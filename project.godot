@@ -20,6 +20,8 @@ Data="*res://core/data.gd"
 Settings="*res://core/settings.gd"
 SaveProfile="*res://core/save_profile.gd"
 VOManager="*res://core/vo_manager.gd"
+BS="*res://bs/bs_state.gd"
+AimAssist="*res://core/aim_assist.gd"
 
 [display]
 
