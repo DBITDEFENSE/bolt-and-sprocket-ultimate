@@ -22,7 +22,7 @@ godot --audio-driver Dummy --position -4000,-4000 --resolution 1280x720 --path .
 
 **Runs made:**
 - Ten-plus headless runs, used to debug the bot itself.
-- Two full god-mode runs to round 10. God mode switches off damage, so these test the systems rather than survival; with the fixes in, the second run had no stalls.
+- Two god-mode runs: seed 7 (before the fixes) to round 10, and seed 11 (after them) to round 8. God mode switches off damage, so these test the systems rather than survival.
 - Four real-difficulty runs.
 - One rendered run with screenshots.
 
@@ -69,8 +69,9 @@ godot --audio-driver Dummy --position -4000,-4000 --resolution 1280x720 --path .
 
 After the fixes:
 - All 259 unit tests pass, 256 scripts compile, and the Scrapheap smoke run still passes.
-- The verification god-mode run (seed 11) reached round 10.
-- A special round passed with no stuck zombies.
+- The verification god-mode run (seed 11) on the fixed code got through round 7, including special round 6, with no stuck zombies or stalls.
+- I stopped it in round 8: the bot was out of ammo and boxed into a corner of the Stable. In god mode it can't die, so the round could never end. That's the bot's weakness, not the game's; the zombies there were crowding within reach, as they should.
+- Round 10 itself was reached and cleared in the seed-7 run, on the code before these fixes.
 
 ## Review
 
