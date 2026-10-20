@@ -1,0 +1,17 @@
+{
+  "_doc": "New M1 UI/systems lines (bs.* ids), same shape as lines_index.json. BSText reads these after lines_index. bs.ui.shop.desc.lawn_dart and bs.ui.shop.browse are the original shopStock / shopShowDesc text (index.html:11964, 12189) that the extractor missed.",
+  "bs.ui.shop.desc.lawn_dart": {"who": "ui", "text": "A slow, patient, homing lawn dart. Banned in 38 star systems; classified as \"a lawn game\" in the other 4. Some assembly required. Assembly sold separately."},
+  "bs.ui.shop.browse": {"who": "ui", "text": "Browse away! Blartz accepts bolts and flattery. Mostly bolts."},
+  "bs.ui.shop.coming_soon": {"who": "ui", "text": "COMING SOON"},
+  "bs.ui.shop.coming_soon_desc": {"who": "ui", "text": "Blartz is still \"finishing\" this one. It is on back-order from a warehouse that may not exist."},
+  "bs.ui.shop.deal": {"who": "ui", "text": "DEAL OF THE DAY: %s, 25%% OFF!"},
+  "bs.ui.shop.style_closed": {"who": "ui", "text": "The paint booth is closed for fumigation. Style returns in a later shipment."},
+  "bs.ui.shop.locked_patent": {"who": "ui", "text": "Only Blartz understands this thing. Rescue him first."},
+  "bs.ui.super.overclock": {"who": "ui", "text": "OVERCLOCK"},
+  "bs.ui.super.bulwark": {"who": "ui", "text": "BULWARK"},
+  "bs.ui.super.zip": {"who": "ui", "text": "ZIP"},
+  "bs.ui.hud.bolts": {"who": "ui", "text": "BOLTS"},
+  "bs.ui.pause.saved": {"who": "ui", "text": "Progress saved."},
+  "bs.ui.console.not_in_mode": {"who": "ui", "text": "not in this mode"},
+  "bs.ui.menu.bs_missing": {"who": "ui", "text": "Scrapheap Junction is still being welded together."}
+}

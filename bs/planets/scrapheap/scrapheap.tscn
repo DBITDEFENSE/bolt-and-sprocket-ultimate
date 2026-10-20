@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://bs/planets/scrapheap/scrapheap.gd" id="1_scrap"]
+
+[node name="Scrapheap" type="Node3D"]
+script = ExtResource("1_scrap")
+level_id = "scrapheap"
+level_name = "SCRAPHEAP JUNCTION"

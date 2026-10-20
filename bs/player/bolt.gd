@@ -57,6 +57,9 @@ func _ready() -> void:
 	_shape.shape = _box
 	add_child(_shape)
 	safe_margin = 0.01
+	var status: StatusEffects = StatusEffects.new()
+	status.name = "Status"                   # statuses on the player (LIEN, frost...) per the damageable contract
+	add_child(status)
 	melee = BoltMelee.new()
 	melee.name = "Melee"
 	add_child(melee)

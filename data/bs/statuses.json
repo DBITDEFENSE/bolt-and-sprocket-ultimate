@@ -1,0 +1,22 @@
+{
+  "_doc": "Status tuning for B&S enemies (BS_WEAPONS.md §4, BS_ENEMIES.md §2.2, §6). Read by bs/enemies/enemy_base.gd. Durations are the default when a hit gives none; the hit's own seconds win. Source refs are to reference/bs_web/index.html.",
+  "served": {"damage_taken_mult": 1.4, "omega_damage_taken_mult": 1.7, "default_time": 6.0, "src": "damageEnemy L5287 (servedT x1.4, omega x1.7)"},
+  "dancing": {"blocks_attacks": true, "bob_height": 0.35, "bob_hz": 14.0, "spin_hz": 22.0, "default_time": 1.6, "boss_damage_mult": 0.7, "src": "updateEnemies raveT L6427-6450"},
+  "frozen": {"blocks_attacks": true, "blocks_move": true, "default_time": 6.0, "tint": "#cdeeff", "src": "updateEnemies frozen L6390"},
+  "rooted": {"blocks_move": true, "can_shoot": true, "default_time": 0.3, "flyer_immune_above": 3.0, "src": "updateEnemies rootedT L6396"},
+  "gravity_clumped": {"blocks_attacks": true, "blocks_move": true, "default_time": 0.4, "src": "updateEnemies clumpedT L6397"},
+  "slowed": {"move_mult": 0.6, "attack_mult": 0.6, "boss_effect": 0.5, "default_time": 3.0},
+  "burning": {"dps": 5.0, "tick": 0.5, "default_time": 3.0, "glacius_mult": 0.5},
+  "conductive": {"zap_range_bonus": 3.0, "zap_mult": 1.25, "default_time": 4.0, "tint": "#3ee6ff"},
+  "stun": {"finisher_time": 0.8, "wobble_hz": 18.0, "wobble": 0.14, "src": "updateEnemies stunT L6400-6408 (combo finisher 0.8 s)"},
+  "lien": {"duration": 8.0, "elite_duration": 14.0, "player_damage_taken_mult": 1.15, "turret_rate_mult": 1.3, "garnish_every": 5, "src": "BS_ENEMIES §3.1 Lien Crawler (new)"},
+  "launch": {"gravity": 30.0, "tumble_x": 7.0, "tumble_z": 3.0, "src": "launchEnemy L6376; updateEnemies airOff L6410-6425"},
+  "immunities": {
+    "boss": ["frozen", "dancing", "rooted", "gravity_clumped", "launch", "acquired"],
+    "heavy": ["gravity_clumped", "launch"],
+    "turret": ["launch", "gravity_clumped"],
+    "flyer": ["launch"],
+    "prop": ["frozen", "dancing", "rooted", "gravity_clumped", "launch", "slowed", "stun", "burning", "acquired"]
+  },
+  "priority": {"frozen_clears": ["dancing", "rooted"], "dancing_clears": ["rooted"], "launch_clears": ["rooted"]}
+}

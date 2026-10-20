@@ -1,6 +1,10 @@
 extends Control
 ## Placeholder front-end hub (M0). The real hub (Blartz's shop at night, the ship outside, a dusty
 ## Helvetia machine humming in the corner) arrives in M9. Doors show their lock state from the profile.
+## M1: the BOLT & SPROCKET door loads Scrapheap Junction; a first run opens with the intro cutscene
+## (The Repossession) through BSLevel.pending_cutscene.
+
+const BS_FIRST_LEVEL: String = "res://bs/planets/scrapheap/scrapheap.tscn"
 
 const DOORS: Array = [
 	["BOLT & SPROCKET", "bs_campaign", "M1"],
@@ -35,9 +39,23 @@ func _ready() -> void:
 		b.text = str(d[0]) + ("   [LOCKED]" if locked else "")
 		b.disabled = locked
 		b.custom_minimum_size = Vector2(520, 56)
-		b.pressed.connect(func() -> void: _status.text = "%s arrives in %s." % [d[0], d[2]])
+		if str(d[1]) == "bs_campaign":
+			b.pressed.connect(launch_bolt_and_sprocket)
+		else:
+			b.pressed.connect(func() -> void: _status.text = "%s arrives in %s." % [d[0], d[2]])
 		box.add_child(b)
 	_status = Label.new()
 	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(_status)
 	(box.get_child(1) as Button).grab_focus()
+
+
+## The Bolt & Sprocket door. Returns false (and says so) while the planet scene isn't built yet.
+func launch_bolt_and_sprocket() -> bool:
+	if not ResourceLoader.exists(BS_FIRST_LEVEL):
+		if _status != null:
+			_status.text = BSText.text("bs.ui.menu.bs_missing")
+		return false
+	BSLevel.pending_cutscene = "intro" if not BS.flag("cs.intro") else ""
+	get_tree().change_scene_to_file.call_deferred(BS_FIRST_LEVEL)
+	return true

@@ -1,0 +1,47 @@
+{
+  "_doc": "Blartz's shop v2 (shopStock / openShop / renderShop / buyItem / sellWeapon / toggleWish / doInteract, index.html:11949-12260, 4345). Prices per docs/BS_WEAPONS.md §13. Weapon ids are the remake's StringName ids; when data/bs/weapons.json exists its entries (by id) override name/price/implemented. Text is by line id (lines_index / ui_lines).",
+  "tabs": [["all", "ALL"], ["weapon", "WEAPONS"], ["upg", "UPGRADES"], ["gear", "GEAR"], ["cosmetic", "STYLE"], ["tradein", "TRADE-IN"]],
+  "_tabs_src": "SHOP_TABS index.html:11949",
+  "trade_pct": 0.6,
+  "_trade_src": "SHOP_TRADE_VALUE index.html:11950 (60% of price)",
+  "deal_pct": 0.25,
+  "_deal_src": "openShop index.html:12048",
+  "grateful_chance": 0.4,
+  "pitch_interval": 6.0,
+  "_pitch_src": "shopPitch / updateShop index.html:12058, 12256",
+  "weapons": [
+    {"id": "boom_box", "name": "html.w3.001", "desc": "misc.shopStock.01", "price": 150, "unlock": "", "m1": true},
+    {"id": "buzzkill", "name": "html.w7.001", "desc": "misc.shopStock.03", "price": 160, "unlock": "", "m1": true},
+    {"id": "lawn_dart", "name": "html.w4.001", "desc": "bs.ui.shop.desc.lawn_dart", "price": 250, "unlock": "", "m1": true},
+    {"id": "grav_grenade", "name": "html.w8.001", "desc": "misc.shopStock.04", "price": 240, "unlock": "cleared.scrapheap", "m1": false},
+    {"id": "late_fee", "name_text": "LATE FEE", "desc": "", "price": 280, "unlock": "landed.rustvane", "m1": false},
+    {"id": "cease_desist", "name": "html.w6.001", "desc": "misc.shopStock.02", "price": 300, "unlock": "cores.1", "m1": false},
+    {"id": "fine_print", "name_text": "THE FINE PRINT", "desc": "", "price": 300, "unlock": "landed.nova", "m1": false},
+    {"id": "middleman", "name": "html.w9.001", "desc": "misc.shopStock.05", "price": 320, "unlock": "core.nova", "m1": false},
+    {"id": "frostbyte", "name": "html.w10.001", "desc": "misc.shopStock.06", "price": 320, "unlock": "core.glacius", "m1": false},
+    {"id": "root_canal", "name": "html.w11.001", "desc": "misc.shopStock.07", "price": 300, "unlock": "core.verdant", "m1": false},
+    {"id": "hostile_takeover", "name_text": "HOSTILE TAKEOVER", "desc": "", "price": 340, "unlock": "landed.verdant", "m1": false},
+    {"id": "clearance_rack", "name_text": "CLEARANCE RACK", "desc": "", "price": 360, "unlock": "landed.galleria", "m1": false}
+  ],
+  "_weapons_note": "Fallback stock, used only when data/bs/weapons.json is missing. unlock: '' = in stock from the start; otherwise a BS flag that must be set. m1: counts as implemented. With weapons.json, a gun is implemented when its 'script' exists on disk (or 'implemented': true), and its 'unlock' is mapped through unlock_flags. Unimplemented stock shows greyed out as COMING SOON.",
+  "unlock_flags": {"shop": "", "scrapheap_clear": "cleared.scrapheap", "rustvane": "landed.rustvane", "first_core": "cores.1", "nova": "landed.nova", "nova_core": "core.nova", "glacius_core": "core.glacius", "verdant_core": "core.verdant", "verdant": "landed.verdant", "galleria": "landed.galleria"},
+  "_unlock_flags_note": "weapons.json unlock value -> BS flag. 'start' and 'blartz_gift' are never sold. cores.1 is set by whoever collects the first Keystone Core.",
+  "trade_only": {"patent_pending": 180},
+  "_trade_only_note": "Guns that are never sold but can be traded in (Patent Pending is Blartz's rescue gift; BS_WEAPONS §13 trade-in 180). Starter guns (omni_blaster, void_ripper, sprocket_zap) trade for 0 and are not listed.",
+  "starters": ["omni_blaster", "void_ripper", "sprocket_zap"],
+  "mod_tracks": [
+    {"k": "dmg", "label": "Damage", "prices": [60, 110, 170], "flavor": "misc.top.27"},
+    {"k": "rate", "label": "Fire Rate", "prices": [50, 90, 140], "flavor": "misc.top.28"},
+    {"k": "ammo", "label": "Ammo Cap", "prices": [40, 70, 110], "flavor": "misc.top.29"}
+  ],
+  "_mod_src": "UPG_TRACKS index.html:11951; BS_WEAPONS §2.2. Overridden by weapons.json 'mod_tracks' when present. Patent Pending mods need flag blartzRescued.",
+  "mallet": [
+    {"tier": 1, "name_text": "Magma Mallet", "price": 220, "desc": "misc.shopStock.11"},
+    {"tier": 2, "name_text": "Thunder Mallet", "price": 450, "desc": "misc.shopStock.12"}
+  ],
+  "mallet_maxed_desc": "misc.shopStock.13",
+  "ammo": {"price": 30, "desc": "misc.shopStock.14"},
+  "nano": {"base": 100, "step": 60, "hp": 20, "desc": "misc.shopStock.15"},
+  "super": {"price": 900, "desc": "misc.shopStock.10"},
+  "karen": {"price": 2500, "unlock": "bs_ending", "desc": "misc.shopStock.09"}
+}

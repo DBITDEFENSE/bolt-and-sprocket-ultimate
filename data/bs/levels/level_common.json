@@ -1,0 +1,9 @@
+{
+  "_doc": "Shared level-kit numbers. stub_hp is only used by StubEnemy when EnemySpawner is missing (values from ENEMY_DEFS L6225 / BS_ENEMIES: scrapmutt 30, tinkerturret 55, vulture 26, repotron 380).",
+  "stub_hp": {"scrap_mutt": 30, "tinker_turret": 55, "vulture_drone": 26, "lien_crawler": 40, "bolt_crate": 10, "repo_tron": 380},
+  "interact_radius": 2.2,
+  "denizen_bark_radius": 3.4,
+  "denizen_bark_cd": 12.0,
+  "checkpoint_heal": 0.25,
+  "navmesh": {"cell_size": 0.25, "cell_height": 0.25, "agent_radius": 0.5, "agent_height": 1.75, "agent_max_climb": 0.5, "agent_max_slope": 45.0, "region_min_size": 4.0}
+}

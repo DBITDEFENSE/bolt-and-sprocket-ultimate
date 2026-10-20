@@ -1,0 +1,267 @@
+{
+  "_doc": "Bolt & Sprocket arsenal (docs/BS_WEAPONS.md). Seeded from data/bs_source: WEAPONS (names/colours), AMMO_BASE + AMMO_PER_TIER (index.html:4415), W_BASE_DMG (12162), OMEGA_DESC (4421), UPG_TRACKS (mods), SHOP_TRADE_VALUE; fire functions fireBlaster 4552, fireBoomBox 4574, detonateRave 4614, releaseRipper 4729, fireZap 4783, updateWeapons 5175, implodeAt/explodeAt 5212, updateProjectiles 5341, WHEEL 17779. Read through WeaponData (bs/weapons/weapon_data.gd). 'params' holds each gun's own tuning; 'src' notes where a number came from.",
+  "progression": {
+    "_src": "BS_WEAPONS §2.1-2.4",
+    "xp_thresholds": [0, 600, 1800, 4000, 8000],
+    "level_dmg_bonus": [0.0, 0.06, 0.12, 0.18, 0.24],
+    "level_ammo_bonus": [0.0, 0.10, 0.10, 0.20, 0.20],
+    "xp_per_hp": 1.0,
+    "xp_boss_per_hp": 0.5,
+    "xp_kill": 10,
+    "xp_elite_kill": 25,
+    "assist_frac": 0.25,
+    "catchup_mul": 2.0,
+    "sig_unlock_level": 3,
+    "sig_price": 200,
+    "omega_level": 5,
+    "omega_price": 2000,
+    "omega_unlock_flag": "blartzRescue",
+    "mods_locked_until_flag": {"patent_pending": "blartzRescue"}
+  },
+  "mods": {
+    "_src": "UPG_TRACKS; wDmg/wRate/ammoCap index.html:4413-4416",
+    "max_tier": 3,
+    "dmg": {"label": "Damage", "per_tier": 0.25, "prices": [60, 110, 170], "flavor": "Makes the hurty end hurtier. Science!"},
+    "rate": {"label": "Fire Rate", "per_tier": 0.15, "prices": [50, 90, 140], "flavor": "Shoots faster than Blartz dodges taxes."},
+    "ammo": {"label": "Ammo Cap", "label_heat": "Heat Sink", "heat_per_tier": 20, "prices": [40, 70, 110], "flavor": "Now holds more boom per bag. Pockets sold separately."},
+    "visual_tier_per_dmg": 0.18
+  },
+  "ammo_families": {
+    "_src": "BS_WEAPONS §3 (purple ammoR / cyan ammoZ orbs, 22% drop on non-crate kills, killEnemy 5325)",
+    "drop_chance": 0.22,
+    "void": {"label": "VOID STOCK", "color": "#a64dff", "grants": {"void_ripper": 6, "boom_box": 2, "grav_grenade": 1, "patent_pending": 1, "late_fee": 3, "hostile_takeover": 1}},
+    "charge": {"label": "CHARGE STOCK", "color": "#3ee6ff", "grants": {"sprocket_zap": 10, "lawn_dart": 1, "frostbyte": 12, "root_canal": 2, "fine_print": 2, "clearance_rack": 40}},
+    "paper": {"label": "PAPER STOCK", "color": "#f2f0e0", "grants": {"cease_desist": 2, "middleman": 1}}
+  },
+  "beat": {"_doc": "Fallback beat clock when no node in group 'music_clock' provides time_to_next_beat(). 120 BPM.", "period": 0.5},
+  "wheel": {"page_size": 8, "hold_threshold": 0.18, "_src": "RB hold logic index.html:1438-1440"},
+  "aim": {"muzzle_forward": 0.6, "muzzle_right": -0.32, "muzzle_up": 0.05, "world_mask": 33, "enemy_mask": 12},
+  "status_owner": {"_doc": "Assist XP (§2.1): damage from another source on a target carrying this status gives 25% to the weapon that applied it.",
+    "dancing": "boom_box", "gravity_clumped": "void_ripper", "conductive": "sprocket_zap", "served": "cease_desist", "frozen": "frostbyte",
+    "rooted": "root_canal", "marked": "fine_print", "marked_down": "clearance_rack", "acquired": "hostile_takeover"},
+  "lines": {
+    "_doc": "New player-facing lines owned by the weapons builder (VOManager's index doesn't carry them yet; WeaponText falls back to these).",
+    "bs.weapon.levelup.01": {"who": "sprocket", "text": "Your gun leveled up. It's growing. I'm not crying, you're crying."},
+    "bs.weapon.levelup.02": {"who": "sprocket", "text": "V3! It's learned a trick. I'd say it was me who taught it, but it wasn't."},
+    "bs.weapon.levelup.03": {"who": "sprocket", "text": "V5. That thing has seen more combat than most generals. Blartz will want to touch it."},
+    "bs.weapon.levelup.04": {"who": "sprocket", "text": "Level up. The weapon is improving. The wielder remains a work in progress."},
+    "bs.weapon.zap.amp.01": {"who": "sprocket", "text": "Oh, so I'm a PYLON now. Great. Really living the dream."},
+    "bs.weapon.zap.amp.02": {"who": "sprocket", "text": "Standing still in a firefight. This is a choice. This is YOUR choice."},
+    "bs.weapon.zap.amp.03": {"who": "sprocket", "text": "My capacitors are filing a grievance. With me. About you."},
+    "bs.weapon.zap.amp.04": {"who": "sprocket", "text": "Fine! FINE! UNLIMITED POWER! Or, you know, about twelve volts more than usual."},
+    "bs.weapon.zap.amp.05": {"who": "sprocket", "text": "Can I move now? I'm moving. I'm moving now."},
+    "bs.weapon.hint.heat": {"who": "hint", "text": "OVERHEAT! Let the Omni-Blaster vent, or cash the heat in with a HOT ROUND (alt-fire)."},
+    "bs.weapon.hint.hot_round_cold": {"who": "hint", "text": "Hot Round needs at least 25 heat. Spray first, then cash it in."},
+    "bs.weapon.hint.rift_cd": {"who": "hint", "text": "The Rift is still stitching itself shut."},
+    "bs.weapon.fx.overheat": {"who": "fx", "text": "OVERHEAT"},
+    "bs.weapon.fx.empty": {"who": "fx", "text": "EMPTY"},
+    "bs.weapon.fx.hot_round": {"who": "fx", "text": "HOT ROUND"},
+    "bs.weapon.fx.max_hot_round": {"who": "fx", "text": "MAX HOT ROUND"},
+    "bs.weapon.fx.denied": {"who": "fx", "text": "DENIED"},
+    "bs.weapon.fx.rift_collapse": {"who": "fx", "text": "RIFT COLLAPSE"},
+    "bs.weapon.fx.aftershock": {"who": "fx", "text": "AFTERSHOCK"},
+    "bs.weapon.fx.drop": {"who": "fx", "text": "DROP THE BASS"},
+    "bs.weapon.fx.encore": {"who": "fx", "text": "ENCORE"},
+    "bs.weapon.fx.ignite": {"who": "fx", "text": "IGNITED"},
+    "bs.weapon.wheel.hub": {"who": "ui", "text": "CHOOSE WEAPON"},
+    "bs.weapon.wheel.last": {"who": "ui", "text": "LAST"},
+    "bs.weapon.wheel.locked": {"who": "ui", "text": "NOT OWNED"},
+    "bs.weapon.wheel.page": {"who": "ui", "text": "PAGE %d/%d"},
+    "bs.weapon.unlock.start": {"who": "ui", "text": "Standard issue."},
+    "bs.weapon.unlock.shop": {"who": "ui", "text": "Blartz stocks this."},
+    "bs.weapon.unlock.scrapheap_clear": {"who": "ui", "text": "Blartz stocks this once Scrapheap is cleared."},
+    "bs.weapon.unlock.first_core": {"who": "ui", "text": "Blartz stocks this after your first Keystone Core."},
+    "bs.weapon.unlock.rustvane": {"who": "ui", "text": "Blartz stocks this on Rustvane."},
+    "bs.weapon.unlock.nova": {"who": "ui", "text": "Blartz stocks this on Nova Plaza."},
+    "bs.weapon.unlock.nova_core": {"who": "ui", "text": "Blartz stocks this after the Nova Plaza core."},
+    "bs.weapon.unlock.glacius_core": {"who": "ui", "text": "Blartz stocks this after the Glacius Vault core."},
+    "bs.weapon.unlock.verdant": {"who": "ui", "text": "Blartz stocks this on Verdant Sink."},
+    "bs.weapon.unlock.verdant_core": {"who": "ui", "text": "Blartz stocks this after the Verdant Sink core."},
+    "bs.weapon.unlock.galleria": {"who": "ui", "text": "Blartz stocks this at the Grand Galleria."},
+    "bs.weapon.unlock.blartz_gift": {"who": "ui", "text": "A gift. From someone who is still in a cell."}
+  },
+  "order": ["omni_blaster", "void_ripper", "sprocket_zap", "boom_box", "lawn_dart", "patent_pending", "cease_desist", "buzzkill",
+    "grav_grenade", "middleman", "frostbyte", "root_canal", "late_fee", "fine_print", "hostile_takeover", "clearance_rack"],
+  "start_weapons": ["omni_blaster", "void_ripper", "sprocket_zap"],
+  "weapons": {
+    "omni_blaster": {
+      "slot": 1, "src_index": 0, "name": "OMNI-BLASTER", "color": "#ffd23e", "icon": "🔫", "archetype": "hitscan", "script": "res://bs/weapons/guns/omni_blaster.gd",
+      "damage_type": "energy", "damage": 8, "w_base_dmg": 8, "interval": 0.13, "ammo_base": -1, "ammo_per_tier": 0, "family": "", "uses_heat": true,
+      "price": 0, "trade_in": 0, "unlock": "start", "recoil": 0.0035, "empty_hint": "", "empty_key": "", "ad": "ad_blaster",
+      "omega_name": "Ω OVERTIME", "omega_desc_index": 0, "omega_line": "bs.forge.evolve.blaster",
+      "params": {
+        "_src": "fireBlaster 4552 (8 dmg, 0.13 s, every 5th HOT ROUND 16 pierce 2, recoil 0.0035); heat/alt per §8.1",
+        "range": 60, "falloff_start": 30, "falloff_mul": 0.6, "hot_every": 5, "hot_every_v3": 4, "hot_every_omega": 3, "hot_damage": 16, "hot_pierce": 2,
+        "heat_per_shot": 6, "heat_max": 100, "vent_rate": 40, "vent_rate_v3": 55, "vent_delay": 0.35, "overheat_time": 1.0,
+        "alt_min_heat": 25, "alt_base": 16, "alt_per_heat": 0.5, "alt_pierce": 3, "alt_recoil": 0.02, "max_hot_heat": 90, "burn_time": 3.0,
+        "omega_sparks": 2, "omega_spark_dmg": 6, "omega_spark_range": 6, "conductive_time": 4.0,
+        "cool_resume_heat": 70, "thermal_debt_per_heat": 1.0
+      },
+      "levels": {"3": "Vent 40 -> 55/s; auto Hot Round every 4th shot", "5": "Alt at 90+ heat: MAX HOT ROUND ignites everything it pierces"},
+      "signature": {"A": {"id": "cool_customer", "name": "Cool Customer", "desc": "No overheat lockout. At 100 heat the fire rate halves until heat drops below 70."},
+        "B": {"id": "thermal_debt", "name": "Thermal Debt", "desc": "Hot Round works at any heat and scales 16 + 1.0 x heat, but forces a 1.0 s overheat."}},
+      "model_by_level": ["", "copper heat-fins", "heat gauge", "second ejection port", "orange-hot muzzle ring"]
+    },
+    "void_ripper": {
+      "slot": 2, "src_index": 1, "name": "VOID RIPPER", "color": "#a64dff", "icon": "🟣", "archetype": "charged", "script": "res://bs/weapons/guns/void_ripper.gd",
+      "damage_type": "void", "damage": 30, "w_base_dmg": 30, "interval": 0.0, "ammo_base": 12, "ammo_per_tier": 6, "family": "void",
+      "price": 0, "trade_in": 0, "unlock": "start", "recoil": 0.015, "empty_hint": "code.releaseRipper.01", "empty_key": "ripammo", "ad": "ad_void",
+      "omega_name": "Ω SECOND OPINION", "omega_desc_index": 1, "omega_line": "bs.forge.evolve.void",
+      "params": {
+        "_src": "releaseRipper 4729 (30+35c dmg, splash 3.5+2c, speed 20+6c, grav 4, life 3, recoil 0.015+0.02c); charge rate 1.15/s updateWeapons 5180; implodeAt 5212 (radius+2, 9 m/s); bolt drag 4.5 m (5398)",
+        "charge_time": 0.87, "charge_time_v3": 0.65, "dmg_per_charge": 35, "splash": 3.5, "splash_per_charge": 2.0, "speed": 20, "speed_per_charge": 6,
+        "gravity": 4, "life": 3, "recoil_per_charge": 0.02, "implode_extra_r": 2.0, "implode_knock": 9.0, "drag_radius": 4.5, "drag_radius_v3": 8.0, "drag_rate": 3.5,
+        "rift_range": 15, "rift_time": 3.0, "rift_radius": 5.0, "rift_pull": 6.0, "rift_ammo": 2, "rift_cooldown": 6.0, "rift_splash_mul": 1.5, "clump_refresh": 0.4,
+        "aftershock_delay": 0.4, "aftershock_blast_delay": 0.22, "aftershock_extra_r": 1.5, "aftershock_mul": 0.7, "aftershock_min_charge": 0.5,
+        "pocket_time": 5.0, "pocket_radius": 7.0, "pocket_pull": 4.0, "quick_tap": 0.15, "quick_charge": 0.5, "quick_dmg_mul": 1.2, "quick_cap": 0.75
+      },
+      "levels": {"3": "Charge time 0.65 s; bolt drag 8 m", "5": "Full-charge orb pierces the first enemy and implodes on the second"},
+      "signature": {"A": {"id": "pocket_universe", "name": "Pocket Universe", "desc": "Rift lasts 5 s with a 7 m radius, but pulls at only 4 m/s."},
+        "B": {"id": "quick_collapse", "name": "Quick Collapse", "desc": "A tap fires an instant 50% orb with +20% damage. Holding caps at 75%."}},
+      "model_by_level": ["", "second containment ring", "violet coolant line", "floating shield shards", "event-horizon disc"]
+    },
+    "sprocket_zap": {
+      "slot": 3, "src_index": 2, "name": "SPROCKET ZAP", "color": "#3ee6ff", "icon": "⚡", "archetype": "chain", "script": "res://bs/weapons/guns/sprocket_zap.gd",
+      "damage_type": "shock", "damage": 18, "w_base_dmg": 18, "interval": 0.5, "ammo_base": 30, "ammo_per_tier": 12, "family": "charge",
+      "price": 0, "trade_in": 0, "unlock": "start", "recoil": 0.006, "empty_hint": "code.fireZap.01", "empty_key": "zapammo", "ad": "ad_zap",
+      "omega_name": "Ω FULL CHARGE", "omega_desc_index": 2, "omega_line": "bs.forge.evolve.zap",
+      "params": {
+        "_src": "fireZap 4783 (first within 11 m, score a*2-d*0.08, skip a<0.35 beyond 4.5 m; hop 6.5 m; dmg 18/14/11/10/9; residue firePatch r1.4 1.6 s, Ω r2.8 2.2 s; fire patches tick 4 per 0.4 s)",
+        "chain_dmg": [18, 14, 11, 10, 9, 9], "first_range": 11, "first_close": 4.5, "first_min_dot": 0.35, "hop_range": 6.5,
+        "targets": 3, "targets_v3": 4, "targets_v5": 5, "targets_omega": 5, "omega_min_dmg": 11,
+        "residue_r": 1.4, "residue_r_v3": 2.0, "residue_r_omega": 2.8, "residue_time": 1.6, "residue_time_omega": 2.2, "residue_tick": 0.4, "residue_dmg": 4,
+        "conductive_time": 4.0, "conductive_reach": 3.0, "conductive_mul": 1.25, "frozen_mul": 2.0, "strands": 2,
+        "amp_targets": 1, "amp_hop": 9.0, "amp_mul": 1.3, "amp_drain": 1.5, "amp_leash": 12.0, "amp_nag_after": 3.0,
+        "surge_residue_time": 4.0, "long_first_range": 18
+      },
+      "levels": {"3": "4 targets, third strand, hits become CONDUCTIVE 4 s, residue r2.0", "5": "5 targets"},
+      "signature": {"A": {"id": "surge_protector", "name": "Surge Protector", "desc": "Residue patches last 4 s and stack."},
+        "B": {"id": "long_distance", "name": "Long Distance", "desc": "First-target range 11 -> 18 m, but one fewer chain target."}},
+      "model_by_level": ["", "copper antenna coil", "spark-gap crown", "insulated cable sleeves", "white-blue eyes"]
+    },
+    "boom_box": {
+      "slot": 4, "src_index": 3, "name": "B.O.O.M. BOX", "color": "#ff4dd2", "icon": "🔊", "archetype": "lobbed", "script": "res://bs/weapons/guns/boom_box.gd",
+      "damage_type": "kinetic", "damage": 45, "w_base_dmg": 45, "interval": 0.95, "ammo_base": 8, "ammo_per_tier": 4, "family": "void",
+      "price": 150, "trade_in": 90, "unlock": "shop", "recoil": 0.012, "empty_hint": "code.fireBoomBox.01", "empty_key": "boomammo", "ad": "ad_boom",
+      "omega_name": "Ω HEADLINER", "omega_desc_index": 3, "omega_line": "bs.forge.evolve.boom",
+      "params": {
+        "_src": "fireBoomBox 4574 (15 fwd + 5 up, grav 16, life 2.2); detonateRave 4614 (r5.5, Ω 7.5; bosses 70% now; raveT 1.6); dance tick 6428 (hold up to 2.5 s for the beat)",
+        "speed": 15, "up": 5, "gravity": 16, "life": 2.2, "radius": 5.5, "radius_v3": 6.5, "radius_omega": 7.5, "dance_time": 1.6, "beat_wait_max": 2.5,
+        "boss_mul": 0.7, "drop_bass_mul": 0.8, "v3_bonus_drops": 1, "v5_launch": 6.0, "omega_launch": 11.0, "encore_mul": 0.5,
+        "extended_dance": 3.0, "extended_mul": 1.3, "radio_delay": 0.8, "radio_radius_mul": 0.8
+      },
+      "levels": {"3": "Radius 6.5 m; each dancer drops +1 bolt", "5": "The drop knocks dancers up 6 m/s"},
+      "signature": {"A": {"id": "extended_mix", "name": "Extended Mix", "desc": "The dance lasts 3 s and the drop deals x1.3."},
+        "B": {"id": "radio_edit", "name": "Radio Edit", "desc": "Drops 0.8 s after landing with no beat wait, but the radius is 20% smaller."}},
+      "model_by_level": ["", "chrome grille", "LED strips", "second woofer", "tiny glitter ball"]
+    },
+    "lawn_dart": {
+      "slot": 5, "src_index": 4, "name": "LAWN DART", "color": "#ff6a2e", "icon": "🚀", "archetype": "projectile", "damage_type": "kinetic",
+      "damage": 55, "w_base_dmg": 55, "interval": 1.15, "ammo_base": 5, "ammo_per_tier": 3, "family": "charge", "price": 250, "trade_in": 150, "unlock": "shop",
+      "recoil": 0.012, "empty_hint": "code.fireLawnDart.01", "empty_key": "dartammo", "ad": "ad_dart", "omega_name": "Ω DOUBLE FAULT", "omega_desc_index": 4, "omega_line": "bs.forge.evolve.dart",
+      "params": {"_src": "fireLawnDart 4637", "speed": 14, "gravity": 0, "life": 6, "splash": 3, "homing": 2.2, "lock_range": 26, "lock_dot": 0.15, "fuse": 1.0, "bullseye_mul": 1.35},
+      "levels": {"3": "Fuse 0.7 s", "5": "Re-locks within 12 m if the target dies"},
+      "signature": {"A": {"id": "lawn_ordinance", "name": "Lawn Ordinance", "desc": "Darts in SERVED or rooted targets split into 3 bomblets."}, "B": {"id": "express_delivery", "name": "Express Delivery", "desc": "Faster, sharper turns; always detonates on impact."}},
+      "model_by_level": ["", "striped fins", "lawn-flamingo hood ornament", "second launch tube", "KEEP OFF THE GRASS sight"]
+    },
+    "patent_pending": {
+      "slot": 6, "src_index": 5, "name": "PATENT PENDING", "color": "#9dff5a", "icon": "🧪", "archetype": "projectile", "damage_type": "legal",
+      "damage": 70, "w_base_dmg": 70, "interval": 2.2, "ammo_base": 4, "ammo_per_tier": 2, "family": "void", "price": 0, "trade_in": 180, "unlock": "blartz_gift",
+      "recoil": 0.02, "empty_hint": "code.firePatent.01", "empty_key": "patammo", "ad": "ad_patent", "omega_name": "Ω PATENT GRANTED", "omega_desc_index": 5, "omega_line": "bs.forge.evolve.patent",
+      "params": {"_src": "firePatent 4684", "speed": 8, "gravity": 0, "life": 4.5, "splash": 5, "fork_interval": 0.45, "fork_dmg": 10, "fork_range": 13, "fork_served": 3.0},
+      "levels": {"3": "Fork interval 0.35 s", "5": "Detonation leaves a PENDING zone"},
+      "signature": {"A": {"id": "provisional", "name": "Provisional", "desc": "Sphere speed 14 m/s, splash -1 m."}, "B": {"id": "prior_art", "name": "Prior Art", "desc": "Fork victims fork once more."}},
+      "model_by_level": ["", "extra taped warnings", "second cooling fan", "exposed coil glow", "pending-stamp turret"]
+    },
+    "cease_desist": {
+      "slot": 7, "src_index": 6, "name": "CEASE & DESIST", "color": "#f2f0e0", "icon": "📜", "archetype": "projectile", "damage_type": "legal",
+      "damage": 24, "w_base_dmg": 24, "interval": 0.5, "ammo_base": 6, "ammo_per_tier": 3, "family": "paper", "price": 300, "trade_in": 180, "unlock": "first_core",
+      "recoil": 0.008, "empty_hint": "code.fireCease.01", "empty_key": "ceaseammo", "ad": "ad_cease", "omega_name": "Ω INJUNCTION", "omega_desc_index": 6, "omega_line": "bs.forge.evolve.cease",
+      "params": {"_src": "fireCease 4711", "speed": 30, "gravity": 0, "life": 2.0, "ricochets": 2, "ricochet_range": 16, "served_time": 6.0},
+      "levels": {"3": "+1 ricochet, range 20 m", "5": "+1 ricochet; paper trail"},
+      "signature": {"A": {"id": "cease", "name": "Cease", "desc": "SERVED lasts 10 s."}, "B": {"id": "desist", "name": "Desist", "desc": "SERVED also SLOWS, but gives +30%."}},
+      "model_by_level": ["", "rubber-stamp hammer", "dot-matrix feed tray", "wax-seal stamper", "tiny gavel"]
+    },
+    "buzzkill": {
+      "slot": 8, "src_index": 7, "name": "BUZZKILL", "color": "#cfd8e4", "icon": "🪚", "archetype": "projectile", "damage_type": "kinetic",
+      "damage": 14, "w_base_dmg": 14, "interval": 0.24, "ammo_base": 20, "ammo_per_tier": 8, "family": "", "price": 160, "trade_in": 96, "unlock": "shop",
+      "recoil": 0.006, "empty_hint": "", "empty_key": "", "ad": "ad_buzz", "omega_name": "Ω MOOD KILLER", "omega_desc_index": 7, "omega_line": "bs.forge.evolve.buzz",
+      "params": {"_src": "fireBuzzkill 5617", "speed": 34, "gravity": 0, "life": 2.2, "bounces": 3, "saw": true},
+      "levels": {"3": "Blades split on the first bounce", "5": "Plate pops every 2 hits"},
+      "signature": {"A": {"id": "hedge_trimmer", "name": "Hedge Trimmer", "desc": "Blades orbit Bolt before launching."}, "B": {"id": "bank_shot", "name": "Bank Shot", "desc": "+25% damage per bounce."}},
+      "model_by_level": ["", "serrated guard", "spare blade", "blade magazine wheel", "sparking grinder"]
+    },
+    "grav_grenade": {
+      "slot": 9, "src_index": 8, "name": "GRAV GRENADE", "color": "#8a4dff", "icon": "🌀", "archetype": "lobbed", "damage_type": "void",
+      "damage": 0, "w_base_dmg": 30, "interval": 1.1, "ammo_base": 5, "ammo_per_tier": 2, "family": "void", "price": 240, "trade_in": 144, "unlock": "scrapheap_clear",
+      "recoil": 0.012, "empty_hint": "code.fireGrav.01", "empty_key": "gravammo", "ad": "ad_grav", "omega_name": "Ω EVENT HORIZON", "omega_desc_index": 8, "omega_line": "bs.forge.evolve.grav",
+      "params": {"_src": "fireGrav 5635 / spawnSingularity 5648", "speed": 15, "up": 5, "gravity": 16, "life": 2.5, "duration": 3.0, "radius": 6.5, "status": "gravity_clumped", "status_time": 0.4},
+      "levels": {"3": "5 s, crush 6 per 0.5 s", "5": "Collapse deals 20; bolt pull 12 m"},
+      "signature": {"A": {"id": "tidy_up", "name": "Tidy Up", "desc": "Radius 9 m, no crush."}, "B": {"id": "compactor", "name": "Compactor", "desc": "Radius 4.5 m, crush x2."}},
+      "model_by_level": ["", "gyroscope cage", "orbiting debris ring", "lensing glass shell", "accretion disk"]
+    },
+    "middleman": {
+      "slot": 10, "src_index": 9, "name": "THE MIDDLEMAN", "color": "#ffb02e", "icon": "🤝", "archetype": "deployable", "damage_type": "energy",
+      "damage": 8, "w_base_dmg": 8, "interval": 0.6, "ammo_base": 3, "ammo_per_tier": 1, "family": "paper", "price": 320, "trade_in": 192, "unlock": "nova_core",
+      "recoil": 0.008, "empty_hint": "code.fireMiddleman.01", "empty_key": "midammo", "ad": "ad_mid", "omega_name": "Ω MIDDLE MANAGEMENT", "omega_desc_index": 9, "omega_line": "bs.forge.evolve.mid",
+      "params": {"_src": "fireMiddleman 5689", "duration": 12, "shot_interval": 0.35, "range": 22, "max_active": 1},
+      "levels": {"3": "Explodes at contract end (45, r5)", "5": "Shield 60; Reassign no cooldown"},
+      "signature": {"A": {"id": "consultant", "name": "Consultant", "desc": "20 s contract, no aggro."}, "B": {"id": "scapegoat", "name": "Scapegoat", "desc": "Huge aggro, tougher, fires half as often."}},
+      "model_by_level": ["", "lanyard ID badge", "clipboard arm", "second rotor", "desk fan and mug"]
+    },
+    "frostbyte": {
+      "slot": 11, "src_index": 10, "name": "FROSTBYTE", "color": "#cdeeff", "icon": "❄️", "archetype": "beam", "damage_type": "frost",
+      "damage": 6, "w_base_dmg": 6, "interval": 0.12, "ammo_base": 40, "ammo_per_tier": 16, "family": "charge", "price": 320, "trade_in": 192, "unlock": "glacius_core",
+      "recoil": 0.0, "empty_hint": "", "empty_key": "", "ad": "ad_frost", "omega_name": "Ω DEEP FREEZE", "omega_desc_index": 10, "omega_line": "bs.forge.evolve.frost",
+      "params": {"_src": "updateFrostbyte 5735", "range": 18, "dot": 0.9, "dps": 6, "frost_rate": 1.4, "freeze_time": 6.0},
+      "levels": {"3": "Shatter spreads freeze within 5 m", "5": "Beam passes through the first frozen target"},
+      "signature": {"A": {"id": "cold_storage", "name": "Cold Storage", "desc": "Shatter drops 8 bolts."}, "B": {"id": "flash_freeze", "name": "Flash Freeze", "desc": "Narrow beam, freeze x1.5."}},
+      "model_by_level": ["", "frosted coolant tank", "icicles", "second tank", "snow-globe sight"]
+    },
+    "root_canal": {
+      "slot": 12, "src_index": 11, "name": "ROOT CANAL", "color": "#9dff5a", "icon": "🌱", "archetype": "projectile", "damage_type": "kinetic",
+      "damage": 8, "w_base_dmg": 8, "interval": 0.7, "ammo_base": 8, "ammo_per_tier": 3, "family": "charge", "price": 300, "trade_in": 180, "unlock": "verdant_core",
+      "recoil": 0.008, "empty_hint": "code.fireRoot.01", "empty_key": "rootammo", "ad": "ad_root", "omega_name": "Ω ORTHODONTIST", "omega_desc_index": 11, "omega_line": "bs.forge.evolve.root",
+      "params": {"_src": "fireRoot 5783 / plantAt 5795", "speed": 22, "gravity": 8, "life": 2.0, "plant_life": 6, "root_radius": 3.2, "bite": 0.5, "max_plants": 3, "status": "rooted", "status_time": 0.3},
+      "levels": {"3": "Plants spit spores", "5": "9 s life, root radius 4 m"},
+      "signature": {"A": {"id": "braces", "name": "Braces", "desc": "Rooted targets take +20%."}, "B": {"id": "wisdom_teeth", "name": "Wisdom Teeth", "desc": "Each plant roots 2 at half damage."}},
+      "model_by_level": ["", "terracotta pot magazine", "watering-can muzzle", "seed hopper", "garden gnome sight"]
+    },
+    "late_fee": {
+      "slot": 13, "src_index": -1, "name": "LATE FEE", "color": "#ff3b3b", "icon": "💸", "archetype": "hitscan", "damage_type": "kinetic",
+      "damage": 7, "w_base_dmg": 56, "interval": 0.85, "ammo_base": 10, "ammo_per_tier": 4, "family": "void", "price": 280, "trade_in": 168, "unlock": "rustvane",
+      "recoil": 0.03, "empty_hint": "", "empty_key": "", "ad": "bs.ad.latefee", "omega_name": "Ω COMPOUND INTEREST", "omega_desc_index": -1, "omega_line": "bs.forge.evolve.latefee",
+      "params": {"_src": "BS_WEAPONS §9.1 (new)", "pellets": 8, "cone_deg": 9, "range": 16, "falloff_start": 4, "falloff_mul": 0.5, "interest_per_s": 0.125, "interest_max": 2.0},
+      "levels": {"3": "Interest accrues while holstered", "5": "Max interest x2.5"},
+      "signature": {"A": {"id": "penalty_apr", "name": "Penalty APR", "desc": "Interest 2x faster, caps at x1.6."}, "B": {"id": "grace_period", "name": "Grace Period", "desc": "After 3 s idle, fires a slug."}},
+      "model_by_level": ["", "brass coin-slot", "interest ticker", "piggy-bank snout barrel", "PAST DUE stamp"]
+    },
+    "fine_print": {
+      "slot": 14, "src_index": -1, "name": "THE FINE PRINT", "color": "#e8e0c8", "icon": "🔍", "archetype": "hitscan", "damage_type": "legal",
+      "damage": 42, "w_base_dmg": 42, "interval": 0.9, "ammo_base": 8, "ammo_per_tier": 3, "family": "charge", "price": 300, "trade_in": 180, "unlock": "nova",
+      "recoil": 0.03, "empty_hint": "", "empty_key": "", "ad": "bs.ad.fineprint", "omega_name": "Ω TERMS APPLY", "omega_desc_index": -1, "omega_line": "bs.forge.evolve.fineprint",
+      "params": {"_src": "BS_WEAPONS §9.2 (new)", "range": 70, "falloff_start": 70, "falloff_mul": 1.0, "status": "marked", "status_time": 6.0, "zoom": 2.5},
+      "levels": {"3": "Rounds pierce one non-heavy enemy", "5": "Marks glow for Sprocket"},
+      "signature": {"A": {"id": "footnote", "name": "Footnote", "desc": "Marks spread to a neighbour."}, "B": {"id": "asterisk", "name": "Asterisk", "desc": "Marked kills refund ammo."}},
+      "model_by_level": ["", "magnifier scope cap", "microtext barrel", "reading-lamp underbarrel", "quill bolt handle"]
+    },
+    "hostile_takeover": {
+      "slot": 15, "src_index": -1, "name": "HOSTILE TAKEOVER", "color": "#ffcf3e", "icon": "💼", "archetype": "beam", "damage_type": "energy",
+      "damage": 4, "w_base_dmg": 4, "interval": 1.0, "ammo_base": 6, "ammo_per_tier": 2, "family": "void", "price": 340, "trade_in": 204, "unlock": "verdant",
+      "recoil": 0.0, "empty_hint": "", "empty_key": "", "ad": "bs.ad.hostile", "omega_name": "Ω GOLDEN PARACHUTE", "omega_desc_index": -1, "omega_line": "bs.forge.evolve.hostile",
+      "params": {"_src": "BS_WEAPONS §9.3 (new)", "range": 18, "dot": 0.9, "dps": 4, "status": "acquired", "status_time": 10.0},
+      "levels": {"3": "Subsidiaries +20% HP", "5": "Faster acquisition, 12 s contracts"},
+      "signature": {"A": {"id": "hostile_bid", "name": "Hostile Bid", "desc": "Half acquisition time, 6 s contracts."}, "B": {"id": "non_compete", "name": "Non-Compete Clause", "desc": "Attackers of subsidiaries are SERVED."}},
+      "model_by_level": ["", "briefcase emitter", "gold-tie antenna", "pen laser", "stock ticker"]
+    },
+    "clearance_rack": {
+      "slot": 16, "src_index": -1, "name": "CLEARANCE RACK", "color": "#ff7ab0", "icon": "🏷️", "archetype": "hitscan", "damage_type": "kinetic",
+      "damage": 5, "w_base_dmg": 5, "interval": 0.06, "ammo_base": 150, "ammo_per_tier": 50, "family": "charge", "price": 360, "trade_in": 216, "unlock": "galleria",
+      "recoil": 0.002, "empty_hint": "", "empty_key": "", "ad": "bs.ad.clearance", "omega_name": "Ω EVERYTHING MUST GO", "omega_desc_index": -1, "omega_line": "bs.forge.evolve.clearance",
+      "params": {"_src": "BS_WEAPONS §9.4 (new)", "range": 40, "falloff_start": 25, "falloff_mul": 0.7, "spread_deg": 3, "status": "marked_down", "status_time": 2.0},
+      "levels": {"3": "Barrels stay spun 1.5 s", "5": "Every 25th round is 50% OFF"},
+      "signature": {"A": {"id": "final_sale", "name": "Final Sale", "desc": "Slower, 2 stacks per hit."}, "B": {"id": "bogo", "name": "Buy One Get One", "desc": "Every 2nd hit ricochets."}},
+      "model_by_level": ["", "tag-gun trigger guard", "SALE placard", "coat-hanger shrouds", "CLEARANCE light bar"]
+    }
+  }
+}

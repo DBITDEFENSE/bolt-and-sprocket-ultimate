@@ -1,32 +1,268 @@
 {
-  "_doc": "Default bindings for every action (remappable; user overrides live in the save profile). kb: key names (Godot keycode strings), mouse: LEFT/RIGHT/MIDDLE/WHEEL_UP/WHEEL_DOWN, pad: button names, axis: [axis, sign]. Bolt & Sprocket defaults follow the web build (WASD, Space jump, F mallet, R dash, Ctrl/C crouch, Q/E weapons, Tab wheel, T Super Sprocket, K K.A.R.E.N.; pad A jump, X mallet, B dash, LS crouch, RT fire, LT aim, LB/RB weapons, D-pad up super, Y interact).",
+  "_doc": "Default bindings for every action (remappable; user overrides live in the save profile). kb: key names (Godot keycode strings), mouse: LEFT/RIGHT/MIDDLE/WHEEL_UP/WHEEL_DOWN, pad: button names, axis: [axis, sign]. Bolt & Sprocket defaults follow the web build (WASD, Space jump, F mallet, R dash, Ctrl/C crouch, Q/E weapons, Tab wheel, T Super Sprocket, K K.A.R.E.N.; pad A jump, X mallet, B dash, LS crouch, RT fire, LT aim, LB/RB weapons, D-pad up super, Y interact). Remake changes (DECISIONS T-021): E is interact only (the web build overloaded it as next-weapon when nothing was in reach); alt-fire is X / middle mouse / pad LB, so pad weapon cycling moves to the D-pad left/right and RB tap.",
   "actions": {
-    "move_forward": {"kb": ["W"], "axis": [["LEFT_Y", -1]]},
-    "move_back": {"kb": ["S"], "axis": [["LEFT_Y", 1]]},
-    "move_left": {"kb": ["A"], "axis": [["LEFT_X", -1]]},
-    "move_right": {"kb": ["D"], "axis": [["LEFT_X", 1]]},
-    "look_left": {"axis": [["RIGHT_X", -1]]},
-    "look_right": {"axis": [["RIGHT_X", 1]]},
-    "look_up": {"axis": [["RIGHT_Y", -1]]},
-    "look_down": {"axis": [["RIGHT_Y", 1]]},
-    "jump": {"kb": ["Space"], "pad": ["A"]},
-    "melee": {"kb": ["F"], "pad": ["X"]},
-    "dash": {"kb": ["R"], "pad": ["B"]},
-    "crouch": {"kb": ["Ctrl", "C"], "pad": ["LEFT_STICK"]},
-    "sprint": {"kb": ["Shift"]},
-    "walk": {"kb": ["V"]},
-    "fire": {"mouse": ["LEFT"], "axis": [["TRIGGER_RIGHT", 1]]},
-    "aim": {"mouse": ["RIGHT"], "axis": [["TRIGGER_LEFT", 1]]},
-    "interact": {"kb": ["E"], "pad": ["Y"]},
-    "weapon_prev": {"kb": ["Q"], "pad": ["LEFT_SHOULDER"], "mouse": ["WHEEL_DOWN"]},
-    "weapon_next": {"kb": ["E"], "pad": ["RIGHT_SHOULDER"], "mouse": ["WHEEL_UP"]},
-    "weapon_wheel": {"kb": ["Tab"]},
-    "weapon_1": {"kb": ["1"]}, "weapon_2": {"kb": ["2"]}, "weapon_3": {"kb": ["3"]}, "weapon_4": {"kb": ["4"]},
-    "weapon_5": {"kb": ["5"]}, "weapon_6": {"kb": ["6"]}, "weapon_7": {"kb": ["7"]}, "weapon_8": {"kb": ["8"]},
-    "super_sprocket": {"kb": ["T"], "pad": ["DPAD_UP"]},
-    "gadget": {"kb": ["K"], "pad": ["DPAD_DOWN"]},
-    "pause": {"kb": ["Escape"], "pad": ["START"]},
-    "console": {"kb": ["QuoteLeft"]},
-    "ui_advance": {"kb": ["Space", "Enter"], "pad": ["A"]}
+    "move_forward": {
+      "kb": [
+        "W"
+      ],
+      "axis": [
+        [
+          "LEFT_Y",
+          -1
+        ]
+      ]
+    },
+    "move_back": {
+      "kb": [
+        "S"
+      ],
+      "axis": [
+        [
+          "LEFT_Y",
+          1
+        ]
+      ]
+    },
+    "move_left": {
+      "kb": [
+        "A"
+      ],
+      "axis": [
+        [
+          "LEFT_X",
+          -1
+        ]
+      ]
+    },
+    "move_right": {
+      "kb": [
+        "D"
+      ],
+      "axis": [
+        [
+          "LEFT_X",
+          1
+        ]
+      ]
+    },
+    "look_left": {
+      "axis": [
+        [
+          "RIGHT_X",
+          -1
+        ]
+      ]
+    },
+    "look_right": {
+      "axis": [
+        [
+          "RIGHT_X",
+          1
+        ]
+      ]
+    },
+    "look_up": {
+      "axis": [
+        [
+          "RIGHT_Y",
+          -1
+        ]
+      ]
+    },
+    "look_down": {
+      "axis": [
+        [
+          "RIGHT_Y",
+          1
+        ]
+      ]
+    },
+    "jump": {
+      "kb": [
+        "Space"
+      ],
+      "pad": [
+        "A"
+      ]
+    },
+    "melee": {
+      "kb": [
+        "F"
+      ],
+      "pad": [
+        "X"
+      ]
+    },
+    "dash": {
+      "kb": [
+        "R"
+      ],
+      "pad": [
+        "B"
+      ]
+    },
+    "crouch": {
+      "kb": [
+        "Ctrl",
+        "C"
+      ],
+      "pad": [
+        "LEFT_STICK"
+      ]
+    },
+    "sprint": {
+      "kb": [
+        "Shift"
+      ]
+    },
+    "walk": {
+      "kb": [
+        "V"
+      ]
+    },
+    "fire": {
+      "mouse": [
+        "LEFT"
+      ],
+      "axis": [
+        [
+          "TRIGGER_RIGHT",
+          1
+        ]
+      ]
+    },
+    "aim": {
+      "mouse": [
+        "RIGHT"
+      ],
+      "axis": [
+        [
+          "TRIGGER_LEFT",
+          1
+        ]
+      ]
+    },
+    "interact": {
+      "kb": [
+        "E"
+      ],
+      "pad": [
+        "Y"
+      ]
+    },
+    "weapon_prev": {
+      "kb": [
+        "Q"
+      ],
+      "pad": [
+        "DPAD_LEFT"
+      ],
+      "mouse": [
+        "WHEEL_DOWN"
+      ]
+    },
+    "weapon_next": {
+      "pad": [
+        "RIGHT_SHOULDER",
+        "DPAD_RIGHT"
+      ],
+      "mouse": [
+        "WHEEL_UP"
+      ]
+    },
+    "weapon_wheel": {
+      "kb": [
+        "Tab"
+      ]
+    },
+    "weapon_1": {
+      "kb": [
+        "1"
+      ]
+    },
+    "weapon_2": {
+      "kb": [
+        "2"
+      ]
+    },
+    "weapon_3": {
+      "kb": [
+        "3"
+      ]
+    },
+    "weapon_4": {
+      "kb": [
+        "4"
+      ]
+    },
+    "weapon_5": {
+      "kb": [
+        "5"
+      ]
+    },
+    "weapon_6": {
+      "kb": [
+        "6"
+      ]
+    },
+    "weapon_7": {
+      "kb": [
+        "7"
+      ]
+    },
+    "weapon_8": {
+      "kb": [
+        "8"
+      ]
+    },
+    "super_sprocket": {
+      "kb": [
+        "T"
+      ],
+      "pad": [
+        "DPAD_UP"
+      ]
+    },
+    "gadget": {
+      "kb": [
+        "K"
+      ],
+      "pad": [
+        "DPAD_DOWN"
+      ]
+    },
+    "pause": {
+      "kb": [
+        "Escape"
+      ],
+      "pad": [
+        "START"
+      ]
+    },
+    "console": {
+      "kb": [
+        "QuoteLeft"
+      ]
+    },
+    "ui_advance": {
+      "kb": [
+        "Space",
+        "Enter"
+      ],
+      "pad": [
+        "A"
+      ]
+    },
+    "alt_fire": {
+      "kb": [
+        "X"
+      ],
+      "mouse": [
+        "MIDDLE"
+      ],
+      "pad": [
+        "LEFT_SHOULDER"
+      ]
+    }
   }
 }

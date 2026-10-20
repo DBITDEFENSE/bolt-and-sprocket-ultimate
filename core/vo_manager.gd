@@ -4,7 +4,10 @@ extends Node
 ## otherwise placeholder text-to-speech with the original web build's per-character voice profile
 ## (pitch / rate / preferred-voice keywords from VOICE_PROFILES). Voice never replaces text.
 
-const LINE_INDEXES: PackedStringArray = ["bs/story/lines_index"]
+## Every source of voiced lines: [data table, key inside it ("" = the table itself)]. New per-system line
+## files (UI, bosses, Fine Print, Gravelight) register here; keys starting with "_" are docs.
+const LINE_SOURCES: Array = [["bs/story/lines_index", ""], ["bs/ui_lines", ""], ["bs/bosses", "lines"],
+	["bs/weapons", "lines"], ["bs/levels/scrapheap_lines", "lines"]]
 const VO_DIR: String = "res://audio/vo/"
 
 var _lines: Dictionary = {}
@@ -16,10 +19,16 @@ var _player: AudioStreamPlayer
 
 
 func _ready() -> void:
-	for idx: String in LINE_INDEXES:
-		var t: Variant = Data.table(idx)
+	for src: Array in LINE_SOURCES:
+		if not Data.has_table(str(src[0])):
+			continue
+		var t: Variant = Data.table(str(src[0]))
+		if t is Dictionary and str(src[1]) != "":
+			t = (t as Dictionary).get(str(src[1]), {})
 		if t is Dictionary:
-			_lines.merge(t as Dictionary)
+			for id: String in (t as Dictionary).keys():
+				if not id.begins_with("_") and (t as Dictionary)[id] is Dictionary:
+					_lines[id] = (t as Dictionary)[id]
 	var sp: Variant = Data.table("bs/story/speakers")
 	if sp is Dictionary:
 		_profiles = (sp as Dictionary).get("voice_profiles", {})

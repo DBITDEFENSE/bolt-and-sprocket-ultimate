@@ -1,0 +1,60 @@
+{
+  "_doc": "Sprocket companion + Super Sprocket Protocol tuning. Source: updateSprocket 3956, setSprocketExpr 3900, sprocketPulse 3906, barkTry/updateBarks 11280-11298, superActivate 4016, updateSuperSprocket 4050, damageEnemy 5300 (index.html).",
+  "follow": {
+    "_src": "updateSprocket: offset (-0.78, 1.85, -0.3) in Bolt's facing frame from the feet, bob sin(t*2.4)*0.09, lerp damp 6. The remake uses a spring (stiffness/damping) for the same target.",
+    "offset": [-0.78, 1.85, -0.3],
+    "bob_amp": 0.09,
+    "bob_rate": 2.4,
+    "stiffness": 38.0,
+    "damping": 9.5,
+    "max_lag": 6.0
+  },
+  "moods": {
+    "_src": "setSprocketExpr / sprocketPulse: damage -> alarmed 1.6 s; bolts -> happy 2 s; bark -> smug 3 s; super -> alarmed for the protocol",
+    "hurt": ["alarmed", 1.6],
+    "bolts": ["happy", 2.0],
+    "bark": ["smug", 3.0],
+    "buy": ["happy", 3.0],
+    "blink_min": 2.0,
+    "blink_max": 4.5,
+    "blink_len": 0.1
+  },
+  "barks": {
+    "_src": "barkTry 11280 / updateBarks 11290",
+    "start_cd": 8.0,
+    "cd_combat": 24.0,
+    "cd_other": 32.0,
+    "lowhp_frac": 0.3,
+    "p_bolts": 0.2,
+    "p_combat": 0.12,
+    "idle_after": 25.0
+  },
+  "super": {
+    "_src": "superActivate 4016 / updateSuperSprocket 4050 / damageEnemy 5301",
+    "duration": 30.0,
+    "fill_per_damage": 0.0006,
+    "combo_tiers": [[0, 1.0], [5, 1.25], [10, 1.5], [20, 2.0]],
+    "_combo_note": "GDD §3.3: the meter also fills from combo tier. [min combo hits, multiplier on the damage fill]. BoltMelee already adds 0.012 per mallet combo hit.",
+    "damage_mult": 2.0,
+    "first_slowmo": 1.5,
+    "bark_first": 1.2,
+    "bark_min": 5.0,
+    "bark_max": 8.0,
+    "target_range": 34.0,
+    "retarget": 4.0,
+    "zip_time": 0.35,
+    "orbit_radius": 3.5,
+    "orbit_height": 1.6,
+    "orbit_rate": 2.2,
+    "fire_interval": 0.22,
+    "shot_speed": 30.0,
+    "shot_damage": 6.0,
+    "shot_life": 1.4,
+    "mode_pick": {
+      "_doc": "GDD §3.3 modes picked from the situation. M1 implements Overclock only; Bulwark and Zip are picked but fall back to Overclock.",
+      "bulwark_hp_frac": 0.35,
+      "zip_enemies": 4,
+      "scan_range": 20.0
+    }
+  }
+}

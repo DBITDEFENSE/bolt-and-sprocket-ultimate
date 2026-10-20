@@ -123,3 +123,27 @@ The GRAVELIGHT project's own log (D-001 … D-059, at `C:\Users\Devin\PROJECTS\N
 - **The transmission is reconciled:** Ch. 1 recovers the long Report No. 207 plus a corrupted 03:12 addendum (`fp.c1.transmission.30–31`, "Do not send anyone else"), and Ch. 5 broadcasts the addendum in full (`fp.c5.finale.81–83`). `fp.doc.29` matches both.
 
 *Speaker IDs:* the Board speaks as `darkmatter` (shared with `cs.postCredits`). New IDs: `courtesy`, `dm_pa`, `nextera`, `middleman_a`, `middleman_b`, `statue`.
+
+**T-021, 2026-10-20: Input changes from the web build.**
+- **E is interact only.** The original overloaded it as next-weapon when nothing interactable was in reach, and that clashed with the shop kiosk.
+- **Alt-fire** is X, middle mouse, or pad LB.
+- **Pad weapon cycling** moves to D-pad left/right, plus an RB tap (holding RB opens the wheel).
+- **Keyboard weapon cycling:** Q, the mouse wheel, the number keys, and Tab (tap = last weapon, hold = wheel).
+
+**T-022, 2026-10-20: M1 was built by four parallel builders against `docs/M1_CONTRACTS.md`, then integrated by the lead.**
+- **Weapons:** the framework and 4 guns, with the other 12 as archetype placeholders.
+- **Enemies:** the AI framework, 4 enemies plus a crate, and REPO-TRON.
+- **Level:** Scrapheap Junction, built from data through LevelDirector.
+- **UI/systems:** BSLevel, Sprocket with Super Protocol, HUD, cutscenes, shop v2, dev console, pause.
+- **Integration fixes:**
+  - VOManager voices every line file (`LINE_SOURCES`).
+  - Bolt has a Status node.
+  - The summary screen reads the planet's `gold_total`.
+  - Enemy shots gained `deny()`.
+- **Respawn fix:** respawning no longer leaves stale air/melee state.
+
+**T-023, 2026-10-20: Known M1 gaps carried to M3:**
+- Super Sprocket's Bulwark and Zip modes are chosen and announced but run as Overclock.
+- Rails and the three gadgets are markers only; Scrapheap's main path doesn't need them.
+- Bolt picks splash quips from all six rather than the planet's own pool.
+- Boss music push/pop has no music system to call yet (the procedural score port is still to do).
