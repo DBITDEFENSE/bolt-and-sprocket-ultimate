@@ -17,6 +17,14 @@ Every change to an **existing** line from the original web build is logged here 
 |---|---|---|---|
 | `cs.galleriaLedger.02` (Bolt) | "Then we keep it. If Grindstone ever tries that clause **again**, we'll have the receipts — every unit he tried to erase." | "Then we keep it. If Grindstone ever tries that clause **on you**, we'll have the receipts — every unit he tried to erase." | Continuity. The Galleria is played during the core hunt (`CAMPAIGN`, `planetLocked()`), *before* the Foundry's Clause 44 scene, so "again" referred to an event that hadn't happened yet. "On you" turns it into foreshadowing. DECISIONS T-005. |
 
+### Gravelight lines (docs/gravelight, §11)
+| Line ID | Old | New | Why |
+|---|---|---|---|
+| `REI_CYL1_01` (Reinholt) | "...the eleventh of **October** 1938..." | "...the eleventh of **December** 1938..." | The recording predated the locked probe landing (9 Nov 1938). |
+| LORE §3 timeline | Gallery 7 deaths Mar 1938; Amt seizure Sep 1938; Helvetia founded 1921 by Imhof; "the Operator speaks" Mar 1942 | 11 Nov 1938; 2 Mar 1939; Imhof & Cie. 1921, re-founded as Helvetia by Vendelin Feb 1940; Opitz's splice-reader from Mar 1942, the Operator proper from 14 Sep 1944 | All the old dates fell before the landing, or contradicted the brief's Ch. 3 Ledger beat. |
+| LORE §8.1 formulators | Venner, Strohwald, Ostrowski, von Aschau, Dessau-Roßlau | The §10.2 humans (Kessler, Agnieszka, Vogt, Brück, Grosi Gähwiler, Sowa, Ammer, Lehrkommando Kaltenbrunn). Strohwald, Ostrowski and von Aschau stay in new roles; Venner stays head of Abteilung III | Brief §11.3. |
+| LORE §6.2 | "Fasbender designed the Crucible" | "Fasbender signed drawings that arrived finished in 1944" | The Crucible is Blartz's confiscated Forge (§10.3). |
+
 ## 2. Structural changes (no text changed)
 
 | What | Old | New | Why |
