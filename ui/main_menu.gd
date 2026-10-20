@@ -5,6 +5,7 @@ extends Control
 ## (The Repossession) through BSLevel.pending_cutscene.
 
 const BS_FIRST_LEVEL: String = "res://bs/planets/scrapheap/scrapheap.tscn"
+const GRAVELIGHT_MENU: String = "res://gravelight/ui/main_menu.tscn"   # Gravelight's own menu (map select, etc.)
 
 const DOORS: Array = [
 	["BOLT & SPROCKET", "bs_campaign", "M1"],
@@ -41,6 +42,8 @@ func _ready() -> void:
 		b.custom_minimum_size = Vector2(520, 56)
 		if str(d[1]) == "bs_campaign":
 			b.pressed.connect(launch_bolt_and_sprocket)
+		elif str(d[1]) == "gl_map00":
+			b.pressed.connect(launch_gravelight)
 		else:
 			b.pressed.connect(func() -> void: _status.text = "%s arrives in %s." % [d[0], d[2]])
 		box.add_child(b)
@@ -58,4 +61,13 @@ func launch_bolt_and_sprocket() -> bool:
 		return false
 	BSLevel.pending_cutscene = "intro" if not BS.flag("cs.intro") else ""
 	get_tree().change_scene_to_file.call_deferred(BS_FIRST_LEVEL)
+	return true
+
+
+## The GRAVELIGHT door: Gravelight's own menu (map select, characters, archive...). It activates its own
+## bindings and screen overlays (GLSettings.activate()).
+func launch_gravelight() -> bool:
+	if not ResourceLoader.exists(GRAVELIGHT_MENU):
+		return false
+	get_tree().change_scene_to_file.call_deferred(GRAVELIGHT_MENU)
 	return true

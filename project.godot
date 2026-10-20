@@ -22,6 +22,22 @@ SaveProfile="*res://core/save_profile.gd"
 VOManager="*res://core/vo_manager.gd"
 BS="*res://bs/bs_state.gd"
 AimAssist="*res://core/aim_assist.gd"
+GLBus="*res://gravelight/autoload/event_bus.gd"
+GLData="*res://gravelight/autoload/data.gd"
+GLSettings="*res://gravelight/autoload/settings.gd"
+ProfileSave="*res://gravelight/autoload/profile_save.gd"
+GameState="*res://gravelight/autoload/game_state.gd"
+Economy="*res://gravelight/autoload/economy.gd"
+RoundManager="*res://gravelight/autoload/round_manager.gd"
+PowerupManager="*res://gravelight/autoload/powerup_manager.gd"
+PerkManager="*res://gravelight/autoload/perk_manager.gd"
+CrateManager="*res://gravelight/autoload/crate_manager.gd"
+QuestManager="*res://gravelight/autoload/quest_manager.gd"
+AudioDirector="*res://gravelight/autoload/audio_director.gd"
+GLVO="*res://gravelight/autoload/vo_manager.gd"
+Effects="*res://gravelight/autoload/effects.gd"
+Net="*res://gravelight/autoload/net.gd"
+GLConsole="*res://gravelight/ui/dev_console.gd"
 
 [display]
 
@@ -37,3 +53,16 @@ anti_aliasing/quality/msaa_3d=2
 [audio]
 
 general/text_to_speech=true
+
+[layer_names]
+
+
+3d_physics/layer_1="world"
+3d_physics/layer_2="player"
+3d_physics/layer_3="zombie_body"
+3d_physics/layer_4="zombie_hitbox"
+3d_physics/layer_5="interactable"
+3d_physics/layer_6="barricade"
+3d_physics/layer_7="projectile"
+3d_physics/layer_8="pickup"
+3d_physics/layer_9="door"

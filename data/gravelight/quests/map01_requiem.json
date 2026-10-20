@@ -1,0 +1,602 @@
+{
+  "id": "map01_requiem",
+  "display_name": "Requiem for Kaltenbrunn",
+  "map": "map01_kaltenbrunn",
+  "version": 1,
+  "random": {
+    "radios": {
+      "type": "pick_per_group",
+      "groups": {
+        "1_surface": [
+          "radio_admin_switch",
+          "radio_admin_fasbender",
+          "radio_rail_signalbox",
+          "radio_mess_kitchen"
+        ],
+        "2_depths": [
+          "radio_chapel_confessional",
+          "radio_gen_foreman_desk"
+        ],
+        "3_lab": [
+          "radio_lab_intake"
+        ]
+      }
+    },
+    "code": {
+      "type": "digits",
+      "count": 6
+    },
+    "melody": {
+      "type": "permutation",
+      "items": [
+        "n1",
+        "n2",
+        "n3",
+        "n4"
+      ]
+    },
+    "bells": {
+      "type": "pick_per_group",
+      "groups": {
+        "n1": [
+          "bell_tower_girder",
+          "bell_gatehouse_roof",
+          "bell_boxcar_roof"
+        ],
+        "n2": [
+          "bell_balcony_rafters",
+          "bell_mess_chandelier",
+          "bell_bunk_beam"
+        ],
+        "n3": [
+          "bell_chapel_chute",
+          "bell_turbine_catwalk",
+          "bell_lift_crossbeam"
+        ],
+        "n4": [
+          "bell_specimen_tank",
+          "bell_nursery_window",
+          "bell_coldstore_pipe"
+        ]
+      }
+    },
+    "parts": {
+      "type": "pick_per_group",
+      "groups": {
+        "tg_part_bell": [
+          "boxcar",
+          "signal_box",
+          "locomotive_cab"
+        ],
+        "tg_part_frame": [
+          "top_bunk",
+          "quartermaster_cage",
+          "mess_stage"
+        ],
+        "tg_part_crank": [
+          "bell_tower_base",
+          "sacristy",
+          "confessional"
+        ]
+      }
+    }
+  },
+  "vo_substitute": {
+    "FAS_M1_CODE1_01": {
+      "%d1%": "code:0",
+      "%d2%": "code:1"
+    },
+    "FAS_M1_CODE2_01": {
+      "%d3%": "code:2",
+      "%d4%": "code:3"
+    },
+    "FAS_M1_CODE3_01": {
+      "%d5%": "code:4",
+      "%d6%": "code:5"
+    }
+  },
+  "steps": [
+    {
+      "id": "s0_power",
+      "type": "flag",
+      "params": {
+        "flag": "power_on"
+      },
+      "requires": [],
+      "debug_skip": "power_on"
+    },
+    {
+      "id": "s1_vault",
+      "type": "flag",
+      "params": {
+        "flag": "core_vault_open"
+      },
+      "requires": [
+        "s0_power"
+      ],
+      "on_complete": [
+        {
+          "vo": "OPR_QUEST_S1_01"
+        },
+        {
+          "vo": "FAS_M1_VAULT_01"
+        },
+        {
+          "save_point": true
+        }
+      ],
+      "debug_skip": "pylons"
+    },
+    {
+      "id": "s2a_radios",
+      "type": "collect",
+      "params": {
+        "tag": "quest_radio",
+        "count": 3
+      },
+      "requires": [
+        "s1_vault"
+      ]
+    },
+    {
+      "id": "s2b_switchboard",
+      "type": "sequence",
+      "params": {
+        "target": "switchboard",
+        "inputs_from": "code"
+      },
+      "requires": [
+        "s2a_radios"
+      ],
+      "reset": {
+        "on": "wrong_input",
+        "actions": [
+          {
+            "vo_category": [
+              "OPR",
+              "BELL_WRONG"
+            ]
+          }
+        ]
+      },
+      "on_complete": [
+        {
+          "vo": "OPR_QUEST_S2_SWITCHBOARD_01"
+        },
+        {
+          "vo_list": [
+            "FAS_M1_SWITCH_01",
+            "FAS_M1_SWITCH_02",
+            "FAS_M1_SWITCH_03",
+            "FAS_M1_SWITCH_04"
+          ]
+        },
+        {
+          "save_point": true
+        }
+      ]
+    },
+    {
+      "id": "s3_build",
+      "type": "build",
+      "params": {
+        "buildable": "totenglocke"
+      },
+      "requires": [],
+      "on_complete": [
+        {
+          "vo": "OPR_QUEST_S3_01"
+        },
+        {
+          "vo": "FAS_M1_S3_DONE_01"
+        },
+        {
+          "vo_player": "BUILD"
+        },
+        {
+          "save_point": true
+        }
+      ]
+    },
+    {
+      "id": "s4_key",
+      "type": "kill_condition",
+      "params": {
+        "enemy": "foreman",
+        "zone": "F_CHAPEL",
+        "world_flag": "chapel_bell_lit"
+      },
+      "requires": [
+        "s1_vault"
+      ],
+      "on_complete": [
+        {
+          "item": "overseers_key"
+        },
+        {
+          "vo": "OPR_QUEST_S4_KEY_01"
+        },
+        {
+          "banner": "THE OVERSEER'S KEY"
+        },
+        {
+          "save_point": true
+        }
+      ],
+      "fail": {
+        "default": [
+          {
+            "banner": "The Foreman fell, but the bell was dark or he was outside the Chapel."
+          }
+        ]
+      },
+      "debug_skip": "give overseers_key"
+    },
+    {
+      "id": "s5_reliquary",
+      "type": "interact",
+      "params": {
+        "target": "altar",
+        "requires_item": "overseers_key"
+      },
+      "requires": [
+        "s4_key"
+      ],
+      "on_complete": [
+        {
+          "take_item": "overseers_key"
+        },
+        {
+          "item": "music_box"
+        },
+        {
+          "vo": "REI_S5_BOX_01"
+        },
+        {
+          "vo": "OPR_QUEST_S5_01"
+        },
+        {
+          "vo": "FAS_M1_S5_01"
+        },
+        {
+          "banner": "LIESL'S MUSIC BOX"
+        },
+        {
+          "save_point": true
+        }
+      ]
+    },
+    {
+      "id": "s6_bells",
+      "type": "sequence",
+      "params": {
+        "target": "four_bells",
+        "inputs_from": "melody"
+      },
+      "requires": [
+        "s5_reliquary"
+      ],
+      "on_input_ok": [
+        {
+          "vo_category": [
+            "OPR",
+            "QUEST_S6_BELL_RIGHT"
+          ]
+        }
+      ],
+      "reset": {
+        "on": "wrong_input",
+        "actions": [
+          {
+            "vo_category": [
+              "OPR",
+              "BELL_WRONG"
+            ]
+          }
+        ]
+      },
+      "on_complete": [
+        {
+          "vo": "OPR_QUEST_S6_DONE_01"
+        },
+        {
+          "vo": "FAS_M1_S6_DONE_01"
+        },
+        {
+          "save_point": true
+        }
+      ]
+    },
+    {
+      "id": "s7_drummer",
+      "type": "chase",
+      "params": {
+        "actor": "drummer",
+        "item": "nachtglas_shard",
+        "seconds": 20.0,
+        "solo_mult": 1.2
+      },
+      "requires": [
+        "s6_bells"
+      ],
+      "on_complete": [
+        {
+          "vo": "OPR_QUEST_S7_DONE_01"
+        },
+        {
+          "vo": "REI_S7_DRUMMER_01"
+        },
+        {
+          "vo": "FAS_M1_S7_DONE_01"
+        },
+        {
+          "save_point": true
+        }
+      ],
+      "fail": {
+        "default": [
+          {
+            "banner": "Herr Tamtam drummed away. Watch the next Crate move."
+          }
+        ]
+      },
+      "debug_skip": "give nachtglas_shard"
+    },
+    {
+      "id": "s8a_place",
+      "type": "interact",
+      "params": {
+        "target": "crucible_shard",
+        "requires_item": "nachtglas_shard"
+      },
+      "requires": [
+        "s2b_switchboard",
+        "s3_build",
+        "s7_drummer"
+      ],
+      "on_complete": [
+        {
+          "take_item": "nachtglas_shard"
+        },
+        {
+          "vo": "OPR_QUEST_S8_START_01"
+        },
+        {
+          "banner": "The shard is in the Crucible.\nFeed it with the Totenglocke near the heart."
+        }
+      ]
+    },
+    {
+      "id": "s8b_charge",
+      "type": "kill_count",
+      "params": {
+        "weapon": [
+          "totenglocke",
+          "totenglocke_up"
+        ],
+        "center": [
+          34,
+          -18,
+          116
+        ],
+        "radius": 15.0,
+        "count": 30,
+        "per_extra_player": 10
+      },
+      "requires": [
+        "s8a_place"
+      ],
+      "on_out_of_range": [
+        {
+          "banner": "The heart can't hear you."
+        }
+      ],
+      "on_complete": [
+        {
+          "vo": "OPR_QUEST_S8_DONE_01"
+        },
+        {
+          "vo": "REI_S8_01"
+        },
+        {
+          "banner": "The Crucible is charged."
+        },
+        {
+          "save_point": true
+        }
+      ]
+    },
+    {
+      "id": "s9_heartstorm",
+      "type": "holdout",
+      "params": {
+        "start_target": "crucible_heartstorm",
+        "duration": 120.0,
+        "zone": "I_CORE",
+        "abort_after": 10.0,
+        "wave_every": 9.0,
+        "wave_special": "bellringer",
+        "wave_special_solo": 3,
+        "wave_special_coop": 5,
+        "wave_gangers": 3,
+        "points": [
+          [
+            21,
+            -18,
+            110
+          ],
+          [
+            47,
+            -18,
+            108
+          ],
+          [
+            21,
+            -18,
+            122
+          ],
+          [
+            40,
+            -18,
+            128
+          ],
+          [
+            28,
+            -18,
+            104
+          ]
+        ],
+        "timeline": {
+          "0": [
+            {
+              "vo": "OPR_QUEST_S9_START_01"
+            },
+            {
+              "shake": 0.5
+            }
+          ],
+          "2": [
+            {
+              "vo": "FAS_M1_S9_START_01"
+            }
+          ],
+          "6": [
+            {
+              "vo": "REI_HEART_00"
+            }
+          ],
+          "15": [
+            {
+              "vo": "REI_HEART_15"
+            }
+          ],
+          "30": [
+            {
+              "vo": "REI_HEART_30"
+            }
+          ],
+          "40": [
+            {
+              "summon_boss": [
+                "foreman",
+                34,
+                -18,
+                104
+              ]
+            }
+          ],
+          "45": [
+            {
+              "vo": "REI_HEART_45"
+            }
+          ],
+          "60": [
+            {
+              "vo": "REI_HEART_60"
+            },
+            {
+              "vo": "OPR_QUEST_S9_MID_01"
+            },
+            {
+              "shake": 0.4
+            }
+          ],
+          "75": [
+            {
+              "vo": "REI_HEART_75"
+            }
+          ],
+          "90": [
+            {
+              "summon_boss": [
+                "foreman",
+                34,
+                -18,
+                128
+              ]
+            },
+            {
+              "vo": "REI_HEART_90"
+            }
+          ],
+          "105": [
+            {
+              "vo": "REI_HEART_105"
+            }
+          ],
+          "118": [
+            {
+              "vo": "REI_HEART_END"
+            },
+            {
+              "shake": 0.8
+            }
+          ]
+        }
+      },
+      "requires": [
+        "s8b_charge"
+      ],
+      "on_holdout_start": [
+        {
+          "banner": "HEARTSTORM\nHold the Core for two minutes"
+        }
+      ],
+      "fail": {
+        "default": [
+          {
+            "banner": "The Heartstorm faded. The shard is still charged: try again at the Crucible."
+          }
+        ]
+      },
+      "on_complete": [
+        {
+          "save_point": true
+        }
+      ]
+    },
+    {
+      "id": "s10_ending",
+      "type": "cutscene",
+      "params": {
+        "runner": "res://gravelight/world/requiem_ending.gd",
+        "seconds": 40.0
+      },
+      "requires": [
+        "s9_heartstorm"
+      ]
+    }
+  ],
+  "on_complete": [
+    {
+      "grant_all_perks": true
+    },
+    {
+      "egg_reward": "map01_perk_slot_5"
+    },
+    {
+      "xp": 25000
+    },
+    {
+      "archive": "requiem"
+    },
+    {
+      "unlock_map": "map02_totenhafen"
+    },
+    {
+      "flag": "requiem_complete"
+    },
+    {
+      "profile_list": [
+        "calling_cards",
+        "herr_tamtam_marches_on"
+      ]
+    },
+    {
+      "profile_list": [
+        "dossier_pages",
+        "egg_map01"
+      ]
+    }
+  ]
+}

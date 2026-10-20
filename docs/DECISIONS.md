@@ -147,3 +147,13 @@ The GRAVELIGHT project's own log (D-001 … D-059, at `C:\Users\Devin\PROJECTS\N
 - Rails and the three gadgets are markers only; Scrapheap's main path doesn't need them.
 - Bolt picks splash quips from all six rather than the planet's own pool.
 - Boss music push/pop has no music system to call yet (the procedural score port is still to do).
+
+**T-024, 2026-10-20: GRAVELIGHT migration (M2 step 1).**
+- **How it was moved:** `tools/migrate_gravelight.py` copies the built GRAVELIGHT project into `gravelight/<dir>/`, with its data in `data/gravelight/`, and rewrites all `res://` paths. The source folder is only read, never modified, and the script can be re-run.
+- **Renamed autoloads:** the five that collide with the shared core are renamed inside Gravelight code only: EventBus→GLBus, Data→GLData, Settings→GLSettings, VOManager→GLVO, DevConsole→GLConsole. Their signal signatures differ from the core's, so unifying them is M9 work, not a blind merge.
+- **Separate save files:** Gravelight saves to `user://gravelight_profile.json` and `user://gravelight_settings.cfg`.
+- **Mode gating:** Gravelight's input bindings, screen overlays (colorblind, film grain) and environment presets apply only while Gravelight is active.
+  - Its menu and map root call `GLSettings.activate()` and `Game.set_mode(GRAVELIGHT)`.
+  - BSLevel deactivates them and re-applies the B&S bindings.
+- **Hub:** the GRAVELIGHT door opens Gravelight's own menu.
+- **Verification:** 252 scripts compile, 259 GUT tests pass (B&S and Gravelight), the Scrapheap smoke passes, and Map 0 renders correctly.

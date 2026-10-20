@@ -1,0 +1,78 @@
+{
+  "id": "map01_song",
+  "display_name": "Lanterns Down Below",
+  "map": "map01_kaltenbrunn",
+  "version": 1,
+  "steps": [
+    {
+      "id": "s1_cylinders",
+      "type": "collect",
+      "params": {
+        "tag": "cylinder",
+        "count": 3
+      },
+      "requires": []
+    },
+    {
+      "id": "s2_phonograph",
+      "type": "interact",
+      "params": {
+        "target": "phonograph"
+      },
+      "requires": [
+        "s1_cylinders"
+      ],
+      "on_complete": [
+        {
+          "flag": "song_unlocked"
+        },
+        {
+          "banner": "\"Lanterns Down Below\"\n(placeholder audio)"
+        }
+      ]
+    }
+  ],
+  "lyrics": [
+    "Hm, hm, hm... down below...",
+    "Hm, hm, hm... down we go...",
+    "They woke us in the black of night and lined us in the snow,",
+    "they gave us each a lantern, said the work is down below,",
+    "I left my boots beside the door, my name upon the wall,",
+    "I counted every step I took, and then I lost them all.",
+    "The salt is in my eyes, and the salt is in my mouth,",
+    "there's no north in the mine, boys, there's no east and there's no south...",
+    "Lanterns, lanterns, down below,",
+    "swinging where the dead men go,",
+    "one for every soul they keep,",
+    "burning in the salt so deep,",
+    "hear the bell and hold your breath,",
+    "it rings for work, it rings for death,",
+    "lanterns, lanterns... down below.",
+    "The overseer's whistle and the overseer's chain,",
+    "he walks the drift at midnight and he calls us all by name,",
+    "the glass hums in the darkness like a hive inside the stone,",
+    "it sings of every one of us, and none of us go home.",
+    "Count us, Ledger, count us all,",
+    "every hand and every fall,",
+    "one, and one, and one, and one,",
+    "the tally's never, never done...",
+    "I took my lantern down below, I'm working there tonight,",
+    "I don't feel the cold no more, I don't need any light,",
+    "and if you hear me singing when the mine is still and slow,",
+    "come down and bring a lantern... (beat) ...come down below.",
+    "Lanterns, LANTERNS, down below,",
+    "swinging where the dead men go,",
+    "one for every soul they keep,"
+  ],
+  "on_complete": [
+    {
+      "archive": "song_lanterns_down_below"
+    },
+    {
+      "profile_list": [
+        "calling_cards",
+        "lanterns_down_below"
+      ]
+    }
+  ]
+}

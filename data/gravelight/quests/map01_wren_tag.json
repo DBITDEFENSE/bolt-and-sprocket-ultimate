@@ -1,0 +1,30 @@
+{
+  "id": "map01_wren_tag",
+  "display_name": "KB-4471",
+  "map": "map01_kaltenbrunn",
+  "version": 1,
+  "steps": [
+    {
+      "id": "s1_tag",
+      "type": "interact",
+      "params": {
+        "target": "kb4471"
+      },
+      "requires": [],
+      "on_complete": [
+        {
+          "archive": "kb4471"
+        },
+        {
+          "profile_list": [
+            "dossier_pages",
+            "wren_tag"
+          ]
+        },
+        {
+          "banner": "Nowak, T.  ·  Wilcza Góra  ·  transferred: COLD STORE"
+        }
+      ]
+    }
+  ]
+}

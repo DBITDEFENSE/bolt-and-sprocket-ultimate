@@ -1,0 +1,23 @@
+{
+  "id": "map00_radio",
+  "display_name": "Glasmacher Calling",
+  "map": "map00_crossroads",
+  "version": 1,
+  "steps": [
+    {
+      "id": "s1_notes",
+      "type": "collect",
+      "params": { "tag": "radio_note", "count": 3 },
+      "requires": [],
+      "debug_skip": "quest skip map00_radio s1_notes"
+    },
+    {
+      "id": "s2_tune",
+      "type": "sequence",
+      "params": { "target": "radio_m0", "inputs": ["3.120", "5.785", "7.440"] },
+      "requires": ["s1_notes"],
+      "reset": { "on": "wrong_input", "actions": [] },
+      "on_complete": [ { "flag": "map00_complete" }, { "unlock_map": "map01_kaltenbrunn" }, { "xp": 5000 }, { "archive": "glasmacher_calling" } ]
+    }
+  ]
+}

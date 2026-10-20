@@ -1,0 +1,30 @@
+{
+  "ore_cart": {
+    "cost": 1000,
+    "duration": 25.0,
+    "cooldown": 90.0,
+    "player_damage": 9999,
+    "pass_seconds": 4.0,
+    "warn_seconds": 1.0,
+    "zombie_damage": 999999
+  },
+  "live_wire": {
+    "cost": 1000,
+    "duration": 25.0,
+    "cooldown": 90.0,
+    "player_damage": 9999,
+    "warn_seconds": 1.0,
+    "zombie_damage": 999999
+  },
+  "chandelier": {
+    "cost": 1000,
+    "duration": 2.0,
+    "cooldown": 0.0,
+    "once_per_round": true,
+    "player_damage": 9999,
+    "radius": 4.0,
+    "fall_seconds": 0.6,
+    "zombie_damage": 999999
+  },
+  "deacon_cooldown_mult": 0.85
+}

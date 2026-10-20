@@ -1,0 +1,22 @@
+{
+  "_doc": "Online co-op (M7). ENet via Godot's high-level multiplayer API, host-authoritative. See docs/DECISIONS.md D-064..",
+  "port": 24785,
+  "max_players": 4,
+  "default_join_ip": "127.0.0.1",
+  "connect_timeout_seconds": 8.0,
+  "load_timeout_seconds": 45.0,
+  "player_send_hz": 30,
+  "zombie_send_hz": 20,
+  "state_send_hz": 5,
+  "inventory_ammo_send_seconds": 0.5,
+  "interp_delay_ms": 100,
+  "hit_validate": {
+    "max_shooter_offset_m": 4.0,
+    "ray_slack_m": 2.5,
+    "max_range_m": 240.0,
+    "max_damage_per_hit": 200000.0
+  },
+  "revive_max_distance_m": 3.2,
+  "names": ["Host", "Player 2", "Player 3", "Player 4"],
+  "player_colors": ["#d8b84a", "#6fb3e0", "#d06a5a", "#8fd07a"]
+}

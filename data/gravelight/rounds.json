@@ -1,0 +1,199 @@
+{
+  "_doc": "Round scaling. Formulas implemented in autoload/round_manager.gd; tests in tests/unit/test_round_scaling.gd.",
+  "health": {
+    "base": 150,
+    "linear_per_round": 100,
+    "linear_until_round": 9,
+    "exp_multiplier": 1.1
+  },
+  "count": {
+    "base": 6.0,
+    "linear": 2.2,
+    "quadratic": 0.09,
+    "player_mult": [
+      1.0,
+      1.6,
+      2.2,
+      2.8
+    ]
+  },
+  "max_active": 24,
+  "spawn_interval": {
+    "start": 2.0,
+    "decay": 0.95,
+    "min": 0.25
+  },
+  "break_seconds": {
+    "min": 10.0,
+    "max": 15.0
+  },
+  "speed_tiers": {
+    "_doc": "Percent of Ganger spawns per tier (docs/ENEMIES.md 1.5). Max 3 sprinters back-to-back.",
+    "max_sprint_streak": 3,
+    "bands": [
+      {
+        "from": 1,
+        "to": 1,
+        "weights": {
+          "shamble": 1.0
+        }
+      },
+      {
+        "from": 2,
+        "to": 2,
+        "weights": {
+          "shamble": 0.9,
+          "walk": 0.1
+        }
+      },
+      {
+        "from": 3,
+        "to": 3,
+        "weights": {
+          "shamble": 0.7,
+          "walk": 0.3
+        }
+      },
+      {
+        "from": 4,
+        "to": 4,
+        "weights": {
+          "shamble": 0.3,
+          "walk": 0.5,
+          "jog": 0.2
+        }
+      },
+      {
+        "from": 5,
+        "to": 5,
+        "weights": {
+          "shamble": 0.15,
+          "walk": 0.5,
+          "jog": 0.35
+        }
+      },
+      {
+        "from": 6,
+        "to": 6,
+        "weights": {
+          "shamble": 0.1,
+          "walk": 0.4,
+          "jog": 0.45,
+          "run": 0.05
+        }
+      },
+      {
+        "from": 7,
+        "to": 7,
+        "weights": {
+          "shamble": 0.05,
+          "walk": 0.3,
+          "jog": 0.5,
+          "run": 0.15
+        }
+      },
+      {
+        "from": 8,
+        "to": 8,
+        "weights": {
+          "walk": 0.15,
+          "jog": 0.4,
+          "run": 0.45
+        }
+      },
+      {
+        "from": 9,
+        "to": 9,
+        "weights": {
+          "walk": 0.1,
+          "jog": 0.3,
+          "run": 0.6
+        }
+      },
+      {
+        "from": 10,
+        "to": 11,
+        "weights": {
+          "walk": 0.05,
+          "jog": 0.2,
+          "run": 0.75
+        }
+      },
+      {
+        "from": 12,
+        "to": 12,
+        "weights": {
+          "walk": 0.05,
+          "jog": 0.15,
+          "run": 0.75,
+          "sprint": 0.05
+        }
+      },
+      {
+        "from": 13,
+        "to": 14,
+        "weights": {
+          "jog": 0.15,
+          "run": 0.75,
+          "sprint": 0.1
+        }
+      },
+      {
+        "from": 15,
+        "to": 19,
+        "weights": {
+          "jog": 0.1,
+          "run": 0.7,
+          "sprint": 0.2
+        }
+      },
+      {
+        "from": 20,
+        "to": 24,
+        "weights": {
+          "jog": 0.05,
+          "run": 0.65,
+          "sprint": 0.3
+        }
+      },
+      {
+        "from": 25,
+        "to": 29,
+        "weights": {
+          "jog": 0.05,
+          "run": 0.55,
+          "sprint": 0.4
+        }
+      },
+      {
+        "from": 30,
+        "to": 9999,
+        "weights": {
+          "jog": 0.05,
+          "run": 0.5,
+          "sprint": 0.45
+        }
+      }
+    ]
+  },
+  "special_round": {
+    "first_min": 5,
+    "first_max": 6,
+    "interval_min": 5,
+    "interval_max": 7,
+    "kind": "bellringer",
+    "warning_seconds": 6.0,
+    "fog_mult": 3.0,
+    "bell_tolls": 3,
+    "bell_count": {
+      "per_player": 6,
+      "round_div": 2,
+      "cap_base": 24,
+      "cap_per_player": 6
+    },
+    "pack_small": 3,
+    "pack_min": 4,
+    "pack_max": 5,
+    "pack_small_until_round": 10
+  }
+}

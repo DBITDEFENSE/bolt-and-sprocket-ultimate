@@ -1,0 +1,41 @@
+{
+  "max_health": 100,
+  "ironhide_max_health": 250,
+  "zombie_hit_damage": 50,
+  "regen_delay": 4.0,
+  "regen_per_second": 60.0,
+  "walk_speed": 4.5,
+  "sprint_speed": 6.8,
+  "crouch_speed": 2.4,
+  "sprint_duration": 4.0,
+  "sprint_recharge_delay": 1.5,
+  "slide_speed": 8.5,
+  "slide_duration": 0.7,
+  "jump_velocity": 4.2,
+  "start_loadout": {
+    "primary": "m1911",
+    "melee": "trench_knife",
+    "lethal": "frag",
+    "lethal_count": 2,
+    "lethal_max": 4
+  },
+  "weapon_slots": 2,
+  "revive_seconds": 4.0,
+  "bleedout_seconds": 45.0,
+  "interact_hold_seconds": 0.35,
+  "traits": {
+    "dutch_melee_mult": 1.1,
+    "peg_extra_grenades": 1,
+    "deacon_work_speed_mult": 0.85,
+    "wren_headshot_scrip_bonus": 10
+  },
+  "self_revive_seconds": 3.5,
+  "downed": {
+    "_doc": "Co-op last stand (GDD §3): crawl with a pistol until revived (revive_seconds, halved by Second Wind) or bled out (bleedout_seconds, paused while a teammate is reviving). A bled-out player spectates and respawns with the start loadout when the next round starts.",
+    "crawl_speed": 0.9,
+    "eye_height": 0.45,
+    "pistol": "m1911",
+    "pistol_min_reserve": 32,
+    "bleedout_pauses_while_reviving": true
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "_doc": "Default bindings. Keys use Godot key names; pads use JoyButton/JoyAxis names.",
+  "move_forward": {
+    "key": "W",
+    "pad_axis": "LEFT_Y-"
+  },
+  "move_back": {
+    "key": "S",
+    "pad_axis": "LEFT_Y+"
+  },
+  "move_left": {
+    "key": "A",
+    "pad_axis": "LEFT_X-"
+  },
+  "move_right": {
+    "key": "D",
+    "pad_axis": "LEFT_X+"
+  },
+  "jump": {
+    "key": "Space",
+    "pad": "A"
+  },
+  "crouch": {
+    "key": "C",
+    "pad": "B"
+  },
+  "sprint": {
+    "key": "Shift",
+    "pad": "LEFT_STICK"
+  },
+  "fire": {
+    "mouse": "LEFT",
+    "pad_axis": "TRIGGER_RIGHT"
+  },
+  "ads": {
+    "mouse": "RIGHT",
+    "pad_axis": "TRIGGER_LEFT"
+  },
+  "reload": {
+    "key": "R",
+    "pad": "X"
+  },
+  "interact": {
+    "key": "F",
+    "pad": "X"
+  },
+  "melee": {
+    "key": "V",
+    "pad": "RIGHT_STICK"
+  },
+  "lethal": {
+    "key": "G",
+    "pad": "RIGHT_SHOULDER"
+  },
+  "tactical": {
+    "key": "Q",
+    "pad": "LEFT_SHOULDER"
+  },
+  "swap_weapon": {
+    "key": "Tab",
+    "pad": "Y",
+    "wheel": true
+  },
+  "lean_left": {
+    "key": "Z"
+  },
+  "lean_right": {
+    "key": "E"
+  },
+  "pause": {
+    "key": "Escape",
+    "pad": "START"
+  },
+  "dev_console": {
+    "key": "QuoteLeft"
+  },
+  "look_left": {
+    "pad_axis": "RIGHT_X-"
+  },
+  "look_right": {
+    "pad_axis": "RIGHT_X+"
+  },
+  "look_up": {
+    "pad_axis": "RIGHT_Y-"
+  },
+  "look_down": {
+    "pad_axis": "RIGHT_Y+"
+  },
+  "weapon_1": {
+    "key": "1"
+  },
+  "weapon_2": {
+    "key": "2"
+  },
+  "weapon_3": {
+    "key": "3"
+  },
+  "ui_scoreboard": {
+    "key": "Ctrl",
+    "pad": "BACK"
+  },
+  "alt_fire": {
+    "key": "B",
+    "mouse": "MIDDLE",
+    "pad": "DPAD_RIGHT"
+  }
+}

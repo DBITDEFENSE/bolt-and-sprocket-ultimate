@@ -1,0 +1,20 @@
+{
+  "_doc": "Drop logic (GDD 11, D-010): each player's earned Scrip counts toward a threshold; once crossed, that player's next kill drops one (threshold then grows). Also a small base chance per kill. Types come from a shuffled bag; every type appears before repeats.",
+  "scrip_threshold_start": 2000,
+  "scrip_threshold_growth": 1.14,
+  "drop_chance_when_eligible": 1.0,
+  "base_random_chance": 0.02,
+  "max_per_round": 4,
+  "lifetime_seconds": 30.0,
+  "blink_from_seconds": 22.0,
+  "timed_duration_seconds": 30.0,
+  "pickup_radius": 1.1,
+  "bag": ["resupply", "deaths_door", "double_scrip", "blackout", "fortify", "resupply", "double_scrip"],
+  "conditional": { "clearance": { "requires": "crate_has_moved", "bag_copies": 1 } },
+  "timed": ["deaths_door", "double_scrip", "clearance"],
+  "names": {
+    "resupply": "RESUPPLY", "deaths_door": "DEATH'S DOOR", "double_scrip": "DOUBLE SCRIP",
+    "blackout": "BLACKOUT", "fortify": "FORTIFY", "clearance": "CLEARANCE"
+  },
+  "rewards": { "blackout_scrip": 400, "fortify_scrip": 200 }
+}

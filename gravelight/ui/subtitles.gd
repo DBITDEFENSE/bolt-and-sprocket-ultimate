@@ -1,0 +1,123 @@
+extends CanvasLayer
+## Subtitles (VO_SCRIPT §1.5). Created by VOManager as its own child. Shows "SPEAKER: text" bottom-center,
+## story lines above player chatter, max 2 lines of ~42 chars per chunk; long lines are split into timed chunks.
+
+const NAMES: Dictionary = {
+	&"OPR": "THE OPERATOR", &"FAS": "FASBENDER (RADIO)", &"REI": "REINHOLT", &"LSL": "LIESL",
+	&"DUT": "DUTCH", &"PEG": "PEG", &"DEA": "DEACON", &"WRN": "WREN",
+}
+const COLORS: Dictionary = {
+	&"OPR": Color(1.0, 0.78, 0.35), &"FAS": Color(0.62, 0.9, 0.62), &"REI": Color(0.72, 0.5, 1.0),
+	&"LSL": Color(1.0, 0.7, 0.78), &"DUT": Color(0.55, 0.7, 0.9), &"PEG": Color(0.86, 0.22, 0.25),
+	&"DEA": Color(0.85, 0.68, 0.3), &"WRN": Color(1.0, 1.0, 1.0),
+}
+const STORY: Array[StringName] = [&"OPR", &"FAS", &"REI", &"LSL"]
+const CHUNK_CHARS: int = 84
+const MIN_CHUNK_SECONDS: float = 1.2
+
+var _rows: Dictionary = {}   # "story" / "player" -> {label, chunks, times, t}
+var _box: VBoxContainer
+
+
+func _init() -> void:
+	layer = 15
+	process_mode = Node.PROCESS_MODE_ALWAYS
+
+
+func _ready() -> void:
+	_box = VBoxContainer.new()
+	# Centered strip above the prompt area, 980 px wide at any resolution.
+	_box.anchor_left = 0.5
+	_box.anchor_right = 0.5
+	_box.anchor_top = 1.0
+	_box.anchor_bottom = 1.0
+	_box.offset_left = -490.0
+	_box.offset_right = 490.0
+	_box.offset_top = -330.0
+	_box.offset_bottom = -200.0
+	_box.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_box.alignment = BoxContainer.ALIGNMENT_END
+	_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_box)
+	var font: SystemFont = SystemFont.new()
+	font.font_names = PackedStringArray(["Courier New", "Consolas"])
+	font.font_weight = 700
+	for key: String in ["story", "player"]:
+		var l: RichTextLabel = RichTextLabel.new()
+		l.bbcode_enabled = true
+		l.fit_content = true
+		l.scroll_active = false
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size = Vector2(980, 0)
+		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		l.add_theme_font_override("normal_font", font)
+		l.add_theme_font_size_override("normal_font_size", 24)
+		l.add_theme_constant_override("outline_size", 6)
+		l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+		l.visible = false
+		_box.add_child(l)
+		_rows[key] = {"label": l, "chunks": PackedStringArray(), "times": PackedFloat32Array(), "i": 0, "t": 0.0, "speaker": &""}
+	GLBus.vo_line_started.connect(_on_line)
+
+
+## Splits text at word boundaries into chunks of at most `max_chars`.
+static func chunk(text: String, max_chars: int) -> PackedStringArray:
+	var out: PackedStringArray = []
+	var cur: String = ""
+	for word: String in text.split(" ", false):
+		if cur.length() + word.length() + 1 > max_chars and cur != "":
+			out.append(cur)
+			cur = word
+		else:
+			cur = word if cur == "" else cur + " " + word
+	if cur != "":
+		out.append(cur)
+	return out
+
+
+func _on_line(_id: StringName, speaker: StringName, text: String, duration: float) -> void:
+	if not bool(GLSettings.values.get("subtitles", true)):
+		return
+	var key: String = "story" if STORY.has(speaker) else "player"
+	var row: Dictionary = _rows[key]
+	var chunks: PackedStringArray = chunk(text, CHUNK_CHARS)
+	var times: PackedFloat32Array = []
+	var total: int = maxi(1, text.length())
+	for c: String in chunks:
+		times.append(maxf(MIN_CHUNK_SECONDS, duration * float(c.length()) / float(total)))
+	row["chunks"] = chunks
+	row["times"] = times
+	row["i"] = 0
+	row["t"] = times[0] if times.size() > 0 else duration
+	row["speaker"] = speaker
+	_show(row)
+
+
+func _show(row: Dictionary) -> void:
+	var l: RichTextLabel = row["label"]
+	var chunks: PackedStringArray = row["chunks"]
+	var i: int = int(row["i"])
+	if i >= chunks.size():
+		l.visible = false
+		return
+	var spk: StringName = row["speaker"]
+	var col: Color = COLORS.get(spk, Color(0.9, 0.9, 0.9))
+	var name_str: String = str(NAMES.get(spk, String(spk)))
+	l.text = "[center][color=#%s]%s:[/color] [color=#ece6d6]%s[/color][/center]" % [col.to_html(false), name_str, chunks[i].replace("[", "[lb]")]
+	l.visible = true
+
+
+func _process(delta: float) -> void:
+	for key: Variant in _rows.keys():
+		var row: Dictionary = _rows[key]
+		var l: RichTextLabel = row["label"]
+		if not l.visible:
+			continue
+		row["t"] = float(row["t"]) - delta
+		if float(row["t"]) <= 0.0:
+			row["i"] = int(row["i"]) + 1
+			var times: PackedFloat32Array = row["times"]
+			if int(row["i"]) < times.size():
+				row["t"] = times[int(row["i"])]
+			_show(row)

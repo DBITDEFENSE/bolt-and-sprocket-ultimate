@@ -1,0 +1,212 @@
+{
+  "_doc": "Enemy tuning (docs/ENEMIES.md). Tier speeds in m/s; each spawn gets \u00c2\u00b1jitter.",
+  "tiers": {
+    "shamble": 1.3,
+    "walk": 2.0,
+    "jog": 3.4,
+    "run": 4.8,
+    "sprint": 5.6
+  },
+  "speed_jitter": 0.05,
+  "pool_size": 32,
+  "enemies": {
+    "ganger": {
+      "damage": 50,
+      "attack_interval": 1.2,
+      "attack_windup": 0.45,
+      "attack_range": 1.5,
+      "tear_interval": 1.2,
+      "tear_interval_late": 0.8,
+      "tear_late_from_round": 15,
+      "climb_seconds": 1.1,
+      "crawler_speed": 0.8,
+      "leg_pool_fraction": 0.35,
+      "leg_sever_chance": 0.6,
+      "explosive_crawler_chance": 0.4,
+      "stagger_seconds": 0.35,
+      "last_zombie_seconds": 20.0,
+      "stuck_respawn_seconds": 15.0,
+      "variants": {
+        "soldier": 0.6,
+        "miner": 0.15,
+        "labstaff": 0.05,
+        "laborer": 0.2
+      }
+    },
+    "glasshide": {
+      "health_mult": 1.5,
+      "damage": 60,
+      "attack_interval": 1.4,
+      "attack_windup": 0.6,
+      "armor_mult": 0.5,
+      "bullet_stagger": false,
+      "can_crawl": false,
+      "tiers": {
+        "walk": 0.6,
+        "jog": 0.4
+      },
+      "scrip": {
+        "body": 75,
+        "neck": 90,
+        "head": 150,
+        "melee": 180
+      },
+      "hit_slow": 0.2,
+      "hit_slow_seconds": 0.5,
+      "shatter_damage": 50,
+      "shatter_radius": 1.5,
+      "from_round": 15,
+      "chance_start": 0.04,
+      "chance_per_round": 0.005,
+      "chance_cap": 0.12,
+      "max_active": 3,
+      "maps": [
+        "map01_kaltenbrunn"
+      ]
+    },
+    "bellringer": {
+      "health_mult": 0.6,
+      "health_min": 300,
+      "speed": 5.4,
+      "damage": 35,
+      "attack_interval": 0.8,
+      "attack_windup": 0.3,
+      "attack_range": 2.4,
+      "lunge_distance": 2.0,
+      "bullet_stagger": false,
+      "can_crawl": false,
+      "scrip": {
+        "body": 60,
+        "neck": 70,
+        "head": 110,
+        "melee": 140
+      },
+      "pack_gap_seconds": 3.5,
+      "max_active": 18,
+      "portal_min_dist": 8.0,
+      "portal_max_dist": 18.0
+    },
+    "foreman": {
+      "health_per_round": 2500,
+      "player_mult": [
+        1.0,
+        1.75,
+        2.5,
+        3.25
+      ],
+      "walk_speed": 2.4,
+      "charge_speed": 9.0,
+      "weakpoint_mult": 3.0,
+      "stunned_weakpoint_mult": 4.0,
+      "helmet_mult": 1.5,
+      "kill_scrip": 500,
+      "first_round_min": 12,
+      "first_round_max": 14,
+      "interval_min": 5,
+      "interval_max": 7,
+      "spawn_delay": 4.0,
+      "jab": {
+        "damage": 40,
+        "knockback": 6.0,
+        "cooldown": 2.5,
+        "reach": 2.5,
+        "windup": 0.5
+      },
+      "slam": {
+        "damage": 90,
+        "damage_far": 45,
+        "radius": 4.0,
+        "radius_far": 6.0,
+        "cooldown": 8.0,
+        "windup": 0.9,
+        "knockdown": 0.6
+      },
+      "charge": {
+        "damage": 75,
+        "knockback": 12.0,
+        "cooldown": 12.0,
+        "windup": 1.2,
+        "max_distance": 18.0,
+        "min_distance": 6.0,
+        "stun": 2.5
+      },
+      "whip": {
+        "damage": 30,
+        "slow_seconds": 1.0,
+        "cooldown": 6.0,
+        "min": 3.0,
+        "max": 7.0
+      },
+      "recover_seconds": 0.7,
+      "stun_burst_fraction": 0.15,
+      "stun_burst_window": 3.0,
+      "stun_seconds": 2.5,
+      "enrage_fraction": 0.3,
+      "enrage_speed_mult": 1.25,
+      "enrage_cooldown_mult": 0.7,
+      "max_active": 1,
+      "maps": [
+        "map01_kaltenbrunn"
+      ]
+    },
+    "screamer": {
+      "health_mult": 0.8,
+      "walk_speed": 2.6,
+      "reposition_speed": 4.2,
+      "keep_min": 10.0,
+      "keep_max": 16.0,
+      "flee_dist": 5.0,
+      "claw_damage": 30,
+      "claw_range": 1.6,
+      "scream_range": 20.0,
+      "scream_cone_deg": 40.0,
+      "windup": 1.5,
+      "cooldown_min": 9.0,
+      "cooldown_max": 12.0,
+      "effect_seconds": 3.0,
+      "scrip": {
+        "body": 150,
+        "neck": 160,
+        "head": 250,
+        "melee": 280
+      },
+      "from_round": 20,
+      "chance_start": 0.35,
+      "chance_per_round": 0.05,
+      "chance_cap": 0.75,
+      "spawn_progress_min": 0.3,
+      "spawn_progress_max": 0.7,
+      "maps": [
+        "map01_kaltenbrunn"
+      ]
+    }
+  },
+  "repath": {
+    "near_m": 15.0,
+    "far_m": 40.0,
+    "near_s": 0.25,
+    "mid_s": 0.75,
+    "far_s": 2.0,
+    "budget_per_frame": 6
+  },
+  "status": {
+    "scream": {
+      "move_mult": 0.65,
+      "no_ads": true,
+      "fx": true
+    },
+    "shard_slow": {
+      "move_mult": 0.8
+    },
+    "whip_slow": {
+      "move_mult": 0.6
+    },
+    "knockdown": {
+      "move_mult": 0.0
+    }
+  },
+  "visual": {
+    "_doc": "Procedural body look (enemies/zombie_body.gd).",
+    "crack_energy": 2.6
+  }
+}

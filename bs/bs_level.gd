@@ -64,6 +64,11 @@ func on_level_ready() -> void:
 
 
 func _ready() -> void:
+	# The shared game hosts several modes: B&S bindings back on, Gravelight's overlays off (T-024).
+	Game.set_mode(Game.Mode.BOLT_AND_SPROCKET)
+	if Engine.has_singleton(&"GLSettings") or get_node_or_null(^"/root/GLSettings") != null:
+		get_node(^"/root/GLSettings").call("deactivate")
+	InputSetup.apply(SaveProfile.doc.get("input_overrides", {}))
 	build()
 	_spawn_player()
 	_spawn_ui()

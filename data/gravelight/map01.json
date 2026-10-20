@@ -1,0 +1,34 @@
+{
+  "_doc": "Map 1 world machinery tuning (MAPS.md: power-on event, pylon holdouts, lift).",
+  "power": {
+    "vo_delay": 1.5,
+    "light_sweep_start": 2.0,
+    "light_zone_gap": 0.6,
+    "burst_delay": 8.0,
+    "burst_count": 6,
+    "vo_line": "OPR_POWER_ON_01"
+  },
+  "pylon": {
+    "cost": 1500,
+    "charge_seconds": 45.0,
+    "radius": 8.0,
+    "drain_grace_seconds": 3.0,
+    "drain_per_second": 0.02,
+    "checkpoint_step": 0.25,
+    "spawn_boost": 2.0,
+    "temp_spawns": 2,
+    "required": 3,
+    "vo_start": "OPR_PYLON_START_01",
+    "vo_pause": "OPR_PYLON_PAUSE_01",
+    "vo_done": "OPR_PYLON_ATTUNED_01",
+    "vo_vault_operator": "OPR_VAULT_01",
+    "vo_vault_reinholt": "REI_VAULT_OPEN_01"
+  },
+  "lift": {
+    "ride_seconds": 25.0,
+    "cooldown_seconds": 60.0
+  },
+  "blast_door": {
+    "open_seconds": 3.0
+  }
+}

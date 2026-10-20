@@ -1,0 +1,113 @@
+{
+  "_doc": "Perk tonics. Effects are applied by autoload/perk_manager.gd via effect keys.",
+  "cap": 4,
+  "perks": {
+    "ironhide_stout": {
+      "name": "Ironhide Stout",
+      "cost": 2500,
+      "needs_power": true,
+      "effects": {
+        "max_health": 250
+      },
+      "color": "#9e2a1e",
+      "abbr": "IH",
+      "shape": "barrel",
+      "sign": "IRONHIDE"
+    },
+    "second_wind": {
+      "name": "Second Wind Schnapps",
+      "cost": 500,
+      "cost_coop": 1500,
+      "needs_power": true,
+      "solo_no_power": true,
+      "effects": {
+        "revive_speed_mult": 2.0,
+        "solo_self_revives": 3
+      },
+      "color": "#9cc3e0",
+      "abbr": "SW",
+      "shape": "cabinet",
+      "sign": "SECOND WIND"
+    },
+    "trigger_tonic": {
+      "name": "Trigger Tonic",
+      "cost": 3000,
+      "needs_power": true,
+      "effects": {
+        "reload_time_mult": 0.5
+      },
+      "color": "#b8c41e",
+      "abbr": "TT",
+      "shape": "crate",
+      "sign": "TRIGGER TONIC!"
+    },
+    "twin_barrel": {
+      "name": "Twin Barrel Bitters",
+      "cost": 2000,
+      "needs_power": true,
+      "effects": {
+        "fire_rate_mult": 1.33
+      },
+      "color": "#d18a1f",
+      "abbr": "TB",
+      "shape": "twin",
+      "sign": "TWIN BARREL"
+    },
+    "marathon_malt": {
+      "name": "Marathon Malt",
+      "cost": 2000,
+      "needs_power": true,
+      "effects": {
+        "unlimited_sprint": true,
+        "move_speed_mult": 1.07
+      },
+      "color": "#8fc4f0",
+      "abbr": "MM",
+      "shape": "teardrop",
+      "sign": "MARATHON MALT"
+    },
+    "hawkeye_brandy": {
+      "name": "Hawkeye Brandy",
+      "cost": 1500,
+      "needs_power": true,
+      "effects": {
+        "sway_mult": 0.5,
+        "ads_time_mult": 0.75,
+        "head_damage_mult": 1.25
+      },
+      "color": "#22553a",
+      "abbr": "HB",
+      "shape": "periscope",
+      "sign": "HAWKEYE"
+    },
+    "packmule_porter": {
+      "name": "Packmule Porter",
+      "cost": 4000,
+      "needs_power": true,
+      "effects": {
+        "weapon_slots": 3
+      },
+      "color": "#6b5a2e",
+      "abbr": "PP",
+      "shape": "wagon",
+      "sign": "PACKMULE"
+    },
+    "blastproof_bock": {
+      "name": "Blastproof Bock",
+      "cost": 2000,
+      "needs_power": true,
+      "effects": {
+        "self_explosive_immune": true,
+        "fall_damage_immune": true,
+        "slide_shockwave_damage": 400,
+        "slide_shockwave_radius": 3.0
+      },
+      "color": "#e0661a",
+      "abbr": "BB",
+      "shape": "safe",
+      "sign": "BLASTPROOF"
+    }
+  },
+  "drink_seconds": 1.2,
+  "solo_self_revives": 3
+}

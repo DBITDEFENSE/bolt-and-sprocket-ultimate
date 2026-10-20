@@ -1,0 +1,1770 @@
+class_name WeaponModels
+extends RefCounted
+## Procedural, original weapon models built from primitives with procedural materials.
+##
+## WeaponModels.build(id, upgraded, camo) -> Node3D
+##   Frame: barrel along -Z, +Y up, origin = the firing hand's grip point (where the right hand holds).
+##   Real-world scale in meters.
+##   Named children for animation: "Muzzle", "LeftHand" (support-hand target), and when present
+##   "Mag", "Bolt", "Slide", "Pump", "Cover", "Barrels", "Crank", "Rocket", "Valve".
+##   Meta: "sight" (Vector3, a point on the sight line just in front of the rear sight),
+##         "reload" (String kind for WeaponHolder animations), "eye_relief" (float), "length" (float).
+## Upgraded weapons get the Nachtglas look; `camo` (ProfileSave.camo_for) tints the furniture.
+
+static var _mat_cache: Dictionary = {}
+static var _tex_cache: Dictionary = {}
+
+var root: Node3D
+var upgraded: bool = false
+var camo: StringName = &""
+
+
+static var _templates: Dictionary = {}     # "id|up|camo" -> built model; build() hands out duplicates
+
+
+static func build(weapon_id: StringName, is_upgraded: bool = false, camo_id: StringName = &"") -> Node3D:
+	var key: String = "%s|%s|%s" % [weapon_id, is_upgraded, camo_id]
+	if not _templates.has(key):
+		_templates[key] = _build_new(weapon_id, is_upgraded, camo_id)
+	var t: Node3D = _templates[key]
+	var copy: Node3D = t.duplicate() as Node3D
+	for k: StringName in t.get_meta_list():
+		copy.set_meta(k, t.get_meta(k))
+	return copy
+
+
+static func _build_new(weapon_id: StringName, is_upgraded: bool, camo_id: StringName) -> Node3D:
+	var b: WeaponModels = WeaponModels.new()
+	b.upgraded = is_upgraded
+	b.camo = camo_id
+	b.root = Node3D.new()
+	var base: String = String(weapon_id).trim_suffix("_up")
+	if String(weapon_id).ends_with("_up"):
+		b.upgraded = true
+	b.root.name = "Model_" + base
+	b.root.set_meta("reload", "mag")
+	b.root.set_meta("eye_relief", 0.14)
+	b.root.set_meta("sight", Vector3(0, 0.05, 0))
+	b.root.set_meta("length", 0.6)
+	if b.has_method("_w_" + base):
+		b.call("_w_" + base)
+	else:
+		b._w_generic()
+	if b.root.get_node_or_null("Muzzle") == null:
+		b.marker("Muzzle", Vector3(0, 0.04, -float(b.root.get_meta("length"))))
+	if b.root.has_meta("bore"):
+		# dark bore at the muzzle so barrels read as barrels, not rods
+		var mz: Vector3 = (b.root.get_node("Muzzle") as Node3D).position
+		b.tube(float(b.root.get_meta("bore")), float(b.root.get_meta("bore")), 0.004, mz + Vector3(0, 0, 0.0015), "black")
+	if b.root.get_node_or_null("LeftHand") == null:
+		b.marker("LeftHand", Vector3(0, -0.02, -0.25))
+	if not b.root.has_meta("grip_r"):
+		b.rhand(Vector3(0, -0.04, 0.05), 20.0)
+	if b.upgraded:
+		b._nachtglas_glow()
+	merge_static(b.root)
+	return b.root
+
+
+## Bakes the plain MeshInstance3D children of `n` (and, recursively, of its part groups) into one mesh
+## with one surface per material, so a whole rifle draws in a handful of calls instead of ~50.
+static func merge_static(n: Node3D) -> void:
+	var verts: Dictionary = {}        # material -> PackedVector3Array (non-indexed triangles)
+	var norms: Dictionary = {}
+	var mats: Array[Material] = []
+	var victims: Array[Node] = []
+	for c: Node in n.get_children():
+		if c is MeshInstance3D and (c as MeshInstance3D).get_child_count() == 0 and (c as MeshInstance3D).visible:
+			var mi: MeshInstance3D = c as MeshInstance3D
+			if mi.mesh == null:
+				continue
+			var xf: Transform3D = mi.transform
+			var nb: Basis = xf.basis.inverse().transposed()
+			for si: int in mi.mesh.get_surface_count():
+				var mat: Material = mi.material_override if mi.material_override != null else mi.mesh.surface_get_material(si)
+				if mat == null:
+					continue
+				if not verts.has(mat):
+					verts[mat] = PackedVector3Array()
+					norms[mat] = PackedVector3Array()
+					mats.append(mat)
+				var arr: Array = mi.mesh.surface_get_arrays(si)
+				var v: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+				var nn: PackedVector3Array = arr[Mesh.ARRAY_NORMAL]
+				var idx: PackedInt32Array = arr[Mesh.ARRAY_INDEX] if arr[Mesh.ARRAY_INDEX] != null else PackedInt32Array()
+				var ov: PackedVector3Array = verts[mat]
+				var on: PackedVector3Array = norms[mat]
+				var count: int = idx.size() if idx.size() > 0 else v.size()
+				for k: int in count:
+					var j: int = idx[k] if idx.size() > 0 else k
+					ov.append(xf * v[j])
+					on.append((nb * nn[j]).normalized() if nn.size() > j else Vector3.UP)
+				verts[mat] = ov
+				norms[mat] = on
+			victims.append(mi)
+		elif c is Node3D and not (c is VisualInstance3D):
+			merge_static(c as Node3D)
+	if victims.size() < 2:
+		return
+	var mesh: ArrayMesh = ArrayMesh.new()
+	for mat: Material in mats:
+		var arrays: Array = []
+		arrays.resize(Mesh.ARRAY_MAX)
+		arrays[Mesh.ARRAY_VERTEX] = verts[mat]
+		arrays[Mesh.ARRAY_NORMAL] = norms[mat]
+		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+		mesh.surface_set_material(mesh.get_surface_count() - 1, mat)
+	for vv: Node in victims:
+		n.remove_child(vv)
+		vv.free()
+	var out: MeshInstance3D = MeshInstance3D.new()
+	out.name = "Merged"
+	out.mesh = mesh
+	out.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	n.add_child(out)
+	n.move_child(out, 0)
+
+
+## Every id this builder knows (for tests and the crate).
+static func known_ids() -> PackedStringArray:
+	return PackedStringArray(["m1911", "kar98k", "m1_garand", "gewehr43", "m1_carbine", "mp40", "thompson", "stg44",
+		"trench_gun", "bar", "ppsh41", "mg42", "m1919", "sawed_off", "type100", "ptrs41", "springfield", "panzerschreck",
+		"flamethrower", "ashlight", "totenglocke", "gramophone", "trench_knife", "etool", "frag"])
+
+
+# ================================================================== materials
+
+static func _gradient(stops: Array) -> Gradient:
+	var g: Gradient = Gradient.new()
+	var offs: PackedFloat32Array = PackedFloat32Array()
+	var cols: PackedColorArray = PackedColorArray()
+	for s: Array in stops:
+		offs.append(float(s[0]))
+		cols.append(s[1] as Color)
+	g.offsets = offs
+	g.colors = cols
+	return g
+
+
+static func _noise_tex(key: String, seed_v: int, freq: float, ramp: Gradient, as_normal: bool,
+		fractal: FastNoiseLite.FractalType = FastNoiseLite.FRACTAL_FBM,
+		noise_type: FastNoiseLite.NoiseType = FastNoiseLite.TYPE_SIMPLEX_SMOOTH) -> NoiseTexture2D:
+	if _tex_cache.has(key):
+		return _tex_cache[key]
+	var n: FastNoiseLite = FastNoiseLite.new()
+	n.seed = seed_v
+	n.frequency = freq
+	n.fractal_type = fractal
+	n.noise_type = noise_type
+	var t: NoiseTexture2D = NoiseTexture2D.new()
+	t.width = 256
+	t.height = 256
+	t.seamless = true
+	t.noise = n
+	if as_normal:
+		t.as_normal_map = true
+		t.bump_strength = 4.0
+	elif ramp != null:
+		t.color_ramp = ramp
+	_tex_cache[key] = t
+	return t
+
+
+## Base (untinted, non-upgraded) materials, cached.
+static func base_mat(kind: String) -> StandardMaterial3D:
+	if _mat_cache.has(kind):
+		return _mat_cache[kind]
+	if kind == "glove_vc" or kind == "buckle":
+		# glove_vc: the glove leather with its colour from the mesh (hands: leather, strap and stitching in one
+		# surface). buckle: blackened steel for the wrist-strap buckle.
+		var v: StandardMaterial3D = base_mat("glove" if kind == "glove_vc" else "blued").duplicate() as StandardMaterial3D
+		if kind == "glove_vc":
+			v.albedo_color = Color.WHITE
+			v.vertex_color_use_as_albedo = true
+			v.vertex_color_is_srgb = true
+		else:
+			v.roughness = 0.55
+		_mat_cache[kind] = v
+		return v
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.uv1_triplanar = true
+	match kind:
+		"blued", "park", "black", "fieldgray", "olive", "steel":
+			var col: Color = {"blued": Color(0.075, 0.08, 0.095), "park": Color(0.17, 0.18, 0.16), "black": Color(0.05, 0.05, 0.05),
+				"fieldgray": Color(0.24, 0.26, 0.22), "olive": Color(0.22, 0.24, 0.14), "steel": Color(0.55, 0.56, 0.58)}[kind]
+			m.albedo_color = col
+			m.metallic = 0.85 if kind in ["blued", "steel"] else 0.45
+			m.roughness = 0.42 if kind == "blued" else (0.3 if kind == "steel" else 0.7)
+			m.roughness_texture = _noise_tex("metal_rough", 7, 0.05, _gradient([[0.0, Color(0.35, 0.35, 0.35)], [1.0, Color(0.85, 0.85, 0.85)]]), false)
+			m.uv1_scale = Vector3(6, 6, 6)
+			m.normal_enabled = true
+			m.normal_texture = _noise_tex("metal_normal", 11, 0.12, null, true)
+			m.normal_scale = 0.15
+		"wood", "wood_light", "wood_red":
+			var ramp: Gradient
+			match kind:
+				"wood":
+					ramp = _gradient([[0.0, Color(0.16, 0.08, 0.04)], [0.45, Color(0.33, 0.18, 0.08)], [0.55, Color(0.27, 0.14, 0.06)], [1.0, Color(0.42, 0.24, 0.11)]])
+				"wood_light":
+					ramp = _gradient([[0.0, Color(0.3, 0.18, 0.08)], [0.5, Color(0.5, 0.32, 0.16)], [1.0, Color(0.6, 0.42, 0.22)]])
+				_:
+					ramp = _gradient([[0.0, Color(0.25, 0.08, 0.04)], [0.5, Color(0.45, 0.17, 0.08)], [1.0, Color(0.55, 0.25, 0.12)]])
+			# Repeating light/dark bands over smooth noise read as growth rings once stretched along Z.
+			var c0: Color = ramp.colors[0]
+			var c1: Color = ramp.colors[ramp.colors.size() - 1]
+			var stops: Array = []
+			for k: int in 7:
+				var o: float = float(k) / 7.0
+				stops.append([o, c0.lerp(c1, 0.55)])
+				stops.append([o + 0.06, c1])
+				stops.append([o + 0.11, c0.lerp(c1, 0.75)])
+			stops.append([1.0, c0.lerp(c1, 0.55)])
+			m.albedo_texture = _noise_tex("grain_" + kind, 3 + kind.length(), 0.012, _gradient(stops), false)
+			# Stretched along Z (the stock's length) for grain.
+			m.uv1_scale = Vector3(9, 9, 0.6)
+			m.roughness = 0.62
+			m.normal_enabled = true
+			m.normal_texture = _noise_tex("wood_normal", 5, 0.06, null, true)
+			m.normal_scale = 0.25
+		"bakelite":
+			m.albedo_color = Color(0.2, 0.08, 0.05)
+			m.roughness = 0.32
+			m.albedo_texture = _noise_tex("bakelite", 21, 0.08, _gradient([[0.0, Color(0.7, 0.7, 0.7)], [1.0, Color(1, 1, 1)]]), false)
+		"brass", "bronze":
+			m.albedo_color = Color(0.78, 0.6, 0.25) if kind == "brass" else Color(0.55, 0.36, 0.17)
+			m.metallic = 0.95
+			m.roughness = 0.28
+			m.roughness_texture = _noise_tex("metal_rough", 7, 0.05, _gradient([[0.0, Color(0.35, 0.35, 0.35)], [1.0, Color(0.85, 0.85, 0.85)]]), false)
+			m.uv1_scale = Vector3(5, 5, 5)
+		"rubber", "leather", "canvas":
+			m.albedo_color = {"rubber": Color(0.06, 0.06, 0.06), "leather": Color(0.25, 0.15, 0.08), "canvas": Color(0.36, 0.34, 0.22)}[kind]
+			m.roughness = 0.9
+			m.albedo_texture = _noise_tex("fabric", 31, 0.4, _gradient([[0.0, Color(0.75, 0.75, 0.75)], [1.0, Color(1, 1, 1)]]), false)
+			m.uv1_scale = Vector3(8, 8, 8)
+		"glass":
+			m.albedo_color = Color(0.7, 0.8, 0.9, 0.25)
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			m.roughness = 0.05
+			m.metallic = 0.2
+		"glow_violet", "glow_amber", "glow_red":
+			var gc: Color = {"glow_violet": Color(0.65, 0.3, 1.0), "glow_amber": Color(1.0, 0.6, 0.2), "glow_red": Color(1.0, 0.25, 0.15)}[kind]
+			m.albedo_color = gc
+			m.emission_enabled = true
+			m.emission = gc
+			m.emission_energy_multiplier = 4.0
+		"red_paint", "white", "cream", "navy", "gold_trim", "chalk", "skin", "sleeve", "glove":
+			m.albedo_color = {"red_paint": Color(0.55, 0.06, 0.05), "white": Color(0.85, 0.84, 0.8), "cream": Color(0.82, 0.74, 0.58),
+				"navy": Color(0.08, 0.1, 0.22), "gold_trim": Color(0.85, 0.66, 0.2), "chalk": Color(0.92, 0.94, 0.9),
+				"skin": Color(0.62, 0.47, 0.38), "sleeve": Color(0.3, 0.31, 0.2), "glove": Color(0.19, 0.13, 0.085)}[kind]
+			m.roughness = 0.75
+			if kind == "gold_trim":
+				m.metallic = 0.9
+				m.roughness = 0.3
+			if kind == "sleeve":
+				m.albedo_texture = _noise_tex("wool", 41, 0.6, _gradient([[0.0, Color(0.7, 0.7, 0.7)], [1.0, Color(1, 1, 1)]]), false)
+				m.uv1_scale = Vector3(14, 14, 14)
+			if kind == "glove":
+				# pebbled leather grain
+				m.albedo_texture = _noise_tex("leather_grain", 47, 0.9, _gradient([[0.0, Color(0.72, 0.72, 0.72)], [1.0, Color(1, 1, 1)]]), false)
+				m.uv1_scale = Vector3(40, 40, 40)
+				m.roughness = 0.68
+				m.normal_enabled = true
+				m.normal_texture = _noise_tex("leather_normal", 49, 0.9, null, true)
+				m.normal_scale = 0.35
+			if kind == "chalk":
+				m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+				m.emission_enabled = true
+				m.emission = Color(0.8, 0.85, 0.8)
+				m.emission_energy_multiplier = 0.4
+		"perforated":
+			# Cooling jackets / heat shields: dark holes from cellular noise.
+			m.albedo_texture = _noise_tex("holes", 51, 0.18, _gradient([[0.0, Color(0.01, 0.01, 0.01)], [0.22, Color(0.02, 0.02, 0.02)], [0.26, Color(0.1, 0.1, 0.11)], [1.0, Color(0.13, 0.13, 0.15)]]),
+				false, FastNoiseLite.FRACTAL_NONE, FastNoiseLite.TYPE_CELLULAR)
+			m.uv1_scale = Vector3(14, 14, 14)
+			m.metallic = 0.7
+			m.roughness = 0.5
+		"nachtglas", "nachtglas_wood":
+			m.albedo_color = Color(0.08, 0.03, 0.13) if kind == "nachtglas" else Color(0.14, 0.05, 0.18)
+			m.metallic = 0.4
+			m.roughness = 0.12
+			m.emission_enabled = true
+			m.emission_texture = _noise_tex("veins", 61, 0.045, _gradient([[0.0, Color(0, 0, 0)], [0.78, Color(0, 0, 0)], [0.84, Color(0.55, 0.2, 1.0)],
+				[0.88, Color(0.05, 0.0, 0.08)], [0.93, Color(0, 0, 0)], [0.96, Color(1.0, 0.55, 0.15)], [1.0, Color(0.1, 0.02, 0.0)]]), false, FastNoiseLite.FRACTAL_RIDGED)
+			m.emission_energy_multiplier = 3.0
+			m.uv1_scale = Vector3(4, 4, 4)
+		_:
+			m.albedo_color = Color(0.5, 0.5, 0.5)
+	_mat_cache[kind] = m
+	return m
+
+
+const CAMO_TINT: Dictionary = {&"olive_drab": Color(0.45, 0.5, 0.3), &"winter": Color(1.6, 1.65, 1.7), &"bronze": Color(0.55, 0.36, 0.18),
+	&"silver": Color(0.72, 0.74, 0.78), &"gold": Color(0.85, 0.66, 0.2), &"nachtglas": Color(0.2, 0.08, 0.3)}
+
+
+## Worn-edge variant of a base material for chamfers: rubbed-bright steel on finished metal, polished
+## high spots on wood and bakelite. Cached.
+static func edge_mat(kind: String) -> Material:
+	var key: String = kind + "_edge"
+	if _mat_cache.has(key):
+		return _mat_cache[key]
+	var src: StandardMaterial3D = base_mat(kind)
+	var e: StandardMaterial3D = src.duplicate() as StandardMaterial3D
+	if kind in ["blued", "park", "black", "fieldgray", "olive", "steel", "perforated"]:
+		e.albedo_texture = null
+		e.albedo_color = src.albedo_color.lerp(Color(0.52, 0.53, 0.55), 0.45 if kind != "steel" else 0.2)
+		e.metallic = 0.92
+		e.roughness = 0.26
+		e.roughness_texture = null
+	elif kind.begins_with("wood") or kind == "bakelite":
+		e.albedo_color = Color(1.35, 1.25, 1.15) if kind != "bakelite" else Color(0.34, 0.15, 0.09)
+		e.roughness = 0.4
+	elif kind == "nachtglas" or kind == "nachtglas_wood":
+		e = base_mat("glow_violet").duplicate() as StandardMaterial3D
+		e.albedo_color = Color(0.5, 0.22, 0.85)
+		e.emission_energy_multiplier = 1.5
+	_mat_cache[key] = e
+	return e
+
+
+## Chamfer material for this model (upgraded edges glow violet: the Nachtglas veins break the surface).
+func m_edge(kind: String) -> Material:
+	var is_wood: bool = kind.begins_with("wood") or kind == "bakelite"
+	var is_metal: bool = kind in ["blued", "park", "black", "fieldgray", "olive", "steel", "perforated"]
+	if upgraded and (is_wood or is_metal):
+		return edge_mat("nachtglas")
+	if is_wood and camo != &"":
+		return m(kind)
+	if is_wood or is_metal:
+		return edge_mat(kind)
+	return m(kind)
+
+
+## Resolves a material for this model: Nachtglas when upgraded, camo tint on wood, otherwise the base.
+func m(kind: String) -> Material:
+	var is_wood: bool = kind.begins_with("wood") or kind == "bakelite"
+	var is_metal: bool = kind in ["blued", "park", "black", "fieldgray", "olive", "steel", "perforated"]
+	if upgraded and (is_wood or is_metal):
+		return base_mat("nachtglas_wood" if is_wood else "nachtglas")
+	if is_wood and camo != &"" and CAMO_TINT.has(camo):
+		var key: String = "%s_camo_%s" % [kind, camo]
+		if not _mat_cache.has(key):
+			var c: StandardMaterial3D
+			if camo == &"nachtglas":
+				c = (base_mat("nachtglas_wood") as StandardMaterial3D).duplicate() as StandardMaterial3D
+			else:
+				c = base_mat(kind).duplicate() as StandardMaterial3D
+				c.albedo_color = CAMO_TINT[camo]
+				if camo in [&"gold", &"silver", &"bronze"]:
+					c.albedo_texture = null
+					c.metallic = 0.9
+					c.roughness = 0.25
+			_mat_cache[key] = c
+		return _mat_cache[key]
+	return base_mat(kind)
+
+
+# ================================================================== primitives
+
+func group(n: String, pos: Vector3 = Vector3.ZERO, parent: Node3D = null) -> Node3D:
+	var g: Node3D = Node3D.new()
+	g.name = n
+	g.position = pos
+	(parent if parent != null else root).add_child(g)
+	return g
+
+
+func marker(n: String, pos: Vector3, parent: Node3D = null) -> Node3D:
+	return group(n, pos, parent)
+
+
+func _mesh(parent: Node3D, mesh: Mesh, pos: Vector3, kind: String, rot_deg: Vector3) -> MeshInstance3D:
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.mesh = mesh
+	mi.material_override = m(kind)
+	mi.position = pos
+	mi.rotation_degrees = rot_deg
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	(parent if parent != null else root).add_child(mi)
+	return mi
+
+
+func box(size: Vector3, pos: Vector3, kind: String, rot_deg: Vector3 = Vector3.ZERO, parent: Node3D = null) -> MeshInstance3D:
+	var bm: BoxMesh = BoxMesh.new()
+	bm.size = size
+	return _mesh(parent, bm, pos, kind, rot_deg)
+
+
+## Cylinder along Z (front = -Z) unless axis says otherwise. r_front at -Z end, r_back at +Z end.
+func tube(r_front: float, r_back: float, length: float, pos: Vector3, kind: String, axis: String = "z", parent: Node3D = null, seg: int = 14) -> MeshInstance3D:
+	var cm: CylinderMesh = CylinderMesh.new()
+	cm.height = length
+	cm.radial_segments = seg
+	cm.rings = 1
+	var rot: Vector3 = Vector3.ZERO
+	match axis:
+		"z":
+			# CylinderMesh is along Y; top (+Y) -> +Z after +90 deg about X. Top radius is the back end.
+			cm.top_radius = r_back
+			cm.bottom_radius = r_front
+			rot = Vector3(90, 0, 0)
+		"x":
+			cm.top_radius = r_back
+			cm.bottom_radius = r_front
+			rot = Vector3(0, 0, -90)
+		_:
+			cm.top_radius = r_back
+			cm.bottom_radius = r_front
+	return _mesh(parent, cm, pos, kind, rot)
+
+
+func ball(r: float, pos: Vector3, kind: String, scale_v: Vector3 = Vector3.ONE, parent: Node3D = null) -> MeshInstance3D:
+	var sm: SphereMesh = SphereMesh.new()
+	sm.radius = r
+	sm.height = r * 2.0
+	sm.radial_segments = 12
+	sm.rings = 6
+	var mi: MeshInstance3D = _mesh(parent, sm, pos, kind, Vector3.ZERO)
+	mi.scale = scale_v
+	return mi
+
+
+func ring(inner: float, outer: float, pos: Vector3, kind: String, axis: String = "z", parent: Node3D = null) -> MeshInstance3D:
+	var tm: TorusMesh = TorusMesh.new()
+	tm.inner_radius = inner
+	tm.outer_radius = outer
+	tm.rings = 16
+	tm.ring_segments = 6
+	var rot: Vector3 = Vector3(90, 0, 0) if axis == "z" else (Vector3(0, 0, 90) if axis == "x" else Vector3.ZERO)
+	return _mesh(parent, tm, pos, kind, rot)
+
+
+func wedge(size: Vector3, pos: Vector3, kind: String, rot_deg: Vector3 = Vector3.ZERO, parent: Node3D = null) -> MeshInstance3D:
+	var pm: PrismMesh = PrismMesh.new()
+	pm.size = size
+	return _mesh(parent, pm, pos, kind, rot_deg)
+
+
+## A flat shape extruded along X: `pts` are (z, y) outline points in model space (any winding).
+## This is how stocks, grips, magazines and blades get real silhouettes.
+func prof(pts: Array, thickness: float, kind: String, x: float = 0.0, parent: Node3D = null) -> MeshInstance3D:
+	var poly: PackedVector2Array = PackedVector2Array()
+	for p: Variant in pts:
+		poly.append(p as Vector2)
+	if Geometry2D.is_polygon_clockwise(poly):
+		poly.reverse()
+	var h: float = thickness * 0.5
+	# Chamfer: the side caps are an inset copy of the outline and a narrow slanted strip joins them to the
+	# edge walls. The strip uses a worn-edge material (bright steel on blued parts, rubbed wood on stocks).
+	var bb: Rect2 = Rect2(poly[0], Vector2.ZERO)
+	for p2: Vector2 in poly:
+		bb = bb.expand(p2)
+	var bev: float = minf(0.0028, minf(thickness * 0.22, minf(bb.size.x, bb.size.y) * 0.18))
+	var inner: PackedVector2Array = _inset(poly, bev) if bev > 0.0006 else poly
+	var tris: PackedInt32Array = Geometry2D.triangulate_polygon(inner)
+	if tris.is_empty():
+		inner = poly
+		bev = 0.0
+		tris = Geometry2D.triangulate_polygon(poly)
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	st.set_smooth_group(-1)
+	# side caps (+X and -X)
+	for i: int in range(0, tris.size(), 3):
+		var a: Vector2 = inner[tris[i]]
+		var b2: Vector2 = inner[tris[i + 1]]
+		var c: Vector2 = inner[tris[i + 2]]
+		st.add_vertex(Vector3(h, a.y, a.x))
+		st.add_vertex(Vector3(h, c.y, c.x))
+		st.add_vertex(Vector3(h, b2.y, b2.x))
+		st.add_vertex(Vector3(-h, a.y, a.x))
+		st.add_vertex(Vector3(-h, b2.y, b2.x))
+		st.add_vertex(Vector3(-h, c.y, c.x))
+	# edge walls
+	_strip(st, poly, h - bev, poly, -(h - bev))
+	st.generate_normals()
+	var mesh: ArrayMesh = st.commit()
+	mesh.surface_set_material(0, m(kind))
+	if bev > 0.0:
+		var se: SurfaceTool = SurfaceTool.new()
+		se.begin(Mesh.PRIMITIVE_TRIANGLES)
+		se.set_smooth_group(-1)
+		_strip(se, inner, h, poly, h - bev)
+		_strip(se, poly, -(h - bev), inner, -h)
+		se.generate_normals()
+		se.commit(mesh)
+		mesh.surface_set_material(1, m_edge(kind))
+	var mi: MeshInstance3D = _mesh(parent, mesh, Vector3(x, 0, 0), kind, Vector3.ZERO)
+	mi.material_override = null
+	return mi
+
+
+## Quads joining outline `a` (at x = xa) to outline `b` (at x = xb); a and b have the same vertex count.
+static func _strip(st: SurfaceTool, a: PackedVector2Array, xa: float, b: PackedVector2Array, xb: float) -> void:
+	var n: int = a.size()
+	for i: int in n:
+		var j: int = (i + 1) % n
+		var a0: Vector3 = Vector3(xa, a[i].y, a[i].x)
+		var a1: Vector3 = Vector3(xa, a[j].y, a[j].x)
+		var b0: Vector3 = Vector3(xb, b[i].y, b[i].x)
+		var b1: Vector3 = Vector3(xb, b[j].y, b[j].x)
+		st.add_vertex(a0)
+		st.add_vertex(b1)
+		st.add_vertex(a1)
+		st.add_vertex(a0)
+		st.add_vertex(b0)
+		st.add_vertex(b1)
+
+
+## Mitred inward offset of a counter-clockwise polygon (same vertex count, spikes clamped).
+static func _inset(poly: PackedVector2Array, d: float) -> PackedVector2Array:
+	var out: PackedVector2Array = PackedVector2Array()
+	var n: int = poly.size()
+	var area: float = 0.0
+	for i: int in n:
+		area += poly[i].x * poly[(i + 1) % n].y - poly[(i + 1) % n].x * poly[i].y
+	var sgn: float = 1.0 if area > 0.0 else -1.0
+	for i: int in n:
+		var p: Vector2 = poly[i]
+		var e0: Vector2 = (p - poly[(i - 1 + n) % n]).normalized()
+		var e1: Vector2 = (poly[(i + 1) % n] - p).normalized()
+		var n0: Vector2 = Vector2(-e0.y, e0.x) * sgn
+		var n1: Vector2 = Vector2(-e1.y, e1.x) * sgn
+		var mdir: Vector2 = n0 + n1
+		if mdir.length_squared() < 0.0001:
+			mdir = n0
+		mdir = mdir.normalized()
+		var k: float = d / maxf(0.35, mdir.dot(n0))
+		out.append(p + mdir * minf(k, d * 2.5))
+	return out
+
+
+func meta(sight: Vector3, reload_kind: String, length: float, relief: float = 0.14) -> void:
+	root.set_meta("sight", sight)
+	root.set_meta("reload", reload_kind)
+	root.set_meta("length", length)
+	root.set_meta("eye_relief", relief)
+
+
+## Open-notch rear sight: a base block from y_base with two ears leaving a notch; the sight line runs through
+## the notch just below the ear tops. Sets the "sight" meta and returns that point.
+func rear_notch(z: float, y_base: float, h: float, kind: String = "blued", width: float = 0.016, gap: float = 0.0042,
+		parent: Node3D = null) -> Vector3:
+	var ear: float = (width - gap) * 0.5
+	var base_h: float = h * 0.55
+	box(Vector3(width, base_h, 0.007), Vector3(0, y_base + base_h * 0.5, z), kind, Vector3.ZERO, parent)
+	for s: float in [-1.0, 1.0]:
+		box(Vector3(ear, h - base_h, 0.007), Vector3(s * (gap + ear) * 0.5, y_base + base_h + (h - base_h) * 0.5, z), kind, Vector3.ZERO, parent)
+	var p: Vector3 = Vector3(0, y_base + h - 0.0012, z - 0.004)
+	root.set_meta("sight", p if parent == null else parent.position + p)
+	return p
+
+
+## Peep (aperture) rear sight: a ring on a short post with protective ears. Sight line = ring center.
+func rear_aperture(z: float, y_center: float, y_base: float, kind: String = "park", r_in: float = 0.0034,
+		r_out: float = 0.0085, ears: bool = true) -> Vector3:
+	ring(r_in, r_out, Vector3(0, y_center, z), kind)
+	box(Vector3(0.008, maxf(0.002, y_center - r_out - y_base + 0.002), 0.006), Vector3(0, (y_center - r_out + y_base) * 0.5 + 0.001, z), kind)
+	if ears:
+		for s: float in [-1.0, 1.0]:
+			box(Vector3(0.0045, y_center + 0.004 - y_base, 0.016), Vector3(s * (r_out + 0.0045), (y_center + 0.004 + y_base) * 0.5, z + 0.004), kind)
+	var p: Vector3 = Vector3(0, y_center, z - 0.004)
+	root.set_meta("sight", p)
+	return p
+
+
+## Front post with an optional hood (an arch you see the post inside). Sets the "front" meta (post tip).
+func front_post(z: float, y_base: float, tip: float, kind: String = "blued", hood: bool = true, hood_r: float = 0.011) -> void:
+	box(Vector3(0.0028, tip - y_base, 0.004), Vector3(0, (tip + y_base) * 0.5, z), kind)
+	wedge(Vector3(0.0028, 0.002, 0.004), Vector3(0, tip - 0.0002, z), kind)
+	box(Vector3(0.012, 0.005, 0.016), Vector3(0, y_base + 0.0025, z), kind)              # sight base / band
+	if hood:
+		var hood_c: Vector3 = Vector3(0, tip - 0.002, z)
+		var t: MeshInstance3D = tube(hood_r + 0.0018, hood_r + 0.0018, 0.016, hood_c, kind, "z", null, 16)
+		# open the bottom of the hood: only the upper arch remains visible from behind (cheap: a dark
+		# disc would hide the post, so the hood is a thin open tube drawn double-sided)
+		var cm: CylinderMesh = t.mesh as CylinderMesh
+		cm.top_radius = hood_r + 0.0018
+		cm.bottom_radius = hood_r + 0.0018
+		cm.cap_top = false
+		cm.cap_bottom = false
+		t.material_override = two_sided(kind)
+	root.set_meta("front", Vector3(0, tip, z))
+
+
+## Double-sided variant of a material (open tubes: hoods, scope bodies).
+func two_sided(kind: String) -> Material:
+	var key: String = kind + "_2s" + ("_up" if upgraded else "")
+	if not _mat_cache.has(key):
+		var src: BaseMaterial3D = m(kind) as BaseMaterial3D
+		var d: BaseMaterial3D = src.duplicate() as BaseMaterial3D
+		d.cull_mode = BaseMaterial3D.CULL_DISABLED
+		_mat_cache[key] = d
+	return _mat_cache[key]
+
+
+## Trigger guard loop + trigger under a receiver, centered at z.
+func trigger_group(z: float, y: float, kind: String = "blued", w: float = 0.012) -> void:
+	box(Vector3(w, 0.006, 0.07), Vector3(0, y - 0.045, z), kind)
+	box(Vector3(w, 0.04, 0.006), Vector3(0, y - 0.025, z - 0.035), kind)
+	box(Vector3(w * 0.6, 0.03, 0.006), Vector3(0, y - 0.022, z + 0.005), kind, Vector3(-15, 0, 0))
+
+
+## Pistol grip: a sloped, slightly flared shape hanging from (z, y). Points are (z, y).
+func grip(z: float, y: float, length: float, kind: String, slope_deg: float = 18.0, width: float = 0.045, thick: float = 0.032, parent: Node3D = null) -> MeshInstance3D:
+	var s: float = tan(deg_to_rad(slope_deg))
+	if parent == null and not root.has_meta("grip_r"):
+		var f: float = minf(0.045, length * 0.45)
+		rhand(Vector3(0, y - f, z + f * s), slope_deg, (width + thick) * 0.25)
+	var pts: Array = [
+		Vector2(z - width * 0.5, y), Vector2(z + width * 0.5, y),
+		Vector2(z + width * 0.55 + length * s, y - length * 0.85),
+		Vector2(z + width * 0.45 + length * s, y - length),
+		Vector2(z - width * 0.45 + length * s, y - length),
+		Vector2(z - width * 0.55 + length * s * 0.9, y - length * 0.5),
+	]
+	return prof(pts, thick, kind, 0.0, parent)
+
+
+## Firing-hand fist: center of the gripped part, grip-axis lean back from vertical (deg), part radius.
+func rhand(center: Vector3, lean_deg: float, radius: float = 0.019) -> void:
+	root.set_meta("grip_r", Transform3D(Basis(Vector3.RIGHT, deg_to_rad(-lean_deg)), center))
+	root.set_meta("grip_r_radius", radius)
+
+
+## Support-hand fist: the "LeftHand" marker is the center of the held part. axis "z" = along the barrel
+## (handguard, pump, jacket), "y" = an upright grip (foregrip, magazine, or cupping a pistol hand).
+func lhand(center: Vector3, axis: String = "z", radius: float = 0.024) -> void:
+	marker("LeftHand", center)
+	root.set_meta("lh_axis", axis)
+	root.set_meta("lh_radius", radius)
+
+
+## Convert an array of [z, y] pairs into Vector2 points.
+static func P(a: Array) -> Array:
+	var out: Array = []
+	for e: Array in a:
+		out.append(Vector2(float(e[0]), float(e[1])))
+	return out
+
+
+# ================================================================== the weapons
+
+func _w_m1911() -> void:
+	var sl: Node3D = group("Slide")
+	prof(P([[0.045, 0.024], [-0.163, 0.024], [-0.165, 0.05], [0.04, 0.05], [0.047, 0.044]]), 0.028, "park", 0.0, sl)
+	for i: int in 7:
+		box(Vector3(0.03, 0.02, 0.0018), Vector3(0, 0.038, 0.018 + i * 0.0045), "black", Vector3.ZERO, sl)
+	box(Vector3(0.0032, 0.0075, 0.007), Vector3(0, 0.0535, -0.152), "park", Vector3.ZERO, sl)  # front blade
+	var rs: Vector3 = rear_notch(0.03, 0.05, 0.0075, "park", 0.014, 0.0036, sl)
+	box(Vector3(0.002, 0.01, 0.016), Vector3(0.0141, 0.038, -0.015), "black", Vector3.ZERO, sl)  # ejection port
+	tube(0.0085, 0.0085, 0.008, Vector3(0, 0.036, -0.163), "black", "z", sl)
+	# frame + dust cover + grip frame + panels
+	prof(P([[0.04, 0.024], [-0.13, 0.024], [-0.13, 0.008], [-0.04, 0.006], [-0.01, 0.0], [0.04, 0.0]]), 0.026, "park")
+	prof(P([[0.048, 0.025], [0.022, 0.0], [0.05, -0.105], [0.082, -0.11], [0.08, -0.04], [0.06, 0.02]]), 0.028, "park")
+	prof(P([[0.03, -0.005], [0.052, -0.095], [0.075, -0.098], [0.07, -0.03], [0.052, 0.005]]), 0.033, "wood")
+	prof(P([[0.047, 0.04], [0.06, 0.06], [0.064, 0.056], [0.054, 0.034]]), 0.012, "park")       # hammer spur
+	prof(P([[0.05, 0.023], [0.075, 0.024], [0.068, 0.012], [0.052, 0.008]]), 0.026, "park")      # beavertail
+	box(Vector3(0.003, 0.012, 0.014), Vector3(0.0135, 0.016, -0.005), "park")                   # slide stop
+	trigger_group(-0.005, 0.02, "park", 0.01)
+	var mag: Node3D = group("Mag")
+	prof(P([[0.028, -0.01], [0.05, -0.1], [0.076, -0.1], [0.055, -0.01]]), 0.02, "blued", 0.0, mag)
+	box(Vector3(0.024, 0.006, 0.034), Vector3(0, -0.106, 0.064), "blued", Vector3(-14, 0, 0), mag)
+	marker("Muzzle", Vector3(0, 0.036, -0.17))
+	rhand(Vector3(0, -0.05, 0.052), 20.0, 0.017)
+	lhand(Vector3(-0.006, -0.056, 0.05), "y", 0.03)
+	meta(rs, "pistol", 0.216, 0.42)
+	root.set_meta("front", Vector3(0, 0.0572, -0.152))
+	root.set_meta("port", Vector3(0.014, 0.038, -0.015))
+	root.set_meta("bore", 0.0058)
+
+
+func _kar_stock(wood: String, front: float) -> void:
+	prof(P([[0.38, 0.004], [0.22, 0.01], [0.09, 0.02], [0.05, 0.024], [front + 0.03, 0.022], [front, 0.005],
+		[front + 0.01, -0.027], [-0.1, -0.032], [-0.02, -0.04], [0.025, -0.072], [0.072, -0.088], [0.11, -0.074],
+		[0.2, -0.105], [0.38, -0.148]]), 0.043, wood)
+	box(Vector3(0.045, 0.155, 0.01), Vector3(0, -0.072, 0.384), "blued", Vector3(-15, 0, 0))   # buttplate
+	box(Vector3(0.01, 0.012, 0.03), Vector3(0, -0.135, 0.3), "blued")                          # sling slot
+	prof(P([[-0.1, 0.019], [-0.42, 0.019], [-0.42, 0.048], [-0.1, 0.044]]), 0.03, wood)        # upper handguard
+
+
+func _bolt_turned_down(handle_x: float = 0.05) -> Node3D:
+	var bolt: Node3D = group("Bolt", Vector3(0, 0.032, 0.05))
+	tube(0.0095, 0.0095, 0.13, Vector3(0, 0, -0.025), "steel", "z", bolt)
+	var h: Node3D = group("Handle", Vector3(0.008, 0, 0.0), bolt)
+	h.rotation_degrees = Vector3(0, 0, -50)
+	tube(0.0045, 0.0045, 0.05, Vector3(0.025, 0, 0), "steel", "x", h)
+	ball(0.0105, Vector3(handle_x, 0, 0), "steel", Vector3.ONE, h)
+	prof(P([[0.04, -0.011], [0.075, -0.009], [0.078, 0.004], [0.04, 0.008]]), 0.014, "blued", 0.0, bolt)  # cocking piece
+	box(Vector3(0.012, 0.004, 0.02), Vector3(0, 0.014, 0.062), "steel", Vector3.ZERO, bolt)              # safety wing
+	return bolt
+
+
+func _w_kar98k() -> void:
+	_kar_stock("wood", -0.52)
+	tube(0.0175, 0.0175, 0.2, Vector3(0, 0.032, -0.03), "blued")                                         # receiver
+	box(Vector3(0.024, 0.01, 0.06), Vector3(0, 0.05, -0.05), "blued")                                     # receiver bridge/ring
+	tube(0.009, 0.0135, 0.6, Vector3(0, 0.032, -0.43), "blued")                                           # stepped barrel
+	tube(0.0115, 0.0115, 0.12, Vector3(0, 0.032, -0.2), "blued")
+	tube(0.026, 0.026, 0.016, Vector3(0, 0.012, -0.29), "blued")                                           # barrel bands
+	tube(0.026, 0.022, 0.035, Vector3(0, 0.014, -0.5), "blued")                                            # nose cap
+	front_post(-0.705, 0.042, 0.06, "blued", true, 0.0105)                                              # hooded barleycorn
+	prof(P([[-0.125, 0.043], [-0.21, 0.043], [-0.21, 0.049], [-0.14, 0.054], [-0.125, 0.054]]), 0.02, "blued")  # tangent leaf base
+	var rs: Vector3 = rear_notch(-0.13, 0.052, 0.0105, "blued", 0.018, 0.0045)
+	tube(0.003, 0.003, 0.36, Vector3(0, -0.012, -0.55), "steel")                                           # cleaning rod
+	box(Vector3(0.024, 0.008, 0.085), Vector3(0, -0.035, -0.06), "blued")                                 # floorplate
+	trigger_group(0.01, 0.0)
+	_bolt_turned_down()
+	marker("Mag", Vector3(0, 0.055, -0.03))
+	marker("Muzzle", Vector3(0, 0.032, -0.73))
+	rhand(Vector3(0, -0.03, 0.065), 38.0, 0.02)
+	lhand(Vector3(0, 0.002, -0.33), "z", 0.026)
+	meta(rs, "bolt", 1.11, 0.36)
+	root.set_meta("front", Vector3(0, 0.06, -0.705))
+	root.set_meta("port", Vector3(0.012, 0.045, 0.0))
+	root.set_meta("bore", 0.0045)
+
+
+func _w_springfield() -> void:
+	prof(P([[0.38, 0.0], [0.1, 0.015], [0.04, 0.022], [-0.46, 0.02], [-0.49, 0.003], [-0.48, -0.027], [-0.08, -0.032],
+		[0.02, -0.05], [0.1, -0.07], [0.38, -0.15]]), 0.043, "wood")
+	box(Vector3(0.045, 0.155, 0.01), Vector3(0, -0.075, 0.384), "park", Vector3(-15, 0, 0))
+	prof(P([[-0.1, 0.019], [-0.4, 0.019], [-0.4, 0.045], [-0.1, 0.042]]), 0.03, "wood")
+	tube(0.0175, 0.0175, 0.2, Vector3(0, 0.032, -0.03), "park")
+	tube(0.009, 0.0135, 0.6, Vector3(0, 0.032, -0.43), "park")
+	tube(0.026, 0.026, 0.016, Vector3(0, 0.012, -0.44), "park")
+	# scope (M73B1-style): tube, objective bell, eyepiece, two rings on a base
+	tube(0.012, 0.012, 0.25, Vector3(0, 0.09, -0.05), "black")
+	tube(0.02, 0.012, 0.06, Vector3(0, 0.09, -0.205), "black")
+	tube(0.0165, 0.012, 0.05, Vector3(0, 0.09, 0.1), "black")
+	for z: float in [-0.12, 0.02]:
+		tube(0.016, 0.016, 0.014, Vector3(0, 0.09, z), "black")
+		box(Vector3(0.016, 0.04, 0.014), Vector3(0, 0.065, z), "black")
+	box(Vector3(0.018, 0.012, 0.03), Vector3(0, 0.092, -0.05), "black")                                    # turret
+	tube(0.0155, 0.0155, 0.002, Vector3(0, 0.09, 0.126), "glass")
+	tube(0.019, 0.019, 0.002, Vector3(0, 0.09, -0.236), "glass")
+	trigger_group(0.03, 0.0, "park")
+	var bolt: Node3D = group("Bolt", Vector3(0, 0.032, 0.05))
+	tube(0.0095, 0.0095, 0.13, Vector3(0, 0, -0.025), "steel", "z", bolt)
+	var h: Node3D = group("Handle", Vector3(0.008, 0, 0), bolt)
+	h.rotation_degrees = Vector3(0, 0, -15)
+	tube(0.0045, 0.0045, 0.05, Vector3(0.025, 0, 0), "steel", "x", h)
+	ball(0.0095, Vector3(0.05, 0, 0), "steel", Vector3.ONE, h)
+	marker("Mag", Vector3(0, 0.055, -0.03))
+	marker("Muzzle", Vector3(0, 0.032, -0.73))
+	rhand(Vector3(0, -0.022, 0.062), 38.0, 0.02)
+	lhand(Vector3(0, 0.002, -0.31), "z", 0.026)
+	meta(Vector3(0, 0.09, 0.14), "bolt", 1.1, 0.07)
+	root.set_meta("scope", 4.0)          # magnification hint; ADS shows the scope picture (HUD) instead of the model
+	root.set_meta("front", Vector3(0, 0.09, -0.236))
+	root.set_meta("port", Vector3(0.012, 0.045, 0.0))
+	root.set_meta("bore", 0.0045)
+
+
+func _w_m1_garand() -> void:
+	prof(P([[0.38, 0.0], [0.1, 0.017], [0.05, 0.026], [-0.06, 0.026], [-0.06, 0.012], [-0.44, 0.012], [-0.46, -0.008],
+		[-0.44, -0.033], [-0.14, -0.038], [-0.09, -0.055], [0.0, -0.058], [0.04, -0.068], [0.085, -0.092], [0.15, -0.098],
+		[0.38, -0.162]]), 0.044, "wood")
+	box(Vector3(0.046, 0.165, 0.01), Vector3(0, -0.078, 0.384), "park", Vector3(-15, 0, 0))
+	prof(P([[-0.12, 0.03], [-0.3, 0.03], [-0.3, 0.058], [-0.12, 0.054]]), 0.034, "wood")                     # rear handguard
+	prof(P([[-0.32, 0.03], [-0.6, 0.03], [-0.6, 0.05], [-0.32, 0.054]]), 0.032, "wood")                      # front handguard
+	prof(P([[0.07, 0.022], [-0.12, 0.022], [-0.12, 0.06], [0.02, 0.062], [0.07, 0.05]]), 0.042, "park")       # receiver
+	tube(0.0105, 0.0135, 0.63, Vector3(0, 0.04, -0.44), "park")
+	tube(0.0135, 0.0135, 0.05, Vector3(0, 0.032, -0.73), "park")                                              # gas cylinder
+	for x: float in [-0.0085, 0.0085]:
+		box(Vector3(0.003, 0.022, 0.014), Vector3(x, 0.061, -0.735), "park")                                  # front sight ears
+	box(Vector3(0.0028, 0.019, 0.004), Vector3(0, 0.0595, -0.735), "park")                                   # front blade
+	var rs: Vector3 = rear_aperture(0.05, 0.075, 0.06, "park", 0.0032, 0.008)
+	var op: Node3D = group("Bolt", Vector3(0.025, 0.035, -0.07))
+	tube(0.0045, 0.0045, 0.36, Vector3(0, -0.005, -0.18), "park", "z", op)
+	prof(P([[0.0, -0.01], [0.03, -0.01], [0.03, 0.012], [0.0, 0.012]]), 0.016, "park", 0.006, op)
+	var mag: Node3D = group("Mag", Vector3(0, 0.04, -0.02))
+	box(Vector3(0.026, 0.008, 0.058), Vector3(0, 0.012, 0.0), "brass", Vector3.ZERO, mag)
+	for i: int in 4:
+		tube(0.0055, 0.0055, 0.052, Vector3(-0.006 + (i % 2) * 0.012, 0.02, 0.0), "brass", "z", mag)
+	trigger_group(0.05, 0.0, "park")
+	marker("Muzzle", Vector3(0, 0.04, -0.76))
+	rhand(Vector3(0, -0.026, 0.072), 38.0, 0.02)
+	lhand(Vector3(0, 0.008, -0.26), "z", 0.027)
+	meta(rs, "enbloc", 1.1, 0.24)
+	root.set_meta("front", Vector3(0, 0.069, -0.735))
+	root.set_meta("port", Vector3(0.012, 0.06, -0.03))
+	root.set_meta("bore", 0.0045)
+
+
+func _w_gewehr43() -> void:
+	prof(P([[0.35, 0.0], [0.1, 0.015], [0.05, 0.024], [-0.36, 0.022], [-0.38, 0.003], [-0.36, -0.027], [-0.12, -0.03],
+		[0.0, -0.045], [0.06, -0.086], [0.11, -0.07], [0.35, -0.142]]), 0.043, "wood_light")
+	box(Vector3(0.045, 0.15, 0.01), Vector3(0, -0.072, 0.354), "blued", Vector3(-15, 0, 0))
+	prof(P([[-0.15, 0.04], [-0.33, 0.04], [-0.33, 0.07], [-0.15, 0.066]]), 0.032, "wood_light")
+	prof(P([[0.06, 0.02], [-0.14, 0.02], [-0.14, 0.055], [0.04, 0.055], [0.06, 0.045]]), 0.038, "blued")
+	tube(0.009, 0.013, 0.5, Vector3(0, 0.034, -0.39), "blued")
+	tube(0.0085, 0.0085, 0.26, Vector3(0, 0.06, -0.3), "blued")
+	front_post(-0.615, 0.047, 0.068, "blued", true, 0.0105)
+	prof(P([[-0.095, 0.055], [-0.15, 0.055], [-0.15, 0.06], [-0.095, 0.061]]), 0.02, "blued")
+	var rs: Vector3 = rear_notch(-0.1, 0.058, 0.0115, "blued", 0.018, 0.0045)
+	box(Vector3(0.006, 0.012, 0.1), Vector3(0.022, 0.045, -0.04), "blued")                                    # scope rail
+	var bolt: Node3D = group("Bolt", Vector3(-0.024, 0.042, 0.0))
+	box(Vector3(0.012, 0.012, 0.022), Vector3.ZERO, "steel", Vector3.ZERO, bolt)
+	var mag: Node3D = group("Mag", Vector3(0, -0.02, -0.07))
+	prof(P([[0.035, 0.0], [-0.035, 0.0], [-0.04, -0.095], [0.032, -0.095]]), 0.026, "blued", 0.0, mag)
+	trigger_group(0.05, 0.0)
+	marker("Muzzle", Vector3(0, 0.034, -0.64))
+	rhand(Vector3(0, -0.03, 0.05), 38.0, 0.02)
+	lhand(Vector3(0, 0.01, -0.25), "z", 0.026)
+	meta(rs, "mag", 1.13, 0.32)
+	root.set_meta("front", Vector3(0, 0.068, -0.615))
+	root.set_meta("port", Vector3(0.02, 0.045, -0.03))
+	root.set_meta("bore", 0.0045)
+
+
+func _w_m1_carbine() -> void:
+	prof(P([[0.3, 0.0], [0.1, 0.013], [0.05, 0.022], [-0.3, 0.022], [-0.32, 0.003], [-0.3, -0.025], [-0.02, -0.03],
+		[0.04, -0.056], [0.1, -0.066], [0.3, -0.12]]), 0.04, "wood")
+	box(Vector3(0.042, 0.125, 0.01), Vector3(0, -0.06, 0.304), "park", Vector3(-15, 0, 0))
+	prof(P([[-0.1, 0.04], [-0.3, 0.04], [-0.3, 0.06], [-0.1, 0.058]]), 0.03, "wood")
+	prof(P([[0.06, 0.022], [-0.1, 0.022], [-0.1, 0.055], [0.05, 0.055]]), 0.034, "park")
+	tube(0.008, 0.011, 0.42, Vector3(0, 0.038, -0.33), "park")
+	tube(0.024, 0.024, 0.02, Vector3(0, 0.025, -0.34), "park")
+	box(Vector3(0.012, 0.016, 0.008), Vector3(0, -0.005, -0.34), "park")                                         # sling swivel
+	for x: float in [-0.008, 0.008]:
+		box(Vector3(0.0028, 0.02, 0.014), Vector3(x, 0.057, -0.525), "park")                                       # front ears
+	box(Vector3(0.0028, 0.022, 0.004), Vector3(0, 0.057, -0.525), "park")
+	var rs: Vector3 = rear_aperture(0.055, 0.0705, 0.055, "park", 0.003, 0.0075)
+	var bolt: Node3D = group("Bolt", Vector3(0.022, 0.038, -0.04))
+	box(Vector3(0.012, 0.01, 0.02), Vector3.ZERO, "park", Vector3.ZERO, bolt)
+	tube(0.004, 0.004, 0.14, Vector3(-0.006, 0, -0.07), "park", "z", bolt)
+	var mag: Node3D = group("Mag", Vector3(0, -0.015, -0.03))
+	prof(P([[0.026, 0.0], [-0.026, 0.0], [-0.034, -0.085], [0.018, -0.088]]), 0.02, "park", 0.0, mag)
+	trigger_group(0.04, 0.0, "park")
+	marker("Muzzle", Vector3(0, 0.038, -0.55))
+	rhand(Vector3(0, -0.022, 0.075), 36.0, 0.019)
+	lhand(Vector3(0, 0.012, -0.22), "z", 0.024)
+	meta(rs, "mag", 0.9, 0.24)
+	root.set_meta("front", Vector3(0, 0.068, -0.525))
+	root.set_meta("port", Vector3(0.017, 0.045, -0.02))
+	root.set_meta("bore", 0.004)
+
+
+func _w_mp40() -> void:
+	tube(0.02, 0.02, 0.28, Vector3(0, 0.03, -0.06), "blued")
+	for i: int in 5:
+		box(Vector3(0.042, 0.004, 0.01), Vector3(0, 0.03, -0.17 + i * 0.012), "blued")                           # receiver ribs
+	prof(P([[0.07, 0.012], [-0.17, 0.012], [-0.17, -0.02], [-0.08, -0.02], [0.03, -0.012], [0.07, -0.004]]), 0.03, "bakelite")
+	tube(0.0105, 0.0105, 0.18, Vector3(0, 0.03, -0.29), "blued")
+	prof(P([[-0.33, 0.026], [-0.36, 0.026], [-0.37, -0.012], [-0.34, -0.012]]), 0.014, "blued")              # resting bar
+	front_post(-0.385, 0.04, 0.061, "blued", true, 0.0095)                                                  # hooded front sight
+	prof(P([[0.02, 0.048], [0.05, 0.048], [0.05, 0.052], [0.025, 0.052]]), 0.018, "blued")                    # rear sight base
+	var rs: Vector3 = rear_notch(0.035, 0.051, 0.011, "blued", 0.016, 0.0045)
+	prof(P([[-0.105, 0.015], [-0.16, 0.015], [-0.16, -0.06], [-0.105, -0.06]]), 0.034, "blued")             # mag housing
+	grip(0.035, -0.005, 0.1, "bakelite", 20.0, 0.042, 0.032)
+	# folding stock, extended
+	for x: float in [-0.017, 0.017]:
+		tube(0.0042, 0.0042, 0.25, Vector3(x, 0.018, 0.2), "blued")
+	prof(P([[0.32, 0.03], [0.335, 0.03], [0.335, -0.06], [0.32, -0.05]]), 0.04, "blued")
+	trigger_group(0.0, 0.0)
+	var bolt: Node3D = group("Bolt", Vector3(-0.026, 0.035, -0.04))
+	tube(0.006, 0.006, 0.02, Vector3(-0.004, 0, 0), "steel", "x", bolt)
+	var mag: Node3D = group("Mag", Vector3(0, -0.06, -0.132))
+	prof(P([[0.017, 0.0], [-0.017, 0.0], [-0.017, -0.24], [0.017, -0.24]]), 0.022, "blued", 0.0, mag)
+	box(Vector3(0.026, 0.008, 0.038), Vector3(0, -0.244, 0.0), "blued", Vector3.ZERO, mag)
+	marker("Muzzle", Vector3(0, 0.03, -0.39))
+	lhand(Vector3(0, -0.06, -0.132), "y", 0.02)
+	meta(rs, "mag", 0.63, 0.3)
+	root.set_meta("front", Vector3(0, 0.061, -0.385))
+	root.set_meta("port", Vector3(0.02, 0.035, -0.08))
+	root.set_meta("bore", 0.0055)
+
+
+func _w_thompson() -> void:
+	prof(P([[0.1, 0.04], [-0.17, 0.04], [-0.17, 0.0], [0.1, 0.0]]), 0.042, "park")                            # receiver
+	prof(P([[0.1, 0.06], [-0.1, 0.06], [-0.12, 0.04], [0.1, 0.04]]), 0.036, "park")                           # top
+	prof(P([[0.06, 0.0], [-0.12, 0.0], [-0.12, -0.02], [0.06, -0.02]]), 0.034, "park")                         # trigger frame
+	tube(0.012, 0.012, 0.3, Vector3(0, 0.03, -0.32), "park")
+	for i: int in 9:
+		tube(0.019, 0.019, 0.005, Vector3(0, 0.03, -0.19 - i * 0.016), "park")                                  # cooling fins
+	tube(0.016, 0.015, 0.055, Vector3(0, 0.03, -0.49), "park")                                                 # compensator
+	box(Vector3(0.003, 0.03, 0.006), Vector3(0, 0.054, -0.485), "park")                                      # front blade
+	var rs: Vector3 = rear_aperture(0.07, 0.074, 0.06, "park", 0.0032, 0.0078)
+	box(Vector3(0.006, 0.014, 0.012), Vector3(0, 0.068, -0.02), "park")                                       # cocking knob base
+	prof(P([[0.1, 0.035], [0.37, 0.022], [0.38, -0.115], [0.33, -0.118], [0.1, -0.03]]), 0.04, "wood")        # butt
+	box(Vector3(0.042, 0.135, 0.01), Vector3(0, -0.047, 0.383), "park")
+	grip(0.04, -0.015, 0.1, "wood", 18.0, 0.042, 0.032)
+	tube(0.017, 0.019, 0.1, Vector3(0, -0.04, -0.26), "wood", "y")                                            # vertical foregrip
+	trigger_group(0.02, 0.0, "park")
+	var bolt: Node3D = group("Bolt", Vector3(0, 0.074, -0.02))
+	ball(0.008, Vector3.ZERO, "park", Vector3.ONE, bolt)
+	var mag: Node3D = group("Mag", Vector3(0, -0.02, -0.09))
+	prof(P([[0.02, 0.0], [-0.02, 0.0], [-0.02, -0.2], [0.02, -0.2]]), 0.025, "park", 0.0, mag)
+	marker("Muzzle", Vector3(0, 0.03, -0.52))
+	lhand(Vector3(0, -0.05, -0.26), "y", 0.019)
+	meta(rs, "mag", 0.81, 0.28)
+	root.set_meta("front", Vector3(0, 0.069, -0.485))
+	root.set_meta("port", Vector3(0.021, 0.045, -0.04))
+	root.set_meta("bore", 0.0065)
+
+
+func _w_stg44() -> void:
+	prof(P([[0.11, 0.06], [-0.25, 0.06], [-0.26, 0.045], [-0.26, 0.0], [0.11, 0.0]]), 0.036, "fieldgray")    # receiver
+	prof(P([[0.0, 0.0], [-0.11, 0.0], [-0.11, -0.03], [-0.02, -0.03]]), 0.032, "fieldgray")                    # trigger housing
+	tube(0.0095, 0.012, 0.26, Vector3(0, 0.03, -0.38), "blued")
+	tube(0.013, 0.013, 0.22, Vector3(0, 0.056, -0.3), "fieldgray")                                            # gas tube
+	prof(P([[-0.16, 0.022], [-0.3, 0.022], [-0.3, 0.05], [-0.16, 0.05]]), 0.034, "fieldgray")                  # handguard
+	front_post(-0.492, 0.045, 0.073, "blued", true, 0.0105)                                                   # hooded front sight
+	prof(P([[-0.095, 0.06], [-0.15, 0.06], [-0.15, 0.064], [-0.095, 0.066]]), 0.02, "blued")                  # tangent leaf base
+	var rs: Vector3 = rear_notch(-0.1, 0.064, 0.0105, "blued", 0.018, 0.0045)
+	prof(P([[0.11, 0.04], [0.37, 0.02], [0.38, -0.115], [0.33, -0.12], [0.11, -0.01]]), 0.04, "wood_light")   # butt
+	box(Vector3(0.042, 0.14, 0.01), Vector3(0, -0.05, 0.383), "blued")
+	grip(0.035, -0.015, 0.1, "wood_light", 18.0, 0.042, 0.03)
+	trigger_group(0.0, 0.0, "fieldgray")
+	var bolt: Node3D = group("Bolt", Vector3(-0.022, 0.04, -0.05))
+	tube(0.006, 0.006, 0.02, Vector3(-0.005, 0, 0), "steel", "x", bolt)
+	var mag: Node3D = group("Mag", Vector3(0, -0.02, -0.12))
+	prof(P([[0.018, 0.0], [-0.022, 0.0], [-0.04, -0.09], [-0.08, -0.19], [-0.04, -0.205], [-0.005, -0.1]]), 0.022, "fieldgray", 0.0, mag)
+	marker("Muzzle", Vector3(0, 0.03, -0.51))
+	lhand(Vector3(0, 0.034, -0.24), "z", 0.02)
+	meta(rs, "mag", 0.94, 0.34)
+	root.set_meta("front", Vector3(0, 0.073, -0.492))
+	root.set_meta("port", Vector3(0.018, 0.04, -0.05))
+	root.set_meta("bore", 0.0045)
+
+
+func _w_trench_gun() -> void:
+	prof(P([[0.08, 0.02], [0.4, -0.01], [0.41, -0.14], [0.36, -0.145], [0.12, -0.05], [0.07, -0.03]]), 0.042, "wood")   # stock
+	box(Vector3(0.044, 0.135, 0.01), Vector3(0, -0.075, 0.405), "blued", Vector3(-8, 0, 0))
+	prof(P([[0.09, 0.06], [-0.13, 0.06], [-0.13, -0.005], [-0.04, -0.03], [0.09, -0.02]]), 0.044, "blued")       # receiver
+	prof(P([[0.05, 0.06], [0.07, 0.078], [0.08, 0.073], [0.065, 0.056]]), 0.012, "blued")                        # exposed hammer
+	box(Vector3(0.002, 0.03, 0.06), Vector3(0.0225, 0.035, -0.05), "black")                                      # ejection port
+	tube(0.0125, 0.0125, 0.52, Vector3(0, 0.042, -0.39), "blued")
+	tube(0.011, 0.011, 0.46, Vector3(0, 0.012, -0.36), "blued")                                                   # mag tube
+	tube(0.0195, 0.0195, 0.38, Vector3(0, 0.048, -0.36), "perforated")                                           # heat shield
+	for z: float in [-0.17, -0.55]:
+		tube(0.021, 0.021, 0.012, Vector3(0, 0.046, z), "blued")
+	prof(P([[-0.6, 0.03], [-0.65, 0.03], [-0.65, -0.005], [-0.6, -0.005]]), 0.016, "blued")                     # bayonet lug
+	ball(0.004, Vector3(0, 0.058, -0.645), "brass")
+	trigger_group(0.03, 0.0)
+	var pump: Node3D = group("Pump", Vector3(0, 0.012, -0.27))
+	tube(0.022, 0.022, 0.15, Vector3.ZERO, "wood", "z", pump)
+	for i: int in 7:
+		tube(0.0224, 0.0224, 0.003, Vector3(0, 0, -0.06 + i * 0.02), "wood_red", "z", pump)
+	marker("Mag", Vector3(0, -0.01, -0.03))
+	marker("Muzzle", Vector3(0, 0.042, -0.65))
+	rhand(Vector3(0, -0.012, 0.1), 36.0, 0.02)
+	lhand(Vector3(0, 0.012, -0.27), "z", 0.024)
+	meta(Vector3(0, 0.0625, 0.0), "shell", 1.0, 0.34)
+	root.set_meta("front", Vector3(0, 0.0625, -0.645))
+	root.set_meta("port", Vector3(0.022, 0.035, -0.05))
+	root.set_meta("bore", 0.0095)
+
+
+func _w_sawed_off() -> void:
+	prof(P([[0.05, 0.02], [0.2, -0.02], [0.2, -0.11], [0.16, -0.115], [0.07, -0.04]]), 0.04, "wood")             # sawn stock / grip
+	prof(P([[0.06, 0.05], [-0.05, 0.05], [-0.05, -0.005], [0.06, -0.015]]), 0.046, "blued")                      # action
+	for x: float in [-0.008, 0.008]:
+		prof(P([[0.03, 0.05], [0.045, 0.072], [0.055, 0.068], [0.045, 0.048]]), 0.006, "blued", x)               # hammers
+	trigger_group(0.02, 0.0)
+	var br: Node3D = group("Barrels", Vector3(0, 0.02, -0.05))
+	for x: float in [-0.0115, 0.0115]:
+		tube(0.0115, 0.0115, 0.32, Vector3(x, 0.012, -0.16), "blued", "z", br)
+	box(Vector3(0.006, 0.006, 0.31), Vector3(0, 0.027, -0.16), "blued", Vector3.ZERO, br)
+	prof(P([[0.0, 0.0], [-0.17, 0.0], [-0.18, -0.02], [0.0, -0.03]]), 0.036, "wood", 0.0, br)                   # forend
+	ball(0.0028, Vector3(0, 0.0325, -0.305), "brass", Vector3.ONE, br)                                             # bead on the rib
+	marker("Muzzle", Vector3(0, 0.032, -0.37))
+	rhand(Vector3(0, -0.012, 0.085), 32.0, 0.02)
+	lhand(Vector3(0, 0.016, -0.14), "z", 0.026)
+	meta(Vector3(0, 0.0545, 0.03), "break", 0.52, 0.34)
+	root.set_meta("front", Vector3(0, 0.0553, -0.355))
+
+
+func _w_bar() -> void:
+	prof(P([[0.12, 0.03], [0.4, 0.0], [0.41, -0.14], [0.35, -0.145], [0.12, -0.04]]), 0.042, "wood")
+	box(Vector3(0.044, 0.15, 0.01), Vector3(0, -0.07, 0.408), "park")
+	grip(0.06, -0.02, 0.1, "wood", 20.0, 0.042, 0.032)
+	prof(P([[0.12, 0.055], [-0.22, 0.055], [-0.22, -0.02], [0.12, -0.02]]), 0.046, "park")                       # receiver
+	prof(P([[-0.22, 0.03], [-0.42, 0.03], [-0.42, -0.005], [-0.22, -0.01]]), 0.042, "wood")                       # handguard
+	tube(0.0125, 0.0145, 0.42, Vector3(0, 0.04, -0.52), "park")
+	tube(0.009, 0.009, 0.36, Vector3(0, 0.008, -0.5), "park")
+	tube(0.02, 0.013, 0.06, Vector3(0, 0.04, -0.75), "park")
+	for s: float in [-1.0, 1.0]:                                                                                   # bipod, folded
+		tube(0.0045, 0.0045, 0.3, Vector3(s * 0.016, 0.016, -0.56), "park", "z")
+		ball(0.0065, Vector3(s * 0.016, 0.016, -0.41), "park")
+	box(Vector3(0.045, 0.014, 0.022), Vector3(0, 0.028, -0.71), "park")                                         # bipod clamp
+	var rs: Vector3 = rear_aperture(0.0, 0.082, 0.055, "park", 0.0034, 0.0085)                                  # rear peep on its tower
+	front_post(-0.755, 0.05, 0.079, "park", true, 0.011)
+	trigger_group(0.06, 0.0, "park")
+	var bolt: Node3D = group("Bolt", Vector3(-0.026, 0.02, -0.12))
+	box(Vector3(0.014, 0.014, 0.02), Vector3.ZERO, "park", Vector3.ZERO, bolt)
+	var mag: Node3D = group("Mag", Vector3(0, -0.02, -0.06))
+	prof(P([[0.035, 0.0], [-0.035, 0.0], [-0.035, -0.12], [0.035, -0.12]]), 0.032, "park", 0.0, mag)
+	marker("Muzzle", Vector3(0, 0.04, -0.78))
+	lhand(Vector3(0, 0.014, -0.32), "z", 0.026)
+	meta(rs, "mag", 1.21, 0.32)
+	root.set_meta("front", Vector3(0, 0.079, -0.755))
+	root.set_meta("port", Vector3(0.024, 0.03, -0.06))
+	root.set_meta("bore", 0.0055)
+
+
+func _w_ppsh41() -> void:
+	prof(P([[0.06, 0.03], [0.4, 0.0], [0.41, -0.125], [0.35, -0.13], [0.13, -0.075], [0.08, -0.09], [0.03, -0.05], [-0.12, -0.035], [-0.12, 0.02]]), 0.044, "wood_red")
+	box(Vector3(0.046, 0.13, 0.01), Vector3(0, -0.062, 0.405), "blued")
+	prof(P([[0.08, 0.06], [-0.12, 0.06], [-0.12, 0.02], [0.08, 0.02]]), 0.046, "blued")                          # receiver
+	tube(0.022, 0.022, 0.26, Vector3(0, 0.038, -0.25), "perforated")
+	prof(P([[-0.38, 0.06], [-0.42, 0.045], [-0.42, 0.015], [-0.38, 0.015]]), 0.04, "blued")                     # slanted compensator
+	front_post(-0.395, 0.058, 0.074, "blued", true, 0.0095)
+	var rs: Vector3 = rear_notch(0.055, 0.06, 0.0115, "blued", 0.018, 0.0045)
+	trigger_group(0.02, 0.01)
+	var bolt: Node3D = group("Bolt", Vector3(0.026, 0.04, -0.03))
+	tube(0.006, 0.006, 0.02, Vector3(0.005, 0, 0), "steel", "x", bolt)
+	var mag: Node3D = group("Mag", Vector3(0, -0.075, -0.09))
+	tube(0.075, 0.075, 0.05, Vector3.ZERO, "blued", "x", mag, 28)
+	ring(0.07, 0.077, Vector3(0.026, 0, 0), "steel", "x", mag)
+	tube(0.02, 0.02, 0.055, Vector3.ZERO, "black", "x", mag)
+	box(Vector3(0.03, 0.04, 0.04), Vector3(0, 0.07, 0.0), "blued", Vector3.ZERO, mag)
+	marker("Muzzle", Vector3(0, 0.038, -0.42))
+	rhand(Vector3(0, -0.03, 0.08), 36.0, 0.021)
+	lhand(Vector3(0, 0.036, -0.23), "z", 0.024)
+	meta(rs, "drum", 0.84, 0.28)
+	root.set_meta("front", Vector3(0, 0.074, -0.395))
+	root.set_meta("port", Vector3(0.023, 0.05, -0.04))
+	root.set_meta("bore", 0.0055)
+
+
+func _w_type100() -> void:
+	prof(P([[0.04, 0.025], [0.38, 0.0], [0.39, -0.12], [0.33, -0.125], [0.1, -0.06], [0.04, -0.07], [-0.02, -0.035], [-0.2, -0.03], [-0.21, 0.015]]), 0.042, "wood")
+	box(Vector3(0.044, 0.13, 0.01), Vector3(0, -0.06, 0.386), "blued")
+	tube(0.018, 0.018, 0.2, Vector3(0, 0.032, -0.04), "blued")
+	tube(0.017, 0.017, 0.2, Vector3(0, 0.032, -0.24), "perforated")
+	tube(0.01, 0.01, 0.06, Vector3(0, 0.032, -0.37), "blued")
+	prof(P([[-0.31, 0.012], [-0.36, 0.012], [-0.36, -0.02], [-0.31, -0.02]]), 0.012, "steel")
+	front_post(-0.37, 0.045, 0.066, "blued", false)
+	for x: float in [-0.0085, 0.0085]:
+		box(Vector3(0.003, 0.018, 0.012), Vector3(x, 0.058, -0.37), "blued")                                        # front guards
+	var rs: Vector3 = rear_notch(0.01, 0.05, 0.016, "blued", 0.018, 0.0045)
+	trigger_group(0.03, -0.005)
+	var bolt: Node3D = group("Bolt", Vector3(0.022, 0.035, 0.0))
+	box(Vector3(0.012, 0.01, 0.014), Vector3.ZERO, "steel", Vector3.ZERO, bolt)
+	var mag: Node3D = group("Mag", Vector3(-0.03, 0.03, -0.1))
+	box(Vector3(0.17, 0.022, 0.035), Vector3(-0.085, -0.01, 0.0), "blued", Vector3(0, 0, -12), mag)
+	marker("Muzzle", Vector3(0, 0.032, -0.4))
+	rhand(Vector3(0, -0.025, 0.07), 36.0, 0.02)
+	lhand(Vector3(0, 0.006, -0.19), "z", 0.025)
+	meta(rs, "mag", 0.87, 0.28)
+	root.set_meta("front", Vector3(0, 0.066, -0.37))
+	root.set_meta("port", Vector3(0.018, 0.04, -0.06))
+	root.set_meta("bore", 0.005)
+
+
+func _w_mg42() -> void:
+	prof(P([[0.12, 0.06], [-0.27, 0.06], [-0.27, -0.01], [0.12, -0.01]]), 0.05, "fieldgray")                      # receiver
+	var cover: Node3D = group("Cover", Vector3(0, 0.06, 0.08))
+	prof(P([[0.0, 0.0], [-0.2, 0.0], [-0.2, 0.022], [-0.02, 0.028]]), 0.052, "fieldgray", 0.0, cover)
+	prof(P([[-0.02, 0.022], [-0.07, 0.022], [-0.07, 0.03], [-0.02, 0.03]]), 0.022, "blued", 0.0, cover)     # rear sight base
+	tube(0.026, 0.026, 0.38, Vector3(0, 0.038, -0.46), "perforated")
+	tube(0.03, 0.022, 0.07, Vector3(0, 0.038, -0.68), "blued")
+	prof(P([[-0.58, 0.064], [-0.6, 0.064], [-0.596, 0.088], [-0.586, 0.088]]), 0.012, "blued")                  # front sight standard
+	front_post(-0.59, 0.086, 0.101, "blued", false)
+	prof(P([[0.12, 0.05], [0.42, 0.01], [0.43, -0.075], [0.37, -0.105], [0.12, -0.03]]), 0.046, "bakelite")      # butt
+	grip(0.05, -0.01, 0.1, "bakelite", 22.0, 0.04, 0.032)
+	for s: float in [-1.0, 1.0]:
+		var leg: MeshInstance3D = tube(0.006, 0.006, 0.3, Vector3(s * 0.03, 0.0, -0.5), "fieldgray")
+		leg.rotation_degrees = Vector3(90, s * 3, 0)
+	trigger_group(0.02, -0.01, "fieldgray")
+	var bolt: Node3D = group("Bolt", Vector3(0.03, 0.025, -0.02))
+	box(Vector3(0.02, 0.014, 0.02), Vector3.ZERO, "steel", Vector3.ZERO, bolt)
+	var mag: Node3D = group("Mag", Vector3(-0.07, -0.05, -0.08))
+	tube(0.06, 0.06, 0.07, Vector3(0, -0.02, 0.0), "fieldgray", "x", mag, 20)                                    # belt drum
+	for i: int in 6:
+		tube(0.005, 0.005, 0.045, Vector3(0.045 + i * 0.005, 0.04 + i * 0.008, 0.0), "brass", "x", mag)
+	marker("Muzzle", Vector3(0, 0.038, -0.72))
+	lhand(Vector3(0, 0.03, -0.36), "z", 0.03)
+	var rs: Vector3 = rear_notch(-0.045, 0.09, 0.0125, "blued", 0.02, 0.005)
+	meta(rs, "belt", 1.22, 0.36)
+	root.set_meta("front", Vector3(0, 0.101, -0.59))
+	root.set_meta("port", Vector3(0.0, -0.01, -0.04))
+	root.set_meta("bore", 0.0065)
+
+
+func _w_m1919() -> void:
+	prof(P([[0.1, 0.065], [-0.22, 0.065], [-0.22, -0.015], [0.1, -0.015]]), 0.06, "park")
+	var cover: Node3D = group("Cover", Vector3(0, 0.065, 0.1))
+	prof(P([[0.0, 0.0], [-0.17, 0.0], [-0.17, 0.016], [0.0, 0.02]]), 0.06, "park", 0.0, cover)
+	tube(0.024, 0.024, 0.4, Vector3(0, 0.035, -0.42), "perforated")
+	tube(0.012, 0.016, 0.06, Vector3(0, 0.035, -0.65), "park")
+	var rs: Vector3 = rear_aperture(0.04, 0.092, 0.065, "park", 0.0034, 0.0085)
+	box(Vector3(0.016, 0.026, 0.014), Vector3(0, 0.072, -0.6), "park")                                          # front sight base
+	front_post(-0.6, 0.082, 0.09, "park", false)
+	prof(P([[0.1, 0.03], [0.32, -0.02], [0.33, -0.1], [0.28, -0.11], [0.1, -0.03]]), 0.04, "wood")
+	grip(0.04, -0.015, 0.09, "wood", 20.0, 0.04, 0.03)
+	for s: float in [-1.0, 1.0]:                                                                                   # bipod, folded
+		tube(0.0045, 0.0045, 0.28, Vector3(s * 0.018, 0.004, -0.46), "park", "z")
+	box(Vector3(0.05, 0.014, 0.022), Vector3(0, 0.012, -0.6), "park")
+	trigger_group(0.0, -0.015, "park")
+	var bolt: Node3D = group("Bolt", Vector3(0.035, 0.03, 0.0))
+	box(Vector3(0.014, 0.014, 0.02), Vector3.ZERO, "steel", Vector3.ZERO, bolt)
+	var mag: Node3D = group("Mag", Vector3(-0.08, -0.04, -0.06))
+	prof(P([[0.09, 0.03], [-0.09, 0.03], [-0.09, -0.08], [0.09, -0.08]]), 0.07, "olive", 0.0, mag)
+	box(Vector3(0.006, 0.01, 0.06), Vector3(0.0, 0.04, 0.0), "olive", Vector3.ZERO, mag)
+	for i: int in 6:
+		tube(0.005, 0.005, 0.045, Vector3(0.045 + i * 0.007, 0.035 + i * 0.008, 0.0), "brass", "x", mag)
+	marker("Muzzle", Vector3(0, 0.035, -0.68))
+	lhand(Vector3(0, 0.035, -0.3), "z", 0.026)
+	meta(rs, "belt", 1.0, 0.36)
+	root.set_meta("front", Vector3(0, 0.09, -0.6))
+	root.set_meta("port", Vector3(0.0, -0.016, -0.03))
+	root.set_meta("bore", 0.0055)
+
+
+func _w_ptrs41() -> void:
+	prof(P([[0.1, 0.04], [0.42, 0.0], [0.43, -0.15], [0.36, -0.16], [0.12, -0.05]]), 0.05, "wood")
+	box(Vector3(0.056, 0.17, 0.03), Vector3(0, -0.078, 0.44), "rubber")
+	grip(0.05, -0.02, 0.1, "wood", 20.0, 0.042, 0.034)
+	prof(P([[0.1, 0.06], [-0.3, 0.06], [-0.3, -0.02], [0.1, -0.02]]), 0.05, "blued")
+	tube(0.0145, 0.019, 0.85, Vector3(0, 0.035, -0.72), "blued")
+	prof(P([[-1.12, 0.06], [-1.2, 0.06], [-1.2, 0.01], [-1.12, 0.01]]), 0.07, "blued")
+	for z: float in [-1.14, -1.165, -1.19]:
+		box(Vector3(0.075, 0.03, 0.008), Vector3(0, 0.035, z), "black")
+	var rs: Vector3 = rear_notch(-0.07, 0.06, 0.024, "blued", 0.022, 0.005)
+	for s: float in [-1.0, 1.0]:                                                                                   # bipod, folded back
+		tube(0.0055, 0.0055, 0.38, Vector3(s * 0.022, 0.012, -0.53), "blued", "z")
+		ball(0.008, Vector3(s * 0.022, 0.012, -0.34), "blued")
+	box(Vector3(0.06, 0.018, 0.03), Vector3(0, 0.03, -0.72), "blued")
+	front_post(-1.0, 0.052, 0.082, "blued", true, 0.012)
+	trigger_group(0.06, 0.0)
+	var bolt: Node3D = group("Bolt", Vector3(0.03, 0.035, 0.05))
+	box(Vector3(0.022, 0.016, 0.022), Vector3.ZERO, "steel", Vector3.ZERO, bolt)
+	var mag: Node3D = group("Mag", Vector3(0, -0.02, -0.12))
+	prof(P([[0.07, 0.0], [-0.07, 0.0], [-0.07, -0.09], [0.07, -0.09]]), 0.04, "blued", 0.0, mag)
+	marker("Muzzle", Vector3(0, 0.035, -1.2))
+	lhand(Vector3(0, 0.035, -0.36), "z", 0.022)
+	meta(rs, "mag", 1.2, 0.4)
+	root.set_meta("front", Vector3(0, 0.082, -1.0))
+	root.set_meta("port", Vector3(0.026, 0.045, -0.02))
+	root.set_meta("bore", 0.0085)
+
+
+func _w_panzerschreck() -> void:
+	tube(0.045, 0.045, 1.5, Vector3(0, 0.07, -0.35), "olive", "z", null, 22)
+	ring(0.043, 0.052, Vector3(0, 0.07, 0.4), "olive")
+	ring(0.043, 0.052, Vector3(0, 0.07, -1.1), "olive")
+	tube(0.05, 0.05, 0.03, Vector3(0, 0.07, -0.6), "olive")
+	# Blast shield, about 36 x 46 cm like the real one, just behind the rear sight. The sighting window is
+	# cut near its top right, beside the tube, so aiming through it leaves the plate in the lower left of
+	# the view; right of the window the plate only rises to the top of the tube.
+	var sh: Node3D = group("Shield", Vector3(0, 0, -0.16))
+	box(Vector3(0.175, 0.46, 0.004), Vector3(-0.2025, -0.038, 0), "olive", Vector3.ZERO, sh)          # left plate
+	box(Vector3(0.08, 0.386, 0.004), Vector3(-0.075, -0.075, 0), "olive", Vector3.ZERO, sh)           # under the window
+	box(Vector3(0.09, 0.01, 0.004), Vector3(-0.07, 0.187, 0), "olive", Vector3.ZERO, sh)              # window top bar
+	box(Vector3(0.01, 0.074, 0.004), Vector3(-0.03, 0.155, 0), "olive", Vector3.ZERO, sh)             # window right bar
+	box(Vector3(0.105, 0.388, 0.004), Vector3(0.0175, -0.074, 0), "olive", Vector3.ZERO, sh)          # right of the window, round the tube
+	box(Vector3(0.08, 0.064, 0.002), Vector3(-0.075, 0.15, 0), "glass", Vector3.ZERO, sh)             # window glass
+	box(Vector3(0.006, 0.46, 0.02), Vector3(-0.29, -0.038, 0), "olive", Vector3.ZERO, sh)             # rolled edges
+	box(Vector3(0.36, 0.006, 0.02), Vector3(-0.11, -0.268, 0), "olive", Vector3.ZERO, sh)
+	box(Vector3(0.05, 0.06, 0.12), Vector3(0, 0.005, 0.35), "rubber")
+	grip(0.0, 0.025, 0.1, "wood", 10.0, 0.04, 0.03)
+	grip(-0.45, 0.025, 0.09, "wood", 0.0, 0.035, 0.03)
+	box(Vector3(0.05, 0.004, 0.004), Vector3(-0.075, 0.15, -0.75), "olive")                                      # front sight frame
+	box(Vector3(0.004, 0.03, 0.004), Vector3(-0.075, 0.14, -0.75), "olive")
+	box(Vector3(0.004, 0.08, 0.004), Vector3(-0.075, 0.11, -0.2), "olive")                                       # rear sight post (seen through the window)
+	box(Vector3(0.02, 0.004, 0.004), Vector3(-0.075, 0.15, -0.2), "olive")
+	trigger_group(0.02, 0.025, "olive")
+	var rocket: Node3D = group("Rocket", Vector3(0, 0.07, 0.62))
+	tube(0.04, 0.04, 0.25, Vector3(0, 0, 0), "fieldgray", "z", rocket)
+	tube(0.0, 0.04, 0.12, Vector3(0, 0, -0.18), "fieldgray", "z", rocket)
+	rocket.hide()
+	marker("Muzzle", Vector3(0, 0.07, -1.12))
+	lhand(Vector3(0, -0.017, -0.45), "y", 0.017)
+	meta(Vector3(-0.075, 0.15, -0.2), "rocket", 1.5, 0.46)   # eye back by the shoulder rest, well behind the shield
+
+
+func _w_flamethrower() -> void:
+	tube(0.016, 0.016, 0.6, Vector3(0, 0.03, -0.2), "olive")
+	tube(0.022, 0.016, 0.06, Vector3(0, 0.03, -0.53), "black")
+	box(Vector3(0.03, 0.03, 0.05), Vector3(0, 0.055, -0.5), "black")
+	ball(0.012, Vector3(0, 0.03, -0.565), "glow_amber")
+	grip(0.02, 0.015, 0.09, "wood", 15.0, 0.04, 0.03)
+	grip(-0.32, 0.015, 0.09, "wood", 0.0, 0.035, 0.03)
+	var valve: Node3D = group("Valve", Vector3(0, 0.03, 0.1))
+	tube(0.02, 0.02, 0.03, Vector3.ZERO, "brass", "z", valve)
+	box(Vector3(0.05, 0.008, 0.008), Vector3(0, 0, 0.01), "brass", Vector3.ZERO, valve)
+	tube(0.01, 0.01, 0.5, Vector3(0.03, -0.1, 0.25), "rubber").rotation_degrees = Vector3(120, 0, 0)
+	marker("Mag", Vector3(0, 0.03, 0.1))
+	marker("Muzzle", Vector3(0, 0.03, -0.58))
+	lhand(Vector3(0, -0.027, -0.32), "y", 0.017)
+	meta(Vector3(0, 0.08, 0.0), "fuel", 0.6, 0.2)
+
+
+func _w_ashlight() -> void:
+	prof(P([[0.05, 0.05], [-0.13, 0.05], [-0.13, 0.012], [0.05, 0.005]]), 0.034, "brass")
+	tube(0.013, 0.013, 0.16, Vector3(0, 0.035, -0.2), "brass")
+	for i: int in 4:
+		ring(0.012, 0.02, Vector3(0, 0.035, -0.14 - i * 0.03), "bronze")
+	tube(0.019, 0.019, 0.07, Vector3(0, 0.068, -0.03), "glass")
+	tube(0.032, 0.022, 0.03, Vector3(0, 0.035, -0.29), "bronze")
+	grip(0.035, 0.005, 0.1, "wood", 18.0, 0.042, 0.032)
+	trigger_group(-0.01, 0.01, "brass")
+	var mag: Node3D = group("Mag", Vector3(0, 0.068, -0.03))
+	tube(0.011, 0.011, 0.05, Vector3.ZERO, "glow_violet", "z", mag)
+	marker("Muzzle", Vector3(0, 0.035, -0.31))
+	lhand(Vector3(-0.006, -0.042, 0.052), "y", 0.03)
+	meta(Vector3(0, 0.09, 0.0), "capsule", 0.32, 0.3)
+
+
+func _w_totenglocke() -> void:
+	tube(0.135, 0.07, 0.22, Vector3(0, 0.06, -0.34), "bronze", "z", null, 24)                                    # bell, mouth forward
+	ring(0.125, 0.145, Vector3(0, 0.06, -0.45), "bronze")
+	tube(0.03, 0.03, 0.08, Vector3(0, 0.06, -0.2), "bronze")
+	prof(P([[0.1, 0.0], [-0.22, 0.0], [-0.22, 0.04], [0.1, 0.04]]), 0.05, "wood")
+	box(Vector3(0.3, 0.03, 0.03), Vector3(0, 0.17, -0.3), "blued")
+	box(Vector3(0.03, 0.12, 0.03), Vector3(-0.14, 0.11, -0.3), "blued")
+	box(Vector3(0.03, 0.12, 0.03), Vector3(0.14, 0.11, -0.3), "blued")
+	grip(0.04, 0.0, 0.1, "wood", 15.0, 0.042, 0.034)
+	grip(-0.2, 0.0, 0.09, "wood", 0.0, 0.035, 0.03)
+	var crank: Node3D = group("Crank", Vector3(0.06, 0.02, -0.05))
+	box(Vector3(0.012, 0.12, 0.012), Vector3(0, 0.05, 0), "blued", Vector3.ZERO, crank)
+	tube(0.01, 0.01, 0.05, Vector3(0.025, 0.11, 0), "wood", "x", crank)
+	marker("Muzzle", Vector3(0, 0.06, -0.46))
+	lhand(Vector3(0, -0.042, -0.2), "y", 0.017)
+	meta(Vector3(0, 0.2, 0.0), "bell", 0.5, 0.2)
+
+
+func _w_gramophone() -> void:
+	box(Vector3(0.22, 0.12, 0.22), Vector3(0, 0.0, 0), "wood")
+	tube(0.1, 0.1, 0.01, Vector3(0, 0.066, 0), "black", "y")
+	tube(0.012, 0.012, 0.012, Vector3(0, 0.075, 0), "brass", "y")
+	tube(0.006, 0.006, 0.15, Vector3(0.08, 0.1, 0.02), "brass", "y")
+	tube(0.012, 0.12, 0.22, Vector3(0.08, 0.2, -0.08), "brass").rotation_degrees = Vector3(60, 0, 0)
+	tube(0.006, 0.006, 0.05, Vector3(0.12, 0.0, 0.0), "brass", "x")
+	meta(Vector3(0, 0.2, 0), "none", 0.25, 0.3)
+
+
+func _w_trench_knife() -> void:
+	ring(0.016, 0.024, Vector3(0, -0.01, 0.03), "brass", "x")                                                   # knuckle bow
+	for i: int in 4:
+		ball(0.006, Vector3(0, -0.035, 0.0 + i * 0.022), "brass")                                                  # knuckle spikes
+	tube(0.013, 0.013, 0.1, Vector3(0, 0.0, 0.035), "wood")
+	box(Vector3(0.04, 0.012, 0.014), Vector3(0, 0.0, -0.022), "brass")
+	prof(P([[-0.025, 0.012], [-0.17, 0.008], [-0.22, 0.0], [-0.17, -0.01], [-0.025, -0.013]]), 0.005, "steel")      # blade
+	box(Vector3(0.0055, 0.002, 0.14), Vector3(0, 0.0, -0.1), "blued")                                              # fuller
+	ball(0.01, Vector3(0, 0, 0.09), "brass")
+	marker("Muzzle", Vector3(0, 0, -0.22))
+	meta(Vector3.ZERO, "none", 0.25, 0.3)
+
+
+func _w_etool() -> void:
+	tube(0.014, 0.016, 0.46, Vector3(0, 0, -0.12), "wood")
+	tube(0.018, 0.018, 0.06, Vector3(0, 0, -0.36), "olive")
+	prof(P([[-0.38, 0.075], [-0.52, 0.075], [-0.57, 0.0], [-0.52, -0.075], [-0.38, -0.075]]), 0.004, "olive")     # spade
+	prof(P([[-0.52, 0.075], [-0.575, 0.002], [-0.56, 0.002], [-0.51, 0.07]]), 0.0045, "steel")                     # sharpened edge
+	marker("Muzzle", Vector3(0, 0, -0.57))
+	meta(Vector3.ZERO, "none", 0.55, 0.3)
+
+
+func _w_frag() -> void:
+	ball(0.028, Vector3.ZERO, "olive", Vector3(1.0, 1.2, 1.0))
+	for i: int in 4:
+		ring(0.026, 0.03, Vector3(0, -0.02 + i * 0.014, 0), "olive", "y")
+	for j: int in 4:
+		var r: MeshInstance3D = ring(0.029, 0.031, Vector3.ZERO, "olive", "x")
+		r.rotation_degrees = Vector3(0, j * 45, 90)
+	tube(0.01, 0.01, 0.02, Vector3(0, 0.04, 0), "steel", "y")
+	box(Vector3(0.01, 0.07, 0.004), Vector3(0.02, 0.02, 0), "steel", Vector3(0, 0, -10))
+	ring(0.008, 0.011, Vector3(-0.012, 0.05, 0), "steel", "z")
+	meta(Vector3.ZERO, "none", 0.08, 0.3)
+
+
+func _w_generic() -> void:
+	prof(P([[0.1, 0.05], [-0.2, 0.05], [-0.2, 0.0], [0.1, 0.0]]), 0.04, "blued")
+	tube(0.012, 0.012, 0.4, Vector3(0, 0.03, -0.4), "blued")
+	prof(P([[0.1, 0.04], [0.36, 0.01], [0.37, -0.11], [0.3, -0.12], [0.1, -0.03]]), 0.04, "wood")
+	grip(0.04, -0.005, 0.09, "wood")
+	var mag: Node3D = group("Mag", Vector3(0, 0.0, -0.08))
+	box(Vector3(0.025, 0.15, 0.04), Vector3(0, -0.075, 0), "blued", Vector3.ZERO, mag)
+	meta(Vector3(0, 0.06, 0.0), "mag", 0.6)
+
+
+## Upgraded weapons: a faint violet light so the veins read in the dark.
+func _nachtglas_glow() -> void:
+	var l: OmniLight3D = OmniLight3D.new()
+	l.name = "Nachtglow"                 # WeaponHolder pulses it slowly
+	l.light_color = Color(0.6, 0.3, 1.0)
+	l.light_energy = 0.3
+	l.omni_range = 0.7
+	l.position = Vector3(0, 0.05, -0.1)
+	l.shadow_enabled = false
+	root.add_child(l)
+
+
+# ================================================================== arms
+
+const HAND_R0: float = 0.018         # default radius of the part a fist closes around
+static var _hand_cache: Dictionary = {}
+static var _flash_mesh_cache: ArrayMesh = null
+
+
+## Point on a circle around the fist's grip axis (local Y). theta is measured from the palm side (+X for the
+## right hand, -X for the left) toward +Z (back of the grip); negative angles wrap toward the front (-Z).
+static func _hp(theta_deg: float, radius: float, y: float, side: float) -> Vector3:
+	var t: float = deg_to_rad(theta_deg)
+	return Vector3(side * radius * cos(t), y, radius * sin(t))
+
+
+## Transform that maps a unit primitive along +Y onto the segment a -> b.
+static func _seg_xf(a: Vector3, b: Vector3) -> Transform3D:
+	var y: Vector3 = (b - a).normalized()
+	var x: Vector3 = y.cross(Vector3.FORWARD if absf(y.dot(Vector3.FORWARD)) < 0.95 else Vector3.RIGHT).normalized()
+	var z: Vector3 = x.cross(y).normalized()
+	return Transform3D(Basis(x, y, z), (a + b) * 0.5)
+
+
+## A gloved hand closed around a cylinder of `grip_radius` (cached ArrayMesh: surface 0 = vertex-coloured
+## leather glove, surface 1 = the wrist-strap buckle; two draw calls per hand).
+## Frame: origin = center of the gripped part, grip axis = local +Y (index finger at the top), palm on +X
+## for the right hand (-X for the left), fingers wrap around the front (-Z) to the far side, the thumb
+## wraps the other way around the back. The wrist is at hand_wrist().
+## Sculpt: the back of the hand is one rounded slab bent around the grip, with knuckle bumps and a hint of
+## the extensor tendons displaced into it; three rows of "points" stitching and a seam across the back;
+## tapered finger segments with joint swellings and rounded tips; a strap with a buckle round the wrist.
+static func hand_mesh(left: bool, grip_radius: float = HAND_R0) -> ArrayMesh:
+	var r: float = snappedf(clampf(grip_radius, 0.012, 0.04), 0.002)
+	var key: String = "%s_%.3f_v2" % ["L" if left else "R", r]
+	if _hand_cache.has(key):
+		return _hand_cache[key]
+	var s: float = -1.0 if left else 1.0
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var rp: float = r + 0.011                     # palm mid-plane radius
+	var palm_ang: float = 35.0
+	var knuckle_ang: float = palm_ang - rad_to_deg(0.03 / rp)
+	var fy: Array = [0.029, 0.0095, -0.0095, -0.028]
+	# ---- back of the hand + palm: a rounded slab bent around the grip
+	var sh: Dictionary = {"t0": knuckle_ang - 7.0, "t1": palm_ang + 42.0, "y0": -0.041, "y1": 0.038,
+		"r0": r + 0.0018, "r1": r + 0.0215, "s": s, "fy": fy, "k_ang": knuckle_ang + 3.0}
+	_hand_shell(st, sh)
+	# stitching: three rows of "points" from the knuckles toward the wrist, and a seam across the back
+	for row: int in 3:
+		var yb: float = (float(fy[row]) + float(fy[row + 1])) * 0.5
+		var a: float = -0.5
+		while a <= 0.42:
+			_hand_stitch(st, sh, a, _shell_b(sh, yb), true)
+			a += 0.105
+	var b2: float = -0.78
+	while b2 <= 0.8:
+		_hand_stitch(st, sh, 0.66, b2, false)
+		b2 += 0.13
+	# heel of the palm (under the thumb)
+	_taper(st, _hp(palm_ang + 30.0, rp, 0.02, s), _hp(palm_ang + 25.0, rp, -0.03, s), 0.0125, 0.0115, GLOVE_COL)
+	_ball(st, _hp(palm_ang + 30.0, rp, 0.02, s), 0.0125, GLOVE_COL)
+	# ---- four fingers, three tapered segments each, wrapping around the front
+	var lens: Array = [0.025, 0.018, 0.015]
+	var fk: Array = [0.97, 1.05, 0.98, 0.8]
+	for f: int in 4:
+		var fr: float = 0.0089 if f < 3 else 0.0077
+		var rad: float = r + fr + 0.001
+		var ang: float = knuckle_ang
+		var p0: Vector3 = _hp(ang, rad, float(fy[f]), s)
+		var r_a: float = fr
+		for k: int in 3:
+			var l: float = float(lens[k]) * float(fk[f])
+			ang -= rad_to_deg(l / rad) * (1.0 if k < 2 else 0.9)
+			var p1: Vector3 = _hp(ang, rad - 0.0015 * k, float(fy[f]) - 0.002 * k, s)
+			var r_b: float = fr * (0.93 - 0.06 * k)
+			_ball(st, p0, r_a + 0.0004, GLOVE_COL)            # knuckle / joint swelling
+			if k < 2:
+				_taper(st, p0, p1, r_a, r_b, GLOVE_COL)
+			else:
+				# last segment: ends in a rounded, slightly elongated fingertip
+				var d: Vector3 = (p1 - p0).normalized()
+				_taper(st, p0, p1 - d * 0.002, r_a, r_b, GLOVE_COL, false)
+				_ball(st, p1 - d * 0.002, r_b, GLOVE_COL, d, 1.3)
+			p0 = p1
+			r_a = r_b
+	# ---- thumb: from inside the palm, around the back of the grip to the far side
+	var t0: Vector3 = _hp(palm_ang + 5.0, rp - 0.004, -0.01, s)
+	var t1: Vector3 = _hp(palm_ang + 55.0, r + 0.012, 0.03, s)
+	_taper(st, t0, t1, 0.0118, 0.0102, GLOVE_COL)
+	_ball(st, t1, 0.0104, GLOVE_COL)
+	var tr: float = r + 0.0095
+	var a1: float = palm_ang + 55.0 + rad_to_deg(0.028 / tr)
+	var t2: Vector3 = _hp(minf(a1, 175.0), tr, 0.04, s)
+	_taper(st, t1, t2, 0.0098, 0.009, GLOVE_COL)
+	_ball(st, t2, 0.0093, GLOVE_COL)
+	var t3: Vector3 = _hp(minf(a1 + rad_to_deg(0.022 / tr), 205.0), tr - 0.001, 0.043, s)
+	var td: Vector3 = (t3 - t2).normalized()
+	_taper(st, t2, t3 - td * 0.002, 0.0088, 0.008, GLOVE_COL, false)
+	_ball(st, t3 - td * 0.002, 0.008, GLOVE_COL, td, 1.3)
+	# ---- wrist stub joining the hand to the forearm cuff, with a strap round it
+	var w0: Vector3 = _hp(palm_ang + 15.0, rp, -0.012, s)
+	var w1: Vector3 = hand_wrist(left, r)
+	_taper(st, w0, w1, 0.0168, 0.0165, GLOVE_COL)
+	_ball(st, w0, 0.0168, GLOVE_COL)
+	var ax: Vector3 = (w1 - w0).normalized()
+	var band_c: Vector3 = w0.lerp(w1, 0.55)
+	var band: CylinderMesh = CylinderMesh.new()
+	band.top_radius = 0.0181
+	band.bottom_radius = 0.0181
+	band.height = 0.0085
+	band.radial_segments = 16
+	band.rings = 1
+	_put(st, band, Transform3D(_seg_xf(w0, w1).basis, band_c), STRAP_COL)
+	var out: Vector3 = Vector3(s * cos(deg_to_rad(56.0)), 0.0, sin(deg_to_rad(56.0)))
+	out = (out - ax * out.dot(ax)).normalized()
+	var side: Vector3 = ax.cross(out).normalized()
+	var buckle_c: Vector3 = band_c + out * 0.0185
+	# strap tail running on past the buckle
+	_box(st, buckle_c + side * 0.009 - out * 0.0002, Vector3(0.012, 0.0014, 0.0075), side, out, STRAP_COL)
+	var mesh: ArrayMesh = st.commit()
+	mesh.surface_set_material(0, base_mat("glove_vc"))
+	# buckle: an open frame and its tongue, blackened steel (second surface)
+	var sb: SurfaceTool = SurfaceTool.new()
+	sb.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var fw: float = 0.0105                         # frame width (across the strap)
+	var fl: float = 0.0125                         # frame length (along the arm; wider than the 8.5 mm strap)
+	var bt: float = 0.0016                         # bar thickness
+	var bh: float = 0.0017                         # bar height off the strap
+	for sg: float in [-1.0, 1.0]:
+		_box(sb, buckle_c + ax * sg * (fl - bt) * 0.5, Vector3(fw, bh, bt), side, out, Color.WHITE)
+		_box(sb, buckle_c + side * sg * (fw - bt) * 0.5, Vector3(bt, bh, fl), side, out, Color.WHITE)
+	_box(sb, buckle_c + side * 0.0012 + out * 0.0004, Vector3(fw * 0.62, 0.0011, 0.0011), side, out, Color.WHITE)   # tongue
+	sb.commit(mesh)
+	mesh.surface_set_material(1, base_mat("buckle"))
+	_hand_cache[key] = mesh
+	return mesh
+
+
+const GLOVE_COL: Color = Color(0.19, 0.13, 0.085)
+const STRAP_COL: Color = Color(0.11, 0.072, 0.045)
+const THREAD_COL: Color = Color(0.36, 0.29, 0.2)
+
+
+## Shell footprint coordinate B (-1..1 along the grip) for a height y.
+static func _shell_b(sh: Dictionary, y: float) -> float:
+	return (y - (float(sh["y0"]) + float(sh["y1"])) * 0.5) / ((float(sh["y1"]) - float(sh["y0"])) * 0.5)
+
+
+## A point on the hand shell. (a, b) in the rounded-rectangle footprint (a: across the back, -1 = knuckles,
+## +1 = wrist side; b: along the grip); top = the outer face (back of the hand), else the inner (palm) face.
+static func _shell_pt(sh: Dictionary, a: float, b: float, top: bool) -> Vector3:
+	var n4: float = clampf(pow(pow(absf(a), 4.0) + pow(absf(b), 4.0), 0.25), 0.0, 1.0)
+	var c: float = pow(maxf(0.0, 1.0 - n4 * n4 * n4), 1.0 / 3.0) * (1.0 if top else -1.0)
+	var t0: float = float(sh["t0"])
+	var t1: float = float(sh["t1"])
+	var theta: float = (t0 + t1) * 0.5 + a * (t1 - t0) * 0.5
+	var y0: float = float(sh["y0"])
+	var y1: float = float(sh["y1"])
+	var y: float = (y0 + y1) * 0.5 + b * (y1 - y0) * 0.5
+	var r0: float = float(sh["r0"])
+	var r1: float = float(sh["r1"])
+	var rad: float = (r0 + r1) * 0.5 + c * (r1 - r0) * 0.5
+	if top:
+		var lift: float = smoothstep(0.0, 0.55, c)
+		var d: float = 0.0012 * (1.0 - b * b)                      # the back of the hand arches a little
+		var k_ang: float = float(sh["k_ang"])
+		var a_k: float = (k_ang - (t0 + t1) * 0.5) / ((t1 - t0) * 0.5)
+		var fk: Array = [0.85, 1.0, 0.95, 0.75]
+		var fys: Array = sh["fy"]
+		for f: int in 4:
+			var fyv: float = float(fys[f])
+			# knuckle (MCP joint) bump at the front edge
+			var dk: float = (theta - k_ang) / 9.0
+			var dy: float = (y - fyv) / 0.0068
+			d += 0.0034 * float(fk[f]) * exp(-dk * dk - dy * dy)
+			# extensor tendon: a faint ridge fanning in from each knuckle toward the wrist
+			var along: float = clampf((a - a_k) / (0.75 - a_k), 0.0, 1.0)
+			var ty: float = (y - lerpf(fyv, fyv * 0.4, along)) / 0.0027
+			d += 0.0008 * exp(-ty * ty) * smoothstep(0.0, 0.15, along) * (1.0 - smoothstep(0.55, 1.0, along))
+		rad += d * lift
+	return _hp(theta, rad, y, float(sh["s"]))
+
+
+## Outward normal of the shell at (a, b) by central differences, oriented away from the slab's middle.
+static func _shell_n(sh: Dictionary, a: float, b: float, top: bool) -> Vector3:
+	var e: float = 0.004
+	var p: Vector3 = _shell_pt(sh, a, b, top)
+	var da: Vector3 = _shell_pt(sh, a + e, b, top) - _shell_pt(sh, a - e, b, top)
+	var db: Vector3 = _shell_pt(sh, a, b + e, top) - _shell_pt(sh, a, b - e, top)
+	var n: Vector3 = da.cross(db)
+	var mid: Vector3 = _hp((float(sh["t0"]) + float(sh["t1"])) * 0.5, (float(sh["r0"]) + float(sh["r1"])) * 0.5,
+		(float(sh["y0"]) + float(sh["y1"])) * 0.5, float(sh["s"]))
+	if n.length_squared() < 1e-14:
+		n = p - mid
+	n = n.normalized()
+	if n.dot(p - mid) < 0.0:
+		n = -n
+	return n
+
+
+static func _hand_shell(st: SurfaceTool, sh: Dictionary) -> void:
+	var na: int = 19
+	var nb: int = 17
+	for top: bool in [true, false]:
+		var pts: Array[Vector3] = []
+		var nrm: Array[Vector3] = []
+		for i: int in na:
+			for j: int in nb:
+				# square grid, denser toward the edges, pushed out onto the rounded-rectangle footprint
+				var qa: float = sin((float(i) / float(na - 1) * 2.0 - 1.0) * PI * 0.5)
+				var qb: float = sin((float(j) / float(nb - 1) * 2.0 - 1.0) * PI * 0.5)
+				var rho: float = maxf(absf(qa), absf(qb))
+				var a: float = 0.0
+				var b: float = 0.0
+				if rho > 1e-6:
+					var dir: Vector2 = Vector2(qa, qb).normalized()
+					var dn: float = pow(pow(absf(dir.x), 4.0) + pow(absf(dir.y), 4.0), 0.25)
+					a = dir.x * rho / dn
+					b = dir.y * rho / dn
+				pts.append(_shell_pt(sh, a, b, top))
+				nrm.append(_shell_n(sh, a, b, top))
+		for i: int in na - 1:
+			for j: int in nb - 1:
+				var i00: int = i * nb + j
+				var i10: int = (i + 1) * nb + j
+				var i11: int = (i + 1) * nb + j + 1
+				var i01: int = i * nb + j + 1
+				_tri(st, pts[i00], pts[i10], pts[i11], nrm[i00], nrm[i10], nrm[i11], GLOVE_COL)
+				_tri(st, pts[i00], pts[i11], pts[i01], nrm[i00], nrm[i11], nrm[i01], GLOVE_COL)
+
+
+## One stitch (a short raised thread) lying on the back of the hand at (a, b). along_a: the stitch runs
+## across the back (knuckles -> wrist), otherwise along the grip.
+static func _hand_stitch(st: SurfaceTool, sh: Dictionary, a: float, b: float, along_a: bool) -> void:
+	var p: Vector3 = _shell_pt(sh, a, b, true)
+	var n: Vector3 = _shell_n(sh, a, b, true)
+	var dir: Vector3 = (_shell_pt(sh, a + 0.01, b, true) - _shell_pt(sh, a - 0.01, b, true)) if along_a \
+		else (_shell_pt(sh, a, b + 0.01, true) - _shell_pt(sh, a, b - 0.01, true))
+	dir = (dir - n * dir.dot(n)).normalized()
+	_box(st, p + n * 0.0002, Vector3(0.0012, 0.0009, 0.0034), n.cross(dir).normalized(), n, THREAD_COL)
+
+
+## Emits one triangle wound so its front face is on the side the normals point to (works for mirrored
+## geometry too: Godot treats clockwise as front-facing).
+static func _tri(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, na: Vector3, nb: Vector3, nc: Vector3, col: Color) -> void:
+	if (b - a).cross(c - a).dot(na + nb + nc) > 0.0:
+		var tv: Vector3 = b
+		b = c
+		c = tv
+		var tn: Vector3 = nb
+		nb = nc
+		nc = tn
+	st.set_color(col)
+	st.set_normal(na)
+	st.add_vertex(a)
+	st.set_color(col)
+	st.set_normal(nb)
+	st.add_vertex(b)
+	st.set_color(col)
+	st.set_normal(nc)
+	st.add_vertex(c)
+
+
+## Appends a primitive mesh, transformed (normals by the inverse transpose), in one vertex colour.
+static func _put(st: SurfaceTool, prim: PrimitiveMesh, xf: Transform3D, col: Color) -> void:
+	var arr: Array = prim.get_mesh_arrays()
+	var v: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+	var nv: PackedVector3Array = arr[Mesh.ARRAY_NORMAL]
+	var idx: PackedInt32Array = arr[Mesh.ARRAY_INDEX]
+	var nb: Basis = xf.basis.inverse().transposed()
+	for i: int in range(0, idx.size(), 3):
+		var i0: int = idx[i]
+		var i1: int = idx[i + 1]
+		var i2: int = idx[i + 2]
+		_tri(st, xf * v[i0], xf * v[i1], xf * v[i2], (nb * nv[i0]).normalized(), (nb * nv[i1]).normalized(), (nb * nv[i2]).normalized(), col)
+
+
+## Tapered limb segment a -> b (radius ra at a, rb at b), open-ended; `cap` puts a ball on the b end.
+static func _taper(st: SurfaceTool, a: Vector3, b: Vector3, ra: float, rb: float, col: Color, cap: bool = true) -> void:
+	var cm: CylinderMesh = CylinderMesh.new()
+	cm.bottom_radius = ra
+	cm.top_radius = rb
+	cm.height = maxf(0.0005, a.distance_to(b))
+	cm.radial_segments = 10
+	cm.rings = 1
+	cm.cap_top = false
+	cm.cap_bottom = false
+	_put(st, cm, _seg_xf(a, b), col)
+	if cap:
+		_ball(st, b, rb, col)
+
+
+## A sphere (optionally stretched by `stretch` along `axis`, for fingertips).
+static func _ball(st: SurfaceTool, c: Vector3, rad: float, col: Color, axis: Vector3 = Vector3.ZERO, stretch: float = 1.0) -> void:
+	var sm: SphereMesh = SphereMesh.new()
+	sm.radius = rad
+	sm.height = rad * 2.0
+	sm.radial_segments = 10
+	sm.rings = 5
+	var xf: Transform3D = Transform3D(Basis(), c)
+	if axis != Vector3.ZERO:
+		var sx: Transform3D = _seg_xf(c, c + axis)
+		xf = Transform3D(sx.basis * Basis.from_scale(Vector3(1.0, stretch, 1.0)), c)
+	_put(st, sm, xf, col)
+
+
+## A box centered at `c`: size.x along `x_dir`, size.y along `y_dir`, size.z along their cross product.
+static func _box(st: SurfaceTool, c: Vector3, size: Vector3, x_dir: Vector3, y_dir: Vector3, col: Color) -> void:
+	var bm: BoxMesh = BoxMesh.new()
+	bm.size = size
+	var x: Vector3 = x_dir.normalized()
+	var y: Vector3 = (y_dir - x * y_dir.dot(x)).normalized()
+	_put(st, bm, Transform3D(Basis(x, y, x.cross(y)), c), col)
+
+
+## The wrist point in a hand's frame (see hand_mesh); the forearm leaves the hand here.
+static func hand_wrist(left: bool, grip_radius: float = HAND_R0) -> Vector3:
+	var s: float = -1.0 if left else 1.0
+	return _hp(62.0, grip_radius + 0.02, -0.03, s) + Vector3(0, 0, 0.035)
+
+
+## A hand node (one MeshInstance3D child named "Mesh"). Swap the mesh with hand_mesh() to refit the grip.
+static func build_hand(left: bool, grip_radius: float = HAND_R0) -> Node3D:
+	var root_n: Node3D = Node3D.new()
+	root_n.name = "HandL" if left else "HandR"
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.name = "Mesh"
+	mi.mesh = hand_mesh(left, grip_radius)
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	root_n.add_child(mi)
+	return root_n
+
+
+## A forearm/upper-arm segment: a sleeve tube from `a` to `b` (positions set each frame).
+static func build_limb(radius_a: float, radius_b: float) -> MeshInstance3D:
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	var cm: CylinderMesh = CylinderMesh.new()
+	cm.top_radius = radius_b
+	cm.bottom_radius = radius_a
+	cm.height = 1.0
+	cm.radial_segments = 12
+	mi.mesh = cm
+	mi.material_override = base_mat("sleeve")
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return mi
+
+
+## Length of the forearm piece below the sleeve (wrist -> start of the sleeve limb).
+const FOREARM_BARE: float = 0.14
+
+
+## Glove gauntlet cuff and the wool tunic sleeve running up the forearm (no bare skin anywhere: the
+## sleeve meets the glove at the wrist). Origin = wrist, +Y runs up the forearm. Cached; two surfaces.
+static func build_forearm() -> MeshInstance3D:
+	var key: String = "forearm2"
+	if not _hand_cache.has(key):
+		var mesh: ArrayMesh = ArrayMesh.new()
+		# [material, [[r_bottom, r_top, height, center_y], ...]]
+		var parts: Array = [["glove", [[0.0205, 0.025, 0.05, 0.016]]],
+			["sleeve", [[0.0265, 0.0372, FOREARM_BARE - 0.03, 0.03 + (FOREARM_BARE - 0.03) * 0.5]]]]
+		for p: Array in parts:
+			var st: SurfaceTool = SurfaceTool.new()
+			st.begin(Mesh.PRIMITIVE_TRIANGLES)
+			for c: Array in p[1]:
+				var cm: CylinderMesh = CylinderMesh.new()
+				cm.bottom_radius = float(c[0])
+				cm.top_radius = float(c[1])
+				cm.height = float(c[2])
+				cm.radial_segments = 12
+				cm.rings = 1
+				st.append_from(cm, 0, Transform3D(Basis(), Vector3(0, float(c[3]), 0)))
+			if str(p[0]) == "glove":
+				var tm: TorusMesh = TorusMesh.new()           # turned-back gauntlet lip
+				tm.inner_radius = 0.022
+				tm.outer_radius = 0.0295
+				tm.rings = 12
+				tm.ring_segments = 6
+				st.append_from(tm, 0, Transform3D(Basis(), Vector3(0, 0.038, 0)))
+			else:
+				var tm2: TorusMesh = TorusMesh.new()           # buttoned sleeve cuff over the gauntlet
+				tm2.inner_radius = 0.024
+				tm2.outer_radius = 0.0335
+				tm2.rings = 14
+				tm2.ring_segments = 6
+				st.append_from(tm2, 0, Transform3D(Basis(), Vector3(0, 0.05, 0)))
+			st.generate_normals()
+			st.commit(mesh)
+			mesh.surface_set_material(mesh.get_surface_count() - 1, base_mat(str(p[0])))
+		_hand_cache[key] = mesh
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.mesh = _hand_cache[key]
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return mi
+
+
+## Muzzle flash: a front-facing star plus two crossed side petals, additive and unshaded. Fires along -Z
+## from the origin. Cached; one surface, one draw call.
+static func muzzle_flash_mesh() -> ArrayMesh:
+	if _flash_mesh_cache != null:
+		return _flash_mesh_cache
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var quads: Array = []
+	var front: float = 0.05
+	quads.append([Vector3(-front, -front, -0.012), Vector3(front, -front, -0.012), Vector3(front, front, -0.012), Vector3(-front, front, -0.012)])
+	var w: float = 0.034
+	var l: float = 0.17
+	quads.append([Vector3(-w, 0, 0.01), Vector3(w, 0, 0.01), Vector3(w, 0, -l), Vector3(-w, 0, -l)])
+	quads.append([Vector3(0, -w, 0.01), Vector3(0, w, 0.01), Vector3(0, w, -l), Vector3(0, -w, -l)])
+	var uvs: Array = [Vector2(0, 1), Vector2(1, 1), Vector2(1, 0), Vector2(0, 0)]
+	for i: int in quads.size():
+		var q: Array = quads[i]
+		for idx: int in [0, 1, 2, 0, 2, 3]:
+			var uv: Vector2 = uvs[idx]
+			# side petals sample the star from its hot center (at the muzzle) out to one spike tip (forward),
+			# so they taper away from the muzzle instead of making a second bright burst ahead of it
+			if i > 0:
+				uv = Vector2(uv.x, 1.0 - 0.5 * uv.y)
+			st.set_uv(uv)
+			st.add_vertex(q[idx])
+	var mesh: ArrayMesh = st.commit()
+	var mat: StandardMaterial3D = StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat.albedo_color = Color(2.0, 1.4, 0.75)       # HDR so it reads in daylight
+	mat.albedo_texture = _flash_texture()
+	mesh.surface_set_material(0, mat)
+	_flash_mesh_cache = mesh
+	return mesh
+
+
+## Six-pointed star with a hot core, drawn once into a 64x64 texture.
+static func _flash_texture() -> ImageTexture:
+	var n: int = 64
+	var img: Image = Image.create(n, n, false, Image.FORMAT_RGBA8)
+	for y: int in n:
+		for x: int in n:
+			var d: Vector2 = (Vector2(x, y) + Vector2(0.5, 0.5)) / float(n) * 2.0 - Vector2.ONE
+			var rr: float = d.length()
+			var a: float = atan2(d.y, d.x)
+			var spikes: float = pow(absf(cos(a * 3.0)), 6.0)
+			var reach: float = 0.3 + 0.7 * spikes
+			var v: float = clampf(1.0 - rr / reach, 0.0, 1.0)
+			var core: float = clampf(1.0 - rr / 0.35, 0.0, 1.0)
+			var k: float = clampf(v * v + core * 0.8, 0.0, 1.0)
+			img.set_pixel(x, y, Color(1.0, lerpf(0.7, 1.0, core), lerpf(0.35, 0.9, core), k))
+	return ImageTexture.create_from_image(img)
+
+
+## Flattened chalk silhouette of a weapon for wall-buys (side view, along the wall's X axis).
+static func build_chalk(weapon_id: StringName, max_len: float = 1.2) -> Node3D:
+	var model: Node3D = build(weapon_id, false, &"")
+	var chalk: Material = base_mat("chalk")
+	_set_material_recursive(model, chalk)
+	for c: Node in model.get_children():
+		if c is Light3D:
+			c.queue_free()
+	var flat: Node3D = Node3D.new()
+	flat.name = "Chalk"
+	var length: float = float(model.get_meta("length", 0.6))
+	var k: float = minf(1.0, max_len / maxf(0.1, length))
+	flat.scale = Vector3(k, k, 0.06)
+	model.rotation_degrees = Vector3(0, 90, 0)          # barrel (-Z) points toward +X along the wall
+	model.position = Vector3(length * 0.4, 0, 0)
+	flat.add_child(model)
+	return flat
+
+
+static func _set_material_recursive(n: Node, mat: Material) -> void:
+	if n is MeshInstance3D:
+		(n as MeshInstance3D).material_override = mat
+	for c: Node in n.get_children():
+		_set_material_recursive(c, mat)

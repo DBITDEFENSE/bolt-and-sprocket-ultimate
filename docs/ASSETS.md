@@ -71,3 +71,6 @@ Its recommended-source tables (characters, props, textures, audio) stay valid fo
 - **Bolt & Sprocket:** bright and stylized, orange and cyan, with rim light. The original's per-planet palettes (`LEVELS[].palette`) and `THEMES` are the reference.
 - **Gravelight:** desaturated grit; Nachtglas is the only saturated color (violet `#c07dff` with amber cracks).
 - **The Fine Print:** 1940s Swiss-poster Basel (flat color fields, grotesque type) against sterile Darkmatter violet interiors.
+
+## GRAVELIGHT module (migrated M2)
+Everything under `gravelight/assets` and `gravelight/audio` is original procedural or synthesized work from the GRAVELIGHT project (see its own docs/ASSETS.md in `docs/gravelight/`). No third-party assets.

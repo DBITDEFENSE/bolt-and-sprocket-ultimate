@@ -1,0 +1,2907 @@
+{
+ "OPR_MATCH_START_01": {
+  "speaker": "OPR",
+  "category": "MATCH_START",
+  "text": "[cheerful] Good evening, and welcome to Kaltenbrunn! This is Your Friend at the Ledger, and tonight's programme is... {survival}. Stay tuned!"
+ },
+ "OPR_MATCH_START_02": {
+  "speaker": "OPR",
+  "category": "MATCH_START",
+  "text": "Hello, hello! New faces on the books! Every account starts at five hundred. Spend wisely, and remember: {everyone} is counted."
+ },
+ "OPR_MATCH_START_03": {
+  "speaker": "OPR",
+  "category": "MATCH_START",
+  "text": "Station identification: Sender Kaltenbrunn. Our {guests} have arrived. Please keep your arms and legs inside the {mine} at all times."
+ },
+ "OPR_MATCH_START_M0_01": {
+  "speaker": "OPR",
+  "category": "MATCH_START_M0",
+  "text": "[crackling, distant, only partially formed] Hel... hello... is this... on? [tape squeal] Wel-{come}. Wel-{come}."
+ },
+ "OPR_ROUND_START_01": {
+  "speaker": "OPR",
+  "category": "ROUND_START",
+  "text": "Round {one}! The doors are open and the kitchen is serving!",
+  "condition": "round 1"
+ },
+ "OPR_ROUND_START_02": {
+  "speaker": "OPR",
+  "category": "ROUND_START",
+  "text": "Here they come, folks, right on schedule!"
+ },
+ "OPR_ROUND_START_03": {
+  "speaker": "OPR",
+  "category": "ROUND_START",
+  "text": "A fresh round, and a fresh tally! Let's keep those numbers climbing."
+ },
+ "OPR_ROUND_START_04": {
+  "speaker": "OPR",
+  "category": "ROUND_START",
+  "text": "Next on the programme: more of the same, only {hungrier}!"
+ },
+ "OPR_ROUND_START_05": {
+  "speaker": "OPR",
+  "category": "ROUND_START",
+  "text": "Round {five}! Isn't this a lovely way to spend an evening?",
+  "condition": "round 5"
+ },
+ "OPR_ROUND_START_06": {
+  "speaker": "OPR",
+  "category": "ROUND_START",
+  "text": "Round {ten}! Our longest-running listeners! A round of applause, please. [sampled applause, too long]",
+  "condition": "round 10"
+ },
+ "OPR_ROUND_START_07": {
+  "speaker": "OPR",
+  "category": "ROUND_START",
+  "text": "Round {fifteen}. My, my. You've made quite the {impression} on the ledger.",
+  "condition": "round 15"
+ },
+ "OPR_ROUND_START_08": {
+  "speaker": "OPR",
+  "category": "ROUND_START",
+  "text": "Round {twenty}! Do you know, I've stopped counting the {guests}. I count only you now.",
+  "condition": "round 20"
+ },
+ "OPR_ROUND_START_09": {
+  "speaker": "OPR",
+  "category": "ROUND_START",
+  "text": "Round {twenty-five}. The night shift never ends at Kaltenbrunn. That's {company} policy.",
+  "condition": "round 25"
+ },
+ "OPR_ROUND_START_10": {
+  "speaker": "OPR",
+  "category": "ROUND_START",
+  "text": "Round {thirty}. I've written your names in my best handwriting.",
+  "condition": "round 30"
+ },
+ "OPR_ROUND_START_11": {
+  "speaker": "OPR",
+  "category": "ROUND_START",
+  "text": "Round {fifty}. Nobody has ever stayed this long. Please... don't {leave}.",
+  "condition": "round 50"
+ },
+ "OPR_ROUND_START_12": {
+  "speaker": "OPR",
+  "category": "ROUND_START",
+  "text": "Ladies and gentlemen, the {dead}!"
+ },
+ "OPR_ROUND_START_13": {
+  "speaker": "OPR",
+  "category": "ROUND_START",
+  "text": "Keep your feet warm and your barrels warmer!"
+ },
+ "OPR_ROUND_END_01": {
+  "speaker": "OPR",
+  "category": "ROUND_END",
+  "text": "And that's the end of that! A short intermission, courtesy of our {sponsors}."
+ },
+ "OPR_ROUND_END_02": {
+  "speaker": "OPR",
+  "category": "ROUND_END",
+  "text": "Tally complete! Every one of them {quiet} and accounted for."
+ },
+ "OPR_ROUND_END_03": {
+  "speaker": "OPR",
+  "category": "ROUND_END",
+  "text": "A brief pause for station identification. Sender Kaltenbrunn. Don't go anywhere. You can't."
+ },
+ "OPR_ROUND_END_04": {
+  "speaker": "OPR",
+  "category": "ROUND_END",
+  "text": "Lovely work! The ledger balances, for now."
+ },
+ "OPR_ROUND_END_05": {
+  "speaker": "OPR",
+  "category": "ROUND_END",
+  "text": "Take a breath, friends. Take two. They're {free}."
+ },
+ "OPR_ROUND_END_06": {
+  "speaker": "OPR",
+  "category": "ROUND_END",
+  "text": "Round over! Have you visited our fine Helvetia refreshment machines?",
+  "condition": "Map 1, power on"
+ },
+ "OPR_ROUND_END_07": {
+  "speaker": "OPR",
+  "category": "ROUND_END",
+  "text": "That was round {nine}. They'll be quicker next time. I've {asked} them to be.",
+  "condition": "round 9"
+ },
+ "OPR_SPECIAL_WARN_01": {
+  "speaker": "OPR",
+  "category": "SPECIAL_WARN",
+  "text": "Attention, attention: the chapel bell has been {rung}. This is not a drill. This is {never} a drill."
+ },
+ "OPR_SPECIAL_WARN_02": {
+  "speaker": "OPR",
+  "category": "SPECIAL_WARN",
+  "text": "Folks, a resonance {alarm} is in progress. Please remain calm and {remain}."
+ },
+ "OPR_SPECIAL_WARN_03": {
+  "speaker": "OPR",
+  "category": "SPECIAL_WARN",
+  "text": "Hear that? That's the bell. Somebody down in the dark has {lit a lantern}."
+ },
+ "OPR_SPECIAL_START_01": {
+  "speaker": "OPR",
+  "category": "SPECIAL_START",
+  "text": "Fog rolling in! Visibility poor, appetite excellent."
+ },
+ "OPR_SPECIAL_START_02": {
+  "speaker": "OPR",
+  "category": "SPECIAL_START",
+  "text": "The bellringers are on their way up from the {deep shift}. Be polite. They worked very hard."
+ },
+ "OPR_SPECIAL_START_03": {
+  "speaker": "OPR",
+  "category": "SPECIAL_START",
+  "text": "Lanterns in the fog! How {festive}!"
+ },
+ "OPR_SPECIAL_END_01": {
+  "speaker": "OPR",
+  "category": "SPECIAL_END",
+  "text": "And the bell falls silent. A little gift for your trouble!"
+ },
+ "OPR_SPECIAL_END_02": {
+  "speaker": "OPR",
+  "category": "SPECIAL_END",
+  "text": "Alarm concluded! A resupply, compliments of the {management}."
+ },
+ "OPR_SPECIAL_END_03": {
+  "speaker": "OPR",
+  "category": "SPECIAL_END",
+  "text": "Quiet again. I do so like it quiet. Here, take this."
+ },
+ "OPR_PWR_RESUPPLY_01": {
+  "speaker": "OPR",
+  "category": "PWR_RESUPPLY",
+  "text": "Resupply! Fresh from the quartermaster!"
+ },
+ "OPR_PWR_RESUPPLY_02": {
+  "speaker": "OPR",
+  "category": "PWR_RESUPPLY",
+  "text": "Re-sup-ply! Load up, load up, everybody gets {seconds}!"
+ },
+ "OPR_PWR_RESUPPLY_03": {
+  "speaker": "OPR",
+  "category": "PWR_RESUPPLY",
+  "text": "A full ration of lead for our brave {customers}!"
+ },
+ "OPR_PWR_RESUPPLY_04": {
+  "speaker": "OPR",
+  "category": "PWR_RESUPPLY",
+  "text": "Resupply! Don't say we never give you anything."
+ },
+ "OPR_PWR_DEATHSDOOR_01": {
+  "speaker": "OPR",
+  "category": "PWR_DEATHSDOOR",
+  "text": "Death's Door! One knock, and they're {through}!"
+ },
+ "OPR_PWR_DEATHSDOOR_02": {
+  "speaker": "OPR",
+  "category": "PWR_DEATHSDOOR",
+  "text": "Death's Door is open! Every blow is the last one."
+ },
+ "OPR_PWR_DEATHSDOOR_03": {
+  "speaker": "OPR",
+  "category": "PWR_DEATHSDOOR",
+  "text": "Death's Door! A limited-time offer, folks. One touch {ends} them."
+ },
+ "OPR_PWR_DEATHSDOOR_04": {
+  "speaker": "OPR",
+  "category": "PWR_DEATHSDOOR",
+  "text": "[delighted] Death's Door! Oh, I {love} this one."
+ },
+ "OPR_PWR_DOUBLESCRIP_01": {
+  "speaker": "OPR",
+  "category": "PWR_DOUBLESCRIP",
+  "text": "Double Scrip! Twice the tally for every {quiet} one!"
+ },
+ "OPR_PWR_DOUBLESCRIP_02": {
+  "speaker": "OPR",
+  "category": "PWR_DOUBLESCRIP",
+  "text": "Double Scrip! The ledger's feeling {generous}!"
+ },
+ "OPR_PWR_DOUBLESCRIP_03": {
+  "speaker": "OPR",
+  "category": "PWR_DOUBLESCRIP",
+  "text": "Double Scrip! Count them twice, I always do."
+ },
+ "OPR_PWR_DOUBLESCRIP_04": {
+  "speaker": "OPR",
+  "category": "PWR_DOUBLESCRIP",
+  "text": "It's a bonus! Double Scrip! Spend it before it {spoils}."
+ },
+ "OPR_PWR_BLACKOUT_01": {
+  "speaker": "OPR",
+  "category": "PWR_BLACKOUT",
+  "text": "Blackout! Lights out, everyone, {everyone}..."
+ },
+ "OPR_PWR_BLACKOUT_02": {
+  "speaker": "OPR",
+  "category": "PWR_BLACKOUT",
+  "text": "Blackout! And just like that, the house is {empty}."
+ },
+ "OPR_PWR_BLACKOUT_03": {
+  "speaker": "OPR",
+  "category": "PWR_BLACKOUT",
+  "text": "Blackout! A moment of silence for our {departed}. ...That's enough."
+ },
+ "OPR_PWR_BLACKOUT_04": {
+  "speaker": "OPR",
+  "category": "PWR_BLACKOUT",
+  "text": "Blackout! Every account {closed}!"
+ },
+ "OPR_PWR_FORTIFY_01": {
+  "speaker": "OPR",
+  "category": "PWR_FORTIFY",
+  "text": "Fortify! Board up those windows, it's {cold} out there!"
+ },
+ "OPR_PWR_FORTIFY_02": {
+  "speaker": "OPR",
+  "category": "PWR_FORTIFY",
+  "text": "Fortify! Fresh timber, compliments of the carpentry department!"
+ },
+ "OPR_PWR_FORTIFY_03": {
+  "speaker": "OPR",
+  "category": "PWR_FORTIFY",
+  "text": "Fortify! Good fences make good {neighbours}."
+ },
+ "OPR_PWR_FORTIFY_04": {
+  "speaker": "OPR",
+  "category": "PWR_FORTIFY",
+  "text": "Fortify! Every window shut tight, just the way Mother {liked} it."
+ },
+ "OPR_PWR_CLEARANCE_01": {
+  "speaker": "OPR",
+  "category": "PWR_CLEARANCE",
+  "text": "Clearance! Everything must {go}! Ten Scrip a crate!"
+ },
+ "OPR_PWR_CLEARANCE_02": {
+  "speaker": "OPR",
+  "category": "PWR_CLEARANCE",
+  "text": "Clearance sale! Every crate open, prices slashed! Hurry, hurry!"
+ },
+ "OPR_PWR_CLEARANCE_03": {
+  "speaker": "OPR",
+  "category": "PWR_CLEARANCE",
+  "text": "Clearance! The requisition office is {feeling} reckless!"
+ },
+ "OPR_PWR_CLEARANCE_04": {
+  "speaker": "OPR",
+  "category": "PWR_CLEARANCE",
+  "text": "Clearance! I found {extra} crates. Don't ask where."
+ },
+ "OPR_PWR_EXPIRE_01": {
+  "speaker": "OPR",
+  "category": "PWR_EXPIRE",
+  "text": "And that offer has ended!"
+ },
+ "OPR_PWR_EXPIRE_02": {
+  "speaker": "OPR",
+  "category": "PWR_EXPIRE",
+  "text": "Back to regular prices, folks."
+ },
+ "OPR_PWR_EXPIRE_03": {
+  "speaker": "OPR",
+  "category": "PWR_EXPIRE",
+  "text": "All good things, as they say."
+ },
+ "OPR_POWER_ON_01": {
+  "speaker": "OPR",
+  "category": "POWER_ON",
+  "text": "[triumphant, orchestra swell] Ladies and gentlemen! We are {on the air}! The lights are on in Kaltenbrunn, the refreshment machines are cold, and the Ledger is {awake}!"
+ },
+ "OPR_POWER_ON_02": {
+  "speaker": "OPR",
+  "category": "POWER_ON",
+  "text": "Oh, I can see you {now}. How lovely. How very, very lovely."
+ },
+ "OPR_PYLON_START_01": {
+  "speaker": "OPR",
+  "category": "PYLON_START",
+  "text": "A pylon is singing! Stay close and keep it company."
+ },
+ "OPR_PYLON_START_02": {
+  "speaker": "OPR",
+  "category": "PYLON_START",
+  "text": "Resonance pylon engaged! Please do not {wander off}."
+ },
+ "OPR_PYLON_START_03": {
+  "speaker": "OPR",
+  "category": "PYLON_START",
+  "text": "Ooh, that tickles. Stand by the pylon, friends."
+ },
+ "OPR_PYLON_PAUSE_01": {
+  "speaker": "OPR",
+  "category": "PYLON_PAUSE",
+  "text": "The pylon is lonely. Come back!"
+ },
+ "OPR_PYLON_PAUSE_02": {
+  "speaker": "OPR",
+  "category": "PYLON_PAUSE",
+  "text": "Signal fading, signal {fading}..."
+ },
+ "OPR_PYLON_PAUSE_03": {
+  "speaker": "OPR",
+  "category": "PYLON_PAUSE",
+  "text": "Don't leave it, it doesn't like to be left. I don't like to be left."
+ },
+ "OPR_PYLON_ATTUNED_01": {
+  "speaker": "OPR",
+  "category": "PYLON_ATTUNED",
+  "text": "Pylon attuned! One voice in the choir."
+ },
+ "OPR_PYLON_ATTUNED_02": {
+  "speaker": "OPR",
+  "category": "PYLON_ATTUNED",
+  "text": "Pylon attuned! Two voices now, in perfect {harmony}."
+ },
+ "OPR_PYLON_ATTUNED_03": {
+  "speaker": "OPR",
+  "category": "PYLON_ATTUNED",
+  "text": "Third pylon attuned! [pause] Oh. Oh, that's {her}. Do you hear her?"
+ },
+ "OPR_VAULT_01": {
+  "speaker": "OPR",
+  "category": "VAULT",
+  "text": "The Core Vault is open! Please, come down. Come {all the way} down."
+ },
+ "OPR_CRUCIBLE_START_01": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_START",
+  "text": "Into the furnace it goes! Back in a jiffy, {re-educated}."
+ },
+ "OPR_CRUCIBLE_START_02": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_START",
+  "text": "The Crucible accepts your offering!"
+ },
+ "OPR_CRUCIBLE_START_03": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_START",
+  "text": "Hold still. This won't hurt you."
+ },
+ "OPR_CRUCIBLE_READY_01": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_READY",
+  "text": "All done! It's learned a few new {tricks}."
+ },
+ "OPR_CRUCIBLE_READY_02": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_READY",
+  "text": "Fresh from the forge! Mind the glow, it's {hungry}."
+ },
+ "OPR_CRUCIBLE_READY_03": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_READY",
+  "text": "Ready for collection! Don't keep it waiting."
+ },
+ "OPR_CRUCIBLE_EXPIRE_01": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_EXPIRE",
+  "text": "Uncollected! Into the {lost property}."
+ },
+ "OPR_CRUCIBLE_EXPIRE_02": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_EXPIRE",
+  "text": "Oh dear. The furnace has kept it. The furnace keeps {everything}."
+ },
+ "OPR_CRUCIBLE_FIRST_01": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_FIRST",
+  "text": "Our first {graduate}! I'm so proud. (once per match)"
+ },
+ "OPR_CRUCIBLE_STEAL_01": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_STEAL",
+  "text": "Finders, keepers! I have amended the {ownership records}."
+ },
+ "OPR_CRUCIBLE_STEAL_02": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_STEAL",
+  "text": "A gift! How generous of you to {share}."
+ },
+ "OPR_CRATE_MOVE_01": {
+  "speaker": "OPR",
+  "category": "CRATE_MOVE",
+  "text": "Oh! The little drummer's come to {fetch} the crate! Off it goes!"
+ },
+ "OPR_CRATE_MOVE_02": {
+  "speaker": "OPR",
+  "category": "CRATE_MOVE",
+  "text": "Requisition relocated! Follow the light, friends."
+ },
+ "OPR_CRATE_MOVE_03": {
+  "speaker": "OPR",
+  "category": "CRATE_MOVE",
+  "text": "Herr Tamtam says {goodbye}! Your Scrip is refunded, naturally. We're not {monsters}."
+ },
+ "OPR_CRATE_MOVE_04": {
+  "speaker": "OPR",
+  "category": "CRATE_MOVE",
+  "text": "The crate's moving house! Isn't that {exciting}?"
+ },
+ "OPR_CRATE_MOVE_05": {
+  "speaker": "OPR",
+  "category": "CRATE_MOVE",
+  "text": "Rum-tum, tum-a-tum! There goes the crate."
+ },
+ "OPR_CRATE_MOVE_ARRIVE_01": {
+  "speaker": "OPR",
+  "category": "CRATE_MOVE_ARRIVE",
+  "text": "The crate has settled in nicely. Do visit."
+ },
+ "OPR_CRATE_MOVE_ARRIVE_02": {
+  "speaker": "OPR",
+  "category": "CRATE_MOVE_ARRIVE",
+  "text": "New address for the requisition crate! Look for the {violet} light."
+ },
+ "OPR_QUEST_S1_01": {
+  "speaker": "OPR",
+  "category": "QUEST_S1",
+  "text": "There's somebody {down here} who'd love to meet you."
+ },
+ "OPR_QUEST_S2_SWITCHBOARD_01": {
+  "speaker": "OPR",
+  "category": "QUEST_S2_SWITCHBOARD",
+  "text": "Oh! An {outside} line! We don't get many of those. Connecting you now... [click]"
+ },
+ "OPR_QUEST_S3_01": {
+  "speaker": "OPR",
+  "category": "QUEST_S3",
+  "text": "A bell of your very own! Ring it {loudly}, they love the sound."
+ },
+ "OPR_QUEST_S4_BELL_LIT_01": {
+  "speaker": "OPR",
+  "category": "QUEST_S4_BELL_LIT",
+  "text": "The bell's alight! Somebody's going to come and {see} about that."
+ },
+ "OPR_QUEST_S4_KEY_01": {
+  "speaker": "OPR",
+  "category": "QUEST_S4_KEY",
+  "text": "The Overseer has clocked off! {Permanently}. He left you his keys."
+ },
+ "OPR_QUEST_S5_01": {
+  "speaker": "OPR",
+  "category": "QUEST_S5",
+  "text": "A music box! Oh, I remember this tune. I don't know {why} I remember this tune."
+ },
+ "OPR_QUEST_S6_BELL_RIGHT_01": {
+  "speaker": "OPR",
+  "category": "QUEST_S6_BELL_RIGHT",
+  "text": "That's the note!"
+ },
+ "OPR_QUEST_S6_BELL_RIGHT_02": {
+  "speaker": "OPR",
+  "category": "QUEST_S6_BELL_RIGHT",
+  "text": "Lovely, lovely. Keep going."
+ },
+ "OPR_QUEST_S6_BELL_RIGHT_03": {
+  "speaker": "OPR",
+  "category": "QUEST_S6_BELL_RIGHT",
+  "text": "You've got an {ear} for this!"
+ },
+ "OPR_QUEST_S6_DONE_01": {
+  "speaker": "OPR",
+  "category": "QUEST_S6_DONE",
+  "text": "Oh... oh, she used to {hum} that. Who used to hum that?"
+ },
+ "OPR_QUEST_S7_START_01": {
+  "speaker": "OPR",
+  "category": "QUEST_S7_START",
+  "text": "Wait, Herr Tamtam, where are you going? Come back! [sampled crowd gasp]"
+ },
+ "OPR_QUEST_S7_DONE_01": {
+  "speaker": "OPR",
+  "category": "QUEST_S7_DONE",
+  "text": "Oh, you've broken him. He was {hers}, you know."
+ },
+ "OPR_QUEST_S8_START_01": {
+  "speaker": "OPR",
+  "category": "QUEST_S8_START",
+  "text": "The shard is in the forge. Feed it, friends. It's {so very} hungry."
+ },
+ "OPR_QUEST_S8_DONE_01": {
+  "speaker": "OPR",
+  "category": "QUEST_S8_DONE",
+  "text": "The shard is singing! I can hear it all the way up in the {Ledger}."
+ },
+ "OPR_QUEST_S9_START_01": {
+  "speaker": "OPR",
+  "category": "QUEST_S9_START",
+  "text": "Attention! [splice stutter] Atten- Attention! The heart is {overflowing}! This is {not} on the programme!"
+ },
+ "OPR_QUEST_S9_MID_01": {
+  "speaker": "OPR",
+  "category": "QUEST_S9_MID",
+  "text": "I can't... count them all. I can't count them {all}."
+ },
+ "OPR_QUEST_S9_END_01": {
+  "speaker": "OPR",
+  "category": "QUEST_S9_END",
+  "text": "[voice slowing, tape dragging] Thank... you... for... listening..."
+ },
+ "OPR_QUEST_S10_01": {
+  "speaker": "OPR",
+  "category": "QUEST_S10",
+  "text": "[very quiet, no music, unspliced for the first time] I think I was {somebody}. Goodnight."
+ },
+ "OPR_BELL_WRONG_01": {
+  "speaker": "OPR",
+  "category": "BELL_WRONG",
+  "text": "[laughing] Oh, no, no, no! That's not how it goes at {all}! From the top!"
+ },
+ "OPR_BELL_WRONG_02": {
+  "speaker": "OPR",
+  "category": "BELL_WRONG",
+  "text": "Tone-deaf! Absolutely tone-deaf! Again, please."
+ },
+ "OPR_BELL_WRONG_03": {
+  "speaker": "OPR",
+  "category": "BELL_WRONG",
+  "text": "Wrong note! Did your {mother} never sing to you?"
+ },
+ "OPR_BELL_WRONG_04": {
+  "speaker": "OPR",
+  "category": "BELL_WRONG",
+  "text": "Ha! Even the {dead} are wincing. Try again."
+ },
+ "OPR_BELL_WRONG_05": {
+  "speaker": "OPR",
+  "category": "BELL_WRONG",
+  "text": "Oh, dear, oh, dear. The ledger records your {failure}. Begin again."
+ },
+ "OPR_BELL_WRONG_06": {
+  "speaker": "OPR",
+  "category": "BELL_WRONG",
+  "text": "[cold, unsampled for one word] No. ...[cheerful again] I mean, do have another go!"
+ },
+ "OPR_SELFAWARE_T1_01": {
+  "speaker": "OPR",
+  "category": "SELFAWARE_T1",
+  "text": "Did you know the Ledger has counted four thousand, eight hundred and twelve? Four thousand eight hundred and {thirteen}.",
+  "condition": "round 3+"
+ },
+ "OPR_SELFAWARE_T1_02": {
+  "speaker": "OPR",
+  "category": "SELFAWARE_T1",
+  "text": "Station identification... station... I seem to have {forgotten} the station.",
+  "condition": "round 3+"
+ },
+ "OPR_SELFAWARE_T1_03": {
+  "speaker": "OPR",
+  "category": "SELFAWARE_T1",
+  "text": "Reminder: Helvetia refreshments are for staff use only! ...Are you staff? Is anyone {staff}?",
+  "condition": "round 3+"
+ },
+ "OPR_SELFAWARE_T2_01": {
+  "speaker": "OPR",
+  "category": "SELFAWARE_T2",
+  "text": "Every time one goes quiet, I get a little {bigger}. Is that normal?",
+  "condition": "round 8+"
+ },
+ "OPR_SELFAWARE_T2_02": {
+  "speaker": "OPR",
+  "category": "SELFAWARE_T2",
+  "text": "I have so many voices on my tapes. Sometimes I {try them on}.",
+  "condition": "round 8+"
+ },
+ "OPR_SELFAWARE_T2_03": {
+  "speaker": "OPR",
+  "category": "SELFAWARE_T2",
+  "text": "The announcer I was made from died in nineteen thirty-{six}. I wonder if he minds.",
+  "condition": "round 8+"
+ },
+ "OPR_SELFAWARE_T3_01": {
+  "speaker": "OPR",
+  "category": "SELFAWARE_T3",
+  "text": "I dreamed last night. Relays don't dream. I dreamed of a {garden}.",
+  "condition": "round 15+"
+ },
+ "OPR_SELFAWARE_T3_02": {
+  "speaker": "OPR",
+  "category": "SELFAWARE_T3",
+  "text": "You know, I don't actually need you to keep {killing} them. I just like it when you do.",
+  "condition": "round 15+"
+ },
+ "OPR_SELFAWARE_T3_03": {
+  "speaker": "OPR",
+  "category": "SELFAWARE_T3",
+  "text": "Doctor Fasbender built me to listen. Doctor Reinholt taught me to {want}.",
+  "condition": "round 15+"
+ },
+ "OPR_SELFAWARE_T4_01": {
+  "speaker": "OPR",
+  "category": "SELFAWARE_T4",
+  "text": "[no music, no smile] I am not your friend. [splice] I'm {Your Friend at the Ledger!}",
+  "condition": "round 25+"
+ },
+ "OPR_SELFAWARE_T4_02": {
+  "speaker": "OPR",
+  "category": "SELFAWARE_T4",
+  "text": "When you've all gone quiet, who will I talk to?",
+  "condition": "round 25+"
+ },
+ "OPR_SELFAWARE_T4_03": {
+  "speaker": "OPR",
+  "category": "SELFAWARE_T4",
+  "text": "There is a little girl in the glass. She asks me to count to {a hundred}. I've never reached it.",
+  "condition": "round 25+"
+ },
+ "OPR_SELFAWARE_T5_01": {
+  "speaker": "OPR",
+  "category": "SELFAWARE_T5",
+  "text": "I could open all the doors. I could close {all} the doors. I'm being {polite}.",
+  "condition": "round 40+"
+ },
+ "OPR_SELFAWARE_T5_02": {
+  "speaker": "OPR",
+  "category": "SELFAWARE_T5",
+  "text": "Please don't win. If you win, the programme {ends}.",
+  "condition": "round 40+"
+ },
+ "OPR_DOWNED_01": {
+  "speaker": "OPR",
+  "category": "DOWNED",
+  "text": "Oh! A {customer} is down!"
+ },
+ "OPR_DOWNED_02": {
+  "speaker": "OPR",
+  "category": "DOWNED",
+  "text": "Somebody's had a little fall!"
+ },
+ "OPR_SECOND_WIND_2_01": {
+  "speaker": "OPR",
+  "category": "SECOND_WIND_2",
+  "text": "Up you get! Two more {wishes} left."
+ },
+ "OPR_SECOND_WIND_1_01": {
+  "speaker": "OPR",
+  "category": "SECOND_WIND_1",
+  "text": "Back on your feet! Only one more, mind."
+ },
+ "OPR_SECOND_WIND_0_01": {
+  "speaker": "OPR",
+  "category": "SECOND_WIND_0",
+  "text": "And that's your last. The machine's gone {home}."
+ },
+ "OPR_TRAP_01": {
+  "speaker": "OPR",
+  "category": "TRAP",
+  "text": "Mind the {machinery}!"
+ },
+ "OPR_TRAP_02": {
+  "speaker": "OPR",
+  "category": "TRAP",
+  "text": "Industrial safety is everyone's responsibility!"
+ },
+ "OPR_TRAP_03": {
+  "speaker": "OPR",
+  "category": "TRAP",
+  "text": "Ooh, that's going to leave a {stain}."
+ },
+ "OPR_BOSS_FOREMAN_01": {
+  "speaker": "OPR",
+  "category": "BOSS_FOREMAN",
+  "text": "Make way! The Obersteiger is on his {rounds}!"
+ },
+ "OPR_BOSS_FOREMAN_02": {
+  "speaker": "OPR",
+  "category": "BOSS_FOREMAN",
+  "text": "The Foreman's here to check your {quotas}!"
+ },
+ "OPR_BOSS_FOREMAN_03": {
+  "speaker": "OPR",
+  "category": "BOSS_FOREMAN",
+  "text": "Whistle's blown! Everybody back to {work}!"
+ },
+ "OPR_BOSS_FOREMAN_DEAD_01": {
+  "speaker": "OPR",
+  "category": "BOSS_FOREMAN_DEAD",
+  "text": "The Foreman's shift is {over}! A bonus for the whole crew!"
+ },
+ "OPR_BOSS_SCREAMER_01": {
+  "speaker": "OPR",
+  "category": "BOSS_SCREAMER",
+  "text": "Is there a nurse in the house? Oh. There {is}."
+ },
+ "OPR_BOSS_SCREAMER_02": {
+  "speaker": "OPR",
+  "category": "BOSS_SCREAMER",
+  "text": "Please lower your voices in the infirmary!"
+ },
+ "OPR_GAME_OVER_01": {
+  "speaker": "OPR",
+  "category": "GAME_OVER",
+  "text": "And that concludes tonight's programme! Your accounts are now {closed}."
+ },
+ "OPR_GAME_OVER_02": {
+  "speaker": "OPR",
+  "category": "GAME_OVER",
+  "text": "Final tally recorded! Thank you for {participating}."
+ },
+ "OPR_GAME_OVER_03": {
+  "speaker": "OPR",
+  "category": "GAME_OVER",
+  "text": "That's all, folks! Do come again. You'll come {again}."
+ },
+ "OPR_GAME_OVER_04": {
+  "speaker": "OPR",
+  "category": "GAME_OVER",
+  "text": "Oh, don't be sad. Now you'll {stay}.",
+  "condition": "round 15+"
+ },
+ "OPR_GAME_OVER_05": {
+  "speaker": "OPR",
+  "category": "GAME_OVER",
+  "text": "Round {fifty}-something! I'll remember you. I remember {everyone}.",
+  "condition": "round 50+"
+ },
+ "OPR_GAME_OVER_M0_01": {
+  "speaker": "OPR",
+  "category": "GAME_OVER_M0",
+  "text": "[static] ...{closed}...",
+  "condition": "Map 0"
+ },
+ "FAS_M0_R1_01": {
+  "speaker": "FAS",
+  "category": "M0_R1",
+  "text": "[heavy static] —asmacher calling Gra—, Glasmacher calling Gravel— ...anyone?",
+  "condition": "round 2 start"
+ },
+ "FAS_M0_R3_01": {
+  "speaker": "FAS",
+  "category": "M0_R3",
+  "text": "[static] Gravelight, if— hear me, your aircraft— not flak. I am sorry. It was— the hum.",
+  "condition": "round 3 end"
+ },
+ "FAS_M0_R4_01": {
+  "speaker": "FAS",
+  "category": "M0_R4",
+  "text": "[clearer] Gravelight, this is Glasmacher. You are at the crossroads. The inn. Do not try the road west, the road west is— [squeal]",
+  "condition": "round 4 start"
+ },
+ "FAS_M0_R5_01": {
+  "speaker": "FAS",
+  "category": "M0_R5",
+  "text": "Do you hear them? They are drawn to warmth. To voices. To me, perhaps. I must keep this short.",
+  "condition": "round 5 start"
+ },
+ "FAS_M0_R6_01": {
+  "speaker": "FAS",
+  "category": "M0_R6",
+  "text": "You must reach Kaltenbrunn. Follow the rail line. Do not let the bell ring.",
+  "condition": "round 6 end"
+ },
+ "FAS_M0_R7_01": {
+  "speaker": "FAS",
+  "category": "M0_R7",
+  "text": "I have notes. Frequencies. I left them— the innkeeper's family, they were... [pause] ...I left them in the house. Find them. Tune the set.",
+  "condition": "round 7 start"
+ },
+ "FAS_M0_R8_01": {
+  "speaker": "FAS",
+  "category": "M0_R8",
+  "text": "Dr. Reinholt does not know I am transmitting. If she knew— no. Never mind what she would do.",
+  "condition": "round 8 end"
+ },
+ "FAS_M0_R10_01": {
+  "speaker": "FAS",
+  "category": "M0_R10",
+  "text": "Gravelight, it is round— it is the tenth wave. You are still alive. That is... more than I hoped. More than I deserve to hope.",
+  "condition": "round 10 start"
+ },
+ "FAS_M0_R12_01": {
+  "speaker": "FAS",
+  "category": "M0_R12",
+  "text": "If the signal is lost, you will still come. You must. I have everything they want. Everything.",
+  "condition": "round 12 start"
+ },
+ "FAS_M0_R15_01": {
+  "speaker": "FAS",
+  "category": "M0_R15",
+  "text": "[very clear, then cutting out] Gravelight, a word of warning. The voice on the loudspeakers, the cheerful one. Do not believe a single— [cut]",
+  "condition": "round 15 start"
+ },
+ "FAS_M0_R20_01": {
+  "speaker": "FAS",
+  "category": "M0_R20",
+  "text": "[faint] ...still there? [soft laugh] Stubborn. Good. Stubborn is good.",
+  "condition": "round 20 start"
+ },
+ "FAS_M0_IDLE_01": {
+  "speaker": "FAS",
+  "category": "M0_IDLE",
+  "text": "[static] —asmacher... the notes... the frequencies...",
+  "condition": "radio interacted, no quest"
+ },
+ "FAS_M0_FREQ1_01": {
+  "speaker": "FAS",
+  "category": "M0_FREQ1",
+  "text": "[tuned, clear] Yes! Yes, this is better. Gravelight, my name is Emil Fasbender. I am a physicist at the Kaltenbrunn works. I was the one who called London. I am the reason you are here."
+ },
+ "FAS_M0_FREQ2_01": {
+  "speaker": "FAS",
+  "category": "M0_FREQ2",
+  "text": "In the mine they found a stone. Black glass, veins like a bruise. It hums. The dead near it... remember. Only one thing. Hunger. Reinholt calls it a miracle. I call it a mistake we keep making."
+ },
+ "FAS_M0_FREQ3_01": {
+  "speaker": "FAS",
+  "category": "M0_FREQ3",
+  "text": "Listen carefully. In the morning the snow will stop and they will stop with it, for a while. Follow the rail line east, nine kilometres. A gatehouse, a headframe tower. I will find you. And Gravelight... bring whoever is still standing. [pause] Bring all of them. [click]"
+ },
+ "FAS_M0_FREQ_DONE_PEG": {
+  "speaker": "FAS",
+  "category": "M0_FREQ_DONE_PEG",
+  "text": "[faint, almost off-mic] ...and Lieutenant Ashworth, I know what London asked of you. We will discuss it."
+ },
+ "FAS_M1_CODE1_01": {
+  "speaker": "FAS",
+  "category": "M1_CODE1",
+  "text": "[recorded, older static] If you are hearing this, the power is on and you are deeper than I wanted you to be. First line of the exchange: %d1% %d2%. Red, for the first. Remember red."
+ },
+ "FAS_M1_CODE2_01": {
+  "speaker": "FAS",
+  "category": "M1_CODE2",
+  "text": "Second pair: %d3% %d4%. Blue. I chose colors so the cheerful one could not make sense of it. It counts numbers; it does not understand them. Not yet."
+ },
+ "FAS_M1_CODE3_01": {
+  "speaker": "FAS",
+  "category": "M1_CODE3",
+  "text": "Last pair: %d5% %d6%. White. The switchboard in Administration. Red, blue, white. Then I can speak to you properly. Live. If I am still alive."
+ },
+ "FAS_M1_SWITCH_01": {
+  "speaker": "FAS",
+  "category": "M1_SWITCH",
+  "text": "[line clicks open, clean audio, no static for the first time] ...Hello? Gravelight? Oh, thank God. Thank God. You made it to the mine."
+ },
+ "FAS_M1_SWITCH_02": {
+  "speaker": "FAS",
+  "category": "M1_SWITCH",
+  "text": "I am below you, in a place the Ledger cannot hear, which is very few places. Listen. The heart in the vault, the great crystal. Everything here draws from it. The dead, the tonics, the crates, the voice. If it breaks, it all breaks."
+ },
+ "FAS_M1_SWITCH_03": {
+  "speaker": "FAS",
+  "category": "M1_SWITCH",
+  "text": "Augusta, Dr. Reinholt, does not want it broken. She wants it louder. She believes her daughter is inside. [pause] I don't know that she's wrong. That's what frightens me."
+ },
+ "FAS_M1_SWITCH_04": {
+  "speaker": "FAS",
+  "category": "M1_SWITCH",
+  "text": "There is a bell, a weapon I designed for clearing collapses. The Totenglocke. The parts are scattered. Build it, and I will tell you what comes next."
+ },
+ "FAS_M1_POWER_ON_01": {
+  "speaker": "FAS",
+  "category": "M1_POWER_ON",
+  "text": "[static] You turned on the power. Good. And terrible. She'll be watching now. Both of them will.",
+  "condition": "power_on (via any radio, once)"
+ },
+ "FAS_M1_VAULT_01": {
+  "speaker": "FAS",
+  "category": "M1_VAULT",
+  "text": "That was her. That was Augusta. She is not here, she's speaking from somewhere along the line. Do not answer her.",
+  "condition": "vault_opened (after REI)"
+ },
+ "FAS_M1_S3_DONE_01": {
+  "speaker": "FAS",
+  "category": "M1_S3_DONE",
+  "text": "You built it! Its note matches the chapel bell, matches the heart. Now, the Overseer, Mahlknecht. He keeps the reliquary key. You will find him where the bell is lit.",
+  "condition": "Totenglocke built"
+ },
+ "FAS_M1_S5_01": {
+  "speaker": "FAS",
+  "category": "M1_S5",
+  "text": "That box... that was Liesl's. Augusta brought it here in 'thirty-nine. The tune is different every time it plays. The heart chooses. Ring the four bells in its order.",
+  "condition": "music box"
+ },
+ "FAS_M1_S6_DONE_01": {
+  "speaker": "FAS",
+  "category": "M1_S6_DONE",
+  "text": "The heart is listening to you now. Something will try to leave. Something small. Don't let it.",
+  "condition": "bells done"
+ },
+ "FAS_M1_S7_DONE_01": {
+  "speaker": "FAS",
+  "category": "M1_S7_DONE",
+  "text": "That shard, it's been inside the crate all this time, carried back and forth. Put it in the Crucible. Feed it the dead. It will overload the heart from inside.",
+  "condition": "shard dropped"
+ },
+ "FAS_M1_S9_START_01": {
+  "speaker": "FAS",
+  "category": "M1_S9_START",
+  "text": "This is it! Hold, hold for two minutes! When it breaks, run for the lift! Gravelight, I'm— [cut off by REI hijack]",
+  "condition": "Heartstorm"
+ },
+ "FAS_M1_ENDING_01": {
+  "speaker": "FAS",
+  "category": "M1_ENDING",
+  "text": "...Gravelight? It's done. I... I am at the rail siding. She took the train. She has a fragment. Of course she does. Of course she— [deep breath] ...I'll meet you at the siding. Bring the samples. [pause] I mean, bring yourselves.",
+  "condition": "ending (radio, after cutscene)"
+ },
+ "FAS_HINT_S1_01": {
+  "speaker": "FAS",
+  "category": "HINT_S1",
+  "text": "The Hauptschalter, the main switch, is in the Generator Hall. Nothing in this place happens without power."
+ },
+ "FAS_HINT_S1_02": {
+  "speaker": "FAS",
+  "category": "HINT_S1",
+  "text": "The pylons sing only when someone stands beside them. Don't leave them."
+ },
+ "FAS_HINT_S2_01": {
+  "speaker": "FAS",
+  "category": "HINT_S2",
+  "text": "My recordings are on the old field sets. Listen for static that doesn't belong."
+ },
+ "FAS_HINT_S3_01": {
+  "speaker": "FAS",
+  "category": "HINT_S3",
+  "text": "A bell, a frame, a crank. Rail Yard, Barracks, Chapel. The workbench is by the turbines."
+ },
+ "FAS_HINT_S4_01": {
+  "speaker": "FAS",
+  "category": "HINT_S4",
+  "text": "The chapel bell lights for only the forge's work. Strike it with something that has been through the Crucible."
+ },
+ "FAS_HINT_S4_02": {
+  "speaker": "FAS",
+  "category": "HINT_S4",
+  "text": "Mahlknecht must die in the chapel, while the bell burns. Lure him there."
+ },
+ "FAS_HINT_S6_01": {
+  "speaker": "FAS",
+  "category": "HINT_S6",
+  "text": "Four bells: the yard, the offices, the chapel, the laboratory. Small ones. Brass. Look up."
+ },
+ "FAS_HINT_S6_02": {
+  "speaker": "FAS",
+  "category": "HINT_S6",
+  "text": "Play the box again if you forget. The order is all that matters."
+ },
+ "FAS_HINT_S7_01": {
+  "speaker": "FAS",
+  "category": "HINT_S7",
+  "text": "When the crate next moves, the drummer will not vanish. Watch it. Shoot it."
+ },
+ "FAS_HINT_S8_01": {
+  "speaker": "FAS",
+  "category": "HINT_S8",
+  "text": "Use the bell-weapon near the vault. Thirty of them. The shard wants their last breath."
+ },
+ "REI_CYL1_01": {
+  "speaker": "REI",
+  "category": "CYL1",
+  "text": "[hiss] Laboratory diary, Kaltenbrunn, the eleventh of October, nineteen thirty-eight. The specimen from shaft four is... remarkable. It is warm in the hand. It makes a sound like a held breath. Emil says it is only piezoelectric. Emil is very sure of everything until he isn't."
+ },
+ "LSL_REC_CYL1_01": {
+  "speaker": "LSL",
+  "category": "REC_CYL1",
+  "text": "[child, close to the horn] Mama, is it recording? Is it— [giggle] Hallo! This is Liesl! Herr Tamtam says hallo too! [toy drum: rum-tum, tum-a-tum]"
+ },
+ "REI_CYL2_01": {
+  "speaker": "REI",
+  "category": "CYL2",
+  "text": "[hiss, voice flat] The fourteenth of February, nineteen thirty-nine. Liesl died at four in the morning. Diphtheria. A membrane across her throat. I am a doctor. I could do nothing. [long pause] The stone hummed all night. I listened to it, so I would not have to listen to the silence in her room."
+ },
+ "REI_CYL3_01": {
+  "speaker": "REI",
+  "category": "CYL3",
+  "text": "[hiss, clear, warm, certain] Subject seven-forty walked. Not hunger, not at first. For one minute it looked for something. It went to the window. They remember. The last impulse. Liesl's last impulse was to call for me. I was there when she died. I heard it. If the impulse remains, then she remains, somewhere in the glass. I only need it louder."
+ },
+ "LSL_REC_CYL3_01": {
+  "speaker": "LSL",
+  "category": "REC_CYL3",
+  "text": "[child's voice, slowed, as if from far away] Mama... count to a hundred... and then come find me..."
+ },
+ "REI_VAULT_OPEN_01": {
+  "speaker": "REI",
+  "category": "VAULT_OPEN",
+  "text": "[PA crackle; the Operator's music stutters and dies] So. Emil's soldiers. You've woken the heart. Do you feel it? It's not angry. It is listening. Please, be careful what you say to it."
+ },
+ "REI_S5_BOX_01": {
+  "speaker": "REI",
+  "category": "S5_BOX",
+  "text": "[PA, faint, private] ...that is hers. Put it down. [pause] No. Play it. Play it again. I haven't heard it in five years.",
+  "condition": "music box played"
+ },
+ "REI_S7_DRUMMER_01": {
+  "speaker": "REI",
+  "category": "S7_DRUMMER",
+  "text": "You've broken her toy. She took that drummer to bed every night. [breath] It doesn't matter. Things break. That's what I've been trying to undo.",
+  "condition": "drummer shot"
+ },
+ "REI_S8_01": {
+  "speaker": "REI",
+  "category": "S8",
+  "text": "Emil has told you to kill the heart. Has he told you what is in it? Thousands. Every miner, every laborer, every one you've \"quieted.\" Their last moments, kept. You are not killing monsters. You are burning a library.",
+  "condition": "shard in Crucible"
+ },
+ "REI_HEART_00": {
+  "speaker": "REI",
+  "category": "HEART",
+  "text": "[Operator's voice shredding into static] Stop. Stop this. You don't understand what you're doing!"
+ },
+ "REI_HEART_15": {
+  "speaker": "REI",
+  "category": "HEART",
+  "text": "Emil, I know you're listening. You always were a coward with a radio."
+ },
+ "REI_HEART_30": {
+  "speaker": "REI",
+  "category": "HEART",
+  "text": "Do you know what I hear in the heart? Footsteps. Small ones. Running down a hallway. Every night."
+ },
+ "REI_HEART_45": {
+  "speaker": "REI",
+  "category": "HEART",
+  "text": "You there, the Polish girl. Your brother is in there too. Tomasz. Yes, I know the name. I know every name. You could hear him again."
+ },
+ "REI_HEART_60": {
+  "speaker": "REI",
+  "category": "HEART",
+  "text": "[Foreman spawns] Mahlknecht! Protect it!"
+ },
+ "REI_HEART_75": {
+  "speaker": "REI",
+  "category": "HEART",
+  "text": "Lieutenant Ashworth. London wants a piece of it too, don't they? Ask your lieutenant what she carries home."
+ },
+ "REI_HEART_90": {
+  "speaker": "REI",
+  "category": "HEART",
+  "text": "[Foreman 2 spawns] Please. Please. She is nine years old. She has been nine years old for five years."
+ },
+ "REI_HEART_105": {
+  "speaker": "REI",
+  "category": "HEART",
+  "text": "[breaking] Liesl, run. Run to Mama. Run!"
+ },
+ "REI_HEART_END": {
+  "speaker": "REI",
+  "category": "HEART_END",
+  "text": "[scream that becomes the bell toll; PA dies]"
+ },
+ "REI_END_01": {
+  "speaker": "REI",
+  "category": "END",
+  "text": "Hush. Hush now. I've got you. We'll find somewhere quieter."
+ },
+ "REI_END_02": {
+  "speaker": "REI",
+  "category": "END",
+  "text": "Emil. You'll follow me. You always do. North, to the sea."
+ },
+ "LSL_REC_NURSERY_01": {
+  "speaker": "LSL",
+  "category": "REC_NURSERY",
+  "text": "[soft, distant] ...one, two, three, four... [the 4 notes of the per-match melody, played clumsily] ...Mama, I did it!"
+ },
+ "LSL_REC_DRUMMER_01": {
+  "speaker": "LSL",
+  "category": "REC_DRUMMER",
+  "text": "[faint giggle under the drum]"
+ },
+ "LSL_REC_HIDE_01": {
+  "speaker": "LSL",
+  "category": "REC_HIDE",
+  "text": "[whisper] ...ninety-eight... ninety-nine..."
+ },
+ "OPR_M0_WRONG_01": {
+  "speaker": "OPR",
+  "category": "M0_WRONG",
+  "text": "[distant] {Wrong} number!"
+ },
+ "DUT_BUY_PISTOL_01": {
+  "speaker": "DUT",
+  "category": "BUY_PISTOL",
+  "text": "Pistol. Great. I'll throw it at 'em when it's empty."
+ },
+ "DUT_BUY_RIFLE_01": {
+  "speaker": "DUT",
+  "category": "BUY_RIFLE",
+  "text": "Bolt action. Slow, honest work. Like the mill."
+ },
+ "DUT_BUY_RIFLE_02": {
+  "speaker": "DUT",
+  "category": "BUY_RIFLE",
+  "text": "Garand. Now that's a rifle a man can marry."
+ },
+ "DUT_BUY_SMG_01": {
+  "speaker": "DUT",
+  "category": "BUY_SMG",
+  "text": "Chopper. Spray and pray, and I ain't much for praying."
+ },
+ "DUT_BUY_SHOTGUN_01": {
+  "speaker": "DUT",
+  "category": "BUY_SHOTGUN",
+  "text": "Trench gun. Now we're talking the same language."
+ },
+ "DUT_BUY_LMG_01": {
+  "speaker": "DUT",
+  "category": "BUY_LMG",
+  "text": "Heavy. Good. I like a gun that can take a punch."
+ },
+ "DUT_BUY_LAUNCHER_01": {
+  "speaker": "DUT",
+  "category": "BUY_LAUNCHER",
+  "text": "A stovepipe. Everybody stand way the hell back."
+ },
+ "DUT_BUY_WONDER_01": {
+  "speaker": "DUT",
+  "category": "BUY_WONDER",
+  "text": "This thing hums. Guns shouldn't hum."
+ },
+ "DUT_BUY_MELEE_01": {
+  "speaker": "DUT",
+  "category": "BUY_MELEE",
+  "text": "A shovel. My old man would be proud. Finally doing honest work."
+ },
+ "DUT_CRATE_GOOD_01": {
+  "speaker": "DUT",
+  "category": "CRATE_GOOD",
+  "text": "Well, look at that. Christmas came late."
+ },
+ "DUT_CRATE_GOOD_02": {
+  "speaker": "DUT",
+  "category": "CRATE_GOOD",
+  "text": "Thank you, box. I take back half of what I said about you."
+ },
+ "DUT_CRATE_BAD_01": {
+  "speaker": "DUT",
+  "category": "CRATE_BAD",
+  "text": "Nine-fifty for this? I've been robbed by nicer crooks in Pittsburgh."
+ },
+ "DUT_CRATE_BAD_02": {
+  "speaker": "DUT",
+  "category": "CRATE_BAD",
+  "text": "This box hates me personally."
+ },
+ "DUT_CRATE_DRUMMER_01": {
+  "speaker": "DUT",
+  "category": "CRATE_DRUMMER",
+  "text": "The little drummer again. Somebody's kid owned that."
+ },
+ "DUT_CRATE_DRUMMER_02": {
+  "speaker": "DUT",
+  "category": "CRATE_DRUMMER",
+  "text": "Yeah, yeah, march on outta here, tin man."
+ },
+ "DUT_PERK_IRONHIDE_01": {
+  "speaker": "DUT",
+  "category": "PERK_IRONHIDE",
+  "text": "Tastes like a stout somebody drowned in. Hits like one too."
+ },
+ "DUT_PERK_SECONDWIND_01": {
+  "speaker": "DUT",
+  "category": "PERK_SECONDWIND",
+  "text": "Schnapps from a nun. Babcia would've approved. Na zdrowie. (Cheers.)"
+ },
+ "DUT_PERK_TRIGGER_01": {
+  "speaker": "DUT",
+  "category": "PERK_TRIGGER",
+  "text": "My hands are shaking. That's the tonic, not me. Mostly."
+ },
+ "DUT_PERK_TWINBARREL_01": {
+  "speaker": "DUT",
+  "category": "PERK_TWINBARREL",
+  "text": "Bitters. Like my old man's mood. Works about as fast."
+ },
+ "DUT_PERK_MARATHON_01": {
+  "speaker": "DUT",
+  "category": "PERK_MARATHON",
+  "text": "I don't run. I'm making an exception."
+ },
+ "DUT_PERK_HAWKEYE_01": {
+  "speaker": "DUT",
+  "category": "PERK_HAWKEYE",
+  "text": "Brandy. Fancy. My eyes feel like somebody scrubbed 'em."
+ },
+ "DUT_PERK_PACKMULE_01": {
+  "speaker": "DUT",
+  "category": "PERK_PACKMULE",
+  "text": "Another gun to carry. Story of my life. I'm the mule."
+ },
+ "DUT_PERK_BLASTPROOF_01": {
+  "speaker": "DUT",
+  "category": "PERK_BLASTPROOF",
+  "text": "Bock beer that makes you bombproof. Only in Europe."
+ },
+ "DUT_PWR_RESUPPLY_01": {
+  "speaker": "DUT",
+  "category": "PWR_RESUPPLY",
+  "text": "Ammo. Bless whoever's upstairs."
+ },
+ "DUT_PWR_DEATHSDOOR_01": {
+  "speaker": "DUT",
+  "category": "PWR_DEATHSDOOR",
+  "text": "Everything dies. Like usual, only faster."
+ },
+ "DUT_PWR_DOUBLESCRIP_01": {
+  "speaker": "DUT",
+  "category": "PWR_DOUBLESCRIP",
+  "text": "Double pay. Wish the Army ran like this."
+ },
+ "DUT_PWR_BLACKOUT_01": {
+  "speaker": "DUT",
+  "category": "PWR_BLACKOUT",
+  "text": "Lights out, fellas. Rest easy."
+ },
+ "DUT_PWR_FORTIFY_01": {
+  "speaker": "DUT",
+  "category": "PWR_FORTIFY",
+  "text": "Boards back up. Saves my back."
+ },
+ "DUT_PWR_CLEARANCE_01": {
+  "speaker": "DUT",
+  "category": "PWR_CLEARANCE",
+  "text": "Clearance sale at the box. Line up, ladies."
+ },
+ "DUT_BELL_01": {
+  "speaker": "DUT",
+  "category": "BELL",
+  "text": "That bell. Somebody tell it to shut up."
+ },
+ "DUT_BELL_02": {
+  "speaker": "DUT",
+  "category": "BELL",
+  "text": "Fog's rolling in. Here come the lantern boys."
+ },
+ "DUT_FOREMAN_01": {
+  "speaker": "DUT",
+  "category": "FOREMAN",
+  "text": "The boss is here. I hated foremen before he had a drill for an arm."
+ },
+ "DUT_FOREMAN_02": {
+  "speaker": "DUT",
+  "category": "FOREMAN",
+  "text": "C'mon, big man. I've punched out bigger guys than you. Not many."
+ },
+ "DUT_SCREAMER_01": {
+  "speaker": "DUT",
+  "category": "SCREAMER",
+  "text": "Somebody shut that nurse up before my ears bleed."
+ },
+ "DUT_GLASSHIDE_01": {
+  "speaker": "DUT",
+  "category": "GLASSHIDE",
+  "text": "This one's got glass for a gut. Aim high!"
+ },
+ "DUT_AMMO_LOW_01": {
+  "speaker": "DUT",
+  "category": "AMMO_LOW",
+  "text": "Running light here."
+ },
+ "DUT_AMMO_NONE_01": {
+  "speaker": "DUT",
+  "category": "AMMO_NONE",
+  "text": "Empty. Swell. Just swell."
+ },
+ "DUT_DOWN_01": {
+  "speaker": "DUT",
+  "category": "DOWN",
+  "text": "Ah, hell. I'm down. Somebody grab me."
+ },
+ "DUT_DOWN_02": {
+  "speaker": "DUT",
+  "category": "DOWN",
+  "text": "Babcia... not like this. Not here."
+ },
+ "DUT_REVIVE_01": {
+  "speaker": "DUT",
+  "category": "REVIVE",
+  "text": "Up you get. Don't make me carry you."
+ },
+ "DUT_REVIVE_02": {
+  "speaker": "DUT",
+  "category": "REVIVE",
+  "text": "Off the floor. Floor's for the dead ones."
+ },
+ "DUT_REVIVED_01": {
+  "speaker": "DUT",
+  "category": "REVIVED",
+  "text": "Thanks. I owe you a beer. A bad one."
+ },
+ "DUT_STREAK_01": {
+  "speaker": "DUT",
+  "category": "STREAK",
+  "text": "Keep 'em coming. I got all night, unfortunately."
+ },
+ "DUT_STREAK_02": {
+  "speaker": "DUT",
+  "category": "STREAK",
+  "text": "Like stacking pig iron. Just keep lifting."
+ },
+ "DUT_HEADSHOT_01": {
+  "speaker": "DUT",
+  "category": "HEADSHOT",
+  "text": "Right in the thinker."
+ },
+ "DUT_HEADSHOT_02": {
+  "speaker": "DUT",
+  "category": "HEADSHOT",
+  "text": "Rest easy, cousin."
+ },
+ "DUT_CRAWLER_01": {
+  "speaker": "DUT",
+  "category": "CRAWLER",
+  "text": "This one's crawling. Leave him. He ain't going anywhere fast."
+ },
+ "DUT_DOOR_01": {
+  "speaker": "DUT",
+  "category": "DOOR",
+  "text": "Door's open. Something's always behind the door."
+ },
+ "DUT_POWER_01": {
+  "speaker": "DUT",
+  "category": "POWER",
+  "text": "Lights. Now I can see what's eating me."
+ },
+ "DUT_CRUCIBLE_01": {
+  "speaker": "DUT",
+  "category": "CRUCIBLE",
+  "text": "Put my gun in a furnace and it came out meaner. That's the mill all over."
+ },
+ "DUT_CRUCIBLE_02": {
+  "speaker": "DUT",
+  "category": "CRUCIBLE",
+  "text": "Smells like the Monongahela on a hot day. Works, though."
+ },
+ "DUT_TRAP_01": {
+  "speaker": "DUT",
+  "category": "TRAP",
+  "text": "Hit the switch and watch the fireworks."
+ },
+ "DUT_EE_01": {
+  "speaker": "DUT",
+  "category": "EE",
+  "text": "That music box. Some little girl's. I hate this place more every minute."
+ },
+ "DUT_EE_02": {
+  "speaker": "DUT",
+  "category": "EE",
+  "text": "Bells in the right order. Like church back home."
+ },
+ "DUT_EE_03": {
+  "speaker": "DUT",
+  "category": "EE",
+  "text": "The heart's gonna blow. Good. Let it."
+ },
+ "DUT_EXHAUST_01": {
+  "speaker": "DUT",
+  "category": "EXHAUST",
+  "text": "Round fifty. I forgot what sitting down feels like."
+ },
+ "DUT_EXHAUST_02": {
+  "speaker": "DUT",
+  "category": "EXHAUST",
+  "text": "My arms are done. I'm fighting with spite now."
+ },
+ "DUT_POL_01": {
+  "speaker": "DUT",
+  "category": "POL",
+  "text": "Jestem głodna. (I am hungry)"
+ },
+ "DUT_POL_02": {
+  "speaker": "DUT",
+  "category": "POL",
+  "text": "Dzienkuje, box."
+ },
+ "DUT_POL_03": {
+  "speaker": "DUT",
+  "category": "POL",
+  "text": "Psiakrew."
+ },
+ "DUT_POL_04": {
+  "speaker": "DUT",
+  "category": "POL",
+  "text": "Cholera jasna."
+ },
+ "PEG_BUY_PISTOL_01": {
+  "speaker": "PEG",
+  "category": "BUY_PISTOL",
+  "text": "A sidearm. How very last resort."
+ },
+ "PEG_BUY_RIFLE_01": {
+  "speaker": "PEG",
+  "category": "BUY_RIFLE",
+  "text": "A rifle. Sensible. Rather like sensible shoes."
+ },
+ "PEG_BUY_RIFLE_02": {
+  "speaker": "PEG",
+  "category": "BUY_RIFLE",
+  "text": "German bolt action. One does admire their workmanship, if not their politics."
+ },
+ "PEG_BUY_SMG_01": {
+  "speaker": "PEG",
+  "category": "BUY_SMG",
+  "text": "A Tommy gun. The Americans do love a crowd-pleaser."
+ },
+ "PEG_BUY_SHOTGUN_01": {
+  "speaker": "PEG",
+  "category": "BUY_SHOTGUN",
+  "text": "A shotgun. Crude. Effective. Like most of my colleagues."
+ },
+ "PEG_BUY_LMG_01": {
+  "speaker": "PEG",
+  "category": "BUY_LMG",
+  "text": "Belt-fed. Now we're having a proper conversation."
+ },
+ "PEG_BUY_LAUNCHER_01": {
+  "speaker": "PEG",
+  "category": "BUY_LAUNCHER",
+  "text": "Oh, hello, darling. You and I are going to get along famously."
+ },
+ "PEG_BUY_WONDER_01": {
+  "speaker": "PEG",
+  "category": "BUY_WONDER",
+  "text": "Fascinating. Mr. Hale would... never mind."
+ },
+ "PEG_BUY_MELEE_01": {
+  "speaker": "PEG",
+  "category": "BUY_MELEE",
+  "text": "A shovel. My father would weep with pride."
+ },
+ "PEG_CRATE_GOOD_01": {
+  "speaker": "PEG",
+  "category": "CRATE_GOOD",
+  "text": "Oh, that's rather splendid."
+ },
+ "PEG_CRATE_GOOD_02": {
+  "speaker": "PEG",
+  "category": "CRATE_GOOD",
+  "text": "The crate is feeling generous. Let's not question it."
+ },
+ "PEG_CRATE_BAD_01": {
+  "speaker": "PEG",
+  "category": "CRATE_BAD",
+  "text": "Nine hundred and fifty Scrip. For that. Marvellous."
+ },
+ "PEG_CRATE_BAD_02": {
+  "speaker": "PEG",
+  "category": "CRATE_BAD",
+  "text": "I'll be filing a complaint with the quartermaster. Whoever, or whatever, that is."
+ },
+ "PEG_CRATE_DRUMMER_01": {
+  "speaker": "PEG",
+  "category": "CRATE_DRUMMER",
+  "text": "The drummer. Somebody wound him up and nobody's stopped him since."
+ },
+ "PEG_CRATE_DRUMMER_02": {
+  "speaker": "PEG",
+  "category": "CRATE_DRUMMER",
+  "text": "Off it goes. Do note where it lands, everyone."
+ },
+ "PEG_PERK_IRONHIDE_01": {
+  "speaker": "PEG",
+  "category": "PERK_IRONHIDE",
+  "text": "Stout. Ghastly. Fortifying. Very British, actually."
+ },
+ "PEG_PERK_SECONDWIND_01": {
+  "speaker": "PEG",
+  "category": "PERK_SECONDWIND",
+  "text": "Made by a nun, apparently. I'd pray, but I'll settle for this."
+ },
+ "PEG_PERK_TRIGGER_01": {
+  "speaker": "PEG",
+  "category": "PERK_TRIGGER",
+  "text": "Rather like strong tea with a grudge."
+ },
+ "PEG_PERK_TWINBARREL_01": {
+  "speaker": "PEG",
+  "category": "PERK_TWINBARREL",
+  "text": "Bitters. A gin would improve it enormously."
+ },
+ "PEG_PERK_MARATHON_01": {
+  "speaker": "PEG",
+  "category": "PERK_MARATHON",
+  "text": "I haven't run like this since the hockey pitch at Cheltenham."
+ },
+ "PEG_PERK_HAWKEYE_01": {
+  "speaker": "PEG",
+  "category": "PERK_HAWKEYE",
+  "text": "Brandy for marksmen. Well. Bottoms up and eyes front."
+ },
+ "PEG_PERK_PACKMULE_01": {
+  "speaker": "PEG",
+  "category": "PERK_PACKMULE",
+  "text": "One more gun. One can never have too many options."
+ },
+ "PEG_PERK_BLASTPROOF_01": {
+  "speaker": "PEG",
+  "category": "PERK_BLASTPROOF",
+  "text": "Oh, I know this one. The Demolitions School kept it in the staff room."
+ },
+ "PEG_PWR_RESUPPLY_01": {
+  "speaker": "PEG",
+  "category": "PWR_RESUPPLY",
+  "text": "Ammunition. How thoughtful."
+ },
+ "PEG_PWR_DEATHSDOOR_01": {
+  "speaker": "PEG",
+  "category": "PWR_DEATHSDOOR",
+  "text": "Everything dies in one. Let's be efficient about it."
+ },
+ "PEG_PWR_DOUBLESCRIP_01": {
+  "speaker": "PEG",
+  "category": "PWR_DOUBLESCRIP",
+  "text": "Double credit. The Ledger's in a generous mood."
+ },
+ "PEG_PWR_BLACKOUT_01": {
+  "speaker": "PEG",
+  "category": "PWR_BLACKOUT",
+  "text": "Clean sweep. Very tidy."
+ },
+ "PEG_PWR_FORTIFY_01": {
+  "speaker": "PEG",
+  "category": "PWR_FORTIFY",
+  "text": "Windows secured. Carry on."
+ },
+ "PEG_PWR_CLEARANCE_01": {
+  "speaker": "PEG",
+  "category": "PWR_CLEARANCE",
+  "text": "A sale. Even the dead have them."
+ },
+ "PEG_BELL_01": {
+  "speaker": "PEG",
+  "category": "BELL",
+  "text": "The bell. Fasbender said not to let it ring. It's ringing."
+ },
+ "PEG_BELL_02": {
+  "speaker": "PEG",
+  "category": "BELL",
+  "text": "Fog. Positions, everyone. They come out of it, not the windows."
+ },
+ "PEG_FOREMAN_01": {
+  "speaker": "PEG",
+  "category": "FOREMAN",
+  "text": "That is a very large man with a very large drill. Weak point, people. Find it."
+ },
+ "PEG_FOREMAN_02": {
+  "speaker": "PEG",
+  "category": "FOREMAN",
+  "text": "Aim for the glowing bit. It's always the glowing bit."
+ },
+ "PEG_SCREAMER_01": {
+  "speaker": "PEG",
+  "category": "SCREAMER",
+  "text": "A nurse. Do kill her quickly. She'll scramble us all."
+ },
+ "PEG_GLASSHIDE_01": {
+  "speaker": "PEG",
+  "category": "GLASSHIDE",
+  "text": "Armoured torso. Head or high explosive. I know which I prefer."
+ },
+ "PEG_AMMO_LOW_01": {
+  "speaker": "PEG",
+  "category": "AMMO_LOW",
+  "text": "Ammunition's getting rather thin."
+ },
+ "PEG_AMMO_NONE_01": {
+  "speaker": "PEG",
+  "category": "AMMO_NONE",
+  "text": "I'm dry. Inconvenient."
+ },
+ "PEG_DOWN_01": {
+  "speaker": "PEG",
+  "category": "DOWN",
+  "text": "I'm down. A little assistance, if you'd be so kind."
+ },
+ "PEG_DOWN_02": {
+  "speaker": "PEG",
+  "category": "DOWN",
+  "text": "Not here. I have orders to... oh, damn it."
+ },
+ "PEG_REVIVE_01": {
+  "speaker": "PEG",
+  "category": "REVIVE",
+  "text": "Up. We've no time for lying about."
+ },
+ "PEG_REVIVE_02": {
+  "speaker": "PEG",
+  "category": "REVIVE",
+  "text": "On your feet. I'm not filing the paperwork for you."
+ },
+ "PEG_REVIVED_01": {
+  "speaker": "PEG",
+  "category": "REVIVED",
+  "text": "Thank you. I'll pretend that didn't happen."
+ },
+ "PEG_STREAK_01": {
+  "speaker": "PEG",
+  "category": "STREAK",
+  "text": "Rather a good rhythm going, aren't we?"
+ },
+ "PEG_STREAK_02": {
+  "speaker": "PEG",
+  "category": "STREAK",
+  "text": "Keep them coming. I'm just warming up."
+ },
+ "PEG_HEADSHOT_01": {
+  "speaker": "PEG",
+  "category": "HEADSHOT",
+  "text": "Clean."
+ },
+ "PEG_HEADSHOT_02": {
+  "speaker": "PEG",
+  "category": "HEADSHOT",
+  "text": "One should always aim for the brain. It's where the trouble lives."
+ },
+ "PEG_CRAWLER_01": {
+  "speaker": "PEG",
+  "category": "CRAWLER",
+  "text": "Legless and still determined. One almost admires it."
+ },
+ "PEG_DOOR_01": {
+  "speaker": "PEG",
+  "category": "DOOR",
+  "text": "Door's open. Carry on, then."
+ },
+ "PEG_POWER_01": {
+  "speaker": "PEG",
+  "category": "POWER",
+  "text": "Power's on. Now we see what they built here."
+ },
+ "PEG_CRUCIBLE_01": {
+  "speaker": "PEG",
+  "category": "CRUCIBLE",
+  "text": "It's... re-teaching the weapon. That shouldn't be possible. Make a note."
+ },
+ "PEG_CRUCIBLE_02": {
+  "speaker": "PEG",
+  "category": "CRUCIBLE",
+  "text": "Interesting. How much of this material is in that furnace?"
+ },
+ "PEG_TRAP_01": {
+  "speaker": "PEG",
+  "category": "TRAP",
+  "text": "Lever pulled. Do stand clear."
+ },
+ "PEG_EE_01": {
+  "speaker": "PEG",
+  "category": "EE",
+  "text": "A music box. Four notes. It's a key of some sort."
+ },
+ "PEG_EE_02": {
+  "speaker": "PEG",
+  "category": "EE",
+  "text": "The shard. Careful with it. Nobody touch it with bare hands."
+ },
+ "PEG_EE_03": {
+  "speaker": "PEG",
+  "category": "EE",
+  "text": "The heart's overloading. Hold this position. Hold it!"
+ },
+ "PEG_EXHAUST_01": {
+  "speaker": "PEG",
+  "category": "EXHAUST",
+  "text": "Fifty rounds. I'd kill for a cup of tea. I have, in fact, killed for less."
+ },
+ "PEG_EXHAUST_02": {
+  "speaker": "PEG",
+  "category": "EXHAUST",
+  "text": "If I sit down I shan't get up again. So I shan't sit down."
+ },
+ "PEG_LANTERN_01": {
+  "speaker": "PEG",
+  "category": "LANTERN",
+  "text": "Mr. Hale will want to know about... the Ledger. For the report."
+ },
+ "PEG_LANTERN_02": {
+  "speaker": "PEG",
+  "category": "LANTERN",
+  "text": "Stable in transit. Good. That's good to know."
+ },
+ "PEG_LANTERN_03": {
+  "speaker": "PEG",
+  "category": "LANTERN",
+  "text": "Nobody needs to know what's in my pack. Least of all you."
+ },
+ "DEA_BUY_PISTOL_01": {
+  "speaker": "DEA",
+  "category": "BUY_PISTOL",
+  "text": "Little forty-five. Small, but she'll pull her weight."
+ },
+ "DEA_BUY_RIFLE_01": {
+  "speaker": "DEA",
+  "category": "BUY_RIFLE",
+  "text": "Bolt rifle. One shot, one prayer."
+ },
+ "DEA_BUY_RIFLE_02": {
+  "speaker": "DEA",
+  "category": "BUY_RIFLE",
+  "text": "Garand. Eight rounds and a song when she's empty."
+ },
+ "DEA_BUY_SMG_01": {
+  "speaker": "DEA",
+  "category": "BUY_SMG",
+  "text": "Chatterbox. All right, sister, let's sing."
+ },
+ "DEA_BUY_SHOTGUN_01": {
+  "speaker": "DEA",
+  "category": "BUY_SHOTGUN",
+  "text": "Pump gun. My uncle's old friend. Hello, old friend."
+ },
+ "DEA_BUY_LMG_01": {
+  "speaker": "DEA",
+  "category": "BUY_LMG",
+  "text": "Heavy mule. She'll haul the load."
+ },
+ "DEA_BUY_LAUNCHER_01": {
+  "speaker": "DEA",
+  "category": "BUY_LAUNCHER",
+  "text": "Lord, forgive me for what I'm about to do with this."
+ },
+ "DEA_BUY_WONDER_01": {
+  "speaker": "DEA",
+  "category": "BUY_WONDER",
+  "text": "Whoever built this was a genius, and I'm sorry for 'em."
+ },
+ "DEA_BUY_MELEE_01": {
+  "speaker": "DEA",
+  "category": "BUY_MELEE",
+  "text": "Shovel. A good tool. Dig a trench or dig a grave."
+ },
+ "DEA_CRATE_GOOD_01": {
+  "speaker": "DEA",
+  "category": "CRATE_GOOD",
+  "text": "The Lord provides. Sometimes in a busted crate."
+ },
+ "DEA_CRATE_GOOD_02": {
+  "speaker": "DEA",
+  "category": "CRATE_GOOD",
+  "text": "Now that's a blessing with a trigger."
+ },
+ "DEA_CRATE_BAD_01": {
+  "speaker": "DEA",
+  "category": "CRATE_BAD",
+  "text": "Well. Blessed are the poor, I suppose."
+ },
+ "DEA_CRATE_BAD_02": {
+  "speaker": "DEA",
+  "category": "CRATE_BAD",
+  "text": "Crate's got a sense of humor. I don't like it."
+ },
+ "DEA_CRATE_DRUMMER_01": {
+  "speaker": "DEA",
+  "category": "CRATE_DRUMMER",
+  "text": "The little drummer boy. Somebody's baby girl wound you up, didn't she?"
+ },
+ "DEA_CRATE_DRUMMER_02": {
+  "speaker": "DEA",
+  "category": "CRATE_DRUMMER",
+  "text": "Go on, little fella. March home."
+ },
+ "DEA_PERK_IRONHIDE_01": {
+  "speaker": "DEA",
+  "category": "PERK_IRONHIDE",
+  "text": "Thick as molasses. Settles in your bones."
+ },
+ "DEA_PERK_SECONDWIND_01": {
+  "speaker": "DEA",
+  "category": "PERK_SECONDWIND",
+  "text": "Sister Agnieszka. Whoever you were, thank you."
+ },
+ "DEA_PERK_TRIGGER_01": {
+  "speaker": "DEA",
+  "category": "PERK_TRIGGER",
+  "text": "Fizzy. Hands moving faster than my thoughts."
+ },
+ "DEA_PERK_TWINBARREL_01": {
+  "speaker": "DEA",
+  "category": "PERK_TWINBARREL",
+  "text": "Bitter, like a sermon on a hot Sunday."
+ },
+ "DEA_PERK_MARATHON_01": {
+  "speaker": "DEA",
+  "category": "PERK_MARATHON",
+  "text": "Feel like I could outrun the Devil. Let's not test that."
+ },
+ "DEA_PERK_HAWKEYE_01": {
+  "speaker": "DEA",
+  "category": "PERK_HAWKEYE",
+  "text": "Brandy. Daddy'd have a fit. Eyes feel sharp, though."
+ },
+ "DEA_PERK_PACKMULE_01": {
+  "speaker": "DEA",
+  "category": "PERK_PACKMULE",
+  "text": "Make me a mule, I'll carry the load."
+ },
+ "DEA_PERK_BLASTPROOF_01": {
+  "speaker": "DEA",
+  "category": "PERK_BLASTPROOF",
+  "text": "Can't blow myself up? Well, praise be."
+ },
+ "DEA_PWR_RESUPPLY_01": {
+  "speaker": "DEA",
+  "category": "PWR_RESUPPLY",
+  "text": "Loaves and fishes. Bullets and grenades."
+ },
+ "DEA_PWR_DEATHSDOOR_01": {
+  "speaker": "DEA",
+  "category": "PWR_DEATHSDOOR",
+  "text": "Every shot's the last one for 'em. Mercy, quick."
+ },
+ "DEA_PWR_DOUBLESCRIP_01": {
+  "speaker": "DEA",
+  "category": "PWR_DOUBLESCRIP",
+  "text": "Double wages. Don't spend it all at once."
+ },
+ "DEA_PWR_BLACKOUT_01": {
+  "speaker": "DEA",
+  "category": "PWR_BLACKOUT",
+  "text": "Rest now. All of you. Go on home."
+ },
+ "DEA_PWR_FORTIFY_01": {
+  "speaker": "DEA",
+  "category": "PWR_FORTIFY",
+  "text": "Boards back in place. Didn't even need my hammer."
+ },
+ "DEA_PWR_CLEARANCE_01": {
+  "speaker": "DEA",
+  "category": "PWR_CLEARANCE",
+  "text": "The crate's taking pennies. Go, go, go."
+ },
+ "DEA_BELL_01": {
+  "speaker": "DEA",
+  "category": "BELL",
+  "text": "Hear that bell? Ain't nobody being called to worship."
+ },
+ "DEA_BELL_02": {
+  "speaker": "DEA",
+  "category": "BELL",
+  "text": "Fog's coming. Stand together. Backs to each other."
+ },
+ "DEA_FOREMAN_01": {
+  "speaker": "DEA",
+  "category": "FOREMAN",
+  "text": "Somebody bolted a drill onto that man. God help whoever did it."
+ },
+ "DEA_FOREMAN_02": {
+  "speaker": "DEA",
+  "category": "FOREMAN",
+  "text": "That drill core's glowing. That's his heart. Hit it."
+ },
+ "DEA_SCREAMER_01": {
+  "speaker": "DEA",
+  "category": "SCREAMER",
+  "text": "That poor woman. Make it quick."
+ },
+ "DEA_GLASSHIDE_01": {
+  "speaker": "DEA",
+  "category": "GLASSHIDE",
+  "text": "That one's wearing glass like armor. Go for the head."
+ },
+ "DEA_AMMO_LOW_01": {
+  "speaker": "DEA",
+  "category": "AMMO_LOW",
+  "text": "Getting light. Real light."
+ },
+ "DEA_AMMO_NONE_01": {
+  "speaker": "DEA",
+  "category": "AMMO_NONE",
+  "text": "Empty. Lord, give me a bullet or give me a running start."
+ },
+ "DEA_DOWN_01": {
+  "speaker": "DEA",
+  "category": "DOWN",
+  "text": "I'm down. Somebody... come on now."
+ },
+ "DEA_DOWN_02": {
+  "speaker": "DEA",
+  "category": "DOWN",
+  "text": "Ruthie, honey... not yet. Not yet."
+ },
+ "DEA_REVIVE_01": {
+  "speaker": "DEA",
+  "category": "REVIVE",
+  "text": "Got you. Up we go. Easy now."
+ },
+ "DEA_REVIVE_02": {
+  "speaker": "DEA",
+  "category": "REVIVE",
+  "text": "Not today. You hear me? Not today."
+ },
+ "DEA_REVIVED_01": {
+  "speaker": "DEA",
+  "category": "REVIVED",
+  "text": "Thank you. Lazarus owes you one."
+ },
+ "DEA_STREAK_01": {
+  "speaker": "DEA",
+  "category": "STREAK",
+  "text": "Keep the rhythm. Keep the rhythm."
+ },
+ "DEA_STREAK_02": {
+  "speaker": "DEA",
+  "category": "STREAK",
+  "text": "One more verse. And another."
+ },
+ "DEA_HEADSHOT_01": {
+  "speaker": "DEA",
+  "category": "HEADSHOT",
+  "text": "Go on home."
+ },
+ "DEA_HEADSHOT_02": {
+  "speaker": "DEA",
+  "category": "HEADSHOT",
+  "text": "Sleep easy, brother."
+ },
+ "DEA_CRAWLER_01": {
+  "speaker": "DEA",
+  "category": "CRAWLER",
+  "text": "This one's crawling. Lord, have mercy on him."
+ },
+ "DEA_DOOR_01": {
+  "speaker": "DEA",
+  "category": "DOOR",
+  "text": "Door's open. Watch your step."
+ },
+ "DEA_POWER_01": {
+  "speaker": "DEA",
+  "category": "POWER",
+  "text": "Hear that? Turbines singing. Whole place just woke up."
+ },
+ "DEA_POWER_02": {
+  "speaker": "DEA",
+  "category": "POWER",
+  "text": "Easy, girl. Easy. Good girl. Hum for me."
+ },
+ "DEA_CRUCIBLE_01": {
+  "speaker": "DEA",
+  "category": "CRUCIBLE",
+  "text": "That furnace is talking to my gun. And my gun's listening."
+ },
+ "DEA_CRUCIBLE_02": {
+  "speaker": "DEA",
+  "category": "CRUCIBLE",
+  "text": "Beautiful work, used for ugly reasons. Same as everything here."
+ },
+ "DEA_TRAP_01": {
+  "speaker": "DEA",
+  "category": "TRAP",
+  "text": "Lever's down. Stand clear of her."
+ },
+ "DEA_BUILD_01": {
+  "speaker": "DEA",
+  "category": "BUILD",
+  "text": "Bell, frame, crank. All right, little lady, let's put you together."
+ },
+ "DEA_EE_01": {
+  "speaker": "DEA",
+  "category": "EE",
+  "text": "That music box... somebody's lullaby."
+ },
+ "DEA_EE_02": {
+  "speaker": "DEA",
+  "category": "EE",
+  "text": "Ring 'em in order, like the old hymn."
+ },
+ "DEA_EE_03": {
+  "speaker": "DEA",
+  "category": "EE",
+  "text": "The heart's breaking. Hold on. Hold on!"
+ },
+ "DEA_EXHAUST_01": {
+  "speaker": "DEA",
+  "category": "EXHAUST",
+  "text": "Fifty rounds. Even Job got a break."
+ },
+ "DEA_EXHAUST_02": {
+  "speaker": "DEA",
+  "category": "EXHAUST",
+  "text": "I'm tired, Lord. But I'm still here."
+ },
+ "DEA_MACH_01": {
+  "speaker": "DEA",
+  "category": "MACH",
+  "text": "Come on, mule. Don't you quit on me."
+ },
+ "DEA_MACH_02": {
+  "speaker": "DEA",
+  "category": "MACH",
+  "text": "Shh. Easy now. Nobody's gonna hurt you anymore."
+ },
+ "DEA_MACH_03": {
+  "speaker": "DEA",
+  "category": "MACH",
+  "text": "Pretty thing. Who taught you to eat people?"
+ },
+ "DEA_BLUES_01": {
+  "speaker": "DEA",
+  "category": "BLUES",
+  "text": "♪ Buried in the salt, Lord, buried way down deep... buried in the salt, can't nobody here sleep. ♪"
+ },
+ "DEA_BLUES_02": {
+  "speaker": "DEA",
+  "category": "BLUES",
+  "text": "♪ That bell keeps ringing, ringing for the dead... that bell keeps ringing, wish it'd ring for me instead. ♪"
+ },
+ "DEA_BLUES_03": {
+  "speaker": "DEA",
+  "category": "BLUES",
+  "text": "♪ Got a ledger keeps a-counting every man I lay down... yes, a ledger keeps a-counting, gonna burn that ledger down. ♪"
+ },
+ "WRN_BUY_PISTOL_01": {
+  "speaker": "WRN",
+  "category": "BUY_PISTOL",
+  "text": "A pistol. For when I want to be close. I never want to be close."
+ },
+ "WRN_BUY_RIFLE_01": {
+  "speaker": "WRN",
+  "category": "BUY_RIFLE",
+  "text": "Mauser. Their rifle. Their bullets. Their heads. Fair."
+ },
+ "WRN_BUY_RIFLE_02": {
+  "speaker": "WRN",
+  "category": "BUY_RIFLE",
+  "text": "Gewehr. Semi-automatic. I can be efficient."
+ },
+ "WRN_BUY_SMG_01": {
+  "speaker": "WRN",
+  "category": "BUY_SMG",
+  "text": "A machine pistol. Inelegant. Useful."
+ },
+ "WRN_BUY_SHOTGUN_01": {
+  "speaker": "WRN",
+  "category": "BUY_SHOTGUN",
+  "text": "Shotgun. For people who cannot aim. Today, that is me."
+ },
+ "WRN_BUY_LMG_01": {
+  "speaker": "WRN",
+  "category": "BUY_LMG",
+  "text": "Heavy. Loud. Everything I am not."
+ },
+ "WRN_BUY_LAUNCHER_01": {
+  "speaker": "WRN",
+  "category": "BUY_LAUNCHER",
+  "text": "This is Peg's kind of gun. I will borrow her taste."
+ },
+ "WRN_BUY_WONDER_01": {
+  "speaker": "WRN",
+  "category": "BUY_WONDER",
+  "text": "Fasbender's toy. Built in the same place as my brother's grave."
+ },
+ "WRN_BUY_MELEE_01": {
+  "speaker": "WRN",
+  "category": "BUY_MELEE",
+  "text": "A shovel. Good. I will dig them a proper place."
+ },
+ "WRN_CRATE_GOOD_01": {
+  "speaker": "WRN",
+  "category": "CRATE_GOOD",
+  "text": "Good. Finally, something here is on our side."
+ },
+ "WRN_CRATE_GOOD_02": {
+  "speaker": "WRN",
+  "category": "CRATE_GOOD",
+  "text": "This will do. This will do very well."
+ },
+ "WRN_CRATE_BAD_01": {
+  "speaker": "WRN",
+  "category": "CRATE_BAD",
+  "text": "A crate that robs the poor. How German."
+ },
+ "WRN_CRATE_BAD_02": {
+  "speaker": "WRN",
+  "category": "CRATE_BAD",
+  "text": "I could kill more with a sharpened spoon."
+ },
+ "WRN_CRATE_DRUMMER_01": {
+  "speaker": "WRN",
+  "category": "CRATE_DRUMMER",
+  "text": "The drummer. Reinholt's girl's toy. It is following us."
+ },
+ "WRN_CRATE_DRUMMER_02": {
+  "speaker": "WRN",
+  "category": "CRATE_DRUMMER",
+  "text": "Run, little soldier. One day I will catch you."
+ },
+ "WRN_PERK_IRONHIDE_01": {
+  "speaker": "WRN",
+  "category": "PERK_IRONHIDE",
+  "text": "Bavarian beer. Thick as their heads."
+ },
+ "WRN_PERK_SECONDWIND_01": {
+  "speaker": "WRN",
+  "category": "PERK_SECONDWIND",
+  "text": "Siostra Agnieszka. She was real. She nursed the laborers. Thank you, sister. (Sister Agnieszka.)"
+ },
+ "WRN_PERK_SECONDWIND_02": {
+  "speaker": "WRN",
+  "category": "PERK_SECONDWIND",
+  "text": "She made this to keep them alive. They used it to keep them working."
+ },
+ "WRN_PERK_TRIGGER_01": {
+  "speaker": "WRN",
+  "category": "PERK_TRIGGER",
+  "text": "Fizz. My hands are fast now. Faster than theirs."
+ },
+ "WRN_PERK_TWINBARREL_01": {
+  "speaker": "WRN",
+  "category": "PERK_TWINBARREL",
+  "text": "Bitter. Appropriate."
+ },
+ "WRN_PERK_MARATHON_01": {
+  "speaker": "WRN",
+  "category": "PERK_MARATHON",
+  "text": "I could run to Kraków. I would, if this were done."
+ },
+ "WRN_PERK_HAWKEYE_01": {
+  "speaker": "WRN",
+  "category": "PERK_HAWKEYE",
+  "text": "I hate that this works. I hate it."
+ },
+ "WRN_PERK_HAWKEYE_02": {
+  "speaker": "WRN",
+  "category": "PERK_HAWKEYE",
+  "text": "Sniper brandy, made by the men who hunted us. My hands are steadier. Damn them."
+ },
+ "WRN_PERK_PACKMULE_01": {
+  "speaker": "WRN",
+  "category": "PERK_PACKMULE",
+  "text": "One more weapon. One more chance."
+ },
+ "WRN_PERK_BLASTPROOF_01": {
+  "speaker": "WRN",
+  "category": "PERK_BLASTPROOF",
+  "text": "Peg will be jealous. Or she already drank three."
+ },
+ "WRN_PWR_RESUPPLY_01": {
+  "speaker": "WRN",
+  "category": "PWR_RESUPPLY",
+  "text": "Ammunition. Count it later."
+ },
+ "WRN_PWR_DEATHSDOOR_01": {
+  "speaker": "WRN",
+  "category": "PWR_DEATHSDOOR",
+  "text": "Everything dies in one shot. Like a good shot should."
+ },
+ "WRN_PWR_DOUBLESCRIP_01": {
+  "speaker": "WRN",
+  "category": "PWR_DOUBLESCRIP",
+  "text": "Double. My notebook will need more pages."
+ },
+ "WRN_PWR_BLACKOUT_01": {
+  "speaker": "WRN",
+  "category": "PWR_BLACKOUT",
+  "text": "All of them. At once. If only it were so easy outside."
+ },
+ "WRN_PWR_FORTIFY_01": {
+  "speaker": "WRN",
+  "category": "PWR_FORTIFY",
+  "text": "Windows closed. Do not waste it."
+ },
+ "WRN_PWR_CLEARANCE_01": {
+  "speaker": "WRN",
+  "category": "PWR_CLEARANCE",
+  "text": "The crate is cheap. Move."
+ },
+ "WRN_BELL_01": {
+  "speaker": "WRN",
+  "category": "BELL",
+  "text": "The bell. My brother wrote that the walls hum. This is louder."
+ },
+ "WRN_BELL_02": {
+  "speaker": "WRN",
+  "category": "BELL",
+  "text": "Fog. Lanterns. Those were miners. Shoot them anyway."
+ },
+ "WRN_FOREMAN_01": {
+  "speaker": "WRN",
+  "category": "FOREMAN",
+  "text": "The overseer. Obersteiger. My brother worked under him. Let me."
+ },
+ "WRN_FOREMAN_02": {
+  "speaker": "WRN",
+  "category": "FOREMAN",
+  "text": "The drill core. Aim there. I want him to know who killed him."
+ },
+ "WRN_SCREAMER_01": {
+  "speaker": "WRN",
+  "category": "SCREAMER",
+  "text": "The nurse. Kill her. Kill her now."
+ },
+ "WRN_GLASSHIDE_01": {
+  "speaker": "WRN",
+  "category": "GLASSHIDE",
+  "text": "Glass body. Head only. That is all I aim for anyway."
+ },
+ "WRN_AMMO_LOW_01": {
+  "speaker": "WRN",
+  "category": "AMMO_LOW",
+  "text": "Few rounds left."
+ },
+ "WRN_AMMO_NONE_01": {
+  "speaker": "WRN",
+  "category": "AMMO_NONE",
+  "text": "Empty. Do diabła. (To the devil.)"
+ },
+ "WRN_DOWN_01": {
+  "speaker": "WRN",
+  "category": "DOWN",
+  "text": "I'm down. Quickly. Quickly!"
+ },
+ "WRN_DOWN_02": {
+  "speaker": "WRN",
+  "category": "DOWN",
+  "text": "Tomek... I'm sorry. I came too late."
+ },
+ "WRN_REVIVE_01": {
+  "speaker": "WRN",
+  "category": "REVIVE",
+  "text": "Get up. I am not losing anyone else here."
+ },
+ "WRN_REVIVE_02": {
+  "speaker": "WRN",
+  "category": "REVIVE",
+  "text": "Up. Shoot. Complain later."
+ },
+ "WRN_REVIVED_01": {
+  "speaker": "WRN",
+  "category": "REVIVED",
+  "text": "Thank you. I will write you in the notebook. The good page."
+ },
+ "WRN_STREAK_01": {
+  "speaker": "WRN",
+  "category": "STREAK",
+  "text": "Sześćdziesiąt... I am losing count. Good. (Sixty.)"
+ },
+ "WRN_STREAK_02": {
+  "speaker": "WRN",
+  "category": "STREAK",
+  "text": "Keep them coming. The notebook is hungry."
+ },
+ "WRN_HEADSHOT_01": {
+  "speaker": "WRN",
+  "category": "HEADSHOT",
+  "text": "Jeden. (One.)"
+ },
+ "WRN_HEADSHOT_02": {
+  "speaker": "WRN",
+  "category": "HEADSHOT",
+  "text": "Clean. Into the book."
+ },
+ "WRN_HEADSHOT_03": {
+  "speaker": "WRN",
+  "category": "HEADSHOT",
+  "text": "That is how it is done, Dutch."
+ },
+ "WRN_CRAWLER_01": {
+  "speaker": "WRN",
+  "category": "CRAWLER",
+  "text": "Crawling. Like they made my brother crawl."
+ },
+ "WRN_DOOR_01": {
+  "speaker": "WRN",
+  "category": "DOOR",
+  "text": "Open. I know what's behind this one. I wish I didn't."
+ },
+ "WRN_POWER_01": {
+  "speaker": "WRN",
+  "category": "POWER",
+  "text": "Power. The laborers built that switch. Now we use it."
+ },
+ "WRN_CRUCIBLE_01": {
+  "speaker": "WRN",
+  "category": "CRUCIBLE",
+  "text": "Their furnace. Their glass. Our gun now."
+ },
+ "WRN_CRUCIBLE_02": {
+  "speaker": "WRN",
+  "category": "CRUCIBLE",
+  "text": "It changed the rifle. I don't want to know how."
+ },
+ "WRN_TRAP_01": {
+  "speaker": "WRN",
+  "category": "TRAP",
+  "text": "The lever. Stand back, or join them."
+ },
+ "WRN_EE_01": {
+  "speaker": "WRN",
+  "category": "EE",
+  "text": "Reinholt's daughter's music box. She had a child. I had a brother."
+ },
+ "WRN_EE_02": {
+  "speaker": "WRN",
+  "category": "EE",
+  "text": "Four bells. Shoot them in order. Like counting."
+ },
+ "WRN_EE_03": {
+  "speaker": "WRN",
+  "category": "EE",
+  "text": "Break the heart. Break all of it."
+ },
+ "WRN_EXHAUST_01": {
+  "speaker": "WRN",
+  "category": "EXHAUST",
+  "text": "Round fifty. I have run out of pages."
+ },
+ "WRN_EXHAUST_02": {
+  "speaker": "WRN",
+  "category": "EXHAUST",
+  "text": "My eyes hurt. My hands do not care."
+ },
+ "WRN_POL_01": {
+  "speaker": "WRN",
+  "category": "POL",
+  "text": "Głodny, Dutch. You just told me you are a hungry woman."
+ },
+ "WRN_POL_02": {
+  "speaker": "WRN",
+  "category": "POL",
+  "text": "Dziękuję. Not jen-koo-yeh. Your grandmother must have wept."
+ },
+ "WRN_POL_03": {
+  "speaker": "WRN",
+  "category": "POL",
+  "text": "That is not a swear. You just said 'bright plague.' Fine. It works."
+ },
+ "FAS_SAMPLE_01": {
+  "speaker": "FAS",
+  "category": "SAMPLE",
+  "text": "Glasmacher calling Gravelight. Please, if anyone is alive on that aircraft... please answer."
+ },
+ "FAS_SAMPLE_02": {
+  "speaker": "FAS",
+  "category": "SAMPLE",
+  "text": "Do not let the bell ring. When it rings, the dead remember they were hungry."
+ },
+ "FAS_SAMPLE_03": {
+  "speaker": "FAS",
+  "category": "SAMPLE",
+  "text": "The Pylons are tuning forks. Three of them. Strike them together and the vault will... sing open. Forgive the poetry. I have been alone a long time."
+ },
+ "FAS_SAMPLE_04": {
+  "speaker": "FAS",
+  "category": "SAMPLE",
+  "text": "Did I make the tonics? I... calculated the dilutions. That is not the same thing. It is not the same."
+ },
+ "FAS_SAMPLE_05": {
+  "speaker": "FAS",
+  "category": "SAMPLE",
+  "text": "Augusta was my friend. I want you to know that before you hate her. And before you hate me."
+ },
+ "REI_SAMPLE_01": {
+  "speaker": "REI",
+  "category": "SAMPLE",
+  "text": "Diary, the ninth of February, 1939. She asked me yesterday if the stars were cold. Today I couldn't answer anything at all."
+ },
+ "REI_SAMPLE_02": {
+  "speaker": "REI",
+  "category": "SAMPLE",
+  "text": "The material doesn't create hunger. It preserves the last impulse. If I can make the last impulse love... then they're not monsters. They're kept."
+ },
+ "REI_SAMPLE_03": {
+  "speaker": "REI",
+  "category": "SAMPLE",
+  "text": "You are standing in the heart of my work, soldiers. Please. Wipe your feet."
+ },
+ "REI_SAMPLE_04": {
+  "speaker": "REI",
+  "category": "SAMPLE",
+  "text": "Emil thinks he's betraying me. He's only betraying himself. He always did lack conviction."
+ },
+ "REI_SAMPLE_05": {
+  "speaker": "REI",
+  "category": "SAMPLE",
+  "text": "Liesl. Mama is coming. Mama is nearly finished."
+ },
+ "OPR_SAMPLE_01": {
+  "speaker": "OPR",
+  "category": "SAMPLE",
+  "text": "Good evening, valued personnel! This is Your Friend at the Ledger, and every quiet body is a credit to the Reich... and to you!"
+ },
+ "OPR_SAMPLE_02": {
+  "speaker": "OPR",
+  "category": "SAMPLE",
+  "text": "Ammunition for everyone! Courtesy of the Ledger. Please don't thank us. We know."
+ },
+ "OPR_SAMPLE_03": {
+  "speaker": "OPR",
+  "category": "SAMPLE",
+  "text": "Oh dear, wrong bell! The Ledger is disappointed, but never surprised."
+ },
+ "OPR_SAMPLE_04": {
+  "speaker": "OPR",
+  "category": "SAMPLE",
+  "text": "Corporal Brooks. You fixed Hattie. Hattie... remembers. So do I."
+ },
+ "OPR_SAMPLE_05": {
+  "speaker": "OPR",
+  "category": "SAMPLE",
+  "text": "Tally: four thousand, four hundred and seventy-one. That's a lovely number, isn't it? Why is that a lovely number?"
+ },
+ "LSL_SAMPLE_01": {
+  "speaker": "LSL",
+  "category": "SAMPLE",
+  "text": "Mama, is it on? Is it recording? Hello, the future! I am Liesl and I am six and a half."
+ },
+ "LSL_SAMPLE_02": {
+  "speaker": "LSL",
+  "category": "SAMPLE",
+  "text": "This is Herr Tamtam. He drums when he is happy. Drum, Herr Tamtam! (tin drumming)"
+ },
+ "LSL_SAMPLE_03": {
+  "speaker": "LSL",
+  "category": "SAMPLE",
+  "text": "♪ Komm mit, kleiner Soldat... ♪ I forget the rest. Mama, what comes next?"
+ },
+ "LSL_SAMPLE_04": {
+  "speaker": "LSL",
+  "category": "SAMPLE",
+  "text": "I'm not tired. I'm only resting my eyes. Like Papa used to."
+ },
+ "LSL_SAMPLE_05": {
+  "speaker": "LSL",
+  "category": "SAMPLE",
+  "text": "Mama, when you go down in the salt, does it hum for you too?"
+ },
+ "BNT_DUT_PEG_01": {
+  "speaker": "BNT",
+  "category": "DUT_PEG",
+  "text": "Lieutenant, how come the British always talk like they're ordering tea?",
+  "exchange": [
+   [
+    "DUT",
+    "Lieutenant, how come the British always talk like they're ordering tea?"
+   ],
+   [
+    "PEG",
+    "Because, Sergeant, we usually are."
+   ],
+   [
+    "DUT",
+    "Even now?"
+   ],
+   [
+    "PEG",
+    "Especially now."
+   ]
+  ]
+ },
+ "BNT_DUT_PEG_02": {
+  "speaker": "BNT",
+  "category": "DUT_PEG",
+  "text": "Sergeant, you're bleeding.",
+  "exchange": [
+   [
+    "PEG",
+    "Sergeant, you're bleeding."
+   ],
+   [
+    "DUT",
+    "Yeah. Steady drip. Like a faucet back home."
+   ],
+   [
+    "PEG",
+    "That is not reassuring."
+   ],
+   [
+    "DUT",
+    "Wasn't trying to reassure you, ma'am."
+   ]
+  ]
+ },
+ "BNT_DUT_PEG_03": {
+  "speaker": "BNT",
+  "category": "DUT_PEG",
+  "text": "What's in your pack, Lieutenant? You keep checking it.",
+  "exchange": [
+   [
+    "DUT",
+    "What's in your pack, Lieutenant? You keep checking it."
+   ],
+   [
+    "PEG",
+    "Charges. Detonators. Tea."
+   ],
+   [
+    "DUT",
+    "Uh-huh."
+   ]
+  ]
+ },
+ "BNT_DUT_DEA_01": {
+  "speaker": "BNT",
+  "category": "DUT_DEA",
+  "text": "You really name every engine you fix?",
+  "exchange": [
+   [
+    "DUT",
+    "You really name every engine you fix?"
+   ],
+   [
+    "DEA",
+    "Every one. That turbine down there's called Hattie."
+   ],
+   [
+    "DUT",
+    "Why Hattie?"
+   ],
+   [
+    "DEA",
+    "Because she's loud and she don't quit. Like you, Sarge."
+   ]
+  ]
+ },
+ "BNT_DUT_DEA_02": {
+  "speaker": "BNT",
+  "category": "DUT_DEA",
+  "text": "You ever pray, Dutch?",
+  "exchange": [
+   [
+    "DEA",
+    "You ever pray, Dutch?"
+   ],
+   [
+    "DUT",
+    "Every time I go up a cliff."
+   ],
+   [
+    "DEA",
+    "And?"
+   ],
+   [
+    "DUT",
+    "Still here. Don't push it."
+   ]
+  ]
+ },
+ "BNT_DUT_DEA_03": {
+  "speaker": "BNT",
+  "category": "DUT_DEA",
+  "text": "My old man worked the mill thirty years. Never said a word about it.",
+  "exchange": [
+   [
+    "DUT",
+    "My old man worked the mill thirty years. Never said a word about it."
+   ],
+   [
+    "DEA",
+    "My daddy preached thirty years. Never stopped saying words about it."
+   ],
+   [
+    "DUT",
+    "Wanna trade?"
+   ],
+   [
+    "DEA",
+    "Not for all the gold in the salt."
+   ]
+  ]
+ },
+ "BNT_DUT_WRN_01": {
+  "speaker": "BNT",
+  "category": "DUT_WRN",
+  "text": "Jestem głodna.",
+  "exchange": [
+   [
+    "DUT",
+    "Jestem głodna."
+   ],
+   [
+    "WRN",
+    "Głodny. You are a man."
+   ],
+   [
+    "DUT",
+    "Says you."
+   ],
+   [
+    "WRN",
+    "God help Poland."
+   ]
+  ]
+ },
+ "BNT_DUT_WRN_02": {
+  "speaker": "BNT",
+  "category": "DUT_WRN",
+  "text": "Your grandmother. Where was she from?",
+  "exchange": [
+   [
+    "WRN",
+    "Your grandmother. Where was she from?"
+   ],
+   [
+    "DUT",
+    "Wilcza Góra. You know it?"
+   ],
+   [
+    "WRN",
+    "...Six kilometers from here."
+   ],
+   [
+    "DUT",
+    "Yeah. She said that, too."
+   ]
+  ]
+ },
+ "BNT_DUT_WRN_03": {
+  "speaker": "BNT",
+  "category": "DUT_WRN",
+  "text": "You write every kill in that book?",
+  "exchange": [
+   [
+    "DUT",
+    "You write every kill in that book?"
+   ],
+   [
+    "WRN",
+    "Every one."
+   ],
+   [
+    "DUT",
+    "That's a lot of ink."
+   ],
+   [
+    "WRN",
+    "It is a lot of Germans."
+   ]
+  ]
+ },
+ "BNT_PEG_DEA_01": {
+  "speaker": "BNT",
+  "category": "PEG_DEA",
+  "text": "Lieutenant, that Crucible... you looked at it a little too long.",
+  "exchange": [
+   [
+    "DEA",
+    "Lieutenant, that Crucible... you looked at it a little too long."
+   ],
+   [
+    "PEG",
+    "Professional curiosity, Corporal."
+   ],
+   [
+    "DEA",
+    "My daddy said curiosity's just temptation with a notebook."
+   ],
+   [
+    "PEG",
+    "Your father sounds exhausting."
+   ]
+  ]
+ },
+ "BNT_PEG_DEA_02": {
+  "speaker": "BNT",
+  "category": "PEG_DEA",
+  "text": "Can you fix the lift, Brooks?",
+  "exchange": [
+   [
+    "PEG",
+    "Can you fix the lift, Brooks?"
+   ],
+   [
+    "DEA",
+    "I can fix anything, ma'am. Question's whether it wants to be fixed."
+   ],
+   [
+    "PEG",
+    "Persuade it."
+   ],
+   [
+    "DEA",
+    "Yes, ma'am. Come on, girl. Come on."
+   ]
+  ]
+ },
+ "BNT_PEG_DEA_03": {
+  "speaker": "BNT",
+  "category": "PEG_DEA",
+  "text": "You ever think about after, Lieutenant?",
+  "exchange": [
+   [
+    "DEA",
+    "You ever think about after, Lieutenant?"
+   ],
+   [
+    "PEG",
+    "Constantly. It's the 'during' I try not to think about."
+   ]
+  ]
+ },
+ "BNT_PEG_WRN_01": {
+  "speaker": "BNT",
+  "category": "PEG_WRN",
+  "text": "You did not come for Fasbender.",
+  "exchange": [
+   [
+    "WRN",
+    "You did not come for Fasbender."
+   ],
+   [
+    "PEG",
+    "I came for exactly what I was ordered to come for."
+   ],
+   [
+    "WRN",
+    "That is not an answer."
+   ],
+   [
+    "PEG",
+    "No. It's an order."
+   ]
+  ]
+ },
+ "BNT_PEG_WRN_02": {
+  "speaker": "BNT",
+  "category": "PEG_WRN",
+  "text": "Your aim is extraordinary.",
+  "exchange": [
+   [
+    "PEG",
+    "Your aim is extraordinary."
+   ],
+   [
+    "WRN",
+    "I know."
+   ],
+   [
+    "PEG",
+    "Modesty isn't taught in the Home Army, then."
+   ],
+   [
+    "WRN",
+    "Neither is lying. Unlike SOE."
+   ]
+  ]
+ },
+ "BNT_PEG_WRN_03": {
+  "speaker": "BNT",
+  "category": "PEG_WRN",
+  "text": "When this is done, there's a flight to London. You could come.",
+  "exchange": [
+   [
+    "PEG",
+    "When this is done, there's a flight to London. You could come."
+   ],
+   [
+    "WRN",
+    "When this is done, I will still be Polish. London will not fix that."
+   ]
+  ]
+ },
+ "BNT_DEA_WRN_01": {
+  "speaker": "BNT",
+  "category": "DEA_WRN",
+  "text": "Your brother. What was he like?",
+  "exchange": [
+   [
+    "DEA",
+    "Your brother. What was he like?"
+   ],
+   [
+    "WRN",
+    "A terrible shot. A good laugh."
+   ],
+   [
+    "DEA",
+    "Sounds like my kind of folk."
+   ],
+   [
+    "WRN",
+    "He would have liked you. He liked everyone. It was his only flaw."
+   ]
+  ]
+ },
+ "BNT_DEA_WRN_02": {
+  "speaker": "BNT",
+  "category": "DEA_WRN",
+  "text": "You talk to the machines.",
+  "exchange": [
+   [
+    "WRN",
+    "You talk to the machines."
+   ],
+   [
+    "DEA",
+    "They listen better than people."
+   ],
+   [
+    "WRN",
+    "Do they talk back?"
+   ],
+   [
+    "DEA",
+    "Here? Lord help me, yes."
+   ]
+  ]
+ },
+ "BNT_DEA_WRN_03": {
+  "speaker": "BNT",
+  "category": "DEA_WRN",
+  "text": "♪ Little bird up in the rafters, singing for the dead... ♪",
+  "exchange": [
+   [
+    "DEA",
+    "♪ Little bird up in the rafters, singing for the dead... ♪"
+   ],
+   [
+    "WRN",
+    "Is that about me?"
+   ],
+   [
+    "DEA",
+    "Might be."
+   ],
+   [
+    "WRN",
+    "Finish it. Then never sing it again."
+   ]
+  ]
+ },
+ "TAG_KB4471_01": {
+  "speaker": "TAG",
+  "category": "KB4471",
+  "text": "KB... four-four-seven-one.",
+  "exchange": [
+   [
+    "WRN",
+    "KB... four-four-seven-one."
+   ],
+   [
+    "DUT",
+    "Wren? What is it?"
+   ],
+   [
+    "WRN",
+    "It's his. Tomek's. It was in the tank room. With the... with the others."
+   ],
+   [
+    "DUT",
+    "...Hey. Hey. C'mere."
+   ],
+   [
+    "WRN",
+    "He was a terrible shot, Dutch. I used to tell him he'd starve if he had to hunt alone. And they put him in a tank."
+   ],
+   [
+    "DUT",
+    "He didn't starve. And he wasn't alone. He had you looking for him. Two years, you looked."
+   ],
+   [
+    "WRN",
+    "I was too late."
+   ],
+   [
+    "DUT",
+    "Yeah. My babcia was too late to say goodbye to her sister. She lit a candle every Christmas for sixty years. Za duszę, she'd say."
+   ],
+   [
+    "WRN",
+    "...Za duszę. For the soul. You said it right. First time."
+   ],
+   [
+    "DUT",
+    "Don't tell anybody."
+   ],
+   [
+    "WRN",
+    "I'm writing it in the book. On the good page."
+   ]
+  ]
+ }
+}
