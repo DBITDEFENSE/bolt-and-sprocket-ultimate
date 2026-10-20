@@ -1,0 +1,19 @@
+{
+  "_doc": "Front-end unlock flow (brief §12). An unlock is granted when ALL of 'all' are held, or ANY of 'any'. Ids in 'all'/'any' are profile unlock ids or other rules. Open from the start: bs_campaign, gl_map00.",
+  "start": ["bs_campaign", "gl_map00"],
+  "rules": {
+    "fp_ch1": {"all": ["bs_ending"]},
+    "fp_ch2": {"any": ["gl_map01_main_egg", "gl_map01_round20"]},
+    "fp_ch3": {"any": ["gl_map01_main_egg", "gl_map01_round20"]},
+    "fp_ch4": {"all": ["fp_ch1_done", "fp_ch2_done", "fp_ch3_done"]},
+    "fp_ch5": {"all": ["fp_ch4_done"]},
+    "gl_helvetia_works": {"all": ["fp_ch5_done"]},
+    "gl_map01": {"any": ["gl_map00_round10", "gl_map00_radio"]},
+    "gl_map02": {"any": ["gl_map01_main_egg", "gl_map01_round30"]},
+    "gl_char_bolt": {"all": ["fp_ch5_done"]},
+    "gl_char_vendelin": {"all": ["fp_ch5_done"]},
+    "gl_perk_fernet": {"all": ["fp_ch5_done"]},
+    "gl_perk_overclock": {"all": ["fp_ch5_done"]},
+    "gl_anomalous_inventory": {"all": ["fp_ch5_done"]}
+  }
+}

@@ -1,0 +1,37 @@
+; Engine configuration file.
+; TERMS & CONDITIONS — Godot 4.7.x stable, Forward+. See docs/DECISIONS.md.
+
+config_version=5
+
+[application]
+
+config/name="TERMS & CONDITIONS"
+config/description="Bolt & Sprocket (remade) + GRAVELIGHT + THE FINE PRINT."
+config/version="0.0.1-m0"
+run/main_scene="res://ui/main_menu.tscn"
+config/features=PackedStringArray("4.7", "Forward Plus")
+config/icon="res://icon.svg"
+
+[autoload]
+
+Game="*res://core/game.gd"
+EventBus="*res://core/event_bus.gd"
+Data="*res://core/data.gd"
+Settings="*res://core/settings.gd"
+SaveProfile="*res://core/save_profile.gd"
+VOManager="*res://core/vo_manager.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/stretch/mode="canvas_items"
+
+[rendering]
+
+renderer/rendering_method="forward_plus"
+anti_aliasing/quality/msaa_3d=2
+
+[audio]
+
+general/text_to_speech=true
