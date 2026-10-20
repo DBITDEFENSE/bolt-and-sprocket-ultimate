@@ -149,6 +149,11 @@ const codePath = path.join(out, "code_lines.json");
 if (fs.existsSync(codePath)) {
   for (const l of JSON.parse(fs.readFileSync(codePath, "utf8"))) index[l.id] = { who: l.who, text: l.text, kind: l.kind, src_line: l.src_line };
 }
+// ---- remaining sentence-like literals found by tools/audit_text_coverage.mjs --emit (shop descriptions etc.)
+const miscPath = path.join(out, "code_misc.json");
+if (fs.existsSync(miscPath)) {
+  for (const l of JSON.parse(fs.readFileSync(miscPath, "utf8"))) index[l.id] = { who: l.who, text: l.text, kind: l.kind, src_line: l.src_line };
+}
 // ---- UI copy from the HTML markup (menus, lobbies, credits): tools/extract_html_text.py
 const htmlPath = path.join(out, "html_text.json");
 if (fs.existsSync(htmlPath)) {

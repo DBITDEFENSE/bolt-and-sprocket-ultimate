@@ -952,6 +952,230 @@
     "src_line": 7979
   },
   {
+    "id": "code.junkProcessor.01",
+    "who": "squatter",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"Best seat in the yard — front row to the crushin'.\"",
+    "src_line": 8198
+  },
+  {
+    "id": "code.junkProcessor.02",
+    "who": "squatter",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"That magnet took my hat once. Kept the hat.\"",
+    "src_line": 8198
+  },
+  {
+    "id": "code.poolScene.01",
+    "who": "tourist",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"OMG is that the mechanic from the feeds?! Do the mallet thing!\"",
+    "src_line": 8214
+  },
+  {
+    "id": "code.poolScene.02",
+    "who": "tourist",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"This resort is a MURDER zone and I gave it four stars.\"",
+    "src_line": 8214
+  },
+  {
+    "id": "code.shiftChange.01",
+    "who": "intern",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"Shift change. Same shift. It never actually changes.\"",
+    "src_line": 8226
+  },
+  {
+    "id": "code.shiftChange.02",
+    "who": "intern",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"Please don't tell HR you saw me having a thought.\"",
+    "src_line": 8226
+  },
+  {
+    "id": "code.populateLife.01",
+    "who": "squatter",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"Spare a bolt? No? Spare a WRENCH? No?? Tough crowd.\"",
+    "src_line": 8277
+  },
+  {
+    "id": "code.populateLife.02",
+    "who": "squatter",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"I remember when this junkyard was just... a smaller junkyard.\"",
+    "src_line": 8277
+  },
+  {
+    "id": "code.populateLife.03",
+    "who": "squatter",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"They took my house on a Tuesday. Sent a survey about it on the Wednesday.\"",
+    "src_line": 8279
+  },
+  {
+    "id": "code.populateLife.04",
+    "who": "squatter",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"Mama Gasket's soup is ninety percent bolts. Best thing I ever ate.\"",
+    "src_line": 8279
+  },
+  {
+    "id": "code.populateLife.05",
+    "who": "intern",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"I keep the Row's ledger. We owe OmniScrap eleven billion bolts. I've stopped carrying the one.\"",
+    "src_line": 8280
+  },
+  {
+    "id": "code.populateLife.06",
+    "who": "intern",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"Your garage went up Thursday. We toasted it. It was a good garage.\"",
+    "src_line": 8280
+  },
+  {
+    "id": "code.populateLife.07",
+    "who": "squatter",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"Roof's a car door. Door's a car roof. It evens out.\"",
+    "src_line": 8281
+  },
+  {
+    "id": "code.populateLife.08",
+    "who": "squatter",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"Kid, if you see my mailbox out there — it's the one with teeth marks.\"",
+    "src_line": 8281
+  },
+  {
+    "id": "code.populateLife.09",
+    "who": "intern",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"I'm on break. Don't tell the whistle.\"",
+    "src_line": 8287
+  },
+  {
+    "id": "code.populateLife.10",
+    "who": "intern",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"Uniform rental went up again. I now owe the resort my own sleeves.\"",
+    "src_line": 8287
+  },
+  {
+    "id": "code.populateLife.11",
+    "who": "intern",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"The vending machine charges for eye contact. I look at the floor a lot.\"",
+    "src_line": 8288
+  },
+  {
+    "id": "code.populateLife.12",
+    "who": "intern",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"We used to mine this canyon. Now we fluff its pillows.\"",
+    "src_line": 8288
+  },
+  {
+    "id": "code.populateLife.13",
+    "who": "squatter",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"Housekeeping-4. Haven't sat down since Tuesday. Ask me how my knees are. Don't.\"",
+    "src_line": 8289
+  },
+  {
+    "id": "code.populateLife.14",
+    "who": "squatter",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"A guest tipped me once. Management framed it. I'm not allowed to look at the frame.\"",
+    "src_line": 8289
+  },
+  {
+    "id": "code.populateLife.15",
+    "who": "squatter",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"I'm grandfathered in. GRANDFATHERED. Try and fine THAT.\"",
+    "src_line": 8300
+  },
+  {
+    "id": "code.populateLife.16",
+    "who": "squatter",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"Vending machine called me a slur earlier. We're not speaking.\"",
+    "src_line": 8300
+  },
+  {
+    "id": "code.populateLife.17",
+    "who": "tourist",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"Is it Tuesday? Is it the future? Both? Please advise.\"",
+    "src_line": 8304
+  },
+  {
+    "id": "code.populateLife.18",
+    "who": "tourist",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"My subscription included slippers but not ANSWERS.\"",
+    "src_line": 8304
+  },
+  {
+    "id": "code.populateLife.19",
+    "who": "intern",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"Corn Union Local 404 salutes you, sibling.\"",
+    "src_line": 8311
+  },
+  {
+    "id": "code.populateLife.20",
+    "who": "intern",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"Ask me about our dental. We fought HARD for this dental.\"",
+    "src_line": 8311
+  },
+  {
+    "id": "code.populateLife.21",
+    "who": "tourist",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"You again! Is it Tuesday HERE too? This planet GLOWS. Is that new?\"",
+    "src_line": 8312
+  },
+  {
+    "id": "code.populateLife.22",
+    "who": "tourist",
+    "kind": "bark",
+    "call": "spawnDenizen",
+    "text": "\"I followed the exits. The exits led to a swamp. I regret nothing. I understand nothing.\"",
+    "src_line": 8312
+  },
+  {
     "id": "code.buildAnnex.01",
     "who": "sign",
     "kind": "world",

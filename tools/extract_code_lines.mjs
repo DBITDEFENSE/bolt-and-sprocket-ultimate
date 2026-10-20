@@ -31,6 +31,7 @@ const CALLS = {
   textSign: { who: "sign", kind: "world", onlyArg: 0 },
   signBoard: { who: "sign", kind: "world" },
   addCheckpoint: { who: "sign", kind: "world", onlyArg: 3 },
+  spawnDenizen: { speakerArg: 2, kind: "bark", onlyArg: 4 },   // ambient residents (who = denizen kind)
 };
 const WHO_BY_NAME = { "SPROCKET": "sprocket", "SUPER SPROCKET": "sprocket", "GLAMBOT PRIME": "glambot", "BLARTZ": "blartz", "BOLT": "bolt" };
 

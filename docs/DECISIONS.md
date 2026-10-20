@@ -79,3 +79,47 @@ The GRAVELIGHT project's own log (D-001 … D-059, at `C:\Users\Devin\PROJECTS\N
 - **"Grindstone 2.0"** becomes phase 3 ("public beta"), so `cs.ending.01` still works unchanged.
 - **Five v9 enemy behaviour flags** that were never coded (surge, freeze, cloak, burrow, buffer) are now designed. So is Middleman aggro, which the shop promised but never implemented.
 - **Boss Rush** has all 8 bosses; Compost King's mercy path is unavailable there.
+
+**T-018, 2026-10-19: Text coverage is audited, not assumed.** `tools/audit_text_coverage.mjs` lists every sentence-like string literal in the original script (770) that isn't in a ported file or a raw table. `--emit` writes the remainder to `data/bs/story/code_misc.json` (`misc.<function>.<nn>`): shop descriptions, mission-tracker text, annex signs, Omega descriptions. Coverage is 770/770, and denizen barks (`spawnDenizen`) are now extracted too. Re-run the audit whenever the extractors change.
+
+**T-019, 2026-10-19: B&S level and inventory calls (BS_LEVELS.md / BS_PORT_INVENTORY.md):**
+- **Post-credits** always plays after the ending (the source gated it on 35/35 memos), because The Fine Print needs it.
+- **The memo epilogue** still triggers on the 35 originals, so "Thirty-five internal memos" stays true. Memos 36–40 sit in a separate "DO NOT DISCUSS" folder, each behind a gadget.
+- **Flyovers:** on first landing, the flyover plays and then the arrival scene, back to back. New camera-only flyovers for the Foundry and Galleria use the `arrive2`/`arrive9` lines.
+- **Rustvane mini-bosses:** the Content Creator survives its fight, demonetized. The "co-host" it says Bolt deleted is the Sentinel, fought first on the same Sunset Stage.
+- **Traversal:** golden ride-rails stay usable from the start. Grind Soles add frost-striped pipes with manual speed and Loop Riot trick names. The boomerang throw is available from the start. Magma and Thunder mallet throws are extra backtracking keys.
+- **Gadget sources:** Rustvane's Co-op winch, Glacius's Premium Tier concierge, Verdant's Local 404 union hall.
+- **The Galleria stays optional** (as in the source). It's flagged from the first core, and its main path needs only the Tether-Hook.
+- **The Blartz rescue is on the critical path:** the Holding Block console lifts the Crusher Corridor lockdown.
+- **Compost King:** completing quest `q7b` pre-seals one of his three leaks.
+- **The Algorithm** can be overloaded with canisters printed by complaint kiosks or by bat-backs, since Nova may be the first core.
+- **Ice friction:** outdoor 72% cut (the source value), indoor 36%, rubber mats 0%. Blizzards only blow outdoors.
+- **Scrapheap's ship** is wheel-clamped until REPO-TRON falls.
+- **Gold bolts:** 30 in total (Scrapheap 5, Foundry 5, 4 everywhere else). Each planet saves at a Save Beacon on the pad.
+- **8 source bugs** are listed in BS_PORT_INVENTORY §28.3 and fixed in the remake (e.g. the "/ 9" gold-bolt counter, `introAlgorithm`/`introCompost` never playing, frame-rate-dependent murk drag).
+
+**T-020, 2026-10-19: Fine Print canon calls (FINEPRINT_LORE.md and the chapter scripts).**
+*Origins and the mine:*
+- **The probe** was delivered into solid salt that flowed shut, so the void looked ancient. The pre-1938 "black salt" folklore is the fold's wake arriving early, and its meaning is left open.
+- **11 Nov 1938:** Pilch and Hasse die in Gallery 7, and Pilch is the first retained miner. **2 Mar 1939:** the Amt seizes the mine. Both move from older LORE dates that came before the landing.
+- **Florian Kubitza** names him "Viktor Wendelin," and V-1 respells it with a V. Florian's grey loden coat is the borrowed coat.
+
+*Helvetia:*
+- **Imhof & Cie. (1921)** was bought and re-founded by Vendelin as Helvetia Automaten AG in Feb 1940, with Konrad Imhof as nominal President, so existing Gravelight "since 1921" lines still hold.
+- **Vignette dates:** Ironhide 3/41, Second Wind 1/42, Trigger 5/42, Twin Barrel 8/42, Marathon 11/42, Hawkeye 4/43, Packmule 7/43, Blastproof 10/43, Fernet 3/44, Overclock 4/44 (blueprint).
+- **Darkmatter re-contacts V-1 on 9 Feb 1943** (status LOST → INVENTORY). The **Ledger installation is 14 Sep 1944**; from Mar 1942, Opitz's mechanical splice-reader was "the Operator." The Interface picks Marchbank's voice.
+- **The Crucible drawings** arrive finished in 1944 in a "Kühlanlage" crate, and Fasbender signs them (this reconciles LORE's "Fasbender designed it").
+- **The Woman in Violet's product** is RECURRING™ Bereavement Continuity (DMS-BC-01). The barge is FB-7 *Standing Order*. The Patent Vault sits in a sealed fold called "Escrow."
+- **The true jingles are wordless first drafts** hidden in the harmonium bench. Overclock's can't resolve until after Ch. 5 (the organ's cracked F-sharp reed) — a deliberate exception.
+
+*Ch. 1 and Ch. 4 gameplay:*
+- **Terms Doors** offer ACCEPT / DECLINE / READ. The Exit Survey rule: any answer implying leaving is wrong. Ch. 4's gadget is THE LOOPHOLE.
+- **THE QUARTERLY** (Sable Vantage's mech): the health bar is the DMS share price, with Q2–Q4 starting at 75/50/25%. In Q3 she acquires your most-used weapon (PATENT PENDING exempt). If the Q4 clock runs out she renews to 40%, the clock lengthens after two renewals so the fight can't stall, and the killing blow is the mallet.
+
+*Ch. 5 finale:*
+- **The finale's clock is the 03:12 transmission time** ("close of business"). The loophole is Clause 0.2: undeliverable inventory returns to sender, "inventory only." Vendelin's override makes him not inventory, so he stays and everything else the fold carried goes home.
+- Vendelin's new directive: **"REFUND. RELEASE. REMAIN."** Peg pockets his serial tag.
+- Nobody on Helvetia Works says "subscription" — not even Bolt (his near-misses are a running gag). Sable is subtitled THE WOMAN IN VIOLET. On Gravelight maps Super Sprocket uses new `gl.all.sprocket.super.*` lines, because B&S `super.02` contains "subscription."
+- **The transmission is reconciled:** Ch. 1 recovers the long Report No. 207 plus a corrupted 03:12 addendum (`fp.c1.transmission.30–31`, "Do not send anyone else"), and Ch. 5 broadcasts the addendum in full (`fp.c5.finale.81–83`). `fp.doc.29` matches both.
+
+*Speaker IDs:* the Board speaks as `darkmatter` (shared with `cs.postCredits`). New IDs: `courtesy`, `dm_pa`, `nextera`, `middleman_a`, `middleman_b`, `statue`.

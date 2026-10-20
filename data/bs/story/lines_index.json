@@ -2689,6 +2689,174 @@
     "kind": "ui",
     "src_line": 7979
   },
+  "code.junkProcessor.01": {
+    "who": "squatter",
+    "text": "\"Best seat in the yard — front row to the crushin'.\"",
+    "kind": "bark",
+    "src_line": 8198
+  },
+  "code.junkProcessor.02": {
+    "who": "squatter",
+    "text": "\"That magnet took my hat once. Kept the hat.\"",
+    "kind": "bark",
+    "src_line": 8198
+  },
+  "code.poolScene.01": {
+    "who": "tourist",
+    "text": "\"OMG is that the mechanic from the feeds?! Do the mallet thing!\"",
+    "kind": "bark",
+    "src_line": 8214
+  },
+  "code.poolScene.02": {
+    "who": "tourist",
+    "text": "\"This resort is a MURDER zone and I gave it four stars.\"",
+    "kind": "bark",
+    "src_line": 8214
+  },
+  "code.shiftChange.01": {
+    "who": "intern",
+    "text": "\"Shift change. Same shift. It never actually changes.\"",
+    "kind": "bark",
+    "src_line": 8226
+  },
+  "code.shiftChange.02": {
+    "who": "intern",
+    "text": "\"Please don't tell HR you saw me having a thought.\"",
+    "kind": "bark",
+    "src_line": 8226
+  },
+  "code.populateLife.01": {
+    "who": "squatter",
+    "text": "\"Spare a bolt? No? Spare a WRENCH? No?? Tough crowd.\"",
+    "kind": "bark",
+    "src_line": 8277
+  },
+  "code.populateLife.02": {
+    "who": "squatter",
+    "text": "\"I remember when this junkyard was just... a smaller junkyard.\"",
+    "kind": "bark",
+    "src_line": 8277
+  },
+  "code.populateLife.03": {
+    "who": "squatter",
+    "text": "\"They took my house on a Tuesday. Sent a survey about it on the Wednesday.\"",
+    "kind": "bark",
+    "src_line": 8279
+  },
+  "code.populateLife.04": {
+    "who": "squatter",
+    "text": "\"Mama Gasket's soup is ninety percent bolts. Best thing I ever ate.\"",
+    "kind": "bark",
+    "src_line": 8279
+  },
+  "code.populateLife.05": {
+    "who": "intern",
+    "text": "\"I keep the Row's ledger. We owe OmniScrap eleven billion bolts. I've stopped carrying the one.\"",
+    "kind": "bark",
+    "src_line": 8280
+  },
+  "code.populateLife.06": {
+    "who": "intern",
+    "text": "\"Your garage went up Thursday. We toasted it. It was a good garage.\"",
+    "kind": "bark",
+    "src_line": 8280
+  },
+  "code.populateLife.07": {
+    "who": "squatter",
+    "text": "\"Roof's a car door. Door's a car roof. It evens out.\"",
+    "kind": "bark",
+    "src_line": 8281
+  },
+  "code.populateLife.08": {
+    "who": "squatter",
+    "text": "\"Kid, if you see my mailbox out there — it's the one with teeth marks.\"",
+    "kind": "bark",
+    "src_line": 8281
+  },
+  "code.populateLife.09": {
+    "who": "intern",
+    "text": "\"I'm on break. Don't tell the whistle.\"",
+    "kind": "bark",
+    "src_line": 8287
+  },
+  "code.populateLife.10": {
+    "who": "intern",
+    "text": "\"Uniform rental went up again. I now owe the resort my own sleeves.\"",
+    "kind": "bark",
+    "src_line": 8287
+  },
+  "code.populateLife.11": {
+    "who": "intern",
+    "text": "\"The vending machine charges for eye contact. I look at the floor a lot.\"",
+    "kind": "bark",
+    "src_line": 8288
+  },
+  "code.populateLife.12": {
+    "who": "intern",
+    "text": "\"We used to mine this canyon. Now we fluff its pillows.\"",
+    "kind": "bark",
+    "src_line": 8288
+  },
+  "code.populateLife.13": {
+    "who": "squatter",
+    "text": "\"Housekeeping-4. Haven't sat down since Tuesday. Ask me how my knees are. Don't.\"",
+    "kind": "bark",
+    "src_line": 8289
+  },
+  "code.populateLife.14": {
+    "who": "squatter",
+    "text": "\"A guest tipped me once. Management framed it. I'm not allowed to look at the frame.\"",
+    "kind": "bark",
+    "src_line": 8289
+  },
+  "code.populateLife.15": {
+    "who": "squatter",
+    "text": "\"I'm grandfathered in. GRANDFATHERED. Try and fine THAT.\"",
+    "kind": "bark",
+    "src_line": 8300
+  },
+  "code.populateLife.16": {
+    "who": "squatter",
+    "text": "\"Vending machine called me a slur earlier. We're not speaking.\"",
+    "kind": "bark",
+    "src_line": 8300
+  },
+  "code.populateLife.17": {
+    "who": "tourist",
+    "text": "\"Is it Tuesday? Is it the future? Both? Please advise.\"",
+    "kind": "bark",
+    "src_line": 8304
+  },
+  "code.populateLife.18": {
+    "who": "tourist",
+    "text": "\"My subscription included slippers but not ANSWERS.\"",
+    "kind": "bark",
+    "src_line": 8304
+  },
+  "code.populateLife.19": {
+    "who": "intern",
+    "text": "\"Corn Union Local 404 salutes you, sibling.\"",
+    "kind": "bark",
+    "src_line": 8311
+  },
+  "code.populateLife.20": {
+    "who": "intern",
+    "text": "\"Ask me about our dental. We fought HARD for this dental.\"",
+    "kind": "bark",
+    "src_line": 8311
+  },
+  "code.populateLife.21": {
+    "who": "tourist",
+    "text": "\"You again! Is it Tuesday HERE too? This planet GLOWS. Is that new?\"",
+    "kind": "bark",
+    "src_line": 8312
+  },
+  "code.populateLife.22": {
+    "who": "tourist",
+    "text": "\"I followed the exits. The exits led to a swamp. I regret nothing. I understand nothing.\"",
+    "kind": "bark",
+    "src_line": 8312
+  },
   "code.buildAnnex.01": {
     "who": "sign",
     "text": " — GATE",
@@ -3828,6 +3996,624 @@
     "text": "The swamp is LITIGIOUS. And acidic. Mostly acidic.",
     "kind": "bark",
     "src_line": 17867
+  },
+  "misc.updateInteract.01": {
+    "who": "ui",
+    "text": "Tip Jar (1 bolt)",
+    "kind": "misc",
+    "src_line": 4327
+  },
+  "misc.top.01": {
+    "who": "ui",
+    "text": "Every 3rd shot is a HOT ROUND, and hot rounds fork sparks at bystanders.",
+    "kind": "misc",
+    "src_line": 4421
+  },
+  "misc.top.02": {
+    "who": "ui",
+    "text": "Charged shots detonate a second implosion at the impact point.",
+    "kind": "misc",
+    "src_line": 4422
+  },
+  "misc.top.03": {
+    "who": "ui",
+    "text": "Arcs to 5 targets and the residue patch is twice as wide.",
+    "kind": "misc",
+    "src_line": 4423
+  },
+  "misc.top.04": {
+    "who": "ui",
+    "text": "Bigger dance floor, and every raver drops DOUBLE bolts.",
+    "kind": "misc",
+    "src_line": 4424
+  },
+  "misc.top.05": {
+    "who": "ui",
+    "text": "Fires TWO darts per trigger, each locking a different target.",
+    "kind": "misc",
+    "src_line": 4425
+  },
+  "misc.top.06": {
+    "who": "ui",
+    "text": "Forks lawsuits twice as fast, with a bigger splash.",
+    "kind": "misc",
+    "src_line": 4426
+  },
+  "misc.top.07": {
+    "who": "ui",
+    "text": "Five bounces, and every blade splits on the first one.",
+    "kind": "misc",
+    "src_line": 4428
+  },
+  "misc.top.08": {
+    "who": "ui",
+    "text": "Singularities last 6.5s and crush from the moment they open.",
+    "kind": "misc",
+    "src_line": 4429
+  },
+  "misc.top.09": {
+    "who": "ui",
+    "text": "Two Middlemen at once — they will not get along.",
+    "kind": "misc",
+    "src_line": 4430
+  },
+  "misc.top.10": {
+    "who": "ui",
+    "text": "Longer beam, faster freeze, and frozen enemies stay iced 9s.",
+    "kind": "misc",
+    "src_line": 4431
+  },
+  "misc.top.11": {
+    "who": "ui",
+    "text": "Five gardens at once, chewing 40% faster.",
+    "kind": "misc",
+    "src_line": 4432
+  },
+  "misc.updateWeapons.01": {
+    "who": "ui",
+    "text": "translate(-50%,-50%) scale(0)",
+    "kind": "misc",
+    "src_line": 5177
+  },
+  "misc.buildLevel1.01": {
+    "who": "ui",
+    "text": "Every ship that ever missed a payment",
+    "kind": "misc",
+    "src_line": 9675
+  },
+  "misc.buildLevel2.01": {
+    "who": "ui",
+    "text": "Where the resort gets its \"authentic canyon\" gravel",
+    "kind": "misc",
+    "src_line": 9877
+  },
+  "misc.buildLevel3.01": {
+    "who": "ui",
+    "text": "OmniScrap dumps what the foundry cannot bill",
+    "kind": "misc",
+    "src_line": 10105
+  },
+  "misc.top.12": {
+    "who": "ui",
+    "text": "NOVA PLAZA — the HOA fined everyone into exile. Mind the enforcers.",
+    "kind": "misc",
+    "src_line": 10519
+  },
+  "misc.top.13": {
+    "who": "ui",
+    "text": "Where the fined went when the fines came due",
+    "kind": "misc",
+    "src_line": 10521
+  },
+  "misc.top.14": {
+    "who": "ui",
+    "text": "GLACIUS VAULT — thousands frozen mid-subscription. Slippery ice + blizzards!",
+    "kind": "misc",
+    "src_line": 10523
+  },
+  "misc.top.15": {
+    "who": "ui",
+    "text": "Frozen customers, stacked for shipping",
+    "kind": "misc",
+    "src_line": 10525
+  },
+  "misc.top.16": {
+    "who": "ui",
+    "text": "VERDANT SINK — the crops unionized. Everything glows. Be nice.",
+    "kind": "misc",
+    "src_line": 10527
+  },
+  "misc.top.17": {
+    "who": "ui",
+    "text": "The crops keep their prisoners here",
+    "kind": "misc",
+    "src_line": 10529
+  },
+  "misc.buildGalleria.01": {
+    "who": "ui",
+    "text": "Validation is a lie. Validation was always a lie.",
+    "kind": "misc",
+    "src_line": 10572
+  },
+  "misc.top.18": {
+    "who": "ui",
+    "text": "Planet 1 — home, sweet foreclosed home",
+    "kind": "misc",
+    "src_line": 10741
+  },
+  "misc.top.19": {
+    "who": "ui",
+    "text": "Planet 2 — OmniScrap™ influencer resort & strip mine",
+    "kind": "misc",
+    "src_line": 10752
+  },
+  "misc.top.20": {
+    "who": "ui",
+    "text": "Planet 3 — OmniScrap™ HQ. Abandon warranty, all ye who enter",
+    "kind": "misc",
+    "src_line": 10763
+  },
+  "misc.top.21": {
+    "who": "ui",
+    "text": "The Last Influencer Standing — waiver implied by continued breathing",
+    "kind": "misc",
+    "src_line": 10774
+  },
+  "misc.top.22": {
+    "who": "ui",
+    "text": "Consensual violence, darling",
+    "kind": "misc",
+    "src_line": 10785
+  },
+  "misc.top.23": {
+    "who": "ui",
+    "text": "Planet 4 — the HOA fined everyone into the sun",
+    "kind": "misc",
+    "src_line": 10796
+  },
+  "misc.top.24": {
+    "who": "ui",
+    "text": "Planet 5 — pause your life, unpause is premium",
+    "kind": "misc",
+    "src_line": 10802
+  },
+  "misc.top.25": {
+    "who": "ui",
+    "text": "Planet 6 — the crops unionized, nature won",
+    "kind": "misc",
+    "src_line": 10808
+  },
+  "misc.top.26": {
+    "who": "ui",
+    "text": "Planet 7 — everything must go. Nothing may leave.",
+    "kind": "misc",
+    "src_line": 10820
+  },
+  "misc.voiceProfile.01": {
+    "who": "ui",
+    "text": "[voice] no profile for",
+    "kind": "misc",
+    "src_line": 11088
+  },
+  "misc.openGallery.01": {
+    "who": "ui",
+    "text": "??? — not yet seen",
+    "kind": "misc",
+    "src_line": 11806
+  },
+  "misc.top.27": {
+    "who": "ui",
+    "text": "Makes the hurty end hurtier. Science!",
+    "kind": "misc",
+    "src_line": 11952
+  },
+  "misc.top.28": {
+    "who": "ui",
+    "text": "Shoots faster than Blartz dodges taxes.",
+    "kind": "misc",
+    "src_line": 11953
+  },
+  "misc.top.29": {
+    "who": "ui",
+    "text": "Now holds more boom per bag. Pockets sold separately.",
+    "kind": "misc",
+    "src_line": 11954
+  },
+  "misc.shopStock.01": {
+    "who": "ui",
+    "text": "Lobs a subwoofer so illegal it counts as both a war crime and a mixtape. Enemies in the blast are forced to dance — then the bass drops THEM. Includes 8 complimentary mixtapes.",
+    "kind": "misc",
+    "src_line": 11960
+  },
+  "misc.shopStock.02": {
+    "who": "ui",
+    "text": "Fires a legal document that ricochets between wrongdoers, stamping each one SERVED — served enemies take 40% more damage from EVERYTHING. \"Litigation is just crowd control with letterhead.\" — Blartz",
+    "kind": "misc",
+    "src_line": 11968
+  },
+  "misc.shopStock.03": {
+    "who": "ui",
+    "text": "A saw-launcher. Blades ricochet off walls and floors up to three times, shredding everything in the path. Learn to love geometry. Tier 3: blades split on first bounce.",
+    "kind": "misc",
+    "src_line": 11971
+  },
+  "misc.shopStock.04": {
+    "who": "ui",
+    "text": "Lobs a micro-singularity that vacuums enemies (and loose bolts) into a clump, then pops them skyward. Slam a gravity-clump for BONUS damage. Physics: now weaponized, now billed.",
+    "kind": "misc",
+    "src_line": 11973
+  },
+  "misc.shopStock.05": {
+    "who": "ui",
+    "text": "Deploys a hovering turret-drone that draws enemy aggro and lays down fire for 12 seconds. Outsource your problems. Tier 3: it self-destructs in a taunting explosion when its contract ends.",
+    "kind": "misc",
+    "src_line": 11975
+  },
+  "misc.shopStock.06": {
+    "who": "ui",
+    "text": "A crystallizing coolant beam. Freezes enemies into ice statues — SHATTER them with the mallet for a fountain of bolts. Tier 3: shatters spread frost to the whole crowd.",
+    "kind": "misc",
+    "src_line": 11977
+  },
+  "misc.shopStock.07": {
+    "who": "ui",
+    "text": "Fires a seed that erupts under a target as a snapping bio-plant, rooting it and chewing for damage. Up to 3 gardens of pain at once. Tier 3: plants spit spores at other enemies.",
+    "kind": "misc",
+    "src_line": 11979
+  },
+  "misc.shopStock.08": {
+    "who": "ui",
+    "text": " Max every track to unlock the Ω form: ",
+    "kind": "misc",
+    "src_line": 11992
+  },
+  "misc.shopStock.09": {
+    "who": "ui",
+    "text": "Kinetic Annihilation & Retribution Emitter Node. Press K: a screen-clearing grievance sweep. Targets comically demand a manager, then explode. Blartz: \"I built her a personality. I regret her.\"",
+    "kind": "misc",
+    "src_line": 11999
+  },
+  "misc.shopStock.10": {
+    "who": "ui",
+    "text": "\"Void the warranty. Awaken the little guy.\" Thirty seconds of autonomous, trash-talking, twin-cannon Sprocket — and EVERYTHING you both do hits twice as hard. Charge it by dealing damage. Activate with T (pad: D-pad Up).",
+    "kind": "misc",
+    "src_line": 12006
+  },
+  "misc.shopStock.11": {
+    "who": "ui",
+    "text": "MAGMA MALLET — +damage, the head splits with glowing cracks, and every big impact leaves a burning patch. Fire safety documentation sold separately, then recalled.",
+    "kind": "misc",
+    "src_line": 12017
+  },
+  "misc.shopStock.12": {
+    "who": "ui",
+    "text": "THUNDER MALLET — +damage, wider finisher shockwave, and lightning arcs off big hits to whoever is standing too close. Legally distinct from any mythological hammer.",
+    "kind": "misc",
+    "src_line": 12018
+  },
+  "misc.shopStock.13": {
+    "who": "ui",
+    "text": "Maximum mallet achieved. OSHA has stopped returning Blartz's calls.",
+    "kind": "misc",
+    "src_line": 12024
+  },
+  "misc.shopStock.14": {
+    "who": "ui",
+    "text": "A mystery sack of ammunition Blartz 'found'. Refills every weapon you own. Do not ask where it was found. Do not smell it.",
+    "kind": "misc",
+    "src_line": 12029
+  },
+  "misc.shopStock.15": {
+    "who": "ui",
+    "text": "Tiny robots that repair your organs and judge your diet. Permanently raises max HP by 20. Side effects include confidence.",
+    "kind": "misc",
+    "src_line": 12034
+  },
+  "misc.renderTradeIn.01": {
+    "who": "ui",
+    "text": "Blartz buys back guns for 60% — no questions, no receipts, no dignity.",
+    "kind": "misc",
+    "src_line": 12110
+  },
+  "misc.renderTradeIn.02": {
+    "who": "ui",
+    "text": "Nothing to trade — you only own the essentials.",
+    "kind": "misc",
+    "src_line": 12123
+  },
+  "misc.computeMission.01": {
+    "who": "ui",
+    "text": "OmniScrap repossessed your garage. Fight to the off-world teleporter and get off this junk heap.",
+    "kind": "misc",
+    "src_line": 12289
+  },
+  "misc.computeMission.02": {
+    "who": "ui",
+    "text": "OmniScrap's influencer resort hides a mini-boss and a way toward HQ. Crash the party.",
+    "kind": "misc",
+    "src_line": 12292
+  },
+  "misc.computeMission.03": {
+    "who": "ui",
+    "text": "Recover the 3 Keystone Cores",
+    "kind": "misc",
+    "src_line": 12296
+  },
+  "misc.computeMission.04": {
+    "who": "ui",
+    "text": "The shield is DOWN. Storm OmniScrap HQ, free the frozen customers, and hand Chairman Grindstone his final invoice.",
+    "kind": "misc",
+    "src_line": 12302
+  },
+  "misc.computeMission.05": {
+    "who": "ui",
+    "text": "You Saved the Galaxy",
+    "kind": "misc",
+    "src_line": 12303
+  },
+  "misc.computeMission.06": {
+    "who": "ui",
+    "text": "Free-roam any planet for gold bolts and memos, drop into ZONGA™, or take on GLAMBOT's Arena challenges.",
+    "kind": "misc",
+    "src_line": 12304
+  },
+  "misc.populateStarmap.01": {
+    "who": "ui",
+    "text": "▸ No objective — explore freely",
+    "kind": "misc",
+    "src_line": 12322
+  },
+  "misc.populateStarmap.02": {
+    "who": "ui",
+    "text": "Pick a destination, hotshot.",
+    "kind": "misc",
+    "src_line": 12329
+  },
+  "misc.populateStarmap.03": {
+    "who": "ui",
+    "text": "radial-gradient(circle at 35% 30%, #9fffc8, #2f9a6a 55%, #123a28)",
+    "kind": "misc",
+    "src_line": 12333
+  },
+  "misc.starmapFocusInfo.01": {
+    "who": "ui",
+    "text": "ZONGA™ — The Last Influencer Standing. 50 drop in. Merchandise comes out.",
+    "kind": "misc",
+    "src_line": 12345
+  },
+  "misc.starmapFocusInfo.02": {
+    "who": "ui",
+    "text": "??? — Signal jammed by a \"DarkMatter Subscriptions LLC\". Suspicious.",
+    "kind": "misc",
+    "src_line": 12346
+  },
+  "misc.starmapFocusInfo.03": {
+    "who": "ui",
+    "text": "THE RIOT LOOP — Loop Riot™ stunt league on the Slag Flats. Recalled products. Unrecalled attitude.",
+    "kind": "misc",
+    "src_line": 12351
+  },
+  "misc.starmapFocusInfo.04": {
+    "who": "ui",
+    "text": "??? — A pirate broadcast, somewhere past Scrapheap. Clear Scrapheap Junction to tune in.",
+    "kind": "misc",
+    "src_line": 12352
+  },
+  "misc.starmapFocusInfo.05": {
+    "who": "ui",
+    "text": "Recover all 3 Keystone Cores to drop the shield.",
+    "kind": "misc",
+    "src_line": 12355
+  },
+  "misc.starmapFocusInfo.06": {
+    "who": "ui",
+    "text": "Recover a Keystone Core first — GLAMBOT flags the lead after the heist begins.",
+    "kind": "misc",
+    "src_line": 12356
+  },
+  "misc.starmapFocusInfo.07": {
+    "who": "ui",
+    "text": "Finish the previous planet first.",
+    "kind": "misc",
+    "src_line": 12357
+  },
+  "misc.questTalk.01": {
+    "who": "ui",
+    "text": "All settled, friend. Go save something.",
+    "kind": "misc",
+    "src_line": 12876
+  },
+  "misc.zongaEnd.01": {
+    "who": "ui",
+    "text": "PRIZE UNLOCKED: Gold Sprocket paint. He will never stop mentioning it.",
+    "kind": "misc",
+    "src_line": 13420
+  },
+  "misc.cosmeticItems.01": {
+    "who": "ui",
+    "text": "Owned. Select to equip.",
+    "kind": "misc",
+    "src_line": 13783
+  },
+  "misc.cosmeticItems.02": {
+    "who": "ui",
+    "text": "A full repaint, applied while you wait. Blartz calls it \"aesthetic recalibration\".",
+    "kind": "misc",
+    "src_line": 13783
+  },
+  "misc.cosmeticItems.03": {
+    "who": "ui",
+    "text": "Sprocket has opinions about hats. All of them are \"yes\".",
+    "kind": "misc",
+    "src_line": 13793
+  },
+  "misc.cosmeticItems.04": {
+    "who": "ui",
+    "text": "Cosmetic seam re-tint. The damage stays rude.",
+    "kind": "misc",
+    "src_line": 13803
+  },
+  "misc.arenaEnd.01": {
+    "who": "ui",
+    "text": "MEDAL EARNED. GLAMBOT is legally proud of you.",
+    "kind": "misc",
+    "src_line": 14027
+  },
+  "misc.arenaEnd.02": {
+    "who": "ui",
+    "text": "Repeat clear — reduced payout, undiminished glory.",
+    "kind": "misc",
+    "src_line": 14027
+  },
+  "misc.raceFinish.01": {
+    "who": "ui",
+    "text": "Photo finish under review by the sponsors.",
+    "kind": "misc",
+    "src_line": 14382
+  },
+  "misc.raceFinish.02": {
+    "who": "ui",
+    "text": "Your hoverboard warranty expired mid-race. Naturally.",
+    "kind": "misc",
+    "src_line": 14382
+  },
+  "misc.raceFinish.03": {
+    "who": "ui",
+    "text": "The Intern demands a rematch. The Intern always demands a rematch.",
+    "kind": "misc",
+    "src_line": 14382
+  },
+  "misc.buildSetting.01": {
+    "who": "ui",
+    "text": "\"If it survives, we did it wrong.\"",
+    "kind": "misc",
+    "src_line": 15292
+  },
+  "misc.message.01": {
+    "who": "ui",
+    "text": "translate(-50%,-50%) scale(1.35)",
+    "kind": "misc",
+    "src_line": 16548
+  },
+  "misc.message.02": {
+    "who": "ui",
+    "text": "translate(-50%,-50%) scale(1)",
+    "kind": "misc",
+    "src_line": 16548
+  },
+  "misc.countText.01": {
+    "who": "ui",
+    "text": "translate(-50%,-50%) scale(1.6)",
+    "kind": "misc",
+    "src_line": 16553
+  },
+  "misc.top.30": {
+    "who": "ui",
+    "text": "The mechanic. Garage-door deck, Sprocket on overclock.",
+    "kind": "misc",
+    "src_line": 16704
+  },
+  "misc.renderLobby.01": {
+    "who": "ui",
+    "text": " UNRECALLED league: win the Riot Cup.",
+    "kind": "misc",
+    "src_line": 16737
+  },
+  "misc.renderLobby.02": {
+    "who": "ui",
+    "text": " unlocked — earn more from Recall Notices",
+    "kind": "misc",
+    "src_line": 16745
+  },
+  "misc.show.01": {
+    "who": "ui",
+    "text": " (Cup purse incl.)",
+    "kind": "misc",
+    "src_line": 16979
+  },
+  "misc.show.02": {
+    "who": "ui",
+    "text": "Dent has requested the footage be destroyed. Dent does not know how footage works.",
+    "kind": "misc",
+    "src_line": 16981
+  },
+  "misc.show.03": {
+    "who": "ui",
+    "text": "MODEL-M has not moved since the finish. MODEL-M is two feet closer.",
+    "kind": "misc",
+    "src_line": 16981
+  },
+  "misc.show.04": {
+    "who": "ui",
+    "text": "The Intern has filed a report. It is mostly a drawing of your kickflip.",
+    "kind": "misc",
+    "src_line": 16981
+  },
+  "misc.show.05": {
+    "who": "ui",
+    "text": "TOASTY says your line through hairpin two was 'underdone'.",
+    "kind": "misc",
+    "src_line": 16982
+  },
+  "misc.show.06": {
+    "who": "ui",
+    "text": "Scuff ate your slipstream. And a cone. Mostly the cone.",
+    "kind": "misc",
+    "src_line": 16982
+  },
+  "misc.show.07": {
+    "who": "ui",
+    "text": "Sprocket's incident report is forty pages. Thirty-eight are diagrams of the loop.",
+    "kind": "misc",
+    "src_line": 16982
+  },
+  "misc.photoFilterCSS.01": {
+    "who": "ui",
+    "text": "grayscale(1) contrast(1.25) brightness(1.05)",
+    "kind": "misc",
+    "src_line": 17048
+  },
+  "misc.photoFilterCSS.02": {
+    "who": "ui",
+    "text": "saturate(1.6) contrast(1.15) hue-rotate(-8deg)",
+    "kind": "misc",
+    "src_line": 17048
+  },
+  "misc.voiceTest.01": {
+    "who": "ui",
+    "text": "Bolt here. Mechanic, hero, guy with a mallet.",
+    "kind": "misc",
+    "src_line": 17429
+  },
+  "misc.voiceTest.02": {
+    "who": "ui",
+    "text": "Sprocket! Chirpy little robot with OPINIONS.",
+    "kind": "misc",
+    "src_line": 17430
+  },
+  "misc.voiceTest.03": {
+    "who": "ui",
+    "text": "Blartz's Discount Armaments — if it explodes, it's a feature!",
+    "kind": "misc",
+    "src_line": 17431
+  },
+  "misc.voiceTest.04": {
+    "who": "ui",
+    "text": "I am Chairman Grindstone. Everything is a subscription.",
+    "kind": "misc",
+    "src_line": 17432
+  },
+  "misc.voiceTest.05": {
+    "who": "ui",
+    "text": "GLAMBOT PRIME! And you are watching ZONGA!",
+    "kind": "misc",
+    "src_line": 17433
+  },
+  "misc.voiceTest.06": {
+    "who": "ui",
+    "text": "OmniScrap PA. Please enjoy this legally-hedged announcement.",
+    "kind": "misc",
+    "src_line": 17434
   },
   "html.page.001": {
     "who": "ui",
