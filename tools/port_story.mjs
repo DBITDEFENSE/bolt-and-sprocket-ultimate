@@ -124,6 +124,26 @@ write("arena", { challenges: S("CHALLENGES"), pools: S("ARENA_POOLS"), boss_rush
 write("cosmetics", { paints: S("PAINTS"), hats: S("HATS"), mallet_skins: S("MSKINS") });
 write("settings_text", S("SETTINGS_DEF"));
 
+// ---- remake additions and logged edits (hand-written in data/bs/story/additions.json; see STORY_CHANGES.md)
+const addPath = path.join(out, "additions.json");
+if (fs.existsSync(addPath)) {
+  const add = JSON.parse(fs.readFileSync(addPath, "utf8"));
+  for (const [id, e] of Object.entries(add.story_edits || {})) {
+    if (!index[id]) throw new Error("story edit for unknown line " + id);
+    if (index[id].text !== e.old) throw new Error("story edit 'old' text does not match the source for " + id);
+    index[id].text = e.new;
+    for (const cs of Object.values(cutscenes)) for (const st of cs.steps) if (st.id === id) st.text = e.new;
+    for (const b of Object.values(beats)) for (const l of b.lines) if (l.id === id) l.text = e.new;
+  }
+  write("cutscenes", cutscenes);
+  write("story_beats", beats);
+  for (const m of add.memos || []) {
+    memos.push(m);
+    index[m.id] = { who: "memo", text: m.title + " — " + m.body };
+  }
+  write("memos", { memos, spots: S("MEMO_SPOTS"), planets: S("MEMO_PLANETS") });
+  for (const [id, l] of Object.entries(add.lines || {})) put(id, l.who, l.text);
+}
 write("lines_index", index);
 const n = Object.keys(index).length;
 console.log(`ported ${n} lines: ${Object.keys(cutscenes).length} cutscenes, ${Object.keys(beats).length} story beats, ` +

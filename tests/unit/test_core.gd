@@ -42,7 +42,7 @@ func test_quest_ids_unique() -> void:
 
 
 func test_memo_count() -> void:
-	assert_eq(((Data.table("bs/story/memos") as Dictionary)["memos"] as Array).size(), 35, "35 original memos (40 after M4)")
+	assert_eq(((Data.table("bs/story/memos") as Dictionary)["memos"] as Array).size(), 40, "35 original memos + 5 Darkmatter memos")
 
 
 func test_save_blank_has_three_tracks_and_archive() -> void:

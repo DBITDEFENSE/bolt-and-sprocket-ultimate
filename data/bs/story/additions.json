@@ -1,0 +1,60 @@
+{
+  "_doc": "New Bolt & Sprocket lines added in the remake (brief §5.1, §5.4). Original lines are never edited here; edits to existing lines are applied by tools/port_story.mjs from STORY_EDITS and logged in docs/STORY_CHANGES.md. Memo placement: docs/BS_LEVELS.md.",
+  "memos": [
+    {
+      "id": "memo.36",
+      "title": "RE: Sol-3 legacy test market (DO NOT DISCUSS)",
+      "body": "Darkmatter's due-diligence team asked about 'the Sol-3 legacy program' four times during today's call. We have no such program. Darkmatter assures us we will have one by close of sale, and that it has 'exceptional retention'. Nobody in this building is to say 'Sol-3' again. Facilities has removed it from the dictionary.",
+      "planet": 6,
+      "hidden": true
+    },
+    {
+      "id": "memo.37",
+      "title": "Asset Sale — Confiscated Vendor IP (BLARTZ, 1 forge schematic)",
+      "body": "Line item 0417 in the fire-sale binder: one (1) weapon-evolution forge schematic, confiscated from vendor BLARTZ upon his arrest for unlicensed innovation. Darkmatter has offered full asking price, plus a 'localization fee' payable to us, which nobody can explain. Legal notes the schematic is stamped PAT. PEND. Legal is told that pending is not the same as granted. Legal has gone very quiet.",
+      "planet": 2,
+      "hidden": true
+    },
+    {
+      "id": "memo.38",
+      "title": "Darkmatter's motto is 'Nobody Cancels'",
+      "body": "Legal asked whether Darkmatter's motto, 'NOBODY CANCELS', is a threat. Darkmatter's counsel replied that it is a promise. Legal asked what the difference is. Darkmatter's counsel replied, 'Timing'. The meeting was then extended by ninety minutes that nobody remembers agreeing to.",
+      "planet": 5,
+      "hidden": true
+    },
+    {
+      "id": "memo.39",
+      "title": "Next-Era Delivery™ pilot: invoices may arrive before orders",
+      "body": "During the Next-Era Delivery™ pilot, invoices may arrive before the order is placed, and occasionally before the customer is born. Accounts Receivable is NOT to chase payment from anyone who does not exist yet. Accounts Receivable is, however, encouraged to send a reminder.",
+      "planet": 7,
+      "hidden": true
+    },
+    {
+      "id": "memo.40",
+      "title": "Re: the vending robot that never reported back",
+      "body": "Darkmatter mentioned 'a field merchandiser lost on arrival' and asked whether OmniScrap units are ever 'inventory'. We said no, ours have Clause 44. Darkmatter laughed for eleven seconds, then asked to see Clause 44. HR sent it. Darkmatter sent back a red-lined copy titled CLAUSE 0. HR has asked for a transfer.",
+      "planet": 9,
+      "hidden": true
+    }
+  ],
+  "lines": {
+    "bs.boss.retention.dm.01": {"who": "retention", "text": "Nobody cancels. I learned that from the best."},
+    "bs.galleria.toniq.01": {"who": "sprocket", "text": "'TONIQ™ VITALITY DISPENSER. Darkmatter Imports. DISCONTINUED: Sol-3 test market incident.' Bolt, it's humming. Machines that are discontinued should not be HUMMING."},
+    "bs.galleria.toniq.02": {"who": "bolt", "text": "Is that the jingle? Why's it playing backwards?"},
+    "bs.galleria.toniq.03": {"who": "sprocket", "text": "Because forwards was worse. I'm not touching it. I've seen enough horror films to know the vending machine is never just a vending machine."},
+    "bs.foundry.forge.01": {"who": "blartz", "text": "THE OMEGA FORGE. Back in business! OmniScrap SEIZED the prototype schematics when they arrested me, so I rebuilt this one from memory."},
+    "bs.foundry.forge.02": {"who": "blartz", "text": "Which makes it better than the original. Which was ALSO perfect. Bring me a gun that's maxed out and bored, and I'll give it a personality."},
+    "bs.foundry.forge.03": {"who": "sprocket", "text": "Where did the seized schematics GO, out of curiosity?"},
+    "bs.foundry.forge.04": {"who": "blartz", "text": "A filing cabinet, probably! Corporations don't steal ideas to USE them, kid. They steal them to own the drawer."},
+    "bs.foundry.holding.01": {"who": "blartz", "text": "They took the forge schematics FIRST. Before my shoes! A man's shoes are his business, but a man's patent is his SOUL. PAT. PEND. B-L-Z four-oh-four-one-seven. Write it on your hand."},
+    "bs.foundry.holding.02": {"who": "bolt", "text": "Blartz, why would I write your patent number on my hand?"},
+    "bs.foundry.holding.03": {"who": "blartz", "text": "Because one day somebody's going to try to sell it back to you, and I want you to SEE it."}
+  },
+  "story_edits": {
+    "cs.galleriaLedger.02": {
+      "old": "Then we keep it. If Grindstone ever tries that clause again, we'll have the receipts — every unit he tried to erase.",
+      "new": "Then we keep it. If Grindstone ever tries that clause on you, we'll have the receipts — every unit he tried to erase.",
+      "why": "Continuity: the Galleria is played during the core hunt, before the Foundry's Clause 44 scene, so 'again' referred to something that hadn't happened yet. 'On you' foreshadows the scene instead."
+    }
+  }
+}

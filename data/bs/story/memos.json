@@ -209,6 +209,41 @@
       "title": "Document Retention Policy",
       "body": "Sensitive files (incl. the Clause 44 ledger) are now stored in the anchor store, in plain sight. Legal ruled this the safest location, citing precedent: nobody has ever voluntarily read anything at this mall.",
       "planet": null
+    },
+    {
+      "id": "memo.36",
+      "title": "RE: Sol-3 legacy test market (DO NOT DISCUSS)",
+      "body": "Darkmatter's due-diligence team asked about 'the Sol-3 legacy program' four times during today's call. We have no such program. Darkmatter assures us we will have one by close of sale, and that it has 'exceptional retention'. Nobody in this building is to say 'Sol-3' again. Facilities has removed it from the dictionary.",
+      "planet": 6,
+      "hidden": true
+    },
+    {
+      "id": "memo.37",
+      "title": "Asset Sale — Confiscated Vendor IP (BLARTZ, 1 forge schematic)",
+      "body": "Line item 0417 in the fire-sale binder: one (1) weapon-evolution forge schematic, confiscated from vendor BLARTZ upon his arrest for unlicensed innovation. Darkmatter has offered full asking price, plus a 'localization fee' payable to us, which nobody can explain. Legal notes the schematic is stamped PAT. PEND. Legal is told that pending is not the same as granted. Legal has gone very quiet.",
+      "planet": 2,
+      "hidden": true
+    },
+    {
+      "id": "memo.38",
+      "title": "Darkmatter's motto is 'Nobody Cancels'",
+      "body": "Legal asked whether Darkmatter's motto, 'NOBODY CANCELS', is a threat. Darkmatter's counsel replied that it is a promise. Legal asked what the difference is. Darkmatter's counsel replied, 'Timing'. The meeting was then extended by ninety minutes that nobody remembers agreeing to.",
+      "planet": 5,
+      "hidden": true
+    },
+    {
+      "id": "memo.39",
+      "title": "Next-Era Delivery™ pilot: invoices may arrive before orders",
+      "body": "During the Next-Era Delivery™ pilot, invoices may arrive before the order is placed, and occasionally before the customer is born. Accounts Receivable is NOT to chase payment from anyone who does not exist yet. Accounts Receivable is, however, encouraged to send a reminder.",
+      "planet": 7,
+      "hidden": true
+    },
+    {
+      "id": "memo.40",
+      "title": "Re: the vending robot that never reported back",
+      "body": "Darkmatter mentioned 'a field merchandiser lost on arrival' and asked whether OmniScrap units are ever 'inventory'. We said no, ours have Clause 44. Darkmatter laughed for eleven seconds, then asked to see Clause 44. HR sent it. Darkmatter sent back a red-lined copy titled CLAUSE 0. HR has asked for a transfer.",
+      "planet": 9,
+      "hidden": true
     }
   ],
   "spots": [

@@ -1,0 +1,92 @@
+# Roadmap
+
+Each milestone ends with: tests passing headless, the game launched and played, a short summary for review (what works, how to test it, known issues), and a git tag `m<N>`. After M0 the project **pauses for review**. After that it goes milestone to milestone.
+
+| # | Milestone | Status |
+|---|---|---|
+| M0 | Port inventory, bible, skeleton | **in review** |
+| M1 | Shared core + Bolt vertical slice (Scrapheap Junction) | next |
+| M2 | Gravelight vertical slice (migration of the built GRAVELIGHT project + §11 on Map 0) | |
+| M3 | Full B&S arsenal + Acts 1–2 (Rustvane, Nova Plaza) | |
+| M4 | B&S complete campaign | |
+| M5 | Gravelight Map 1 Kaltenbrunn (with §11) | |
+| M6 | B&S side modes & extras | |
+| M7 | The Fine Print Ch. 1–4 | |
+| M8 | Helvetia Works + finale | |
+| M9 | Unified front end & meta | |
+| M10 | Art/audio pass & polish | |
+| M11 | (stretch) Online co-op | |
+
+---
+
+## M0: Port inventory & bible
+**Acceptance**
+- The extraction tool dumps every original table to `/data/bs_source/`.
+- Every written line is ported to `/data/bs/story/` with VO line IDs, losslessly.
+- All M0 docs are written in full: BS_PORT_INVENTORY, CANON, TIMELINE, GDD, BS_WEAPONS, BS_ENEMIES, BS_LEVELS, FINEPRINT_LORE, FINEPRINT_SCRIPT, JINGLES, STORY_CHANGES, ASSETS, DECISIONS, ROADMAP, plus the Gravelight docs with §11 applied.
+- The Godot skeleton, autoloads, git repo and tests are in place.
+- The HUMOR-REVIEW yes/no list is presented.
+
+**Done:**
+- 134 tables extracted.
+- 494 lines indexed (all 707 source strings verified present), plus 5 new memos and new lines.
+- Skeleton with core autoloads; 12 GUT tests passing.
+
+## M1: Shared core + Bolt vertical slice
+**Scope**
+- **Shared core (`/core`):**
+  - damage model: hitboxes, weak points, damage types kinetic/energy/fire/frost/shock/legal/void, the status effects, knockback, hitstop
+  - weapon framework: WeaponData resources; hitscan, projectile, beam, deployable and thrown archetypes; V-level pipeline; mods
+  - enemy AI framework: NavigationAgent3D, data-driven state machines, archetypes, AI LOD, pooling
+  - interaction system, input remapping with full controller support, aim assist with per-device stickiness, subtitles, the dev console with every listed cheat
+- **`ThirdPersonController` at parity with the web build:**
+  - every `CONFIG.move/jump/hover/wall/dashJump/slamBounce/dash/slam/slide/melee/cam/AIM_ASSIST` value ported as the starting tuning
+  - a side-by-side feel checklist signed off: jump arc, dash distance, slam timing, combo windows, hitstop
+  - then the camera SpringArm and soft lock-on
+- **Melee:** the 3-hit mallet string with hitstop, plus mallet throw. Throw → boomerang can come in M1 or M3.
+- **Sprocket:** body, four moods, barks wired from `data/bs/story/barks.json`.
+- **Weapons:** the weapon wheel; OMNI-BLASTER plus 3 more redesigned weapons with V-levels.
+- **The full Scrapheap Junction remake:**
+  - the garage prologue
+  - Rusty's Row (Mama Gasket, Rusty's quests), the Billing Mast, the Conveyor Works, the Teleporter Yard
+  - Exit Yard and REPO-TRON
+- **Also:** the Blartz shop (v2 tabs, deal of the day, wishlist, trade-in, celebration), saving, TTS voices with subtitles.
+
+**Acceptance:** intro through Repo-Tron is playable and feels as good as or better than the web build (checked side by side).
+
+## M2: Gravelight vertical slice
+**Scope**
+- Move the GRAVELIGHT project's code into `/gravelight` (scripted `res://` path rewrite) and merge its autoloads into `/core` (DECISIONS T-007, T-008).
+- `FirstPersonController` on the shared core.
+- Map 0 Crossroads Inn already has rounds, barricades, Scrip, wall-buys, doors, crate, power-ups, the radio quest and Operator lines. Add or verify all 8 perk machines in the cellar (behind a 1500 door) with §11 backstories, readable fine-print panels on their backs, and hidden plan-ID stencils.
+- Operator corporate slips.
+- The settings merge.
+
+**Acceptance:** round 15 on Map 0 feels tense and fair, and the existing GRAVELIGHT QA suite passes inside the new project.
+
+## M3: Full B&S arsenal + Act 1–2
+All 16 weapons with V1–V5, mods and Signature Mods. Rustvane Canyon complete (Sentinel, Content Creator, GLAMBOT defection, Tether-Hook). The shield reveal. Nova Plaza complete (The Algorithm). The Omega Forge built and testable through the dev console.
+
+## M4: B&S complete campaign
+Glacius (Grind Soles), Verdant (Glide), the Grand Galleria (TONIQ™ dispenser), and Core Foundry in full: the Blartz rescue and Omega Forge unlock, the Holding Block schematic scene, Clause 44, the Grindstone finale. Then the ending, memo epilogue and post-credits; all side quests and all 40 memos; flyovers, star map, space travel, the cutscene gallery, all 17 ad vignettes.
+
+## M5: Gravelight Map 1 Kaltenbrunn
+Already built in GRAVELIGHT (M3–M4 there). This milestone verifies it after the migration and adds §11: the Crucible plaque, the stencils lit by muzzle flash, Operator slips, Reinholt's "Woman in Violet" recordings, Wren's Hawkeye Brandy VO, and the new perk backstories in-world.
+
+## M6: B&S side modes & extras
+ZONGA™ (rarity tiers, sponsor drops, smarter bots), the GLAMBOT Colosseum (all 8 challenge types; Boss Rush with every boss), OMNIGRAND PRIX™ with RUSTVANE SKYWAY, LOOP RIOT™ in full, the Firing Range, Photo Mode, NG+, cosmetics, trophies.
+
+## M7: The Fine Print Ch. 1–4
+The Retention Spire, Field Unit (VendelinController with stealth), the Helvetia vignettes (cabinet build puzzles, human scenes, the pump-organ jingle composer), the Patent Pending heist, THE QUARTERLY.
+
+## M8: Helvetia Works + finale
+The full crossover map. Bolt and Vendelin as first-person characters. Audit Rounds and Repossessors, the Underwriter, THE RETURN POLICY and its upgrade "No Questions Asked," the Field-Kit OMNI-BLASTER buildable, the Original Omega Forge second tier, the Anomalous Inventory crate pool, the "Clause Zero" egg, the ending and its rewards.
+
+## M9: Unified front end & meta
+The hub (Blartz's shop at night), the unlock flow, the one save profile, Archive cross-linking, cross-rewards, Gravelight rank/prestige/dossiers/mastery inside the shared profile, the full settings menu, controller polish.
+
+## M10: Art/audio pass & polish
+Sourced CC0 assets per `ASSETS.md`; per-world art direction; VFX; the audio mix; optimization (60+ FPS mid-range, 24 zombies); a bug bash.
+
+## M11 (stretch): Online co-op
+Gravelight and Helvetia Works for 1–4 players. Their authority logic is already kept separate from presentation. 2-player Colosseum.
