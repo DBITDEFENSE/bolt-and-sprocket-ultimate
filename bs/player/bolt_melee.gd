@@ -36,6 +36,18 @@ func _ready() -> void:
 	T = Data.table("bs/tuning")
 
 
+## resetPlayer() (index.html:2947): clear any attack in progress and retrieve a thrown mallet.
+func reset() -> void:
+	attack_t = 0.0
+	attack_hit_done = true
+	queue = false
+	combo_idx = 0
+	combo_win_t = 0.0
+	air_combo = 0
+	throw_active = false
+	throw_cd = 0.0
+
+
 func windup_committed() -> bool:
 	return attack_t > 0.0 and not attack_hit_done
 

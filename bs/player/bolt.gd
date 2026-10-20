@@ -285,6 +285,7 @@ func _recover(dmg: float, splash: bool) -> void:
 	motor.slide_t = 0.0
 	motor.vel = Vector3.ZERO
 	global_position = last_safe
+	_settle_after_teleport()
 	if splash and _splash_quip_cd <= 0.0:
 		_splash_quip_cd = 20.0
 		var n: int = (Data.table("bs/story/barks")["out_of_bounds"] as Array).size() if Data.table("bs/story/barks")["out_of_bounds"] is Array else 0
@@ -326,8 +327,26 @@ func respawn_at(pos: Vector3) -> void:
 	dead = false
 	hp = max_hp
 	invuln = 1.5
+	if melee != null:
+		melee.reset()          # resetPlayer: attackT = 0, queue cleared, combo reset, mallet retrieved
+	_settle_after_teleport()
 	if camera != null:
 		camera.snap_to(self)
+
+
+## After a teleport the motor still remembers the old frame's air/ground state, so the first jump press
+## would be spent as a double jump. Probe the floor and restore a clean grounded (or airborne) state.
+func _settle_after_teleport() -> void:
+	var c: KinematicCollision3D = move_and_collide(Vector3(0, -0.15, 0), true)
+	var grounded: bool = c != null and c.get_normal().y > 0.5
+	if grounded:
+		global_position += c.get_travel()
+	motor.on_ground = grounded
+	motor.jumps = 0
+	motor.coyote = float(T["jump"]["coyote"]) if grounded else 0.0
+	motor.jump_buffer = 0.0
+	motor.air_dash_used = false
+	motor.fall_peak = global_position.y
 
 
 func is_alive() -> bool:

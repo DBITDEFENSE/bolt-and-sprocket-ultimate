@@ -105,3 +105,15 @@ func test_slam_hits_and_launches() -> void:
 	assert_gt(d.total_damage(), 0.0, "slam shockwave damaged the dummy")
 	assert_gt(d.launched, 0.0, "slam launches enemies")
 	assert_true(_bolt.motor.on_ground)
+
+
+func test_respawn_then_jump_is_a_ground_jump() -> void:
+	# regression: after a respawn mid-air state, the first press was spent as a double jump
+	_bolt.global_position = Vector3(0, 6, 0)
+	_bolt.scripted = {"dir": Vector3.ZERO}
+	await _frames(3)
+	_bolt.respawn_at(Vector3(0, 0.95, 0))
+	_bolt.scripted = {"dir": Vector3.ZERO, "jump_pressed": true, "jump_held": true}
+	await _frames(2)
+	assert_eq(_bolt.motor.jumps, 1, "first press after a respawn is a ground jump")
+	assert_almost_eq(_bolt.motor.vel.y, float(Data.table("bs/tuning")["jump"]["vel"]), 1.0)
