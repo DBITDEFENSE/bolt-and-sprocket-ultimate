@@ -1,0 +1,1184 @@
+[
+  {
+    "id": "html.page.001",
+    "screen": "page",
+    "text": "Bolt & Sprocket",
+    "src_line": 6
+  },
+  {
+    "id": "html.hpLabel.001",
+    "screen": "hpLabel",
+    "text": "NANOTECH",
+    "src_line": 328
+  },
+  {
+    "id": "html.hoverLabel.001",
+    "screen": "hoverLabel",
+    "text": "JETPACK",
+    "src_line": 333
+  },
+  {
+    "id": "html.superLabel.001",
+    "screen": "superLabel",
+    "text": "SUPER (T)",
+    "src_line": 335
+  },
+  {
+    "id": "html.levelName.001",
+    "screen": "levelName",
+    "text": "SCRAPHEAP JUNCTION",
+    "src_line": 338
+  },
+  {
+    "id": "html.w0.001",
+    "screen": "w0",
+    "text": "BLASTER",
+    "src_line": 340
+  },
+  {
+    "id": "html.w1.001",
+    "screen": "w1",
+    "text": "VOID RIPPER",
+    "src_line": 341
+  },
+  {
+    "id": "html.w2.001",
+    "screen": "w2",
+    "text": "SPROCKET ZAP",
+    "src_line": 342
+  },
+  {
+    "id": "html.w3.001",
+    "screen": "w3",
+    "text": "B.O.O.M. BOX",
+    "src_line": 343
+  },
+  {
+    "id": "html.w4.001",
+    "screen": "w4",
+    "text": "LAWN DART",
+    "src_line": 344
+  },
+  {
+    "id": "html.w5.001",
+    "screen": "w5",
+    "text": "PATENT PENDING",
+    "src_line": 345
+  },
+  {
+    "id": "html.w6.001",
+    "screen": "w6",
+    "text": "CEASE & DESIST",
+    "src_line": 346
+  },
+  {
+    "id": "html.w7.001",
+    "screen": "w7",
+    "text": "BUZZKILL",
+    "src_line": 347
+  },
+  {
+    "id": "html.w8.001",
+    "screen": "w8",
+    "text": "GRAV GRENADE",
+    "src_line": 348
+  },
+  {
+    "id": "html.w9.001",
+    "screen": "w9",
+    "text": "MIDDLEMAN",
+    "src_line": 349
+  },
+  {
+    "id": "html.w10.001",
+    "screen": "w10",
+    "text": "FROSTBYTE",
+    "src_line": 350
+  },
+  {
+    "id": "html.w11.001",
+    "screen": "w11",
+    "text": "ROOT CANAL",
+    "src_line": 351
+  },
+  {
+    "id": "html.wrenchHint.001",
+    "screen": "wrenchHint",
+    "text": "🔨 F — Mallet | R — Dash | 2×Jump+F — Slam | Q/E — Weapons",
+    "src_line": 353
+  },
+  {
+    "id": "html.comboLabel.001",
+    "screen": "comboLabel",
+    "text": "HITS",
+    "src_line": 357
+  },
+  {
+    "id": "html.bossName.001",
+    "screen": "bossName",
+    "text": "BOSS",
+    "src_line": 358
+  },
+  {
+    "id": "html.bossBreakLbl.001",
+    "screen": "bossBreakLbl",
+    "text": "BREAK",
+    "src_line": 358
+  },
+  {
+    "id": "html.objLbl.001",
+    "screen": "objLbl",
+    "text": "EXIT · 40m",
+    "src_line": 360
+  },
+  {
+    "id": "html.zongaHud.001",
+    "screen": "zongaHud",
+    "text": "· ZONGA™ LIVE 🔴",
+    "src_line": 363
+  },
+  {
+    "id": "html.raceLap.001",
+    "screen": "raceLap",
+    "text": "LAP 1/3",
+    "src_line": 364
+  },
+  {
+    "id": "html.lrPosSuf.001",
+    "screen": "lrPosSuf",
+    "text": "ST",
+    "src_line": 370
+  },
+  {
+    "id": "html.lrLapBox.001",
+    "screen": "lrLapBox",
+    "text": "LAP",
+    "src_line": 371
+  },
+  {
+    "id": "html.lrSpeed.001",
+    "screen": "lrSpeed",
+    "text": "KM/H",
+    "src_line": 373
+  },
+  {
+    "id": "html.lrNitro.001",
+    "screen": "lrNitro",
+    "text": "SPROCKET OVERCLOCK",
+    "src_line": 374
+  },
+  {
+    "id": "html.lrHint.001",
+    "screen": "lrHint",
+    "text": "W push · A/D steer · hold+release SPACE ollie · ARROWS tricks · S+steer slide · SHIFT overclock",
+    "src_line": 381
+  },
+  {
+    "id": "html.skipLabel.001",
+    "screen": "skipLabel",
+    "text": "HOLD TO SKIP",
+    "src_line": 397
+  },
+  {
+    "id": "html.fpsCounter.001",
+    "screen": "fpsCounter",
+    "text": "60 FPS",
+    "src_line": 398
+  },
+  {
+    "id": "html.rangeHud.001",
+    "screen": "rangeHud",
+    "text": "🎯 HITS:",
+    "src_line": 402
+  },
+  {
+    "id": "html.title.001",
+    "screen": "title",
+    "text": "BOLT",
+    "src_line": 406
+  },
+  {
+    "id": "html.title.002",
+    "screen": "title",
+    "text": "SPROCKET",
+    "src_line": 406
+  },
+  {
+    "id": "html.subtitle.001",
+    "screen": "subtitle",
+    "text": "Scrap the rogue mega-corp. Save the galaxy. Read the fine print.",
+    "src_line": 407
+  },
+  {
+    "id": "html.btnContinue.001",
+    "screen": "btnContinue",
+    "text": "CONTINUE",
+    "src_line": 409
+  },
+  {
+    "id": "html.btnNew.001",
+    "screen": "btnNew",
+    "text": "NEW GAME",
+    "src_line": 410
+  },
+  {
+    "id": "html.btnNGPlus.001",
+    "screen": "btnNGPlus",
+    "text": "NEW GAME+",
+    "src_line": 411
+  },
+  {
+    "id": "html.btnMenuZonga.001",
+    "screen": "btnMenuZonga",
+    "text": "ZONGA™",
+    "src_line": 412
+  },
+  {
+    "id": "html.btnMenuArena.001",
+    "screen": "btnMenuArena",
+    "text": "ARENA",
+    "src_line": 413
+  },
+  {
+    "id": "html.btnMenuRace.001",
+    "screen": "btnMenuRace",
+    "text": "OMNIGRAND PRIX™",
+    "src_line": 414
+  },
+  {
+    "id": "html.btnMenuLoopRiot.001",
+    "screen": "btnMenuLoopRiot",
+    "text": "LOOP RIOT™",
+    "src_line": 414
+  },
+  {
+    "id": "html.btnSettings.001",
+    "screen": "btnSettings",
+    "text": "SETTINGS",
+    "src_line": 415
+  },
+  {
+    "id": "html.btnExtras.001",
+    "screen": "btnExtras",
+    "text": "EXTRAS",
+    "src_line": 416
+  },
+  {
+    "id": "html.btnControls.001",
+    "screen": "btnControls",
+    "text": "CONTROLS",
+    "src_line": 417
+  },
+  {
+    "id": "html.extras.001",
+    "screen": "extras",
+    "text": "EXTRAS",
+    "src_line": 424
+  },
+  {
+    "id": "html.btnExMemos.001",
+    "screen": "btnExMemos",
+    "text": "OMNISCRAP MEMOS",
+    "src_line": 425
+  },
+  {
+    "id": "html.btnExGallery.001",
+    "screen": "btnExGallery",
+    "text": "CUTSCENE GALLERY",
+    "src_line": 426
+  },
+  {
+    "id": "html.btnExCredits.001",
+    "screen": "btnExCredits",
+    "text": "CREDITS",
+    "src_line": 427
+  },
+  {
+    "id": "html.btnExBack.001",
+    "screen": "btnExBack",
+    "text": "BACK",
+    "src_line": 428
+  },
+  {
+    "id": "html.gallery.001",
+    "screen": "gallery",
+    "text": "CUTSCENE GALLERY",
+    "src_line": 435
+  },
+  {
+    "id": "html.btnGalleryBack.001",
+    "screen": "btnGalleryBack",
+    "text": "BACK",
+    "src_line": 437
+  },
+  {
+    "id": "html.credits.001",
+    "screen": "credits",
+    "text": "CREDITS",
+    "src_line": 444
+  },
+  {
+    "id": "html.credits.002",
+    "screen": "credits",
+    "text": "BOLT & SPROCKET",
+    "src_line": 445
+  },
+  {
+    "id": "html.credits.003",
+    "screen": "credits",
+    "text": "a one-file experiment in scrap and spite",
+    "src_line": 447
+  },
+  {
+    "id": "html.credits.004",
+    "screen": "credits",
+    "text": "Everything —",
+    "src_line": 447
+  },
+  {
+    "id": "html.credits.005",
+    "screen": "credits",
+    "text": "Devin + Claude",
+    "src_line": 448
+  },
+  {
+    "id": "html.credits.006",
+    "screen": "credits",
+    "text": "Bolts harmed —",
+    "src_line": 448
+  },
+  {
+    "id": "html.credits.007",
+    "screen": "credits",
+    "text": "several million",
+    "src_line": 449
+  },
+  {
+    "id": "html.credits.008",
+    "screen": "credits",
+    "text": "Warranty status —",
+    "src_line": 449
+  },
+  {
+    "id": "html.credits.009",
+    "screen": "credits",
+    "text": "VOID",
+    "src_line": 450
+  },
+  {
+    "id": "html.credits.010",
+    "screen": "credits",
+    "text": "No OmniScrap™ executives were consulted. Clause 44 has been removed from all shipping firmware.",
+    "src_line": 451
+  },
+  {
+    "id": "html.btnCreditsBack.001",
+    "screen": "btnCreditsBack",
+    "text": "BACK",
+    "src_line": 453
+  },
+  {
+    "id": "html.starmap.001",
+    "screen": "starmap",
+    "text": "STAR MAP",
+    "src_line": 459
+  },
+  {
+    "id": "html.p0.001",
+    "screen": "p0",
+    "text": "GO",
+    "src_line": 465
+  },
+  {
+    "id": "html.p0.002",
+    "screen": "p0",
+    "text": "SCRAPHEAP",
+    "src_line": 465
+  },
+  {
+    "id": "html.p1.001",
+    "screen": "p1",
+    "text": "GO",
+    "src_line": 466
+  },
+  {
+    "id": "html.p1.002",
+    "screen": "p1",
+    "text": "RUSTVANE",
+    "src_line": 466
+  },
+  {
+    "id": "html.p5.001",
+    "screen": "p5",
+    "text": "CORE",
+    "src_line": 467
+  },
+  {
+    "id": "html.p5.002",
+    "screen": "p5",
+    "text": "NOVA PLAZA",
+    "src_line": 467
+  },
+  {
+    "id": "html.p6.001",
+    "screen": "p6",
+    "text": "CORE",
+    "src_line": 468
+  },
+  {
+    "id": "html.p6.002",
+    "screen": "p6",
+    "text": "GLACIUS",
+    "src_line": 468
+  },
+  {
+    "id": "html.p7.001",
+    "screen": "p7",
+    "text": "CORE",
+    "src_line": 469
+  },
+  {
+    "id": "html.p7.002",
+    "screen": "p7",
+    "text": "VERDANT SINK",
+    "src_line": 469
+  },
+  {
+    "id": "html.p9.001",
+    "screen": "p9",
+    "text": "SIDE",
+    "src_line": 470
+  },
+  {
+    "id": "html.p9.002",
+    "screen": "p9",
+    "text": "GRAND GALLERIA",
+    "src_line": 470
+  },
+  {
+    "id": "html.p2.001",
+    "screen": "p2",
+    "text": "FINALE",
+    "src_line": 471
+  },
+  {
+    "id": "html.p2.002",
+    "screen": "p2",
+    "text": "CORE FOUNDRY",
+    "src_line": 471
+  },
+  {
+    "id": "html.p10.001",
+    "screen": "p10",
+    "text": "SIDE",
+    "src_line": 473
+  },
+  {
+    "id": "html.mpLabel.001",
+    "screen": "mpLabel",
+    "text": "◆ CURRENT MISSION",
+    "src_line": 476
+  },
+  {
+    "id": "html.btnSmShop.001",
+    "screen": "btnSmShop",
+    "text": "BLARTZ'S SHOP",
+    "src_line": 485
+  },
+  {
+    "id": "html.btnSmBack.001",
+    "screen": "btnSmBack",
+    "text": "BACK",
+    "src_line": 486
+  },
+  {
+    "id": "html.settings.001",
+    "screen": "settings",
+    "text": "SETTINGS",
+    "src_line": 493
+  },
+  {
+    "id": "html.btnResetSave.001",
+    "screen": "btnResetSave",
+    "text": "RESET SAVE DATA",
+    "src_line": 496
+  },
+  {
+    "id": "html.btnSettingsBack.001",
+    "screen": "btnSettingsBack",
+    "text": "BACK",
+    "src_line": 497
+  },
+  {
+    "id": "html.shopTitle.001",
+    "screen": "shopTitle",
+    "text": "BLARTZ'S DISCOUNT ARMAMENTS",
+    "src_line": 508
+  },
+  {
+    "id": "html.shopPitch.001",
+    "screen": "shopPitch",
+    "text": "\"If it explodes, it's a feature!\"",
+    "src_line": 509
+  },
+  {
+    "id": "html.shopDesc.001",
+    "screen": "shopDesc",
+    "text": "Welcome!",
+    "src_line": 519
+  },
+  {
+    "id": "html.shopDesc.002",
+    "screen": "shopDesc",
+    "text": "Browse the merchandise. Blartz accepts bolts, gold bolts, and absolutely no returns.",
+    "src_line": 519
+  },
+  {
+    "id": "html.btnShopRange.001",
+    "screen": "btnShopRange",
+    "text": "🎯 FIRING RANGE",
+    "src_line": 522
+  },
+  {
+    "id": "html.btnShopClose.001",
+    "screen": "btnShopClose",
+    "text": "LEAVE SHOP",
+    "src_line": 523
+  },
+  {
+    "id": "html.zonga.001",
+    "screen": "zonga",
+    "text": "ZONGA™",
+    "src_line": 531
+  },
+  {
+    "id": "html.zonga.002",
+    "screen": "zonga",
+    "text": "THE LAST INFLUENCER STANDING — broadcast live, liability-free",
+    "src_line": 532
+  },
+  {
+    "id": "html.zonga.003",
+    "screen": "zonga",
+    "text": "CONTESTANTS",
+    "src_line": 533
+  },
+  {
+    "id": "html.btnZongaStart.001",
+    "screen": "btnZongaStart",
+    "text": "DROP IN",
+    "src_line": 541
+  },
+  {
+    "id": "html.btnZongaBack.001",
+    "screen": "btnZongaBack",
+    "text": "BACK",
+    "src_line": 542
+  },
+  {
+    "id": "html.arena.001",
+    "screen": "arena",
+    "text": "GLAMBOT'S COLOSSEUM",
+    "src_line": 550
+  },
+  {
+    "id": "html.arena.002",
+    "screen": "arena",
+    "text": "\"Consensual violence, DARLING. Sign here.\"",
+    "src_line": 551
+  },
+  {
+    "id": "html.btnArenaBack.001",
+    "screen": "btnArenaBack",
+    "text": "BACK",
+    "src_line": 553
+  },
+  {
+    "id": "html.race.001",
+    "screen": "race",
+    "text": "OMNIGRAND PRIX™",
+    "src_line": 560
+  },
+  {
+    "id": "html.race.002",
+    "screen": "race",
+    "text": "\"Hoverboards provided as-is. Speed sold separately.\"",
+    "src_line": 561
+  },
+  {
+    "id": "html.btnRaceBack.001",
+    "screen": "btnRaceBack",
+    "text": "BACK",
+    "src_line": 563
+  },
+  {
+    "id": "html.loopriot.001",
+    "screen": "loopriot",
+    "text": "LOOP RIOT™",
+    "src_line": 570
+  },
+  {
+    "id": "html.loopriot.002",
+    "screen": "loopriot",
+    "text": "\"Recalled products. Unrecalled attitude.\" — pirate broadcast, OmniScrap™ Durability Proving Ground",
+    "src_line": 571
+  },
+  {
+    "id": "html.lrLobbyKeys.001",
+    "screen": "lrLobbyKeys",
+    "text": "push ·",
+    "src_line": 575
+  },
+  {
+    "id": "html.lrLobbyKeys.002",
+    "screen": "lrLobbyKeys",
+    "text": "A/D",
+    "src_line": 575
+  },
+  {
+    "id": "html.lrLobbyKeys.003",
+    "screen": "lrLobbyKeys",
+    "text": "steer (spin in the air) ·",
+    "src_line": 575
+  },
+  {
+    "id": "html.lrLobbyKeys.004",
+    "screen": "lrLobbyKeys",
+    "text": "SPACE",
+    "src_line": 575
+  },
+  {
+    "id": "html.lrLobbyKeys.005",
+    "screen": "lrLobbyKeys",
+    "text": "hold to tuck, release to ollie ·",
+    "src_line": 575
+  },
+  {
+    "id": "html.lrLobbyKeys.006",
+    "screen": "lrLobbyKeys",
+    "text": "SHIFT",
+    "src_line": 575
+  },
+  {
+    "id": "html.lrLobbyKeys.007",
+    "screen": "lrLobbyKeys",
+    "text": "Sprocket overclock",
+    "src_line": 575
+  },
+  {
+    "id": "html.lrLobbyKeys.008",
+    "screen": "lrLobbyKeys",
+    "text": "kickflip / heelflip / shove-it ·",
+    "src_line": 576
+  },
+  {
+    "id": "html.lrLobbyKeys.009",
+    "screen": "lrLobbyKeys",
+    "text": "grab in the air, manual on flats ·",
+    "src_line": 576
+  },
+  {
+    "id": "html.lrLobbyKeys.010",
+    "screen": "lrLobbyKeys",
+    "text": "+steer power slide",
+    "src_line": 576
+  },
+  {
+    "id": "html.lrLobbyKeys.011",
+    "screen": "lrLobbyKeys",
+    "text": "Pad:",
+    "src_line": 576
+  },
+  {
+    "id": "html.lrLobbyKeys.012",
+    "screen": "lrLobbyKeys",
+    "text": "stick",
+    "src_line": 577
+  },
+  {
+    "id": "html.lrLobbyKeys.013",
+    "screen": "lrLobbyKeys",
+    "text": "steer ·",
+    "src_line": 577
+  },
+  {
+    "id": "html.lrLobbyKeys.014",
+    "screen": "lrLobbyKeys",
+    "text": "ollie ·",
+    "src_line": 577
+  },
+  {
+    "id": "html.lrLobbyKeys.015",
+    "screen": "lrLobbyKeys",
+    "text": "R-stick",
+    "src_line": 577
+  },
+  {
+    "id": "html.lrLobbyKeys.016",
+    "screen": "lrLobbyKeys",
+    "text": "tricks ·",
+    "src_line": 577
+  },
+  {
+    "id": "html.lrLobbyKeys.017",
+    "screen": "lrLobbyKeys",
+    "text": "LT",
+    "src_line": 577
+  },
+  {
+    "id": "html.lrLobbyKeys.018",
+    "screen": "lrLobbyKeys",
+    "text": "brake/slide ·",
+    "src_line": 577
+  },
+  {
+    "id": "html.lrLobbyKeys.019",
+    "screen": "lrLobbyKeys",
+    "text": "RT",
+    "src_line": 577
+  },
+  {
+    "id": "html.lrLobbyKeys.020",
+    "screen": "lrLobbyKeys",
+    "text": "overclock. Land combos to charge the overclock.",
+    "src_line": 577
+  },
+  {
+    "id": "html.btnLrStart.001",
+    "screen": "btnLrStart",
+    "text": "DROP IN",
+    "src_line": 580
+  },
+  {
+    "id": "html.btnLrNotices.001",
+    "screen": "btnLrNotices",
+    "text": "RECALL NOTICES",
+    "src_line": 581
+  },
+  {
+    "id": "html.btnLrBack.001",
+    "screen": "btnLrBack",
+    "text": "BACK",
+    "src_line": 582
+  },
+  {
+    "id": "html.zongaEndTitle.001",
+    "screen": "zongaEndTitle",
+    "text": "ELIMINATED",
+    "src_line": 590
+  },
+  {
+    "id": "html.zeLbl1.001",
+    "screen": "zeLbl1",
+    "text": "PLACEMENT",
+    "src_line": 591
+  },
+  {
+    "id": "html.zeLbl2.001",
+    "screen": "zeLbl2",
+    "text": "ELIMINATIONS",
+    "src_line": 592
+  },
+  {
+    "id": "html.zongaEnd.001",
+    "screen": "zongaEnd",
+    "text": "PAYOUT",
+    "src_line": 593
+  },
+  {
+    "id": "html.btnZeRematch.001",
+    "screen": "btnZeRematch",
+    "text": "REMATCH",
+    "src_line": 596
+  },
+  {
+    "id": "html.btnZeLobby.001",
+    "screen": "btnZeLobby",
+    "text": "LOBBY",
+    "src_line": 597
+  },
+  {
+    "id": "html.questLog.001",
+    "screen": "questLog",
+    "text": "QUEST LOG",
+    "src_line": 605
+  },
+  {
+    "id": "html.btnQuestBack.001",
+    "screen": "btnQuestBack",
+    "text": "BACK",
+    "src_line": 607
+  },
+  {
+    "id": "html.memoLog.001",
+    "screen": "memoLog",
+    "text": "OMNISCRAP INTERNAL MEMOS",
+    "src_line": 614
+  },
+  {
+    "id": "html.memoText.001",
+    "screen": "memoText",
+    "text": "Select a recovered memo.",
+    "src_line": 618
+  },
+  {
+    "id": "html.btnMemoBack.001",
+    "screen": "btnMemoBack",
+    "text": "BACK",
+    "src_line": 620
+  },
+  {
+    "id": "html.controlsOverlay.001",
+    "screen": "controlsOverlay",
+    "text": "CONTROLS",
+    "src_line": 627
+  },
+  {
+    "id": "html.controlsList.001",
+    "screen": "controlsList",
+    "text": "W A S D / L-STICK",
+    "src_line": 629
+  },
+  {
+    "id": "html.controlsList.002",
+    "screen": "controlsList",
+    "text": "Move",
+    "src_line": 629
+  },
+  {
+    "id": "html.controlsList.003",
+    "screen": "controlsList",
+    "text": "MOUSE / R-STICK",
+    "src_line": 630
+  },
+  {
+    "id": "html.controlsList.004",
+    "screen": "controlsList",
+    "text": "Look (click canvas to lock)",
+    "src_line": 630
+  },
+  {
+    "id": "html.controlsList.005",
+    "screen": "controlsList",
+    "text": "SPACE / A",
+    "src_line": 631
+  },
+  {
+    "id": "html.controlsList.006",
+    "screen": "controlsList",
+    "text": "Jump, double jump, hold to hover",
+    "src_line": 631
+  },
+  {
+    "id": "html.controlsList.007",
+    "screen": "controlsList",
+    "text": "SHIFT",
+    "src_line": 632
+  },
+  {
+    "id": "html.controlsList.008",
+    "screen": "controlsList",
+    "text": "Sprint (stick: push fully)",
+    "src_line": 632
+  },
+  {
+    "id": "html.controlsList.009",
+    "screen": "controlsList",
+    "text": "V (hold)",
+    "src_line": 633
+  },
+  {
+    "id": "html.controlsList.010",
+    "screen": "controlsList",
+    "text": "Walk (stick: partial tilt)",
+    "src_line": 633
+  },
+  {
+    "id": "html.controlsList.011",
+    "screen": "controlsList",
+    "text": "R / B",
+    "src_line": 634
+  },
+  {
+    "id": "html.controlsList.012",
+    "screen": "controlsList",
+    "text": "Dash (ground or air, i-frames)",
+    "src_line": 634
+  },
+  {
+    "id": "html.controlsList.013",
+    "screen": "controlsList",
+    "text": "C, CTRL / L3",
+    "src_line": 635
+  },
+  {
+    "id": "html.controlsList.014",
+    "screen": "controlsList",
+    "text": "Slide (sprinting)",
+    "src_line": 635
+  },
+  {
+    "id": "html.controlsList.015",
+    "screen": "controlsList",
+    "text": "2×JUMP + F/X",
+    "src_line": 636
+  },
+  {
+    "id": "html.controlsList.016",
+    "screen": "controlsList",
+    "text": "SLAM · hold DOWN (or keep holding F/X) = SUPER SLAM",
+    "src_line": 636
+  },
+  {
+    "id": "html.controlsList.017",
+    "screen": "controlsList",
+    "text": "CLICK / RT",
+    "src_line": 637
+  },
+  {
+    "id": "html.controlsList.018",
+    "screen": "controlsList",
+    "text": "Fire (hold to charge Void Ripper)",
+    "src_line": 637
+  },
+  {
+    "id": "html.controlsList.019",
+    "screen": "controlsList",
+    "text": "Q,E / LB,RB",
+    "src_line": 638
+  },
+  {
+    "id": "html.controlsList.020",
+    "screen": "controlsList",
+    "text": "Cycle weapons",
+    "src_line": 638
+  },
+  {
+    "id": "html.controlsList.021",
+    "screen": "controlsList",
+    "text": "TAB / hold RB",
+    "src_line": 639
+  },
+  {
+    "id": "html.controlsList.022",
+    "screen": "controlsList",
+    "text": "Weapon wheel (mouse / stick to pick)",
+    "src_line": 639
+  },
+  {
+    "id": "html.controlsList.023",
+    "screen": "controlsList",
+    "text": "F / X",
+    "src_line": 640
+  },
+  {
+    "id": "html.controlsList.024",
+    "screen": "controlsList",
+    "text": "Mallet — mash for combos, hold to launch",
+    "src_line": 640
+  },
+  {
+    "id": "html.controlsList.025",
+    "screen": "controlsList",
+    "text": "E / Y",
+    "src_line": 641
+  },
+  {
+    "id": "html.controlsList.026",
+    "screen": "controlsList",
+    "text": "Interact (ship, shop)",
+    "src_line": 641
+  },
+  {
+    "id": "html.controlsList.027",
+    "screen": "controlsList",
+    "text": "ESC / START",
+    "src_line": 642
+  },
+  {
+    "id": "html.controlsList.028",
+    "screen": "controlsList",
+    "text": "Pause",
+    "src_line": 642
+  },
+  {
+    "id": "html.controlsList.029",
+    "screen": "controlsList",
+    "text": "LT / L2",
+    "src_line": 643
+  },
+  {
+    "id": "html.controlsList.030",
+    "screen": "controlsList",
+    "text": "Aim lock",
+    "src_line": 643
+  },
+  {
+    "id": "html.controlsList.031",
+    "screen": "controlsList",
+    "text": "T / D-PAD UP",
+    "src_line": 644
+  },
+  {
+    "id": "html.controlsList.032",
+    "screen": "controlsList",
+    "text": "Super Sprocket (once purchased)",
+    "src_line": 644
+  },
+  {
+    "id": "html.controlsList.033",
+    "screen": "controlsList",
+    "text": "K.A.R.E.N. (NG+ superweapon)",
+    "src_line": 645
+  },
+  {
+    "id": "html.controlsList.034",
+    "screen": "controlsList",
+    "text": "Jump → double jump → air dash → hover chains into one flow. Jump out of a slide for a LONG JUMP!",
+    "src_line": 646
+  },
+  {
+    "id": "html.btnCloseControls.001",
+    "screen": "btnCloseControls",
+    "text": "GOT IT!",
+    "src_line": 648
+  },
+  {
+    "id": "html.pause.001",
+    "screen": "pause",
+    "text": "PAUSED",
+    "src_line": 655
+  },
+  {
+    "id": "html.btnResume.001",
+    "screen": "btnResume",
+    "text": "RESUME",
+    "src_line": 656
+  },
+  {
+    "id": "html.btnPhoto.001",
+    "screen": "btnPhoto",
+    "text": "PHOTO MODE",
+    "src_line": 657
+  },
+  {
+    "id": "html.btnQuests.001",
+    "screen": "btnQuests",
+    "text": "QUEST LOG",
+    "src_line": 658
+  },
+  {
+    "id": "html.btnMemos.001",
+    "screen": "btnMemos",
+    "text": "MEMOS",
+    "src_line": 659
+  },
+  {
+    "id": "html.btnPauseSettings.001",
+    "screen": "btnPauseSettings",
+    "text": "SETTINGS",
+    "src_line": 660
+  },
+  {
+    "id": "html.btnRestart.001",
+    "screen": "btnRestart",
+    "text": "RESTART PLANET",
+    "src_line": 661
+  },
+  {
+    "id": "html.btnQuit.001",
+    "screen": "btnQuit",
+    "text": "MAIN MENU",
+    "src_line": 662
+  },
+  {
+    "id": "html.complete.001",
+    "screen": "complete",
+    "text": "PLANET CLEAR!",
+    "src_line": 669
+  },
+  {
+    "id": "html.complete.002",
+    "screen": "complete",
+    "text": "BOLTS COLLECTED",
+    "src_line": 671
+  },
+  {
+    "id": "html.complete.003",
+    "screen": "complete",
+    "text": "GOLD BOLTS",
+    "src_line": 672
+  },
+  {
+    "id": "html.complete.004",
+    "screen": "complete",
+    "text": "TIME",
+    "src_line": 673
+  },
+  {
+    "id": "html.btnNext.001",
+    "screen": "btnNext",
+    "text": "TO THE SHIP →",
+    "src_line": 675
+  },
+  {
+    "id": "html.btnMap.001",
+    "screen": "btnMap",
+    "text": "MAIN MENU",
+    "src_line": 676
+  },
+  {
+    "id": "html.victory.001",
+    "screen": "victory",
+    "text": "YOU SAVED THE GALAXY!",
+    "src_line": 684
+  },
+  {
+    "id": "html.victory.002",
+    "screen": "victory",
+    "text": "OmniScrap™ has filed for moral bankruptcy.",
+    "src_line": 685
+  },
+  {
+    "id": "html.victory.003",
+    "screen": "victory",
+    "text": "TOTAL BOLTS",
+    "src_line": 686
+  },
+  {
+    "id": "html.victory.004",
+    "screen": "victory",
+    "text": "GOLD BOLTS",
+    "src_line": 687
+  },
+  {
+    "id": "html.victory.005",
+    "screen": "victory",
+    "text": "TOTAL TIME",
+    "src_line": 688
+  },
+  {
+    "id": "html.btnVictoryMap.001",
+    "screen": "btnVictoryMap",
+    "text": "MAIN MENU",
+    "src_line": 689
+  },
+  {
+    "id": "html.photoHud.001",
+    "screen": "photoHud",
+    "text": "📸 PHOTO MODE — DRAG orbit · WHEEL zoom · -/+ FOV · F filter · P pose · O Sprocket face · H hide this · C capture PNG · ESC exit",
+    "src_line": 695
+  },
+  {
+    "id": "html.loadError.001",
+    "screen": "loadError",
+    "text": "Failed to load Three.js from CDN.",
+    "src_line": 698
+  },
+  {
+    "id": "html.loadError.002",
+    "screen": "loadError",
+    "text": "Check your internet connection and reload.",
+    "src_line": 698
+  }
+]

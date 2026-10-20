@@ -97,3 +97,13 @@ func test_vo_play_is_silent_headless_but_subtitles() -> void:
 	assert_true(VOManager.play("cs.intro.02"))
 	assert_signal_emitted(EventBus, "subtitle")
 	assert_false(VOManager.play("no.such.line"))
+
+
+func test_code_spoken_lines_ported() -> void:
+	# Boss barks, banners and hints the web build spoke from code, not tables (tools/extract_code_lines.mjs).
+	var code: Array = Data.table("bs/story/code_lines")
+	assert_gt(code.size(), 300)
+	assert_true(VOManager.has_line("code.updateRetention.02"), "Retention Specialist's 'trying to LEAVE' bark")
+	assert_string_contains(str(VOManager.line("code.updateRetention.02")["text"]), "LEAVE")
+	var html: Array = Data.table("bs/story/html_text")
+	assert_gt(html.size(), 150, "menu/lobby/credits copy ported")

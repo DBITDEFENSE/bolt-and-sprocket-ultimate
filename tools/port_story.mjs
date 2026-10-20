@@ -144,6 +144,16 @@ if (fs.existsSync(addPath)) {
   write("memos", { memos, spots: S("MEMO_SPOTS"), planets: S("MEMO_PLANETS") });
   for (const [id, l] of Object.entries(add.lines || {})) put(id, l.who, l.text);
 }
+// ---- text spoken/shown from code (boss barks, banners, hints, announcer...): tools/extract_code_lines.mjs
+const codePath = path.join(out, "code_lines.json");
+if (fs.existsSync(codePath)) {
+  for (const l of JSON.parse(fs.readFileSync(codePath, "utf8"))) index[l.id] = { who: l.who, text: l.text, kind: l.kind, src_line: l.src_line };
+}
+// ---- UI copy from the HTML markup (menus, lobbies, credits): tools/extract_html_text.py
+const htmlPath = path.join(out, "html_text.json");
+if (fs.existsSync(htmlPath)) {
+  for (const l of JSON.parse(fs.readFileSync(htmlPath, "utf8"))) index[l.id] = { who: "ui", text: l.text, kind: "ui", src_line: l.src_line };
+}
 write("lines_index", index);
 const n = Object.keys(index).length;
 console.log(`ported ${n} lines: ${Object.keys(cutscenes).length} cutscenes, ${Object.keys(beats).length} story beats, ` +

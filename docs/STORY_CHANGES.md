@@ -21,7 +21,7 @@ Every change to an **existing** line from the original web build is logged here 
 
 | What | Old | New | Why |
 |---|---|---|---|
-| Quest IDs | `q6a`/`q6b` used by both the Grand Galleria and Verdant Sink quests; `q3b` used twice on planet 2 | Galleria `q9a`/`q9b`, Verdant `q7a`/`q7b`, "Art Criticism" `q3c`. The original ID is kept as `source_id` | Duplicate IDs made saved quest progress collide between quests. DECISIONS T-004. |
+| Quest IDs | `q6a`/`q6b` used by both the Grand Galleria and Verdant Sink quests; `q3b` used twice on Core Foundry (planet index 2) | Galleria `q9a`/`q9b`, Verdant `q7a`/`q7b`, "Art Criticism" `q3c`. The original ID is kept as `source_id` | Duplicate IDs made saved quest progress collide between quests. DECISIONS T-004. |
 
 ## 3. New lines (additions to canon, nothing replaced)
 

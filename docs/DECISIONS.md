@@ -19,7 +19,7 @@ The GRAVELIGHT project's own log (D-001 … D-059, at `C:\Users\Devin\PROJECTS\N
 - It writes `data/bs/story/lines_index.json` for the VOManager.
 - A check confirmed that all 707 text strings in the source story tables are present in the port.
 
-**T-004, 2026-10-19: Duplicate quest IDs fixed.** The web build reuses `q6a`/`q6b` (Grand Galleria *and* Verdant Sink) and `q3b` (twice on Rustvane/planet 2), so saved progress for those quests collided. The remake IDs are `q9a`/`q9b` (Galleria), `q7a`/`q7b` (Verdant), and `q3c` ("Art Criticism"). The original ID is kept as `source_id`.
+**T-004, 2026-10-19: Duplicate quest IDs fixed.** The web build reuses `q6a`/`q6b` (Grand Galleria *and* Verdant Sink) and `q3b` (twice on Core Foundry, planet index 2), so saved progress for those quests collided. The remake IDs are `q9a`/`q9b` (Galleria), `q7a`/`q7b` (Verdant), and `q3c` ("Art Criticism"). The original ID is kept as `source_id`.
 
 **T-005, 2026-10-19: Galleria continuity.** The Grand Galleria stays playable during the core hunt, as in the source (`CAMPAIGN = [0,1,5,6,7,9,2]`, `planetLocked()`). The one line that implied it came after the Foundry is reworded (`cs.galleriaLedger.02`: "tries that clause **again**" → "**on you**"). This is the smallest change that fixes the continuity, and it turns the line into foreshadowing. Logged in STORY_CHANGES.
 
@@ -58,3 +58,24 @@ The GRAVELIGHT project's own log (D-001 … D-059, at `C:\Users\Devin\PROJECTS\N
 **T-014, 2026-10-19: Nothing that opens a window runs while the user is playing.** All automated Godot runs are headless: no window, no audio (GRAVELIGHT D-058, made stricter). Rendered screenshot checks wait until the user says they've stopped playing.
 
 **T-015, 2026-10-19: The M0 docs were written by parallel writers against one fact sheet** (`docs/M0_SHARED_FACTS.md`). Each writer owned separate files. The lead reconciled their decisions into this log and STORY_CHANGES.
+
+**T-016, 2026-10-19: Text spoken from code is ported too.**
+- About 309 player-facing lines live in function calls rather than tables: boss barks, banners, hints, the Zonga announcer, shop pitches, signs, Loop Riot taglines. `tools/extract_code_lines.mjs` extracts them to `data/bs/story/code_lines.json` with IDs `code.<function>.<nn>` and source line numbers.
+- 197 pieces of menu, lobby and credits copy come from the HTML (`tools/extract_html_text.py` → `html.<screen>.<nnn>`).
+- Both are merged into `lines_index.json`, which now holds 1,000 entries.
+- BS_ENEMIES' proposed `bs.boss.*.orig.*` IDs were replaced with the real `code.*` IDs.
+
+**T-017, 2026-10-19: B&S arsenal and enemy design calls (from BS_WEAPONS.md / BS_ENEMIES.md):**
+- **Use-XP:** V2 600 / V3 1,800 / V4 4,000 / V5 8,000.
+- **Signature Mod:** unlocks at V3 for 200 bolts and can be swapped free. Omega needs a Signature Mod too: 840 in mods + 200 + 2,000 = 3,040 bolts per gun.
+- **V-levels vs mods:** the original damage-tier-3 behaviours move to V-levels; mods are stat-only. The Blaster's ammo slot becomes Heat Sink.
+- **Mallets** have no XP and no Omega. The Riot Mallet comes from winning Loop Riot's Unrecalled league.
+- **New gun prices:** Late Fee 280, The Fine Print 300, Hostile Takeover 340, Clearance Rack 360. Trade-in is 60%.
+- **Inputs:** alt-fire is LB/V. A tap of RB/Q quick-swaps; holding it opens the wheel at 30% time.
+- **Elites:** ×1.8 HP and ×1.5 drops. They're 25% of NG+ spawns.
+- **Combat pacing:** fast source telegraphs raised to 0.4–0.8 s. Attack tokens allow at most 2 melee attackers and 3 ranged shot starts per second.
+- **Rustvane Sentinel:** the source has no separate Sentinel (the `miniboss` tank is labelled THE CONTENT CREATOR but its banner says "The Sentinel sheds its armor!"). The remake splits it: the Sentinel is a 300 HP tank mini-boss, and the Content Creator keeps 420 HP plus its camera drones.
+- **Compost King's mercy ending** didn't exist in the source; his plea always failed. The remake adds it: during an 8 s plea, seal all 3 leaks, holster, shake hands.
+- **"Grindstone 2.0"** becomes phase 3 ("public beta"), so `cs.ending.01` still works unchanged.
+- **Five v9 enemy behaviour flags** that were never coded (surge, freeze, cloak, burrow, buffer) are now designed. So is Middleman aggro, which the shop promised but never implemented.
+- **Boss Rush** has all 8 bosses; Compost King's mercy path is unavailable there.

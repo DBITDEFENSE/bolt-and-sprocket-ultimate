@@ -1,0 +1,2474 @@
+[
+  {
+    "id": "code.top.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Filter: ",
+    "src_line": 1061
+  },
+  {
+    "id": "code.top.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Pose: ",
+    "src_line": 1062
+  },
+  {
+    "id": "code.handlePad.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Filter: ",
+    "src_line": 1457
+  },
+  {
+    "id": "code.handlePad.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Pose: ",
+    "src_line": 1458
+  },
+  {
+    "id": "code.tryAttachRail.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "GRINDING! Hold on — SPACE to jump off",
+    "src_line": 3095
+  },
+  {
+    "id": "code.tryAttachRail.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "rail",
+    "src_line": 3095
+  },
+  {
+    "id": "code.updatePlayer.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "WALL SLIDE — press JUMP to kick off the wall!",
+    "src_line": 3510
+  },
+  {
+    "id": "code.updatePlayer.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "wallkick",
+    "src_line": 3510
+  },
+  {
+    "id": "code.updatePlayer.03",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Hold SPACE in mid-air to HOVER with the jetpack!",
+    "src_line": 3594
+  },
+  {
+    "id": "code.updatePlayer.04",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "hover",
+    "src_line": 3594
+  },
+  {
+    "id": "code.superActivate.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "SUPER SPROCKET is still charging — deal damage to fill the meter!",
+    "src_line": 4020
+  },
+  {
+    "id": "code.superActivate.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "SUPER SPROCKET PROTOCOL",
+    "src_line": 4035
+  },
+  {
+    "id": "code.superActivate.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Warranty status: OBLITERATED",
+    "src_line": 4035
+  },
+  {
+    "id": "code.superActivate.04",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "SUPER SPROCKET",
+    "src_line": 4040
+  },
+  {
+    "id": "code.superEnd.01",
+    "who": "sprocket",
+    "kind": "bark",
+    "call": "showBark",
+    "text": "Protocol complete. Booting customer-service voice... hi there!",
+    "src_line": 4047
+  },
+  {
+    "id": "code.doInteract.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "BACK IN 5 MIN",
+    "src_line": 4358
+  },
+  {
+    "id": "code.doInteract.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "(ARRESTED)",
+    "src_line": 4358
+  },
+  {
+    "id": "code.doInteract.03",
+    "who": "sprocket",
+    "kind": "bark",
+    "call": "showBark",
+    "text": "The sign says \"arrested\". OmniScrap got him, Bolt. Check the holding block off the catwalks.",
+    "src_line": 4359
+  },
+  {
+    "id": "code.damagePlayer.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "BOLT DOWN!",
+    "src_line": 4391
+  },
+  {
+    "id": "code.damagePlayer.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Rebooting nanotech...",
+    "src_line": 4391
+  },
+  {
+    "id": "code.fireBoomBox.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "B.O.O.M. Box is out of mixtapes — buy ammo at Blartz!",
+    "src_line": 4578
+  },
+  {
+    "id": "code.fireBoomBox.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "boomammo",
+    "src_line": 4578
+  },
+  {
+    "id": "code.fireLawnDart.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Out of lawn darts. Blartz \"found\" more — for a price.",
+    "src_line": 4641
+  },
+  {
+    "id": "code.fireLawnDart.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "dartammo",
+    "src_line": 4641
+  },
+  {
+    "id": "code.firePatent.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "The Patent Pending is out of prototypes — Blartz stocks refills. Reluctantly.",
+    "src_line": 4688
+  },
+  {
+    "id": "code.firePatent.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "patammo",
+    "src_line": 4688
+  },
+  {
+    "id": "code.fireCease.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Out of legal documents — Blartz restocks the paperwork.",
+    "src_line": 4713
+  },
+  {
+    "id": "code.fireCease.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "ceaseammo",
+    "src_line": 4713
+  },
+  {
+    "id": "code.releaseRipper.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Out of Void Ripper ammo — find purple orbs!",
+    "src_line": 4733
+  },
+  {
+    "id": "code.releaseRipper.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "ripammo",
+    "src_line": 4733
+  },
+  {
+    "id": "code.fireZap.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Sprocket needs zap cells — find cyan batteries!",
+    "src_line": 4787
+  },
+  {
+    "id": "code.fireZap.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "zapammo",
+    "src_line": 4787
+  },
+  {
+    "id": "code.meleeHit.01",
+    "who": "blartz",
+    "kind": "bark",
+    "call": "showBark",
+    "text": "One.",
+    "src_line": 5035
+  },
+  {
+    "id": "code.meleeHit.02",
+    "who": "blartz",
+    "kind": "bark",
+    "call": "showBark",
+    "text": "Two. The welds are already crying.",
+    "src_line": 5036
+  },
+  {
+    "id": "code.updateWeapons.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "MALLET ONLY — the sponsors disabled your guns.",
+    "src_line": 5192
+  },
+  {
+    "id": "code.fireGrav.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Out of grav charges — Blartz restocks the physics.",
+    "src_line": 5637
+  },
+  {
+    "id": "code.fireGrav.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "gravammo",
+    "src_line": 5637
+  },
+  {
+    "id": "code.fireMiddleman.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "No Middleman drones left — outsource responsibly.",
+    "src_line": 5691
+  },
+  {
+    "id": "code.fireMiddleman.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "midammo",
+    "src_line": 5691
+  },
+  {
+    "id": "code.fireMiddleman.03",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Two Middlemen is the legal maximum.",
+    "src_line": 5692
+  },
+  {
+    "id": "code.fireMiddleman.04",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Only ONE Middleman at a time. Union rules.",
+    "src_line": 5692
+  },
+  {
+    "id": "code.fireMiddleman.05",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "SUBCONTRACTED",
+    "src_line": 5703
+  },
+  {
+    "id": "code.fireMiddleman.06",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "The Middleman hired a middleman",
+    "src_line": 5703
+  },
+  {
+    "id": "code.fireMiddleman.07",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "MIDDLEMAN deployed — enemies love a fresh target.",
+    "src_line": 5705
+  },
+  {
+    "id": "code.fireMiddleman.08",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "midtut",
+    "src_line": 5705
+  },
+  {
+    "id": "code.updateOneMiddleman.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "OUTSOURCED!",
+    "src_line": 5730
+  },
+  {
+    "id": "code.updateOneMiddleman.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "The Middleman quit — loudly",
+    "src_line": 5730
+  },
+  {
+    "id": "code.fireRoot.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Out of seeds — nature is not a renewable resource, apparently.",
+    "src_line": 5785
+  },
+  {
+    "id": "code.fireRoot.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "rootammo",
+    "src_line": 5785
+  },
+  {
+    "id": "code.updateAlgorithm.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "bossStart",
+    "text": "THE ALGORITHM",
+    "src_line": 6844
+  },
+  {
+    "id": "code.updateAlgorithm.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "TRENDING",
+    "src_line": 6850
+  },
+  {
+    "id": "code.updateAlgorithm.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "The Algorithm is going viral!",
+    "src_line": 6850
+  },
+  {
+    "id": "code.updateAlgorithm.04",
+    "who": "sprocket",
+    "kind": "bark",
+    "call": "showBark",
+    "text": "It's SPAWNING them. Classic engagement farming.",
+    "src_line": 6860
+  },
+  {
+    "id": "code.updateAlgorithm.05",
+    "who": "sprocket",
+    "kind": "bark",
+    "call": "showBark",
+    "text": "UNPAID FINE! That is SO not fair!",
+    "src_line": 6876
+  },
+  {
+    "id": "code.updateCompostKing.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "bossStart",
+    "text": "THE COMPOST KING",
+    "src_line": 6904
+  },
+  {
+    "id": "code.updateCompostKing.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "NEGOTIATION",
+    "src_line": 6909
+  },
+  {
+    "id": "code.updateCompostKing.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "The Compost King would like to talk",
+    "src_line": 6909
+  },
+  {
+    "id": "code.updateCompostKing.04",
+    "who": "corn",
+    "kind": "voice",
+    "call": "speak",
+    "text": "WAIT. WAIT. Let us be reasonable. I am not a monster. I am a COMMUNITY. We could... unionize?",
+    "src_line": 6910
+  },
+  {
+    "id": "code.updateCompostKing.05",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "NEGOTIATION FAILED",
+    "src_line": 6915
+  },
+  {
+    "id": "code.updateCompostKing.06",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "He composts you out of SPITE",
+    "src_line": 6915
+  },
+  {
+    "id": "code.updateCompostKing.07",
+    "who": "corn",
+    "kind": "voice",
+    "call": "speak",
+    "text": "Fine. FINE! Then you get the ROT!",
+    "src_line": 6915
+  },
+  {
+    "id": "code.updateGreeter.01",
+    "who": "pa",
+    "kind": "voice",
+    "call": "speak",
+    "text": "WELCOME!",
+    "src_line": 7014
+  },
+  {
+    "id": "code.updateGreeter.02",
+    "who": "pa",
+    "kind": "voice",
+    "call": "speak",
+    "text": "VALUED GUEST DETECTED.",
+    "src_line": 7014
+  },
+  {
+    "id": "code.updateGreeter.03",
+    "who": "pa",
+    "kind": "voice",
+    "call": "speak",
+    "text": "HAVE A DAY!",
+    "src_line": 7014
+  },
+  {
+    "id": "code.updateRepoTron.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "bossStart",
+    "text": "REPO-TRON",
+    "src_line": 7078
+  },
+  {
+    "id": "code.updateRepoTron.02",
+    "who": "pa",
+    "kind": "voice",
+    "call": "speak",
+    "text": "ATTENTION OCCUPANT. THIS PROPERTY HAS BEEN FORECLOSED. PLEASE HOLD STILL FOR COMPACTION.",
+    "src_line": 7079
+  },
+  {
+    "id": "code.updateRepoTron.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "REPOSSESSION MODE",
+    "src_line": 7087
+  },
+  {
+    "id": "code.updateRepoTron.04",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Treads engaged. Nothing is off the table. Including the table.",
+    "src_line": 7087
+  },
+  {
+    "id": "code.updateRepoTron.05",
+    "who": "pa",
+    "kind": "voice",
+    "call": "speak",
+    "text": "ESCALATING. YOUR BELONGINGS ARE NOW OUR BELONGINGS.",
+    "src_line": 7088
+  },
+  {
+    "id": "code.updateRepoTron.06",
+    "who": "pa",
+    "kind": "voice",
+    "call": "speak",
+    "text": "ASSETS DETECTED.",
+    "src_line": 7128
+  },
+  {
+    "id": "code.updateRepoTron.07",
+    "who": "pa",
+    "kind": "voice",
+    "call": "speak",
+    "text": "COME HERE, COLLATERAL.",
+    "src_line": 7128
+  },
+  {
+    "id": "code.updateRepoTron.08",
+    "who": "pa",
+    "kind": "voice",
+    "call": "speak",
+    "text": "THIS IS A COURTESY GRAB.",
+    "src_line": 7128
+  },
+  {
+    "id": "code.updateRepoTron.09",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "MAGNET PULL — DASH to break free!",
+    "src_line": 7151
+  },
+  {
+    "id": "code.updateRepoTron.10",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "repomag",
+    "src_line": 7151
+  },
+  {
+    "id": "code.updateRepoTron.11",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Shockwave — JUMP it, then hit the PAST DUE stamp!",
+    "src_line": 7179
+  },
+  {
+    "id": "code.updateRepoTron.12",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "repopress",
+    "src_line": 7179
+  },
+  {
+    "id": "code.updateRepoTron.13",
+    "who": "sprocket",
+    "kind": "bark",
+    "call": "showBark",
+    "text": "It’s calling the DOGS. The dogs it repossessed.",
+    "src_line": 7191
+  },
+  {
+    "id": "code.updateRetention.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "bossStart",
+    "text": "THE RETENTION SPECIALIST",
+    "src_line": 7227
+  },
+  {
+    "id": "code.updateRetention.02",
+    "who": "retention",
+    "kind": "voice",
+    "call": "speak",
+    "text": "Hi there! I see you're trying to LEAVE. Before you go, can I interest you in staying? Forever?",
+    "src_line": 7228
+  },
+  {
+    "id": "code.updateRetention.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "CANCELLATION FEE",
+    "src_line": 7236
+  },
+  {
+    "id": "code.updateRetention.04",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "He is taking this personally",
+    "src_line": 7236
+  },
+  {
+    "id": "code.updateRetention.05",
+    "who": "retention",
+    "kind": "voice",
+    "call": "speak",
+    "text": "You know what? FINE. Enjoy the EARLY TERMINATION FEE.",
+    "src_line": 7237
+  },
+  {
+    "id": "code.updateRetention.06",
+    "who": "retention",
+    "kind": "voice",
+    "call": "speak",
+    "text": "Have you considered our ANNUAL plan?",
+    "src_line": 7281
+  },
+  {
+    "id": "code.updateRetention.07",
+    "who": "retention",
+    "kind": "voice",
+    "call": "speak",
+    "text": "Just three easy payments!",
+    "src_line": 7281
+  },
+  {
+    "id": "code.updateRetention.08",
+    "who": "retention",
+    "kind": "voice",
+    "call": "speak",
+    "text": "This offer expires when YOU do.",
+    "src_line": 7281
+  },
+  {
+    "id": "code.updateRetention.09",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "FROZEN!",
+    "src_line": 7294
+  },
+  {
+    "id": "code.updateRetention.10",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Mash any direction to thaw",
+    "src_line": 7294
+  },
+  {
+    "id": "code.updateRetention.11",
+    "who": "sprocket",
+    "kind": "bark",
+    "call": "showBark",
+    "text": "He’s pulling in the SUBSCRIBERS. They look cold and angry.",
+    "src_line": 7331
+  },
+  {
+    "id": "code.updateMiniBoss.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "bossStart",
+    "text": "THE CONTENT CREATOR",
+    "src_line": 7341
+  },
+  {
+    "id": "code.updateMiniBoss.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "DEMONETIZED!",
+    "src_line": 7349
+  },
+  {
+    "id": "code.updateMiniBoss.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "The Sentinel sheds its armor!",
+    "src_line": 7349
+  },
+  {
+    "id": "code.updateMiniBoss.04",
+    "who": "sprocket",
+    "kind": "bark",
+    "call": "showBark",
+    "text": "It brought a CAMERA CREW. Of course it did.",
+    "src_line": 7356
+  },
+  {
+    "id": "code.updateFinalBoss.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "bossStart",
+    "text": "EXCAVATRON PRIME",
+    "src_line": 7424
+  },
+  {
+    "id": "code.updateFinalBoss.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "EXCAVATRON ENRAGED!",
+    "src_line": 7429
+  },
+  {
+    "id": "code.updateFinalBoss.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Armor plating destroyed!",
+    "src_line": 7429
+  },
+  {
+    "id": "code.updateFinalBoss.04",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "LIQUIDATION MODE",
+    "src_line": 7450
+  },
+  {
+    "id": "code.updateFinalBoss.05",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Grindstone is selling the planet out from under you",
+    "src_line": 7450
+  },
+  {
+    "id": "code.updateFinalBoss.06",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Shockwave — JUMP! Then blast the glowing core!",
+    "src_line": 7504
+  },
+  {
+    "id": "code.updateFinalBoss.07",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "stomp",
+    "src_line": 7504
+  },
+  {
+    "id": "code.bossStart.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "DESTROY THE GLOWING CORE!",
+    "src_line": 7619
+  },
+  {
+    "id": "code.bossBreak.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "BREAK!",
+    "src_line": 7643
+  },
+  {
+    "id": "code.bossBreak.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "It’s staggered — unload everything!",
+    "src_line": 7643
+  },
+  {
+    "id": "code.bossBreak.03",
+    "who": "sprocket",
+    "kind": "bark",
+    "call": "showBark",
+    "text": "STAGGERED! Hit it! HIT IT!",
+    "src_line": 7647
+  },
+  {
+    "id": "code.bossBreak.04",
+    "who": "sprocket",
+    "kind": "bark",
+    "call": "showBark",
+    "text": "It’s wide open — go go go!",
+    "src_line": 7647
+  },
+  {
+    "id": "code.bossBreak.05",
+    "who": "sprocket",
+    "kind": "bark",
+    "call": "showBark",
+    "text": "Weak point exposed. Like, aggressively exposed.",
+    "src_line": 7647
+  },
+  {
+    "id": "code.collectPickup.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "NANO REFRESH!",
+    "src_line": 7737
+  },
+  {
+    "id": "code.collectPickup.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Fully healed",
+    "src_line": 7737
+  },
+  {
+    "id": "code.collectPickup.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "NANOTECH UPGRADE!",
+    "src_line": 7741
+  },
+  {
+    "id": "code.collectPickup.04",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Max HP +20",
+    "src_line": 7741
+  },
+  {
+    "id": "code.collectPickup.05",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "INTERNAL MEMO RECOVERED",
+    "src_line": 7747
+  },
+  {
+    "id": "code.collectPickup.06",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "\"{MEMOS[memoBase(G.levelIndex) + pk.goldIndex].t}\" · {memoCount()}/{MEMOS.length} · read from PAUSE",
+    "src_line": 7747
+  },
+  {
+    "id": "code.collectPickup.07",
+    "who": "sprocket",
+    "kind": "bark",
+    "call": "showBark",
+    "text": "One memo left. I have... a VERY bad feeling about the epilogue.",
+    "src_line": 7753
+  },
+  {
+    "id": "code.collectPickup.08",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "{q.name}: {Math.min(qs.k, q.n)}/{q.n}",
+    "src_line": 7760
+  },
+  {
+    "id": "code.collectPickup.09",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": " — return to {q.npcName}!",
+    "src_line": 7760
+  },
+  {
+    "id": "code.collectPickup.10",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "GOLD BOLT!",
+    "src_line": 7767
+  },
+  {
+    "id": "code.collectPickup.11",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "{G.gold[G.levelIndex].filter(Boolean).length} of 3 found",
+    "src_line": 7767
+  },
+  {
+    "id": "code.activateCheckpoint.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Nanotech relay synced — respawn here",
+    "src_line": 7964
+  },
+  {
+    "id": "code.activateGoal.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "EXIT ONLINE!",
+    "src_line": 7979
+  },
+  {
+    "id": "code.activateGoal.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Get to the teleporter!",
+    "src_line": 7979
+  },
+  {
+    "id": "code.buildAnnex.01",
+    "who": "sign",
+    "kind": "world",
+    "call": "addCheckpoint",
+    "text": " — GATE",
+    "src_line": 9258
+  },
+  {
+    "id": "code.buildAnnex.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "New district! Climb, then WALL-KICK up the shaft (jump off walls mid-air).",
+    "src_line": 9261
+  },
+  {
+    "id": "code.buildAnnex.03",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "annex",
+    "src_line": 9261
+  },
+  {
+    "id": "code.buildAnnex.04",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "WALL-KICK: jump at a wall, then JUMP again to spring off it. Chain both walls!",
+    "src_line": 9282
+  },
+  {
+    "id": "code.buildAnnex.05",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "shaft",
+    "src_line": 9282
+  },
+  {
+    "id": "code.buildAnnex.06",
+    "who": "sign",
+    "kind": "world",
+    "call": "addCheckpoint",
+    "text": " — PLAZA",
+    "src_line": 9289
+  },
+  {
+    "id": "code.buildAnnex.07",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "THE PLAZA",
+    "src_line": 9301
+  },
+  {
+    "id": "code.buildAnnex.08",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Clear the wing",
+    "src_line": 9301
+  },
+  {
+    "id": "code.buildAnnex.09",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "WING CLEARED",
+    "src_line": 9312
+  },
+  {
+    "id": "code.buildAnnex.10",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Nanotech upgrade secured",
+    "src_line": 9312
+  },
+  {
+    "id": "code.buildAnnex.11",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Ride the updraft up to the vault!",
+    "src_line": 9313
+  },
+  {
+    "id": "code.buildAnnex.12",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "vault",
+    "src_line": 9313
+  },
+  {
+    "id": "code.expandScrapheap.01",
+    "who": "sign",
+    "kind": "world",
+    "call": "textSign",
+    "text": "RUSTY'S ROW",
+    "src_line": 9412
+  },
+  {
+    "id": "code.expandScrapheap.02",
+    "who": "sign",
+    "kind": "world",
+    "call": "addCheckpoint",
+    "text": "RUSTY'S ROW",
+    "src_line": 9413
+  },
+  {
+    "id": "code.expandScrapheap.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "RUSTY'S ROW",
+    "src_line": 9414
+  },
+  {
+    "id": "code.expandScrapheap.04",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Population: everyone OmniScrap repossessed",
+    "src_line": 9414
+  },
+  {
+    "id": "code.expandScrapheap.05",
+    "who": "sign",
+    "kind": "world",
+    "call": "textSign",
+    "text": "FUSES · PARTS · SOUP",
+    "src_line": 9431
+  },
+  {
+    "id": "code.expandScrapheap.06",
+    "who": "sign",
+    "kind": "world",
+    "call": "textSign",
+    "text": "ROW",
+    "src_line": 9441
+  },
+  {
+    "id": "code.expandScrapheap.07",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "An old billing antenna — climb the mast!",
+    "src_line": 9472
+  },
+  {
+    "id": "code.expandScrapheap.08",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "mast1",
+    "src_line": 9472
+  },
+  {
+    "id": "code.expandScrapheap.09",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Grind the antenna cable back to the dune bowl!",
+    "src_line": 9473
+  },
+  {
+    "id": "code.expandScrapheap.10",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "mast2",
+    "src_line": 9473
+  },
+  {
+    "id": "code.expandRustvane.01",
+    "who": "sign",
+    "kind": "world",
+    "call": "addCheckpoint",
+    "text": "BACK OF HOUSE",
+    "src_line": 9480
+  },
+  {
+    "id": "code.expandRustvane.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "BACK OF HOUSE",
+    "src_line": 9481
+  },
+  {
+    "id": "code.expandRustvane.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Staff only. Smiling is mandatory.",
+    "src_line": 9481
+  },
+  {
+    "id": "code.expandRustvane.04",
+    "who": "sign",
+    "kind": "world",
+    "call": "textSign",
+    "text": "EMPLOYEES MUST SMILE\n(SMILES ARE BILLABLE)",
+    "src_line": 9483
+  },
+  {
+    "id": "code.expandRustvane.05",
+    "who": "sign",
+    "kind": "world",
+    "call": "textSign",
+    "text": "RUSTVANE MINING CO-OP\nWORKER-OWNED SINCE BEFORE THE RESORT",
+    "src_line": 9528
+  },
+  {
+    "id": "code.buildLevel1.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "WASD to move, SPACE to jump — double-tap for a double jump!",
+    "src_line": 9557
+  },
+  {
+    "id": "code.buildLevel1.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "move",
+    "src_line": 9557
+  },
+  {
+    "id": "code.buildLevel1.03",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "SPRINT + C (pad: L3) to SLIDE! Double-jump + F = SLAM!",
+    "src_line": 9563
+  },
+  {
+    "id": "code.buildLevel1.04",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "slide",
+    "src_line": 9563
+  },
+  {
+    "id": "code.buildLevel1.05",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "SCRAP MUTTS ahead — mash F for mallet combos!",
+    "src_line": 9577
+  },
+  {
+    "id": "code.buildLevel1.06",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "mutts",
+    "src_line": 9577
+  },
+  {
+    "id": "code.buildLevel1.07",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Conveyor belts carry you — ride the junk stream!",
+    "src_line": 9597
+  },
+  {
+    "id": "code.buildLevel1.08",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "belt",
+    "src_line": 9597
+  },
+  {
+    "id": "code.buildLevel1.09",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "SCRAPHEAP JUNCTION",
+    "src_line": 9645
+  },
+  {
+    "id": "code.buildLevel1.10",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "The whole junkyard, from the wreck that started it",
+    "src_line": 9645
+  },
+  {
+    "id": "code.buildLevel1.11",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Jump onto the golden rail to GRIND down!",
+    "src_line": 9646
+  },
+  {
+    "id": "code.buildLevel1.12",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "railhint",
+    "src_line": 9646
+  },
+  {
+    "id": "code.buildLevel1.13",
+    "who": "sign",
+    "kind": "world",
+    "call": "addCheckpoint",
+    "text": "COMPACTION LOT",
+    "src_line": 9663
+  },
+  {
+    "id": "code.onDeath.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "FORECLOSURE REVERSED",
+    "src_line": 9668
+  },
+  {
+    "id": "code.onDeath.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "The junkyard stays yours",
+    "src_line": 9668
+  },
+  {
+    "id": "code.onDeath.03",
+    "who": "sprocket",
+    "kind": "voice",
+    "call": "speak",
+    "text": "Repo THIS.",
+    "src_line": 9668
+  },
+  {
+    "id": "code.buildLevel1.14",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "A sealed vault — SLIDE under the lip!",
+    "src_line": 9700
+  },
+  {
+    "id": "code.buildLevel1.15",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "vault1",
+    "src_line": 9700
+  },
+  {
+    "id": "code.buildLevel1.16",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Dash + hover up the scrap perch!",
+    "src_line": 9711
+  },
+  {
+    "id": "code.buildLevel1.17",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "perch1",
+    "src_line": 9711
+  },
+  {
+    "id": "code.buildLevel2.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Two ways up: hop the RIVER STONES west, or climb the CLIFF LEDGES east!",
+    "src_line": 9758
+  },
+  {
+    "id": "code.buildLevel2.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "routes",
+    "src_line": 9758
+  },
+  {
+    "id": "code.buildLevel2.03",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Umbrellas are BOUNCE PADS — land on the canopy!",
+    "src_line": 9777
+  },
+  {
+    "id": "code.buildLevel2.04",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "bounce",
+    "src_line": 9777
+  },
+  {
+    "id": "code.buildLevel2.05",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "RUSTVANE CANYON",
+    "src_line": 9844
+  },
+  {
+    "id": "code.buildLevel2.06",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Twin suns, zero refunds",
+    "src_line": 9844
+  },
+  {
+    "id": "code.buildLevel2.07",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "A collapsed mine — memo inside!",
+    "src_line": 9899
+  },
+  {
+    "id": "code.buildLevel2.08",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "mine2",
+    "src_line": 9899
+  },
+  {
+    "id": "code.buildLevel2.09",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Cliff roost — climb the east wall ledges!",
+    "src_line": 9908
+  },
+  {
+    "id": "code.buildLevel2.10",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "roost2",
+    "src_line": 9908
+  },
+  {
+    "id": "code.buildLevel3.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Welcome to OmniScrap HQ. Please enjoy the muzak while it lasts.",
+    "src_line": 10002
+  },
+  {
+    "id": "code.buildLevel3.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "lobby",
+    "src_line": 10002
+  },
+  {
+    "id": "code.buildLevel3.03",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Ride the glass elevator down into the foundry.",
+    "src_line": 10009
+  },
+  {
+    "id": "code.buildLevel3.04",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "elev",
+    "src_line": 10009
+  },
+  {
+    "id": "code.buildLevel3.05",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Piston crushers — watch the rhythm, dash the gaps!",
+    "src_line": 10020
+  },
+  {
+    "id": "code.buildLevel3.06",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "piston",
+    "src_line": 10020
+  },
+  {
+    "id": "code.buildLevel3.07",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "HOLDING BLOCK",
+    "src_line": 10052
+  },
+  {
+    "id": "code.buildLevel3.08",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Free Blartz — clear the guards!",
+    "src_line": 10052
+  },
+  {
+    "id": "code.buildLevel3.09",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "The cell lock is BUSTED. Percussive maintenance: hit it with the mallet!",
+    "src_line": 10058
+  },
+  {
+    "id": "code.buildLevel3.10",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "cellhint",
+    "src_line": 10058
+  },
+  {
+    "id": "code.buildLevel3.11",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "THE MOLTEN CORE",
+    "src_line": 10082
+  },
+  {
+    "id": "code.buildLevel3.12",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "OmniScrap runs on this. And unpaid interns.",
+    "src_line": 10082
+  },
+  {
+    "id": "code.buildLevel3.13",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "A maintenance shaft — drop into the store room!",
+    "src_line": 10132
+  },
+  {
+    "id": "code.buildLevel3.14",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "shaft3",
+    "src_line": 10132
+  },
+  {
+    "id": "code.buildLevel3.15",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Molten islet — ride the gears out!",
+    "src_line": 10141
+  },
+  {
+    "id": "code.buildLevel3.16",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "islet3",
+    "src_line": 10141
+  },
+  {
+    "id": "code.startWaveArena.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "WAVE 1",
+    "src_line": 10169
+  },
+  {
+    "id": "code.startWaveArena.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Survive the ambush!",
+    "src_line": 10169
+  },
+  {
+    "id": "code.waveHook.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "WAVE 2",
+    "src_line": 10216
+  },
+  {
+    "id": "code.waveHook.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "They keep coming!",
+    "src_line": 10216
+  },
+  {
+    "id": "code.waveHook.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "ARENA CLEARED!",
+    "src_line": 10226
+  },
+  {
+    "id": "code.waveHook.04",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "The bridge to the core is open",
+    "src_line": 10226
+  },
+  {
+    "id": "code.buildNewPlanet.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "v9hint",
+    "src_line": 10361
+  },
+  {
+    "id": "code.buildNewPlanet.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "A sealed cache — slide under the lip!",
+    "src_line": 10387
+  },
+  {
+    "id": "code.buildNewPlanet.03",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "v9pkt",
+    "src_line": 10387
+  },
+  {
+    "id": "code.buildNewPlanet.04",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Hover up to the perch!",
+    "src_line": 10392
+  },
+  {
+    "id": "code.buildNewPlanet.05",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "v9perch",
+    "src_line": 10392
+  },
+  {
+    "id": "code.onDeath.04",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "CORE EXPOSED",
+    "src_line": 10398
+  },
+  {
+    "id": "code.onDeath.05",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Grab the Keystone Core!",
+    "src_line": 10398
+  },
+  {
+    "id": "code.buildGalleria.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "FLASH SALE",
+    "src_line": 10658
+  },
+  {
+    "id": "code.buildGalleria.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "The food court is DEFENDING its prices!",
+    "src_line": 10658
+  },
+  {
+    "id": "code.onDeath.06",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "CUSTOMER SERVICE, CONCLUDED",
+    "src_line": 10698
+  },
+  {
+    "id": "code.onDeath.07",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "The vault is open. Grab the ledger!",
+    "src_line": 10698
+  },
+  {
+    "id": "code.buildGalleria.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "bossStart",
+    "text": "GREETER PRIME",
+    "src_line": 10714
+  },
+  {
+    "id": "code.fn.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "THE PATENT PENDING!",
+    "src_line": 11531
+  },
+  {
+    "id": "code.fn.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "A gloriously overengineered prototype cannon",
+    "src_line": 11531
+  },
+  {
+    "id": "code.fn.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "GO GO GO!",
+    "src_line": 11697
+  },
+  {
+    "id": "code.fn.04",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Broadcast is LIVE",
+    "src_line": 11697
+  },
+  {
+    "id": "code.fn.05",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "GO GO GO!",
+    "src_line": 11701
+  },
+  {
+    "id": "code.fn.06",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Broadcast is LIVE",
+    "src_line": 11701
+  },
+  {
+    "id": "code.fn.07",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Your free trial of VICTORY has expired.",
+    "src_line": 11707
+  },
+  {
+    "id": "code.fn.08",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "UPGRADE TO VICTORY PREMIUM™ — $9.99/mo",
+    "src_line": 11707
+  },
+  {
+    "id": "code.sellWeapon.01",
+    "who": "blartz",
+    "kind": "voice",
+    "call": "shopPitch",
+    "text": "\"Pleasure doing business. I'll sell it to the next hero at FULL price. That's the model.\"",
+    "src_line": 12132
+  },
+  {
+    "id": "code.buyItem.01",
+    "who": "blartz",
+    "kind": "voice",
+    "call": "shopPitch",
+    "text": "\"That one's MAXED, champ. Even Blartz has limits. Legally imposed limits.\"",
+    "src_line": 12198
+  },
+  {
+    "id": "code.buyItem.02",
+    "who": "blartz",
+    "kind": "voice",
+    "call": "shopPitch",
+    "text": "\"SOLD! To the hero with the questionable haircut!\"",
+    "src_line": 12206
+  },
+  {
+    "id": "code.buyItem.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": " ACQUIRED!",
+    "src_line": 12211
+  },
+  {
+    "id": "code.buyItem.04",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Cycle weapons to equip it",
+    "src_line": 12211
+  },
+  {
+    "id": "code.buyItem.05",
+    "who": "sprocket",
+    "kind": "bark",
+    "call": "showBark",
+    "text": "Blartz is CRYING. Are those real tears? Do goblins do that?",
+    "src_line": 12219
+  },
+  {
+    "id": "code.buyItem.06",
+    "who": "sprocket",
+    "kind": "bark",
+    "call": "showBark",
+    "text": "That thing is illegal in every jurisdiction with a word for \"jurisdiction\".",
+    "src_line": 12219
+  },
+  {
+    "id": "code.buyItem.07",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "K.A.R.E.N. INSTALLED",
+    "src_line": 12228
+  },
+  {
+    "id": "code.buyItem.08",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Press K. Apologize later.",
+    "src_line": 12228
+  },
+  {
+    "id": "code.buyItem.09",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "SUPER SPROCKET PROTOCOL!",
+    "src_line": 12232
+  },
+  {
+    "id": "code.buyItem.10",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Press T (D-pad Up) when the meter is full",
+    "src_line": 12232
+  },
+  {
+    "id": "code.buyItem.11",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "The mallet grows stronger. The galaxy grows nervous.",
+    "src_line": 12237
+  },
+  {
+    "id": "code.pickPlanet.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "That's sequel content. Stop poking it. — Sprocket",
+    "src_line": 12365
+  },
+  {
+    "id": "code.pickPlanet.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "NO SIGNAL",
+    "src_line": 12370
+  },
+  {
+    "id": "code.pickPlanet.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Clear Scrapheap Junction to tune in.",
+    "src_line": 12370
+  },
+  {
+    "id": "code.pickPlanet.04",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "LOCKED",
+    "src_line": 12375
+  },
+  {
+    "id": "code.pickPlanet.05",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Finish the previous planet first!",
+    "src_line": 12375
+  },
+  {
+    "id": "code.pickPlanet.06",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "ALREADY PARKED HERE",
+    "src_line": 12380
+  },
+  {
+    "id": "code.pickPlanet.07",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "\"Genius.\" — Sprocket",
+    "src_line": 12380
+  },
+  {
+    "id": "code.questTalk.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "QUEST: ",
+    "src_line": 12861
+  },
+  {
+    "id": "code.questTalk.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "kill",
+    "src_line": 12861
+  },
+  {
+    "id": "code.questTalk.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Defeat {q.n} {q.type}{q.n > 1 ? 's' : ''}",
+    "src_line": 12861
+  },
+  {
+    "id": "code.questTalk.04",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Find {q.n} {q.item}s",
+    "src_line": 12861
+  },
+  {
+    "id": "code.questTalk.05",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "QUEST COMPLETE!",
+    "src_line": 12869
+  },
+  {
+    "id": "code.questTalk.06",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "{q.name} — +{q.reward} bolts",
+    "src_line": 12869
+  },
+  {
+    "id": "code.questKill.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "{q.name}: {qs.k}/{q.n}",
+    "src_line": 12885
+  },
+  {
+    "id": "code.questKill.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": " — return to ",
+    "src_line": 12885
+  },
+  {
+    "id": "code.startZongaMatch.01",
+    "who": "glambot",
+    "kind": "voice",
+    "call": "ANNOUNCER",
+    "text": "Fresh meat! I mean— fresh CONTENT!",
+    "src_line": 13350
+  },
+  {
+    "id": "code.startZongaMatch.02",
+    "who": "glambot",
+    "kind": "voice",
+    "call": "ANNOUNCER",
+    "text": "Back again?! The audience LOVED your last elimination!",
+    "src_line": 13350
+  },
+  {
+    "id": "code.startZongaMatch.03",
+    "who": "glambot",
+    "kind": "voice",
+    "call": "ANNOUNCER",
+    "text": "Our returning junk mechanic! The sponsors know your name now. It's 'Liability'.",
+    "src_line": 13350
+  },
+  {
+    "id": "code.zBotDied.01",
+    "who": "zonga_feed",
+    "kind": "ui",
+    "call": "zFeed",
+    "text": "{killer} 🔧 {bot.botName}",
+    "src_line": 13367
+  },
+  {
+    "id": "code.zBotDied.02",
+    "who": "glambot",
+    "kind": "voice",
+    "call": "ANNOUNCER",
+    "text": "FIRST BLOOD! {bot.botName} has been unsubscribed!",
+    "src_line": 13370
+  },
+  {
+    "id": "code.zBotDied.03",
+    "who": "glambot",
+    "kind": "voice",
+    "call": "ANNOUNCER",
+    "text": "The junk mechanic DELIVERS!",
+    "src_line": 13375
+  },
+  {
+    "id": "code.zBotDied.04",
+    "who": "glambot",
+    "kind": "voice",
+    "call": "ANNOUNCER",
+    "text": "Brutal! Sponsors love it!",
+    "src_line": 13375
+  },
+  {
+    "id": "code.zBotDied.05",
+    "who": "glambot",
+    "kind": "voice",
+    "call": "ANNOUNCER",
+    "text": "That elimination was 100% organic content!",
+    "src_line": 13375
+  },
+  {
+    "id": "code.zBotDied.06",
+    "who": "glambot",
+    "kind": "voice",
+    "call": "ANNOUNCER",
+    "text": "TOP 10! Engagement is THROUGH THE ORBITAL PLATFORM!",
+    "src_line": 13379
+  },
+  {
+    "id": "code.zBotDied.07",
+    "who": "glambot",
+    "kind": "voice",
+    "call": "ANNOUNCER",
+    "text": "FINAL TWO! One will be champion. The other will be CONTENT.",
+    "src_line": 13383
+  },
+  {
+    "id": "code.updateZonga.01",
+    "who": "glambot",
+    "kind": "voice",
+    "call": "ANNOUNCER",
+    "text": "The Engagement Zone™ is shrinking! Stay inside to remain RELEVANT! (Stage {zone.stage})",
+    "src_line": 13440
+  },
+  {
+    "id": "code.updateZonga.02",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "OUTSIDE THE ENGAGEMENT ZONE™ — get back inside to remain relevant!",
+    "src_line": 13455
+  },
+  {
+    "id": "code.startNGPlus.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "NEW GAME+",
+    "src_line": 13665
+  },
+  {
+    "id": "code.startNGPlus.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Everything hits harder. Including you.",
+    "src_line": 13665
+  },
+  {
+    "id": "code.fireKaren.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "K.A.R.E.N. is composing a complaint ({Math.ceil(P.karenCd)}s)",
+    "src_line": 13672
+  },
+  {
+    "id": "code.fireKaren.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "SCANNING FOR POLICY VIOLATIONS…",
+    "src_line": 13679
+  },
+  {
+    "id": "code.fireKaren.03",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "K.A.R.E.N. found no one to escalate at. She is furious anyway.",
+    "src_line": 13691
+  },
+  {
+    "id": "code.karenSweep.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "ESCALATING TO CORPORATE",
+    "src_line": 13696
+  },
+  {
+    "id": "code.startRange.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "FIRING RANGE",
+    "src_line": 13839
+  },
+  {
+    "id": "code.startRange.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Every gun, infinite ammo. Rack up hits!",
+    "src_line": 13839
+  },
+  {
+    "id": "code.startRange.03",
+    "who": "glambot",
+    "kind": "voice",
+    "call": "ANNOUNCER",
+    "text": "Try before you DIE, darling! I mean BUY! Both, honestly!",
+    "src_line": 13840
+  },
+  {
+    "id": "code.rangeEnd.01",
+    "who": "glambot",
+    "kind": "voice",
+    "call": "ANNOUNCER",
+    "text": "A NATURAL! The crowd is on its feet! (They are drones.)",
+    "src_line": 13882
+  },
+  {
+    "id": "code.rangeEnd.02",
+    "who": "glambot",
+    "kind": "voice",
+    "call": "ANNOUNCER",
+    "text": "Not bad for a warm-up, champ!",
+    "src_line": 13882
+  },
+  {
+    "id": "code.rangeEnd.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "RANGE COMPLETE",
+    "src_line": 13884
+  },
+  {
+    "id": "code.rangeEnd.04",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "{RANGE.score} hits — earned 🔩 {reward} bolts",
+    "src_line": 13884
+  },
+  {
+    "id": "code.startChallenge.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "lowgrav",
+    "src_line": 13951
+  },
+  {
+    "id": "code.startChallenge.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Sponsored by LowGrav Cola™ — moon rules!",
+    "src_line": 13951
+  },
+  {
+    "id": "code.startChallenge.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "adblock",
+    "src_line": 13951
+  },
+  {
+    "id": "code.startChallenge.04",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Sponsored by Ad-Block Premium™ — enemies have shields!",
+    "src_line": 13951
+  },
+  {
+    "id": "code.startChallenge.05",
+    "who": "glambot",
+    "kind": "voice",
+    "call": "ANNOUNCER",
+    "text": "Welcome to MY house, darling!",
+    "src_line": 13954
+  },
+  {
+    "id": "code.startChallenge.06",
+    "who": "glambot",
+    "kind": "voice",
+    "call": "ANNOUNCER",
+    "text": "The crowd is drones. The drones are SCREAMING.",
+    "src_line": 13954
+  },
+  {
+    "id": "code.startChallenge.07",
+    "who": "glambot",
+    "kind": "voice",
+    "call": "ANNOUNCER",
+    "text": "Try to die photogenic!",
+    "src_line": 13954
+  },
+  {
+    "id": "code.arenaWave.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "ROUND {CH.wave}",
+    "src_line": 13972
+  },
+  {
+    "id": "code.arenaWave.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "THE RUSTVANE SENTINEL",
+    "src_line": 13972
+  },
+  {
+    "id": "code.arenaWave.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "THE ALGORITHM",
+    "src_line": 13972
+  },
+  {
+    "id": "code.arenaWave.04",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "THE COMPOST KING",
+    "src_line": 13972
+  },
+  {
+    "id": "code.arenaWave.05",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "WAVE {CH.wave}",
+    "src_line": 13993
+  },
+  {
+    "id": "code.arenaWave.06",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "A GOLDEN target has entered the ring!",
+    "src_line": 13993
+  },
+  {
+    "id": "code.arenaWave.07",
+    "who": "glambot",
+    "kind": "voice",
+    "call": "ANNOUNCER",
+    "text": "Drop the GOLDEN one, darling! The crowd DEMANDS it!",
+    "src_line": 13993
+  },
+  {
+    "id": "code.arenaWave.08",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "WAVE {CH.wave}",
+    "src_line": 13994
+  },
+  {
+    "id": "code.updateArena.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "arenaEnd",
+    "text": "TIME! The sponsors are disappointed.",
+    "src_line": 13999
+  },
+  {
+    "id": "code.startRace.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "{tr.laps} laps — ride the rings, mind the fine print",
+    "src_line": 14241
+  },
+  {
+    "id": "code.updateRace.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "GO!",
+    "src_line": 14278
+  },
+  {
+    "id": "code.updateRace.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "FINAL LAP!",
+    "src_line": 14296
+  },
+  {
+    "id": "code.updateRace.03",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "LAP {RACE.lap}",
+    "src_line": 14296
+  },
+  {
+    "id": "code.buildSigns.01",
+    "who": "sign",
+    "kind": "world",
+    "call": "signBoard",
+    "text": "SHORTCUT",
+    "src_line": 15170
+  },
+  {
+    "id": "code.buildSigns.02",
+    "who": "sign",
+    "kind": "world",
+    "call": "signBoard",
+    "text": "#3ee6ff",
+    "src_line": 15170
+  },
+  {
+    "id": "code.buildSigns.03",
+    "who": "sign",
+    "kind": "world",
+    "call": "signBoard",
+    "text": "GRIND IT",
+    "src_line": 15171
+  },
+  {
+    "id": "code.buildSigns.04",
+    "who": "sign",
+    "kind": "world",
+    "call": "signBoard",
+    "text": "#ff4d9d",
+    "src_line": 15171
+  },
+  {
+    "id": "code.buildSigns.05",
+    "who": "sign",
+    "kind": "world",
+    "call": "signBoard",
+    "text": "GAP: UNFINISHED",
+    "src_line": 15172
+  },
+  {
+    "id": "code.buildSigns.06",
+    "who": "sign",
+    "kind": "world",
+    "call": "signBoard",
+    "text": "#ffd23e",
+    "src_line": 15172
+  },
+  {
+    "id": "code.buildSigns.07",
+    "who": "sign",
+    "kind": "world",
+    "call": "signBoard",
+    "text": "LOOP TEST 7-B",
+    "src_line": 15173
+  },
+  {
+    "id": "code.buildSigns.08",
+    "who": "sign",
+    "kind": "world",
+    "call": "signBoard",
+    "text": "#3ee6ff",
+    "src_line": 15173
+  },
+  {
+    "id": "code.emit.01",
+    "who": "loop_riot",
+    "kind": "ui",
+    "call": "tagline",
+    "text": "BOOST PAD",
+    "src_line": 16529
+  },
+  {
+    "id": "code.emit.02",
+    "who": "loop_riot",
+    "kind": "ui",
+    "call": "tagline",
+    "text": "OVERCLOCK GATE",
+    "src_line": 16530
+  },
+  {
+    "id": "code.emit.03",
+    "who": "loop_riot",
+    "kind": "ui",
+    "call": "tagline",
+    "text": "SLIDE BOOST +",
+    "src_line": 16532
+  },
+  {
+    "id": "code.emit.04",
+    "who": "loop_riot",
+    "kind": "ui",
+    "call": "tagline",
+    "text": "MANUAL · balance with ↑ ↓",
+    "src_line": 16535
+  },
+  {
+    "id": "code.interactions.01",
+    "who": "loop_riot",
+    "kind": "ui",
+    "call": "tagline",
+    "text": "DRAFTING",
+    "src_line": 16848
+  },
+  {
+    "id": "code.photoCapture.01",
+    "who": "hint",
+    "kind": "ui",
+    "call": "showHint",
+    "text": "Saved! Check your downloads.",
+    "src_line": 17088
+  },
+  {
+    "id": "code.respawn.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "RELAY RESPAWN",
+    "src_line": 17625
+  },
+  {
+    "id": "code.updateBlizzard.01",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "BLIZZARD",
+    "src_line": 17854
+  },
+  {
+    "id": "code.updateBlizzard.02",
+    "who": "banner",
+    "kind": "ui",
+    "call": "showBanner",
+    "text": "Brace against the wind!",
+    "src_line": 17854
+  },
+  {
+    "id": "code.updateBlizzard.03",
+    "who": "sprocket",
+    "kind": "bark",
+    "call": "showBark",
+    "text": "A whiteout! Lean into it, Bolt — and mind the ice!",
+    "src_line": 17855
+  },
+  {
+    "id": "code.updateMurk.01",
+    "who": "sprocket",
+    "kind": "bark",
+    "call": "showBark",
+    "text": "The swamp is LITIGIOUS. And acidic. Mostly acidic.",
+    "src_line": 17867
+  }
+]

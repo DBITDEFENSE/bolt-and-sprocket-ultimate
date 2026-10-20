@@ -55,7 +55,7 @@ Every M0 document uses these facts verbatim, so the docs agree with each other. 
 
 ## Locked story fixes
 - **Galleria continuity:** the Grand Galleria stays playable during the core hunt (`CAMPAIGN = [0,1,5,6,7,9,2]`, `planetLocked()`). Line `cs.galleriaLedger.02` changes "If Grindstone ever tries that clause **again**" → "If Grindstone ever tries that clause **on you**", which foreshadows Clause 44 in the Foundry instead of contradicting it.
-- **Duplicate quest IDs** in the web build get unique remake IDs: Galleria `q6a/q6b` → `q9a/q9b`, Verdant corn `q6a/q6b` → `q7a/q7b`, and the second `q3b` "Art Criticism" → `q3c`. The original ID is kept as `source_id`.
+- **Duplicate quest IDs** in the web build get unique remake IDs: Galleria `q6a/q6b` → `q9a/q9b`, Verdant corn `q6a/q6b` → `q7a/q7b`, and the second Core Foundry `q3b` "Art Criticism" → `q3c`. The original ID is kept as `source_id`.
 
 ## VO line ID prefixes for new content
 | Content | Prefix |
