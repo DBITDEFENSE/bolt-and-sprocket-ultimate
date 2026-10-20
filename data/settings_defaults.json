@@ -1,5 +1,5 @@
 {
-  "_doc": "Every user setting and its default. Keys up to seenTravel are the original web build's settings (SETTINGS_DEF / settings), kept with their names and defaults. The rest are Gravelight and shared additions. shakeMul scales screen shake in every mode.",
+  "_doc": "Every user setting and its default. Keys up to seenTravel are the original web build's settings (SETTINGS_DEF / settings), kept with their names and defaults. The rest are Gravelight and shared additions. shakeMul scales screen shake in every mode. windowMode (windowed|borderless|fullscreen), vsync and maxFps are display additions (T-025).",
   "mouseSens": 1.0,
   "padSens": 1.0,
   "invertY": false,
@@ -34,5 +34,8 @@
   "hint_mode": false,
   "film_grain": true,
   "lean_enabled": true,
-  "anomalous_inventory": false
+  "anomalous_inventory": false,
+  "windowMode": "borderless",
+  "vsync": true,
+  "maxFps": 0
 }

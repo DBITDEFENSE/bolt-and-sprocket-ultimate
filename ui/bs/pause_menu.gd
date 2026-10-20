@@ -11,6 +11,7 @@ const MENU_SCENE: String = "res://ui/main_menu.tscn"
 var is_open: bool = false
 var _panel: PanelContainer
 var _resume: Button
+var _settings: SettingsMenu = null
 
 
 func _ready() -> void:
@@ -43,6 +44,9 @@ func _ready() -> void:
 		close()
 		restart_requested.emit())
 	v.add_child(r)
+	var s: Button = BSStyle.button(BSText.text("html.btnPauseSettings.001"), BSStyle.GREEN, 26)
+	s.pressed.connect(open_settings)
+	v.add_child(s)
 	var q: Button = BSStyle.button(BSText.text("html.btnQuit.001"), BSStyle.PINK, 26)
 	q.pressed.connect(func() -> void:
 		close()
@@ -51,7 +55,23 @@ func _ready() -> void:
 	holder.visible = false
 
 
+## The shared Settings screen over the pause panel (the web build's pause SETTINGS button).
+func open_settings() -> void:
+	if _settings != null:
+		return
+	($Holder as Control).visible = false
+	_settings = SettingsMenu.new()
+	add_child(_settings)
+	_settings.closed.connect(func() -> void:
+		_settings = null
+		if is_open:
+			($Holder as Control).visible = true
+			_resume.grab_focus.call_deferred())
+
+
 func _unhandled_input(event: InputEvent) -> void:
+	if _settings != null:
+		return   # the settings screen handles its own back / pause
 	if not event.is_action_pressed(&"pause"):
 		return
 	if is_open:

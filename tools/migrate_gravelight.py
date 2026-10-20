@@ -80,6 +80,19 @@ PATCHES = [
      "func _ready() -> void:" + N + T + "get_tree().paused = false" + N,
      "func _ready() -> void:" + N + T + "GLSettings.activate()" + N + T + "Game.set_mode(Game.Mode.GRAVELIGHT)" + N
      + T + "get_tree().paused = false" + N),
+    # Gravelight is one mode of the merged game: its Quit returns to the hub instead of closing everything.
+    ("gravelight/ui/main_menu.gd",
+     'MenuKit.button("Quit", func() -> void: get_tree().quit(), 26)',
+     'MenuKit.button("Back to Terms & Conditions", func() -> void: get_tree().change_scene_to_file("res://ui/main_menu.tscn"), 26)'),
+    # A click carried over from the hub (double-click) must not land on a menu button.
+    ("gravelight/ui/main_menu.gd",
+     T + "add_child(_menu)" + N + T + "_build()" + N,
+     T + "add_child(_menu)" + N + T + "_build()" + N
+     + T + "var guard: Control = Control.new()   # swallow clicks for a moment (T-025)" + N
+     + T + "guard.set_anchors_preset(Control.PRESET_FULL_RECT)" + N
+     + T + "guard.mouse_filter = Control.MOUSE_FILTER_STOP" + N
+     + T + "add_child(guard)" + N
+     + T + "get_tree().create_timer(0.35).timeout.connect(guard.queue_free)" + N),
     ("gravelight/tests/unit/test_progression.gd",
      "func test_keybind_override_roundtrip() -> void:" + N,
      "func test_keybind_override_roundtrip() -> void:" + N + T + "GLSettings.activate()   # Gravelight's bindings exist only in Gravelight mode (T-024)" + N),

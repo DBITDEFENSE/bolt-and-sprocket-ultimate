@@ -1,0 +1,48 @@
+{
+  "_doc": "Settings screen layout (ui/settings_menu.gd). Rows from the web build's SETTINGS_DEF (labels, ranges, steps kept; data/bs_source/SETTINGS_DEF.json) plus TERMS & CONDITIONS additions marked 'new': true. type: range (min/max/step/fmt: pct|x2|deg|int), toggle, cycle (options + optional labels). The web build's 'Fullscreen' action became the Display Mode cycle; its debug rows (collider wireframes, assist view) and 'Voice Test' moved to the dev console. Keys live in data/settings_defaults.json.",
+  "title": "SETTINGS",
+  "back": "BACK",
+  "reset": "RESTORE DEFAULTS",
+  "reset_done": "Defaults restored.",
+  "hint": "Changes apply instantly and are saved when you leave.",
+  "tabs": [
+    {"head": "CONTROLS", "rows": [
+      {"key": "mouseSens", "label": "Mouse Sensitivity", "type": "range", "min": 0.3, "max": 2.5, "step": 0.05, "fmt": "x2"},
+      {"key": "padSens", "label": "Controller Sensitivity", "type": "range", "min": 0.3, "max": 2.5, "step": 0.05, "fmt": "x2"},
+      {"key": "invertY", "label": "Invert Y Axis", "type": "toggle"},
+      {"key": "invertX", "label": "Invert X Axis", "type": "toggle"},
+      {"key": "camAuto", "label": "Lazy Auto-Camera (follows your run)", "type": "toggle"},
+      {"key": "camLookAhead", "label": "Camera Look-Ahead", "type": "toggle"},
+      {"key": "aimAssist", "label": "Aim Assist", "type": "toggle"},
+      {"key": "stickPad", "label": "Assist Stickiness (Pad)", "type": "range", "min": 0, "max": 1, "step": 0.05, "fmt": "pct"},
+      {"key": "stickMouse", "label": "Assist Stickiness (Mouse)", "type": "range", "min": 0, "max": 1, "step": 0.05, "fmt": "pct"},
+      {"key": "meleeAssist", "label": "Melee Assist", "type": "toggle"},
+      {"key": "rumble", "label": "Controller Rumble", "type": "toggle"},
+      {"key": "deadzone", "label": "Stick Deadzone", "type": "range", "min": 0.05, "max": 0.35, "step": 0.01, "fmt": "x2"}
+    ]},
+    {"head": "GRAPHICS", "rows": [
+      {"key": "windowMode", "label": "Display Mode", "type": "cycle", "options": ["windowed", "borderless", "fullscreen"], "labels": ["Windowed", "Borderless Fullscreen", "Exclusive Fullscreen"], "new": true},
+      {"key": "vsync", "label": "V-Sync", "type": "toggle", "new": true},
+      {"key": "maxFps", "label": "Frame Rate Limit", "type": "cycle", "options": [0, 60, 120, 144, 165, 240], "labels": ["Unlimited", "60", "120", "144", "165", "240"], "new": true},
+      {"key": "quality", "label": "Quality Preset", "type": "cycle", "options": ["low", "medium", "high", "ultra"], "labels": ["Low", "Medium", "High", "Ultra"]},
+      {"key": "fov", "label": "Field of View", "type": "range", "min": 60, "max": 110, "step": 1, "fmt": "deg"},
+      {"key": "fp_fov", "label": "Field of View (Gravelight)", "type": "range", "min": 65, "max": 110, "step": 1, "fmt": "deg", "new": true},
+      {"key": "shakeMul", "label": "Screen Shake", "type": "range", "min": 0, "max": 1.5, "step": 0.05, "fmt": "pct"},
+      {"key": "fps", "label": "FPS Counter", "type": "toggle"}
+    ]},
+    {"head": "AUDIO", "rows": [
+      {"key": "master", "label": "Master Volume", "type": "range", "min": 0, "max": 1, "step": 0.05, "fmt": "pct"},
+      {"key": "sfxV", "label": "SFX Volume", "type": "range", "min": 0, "max": 1, "step": 0.05, "fmt": "pct"},
+      {"key": "musicV", "label": "Music Volume", "type": "range", "min": 0, "max": 1, "step": 0.05, "fmt": "pct"},
+      {"key": "voiceOn", "label": "Voice Acting", "type": "toggle"},
+      {"key": "voiceVol", "label": "Voice Volume", "type": "range", "min": 0, "max": 1, "step": 0.05, "fmt": "pct"},
+      {"key": "tts_voices", "label": "Synthesized Voices (text-to-speech)", "type": "toggle", "new": true}
+    ]},
+    {"head": "ACCESSIBILITY", "rows": [
+      {"key": "subtitles", "label": "Subtitles", "type": "toggle", "new": true},
+      {"key": "colorblind", "label": "Colorblind Filter", "type": "cycle", "options": ["off", "protanopia", "deuteranopia", "tritanopia"], "labels": ["Off", "Protanopia", "Deuteranopia", "Tritanopia"], "new": true},
+      {"key": "film_grain", "label": "Film Grain (Gravelight)", "type": "toggle", "new": true},
+      {"key": "hint_mode", "label": "Hint Mode (Gravelight)", "type": "toggle", "new": true}
+    ]}
+  ]
+}

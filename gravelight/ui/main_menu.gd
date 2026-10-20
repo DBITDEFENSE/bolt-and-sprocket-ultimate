@@ -39,6 +39,11 @@ func _ready() -> void:
 	_menu.add_theme_constant_override("separation", 8)
 	add_child(_menu)
 	_build()
+	var guard: Control = Control.new()   # swallow clicks for a moment (T-025)
+	guard.set_anchors_preset(Control.PRESET_FULL_RECT)
+	guard.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(guard)
+	get_tree().create_timer(0.35).timeout.connect(guard.queue_free)
 
 
 func _build() -> void:
@@ -69,7 +74,7 @@ func _build() -> void:
 	_menu.add_child(MenuKit.button("Settings", _open.bind(MenuSettings), 26))
 	_menu.add_child(MenuKit.button("Credits", _open.bind(MenuCredits), 26))
 	_menu.add_child(MenuKit.button("Test Range (dev)", func() -> void: get_tree().change_scene_to_file(TEST_RANGE), 20))
-	_menu.add_child(MenuKit.button("Quit", func() -> void: get_tree().quit(), 26))
+	_menu.add_child(MenuKit.button("Back to Terms & Conditions", func() -> void: get_tree().change_scene_to_file("res://ui/main_menu.tscn"), 26))
 	if Net.last_error != "":
 		_menu.add_child(MenuKit.para(Net.last_error, 18, MenuKit.INK.lightened(0.35)))
 		Net.last_error = ""

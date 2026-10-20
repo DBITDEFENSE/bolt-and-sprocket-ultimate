@@ -157,3 +157,24 @@ The GRAVELIGHT project's own log (D-001 … D-059, at `C:\Users\Devin\PROJECTS\N
   - BSLevel deactivates them and re-applies the B&S bindings.
 - **Hub:** the GRAVELIGHT door opens Gravelight's own menu.
 - **Verification:** 252 scripts compile, 259 GUT tests pass (B&S and Gravelight), the Scrapheap smoke passes, and Map 0 renders correctly.
+
+**T-025, 2026-10-20: Front-end menus and shared settings.**
+- **The bug:** clicking GRAVELIGHT appeared to crash the game. GRAVELIGHT's menu had a **Quit** button wired to `get_tree().quit()`, which closed the whole merged game. A carried-over or second click could hit it, and the window vanished with nothing in the log.
+- **The fix:**
+  - That button is now "Back to Terms & Conditions".
+  - Both menus ignore clicks for about 0.35 s after they appear.
+  - Both changes are migration patches, so a re-migration keeps them.
+- **The hub was rebuilt** from `data/hub.json`:
+  - door list on the left, preview card on the right, drifting contract fine print behind it
+  - an "ACCEPTED" stamp when a door is chosen
+  - lock states, and full mouse, keyboard and pad support
+- **New shared Settings screen** (`ui/settings_menu.gd`), built from `data/settings_page.json`:
+  - The rows come from the web build's SETTINGS_DEF, keeping its labels.
+  - Its Fullscreen action became a Display Mode cycle.
+  - New rows: V-Sync, frame cap, Gravelight FOV, TTS voices, subtitles, colorblind filter, film grain, hint mode.
+  - It opens from the hub and from the Bolt & Sprocket pause menu (the original's pause SETTINGS button).
+- **Core Settings changes:**
+  - Changes apply live: audio buses, window mode, V-Sync, frame cap, quality.
+  - The keys Gravelight also stores are mirrored to GLSettings, and read back from it when the screen opens.
+- **Display safety:** window mode is never applied for headless or `--position` (off-screen tool) runs.
+- **New display defaults:** borderless fullscreen, V-Sync on.
