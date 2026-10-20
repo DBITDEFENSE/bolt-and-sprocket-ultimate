@@ -1,0 +1,34 @@
+{
+  "holo": "glaciusHolo",
+  "planetIdx": 6,
+  "terrain": "glacius",
+  "roster": [
+    "chillsplit",
+    "popsicle",
+    "frostpeddler"
+  ],
+  "miniboss": "retention",
+  "dress": {
+    "__ref__": "glaciusDress"
+  },
+  "pocketCol": 9097448,
+  "railColor": 4122367,
+  "slip": 1,
+  "blizzard": true,
+  "hint": "GLACIUS VAULT — thousands frozen mid-subscription. Slippery ice + blizzards!",
+  "introBeat": "glaciusIntro",
+  "midBeat": "glaciusMid",
+  "lateBeat": "glaciusLate",
+  "wing": {
+    "name": "THE ICEBREAKER YARD",
+    "sub": "Frozen customers, stacked for shipping",
+    "plaza": "THE COLD STORAGE",
+    "col": {
+      "slab": 9097448,
+      "accent": 5929616,
+      "rail": 4122367,
+      "wall": 13496063,
+      "plaza": 14479359
+    }
+  }
+}

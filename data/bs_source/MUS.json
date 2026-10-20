@@ -1,0 +1,11 @@
+{
+  "on": false,
+  "themeId": null,
+  "prevThemeId": null,
+  "step": 0,
+  "nextT": 0,
+  "baseG": null,
+  "combatG": null,
+  "combatLvl": 0,
+  "beatListeners": []
+}

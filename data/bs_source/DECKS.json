@@ -1,0 +1,50 @@
+[
+  {
+    "id": "door",
+    "name": "Garage Door",
+    "deck": 16765502,
+    "glow": 4122367
+  },
+  {
+    "id": "hazard",
+    "name": "Hazard Tape",
+    "deck": 1844019,
+    "glow": 16765502
+  },
+  {
+    "id": "neon",
+    "name": "Galleria Neon",
+    "deck": 16731549,
+    "glow": 16751312
+  },
+  {
+    "id": "chrome",
+    "name": "Showroom Chrome",
+    "deck": 14212841,
+    "glow": 16777215
+  },
+  {
+    "id": "slag",
+    "name": "Slag Runner",
+    "deck": 3806216,
+    "glow": 16738842
+  },
+  {
+    "id": "void",
+    "name": "Void Seam",
+    "deck": 2759242,
+    "glow": 10898943
+  },
+  {
+    "id": "mint",
+    "name": "Mint in Box",
+    "deck": 4173450,
+    "glow": 8257434
+  },
+  {
+    "id": "gold",
+    "name": "Gilded Recall",
+    "deck": 13212190,
+    "glow": 16769658
+  }
+]

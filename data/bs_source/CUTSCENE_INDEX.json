@@ -1,0 +1,307 @@
+[
+  [
+    "intro",
+    "The Repossession",
+    "STORY"
+  ],
+  [
+    "arrive0",
+    "Landing: Scrapheap",
+    "STORY"
+  ],
+  [
+    "l1_glitch",
+    "A Suspicious Clause",
+    "STORY"
+  ],
+  [
+    "l1_vista",
+    "Junk-Planet Kid",
+    "STORY"
+  ],
+  [
+    "arrive1",
+    "Landing: Rustvane",
+    "STORY"
+  ],
+  [
+    "l2_holo1",
+    "Grindstone Calls",
+    "STORY"
+  ],
+  [
+    "ccIntro",
+    "The Content Creator",
+    "BOSS"
+  ],
+  [
+    "l2_glambot",
+    "GLAMBOT Defects",
+    "STORY"
+  ],
+  [
+    "shieldReveal",
+    "The Shield Goes Up",
+    "STORY"
+  ],
+  [
+    "novaIntro",
+    "Welcome to Nova Plaza",
+    "STORY"
+  ],
+  [
+    "novaHolo",
+    "Grindstone: Nova",
+    "STORY"
+  ],
+  [
+    "coreNova",
+    "Core: Nova",
+    "STORY"
+  ],
+  [
+    "glaciusIntro",
+    "Welcome to Glacius",
+    "STORY"
+  ],
+  [
+    "glaciusHolo",
+    "Grindstone: Glacius",
+    "STORY"
+  ],
+  [
+    "coreGlacius",
+    "Core: Glacius (RECALL)",
+    "STORY"
+  ],
+  [
+    "verdantIntro",
+    "Welcome to Verdant Sink",
+    "STORY"
+  ],
+  [
+    "coreVerdant",
+    "Core: Verdant",
+    "STORY"
+  ],
+  [
+    "shieldFall",
+    "The Shield Falls",
+    "STORY"
+  ],
+  [
+    "arrive2",
+    "Landing: Core Foundry",
+    "STORY"
+  ],
+  [
+    "blartzArrest",
+    "Blartz Arrested",
+    "STORY"
+  ],
+  [
+    "blartzFound",
+    "Found: The Cell",
+    "STORY"
+  ],
+  [
+    "blartzRescue",
+    "The Blartz Rescue",
+    "STORY"
+  ],
+  [
+    "l3_holo2",
+    "HQ Lobby",
+    "STORY"
+  ],
+  [
+    "l3_vent",
+    "GLAMBOT Assist",
+    "STORY"
+  ],
+  [
+    "l3_brick",
+    "Clause 44",
+    "STORY"
+  ],
+  [
+    "arrive9",
+    "Landing: Grand Galleria",
+    "STORY"
+  ],
+  [
+    "galleriaGreeter",
+    "Guest Services",
+    "BOSS"
+  ],
+  [
+    "galleriaLedger",
+    "The Ledger",
+    "STORY"
+  ],
+  [
+    "gsIntro",
+    "Chairman Grindstone",
+    "BOSS"
+  ],
+  [
+    "ending",
+    "The Ending",
+    "STORY"
+  ],
+  [
+    "epilogue",
+    "The Memo Epilogue",
+    "STORY"
+  ],
+  [
+    "postCredits",
+    "Post-Credits",
+    "STORY"
+  ],
+  [
+    "zongaReveal",
+    "ZONGA Revealed",
+    "STORY"
+  ],
+  [
+    "zongaStart",
+    "ZONGA: Drop In",
+    "STORY"
+  ],
+  [
+    "zongaTruth",
+    "ZONGA: The Truth",
+    "STORY"
+  ],
+  [
+    "firmwareScene",
+    "Sprocket Finds His Settings",
+    "STORY"
+  ],
+  [
+    "lrSignal",
+    "Loop Riot: The Pirate Broadcast",
+    "STORY"
+  ],
+  [
+    "lrIntro",
+    "Loop Riot: Meet the Recalls",
+    "STORY"
+  ],
+  [
+    "lrChampion",
+    "Loop Riot: The Black Box",
+    "STORY"
+  ],
+  [
+    "flyover0",
+    "Flyover: Scrapheap",
+    "FLYOVER"
+  ],
+  [
+    "flyover1",
+    "Flyover: Rustvane",
+    "FLYOVER"
+  ],
+  [
+    "flyover5",
+    "Flyover: Nova Plaza",
+    "FLYOVER"
+  ],
+  [
+    "flyover6",
+    "Flyover: Glacius",
+    "FLYOVER"
+  ],
+  [
+    "flyover7",
+    "Flyover: Verdant Sink",
+    "FLYOVER"
+  ],
+  [
+    "introAlgorithm",
+    "Intro: The Algorithm",
+    "BOSS"
+  ],
+  [
+    "introCC",
+    "Intro: Content Creator",
+    "BOSS"
+  ],
+  [
+    "introCompost",
+    "Intro: Compost King",
+    "BOSS"
+  ],
+  [
+    "introGrindstone",
+    "Intro: Chairman Grindstone",
+    "BOSS"
+  ],
+  [
+    "ad_blaster",
+    "Ad: Omni-Blaster",
+    "AD"
+  ],
+  [
+    "ad_void",
+    "Ad: Void Ripper",
+    "AD"
+  ],
+  [
+    "ad_zap",
+    "Ad: Zapinator",
+    "AD"
+  ],
+  [
+    "ad_boom",
+    "Ad: Boom Box",
+    "AD"
+  ],
+  [
+    "ad_dart",
+    "Ad: Lawn Dart",
+    "AD"
+  ],
+  [
+    "ad_patent",
+    "Ad: Patent Pending",
+    "AD"
+  ],
+  [
+    "ad_cease",
+    "Ad: Cease & Desist",
+    "AD"
+  ],
+  [
+    "ad_buzz",
+    "Ad: Buzzkill",
+    "AD"
+  ],
+  [
+    "ad_grav",
+    "Ad: Grav Grenade",
+    "AD"
+  ],
+  [
+    "ad_mid",
+    "Ad: The Middleman",
+    "AD"
+  ],
+  [
+    "ad_frost",
+    "Ad: Frostbyte",
+    "AD"
+  ],
+  [
+    "ad_root",
+    "Ad: Root Canal",
+    "AD"
+  ],
+  [
+    "ad_karen",
+    "Ad: K.A.R.E.N.",
+    "AD"
+  ]
+]

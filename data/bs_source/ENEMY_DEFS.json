@@ -1,0 +1,184 @@
+{
+  "scrapmutt": {
+    "make": {
+      "__ref__": "makeScrapMutt"
+    },
+    "arch": "chaser",
+    "hp": 30,
+    "speed": 4.2,
+    "pounce": true,
+    "dmg": 10,
+    "drops": 6,
+    "chunk": 10246702,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => beep(600, 90, 0.35, 'sawtooth', 0.1)"
+    }
+  },
+  "tinkerturret": {
+    "make": {
+      "__ref__": "makeTinkerTurret"
+    },
+    "arch": "turret",
+    "hp": 55,
+    "ambush": true,
+    "drops": 8,
+    "chunk": 9075266,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => { beep(300, 60, 0.3, 'square', 0.1); noiseBurst(0.2, 0.12, 1500); }"
+    }
+  },
+  "vulture": {
+    "make": {
+      "__ref__": "makeVultureDrone"
+    },
+    "arch": "flyer",
+    "hp": 26,
+    "dive": true,
+    "steal": 5,
+    "drops": 6,
+    "chunk": 6179384,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => beep(1200, 200, 0.4, 'sawtooth', 0.08)"
+    }
+  },
+  "ambassadog": {
+    "make": {
+      "__ref__": "makeAmbassadog"
+    },
+    "arch": "chaser",
+    "hp": 26,
+    "speed": 5.6,
+    "pounce": true,
+    "dmg": 9,
+    "drops": 6,
+    "chunk": 14209220,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => { beep(880, 440, 0.12, 'sine', 0.08); beep(660, 220, 0.18, 'sine', 0.08, 0.1); }"
+    }
+  },
+  "selfie": {
+    "make": {
+      "__ref__": "makeSelfieSentry"
+    },
+    "arch": "flyer",
+    "hp": 30,
+    "flash": true,
+    "drops": 7,
+    "chunk": 15920096,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => { beep(1800, 1800, 0.05, 'square', 0.1); beep(90, 40, 0.3, 'sawtooth', 0.1, 0.06); }"
+    }
+  },
+  "lifeguard": {
+    "make": {
+      "__ref__": "makeLifeguardBot"
+    },
+    "arch": "chaser",
+    "hp": 85,
+    "speed": 2.3,
+    "lob": true,
+    "dmg": 14,
+    "drops": 11,
+    "heavy": true,
+    "chunk": 15261908,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => { beep(2200, 2400, 0.4, 'square', 0.06); beep(140, 40, 0.4, 'sawtooth', 0.12, 0.1); }"
+    }
+  },
+  "slaggolem": {
+    "make": {
+      "__ref__": "makeSlagGolem"
+    },
+    "arch": "chaser",
+    "hp": 75,
+    "speed": 1.9,
+    "plated": true,
+    "dmg": 16,
+    "drops": 12,
+    "heavy": true,
+    "chunk": 2892838,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => { noiseBurst(0.5, 0.3, 400); beep(70, 30, 0.6, 'sawtooth', 0.15); }"
+    }
+  },
+  "hrdrone": {
+    "make": {
+      "__ref__": "makeHRDrone"
+    },
+    "arch": "flyer",
+    "hp": 34,
+    "paper": true,
+    "hoverHome": true,
+    "drops": 7,
+    "chunk": 9082280,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => { beep(500, 1500, 0.2, 'square', 0.06); noiseBurst(0.25, 0.1, 3000); }"
+    }
+  },
+  "weldwasp": {
+    "make": {
+      "__ref__": "makeWeldWasp"
+    },
+    "arch": "flyer",
+    "hp": 8,
+    "wasp": true,
+    "dmg": 6,
+    "drops": 3,
+    "chunk": 16760878,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => beep(1400, 300, 0.15, 'sawtooth', 0.07)"
+    }
+  },
+  "statue": {
+    "make": {
+      "__ref__": "makeStatue"
+    },
+    "arch": "prop",
+    "hp": 40,
+    "drops": 22,
+    "chunk": 12109012,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => { noiseBurst(0.4, 0.3, 600); beep(200, 60, 0.4, 'square', 0.1); }"
+    }
+  },
+  "mannequin": {
+    "make": {
+      "__ref__": "makeMannequin"
+    },
+    "arch": "chaser",
+    "hp": 44,
+    "speed": 7.2,
+    "stalker": true,
+    "dmg": 14,
+    "drops": 8,
+    "chunk": 15262424,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => { noiseBurst(0.3, 0.2, 900); beep(140, 50, 0.4, 'square', 0.1); }"
+    }
+  },
+  "couponcrier": {
+    "make": {
+      "__ref__": "makeCouponCrier"
+    },
+    "arch": "flyer",
+    "hp": 28,
+    "rally": true,
+    "drops": 9,
+    "chunk": 16765502,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => { beep(880, 220, 0.3, 'square', 0.08); beep(1760, 440, 0.2, 'square', 0.06, 0.1); }"
+    }
+  }
+}

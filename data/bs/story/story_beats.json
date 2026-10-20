@@ -1,0 +1,472 @@
+{
+  "novaMid": {
+    "title": "novaMid",
+    "lines": [
+      {
+        "id": "st.novaMid.01",
+        "who": "sprocket",
+        "text": "Bolt, I pulled the city ledger. Nova Plaza didn't fail — the HOA fined every resident until they LEFT, then kept charging the empty houses."
+      },
+      {
+        "id": "st.novaMid.02",
+        "who": "bolt",
+        "text": "So where'd the Keystone Core end up?"
+      },
+      {
+        "id": "st.novaMid.03",
+        "who": "sprocket",
+        "text": "Wired straight into the FineTree, powering the fine-meter. Grindstone's using a galaxy-saving artifact to send late notices. Let's go unplug it."
+      }
+    ]
+  },
+  "glaciusMid": {
+    "title": "glaciusMid",
+    "lines": [
+      {
+        "id": "st.glaciusMid.01",
+        "who": "bolt",
+        "text": "These pods... there are people in them, Sprocket. Thousands. All mid-subscription."
+      },
+      {
+        "id": "st.glaciusMid.02",
+        "who": "sprocket",
+        "text": "ForeverYou™. You pay to be frozen; thawing is a PREMIUM tier. The Core's running the freezer. Pull it and the whole vault wakes up."
+      },
+      {
+        "id": "st.glaciusMid.03",
+        "who": "bolt",
+        "text": "Then that's exactly what we're doing. Every one of them goes home."
+      }
+    ]
+  },
+  "verdantMid": {
+    "title": "verdantMid",
+    "lines": [
+      {
+        "id": "st.verdantMid.01",
+        "who": "sprocket",
+        "text": "The mega-harvester's been leaking coolant for six years. The whole ecosystem mutated AROUND it — that's why everything glows. And talks. And unionizes."
+      },
+      {
+        "id": "st.verdantMid.02",
+        "who": "bolt",
+        "text": "And the Core?"
+      },
+      {
+        "id": "st.verdantMid.03",
+        "who": "sprocket",
+        "text": "Fused into the harvester's dead reactor. The corn's been guarding it. Honestly? They've done a better job than OmniScrap ever did."
+      }
+    ]
+  },
+  "novaLate": {
+    "title": "novaLate",
+    "lines": [
+      {
+        "id": "st.novaLate.01",
+        "who": "sprocket",
+        "text": "Update: the FineTree just issued YOU a fine. 'Unauthorized heroism, second offense.' There's a late fee on it. It's dated next week."
+      },
+      {
+        "id": "st.novaLate.02",
+        "who": "bolt",
+        "text": "They pre-fined me?"
+      },
+      {
+        "id": "st.novaLate.03",
+        "who": "sprocket",
+        "text": "They pre-fined you. Honestly? That's the most confidence anyone's ever shown in us."
+      }
+    ]
+  },
+  "glaciusLate": {
+    "title": "glaciusLate",
+    "lines": [
+      {
+        "id": "st.glaciusLate.01",
+        "who": "bolt",
+        "text": "When the vault thaws... where do all these people GO? Their homes got repossessed while they were frozen."
+      },
+      {
+        "id": "st.glaciusLate.02",
+        "who": "sprocket",
+        "text": "Filed that under 'problems for after we win'. It's a big file, Bolt. It's basically the whole cabinet."
+      },
+      {
+        "id": "st.glaciusLate.03",
+        "who": "bolt",
+        "text": "Then we'd better win big."
+      }
+    ]
+  },
+  "verdantLate": {
+    "title": "verdantLate",
+    "lines": [
+      {
+        "id": "st.verdantLate.01",
+        "who": "sprocket",
+        "text": "The corn offered me a union card. Local 404. Dental. Sunlight clause. A DIGNITY rider, Bolt."
+      },
+      {
+        "id": "st.verdantLate.02",
+        "who": "bolt",
+        "text": "You're a robot. You don't have teeth."
+      },
+      {
+        "id": "st.verdantLate.03",
+        "who": "sprocket",
+        "text": "It's about the PRINCIPLE of the teeth."
+      }
+    ]
+  },
+  "novaHolo": {
+    "title": "Grindstone: Nova",
+    "lines": [
+      {
+        "id": "st.novaHolo.01",
+        "who": "grindstone",
+        "text": "The mechanic, slumming it in my FAILURES. Nova Plaza was a rounding error. A TASTEFUL one."
+      },
+      {
+        "id": "st.novaHolo.02",
+        "who": "sprocket",
+        "text": "He's watching us through the ad-drones. Smile, Bolt, you're depreciating on camera."
+      }
+    ]
+  },
+  "glaciusHolo": {
+    "title": "Grindstone: Glacius",
+    "lines": [
+      {
+        "id": "st.glaciusHolo.01",
+        "who": "grindstone",
+        "text": "Cold enough for you? I could unfreeze this whole facility with one click. I simply choose not to. That's POWER, boy."
+      },
+      {
+        "id": "st.glaciusHolo.02",
+        "who": "bolt",
+        "text": "That's not power. That's just being a jerk with admin access."
+      }
+    ]
+  },
+  "l1_glitch": {
+    "title": "A Suspicious Clause",
+    "lines": [
+      {
+        "id": "st.l1_glitch.01",
+        "who": "sprocket",
+        "text": "Bolt. Hypothetical. If a robot had a mandatory remote-shutdown clause buried in his firmware, would that change how you— NEW TOPIC. Great dunes."
+      },
+      {
+        "id": "st.l1_glitch.02",
+        "who": "bolt",
+        "text": "...What clause?"
+      },
+      {
+        "id": "st.l1_glitch.03",
+        "who": "sprocket",
+        "text": "I said LOOK AT THE DUNES, Bolt. They're doing dune stuff. Nature is healing."
+      }
+    ]
+  },
+  "l1_vista": {
+    "title": "Junk-Planet Kid",
+    "lines": [
+      {
+        "id": "st.l1_vista.01",
+        "who": "bolt",
+        "text": "Look at it. The whole planet's a landfill and it's still home. And I'm just... the guy who fixes junk nobody wanted."
+      },
+      {
+        "id": "st.l1_vista.02",
+        "who": "sprocket",
+        "text": "You fixed ME. Day one. Bent antenna, refund-bin firmware, 'DEFECTIVE' stamped right on the box. You could've stripped me for parts."
+      },
+      {
+        "id": "st.l1_vista.03",
+        "who": "bolt",
+        "text": "You WERE parts."
+      },
+      {
+        "id": "st.l1_vista.04",
+        "who": "sprocket",
+        "text": "And now I'm parts with OPINIONS. That's craftsmanship, junk boy. Own it."
+      }
+    ]
+  },
+  "l2_holo1": {
+    "title": "Grindstone Calls",
+    "lines": [
+      {
+        "id": "st.l2_holo1.01",
+        "who": "grindstone",
+        "text": "The mechanic. Enjoying my resort? Every deck chair is monetized. This hologram has a sponsor. YOU have a sponsor — you just haven't been invoiced yet."
+      },
+      {
+        "id": "st.l2_holo1.02",
+        "who": "grindstone",
+        "text": "Do bring the toaster to Core Foundry. And ask him about Clause 44 on the way. Watch the little eye twitch."
+      },
+      {
+        "id": "st.l2_holo1.03",
+        "who": "sprocket",
+        "text": "My eye does not TWITCH. It BUFFERS. Totally different failure mode."
+      },
+      {
+        "id": "st.l2_holo1.04",
+        "who": "bolt",
+        "text": "Sprocket... what's Clause 44?"
+      },
+      {
+        "id": "st.l2_holo1.05",
+        "who": "sprocket",
+        "text": "A typo. Probably. Look, a waterfall!"
+      }
+    ]
+  },
+  "l2_glambot": {
+    "title": "GLAMBOT Defects",
+    "lines": [
+      {
+        "id": "st.l2_glambot.01",
+        "who": "cc",
+        "text": "CUT! Cut cut cut— you just DELETED my co-host! Do you know what that does to my engagement?!"
+      },
+      {
+        "id": "st.l2_glambot.02",
+        "who": "cc",
+        "text": "...It tripled it. It TRIPLED it. I love you. I'm keeping you."
+      },
+      {
+        "id": "st.l2_glambot.03",
+        "who": "bolt",
+        "text": "You're not going to, like... avenge him?"
+      },
+      {
+        "id": "st.l2_glambot.04",
+        "who": "glambot",
+        "text": "Sweetie. I'm a STAR, not a sequel hook. OmniScrap has been scripting my personality for six seasons. Consider me DEFECTED. Call me GLAMBOT PRIME — I'll be your eye in the sky."
+      },
+      {
+        "id": "st.l2_glambot.05",
+        "who": "sprocket",
+        "text": "I hate how much I respect this."
+      }
+    ]
+  },
+  "l3_holo2": {
+    "title": "HQ Lobby",
+    "lines": [
+      {
+        "id": "st.l3_holo2.01",
+        "who": "grindstone",
+        "text": "Welcome to headquarters, mechanic. Marble floors. Forty thousand subscription tiers paid for them. VOLUNTARILY. Remember that before you judge me."
+      },
+      {
+        "id": "st.l3_holo2.02",
+        "who": "bolt",
+        "text": "Lobby's nice. The murder robots undercut it a little."
+      },
+      {
+        "id": "st.l3_holo2.03",
+        "who": "grindstone",
+        "text": "Security is a premium feature. You triggered the free trial."
+      }
+    ]
+  },
+  "l3_vent": {
+    "title": "GLAMBOT Assist",
+    "lines": [
+      {
+        "id": "st.l3_vent.01",
+        "who": "glambot",
+        "text": "PLOT TWIST, darling! That crusher corridor is rated for zero survivals, so I jammed a cooling vent open for you. Updrafts are SO cinematic."
+      },
+      {
+        "id": "st.l3_vent.02",
+        "who": "sprocket",
+        "text": "Tactical support from an influencer. This war is deeply strange."
+      },
+      {
+        "id": "st.l3_vent.03",
+        "who": "bolt",
+        "text": "Thanks, GLAMBOT. Weirdly reliable of you."
+      }
+    ]
+  },
+  "l1_row": {
+    "title": "l1_row",
+    "lines": [
+      {
+        "id": "st.l1_row.01",
+        "who": "bolt",
+        "text": "Rusty's Row. Every time OmniScrap repossesses a house, the family ends up here. It was three shacks when I was a kid."
+      },
+      {
+        "id": "st.l1_row.02",
+        "who": "sprocket",
+        "text": "It is now forty-one shacks, a water tower, and a working barter economy based on fuses. I ran the census while you were being wistful."
+      },
+      {
+        "id": "st.l1_row.03",
+        "who": "gasket",
+        "text": "Well, if it isn't the Bolt boy. Heard they took your garage. Welcome to the club, hon — dues are zero and the roof leaks."
+      },
+      {
+        "id": "st.l1_row.04",
+        "who": "bolt",
+        "text": "I'm getting it back, Mama Gasket. All of it. Everybody's."
+      },
+      {
+        "id": "st.l1_row.05",
+        "who": "gasket",
+        "text": "That's what your father said. Difference is, you brought a mallet and a robot with a mouth on him. I like your odds better."
+      }
+    ]
+  },
+  "l1_mast": {
+    "title": "l1_mast",
+    "lines": [
+      {
+        "id": "st.l1_mast.01",
+        "who": "sprocket",
+        "text": "This mast was OmniScrap's billing antenna. Somebody's re-aimed it. I'm picking up... skate wheels? And a crash-test dummy doing play-by-play."
+      },
+      {
+        "id": "st.l1_mast.02",
+        "who": "bolt",
+        "text": "Out here? Who'd be broadcasting from past the Slag Flats?"
+      },
+      {
+        "id": "st.l1_mast.03",
+        "who": "sprocket",
+        "text": "Unknown. The signal's too thin to lock from Scrapheap. But whoever it is just called OmniScrap 'a subscription to disappointment', so I've decided we're friends."
+      }
+    ]
+  },
+  "l2_camp": {
+    "title": "l2_camp",
+    "lines": [
+      {
+        "id": "st.l2_camp.01",
+        "who": "bolt",
+        "text": "Tents. Ore carts. This place wasn't always a resort."
+      },
+      {
+        "id": "st.l2_camp.02",
+        "who": "sprocket",
+        "text": "Rustvane Mining Co-op. Worker-owned for sixty years. OmniScrap couldn't buy the mine, so they bought the river — then billed the miners for 'ambient moisture'."
+      },
+      {
+        "id": "st.l2_camp.03",
+        "who": "bolt",
+        "text": "And when they couldn't pay?"
+      },
+      {
+        "id": "st.l2_camp.04",
+        "who": "sprocket",
+        "text": "The Co-op became 'Guest Experience Staff'. Same people, new lanyards. The uniform rental comes out of their wages. It is more than their wages."
+      }
+    ]
+  },
+  "l2_staff": {
+    "title": "l2_staff",
+    "lines": [
+      {
+        "id": "st.l2_staff.01",
+        "who": "pa",
+        "text": "BACK OF HOUSE. Staff are reminded that breaks are a guest-facing privilege."
+      },
+      {
+        "id": "st.l2_staff.02",
+        "who": "bellhop",
+        "text": "A guest! Guests aren't allowed back here. ...You're not a guest. You're the one smashing the Selfie Sentries. Please don't stop on our account."
+      },
+      {
+        "id": "st.l2_staff.03",
+        "who": "bolt",
+        "text": "You all LIVE down here? Under the pool?"
+      },
+      {
+        "id": "st.l2_staff.04",
+        "who": "bellhop",
+        "text": "The pool drips. We call it 'complimentary rain'. My grandmother dug this canyon. Now I carry luggage across it for people who rate it two stars."
+      },
+      {
+        "id": "st.l2_staff.05",
+        "who": "sprocket",
+        "text": "Bolt. I've read their contracts. Clause after clause after clause. I... recognize the handwriting."
+      }
+    ]
+  },
+  "l1_repo": {
+    "title": "l1_repo",
+    "lines": [
+      {
+        "id": "st.l1_repo.01",
+        "who": "pa",
+        "text": "ATTENTION. THIS LOT IS SCHEDULED FOR COMPACTION. OCCUPANTS WILL BE FLATTENED AS A COURTESY."
+      },
+      {
+        "id": "st.l1_repo.02",
+        "who": "sprocket",
+        "text": "That's the REPO-TRON. It took the neighbour's house. And the neighbour."
+      },
+      {
+        "id": "st.l1_repo.03",
+        "who": "bolt",
+        "text": "It's got a PAST DUE stamp for a heart. I've got a mallet. Let's settle the account."
+      }
+    ]
+  },
+  "l1_mid": {
+    "title": "l1_mid",
+    "lines": [
+      {
+        "id": "st.l1_mid.01",
+        "who": "bolt",
+        "text": "That teleporter can get us off-world. I just need to 'borrow' a few parts first."
+      },
+      {
+        "id": "st.l1_mid.02",
+        "who": "sprocket",
+        "text": "Borrowing implies returning. I admire your optimism. I do not share it."
+      }
+    ]
+  },
+  "l2_mid": {
+    "title": "l2_mid",
+    "lines": [
+      {
+        "id": "st.l2_mid.01",
+        "who": "sprocket",
+        "text": "Careful. This resort has a two-star rating and a three-digit body count."
+      },
+      {
+        "id": "st.l2_mid.02",
+        "who": "bolt",
+        "text": "As long as the pool's open."
+      },
+      {
+        "id": "st.l2_mid.03",
+        "who": "sprocket",
+        "text": "The pool is lava, Bolt. The pool has ALWAYS been lava."
+      }
+    ]
+  },
+  "l3_waves": {
+    "title": "l3_waves",
+    "lines": [
+      {
+        "id": "st.l3_waves.01",
+        "who": "sprocket",
+        "text": "Bridge is open! Grindstone's mech is right there. Try not to trip over the dramatic tension."
+      },
+      {
+        "id": "st.l3_waves.02",
+        "who": "bolt",
+        "text": "Relax. I've beaten TWO bosses. I'm basically a professional."
+      }
+    ]
+  }
+}

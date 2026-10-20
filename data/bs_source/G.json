@@ -1,0 +1,142 @@
+{
+  "state": "menu",
+  "levelIndex": 0,
+  "level": null,
+  "bolts": 0,
+  "levelBolts": 0,
+  "gold": [
+    [
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false
+    ],
+    [],
+    [],
+    [
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false
+    ],
+    [],
+    [
+      false,
+      false,
+      false
+    ]
+  ],
+  "totalTime": 0,
+  "levelTime": 0,
+  "maxHp": 100,
+  "shake": 0,
+  "deadTimer": 0,
+  "hintsShown": {},
+  "story": 0,
+  "seenCut": {},
+  "seenTravel": false,
+  "inGame": false,
+  "superOwned": false,
+  "superMeter": 0,
+  "superSeen": false,
+  "zongaUnlocked": false,
+  "zongaWins": 0,
+  "zongaBest": 0,
+  "zongaKills": 0,
+  "zongaGold": false,
+  "zongaMatches": 0,
+  "cores": [],
+  "clears": {},
+  "shieldSeen": false,
+  "memos": [
+    [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [],
+    [],
+    [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [],
+    [
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "quests": {},
+  "ngPlus": false,
+  "multT": 0,
+  "karenOwned": false,
+  "cos": {
+    "paint": "default",
+    "hat": "none",
+    "mallet": "default",
+    "owned": {
+      "p_default": 1,
+      "h_none": 1,
+      "m_default": 1
+    }
+  },
+  "arena": {},
+  "race": {},
+  "loopRiot": {},
+  "blartzRescued": false,
+  "tipCount": 0
+}

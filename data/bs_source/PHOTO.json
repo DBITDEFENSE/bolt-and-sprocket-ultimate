@@ -1,0 +1,22 @@
+{
+  "on": false,
+  "yaw": 0.6,
+  "pitch": 0.25,
+  "dist": 5.5,
+  "fov": 55,
+  "filter": 0,
+  "pose": 0,
+  "hud": true,
+  "filters": [
+    "none",
+    "grade",
+    "noir",
+    "vhs"
+  ],
+  "poses": [
+    "idle",
+    "point",
+    "flex",
+    "victory"
+  ]
+}

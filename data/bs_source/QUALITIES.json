@@ -1,0 +1,42 @@
+{
+  "low": {
+    "px": 1,
+    "shadow": 0,
+    "particles": 0.4,
+    "fogMul": 0.6,
+    "props": 0.4,
+    "bloom": 0,
+    "vig": false,
+    "grade": false
+  },
+  "medium": {
+    "px": 1.5,
+    "shadow": 1024,
+    "particles": 1,
+    "fogMul": 1,
+    "props": 1,
+    "bloom": 0.25,
+    "vig": false,
+    "grade": false
+  },
+  "high": {
+    "px": 2,
+    "shadow": 2048,
+    "particles": 1,
+    "fogMul": 1,
+    "props": 1,
+    "bloom": 0.45,
+    "vig": true,
+    "grade": true
+  },
+  "ultra": {
+    "px": 2,
+    "shadow": 4096,
+    "particles": 1.3,
+    "fogMul": 1.15,
+    "props": 1.3,
+    "bloom": 0.65,
+    "vig": true,
+    "grade": true
+  }
+}

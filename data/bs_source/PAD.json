@@ -1,0 +1,18 @@
+{
+  "connected": false,
+  "lastDevice": "kb",
+  "axes": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "held": {},
+  "pressed": {},
+  "released": {},
+  "navTimer": 0,
+  "navDir": 0,
+  "navXTimer": 0,
+  "navXDir": 0,
+  "pad": null
+}

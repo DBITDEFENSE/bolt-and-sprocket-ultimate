@@ -1,0 +1,299 @@
+{
+  "speakers": {
+    "bolt": {
+      "name": "BOLT",
+      "color": "#ffb95e",
+      "voice": {
+        "pitch": 1,
+        "rate": 1,
+        "kw": [
+          "david",
+          "male",
+          "natural",
+          "en-us"
+        ]
+      }
+    },
+    "sprocket": {
+      "name": "SPROCKET",
+      "color": "#3ee6ff",
+      "voice": {
+        "pitch": 1.6,
+        "rate": 1.15,
+        "kw": [
+          "zira",
+          "female",
+          "google us",
+          "samantha"
+        ]
+      }
+    },
+    "grindstone": {
+      "name": "CHAIRMAN GRINDSTONE",
+      "color": "#ff5d5d",
+      "voice": {
+        "pitch": 0.6,
+        "rate": 0.85,
+        "kw": [
+          "david",
+          "male",
+          "george",
+          "daniel"
+        ]
+      }
+    },
+    "blartz": {
+      "name": "BLARTZ",
+      "color": "#7dff9a",
+      "voice": {
+        "pitch": 0.82,
+        "rate": 1.32,
+        "kw": [
+          "mark",
+          "male",
+          "daniel"
+        ]
+      }
+    },
+    "cc": {
+      "name": "THE CONTENT CREATOR",
+      "color": "#c06aff",
+      "voice": {
+        "pitch": 1.25,
+        "rate": 1.12,
+        "kw": [
+          "female",
+          "zira",
+          "samantha"
+        ]
+      }
+    },
+    "pa": {
+      "name": "OMNISCRAP™ PA",
+      "color": "#8b95a8",
+      "voice": {
+        "pitch": 1,
+        "rate": 1,
+        "kw": [
+          "male",
+          "david"
+        ],
+        "radio": true
+      }
+    },
+    "glambot": {
+      "name": "GLAMBOT PRIME",
+      "color": "#ff7ab8",
+      "voice": {
+        "pitch": 1.2,
+        "rate": 1.1,
+        "kw": [
+          "female",
+          "zira",
+          "samantha"
+        ]
+      }
+    },
+    "rusty": {
+      "name": "RUSTY",
+      "color": "#ffb36b",
+      "voice": null
+    },
+    "concierge": {
+      "name": "CONCIERGE-TRON",
+      "color": "#ff8ac2",
+      "voice": null
+    },
+    "intern": {
+      "name": "INTERN #4401",
+      "color": "#9fc4e0",
+      "voice": null
+    },
+    "darkmatter": {
+      "name": "DARKMATTER SUBSCRIPTIONS LLC",
+      "color": "#c07dff",
+      "voice": {
+        "pitch": 0.7,
+        "rate": 0.9,
+        "kw": [
+          "male",
+          "david"
+        ],
+        "radio": true
+      }
+    },
+    "retention": {
+      "name": "THE RETENTION SPECIALIST",
+      "color": "#8ad0e8",
+      "voice": {
+        "pitch": 1.15,
+        "rate": 1.18,
+        "kw": [
+          "male",
+          "mark",
+          "david"
+        ]
+      }
+    },
+    "squat": {
+      "name": "THE SQUATTER",
+      "color": "#8a9aff",
+      "voice": null
+    },
+    "bathrobe": {
+      "name": "CONFUSED CUSTOMER",
+      "color": "#cdeeff",
+      "voice": null
+    },
+    "corn": {
+      "name": "STEWARD CORNELIUS",
+      "color": "#ffd23e",
+      "voice": null
+    },
+    "clerk": {
+      "name": "GILDA — KIOSK #7",
+      "color": "#ff9ad0",
+      "voice": null
+    },
+    "dent": {
+      "name": "DENT — TEST UNIT #001",
+      "color": "#ffd23e",
+      "voice": null
+    },
+    "gasket": {
+      "name": "MAMA GASKET",
+      "color": "#ffb36b",
+      "voice": null
+    },
+    "bellhop": {
+      "name": "BELLHOP-9",
+      "color": "#ff8ac2",
+      "voice": null
+    }
+  },
+  "voice_profiles": {
+    "bolt": {
+      "pitch": 1,
+      "rate": 1,
+      "kw": [
+        "david",
+        "male",
+        "natural",
+        "en-us"
+      ]
+    },
+    "sprocket": {
+      "pitch": 1.6,
+      "rate": 1.15,
+      "kw": [
+        "zira",
+        "female",
+        "google us",
+        "samantha"
+      ]
+    },
+    "blartz": {
+      "pitch": 0.82,
+      "rate": 1.32,
+      "kw": [
+        "mark",
+        "male",
+        "daniel"
+      ]
+    },
+    "grindstone": {
+      "pitch": 0.6,
+      "rate": 0.85,
+      "kw": [
+        "david",
+        "male",
+        "george",
+        "daniel"
+      ]
+    },
+    "cc": {
+      "pitch": 1.25,
+      "rate": 1.12,
+      "kw": [
+        "female",
+        "zira",
+        "samantha"
+      ]
+    },
+    "glambot": {
+      "pitch": 1.2,
+      "rate": 1.1,
+      "kw": [
+        "female",
+        "zira",
+        "samantha"
+      ]
+    },
+    "pa": {
+      "pitch": 1,
+      "rate": 1,
+      "kw": [
+        "male",
+        "david"
+      ],
+      "radio": true
+    },
+    "darkmatter": {
+      "pitch": 0.7,
+      "rate": 0.9,
+      "kw": [
+        "male",
+        "david"
+      ],
+      "radio": true
+    },
+    "retention": {
+      "pitch": 1.15,
+      "rate": 1.18,
+      "kw": [
+        "male",
+        "mark",
+        "david"
+      ]
+    },
+    "npc0": {
+      "pitch": 1.1,
+      "rate": 1,
+      "kw": [
+        "male"
+      ]
+    },
+    "npc1": {
+      "pitch": 0.95,
+      "rate": 1.05,
+      "kw": [
+        "female"
+      ]
+    },
+    "npc2": {
+      "pitch": 1.35,
+      "rate": 1.08,
+      "kw": [
+        "female",
+        "zira"
+      ]
+    },
+    "npc3": {
+      "pitch": 0.85,
+      "rate": 0.95,
+      "kw": [
+        "male",
+        "mark"
+      ]
+    }
+  },
+  "npc_voice": {
+    "rusty": "npc3",
+    "concierge": "npc2",
+    "intern": "npc1",
+    "squat": "npc3",
+    "bathrobe": "npc0",
+    "corn": "npc1",
+    "dent": "npc3"
+  }
+}

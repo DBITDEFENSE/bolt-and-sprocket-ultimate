@@ -1,0 +1,68 @@
+[
+  {
+    "id": "default",
+    "name": "Factory Blue",
+    "suit": 3830473,
+    "suit2": 2576017,
+    "fur": 15245628,
+    "price": 0
+  },
+  {
+    "id": "ember",
+    "name": "Ember Ops",
+    "suit": 13191210,
+    "suit2": 9054232,
+    "fur": 15245628,
+    "price": 120
+  },
+  {
+    "id": "mint",
+    "name": "Mint Condition",
+    "suit": 4173450,
+    "suit2": 1997402,
+    "fur": 15784104,
+    "price": 120
+  },
+  {
+    "id": "royal",
+    "name": "Royal Grape",
+    "suit": 8015320,
+    "suit2": 4860570,
+    "fur": 14202954,
+    "price": 150
+  },
+  {
+    "id": "stealth",
+    "name": "Stealth Unit",
+    "suit": 2896450,
+    "suit2": 1711660,
+    "fur": 9147816,
+    "price": 150
+  },
+  {
+    "id": "sunset",
+    "name": "Rustvane Sunset",
+    "suit": 16743096,
+    "suit2": 12728954,
+    "fur": 16767408,
+    "price": 180
+  },
+  {
+    "id": "chrome",
+    "name": "NG+ Chrome",
+    "suit": 14212841,
+    "suit2": 10466248,
+    "fur": 15265012,
+    "price": 300,
+    "ng": true
+  },
+  {
+    "id": "hazard",
+    "name": "Crash-Test Yellow",
+    "suit": 16765502,
+    "suit2": 1844019,
+    "fur": 15245628,
+    "price": 0,
+    "lr": true
+  }
+]

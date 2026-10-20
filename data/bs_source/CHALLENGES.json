@@ -1,0 +1,50 @@
+[
+  {
+    "id": "waves",
+    "name": "Wave Survival",
+    "desc": "5 waves. Mixed rosters. Zero refunds.",
+    "reward": 200
+  },
+  {
+    "id": "mallet",
+    "name": "Mallet Only",
+    "desc": "Guns disabled. Percussion approved.",
+    "reward": 220
+  },
+  {
+    "id": "onehit",
+    "name": "One-Hit KO",
+    "desc": "Everyone dies in one hit. EVERYONE.",
+    "reward": 250
+  },
+  {
+    "id": "timed",
+    "name": "Timed Gauntlet",
+    "desc": "Clear 12 contestants in 60 seconds.",
+    "reward": 250
+  },
+  {
+    "id": "sponsor",
+    "name": "Sponsored Round",
+    "desc": "Today's sponsor modifies the rules.",
+    "reward": 300
+  },
+  {
+    "id": "bossrush",
+    "name": "Boss Rush",
+    "desc": "The Sentinel, the Algorithm, the Compost King. Back to back.",
+    "reward": 450
+  },
+  {
+    "id": "blizzard",
+    "name": "Whiteout Brawl",
+    "desc": "5 waves on live ice, in a blizzard. Good luck.",
+    "reward": 350
+  },
+  {
+    "id": "bounty",
+    "name": "Bounty Hunt",
+    "desc": "4 waves. Drop the GOLDEN target fast for the crowd.",
+    "reward": 320
+  }
+]

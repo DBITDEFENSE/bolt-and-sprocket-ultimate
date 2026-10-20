@@ -1,0 +1,188 @@
+{
+  "move": {
+    "walk": 7,
+    "sprint": 10.5,
+    "accel": 30,
+    "decel": 12,
+    "airAccel": 16,
+    "airDecel": 3,
+    "snapTurnSpeed": 4,
+    "sprintCarry": 0.6,
+    "sprintJumpBoost": 1.08
+  },
+  "jump": {
+    "vel": 10.2,
+    "doubleVel": 9.4,
+    "riseGrav": 22,
+    "cutGrav": 58,
+    "fallGrav": 38,
+    "maxFall": 34,
+    "coyote": 0.14,
+    "buffer": 0.16,
+    "apexGrav": 0.72
+  },
+  "hover": {
+    "thrust": 2.8,
+    "engageBelow": 2.5,
+    "drainTime": 1.5,
+    "regen": 0.9
+  },
+  "wall": {
+    "slideFall": 3.2,
+    "kickH": 9.5,
+    "kickV": 10.4,
+    "lockTime": 0.16,
+    "coyote": 0.1,
+    "minAir": 0.08
+  },
+  "dashJump": {
+    "hMul": 0.82,
+    "v": 9.6
+  },
+  "slamBounce": {
+    "window": 0.16,
+    "v": 14.5,
+    "superV": 17.5
+  },
+  "cam": {
+    "leadMax": 0.5,
+    "followRate": 11,
+    "sprintFov": 5,
+    "padCurve": 1.6,
+    "inputSmooth": 22,
+    "autoYawRate": 1.35,
+    "autoIdle": 0.75,
+    "autoPitch": 0.18
+  },
+  "AIM_ASSIST": {
+    "coneNarrow": 0.966,
+    "coneMed": 0.906,
+    "rangeNarrow": 30,
+    "rangeMed": 22,
+    "falloffStart": 14,
+    "falloffFloor": 0.35,
+    "bendMax": 6,
+    "frictionFloor": 0.45,
+    "rotAssist": 30,
+    "stickyBonus": 0.18,
+    "comboBonus": 0.3,
+    "meleeLunge": 9,
+    "slamNudge": 3.2,
+    "losStep": 0.8
+  },
+  "dash": {
+    "speed": 21,
+    "time": 0.18,
+    "cooldown": 0.8,
+    "iframes": 0.2,
+    "fovKick": 9
+  },
+  "slam": {
+    "fallSpeed": 36,
+    "flipTime": 0.12,
+    "radius": 4.2,
+    "dmg": 30,
+    "superHang": 0.42,
+    "superFall": 58,
+    "superRadius": 6.8,
+    "superDmg": 62,
+    "knockUp": 10,
+    "holdConvert": 0.35
+  },
+  "slide": {
+    "speed": 14.5,
+    "time": 0.5,
+    "cooldown": 0.65,
+    "hy": 0.55,
+    "steer": 2.5,
+    "longJumpH": 13.5,
+    "longJumpV": 8.6
+  },
+  "melee": {
+    "ground": [
+      {
+        "dmg": 24,
+        "range": 2.8,
+        "dur": 0.34,
+        "window": 0.62,
+        "knock": 6,
+        "sparks": true,
+        "hitstop": 0.033,
+        "thud": 92
+      },
+      {
+        "dmg": 28,
+        "range": 2.8,
+        "dur": 0.36,
+        "window": 0.62,
+        "knock": 8,
+        "hitstop": 0.05,
+        "thud": 76
+      },
+      {
+        "dmg": 55,
+        "range": 3.2,
+        "dur": 0.55,
+        "window": 0,
+        "knock": 16,
+        "hitstop": 0.083,
+        "hitK": 0.62,
+        "finisher": true,
+        "thud": 58
+      }
+    ],
+    "queueWindow": 0.25,
+    "magnetCone": 0.7,
+    "magnetRange": 4.2,
+    "air": [
+      {
+        "dmg": 26,
+        "range": 3,
+        "dur": 0.34,
+        "window": 0.65,
+        "knock": 5
+      },
+      {
+        "dmg": 36,
+        "range": 3,
+        "dur": 0.36,
+        "window": 0,
+        "knock": 11,
+        "hitstop": 0.055
+      }
+    ],
+    "launcher": {
+      "dmg": 22,
+      "range": 2.5,
+      "dur": 0.34,
+      "window": 0,
+      "knock": 2,
+      "launch": 11,
+      "popJump": 7.5,
+      "ding": true
+    },
+    "dashStab": {
+      "dmg": 38,
+      "range": 3.4,
+      "dur": 0.26,
+      "window": 0,
+      "knock": 12,
+      "hitstop": 0.05,
+      "arc": 0.35
+    },
+    "punch": {
+      "dmg": 8,
+      "range": 1.8,
+      "dur": 0.2,
+      "window": 0.4,
+      "knock": 3
+    },
+    "throw": {
+      "dmg": 18,
+      "speed": 24,
+      "outTime": 0.55,
+      "cooldown": 1.2
+    },
+    "hitstopSmall": 0.045
+  }
+}

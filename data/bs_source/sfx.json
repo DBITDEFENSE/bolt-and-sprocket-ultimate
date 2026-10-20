@@ -1,0 +1,154 @@
+{
+  "shoot": {
+    "__fn__": "shoot",
+    "__src__": "() => beep(880, 220, 0.09, 'square', 0.08)"
+  },
+  "ripper": {
+    "__fn__": "ripper",
+    "__src__": "() => { beep(160, 60, 0.35, 'sawtooth', 0.16); noiseBurst(0.15, 0.08, 900); }"
+  },
+  "charge": {
+    "__fn__": "charge",
+    "__src__": "t => beep(200 + t * 500, 220 + t * 520, 0.06, 'sine', 0.05)"
+  },
+  "zap": {
+    "__fn__": "zap",
+    "__src__": "() => { beep(1600, 90, 0.16, 'sawtooth', 0.12); beep(2200, 200, 0.1, 'square', 0.06, 0.02); }"
+  },
+  "boom": {
+    "__fn__": "boom",
+    "__src__": "() => { [220, 277, 330, 440].forEach((f, i) => beep(f, f * 1.02, 0.16, 'square', 0.1, i * 0.09)); noiseBurst(0.5, 0.3, 800); }"
+  },
+  "dart": {
+    "__fn__": "dart",
+    "__src__": "() => { beep(300, 700, 0.5, 'sawtooth', 0.09); noiseBurst(0.3, 0.06, 2000); }"
+  },
+  "fizzle": {
+    "__fn__": "fizzle",
+    "__src__": "() => beep(300, 120, 0.12, 'triangle', 0.06)"
+  },
+  "wrench": {
+    "__fn__": "wrench",
+    "__src__": "() => beep(140, 420, 0.08, 'triangle', 0.12)"
+  },
+  "mallet": {
+    "__fn__": "mallet",
+    "__src__": "() => { noiseBurst(0.2, 0.09, 650); beep(120, 55, 0.24, 'sawtooth', 0.1); }"
+  },
+  "thunk": {
+    "__fn__": "thunk",
+    "__src__": "() => { noiseBurst(0.16, 0.26, 480); beep(85, 36, 0.22, 'sawtooth', 0.18); }"
+  },
+  "ding": {
+    "__fn__": "ding",
+    "__src__": "() => { beep(1568, 1560, 0.5, 'sine', 0.12); beep(3136, 3120, 0.3, 'sine', 0.05, 0.02); }"
+  },
+  "clank": {
+    "__fn__": "clank",
+    "__src__": "() => { beep(520, 180, 0.06, 'square', 0.1); noiseBurst(0.05, 0.1, 3000); }"
+  },
+  "hit": {
+    "__fn__": "hit",
+    "__src__": "() => beep(400, 150, 0.07, 'square', 0.09)"
+  },
+  "explode": {
+    "__fn__": "explode",
+    "__src__": "() => { noiseBurst(0.5, 0.35, 700); beep(120, 30, 0.4, 'sawtooth', 0.18); }"
+  },
+  "hurt": {
+    "__fn__": "hurt",
+    "__src__": "() => { beep(220, 80, 0.22, 'sawtooth', 0.16); }"
+  },
+  "jump": {
+    "__fn__": "jump",
+    "__src__": "() => beep(300, 560, 0.12, 'sine', 0.09)"
+  },
+  "djump": {
+    "__fn__": "djump",
+    "__src__": "() => beep(420, 760, 0.12, 'sine', 0.09)"
+  },
+  "hover": {
+    "__fn__": "hover",
+    "__src__": "() => beep(180, 200, 0.08, 'triangle', 0.03)"
+  },
+  "bolt": {
+    "__fn__": "bolt",
+    "__src__": "() => { beep(1200, 1800, 0.07, 'sine', 0.09); beep(1800, 2400, 0.08, 'sine', 0.07, 0.05); }"
+  },
+  "nano": {
+    "__fn__": "nano",
+    "__src__": "() => { beep(500, 900, 0.15, 'sine', 0.12); beep(750, 1350, 0.2, 'sine', 0.1, 0.1); }"
+  },
+  "gold": {
+    "__fn__": "gold",
+    "__src__": "() => { [523, 659, 784, 1047].forEach((f, i) => beep(f, f, 0.18, 'sine', 0.12, i * 0.1)); }"
+  },
+  "grind": {
+    "__fn__": "grind",
+    "__src__": "() => noiseBurst(0.08, 0.05, 2500)"
+  },
+  "roll": {
+    "__fn__": "roll",
+    "__src__": "() => noiseBurst(0.15, 0.08, 1400)"
+  },
+  "dash": {
+    "__fn__": "dash",
+    "__src__": "() => { noiseBurst(0.16, 0.14, 3200); beep(760, 240, 0.14, 'sine', 0.08); }"
+  },
+  "slamGo": {
+    "__fn__": "slamGo",
+    "__src__": "() => beep(520, 180, 0.18, 'triangle', 0.1)"
+  },
+  "slam": {
+    "__fn__": "slam",
+    "__src__": "() => { noiseBurst(0.4, 0.32, 600); beep(100, 34, 0.32, 'sawtooth', 0.18); }"
+  },
+  "slide": {
+    "__fn__": "slide",
+    "__src__": "() => { noiseBurst(0.25, 0.1, 1600); beep(420, 200, 0.18, 'triangle', 0.06); }"
+  },
+  "click": {
+    "__fn__": "click",
+    "__src__": "() => beep(700, 500, 0.06, 'square', 0.08)"
+  },
+  "focus": {
+    "__fn__": "focus",
+    "__src__": "() => beep(500, 620, 0.04, 'sine', 0.05)"
+  },
+  "deny": {
+    "__fn__": "deny",
+    "__src__": "() => { beep(200, 140, 0.15, 'square', 0.1); beep(150, 100, 0.2, 'square', 0.1, 0.12); }"
+  },
+  "buy": {
+    "__fn__": "buy",
+    "__src__": "() => { [660, 880, 1100].forEach((f, i) => beep(f, f, 0.12, 'square', 0.1, i * 0.08)); }"
+  },
+  "talk": {
+    "__fn__": "talk",
+    "__src__": "() => beep(rand(500, 700), rand(400, 600), 0.03, 'triangle', 0.03)"
+  },
+  "boss": {
+    "__fn__": "boss",
+    "__src__": "() => { beep(80, 60, 0.7, 'sawtooth', 0.2); beep(120, 90, 0.7, 'square', 0.12, 0.1); }"
+  },
+  "win": {
+    "__fn__": "win",
+    "__src__": "() => { [523, 659, 784, 1047, 1319].forEach((f, i) => beep(f, f, 0.25, 'square', 0.1, i * 0.13)); }"
+  },
+  "respawn": {
+    "__fn__": "respawn",
+    "__src__": "() => beep(200, 600, 0.3, 'sine', 0.1)"
+  },
+  "door": {
+    "__fn__": "door",
+    "__src__": "() => beep(90, 220, 0.5, 'sawtooth', 0.12)"
+  },
+  "launch": {
+    "__fn__": "launch",
+    "__src__": "() => { beep(60, 300, 1.6, 'sawtooth', 0.15); noiseBurst(1.4, 0.2, 500); }"
+  },
+  "warp": {
+    "__fn__": "warp",
+    "__src__": "() => { beep(200, 1600, 0.9, 'sine', 0.12); beep(150, 1200, 0.9, 'sawtooth', 0.06, 0.05); }"
+  }
+}

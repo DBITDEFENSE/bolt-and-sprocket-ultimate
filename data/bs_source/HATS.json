@@ -1,0 +1,28 @@
+[
+  {
+    "id": "none",
+    "name": "Sprocket: No Hat",
+    "price": 0
+  },
+  {
+    "id": "top",
+    "name": "Sprocket: Top Hat",
+    "price": 100
+  },
+  {
+    "id": "prop",
+    "name": "Sprocket: Propeller Beanie",
+    "price": 120
+  },
+  {
+    "id": "crown",
+    "name": "Sprocket: Tiny Crown",
+    "price": 200
+  },
+  {
+    "id": "helmet",
+    "name": "Sprocket: Crash Helmet",
+    "price": 0,
+    "lr": true
+  }
+]

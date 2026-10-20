@@ -1,0 +1,225 @@
+[
+  {
+    "head": "CONTROLS"
+  },
+  {
+    "key": "mouseSens",
+    "label": "Mouse Sensitivity",
+    "type": "range",
+    "min": 0.3,
+    "max": 2.5,
+    "step": 0.05,
+    "fmt": {
+      "__fn__": "fmt",
+      "__src__": "v => v.toFixed(2)"
+    }
+  },
+  {
+    "key": "padSens",
+    "label": "Controller Sensitivity",
+    "type": "range",
+    "min": 0.3,
+    "max": 2.5,
+    "step": 0.05,
+    "fmt": {
+      "__fn__": "fmt",
+      "__src__": "v => v.toFixed(2)"
+    }
+  },
+  {
+    "key": "invertY",
+    "label": "Invert Y Axis",
+    "type": "toggle"
+  },
+  {
+    "key": "invertX",
+    "label": "Invert X Axis",
+    "type": "toggle"
+  },
+  {
+    "key": "camAuto",
+    "label": "Lazy Auto-Camera (follows your run)",
+    "type": "toggle"
+  },
+  {
+    "key": "camLookAhead",
+    "label": "Camera Look-Ahead",
+    "type": "toggle"
+  },
+  {
+    "key": "aimAssist",
+    "label": "Aim Assist",
+    "type": "toggle"
+  },
+  {
+    "key": "stickPad",
+    "label": "Assist Stickiness (Pad)",
+    "type": "range",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "fmt": {
+      "__fn__": "fmt",
+      "__src__": "v => Math.round(v * 100) + '%'"
+    }
+  },
+  {
+    "key": "stickMouse",
+    "label": "Assist Stickiness (Mouse)",
+    "type": "range",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "fmt": {
+      "__fn__": "fmt",
+      "__src__": "v => Math.round(v * 100) + '%'"
+    }
+  },
+  {
+    "key": "meleeAssist",
+    "label": "Melee Assist",
+    "type": "toggle"
+  },
+  {
+    "key": "rumble",
+    "label": "Controller Rumble",
+    "type": "toggle"
+  },
+  {
+    "key": "deadzone",
+    "label": "Stick Deadzone",
+    "type": "range",
+    "min": 0.05,
+    "max": 0.35,
+    "step": 0.01,
+    "fmt": {
+      "__fn__": "fmt",
+      "__src__": "v => v.toFixed(2)"
+    }
+  },
+  {
+    "head": "GRAPHICS"
+  },
+  {
+    "key": "quality",
+    "label": "Quality Preset",
+    "type": "cycle",
+    "options": [
+      "low",
+      "medium",
+      "high",
+      "ultra"
+    ]
+  },
+  {
+    "key": "fov",
+    "label": "Field of View",
+    "type": "range",
+    "min": 60,
+    "max": 110,
+    "step": 1,
+    "fmt": {
+      "__fn__": "fmt",
+      "__src__": "v => Math.round(v) + '°'"
+    }
+  },
+  {
+    "key": "shakeMul",
+    "label": "Screen Shake",
+    "type": "range",
+    "min": 0,
+    "max": 1.5,
+    "step": 0.05,
+    "fmt": {
+      "__fn__": "fmt",
+      "__src__": "v => Math.round(v * 100) + '%'"
+    }
+  },
+  {
+    "key": "fps",
+    "label": "FPS Counter",
+    "type": "toggle"
+  },
+  {
+    "key": "showColliders",
+    "label": "Debug: Collider Wireframes",
+    "type": "toggle"
+  },
+  {
+    "key": "showAssist",
+    "label": "Debug: Aim Assist View",
+    "type": "toggle"
+  },
+  {
+    "label": "Fullscreen",
+    "type": "action",
+    "fn": {
+      "__fn__": "fn",
+      "__src__": "() => toggleFullscreen()"
+    }
+  },
+  {
+    "head": "AUDIO"
+  },
+  {
+    "key": "master",
+    "label": "Master Volume",
+    "type": "range",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "fmt": {
+      "__fn__": "fmt",
+      "__src__": "v => Math.round(v * 100) + '%'"
+    }
+  },
+  {
+    "key": "sfxV",
+    "label": "SFX Volume",
+    "type": "range",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "fmt": {
+      "__fn__": "fmt",
+      "__src__": "v => Math.round(v * 100) + '%'"
+    }
+  },
+  {
+    "key": "musicV",
+    "label": "Music Volume",
+    "type": "range",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "fmt": {
+      "__fn__": "fmt",
+      "__src__": "v => Math.round(v * 100) + '%'"
+    }
+  },
+  {
+    "key": "voiceOn",
+    "label": "Voice Acting",
+    "type": "toggle"
+  },
+  {
+    "key": "voiceVol",
+    "label": "Voice Volume",
+    "type": "range",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "fmt": {
+      "__fn__": "fmt",
+      "__src__": "v => Math.round(v * 100) + '%'"
+    }
+  },
+  {
+    "label": "Voice Test (cast)",
+    "type": "action",
+    "fn": {
+      "__fn__": "fn",
+      "__src__": "() => voiceTest()"
+    }
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "k": "d",
+    "label": "Damage",
+    "prices": [
+      60,
+      110,
+      170
+    ],
+    "flavor": "Makes the hurty end hurtier. Science!"
+  },
+  {
+    "k": "r",
+    "label": "Fire Rate",
+    "prices": [
+      50,
+      90,
+      140
+    ],
+    "flavor": "Shoots faster than Blartz dodges taxes."
+  },
+  {
+    "k": "a",
+    "label": "Ammo Cap",
+    "prices": [
+      40,
+      70,
+      110
+    ],
+    "flavor": "Now holds more boom per bag. Pockets sold separately."
+  }
+]

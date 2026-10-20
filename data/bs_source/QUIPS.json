@@ -1,0 +1,29 @@
+{
+  "bail": [
+    "Gravity called. I let it go to voicemail. It left a message.",
+    "Logged as 'unscheduled floor research'.",
+    "The deck is fine. I checked the deck first."
+  ],
+  "fall": [
+    "Respawn's on me. Itemized bill to follow.",
+    "For the black box: that was not the racing line.",
+    "The slag is 1,400 degrees. I'd describe it as 'not a shortcut'."
+  ],
+  "bank": [
+    "That was… adequate. I'm lying. That was GREAT.",
+    "Overclock charged. Please don't tell me what you're about to do.",
+    "Dent is pretending he didn't see that. Dent saw that."
+  ],
+  "loop": [
+    "We are upside down. Just narrating. For the record."
+  ],
+  "final": [
+    "Final lap. Statistically this is where you do something heroic or stupid. Often both."
+  ],
+  "lead": [
+    "First place. Don't look back. Dent hates that. Do it."
+  ],
+  "start": [
+    "Tricks charge my overclock. Land them clean and I light the jets."
+  ]
+}

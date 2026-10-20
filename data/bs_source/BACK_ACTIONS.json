@@ -1,0 +1,62 @@
+{
+  "pause": {
+    "__fn__": "pause",
+    "__src__": "() => setPause(false)"
+  },
+  "zonga": {
+    "__fn__": "zonga",
+    "__src__": "() => openStarmap('menu')"
+  },
+  "zongaEnd": {
+    "__fn__": "zongaEnd",
+    "__src__": "() => { if (ZE_MODE === 'race') openRace(); else if (ZE_MODE === 'loopriot') LR.open(); else if (ZE_MODE === 'arena') openArena(); else openZongaLobby(); }"
+  },
+  "loopriot": {
+    "__fn__": "loopriot",
+    "__src__": "() => LR.back()"
+  },
+  "arena": {
+    "__fn__": "arena",
+    "__src__": "() => showMenu()"
+  },
+  "race": {
+    "__fn__": "race",
+    "__src__": "() => showMenu()"
+  },
+  "questLog": {
+    "__fn__": "questLog",
+    "__src__": "() => { G.state = 'paused'; setScreen('pause'); }"
+  },
+  "memoLog": {
+    "__fn__": "memoLog",
+    "__src__": "() => { if (MEMO_FROM === 'extras') { G.state = 'extras'; setScreen('extras'); } else { G.state = 'paused'; setScreen('pause'); } }"
+  },
+  "extras": {
+    "__fn__": "extras",
+    "__src__": "() => showMenu()"
+  },
+  "gallery": {
+    "__fn__": "gallery",
+    "__src__": "() => { G.state = 'extras'; setScreen('extras'); }"
+  },
+  "credits": {
+    "__fn__": "credits",
+    "__src__": "() => { G.state = 'extras'; setScreen('extras'); }"
+  },
+  "settings": {
+    "__fn__": "settings",
+    "__src__": "() => closeSettings()"
+  },
+  "starmap": {
+    "__fn__": "starmap",
+    "__src__": "() => { if (SM.from === 'level') returnToPlay(); else showMenu(); }"
+  },
+  "shop": {
+    "__fn__": "shop",
+    "__src__": "() => closeShop()"
+  },
+  "controlsOverlay": {
+    "__fn__": "controlsOverlay",
+    "__src__": "() => closeControls()"
+  }
+}

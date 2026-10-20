@@ -1,0 +1,53 @@
+[
+  {
+    "name": "BOLT",
+    "kind": "bolt",
+    "deck": 16765502,
+    "glow": 4122367
+  },
+  {
+    "name": "DENT",
+    "kind": "dummy",
+    "body": 16765502,
+    "pants": 1844019,
+    "deck": 2304056,
+    "glow": 16765502,
+    "bio": "Test Unit #001. 4,000 certified impacts, zero complaints. Complaints was impact #212."
+  },
+  {
+    "name": "MODEL-M",
+    "kind": "mannequin",
+    "body": 15921386,
+    "pants": 14209736,
+    "deck": 16731549,
+    "glow": 16731549,
+    "bio": "Display unit. Walked away from its own recall. Only moves when you blink."
+  },
+  {
+    "name": "SCUFF",
+    "kind": "mutt",
+    "body": 10246702,
+    "pants": 5252122,
+    "deck": 3844256,
+    "glow": 4122312,
+    "bio": "Scrap Mutt. Ate a mag-deck once. The deck won. They are friends now."
+  },
+  {
+    "name": "TOASTY",
+    "kind": "toaster",
+    "body": 13621476,
+    "pants": 3752015,
+    "deck": 16738862,
+    "glow": 16738862,
+    "bio": "ToastBuddy™. Recalled for having opinions. The opinions were correct."
+  },
+  {
+    "name": "INTERN #4401",
+    "kind": "intern",
+    "body": 10470624,
+    "pants": 3752015,
+    "deck": 10470624,
+    "glow": 10470624,
+    "bio": "Sent to shut the league down. Unpaid. Currently fourth in the standings."
+  }
+]

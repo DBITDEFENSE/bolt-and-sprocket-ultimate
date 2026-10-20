@@ -1,0 +1,50 @@
+{
+  "nova": {
+    "w": 240,
+    "d": 200,
+    "cz": -50,
+    "seed": 61,
+    "segX": 160,
+    "segZ": 140,
+    "shape": {
+      "__fn__": "shape",
+      "__src__": "(x, z, n) { let h = (n - 0.5) * 1.2; h = flatB(h, x, z, 0, 8, 16, 12, 8, 0.1); // arrival plaza h = flatB(h, x, z, 0, -30, 15, 13, 8, 4.5); // mid district (rai"
+    },
+    "color": {
+      "__fn__": "color",
+      "__src__": "(h, ny, x, z, col, n) { col.setHex(0x1a2240); // dark plaza stone col.lerp(_tc2.setHex(0x2a3a6a), sstep(3, 8, h) * 0.7); col.lerp(_tc2.setHex(0x0e1428), clamp(("
+    }
+  },
+  "glacius": {
+    "w": 240,
+    "d": 200,
+    "cz": -50,
+    "seed": 71,
+    "segX": 176,
+    "segZ": 150,
+    "shape": {
+      "__fn__": "shape",
+      "__src__": "(x, z, n) { let h = (n - 0.5) * 4 + 1; const crev = 1 - sstep(2.5, 6, Math.abs(x - 6 + Math.sin(z * 0.08) * 5)); h -= crev * sstep(-15, -35, z) * (1 - sstep(-70"
+    },
+    "color": {
+      "__fn__": "color",
+      "__src__": "(h, ny, x, z, col, n) { col.setHex(0xdcefff); // snow col.lerp(_tc2.setHex(0x8fc4e8), clamp((0.9 - ny) * 3, 0, 0.7)); // blue ice on slopes col.lerp(_tc2.setHex"
+    }
+  },
+  "verdant": {
+    "w": 240,
+    "d": 200,
+    "cz": -50,
+    "seed": 83,
+    "segX": 160,
+    "segZ": 140,
+    "shape": {
+      "__fn__": "shape",
+      "__src__": "(x, z, n) { let h = (n - 0.5) * 1.4; h = flatB(h, x, z, 0, 8, 16, 12, 8, 0.2); // swamp landing h = flatB(h, x, z, 0, -30, 30, 16, 6, -0.6); // swamp flats (nea"
+    },
+    "color": {
+      "__fn__": "color",
+      "__src__": "(h, ny, x, z, col, n) { col.setHex(0x143a34); // dark teal muck col.lerp(_tc2.setHex(0x1f5a4a), sstep(1, 4, h) * 0.7); col.lerp(_tc2.setHex(0x0a201e), sstep(-0."
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "lowhp": [
+    "Your health bar looks like my battery: critically ignored.",
+    "Medical advice: stop getting hit. That'll be 40 bolts.",
+    "I can deliver a eulogy or a pep talk. Currently drafting both."
+  ],
+  "bolts": [
+    "Ooh, shiny! Capitalism!",
+    "At this rate you can afford HALF a weapon!",
+    "Cha-ching! Blartz is going to love you. Financially. Only financially."
+  ],
+  "idle": [
+    "Should I file a missing-person report on your motivation?",
+    "I've seen statues with more hustle. Nicer paint jobs, too.",
+    "Take your time. The galaxy is only being strip-mined as we speak.",
+    "I've calculated our odds. Then I stopped, for morale reasons.",
+    "If we die here, I want it noted that it was YOUR route."
+  ],
+  "combat": [
+    "Behind you! No, other behind. YOUR behind!",
+    "Hit it until the beeping stops. That's my whole strategy.",
+    "That one owed OmniScrap money. Now it owes YOU an apology.",
+    "Beautiful swing! Ugly result! Ten out of ten!",
+    "More of them?! Do they respawn out of SPITE?",
+    "I love this part. I hate this part. I contain multitudes.",
+    "Mallet diplomacy: surprisingly effective, legally complicated."
+  ]
+}

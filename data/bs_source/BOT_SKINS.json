@@ -1,0 +1,22 @@
+{
+  "dummy": {
+    "__fn__": "dummy",
+    "__src__": "(m, c) { // DENT — crash-test dummy: hazard yellow, target decals, one honest dent const y = heroMat(c.body), k = mat(0x14161c); m.up.add(mesh('cyl', k, 0, 0.05"
+  },
+  "mannequin": {
+    "__fn__": "mannequin",
+    "__src__": "(m, c) { // MODEL-M — retail display unit: seamless, faceless, still wearing the sale tag const w = heroMat(c.body), seam = mat(0xb8b2a8); m.up.add(mesh('sphere"
+  },
+  "toaster": {
+    "__fn__": "toaster",
+    "__src__": "(m, c) { // TOASTY — ToastBuddy™: chrome box, two slots, one opinionated dial const ch = heroMat(c.body), dk = mat(0x1c2333); m.up.add(mesh('box', ch, 0, 0.44, "
+  },
+  "intern": {
+    "__fn__": "intern",
+    "__src__": "(m, c) { // INTERN #4401 — supervisory capacity, visitor badge, load-bearing coffee const b = heroMat(c.body); m.up.add(mesh('cyl', b, 0, 0.36, 0, 0.21, 0.64, 0"
+  },
+  "mutt": {
+    "__fn__": "mutt",
+    "__src__": "(m) { // SCUFF — an actual Scrap Mutt, all four paws on the deck const d = makeScrapMutt(); d.group.scale.setScalar(1.22); d.head.add(mesh('sphere', heroMat(0x3"
+  }
+}

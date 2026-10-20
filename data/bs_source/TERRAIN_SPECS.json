@@ -1,0 +1,66 @@
+{
+  "p1": {
+    "w": 200,
+    "d": 220,
+    "cz": -60,
+    "seed": 11,
+    "segX": 147,
+    "segZ": 150,
+    "shape": {
+      "__fn__": "shape",
+      "__src__": "(x, z, n) { let h = (n - 0.5) * 3.4; // rolling scrap dunes h += sstep(-95, -128, z) * 2; // ground climbs toward the exit yard h += sstep(-20, -70, Math.abs(x)"
+    },
+    "color": {
+      "__fn__": "color",
+      "__src__": "(h, ny, x, z, col, n) { col.setHex(0x96603a); // rust flats col.lerp(_tc2.setHex(0x6e452c), clamp((0.86 - ny) * 3, 0, 0.8)); // oxidized slopes col.lerp(_tc2.se"
+    }
+  },
+  "p2": {
+    "w": 190,
+    "d": 220,
+    "cz": -45,
+    "seed": 23,
+    "segX": 158,
+    "segZ": 160,
+    "shape": {
+      "__fn__": "shape",
+      "__src__": "(x, z, n) { let h = (n - 0.5) * 1.8; // sandy undulation const river = (1 - sstep(3.5, 8.5, Math.abs(x + 10.5 + Math.sin(z * 0.06) * 2))) * sstep(-20, -12, z) *"
+    },
+    "color": {
+      "__fn__": "color",
+      "__src__": "(h, ny, x, z, col, n) { if (ny < 0.8) strata(col, h, 0.9, 0x9e4a32, 0x74301f); // banded rock on steep faces else col.setHex(0xc9976a); // sand flats col.lerp(_"
+    }
+  },
+  "p3": {
+    "w": 230,
+    "d": 160,
+    "cz": -50,
+    "seed": 37,
+    "segX": 160,
+    "segZ": 110,
+    "shape": {
+      "__fn__": "shape",
+      "__src__": "(x, z, n) { let h = -9 + (n - 0.5) * 2.5; // slag seabed under the lava h = flatB(h, x, z, 0, -58, 15, 15, 9, 4 + (n - 0.5) * 0.5); // wave-arena plateau h = fl"
+    },
+    "color": {
+      "__fn__": "color",
+      "__src__": "(h, ny, x, z, col, n) { col.setHex(0x2c2426); // basalt col.lerp(_tc2.setHex(0x7a2c0e), sstep(-2, -5.5, h) * 0.85); // ember glow toward the lava line col.lerp("
+    }
+  },
+  "zonga": {
+    "w": 330,
+    "d": 330,
+    "seed": 51,
+    "segX": 150,
+    "segZ": 150,
+    "detail": 0.03,
+    "shape": {
+      "__fn__": "shape",
+      "__src__": "(x, z, n) { const r = Math.hypot(x, z); let h = r > 128 ? lerp(-1.4, -7, sstep(128, 160, r)) // sea floor : lerp(0.6, -1.4, sstep(104, 128, r)); // beach: dry s"
+    },
+    "color": {
+      "__fn__": "color",
+      "__src__": "(h, ny, x, z, col, n) { col.setHex(0xe8d8a0); // sand col.lerp(_tc2.setHex(0x3f9a4a), sstep(0.9, 2.2, h) * 0.9); // jungle green col.lerp(_tc2.setHex(0x6e5a48),"
+    }
+  }
+}

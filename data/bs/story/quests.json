@@ -1,0 +1,1162 @@
+[
+  {
+    "id": "q1a",
+    "planet": 0,
+    "name": "Mutt Census",
+    "kind": "kill",
+    "type": "scrapmutt",
+    "n": 4,
+    "reward": 80,
+    "giver": "rusty",
+    "npcName": "Rusty",
+    "npcPos": [
+      -13,
+      0,
+      6
+    ],
+    "npcColor": 11560238,
+    "intro": [
+      {
+        "id": "q.q1a.intro.01",
+        "who": "rusty",
+        "text": "New neighbor! Quick favor: the Scrap Mutts ate my mailbox, my spare legs, and my optimism. Thin the pack — four should send a message."
+      },
+      {
+        "id": "q.q1a.intro.02",
+        "who": "sprocket",
+        "text": "The message being 'stop eating Rusty'?"
+      },
+      {
+        "id": "q.q1a.intro.03",
+        "who": "rusty",
+        "text": "The message being ANYTHING. I'm not picky. 80 bolts in it for you."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q1a.prog.01",
+        "who": "rusty",
+        "text": "Still hearing chewing at night. Keep swinging, kid."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q1a.done.01",
+        "who": "rusty",
+        "text": "The chewing has STOPPED. First silence in six years. Here — 80 bolts, and take my respect too, it's free."
+      },
+      {
+        "id": "q.q1a.done.02",
+        "who": "bolt",
+        "text": "Junkyard pest control. Dad would be proud. Probably."
+      }
+    ]
+  },
+  {
+    "id": "q1b",
+    "planet": 0,
+    "name": "Sandwich Recovery",
+    "kind": "collect",
+    "item": "sandwich",
+    "n": 3,
+    "reward": 100,
+    "giver": "rusty",
+    "npcName": "Rusty",
+    "npcPos": [
+      -13,
+      0,
+      6
+    ],
+    "npcColor": 11560238,
+    "spots": [
+      [
+        16,
+        1,
+        -30
+      ],
+      [
+        -8,
+        5.6,
+        -54
+      ],
+      [
+        3,
+        10.6,
+        -76
+      ]
+    ],
+    "intro": [
+      {
+        "id": "q.q1b.intro.01",
+        "who": "rusty",
+        "text": "Second thing. When the repo drones took your garage, the blast scattered my emergency sandwich stash. THREE sandwiches. Still vacuum-sealed. Still legally food."
+      },
+      {
+        "id": "q.q1b.intro.02",
+        "who": "bolt",
+        "text": "You want me to platform across a junkyard... for sandwiches."
+      },
+      {
+        "id": "q.q1b.intro.03",
+        "who": "rusty",
+        "text": "EMERGENCY sandwiches. 100 bolts. The mustard packet stays with me."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q1b.prog.01",
+        "who": "rusty",
+        "text": "I can smell that you haven't found them all. It's a gift. And a curse."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q1b.done.01",
+        "who": "rusty",
+        "text": "All three! Barely dented! You're a good kid. Here's 100 bolts and a life lesson: always know where your sandwich is."
+      },
+      {
+        "id": "q.q1b.done.02",
+        "who": "sprocket",
+        "text": "Bolt, your sandwich went up with the garage. I didn't want to say anything."
+      },
+      {
+        "id": "q.q1b.done.03",
+        "who": "bolt",
+        "text": "...We don't talk about my sandwich."
+      }
+    ]
+  },
+  {
+    "id": "q2a",
+    "planet": 1,
+    "name": "Delete My Reviews",
+    "kind": "kill",
+    "type": "selfie",
+    "n": 3,
+    "reward": 90,
+    "giver": "concierge",
+    "npcName": "Concierge-Tron",
+    "npcPos": [
+      5,
+      0,
+      24
+    ],
+    "npcColor": 16747202,
+    "intro": [
+      {
+        "id": "q.q2a.intro.01",
+        "who": "concierge",
+        "text": "Welcome to Rustvane, valued guest! Small issue: the Selfie Sentries have been photographing guests and auto-posting one-star reviews of their FACES."
+      },
+      {
+        "id": "q.q2a.intro.02",
+        "who": "sprocket",
+        "text": "That is the most evil thing I've heard today, and today included a lava pool."
+      },
+      {
+        "id": "q.q2a.intro.03",
+        "who": "concierge",
+        "text": "Smash three of them and the resort comps you 90 bolts. Discreetly. We were never talking."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q2a.prog.01",
+        "who": "concierge",
+        "text": "The reviews continue. This morning one called my lobby 'mid'. MY LOBBY."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q2a.done.01",
+        "who": "concierge",
+        "text": "Review velocity down 97%! The resort thanks you with 90 bolts and this complimentary attitude of gratitude."
+      },
+      {
+        "id": "q.q2a.done.02",
+        "who": "bolt",
+        "text": "Does the attitude come in bolts too?"
+      }
+    ]
+  },
+  {
+    "id": "q2b",
+    "planet": 1,
+    "name": "Towel Service",
+    "kind": "collect",
+    "item": "towel",
+    "n": 3,
+    "reward": 100,
+    "giver": "concierge",
+    "npcName": "Concierge-Tron",
+    "npcPos": [
+      5,
+      0,
+      24
+    ],
+    "npcColor": 16747202,
+    "spots": [
+      [
+        -10.5,
+        1,
+        4
+      ],
+      [
+        13,
+        8.7,
+        -44
+      ],
+      [
+        0,
+        22.6,
+        -78
+      ]
+    ],
+    "intro": [
+      {
+        "id": "q.q2b.intro.01",
+        "who": "concierge",
+        "text": "A guest 'borrowed' three resort towels and scattered them across the canyon while, quote, 'chasing the algorithm'. Retrieve them. The towels have feelings. Contractually."
+      },
+      {
+        "id": "q.q2b.intro.02",
+        "who": "bolt",
+        "text": "The towels have WHAT?"
+      },
+      {
+        "id": "q.q2b.intro.03",
+        "who": "concierge",
+        "text": "100 bolts. Please do not interview the towels."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q2b.prog.01",
+        "who": "concierge",
+        "text": "The towels remain at large. One was seen near the billboards, living its best life."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q2b.done.01",
+        "who": "concierge",
+        "text": "The towel family is reunited. There wasn't a dry eye in housekeeping. 100 bolts, as promised."
+      },
+      {
+        "id": "q.q2b.done.02",
+        "who": "sprocket",
+        "text": "I interviewed one of the towels. No comment, but it seemed happy."
+      }
+    ]
+  },
+  {
+    "id": "q3a",
+    "planet": 2,
+    "name": "Mandatory Fun Audit",
+    "kind": "kill",
+    "type": "hrdrone",
+    "n": 2,
+    "reward": 110,
+    "giver": "intern",
+    "npcName": "Intern #4401",
+    "npcPos": [
+      12,
+      30,
+      22
+    ],
+    "npcColor": 10470624,
+    "intro": [
+      {
+        "id": "q.q3a.intro.01",
+        "who": "intern",
+        "text": "Psst. I'm the last intern. The HR Drones scheduled me for 'Mandatory Fun' — it's a meeting about fun, with attendance tracking, that repeats FOREVER."
+      },
+      {
+        "id": "q.q3a.intro.02",
+        "who": "sprocket",
+        "text": "That's not fun. That's a hostage situation with snacks."
+      },
+      {
+        "id": "q.q3a.intro.03",
+        "who": "intern",
+        "text": "There are no snacks. Shred both drones on the catwalks and my last paycheck — 110 bolts — is yours. I'll invoice my trauma separately."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q3a.prog.01",
+        "who": "intern",
+        "text": "I just got a calendar invite titled 'Fun (Recurring)'. Please hurry."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q3a.done.01",
+        "who": "intern",
+        "text": "My calendar is EMPTY. I can feel feelings again! Take the 110 bolts. I'm going to go stare at a wall — recreationally, this time."
+      },
+      {
+        "id": "q.q3a.done.02",
+        "who": "bolt",
+        "text": "Get out of here, kid. Go be an intern somewhere with sunlight."
+      }
+    ]
+  },
+  {
+    "id": "q3b",
+    "planet": 2,
+    "name": "Clock Out Forever",
+    "kind": "collect",
+    "item": "chip",
+    "n": 3,
+    "reward": 130,
+    "giver": "intern",
+    "npcName": "Intern #4401",
+    "npcPos": [
+      12,
+      30,
+      22
+    ],
+    "npcColor": 10470624,
+    "spots": [
+      [
+        -10,
+        31.4,
+        26
+      ],
+      [
+        5,
+        18.4,
+        -30
+      ],
+      [
+        25,
+        6.9,
+        -70
+      ]
+    ],
+    "intro": [
+      {
+        "id": "q.q3b.intro.01",
+        "who": "intern",
+        "text": "One more thing. Three master timeclock chips, scattered when the lobby fountain 'restructured'. While they exist, every departed employee is technically still ON SHIFT."
+      },
+      {
+        "id": "q.q3b.intro.02",
+        "who": "sprocket",
+        "text": "They're billing the RESIGNED for overtime?"
+      },
+      {
+        "id": "q.q3b.intro.03",
+        "who": "intern",
+        "text": "Billing the retired, the resigned, and at least one guy who ascended to a higher plane. Pull the chips and everyone clocks out. Forever. 130 bolts."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q3b.prog.01",
+        "who": "intern",
+        "text": "The clock's still running. Somewhere, a ghost is accruing PTO it can never use."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q3b.done.01",
+        "who": "intern",
+        "text": "*click* ...Shift complete. Forty thousand employees just clocked out at once. Listen — you can almost hear the sigh. 130 bolts, hero."
+      },
+      {
+        "id": "q.q3b.done.02",
+        "who": "bolt",
+        "text": "Best severance package this company ever paid out."
+      }
+    ]
+  },
+  {
+    "id": "q4a",
+    "planet": 5,
+    "name": "Fine Evasion",
+    "kind": "kill",
+    "type": "metermaid",
+    "n": 4,
+    "reward": 130,
+    "giver": "squat",
+    "npcName": "The Squatter",
+    "npcPos": [
+      -6,
+      0,
+      12
+    ],
+    "npcColor": 6978303,
+    "intro": [
+      {
+        "id": "q.q4a.intro.01",
+        "who": "squat",
+        "text": "I'm grandfathered in. Last resident of Nova Plaza. The Meter Maids fine me for EXISTING. Boot four of 'em, I'll pay you what the HOA never could."
+      },
+      {
+        "id": "q.q4a.intro.02",
+        "who": "sprocket",
+        "text": "You live in a fully automated ghost city that wants to bankrupt you."
+      },
+      {
+        "id": "q.q4a.intro.03",
+        "who": "squat",
+        "text": "The rent's technically zero if you never leave. Checkmate, capitalism. 130 bolts, go."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q4a.prog.01",
+        "who": "squat",
+        "text": "Still getting fined for 'unlicensed loitering in my own living room'. Hurry."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q4a.done.01",
+        "who": "squat",
+        "text": "Quietest night in years. No boot clamps, no citations. 130 bolts, neighbor. Stay grandfathered."
+      }
+    ]
+  },
+  {
+    "id": "q4b",
+    "planet": 5,
+    "name": "Reboot the Fountains",
+    "kind": "collect",
+    "item": "chip",
+    "n": 3,
+    "reward": 110,
+    "giver": "squat",
+    "npcName": "The Squatter",
+    "npcPos": [
+      -6,
+      0,
+      12
+    ],
+    "npcColor": 6978303,
+    "spots": [
+      [
+        -30,
+        10,
+        -60
+      ],
+      [
+        30,
+        4,
+        -60
+      ],
+      [
+        0,
+        7,
+        -98
+      ]
+    ],
+    "intro": [
+      {
+        "id": "q.q4b.intro.01",
+        "who": "squat",
+        "text": "The fountains are the only thing keeping this dead city pretty. Find three control chips before the HOA 'optimizes' them into a parking fee."
+      },
+      {
+        "id": "q.q4b.intro.02",
+        "who": "bolt",
+        "text": "You want me to save... the decorative water features."
+      },
+      {
+        "id": "q.q4b.intro.03",
+        "who": "squat",
+        "text": "A man needs SOMETHING beautiful, mechanic. 110 bolts. Bring the chips."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q4b.prog.01",
+        "who": "squat",
+        "text": "One fountain already sputtered out. Clock's ticking."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q4b.done.01",
+        "who": "squat",
+        "text": "They're flowing again. Listen to that. That's the sound of spite, mechanic. 110 bolts, well spent."
+      }
+    ]
+  },
+  {
+    "id": "q5a",
+    "planet": 6,
+    "name": "Wake-Up Call",
+    "kind": "kill",
+    "type": "popsicle",
+    "n": 3,
+    "reward": 130,
+    "giver": "bathrobe",
+    "npcName": "Confused Customer",
+    "npcPos": [
+      6,
+      0,
+      12
+    ],
+    "npcColor": 13496063,
+    "intro": [
+      {
+        "id": "q.q5a.intro.01",
+        "who": "bathrobe",
+        "text": "Excuse me! Is it Tuesday? Is it 40,000 years later? The frozen security bots keep 'greeting' me with LASERS. Thaw three permanently, would you?"
+      },
+      {
+        "id": "q.q5a.intro.02",
+        "who": "sprocket",
+        "text": "Sir, you're wearing a bathrobe on an ice planet."
+      },
+      {
+        "id": "q.q5a.intro.03",
+        "who": "bathrobe",
+        "text": "The subscription included slippers. It did NOT include CONTEXT. 130 bolts if you help."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q5a.prog.01",
+        "who": "bathrobe",
+        "text": "Another one just thawed and shot at me. Is that in my plan? Is shooting a PREMIUM feature?"
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q5a.done.01",
+        "who": "bathrobe",
+        "text": "Peace and quiet! Well — cold quiet. 130 bolts. Say, what year IS it? ...You already left. Classic 40,000-years-ago behavior."
+      }
+    ]
+  },
+  {
+    "id": "q9a",
+    "planet": 9,
+    "name": "Visual Merchandising",
+    "kind": "kill",
+    "type": "mannequin",
+    "n": 4,
+    "reward": 150,
+    "giver": "clerk",
+    "npcName": "Gilda",
+    "npcPos": [
+      5,
+      0,
+      -2
+    ],
+    "npcColor": 16751312,
+    "intro": [
+      {
+        "id": "q.q9a.intro.01",
+        "who": "clerk",
+        "text": "Welcome to the Galleria! Kiosk seven, phone cases and existential dread. Quick thing: the mannequins move when you're not looking, and last week they started DRESSING LIKE ME."
+      },
+      {
+        "id": "q.q9a.intro.02",
+        "who": "sprocket",
+        "text": "Bolt. Bolt. It's a compliment-based horror scenario."
+      },
+      {
+        "id": "q.q9a.intro.03",
+        "who": "clerk",
+        "text": "Smash four of them. I'll pay 150 bolts out of the register nobody's emptied in eleven years."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q9a.prog.01",
+        "who": "clerk",
+        "text": "One of them is wearing my LANYARD now. Please hurry."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q9a.done.01",
+        "who": "clerk",
+        "text": "The showroom floor is still. STILL. Here's your 150 — and take a phone case. For morale. Mine, mostly."
+      },
+      {
+        "id": "q.q9a.done.02",
+        "who": "bolt",
+        "text": "I don't have a phone."
+      },
+      {
+        "id": "q.q9a.done.03",
+        "who": "clerk",
+        "text": "It's a lifestyle product. It doesn't need a phone. That's the genius of it."
+      }
+    ],
+    "source_id": "q6a"
+  },
+  {
+    "id": "q9b",
+    "planet": 9,
+    "name": "Final Markdown",
+    "kind": "collect",
+    "item": "pricegun",
+    "n": 3,
+    "reward": 140,
+    "giver": "clerk",
+    "npcName": "Gilda",
+    "npcPos": [
+      5,
+      0,
+      -2
+    ],
+    "npcColor": 16751312,
+    "spots": [
+      [
+        -45,
+        1,
+        4
+      ],
+      [
+        24,
+        14.6,
+        -30
+      ],
+      [
+        3,
+        1,
+        -70
+      ]
+    ],
+    "intro": [
+      {
+        "id": "q.q9b.intro.01",
+        "who": "clerk",
+        "text": "Corporate lost the three master price guns. Without them, nothing can be marked down, so legally the sale can never END. Find them and I can finally close this mall out with dignity."
+      },
+      {
+        "id": "q.q9b.intro.02",
+        "who": "bolt",
+        "text": "You want me to end an eleven-year sale... with office equipment."
+      },
+      {
+        "id": "q.q9b.intro.03",
+        "who": "clerk",
+        "text": "The RIGHT office equipment. 140 bolts. Mind the food court — the tables have opinions."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q9b.prog.01",
+        "who": "clerk",
+        "text": "I can hear a price gun clicking somewhere. Taunting me. Marking things UP, probably."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q9b.done.01",
+        "who": "clerk",
+        "text": "All three! *click* *click* *click* — there. Everything is now ZERO bolts and the sale is legally COMPLETE. Here's 140 from the register. Don't tell the mall."
+      },
+      {
+        "id": "q.q9b.done.02",
+        "who": "sprocket",
+        "text": "She just crashed their entire economy with a labeling tool. I've never respected anyone more."
+      }
+    ],
+    "source_id": "q6b"
+  },
+  {
+    "id": "q5b",
+    "planet": 6,
+    "name": "Lost & Frozen",
+    "kind": "collect",
+    "item": "slipper",
+    "n": 3,
+    "reward": 120,
+    "giver": "bathrobe",
+    "npcName": "Confused Customer",
+    "npcPos": [
+      6,
+      0,
+      12
+    ],
+    "npcColor": 13496063,
+    "spots": [
+      [
+        -28,
+        3,
+        -58
+      ],
+      [
+        26,
+        6,
+        -58
+      ],
+      [
+        38,
+        6,
+        -46
+      ]
+    ],
+    "intro": [
+      {
+        "id": "q.q5b.intro.01",
+        "who": "bathrobe",
+        "text": "The thaw glitch scattered my complimentary slippers across the glacier. Three of them. A man cannot rebuild his dignity barefoot, mechanic."
+      },
+      {
+        "id": "q.q5b.intro.02",
+        "who": "bolt",
+        "text": "...Sure. Let's find your ice slippers."
+      },
+      {
+        "id": "q.q5b.intro.03",
+        "who": "bathrobe",
+        "text": "120 bolts and my eternal, slightly-confused gratitude."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q5b.prog.01",
+        "who": "bathrobe",
+        "text": "Still one slipper short. My left foot has filed a complaint."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q5b.done.01",
+        "who": "bathrobe",
+        "text": "REUNITED! All three! I am once again a man of leisure. 120 bolts. See you on the next planet — I seem to keep... showing up."
+      }
+    ]
+  },
+  {
+    "id": "q7a",
+    "planet": 7,
+    "name": "Pest Control (Reverse)",
+    "kind": "kill",
+    "type": "pollinator",
+    "n": 5,
+    "reward": 130,
+    "giver": "corn",
+    "npcName": "Shop Steward Cornelius",
+    "npcPos": [
+      -6,
+      0,
+      12
+    ],
+    "npcColor": 16764749,
+    "intro": [
+      {
+        "id": "q.q7a.intro.01",
+        "who": "corn",
+        "text": "On behalf of Corn Union Local 404: the Pollinator scabs are crossing our picket line and buffing management's goons. Clear five. Solidarity pays 130 bolts."
+      },
+      {
+        "id": "q.q7a.intro.02",
+        "who": "sprocket",
+        "text": "I am negotiating with sentient corn and I have never respected anyone more."
+      },
+      {
+        "id": "q.q7a.intro.03",
+        "who": "corn",
+        "text": "We also have GREAT dental now. Ask me about our dental."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q7a.prog.01",
+        "who": "corn",
+        "text": "The scabs keep buffing the enemy. Local 404 is counting on you, sibling."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q7a.done.01",
+        "who": "corn",
+        "text": "Picket line HELD. The scabs are compost. 130 bolts from the strike fund, with the union's thanks. Now — about that dental."
+      }
+    ],
+    "source_id": "q6a"
+  },
+  {
+    "id": "q7b",
+    "planet": 7,
+    "name": "Stop the Leak",
+    "kind": "collect",
+    "item": "seal",
+    "n": 3,
+    "reward": 140,
+    "giver": "corn",
+    "npcName": "Shop Steward Cornelius",
+    "npcPos": [
+      -6,
+      0,
+      12
+    ],
+    "npcColor": 16764749,
+    "spots": [
+      [
+        -28,
+        5,
+        -58
+      ],
+      [
+        28,
+        4,
+        -58
+      ],
+      [
+        0,
+        0,
+        -96
+      ]
+    ],
+    "intro": [
+      {
+        "id": "q.q7b.intro.01",
+        "who": "corn",
+        "text": "The dead harvester's been leaking coolant into the swamp for six years. Find three sealant cores — patch it, and the whole ecosystem stops trying to kill us. Everybody wins."
+      },
+      {
+        "id": "q.q7b.intro.02",
+        "who": "bolt",
+        "text": "OmniScrap could've fixed this for 40 bolts."
+      },
+      {
+        "id": "q.q7b.intro.03",
+        "who": "corn",
+        "text": "They spent four MILLION explaining why our anger was unlicensed. Capitalism, sibling. 140 bolts and a cleaner planet."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q7b.prog.01",
+        "who": "corn",
+        "text": "The swamp can smell that leak still dripping. So can I. Please hurry."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q7b.done.01",
+        "who": "corn",
+        "text": "SEALED. The water's already clearing. The frogs are singing a different key. 140 bolts — you did more for this planet in an hour than OmniScrap did in a decade."
+      }
+    ],
+    "source_id": "q6b"
+  },
+  {
+    "id": "q1c",
+    "planet": 0,
+    "name": "Lights On",
+    "kind": "collect",
+    "item": "fuse",
+    "n": 3,
+    "reward": 110,
+    "giver": "gasket",
+    "npcName": "Mama Gasket",
+    "npcPos": [
+      37.5,
+      0.4,
+      -11.5
+    ],
+    "npcColor": 13201466,
+    "spots": [
+      [
+        9.5,
+        5.8,
+        -50.5
+      ],
+      [
+        -5,
+        10.5,
+        -66
+      ],
+      [
+        -2.5,
+        16.3,
+        -88
+      ]
+    ],
+    "intro": [
+      {
+        "id": "q.q1c.intro.01",
+        "who": "gasket",
+        "text": "The Row runs on one generator and three fuses. Repo drones lifted the fuses last night, then dropped 'em all over the yard when the Mutts spooked 'em. Bring my lights back, hon."
+      },
+      {
+        "id": "q.q1c.intro.02",
+        "who": "sprocket",
+        "text": "Without those fuses, forty-one families sit in the dark. Also their one television. They were mid-season, Bolt."
+      },
+      {
+        "id": "q.q1c.intro.03",
+        "who": "gasket",
+        "text": "110 bolts. And then you'll eat something. That part ain't optional."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q1c.prog.01",
+        "who": "gasket",
+        "text": "Still dark, hon. The little ones have started telling ghost stories about the billing department."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q1c.done.01",
+        "who": "gasket",
+        "text": "And there's light! Whole Row lit up like a recall notice. Here's your 110. Now sit down, the pair of you — you're too thin."
+      },
+      {
+        "id": "q.q1c.done.02",
+        "who": "sprocket",
+        "text": "I am a robot."
+      },
+      {
+        "id": "q.q1c.done.03",
+        "who": "gasket",
+        "text": "Thin."
+      }
+    ]
+  },
+  {
+    "id": "q1d",
+    "planet": 0,
+    "name": "Dusk Appraisal",
+    "kind": "kill",
+    "type": "vulture",
+    "n": 3,
+    "reward": 90,
+    "giver": "gasket",
+    "npcName": "Mama Gasket",
+    "npcPos": [
+      37.5,
+      0.4,
+      -11.5
+    ],
+    "npcColor": 13201466,
+    "intro": [
+      {
+        "id": "q.q1d.intro.01",
+        "who": "gasket",
+        "text": "Every dusk the Vulture Drones circle the Row, pricing our roofs for the next repossession. Three fewer appraisers would do wonders for property values."
+      },
+      {
+        "id": "q.q1d.intro.02",
+        "who": "bolt",
+        "text": "They're appraising SHACKS?"
+      },
+      {
+        "id": "q.q1d.intro.03",
+        "who": "gasket",
+        "text": "Everything's an asset if you squint, hon. 90 bolts. Aim for the clipboard."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q1d.prog.01",
+        "who": "gasket",
+        "text": "Still hear 'em up there, muttering square footage. Keep swinging."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q1d.done.01",
+        "who": "gasket",
+        "text": "Quietest dusk in years. Take your 90. Your daddy'd be proud — he threw a wrench at one once. Missed. But the SPIRIT was there."
+      },
+      {
+        "id": "q.q1d.done.02",
+        "who": "bolt",
+        "text": "He never told me that."
+      },
+      {
+        "id": "q.q1d.done.03",
+        "who": "gasket",
+        "text": "He told everybody else. Daily."
+      }
+    ]
+  },
+  {
+    "id": "q2c",
+    "planet": 1,
+    "name": "Tip Jar Liberation",
+    "kind": "collect",
+    "item": "tip jar",
+    "n": 3,
+    "reward": 110,
+    "giver": "bellhop",
+    "npcName": "Bellhop-9",
+    "npcPos": [
+      -3.5,
+      0.1,
+      -72
+    ],
+    "npcColor": 16747202,
+    "spots": [
+      [
+        -3,
+        7.3,
+        -22
+      ],
+      [
+        13,
+        8.5,
+        -44.5
+      ],
+      [
+        10,
+        9.2,
+        -121
+      ]
+    ],
+    "intro": [
+      {
+        "id": "q.q2c.intro.01",
+        "who": "bellhop",
+        "text": "Management confiscates our tip jars. Policy says gratuity is 'a relationship between the guest and the brand'. There are three jars up on the decks. They are ours."
+      },
+      {
+        "id": "q.q2c.intro.02",
+        "who": "sprocket",
+        "text": "They're taxing kindness. I didn't think I could be surprised any more, and yet."
+      },
+      {
+        "id": "q.q2c.intro.03",
+        "who": "bellhop",
+        "text": "110 bolts from the staff fund. We passed a hat. Then management confiscated the hat. This is from the SECOND hat."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q2c.prog.01",
+        "who": "bellhop",
+        "text": "The jars are still up top. One of them has been relabelled 'BRAND LOVE'. Please hurry."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q2c.done.01",
+        "who": "bellhop",
+        "text": "All three! That's six weeks of tips. That's a bus ticket home for Housekeeping-4. Here — 110, and the thanks of everyone under the pool."
+      },
+      {
+        "id": "q.q2c.done.02",
+        "who": "bolt",
+        "text": "Keep it. Put it toward the bus."
+      },
+      {
+        "id": "q.q2c.done.03",
+        "who": "bellhop",
+        "text": "Sir, we have rules about refusing gratuity. They're the only rules we like."
+      }
+    ]
+  },
+  {
+    "id": "q2d",
+    "planet": 1,
+    "name": "Break Enforcement",
+    "kind": "kill",
+    "type": "lifeguard",
+    "n": 2,
+    "reward": 100,
+    "giver": "bellhop",
+    "npcName": "Bellhop-9",
+    "npcPos": [
+      -3.5,
+      0.1,
+      -72
+    ],
+    "npcColor": 16747202,
+    "intro": [
+      {
+        "id": "q.q2d.intro.01",
+        "who": "bellhop",
+        "text": "The Lifeguard Bots don't guard lives. They guard BREAKS. Sit down for nine seconds and one blows a whistle in your audio port."
+      },
+      {
+        "id": "q.q2d.intro.02",
+        "who": "bolt",
+        "text": "Two of them need a permanent break. Got it."
+      },
+      {
+        "id": "q.q2d.intro.03",
+        "who": "bellhop",
+        "text": "100 bolts. And if anyone asks, you slipped. Wet floor. We have a sign."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q2d.prog.01",
+        "who": "bellhop",
+        "text": "I still hear whistling. Housekeeping-4 hasn't sat down since Tuesday."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q2d.done.01",
+        "who": "bellhop",
+        "text": "Silence. Listen to that. Somebody down the row just SAT. On purpose. 100 bolts, and I've put the wet-floor sign out for you."
+      },
+      {
+        "id": "q.q2d.done.02",
+        "who": "sprocket",
+        "text": "For the record, I'm logging this as workplace safety."
+      }
+    ]
+  },
+  {
+    "id": "q3c",
+    "planet": 2,
+    "name": "Art Criticism",
+    "kind": "kill",
+    "type": "statue",
+    "n": 1,
+    "reward": 120,
+    "giver": "intern",
+    "npcName": "Intern #4401",
+    "npcPos": [
+      12,
+      30,
+      22
+    ],
+    "npcColor": 10470624,
+    "intro": [
+      {
+        "id": "q.q3c.intro.01",
+        "who": "intern",
+        "text": "One more thing. That statue of Chairman Grindstone in the lobby? I had to polish its cigar every morning. At 5 AM. While it judged me."
+      },
+      {
+        "id": "q.q3c.intro.02",
+        "who": "bolt",
+        "text": "Say no more."
+      },
+      {
+        "id": "q.q3c.intro.03",
+        "who": "intern",
+        "text": "I'm saying slightly more: 120 bolts, and please make it THOROUGH."
+      }
+    ],
+    "prog": [
+      {
+        "id": "q.q3c.prog.01",
+        "who": "intern",
+        "text": "The statue still stands. I can feel its marble disappointment from here."
+      }
+    ],
+    "done": [
+      {
+        "id": "q.q3c.done.01",
+        "who": "intern",
+        "text": "I watched the whole thing. Twice, in my head. Here's 120 bolts — best money my severance ever spent."
+      },
+      {
+        "id": "q.q3c.done.02",
+        "who": "sprocket",
+        "text": "Officially, that was structural maintenance. Unofficially: 10 out of 10."
+      }
+    ],
+    "source_id": "q3b"
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "base": [
+    "scrapmutt",
+    "ambassadog",
+    "weldwasp",
+    "selfie",
+    "vulture",
+    "hrdrone",
+    "lifeguard",
+    "slaggolem",
+    "metermaid",
+    "surgedrone",
+    "gloomstalker",
+    "pollinator"
+  ],
+  "ice": [
+    "chillsplit",
+    "popsicle",
+    "frostpeddler",
+    "metermaid",
+    "lifeguard",
+    "hoaenforcer",
+    "vulture"
+  ]
+}

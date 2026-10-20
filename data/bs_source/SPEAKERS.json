@@ -1,0 +1,78 @@
+{
+  "bolt": {
+    "name": "BOLT",
+    "color": "#ffb95e"
+  },
+  "sprocket": {
+    "name": "SPROCKET",
+    "color": "#3ee6ff"
+  },
+  "grindstone": {
+    "name": "CHAIRMAN GRINDSTONE",
+    "color": "#ff5d5d"
+  },
+  "blartz": {
+    "name": "BLARTZ",
+    "color": "#7dff9a"
+  },
+  "cc": {
+    "name": "THE CONTENT CREATOR",
+    "color": "#c06aff"
+  },
+  "pa": {
+    "name": "OMNISCRAP™ PA",
+    "color": "#8b95a8"
+  },
+  "glambot": {
+    "name": "GLAMBOT PRIME",
+    "color": "#ff7ab8"
+  },
+  "rusty": {
+    "name": "RUSTY",
+    "color": "#ffb36b"
+  },
+  "concierge": {
+    "name": "CONCIERGE-TRON",
+    "color": "#ff8ac2"
+  },
+  "intern": {
+    "name": "INTERN #4401",
+    "color": "#9fc4e0"
+  },
+  "darkmatter": {
+    "name": "DARKMATTER SUBSCRIPTIONS LLC",
+    "color": "#c07dff"
+  },
+  "retention": {
+    "name": "THE RETENTION SPECIALIST",
+    "color": "#8ad0e8"
+  },
+  "squat": {
+    "name": "THE SQUATTER",
+    "color": "#8a9aff"
+  },
+  "bathrobe": {
+    "name": "CONFUSED CUSTOMER",
+    "color": "#cdeeff"
+  },
+  "corn": {
+    "name": "STEWARD CORNELIUS",
+    "color": "#ffd23e"
+  },
+  "clerk": {
+    "name": "GILDA — KIOSK #7",
+    "color": "#ff9ad0"
+  },
+  "dent": {
+    "name": "DENT — TEST UNIT #001",
+    "color": "#ffd23e"
+  },
+  "gasket": {
+    "name": "MAMA GASKET",
+    "color": "#ffb36b"
+  },
+  "bellhop": {
+    "name": "BELLHOP-9",
+    "color": "#ff8ac2"
+  }
+}

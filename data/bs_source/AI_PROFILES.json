@@ -1,0 +1,33 @@
+[
+  null,
+  {
+    "skill": 1.035,
+    "shortcut": 0.55,
+    "grind": 0.5,
+    "aggro": 0.9
+  },
+  {
+    "skill": 1,
+    "shortcut": 0.3,
+    "grind": 0.7,
+    "aggro": 0.6
+  },
+  {
+    "skill": 0.975,
+    "shortcut": 0.15,
+    "grind": 0.3,
+    "aggro": 0.4
+  },
+  {
+    "skill": 1.01,
+    "shortcut": 0.4,
+    "grind": 0.4,
+    "aggro": 0.7
+  },
+  {
+    "skill": 0.955,
+    "shortcut": 0.2,
+    "grind": 0.8,
+    "aggro": 0.5
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "default",
+    "name": "Mallet: Standard Seam",
+    "price": 0
+  },
+  {
+    "id": "void",
+    "name": "Mallet: Void Seam",
+    "price": 100,
+    "seam": 10898943
+  },
+  {
+    "id": "gold",
+    "name": "Mallet: Gilded Seam",
+    "price": 140,
+    "seam": 16765502
+  },
+  {
+    "id": "riot",
+    "name": "Mallet: Riot Seam",
+    "price": 0,
+    "seam": 4122367,
+    "lr": true
+  }
+]

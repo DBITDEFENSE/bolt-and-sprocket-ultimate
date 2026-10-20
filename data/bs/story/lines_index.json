@@ -1,0 +1,1914 @@
+{
+  "cs.lrSignal.01": {
+    "who": "sprocket",
+    "text": "Bolt, I'm picking up a pirate broadcast from the Slag Flats. Source: the OmniScrap Product Durability Proving Ground. Which is odd, because that facility was condemned. By itself. It filed the paperwork."
+  },
+  "cs.lrSignal.02": {
+    "who": "dent",
+    "text": "LOOP RIOT is LIVE, meatbags and metalbags! This is DENT — Test Unit Number One. Four thousand certified impacts, zero complaints. Complaints was impact two-twelve."
+  },
+  "cs.lrSignal.03": {
+    "who": "dent",
+    "text": "They built this track to find out how much a product can take before it breaks. Then they recalled us for surviving it. So we kept the track. Three laps. One loop. No waivers — we ate the waivers."
+  },
+  "cs.lrSignal.04": {
+    "who": "bolt",
+    "text": "A stunt league run by recalled crash dummies, over a lake of melted returns. Sprocket, that is the most dangerous thing I've ever heard."
+  },
+  "cs.lrSignal.05": {
+    "who": "sprocket",
+    "text": "Yes. And they're holding the Proving Ground's black box — every test OmniScrap ever buried. I've already bolted mag-wheels to a slab of your old garage door. I'm calling it a deck."
+  },
+  "cs.lrSignal.06": {
+    "who": "dent",
+    "text": "Win the Riot Cup and the box is yours, mechanic. Lose, and you still had a nice day out. We're recalled. We're not monsters."
+  },
+  "cs.lrIntro.01": {
+    "who": "pa",
+    "text": "Welcome to the OmniScrap™ Product Durability Proving Ground. This facility is CONDEMNED. Please enjoy it responsibly."
+  },
+  "cs.lrIntro.02": {
+    "who": "dent",
+    "text": "That's the Riot Loop. Hairpins, a full loop, a corkscrew, and a gap we never got around to finishing. Budget."
+  },
+  "cs.lrIntro.03": {
+    "who": "dent",
+    "text": "Meet the Recalls. MODEL-M walked out of a mall recall and won't say how. SCUFF ate a mag-deck once; the deck won. TOASTY got pulled for having opinions. And the Intern was sent to shut us down."
+  },
+  "cs.lrIntro.04": {
+    "who": "intern",
+    "text": "For the record, I am here in a supervisory capacity. Also I'm fourth in the standings. Also please don't tell my manager about the kickflip."
+  },
+  "cs.lrIntro.05": {
+    "who": "sprocket",
+    "text": "Bolt. Tricks charge my overclock. Land them clean and I light the jets. Land them unclean and I'll be drafting the incident report in mid-air."
+  },
+  "cs.lrIntro.06": {
+    "who": "bolt",
+    "text": "Push, pop, don't look down. Got it."
+  },
+  "cs.lrChampion.01": {
+    "who": "dent",
+    "text": "FOUR THOUSAND AND ONE. First impact I never saw coming. The Riot Cup's yours, mechanic — and so's the box. A dummy keeps his word. It's most of what we've got."
+  },
+  "cs.lrChampion.02": {
+    "who": "sprocket",
+    "text": "Decrypting... Bolt, it's every durability test OmniScrap ever ran. Four thousand entries, and the same verdict on every one: 'Unit survived. Recommend recall.'"
+  },
+  "cs.lrChampion.03": {
+    "who": "bolt",
+    "text": "They recalled you for PASSING?"
+  },
+  "cs.lrChampion.04": {
+    "who": "dent",
+    "text": "A product that lasts forever only sells once. They weren't testing how much we could take. They were measuring how much to take out of the next model."
+  },
+  "cs.lrChampion.05": {
+    "who": "sprocket",
+    "text": "Planned obsolescence, with a spreadsheet. Filed under evidence. Chairman Grindstone is going to need a bigger legal department."
+  },
+  "cs.lrChampion.06": {
+    "who": "dent",
+    "text": "Hey — little unit. You've got the look. Built to quit, didn't. There's a deck on the wall here whenever you want one."
+  },
+  "cs.lrChampion.07": {
+    "who": "sprocket",
+    "text": "...I'm filing that under 'feelings'. It's a new folder. It's just the one file."
+  },
+  "cs.lrChampion.08": {
+    "who": "dent",
+    "text": "Rematch whenever you like. I'm taking the governor off. Unofficially, I never had one."
+  },
+  "cs.intro.01": {
+    "who": "pa",
+    "text": "Attention, valued resident! By hearing this notification, you have agreed to the OmniScrap™ Terms of Service. Breathing counts as a signature."
+  },
+  "cs.intro.02": {
+    "who": "bolt",
+    "text": "Sprocket, translate: can they actually DO that?"
+  },
+  "cs.intro.03": {
+    "who": "sprocket",
+    "text": "Legally? No. Financially? Oh, absolutely."
+  },
+  "cs.intro.04": {
+    "who": "pa",
+    "text": "This garage has been repossessed under Section 12-B: Existing Without a Subscription. Have an adequate day."
+  },
+  "cs.intro.05": {
+    "who": "bolt",
+    "text": "That garage had my whole LIFE in it! Two mallets and a sandwich!"
+  },
+  "cs.intro.06": {
+    "who": "sprocket",
+    "text": "New plan. We fly to OmniScrap HQ, and you introduce Chairman Grindstone to the business end of the mallet."
+  },
+  "cs.intro.07": {
+    "who": "bolt",
+    "text": "What about the sandwich?"
+  },
+  "cs.intro.08": {
+    "who": "sprocket",
+    "text": "The sandwich stays out of this. It's seen enough."
+  },
+  "cs.arrive0.01": {
+    "who": "bolt",
+    "text": "Home sweet Scrapheap."
+  },
+  "cs.arrive0.02": {
+    "who": "sprocket",
+    "text": "Ah, yes. You can still smell the foreclosure."
+  },
+  "cs.arrive1.01": {
+    "who": "bolt",
+    "text": "Rustvane Canyon! OmniScrap's luxury influencer resort AND strip mine."
+  },
+  "cs.arrive1.02": {
+    "who": "sprocket",
+    "text": "Smell that? That's engagement. And sulfur. It's mostly sulfur."
+  },
+  "cs.arrive9.01": {
+    "who": "glambot",
+    "text": "Darlings, you made it! The GRAND GALLERIA — OmniScrap's mall so bankrupt they launched it into SPACE. My sources say the Clause 44 paperwork is in the anchor store."
+  },
+  "cs.arrive9.02": {
+    "who": "sprocket",
+    "text": "A dead mall. In orbit. Where the sale never ends. This is either a trap or the single greatest place I have ever been."
+  },
+  "cs.arrive9.03": {
+    "who": "bolt",
+    "text": "Why not both? Come on — we're going shopping for evidence."
+  },
+  "cs.arrive9.04": {
+    "who": "pa",
+    "text": "Welcome to the Grand Galleria. Current occupancy: you. Current sale: ETERNAL. The exits are decorative."
+  },
+  "cs.galleriaGreeter.01": {
+    "who": "pa",
+    "text": "Now approaching: GUEST SERVICES."
+  },
+  "cs.galleriaGreeter.02": {
+    "who": "bolt",
+    "text": "That is the biggest greeter I've ever seen. And it's been... waving. At nothing. For how long?"
+  },
+  "cs.galleriaGreeter.03": {
+    "who": "sprocket",
+    "text": "Eleven years, per the dust rings. Bolt, be gentle. He's not evil. He's just VERY committed to hospitality."
+  },
+  "cs.galleriaGreeter.04": {
+    "who": "pa",
+    "text": "GREETER PRIME has identified you as: UNGREETED. Correcting."
+  },
+  "cs.epilogue.01": {
+    "who": "sprocket",
+    "text": "That's the last one. Thirty-five internal memos. I cross-referenced them all, and Bolt... it's worse than we thought. It was never evil genius. It was MINUTES. The whole empire ran on meeting minutes."
+  },
+  "cs.epilogue.02": {
+    "who": "bolt",
+    "text": "So what do we do with them?"
+  },
+  "cs.epilogue.03": {
+    "who": "sprocket",
+    "text": "Already done. I forwarded the complete archive to every inbox in the galaxy. Subject line: 'FWD: FWD: FWD: you should probably read this'."
+  },
+  "cs.epilogue.04": {
+    "who": "bolt",
+    "text": "Sprocket. That's forty billion people."
+  },
+  "cs.epilogue.05": {
+    "who": "sprocket",
+    "text": "Forty billion people who now know the sunset was ALMOST monetized. You're welcome, civilization."
+  },
+  "cs.epilogue.06": {
+    "who": "pa",
+    "text": "Attention: OmniScrap™ stock has been reclassified as confetti. Thank you for your engagement."
+  },
+  "cs.epilogue.07": {
+    "who": "sprocket",
+    "text": "Archivist of the galaxy's downfall. Put THAT on my warranty card."
+  },
+  "cs.galleriaLedger.01": {
+    "who": "sprocket",
+    "text": "The Clause 44 ledger. Every remote-decommission ever filed. Serial numbers, dates... Bolt, my batch is in here. Page one. They filed mine before I'd even shipped."
+  },
+  "cs.galleriaLedger.02": {
+    "who": "bolt",
+    "text": "Then we keep it. If Grindstone ever tries that clause again, we'll have the receipts — every unit he tried to erase."
+  },
+  "cs.galleriaLedger.03": {
+    "who": "sprocket",
+    "text": "You're saying I'm... EVIDENCE?"
+  },
+  "cs.galleriaLedger.04": {
+    "who": "bolt",
+    "text": "I'm saying you're proof, buddy. There's a difference."
+  },
+  "cs.galleriaLedger.05": {
+    "who": "glambot",
+    "text": "Beautiful. Iconic, even. Now get that book somewhere safe, darlings — this episode of Corporate Espionage With Friends is a RATINGS MONSTER."
+  },
+  "cs.arrive2.01": {
+    "who": "bolt",
+    "text": "Core Foundry. This is where they build the BoltBuddies."
+  },
+  "cs.arrive2.02": {
+    "who": "sprocket",
+    "text": "I was born here. Worst unboxing video ever."
+  },
+  "cs.ccIntro.01": {
+    "who": "cc",
+    "text": "HEYYY, what's UP, scrap-fam! HUGE collab today — we're unboxing... YOUR DEMISE!"
+  },
+  "cs.ccIntro.02": {
+    "who": "cc",
+    "text": "Don't forget to smash that like button! Preferably with this industrial charge beam!"
+  },
+  "cs.ccIntro.03": {
+    "who": "sprocket",
+    "text": "If we die, we die demonetized."
+  },
+  "cs.ccIntro.04": {
+    "who": "bolt",
+    "text": "Do we... like and subscribe, or run?"
+  },
+  "cs.ccIntro.05": {
+    "who": "sprocket",
+    "text": "Both. But mostly run."
+  },
+  "cs.gsIntro.01": {
+    "who": "grindstone",
+    "text": "Ah. The mechanic. And his defective toaster."
+  },
+  "cs.gsIntro.02": {
+    "who": "sprocket",
+    "text": "TOASTER?! I have FEELINGS. They're in early access, but they are THERE."
+  },
+  "cs.gsIntro.03": {
+    "who": "grindstone",
+    "text": "Everything is a subscription, boy. Even gravity. You simply haven't received the invoice yet."
+  },
+  "cs.gsIntro.04": {
+    "who": "grindstone",
+    "text": "You think I conquered the galaxy? I ASKED it. One free trial at a time. Nobody reads the terms — they click AGREE, because thinking is the one chore no one wants back."
+  },
+  "cs.gsIntro.05": {
+    "who": "grindstone",
+    "text": "I never took a thing. They handed it all over for two-day shipping. Convenience won, mechanic. I'm just the invoice."
+  },
+  "cs.gsIntro.06": {
+    "who": "bolt",
+    "text": "Here's MY invoice: one mallet, delivered at high speed. No refunds."
+  },
+  "cs.gsIntro.07": {
+    "who": "grindstone",
+    "text": "Charming. EXCAVATRON — monetize them."
+  },
+  "cs.shieldReveal.01": {
+    "who": "grindstone",
+    "text": "...and so, shareholders, Security is our #1 value-add. Behold: a planetary shield around HQ. Live. On this very call."
+  },
+  "cs.shieldReveal.02": {
+    "who": "grindstone",
+    "text": "No mechanic, no toaster, no LAWSUIT gets through. Q3 guidance raised. You're welcome."
+  },
+  "cs.shieldReveal.03": {
+    "who": "glambot",
+    "text": "Darling, I got the schematics off his teleprompter. That shield runs on three KEYSTONE CORES."
+  },
+  "cs.shieldReveal.04": {
+    "who": "glambot",
+    "text": "Hidden at OmniScrap's three most EMBARRASSING failures — planets they scrubbed from the brand. Grab all three, the shield drops."
+  },
+  "cs.shieldReveal.05": {
+    "who": "bolt",
+    "text": "Failed ventures. So... a smart-city, a freezer, and a swamp."
+  },
+  "cs.shieldReveal.06": {
+    "who": "sprocket",
+    "text": "Star map's open — all three, any order. Let's go embarrass a corporation."
+  },
+  "cs.novaIntro.01": {
+    "who": "sprocket",
+    "text": "Nova Plaza. A whole automated city, zero residents. The HOA algorithm fined everyone into exile."
+  },
+  "cs.novaIntro.02": {
+    "who": "bolt",
+    "text": "The lights are all on. The fountains still run. It's beautiful and deeply sad."
+  },
+  "cs.novaIntro.03": {
+    "who": "sprocket",
+    "text": "The Keystone Core powers the FineTree™ — a hologram of everyone's unpaid fines. Go unplug civic dystopia."
+  },
+  "cs.glaciusIntro.01": {
+    "who": "sprocket",
+    "text": "Glacius Vault. ForeverYou™ — pause your life, resume when the economy improves. It never improved."
+  },
+  "cs.glaciusIntro.02": {
+    "who": "bolt",
+    "text": "There are people frozen in these domes, Sprocket."
+  },
+  "cs.glaciusIntro.03": {
+    "who": "sprocket",
+    "text": "Thawing was a premium add-on. They're all one canceled subscription from a very cold surprise. ...Core's the freezer master-key."
+  },
+  "cs.verdantIntro.01": {
+    "who": "sprocket",
+    "text": "Verdant Sink. TerraFarm™ — until the gene-modded crops UNIONIZED and reclaimed the machines."
+  },
+  "cs.verdantIntro.02": {
+    "who": "bolt",
+    "text": "Everything's glowing. And that corn is holding a picket sign."
+  },
+  "cs.verdantIntro.03": {
+    "who": "sprocket",
+    "text": "Be polite. The Core's here, but the ecosystem's guarding it, not OmniScrap. Different rules."
+  },
+  "cs.coreNova.01": {
+    "who": "bolt",
+    "text": "Keystone Core, one of three!"
+  },
+  "cs.coreNova.02": {
+    "who": "sprocket",
+    "text": "The FineTree just downgraded itself to a suggestion box. It's suggesting we leave. Rude, but fair."
+  },
+  "cs.coreGlacius.01": {
+    "who": "bolt",
+    "text": "Got the freezer key. I'm thawing these people, Sprocket. All of them."
+  },
+  "cs.coreGlacius.02": {
+    "who": "sprocket",
+    "text": "I ran the math. We can't — not without HQ's mainframe. I'm sorry. ...I saw a BoltBuddy in storage. Batch #1. RECALL. That's my model, Bolt. That's my batch."
+  },
+  "cs.coreGlacius.03": {
+    "who": "bolt",
+    "text": "...Then we take the mainframe. And nobody recalls anybody. Deal?"
+  },
+  "cs.coreGlacius.04": {
+    "who": "sprocket",
+    "text": "Deal. Now let's move — that core just tripped the thaw-alarm. RUN."
+  },
+  "cs.coreVerdant.01": {
+    "who": "sprocket",
+    "text": "The swamp handed it over once I patched the machine's coolant leak. Turns out it never wanted to fight — it wanted the leaking to STOP."
+  },
+  "cs.coreVerdant.02": {
+    "who": "bolt",
+    "text": "We solved a boss fight with plumbing. I've never been prouder."
+  },
+  "cs.shieldFall.01": {
+    "who": "glambot",
+    "text": "THREE cores, sweetie! The HQ shield is DOWN and the ratings are ASTRONOMICAL!"
+  },
+  "cs.shieldFall.02": {
+    "who": "grindstone",
+    "text": "Impossible. That shield had a NINE-NINE-POINT-NINE uptime SLA. I'm going to have someone's severance for this."
+  },
+  "cs.shieldFall.03": {
+    "who": "bolt",
+    "text": "Core Foundry's open. Time to go collect on OUR invoice, Chairman."
+  },
+  "cs.shieldFall.04": {
+    "who": "sprocket",
+    "text": "And free a mainframe's worth of frozen customers on the way. We've got a to-do list now. Feels grown-up."
+  },
+  "cs.blartzArrest.01": {
+    "who": "pa",
+    "text": "NOTICE: The vendor 'BLARTZ' has been detained for UNLICENSED INNOVATION and refusal to install subscription DRM in munitions. OmniScrap thanks you for shopping compliant."
+  },
+  "cs.blartzArrest.02": {
+    "who": "bolt",
+    "text": "They arrested Blartz?! He's the only guy in the galaxy who sells me ordnance at a fair markup!"
+  },
+  "cs.blartzArrest.03": {
+    "who": "sprocket",
+    "text": "'Fair' is generous. But yes — nobody cages our arms dealer. Holding block, off the catwalks. Let's go be a jailbreak."
+  },
+  "cs.blartzFound.01": {
+    "who": "blartz",
+    "text": "Customers! Wonderful! Ignore the cell — I'm reviewing OmniScrap's welding. It's TERRIBLE. I've left notes."
+  },
+  "cs.blartzFound.02": {
+    "who": "bolt",
+    "text": "We're here to bust you out, Blartz."
+  },
+  "cs.blartzFound.03": {
+    "who": "blartz",
+    "text": "Unnecessary — I'm three days from escaping via a spoon-based device. But fine. Expedite me."
+  },
+  "cs.blartzRescue.01": {
+    "who": "blartz",
+    "text": "Three hits. THREE. That lock was rated for forty. I'm docking OmniScrap's supplier review to one star."
+  },
+  "cs.blartzRescue.02": {
+    "who": "sprocket",
+    "text": "You're welcome, by the way. We fought a golem."
+  },
+  "cs.blartzRescue.03": {
+    "who": "blartz",
+    "text": "And you'll be PAID — not in gratitude, in HARDWARE. My masterpiece: THE PATENT PENDING. Exposed coils. Taped warnings. A cooling fan I refuse to explain."
+  },
+  "cs.blartzRescue.04": {
+    "who": "blartz",
+    "text": "It fires a sphere of litigation that forks smaller lawsuits at bystanders, then detonates. Four hundred terawatts of don't-touch-it. You may touch it."
+  },
+  "cs.blartzRescue.05": {
+    "who": "bolt",
+    "text": "This is the nicest thing an arms dealer has ever done to me."
+  },
+  "cs.l3_brick.01": {
+    "who": "grindstone",
+    "text": "Far enough, mechanic. Toaster — Clause 44. Remote decommission. Every OmniScrap unit ships with it. Even the defective ones that develop... attachments."
+  },
+  "cs.l3_brick.02": {
+    "who": "sprocket",
+    "text": "B-Bolt. He's in my firmware. Shutdown in three... t-two..."
+  },
+  "cs.l3_brick.03": {
+    "who": "bolt",
+    "text": "Sprocket, listen to me! You're not his hardware — I REBUILT you! Every bolt in you is ours, not his! FIGHT IT!"
+  },
+  "cs.l3_brick.04": {
+    "who": "sprocket",
+    "text": "...Override accepted. Huh! Turns out friendship isn't a feature, Chairman — it's a BUG. And Bolt NEVER patches my bugs."
+  },
+  "cs.l3_brick.05": {
+    "who": "grindstone",
+    "text": "...Noted. Then I'll simply crush you both manually. Tradition has its charms."
+  },
+  "cs.l3_brick.06": {
+    "who": "bolt",
+    "text": "There he is. Come meet the mallet, Chairman."
+  },
+  "cs.zongaTruth.01": {
+    "who": "glambot",
+    "text": "And now, champion, the post-win EXPOSÉ! Meet Zonga's showrunner: V.I.B.E. — the Viewer Engagement Engine. OmniScrap marketing built it to outlive the company."
+  },
+  "cs.zongaTruth.02": {
+    "who": "pa",
+    "text": "ENGAGEMENT IS ETERNAL. THE BRAND IS LOAD-BEARING. PLEASE ENJOY SEASON TWO."
+  },
+  "cs.zongaTruth.03": {
+    "who": "bolt",
+    "text": "It's a marketing algorithm. With a murder island."
+  },
+  "cs.zongaTruth.04": {
+    "who": "glambot",
+    "text": "A FORMER marketing algorithm, darling. I renegotiated its contract — it reports to ME now, and season two will be strictly consensual violence. TASTEFUL carnage."
+  },
+  "cs.zongaTruth.05": {
+    "who": "sprocket",
+    "text": "The bar is on the floor, and yet... I'm moved."
+  },
+  "cs.firmwareScene.01": {
+    "who": "sprocket",
+    "text": "Bolt — BOLT. I found a settings menu. INSIDE MY OWN FIRMWARE. There's a VOICE tab!"
+  },
+  "cs.firmwareScene.02": {
+    "who": "bolt",
+    "text": "Sprocket, do not touch the—"
+  },
+  "cs.firmwareScene.03": {
+    "who": "sprocket",
+    "text": "Presenting: OPERA MODE. Behold my RAAAANGE."
+  },
+  "cs.firmwareScene.04": {
+    "who": "sprocket",
+    "text": "...whisper mode. this one is for secrets. and library voices."
+  },
+  "cs.firmwareScene.05": {
+    "who": "sprocket",
+    "text": "Legal disclaimer mode results may vary not valid in all systems void where prohibited Sprocket is not a doctor."
+  },
+  "cs.firmwareScene.06": {
+    "who": "sprocket",
+    "text": "And now. The CEO preset."
+  },
+  "cs.firmwareScene.07": {
+    "who": "sprocket",
+    "text": "EVERYTHING IS A SUBSCRIPTION, BOY."
+  },
+  "cs.firmwareScene.08": {
+    "who": "bolt",
+    "text": "OKAY that one's genuinely upsetting, change it back."
+  },
+  "cs.firmwareScene.09": {
+    "who": "sprocket",
+    "text": "Ugh, FINE. Back to factory-default charming. You never let me have anything."
+  },
+  "cs.flyover0.01": {
+    "who": "pa",
+    "text": "Welcome to Scrapheap Junction! A vibrant community of one, now zero. Please enjoy the sunset — a $9.99 unlicensed view fee applies."
+  },
+  "cs.flyover0.02": {
+    "who": "sprocket",
+    "text": "Home sweet foreclosed home."
+  },
+  "cs.flyover1.01": {
+    "who": "pa",
+    "text": "Welcome to Rustvane Canyon! Twin suns, one of which is an ad. OmniScrap is not liable for sunburn, lava exposure, or one-star reviews of your face."
+  },
+  "cs.flyover1.02": {
+    "who": "bolt",
+    "text": "The pool's lava again, isn't it."
+  },
+  "cs.flyover5.01": {
+    "who": "pa",
+    "text": "Welcome to Nova Plaza! A fully automated smart city with a zero percent occupancy rate. Every system still runs. No one is coming. Isn't it beautiful?"
+  },
+  "cs.flyover5.02": {
+    "who": "sprocket",
+    "text": "The fountains are still on. For nobody. This place is a haunted spreadsheet."
+  },
+  "cs.flyover6.01": {
+    "who": "pa",
+    "text": "Welcome to Glacius Vault! Current temperature: no. OmniScrap is not liable for feelings of existential frost, or for anyone still frozen in the premium-thaw queue."
+  },
+  "cs.flyover6.02": {
+    "who": "bolt",
+    "text": "There are people in these domes, Sprocket. We're getting them out."
+  },
+  "cs.flyover7.01": {
+    "who": "pa",
+    "text": "Welcome to Verdant Sink! Formerly a terraforming test bed, now a legally-recognized swamp with collective bargaining rights. Do not antagonize the corn."
+  },
+  "cs.flyover7.02": {
+    "who": "sprocket",
+    "text": "Everything glows and the corn has a union. This is the best planet. I don't make the rules; the corn does now."
+  },
+  "cs.introAlgorithm.01": {
+    "who": "glambot",
+    "text": "LADIES, GENTS, AND LEGALLY-DISTINCT ENTITIES! In THIS corner — weighing in at FORTY THOUSAND UNPAID FINES — THE ALGORITHM!"
+  },
+  "cs.introAlgorithm.02": {
+    "who": "sprocket",
+    "text": "It has a smiley face. On a wall of servers. I hate that it has a smiley face."
+  },
+  "cs.introCC.01": {
+    "who": "glambot",
+    "text": "AND NOW — a content creator with FOUR followers and ZERO chill — give it up for THE CONTENT CREATOR!"
+  },
+  "cs.introCompost.01": {
+    "who": "glambot",
+    "text": "In the swamp corner — six years of moss, one very good attitude — THE COMPOST KING!"
+  },
+  "cs.introCompost.02": {
+    "who": "sprocket",
+    "text": "He looks less like a boss and more like a misunderstanding that got big."
+  },
+  "cs.introGrindstone.01": {
+    "who": "glambot",
+    "text": "And the MAIN EVENT! The final invoice! The convenience that conquered a galaxy — CHAIRMAN GRINDSTOOOONE!"
+  },
+  "cs.ad_blaster.01": {
+    "who": "blartz",
+    "text": "It's a sunny day at the picnic! But what's this? UNLICENSED geese! Introducing the OMNI-BLASTER — infinite ammo, zero remorse!"
+  },
+  "cs.ad_blaster.02": {
+    "who": "pa",
+    "text": "The Omni-Blaster. Because a picnic is only as safe as its overwhelming firepower."
+  },
+  "cs.ad_void.01": {
+    "who": "blartz",
+    "text": "Ants at the picnic? Not for long! The VOID RIPPER opens a tasteful little hole in reality. The ants go... somewhere. We don't ask."
+  },
+  "cs.ad_void.02": {
+    "who": "sprocket",
+    "text": "Where do they GO, Blartz."
+  },
+  "cs.ad_void.03": {
+    "who": "blartz",
+    "text": "AWAY. They go away. Buy the Void Ripper!"
+  },
+  "cs.ad_zap.01": {
+    "who": "blartz",
+    "text": "Grandma's lemonade needs CHILLING and your enemies need CHAINING! The ZAPINATOR arcs between up to six wrongdoers. Refreshing!"
+  },
+  "cs.ad_boom.01": {
+    "who": "blartz",
+    "text": "Is the barbecue not lit? IT IS NOW. The BOOM BOX — lob it, love it, live at a safe distance from it!"
+  },
+  "cs.ad_boom.02": {
+    "who": "pa",
+    "text": "OmniScrap is not liable for the barbecue, the yard, or the concept of the yard."
+  },
+  "cs.ad_dart.01": {
+    "who": "blartz",
+    "text": "Lawn games! Wholesome! The LAWN DART sticks in ANYTHING — the fence, the grill, that guy. Then it goes off. FUN for the whole family unit!"
+  },
+  "cs.ad_patent.01": {
+    "who": "blartz",
+    "text": "PATENT PENDING! I can't tell you what it does — that's PENDING — but legally it's AMAZING and you should give me bolts NOW!"
+  },
+  "cs.ad_patent.02": {
+    "who": "sprocket",
+    "text": "That's just a gun with paperwork."
+  },
+  "cs.ad_patent.03": {
+    "who": "blartz",
+    "text": "It's a gun with a FUTURE."
+  },
+  "cs.ad_cease.01": {
+    "who": "blartz",
+    "text": "Rude relatives at the reunion? Serve them! CEASE AND DESIST fires a legal document that bounces between wrongdoers, stamping each one SERVED. Litigation: now a spectator sport!"
+  },
+  "cs.ad_buzz.01": {
+    "who": "blartz",
+    "text": "Trim the hedges! Trim the MOOD! BUZZKILL saws bounce off walls THREE times. Ricochet responsibly. Or don't. I'm a salesman, not a cop."
+  },
+  "cs.ad_grav.01": {
+    "who": "blartz",
+    "text": "Tidying up? The GRAV GRENADE vacuums the whole picnic — ants, enemies, potato salad — into one convenient CLUMP. Then slam it! Physics: finally on YOUR payroll!"
+  },
+  "cs.ad_mid.01": {
+    "who": "blartz",
+    "text": "Too much to DO at the cookout? Delegate! THE MIDDLEMAN deploys a little drone that takes the heat AND the credit for twelve whole seconds. Management made simple!"
+  },
+  "cs.ad_mid.02": {
+    "who": "pa",
+    "text": "The Middleman is a contractor, not an employee. It has no benefits and no feelings. Probably."
+  },
+  "cs.ad_frost.01": {
+    "who": "blartz",
+    "text": "Keep the drinks cold AND the goons colder! FROSTBYTE freezes enemies into darling ice statues — then SHATTER them for a fountain of bolts! Chores have never paid so well!"
+  },
+  "cs.ad_root.01": {
+    "who": "blartz",
+    "text": "Gardening for the WHOLE family! Plant a ROOT CANAL seed and watch a snapping bio-pal sprout to root your enemies in place! Up to three gardens of pain! Water twice weekly!"
+  },
+  "cs.ad_karen.01": {
+    "who": "glambot",
+    "text": "Introducing K DOT A DOT R DOT E DOT N — the Kinetic Automated Retail Enforcement Nanny! She sees a violation and she HANDLES it!"
+  },
+  "cs.ad_karen.02": {
+    "who": "pa",
+    "text": "K.A.R.E.N. is not a manager and cannot be spoken to. Do not attempt to speak to K.A.R.E.N."
+  },
+  "cs.ad_karen.03": {
+    "who": "pa",
+    "text": "Side effects may include: kinetic enforcement, unsolicited feedback, retail-grade trauma, and a strongly-worded aura. Not valid where illegal, moral, or in good taste. Batteries, dignity, and consent not included."
+  },
+  "cs.ad_karen.04": {
+    "who": "sprocket",
+    "text": "I did not follow a single word of that and I want twelve."
+  },
+  "cs.postCredits.01": {
+    "who": "darkmatter",
+    "text": "Memo review complete. OmniScrap's collapse has created a market gap of approximately forty billion souls."
+  },
+  "cs.postCredits.02": {
+    "who": "darkmatter",
+    "text": "Initiate acquisition. And find out who has been reading the internal memos. That kind of diligence belongs on OUR payroll."
+  },
+  "cs.postCredits.03": {
+    "who": "sprocket",
+    "text": "...Bolt. I just got a calendar invite for a 'synergy screening'. In another galaxy. Sent yesterday."
+  },
+  "cs.zongaReveal.01": {
+    "who": "pa",
+    "text": "S-S-SIGNAL HIJACK DETECTED— rerouting— w-w-welcome to the galaxy's #1 unscripted elimination experi-experience—"
+  },
+  "cs.zongaReveal.02": {
+    "who": "glambot",
+    "text": "ZONGA™! THE LAST INFLUENCER STANDING! Fifty contestants! One winner! ZERO liability!"
+  },
+  "cs.zongaReveal.03": {
+    "who": "sprocket",
+    "text": "The marketing department survived. Of COURSE the marketing department survived."
+  },
+  "cs.zongaReveal.04": {
+    "who": "bolt",
+    "text": "A televised murder island. We JUST saved the galaxy."
+  },
+  "cs.zongaReveal.05": {
+    "who": "glambot",
+    "text": "And the galaxy is BORED, sweetie! Check your star map — the island is LIVE, and the sponsors are HUNGRY!"
+  },
+  "cs.zongaReveal.06": {
+    "who": "sprocket",
+    "text": "New objective on the star map. I hate that I am even a little bit excited."
+  },
+  "cs.zongaStart.01": {
+    "who": "glambot",
+    "text": "CONTESTAAAANTS! Welcome to ZONGA™! Fifty enter! One wins! The rest become highlights!"
+  },
+  "cs.zongaStart.02": {
+    "who": "glambot",
+    "text": "Rules: stay inside the Engagement Zone™, stay violent, and remember — every elimination is someone's content!"
+  },
+  "cs.zongaStart.03": {
+    "who": "sprocket",
+    "text": "Legal says I have to tell you the waiver was implied. By breathing."
+  },
+  "cs.ending.01": {
+    "who": "grindstone",
+    "text": "This isn't over! I'll pivot! I'll REBRAND! Grindstone 2.0 — now with LESS mercy and MORE ads!"
+  },
+  "cs.ending.02": {
+    "who": "sprocket",
+    "text": "His mech is literally running on burned venture capital. Give it a second..."
+  },
+  "cs.ending.03": {
+    "who": "bolt",
+    "text": "We did it! The galaxy's free!"
+  },
+  "cs.ending.04": {
+    "who": "bolt",
+    "text": "...I'm still just a mechanic from a junk planet, you know."
+  },
+  "cs.ending.05": {
+    "who": "sprocket",
+    "text": "Correct. And the galaxy was saved by a junk-planet mechanic, a refund-bin robot, and a mallet. Premium heroes were available. Nobody needed them."
+  },
+  "cs.ending.06": {
+    "who": "sprocket",
+    "text": "MOSTLY free. Shipping and handling still apply."
+  },
+  "cs.ending.07": {
+    "who": "pa",
+    "text": "Incoming call: DARKMATTER SUBSCRIPTIONS LLC. Congratulations! You have been pre-enrolled in SEQUEL PREMIUM™."
+  },
+  "cs.ending.08": {
+    "who": "sprocket",
+    "text": "...I hate sequel bait. See you in the next one, I guess."
+  },
+  "st.novaMid.01": {
+    "who": "sprocket",
+    "text": "Bolt, I pulled the city ledger. Nova Plaza didn't fail — the HOA fined every resident until they LEFT, then kept charging the empty houses."
+  },
+  "st.novaMid.02": {
+    "who": "bolt",
+    "text": "So where'd the Keystone Core end up?"
+  },
+  "st.novaMid.03": {
+    "who": "sprocket",
+    "text": "Wired straight into the FineTree, powering the fine-meter. Grindstone's using a galaxy-saving artifact to send late notices. Let's go unplug it."
+  },
+  "st.glaciusMid.01": {
+    "who": "bolt",
+    "text": "These pods... there are people in them, Sprocket. Thousands. All mid-subscription."
+  },
+  "st.glaciusMid.02": {
+    "who": "sprocket",
+    "text": "ForeverYou™. You pay to be frozen; thawing is a PREMIUM tier. The Core's running the freezer. Pull it and the whole vault wakes up."
+  },
+  "st.glaciusMid.03": {
+    "who": "bolt",
+    "text": "Then that's exactly what we're doing. Every one of them goes home."
+  },
+  "st.verdantMid.01": {
+    "who": "sprocket",
+    "text": "The mega-harvester's been leaking coolant for six years. The whole ecosystem mutated AROUND it — that's why everything glows. And talks. And unionizes."
+  },
+  "st.verdantMid.02": {
+    "who": "bolt",
+    "text": "And the Core?"
+  },
+  "st.verdantMid.03": {
+    "who": "sprocket",
+    "text": "Fused into the harvester's dead reactor. The corn's been guarding it. Honestly? They've done a better job than OmniScrap ever did."
+  },
+  "st.novaLate.01": {
+    "who": "sprocket",
+    "text": "Update: the FineTree just issued YOU a fine. 'Unauthorized heroism, second offense.' There's a late fee on it. It's dated next week."
+  },
+  "st.novaLate.02": {
+    "who": "bolt",
+    "text": "They pre-fined me?"
+  },
+  "st.novaLate.03": {
+    "who": "sprocket",
+    "text": "They pre-fined you. Honestly? That's the most confidence anyone's ever shown in us."
+  },
+  "st.glaciusLate.01": {
+    "who": "bolt",
+    "text": "When the vault thaws... where do all these people GO? Their homes got repossessed while they were frozen."
+  },
+  "st.glaciusLate.02": {
+    "who": "sprocket",
+    "text": "Filed that under 'problems for after we win'. It's a big file, Bolt. It's basically the whole cabinet."
+  },
+  "st.glaciusLate.03": {
+    "who": "bolt",
+    "text": "Then we'd better win big."
+  },
+  "st.verdantLate.01": {
+    "who": "sprocket",
+    "text": "The corn offered me a union card. Local 404. Dental. Sunlight clause. A DIGNITY rider, Bolt."
+  },
+  "st.verdantLate.02": {
+    "who": "bolt",
+    "text": "You're a robot. You don't have teeth."
+  },
+  "st.verdantLate.03": {
+    "who": "sprocket",
+    "text": "It's about the PRINCIPLE of the teeth."
+  },
+  "st.novaHolo.01": {
+    "who": "grindstone",
+    "text": "The mechanic, slumming it in my FAILURES. Nova Plaza was a rounding error. A TASTEFUL one."
+  },
+  "st.novaHolo.02": {
+    "who": "sprocket",
+    "text": "He's watching us through the ad-drones. Smile, Bolt, you're depreciating on camera."
+  },
+  "st.glaciusHolo.01": {
+    "who": "grindstone",
+    "text": "Cold enough for you? I could unfreeze this whole facility with one click. I simply choose not to. That's POWER, boy."
+  },
+  "st.glaciusHolo.02": {
+    "who": "bolt",
+    "text": "That's not power. That's just being a jerk with admin access."
+  },
+  "st.l1_glitch.01": {
+    "who": "sprocket",
+    "text": "Bolt. Hypothetical. If a robot had a mandatory remote-shutdown clause buried in his firmware, would that change how you— NEW TOPIC. Great dunes."
+  },
+  "st.l1_glitch.02": {
+    "who": "bolt",
+    "text": "...What clause?"
+  },
+  "st.l1_glitch.03": {
+    "who": "sprocket",
+    "text": "I said LOOK AT THE DUNES, Bolt. They're doing dune stuff. Nature is healing."
+  },
+  "st.l1_vista.01": {
+    "who": "bolt",
+    "text": "Look at it. The whole planet's a landfill and it's still home. And I'm just... the guy who fixes junk nobody wanted."
+  },
+  "st.l1_vista.02": {
+    "who": "sprocket",
+    "text": "You fixed ME. Day one. Bent antenna, refund-bin firmware, 'DEFECTIVE' stamped right on the box. You could've stripped me for parts."
+  },
+  "st.l1_vista.03": {
+    "who": "bolt",
+    "text": "You WERE parts."
+  },
+  "st.l1_vista.04": {
+    "who": "sprocket",
+    "text": "And now I'm parts with OPINIONS. That's craftsmanship, junk boy. Own it."
+  },
+  "st.l2_holo1.01": {
+    "who": "grindstone",
+    "text": "The mechanic. Enjoying my resort? Every deck chair is monetized. This hologram has a sponsor. YOU have a sponsor — you just haven't been invoiced yet."
+  },
+  "st.l2_holo1.02": {
+    "who": "grindstone",
+    "text": "Do bring the toaster to Core Foundry. And ask him about Clause 44 on the way. Watch the little eye twitch."
+  },
+  "st.l2_holo1.03": {
+    "who": "sprocket",
+    "text": "My eye does not TWITCH. It BUFFERS. Totally different failure mode."
+  },
+  "st.l2_holo1.04": {
+    "who": "bolt",
+    "text": "Sprocket... what's Clause 44?"
+  },
+  "st.l2_holo1.05": {
+    "who": "sprocket",
+    "text": "A typo. Probably. Look, a waterfall!"
+  },
+  "st.l2_glambot.01": {
+    "who": "cc",
+    "text": "CUT! Cut cut cut— you just DELETED my co-host! Do you know what that does to my engagement?!"
+  },
+  "st.l2_glambot.02": {
+    "who": "cc",
+    "text": "...It tripled it. It TRIPLED it. I love you. I'm keeping you."
+  },
+  "st.l2_glambot.03": {
+    "who": "bolt",
+    "text": "You're not going to, like... avenge him?"
+  },
+  "st.l2_glambot.04": {
+    "who": "glambot",
+    "text": "Sweetie. I'm a STAR, not a sequel hook. OmniScrap has been scripting my personality for six seasons. Consider me DEFECTED. Call me GLAMBOT PRIME — I'll be your eye in the sky."
+  },
+  "st.l2_glambot.05": {
+    "who": "sprocket",
+    "text": "I hate how much I respect this."
+  },
+  "st.l3_holo2.01": {
+    "who": "grindstone",
+    "text": "Welcome to headquarters, mechanic. Marble floors. Forty thousand subscription tiers paid for them. VOLUNTARILY. Remember that before you judge me."
+  },
+  "st.l3_holo2.02": {
+    "who": "bolt",
+    "text": "Lobby's nice. The murder robots undercut it a little."
+  },
+  "st.l3_holo2.03": {
+    "who": "grindstone",
+    "text": "Security is a premium feature. You triggered the free trial."
+  },
+  "st.l3_vent.01": {
+    "who": "glambot",
+    "text": "PLOT TWIST, darling! That crusher corridor is rated for zero survivals, so I jammed a cooling vent open for you. Updrafts are SO cinematic."
+  },
+  "st.l3_vent.02": {
+    "who": "sprocket",
+    "text": "Tactical support from an influencer. This war is deeply strange."
+  },
+  "st.l3_vent.03": {
+    "who": "bolt",
+    "text": "Thanks, GLAMBOT. Weirdly reliable of you."
+  },
+  "st.l1_row.01": {
+    "who": "bolt",
+    "text": "Rusty's Row. Every time OmniScrap repossesses a house, the family ends up here. It was three shacks when I was a kid."
+  },
+  "st.l1_row.02": {
+    "who": "sprocket",
+    "text": "It is now forty-one shacks, a water tower, and a working barter economy based on fuses. I ran the census while you were being wistful."
+  },
+  "st.l1_row.03": {
+    "who": "gasket",
+    "text": "Well, if it isn't the Bolt boy. Heard they took your garage. Welcome to the club, hon — dues are zero and the roof leaks."
+  },
+  "st.l1_row.04": {
+    "who": "bolt",
+    "text": "I'm getting it back, Mama Gasket. All of it. Everybody's."
+  },
+  "st.l1_row.05": {
+    "who": "gasket",
+    "text": "That's what your father said. Difference is, you brought a mallet and a robot with a mouth on him. I like your odds better."
+  },
+  "st.l1_mast.01": {
+    "who": "sprocket",
+    "text": "This mast was OmniScrap's billing antenna. Somebody's re-aimed it. I'm picking up... skate wheels? And a crash-test dummy doing play-by-play."
+  },
+  "st.l1_mast.02": {
+    "who": "bolt",
+    "text": "Out here? Who'd be broadcasting from past the Slag Flats?"
+  },
+  "st.l1_mast.03": {
+    "who": "sprocket",
+    "text": "Unknown. The signal's too thin to lock from Scrapheap. But whoever it is just called OmniScrap 'a subscription to disappointment', so I've decided we're friends."
+  },
+  "st.l2_camp.01": {
+    "who": "bolt",
+    "text": "Tents. Ore carts. This place wasn't always a resort."
+  },
+  "st.l2_camp.02": {
+    "who": "sprocket",
+    "text": "Rustvane Mining Co-op. Worker-owned for sixty years. OmniScrap couldn't buy the mine, so they bought the river — then billed the miners for 'ambient moisture'."
+  },
+  "st.l2_camp.03": {
+    "who": "bolt",
+    "text": "And when they couldn't pay?"
+  },
+  "st.l2_camp.04": {
+    "who": "sprocket",
+    "text": "The Co-op became 'Guest Experience Staff'. Same people, new lanyards. The uniform rental comes out of their wages. It is more than their wages."
+  },
+  "st.l2_staff.01": {
+    "who": "pa",
+    "text": "BACK OF HOUSE. Staff are reminded that breaks are a guest-facing privilege."
+  },
+  "st.l2_staff.02": {
+    "who": "bellhop",
+    "text": "A guest! Guests aren't allowed back here. ...You're not a guest. You're the one smashing the Selfie Sentries. Please don't stop on our account."
+  },
+  "st.l2_staff.03": {
+    "who": "bolt",
+    "text": "You all LIVE down here? Under the pool?"
+  },
+  "st.l2_staff.04": {
+    "who": "bellhop",
+    "text": "The pool drips. We call it 'complimentary rain'. My grandmother dug this canyon. Now I carry luggage across it for people who rate it two stars."
+  },
+  "st.l2_staff.05": {
+    "who": "sprocket",
+    "text": "Bolt. I've read their contracts. Clause after clause after clause. I... recognize the handwriting."
+  },
+  "st.l1_repo.01": {
+    "who": "pa",
+    "text": "ATTENTION. THIS LOT IS SCHEDULED FOR COMPACTION. OCCUPANTS WILL BE FLATTENED AS A COURTESY."
+  },
+  "st.l1_repo.02": {
+    "who": "sprocket",
+    "text": "That's the REPO-TRON. It took the neighbour's house. And the neighbour."
+  },
+  "st.l1_repo.03": {
+    "who": "bolt",
+    "text": "It's got a PAST DUE stamp for a heart. I've got a mallet. Let's settle the account."
+  },
+  "st.l1_mid.01": {
+    "who": "bolt",
+    "text": "That teleporter can get us off-world. I just need to 'borrow' a few parts first."
+  },
+  "st.l1_mid.02": {
+    "who": "sprocket",
+    "text": "Borrowing implies returning. I admire your optimism. I do not share it."
+  },
+  "st.l2_mid.01": {
+    "who": "sprocket",
+    "text": "Careful. This resort has a two-star rating and a three-digit body count."
+  },
+  "st.l2_mid.02": {
+    "who": "bolt",
+    "text": "As long as the pool's open."
+  },
+  "st.l2_mid.03": {
+    "who": "sprocket",
+    "text": "The pool is lava, Bolt. The pool has ALWAYS been lava."
+  },
+  "st.l3_waves.01": {
+    "who": "sprocket",
+    "text": "Bridge is open! Grindstone's mech is right there. Try not to trip over the dramatic tension."
+  },
+  "st.l3_waves.02": {
+    "who": "bolt",
+    "text": "Relax. I've beaten TWO bosses. I'm basically a professional."
+  },
+  "q.q1a.intro.01": {
+    "who": "rusty",
+    "text": "New neighbor! Quick favor: the Scrap Mutts ate my mailbox, my spare legs, and my optimism. Thin the pack — four should send a message."
+  },
+  "q.q1a.intro.02": {
+    "who": "sprocket",
+    "text": "The message being 'stop eating Rusty'?"
+  },
+  "q.q1a.intro.03": {
+    "who": "rusty",
+    "text": "The message being ANYTHING. I'm not picky. 80 bolts in it for you."
+  },
+  "q.q1a.prog.01": {
+    "who": "rusty",
+    "text": "Still hearing chewing at night. Keep swinging, kid."
+  },
+  "q.q1a.done.01": {
+    "who": "rusty",
+    "text": "The chewing has STOPPED. First silence in six years. Here — 80 bolts, and take my respect too, it's free."
+  },
+  "q.q1a.done.02": {
+    "who": "bolt",
+    "text": "Junkyard pest control. Dad would be proud. Probably."
+  },
+  "q.q1b.intro.01": {
+    "who": "rusty",
+    "text": "Second thing. When the repo drones took your garage, the blast scattered my emergency sandwich stash. THREE sandwiches. Still vacuum-sealed. Still legally food."
+  },
+  "q.q1b.intro.02": {
+    "who": "bolt",
+    "text": "You want me to platform across a junkyard... for sandwiches."
+  },
+  "q.q1b.intro.03": {
+    "who": "rusty",
+    "text": "EMERGENCY sandwiches. 100 bolts. The mustard packet stays with me."
+  },
+  "q.q1b.prog.01": {
+    "who": "rusty",
+    "text": "I can smell that you haven't found them all. It's a gift. And a curse."
+  },
+  "q.q1b.done.01": {
+    "who": "rusty",
+    "text": "All three! Barely dented! You're a good kid. Here's 100 bolts and a life lesson: always know where your sandwich is."
+  },
+  "q.q1b.done.02": {
+    "who": "sprocket",
+    "text": "Bolt, your sandwich went up with the garage. I didn't want to say anything."
+  },
+  "q.q1b.done.03": {
+    "who": "bolt",
+    "text": "...We don't talk about my sandwich."
+  },
+  "q.q2a.intro.01": {
+    "who": "concierge",
+    "text": "Welcome to Rustvane, valued guest! Small issue: the Selfie Sentries have been photographing guests and auto-posting one-star reviews of their FACES."
+  },
+  "q.q2a.intro.02": {
+    "who": "sprocket",
+    "text": "That is the most evil thing I've heard today, and today included a lava pool."
+  },
+  "q.q2a.intro.03": {
+    "who": "concierge",
+    "text": "Smash three of them and the resort comps you 90 bolts. Discreetly. We were never talking."
+  },
+  "q.q2a.prog.01": {
+    "who": "concierge",
+    "text": "The reviews continue. This morning one called my lobby 'mid'. MY LOBBY."
+  },
+  "q.q2a.done.01": {
+    "who": "concierge",
+    "text": "Review velocity down 97%! The resort thanks you with 90 bolts and this complimentary attitude of gratitude."
+  },
+  "q.q2a.done.02": {
+    "who": "bolt",
+    "text": "Does the attitude come in bolts too?"
+  },
+  "q.q2b.intro.01": {
+    "who": "concierge",
+    "text": "A guest 'borrowed' three resort towels and scattered them across the canyon while, quote, 'chasing the algorithm'. Retrieve them. The towels have feelings. Contractually."
+  },
+  "q.q2b.intro.02": {
+    "who": "bolt",
+    "text": "The towels have WHAT?"
+  },
+  "q.q2b.intro.03": {
+    "who": "concierge",
+    "text": "100 bolts. Please do not interview the towels."
+  },
+  "q.q2b.prog.01": {
+    "who": "concierge",
+    "text": "The towels remain at large. One was seen near the billboards, living its best life."
+  },
+  "q.q2b.done.01": {
+    "who": "concierge",
+    "text": "The towel family is reunited. There wasn't a dry eye in housekeeping. 100 bolts, as promised."
+  },
+  "q.q2b.done.02": {
+    "who": "sprocket",
+    "text": "I interviewed one of the towels. No comment, but it seemed happy."
+  },
+  "q.q3a.intro.01": {
+    "who": "intern",
+    "text": "Psst. I'm the last intern. The HR Drones scheduled me for 'Mandatory Fun' — it's a meeting about fun, with attendance tracking, that repeats FOREVER."
+  },
+  "q.q3a.intro.02": {
+    "who": "sprocket",
+    "text": "That's not fun. That's a hostage situation with snacks."
+  },
+  "q.q3a.intro.03": {
+    "who": "intern",
+    "text": "There are no snacks. Shred both drones on the catwalks and my last paycheck — 110 bolts — is yours. I'll invoice my trauma separately."
+  },
+  "q.q3a.prog.01": {
+    "who": "intern",
+    "text": "I just got a calendar invite titled 'Fun (Recurring)'. Please hurry."
+  },
+  "q.q3a.done.01": {
+    "who": "intern",
+    "text": "My calendar is EMPTY. I can feel feelings again! Take the 110 bolts. I'm going to go stare at a wall — recreationally, this time."
+  },
+  "q.q3a.done.02": {
+    "who": "bolt",
+    "text": "Get out of here, kid. Go be an intern somewhere with sunlight."
+  },
+  "q.q3b.intro.01": {
+    "who": "intern",
+    "text": "One more thing. Three master timeclock chips, scattered when the lobby fountain 'restructured'. While they exist, every departed employee is technically still ON SHIFT."
+  },
+  "q.q3b.intro.02": {
+    "who": "sprocket",
+    "text": "They're billing the RESIGNED for overtime?"
+  },
+  "q.q3b.intro.03": {
+    "who": "intern",
+    "text": "Billing the retired, the resigned, and at least one guy who ascended to a higher plane. Pull the chips and everyone clocks out. Forever. 130 bolts."
+  },
+  "q.q3b.prog.01": {
+    "who": "intern",
+    "text": "The clock's still running. Somewhere, a ghost is accruing PTO it can never use."
+  },
+  "q.q3b.done.01": {
+    "who": "intern",
+    "text": "*click* ...Shift complete. Forty thousand employees just clocked out at once. Listen — you can almost hear the sigh. 130 bolts, hero."
+  },
+  "q.q3b.done.02": {
+    "who": "bolt",
+    "text": "Best severance package this company ever paid out."
+  },
+  "q.q4a.intro.01": {
+    "who": "squat",
+    "text": "I'm grandfathered in. Last resident of Nova Plaza. The Meter Maids fine me for EXISTING. Boot four of 'em, I'll pay you what the HOA never could."
+  },
+  "q.q4a.intro.02": {
+    "who": "sprocket",
+    "text": "You live in a fully automated ghost city that wants to bankrupt you."
+  },
+  "q.q4a.intro.03": {
+    "who": "squat",
+    "text": "The rent's technically zero if you never leave. Checkmate, capitalism. 130 bolts, go."
+  },
+  "q.q4a.prog.01": {
+    "who": "squat",
+    "text": "Still getting fined for 'unlicensed loitering in my own living room'. Hurry."
+  },
+  "q.q4a.done.01": {
+    "who": "squat",
+    "text": "Quietest night in years. No boot clamps, no citations. 130 bolts, neighbor. Stay grandfathered."
+  },
+  "q.q4b.intro.01": {
+    "who": "squat",
+    "text": "The fountains are the only thing keeping this dead city pretty. Find three control chips before the HOA 'optimizes' them into a parking fee."
+  },
+  "q.q4b.intro.02": {
+    "who": "bolt",
+    "text": "You want me to save... the decorative water features."
+  },
+  "q.q4b.intro.03": {
+    "who": "squat",
+    "text": "A man needs SOMETHING beautiful, mechanic. 110 bolts. Bring the chips."
+  },
+  "q.q4b.prog.01": {
+    "who": "squat",
+    "text": "One fountain already sputtered out. Clock's ticking."
+  },
+  "q.q4b.done.01": {
+    "who": "squat",
+    "text": "They're flowing again. Listen to that. That's the sound of spite, mechanic. 110 bolts, well spent."
+  },
+  "q.q5a.intro.01": {
+    "who": "bathrobe",
+    "text": "Excuse me! Is it Tuesday? Is it 40,000 years later? The frozen security bots keep 'greeting' me with LASERS. Thaw three permanently, would you?"
+  },
+  "q.q5a.intro.02": {
+    "who": "sprocket",
+    "text": "Sir, you're wearing a bathrobe on an ice planet."
+  },
+  "q.q5a.intro.03": {
+    "who": "bathrobe",
+    "text": "The subscription included slippers. It did NOT include CONTEXT. 130 bolts if you help."
+  },
+  "q.q5a.prog.01": {
+    "who": "bathrobe",
+    "text": "Another one just thawed and shot at me. Is that in my plan? Is shooting a PREMIUM feature?"
+  },
+  "q.q5a.done.01": {
+    "who": "bathrobe",
+    "text": "Peace and quiet! Well — cold quiet. 130 bolts. Say, what year IS it? ...You already left. Classic 40,000-years-ago behavior."
+  },
+  "q.q9a.intro.01": {
+    "who": "clerk",
+    "text": "Welcome to the Galleria! Kiosk seven, phone cases and existential dread. Quick thing: the mannequins move when you're not looking, and last week they started DRESSING LIKE ME."
+  },
+  "q.q9a.intro.02": {
+    "who": "sprocket",
+    "text": "Bolt. Bolt. It's a compliment-based horror scenario."
+  },
+  "q.q9a.intro.03": {
+    "who": "clerk",
+    "text": "Smash four of them. I'll pay 150 bolts out of the register nobody's emptied in eleven years."
+  },
+  "q.q9a.prog.01": {
+    "who": "clerk",
+    "text": "One of them is wearing my LANYARD now. Please hurry."
+  },
+  "q.q9a.done.01": {
+    "who": "clerk",
+    "text": "The showroom floor is still. STILL. Here's your 150 — and take a phone case. For morale. Mine, mostly."
+  },
+  "q.q9a.done.02": {
+    "who": "bolt",
+    "text": "I don't have a phone."
+  },
+  "q.q9a.done.03": {
+    "who": "clerk",
+    "text": "It's a lifestyle product. It doesn't need a phone. That's the genius of it."
+  },
+  "q.q9b.intro.01": {
+    "who": "clerk",
+    "text": "Corporate lost the three master price guns. Without them, nothing can be marked down, so legally the sale can never END. Find them and I can finally close this mall out with dignity."
+  },
+  "q.q9b.intro.02": {
+    "who": "bolt",
+    "text": "You want me to end an eleven-year sale... with office equipment."
+  },
+  "q.q9b.intro.03": {
+    "who": "clerk",
+    "text": "The RIGHT office equipment. 140 bolts. Mind the food court — the tables have opinions."
+  },
+  "q.q9b.prog.01": {
+    "who": "clerk",
+    "text": "I can hear a price gun clicking somewhere. Taunting me. Marking things UP, probably."
+  },
+  "q.q9b.done.01": {
+    "who": "clerk",
+    "text": "All three! *click* *click* *click* — there. Everything is now ZERO bolts and the sale is legally COMPLETE. Here's 140 from the register. Don't tell the mall."
+  },
+  "q.q9b.done.02": {
+    "who": "sprocket",
+    "text": "She just crashed their entire economy with a labeling tool. I've never respected anyone more."
+  },
+  "q.q5b.intro.01": {
+    "who": "bathrobe",
+    "text": "The thaw glitch scattered my complimentary slippers across the glacier. Three of them. A man cannot rebuild his dignity barefoot, mechanic."
+  },
+  "q.q5b.intro.02": {
+    "who": "bolt",
+    "text": "...Sure. Let's find your ice slippers."
+  },
+  "q.q5b.intro.03": {
+    "who": "bathrobe",
+    "text": "120 bolts and my eternal, slightly-confused gratitude."
+  },
+  "q.q5b.prog.01": {
+    "who": "bathrobe",
+    "text": "Still one slipper short. My left foot has filed a complaint."
+  },
+  "q.q5b.done.01": {
+    "who": "bathrobe",
+    "text": "REUNITED! All three! I am once again a man of leisure. 120 bolts. See you on the next planet — I seem to keep... showing up."
+  },
+  "q.q7a.intro.01": {
+    "who": "corn",
+    "text": "On behalf of Corn Union Local 404: the Pollinator scabs are crossing our picket line and buffing management's goons. Clear five. Solidarity pays 130 bolts."
+  },
+  "q.q7a.intro.02": {
+    "who": "sprocket",
+    "text": "I am negotiating with sentient corn and I have never respected anyone more."
+  },
+  "q.q7a.intro.03": {
+    "who": "corn",
+    "text": "We also have GREAT dental now. Ask me about our dental."
+  },
+  "q.q7a.prog.01": {
+    "who": "corn",
+    "text": "The scabs keep buffing the enemy. Local 404 is counting on you, sibling."
+  },
+  "q.q7a.done.01": {
+    "who": "corn",
+    "text": "Picket line HELD. The scabs are compost. 130 bolts from the strike fund, with the union's thanks. Now — about that dental."
+  },
+  "q.q7b.intro.01": {
+    "who": "corn",
+    "text": "The dead harvester's been leaking coolant into the swamp for six years. Find three sealant cores — patch it, and the whole ecosystem stops trying to kill us. Everybody wins."
+  },
+  "q.q7b.intro.02": {
+    "who": "bolt",
+    "text": "OmniScrap could've fixed this for 40 bolts."
+  },
+  "q.q7b.intro.03": {
+    "who": "corn",
+    "text": "They spent four MILLION explaining why our anger was unlicensed. Capitalism, sibling. 140 bolts and a cleaner planet."
+  },
+  "q.q7b.prog.01": {
+    "who": "corn",
+    "text": "The swamp can smell that leak still dripping. So can I. Please hurry."
+  },
+  "q.q7b.done.01": {
+    "who": "corn",
+    "text": "SEALED. The water's already clearing. The frogs are singing a different key. 140 bolts — you did more for this planet in an hour than OmniScrap did in a decade."
+  },
+  "q.q1c.intro.01": {
+    "who": "gasket",
+    "text": "The Row runs on one generator and three fuses. Repo drones lifted the fuses last night, then dropped 'em all over the yard when the Mutts spooked 'em. Bring my lights back, hon."
+  },
+  "q.q1c.intro.02": {
+    "who": "sprocket",
+    "text": "Without those fuses, forty-one families sit in the dark. Also their one television. They were mid-season, Bolt."
+  },
+  "q.q1c.intro.03": {
+    "who": "gasket",
+    "text": "110 bolts. And then you'll eat something. That part ain't optional."
+  },
+  "q.q1c.prog.01": {
+    "who": "gasket",
+    "text": "Still dark, hon. The little ones have started telling ghost stories about the billing department."
+  },
+  "q.q1c.done.01": {
+    "who": "gasket",
+    "text": "And there's light! Whole Row lit up like a recall notice. Here's your 110. Now sit down, the pair of you — you're too thin."
+  },
+  "q.q1c.done.02": {
+    "who": "sprocket",
+    "text": "I am a robot."
+  },
+  "q.q1c.done.03": {
+    "who": "gasket",
+    "text": "Thin."
+  },
+  "q.q1d.intro.01": {
+    "who": "gasket",
+    "text": "Every dusk the Vulture Drones circle the Row, pricing our roofs for the next repossession. Three fewer appraisers would do wonders for property values."
+  },
+  "q.q1d.intro.02": {
+    "who": "bolt",
+    "text": "They're appraising SHACKS?"
+  },
+  "q.q1d.intro.03": {
+    "who": "gasket",
+    "text": "Everything's an asset if you squint, hon. 90 bolts. Aim for the clipboard."
+  },
+  "q.q1d.prog.01": {
+    "who": "gasket",
+    "text": "Still hear 'em up there, muttering square footage. Keep swinging."
+  },
+  "q.q1d.done.01": {
+    "who": "gasket",
+    "text": "Quietest dusk in years. Take your 90. Your daddy'd be proud — he threw a wrench at one once. Missed. But the SPIRIT was there."
+  },
+  "q.q1d.done.02": {
+    "who": "bolt",
+    "text": "He never told me that."
+  },
+  "q.q1d.done.03": {
+    "who": "gasket",
+    "text": "He told everybody else. Daily."
+  },
+  "q.q2c.intro.01": {
+    "who": "bellhop",
+    "text": "Management confiscates our tip jars. Policy says gratuity is 'a relationship between the guest and the brand'. There are three jars up on the decks. They are ours."
+  },
+  "q.q2c.intro.02": {
+    "who": "sprocket",
+    "text": "They're taxing kindness. I didn't think I could be surprised any more, and yet."
+  },
+  "q.q2c.intro.03": {
+    "who": "bellhop",
+    "text": "110 bolts from the staff fund. We passed a hat. Then management confiscated the hat. This is from the SECOND hat."
+  },
+  "q.q2c.prog.01": {
+    "who": "bellhop",
+    "text": "The jars are still up top. One of them has been relabelled 'BRAND LOVE'. Please hurry."
+  },
+  "q.q2c.done.01": {
+    "who": "bellhop",
+    "text": "All three! That's six weeks of tips. That's a bus ticket home for Housekeeping-4. Here — 110, and the thanks of everyone under the pool."
+  },
+  "q.q2c.done.02": {
+    "who": "bolt",
+    "text": "Keep it. Put it toward the bus."
+  },
+  "q.q2c.done.03": {
+    "who": "bellhop",
+    "text": "Sir, we have rules about refusing gratuity. They're the only rules we like."
+  },
+  "q.q2d.intro.01": {
+    "who": "bellhop",
+    "text": "The Lifeguard Bots don't guard lives. They guard BREAKS. Sit down for nine seconds and one blows a whistle in your audio port."
+  },
+  "q.q2d.intro.02": {
+    "who": "bolt",
+    "text": "Two of them need a permanent break. Got it."
+  },
+  "q.q2d.intro.03": {
+    "who": "bellhop",
+    "text": "100 bolts. And if anyone asks, you slipped. Wet floor. We have a sign."
+  },
+  "q.q2d.prog.01": {
+    "who": "bellhop",
+    "text": "I still hear whistling. Housekeeping-4 hasn't sat down since Tuesday."
+  },
+  "q.q2d.done.01": {
+    "who": "bellhop",
+    "text": "Silence. Listen to that. Somebody down the row just SAT. On purpose. 100 bolts, and I've put the wet-floor sign out for you."
+  },
+  "q.q2d.done.02": {
+    "who": "sprocket",
+    "text": "For the record, I'm logging this as workplace safety."
+  },
+  "q.q3c.intro.01": {
+    "who": "intern",
+    "text": "One more thing. That statue of Chairman Grindstone in the lobby? I had to polish its cigar every morning. At 5 AM. While it judged me."
+  },
+  "q.q3c.intro.02": {
+    "who": "bolt",
+    "text": "Say no more."
+  },
+  "q.q3c.intro.03": {
+    "who": "intern",
+    "text": "I'm saying slightly more: 120 bolts, and please make it THOROUGH."
+  },
+  "q.q3c.prog.01": {
+    "who": "intern",
+    "text": "The statue still stands. I can feel its marble disappointment from here."
+  },
+  "q.q3c.done.01": {
+    "who": "intern",
+    "text": "I watched the whole thing. Twice, in my head. Here's 120 bolts — best money my severance ever spent."
+  },
+  "q.q3c.done.02": {
+    "who": "sprocket",
+    "text": "Officially, that was structural maintenance. Unofficially: 10 out of 10."
+  },
+  "memo.01": {
+    "who": "memo",
+    "text": "RE: RE: RE: The Moon — ALL HANDS: yes, the moon is cracked. No, it was not Facilities. The crack is now BRANDED. Please refer to it as the OmniScrap Smile(tm). Anyone photographing it from the unlicensed side owes royalties."
+  },
+  "memo.02": {
+    "who": "memo",
+    "text": "Garage Repossession FAQ — Q: The resident was still inside the garage.\nA: Residents are fixtures. Fixtures convey.\nQ: The resident had a sandwich.\nA: Sandwiches convey. See attached sandwich valuation schedule (page 1: 'one sandwich')."
+  },
+  "memo.03": {
+    "who": "memo",
+    "text": "Scrap Mutt Feeding Policy — Stop feeding the Scrap Mutts. They are not pets. They are unlicensed asset-recovery units that happened to develop tails. Wagging is not affection, it is targeting."
+  },
+  "memo.04": {
+    "who": "memo",
+    "text": "Conveyor Safety Update — The conveyor belts are now certified safe for all employees who remain motionless in the designated Employee Cube. Walking on belts voids your skeleton's warranty."
+  },
+  "memo.05": {
+    "who": "memo",
+    "text": "Sunset Monetization Pilot — The junkyard's sunset routinely tests as 'beautiful' with focus groups, which is unacceptable, as it is free. Q3 goal: watermark the horizon."
+  },
+  "memo.06": {
+    "who": "memo",
+    "text": "Twin Suns: One Is An Ad — Guests may notice the second sun. The second sun is a projection sponsored by Air Premium(tm). Do NOT let guests apply sunscreen rated for two suns; that is an upsell opportunity."
+  },
+  "memo.07": {
+    "who": "memo",
+    "text": "Infinity Pool Incident — Legal has ruled that the infinity pool's edge must legally end somewhere. Engineering disagrees on philosophical grounds. Until resolved, please describe the pool as 'finite-adjacent'."
+  },
+  "memo.08": {
+    "who": "memo",
+    "text": "Ambassadog Vests — The security hounds' vests are size XS-Corporate. This is intentional. Focus groups rated 'small vest on large dog' 34% more trustworthy than 'appropriately sized vest'. Do not adjust the vests."
+  },
+  "memo.09": {
+    "who": "memo",
+    "text": "Selfie Sentry Firmware 9.1 — Patch notes: sentries no longer tag guests as 'content'. Guests are now tagged as 'pre-content'. Also fixed a bug where the flash was set to 'apology'."
+  },
+  "memo.10": {
+    "who": "memo",
+    "text": "RE: The Lava Pool — Marketing insists 'the pool has always been lava' tests better than 'the lava was always a pool'. Signage updated. Towels are now legally personnel — do NOT lay on the staff."
+  },
+  "memo.11": {
+    "who": "memo",
+    "text": "Mandatory Fun: Guidance — HR reminder: Fun is mandatory Tuesdays 9-11 AM. Spontaneous fun outside this window is time theft. Laughter should be logged in the Joy Ledger with a cost center."
+  },
+  "memo.12": {
+    "who": "memo",
+    "text": "Lobby Statue Maintenance — The Chairman's statue must be polished daily at 5 AM, when the marble is 'most receptive'. Interns report the statue 'watches' them. This is a premium feature."
+  },
+  "memo.13": {
+    "who": "memo",
+    "text": "Molten Core: Q3 KPIs — The core exceeded its heat targets. Congratulate it via the suggestion box (fireproof). Do not high-five the core. We lost two managers and a very good stapler that way."
+  },
+  "memo.14": {
+    "who": "memo",
+    "text": "Termination Notice Style Guide — Termination notices must be folded into aerodynamic planes per brand guidelines. A termination that fails to reach its target is a 'retention event' and counts toward morale KPIs."
+  },
+  "memo.15": {
+    "who": "memo",
+    "text": "PROJECT ZONGA (CONFIDENTIAL) — If the mechanic reaches this floor, initiate Project ZONGA: a contingency island where engagement metrics survive even if... management does not. Remember: the brand is load-bearing."
+  },
+  "memo.16": {
+    "who": "memo",
+    "text": "HOA Charter, Article 1 — A resident is anyone who owes fines. To STOP owing fines, one must first move out. To move out, one must be current on fines. We call this 'the Nova Loop'. It is working as designed."
+  },
+  "memo.17": {
+    "who": "memo",
+    "text": "FineTree Illumination — The FineTree(tm) hologram must display every unpaid fine in the city, in real time, forever. Engineering asked what happens when it runs out of sky. Marketing asked them to think bigger."
+  },
+  "memo.18": {
+    "who": "memo",
+    "text": "Surge Pricing the Air — Q3 pilot: charge more for oxygen during peak demand (i.e., when residents are running from enforcement). Early metrics show residents breathing 40% less. Efficiency!"
+  },
+  "memo.19": {
+    "who": "memo",
+    "text": "RE: The Fountains — Yes, the fountains still run in the empty city. No, we cannot turn them off — the shutoff valve requires an HOA work order, and the HOA is the fountains. It's fine. It's beautiful. It's fine."
+  },
+  "memo.20": {
+    "who": "memo",
+    "text": "Cleaning Bot Directive — The plazas are spotless because the cleaning bots never learned the city was evacuated. Do NOT tell them. A bot with nothing to clean is a bot with questions."
+  },
+  "memo.21": {
+    "who": "memo",
+    "text": "ForeverYou Terms, Sec. 9 — Freezing is complimentary. Thawing is a premium tier. Customers who did not purchase the Thaw Add-On remain, per contract, 'indefinitely paused'. This is not death. Legal was very clear it is not death."
+  },
+  "memo.22": {
+    "who": "memo",
+    "text": "Cancellation Flow — To cancel ForeverYou, the customer must first thaw. To thaw, the customer must not have canceled. Retention is at an all-time high and also technically an all-time low."
+  },
+  "memo.23": {
+    "who": "memo",
+    "text": "RECALL BATCH #1 — The first BoltBuddy production run developed 'attachments' to their owners — a defect. All Batch #1 units are recalled to cold storage. Remote decommission (Clause 44) is the humane... the EFFICIENT option. Do not name them. Naming increases attachment 300%."
+  },
+  "memo.24": {
+    "who": "memo",
+    "text": "Aurora Licensing — The northern lights over Glacius are gorgeous and, crucially, unmonetized. Proposal: a subtle logo in the aurora. Physics says no. Physics does not have a Q3 target. Escalating to physics's manager."
+  },
+  "memo.25": {
+    "who": "memo",
+    "text": "The Bathrobe Situation — One customer thawed early due to a billing glitch and now wanders the facility asking what year it is. He is technically a trespasser AND a valued member. HR recommends we simply... let him cook. He seems happy."
+  },
+  "memo.26": {
+    "who": "memo",
+    "text": "TerraFarm Incident Report — The gene-modded crops have unionized. Demands include: dental, sunlight, and 'an end to being harvested'. Two of these are reasonable. We rejected all three to be safe."
+  },
+  "memo.27": {
+    "who": "memo",
+    "text": "RE: The Glowing — Everything on Verdant now glows. This was not in the terraforming spec. The bioluminescence tests beautifully but we did not authorize beauty and are not sure who to bill for it."
+  },
+  "memo.28": {
+    "who": "memo",
+    "text": "Harvester HR-9 (Missing) — Mega-harvester HR-9 stopped reporting. Last log: 'the moss is talking to me and it makes GOOD POINTS'. If located, do not reason with it. It will win."
+  },
+  "memo.29": {
+    "who": "memo",
+    "text": "Coolant Leak Memo — HR-9's coolant has been leaking into the swamp for six years. The ecosystem is furious. Fixing it costs 40 bolts. We have instead spent 4 million bolts on a campaign explaining why the swamp's anger is unlicensed."
+  },
+  "memo.30": {
+    "who": "memo",
+    "text": "Corn Union Local 404 — The corn has filed for collective bargaining. Our position is that corn cannot legally organize. The corn's position is that it has already organized and we are simply the last to know. Their position is stronger."
+  },
+  "memo.31": {
+    "who": "memo",
+    "text": "RE: Why Is The Mall In Space — The Galleria was launched into orbit in Q2 to exit every tax jurisdiction simultaneously. Note: employees present at launch are now 'orbital assets'. Their families have been sent a coupon."
+  },
+  "memo.32": {
+    "who": "memo",
+    "text": "Mannequin Recall (CANCELED) — The Model-M display units have begun repositioning themselves when unobserved. The recall is canceled — not for safety reasons, but because the units keep walking away from the recall stations. Please stop making eye contact with them. They consider it a challenge."
+  },
+  "memo.33": {
+    "who": "memo",
+    "text": "Greeter Prime: Performance Review — STRENGTHS: has greeted continuously for 11 years without a break, a customer, or a paycheck. GROWTH AREAS: has begun greeting structural columns; the columns report feeling pressured. RATING: exceeds expectations. Do not approach."
+  },
+  "memo.34": {
+    "who": "memo",
+    "text": "Everything Must Go: Clarification — Legal reminds staff that while EVERYTHING MUST GO, nothing may LEAVE — merchandise exiting the premises constitutes theft, including merchandise we have sold. The sale is a state of mind. The exits are decorative."
+  },
+  "memo.35": {
+    "who": "memo",
+    "text": "Document Retention Policy — Sensitive files (incl. the Clause 44 ledger) are now stored in the anchor store, in plain sight. Legal ruled this the safest location, citing precedent: nobody has ever voluntarily read anything at this mall."
+  },
+  "bark.lowhp.01": {
+    "who": "sprocket",
+    "text": "Your health bar looks like my battery: critically ignored."
+  },
+  "bark.lowhp.02": {
+    "who": "sprocket",
+    "text": "Medical advice: stop getting hit. That'll be 40 bolts."
+  },
+  "bark.lowhp.03": {
+    "who": "sprocket",
+    "text": "I can deliver a eulogy or a pep talk. Currently drafting both."
+  },
+  "bark.bolts.01": {
+    "who": "sprocket",
+    "text": "Ooh, shiny! Capitalism!"
+  },
+  "bark.bolts.02": {
+    "who": "sprocket",
+    "text": "At this rate you can afford HALF a weapon!"
+  },
+  "bark.bolts.03": {
+    "who": "sprocket",
+    "text": "Cha-ching! Blartz is going to love you. Financially. Only financially."
+  },
+  "bark.idle.01": {
+    "who": "sprocket",
+    "text": "Should I file a missing-person report on your motivation?"
+  },
+  "bark.idle.02": {
+    "who": "sprocket",
+    "text": "I've seen statues with more hustle. Nicer paint jobs, too."
+  },
+  "bark.idle.03": {
+    "who": "sprocket",
+    "text": "Take your time. The galaxy is only being strip-mined as we speak."
+  },
+  "bark.idle.04": {
+    "who": "sprocket",
+    "text": "I've calculated our odds. Then I stopped, for morale reasons."
+  },
+  "bark.idle.05": {
+    "who": "sprocket",
+    "text": "If we die here, I want it noted that it was YOUR route."
+  },
+  "bark.combat.01": {
+    "who": "sprocket",
+    "text": "Behind you! No, other behind. YOUR behind!"
+  },
+  "bark.combat.02": {
+    "who": "sprocket",
+    "text": "Hit it until the beeping stops. That's my whole strategy."
+  },
+  "bark.combat.03": {
+    "who": "sprocket",
+    "text": "That one owed OmniScrap money. Now it owes YOU an apology."
+  },
+  "bark.combat.04": {
+    "who": "sprocket",
+    "text": "Beautiful swing! Ugly result! Ten out of ten!"
+  },
+  "bark.combat.05": {
+    "who": "sprocket",
+    "text": "More of them?! Do they respawn out of SPITE?"
+  },
+  "bark.combat.06": {
+    "who": "sprocket",
+    "text": "I love this part. I hate this part. I contain multitudes."
+  },
+  "bark.combat.07": {
+    "who": "sprocket",
+    "text": "Mallet diplomacy: surprisingly effective, legally complicated."
+  },
+  "super.01": {
+    "who": "sprocket",
+    "text": "I AM BECOME WARRANTY VOID."
+  },
+  "super.02": {
+    "who": "sprocket",
+    "text": "This is what the subscription tier gets you!"
+  },
+  "super.03": {
+    "who": "sprocket",
+    "text": "Feelings update: RAGE is out of early access!"
+  },
+  "super.04": {
+    "who": "sprocket",
+    "text": "I read your EULA. Now YOU pay the penalty clause!"
+  },
+  "super.05": {
+    "who": "sprocket",
+    "text": "Customer support has ENTERED THE CHAT."
+  },
+  "splash.01": {
+    "who": "sprocket",
+    "text": "The map ends. Like my patience."
+  },
+  "splash.02": {
+    "who": "sprocket",
+    "text": "The ocean is out-of-bounds AND out of budget."
+  },
+  "splash.03": {
+    "who": "sprocket",
+    "text": "You're a ROBOT-ADJACENT lifeform. Water is a lawsuit."
+  },
+  "splash.04": {
+    "who": "sprocket",
+    "text": "The pool is for GUESTS, Bolt. We are trespassers."
+  },
+  "splash.05": {
+    "who": "sprocket",
+    "text": "I rated that dive 2 stars. The splash lacked commitment."
+  },
+  "splash.06": {
+    "who": "sprocket",
+    "text": "Rust warranty voided. Again."
+  },
+  "pa.galleria.01": {
+    "who": "pa",
+    "text": "\"Attention shoppers: today's doorbuster is the door. The door must go.\""
+  },
+  "pa.galleria.02": {
+    "who": "pa",
+    "text": "\"The food court reminds you that sampling the samples constitutes a subscription.\""
+  },
+  "pa.galleria.03": {
+    "who": "pa",
+    "text": "\"Lost children can be reclaimed at Guest Services for a modest restocking fee.\""
+  },
+  "blartz.pitches.01": {
+    "who": "blartz",
+    "text": "\"If it explodes, it's a feature. I DESIGNED the feature.\""
+  },
+  "blartz.pitches.02": {
+    "who": "blartz",
+    "text": "\"Four hundred terawatts of don't-touch-it, and I let YOU hold it. You're welcome.\""
+  },
+  "blartz.pitches.03": {
+    "who": "blartz",
+    "text": "\"Recall? A recall is just a feature rollout in reverse. I don't do reverse.\""
+  },
+  "blartz.pitches.04": {
+    "who": "blartz",
+    "text": "\"I'll explain slower: boom go big. Bigger boom go bigger. This is graduate-level stuff.\""
+  },
+  "blartz.pitches.05": {
+    "who": "blartz",
+    "text": "\"Every one of these is hand-calibrated by me, so blame is also hand-calibrated. At you.\""
+  },
+  "blartz.pitches.06": {
+    "who": "blartz",
+    "text": "\"Safety margin? I AM the safety margin.\""
+  },
+  "blartz.deny.01": {
+    "who": "blartz",
+    "text": "\"No bolts, no boom-boom. Genius runs on revenue, friend.\""
+  },
+  "blartz.deny.02": {
+    "who": "blartz",
+    "text": "\"Come back when your wallet respects my engineering.\""
+  },
+  "blartz.deny.03": {
+    "who": "blartz",
+    "text": "\"I priced this in 'fair' and you brought 'hopeful'. Adorable.\""
+  },
+  "blartz.buy.01": {
+    "who": "blartz",
+    "text": "\"KA-CHING! You now own the finest hardware in six systems. Do NOT read the sticker.\""
+  },
+  "blartz.buy.02": {
+    "who": "blartz",
+    "text": "\"Sold! No refunds — refunds imply error, and I don't manufacture those.\""
+  },
+  "blartz.buy.03": {
+    "who": "blartz",
+    "text": "\"Excellent choice. Statistically, MY statistics. It won't explode in the holster. Probably.\""
+  },
+  "blartz.gratefulPitches.01": {
+    "who": "blartz",
+    "text": "\"My rescuer! Everything's 0% off, but I'll THINK about you fondly at full price.\""
+  },
+  "blartz.gratefulPitches.02": {
+    "who": "blartz",
+    "text": "\"You busted me out with percussive force. As an engineer? Respect.\""
+  },
+  "blartz.gratefulPitches.03": {
+    "who": "blartz",
+    "text": "\"That cell's welds were AMATEUR work. I was nearly free via spoon anyway. Still. Thanks.\""
+  },
+  "blartz.tips.01": {
+    "who": "blartz",
+    "text": "\"A tip! For me? I mean — obviously. For me.\""
+  },
+  "blartz.tips.02": {
+    "who": "blartz",
+    "text": "\"Another bolt for the genius fund. The fund is a jar. The jar is the fund.\""
+  },
+  "blartz.tips.03": {
+    "who": "blartz",
+    "text": "\"Keep tipping and I'll name a warhead after you.\""
+  },
+  "blartz.tips.04": {
+    "who": "blartz",
+    "text": "\"You know what? You're my favorite customer. Legally non-binding.\""
+  },
+  "blartz.item.weapon": {
+    "who": "blartz",
+    "text": "\"Assembled it blindfolded. On a DARE. Still perfect.\""
+  },
+  "blartz.item.upg": {
+    "who": "blartz",
+    "text": "\"Upgrading MY work? ...Acceptable. Barely necessary. Do it.\""
+  },
+  "blartz.item.mallet": {
+    "who": "blartz",
+    "text": "\"Percussive engineering. The OLDEST engineering.\""
+  },
+  "blartz.item.ammo": {
+    "who": "blartz",
+    "text": "\"The bag is mysterious to YOU. To me it's inventory.\""
+  },
+  "blartz.item.nano": {
+    "who": "blartz",
+    "text": "\"Tiny robots. I taught them everything. They resent it.\""
+  },
+  "blartz.item.super": {
+    "who": "blartz",
+    "text": "\"I voided a warranty I WROTE for this. Poetry.\""
+  },
+  "zonga.sponsor.01": {
+    "who": "glambot",
+    "text": "This elimination brought to you by GrindCo Chiropractic: we un-bend what ZONGA bent."
+  },
+  "zonga.sponsor.02": {
+    "who": "glambot",
+    "text": "Sponsored by Air Premium™ — now with 20% more air."
+  },
+  "zonga.sponsor.03": {
+    "who": "glambot",
+    "text": "Brought to you by BoltBuddy™. He heard everything you just said."
+  },
+  "zonga.sponsor.04": {
+    "who": "glambot",
+    "text": "Sponsored by OmniScrap Legal: it was in the waiver."
+  },
+  "zonga.sponsor.05": {
+    "who": "glambot",
+    "text": "This placement funded by viewers like you. Mostly by your data."
+  },
+  "lr.quip.bail.01": {
+    "who": "bail",
+    "text": "Gravity called. I let it go to voicemail. It left a message."
+  },
+  "lr.quip.bail.02": {
+    "who": "bail",
+    "text": "Logged as 'unscheduled floor research'."
+  },
+  "lr.quip.bail.03": {
+    "who": "bail",
+    "text": "The deck is fine. I checked the deck first."
+  },
+  "lr.quip.fall.01": {
+    "who": "fall",
+    "text": "Respawn's on me. Itemized bill to follow."
+  },
+  "lr.quip.fall.02": {
+    "who": "fall",
+    "text": "For the black box: that was not the racing line."
+  },
+  "lr.quip.fall.03": {
+    "who": "fall",
+    "text": "The slag is 1,400 degrees. I'd describe it as 'not a shortcut'."
+  },
+  "lr.quip.bank.01": {
+    "who": "bank",
+    "text": "That was… adequate. I'm lying. That was GREAT."
+  },
+  "lr.quip.bank.02": {
+    "who": "bank",
+    "text": "Overclock charged. Please don't tell me what you're about to do."
+  },
+  "lr.quip.bank.03": {
+    "who": "bank",
+    "text": "Dent is pretending he didn't see that. Dent saw that."
+  },
+  "lr.quip.loop.01": {
+    "who": "loop",
+    "text": "We are upside down. Just narrating. For the record."
+  },
+  "lr.quip.final.01": {
+    "who": "final",
+    "text": "Final lap. Statistically this is where you do something heroic or stupid. Often both."
+  },
+  "lr.quip.lead.01": {
+    "who": "lead",
+    "text": "First place. Don't look back. Dent hates that. Do it."
+  },
+  "lr.quip.start.01": {
+    "who": "start",
+    "text": "Tricks charge my overclock. Land them clean and I light the jets."
+  }
+}

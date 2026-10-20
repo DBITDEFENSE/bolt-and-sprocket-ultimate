@@ -1,0 +1,310 @@
+[
+  {
+    "name": "SCRAPHEAP JUNCTION",
+    "tagline": "Planet 1 — home, sweet foreclosed home",
+    "palette": {
+      "sky": 4530234,
+      "fog": 10112819,
+      "fogNear": 45,
+      "fogFar": 165,
+      "hemiTop": 16767408,
+      "hemiBot": 6175772,
+      "sun": 16757370,
+      "sunI": 1.5,
+      "hemiI": 0.85,
+      "ambI": 0.22,
+      "sunOff": [
+        26,
+        18,
+        10
+      ],
+      "grade": "linear-gradient(180deg, rgba(255,150,80,0.55), rgba(90,40,120,0.5))"
+    },
+    "amb": "junk",
+    "orbColor": 13199902,
+    "musicRoot": 130.8,
+    "build": {
+      "__ref__": "buildLevel1"
+    }
+  },
+  {
+    "name": "RUSTVANE CANYON",
+    "tagline": "Planet 2 — OmniScrap™ influencer resort & strip mine",
+    "palette": {
+      "sky": 7324906,
+      "fog": 10473690,
+      "fogNear": 55,
+      "fogFar": 210,
+      "hemiTop": 16777215,
+      "hemiBot": 9064512,
+      "sun": 16773840,
+      "sunI": 1.6,
+      "hemiI": 1,
+      "ambI": 0.3,
+      "sunOff": [
+        14,
+        40,
+        8
+      ],
+      "grade": "linear-gradient(180deg, rgba(120,220,255,0.5), rgba(255,190,120,0.45))"
+    },
+    "amb": "resort",
+    "orbColor": 11022898,
+    "musicRoot": 98,
+    "build": {
+      "__ref__": "buildLevel2"
+    }
+  },
+  {
+    "name": "CORE FOUNDRY",
+    "tagline": "Planet 3 — OmniScrap™ HQ. Abandon warranty, all ye who enter",
+    "palette": {
+      "sky": 329228,
+      "fog": 1444621,
+      "fogNear": 40,
+      "fogFar": 150,
+      "hemiTop": 10470624,
+      "hemiBot": 4855816,
+      "sun": 13624575,
+      "sunI": 1.1,
+      "hemiI": 0.7,
+      "ambI": 0.2,
+      "sunOff": [
+        10,
+        36,
+        -8
+      ],
+      "grade": "linear-gradient(180deg, rgba(120,180,255,0.55), rgba(255,90,30,0.55))"
+    },
+    "amb": "foundry",
+    "orbColor": 2781071,
+    "musicRoot": 82.4,
+    "build": {
+      "__ref__": "buildLevel3"
+    }
+  },
+  {
+    "name": "ZONGA™",
+    "tagline": "The Last Influencer Standing — waiver implied by continued breathing",
+    "palette": {
+      "sky": 6277359,
+      "fog": 11066596,
+      "fogNear": 70,
+      "fogFar": 260,
+      "hemiTop": 16777215,
+      "hemiBot": 8022602,
+      "sun": 16774877,
+      "sunI": 1.7,
+      "hemiI": 1.05,
+      "ambI": 0.3,
+      "sunOff": [
+        16,
+        42,
+        12
+      ],
+      "grade": "linear-gradient(180deg, rgba(140,230,255,0.5), rgba(255,220,140,0.45))"
+    },
+    "amb": "zonga",
+    "orbColor": 3119722,
+    "musicRoot": 146.8,
+    "build": {
+      "__ref__": "buildZonga"
+    }
+  },
+  {
+    "name": "GLAMBOT COLOSSEUM",
+    "tagline": "Consensual violence, darling",
+    "palette": {
+      "sky": 2756656,
+      "fog": 3809348,
+      "fogNear": 50,
+      "fogFar": 180,
+      "hemiTop": 16765164,
+      "hemiBot": 4860506,
+      "sun": 16773848,
+      "sunI": 1.5,
+      "hemiI": 0.9,
+      "ambI": 0.3,
+      "sunOff": [
+        12,
+        38,
+        6
+      ],
+      "grade": "linear-gradient(180deg, rgba(255,120,200,0.5), rgba(90,40,140,0.5))"
+    },
+    "amb": "zonga",
+    "orbColor": 16743096,
+    "musicRoot": 130.8,
+    "build": {
+      "__ref__": "buildArena"
+    }
+  },
+  {
+    "name": "NOVA PLAZA",
+    "tagline": "Planet 4 — the HOA fined everyone into the sun",
+    "palette": {
+      "sky": 658980,
+      "fog": 1711674,
+      "fogNear": 45,
+      "fogFar": 190,
+      "hemiTop": 6978303,
+      "hemiBot": 2102330,
+      "sun": 12568831,
+      "sunI": 1.1,
+      "hemiI": 0.7,
+      "ambI": 0.28,
+      "sunOff": [
+        16,
+        34,
+        10
+      ],
+      "grade": "linear-gradient(180deg, rgba(120,120,255,0.55), rgba(255,80,200,0.5))"
+    },
+    "amb": "nova",
+    "orbColor": 3820287,
+    "musicRoot": 116,
+    "build": {
+      "__ref__": "buildNova"
+    }
+  },
+  {
+    "name": "GLACIUS VAULT",
+    "tagline": "Planet 5 — pause your life, unpause is premium",
+    "palette": {
+      "sky": 10473712,
+      "fog": 14216447,
+      "fogNear": 40,
+      "fogFar": 200,
+      "hemiTop": 16777215,
+      "hemiBot": 9417944,
+      "sun": 15398143,
+      "sunI": 1.5,
+      "hemiI": 1.05,
+      "ambI": 0.35,
+      "sunOff": [
+        12,
+        40,
+        8
+      ],
+      "grade": "linear-gradient(180deg, rgba(160,220,255,0.5), rgba(255,240,220,0.4))"
+    },
+    "amb": "glacius",
+    "orbColor": 10473712,
+    "musicRoot": 138.6,
+    "build": {
+      "__ref__": "buildGlacius"
+    }
+  },
+  {
+    "name": "VERDANT SINK",
+    "tagline": "Planet 6 — the crops unionized, nature won",
+    "palette": {
+      "sky": 530976,
+      "fog": 666154,
+      "fogNear": 35,
+      "fogFar": 150,
+      "hemiTop": 3836538,
+      "hemiBot": 663576,
+      "sun": 10485711,
+      "sunI": 0.9,
+      "hemiI": 0.7,
+      "ambI": 0.3,
+      "sunOff": [
+        10,
+        30,
+        -6
+      ],
+      "grade": "linear-gradient(180deg, rgba(60,200,160,0.5), rgba(180,120,255,0.45))"
+    },
+    "amb": "verdant",
+    "orbColor": 3119722,
+    "musicRoot": 98,
+    "build": {
+      "__ref__": "buildVerdant"
+    }
+  },
+  {
+    "name": "OMNIGRAND PRIX™",
+    "tagline": "Hoverboards provided as-is. Speed sold separately.",
+    "palette": {
+      "sky": 4530234,
+      "fog": 10112819,
+      "fogNear": 45,
+      "fogFar": 190,
+      "hemiTop": 16767408,
+      "hemiBot": 6175772,
+      "sun": 16757370,
+      "sunI": 1.5,
+      "hemiI": 0.85,
+      "ambI": 0.22,
+      "sunOff": [
+        26,
+        18,
+        10
+      ],
+      "grade": "linear-gradient(180deg, rgba(120,220,255,0.5), rgba(255,150,80,0.5))"
+    },
+    "amb": "zonga",
+    "orbColor": 4122367,
+    "musicRoot": 146.8,
+    "build": {
+      "__ref__": "buildRaceTrack"
+    }
+  },
+  {
+    "name": "GRAND GALLERIA",
+    "tagline": "Planet 7 — everything must go. Nothing may leave.",
+    "palette": {
+      "sky": 657428,
+      "fog": 1446438,
+      "fogNear": 38,
+      "fogFar": 150,
+      "hemiTop": 12098272,
+      "hemiBot": 2366000,
+      "sun": 14207231,
+      "sunI": 0.9,
+      "hemiI": 0.75,
+      "ambI": 0.3,
+      "sunOff": [
+        8,
+        34,
+        6
+      ],
+      "grade": "linear-gradient(180deg, rgba(255,120,200,0.5), rgba(60,220,255,0.45))"
+    },
+    "amb": "nova",
+    "orbColor": 16731549,
+    "musicRoot": 123.5,
+    "build": {
+      "__ref__": "buildGalleria"
+    }
+  },
+  {
+    "name": "THE RIOT LOOP",
+    "tagline": "Recalled products. Unrecalled attitude.",
+    "palette": {
+      "sky": 2757174,
+      "fog": 5908016,
+      "fogNear": 260,
+      "fogFar": 1600,
+      "hemiTop": 12101887,
+      "hemiBot": 16742954,
+      "sun": 16763024,
+      "sunI": 1.5,
+      "hemiI": 1,
+      "ambI": 0.3,
+      "sunOff": [
+        22,
+        26,
+        12
+      ],
+      "grade": "linear-gradient(180deg, rgba(120,90,255,0.5), rgba(255,130,50,0.55))"
+    },
+    "amb": "zonga",
+    "orbColor": 16751918,
+    "musicRoot": 146.8,
+    "build": {
+      "__ref__": "buildLoopRiotVenue"
+    }
+  }
+]

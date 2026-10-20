@@ -1,0 +1,26 @@
+{
+  "match": false,
+  "phase": "off",
+  "count": 50,
+  "bots": [],
+  "alive": 0,
+  "kills": 0,
+  "feed": [],
+  "tierAcc": 0,
+  "midAcc": 0,
+  "farAcc": 0,
+  "zone": {
+    "r": 160,
+    "targetR": 160,
+    "stage": 0,
+    "timer": 12,
+    "cx": 0,
+    "cz": 0,
+    "wall": null,
+    "ring": null
+  },
+  "firstBlood": false,
+  "top10Said": false,
+  "final2Said": false,
+  "pendingStart": false
+}

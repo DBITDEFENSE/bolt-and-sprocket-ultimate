@@ -1,0 +1,116 @@
+{
+  "bolt": {
+    "pitch": 1,
+    "rate": 1,
+    "kw": [
+      "david",
+      "male",
+      "natural",
+      "en-us"
+    ]
+  },
+  "sprocket": {
+    "pitch": 1.6,
+    "rate": 1.15,
+    "kw": [
+      "zira",
+      "female",
+      "google us",
+      "samantha"
+    ]
+  },
+  "blartz": {
+    "pitch": 0.82,
+    "rate": 1.32,
+    "kw": [
+      "mark",
+      "male",
+      "daniel"
+    ]
+  },
+  "grindstone": {
+    "pitch": 0.6,
+    "rate": 0.85,
+    "kw": [
+      "david",
+      "male",
+      "george",
+      "daniel"
+    ]
+  },
+  "cc": {
+    "pitch": 1.25,
+    "rate": 1.12,
+    "kw": [
+      "female",
+      "zira",
+      "samantha"
+    ]
+  },
+  "glambot": {
+    "pitch": 1.2,
+    "rate": 1.1,
+    "kw": [
+      "female",
+      "zira",
+      "samantha"
+    ]
+  },
+  "pa": {
+    "pitch": 1,
+    "rate": 1,
+    "kw": [
+      "male",
+      "david"
+    ],
+    "radio": true
+  },
+  "darkmatter": {
+    "pitch": 0.7,
+    "rate": 0.9,
+    "kw": [
+      "male",
+      "david"
+    ],
+    "radio": true
+  },
+  "retention": {
+    "pitch": 1.15,
+    "rate": 1.18,
+    "kw": [
+      "male",
+      "mark",
+      "david"
+    ]
+  },
+  "npc0": {
+    "pitch": 1.1,
+    "rate": 1,
+    "kw": [
+      "male"
+    ]
+  },
+  "npc1": {
+    "pitch": 0.95,
+    "rate": 1.05,
+    "kw": [
+      "female"
+    ]
+  },
+  "npc2": {
+    "pitch": 1.35,
+    "rate": 1.08,
+    "kw": [
+      "female",
+      "zira"
+    ]
+  },
+  "npc3": {
+    "pitch": 0.85,
+    "rate": 0.95,
+    "kw": [
+      "male",
+      "mark"
+    ]
+  }
+}

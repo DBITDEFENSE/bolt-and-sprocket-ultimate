@@ -1,0 +1,10 @@
+{
+  "px": 2,
+  "shadow": 2048,
+  "particles": 1,
+  "fogMul": 1,
+  "props": 1,
+  "bloom": 0.45,
+  "vig": true,
+  "grade": true
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "scrap",
+    "name": "SCRAP LEAGUE",
+    "desc": "The Recalls go easy. They call it \"warranty mode\".",
+    "skill": 0.93,
+    "pay": 0.6,
+    "rep": 0.7
+  },
+  {
+    "id": "cup",
+    "name": "RIOT CUP",
+    "desc": "The real thing. Win it and the black box is yours.",
+    "skill": 1,
+    "pay": 1,
+    "rep": 1
+  },
+  {
+    "id": "unrecalled",
+    "name": "UNRECALLED",
+    "desc": "Governors off. Dent stops being polite.",
+    "skill": 1.06,
+    "pay": 1.6,
+    "rep": 1.6,
+    "locked": "Win the RIOT CUP"
+  }
+]

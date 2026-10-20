@@ -1,0 +1,31 @@
+{
+  "pitches": [
+    "\"If it explodes, it's a feature. I DESIGNED the feature.\"",
+    "\"Four hundred terawatts of don't-touch-it, and I let YOU hold it. You're welcome.\"",
+    "\"Recall? A recall is just a feature rollout in reverse. I don't do reverse.\"",
+    "\"I'll explain slower: boom go big. Bigger boom go bigger. This is graduate-level stuff.\"",
+    "\"Every one of these is hand-calibrated by me, so blame is also hand-calibrated. At you.\"",
+    "\"Safety margin? I AM the safety margin.\""
+  ],
+  "deny": [
+    "\"No bolts, no boom-boom. Genius runs on revenue, friend.\"",
+    "\"Come back when your wallet respects my engineering.\"",
+    "\"I priced this in 'fair' and you brought 'hopeful'. Adorable.\""
+  ],
+  "buy": [
+    "\"KA-CHING! You now own the finest hardware in six systems. Do NOT read the sticker.\"",
+    "\"Sold! No refunds — refunds imply error, and I don't manufacture those.\"",
+    "\"Excellent choice. Statistically, MY statistics. It won't explode in the holster. Probably.\""
+  ],
+  "gratefulPitches": [
+    "\"My rescuer! Everything's 0% off, but I'll THINK about you fondly at full price.\"",
+    "\"You busted me out with percussive force. As an engineer? Respect.\"",
+    "\"That cell's welds were AMATEUR work. I was nearly free via spoon anyway. Still. Thanks.\""
+  ],
+  "tips": [
+    "\"A tip! For me? I mean — obviously. For me.\"",
+    "\"Another bolt for the genius fund. The fund is a jar. The jar is the fund.\"",
+    "\"Keep tipping and I'll name a warhead after you.\"",
+    "\"You know what? You're my favorite customer. Legally non-binding.\""
+  ]
+}

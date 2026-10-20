@@ -1,0 +1,180 @@
+{
+  "sprocket": {
+    "lowhp": [
+      {
+        "id": "bark.lowhp.01",
+        "who": "sprocket",
+        "text": "Your health bar looks like my battery: critically ignored."
+      },
+      {
+        "id": "bark.lowhp.02",
+        "who": "sprocket",
+        "text": "Medical advice: stop getting hit. That'll be 40 bolts."
+      },
+      {
+        "id": "bark.lowhp.03",
+        "who": "sprocket",
+        "text": "I can deliver a eulogy or a pep talk. Currently drafting both."
+      }
+    ],
+    "bolts": [
+      {
+        "id": "bark.bolts.01",
+        "who": "sprocket",
+        "text": "Ooh, shiny! Capitalism!"
+      },
+      {
+        "id": "bark.bolts.02",
+        "who": "sprocket",
+        "text": "At this rate you can afford HALF a weapon!"
+      },
+      {
+        "id": "bark.bolts.03",
+        "who": "sprocket",
+        "text": "Cha-ching! Blartz is going to love you. Financially. Only financially."
+      }
+    ],
+    "idle": [
+      {
+        "id": "bark.idle.01",
+        "who": "sprocket",
+        "text": "Should I file a missing-person report on your motivation?"
+      },
+      {
+        "id": "bark.idle.02",
+        "who": "sprocket",
+        "text": "I've seen statues with more hustle. Nicer paint jobs, too."
+      },
+      {
+        "id": "bark.idle.03",
+        "who": "sprocket",
+        "text": "Take your time. The galaxy is only being strip-mined as we speak."
+      },
+      {
+        "id": "bark.idle.04",
+        "who": "sprocket",
+        "text": "I've calculated our odds. Then I stopped, for morale reasons."
+      },
+      {
+        "id": "bark.idle.05",
+        "who": "sprocket",
+        "text": "If we die here, I want it noted that it was YOUR route."
+      }
+    ],
+    "combat": [
+      {
+        "id": "bark.combat.01",
+        "who": "sprocket",
+        "text": "Behind you! No, other behind. YOUR behind!"
+      },
+      {
+        "id": "bark.combat.02",
+        "who": "sprocket",
+        "text": "Hit it until the beeping stops. That's my whole strategy."
+      },
+      {
+        "id": "bark.combat.03",
+        "who": "sprocket",
+        "text": "That one owed OmniScrap money. Now it owes YOU an apology."
+      },
+      {
+        "id": "bark.combat.04",
+        "who": "sprocket",
+        "text": "Beautiful swing! Ugly result! Ten out of ten!"
+      },
+      {
+        "id": "bark.combat.05",
+        "who": "sprocket",
+        "text": "More of them?! Do they respawn out of SPITE?"
+      },
+      {
+        "id": "bark.combat.06",
+        "who": "sprocket",
+        "text": "I love this part. I hate this part. I contain multitudes."
+      },
+      {
+        "id": "bark.combat.07",
+        "who": "sprocket",
+        "text": "Mallet diplomacy: surprisingly effective, legally complicated."
+      }
+    ]
+  },
+  "super_sprocket": {
+    "all": [
+      {
+        "id": "super.01",
+        "who": "sprocket",
+        "text": "I AM BECOME WARRANTY VOID."
+      },
+      {
+        "id": "super.02",
+        "who": "sprocket",
+        "text": "This is what the subscription tier gets you!"
+      },
+      {
+        "id": "super.03",
+        "who": "sprocket",
+        "text": "Feelings update: RAGE is out of early access!"
+      },
+      {
+        "id": "super.04",
+        "who": "sprocket",
+        "text": "I read your EULA. Now YOU pay the penalty clause!"
+      },
+      {
+        "id": "super.05",
+        "who": "sprocket",
+        "text": "Customer support has ENTERED THE CHAT."
+      }
+    ]
+  },
+  "out_of_bounds": [
+    {
+      "id": "splash.01",
+      "who": "sprocket",
+      "text": "The map ends. Like my patience."
+    },
+    {
+      "id": "splash.02",
+      "who": "sprocket",
+      "text": "The ocean is out-of-bounds AND out of budget."
+    },
+    {
+      "id": "splash.03",
+      "who": "sprocket",
+      "text": "You're a ROBOT-ADJACENT lifeform. Water is a lawsuit."
+    },
+    {
+      "id": "splash.04",
+      "who": "sprocket",
+      "text": "The pool is for GUESTS, Bolt. We are trespassers."
+    },
+    {
+      "id": "splash.05",
+      "who": "sprocket",
+      "text": "I rated that dive 2 stars. The splash lacked commitment."
+    },
+    {
+      "id": "splash.06",
+      "who": "sprocket",
+      "text": "Rust warranty voided. Again."
+    }
+  ],
+  "galleria_pa": [
+    {
+      "id": "pa.galleria.01",
+      "who": "pa",
+      "text": "\"Attention shoppers: today's doorbuster is the door. The door must go.\""
+    },
+    {
+      "id": "pa.galleria.02",
+      "who": "pa",
+      "text": "\"The food court reminds you that sampling the samples constitutes a subscription.\""
+    },
+    {
+      "id": "pa.galleria.03",
+      "who": "pa",
+      "text": "\"Lost children can be reclaimed at Guest Services for a modest restocking fee.\""
+    }
+  ]
+}

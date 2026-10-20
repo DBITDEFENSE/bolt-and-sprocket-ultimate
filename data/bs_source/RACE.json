@@ -1,0 +1,16 @@
+{
+  "active": false,
+  "track": null,
+  "t": 0,
+  "countdown": 0,
+  "lap": 1,
+  "nextGate": 0,
+  "place": 1,
+  "finished": false,
+  "rivals": [],
+  "rivalsDone": 0,
+  "gates": [],
+  "samples": [],
+  "board": null,
+  "bannerN": -1
+}

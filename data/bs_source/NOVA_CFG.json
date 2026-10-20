@@ -1,0 +1,32 @@
+{
+  "holo": "novaHolo",
+  "planetIdx": 5,
+  "terrain": "nova",
+  "roster": [
+    "metermaid",
+    "hoaenforcer",
+    "surgedrone"
+  ],
+  "miniboss": "algorithm",
+  "dress": {
+    "__ref__": "novaDress"
+  },
+  "pocketCol": 1712704,
+  "railColor": 16731549,
+  "hint": "NOVA PLAZA — the HOA fined everyone into exile. Mind the enforcers.",
+  "introBeat": "novaIntro",
+  "midBeat": "novaMid",
+  "lateBeat": "novaLate",
+  "wing": {
+    "name": "THE UNDERPASS",
+    "sub": "Where the fined went when the fines came due",
+    "plaza": "PERMIT PARKING ONLY",
+    "col": {
+      "slab": 1712704,
+      "accent": 4122367,
+      "rail": 16731549,
+      "wall": 1317424,
+      "plaza": 922664
+    }
+  }
+}

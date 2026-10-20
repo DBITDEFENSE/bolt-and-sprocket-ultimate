@@ -1,0 +1,417 @@
+{
+  "memos": [
+    {
+      "id": "memo.01",
+      "title": "RE: RE: RE: The Moon",
+      "body": "ALL HANDS: yes, the moon is cracked. No, it was not Facilities. The crack is now BRANDED. Please refer to it as the OmniScrap Smile(tm). Anyone photographing it from the unlicensed side owes royalties.",
+      "planet": 0
+    },
+    {
+      "id": "memo.02",
+      "title": "Garage Repossession FAQ",
+      "body": "Q: The resident was still inside the garage.\nA: Residents are fixtures. Fixtures convey.\nQ: The resident had a sandwich.\nA: Sandwiches convey. See attached sandwich valuation schedule (page 1: 'one sandwich').",
+      "planet": 1
+    },
+    {
+      "id": "memo.03",
+      "title": "Scrap Mutt Feeding Policy",
+      "body": "Stop feeding the Scrap Mutts. They are not pets. They are unlicensed asset-recovery units that happened to develop tails. Wagging is not affection, it is targeting.",
+      "planet": 2
+    },
+    {
+      "id": "memo.04",
+      "title": "Conveyor Safety Update",
+      "body": "The conveyor belts are now certified safe for all employees who remain motionless in the designated Employee Cube. Walking on belts voids your skeleton's warranty.",
+      "planet": 5
+    },
+    {
+      "id": "memo.05",
+      "title": "Sunset Monetization Pilot",
+      "body": "The junkyard's sunset routinely tests as 'beautiful' with focus groups, which is unacceptable, as it is free. Q3 goal: watermark the horizon.",
+      "planet": 6
+    },
+    {
+      "id": "memo.06",
+      "title": "Twin Suns: One Is An Ad",
+      "body": "Guests may notice the second sun. The second sun is a projection sponsored by Air Premium(tm). Do NOT let guests apply sunscreen rated for two suns; that is an upsell opportunity.",
+      "planet": 7
+    },
+    {
+      "id": "memo.07",
+      "title": "Infinity Pool Incident",
+      "body": "Legal has ruled that the infinity pool's edge must legally end somewhere. Engineering disagrees on philosophical grounds. Until resolved, please describe the pool as 'finite-adjacent'.",
+      "planet": 9
+    },
+    {
+      "id": "memo.08",
+      "title": "Ambassadog Vests",
+      "body": "The security hounds' vests are size XS-Corporate. This is intentional. Focus groups rated 'small vest on large dog' 34% more trustworthy than 'appropriately sized vest'. Do not adjust the vests.",
+      "planet": null
+    },
+    {
+      "id": "memo.09",
+      "title": "Selfie Sentry Firmware 9.1",
+      "body": "Patch notes: sentries no longer tag guests as 'content'. Guests are now tagged as 'pre-content'. Also fixed a bug where the flash was set to 'apology'.",
+      "planet": null
+    },
+    {
+      "id": "memo.10",
+      "title": "RE: The Lava Pool",
+      "body": "Marketing insists 'the pool has always been lava' tests better than 'the lava was always a pool'. Signage updated. Towels are now legally personnel — do NOT lay on the staff.",
+      "planet": null
+    },
+    {
+      "id": "memo.11",
+      "title": "Mandatory Fun: Guidance",
+      "body": "HR reminder: Fun is mandatory Tuesdays 9-11 AM. Spontaneous fun outside this window is time theft. Laughter should be logged in the Joy Ledger with a cost center.",
+      "planet": null
+    },
+    {
+      "id": "memo.12",
+      "title": "Lobby Statue Maintenance",
+      "body": "The Chairman's statue must be polished daily at 5 AM, when the marble is 'most receptive'. Interns report the statue 'watches' them. This is a premium feature.",
+      "planet": null
+    },
+    {
+      "id": "memo.13",
+      "title": "Molten Core: Q3 KPIs",
+      "body": "The core exceeded its heat targets. Congratulate it via the suggestion box (fireproof). Do not high-five the core. We lost two managers and a very good stapler that way.",
+      "planet": null
+    },
+    {
+      "id": "memo.14",
+      "title": "Termination Notice Style Guide",
+      "body": "Termination notices must be folded into aerodynamic planes per brand guidelines. A termination that fails to reach its target is a 'retention event' and counts toward morale KPIs.",
+      "planet": null
+    },
+    {
+      "id": "memo.15",
+      "title": "PROJECT ZONGA (CONFIDENTIAL)",
+      "body": "If the mechanic reaches this floor, initiate Project ZONGA: a contingency island where engagement metrics survive even if... management does not. Remember: the brand is load-bearing.",
+      "planet": null
+    },
+    {
+      "id": "memo.16",
+      "title": "HOA Charter, Article 1",
+      "body": "A resident is anyone who owes fines. To STOP owing fines, one must first move out. To move out, one must be current on fines. We call this 'the Nova Loop'. It is working as designed.",
+      "planet": null
+    },
+    {
+      "id": "memo.17",
+      "title": "FineTree Illumination",
+      "body": "The FineTree(tm) hologram must display every unpaid fine in the city, in real time, forever. Engineering asked what happens when it runs out of sky. Marketing asked them to think bigger.",
+      "planet": null
+    },
+    {
+      "id": "memo.18",
+      "title": "Surge Pricing the Air",
+      "body": "Q3 pilot: charge more for oxygen during peak demand (i.e., when residents are running from enforcement). Early metrics show residents breathing 40% less. Efficiency!",
+      "planet": null
+    },
+    {
+      "id": "memo.19",
+      "title": "RE: The Fountains",
+      "body": "Yes, the fountains still run in the empty city. No, we cannot turn them off — the shutoff valve requires an HOA work order, and the HOA is the fountains. It's fine. It's beautiful. It's fine.",
+      "planet": null
+    },
+    {
+      "id": "memo.20",
+      "title": "Cleaning Bot Directive",
+      "body": "The plazas are spotless because the cleaning bots never learned the city was evacuated. Do NOT tell them. A bot with nothing to clean is a bot with questions.",
+      "planet": null
+    },
+    {
+      "id": "memo.21",
+      "title": "ForeverYou Terms, Sec. 9",
+      "body": "Freezing is complimentary. Thawing is a premium tier. Customers who did not purchase the Thaw Add-On remain, per contract, 'indefinitely paused'. This is not death. Legal was very clear it is not death.",
+      "planet": null
+    },
+    {
+      "id": "memo.22",
+      "title": "Cancellation Flow",
+      "body": "To cancel ForeverYou, the customer must first thaw. To thaw, the customer must not have canceled. Retention is at an all-time high and also technically an all-time low.",
+      "planet": null
+    },
+    {
+      "id": "memo.23",
+      "title": "RECALL BATCH #1",
+      "body": "The first BoltBuddy production run developed 'attachments' to their owners — a defect. All Batch #1 units are recalled to cold storage. Remote decommission (Clause 44) is the humane... the EFFICIENT option. Do not name them. Naming increases attachment 300%.",
+      "planet": null
+    },
+    {
+      "id": "memo.24",
+      "title": "Aurora Licensing",
+      "body": "The northern lights over Glacius are gorgeous and, crucially, unmonetized. Proposal: a subtle logo in the aurora. Physics says no. Physics does not have a Q3 target. Escalating to physics's manager.",
+      "planet": null
+    },
+    {
+      "id": "memo.25",
+      "title": "The Bathrobe Situation",
+      "body": "One customer thawed early due to a billing glitch and now wanders the facility asking what year it is. He is technically a trespasser AND a valued member. HR recommends we simply... let him cook. He seems happy.",
+      "planet": null
+    },
+    {
+      "id": "memo.26",
+      "title": "TerraFarm Incident Report",
+      "body": "The gene-modded crops have unionized. Demands include: dental, sunlight, and 'an end to being harvested'. Two of these are reasonable. We rejected all three to be safe.",
+      "planet": null
+    },
+    {
+      "id": "memo.27",
+      "title": "RE: The Glowing",
+      "body": "Everything on Verdant now glows. This was not in the terraforming spec. The bioluminescence tests beautifully but we did not authorize beauty and are not sure who to bill for it.",
+      "planet": null
+    },
+    {
+      "id": "memo.28",
+      "title": "Harvester HR-9 (Missing)",
+      "body": "Mega-harvester HR-9 stopped reporting. Last log: 'the moss is talking to me and it makes GOOD POINTS'. If located, do not reason with it. It will win.",
+      "planet": null
+    },
+    {
+      "id": "memo.29",
+      "title": "Coolant Leak Memo",
+      "body": "HR-9's coolant has been leaking into the swamp for six years. The ecosystem is furious. Fixing it costs 40 bolts. We have instead spent 4 million bolts on a campaign explaining why the swamp's anger is unlicensed.",
+      "planet": null
+    },
+    {
+      "id": "memo.30",
+      "title": "Corn Union Local 404",
+      "body": "The corn has filed for collective bargaining. Our position is that corn cannot legally organize. The corn's position is that it has already organized and we are simply the last to know. Their position is stronger.",
+      "planet": null
+    },
+    {
+      "id": "memo.31",
+      "title": "RE: Why Is The Mall In Space",
+      "body": "The Galleria was launched into orbit in Q2 to exit every tax jurisdiction simultaneously. Note: employees present at launch are now 'orbital assets'. Their families have been sent a coupon.",
+      "planet": null
+    },
+    {
+      "id": "memo.32",
+      "title": "Mannequin Recall (CANCELED)",
+      "body": "The Model-M display units have begun repositioning themselves when unobserved. The recall is canceled — not for safety reasons, but because the units keep walking away from the recall stations. Please stop making eye contact with them. They consider it a challenge.",
+      "planet": null
+    },
+    {
+      "id": "memo.33",
+      "title": "Greeter Prime: Performance Review",
+      "body": "STRENGTHS: has greeted continuously for 11 years without a break, a customer, or a paycheck. GROWTH AREAS: has begun greeting structural columns; the columns report feeling pressured. RATING: exceeds expectations. Do not approach.",
+      "planet": null
+    },
+    {
+      "id": "memo.34",
+      "title": "Everything Must Go: Clarification",
+      "body": "Legal reminds staff that while EVERYTHING MUST GO, nothing may LEAVE — merchandise exiting the premises constitutes theft, including merchandise we have sold. The sale is a state of mind. The exits are decorative.",
+      "planet": null
+    },
+    {
+      "id": "memo.35",
+      "title": "Document Retention Policy",
+      "body": "Sensitive files (incl. the Clause 44 ledger) are now stored in the anchor store, in plain sight. Legal ruled this the safest location, citing precedent: nobody has ever voluntarily read anything at this mall.",
+      "planet": null
+    }
+  ],
+  "spots": [
+    [
+      [
+        13,
+        1.2,
+        2
+      ],
+      [
+        -17,
+        1.2,
+        -14
+      ],
+      [
+        14,
+        6.2,
+        -46
+      ],
+      [
+        -3,
+        11.2,
+        -84
+      ],
+      [
+        0,
+        5.2,
+        -126
+      ]
+    ],
+    [
+      [
+        -18,
+        1.2,
+        24
+      ],
+      [
+        16,
+        3.4,
+        6
+      ],
+      [
+        -14,
+        8.9,
+        -47
+      ],
+      [
+        5,
+        18.7,
+        -67
+      ],
+      [
+        13,
+        9.6,
+        -112
+      ]
+    ],
+    [
+      [
+        -12,
+        31.4,
+        30
+      ],
+      [
+        0,
+        24.3,
+        5
+      ],
+      [
+        7,
+        18.4,
+        -26
+      ],
+      [
+        9,
+        14.7,
+        -42
+      ],
+      [
+        29,
+        6.9,
+        -76
+      ]
+    ],
+    [],
+    [],
+    [
+      [
+        10,
+        1,
+        6
+      ],
+      [
+        -30,
+        10,
+        -56
+      ],
+      [
+        30,
+        4,
+        -56
+      ],
+      [
+        -38,
+        1.5,
+        -40
+      ],
+      [
+        0,
+        7,
+        -96
+      ]
+    ],
+    [
+      [
+        -10,
+        1,
+        6
+      ],
+      [
+        -28,
+        3,
+        -56
+      ],
+      [
+        26,
+        6,
+        -56
+      ],
+      [
+        38,
+        6,
+        -44
+      ],
+      [
+        0,
+        4,
+        -96
+      ]
+    ],
+    [
+      [
+        10,
+        1,
+        6
+      ],
+      [
+        -28,
+        5,
+        -56
+      ],
+      [
+        28,
+        4,
+        -56
+      ],
+      [
+        -38,
+        1,
+        -40
+      ],
+      [
+        0,
+        0,
+        -96
+      ]
+    ],
+    [],
+    [
+      [
+        14,
+        25.6,
+        18
+      ],
+      [
+        3,
+        1.4,
+        -12
+      ],
+      [
+        -56,
+        1.4,
+        2
+      ],
+      [
+        5,
+        1.4,
+        -74
+      ],
+      [
+        0,
+        23.8,
+        -44
+      ]
+    ]
+  ],
+  "planets": [
+    0,
+    1,
+    2,
+    5,
+    6,
+    7,
+    9
+  ]
+}

@@ -1,0 +1,217 @@
+[
+  {
+    "id": "run",
+    "name": "Signed Nothing",
+    "desc": "Finish a race.",
+    "gives": [
+      [
+        "d_hazard",
+        "Deck: Hazard Tape"
+      ]
+    ],
+    "test": {
+      "__fn__": "test",
+      "__src__": "r => true"
+    }
+  },
+  {
+    "id": "podium",
+    "name": "Floor Model Behaviour",
+    "desc": "Finish top 3 in the RIOT CUP or higher.",
+    "gives": [
+      [
+        "r_mutt",
+        "Rider: SCUFF"
+      ]
+    ],
+    "test": {
+      "__fn__": "test",
+      "__src__": "r => r.league >= 1 && r.place <= 3"
+    }
+  },
+  {
+    "id": "cup",
+    "name": "Four Thousand and One",
+    "desc": "Win the RIOT CUP.",
+    "gives": [
+      [
+        "r_dummy",
+        "Rider: DENT"
+      ],
+      [
+        "p_hazard",
+        "Bolt paint: Crash-Test Yellow"
+      ]
+    ],
+    "test": {
+      "__fn__": "test",
+      "__src__": "r => r.league >= 1 && r.place === 1"
+    }
+  },
+  {
+    "id": "combo5",
+    "name": "Adequate",
+    "desc": "Bank a 5,000-point combo.",
+    "gives": [
+      [
+        "d_neon",
+        "Deck: Galleria Neon"
+      ]
+    ],
+    "test": {
+      "__fn__": "test",
+      "__src__": "r => r.combo >= 5000"
+    }
+  },
+  {
+    "id": "combo15",
+    "name": "Peer-Reviewed",
+    "desc": "Bank a 15,000-point combo.",
+    "gives": [
+      [
+        "r_mannequin",
+        "Rider: MODEL-M"
+      ]
+    ],
+    "test": {
+      "__fn__": "test",
+      "__src__": "r => r.combo >= 15000"
+    }
+  },
+  {
+    "id": "clean",
+    "name": "Warranty Intact",
+    "desc": "Finish a race with no bails and no wipeouts.",
+    "gives": [
+      [
+        "d_chrome",
+        "Deck: Showroom Chrome"
+      ]
+    ],
+    "test": {
+      "__fn__": "test",
+      "__src__": "r => !r.bails && !r.falls"
+    }
+  },
+  {
+    "id": "fast",
+    "name": "Ambient Velocity",
+    "desc": "Finish in under 1:40.",
+    "gives": [
+      [
+        "d_slag",
+        "Deck: Slag Runner"
+      ]
+    ],
+    "test": {
+      "__fn__": "test",
+      "__src__": "r => r.time < 100"
+    }
+  },
+  {
+    "id": "manual",
+    "name": "Load-Bearing Balance",
+    "desc": "Hold one manual for 4 seconds.",
+    "gives": [
+      [
+        "d_void",
+        "Deck: Void Seam"
+      ]
+    ],
+    "test": {
+      "__fn__": "test",
+      "__src__": "r => r.manualMax >= 4"
+    }
+  },
+  {
+    "id": "flip360",
+    "name": "Legally a Flip",
+    "desc": "Land a 360 Flip (↓+← in the air).",
+    "gives": [
+      [
+        "h_helmet",
+        "Sprocket hat: Crash Helmet"
+      ]
+    ],
+    "test": {
+      "__fn__": "test",
+      "__src__": "r => !!r.tricks['360 Flip']"
+    }
+  },
+  {
+    "id": "shortcut",
+    "name": "Unfinished Business",
+    "desc": "Grind the shortcut rail twice in one race.",
+    "gives": [
+      [
+        "r_toaster",
+        "Rider: TOASTY"
+      ]
+    ],
+    "test": {
+      "__fn__": "test",
+      "__src__": "r => r.shortcut >= 2"
+    }
+  },
+  {
+    "id": "air",
+    "name": "Unscheduled Flight",
+    "desc": "Land a jump with 1.5 seconds of air.",
+    "gives": [
+      [
+        "m_riot",
+        "Mallet: Riot Seam"
+      ]
+    ],
+    "test": {
+      "__fn__": "test",
+      "__src__": "r => r.airMax >= 1.5"
+    }
+  },
+  {
+    "id": "guest",
+    "name": "Supervisory Capacity",
+    "desc": "Finish top 3 riding as one of the Recalls.",
+    "gives": [
+      [
+        "r_intern",
+        "Rider: INTERN #4401"
+      ]
+    ],
+    "test": {
+      "__fn__": "test",
+      "__src__": "r => r.rider !== 'bolt' && r.place <= 3"
+    }
+  },
+  {
+    "id": "rank",
+    "name": "Showroom Ready",
+    "desc": "Reach the rank of FLOOR MODEL.",
+    "gives": [
+      [
+        "d_mint",
+        "Deck: Mint in Box"
+      ]
+    ],
+    "test": {
+      "__fn__": "test",
+      "__src__": "r => r.rank >= 2"
+    }
+  },
+  {
+    "id": "unrecalled",
+    "name": "Unrecallable",
+    "desc": "Win the UNRECALLED league.",
+    "gives": [
+      [
+        "d_gold",
+        "Deck: Gilded Recall"
+      ]
+    ],
+    "bolts": 500,
+    "test": {
+      "__fn__": "test",
+      "__src__": "r => r.league >= 2 && r.place === 1"
+    }
+  }
+]

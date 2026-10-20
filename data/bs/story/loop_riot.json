@@ -1,0 +1,560 @@
+{
+  "crew": [
+    {
+      "name": "BOLT",
+      "kind": "bolt",
+      "deck": 16765502,
+      "glow": 4122367
+    },
+    {
+      "name": "DENT",
+      "kind": "dummy",
+      "body": 16765502,
+      "pants": 1844019,
+      "deck": 2304056,
+      "glow": 16765502,
+      "bio": "Test Unit #001. 4,000 certified impacts, zero complaints. Complaints was impact #212."
+    },
+    {
+      "name": "MODEL-M",
+      "kind": "mannequin",
+      "body": 15921386,
+      "pants": 14209736,
+      "deck": 16731549,
+      "glow": 16731549,
+      "bio": "Display unit. Walked away from its own recall. Only moves when you blink."
+    },
+    {
+      "name": "SCUFF",
+      "kind": "mutt",
+      "body": 10246702,
+      "pants": 5252122,
+      "deck": 3844256,
+      "glow": 4122312,
+      "bio": "Scrap Mutt. Ate a mag-deck once. The deck won. They are friends now."
+    },
+    {
+      "name": "TOASTY",
+      "kind": "toaster",
+      "body": 13621476,
+      "pants": 3752015,
+      "deck": 16738862,
+      "glow": 16738862,
+      "bio": "ToastBuddy™. Recalled for having opinions. The opinions were correct."
+    },
+    {
+      "name": "INTERN #4401",
+      "kind": "intern",
+      "body": 10470624,
+      "pants": 3752015,
+      "deck": 10470624,
+      "glow": 10470624,
+      "bio": "Sent to shut the league down. Unpaid. Currently fourth in the standings."
+    }
+  ],
+  "ai_profiles": [
+    null,
+    {
+      "skill": 1.035,
+      "shortcut": 0.55,
+      "grind": 0.5,
+      "aggro": 0.9
+    },
+    {
+      "skill": 1,
+      "shortcut": 0.3,
+      "grind": 0.7,
+      "aggro": 0.6
+    },
+    {
+      "skill": 0.975,
+      "shortcut": 0.15,
+      "grind": 0.3,
+      "aggro": 0.4
+    },
+    {
+      "skill": 1.01,
+      "shortcut": 0.4,
+      "grind": 0.4,
+      "aggro": 0.7
+    },
+    {
+      "skill": 0.955,
+      "shortcut": 0.2,
+      "grind": 0.8,
+      "aggro": 0.5
+    }
+  ],
+  "leagues": [
+    {
+      "id": "scrap",
+      "name": "SCRAP LEAGUE",
+      "desc": "The Recalls go easy. They call it \"warranty mode\".",
+      "skill": 0.93,
+      "pay": 0.6,
+      "rep": 0.7
+    },
+    {
+      "id": "cup",
+      "name": "RIOT CUP",
+      "desc": "The real thing. Win it and the black box is yours.",
+      "skill": 1,
+      "pay": 1,
+      "rep": 1
+    },
+    {
+      "id": "unrecalled",
+      "name": "UNRECALLED",
+      "desc": "Governors off. Dent stops being polite.",
+      "skill": 1.06,
+      "pay": 1.6,
+      "rep": 1.6,
+      "locked": "Win the RIOT CUP"
+    }
+  ],
+  "ranks": [
+    [
+      0,
+      "TEST SUBJECT"
+    ],
+    [
+      500,
+      "PROTOTYPE"
+    ],
+    [
+      1300,
+      "FLOOR MODEL"
+    ],
+    [
+      2600,
+      "RECALLED"
+    ],
+    [
+      4400,
+      "UNRECALLABLE"
+    ],
+    [
+      7000,
+      "RIOT LEGEND"
+    ]
+  ],
+  "decks": [
+    {
+      "id": "door",
+      "name": "Garage Door",
+      "deck": 16765502,
+      "glow": 4122367
+    },
+    {
+      "id": "hazard",
+      "name": "Hazard Tape",
+      "deck": 1844019,
+      "glow": 16765502
+    },
+    {
+      "id": "neon",
+      "name": "Galleria Neon",
+      "deck": 16731549,
+      "glow": 16751312
+    },
+    {
+      "id": "chrome",
+      "name": "Showroom Chrome",
+      "deck": 14212841,
+      "glow": 16777215
+    },
+    {
+      "id": "slag",
+      "name": "Slag Runner",
+      "deck": 3806216,
+      "glow": 16738842
+    },
+    {
+      "id": "void",
+      "name": "Void Seam",
+      "deck": 2759242,
+      "glow": 10898943
+    },
+    {
+      "id": "mint",
+      "name": "Mint in Box",
+      "deck": 4173450,
+      "glow": 8257434
+    },
+    {
+      "id": "gold",
+      "name": "Gilded Recall",
+      "deck": 13212190,
+      "glow": 16769658
+    }
+  ],
+  "notices": [
+    {
+      "id": "run",
+      "name": "Signed Nothing",
+      "desc": "Finish a race.",
+      "gives": [
+        [
+          "d_hazard",
+          "Deck: Hazard Tape"
+        ]
+      ],
+      "test": {
+        "__fn__": "test",
+        "__src__": "r => true"
+      }
+    },
+    {
+      "id": "podium",
+      "name": "Floor Model Behaviour",
+      "desc": "Finish top 3 in the RIOT CUP or higher.",
+      "gives": [
+        [
+          "r_mutt",
+          "Rider: SCUFF"
+        ]
+      ],
+      "test": {
+        "__fn__": "test",
+        "__src__": "r => r.league >= 1 && r.place <= 3"
+      }
+    },
+    {
+      "id": "cup",
+      "name": "Four Thousand and One",
+      "desc": "Win the RIOT CUP.",
+      "gives": [
+        [
+          "r_dummy",
+          "Rider: DENT"
+        ],
+        [
+          "p_hazard",
+          "Bolt paint: Crash-Test Yellow"
+        ]
+      ],
+      "test": {
+        "__fn__": "test",
+        "__src__": "r => r.league >= 1 && r.place === 1"
+      }
+    },
+    {
+      "id": "combo5",
+      "name": "Adequate",
+      "desc": "Bank a 5,000-point combo.",
+      "gives": [
+        [
+          "d_neon",
+          "Deck: Galleria Neon"
+        ]
+      ],
+      "test": {
+        "__fn__": "test",
+        "__src__": "r => r.combo >= 5000"
+      }
+    },
+    {
+      "id": "combo15",
+      "name": "Peer-Reviewed",
+      "desc": "Bank a 15,000-point combo.",
+      "gives": [
+        [
+          "r_mannequin",
+          "Rider: MODEL-M"
+        ]
+      ],
+      "test": {
+        "__fn__": "test",
+        "__src__": "r => r.combo >= 15000"
+      }
+    },
+    {
+      "id": "clean",
+      "name": "Warranty Intact",
+      "desc": "Finish a race with no bails and no wipeouts.",
+      "gives": [
+        [
+          "d_chrome",
+          "Deck: Showroom Chrome"
+        ]
+      ],
+      "test": {
+        "__fn__": "test",
+        "__src__": "r => !r.bails && !r.falls"
+      }
+    },
+    {
+      "id": "fast",
+      "name": "Ambient Velocity",
+      "desc": "Finish in under 1:40.",
+      "gives": [
+        [
+          "d_slag",
+          "Deck: Slag Runner"
+        ]
+      ],
+      "test": {
+        "__fn__": "test",
+        "__src__": "r => r.time < 100"
+      }
+    },
+    {
+      "id": "manual",
+      "name": "Load-Bearing Balance",
+      "desc": "Hold one manual for 4 seconds.",
+      "gives": [
+        [
+          "d_void",
+          "Deck: Void Seam"
+        ]
+      ],
+      "test": {
+        "__fn__": "test",
+        "__src__": "r => r.manualMax >= 4"
+      }
+    },
+    {
+      "id": "flip360",
+      "name": "Legally a Flip",
+      "desc": "Land a 360 Flip (↓+← in the air).",
+      "gives": [
+        [
+          "h_helmet",
+          "Sprocket hat: Crash Helmet"
+        ]
+      ],
+      "test": {
+        "__fn__": "test",
+        "__src__": "r => !!r.tricks['360 Flip']"
+      }
+    },
+    {
+      "id": "shortcut",
+      "name": "Unfinished Business",
+      "desc": "Grind the shortcut rail twice in one race.",
+      "gives": [
+        [
+          "r_toaster",
+          "Rider: TOASTY"
+        ]
+      ],
+      "test": {
+        "__fn__": "test",
+        "__src__": "r => r.shortcut >= 2"
+      }
+    },
+    {
+      "id": "air",
+      "name": "Unscheduled Flight",
+      "desc": "Land a jump with 1.5 seconds of air.",
+      "gives": [
+        [
+          "m_riot",
+          "Mallet: Riot Seam"
+        ]
+      ],
+      "test": {
+        "__fn__": "test",
+        "__src__": "r => r.airMax >= 1.5"
+      }
+    },
+    {
+      "id": "guest",
+      "name": "Supervisory Capacity",
+      "desc": "Finish top 3 riding as one of the Recalls.",
+      "gives": [
+        [
+          "r_intern",
+          "Rider: INTERN #4401"
+        ]
+      ],
+      "test": {
+        "__fn__": "test",
+        "__src__": "r => r.rider !== 'bolt' && r.place <= 3"
+      }
+    },
+    {
+      "id": "rank",
+      "name": "Showroom Ready",
+      "desc": "Reach the rank of FLOOR MODEL.",
+      "gives": [
+        [
+          "d_mint",
+          "Deck: Mint in Box"
+        ]
+      ],
+      "test": {
+        "__fn__": "test",
+        "__src__": "r => r.rank >= 2"
+      }
+    },
+    {
+      "id": "unrecalled",
+      "name": "Unrecallable",
+      "desc": "Win the UNRECALLED league.",
+      "gives": [
+        [
+          "d_gold",
+          "Deck: Gilded Recall"
+        ]
+      ],
+      "bolts": 500,
+      "test": {
+        "__fn__": "test",
+        "__src__": "r => r.league >= 2 && r.place === 1"
+      }
+    }
+  ],
+  "quips": {
+    "bail": [
+      {
+        "id": "lr.quip.bail.01",
+        "who": "bail",
+        "text": "Gravity called. I let it go to voicemail. It left a message."
+      },
+      {
+        "id": "lr.quip.bail.02",
+        "who": "bail",
+        "text": "Logged as 'unscheduled floor research'."
+      },
+      {
+        "id": "lr.quip.bail.03",
+        "who": "bail",
+        "text": "The deck is fine. I checked the deck first."
+      }
+    ],
+    "fall": [
+      {
+        "id": "lr.quip.fall.01",
+        "who": "fall",
+        "text": "Respawn's on me. Itemized bill to follow."
+      },
+      {
+        "id": "lr.quip.fall.02",
+        "who": "fall",
+        "text": "For the black box: that was not the racing line."
+      },
+      {
+        "id": "lr.quip.fall.03",
+        "who": "fall",
+        "text": "The slag is 1,400 degrees. I'd describe it as 'not a shortcut'."
+      }
+    ],
+    "bank": [
+      {
+        "id": "lr.quip.bank.01",
+        "who": "bank",
+        "text": "That was… adequate. I'm lying. That was GREAT."
+      },
+      {
+        "id": "lr.quip.bank.02",
+        "who": "bank",
+        "text": "Overclock charged. Please don't tell me what you're about to do."
+      },
+      {
+        "id": "lr.quip.bank.03",
+        "who": "bank",
+        "text": "Dent is pretending he didn't see that. Dent saw that."
+      }
+    ],
+    "loop": [
+      {
+        "id": "lr.quip.loop.01",
+        "who": "loop",
+        "text": "We are upside down. Just narrating. For the record."
+      }
+    ],
+    "final": [
+      {
+        "id": "lr.quip.final.01",
+        "who": "final",
+        "text": "Final lap. Statistically this is where you do something heroic or stupid. Often both."
+      }
+    ],
+    "lead": [
+      {
+        "id": "lr.quip.lead.01",
+        "who": "lead",
+        "text": "First place. Don't look back. Dent hates that. Do it."
+      }
+    ],
+    "start": [
+      {
+        "id": "lr.quip.start.01",
+        "who": "start",
+        "text": "Tricks charge my overclock. Land them clean and I light the jets."
+      }
+    ]
+  },
+  "flips": {
+    "L": {
+      "name": "Kickflip",
+      "pts": 400,
+      "dur": 0.42,
+      "roll": -6.283185307179586,
+      "yaw": 0
+    },
+    "R": {
+      "name": "Heelflip",
+      "pts": 400,
+      "dur": 0.42,
+      "roll": 6.283185307179586,
+      "yaw": 0
+    },
+    "D": {
+      "name": "Pop Shove-It",
+      "pts": 300,
+      "dur": 0.36,
+      "roll": 0,
+      "yaw": 3.141592653589793
+    },
+    "UL": {
+      "name": "Varial Kickflip",
+      "pts": 650,
+      "dur": 0.5,
+      "roll": -6.283185307179586,
+      "yaw": 3.141592653589793
+    },
+    "UR": {
+      "name": "Varial Heelflip",
+      "pts": 650,
+      "dur": 0.5,
+      "roll": 6.283185307179586,
+      "yaw": -3.141592653589793
+    },
+    "DL": {
+      "name": "360 Flip",
+      "pts": 900,
+      "dur": 0.6,
+      "roll": -6.283185307179586,
+      "yaw": 6.283185307179586
+    },
+    "DR": {
+      "name": "Hardflip",
+      "pts": 750,
+      "dur": 0.52,
+      "roll": 6.283185307179586,
+      "yaw": 3.141592653589793
+    }
+  },
+  "grabs": [
+    "Mallet Grab",
+    "Wrench Tweak",
+    "Warranty Void"
+  ],
+  "grinds": {
+    "L": "Boardslide",
+    "R": "Lipslide",
+    "D": "5-0 Grind",
+    "U": "Nosegrind"
+  },
+  "ads": [
+    "LOOP RIOT™\nNOT A SPORT (LEGALLY)",
+    "DURABILITY LAB\nNOW 40% DURABLE",
+    "RECALLED?\nRIDE ANYWAY",
+    "OMNISCRAP™\nGRAVITY IS A FEATURE",
+    "DENT'S DENTS\nFREE ESTIMATES",
+    "ToastBuddy™\nHE HAS NOTES",
+    "WAIVERS\nWE ATE THEM"
+  ]
+}

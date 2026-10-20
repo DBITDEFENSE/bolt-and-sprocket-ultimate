@@ -1,0 +1,199 @@
+{
+  "challenges": [
+    {
+      "id": "waves",
+      "name": "Wave Survival",
+      "desc": "5 waves. Mixed rosters. Zero refunds.",
+      "reward": 200
+    },
+    {
+      "id": "mallet",
+      "name": "Mallet Only",
+      "desc": "Guns disabled. Percussion approved.",
+      "reward": 220
+    },
+    {
+      "id": "onehit",
+      "name": "One-Hit KO",
+      "desc": "Everyone dies in one hit. EVERYONE.",
+      "reward": 250
+    },
+    {
+      "id": "timed",
+      "name": "Timed Gauntlet",
+      "desc": "Clear 12 contestants in 60 seconds.",
+      "reward": 250
+    },
+    {
+      "id": "sponsor",
+      "name": "Sponsored Round",
+      "desc": "Today's sponsor modifies the rules.",
+      "reward": 300
+    },
+    {
+      "id": "bossrush",
+      "name": "Boss Rush",
+      "desc": "The Sentinel, the Algorithm, the Compost King. Back to back.",
+      "reward": 450
+    },
+    {
+      "id": "blizzard",
+      "name": "Whiteout Brawl",
+      "desc": "5 waves on live ice, in a blizzard. Good luck.",
+      "reward": 350
+    },
+    {
+      "id": "bounty",
+      "name": "Bounty Hunt",
+      "desc": "4 waves. Drop the GOLDEN target fast for the crowd.",
+      "reward": 320
+    }
+  ],
+  "pools": {
+    "base": [
+      "scrapmutt",
+      "ambassadog",
+      "weldwasp",
+      "selfie",
+      "vulture",
+      "hrdrone",
+      "lifeguard",
+      "slaggolem",
+      "metermaid",
+      "surgedrone",
+      "gloomstalker",
+      "pollinator"
+    ],
+    "ice": [
+      "chillsplit",
+      "popsicle",
+      "frostpeddler",
+      "metermaid",
+      "lifeguard",
+      "hoaenforcer",
+      "vulture"
+    ]
+  },
+  "boss_rush": [
+    "miniboss",
+    "algorithm",
+    "compostking"
+  ],
+  "tracks": [
+    {
+      "id": "scrap",
+      "name": "JUNKYARD SPRINT",
+      "desc": "Dune-bowl circuit. Magnet cranes not liable.",
+      "laps": 3,
+      "skyAs": 0,
+      "slip": 0.5,
+      "rough": 6,
+      "roadAmp": 2,
+      "rewards": [
+        260,
+        150,
+        80
+      ],
+      "radius": {
+        "__fn__": "radius",
+        "__src__": "a => 62 + Math.sin(a * 2) * 10 + Math.sin(a * 3 + 1) * 6"
+      },
+      "ground": {
+        "__fn__": "ground",
+        "__src__": "(h, c) => c.setHSL(0.07, 0.5, 0.3 + h * 0.012)"
+      }
+    },
+    {
+      "id": "canyon",
+      "name": "RUSTVANE ESSES",
+      "desc": "Resort switchbacks. Two stars. Three hairpins.",
+      "laps": 3,
+      "skyAs": 1,
+      "slip": 0.45,
+      "rough": 8,
+      "roadAmp": 2.6,
+      "rewards": [
+        300,
+        170,
+        90
+      ],
+      "radius": {
+        "__fn__": "radius",
+        "__src__": "a => 58 + Math.sin(a * 3) * 14"
+      },
+      "ground": {
+        "__fn__": "ground",
+        "__src__": "(h, c) => c.setHSL(0.03, 0.55, 0.32 + h * 0.014)"
+      }
+    },
+    {
+      "id": "ice",
+      "name": "GLACIUS GLIDE",
+      "desc": "Live ice. The brakes are decorative.",
+      "laps": 3,
+      "skyAs": 6,
+      "slip": 0.85,
+      "rough": 5,
+      "roadAmp": 1.6,
+      "rewards": [
+        340,
+        190,
+        100
+      ],
+      "radius": {
+        "__fn__": "radius",
+        "__src__": "a => 66 + Math.sin(a * 2 + 0.7) * 18"
+      },
+      "ground": {
+        "__fn__": "ground",
+        "__src__": "(h, c) => c.setHSL(0.55, 0.25, 0.62 + h * 0.01)"
+      }
+    },
+    {
+      "id": "skyway",
+      "name": "RUSTVANE SKYWAY",
+      "desc": "Jet-board conversion. Fly where you look. Try to keep looking at sky.",
+      "laps": 2,
+      "skyAs": 1,
+      "fly": true,
+      "slip": 0,
+      "rough": 9,
+      "roadAmp": 3.5,
+      "rewards": [
+        400,
+        220,
+        120
+      ],
+      "radius": {
+        "__fn__": "radius",
+        "__src__": "a => 72 + Math.sin(a * 2) * 16 + Math.sin(a * 3 + 2) * 7"
+      },
+      "ground": {
+        "__fn__": "ground",
+        "__src__": "(h, c) => c.setHSL(0.03, 0.55, 0.3 + h * 0.012)"
+      }
+    }
+  ],
+  "rivals": [
+    {
+      "name": "MS. TORQUE",
+      "color": 16731602
+    },
+    {
+      "name": "GLAM-8",
+      "color": 16743096
+    },
+    {
+      "name": "RUSTY JR.",
+      "color": 11560238
+    },
+    {
+      "name": "LEEROY DUBSTEP",
+      "color": 10354522
+    },
+    {
+      "name": "THE INTERN (AGAIN)",
+      "color": 10470624
+    }
+  ]
+}

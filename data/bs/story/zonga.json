@@ -1,0 +1,106 @@
+{
+  "stages": [
+    {
+      "r": 110,
+      "t": 32
+    },
+    {
+      "r": 76,
+      "t": 30
+    },
+    {
+      "r": 50,
+      "t": 27
+    },
+    {
+      "r": 30,
+      "t": 24
+    },
+    {
+      "r": 14,
+      "t": 22
+    }
+  ],
+  "bot_names": [
+    "Ratchette",
+    "Bjorn Toolven",
+    "xX_ScrapLord_Xx",
+    "Karen-9",
+    "Chad Thundervolt",
+    "Allen Wrench",
+    "Grease Lightning",
+    "Tetanus Jones",
+    "Lil Lugnut",
+    "DIY-or-DIE",
+    "Socket 2 Me",
+    "The Debt Collector",
+    "Vibe Mechanic",
+    "Piston Honda-ish",
+    "Warranty Voider",
+    "ClanknSpanner",
+    "MegaMaid Prime",
+    "Rust Cohle",
+    "Captain Cardboard",
+    "Sir Loose-A-Lot",
+    "Doombaa",
+    "Gary From Accounting",
+    "NPC_47",
+    "Screwnicorn",
+    "Bolt Cutter Betty",
+    "The Unsubscriber",
+    "Ferrous Bueller",
+    "Duct Tape Daddy",
+    "Ms. Fixit",
+    "Grimebot",
+    "Two-Stroke Tony",
+    "Hexnut Hexer",
+    "Sparky McFly",
+    "Load-Bearing Larry",
+    "The Refurbished One",
+    "Janet Dent",
+    "Crowbar Carl",
+    "NoScope Nona",
+    "Patch Notes",
+    "Free Trial",
+    "Angle Grindr",
+    "Baroness von Bolt",
+    "Scrappy 2.0",
+    "E-Waste Wade",
+    "Molly Wrench",
+    "Turbo Ted",
+    "The Intern",
+    "Grandma Torque",
+    "Depreciating Ass-et",
+    "Certified Pre-Owned",
+    "Kevin",
+    "GlamFan_0042",
+    "Union Rep"
+  ],
+  "sponsor_jokes": [
+    {
+      "id": "zonga.sponsor.01",
+      "who": "glambot",
+      "text": "This elimination brought to you by GrindCo Chiropractic: we un-bend what ZONGA bent."
+    },
+    {
+      "id": "zonga.sponsor.02",
+      "who": "glambot",
+      "text": "Sponsored by Air Premium™ — now with 20% more air."
+    },
+    {
+      "id": "zonga.sponsor.03",
+      "who": "glambot",
+      "text": "Brought to you by BoltBuddy™. He heard everything you just said."
+    },
+    {
+      "id": "zonga.sponsor.04",
+      "who": "glambot",
+      "text": "Sponsored by OmniScrap Legal: it was in the waiver."
+    },
+    {
+      "id": "zonga.sponsor.05",
+      "who": "glambot",
+      "text": "This placement funded by viewers like you. Mostly by your data."
+    }
+  ]
+}

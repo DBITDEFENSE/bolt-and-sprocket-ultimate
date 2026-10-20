@@ -1,0 +1,31 @@
+{
+  "planetIdx": 7,
+  "terrain": "verdant",
+  "roster": [
+    "gloomstalker",
+    "sporelobber",
+    "pollinator"
+  ],
+  "miniboss": "compostking",
+  "dress": {
+    "__ref__": "verdantDress"
+  },
+  "pocketCol": 1325620,
+  "railColor": 10354522,
+  "hint": "VERDANT SINK — the crops unionized. Everything glows. Be nice.",
+  "introBeat": "verdantIntro",
+  "midBeat": "verdantMid",
+  "lateBeat": "verdantLate",
+  "wing": {
+    "name": "THE ROOT CELLAR",
+    "sub": "The crops keep their prisoners here",
+    "plaza": "THE COMPOST RING",
+    "col": {
+      "slab": 1325620,
+      "accent": 5950506,
+      "rail": 10354522,
+      "wall": 2759226,
+      "plaza": 2054730
+    }
+  }
+}

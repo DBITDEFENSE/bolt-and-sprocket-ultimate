@@ -1,0 +1,137 @@
+{
+  "metermaid": {
+    "make": {
+      "__ref__": "makeMeterMaid"
+    },
+    "arch": "chaser",
+    "hp": 34,
+    "speed": 6.2,
+    "pounce": true,
+    "dmg": 10,
+    "drops": 7,
+    "chunk": 3037864,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => { beep(700, 200, 0.15, 'square', 0.08); beep(400, 120, 0.2, 'square', 0.06, 0.08); }"
+    }
+  },
+  "hoaenforcer": {
+    "make": {
+      "__ref__": "makeHOAEnforcer"
+    },
+    "arch": "turret",
+    "hp": 70,
+    "plated": true,
+    "drops": 11,
+    "heavy": true,
+    "chunk": 3819096,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => { noiseBurst(0.35, 0.2, 900); beep(200, 60, 0.3, 'square', 0.1); }"
+    }
+  },
+  "surgedrone": {
+    "make": {
+      "__ref__": "makeSurgeDrone"
+    },
+    "arch": "flyer",
+    "hp": 26,
+    "surge": true,
+    "drops": 6,
+    "chunk": 16731549,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => beep(1800, 400, 0.25, 'sawtooth', 0.07)"
+    }
+  },
+  "popsicle": {
+    "make": {
+      "__ref__": "makePopsicle"
+    },
+    "arch": "turret",
+    "hp": 48,
+    "ambush": true,
+    "drops": 8,
+    "chunk": 9097448,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => { noiseBurst(0.3, 0.18, 3000); beep(1200, 300, 0.2, 'sine', 0.06); }"
+    }
+  },
+  "chillsplit": {
+    "make": {
+      "__ref__": "makeChillsplitter"
+    },
+    "arch": "chaser",
+    "hp": 30,
+    "speed": 5,
+    "burrow": true,
+    "dmg": 11,
+    "drops": 6,
+    "chunk": 5937864,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => { beep(500, 90, 0.2, 'sawtooth', 0.08); noiseBurst(0.2, 0.1, 2000); }"
+    }
+  },
+  "frostpeddler": {
+    "make": {
+      "__ref__": "makeFrostPeddler"
+    },
+    "arch": "flyer",
+    "hp": 30,
+    "freeze": true,
+    "drops": 7,
+    "chunk": 8042712,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => beep(900, 1600, 0.2, 'sine', 0.06)"
+    }
+  },
+  "gloomstalker": {
+    "make": {
+      "__ref__": "makeGloomstalker"
+    },
+    "arch": "chaser",
+    "hp": 32,
+    "speed": 6,
+    "pounce": true,
+    "cloak": true,
+    "dmg": 12,
+    "drops": 7,
+    "chunk": 2771514,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => beep(300, 900, 0.2, 'triangle', 0.07)"
+    }
+  },
+  "sporelobber": {
+    "make": {
+      "__ref__": "makeSporeLobber"
+    },
+    "arch": "turret",
+    "hp": 40,
+    "spore": true,
+    "drops": 8,
+    "chunk": 6961770,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => { noiseBurst(0.3, 0.15, 700); beep(400, 100, 0.2, 'triangle', 0.08); }"
+    }
+  },
+  "pollinator": {
+    "make": {
+      "__ref__": "makePollinator"
+    },
+    "arch": "flyer",
+    "hp": 10,
+    "buffer": true,
+    "dmg": 5,
+    "drops": 3,
+    "chunk": 16764749,
+    "dieSfx": {
+      "__fn__": "dieSfx",
+      "__src__": "() => beep(1400, 500, 0.12, 'sawtooth', 0.05)"
+    }
+  }
+}

@@ -1,0 +1,3 @@
+{
+  "__call__": "(() => { const cv = document.createElement('canvas'); cv.width = cv.height = 64; const x = cv.getContext('2d'); const g = x.createRadialGradient(32, 32, 2, 32, "
+}

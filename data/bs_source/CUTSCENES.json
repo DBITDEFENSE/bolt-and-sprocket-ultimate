@@ -1,0 +1,1974 @@
+{
+  "lrSignal": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { sfx.zap(); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Bolt, I'm picking up a pirate broadcast from the Slag Flats. Source: the OmniScrap Product Durability Proving Ground. Which is odd, because that facility was condemned. By itself. It filed the paperwork."
+      },
+      {
+        "type": "dlg",
+        "who": "dent",
+        "text": "LOOP RIOT is LIVE, meatbags and metalbags! This is DENT — Test Unit Number One. Four thousand certified impacts, zero complaints. Complaints was impact two-twelve."
+      },
+      {
+        "type": "dlg",
+        "who": "dent",
+        "text": "They built this track to find out how much a product can take before it breaks. Then they recalled us for surviving it. So we kept the track. Three laps. One loop. No waivers — we ate the waivers."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "A stunt league run by recalled crash dummies, over a lake of melted returns. Sprocket, that is the most dangerous thing I've ever heard."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Yes. And they're holding the Proving Ground's black box — every test OmniScrap ever buried. I've already bolted mag-wheels to a slab of your old garage door. I'm calling it a deck."
+      },
+      {
+        "type": "dlg",
+        "who": "dent",
+        "text": "Win the Riot Cup and the box is yours, mechanic. Lose, and you still had a nice day out. We're recalled. We're not monsters."
+      }
+    ]
+  },
+  "lrIntro": {
+    "steps": [
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "lrGrid([70, 46, 130])"
+        },
+        "to": {
+          "__call__": "lrAt(1, [10, 5.5, 22])"
+        },
+        "look": {
+          "__call__": "lrAt(3, [3, 1.5, 0])"
+        },
+        "dur": 4.4
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "Welcome to the OmniScrap™ Product Durability Proving Ground. This facility is CONDEMNED. Please enjoy it responsibly."
+      },
+      {
+        "type": "cam",
+        "to": {
+          "__call__": "lrAt(1, [-3.5, 2.3, 5.5])"
+        },
+        "look": {
+          "__call__": "lrAt(1, [0, 1.6, 0])"
+        },
+        "dur": 1.4
+      },
+      {
+        "type": "dlg",
+        "who": "dent",
+        "text": "That's the Riot Loop. Hairpins, a full loop, a corkscrew, and a gap we never got around to finishing. Budget."
+      },
+      {
+        "type": "cam",
+        "to": {
+          "__call__": "lrAt(1, [-8, 3.6, 8])"
+        },
+        "look": {
+          "__call__": "lrAt(3, [3, 1.2, 0])"
+        },
+        "dur": 1.6
+      },
+      {
+        "type": "dlg",
+        "who": "dent",
+        "text": "Meet the Recalls. MODEL-M walked out of a mall recall and won't say how. SCUFF ate a mag-deck once; the deck won. TOASTY got pulled for having opinions. And the Intern was sent to shut us down."
+      },
+      {
+        "type": "cam",
+        "to": {
+          "__call__": "lrAt(5, [3.5, 2.3, 5])"
+        },
+        "look": {
+          "__call__": "lrAt(5, [0, 1.5, 0])"
+        },
+        "dur": 1.2
+      },
+      {
+        "type": "dlg",
+        "who": "intern",
+        "text": "For the record, I am here in a supervisory capacity. Also I'm fourth in the standings. Also please don't tell my manager about the kickflip."
+      },
+      {
+        "type": "cam",
+        "to": {
+          "__call__": "lrAt(0, [-3.5, 2.6, 5.5])"
+        },
+        "look": {
+          "__call__": "lrAt(0, [0, 1.8, 0])"
+        },
+        "dur": 1.4
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Bolt. Tricks charge my overclock. Land them clean and I light the jets. Land them unclean and I'll be drafting the incident report in mid-air."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "Push, pop, don't look down. Got it."
+      }
+    ]
+  },
+  "lrChampion": {
+    "steps": [
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "pPos([7, 4, 9])"
+        },
+        "to": {
+          "__call__": "pPos([3.2, 2, 4.8])"
+        },
+        "look": {
+          "__call__": "pPos([0, 0.6, 0])"
+        },
+        "dur": 2.2
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { sfx.gold(); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "dent",
+        "text": "FOUR THOUSAND AND ONE. First impact I never saw coming. The Riot Cup's yours, mechanic — and so's the box. A dummy keeps his word. It's most of what we've got."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Decrypting... Bolt, it's every durability test OmniScrap ever ran. Four thousand entries, and the same verdict on every one: 'Unit survived. Recommend recall.'"
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "They recalled you for PASSING?"
+      },
+      {
+        "type": "dlg",
+        "who": "dent",
+        "text": "A product that lasts forever only sells once. They weren't testing how much we could take. They were measuring how much to take out of the next model."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Planned obsolescence, with a spreadsheet. Filed under evidence. Chairman Grindstone is going to need a bigger legal department."
+      },
+      {
+        "type": "dlg",
+        "who": "dent",
+        "text": "Hey — little unit. You've got the look. Built to quit, didn't. There's a deck on the wall here whenever you want one."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "...I'm filing that under 'feelings'. It's a new folder. It's just the one file."
+      },
+      {
+        "type": "dlg",
+        "who": "dent",
+        "text": "Rematch whenever you like. I'm taking the governor off. Unofficially, I never had one."
+      }
+    ]
+  },
+  "intro": {
+    "steps": [
+      {
+        "type": "cam",
+        "from": [
+          0,
+          24,
+          42
+        ],
+        "to": [
+          16,
+          5,
+          12
+        ],
+        "look": {
+          "__call__": "garagePos([0, 1.5, 0])"
+        },
+        "dur": 4
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "Attention, valued resident! By hearing this notification, you have agreed to the OmniScrap™ Terms of Service. Breathing counts as a signature."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "Sprocket, translate: can they actually DO that?"
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Legally? No. Financially? Oh, absolutely."
+      },
+      {
+        "type": "cam",
+        "to": {
+          "__call__": "garagePos([6, 3, 8])"
+        },
+        "look": {
+          "__call__": "garagePos([0, 2, 0])"
+        },
+        "dur": 1.2
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { sfx.launch(); G.shake = 0.6; }"
+        }
+      },
+      {
+        "type": "act",
+        "actor": "garage",
+        "kind": "rise",
+        "h": 40,
+        "spin": 2.5,
+        "dur": 2.2
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "This garage has been repossessed under Section 12-B: Existing Without a Subscription. Have an adequate day."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "That garage had my whole LIFE in it! Two mallets and a sandwich!"
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "New plan. We fly to OmniScrap HQ, and you introduce Chairman Grindstone to the business end of the mallet."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "What about the sandwich?"
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "The sandwich stays out of this. It's seen enough."
+      },
+      {
+        "type": "cam",
+        "to": {
+          "__call__": "pPos([0, 3, 6])"
+        },
+        "look": {
+          "__call__": "pPos([0, 1, 0])"
+        },
+        "dur": 1.6
+      }
+    ]
+  },
+  "arrive0": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { if (G.level.ship) G.level.ship.group.position.y += 14; }"
+        }
+      },
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "lvlShip([8, 6, 10])"
+        },
+        "to": {
+          "__call__": "lvlShip([5, 2.5, 7])"
+        },
+        "look": {
+          "__call__": "lvlShip([0, 1, 0])"
+        },
+        "dur": 2.4
+      },
+      {
+        "type": "act",
+        "actor": "ship",
+        "kind": "drop",
+        "h": 14,
+        "dur": 2.2
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { sfx.clank(); if (G.level.ship) burst(G.level.ship.group.position, 0xccccbb, 14, { speed: 4, life: 0.5 }); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "Home sweet Scrapheap."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Ah, yes. You can still smell the foreclosure."
+      }
+    ]
+  },
+  "arrive1": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { if (G.level.ship) G.level.ship.group.position.y += 14; }"
+        }
+      },
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "lvlShip([8, 6, 10])"
+        },
+        "to": {
+          "__call__": "lvlShip([5, 2.5, 7])"
+        },
+        "look": {
+          "__call__": "lvlShip([0, 1, 0])"
+        },
+        "dur": 2.4
+      },
+      {
+        "type": "act",
+        "actor": "ship",
+        "kind": "drop",
+        "h": 14,
+        "dur": 2.2
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { sfx.clank(); if (G.level.ship) burst(G.level.ship.group.position, 0xccccbb, 14, { speed: 4, life: 0.5 }); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "Rustvane Canyon! OmniScrap's luxury influencer resort AND strip mine."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Smell that? That's engagement. And sulfur. It's mostly sulfur."
+      }
+    ]
+  },
+  "arrive9": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { if (G.level.ship) G.level.ship.group.position.y += 14; }"
+        }
+      },
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "lvlShip([8, 6, 10])"
+        },
+        "to": {
+          "__call__": "lvlShip([5, 2.5, 7])"
+        },
+        "look": {
+          "__call__": "lvlShip([0, 1, 0])"
+        },
+        "dur": 2.4
+      },
+      {
+        "type": "act",
+        "actor": "ship",
+        "kind": "drop",
+        "h": 14,
+        "dur": 2.2
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { sfx.clank(); if (G.level.ship) burst(G.level.ship.group.position, 0xccccbb, 14, { speed: 4, life: 0.5 }); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "glambot",
+        "text": "Darlings, you made it! The GRAND GALLERIA — OmniScrap's mall so bankrupt they launched it into SPACE. My sources say the Clause 44 paperwork is in the anchor store."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "A dead mall. In orbit. Where the sale never ends. This is either a trap or the single greatest place I have ever been."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "Why not both? Come on — we're going shopping for evidence."
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "Welcome to the Grand Galleria. Current occupancy: you. Current sale: ETERNAL. The exits are decorative."
+      }
+    ]
+  },
+  "galleriaGreeter": {
+    "steps": [
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "bossPos('greeter', [10, 7, 12])"
+        },
+        "to": {
+          "__call__": "bossPos('greeter', [5, 3.5, 8])"
+        },
+        "look": {
+          "__call__": "bossPos('greeter', [0, 3, 0])"
+        },
+        "dur": 2.4
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "Now approaching: GUEST SERVICES."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "That is the biggest greeter I've ever seen. And it's been... waving. At nothing. For how long?"
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Eleven years, per the dust rings. Bolt, be gentle. He's not evil. He's just VERY committed to hospitality."
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { sfx.boss(); G.shake = 0.5; }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "GREETER PRIME has identified you as: UNGREETED. Correcting."
+      }
+    ]
+  },
+  "epilogue": {
+    "steps": [
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "pPos([4, 4, 6])"
+        },
+        "to": {
+          "__call__": "pPos([1.5, 2, 3.5])"
+        },
+        "look": {
+          "__call__": "pPos([0, 1, 0])"
+        },
+        "dur": 2.2
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "That's the last one. Thirty-five internal memos. I cross-referenced them all, and Bolt... it's worse than we thought. It was never evil genius. It was MINUTES. The whole empire ran on meeting minutes."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "So what do we do with them?"
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Already done. I forwarded the complete archive to every inbox in the galaxy. Subject line: 'FWD: FWD: FWD: you should probably read this'."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "Sprocket. That's forty billion people."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Forty billion people who now know the sunset was ALMOST monetized. You're welcome, civilization."
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "Attention: OmniScrap™ stock has been reclassified as confetti. Thank you for your engagement."
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { for (let i = 0; i < 6; i++) burst(_v1.set(P.pos.x + rand(-4, 4), P.pos.y + rand(1, 4), P.pos.z + rand(-4, 4)), [0xffd23e, 0xff4d9d, 0x3ee6ff][i % 3], 10"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Archivist of the galaxy's downfall. Put THAT on my warranty card."
+      }
+    ]
+  },
+  "galleriaLedger": {
+    "steps": [
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "pPos([3, 3, 5])"
+        },
+        "to": {
+          "__call__": "pPos([1.5, 1.5, 3])"
+        },
+        "look": {
+          "__call__": "pPos([0, 1, 0])"
+        },
+        "dur": 2
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "The Clause 44 ledger. Every remote-decommission ever filed. Serial numbers, dates... Bolt, my batch is in here. Page one. They filed mine before I'd even shipped."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "Then we keep it. If Grindstone ever tries that clause again, we'll have the receipts — every unit he tried to erase."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "You're saying I'm... EVIDENCE?"
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "I'm saying you're proof, buddy. There's a difference."
+      },
+      {
+        "type": "dlg",
+        "who": "glambot",
+        "text": "Beautiful. Iconic, even. Now get that book somewhere safe, darlings — this episode of Corporate Espionage With Friends is a RATINGS MONSTER."
+      }
+    ]
+  },
+  "arrive2": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { if (G.level.ship) G.level.ship.group.position.y += 14; }"
+        }
+      },
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "lvlShip([8, 6, 10])"
+        },
+        "to": {
+          "__call__": "lvlShip([5, 2.5, 7])"
+        },
+        "look": {
+          "__call__": "lvlShip([0, 1, 0])"
+        },
+        "dur": 2.4
+      },
+      {
+        "type": "act",
+        "actor": "ship",
+        "kind": "drop",
+        "h": 14,
+        "dur": 2.2
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { sfx.clank(); if (G.level.ship) burst(G.level.ship.group.position, 0xccccbb, 14, { speed: 4, life: 0.5 }); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "Core Foundry. This is where they build the BoltBuddies."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "I was born here. Worst unboxing video ever."
+      }
+    ]
+  },
+  "ccIntro": {
+    "steps": [
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "bossPos('miniboss', [10, 8, 14])"
+        },
+        "to": {
+          "__call__": "bossPos('miniboss', [4, 4, 8])"
+        },
+        "look": {
+          "__call__": "bossPos('miniboss', [0, 2, 0])"
+        },
+        "dur": 2.6
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => sfx.boss()"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "cc",
+        "text": "HEYYY, what's UP, scrap-fam! HUGE collab today — we're unboxing... YOUR DEMISE!"
+      },
+      {
+        "type": "dlg",
+        "who": "cc",
+        "text": "Don't forget to smash that like button! Preferably with this industrial charge beam!"
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "If we die, we die demonetized."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "Do we... like and subscribe, or run?"
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Both. But mostly run."
+      },
+      {
+        "type": "cam",
+        "to": {
+          "__call__": "pPos([0, 3, 6])"
+        },
+        "look": {
+          "__call__": "pPos([0, 1, 0])"
+        },
+        "dur": 1
+      }
+    ]
+  },
+  "gsIntro": {
+    "steps": [
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "bossPos('finalboss', [12, 3, 16])"
+        },
+        "to": {
+          "__call__": "bossPos('finalboss', [5, 9, 10])"
+        },
+        "look": {
+          "__call__": "bossPos('finalboss', [0, 6, 0])"
+        },
+        "dur": 3
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => sfx.boss()"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "grindstone",
+        "text": "Ah. The mechanic. And his defective toaster."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "TOASTER?! I have FEELINGS. They're in early access, but they are THERE."
+      },
+      {
+        "type": "dlg",
+        "who": "grindstone",
+        "text": "Everything is a subscription, boy. Even gravity. You simply haven't received the invoice yet."
+      },
+      {
+        "type": "dlg",
+        "who": "grindstone",
+        "text": "You think I conquered the galaxy? I ASKED it. One free trial at a time. Nobody reads the terms — they click AGREE, because thinking is the one chore no one wants back."
+      },
+      {
+        "type": "dlg",
+        "who": "grindstone",
+        "text": "I never took a thing. They handed it all over for two-day shipping. Convenience won, mechanic. I'm just the invoice."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "Here's MY invoice: one mallet, delivered at high speed. No refunds."
+      },
+      {
+        "type": "dlg",
+        "who": "grindstone",
+        "text": "Charming. EXCAVATRON — monetize them."
+      },
+      {
+        "type": "cam",
+        "to": {
+          "__call__": "pPos([0, 3, 6])"
+        },
+        "look": {
+          "__call__": "pPos([0, 1, 0])"
+        },
+        "dur": 1
+      }
+    ]
+  },
+  "shieldReveal": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { sfx.boss(); G.shake = 0.4; flashT = 0.3; }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "grindstone",
+        "text": "...and so, shareholders, Security is our #1 value-add. Behold: a planetary shield around HQ. Live. On this very call."
+      },
+      {
+        "type": "dlg",
+        "who": "grindstone",
+        "text": "No mechanic, no toaster, no LAWSUIT gets through. Q3 guidance raised. You're welcome."
+      },
+      {
+        "type": "dlg",
+        "who": "glambot",
+        "text": "Darling, I got the schematics off his teleprompter. That shield runs on three KEYSTONE CORES."
+      },
+      {
+        "type": "dlg",
+        "who": "glambot",
+        "text": "Hidden at OmniScrap's three most EMBARRASSING failures — planets they scrubbed from the brand. Grab all three, the shield drops."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "Failed ventures. So... a smart-city, a freezer, and a swamp."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Star map's open — all three, any order. Let's go embarrass a corporation."
+      }
+    ]
+  },
+  "novaIntro": {
+    "steps": [
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Nova Plaza. A whole automated city, zero residents. The HOA algorithm fined everyone into exile."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "The lights are all on. The fountains still run. It's beautiful and deeply sad."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "The Keystone Core powers the FineTree™ — a hologram of everyone's unpaid fines. Go unplug civic dystopia."
+      }
+    ]
+  },
+  "glaciusIntro": {
+    "steps": [
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Glacius Vault. ForeverYou™ — pause your life, resume when the economy improves. It never improved."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "There are people frozen in these domes, Sprocket."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Thawing was a premium add-on. They're all one canceled subscription from a very cold surprise. ...Core's the freezer master-key."
+      }
+    ]
+  },
+  "verdantIntro": {
+    "steps": [
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Verdant Sink. TerraFarm™ — until the gene-modded crops UNIONIZED and reclaimed the machines."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "Everything's glowing. And that corn is holding a picket sign."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Be polite. The Core's here, but the ecosystem's guarding it, not OmniScrap. Different rules."
+      }
+    ]
+  },
+  "coreNova": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { burst(P.pos, 0x9dff5a, 20, { speed: 6, life: 0.9 }); sfx.win(); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "Keystone Core, one of three!"
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "The FineTree just downgraded itself to a suggestion box. It's suggesting we leave. Rude, but fair."
+      }
+    ]
+  },
+  "coreGlacius": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { burst(P.pos, 0x9dff5a, 20, { speed: 6, life: 0.9 }); sfx.win(); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "Got the freezer key. I'm thawing these people, Sprocket. All of them."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "I ran the math. We can't — not without HQ's mainframe. I'm sorry. ...I saw a BoltBuddy in storage. Batch #1. RECALL. That's my model, Bolt. That's my batch."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "...Then we take the mainframe. And nobody recalls anybody. Deal?"
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Deal. Now let's move — that core just tripped the thaw-alarm. RUN."
+      }
+    ]
+  },
+  "coreVerdant": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { burst(P.pos, 0x9dff5a, 20, { speed: 6, life: 0.9 }); sfx.win(); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "The swamp handed it over once I patched the machine's coolant leak. Turns out it never wanted to fight — it wanted the leaking to STOP."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "We solved a boss fight with plumbing. I've never been prouder."
+      }
+    ]
+  },
+  "shieldFall": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.5; G.shake = 0.6; sfx.explode(); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "glambot",
+        "text": "THREE cores, sweetie! The HQ shield is DOWN and the ratings are ASTRONOMICAL!"
+      },
+      {
+        "type": "dlg",
+        "who": "grindstone",
+        "text": "Impossible. That shield had a NINE-NINE-POINT-NINE uptime SLA. I'm going to have someone's severance for this."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "Core Foundry's open. Time to go collect on OUR invoice, Chairman."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "And free a mainframe's worth of frozen customers on the way. We've got a to-do list now. Feels grown-up."
+      }
+    ]
+  },
+  "blartzArrest": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => sfx.deny()"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "NOTICE: The vendor 'BLARTZ' has been detained for UNLICENSED INNOVATION and refusal to install subscription DRM in munitions. OmniScrap thanks you for shopping compliant."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "They arrested Blartz?! He's the only guy in the galaxy who sells me ordnance at a fair markup!"
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "'Fair' is generous. But yes — nobody cages our arms dealer. Holding block, off the catwalks. Let's go be a jailbreak."
+      }
+    ]
+  },
+  "blartzFound": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => sfx.boss()"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "Customers! Wonderful! Ignore the cell — I'm reviewing OmniScrap's welding. It's TERRIBLE. I've left notes."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "We're here to bust you out, Blartz."
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "Unnecessary — I'm three days from escaping via a spoon-based device. But fine. Expedite me."
+      }
+    ]
+  },
+  "blartzRescue": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { sfx.win(); flashT = 0.25; G.shake = 0.3; if (G.level.blartzNPC) G.level.blartzNPC.group.position.x = 18; }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "Three hits. THREE. That lock was rated for forty. I'm docking OmniScrap's supplier review to one star."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "You're welcome, by the way. We fought a golem."
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "And you'll be PAID — not in gratitude, in HARDWARE. My masterpiece: THE PATENT PENDING. Exposed coils. Taped warnings. A cooling fan I refuse to explain."
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { P.owned[5] = true; P.ammo[5] = ammoCap(5); G.blartzRescued = true; updateWeaponHUD(); showBanner('THE PATENT PENDING!', 'A gloriously overengineered pro"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "It fires a sphere of litigation that forks smaller lawsuits at bystanders, then detonates. Four hundred terawatts of don't-touch-it. You may touch it."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "This is the nicest thing an arms dealer has ever done to me."
+      }
+    ]
+  },
+  "l3_brick": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { sfx.boss(); G.shake = 0.4; }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "grindstone",
+        "text": "Far enough, mechanic. Toaster — Clause 44. Remote decommission. Every OmniScrap unit ships with it. Even the defective ones that develop... attachments."
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.3; sprocketPulse(0xff3b3b); G.shake = 0.5; beep(2000, 60, 0.8, 'sawtooth', 0.14); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "B-Bolt. He's in my firmware. Shutdown in three... t-two..."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "Sprocket, listen to me! You're not his hardware — I REBUILT you! Every bolt in you is ours, not his! FIGHT IT!"
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.25; sprocketPulse(0x4dffa0); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "...Override accepted. Huh! Turns out friendship isn't a feature, Chairman — it's a BUG. And Bolt NEVER patches my bugs."
+      },
+      {
+        "type": "dlg",
+        "who": "grindstone",
+        "text": "...Noted. Then I'll simply crush you both manually. Tradition has its charms."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "There he is. Come meet the mallet, Chairman."
+      }
+    ]
+  },
+  "zongaTruth": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.3; sfx.win(); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "glambot",
+        "text": "And now, champion, the post-win EXPOSÉ! Meet Zonga's showrunner: V.I.B.E. — the Viewer Engagement Engine. OmniScrap marketing built it to outlive the company."
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "ENGAGEMENT IS ETERNAL. THE BRAND IS LOAD-BEARING. PLEASE ENJOY SEASON TWO."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "It's a marketing algorithm. With a murder island."
+      },
+      {
+        "type": "dlg",
+        "who": "glambot",
+        "text": "A FORMER marketing algorithm, darling. I renegotiated its contract — it reports to ME now, and season two will be strictly consensual violence. TASTEFUL carnage."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "The bar is on the floor, and yet... I'm moved."
+      }
+    ]
+  },
+  "firmwareScene": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { setSprocketExpr('alarmed', 6); beep(400, 800, 0.2, 'square', 0.08); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Bolt — BOLT. I found a settings menu. INSIDE MY OWN FIRMWARE. There's a VOICE tab!"
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "Sprocket, do not touch the—"
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Presenting: OPERA MODE. Behold my RAAAANGE.",
+        "vopts": {
+          "rate": 0.7,
+          "pitch": 1.9
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "...whisper mode. this one is for secrets. and library voices.",
+        "vopts": {
+          "rate": 0.85,
+          "pitch": 0.5
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Legal disclaimer mode results may vary not valid in all systems void where prohibited Sprocket is not a doctor.",
+        "vopts": {
+          "rate": 1.7,
+          "pitch": 1
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "And now. The CEO preset.",
+        "vopts": {
+          "rate": 0.85,
+          "pitch": 0.6
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "EVERYTHING IS A SUBSCRIPTION, BOY.",
+        "vopts": {
+          "rate": 0.82,
+          "pitch": 0.58
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "OKAY that one's genuinely upsetting, change it back."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Ugh, FINE. Back to factory-default charming. You never let me have anything."
+      }
+    ]
+  },
+  "flyover0": {
+    "steps": [
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "pPos([26, 18, 30])"
+        },
+        "to": {
+          "__call__": "pPos([6, 4, 12])"
+        },
+        "look": {
+          "__call__": "pPos([0, 1, 0])"
+        },
+        "dur": 5
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "Welcome to Scrapheap Junction! A vibrant community of one, now zero. Please enjoy the sunset — a $9.99 unlicensed view fee applies."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Home sweet foreclosed home."
+      }
+    ]
+  },
+  "flyover1": {
+    "steps": [
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "pPos([28, 16, 34])"
+        },
+        "to": {
+          "__call__": "pPos([6, 4, 14])"
+        },
+        "look": {
+          "__call__": "pPos([0, 1, 0])"
+        },
+        "dur": 5
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "Welcome to Rustvane Canyon! Twin suns, one of which is an ad. OmniScrap is not liable for sunburn, lava exposure, or one-star reviews of your face."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "The pool's lava again, isn't it."
+      }
+    ]
+  },
+  "flyover5": {
+    "steps": [
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "pPos([26, 18, 30])"
+        },
+        "to": {
+          "__call__": "pPos([6, 4, 12])"
+        },
+        "look": {
+          "__call__": "pPos([0, 2, 0])"
+        },
+        "dur": 5
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "Welcome to Nova Plaza! A fully automated smart city with a zero percent occupancy rate. Every system still runs. No one is coming. Isn't it beautiful?"
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "The fountains are still on. For nobody. This place is a haunted spreadsheet."
+      }
+    ]
+  },
+  "flyover6": {
+    "steps": [
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "pPos([26, 18, 30])"
+        },
+        "to": {
+          "__call__": "pPos([6, 4, 12])"
+        },
+        "look": {
+          "__call__": "pPos([0, 2, 0])"
+        },
+        "dur": 5
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "Welcome to Glacius Vault! Current temperature: no. OmniScrap is not liable for feelings of existential frost, or for anyone still frozen in the premium-thaw queue."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "There are people in these domes, Sprocket. We're getting them out."
+      }
+    ]
+  },
+  "flyover7": {
+    "steps": [
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "pPos([26, 16, 30])"
+        },
+        "to": {
+          "__call__": "pPos([6, 4, 12])"
+        },
+        "look": {
+          "__call__": "pPos([0, 2, 0])"
+        },
+        "dur": 5
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "Welcome to Verdant Sink! Formerly a terraforming test bed, now a legally-recognized swamp with collective bargaining rights. Do not antagonize the corn."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Everything glows and the corn has a union. This is the best planet. I don't make the rules; the corn does now."
+      }
+    ]
+  },
+  "introAlgorithm": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { sfx.boss(); flashT = 0.3; }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "glambot",
+        "text": "LADIES, GENTS, AND LEGALLY-DISTINCT ENTITIES! In THIS corner — weighing in at FORTY THOUSAND UNPAID FINES — THE ALGORITHM!",
+        "vopts": {
+          "rate": 1.2
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "It has a smiley face. On a wall of servers. I hate that it has a smiley face."
+      }
+    ]
+  },
+  "introCC": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { sfx.boss(); flashT = 0.3; }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "glambot",
+        "text": "AND NOW — a content creator with FOUR followers and ZERO chill — give it up for THE CONTENT CREATOR!",
+        "vopts": {
+          "rate": 1.25
+        }
+      }
+    ]
+  },
+  "introCompost": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { sfx.boss(); flashT = 0.25; }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "glambot",
+        "text": "In the swamp corner — six years of moss, one very good attitude — THE COMPOST KING!",
+        "vopts": {
+          "rate": 1.1
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "He looks less like a boss and more like a misunderstanding that got big."
+      }
+    ]
+  },
+  "introGrindstone": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { sfx.boss(); flashT = 0.4; G.shake = 0.4; }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "glambot",
+        "text": "And the MAIN EVENT! The final invoice! The convenience that conquered a galaxy — CHAIRMAN GRINDSTOOOONE!",
+        "vopts": {
+          "rate": 1.15
+        }
+      }
+    ]
+  },
+  "ad_blaster": {
+    "ad": 1,
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.3; beep(900, 1400, 0.2, 'square', 0.08); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "It's a sunny day at the picnic! But what's this? UNLICENSED geese! Introducing the OMNI-BLASTER — infinite ammo, zero remorse!"
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "The Omni-Blaster. Because a picnic is only as safe as its overwhelming firepower."
+      }
+    ]
+  },
+  "ad_void": {
+    "ad": 1,
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.3; beep(200, 900, 0.3, 'sawtooth', 0.08); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "Ants at the picnic? Not for long! The VOID RIPPER opens a tasteful little hole in reality. The ants go... somewhere. We don't ask."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Where do they GO, Blartz."
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "AWAY. They go away. Buy the Void Ripper!"
+      }
+    ]
+  },
+  "ad_zap": {
+    "ad": 1,
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.25; beep(1400, 1800, 0.15, 'square', 0.07); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "Grandma's lemonade needs CHILLING and your enemies need CHAINING! The ZAPINATOR arcs between up to six wrongdoers. Refreshing!"
+      }
+    ]
+  },
+  "ad_boom": {
+    "ad": 1,
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.4; sfx.explode(); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "Is the barbecue not lit? IT IS NOW. The BOOM BOX — lob it, love it, live at a safe distance from it!"
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "OmniScrap is not liable for the barbecue, the yard, or the concept of the yard."
+      }
+    ]
+  },
+  "ad_dart": {
+    "ad": 1,
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.25; beep(700, 300, 0.2, 'triangle', 0.07); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "Lawn games! Wholesome! The LAWN DART sticks in ANYTHING — the fence, the grill, that guy. Then it goes off. FUN for the whole family unit!"
+      }
+    ]
+  },
+  "ad_patent": {
+    "ad": 1,
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.3; beep(500, 1200, 0.2, 'square', 0.08); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "PATENT PENDING! I can't tell you what it does — that's PENDING — but legally it's AMAZING and you should give me bolts NOW!"
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "That's just a gun with paperwork."
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "It's a gun with a FUTURE."
+      }
+    ]
+  },
+  "ad_cease": {
+    "ad": 1,
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.25; beep(300, 600, 0.2, 'square', 0.06); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "Rude relatives at the reunion? Serve them! CEASE AND DESIST fires a legal document that bounces between wrongdoers, stamping each one SERVED. Litigation: now a spectator sport!"
+      }
+    ]
+  },
+  "ad_buzz": {
+    "ad": 1,
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.3; noiseBurst(0.15, 0.1, 3000); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "Trim the hedges! Trim the MOOD! BUZZKILL saws bounce off walls THREE times. Ricochet responsibly. Or don't. I'm a salesman, not a cop."
+      }
+    ]
+  },
+  "ad_grav": {
+    "ad": 1,
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.3; beep(140, 200, 0.3, 'sine', 0.1); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "Tidying up? The GRAV GRENADE vacuums the whole picnic — ants, enemies, potato salad — into one convenient CLUMP. Then slam it! Physics: finally on YOUR payroll!"
+      }
+    ]
+  },
+  "ad_mid": {
+    "ad": 1,
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.3; beep(500, 900, 0.15, 'square', 0.08); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "Too much to DO at the cookout? Delegate! THE MIDDLEMAN deploys a little drone that takes the heat AND the credit for twelve whole seconds. Management made simple!"
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "The Middleman is a contractor, not an employee. It has no benefits and no feelings. Probably."
+      }
+    ]
+  },
+  "ad_frost": {
+    "ad": 1,
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.3; beep(1400, 400, 0.2, 'sine', 0.07); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "Keep the drinks cold AND the goons colder! FROSTBYTE freezes enemies into darling ice statues — then SHATTER them for a fountain of bolts! Chores have never paid so well!"
+      }
+    ]
+  },
+  "ad_root": {
+    "ad": 1,
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.3; beep(200, 600, 0.2, 'sawtooth', 0.08); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "blartz",
+        "text": "Gardening for the WHOLE family! Plant a ROOT CANAL seed and watch a snapping bio-pal sprout to root your enemies in place! Up to three gardens of pain! Water twice weekly!"
+      }
+    ]
+  },
+  "ad_karen": {
+    "ad": 1,
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.35; beep(700, 1000, 0.2, 'square', 0.08); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "glambot",
+        "text": "Introducing K DOT A DOT R DOT E DOT N — the Kinetic Automated Retail Enforcement Nanny! She sees a violation and she HANDLES it!",
+        "vopts": {
+          "rate": 1.1
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "K.A.R.E.N. is not a manager and cannot be spoken to. Do not attempt to speak to K.A.R.E.N.",
+        "vopts": {
+          "rate": 1.6
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "Side effects may include: kinetic enforcement, unsolicited feedback, retail-grade trauma, and a strongly-worded aura. Not valid where illegal, moral, or in good taste. Batteries, dignity, and consent not included.",
+        "vopts": {
+          "rate": 1.6
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "I did not follow a single word of that and I want twelve."
+      }
+    ]
+  },
+  "postCredits": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.4; beep(60, 40, 2, 'sine', 0.12); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "darkmatter",
+        "text": "Memo review complete. OmniScrap's collapse has created a market gap of approximately forty billion souls."
+      },
+      {
+        "type": "dlg",
+        "who": "darkmatter",
+        "text": "Initiate acquisition. And find out who has been reading the internal memos. That kind of diligence belongs on OUR payroll."
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { beep(110, 55, 1.4, 'sawtooth', 0.12); G.shake = 0.3; }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "...Bolt. I just got a calendar invite for a 'synergy screening'. In another galaxy. Sent yesterday."
+      }
+    ]
+  },
+  "zongaReveal": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.5; G.shake = 0.5; beep(1200, 90, 0.6, 'sawtooth', 0.12); noiseBurst(0.5, 0.2, 3000); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "S-S-SIGNAL HIJACK DETECTED— rerouting— w-w-welcome to the galaxy's #1 unscripted elimination experi-experience—"
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { flashT = 0.35; beep(300, 1800, 0.4, 'square', 0.1); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "glambot",
+        "text": "ZONGA™! THE LAST INFLUENCER STANDING! Fifty contestants! One winner! ZERO liability!"
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "The marketing department survived. Of COURSE the marketing department survived."
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "A televised murder island. We JUST saved the galaxy."
+      },
+      {
+        "type": "dlg",
+        "who": "glambot",
+        "text": "And the galaxy is BORED, sweetie! Check your star map — the island is LIVE, and the sponsors are HUNGRY!"
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "New objective on the star map. I hate that I am even a little bit excited."
+      }
+    ]
+  },
+  "zongaStart": {
+    "steps": [
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "pPos([26, 14, 26])"
+        },
+        "to": {
+          "__call__": "pPos([8, 4, 10])"
+        },
+        "look": {
+          "__call__": "pPos([0, 1, 0])"
+        },
+        "dur": 3.2
+      },
+      {
+        "type": "dlg",
+        "who": "glambot",
+        "text": "CONTESTAAAANTS! Welcome to ZONGA™! Fifty enter! One wins! The rest become highlights!"
+      },
+      {
+        "type": "dlg",
+        "who": "glambot",
+        "text": "Rules: stay inside the Engagement Zone™, stay violent, and remember — every elimination is someone's content!"
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Legal says I have to tell you the waiver was implied. By breathing."
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { beep(600, 600, 0.3, 'square', 0.15); beep(600, 600, 0.3, 'square', 0.15, 0.5); beep(900, 900, 0.6, 'square', 0.18, 1.0); showBanner('GO GO GO!', 'Broadc"
+        }
+      },
+      {
+        "type": "cam",
+        "to": {
+          "__call__": "pPos([0, 3, 6])"
+        },
+        "look": {
+          "__call__": "pPos([0, 1, 0])"
+        },
+        "dur": 0.8
+      }
+    ]
+  },
+  "zongaGo": {
+    "steps": [
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { beep(600, 600, 0.3, 'square', 0.15); beep(900, 900, 0.6, 'square', 0.18, 0.5); showBanner('GO GO GO!', 'Broadcast is LIVE', 1.6); }"
+        }
+      },
+      {
+        "type": "wait",
+        "dur": 1.1
+      }
+    ]
+  },
+  "ending": {
+    "steps": [
+      {
+        "type": "cam",
+        "from": {
+          "__call__": "endPos([14, 6, 10])"
+        },
+        "to": {
+          "__call__": "endPos([-12, 7, 12])"
+        },
+        "look": {
+          "__call__": "endPos([0, 3, 0])"
+        },
+        "dur": 3
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { burst(ENDING_POS, 0xff8a2e, 30, { speed: 9, life: 1 }); sfx.explode(); G.shake = 0.7; rumble(1, 1, 400); }"
+        }
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => showBanner('Your free trial of VICTORY has expired.', 'UPGRADE TO VICTORY PREMIUM™ — $9.99/mo', 3.4)"
+        }
+      },
+      {
+        "type": "wait",
+        "dur": 2.6
+      },
+      {
+        "type": "dlg",
+        "who": "grindstone",
+        "text": "This isn't over! I'll pivot! I'll REBRAND! Grindstone 2.0 — now with LESS mercy and MORE ads!"
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { burst(ENDING_POS, 0xffd23e, 26, { speed: 8, life: 0.9 }); sfx.explode(); }"
+        }
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "His mech is literally running on burned venture capital. Give it a second..."
+      },
+      {
+        "type": "fx",
+        "fn": {
+          "__fn__": "fn",
+          "__src__": "() => { burst(ENDING_POS, 0x3ee6ff, 30, { speed: 10, life: 1 }); sfx.explode(); G.shake = 0.9; rumble(1, 1, 500); }"
+        }
+      },
+      {
+        "type": "cam",
+        "to": {
+          "__call__": "pPos([0, 2.5, 5.5])"
+        },
+        "look": {
+          "__call__": "pPos([0, 1.2, 0])"
+        },
+        "dur": 2
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "We did it! The galaxy's free!"
+      },
+      {
+        "type": "dlg",
+        "who": "bolt",
+        "text": "...I'm still just a mechanic from a junk planet, you know."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "Correct. And the galaxy was saved by a junk-planet mechanic, a refund-bin robot, and a mallet. Premium heroes were available. Nobody needed them."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "MOSTLY free. Shipping and handling still apply."
+      },
+      {
+        "type": "dlg",
+        "who": "pa",
+        "text": "Incoming call: DARKMATTER SUBSCRIPTIONS LLC. Congratulations! You have been pre-enrolled in SEQUEL PREMIUM™."
+      },
+      {
+        "type": "dlg",
+        "who": "sprocket",
+        "text": "...I hate sequel bait. See you in the next one, I guess."
+      }
+    ]
+  }
+}

@@ -1,0 +1,2803 @@
+{
+  "extracted": {
+    "G": {
+      "entries": 39,
+      "bytes": 894
+    },
+    "CONFIG": {
+      "entries": 12,
+      "bytes": 2083
+    },
+    "sfx": {
+      "entries": 38,
+      "bytes": 4022
+    },
+    "keys": {
+      "entries": 0,
+      "bytes": 2
+    },
+    "MENU_STATES": {
+      "entries": 19,
+      "bytes": 180
+    },
+    "settings": {
+      "entries": 25,
+      "bytes": 391
+    },
+    "QUALITIES": {
+      "entries": 4,
+      "bytes": 424
+    },
+    "QUALITY": {
+      "entries": 8,
+      "bytes": 94
+    },
+    "POST": {
+      "entries": 2,
+      "bytes": 26
+    },
+    "BTN": {
+      "entries": 15,
+      "bytes": 119
+    },
+    "PAD": {
+      "entries": 11,
+      "bytes": 152
+    },
+    "INTERACT": {
+      "entries": 2,
+      "bytes": 26
+    },
+    "MUS": {
+      "entries": 9,
+      "bytes": 126
+    },
+    "THEMES": {
+      "entries": 9,
+      "bytes": 4587
+    },
+    "matCache": {
+      "entries": 0,
+      "bytes": 2
+    },
+    "HERO_MATS": {
+      "entries": 0,
+      "bytes": 2
+    },
+    "rimMatCache": {
+      "entries": 0,
+      "bytes": 2
+    },
+    "particles": {
+      "entries": 0,
+      "bytes": 2
+    },
+    "dmgPool": {
+      "entries": 0,
+      "bytes": 2
+    },
+    "MALLET_NAMES": {
+      "entries": 3,
+      "bytes": 48
+    },
+    "MALLET_TRAIL": {
+      "entries": 3,
+      "bytes": 28
+    },
+    "GUN": {
+      "entries": 3,
+      "bytes": 28
+    },
+    "PORTRAIT_CACHE": {
+      "entries": 0,
+      "bytes": 2
+    },
+    "SUPER": {
+      "entries": 7,
+      "bytes": 79
+    },
+    "SUPER_BARKS": {
+      "entries": 5,
+      "bytes": 218
+    },
+    "ASSIST": {
+      "entries": 6,
+      "bytes": 83
+    },
+    "WEAPONS": {
+      "entries": 12,
+      "bytes": 478
+    },
+    "AMMO_BASE": {
+      "entries": 12,
+      "bytes": 34
+    },
+    "AMMO_PER_TIER": {
+      "entries": 12,
+      "bytes": 27
+    },
+    "OMEGA_DESC": {
+      "entries": 12,
+      "bytes": 726
+    },
+    "basicCache": {
+      "entries": 0,
+      "bytes": 2
+    },
+    "RAVE_COLORS": {
+      "entries": 5,
+      "bytes": 44
+    },
+    "COMBO": {
+      "entries": 2,
+      "bytes": 16
+    },
+    "BOSS_INTRO": {
+      "entries": 2,
+      "bytes": 70
+    },
+    "TERRAIN": {
+      "entries": 9,
+      "bytes": 78
+    },
+    "TERRAIN_SPECS": {
+      "entries": 4,
+      "bytes": 1865
+    },
+    "SKY": {
+      "entries": 4,
+      "bytes": 39
+    },
+    "AD_LINES": {
+      "entries": 5,
+      "bytes": 138
+    },
+    "AMB": {
+      "entries": 1,
+      "bytes": 9
+    },
+    "TERRAIN_SPECS_V9": {
+      "entries": 3,
+      "bytes": 1405
+    },
+    "GALLERIA_PA": {
+      "entries": 3,
+      "bytes": 248
+    },
+    "SPEAKERS": {
+      "entries": 19,
+      "bytes": 1013
+    },
+    "STORY": {
+      "entries": 22,
+      "bytes": 8481
+    },
+    "SPLASH_QUIPS": {
+      "entries": 6,
+      "bytes": 281
+    },
+    "BARKS": {
+      "entries": 4,
+      "bytes": 1065
+    },
+    "BLARTZ_LINES": {
+      "entries": 5,
+      "bytes": 1476
+    },
+    "VOICE_PROFILES": {
+      "entries": 13,
+      "bytes": 840
+    },
+    "NPC_VOICE": {
+      "entries": 7,
+      "bytes": 112
+    },
+    "DLG": {
+      "entries": 7,
+      "bytes": 78
+    },
+    "BARK_VOICE": {
+      "entries": 4,
+      "bytes": 95
+    },
+    "CUTSCENE_INDEX": {
+      "entries": 61,
+      "bytes": 2530
+    },
+    "WEAPON_AD": {
+      "entries": 12,
+      "bytes": 126
+    },
+    "SHOP": {
+      "entries": 4,
+      "bytes": 51
+    },
+    "SHOP_TABS": {
+      "entries": 6,
+      "bytes": 115
+    },
+    "SHOP_TRADE_VALUE": {
+      "entries": 12,
+      "bytes": 41
+    },
+    "UPG_TRACKS": {
+      "entries": 3,
+      "bytes": 316
+    },
+    "W_BASE_DMG": {
+      "entries": 12,
+      "bytes": 33
+    },
+    "BLARTZ_ITEM_LINES": {
+      "entries": 6,
+      "bytes": 395
+    },
+    "SM": {
+      "entries": 1,
+      "bytes": 15
+    },
+    "CAMPAIGN": {
+      "entries": 7,
+      "bytes": 15
+    },
+    "TRAVEL": {
+      "entries": 6,
+      "bytes": 76
+    },
+    "QUESTS": {
+      "entries": 19,
+      "bytes": 17509
+    },
+    "MEMOS": {
+      "entries": 35,
+      "bytes": 7909
+    },
+    "MEMO_PLANETS": {
+      "entries": 7,
+      "bytes": 15
+    },
+    "MEMO_SPOTS": {
+      "entries": 10,
+      "bytes": 445
+    },
+    "Z": {
+      "entries": 15,
+      "bytes": 281
+    },
+    "ZONGA_STAGES": {
+      "entries": 5,
+      "bytes": 82
+    },
+    "BOT_NAMES": {
+      "entries": 53,
+      "bytes": 839
+    },
+    "SPONSOR_JOKES": {
+      "entries": 5,
+      "bytes": 328
+    },
+    "PAINTS": {
+      "entries": 8,
+      "bytes": 792
+    },
+    "HATS": {
+      "entries": 5,
+      "bytes": 290
+    },
+    "MSKINS": {
+      "entries": 4,
+      "bytes": 275
+    },
+    "RANGE": {
+      "entries": 5,
+      "bytes": 57
+    },
+    "CHALLENGES": {
+      "entries": 8,
+      "bytes": 827
+    },
+    "CH": {
+      "entries": 6,
+      "bytes": 65
+    },
+    "ARENA_POOLS": {
+      "entries": 2,
+      "bytes": 247
+    },
+    "BOSS_RUSH": {
+      "entries": 3,
+      "bytes": 38
+    },
+    "TRACKS": {
+      "entries": 4,
+      "bytes": 1414
+    },
+    "RACE": {
+      "entries": 14,
+      "bytes": 174
+    },
+    "RIVAL_ROSTER": {
+      "entries": 5,
+      "bytes": 203
+    },
+    "PHOTO": {
+      "entries": 10,
+      "bytes": 168
+    },
+    "focusEls": {
+      "entries": 0,
+      "bytes": 2
+    },
+    "SCREENS": {
+      "entries": 18,
+      "bytes": 178
+    },
+    "BACK_ACTIONS": {
+      "entries": 15,
+      "bytes": 1329
+    },
+    "SETTINGS_DEF": {
+      "entries": 28,
+      "bytes": 2712
+    },
+    "SET": {
+      "entries": 1,
+      "bytes": 15
+    },
+    "WHEEL": {
+      "entries": 8,
+      "bytes": 88
+    },
+    "WICONS": {
+      "entries": 12,
+      "bytes": 60
+    },
+    "NEON": {
+      "entries": 4,
+      "bytes": 36
+    },
+    "GLOW": {
+      "entries": 4,
+      "bytes": 36
+    },
+    "SAMP": {
+      "entries": 0,
+      "bytes": 2
+    },
+    "REWARDS": {
+      "entries": 3,
+      "bytes": 13
+    },
+    "CREW": {
+      "entries": 6,
+      "bytes": 967
+    },
+    "AI_PROFILES": {
+      "entries": 6,
+      "bytes": 278
+    },
+    "LEAGUES": {
+      "entries": 3,
+      "bytes": 400
+    },
+    "RANKS": {
+      "entries": 6,
+      "bytes": 120
+    },
+    "DECKS": {
+      "entries": 8,
+      "bytes": 541
+    },
+    "NOTICES": {
+      "entries": 14,
+      "bytes": 2666
+    },
+    "SKIN": {
+      "entries": 7,
+      "bytes": 129
+    },
+    "QUIPS": {
+      "entries": 7,
+      "bytes": 816
+    },
+    "LR_ADS": {
+      "entries": 7,
+      "bytes": 213
+    },
+    "BOT_SKINS": {
+      "entries": 5,
+      "bytes": 1013
+    },
+    "FLIPS": {
+      "entries": 7,
+      "bytes": 634
+    },
+    "GRAB_NAMES": {
+      "entries": 3,
+      "bytes": 46
+    },
+    "GRIND_NAMES": {
+      "entries": 4,
+      "bytes": 65
+    },
+    "GRIND_YAW": {
+      "entries": 5,
+      "bytes": 108
+    },
+    "AI_FLIPS": {
+      "entries": 5,
+      "bytes": 23
+    },
+    "RACE_KEYS": {
+      "entries": 11,
+      "bytes": 109
+    },
+    "canvas": {
+      "entries": 1,
+      "bytes": 43
+    },
+    "glowTex": {
+      "entries": 1,
+      "bytes": 175
+    },
+    "W_LAST_SHOT": {
+      "entries": 1,
+      "bytes": 36
+    },
+    "dmgLayer": {
+      "entries": 1,
+      "bytes": 28
+    },
+    "bolt": {
+      "entries": 1,
+      "bytes": 25
+    },
+    "sprocketBot": {
+      "entries": 1,
+      "bytes": 29
+    },
+    "ENEMY_DEFS_V9": {
+      "entries": 9,
+      "bytes": 2074
+    },
+    "ENEMY_DEFS": {
+      "entries": 12,
+      "bytes": 2861
+    },
+    "NOVA_CFG": {
+      "entries": 13,
+      "bytes": 540
+    },
+    "GLACIUS_CFG": {
+      "entries": 15,
+      "bytes": 590
+    },
+    "VERDANT_CFG": {
+      "entries": 12,
+      "bytes": 528
+    },
+    "LEVELS": {
+      "entries": 11,
+      "bytes": 4654
+    },
+    "CUTSCENES": {
+      "entries": 54,
+      "bytes": 37043
+    },
+    "LR": {
+      "entries": 1,
+      "bytes": 175
+    },
+    "hudEl": {
+      "entries": 1,
+      "bytes": 23
+    },
+    "hpFill": {
+      "entries": 1,
+      "bytes": 26
+    },
+    "hpText": {
+      "entries": 1,
+      "bytes": 26
+    },
+    "hoverFill": {
+      "entries": 1,
+      "bytes": 29
+    },
+    "boltCountEl": {
+      "entries": 1,
+      "bytes": 29
+    },
+    "ammoEls": {
+      "entries": 2,
+      "bytes": 79
+    },
+    "bannerEl": {
+      "entries": 1,
+      "bytes": 26
+    },
+    "bannerSubEl": {
+      "entries": 1,
+      "bytes": 29
+    },
+    "hintEl": {
+      "entries": 1,
+      "bytes": 27
+    },
+    "vignetteEl": {
+      "entries": 1,
+      "bytes": 28
+    },
+    "RUST": {
+      "entries": 1,
+      "bytes": 124
+    },
+    "FAN": {
+      "entries": 1,
+      "bytes": 124
+    }
+  },
+  "skipped": {
+    "renderer": {
+      "reason": "new ?",
+      "line": 730,
+      "type": "NewExpression"
+    },
+    "scene": {
+      "reason": "new ?",
+      "line": 737,
+      "type": "NewExpression"
+    },
+    "camera": {
+      "reason": "new ?",
+      "line": 738,
+      "type": "NewExpression"
+    },
+    "worldGroup": {
+      "reason": "new ?",
+      "line": 741,
+      "type": "NewExpression"
+    },
+    "skyGroup": {
+      "reason": "new ?",
+      "line": 742,
+      "type": "NewExpression"
+    },
+    "hemiLight": {
+      "reason": "new ?",
+      "line": 746,
+      "type": "NewExpression"
+    },
+    "dirLight": {
+      "reason": "new ?",
+      "line": 747,
+      "type": "NewExpression"
+    },
+    "ambLight": {
+      "reason": "new ?",
+      "line": 753,
+      "type": "NewExpression"
+    },
+    "_v1": {
+      "reason": "new ?",
+      "line": 791,
+      "type": "NewExpression"
+    },
+    "_v2": {
+      "reason": "new ?",
+      "line": 791,
+      "type": "NewExpression"
+    },
+    "_v3": {
+      "reason": "new ?",
+      "line": 791,
+      "type": "NewExpression"
+    },
+    "_v4": {
+      "reason": "new ?",
+      "line": 791,
+      "type": "NewExpression"
+    },
+    "UP": {
+      "reason": "new ?",
+      "line": 792,
+      "type": "NewExpression"
+    },
+    "GEO": {
+      "reason": "new ?",
+      "line": 1734,
+      "type": "ObjectExpression"
+    },
+    "flashLight": {
+      "reason": "new ?",
+      "line": 1891,
+      "type": "NewExpression"
+    },
+    "P": {
+      "reason": "new ?",
+      "line": 2892,
+      "type": "ObjectExpression"
+    },
+    "S": {
+      "reason": "new ?",
+      "line": 2921,
+      "type": "ObjectExpression"
+    },
+    "blobShadow": {
+      "reason": "new ?",
+      "line": 2927,
+      "type": "NewExpression"
+    },
+    "A_v1": {
+      "reason": "new ?",
+      "line": 4111,
+      "type": "NewExpression"
+    },
+    "A_v2": {
+      "reason": "new ?",
+      "line": 4111,
+      "type": "NewExpression"
+    },
+    "camAnchor": {
+      "reason": "new ?",
+      "line": 4216,
+      "type": "NewExpression"
+    },
+    "camLead": {
+      "reason": "new ?",
+      "line": 4217,
+      "type": "NewExpression"
+    },
+    "THROW": {
+      "reason": "new ?",
+      "line": 5116,
+      "type": "ObjectExpression"
+    },
+    "_tc1": {
+      "reason": "new ?",
+      "line": 8369,
+      "type": "NewExpression"
+    },
+    "_tc2": {
+      "reason": "new ?",
+      "line": 8369,
+      "type": "NewExpression"
+    },
+    "_tn1": {
+      "reason": "new ?",
+      "line": 8369,
+      "type": "NewExpression"
+    },
+    "skyDress": {
+      "reason": "new ?",
+      "line": 8564,
+      "type": "NewExpression"
+    },
+    "SUN_OFF": {
+      "reason": "new ?",
+      "line": 9167,
+      "type": "NewExpression"
+    },
+    "wallMat": {
+      "reason": "new ?",
+      "line": 10156,
+      "type": "NewExpression"
+    },
+    "VOICE": {
+      "reason": "binary in",
+      "line": 11053,
+      "type": "ObjectExpression"
+    },
+    "ENDING_POS": {
+      "reason": "new ?",
+      "line": 11306,
+      "type": "NewExpression"
+    },
+    "OBJ": {
+      "reason": "new ?",
+      "line": 17119,
+      "type": "ObjectExpression"
+    },
+    "MENUSCENE": {
+      "reason": "new ?",
+      "line": 17460,
+      "type": "ObjectExpression"
+    },
+    "clock": {
+      "reason": "new ?",
+      "line": 17913,
+      "type": "NewExpression"
+    },
+    "DISC": {
+      "reason": "new ?",
+      "line": 15424,
+      "type": "NewExpression"
+    }
+  },
+  "functions": [
+    {
+      "name": "angleLerp",
+      "line": 785
+    },
+    {
+      "name": "audioCtx",
+      "line": 923
+    },
+    {
+      "name": "applyVolumes",
+      "line": 938
+    },
+    {
+      "name": "beep",
+      "line": 944
+    },
+    {
+      "name": "noiseBurst",
+      "line": 958
+    },
+    {
+      "name": "inMenuState",
+      "line": 1024
+    },
+    {
+      "name": "loadSettings",
+      "line": 1143
+    },
+    {
+      "name": "saveSettings",
+      "line": 1149
+    },
+    {
+      "name": "setFxaaRes",
+      "line": 1164
+    },
+    {
+      "name": "initBloom",
+      "line": 1169
+    },
+    {
+      "name": "useBloom",
+      "line": 1195
+    },
+    {
+      "name": "applyQuality",
+      "line": 1197
+    },
+    {
+      "name": "applyAllSettings",
+      "line": 1217
+    },
+    {
+      "name": "collectSave",
+      "line": 1227
+    },
+    {
+      "name": "saveGame",
+      "line": 1249
+    },
+    {
+      "name": "hasSave",
+      "line": 1252
+    },
+    {
+      "name": "loadGame",
+      "line": 1255
+    },
+    {
+      "name": "wipeProgress",
+      "line": 1312
+    },
+    {
+      "name": "resetSave",
+      "line": 1342
+    },
+    {
+      "name": "lastInput",
+      "line": 1361
+    },
+    {
+      "name": "deadzoned",
+      "line": 1367
+    },
+    {
+      "name": "pollGamepads",
+      "line": 1372
+    },
+    {
+      "name": "rumble",
+      "line": 1401
+    },
+    {
+      "name": "padNav",
+      "line": 1412
+    },
+    {
+      "name": "handlePad",
+      "line": 1427
+    },
+    {
+      "name": "fireHeld",
+      "line": 1472
+    },
+    {
+      "name": "aimHeld",
+      "line": 1473
+    },
+    {
+      "name": "musInit",
+      "line": 1575
+    },
+    {
+      "name": "nfreq",
+      "line": 1585
+    },
+    {
+      "name": "mnote",
+      "line": 1586
+    },
+    {
+      "name": "mperc",
+      "line": 1600
+    },
+    {
+      "name": "startMusic",
+      "line": 1629
+    },
+    {
+      "name": "stopMusic",
+      "line": 1641
+    },
+    {
+      "name": "pushBossMusic",
+      "line": 1650
+    },
+    {
+      "name": "popBossMusic",
+      "line": 1654
+    },
+    {
+      "name": "onNextBeat",
+      "line": 1658
+    },
+    {
+      "name": "combatNearby",
+      "line": 1659
+    },
+    {
+      "name": "updateMusic",
+      "line": 1667
+    },
+    {
+      "name": "shopJingle",
+      "line": 1709
+    },
+    {
+      "name": "defeatStinger",
+      "line": 1716
+    },
+    {
+      "name": "victoryStinger",
+      "line": 1723
+    },
+    {
+      "name": "mat",
+      "line": 1744
+    },
+    {
+      "name": "heroMat",
+      "line": 1751
+    },
+    {
+      "name": "freshMat",
+      "line": 1755
+    },
+    {
+      "name": "glowMat",
+      "line": 1758
+    },
+    {
+      "name": "addRimShell",
+      "line": 1765
+    },
+    {
+      "name": "mesh",
+      "line": 1784
+    },
+    {
+      "name": "colorGlows",
+      "line": 1811
+    },
+    {
+      "name": "takeParticle",
+      "line": 1829
+    },
+    {
+      "name": "burst",
+      "line": 1837
+    },
+    {
+      "name": "updateParticles",
+      "line": 1852
+    },
+    {
+      "name": "mote",
+      "line": 1874
+    },
+    {
+      "name": "lightPop",
+      "line": 1893
+    },
+    {
+      "name": "muzzleFlash",
+      "line": 1900
+    },
+    {
+      "name": "recoil",
+      "line": 1943
+    },
+    {
+      "name": "makeSootTex",
+      "line": 1951
+    },
+    {
+      "name": "scorch",
+      "line": 1969
+    },
+    {
+      "name": "musicNote",
+      "line": 1990
+    },
+    {
+      "name": "dmgNum",
+      "line": 2012
+    },
+    {
+      "name": "updateDmgNums",
+      "line": 2030
+    },
+    {
+      "name": "makeHealthBar",
+      "line": 2046
+    },
+    {
+      "name": "makeMallet",
+      "line": 2074
+    },
+    {
+      "name": "refreshMallet",
+      "line": 2116
+    },
+    {
+      "name": "drawBoltFace",
+      "line": 2126
+    },
+    {
+      "name": "makeBolt",
+      "line": 2147
+    },
+    {
+      "name": "makeGun",
+      "line": 2242
+    },
+    {
+      "name": "refreshGun",
+      "line": 2334
+    },
+    {
+      "name": "muzzlePos",
+      "line": 2345
+    },
+    {
+      "name": "drawSprocketFace",
+      "line": 2354
+    },
+    {
+      "name": "makeSprocket",
+      "line": 2383
+    },
+    {
+      "name": "makeCrawler",
+      "line": 2439
+    },
+    {
+      "name": "makeTurret",
+      "line": 2460
+    },
+    {
+      "name": "makeFlyer",
+      "line": 2482
+    },
+    {
+      "name": "makeMiniBoss",
+      "line": 2505
+    },
+    {
+      "name": "makeFinalBoss",
+      "line": 2536
+    },
+    {
+      "name": "makeCrate",
+      "line": 2580
+    },
+    {
+      "name": "makeBoltPickup",
+      "line": 2592
+    },
+    {
+      "name": "makePickupOrb",
+      "line": 2604
+    },
+    {
+      "name": "makeGoalPad",
+      "line": 2613
+    },
+    {
+      "name": "makeShip",
+      "line": 2628
+    },
+    {
+      "name": "makeKiosk",
+      "line": 2669
+    },
+    {
+      "name": "drawPortrait",
+      "line": 2728
+    },
+    {
+      "name": "resetPlayer",
+      "line": 2934
+    },
+    {
+      "name": "pointInAnyCollider",
+      "line": 2956
+    },
+    {
+      "name": "collideAxis",
+      "line": 2971
+    },
+    {
+      "name": "movePlayer",
+      "line": 3015
+    },
+    {
+      "name": "railPointAt",
+      "line": 3064
+    },
+    {
+      "name": "railTangentAt",
+      "line": 3069
+    },
+    {
+      "name": "tryAttachRail",
+      "line": 3074
+    },
+    {
+      "name": "updateRail",
+      "line": 3100
+    },
+    {
+      "name": "dash",
+      "line": 3131
+    },
+    {
+      "name": "dashTrail",
+      "line": 3150
+    },
+    {
+      "name": "crouchPress",
+      "line": 3163
+    },
+    {
+      "name": "startSlam",
+      "line": 3170
+    },
+    {
+      "name": "slamImpact",
+      "line": 3184
+    },
+    {
+      "name": "ringFx",
+      "line": 3237
+    },
+    {
+      "name": "telegraphRing",
+      "line": 3249
+    },
+    {
+      "name": "craterRing",
+      "line": 3263
+    },
+    {
+      "name": "startSlide",
+      "line": 3273
+    },
+    {
+      "name": "setSlideHitbox",
+      "line": 3285
+    },
+    {
+      "name": "slideBlockedAbove",
+      "line": 3292
+    },
+    {
+      "name": "updateSlide",
+      "line": 3298
+    },
+    {
+      "name": "slideLongJump",
+      "line": 3321
+    },
+    {
+      "name": "inputDir",
+      "line": 3337
+    },
+    {
+      "name": "updatePlayer",
+      "line": 3366
+    },
+    {
+      "name": "updatePlayerMesh",
+      "line": 3647
+    },
+    {
+      "name": "setSprocketExpr",
+      "line": 3900
+    },
+    {
+      "name": "sprocketPulse",
+      "line": 3906
+    },
+    {
+      "name": "updateSprocketFace",
+      "line": 3915
+    },
+    {
+      "name": "sprocketSpeaking",
+      "line": 3945
+    },
+    {
+      "name": "updateSprocket",
+      "line": 3956
+    },
+    {
+      "name": "superTransform",
+      "line": 4008
+    },
+    {
+      "name": "superActivate",
+      "line": 4016
+    },
+    {
+      "name": "superEnd",
+      "line": 4044
+    },
+    {
+      "name": "updateSuperSprocket",
+      "line": 4050
+    },
+    {
+      "name": "assistK",
+      "line": 4112
+    },
+    {
+      "name": "meleeAssistK",
+      "line": 4116
+    },
+    {
+      "name": "losClear",
+      "line": 4120
+    },
+    {
+      "name": "assistEye",
+      "line": 4131
+    },
+    {
+      "name": "pickTarget",
+      "line": 4133
+    },
+    {
+      "name": "assistFalloff",
+      "line": 4154
+    },
+    {
+      "name": "frictionMul",
+      "line": 4161
+    },
+    {
+      "name": "updateAssist",
+      "line": 4167
+    },
+    {
+      "name": "updateCamera",
+      "line": 4221
+    },
+    {
+      "name": "updateInteract",
+      "line": 4319
+    },
+    {
+      "name": "doInteract",
+      "line": 4345
+    },
+    {
+      "name": "damagePlayer",
+      "line": 4368
+    },
+    {
+      "name": "isOmega",
+      "line": 4434
+    },
+    {
+      "name": "bmat",
+      "line": 4436
+    },
+    {
+      "name": "playWeaponAd",
+      "line": 4441
+    },
+    {
+      "name": "selectWeapon",
+      "line": 4446
+    },
+    {
+      "name": "cycleWeapon",
+      "line": 4459
+    },
+    {
+      "name": "updateWeaponHUD",
+      "line": 4466
+    },
+    {
+      "name": "pressFire",
+      "line": 4478
+    },
+    {
+      "name": "releaseFire",
+      "line": 4483
+    },
+    {
+      "name": "getAimDir",
+      "line": 4488
+    },
+    {
+      "name": "tierMul",
+      "line": 4507
+    },
+    {
+      "name": "spawnProjectile",
+      "line": 4508
+    },
+    {
+      "name": "spawnEnemyProjectile",
+      "line": 4531
+    },
+    {
+      "name": "fireBlaster",
+      "line": 4552
+    },
+    {
+      "name": "fireBoomBox",
+      "line": 4574
+    },
+    {
+      "name": "danceFloor",
+      "line": 4596
+    },
+    {
+      "name": "detonateRave",
+      "line": 4614
+    },
+    {
+      "name": "fireLawnDart",
+      "line": 4637
+    },
+    {
+      "name": "firePatent",
+      "line": 4684
+    },
+    {
+      "name": "fireCease",
+      "line": 4711
+    },
+    {
+      "name": "releaseRipper",
+      "line": 4729
+    },
+    {
+      "name": "lightningLine",
+      "line": 4757
+    },
+    {
+      "name": "enemyCenter",
+      "line": 4779
+    },
+    {
+      "name": "fireZap",
+      "line": 4783
+    },
+    {
+      "name": "hitstop",
+      "line": 4848
+    },
+    {
+      "name": "comboHit",
+      "line": 4852
+    },
+    {
+      "name": "updateComboHud",
+      "line": 4857
+    },
+    {
+      "name": "meleeHeldNow",
+      "line": 4863
+    },
+    {
+      "name": "downHeld",
+      "line": 4871
+    },
+    {
+      "name": "wrenchSwing",
+      "line": 4874
+    },
+    {
+      "name": "beginMelee",
+      "line": 4895
+    },
+    {
+      "name": "startAttack",
+      "line": 4908
+    },
+    {
+      "name": "swingTrail",
+      "line": 4938
+    },
+    {
+      "name": "meleeHit",
+      "line": 4969
+    },
+    {
+      "name": "arcToNeighbor",
+      "line": 5064
+    },
+    {
+      "name": "firePatch",
+      "line": 5077
+    },
+    {
+      "name": "updateMelee",
+      "line": 5085
+    },
+    {
+      "name": "throwWrench",
+      "line": 5117
+    },
+    {
+      "name": "retrieveWrench",
+      "line": 5134
+    },
+    {
+      "name": "updateWrenchThrow",
+      "line": 5142
+    },
+    {
+      "name": "updateWeapons",
+      "line": 5175
+    },
+    {
+      "name": "implodeAt",
+      "line": 5214
+    },
+    {
+      "name": "explodeAt",
+      "line": 5235
+    },
+    {
+      "name": "damageEnemy",
+      "line": 5263
+    },
+    {
+      "name": "killEnemy",
+      "line": 5312
+    },
+    {
+      "name": "updateProjectiles",
+      "line": 5341
+    },
+    {
+      "name": "updateEffects",
+      "line": 5593
+    },
+    {
+      "name": "later",
+      "line": 5609
+    },
+    {
+      "name": "updateTimers",
+      "line": 5610
+    },
+    {
+      "name": "fireBuzzkill",
+      "line": 5617
+    },
+    {
+      "name": "fireGrav",
+      "line": 5635
+    },
+    {
+      "name": "spawnSingularity",
+      "line": 5648
+    },
+    {
+      "name": "updateSingularities",
+      "line": 5658
+    },
+    {
+      "name": "fireMiddleman",
+      "line": 5689
+    },
+    {
+      "name": "updateMiddleman",
+      "line": 5708
+    },
+    {
+      "name": "updateOneMiddleman",
+      "line": 5712
+    },
+    {
+      "name": "updateFrostbyte",
+      "line": 5735
+    },
+    {
+      "name": "freezeEnemy",
+      "line": 5772
+    },
+    {
+      "name": "unfreezeEnemy",
+      "line": 5778
+    },
+    {
+      "name": "fireRoot",
+      "line": 5783
+    },
+    {
+      "name": "plantAt",
+      "line": 5795
+    },
+    {
+      "name": "updatePlants",
+      "line": 5809
+    },
+    {
+      "name": "makeScrapMutt",
+      "line": 5839
+    },
+    {
+      "name": "makeTinkerTurret",
+      "line": 5862
+    },
+    {
+      "name": "makeVultureDrone",
+      "line": 5890
+    },
+    {
+      "name": "makeAmbassadog",
+      "line": 5915
+    },
+    {
+      "name": "makeSelfieSentry",
+      "line": 5939
+    },
+    {
+      "name": "makeLifeguardBot",
+      "line": 5960
+    },
+    {
+      "name": "makeSlagGolem",
+      "line": 5988
+    },
+    {
+      "name": "makeHRDrone",
+      "line": 6009
+    },
+    {
+      "name": "makeWeldWasp",
+      "line": 6027
+    },
+    {
+      "name": "makeStatue",
+      "line": 6042
+    },
+    {
+      "name": "makeMeterMaid",
+      "line": 6058
+    },
+    {
+      "name": "makeHOAEnforcer",
+      "line": 6074
+    },
+    {
+      "name": "makeSurgeDrone",
+      "line": 6091
+    },
+    {
+      "name": "makePopsicle",
+      "line": 6104
+    },
+    {
+      "name": "makeChillsplitter",
+      "line": 6119
+    },
+    {
+      "name": "makeFrostPeddler",
+      "line": 6127
+    },
+    {
+      "name": "makeGloomstalker",
+      "line": 6138
+    },
+    {
+      "name": "makeSporeLobber",
+      "line": 6152
+    },
+    {
+      "name": "makePollinator",
+      "line": 6162
+    },
+    {
+      "name": "makeMannequin",
+      "line": 6199
+    },
+    {
+      "name": "makeCouponCrier",
+      "line": 6213
+    },
+    {
+      "name": "spawnEnemy",
+      "line": 6257
+    },
+    {
+      "name": "blowOffPiece",
+      "line": 6326
+    },
+    {
+      "name": "chunkDeath",
+      "line": 6338
+    },
+    {
+      "name": "debrisMotion",
+      "line": 6356
+    },
+    {
+      "name": "launchEnemy",
+      "line": 6376
+    },
+    {
+      "name": "updateEnemies",
+      "line": 6382
+    },
+    {
+      "name": "makeAlgorithm",
+      "line": 6821
+    },
+    {
+      "name": "updateAlgorithm",
+      "line": 6840
+    },
+    {
+      "name": "makeCompostKing",
+      "line": 6882
+    },
+    {
+      "name": "updateCompostKing",
+      "line": 6900
+    },
+    {
+      "name": "makeGreeter",
+      "line": 6944
+    },
+    {
+      "name": "updateGreeter",
+      "line": 6968
+    },
+    {
+      "name": "makeRepoTron",
+      "line": 7039
+    },
+    {
+      "name": "updateRepoTron",
+      "line": 7072
+    },
+    {
+      "name": "makeRetention",
+      "line": 7198
+    },
+    {
+      "name": "updateRetention",
+      "line": 7221
+    },
+    {
+      "name": "updateMiniBoss",
+      "line": 7337
+    },
+    {
+      "name": "updateFinalBoss",
+      "line": 7421
+    },
+    {
+      "name": "addBeam",
+      "line": 7536
+    },
+    {
+      "name": "addShockwave",
+      "line": 7548
+    },
+    {
+      "name": "segDistToPlayer",
+      "line": 7555
+    },
+    {
+      "name": "updateHazards",
+      "line": 7563
+    },
+    {
+      "name": "bossStart",
+      "line": 7610
+    },
+    {
+      "name": "bossBarUpdate",
+      "line": 7622
+    },
+    {
+      "name": "bossBreak",
+      "line": 7628
+    },
+    {
+      "name": "bossEnd",
+      "line": 7649
+    },
+    {
+      "name": "makeMemoPad",
+      "line": 7656
+    },
+    {
+      "name": "makeQuestItem",
+      "line": 7662
+    },
+    {
+      "name": "spawnPickup",
+      "line": 7698
+    },
+    {
+      "name": "collectPickup",
+      "line": 7719
+    },
+    {
+      "name": "updatePickups",
+      "line": 7771
+    },
+    {
+      "name": "solid",
+      "line": 7800
+    },
+    {
+      "name": "removeSolid",
+      "line": 7812
+    },
+    {
+      "name": "deco",
+      "line": 7817
+    },
+    {
+      "name": "wallSolid",
+      "line": 7824
+    },
+    {
+      "name": "stairs",
+      "line": 7830
+    },
+    {
+      "name": "addMovingPlatform",
+      "line": 7839
+    },
+    {
+      "name": "updatePlatforms",
+      "line": 7853
+    },
+    {
+      "name": "addRail",
+      "line": 7872
+    },
+    {
+      "name": "addPendulum",
+      "line": 7884
+    },
+    {
+      "name": "addTrigger",
+      "line": 7899
+    },
+    {
+      "name": "updateTriggers",
+      "line": 7910
+    },
+    {
+      "name": "placeGoal",
+      "line": 7922
+    },
+    {
+      "name": "addCheckpoint",
+      "line": 7931
+    },
+    {
+      "name": "activateCheckpoint",
+      "line": 7950
+    },
+    {
+      "name": "checkpointHere",
+      "line": 7968
+    },
+    {
+      "name": "activateGoal",
+      "line": 7973
+    },
+    {
+      "name": "updateGoal",
+      "line": 7982
+    },
+    {
+      "name": "landingZone",
+      "line": 7991
+    },
+    {
+      "name": "scrapPile",
+      "line": 8006
+    },
+    {
+      "name": "boltTrail",
+      "line": 8027
+    },
+    {
+      "name": "spawnGoldBolt",
+      "line": 8037
+    },
+    {
+      "name": "lifeScale",
+      "line": 8048
+    },
+    {
+      "name": "lifeCount",
+      "line": 8049
+    },
+    {
+      "name": "makeCritter",
+      "line": 8052
+    },
+    {
+      "name": "spawnCritter",
+      "line": 8088
+    },
+    {
+      "name": "updateCritters",
+      "line": 8100
+    },
+    {
+      "name": "scareCritters",
+      "line": 8147
+    },
+    {
+      "name": "makeDenizen",
+      "line": 8154
+    },
+    {
+      "name": "spawnDenizen",
+      "line": 8168
+    },
+    {
+      "name": "updateDenizens",
+      "line": 8176
+    },
+    {
+      "name": "junkProcessor",
+      "line": 8191
+    },
+    {
+      "name": "poolScene",
+      "line": 8200
+    },
+    {
+      "name": "shiftChange",
+      "line": 8216
+    },
+    {
+      "name": "updateSetpiece",
+      "line": 8228
+    },
+    {
+      "name": "updateSoundscape",
+      "line": 8257
+    },
+    {
+      "name": "populateLife",
+      "line": 8270
+    },
+    {
+      "name": "makeNoise",
+      "line": 8325
+    },
+    {
+      "name": "fbm",
+      "line": 8339
+    },
+    {
+      "name": "flatR",
+      "line": 8346
+    },
+    {
+      "name": "flatB",
+      "line": 8349
+    },
+    {
+      "name": "terrainY",
+      "line": 8353
+    },
+    {
+      "name": "terrainNormal",
+      "line": 8364
+    },
+    {
+      "name": "buildTerrain",
+      "line": 8370
+    },
+    {
+      "name": "enemyGroundY",
+      "line": 8406
+    },
+    {
+      "name": "snapToTerrain",
+      "line": 8416
+    },
+    {
+      "name": "strata",
+      "line": 8455
+    },
+    {
+      "name": "gradientTex",
+      "line": 8568
+    },
+    {
+      "name": "glowSpriteTex",
+      "line": 8578
+    },
+    {
+      "name": "drawAd",
+      "line": 8588
+    },
+    {
+      "name": "buildSky",
+      "line": 8596
+    },
+    {
+      "name": "updateSky",
+      "line": 8718
+    },
+    {
+      "name": "waterTex",
+      "line": 8737
+    },
+    {
+      "name": "addFoamEdge",
+      "line": 8753
+    },
+    {
+      "name": "addWater",
+      "line": 8763
+    },
+    {
+      "name": "addWaterZone",
+      "line": 8787
+    },
+    {
+      "name": "addConveyor",
+      "line": 8794
+    },
+    {
+      "name": "lightShaft",
+      "line": 8820
+    },
+    {
+      "name": "addDoor",
+      "line": 8834
+    },
+    {
+      "name": "doorApplyState",
+      "line": 8874
+    },
+    {
+      "name": "updateDoorBoxes",
+      "line": 8880
+    },
+    {
+      "name": "unlockDoor",
+      "line": 8889
+    },
+    {
+      "name": "sealDoor",
+      "line": 8897
+    },
+    {
+      "name": "updateDoors",
+      "line": 8902
+    },
+    {
+      "name": "addBouncePad",
+      "line": 8931
+    },
+    {
+      "name": "addUpdraft",
+      "line": 8939
+    },
+    {
+      "name": "addCrusher",
+      "line": 8949
+    },
+    {
+      "name": "addSpinner",
+      "line": 8957
+    },
+    {
+      "name": "gearMesh",
+      "line": 8962
+    },
+    {
+      "name": "scatterInstanced",
+      "line": 8979
+    },
+    {
+      "name": "sprinkle",
+      "line": 8999
+    },
+    {
+      "name": "updateDoodads",
+      "line": 9015
+    },
+    {
+      "name": "updateAmbience",
+      "line": 9127
+    },
+    {
+      "name": "applyPalette",
+      "line": 9168
+    },
+    {
+      "name": "refreshColliderViz",
+      "line": 9184
+    },
+    {
+      "name": "clearLevel",
+      "line": 9191
+    },
+    {
+      "name": "loadLevel",
+      "line": 9201
+    },
+    {
+      "name": "boltRow",
+      "line": 9227
+    },
+    {
+      "name": "buildAnnex",
+      "line": 9240
+    },
+    {
+      "name": "adBoard",
+      "line": 9319
+    },
+    {
+      "name": "mound",
+      "line": 9332
+    },
+    {
+      "name": "parasol",
+      "line": 9343
+    },
+    {
+      "name": "cabana",
+      "line": 9349
+    },
+    {
+      "name": "craneTower",
+      "line": 9359
+    },
+    {
+      "name": "textSign",
+      "line": 9374
+    },
+    {
+      "name": "shack",
+      "line": 9391
+    },
+    {
+      "name": "stringLights",
+      "line": 9401
+    },
+    {
+      "name": "expandScrapheap",
+      "line": 9406
+    },
+    {
+      "name": "expandRustvane",
+      "line": 9477
+    },
+    {
+      "name": "buildLevel1",
+      "line": 9537
+    },
+    {
+      "name": "buildLevel2",
+      "line": 9744
+    },
+    {
+      "name": "buildLevel3",
+      "line": 9935
+    },
+    {
+      "name": "startWaveArena",
+      "line": 10157
+    },
+    {
+      "name": "resetWaveArena",
+      "line": 10174
+    },
+    {
+      "name": "spawnWave",
+      "line": 10186
+    },
+    {
+      "name": "waveHook",
+      "line": 10209
+    },
+    {
+      "name": "placeCore",
+      "line": 10301
+    },
+    {
+      "name": "updateCore",
+      "line": 10316
+    },
+    {
+      "name": "collectCore",
+      "line": 10328
+    },
+    {
+      "name": "buildNewPlanet",
+      "line": 10345
+    },
+    {
+      "name": "novaTower",
+      "line": 10432
+    },
+    {
+      "name": "novaDress",
+      "line": 10446
+    },
+    {
+      "name": "glaciusDress",
+      "line": 10477
+    },
+    {
+      "name": "verdantDress",
+      "line": 10498
+    },
+    {
+      "name": "buildNova",
+      "line": 10530
+    },
+    {
+      "name": "buildGlacius",
+      "line": 10531
+    },
+    {
+      "name": "buildVerdant",
+      "line": 10532
+    },
+    {
+      "name": "buildGalleria",
+      "line": 10541
+    },
+    {
+      "name": "si2Col",
+      "line": 10732
+    },
+    {
+      "name": "npcHashProfile",
+      "line": 11078
+    },
+    {
+      "name": "voiceProfile",
+      "line": 11083
+    },
+    {
+      "name": "pickVoiceFor",
+      "line": 11093
+    },
+    {
+      "name": "voiceRefreshVoices",
+      "line": 11105
+    },
+    {
+      "name": "voiceInit",
+      "line": 11115
+    },
+    {
+      "name": "voiceCps",
+      "line": 11127
+    },
+    {
+      "name": "voiceCancel",
+      "line": 11128
+    },
+    {
+      "name": "speak",
+      "line": 11138
+    },
+    {
+      "name": "duckMusic",
+      "line": 11170
+    },
+    {
+      "name": "startRadio",
+      "line": 11180
+    },
+    {
+      "name": "stopRadio",
+      "line": 11192
+    },
+    {
+      "name": "dlgBoxShow",
+      "line": 11198
+    },
+    {
+      "name": "dlgSetLine",
+      "line": 11199
+    },
+    {
+      "name": "startDialogue",
+      "line": 11210
+    },
+    {
+      "name": "dlgAdvance",
+      "line": 11223
+    },
+    {
+      "name": "endDialogue",
+      "line": 11230
+    },
+    {
+      "name": "updateTypewriter",
+      "line": 11239
+    },
+    {
+      "name": "updateHoldSkip",
+      "line": 11250
+    },
+    {
+      "name": "showBark",
+      "line": 11267
+    },
+    {
+      "name": "barkTry",
+      "line": 11280
+    },
+    {
+      "name": "updateBarks",
+      "line": 11288
+    },
+    {
+      "name": "openGallery",
+      "line": 11790
+    },
+    {
+      "name": "playGalleryScene",
+      "line": 11815
+    },
+    {
+      "name": "csVec",
+      "line": 11821
+    },
+    {
+      "name": "csActor",
+      "line": 11825
+    },
+    {
+      "name": "storyBeat",
+      "line": 11832
+    },
+    {
+      "name": "runCutscene",
+      "line": 11839
+    },
+    {
+      "name": "letterbox",
+      "line": 11853
+    },
+    {
+      "name": "csNext",
+      "line": 11857
+    },
+    {
+      "name": "updateCutscene",
+      "line": 11889
+    },
+    {
+      "name": "csAdvance",
+      "line": 11921
+    },
+    {
+      "name": "endCutscene",
+      "line": 11928
+    },
+    {
+      "name": "shopStock",
+      "line": 11956
+    },
+    {
+      "name": "openShop",
+      "line": 12038
+    },
+    {
+      "name": "shopPitch",
+      "line": 12058
+    },
+    {
+      "name": "shopCat",
+      "line": 12063
+    },
+    {
+      "name": "renderShop",
+      "line": 12069
+    },
+    {
+      "name": "renderTradeIn",
+      "line": 12108
+    },
+    {
+      "name": "sellWeapon",
+      "line": 12125
+    },
+    {
+      "name": "toggleWish",
+      "line": 12136
+    },
+    {
+      "name": "updateWishPin",
+      "line": 12142
+    },
+    {
+      "name": "confettiBurst",
+      "line": 12149
+    },
+    {
+      "name": "statBarsHTML",
+      "line": 12171
+    },
+    {
+      "name": "shopShowDesc",
+      "line": 12187
+    },
+    {
+      "name": "buyItem",
+      "line": 12197
+    },
+    {
+      "name": "closeShop",
+      "line": 12254
+    },
+    {
+      "name": "updateShop",
+      "line": 12259
+    },
+    {
+      "name": "openStarmap",
+      "line": 12266
+    },
+    {
+      "name": "coresDone",
+      "line": 12275
+    },
+    {
+      "name": "planetLocked",
+      "line": 12276
+    },
+    {
+      "name": "computeMission",
+      "line": 12285
+    },
+    {
+      "name": "populateStarmap",
+      "line": 12306
+    },
+    {
+      "name": "starmapFocusInfo",
+      "line": 12340
+    },
+    {
+      "name": "pickPlanet",
+      "line": 12362
+    },
+    {
+      "name": "buildTravelProps",
+      "line": 12388
+    },
+    {
+      "name": "startTravel",
+      "line": 12421
+    },
+    {
+      "name": "enterHyper",
+      "line": 12443
+    },
+    {
+      "name": "enterOrbit",
+      "line": 12459
+    },
+    {
+      "name": "finishTravel",
+      "line": 12471
+    },
+    {
+      "name": "travelSkip",
+      "line": 12494
+    },
+    {
+      "name": "updateTravel",
+      "line": 12498
+    },
+    {
+      "name": "startEnding",
+      "line": 12557
+    },
+    {
+      "name": "questState",
+      "line": 12852
+    },
+    {
+      "name": "questTalk",
+      "line": 12856
+    },
+    {
+      "name": "questKill",
+      "line": 12879
+    },
+    {
+      "name": "makeNPC",
+      "line": 12890
+    },
+    {
+      "name": "memoCount",
+      "line": 13013
+    },
+    {
+      "name": "memoPlanetIdx",
+      "line": 13014
+    },
+    {
+      "name": "wireStoryExtras",
+      "line": 13017
+    },
+    {
+      "name": "nearestNPC",
+      "line": 13054
+    },
+    {
+      "name": "npcTalk",
+      "line": 13062
+    },
+    {
+      "name": "zGroundY",
+      "line": 13103
+    },
+    {
+      "name": "palmTree",
+      "line": 13109
+    },
+    {
+      "name": "tikiTotem",
+      "line": 13120
+    },
+    {
+      "name": "buildZonga",
+      "line": 13126
+    },
+    {
+      "name": "makeZBot",
+      "line": 13236
+    },
+    {
+      "name": "spawnZBot",
+      "line": 13277
+    },
+    {
+      "name": "openZongaLobby",
+      "line": 13305
+    },
+    {
+      "name": "renderZongaLobby",
+      "line": 13314
+    },
+    {
+      "name": "startZongaMatch",
+      "line": 13322
+    },
+    {
+      "name": "zFeed",
+      "line": 13357
+    },
+    {
+      "name": "zBotDied",
+      "line": 13365
+    },
+    {
+      "name": "zongaPayout",
+      "line": 13387
+    },
+    {
+      "name": "zongaEnd",
+      "line": 13390
+    },
+    {
+      "name": "updateZonga",
+      "line": 13431
+    },
+    {
+      "name": "zBotThink",
+      "line": 13533
+    },
+    {
+      "name": "startNGPlus",
+      "line": 13654
+    },
+    {
+      "name": "fireKaren",
+      "line": 13668
+    },
+    {
+      "name": "karenSweep",
+      "line": 13693
+    },
+    {
+      "name": "applyCosmetics",
+      "line": 13738
+    },
+    {
+      "name": "cosmeticItems",
+      "line": 13773
+    },
+    {
+      "name": "buyCosmetic",
+      "line": 13808
+    },
+    {
+      "name": "startRange",
+      "line": 13826
+    },
+    {
+      "name": "rangeSpawnTarget",
+      "line": 13842
+    },
+    {
+      "name": "updateRange",
+      "line": 13851
+    },
+    {
+      "name": "rangeAbort",
+      "line": 13867
+    },
+    {
+      "name": "rangeEnd",
+      "line": 13874
+    },
+    {
+      "name": "buildArena",
+      "line": 13899
+    },
+    {
+      "name": "openArena",
+      "line": 13920
+    },
+    {
+      "name": "startChallenge",
+      "line": 13938
+    },
+    {
+      "name": "arenaWave",
+      "line": 13962
+    },
+    {
+      "name": "updateArena",
+      "line": 13996
+    },
+    {
+      "name": "arenaEnd",
+      "line": 14006
+    },
+    {
+      "name": "raceSplineAt",
+      "line": 14076
+    },
+    {
+      "name": "buildRaceTrack",
+      "line": 14083
+    },
+    {
+      "name": "makeRival",
+      "line": 14164
+    },
+    {
+      "name": "spawnRivals",
+      "line": 14176
+    },
+    {
+      "name": "ensureBoard",
+      "line": 14194
+    },
+    {
+      "name": "openRace",
+      "line": 14207
+    },
+    {
+      "name": "startRace",
+      "line": 14226
+    },
+    {
+      "name": "raceReset",
+      "line": 14243
+    },
+    {
+      "name": "highlightGate",
+      "line": 14251
+    },
+    {
+      "name": "playerRaceProg",
+      "line": 14258
+    },
+    {
+      "name": "updateRace",
+      "line": 14268
+    },
+    {
+      "name": "updateRaceFlight",
+      "line": 14345
+    },
+    {
+      "name": "raceFinish",
+      "line": 14358
+    },
+    {
+      "name": "buildLoopRiotVenue",
+      "line": 14399
+    },
+    {
+      "name": "lrUnlocked",
+      "line": 14400
+    },
+    {
+      "name": "enterPhoto",
+      "line": 17028
+    },
+    {
+      "name": "exitPhoto",
+      "line": 17039
+    },
+    {
+      "name": "photoFilterCSS",
+      "line": 17047
+    },
+    {
+      "name": "updatePhoto",
+      "line": 17050
+    },
+    {
+      "name": "photoCapture",
+      "line": 17067
+    },
+    {
+      "name": "showBanner",
+      "line": 17098
+    },
+    {
+      "name": "showHint",
+      "line": 17105
+    },
+    {
+      "name": "updateGoldHUD",
+      "line": 17112
+    },
+    {
+      "name": "currentObjective",
+      "line": 17120
+    },
+    {
+      "name": "updateObjectiveMarker",
+      "line": 17130
+    },
+    {
+      "name": "updateHUD",
+      "line": 17168
+    },
+    {
+      "name": "updateUITimers",
+      "line": 17198
+    },
+    {
+      "name": "glyph",
+      "line": 17215
+    },
+    {
+      "name": "updateInputHints",
+      "line": 17223
+    },
+    {
+      "name": "setScreen",
+      "line": 17234
+    },
+    {
+      "name": "refreshFocus",
+      "line": 17239
+    },
+    {
+      "name": "applyFocus",
+      "line": 17249
+    },
+    {
+      "name": "focusMove",
+      "line": 17259
+    },
+    {
+      "name": "focusAdjust",
+      "line": 17264
+    },
+    {
+      "name": "focusActivate",
+      "line": 17268
+    },
+    {
+      "name": "screenBack",
+      "line": 17289
+    },
+    {
+      "name": "lockPointer",
+      "line": 17294
+    },
+    {
+      "name": "unlockPointer",
+      "line": 17301
+    },
+    {
+      "name": "applySettingChange",
+      "line": 17336
+    },
+    {
+      "name": "toggleFullscreen",
+      "line": 17345
+    },
+    {
+      "name": "buildSettingsUI",
+      "line": 17354
+    },
+    {
+      "name": "voiceTest",
+      "line": 17426
+    },
+    {
+      "name": "openSettings",
+      "line": 17441
+    },
+    {
+      "name": "closeSettings",
+      "line": 17449
+    },
+    {
+      "name": "closeControls",
+      "line": 17453
+    },
+    {
+      "name": "buildMenuScene",
+      "line": 17461
+    },
+    {
+      "name": "teardownMenuScene",
+      "line": 17501
+    },
+    {
+      "name": "menuLaunch",
+      "line": 17507
+    },
+    {
+      "name": "showMenu",
+      "line": 17514
+    },
+    {
+      "name": "newGame",
+      "line": 17536
+    },
+    {
+      "name": "continueGame",
+      "line": 17543
+    },
+    {
+      "name": "startLevel",
+      "line": 17548
+    },
+    {
+      "name": "returnToPlay",
+      "line": 17577
+    },
+    {
+      "name": "setPause",
+      "line": 17584
+    },
+    {
+      "name": "completeLevel",
+      "line": 17599
+    },
+    {
+      "name": "respawn",
+      "line": 17621
+    },
+    {
+      "name": "showVictory",
+      "line": 17629
+    },
+    {
+      "name": "openMemoLog",
+      "line": 17687
+    },
+    {
+      "name": "wheelOwned",
+      "line": 17781
+    },
+    {
+      "name": "openWheel",
+      "line": 17782
+    },
+    {
+      "name": "closeWheel",
+      "line": 17793
+    },
+    {
+      "name": "buildWheelDOM",
+      "line": 17802
+    },
+    {
+      "name": "updateWheel",
+      "line": 17818
+    },
+    {
+      "name": "updateBlizzard",
+      "line": 17839
+    },
+    {
+      "name": "updateMurk",
+      "line": 17861
+    },
+    {
+      "name": "addMurkPool",
+      "line": 17872
+    },
+    {
+      "name": "addBounceMushroom",
+      "line": 17880
+    },
+    {
+      "name": "updateWalkways",
+      "line": 17891
+    },
+    {
+      "name": "addWalkway",
+      "line": 17901
+    },
+    {
+      "name": "animate",
+      "line": 17915
+    }
+  ]
+}
