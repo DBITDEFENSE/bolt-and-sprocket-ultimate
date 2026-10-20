@@ -319,7 +319,7 @@ func _update_tear(delta: float) -> void:
 	_face(window.inside_point())
 	# Swipe through a mostly-open window at a player standing right behind it.
 	if target != null and window.boards <= 2 and _attack_cd <= 0.0:
-		if target.global_position.distance_to(window.inside_point()) < float(GLData.table("world")["barricade"]["window_attack_reach"]):
+		if _window_reach_ok(target, 0.0):
 			_attack_cd = float(_cfg["attack_interval"])
 			_window_swipe()
 	_tear_t -= delta
@@ -339,8 +339,39 @@ func _window_swipe() -> void:
 	var tw: Tween = create_tween()
 	tw.tween_interval(float(_cfg["attack_windup"]))
 	tw.tween_callback(func() -> void:
-		if is_active() and window != null and is_instance_valid(t) and t.global_position.distance_to(window.inside_point()) < float(GLData.table("world")["barricade"]["window_attack_reach"]) + 0.3:
+		if is_active() and window != null and is_instance_valid(t) and _window_reach_ok(t, 0.2):
 			t.take_hit(float(_cfg["damage"]), self))
+
+
+## Melee needs a clear line to the target: no wall or closed door in between. Without it a long-reach
+## attacker (a Bellringer reaches 2.4 m, +0.5 m when the hit lands) could hit through a thin wall or a closed
+## door (playtest fix, T-026). Window swipes have their own rule (_window_reach_ok).
+func _clear_to(t: Player) -> bool:
+	if t == null:
+		return false
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	# Two rays (chest, head height), each trimmed 0.35 m at both ends so a wall or door frame that both bodies
+	# are hugging doesn't count; any clear ray is enough.
+	for h: Vector2 in [Vector2(1.2, 1.0), Vector2(1.55, 1.5)]:
+		var from: Vector3 = global_position + Vector3.UP * h.x
+		var to: Vector3 = t.global_position + Vector3.UP * h.y
+		var span: float = from.distance_to(to)
+		if span < 0.8:
+			return true
+		var dir: Vector3 = (to - from) / span
+		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from + dir * 0.35, to - dir * 0.35, 1 | (1 << 8), [get_rid(), t.get_rid()])
+		if space.intersect_ray(q).is_empty():
+			return true
+	return false
+
+
+## Through-the-window reach: measured from the window opening (the barricade plane), not from a point 1 m
+## inside the room, so only a player standing right at the boards can be swiped (playtest fix, T-026).
+func _window_reach_ok(t: Player, grace: float) -> bool:
+	var reach: float = float(GLData.table("world")["barricade"]["window_attack_reach"]) + grace
+	var w: Vector3 = window.global_position
+	var flat: Vector2 = Vector2(t.global_position.x - w.x, t.global_position.z - w.z)
+	return flat.length() < reach and absf(t.global_position.y - w.y) < 2.0
 
 
 func on_board_repaired() -> void:
@@ -396,7 +427,7 @@ func _update_chase(delta: float) -> void:
 		return
 	var to_t: Vector3 = target.global_position - global_position
 	var dist: float = to_t.length()
-	if dist <= float(_cfg["attack_range"]) and absf(to_t.y) < 1.3 and _attack_cd <= 0.0:
+	if dist <= float(_cfg["attack_range"]) and absf(to_t.y) < 1.3 and _attack_cd <= 0.0 and _clear_to(target):
 		_enter(State.ATTACK)
 		return
 	var rp: Dictionary = GLData.table("enemies")["repath"]
@@ -412,7 +443,9 @@ func _update_chase(delta: float) -> void:
 	# Stuck check: barely moved for a long time while far from the player -> recycle into the queue.
 	_stuck_t += delta
 	if _stuck_t > float(_cfg["stuck_respawn_seconds"]):
-		if global_position.distance_to(_stuck_origin) < 1.0 and dist > 8.0 and not is_crawler:
+		# ...or stuck anywhere it isn't within reach of its target: snagged on a stair corner, a stall, or with a
+		# closed door / wall in between (T-026). A recycled zombie re-enters through a window.
+		if global_position.distance_to(_stuck_origin) < 1.0 and (dist > float(_cfg["attack_range"]) + 1.0 or not _clear_to(target)) and not is_crawler:
 			recycle()
 			return
 		_stuck_t = 0.0
@@ -439,7 +472,7 @@ func _update_attack(delta: float) -> void:
 		_attack_hit_done = true
 		if target != null and target.is_alive():
 			var d: float = global_position.distance_to(target.global_position)
-			if d <= float(_cfg["attack_range"]) + 0.5:
+			if d <= float(_cfg["attack_range"]) + 0.5 and _clear_to(target):
 				target.take_hit(float(_cfg["damage"]), self)
 				if _cfg.has("hit_slow"):
 					target.apply_status(&"shard_slow", float(_cfg.get("hit_slow_seconds", 0.5)))

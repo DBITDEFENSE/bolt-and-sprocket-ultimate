@@ -113,6 +113,9 @@ def apply_patches() -> None:
 
 
 def main() -> None:
+    if "--force" not in sys.argv:
+        sys.exit("The migration is done (T-024). gravelight/ has been edited since (playtest fixes, T-026); re-running "
+                 "would discard them. Pass --force only if you mean to start over from the original project.")
     gl = os.path.join(DST, "gravelight")
     gd = os.path.join(DST, "data", "gravelight")
     for p in (gl, gd):

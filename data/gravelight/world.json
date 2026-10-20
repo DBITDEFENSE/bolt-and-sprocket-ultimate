@@ -1,5 +1,5 @@
 {
   "_doc": "World interactables (barricades, doors).",
-  "barricade": { "boards": 6, "repair_seconds": 0.55, "window_attack_reach": 1.7 },
+  "barricade": { "boards": 6, "repair_seconds": 0.55, "window_attack_reach": 1.5 },
   "door": { "open_seconds": 0.8 }
 }

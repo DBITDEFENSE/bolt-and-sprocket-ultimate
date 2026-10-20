@@ -222,7 +222,7 @@ func _portal_point() -> Vector3:
 			if path.is_empty():
 				continue
 			var pt: Vector3 = path[path.size() - 1]
-			var ok: bool = absf(pt.y - p.global_position.y) < 2.5
+			var ok: bool = absf(pt.y - p.global_position.y) < 2.5 and _in_open_zone(pt) and not _crosses_closed_door(path)
 			for q: Player in players:
 				if q.global_position.distance_to(pt) < lo * relax:
 					ok = false
@@ -234,6 +234,34 @@ func _portal_point() -> Vector3:
 		if sp != null and sp.kind == &"ground" and sp.is_active(maxi(1, RoundManager.current_round)):
 			return sp.global_position
 	return Vector3.INF
+
+
+## Fog portals only open in zones the players have bought into. Map 0 has one navmesh across closed doors
+## (doors aren't baked), so a reachable-looking point can be behind a locked door: a pack spawned there
+## would chase into the door and stall the round (playtest fix, T-026). Maps without zone volumes allow all.
+func _in_open_zone(pt: Vector3) -> bool:
+	if get_tree().get_nodes_in_group(&"zone_volumes").is_empty():
+		return true
+	var zone: StringName = ZoneVolume.zone_at(get_tree(), pt)
+	return zone != &"" and GameState.is_zone_open(zone)
+
+
+## True when a nav path runs through a door that's still shut (doors are colliders, not navmesh cuts).
+func _crosses_closed_door(path: PackedVector3Array) -> bool:
+	for n: Node in get_tree().get_nodes_in_group(&"doors"):
+		var d: BuyDoor = n as BuyDoor
+		if d == null or d.is_open:
+			continue
+		var dp: Vector2 = Vector2(d.global_position.x, d.global_position.z)
+		var half: float = maxf(d.size.x, d.size.z) * 0.5 + 0.3
+		for i: int in range(1, path.size()):
+			var a: Vector3 = path[i - 1]
+			var b: Vector3 = path[i]
+			if absf((a.y + b.y) * 0.5 - d.global_position.y) > 2.0:
+				continue
+			if Geometry2D.get_closest_point_to_segment(dp, Vector2(a.x, a.z), Vector2(b.x, b.z)).distance_to(dp) < half:
+				return true
+	return false
 
 
 func _snap(p: Vector3) -> Vector3:

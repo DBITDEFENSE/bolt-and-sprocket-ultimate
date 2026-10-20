@@ -178,3 +178,20 @@ The GRAVELIGHT project's own log (D-001 … D-059, at `C:\Users\Devin\PROJECTS\N
   - The keys Gravelight also stores are mirrored to GLSettings, and read back from it when the screen opens.
 - **Display safety:** window mode is never applied for headless or `--position` (off-screen tool) runs.
 - **New display defaults:** borderless fullscreen, V-Sync on.
+
+**T-026, 2026-10-20: Fixes from the Map 0 playtest to round 10** (full review in `docs/PLAYTEST_GL_MAP0.md`). The playtest bot, `tools_src/playtest_gl.gd`, plays through the real Player's input actions.
+
+**The migration is now one-way.** `gravelight/` is edited in place from here on, and `tools/migrate_gravelight.py` refuses to re-run without `--force`.
+
+Fixes:
+1. **Zombie melee needs a clear line to the target,** world and door geometry trimmed 0.35 m at each end (`Zombie._clear_to`). Bellringers were hitting through walls and closed doors.
+2. **Window swipe reach is measured from the window opening.** `window_attack_reach` is now 1.5, plus 0.2 m grace. Before, players 2.7 m inside the room got hit.
+3. **Bellringer fog portals only open in zones the players have opened,** and never across a closed door. Map 0's navmesh runs under closed doors, so packs spawned behind them and stalled rounds.
+4. **Wider stuck recycling.** A zombie in CHASE that hasn't moved 1 m in 15 s is recycled if it isn't within reach, or has no clear line to its target. Before, this only happened when the player was more than 8 m away.
+
+**Flagged, not changed** (design calls for the user):
+- Map 0 two-hit downs with no perks.
+- No scrip sink after the guns are bought.
+- Stair navmesh tighter than a player-sized body.
+- Approximate zone boxes.
+- A first-use shader hitch.
