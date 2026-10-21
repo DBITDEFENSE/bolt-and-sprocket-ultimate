@@ -1,582 +1,6519 @@
 {
-  "_doc": "Scrapheap Junction (LEVELS[0]) greybox, BS_LEVELS §1-2. Frame: metres, north = -z, y up. Boxes are centre + size (source solid()). Flags without a dot are level-local (stored as BS flag 'scrapheap.<name>'); flags with a dot are global. Source refs: buildLevel1 L9537, expandScrapheap L9406, buildAnnex L9240, populateLife L8270, junkProcessor L8191, MEMO_SPOTS L13002.",
-  "id": "scrapheap",
-  "planet_index": 0,
-  "name": "SCRAPHEAP JUNCTION",
-  "lines_file": "bs/levels/scrapheap_lines",
-  "spawn": [0, 1.2, 12],
-  "prologue_spawn": [15.5, 1.2, 4.5],
-  "kill_y": -8,
-  "gold_total": 5,
-  "campaign_step_after": 1,
-  "enemy_aliases": {"scrapmutt": "scrap_mutt", "tinkerturret": "tinker_turret", "vulture": "vulture_drone", "liencrawler": "lien_crawler", "crate": "bolt_crate", "repotron": "repo_tron"},
-
-  "palette": {"_src": "LEVELS[0].palette L10741", "sky": "#45203a", "fog": "#9a4f33", "fog_near": 45, "fog_far": 165,
-    "hemi_top": "#ffd9b0", "hemi_bot": "#5e3c1c", "sun": "#ffb27a", "sun_i": 1.5, "hemi_i": 0.85, "amb_i": 0.22, "sun_off": [26, 18, 10]},
-  "rim": {"rim": 0.4, "tint": 0.6, "roughness": 0.85, "metallic": 0.15},
-  "materials": {
-    "ground": "#6a4428", "dune": "#7a4c28", "bowl": "#5e3c22", "slab": "#6b6f7e", "rust": "#8a5a30", "wood": "#74593a",
-    "dark": "#4a3428", "hull": "#6e4a3a", "hullside": "#5e3f32", "steel": "#39404f", "belt": "#2c3242", "navy": "#232838",
-    "shack1": "#7a6a58", "shack2": "#5e6a72", "shack3": "#9a8a6a", "vault": "#4a3a2a", "concrete": "#8c8478", "fence": "#5a5048",
-    "crane": "#b0652e", "car1": "#b04a3a", "car2": "#4a7ab0", "car3": "#7ab04a", "car4": "#9a8a6a", "car5": "#b0652e",
-    "yellow": "#ffd23e", "teal": "#3ee6ff", "slag": "#ff7b2a", "oil": "#141018", "awning": "#c9482a", "tarp": "#4a6a3a", "glass": "#9fecff"
+ "_doc": "Scrapheap Junction (LEVELS[0]) greybox, BS_LEVELS §1-2. Frame: metres, north = -z, y up. Boxes are centre + size (source solid()). Flags without a dot are level-local (stored as BS flag 'scrapheap.<name>'); flags with a dot are global. Source refs: buildLevel1 L9537, expandScrapheap L9406, buildAnnex L9240, populateLife L8270, junkProcessor L8191, MEMO_SPOTS L13002.",
+ "id": "scrapheap",
+ "planet_index": 0,
+ "name": "SCRAPHEAP JUNCTION",
+ "lines_file": "bs/levels/scrapheap_lines",
+ "spawn": [
+  0,
+  1.2,
+  12
+ ],
+ "prologue_spawn": [
+  15.5,
+  1.2,
+  4.5
+ ],
+ "kill_y": -8,
+ "gold_total": 5,
+ "campaign_step_after": 1,
+ "enemy_aliases": {
+  "scrapmutt": "scrap_mutt",
+  "tinkerturret": "tinker_turret",
+  "vulture": "vulture_drone",
+  "liencrawler": "lien_crawler",
+  "crate": "bolt_crate",
+  "repotron": "repo_tron"
+ },
+ "palette": {
+  "_src": "LEVELS[0].palette L10741",
+  "sky": "#45203a",
+  "fog": "#9a4f33",
+  "fog_near": 45,
+  "fog_far": 165,
+  "hemi_top": "#ffd9b0",
+  "hemi_bot": "#5e3c1c",
+  "sun": "#ffb27a",
+  "sun_i": 1.5,
+  "hemi_i": 0.85,
+  "amb_i": 0.22,
+  "sun_off": [
+   26,
+   18,
+   10
+  ]
+ },
+ "rim": {
+  "rim": 0.4,
+  "tint": 0.6,
+  "roughness": 0.85,
+  "metallic": 0.15
+ },
+ "materials": {
+  "ground": "#6a4428",
+  "dune": "#7a4c28",
+  "bowl": "#5e3c22",
+  "slab": "#6b6f7e",
+  "rust": "#8a5a30",
+  "wood": "#74593a",
+  "dark": "#4a3428",
+  "hull": "#6e4a3a",
+  "hullside": "#5e3f32",
+  "steel": "#39404f",
+  "belt": "#2c3242",
+  "navy": "#232838",
+  "shack1": "#7a6a58",
+  "shack2": "#5e6a72",
+  "shack3": "#9a8a6a",
+  "vault": "#4a3a2a",
+  "concrete": "#8c8478",
+  "fence": "#5a5048",
+  "crane": "#b0652e",
+  "car1": "#b04a3a",
+  "car2": "#4a7ab0",
+  "car3": "#7ab04a",
+  "car4": "#9a8a6a",
+  "car5": "#b0652e",
+  "yellow": "#ffd23e",
+  "teal": "#3ee6ff",
+  "slag": "#ff7b2a",
+  "oil": "#141018",
+  "awning": "#c9482a",
+  "tarp": "#4a6a3a",
+  "glass": "#9fecff"
+ },
+ "zones": [
+  {
+   "id": "junction_yard",
+   "name": "The Junction: landing yard",
+   "center": [
+    -2,
+    8
+   ],
+   "size": [
+    30,
+    20
+   ],
+   "floor": 0,
+   "probe": [
+    0,
+    1.2,
+    12
+   ]
   },
-
-  "zones": [
-    {"id": "junction_yard", "name": "The Junction: landing yard", "center": [-2, 8], "size": [30, 20], "floor": 0, "probe": [0, 1.2, 12]},
-    {"id": "garage_lot", "name": "Garage Lot", "center": [13, 2], "size": [14, 12], "floor": 0, "probe": [8, 1.2, -2]},
-    {"id": "dune_bowl", "name": "The Junction: Dune Bowl", "center": [0, -27], "size": [40, 30], "floor": -0.5, "probe": [0, 0.7, -25]},
-    {"id": "rustys_row", "name": "Rusty's Row", "center": [42, -15], "size": [36, 28], "floor": 0, "probe": [33, 1.2, -12]},
-    {"id": "ridge_lookout", "name": "Ridge Lookout", "center": [40, -70], "size": [8, 12], "floor": 7.4, "probe": [39, 8.9, -75]},
-    {"id": "billing_mast", "name": "Billing Mast", "center": [-36, -72], "size": [7, 7], "floor": 16.2, "probe": [-36, 17.7, -71]},
-    {"id": "buried_vault", "name": "Buried Vault", "center": [-46, -40], "size": [8, 8], "floor": 0, "probe": [-46, 1.2, -40]},
-    {"id": "conveyor_works", "name": "Conveyor Works", "center": [0, -50], "size": [40, 22], "floor": 5, "probe": [-10, 6.2, -54.5]},
-    {"id": "buried_hull", "name": "Buried Starship Hull", "center": [0, -83], "size": [9, 22], "floor": 10, "probe": [0, 11.2, -80]},
-    {"id": "hull_vista", "name": "Hull-top Vista", "center": [0, -86], "size": [7, 10], "floor": 15.5, "probe": [0, 16.7, -86]},
-    {"id": "boneyard", "name": "The Boneyard", "center": [-58, -104], "size": [68, 22], "floor": 0.5, "probe": [-72, 1.7, -104]},
-    {"id": "compaction_lot", "name": "Compaction Lot", "center": [0, -131], "size": [36, 24], "floor": 2, "probe": [0, 3.2, -128]},
-    {"id": "teleporter_yard", "name": "Teleporter Yard", "center": [0, -146], "size": [14, 8], "floor": 2.5, "probe": [4.5, 3.7, -146]}
-  ],
-
-  "boxes": [
-    {"_": "GROUND: four slabs around the Dune Bowl (top y 0) and the bowl (top -0.5)"},
-    {"p": [-12.5, -1, 6.5], "s": [175, 2, 37], "m": "ground"},
-    {"p": [-60, -1, -66], "s": [80, 2, 108], "m": "ground"},
-    {"p": [47.5, -1, -66], "s": [55, 2, 108], "m": "ground"},
-    {"p": [0, -1, -81], "s": [40, 2, 78], "m": "ground"},
-    {"p": [0, -1.5, -27], "s": [40, 2, 30], "m": "bowl"},
-    {"_": "Compaction Lot (top 2) and Teleporter Yard (top 2.5) over the Slag Flats"},
-    {"p": [0, 1, -131], "s": [36, 2, 24], "m": "concrete"},
-    {"p": [0, 1.25, -146.5], "s": [14, 2.5, 8], "m": "steel"},
-    {"p": [-12.5, -3, -150], "s": [175, 0.2, 60], "m": "slag", "deco": true, "glow": 0.9},
-
-    {"_": "PROPERTY LINE fence (6 m) on the south, west and east edges"},
-    {"p": [-12.5, 3, 20], "s": [175, 6, 0.4], "m": "fence"},
-    {"p": [-100, 3, -50], "s": [0.4, 6, 140], "m": "fence"},
-    {"p": [75, 3, -50], "s": [0.4, 6, 140], "m": "fence"},
-
-    {"_": "HUB: landing pad, slide pipe (source 0,1.55,-2)"},
-    {"p": [-8, -0.1, 8], "s": [5.5, 0.25, 5.5], "m": "belt", "deco": true},
-    {"p": [-8, 0.02, 8], "s": [4.5, 0.06, 4.5], "m": "#455066", "deco": true},
-    {"p": [0, 1.55, -2], "s": [7, 0.7, 1.2], "m": "steel"},
-    {"p": [3.75, 0.6, -2], "s": [0.5, 1.2, 1.4], "m": "belt"},
-    {"p": [-3.75, 0.6, -2], "s": [0.5, 1.2, 1.4], "m": "belt"},
-    {"_": "Bolt's ship (booted) and the Blartz kiosk"},
-    {"group": "ship", "p": [-8, 1.2, 8], "s": [3, 1.6, 6], "m": "slab"},
-    {"group": "ship", "p": [-8, 2.1, 6.2], "s": [1.6, 0.8, 1.6], "m": "glass", "deco": true, "glow": 0.6},
-    {"group": "ship", "p": [-8, 1.0, 9], "s": [8, 0.25, 2.2], "m": "steel", "deco": true},
-    {"group": "ship", "p": [-8, 2.3, 10.6], "s": [0.3, 1.4, 1.2], "m": "car1", "deco": true},
-    {"group": "boot", "p": [-6.2, 0.6, 9], "s": [0.9, 1.2, 1.8], "m": "yellow"},
-    {"group": "boot", "p": [-5.7, 0.9, 9], "s": [0.1, 0.6, 1.2], "m": "navy", "deco": true},
-
-    {"_": "GARAGE LOT (prologue): yard fence, gate gap on the west side z 3..6"},
-    {"p": [13, 0.9, -4], "s": [14, 1.8, 0.2], "m": "fence"},
-    {"p": [20, 0.9, 2], "s": [0.2, 1.8, 12], "m": "fence"},
-    {"p": [6, 0.9, -0.5], "s": [0.2, 1.8, 7], "m": "fence"},
-    {"p": [6, 0.9, 7], "s": [0.2, 1.8, 2], "m": "fence"},
-    {"p": [13, 0.9, 8], "s": [14, 1.8, 0.2], "m": "fence"},
-    {"_": "BOLT'S GARAGE 8x6 (interior 3.6 m so Bolt, 1.9 m tall, fits on the loft shelf); door on the west wall"},
-    {"group": "garage", "p": [14, 1.8, 1.15], "s": [8, 3.6, 0.3], "m": "slab"},
-    {"group": "garage", "p": [14, 1.8, 6.85], "s": [8, 3.6, 0.3], "m": "slab"},
-    {"group": "garage", "p": [17.85, 1.8, 4], "s": [0.3, 3.6, 6], "m": "slab"},
-    {"group": "garage", "p": [10.15, 1.8, 2], "s": [0.3, 3.6, 2], "m": "slab"},
-    {"group": "garage", "p": [10.15, 1.8, 6], "s": [0.3, 3.6, 2], "m": "slab"},
-    {"group": "garage", "p": [10.15, 2.9, 4], "s": [0.3, 1.4, 2], "m": "slab"},
-    {"group": "garage", "p": [14, 3.75, 4], "s": [8.6, 0.3, 6.6], "m": "rust"},
-    {"group": "garage", "p": [16.6, 0.3, 2.0], "s": [2.2, 0.6, 1.0], "m": "car2", "_n": "bunk"},
-    {"group": "garage", "p": [17.1, 1.35, 4.6], "s": [1.2, 0.3, 2.6], "m": "wood", "_n": "loft shelf"},
-    {"group": "garage", "p": [14, 0.45, 1.8], "s": [2.2, 0.9, 0.8], "m": "wood", "_n": "workbench (Sprocket wakes here)"},
-    {"group": "garage", "p": [13.4, 1.05, 1.8], "s": [0.5, 0.3, 0.35], "m": "steel", "deco": true, "_n": "toaster"},
-    {"group": "garage", "p": [11.4, 1.4, 6.0], "s": [2.2, 0.3, 1.4], "m": "wood", "_n": "low shelf: slide under it"},
-    {"group": "garage", "p": [12.55, 0.62, 6.0], "s": [0.1, 1.25, 1.4], "m": "wood"},
-    {"group": "garage_door", "p": [9.95, 3.3, 4], "s": [0.06, 0.5, 2.6], "m": "yellow", "deco": true, "glow": 1.0},
-    {"_": "yard props: tire stack, crate stack (3 m) + car-door ramp, junk pile, inspection pit walls"},
-    {"p": [7.5, 0.5, -2.8], "s": [1.2, 1.0, 1.2], "m": "navy"},
-    {"p": [19.2, 0.75, -2.4], "s": [1.5, 1.5, 1.5], "m": "rust"},
-    {"p": [19.2, 2.25, -2.4], "s": [1.5, 1.5, 1.5], "m": "wood"},
-    {"ramp": true, "from": [15.4, 0, -2.4], "to": [18.45, 1.5, -2.4], "w": 1.2, "m": "car1"},
-    {"p": [10.8, 0.6, -2.5], "s": [0.2, 1.2, 2.6], "m": "concrete"},
-    {"p": [13.2, 0.6, -2.5], "s": [0.2, 1.2, 2.6], "m": "concrete"},
-    {"p": [12, 0.6, -3.7], "s": [2.6, 1.2, 0.2], "m": "concrete"},
-    {"p": [12, 0.6, -1.3], "s": [2.6, 1.2, 0.2], "m": "concrete"},
-    {"group": "lot_after", "p": [14, 0.04, 4], "s": [8, 0.08, 6], "m": "concrete", "deco": true},
-    {"group": "lot_after", "p": [10.5, 0.8, 7.2], "s": [0.12, 1.6, 0.12], "m": "wood", "deco": true},
-
-    {"_": "DUNE BOWL: east junk-pile ridge (2.5 m), west-rim wreck pocket (gold 2), feeding trough, oil ponds"},
-    {"p": [18, 0.75, -26], "s": [3, 2.5, 10], "m": "rust"},
-    {"ramp": true, "from": [12.5, -0.5, -26], "to": [16.5, 2.0, -26], "w": 2.4, "m": "car4"},
-    {"p": [-19, 0.2, -32], "s": [3, 0.5, 3], "m": "slab"},
-    {"p": [-17.4, 0.8, -29.4], "s": [3.4, 2.6, 1.2], "m": "shack1", "_n": "wreck screening the pocket"},
-    {"p": [-15.5, 1.8, -14], "s": [2, 0.6, 0.8], "m": "rust", "deco": true, "rot": [0, 20, 160], "_n": "overturned feeding trough"},
-    {"p": [-8, -0.45, -36], "s": [5, 0.04, 4], "m": "oil", "deco": true},
-    {"p": [10, -0.45, -15], "s": [4, 0.04, 3], "m": "oil", "deco": true},
-    {"p": [-14, 0.6, -40], "s": [2.6, 1.8, 4.2], "m": "#d8dee9", "deco": true, "_n": "repossessed fridge"},
-    {"p": [14, 0.4, -14], "s": [4.2, 1.4, 2.2], "m": "car1", "deco": true},
-    {"p": [-20.5, 0.4, -20], "s": [2.2, 1.4, 4.2], "m": "car2", "deco": true},
-    {"p": [6, -0.1, -40], "s": [1.4, 0.8, 0.2], "m": "car3", "deco": true, "_n": "child's bike with a tag"},
-
-    {"_": "BURIED VAULT (-46,-40): slide under the 1.1 m lip (underside 1.3)"},
-    {"p": [-46, 2.7, -40], "s": [8, 0.6, 8], "m": "vault"},
-    {"p": [-50, 1.2, -40], "s": [0.6, 2.4, 8], "m": "vault"},
-    {"p": [-42, 1.2, -40], "s": [0.6, 2.4, 8], "m": "vault"},
-    {"p": [-46, 1.2, -44], "s": [8, 2.4, 0.6], "m": "vault"},
-    {"p": [-46, 1.85, -36.6], "s": [8, 1.1, 0.7], "m": "steel"},
-    {"p": [-46, 0.2, -40], "s": [6, 0.4, 6], "m": "#2c2018", "deco": true},
-
-    {"_": "BILLING MAST (-36,-72): base, legs, spiral of six steps (a = k*1.25, r 3.1, rise 2.3), crow's nest y 16.2"},
-    {"p": [-36, 0.2, -72], "s": [7, 0.8, 7], "m": "vault"},
-    {"p": [-36.6, 9.6, -72.6], "s": [0.22, 18.4, 0.22], "m": "shack2", "deco": true},
-    {"p": [-35.4, 9.6, -72.6], "s": [0.22, 18.4, 0.22], "m": "shack2", "deco": true},
-    {"p": [-36.6, 9.6, -71.4], "s": [0.22, 18.4, 0.22], "m": "shack2", "deco": true},
-    {"p": [-35.4, 9.6, -71.4], "s": [0.22, 18.4, 0.22], "m": "shack2", "deco": true},
-    {"p": [-32.9, 2.4, -72.0], "s": [2.8, 0.4, 2.8], "m": "wood"},
-    {"p": [-35.02, 4.7, -69.06], "s": [2.8, 0.4, 2.8], "m": "slab"},
-    {"p": [-38.48, 7.0, -70.14], "s": [2.8, 0.4, 2.8], "m": "wood"},
-    {"p": [-38.54, 9.3, -73.77], "s": [2.8, 0.4, 2.8], "m": "slab"},
-    {"p": [-35.12, 11.6, -74.97], "s": [2.8, 0.4, 2.8], "m": "wood"},
-    {"p": [-32.9, 13.9, -72.1], "s": [2.8, 0.4, 2.8], "m": "slab"},
-    {"p": [-36, 16.2, -72], "s": [5.4, 0.5, 5.4], "m": "wood"},
-    {"group": "dish", "p": [-36, 19.4, -72], "s": [4.4, 0.4, 4.4], "m": "#d8dee9", "deco": true, "rot": [40, 0, 20]},
-    {"p": [-36, 17.9, -72], "s": [0.6, 3.0, 0.6], "m": "steel", "deco": true},
-    {"_": "AIR PREMIUM blimp (S2, Tether-Hook): gondola at y 20, 10.8 m from step 6"},
-    {"p": [-30, 24, -84], "s": [6, 3.4, 12], "m": "#c9b8e8", "deco": true},
-    {"p": [-30, 20.2, -84], "s": [2.6, 0.3, 3], "m": "steel"},
-
-    {"_": "CONVEYOR WORKS: car-cube stair tower (five 0.9 m steps), tower top y 5, west landing, crane ledge, step to hull"},
-    {"p": [10, 0.45, -40], "s": [2.6, 0.9, 1.8], "m": "car1"},
-    {"p": [12, 1.35, -42.5], "s": [2.6, 0.9, 1.8], "m": "car2"},
-    {"p": [14, 2.25, -45], "s": [2.6, 0.9, 1.8], "m": "car3"},
-    {"p": [13.5, 3.15, -48], "s": [2.6, 0.9, 1.8], "m": "car4"},
-    {"p": [11, 4.05, -50], "s": [2.6, 0.9, 1.8], "m": "car5"},
-    {"p": [8, 4.55, -52], "s": [7, 0.9, 6], "m": "wood"},
-    {"p": [-9.25, 4.5, -54.5], "s": [6.5, 1, 8], "m": "wood"},
-    {"p": [-5, 9.3, -66], "s": [9, 0.8, 6], "m": "wood"},
-    {"p": [0, 9.6, -69], "s": [6, 0.8, 4], "m": "wood"},
-    {"p": [-17, 8.2, -60], "s": [2.6, 0.4, 2.6], "m": "slab", "_n": "gold 3 slab off the crane path"},
-    {"p": [-4, 2.4, -52], "s": [0.6, 4.8, 0.6], "m": "steel", "deco": true},
-    {"p": [4, 2.4, -52], "s": [0.6, 4.8, 0.6], "m": "steel", "deco": true},
-    {"p": [-4, 2.4, -57], "s": [0.6, 4.8, 0.6], "m": "steel", "deco": true},
-    {"p": [4, 2.4, -57], "s": [0.6, 4.8, 0.6], "m": "steel", "deco": true},
-    {"_": "pipe-top cache (S3, Grind Soles): memo 04 + 60 bolts at y 12"},
-    {"p": [2, 11.8, -45], "s": [3, 0.4, 3], "m": "steel"},
-    {"p": [6, 8.8, -48.5], "s": [0.5, 0.5, 9], "m": "rust", "deco": true, "rot": [-38, -50, 0], "_n": "(G) rusted pipe from the tower top"},
-
-    {"_": "BURIED STARSHIP HULL: belly, interior walkway y 10, sides, exterior shell, engine room, rear ledge, crown steps, vista deck"},
-    {"p": [0, 4.5, -82], "s": [10, 9, 22], "m": "hull"},
-    {"p": [0, 9.5, -82], "s": [9, 1, 22], "m": "dark"},
-    {"p": [4.8, 11.5, -81.5], "s": [1, 3, 21], "m": "hullside"},
-    {"p": [-4.8, 11.5, -81.5], "s": [1, 3, 21], "m": "hullside"},
-    {"p": [6.2, 11, -81.5], "s": [1.6, 8, 21], "m": "hull"},
-    {"p": [-6.2, 11, -81.5], "s": [1.6, 8, 21], "m": "hull"},
-    {"p": [3, 10.5, -74], "s": [1, 1, 1], "m": "rust"},
-    {"p": [-3, 10.5, -84], "s": [1.2, 1, 2], "m": "rust"},
-    {"p": [0, 10.0, -95.75], "s": [6, 0.8, 5.5], "m": "hullside", "_n": "rear ledge"},
-    {"p": [4, 11.4, -97], "s": [2.6, 0.6, 2.6], "m": "slab"},
-    {"p": [4.5, 12.8, -93.5], "s": [2.6, 0.6, 2.6], "m": "slab"},
-    {"p": [2, 14.1, -91.5], "s": [2.6, 0.6, 2.6], "m": "slab"},
-    {"p": [0, 15.1, -86], "s": [7, 0.8, 10], "m": "wood", "_n": "vista deck on the hull crown"},
-    {"p": [6.5, 15.5, -82], "s": [2.4, 0.4, 2.4], "m": "slab", "_n": "gold 4 side slab"},
-    {"p": [0, 6.5, -72], "s": [8, 1.0, 3], "m": "hullside", "deco": true},
-
-    {"_": "golden rail descent supports and the Compaction Lot approach ramp"},
-    {"ramp": true, "from": [0, 0, -109], "to": [0, 2, -119], "w": 8, "m": "concrete"},
-
-    {"_": "COMPACTION LOT walls: south wall with gate gap (x -3..3), north fence segments; crane gantry at 9 m"},
-    {"p": [-10.5, 4, -119.3], "s": [15, 4, 0.6], "m": "car4"},
-    {"p": [10.5, 4, -119.3], "s": [15, 4, 0.6], "m": "car1"},
-    {"p": [-12.5, 4, -143.2], "s": [11, 4, 0.6], "m": "car2"},
-    {"p": [12.5, 4, -143.2], "s": [11, 4, 0.6], "m": "car3"},
-    {"p": [-3.8, 5.5, -119.0], "s": [0.6, 7, 0.6], "m": "steel"},
-    {"p": [3.8, 5.5, -119.0], "s": [0.6, 7, 0.6], "m": "steel"},
-    {"p": [0, 8.2, -119.0], "s": [8.2, 0.5, 0.6], "m": "steel"},
-    {"p": [0, 11, -131], "s": [40, 0.5, 0.8], "m": "crane", "deco": true},
-    {"p": [-20.5, 5.5, -131], "s": [0.8, 11, 0.8], "m": "crane", "deco": true},
-    {"p": [20.5, 5.5, -131], "s": [0.8, 11, 0.8], "m": "crane", "deco": true},
-    {"id": "cube_nw", "p": [-9, 3.25, -137], "s": [2.5, 2.5, 2.5], "m": "car1"},
-    {"id": "cube_w", "p": [-10, 3.25, -131], "s": [2.5, 2.5, 2.5], "m": "car2"},
-    {"id": "cube_e", "p": [10, 3.25, -131], "s": [2.5, 2.5, 2.5], "m": "car3"},
-    {"id": "cube_s", "p": [6, 3.25, -124], "s": [2.5, 2.5, 2.5], "m": "car5"},
-    {"group": "container_stack", "p": [-8, 2.75, -124.5], "s": [6, 1.5, 2.5], "m": "car2"},
-    {"group": "container_stack", "p": [-8, 4.25, -124.5], "s": [6, 1.5, 2.5], "m": "car1"},
-    {"_": "Impound Cage (NE corner, 3x3)"},
-    {"p": [16.5, 3.5, -138.5], "s": [0.2, 3, 3], "m": "steel"},
-    {"p": [15, 3.5, -140], "s": [3, 3, 0.2], "m": "steel"},
-    {"p": [15, 5.1, -138.5], "s": [3.2, 0.2, 3.2], "m": "steel"},
-    {"p": [13.5, 3.5, -139.5], "s": [0.2, 3, 1.0], "m": "steel"},
-    {"_": "Teleporter Yard railings"},
-    {"p": [-7, 3.1, -146.5], "s": [0.2, 1.2, 8], "m": "steel"},
-    {"p": [7, 3.1, -146.5], "s": [0.2, 1.2, 8], "m": "steel"},
-
-    {"_": "RIDGE LOOKOUT (40,-70): dash + hover chain to the perch at +7.4"},
-    {"p": [38, 3, -66], "s": [3, 0.5, 3], "m": "slab"},
-    {"p": [41, 5.2, -71], "s": [3, 0.5, 3], "m": "slab"},
-    {"p": [39, 7.4, -75], "s": [5, 0.6, 5], "m": "wood"},
-    {"p": [46, 5, -70], "s": [1.2, 10, 1.2], "m": "crane", "deco": true},
-    {"_": "S4: Mama Gasket's mailbox on a scrap spire 24 m east, ringed by an oil pond (Glide from the perch)"},
-    {"p": [64, -0.45, -72], "s": [22, 0.04, 22], "m": "oil", "deco": true},
-    {"p": [64, 0.6, -72], "s": [2, 1.2, 2], "m": "rust"},
-    {"p": [64, 1.6, -72], "s": [0.2, 0.8, 0.2], "m": "steel", "deco": true},
-
-    {"_": "THE BONEYARD (annex, west of the hull): gate, three staggered slabs, lift, wall-kick shaft, Crusher Pit plaza, vault"},
-    {"p": [-32, 1.0, -102], "s": [3, 0.5, 3], "m": "slab"},
-    {"p": [-36, 2.6, -106], "s": [3, 0.5, 3], "m": "slab"},
-    {"p": [-40, 4.2, -102], "s": [3, 0.5, 3], "m": "slab"},
-    {"p": [-51, 5.7, -104], "s": [6, 0.6, 5], "m": "slab", "_n": "shaft floor (top 6.0)"},
-    {"p": [-47.25, 5.7, -104], "s": [1.5, 0.6, 5], "m": "slab"},
-    {"p": [-51, 7.75, -101.2], "s": [6, 15.5, 0.6], "m": "hullside", "_n": "wall-kick wall A (9.5 m above the shaft floor)"},
-    {"p": [-51, 7.75, -106.8], "s": [6, 15.5, 0.6], "m": "hullside", "_n": "wall-kick wall B (5 m apart)"},
-    {"p": [-57, 15.2, -104], "s": [6, 0.6, 6], "m": "wood", "_n": "shaft-top platform"},
-    {"p": [-72, 0.25, -104], "s": [22, 0.5, 22], "m": "dark", "_n": "THE CRUSHER PIT plaza"},
-    {"p": [-72, 1.1, -92.8], "s": [22, 1.2, 0.6], "m": "car1"},
-    {"p": [-72, 1.1, -115.2], "s": [22, 1.2, 0.6], "m": "car2"},
-    {"p": [-83.2, 1.1, -98], "s": [0.6, 1.2, 10], "m": "car3"},
-    {"p": [-83.2, 1.1, -110], "s": [0.6, 1.2, 10], "m": "car4"},
-    {"p": [-86, 2.6, -110], "s": [3, 0.5, 3], "m": "slab"},
-    {"p": [-89, 5.2, -106], "s": [3, 0.5, 3], "m": "slab"},
-    {"p": [-89, 8, -100.5], "s": [5, 0.5, 5], "m": "wood", "_n": "updraft vault floor"},
-    {"_": "junk processor set piece at the Boneyard gate (S5 crusher bay)"},
-    {"p": [-29, 1.25, -94], "s": [3.4, 2.5, 3.4], "m": "steel", "deco": true},
-    {"p": [-29, 0.6, -90.6], "s": [3.6, 1.2, 0.3], "m": "steel"},
-    {"p": [-27.1, 0.6, -92.3], "s": [0.3, 1.2, 3.6], "m": "steel"},
-    {"p": [-32, 0.75, -91.4], "s": [0.8, 1.5, 0.6], "m": "navy", "_n": "crusher control box"},
-
-    {"_": "RUSTY'S ROW: three terraces against the east dune (T1 y0 x24..43, T2 y2.6 x43..51, T3 y5.2 x51..60), car-door ramps"},
-    {"p": [47, 1.3, -15], "s": [8, 2.6, 28], "m": "dune"},
-    {"p": [55.5, 2.6, -15], "s": [9, 5.2, 28], "m": "dune"},
-    {"ramp": true, "from": [37.5, 0, -8], "to": [43, 2.6, -8], "w": 2.2, "m": "car1"},
-    {"ramp": true, "from": [45.5, 2.6, -20], "to": [51, 5.2, -20], "w": 2.2, "m": "car2"},
-    {"_": "gate posts + crossbar (source x 25)"},
-    {"p": [25, 2.2, -6.2], "s": [0.5, 4.4, 0.5], "m": "rust"},
-    {"p": [25, 2.2, -13.8], "s": [0.5, 4.4, 0.5], "m": "rust"},
-    {"p": [25, 4.3, -10], "s": [0.5, 0.5, 8.2], "m": "rust", "deco": true},
-    {"_": "the square: fire barrel, stall (counter, posts, awning)"},
-    {"p": [36, 0.55, -14], "s": [1.0, 1.1, 1.0], "m": "steel"},
-    {"p": [36, 1.35, -14], "s": [0.5, 0.7, 0.5], "m": "#ffa629", "deco": true, "glow": 1.8},
-    {"p": [33.5, 0.55, -18.3], "s": [2.6, 1.1, 1.2], "m": "wood"},
-    {"p": [33.5, 2.3, -18.3], "s": [3.6, 0.16, 3], "m": "awning", "deco": true},
-    {"p": [32.1, 1.1, -17.2], "s": [0.14, 2.2, 0.14], "m": "rust", "deco": true},
-    {"p": [34.9, 1.1, -17.2], "s": [0.14, 2.2, 0.14], "m": "rust", "deco": true},
-    {"p": [32.1, 1.1, -19.4], "s": [0.14, 2.2, 0.14], "m": "rust", "deco": true},
-    {"p": [34.9, 1.1, -19.4], "s": [0.14, 2.2, 0.14], "m": "rust", "deco": true},
-    {"_": "water tower on T2 (45.5,-24.5): legs, catwalk (top 10.2 = +7.4 over T2 +0.2), tank, crate steps"},
-    {"p": [43.5, 6.2, -26.5], "s": [0.3, 7.2, 0.3], "m": "hullside", "deco": true},
-    {"p": [47.5, 6.2, -26.5], "s": [0.3, 7.2, 0.3], "m": "hullside", "deco": true},
-    {"p": [43.5, 6.2, -22.5], "s": [0.3, 7.2, 0.3], "m": "hullside", "deco": true},
-    {"p": [47.5, 6.2, -22.5], "s": [0.3, 7.2, 0.3], "m": "hullside", "deco": true},
-    {"p": [45.5, 10.0, -24.5], "s": [6.4, 0.4, 6.4], "m": "wood"},
-    {"p": [45.5, 12.0, -24.5], "s": [2.8, 3.6, 2.8], "m": "hull"},
-    {"p": [45.5, 14.0, -24.5], "s": [3.2, 0.4, 3.2], "m": "hullside", "deco": true},
-    {"p": [40.5, 4.9, -24.5], "s": [1.6, 0.5, 1.6], "m": "slab"},
-    {"p": [42.5, 7.4, -24.4], "s": [2, 0.5, 2], "m": "slab"},
-    {"_": "S7 back shed behind a tarp curtain on the top terrace"},
-    {"p": [57.5, 6.5, -28.5], "s": [3, 2.6, 0.2], "m": "shack2"},
-    {"p": [59, 6.5, -27], "s": [0.2, 2.6, 3], "m": "shack2"},
-    {"p": [57.5, 6.5, -25.5], "s": [3, 2.6, 0.2], "m": "shack2"},
-    {"p": [57.5, 7.95, -27], "s": [3.4, 0.3, 3.4], "m": "rust"}
-  ],
-
-  "shacks": {
-    "_doc": "shack(x, z, w, d, col, roof) from expandScrapheap: body h 2.6 (+0.4 sunk), walkable 0.3 m roof slab (top = floor + 2.87). 'floor' is the terrace height. 'stack' = another shack on its roof.",
-    "list": [
-      {"x": 30, "z": -5, "w": 4.4, "d": 3.6, "c": "shack1", "r": "rust", "floor": 0},
-      {"x": 40.5, "z": -5, "w": 4, "d": 3.4, "c": "shack2", "r": "hull", "floor": 0},
-      {"x": 30, "z": -22, "w": 4.2, "d": 3.6, "c": "slab", "r": "rust", "floor": 0},
-      {"x": 38, "z": -24, "w": 4.6, "d": 3.4, "c": "shack3", "r": "hull", "floor": 0},
-      {"x": 27.5, "z": -13.8, "w": 3.2, "d": 3.0, "c": "shack1", "r": "hullside", "floor": 0},
-      {"x": 45, "z": -15, "w": 3.6, "d": 4.2, "c": "rust", "r": "hullside", "floor": 2.6},
-      {"x": 47, "z": -5, "w": 4, "d": 3.6, "c": "shack1", "r": "rust", "floor": 2.6, "stack": true},
-      {"x": 48.5, "z": -10, "w": 3, "d": 3, "c": "shack2", "r": "rust", "floor": 2.6},
-      {"x": 54, "z": -4, "w": 4, "d": 3.4, "c": "shack3", "r": "hull", "floor": 5.2, "stack": true},
-      {"x": 57.5, "z": -10, "w": 3.6, "d": 3.6, "c": "shack1", "r": "rust", "floor": 5.2},
-      {"x": 54, "z": -16, "w": 3.4, "d": 3.4, "c": "slab", "r": "hullside", "floor": 5.2, "stack": true},
-      {"x": 57.5, "z": -21, "w": 3.4, "d": 3.2, "c": "shack2", "r": "rust", "floor": 5.2}
-    ],
-    "backdrop": {"_doc": "the rest of the 41 shacks: decorative stacks on the east dune behind the Row", "x0": 61, "x1": 73, "z0": -2, "z1": -28, "count": 26, "seed": 41}
+  {
+   "id": "garage_lot",
+   "name": "Garage Lot",
+   "center": [
+    13,
+    2
+   ],
+   "size": [
+    14,
+    12
+   ],
+   "floor": 0,
+   "probe": [
+    8,
+    1.2,
+    -2
+   ]
   },
-
-  "mounds": [
-    {"_": "Dune Bowl scrap mounds (source positions; r, h), cover and height", "x": 0, "z": 0, "r": 0, "h": 0},
-    {"x": -16, "z": -14, "r": 5, "h": 2.0, "floor": -0.5, "m": "dune"},
-    {"x": 17, "z": -18, "r": 6, "h": 2.5, "floor": -0.5, "m": "dune"},
-    {"x": -18, "z": -28, "r": 6, "h": 3.0, "floor": -0.5, "m": "dune"},
-    {"x": 16, "z": -34, "r": 5, "h": 2.0, "floor": -0.5, "m": "dune"},
-    {"x": 0, "z": -40.5, "r": 7, "h": 2.5, "floor": -0.5, "m": "dune"},
-    {"x": -8, "z": -12, "r": 3.5, "h": 1.5, "floor": -0.5, "m": "dune"},
-    {"x": 3, "z": -46, "r": 2.6, "h": 1.6, "floor": 0, "m": "rust"},
-    {"x": -3, "z": -61, "r": 2.6, "h": 1.6, "floor": 0, "m": "rust"},
-    {"x": 8, "z": -2, "r": 1.6, "h": 1.0, "floor": 0, "m": "rust"},
-    {"x": 0, "z": -71, "r": 4, "h": 1.0, "floor": 0, "m": "hull"},
-    {"x": -3, "z": -99, "r": 3.5, "h": 1.0, "floor": 0, "m": "hullside"},
-    {"x": -86, "z": -92, "r": 5, "h": 2.0, "floor": 0, "m": "dune"},
-    {"x": -60, "z": -117, "r": 4, "h": 2.0, "floor": 0, "m": "dune"}
-  ],
-  "cylinders": [
-    {"_": "hull shell (deco), r 6.5 x 26 along z", "p": [0, 9, -83], "r": 6.5, "h": 26, "axis": "z", "m": "hull"},
-    {"p": [-36, 18.0, -72], "r": 0.3, "h": 0.4, "m": "steel"}
-  ],
-
-  "signs": [
-    {"text": "bs.scrapheap.sign_property", "p": [0, 3.6, 19.7], "size": [7, 1.6], "ry": 180},
-    {"text": "bs.scrapheap.sign_property", "p": [-99.7, 3.6, -40], "size": [7, 1.6], "ry": 90},
-    {"text": "bs.scrapheap.sign_property", "p": [74.7, 3.6, -50], "size": [7, 1.6], "ry": -90},
-    {"text": "bs.scrapheap.sign_bolts", "p": [9.95, 3.3, 4], "size": [2.6, 0.5], "ry": -90, "group": "garage"},
-    {"text": "bs.scrapheap.sign_12b", "p": [10.5, 1.4, 7.25], "size": [2.4, 0.9], "ry": -90, "group": "lot_after"},
-    {"text": "bs.scrapheap.boot_tag", "p": [-5.6, 0.9, 9], "size": [1.4, 0.6], "ry": 90, "group": "boot"},
-    {"text": "code.expandScrapheap.01", "p": [24.7, 5.2, -10], "size": [6.4, 1.3], "ry": -90},
-    {"text": "code.expandScrapheap.05", "p": [33.5, 2.95, -16.75], "size": [3.4, 0.62], "ry": 0, "bg": "#3a2414", "fg": "#ffe2b8"},
-    {"text": "code.expandScrapheap.06", "p": [45.5, 12.2, -23.08], "size": [2.2, 1.0], "ry": 0, "bg": "#6e4a3a", "fg": "#ffe2b8"},
-    {"text": "bs.scrapheap.sign_mast", "p": [-36, 2.2, -68.4], "size": [4.4, 1.2], "ry": 0},
-    {"text": "bs.scrapheap.sign_works", "p": [11.5, 2.4, -38.6], "size": [4.4, 1.2], "ry": 0},
-    {"text": "bs.scrapheap.sign_hull", "p": [-3.5, 2.8, -70.8], "size": [4.4, 1.2], "ry": 0},
-    {"text": "code.buildLevel1.13", "p": [0, 9.2, -118.6], "size": [6.4, 1.1], "ry": 0},
-    {"text": "bs.scrapheap.lamp_power", "p": [-3.8, 7.3, -118.6], "size": [1.6, 0.5], "ry": 0},
-    {"text": "bs.scrapheap.lamp_uplink", "p": [3.8, 7.3, -118.6], "size": [1.6, 0.5], "ry": 0},
-    {"text": "bs.scrapheap.sign_teleporter", "p": [0, 5.6, -150.2], "size": [6, 1.2], "ry": 0},
-    {"text": "bs.scrapheap.sign_boneyard", "p": [-24, 2.6, -100], "size": [5, 1.2], "ry": 90}
-  ],
-
-  "lights": [
-    {"_": "string lights over Rusty's Row + warm windows; omni lights are few (greybox)", "p": [37, 3.8, -12], "color": "#ffd27a", "energy": 2.0, "range": 14},
-    {"p": [36, 2.0, -14], "color": "#ffa629", "energy": 2.5, "range": 8},
-    {"p": [0, 13, -82], "color": "#ffd9a0", "energy": 1.5, "range": 14},
-    {"p": [0, 5, -146], "color": "#3ee6ff", "energy": 2.0, "range": 10}
-  ],
-
-  "rails": [
-    {"_": "golden ride-rails (BS_LEVELS §2.5). Marker paths in group 'rails' (meta points) for the rail system; drawn as a golden tube.", "id": "antenna_cable", "points": [[-33.6, 16.5, -74.4], [-20, 15.6, -80], [-4, 15.6, -86]], "color": "#3ee6ff", "two_way": true},
-    {"id": "hull_descent", "points": [[0, 15.2, -90], [6, 12, -102], [-6, 8.5, -112], [0, 4, -122]], "color": "#ffd23e"},
-    {"id": "boneyard_grind", "points": [[-58, 15.6, -104], [-64, 8, -104], [-70, 0.9, -104]], "color": "#ffd23e"},
-    {"id": "works_pipe", "points": [[10, 5.2, -52], [2, 12.2, -45]], "color": "#3ea8ff", "gadget": "grind_soles"}
-  ],
-
-  "gadget_points": [
-    {"_": "secrets gated by gadgets earned on later planets (markers only in M1)", "kind": "tether", "id": "blimp_ring", "p": [-31, 21, -80], "secret": "S2"},
-    {"kind": "glide", "id": "lookout_pennant", "p": [41.5, 8.0, -75], "secret": "S4"},
-    {"kind": "updraft", "id": "boneyard_updraft", "p": [-86, 0.5, -104], "force": 30, "top": 9.0}
-  ],
-
-  "water": [
-    {"_": "oil-jelly ponds (water type: 8 damage, reset, splash quip). Box = centre + size", "p": [-8, -0.3, -36], "s": [5, 0.6, 4]},
-    {"p": [10, -0.3, -15], "s": [4, 0.6, 3]},
-    {"p": [64, -0.1, -72], "s": [22, 0.8, 22], "hole": [2.4, 2.4]}
-  ],
-  "water_quips": ["splash.05"],
-
-  "conveyors": [
-    {"id": "west_belt", "p": [0, 4.75, -52], "s": [12, 0.5, 3], "dir": [-1, 0], "speed": 3.2, "warn": 1.0},
-    {"id": "return_belt", "p": [0, 4.75, -57], "s": [12, 0.5, 3], "dir": [1, 0], "speed": 2.6, "warn": 1.0},
-    {"id": "processor_belt", "p": [-36, 0.95, -94], "s": [12, 0.5, 3], "dir": [1, 0], "speed": 2.4, "warn": 1.0}
-  ],
-  "movers": [
-    {"id": "magnet_crane", "kind": "crane", "base": [-10, 6, -58], "end": [-10, 9.6, -64], "speed": 0.55, "size": [3.4, 0.4, 3.4], "tower": [-7, 0, -4]},
-    {"id": "boneyard_lift", "kind": "lift", "base": [-44, 4.25, -104], "end": [-44, 5.8, -104], "speed": 0.8, "size": [3, 0.4, 3]},
-    {"id": "stamp", "kind": "crusher", "base": [-29, 4.0, -94], "end": [-29, 0.8, -94], "speed": 1.4, "size": [3, 2, 3]}
-  ],
-  "gates": [
-    {"id": "pit_lid", "p": [12, 1.3, -2.5], "s": [2.6, 0.2, 2.6], "open": [2.8, 0, 0], "speed": 3, "color": "steel"},
-    {"id": "blast_door", "p": [0, 12.2, -70.5], "s": [7, 4.4, 0.6], "open": [0, 4.6, 0], "speed": 2.5, "color": "#5a6377"},
-    {"id": "rear_hatch", "p": [0, 12.0, -93.3], "s": [7, 4, 0.6], "open": [0, 4.2, 0], "speed": 2.5, "color": "#5a6377"},
-    {"id": "lot_gate", "p": [0, 4, -119.3], "s": [7, 4, 0.6], "open": [0, -4.2, 0], "speed": 3, "color": "#5a6377"},
-    {"id": "yard_fence", "p": [0, 4.5, -143.2], "s": [14, 5, 0.4], "open": [0, -5.2, 0], "speed": 3, "color": "#5a6377"},
-    {"id": "impound_cage", "p": [13.5, 3.5, -137.6], "s": [0.2, 3, 1.8], "open": [0, 3.2, 0], "speed": 3, "color": "steel"},
-    {"id": "crusher_bay", "p": [-30.9, 0.6, -92.3], "s": [0.3, 1.2, 3.6], "open": [0, -1.3, 0], "speed": 4, "color": "steel"},
-    {"id": "tarp", "p": [56, 6.5, -27], "s": [0.1, 2.6, 3], "open": [0, 2.8, 0], "speed": 4, "color": "tarp"},
-    {"id": "vault_cage", "p": [-89, 9.2, -98.1], "s": [5, 2, 0.2], "open": [0, 2.2, 0], "speed": 3, "color": "steel"}
-  ],
-  "lamps": [
-    {"id": "lamp_power", "p": [-3.8, 6.6, -118.6], "r": 0.45, "off": "#5a2a1a", "on": "#3ee6ff"},
-    {"id": "lamp_uplink", "p": [3.8, 6.6, -118.6], "r": 0.45, "off": "#5a2a1a", "on": "#3ee6ff"},
-    {"id": "mast_beacon", "p": [-36, 20.6, -72], "r": 0.3, "off": "#ff9d2e", "on": "#3ee6ff", "blink": true}
-  ],
-
-  "switches": [
-    {"_": "mallet-throw switches: every one reachable from a standing spot within 13.2 m (§2.5)", "id": "pit_latch", "p": [12, 1.2, -3.85], "ry": 0, "actions": [{"open": "pit_lid"}, {"flag": "pit_open"}]},
-    {"id": "clamp_nest", "p": [-36, 18.4, -74.9], "ry": 0, "actions": [{"flag": "clamp_1"}]},
-    {"id": "clamp_step3", "p": [-38.9, 18.4, -71.0], "ry": -90, "actions": [{"flag": "clamp_2"}]},
-    {"id": "clamp_step5", "p": [-33.1, 18.4, -73.6], "ry": 90, "actions": [{"flag": "clamp_3"}]},
-    {"id": "lever_west_w", "p": [-6.6, 6.0, -50.3], "ry": 0, "one_shot": false, "cooldown": 8, "size": [0.8, 0.8], "actions": [{"reverse": "west_belt", "seconds": 8}]},
-    {"id": "lever_west_e", "p": [6.6, 6.0, -50.3], "ry": 0, "one_shot": false, "cooldown": 8, "size": [0.8, 0.8], "actions": [{"reverse": "west_belt", "seconds": 8}]},
-    {"id": "lever_return_w", "p": [-6.6, 6.0, -58.7], "ry": 180, "one_shot": false, "cooldown": 8, "size": [0.8, 0.8], "actions": [{"reverse": "return_belt", "seconds": 8}]},
-    {"id": "lever_return_e", "p": [6.6, 6.0, -58.7], "ry": 180, "one_shot": false, "cooldown": 8, "size": [0.8, 0.8], "actions": [{"reverse": "return_belt", "seconds": 8}]},
-    {"id": "crusher_box", "p": [-32, 1.8, -91.05], "ry": 0, "gadget": "thunder", "one_shot": false, "cooldown": 10, "actions": [{"pause": "stamp", "for": 10}, {"open": "crusher_bay", "for": 10}]},
-    {"id": "tarp_seal", "p": [55.9, 6.8, -27], "ry": -90, "gadget": "magma", "actions": [{"open": "tarp"}]}
-  ],
-
-  "gold_bolts": [
-    {"id": "scrapheap.1", "p": [12, 0.6, -2.5], "how": "prologue: mallet throw at the pit-lid latch"},
-    {"id": "scrapheap.2", "p": [-19, 1.4, -32], "how": "source #1: pocket behind the west-rim wreck"},
-    {"id": "scrapheap.3", "p": [-17, 9.3, -60], "how": "source #2: bail off the magnet crane"},
-    {"id": "scrapheap.4", "p": [6.5, 16.6, -82], "how": "source #3: hull-top side slab"},
-    {"id": "scrapheap.5", "p": [-30, 21.0, -84], "how": "S2: AIR PREMIUM blimp gondola (Tether-Hook)"}
-  ],
-  "memos": [
-    {"id": "memo.01", "p": [-36.8, 17.2, -70.8], "where": "Billing Mast crow's nest"},
-    {"id": "memo.02", "p": [14, 1.2, 4], "where": "the empty Garage Lot slab, after intro", "after_flag": "prologue_done"},
-    {"id": "memo.03", "p": [-16.5, 2.3, -14], "where": "Dune Bowl west mound, by the feeding trough"},
-    {"id": "memo.04", "p": [2, 12.8, -45], "where": "S3 pipe-top cache (Grind Soles)"},
-    {"id": "memo.05", "p": [-2, 16.3, -84], "where": "Hull-top Vista"}
-  ],
-  "quest_items_from_quests": true,
-  "items": [
-    {"id": "mallet", "kind": "crate", "radius": 0.45, "p": [11.4, 0.45, 6.3], "actions": [{"flag": "got_mallet"}, {"hint": "bs.scrapheap.hint_mallet", "key": "mallet"}]},
-    {"id": "power_cell", "kind": "cell", "p": [0, 10.9, -92.2], "actions": [{"flag": "power"}]},
-    {"id": "vault_nano", "kind": "nano", "p": [-46, 1.0, -41], "actions": [{"heal": 1.0}, {"banner": ["code.collectPickup.01", "code.collectPickup.02"]}, {"flag": "secret_S1"}]},
-    {"id": "mast_nano", "kind": "nano", "p": [-34.4, 17.0, -73.6], "actions": [{"heal": 1.0}, {"banner": ["code.collectPickup.01", "code.collectPickup.02"]}]},
-    {"id": "tower_nano", "kind": "nano", "p": [43.2, 10.7, -22.2], "actions": [{"heal": 1.0}, {"banner": ["code.collectPickup.01", "code.collectPickup.02"]}]},
-    {"id": "hull_nano", "kind": "nano", "p": [-3, 10.6, -90], "actions": [{"heal": 1.0}, {"banner": ["code.collectPickup.01", "code.collectPickup.02"]}]},
-    {"id": "lot_nano", "kind": "nano", "p": [-12, 2.6, -138], "actions": [{"heal": 1.0}, {"banner": ["code.collectPickup.01", "code.collectPickup.02"]}]},
-    {"id": "pipe_cache", "kind": "jar", "p": [3, 12.6, -45.8], "actions": [{"bolts": 60}, {"banner": ["bs.scrapheap.cache_banner", "bs.scrapheap.cache_sub"]}, {"flag": "secret_S3"}]},
-    {"id": "mailbox", "kind": "crate", "p": [64, 2.3, -72], "actions": [{"bolts": 100}, {"banner": ["bs.scrapheap.mailbox_banner", "bs.scrapheap.mailbox_sub"]}, {"flag": "secret_S4"}]},
-    {"id": "crusher_nano", "kind": "nano", "p": [-29, 0.6, -92.4], "actions": [{"heal": 1.0}, {"banner": ["code.collectPickup.01", "code.collectPickup.02"]}, {"flag": "secret_S5"}]},
-    {"id": "boneyard_upgrade", "kind": "nano", "p": [-89, 8.8, -100.5], "actions": [{"max_hp": 20}, {"banner": ["code.collectPickup.03", "code.collectPickup.04"]}, {"flag": "secret_S6"}]},
-    {"id": "spare_jar", "kind": "jar", "p": [57.5, 5.6, -27], "actions": [{"bolts": 80}, {"banner": ["bs.scrapheap.jar_banner", "bs.scrapheap.jar_sub"]}, {"flag": "secret_S7"}]}
-  ],
-  "pickup_spots": [
-    {"_": "ammo / loose-bolt / nanotech markers for the weapons + pickup builders (group 'pickup_spots', meta kind)", "kind": "ammoR", "p": [-11, 0.1, -20]},
-    {"kind": "ammoZ", "p": [-48, 0.8, -41]},
-    {"kind": "ammoZ", "p": [-10, 5.6, -57]},
-    {"kind": "ammoR", "p": [3, 10.6, -90]},
-    {"kind": "ammoR", "p": [-37.6, 17.2, -73.6]},
-    {"kind": "ammoZ", "p": [47.8, 10.9, -22.2]},
-    {"kind": "ammoR", "p": [41.5, 0.8, -19.5]},
-    {"kind": "ammoR", "p": [38, 8.4, -75]},
-    {"kind": "ammoZ", "p": [-8, 2.6, -124]},
-    {"kind": "ammoR", "p": [8, 2.6, -138]},
-    {"kind": "bolt_row", "p": [-5, 0.5, 10], "to": [5, 0.5, 10], "n": 4},
-    {"kind": "bolt_row", "p": [-2, 0.5, -2], "to": [2, 0.5, -2], "n": 3},
-    {"kind": "bolt_row", "p": [0, 0.0, -14], "to": [0, 0.0, -34], "n": 5},
-    {"kind": "bolt_row", "p": [10, 1.5, -40], "to": [11, 5.5, -50], "n": 4},
-    {"kind": "bolt_row", "p": [-9, 10.3, -66], "to": [-1, 10.3, -66], "n": 3},
-    {"kind": "bolt_row", "p": [0, 10.5, -73], "to": [0, 10.5, -91], "n": 5},
-    {"kind": "bolt_row", "p": [0, 16.2, -90], "to": [0, 16.2, -83], "n": 3},
-    {"kind": "bolt_row", "p": [-6, 2.5, -129], "to": [6, 2.5, -129], "n": 4},
-    {"kind": "bolt_row", "p": [27, 0.7, -10], "to": [34, 0.7, -13], "n": 4},
-    {"kind": "bolt_row", "p": [43.1, 10.6, -26.9], "to": [47.9, 10.6, -26.9], "n": 4},
-    {"kind": "bolt_trail", "points": [[0, -14], [-8, -22], [-16, -30], [-19, -38]], "n": 3},
-    {"kind": "bolt_trail", "points": [[12, -40], [20, -52], [28, -62], [34, -70]], "n": 3},
-    {"kind": "bolt_trail", "points": [[16, -2], [21, -6], [25, -10]], "n": 3},
-    {"kind": "bolt_trail", "points": [[-19, -40], [-27, -54], [-34, -64]], "n": 3},
-    {"kind": "bolt_trail", "points": [[-8, -96], [-16, -100], [-24, -104]], "n": 3}
-  ],
-
-  "relays": [
-    {"id": "pad", "p": [-4, 0, 13], "label": "bs.scrapheap.relay_pad", "start": true},
-    {"id": "row", "p": [28, 0, -10], "label": "code.expandScrapheap.02"},
-    {"id": "works", "p": [14, 0, -38], "label": "bs.scrapheap.relay_works"},
-    {"id": "boneyard", "p": [-26, 0, -104], "label": "bs.scrapheap.relay_boneyard"},
-    {"id": "lot", "p": [6, 0, -106], "label": "code.buildLevel1.13"}
-  ],
-  "beacon": {"p": [-3.5, 0, 4]},
-  "interacts": [
-    {"id": "ship", "p": [-5.2, 0, 6.2], "prompt": "bs.level.ship_prompt", "actions": [{"if": "repo_down", "then": [{"host": "open_star_map"}], "else": [{"line": "bs.scrapheap.ship_booted"}]}]}
-  ],
-  "kiosk": {"p": [8, 0, 10], "ry": 180},
-  "teleporter": {"p": [0, 2.5, -147]},
-
-  "npcs": [
-    {"id": "rusty", "name": "Rusty", "p": [-13, 0, 6], "quests": ["q1a", "q1b"], "color": "#b0652e", "idle": "bs.scrapheap.rusty_idle"},
-    {"id": "gasket", "name": "Mama Gasket", "p": [37.5, 0, -11.5], "quests": ["q1c", "q1d"], "color": "#c9703a", "idle": "bs.scrapheap.gasket_idle"},
-    {"id": "denizen_hub", "kind": "squatter", "p": [-11, 0, 2], "color": "#9a8a6a", "barks": ["code.populateLife.01", "code.populateLife.02"]},
-    {"id": "denizen_survey", "kind": "squatter", "p": [33, 0, -8], "color": "#b0652e", "barks": ["code.populateLife.03", "code.populateLife.04"]},
-    {"id": "denizen_ledger", "kind": "intern", "p": [40, 0, -16], "color": "#7a8a9a", "barks": ["code.populateLife.05", "code.populateLife.06"]},
-    {"id": "denizen_mailbox", "kind": "squatter", "p": [34, 0, -21], "color": "#9a8a6a", "barks": ["code.populateLife.07", "code.populateLife.08"]},
-    {"id": "denizen_processor", "kind": "squatter", "p": [-26, 0, -92], "color": "#b0652e", "barks": ["code.junkProcessor.01", "code.junkProcessor.02"]}
-  ],
-  "dummies": [
-    {"_": "prologue: the broken repo drone for the 3-hit mallet string (TestDummy)", "p": [9, 0, 0.5]}
-  ],
-
-  "encounters": [
-    {"id": "hub_crates", "autostart": true, "waves": [[{"type": "bolt_crate", "pos": [-13, 0, 0]}, {"type": "bolt_crate", "pos": [-12, 0, 1.4]}, {"type": "bolt_crate", "pos": [12, 0, 12]}, {"type": "bolt_crate", "pos": [4, 0, 14]}]]},
-    {"id": "bowl_crates", "autostart": true, "waves": [[{"type": "bolt_crate", "pos": [-10, -0.5, -30]}, {"type": "bolt_crate", "pos": [11, -0.5, -33]}, {"type": "bolt_crate", "pos": [12, -0.5, -31.6]}]]},
-    {"id": "row_crates", "autostart": true, "waves": [[{"type": "bolt_crate", "pos": [40, 0, -11]}, {"type": "bolt_crate", "pos": [41, 0, -12.2]}, {"type": "bolt_crate", "pos": [27.5, 0, -17]}]]},
-    {"id": "bowl", "zone": "dune_bowl", "waves": [[{"type": "scrap_mutt", "pos": [-5, -0.5, -22]}, {"type": "scrap_mutt", "pos": [6, -0.5, -28]}, {"type": "scrap_mutt", "pos": [-2, -0.5, -33]}, {"type": "tinker_turret", "pos": [18, 2.0, -24]}, {"type": "vulture_drone", "pos": [-6, 4, -28]}]]},
-    {"id": "vault", "zone": "buried_vault", "waves": [[{"type": "lien_crawler", "pos": [-44, 0, -31]}]]},
-    {"id": "mast", "zone": "billing_mast", "waves": [[{"type": "scrap_mutt", "pos": [-31, 0, -66]}, {"type": "scrap_mutt", "pos": [-41, 0, -66]}, {"type": "vulture_drone", "pos": [-40, 9, -69]}]]},
-    {"id": "works", "zone": "conveyor_works", "waves": [[{"type": "scrap_mutt", "pos": [8, 5.0, -53]}, {"type": "tinker_turret", "pos": [3, 1.6, -46]}, {"type": "tinker_turret", "pos": [-3, 1.6, -61]}, {"type": "vulture_drone", "pos": [0, 10, -54]}, {"type": "lien_crawler", "pos": [-4, 5.0, -57]}]]},
-    {"id": "hull", "zone": "buried_hull", "waves": [[{"type": "tinker_turret", "pos": [2.5, 10, -78]}, {"type": "tinker_turret", "pos": [-2.5, 10, -87]}, {"type": "bolt_crate", "pos": [3, 10, -75.5]}]]},
-    {"id": "row", "zone": "rustys_row", "waves": [[{"type": "vulture_drone", "pos": [45.5, 14, -19]}, {"type": "vulture_drone", "pos": [45.5, 14, -30]}, {"type": "lien_crawler", "pos": [28, 0, -27]}]]},
-    {"id": "lot_pre", "zone": "compaction_lot", "waves": [[{"type": "vulture_drone", "pos": [4, 6, -128]}, {"type": "tinker_turret", "pos": [-12, 2, -133]}, {"type": "bolt_crate", "pos": [9, 2, -124]}, {"type": "bolt_crate", "pos": [-13, 2, -127.5]}]]},
-    {"id": "boneyard", "zone": "boneyard", "waves": [[{"type": "scrap_mutt", "pos": [-68, 0.5, -98]}, {"type": "scrap_mutt", "pos": [-76, 0.5, -110]}, {"type": "vulture_drone", "pos": [-72, 5, -104]}], [{"type": "tinker_turret", "pos": [-72, 0.5, -112]}, {"type": "lien_crawler", "pos": [-66, 0.5, -108]}]],
-      "on_clear": [{"banner": ["code.buildAnnex.09", "code.buildAnnex.10"]}, {"hint": "code.buildAnnex.11", "key": "vault"}, {"open": "vault_cage"}, {"flag": "boneyard_cleared"}]}
-  ],
-
-  "boss": {
-    "id": "repo_tron", "spawn": [0, 2, -136], "arena_center": [0, 2, -131], "arena_half": [18, 12],
-    "walls": {"center": [0, 2, -131], "start_width": 36, "min_width": 14, "wall_size": [2, 4, 24], "speed": 2.0, "riders": {"cube_w": -1, "cube_e": 1}},
-    "phases": [
-      {"_": "BS_LEVELS §2.10: phase 2 walls in 4 m each (28 m), phase 3 to 22 m and the container stack is crushed", "below": 0.66, "actions": [{"walls": 28}]},
-      {"below": 0.33, "actions": [{"walls": 22}, {"crush": "container_stack"}]}
-    ],
-    "on_start": [{"close": "lot_gate"}],
-    "on_defeat": [{"banner": ["code.onDeath.01", "code.onDeath.02"], "sec": 2.4}, {"line": "code.onDeath.03"}, {"flag": "repo_down"}, {"open": "yard_fence"}, {"open": "lot_gate"}, {"open": "impound_cage"}, {"remove": "boot"}, {"exit": true}]
+  {
+   "id": "dune_bowl",
+   "name": "The Junction: Dune Bowl",
+   "center": [
+    0,
+    -27
+   ],
+   "size": [
+    40,
+    30
+   ],
+   "floor": -0.5,
+   "probe": [
+    0,
+    0.7,
+    -25
+   ]
   },
-
-  "rules": [
-    {"_": "UPLINK: all three dish bearing clamps free", "id": "uplink", "all": ["clamp_1", "clamp_2", "clamp_3"], "do": [{"flag": "uplink"}, {"lamp": "lamp_uplink", "on": true}, {"lamp": "mast_beacon", "on": true}, {"rotate": "dish", "deg": [20, 45, 0]}, {"banner": ["bs.scrapheap.uplink_banner", "bs.scrapheap.uplink_sub"]}]},
-    {"id": "power", "all": ["power"], "do": [{"lamp": "lamp_power", "on": true}, {"open": "rear_hatch"}, {"banner": ["bs.scrapheap.power_banner", "bs.scrapheap.power_sub"]}]},
-    {"id": "lot_open", "all": ["power", "uplink"], "do": [{"open": "lot_gate"}, {"banner": ["bs.scrapheap.gate_banner", "bs.scrapheap.gate_sub"]}, {"encounter": "lot_pre"}]},
-    {"id": "mailbox_bark", "all": ["secret_S4"], "do": [{"bark_swap": "denizen_mailbox", "from": "code.populateLife.08", "to": "bs.scrapheap.mailbox_bark"}]},
-    {"id": "after_repo", "all": ["repo_down"], "do": [{"remove": "boot"}, {"open": "yard_fence", "instant": true}, {"exit": true, "silent": true}], "on_load_only": true}
-  ],
-
-  "triggers": [
-    {"_": "PROLOGUE", "id": "garage_hint_slide", "p": [11.4, 1.2, 4.6], "s": [2.4, 2.4, 1.0], "forbids": ["got_mallet"], "actions": [{"hint": "code.buildLevel1.03", "key": "slide"}]},
-    {"id": "yard_latch_hint", "p": [12, 1.5, 0], "s": [12, 3, 2.0], "requires": ["got_mallet"], "forbids": ["pit_open"], "actions": [{"hint": "bs.scrapheap.hint_latch", "key": "latch"}]},
-    {"id": "yard_hover_hint", "p": [17, 1.5, -2.4], "s": [4, 3, 3], "actions": [{"hint": "bs.scrapheap.hint_hover", "key": "hover"}]},
-    {"id": "leave_lot_w", "p": [4.5, 2, 2], "s": [3, 4, 16], "forbids": ["prologue_done"], "actions": [{"intro": true}]},
-    {"id": "leave_lot_n", "p": [13, 2, -5.5], "s": [17, 4, 3], "forbids": ["prologue_done"], "actions": [{"intro": true}]},
-    {"id": "leave_lot_e", "p": [21.5, 2, 2], "s": [3, 4, 16], "forbids": ["prologue_done"], "actions": [{"intro": true}]},
-    {"id": "leave_lot_s", "p": [13, 2, 9.5], "s": [17, 4, 3], "forbids": ["prologue_done"], "actions": [{"intro": true}]},
-
-    {"_": "HUB + BOWL", "id": "hint_move", "p": [0, 3, 12], "s": [22, 6, 8], "actions": [{"hint": "code.buildLevel1.01", "key": "move"}]},
-    {"id": "hint_slide_pipe", "p": [0, 1.5, 1.5], "s": [12, 3, 3], "actions": [{"hint": "code.buildLevel1.03", "key": "slide"}]},
-    {"id": "bowl_mutts", "p": [0, 2, -16], "s": [26, 5, 4], "actions": [{"hint": "code.buildLevel1.05", "key": "mutts"}, {"encounter": "bowl"}]},
-    {"id": "beat_glitch", "p": [0, 1.5, -22], "s": [30, 5, 4], "actions": [{"beat": "l1_glitch"}]},
-
-    {"_": "WEST SPOKE", "id": "vault_approach", "p": [-44, 1.5, -30], "s": [14, 4, 6], "actions": [{"encounter": "vault"}]},
-    {"id": "vault_hint", "p": [-46, 1.5, -35], "s": [6, 3, 3], "actions": [{"hint": "code.buildLevel1.15", "key": "vault1"}]},
-    {"id": "mast_base", "p": [-36, 2, -66], "s": [12, 5, 6], "actions": [{"hint": "code.expandScrapheap.07", "key": "mast1"}, {"encounter": "mast"}]},
-    {"id": "mast_nest", "p": [-36, 17.9, -72], "s": [5, 3, 5], "actions": [{"beat": "l1_mast"}, {"hint": "bs.scrapheap.hint_clamps", "key": "clamps"}]},
-
-    {"_": "NORTH SPOKE", "id": "works_tower", "p": [11, 2, -41], "s": [10, 6, 6], "actions": [{"encounter": "works"}]},
-    {"id": "works_belt_hint", "p": [4, 6.5, -52], "s": [6, 4, 4], "actions": [{"hint": "code.buildLevel1.07", "key": "belt"}]},
-    {"id": "works_reverser_hint", "p": [-9.25, 6.5, -54.5], "s": [6, 3, 8], "actions": [{"hint": "bs.scrapheap.hint_reverser", "key": "reverser"}]},
-    {"id": "hull_blast_door", "p": [0, 11.5, -68.5], "s": [10, 6, 3], "actions": [{"beat": "l1_mid"}, {"open": "blast_door"}, {"encounter": "hull"}]},
-    {"id": "hull_vista", "p": [0, 17, -86], "s": [8, 4, 8], "actions": [{"banner": ["code.buildLevel1.09", "code.buildLevel1.10"], "sec": 2.6}, {"beat": "l1_vista"}, {"hint": "code.buildLevel1.11", "key": "railhint"}]},
-
-    {"_": "EAST SPOKE", "id": "row_gate", "p": [31, 2, -12], "s": [5, 6, 16], "actions": [{"banner": ["code.expandScrapheap.03", "code.expandScrapheap.04"], "sec": 2.8}, {"beat": "l1_row"}, {"encounter": "row"}]},
-    {"id": "lookout_hint", "p": [38, 3.5, -66], "s": [5, 4, 5], "actions": [{"hint": "code.buildLevel1.17", "key": "perch1"}]},
-
-    {"_": "BONEYARD", "id": "boneyard_gate", "p": [-28, 2, -104], "s": [4, 4, 10], "actions": [{"hint": "code.buildAnnex.02", "key": "annex"}]},
-    {"id": "boneyard_shaft", "p": [-51, 7.5, -104], "s": [5, 3, 4], "actions": [{"hint": "code.buildAnnex.04", "key": "shaft"}]},
-    {"id": "boneyard_plaza", "p": [-72, 2, -104], "s": [18, 4, 18], "actions": [{"banner": ["code.buildAnnex.07", "code.buildAnnex.08"]}, {"encounter": "boneyard"}]},
-
-    {"_": "BOSS", "id": "lot_entry", "p": [0, 4, -123], "s": [24, 6, 5], "requires": ["power", "uplink"], "forbids": ["repo_down"], "actions": [{"beat": "l1_repo"}, {"boss": "repo_tron"}]},
-
-    {"_": "OUT OF BOUNDS quips (BS_LEVELS §2.12); cooldown 20 s like SPLASH_QUIPS", "id": "oob_slag", "p": [-12.5, -5.5, -150], "s": [175, 4, 60], "once": false, "cooldown": 20, "actions": [{"bark": "splash.06"}]},
-    {"id": "oob_south", "p": [-12.5, 3, 18.8], "s": [175, 6, 2], "once": false, "cooldown": 20, "actions": [{"bark": "splash.01"}]},
-    {"id": "oob_west", "p": [-98.8, 3, -50], "s": [2, 6, 140], "once": false, "cooldown": 20, "actions": [{"bark": "splash.01"}]},
-    {"id": "oob_east", "p": [73.8, 3, -50], "s": [2, 6, 140], "once": false, "cooldown": 20, "actions": [{"bark": "splash.01"}]}
-  ],
-
-  "secrets": [
-    {"id": "S1", "name": "Buried Vault", "gate": "slide", "reward": "vault_nano + ammo", "flag": "secret_S1"},
-    {"id": "S2", "name": "AIR PREMIUM blimp", "gate": "tether", "reward": "gold scrapheap.5", "flag": "gold.scrapheap.5"},
-    {"id": "S3", "name": "Pipe-top cache", "gate": "grind_soles", "reward": "memo.04 + 60 bolts", "flag": "secret_S3"},
-    {"id": "S4", "name": "Mama Gasket's mailbox", "gate": "glide", "reward": "100 bolts, denizen bark changes", "flag": "secret_S4"},
-    {"id": "S5", "name": "Junk processor crusher bay", "gate": "thunder", "reward": "crusher_nano", "flag": "secret_S5"},
-    {"id": "S6", "name": "Boneyard updraft vault", "gate": "annex", "reward": "nanotech +20 HP", "flag": "secret_S6"},
-    {"id": "S7", "name": "The Row's back shed", "gate": "magma", "reward": "80 bolts", "flag": "secret_S7"}
-  ],
-
-  "quest_hints": {"_doc": "BS_LEVELS §0.6: while a quest is active and Bolt is within radius of an item/target, Sprocket barks once per cooldown", "radius": 25, "cooldown": 60,
-    "lines": {"q1a": "bs.scrapheap.qhint_q1a", "q1b": "bs.scrapheap.qhint_q1b", "q1c": "bs.scrapheap.qhint_q1c", "q1d": "bs.scrapheap.qhint_q1d"}},
-  "story": {
-    "intro_cutscene": "intro",
-    "garage_anchor": [14, 0, 4],
-    "ship_anchor": [-8, 0, 8],
-    "garage_rise": {"h": 40, "spin": 2.5, "dur": 2.2, "delay": 6.0},
-    "return_cutscenes": ["flyover0", "arrive0"]
+  {
+   "id": "rustys_row",
+   "name": "Rusty's Row",
+   "center": [
+    42,
+    -15
+   ],
+   "size": [
+    36,
+    28
+   ],
+   "floor": 0,
+   "probe": [
+    33,
+    1.2,
+    -12
+   ]
+  },
+  {
+   "id": "ridge_lookout",
+   "name": "Ridge Lookout",
+   "center": [
+    40,
+    -70
+   ],
+   "size": [
+    8,
+    12
+   ],
+   "floor": 7.4,
+   "probe": [
+    39,
+    8.9,
+    -75
+   ]
+  },
+  {
+   "id": "billing_mast",
+   "name": "Billing Mast",
+   "center": [
+    -36,
+    -72
+   ],
+   "size": [
+    7,
+    7
+   ],
+   "floor": 16.2,
+   "probe": [
+    -36,
+    17.7,
+    -71
+   ]
+  },
+  {
+   "id": "buried_vault",
+   "name": "Buried Vault",
+   "center": [
+    -46,
+    -40
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "floor": 0,
+   "probe": [
+    -46,
+    1.2,
+    -40
+   ]
+  },
+  {
+   "id": "conveyor_works",
+   "name": "Conveyor Works",
+   "center": [
+    0,
+    -50
+   ],
+   "size": [
+    40,
+    22
+   ],
+   "floor": 5,
+   "probe": [
+    -10,
+    6.2,
+    -54.5
+   ]
+  },
+  {
+   "id": "buried_hull",
+   "name": "Buried Starship Hull",
+   "center": [
+    0,
+    -83
+   ],
+   "size": [
+    9,
+    22
+   ],
+   "floor": 10,
+   "probe": [
+    0,
+    11.2,
+    -80
+   ]
+  },
+  {
+   "id": "hull_vista",
+   "name": "Hull-top Vista",
+   "center": [
+    0,
+    -86
+   ],
+   "size": [
+    7,
+    10
+   ],
+   "floor": 15.5,
+   "probe": [
+    0,
+    16.7,
+    -86
+   ]
+  },
+  {
+   "id": "boneyard",
+   "name": "The Boneyard",
+   "center": [
+    -58,
+    -104
+   ],
+   "size": [
+    68,
+    22
+   ],
+   "floor": 0.5,
+   "probe": [
+    -72,
+    1.7,
+    -104
+   ]
+  },
+  {
+   "id": "compaction_lot",
+   "name": "Compaction Lot",
+   "center": [
+    0,
+    -131
+   ],
+   "size": [
+    36,
+    24
+   ],
+   "floor": 2,
+   "probe": [
+    0,
+    3.2,
+    -128
+   ]
+  },
+  {
+   "id": "teleporter_yard",
+   "name": "Teleporter Yard",
+   "center": [
+    0,
+    -146
+   ],
+   "size": [
+    14,
+    8
+   ],
+   "floor": 2.5,
+   "probe": [
+    4.5,
+    3.7,
+    -146
+   ]
   }
+ ],
+ "boxes": [
+  {
+   "_": "GROUND: four slabs around the Dune Bowl (top y 0) and the bowl (top -0.5)"
+  },
+  {
+   "p": [
+    -12.5,
+    -1,
+    6.5
+   ],
+   "s": [
+    175,
+    2,
+    37
+   ],
+   "m": "ground"
+  },
+  {
+   "p": [
+    -60,
+    -1,
+    -66
+   ],
+   "s": [
+    80,
+    2,
+    108
+   ],
+   "m": "ground"
+  },
+  {
+   "p": [
+    47.5,
+    -1,
+    -66
+   ],
+   "s": [
+    55,
+    2,
+    108
+   ],
+   "m": "ground"
+  },
+  {
+   "p": [
+    0,
+    -1,
+    -81
+   ],
+   "s": [
+    40,
+    2,
+    78
+   ],
+   "m": "ground"
+  },
+  {
+   "p": [
+    0,
+    -1.5,
+    -27
+   ],
+   "s": [
+    40,
+    2,
+    30
+   ],
+   "m": "bowl"
+  },
+  {
+   "_": "Compaction Lot (top 2) and Teleporter Yard (top 2.5) over the Slag Flats"
+  },
+  {
+   "p": [
+    0,
+    1,
+    -131
+   ],
+   "s": [
+    36,
+    2,
+    24
+   ],
+   "m": "concrete"
+  },
+  {
+   "p": [
+    0,
+    1.25,
+    -146.5
+   ],
+   "s": [
+    14,
+    2.5,
+    8
+   ],
+   "m": "steel"
+  },
+  {
+   "p": [
+    -12.5,
+    -3,
+    -150
+   ],
+   "s": [
+    175,
+    0.2,
+    60
+   ],
+   "m": "slag",
+   "deco": true,
+   "glow": 0.9
+  },
+  {
+   "_": "PROPERTY LINE fence (6 m) on the south, west and east edges"
+  },
+  {
+   "p": [
+    -12.5,
+    3,
+    20
+   ],
+   "s": [
+    175,
+    6,
+    0.4
+   ],
+   "m": "fence"
+  },
+  {
+   "p": [
+    -100,
+    3,
+    -50
+   ],
+   "s": [
+    0.4,
+    6,
+    140
+   ],
+   "m": "fence"
+  },
+  {
+   "p": [
+    75,
+    3,
+    -50
+   ],
+   "s": [
+    0.4,
+    6,
+    140
+   ],
+   "m": "fence"
+  },
+  {
+   "_": "HUB: landing pad, slide pipe (source 0,1.55,-2)"
+  },
+  {
+   "p": [
+    -8,
+    -0.1,
+    8
+   ],
+   "s": [
+    5.5,
+    0.25,
+    5.5
+   ],
+   "m": "belt",
+   "deco": true
+  },
+  {
+   "p": [
+    -8,
+    0.02,
+    8
+   ],
+   "s": [
+    4.5,
+    0.06,
+    4.5
+   ],
+   "m": "#455066",
+   "deco": true
+  },
+  {
+   "p": [
+    0,
+    1.55,
+    -2
+   ],
+   "s": [
+    7,
+    0.7,
+    1.2
+   ],
+   "m": "steel"
+  },
+  {
+   "p": [
+    3.75,
+    0.6,
+    -2
+   ],
+   "s": [
+    0.5,
+    1.2,
+    1.4
+   ],
+   "m": "belt"
+  },
+  {
+   "p": [
+    -3.75,
+    0.6,
+    -2
+   ],
+   "s": [
+    0.5,
+    1.2,
+    1.4
+   ],
+   "m": "belt"
+  },
+  {
+   "_": "Bolt's ship (booted) and the Blartz kiosk"
+  },
+  {
+   "group": "ship",
+   "p": [
+    -8,
+    1.2,
+    8
+   ],
+   "s": [
+    3,
+    1.6,
+    6
+   ],
+   "m": "slab"
+  },
+  {
+   "group": "ship",
+   "p": [
+    -8,
+    2.1,
+    6.2
+   ],
+   "s": [
+    1.6,
+    0.8,
+    1.6
+   ],
+   "m": "glass",
+   "deco": true,
+   "glow": 0.6
+  },
+  {
+   "group": "ship",
+   "p": [
+    -8,
+    1.0,
+    9
+   ],
+   "s": [
+    8,
+    0.25,
+    2.2
+   ],
+   "m": "steel",
+   "deco": true
+  },
+  {
+   "group": "ship",
+   "p": [
+    -8,
+    2.3,
+    10.6
+   ],
+   "s": [
+    0.3,
+    1.4,
+    1.2
+   ],
+   "m": "car1",
+   "deco": true
+  },
+  {
+   "group": "boot",
+   "p": [
+    -6.2,
+    0.6,
+    9
+   ],
+   "s": [
+    0.9,
+    1.2,
+    1.8
+   ],
+   "m": "yellow"
+  },
+  {
+   "group": "boot",
+   "p": [
+    -5.7,
+    0.9,
+    9
+   ],
+   "s": [
+    0.1,
+    0.6,
+    1.2
+   ],
+   "m": "navy",
+   "deco": true
+  },
+  {
+   "_": "GARAGE LOT (prologue): yard fence, gate gap on the west side z 3..6"
+  },
+  {
+   "p": [
+    13,
+    0.9,
+    -4
+   ],
+   "s": [
+    14,
+    1.8,
+    0.2
+   ],
+   "m": "fence"
+  },
+  {
+   "p": [
+    20,
+    0.9,
+    2
+   ],
+   "s": [
+    0.2,
+    1.8,
+    12
+   ],
+   "m": "fence"
+  },
+  {
+   "p": [
+    6,
+    0.9,
+    -0.5
+   ],
+   "s": [
+    0.2,
+    1.8,
+    7
+   ],
+   "m": "fence"
+  },
+  {
+   "p": [
+    6,
+    0.9,
+    7
+   ],
+   "s": [
+    0.2,
+    1.8,
+    2
+   ],
+   "m": "fence"
+  },
+  {
+   "p": [
+    13,
+    0.9,
+    8
+   ],
+   "s": [
+    14,
+    1.8,
+    0.2
+   ],
+   "m": "fence"
+  },
+  {
+   "_": "BOLT'S GARAGE 8x6 (interior 3.6 m so Bolt, 1.9 m tall, fits on the loft shelf); door on the west wall"
+  },
+  {
+   "group": "garage",
+   "p": [
+    14,
+    1.8,
+    1.15
+   ],
+   "s": [
+    8,
+    3.6,
+    0.3
+   ],
+   "m": "slab"
+  },
+  {
+   "group": "garage",
+   "p": [
+    14,
+    1.8,
+    6.85
+   ],
+   "s": [
+    8,
+    3.6,
+    0.3
+   ],
+   "m": "slab"
+  },
+  {
+   "group": "garage",
+   "p": [
+    17.85,
+    1.8,
+    4
+   ],
+   "s": [
+    0.3,
+    3.6,
+    6
+   ],
+   "m": "slab"
+  },
+  {
+   "group": "garage",
+   "p": [
+    10.15,
+    1.8,
+    2
+   ],
+   "s": [
+    0.3,
+    3.6,
+    2
+   ],
+   "m": "slab"
+  },
+  {
+   "group": "garage",
+   "p": [
+    10.15,
+    1.8,
+    6
+   ],
+   "s": [
+    0.3,
+    3.6,
+    2
+   ],
+   "m": "slab"
+  },
+  {
+   "group": "garage",
+   "p": [
+    10.15,
+    2.9,
+    4
+   ],
+   "s": [
+    0.3,
+    1.4,
+    2
+   ],
+   "m": "slab"
+  },
+  {
+   "group": "garage",
+   "p": [
+    14,
+    3.75,
+    4
+   ],
+   "s": [
+    8.6,
+    0.3,
+    6.6
+   ],
+   "m": "rust"
+  },
+  {
+   "group": "garage",
+   "p": [
+    16.6,
+    0.3,
+    2.0
+   ],
+   "s": [
+    2.2,
+    0.6,
+    1.0
+   ],
+   "m": "car2",
+   "_n": "bunk"
+  },
+  {
+   "group": "garage",
+   "p": [
+    17.1,
+    1.35,
+    4.6
+   ],
+   "s": [
+    1.2,
+    0.3,
+    2.6
+   ],
+   "m": "wood",
+   "_n": "loft shelf"
+  },
+  {
+   "group": "garage",
+   "p": [
+    14,
+    0.45,
+    1.8
+   ],
+   "s": [
+    2.2,
+    0.9,
+    0.8
+   ],
+   "m": "wood",
+   "_n": "workbench (Sprocket wakes here)"
+  },
+  {
+   "group": "garage",
+   "p": [
+    13.4,
+    1.05,
+    1.8
+   ],
+   "s": [
+    0.5,
+    0.3,
+    0.35
+   ],
+   "m": "steel",
+   "deco": true,
+   "_n": "toaster"
+  },
+  {
+   "group": "garage",
+   "p": [
+    11.4,
+    1.4,
+    6.0
+   ],
+   "s": [
+    2.2,
+    0.3,
+    1.4
+   ],
+   "m": "wood",
+   "_n": "low shelf: slide under it"
+  },
+  {
+   "group": "garage",
+   "p": [
+    12.55,
+    0.62,
+    6.0
+   ],
+   "s": [
+    0.1,
+    1.25,
+    1.4
+   ],
+   "m": "wood"
+  },
+  {
+   "group": "garage_door",
+   "p": [
+    9.95,
+    3.3,
+    4
+   ],
+   "s": [
+    0.06,
+    0.5,
+    2.6
+   ],
+   "m": "yellow",
+   "deco": true,
+   "glow": 1.0
+  },
+  {
+   "_": "yard props: tire stack, crate stack (3 m) + car-door ramp, junk pile, inspection pit walls"
+  },
+  {
+   "p": [
+    7.5,
+    0.5,
+    -2.8
+   ],
+   "s": [
+    1.2,
+    1.0,
+    1.2
+   ],
+   "m": "navy"
+  },
+  {
+   "p": [
+    19.2,
+    0.75,
+    -2.4
+   ],
+   "s": [
+    1.5,
+    1.5,
+    1.5
+   ],
+   "m": "rust"
+  },
+  {
+   "p": [
+    19.2,
+    2.25,
+    -2.4
+   ],
+   "s": [
+    1.5,
+    1.5,
+    1.5
+   ],
+   "m": "wood"
+  },
+  {
+   "ramp": true,
+   "from": [
+    15.4,
+    0,
+    -2.4
+   ],
+   "to": [
+    18.45,
+    1.5,
+    -2.4
+   ],
+   "w": 1.2,
+   "m": "car1"
+  },
+  {
+   "p": [
+    10.8,
+    0.6,
+    -2.5
+   ],
+   "s": [
+    0.2,
+    1.2,
+    2.6
+   ],
+   "m": "concrete"
+  },
+  {
+   "p": [
+    13.2,
+    0.6,
+    -2.5
+   ],
+   "s": [
+    0.2,
+    1.2,
+    2.6
+   ],
+   "m": "concrete"
+  },
+  {
+   "p": [
+    12,
+    0.6,
+    -3.7
+   ],
+   "s": [
+    2.6,
+    1.2,
+    0.2
+   ],
+   "m": "concrete"
+  },
+  {
+   "p": [
+    12,
+    0.6,
+    -1.3
+   ],
+   "s": [
+    2.6,
+    1.2,
+    0.2
+   ],
+   "m": "concrete"
+  },
+  {
+   "group": "lot_after",
+   "p": [
+    14,
+    0.04,
+    4
+   ],
+   "s": [
+    8,
+    0.08,
+    6
+   ],
+   "m": "concrete",
+   "deco": true
+  },
+  {
+   "group": "lot_after",
+   "p": [
+    10.5,
+    0.8,
+    7.2
+   ],
+   "s": [
+    0.12,
+    1.6,
+    0.12
+   ],
+   "m": "wood",
+   "deco": true
+  },
+  {
+   "_": "DUNE BOWL: east junk-pile ridge (2.5 m), west-rim wreck pocket (gold 2), feeding trough, oil ponds"
+  },
+  {
+   "p": [
+    18,
+    0.75,
+    -26
+   ],
+   "s": [
+    3,
+    2.5,
+    10
+   ],
+   "m": "rust"
+  },
+  {
+   "ramp": true,
+   "from": [
+    12.5,
+    -0.5,
+    -26
+   ],
+   "to": [
+    16.5,
+    2.0,
+    -26
+   ],
+   "w": 2.4,
+   "m": "car4"
+  },
+  {
+   "p": [
+    -19,
+    0.2,
+    -32
+   ],
+   "s": [
+    3,
+    0.5,
+    3
+   ],
+   "m": "slab"
+  },
+  {
+   "p": [
+    -17.4,
+    0.8,
+    -29.4
+   ],
+   "s": [
+    3.4,
+    2.6,
+    1.2
+   ],
+   "m": "shack1",
+   "_n": "wreck screening the pocket"
+  },
+  {
+   "p": [
+    -15.5,
+    1.8,
+    -14
+   ],
+   "s": [
+    2,
+    0.6,
+    0.8
+   ],
+   "m": "rust",
+   "deco": true,
+   "rot": [
+    0,
+    20,
+    160
+   ],
+   "_n": "overturned feeding trough"
+  },
+  {
+   "p": [
+    -8,
+    -0.45,
+    -36
+   ],
+   "s": [
+    5,
+    0.04,
+    4
+   ],
+   "m": "oil",
+   "deco": true
+  },
+  {
+   "p": [
+    10,
+    -0.45,
+    -15
+   ],
+   "s": [
+    4,
+    0.04,
+    3
+   ],
+   "m": "oil",
+   "deco": true
+  },
+  {
+   "p": [
+    -14,
+    0.6,
+    -40
+   ],
+   "s": [
+    2.6,
+    1.8,
+    4.2
+   ],
+   "m": "#d8dee9",
+   "deco": true,
+   "_n": "repossessed fridge"
+  },
+  {
+   "p": [
+    14,
+    0.4,
+    -14
+   ],
+   "s": [
+    4.2,
+    1.4,
+    2.2
+   ],
+   "m": "car1",
+   "deco": true
+  },
+  {
+   "p": [
+    -20.5,
+    0.4,
+    -20
+   ],
+   "s": [
+    2.2,
+    1.4,
+    4.2
+   ],
+   "m": "car2",
+   "deco": true
+  },
+  {
+   "p": [
+    6,
+    -0.1,
+    -40
+   ],
+   "s": [
+    1.4,
+    0.8,
+    0.2
+   ],
+   "m": "car3",
+   "deco": true,
+   "_n": "child's bike with a tag"
+  },
+  {
+   "_": "BURIED VAULT (-46,-40): slide under the 1.1 m lip (underside 1.3)"
+  },
+  {
+   "p": [
+    -46,
+    2.7,
+    -40
+   ],
+   "s": [
+    8,
+    0.6,
+    8
+   ],
+   "m": "vault"
+  },
+  {
+   "p": [
+    -50,
+    1.2,
+    -40
+   ],
+   "s": [
+    0.6,
+    2.4,
+    8
+   ],
+   "m": "vault"
+  },
+  {
+   "p": [
+    -42,
+    1.2,
+    -40
+   ],
+   "s": [
+    0.6,
+    2.4,
+    8
+   ],
+   "m": "vault"
+  },
+  {
+   "p": [
+    -46,
+    1.2,
+    -44
+   ],
+   "s": [
+    8,
+    2.4,
+    0.6
+   ],
+   "m": "vault"
+  },
+  {
+   "p": [
+    -46,
+    1.85,
+    -36.6
+   ],
+   "s": [
+    8,
+    1.1,
+    0.7
+   ],
+   "m": "steel"
+  },
+  {
+   "p": [
+    -46,
+    0.2,
+    -40
+   ],
+   "s": [
+    6,
+    0.4,
+    6
+   ],
+   "m": "#2c2018",
+   "deco": true
+  },
+  {
+   "_": "BILLING MAST (-36,-72): base, legs, spiral of six steps (a = k*1.25, r 3.1, rise 2.3), crow's nest y 16.2"
+  },
+  {
+   "p": [
+    -36,
+    0.2,
+    -72
+   ],
+   "s": [
+    7,
+    0.8,
+    7
+   ],
+   "m": "vault"
+  },
+  {
+   "p": [
+    -36.6,
+    9.6,
+    -72.6
+   ],
+   "s": [
+    0.22,
+    18.4,
+    0.22
+   ],
+   "m": "shack2",
+   "deco": true
+  },
+  {
+   "p": [
+    -35.4,
+    9.6,
+    -72.6
+   ],
+   "s": [
+    0.22,
+    18.4,
+    0.22
+   ],
+   "m": "shack2",
+   "deco": true
+  },
+  {
+   "p": [
+    -36.6,
+    9.6,
+    -71.4
+   ],
+   "s": [
+    0.22,
+    18.4,
+    0.22
+   ],
+   "m": "shack2",
+   "deco": true
+  },
+  {
+   "p": [
+    -35.4,
+    9.6,
+    -71.4
+   ],
+   "s": [
+    0.22,
+    18.4,
+    0.22
+   ],
+   "m": "shack2",
+   "deco": true
+  },
+  {
+   "p": [
+    -32.9,
+    2.4,
+    -72.0
+   ],
+   "s": [
+    2.8,
+    0.4,
+    2.8
+   ],
+   "m": "wood"
+  },
+  {
+   "p": [
+    -35.02,
+    4.7,
+    -69.06
+   ],
+   "s": [
+    2.8,
+    0.4,
+    2.8
+   ],
+   "m": "slab"
+  },
+  {
+   "p": [
+    -38.48,
+    7.0,
+    -70.14
+   ],
+   "s": [
+    2.8,
+    0.4,
+    2.8
+   ],
+   "m": "wood"
+  },
+  {
+   "p": [
+    -38.54,
+    9.3,
+    -73.77
+   ],
+   "s": [
+    2.8,
+    0.4,
+    2.8
+   ],
+   "m": "slab"
+  },
+  {
+   "p": [
+    -35.12,
+    11.6,
+    -74.97
+   ],
+   "s": [
+    2.8,
+    0.4,
+    2.8
+   ],
+   "m": "wood"
+  },
+  {
+   "p": [
+    -32.9,
+    13.9,
+    -72.1
+   ],
+   "s": [
+    2.8,
+    0.4,
+    2.8
+   ],
+   "m": "slab"
+  },
+  {
+   "p": [
+    -36,
+    16.2,
+    -72
+   ],
+   "s": [
+    5.4,
+    0.5,
+    5.4
+   ],
+   "m": "wood"
+  },
+  {
+   "group": "dish",
+   "p": [
+    -36,
+    19.4,
+    -72
+   ],
+   "s": [
+    4.4,
+    0.4,
+    4.4
+   ],
+   "m": "#d8dee9",
+   "deco": true,
+   "rot": [
+    40,
+    0,
+    20
+   ]
+  },
+  {
+   "p": [
+    -36,
+    17.9,
+    -72
+   ],
+   "s": [
+    0.6,
+    3.0,
+    0.6
+   ],
+   "m": "steel",
+   "deco": true
+  },
+  {
+   "_": "AIR PREMIUM blimp (S2, Tether-Hook): gondola at y 20, 10.8 m from step 6"
+  },
+  {
+   "p": [
+    -30,
+    24,
+    -84
+   ],
+   "s": [
+    6,
+    3.4,
+    12
+   ],
+   "m": "#c9b8e8",
+   "deco": true
+  },
+  {
+   "p": [
+    -30,
+    20.2,
+    -84
+   ],
+   "s": [
+    2.6,
+    0.3,
+    3
+   ],
+   "m": "steel"
+  },
+  {
+   "_": "CONVEYOR WORKS: car-cube stair tower (five 0.9 m steps), tower top y 5, west landing, crane ledge, step to hull"
+  },
+  {
+   "p": [
+    10,
+    0.45,
+    -40
+   ],
+   "s": [
+    2.6,
+    0.9,
+    1.8
+   ],
+   "m": "car1"
+  },
+  {
+   "p": [
+    12,
+    1.35,
+    -42.5
+   ],
+   "s": [
+    2.6,
+    0.9,
+    1.8
+   ],
+   "m": "car2"
+  },
+  {
+   "p": [
+    14,
+    2.25,
+    -45
+   ],
+   "s": [
+    2.6,
+    0.9,
+    1.8
+   ],
+   "m": "car3"
+  },
+  {
+   "p": [
+    13.5,
+    3.15,
+    -48
+   ],
+   "s": [
+    2.6,
+    0.9,
+    1.8
+   ],
+   "m": "car4"
+  },
+  {
+   "p": [
+    11,
+    4.05,
+    -50
+   ],
+   "s": [
+    2.6,
+    0.9,
+    1.8
+   ],
+   "m": "car5"
+  },
+  {
+   "p": [
+    8,
+    4.55,
+    -52
+   ],
+   "s": [
+    7,
+    0.9,
+    6
+   ],
+   "m": "wood"
+  },
+  {
+   "p": [
+    -9.25,
+    4.5,
+    -54.5
+   ],
+   "s": [
+    6.5,
+    1,
+    8
+   ],
+   "m": "wood"
+  },
+  {
+   "p": [
+    -5,
+    9.3,
+    -66
+   ],
+   "s": [
+    9,
+    0.8,
+    6
+   ],
+   "m": "wood"
+  },
+  {
+   "p": [
+    0,
+    9.6,
+    -69
+   ],
+   "s": [
+    6,
+    0.8,
+    4
+   ],
+   "m": "wood"
+  },
+  {
+   "p": [
+    -17,
+    8.2,
+    -60
+   ],
+   "s": [
+    2.6,
+    0.4,
+    2.6
+   ],
+   "m": "slab",
+   "_n": "gold 3 slab off the crane path"
+  },
+  {
+   "p": [
+    -4,
+    2.4,
+    -52
+   ],
+   "s": [
+    0.6,
+    4.8,
+    0.6
+   ],
+   "m": "steel",
+   "deco": true
+  },
+  {
+   "p": [
+    4,
+    2.4,
+    -52
+   ],
+   "s": [
+    0.6,
+    4.8,
+    0.6
+   ],
+   "m": "steel",
+   "deco": true
+  },
+  {
+   "p": [
+    -4,
+    2.4,
+    -57
+   ],
+   "s": [
+    0.6,
+    4.8,
+    0.6
+   ],
+   "m": "steel",
+   "deco": true
+  },
+  {
+   "p": [
+    4,
+    2.4,
+    -57
+   ],
+   "s": [
+    0.6,
+    4.8,
+    0.6
+   ],
+   "m": "steel",
+   "deco": true
+  },
+  {
+   "_": "pipe-top cache (S3, Grind Soles): memo 04 + 60 bolts at y 12"
+  },
+  {
+   "p": [
+    2,
+    11.8,
+    -45
+   ],
+   "s": [
+    3,
+    0.4,
+    3
+   ],
+   "m": "steel"
+  },
+  {
+   "p": [
+    6,
+    8.8,
+    -48.5
+   ],
+   "s": [
+    0.5,
+    0.5,
+    9
+   ],
+   "m": "rust",
+   "deco": true,
+   "rot": [
+    -38,
+    -50,
+    0
+   ],
+   "_n": "(G) rusted pipe from the tower top"
+  },
+  {
+   "_": "BURIED STARSHIP HULL: belly, interior walkway y 10, sides, exterior shell, engine room, rear ledge, crown steps, vista deck"
+  },
+  {
+   "p": [
+    0,
+    4.5,
+    -82
+   ],
+   "s": [
+    10,
+    9,
+    22
+   ],
+   "m": "hull"
+  },
+  {
+   "p": [
+    0,
+    9.5,
+    -82
+   ],
+   "s": [
+    9,
+    1,
+    22
+   ],
+   "m": "dark"
+  },
+  {
+   "p": [
+    4.8,
+    11.5,
+    -81.5
+   ],
+   "s": [
+    1,
+    3,
+    21
+   ],
+   "m": "hullside"
+  },
+  {
+   "p": [
+    -4.8,
+    11.5,
+    -81.5
+   ],
+   "s": [
+    1,
+    3,
+    21
+   ],
+   "m": "hullside"
+  },
+  {
+   "p": [
+    6.2,
+    11,
+    -81.5
+   ],
+   "s": [
+    1.6,
+    8,
+    21
+   ],
+   "m": "hull"
+  },
+  {
+   "p": [
+    -6.2,
+    11,
+    -81.5
+   ],
+   "s": [
+    1.6,
+    8,
+    21
+   ],
+   "m": "hull"
+  },
+  {
+   "p": [
+    3,
+    10.5,
+    -74
+   ],
+   "s": [
+    1,
+    1,
+    1
+   ],
+   "m": "rust"
+  },
+  {
+   "p": [
+    -3,
+    10.5,
+    -84
+   ],
+   "s": [
+    1.2,
+    1,
+    2
+   ],
+   "m": "rust"
+  },
+  {
+   "p": [
+    0,
+    10.0,
+    -95.75
+   ],
+   "s": [
+    6,
+    0.8,
+    5.5
+   ],
+   "m": "hullside",
+   "_n": "rear ledge"
+  },
+  {
+   "p": [
+    4,
+    11.4,
+    -97
+   ],
+   "s": [
+    2.6,
+    0.6,
+    2.6
+   ],
+   "m": "slab"
+  },
+  {
+   "p": [
+    4.5,
+    12.8,
+    -93.5
+   ],
+   "s": [
+    2.6,
+    0.6,
+    2.6
+   ],
+   "m": "slab"
+  },
+  {
+   "p": [
+    2,
+    14.1,
+    -91.5
+   ],
+   "s": [
+    2.6,
+    0.6,
+    2.6
+   ],
+   "m": "slab"
+  },
+  {
+   "p": [
+    0,
+    15.1,
+    -86
+   ],
+   "s": [
+    7,
+    0.8,
+    10
+   ],
+   "m": "wood",
+   "_n": "vista deck on the hull crown"
+  },
+  {
+   "p": [
+    6.5,
+    15.5,
+    -82
+   ],
+   "s": [
+    2.4,
+    0.4,
+    2.4
+   ],
+   "m": "slab",
+   "_n": "gold 4 side slab"
+  },
+  {
+   "p": [
+    0,
+    6.5,
+    -72
+   ],
+   "s": [
+    8,
+    1.0,
+    3
+   ],
+   "m": "hullside",
+   "deco": true
+  },
+  {
+   "_": "golden rail descent supports and the Compaction Lot approach ramp"
+  },
+  {
+   "ramp": true,
+   "from": [
+    0,
+    0,
+    -109
+   ],
+   "to": [
+    0,
+    2,
+    -119
+   ],
+   "w": 8,
+   "m": "concrete"
+  },
+  {
+   "_": "COMPACTION LOT walls: south wall with gate gap (x -3..3), north fence segments; crane gantry at 9 m"
+  },
+  {
+   "p": [
+    -10.5,
+    4,
+    -119.3
+   ],
+   "s": [
+    15,
+    4,
+    0.6
+   ],
+   "m": "car4"
+  },
+  {
+   "p": [
+    10.5,
+    4,
+    -119.3
+   ],
+   "s": [
+    15,
+    4,
+    0.6
+   ],
+   "m": "car1"
+  },
+  {
+   "p": [
+    -12.5,
+    4,
+    -143.2
+   ],
+   "s": [
+    11,
+    4,
+    0.6
+   ],
+   "m": "car2"
+  },
+  {
+   "p": [
+    12.5,
+    4,
+    -143.2
+   ],
+   "s": [
+    11,
+    4,
+    0.6
+   ],
+   "m": "car3"
+  },
+  {
+   "p": [
+    -3.8,
+    5.5,
+    -119.0
+   ],
+   "s": [
+    0.6,
+    7,
+    0.6
+   ],
+   "m": "steel"
+  },
+  {
+   "p": [
+    3.8,
+    5.5,
+    -119.0
+   ],
+   "s": [
+    0.6,
+    7,
+    0.6
+   ],
+   "m": "steel"
+  },
+  {
+   "p": [
+    0,
+    8.2,
+    -119.0
+   ],
+   "s": [
+    8.2,
+    0.5,
+    0.6
+   ],
+   "m": "steel"
+  },
+  {
+   "p": [
+    0,
+    11,
+    -131
+   ],
+   "s": [
+    40,
+    0.5,
+    0.8
+   ],
+   "m": "crane",
+   "deco": true
+  },
+  {
+   "p": [
+    -20.5,
+    5.5,
+    -131
+   ],
+   "s": [
+    0.8,
+    11,
+    0.8
+   ],
+   "m": "crane",
+   "deco": true
+  },
+  {
+   "p": [
+    20.5,
+    5.5,
+    -131
+   ],
+   "s": [
+    0.8,
+    11,
+    0.8
+   ],
+   "m": "crane",
+   "deco": true
+  },
+  {
+   "id": "cube_nw",
+   "p": [
+    -9,
+    3.25,
+    -137
+   ],
+   "s": [
+    2.5,
+    2.5,
+    2.5
+   ],
+   "m": "car1"
+  },
+  {
+   "id": "cube_w",
+   "p": [
+    -10,
+    3.25,
+    -131
+   ],
+   "s": [
+    2.5,
+    2.5,
+    2.5
+   ],
+   "m": "car2"
+  },
+  {
+   "id": "cube_e",
+   "p": [
+    10,
+    3.25,
+    -131
+   ],
+   "s": [
+    2.5,
+    2.5,
+    2.5
+   ],
+   "m": "car3"
+  },
+  {
+   "id": "cube_s",
+   "p": [
+    6,
+    3.25,
+    -124
+   ],
+   "s": [
+    2.5,
+    2.5,
+    2.5
+   ],
+   "m": "car5"
+  },
+  {
+   "group": "container_stack",
+   "p": [
+    -8,
+    2.75,
+    -124.5
+   ],
+   "s": [
+    6,
+    1.5,
+    2.5
+   ],
+   "m": "car2"
+  },
+  {
+   "group": "container_stack",
+   "p": [
+    -8,
+    4.25,
+    -124.5
+   ],
+   "s": [
+    6,
+    1.5,
+    2.5
+   ],
+   "m": "car1"
+  },
+  {
+   "_": "Impound Cage (NE corner, 3x3)"
+  },
+  {
+   "p": [
+    16.5,
+    3.5,
+    -138.5
+   ],
+   "s": [
+    0.2,
+    3,
+    3
+   ],
+   "m": "steel"
+  },
+  {
+   "p": [
+    15,
+    3.5,
+    -140
+   ],
+   "s": [
+    3,
+    3,
+    0.2
+   ],
+   "m": "steel"
+  },
+  {
+   "p": [
+    15,
+    5.1,
+    -138.5
+   ],
+   "s": [
+    3.2,
+    0.2,
+    3.2
+   ],
+   "m": "steel"
+  },
+  {
+   "p": [
+    13.5,
+    3.5,
+    -139.5
+   ],
+   "s": [
+    0.2,
+    3,
+    1.0
+   ],
+   "m": "steel"
+  },
+  {
+   "_": "Teleporter Yard railings"
+  },
+  {
+   "p": [
+    -7,
+    3.1,
+    -146.5
+   ],
+   "s": [
+    0.2,
+    1.2,
+    8
+   ],
+   "m": "steel"
+  },
+  {
+   "p": [
+    7,
+    3.1,
+    -146.5
+   ],
+   "s": [
+    0.2,
+    1.2,
+    8
+   ],
+   "m": "steel"
+  },
+  {
+   "_": "RIDGE LOOKOUT (40,-70): dash + hover chain to the perch at +7.4"
+  },
+  {
+   "p": [
+    38,
+    3,
+    -66
+   ],
+   "s": [
+    3,
+    0.5,
+    3
+   ],
+   "m": "slab"
+  },
+  {
+   "p": [
+    41,
+    5.2,
+    -71
+   ],
+   "s": [
+    3,
+    0.5,
+    3
+   ],
+   "m": "slab"
+  },
+  {
+   "p": [
+    39,
+    7.4,
+    -75
+   ],
+   "s": [
+    5,
+    0.6,
+    5
+   ],
+   "m": "wood"
+  },
+  {
+   "p": [
+    46,
+    5,
+    -70
+   ],
+   "s": [
+    1.2,
+    10,
+    1.2
+   ],
+   "m": "crane",
+   "deco": true
+  },
+  {
+   "_": "S4: Mama Gasket's mailbox on a scrap spire 24 m east, ringed by an oil pond (Glide from the perch)"
+  },
+  {
+   "p": [
+    64,
+    -0.45,
+    -72
+   ],
+   "s": [
+    22,
+    0.04,
+    22
+   ],
+   "m": "oil",
+   "deco": true
+  },
+  {
+   "p": [
+    64,
+    0.6,
+    -72
+   ],
+   "s": [
+    2,
+    1.2,
+    2
+   ],
+   "m": "rust"
+  },
+  {
+   "p": [
+    64,
+    1.6,
+    -72
+   ],
+   "s": [
+    0.2,
+    0.8,
+    0.2
+   ],
+   "m": "steel",
+   "deco": true
+  },
+  {
+   "_": "THE BONEYARD (annex, west of the hull): gate, three staggered slabs, lift, wall-kick shaft, Crusher Pit plaza, vault"
+  },
+  {
+   "p": [
+    -32,
+    1.0,
+    -102
+   ],
+   "s": [
+    3,
+    0.5,
+    3
+   ],
+   "m": "slab"
+  },
+  {
+   "p": [
+    -36,
+    2.6,
+    -106
+   ],
+   "s": [
+    3,
+    0.5,
+    3
+   ],
+   "m": "slab"
+  },
+  {
+   "p": [
+    -40,
+    4.2,
+    -102
+   ],
+   "s": [
+    3,
+    0.5,
+    3
+   ],
+   "m": "slab"
+  },
+  {
+   "p": [
+    -51,
+    5.7,
+    -104
+   ],
+   "s": [
+    6,
+    0.6,
+    5
+   ],
+   "m": "slab",
+   "_n": "shaft floor (top 6.0)"
+  },
+  {
+   "p": [
+    -47.25,
+    5.7,
+    -104
+   ],
+   "s": [
+    1.5,
+    0.6,
+    5
+   ],
+   "m": "slab"
+  },
+  {
+   "p": [
+    -51,
+    7.75,
+    -101.2
+   ],
+   "s": [
+    6,
+    15.5,
+    0.6
+   ],
+   "m": "hullside",
+   "_n": "wall-kick wall A (9.5 m above the shaft floor)"
+  },
+  {
+   "p": [
+    -51,
+    7.75,
+    -106.8
+   ],
+   "s": [
+    6,
+    15.5,
+    0.6
+   ],
+   "m": "hullside",
+   "_n": "wall-kick wall B (5 m apart)"
+  },
+  {
+   "p": [
+    -57,
+    15.2,
+    -104
+   ],
+   "s": [
+    6,
+    0.6,
+    6
+   ],
+   "m": "wood",
+   "_n": "shaft-top platform"
+  },
+  {
+   "p": [
+    -72,
+    0.25,
+    -104
+   ],
+   "s": [
+    22,
+    0.5,
+    22
+   ],
+   "m": "dark",
+   "_n": "THE CRUSHER PIT plaza"
+  },
+  {
+   "p": [
+    -72,
+    1.1,
+    -92.8
+   ],
+   "s": [
+    22,
+    1.2,
+    0.6
+   ],
+   "m": "car1"
+  },
+  {
+   "p": [
+    -72,
+    1.1,
+    -115.2
+   ],
+   "s": [
+    22,
+    1.2,
+    0.6
+   ],
+   "m": "car2"
+  },
+  {
+   "p": [
+    -83.2,
+    1.1,
+    -98
+   ],
+   "s": [
+    0.6,
+    1.2,
+    10
+   ],
+   "m": "car3"
+  },
+  {
+   "p": [
+    -83.2,
+    1.1,
+    -110
+   ],
+   "s": [
+    0.6,
+    1.2,
+    10
+   ],
+   "m": "car4"
+  },
+  {
+   "p": [
+    -86,
+    2.6,
+    -110
+   ],
+   "s": [
+    3,
+    0.5,
+    3
+   ],
+   "m": "slab"
+  },
+  {
+   "p": [
+    -89,
+    5.2,
+    -106
+   ],
+   "s": [
+    3,
+    0.5,
+    3
+   ],
+   "m": "slab"
+  },
+  {
+   "p": [
+    -89,
+    8,
+    -100.5
+   ],
+   "s": [
+    5,
+    0.5,
+    5
+   ],
+   "m": "wood",
+   "_n": "updraft vault floor"
+  },
+  {
+   "_": "junk processor set piece at the Boneyard gate (S5 crusher bay)"
+  },
+  {
+   "p": [
+    -29,
+    1.25,
+    -94
+   ],
+   "s": [
+    3.4,
+    2.5,
+    3.4
+   ],
+   "m": "steel",
+   "deco": true
+  },
+  {
+   "p": [
+    -29,
+    0.6,
+    -90.6
+   ],
+   "s": [
+    3.6,
+    1.2,
+    0.3
+   ],
+   "m": "steel"
+  },
+  {
+   "p": [
+    -27.1,
+    0.6,
+    -92.3
+   ],
+   "s": [
+    0.3,
+    1.2,
+    3.6
+   ],
+   "m": "steel"
+  },
+  {
+   "p": [
+    -32,
+    0.75,
+    -91.4
+   ],
+   "s": [
+    0.8,
+    1.5,
+    0.6
+   ],
+   "m": "navy",
+   "_n": "crusher control box"
+  },
+  {
+   "_": "RUSTY'S ROW: three terraces against the east dune (T1 y0 x24..43, T2 y2.6 x43..51, T3 y5.2 x51..60), car-door ramps"
+  },
+  {
+   "p": [
+    47,
+    1.3,
+    -15
+   ],
+   "s": [
+    8,
+    2.6,
+    28
+   ],
+   "m": "dune"
+  },
+  {
+   "p": [
+    55.5,
+    2.6,
+    -15
+   ],
+   "s": [
+    9,
+    5.2,
+    28
+   ],
+   "m": "dune"
+  },
+  {
+   "ramp": true,
+   "from": [
+    37.5,
+    0,
+    -8
+   ],
+   "to": [
+    43,
+    2.6,
+    -8
+   ],
+   "w": 2.2,
+   "m": "car1"
+  },
+  {
+   "ramp": true,
+   "from": [
+    45.5,
+    2.6,
+    -20
+   ],
+   "to": [
+    51,
+    5.2,
+    -20
+   ],
+   "w": 2.2,
+   "m": "car2"
+  },
+  {
+   "_": "gate posts + crossbar (source x 25)"
+  },
+  {
+   "p": [
+    25,
+    2.2,
+    -6.2
+   ],
+   "s": [
+    0.5,
+    4.4,
+    0.5
+   ],
+   "m": "rust"
+  },
+  {
+   "p": [
+    25,
+    2.2,
+    -13.8
+   ],
+   "s": [
+    0.5,
+    4.4,
+    0.5
+   ],
+   "m": "rust"
+  },
+  {
+   "p": [
+    25,
+    4.3,
+    -10
+   ],
+   "s": [
+    0.5,
+    0.5,
+    8.2
+   ],
+   "m": "rust",
+   "deco": true
+  },
+  {
+   "_": "the square: fire barrel, stall (counter, posts, awning)"
+  },
+  {
+   "p": [
+    36,
+    0.55,
+    -14
+   ],
+   "s": [
+    1.0,
+    1.1,
+    1.0
+   ],
+   "m": "steel"
+  },
+  {
+   "p": [
+    36,
+    1.35,
+    -14
+   ],
+   "s": [
+    0.5,
+    0.7,
+    0.5
+   ],
+   "m": "#ffa629",
+   "deco": true,
+   "glow": 1.8
+  },
+  {
+   "p": [
+    33.5,
+    0.55,
+    -18.3
+   ],
+   "s": [
+    2.6,
+    1.1,
+    1.2
+   ],
+   "m": "wood"
+  },
+  {
+   "p": [
+    33.5,
+    2.3,
+    -18.3
+   ],
+   "s": [
+    3.6,
+    0.16,
+    3
+   ],
+   "m": "awning",
+   "deco": true
+  },
+  {
+   "p": [
+    32.1,
+    1.1,
+    -17.2
+   ],
+   "s": [
+    0.14,
+    2.2,
+    0.14
+   ],
+   "m": "rust",
+   "deco": true
+  },
+  {
+   "p": [
+    34.9,
+    1.1,
+    -17.2
+   ],
+   "s": [
+    0.14,
+    2.2,
+    0.14
+   ],
+   "m": "rust",
+   "deco": true
+  },
+  {
+   "p": [
+    32.1,
+    1.1,
+    -19.4
+   ],
+   "s": [
+    0.14,
+    2.2,
+    0.14
+   ],
+   "m": "rust",
+   "deco": true
+  },
+  {
+   "p": [
+    34.9,
+    1.1,
+    -19.4
+   ],
+   "s": [
+    0.14,
+    2.2,
+    0.14
+   ],
+   "m": "rust",
+   "deco": true
+  },
+  {
+   "_": "water tower on T2 (45.5,-24.5): legs, catwalk (top 10.2 = +7.4 over T2 +0.2), tank, crate steps"
+  },
+  {
+   "p": [
+    43.5,
+    6.2,
+    -26.5
+   ],
+   "s": [
+    0.3,
+    7.2,
+    0.3
+   ],
+   "m": "hullside",
+   "deco": true
+  },
+  {
+   "p": [
+    47.5,
+    6.2,
+    -26.5
+   ],
+   "s": [
+    0.3,
+    7.2,
+    0.3
+   ],
+   "m": "hullside",
+   "deco": true
+  },
+  {
+   "p": [
+    43.5,
+    6.2,
+    -22.5
+   ],
+   "s": [
+    0.3,
+    7.2,
+    0.3
+   ],
+   "m": "hullside",
+   "deco": true
+  },
+  {
+   "p": [
+    47.5,
+    6.2,
+    -22.5
+   ],
+   "s": [
+    0.3,
+    7.2,
+    0.3
+   ],
+   "m": "hullside",
+   "deco": true
+  },
+  {
+   "p": [
+    45.5,
+    10.0,
+    -24.5
+   ],
+   "s": [
+    6.4,
+    0.4,
+    6.4
+   ],
+   "m": "wood"
+  },
+  {
+   "p": [
+    45.5,
+    12.0,
+    -24.5
+   ],
+   "s": [
+    2.8,
+    3.6,
+    2.8
+   ],
+   "m": "hull"
+  },
+  {
+   "p": [
+    45.5,
+    14.0,
+    -24.5
+   ],
+   "s": [
+    3.2,
+    0.4,
+    3.2
+   ],
+   "m": "hullside",
+   "deco": true
+  },
+  {
+   "p": [
+    40.5,
+    4.9,
+    -24.5
+   ],
+   "s": [
+    1.6,
+    0.5,
+    1.6
+   ],
+   "m": "slab"
+  },
+  {
+   "p": [
+    42.5,
+    7.4,
+    -24.4
+   ],
+   "s": [
+    2,
+    0.5,
+    2
+   ],
+   "m": "slab"
+  },
+  {
+   "_": "S7 back shed behind a tarp curtain on the top terrace"
+  },
+  {
+   "p": [
+    57.5,
+    6.5,
+    -28.5
+   ],
+   "s": [
+    3,
+    2.6,
+    0.2
+   ],
+   "m": "shack2"
+  },
+  {
+   "p": [
+    59,
+    6.5,
+    -27
+   ],
+   "s": [
+    0.2,
+    2.6,
+    3
+   ],
+   "m": "shack2"
+  },
+  {
+   "p": [
+    57.5,
+    6.5,
+    -25.5
+   ],
+   "s": [
+    3,
+    2.6,
+    0.2
+   ],
+   "m": "shack2"
+  },
+  {
+   "p": [
+    57.5,
+    7.95,
+    -27
+   ],
+   "s": [
+    3.4,
+    0.3,
+    3.4
+   ],
+   "m": "rust"
+  }
+ ],
+ "shacks": {
+  "_doc": "shack(x, z, w, d, col, roof) from expandScrapheap: body h 2.6 (+0.4 sunk), walkable 0.3 m roof slab (top = floor + 2.87). 'floor' is the terrace height. 'stack' = another shack on its roof.",
+  "list": [
+   {
+    "x": 30,
+    "z": -5,
+    "w": 4.4,
+    "d": 3.6,
+    "c": "shack1",
+    "r": "rust",
+    "floor": 0
+   },
+   {
+    "x": 40.5,
+    "z": -5,
+    "w": 4,
+    "d": 3.4,
+    "c": "shack2",
+    "r": "hull",
+    "floor": 0
+   },
+   {
+    "x": 30,
+    "z": -22,
+    "w": 4.2,
+    "d": 3.6,
+    "c": "slab",
+    "r": "rust",
+    "floor": 0
+   },
+   {
+    "x": 38,
+    "z": -24,
+    "w": 4.6,
+    "d": 3.4,
+    "c": "shack3",
+    "r": "hull",
+    "floor": 0
+   },
+   {
+    "x": 27.5,
+    "z": -13.8,
+    "w": 3.2,
+    "d": 3.0,
+    "c": "shack1",
+    "r": "hullside",
+    "floor": 0
+   },
+   {
+    "x": 45,
+    "z": -15,
+    "w": 3.6,
+    "d": 4.2,
+    "c": "rust",
+    "r": "hullside",
+    "floor": 2.6
+   },
+   {
+    "x": 47,
+    "z": -5,
+    "w": 4,
+    "d": 3.6,
+    "c": "shack1",
+    "r": "rust",
+    "floor": 2.6,
+    "stack": true
+   },
+   {
+    "x": 48.5,
+    "z": -10,
+    "w": 3,
+    "d": 3,
+    "c": "shack2",
+    "r": "rust",
+    "floor": 2.6
+   },
+   {
+    "x": 54,
+    "z": -4,
+    "w": 4,
+    "d": 3.4,
+    "c": "shack3",
+    "r": "hull",
+    "floor": 5.2,
+    "stack": true
+   },
+   {
+    "x": 57.5,
+    "z": -10,
+    "w": 3.6,
+    "d": 3.6,
+    "c": "shack1",
+    "r": "rust",
+    "floor": 5.2
+   },
+   {
+    "x": 54,
+    "z": -16,
+    "w": 3.4,
+    "d": 3.4,
+    "c": "slab",
+    "r": "hullside",
+    "floor": 5.2,
+    "stack": true
+   },
+   {
+    "x": 57.5,
+    "z": -21,
+    "w": 3.4,
+    "d": 3.2,
+    "c": "shack2",
+    "r": "rust",
+    "floor": 5.2
+   }
+  ],
+  "backdrop": {
+   "_doc": "the rest of the 41 shacks: decorative stacks on the east dune behind the Row",
+   "x0": 61,
+   "x1": 73,
+   "z0": -2,
+   "z1": -28,
+   "count": 26,
+   "seed": 41
+  }
+ },
+ "mounds": [
+  {
+   "_": "Dune Bowl scrap mounds (source positions; r, h), cover and height",
+   "x": 0,
+   "z": 0,
+   "r": 0,
+   "h": 0
+  },
+  {
+   "x": -16,
+   "z": -14,
+   "r": 5,
+   "h": 2.0,
+   "floor": -0.5,
+   "m": "dune"
+  },
+  {
+   "x": 17,
+   "z": -18,
+   "r": 6,
+   "h": 2.5,
+   "floor": -0.5,
+   "m": "dune"
+  },
+  {
+   "x": -18,
+   "z": -28,
+   "r": 6,
+   "h": 3.0,
+   "floor": -0.5,
+   "m": "dune"
+  },
+  {
+   "x": 16,
+   "z": -34,
+   "r": 5,
+   "h": 2.0,
+   "floor": -0.5,
+   "m": "dune"
+  },
+  {
+   "x": 0,
+   "z": -40.5,
+   "r": 7,
+   "h": 2.5,
+   "floor": -0.5,
+   "m": "dune"
+  },
+  {
+   "x": -8,
+   "z": -12,
+   "r": 3.5,
+   "h": 1.5,
+   "floor": -0.5,
+   "m": "dune"
+  },
+  {
+   "x": 3,
+   "z": -46,
+   "r": 2.6,
+   "h": 1.6,
+   "floor": 0,
+   "m": "rust"
+  },
+  {
+   "x": -3,
+   "z": -61,
+   "r": 2.6,
+   "h": 1.6,
+   "floor": 0,
+   "m": "rust"
+  },
+  {
+   "x": 8,
+   "z": -2,
+   "r": 1.6,
+   "h": 1.0,
+   "floor": 0,
+   "m": "rust"
+  },
+  {
+   "x": 0,
+   "z": -71,
+   "r": 4,
+   "h": 1.0,
+   "floor": 0,
+   "m": "hull"
+  },
+  {
+   "x": -3,
+   "z": -99,
+   "r": 3.5,
+   "h": 1.0,
+   "floor": 0,
+   "m": "hullside"
+  },
+  {
+   "x": -86,
+   "z": -92,
+   "r": 5,
+   "h": 2.0,
+   "floor": 0,
+   "m": "dune"
+  },
+  {
+   "x": -60,
+   "z": -117,
+   "r": 4,
+   "h": 2.0,
+   "floor": 0,
+   "m": "dune"
+  }
+ ],
+ "cylinders": [
+  {
+   "_": "hull shell (deco), r 6.5 x 26 along z",
+   "p": [
+    0,
+    9,
+    -83
+   ],
+   "r": 6.5,
+   "h": 26,
+   "axis": "z",
+   "m": "hull"
+  },
+  {
+   "p": [
+    -36,
+    18.0,
+    -72
+   ],
+   "r": 0.3,
+   "h": 0.4,
+   "m": "steel"
+  }
+ ],
+ "signs": [
+  {
+   "text": "bs.scrapheap.sign_property",
+   "p": [
+    0,
+    3.6,
+    19.7
+   ],
+   "size": [
+    7,
+    1.6
+   ],
+   "ry": 180
+  },
+  {
+   "text": "bs.scrapheap.sign_property",
+   "p": [
+    -99.7,
+    3.6,
+    -40
+   ],
+   "size": [
+    7,
+    1.6
+   ],
+   "ry": 90
+  },
+  {
+   "text": "bs.scrapheap.sign_property",
+   "p": [
+    74.7,
+    3.6,
+    -50
+   ],
+   "size": [
+    7,
+    1.6
+   ],
+   "ry": -90
+  },
+  {
+   "text": "bs.scrapheap.sign_bolts",
+   "p": [
+    9.95,
+    3.3,
+    4
+   ],
+   "size": [
+    2.6,
+    0.5
+   ],
+   "ry": -90,
+   "group": "garage"
+  },
+  {
+   "text": "bs.scrapheap.sign_12b",
+   "p": [
+    10.5,
+    1.4,
+    7.25
+   ],
+   "size": [
+    2.4,
+    0.9
+   ],
+   "ry": -90,
+   "group": "lot_after"
+  },
+  {
+   "text": "bs.scrapheap.boot_tag",
+   "p": [
+    -5.6,
+    0.9,
+    9
+   ],
+   "size": [
+    1.4,
+    0.6
+   ],
+   "ry": 90,
+   "group": "boot"
+  },
+  {
+   "text": "code.expandScrapheap.01",
+   "p": [
+    24.7,
+    5.2,
+    -10
+   ],
+   "size": [
+    6.4,
+    1.3
+   ],
+   "ry": -90
+  },
+  {
+   "text": "code.expandScrapheap.05",
+   "p": [
+    33.5,
+    2.95,
+    -16.75
+   ],
+   "size": [
+    3.4,
+    0.62
+   ],
+   "ry": 0,
+   "bg": "#3a2414",
+   "fg": "#ffe2b8"
+  },
+  {
+   "text": "code.expandScrapheap.06",
+   "p": [
+    45.5,
+    12.2,
+    -23.08
+   ],
+   "size": [
+    2.2,
+    1.0
+   ],
+   "ry": 0,
+   "bg": "#6e4a3a",
+   "fg": "#ffe2b8"
+  },
+  {
+   "text": "bs.scrapheap.sign_mast",
+   "p": [
+    -36,
+    2.2,
+    -68.4
+   ],
+   "size": [
+    4.4,
+    1.2
+   ],
+   "ry": 0
+  },
+  {
+   "text": "bs.scrapheap.sign_works",
+   "p": [
+    11.5,
+    2.4,
+    -38.6
+   ],
+   "size": [
+    4.4,
+    1.2
+   ],
+   "ry": 0
+  },
+  {
+   "text": "bs.scrapheap.sign_hull",
+   "p": [
+    -3.5,
+    2.8,
+    -70.8
+   ],
+   "size": [
+    4.4,
+    1.2
+   ],
+   "ry": 0
+  },
+  {
+   "text": "code.buildLevel1.13",
+   "p": [
+    0,
+    9.2,
+    -118.6
+   ],
+   "size": [
+    6.4,
+    1.1
+   ],
+   "ry": 0
+  },
+  {
+   "text": "bs.scrapheap.lamp_power",
+   "p": [
+    -3.8,
+    7.3,
+    -118.6
+   ],
+   "size": [
+    1.6,
+    0.5
+   ],
+   "ry": 0
+  },
+  {
+   "text": "bs.scrapheap.lamp_uplink",
+   "p": [
+    3.8,
+    7.3,
+    -118.6
+   ],
+   "size": [
+    1.6,
+    0.5
+   ],
+   "ry": 0
+  },
+  {
+   "text": "bs.scrapheap.sign_teleporter",
+   "p": [
+    0,
+    5.6,
+    -150.2
+   ],
+   "size": [
+    6,
+    1.2
+   ],
+   "ry": 0
+  },
+  {
+   "text": "bs.scrapheap.sign_boneyard",
+   "p": [
+    -24,
+    2.6,
+    -100
+   ],
+   "size": [
+    5,
+    1.2
+   ],
+   "ry": 90
+  }
+ ],
+ "lights": [
+  {
+   "_": "string lights over Rusty's Row + warm windows; omni lights are few (greybox)",
+   "p": [
+    37,
+    3.8,
+    -12
+   ],
+   "color": "#ffd27a",
+   "energy": 2.0,
+   "range": 14
+  },
+  {
+   "p": [
+    36,
+    2.0,
+    -14
+   ],
+   "color": "#ffa629",
+   "energy": 2.5,
+   "range": 8
+  },
+  {
+   "p": [
+    0,
+    13,
+    -82
+   ],
+   "color": "#ffd9a0",
+   "energy": 1.5,
+   "range": 14
+  },
+  {
+   "p": [
+    0,
+    5,
+    -146
+   ],
+   "color": "#3ee6ff",
+   "energy": 2.0,
+   "range": 10
+  }
+ ],
+ "rails": [
+  {
+   "_": "golden ride-rails (BS_LEVELS §2.5). Marker paths in group 'rails' (meta points) for the rail system; drawn as a golden tube.",
+   "id": "antenna_cable",
+   "points": [
+    [
+     -33.6,
+     16.5,
+     -74.4
+    ],
+    [
+     -20,
+     15.6,
+     -80
+    ],
+    [
+     -4,
+     15.6,
+     -86
+    ]
+   ],
+   "color": "#3ee6ff",
+   "two_way": true
+  },
+  {
+   "id": "hull_descent",
+   "points": [
+    [
+     0,
+     15.2,
+     -90
+    ],
+    [
+     6,
+     12,
+     -102
+    ],
+    [
+     -6,
+     8.5,
+     -112
+    ],
+    [
+     0,
+     4,
+     -122
+    ]
+   ],
+   "color": "#ffd23e"
+  },
+  {
+   "id": "boneyard_grind",
+   "points": [
+    [
+     -58,
+     15.6,
+     -104
+    ],
+    [
+     -64,
+     8,
+     -104
+    ],
+    [
+     -70,
+     0.9,
+     -104
+    ]
+   ],
+   "color": "#ffd23e"
+  },
+  {
+   "id": "works_pipe",
+   "points": [
+    [
+     10,
+     5.2,
+     -52
+    ],
+    [
+     2,
+     12.2,
+     -45
+    ]
+   ],
+   "color": "#3ea8ff",
+   "gadget": "grind_soles"
+  }
+ ],
+ "gadget_points": [
+  {
+   "_": "secrets gated by gadgets earned on later planets (markers only in M1)",
+   "kind": "tether",
+   "id": "blimp_ring",
+   "p": [
+    -31,
+    21,
+    -80
+   ],
+   "secret": "S2"
+  },
+  {
+   "kind": "glide",
+   "id": "lookout_pennant",
+   "p": [
+    41.5,
+    8.0,
+    -75
+   ],
+   "secret": "S4"
+  },
+  {
+   "kind": "updraft",
+   "id": "boneyard_updraft",
+   "p": [
+    -86,
+    0.5,
+    -104
+   ],
+   "force": 30,
+   "top": 9.0
+  }
+ ],
+ "water": [
+  {
+   "_": "oil-jelly ponds (water type: 8 damage, reset, splash quip). Box = centre + size",
+   "p": [
+    -8,
+    -0.3,
+    -36
+   ],
+   "s": [
+    5,
+    0.6,
+    4
+   ]
+  },
+  {
+   "p": [
+    10,
+    -0.3,
+    -15
+   ],
+   "s": [
+    4,
+    0.6,
+    3
+   ]
+  },
+  {
+   "p": [
+    64,
+    -0.1,
+    -72
+   ],
+   "s": [
+    22,
+    0.8,
+    22
+   ],
+   "hole": [
+    2.4,
+    2.4
+   ]
+  }
+ ],
+ "water_quips": [
+  "splash.05"
+ ],
+ "conveyors": [
+  {
+   "id": "west_belt",
+   "p": [
+    0,
+    4.75,
+    -52
+   ],
+   "s": [
+    12,
+    0.5,
+    3
+   ],
+   "dir": [
+    -1,
+    0
+   ],
+   "speed": 3.2,
+   "warn": 1.0
+  },
+  {
+   "id": "return_belt",
+   "p": [
+    0,
+    4.75,
+    -57
+   ],
+   "s": [
+    12,
+    0.5,
+    3
+   ],
+   "dir": [
+    1,
+    0
+   ],
+   "speed": 2.6,
+   "warn": 1.0
+  },
+  {
+   "id": "processor_belt",
+   "p": [
+    -36,
+    0.95,
+    -94
+   ],
+   "s": [
+    12,
+    0.5,
+    3
+   ],
+   "dir": [
+    1,
+    0
+   ],
+   "speed": 2.4,
+   "warn": 1.0
+  }
+ ],
+ "movers": [
+  {
+   "id": "magnet_crane",
+   "kind": "crane",
+   "base": [
+    -10,
+    6,
+    -58
+   ],
+   "end": [
+    -10,
+    9.6,
+    -64
+   ],
+   "speed": 0.55,
+   "size": [
+    3.4,
+    0.4,
+    3.4
+   ],
+   "tower": [
+    -7,
+    0,
+    -4
+   ]
+  },
+  {
+   "id": "boneyard_lift",
+   "kind": "lift",
+   "base": [
+    -44,
+    4.25,
+    -104
+   ],
+   "end": [
+    -44,
+    5.8,
+    -104
+   ],
+   "speed": 0.8,
+   "size": [
+    3,
+    0.4,
+    3
+   ]
+  },
+  {
+   "id": "stamp",
+   "kind": "crusher",
+   "base": [
+    -29,
+    4.0,
+    -94
+   ],
+   "end": [
+    -29,
+    0.8,
+    -94
+   ],
+   "speed": 1.4,
+   "size": [
+    3,
+    2,
+    3
+   ]
+  }
+ ],
+ "gates": [
+  {
+   "id": "pit_lid",
+   "p": [
+    12,
+    1.3,
+    -2.5
+   ],
+   "s": [
+    2.6,
+    0.2,
+    2.6
+   ],
+   "open": [
+    2.8,
+    0,
+    0
+   ],
+   "speed": 3,
+   "color": "steel"
+  },
+  {
+   "id": "blast_door",
+   "p": [
+    0,
+    12.2,
+    -70.5
+   ],
+   "s": [
+    7,
+    4.4,
+    0.6
+   ],
+   "open": [
+    0,
+    4.6,
+    0
+   ],
+   "speed": 2.5,
+   "color": "#5a6377"
+  },
+  {
+   "id": "rear_hatch",
+   "p": [
+    0,
+    12.0,
+    -93.3
+   ],
+   "s": [
+    7,
+    4,
+    0.6
+   ],
+   "open": [
+    0,
+    4.2,
+    0
+   ],
+   "speed": 2.5,
+   "color": "#5a6377"
+  },
+  {
+   "id": "lot_gate",
+   "p": [
+    0,
+    4,
+    -119.3
+   ],
+   "s": [
+    7,
+    4,
+    0.6
+   ],
+   "open": [
+    0,
+    -4.2,
+    0
+   ],
+   "speed": 3,
+   "color": "#5a6377"
+  },
+  {
+   "id": "yard_fence",
+   "p": [
+    0,
+    4.5,
+    -143.2
+   ],
+   "s": [
+    14,
+    5,
+    0.4
+   ],
+   "open": [
+    0,
+    -5.2,
+    0
+   ],
+   "speed": 3,
+   "color": "#5a6377"
+  },
+  {
+   "id": "impound_cage",
+   "p": [
+    13.5,
+    3.5,
+    -137.6
+   ],
+   "s": [
+    0.2,
+    3,
+    1.8
+   ],
+   "open": [
+    0,
+    3.2,
+    0
+   ],
+   "speed": 3,
+   "color": "steel"
+  },
+  {
+   "id": "crusher_bay",
+   "p": [
+    -30.9,
+    0.6,
+    -92.3
+   ],
+   "s": [
+    0.3,
+    1.2,
+    3.6
+   ],
+   "open": [
+    0,
+    -1.3,
+    0
+   ],
+   "speed": 4,
+   "color": "steel"
+  },
+  {
+   "id": "tarp",
+   "p": [
+    56,
+    6.5,
+    -27
+   ],
+   "s": [
+    0.1,
+    2.6,
+    3
+   ],
+   "open": [
+    0,
+    2.8,
+    0
+   ],
+   "speed": 4,
+   "color": "tarp"
+  },
+  {
+   "id": "vault_cage",
+   "p": [
+    -89,
+    9.2,
+    -98.1
+   ],
+   "s": [
+    5,
+    2,
+    0.2
+   ],
+   "open": [
+    0,
+    2.2,
+    0
+   ],
+   "speed": 3,
+   "color": "steel"
+  }
+ ],
+ "lamps": [
+  {
+   "id": "lamp_power",
+   "p": [
+    -3.8,
+    6.6,
+    -118.6
+   ],
+   "r": 0.45,
+   "off": "#5a2a1a",
+   "on": "#3ee6ff"
+  },
+  {
+   "id": "lamp_uplink",
+   "p": [
+    3.8,
+    6.6,
+    -118.6
+   ],
+   "r": 0.45,
+   "off": "#5a2a1a",
+   "on": "#3ee6ff"
+  },
+  {
+   "id": "mast_beacon",
+   "p": [
+    -36,
+    20.6,
+    -72
+   ],
+   "r": 0.3,
+   "off": "#ff9d2e",
+   "on": "#3ee6ff",
+   "blink": true
+  }
+ ],
+ "switches": [
+  {
+   "_": "mallet-throw switches: every one reachable from a standing spot within 13.2 m (§2.5)",
+   "id": "pit_latch",
+   "p": [
+    12,
+    1.2,
+    -3.85
+   ],
+   "ry": 0,
+   "actions": [
+    {
+     "open": "pit_lid"
+    },
+    {
+     "flag": "pit_open"
+    }
+   ]
+  },
+  {
+   "id": "clamp_nest",
+   "p": [
+    -36,
+    18.4,
+    -74.9
+   ],
+   "ry": 0,
+   "actions": [
+    {
+     "flag": "clamp_1"
+    }
+   ]
+  },
+  {
+   "id": "clamp_step3",
+   "p": [
+    -38.9,
+    18.4,
+    -71.0
+   ],
+   "ry": -90,
+   "actions": [
+    {
+     "flag": "clamp_2"
+    }
+   ]
+  },
+  {
+   "id": "clamp_step5",
+   "p": [
+    -33.1,
+    18.4,
+    -73.6
+   ],
+   "ry": 90,
+   "actions": [
+    {
+     "flag": "clamp_3"
+    }
+   ]
+  },
+  {
+   "id": "lever_west_w",
+   "p": [
+    -6.6,
+    6.0,
+    -50.3
+   ],
+   "ry": 0,
+   "one_shot": false,
+   "cooldown": 8,
+   "size": [
+    0.8,
+    0.8
+   ],
+   "actions": [
+    {
+     "reverse": "west_belt",
+     "seconds": 8
+    }
+   ]
+  },
+  {
+   "id": "lever_west_e",
+   "p": [
+    6.6,
+    6.0,
+    -50.3
+   ],
+   "ry": 0,
+   "one_shot": false,
+   "cooldown": 8,
+   "size": [
+    0.8,
+    0.8
+   ],
+   "actions": [
+    {
+     "reverse": "west_belt",
+     "seconds": 8
+    }
+   ]
+  },
+  {
+   "id": "lever_return_w",
+   "p": [
+    -6.6,
+    6.0,
+    -58.7
+   ],
+   "ry": 180,
+   "one_shot": false,
+   "cooldown": 8,
+   "size": [
+    0.8,
+    0.8
+   ],
+   "actions": [
+    {
+     "reverse": "return_belt",
+     "seconds": 8
+    }
+   ]
+  },
+  {
+   "id": "lever_return_e",
+   "p": [
+    6.6,
+    6.0,
+    -58.7
+   ],
+   "ry": 180,
+   "one_shot": false,
+   "cooldown": 8,
+   "size": [
+    0.8,
+    0.8
+   ],
+   "actions": [
+    {
+     "reverse": "return_belt",
+     "seconds": 8
+    }
+   ]
+  },
+  {
+   "id": "crusher_box",
+   "p": [
+    -32,
+    1.8,
+    -91.05
+   ],
+   "ry": 0,
+   "gadget": "thunder",
+   "one_shot": false,
+   "cooldown": 10,
+   "actions": [
+    {
+     "pause": "stamp",
+     "for": 10
+    },
+    {
+     "open": "crusher_bay",
+     "for": 10
+    }
+   ]
+  },
+  {
+   "id": "tarp_seal",
+   "p": [
+    55.9,
+    6.8,
+    -27
+   ],
+   "ry": -90,
+   "gadget": "magma",
+   "actions": [
+    {
+     "open": "tarp"
+    }
+   ]
+  }
+ ],
+ "gold_bolts": [
+  {
+   "id": "scrapheap.1",
+   "p": [
+    12,
+    0.6,
+    -2.5
+   ],
+   "how": "prologue: mallet throw at the pit-lid latch"
+  },
+  {
+   "id": "scrapheap.2",
+   "p": [
+    -19,
+    1.4,
+    -32
+   ],
+   "how": "source #1: pocket behind the west-rim wreck"
+  },
+  {
+   "id": "scrapheap.3",
+   "p": [
+    -17,
+    9.3,
+    -60
+   ],
+   "how": "source #2: bail off the magnet crane"
+  },
+  {
+   "id": "scrapheap.4",
+   "p": [
+    6.5,
+    16.6,
+    -82
+   ],
+   "how": "source #3: hull-top side slab"
+  },
+  {
+   "id": "scrapheap.5",
+   "p": [
+    -30,
+    21.0,
+    -84
+   ],
+   "how": "S2: AIR PREMIUM blimp gondola (Tether-Hook)"
+  }
+ ],
+ "memos": [
+  {
+   "id": "memo.01",
+   "p": [
+    -36.8,
+    17.2,
+    -70.8
+   ],
+   "where": "Billing Mast crow's nest"
+  },
+  {
+   "id": "memo.02",
+   "p": [
+    14,
+    1.2,
+    4
+   ],
+   "where": "the empty Garage Lot slab, after intro",
+   "after_flag": "prologue_done"
+  },
+  {
+   "id": "memo.03",
+   "p": [
+    -16.5,
+    2.3,
+    -14
+   ],
+   "where": "Dune Bowl west mound, by the feeding trough"
+  },
+  {
+   "id": "memo.04",
+   "p": [
+    2,
+    12.8,
+    -45
+   ],
+   "where": "S3 pipe-top cache (Grind Soles)"
+  },
+  {
+   "id": "memo.05",
+   "p": [
+    -2,
+    16.3,
+    -84
+   ],
+   "where": "Hull-top Vista"
+  }
+ ],
+ "quest_items_from_quests": true,
+ "items": [
+  {
+   "id": "mallet",
+   "kind": "crate",
+   "radius": 0.45,
+   "p": [
+    11.4,
+    0.45,
+    6.3
+   ],
+   "actions": [
+    {
+     "flag": "got_mallet"
+    },
+    {
+     "hint": "bs.scrapheap.hint_mallet",
+     "key": "mallet"
+    }
+   ]
+  },
+  {
+   "id": "power_cell",
+   "kind": "cell",
+   "p": [
+    0,
+    10.9,
+    -92.2
+   ],
+   "actions": [
+    {
+     "flag": "power"
+    }
+   ]
+  },
+  {
+   "id": "vault_nano",
+   "kind": "nano",
+   "p": [
+    -46,
+    1.0,
+    -41
+   ],
+   "actions": [
+    {
+     "heal": 1.0
+    },
+    {
+     "banner": [
+      "code.collectPickup.01",
+      "code.collectPickup.02"
+     ]
+    },
+    {
+     "flag": "secret_S1"
+    }
+   ]
+  },
+  {
+   "id": "mast_nano",
+   "kind": "nano",
+   "p": [
+    -34.4,
+    17.0,
+    -73.6
+   ],
+   "actions": [
+    {
+     "heal": 1.0
+    },
+    {
+     "banner": [
+      "code.collectPickup.01",
+      "code.collectPickup.02"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tower_nano",
+   "kind": "nano",
+   "p": [
+    43.2,
+    10.7,
+    -22.2
+   ],
+   "actions": [
+    {
+     "heal": 1.0
+    },
+    {
+     "banner": [
+      "code.collectPickup.01",
+      "code.collectPickup.02"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "hull_nano",
+   "kind": "nano",
+   "p": [
+    -3,
+    10.6,
+    -90
+   ],
+   "actions": [
+    {
+     "heal": 1.0
+    },
+    {
+     "banner": [
+      "code.collectPickup.01",
+      "code.collectPickup.02"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "lot_nano",
+   "kind": "nano",
+   "p": [
+    -12,
+    2.6,
+    -138
+   ],
+   "actions": [
+    {
+     "heal": 1.0
+    },
+    {
+     "banner": [
+      "code.collectPickup.01",
+      "code.collectPickup.02"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pipe_cache",
+   "kind": "jar",
+   "p": [
+    3,
+    12.6,
+    -45.8
+   ],
+   "actions": [
+    {
+     "bolts": 60
+    },
+    {
+     "banner": [
+      "bs.scrapheap.cache_banner",
+      "bs.scrapheap.cache_sub"
+     ]
+    },
+    {
+     "flag": "secret_S3"
+    }
+   ]
+  },
+  {
+   "id": "mailbox",
+   "kind": "crate",
+   "p": [
+    64,
+    2.3,
+    -72
+   ],
+   "actions": [
+    {
+     "bolts": 100
+    },
+    {
+     "banner": [
+      "bs.scrapheap.mailbox_banner",
+      "bs.scrapheap.mailbox_sub"
+     ]
+    },
+    {
+     "flag": "secret_S4"
+    }
+   ]
+  },
+  {
+   "id": "crusher_nano",
+   "kind": "nano",
+   "p": [
+    -29,
+    0.6,
+    -92.4
+   ],
+   "actions": [
+    {
+     "heal": 1.0
+    },
+    {
+     "banner": [
+      "code.collectPickup.01",
+      "code.collectPickup.02"
+     ]
+    },
+    {
+     "flag": "secret_S5"
+    }
+   ]
+  },
+  {
+   "id": "boneyard_upgrade",
+   "kind": "nano",
+   "p": [
+    -89,
+    8.8,
+    -100.5
+   ],
+   "actions": [
+    {
+     "max_hp": 20
+    },
+    {
+     "banner": [
+      "code.collectPickup.03",
+      "code.collectPickup.04"
+     ]
+    },
+    {
+     "flag": "secret_S6"
+    }
+   ]
+  },
+  {
+   "id": "spare_jar",
+   "kind": "jar",
+   "p": [
+    57.5,
+    5.6,
+    -27
+   ],
+   "actions": [
+    {
+     "bolts": 80
+    },
+    {
+     "banner": [
+      "bs.scrapheap.jar_banner",
+      "bs.scrapheap.jar_sub"
+     ]
+    },
+    {
+     "flag": "secret_S7"
+    }
+   ]
+  }
+ ],
+ "pickup_spots": [
+  {
+   "_": "ammo / loose-bolt / nanotech markers for the weapons + pickup builders (group 'pickup_spots', meta kind)",
+   "kind": "ammoR",
+   "p": [
+    -11,
+    0.1,
+    -20
+   ]
+  },
+  {
+   "kind": "ammoZ",
+   "p": [
+    -48,
+    0.8,
+    -41
+   ]
+  },
+  {
+   "kind": "ammoZ",
+   "p": [
+    -10,
+    5.6,
+    -57
+   ]
+  },
+  {
+   "kind": "ammoR",
+   "p": [
+    3,
+    10.6,
+    -90
+   ]
+  },
+  {
+   "kind": "ammoR",
+   "p": [
+    -37.6,
+    17.2,
+    -73.6
+   ]
+  },
+  {
+   "kind": "ammoZ",
+   "p": [
+    47.8,
+    10.9,
+    -22.2
+   ]
+  },
+  {
+   "kind": "ammoR",
+   "p": [
+    41.5,
+    0.8,
+    -19.5
+   ]
+  },
+  {
+   "kind": "ammoR",
+   "p": [
+    38,
+    8.4,
+    -75
+   ]
+  },
+  {
+   "kind": "ammoZ",
+   "p": [
+    -8,
+    2.6,
+    -124
+   ]
+  },
+  {
+   "kind": "ammoR",
+   "p": [
+    8,
+    2.6,
+    -138
+   ]
+  },
+  {
+   "kind": "bolt_row",
+   "p": [
+    -5,
+    0.5,
+    10
+   ],
+   "to": [
+    5,
+    0.5,
+    10
+   ],
+   "n": 4
+  },
+  {
+   "kind": "bolt_row",
+   "p": [
+    -2,
+    0.5,
+    -2
+   ],
+   "to": [
+    2,
+    0.5,
+    -2
+   ],
+   "n": 3
+  },
+  {
+   "kind": "bolt_row",
+   "p": [
+    0,
+    0.0,
+    -14
+   ],
+   "to": [
+    0,
+    0.0,
+    -34
+   ],
+   "n": 5
+  },
+  {
+   "kind": "bolt_row",
+   "p": [
+    10,
+    1.5,
+    -40
+   ],
+   "to": [
+    11,
+    5.5,
+    -50
+   ],
+   "n": 4
+  },
+  {
+   "kind": "bolt_row",
+   "p": [
+    -9,
+    10.3,
+    -66
+   ],
+   "to": [
+    -1,
+    10.3,
+    -66
+   ],
+   "n": 3
+  },
+  {
+   "kind": "bolt_row",
+   "p": [
+    0,
+    10.5,
+    -73
+   ],
+   "to": [
+    0,
+    10.5,
+    -91
+   ],
+   "n": 5
+  },
+  {
+   "kind": "bolt_row",
+   "p": [
+    0,
+    16.2,
+    -90
+   ],
+   "to": [
+    0,
+    16.2,
+    -83
+   ],
+   "n": 3
+  },
+  {
+   "kind": "bolt_row",
+   "p": [
+    -6,
+    2.5,
+    -129
+   ],
+   "to": [
+    6,
+    2.5,
+    -129
+   ],
+   "n": 4
+  },
+  {
+   "kind": "bolt_row",
+   "p": [
+    27,
+    0.7,
+    -10
+   ],
+   "to": [
+    34,
+    0.7,
+    -13
+   ],
+   "n": 4
+  },
+  {
+   "kind": "bolt_row",
+   "p": [
+    43.1,
+    10.6,
+    -26.9
+   ],
+   "to": [
+    47.9,
+    10.6,
+    -26.9
+   ],
+   "n": 4
+  },
+  {
+   "kind": "bolt_trail",
+   "points": [
+    [
+     0,
+     -14
+    ],
+    [
+     -8,
+     -22
+    ],
+    [
+     -16,
+     -30
+    ],
+    [
+     -19,
+     -38
+    ]
+   ],
+   "n": 3
+  },
+  {
+   "kind": "bolt_trail",
+   "points": [
+    [
+     12,
+     -40
+    ],
+    [
+     20,
+     -52
+    ],
+    [
+     28,
+     -62
+    ],
+    [
+     34,
+     -70
+    ]
+   ],
+   "n": 3
+  },
+  {
+   "kind": "bolt_trail",
+   "points": [
+    [
+     16,
+     -2
+    ],
+    [
+     21,
+     -6
+    ],
+    [
+     25,
+     -10
+    ]
+   ],
+   "n": 3
+  },
+  {
+   "kind": "bolt_trail",
+   "points": [
+    [
+     -19,
+     -40
+    ],
+    [
+     -27,
+     -54
+    ],
+    [
+     -34,
+     -64
+    ]
+   ],
+   "n": 3
+  },
+  {
+   "kind": "bolt_trail",
+   "points": [
+    [
+     -8,
+     -96
+    ],
+    [
+     -16,
+     -100
+    ],
+    [
+     -24,
+     -104
+    ]
+   ],
+   "n": 3
+  }
+ ],
+ "relays": [
+  {
+   "id": "pad",
+   "p": [
+    -4,
+    0,
+    13
+   ],
+   "label": "bs.scrapheap.relay_pad",
+   "start": true
+  },
+  {
+   "id": "row",
+   "p": [
+    28,
+    0,
+    -10
+   ],
+   "label": "code.expandScrapheap.02"
+  },
+  {
+   "id": "works",
+   "p": [
+    14,
+    0,
+    -38
+   ],
+   "label": "bs.scrapheap.relay_works"
+  },
+  {
+   "id": "boneyard",
+   "p": [
+    -26,
+    0,
+    -104
+   ],
+   "label": "bs.scrapheap.relay_boneyard"
+  },
+  {
+   "id": "lot",
+   "p": [
+    6,
+    0,
+    -106
+   ],
+   "label": "code.buildLevel1.13"
+  }
+ ],
+ "beacon": {
+  "p": [
+   -3.5,
+   0,
+   4
+  ]
+ },
+ "interacts": [
+  {
+   "id": "ship",
+   "p": [
+    -5.2,
+    0,
+    6.2
+   ],
+   "prompt": "bs.level.ship_prompt",
+   "actions": [
+    {
+     "if": "repo_down",
+     "then": [
+      {
+       "host": "open_star_map"
+      }
+     ],
+     "else": [
+      {
+       "line": "bs.scrapheap.ship_booted"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "kiosk": {
+  "p": [
+   8,
+   0,
+   10
+  ],
+  "ry": 180
+ },
+ "teleporter": {
+  "p": [
+   0,
+   2.5,
+   -147
+  ]
+ },
+ "npcs": [
+  {
+   "id": "rusty",
+   "name": "Rusty",
+   "p": [
+    -13,
+    0,
+    6
+   ],
+   "quests": [
+    "q1a",
+    "q1b"
+   ],
+   "color": "#b0652e",
+   "idle": "bs.scrapheap.rusty_idle"
+  },
+  {
+   "id": "gasket",
+   "name": "Mama Gasket",
+   "p": [
+    37.5,
+    0,
+    -11.5
+   ],
+   "quests": [
+    "q1c",
+    "q1d"
+   ],
+   "color": "#c9703a",
+   "idle": "bs.scrapheap.gasket_idle"
+  },
+  {
+   "id": "denizen_hub",
+   "kind": "squatter",
+   "p": [
+    -11,
+    0,
+    2
+   ],
+   "color": "#9a8a6a",
+   "barks": [
+    "code.populateLife.01",
+    "code.populateLife.02"
+   ]
+  },
+  {
+   "id": "denizen_survey",
+   "kind": "squatter",
+   "p": [
+    33,
+    0,
+    -8
+   ],
+   "color": "#b0652e",
+   "barks": [
+    "code.populateLife.03",
+    "code.populateLife.04"
+   ]
+  },
+  {
+   "id": "denizen_ledger",
+   "kind": "intern",
+   "p": [
+    40,
+    0,
+    -16
+   ],
+   "color": "#7a8a9a",
+   "barks": [
+    "code.populateLife.05",
+    "code.populateLife.06"
+   ]
+  },
+  {
+   "id": "denizen_mailbox",
+   "kind": "squatter",
+   "p": [
+    34,
+    0,
+    -21
+   ],
+   "color": "#9a8a6a",
+   "barks": [
+    "code.populateLife.07",
+    "code.populateLife.08"
+   ]
+  },
+  {
+   "id": "denizen_processor",
+   "kind": "squatter",
+   "p": [
+    -26,
+    0,
+    -92
+   ],
+   "color": "#b0652e",
+   "barks": [
+    "code.junkProcessor.01",
+    "code.junkProcessor.02"
+   ]
+  }
+ ],
+ "dummies": [
+  {
+   "_": "prologue: the broken repo drone for the 3-hit mallet string (TestDummy)",
+   "p": [
+    9,
+    0,
+    0.5
+   ]
+  }
+ ],
+ "encounters": [
+  {
+   "id": "hub_crates",
+   "autostart": true,
+   "waves": [
+    [
+     {
+      "type": "bolt_crate",
+      "pos": [
+       -13,
+       0,
+       0
+      ]
+     },
+     {
+      "type": "bolt_crate",
+      "pos": [
+       -12,
+       0,
+       1.4
+      ]
+     },
+     {
+      "type": "bolt_crate",
+      "pos": [
+       12,
+       0,
+       12
+      ]
+     },
+     {
+      "type": "bolt_crate",
+      "pos": [
+       4,
+       0,
+       14
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "id": "bowl_crates",
+   "autostart": true,
+   "waves": [
+    [
+     {
+      "type": "bolt_crate",
+      "pos": [
+       -10,
+       -0.5,
+       -30
+      ]
+     },
+     {
+      "type": "bolt_crate",
+      "pos": [
+       11,
+       -0.5,
+       -33
+      ]
+     },
+     {
+      "type": "bolt_crate",
+      "pos": [
+       12,
+       -0.5,
+       -31.6
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "id": "row_crates",
+   "autostart": true,
+   "waves": [
+    [
+     {
+      "type": "bolt_crate",
+      "pos": [
+       40,
+       0,
+       -11
+      ]
+     },
+     {
+      "type": "bolt_crate",
+      "pos": [
+       41,
+       0,
+       -12.2
+      ]
+     },
+     {
+      "type": "bolt_crate",
+      "pos": [
+       27.5,
+       0,
+       -17
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "id": "bowl",
+   "zone": "dune_bowl",
+   "waves": [
+    [
+     {
+      "type": "scrap_mutt",
+      "pos": [
+       -5,
+       -0.5,
+       -22
+      ]
+     },
+     {
+      "type": "scrap_mutt",
+      "pos": [
+       6,
+       -0.5,
+       -28
+      ]
+     },
+     {
+      "type": "scrap_mutt",
+      "pos": [
+       -2,
+       -0.5,
+       -33
+      ]
+     },
+     {
+      "type": "tinker_turret",
+      "pos": [
+       18,
+       2.0,
+       -24
+      ]
+     },
+     {
+      "type": "vulture_drone",
+      "pos": [
+       -6,
+       4,
+       -28
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "id": "vault",
+   "zone": "buried_vault",
+   "waves": [
+    [
+     {
+      "type": "lien_crawler",
+      "pos": [
+       -44,
+       0,
+       -31
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "id": "mast",
+   "zone": "billing_mast",
+   "waves": [
+    [
+     {
+      "type": "scrap_mutt",
+      "pos": [
+       -31,
+       0,
+       -66
+      ]
+     },
+     {
+      "type": "scrap_mutt",
+      "pos": [
+       -41,
+       0,
+       -66
+      ]
+     },
+     {
+      "type": "vulture_drone",
+      "pos": [
+       -40,
+       9,
+       -69
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "id": "works",
+   "zone": "conveyor_works",
+   "waves": [
+    [
+     {
+      "type": "scrap_mutt",
+      "pos": [
+       8,
+       5.0,
+       -53
+      ]
+     },
+     {
+      "type": "tinker_turret",
+      "pos": [
+       3,
+       1.6,
+       -46
+      ]
+     },
+     {
+      "type": "tinker_turret",
+      "pos": [
+       -3,
+       1.6,
+       -61
+      ]
+     },
+     {
+      "type": "vulture_drone",
+      "pos": [
+       0,
+       10,
+       -54
+      ]
+     },
+     {
+      "type": "lien_crawler",
+      "pos": [
+       -4,
+       5.0,
+       -57
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "id": "hull",
+   "zone": "buried_hull",
+   "waves": [
+    [
+     {
+      "type": "tinker_turret",
+      "pos": [
+       2.5,
+       10,
+       -78
+      ]
+     },
+     {
+      "type": "tinker_turret",
+      "pos": [
+       -2.5,
+       10,
+       -87
+      ]
+     },
+     {
+      "type": "bolt_crate",
+      "pos": [
+       3,
+       10,
+       -75.5
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "id": "row",
+   "zone": "rustys_row",
+   "waves": [
+    [
+     {
+      "type": "vulture_drone",
+      "pos": [
+       45.5,
+       14,
+       -19
+      ]
+     },
+     {
+      "type": "vulture_drone",
+      "pos": [
+       45.5,
+       14,
+       -30
+      ]
+     },
+     {
+      "type": "lien_crawler",
+      "pos": [
+       28,
+       0,
+       -27
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "id": "lot_pre",
+   "zone": "compaction_lot",
+   "waves": [
+    [
+     {
+      "type": "vulture_drone",
+      "pos": [
+       4,
+       6,
+       -128
+      ]
+     },
+     {
+      "type": "tinker_turret",
+      "pos": [
+       -12,
+       2,
+       -133
+      ]
+     },
+     {
+      "type": "bolt_crate",
+      "pos": [
+       9,
+       2,
+       -124
+      ]
+     },
+     {
+      "type": "bolt_crate",
+      "pos": [
+       -13,
+       2,
+       -127.5
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "id": "boneyard",
+   "zone": "boneyard",
+   "waves": [
+    [
+     {
+      "type": "scrap_mutt",
+      "pos": [
+       -68,
+       0.5,
+       -98
+      ]
+     },
+     {
+      "type": "scrap_mutt",
+      "pos": [
+       -76,
+       0.5,
+       -110
+      ]
+     },
+     {
+      "type": "vulture_drone",
+      "pos": [
+       -72,
+       5,
+       -104
+      ]
+     }
+    ],
+    [
+     {
+      "type": "tinker_turret",
+      "pos": [
+       -72,
+       0.5,
+       -112
+      ]
+     },
+     {
+      "type": "lien_crawler",
+      "pos": [
+       -66,
+       0.5,
+       -108
+      ]
+     }
+    ]
+   ],
+   "on_clear": [
+    {
+     "banner": [
+      "code.buildAnnex.09",
+      "code.buildAnnex.10"
+     ]
+    },
+    {
+     "hint": "code.buildAnnex.11",
+     "key": "vault"
+    },
+    {
+     "open": "vault_cage"
+    },
+    {
+     "flag": "boneyard_cleared"
+    }
+   ]
+  }
+ ],
+ "boss": {
+  "id": "repo_tron",
+  "spawn": [
+   0,
+   2,
+   -136
+  ],
+  "arena_center": [
+   0,
+   2,
+   -131
+  ],
+  "arena_half": [
+   18,
+   12
+  ],
+  "walls": {
+   "center": [
+    0,
+    2,
+    -131
+   ],
+   "start_width": 36,
+   "min_width": 14,
+   "wall_size": [
+    2,
+    4,
+    24
+   ],
+   "speed": 2.0,
+   "riders": {
+    "cube_w": -1,
+    "cube_e": 1
+   }
+  },
+  "phases": [
+   {
+    "_": "BS_LEVELS §2.10: phase 2 walls in 4 m each (28 m), phase 3 to 22 m and the container stack is crushed",
+    "below": 0.66,
+    "actions": [
+     {
+      "walls": 28
+     }
+    ]
+   },
+   {
+    "below": 0.33,
+    "actions": [
+     {
+      "walls": 22
+     },
+     {
+      "crush": "container_stack"
+     }
+    ]
+   }
+  ],
+  "on_start": [
+   {
+    "close": "lot_gate"
+   }
+  ],
+  "on_defeat": [
+   {
+    "banner": [
+     "code.onDeath.01",
+     "code.onDeath.02"
+    ],
+    "sec": 2.4
+   },
+   {
+    "line": "code.onDeath.03"
+   },
+   {
+    "flag": "repo_down"
+   },
+   {
+    "open": "yard_fence"
+   },
+   {
+    "open": "lot_gate"
+   },
+   {
+    "open": "impound_cage"
+   },
+   {
+    "remove": "boot"
+   },
+   {
+    "exit": true
+   }
+  ]
+ },
+ "rules": [
+  {
+   "_": "UPLINK: all three dish bearing clamps free",
+   "id": "uplink",
+   "all": [
+    "clamp_1",
+    "clamp_2",
+    "clamp_3"
+   ],
+   "do": [
+    {
+     "flag": "uplink"
+    },
+    {
+     "lamp": "lamp_uplink",
+     "on": true
+    },
+    {
+     "lamp": "mast_beacon",
+     "on": true
+    },
+    {
+     "rotate": "dish",
+     "deg": [
+      20,
+      45,
+      0
+     ]
+    },
+    {
+     "banner": [
+      "bs.scrapheap.uplink_banner",
+      "bs.scrapheap.uplink_sub"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "power",
+   "all": [
+    "power"
+   ],
+   "do": [
+    {
+     "lamp": "lamp_power",
+     "on": true
+    },
+    {
+     "open": "rear_hatch"
+    },
+    {
+     "banner": [
+      "bs.scrapheap.power_banner",
+      "bs.scrapheap.power_sub"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "lot_open",
+   "all": [
+    "power",
+    "uplink"
+   ],
+   "do": [
+    {
+     "open": "lot_gate"
+    },
+    {
+     "banner": [
+      "bs.scrapheap.gate_banner",
+      "bs.scrapheap.gate_sub"
+     ]
+    },
+    {
+     "encounter": "lot_pre"
+    }
+   ]
+  },
+  {
+   "id": "mailbox_bark",
+   "all": [
+    "secret_S4"
+   ],
+   "do": [
+    {
+     "bark_swap": "denizen_mailbox",
+     "from": "code.populateLife.08",
+     "to": "bs.scrapheap.mailbox_bark"
+    }
+   ]
+  },
+  {
+   "id": "after_repo",
+   "all": [
+    "repo_down"
+   ],
+   "do": [
+    {
+     "remove": "boot"
+    },
+    {
+     "open": "yard_fence",
+     "instant": true
+    },
+    {
+     "exit": true,
+     "silent": true
+    }
+   ],
+   "on_load_only": true
+  }
+ ],
+ "triggers": [
+  {
+   "_": "PROLOGUE",
+   "id": "garage_hint_slide",
+   "p": [
+    11.4,
+    1.2,
+    4.6
+   ],
+   "s": [
+    2.4,
+    2.4,
+    1.0
+   ],
+   "forbids": [
+    "got_mallet"
+   ],
+   "actions": [
+    {
+     "hint": "code.buildLevel1.03",
+     "key": "slide"
+    }
+   ]
+  },
+  {
+   "id": "yard_latch_hint",
+   "p": [
+    12,
+    1.5,
+    0
+   ],
+   "s": [
+    12,
+    3,
+    2.0
+   ],
+   "requires": [
+    "got_mallet"
+   ],
+   "forbids": [
+    "pit_open"
+   ],
+   "actions": [
+    {
+     "hint": "bs.scrapheap.hint_latch",
+     "key": "latch"
+    }
+   ]
+  },
+  {
+   "id": "yard_hover_hint",
+   "p": [
+    17,
+    1.5,
+    -2.4
+   ],
+   "s": [
+    4,
+    3,
+    3
+   ],
+   "actions": [
+    {
+     "hint": "bs.scrapheap.hint_hover",
+     "key": "hover"
+    }
+   ]
+  },
+  {
+   "id": "leave_lot_w",
+   "p": [
+    4.5,
+    2,
+    2
+   ],
+   "s": [
+    3,
+    4,
+    16
+   ],
+   "forbids": [
+    "prologue_done"
+   ],
+   "actions": [
+    {
+     "intro": true
+    }
+   ]
+  },
+  {
+   "id": "leave_lot_n",
+   "p": [
+    13,
+    2,
+    -5.5
+   ],
+   "s": [
+    17,
+    4,
+    3
+   ],
+   "forbids": [
+    "prologue_done"
+   ],
+   "actions": [
+    {
+     "intro": true
+    }
+   ]
+  },
+  {
+   "id": "leave_lot_e",
+   "p": [
+    21.5,
+    2,
+    2
+   ],
+   "s": [
+    3,
+    4,
+    16
+   ],
+   "forbids": [
+    "prologue_done"
+   ],
+   "actions": [
+    {
+     "intro": true
+    }
+   ]
+  },
+  {
+   "id": "leave_lot_s",
+   "p": [
+    13,
+    2,
+    9.5
+   ],
+   "s": [
+    17,
+    4,
+    3
+   ],
+   "forbids": [
+    "prologue_done"
+   ],
+   "actions": [
+    {
+     "intro": true
+    }
+   ]
+  },
+  {
+   "_": "HUB + BOWL",
+   "id": "hint_move",
+   "p": [
+    0,
+    3,
+    12
+   ],
+   "s": [
+    22,
+    6,
+    8
+   ],
+   "actions": [
+    {
+     "hint": "code.buildLevel1.01",
+     "key": "move"
+    }
+   ]
+  },
+  {
+   "id": "hint_slide_pipe",
+   "p": [
+    0,
+    1.5,
+    1.5
+   ],
+   "s": [
+    12,
+    3,
+    3
+   ],
+   "actions": [
+    {
+     "hint": "code.buildLevel1.03",
+     "key": "slide"
+    }
+   ]
+  },
+  {
+   "id": "bowl_mutts",
+   "p": [
+    0,
+    2,
+    -16
+   ],
+   "s": [
+    26,
+    5,
+    4
+   ],
+   "actions": [
+    {
+     "hint": "code.buildLevel1.05",
+     "key": "mutts"
+    },
+    {
+     "encounter": "bowl"
+    }
+   ]
+  },
+  {
+   "id": "beat_glitch",
+   "p": [
+    0,
+    1.5,
+    -22
+   ],
+   "s": [
+    30,
+    5,
+    4
+   ],
+   "actions": [
+    {
+     "beat": "l1_glitch"
+    }
+   ]
+  },
+  {
+   "_": "WEST SPOKE",
+   "id": "vault_approach",
+   "p": [
+    -44,
+    1.5,
+    -30
+   ],
+   "s": [
+    14,
+    4,
+    6
+   ],
+   "actions": [
+    {
+     "encounter": "vault"
+    }
+   ]
+  },
+  {
+   "id": "vault_hint",
+   "p": [
+    -46,
+    1.5,
+    -35
+   ],
+   "s": [
+    6,
+    3,
+    3
+   ],
+   "actions": [
+    {
+     "hint": "code.buildLevel1.15",
+     "key": "vault1"
+    }
+   ]
+  },
+  {
+   "id": "mast_base",
+   "p": [
+    -36,
+    2,
+    -66
+   ],
+   "s": [
+    12,
+    5,
+    6
+   ],
+   "actions": [
+    {
+     "hint": "code.expandScrapheap.07",
+     "key": "mast1"
+    },
+    {
+     "encounter": "mast"
+    }
+   ]
+  },
+  {
+   "id": "mast_nest",
+   "p": [
+    -36,
+    17.9,
+    -72
+   ],
+   "s": [
+    5,
+    3,
+    5
+   ],
+   "actions": [
+    {
+     "beat": "l1_mast"
+    },
+    {
+     "hint": "bs.scrapheap.hint_clamps",
+     "key": "clamps"
+    }
+   ]
+  },
+  {
+   "_": "NORTH SPOKE",
+   "id": "works_tower",
+   "p": [
+    11,
+    2,
+    -41
+   ],
+   "s": [
+    10,
+    6,
+    6
+   ],
+   "actions": [
+    {
+     "encounter": "works"
+    }
+   ]
+  },
+  {
+   "id": "works_belt_hint",
+   "p": [
+    4,
+    6.5,
+    -52
+   ],
+   "s": [
+    6,
+    4,
+    4
+   ],
+   "actions": [
+    {
+     "hint": "code.buildLevel1.07",
+     "key": "belt"
+    }
+   ]
+  },
+  {
+   "id": "works_reverser_hint",
+   "p": [
+    -9.25,
+    6.5,
+    -54.5
+   ],
+   "s": [
+    6,
+    3,
+    8
+   ],
+   "actions": [
+    {
+     "hint": "bs.scrapheap.hint_reverser",
+     "key": "reverser"
+    }
+   ]
+  },
+  {
+   "id": "hull_blast_door",
+   "p": [
+    0,
+    11.5,
+    -68.5
+   ],
+   "s": [
+    10,
+    6,
+    3
+   ],
+   "actions": [
+    {
+     "beat": "l1_mid"
+    },
+    {
+     "open": "blast_door"
+    },
+    {
+     "encounter": "hull"
+    }
+   ]
+  },
+  {
+   "id": "hull_vista",
+   "p": [
+    0,
+    17,
+    -86
+   ],
+   "s": [
+    8,
+    4,
+    8
+   ],
+   "actions": [
+    {
+     "banner": [
+      "code.buildLevel1.09",
+      "code.buildLevel1.10"
+     ],
+     "sec": 2.6
+    },
+    {
+     "beat": "l1_vista"
+    },
+    {
+     "hint": "code.buildLevel1.11",
+     "key": "railhint"
+    }
+   ]
+  },
+  {
+   "_": "EAST SPOKE",
+   "id": "row_gate",
+   "p": [
+    31,
+    2,
+    -12
+   ],
+   "s": [
+    5,
+    6,
+    16
+   ],
+   "actions": [
+    {
+     "banner": [
+      "code.expandScrapheap.03",
+      "code.expandScrapheap.04"
+     ],
+     "sec": 2.8
+    },
+    {
+     "beat": "l1_row"
+    },
+    {
+     "encounter": "row"
+    }
+   ]
+  },
+  {
+   "id": "lookout_hint",
+   "p": [
+    38,
+    3.5,
+    -66
+   ],
+   "s": [
+    5,
+    4,
+    5
+   ],
+   "actions": [
+    {
+     "hint": "code.buildLevel1.17",
+     "key": "perch1"
+    }
+   ]
+  },
+  {
+   "_": "BONEYARD",
+   "id": "boneyard_gate",
+   "p": [
+    -28,
+    2,
+    -104
+   ],
+   "s": [
+    4,
+    4,
+    10
+   ],
+   "actions": [
+    {
+     "hint": "code.buildAnnex.02",
+     "key": "annex"
+    }
+   ]
+  },
+  {
+   "id": "boneyard_shaft",
+   "p": [
+    -51,
+    7.5,
+    -104
+   ],
+   "s": [
+    5,
+    3,
+    4
+   ],
+   "actions": [
+    {
+     "hint": "code.buildAnnex.04",
+     "key": "shaft"
+    }
+   ]
+  },
+  {
+   "id": "boneyard_plaza",
+   "p": [
+    -72,
+    2,
+    -104
+   ],
+   "s": [
+    18,
+    4,
+    18
+   ],
+   "actions": [
+    {
+     "banner": [
+      "code.buildAnnex.07",
+      "code.buildAnnex.08"
+     ]
+    },
+    {
+     "encounter": "boneyard"
+    }
+   ]
+  },
+  {
+   "_": "BOSS",
+   "id": "lot_entry",
+   "p": [
+    0,
+    4,
+    -123
+   ],
+   "s": [
+    24,
+    6,
+    5
+   ],
+   "requires": [
+    "power",
+    "uplink"
+   ],
+   "forbids": [
+    "repo_down"
+   ],
+   "actions": [
+    {
+     "beat": "l1_repo"
+    },
+    {
+     "boss": "repo_tron"
+    }
+   ]
+  },
+  {
+   "_": "OUT OF BOUNDS quips (BS_LEVELS §2.12); cooldown 20 s like SPLASH_QUIPS",
+   "id": "oob_slag",
+   "p": [
+    -12.5,
+    -5.5,
+    -150
+   ],
+   "s": [
+    175,
+    4,
+    60
+   ],
+   "once": false,
+   "cooldown": 20,
+   "actions": [
+    {
+     "bark": "splash.06"
+    }
+   ]
+  },
+  {
+   "id": "oob_south",
+   "p": [
+    -12.5,
+    3,
+    18.8
+   ],
+   "s": [
+    175,
+    6,
+    2
+   ],
+   "once": false,
+   "cooldown": 20,
+   "actions": [
+    {
+     "bark": "splash.01"
+    }
+   ]
+  },
+  {
+   "id": "oob_west",
+   "p": [
+    -98.8,
+    3,
+    -50
+   ],
+   "s": [
+    2,
+    6,
+    140
+   ],
+   "once": false,
+   "cooldown": 20,
+   "actions": [
+    {
+     "bark": "splash.01"
+    }
+   ]
+  },
+  {
+   "id": "oob_east",
+   "p": [
+    73.8,
+    3,
+    -50
+   ],
+   "s": [
+    2,
+    6,
+    140
+   ],
+   "once": false,
+   "cooldown": 20,
+   "actions": [
+    {
+     "bark": "splash.01"
+    }
+   ]
+  }
+ ],
+ "secrets": [
+  {
+   "id": "S1",
+   "name": "Buried Vault",
+   "gate": "slide",
+   "reward": "vault_nano + ammo",
+   "flag": "secret_S1"
+  },
+  {
+   "id": "S2",
+   "name": "AIR PREMIUM blimp",
+   "gate": "tether",
+   "reward": "gold scrapheap.5",
+   "flag": "gold.scrapheap.5"
+  },
+  {
+   "id": "S3",
+   "name": "Pipe-top cache",
+   "gate": "grind_soles",
+   "reward": "memo.04 + 60 bolts",
+   "flag": "secret_S3"
+  },
+  {
+   "id": "S4",
+   "name": "Mama Gasket's mailbox",
+   "gate": "glide",
+   "reward": "100 bolts, denizen bark changes",
+   "flag": "secret_S4"
+  },
+  {
+   "id": "S5",
+   "name": "Junk processor crusher bay",
+   "gate": "thunder",
+   "reward": "crusher_nano",
+   "flag": "secret_S5"
+  },
+  {
+   "id": "S6",
+   "name": "Boneyard updraft vault",
+   "gate": "annex",
+   "reward": "nanotech +20 HP",
+   "flag": "secret_S6"
+  },
+  {
+   "id": "S7",
+   "name": "The Row's back shed",
+   "gate": "magma",
+   "reward": "80 bolts",
+   "flag": "secret_S7"
+  }
+ ],
+ "quest_hints": {
+  "_doc": "BS_LEVELS §0.6: while a quest is active and Bolt is within radius of an item/target, Sprocket barks once per cooldown",
+  "radius": 25,
+  "cooldown": 60,
+  "lines": {
+   "q1a": "bs.scrapheap.qhint_q1a",
+   "q1b": "bs.scrapheap.qhint_q1b",
+   "q1c": "bs.scrapheap.qhint_q1c",
+   "q1d": "bs.scrapheap.qhint_q1d"
+  }
+ },
+ "story": {
+  "intro_cutscene": "intro",
+  "garage_anchor": [
+   14,
+   0,
+   4
+  ],
+  "ship_anchor": [
+   -8,
+   0,
+   8
+  ],
+  "garage_rise": {
+   "h": 40,
+   "spin": 2.5,
+   "dur": 2.2,
+   "delay": 6.0
+  },
+  "return_cutscenes": [
+   "flyover0",
+   "arrive0"
+  ]
+ },
+ "splash_quips": [
+  "splash.05",
+  "splash.06",
+  "splash.01"
+ ],
+ "_doc_splash": "splash_quips: the out-of-bounds barks for this planet (BS_LEVELS 2.12: the oil-jelly ponds get the 2-star dive line); Bolt falls back to all six."
 }

@@ -239,3 +239,16 @@ Fixes:
 3. **Bellringer portals snapped onto furniture.** A portal's offset point could snap onto a bed top. Offsets that change height by more than 0.4 m now fall back to the portal point.
 4. **Closed-door test fixed.** "Does this path cross a closed door" is now a real plane crossing between the jambs (`ZombieDirector.door_crossed`). The old distance test rejected any path that merely started next to a door.
 5. **Cellar zone box** stops below the ceiling, so the yard above isn't counted as "cellar".
+
+**T-029, 2026-10-20: M3 lead work.**
+- **Super Sprocket's three modes all run** (GDD section 3.3), each tuned in `data/bs/sprocket.json`:
+  - **Bulwark** (picked when Bolt is hurting): Sprocket guards between Bolt and the nearest threat. Bolt takes 35% of each hit and regenerates 3/s. Enemy shots within 3.2 m of Bolt are denied, and Sprocket returns fire at half rate.
+  - **Zip** (picked against a crowd): a hop every 0.45 s, with a 14 × 2 damage burst within 2.2 m on each arrival.
+  - **Overclock** is unchanged.
+- **Per-planet splash quips:** each planet's level data can list `splash_quips` (BS_LEVELS's per-planet out-of-bounds tables); otherwise all six are used. Scrapheap uses splash.05, .06 and .01.
+- **Minimal star map** (`ui/bs/star_map`, `data/bs/planets.json`):
+  - planets in campaign order, with the `planetLocked` rules, gold counts and taglines
+  - travel to built planets
+  - opened from the planet summary's STAR MAP button, and from the hub once Scrapheap is cleared
+  - the full port (cockpit, mission tracker, travel sequence, flyovers) is M4
+- **M3 builders** work against `docs/M3_CONTRACTS.md`: A for the arsenal and Forge, B for Rustvane, C for Nova Plaza, D for enemies and bosses.

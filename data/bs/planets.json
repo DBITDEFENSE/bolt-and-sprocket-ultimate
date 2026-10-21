@@ -1,0 +1,67 @@
+{
+ "_doc": "Bolt & Sprocket planets for the star map (ui/bs/star_map.gd): campaign order CAMPAIGN = [0,1,5,6,7,9,2] (GDD 3.1, BS_LEVELS 10). index = the web build's LEVELS index (names/taglines come from data/bs_source/LEVELS.json). scene: the built planet ('' = not built yet). lock: always | cleared:<level_id> | cores:<n>. gold_total per BS_LEVELS 0.6.",
+ "campaign": [
+  {
+   "index": 0,
+   "level_id": "scrapheap",
+   "scene": "res://bs/planets/scrapheap/scrapheap.tscn",
+   "lock": "always",
+   "gold_total": 5
+  },
+  {
+   "index": 1,
+   "level_id": "rustvane",
+   "scene": "res://bs/planets/rustvane/rustvane.tscn",
+   "lock": "cleared:scrapheap",
+   "gold_total": 4
+  },
+  {
+   "index": 5,
+   "level_id": "nova_plaza",
+   "scene": "res://bs/planets/nova_plaza/nova_plaza.tscn",
+   "lock": "cleared:rustvane",
+   "gold_total": 4
+  },
+  {
+   "index": 6,
+   "level_id": "glacius",
+   "scene": "",
+   "lock": "cleared:rustvane",
+   "gold_total": 4,
+   "milestone": "M4"
+  },
+  {
+   "index": 7,
+   "level_id": "verdant",
+   "scene": "",
+   "lock": "cleared:rustvane",
+   "gold_total": 4,
+   "milestone": "M4"
+  },
+  {
+   "index": 9,
+   "level_id": "galleria",
+   "scene": "",
+   "lock": "cores:1",
+   "gold_total": 4,
+   "milestone": "M4"
+  },
+  {
+   "index": 2,
+   "level_id": "core_foundry",
+   "scene": "",
+   "lock": "cores:3",
+   "gold_total": 5,
+   "milestone": "M4"
+  }
+ ],
+ "text": {
+  "title": "STAR MAP",
+  "locked": "LOCKED",
+  "soon": "Arrives in %s",
+  "go": "GO",
+  "here": "HERE",
+  "clear": "CLEAR",
+  "back": "BACK"
+ }
+}

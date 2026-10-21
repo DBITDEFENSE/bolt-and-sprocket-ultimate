@@ -453,7 +453,7 @@ func test_super_activation_overclock_turret() -> void:
 	assert_eq(l.sprocket.damage_mult(), 1.0)
 
 
-func test_super_mode_pick_falls_back_to_overclock() -> void:
+func test_super_bulwark_shields_and_heals() -> void:
 	var l: MiniLevel = _level()
 	await get_tree().process_frame
 	var sp: SuperProtocol = l.sprocket.super_protocol
@@ -462,7 +462,41 @@ func test_super_mode_pick_falls_back_to_overclock() -> void:
 	BS.set_flag("super_seen")
 	l.bolt.hp = 10.0
 	assert_eq(sp.pick_mode(), &"bulwark", "hurting -> Bulwark")
-	sp.activate()
-	assert_eq(sp.requested_mode, &"bulwark")
-	assert_eq(sp.mode, &"overclock", "Bulwark runs as Overclock in M1")
+	assert_true(sp.activate())
+	assert_eq(sp.mode, &"bulwark", "Bulwark runs as itself (T-029)")
+	var before: float = l.bolt.hp
+	l.bolt.invuln = 0.0
+	l.bolt.take_damage(Combat.Hit.make(10.0))
+	assert_almost_eq(before - l.bolt.hp, 3.5, 0.01, "Bolt takes 35% of a hit")
+	var hp_now: float = l.bolt.hp
+	sp.update(1.0)
+	assert_almost_eq(l.bolt.hp, hp_now + 3.0, 0.01, "regenerates 3/s")
+	sp.end()
+	assert_eq(l.bolt.damage_taken_mult, 1.0, "the shield drops with the protocol")
+
+
+func test_super_zip_hops_between_enemies() -> void:
+	var l: MiniLevel = _level()
+	await get_tree().process_frame
+	var sp: SuperProtocol = l.sprocket.super_protocol
+	BS.super_owned = true
+	BS.super_meter = 1.0
+	BS.set_flag("super_seen")
+	var dummies: Array[TestDummy] = []
+	for i: int in 5:
+		var d: TestDummy = TestDummy.new()
+		l.add_child(d)
+		d.global_position = l.bolt.global_position + Vector3(-4.0 + i * 2.5, -0.95, -6)
+		dummies.append(d)
+	assert_eq(sp.pick_mode(), &"zip", "a crowd -> Zip")
+	assert_true(sp.activate())
+	assert_eq(sp.mode, &"zip")
+	for i: int in 6:
+		sp.update(0.5)
+	assert_gte(sp.hops, 5, "hops every 0.45 s")
+	var hit_count: int = 0
+	for d: TestDummy in dummies:
+		if d.total_damage() > 0.0:
+			hit_count += 1
+	assert_gte(hit_count, 3, "and spreads its bursts across the crowd")
 	sp.end()

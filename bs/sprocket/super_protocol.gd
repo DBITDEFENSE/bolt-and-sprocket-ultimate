@@ -5,16 +5,18 @@ extends Node
 ##          tier (GDD addition), only once the protocol is owned (BS.super_owned) and while it isn't running.
 ##          The mallet also adds 0.012 per combo hit (BoltMelee.combo_hit).
 ##   Activate: the super_sprocket action with a full meter. 30 s; everything hits twice as hard (damage_mult()).
-##   Modes picked from the situation: BULWARK (Bolt hurting), ZIP (a crowd), OVERCLOCK (otherwise).
-##   M1 implements OVERCLOCK only (the original's autonomous twin-cannon turret that zips between targets);
-##   BULWARK and ZIP are chosen and announced in `requested_mode`, but run as OVERCLOCK (`mode`).
+##   Modes picked from the situation (GDD section 3.3):
+##     OVERCLOCK (otherwise): the original's autonomous twin-cannon turret that zips between targets.
+##     BULWARK (Bolt hurting): shield and taunt. Sprocket guards between Bolt and the nearest threat, Bolt takes
+##       a fraction of every hit and regenerates, and enemy shots near Bolt are knocked down (T-029).
+##     ZIP (a crowd): Sprocket rams from enemy to enemy, a damage burst on every arrival (T-029).
 ## Child of Sprocket. Tuning: data/bs/sprocket.json "super".
 
 signal activated(mode: StringName, requested: StringName)
 signal ended
 
 const MODES: Array[StringName] = [&"overclock", &"bulwark", &"zip"]
-const IMPLEMENTED: Array[StringName] = [&"overclock"]
+const IMPLEMENTED: Array[StringName] = [&"overclock", &"bulwark", &"zip"]
 
 var C: Dictionary
 var sprocket: Node3D
@@ -28,6 +30,9 @@ var bark_t: float = 0.0
 var fire_acc: float = 0.0
 var zip: float = 0.0
 var combo_hits: int = 0
+var hop_t: float = 0.0
+var hops: int = 0
+var denied: int = 0
 var shots_fired: int = 0
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
@@ -117,6 +122,9 @@ func activate() -> bool:
 		BS.save_to_profile()
 	else:
 		EventBus.banner.emit(BSText.text("code.superActivate.04"), BSText.text("bs.ui.super." + String(requested_mode)), 1.2)
+	hop_t = 0.0
+	if mode == &"bulwark" and b != null:
+		b.damage_taken_mult = float(C["bulwark"]["damage_taken_mult"])
 	if sprocket != null and sprocket.has_method("on_super"):
 		sprocket.call("on_super", true)
 	activated.emit(mode, requested_mode)
@@ -128,6 +136,9 @@ func end() -> void:
 		return
 	active = false
 	target = null
+	var b: Bolt = _bolt()
+	if b != null:
+		b.damage_taken_mult = 1.0
 	if sprocket != null and sprocket.has_method("on_super"):
 		sprocket.call("on_super", false)
 	BSText.say("code.superEnd.01")
@@ -149,6 +160,10 @@ func update(dt: float) -> Vector3:
 		var ids: PackedStringArray = super_lines()
 		if not ids.is_empty():
 			BSText.say(ids[rng.randi_range(0, ids.size() - 1)])
+	if mode == &"bulwark":
+		return _update_bulwark(dt)
+	if mode == &"zip":
+		return _update_zip(dt)
 	if target == null or not is_instance_valid(target) or not target.call("is_alive") or retarget <= 0.0:
 		var best: Node3D = _nearest()
 		if best != null and best != target:
@@ -167,6 +182,75 @@ func update(dt: float) -> Vector3:
 		fire_acc = 0.0
 		fire_at(c)
 	return want
+
+
+## BULWARK: guard position between Bolt and the nearest threat; heal Bolt; swat enemy shots near Bolt.
+func _update_bulwark(dt: float) -> Vector3:
+	var B: Dictionary = C["bulwark"]
+	var b: Bolt = _bolt()
+	if b == null:
+		return Vector3.INF
+	b.heal(float(B["heal_per_s"]) * dt)
+	for n: Node in get_tree().get_nodes_in_group(&"enemy_projectiles"):
+		var pr: Node3D = n as Node3D
+		if pr != null and pr.global_position.distance_to(b.get_center()) < float(B["deny_radius"]) and pr.has_method("deny"):
+			pr.call("deny")
+			denied += 1
+	var threat: Node3D = _nearest()
+	var dir: Vector3 = -b.global_basis.z
+	if threat != null:
+		dir = threat.global_position - b.global_position
+		dir.y = 0.0
+		dir = dir.normalized() if dir.length() > 0.01 else -b.global_basis.z
+		fire_acc += dt
+		if fire_acc > float(C["fire_interval"]) * 2.0:   # it still returns fire, at half the turret's rate
+			fire_acc = 0.0
+			fire_at(threat.call("get_center"))
+	return b.global_position + dir * float(B["guard_distance"]) + Vector3.UP * float(B["guard_height"])
+
+
+## ZIP: hop to the next mark every hop_interval and burst on arrival.
+func _update_zip(dt: float) -> Vector3:
+	var Z: Dictionary = C["zip"]
+	hop_t -= dt
+	if target == null or not is_instance_valid(target) or not target.call("is_alive"):
+		target = _nearest()
+	if target == null:
+		return Vector3.INF
+	var c: Vector3 = target.call("get_center")
+	if hop_t <= 0.0:
+		hop_t = float(Z["hop_interval"])
+		zip = float(C["zip_time"])
+		hops += 1
+		for e: Node3D in Combat.in_radius(get_tree(), c, float(Z["hop_radius"]), &"enemies"):
+			if e.is_in_group(&"props") or not e.call("is_alive"):
+				continue
+			var h: Combat.Hit = Combat.Hit.new()
+			h.amount = float(Z["hop_damage"]) * damage_mult()
+			h.type = Combat.Type.KINETIC
+			h.source = sprocket
+			h.weapon_id = &"super_sprocket"
+			h.point = e.call("get_center")
+			h.dir = (h.point - c).normalized() if h.point.distance_to(c) > 0.01 else Vector3.UP
+			h.knock = 3.0
+			e.call("take_damage", h)
+		target = _next_mark(target)   # the next hop goes somewhere else
+	return c + Vector3.UP * 0.9
+
+
+## The closest live enemy to `from_e` that isn't it (falls back to the nearest to Bolt).
+func _next_mark(from_e: Node3D) -> Node3D:
+	var best: Node3D = null
+	var bd: float = float(C["zip"]["hop_range"])
+	for n: Node in get_tree().get_nodes_in_group(&"enemies"):
+		var e: Node3D = n as Node3D
+		if e == null or e == from_e or e.is_in_group(&"props") or not e.call("is_alive"):
+			continue
+		var d: float = e.global_position.distance_to(from_e.global_position)
+		if d < bd:
+			bd = d
+			best = e
+	return best if best != null else _nearest()
 
 
 func _nearest() -> Node3D:

@@ -63,7 +63,15 @@ func on_level_ready() -> void:
 	pass
 
 
+## This planet's out-of-bounds splash quips (line ids, from the level data's "splash_quips"; empty = all six).
+var splash_quips: PackedStringArray = []
+
+
 func _ready() -> void:
+	if level_id != "" and Data.has_table("bs/levels/" + level_id):
+		var ld: Variant = Data.table("bs/levels/" + level_id)
+		if ld is Dictionary:
+			splash_quips = PackedStringArray((ld as Dictionary).get("splash_quips", []))
 	# The shared game hosts several modes: B&S bindings back on, Gravelight's overlays off (T-024).
 	Game.set_mode(Game.Mode.BOLT_AND_SPROCKET)
 	if Engine.has_singleton(&"GLSettings") or get_node_or_null(^"/root/GLSettings") != null:
@@ -292,7 +300,7 @@ func complete_level() -> void:
 	for k: Variant in BS.flags.keys():
 		if str(k).begins_with("gold.%s." % level_id) and BS.flag(str(k)):
 			gold += 1
-	hud.show_summary(level_name if level_name != "" else level_id.to_upper(), level_bolts, "%d / %d" % [gold, gold_total], level_time, quit_to_menu)
+	hud.show_summary(level_name if level_name != "" else level_id.to_upper(), level_bolts, "%d / %d" % [gold, gold_total], level_time, to_star_map)
 	level_completed.emit(level_id)
 
 
@@ -300,6 +308,12 @@ func restart_level() -> void:
 	get_tree().paused = false
 	BS.ui_block = 0
 	get_tree().reload_current_scene.call_deferred()
+
+
+## The summary's STAR MAP button (html.btnMap): pick the next planet (M3 minimal star map; full port in M4).
+func to_star_map() -> void:
+	BS.save_to_profile()
+	StarMap.open(get_tree())
 
 
 func quit_to_menu() -> void:

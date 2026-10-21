@@ -291,14 +291,28 @@ func _recover(dmg: float, splash: bool) -> void:
 	_settle_after_teleport()
 	if splash and _splash_quip_cd <= 0.0:
 		_splash_quip_cd = 20.0
-		var n: int = (Data.table("bs/story/barks")["out_of_bounds"] as Array).size() if Data.table("bs/story/barks")["out_of_bounds"] is Array else 0
-		if n > 0:
-			EventBus.bark.emit("splash.%02d" % randi_range(1, n))
+		# the planet's own out-of-bounds quips (BS_LEVELS per-planet tables), else the web build's six
+		var pool: PackedStringArray = []
+		var scene: Node = get_tree().current_scene
+		if scene != null and scene.get("splash_quips") is PackedStringArray:
+			pool = scene.get("splash_quips")
+		if pool.is_empty():
+			var all: Variant = Data.table("bs/story/barks")["out_of_bounds"]
+			if all is Array:
+				for e: Variant in all:
+					pool.append(str((e as Dictionary)["id"]))
+		if not pool.is_empty():
+			EventBus.bark.emit(pool[randi_range(0, pool.size() - 1)])
+
+
+## Scales every hit Bolt takes (Super Sprocket's Bulwark shield sets it below 1 while it runs).
+var damage_taken_mult: float = 1.0
 
 
 func take_damage(hit: Combat.Hit, ignore_invuln: bool = false) -> bool:
 	if dead or (invuln > 0.0 and not ignore_invuln) or BS.god_mode:
 		return false
+	hit.amount *= damage_taken_mult
 	hp = maxf(0.0, hp - hit.amount)
 	invuln = maxf(invuln, 0.6)
 	if hit.knock > 0.0 and hit.dir != Vector3.ZERO:

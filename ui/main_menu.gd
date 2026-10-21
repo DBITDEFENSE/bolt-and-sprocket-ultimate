@@ -271,6 +271,9 @@ func launch_bolt_and_sprocket() -> bool:
 		if _status != null:
 			_status.text = BSText.text("bs.ui.menu.bs_missing")
 		return false
+	if BS.flag("cleared.scrapheap"):
+		StarMap.open(get_tree())   # past planet 1: choose where to go
+		return true
 	BSLevel.pending_cutscene = "intro" if not BS.flag("cs.intro") else ""
 	get_tree().change_scene_to_file.call_deferred(BS_FIRST_LEVEL)
 	return true
