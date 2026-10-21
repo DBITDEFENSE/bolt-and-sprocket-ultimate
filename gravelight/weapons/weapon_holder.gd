@@ -275,7 +275,8 @@ func give_tactical(id: StringName) -> void:
 
 ## Puppet holder on the host: the change must also happen on the owner's machine. Returns true if sent.
 func _forward_op(op: StringName, args: Array) -> bool:
-	if mirror and Net.replicating() and player != null:
+	if mirror and Net.replicating() and player != null and not player.is_bot:
+
 		player._forward(&"inv", [op, args])
 		return true
 	return false

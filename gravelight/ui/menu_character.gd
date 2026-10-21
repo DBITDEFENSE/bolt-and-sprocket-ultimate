@@ -47,6 +47,7 @@ func _pick(id: String) -> void:
 
 func _build_maps() -> void:
 	content.add_child(MenuKit.para("Survivor: %s" % _picked.capitalize(), 20, MenuKit.GOLD))
+	_build_squad()
 	for m: Array in MAPS:
 		var id: StringName = StringName(m[0])
 		var open: bool = ProfileSave.is_map_unlocked(id)
@@ -70,10 +71,44 @@ func _unpick() -> void:
 	rebuild()
 
 
+## AI teammates (T-031): 0-3 bots that take the other survivors, and their skill. Remembered in the settings.
+func _build_squad() -> void:
+	var c: Dictionary = BotConfig.cfg()
+	var bots: int = BotConfig.clamp_bots(c, int(GLSettings.values.get("bots", 0)))
+	var skill: String = str(GLSettings.values.get("bot_skill", c.get("skill_default", "regular")))
+	var row: HBoxContainer = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	content.add_child(row)
+	var names: Array = ["Squad: just you", "Squad: you + 1 bot", "Squad: you + 2 bots", "Squad: you + 3 bots"]
+	var b: Button = MenuKit.button(str(names[mini(bots, names.size() - 1)]), func() -> void:
+		GLSettings.set_value("bots", BotConfig.clamp_bots(c, (bots + 1) % (int(c.get("max_bots", 3)) + 1)))
+		rebuild(), 22)
+	b.custom_minimum_size = Vector2(300, 44)
+	row.add_child(b)
+	var s: Button = MenuKit.button("Bot skill: %s" % skill.capitalize(), func() -> void:
+		GLSettings.set_value("bot_skill", BotConfig.next_skill(c, skill))
+		rebuild(), 22)
+	s.custom_minimum_size = Vector2(240, 44)
+	s.disabled = bots <= 0
+	row.add_child(s)
+	if bots > 0:
+		var others: Array[StringName] = BotConfig.assign_characters([_picked], bots)
+		var who: PackedStringArray = []
+		for ch: StringName in others:
+			who.append(str(Net.DISPLAY.get(String(ch), String(ch))))
+		content.add_child(MenuKit.para("%s fight alongside you: they follow, shoot, rebuild boards, buy their own guns, open doors with their own Scrip, and revive you (and you them). Zombies scale as for %d players." % [
+
+			" and ".join(who) if who.size() <= 2 else ", ".join(who.slice(0, who.size() - 1)) + " and " + who[who.size() - 1],
+			BotConfig.scaled_player_count(1, bots, c)], 16, MenuKit.DIM))
+
+
 func _start(scene: String) -> void:
 	if scene == "":
 		return
+	GameState.bot_count = BotConfig.clamp_bots(BotConfig.cfg(), int(GLSettings.values.get("bots", 0)))
+	GameState.bot_skill = str(GLSettings.values.get("bot_skill", "regular"))
 	get_tree().change_scene_to_file(scene)
+
 
 
 func _unhandled_input(event: InputEvent) -> void:

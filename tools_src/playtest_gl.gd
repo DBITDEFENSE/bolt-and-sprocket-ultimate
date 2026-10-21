@@ -4,8 +4,9 @@ extends Node
 ## at a capped human turn rate with aim noise. Shoots heads, reloads, retreats from crowds along the navmesh,
 ## repairs barricades, buys wall guns / ammo / doors / power / perks. Watches for bugs while it plays:
 ## stuck or fallen zombies, stalled rounds, a stuck player, failed purchases, and reports every round.
-##   godot --headless --audio-driver Dummy --fixed-fps 60 --path . res://tools_src/playtest_gl.tscn -- --rounds=10 [--map=map00] [--god] [--seed=1]
+##   godot --headless --audio-driver Dummy --fixed-fps 60 --path . res://tools_src/playtest_gl.tscn -- --rounds=10 [--map=map00] [--god] [--seed=1] [--bots=3] [--bot-skill=regular]
 ## Prints "[bot] ..." lines and a final "[bot] REPORT" block. Own save profile (deleted afterwards).
+## --bots=N (T-031) plays with N AI teammates: the report then adds the squad's kills, downs and revives.
 
 const MAPS: Dictionary = {
 	"map00": "res://gravelight/maps/map00_crossroads/map00.tscn",
@@ -21,6 +22,11 @@ const MAX_MINUTES: float = 75.0       # game-time safety cap
 var target_rounds: int = 10
 var god: bool = false
 var map_key: String = "map00"
+var bots: int = 0
+var bot_kills: int = 0
+var bot_downs: int = 0
+var revived_by_bot: int = 0
+var bot_revives: int = 0
 var map: Node3D
 var player: Player
 var director: ZombieDirector
@@ -88,8 +94,13 @@ func _ready() -> void:
 			_shots_dir = a.substr(8)   # rendered runs only: a screenshot every 12 s of game time
 		elif a.begins_with("--seed="):
 			rng.seed = int(a.substr(7))
+		elif a.begins_with("--bots="):
+			bots = int(a.substr(7))
+		elif a.begins_with("--bot-skill="):
+			GameState.bot_skill = a.substr(12)
 	ProfileSave.path = PROFILE
 	ProfileSave.profile = ProfileSave.new_profile()
+	GameState.bot_count = bots
 	map = (load(MAPS[map_key]) as PackedScene).instantiate() as Node3D
 	get_tree().root.add_child.call_deferred(map)
 	get_tree().set_deferred("current_scene", map)
@@ -98,7 +109,15 @@ func _ready() -> void:
 			kills += 1
 			_round_kills += 1
 			if limb == &"head":
-				heads += 1)
+				heads += 1
+		elif GameState.is_bot(by):
+			bot_kills += 1)
+	GLBus.player_revived.connect(func(p: int, by: int) -> void:
+		if p == 1 and GameState.is_bot(by):
+			revived_by_bot += 1
+			print("[bot] revived by %s in round %d" % [Net.display_name(by), RoundManager.current_round])
+		elif GameState.is_bot(p) and GameState.is_bot(by):
+			bot_revives += 1)
 	GLBus.enemy_damaged.connect(func(_e: StringName, _l: StringName, _a: float, by: int) -> void:
 		if by == 1:
 			hits += 1)
@@ -112,7 +131,11 @@ func _ready() -> void:
 				str(nz.enemy_id) if nz else "-", nz.global_position.distance_to(player.global_position) if nz else -1.0,
 				Zombie.State.keys()[nz.state] if nz else "-", _path_i, _path.size(), _target != null, w.id if w else &"-", w.mag if w else -1,
 				player.weapons.is_busy(), str(_goal.get("kind", "-")) + " reserve %d" % (w.reserve if w else -1)]))
-	GLBus.player_downed.connect(func(_p: int) -> void:
+	GLBus.player_downed.connect(func(p: int) -> void:
+		if GameState.is_bot(p):
+			bot_downs += 1
+			print("[bot] teammate %s DOWNED in round %d" % [Net.display_name(p), RoundManager.current_round])
+			return
 		downs += 1
 		print("[bot] DOWNED in round %d at %s (hp events this round %.0f)" % [RoundManager.current_round, _v(player.global_position), _round_dmg]))
 	GLBus.round_started.connect(_on_round_started)
@@ -813,7 +836,14 @@ func _finish(why: String) -> void:
 	var p50: float = _phys_us[_phys_us.size() / 2] if not _phys_us.is_empty() else 0.0
 	var p99: float = _phys_us[int(_phys_us.size() * 0.99)] if not _phys_us.is_empty() else 0.0
 	print("[bot] REPORT ----------------------------------------------------")
-	print("[bot] end: %s | round %d | game time %.1f min | god=%s" % [why, RoundManager.current_round, _t / 60.0, god])
+	print("[bot] end: %s | round %d | game time %.1f min | god=%s | bots=%d" % [why, RoundManager.current_round, _t / 60.0, god, bots])
+	if bots > 0:
+		print("[bot] squad: bot kills %d (vs mine %d), bot downs %d, bots revived me %d times, bots revived each other %d times" % [bot_kills, kills, bot_downs, revived_by_bot, bot_revives])
+		var sq: BotSquad = get_tree().get_first_node_in_group(&"bot_squad") as BotSquad
+		if sq != null:
+			for line: String in sq.report():
+				print("[bot]   ", line)
+
 	print("[bot] kills %d (headshots %d, %.0f%%) | trigger pulls %d | downs %d | damage taken %.0f" % [
 		kills, heads, 100.0 * heads / maxf(1, kills), shots, downs, damage_taken])
 	print("[bot] rounds fired %d, hit events %d (%.0f%% hit rate), %.1f rounds per kill" % [fired, hits, 100.0 * hits / maxf(1, fired), fired / maxf(1, kills)])

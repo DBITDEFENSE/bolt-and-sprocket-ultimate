@@ -1,0 +1,194 @@
+{
+  "_doc": "AI teammates (T-031). Tuning for gravelight/bots/*.gd; pure rules in bot_config.gd, unit-tested in gravelight/tests/unit/test_bots.gd.",
+  "max_bots": 3,
+  "scaling": {
+    "_doc": "Each bot counts as this many players for zombie counts, the Foreman's health and the Bellringer count (rounded, capped at 4). 1.0 = exactly like a human teammate.",
+    "bot_player_weight": 0.75
+  },
+  "skill_default": "regular",
+  "skill_order": [
+    "green",
+    "regular",
+    "veteran"
+  ],
+  "skills": {
+    "green": {
+      "reaction_s": [
+        0.45,
+        0.8
+      ],
+      "turn_rate": 4.5,
+      "aim_error_deg": 5.0,
+      "settle_error_deg": 1.8,
+      "settle_s": 0.7,
+      "head_aim_chance": 0.2,
+      "fire_tolerance_deg": 4.0,
+      "semi_max_rpm": 200,
+      "spread_mult": 1.3,
+      "burst_s": [
+        0.25,
+        0.55
+      ],
+      "burst_pause_s": [
+        0.3,
+        0.6
+      ],
+      "damage_taken_mult": 1.0
+    },
+    "regular": {
+      "reaction_s": [
+        0.3,
+        0.6
+      ],
+      "turn_rate": 6.0,
+      "aim_error_deg": 3.5,
+      "settle_error_deg": 1.1,
+      "settle_s": 0.5,
+      "head_aim_chance": 0.35,
+      "fire_tolerance_deg": 3.0,
+      "semi_max_rpm": 240,
+      "spread_mult": 1.1,
+      "burst_s": [
+        0.3,
+        0.7
+      ],
+      "burst_pause_s": [
+        0.2,
+        0.45
+      ],
+      "damage_taken_mult": 1.0
+    },
+    "veteran": {
+      "reaction_s": [
+        0.2,
+        0.42
+      ],
+      "turn_rate": 8.0,
+      "aim_error_deg": 2.5,
+      "settle_error_deg": 0.7,
+      "settle_s": 0.35,
+      "head_aim_chance": 0.5,
+      "fire_tolerance_deg": 2.5,
+      "semi_max_rpm": 280,
+      "spread_mult": 1.0,
+      "burst_s": [
+        0.4,
+        0.9
+      ],
+      "burst_pause_s": [
+        0.15,
+        0.3
+      ],
+      "damage_taken_mult": 0.9
+    }
+  },
+  "perception": {
+    "think_hz": 8.0,
+    "engage_range_m": 26.0,
+    "los_checks_per_think": 3,
+    "eye_height": 1.55
+  },
+  "follow": {
+    "near_m": 2.5,
+    "far_m": 6.5,
+    "slot_radius_m": 3.2,
+    "slot_angles_deg": [
+      140,
+      -140,
+      180
+    ],
+    "repath_s": 0.6,
+    "line_of_fire_cone_deg": 20,
+    "line_of_fire_range_m": 16,
+    "catchup_sprint_m": 11.0,
+    "teleport_after_s": 8.0,
+    "teleport_min_dist_m": 14.0,
+    "door_keepout_m": 1.3
+  },
+  "combat": {
+    "kill_share": {
+      "_doc": "When the human has fewer than human_min_share of the last window kills (once min_sample kills are logged), bots leave zombies the human is aiming at alone unless they threaten someone.",
+      "human_min_share": 0.45,
+      "window": 24,
+      "min_sample": 6,
+      "human_cone_deg": 22,
+      "threat_radius_m": 4.0
+    },
+    "window_target_priority": 0.35,
+    "melee_range_m": 1.7,
+    "danger_radius_m": 3.0,
+    "crowd_count": 3,
+    "flee_hp_frac": 0.4,
+    "moving_spread_mult": 1.7,
+    "damage_mult": 1.0,
+    "round_start_pistol_refill": true,
+    "backpedal_radius_m": 2.6,
+    "_doc": "window_target_priority raises zombies at windows; a bot backs away from anything closer than backpedal_radius_m while it shoots; melee_range_m is the knife; danger_radius_m / crowd_count / flee_hp_frac decide when it kites instead."
+  },
+  "revive": {
+    "safe_radius_m": 3.0,
+    "risk_bleed_s": 15.0,
+    "reach_m": 1.4
+  },
+  "repair": {
+    "radius_m": 9.0,
+    "max_from_leader_m": 14.0,
+    "quiet_radius_m": 7.0
+  },
+  "shopping": {
+    "max_from_leader_m": 24.0,
+    "weapon_wishlist": [
+      "bar",
+      "stg44",
+      "thompson",
+      "mp40",
+      "gewehr43",
+      "m1_garand",
+      "m1_carbine",
+      "trench_gun",
+      "kar98k"
+    ],
+    "weapon_buffer_scrip": 150,
+    "ammo_below_frac": 0.35,
+    "perk_wishlist": [
+      "hawkeye_brandy",
+      "second_wind",
+      "twin_barrel",
+      "trigger_tonic"
+    ],
+    "max_perks": 2,
+    "perk_min_round": 3,
+    "perk_buffer_scrip": 400,
+    "errand_timeout_s": 20.0,
+    "_doc": "What a bot spends its own Scrip on between fights, within max_from_leader_m of the leader: wall guns from the wishlist (best affordable first, keeping weapon_buffer_scrip), ammo for a held gun under ammo_below_frac, up to max_perks cheap perks from perk_min_round, doors (see doors) and the Crucible upgrade (see crucible).",
+    "doors": {
+      "_doc": "Bots buy closed doors: enabled, when scrip >= cost + reserve_scrip, at least round_delay_s after the round started, at most max_per_round_per_bot per bot per round; the door the human is looking at (within human_look_cone_deg) or nearest to is preferred (near_bonus_m - distance), within max_from_leader_m of the leader. Doors needing the power wait for it.",
+      "enabled": true,
+      "reserve_scrip": 300,
+      "round_delay_s": 20.0,
+      "max_per_round_per_bot": 1,
+      "human_look_cone_deg": 35.0,
+      "near_bonus_m": 14.0,
+      "max_from_leader_m": 30.0
+    },
+    "crucible": {
+      "_doc": "The Crucible upgrade for the gun in hand when the map has one: from min_round, when scrip >= the upgrade price + reserve_scrip; the bot feeds the gun, waits for the forge and takes the result.",
+      "enabled": true,
+      "reserve_scrip": 500,
+      "min_round": 8
+    }
+  },
+  "callouts": {
+    "cooldown_s": 7.0,
+    "chance": {
+      "DOWN": 1.0,
+      "REVIVE": 0.6,
+      "REVIVED": 0.7,
+      "AMMO_NONE": 0.3,
+      "FOREMAN": 0.6,
+      "SCREAMER": 0.6,
+      "HEADSHOT": 0.04,
+      "CRAWLER": 0.05
+    }
+  }
+}

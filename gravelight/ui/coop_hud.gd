@@ -3,6 +3,8 @@ extends CanvasLayer
 ##  - the squad ledger (left): each survivor's name in their colour, Scrip, and DOWN / BLED OUT
 ##  - "<name> is down" markers on screen (clamped to the edges) with the distance, so a teammate can be found
 ##  - your own last stand: the bleed-out bar and "being revived by ..."; spectating after bleeding out
+## Solo with AI teammates (T-031) uses the same ledger through the offline session: bots show their health
+## (known here) and everyone's kills come from the BotSquad's count.
 
 const INK: Color = Color(0.62, 0.09, 0.08)
 const PAPER: Color = Color(0.93, 0.89, 0.8)
@@ -128,8 +130,20 @@ func _update_list(s: NetMatch) -> void:
 		elif s.coop.is_dead(pid2):
 			state = "  BLED OUT"
 		var me: String = " (you)" if pid2 == Net.local_player_id() else ""
-		row.text = "■ %-7s ǂ%-6d%s%s" % [Net.display_name(pid2), Economy.get_scrip(pid2), state, me]
+		var p: Player = s.players[pid2] as Player
+		var extra: String = ""
+		if p != null and p.is_bot and state == "":
+			extra = "  %s" % _health_bar(p.health_fraction())
+		var sq: BotSquad = get_tree().get_first_node_in_group(&"bot_squad") as BotSquad
+		if sq != null:
+			extra += "  %d kills" % int(sq.kills.get(pid2, 0))
+		row.text = "■ %-7s ǂ%-6d%s%s%s" % [Net.display_name(pid2), Economy.get_scrip(pid2), extra, state, me]
 		row.add_theme_color_override("font_color", Net.player_color(pid2) if state == "" else INK.lightened(0.35))
+
+
+static func _health_bar(frac: float) -> String:
+	var n: int = clampi(int(ceil(frac * 5.0)), 0, 5)
+	return "▮".repeat(n) + "▯".repeat(5 - n)
 
 
 func _update_center(s: NetMatch) -> void:

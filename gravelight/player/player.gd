@@ -9,6 +9,11 @@ extends CharacterBody3D
 ## interpolated network state, a mirrored inventory (WeaponHolder.mirror) for host-side rules, and calls that
 ## must reach the owner (take_hit, apply_status, apply_knockback) forwarded to them. In co-op a downed player
 ## crawls with a pistol (last stand) until revived or bled out; bled out = spectate until the next round.
+##
+## AI teammates (T-031): a bot is a remote-style Player (`is_local = false, is_bot = true`) that lives on this
+## machine: it collides with the world, takes damage and goes down here instead of forwarding to an owner, and a
+## BotBrain child moves it, aims it and fires its weapons. Its RemoteBody is the same third-person body a co-op
+## teammate has.
 
 signal prompt_denied
 
@@ -32,11 +37,15 @@ var player_id: int = 1
 var character_id: StringName = &"dutch"
 ## false = a teammate's puppet on this peer (set by the map before add_child).
 var is_local: bool = true
+## An AI teammate (with is_local = false): simulated here, driven by its BotBrain (set before add_child).
+var is_bot: bool = false
 var remote_body: RemoteBody = null
 var last_stand: bool = false      # co-op: downed and crawling with a pistol
 var spectating: bool = false      # co-op: bled out, watching a teammate until the next round
 var net_flags: int = 0            # remote: the last replicated state flags (see NetMatch.PF_*)
 var interp: InterpBuffer = null   # remote: interpolation samples
+var bot_damage_mult: float = 1.0  # bot: skill preset damage_taken_mult (bots.json)
+
 var camera: Camera3D
 var head: Node3D
 var weapons: WeaponHolder
@@ -135,6 +144,11 @@ func _ready_remote() -> void:
 	add_to_group(&"players")
 	collision_layer = LAYER_PLAYER
 	collision_mask = 0
+	if is_bot:
+		add_to_group(&"bots")
+		collision_mask = MASK_MOVE   # a bot walks the world itself
+		floor_max_angle = deg_to_rad(46.0)
+		floor_snap_length = 0.35
 	max_hp = float(_cfg["max_health"])
 	hp = max_hp
 	character_id = GameState.character_of(player_id)
@@ -162,8 +176,11 @@ func _ready_remote() -> void:
 	remote_body.name = "Body"
 	add_child(remote_body)
 	remote_body.setup(character_id, player_id)
-	interp = InterpBuffer.new()
+	if not is_bot:
+		interp = InterpBuffer.new()
 	GLBus.perks_changed.connect(_on_perks_changed)
+	if is_bot:
+		GLBus.player_status.connect(_on_player_status)
 
 
 # ---------------------------------------------------------------- input
@@ -251,7 +268,8 @@ func _gather_intent() -> Dictionary:
 
 func _physics_process(delta: float) -> void:
 	if not is_local:
-		_remote_tick(delta)
+		if not is_bot:
+			_remote_tick(delta)   # a bot's BotBrain moves it
 		return
 	if GameState.phase != GameState.Phase.PLAYING or downed or spectating:
 		_set_heartbeat(false)
@@ -446,14 +464,14 @@ func _head_blocked() -> bool:
 
 ## Timed status effects from enemies (data/enemies.json "status"). Refreshes, never stacks.
 func apply_status(effect: StringName, seconds: float) -> void:
-	if not is_local:
+	if not is_local and not is_bot:
 		_forward(&"status", [effect, seconds])
 		return
 	if downed:
 		return
 	_status[effect] = maxf(float(_status.get(effect, 0.0)), seconds)
 	var def: Dictionary = (GLData.table("enemies").get("status", {}) as Dictionary).get(String(effect), {})
-	if bool(def.get("fx", false)):
+	if bool(def.get("fx", false)) and is_local:
 		if _status_fx == null or not is_instance_valid(_status_fx):
 			_status_fx = (load("res://gravelight/ui/status_fx.gd") as GDScript).new() as CanvasLayer
 			add_child(_status_fx)
@@ -483,7 +501,7 @@ func _status_flag(key: String) -> bool:
 
 ## Shoves the player (Foreman jab, slam, charge).
 func apply_knockback(impulse: Vector3) -> void:
-	if not is_local:
+	if not is_local and not is_bot:
 		_forward(&"knock", [impulse])
 		return
 	impulse.y = 0.0
@@ -690,16 +708,21 @@ func is_alive() -> bool:
 func take_hit(amount: float, _source: Node) -> void:
 	if downed or spectating or GameState.phase != GameState.Phase.PLAYING:
 		return
-	if not is_local:
+	if not is_local and not is_bot:
 		_forward(&"hit", [amount])   # the owner applies it (their health is theirs, D-065)
 		return
-	if GameState.god_mode:
+	if GameState.god_mode and is_local:
 		GLBus.player_damaged.emit(player_id, 0.0)
 		return
+	if is_bot:
+		amount *= bot_damage_mult
 	hp -= amount
 	_since_hit = 0.0
 	_shake = maxf(_shake, 0.35)
-	AudioDirector.play_2d("player_hurt", -2.0)
+	if is_bot:
+		AudioDirector.play_3d("player_hurt", global_position + Vector3.UP * 1.3, -6.0)
+	else:
+		AudioDirector.play_2d("player_hurt", -2.0)
 	GLBus.player_damaged.emit(player_id, amount)
 	if hp <= 0.0:
 		hp = 0.0
@@ -709,7 +732,7 @@ func take_hit(amount: float, _source: Node) -> void:
 func down() -> void:
 	if downed:
 		return
-	if not is_local:
+	if not is_local and not is_bot:
 		_forward(&"down", [])
 		return
 	downed = true
@@ -738,7 +761,10 @@ func _enter_last_stand() -> void:
 	last_stand = true
 	crouching = false
 	weapons.enter_last_stand()
-	AudioDirector.play_2d("player_hurt", 0.0, 0.0)
+	if is_bot:
+		AudioDirector.play_3d("player_hurt", global_position + Vector3.UP, -2.0, 0.0)
+	else:
+		AudioDirector.play_2d("player_hurt", 0.0, 0.0)
 
 
 func _last_stand_tick(delta: float) -> void:
@@ -880,7 +906,8 @@ func remote_fire(kind: int, weapon_id: StringName, origin: Vector3, end: Vector3
 
 func flash_prompt_denied() -> void:
 	if not is_local:
-		_forward(&"deny", [])
+		if not is_bot:
+			_forward(&"deny", [])
 		return
 	prompt_denied.emit()
 

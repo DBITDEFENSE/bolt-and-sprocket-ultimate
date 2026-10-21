@@ -74,3 +74,14 @@ Its recommended-source tables (characters, props, textures, audio) stay valid fo
 
 ## GRAVELIGHT module (migrated M2)
 Everything under `gravelight/assets` and `gravelight/audio` is original procedural or synthesized work from the GRAVELIGHT project (see its own docs/ASSETS.md in `docs/gravelight/`). No third-party assets.
+
+### Map 0 art pass (cellar, staircase, pictures)
+All code-built, nothing downloaded (`gravelight/world/materials.gd` `_build_map0`, `gravelight/world/props.gd` Map 0 section, `gravelight/tools_src/gen_map00.gd`):
+- **Stone shader** (`cellar_stone`, `cellar_floor`, `limewash`): world-space coursed rubble / flagstones with ragged joints, a damp band above the floor and wet patches. `brick_cellar` reuses the Map 1 brick shader with cellar tones.
+- **Painting shader** (`painting:<style>:<n>`): the framed pictures are procedural canvases (landscape, bust portrait without a face, hunting print with a stag, faded group photograph of figure silhouettes, inn licence, still life) built from gradients, value noise and simple shapes, then aged. No real people, places or logos; the "inn licence" text is bars, not words.
+- Cellar props (barrels, preserves shelves, wine rack, coal chute, pendant bulbs, cobwebs, puddles, workbench, Helvetia Automaten AG crates) and the stair furniture (newels, balusters, runner with brass rods, sloped wainscot) are primitives with the library's triplanar materials.
+
+### Starting pistol and the Requisition Crate (art pass)
+All code-built (`gravelight/weapons/weapon_models.gd`, `gravelight/world/crate_art.gd`, `gravelight/world/mystery_crate.gd`):
+- **M1911 viewmodel**: a 1911-pattern service pistol built at real scale from cross-section extrusions (`xsec`) and profiles. Two-tone parkerized phosphate materials (`park_slide` / `park_frame`, noise-mottled) and checkered walnut grips (`wood_check`: the walnut grain multiplied by a procedural diamond-checker tile, `_checker_tex`). The only marking is an invented arsenal stamp (dash bars and a proof ring), no maker's names.
+- **Lost Requisition Crate**: an original ordnance crate on skids (horizontal planks over a dark shell, iron corner brackets and straps with rivets, rope handles, a hasp under a wax seal, an invented "LOS 44-117" stencil, a Helvetia Automaten AG brass plate, a chalk sigil); a planked lid on strap hinges that stands up as a backdrop, its underside lined and cracked with Nachtglas veins; violet light motes (CPUParticles3D) while open. Each spot has a lantern on a hooked iron stake (lit only where the crate is) and a chalk footprint on the floor. No "?" glyph, no teddy bear, nothing from any commercial game.

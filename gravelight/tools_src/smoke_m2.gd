@@ -120,6 +120,12 @@ func _run() -> void:
 	await _walk_forward(1.0)
 	_check(w.mag == w.mag_size(), "Resupply refilled ammo")
 
+	# ---- the Crucible (T-032): in the cellar, dark until the lever
+	var cru: Crucible = get_tree().get_first_node_in_group(&"crucible") as Crucible
+	_check(cru != null and cru.global_position.y < -2.0 and cru.global_position.z > 19.0, "Crucible on Map 0, in the cellar")
+	if cru != null:
+		_check(not cru.can_interact(_p) and cru.get_prompt(_p) == "Power must be activated", "Crucible waits for the cellar power")
+
 	# ---- perks
 	GameState.power_on = true
 	GLBus.power_activated.emit()
@@ -129,6 +135,24 @@ func _run() -> void:
 	PerkManager.buy_for(1, &"packmule_porter")
 	await _frames(2)
 	_check(_p.weapons.max_slots() == 3, "Packmule Porter: 3 slots")
+
+	# ---- the Crucible, powered: feed a Kar98k, wait out the forge, take the upgrade
+	if cru != null:
+		_p.weapons.give_weapon(&"kar98k")
+		await _frames(2)
+		var price: int = Crucible.price_for(&"upgrade", GLData.table("economy"))
+		Economy.grant(1, price)
+		_check(cru.can_interact(_p) and cru.get_prompt(_p).begins_with("Hold"), "Crucible usable once powered (%s)" % cru.get_prompt(_p))
+		var scrip_c: int = Economy.get_scrip(1)
+		cru.interact(_p)
+		await _frames(2)
+		_check(cru.phase == Crucible.Phase.FORGING and Economy.get_scrip(1) == scrip_c - price, "Crucible took the weapon and %d Scrip" % price)
+		await _secs(cru.forge_seconds + 0.4)
+		_check(cru.phase == Crucible.Phase.OFFERED, "Crucible offers the upgrade")
+		cru.interact(_p)
+		await _frames(2)
+		var uw: WeaponInstance = _p.weapons.current()
+		_check(uw != null and uw.upgraded, "took the upgraded weapon (%s)" % (uw.display_name() if uw != null else "-"))
 	PerkManager.buy_for(1, &"second_wind")
 	PerkManager.buy_for(1, &"trigger_tonic")
 	_check(PerkManager.buy_for(1, &"hawkeye_brandy") == &"cap", "perk cap of 4 enforced")

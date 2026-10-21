@@ -34,7 +34,7 @@ Each plan is roughly to scale: **1 character ≈ 1 m** horizontally unless noted
 **Story question answered:** *Who shot us down, and who's talking to us?* Something that isn't flak brought the plane down, and a man named Glasmacher is on the radio.
 **New question raised:** *What is at Kaltenbrunn, and why must the bell not ring?*
 
-A two-story roadside inn (**Gasthaus Zum Kreuzweg**) and a stable at a snowy crossroads, 9 km northwest of Kaltenbrunn. GRAVELIGHT ONE burns in the field to the east and can be seen through the taproom's east windows and the stable doors. There's no power, no perks, and no Crucible. It's a tutorial-scale map.
+A two-story roadside inn (**Gasthaus Zum Kreuzweg**) and a stable at a snowy crossroads, 9 km northwest of Kaltenbrunn. GRAVELIGHT ONE burns in the field to the east and can be seen through the taproom's east windows and the stable doors. Power, the perks and the Crucible are all behind Door 3 in the Helvetia cellar (T-027, T-032). It's a tutorial-scale map.
 
 **Overall footprint:** inn 24 × 16 m; stable 18 × 12 m, joined to the inn's rear by a covered 4 m yard passage. The outdoor play space is snow-fenced and not walkable. Zombies cross it to reach the windows.
 
@@ -150,6 +150,7 @@ Door 3 (**1500**, zone `CELLAR`) is in the taproom's east wall at z 10.7–12.3.
   - **South pair**: Packmule, Blastproof.
   - Every machine stands 1.1 m or more off the wall, so its **fine-print panel** can be read from behind.
 - **The cellar lever** (north wall, x 32.5): Map 0's power. Throwing it lights the cellar, then the taproom, upstairs and stable in sequence, plays the Operator's first fumbling power line, and emerges 3 zombies at the coal chute.
+- **The Crucible** (T-032): in a brick alcove on the vault's north wall at x 29.5, between the stair mouth and the lever, facing south. Map 0's weapon upgrades (5000; upgraded ammo 2500, `economy.json`). It is dark and refuses until the lever is thrown ("Power must be activated"), like the machines.
 - **Coal chute** (SE corner): a ground spawn from round 6.
 - Machine and crate footprints are baked into the navmesh, so zombies path round them.
 

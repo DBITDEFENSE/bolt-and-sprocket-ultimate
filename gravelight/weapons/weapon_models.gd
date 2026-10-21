@@ -11,6 +11,9 @@ extends RefCounted
 ##         "reload" (String kind for WeaponHolder animations), "eye_relief" (float), "length" (float).
 ## Upgraded weapons get the Nachtglas look; `camo` (ProfileSave.camo_for) tints the furniture.
 
+## Finished-steel material kinds (worn-edge chamfers, Nachtglas when upgraded).
+const METAL_KINDS: Array = ["blued", "park", "black", "fieldgray", "olive", "steel", "perforated", "park_slide", "park_frame"]
+
 static var _mat_cache: Dictionary = {}
 static var _tex_cache: Dictionary = {}
 
@@ -189,6 +192,37 @@ static func base_mat(kind: String) -> StandardMaterial3D:
 	var m: StandardMaterial3D = StandardMaterial3D.new()
 	m.uv1_triplanar = true
 	match kind:
+		"park_slide", "park_frame":
+			# Parkerized steel with a mottled phosphate finish; slide and frame come from different batches, so
+			# the slide is a shade greener-darker than the frame (the classic two-tone of a reworked service gun).
+			var pc: Color = Color(0.165, 0.175, 0.152) if kind == "park_slide" else Color(0.2, 0.205, 0.19)
+			m.albedo_color = pc
+			m.albedo_texture = _noise_tex("phosphate_" + kind, 71 if kind == "park_slide" else 73, 0.09,
+				_gradient([[0.0, Color(0.78, 0.8, 0.76)], [0.5, Color(0.97, 0.97, 0.95)], [1.0, Color(1.0, 1.0, 1.0)]]), false)
+			m.metallic = 0.5
+			m.roughness = 0.74
+			m.roughness_texture = _noise_tex("metal_rough", 7, 0.05, _gradient([[0.0, Color(0.35, 0.35, 0.35)], [1.0, Color(0.85, 0.85, 0.85)]]), false)
+			m.uv1_scale = Vector3(9, 9, 9)
+			m.normal_enabled = true
+			m.normal_texture = _noise_tex("metal_normal", 11, 0.12, null, true)
+			m.normal_scale = 0.22
+		"wood_check":
+			# Checkered walnut grip panels: walnut grain (UV1) multiplied by a diamond-checkering pattern (UV2,
+			# ~2 mm pitch) so every diamond has a lit peak and a dark groove.
+			var wb: StandardMaterial3D = base_mat("wood")
+			m.albedo_texture = wb.albedo_texture
+			m.albedo_color = Color(0.7, 0.6, 0.55)
+			m.uv1_scale = Vector3(14, 14, 3)
+			m.roughness = 0.58
+			m.detail_enabled = true
+			m.detail_blend_mode = BaseMaterial3D.BLEND_MODE_MUL
+			m.detail_uv_layer = BaseMaterial3D.DETAIL_UV_2
+			m.detail_albedo = _checker_tex()
+			m.uv2_triplanar = true
+			m.uv2_scale = Vector3(110, 110, 110)
+			m.normal_enabled = true
+			m.normal_texture = _noise_tex("wood_normal", 5, 0.06, null, true)
+			m.normal_scale = 0.4
 		"blued", "park", "black", "fieldgray", "olive", "steel":
 			var col: Color = {"blued": Color(0.075, 0.08, 0.095), "park": Color(0.17, 0.18, 0.16), "black": Color(0.05, 0.05, 0.05),
 				"fieldgray": Color(0.24, 0.26, 0.22), "olive": Color(0.22, 0.24, 0.14), "steel": Color(0.55, 0.56, 0.58)}[kind]
@@ -298,7 +332,29 @@ static func base_mat(kind: String) -> StandardMaterial3D:
 	return m
 
 
-const CAMO_TINT: Dictionary = {&"olive_drab": Color(0.45, 0.5, 0.3), &"winter": Color(1.6, 1.65, 1.7), &"bronze": Color(0.55, 0.36, 0.18),
+## Diamond checkering (4 x 4 pyramids per tile, peaks bright, grooves dark), for multiply-detail use.
+static func _checker_tex() -> ImageTexture:
+	if _tex_cache.has("checker"):
+		return _tex_cache["checker"]
+	var n: int = 64
+	var img: Image = Image.create(n, n, false, Image.FORMAT_RGB8)
+	for y: int in n:
+		for x: int in n:
+			var u: float = float(x) / n * 4.0
+			var v: float = float(y) / n * 4.0
+			var a: float = absf(fposmod(u + v, 1.0) - 0.5)
+			var b: float = absf(fposmod(u - v, 1.0) - 0.5)
+			var h: float = minf(0.5 - a, 0.5 - b) * 2.0          # 0 in the grooves, 1 on the diamond peaks
+			var facet: float = 1.06 if fposmod(u, 1.0) < 0.5 else 0.94   # one facet of each pyramid catches more light
+			var k: float = lerpf(0.36, 1.0, smoothstep(0.0, 0.45, h)) * facet
+			img.set_pixel(x, y, Color(k, k, k))
+	img.generate_mipmaps()
+	var t: ImageTexture = ImageTexture.create_from_image(img)
+	_tex_cache["checker"] = t
+	return t
+
+
+const CAMO_TINT: Dictionary ={&"olive_drab": Color(0.45, 0.5, 0.3), &"winter": Color(1.6, 1.65, 1.7), &"bronze": Color(0.55, 0.36, 0.18),
 	&"silver": Color(0.72, 0.74, 0.78), &"gold": Color(0.85, 0.66, 0.2), &"nachtglas": Color(0.2, 0.08, 0.3)}
 
 
@@ -310,7 +366,7 @@ static func edge_mat(kind: String) -> Material:
 		return _mat_cache[key]
 	var src: StandardMaterial3D = base_mat(kind)
 	var e: StandardMaterial3D = src.duplicate() as StandardMaterial3D
-	if kind in ["blued", "park", "black", "fieldgray", "olive", "steel", "perforated"]:
+	if kind in METAL_KINDS:
 		e.albedo_texture = null
 		e.albedo_color = src.albedo_color.lerp(Color(0.52, 0.53, 0.55), 0.45 if kind != "steel" else 0.2)
 		e.metallic = 0.92
@@ -330,7 +386,7 @@ static func edge_mat(kind: String) -> Material:
 ## Chamfer material for this model (upgraded edges glow violet: the Nachtglas veins break the surface).
 func m_edge(kind: String) -> Material:
 	var is_wood: bool = kind.begins_with("wood") or kind == "bakelite"
-	var is_metal: bool = kind in ["blued", "park", "black", "fieldgray", "olive", "steel", "perforated"]
+	var is_metal: bool = kind in METAL_KINDS
 	if upgraded and (is_wood or is_metal):
 		return edge_mat("nachtglas")
 	if is_wood and camo != &"":
@@ -343,7 +399,7 @@ func m_edge(kind: String) -> Material:
 ## Resolves a material for this model: Nachtglas when upgraded, camo tint on wood, otherwise the base.
 func m(kind: String) -> Material:
 	var is_wood: bool = kind.begins_with("wood") or kind == "bakelite"
-	var is_metal: bool = kind in ["blued", "park", "black", "fieldgray", "olive", "steel", "perforated"]
+	var is_metal: bool = kind in METAL_KINDS
 	if upgraded and (is_wood or is_metal):
 		return base_mat("nachtglas_wood" if is_wood else "nachtglas")
 	if is_wood and camo != &"" and CAMO_TINT.has(camo):
@@ -474,12 +530,9 @@ func prof(pts: Array, thickness: float, kind: String, x: float = 0.0, parent: No
 		var a: Vector2 = inner[tris[i]]
 		var b2: Vector2 = inner[tris[i + 1]]
 		var c: Vector2 = inner[tris[i + 2]]
-		st.add_vertex(Vector3(h, a.y, a.x))
-		st.add_vertex(Vector3(h, c.y, c.x))
-		st.add_vertex(Vector3(h, b2.y, b2.x))
-		st.add_vertex(Vector3(-h, a.y, a.x))
-		st.add_vertex(Vector3(-h, b2.y, b2.x))
-		st.add_vertex(Vector3(-h, c.y, c.x))
+		# wound explicitly: triangulate_polygon's output orientation isn't guaranteed to follow the outline's
+		_face_tri(st, Vector3(h, a.y, a.x), Vector3(h, b2.y, b2.x), Vector3(h, c.y, c.x), Vector3.RIGHT)
+		_face_tri(st, Vector3(-h, a.y, a.x), Vector3(-h, b2.y, b2.x), Vector3(-h, c.y, c.x), Vector3.LEFT)
 	# edge walls
 	_strip(st, poly, h - bev, poly, -(h - bev))
 	st.generate_normals()
@@ -499,21 +552,104 @@ func prof(pts: Array, thickness: float, kind: String, x: float = 0.0, parent: No
 	return mi
 
 
+## A cross-section `pts` ((x, y) outline points, any winding, may be concave) extruded along Z from z0 (front)
+## to z1 (back). Chamfers only on the ends that ask for one (bev_front / bev_back > 0), with the worn-edge
+## material, so consecutive sections can butt together seamlessly (slides with a port cut, rounded tops).
+func xsec(pts: Array, z0: float, z1: float, kind: String, parent: Node3D = null, bev_front: float = 0.0,
+		bev_back: float = 0.0) -> MeshInstance3D:
+	var poly: PackedVector2Array = PackedVector2Array()
+	for p: Variant in pts:
+		poly.append(p as Vector2)
+	var inner_f: PackedVector2Array = _inset(poly, bev_front) if bev_front > 0.0 else poly
+	var inner_b: PackedVector2Array = _inset(poly, bev_back) if bev_back > 0.0 else poly
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	st.set_smooth_group(-1)
+	for end: int in 2:
+		var ring_pts: PackedVector2Array = inner_f if end == 0 else inner_b
+		var tris: PackedInt32Array = Geometry2D.triangulate_polygon(ring_pts)
+		var zc: float = z0 if end == 0 else z1
+		var d: Vector3 = Vector3(0, 0, -1) if end == 0 else Vector3(0, 0, 1)
+		for i: int in range(0, tris.size(), 3):
+			_face_tri(st, _v2z(ring_pts[tris[i]], zc), _v2z(ring_pts[tris[i + 1]], zc), _v2z(ring_pts[tris[i + 2]], zc), d)
+	_zwall(st, poly, z0 + bev_front, poly, z1 - bev_back, poly)
+	st.generate_normals()
+	var mesh: ArrayMesh = st.commit()
+	mesh.surface_set_material(0, m(kind))
+	if bev_front > 0.0 or bev_back > 0.0:
+		var se: SurfaceTool = SurfaceTool.new()
+		se.begin(Mesh.PRIMITIVE_TRIANGLES)
+		se.set_smooth_group(-1)
+		if bev_front > 0.0:
+			_zwall(se, inner_f, z0, poly, z0 + bev_front, poly)
+		if bev_back > 0.0:
+			_zwall(se, poly, z1 - bev_back, inner_b, z1, poly)
+		se.generate_normals()
+		se.commit(mesh)
+		mesh.surface_set_material(1, m_edge(kind))
+	var mi: MeshInstance3D = _mesh(parent, mesh, Vector3.ZERO, kind, Vector3.ZERO)
+	mi.material_override = null
+	return mi
+
+
+static func _v2z(p: Vector2, z: float) -> Vector3:
+	return Vector3(p.x, p.y, z)
+
+
+## Adds a triangle wound so its front face looks along `d` (Godot: clockwise seen from the front).
+static func _face_tri(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3) -> void:
+	if (b - a).cross(c - a).dot(d) < 0.0:
+		st.add_vertex(a)
+		st.add_vertex(b)
+		st.add_vertex(c)
+	else:
+		st.add_vertex(a)
+		st.add_vertex(c)
+		st.add_vertex(b)
+
+
+## Quads joining outline `a` at z = za to outline `b` at z = zb, facing outward from `ref` (the outline whose
+## edge normals define "outward").
+static func _zwall(st: SurfaceTool, a: PackedVector2Array, za: float, b: PackedVector2Array, zb: float, ref: PackedVector2Array) -> void:
+	var n: int = ref.size()
+	var area: float = 0.0
+	for i: int in n:
+		area += ref[i].x * ref[(i + 1) % n].y - ref[(i + 1) % n].x * ref[i].y
+	var sgn: float = 1.0 if area > 0.0 else -1.0
+	if absf(za - zb) < 0.00001:
+		return
+	for i: int in n:
+		var j: int = (i + 1) % n
+		var e: Vector2 = ref[j] - ref[i]
+		var out: Vector2 = Vector2(e.y, -e.x) * sgn
+		var a0: Vector3 = _v2z(a[i], za)
+		var a1: Vector3 = _v2z(a[j], za)
+		var b0: Vector3 = _v2z(b[i], zb)
+		var b1: Vector3 = _v2z(b[j], zb)
+		# a chamfer strip leans toward the end it closes, but its normal keeps a positive outward component
+		var d: Vector3 = Vector3(out.x, out.y, 0.0)
+		_face_tri(st, a0, b0, b1, d)
+		_face_tri(st, a0, b1, a1, d)
+
+
 ## Quads joining outline `a` (at x = xa) to outline `b` (at x = xb); a and b have the same vertex count.
 static func _strip(st: SurfaceTool, a: PackedVector2Array, xa: float, b: PackedVector2Array, xb: float) -> void:
 	var n: int = a.size()
+	var area: float = 0.0
+	for i: int in n:
+		area += a[i].x * a[(i + 1) % n].y - a[(i + 1) % n].x * a[i].y
+	var sgn: float = 1.0 if area > 0.0 else -1.0
 	for i: int in n:
 		var j: int = (i + 1) % n
 		var a0: Vector3 = Vector3(xa, a[i].y, a[i].x)
 		var a1: Vector3 = Vector3(xa, a[j].y, a[j].x)
 		var b0: Vector3 = Vector3(xb, b[i].y, b[i].x)
 		var b1: Vector3 = Vector3(xb, b[j].y, b[j].x)
-		st.add_vertex(a0)
-		st.add_vertex(b1)
-		st.add_vertex(a1)
-		st.add_vertex(a0)
-		st.add_vertex(b0)
-		st.add_vertex(b1)
+		# outward = the outline edge's outward normal in the (z, y) plane (chamfer strips keep a positive share)
+		var e: Vector2 = a[j] - a[i]
+		var d: Vector3 = Vector3(0.0, -e.x, e.y) * sgn
+		_face_tri(st, a0, b1, a1, d)
+		_face_tri(st, a0, b0, b1, d)
 
 
 ## Mitred inward offset of a counter-clockwise polygon (same vertex count, spikes clamped).
@@ -650,33 +786,161 @@ static func P(a: Array) -> Array:
 
 # ================================================================== the weapons
 
+## The starting pistol: a 1911-pattern .45 in a parkerized service finish (unmarked except an invented
+## arsenal stamp). Built at real scale; the slide is a stack of cross-sections (rounded top, open ejection
+## port with the barrel hood showing, the full-height nose holding bushing and recoil-spring plug).
+## Controls sit where they belong: slide stop, thumb safety, plunger tube and magazine catch on the left
+## (the side the viewmodel shows), the pin ends on the right.
 func _w_m1911() -> void:
+	const SW: float = 0.0117           # slide half-width
+	const FW: float = 0.0111           # frame half-width
+	const TOP: float = 0.051           # slide top
+	const SB: float = 0.0255           # slide bottom / frame rails
+	const BY: float = 0.0385           # bore line
 	var sl: Node3D = group("Slide")
-	prof(P([[0.045, 0.024], [-0.163, 0.024], [-0.165, 0.05], [0.04, 0.05], [0.047, 0.044]]), 0.028, "park", 0.0, sl)
-	for i: int in 7:
-		box(Vector3(0.03, 0.02, 0.0018), Vector3(0, 0.038, 0.018 + i * 0.0045), "black", Vector3.ZERO, sl)
-	box(Vector3(0.0032, 0.0075, 0.007), Vector3(0, 0.0535, -0.152), "park", Vector3.ZERO, sl)  # front blade
-	var rs: Vector3 = rear_notch(0.03, 0.05, 0.0075, "park", 0.014, 0.0036, sl)
-	box(Vector3(0.002, 0.01, 0.016), Vector3(0.0141, 0.038, -0.015), "black", Vector3.ZERO, sl)  # ejection port
-	tube(0.0085, 0.0085, 0.008, Vector3(0, 0.036, -0.163), "black", "z", sl)
-	# frame + dust cover + grip frame + panels
-	prof(P([[0.04, 0.024], [-0.13, 0.024], [-0.13, 0.008], [-0.04, 0.006], [-0.01, 0.0], [0.04, 0.0]]), 0.026, "park")
-	prof(P([[0.048, 0.025], [0.022, 0.0], [0.05, -0.105], [0.082, -0.11], [0.08, -0.04], [0.06, 0.02]]), 0.028, "park")
-	prof(P([[0.03, -0.005], [0.052, -0.095], [0.075, -0.098], [0.07, -0.03], [0.052, 0.005]]), 0.033, "wood")
-	prof(P([[0.047, 0.04], [0.06, 0.06], [0.064, 0.056], [0.054, 0.034]]), 0.012, "park")       # hammer spur
-	prof(P([[0.05, 0.023], [0.075, 0.024], [0.068, 0.012], [0.052, 0.008]]), 0.026, "park")      # beavertail
-	box(Vector3(0.003, 0.012, 0.014), Vector3(0.0135, 0.016, -0.005), "park")                   # slide stop
-	trigger_group(-0.005, 0.02, "park", 0.01)
+	# one loop: up the right side, over the rounded top, down the left
+	var top_l: Array = [Vector2(SW, 0.0445), Vector2(0.0097, 0.0493), Vector2(0.0066, TOP), Vector2(-0.0066, TOP),
+		Vector2(-0.0097, 0.0493), Vector2(-SW, 0.0445)]
+	# nose: full height, rounded spring tunnel underneath
+	var nose: Array = [Vector2(-SW, 0.016), Vector2(-0.0094, 0.0098), Vector2(-0.0056, 0.0080), Vector2(0.0056, 0.0080),
+		Vector2(0.0094, 0.0098), Vector2(SW, 0.016)] + top_l
+	xsec(nose, -0.168, -0.1285, "park_slide", sl, 0.0011, 0.0)
+	var upper: Array = [Vector2(-SW, SB), Vector2(SW, SB)] + top_l
+	xsec(upper, -0.1285, -0.036, "park_slide", sl)
+	# ejection port (right side): a C-section open on the right, barrel hood visible inside
+	var port: Array = [Vector2(-SW, SB), Vector2(SW, SB), Vector2(SW, 0.0315), Vector2(-0.0086, 0.0315),
+		Vector2(-0.0086, 0.0476), Vector2(0.0099, 0.0476), Vector2(0.0097, 0.0493), Vector2(0.0066, TOP),
+		Vector2(-0.0066, TOP), Vector2(-0.0097, 0.0493), Vector2(-SW, 0.0445)]
+	xsec(port, -0.036, -0.004, "park_slide", sl)
+	xsec(upper, -0.004, 0.0462, "park_slide", sl, 0.0, 0.0012)
+	tube(0.0086, 0.0086, 0.034, Vector3(0, BY, -0.019), "steel", "z", sl, 16)                 # barrel hood
+	# rear serrations, both sides
+	for i: int in 10:
+		var z: float = 0.0135 + i * 0.0031
+		for s: float in [-1.0, 1.0]:
+			box(Vector3(0.0006, 0.0175, 0.0012), Vector3(s * (SW + 0.0001), 0.0352, z), "black", Vector3.ZERO, sl)
+	# muzzle: barrel crown in the bushing, recoil-spring plug below
+	tube(0.0069, 0.0069, 0.006, Vector3(0, BY, -0.1690), "steel", "z", sl, 16)
+	tube(0.0091, 0.0091, 0.0035, Vector3(0, BY, -0.1690), "blued", "z", sl, 18)               # barrel bushing
+	box(Vector3(0.004, 0.0035, 0.0034), Vector3(0.0082, BY - 0.0058, -0.1691), "blued", Vector3(0, 0, 40), sl)  # bushing lug
+	tube(0.0056, 0.0056, 0.0032, Vector3(0, 0.0162, -0.1692), "park_frame", "z", sl, 14)      # recoil-spring plug
+	tube(0.0017, 0.0017, 0.001, Vector3(0, 0.0162, -0.1709), "black", "z", sl, 8)             # plug dimple
+	# sights: tapered front blade, notched rear on a dovetail
+	prof(P([[-0.1612, TOP - 0.0004], [-0.1502, TOP - 0.0004], [-0.1528, 0.0566], [-0.1585, 0.0566]]), 0.0032, "park_slide", 0.0, sl)
+	var rs: Vector3 = rear_notch(0.0392, TOP - 0.0004, 0.0072, "park_slide", 0.0158, 0.0036, sl)
+	box(Vector3(0.0215, 0.0016, 0.0085), Vector3(0, TOP - 0.0002, 0.0392), "park_slide", Vector3.ZERO, sl)  # dovetail
+	box(Vector3(0.011, 0.0145, 0.0012), Vector3(0, 0.0375, 0.0465), "blued", Vector3.ZERO, sl)           # firing-pin stop
+	tube(0.0021, 0.0021, 0.0012, Vector3(0, BY, 0.0472), "steel", "z", sl, 10)                         # firing pin
+	# invented arsenal stamp on the left flat: two short lines of dashes and a small proof ring (no real marks)
+	for d: Array in [[-0.118, 0.006], [-0.1105, 0.004], [-0.105, 0.007], [-0.0965, 0.003], [-0.0915, 0.006]]:
+		box(Vector3(0.0004, 0.0018, float(d[1])), Vector3(-SW - 0.0001, 0.0368, float(d[0])), "black", Vector3.ZERO, sl)
+	for d2: Array in [[-0.116, 0.008], [-0.106, 0.005], [-0.0985, 0.007]]:
+		box(Vector3(0.0004, 0.0012, float(d2[1])), Vector3(-SW - 0.0001, 0.0332, float(d2[0])), "black", Vector3.ZERO, sl)
+	ring(0.0012, 0.0021, Vector3(-SW - 0.0001, 0.035, -0.085), "black", "x", sl)
+	box(Vector3(0.0005, 0.004, 0.006), Vector3(-SW - 0.0001, 0.0285, -0.0275), "black", Vector3.ZERO, sl)  # slide-stop notch
+
+	# ---- frame
+	var fr: String = "park_frame"
+	prof(P([[0.0462, SB], [-0.1285, SB], [-0.1285, 0.0095], [-0.118, 0.0081], [-0.043, 0.0078], [-0.0365, 0.004],
+		[0.014, 0.0], [0.03, 0.0], [0.0462, 0.012]]), FW * 2.0, fr)
+	# grip frame (front strap ~20 deg, back strap) down to the magazine well
+	prof(P([[0.0135, 0.0015], [0.016, -0.004], [0.0505, -0.0995], [0.0535, -0.1028], [0.0885, -0.1028], [0.0905, -0.099],
+		[0.0555, 0.003], [0.047, 0.013], [0.03, 0.002]]), FW * 2.0, fr)
+	# arched mainspring housing (fine horizontal grooves), with the lanyard loop under it
+	prof(P([[0.0625, -0.03], [0.0665, -0.031], [0.0825, -0.071], [0.0925, -0.0975], [0.0935, -0.1028], [0.0855, -0.1028], [0.0705, -0.062]]),
+		FW * 2.0 - 0.0014, fr)
+	for i: int in 9:
+		var t: float = float(i) / 8.0
+		var gy: float = lerpf(-0.04, -0.096, t)
+		# the housing's back face: z = 0.0665 + (-0.031 - y) * 0.391; grooves sit flush in it (half buried)
+		box(Vector3(FW * 2.0 - 0.0026, 0.0007, 0.0012), Vector3(0, gy, 0.0665 + (-0.031 - gy) * 0.391 - 0.0002), "black", Vector3(-21, 0, 0))
+	ring(0.0018, 0.0034, Vector3(0, -0.1055, 0.0945), "steel", "x")                              # lanyard loop
+	box(Vector3(0.006, 0.004, 0.006), Vector3(0, -0.1032, 0.0905), fr)                              # its lug
+	# trigger guard: a round bow (5.5 mm band) joined to the dust cover in front and the front strap behind
+	var tg: Array = [[-0.0325, 0.005]]
+	for i: int in 19:
+		var a: float = deg_to_rad(180.0 + 10.0 * i)
+		tg.append([-0.0085 + 0.024 * cos(a), -0.0065 + 0.0235 * sin(a)])
+	tg.append([0.0155, 0.004])
+	tg.append([0.01, 0.004])
+	for i: int in 19:
+		var a2: float = deg_to_rad(360.0 - 10.0 * i)
+		tg.append([-0.0085 + 0.0185 * cos(a2), -0.0065 + 0.018 * sin(a2)])
+	tg.append([-0.027, 0.005])
+	prof(P(tg), 0.0105, fr)
+	# flat-faced trigger with a few grooves
+	prof(P([[-0.0112, 0.0035], [-0.0048, 0.0035], [-0.0052, -0.0125], [-0.0082, -0.0152], [-0.0118, -0.0125]]), 0.0068, "blued")
+	for i: int in 3:
+		box(Vector3(0.0062, 0.0006, 0.0008), Vector3(0, -0.002 - i * 0.0035, -0.0118), "black")
+	# hammer, cocked: the body rises out of the frame's rear face, the spur curls back into a rounded,
+	# grooved thumb pad over the tang (pivot pin through the frame at z 0.0395)
+	var hz: float = 0.067      # spur lobe centre (z, y) and radius
+	var hy: float = 0.0485
+	var hr: float = 0.007
+	var hp: Array = [[0.0445, 0.0205], [0.0548, 0.0205], [0.0608, 0.031], [0.0665, 0.0398]]
+	for a: int in range(-30, 201, 20):
+		hp.append([hz + hr * cos(deg_to_rad(float(a))), hy + hr * sin(deg_to_rad(float(a)))])
+	hp.append_array([[0.0538, 0.0362], [0.0474, 0.028]])
+	prof(P(hp), 0.0096, "blued")
+	for a2: int in range(15, 121, 21):
+		var ar: float = deg_to_rad(float(a2))
+		box(Vector3(0.0088, 0.0006, 0.0013), Vector3(0, hy + (hr + 0.0001) * sin(ar), hz + (hr + 0.0001) * cos(ar)), "black", Vector3(-(float(a2) + 90.0), 0, 0))
+	# beavertail grip safety: tang behind the hammer, a slim tail curling over the web of the hand, a raised
+	# pad down the back strap
+	prof(P([[0.0498, 0.006], [0.0548, 0.0182], [0.06, 0.0225], [0.066, 0.0252], [0.072, 0.0262], [0.0775, 0.0255], [0.0808, 0.0235],
+		[0.081, 0.0212], [0.0785, 0.019], [0.0735, 0.017], [0.0685, 0.0146], [0.064, 0.0105], [0.0615, 0.0062], [0.0622, -0.012],
+		[0.0652, -0.0255], [0.0618, -0.0335], [0.0578, -0.0145]]), 0.0138, "park_slide")
+	# left side: slide stop, plunger tube, thumb safety, magazine catch
+	var lx: float = -(FW + 0.0013)
+	prof(P([[-0.0305, 0.0118], [-0.0175, 0.0115], [-0.0055, 0.0158], [0.0015, 0.0212], [0.0005, 0.0262], [-0.0058, 0.0262],
+		[-0.0108, 0.0225], [-0.0222, 0.0216], [-0.0305, 0.0205]]), 0.0026, fr, lx)
+	tube(0.0036, 0.0036, 0.0016, Vector3(lx - 0.0018, 0.0162, -0.0262), "steel", "x", null, 12)    # slide-stop pivot boss
+	for i: int in 3:
+		box(Vector3(0.0008, 0.0042, 0.0006), Vector3(lx - 0.0012, 0.0225, -0.0045 + i * 0.0018), "black")
+	tube(0.0028, 0.0028, 0.024, Vector3(lx - 0.0012, 0.0214, 0.0175), "park_frame", "z", null, 10)  # plunger tube
+	prof(P([[0.0318, 0.0145], [0.0468, 0.0145], [0.0492, 0.0228], [0.0455, 0.0262], [0.0215, 0.0258], [0.0178, 0.0222],
+		[0.0232, 0.0196], [0.0318, 0.0196]]), 0.0026, fr, lx)                                         # thumb safety
+	box(Vector3(0.0062, 0.0018, 0.0105), Vector3(lx - 0.0031, 0.0252, 0.0235), fr)                   # safety thumb shelf
+	tube(0.0042, 0.0042, 0.0028, Vector3(-(FW + 0.0014), -0.0055, 0.0245), "park_frame", "x", null, 14)  # magazine catch
+	for i: int in 3:
+		box(Vector3(0.0004, 0.0062, 0.0006), Vector3(-(FW + 0.0029), -0.0055, 0.0228 + i * 0.0017), "black")
+	# right side: pin ends (slide-stop pin, hammer pin, magazine-catch lock); the hammer pin shows on the left too
+	tube(0.0028, 0.0028, 0.0012, Vector3(FW + 0.0005, 0.0162, -0.0262), "steel", "x", null, 10)
+	tube(0.0024, 0.0024, 0.0012, Vector3(FW + 0.0005, 0.0185, 0.0395), "steel", "x", null, 10)
+	tube(0.0024, 0.0024, 0.0012, Vector3(-(FW + 0.0005), 0.0185, 0.0395), "steel", "x", null, 10)
+	tube(0.0032, 0.0032, 0.0012, Vector3(FW + 0.0005, -0.0055, 0.0245), "park_frame", "x", null, 12)
+	# checkered walnut grip panels with two slotted screws each
+	var yt: float = -0.0042
+	var yb: float = -0.0965
+	var ft: float = 0.016 + (0.0 - yt) * 0.363 + 0.0028
+	var fb: float = 0.016 + (0.0 - yb) * 0.363 + 0.0028
+	var bt: float = 0.0555 + (0.003 - yt) * 0.343 - 0.0042
+	var bb: float = 0.0555 + (0.003 - yb) * 0.343 - 0.0042
+	var gpts: Array = [[ft + 0.002, yt], [bt - 0.003, yt], [bt, yt - 0.003], [bb, yb + 0.003], [bb - 0.003, yb], [fb + 0.003, yb],
+		[fb, yb + 0.003], [ft, yt - 0.003]]
+	for s: float in [-1.0, 1.0]:
+		var px: float = s * (FW + 0.0016)
+		prof(P(gpts), 0.0032, "wood_check", px)
+		for sy: float in [-0.0165, -0.084]:
+			var cz: float = lerpf(ft, bt, 0.5) + (-sy + yt) * 0.353
+			tube(0.0027, 0.0027, 0.0011, Vector3(px + s * 0.0019, sy, cz), "steel", "x", null, 12)
+			box(Vector3(0.0006, 0.0006, 0.0046), Vector3(px + s * 0.0024, sy, cz), "black", Vector3(35, 0, 0))
+
+	# ---- magazine: body inside the grip, baseplate under it, top round visible when it drops
 	var mag: Node3D = group("Mag")
-	prof(P([[0.028, -0.01], [0.05, -0.1], [0.076, -0.1], [0.055, -0.01]]), 0.02, "blued", 0.0, mag)
-	box(Vector3(0.024, 0.006, 0.034), Vector3(0, -0.106, 0.064), "blued", Vector3(-14, 0, 0), mag)
-	marker("Muzzle", Vector3(0, 0.036, -0.17))
-	rhand(Vector3(0, -0.05, 0.052), 20.0, 0.017)
+	prof(P([[0.0215, -0.0035], [0.0535, -0.0985], [0.0855, -0.0985], [0.0525, -0.0035]]), 0.0176, "blued", 0.0, mag)
+	prof(P([[0.0498, -0.1028], [0.0905, -0.1028], [0.0918, -0.1062], [0.0882, -0.1078], [0.0512, -0.1078], [0.0488, -0.1056]]),
+		0.0214, "steel", 0.0, mag)
+	tube(0.0056, 0.0059, 0.021, Vector3(0, -0.0008, 0.0405), "brass", "z", mag, 12)
+	ball(0.0056, Vector3(0, -0.0008, 0.0302), "bronze", Vector3(1, 1, 1.25), mag)
+
+	marker("Muzzle", Vector3(0, BY, -0.1725))
+	rhand(Vector3(0, -0.05, 0.053), 20.0, 0.017)
 	lhand(Vector3(-0.006, -0.056, 0.05), "y", 0.03)
 	meta(rs, "pistol", 0.216, 0.42)
-	root.set_meta("front", Vector3(0, 0.0572, -0.152))
-	root.set_meta("port", Vector3(0.014, 0.038, -0.015))
-	root.set_meta("bore", 0.0058)
+	root.set_meta("front", Vector3(0, 0.0566, -0.1556))
+	root.set_meta("port", Vector3(0.0125, 0.0405, -0.02))
+	root.set_meta("bore", 0.0057)
 
 
 func _kar_stock(wood: String, front: float) -> void:
@@ -1761,6 +2025,26 @@ static func build_chalk(weapon_id: StringName, max_len: float = 1.2) -> Node3D:
 	model.position = Vector3(length * 0.4, 0, 0)
 	flat.add_child(model)
 	return flat
+
+
+## Bounding box of every mesh under `n`, in n's space (for centring a model in a display).
+static func model_bounds(n: Node3D) -> AABB:
+	var out: AABB = AABB()
+	var first: bool = true
+	for c: Node in n.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = c as MeshInstance3D
+		if mi.mesh == null:
+			continue
+		var xf: Transform3D = mi.transform
+		var p: Node = mi.get_parent()
+		while p != null and p != n:
+			if p is Node3D:
+				xf = (p as Node3D).transform * xf
+			p = p.get_parent()
+		var b: AABB = xf * mi.get_aabb()
+		out = b if first else out.merge(b)
+		first = false
+	return out
 
 
 static func _set_material_recursive(n: Node, mat: Material) -> void:

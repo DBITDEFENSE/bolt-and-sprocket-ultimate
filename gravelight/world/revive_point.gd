@@ -3,7 +3,8 @@ extends Interactable
 ## Co-op revive (GDD §3): a child of every Player in an online match. While its owner is downed (crawling, not
 ## yet bled out) a teammate can hold use on them: 4 s, or 2 s when the reviver has Second Wind (perks.json
 ## revive_speed_mult). The bleed-out clock pauses while the hold is on (hold_changed). Host-validated: the host
-## runs interact() with the reviver's puppet and NetMatch.coop_revive() decides.
+## runs interact() with the reviver's puppet and NetMatch.coop_revive() decides. Solo with AI teammates (T-031)
+## uses the same point through the offline local session: the human revives bots, bots revive the human.
 
 var owner_player: Player
 
@@ -55,7 +56,8 @@ func hold_changed(player: Player, active: bool) -> void:
 
 
 func interact(player: Player) -> void:
-	if Net.is_host() and Net.session != null and can_interact(player):
+	if Net.is_authority() and Net.session != null and can_interact(player):
+
 		var max_d: float = float(GLData.table("net").get("revive_max_distance_m", 3.2))
 		if player.global_position.distance_to(owner_player.global_position) <= max_d + 1.0:
 			Net.session.coop_revive(owner_player.player_id, player.player_id)

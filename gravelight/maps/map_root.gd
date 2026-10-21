@@ -6,6 +6,10 @@ extends Node3D
 ## Co-op (M7): one Player per roster slot at PlayerSpawn1..4 (the local one has the camera and HUD, the others
 ## are puppets with a RevivePoint), plus the NetMatch session. The host waits for every client to finish
 ## loading before the first round; a client never runs the round loop, it mirrors the host.
+##
+## AI teammates (T-031): a solo match with GameState.bot_count > 0 spawns bot Players (is_bot, each a free
+## survivor), an offline NetMatch as the local co-op session (last stand, revives, bleed-out, spectate) and a
+## BotSquad that drives them. Round scaling counts a bot as bots.json scaling.bot_player_weight of a player.
 
 @export var map_id: StringName = &"map00_crossroads"
 @export var display_name: String = "Crossroads Inn"
@@ -25,6 +29,7 @@ var hud: Hud
 var director: ZombieDirector
 var pause_menu: PauseMenu
 var session: NetMatch = null
+var squad: BotSquad = null
 var _online: bool = false
 
 
@@ -34,10 +39,12 @@ func _ready() -> void:
 	get_tree().paused = false
 	_online = Net.is_online() and Net.in_match
 	GameState.reset_match(map_id, display_name, start_zone)
+	GameState.bot_ids = []
 	if _online:
 		GameState.player_ids = Net.player_ids()
 	else:
 		GameState.player_ids = [1]
+		_assign_bots()
 	director = ZombieDirector.new()
 	director.name = "ZombieDirector"
 	director.puppet_mode = _online and Net.is_client()
@@ -65,6 +72,8 @@ func _ready() -> void:
 		Net.session = session
 		var coop_hud: CanvasLayer = (load("res://gravelight/ui/coop_hud.gd") as GDScript).new() as CanvasLayer
 		add_child(coop_hud)
+	elif not GameState.bot_ids.is_empty():
+		_start_bot_session()
 	GLBus.match_started.emit(map_id)
 	for q: String in quest_files:
 		QuestManager.load_quest(q)
@@ -87,10 +96,8 @@ func _ready() -> void:
 
 ## The first round's intro timer starts (host / solo).
 func start_rounds() -> void:
-	if auto_rounds:
-		RoundManager.start_game(GameState.player_ids.size())
-	else:
-		RoundManager.start_game(GameState.player_ids.size())
+	RoundManager.start_game(scaled_player_count())
+	if not auto_rounds:
 		RoundManager.stop()
 	if intro_text != "":
 		hud.show_banner(intro_text, 3.5)
@@ -102,20 +109,58 @@ func on_net_begin() -> void:
 		hud.show_banner(intro_text, 3.5)
 
 
+## Players the round scaling sees: humans count 1 each, bots a fraction (BotConfig.scaled_player_count).
+func scaled_player_count() -> int:
+	var bots: int = GameState.bot_ids.size()
+	return BotConfig.scaled_player_count(GameState.player_ids.size() - bots, bots, BotConfig.cfg(), int(GLData.table("net").get("max_players", 4)))
+
+
+## Solo: the bots the menu asked for take the survivors the human didn't pick (ids 2..).
+func _assign_bots() -> void:
+	var n: int = BotConfig.clamp_bots(BotConfig.cfg(), GameState.bot_count)
+	if n <= 0:
+		GameState.characters = {}
+		return
+	GameState.characters = {1: GameState.character_id}
+	for ch: StringName in BotConfig.assign_characters([GameState.character_id], n):
+		var pid: int = GameState.player_ids.size() + 1
+		GameState.player_ids.append(pid)
+		GameState.bot_ids.append(pid)
+		GameState.characters[pid] = ch
+
+
+## Solo with bots: the offline session that owns the co-op life-cycle, the co-op HUD, and the squad's brains.
+func _start_bot_session() -> void:
+	session = NetMatch.new()
+	session.name = "NetMatch"
+	add_child(session)
+	session.setup(self)
+	Net.session = session
+	session.begun = true
+	var coop_hud: CanvasLayer = (load("res://gravelight/ui/coop_hud.gd") as GDScript).new() as CanvasLayer
+	add_child(coop_hud)
+	squad = BotSquad.new()
+	squad.name = "BotSquad"
+	add_child(squad)
+	squad.setup(self)
+
+
 func _spawn_players() -> void:
 	var local_pid: int = Net.local_player_id() if _online else 1
 	for pid: int in GameState.player_ids:
 		var p: Player = Player.new()
 		p.player_id = pid
 		p.is_local = pid == local_pid
+		p.is_bot = GameState.is_bot(pid)
 		p.name = "Player%d" % pid
 		add_child(p)
 		p.global_transform = spawn_transform(pid)
 		players[pid] = p
 		if p.is_local:
 			player = p
-		if _online:
+		if _online or p.is_bot or not GameState.bot_ids.is_empty():
 			var rp: RevivePoint = RevivePoint.new()
+
 			rp.name = "Revive"
 			rp.owner_player = p
 			p.add_child(rp)
@@ -147,14 +192,18 @@ func _apply_coop_egg_slots() -> void:
 
 ## 3-5 Intel Archive pickups per match at random reachable spots inside the map's zones (not already found).
 ## Intel is personal: in co-op every peer places and finds its own (IntelPickup.net_local).
+## Rows marked "placement": "fixed" (LORE.md section 13.1) are hand-placed StoryProps instead, always present.
 func _spawn_intel() -> void:
 	if map_id == &"test_range":
 		return
 	var map_key: String = "0" if map_id == &"map00_crossroads" else ("1" if map_id == &"map01_kaltenbrunn" else "?")
+	StoryProp.spawn_all(self, map_key)
 	var pool: Array = []
 	for row: Dictionary in GLData.load_json("res://data/gravelight/intel.json").get("intel", []):
 		var m: String = str(row.get("map", ""))
 		var id: String = str(row["id"])
+		if str(row.get("placement", "")) == "fixed":
+			continue
 		if (m == map_key or m == "all") and not ProfileSave.has_intel(id):
 			if id == "INT_GEN_02" and ProfileSave.dossier_level(&"peg") < 5:
 				continue

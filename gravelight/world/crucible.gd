@@ -11,6 +11,8 @@ enum Phase { IDLE, FORGING, OFFERED }
 
 @export var forge_seconds: float = 5.0
 @export var offer_seconds: float = 15.0
+## Map 0 (T-032): the cellar Crucible waits for the cellar lever, like the Helvetia machines beside it.
+@export var needs_power: bool = false
 
 var phase: Phase = Phase.IDLE
 var _t: float = 0.0
@@ -59,6 +61,21 @@ func _ready() -> void:
 	cs.position = Vector3(0, 1.2, 0)
 	body.add_child(cs)
 	add_child(body)
+	GLBus.power_activated.connect(_refresh_power)
+	_refresh_power()
+
+
+func is_powered() -> bool:
+	return GameState.power_on or not needs_power
+
+
+## Unpowered (Map 0 before the lever): the mouth barely glows and the Nachtglas light is off.
+func _refresh_power() -> void:
+	var on: bool = is_powered()
+	if _glow != null:
+		_glow.visible = on
+	if _mouth_mat != null:
+		_mouth_mat.emission_energy_multiplier = 1.0 if on else 0.12
 
 
 func build_greybox() -> void:
@@ -146,6 +163,8 @@ func get_prompt(player: Player) -> String:
 			return "Hold [%s] to place the Nachtglas shard in the Crucible" % key
 		&"crucible_heartstorm":
 			return "Hold [%s] to begin the HEARTSTORM" % key
+	if not is_powered():
+		return "Power must be activated"
 	match phase:
 		Phase.FORGING:
 			return "" if player.player_id == _fed_by or GameState.is_solo() else "The Crucible is occupied."
@@ -168,6 +187,8 @@ func get_prompt(player: Player) -> String:
 func can_interact(player: Player) -> bool:
 	if _quest_target() != &"":
 		return true
+	if not is_powered():
+		return false
 	match phase:
 		Phase.FORGING:
 			return false

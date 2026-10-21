@@ -15,6 +15,11 @@ extends Node
 ## Client: predicts its own movement and shooting; zombies are puppets (interpolated); a shot that hits a
 ## puppet sends the hit + its shot ray to the host, which validates and applies the damage; uses that change
 ## the world (buy, repair, revive...) are requests the host runs with that player's puppet.
+##
+## Local session (T-031): a solo match with AI teammates also gets a NetMatch, offline. Nothing is sent; it only
+## owns the co-op life-cycle rules (CoopState: last stand, bleed-out, revives, respawns, game over, spectating)
+## that the RevivePoints, the co-op HUD and the MapRoot read from `Net.session`. Bots are Players with
+## `is_bot` living on this machine: decisions that would go to a client's owner are applied to them directly.
 
 const PF_CROUCH: int = 1
 const PF_SPRINT: int = 2
@@ -92,6 +97,7 @@ func setup(map_root: MapRoot) -> void:
 		coop.add(int(pid))
 	if Net.is_host():
 		_connect_relays()
+	if Net.is_authority():
 		GLBus.round_started.connect(_on_round_started_host)
 	else:
 		Net.roster_changed.connect(_on_roster_changed_client)
@@ -140,6 +146,8 @@ func _physics_process(delta: float) -> void:
 		_host_tick(delta)
 	elif Net.is_client():
 		_client_tick(delta)
+	else:
+		_tick_bleed(delta)   # local session (bots): just the life-cycle clocks
 	_update_spectate(delta)
 
 
@@ -163,6 +171,10 @@ func _host_tick(delta: float) -> void:
 		_s_acc = 0.0
 		_send_state(delta)
 	_check_inventory(delta)
+	_tick_bleed(delta)
+
+
+func _tick_bleed(delta: float) -> void:
 	if GameState.phase == GameState.Phase.PLAYING:
 		var pause: bool = bool((GLData.table("player").get("downed", {}) as Dictionary).get("bleedout_pauses_while_reviving", true))
 		for pid: int in coop.tick(delta, pause):
@@ -421,16 +433,45 @@ func on_quest_request(pid: int, op: StringName, args: Array) -> void:
 			n.callv(method, args[2] as Array)
 
 
-## Host -> the owner of `pid`: a call that must run on their machine (Player._forward).
+## Host -> the owner of `pid`: a call that must run on their machine (Player._forward). A bot's "machine" is
+## this one: the call lands on the bot's Player directly.
 func send_player_op(pid: int, op: StringName, args: Array) -> void:
-	if not Net.is_host():
+	if not Net.is_authority():
 		return
 	if pid == Net.local_player_id():
 		_apply_op(op, args)
 		return
+	var p: Player = players.get(pid) as Player
+	if p != null and p.is_bot:
+		_apply_bot_op(p, op, args)
+		return
+	if not Net.is_host():
+		return
 	var peer: int = Net.peer_of(pid)
 	if peer > 1:
 		Net._rpc_op.rpc_id(peer, op, args)
+
+
+## The ops a bot can receive (the rest are HUD / sound feedback a bot has no use for).
+func _apply_bot_op(p: Player, op: StringName, args: Array) -> void:
+	match op:
+		&"hit":
+			p.take_hit(float(args[0]), null)
+		&"status":
+			p.apply_status(StringName(str(args[0])), float(args[1]))
+		&"knock":
+			p.apply_knockback(args[0] as Vector3)
+		&"down":
+			p.down()
+		&"inv":
+			if args.size() >= 2 and INV_OPS.has(str(args[0])):
+				p.weapons.callv(StringName(str(args[0])), args[1] as Array)
+		&"revived":
+			p.revive(int(args[0]))
+		&"bleed":
+			p.bleed_out()
+		&"respawn":
+			p.respawn_at(args[0] as Transform3D)
 
 
 ## Host: a world object changed; run the same presentation call on every client.
@@ -498,6 +539,8 @@ func sfx_all(key: String, pos: Vector3, db: float = 0.0) -> void:
 
 ## Effects made on this peer by its own player (a grenade going off) shown to everyone else.
 func local_explosion(pos: Vector3, radius: float, sound: String, db: float) -> void:
+	if not Net.is_online():
+		return
 	var args: Array = [pos, radius, sound, db]
 	if Net.is_host():
 		Net._rpc_fx_of.rpc(&"explosion", args)
@@ -517,6 +560,8 @@ func _show_fx(kind: StringName, args: Array) -> void:
 
 
 func local_fired(kind: int, weapon_id: StringName, origin: Vector3, end: Vector3) -> void:
+	if not Net.is_online():
+		return
 	var data: Array = [kind, String(weapon_id), origin, end]
 	if Net.is_host():
 		Net._rpc_fire_of.rpc(Net.local_player_id(), data)
@@ -541,8 +586,8 @@ func coop_revive(target_pid: int, by_pid: int) -> void:
 	var t: Player = players.get(target_pid) as Player
 	if t == null:
 		return
-	if t.is_local:
-		t.revive(by_pid)
+	if t.is_local or t.is_bot:
+		t.revive(by_pid)   # a bot gets up here (it announces player_revived itself, like the local player)
 	else:
 		t.downed = false
 		t.last_stand = false
@@ -557,6 +602,8 @@ func _bleed_out(pid: int) -> void:
 		return
 	if t.is_local:
 		_apply_op(&"bleed", [])
+	elif t.is_bot:
+		t.bleed_out()
 	else:
 		t.spectating = true
 		send_player_op(pid, &"bleed", [])
@@ -572,7 +619,10 @@ func _on_round_started_host(_round_number: int, _special: bool) -> void:
 		var xf: Transform3D = map.spawn_transform(pid)
 		if t.is_local:
 			_apply_op(&"respawn", [xf])
+		elif t.is_bot:
+			t.respawn_at(xf)
 		else:
+
 			t.downed = false
 			t.spectating = false
 			t.last_stand = false

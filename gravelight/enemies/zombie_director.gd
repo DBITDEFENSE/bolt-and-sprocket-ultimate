@@ -501,7 +501,8 @@ func summon_boss(enemy_id: StringName, at: Vector3) -> Node3D:
 				f.net_id = Net.session.next_extra_id()
 			add_child(f)
 			RoundManager.take_extra_spawn()
-			f.spawn_boss(at, float(RoundManager.foreman_health(maxi(1, RoundManager.current_round), GameState.player_ids.size(), _ecfg(&"foreman"))))
+			f.spawn_boss(at, float(RoundManager.foreman_health(maxi(1, RoundManager.current_round), RoundManager.players, _ecfg(&"foreman"))))
+
 			GLBus.boss_spawned.emit(&"foreman")
 			z = f
 		&"screamer":

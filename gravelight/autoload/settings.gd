@@ -38,6 +38,9 @@ var values: Dictionary = {
 	"lean_enabled": true,
 	"screen_shake": 1.0,       # 0..1.5: camera shake + recoil FOV punch (weapons, explosions)
 	"last_join_ip": "127.0.0.1",   # co-op: the address typed in the lobby's Join field last time
+	"bots": 0,                     # AI teammates in a solo match (0-3, T-031)
+	"bot_skill": "regular",        # their skill preset (data/gravelight/bots.json "skills")
+
 }
 ## User binding overrides: action -> {"kb": spec, "pad": spec}. A spec is a plain Dictionary (see event_to_spec).
 var overrides: Dictionary = {}

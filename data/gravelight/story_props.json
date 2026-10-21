@@ -1,0 +1,11 @@
+{
+ "_doc": "Fixed, hand-placed story items (docs/gravelight/LORE.md section 13.1). StoryProp.spawn_all(map, map_key) spawns every entry whose map matches, at position (map frame: +X east, +Z south, y up) with yaw in degrees (0 = the front faces -Z; 90 faces -X; -90 faces +X; 180 faces +Z). Flat styles (guest_book, logbook, letter) sit on the surface at position.y; wall styles (drawing, docket, clipping) hang with their back on the wall face at position. id must be an intel.json row with placement fixed. 'where' is a note for people.",
+ "props": [
+  {"id": "INT_M0_09", "map": "0", "style": "guest_book", "position": [8.62, 1.1, 6.9], "yaw": -90, "where": "Taproom, the bar's side counter (top 1.1), facing the player spawn"},
+  {"id": "INT_M0_10", "map": "0", "style": "logbook", "position": [19.7, 0.75, 5.0], "yaw": 90, "where": "Taproom, the NE table (top 0.75) by the signals section's kit crates"},
+  {"id": "INT_M0_11", "map": "0", "style": "drawing", "position": [1.5, 5.15, 6.15], "yaw": 180, "where": "Upstairs hallway, north wall (z 6.15 face) straight ahead at the top of the stairs, a child's height"},
+  {"id": "INT_M0_12", "map": "0", "style": "letter", "position": [22.3, 4.28, 4.7], "yaw": 90, "where": "Upstairs Room 3, on the bed's blanket (top 4.275)"},
+  {"id": "INT_M0_13", "map": "0", "style": "docket", "position": [30.0, -1.65, 22.65], "yaw": 0, "where": "Helvetia cellar, north face of the north pillar, facing the stairs"},
+  {"id": "INT_M0_14", "map": "0", "style": "clipping", "position": [17.2, 1.75, 15.85], "yaw": 0, "where": "Taproom, south wall (z 15.85 face) above the benches, east of the east bench"}
+ ]
+}

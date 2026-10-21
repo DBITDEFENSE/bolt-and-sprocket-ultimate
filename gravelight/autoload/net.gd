@@ -116,7 +116,8 @@ func pid_of_peer(peer: int) -> int:
 
 func character_of(pid: int) -> StringName:
 	if not is_online():
-		return GameState.character_id
+		return GameState.character_of(pid)   # solo with AI teammates: each bot plays its own survivor
+
 	return StringName(str((roster.get(pid, {}) as Dictionary).get("character", "dutch")))
 
 

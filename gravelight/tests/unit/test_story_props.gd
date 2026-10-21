@@ -1,0 +1,112 @@
+extends GutTest
+## Map 0 fixed story items (docs/gravelight/LORE.md section 13.1): the intel rows exist and are fixed-placement,
+## nothing duplicates an id, every story_props.json placement points at a fixed row (and every fixed row has
+## one), the text is subtitle-safe, and StoryProp.spawn_all puts them where the table says.
+
+const FIXED_IDS: PackedStringArray = ["INT_M0_09", "INT_M0_10", "INT_M0_11", "INT_M0_12", "INT_M0_13", "INT_M0_14"]
+
+
+func _intel() -> Array:
+	return GLData.load_json(StoryProp.INTEL_PATH).get("intel", [])
+
+
+func _props() -> Array:
+	return GLData.load_json(StoryProp.DATA_PATH).get("props", [])
+
+
+func _by_id() -> Dictionary:
+	var out: Dictionary = {}
+	for r: Dictionary in _intel():
+		out[str(r["id"])] = r
+	return out
+
+
+func test_new_ids_exist_fixed_on_map_0() -> void:
+	var rows: Dictionary = _by_id()
+	for id: String in FIXED_IDS:
+		assert_true(rows.has(id), "%s is in intel.json" % id)
+		if not rows.has(id):
+			continue
+		var r: Dictionary = rows[id]
+		assert_eq(str(r.get("placement", "")), "fixed", "%s is fixed-placement" % id)
+		assert_eq(str(r.get("map", "")), "0", "%s is on Map 0" % id)
+		assert_eq(str(r.get("type", "")), "DOC", "%s is a document" % id)
+		assert_true(str(r.get("title", "")).length() > 3, "%s has a title" % id)
+		var parts: PackedStringArray = StoryReader.split_caption(str(r.get("text", "")))
+		assert_true(parts[0].length() > 20, "%s: the first paragraph describes the object (caption)" % id)
+		assert_true(parts[1].length() > 40, "%s: there is text after the caption" % id)
+
+
+func test_no_duplicate_intel_ids() -> void:
+	var seen: Dictionary = {}
+	for r: Dictionary in _intel():
+		var id: String = str(r["id"])
+		assert_false(seen.has(id), "duplicate intel id " + id)
+		seen[id] = true
+	assert_gt(seen.size(), 20, "the archive is not empty")
+
+
+func test_only_these_rows_are_fixed() -> void:
+	var fixed: PackedStringArray = []
+	for r: Dictionary in _intel():
+		if str(r.get("placement", "")) == "fixed":
+			fixed.append(str(r["id"]))
+	fixed.sort()
+	var want: PackedStringArray = FIXED_IDS.duplicate()
+	want.sort()
+	assert_eq(fixed, want, "exactly the section 13.1 rows are fixed")
+
+
+func test_placements_point_at_fixed_rows() -> void:
+	var rows: Dictionary = _by_id()
+	var placed: Dictionary = {}
+	for e: Dictionary in _props():
+		var id: String = str(e.get("id", ""))
+		assert_true(rows.has(id), "placement %s has an intel row" % id)
+		if rows.has(id):
+			assert_eq(str((rows[id] as Dictionary).get("placement", "")), "fixed", "placement %s points at a fixed row" % id)
+			assert_eq(str((rows[id] as Dictionary).get("map", "")), str(e.get("map", "")), "placement %s is on the row's map" % id)
+		assert_false(placed.has(id), "placement %s is not duplicated" % id)
+		placed[id] = true
+		assert_true(StoryProp.STYLES.has(str(e.get("style", ""))), "placement %s has a known prop style (%s)" % [id, e.get("style", "")])
+		var pos: Array = e.get("position", [])
+		assert_eq(pos.size(), 3, "placement %s has an xyz position" % id)
+		assert_typeof(e.get("yaw", 0.0), TYPE_FLOAT, "placement %s yaw is a number" % id)
+	for id: String in FIXED_IDS:
+		assert_true(placed.has(id), "fixed row %s has a placement" % id)
+
+
+func test_text_is_subtitle_safe() -> void:
+	var rows: Dictionary = _by_id()
+	for id: String in FIXED_IDS:
+		if not rows.has(id):
+			continue
+		var t: String = str((rows[id] as Dictionary).get("text", "")) + str((rows[id] as Dictionary).get("title", ""))
+		assert_false(t.contains("<br>"), "%s: <br> converted to newlines" % id)
+		assert_false(t.contains("[") or t.contains("]"), "%s: no BBCode-looking brackets" % id)
+		assert_false(t.contains("*"), "%s: no markdown emphasis" % id)
+
+
+func test_spawn_all_places_the_map_0_items() -> void:
+	var root: Node3D = Node3D.new()
+	add_child_autofree(root)
+	assert_eq(StoryProp.spawn_all(root, "0"), 6, "six Map 0 items")
+	var other: Node3D = Node3D.new()
+	add_child_autofree(other)
+	assert_eq(StoryProp.spawn_all(other, "1"), 0, "none on Map 1")
+	var by_name: Dictionary = {}
+	for c: Node in root.get_children():
+		by_name[c.name] = c
+	for e: Dictionary in _props():
+		var n: String = "Story_" + str(e["id"])
+		assert_true(by_name.has(n), n + " spawned")
+		if not by_name.has(n):
+			continue
+		var p: StoryProp = by_name[n] as StoryProp
+		var pos: Array = e["position"]
+		assert_almost_eq(p.position, Vector3(float(pos[0]), float(pos[1]), float(pos[2])), Vector3(0.001, 0.001, 0.001), n + " at its position")
+		assert_almost_eq(rad_to_deg(p.rotation.y), float(e.get("yaw", 0.0)), 0.01, n + " yaw")
+		assert_true(p.is_in_group(&"story_props"), n + " in the story_props group")
+		assert_eq(p.title, str((_by_id()[str(e["id"])] as Dictionary)["title"]), n + " knows its title")
+		assert_true(p.get_prompt(null).contains(p.title), n + " prompt names the item")
+		assert_true(p.net_local(), n + " reading is personal")

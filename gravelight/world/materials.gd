@@ -219,6 +219,9 @@ static func _build(key: String) -> Material:
 	var m2: Material = _build_art(key)
 	if m2 != null:
 		return m2
+	var m3: Material = _build_map0(key)
+	if m3 != null:
+		return m3
 	push_warning("Mats: unknown key %s" % key)
 	return _flat(Color(1, 0, 1))
 
@@ -619,4 +622,391 @@ static func _build_art(key: String) -> Material:
 			return lp
 		"felt_green":
 			return _surface(_tex(_noise(simplex, 0.2, 3, 435), _ramp([[0.0, Color(0.05, 0.12, 0.07)], [1.0, Color(0.10, 0.20, 0.12)]])), null, Vector3(3, 3, 3), 1.0)
+	return null
+
+
+# ================================================================== Map 0 (Crossroads Inn) art pass
+
+## Coursed rubble / flagstones in world space (walls are axis-aligned boxes): rows of constant height, random
+## block widths per row, ragged recessed joints, a bevel toward each joint, a damp band rising from `floor_y`
+## on vertical faces (mossy tint, low roughness), and optional wet patches on horizontal faces. No textures.
+const STONE_SHADER: String = """
+shader_type spatial;
+render_mode diffuse_burley, specular_schlick_ggx;
+uniform vec3 stone_dark : source_color = vec3(0.16, 0.15, 0.13);
+uniform vec3 stone_light : source_color = vec3(0.46, 0.43, 0.38);
+uniform vec3 mortar : source_color = vec3(0.24, 0.22, 0.19);
+uniform vec3 damp_tint : source_color = vec3(0.5, 0.58, 0.52);
+uniform vec2 block_size = vec2(0.55, 0.26);
+uniform float joint = 0.016;
+uniform float floor_y = -3.2;
+uniform float damp_height = 0.9;
+uniform float wet = 0.0;
+varying vec3 wpos;
+varying vec3 wnrm;
+
+float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float vnoise(vec2 p) {
+	vec2 i = floor(p);
+	vec2 f = fract(p);
+	f = f * f * (3.0 - 2.0 * f);
+	return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y);
+}
+
+void vertex() {
+	wpos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	wnrm = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
+}
+
+void fragment() {
+	vec3 an = abs(wnrm);
+	vec2 uv = an.x > an.z ? wpos.zy : wpos.xy;
+	float horiz = 0.0;
+	if (an.y > max(an.x, an.z)) { uv = wpos.xz; horiz = 1.0; }
+	float row = floor(uv.y / block_size.y);
+	float rh = hash(vec2(row, 7.0));
+	float bw = block_size.x * (0.75 + 0.6 * rh);
+	float ux = uv.x + rh * 3.0;
+	vec2 cell = vec2(floor(ux / bw), row);
+	vec2 f = vec2(fract(ux / bw) * bw, fract(uv.y / block_size.y) * block_size.y);
+	vec2 d = min(f, vec2(bw, block_size.y) - f);
+	float edge = min(d.x, d.y) + (vnoise(uv * 35.0) - 0.5) * 0.012;
+	float m = 1.0 - smoothstep(joint * 0.6, joint * 1.4, edge);
+	float tone = hash(cell);
+	float grime = vnoise(uv * 2.0 + cell) * 0.5 + vnoise(uv * 9.0) * 0.3;
+	vec3 s = mix(stone_dark, stone_light, clamp(tone * 0.7 + grime * 0.45, 0.0, 1.0));
+	s *= 0.72 + 0.28 * smoothstep(0.0, 0.07, edge);
+	vec3 c = mix(s, mortar * (0.75 + grime * 0.5), m);
+	float rough = mix(0.9, 0.98, m);
+	float h = wpos.y - floor_y;
+	float damp = (1.0 - smoothstep(0.05, damp_height, h + vnoise(uv * 3.0) * 0.5)) * (1.0 - horiz);
+	c = mix(c, c * damp_tint, damp * 0.85);
+	rough = mix(rough, 0.35, damp * 0.6);
+	float w = wet * smoothstep(0.5, 0.72, vnoise(uv * 0.55 + 11.0)) * horiz;
+	c = mix(c, c * 0.45, w);
+	rough = mix(rough, 0.12, w);
+	ALBEDO = c;
+	ROUGHNESS = rough;
+	SPECULAR = 0.4;
+	AO = 1.0 - m * 0.6;
+	AO_LIGHT_AFFECT = 0.4;
+}
+"""
+
+## Procedural "paintings" in canvas UV space (for QuadMesh canvases): a landscape, a bust portrait (no face),
+## a hunting print, a faded group photograph, an inn licence and a still life, all built from gradients, value
+## noise and simple shapes, then aged (grain, sepia fade, varnish vignette). Original; no images.
+const PAINTING_SHADER: String = """
+shader_type spatial;
+render_mode diffuse_burley, specular_schlick_ggx;
+uniform int style = 0;
+uniform float seed = 1.0;
+uniform vec3 col_a : source_color = vec3(0.55, 0.62, 0.72);
+uniform vec3 col_b : source_color = vec3(0.25, 0.28, 0.22);
+uniform vec3 col_c : source_color = vec3(0.85, 0.80, 0.70);
+uniform float fade = 0.0;
+
+float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float vnoise(vec2 p) {
+	vec2 i = floor(p);
+	vec2 f = fract(p);
+	f = f * f * (3.0 - 2.0 * f);
+	return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y);
+}
+float fbm(vec2 p) {
+	float a = 0.5;
+	float s = 0.0;
+	for (int i = 0; i < 4; i++) { s += a * vnoise(p); p *= 2.1; a *= 0.5; }
+	return s;
+}
+float ell(vec2 p, vec2 c, vec2 r) { vec2 q = (p - c) / r; return step(dot(q, q), 1.0); }
+float seg(vec2 p, vec2 a, vec2 b, float w) {
+	vec2 d = b - a;
+	float t = clamp(dot(p - a, d) / dot(d, d), 0.0, 1.0);
+	return step(length(p - (a + d * t)), w);
+}
+
+vec3 landscape(vec2 p) {
+	vec3 sky = mix(col_c, col_a, smoothstep(0.3, 1.0, p.y));
+	vec2 sp = vec2(0.3 + 0.4 * hash(vec2(seed, 3.0)), 0.74);
+	sky = mix(sky, col_c * 1.2, smoothstep(0.07, 0.055, distance(p, sp)) * 0.85);
+	float cl = smoothstep(0.55, 0.75, fbm(p * vec2(3.0, 7.0) + seed));
+	sky = mix(sky, col_c, cl * 0.3 * smoothstep(0.45, 0.55, p.y));
+	float r1 = 0.46 + 0.2 * fbm(vec2(p.x * 2.5 + seed, 1.0));
+	vec3 mcol = mix(col_a * 0.5, col_c * 0.95, smoothstep(r1 - 0.12, r1 - 0.02, p.y) * 0.8);
+	float r2 = 0.28 + 0.12 * fbm(vec2(p.x * 3.5 + seed * 2.0, 7.0));
+	vec3 hcol = col_b * (0.55 + 0.5 * fbm(p * 8.0));
+	float r3 = 0.17 + 0.03 * vnoise(vec2(p.x * 6.0, 2.0));
+	vec3 fcol = mix(col_c * 0.85, col_b * 0.6, 0.35 + 0.35 * vnoise(p * vec2(12.0, 40.0)));
+	vec3 c = sky;
+	c = mix(c, mcol, step(p.y, r1));
+	c = mix(c, hcol, step(p.y, r2));
+	c = mix(c, fcol, step(p.y, r3));
+	vec2 hp = vec2(0.58 + 0.2 * hash(vec2(seed, 9.0)), r3 + 0.02);
+	float house = step(abs(p.x - hp.x), 0.035) * step(hp.y, p.y) * step(p.y, hp.y + 0.05);
+	float roof = step(abs(p.x - hp.x), max(0.0, 0.045 - (p.y - hp.y - 0.05) * 1.3)) * step(hp.y + 0.05, p.y);
+	float tower = step(abs(p.x - hp.x + 0.045), 0.008) * step(hp.y, p.y) * step(p.y, hp.y + 0.13);
+	float spire = step(abs(p.x - hp.x + 0.045), max(0.0, 0.012 - (p.y - hp.y - 0.13) * 0.6)) * step(hp.y + 0.13, p.y);
+	c = mix(c, col_b * 0.22, max(max(house, roof), max(tower, spire)));
+	float win = step(abs(p.x - hp.x), 0.006) * step(abs(p.y - hp.y - 0.025), 0.008);
+	c = mix(c, col_c * 1.1, win);
+	return c;
+}
+
+vec3 portrait(vec2 p) {
+	vec3 c = mix(col_b * 0.45, col_b, smoothstep(0.85, 0.15, distance(p, vec2(0.5, 0.6))));
+	float body = ell(p, vec2(0.5, 0.02), vec2(0.44, 0.46));
+	float collar = body * step(abs(p.x - 0.5), 0.07) * step(0.3, p.y) * step(p.y, 0.44) * step(0.05, abs(p.x - 0.5) + (p.y - 0.3) * 0.3);
+	float head = ell(p, vec2(0.5, 0.6), vec2(0.14, 0.19));
+	float hair = head * smoothstep(0.62, 0.7, p.y + 0.15 * abs(p.x - 0.5));
+	vec3 skin = col_c * (0.7 + 0.35 * smoothstep(0.3, 0.7, p.x)) * (0.85 + 0.15 * smoothstep(0.45, 0.6, p.y));
+	c = mix(c, col_a * 0.5 * (0.8 + 0.3 * vnoise(p * 25.0)), body);
+	c = mix(c, col_c * 0.9, collar);
+	c = mix(c, skin, head);
+	c = mix(c, col_a * 0.25, hair);
+	return c;
+}
+
+vec3 hunting(vec2 p) {
+	vec3 paper = col_c;
+	vec3 ink = col_b;
+	float ground = step(p.y, 0.3 + 0.05 * vnoise(vec2(p.x * 5.0, seed)));
+	vec3 c = mix(paper, mix(paper, ink, 0.35 + 0.2 * vnoise(p * 20.0)), ground);
+	for (int i = 0; i < 5; i++) {
+		float fi = float(i);
+		float tx = 0.06 + 0.22 * fi + 0.08 * hash(vec2(fi, seed));
+		float w = 0.012 + 0.012 * hash(vec2(seed, fi));
+		float trunk = step(abs(p.x - tx + 0.01 * sin(p.y * 20.0 + fi)), w) * step(0.22, p.y);
+		c = mix(c, ink * 0.8, trunk * (0.8 + 0.2 * vnoise(p * 30.0)));
+		float cnp = smoothstep(0.2, 0.1, distance(p, vec2(tx, 0.8 + 0.12 * hash(vec2(seed + 1.0, fi))))) * (0.4 + 0.5 * fbm(p * 15.0 + fi));
+		c = mix(c, ink * 0.9, cnp * 0.85);
+	}
+	vec2 sc = vec2(0.5, 0.4);
+	float stag = ell(p, sc, vec2(0.13, 0.07));
+	stag = max(stag, ell(p, sc + vec2(0.11, 0.08), vec2(0.035, 0.09)));
+	stag = max(stag, ell(p, sc + vec2(0.145, 0.17), vec2(0.05, 0.028)));
+	for (int k = 0; k < 4; k++) {
+		float lx = sc.x - 0.09 + 0.06 * float(k);
+		stag = max(stag, seg(p, vec2(lx, sc.y), vec2(lx + 0.01 * float(k % 2), sc.y - 0.2), 0.008));
+	}
+	vec2 ab = sc + vec2(0.15, 0.19);
+	for (int k = 0; k < 2; k++) {
+		float s = (k == 0) ? -1.0 : 1.0;
+		vec2 tip = ab + vec2(s * 0.06, 0.12);
+		stag = max(stag, seg(p, ab, tip, 0.006));
+		stag = max(stag, seg(p, mix(ab, tip, 0.5), mix(ab, tip, 0.5) + vec2(s * 0.05, 0.02), 0.005));
+		stag = max(stag, seg(p, mix(ab, tip, 0.8), mix(ab, tip, 0.8) + vec2(s * 0.03, 0.035), 0.005));
+	}
+	c = mix(c, ink * 0.5, stag);
+	return c;
+}
+
+vec3 photo(vec2 p) {
+	vec3 c = mix(col_b, col_c, 0.5 + 0.25 * vnoise(p * 6.0));
+	float win = 0.0;
+	for (int i = 0; i < 3; i++) {
+		vec2 wc = vec2(0.2 + 0.3 * float(i), 0.74);
+		win = max(win, step(abs(p.x - wc.x), 0.06) * step(abs(p.y - wc.y), 0.09));
+	}
+	c = mix(c, col_b * 0.45, win);
+	c = mix(c, mix(col_b, col_c, 0.4) * (0.9 + 0.2 * vnoise(p * 15.0)), step(p.y, 0.2));
+	for (int i = 0; i < 4; i++) {
+		float fi = float(i);
+		float fx = 0.2 + 0.2 * fi + 0.04 * hash(vec2(seed, fi));
+		float fh = 0.48 + 0.1 * hash(vec2(fi, seed));
+		float bodyf = ell(p, vec2(fx, 0.2), vec2(0.075, fh - 0.06)) * step(0.0, p.y - 0.14);
+		bodyf = max(bodyf, step(abs(p.x - fx), 0.07) * step(0.14, p.y) * step(p.y, 0.2 + (fh - 0.06) * 0.5));
+		float headf = step(distance(p, vec2(fx, 0.2 + fh - 0.03)), 0.045);
+		vec3 fc = (i % 2 == 0) ? col_b * 0.45 : col_b * 0.75;
+		c = mix(c, fc, bodyf);
+		c = mix(c, mix(col_c, col_b, 0.3), headf);
+	}
+	return c;
+}
+
+vec3 licence(vec2 p) {
+	vec3 c = col_c * (0.9 + 0.1 * vnoise(p * 30.0));
+	c = mix(c, col_b, 0.3 * smoothstep(0.55, 0.85, fbm(p * 4.0 + seed)));
+	float head = step(abs(p.x - 0.5), 0.26) * step(abs(p.y - 0.85), 0.028);
+	head = max(head, step(abs(p.x - 0.5), 0.18) * step(abs(p.y - 0.78), 0.012));
+	float lines = 0.0;
+	for (int i = 0; i < 9; i++) {
+		float fi = float(i);
+		float ly = 0.7 - 0.052 * fi;
+		float len = 0.5 + 0.3 * hash(vec2(fi, seed));
+		float ln = step(abs(p.y - ly), 0.007) * step(0.12, p.x) * step(p.x, 0.12 + len) * step(0.35, vnoise(vec2(p.x * 70.0, fi * 3.0)));
+		lines = max(lines, ln);
+	}
+	c = mix(c, col_b * 0.35, max(head, lines) * 0.9);
+	float sd = distance(p, vec2(0.78, 0.17));
+	c = mix(c, col_a, smoothstep(0.075, 0.07, sd) * 0.9);
+	c = mix(c, col_a * 0.6, smoothstep(0.06, 0.055, sd) - smoothstep(0.045, 0.04, sd));
+	float sig = step(abs(p.y - (0.2 + 0.025 * sin(p.x * 60.0) + 0.02 * sin(p.x * 23.0 + seed))), 0.005) * step(0.15, p.x) * step(p.x, 0.5);
+	c = mix(c, col_b * 0.3, sig);
+	c *= 1.0 - 0.15 * smoothstep(0.012, 0.0, abs(p.y - 0.5));
+	return c;
+}
+
+vec3 stilllife(vec2 p) {
+	vec3 c = mix(col_b * 0.35, col_b * 0.8, p.y);
+	c += col_c * 0.15 * smoothstep(0.7, 0.0, distance(p, vec2(0.3, 0.8)));
+	c = mix(c, col_b * 0.6 * (0.8 + 0.3 * vnoise(p * 20.0)), step(p.y, 0.32));
+	c = mix(c, col_c * 0.5, step(abs(p.y - 0.32), 0.006));
+	float bottle = max(step(abs(p.x - 0.3), 0.06) * step(0.3, p.y) * step(p.y, 0.62), step(abs(p.x - 0.3), 0.02) * step(0.62, p.y) * step(p.y, 0.78));
+	c = mix(c, col_a * 0.45, bottle);
+	c = mix(c, col_c, bottle * 0.5 * smoothstep(0.04, 0.0, abs(p.x - 0.27)));
+	for (int i = 0; i < 4; i++) {
+		float fi = float(i);
+		vec2 fc = vec2(0.5 + 0.13 * fi - 0.06 * float(i % 2), 0.37 + 0.04 * float(i % 2));
+		float r = 0.055 + 0.012 * hash(vec2(fi, seed));
+		float fr = step(distance(p, fc), r);
+		vec3 col = (i % 2 == 0) ? col_a : mix(col_a, col_c, 0.5);
+		col *= 0.55 + 0.6 * smoothstep(r, 0.0, distance(p, fc - vec2(0.02, -0.02)));
+		c = mix(c, col, fr);
+	}
+	return c;
+}
+
+void fragment() {
+	vec2 p = vec2(UV.x, 1.0 - UV.y);
+	vec3 c;
+	if (style == 0) { c = landscape(p); }
+	else if (style == 1) { c = portrait(p); }
+	else if (style == 2) { c = hunting(p); }
+	else if (style == 3) { c = photo(p); }
+	else if (style == 4) { c = licence(p); }
+	else { c = stilllife(p); }
+	c *= 0.92 + 0.12 * vnoise(p * 160.0);
+	float lum = dot(c, vec3(0.3, 0.59, 0.11));
+	vec3 sep = vec3(lum) * vec3(1.1, 0.9, 0.65);
+	c = mix(c, mix(sep, col_c * 0.9, 0.25), fade);
+	float vig = smoothstep(0.0, 0.22, p.x) * smoothstep(1.0, 0.78, p.x) * smoothstep(0.0, 0.22, p.y) * smoothstep(1.0, 0.78, p.y);
+	c *= 0.62 + 0.38 * vig;
+	ALBEDO = c;
+	ROUGHNESS = (style >= 2 && style <= 4) ? 0.9 : 0.45;
+	SPECULAR = 0.35;
+}
+"""
+
+static var _stone_shader: Shader
+static var _painting_shader: Shader
+
+## Styles: name -> [index, [palettes: [col_a, col_b, col_c, fade], ...]] (the seed picks the palette).
+const PAINTING_STYLES: Dictionary = {
+	"landscape": [0, [[Color(0.42, 0.50, 0.66), Color(0.20, 0.24, 0.17), Color(0.88, 0.82, 0.70), 0.15],
+		[Color(0.62, 0.42, 0.36), Color(0.16, 0.14, 0.12), Color(0.95, 0.80, 0.55), 0.25],
+		[Color(0.22, 0.28, 0.45), Color(0.12, 0.14, 0.16), Color(0.80, 0.84, 0.92), 0.1]]],
+	"portrait": [1, [[Color(0.16, 0.12, 0.09), Color(0.30, 0.22, 0.14), Color(0.85, 0.70, 0.55), 0.3],
+		[Color(0.10, 0.11, 0.14), Color(0.26, 0.24, 0.20), Color(0.80, 0.68, 0.56), 0.35]]],
+	"hunting": [2, [[Color(0.5, 0.4, 0.3), Color(0.28, 0.18, 0.10), Color(0.84, 0.76, 0.60), 0.4]]],
+	"photo": [3, [[Color(0.5, 0.4, 0.3), Color(0.30, 0.24, 0.18), Color(0.78, 0.72, 0.60), 0.85]]],
+	"licence": [4, [[Color(0.55, 0.12, 0.08), Color(0.22, 0.16, 0.10), Color(0.84, 0.78, 0.62), 0.3]]],
+	"stilllife": [5, [[Color(0.60, 0.22, 0.12), Color(0.30, 0.20, 0.12), Color(0.85, 0.72, 0.45), 0.2],
+		[Color(0.45, 0.50, 0.20), Color(0.24, 0.18, 0.12), Color(0.80, 0.74, 0.52), 0.25]]],
+}
+
+
+static func _stone(dark: Color, light: Color, mortar: Color, damp: Color, block: Vector2, joint: float, floor_y: float,
+		damp_h: float, wet: float) -> ShaderMaterial:
+	if _stone_shader == null:
+		_stone_shader = Shader.new()
+		_stone_shader.code = STONE_SHADER
+	var m: ShaderMaterial = ShaderMaterial.new()
+	m.shader = _stone_shader
+	m.set_shader_parameter("stone_dark", Vector3(dark.r, dark.g, dark.b))
+	m.set_shader_parameter("stone_light", Vector3(light.r, light.g, light.b))
+	m.set_shader_parameter("mortar", Vector3(mortar.r, mortar.g, mortar.b))
+	m.set_shader_parameter("damp_tint", Vector3(damp.r, damp.g, damp.b))
+	m.set_shader_parameter("block_size", block)
+	m.set_shader_parameter("joint", joint)
+	m.set_shader_parameter("floor_y", floor_y)
+	m.set_shader_parameter("damp_height", damp_h)
+	m.set_shader_parameter("wet", wet)
+	return m
+
+
+## Map 0 art-pass materials: the Helvetia cellar, the stairwell and its framed pictures ("painting:<style>:<n>").
+static func _build_map0(key: String) -> Material:
+	var simplex: FastNoiseLite.NoiseType = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	var cell: FastNoiseLite.NoiseType = FastNoiseLite.TYPE_CELLULAR
+	if key.begins_with("painting:"):
+		var parts: PackedStringArray = key.split(":")
+		var style: Array = PAINTING_STYLES.get(parts[1] if parts.size() > 1 else "landscape", PAINTING_STYLES["landscape"])
+		var n: int = parts[2].to_int() if parts.size() > 2 else 0
+		var pals: Array = style[1]
+		var pal: Array = pals[n % pals.size()]
+		if _painting_shader == null:
+			_painting_shader = Shader.new()
+			_painting_shader.code = PAINTING_SHADER
+		var pm: ShaderMaterial = ShaderMaterial.new()
+		pm.shader = _painting_shader
+		pm.set_shader_parameter("style", int(style[0]))
+		pm.set_shader_parameter("seed", float(n) * 1.7 + 0.37)
+		for i: int in 3:
+			var c: Color = pal[i]
+			pm.set_shader_parameter(["col_a", "col_b", "col_c"][i], Vector3(c.r, c.g, c.b))
+		pm.set_shader_parameter("fade", float(pal[3]))
+		return pm
+	match key:
+		"cellar_stone":   # the vault: coursed grey-brown rubble, mossy damp at the floor
+			return _stone(Color(0.13, 0.12, 0.105), Color(0.34, 0.32, 0.28), Color(0.17, 0.16, 0.14), Color(0.5, 0.6, 0.5),
+				Vector2(0.42, 0.2), 0.011, -3.2, 0.9, 0.0)
+		"cellar_floor":   # big worn flagstones, wet patches
+			return _stone(Color(0.12, 0.11, 0.10), Color(0.32, 0.30, 0.27), Color(0.08, 0.075, 0.07), Color(0.6, 0.6, 0.55),
+				Vector2(0.8, 0.55), 0.018, -3.2, 0.0, 1.0)
+		"limewash":   # the stair hall: limewashed rubble, grimy toward the steps
+			return _stone(Color(0.46, 0.44, 0.39), Color(0.66, 0.64, 0.58), Color(0.50, 0.48, 0.43), Color(0.62, 0.58, 0.50),
+				Vector2(0.42, 0.2), 0.009, -3.2, 1.2, 0.0)
+		"brick_cellar":   # old handmade brick for the vault soffit and arches, lime mortar
+			var bs: Shader = Shader.new()
+			bs.code = BRICK_SHADER
+			var bm: ShaderMaterial = ShaderMaterial.new()
+			bm.shader = bs
+			bm.set_shader_parameter("brick_dark", Vector3(0.20, 0.10, 0.07))
+			bm.set_shader_parameter("brick_light", Vector3(0.44, 0.26, 0.17))
+			bm.set_shader_parameter("mortar", Vector3(0.46, 0.43, 0.37))
+			bm.set_shader_parameter("brick_size", Vector2(0.24, 0.07))
+			bm.set_shader_parameter("joint", 0.012)
+			return bm
+		"oak_stave":   # barrel staves (vertical boards, lighter oak)
+			return _boards(501, [[0.0, Color(0.28, 0.19, 0.11)], [0.5, Color(0.40, 0.28, 0.16)], [1.0, Color(0.48, 0.35, 0.21)]], Vector3(3.0, 0.1, 3.0), 0.8)
+		"puddle":
+			var pd: StandardMaterial3D = _clear(Color(0.02, 0.03, 0.04, 0.62), 0.03)
+			pd.metallic = 0.2
+			return pd
+		"cobweb":   # a cellular lattice ramped into alpha: strands, seen from both sides
+			var wn: FastNoiseLite = _noise(cell, 0.18, 1, 511)
+			wn.cellular_return_type = FastNoiseLite.RETURN_DISTANCE2_SUB
+			wn.cellular_jitter = 0.8
+			var wm: StandardMaterial3D = _surface(_tex(wn, _ramp([[0.0, Color(0.55, 0.55, 0.5, 0.4)], [0.04, Color(0.5, 0.5, 0.45, 0.14)],
+				[0.1, Color(0.5, 0.5, 0.45, 0.0)], [1.0, Color(0.5, 0.5, 0.45, 0.0)]])), null, Vector3(3.0, 3.0, 3.0), 1.0)
+			wm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			wm.cull_mode = BaseMaterial3D.CULL_DISABLED
+			wm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			return wm
+		"runner":   # stair/hall runner: deep red with a woven pattern
+			var rn: FastNoiseLite = _noise(cell, 0.14, 1, 521)
+			rn.cellular_return_type = FastNoiseLite.RETURN_CELL_VALUE
+			return _surface(_tex(rn, _ramp([[0.0, Color(0.26, 0.06, 0.05)], [0.5, Color(0.40, 0.11, 0.06)], [0.75, Color(0.34, 0.20, 0.09)], [1.0, Color(0.30, 0.08, 0.05)]])),
+				_normal(_noise(simplex, 0.5, 2, 522), 0.8), Vector3(3.0, 3.0, 3.0), 1.0)
+		"mirror":
+			return _flat(Color(0.55, 0.57, 0.60), 0.04, 1.0)
+		"frame_walnut":
+			return _flat(Color(0.15, 0.08, 0.04), 0.45)
+		"frame_black":
+			return _flat(Color(0.05, 0.05, 0.05), 0.5)
+		"gilt":
+			return _flat(Color(0.58, 0.44, 0.18), 0.32, 0.85)
+		"paper_old":
+			return _flat(Color(0.60, 0.53, 0.38), 0.95)
+		"jar_red":   # preserves
+			return _clear(Color(0.45, 0.12, 0.06, 0.78), 0.1)
+		"tin":   # galvanised lamp shades, buckets
+			return _flat(Color(0.52, 0.53, 0.52), 0.45, 0.65)
+		"plaster_cellar":   # the hall's plaster strip above the limewash (upstairs-stair match)
+			return get_mat("plaster_upper")
+		"wainscot_matte":   # the stairwell's sloped panels: the same boards without the varnish highlight
+			var wmat: StandardMaterial3D = (get_mat("wainscot") as StandardMaterial3D).duplicate() as StandardMaterial3D
+			wmat.roughness = 0.88
+			return wmat
 	return null

@@ -9,6 +9,8 @@ extends Interactable
 
 enum Phase { HIDDEN, CLOSED, CYCLING, OFFERED, DRUMMER }
 
+const CrateArt: GDScript = preload("res://gravelight/world/crate_art.gd")
+
 @export var spot_index: int = 0
 @export var can_start: bool = false
 @export var spot_name: String = ""
@@ -34,6 +36,10 @@ var _names: PackedStringArray = []
 var _ids: PackedStringArray = []
 var _float_model: Node3D
 var _sticks: Array[Node3D] = []
+var _lamp: OmniLight3D
+var _lamp_glass: MeshInstance3D
+var _motes: CPUParticles3D
+var _lamp_t: float = 0.0
 static var _ghost_mat: StandardMaterial3D
 
 
@@ -66,24 +72,96 @@ func _on_crate_moved(index: int) -> void:
 		show_beam()   # the host shows its own beam where the drummer took the crate
 
 
+## The crate's art (CrateArt): the planked, strapped body with its seal and stencils, the lid on its rear hinges,
+## and, at every spot, the lantern stake and chalk footprint. The lantern burns only where the crate is.
 func build_greybox() -> void:
+	# always there: the chalk footprint and the lantern on its stake (the glass and light switch with the crate)
+	InteractableArt.place(self, "crate_spot", func(r: Node3D) -> void: CrateArt.spot(r))
+	var lp: Vector3 = CrateArt.lantern_pos()
+	_lamp_glass = MeshInstance3D.new()
+	var gm: CylinderMesh = CylinderMesh.new()
+	gm.top_radius = 0.042
+	gm.bottom_radius = 0.046
+	gm.height = 0.19
+	gm.radial_segments = 12
+	_lamp_glass.mesh = gm
+	_lamp_glass.position = lp
+	_lamp_glass.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(_lamp_glass)
+	_lamp = OmniLight3D.new()
+	_lamp.light_color = Color(1.0, 0.72, 0.42)
+	_lamp.light_energy = 1.1
+	_lamp.omni_range = 3.2
+	_lamp.omni_attenuation = 1.4
+	_lamp.shadow_enabled = false
+	_lamp.position = lp
+	add_child(_lamp)
 	_body = Node3D.new()
 	add_child(_body)
-	var wood: StandardMaterial3D = greybox_mat(Color(0.28, 0.36, 0.2))
-	var band: StandardMaterial3D = greybox_mat(Color(0.18, 0.18, 0.16))
-	add_box(_body, Vector3(1.4, 0.6, 0.7), Vector3(0, 0.3, 0), wood)
-	add_box(_body, Vector3(1.44, 0.08, 0.74), Vector3(0, 0.2, 0), band)
-	add_label(_body, "REQ. 44-117  ·  QM", Vector3(0, 0.33, -0.36), 22, Color(0.9, 0.88, 0.75, 0.8))
+	InteractableArt.place(_body, "crate_body", func(r: Node3D) -> void: CrateArt.body(r))
+	# stencilled requisition markings (invented): the lot number on the front, the works on the plate
+	var st: Label3D = add_label(_body, "LOS 44-117", Vector3(0, 0.2, -0.395), 24, Color(0.86, 0.84, 0.72, 0.85))
+	st.outline_size = 0
+	var st2: Label3D = add_label(_body, "NICHT KIPPEN  ·  INHALT UNBEKANNT", Vector3(0.0, 0.1, -0.395), 11, Color(0.86, 0.84, 0.72, 0.7))
+	st2.outline_size = 0
+	st2.pixel_size = 0.0025
+	var pl: Label3D = add_label(_body, "HELVETIA AUTOMATEN AG", Vector3(-0.41, 0.395, -0.405), 12, Color(0.12, 0.09, 0.03, 0.95))
+	pl.outline_size = 0
+	pl.pixel_size = 0.0022
 	_lid = Node3D.new()
-	_lid.position = Vector3(0, 0.6, 0.35)
+	_lid.position = Vector3(0, CrateArt.TOP + 0.1, CrateArt.HD)   # the hinge pins: the lid's top rear edge
 	_body.add_child(_lid)
-	add_box(_lid, Vector3(1.4, 0.1, 0.7), Vector3(0, 0.05, -0.35), wood)
+	InteractableArt.place(_lid, "crate_lid", func(r: Node3D) -> void: CrateArt.lid(r))
+	var lt: Label3D = add_label(_lid, "AUSGABE  ·  H.A. AG", Vector3(0, 0.009, -0.38), 12, Color(0.12, 0.09, 0.03, 0.95))
+	lt.outline_size = 0
+	lt.pixel_size = 0.0025
+	lt.rotation_degrees = Vector3(-90, 180, 0)   # reads from above, the top of the text toward the hinge
+	# inside: straw packing and the violet glow of whatever is in there
+	var inner: Node3D = Node3D.new()
+	_body.add_child(inner)
+	var inner_builder: Callable = func(r: Node3D) -> void:
+		Props.block(r, Vector3(-0.64, 0.11, -0.3), Vector3(0.64, 0.3, 0.3), "hay")
+		Props.block(r, Vector3(-0.5, 0.3, -0.2), Vector3(0.5, 0.33, 0.2), "nachtglas_dim")
+		Props.block(r, Vector3(-0.2, 0.33, -0.08), Vector3(0.2, 0.35, 0.08), "nachtglas")
+	InteractableArt.place(inner, "crate_inner", inner_builder, Vector3.ZERO, false)
 	_glow = OmniLight3D.new()
 	_glow.light_color = Color(0.65, 0.35, 1.0)
 	_glow.omni_range = 5.0
 	_glow.light_energy = 0.0
 	_glow.position = Vector3(0, 0.9, 0)
 	_body.add_child(_glow)
+	_motes = CPUParticles3D.new()
+	_motes.amount = 22
+	_motes.lifetime = 2.6
+	_motes.emitting = false
+	_motes.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	_motes.emission_box_extents = Vector3(0.5, 0.04, 0.22)
+	_motes.direction = Vector3.UP
+	_motes.spread = 25.0
+	_motes.gravity = Vector3(0, 0.06, 0)
+	_motes.initial_velocity_min = 0.12
+	_motes.initial_velocity_max = 0.3
+	_motes.scale_amount_min = 0.35
+	_motes.scale_amount_max = 1.0
+	_motes.position = Vector3(0, 0.36, 0)
+	var mq: QuadMesh = QuadMesh.new()
+	mq.size = Vector2(0.018, 0.018)
+	_motes.mesh = mq
+	var mm: StandardMaterial3D = StandardMaterial3D.new()
+	mm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mm.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	mm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mm.albedo_color = Color(0.8, 0.55, 1.0, 0.55)
+	mm.emission_enabled = true
+	mm.emission = Color(0.7, 0.4, 1.0)
+	mm.emission_energy_multiplier = 2.5
+	mm.vertex_color_use_as_albedo = true
+	var ramp: Gradient = Gradient.new()
+	ramp.offsets = PackedFloat32Array([0.0, 0.25, 1.0])
+	ramp.colors = PackedColorArray([Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0)])
+	_motes.color_ramp = ramp
+	_motes.mesh.surface_set_material(0, mm)
+	_body.add_child(_motes)
 	_float = Node3D.new()
 	_float.position = Vector3(0, 0.8, 0)
 	_body.add_child(_float)
@@ -123,11 +201,24 @@ func refresh() -> void:
 	if _body != null:
 		_body.visible = here
 		_body.position.y = 0.0
+		_set_lantern(here)
 	_blocker.collision_layer = (1 << 8) if here else 0
 	area.collision_layer = LAYER_INTERACTABLE if here else 0
 
 
+## The lantern burns where the crate is: lit glass and its light, a cold lamp at the other spots.
+func _set_lantern(lit: bool) -> void:
+	if _lamp == null:
+		return
+	_lamp.visible = lit
+	_lamp_glass.material_override = Mats.get_mat("lantern_glass" if lit else "neon_off")
+
+
 func _process(delta: float) -> void:
+	if _lamp != null and _lamp.visible:
+		# a hurricane lamp's slow breathing, not a strobe
+		_lamp_t += delta
+		_lamp.light_energy = 1.1 + 0.1 * sin(_lamp_t * 5.3) + 0.06 * sin(_lamp_t * 13.7)
 	if _beam_t > 0.0:
 		_beam_t -= delta
 		_beam.visible = _beam_t > 0.0
@@ -141,7 +232,10 @@ func _process(delta: float) -> void:
 			_t += delta
 			_swap_t -= delta
 			var cyc: float = float(GLData.table("crate")["cycle_seconds"])
-			_float.position.y = lerpf(0.65, 1.1, clampf(_t / cyc, 0.0, 1.0))
+			var u: float = clampf(_t / cyc, 0.0, 1.0)
+			# rises out of the straw and slows its spin as the crate makes up its mind
+			_float.position.y = lerpf(0.6, 1.1, 1.0 - (1.0 - u) * (1.0 - u)) + sin(_t * 3.0) * 0.012
+			_float.rotation.y += delta * lerpf(5.0, 1.2, u)
 			if _swap_t <= 0.0:
 				_swap_t = lerpf(0.06, 0.4, clampf(_t / cyc, 0.0, 1.0))
 				var k: int = randi() % _ids.size()
@@ -153,6 +247,7 @@ func _process(delta: float) -> void:
 		Phase.OFFERED:
 			_t += delta
 			_float.rotation.y += delta * 1.2
+			_float.position.y = 1.1 + sin(_t * 2.2) * 0.02
 			# a client waits for the host's close (a little longer, in case that message is late)
 			if _t >= float(GLData.table("crate")["pickup_window_seconds"]) + (2.0 if Net.is_client() else 0.0):
 				_close()
@@ -171,6 +266,7 @@ func _process(delta: float) -> void:
 				phase = Phase.HIDDEN
 				_lid.rotation.x = 0.0
 				_glow.light_energy = 0.0
+				_motes.emitting = false
 				if Net.is_client():
 					refresh()
 					return   # the host moves the crate (relayed crate_moved)
@@ -241,9 +337,11 @@ var _paid: int = 0
 
 
 func _open_lid() -> void:
+	# the lid swings up to just short of vertical (crates stand against walls: nothing may pass the hinge line)
 	var tw: Tween = create_tween()
-	tw.tween_property(_lid, "rotation:x", -1.9, 0.35).set_trans(Tween.TRANS_BACK)
+	tw.tween_property(_lid, "rotation:x", 1.52, 0.45).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	_glow.light_energy = 2.5
+	_motes.emitting = true
 	AudioDirector.play_3d("crate_open", global_position + Vector3.UP * 0.6, 0.0, 0.0)
 
 
@@ -280,8 +378,9 @@ func _close() -> void:
 		Net.mirror(self, &"_close")
 	_float.hide()
 	_glow.light_energy = 0.0
+	_motes.emitting = false
 	var tw: Tween = create_tween()
-	tw.tween_property(_lid, "rotation:x", 0.0, 0.3)
+	tw.tween_property(_lid, "rotation:x", 0.0, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	phase = Phase.CLOSED
 	refresh()
 
@@ -320,12 +419,15 @@ func _show_model(id: StringName, ghost: bool) -> void:
 	if _float_model != null and is_instance_valid(_float_model):
 		_float_model.queue_free()
 	var model: Node3D = WeaponModels.build(id)
-	var length: float = float(model.get_meta("length", 0.6))
+	var bb: AABB = WeaponModels.model_bounds(model)
+	var length: float = maxf(0.2, bb.size.z)
 	var holder: Node3D = Node3D.new()
-	var k: float = clampf(0.95 / maxf(0.2, length), 0.6, 2.2)
+	var k: float = clampf(0.95 / length, 0.6, 2.2)
 	holder.scale = Vector3.ONE * k
+	# barrel along -X, the model's bounding box centred on the float (a yaw of 90 maps local (x, z) to (z, -x))
+	var c: Vector3 = bb.get_center()
 	model.rotation_degrees = Vector3(0, 90, 0)
-	model.position = Vector3(length * 0.45, 0, 0)
+	model.position = -Vector3(c.z, c.y, -c.x)
 	holder.add_child(model)
 	if ghost:
 		if _ghost_mat == null:

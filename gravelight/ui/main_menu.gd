@@ -47,9 +47,11 @@ func _ready() -> void:
 
 
 func _build() -> void:
+	GameState.bot_count = 0   # only Play (MenuCharacter) sends bots into a match (T-031)
 	for c: Node in _menu.get_children():
 		_menu.remove_child(c)
 		c.queue_free()
+
 	_menu.add_child(MenuKit.label("GRAVELIGHT", 104, Color(0.85, 0.82, 0.74), true))
 	_menu.add_child(MenuKit.label("Silesia, winter 1944. The dead are keeping count.", 22, MenuKit.VIOLET))
 	# profile header: rank stamp + XP bar

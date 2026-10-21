@@ -10,6 +10,10 @@ var map_display_name: String = ""
 var player_ids: Array[int] = [1]
 var character_id: StringName = &"dutch"     # the local player's survivor
 var characters: Dictionary = {}           # co-op: player id -> survivor (empty in solo: everyone is character_id)
+## AI teammates (T-031): how many the menu asked for and their skill preset; the ids they got this match.
+var bot_count: int = 0
+var bot_skill: String = "regular"
+var bot_ids: Array[int] = []
 var power_on: bool = false
 var open_zones: Dictionary = {}    # zone_id -> true
 var flags: Dictionary = {}         # e.g. {&"crate_has_moved": true}
@@ -41,6 +45,20 @@ func reset_match(new_map_id: StringName, display_name: String, start_zone: Strin
 
 func is_solo() -> bool:
 	return player_ids.size() == 1
+
+
+func is_bot(pid: int) -> bool:
+	return bot_ids.has(pid)
+
+
+## The humans in the match (bots excluded).
+func human_ids() -> Array[int]:
+	var out: Array[int] = []
+	for pid: int in player_ids:
+		if not bot_ids.has(pid):
+			out.append(pid)
+	return out
+
 
 
 ## Character traits apply unless Classic Rules is on.

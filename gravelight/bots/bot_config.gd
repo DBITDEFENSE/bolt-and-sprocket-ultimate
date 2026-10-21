@@ -1,0 +1,180 @@
+class_name BotConfig
+extends RefCounted
+## Pure rules for AI teammates (T-031): tuning lookup, who plays which survivor, how much a bot counts for
+## round scaling, the kill-share rule, and what a bot buys. No scene access, so it is unit-tested directly
+## (gravelight/tests/unit/test_bots.gd). Tuning: data/gravelight/bots.json.
+
+const CHARACTERS: PackedStringArray = ["dutch", "peg", "deacon", "wren"]
+
+
+static func cfg() -> Dictionary:
+	return GLData.table("bots")
+
+
+## A skill preset ("green" / "regular" / "veteran"); unknown names fall back to the default preset.
+static func skill(c: Dictionary, skill_name: String) -> Dictionary:
+	var skills: Dictionary = c.get("skills", {})
+	if skills.has(skill_name):
+		return skills[skill_name]
+	return skills.get(str(c.get("skill_default", "regular")), {})
+
+
+## The next skill preset in the menu cycle.
+static func next_skill(c: Dictionary, current: String) -> String:
+	var order: Array = c.get("skill_order", ["regular"])
+	var i: int = order.find(current)
+	return str(order[(i + 1) % order.size()])
+
+
+static func clamp_bots(c: Dictionary, n: int) -> int:
+	return clampi(n, 0, int(c.get("max_bots", 3)))
+
+
+## Survivors for `n` bots: every survivor once, never the ones in `taken` (the humans'), in roster order.
+static func assign_characters(taken: Array, n: int) -> Array[StringName]:
+	var out: Array[StringName] = []
+	for ch: String in CHARACTERS:
+		if out.size() >= n:
+			break
+		if not taken.has(ch) and not taken.has(StringName(ch)):
+			out.append(StringName(ch))
+	return out
+
+
+## Players the round scaling sees: humans count 1, bots `bot_player_weight` each (rounded), 1..max_players.
+static func scaled_player_count(humans: int, bots: int, c: Dictionary, max_players: int = 4) -> int:
+	var w: float = float((c.get("scaling", {}) as Dictionary).get("bot_player_weight", 1.0))
+	return clampi(maxi(1, humans) + roundi(float(bots) * w), 1, max_players)
+
+
+## Kill share: true when bots may take any kill. `recent` = killer pids of the last kills (newest last).
+static func human_share_ok(recent: Array, human_ids: Array, ks: Dictionary) -> bool:
+	var window: int = int(ks.get("window", 24))
+	var sample: Array = recent.slice(maxi(0, recent.size() - window))
+	if sample.size() < int(ks.get("min_sample", 6)):
+		return true
+	var human: int = 0
+	for pid: Variant in sample:
+		if human_ids.has(int(pid)):
+			human += 1
+	return float(human) / float(sample.size()) >= float(ks.get("human_min_share", 0.45))
+
+
+## The wall weapon to buy next: the first wishlist entry on the map that is better than everything held
+## (earlier in the wishlist = better; unlisted held guns count as worst) and affordable with the buffer.
+## `prices` = weapon id -> wall price for the wall-buys on this map. Returns &"" for nothing.
+static func pick_weapon(wishlist: Array, held: Array, scrip: int, prices: Dictionary, buffer: int) -> StringName:
+	var best_held: int = wishlist.size()
+	for h: Variant in held:
+		var i: int = wishlist.find(String(h))
+		if i >= 0:
+			best_held = mini(best_held, i)
+	for i2: int in range(0, mini(best_held, wishlist.size())):
+		var wid: String = str(wishlist[i2])
+		if prices.has(wid) and scrip >= int(prices[wid]) + buffer:
+			return StringName(wid)
+	return &""
+
+
+## The perk to drink next: the first wishlist perk not owned and affordable, while under max_perks.
+## `prices` = perk id -> price for machines that can sell to this bot right now.
+static func pick_perk(wishlist: Array, owned: Array, scrip: int, prices: Dictionary, max_perks: int, buffer: int) -> StringName:
+	if owned.size() >= max_perks:
+		return &""
+	for p: Variant in wishlist:
+		var pid: String = str(p)
+		if owned.has(pid) or owned.has(StringName(pid)):
+			continue
+		if prices.has(pid) and scrip >= int(prices[pid]) + buffer:
+			return StringName(pid)
+	return &""
+
+
+## Doors (shopping.doors): may this bot buy one now? `since_round_start` seconds into the round, `bought` doors
+## this bot opened this round.
+static func door_allowed(d: Dictionary, since_round_start: float, bought: int) -> bool:
+	if not bool(d.get("enabled", true)):
+		return false
+	if since_round_start < float(d.get("round_delay_s", 20.0)):
+		return false
+	return bought < int(d.get("max_per_round_per_bot", 1))
+
+
+## The door to buy: `doors` = [{"cost": int, "pos": Vector3, "ok": bool (usable and reachable)}, ...]. Affordable
+## with the reserve, preferring the one the human looks at (human_look_cone_deg) and the one nearest the human
+## (near_bonus_m - distance). Returns the index in `doors`, or -1.
+static func pick_door(d: Dictionary, doors: Array, scrip: int, human_pos: Vector3, human_fwd: Vector3) -> int:
+	var best: int = -1
+	var best_s: float = -INF
+	for i: int in doors.size():
+		var door: Dictionary = doors[i]
+		if not bool(door.get("ok", true)) or scrip < int(door.get("cost", 0)) + int(d.get("reserve_scrip", 0)):
+			continue
+		var pos: Vector3 = door.get("pos", Vector3.ZERO)
+		var dist: float = Vector2(pos.x - human_pos.x, pos.z - human_pos.z).length()
+		var s: float = maxf(0.0, float(d.get("near_bonus_m", 14.0)) - dist)
+		if in_fire_cone(human_pos, human_fwd, pos, float(d.get("human_look_cone_deg", 35.0)), 60.0):
+			s += 20.0
+		if s > best_s:
+			best_s = s
+			best = i
+	return best
+
+
+## Crucible (shopping.crucible): worth feeding the gun in hand? `can_upgrade` = the gun has an upgrade and isn't
+## upgraded yet; `cost` = the upgrade price.
+static func crucible_wanted(c: Dictionary, can_upgrade: bool, scrip: int, cost: int, round_number: int) -> bool:
+	if not bool(c.get("enabled", true)) or not can_upgrade:
+		return false
+	if round_number < int(c.get("min_round", 8)):
+		return false
+	return scrip >= cost + int(c.get("reserve_scrip", 0))
+
+
+## Aim error (degrees) `t` seconds after picking a target: starts wide and settles like a person's.
+
+static func aim_error_deg(sk: Dictionary, t: float) -> float:
+	var a: float = float(sk.get("aim_error_deg", 3.0))
+	var s: float = float(sk.get("settle_error_deg", 1.0))
+	var tau: float = maxf(0.05, float(sk.get("settle_s", 0.5)))
+	return s + (a - s) * exp(-maxf(0.0, t) / tau)
+
+
+## A value from a [min, max] pair in the tuning.
+static func range_roll(pair: Variant, rng: RandomNumberGenerator, fallback: float) -> float:
+	if pair is Array and (pair as Array).size() >= 2:
+		return rng.randf_range(float(pair[0]), float(pair[1]))
+	return fallback
+
+
+## Formation slot offset (leader-local, -Z forward) for the i-th bot.
+static func slot_offset(follow: Dictionary, i: int) -> Vector3:
+	var angles: Array = follow.get("slot_angles_deg", [180])
+	var a: float = deg_to_rad(float(angles[i % angles.size()]))
+	var r: float = float(follow.get("slot_radius_m", 3.0)) + 0.6 * float(i / angles.size())
+	return Vector3(sin(a) * r, 0.0, -cos(a) * r)
+
+
+## True when `p` stands in the cone in front of a shooter at `origin` facing `fwd` (both flat).
+static func in_fire_cone(origin: Vector3, fwd: Vector3, p: Vector3, cone_deg: float, max_range: float) -> bool:
+	var to: Vector3 = p - origin
+	to.y = 0.0
+	var d: float = to.length()
+	if d < 0.3 or d > max_range:
+		return false
+	var f: Vector3 = Vector3(fwd.x, 0.0, fwd.z)
+	if f.length_squared() < 0.0001:
+		return false
+	return f.normalized().angle_to(to / d) < deg_to_rad(cone_deg)
+
+
+## Shooting from `a` to `b` would pass within `radius` of `p` (a teammate in the way).
+static func blocks_shot(a: Vector3, b: Vector3, p: Vector3, radius: float) -> bool:
+	var ab: Vector3 = b - a
+	var len2: float = ab.length_squared()
+	if len2 < 0.0001:
+		return false
+	var t: float = (p - a).dot(ab) / len2
+	if t <= 0.02 or t >= 0.98:
+		return false
+	return (a + ab * t).distance_to(p) < radius

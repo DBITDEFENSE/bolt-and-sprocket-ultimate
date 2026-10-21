@@ -35,6 +35,7 @@ func _physics_process(delta: float) -> void:
 	_frames += 1
 	if _frames == 30:
 		_check_paths()
+		_check_crucible()
 	var dir: ZombieDirector = _map.get_node("ZombieDirector") as ZombieDirector
 	for z: Zombie in dir.active_zombies():
 		var key: String = str(Zombie.State.keys()[z.state])
@@ -68,6 +69,15 @@ func _physics_process(delta: float) -> void:
 				print("[smoke] FAIL: ", f)
 		get_tree().quit(0 if _fails.is_empty() else 1)
 		set_physics_process(false)
+
+
+## T-032: Map 0 has a Crucible, in the Helvetia cellar (below ground, south of the stair hall).
+func _check_crucible() -> void:
+	var cru: Node3D = get_tree().get_first_node_in_group(&"crucible") as Node3D
+	var ok: bool = cru != null and cru.global_position.y < -2.0 and cru.global_position.z > 19.0
+	print("[smoke] crucible in the Helvetia cellar                   %s" % ("ok" if ok else "MISSING"))
+	if not ok:
+		_fails.append("no Crucible in the cellar")
 
 
 func _check_paths() -> void:

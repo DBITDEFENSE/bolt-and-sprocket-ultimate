@@ -831,3 +831,215 @@ static func crystal_chandelier(parent: Node3D, chain: float, lit_key: String = "
 	ball(g, Vector3(0, -0.05, 0), Vector3(0.42, 0.42, 0.42), "salt_crystal")
 	bake(g)
 	return g
+
+
+# ================================================================== Map 0 (Crossroads Inn) art pass
+
+static var _quad: QuadMesh
+
+
+## Unit quad (UV 0..1), facing local +Z.
+static func unit_quad() -> QuadMesh:
+	if _quad == null:
+		_quad = QuadMesh.new()
+		_quad.size = Vector2.ONE
+	return _quad
+
+
+static func _noshadow(mi: MeshInstance3D) -> MeshInstance3D:
+	if mi != null:
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return mi
+
+
+## A framed procedural painting on a wall; local -Z faces the room (pos = the wall face). `style` is one of the
+## Mats "painting:<style>:<n>" styles (landscape, portrait, hunting, photo, licence, stilllife); `n` picks the
+## palette/seed; `tilt` hangs it askew; `mount` adds a paper mount inside the frame.
+static func painting(parent: Node3D, pos: Vector3, yaw: float, w: float, h: float, style: String, n: int = 0,
+		frame: String = "frame_gold", tilt: float = 0.0, mount: bool = false) -> Node3D:
+	var g: Node3D = group(parent, "Painting", pos, yaw)
+	g.rotation.z = deg_to_rad(tilt)
+	var fw: float = 0.04 if w < 0.5 else 0.06
+	var d: float = 0.04 if w < 0.5 else 0.055
+	block(g, Vector3(-w * 0.5 - fw, h * 0.5, -d), Vector3(w * 0.5 + fw, h * 0.5 + fw, 0.0), frame)
+	block(g, Vector3(-w * 0.5 - fw, -h * 0.5 - fw, -d), Vector3(w * 0.5 + fw, -h * 0.5, 0.0), frame)
+	block(g, Vector3(-w * 0.5 - fw, -h * 0.5, -d), Vector3(-w * 0.5, h * 0.5, 0.0), frame)
+	block(g, Vector3(w * 0.5, -h * 0.5, -d), Vector3(w * 0.5 + fw, h * 0.5, 0.0), frame)
+	# inner lip (the rebate) and a backboard
+	block(g, Vector3(-w * 0.5 - 0.012, -h * 0.5 - 0.012, -d * 0.55), Vector3(w * 0.5 + 0.012, h * 0.5 + 0.012, -d * 0.4), "frame_black")
+	block(g, Vector3(-w * 0.5, -h * 0.5, -d * 0.4), Vector3(w * 0.5, h * 0.5, 0.0), "wainscot")
+	var cw: float = w
+	var ch: float = h
+	if mount:
+		_noshadow(block(g, Vector3(-w * 0.5, -h * 0.5, -d * 0.6), Vector3(w * 0.5, h * 0.5, -d * 0.55), "paper"))
+		cw = w * 0.72
+		ch = h * 0.72
+	var cv: MeshInstance3D = MeshInstance3D.new()
+	cv.mesh = unit_quad()
+	cv.material_override = Mats.get_mat("painting:%s:%d" % [style, n])
+	cv.position = Vector3(0, 0, -d * 0.62)   # in front of the lip, recessed inside the frame rails
+	cv.rotation.y = PI
+	cv.scale = Vector3(cw, ch, 1.0)
+	cv.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	g.add_child(cv)
+	return g
+
+
+## A framed wall mirror (local -Z faces the room).
+static func mirror(parent: Node3D, pos: Vector3, yaw: float, w: float, h: float, frame: String = "gilt") -> void:
+	var g: Node3D = group(parent, "Mirror", pos, yaw)
+	block(g, Vector3(-w * 0.5 - 0.06, -h * 0.5 - 0.06, -0.05), Vector3(w * 0.5 + 0.06, h * 0.5 + 0.06, 0.0), frame)
+	block(g, Vector3(-w * 0.5 - 0.02, -h * 0.5 - 0.02, -0.055), Vector3(w * 0.5 + 0.02, h * 0.5 + 0.02, -0.05), "frame_black")
+	_noshadow(block(g, Vector3(-w * 0.5, -h * 0.5, -0.058), Vector3(w * 0.5, h * 0.5, -0.05), "mirror"))
+
+
+## Oak barrel: bulged staves, iron hoops, a bung. Upright on the floor at pos, or lying along local Z (tipped).
+static func barrel(parent: Node3D, pos: Vector3, yaw: float, r: float = 0.32, h: float = 0.9, tipped: bool = false) -> Node3D:
+	var g: Node3D = group(parent, "Barrel", pos + Vector3(0, r if tipped else h * 0.5, 0), yaw)
+	if tipped:
+		g.rotation.x = PI * 0.5
+	cyl(g, Vector3.ZERO, r * 0.92, h, "oak_stave")
+	cyl(g, Vector3.ZERO, r, h * 0.55, "oak_stave")
+	for y: float in [-h * 0.32, h * 0.32]:
+		cyl(g, Vector3(0, y, 0), r * 0.92 + 0.012, 0.04, "iron")
+	for y2: float in [-h * 0.11, h * 0.11]:
+		cyl(g, Vector3(0, y2, 0), r + 0.01, 0.035, "iron")
+	cyl(g, Vector3(0, h * 0.05, -r + 0.005), 0.03, 0.04, "beam", Vector3(90, 0, 0))
+	return g
+
+
+## Wall shelves (the back at local z = 0 against the wall, boards reaching to -depth), with jars, bottles and tins.
+static func shelves(parent: Node3D, pos: Vector3, yaw: float, w: float, h: float, depth: float = 0.3, boards: int = 3, seed_v: int = 1) -> void:
+	var g: Node3D = group(parent, "Shelves", pos, yaw)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = seed_v
+	for sx: float in [-1.0, 1.0]:
+		block(g, Vector3(sx * w * 0.5 - 0.02, 0, -depth), Vector3(sx * w * 0.5 + 0.02, h, 0), "planks")
+	var keys: Array = ["jar_red", "bottle_green", "bottle_amber", "stein", "tin", "jar_red", "paper_old"]
+	for i: int in boards:
+		var y: float = h * float(i + 1) / float(boards) - 0.03
+		block(g, Vector3(-w * 0.5, y, -depth), Vector3(w * 0.5, y + 0.03, 0), "furniture")
+		var n: int = int(w / 0.15)
+		for k: int in n:
+			if rng.randf() < 0.25:
+				continue
+			var key: String = keys[rng.randi() % keys.size()]
+			var x: float = -w * 0.5 + 0.1 + float(k) * 0.15 + rng.randf_range(-0.03, 0.03)
+			var z: float = -depth * 0.5 + rng.randf_range(-0.05, 0.05)
+			if key == "paper_old":   # a small box / a stack of tied papers
+				_noshadow(block(g, Vector3(x - 0.07, y + 0.03, z - 0.06), Vector3(x + 0.07, y + 0.03 + rng.randf_range(0.05, 0.12), z + 0.06), key))
+			elif key == "tin":
+				_noshadow(cyl(g, Vector3(x, y + 0.03 + 0.08, z), 0.045, 0.16, key))
+			else:
+				var tall: float = rng.randf_range(0.12, 0.24) if key != "stein" else 0.15
+				var rad: float = 0.05 if key == "jar_red" else (0.055 if key == "stein" else 0.035)
+				_noshadow(cyl(g, Vector3(x, y + 0.03 + tall * 0.5, z), rad, tall, key))
+				if key == "jar_red":
+					_noshadow(cyl(g, Vector3(x, y + 0.03 + tall + 0.006, z), rad + 0.004, 0.012, "paper"))
+
+
+## Bare bulb on a cord under a tin shade, hanging from `ceiling_y`. The lit twin (bulb_warm, slightly larger) goes
+## under `lit_parent`, which the map shows only once the power is on. The lit mesh carries meta "keep" so a static
+## merge leaves it alone.
+static func pendant(parent: Node3D, pos: Vector3, ceiling_y: float, lit_parent: Node3D = null, shade: String = "tin") -> void:
+	var g: Node3D = group(parent, "Pendant", pos)
+	_noshadow(block(g, Vector3(-0.008, 0.12, -0.008), Vector3(0.008, ceiling_y - pos.y, 0.008), "rubber"))
+	cyl(g, Vector3(0, ceiling_y - pos.y - 0.02, 0), 0.05, 0.04, "iron")
+	cone(g, Vector3(0, 0.1, 0), 0.2, 0.15, shade)
+	cyl(g, Vector3(0, 0.17, 0), 0.03, 0.06, "bakelite")
+	_noshadow(ball(g, Vector3.ZERO, Vector3(0.085, 0.115, 0.085), "bulb_off"))
+	if lit_parent != null:
+		var lit: MeshInstance3D = _noshadow(ball(lit_parent, pos, Vector3(0.095, 0.125, 0.095), "bulb_warm"))
+		lit.set_meta("keep", true)
+
+
+## A cobweb in a ceiling corner: two thin translucent triangles, one hanging across the corner's diagonal and one
+## flat under the ceiling. `corner` is the ceiling corner point; the web spans into local +X / +Z.
+static func cobweb(parent: Node3D, corner: Vector3, yaw: float, size: float = 0.8) -> void:
+	var g: Node3D = group(parent, "Cobweb", corner, yaw)
+	_noshadow(prism(g, Vector3(size * 0.3, -size * 0.42, size * 0.3), Vector3(size * 0.85, size * 0.85, 0.003), "cobweb", Vector3(0, 45, 180)))
+	_noshadow(prism(g, Vector3(size * 0.26, -0.01, size * 0.26), Vector3(size * 0.75, size * 0.75, 0.003), "cobweb", Vector3(90, 45, 0)))
+
+
+## A puddle on a floor at `pos.y` (the floor's top): a glossy dark, flattened disc.
+static func puddle(parent: Node3D, pos: Vector3, w: float, d: float, yaw: float = 0.0) -> void:
+	var mi: MeshInstance3D = _noshadow(ball(parent, pos + Vector3(0, 0.003, 0), Vector3(w, 0.006, d), "puddle"))
+	mi.rotation.y = deg_to_rad(yaw)
+
+
+## A heavy workbench (top at 0.9) with a vice, a shelf of tins below and tools on the top. Local -Z faces the room.
+static func workbench(parent: Node3D, pos: Vector3, yaw: float, w: float = 2.0, d: float = 0.7) -> void:
+	var g: Node3D = group(parent, "Workbench", pos, yaw)
+	block(g, Vector3(-w * 0.5, 0.82, -d * 0.5), Vector3(w * 0.5, 0.9, d * 0.5), "planks")
+	for sx: float in [-1.0, 1.0]:
+		for sz: float in [-1.0, 1.0]:
+			block(g, Vector3(sx * (w * 0.5 - 0.1) - 0.05, 0, sz * (d * 0.5 - 0.1) - 0.05), Vector3(sx * (w * 0.5 - 0.1) + 0.05, 0.82, sz * (d * 0.5 - 0.1) + 0.05), "beam")
+	block(g, Vector3(-w * 0.5 + 0.05, 0.25, -d * 0.5 + 0.08), Vector3(w * 0.5 - 0.05, 0.29, d * 0.5 - 0.08), "planks")
+	# vice at the left end, a tool roll, tins, a hammer and an oil can
+	block(g, Vector3(-w * 0.5 + 0.1, 0.9, -d * 0.5 - 0.1), Vector3(-w * 0.5 + 0.28, 1.08, -d * 0.5 + 0.1), "iron")
+	cyl(g, Vector3(-w * 0.5 + 0.19, 1.0, -d * 0.5 - 0.22), 0.015, 0.3, "steel", Vector3(0, 0, 90))
+	block(g, Vector3(w * 0.5 - 0.6, 0.9, -0.1), Vector3(w * 0.5 - 0.2, 0.95, 0.22), "leather")
+	for i: int in 3:
+		_noshadow(cyl(g, Vector3(-0.3 + i * 0.16, 0.37, d * 0.2), 0.05, 0.16, "tin"))
+	_noshadow(cyl(g, Vector3(0.1, 0.96, 0.12), 0.045, 0.12, "tin"))
+	obox(g, Vector3(-0.2, 0.915, -0.05), Vector3(0.03, 0.03, 0.3), "beam", Vector3(0, 30, 0))
+	block(g, Vector3(-0.17, 0.9, -0.2), Vector3(-0.09, 0.95, -0.14), "iron")
+	# a drawer front
+	block(g, Vector3(0.1, 0.68, -d * 0.5 - 0.01), Vector3(0.7, 0.8, -d * 0.5), "furniture")
+	block(g, Vector3(0.36, 0.72, -d * 0.5 - 0.03), Vector3(0.44, 0.76, -d * 0.5 - 0.01), "brass")
+
+
+## A slumped sack (flour, salt, potatoes) with a tied neck.
+static func sack(parent: Node3D, pos: Vector3, yaw: float, s: float = 1.0) -> void:
+	var g: Node3D = group(parent, "Sack", pos, yaw)
+	ball(g, Vector3(0, 0.27 * s, 0), Vector3(0.56, 0.56, 0.42) * s, "sandbag")
+	ball(g, Vector3(0, 0.52 * s, 0.02 * s), Vector3(0.3, 0.22, 0.24) * s, "sandbag")
+	cyl(g, Vector3(0, 0.58 * s, 0.02 * s), 0.07 * s, 0.03 * s, "rubber")
+
+
+## Stair newel post with a turned cap and a ball finial.
+static func newel(parent: Node3D, pos: Vector3, h: float = 1.05, key: String = "furniture") -> void:
+	var g: Node3D = group(parent, "Newel", pos)
+	block(g, Vector3(-0.07, 0, -0.07), Vector3(0.07, h - 0.12, 0.07), key)
+	block(g, Vector3(-0.09, h - 0.12, -0.09), Vector3(0.09, h - 0.06, 0.09), key)
+	cyl(g, Vector3(0, h - 0.03, 0), 0.05, 0.06, key)
+	ball(g, Vector3(0, h + 0.05, 0), Vector3(0.14, 0.14, 0.14), key)
+
+
+## Painted stencil text on a wall (local -Z faces the room; pos is on the wall face).
+static func stencil(parent: Node3D, pos: Vector3, yaw: float, text: String, size_px: int = 40, color: Color = Color(0.85, 0.82, 0.7, 0.75),
+		pixel: float = 0.004) -> Label3D:
+	var g: Node3D = group(parent, "Stencil", pos, yaw)
+	var l: Label3D = Label3D.new()
+	l.text = text
+	l.font_size = size_px
+	l.pixel_size = pixel
+	l.modulate = color
+	l.outline_size = 0
+	l.position = Vector3(0, 0, -0.012)
+	l.rotation.y = PI
+	g.add_child(l)
+	return l
+
+
+## Iron pipe between two points with a collar at each end.
+static func pipe(parent: Node3D, a: Vector3, b: Vector3, r: float = 0.035, key: String = "iron") -> void:
+	strut(parent, a, b, r * 2.0, key, true)
+	var d: Vector3 = (b - a).normalized()
+	for p: Vector3 in [a, b]:
+		var mi: MeshInstance3D = strut(parent, p - d * 0.03, p + d * 0.03, (r + 0.015) * 2.0, key, true)
+		if mi != null:
+			mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
+## Wall-mounted iron fuse / junction box with a cable gland on top and a row of porcelain fuses (local -Z out).
+static func fuse_box(parent: Node3D, pos: Vector3, yaw: float, w: float = 0.5, h: float = 0.7) -> void:
+	var g: Node3D = group(parent, "FuseBox", pos, yaw)
+	block(g, Vector3(-w * 0.5, -h * 0.5, -0.16), Vector3(w * 0.5, h * 0.5, 0.0), "machine_grey")
+	block(g, Vector3(-w * 0.5 + 0.03, -h * 0.5 + 0.03, -0.175), Vector3(w * 0.5 - 0.03, h * 0.5 - 0.03, -0.16), "black_paint")
+	for i: int in 4:
+		var x: float = -w * 0.5 + 0.09 + float(i) * (w - 0.18) / 3.0
+		_noshadow(cyl(g, Vector3(x, 0.05, -0.19), 0.03, 0.03, "enamel_white", Vector3(90, 0, 0)))
+		_noshadow(block(g, Vector3(x - 0.012, -0.14, -0.185), Vector3(x + 0.012, -0.08, -0.175), "bakelite"))
+	block(g, Vector3(-0.12, -h * 0.5 + 0.06, -0.19), Vector3(0.12, -h * 0.5 + 0.1, -0.175), "gauge_face")
+	cyl(g, Vector3(0.1, h * 0.5 + 0.03, -0.08), 0.03, 0.06, "iron")
