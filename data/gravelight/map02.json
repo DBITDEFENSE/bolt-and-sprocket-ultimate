@@ -1,0 +1,72 @@
+{
+  "_doc": "Map 2 (Totenhafen) settings not in the generic tables (MAPS.md Map 2, DECISIONS T-036). power: the Pumpenschalter in the pump room (PowerSwitch config_table map02). tide: the Pen Hall water (gravelight/maps/map02_totenhafen/tide_controller.gd): high tide on every round divisible by every_rounds from min_round, rising over rise_seconds at that round's start and falling over fall_seconds at the next round's start, between low_y and high_y; anyone inside a flood box and below the surface + 0.4 wades (players: the enemies.json status player_status, refreshed every tick; zombies: the frost slow zombie_slow); the named spawns switch while flooded; the Operator reads the forecast the round before (vo_warn), then vo_rising / vo_falling. zones/doors/roster: the zone graph the generator builds (tests/unit/test_map02_data.gd checks it against map02.tscn, enemies.json and weapons.json). ballast: the carry mechanic's data, deferred (the coffins are dressing in this pass). No exfil block: this is the last map of the campaign chain.",
+  "power": {
+    "vo_delay": 1.5,
+    "light_sweep_start": 2.0,
+    "light_zone_gap": 0.6,
+    "burst_delay": 8.0,
+    "burst_count": 6,
+    "vo_line": "OPR_POWER_ON_M2_01"
+  },
+  "tide": {
+    "min_round": 3,
+    "every_rounds": 3,
+    "low_y": -4.0,
+    "high_y": -2.2,
+    "rise_seconds": 24.0,
+    "fall_seconds": 24.0,
+    "flood_boxes": [
+      [[32.0, -3.6, 50.0], [52.0, -1.0, 84.0]]
+    ],
+    "player_status": "wading",
+    "zombie_slow": 0.45,
+    "slow_tick_seconds": 0.35,
+    "flood_disable": ["Ground_F_LOWERPENS_0", "Ground_F_LOWERPENS_1"],
+    "flood_enable": ["Catwalk_D_PENHALL_0", "Catwalk_D_PENHALL_1", "Catwalk_D_PENHALL_2"],
+    "vo_warn": ["OPR_TIDE_WARN_01", "OPR_TIDE_WARN_02"],
+    "vo_rising": ["OPR_TIDE_RISING_01", "OPR_TIDE_RISING_02"],
+    "vo_falling": ["OPR_TIDE_FALLING_01", "OPR_TIDE_FALLING_02"],
+    "banner_warn": "SHIPPING FORECAST: high water next round",
+    "banner_rising": "THE TIDE IS COMING IN",
+    "banner_falling": "THE TIDE IS GOING OUT",
+    "vo_delay": 2.5
+  },
+  "zones": {
+    "A_QUAY": {"name": "Harbour Quay", "level": 0, "spawn": true},
+    "B_CANNERY": {"name": "Fish Cannery", "level": 0},
+    "C_WORKSHOP": {"name": "Torpedo Workshop", "level": 0},
+    "D_PENHALL": {"name": "Pen Hall", "level": 0},
+    "E_UBOAT": {"name": "U-1047", "level": -2},
+    "F_LOWERPENS": {"name": "Lower Pens", "level": -3, "floods": true},
+    "G_SIGNAL": {"name": "Signal Tower", "level": 7, "requires_power": true}
+  },
+  "doors": [
+    {"id": "door_cannery", "from": "A_QUAY", "to": "B_CANNERY", "cost": 1000},
+    {"id": "door_workshop", "from": "A_QUAY", "to": "C_WORKSHOP", "cost": 1000},
+    {"id": "door_penhall", "from": "B_CANNERY", "to": "D_PENHALL", "cost": 1500, "link_group": "penhall"},
+    {"id": "door_penhall", "from": "C_WORKSHOP", "to": "D_PENHALL", "cost": 1500, "link_group": "penhall"},
+    {"id": "door_gangway", "from": "D_PENHALL", "to": "E_UBOAT", "cost": 1500},
+    {"id": "door_pumps", "from": "D_PENHALL", "to": "F_LOWERPENS", "cost": 1500},
+    {"id": "door_signal", "from": "D_PENHALL", "to": "G_SIGNAL", "cost": 2500, "requires_power": true}
+  ],
+  "wall_buys": ["kar98k", "m1_carbine", "trench_gun", "frag", "mp40", "stg44", "etool", "bar", "thompson"],
+  "perks": ["second_wind", "marathon_malt", "ironhide_stout", "trigger_tonic", "overclock_cordial", "hawkeye_brandy"],
+  "roster": ["ganger", "glasshide", "bellringer", "foreman", "screamer"],
+  "spawn_table": {
+    "_doc": "Which spawn points exist per zone (the generator places them; the smoke test counts them). windows = barricades, ground = emerge points live from round 1, catwalk = emerge points live only at high tide.",
+    "A_QUAY": {"windows": 4, "ground": 2},
+    "B_CANNERY": {"windows": 3, "ground": 0},
+    "C_WORKSHOP": {"windows": 3, "ground": 0},
+    "D_PENHALL": {"windows": 3, "ground": 1, "catwalk": 3},
+    "E_UBOAT": {"windows": 0, "ground": 1},
+    "F_LOWERPENS": {"windows": 0, "ground": 2},
+    "G_SIGNAL": {"windows": 2, "ground": 0}
+  },
+  "ballast": {
+    "_doc": "Deferred (T-036): the carry mechanic. coffin_spots are where the lead coffins stand (east apron pallets, the warhead store); crane_hook is the drop point that would power the pumps; carry_status is the enemies.json status a carrier gets.",
+    "enabled": false,
+    "carry_status": "ballast",
+    "crane_hook": [40.0, 0.0, 60.0],
+    "coffin_spots": [[36.5, 0.0, 40.0], [38.6, 0.0, 40.0], [36.5, 0.0, 42.4], [50.0, 0.0, 70.0], [56.0, 0.0, 22.5]]
+  }
+}

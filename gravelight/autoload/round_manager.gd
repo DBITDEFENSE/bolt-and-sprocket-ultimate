@@ -252,6 +252,34 @@ func _end_round() -> void:
 	GLBus.round_ended.emit(current_round)
 
 
+## A carried schedule entry (next special / boss round) that already passed is pushed past the arrival round
+## with its usual gap, so Bellringers and the Foreman keep their rhythm across maps (T-033).
+static func carried_schedule(next_round: int, arrival: int, gap_min: int, gap_max: int, r: RandomNumberGenerator) -> int:
+	if next_round > arrival:
+		return next_round
+	return arrival + r.randi_range(gap_min, gap_max)
+
+
+## Campaign arrival (T-033): the count continues from the round the squad left the last map on, so the next
+## round is `left_on + 1` with that round's zombie count and health. The carried Bellringer / Foreman schedule
+## is kept; an entry already behind the arrival round is pushed past it with its usual gap. The first round on
+## the new map waits `grace` seconds (instead of the intro) so the squad can get its bearings.
+func resume_at(left_on: int, carried_special: int, carried_boss: int, grace: float) -> void:
+	current_round = maxi(0, left_on)
+	var arrival: int = current_round + 1
+	var sr: Dictionary = _cfg["special_round"]
+	var fm: Dictionary = GLData.table("enemies")["enemies"]["foreman"]
+	next_special = carried_schedule(carried_special, arrival, int(sr["interval_min"]), int(sr["interval_max"]), rng)
+	next_boss = carried_schedule(carried_boss, arrival, int(fm["interval_min"]), int(fm["interval_max"]), rng)
+	is_special_round = false
+	_warned = false
+	to_spawn = 0
+	alive = 0
+	state = State.BREAK
+	break_left = maxf(0.5, grace)
+	GameState.stats[&"round"] = current_round
+
+
 ## Dev console: jump so the NEXT round is `target`. Active zombies are cleared by the caller.
 func debug_set_round(target: int) -> void:
 	current_round = maxi(0, target - 1)

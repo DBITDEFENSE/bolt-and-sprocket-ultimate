@@ -1,9 +1,24 @@
-"""Extracts every ID'd VO line from docs/VO_SCRIPT.md and docs/CHARACTERS.md into data/vo/lines.json,
-and writes the playback rules (VO_SCRIPT §1) to data/vo/rules.json.
-Re-run after editing either doc:  python tools_src/extract_vo.py"""
-import json, re, collections, os
+"""Extracts every ID'd VO line from docs/gravelight/VO_SCRIPT.md and docs/gravelight/CHARACTERS.md into
+data/gravelight/vo/lines.json, and keeps data/gravelight/vo/rules.json complete (VO_SCRIPT section 1).
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+Merge semantics (T-035): the docs are the source for every id they define (text, condition, exchange parts),
+but lines that exist only in lines.json (the op.slip.* corporate slips with their slip_tier / min_round,
+lines other tools or agents add directly) are kept, and rules.json keys that exist already are never
+overwritten; only missing keys get the defaults below. So re-running is always safe.
+
+Re-run after editing either doc:   python gravelight/tools_src/extract_vo.py
+Then bake audio for the new lines:  python gravelight/tools_src/gen_vo.py
+"""
+import collections
+import json
+import os
+import re
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(os.path.dirname(HERE))
+DOCS = ("docs/gravelight/VO_SCRIPT.md", "docs/gravelight/CHARACTERS.md")
+LINES_PATH = os.path.join(ROOT, "data", "gravelight", "vo", "lines.json")
+RULES_PATH = os.path.join(ROOT, "data", "gravelight", "vo", "rules.json")
 ID_RE = r"[A-Z]{3}_[A-Z0-9_]+"
 lines = {}
 
@@ -49,6 +64,7 @@ def parse_tables(md):
             continue
         rec = dict(zip(header, cells))
         text = rec.get("Line") or rec.get("Text") or ""
+        text = text.strip().strip('"')
         cond = rec.get("Condition") or rec.get("Trigger") or rec.get("Unlock") or ""
         if text:
             add(cid, text, cond)
@@ -97,19 +113,59 @@ def parse_inline(md):
         add(m.group(1), m.group(2))
 
 
-for doc in ("docs/VO_SCRIPT.md", "docs/CHARACTERS.md"):
+GL_SPEAKERS = {"dutch": "DUT", "peg": "PEG", "deacon": "DEA", "wren": "WRN"}
+
+
+def parse_gl_tables(md):
+    """CHARACTERS.md section 5 rows, | `gl.all.dutch.perk_overclock.01` (optional note) | "Line" |, become the
+    VOManager's `{SPK}_PERK_{TOKEN}_{NN}` ids (PERK_TOKENS). An id another pass already defined is kept."""
+    pat = re.compile(r"`gl\.all\.([a-z]+)\.perk_([a-z]+)\.(\d+)`(.*)")
+    for raw in md.splitlines():
+        row = raw.strip()
+        if not row.startswith("|"):
+            continue
+        cells = [c.strip() for c in row.strip("|").split("|")]
+        if len(cells) < 2:
+            continue
+        m = pat.match(cells[0])
+        if not m or m.group(1) not in GL_SPEAKERS:
+            continue
+        line_id = "%s_PERK_%s_%s" % (GL_SPEAKERS[m.group(1)], m.group(2).upper(), m.group(3))
+        if line_id in lines:
+            print("extract_vo: %s is already defined, keeping that line" % line_id)
+            continue
+        add(line_id, cells[1].strip('"'), m.group(4).strip().strip("()"))
+
+
+for doc in DOCS:
     md = open(os.path.join(ROOT, doc), encoding="utf-8").read()
     parse_tables(md)
     parse_bullets(md)
     parse_exchanges(md)
     parse_inline(md)
+for doc in DOCS:
+    parse_gl_tables(open(os.path.join(ROOT, doc), encoding="utf-8").read())
 
-# drop exchange headers with no parsed lines
 for v in lines.values():
     v["text"] = re.sub(r"^\([^)]*\)\s*", "", v["text"])   # leading stage notes like "(follows 01 after 6 s)"
 lines = {k: v for k, v in lines.items() if v["text"]}
 
-rules = {
+# ---- merge with the existing lines.json: doc ids win, everything else is kept
+existing = {}
+if os.path.exists(LINES_PATH):
+    existing = json.load(open(LINES_PATH, encoding="utf-8"))
+kept = 0
+for k, v in existing.items():
+    if k not in lines:
+        lines[k] = v
+        kept += 1
+    else:
+        # keep hand-added fields (once_per_match, min_round...) the docs don't carry
+        for field, val in v.items():
+            if field not in ("speaker", "category", "text", "condition", "exchange"):
+                lines[k].setdefault(field, val)
+
+rules_defaults = {
     "_doc": "VO playback rules (docs/VO_SCRIPT.md §1). priority: 4 CRITICAL, 3 ANNOUNCE, 2 EVENT, 1 CHATTER, 0 AMBIENT.",
     "story_speakers": ["OPR", "FAS", "REI", "LSL", "CUT", "NPC"],
     "player_speakers": ["DUT", "PEG", "DEA", "WRN", "BNT", "TAG"],
@@ -128,7 +184,12 @@ rules = {
         "LOW_AMMO": [30, 0.7], "NO_AMMO": [30, 0.7], "KILL": [15, 0.1], "BUY": [10, 0.8], "PERK": [0, 1.0],
         "IDLE_SELFAWARE": [240, 0.5], "SELFAWARE": [240, 1.0], "HINT": [120, 0.4], "BNT": [180, 0.3], "DOWNED": [0, 1.0],
         "REVIVE": [5, 0.8], "REVIVED": [5, 0.8], "DENY": [8, 0.8], "DOOR": [20, 0.4], "MATCH_START": [0, 1.0],
-        "SPAWN": [0, 0.6], "GAME_OVER": [0, 1.0], "POWER_ON": [0, 1.0], "INTEL": [10, 1.0]},
+        "SPAWN": [0, 0.6], "GAME_OVER": [0, 1.0], "POWER_ON": [0, 1.0], "INTEL": [10, 1.0],
+        "TEAM_DOWN": [8, 0.8], "BOSS": [0, 0.6], "FOREMAN": [0, 0.6], "SCREAMER": [0, 0.6], "GLASSHIDE": [30, 0.3],
+        "CRAWLER": [30, 0.15], "TRAP": [12, 0.3], "POWER": [0, 1.0], "BELL": [0, 0.4], "CRUCIBLE": [10, 0.8], "BUILD": [0, 1.0],
+        "EE": [0, 1.0], "CRUCIBLE_FIRST": [0, 1.0], "CRUCIBLE_START": [0, 0.7], "CRUCIBLE_READY": [0, 0.7],
+        "CRUCIBLE_EXPIRE": [0, 1.0], "SPECIAL_END": [0, 1.0], "PYLON": [0, 1.0], "VAULT": [0, 1.0],
+        "AMMO_LOW": [30, 0.7], "AMMO_NONE": [30, 0.7]},
     "round_start_always": [1, 5, 10, 15, 20, 25, 30, 50],
     "queue_expiry": {"0": 4.0, "1": 4.0, "2": 4.0, "3": 20.0, "4": -1.0},
     "player_chatter_gap": 3.5,
@@ -136,12 +197,40 @@ rules = {
     "chars_per_second_inv": 0.065,
     "min_duration": 1.5,
     "exchange_gap": 0.4,
+    # T-035 voice pass: squad / Operator overrides, round-break banter and playback.
+    "player_category_cooldown": {"_doc": "Overrides of category_cooldown for the squad (DUT/PEG/DEA/WRN) only: [cooldown s, chance].",
+                                 "ROUND_START": [0, 0.2], "ROUND_END": [0, 0.2], "TRAP": [20, 0.3], "DOWNED": [0, 1.0], "SPAWN": [0, 0.6]},
+    "player_category_priority": {"_doc": "Squad categories above tier 1 (CHATTER): they skip the chatter gap and queue behind a story line instead of being dropped.",
+                                 "DOWN": 2, "TEAM_DOWN": 2, "REVIVE": 2, "REVIVED": 2},
+    "squad_second_channel": ["TEAM_DOWN", "REVIVE"],
+    "down_sequence": {"_doc": "DOWN at once (player channel); TEAM_DOWN on the second squad channel team_down_delay_s later, speaker chosen when it starts (never the downed one or the reviver), dropped after team_down_window_s; the reviver's REVIVE queues behind it; REVIVE is said at revive completion instead if the reviver's line is older than revive_fallback_s; REVIVED on the player channel when the revive lands.",
+                      "team_down_delay_s": 1.0, "team_down_window_s": 8.0, "revive_fallback_s": 12.0},
+    "story_category_cooldown": {"_doc": "Overrides for the Operator: TRAP 20%, DOWNED 50%.", "TRAP": [10, 0.2], "DOWNED": [0, 0.5]},
+    "banter": {"_doc": "Round-break banter (CHARACTERS.md Banter): rolled once per round end after delay_s, between two standing survivors within max_distance_m (0 = any); cooldown_s between exchanges; each exchange once per match.",
+               "chance": 0.3, "cooldown_s": 180.0, "delay_s": 2.5, "max_distance_m": 15.0, "min_round": 2},
+    "audio": {"_doc": "Playback: squad lines from other players/bots are positional (unit_size/max_distance in metres); local player and story voices are 2D. duck_db applies to Music/Jingles/ambience while a story line plays.",
+              "squad_unit_size": 5.0, "squad_max_distance": 40.0, "squad_volume_db": 0.0, "story_volume_db": 0.0,
+              "duck_music_db": -6.0, "duck_jingles_db": -9.0, "duck_ambience_db": -5.0},
 }
 
-os.makedirs(os.path.join(ROOT, "data/vo"), exist_ok=True)
-json.dump(lines, open(os.path.join(ROOT, "data/vo/lines.json"), "w", encoding="utf-8"), indent=1, ensure_ascii=False)
-json.dump(rules, open(os.path.join(ROOT, "data/vo/rules.json"), "w", encoding="utf-8"), indent=2)
+rules = {}
+if os.path.exists(RULES_PATH):
+    rules = json.load(open(RULES_PATH, encoding="utf-8"))
+added_rules = 0
+for k, v in rules_defaults.items():
+    if k not in rules:
+        rules[k] = v
+        added_rules += 1
+    elif isinstance(v, dict) and isinstance(rules[k], dict):
+        for kk, vv in v.items():
+            if kk not in rules[k]:
+                rules[k][kk] = vv
+                added_rules += 1
+
+os.makedirs(os.path.dirname(LINES_PATH), exist_ok=True)
+json.dump(lines, open(LINES_PATH, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
+json.dump(rules, open(RULES_PATH, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
 counts = collections.Counter(v["speaker"] for v in lines.values())
-print("total", len(lines))
+print("total", len(lines), "(kept %d ids that only exist in lines.json; %d rule keys added)" % (kept, added_rules))
 for k, v in sorted(counts.items()):
     print(f"  {k}: {v}")

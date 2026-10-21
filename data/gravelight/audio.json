@@ -1022,6 +1022,26 @@
    "volume_db": -3.0,
    "max_voices": 1
   },
+  "jingle_overclock_cordial": {
+   "files": [
+    "res://gravelight/audio/jingles/overclock_cordial_01.wav"
+   ],
+   "bus": "Jingles",
+   "volume_db": -4.0,
+   "max_voices": 1,
+   "pitch": [1.0, 1.0],
+   "attenuation": "world"
+  },
+  "jingle_overclock_cordial_resolved": {
+   "files": [
+    "res://gravelight/audio/jingles/overclock_cordial_resolved_01.wav"
+   ],
+   "bus": "Jingles",
+   "volume_db": -4.0,
+   "max_voices": 1,
+   "pitch": [1.0, 1.0],
+   "attenuation": "world"
+  },
   "knife_hit": {
    "files": [
     "res://gravelight/audio/sfx/weapons/knife_hit_01.wav",
@@ -1152,6 +1172,17 @@
    "attenuation": "hum",
    "loop": true
   },
+  "perk_hum_overclock_cordial": {
+   "files": [
+    "res://gravelight/audio/sfx/world/perks/hum_overclock_cordial.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -10.0,
+   "pitch": [1.0, 1.0],
+   "max_voices": 1,
+   "attenuation": "hum",
+   "loop": true
+  },
   "perk_hum_packmule_porter": {
    "files": [
     "res://gravelight/audio/sfx/world/perks/hum_packmule_porter.wav"
@@ -1195,6 +1226,37 @@
    "max_voices": 1,
    "attenuation": "hum",
    "loop": true
+  },
+  "perk_overclock_arc": {
+   "files": [
+    "res://gravelight/audio/sfx/world/perks/overclock_arc_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -6.0,
+   "max_voices": 2,
+   "pitch": [0.9, 1.1],
+   "attenuation": "quiet"
+  },
+  "perk_overclock_burst": {
+   "files": [
+    "res://gravelight/audio/sfx/world/perks/overclock_burst_01.wav",
+    "res://gravelight/audio/sfx/world/perks/overclock_burst_02.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -2.0,
+   "max_voices": 3,
+   "pitch": [0.94, 1.06],
+   "attenuation": "loud"
+  },
+  "perk_overclock_capoff": {
+   "files": [
+    "res://gravelight/audio/sfx/world/perks/overclock_capoff_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -3.0,
+   "max_voices": 1,
+   "pitch": [1.0, 1.0],
+   "attenuation": "world"
   },
   "perks_lost": {
    "files": [

@@ -45,6 +45,7 @@ func _ready() -> void:
 	else:
 		GameState.player_ids = [1]
 		_assign_bots()
+		Campaign.on_roster(self)   # arriving by exfil: the same survivors keep their ids (T-033)
 	director = ZombieDirector.new()
 	director.name = "ZombieDirector"
 	director.puppet_mode = _online and Net.is_client()
@@ -63,6 +64,7 @@ func _ready() -> void:
 	Economy.reset(GameState.player_ids)
 	GLBus.player_downed.connect(_on_player_downed)
 	PerkManager.reset_match()
+	Campaign.on_players_spawned(self)   # arriving by exfil: everyone's weapons, Scrip and perks come back (T-033)
 	if _online:
 		_apply_coop_egg_slots()
 		session = NetMatch.new()
@@ -79,6 +81,8 @@ func _ready() -> void:
 		QuestManager.load_quest(q)
 	_init_crate()
 	_spawn_intel.call_deferred()
+	if Campaign.active:
+		ExfilPoint.spawn(self)   # the campaign's exfil beacon, from this map's json "exfil" block (T-033)
 	if power_on_at_start:
 		GameState.power_on = true
 		GLBus.power_activated.emit.call_deferred()
@@ -97,6 +101,7 @@ func _ready() -> void:
 ## The first round's intro timer starts (host / solo).
 func start_rounds() -> void:
 	RoundManager.start_game(scaled_player_count())
+	Campaign.on_rounds_started(self)   # arriving by exfil: the round count continues after an arrival grace (T-033)
 	if not auto_rounds:
 		RoundManager.stop()
 	if intro_text != "":
@@ -196,7 +201,7 @@ func _apply_coop_egg_slots() -> void:
 func _spawn_intel() -> void:
 	if map_id == &"test_range":
 		return
-	var map_key: String = "0" if map_id == &"map00_crossroads" else ("1" if map_id == &"map01_kaltenbrunn" else "?")
+	var map_key: String = "0" if map_id == &"map00_crossroads" else ("1" if map_id == &"map01_kaltenbrunn" else ("2" if map_id == &"map02_totenhafen" else "?"))
 	StoryProp.spawn_all(self, map_key)
 	var pool: Array = []
 	for row: Dictionary in GLData.load_json("res://data/gravelight/intel.json").get("intel", []):

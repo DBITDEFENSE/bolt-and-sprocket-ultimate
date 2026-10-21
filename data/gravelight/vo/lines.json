@@ -414,16 +414,6 @@
   "category": "CRUCIBLE_FIRST",
   "text": "Our first {graduate}! I'm so proud. (once per match)"
  },
- "OPR_CRUCIBLE_STEAL_01": {
-  "speaker": "OPR",
-  "category": "CRUCIBLE_STEAL",
-  "text": "Finders, keepers! I have amended the {ownership records}."
- },
- "OPR_CRUCIBLE_STEAL_02": {
-  "speaker": "OPR",
-  "category": "CRUCIBLE_STEAL",
-  "text": "A gift! How generous of you to {share}."
- },
  "OPR_CRATE_MOVE_01": {
   "speaker": "OPR",
   "category": "CRATE_MOVE",
@@ -766,6 +756,71 @@
   "text": "[static] ...{closed}...",
   "condition": "Map 0"
  },
+ "OPR_EXFIL_OPEN_M0_01": {
+  "speaker": "OPR",
+  "category": "EXFIL_OPEN_M0",
+  "text": "[static, half-formed, through the inn's horn] ...the carters' road... is {open}. Nine kilometres. The {Ledger}... will keep your places warm."
+ },
+ "OPR_EXFIL_OPEN_01": {
+  "speaker": "OPR",
+  "category": "EXFIL_OPEN",
+  "text": "[bright] Attention, valued {guests}: the north gate is open and the road is {clear}! Transport to Totenhafen departs from the beacon. Mind the gap in the fence."
+ },
+ "OPR_EXFIL_WAIT_01": {
+  "speaker": "OPR",
+  "category": "EXFIL_WAIT",
+  "text": "Now boarding! Every account travels {with} you. Everyone to the beacon, please. I do so hate a {late} departure."
+ },
+ "OPR_EXFIL_WAIT_02": {
+  "speaker": "OPR",
+  "category": "EXFIL_WAIT",
+  "text": "The lamp is lit and the clock is running. Gather at the beacon, all of you. The dead don't wait, and neither does the {timetable}."
+ },
+ "OPR_EXFIL_MISSED_M0_01": {
+  "speaker": "OPR",
+  "category": "EXFIL_MISSED_M0",
+  "text": "[static] ...departure... {postponed}... [tape squeal]"
+ },
+ "OPR_EXFIL_MISSED_01": {
+  "speaker": "OPR",
+  "category": "EXFIL_MISSED",
+  "text": "Oh dear. Departure {missed}. Never mind: the dead are patient, and so am {I}. We'll try again in a few rounds."
+ },
+ "OPR_POWER_ON_M2_01": {
+  "speaker": "OPR",
+  "category": "POWER_ON_M2",
+  "text": "[the tannoy clears its throat, half under water] Ladies and gentlemen, the pumps are running! The lights are on in Totenhafen, the refreshment machines are cold, and the {harbour} is open for business. Do mind the tide."
+ },
+ "OPR_TIDE_WARN_01": {
+  "speaker": "OPR",
+  "category": "TIDE_WARN",
+  "text": "And now the shipping forecast. Totenhafen, Totenhafen. Wind north-west, force nine, {rising}. Sea state: hungry. High water {next round}. Visibility: poor, and getting worse."
+ },
+ "OPR_TIDE_WARN_02": {
+  "speaker": "OPR",
+  "category": "TIDE_WARN",
+  "text": "Shipping forecast, issued by the Ledger at the hour. Totenhafen: gale warning in force. High water {next round}. Low spirits, becoming {lower}."
+ },
+ "OPR_TIDE_RISING_01": {
+  "speaker": "OPR",
+  "category": "TIDE_RISING",
+  "text": "High water, Totenhafen! The sea is coming in through the lower pens. Do keep your feet dry. Or don't. I'm not your {mother}."
+ },
+ "OPR_TIDE_RISING_02": {
+  "speaker": "OPR",
+  "category": "TIDE_RISING",
+  "text": "The tide is in! Everything below the apron is now a {bath}. Guests on the catwalks: the dead will be joining you {shortly}."
+ },
+ "OPR_TIDE_FALLING_01": {
+  "speaker": "OPR",
+  "category": "TIDE_FALLING",
+  "text": "And the tide is going out. Totenhafen, Totenhafen: falling slowly, good, occasionally {poor}. Mind what it left behind."
+ },
+ "OPR_TIDE_FALLING_02": {
+  "speaker": "OPR",
+  "category": "TIDE_FALLING",
+  "text": "Low water. The pens are draining, the pumps are {laughing}, and so am I. Until the {next} one."
+ },
  "FAS_M0_R1_01": {
   "speaker": "FAS",
   "category": "M0_R1",
@@ -994,7 +1049,7 @@
  "REI_CYL1_01": {
   "speaker": "REI",
   "category": "CYL1",
-  "text": "[hiss] Laboratory diary, Kaltenbrunn, the eleventh of October, nineteen thirty-eight. The specimen from shaft four is... remarkable. It is warm in the hand. It makes a sound like a held breath. Emil says it is only piezoelectric. Emil is very sure of everything until he isn't."
+  "text": "[hiss] Laboratory diary, Kaltenbrunn, the eleventh of December, nineteen thirty-eight. The specimen from shaft four is... remarkable. It is warm in the hand. It makes a sound like a held breath. Emil says it is only piezoelectric. Emil is very sure of everything until he isn't."
  },
  "LSL_REC_CYL1_01": {
   "speaker": "LSL",
@@ -1113,6 +1168,266 @@
   "speaker": "OPR",
   "category": "M0_WRONG",
   "text": "[distant] {Wrong} number!"
+ },
+ "DUT_SPAWN_01": {
+  "speaker": "DUT",
+  "category": "SPAWN",
+  "text": "Kaltenbrunn. Smells like the mill with the lights off. Let's get to work."
+ },
+ "DUT_SPAWN_02": {
+  "speaker": "DUT",
+  "category": "SPAWN",
+  "text": "All right. Boots on, heads down. Nobody dies before payday."
+ },
+ "DUT_ROUND_START_01": {
+  "speaker": "DUT",
+  "category": "ROUND_START",
+  "text": "Here they come. Same shift, different faces."
+ },
+ "DUT_ROUND_START_02": {
+  "speaker": "DUT",
+  "category": "ROUND_START",
+  "text": "Punch in, fellas. Clock's running."
+ },
+ "DUT_ROUND_END_01": {
+  "speaker": "DUT",
+  "category": "ROUND_END",
+  "text": "Whistle. Breathe while you can."
+ },
+ "DUT_ROUND_END_02": {
+  "speaker": "DUT",
+  "category": "ROUND_END",
+  "text": "That's the round. Anybody hurt? Anybody care?"
+ },
+ "DUT_BUY_AMMO_01": {
+  "speaker": "DUT",
+  "category": "BUY_AMMO",
+  "text": "Topped off. Costs more than beer, hits about the same."
+ },
+ "DUT_TEAM_DOWN_01": {
+  "speaker": "DUT",
+  "category": "TEAM_DOWN",
+  "text": "Man down! Hold on, I'm coming!"
+ },
+ "DUT_TEAM_DOWN_02": {
+  "speaker": "DUT",
+  "category": "TEAM_DOWN",
+  "text": "Somebody's on the floor. Cover me, I'll get 'em."
+ },
+ "DUT_INTEL_01": {
+  "speaker": "DUT",
+  "category": "INTEL",
+  "text": "Paper. Somebody wrote this down for a reason. Hang onto it."
+ },
+ "DUT_DENY_NO_POWER_01": {
+  "speaker": "DUT",
+  "category": "DENY_NO_POWER",
+  "text": "Dead as a doornail. Needs juice."
+ },
+ "DUT_DENY_CAP_01": {
+  "speaker": "DUT",
+  "category": "DENY_CAP",
+  "text": "I'm full up. Any more of this stuff and I'll float."
+ },
+ "DUT_DENY_NO_SCRIP_01": {
+  "speaker": "DUT",
+  "category": "DENY_NO_SCRIP",
+  "text": "Short again. Story of my paycheck."
+ },
+ "PEG_SPAWN_01": {
+  "speaker": "PEG",
+  "category": "SPAWN",
+  "text": "Kaltenbrunn. Right. Weapons ready, manners optional."
+ },
+ "PEG_SPAWN_02": {
+  "speaker": "PEG",
+  "category": "SPAWN",
+  "text": "Everyone stay close and try not to die. It's such a bother for the paperwork."
+ },
+ "PEG_ROUND_START_01": {
+  "speaker": "PEG",
+  "category": "ROUND_START",
+  "text": "Company. Do form a queue, there's good chaps."
+ },
+ "PEG_ROUND_START_02": {
+  "speaker": "PEG",
+  "category": "ROUND_START",
+  "text": "And we're on again. Splendid."
+ },
+ "PEG_ROUND_END_01": {
+  "speaker": "PEG",
+  "category": "ROUND_END",
+  "text": "Quiet. One does cherish these little intervals."
+ },
+ "PEG_ROUND_END_02": {
+  "speaker": "PEG",
+  "category": "ROUND_END",
+  "text": "That's the lot. Reload, regroup, and for heaven's sake someone find the tea."
+ },
+ "PEG_BUY_AMMO_01": {
+  "speaker": "PEG",
+  "category": "BUY_AMMO",
+  "text": "Restocked. The Crown will reimburse me. Eventually."
+ },
+ "PEG_TEAM_DOWN_01": {
+  "speaker": "PEG",
+  "category": "TEAM_DOWN",
+  "text": "Someone's down. Keep them talking, I'm on my way."
+ },
+ "PEG_TEAM_DOWN_02": {
+  "speaker": "PEG",
+  "category": "TEAM_DOWN",
+  "text": "Casualty. Do try not to bleed on anything important."
+ },
+ "PEG_INTEL_01": {
+  "speaker": "PEG",
+  "category": "INTEL",
+  "text": "A document. Mr. Hale will want this. Everyone wants everything."
+ },
+ "PEG_DENY_NO_POWER_01": {
+  "speaker": "PEG",
+  "category": "DENY_NO_POWER",
+  "text": "No power. Of course not. Nothing in this country works without a committee."
+ },
+ "PEG_DENY_CAP_01": {
+  "speaker": "PEG",
+  "category": "DENY_CAP",
+  "text": "I think that's quite enough of the local spirits, thank you."
+ },
+ "PEG_DENY_NO_SCRIP_01": {
+  "speaker": "PEG",
+  "category": "DENY_NO_SCRIP",
+  "text": "Insufficient funds. How terribly common."
+ },
+ "DEA_SPAWN_01": {
+  "speaker": "DEA",
+  "category": "SPAWN",
+  "text": "Lord, look at this place. All right. Hands to work, hearts to You."
+ },
+ "DEA_SPAWN_02": {
+  "speaker": "DEA",
+  "category": "SPAWN",
+  "text": "Kaltenbrunn. Something down here's humming, and it ain't a hymn."
+ },
+ "DEA_ROUND_START_01": {
+  "speaker": "DEA",
+  "category": "ROUND_START",
+  "text": "Here they come, children. Stay close now."
+ },
+ "DEA_ROUND_START_02": {
+  "speaker": "DEA",
+  "category": "ROUND_START",
+  "text": "Round's on. Steady hands, steady hearts."
+ },
+ "DEA_ROUND_END_01": {
+  "speaker": "DEA",
+  "category": "ROUND_END",
+  "text": "That's a round. Amen, and I mean it."
+ },
+ "DEA_ROUND_END_02": {
+  "speaker": "DEA",
+  "category": "ROUND_END",
+  "text": "Quiet spell. Check your guns, check your friends."
+ },
+ "DEA_BUY_AMMO_01": {
+  "speaker": "DEA",
+  "category": "BUY_AMMO",
+  "text": "There you go, girl. Fed and ready."
+ },
+ "DEA_TEAM_DOWN_01": {
+  "speaker": "DEA",
+  "category": "TEAM_DOWN",
+  "text": "Hold on, now! Don't you go nowhere, I'm coming!"
+ },
+ "DEA_TEAM_DOWN_02": {
+  "speaker": "DEA",
+  "category": "TEAM_DOWN",
+  "text": "Somebody's hurt. Lord, give me quick feet."
+ },
+ "DEA_INTEL_01": {
+  "speaker": "DEA",
+  "category": "INTEL",
+  "text": "Somebody wrote this in a hurry. Folks only write in a hurry when it matters."
+ },
+ "DEA_DENY_NO_POWER_01": {
+  "speaker": "DEA",
+  "category": "DENY_NO_POWER",
+  "text": "She's cold. No juice in her. We gotta wake the turbine first."
+ },
+ "DEA_DENY_CAP_01": {
+  "speaker": "DEA",
+  "category": "DENY_CAP",
+  "text": "No, ma'am. Any more and I'll be preaching to the zombies."
+ },
+ "DEA_DENY_NO_SCRIP_01": {
+  "speaker": "DEA",
+  "category": "DENY_NO_SCRIP",
+  "text": "Not enough. Machine don't take promises."
+ },
+ "WRN_SPAWN_01": {
+  "speaker": "WRN",
+  "category": "SPAWN",
+  "text": "Kaltenbrunn. Six kilometers from home. Good. Then I know the way out."
+ },
+ "WRN_SPAWN_02": {
+  "speaker": "WRN",
+  "category": "SPAWN",
+  "text": "Rifle, book, pencil. I am ready."
+ },
+ "WRN_ROUND_START_01": {
+  "speaker": "WRN",
+  "category": "ROUND_START",
+  "text": "They come. Count them."
+ },
+ "WRN_ROUND_START_02": {
+  "speaker": "WRN",
+  "category": "ROUND_START",
+  "text": "Again. Good. I have pages left."
+ },
+ "WRN_ROUND_END_01": {
+  "speaker": "WRN",
+  "category": "ROUND_END",
+  "text": "Finished. Reload. Do not relax."
+ },
+ "WRN_ROUND_END_02": {
+  "speaker": "WRN",
+  "category": "ROUND_END",
+  "text": "Quiet. It will not last. It never does."
+ },
+ "WRN_BUY_AMMO_01": {
+  "speaker": "WRN",
+  "category": "BUY_AMMO",
+  "text": "Ammunition. The only thing here worth the price."
+ },
+ "WRN_TEAM_DOWN_01": {
+  "speaker": "WRN",
+  "category": "TEAM_DOWN",
+  "text": "You are down. Stay down, shoot low. I come."
+ },
+ "WRN_TEAM_DOWN_02": {
+  "speaker": "WRN",
+  "category": "TEAM_DOWN",
+  "text": "One of us is on the floor. Cover me."
+ },
+ "WRN_INTEL_01": {
+  "speaker": "WRN",
+  "category": "INTEL",
+  "text": "Papers. Their papers. I keep everything they write."
+ },
+ "WRN_DENY_NO_POWER_01": {
+  "speaker": "WRN",
+  "category": "DENY_NO_POWER",
+  "text": "No current. The machine sleeps."
+ },
+ "WRN_DENY_CAP_01": {
+  "speaker": "WRN",
+  "category": "DENY_CAP",
+  "text": "Enough. A sniper does not drink four bottles."
+ },
+ "WRN_DENY_NO_SCRIP_01": {
+  "speaker": "WRN",
+  "category": "DENY_NO_SCRIP",
+  "text": "Too little Scrip. Later."
  },
  "DUT_BUY_PISTOL_01": {
   "speaker": "DUT",
@@ -2524,6 +2839,40 @@
    ]
   ]
  },
+ "BNT_DUT_PEG_04": {
+  "speaker": "BNT",
+  "category": "DUT_PEG",
+  "text": "Lieutenant, you ever miss anything? Ever once?",
+  "exchange": [
+   [
+    "DUT",
+    "Lieutenant, you ever miss anything? Ever once?"
+   ],
+   [
+    "PEG",
+    "Breakfast, Sergeant. Every single day."
+   ]
+  ]
+ },
+ "BNT_DUT_PEG_05": {
+  "speaker": "BNT",
+  "category": "DUT_PEG",
+  "text": "You're humming, Sergeant.",
+  "exchange": [
+   [
+    "PEG",
+    "You're humming, Sergeant."
+   ],
+   [
+    "DUT",
+    "Yeah. Babcia's tune. Keeps my hands steady."
+   ],
+   [
+    "PEG",
+    "Carry on, then. Quietly."
+   ]
+  ]
+ },
  "BNT_DUT_DEA_01": {
   "speaker": "BNT",
   "category": "DUT_DEA",
@@ -2590,6 +2939,40 @@
    [
     "DEA",
     "Not for all the gold in the salt."
+   ]
+  ]
+ },
+ "BNT_DUT_DEA_04": {
+  "speaker": "BNT",
+  "category": "DUT_DEA",
+  "text": "You hear that hum, Sarge? Down in the floor?",
+  "exchange": [
+   [
+    "DEA",
+    "You hear that hum, Sarge? Down in the floor?"
+   ],
+   [
+    "DUT",
+    "I hear it. I'm choosing not to."
+   ]
+  ]
+ },
+ "BNT_DUT_DEA_05": {
+  "speaker": "BNT",
+  "category": "DUT_DEA",
+  "text": "Your gun got a name too?",
+  "exchange": [
+   [
+    "DUT",
+    "Your gun got a name too?"
+   ],
+   [
+    "DEA",
+    "Ruth. She's patient."
+   ],
+   [
+    "DUT",
+    "Mine's called 'the gun.'"
    ]
   ]
  },
@@ -2662,6 +3045,48 @@
    ]
   ]
  },
+ "BNT_DUT_WRN_04": {
+  "speaker": "BNT",
+  "category": "DUT_WRN",
+  "text": "Dzienkuje, Wren.",
+  "exchange": [
+   [
+    "DUT",
+    "Dzienkuje, Wren."
+   ],
+   [
+    "WRN",
+    "Dziękuję. You thank me like a man chewing gravel."
+   ],
+   [
+    "DUT",
+    "That's how Babcia said it."
+   ],
+   [
+    "WRN",
+    "Then Babcia chewed gravel."
+   ]
+  ]
+ },
+ "BNT_DUT_WRN_05": {
+  "speaker": "BNT",
+  "category": "DUT_WRN",
+  "text": "How many tonight?",
+  "exchange": [
+   [
+    "WRN",
+    "How many tonight?"
+   ],
+   [
+    "DUT",
+    "I don't count."
+   ],
+   [
+    "WRN",
+    "Thirty-one. I count for you."
+   ]
+  ]
+ },
  "BNT_PEG_DEA_01": {
   "speaker": "BNT",
   "category": "PEG_DEA",
@@ -2723,6 +3148,36 @@
    ]
   ]
  },
+ "BNT_PEG_DEA_04": {
+  "speaker": "BNT",
+  "category": "PEG_DEA",
+  "text": "Corporal, must you talk to the machines?",
+  "exchange": [
+   [
+    "PEG",
+    "Corporal, must you talk to the machines?"
+   ],
+   [
+    "DEA",
+    "They're the only ones here that answer polite, ma'am."
+   ]
+  ]
+ },
+ "BNT_PEG_DEA_05": {
+  "speaker": "BNT",
+  "category": "PEG_DEA",
+  "text": "You ever lose your temper, Lieutenant?",
+  "exchange": [
+   [
+    "DEA",
+    "You ever lose your temper, Lieutenant?"
+   ],
+   [
+    "PEG",
+    "Once. In 1941. It was most inconvenient."
+   ]
+  ]
+ },
  "BNT_PEG_WRN_01": {
   "speaker": "BNT",
   "category": "PEG_WRN",
@@ -2781,6 +3236,44 @@
    [
     "WRN",
     "When this is done, I will still be Polish. London will not fix that."
+   ]
+  ]
+ },
+ "BNT_PEG_WRN_04": {
+  "speaker": "BNT",
+  "category": "PEG_WRN",
+  "text": "Your orders. Do they say to bring us out?",
+  "exchange": [
+   [
+    "WRN",
+    "Your orders. Do they say to bring us out?"
+   ],
+   [
+    "PEG",
+    "They say to bring the asset out."
+   ],
+   [
+    "WRN",
+    "I asked about us."
+   ]
+  ]
+ },
+ "BNT_PEG_WRN_05": {
+  "speaker": "BNT",
+  "category": "PEG_WRN",
+  "text": "Thirty-one tonight. I counted.",
+  "exchange": [
+   [
+    "PEG",
+    "Thirty-one tonight. I counted."
+   ],
+   [
+    "WRN",
+    "Thirty-two. You missed the one in the fog."
+   ],
+   [
+    "PEG",
+    "...So I did."
    ]
   ]
  },
@@ -2853,6 +3346,44 @@
    ]
   ]
  },
+ "BNT_DEA_WRN_04": {
+  "speaker": "BNT",
+  "category": "DEA_WRN",
+  "text": "You ever sing, Wren?",
+  "exchange": [
+   [
+    "DEA",
+    "You ever sing, Wren?"
+   ],
+   [
+    "WRN",
+    "In church. Before."
+   ],
+   [
+    "DEA",
+    "Then you'll sing again. After."
+   ]
+  ]
+ },
+ "BNT_DEA_WRN_05": {
+  "speaker": "BNT",
+  "category": "DEA_WRN",
+  "text": "Your machine. Hattie. She is loud.",
+  "exchange": [
+   [
+    "WRN",
+    "Your machine. Hattie. She is loud."
+   ],
+   [
+    "DEA",
+    "Loud means alive."
+   ],
+   [
+    "WRN",
+    "Then I am very alive tonight."
+   ]
+  ]
+ },
  "TAG_KB4471_01": {
   "speaker": "TAG",
   "category": "KB4471",
@@ -2903,6 +3434,96 @@
     "I'm writing it in the book. On the good page."
    ]
   ]
+ },
+ "DUT_PERK_FERNET_01": {
+  "speaker": "DUT",
+  "category": "PERK_FERNET",
+  "text": "Tastes like Babcia's cough syrup. Everything looks... louder."
+ },
+ "DUT_PERK_FERNET_02": {
+  "speaker": "DUT",
+  "category": "PERK_FERNET",
+  "text": "Bitter. Now I can see the stuff this place is trying to hide. Swell. More stuff."
+ },
+ "DUT_PERK_OVERCLOCK_01": {
+  "speaker": "DUT",
+  "category": "PERK_OVERCLOCK",
+  "text": "My fillings are buzzing. Nobody said nothing about fillings."
+ },
+ "DUT_PERK_OVERCLOCK_02": {
+  "speaker": "DUT",
+  "category": "PERK_OVERCLOCK",
+  "text": "Run the gun dry and it bites back. My kind of gun."
+ },
+ "PEG_PERK_FERNET_01": {
+  "speaker": "PEG",
+  "category": "PERK_FERNET",
+  "text": "Bitter as a Whitehall memo. And just as revealing, for once."
+ },
+ "PEG_PERK_FERNET_02": {
+  "speaker": "PEG",
+  "category": "PERK_FERNET",
+  "text": "Everything has edges now. I can see where they've hidden things. How very useful."
+ },
+ "PEG_PERK_OVERCLOCK_01": {
+  "speaker": "PEG",
+  "category": "PERK_OVERCLOCK",
+  "text": "Oh, I like that. Every empty magazine a small detonation."
+ },
+ "PEG_PERK_OVERCLOCK_02": {
+  "speaker": "PEG",
+  "category": "PERK_OVERCLOCK",
+  "text": "Electrical. Cheerful. I don't trust it at all. Another, please."
+ },
+ "DEA_PERK_FERNET_01": {
+  "speaker": "DEA",
+  "category": "PERK_FERNET",
+  "text": "Bitter herbs. Like Passover. Lord, I can see what this place is hiding."
+ },
+ "DEA_PERK_FERNET_02": {
+  "speaker": "DEA",
+  "category": "PERK_FERNET",
+  "text": "Whoever made this one wanted folks to see straight. First honest drink in the building."
+ },
+ "DEA_PERK_OVERCLOCK_01": {
+  "speaker": "DEA",
+  "category": "PERK_OVERCLOCK",
+  "text": "Feels like somebody wired a friend into my hands. Howdy, friend."
+ },
+ "DEA_PERK_OVERCLOCK_02": {
+  "speaker": "DEA",
+  "category": "PERK_OVERCLOCK",
+  "text": "She sparks when she's empty. Don't we all, girl. Don't we all."
+ },
+ "WRN_PERK_FERNET_01": {
+  "speaker": "WRN",
+  "category": "PERK_FERNET",
+  "text": "Bitter. Good. Now I see where they hide things."
+ },
+ "WRN_PERK_FERNET_02": {
+  "speaker": "WRN",
+  "category": "PERK_FERNET",
+  "text": "It shows me the clock on every gift. Nothing here is free. I knew that."
+ },
+ "WRN_PERK_OVERCLOCK_01": {
+  "speaker": "WRN",
+  "category": "PERK_OVERCLOCK",
+  "text": "My rifle hums when it is empty. Fine. Let it sing."
+ },
+ "WRN_PERK_OVERCLOCK_02": {
+  "speaker": "WRN",
+  "category": "PERK_OVERCLOCK",
+  "text": "Static in the blood. My brother would have laughed at this."
+ },
+ "OPR_CRUCIBLE_STEAL_01": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_STEAL",
+  "text": "Finders, keepers! I have amended the {ownership records}."
+ },
+ "OPR_CRUCIBLE_STEAL_02": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_STEAL",
+  "text": "A gift! How generous of you to {share}."
  },
  "OPR_POWER_ON_M0_01": {
   "speaker": "OPR",
@@ -3132,5 +3753,30 @@
   "slip_tier": "C",
   "min_round": 30,
   "text": "Your free trial— [recovery] No. No, I misread. There's nothing free here. There never {was}."
+ },
+ "OPR_EXFIL_GO_M0_01": {
+  "speaker": "OPR",
+  "category": "CUT_EXFIL_M0",
+  "text": "[the crackle clearing, a voice finding itself] ...there you are. Dawn on the {Kreuzweg}. Follow the signpost. Kaltenbrunn is... {expecting} you."
+ },
+ "FAS_EXFIL_M0_01": {
+  "speaker": "FAS",
+  "category": "CUT_EXFIL_M0",
+  "text": "[radio, hurried] Fasbender. If you are leaving the inn: the salt road, east, nine kilometres. Whatever you hear at Kaltenbrunn... do not let the {bell} ring."
+ },
+ "OPR_EXFIL_ROAD_M0_01": {
+  "speaker": "OPR",
+  "category": "CUT_EXFIL_M0",
+  "text": "Bring everything you carry. Every gun, every {coin}. The books come with you. The books {always} come with you."
+ },
+ "OPR_EXFIL_GO_01": {
+  "speaker": "OPR",
+  "category": "CUT_EXFIL",
+  "text": "Your Friend at the Ledger, signing off from Sender Kaltenbrunn... [a beat] ...no. Not signing off. {Transferring}. North, to the sea."
+ },
+ "OPR_EXFIL_ROAD_01": {
+  "speaker": "OPR",
+  "category": "CUT_EXFIL",
+  "text": "Totenhafen. A harbour of {sealed} cargo and patient tides. Keep your accounts in order. I'll be there before you are. I'm {always} there before you are."
  }
 }

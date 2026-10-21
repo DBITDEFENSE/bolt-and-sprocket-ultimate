@@ -252,7 +252,7 @@ func _run() -> void:
 	Engine.time_scale = 1.0
 	await _frames(5)
 	_check(QuestManager.is_complete(Q), "step 10: ending played, Requiem complete")
-	_check(PerkManager.owned(1).size() == 8 and GameState.has_flag(&"requiem_complete"), "rewards: all 8 perks above the cap")
+	_check(PerkManager.owned(1).size() == (GLData.table("perks")["perks"] as Dictionary).size() and GameState.has_flag(&"requiem_complete"), "rewards: all perks above the cap")
 	_check(bool((ProfileSave.profile.get("egg_rewards", {}) as Dictionary).get("map01_perk_slot_5", false)) and PerkManager.cap_for(1) == 5,
 		"rewards: permanent 5th perk slot on Map 1")
 	_check(ProfileSave.is_map_unlocked(&"map02_totenhafen"), "rewards: Map 2 Totenhafen unlocked")

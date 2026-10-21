@@ -79,7 +79,7 @@ func _run() -> void:
 	for n: Node in _g("").get_children():
 		if n is PerkMachine:
 			perks += 1
-	_check(perks == 8, "8 perk machines placed")
+	_check(perks == 9, "9 perk machines placed")
 
 	# --- Lab door needs power
 	var lab: BuyDoor = _g("Door_Lab") as BuyDoor
@@ -122,6 +122,28 @@ func _run() -> void:
 	(cru as Interactable).interact(_p)
 	await _frames(3)
 	_check(_p.weapons.find_weapon(&"m1911_up") != null, "Crucible upgraded the M1911 to Last Rites")
+
+	# --- Overclock Cordial (T-034): the Generator Hall machine sells the perk, and a reload at e >= 0.25
+	# releases a static burst that damages a nearby zombie
+	var oc: PerkMachine = _g("Perk_overclock_cordial") as PerkMachine
+	_check(oc != null, "Overclock Cordial machine placed in the Generator Hall")
+	if oc != null:
+		await _tp(oc.global_position + Vector3(0, 0.2, 1.3), 180.0)
+		_check(oc.get_prompt(_p).contains("2500"), "Overclock prompt: " + oc.get_prompt(_p))
+		oc.interact(_p)
+		await _secs(1.6)
+		_check(PerkManager.has_perk(1, &"overclock_cordial"), "drank Overclock Cordial")
+		var oz: Zombie = await _zombie_at(_p.global_position + Vector3(0, 0, 2.0))
+		var hp0: float = oz.hp
+		var w: WeaponInstance = _p.weapons.current()
+		w.mag = int(w.mag_size() * 0.5)   # e = 0.5: radius 4.25 m, damage 0.3 x round health
+		w.reserve = maxi(w.reserve, w.mag_size())
+		_p.weapons.set("_sprinting", false)
+		_p.weapons.start_reload()
+		await _secs(0.4)
+		_check(oz.hp < hp0 or not oz.is_active(), "Overclock burst damaged a zombie 2 m away (hp %.0f -> %.0f)" % [hp0, oz.hp])
+		_check(_p.hp > 0.0, "the burst did not hurt the player")
+		_dir.kill_all(true)
 
 	# --- lift ride (top -> bottom)
 	var lift: Node = _g("Lift")

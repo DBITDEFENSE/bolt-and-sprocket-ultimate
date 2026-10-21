@@ -141,6 +141,7 @@ func _process(delta: float) -> void:
 				_float.rotation.y += delta * 1.5
 				_float.position.y = 1.2 + sin(_t * 2.0) * 0.06
 			if _t >= offer_seconds and Net.is_authority():
+				GLBus.crucible_expired.emit(_result)
 				_reset()
 				Net.mirror(self, &"_reset")
 
@@ -231,6 +232,7 @@ func _forge(fed_by: int, result: String) -> void:
 	phase = Phase.FORGING
 	_t = 0.0
 	_roar_t = 0.0
+	GLBus.crucible_started.emit(fed_by, _result)
 	if _embers != null:
 		_embers.emitting = true
 	AudioDirector.play_3d("door_open", global_position + Vector3.UP, 0.0, 0.0)
@@ -254,6 +256,7 @@ func _quest_glow() -> void:
 func _offer() -> void:
 	phase = Phase.OFFERED
 	_t = 0.0
+	GLBus.crucible_ready.emit(_result)
 	if _float != null:
 		_float_label.text = _display(_result)
 		_float.show()

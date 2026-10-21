@@ -4,6 +4,8 @@ extends GutTest
 ## one), the text is subtitle-safe, and StoryProp.spawn_all puts them where the table says.
 
 const FIXED_IDS: PackedStringArray = ["INT_M0_09", "INT_M0_10", "INT_M0_11", "INT_M0_12", "INT_M0_13", "INT_M0_14"]
+## Map 2 (LORE.md section 13.2, T-036): the same rules, map "2".
+const MAP2_IDS: PackedStringArray = ["INT_M2_01", "INT_M2_02", "INT_M2_03", "INT_M2_04"]
 
 
 func _intel() -> Array:
@@ -53,8 +55,9 @@ func test_only_these_rows_are_fixed() -> void:
 			fixed.append(str(r["id"]))
 	fixed.sort()
 	var want: PackedStringArray = FIXED_IDS.duplicate()
+	want.append_array(MAP2_IDS)
 	want.sort()
-	assert_eq(fixed, want, "exactly the section 13.1 rows are fixed")
+	assert_eq(fixed, want, "exactly the section 13.1 and 13.2 rows are fixed")
 
 
 func test_placements_point_at_fixed_rows() -> void:
@@ -74,11 +77,16 @@ func test_placements_point_at_fixed_rows() -> void:
 		assert_typeof(e.get("yaw", 0.0), TYPE_FLOAT, "placement %s yaw is a number" % id)
 	for id: String in FIXED_IDS:
 		assert_true(placed.has(id), "fixed row %s has a placement" % id)
+	for id2: String in MAP2_IDS:
+		assert_true(placed.has(id2), "fixed row %s has a placement" % id2)
+		assert_eq(str((rows[id2] as Dictionary).get("map", "")), "2", "%s is on Map 2" % id2)
 
 
 func test_text_is_subtitle_safe() -> void:
 	var rows: Dictionary = _by_id()
-	for id: String in FIXED_IDS:
+	var ids: PackedStringArray = FIXED_IDS.duplicate()
+	ids.append_array(MAP2_IDS)
+	for id: String in ids:
 		if not rows.has(id):
 			continue
 		var t: String = str((rows[id] as Dictionary).get("text", "")) + str((rows[id] as Dictionary).get("title", ""))
@@ -94,9 +102,14 @@ func test_spawn_all_places_the_map_0_items() -> void:
 	var other: Node3D = Node3D.new()
 	add_child_autofree(other)
 	assert_eq(StoryProp.spawn_all(other, "1"), 0, "none on Map 1")
+	var m2: Node3D = Node3D.new()
+	add_child_autofree(m2)
+	assert_eq(StoryProp.spawn_all(m2, "2"), 4, "four Map 2 items")
 	var by_name: Dictionary = {}
 	for c: Node in root.get_children():
 		by_name[c.name] = c
+	for c2: Node in m2.get_children():
+		by_name[c2.name] = c2
 	for e: Dictionary in _props():
 		var n: String = "Story_" + str(e["id"])
 		assert_true(by_name.has(n), n + " spawned")

@@ -14,6 +14,7 @@ var _key: OmniLight3D
 var _shots: Array = []
 var _x: float = 0.0
 var _env: Environment
+var _overclock: PerkMachine = null
 
 
 func _ready() -> void:
@@ -46,6 +47,20 @@ func _ready() -> void:
 			var path: String = _out.path_join("mach_%s_%s.png" % [s[0], "on" if pass_i == 1 else "off"])
 			img.save_png(path)
 			print("shot ", path)
+	# Overclock Cordial's static burst (an empty-mag reload, e = 1.0: a 6 m ring) in front of its cabinet
+	if _overclock != null and (_only.is_empty() or _wanted("perk_overclock") or _wanted("burst")):
+		var at: Vector3 = _overclock.global_position + Vector3(0, 0, -2.6)
+		_cam.global_position = at + Vector3(-4.2, 2.6, -4.6)
+		_cam.look_at(at + Vector3(0, 0.8, 0), Vector3.UP)
+		_key.global_position = at + Vector3(-2.0, 3.0, -2.5)
+		await get_tree().create_timer(0.3).timeout
+		Effects.static_burst(at + Vector3.UP * 0.9, PerkManager.overclock_radius(1.0))
+		GLBus.overclock_burst.emit(1, at, 1.0, 6.0)
+		await get_tree().create_timer(0.12).timeout
+		var img2: Image = get_viewport().get_texture().get_image()
+		var path2: String = _out.path_join("mach_overclock_burst.png")
+		img2.save_png(path2)
+		print("shot ", path2)
 	get_tree().quit()
 
 
@@ -113,17 +128,22 @@ func _next() -> Vector3:
 
 
 func _exhibits() -> void:
-	# perk dispensers, each alone and then all eight in a row
+	# perk dispensers, each alone and then all nine in a row
 	var perks: Array = ["ironhide_stout", "second_wind", "trigger_tonic", "twin_barrel", "marathon_malt", "hawkeye_brandy",
-		"packmule_porter", "blastproof_bock"]
+		"packmule_porter", "blastproof_bock", "overclock_cordial"]
 	var row: Vector3 = _next()
 	for i: int in perks.size():
 		var pm: PerkMachine = PerkMachine.new()
 		pm.perk_id = StringName(perks[i])
 		_add("perk_" + str(perks[i]), pm, row + Vector3(i * 2.2, 0, 1.5), 0.0, Vector3(-1.3, 1.7, -2.9), Vector3(0, 1.2, 0))
+		if perks[i] == "overclock_cordial":
+			# a closer look at the crown (coil, arc, Funki) and the gauge
+			_add("perk_overclock_crown", pm, row + Vector3(i * 2.2, 0, 1.5), 0.0, Vector3(-0.9, 2.6, -1.4), Vector3(0, 2.2, 0))
+			_add("perk_overclock_gauge", pm, row + Vector3(i * 2.2, 0, 1.5), 0.0, Vector3(0.0, 1.5, -1.0), Vector3(0, 1.45, 0))
+			_overclock = pm
 	var anchor: Node3D = Node3D.new()
-	_add("perks_row", anchor, row + Vector3(7.7, 0, 1.5), 0.0, Vector3(0, 2.4, -7.5), Vector3(0, 1.3, 0))
-	_x += 17.0
+	_add("perks_row", anchor, row + Vector3(8.8, 0, 1.5), 0.0, Vector3(0, 2.6, -8.6), Vector3(0, 1.3, 0))
+	_x += 19.0
 	# the Crucible
 	_add("crucible", Crucible.new(), _next() + Vector3(0, 0, 1.0), 0.0, Vector3(-2.2, 2.0, -4.6), Vector3(0, 1.6, 0))
 	_x += 2.0

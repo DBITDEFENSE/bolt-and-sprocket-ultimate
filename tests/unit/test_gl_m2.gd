@@ -4,7 +4,7 @@ extends GutTest
 
 const MAP00: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 const PERKS: PackedStringArray = ["ironhide_stout", "second_wind", "trigger_tonic", "twin_barrel",
-	"marathon_malt", "hawkeye_brandy", "packmule_porter", "blastproof_bock"]
+	"marathon_malt", "hawkeye_brandy", "packmule_porter", "blastproof_bock", "overclock_cordial"]   # nine since T-034
 
 var _saved_path: String = ""
 

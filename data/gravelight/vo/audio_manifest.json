@@ -1,0 +1,7110 @@
+{
+ "_doc": "Built by gravelight/tools_src/gen_vo.py. files: audio file per line (or per exchange part <id>_p<n>) with the text/profile hash that produced it; missing: ids with no audio and why. Windows OneCore TTS (Microsoft David / Mark / Zira), processed; see docs/ASSETS.md.",
+ "tool_version": "1",
+ "files": {
+  "BNT_DEA_WRN_01_p0": {
+   "line": "BNT_DEA_WRN_01",
+   "speaker": "DEA",
+   "hash": "cbf36e62c95a0770",
+   "path": "res://gravelight/audio/vo/dea/BNT_DEA_WRN_01_p0.ogg",
+   "format": "ogg",
+   "duration": 2.494,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DEA_WRN_01_p1": {
+   "line": "BNT_DEA_WRN_01",
+   "speaker": "WRN",
+   "hash": "9e239b4c66fce53a",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DEA_WRN_01_p1.ogg",
+   "format": "ogg",
+   "duration": 2.492,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DEA_WRN_01_p2": {
+   "line": "BNT_DEA_WRN_01",
+   "speaker": "DEA",
+   "hash": "389c1cc9da341296",
+   "path": "res://gravelight/audio/vo/dea/BNT_DEA_WRN_01_p2.ogg",
+   "format": "ogg",
+   "duration": 1.933,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DEA_WRN_01_p3": {
+   "line": "BNT_DEA_WRN_01",
+   "speaker": "WRN",
+   "hash": "60a60f770b22ad55",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DEA_WRN_01_p3.ogg",
+   "format": "ogg",
+   "duration": 4.516,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DEA_WRN_02_p0": {
+   "line": "BNT_DEA_WRN_02",
+   "speaker": "WRN",
+   "hash": "6d41868bb28b017b",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DEA_WRN_02_p0.ogg",
+   "format": "ogg",
+   "duration": 1.386,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DEA_WRN_02_p1": {
+   "line": "BNT_DEA_WRN_02",
+   "speaker": "DEA",
+   "hash": "a26683799fd4e421",
+   "path": "res://gravelight/audio/vo/dea/BNT_DEA_WRN_02_p1.ogg",
+   "format": "ogg",
+   "duration": 1.626,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DEA_WRN_02_p2": {
+   "line": "BNT_DEA_WRN_02",
+   "speaker": "WRN",
+   "hash": "359fa4d864cea359",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DEA_WRN_02_p2.ogg",
+   "format": "ogg",
+   "duration": 1.117,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DEA_WRN_02_p3": {
+   "line": "BNT_DEA_WRN_02",
+   "speaker": "DEA",
+   "hash": "4acd409315acace7",
+   "path": "res://gravelight/audio/vo/dea/BNT_DEA_WRN_02_p3.ogg",
+   "format": "ogg",
+   "duration": 2.835,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DEA_WRN_03_p0": {
+   "line": "BNT_DEA_WRN_03",
+   "speaker": "DEA",
+   "hash": "15eb55d520f9038f",
+   "path": "res://gravelight/audio/vo/dea/BNT_DEA_WRN_03_p0.ogg",
+   "format": "ogg",
+   "duration": 3.209,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DEA_WRN_03_p1": {
+   "line": "BNT_DEA_WRN_03",
+   "speaker": "WRN",
+   "hash": "c1ed44c3e291b77b",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DEA_WRN_03_p1.ogg",
+   "format": "ogg",
+   "duration": 0.967,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DEA_WRN_03_p2": {
+   "line": "BNT_DEA_WRN_03",
+   "speaker": "DEA",
+   "hash": "fed50eed4257bc51",
+   "path": "res://gravelight/audio/vo/dea/BNT_DEA_WRN_03_p2.ogg",
+   "format": "ogg",
+   "duration": 0.779,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DEA_WRN_03_p3": {
+   "line": "BNT_DEA_WRN_03",
+   "speaker": "WRN",
+   "hash": "e950cc7eab217d8f",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DEA_WRN_03_p3.ogg",
+   "format": "ogg",
+   "duration": 2.592,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DEA_WRN_04_p0": {
+   "line": "BNT_DEA_WRN_04",
+   "speaker": "DEA",
+   "hash": "84fe07742447e0af",
+   "path": "res://gravelight/audio/vo/dea/BNT_DEA_WRN_04_p0.ogg",
+   "format": "ogg",
+   "duration": 1.703,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DEA_WRN_04_p1": {
+   "line": "BNT_DEA_WRN_04",
+   "speaker": "WRN",
+   "hash": "deb0e6778edba14c",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DEA_WRN_04_p1.ogg",
+   "format": "ogg",
+   "duration": 1.954,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DEA_WRN_04_p2": {
+   "line": "BNT_DEA_WRN_04",
+   "speaker": "DEA",
+   "hash": "50667e4f29c0fa1e",
+   "path": "res://gravelight/audio/vo/dea/BNT_DEA_WRN_04_p2.ogg",
+   "format": "ogg",
+   "duration": 2.439,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DEA_WRN_05_p0": {
+   "line": "BNT_DEA_WRN_05",
+   "speaker": "WRN",
+   "hash": "e1fb35381909bbb0",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DEA_WRN_05_p0.ogg",
+   "format": "ogg",
+   "duration": 3.36,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DEA_WRN_05_p1": {
+   "line": "BNT_DEA_WRN_05",
+   "speaker": "DEA",
+   "hash": "570aeb3a8594b23e",
+   "path": "res://gravelight/audio/vo/dea/BNT_DEA_WRN_05_p1.ogg",
+   "format": "ogg",
+   "duration": 1.362,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DEA_WRN_05_p2": {
+   "line": "BNT_DEA_WRN_05",
+   "speaker": "WRN",
+   "hash": "a9937e7392508f85",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DEA_WRN_05_p2.ogg",
+   "format": "ogg",
+   "duration": 1.685,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DUT_DEA_01_p0": {
+   "line": "BNT_DUT_DEA_01",
+   "speaker": "DUT",
+   "hash": "a7a7169cd25d0124",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_DEA_01_p0.ogg",
+   "format": "ogg",
+   "duration": 2.271,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_DEA_01_p1": {
+   "line": "BNT_DUT_DEA_01",
+   "speaker": "DEA",
+   "hash": "1b38a92cb4ff170f",
+   "path": "res://gravelight/audio/vo/dea/BNT_DUT_DEA_01_p1.ogg",
+   "format": "ogg",
+   "duration": 3.55,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DUT_DEA_01_p2": {
+   "line": "BNT_DUT_DEA_01",
+   "speaker": "DUT",
+   "hash": "a57dd8f2e181d034",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_DEA_01_p2.ogg",
+   "format": "ogg",
+   "duration": 0.723,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_DEA_01_p3": {
+   "line": "BNT_DUT_DEA_01",
+   "speaker": "DEA",
+   "hash": "7a0c5d331ccf84d0",
+   "path": "res://gravelight/audio/vo/dea/BNT_DUT_DEA_01_p3.ogg",
+   "format": "ogg",
+   "duration": 4.21,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DUT_DEA_02_p0": {
+   "line": "BNT_DUT_DEA_02",
+   "speaker": "DEA",
+   "hash": "4bd5cfde81dff98d",
+   "path": "res://gravelight/audio/vo/dea/BNT_DUT_DEA_02_p0.ogg",
+   "format": "ogg",
+   "duration": 1.901,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DUT_DEA_02_p1": {
+   "line": "BNT_DUT_DEA_02",
+   "speaker": "DUT",
+   "hash": "d9bccd9be6e0bca0",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_DEA_02_p1.ogg",
+   "format": "ogg",
+   "duration": 1.812,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_DEA_02_p2": {
+   "line": "BNT_DUT_DEA_02",
+   "speaker": "DEA",
+   "hash": "7785cc755158ba18",
+   "path": "res://gravelight/audio/vo/dea/BNT_DUT_DEA_02_p2.ogg",
+   "format": "ogg",
+   "duration": 0.636,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DUT_DEA_02_p3": {
+   "line": "BNT_DUT_DEA_02",
+   "speaker": "DUT",
+   "hash": "d1b182a7642e367a",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_DEA_02_p3.ogg",
+   "format": "ogg",
+   "duration": 2.409,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_DEA_03_p0": {
+   "line": "BNT_DUT_DEA_03",
+   "speaker": "DUT",
+   "hash": "a55d28b79f04b92f",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_DEA_03_p0.ogg",
+   "format": "ogg",
+   "duration": 4.817,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_DEA_03_p1": {
+   "line": "BNT_DUT_DEA_03",
+   "speaker": "DEA",
+   "hash": "36aa9acf004a595e",
+   "path": "res://gravelight/audio/vo/dea/BNT_DUT_DEA_03_p1.ogg",
+   "format": "ogg",
+   "duration": 4.661,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DUT_DEA_03_p2": {
+   "line": "BNT_DUT_DEA_03",
+   "speaker": "DUT",
+   "hash": "a26ce45b196fb295",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_DEA_03_p2.ogg",
+   "format": "ogg",
+   "duration": 0.826,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_DEA_03_p3": {
+   "line": "BNT_DUT_DEA_03",
+   "speaker": "DEA",
+   "hash": "caf2601640ab4b20",
+   "path": "res://gravelight/audio/vo/dea/BNT_DUT_DEA_03_p3.ogg",
+   "format": "ogg",
+   "duration": 1.977,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DUT_DEA_04_p0": {
+   "line": "BNT_DUT_DEA_04",
+   "speaker": "DEA",
+   "hash": "fa6e66e86e4f0d5c",
+   "path": "res://gravelight/audio/vo/dea/BNT_DUT_DEA_04_p0.ogg",
+   "format": "ogg",
+   "duration": 3.55,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DUT_DEA_04_p1": {
+   "line": "BNT_DUT_DEA_04",
+   "speaker": "DUT",
+   "hash": "669818aaf18e8849",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_DEA_04_p1.ogg",
+   "format": "ogg",
+   "duration": 2.936,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_DEA_05_p0": {
+   "line": "BNT_DUT_DEA_05",
+   "speaker": "DUT",
+   "hash": "f9edfc1794f0c364",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_DEA_05_p0.ogg",
+   "format": "ogg",
+   "duration": 1.491,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_DEA_05_p1": {
+   "line": "BNT_DUT_DEA_05",
+   "speaker": "DEA",
+   "hash": "e507d4ebfcf43d23",
+   "path": "res://gravelight/audio/vo/dea/BNT_DUT_DEA_05_p1.ogg",
+   "format": "ogg",
+   "duration": 2.307,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DUT_DEA_05_p2": {
+   "line": "BNT_DUT_DEA_05",
+   "speaker": "DUT",
+   "hash": "66c86ddcc1a670f6",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_DEA_05_p2.ogg",
+   "format": "ogg",
+   "duration": 1.227,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_PEG_01_p0": {
+   "line": "BNT_DUT_PEG_01",
+   "speaker": "DUT",
+   "hash": "9b3036460489ef18",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_PEG_01_p0.ogg",
+   "format": "ogg",
+   "duration": 4.186,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_PEG_01_p1": {
+   "line": "BNT_DUT_PEG_01",
+   "speaker": "PEG",
+   "hash": "dfe27e9c60a70fb6",
+   "path": "res://gravelight/audio/vo/peg/BNT_DUT_PEG_01_p1.ogg",
+   "format": "ogg",
+   "duration": 2.648,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_DUT_PEG_01_p2": {
+   "line": "BNT_DUT_PEG_01",
+   "speaker": "DUT",
+   "hash": "2c377710763c0836",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_PEG_01_p2.ogg",
+   "format": "ogg",
+   "duration": 0.677,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_PEG_01_p3": {
+   "line": "BNT_DUT_PEG_01",
+   "speaker": "PEG",
+   "hash": "33d81d06eb0f855e",
+   "path": "res://gravelight/audio/vo/peg/BNT_DUT_PEG_01_p3.ogg",
+   "format": "ogg",
+   "duration": 1.04,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_DUT_PEG_02_p0": {
+   "line": "BNT_DUT_PEG_02",
+   "speaker": "PEG",
+   "hash": "d55bf143752e88b4",
+   "path": "res://gravelight/audio/vo/peg/BNT_DUT_PEG_02_p0.ogg",
+   "format": "ogg",
+   "duration": 1.683,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_DUT_PEG_02_p1": {
+   "line": "BNT_DUT_PEG_02",
+   "speaker": "DUT",
+   "hash": "feb7aa9bc00291ed",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_PEG_02_p1.ogg",
+   "format": "ogg",
+   "duration": 4.634,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_PEG_02_p2": {
+   "line": "BNT_DUT_PEG_02",
+   "speaker": "PEG",
+   "hash": "02dcb55d60cd8035",
+   "path": "res://gravelight/audio/vo/peg/BNT_DUT_PEG_02_p2.ogg",
+   "format": "ogg",
+   "duration": 1.372,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_DUT_PEG_02_p3": {
+   "line": "BNT_DUT_PEG_02",
+   "speaker": "DUT",
+   "hash": "bdacc4627b86f210",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_PEG_02_p3.ogg",
+   "format": "ogg",
+   "duration": 2.661,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_PEG_03_p0": {
+   "line": "BNT_DUT_PEG_03",
+   "speaker": "DUT",
+   "hash": "bffda919cad21b32",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_PEG_03_p0.ogg",
+   "format": "ogg",
+   "duration": 4.221,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_PEG_03_p1": {
+   "line": "BNT_DUT_PEG_03",
+   "speaker": "PEG",
+   "hash": "813427ff7f272f71",
+   "path": "res://gravelight/audio/vo/peg/BNT_DUT_PEG_03_p1.ogg",
+   "format": "ogg",
+   "duration": 3.06,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_DUT_PEG_03_p2": {
+   "line": "BNT_DUT_PEG_03",
+   "speaker": "DUT",
+   "hash": "2499929cc8ac4e8c",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_PEG_03_p2.ogg",
+   "format": "ogg",
+   "duration": 0.47,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_PEG_04_p0": {
+   "line": "BNT_DUT_PEG_04",
+   "speaker": "DUT",
+   "hash": "a1fa4eda70736535",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_PEG_04_p0.ogg",
+   "format": "ogg",
+   "duration": 4.244,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_PEG_04_p1": {
+   "line": "BNT_DUT_PEG_04",
+   "speaker": "PEG",
+   "hash": "f6835bbc601a09d4",
+   "path": "res://gravelight/audio/vo/peg/BNT_DUT_PEG_04_p1.ogg",
+   "format": "ogg",
+   "duration": 3.147,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_DUT_PEG_05_p0": {
+   "line": "BNT_DUT_PEG_05",
+   "speaker": "PEG",
+   "hash": "8070a8f6e9c548de",
+   "path": "res://gravelight/audio/vo/peg/BNT_DUT_PEG_05_p0.ogg",
+   "format": "ogg",
+   "duration": 1.663,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_DUT_PEG_05_p1": {
+   "line": "BNT_DUT_PEG_05",
+   "speaker": "DUT",
+   "hash": "b533d46d38fcdca0",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_PEG_05_p1.ogg",
+   "format": "ogg",
+   "duration": 4.645,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_PEG_05_p2": {
+   "line": "BNT_DUT_PEG_05",
+   "speaker": "PEG",
+   "hash": "6add0f1e98ab5f91",
+   "path": "res://gravelight/audio/vo/peg/BNT_DUT_PEG_05_p2.ogg",
+   "format": "ogg",
+   "duration": 2.582,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_DUT_WRN_01_p0": {
+   "line": "BNT_DUT_WRN_01",
+   "speaker": "DUT",
+   "hash": "0ec0dc2f94948902",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_WRN_01_p0.ogg",
+   "format": "ogg",
+   "duration": 1.135,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_WRN_01_p1": {
+   "line": "BNT_DUT_WRN_01",
+   "speaker": "WRN",
+   "hash": "92d259e609d357c2",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DUT_WRN_01_p1.ogg",
+   "format": "ogg",
+   "duration": 2.054,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DUT_WRN_01_p2": {
+   "line": "BNT_DUT_WRN_01",
+   "speaker": "DUT",
+   "hash": "8983e1ae1c7c1191",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_WRN_01_p2.ogg",
+   "format": "ogg",
+   "duration": 0.723,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_WRN_01_p3": {
+   "line": "BNT_DUT_WRN_01",
+   "speaker": "WRN",
+   "hash": "c6f993bd228f3ff0",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DUT_WRN_01_p3.ogg",
+   "format": "ogg",
+   "duration": 1.156,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DUT_WRN_02_p0": {
+   "line": "BNT_DUT_WRN_02",
+   "speaker": "WRN",
+   "hash": "1b54252fc157a269",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DUT_WRN_02_p0.ogg",
+   "format": "ogg",
+   "duration": 2.712,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DUT_WRN_02_p1": {
+   "line": "BNT_DUT_WRN_02",
+   "speaker": "DUT",
+   "hash": "9c2ffa19ffd1da01",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_WRN_02_p1.ogg",
+   "format": "ogg",
+   "duration": 2.443,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_WRN_02_p2": {
+   "line": "BNT_DUT_WRN_02",
+   "speaker": "WRN",
+   "hash": "4c27edc60acfbd2d",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DUT_WRN_02_p2.ogg",
+   "format": "ogg",
+   "duration": 1.745,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DUT_WRN_02_p3": {
+   "line": "BNT_DUT_WRN_02",
+   "speaker": "DUT",
+   "hash": "613e5093cb65d1a8",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_WRN_02_p3.ogg",
+   "format": "ogg",
+   "duration": 3.005,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_WRN_03_p0": {
+   "line": "BNT_DUT_WRN_03",
+   "speaker": "DUT",
+   "hash": "012db868f627b2cc",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_WRN_03_p0.ogg",
+   "format": "ogg",
+   "duration": 1.812,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_WRN_03_p1": {
+   "line": "BNT_DUT_WRN_03",
+   "speaker": "WRN",
+   "hash": "ba658e407a90fcd3",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DUT_WRN_03_p1.ogg",
+   "format": "ogg",
+   "duration": 0.728,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DUT_WRN_03_p2": {
+   "line": "BNT_DUT_WRN_03",
+   "speaker": "DUT",
+   "hash": "943603eb8a7bb138",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_WRN_03_p2.ogg",
+   "format": "ogg",
+   "duration": 1.135,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_WRN_03_p3": {
+   "line": "BNT_DUT_WRN_03",
+   "speaker": "WRN",
+   "hash": "c339ca34d08655f5",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DUT_WRN_03_p3.ogg",
+   "format": "ogg",
+   "duration": 1.416,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DUT_WRN_04_p0": {
+   "line": "BNT_DUT_WRN_04",
+   "speaker": "DUT",
+   "hash": "331c8c131fc2ad89",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_WRN_04_p0.ogg",
+   "format": "ogg",
+   "duration": 1.606,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_WRN_04_p1": {
+   "line": "BNT_DUT_WRN_04",
+   "speaker": "WRN",
+   "hash": "4f7dda152b9febbb",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DUT_WRN_04_p1.ogg",
+   "format": "ogg",
+   "duration": 3.429,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DUT_WRN_04_p2": {
+   "line": "BNT_DUT_WRN_04",
+   "speaker": "DUT",
+   "hash": "952ea39093e21a6f",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_WRN_04_p2.ogg",
+   "format": "ogg",
+   "duration": 1.48,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_WRN_04_p3": {
+   "line": "BNT_DUT_WRN_04",
+   "speaker": "WRN",
+   "hash": "13a9d5f0ff9b9f28",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DUT_WRN_04_p3.ogg",
+   "format": "ogg",
+   "duration": 1.575,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DUT_WRN_05_p0": {
+   "line": "BNT_DUT_WRN_05",
+   "speaker": "WRN",
+   "hash": "914346b994e2acf9",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DUT_WRN_05_p0.ogg",
+   "format": "ogg",
+   "duration": 1.057,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_DUT_WRN_05_p1": {
+   "line": "BNT_DUT_WRN_05",
+   "speaker": "DUT",
+   "hash": "96673799b55f9ff3",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_WRN_05_p1.ogg",
+   "format": "ogg",
+   "duration": 0.941,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_WRN_05_p2": {
+   "line": "BNT_DUT_WRN_05",
+   "speaker": "WRN",
+   "hash": "ee6de50db7e1d67c",
+   "path": "res://gravelight/audio/vo/wrn/BNT_DUT_WRN_05_p2.ogg",
+   "format": "ogg",
+   "duration": 2.333,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_PEG_DEA_01_p0": {
+   "line": "BNT_PEG_DEA_01",
+   "speaker": "DEA",
+   "hash": "07db74cd49737abd",
+   "path": "res://gravelight/audio/vo/dea/BNT_PEG_DEA_01_p0.ogg",
+   "format": "ogg",
+   "duration": 3.946,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_PEG_DEA_01_p1": {
+   "line": "BNT_PEG_DEA_01",
+   "speaker": "PEG",
+   "hash": "7e1519f16d50381c",
+   "path": "res://gravelight/audio/vo/peg/BNT_PEG_DEA_01_p1.ogg",
+   "format": "ogg",
+   "duration": 2.591,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_PEG_DEA_01_p2": {
+   "line": "BNT_PEG_DEA_01",
+   "speaker": "DEA",
+   "hash": "223b7a4b50a01dd8",
+   "path": "res://gravelight/audio/vo/dea/BNT_PEG_DEA_01_p2.ogg",
+   "format": "ogg",
+   "duration": 3.869,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_PEG_DEA_01_p3": {
+   "line": "BNT_PEG_DEA_01",
+   "speaker": "PEG",
+   "hash": "0aeed250278588a4",
+   "path": "res://gravelight/audio/vo/peg/BNT_PEG_DEA_01_p3.ogg",
+   "format": "ogg",
+   "duration": 1.778,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_PEG_DEA_02_p0": {
+   "line": "BNT_PEG_DEA_02",
+   "speaker": "PEG",
+   "hash": "d27a146f6fa8829f",
+   "path": "res://gravelight/audio/vo/peg/BNT_PEG_DEA_02_p0.ogg",
+   "format": "ogg",
+   "duration": 2.075,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_PEG_DEA_02_p1": {
+   "line": "BNT_PEG_DEA_02",
+   "speaker": "DEA",
+   "hash": "06c3c857dfb1d847",
+   "path": "res://gravelight/audio/vo/dea/BNT_PEG_DEA_02_p1.ogg",
+   "format": "ogg",
+   "duration": 4.947,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_PEG_DEA_02_p2": {
+   "line": "BNT_PEG_DEA_02",
+   "speaker": "PEG",
+   "hash": "0a9d01fb1875a999",
+   "path": "res://gravelight/audio/vo/peg/BNT_PEG_DEA_02_p2.ogg",
+   "format": "ogg",
+   "duration": 0.83,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_PEG_DEA_02_p3": {
+   "line": "BNT_PEG_DEA_02",
+   "speaker": "DEA",
+   "hash": "e75a640d69d65c68",
+   "path": "res://gravelight/audio/vo/dea/BNT_PEG_DEA_02_p3.ogg",
+   "format": "ogg",
+   "duration": 4.507,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_PEG_DEA_03_p0": {
+   "line": "BNT_PEG_DEA_03",
+   "speaker": "DEA",
+   "hash": "b36af4143aa103d6",
+   "path": "res://gravelight/audio/vo/dea/BNT_PEG_DEA_03_p0.ogg",
+   "format": "ogg",
+   "duration": 2.593,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_PEG_DEA_03_p1": {
+   "line": "BNT_PEG_DEA_03",
+   "speaker": "PEG",
+   "hash": "dc35b7090b43991f",
+   "path": "res://gravelight/audio/vo/peg/BNT_PEG_DEA_03_p1.ogg",
+   "format": "ogg",
+   "duration": 3.543,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_PEG_DEA_04_p0": {
+   "line": "BNT_PEG_DEA_04",
+   "speaker": "PEG",
+   "hash": "3ba418ba649f2f31",
+   "path": "res://gravelight/audio/vo/peg/BNT_PEG_DEA_04_p0.ogg",
+   "format": "ogg",
+   "duration": 2.538,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_PEG_DEA_04_p1": {
+   "line": "BNT_PEG_DEA_04",
+   "speaker": "DEA",
+   "hash": "13786c97bd7ce78a",
+   "path": "res://gravelight/audio/vo/dea/BNT_PEG_DEA_04_p1.ogg",
+   "format": "ogg",
+   "duration": 3.165,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_PEG_DEA_05_p0": {
+   "line": "BNT_PEG_DEA_05",
+   "speaker": "DEA",
+   "hash": "b1e7ff1967df1493",
+   "path": "res://gravelight/audio/vo/dea/BNT_PEG_DEA_05_p0.ogg",
+   "format": "ogg",
+   "duration": 2.516,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_PEG_DEA_05_p1": {
+   "line": "BNT_PEG_DEA_05",
+   "speaker": "PEG",
+   "hash": "16d742ca8f7133b7",
+   "path": "res://gravelight/audio/vo/peg/BNT_PEG_DEA_05_p1.ogg",
+   "format": "ogg",
+   "duration": 4.652,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_PEG_WRN_01_p0": {
+   "line": "BNT_PEG_WRN_01",
+   "speaker": "WRN",
+   "hash": "c3376f298927ecd4",
+   "path": "res://gravelight/audio/vo/wrn/BNT_PEG_WRN_01_p0.ogg",
+   "format": "ogg",
+   "duration": 1.824,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_PEG_WRN_01_p1": {
+   "line": "BNT_PEG_WRN_01",
+   "speaker": "PEG",
+   "hash": "f0bbc8cfb26e778e",
+   "path": "res://gravelight/audio/vo/peg/BNT_PEG_WRN_01_p1.ogg",
+   "format": "ogg",
+   "duration": 2.827,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_PEG_WRN_01_p2": {
+   "line": "BNT_PEG_WRN_01",
+   "speaker": "WRN",
+   "hash": "9261a15eb22d4c1b",
+   "path": "res://gravelight/audio/vo/wrn/BNT_PEG_WRN_01_p2.ogg",
+   "format": "ogg",
+   "duration": 1.246,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_PEG_WRN_01_p3": {
+   "line": "BNT_PEG_WRN_01",
+   "speaker": "PEG",
+   "hash": "c7654d65b6eca7d0",
+   "path": "res://gravelight/audio/vo/peg/BNT_PEG_WRN_01_p3.ogg",
+   "format": "ogg",
+   "duration": 1.694,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_PEG_WRN_02_p0": {
+   "line": "BNT_PEG_WRN_02",
+   "speaker": "PEG",
+   "hash": "8c855e11f4cb20cb",
+   "path": "res://gravelight/audio/vo/peg/BNT_PEG_WRN_02_p0.ogg",
+   "format": "ogg",
+   "duration": 1.516,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_PEG_WRN_02_p1": {
+   "line": "BNT_PEG_WRN_02",
+   "speaker": "WRN",
+   "hash": "37ba2c00dadd2b11",
+   "path": "res://gravelight/audio/vo/wrn/BNT_PEG_WRN_02_p1.ogg",
+   "format": "ogg",
+   "duration": 0.498,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_PEG_WRN_02_p2": {
+   "line": "BNT_PEG_WRN_02",
+   "speaker": "PEG",
+   "hash": "540f66326a81dae7",
+   "path": "res://gravelight/audio/vo/peg/BNT_PEG_WRN_02_p2.ogg",
+   "format": "ogg",
+   "duration": 2.74,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_PEG_WRN_02_p3": {
+   "line": "BNT_PEG_WRN_02",
+   "speaker": "WRN",
+   "hash": "2352d044b6c19acd",
+   "path": "res://gravelight/audio/vo/wrn/BNT_PEG_WRN_02_p3.ogg",
+   "format": "ogg",
+   "duration": 2.343,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_PEG_WRN_03_p0": {
+   "line": "BNT_PEG_WRN_03",
+   "speaker": "PEG",
+   "hash": "8374e460d1c4e664",
+   "path": "res://gravelight/audio/vo/peg/BNT_PEG_WRN_03_p0.ogg",
+   "format": "ogg",
+   "duration": 3.825,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_PEG_WRN_03_p1": {
+   "line": "BNT_PEG_WRN_03",
+   "speaker": "WRN",
+   "hash": "5f2b716e4ebd346f",
+   "path": "res://gravelight/audio/vo/wrn/BNT_PEG_WRN_03_p1.ogg",
+   "format": "ogg",
+   "duration": 4.576,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_PEG_WRN_04_p0": {
+   "line": "BNT_PEG_WRN_04",
+   "speaker": "WRN",
+   "hash": "c0cbb721d7f8c16b",
+   "path": "res://gravelight/audio/vo/wrn/BNT_PEG_WRN_04_p0.ogg",
+   "format": "ogg",
+   "duration": 3.041,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_PEG_WRN_04_p1": {
+   "line": "BNT_PEG_WRN_04",
+   "speaker": "PEG",
+   "hash": "d4fdf1546ec58399",
+   "path": "res://gravelight/audio/vo/peg/BNT_PEG_WRN_04_p1.ogg",
+   "format": "ogg",
+   "duration": 1.787,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_PEG_WRN_04_p2": {
+   "line": "BNT_PEG_WRN_04",
+   "speaker": "WRN",
+   "hash": "d338dbfb90af2ca3",
+   "path": "res://gravelight/audio/vo/wrn/BNT_PEG_WRN_04_p2.ogg",
+   "format": "ogg",
+   "duration": 1.256,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_PEG_WRN_05_p0": {
+   "line": "BNT_PEG_WRN_05",
+   "speaker": "PEG",
+   "hash": "0687fe55d98512ca",
+   "path": "res://gravelight/audio/vo/peg/BNT_PEG_WRN_05_p0.ogg",
+   "format": "ogg",
+   "duration": 2.344,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_PEG_WRN_05_p1": {
+   "line": "BNT_PEG_WRN_05",
+   "speaker": "WRN",
+   "hash": "363d715384408473",
+   "path": "res://gravelight/audio/vo/wrn/BNT_PEG_WRN_05_p1.ogg",
+   "format": "ogg",
+   "duration": 2.622,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_PEG_WRN_05_p2": {
+   "line": "BNT_PEG_WRN_05",
+   "speaker": "PEG",
+   "hash": "455efd4d40b4c787",
+   "path": "res://gravelight/audio/vo/peg/BNT_PEG_WRN_05_p2.ogg",
+   "format": "ogg",
+   "duration": 0.805,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "DEA_AMMO_LOW_01": {
+   "line": "DEA_AMMO_LOW_01",
+   "speaker": "DEA",
+   "hash": "84c01148ec475689",
+   "path": "res://gravelight/audio/vo/dea/DEA_AMMO_LOW_01.ogg",
+   "format": "ogg",
+   "duration": 2.186,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_AMMO_NONE_01": {
+   "line": "DEA_AMMO_NONE_01",
+   "speaker": "DEA",
+   "hash": "05f13bca53ad7a00",
+   "path": "res://gravelight/audio/vo/dea/DEA_AMMO_NONE_01.ogg",
+   "format": "ogg",
+   "duration": 4.287,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_BELL_01": {
+   "line": "DEA_BELL_01",
+   "speaker": "DEA",
+   "hash": "316cd6f6c3a6a9e7",
+   "path": "res://gravelight/audio/vo/dea/DEA_BELL_01.ogg",
+   "format": "ogg",
+   "duration": 3.638,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_BELL_02": {
+   "line": "DEA_BELL_02",
+   "speaker": "DEA",
+   "hash": "54116ca3bc4f2bdf",
+   "path": "res://gravelight/audio/vo/dea/DEA_BELL_02.ogg",
+   "format": "ogg",
+   "duration": 4.386,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_BLUES_01": {
+   "line": "DEA_BLUES_01",
+   "speaker": "DEA",
+   "hash": "53f9d0f20c3e0c11",
+   "path": "res://gravelight/audio/vo/dea/DEA_BLUES_01.ogg",
+   "format": "ogg",
+   "duration": 6.541,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_BLUES_02": {
+   "line": "DEA_BLUES_02",
+   "speaker": "DEA",
+   "hash": "9170646ffe1b3ae7",
+   "path": "res://gravelight/audio/vo/dea/DEA_BLUES_02.ogg",
+   "format": "ogg",
+   "duration": 6.156,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_BLUES_03": {
+   "line": "DEA_BLUES_03",
+   "speaker": "DEA",
+   "hash": "3685d5dec8232ea0",
+   "path": "res://gravelight/audio/vo/dea/DEA_BLUES_03.ogg",
+   "format": "ogg",
+   "duration": 7.322,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_BUILD_01": {
+   "line": "DEA_BUILD_01",
+   "speaker": "DEA",
+   "hash": "f6188590ab4fec29",
+   "path": "res://gravelight/audio/vo/dea/DEA_BUILD_01.ogg",
+   "format": "ogg",
+   "duration": 5.782,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_BUY_AMMO_01": {
+   "line": "DEA_BUY_AMMO_01",
+   "speaker": "DEA",
+   "hash": "13f2ab7ec19e281f",
+   "path": "res://gravelight/audio/vo/dea/DEA_BUY_AMMO_01.ogg",
+   "format": "ogg",
+   "duration": 3.077,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_BUY_LAUNCHER_01": {
+   "line": "DEA_BUY_LAUNCHER_01",
+   "speaker": "DEA",
+   "hash": "4e260e21be673efe",
+   "path": "res://gravelight/audio/vo/dea/DEA_BUY_LAUNCHER_01.ogg",
+   "format": "ogg",
+   "duration": 3.319,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_BUY_LMG_01": {
+   "line": "DEA_BUY_LMG_01",
+   "speaker": "DEA",
+   "hash": "8456395f7b3f4a00",
+   "path": "res://gravelight/audio/vo/dea/DEA_BUY_LMG_01.ogg",
+   "format": "ogg",
+   "duration": 2.626,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_BUY_MELEE_01": {
+   "line": "DEA_BUY_MELEE_01",
+   "speaker": "DEA",
+   "hash": "9555a42eb5e0536f",
+   "path": "res://gravelight/audio/vo/dea/DEA_BUY_MELEE_01.ogg",
+   "format": "ogg",
+   "duration": 4.287,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_BUY_PISTOL_01": {
+   "line": "DEA_BUY_PISTOL_01",
+   "speaker": "DEA",
+   "hash": "c37879cb0ee32052",
+   "path": "res://gravelight/audio/vo/dea/DEA_BUY_PISTOL_01.ogg",
+   "format": "ogg",
+   "duration": 4.012,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_BUY_RIFLE_01": {
+   "line": "DEA_BUY_RIFLE_01",
+   "speaker": "DEA",
+   "hash": "cf8559ff197bf0d1",
+   "path": "res://gravelight/audio/vo/dea/DEA_BUY_RIFLE_01.ogg",
+   "format": "ogg",
+   "duration": 3.297,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_BUY_RIFLE_02": {
+   "line": "DEA_BUY_RIFLE_02",
+   "speaker": "DEA",
+   "hash": "7f72deaf186ddce1",
+   "path": "res://gravelight/audio/vo/dea/DEA_BUY_RIFLE_02.ogg",
+   "format": "ogg",
+   "duration": 3.407,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_BUY_SHOTGUN_01": {
+   "line": "DEA_BUY_SHOTGUN_01",
+   "speaker": "DEA",
+   "hash": "3e04073c0e6f1fad",
+   "path": "res://gravelight/audio/vo/dea/DEA_BUY_SHOTGUN_01.ogg",
+   "format": "ogg",
+   "duration": 5.144,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_BUY_SMG_01": {
+   "line": "DEA_BUY_SMG_01",
+   "speaker": "DEA",
+   "hash": "9ac9736cb47177a2",
+   "path": "res://gravelight/audio/vo/dea/DEA_BUY_SMG_01.ogg",
+   "format": "ogg",
+   "duration": 4.045,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_BUY_WONDER_01": {
+   "line": "DEA_BUY_WONDER_01",
+   "speaker": "DEA",
+   "hash": "38107c9f0778e797",
+   "path": "res://gravelight/audio/vo/dea/DEA_BUY_WONDER_01.ogg",
+   "format": "ogg",
+   "duration": 3.528,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_CRATE_BAD_01": {
+   "line": "DEA_CRATE_BAD_01",
+   "speaker": "DEA",
+   "hash": "881b31916e31ba0c",
+   "path": "res://gravelight/audio/vo/dea/DEA_CRATE_BAD_01.ogg",
+   "format": "ogg",
+   "duration": 3.286,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_CRATE_BAD_02": {
+   "line": "DEA_CRATE_BAD_02",
+   "speaker": "DEA",
+   "hash": "e078f6d7302d6a2d",
+   "path": "res://gravelight/audio/vo/dea/DEA_CRATE_BAD_02.ogg",
+   "format": "ogg",
+   "duration": 3.231,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_CRATE_DRUMMER_01": {
+   "line": "DEA_CRATE_DRUMMER_01",
+   "speaker": "DEA",
+   "hash": "ba3fa1fc9e227b1a",
+   "path": "res://gravelight/audio/vo/dea/DEA_CRATE_DRUMMER_01.ogg",
+   "format": "ogg",
+   "duration": 5.013,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_CRATE_DRUMMER_02": {
+   "line": "DEA_CRATE_DRUMMER_02",
+   "speaker": "DEA",
+   "hash": "83cc30333db501e7",
+   "path": "res://gravelight/audio/vo/dea/DEA_CRATE_DRUMMER_02.ogg",
+   "format": "ogg",
+   "duration": 3.022,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_CRATE_GOOD_01": {
+   "line": "DEA_CRATE_GOOD_01",
+   "speaker": "DEA",
+   "hash": "e2ba5fb78f04517a",
+   "path": "res://gravelight/audio/vo/dea/DEA_CRATE_GOOD_01.ogg",
+   "format": "ogg",
+   "duration": 3.693,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_CRATE_GOOD_02": {
+   "line": "DEA_CRATE_GOOD_02",
+   "speaker": "DEA",
+   "hash": "1334be69d31134b1",
+   "path": "res://gravelight/audio/vo/dea/DEA_CRATE_GOOD_02.ogg",
+   "format": "ogg",
+   "duration": 1.977,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_CRAWLER_01": {
+   "line": "DEA_CRAWLER_01",
+   "speaker": "DEA",
+   "hash": "332f95299a597258",
+   "path": "res://gravelight/audio/vo/dea/DEA_CRAWLER_01.ogg",
+   "format": "ogg",
+   "duration": 3.737,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_CRUCIBLE_01": {
+   "line": "DEA_CRUCIBLE_01",
+   "speaker": "DEA",
+   "hash": "fa217b6fe4ceba27",
+   "path": "res://gravelight/audio/vo/dea/DEA_CRUCIBLE_01.ogg",
+   "format": "ogg",
+   "duration": 3.88,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_CRUCIBLE_02": {
+   "line": "DEA_CRUCIBLE_02",
+   "speaker": "DEA",
+   "hash": "c6571bae982e7fbd",
+   "path": "res://gravelight/audio/vo/dea/DEA_CRUCIBLE_02.ogg",
+   "format": "ogg",
+   "duration": 4.87,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_DENY_CAP_01": {
+   "line": "DEA_DENY_CAP_01",
+   "speaker": "DEA",
+   "hash": "a01ef86605a7b128",
+   "path": "res://gravelight/audio/vo/dea/DEA_DENY_CAP_01.ogg",
+   "format": "ogg",
+   "duration": 4.133,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_DENY_NO_POWER_01": {
+   "line": "DEA_DENY_NO_POWER_01",
+   "speaker": "DEA",
+   "hash": "bec82f8cce1941ec",
+   "path": "res://gravelight/audio/vo/dea/DEA_DENY_NO_POWER_01.ogg",
+   "format": "ogg",
+   "duration": 5.101,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_DENY_NO_SCRIP_01": {
+   "line": "DEA_DENY_NO_SCRIP_01",
+   "speaker": "DEA",
+   "hash": "1a621044dc28ebef",
+   "path": "res://gravelight/audio/vo/dea/DEA_DENY_NO_SCRIP_01.ogg",
+   "format": "ogg",
+   "duration": 3.44,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_DOOR_01": {
+   "line": "DEA_DOOR_01",
+   "speaker": "DEA",
+   "hash": "3c253d02ffa4ee22",
+   "path": "res://gravelight/audio/vo/dea/DEA_DOOR_01.ogg",
+   "format": "ogg",
+   "duration": 2.483,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_DOWN_01": {
+   "line": "DEA_DOWN_01",
+   "speaker": "DEA",
+   "hash": "f72e310eca624e4e",
+   "path": "res://gravelight/audio/vo/dea/DEA_DOWN_01.ogg",
+   "format": "ogg",
+   "duration": 3.055,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_DOWN_02": {
+   "line": "DEA_DOWN_02",
+   "speaker": "DEA",
+   "hash": "2da9c83602c72f5c",
+   "path": "res://gravelight/audio/vo/dea/DEA_DOWN_02.ogg",
+   "format": "ogg",
+   "duration": 3.407,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_EE_01": {
+   "line": "DEA_EE_01",
+   "speaker": "DEA",
+   "hash": "16d4277e22034bb4",
+   "path": "res://gravelight/audio/vo/dea/DEA_EE_01.ogg",
+   "format": "ogg",
+   "duration": 2.879,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_EE_02": {
+   "line": "DEA_EE_02",
+   "speaker": "DEA",
+   "hash": "a824c66603f7f954",
+   "path": "res://gravelight/audio/vo/dea/DEA_EE_02.ogg",
+   "format": "ogg",
+   "duration": 2.329,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_EE_03": {
+   "line": "DEA_EE_03",
+   "speaker": "DEA",
+   "hash": "c9cf0db0c96c3780",
+   "path": "res://gravelight/audio/vo/dea/DEA_EE_03.ogg",
+   "format": "ogg",
+   "duration": 3.847,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_EXHAUST_01": {
+   "line": "DEA_EXHAUST_01",
+   "speaker": "DEA",
+   "hash": "550381f0b9e6ec36",
+   "path": "res://gravelight/audio/vo/dea/DEA_EXHAUST_01.ogg",
+   "format": "ogg",
+   "duration": 3.22,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_EXHAUST_02": {
+   "line": "DEA_EXHAUST_02",
+   "speaker": "DEA",
+   "hash": "0ed363221d22dc91",
+   "path": "res://gravelight/audio/vo/dea/DEA_EXHAUST_02.ogg",
+   "format": "ogg",
+   "duration": 3.231,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_FOREMAN_01": {
+   "line": "DEA_FOREMAN_01",
+   "speaker": "DEA",
+   "hash": "2ff8c4b61e716029",
+   "path": "res://gravelight/audio/vo/dea/DEA_FOREMAN_01.ogg",
+   "format": "ogg",
+   "duration": 4.331,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_FOREMAN_02": {
+   "line": "DEA_FOREMAN_02",
+   "speaker": "DEA",
+   "hash": "1480ba257448dd7c",
+   "path": "res://gravelight/audio/vo/dea/DEA_FOREMAN_02.ogg",
+   "format": "ogg",
+   "duration": 4.023,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_GLASSHIDE_01": {
+   "line": "DEA_GLASSHIDE_01",
+   "speaker": "DEA",
+   "hash": "d7b23cfd45fdea5a",
+   "path": "res://gravelight/audio/vo/dea/DEA_GLASSHIDE_01.ogg",
+   "format": "ogg",
+   "duration": 3.693,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_HEADSHOT_01": {
+   "line": "DEA_HEADSHOT_01",
+   "speaker": "DEA",
+   "hash": "07f5119956c2cbdd",
+   "path": "res://gravelight/audio/vo/dea/DEA_HEADSHOT_01.ogg",
+   "format": "ogg",
+   "duration": 0.922,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_HEADSHOT_02": {
+   "line": "DEA_HEADSHOT_02",
+   "speaker": "DEA",
+   "hash": "45eaa31a2522cae4",
+   "path": "res://gravelight/audio/vo/dea/DEA_HEADSHOT_02.ogg",
+   "format": "ogg",
+   "duration": 1.747,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_INTEL_01": {
+   "line": "DEA_INTEL_01",
+   "speaker": "DEA",
+   "hash": "1cd21a798ca2fdf3",
+   "path": "res://gravelight/audio/vo/dea/DEA_INTEL_01.ogg",
+   "format": "ogg",
+   "duration": 4.914,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_MACH_01": {
+   "line": "DEA_MACH_01",
+   "speaker": "DEA",
+   "hash": "f6e3fcd5037af855",
+   "path": "res://gravelight/audio/vo/dea/DEA_MACH_01.ogg",
+   "format": "ogg",
+   "duration": 3.308,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_MACH_02": {
+   "line": "DEA_MACH_02",
+   "speaker": "DEA",
+   "hash": "be4d0536e56a6c8b",
+   "path": "res://gravelight/audio/vo/dea/DEA_MACH_02.ogg",
+   "format": "ogg",
+   "duration": 4.045,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_MACH_03": {
+   "line": "DEA_MACH_03",
+   "speaker": "DEA",
+   "hash": "9c0238349517b998",
+   "path": "res://gravelight/audio/vo/dea/DEA_MACH_03.ogg",
+   "format": "ogg",
+   "duration": 2.89,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PERK_BLASTPROOF_01": {
+   "line": "DEA_PERK_BLASTPROOF_01",
+   "speaker": "DEA",
+   "hash": "8278618ab077a8a9",
+   "path": "res://gravelight/audio/vo/dea/DEA_PERK_BLASTPROOF_01.ogg",
+   "format": "ogg",
+   "duration": 3.572,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PERK_FERNET_01": {
+   "line": "DEA_PERK_FERNET_01",
+   "speaker": "DEA",
+   "hash": "ca708981758c31aa",
+   "path": "res://gravelight/audio/vo/dea/DEA_PERK_FERNET_01.ogg",
+   "format": "ogg",
+   "duration": 5.837,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PERK_FERNET_02": {
+   "line": "DEA_PERK_FERNET_02",
+   "speaker": "DEA",
+   "hash": "18af41bdc8b42719",
+   "path": "res://gravelight/audio/vo/dea/DEA_PERK_FERNET_02.ogg",
+   "format": "ogg",
+   "duration": 5.386,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PERK_HAWKEYE_01": {
+   "line": "DEA_PERK_HAWKEYE_01",
+   "speaker": "DEA",
+   "hash": "8a82fe31f3686d51",
+   "path": "res://gravelight/audio/vo/dea/DEA_PERK_HAWKEYE_01.ogg",
+   "format": "ogg",
+   "duration": 4.639,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PERK_IRONHIDE_01": {
+   "line": "DEA_PERK_IRONHIDE_01",
+   "speaker": "DEA",
+   "hash": "8d21ca0426543b53",
+   "path": "res://gravelight/audio/vo/dea/DEA_PERK_IRONHIDE_01.ogg",
+   "format": "ogg",
+   "duration": 3.341,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PERK_MARATHON_01": {
+   "line": "DEA_PERK_MARATHON_01",
+   "speaker": "DEA",
+   "hash": "1d872d42f3f47bf9",
+   "path": "res://gravelight/audio/vo/dea/DEA_PERK_MARATHON_01.ogg",
+   "format": "ogg",
+   "duration": 3.715,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PERK_OVERCLOCK_01": {
+   "line": "DEA_PERK_OVERCLOCK_01",
+   "speaker": "DEA",
+   "hash": "2fd2696e2ff46b55",
+   "path": "res://gravelight/audio/vo/dea/DEA_PERK_OVERCLOCK_01.ogg",
+   "format": "ogg",
+   "duration": 5.166,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PERK_OVERCLOCK_02": {
+   "line": "DEA_PERK_OVERCLOCK_02",
+   "speaker": "DEA",
+   "hash": "27d75b5e8cf9234d",
+   "path": "res://gravelight/audio/vo/dea/DEA_PERK_OVERCLOCK_02.ogg",
+   "format": "ogg",
+   "duration": 5.364,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PERK_PACKMULE_01": {
+   "line": "DEA_PERK_PACKMULE_01",
+   "speaker": "DEA",
+   "hash": "5d4ade70c22c95d7",
+   "path": "res://gravelight/audio/vo/dea/DEA_PERK_PACKMULE_01.ogg",
+   "format": "ogg",
+   "duration": 2.395,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PERK_SECONDWIND_01": {
+   "line": "DEA_PERK_SECONDWIND_01",
+   "speaker": "DEA",
+   "hash": "3188f3c1581d11c4",
+   "path": "res://gravelight/audio/vo/dea/DEA_PERK_SECONDWIND_01.ogg",
+   "format": "ogg",
+   "duration": 3.935,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PERK_TRIGGER_01": {
+   "line": "DEA_PERK_TRIGGER_01",
+   "speaker": "DEA",
+   "hash": "27ff5f35b4c794a1",
+   "path": "res://gravelight/audio/vo/dea/DEA_PERK_TRIGGER_01.ogg",
+   "format": "ogg",
+   "duration": 3.418,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PERK_TWINBARREL_01": {
+   "line": "DEA_PERK_TWINBARREL_01",
+   "speaker": "DEA",
+   "hash": "71ae21d6bbce876e",
+   "path": "res://gravelight/audio/vo/dea/DEA_PERK_TWINBARREL_01.ogg",
+   "format": "ogg",
+   "duration": 2.439,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_POWER_01": {
+   "line": "DEA_POWER_01",
+   "speaker": "DEA",
+   "hash": "4a4f1e50243933ae",
+   "path": "res://gravelight/audio/vo/dea/DEA_POWER_01.ogg",
+   "format": "ogg",
+   "duration": 4.573,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_POWER_02": {
+   "line": "DEA_POWER_02",
+   "speaker": "DEA",
+   "hash": "6836b0b4fcedcfaf",
+   "path": "res://gravelight/audio/vo/dea/DEA_POWER_02.ogg",
+   "format": "ogg",
+   "duration": 5.045,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PWR_BLACKOUT_01": {
+   "line": "DEA_PWR_BLACKOUT_01",
+   "speaker": "DEA",
+   "hash": "a6212efe9e385f99",
+   "path": "res://gravelight/audio/vo/dea/DEA_PWR_BLACKOUT_01.ogg",
+   "format": "ogg",
+   "duration": 3.517,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PWR_CLEARANCE_01": {
+   "line": "DEA_PWR_CLEARANCE_01",
+   "speaker": "DEA",
+   "hash": "a3c1033f4fc9cf53",
+   "path": "res://gravelight/audio/vo/dea/DEA_PWR_CLEARANCE_01.ogg",
+   "format": "ogg",
+   "duration": 4.034,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PWR_DEATHSDOOR_01": {
+   "line": "DEA_PWR_DEATHSDOOR_01",
+   "speaker": "DEA",
+   "hash": "c044bc8c80eaed56",
+   "path": "res://gravelight/audio/vo/dea/DEA_PWR_DEATHSDOOR_01.ogg",
+   "format": "ogg",
+   "duration": 4.001,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PWR_DOUBLESCRIP_01": {
+   "line": "DEA_PWR_DOUBLESCRIP_01",
+   "speaker": "DEA",
+   "hash": "88135dbd98962d40",
+   "path": "res://gravelight/audio/vo/dea/DEA_PWR_DOUBLESCRIP_01.ogg",
+   "format": "ogg",
+   "duration": 3.473,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PWR_FORTIFY_01": {
+   "line": "DEA_PWR_FORTIFY_01",
+   "speaker": "DEA",
+   "hash": "828a4884b9c5624b",
+   "path": "res://gravelight/audio/vo/dea/DEA_PWR_FORTIFY_01.ogg",
+   "format": "ogg",
+   "duration": 3.726,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_PWR_RESUPPLY_01": {
+   "line": "DEA_PWR_RESUPPLY_01",
+   "speaker": "DEA",
+   "hash": "e3cff61cc791b86d",
+   "path": "res://gravelight/audio/vo/dea/DEA_PWR_RESUPPLY_01.ogg",
+   "format": "ogg",
+   "duration": 3.407,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_REVIVED_01": {
+   "line": "DEA_REVIVED_01",
+   "speaker": "DEA",
+   "hash": "74f95b22671e0904",
+   "path": "res://gravelight/audio/vo/dea/DEA_REVIVED_01.ogg",
+   "format": "ogg",
+   "duration": 2.78,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_REVIVE_01": {
+   "line": "DEA_REVIVE_01",
+   "speaker": "DEA",
+   "hash": "2a786f56f311bf25",
+   "path": "res://gravelight/audio/vo/dea/DEA_REVIVE_01.ogg",
+   "format": "ogg",
+   "duration": 3.33,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_REVIVE_02": {
+   "line": "DEA_REVIVE_02",
+   "speaker": "DEA",
+   "hash": "c86b0b89ccd6a793",
+   "path": "res://gravelight/audio/vo/dea/DEA_REVIVE_02.ogg",
+   "format": "ogg",
+   "duration": 3.484,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_ROUND_END_01": {
+   "line": "DEA_ROUND_END_01",
+   "speaker": "DEA",
+   "hash": "507b48b801289f37",
+   "path": "res://gravelight/audio/vo/dea/DEA_ROUND_END_01.ogg",
+   "format": "ogg",
+   "duration": 3.022,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_ROUND_END_02": {
+   "line": "DEA_ROUND_END_02",
+   "speaker": "DEA",
+   "hash": "db2e6eccae769cea",
+   "path": "res://gravelight/audio/vo/dea/DEA_ROUND_END_02.ogg",
+   "format": "ogg",
+   "duration": 4.166,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_ROUND_START_01": {
+   "line": "DEA_ROUND_START_01",
+   "speaker": "DEA",
+   "hash": "bd5e4cceeeee8d17",
+   "path": "res://gravelight/audio/vo/dea/DEA_ROUND_START_01.ogg",
+   "format": "ogg",
+   "duration": 3.484,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_ROUND_START_02": {
+   "line": "DEA_ROUND_START_02",
+   "speaker": "DEA",
+   "hash": "ad04ccd189c19833",
+   "path": "res://gravelight/audio/vo/dea/DEA_ROUND_START_02.ogg",
+   "format": "ogg",
+   "duration": 3.902,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_SCREAMER_01": {
+   "line": "DEA_SCREAMER_01",
+   "speaker": "DEA",
+   "hash": "d991120e69c0ca55",
+   "path": "res://gravelight/audio/vo/dea/DEA_SCREAMER_01.ogg",
+   "format": "ogg",
+   "duration": 2.571,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_SPAWN_01": {
+   "line": "DEA_SPAWN_01",
+   "speaker": "DEA",
+   "hash": "d0b8f627c09a9229",
+   "path": "res://gravelight/audio/vo/dea/DEA_SPAWN_01.ogg",
+   "format": "ogg",
+   "duration": 5.914,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_SPAWN_02": {
+   "line": "DEA_SPAWN_02",
+   "speaker": "DEA",
+   "hash": "4149d922ae6e6ad3",
+   "path": "res://gravelight/audio/vo/dea/DEA_SPAWN_02.ogg",
+   "format": "ogg",
+   "duration": 4.298,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_STREAK_01": {
+   "line": "DEA_STREAK_01",
+   "speaker": "DEA",
+   "hash": "2c0291f06153fd97",
+   "path": "res://gravelight/audio/vo/dea/DEA_STREAK_01.ogg",
+   "format": "ogg",
+   "duration": 2.373,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_STREAK_02": {
+   "line": "DEA_STREAK_02",
+   "speaker": "DEA",
+   "hash": "4200f0d4bffff1f7",
+   "path": "res://gravelight/audio/vo/dea/DEA_STREAK_02.ogg",
+   "format": "ogg",
+   "duration": 2.472,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_TEAM_DOWN_01": {
+   "line": "DEA_TEAM_DOWN_01",
+   "speaker": "DEA",
+   "hash": "b7523e2bab3fe5e5",
+   "path": "res://gravelight/audio/vo/dea/DEA_TEAM_DOWN_01.ogg",
+   "format": "ogg",
+   "duration": 4.177,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_TEAM_DOWN_02": {
+   "line": "DEA_TEAM_DOWN_02",
+   "speaker": "DEA",
+   "hash": "230f368bdf1bf3d9",
+   "path": "res://gravelight/audio/vo/dea/DEA_TEAM_DOWN_02.ogg",
+   "format": "ogg",
+   "duration": 3.407,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_TRAP_01": {
+   "line": "DEA_TRAP_01",
+   "speaker": "DEA",
+   "hash": "224cba188cf20fb3",
+   "path": "res://gravelight/audio/vo/dea/DEA_TRAP_01.ogg",
+   "format": "ogg",
+   "duration": 2.846,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DUT_AMMO_LOW_01": {
+   "line": "DUT_AMMO_LOW_01",
+   "speaker": "DUT",
+   "hash": "a2255248320e290c",
+   "path": "res://gravelight/audio/vo/dut/DUT_AMMO_LOW_01.ogg",
+   "format": "ogg",
+   "duration": 1.009,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_AMMO_NONE_01": {
+   "line": "DUT_AMMO_NONE_01",
+   "speaker": "DUT",
+   "hash": "d5a2f06640c2ca8c",
+   "path": "res://gravelight/audio/vo/dut/DUT_AMMO_NONE_01.ogg",
+   "format": "ogg",
+   "duration": 3.659,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_BELL_01": {
+   "line": "DUT_BELL_01",
+   "speaker": "DUT",
+   "hash": "b0438aefb6817553",
+   "path": "res://gravelight/audio/vo/dut/DUT_BELL_01.ogg",
+   "format": "ogg",
+   "duration": 3.269,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_BELL_02": {
+   "line": "DUT_BELL_02",
+   "speaker": "DUT",
+   "hash": "3b6bda5319462ebb",
+   "path": "res://gravelight/audio/vo/dut/DUT_BELL_02.ogg",
+   "format": "ogg",
+   "duration": 3.705,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_BUY_AMMO_01": {
+   "line": "DUT_BUY_AMMO_01",
+   "speaker": "DUT",
+   "hash": "a5c0607ef92a97d8",
+   "path": "res://gravelight/audio/vo/dut/DUT_BUY_AMMO_01.ogg",
+   "format": "ogg",
+   "duration": 4.634,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_BUY_LAUNCHER_01": {
+   "line": "DUT_BUY_LAUNCHER_01",
+   "speaker": "DUT",
+   "hash": "765e7d2e579b05b6",
+   "path": "res://gravelight/audio/vo/dut/DUT_BUY_LAUNCHER_01.ogg",
+   "format": "ogg",
+   "duration": 3.946,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_BUY_LMG_01": {
+   "line": "DUT_BUY_LMG_01",
+   "speaker": "DUT",
+   "hash": "d6a8ef9ff669106e",
+   "path": "res://gravelight/audio/vo/dut/DUT_BUY_LMG_01.ogg",
+   "format": "ogg",
+   "duration": 4.863,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_BUY_MELEE_01": {
+   "line": "DUT_BUY_MELEE_01",
+   "speaker": "DUT",
+   "hash": "0a4dc05ae9b8b2ad",
+   "path": "res://gravelight/audio/vo/dut/DUT_BUY_MELEE_01.ogg",
+   "format": "ogg",
+   "duration": 5.918,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_BUY_PISTOL_01": {
+   "line": "DUT_BUY_PISTOL_01",
+   "speaker": "DUT",
+   "hash": "c039e805c2367fbe",
+   "path": "res://gravelight/audio/vo/dut/DUT_BUY_PISTOL_01.ogg",
+   "format": "ogg",
+   "duration": 4.806,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_BUY_RIFLE_01": {
+   "line": "DUT_BUY_RIFLE_01",
+   "speaker": "DUT",
+   "hash": "f1847cab12a27c0e",
+   "path": "res://gravelight/audio/vo/dut/DUT_BUY_RIFLE_01.ogg",
+   "format": "ogg",
+   "duration": 5.287,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_BUY_RIFLE_02": {
+   "line": "DUT_BUY_RIFLE_02",
+   "speaker": "DUT",
+   "hash": "5ed906877ef5e27e",
+   "path": "res://gravelight/audio/vo/dut/DUT_BUY_RIFLE_02.ogg",
+   "format": "ogg",
+   "duration": 3.59,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_BUY_SHOTGUN_01": {
+   "line": "DUT_BUY_SHOTGUN_01",
+   "speaker": "DUT",
+   "hash": "1c3eec27ffa44980",
+   "path": "res://gravelight/audio/vo/dut/DUT_BUY_SHOTGUN_01.ogg",
+   "format": "ogg",
+   "duration": 3.842,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_BUY_SMG_01": {
+   "line": "DUT_BUY_SMG_01",
+   "speaker": "DUT",
+   "hash": "6168e9e062064a96",
+   "path": "res://gravelight/audio/vo/dut/DUT_BUY_SMG_01.ogg",
+   "format": "ogg",
+   "duration": 4.473,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_BUY_WONDER_01": {
+   "line": "DUT_BUY_WONDER_01",
+   "speaker": "DUT",
+   "hash": "8148aded351624bb",
+   "path": "res://gravelight/audio/vo/dut/DUT_BUY_WONDER_01.ogg",
+   "format": "ogg",
+   "duration": 3.131,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_CRATE_BAD_01": {
+   "line": "DUT_CRATE_BAD_01",
+   "speaker": "DUT",
+   "hash": "f6d3664c5bd691af",
+   "path": "res://gravelight/audio/vo/dut/DUT_CRATE_BAD_01.ogg",
+   "format": "ogg",
+   "duration": 4.771,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_CRATE_BAD_02": {
+   "line": "DUT_CRATE_BAD_02",
+   "speaker": "DUT",
+   "hash": "8466556879407b0f",
+   "path": "res://gravelight/audio/vo/dut/DUT_CRATE_BAD_02.ogg",
+   "format": "ogg",
+   "duration": 1.778,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_CRATE_DRUMMER_01": {
+   "line": "DUT_CRATE_DRUMMER_01",
+   "speaker": "DUT",
+   "hash": "bb8f817a4cd3ed46",
+   "path": "res://gravelight/audio/vo/dut/DUT_CRATE_DRUMMER_01.ogg",
+   "format": "ogg",
+   "duration": 3.923,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_CRATE_DRUMMER_02": {
+   "line": "DUT_CRATE_DRUMMER_02",
+   "speaker": "DUT",
+   "hash": "799efb870314cb48",
+   "path": "res://gravelight/audio/vo/dut/DUT_CRATE_DRUMMER_02.ogg",
+   "format": "ogg",
+   "duration": 3.991,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_CRATE_GOOD_01": {
+   "line": "DUT_CRATE_GOOD_01",
+   "speaker": "DUT",
+   "hash": "5067f13331447cee",
+   "path": "res://gravelight/audio/vo/dut/DUT_CRATE_GOOD_01.ogg",
+   "format": "ogg",
+   "duration": 3.728,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_CRATE_GOOD_02": {
+   "line": "DUT_CRATE_GOOD_02",
+   "speaker": "DUT",
+   "hash": "92b315545f610350",
+   "path": "res://gravelight/audio/vo/dut/DUT_CRATE_GOOD_02.ogg",
+   "format": "ogg",
+   "duration": 4.989,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_CRAWLER_01": {
+   "line": "DUT_CRAWLER_01",
+   "speaker": "DUT",
+   "hash": "093bff055bc8fce7",
+   "path": "res://gravelight/audio/vo/dut/DUT_CRAWLER_01.ogg",
+   "format": "ogg",
+   "duration": 5.551,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_CRUCIBLE_01": {
+   "line": "DUT_CRUCIBLE_01",
+   "speaker": "DUT",
+   "hash": "d07b4723a27a195c",
+   "path": "res://gravelight/audio/vo/dut/DUT_CRUCIBLE_01.ogg",
+   "format": "ogg",
+   "duration": 4.863,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_CRUCIBLE_02": {
+   "line": "DUT_CRUCIBLE_02",
+   "speaker": "DUT",
+   "hash": "55016077e6808726",
+   "path": "res://gravelight/audio/vo/dut/DUT_CRUCIBLE_02.ogg",
+   "format": "ogg",
+   "duration": 4.748,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_DENY_CAP_01": {
+   "line": "DUT_DENY_CAP_01",
+   "speaker": "DUT",
+   "hash": "6462f73132b7573c",
+   "path": "res://gravelight/audio/vo/dut/DUT_DENY_CAP_01.ogg",
+   "format": "ogg",
+   "duration": 3.67,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_DENY_NO_POWER_01": {
+   "line": "DUT_DENY_NO_POWER_01",
+   "speaker": "DUT",
+   "hash": "bab17d90f9dc5927",
+   "path": "res://gravelight/audio/vo/dut/DUT_DENY_NO_POWER_01.ogg",
+   "format": "ogg",
+   "duration": 2.959,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_DENY_NO_SCRIP_01": {
+   "line": "DUT_DENY_NO_SCRIP_01",
+   "speaker": "DUT",
+   "hash": "65ce786360da5b09",
+   "path": "res://gravelight/audio/vo/dut/DUT_DENY_NO_SCRIP_01.ogg",
+   "format": "ogg",
+   "duration": 3.269,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_DOOR_01": {
+   "line": "DUT_DOOR_01",
+   "speaker": "DUT",
+   "hash": "e3bdbdd8da72d833",
+   "path": "res://gravelight/audio/vo/dut/DUT_DOOR_01.ogg",
+   "format": "ogg",
+   "duration": 3.842,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_DOWN_01": {
+   "line": "DUT_DOWN_01",
+   "speaker": "DUT",
+   "hash": "7b8b388f589d8eff",
+   "path": "res://gravelight/audio/vo/dut/DUT_DOWN_01.ogg",
+   "format": "ogg",
+   "duration": 4.84,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_DOWN_02": {
+   "line": "DUT_DOWN_02",
+   "speaker": "DUT",
+   "hash": "cf1f7bee50304df4",
+   "path": "res://gravelight/audio/vo/dut/DUT_DOWN_02.ogg",
+   "format": "ogg",
+   "duration": 3.59,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_EE_01": {
+   "line": "DUT_EE_01",
+   "speaker": "DUT",
+   "hash": "0c3834ce5cb0047d",
+   "path": "res://gravelight/audio/vo/dut/DUT_EE_01.ogg",
+   "format": "ogg",
+   "duration": 6.297,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_EE_02": {
+   "line": "DUT_EE_02",
+   "speaker": "DUT",
+   "hash": "6c92bdf23b5ddacb",
+   "path": "res://gravelight/audio/vo/dut/DUT_EE_02.ogg",
+   "format": "ogg",
+   "duration": 3.452,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_EE_03": {
+   "line": "DUT_EE_03",
+   "speaker": "DUT",
+   "hash": "b02075004c98da3d",
+   "path": "res://gravelight/audio/vo/dut/DUT_EE_03.ogg",
+   "format": "ogg",
+   "duration": 3.957,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_EXHAUST_01": {
+   "line": "DUT_EXHAUST_01",
+   "speaker": "DUT",
+   "hash": "7a412769ce0a4018",
+   "path": "res://gravelight/audio/vo/dut/DUT_EXHAUST_01.ogg",
+   "format": "ogg",
+   "duration": 4.072,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_EXHAUST_02": {
+   "line": "DUT_EXHAUST_02",
+   "speaker": "DUT",
+   "hash": "3f35423c3941fc50",
+   "path": "res://gravelight/audio/vo/dut/DUT_EXHAUST_02.ogg",
+   "format": "ogg",
+   "duration": 3.613,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_FOREMAN_01": {
+   "line": "DUT_FOREMAN_01",
+   "speaker": "DUT",
+   "hash": "825ce49f9da0e79c",
+   "path": "res://gravelight/audio/vo/dut/DUT_FOREMAN_01.ogg",
+   "format": "ogg",
+   "duration": 4.84,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_FOREMAN_02": {
+   "line": "DUT_FOREMAN_02",
+   "speaker": "DUT",
+   "hash": "a5eb03c635143f82",
+   "path": "res://gravelight/audio/vo/dut/DUT_FOREMAN_02.ogg",
+   "format": "ogg",
+   "duration": 6.4,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_GLASSHIDE_01": {
+   "line": "DUT_GLASSHIDE_01",
+   "speaker": "DUT",
+   "hash": "08b3a1e74d6b8da0",
+   "path": "res://gravelight/audio/vo/dut/DUT_GLASSHIDE_01.ogg",
+   "format": "ogg",
+   "duration": 3.418,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_HEADSHOT_01": {
+   "line": "DUT_HEADSHOT_01",
+   "speaker": "DUT",
+   "hash": "80ce93f9f8242512",
+   "path": "res://gravelight/audio/vo/dut/DUT_HEADSHOT_01.ogg",
+   "format": "ogg",
+   "duration": 1.055,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_HEADSHOT_02": {
+   "line": "DUT_HEADSHOT_02",
+   "speaker": "DUT",
+   "hash": "6324ed50dbcd9c8d",
+   "path": "res://gravelight/audio/vo/dut/DUT_HEADSHOT_02.ogg",
+   "format": "ogg",
+   "duration": 1.789,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_INTEL_01": {
+   "line": "DUT_INTEL_01",
+   "speaker": "DUT",
+   "hash": "a46f3ce3906190c8",
+   "path": "res://gravelight/audio/vo/dut/DUT_INTEL_01.ogg",
+   "format": "ogg",
+   "duration": 5.356,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PERK_BLASTPROOF_01": {
+   "line": "DUT_PERK_BLASTPROOF_01",
+   "speaker": "DUT",
+   "hash": "f71ef8791fb92342",
+   "path": "res://gravelight/audio/vo/dut/DUT_PERK_BLASTPROOF_01.ogg",
+   "format": "ogg",
+   "duration": 3.946,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PERK_FERNET_01": {
+   "line": "DUT_PERK_FERNET_01",
+   "speaker": "DUT",
+   "hash": "a8f504c635ab4a6f",
+   "path": "res://gravelight/audio/vo/dut/DUT_PERK_FERNET_01.ogg",
+   "format": "ogg",
+   "duration": 5.035,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PERK_FERNET_02": {
+   "line": "DUT_PERK_FERNET_02",
+   "speaker": "DUT",
+   "hash": "cae3aa5d389bc40a",
+   "path": "res://gravelight/audio/vo/dut/DUT_PERK_FERNET_02.ogg",
+   "format": "ogg",
+   "duration": 7.65,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PERK_HAWKEYE_01": {
+   "line": "DUT_PERK_HAWKEYE_01",
+   "speaker": "DUT",
+   "hash": "21e56258ca2e199c",
+   "path": "res://gravelight/audio/vo/dut/DUT_PERK_HAWKEYE_01.ogg",
+   "format": "ogg",
+   "duration": 5.482,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PERK_IRONHIDE_01": {
+   "line": "DUT_PERK_IRONHIDE_01",
+   "speaker": "DUT",
+   "hash": "889683e9227107e5",
+   "path": "res://gravelight/audio/vo/dut/DUT_PERK_IRONHIDE_01.ogg",
+   "format": "ogg",
+   "duration": 4.462,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PERK_MARATHON_01": {
+   "line": "DUT_PERK_MARATHON_01",
+   "speaker": "DUT",
+   "hash": "b5e61c8e910dd812",
+   "path": "res://gravelight/audio/vo/dut/DUT_PERK_MARATHON_01.ogg",
+   "format": "ogg",
+   "duration": 3.143,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PERK_OVERCLOCK_01": {
+   "line": "DUT_PERK_OVERCLOCK_01",
+   "speaker": "DUT",
+   "hash": "1a7f30b7be186747",
+   "path": "res://gravelight/audio/vo/dut/DUT_PERK_OVERCLOCK_01.ogg",
+   "format": "ogg",
+   "duration": 4.427,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PERK_OVERCLOCK_02": {
+   "line": "DUT_PERK_OVERCLOCK_02",
+   "speaker": "DUT",
+   "hash": "6775ff05c6c67c3b",
+   "path": "res://gravelight/audio/vo/dut/DUT_PERK_OVERCLOCK_02.ogg",
+   "format": "ogg",
+   "duration": 4.003,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PERK_PACKMULE_01": {
+   "line": "DUT_PERK_PACKMULE_01",
+   "speaker": "DUT",
+   "hash": "fbe4920232417a34",
+   "path": "res://gravelight/audio/vo/dut/DUT_PERK_PACKMULE_01.ogg",
+   "format": "ogg",
+   "duration": 5.356,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PERK_SECONDWIND_01": {
+   "line": "DUT_PERK_SECONDWIND_01",
+   "speaker": "DUT",
+   "hash": "4a7adb3780c1f7b3",
+   "path": "res://gravelight/audio/vo/dut/DUT_PERK_SECONDWIND_01.ogg",
+   "format": "ogg",
+   "duration": 5.471,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PERK_TRIGGER_01": {
+   "line": "DUT_PERK_TRIGGER_01",
+   "speaker": "DUT",
+   "hash": "ce799578633ad254",
+   "path": "res://gravelight/audio/vo/dut/DUT_PERK_TRIGGER_01.ogg",
+   "format": "ogg",
+   "duration": 5.758,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PERK_TWINBARREL_01": {
+   "line": "DUT_PERK_TWINBARREL_01",
+   "speaker": "DUT",
+   "hash": "488d4920da45d031",
+   "path": "res://gravelight/audio/vo/dut/DUT_PERK_TWINBARREL_01.ogg",
+   "format": "ogg",
+   "duration": 5.379,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_POL_01": {
+   "line": "DUT_POL_01",
+   "speaker": "DUT",
+   "hash": "0ec0dc2f94948902",
+   "path": "res://gravelight/audio/vo/dut/DUT_POL_01.ogg",
+   "format": "ogg",
+   "duration": 1.135,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_POL_02": {
+   "line": "DUT_POL_02",
+   "speaker": "DUT",
+   "hash": "9a3c70a3e0aa7e93",
+   "path": "res://gravelight/audio/vo/dut/DUT_POL_02.ogg",
+   "format": "ogg",
+   "duration": 1.812,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_POL_03": {
+   "line": "DUT_POL_03",
+   "speaker": "DUT",
+   "hash": "0dedd0198fad10d9",
+   "path": "res://gravelight/audio/vo/dut/DUT_POL_03.ogg",
+   "format": "ogg",
+   "duration": 0.883,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_POL_04": {
+   "line": "DUT_POL_04",
+   "speaker": "DUT",
+   "hash": "4e5542b05ab4bdd7",
+   "path": "res://gravelight/audio/vo/dut/DUT_POL_04.ogg",
+   "format": "ogg",
+   "duration": 1.055,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_POWER_01": {
+   "line": "DUT_POWER_01",
+   "speaker": "DUT",
+   "hash": "5fb4e7d2b6448095",
+   "path": "res://gravelight/audio/vo/dut/DUT_POWER_01.ogg",
+   "format": "ogg",
+   "duration": 3.326,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PWR_BLACKOUT_01": {
+   "line": "DUT_PWR_BLACKOUT_01",
+   "speaker": "DUT",
+   "hash": "8b224d379d116edf",
+   "path": "res://gravelight/audio/vo/dut/DUT_PWR_BLACKOUT_01.ogg",
+   "format": "ogg",
+   "duration": 3.384,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PWR_CLEARANCE_01": {
+   "line": "DUT_PWR_CLEARANCE_01",
+   "speaker": "DUT",
+   "hash": "b76779a761e7972f",
+   "path": "res://gravelight/audio/vo/dut/DUT_PWR_CLEARANCE_01.ogg",
+   "format": "ogg",
+   "duration": 4.244,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PWR_DEATHSDOOR_01": {
+   "line": "DUT_PWR_DEATHSDOOR_01",
+   "speaker": "DUT",
+   "hash": "c58e8f0a70466e44",
+   "path": "res://gravelight/audio/vo/dut/DUT_PWR_DEATHSDOOR_01.ogg",
+   "format": "ogg",
+   "duration": 4.175,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PWR_DOUBLESCRIP_01": {
+   "line": "DUT_PWR_DOUBLESCRIP_01",
+   "speaker": "DUT",
+   "hash": "c2a16051b857f00e",
+   "path": "res://gravelight/audio/vo/dut/DUT_PWR_DOUBLESCRIP_01.ogg",
+   "format": "ogg",
+   "duration": 3.487,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PWR_FORTIFY_01": {
+   "line": "DUT_PWR_FORTIFY_01",
+   "speaker": "DUT",
+   "hash": "1a1da142cddb4a6e",
+   "path": "res://gravelight/audio/vo/dut/DUT_PWR_FORTIFY_01.ogg",
+   "format": "ogg",
+   "duration": 3.051,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_PWR_RESUPPLY_01": {
+   "line": "DUT_PWR_RESUPPLY_01",
+   "speaker": "DUT",
+   "hash": "34cb9c3d31addfa1",
+   "path": "res://gravelight/audio/vo/dut/DUT_PWR_RESUPPLY_01.ogg",
+   "format": "ogg",
+   "duration": 3.108,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_REVIVED_01": {
+   "line": "DUT_REVIVED_01",
+   "speaker": "DUT",
+   "hash": "d9d00af00167fbd3",
+   "path": "res://gravelight/audio/vo/dut/DUT_REVIVED_01.ogg",
+   "format": "ogg",
+   "duration": 4.301,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_REVIVE_01": {
+   "line": "DUT_REVIVE_01",
+   "speaker": "DUT",
+   "hash": "1fc6f154ab45b692",
+   "path": "res://gravelight/audio/vo/dut/DUT_REVIVE_01.ogg",
+   "format": "ogg",
+   "duration": 3.12,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_REVIVE_02": {
+   "line": "DUT_REVIVE_02",
+   "speaker": "DUT",
+   "hash": "7279835d7b5317a1",
+   "path": "res://gravelight/audio/vo/dut/DUT_REVIVE_02.ogg",
+   "format": "ogg",
+   "duration": 3.361,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_ROUND_END_01": {
+   "line": "DUT_ROUND_END_01",
+   "speaker": "DUT",
+   "hash": "33b80e02bb065424",
+   "path": "res://gravelight/audio/vo/dut/DUT_ROUND_END_01.ogg",
+   "format": "ogg",
+   "duration": 2.718,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_ROUND_END_02": {
+   "line": "DUT_ROUND_END_02",
+   "speaker": "DUT",
+   "hash": "aac9933fb9e03221",
+   "path": "res://gravelight/audio/vo/dut/DUT_ROUND_END_02.ogg",
+   "format": "ogg",
+   "duration": 4.599,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_ROUND_START_01": {
+   "line": "DUT_ROUND_START_01",
+   "speaker": "DUT",
+   "hash": "f32294d17640a693",
+   "path": "res://gravelight/audio/vo/dut/DUT_ROUND_START_01.ogg",
+   "format": "ogg",
+   "duration": 4.163,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_ROUND_START_02": {
+   "line": "DUT_ROUND_START_02",
+   "speaker": "DUT",
+   "hash": "13e583dd7903568d",
+   "path": "res://gravelight/audio/vo/dut/DUT_ROUND_START_02.ogg",
+   "format": "ogg",
+   "duration": 3.533,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_SCREAMER_01": {
+   "line": "DUT_SCREAMER_01",
+   "speaker": "DUT",
+   "hash": "c4193b8611656023",
+   "path": "res://gravelight/audio/vo/dut/DUT_SCREAMER_01.ogg",
+   "format": "ogg",
+   "duration": 2.833,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_SPAWN_01": {
+   "line": "DUT_SPAWN_01",
+   "speaker": "DUT",
+   "hash": "5ec5024f55100aab",
+   "path": "res://gravelight/audio/vo/dut/DUT_SPAWN_01.ogg",
+   "format": "ogg",
+   "duration": 6.125,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_SPAWN_02": {
+   "line": "DUT_SPAWN_02",
+   "speaker": "DUT",
+   "hash": "36738bb4eec5cd26",
+   "path": "res://gravelight/audio/vo/dut/DUT_SPAWN_02.ogg",
+   "format": "ogg",
+   "duration": 6.171,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_STREAK_01": {
+   "line": "DUT_STREAK_01",
+   "speaker": "DUT",
+   "hash": "efb0f69783a833c1",
+   "path": "res://gravelight/audio/vo/dut/DUT_STREAK_01.ogg",
+   "format": "ogg",
+   "duration": 4.404,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_STREAK_02": {
+   "line": "DUT_STREAK_02",
+   "speaker": "DUT",
+   "hash": "9d8a4879aa048386",
+   "path": "res://gravelight/audio/vo/dut/DUT_STREAK_02.ogg",
+   "format": "ogg",
+   "duration": 3.567,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_TEAM_DOWN_01": {
+   "line": "DUT_TEAM_DOWN_01",
+   "speaker": "DUT",
+   "hash": "a3b6395c145dd65c",
+   "path": "res://gravelight/audio/vo/dut/DUT_TEAM_DOWN_01.ogg",
+   "format": "ogg",
+   "duration": 3.579,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_TEAM_DOWN_02": {
+   "line": "DUT_TEAM_DOWN_02",
+   "speaker": "DUT",
+   "hash": "3c04f8facf1d0c3c",
+   "path": "res://gravelight/audio/vo/dut/DUT_TEAM_DOWN_02.ogg",
+   "format": "ogg",
+   "duration": 4.244,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_TRAP_01": {
+   "line": "DUT_TRAP_01",
+   "speaker": "DUT",
+   "hash": "8a6e9fc27d950bd1",
+   "path": "res://gravelight/audio/vo/dut/DUT_TRAP_01.ogg",
+   "format": "ogg",
+   "duration": 2.191,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "FAS_EXFIL_M0_01": {
+   "line": "FAS_EXFIL_M0_01",
+   "speaker": "FAS",
+   "hash": "9d2dd429e5b59283",
+   "path": "res://gravelight/audio/vo/fas/FAS_EXFIL_M0_01.ogg",
+   "format": "ogg",
+   "duration": 9.325,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_HINT_S1_01": {
+   "line": "FAS_HINT_S1_01",
+   "speaker": "FAS",
+   "hash": "53461b336f0680a6",
+   "path": "res://gravelight/audio/vo/fas/FAS_HINT_S1_01.ogg",
+   "format": "ogg",
+   "duration": 6.18,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_HINT_S1_02": {
+   "line": "FAS_HINT_S1_02",
+   "speaker": "FAS",
+   "hash": "24408c2be290a913",
+   "path": "res://gravelight/audio/vo/fas/FAS_HINT_S1_02.ogg",
+   "format": "ogg",
+   "duration": 3.937,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_HINT_S2_01": {
+   "line": "FAS_HINT_S2_01",
+   "speaker": "FAS",
+   "hash": "17b1a0f7da7ab962",
+   "path": "res://gravelight/audio/vo/fas/FAS_HINT_S2_01.ogg",
+   "format": "ogg",
+   "duration": 4.586,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_HINT_S3_01": {
+   "line": "FAS_HINT_S3_01",
+   "speaker": "FAS",
+   "hash": "cc17c2d8f3476ece",
+   "path": "res://gravelight/audio/vo/fas/FAS_HINT_S3_01.ogg",
+   "format": "ogg",
+   "duration": 7.588,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_HINT_S4_01": {
+   "line": "FAS_HINT_S4_01",
+   "speaker": "FAS",
+   "hash": "8934b704e46e802d",
+   "path": "res://gravelight/audio/vo/fas/FAS_HINT_S4_01.ogg",
+   "format": "ogg",
+   "duration": 5.256,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_HINT_S4_02": {
+   "line": "FAS_HINT_S4_02",
+   "speaker": "FAS",
+   "hash": "cffed73f9179999d",
+   "path": "res://gravelight/audio/vo/fas/FAS_HINT_S4_02.ogg",
+   "format": "ogg",
+   "duration": 4.509,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_HINT_S6_01": {
+   "line": "FAS_HINT_S6_01",
+   "speaker": "FAS",
+   "hash": "1a9db0f3541f881b",
+   "path": "res://gravelight/audio/vo/fas/FAS_HINT_S6_01.ogg",
+   "format": "ogg",
+   "duration": 8.28,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_HINT_S6_02": {
+   "line": "FAS_HINT_S6_02",
+   "speaker": "FAS",
+   "hash": "fb2c5afcc54c55dc",
+   "path": "res://gravelight/audio/vo/fas/FAS_HINT_S6_02.ogg",
+   "format": "ogg",
+   "duration": 3.805,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_HINT_S7_01": {
+   "line": "FAS_HINT_S7_01",
+   "speaker": "FAS",
+   "hash": "c785b1d603e2753b",
+   "path": "res://gravelight/audio/vo/fas/FAS_HINT_S7_01.ogg",
+   "format": "ogg",
+   "duration": 5.124,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_HINT_S8_01": {
+   "line": "FAS_HINT_S8_01",
+   "speaker": "FAS",
+   "hash": "1e9356f4878a96f3",
+   "path": "res://gravelight/audio/vo/fas/FAS_HINT_S8_01.ogg",
+   "format": "ogg",
+   "duration": 5.157,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M0_FREQ1_01": {
+   "line": "FAS_M0_FREQ1_01",
+   "speaker": "FAS",
+   "hash": "bb8951931d61572b",
+   "path": "res://gravelight/audio/vo/fas/FAS_M0_FREQ1_01.ogg",
+   "format": "ogg",
+   "duration": 12.624,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M0_FREQ2_01": {
+   "line": "FAS_M0_FREQ2_01",
+   "speaker": "FAS",
+   "hash": "de9e538eaa5a177b",
+   "path": "res://gravelight/audio/vo/fas/FAS_M0_FREQ2_01.ogg",
+   "format": "ogg",
+   "duration": 14.999,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M0_FREQ3_01": {
+   "line": "FAS_M0_FREQ3_01",
+   "speaker": "FAS",
+   "hash": "47ded3b00ab38739",
+   "path": "res://gravelight/audio/vo/fas/FAS_M0_FREQ3_01.ogg",
+   "format": "ogg",
+   "duration": 17.331,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M0_FREQ_DONE_PEG": {
+   "line": "FAS_M0_FREQ_DONE_PEG",
+   "speaker": "FAS",
+   "hash": "768cf3b7c2387b23",
+   "path": "res://gravelight/audio/vo/fas/FAS_M0_FREQ_DONE_PEG.ogg",
+   "format": "ogg",
+   "duration": 5.441,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M0_IDLE_01": {
+   "line": "FAS_M0_IDLE_01",
+   "speaker": "FAS",
+   "hash": "83bfbd6e56c59c54",
+   "path": "res://gravelight/audio/vo/fas/FAS_M0_IDLE_01.ogg",
+   "format": "ogg",
+   "duration": 2.716,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M0_R10_01": {
+   "line": "FAS_M0_R10_01",
+   "speaker": "FAS",
+   "hash": "69a1d65d02715b57",
+   "path": "res://gravelight/audio/vo/fas/FAS_M0_R10_01.ogg",
+   "format": "ogg",
+   "duration": 8.918,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M0_R12_01": {
+   "line": "FAS_M0_R12_01",
+   "speaker": "FAS",
+   "hash": "b14220bf71e14760",
+   "path": "res://gravelight/audio/vo/fas/FAS_M0_R12_01.ogg",
+   "format": "ogg",
+   "duration": 6.862,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M0_R15_01": {
+   "line": "FAS_M0_R15_01",
+   "speaker": "FAS",
+   "hash": "c4f3db53563ba207",
+   "path": "res://gravelight/audio/vo/fas/FAS_M0_R15_01.ogg",
+   "format": "ogg",
+   "duration": 6.807,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M0_R1_01": {
+   "line": "FAS_M0_R1_01",
+   "speaker": "FAS",
+   "hash": "f23136ac05fe30cd",
+   "path": "res://gravelight/audio/vo/fas/FAS_M0_R1_01.ogg",
+   "format": "ogg",
+   "duration": 4.058,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M0_R20_01": {
+   "line": "FAS_M0_R20_01",
+   "speaker": "FAS",
+   "hash": "9d92131064bc9997",
+   "path": "res://gravelight/audio/vo/fas/FAS_M0_R20_01.ogg",
+   "format": "ogg",
+   "duration": 5.562,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M0_R3_01": {
+   "line": "FAS_M0_R3_01",
+   "speaker": "FAS",
+   "hash": "cc96ff80003f3469",
+   "path": "res://gravelight/audio/vo/fas/FAS_M0_R3_01.ogg",
+   "format": "ogg",
+   "duration": 7.379,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M0_R4_01": {
+   "line": "FAS_M0_R4_01",
+   "speaker": "FAS",
+   "hash": "e24907b248f5fe8c",
+   "path": "res://gravelight/audio/vo/fas/FAS_M0_R4_01.ogg",
+   "format": "ogg",
+   "duration": 8.467,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M0_R5_01": {
+   "line": "FAS_M0_R5_01",
+   "speaker": "FAS",
+   "hash": "8ef8618ca7cfe186",
+   "path": "res://gravelight/audio/vo/fas/FAS_M0_R5_01.ogg",
+   "format": "ogg",
+   "duration": 7.632,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M0_R6_01": {
+   "line": "FAS_M0_R6_01",
+   "speaker": "FAS",
+   "hash": "56442a6f3f42ecab",
+   "path": "res://gravelight/audio/vo/fas/FAS_M0_R6_01.ogg",
+   "format": "ogg",
+   "duration": 5.058,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M0_R7_01": {
+   "line": "FAS_M0_R7_01",
+   "speaker": "FAS",
+   "hash": "7a38b511f2cbb16f",
+   "path": "res://gravelight/audio/vo/fas/FAS_M0_R7_01.ogg",
+   "format": "ogg",
+   "duration": 9.798,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M0_R8_01": {
+   "line": "FAS_M0_R8_01",
+   "speaker": "FAS",
+   "hash": "965731911e08e5f7",
+   "path": "res://gravelight/audio/vo/fas/FAS_M0_R8_01.ogg",
+   "format": "ogg",
+   "duration": 6.279,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M1_CODE1_01": {
+   "line": "FAS_M1_CODE1_01",
+   "speaker": "FAS",
+   "hash": "efd0930a3ba1bbc4",
+   "path": "res://gravelight/audio/vo/fas/FAS_M1_CODE1_01.ogg",
+   "format": "ogg",
+   "duration": 12.195,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M1_CODE2_01": {
+   "line": "FAS_M1_CODE2_01",
+   "speaker": "FAS",
+   "hash": "4cc12bb5728d8adc",
+   "path": "res://gravelight/audio/vo/fas/FAS_M1_CODE2_01.ogg",
+   "format": "ogg",
+   "duration": 12.591,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M1_CODE3_01": {
+   "line": "FAS_M1_CODE3_01",
+   "speaker": "FAS",
+   "hash": "ab4d8d4f6b7a8e88",
+   "path": "res://gravelight/audio/vo/fas/FAS_M1_CODE3_01.ogg",
+   "format": "ogg",
+   "duration": 14.548,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M1_ENDING_01": {
+   "line": "FAS_M1_ENDING_01",
+   "speaker": "FAS",
+   "hash": "01732dd5ea4c9f3f",
+   "path": "res://gravelight/audio/vo/fas/FAS_M1_ENDING_01.ogg",
+   "format": "ogg",
+   "duration": 16.825,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M1_POWER_ON_01": {
+   "line": "FAS_M1_POWER_ON_01",
+   "speaker": "FAS",
+   "hash": "db9f97062051bd01",
+   "path": "res://gravelight/audio/vo/fas/FAS_M1_POWER_ON_01.ogg",
+   "format": "ogg",
+   "duration": 6.807,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M1_S3_DONE_01": {
+   "line": "FAS_M1_S3_DONE_01",
+   "speaker": "FAS",
+   "hash": "1856e38b63d2e544",
+   "path": "res://gravelight/audio/vo/fas/FAS_M1_S3_DONE_01.ogg",
+   "format": "ogg",
+   "duration": 11.799,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M1_S5_01": {
+   "line": "FAS_M1_S5_01",
+   "speaker": "FAS",
+   "hash": "fc558042bc8a3943",
+   "path": "res://gravelight/audio/vo/fas/FAS_M1_S5_01.ogg",
+   "format": "ogg",
+   "duration": 10.755,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M1_S6_DONE_01": {
+   "line": "FAS_M1_S6_DONE_01",
+   "speaker": "FAS",
+   "hash": "c635f8bb65a71104",
+   "path": "res://gravelight/audio/vo/fas/FAS_M1_S6_DONE_01.ogg",
+   "format": "ogg",
+   "duration": 6.279,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M1_S7_DONE_01": {
+   "line": "FAS_M1_S7_DONE_01",
+   "speaker": "FAS",
+   "hash": "6ed5b8fcbafab2ea",
+   "path": "res://gravelight/audio/vo/fas/FAS_M1_S7_DONE_01.ogg",
+   "format": "ogg",
+   "duration": 9.985,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M1_S9_START_01": {
+   "line": "FAS_M1_S9_START_01",
+   "speaker": "FAS",
+   "hash": "3d348c8109b376e2",
+   "path": "res://gravelight/audio/vo/fas/FAS_M1_S9_START_01.ogg",
+   "format": "ogg",
+   "duration": 7.61,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M1_SWITCH_01": {
+   "line": "FAS_M1_SWITCH_01",
+   "speaker": "FAS",
+   "hash": "4ec0026c8e49ebd9",
+   "path": "res://gravelight/audio/vo/fas/FAS_M1_SWITCH_01.ogg",
+   "format": "ogg",
+   "duration": 6.642,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M1_SWITCH_02": {
+   "line": "FAS_M1_SWITCH_02",
+   "speaker": "FAS",
+   "hash": "f59bfb7ce81c5887",
+   "path": "res://gravelight/audio/vo/fas/FAS_M1_SWITCH_02.ogg",
+   "format": "ogg",
+   "duration": 16.66,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M1_SWITCH_03": {
+   "line": "FAS_M1_SWITCH_03",
+   "speaker": "FAS",
+   "hash": "f44bdbfd70f92614",
+   "path": "res://gravelight/audio/vo/fas/FAS_M1_SWITCH_03.ogg",
+   "format": "ogg",
+   "duration": 11.227,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M1_SWITCH_04": {
+   "line": "FAS_M1_SWITCH_04",
+   "speaker": "FAS",
+   "hash": "baa55f4697bd039a",
+   "path": "res://gravelight/audio/vo/fas/FAS_M1_SWITCH_04.ogg",
+   "format": "ogg",
+   "duration": 9.677,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_M1_VAULT_01": {
+   "line": "FAS_M1_VAULT_01",
+   "speaker": "FAS",
+   "hash": "f85fc380adbaa6a0",
+   "path": "res://gravelight/audio/vo/fas/FAS_M1_VAULT_01.ogg",
+   "format": "ogg",
+   "duration": 7.852,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_SAMPLE_01": {
+   "line": "FAS_SAMPLE_01",
+   "speaker": "FAS",
+   "hash": "48b91e1a85125db8",
+   "path": "res://gravelight/audio/vo/fas/FAS_SAMPLE_01.ogg",
+   "format": "ogg",
+   "duration": 5.971,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_SAMPLE_02": {
+   "line": "FAS_SAMPLE_02",
+   "speaker": "FAS",
+   "hash": "b0a2c0a55c92265f",
+   "path": "res://gravelight/audio/vo/fas/FAS_SAMPLE_02.ogg",
+   "format": "ogg",
+   "duration": 4.256,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_SAMPLE_03": {
+   "line": "FAS_SAMPLE_03",
+   "speaker": "FAS",
+   "hash": "6131da328390f00c",
+   "path": "res://gravelight/audio/vo/fas/FAS_SAMPLE_03.ogg",
+   "format": "ogg",
+   "duration": 10.095,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_SAMPLE_04": {
+   "line": "FAS_SAMPLE_04",
+   "speaker": "FAS",
+   "hash": "81fc21c6356615d2",
+   "path": "res://gravelight/audio/vo/fas/FAS_SAMPLE_04.ogg",
+   "format": "ogg",
+   "duration": 7.291,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "FAS_SAMPLE_05": {
+   "line": "FAS_SAMPLE_05",
+   "speaker": "FAS",
+   "hash": "344d2ebf9d1c41e0",
+   "path": "res://gravelight/audio/vo/fas/FAS_SAMPLE_05.ogg",
+   "format": "ogg",
+   "duration": 5.619,
+   "voice": "David",
+   "chain": "radio"
+  },
+  "LSL_REC_CYL1_01": {
+   "line": "LSL_REC_CYL1_01",
+   "speaker": "LSL",
+   "hash": "6d6e6f4cde5f4b51",
+   "path": "res://gravelight/audio/vo/lsl/LSL_REC_CYL1_01.ogg",
+   "format": "ogg",
+   "duration": 7.305,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "LSL_REC_CYL3_01": {
+   "line": "LSL_REC_CYL3_01",
+   "speaker": "LSL",
+   "hash": "d5916df8f19d39c6",
+   "path": "res://gravelight/audio/vo/lsl/LSL_REC_CYL3_01.ogg",
+   "format": "ogg",
+   "duration": 4.945,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "LSL_REC_HIDE_01": {
+   "line": "LSL_REC_HIDE_01",
+   "speaker": "LSL",
+   "hash": "c7a8bc9ab1bdc2c2",
+   "path": "res://gravelight/audio/vo/lsl/LSL_REC_HIDE_01.ogg",
+   "format": "ogg",
+   "duration": 1.937,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "LSL_REC_NURSERY_01": {
+   "line": "LSL_REC_NURSERY_01",
+   "speaker": "LSL",
+   "hash": "0fa6b9076231057c",
+   "path": "res://gravelight/audio/vo/lsl/LSL_REC_NURSERY_01.ogg",
+   "format": "ogg",
+   "duration": 4.828,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "LSL_SAMPLE_01": {
+   "line": "LSL_SAMPLE_01",
+   "speaker": "LSL",
+   "hash": "40a0f57bd24dc5d0",
+   "path": "res://gravelight/audio/vo/lsl/LSL_SAMPLE_01.ogg",
+   "format": "ogg",
+   "duration": 7.698,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "LSL_SAMPLE_02": {
+   "line": "LSL_SAMPLE_02",
+   "speaker": "LSL",
+   "hash": "e3cf0917731482b5",
+   "path": "res://gravelight/audio/vo/lsl/LSL_SAMPLE_02.ogg",
+   "format": "ogg",
+   "duration": 5.792,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "LSL_SAMPLE_03": {
+   "line": "LSL_SAMPLE_03",
+   "speaker": "LSL",
+   "hash": "5fc02ccc1d7a4de0",
+   "path": "res://gravelight/audio/vo/lsl/LSL_SAMPLE_03.ogg",
+   "format": "ogg",
+   "duration": 6.518,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "LSL_SAMPLE_04": {
+   "line": "LSL_SAMPLE_04",
+   "speaker": "LSL",
+   "hash": "8ce24faca0e69ac3",
+   "path": "res://gravelight/audio/vo/lsl/LSL_SAMPLE_04.ogg",
+   "format": "ogg",
+   "duration": 5.163,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "LSL_SAMPLE_05": {
+   "line": "LSL_SAMPLE_05",
+   "speaker": "LSL",
+   "hash": "846611e647d61a36",
+   "path": "res://gravelight/audio/vo/lsl/LSL_SAMPLE_05.ogg",
+   "format": "ogg",
+   "duration": 3.843,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "OPR_BELL_WRONG_01": {
+   "line": "OPR_BELL_WRONG_01",
+   "speaker": "OPR",
+   "hash": "d3e99a72b86f3a67",
+   "path": "res://gravelight/audio/vo/opr/OPR_BELL_WRONG_01.ogg",
+   "format": "ogg",
+   "duration": 5.15,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_BELL_WRONG_02": {
+   "line": "OPR_BELL_WRONG_02",
+   "speaker": "OPR",
+   "hash": "9cc3dccc969ce7fc",
+   "path": "res://gravelight/audio/vo/opr/OPR_BELL_WRONG_02.ogg",
+   "format": "ogg",
+   "duration": 4.619,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_BELL_WRONG_03": {
+   "line": "OPR_BELL_WRONG_03",
+   "speaker": "OPR",
+   "hash": "bdbf99670e81d146",
+   "path": "res://gravelight/audio/vo/opr/OPR_BELL_WRONG_03.ogg",
+   "format": "ogg",
+   "duration": 3.638,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_BELL_WRONG_04": {
+   "line": "OPR_BELL_WRONG_04",
+   "speaker": "OPR",
+   "hash": "e8da322dab97aa56",
+   "path": "res://gravelight/audio/vo/opr/OPR_BELL_WRONG_04.ogg",
+   "format": "ogg",
+   "duration": 4.162,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_BELL_WRONG_05": {
+   "line": "OPR_BELL_WRONG_05",
+   "speaker": "OPR",
+   "hash": "89cd0f1a22f7b607",
+   "path": "res://gravelight/audio/vo/opr/OPR_BELL_WRONG_05.ogg",
+   "format": "ogg",
+   "duration": 5.316,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_BELL_WRONG_06": {
+   "line": "OPR_BELL_WRONG_06",
+   "speaker": "OPR",
+   "hash": "7c4ca34595f507b4",
+   "path": "res://gravelight/audio/vo/opr/OPR_BELL_WRONG_06.ogg",
+   "format": "ogg",
+   "duration": 3.057,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_BOSS_FOREMAN_01": {
+   "line": "OPR_BOSS_FOREMAN_01",
+   "speaker": "OPR",
+   "hash": "8a9a792d7eee99c1",
+   "path": "res://gravelight/audio/vo/opr/OPR_BOSS_FOREMAN_01.ogg",
+   "format": "ogg",
+   "duration": 3.716,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_BOSS_FOREMAN_02": {
+   "line": "OPR_BOSS_FOREMAN_02",
+   "speaker": "OPR",
+   "hash": "bff1a4f34733daf0",
+   "path": "res://gravelight/audio/vo/opr/OPR_BOSS_FOREMAN_02.ogg",
+   "format": "ogg",
+   "duration": 2.736,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_BOSS_FOREMAN_03": {
+   "line": "OPR_BOSS_FOREMAN_03",
+   "speaker": "OPR",
+   "hash": "68eddd668e24527d",
+   "path": "res://gravelight/audio/vo/opr/OPR_BOSS_FOREMAN_03.ogg",
+   "format": "ogg",
+   "duration": 3.437,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_BOSS_FOREMAN_DEAD_01": {
+   "line": "OPR_BOSS_FOREMAN_DEAD_01",
+   "speaker": "OPR",
+   "hash": "cb1f02e278c411a0",
+   "path": "res://gravelight/audio/vo/opr/OPR_BOSS_FOREMAN_DEAD_01.ogg",
+   "format": "ogg",
+   "duration": 3.521,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_BOSS_SCREAMER_01": {
+   "line": "OPR_BOSS_SCREAMER_01",
+   "speaker": "OPR",
+   "hash": "8a989da0cb48aa40",
+   "path": "res://gravelight/audio/vo/opr/OPR_BOSS_SCREAMER_01.ogg",
+   "format": "ogg",
+   "duration": 3.907,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_BOSS_SCREAMER_02": {
+   "line": "OPR_BOSS_SCREAMER_02",
+   "speaker": "OPR",
+   "hash": "3f4b38c73aa68809",
+   "path": "res://gravelight/audio/vo/opr/OPR_BOSS_SCREAMER_02.ogg",
+   "format": "ogg",
+   "duration": 2.544,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRATE_MOVE_01": {
+   "line": "OPR_CRATE_MOVE_01",
+   "speaker": "OPR",
+   "hash": "f01d4dcb09827f70",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRATE_MOVE_01.ogg",
+   "format": "ogg",
+   "duration": 4.924,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRATE_MOVE_02": {
+   "line": "OPR_CRATE_MOVE_02",
+   "speaker": "OPR",
+   "hash": "916d2280bc9fabd5",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRATE_MOVE_02.ogg",
+   "format": "ogg",
+   "duration": 4.067,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRATE_MOVE_03": {
+   "line": "OPR_CRATE_MOVE_03",
+   "speaker": "OPR",
+   "hash": "dd61535e9370b566",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRATE_MOVE_03.ogg",
+   "format": "ogg",
+   "duration": 6.039,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRATE_MOVE_04": {
+   "line": "OPR_CRATE_MOVE_04",
+   "speaker": "OPR",
+   "hash": "4d49c7db50b101c7",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRATE_MOVE_04.ogg",
+   "format": "ogg",
+   "duration": 3.672,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRATE_MOVE_05": {
+   "line": "OPR_CRATE_MOVE_05",
+   "speaker": "OPR",
+   "hash": "74d9d1a0201e9f69",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRATE_MOVE_05.ogg",
+   "format": "ogg",
+   "duration": 3.443,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRATE_MOVE_ARRIVE_01": {
+   "line": "OPR_CRATE_MOVE_ARRIVE_01",
+   "speaker": "OPR",
+   "hash": "f6a7f7043d2abce6",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRATE_MOVE_ARRIVE_01.ogg",
+   "format": "ogg",
+   "duration": 3.162,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRATE_MOVE_ARRIVE_02": {
+   "line": "OPR_CRATE_MOVE_ARRIVE_02",
+   "speaker": "OPR",
+   "hash": "0424e95e1b8ef505",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRATE_MOVE_ARRIVE_02.ogg",
+   "format": "ogg",
+   "duration": 4.435,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRUCIBLE_EXPIRE_01": {
+   "line": "OPR_CRUCIBLE_EXPIRE_01",
+   "speaker": "OPR",
+   "hash": "ff35666121d26c2e",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRUCIBLE_EXPIRE_01.ogg",
+   "format": "ogg",
+   "duration": 3.241,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRUCIBLE_EXPIRE_02": {
+   "line": "OPR_CRUCIBLE_EXPIRE_02",
+   "speaker": "OPR",
+   "hash": "cfdf9108b92a3e38",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRUCIBLE_EXPIRE_02.ogg",
+   "format": "ogg",
+   "duration": 4.785,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRUCIBLE_FIRST_01": {
+   "line": "OPR_CRUCIBLE_FIRST_01",
+   "speaker": "OPR",
+   "hash": "5ed63375e7047418",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRUCIBLE_FIRST_01.ogg",
+   "format": "ogg",
+   "duration": 2.781,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRUCIBLE_READY_01": {
+   "line": "OPR_CRUCIBLE_READY_01",
+   "speaker": "OPR",
+   "hash": "f162c77da6d9be18",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRUCIBLE_READY_01.ogg",
+   "format": "ogg",
+   "duration": 3.343,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRUCIBLE_READY_02": {
+   "line": "OPR_CRUCIBLE_READY_02",
+   "speaker": "OPR",
+   "hash": "70d085a295ac563b",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRUCIBLE_READY_02.ogg",
+   "format": "ogg",
+   "duration": 3.986,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRUCIBLE_READY_03": {
+   "line": "OPR_CRUCIBLE_READY_03",
+   "speaker": "OPR",
+   "hash": "4057884047dfb6ea",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRUCIBLE_READY_03.ogg",
+   "format": "ogg",
+   "duration": 3.152,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRUCIBLE_START_01": {
+   "line": "OPR_CRUCIBLE_START_01",
+   "speaker": "OPR",
+   "hash": "17c141e27dede054",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRUCIBLE_START_01.ogg",
+   "format": "ogg",
+   "duration": 4.246,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRUCIBLE_START_02": {
+   "line": "OPR_CRUCIBLE_START_02",
+   "speaker": "OPR",
+   "hash": "f2900ad7f6352ce5",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRUCIBLE_START_02.ogg",
+   "format": "ogg",
+   "duration": 2.27,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRUCIBLE_START_03": {
+   "line": "OPR_CRUCIBLE_START_03",
+   "speaker": "OPR",
+   "hash": "8f18e9a3d3aaa431",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRUCIBLE_START_03.ogg",
+   "format": "ogg",
+   "duration": 2.757,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRUCIBLE_STEAL_01": {
+   "line": "OPR_CRUCIBLE_STEAL_01",
+   "speaker": "OPR",
+   "hash": "f5d06dcd9ed928fe",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRUCIBLE_STEAL_01.ogg",
+   "format": "ogg",
+   "duration": 4.519,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRUCIBLE_STEAL_02": {
+   "line": "OPR_CRUCIBLE_STEAL_02",
+   "speaker": "OPR",
+   "hash": "f53b3feee70fd2ab",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRUCIBLE_STEAL_02.ogg",
+   "format": "ogg",
+   "duration": 3.112,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_DOWNED_01": {
+   "line": "OPR_DOWNED_01",
+   "speaker": "OPR",
+   "hash": "71c89278049bcb3e",
+   "path": "res://gravelight/audio/vo/opr/OPR_DOWNED_01.ogg",
+   "format": "ogg",
+   "duration": 2.75,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_DOWNED_02": {
+   "line": "OPR_DOWNED_02",
+   "speaker": "OPR",
+   "hash": "14f89ced878d2448",
+   "path": "res://gravelight/audio/vo/opr/OPR_DOWNED_02.ogg",
+   "format": "ogg",
+   "duration": 2.08,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_EXFIL_GO_01": {
+   "line": "OPR_EXFIL_GO_01",
+   "speaker": "OPR",
+   "hash": "dc1226b1a5e6463d",
+   "path": "res://gravelight/audio/vo/opr/OPR_EXFIL_GO_01.ogg",
+   "format": "ogg",
+   "duration": 8.028,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_EXFIL_GO_M0_01": {
+   "line": "OPR_EXFIL_GO_M0_01",
+   "speaker": "OPR",
+   "hash": "0f150b2a6f6649d2",
+   "path": "res://gravelight/audio/vo/opr/OPR_EXFIL_GO_M0_01.ogg",
+   "format": "ogg",
+   "duration": 7.25,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_EXFIL_MISSED_01": {
+   "line": "OPR_EXFIL_MISSED_01",
+   "speaker": "OPR",
+   "hash": "35164ce59367a27e",
+   "path": "res://gravelight/audio/vo/opr/OPR_EXFIL_MISSED_01.ogg",
+   "format": "ogg",
+   "duration": 7.247,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_EXFIL_MISSED_M0_01": {
+   "line": "OPR_EXFIL_MISSED_M0_01",
+   "speaker": "OPR",
+   "hash": "8c0c7ac9cd27592a",
+   "path": "res://gravelight/audio/vo/opr/OPR_EXFIL_MISSED_M0_01.ogg",
+   "format": "ogg",
+   "duration": 2.676,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_EXFIL_OPEN_01": {
+   "line": "OPR_EXFIL_OPEN_01",
+   "speaker": "OPR",
+   "hash": "d709a6626df8b722",
+   "path": "res://gravelight/audio/vo/opr/OPR_EXFIL_OPEN_01.ogg",
+   "format": "ogg",
+   "duration": 8.775,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_EXFIL_OPEN_M0_01": {
+   "line": "OPR_EXFIL_OPEN_M0_01",
+   "speaker": "OPR",
+   "hash": "4550bc35f146d4f3",
+   "path": "res://gravelight/audio/vo/opr/OPR_EXFIL_OPEN_M0_01.ogg",
+   "format": "ogg",
+   "duration": 5.932,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_EXFIL_ROAD_01": {
+   "line": "OPR_EXFIL_ROAD_01",
+   "speaker": "OPR",
+   "hash": "34325ac9cdee868d",
+   "path": "res://gravelight/audio/vo/opr/OPR_EXFIL_ROAD_01.ogg",
+   "format": "ogg",
+   "duration": 10.214,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_EXFIL_ROAD_M0_01": {
+   "line": "OPR_EXFIL_ROAD_M0_01",
+   "speaker": "OPR",
+   "hash": "ae567efd2cca988c",
+   "path": "res://gravelight/audio/vo/opr/OPR_EXFIL_ROAD_M0_01.ogg",
+   "format": "ogg",
+   "duration": 7.522,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_EXFIL_WAIT_01": {
+   "line": "OPR_EXFIL_WAIT_01",
+   "speaker": "OPR",
+   "hash": "b9644fe6da85b56e",
+   "path": "res://gravelight/audio/vo/opr/OPR_EXFIL_WAIT_01.ogg",
+   "format": "ogg",
+   "duration": 8.145,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_EXFIL_WAIT_02": {
+   "line": "OPR_EXFIL_WAIT_02",
+   "speaker": "OPR",
+   "hash": "fd425648921e0f96",
+   "path": "res://gravelight/audio/vo/opr/OPR_EXFIL_WAIT_02.ogg",
+   "format": "ogg",
+   "duration": 7.578,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_GAME_OVER_01": {
+   "line": "OPR_GAME_OVER_01",
+   "speaker": "OPR",
+   "hash": "6eca39ce78bcdd17",
+   "path": "res://gravelight/audio/vo/opr/OPR_GAME_OVER_01.ogg",
+   "format": "ogg",
+   "duration": 4.374,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_GAME_OVER_02": {
+   "line": "OPR_GAME_OVER_02",
+   "speaker": "OPR",
+   "hash": "c34899dbe38fcc66",
+   "path": "res://gravelight/audio/vo/opr/OPR_GAME_OVER_02.ogg",
+   "format": "ogg",
+   "duration": 3.973,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_GAME_OVER_03": {
+   "line": "OPR_GAME_OVER_03",
+   "speaker": "OPR",
+   "hash": "6bd80bd0acf9b539",
+   "path": "res://gravelight/audio/vo/opr/OPR_GAME_OVER_03.ogg",
+   "format": "ogg",
+   "duration": 4.68,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_GAME_OVER_04": {
+   "line": "OPR_GAME_OVER_04",
+   "speaker": "OPR",
+   "hash": "fe2a0754957c46f9",
+   "path": "res://gravelight/audio/vo/opr/OPR_GAME_OVER_04.ogg",
+   "format": "ogg",
+   "duration": 3.413,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_GAME_OVER_05": {
+   "line": "OPR_GAME_OVER_05",
+   "speaker": "OPR",
+   "hash": "f4454602b81f6e06",
+   "path": "res://gravelight/audio/vo/opr/OPR_GAME_OVER_05.ogg",
+   "format": "ogg",
+   "duration": 5.177,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_GAME_OVER_M0_01": {
+   "line": "OPR_GAME_OVER_M0_01",
+   "speaker": "OPR",
+   "hash": "5b229b0ba949d584",
+   "path": "res://gravelight/audio/vo/opr/OPR_GAME_OVER_M0_01.ogg",
+   "format": "ogg",
+   "duration": 1.286,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_M0_WRONG_01": {
+   "line": "OPR_M0_WRONG_01",
+   "speaker": "OPR",
+   "hash": "7ea3a97059e6e5ee",
+   "path": "res://gravelight/audio/vo/opr/OPR_M0_WRONG_01.ogg",
+   "format": "ogg",
+   "duration": 2.588,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_MATCH_START_01": {
+   "line": "OPR_MATCH_START_01",
+   "speaker": "OPR",
+   "hash": "c755d3959c290636",
+   "path": "res://gravelight/audio/vo/opr/OPR_MATCH_START_01.ogg",
+   "format": "ogg",
+   "duration": 7.903,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_MATCH_START_02": {
+   "line": "OPR_MATCH_START_02",
+   "speaker": "OPR",
+   "hash": "d61f840d609b3328",
+   "path": "res://gravelight/audio/vo/opr/OPR_MATCH_START_02.ogg",
+   "format": "ogg",
+   "duration": 9.318,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_MATCH_START_03": {
+   "line": "OPR_MATCH_START_03",
+   "speaker": "OPR",
+   "hash": "211549c38c628819",
+   "path": "res://gravelight/audio/vo/opr/OPR_MATCH_START_03.ogg",
+   "format": "ogg",
+   "duration": 8.863,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_MATCH_START_M0_01": {
+   "line": "OPR_MATCH_START_M0_01",
+   "speaker": "OPR",
+   "hash": "9060a1859b49c5da",
+   "path": "res://gravelight/audio/vo/opr/OPR_MATCH_START_M0_01.ogg",
+   "format": "ogg",
+   "duration": 6.685,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_POWER_ON_01": {
+   "line": "OPR_POWER_ON_01",
+   "speaker": "OPR",
+   "hash": "7ce05339ed20e20b",
+   "path": "res://gravelight/audio/vo/opr/OPR_POWER_ON_01.ogg",
+   "format": "ogg",
+   "duration": 7.921,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_POWER_ON_02": {
+   "line": "OPR_POWER_ON_02",
+   "speaker": "OPR",
+   "hash": "9f1b36b537303d24",
+   "path": "res://gravelight/audio/vo/opr/OPR_POWER_ON_02.ogg",
+   "format": "ogg",
+   "duration": 4.791,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_POWER_ON_M0_01": {
+   "line": "OPR_POWER_ON_M0_01",
+   "speaker": "OPR",
+   "hash": "8f41004747307296",
+   "path": "res://gravelight/audio/vo/opr/OPR_POWER_ON_M0_01.ogg",
+   "format": "ogg",
+   "duration": 10.61,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_POWER_ON_M2_01": {
+   "line": "OPR_POWER_ON_M2_01",
+   "speaker": "OPR",
+   "hash": "a25199ea58325a22",
+   "path": "res://gravelight/audio/vo/opr/OPR_POWER_ON_M2_01.ogg",
+   "format": "ogg",
+   "duration": 9.883,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_BLACKOUT_01": {
+   "line": "OPR_PWR_BLACKOUT_01",
+   "speaker": "OPR",
+   "hash": "fc9470fbf9428ce5",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_BLACKOUT_01.ogg",
+   "format": "ogg",
+   "duration": 3.844,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_BLACKOUT_02": {
+   "line": "OPR_PWR_BLACKOUT_02",
+   "speaker": "OPR",
+   "hash": "9f95af783f418392",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_BLACKOUT_02.ogg",
+   "format": "ogg",
+   "duration": 3.886,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_BLACKOUT_03": {
+   "line": "OPR_PWR_BLACKOUT_03",
+   "speaker": "OPR",
+   "hash": "b353f6c85af9b929",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_BLACKOUT_03.ogg",
+   "format": "ogg",
+   "duration": 4.373,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_BLACKOUT_04": {
+   "line": "OPR_PWR_BLACKOUT_04",
+   "speaker": "OPR",
+   "hash": "a6d83b1f12e4071b",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_BLACKOUT_04.ogg",
+   "format": "ogg",
+   "duration": 3.036,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_CLEARANCE_01": {
+   "line": "OPR_PWR_CLEARANCE_01",
+   "speaker": "OPR",
+   "hash": "76ea383304c4e2c4",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_CLEARANCE_01.ogg",
+   "format": "ogg",
+   "duration": 4.008,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_CLEARANCE_02": {
+   "line": "OPR_PWR_CLEARANCE_02",
+   "speaker": "OPR",
+   "hash": "c500d4193669744f",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_CLEARANCE_02.ogg",
+   "format": "ogg",
+   "duration": 5.489,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_CLEARANCE_03": {
+   "line": "OPR_PWR_CLEARANCE_03",
+   "speaker": "OPR",
+   "hash": "679f73de8c9a73e5",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_CLEARANCE_03.ogg",
+   "format": "ogg",
+   "duration": 4.364,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_CLEARANCE_04": {
+   "line": "OPR_PWR_CLEARANCE_04",
+   "speaker": "OPR",
+   "hash": "e520c46be3c7197c",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_CLEARANCE_04.ogg",
+   "format": "ogg",
+   "duration": 4.783,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_DEATHSDOOR_01": {
+   "line": "OPR_PWR_DEATHSDOOR_01",
+   "speaker": "OPR",
+   "hash": "1177ff6e03ceb160",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_DEATHSDOOR_01.ogg",
+   "format": "ogg",
+   "duration": 3.552,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_DEATHSDOOR_02": {
+   "line": "OPR_PWR_DEATHSDOOR_02",
+   "speaker": "OPR",
+   "hash": "39e34d9cca5f99c4",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_DEATHSDOOR_02.ogg",
+   "format": "ogg",
+   "duration": 3.465,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_DEATHSDOOR_03": {
+   "line": "OPR_PWR_DEATHSDOOR_03",
+   "speaker": "OPR",
+   "hash": "a7342ef484136fd5",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_DEATHSDOOR_03.ogg",
+   "format": "ogg",
+   "duration": 5.445,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_DEATHSDOOR_04": {
+   "line": "OPR_PWR_DEATHSDOOR_04",
+   "speaker": "OPR",
+   "hash": "5c8b709edbd85fa0",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_DEATHSDOOR_04.ogg",
+   "format": "ogg",
+   "duration": 3.469,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_DOUBLESCRIP_01": {
+   "line": "OPR_PWR_DOUBLESCRIP_01",
+   "speaker": "OPR",
+   "hash": "8433865fb71a4514",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_DOUBLESCRIP_01.ogg",
+   "format": "ogg",
+   "duration": 4.093,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_DOUBLESCRIP_02": {
+   "line": "OPR_PWR_DOUBLESCRIP_02",
+   "speaker": "OPR",
+   "hash": "0b9f7c0a2d23e5dc",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_DOUBLESCRIP_02.ogg",
+   "format": "ogg",
+   "duration": 3.642,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_DOUBLESCRIP_03": {
+   "line": "OPR_PWR_DOUBLESCRIP_03",
+   "speaker": "OPR",
+   "hash": "72277d0c758f745b",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_DOUBLESCRIP_03.ogg",
+   "format": "ogg",
+   "duration": 3.835,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_DOUBLESCRIP_04": {
+   "line": "OPR_PWR_DOUBLESCRIP_04",
+   "speaker": "OPR",
+   "hash": "4221d9726b6ea2fe",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_DOUBLESCRIP_04.ogg",
+   "format": "ogg",
+   "duration": 4.816,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_EXPIRE_01": {
+   "line": "OPR_PWR_EXPIRE_01",
+   "speaker": "OPR",
+   "hash": "149d78a38dfae5e4",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_EXPIRE_01.ogg",
+   "format": "ogg",
+   "duration": 1.836,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_EXPIRE_02": {
+   "line": "OPR_PWR_EXPIRE_02",
+   "speaker": "OPR",
+   "hash": "e5840d1d03b31c1e",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_EXPIRE_02.ogg",
+   "format": "ogg",
+   "duration": 2.796,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_EXPIRE_03": {
+   "line": "OPR_PWR_EXPIRE_03",
+   "speaker": "OPR",
+   "hash": "6904fa8363db9063",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_EXPIRE_03.ogg",
+   "format": "ogg",
+   "duration": 2.387,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_FORTIFY_01": {
+   "line": "OPR_PWR_FORTIFY_01",
+   "speaker": "OPR",
+   "hash": "ad5864b63b64570b",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_FORTIFY_01.ogg",
+   "format": "ogg",
+   "duration": 4.437,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_FORTIFY_02": {
+   "line": "OPR_PWR_FORTIFY_02",
+   "speaker": "OPR",
+   "hash": "a79de764903e0088",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_FORTIFY_02.ogg",
+   "format": "ogg",
+   "duration": 4.608,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_FORTIFY_03": {
+   "line": "OPR_PWR_FORTIFY_03",
+   "speaker": "OPR",
+   "hash": "cf582f946fecdde8",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_FORTIFY_03.ogg",
+   "format": "ogg",
+   "duration": 3.573,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_FORTIFY_04": {
+   "line": "OPR_PWR_FORTIFY_04",
+   "speaker": "OPR",
+   "hash": "48c35742deffb355",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_FORTIFY_04.ogg",
+   "format": "ogg",
+   "duration": 4.638,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_RESUPPLY_01": {
+   "line": "OPR_PWR_RESUPPLY_01",
+   "speaker": "OPR",
+   "hash": "192ef6c162e8dc6b",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_RESUPPLY_01.ogg",
+   "format": "ogg",
+   "duration": 3.188,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_RESUPPLY_02": {
+   "line": "OPR_PWR_RESUPPLY_02",
+   "speaker": "OPR",
+   "hash": "641072905767f811",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_RESUPPLY_02.ogg",
+   "format": "ogg",
+   "duration": 4.986,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_RESUPPLY_03": {
+   "line": "OPR_PWR_RESUPPLY_03",
+   "speaker": "OPR",
+   "hash": "21b13e8835dbe7c6",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_RESUPPLY_03.ogg",
+   "format": "ogg",
+   "duration": 3.162,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PWR_RESUPPLY_04": {
+   "line": "OPR_PWR_RESUPPLY_04",
+   "speaker": "OPR",
+   "hash": "3d4d7970b80e1cfe",
+   "path": "res://gravelight/audio/vo/opr/OPR_PWR_RESUPPLY_04.ogg",
+   "format": "ogg",
+   "duration": 3.465,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PYLON_ATTUNED_01": {
+   "line": "OPR_PYLON_ATTUNED_01",
+   "speaker": "OPR",
+   "hash": "7d7f99cc1ccce50c",
+   "path": "res://gravelight/audio/vo/opr/OPR_PYLON_ATTUNED_01.ogg",
+   "format": "ogg",
+   "duration": 3.171,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PYLON_ATTUNED_02": {
+   "line": "OPR_PYLON_ATTUNED_02",
+   "speaker": "OPR",
+   "hash": "b422451f069c0c89",
+   "path": "res://gravelight/audio/vo/opr/OPR_PYLON_ATTUNED_02.ogg",
+   "format": "ogg",
+   "duration": 4.338,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PYLON_ATTUNED_03": {
+   "line": "OPR_PYLON_ATTUNED_03",
+   "speaker": "OPR",
+   "hash": "5e9e0c7347fb5eb6",
+   "path": "res://gravelight/audio/vo/opr/OPR_PYLON_ATTUNED_03.ogg",
+   "format": "ogg",
+   "duration": 5.136,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PYLON_PAUSE_01": {
+   "line": "OPR_PYLON_PAUSE_01",
+   "speaker": "OPR",
+   "hash": "6caa274fb13f1ca7",
+   "path": "res://gravelight/audio/vo/opr/OPR_PYLON_PAUSE_01.ogg",
+   "format": "ogg",
+   "duration": 2.877,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PYLON_PAUSE_02": {
+   "line": "OPR_PYLON_PAUSE_02",
+   "speaker": "OPR",
+   "hash": "f06250374e113f16",
+   "path": "res://gravelight/audio/vo/opr/OPR_PYLON_PAUSE_02.ogg",
+   "format": "ogg",
+   "duration": 2.655,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PYLON_PAUSE_03": {
+   "line": "OPR_PYLON_PAUSE_03",
+   "speaker": "OPR",
+   "hash": "bd064cdf14efcd0a",
+   "path": "res://gravelight/audio/vo/opr/OPR_PYLON_PAUSE_03.ogg",
+   "format": "ogg",
+   "duration": 4.545,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PYLON_START_01": {
+   "line": "OPR_PYLON_START_01",
+   "speaker": "OPR",
+   "hash": "aade77c295def4ee",
+   "path": "res://gravelight/audio/vo/opr/OPR_PYLON_START_01.ogg",
+   "format": "ogg",
+   "duration": 3.677,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PYLON_START_02": {
+   "line": "OPR_PYLON_START_02",
+   "speaker": "OPR",
+   "hash": "b391a0198489badb",
+   "path": "res://gravelight/audio/vo/opr/OPR_PYLON_START_02.ogg",
+   "format": "ogg",
+   "duration": 4.212,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_PYLON_START_03": {
+   "line": "OPR_PYLON_START_03",
+   "speaker": "OPR",
+   "hash": "877528736c129c1d",
+   "path": "res://gravelight/audio/vo/opr/OPR_PYLON_START_03.ogg",
+   "format": "ogg",
+   "duration": 4.305,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S10_01": {
+   "line": "OPR_QUEST_S10_01",
+   "speaker": "OPR",
+   "hash": "a4380256a771333b",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S10_01.ogg",
+   "format": "ogg",
+   "duration": 2.66,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S1_01": {
+   "line": "OPR_QUEST_S1_01",
+   "speaker": "OPR",
+   "hash": "2904eeb9d9b0630c",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S1_01.ogg",
+   "format": "ogg",
+   "duration": 3.003,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S2_SWITCHBOARD_01": {
+   "line": "OPR_QUEST_S2_SWITCHBOARD_01",
+   "speaker": "OPR",
+   "hash": "187c2f75670d8cb0",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S2_SWITCHBOARD_01.ogg",
+   "format": "ogg",
+   "duration": 5.758,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S3_01": {
+   "line": "OPR_QUEST_S3_01",
+   "speaker": "OPR",
+   "hash": "a2f5a353a1246171",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S3_01.ogg",
+   "format": "ogg",
+   "duration": 4.123,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S4_BELL_LIT_01": {
+   "line": "OPR_QUEST_S4_BELL_LIT_01",
+   "speaker": "OPR",
+   "hash": "15fe0e5d7179d72b",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S4_BELL_LIT_01.ogg",
+   "format": "ogg",
+   "duration": 4.197,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S4_KEY_01": {
+   "line": "OPR_QUEST_S4_KEY_01",
+   "speaker": "OPR",
+   "hash": "627114b0fb0525b4",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S4_KEY_01.ogg",
+   "format": "ogg",
+   "duration": 4.683,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S5_01": {
+   "line": "OPR_QUEST_S5_01",
+   "speaker": "OPR",
+   "hash": "4d1059930355be65",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S5_01.ogg",
+   "format": "ogg",
+   "duration": 5.994,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S6_BELL_RIGHT_01": {
+   "line": "OPR_QUEST_S6_BELL_RIGHT_01",
+   "speaker": "OPR",
+   "hash": "d40e1998a787fcbe",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S6_BELL_RIGHT_01.ogg",
+   "format": "ogg",
+   "duration": 1.36,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S6_BELL_RIGHT_02": {
+   "line": "OPR_QUEST_S6_BELL_RIGHT_02",
+   "speaker": "OPR",
+   "hash": "5e8a220c91d8e3da",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S6_BELL_RIGHT_02.ogg",
+   "format": "ogg",
+   "duration": 2.875,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S6_BELL_RIGHT_03": {
+   "line": "OPR_QUEST_S6_BELL_RIGHT_03",
+   "speaker": "OPR",
+   "hash": "61d25760b9a4282a",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S6_BELL_RIGHT_03.ogg",
+   "format": "ogg",
+   "duration": 2.206,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S6_DONE_01": {
+   "line": "OPR_QUEST_S6_DONE_01",
+   "speaker": "OPR",
+   "hash": "3c30e1866b65a690",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S6_DONE_01.ogg",
+   "format": "ogg",
+   "duration": 4.415,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S7_DONE_01": {
+   "line": "OPR_QUEST_S7_DONE_01",
+   "speaker": "OPR",
+   "hash": "2d06cec9bf1e442d",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S7_DONE_01.ogg",
+   "format": "ogg",
+   "duration": 3.937,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S7_START_01": {
+   "line": "OPR_QUEST_S7_START_01",
+   "speaker": "OPR",
+   "hash": "4363c0a756080268",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S7_START_01.ogg",
+   "format": "ogg",
+   "duration": 4.064,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S8_DONE_01": {
+   "line": "OPR_QUEST_S8_DONE_01",
+   "speaker": "OPR",
+   "hash": "207b92e1a8d8424a",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S8_DONE_01.ogg",
+   "format": "ogg",
+   "duration": 3.958,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S8_START_01": {
+   "line": "OPR_QUEST_S8_START_01",
+   "speaker": "OPR",
+   "hash": "8980d176364e8e36",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S8_START_01.ogg",
+   "format": "ogg",
+   "duration": 5.577,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S9_END_01": {
+   "line": "OPR_QUEST_S9_END_01",
+   "speaker": "OPR",
+   "hash": "d2373c25f00a6245",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S9_END_01.ogg",
+   "format": "ogg",
+   "duration": 2.854,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S9_MID_01": {
+   "line": "OPR_QUEST_S9_MID_01",
+   "speaker": "OPR",
+   "hash": "70d7f9319514ae2c",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S9_MID_01.ogg",
+   "format": "ogg",
+   "duration": 3.867,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_QUEST_S9_START_01": {
+   "line": "OPR_QUEST_S9_START_01",
+   "speaker": "OPR",
+   "hash": "2167fbe832bf94e4",
+   "path": "res://gravelight/audio/vo/opr/OPR_QUEST_S9_START_01.ogg",
+   "format": "ogg",
+   "duration": 6.138,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_END_01": {
+   "line": "OPR_ROUND_END_01",
+   "speaker": "OPR",
+   "hash": "7c3bcf0086b99631",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_END_01.ogg",
+   "format": "ogg",
+   "duration": 5.021,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_END_02": {
+   "line": "OPR_ROUND_END_02",
+   "speaker": "OPR",
+   "hash": "69e8793313d5016c",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_END_02.ogg",
+   "format": "ogg",
+   "duration": 4.306,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_END_03": {
+   "line": "OPR_ROUND_END_03",
+   "speaker": "OPR",
+   "hash": "f570a70786cb0a44",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_END_03.ogg",
+   "format": "ogg",
+   "duration": 6.699,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_END_04": {
+   "line": "OPR_ROUND_END_04",
+   "speaker": "OPR",
+   "hash": "319deb47cf1d7b56",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_END_04.ogg",
+   "format": "ogg",
+   "duration": 3.767,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_END_05": {
+   "line": "OPR_ROUND_END_05",
+   "speaker": "OPR",
+   "hash": "7bc1d9bf49b74351",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_END_05.ogg",
+   "format": "ogg",
+   "duration": 4.634,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_END_06": {
+   "line": "OPR_ROUND_END_06",
+   "speaker": "OPR",
+   "hash": "ecaedf139a024158",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_END_06.ogg",
+   "format": "ogg",
+   "duration": 4.468,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_END_07": {
+   "line": "OPR_ROUND_END_07",
+   "speaker": "OPR",
+   "hash": "0abe5440c2732575",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_END_07.ogg",
+   "format": "ogg",
+   "duration": 5.058,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_START_01": {
+   "line": "OPR_ROUND_START_01",
+   "speaker": "OPR",
+   "hash": "4bdd7374d094a44d",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_START_01.ogg",
+   "format": "ogg",
+   "duration": 3.317,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_START_02": {
+   "line": "OPR_ROUND_START_02",
+   "speaker": "OPR",
+   "hash": "fe622fbedce36378",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_START_02.ogg",
+   "format": "ogg",
+   "duration": 3.136,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_START_03": {
+   "line": "OPR_ROUND_START_03",
+   "speaker": "OPR",
+   "hash": "083d9fa80870cc85",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_START_03.ogg",
+   "format": "ogg",
+   "duration": 4.533,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_START_04": {
+   "line": "OPR_ROUND_START_04",
+   "speaker": "OPR",
+   "hash": "7244f440e58846a0",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_START_04.ogg",
+   "format": "ogg",
+   "duration": 3.882,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_START_05": {
+   "line": "OPR_ROUND_START_05",
+   "speaker": "OPR",
+   "hash": "bcf8cea818addbfa",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_START_05.ogg",
+   "format": "ogg",
+   "duration": 3.58,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_START_06": {
+   "line": "OPR_ROUND_START_06",
+   "speaker": "OPR",
+   "hash": "d7ae5f6e2eec486f",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_START_06.ogg",
+   "format": "ogg",
+   "duration": 5.182,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_START_07": {
+   "line": "OPR_ROUND_START_07",
+   "speaker": "OPR",
+   "hash": "1d3749d4b4224afd",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_START_07.ogg",
+   "format": "ogg",
+   "duration": 5.286,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_START_08": {
+   "line": "OPR_ROUND_START_08",
+   "speaker": "OPR",
+   "hash": "3fc6f5d8ef16bef7",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_START_08.ogg",
+   "format": "ogg",
+   "duration": 5.348,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_START_09": {
+   "line": "OPR_ROUND_START_09",
+   "speaker": "OPR",
+   "hash": "2ea1f41ff849b8d8",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_START_09.ogg",
+   "format": "ogg",
+   "duration": 6.09,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_START_10": {
+   "line": "OPR_ROUND_START_10",
+   "speaker": "OPR",
+   "hash": "181b3cb8ceb64b07",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_START_10.ogg",
+   "format": "ogg",
+   "duration": 3.599,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_START_11": {
+   "line": "OPR_ROUND_START_11",
+   "speaker": "OPR",
+   "hash": "281e49f2c02b6c8f",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_START_11.ogg",
+   "format": "ogg",
+   "duration": 5.257,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_START_12": {
+   "line": "OPR_ROUND_START_12",
+   "speaker": "OPR",
+   "hash": "c66ac0b7974395f8",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_START_12.ogg",
+   "format": "ogg",
+   "duration": 2.611,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ROUND_START_13": {
+   "line": "OPR_ROUND_START_13",
+   "speaker": "OPR",
+   "hash": "7949e79d52c8a189",
+   "path": "res://gravelight/audio/vo/opr/OPR_ROUND_START_13.ogg",
+   "format": "ogg",
+   "duration": 2.552,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SAMPLE_01": {
+   "line": "OPR_SAMPLE_01",
+   "speaker": "OPR",
+   "hash": "aeca3ca4f265b28a",
+   "path": "res://gravelight/audio/vo/opr/OPR_SAMPLE_01.ogg",
+   "format": "ogg",
+   "duration": 7.207,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SAMPLE_02": {
+   "line": "OPR_SAMPLE_02",
+   "speaker": "OPR",
+   "hash": "ef3b1ba082e5df54",
+   "path": "res://gravelight/audio/vo/opr/OPR_SAMPLE_02.ogg",
+   "format": "ogg",
+   "duration": 5.957,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SAMPLE_03": {
+   "line": "OPR_SAMPLE_03",
+   "speaker": "OPR",
+   "hash": "28b59c6fdbcdb139",
+   "path": "res://gravelight/audio/vo/opr/OPR_SAMPLE_03.ogg",
+   "format": "ogg",
+   "duration": 4.916,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SAMPLE_04": {
+   "line": "OPR_SAMPLE_04",
+   "speaker": "OPR",
+   "hash": "8363a98a11dfe431",
+   "path": "res://gravelight/audio/vo/opr/OPR_SAMPLE_04.ogg",
+   "format": "ogg",
+   "duration": 5.747,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SAMPLE_05": {
+   "line": "OPR_SAMPLE_05",
+   "speaker": "OPR",
+   "hash": "3af9dda11f3d8e99",
+   "path": "res://gravelight/audio/vo/opr/OPR_SAMPLE_05.ogg",
+   "format": "ogg",
+   "duration": 7.696,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SECOND_WIND_0_01": {
+   "line": "OPR_SECOND_WIND_0_01",
+   "speaker": "OPR",
+   "hash": "5b0394cfdafdf2d8",
+   "path": "res://gravelight/audio/vo/opr/OPR_SECOND_WIND_0_01.ogg",
+   "format": "ogg",
+   "duration": 3.369,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SECOND_WIND_1_01": {
+   "line": "OPR_SECOND_WIND_1_01",
+   "speaker": "OPR",
+   "hash": "f9dc8a6def980218",
+   "path": "res://gravelight/audio/vo/opr/OPR_SECOND_WIND_1_01.ogg",
+   "format": "ogg",
+   "duration": 3.435,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SECOND_WIND_2_01": {
+   "line": "OPR_SECOND_WIND_2_01",
+   "speaker": "OPR",
+   "hash": "8baa7f824d53d748",
+   "path": "res://gravelight/audio/vo/opr/OPR_SECOND_WIND_2_01.ogg",
+   "format": "ogg",
+   "duration": 3.288,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SELFAWARE_T1_01": {
+   "line": "OPR_SELFAWARE_T1_01",
+   "speaker": "OPR",
+   "hash": "076fa18efc722feb",
+   "path": "res://gravelight/audio/vo/opr/OPR_SELFAWARE_T1_01.ogg",
+   "format": "ogg",
+   "duration": 6.811,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SELFAWARE_T1_02": {
+   "line": "OPR_SELFAWARE_T1_02",
+   "speaker": "OPR",
+   "hash": "b6e7c3e120a480f5",
+   "path": "res://gravelight/audio/vo/opr/OPR_SELFAWARE_T1_02.ogg",
+   "format": "ogg",
+   "duration": 5.345,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SELFAWARE_T1_03": {
+   "line": "OPR_SELFAWARE_T1_03",
+   "speaker": "OPR",
+   "hash": "8c95bde8f24759dc",
+   "path": "res://gravelight/audio/vo/opr/OPR_SELFAWARE_T1_03.ogg",
+   "format": "ogg",
+   "duration": 6.666,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SELFAWARE_T2_01": {
+   "line": "OPR_SELFAWARE_T2_01",
+   "speaker": "OPR",
+   "hash": "85678620e46da24c",
+   "path": "res://gravelight/audio/vo/opr/OPR_SELFAWARE_T2_01.ogg",
+   "format": "ogg",
+   "duration": 4.173,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SELFAWARE_T2_02": {
+   "line": "OPR_SELFAWARE_T2_02",
+   "speaker": "OPR",
+   "hash": "fb846494ac2834d3",
+   "path": "res://gravelight/audio/vo/opr/OPR_SELFAWARE_T2_02.ogg",
+   "format": "ogg",
+   "duration": 4.531,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SELFAWARE_T2_03": {
+   "line": "OPR_SELFAWARE_T2_03",
+   "speaker": "OPR",
+   "hash": "6dee15e271385a47",
+   "path": "res://gravelight/audio/vo/opr/OPR_SELFAWARE_T2_03.ogg",
+   "format": "ogg",
+   "duration": 4.912,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SELFAWARE_T3_01": {
+   "line": "OPR_SELFAWARE_T3_01",
+   "speaker": "OPR",
+   "hash": "83ff9048b5add55e",
+   "path": "res://gravelight/audio/vo/opr/OPR_SELFAWARE_T3_01.ogg",
+   "format": "ogg",
+   "duration": 4.782,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SELFAWARE_T3_02": {
+   "line": "OPR_SELFAWARE_T3_02",
+   "speaker": "OPR",
+   "hash": "5135a94577a5fa68",
+   "path": "res://gravelight/audio/vo/opr/OPR_SELFAWARE_T3_02.ogg",
+   "format": "ogg",
+   "duration": 5.379,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SELFAWARE_T3_03": {
+   "line": "OPR_SELFAWARE_T3_03",
+   "speaker": "OPR",
+   "hash": "8835a21006400d9e",
+   "path": "res://gravelight/audio/vo/opr/OPR_SELFAWARE_T3_03.ogg",
+   "format": "ogg",
+   "duration": 4.98,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SELFAWARE_T4_01": {
+   "line": "OPR_SELFAWARE_T4_01",
+   "speaker": "OPR",
+   "hash": "9eb4943a74db3121",
+   "path": "res://gravelight/audio/vo/opr/OPR_SELFAWARE_T4_01.ogg",
+   "format": "ogg",
+   "duration": 3.722,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SELFAWARE_T4_02": {
+   "line": "OPR_SELFAWARE_T4_02",
+   "speaker": "OPR",
+   "hash": "e1f434f144d128e4",
+   "path": "res://gravelight/audio/vo/opr/OPR_SELFAWARE_T4_02.ogg",
+   "format": "ogg",
+   "duration": 2.996,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SELFAWARE_T4_03": {
+   "line": "OPR_SELFAWARE_T4_03",
+   "speaker": "OPR",
+   "hash": "60c561a13df27ddd",
+   "path": "res://gravelight/audio/vo/opr/OPR_SELFAWARE_T4_03.ogg",
+   "format": "ogg",
+   "duration": 5.611,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SELFAWARE_T5_01": {
+   "line": "OPR_SELFAWARE_T5_01",
+   "speaker": "OPR",
+   "hash": "17745e1801f8e46f",
+   "path": "res://gravelight/audio/vo/opr/OPR_SELFAWARE_T5_01.ogg",
+   "format": "ogg",
+   "duration": 5.657,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SELFAWARE_T5_02": {
+   "line": "OPR_SELFAWARE_T5_02",
+   "speaker": "OPR",
+   "hash": "e4ccdd8d040ff31e",
+   "path": "res://gravelight/audio/vo/opr/OPR_SELFAWARE_T5_02.ogg",
+   "format": "ogg",
+   "duration": 3.887,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SPECIAL_END_01": {
+   "line": "OPR_SPECIAL_END_01",
+   "speaker": "OPR",
+   "hash": "d8b2040289c0a0e9",
+   "path": "res://gravelight/audio/vo/opr/OPR_SPECIAL_END_01.ogg",
+   "format": "ogg",
+   "duration": 3.741,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SPECIAL_END_02": {
+   "line": "OPR_SPECIAL_END_02",
+   "speaker": "OPR",
+   "hash": "b50b05dbec21eaca",
+   "path": "res://gravelight/audio/vo/opr/OPR_SPECIAL_END_02.ogg",
+   "format": "ogg",
+   "duration": 4.686,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SPECIAL_END_03": {
+   "line": "OPR_SPECIAL_END_03",
+   "speaker": "OPR",
+   "hash": "8964d48327c90ea9",
+   "path": "res://gravelight/audio/vo/opr/OPR_SPECIAL_END_03.ogg",
+   "format": "ogg",
+   "duration": 4.665,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SPECIAL_START_01": {
+   "line": "OPR_SPECIAL_START_01",
+   "speaker": "OPR",
+   "hash": "2b38fa7d4b0a92f9",
+   "path": "res://gravelight/audio/vo/opr/OPR_SPECIAL_START_01.ogg",
+   "format": "ogg",
+   "duration": 4.156,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SPECIAL_START_02": {
+   "line": "OPR_SPECIAL_START_02",
+   "speaker": "OPR",
+   "hash": "6cbb6f820a544ab5",
+   "path": "res://gravelight/audio/vo/opr/OPR_SPECIAL_START_02.ogg",
+   "format": "ogg",
+   "duration": 5.422,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SPECIAL_START_03": {
+   "line": "OPR_SPECIAL_START_03",
+   "speaker": "OPR",
+   "hash": "1fb242c05fd97da7",
+   "path": "res://gravelight/audio/vo/opr/OPR_SPECIAL_START_03.ogg",
+   "format": "ogg",
+   "duration": 3.139,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SPECIAL_WARN_01": {
+   "line": "OPR_SPECIAL_WARN_01",
+   "speaker": "OPR",
+   "hash": "e8f65326c4bdc459",
+   "path": "res://gravelight/audio/vo/opr/OPR_SPECIAL_WARN_01.ogg",
+   "format": "ogg",
+   "duration": 6.547,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SPECIAL_WARN_02": {
+   "line": "OPR_SPECIAL_WARN_02",
+   "speaker": "OPR",
+   "hash": "9cca98249d488219",
+   "path": "res://gravelight/audio/vo/opr/OPR_SPECIAL_WARN_02.ogg",
+   "format": "ogg",
+   "duration": 5.541,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SPECIAL_WARN_03": {
+   "line": "OPR_SPECIAL_WARN_03",
+   "speaker": "OPR",
+   "hash": "1479d4443736eba8",
+   "path": "res://gravelight/audio/vo/opr/OPR_SPECIAL_WARN_03.ogg",
+   "format": "ogg",
+   "duration": 5.194,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_TIDE_FALLING_01": {
+   "line": "OPR_TIDE_FALLING_01",
+   "speaker": "OPR",
+   "hash": "de44380f7d2db96d",
+   "path": "res://gravelight/audio/vo/opr/OPR_TIDE_FALLING_01.ogg",
+   "format": "ogg",
+   "duration": 8.137,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_TIDE_FALLING_02": {
+   "line": "OPR_TIDE_FALLING_02",
+   "speaker": "OPR",
+   "hash": "0c952cb97039d11d",
+   "path": "res://gravelight/audio/vo/opr/OPR_TIDE_FALLING_02.ogg",
+   "format": "ogg",
+   "duration": 6.547,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_TIDE_RISING_01": {
+   "line": "OPR_TIDE_RISING_01",
+   "speaker": "OPR",
+   "hash": "d4cdeef4347f4943",
+   "path": "res://gravelight/audio/vo/opr/OPR_TIDE_RISING_01.ogg",
+   "format": "ogg",
+   "duration": 8.686,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_TIDE_RISING_02": {
+   "line": "OPR_TIDE_RISING_02",
+   "speaker": "OPR",
+   "hash": "d959c73af4d4a104",
+   "path": "res://gravelight/audio/vo/opr/OPR_TIDE_RISING_02.ogg",
+   "format": "ogg",
+   "duration": 7.323,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_TIDE_WARN_01": {
+   "line": "OPR_TIDE_WARN_01",
+   "speaker": "OPR",
+   "hash": "7f19060365c14d85",
+   "path": "res://gravelight/audio/vo/opr/OPR_TIDE_WARN_01.ogg",
+   "format": "ogg",
+   "duration": 12.716,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_TIDE_WARN_02": {
+   "line": "OPR_TIDE_WARN_02",
+   "speaker": "OPR",
+   "hash": "cf1d62445bb32d0d",
+   "path": "res://gravelight/audio/vo/opr/OPR_TIDE_WARN_02.ogg",
+   "format": "ogg",
+   "duration": 9.56,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_TRAP_01": {
+   "line": "OPR_TRAP_01",
+   "speaker": "OPR",
+   "hash": "ee40e8a5508af241",
+   "path": "res://gravelight/audio/vo/opr/OPR_TRAP_01.ogg",
+   "format": "ogg",
+   "duration": 1.921,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_TRAP_02": {
+   "line": "OPR_TRAP_02",
+   "speaker": "OPR",
+   "hash": "90bd20e03f6c2ec9",
+   "path": "res://gravelight/audio/vo/opr/OPR_TRAP_02.ogg",
+   "format": "ogg",
+   "duration": 3.217,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_TRAP_03": {
+   "line": "OPR_TRAP_03",
+   "speaker": "OPR",
+   "hash": "409fec8f04f82fe8",
+   "path": "res://gravelight/audio/vo/opr/OPR_TRAP_03.ogg",
+   "format": "ogg",
+   "duration": 2.667,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_VAULT_01": {
+   "line": "OPR_VAULT_01",
+   "speaker": "OPR",
+   "hash": "0980ded362e60839",
+   "path": "res://gravelight/audio/vo/opr/OPR_VAULT_01.ogg",
+   "format": "ogg",
+   "duration": 5.387,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "PEG_AMMO_LOW_01": {
+   "line": "PEG_AMMO_LOW_01",
+   "speaker": "PEG",
+   "hash": "b4c0c5fecfa38250",
+   "path": "res://gravelight/audio/vo/peg/PEG_AMMO_LOW_01.ogg",
+   "format": "ogg",
+   "duration": 1.822,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_AMMO_NONE_01": {
+   "line": "PEG_AMMO_NONE_01",
+   "speaker": "PEG",
+   "hash": "5e8592bfe3061c05",
+   "path": "res://gravelight/audio/vo/peg/PEG_AMMO_NONE_01.ogg",
+   "format": "ogg",
+   "duration": 2.024,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_BELL_01": {
+   "line": "PEG_BELL_01",
+   "speaker": "PEG",
+   "hash": "b7ac2272e5bbff4f",
+   "path": "res://gravelight/audio/vo/peg/PEG_BELL_01.ogg",
+   "format": "ogg",
+   "duration": 4.415,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_BELL_02": {
+   "line": "PEG_BELL_02",
+   "speaker": "PEG",
+   "hash": "dfd5c837bde9cf4b",
+   "path": "res://gravelight/audio/vo/peg/PEG_BELL_02.ogg",
+   "format": "ogg",
+   "duration": 5.247,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_BUY_AMMO_01": {
+   "line": "PEG_BUY_AMMO_01",
+   "speaker": "PEG",
+   "hash": "3914877fa8b2c292",
+   "path": "res://gravelight/audio/vo/peg/PEG_BUY_AMMO_01.ogg",
+   "format": "ogg",
+   "duration": 4.166,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_BUY_LAUNCHER_01": {
+   "line": "PEG_BUY_LAUNCHER_01",
+   "speaker": "PEG",
+   "hash": "05791e929a332b8a",
+   "path": "res://gravelight/audio/vo/peg/PEG_BUY_LAUNCHER_01.ogg",
+   "format": "ogg",
+   "duration": 4.614,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_BUY_LMG_01": {
+   "line": "PEG_BUY_LMG_01",
+   "speaker": "PEG",
+   "hash": "810fe8085e6f434b",
+   "path": "res://gravelight/audio/vo/peg/PEG_BUY_LMG_01.ogg",
+   "format": "ogg",
+   "duration": 3.564,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_BUY_MELEE_01": {
+   "line": "PEG_BUY_MELEE_01",
+   "speaker": "PEG",
+   "hash": "e70acc78e43f2dd4",
+   "path": "res://gravelight/audio/vo/peg/PEG_BUY_MELEE_01.ogg",
+   "format": "ogg",
+   "duration": 2.819,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_BUY_PISTOL_01": {
+   "line": "PEG_BUY_PISTOL_01",
+   "speaker": "PEG",
+   "hash": "e717e5a778bd6340",
+   "path": "res://gravelight/audio/vo/peg/PEG_BUY_PISTOL_01.ogg",
+   "format": "ogg",
+   "duration": 2.721,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_BUY_RIFLE_01": {
+   "line": "PEG_BUY_RIFLE_01",
+   "speaker": "PEG",
+   "hash": "5a52ae92b66f33a9",
+   "path": "res://gravelight/audio/vo/peg/PEG_BUY_RIFLE_01.ogg",
+   "format": "ogg",
+   "duration": 4.09,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_BUY_RIFLE_02": {
+   "line": "PEG_BUY_RIFLE_02",
+   "speaker": "PEG",
+   "hash": "aa3cdeadfe3bdbcf",
+   "path": "res://gravelight/audio/vo/peg/PEG_BUY_RIFLE_02.ogg",
+   "format": "ogg",
+   "duration": 5.236,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_BUY_SHOTGUN_01": {
+   "line": "PEG_BUY_SHOTGUN_01",
+   "speaker": "PEG",
+   "hash": "a200434ff2c0c718",
+   "path": "res://gravelight/audio/vo/peg/PEG_BUY_SHOTGUN_01.ogg",
+   "format": "ogg",
+   "duration": 5.179,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_BUY_SMG_01": {
+   "line": "PEG_BUY_SMG_01",
+   "speaker": "PEG",
+   "hash": "6d8443de6b76943d",
+   "path": "res://gravelight/audio/vo/peg/PEG_BUY_SMG_01.ogg",
+   "format": "ogg",
+   "duration": 3.641,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_BUY_WONDER_01": {
+   "line": "PEG_BUY_WONDER_01",
+   "speaker": "PEG",
+   "hash": "fcbaf86adb8d0ad5",
+   "path": "res://gravelight/audio/vo/peg/PEG_BUY_WONDER_01.ogg",
+   "format": "ogg",
+   "duration": 3.503,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_CRATE_BAD_01": {
+   "line": "PEG_CRATE_BAD_01",
+   "speaker": "PEG",
+   "hash": "8d45dcb6734b3b32",
+   "path": "res://gravelight/audio/vo/peg/PEG_CRATE_BAD_01.ogg",
+   "format": "ogg",
+   "duration": 4.201,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_CRATE_BAD_02": {
+   "line": "PEG_CRATE_BAD_02",
+   "speaker": "PEG",
+   "hash": "2a4f78a0e92cd980",
+   "path": "res://gravelight/audio/vo/peg/PEG_CRATE_BAD_02.ogg",
+   "format": "ogg",
+   "duration": 5.596,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_CRATE_DRUMMER_01": {
+   "line": "PEG_CRATE_DRUMMER_01",
+   "speaker": "PEG",
+   "hash": "c0190706a45d345c",
+   "path": "res://gravelight/audio/vo/peg/PEG_CRATE_DRUMMER_01.ogg",
+   "format": "ogg",
+   "duration": 4.112,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_CRATE_DRUMMER_02": {
+   "line": "PEG_CRATE_DRUMMER_02",
+   "speaker": "PEG",
+   "hash": "d84b02871449c83b",
+   "path": "res://gravelight/audio/vo/peg/PEG_CRATE_DRUMMER_02.ogg",
+   "format": "ogg",
+   "duration": 3.639,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_CRATE_GOOD_01": {
+   "line": "PEG_CRATE_GOOD_01",
+   "speaker": "PEG",
+   "hash": "08469f5b37f13506",
+   "path": "res://gravelight/audio/vo/peg/PEG_CRATE_GOOD_01.ogg",
+   "format": "ogg",
+   "duration": 1.722,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_CRATE_GOOD_02": {
+   "line": "PEG_CRATE_GOOD_02",
+   "speaker": "PEG",
+   "hash": "acc9bac6259242ed",
+   "path": "res://gravelight/audio/vo/peg/PEG_CRATE_GOOD_02.ogg",
+   "format": "ogg",
+   "duration": 3.51,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_CRAWLER_01": {
+   "line": "PEG_CRAWLER_01",
+   "speaker": "PEG",
+   "hash": "f26353ddd21959e2",
+   "path": "res://gravelight/audio/vo/peg/PEG_CRAWLER_01.ogg",
+   "format": "ogg",
+   "duration": 3.545,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_CRUCIBLE_01": {
+   "line": "PEG_CRUCIBLE_01",
+   "speaker": "PEG",
+   "hash": "5b8899ffff0665e0",
+   "path": "res://gravelight/audio/vo/peg/PEG_CRUCIBLE_01.ogg",
+   "format": "ogg",
+   "duration": 5.025,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_CRUCIBLE_02": {
+   "line": "PEG_CRUCIBLE_02",
+   "speaker": "PEG",
+   "hash": "354e972244d188cb",
+   "path": "res://gravelight/audio/vo/peg/PEG_CRUCIBLE_02.ogg",
+   "format": "ogg",
+   "duration": 3.848,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_DENY_CAP_01": {
+   "line": "PEG_DENY_CAP_01",
+   "speaker": "PEG",
+   "hash": "79bd492f2a8e0e1c",
+   "path": "res://gravelight/audio/vo/peg/PEG_DENY_CAP_01.ogg",
+   "format": "ogg",
+   "duration": 3.372,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_DENY_NO_POWER_01": {
+   "line": "PEG_DENY_NO_POWER_01",
+   "speaker": "PEG",
+   "hash": "b790ce4c7a1d40db",
+   "path": "res://gravelight/audio/vo/peg/PEG_DENY_NO_POWER_01.ogg",
+   "format": "ogg",
+   "duration": 5.171,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_DENY_NO_SCRIP_01": {
+   "line": "PEG_DENY_NO_SCRIP_01",
+   "speaker": "PEG",
+   "hash": "b2ff18a990e741b7",
+   "path": "res://gravelight/audio/vo/peg/PEG_DENY_NO_SCRIP_01.ogg",
+   "format": "ogg",
+   "duration": 3.049,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_DOOR_01": {
+   "line": "PEG_DOOR_01",
+   "speaker": "PEG",
+   "hash": "80e409bbfea6a997",
+   "path": "res://gravelight/audio/vo/peg/PEG_DOOR_01.ogg",
+   "format": "ogg",
+   "duration": 2.712,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_DOWN_01": {
+   "line": "PEG_DOWN_01",
+   "speaker": "PEG",
+   "hash": "a39bdd030ac4b357",
+   "path": "res://gravelight/audio/vo/peg/PEG_DOWN_01.ogg",
+   "format": "ogg",
+   "duration": 3.795,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_DOWN_02": {
+   "line": "PEG_DOWN_02",
+   "speaker": "PEG",
+   "hash": "2e32a01c2ff5a241",
+   "path": "res://gravelight/audio/vo/peg/PEG_DOWN_02.ogg",
+   "format": "ogg",
+   "duration": 3.492,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_EE_01": {
+   "line": "PEG_EE_01",
+   "speaker": "PEG",
+   "hash": "00b48e7abe0c1a61",
+   "path": "res://gravelight/audio/vo/peg/PEG_EE_01.ogg",
+   "format": "ogg",
+   "duration": 4.437,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_EE_02": {
+   "line": "PEG_EE_02",
+   "speaker": "PEG",
+   "hash": "298812229b00bd90",
+   "path": "res://gravelight/audio/vo/peg/PEG_EE_02.ogg",
+   "format": "ogg",
+   "duration": 4.394,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_EE_03": {
+   "line": "PEG_EE_03",
+   "speaker": "PEG",
+   "hash": "3ea4b159e82c3fc5",
+   "path": "res://gravelight/audio/vo/peg/PEG_EE_03.ogg",
+   "format": "ogg",
+   "duration": 4.163,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_EXHAUST_01": {
+   "line": "PEG_EXHAUST_01",
+   "speaker": "PEG",
+   "hash": "161165bc4554d5d4",
+   "path": "res://gravelight/audio/vo/peg/PEG_EXHAUST_01.ogg",
+   "format": "ogg",
+   "duration": 6.007,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_EXHAUST_02": {
+   "line": "PEG_EXHAUST_02",
+   "speaker": "PEG",
+   "hash": "edf0c1efca9a303e",
+   "path": "res://gravelight/audio/vo/peg/PEG_EXHAUST_02.ogg",
+   "format": "ogg",
+   "duration": 4.521,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_FOREMAN_01": {
+   "line": "PEG_FOREMAN_01",
+   "speaker": "PEG",
+   "hash": "5a7ad496fc9b6878",
+   "path": "res://gravelight/audio/vo/peg/PEG_FOREMAN_01.ogg",
+   "format": "ogg",
+   "duration": 5.806,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_FOREMAN_02": {
+   "line": "PEG_FOREMAN_02",
+   "speaker": "PEG",
+   "hash": "f94bdff62999d9d4",
+   "path": "res://gravelight/audio/vo/peg/PEG_FOREMAN_02.ogg",
+   "format": "ogg",
+   "duration": 3.314,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_GLASSHIDE_01": {
+   "line": "PEG_GLASSHIDE_01",
+   "speaker": "PEG",
+   "hash": "9c1bd96d1567dd21",
+   "path": "res://gravelight/audio/vo/peg/PEG_GLASSHIDE_01.ogg",
+   "format": "ogg",
+   "duration": 4.888,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_HEADSHOT_01": {
+   "line": "PEG_HEADSHOT_01",
+   "speaker": "PEG",
+   "hash": "4d90c43ea1997506",
+   "path": "res://gravelight/audio/vo/peg/PEG_HEADSHOT_01.ogg",
+   "format": "ogg",
+   "duration": 0.568,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_HEADSHOT_02": {
+   "line": "PEG_HEADSHOT_02",
+   "speaker": "PEG",
+   "hash": "774d4808acb2bde7",
+   "path": "res://gravelight/audio/vo/peg/PEG_HEADSHOT_02.ogg",
+   "format": "ogg",
+   "duration": 3.756,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_INTEL_01": {
+   "line": "PEG_INTEL_01",
+   "speaker": "PEG",
+   "hash": "d17e31e1b9e1cc7c",
+   "path": "res://gravelight/audio/vo/peg/PEG_INTEL_01.ogg",
+   "format": "ogg",
+   "duration": 4.861,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_LANTERN_01": {
+   "line": "PEG_LANTERN_01",
+   "speaker": "PEG",
+   "hash": "c842449c79c41d3e",
+   "path": "res://gravelight/audio/vo/peg/PEG_LANTERN_01.ogg",
+   "format": "ogg",
+   "duration": 4.316,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_LANTERN_02": {
+   "line": "PEG_LANTERN_02",
+   "speaker": "PEG",
+   "hash": "aa07deb030986b69",
+   "path": "res://gravelight/audio/vo/peg/PEG_LANTERN_02.ogg",
+   "format": "ogg",
+   "duration": 3.658,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_LANTERN_03": {
+   "line": "PEG_LANTERN_03",
+   "speaker": "PEG",
+   "hash": "45e83fbc629d967d",
+   "path": "res://gravelight/audio/vo/peg/PEG_LANTERN_03.ogg",
+   "format": "ogg",
+   "duration": 3.646,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PERK_BLASTPROOF_01": {
+   "line": "PEG_PERK_BLASTPROOF_01",
+   "speaker": "PEG",
+   "hash": "c1a29102838a7054",
+   "path": "res://gravelight/audio/vo/peg/PEG_PERK_BLASTPROOF_01.ogg",
+   "format": "ogg",
+   "duration": 4.595,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PERK_FERNET_01": {
+   "line": "PEG_PERK_FERNET_01",
+   "speaker": "PEG",
+   "hash": "2b020d2e1d05466f",
+   "path": "res://gravelight/audio/vo/peg/PEG_PERK_FERNET_01.ogg",
+   "format": "ogg",
+   "duration": 4.254,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PERK_FERNET_02": {
+   "line": "PEG_PERK_FERNET_02",
+   "speaker": "PEG",
+   "hash": "4cae1bfda7103b0a",
+   "path": "res://gravelight/audio/vo/peg/PEG_PERK_FERNET_02.ogg",
+   "format": "ogg",
+   "duration": 5.352,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PERK_HAWKEYE_01": {
+   "line": "PEG_PERK_HAWKEYE_01",
+   "speaker": "PEG",
+   "hash": "02a795371bfed398",
+   "path": "res://gravelight/audio/vo/peg/PEG_PERK_HAWKEYE_01.ogg",
+   "format": "ogg",
+   "duration": 4.615,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PERK_IRONHIDE_01": {
+   "line": "PEG_PERK_IRONHIDE_01",
+   "speaker": "PEG",
+   "hash": "4b93dcb8d862c0dc",
+   "path": "res://gravelight/audio/vo/peg/PEG_PERK_IRONHIDE_01.ogg",
+   "format": "ogg",
+   "duration": 5.348,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PERK_MARATHON_01": {
+   "line": "PEG_PERK_MARATHON_01",
+   "speaker": "PEG",
+   "hash": "e2625bd756a3d044",
+   "path": "res://gravelight/audio/vo/peg/PEG_PERK_MARATHON_01.ogg",
+   "format": "ogg",
+   "duration": 3.067,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PERK_OVERCLOCK_01": {
+   "line": "PEG_PERK_OVERCLOCK_01",
+   "speaker": "PEG",
+   "hash": "bfb3f92f483da4b2",
+   "path": "res://gravelight/audio/vo/peg/PEG_PERK_OVERCLOCK_01.ogg",
+   "format": "ogg",
+   "duration": 4.181,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PERK_OVERCLOCK_02": {
+   "line": "PEG_PERK_OVERCLOCK_02",
+   "speaker": "PEG",
+   "hash": "a5a59ffb8d9c5b8f",
+   "path": "res://gravelight/audio/vo/peg/PEG_PERK_OVERCLOCK_02.ogg",
+   "format": "ogg",
+   "duration": 5.839,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PERK_PACKMULE_01": {
+   "line": "PEG_PERK_PACKMULE_01",
+   "speaker": "PEG",
+   "hash": "15271f2e633921c4",
+   "path": "res://gravelight/audio/vo/peg/PEG_PERK_PACKMULE_01.ogg",
+   "format": "ogg",
+   "duration": 3.49,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PERK_SECONDWIND_01": {
+   "line": "PEG_PERK_SECONDWIND_01",
+   "speaker": "PEG",
+   "hash": "bab74758bbc34120",
+   "path": "res://gravelight/audio/vo/peg/PEG_PERK_SECONDWIND_01.ogg",
+   "format": "ogg",
+   "duration": 4.487,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PERK_TRIGGER_01": {
+   "line": "PEG_PERK_TRIGGER_01",
+   "speaker": "PEG",
+   "hash": "982c43728eae7839",
+   "path": "res://gravelight/audio/vo/peg/PEG_PERK_TRIGGER_01.ogg",
+   "format": "ogg",
+   "duration": 2.071,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PERK_TWINBARREL_01": {
+   "line": "PEG_PERK_TWINBARREL_01",
+   "speaker": "PEG",
+   "hash": "f6bfb197254caa96",
+   "path": "res://gravelight/audio/vo/peg/PEG_PERK_TWINBARREL_01.ogg",
+   "format": "ogg",
+   "duration": 2.991,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_POWER_01": {
+   "line": "PEG_POWER_01",
+   "speaker": "PEG",
+   "hash": "ac149ff27163b100",
+   "path": "res://gravelight/audio/vo/peg/PEG_POWER_01.ogg",
+   "format": "ogg",
+   "duration": 3.069,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PWR_BLACKOUT_01": {
+   "line": "PEG_PWR_BLACKOUT_01",
+   "speaker": "PEG",
+   "hash": "cfbfad65d49eb771",
+   "path": "res://gravelight/audio/vo/peg/PEG_PWR_BLACKOUT_01.ogg",
+   "format": "ogg",
+   "duration": 2.226,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PWR_CLEARANCE_01": {
+   "line": "PEG_PWR_CLEARANCE_01",
+   "speaker": "PEG",
+   "hash": "60cfc80b6c879e18",
+   "path": "res://gravelight/audio/vo/peg/PEG_PWR_CLEARANCE_01.ogg",
+   "format": "ogg",
+   "duration": 2.367,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PWR_DEATHSDOOR_01": {
+   "line": "PEG_PWR_DEATHSDOOR_01",
+   "speaker": "PEG",
+   "hash": "04de8802e816dcca",
+   "path": "res://gravelight/audio/vo/peg/PEG_PWR_DEATHSDOOR_01.ogg",
+   "format": "ogg",
+   "duration": 3.259,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PWR_DOUBLESCRIP_01": {
+   "line": "PEG_PWR_DOUBLESCRIP_01",
+   "speaker": "PEG",
+   "hash": "be4d8e701ea3edf3",
+   "path": "res://gravelight/audio/vo/peg/PEG_PWR_DOUBLESCRIP_01.ogg",
+   "format": "ogg",
+   "duration": 3.018,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PWR_FORTIFY_01": {
+   "line": "PEG_PWR_FORTIFY_01",
+   "speaker": "PEG",
+   "hash": "ef8af850884db8e7",
+   "path": "res://gravelight/audio/vo/peg/PEG_PWR_FORTIFY_01.ogg",
+   "format": "ogg",
+   "duration": 2.512,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_PWR_RESUPPLY_01": {
+   "line": "PEG_PWR_RESUPPLY_01",
+   "speaker": "PEG",
+   "hash": "a68369487c4aa38f",
+   "path": "res://gravelight/audio/vo/peg/PEG_PWR_RESUPPLY_01.ogg",
+   "format": "ogg",
+   "duration": 2.284,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_REVIVED_01": {
+   "line": "PEG_REVIVED_01",
+   "speaker": "PEG",
+   "hash": "6eac54b2be1f8136",
+   "path": "res://gravelight/audio/vo/peg/PEG_REVIVED_01.ogg",
+   "format": "ogg",
+   "duration": 2.936,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_REVIVE_01": {
+   "line": "PEG_REVIVE_01",
+   "speaker": "PEG",
+   "hash": "218634ddbe5160a6",
+   "path": "res://gravelight/audio/vo/peg/PEG_REVIVE_01.ogg",
+   "format": "ogg",
+   "duration": 2.686,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_REVIVE_02": {
+   "line": "PEG_REVIVE_02",
+   "speaker": "PEG",
+   "hash": "4b692cb1198b19d2",
+   "path": "res://gravelight/audio/vo/peg/PEG_REVIVE_02.ogg",
+   "format": "ogg",
+   "duration": 3.437,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_ROUND_END_01": {
+   "line": "PEG_ROUND_END_01",
+   "speaker": "PEG",
+   "hash": "0a71a0bea3b28415",
+   "path": "res://gravelight/audio/vo/peg/PEG_ROUND_END_01.ogg",
+   "format": "ogg",
+   "duration": 3.192,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_ROUND_END_02": {
+   "line": "PEG_ROUND_END_02",
+   "speaker": "PEG",
+   "hash": "77e539b855394099",
+   "path": "res://gravelight/audio/vo/peg/PEG_ROUND_END_02.ogg",
+   "format": "ogg",
+   "duration": 4.145,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_ROUND_START_01": {
+   "line": "PEG_ROUND_START_01",
+   "speaker": "PEG",
+   "hash": "13e32ef60c4c7a06",
+   "path": "res://gravelight/audio/vo/peg/PEG_ROUND_START_01.ogg",
+   "format": "ogg",
+   "duration": 3.497,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_ROUND_START_02": {
+   "line": "PEG_ROUND_START_02",
+   "speaker": "PEG",
+   "hash": "842be4faa058969c",
+   "path": "res://gravelight/audio/vo/peg/PEG_ROUND_START_02.ogg",
+   "format": "ogg",
+   "duration": 2.418,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_SCREAMER_01": {
+   "line": "PEG_SCREAMER_01",
+   "speaker": "PEG",
+   "hash": "2218ef097df344f9",
+   "path": "res://gravelight/audio/vo/peg/PEG_SCREAMER_01.ogg",
+   "format": "ogg",
+   "duration": 4.316,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_SPAWN_01": {
+   "line": "PEG_SPAWN_01",
+   "speaker": "PEG",
+   "hash": "360deb2f81135f25",
+   "path": "res://gravelight/audio/vo/peg/PEG_SPAWN_01.ogg",
+   "format": "ogg",
+   "duration": 4.55,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_SPAWN_02": {
+   "line": "PEG_SPAWN_02",
+   "speaker": "PEG",
+   "hash": "09bdb2ffaac970c0",
+   "path": "res://gravelight/audio/vo/peg/PEG_SPAWN_02.ogg",
+   "format": "ogg",
+   "duration": 4.686,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_STREAK_01": {
+   "line": "PEG_STREAK_01",
+   "speaker": "PEG",
+   "hash": "0c0a2541f3b609aa",
+   "path": "res://gravelight/audio/vo/peg/PEG_STREAK_01.ogg",
+   "format": "ogg",
+   "duration": 2.191,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_STREAK_02": {
+   "line": "PEG_STREAK_02",
+   "speaker": "PEG",
+   "hash": "6c98fad8ce19b5e4",
+   "path": "res://gravelight/audio/vo/peg/PEG_STREAK_02.ogg",
+   "format": "ogg",
+   "duration": 2.782,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_TEAM_DOWN_01": {
+   "line": "PEG_TEAM_DOWN_01",
+   "speaker": "PEG",
+   "hash": "55a1ea170acf052c",
+   "path": "res://gravelight/audio/vo/peg/PEG_TEAM_DOWN_01.ogg",
+   "format": "ogg",
+   "duration": 3.789,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_TEAM_DOWN_02": {
+   "line": "PEG_TEAM_DOWN_02",
+   "speaker": "PEG",
+   "hash": "edbc3aeb67f5fe34",
+   "path": "res://gravelight/audio/vo/peg/PEG_TEAM_DOWN_02.ogg",
+   "format": "ogg",
+   "duration": 3.702,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_TRAP_01": {
+   "line": "PEG_TRAP_01",
+   "speaker": "PEG",
+   "hash": "21e055f8717af284",
+   "path": "res://gravelight/audio/vo/peg/PEG_TRAP_01.ogg",
+   "format": "ogg",
+   "duration": 2.423,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "REI_CYL1_01": {
+   "line": "REI_CYL1_01",
+   "speaker": "REI",
+   "hash": "8970c681aa20521c",
+   "path": "res://gravelight/audio/vo/rei/REI_CYL1_01.ogg",
+   "format": "ogg",
+   "duration": 21.58,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "REI_CYL2_01": {
+   "line": "REI_CYL2_01",
+   "speaker": "REI",
+   "hash": "4d10ef274161628b",
+   "path": "res://gravelight/audio/vo/rei/REI_CYL2_01.ogg",
+   "format": "ogg",
+   "duration": 20.491,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "REI_CYL3_01": {
+   "line": "REI_CYL3_01",
+   "speaker": "REI",
+   "hash": "ed9969670c04dd8c",
+   "path": "res://gravelight/audio/vo/rei/REI_CYL3_01.ogg",
+   "format": "ogg",
+   "duration": 26.868,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "REI_END_01": {
+   "line": "REI_END_01",
+   "speaker": "REI",
+   "hash": "0a436dfc215747b2",
+   "path": "res://gravelight/audio/vo/rei/REI_END_01.ogg",
+   "format": "ogg",
+   "duration": 6.011,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "REI_END_02": {
+   "line": "REI_END_02",
+   "speaker": "REI",
+   "hash": "ffaf546bf002e9f2",
+   "path": "res://gravelight/audio/vo/rei/REI_END_02.ogg",
+   "format": "ogg",
+   "duration": 6.284,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "REI_HEART_00": {
+   "line": "REI_HEART_00",
+   "speaker": "REI",
+   "hash": "4c666665ee44fdbd",
+   "path": "res://gravelight/audio/vo/rei/REI_HEART_00.ogg",
+   "format": "ogg",
+   "duration": 6.486,
+   "voice": "Zira",
+   "chain": "pa"
+  },
+  "REI_HEART_105": {
+   "line": "REI_HEART_105",
+   "speaker": "REI",
+   "hash": "12dd00557b47f12d",
+   "path": "res://gravelight/audio/vo/rei/REI_HEART_105.ogg",
+   "format": "ogg",
+   "duration": 5.476,
+   "voice": "Zira",
+   "chain": "pa"
+  },
+  "REI_HEART_15": {
+   "line": "REI_HEART_15",
+   "speaker": "REI",
+   "hash": "62f2655f6d2d3ada",
+   "path": "res://gravelight/audio/vo/rei/REI_HEART_15.ogg",
+   "format": "ogg",
+   "duration": 6.486,
+   "voice": "Zira",
+   "chain": "pa"
+  },
+  "REI_HEART_30": {
+   "line": "REI_HEART_30",
+   "speaker": "REI",
+   "hash": "e4517e3a7dd7b7b4",
+   "path": "res://gravelight/audio/vo/rei/REI_HEART_30.ogg",
+   "format": "ogg",
+   "duration": 10.117,
+   "voice": "Zira",
+   "chain": "pa"
+  },
+  "REI_HEART_45": {
+   "line": "REI_HEART_45",
+   "speaker": "REI",
+   "hash": "568b073f03d0424f",
+   "path": "res://gravelight/audio/vo/rei/REI_HEART_45.ogg",
+   "format": "ogg",
+   "duration": 13.079,
+   "voice": "Zira",
+   "chain": "pa"
+  },
+  "REI_HEART_60": {
+   "line": "REI_HEART_60",
+   "speaker": "REI",
+   "hash": "f424ccd317301ed6",
+   "path": "res://gravelight/audio/vo/rei/REI_HEART_60.ogg",
+   "format": "ogg",
+   "duration": 3.774,
+   "voice": "Zira",
+   "chain": "pa"
+  },
+  "REI_HEART_75": {
+   "line": "REI_HEART_75",
+   "speaker": "REI",
+   "hash": "8ff17e599dd015e4",
+   "path": "res://gravelight/audio/vo/rei/REI_HEART_75.ogg",
+   "format": "ogg",
+   "duration": 9.198,
+   "voice": "Zira",
+   "chain": "pa"
+  },
+  "REI_HEART_90": {
+   "line": "REI_HEART_90",
+   "speaker": "REI",
+   "hash": "ce52bd6f7ca18ea3",
+   "path": "res://gravelight/audio/vo/rei/REI_HEART_90.ogg",
+   "format": "ogg",
+   "duration": 8.926,
+   "voice": "Zira",
+   "chain": "pa"
+  },
+  "REI_S5_BOX_01": {
+   "line": "REI_S5_BOX_01",
+   "speaker": "REI",
+   "hash": "d37dd5e7073a4ae4",
+   "path": "res://gravelight/audio/vo/rei/REI_S5_BOX_01.ogg",
+   "format": "ogg",
+   "duration": 11.387,
+   "voice": "Zira",
+   "chain": "pa"
+  },
+  "REI_S7_DRUMMER_01": {
+   "line": "REI_S7_DRUMMER_01",
+   "speaker": "REI",
+   "hash": "0a1b2e680f4fcc22",
+   "path": "res://gravelight/audio/vo/rei/REI_S7_DRUMMER_01.ogg",
+   "format": "ogg",
+   "duration": 11.479,
+   "voice": "Zira",
+   "chain": "pa"
+  },
+  "REI_S8_01": {
+   "line": "REI_S8_01",
+   "speaker": "REI",
+   "hash": "4dfc965d28cc45a5",
+   "path": "res://gravelight/audio/vo/rei/REI_S8_01.ogg",
+   "format": "ogg",
+   "duration": 18.946,
+   "voice": "Zira",
+   "chain": "pa"
+  },
+  "REI_SAMPLE_01": {
+   "line": "REI_SAMPLE_01",
+   "speaker": "REI",
+   "hash": "192476a7941091bd",
+   "path": "res://gravelight/audio/vo/rei/REI_SAMPLE_01.ogg",
+   "format": "ogg",
+   "duration": 10.834,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "REI_SAMPLE_02": {
+   "line": "REI_SAMPLE_02",
+   "speaker": "REI",
+   "hash": "121556226c954089",
+   "path": "res://gravelight/audio/vo/rei/REI_SAMPLE_02.ogg",
+   "format": "ogg",
+   "duration": 10.959,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "REI_SAMPLE_03": {
+   "line": "REI_SAMPLE_03",
+   "speaker": "REI",
+   "hash": "6416d069c8f1b214",
+   "path": "res://gravelight/audio/vo/rei/REI_SAMPLE_03.ogg",
+   "format": "ogg",
+   "duration": 6.454,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "REI_SAMPLE_04": {
+   "line": "REI_SAMPLE_04",
+   "speaker": "REI",
+   "hash": "c9a5b8f805e0dacb",
+   "path": "res://gravelight/audio/vo/rei/REI_SAMPLE_04.ogg",
+   "format": "ogg",
+   "duration": 7.441,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "REI_SAMPLE_05": {
+   "line": "REI_SAMPLE_05",
+   "speaker": "REI",
+   "hash": "4c4383def6deb67c",
+   "path": "res://gravelight/audio/vo/rei/REI_SAMPLE_05.ogg",
+   "format": "ogg",
+   "duration": 5.081,
+   "voice": "Zira",
+   "chain": "phono"
+  },
+  "REI_VAULT_OPEN_01": {
+   "line": "REI_VAULT_OPEN_01",
+   "speaker": "REI",
+   "hash": "99722b7b770c275c",
+   "path": "res://gravelight/audio/vo/rei/REI_VAULT_OPEN_01.ogg",
+   "format": "ogg",
+   "duration": 13.919,
+   "voice": "Zira",
+   "chain": "pa"
+  },
+  "TAG_KB4471_01_p0": {
+   "line": "TAG_KB4471_01",
+   "speaker": "WRN",
+   "hash": "db27170c87d5ae6d",
+   "path": "res://gravelight/audio/vo/wrn/TAG_KB4471_01_p0.ogg",
+   "format": "ogg",
+   "duration": 1.974,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "TAG_KB4471_01_p1": {
+   "line": "TAG_KB4471_01",
+   "speaker": "DUT",
+   "hash": "512f167d01dbdf2a",
+   "path": "res://gravelight/audio/vo/dut/TAG_KB4471_01_p1.ogg",
+   "format": "ogg",
+   "duration": 1.973,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "TAG_KB4471_01_p10": {
+   "line": "TAG_KB4471_01",
+   "speaker": "WRN",
+   "hash": "1324c0f0042f1e7e",
+   "path": "res://gravelight/audio/vo/wrn/TAG_KB4471_01_p10.ogg",
+   "format": "ogg",
+   "duration": 2.851,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "TAG_KB4471_01_p2": {
+   "line": "TAG_KB4471_01",
+   "speaker": "WRN",
+   "hash": "dd360ff4bd57cb6b",
+   "path": "res://gravelight/audio/vo/wrn/TAG_KB4471_01_p2.ogg",
+   "format": "ogg",
+   "duration": 5.971,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "TAG_KB4471_01_p3": {
+   "line": "TAG_KB4471_01",
+   "speaker": "DUT",
+   "hash": "9538ed53e5521761",
+   "path": "res://gravelight/audio/vo/dut/TAG_KB4471_01_p3.ogg",
+   "format": "ogg",
+   "duration": 3.257,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "TAG_KB4471_01_p4": {
+   "line": "TAG_KB4471_01",
+   "speaker": "WRN",
+   "hash": "2c86165abd6af82c",
+   "path": "res://gravelight/audio/vo/wrn/TAG_KB4471_01_p4.ogg",
+   "format": "ogg",
+   "duration": 7.427,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "TAG_KB4471_01_p5": {
+   "line": "TAG_KB4471_01",
+   "speaker": "DUT",
+   "hash": "e012cea13d3a7314",
+   "path": "res://gravelight/audio/vo/dut/TAG_KB4471_01_p5.ogg",
+   "format": "ogg",
+   "duration": 8.155,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "TAG_KB4471_01_p6": {
+   "line": "TAG_KB4471_01",
+   "speaker": "WRN",
+   "hash": "ba76a7c694ac8b2b",
+   "path": "res://gravelight/audio/vo/wrn/TAG_KB4471_01_p6.ogg",
+   "format": "ogg",
+   "duration": 0.987,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "TAG_KB4471_01_p7": {
+   "line": "TAG_KB4471_01",
+   "speaker": "DUT",
+   "hash": "2ea111e373b985d5",
+   "path": "res://gravelight/audio/vo/dut/TAG_KB4471_01_p7.ogg",
+   "format": "ogg",
+   "duration": 11.343,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "TAG_KB4471_01_p8": {
+   "line": "TAG_KB4471_01",
+   "speaker": "WRN",
+   "hash": "180d124756af82e0",
+   "path": "res://gravelight/audio/vo/wrn/TAG_KB4471_01_p8.ogg",
+   "format": "ogg",
+   "duration": 5.274,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "TAG_KB4471_01_p9": {
+   "line": "TAG_KB4471_01",
+   "speaker": "DUT",
+   "hash": "230f93b758d2477d",
+   "path": "res://gravelight/audio/vo/dut/TAG_KB4471_01_p9.ogg",
+   "format": "ogg",
+   "duration": 1.204,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "WRN_AMMO_LOW_01": {
+   "line": "WRN_AMMO_LOW_01",
+   "speaker": "WRN",
+   "hash": "9346e674b3dcd6cf",
+   "path": "res://gravelight/audio/vo/wrn/WRN_AMMO_LOW_01.ogg",
+   "format": "ogg",
+   "duration": 1.156,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_AMMO_NONE_01": {
+   "line": "WRN_AMMO_NONE_01",
+   "speaker": "WRN",
+   "hash": "fcb5ee49578b2d8e",
+   "path": "res://gravelight/audio/vo/wrn/WRN_AMMO_NONE_01.ogg",
+   "format": "ogg",
+   "duration": 1.914,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_BELL_01": {
+   "line": "WRN_BELL_01",
+   "speaker": "WRN",
+   "hash": "2d0b117deb6cfeed",
+   "path": "res://gravelight/audio/vo/wrn/WRN_BELL_01.ogg",
+   "format": "ogg",
+   "duration": 4.436,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_BELL_02": {
+   "line": "WRN_BELL_02",
+   "speaker": "WRN",
+   "hash": "0f62f59a035b217e",
+   "path": "res://gravelight/audio/vo/wrn/WRN_BELL_02.ogg",
+   "format": "ogg",
+   "duration": 5.144,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_BUY_AMMO_01": {
+   "line": "WRN_BUY_AMMO_01",
+   "speaker": "WRN",
+   "hash": "0ae51be3540de3f0",
+   "path": "res://gravelight/audio/vo/wrn/WRN_BUY_AMMO_01.ogg",
+   "format": "ogg",
+   "duration": 3.32,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_BUY_LAUNCHER_01": {
+   "line": "WRN_BUY_LAUNCHER_01",
+   "speaker": "WRN",
+   "hash": "b6fef67dabb5874d",
+   "path": "res://gravelight/audio/vo/wrn/WRN_BUY_LAUNCHER_01.ogg",
+   "format": "ogg",
+   "duration": 3.549,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_BUY_LMG_01": {
+   "line": "WRN_BUY_LMG_01",
+   "speaker": "WRN",
+   "hash": "f1530e66b8270df0",
+   "path": "res://gravelight/audio/vo/wrn/WRN_BUY_LMG_01.ogg",
+   "format": "ogg",
+   "duration": 3.19,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_BUY_MELEE_01": {
+   "line": "WRN_BUY_MELEE_01",
+   "speaker": "WRN",
+   "hash": "3132b6da98c2ff13",
+   "path": "res://gravelight/audio/vo/wrn/WRN_BUY_MELEE_01.ogg",
+   "format": "ogg",
+   "duration": 3.838,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_BUY_PISTOL_01": {
+   "line": "WRN_BUY_PISTOL_01",
+   "speaker": "WRN",
+   "hash": "5a0cf914a6e746df",
+   "path": "res://gravelight/audio/vo/wrn/WRN_BUY_PISTOL_01.ogg",
+   "format": "ogg",
+   "duration": 5.064,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_BUY_RIFLE_01": {
+   "line": "WRN_BUY_RIFLE_01",
+   "speaker": "WRN",
+   "hash": "7c746eacebb73578",
+   "path": "res://gravelight/audio/vo/wrn/WRN_BUY_RIFLE_01.ogg",
+   "format": "ogg",
+   "duration": 5.692,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_BUY_RIFLE_02": {
+   "line": "WRN_BUY_RIFLE_02",
+   "speaker": "WRN",
+   "hash": "f3c8b47b25270f41",
+   "path": "res://gravelight/audio/vo/wrn/WRN_BUY_RIFLE_02.ogg",
+   "format": "ogg",
+   "duration": 3.818,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_BUY_SHOTGUN_01": {
+   "line": "WRN_BUY_SHOTGUN_01",
+   "speaker": "WRN",
+   "hash": "13b182f625b4fe24",
+   "path": "res://gravelight/audio/vo/wrn/WRN_BUY_SHOTGUN_01.ogg",
+   "format": "ogg",
+   "duration": 4.755,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_BUY_SMG_01": {
+   "line": "WRN_BUY_SMG_01",
+   "speaker": "WRN",
+   "hash": "dfb2646165d9d216",
+   "path": "res://gravelight/audio/vo/wrn/WRN_BUY_SMG_01.ogg",
+   "format": "ogg",
+   "duration": 3.688,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_BUY_WONDER_01": {
+   "line": "WRN_BUY_WONDER_01",
+   "speaker": "WRN",
+   "hash": "9de08fd50b965e6a",
+   "path": "res://gravelight/audio/vo/wrn/WRN_BUY_WONDER_01.ogg",
+   "format": "ogg",
+   "duration": 4.067,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_CRATE_BAD_01": {
+   "line": "WRN_CRATE_BAD_01",
+   "speaker": "WRN",
+   "hash": "a41edc439ebe6f29",
+   "path": "res://gravelight/audio/vo/wrn/WRN_CRATE_BAD_01.ogg",
+   "format": "ogg",
+   "duration": 2.781,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_CRATE_BAD_02": {
+   "line": "WRN_CRATE_BAD_02",
+   "speaker": "WRN",
+   "hash": "9975947e66ce535d",
+   "path": "res://gravelight/audio/vo/wrn/WRN_CRATE_BAD_02.ogg",
+   "format": "ogg",
+   "duration": 2.064,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_CRATE_DRUMMER_01": {
+   "line": "WRN_CRATE_DRUMMER_01",
+   "speaker": "WRN",
+   "hash": "7e7222daa03d6553",
+   "path": "res://gravelight/audio/vo/wrn/WRN_CRATE_DRUMMER_01.ogg",
+   "format": "ogg",
+   "duration": 4.267,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_CRATE_DRUMMER_02": {
+   "line": "WRN_CRATE_DRUMMER_02",
+   "speaker": "WRN",
+   "hash": "bb89c748db0d0c75",
+   "path": "res://gravelight/audio/vo/wrn/WRN_CRATE_DRUMMER_02.ogg",
+   "format": "ogg",
+   "duration": 3.549,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_CRATE_GOOD_01": {
+   "line": "WRN_CRATE_GOOD_01",
+   "speaker": "WRN",
+   "hash": "9315df6d4dd86738",
+   "path": "res://gravelight/audio/vo/wrn/WRN_CRATE_GOOD_01.ogg",
+   "format": "ogg",
+   "duration": 3.31,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_CRATE_GOOD_02": {
+   "line": "WRN_CRATE_GOOD_02",
+   "speaker": "WRN",
+   "hash": "f5bc4fa82d46aa31",
+   "path": "res://gravelight/audio/vo/wrn/WRN_CRATE_GOOD_02.ogg",
+   "format": "ogg",
+   "duration": 2.532,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_CRAWLER_01": {
+   "line": "WRN_CRAWLER_01",
+   "speaker": "WRN",
+   "hash": "e680255b4432bb7e",
+   "path": "res://gravelight/audio/vo/wrn/WRN_CRAWLER_01.ogg",
+   "format": "ogg",
+   "duration": 2.911,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_CRUCIBLE_01": {
+   "line": "WRN_CRUCIBLE_01",
+   "speaker": "WRN",
+   "hash": "7f53bbf69840ed38",
+   "path": "res://gravelight/audio/vo/wrn/WRN_CRUCIBLE_01.ogg",
+   "format": "ogg",
+   "duration": 3.429,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_CRUCIBLE_02": {
+   "line": "WRN_CRUCIBLE_02",
+   "speaker": "WRN",
+   "hash": "1ef0ae164e6aa26c",
+   "path": "res://gravelight/audio/vo/wrn/WRN_CRUCIBLE_02.ogg",
+   "format": "ogg",
+   "duration": 3.16,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_DENY_CAP_01": {
+   "line": "WRN_DENY_CAP_01",
+   "speaker": "WRN",
+   "hash": "5fd91e69d5861c2b",
+   "path": "res://gravelight/audio/vo/wrn/WRN_DENY_CAP_01.ogg",
+   "format": "ogg",
+   "duration": 3.33,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_DENY_NO_POWER_01": {
+   "line": "WRN_DENY_NO_POWER_01",
+   "speaker": "WRN",
+   "hash": "477e0b772ba22789",
+   "path": "res://gravelight/audio/vo/wrn/WRN_DENY_NO_POWER_01.ogg",
+   "format": "ogg",
+   "duration": 2.562,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_DENY_NO_SCRIP_01": {
+   "line": "WRN_DENY_NO_SCRIP_01",
+   "speaker": "WRN",
+   "hash": "abe31282e4cc6e5c",
+   "path": "res://gravelight/audio/vo/wrn/WRN_DENY_NO_SCRIP_01.ogg",
+   "format": "ogg",
+   "duration": 2.093,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_DOOR_01": {
+   "line": "WRN_DOOR_01",
+   "speaker": "WRN",
+   "hash": "fd1cbf36a01f4fd1",
+   "path": "res://gravelight/audio/vo/wrn/WRN_DOOR_01.ogg",
+   "format": "ogg",
+   "duration": 4.297,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_DOWN_01": {
+   "line": "WRN_DOWN_01",
+   "speaker": "WRN",
+   "hash": "06bb3f3407fb4b95",
+   "path": "res://gravelight/audio/vo/wrn/WRN_DOWN_01.ogg",
+   "format": "ogg",
+   "duration": 2.951,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_DOWN_02": {
+   "line": "WRN_DOWN_02",
+   "speaker": "WRN",
+   "hash": "1492c46f10556eb6",
+   "path": "res://gravelight/audio/vo/wrn/WRN_DOWN_02.ogg",
+   "format": "ogg",
+   "duration": 3.479,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_EE_01": {
+   "line": "WRN_EE_01",
+   "speaker": "WRN",
+   "hash": "89ec6c493e2b42f8",
+   "path": "res://gravelight/audio/vo/wrn/WRN_EE_01.ogg",
+   "format": "ogg",
+   "duration": 5.094,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_EE_02": {
+   "line": "WRN_EE_02",
+   "speaker": "WRN",
+   "hash": "79a2873df9ff95db",
+   "path": "res://gravelight/audio/vo/wrn/WRN_EE_02.ogg",
+   "format": "ogg",
+   "duration": 3.858,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_EE_03": {
+   "line": "WRN_EE_03",
+   "speaker": "WRN",
+   "hash": "14b1fa7167e3e5b8",
+   "path": "res://gravelight/audio/vo/wrn/WRN_EE_03.ogg",
+   "format": "ogg",
+   "duration": 2.293,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_EXHAUST_01": {
+   "line": "WRN_EXHAUST_01",
+   "speaker": "WRN",
+   "hash": "9ab21c692c258842",
+   "path": "res://gravelight/audio/vo/wrn/WRN_EXHAUST_01.ogg",
+   "format": "ogg",
+   "duration": 2.961,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_EXHAUST_02": {
+   "line": "WRN_EXHAUST_02",
+   "speaker": "WRN",
+   "hash": "bdf2598ec7dc6853",
+   "path": "res://gravelight/audio/vo/wrn/WRN_EXHAUST_02.ogg",
+   "format": "ogg",
+   "duration": 2.941,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_FOREMAN_01": {
+   "line": "WRN_FOREMAN_01",
+   "speaker": "WRN",
+   "hash": "b77cf71adbc57b6d",
+   "path": "res://gravelight/audio/vo/wrn/WRN_FOREMAN_01.ogg",
+   "format": "ogg",
+   "duration": 5.443,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_FOREMAN_02": {
+   "line": "WRN_FOREMAN_02",
+   "speaker": "WRN",
+   "hash": "ca8222afe6e19c88",
+   "path": "res://gravelight/audio/vo/wrn/WRN_FOREMAN_02.ogg",
+   "format": "ogg",
+   "duration": 4.396,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_GLASSHIDE_01": {
+   "line": "WRN_GLASSHIDE_01",
+   "speaker": "WRN",
+   "hash": "69350e02c81abdf1",
+   "path": "res://gravelight/audio/vo/wrn/WRN_GLASSHIDE_01.ogg",
+   "format": "ogg",
+   "duration": 4.336,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_HEADSHOT_01": {
+   "line": "WRN_HEADSHOT_01",
+   "speaker": "WRN",
+   "hash": "97532b9eb9fa120b",
+   "path": "res://gravelight/audio/vo/wrn/WRN_HEADSHOT_01.ogg",
+   "format": "ogg",
+   "duration": 0.568,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_HEADSHOT_02": {
+   "line": "WRN_HEADSHOT_02",
+   "speaker": "WRN",
+   "hash": "5f9535b7d05d56c0",
+   "path": "res://gravelight/audio/vo/wrn/WRN_HEADSHOT_02.ogg",
+   "format": "ogg",
+   "duration": 1.904,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_HEADSHOT_03": {
+   "line": "WRN_HEADSHOT_03",
+   "speaker": "WRN",
+   "hash": "19e95fbf3203d140",
+   "path": "res://gravelight/audio/vo/wrn/WRN_HEADSHOT_03.ogg",
+   "format": "ogg",
+   "duration": 1.904,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_INTEL_01": {
+   "line": "WRN_INTEL_01",
+   "speaker": "WRN",
+   "hash": "af34d66b665a8388",
+   "path": "res://gravelight/audio/vo/wrn/WRN_INTEL_01.ogg",
+   "format": "ogg",
+   "duration": 4.057,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PERK_BLASTPROOF_01": {
+   "line": "WRN_PERK_BLASTPROOF_01",
+   "speaker": "WRN",
+   "hash": "c3170075bb50cf25",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PERK_BLASTPROOF_01.ogg",
+   "format": "ogg",
+   "duration": 3.399,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PERK_FERNET_01": {
+   "line": "WRN_PERK_FERNET_01",
+   "speaker": "WRN",
+   "hash": "41879c51ee6f9015",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PERK_FERNET_01.ogg",
+   "format": "ogg",
+   "duration": 3.818,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PERK_FERNET_02": {
+   "line": "WRN_PERK_FERNET_02",
+   "speaker": "WRN",
+   "hash": "b59ea1050d431be4",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PERK_FERNET_02.ogg",
+   "format": "ogg",
+   "duration": 5.074,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PERK_HAWKEYE_01": {
+   "line": "WRN_PERK_HAWKEYE_01",
+   "speaker": "WRN",
+   "hash": "ca36a2b00733a63e",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PERK_HAWKEYE_01.ogg",
+   "format": "ogg",
+   "duration": 2.502,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PERK_HAWKEYE_02": {
+   "line": "WRN_PERK_HAWKEYE_02",
+   "speaker": "WRN",
+   "hash": "3d3abb8722673edf",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PERK_HAWKEYE_02.ogg",
+   "format": "ogg",
+   "duration": 6.091,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PERK_IRONHIDE_01": {
+   "line": "WRN_PERK_IRONHIDE_01",
+   "speaker": "WRN",
+   "hash": "d70376911704a91c",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PERK_IRONHIDE_01.ogg",
+   "format": "ogg",
+   "duration": 2.602,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PERK_MARATHON_01": {
+   "line": "WRN_PERK_MARATHON_01",
+   "speaker": "WRN",
+   "hash": "303a08123881d438",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PERK_MARATHON_01.ogg",
+   "format": "ogg",
+   "duration": 3.509,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PERK_OVERCLOCK_01": {
+   "line": "WRN_PERK_OVERCLOCK_01",
+   "speaker": "WRN",
+   "hash": "daa20227c0053d45",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PERK_OVERCLOCK_01.ogg",
+   "format": "ogg",
+   "duration": 4.267,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PERK_OVERCLOCK_02": {
+   "line": "WRN_PERK_OVERCLOCK_02",
+   "speaker": "WRN",
+   "hash": "053cfce8aa37a175",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PERK_OVERCLOCK_02.ogg",
+   "format": "ogg",
+   "duration": 3.449,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PERK_PACKMULE_01": {
+   "line": "WRN_PERK_PACKMULE_01",
+   "speaker": "WRN",
+   "hash": "e4d0d16ba562bb55",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PERK_PACKMULE_01.ogg",
+   "format": "ogg",
+   "duration": 2.622,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PERK_SECONDWIND_01": {
+   "line": "WRN_PERK_SECONDWIND_01",
+   "speaker": "WRN",
+   "hash": "ea5d439910749589",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PERK_SECONDWIND_01.ogg",
+   "format": "ogg",
+   "duration": 6.898,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PERK_SECONDWIND_02": {
+   "line": "WRN_PERK_SECONDWIND_02",
+   "speaker": "WRN",
+   "hash": "4cb3aa24b9e891f5",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PERK_SECONDWIND_02.ogg",
+   "format": "ogg",
+   "duration": 4.057,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PERK_TRIGGER_01": {
+   "line": "WRN_PERK_TRIGGER_01",
+   "speaker": "WRN",
+   "hash": "40250383b5fbf619",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PERK_TRIGGER_01.ogg",
+   "format": "ogg",
+   "duration": 4.227,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PERK_TWINBARREL_01": {
+   "line": "WRN_PERK_TWINBARREL_01",
+   "speaker": "WRN",
+   "hash": "5e265dd8f81f902e",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PERK_TWINBARREL_01.ogg",
+   "format": "ogg",
+   "duration": 1.884,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_POL_01": {
+   "line": "WRN_POL_01",
+   "speaker": "WRN",
+   "hash": "73ddf1fef3049f00",
+   "path": "res://gravelight/audio/vo/wrn/WRN_POL_01.ogg",
+   "format": "ogg",
+   "duration": 4.047,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_POL_02": {
+   "line": "WRN_POL_02",
+   "speaker": "WRN",
+   "hash": "13a19106bb411da1",
+   "path": "res://gravelight/audio/vo/wrn/WRN_POL_02.ogg",
+   "format": "ogg",
+   "duration": 4.586,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_POL_03": {
+   "line": "WRN_POL_03",
+   "speaker": "WRN",
+   "hash": "89b5444f3807c460",
+   "path": "res://gravelight/audio/vo/wrn/WRN_POL_03.ogg",
+   "format": "ogg",
+   "duration": 5.583,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_POWER_01": {
+   "line": "WRN_POWER_01",
+   "speaker": "WRN",
+   "hash": "97a07e38cd8b3667",
+   "path": "res://gravelight/audio/vo/wrn/WRN_POWER_01.ogg",
+   "format": "ogg",
+   "duration": 4.257,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PWR_BLACKOUT_01": {
+   "line": "WRN_PWR_BLACKOUT_01",
+   "speaker": "WRN",
+   "hash": "99bd1832c0e79e52",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PWR_BLACKOUT_01.ogg",
+   "format": "ogg",
+   "duration": 4.346,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PWR_CLEARANCE_01": {
+   "line": "WRN_PWR_CLEARANCE_01",
+   "speaker": "WRN",
+   "hash": "e336857c3d7c61b0",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PWR_CLEARANCE_01.ogg",
+   "format": "ogg",
+   "duration": 2.123,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PWR_DEATHSDOOR_01": {
+   "line": "WRN_PWR_DEATHSDOOR_01",
+   "speaker": "WRN",
+   "hash": "61e0a6fd0e9ad23a",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PWR_DEATHSDOOR_01.ogg",
+   "format": "ogg",
+   "duration": 3.529,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PWR_DOUBLESCRIP_01": {
+   "line": "WRN_PWR_DOUBLESCRIP_01",
+   "speaker": "WRN",
+   "hash": "900917f695b1fc02",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PWR_DOUBLESCRIP_01.ogg",
+   "format": "ogg",
+   "duration": 2.961,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PWR_FORTIFY_01": {
+   "line": "WRN_PWR_FORTIFY_01",
+   "speaker": "WRN",
+   "hash": "77752dde71f4cac9",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PWR_FORTIFY_01.ogg",
+   "format": "ogg",
+   "duration": 2.622,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_PWR_RESUPPLY_01": {
+   "line": "WRN_PWR_RESUPPLY_01",
+   "speaker": "WRN",
+   "hash": "8fe0c4da9f0e7ffe",
+   "path": "res://gravelight/audio/vo/wrn/WRN_PWR_RESUPPLY_01.ogg",
+   "format": "ogg",
+   "duration": 2.323,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_REVIVED_01": {
+   "line": "WRN_REVIVED_01",
+   "speaker": "WRN",
+   "hash": "8e6a1360afc6f8a8",
+   "path": "res://gravelight/audio/vo/wrn/WRN_REVIVED_01.ogg",
+   "format": "ogg",
+   "duration": 4.307,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_REVIVE_01": {
+   "line": "WRN_REVIVE_01",
+   "speaker": "WRN",
+   "hash": "05c71af00605b971",
+   "path": "res://gravelight/audio/vo/wrn/WRN_REVIVE_01.ogg",
+   "format": "ogg",
+   "duration": 3.16,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_REVIVE_02": {
+   "line": "WRN_REVIVE_02",
+   "speaker": "WRN",
+   "hash": "64ba8d1f071b638f",
+   "path": "res://gravelight/audio/vo/wrn/WRN_REVIVE_02.ogg",
+   "format": "ogg",
+   "duration": 3.021,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_ROUND_END_01": {
+   "line": "WRN_ROUND_END_01",
+   "speaker": "WRN",
+   "hash": "9614415bafd95bee",
+   "path": "res://gravelight/audio/vo/wrn/WRN_ROUND_END_01.ogg",
+   "format": "ogg",
+   "duration": 3.36,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_ROUND_END_02": {
+   "line": "WRN_ROUND_END_02",
+   "speaker": "WRN",
+   "hash": "0115746152fe427d",
+   "path": "res://gravelight/audio/vo/wrn/WRN_ROUND_END_02.ogg",
+   "format": "ogg",
+   "duration": 3.619,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_ROUND_START_01": {
+   "line": "WRN_ROUND_START_01",
+   "speaker": "WRN",
+   "hash": "b98a02d8a8d3666e",
+   "path": "res://gravelight/audio/vo/wrn/WRN_ROUND_START_01.ogg",
+   "format": "ogg",
+   "duration": 1.834,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_ROUND_START_02": {
+   "line": "WRN_ROUND_START_02",
+   "speaker": "WRN",
+   "hash": "8a739881248a7a91",
+   "path": "res://gravelight/audio/vo/wrn/WRN_ROUND_START_02.ogg",
+   "format": "ogg",
+   "duration": 3.28,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_SCREAMER_01": {
+   "line": "WRN_SCREAMER_01",
+   "speaker": "WRN",
+   "hash": "7f32e9a04f5e2dc7",
+   "path": "res://gravelight/audio/vo/wrn/WRN_SCREAMER_01.ogg",
+   "format": "ogg",
+   "duration": 3.19,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_SPAWN_01": {
+   "line": "WRN_SPAWN_01",
+   "speaker": "WRN",
+   "hash": "27554bb6a7b51ebd",
+   "path": "res://gravelight/audio/vo/wrn/WRN_SPAWN_01.ogg",
+   "format": "ogg",
+   "duration": 5.971,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_SPAWN_02": {
+   "line": "WRN_SPAWN_02",
+   "speaker": "WRN",
+   "hash": "513dfd2fe3273312",
+   "path": "res://gravelight/audio/vo/wrn/WRN_SPAWN_02.ogg",
+   "format": "ogg",
+   "duration": 3.24,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_STREAK_01": {
+   "line": "WRN_STREAK_01",
+   "speaker": "WRN",
+   "hash": "c52852d3c2c446e3",
+   "path": "res://gravelight/audio/vo/wrn/WRN_STREAK_01.ogg",
+   "format": "ogg",
+   "duration": 3.698,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_STREAK_02": {
+   "line": "WRN_STREAK_02",
+   "speaker": "WRN",
+   "hash": "b8c797a985862b7a",
+   "path": "res://gravelight/audio/vo/wrn/WRN_STREAK_02.ogg",
+   "format": "ogg",
+   "duration": 2.901,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_TEAM_DOWN_01": {
+   "line": "WRN_TEAM_DOWN_01",
+   "speaker": "WRN",
+   "hash": "ba4f655cc8700114",
+   "path": "res://gravelight/audio/vo/wrn/WRN_TEAM_DOWN_01.ogg",
+   "format": "ogg",
+   "duration": 4.147,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_TEAM_DOWN_02": {
+   "line": "WRN_TEAM_DOWN_02",
+   "speaker": "WRN",
+   "hash": "1e255934453d18c7",
+   "path": "res://gravelight/audio/vo/wrn/WRN_TEAM_DOWN_02.ogg",
+   "format": "ogg",
+   "duration": 2.662,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_TRAP_01": {
+   "line": "WRN_TRAP_01",
+   "speaker": "WRN",
+   "hash": "7376cc38c2d0eca6",
+   "path": "res://gravelight/audio/vo/wrn/WRN_TRAP_01.ogg",
+   "format": "ogg",
+   "duration": 3.011,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "op.slip.01": {
+   "line": "op.slip.01",
+   "speaker": "OPR",
+   "hash": "454ce8a82fa79a79",
+   "path": "res://gravelight/audio/vo/opr/op.slip.01.ogg",
+   "format": "ogg",
+   "duration": 2.436,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.02": {
+   "line": "op.slip.02",
+   "speaker": "OPR",
+   "hash": "c0aa673b5d83573b",
+   "path": "res://gravelight/audio/vo/opr/op.slip.02.ogg",
+   "format": "ogg",
+   "duration": 1.728,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.03": {
+   "line": "op.slip.03",
+   "speaker": "OPR",
+   "hash": "4190f917d9d998e0",
+   "path": "res://gravelight/audio/vo/opr/op.slip.03.ogg",
+   "format": "ogg",
+   "duration": 2.958,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.04": {
+   "line": "op.slip.04",
+   "speaker": "OPR",
+   "hash": "c07192701dbe1833",
+   "path": "res://gravelight/audio/vo/opr/op.slip.04.ogg",
+   "format": "ogg",
+   "duration": 2.599,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.05": {
+   "line": "op.slip.05",
+   "speaker": "OPR",
+   "hash": "6521a8081aaf513e",
+   "path": "res://gravelight/audio/vo/opr/op.slip.05.ogg",
+   "format": "ogg",
+   "duration": 8.357,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.06": {
+   "line": "op.slip.06",
+   "speaker": "OPR",
+   "hash": "7b03cf07c674d109",
+   "path": "res://gravelight/audio/vo/opr/op.slip.06.ogg",
+   "format": "ogg",
+   "duration": 5.831,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.07": {
+   "line": "op.slip.07",
+   "speaker": "OPR",
+   "hash": "92e14fcc868ee22a",
+   "path": "res://gravelight/audio/vo/opr/op.slip.07.ogg",
+   "format": "ogg",
+   "duration": 6.485,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.08": {
+   "line": "op.slip.08",
+   "speaker": "OPR",
+   "hash": "7f2baa0606be466e",
+   "path": "res://gravelight/audio/vo/opr/op.slip.08.ogg",
+   "format": "ogg",
+   "duration": 4.046,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.09": {
+   "line": "op.slip.09",
+   "speaker": "OPR",
+   "hash": "4dd103edec77c286",
+   "path": "res://gravelight/audio/vo/opr/op.slip.09.ogg",
+   "format": "ogg",
+   "duration": 2.751,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.10": {
+   "line": "op.slip.10",
+   "speaker": "OPR",
+   "hash": "e084fdce561e359a",
+   "path": "res://gravelight/audio/vo/opr/op.slip.10.ogg",
+   "format": "ogg",
+   "duration": 4.819,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.11": {
+   "line": "op.slip.11",
+   "speaker": "OPR",
+   "hash": "f1a4decb019edf1b",
+   "path": "res://gravelight/audio/vo/opr/op.slip.11.ogg",
+   "format": "ogg",
+   "duration": 6.3,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.12": {
+   "line": "op.slip.12",
+   "speaker": "OPR",
+   "hash": "6cce795d7ed185cd",
+   "path": "res://gravelight/audio/vo/opr/op.slip.12.ogg",
+   "format": "ogg",
+   "duration": 6.223,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.13": {
+   "line": "op.slip.13",
+   "speaker": "OPR",
+   "hash": "72127cc9611845ca",
+   "path": "res://gravelight/audio/vo/opr/op.slip.13.ogg",
+   "format": "ogg",
+   "duration": 4.678,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.14": {
+   "line": "op.slip.14",
+   "speaker": "OPR",
+   "hash": "711c2b461547bf93",
+   "path": "res://gravelight/audio/vo/opr/op.slip.14.ogg",
+   "format": "ogg",
+   "duration": 6.702,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.15": {
+   "line": "op.slip.15",
+   "speaker": "OPR",
+   "hash": "05bd98b4c1cdf748",
+   "path": "res://gravelight/audio/vo/opr/op.slip.15.ogg",
+   "format": "ogg",
+   "duration": 6.332,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.16": {
+   "line": "op.slip.16",
+   "speaker": "OPR",
+   "hash": "6b6932ff8f3d4ac0",
+   "path": "res://gravelight/audio/vo/opr/op.slip.16.ogg",
+   "format": "ogg",
+   "duration": 7.355,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.17": {
+   "line": "op.slip.17",
+   "speaker": "OPR",
+   "hash": "2a60b33169d69614",
+   "path": "res://gravelight/audio/vo/opr/op.slip.17.ogg",
+   "format": "ogg",
+   "duration": 7.889,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.18": {
+   "line": "op.slip.18",
+   "speaker": "OPR",
+   "hash": "f3507af7d29f2b9c",
+   "path": "res://gravelight/audio/vo/opr/op.slip.18.ogg",
+   "format": "ogg",
+   "duration": 6.539,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.19": {
+   "line": "op.slip.19",
+   "speaker": "OPR",
+   "hash": "6ca948d2677b073f",
+   "path": "res://gravelight/audio/vo/opr/op.slip.19.ogg",
+   "format": "ogg",
+   "duration": 6.702,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.20": {
+   "line": "op.slip.20",
+   "speaker": "OPR",
+   "hash": "a8d18ef4a53e0700",
+   "path": "res://gravelight/audio/vo/opr/op.slip.20.ogg",
+   "format": "ogg",
+   "duration": 6.267,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.21": {
+   "line": "op.slip.21",
+   "speaker": "OPR",
+   "hash": "22616647654b96c5",
+   "path": "res://gravelight/audio/vo/opr/op.slip.21.ogg",
+   "format": "ogg",
+   "duration": 1.924,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.22": {
+   "line": "op.slip.22",
+   "speaker": "OPR",
+   "hash": "edda62cd9fd6a884",
+   "path": "res://gravelight/audio/vo/opr/op.slip.22.ogg",
+   "format": "ogg",
+   "duration": 7.464,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.23": {
+   "line": "op.slip.23",
+   "speaker": "OPR",
+   "hash": "a4fc4d5a99cdabfd",
+   "path": "res://gravelight/audio/vo/opr/op.slip.23.ogg",
+   "format": "ogg",
+   "duration": 4.874,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.24": {
+   "line": "op.slip.24",
+   "speaker": "OPR",
+   "hash": "30620b1902a46d97",
+   "path": "res://gravelight/audio/vo/opr/op.slip.24.ogg",
+   "format": "ogg",
+   "duration": 4.558,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.25": {
+   "line": "op.slip.25",
+   "speaker": "OPR",
+   "hash": "83e04b7d06a113fc",
+   "path": "res://gravelight/audio/vo/opr/op.slip.25.ogg",
+   "format": "ogg",
+   "duration": 2.283,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.26": {
+   "line": "op.slip.26",
+   "speaker": "OPR",
+   "hash": "81dcb28b717ed215",
+   "path": "res://gravelight/audio/vo/opr/op.slip.26.ogg",
+   "format": "ogg",
+   "duration": 6.093,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.27": {
+   "line": "op.slip.27",
+   "speaker": "OPR",
+   "hash": "cab2a3daf47b9782",
+   "path": "res://gravelight/audio/vo/opr/op.slip.27.ogg",
+   "format": "ogg",
+   "duration": 5.102,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.28": {
+   "line": "op.slip.28",
+   "speaker": "OPR",
+   "hash": "2b97e165e796a987",
+   "path": "res://gravelight/audio/vo/opr/op.slip.28.ogg",
+   "format": "ogg",
+   "duration": 4.036,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.29": {
+   "line": "op.slip.29",
+   "speaker": "OPR",
+   "hash": "5b9221ea3174cf70",
+   "path": "res://gravelight/audio/vo/opr/op.slip.29.ogg",
+   "format": "ogg",
+   "duration": 2.577,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.30": {
+   "line": "op.slip.30",
+   "speaker": "OPR",
+   "hash": "5e33b7af7f1fbbb5",
+   "path": "res://gravelight/audio/vo/opr/op.slip.30.ogg",
+   "format": "ogg",
+   "duration": 8.172,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.31": {
+   "line": "op.slip.31",
+   "speaker": "OPR",
+   "hash": "209867c39e09834e",
+   "path": "res://gravelight/audio/vo/opr/op.slip.31.ogg",
+   "format": "ogg",
+   "duration": 6.191,
+   "voice": "Mark",
+   "chain": "corporate"
+  },
+  "op.slip.32": {
+   "line": "op.slip.32",
+   "speaker": "OPR",
+   "hash": "87735ca0716b6292",
+   "path": "res://gravelight/audio/vo/opr/op.slip.32.ogg",
+   "format": "ogg",
+   "duration": 7.475,
+   "voice": "Mark",
+   "chain": "corporate"
+  }
+ },
+ "missing": {
+  "LSL_REC_DRUMMER_01": "no speech: stage direction only ([faint giggle under the drum])",
+  "REI_HEART_END": "no speech: stage direction only ([scream that becomes the bell toll; PA d)"
+ }
+}

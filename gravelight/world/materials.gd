@@ -222,6 +222,9 @@ static func _build(key: String) -> Material:
 	var m3: Material = _build_map0(key)
 	if m3 != null:
 		return m3
+	var m4: Material = _build_map2(key)
+	if m4 != null:
+		return m4
 	push_warning("Mats: unknown key %s" % key)
 	return _flat(Color(1, 0, 1))
 
@@ -1009,4 +1012,142 @@ static func _build_map0(key: String) -> Material:
 			var wmat: StandardMaterial3D = (get_mat("wainscot") as StandardMaterial3D).duplicate() as StandardMaterial3D
 			wmat.roughness = 0.88
 			return wmat
+	return null
+
+
+# ================================================================== Map 2 (Totenhafen) additions (T-036)
+
+## The Baltic in a winter storm: a flat plane that the vertex shader heaves with crossing wind chop, dark
+## green-black water with a cold fresnel sheen, foam streaks along the crests, and a soft depth fade at the
+## edges. The tide controller moves the plane; the shader does not need to know.
+const SEA_SHADER: String = """
+shader_type spatial;
+render_mode blend_mix, depth_draw_opaque, cull_disabled, specular_schlick_ggx;
+uniform vec3 deep : source_color = vec3(0.012, 0.035, 0.045);
+uniform vec3 shallow : source_color = vec3(0.05, 0.12, 0.13);
+uniform vec3 foam : source_color = vec3(0.55, 0.62, 0.64);
+uniform float amp = 0.18;
+uniform float chop = 0.9;
+uniform float speed = 1.0;
+uniform float alpha = 0.9;
+varying float crest;
+
+float wave(vec2 p, vec2 dir, float k, float w, float t) {
+	return sin(dot(p, dir) * k + t * w);
+}
+
+void vertex() {
+	vec3 wp = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	float t = TIME * speed;
+	float h = wave(wp.xz, vec2(0.80, 0.60), 0.55, 1.7, t) * 0.5
+		+ wave(wp.xz, vec2(-0.35, 0.94), 1.10, 2.6, t) * 0.3
+		+ wave(wp.xz, vec2(0.98, -0.20), 2.30, 3.9, t) * 0.2;
+	VERTEX.y += h * amp;
+	crest = clamp(h * 0.5 + 0.5, 0.0, 1.0);
+	float dx = cos(wp.x * 0.55 + t * 1.7) * 0.55 * amp;
+	float dz = cos(wp.z * 1.10 + t * 2.6) * 1.10 * amp * chop;
+	NORMAL = normalize(vec3(-dx, 1.0, -dz));
+}
+
+void fragment() {
+	float fres = pow(1.0 - clamp(dot(normalize(NORMAL), normalize(VIEW)), 0.0, 1.0), 3.0);
+	vec3 col = mix(deep, shallow, fres * 0.8 + crest * 0.2);
+	float streak = smoothstep(0.78, 0.96, crest);
+	col = mix(col, foam, streak * 0.35);
+	ALBEDO = col;
+	ROUGHNESS = 0.08 + streak * 0.5;
+	METALLIC = 0.0;
+	SPECULAR = 0.6;
+	ALPHA = alpha;
+}
+"""
+static var _sea_shader: Shader
+
+
+static func _build_map2(key: String) -> Material:
+	var simplex: FastNoiseLite.NoiseType = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	var cell: FastNoiseLite.NoiseType = FastNoiseLite.TYPE_CELLULAR
+	match key:
+		"sea_water":   # the Baltic, in the pens and off the quay (vertex-heaved plane)
+			if _sea_shader == null:
+				_sea_shader = Shader.new()
+				_sea_shader.code = SEA_SHADER
+			var sm: ShaderMaterial = ShaderMaterial.new()
+			sm.shader = _sea_shader
+			return sm
+		"bunker_concrete":   # cold shuttered concrete, board marks, damp streaks: the 18 m bunker
+			var bn: FastNoiseLite = _noise(simplex, 0.025, 5, 611)
+			var m: StandardMaterial3D = _surface(_tex(bn, _ramp([[0.0, Color(0.22, 0.23, 0.24)], [0.4, Color(0.31, 0.32, 0.33)],
+				[0.75, Color(0.38, 0.39, 0.39)], [1.0, Color(0.44, 0.44, 0.43)]])),
+				_normal(_noise(cell, 0.05, 2, 612), 1.6), Vector3(0.3, 0.3, 0.3), 0.9, 0.6)
+			var streak: FastNoiseLite = _noise(simplex, 0.5, 2, 613)
+			m.detail_enabled = true
+			m.detail_blend_mode = BaseMaterial3D.BLEND_MODE_MUL
+			m.detail_uv_layer = BaseMaterial3D.DETAIL_UV_1
+			m.detail_albedo = _tex(streak, _ramp([[0.0, Color(0.62, 0.64, 0.66)], [0.5, Color(1, 1, 1)], [1.0, Color(1, 1, 1)]]))
+			return m
+		"wet_concrete":   # the quay and the pier decks: darker, glossier, puddled
+			return _surface(_tex(_noise(simplex, 0.02, 5, 621), _ramp([[0.0, Color(0.09, 0.10, 0.11)], [0.35, Color(0.17, 0.18, 0.19)],
+				[0.7, Color(0.24, 0.25, 0.25)], [1.0, Color(0.30, 0.30, 0.29)]])),
+				_normal(_noise(simplex, 0.08, 3, 622), 0.9), Vector3(0.25, 0.25, 0.25), 0.42, 0.4)
+		"pier_concrete":   # pier and apron sides seen from the water: tide-stained, algae at the foot
+			return _surface(_tex(_noise(simplex, 0.03, 5, 625), _ramp([[0.0, Color(0.10, 0.13, 0.11)], [0.3, Color(0.22, 0.24, 0.22)],
+				[0.7, Color(0.33, 0.34, 0.33)], [1.0, Color(0.40, 0.40, 0.39)]])),
+				_normal(_noise(cell, 0.05, 2, 626), 1.4), Vector3(0.3, 0.12, 0.3), 0.85, 0.6)
+		"u_hull":   # the boat: grey-black anti-fouling with rust weeping from the seams
+			return _surface(_tex(_noise(simplex, 0.08, 5, 631), _ramp([[0.0, Color(0.05, 0.05, 0.055)], [0.55, Color(0.12, 0.12, 0.13)],
+				[0.85, Color(0.18, 0.18, 0.19)], [1.0, Color(0.30, 0.17, 0.10)]])),
+				_normal(_noise(simplex, 0.25, 3, 632), 1.2), Vector3(1.0, 1.0, 1.0), 0.55, 0.6, 0.5)
+		"u_interior":   # the pressure hull inside: grey-green paint, sweat and grime
+			return _surface(_tex(_noise(simplex, 0.06, 4, 635), _ramp([[0.0, Color(0.14, 0.17, 0.15)], [0.6, Color(0.25, 0.29, 0.26)], [1.0, Color(0.34, 0.37, 0.33)]])),
+				_normal(_noise(simplex, 0.2, 3, 636), 1.0), Vector3(0.8, 0.8, 0.8), 0.6, 0.5, 0.3)
+		"lead":   # the sealed coffins: dull, soft, scratched
+			return _surface(_tex(_noise(simplex, 0.1, 4, 641), _ramp([[0.0, Color(0.20, 0.21, 0.23)], [0.6, Color(0.30, 0.31, 0.33)], [1.0, Color(0.38, 0.39, 0.40)]])),
+				_normal(_noise(simplex, 0.4, 2, 642), 0.6), Vector3(2.0, 2.0, 2.0), 0.55, 0.4, 0.8)
+		"rope":   # hemp hawsers, mooring lines
+			return _surface(_tex(_noise(cell, 0.9, 1, 651), _ramp([[0.0, Color(0.30, 0.24, 0.14)], [1.0, Color(0.48, 0.40, 0.25)]])),
+				_normal(_noise(cell, 0.9, 1, 652), 2.0), Vector3(6.0, 6.0, 6.0), 0.95)
+		"net":   # heaped fishing nets: dark olive, matted
+			var nn: FastNoiseLite = _noise(cell, 0.6, 2, 655)
+			nn.cellular_return_type = FastNoiseLite.RETURN_DISTANCE2_SUB
+			return _surface(_tex(nn, _ramp([[0.0, Color(0.08, 0.10, 0.06)], [0.5, Color(0.16, 0.19, 0.11)], [1.0, Color(0.24, 0.26, 0.16)]])),
+				_normal(nn, 2.5), Vector3(4.0, 4.0, 4.0), 1.0)
+		"zinc":   # gutting tables, cannery lines
+			return _surface(_tex(_noise(simplex, 0.15, 3, 661), _ramp([[0.0, Color(0.40, 0.42, 0.43)], [1.0, Color(0.56, 0.58, 0.58)]])),
+				_normal(_noise(simplex, 0.5, 2, 662), 0.5), Vector3(1.5, 1.5, 1.5), 0.38, 0.4, 0.7)
+		"tide_mark":   # the high-water band: wet black-green slime
+			return _surface(_tex(_noise(simplex, 0.3, 3, 665), _ramp([[0.0, Color(0.03, 0.05, 0.04)], [1.0, Color(0.09, 0.13, 0.10)]])),
+				null, Vector3(1.0, 1.0, 1.0), 0.25)
+		"weed":   # bladderwrack on the grilles and the boat's waterline
+			return _surface(_tex(_noise(cell, 0.5, 2, 668), _ramp([[0.0, Color(0.06, 0.09, 0.05)], [0.6, Color(0.12, 0.16, 0.08)], [1.0, Color(0.20, 0.22, 0.10)]])),
+				_normal(_noise(cell, 0.5, 2, 669), 2.0), Vector3(3.0, 3.0, 3.0), 0.7)
+		"bulb_cold":   # the pen hall's mercury floods and the boat's white lamps, lit
+			return _glow(Color(0.82, 0.9, 1.0), 4.5)
+		"lamp_red_lit":   # battle lanterns in the boat
+			return _glow(Color(1.0, 0.22, 0.14), 3.5)
+		"signal_glass":   # the signal lamp's lens
+			return _glow(Color(1.0, 0.92, 0.75), 6.0)
+		"hull_red":   # the boat's lower hull, red lead
+			return _surface(_tex(_noise(simplex, 0.08, 4, 672), _ramp([[0.0, Color(0.22, 0.07, 0.05)], [0.7, Color(0.36, 0.12, 0.08)], [1.0, Color(0.30, 0.19, 0.12)]])),
+				_normal(_noise(simplex, 0.25, 3, 673), 1.0), Vector3(1.0, 1.0, 1.0), 0.7, 0.5, 0.3)
+		"brass_plate":
+			return _flat(Color(0.62, 0.50, 0.24), 0.3, 0.9)
+		"grey_paint":   # torpedo bodies, cradles, the crane
+			return _surface(_tex(_noise(simplex, 0.1, 4, 676), _ramp([[0.0, Color(0.30, 0.31, 0.30)], [1.0, Color(0.44, 0.45, 0.43)]])),
+				_normal(_noise(simplex, 0.3, 2, 677), 0.6), Vector3(1.0, 1.0, 1.0), 0.5, 0.4, 0.4)
+		"crane_yellow":
+			return _surface(_tex(_noise(simplex, 0.1, 4, 681), _ramp([[0.0, Color(0.45, 0.33, 0.08)], [0.6, Color(0.66, 0.50, 0.12)], [1.0, Color(0.72, 0.58, 0.18)]])),
+				_normal(_noise(simplex, 0.3, 2, 682), 0.8), Vector3(1.0, 1.0, 1.0), 0.6, 0.5, 0.3)
+		"shingle":   # the beach beyond the cannery windows
+			var sh: FastNoiseLite = _noise(cell, 0.9, 1, 685)
+			sh.cellular_return_type = FastNoiseLite.RETURN_CELL_VALUE
+			return _surface(_tex(sh, _ramp([[0.0, Color(0.14, 0.14, 0.13)], [0.5, Color(0.26, 0.25, 0.23)], [1.0, Color(0.36, 0.34, 0.31)]])),
+				_normal(_noise(cell, 0.9, 1, 686), 2.5), Vector3(4.0, 4.0, 4.0), 0.9)
+		"cliff":   # the headland behind the harbour
+			return _rock(691, [[0.0, Color(0.08, 0.09, 0.09)], [0.4, Color(0.16, 0.17, 0.17)], [0.8, Color(0.24, 0.24, 0.23)], [1.0, Color(0.30, 0.30, 0.28)]],
+				Vector3(0.1, 0.03, 0.1), 0.0, 2.0)
+		"can_tin":   # stacked cans
+			return _flat(Color(0.58, 0.58, 0.55), 0.35, 0.8)
+		"dial_red":
+			return _flat(Color(0.5, 0.08, 0.06), 0.5)
 	return null

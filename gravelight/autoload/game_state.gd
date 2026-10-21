@@ -106,6 +106,11 @@ func elapsed_seconds() -> float:
 	return float(Time.get_ticks_msec() - _start_msec) / 1000.0
 
 
+## Campaign (T-033): the time played on the maps before this one counts toward the run's clock.
+func credit_elapsed(seconds: float) -> void:
+	_start_msec -= int(maxf(0.0, seconds) * 1000.0)
+
+
 func _bump(key: StringName, amount: int = 1) -> void:
 	if phase == Phase.PLAYING:
 		stats[key] = int(stats.get(key, 0)) + amount

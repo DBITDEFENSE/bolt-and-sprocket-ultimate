@@ -1043,3 +1043,169 @@ static func fuse_box(parent: Node3D, pos: Vector3, yaw: float, w: float = 0.5, h
 		_noshadow(block(g, Vector3(x - 0.012, -0.14, -0.185), Vector3(x + 0.012, -0.08, -0.175), "bakelite"))
 	block(g, Vector3(-0.12, -h * 0.5 + 0.06, -0.19), Vector3(0.12, -h * 0.5 + 0.1, -0.175), "gauge_face")
 	cyl(g, Vector3(0.1, h * 0.5 + 0.03, -0.08), 0.03, 0.06, "iron")
+
+
+
+# ================================================================== Map 2 (Totenhafen) props (T-036)
+
+## Cast-iron mooring bollard: a squat drum with a flared cap, on a base plate.
+static func bollard(parent: Node3D, pos: Vector3, key: String = "iron") -> void:
+	var g: Node3D = group(parent, "Bollard", pos)
+	block(g, Vector3(-0.32, 0, -0.32), Vector3(0.32, 0.06, 0.32), key)
+	cyl(g, Vector3(0, 0.36, 0), 0.17, 0.6, key)
+	cyl(g, Vector3(0, 0.7, 0), 0.24, 0.1, key)
+	ball(g, Vector3(0, 0.78, 0), Vector3(0.44, 0.14, 0.44), key)
+
+
+## Lead-sealed Nachtglas coffin on its pallet: a 2.0 × 0.7 × 0.6 lead case with soldered seams, three steel
+## straps, a Helvetia maker's plate, a stencilled unit number, and a hair-line violet seam under the lid where
+## the seal weeps. Local -Z is the front (the plate end). Non-colliding dressing; the navmesh block is separate.
+static func coffin(parent: Node3D, pos: Vector3, yaw: float, unit: String, pallet: bool = true) -> void:
+	var g: Node3D = group(parent, "Coffin", pos, yaw)
+	var y0: float = 0.0
+	if pallet:
+		for sx: float in [-0.95, 0.0, 0.95]:
+			block(g, Vector3(sx - 0.05, 0, -0.42), Vector3(sx + 0.05, 0.1, 0.42), "planks")
+		for sz: float in [-0.36, 0.0, 0.36]:
+			block(g, Vector3(-1.05, 0.1, sz - 0.05), Vector3(1.05, 0.14, sz + 0.05), "planks")
+		y0 = 0.14
+	block(g, Vector3(-1.0, y0, -0.35), Vector3(1.0, y0 + 0.56, 0.35), "lead")
+	block(g, Vector3(-1.03, y0 + 0.5, -0.38), Vector3(1.03, y0 + 0.6, 0.38), "lead")
+	for sx2: float in [-0.6, 0.0, 0.6]:
+		block(g, Vector3(sx2 - 0.03, y0 - 0.005, -0.37), Vector3(sx2 + 0.03, y0 + 0.61, 0.37), "steel")
+	_noshadow(block(g, Vector3(-0.99, y0 + 0.495, -0.352), Vector3(0.99, y0 + 0.505, 0.352), "nachtglas_dim"))
+	block(g, Vector3(-0.16, y0 + 0.14, -0.356), Vector3(0.16, y0 + 0.3, -0.35), "brass_plate")
+	stencil(g, Vector3(0.55, y0 + 0.3, -0.352), 0.0, unit, 22, Color(0.85, 0.82, 0.7, 0.8), 0.003)
+	stencil(g, Vector3(0.0, y0 + 0.21, -0.354), 0.0, "HELVETIA AUTOMATEN AG", 9, Color(0.12, 0.09, 0.03, 0.9), 0.003)
+
+
+## A coiled hawser lying flat (torus of rope segments) with a tail.
+static func rope_coil(parent: Node3D, pos: Vector3, r: float = 0.45) -> void:
+	var g: Node3D = group(parent, "RopeCoil", pos)
+	var prev: Vector3 = Vector3(r, 0.04, 0)
+	for k: int in 14:
+		var a: float = TAU * float(k + 1) / 14.0
+		var p: Vector3 = Vector3(cos(a) * r, 0.04, sin(a) * r)
+		strut(g, prev, p, 0.08, "rope", true)
+		prev = p
+	prev = Vector3(r * 0.7, 0.11, 0)
+	for k2: int in 12:
+		var a2: float = TAU * float(k2 + 1) / 12.0
+		var p2: Vector3 = Vector3(cos(a2) * r * 0.7, 0.11, sin(a2) * r * 0.7)
+		strut(g, prev, p2, 0.08, "rope", true)
+		prev = p2
+	strut(g, Vector3(r, 0.04, 0), Vector3(r + 0.9, 0.03, 0.4), 0.07, "rope", true)
+
+
+## Cork life ring on a wall hook (local -Z faces out).
+static func life_ring(parent: Node3D, pos: Vector3, yaw: float) -> void:
+	var g: Node3D = group(parent, "LifeRing", pos, yaw)
+	var prev: Vector3 = Vector3(0.36, 0, -0.08)
+	for k: int in 12:
+		var a: float = TAU * float(k + 1) / 12.0
+		var p: Vector3 = Vector3(cos(a) * 0.36, sin(a) * 0.36, -0.08)
+		strut(g, prev, p, 0.12, "enamel_white" if k % 3 != 2 else "red_paint", true)
+		prev = p
+	block(g, Vector3(-0.03, 0.34, -0.06), Vector3(0.03, 0.5, 0.0), "iron")
+
+
+## A torpedo on two trestles (or lying on the deck): grey body, red-lead warhead band, brass propellers, fins.
+## Axis along local Z, nose at -Z.
+static func torpedo(parent: Node3D, pos: Vector3, yaw: float, length: float = 7.0, trestles: bool = true) -> void:
+	var g: Node3D = group(parent, "Torpedo", pos, yaw)
+	var r: float = 0.27
+	var y: float = 0.95 if trestles else r
+	if trestles:
+		for tz: float in [-length * 0.3, length * 0.3]:
+			for sx: float in [-0.45, 0.45]:
+				block(g, Vector3(sx - 0.05, 0, tz - 0.05), Vector3(sx + 0.05, 0.72, tz + 0.05), "furniture")
+			block(g, Vector3(-0.55, 0.68, tz - 0.08), Vector3(0.55, 0.76, tz + 0.08), "furniture")
+	cyl(g, Vector3(0, y, 0), r, length * 0.82, "grey_paint", Vector3(90, 0, 0))
+	cone(g, Vector3(0, y, -length * 0.41 - length * 0.09), r, length * 0.18, "grey_paint", Vector3(-90, 0, 0))
+	cyl(g, Vector3(0, y, -length * 0.3), r + 0.004, 0.5, "hull_red", Vector3(90, 0, 0))
+	cone(g, Vector3(0, y, length * 0.41 + length * 0.06), r, length * 0.12, "grey_paint", Vector3(90, 0, 0))
+	for a: float in [0.0, 90.0, 180.0, 270.0]:
+		obox(g, Vector3(0, y, length * 0.44), Vector3(0.05, 0.34, 0.5), "grey_paint", Vector3(0, 0, a))
+	for a2: float in [0.0, 60.0, 120.0]:
+		obox(g, Vector3(0, y, length * 0.5 + 0.02), Vector3(0.46, 0.03, 0.08), "brass", Vector3(0, 0, a2))
+	cyl(g, Vector3(0, y, length * 0.5), 0.05, 0.1, "brass", Vector3(90, 0, 0))
+
+
+## A heap of fishing nets with cork floats.
+static func net_pile(parent: Node3D, pos: Vector3, size: Vector3, seed_v: int) -> void:
+	var g: Node3D = group(parent, "NetPile", pos)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = seed_v
+	ball(g, Vector3(0, size.y * 0.4, 0), Vector3(size.x, size.y * 0.8, size.z), "net")
+	ball(g, Vector3(size.x * 0.2, size.y * 0.7, -size.z * 0.15), Vector3(size.x * 0.6, size.y * 0.6, size.z * 0.6), "net")
+	for i: int in 7:
+		var p: Vector3 = Vector3(rng.randf_range(-0.45, 0.45) * size.x, size.y * rng.randf_range(0.5, 0.95), rng.randf_range(-0.45, 0.45) * size.z)
+		ball(g, p, Vector3(0.14, 0.1, 0.14), "cream")
+
+
+## Steel rung ladder against a wall (local -Z faces away from the wall), from y 0 to height.
+static func ladder(parent: Node3D, pos: Vector3, yaw: float, height: float, key: String = "iron") -> void:
+	var g: Node3D = group(parent, "Ladder", pos, yaw)
+	for sx: float in [-0.2, 0.2]:
+		block(g, Vector3(sx - 0.025, 0, -0.14), Vector3(sx + 0.025, height, -0.09), key)
+	var n: int = int(height / 0.3)
+	for k: int in n:
+		cyl(g, Vector3(0, 0.15 + k * 0.3, -0.115), 0.016, 0.4, key, Vector3(0, 0, 90))
+
+
+## A stack of tinned cans (cannery): rows of small cylinders on a board.
+static func can_stack(parent: Node3D, pos: Vector3, cols: int, rows: int, layers: int) -> void:
+	var g: Node3D = group(parent, "Cans", pos)
+	block(g, Vector3(-cols * 0.06 - 0.02, 0, -rows * 0.06 - 0.02), Vector3(cols * 0.06 + 0.02, 0.03, rows * 0.06 + 0.02), "planks")
+	for l: int in layers:
+		for c: int in cols:
+			for r: int in rows:
+				_noshadow(cyl(g, Vector3(-cols * 0.06 + 0.06 + c * 0.12, 0.03 + l * 0.11 + 0.055, -rows * 0.06 + 0.06 + r * 0.12), 0.055, 0.11, "can_tin"))
+
+
+## Hand wheel valve on a pipe (local -Z faces the user).
+static func valve_wheel(parent: Node3D, pos: Vector3, yaw: float, r: float = 0.14, key: String = "red_paint") -> void:
+	var g: Node3D = group(parent, "Valve", pos, yaw)
+	var prev: Vector3 = Vector3(r, 0, 0)
+	for k: int in 10:
+		var a: float = TAU * float(k + 1) / 10.0
+		var p: Vector3 = Vector3(cos(a) * r, sin(a) * r, 0)
+		strut(g, prev, p, 0.025, key, true)
+		prev = p
+	for k2: int in 3:
+		var a2: float = TAU * float(k2) / 3.0
+		strut(g, Vector3.ZERO, Vector3(cos(a2) * r, sin(a2) * r, 0), 0.02, key, true)
+	cyl(g, Vector3(0, 0, 0.04), 0.03, 0.1, "iron", Vector3(90, 0, 0))
+
+
+## Steel sea grille: vertical bars with two horizontal bands, from (a) to (b) along X or Z, height h.
+static func grille(parent: Node3D, a: Vector3, b: Vector3, h: float, step: float = 0.3, key: String = "rust") -> void:
+	var g: Node3D = group(parent, "Grille", a)
+	var d: Vector3 = b - a
+	var n: int = maxi(1, int(d.length() / step))
+	for k: int in n + 1:
+		var p: Vector3 = d * (float(k) / float(n))
+		block(g, p + Vector3(-0.03, 0, -0.03), p + Vector3(0.03, h, 0.03), key)
+	for hy: float in [h * 0.3, h * 0.75]:
+		strut(g, Vector3(0, hy, 0), d + Vector3(0, hy, 0), 0.08, key)
+
+
+## Wintergarten / pier railing: posts every 1.5 m with a top rail and a mid rail (round iron).
+static func railing(parent: Node3D, a: Vector3, b: Vector3, h: float = 1.05, key: String = "iron", step: float = 1.5) -> void:
+	var g: Node3D = group(parent, "Railing", a)
+	var d: Vector3 = b - a
+	var n: int = maxi(1, int(round(d.length() / step)))
+	for k: int in n + 1:
+		var p: Vector3 = d * (float(k) / float(n))
+		block(g, p + Vector3(-0.03, 0, -0.03), p + Vector3(0.03, h, 0.03), key)
+	strut(g, Vector3(0, h, 0), d + Vector3(0, h, 0), 0.06, key, true)
+	strut(g, Vector3(0, h * 0.5, 0), d + Vector3(0, h * 0.5, 0), 0.035, key, true)
+
+
+## Caged bulkhead lamp body only (no light): used for the boat's battle lanterns and the pen bulkheads.
+static func bulkhead_lamp(parent: Node3D, pos: Vector3, yaw: float, glass: String = "bulb_off") -> void:
+	var g: Node3D = group(parent, "BulkheadLamp", pos, yaw)
+	block(g, Vector3(-0.12, -0.12, -0.04), Vector3(0.12, 0.12, 0.0), "iron")
+	_noshadow(cyl(g, Vector3(0, 0, -0.1), 0.09, 0.14, glass, Vector3(90, 0, 0)))
+	for a: float in [0.0, 60.0, 120.0]:
+		obox(g, Vector3(0, 0, -0.12), Vector3(0.22, 0.015, 0.2), "iron", Vector3(0, 0, a))

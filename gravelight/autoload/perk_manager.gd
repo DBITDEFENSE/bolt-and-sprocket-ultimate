@@ -14,15 +14,28 @@ extends Node
 ##   try_self_revive(player) -> bool           consumes a Second Wind solo use if available
 ##   on_player_downed(player) -> void          co-op rule: every perk is lost
 ##   reset_match() -> void
+##   overclock_reload(player: Player, spent: float) -> bool   Overclock Cordial hook (WEAPONS.md section 20.2):
+##       call at the START of a reload (or an overheat vent, spent = 1.0) with spent = 1 - mag / mag_size.
+##       Returns true when a burst was scheduled (it lands overclock_delay later at the player's position).
+##       WeaponHolder.start_reload calls it; a bot's own reload code can call it the same way.
+##   overclock_spent(mag, mag_size) / overclock_radius(spent) / overclock_damage(spent, round_health, boss,
+##       repossessor) / overclock_staggers(spent): the pure rules, for tests and bots.
 
 ## Emitted when the solo Second Wind machine has used its last self-revive and should leave.
 signal second_wind_retired
+## Overclock Cordial accepted a reload (before the 0.15 s delay). GLBus.overclock_burst fires when it lands.
+signal overclock_triggered(player: int, spent: float)
+
+const OVERCLOCK: StringName = &"overclock_cordial"
+## Bosses take the flat boss damage and are never staggered by the burst.
+const OVERCLOCK_BOSSES: PackedStringArray = ["foreman", "underwriter"]
 
 var _owned: Dictionary = {}        # player -> Array[StringName]
 var _bonus_slots: Dictionary = {}  # player -> int (Map 1 egg reward)
 var solo_self_revives_left: int = 3
 var second_wind_gone: bool = false
 var _hud: CanvasLayer = null
+var _overclock_ready_at: Dictionary = {}   # player -> msec when the 3 s cooldown ends
 
 
 func _ready() -> void:
@@ -32,6 +45,7 @@ func _ready() -> void:
 func reset_match() -> void:
 	_owned.clear()
 	_bonus_slots.clear()   # the Map 1 egg slot is re-applied on match_started
+	_overclock_ready_at.clear()
 	solo_self_revives_left = int(GLData.table("perks").get("solo_self_revives", 3))
 	second_wind_gone = false
 
@@ -184,3 +198,103 @@ static func cost_for(perk: Dictionary, solo: bool) -> int:
 	if not solo and perk.has("cost_coop"):
 		return int(perk["cost_coop"])
 	return int(perk.get("cost", 0))
+
+
+# ---------------------------------------------------------------- Overclock Cordial (WEAPONS.md section 20.2)
+
+## The rule numbers live in perks.json "effects" of overclock_cordial (fallbacks are the doc's values).
+static func _oc(key: String, fallback: float) -> float:
+	var effects: Dictionary = (GLData.table("perks")["perks"] as Dictionary).get("overclock_cordial", {}).get("effects", {})
+	return float(effects.get(key, fallback))
+
+
+## Spent fraction e = 1 - rounds_in_mag / mag_size, clamped to 0..1.
+static func overclock_spent(mag: int, mag_size: int) -> float:
+	if mag_size <= 0:
+		return 1.0
+	return clampf(1.0 - float(mag) / float(mag_size), 0.0, 1.0)
+
+
+## Radius 2.5 + 3.5 * e metres (6.0 m on an empty mag).
+static func overclock_radius(spent: float) -> float:
+	return _oc("overclock_radius_base", 2.5) + _oc("overclock_radius_per_spent", 3.5) * clampf(spent, 0.0, 1.0)
+
+
+## Non-boss: 0.6 * health(r) * e (Repossessors x2). Boss: a flat 1500 * e.
+static func overclock_damage(spent: float, round_health: float, boss: bool, repossessor: bool = false) -> float:
+	var e: float = clampf(spent, 0.0, 1.0)
+	if boss:
+		return _oc("overclock_boss_damage", 1500.0) * e
+	var dmg: float = _oc("overclock_damage_health_mult", 0.6) * round_health * e
+	if repossessor:
+		dmg *= _oc("overclock_repossessor_mult", 2.0)
+	return dmg
+
+
+## Every non-boss enemy in the radius is staggered when e >= 0.75.
+static func overclock_staggers(spent: float) -> bool:
+	return spent >= _oc("overclock_stagger_spent", 0.75) - 0.0001
+
+
+## Hook for the start of a reload (manual, automatic, bolt / shell-by-shell once, or an overheat vent with
+## spent = 1.0). Needs the perk, e >= 0.25 and the 3 s cooldown to be over. The burst lands 0.15 s later
+## (overclock_delay) around the player, so a player who dropped in the meantime releases nothing.
+func overclock_reload(player: Player, spent: float) -> bool:
+	if player == null or not is_instance_valid(player) or not has_perk(player.player_id, OVERCLOCK):
+		return false
+	var e: float = clampf(spent, 0.0, 1.0)
+	if e < _oc("overclock_min_spent", 0.25) - 0.0001:
+		return false
+	var now: int = Time.get_ticks_msec()
+	if now < int(_overclock_ready_at.get(player.player_id, 0)):
+		return false
+	_overclock_ready_at[player.player_id] = now + int(_oc("overclock_cooldown", 3.0) * 1000.0)
+	overclock_triggered.emit(player.player_id, e)
+	var delay: float = _oc("overclock_delay", 0.15)
+	if delay <= 0.0 or not is_inside_tree():
+		_overclock_burst(player, e)
+	else:
+		get_tree().create_timer(delay).timeout.connect(_overclock_burst.bind(player, e))
+	return true
+
+
+## Tests / dev: forget the cooldown so the next reload can burst.
+func overclock_clear_cooldown(player_id: int) -> void:
+	_overclock_ready_at.erase(player_id)
+
+
+## The burst itself: the nearest 10 enemies in the radius take electrical damage (no armour, no self, team or
+## barricade damage), bosses take the flat amount, everyone else staggers at e >= 0.75. Presentation: a
+## teal-violet ring, a ZAP, and GLBus.overclock_burst (the cabinet's gauge needle listens).
+func _overclock_burst(player_ref: Variant, e: float) -> void:
+	# untyped on purpose: the bound Player may have been freed during the delay (a typed parameter would
+	# refuse the call with an error instead of letting us check)
+	if not is_instance_valid(player_ref) or not (player_ref is Player):
+		return
+	var player: Player = player_ref as Player
+	if not player.is_inside_tree() or player.downed:
+		return
+	var radius: float = overclock_radius(e)
+	var pos: Vector3 = player.global_position + Vector3.UP * 0.9
+	var pid: int = player.player_id
+	var director: Node = get_tree().get_first_node_in_group(&"director")
+	if director != null and director.has_method("active_zombies"):
+		var in_range: Array = []
+		for z: Zombie in director.call("active_zombies"):
+			var d: float = z.global_position.distance_to(player.global_position)
+			if d <= radius:
+				in_range.append([d, z])
+		in_range.sort_custom(func(a: Array, b: Array) -> bool: return float(a[0]) < float(b[0]))
+		var health_r: float = float(RoundManager.current_health())
+		var max_targets: int = int(_oc("overclock_max_targets", 10))
+		var stagger: bool = overclock_staggers(e)
+		for i: int in mini(in_range.size(), max_targets):
+			var z: Zombie = in_range[i][1]
+			var boss: bool = OVERCLOCK_BOSSES.has(String(z.enemy_id))
+			var dmg: float = overclock_damage(e, health_r, boss, z.enemy_id == &"repossessor")
+			var killed: bool = z.take_damage(dmg, &"torso", OVERCLOCK, pid, &"electric", true)
+			if stagger and not boss and not killed and z.is_active():
+				z.force_stagger()
+	Effects.static_burst(pos, radius)
+	AudioDirector.play_3d("perk_overclock_burst", pos, lerpf(-6.0, 0.0, e), 0.08)
+	GLBus.overclock_burst.emit(pid, pos, e, radius)

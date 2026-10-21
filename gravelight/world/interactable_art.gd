@@ -224,6 +224,12 @@ static func perk_layout(shape: String, fp: Vector3) -> Dictionary:
 			return {"sign": Vector3(0, 2.18, fz + 0.12), "sign_size": Vector2(1.3, 0.34), "win": Vector3(-0.05, 1.32, fz - 0.06), "win_size": Vector2(0.4, 0.4),
 				"lamp": Vector3(0.4, 1.98, 0.1), "price": Vector3(0, 0.36, fz - 0.06), "hatch": Vector3(-0.05, 0.74, fz - 0.06), "slot": Vector3(0.36, 1.32, fz - 0.06),
 				"round": true}
+		"coil":
+			# Overclock Cordial: a porthole low, the LEER/HALB/VOLL gauge above it, the sign on the roof edge, the
+			# lamp globe is the brass ball on top of the induction coil.
+			return {"sign": Vector3(0, 2.16, fz + 0.06), "sign_size": Vector2(1.1, 0.3), "win": Vector3(0, 1.14, fz - 0.02), "win_size": Vector2(0.44, 0.44),
+				"lamp": Vector3(0, 2.46, 0.05), "price": Vector3(0, 0.38, fz - 0.02), "hatch": Vector3(0, 0.7, fz - 0.02), "slot": Vector3(0.27, 0.95, fz - 0.01),
+				"dial": Vector3(-0.27, 0.98, fz - 0.03), "round": true}
 	return {"sign": Vector3(0, fp.y + 0.28, fz), "sign_size": Vector2(fp.x + 0.2, 0.3), "win": Vector3(0, 1.45, fz - 0.02), "win_size": Vector2(0.5, 0.45),
 		"lamp": Vector3(0, fp.y + 0.1, 0), "price": Vector3(0, 0.55, fz - 0.02), "hatch": Vector3(0, 0.85, fz - 0.02), "slot": Vector3(0.3, 1.05, fz - 0.01)}
 
@@ -250,6 +256,8 @@ static func perk_body(g: Node3D, shape: String, fp: Vector3, brand: Color) -> vo
 			_wagon(g, fp, en)
 		"safe":
 			_safe(g, fp, en)
+		"coil":
+			_coil_tower(g, fp, en)
 		_:
 			B(g, Vector3(-fp.x * 0.5, 0, -fp.z * 0.5), Vector3(fp.x * 0.5, fp.y, fp.z * 0.5), en)
 	# sign board (the neon tubes and the label sit in front of it)
@@ -683,6 +691,91 @@ static func porter_sign(g: Node3D) -> void:
 		S(g, Vector3(s, 0, 0), Vector3(s, -0.12, 0), 0.008, "iron")
 	B(g, Vector3(-0.16, -0.24, -0.006), Vector3(0.16, -0.12, 0.006), "enamel:#c7b37a")
 	B(g, Vector3(-0.17, -0.25, -0.004), Vector3(0.17, -0.11, 0.004), "black_paint")
+
+
+# ---- Overclock Cordial: a tall teal cabinet with copper bands, cable loops like suspenders, a porthole under a
+# LEER / HALB / VOLL needle gauge, and an induction coil on a ceramic collar for a crown (JINGLES.md section 10).
+# The Plan was never brand-edited: no Darkmatter trim, the maker's own copper and tin. The arc, the needle, the
+# brass ball (lamp globe) and the labels are the script's.
+static func _coil_tower(g: Node3D, fp: Vector3, en: String) -> void:
+	var hw: float = fp.x * 0.5
+	var hd: float = fp.z * 0.5
+	_plinth(g, fp.x + 0.06, fp.z + 0.06, 0.12)
+	B(g, Vector3(-hw, 0.12, -hd), Vector3(hw, 2.0, hd), en)
+	# copper bands and front edge rails
+	for by: float in [0.3, 0.92, 1.46, 1.94]:
+		B(g, Vector3(-hw - 0.012, by - 0.02, -hd - 0.012), Vector3(hw + 0.012, by + 0.02, hd + 0.012), "copper")
+	for sx: float in [-1.0, 1.0]:
+		B(g, Vector3(sx * hw - 0.02, 0.2, -hd - 0.02), Vector3(sx * hw + 0.02, 1.96, -hd + 0.03), "copper")
+		# cable loops down each side, clipped at the crown and at the waist
+		var x: float = sx * (hw + 0.045)
+		for zs: float in [-1.0, 1.0]:
+			var z0: float = zs * 0.12
+			var z1: float = zs * 0.22
+			S(g, Vector3(x, 1.97, z0), Vector3(x + sx * 0.07, 1.55, z1), 0.018, "copper")
+			S(g, Vector3(x + sx * 0.07, 1.55, z1), Vector3(x + sx * 0.05, 1.05, z0 * 0.6), 0.018, "copper")
+			S(g, Vector3(x + sx * 0.05, 1.05, z0 * 0.6), Vector3(x, 0.55, 0.0), 0.018, "copper")
+			dot(g, Vector3(x, 1.97, z0), 0.028, "brass")
+		dot(g, Vector3(x, 0.55, 0.0), 0.03, "brass")
+	# the needle gauge above the porthole: a dial face in a copper rim, three marks (LEER, HALB, VOLL), a brass hub
+	var gc: Vector3 = Vector3(0, 1.62, -hd - 0.025)
+	C(g, gc, 0.2, 0.03, "gauge_face", Vector3(90, 0, 0))
+	ring(g, gc + Vector3(0, 0, -0.006), 0.2, 0.022, "copper", Vector3(90, 0, 0))
+	B(g, Vector3(-0.24, 1.38, -hd - 0.03), Vector3(0.24, 1.44, -hd - 0.005), "copper")
+	for a: float in [-60.0, 0.0, 60.0]:
+		var ang: float = deg_to_rad(90.0 - a)
+		OB(g, gc + Vector3(cos(ang) * 0.165, sin(ang) * 0.165, -0.022), Vector3(0.012, 0.045, 0.006), "black_paint", Vector3(0, 0, -a))
+	dot(g, gc + Vector3(0, 0, -0.022), 0.022, "brass")
+	# crown: roof plate, ceramic collar, the induction coil, its rod (the brass ball is the lamp globe)
+	var cz: float = 0.05
+	B(g, Vector3(-0.24, 2.0, cz - 0.24), Vector3(0.24, 2.02, cz + 0.24), "copper")
+	C(g, Vector3(0, 2.05, cz), 0.19, 0.08, "enamel_white")
+	C(g, Vector3(0, 2.11, cz), 0.14, 0.05, "copper")
+	for k: int in 9:
+		ring(g, Vector3(0, 2.135 + k * 0.034, cz), 0.16, 0.013, "copper")
+	C(g, Vector3(0, 2.28, cz), 0.028, 0.34, "copper")
+	# valves on the roof's right (they pulse in the script's imagination; here they are brass stems with red caps)
+	for i: int in 3:
+		C(g, Vector3(0.3, 2.05, -0.16 + i * 0.13), 0.018, 0.1, "brass")
+		dot(g, Vector3(0.3, 2.11, -0.16 + i * 0.13), 0.028, "red_paint")
+	# sign posts on the front roof edge
+	for sx2: float in [-0.44, 0.44]:
+		S(g, Vector3(sx2, 1.98, -hd + 0.16), Vector3(sx2, 2.08, -hd + 0.12), 0.03, "copper", false)
+	# Funki, the tin bin-shaped mascot: hinged-lid hat, round eyes, one antenna, a lightning bolt held overhead
+	var m: Vector3 = Vector3(-0.3, 2.02, 0.13)
+	tube(g, m + Vector3(0, 0.1, 0), Vector3(0.14, 0.2, 0.14), "tin")
+	tube(g, m + Vector3(0, 0.21, 0), Vector3(0.16, 0.025, 0.16), "chrome_worn")
+	B(g, m + Vector3(-0.02, 0.22, -0.08), m + Vector3(0.02, 0.245, -0.03), "chrome_worn")
+	for ex: float in [-0.035, 0.035]:
+		dot(g, m + Vector3(ex, 0.14, -0.07), 0.02, "cream")
+		dot(g, m + Vector3(ex, 0.14, -0.086), 0.009, "black_paint")
+	S(g, m + Vector3(0, 0.23, 0), m + Vector3(0.03, 0.34, 0), 0.006, "iron")
+	dot(g, m + Vector3(0.03, 0.345, 0), 0.012, "red_paint")
+	S(g, m + Vector3(0.07, 0.12, 0), m + Vector3(0.12, 0.27, 0), 0.015, "iron")
+	S(g, m + Vector3(-0.07, 0.12, 0), m + Vector3(-0.11, 0.05, 0), 0.015, "iron")
+	OB(g, m + Vector3(0.12, 0.32, 0), Vector3(0.035, 0.09, 0.012), "yellow_paint", Vector3(0, 0, 25))
+	OB(g, m + Vector3(0.135, 0.38, 0), Vector3(0.035, 0.09, 0.012), "yellow_paint", Vector3(0, 0, -25))
+	OB(g, m + Vector3(0.12, 0.44, 0), Vector3(0.035, 0.08, 0.012), "yellow_paint", Vector3(0, 0, 25))
+	for fx: float in [-0.04, 0.04]:
+		B(g, m + Vector3(fx - 0.025, 0, -0.04), m + Vector3(fx + 0.025, 0.02, 0.04), "iron")
+
+
+## The violet arc that snaps from the coil's top turn to the brass ball (origin at the coil top, +Y up).
+static func coil_arc(g: Node3D) -> void:
+	var pts: Array = [Vector3(0.16, -0.02, 0.0), Vector3(0.11, 0.03, 0.03), Vector3(0.13, 0.07, -0.02), Vector3(0.07, 0.1, 0.02),
+		Vector3(0.09, 0.14, -0.01), Vector3(0.04, 0.17, 0.0)]
+	for i: int in pts.size() - 1:
+		S(g, pts[i], pts[i + 1], 0.011, "neon:#c07dff")
+	var pts2: Array = [Vector3(-0.15, -0.02, 0.03), Vector3(-0.1, 0.05, -0.02), Vector3(-0.11, 0.1, 0.02), Vector3(-0.05, 0.16, 0.0)]
+	for i2: int in pts2.size() - 1:
+		S(g, pts2[i2], pts2[i2 + 1], 0.008, "neon:#c07dff")
+
+
+## The gauge needle (pivot at the origin, points +Y at rest; the script turns it about Z).
+static func gauge_needle(g: Node3D) -> void:
+	OB(g, Vector3(0, 0.075, 0), Vector3(0.012, 0.15, 0.006), "red_paint")
+	OB(g, Vector3(0, -0.03, 0), Vector3(0.02, 0.05, 0.006), "brass")
+	dot(g, Vector3.ZERO, 0.014, "brass")
 
 
 # ================================================================== the Crucible (WEAPONS.md §11)

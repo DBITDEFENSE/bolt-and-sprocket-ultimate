@@ -73,18 +73,18 @@ func _run() -> void:
 	_check(_p.weapons.current().id == &"kar98k", "switched to the new weapon")
 
 	# 2. Door (Upstairs, 750)
-	await _place(Vector3(4.6, 0, 15.1), 90.0)
+	await _place(Vector3(7.6, 0, 15.1), 90.0)
 	_check(_p.prompt_text.contains("Upstairs"), "door prompt shows: " + _p.prompt_text)
 	before = Economy.get_scrip(1)
 	await _hold(&"interact", 0.6)
 	_check(GameState.is_zone_open(&"UPSTAIRS"), "door opened the UPSTAIRS zone")
 	_check(Economy.get_scrip(1) == before - 750, "charged 750 Scrip")
 	await _secs(1.0)
-	await _place(Vector3(4.6, 0, 15.1), 90.0)
+	await _place(Vector3(7.6, 0, 15.1), 90.0)
 	Input.action_press(&"move_forward")
 	await _secs(1.2)
 	Input.action_release(&"move_forward")
-	_check(_p.global_position.x < 2.9, "can walk through the opened door (x=%.2f)" % _p.global_position.x)
+	_check(_p.global_position.x < 5.9, "can walk through the opened door (x=%.2f)" % _p.global_position.x)
 
 	# 3. Barricade repair (east window)
 	var win: Barricade = _map.get_node("Gameplay/W_TAP_E") as Barricade

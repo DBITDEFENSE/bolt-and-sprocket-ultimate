@@ -1,5 +1,5 @@
 {
-  "_doc": "Map 0 (Crossroads Inn) settings not in the generic tables. power: the cellar lever (T&C M2, T-027).",
+  "_doc": "Map 0 (Crossroads Inn) settings not in the generic tables. power: the cellar lever (T&C M2, T-027). exfil: the campaign beacon (T-033): lights when round `round` starts, stays open window_seconds, then again every retry_rounds rounds; a vote at the beacon leaves for `target` through cutscene `cutscene` (data/gravelight/campaign.json). position/yaw in the map frame (yaw 0 = the beacon's front faces -Z). opens_zone: that zone's doors open for free when the beacon lights, so the exfil is always reachable.",
   "power": {
     "vo_delay": 1.5,
     "light_sweep_start": 1.0,
@@ -7,5 +7,20 @@
     "burst_delay": 6.0,
     "burst_count": 3,
     "vo_line": "OPR_POWER_ON_M0_01"
+  },
+  "exfil": {
+    "round": 10,
+    "target": "map01_kaltenbrunn",
+    "position": [18.0, 0.0, 32.0],
+    "yaw": 0.0,
+    "zone": "STABLE",
+    "opens_zone": true,
+    "window_seconds": 90.0,
+    "retry_rounds": 3,
+    "cutscene": "exfil_m0_m1",
+    "label": "THE CARTERS' ROAD",
+    "vo_open": "OPR_EXFIL_OPEN_M0_01",
+    "vo_wait": "OPR_EXFIL_WAIT_01",
+    "vo_missed": "OPR_EXFIL_MISSED_M0_01"
   }
 }

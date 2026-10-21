@@ -103,3 +103,141 @@ func test_coop_down_loses_all() -> void:
 	PerkManager.on_player_downed(PID)
 	assert_eq(PerkManager.owned(PID).size(), 0)
 	GameState.player_ids = [PID]
+
+
+# ---------------------------------------------------------------- data integrity (nine machines, lore)
+
+func test_perks_json_valid() -> void:
+	var perks: Dictionary = GLData.table("perks")["perks"]
+	assert_eq(perks.size(), 9, "nine perk tonics")
+	var shapes: Dictionary = {}
+	for id: String in perks.keys():
+		var p: Dictionary = perks[id]
+		for field: String in ["name", "cost", "effects", "color", "abbr", "shape", "sign"]:
+			assert_true(p.has(field), "%s has %s" % [id, field])
+		assert_gt(int(p.get("cost", 0)), 0, id + " costs something")
+		assert_eq(str(p.get("abbr", "")).length(), 2, id + " abbr is two letters")
+		assert_false(shapes.has(p.get("shape")), "%s: shape %s is unique" % [id, p.get("shape")])
+		shapes[p.get("shape")] = id
+		var fp: Vector3 = PerkMachine._shape_footprint(str(p["shape"]))
+		assert_gt(fp.y, 1.5, id + " shape has a footprint")
+	assert_eq(int(perks["overclock_cordial"]["cost"]), 2500)
+	assert_eq(str(perks["overclock_cordial"]["shape"]), "coil")
+	assert_eq(PerkMachine._shape_footprint("coil"), Vector3(0.8, 2.3, 0.6), "coil shares the cabinet footprint")
+
+
+func test_perk_lore_covers_every_perk() -> void:
+	var perks: Dictionary = GLData.table("perks")["perks"]
+	for id: String in perks.keys():
+		var lo: Dictionary = FinePrintReader.lore(StringName(id))
+		assert_false(lo.is_empty(), id + " has lore")
+		assert_true(str(lo.get("plan_id", "")).begins_with("DMS-VP-"), id + " has a plan ID stencil")
+		assert_gt((lo.get("panel", []) as Array).size(), 3, id + " has a fine-print panel")
+	var oc: Dictionary = FinePrintReader.lore(&"overclock_cordial")
+	assert_eq(str(oc.get("plan_id", "")), "DMS-VP-SRG-X2")
+	assert_true(str(oc.get("plan_name", "")).begins_with("SURGE"))
+
+
+# ---------------------------------------------------------------- Overclock Cordial (WEAPONS.md section 20.2)
+
+func test_overclock_rules() -> void:
+	assert_almost_eq(PerkManager.overclock_spent(30, 30), 0.0, 0.001, "full mag")
+	assert_almost_eq(PerkManager.overclock_spent(0, 30), 1.0, 0.001, "empty mag")
+	assert_almost_eq(PerkManager.overclock_spent(15, 30), 0.5, 0.001)
+	assert_almost_eq(PerkManager.overclock_radius(1.0), 6.0, 0.001, "6.0 m on an empty mag")
+	assert_almost_eq(PerkManager.overclock_radius(0.25), 2.5 + 3.5 * 0.25, 0.001)
+	# damage: 0.6 x health(r) x e; the doc's examples (150 at r1, 2710 at r20, 7030 at r30)
+	assert_almost_eq(PerkManager.overclock_damage(1.0, 150.0, false), 90.0, 0.01, "90 at r1 empty")
+	assert_almost_eq(PerkManager.overclock_damage(1.0, 2710.0, false), 1626.0, 0.01, "1626 at r20 empty")
+	assert_almost_eq(PerkManager.overclock_damage(1.0, 7030.0, false), 4218.0, 0.01, "4218 at r30 empty")
+	assert_almost_eq(PerkManager.overclock_damage(0.5, 1000.0, false), 300.0, 0.01, "scales with e")
+	assert_almost_eq(PerkManager.overclock_damage(1.0, 1000.0, false, true), 1200.0, 0.01, "Repossessors take x2")
+	assert_almost_eq(PerkManager.overclock_damage(1.0, 99999.0, true), 1500.0, 0.01, "bosses: flat 1500 x e")
+	assert_almost_eq(PerkManager.overclock_damage(0.5, 99999.0, true), 750.0, 0.01)
+	assert_false(PerkManager.overclock_staggers(0.5))
+	assert_true(PerkManager.overclock_staggers(0.75))
+	assert_true(PerkManager.overclock_staggers(1.0))
+
+
+func _armed_player(weapon_id: StringName, mag: int, reserve: int) -> Player:
+	var p: Player = Player.new()
+	p.player_id = PID
+	add_child_autofree(p)
+	p.set_physics_process(false)
+	p.set_process_unhandled_input(false)
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	var h: WeaponHolder = p.weapons
+	h.give_weapon(weapon_id)
+	h.current_index = h.slots.find(h.find_weapon(weapon_id))
+	h.call("_rebuild_gun")
+	var w: WeaponInstance = h.current()
+	w.mag = mag
+	w.reserve = reserve
+	h.set("_swap_t", 0.0)
+	return p
+
+
+func _tick(p: Player, seconds: float) -> void:
+	var t: float = 0.0
+	while t < seconds:
+		p.weapons.tick(1.0 / 60.0, {})
+		t += 1.0 / 60.0
+
+
+func test_overclock_needs_the_perk_and_a_quarter_spent() -> void:
+	var p: Player = _armed_player(&"mp40", 16, 64)   # mp40 mag 32: e = 0.5
+	assert_false(PerkManager.overclock_reload(p, 0.5), "no perk, no burst")
+	assert_eq(PerkManager.buy_for(PID, &"overclock_cordial"), &"ok")
+	assert_false(PerkManager.overclock_reload(p, 0.2), "below the 0.25 threshold")
+	assert_true(PerkManager.overclock_reload(p, 0.25), "at the threshold")
+	assert_false(PerkManager.overclock_reload(p, 1.0), "3 s cooldown")
+	PerkManager.overclock_clear_cooldown(PID)
+	assert_true(PerkManager.overclock_reload(p, 1.0), "cooldown cleared")
+
+
+func test_overclock_reload_hook_scales_with_spent() -> void:
+	var p: Player = _armed_player(&"mp40", 8, 64)
+	PerkManager.buy_for(PID, &"overclock_cordial")
+	var seen: Array = []
+	var cb: Callable = func(pid: int, e: float) -> void: seen.append([pid, e])
+	PerkManager.overclock_triggered.connect(cb)
+	p.weapons.start_reload()
+	assert_eq(seen.size(), 1, "the reload start triggered a burst")
+	assert_almost_eq(float(seen[0][1]), 0.75, 0.001, "e = 1 - 8/32")
+	assert_eq(int(seen[0][0]), PID)
+	# a nearly full mag reloads without a burst
+	p.weapons.call("_cancel_reload")
+	PerkManager.overclock_clear_cooldown(PID)
+	p.weapons.current().mag = 30
+	p.weapons.start_reload()
+	assert_eq(seen.size(), 1, "e = 0.06: no burst")
+	PerkManager.overclock_triggered.disconnect(cb)
+
+
+func test_overclock_once_per_bolt_and_shell_reload() -> void:
+	# shell-by-shell (trench gun): the reload loads four rounds one at a time and bursts once, at the start
+	var p: Player = _armed_player(&"trench_gun", 2, 30)
+	PerkManager.buy_for(PID, &"overclock_cordial")
+	var count: Array = [0]
+	var cb: Callable = func(_pid: int, _e: float) -> void: count[0] += 1
+	PerkManager.overclock_triggered.connect(cb)
+	p.weapons.start_reload()
+	_tick(p, 4.0)
+	assert_eq(p.weapons.current().mag, 6, "shotgun fully reloaded round by round")
+	assert_false(p.weapons.is_reloading())
+	assert_eq(count[0], 1, "shell reload: one burst")
+	PerkManager.overclock_triggered.disconnect(cb)
+	p.queue_free()
+	# bolt rifle (Kar98k) from empty: a stripper clip, one burst; from 2/5 it loads one at a time, still one burst
+	for start_mag: int in [0, 2]:
+		var pb: Player = _armed_player(&"kar98k", start_mag, 30)
+		PerkManager.overclock_clear_cooldown(PID)
+		var n: Array = [0]
+		var cb2: Callable = func(_pid: int, _e: float) -> void: n[0] += 1
+		PerkManager.overclock_triggered.connect(cb2)
+		pb.weapons.start_reload()
+		_tick(pb, 5.0)
+		assert_eq(pb.weapons.current().mag, 5, "bolt rifle full from %d" % start_mag)
+		assert_eq(n[0], 1, "bolt reload from %d: one burst" % start_mag)
+		PerkManager.overclock_triggered.disconnect(cb2)
+		pb.queue_free()

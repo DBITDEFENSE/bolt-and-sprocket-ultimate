@@ -9,13 +9,15 @@ Each milestone ends with: tests passing headless, the game launched and played, 
 | M2 | Gravelight vertical slice (migration of the built GRAVELIGHT project + §11 on Map 0) | done (tag m2): cellar + 8 machines, lore, slips, playtest fixes (T-024..T-028) |
 | M3 | Full B&S arsenal + Acts 1–2 (Rustvane, Nova Plaza) | **partway (WIP, not tagged)**: see "M3 status" below |
 | M4 | B&S complete campaign | |
-| M5 | Gravelight Map 1 Kaltenbrunn (with §11) | |
+| M5 | Gravelight Map 1 Kaltenbrunn (with §11) | Map 2 Totenhafen first playable (T-036): zones, tide set-piece, campaign arrival at round 31; Ballast carry and the Kielholer deferred |
 | M6 | B&S side modes & extras | |
 | M7 | The Fine Print Ch. 1–4 | |
 | M8 | Helvetia Works + finale | |
 | M9 | Unified front end & meta | |
 | M10 | Art/audio pass & polish | |
 | M11 | (stretch) Online co-op | |
+
+**Gravelight campaign chain (T-033, 2026-10-21):** Map 0 → Map 1 → Map 2 linked by exfil beacons at rounds 10 and 30 with full carry-over (weapons, ammo, upgrades, Scrip, perks, rounds) and in-engine transition cutscenes; the third map falls back to a "campaign continues" screen until its scene lands.
 
 ---
 

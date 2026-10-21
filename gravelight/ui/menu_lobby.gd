@@ -104,6 +104,10 @@ func _build_lobby() -> void:
 	else:
 		var all_ready: bool = Net.all_ready()
 		content.add_child(MenuKit.label("Map" + ("" if all_ready else "   (waiting for everyone to be ready)"), 22, MenuKit.PAPER))
+		# The campaign chain for the whole squad (T-033): the host drives every exfil, every peer follows.
+		var camp: Button = MenuKit.button("Campaign   ·   Crossroads Inn  >  Kaltenbrunn  >  Totenhafen", Net.start_match.bind(Campaign.scene_for(Campaign.first_map()), true), 24, "ui_confirm")
+		camp.disabled = not all_ready
+		content.add_child(camp)
 		for m: Array in MenuCharacter.MAPS:
 			var id2: StringName = StringName(m[0])
 			var open: bool = ProfileSave.is_map_unlocked(id2) and str(m[2]) != ""

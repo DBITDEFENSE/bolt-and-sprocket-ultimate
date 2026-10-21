@@ -11,7 +11,7 @@ const CHARACTERS: Array = [
 const MAPS: Array = [
 	["map00_crossroads", "Crossroads Inn", "res://gravelight/maps/map00_crossroads/map00.tscn", "Always open."],
 	["map01_kaltenbrunn", "Kaltenbrunn", "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", "Reach round 10 at the inn, or answer the radio."],
-	["map02_totenhafen", "Totenhafen", "", "Complete \"Requiem for Kaltenbrunn\", or reach round 30 at Kaltenbrunn."],
+	["map02_totenhafen", "Totenhafen", "res://gravelight/maps/map02_totenhafen/map02.tscn", "Complete \"Requiem for Kaltenbrunn\", or reach round 30 at Kaltenbrunn."],
 ]
 
 var _picked: String = ""
@@ -48,6 +48,12 @@ func _pick(id: String) -> void:
 func _build_maps() -> void:
 	content.add_child(MenuKit.para("Survivor: %s" % _picked.capitalize(), 20, MenuKit.GOLD))
 	_build_squad()
+	# The campaign (T-033): the inn, then exfil at round 10 to Kaltenbrunn and at round 30 onward, kit and all.
+	var camp: Button = MenuKit.button("Campaign   ·   Crossroads Inn  >  Kaltenbrunn  >  Totenhafen", _start.bind(Campaign.scene_for(Campaign.first_map()), true), 24, "ui_confirm")
+	camp.custom_minimum_size = Vector2(0, 64)
+	content.add_child(camp)
+	content.add_child(MenuKit.para("Hold the inn to round 10, then take the exfil beacon with everything you carry. Round 30 at Kaltenbrunn opens the road north.", 16, MenuKit.DIM))
+	content.add_child(MenuKit.label("Single map", 22, MenuKit.PAPER))
 	for m: Array in MAPS:
 		var id: StringName = StringName(m[0])
 		var open: bool = ProfileSave.is_map_unlocked(id)
@@ -102,11 +108,15 @@ func _build_squad() -> void:
 			BotConfig.scaled_player_count(1, bots, c)], 16, MenuKit.DIM))
 
 
-func _start(scene: String) -> void:
+func _start(scene: String, campaign: bool = false) -> void:
 	if scene == "":
 		return
 	GameState.bot_count = BotConfig.clamp_bots(BotConfig.cfg(), int(GLSettings.values.get("bots", 0)))
 	GameState.bot_skill = str(GLSettings.values.get("bot_skill", "regular"))
+	if campaign:
+		Campaign.begin()
+	else:
+		Campaign.reset()   # single-map play: no beacon, no chain
 	get_tree().change_scene_to_file(scene)
 
 

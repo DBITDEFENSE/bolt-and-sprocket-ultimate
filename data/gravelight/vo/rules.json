@@ -52,7 +52,10 @@
   "M1": 4,
   "IDLE_SELFAWARE": 0,
   "SELFAWARE": 0,
-  "EXHAUST": 1
+  "EXHAUST": 1,
+  "EXFIL": 3,
+  "CUT_EXFIL": 4,
+  "TIDE": 3
  },
  "category_cooldown": {
   "ROUND_START": [
@@ -178,6 +181,102 @@
   "INTEL": [
    10,
    1.0
+  ],
+  "EXFIL": [
+   0,
+   1.0
+  ],
+  "CUT_EXFIL": [
+   0,
+   1.0
+  ],
+  "TEAM_DOWN": [
+   8,
+   0.8
+  ],
+  "BOSS": [
+   0,
+   0.6
+  ],
+  "FOREMAN": [
+   0,
+   0.6
+  ],
+  "SCREAMER": [
+   0,
+   0.6
+  ],
+  "GLASSHIDE": [
+   30,
+   0.3
+  ],
+  "CRAWLER": [
+   30,
+   0.15
+  ],
+  "TRAP": [
+   12,
+   0.3
+  ],
+  "POWER": [
+   0,
+   1.0
+  ],
+  "BELL": [
+   0,
+   0.4
+  ],
+  "CRUCIBLE": [
+   10,
+   0.8
+  ],
+  "BUILD": [
+   0,
+   1.0
+  ],
+  "EE": [
+   0,
+   1.0
+  ],
+  "CRUCIBLE_FIRST": [
+   0,
+   1.0
+  ],
+  "CRUCIBLE_START": [
+   0,
+   0.7
+  ],
+  "CRUCIBLE_READY": [
+   0,
+   0.7
+  ],
+  "CRUCIBLE_EXPIRE": [
+   0,
+   1.0
+  ],
+  "SPECIAL_END": [
+   0,
+   1.0
+  ],
+  "PYLON": [
+   0,
+   1.0
+  ],
+  "VAULT": [
+   0,
+   1.0
+  ],
+  "AMMO_LOW": [
+   30,
+   0.7
+  ],
+  "AMMO_NONE": [
+   30,
+   0.7
+  ],
+  "TIDE": [
+   0,
+   1.0
   ]
  },
  "round_start_always": [
@@ -217,5 +316,74 @@
  "slip_cooldown_s": 300.0,
  "slip_cooldown_hw_map03_s": 240.0,
  "slip_tail_delay_s": 0.6,
- "slip_after_down_s": 10.0
+ "slip_after_down_s": 10.0,
+ "player_category_cooldown": {
+  "_doc": "Overrides of category_cooldown for the squad (DUT/PEG/DEA/WRN) only: [cooldown s, chance].",
+  "ROUND_START": [
+   0,
+   0.2
+  ],
+  "ROUND_END": [
+   0,
+   0.2
+  ],
+  "TRAP": [
+   20,
+   0.3
+  ],
+  "DOWNED": [
+   0,
+   1.0
+  ],
+  "SPAWN": [
+   0,
+   0.6
+  ]
+ },
+ "story_category_cooldown": {
+  "_doc": "Overrides for the Operator: TRAP 20%, DOWNED 50%.",
+  "TRAP": [
+   10,
+   0.2
+  ],
+  "DOWNED": [
+   0,
+   0.5
+  ]
+ },
+ "banter": {
+  "_doc": "Round-break banter (CHARACTERS.md Banter): rolled once per round end after delay_s, between two standing survivors within max_distance_m (0 = any); cooldown_s between exchanges; each exchange once per match.",
+  "chance": 0.3,
+  "cooldown_s": 180.0,
+  "delay_s": 2.5,
+  "max_distance_m": 15.0,
+  "min_round": 2
+ },
+ "audio": {
+  "_doc": "Playback: squad lines from other players/bots are positional (unit_size/max_distance in metres); local player and story voices are 2D. duck_db applies to Music/Jingles/ambience while a story line plays.",
+  "squad_unit_size": 5.0,
+  "squad_max_distance": 40.0,
+  "squad_volume_db": 0.0,
+  "story_volume_db": 0.0,
+  "duck_music_db": -6.0,
+  "duck_jingles_db": -9.0,
+  "duck_ambience_db": -5.0
+ },
+ "player_category_priority": {
+  "_doc": "Squad categories above tier 1 (CHATTER): they skip the chatter gap and queue behind a story line instead of being dropped.",
+  "DOWN": 2,
+  "TEAM_DOWN": 2,
+  "REVIVE": 2,
+  "REVIVED": 2
+ },
+ "squad_second_channel": [
+  "TEAM_DOWN",
+  "REVIVE"
+ ],
+ "down_sequence": {
+  "_doc": "DOWN at once (player channel); TEAM_DOWN on the second squad channel team_down_delay_s later, speaker chosen when it starts (never the downed one or the reviver), dropped after team_down_window_s; the reviver's REVIVE queues behind it; REVIVE is said at revive completion instead if the reviver's line is older than revive_fallback_s; REVIVED on the player channel when the revive lands.",
+  "team_down_delay_s": 1.0,
+  "team_down_window_s": 8.0,
+  "revive_fallback_s": 12.0
+ }
 }

@@ -25,9 +25,14 @@ const LIT: Array = [
 	["cellar_lever_lit", Vector3(30.5, -1.5, 23.0), Vector3(33.0, -2.2, 19.3)],
 	["cellar_chute_lit", Vector3(29.0, -1.5, 25.5), Vector3(35.0, -2.4, 30.5)],
 	["cellar_up_stairs_lit", Vector3(29.0, -1.5, 24.0), Vector3(26.0, -1.2, 16.0)],
-	["stair_up_from_door", Vector3(2.2, 1.6, 15.6), Vector3(1.2, 3.6, 10.0)],
-	["stair_west_wall", Vector3(2.6, 2.2, 14.2), Vector3(0.0, 2.4, 11.8)],
-	["stair_down_from_top", Vector3(1.5, 5.45, 7.4), Vector3(1.5, 1.5, 15.5)],
+	["stair_up_from_door", Vector3(5.3, 1.6, 15.3), Vector3(1.6, 3.4, 9.4)],
+	["stair_west_wall", Vector3(3.4, 2.2, 13.9), Vector3(0.0, 2.6, 11.4)],
+	["stair_down_from_top", Vector3(1.9, 5.45, 7.6), Vector3(2.2, 1.2, 15.2)],
+	["stair_vestibule", Vector3(1.0, 1.6, 15.5), Vector3(5.5, 1.8, 11.0)],
+	["stair_well_up", Vector3(4.9, 1.5, 14.9), Vector3(3.0, 5.0, 10.2)],
+	["hall_rail_down", Vector3(5.0, 5.4, 8.6), Vector3(4.2, 0.5, 14.5)],
+	["stair_from_taproom", Vector3(8.0, 1.7, 7.5), Vector3(2.0, 2.5, 10.0)],
+	["taproom_sw_soffit", Vector3(3.0, 1.6, 6.5), Vector3(1.8, 3.2, 9.8)],
 	["upstairs_landing", Vector3(1.4, 5.4, 9.4), Vector3(10.0, 5.0, 7.6)],
 	["upstairs_hall", Vector3(22.5, 5.4, 8.2), Vector3(8.0, 4.8, 7.4)],
 	["taproom_hearth", Vector3(15.5, 1.7, 9.5), Vector3(11.5, 1.4, 0.5)],
@@ -38,11 +43,19 @@ const LIT: Array = [
 	["cellar_shelves_west", Vector3(27.6, -1.6, 25.6), Vector3(24.2, -2.0, 24.8)],
 	["cellar_rack_south", Vector3(27.2, -1.6, 27.6), Vector3(25.6, -2.3, 30.8)],
 	["cellar_north_pillar", Vector3(30.0, -1.5, 20.3), Vector3(30.0, -2.0, 23.0)],
-	["stair_pictures_close", Vector3(1.7, 2.6, 13.9), Vector3(0.15, 2.9, 13.0)],
+	["stair_pictures_close", Vector3(2.3, 2.6, 13.4), Vector3(0.15, 2.9, 12.4)],
 	["upstairs_room1", Vector3(6.0, 5.4, 4.6), Vector3(1.5, 4.8, 1.5)],
 	["taproom_clock", Vector3(3.6, 1.7, 6.2), Vector3(0.16, 2.4, 3.4)],
 	["cellar_crucible_lit", Vector3(29.5, -1.5, 22.3), Vector3(29.5, -2.0, 19.9)],
 	["cellar_crucible_side", Vector3(33.2, -1.6, 22.4), Vector3(29.5, -2.2, 19.9)],
+	["cellar_ninth_machine", Vector3(31.6, -1.4, 25.2), Vector3(30.15, -2.0, 29.4)],
+	["cellar_south_row_lit", Vector3(27.0, -1.4, 26.2), Vector3(31.0, -2.2, 29.4)],
+	["exfil_doors_closed", Vector3(21.2, 2.0, 28.6), Vector3(18.0, 1.5, 33.6)],
+	["exfil_open_doorway", Vector3(21.2, 2.0, 28.6), Vector3(18.0, 1.5, 33.6)],   # the cutscene's first shot, doors down
+	["exfil_open_road_out", Vector3(18.0, 2.2, 35.0), Vector3(26.0, 0.8, 52.0)],
+	["exfil_open_road_wide", Vector3(12.0, 3.2, 37.0), Vector3(32.0, 0.5, 58.0)],
+	["exfil_open_signpost", Vector3(19.5, 1.7, 37.5), Vector3(23.0, 1.6, 41.5)],
+	["road_east_cutscene", Vector3(12.0, 2.3, -7.8), Vector3(70.0, 1.0, -7.5)],
 ]
 
 
@@ -107,6 +120,10 @@ func _run() -> void:
 
 
 func _shot(label: String, at: Vector3, look: Vector3) -> void:
+	if label.begins_with("exfil_open"):   # as the campaign cutscene leaves them: the great doors fallen outward
+		var gd: Node3D = map.find_child("GreatDoors", true, false) as Node3D
+		if gd != null:
+			gd.rotation.x = deg_to_rad(88.0)
 	cam.global_position = at
 	cam.look_at(look)
 	await get_tree().create_timer(0.35).timeout

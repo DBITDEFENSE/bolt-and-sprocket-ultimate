@@ -8,11 +8,16 @@ extends Node
 ##   4. the human goes down and a bot revives them
 ##   5. the human bleeds out, spectates, and respawns at the next round
 ##   6. everyone down = game over
-## Usage: godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/smoke_bots.tscn [-- --rounds=3 --skill=veteran]
+## Between 2 and 3 (T-033): the Crucible. The round is set to 9, the power goes on, the cellar door opens, every bot
+## gets 7000 Scrip and a long break: at least one bot must walk to the Crucible, feed its gun, wait the forge and
+## take the upgraded gun; then that bot's upgraded reserve is emptied and it must buy upgraded ammo.
+## Usage: godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/smoke_bots.tscn [-- --rounds=3 --skill=veteran --map=map01 --crucible-only]
+## --map=map01 runs on Kaltenbrunn with every zone and door debug-opened and the squad moved to the Core Vault;
+## --crucible-only skips the fight and the revive/bleed-out/game-over checks.
 ## Prints "[bots] ..." lines, the squad report, and RESULT PASS/FAIL (exit code 0/1).
 
-const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
-const TIMEOUT: float = 600.0
+const MAPS: Dictionary = {"map00": "res://gravelight/maps/map00_crossroads/map00.tscn", "map01": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn"}
+const TIMEOUT: float = 900.0
 
 var _map: Node3D
 var _t: float = 0.0
@@ -37,6 +42,11 @@ var _max_alive: int = 0
 var _bleed_checked: bool = false
 var _bot_buys: Array = []        # [pid, item]
 var _door_ids: Dictionary = {}
+var _map_key: String = "map00"
+var _crucible_only: bool = false
+var _upgrades: Array = []        # [pid, weapon id]
+var _ammo_pid: int = 0
+var _ammo_bought: bool = false
 
 
 
@@ -46,11 +56,15 @@ func _ready() -> void:
 			_fight_rounds = int(a.substr(9))
 		elif a.begins_with("--skill="):
 			GameState.bot_skill = a.substr(8)
+		elif a.begins_with("--map="):
+			_map_key = a.substr(6)
+		elif a == "--crucible-only":
+			_crucible_only = true
 	ProfileSave.path = "user://_qa_bots_profile.json"
 	ProfileSave.profile = ProfileSave.new_profile()
 	GameState.character_id = &"peg"
 	GameState.bot_count = 3
-	_map = (load(MAP) as PackedScene).instantiate() as Node3D
+	_map = (load(str(MAPS.get(_map_key, MAPS["map00"]))) as PackedScene).instantiate() as Node3D
 	get_tree().root.add_child.call_deferred(_map)
 	get_tree().set_deferred("current_scene", _map)
 	GameState.god_mode = true
@@ -72,6 +86,10 @@ func _ready() -> void:
 			print("[bots] P%d bought %s for %d at t=%.0fs" % [p, item, cost, _t]))
 	GLBus.door_opened.connect(func(d: StringName, by: int) -> void:
 		print("[bots] door %s opened by P%d at t=%.0fs" % [d, by, _t]))
+	GLBus.weapon_upgraded.connect(func(p: int, w: StringName) -> void:
+		if GameState.is_bot(p):
+			_upgrades.append([p, w])
+			print("[bots] P%d (%s) took %s from the Crucible at t=%.0fs" % [p, Net.display_name(p), w, _t]))
 	GLBus.player_downed.connect(func(p: int) -> void:
 		_downs.append(p)
 		print("[bots] P%d down at t=%.0fs" % [p, _t]))
@@ -130,15 +148,59 @@ func _physics_process(delta: float) -> void:
 			_check_setup(root)
 			_phase = 1
 			_phase_t = 0.0
+			if _map_key != "map00":
+				_debug_open_map(root, human)
+			if _crucible_only:
+				_phase = 10
 		1:
 			_watch_fight(delta, root, human)
 			if RoundManager.current_round > _fight_rounds or _phase_t > 420.0:
 				_check_fight(root)
-				_phase = 2
+				_phase = 10
 				_phase_t = 0.0
+		10:
+			_crucible_setup(root)
+			_phase = 11
+			_phase_t = 0.0
+		11:
+			RoundManager.break_left = maxf(RoundManager.break_left, 30.0)   # a long break: the Crucible is a break errand
+			if not _upgrades.is_empty() and (_upgrades.size() >= 3 or _phase_t > 100.0):
+				_note("crucible: %d bot upgrade(s) after %.0fs: %s" % [_upgrades.size(), _phase_t, str(_upgrades)])
+				_phase = 12
+				_phase_t = 0.0
+				_ammo_pid = int((_upgrades[0] as Array)[0])
+				var bp: Player = _bots_by_id(_ammo_pid)
+				for i: int in bp.weapons.slots.size():
+					var w: WeaponInstance = bp.weapons.slots[i]
+					if w.upgraded:
+						bp.weapons.current_index = i
+						w.reserve = 0
+						w.mag = 1
+				Economy.grant(_ammo_pid, 3000)
+				_note("emptied P%d's upgraded reserve (%s) and gave it 3000 Scrip" % [_ammo_pid, str(bp.weapons.current().id)])
+			elif _phase_t > 150.0:
+				_fail("no bot upgraded a gun at the Crucible within 150 s")
+				for line: String in root.squad.report():
+					print("[bots]   ", line)
+				_phase = 2 if not _crucible_only else 99
+				_phase_t = 0.0
+		12:
+			RoundManager.break_left = maxf(RoundManager.break_left, 30.0)
+			if _ammo_bought:
+				_note("crucible: P%d bought upgraded ammo after %.0fs" % [_ammo_pid, _phase_t])
+				_phase = 2 if not _crucible_only else 99
+				_phase_t = 0.0
+			elif _phase_t > 90.0:
+				_fail("P%d never bought upgraded ammo at the Crucible" % _ammo_pid)
+				_phase = 2 if not _crucible_only else 99
+				_phase_t = 0.0
+			if _phase == 2:
+				RoundManager.break_left = 2.0
 				var b: Player = _bots()[0]
 				b.take_hit(9999.0, null)
 				_note("downed %s (P%d) on purpose" % [Net.display_name(b.player_id), b.player_id])
+			elif _phase == 99:
+				_finish()
 		2:
 			var b: Player = _bots()[0]
 			var revived: bool = false
@@ -221,6 +283,76 @@ func _physics_process(delta: float) -> void:
 				_finish()
 
 
+func _bots_by_id(pid: int) -> Player:
+	for b: Player in _bots():
+		if b.player_id == pid:
+			return b
+	return null
+
+
+## Round 9, the power on, the cellar door open (Map 0), 7000 Scrip per bot: the Crucible is affordable and lit.
+func _crucible_setup(root: MapRoot) -> void:
+	root.director.kill_all(true)
+	RoundManager.debug_set_round(9)
+	RoundManager.break_left = 30.0
+	if not GameState.power_on:
+		GameState.power_on = true
+		GameState.set_flag(&"power_on", true)
+		GLBus.power_activated.emit()
+	for n: Node in get_tree().get_nodes_in_group(&"doors"):
+		var d: BuyDoor = n as BuyDoor
+		if d != null and d.door_id == &"door_cellar" and not d.is_open:
+			d.open()
+	for pid: int in GameState.bot_ids:
+		Economy.grant(pid, 7000)
+	GLBus.purchase_made.connect(func(p: int, item: StringName, _c: int) -> void:
+		if p == _ammo_pid and String(item).ends_with("_ammo") and String(item).contains("_up"):
+			_ammo_bought = true)
+	var crs: Array[Node] = get_tree().get_nodes_in_group(&"crucible")
+	if crs.is_empty():
+		_fail("no Crucible on this map")
+		return
+	var cr: Crucible = crs[0] as Crucible
+	_note("crucible at %s, powered %s, phase %s; bots at %s" % [str(cr.global_position.snapped(Vector3.ONE * 0.1)), str(cr.is_powered()), Crucible.Phase.keys()[cr.phase],
+		", ".join(PackedStringArray(_bots().map(func(b: Player) -> String: return str(b.global_position.snapped(Vector3.ONE)))))])
+	var front: Vector3 = BotBrain._front_of(cr)
+	var nav: RID = root.get_world_3d().navigation_map
+	var snapped: Vector3 = NavigationServer3D.map_get_closest_point(nav, front)
+	for b: BotBrain in root.squad.brains:
+		var w: WeaponInstance = b.player.weapons.current()
+		_note("  %s: front %s snapped %s (%.2f m off) reachable %s | gun %s action %s slot %d | round %d state %s | wanted %s" % [
+			Net.display_name(b.player.player_id), str(front.snapped(Vector3.ONE * 0.1)), str(snapped.snapped(Vector3.ONE * 0.1)), snapped.distance_to(front),
+			str(b._reachable(front)), str(w.id) if w != null else "-", str(Crucible.action_for(w)), b._upgradeable_slot(), RoundManager.current_round,
+			RoundManager.State.keys()[RoundManager.state],
+			str(BotConfig.crucible_wanted(BotConfig.cfg()["shopping"]["crucible"], b._upgradeable_slot() >= 0, Economy.get_scrip(b.player.player_id), Crucible.price_for(&"upgrade", GLData.table("economy")), RoundManager.current_round))])
+
+
+
+## Map 1: every zone and door open, the power on, the squad standing in the Core Vault in front of the Crucible.
+func _debug_open_map(root: MapRoot, human: Player) -> void:
+	for z: Variant in root.nav_zone_bits.keys():
+		GameState.open_zone(StringName(str(z)))
+	for n: Node in get_tree().get_nodes_in_group(&"doors"):
+		var d: BuyDoor = n as BuyDoor
+		if d != null and not d.is_open:
+			d.open()
+	if not GameState.power_on:
+		GameState.power_on = true
+		GameState.set_flag(&"power_on", true)
+		GLBus.power_activated.emit()
+	var crs: Array[Node] = get_tree().get_nodes_in_group(&"crucible")
+	if crs.is_empty():
+		return
+	var cr: Crucible = crs[0] as Crucible
+	var front: Vector3 = cr.to_global(Vector3(0, 0, -4.0))
+	human.global_position = front + Vector3(0, 0.1, 0)
+	var i: int = 0
+	for b: Player in _bots():
+		b.global_position = front + Vector3(2.0 * float(i - 1), 0.1, 2.0)
+		i += 1
+	_note("map debug-opened: %d zones, squad moved to the Crucible at %s" % [root.nav_zone_bits.size(), str(cr.global_position.snapped(Vector3.ONE * 0.1))])
+
+
 func _check_setup(root: MapRoot) -> void:
 	var bots: Array[Player] = _bots()
 	if bots.size() != 3:
@@ -248,6 +380,9 @@ func _check_setup(root: MapRoot) -> void:
 		_fail("no squad / wrong brain count")
 	if RoundManager.players != 3:
 		_fail("round scaling sees %d players, expected 3 (1 human + 3 x 0.75)" % RoundManager.players)
+	if get_tree().get_nodes_in_group(&"crucible").is_empty():
+		_fail("no Crucible on this map")
+
 	if GameState.is_solo():
 		_fail("GameState thinks this is solo")
 	_note("setup: %d bots (%s), scaling players %d, session %s" % [bots.size(), ", ".join(PackedStringArray(chars.keys().map(func(c: Variant) -> String: return str(c)))), RoundManager.players, "local" if not Net.is_online() else "online"])

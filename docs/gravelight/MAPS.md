@@ -25,7 +25,7 @@ Greybox colors are from the canon sheet.
 
 Each plan is roughly to scale: **1 character ≈ 1 m** horizontally unless noted.
 
-**(§11 amendment)** The Helvetia Works plans also use `r` = river-climb spawn, `B` = beam pad, `~` = water, and `║` = the cargo-lift beam. **Map list (§11.7):** Map 0 Crossroads Inn and Map 1 Kaltenbrunn (full, built), **Helvetia Works** (full, new; The Fine Print Ch. 5 and a standalone map), and Map 2 Totenhafen and Map 3 Morgenrot (outlines).
+**(§11 amendment)** The Helvetia Works plans also use `r` = river-climb spawn, `B` = beam pad, `~` = water, and `║` = the cargo-lift beam. **Map list (§11.7):** Map 0 Crossroads Inn and Map 1 Kaltenbrunn (full, built), **Helvetia Works** (full, new; The Fine Print Ch. 5 and a standalone map), Map 2 Totenhafen (first playable, T-036) and Map 3 Morgenrot (outline).
 
 ---
 
@@ -45,7 +45,7 @@ graph LR
   TAPROOM["TAPROOM (spawn)<br/>4 windows · Kar98k · M1 Garand<br/>Radio · Crate*"]
   UPSTAIRS["UPSTAIRS ROOMS<br/>2 windows · MP40 · Crate"]
   STABLE["STABLE / BARN<br/>3 windows · Trench Gun · Crate*<br/>Hayloft perch"]
-  TAPROOM -- "Door 1: 750<br/>(stair landing)" --> UPSTAIRS
+  TAPROOM -- "Door 1: 750<br/>(stair vestibule)" --> UPSTAIRS
   TAPROOM -- "Door 2: 1000<br/>(kitchen back door)" --> STABLE
 ```
 
@@ -63,9 +63,9 @@ graph LR
    #  $  └──────┘  .  X  X    #          $ (W wall) Kar98k 200
    #  .   tables  .  .  .  $  #          $ (E wall) M1 Garand 600
    #  .  .  .  .  .  .   C*   #          C* crate spot "Hearth" (SE corner)
-   #  ^ (Door 1: 750)   kitchen
-   ##D#######################D#
-     ↑ stairs to UPSTAIRS     │  Door 2: 1000 (kitchen back door)
+   # ^^^ |D1  .  .  .  .  .   kitchen      stairwell 6 x 6 m in the SW corner: the flight (^^^) up the west
+   ###########################D#          wall, Door 1 (750) in its east wall into a vestibule (see below)
+                              │  Door 2: 1000 (kitchen back door)
                               │
               ┌───────────────┴─────┐   covered yard passage 4 x 6 m
               │   yard passage      │
@@ -79,7 +79,12 @@ graph LR
    ######W########great doors######     great doors: barred, zombies can't use
 ```
 
+**The great doors and the carters' road (campaign exfil, T-033):** the doors (x 16–20 in the stable's south wall, 4 × 4.2 m) are dressing in a drawn opening that is filled with an invisible collider, so the navmesh and collision stay a solid wall; the exfil beacon stands just inside at (18, 0, 32) and the Map 0 → Map 1 cutscene tweens the `GreatDoors` group so they fall outward. Behind them, cutscene-only dressing: a trodden track south through a gap in the yard fence (gateposts, a dead lantern post, a signpost "Kaltenbrunn 9 km / Wilcza Góra 6 km / Gasthaus zum Kreuzweg"), bending south-east past dead trees and drifts toward low snowy rises on the horizon. Nothing out there is walkable.
+
 Window count: Taproom 4 (N×2, W, E), Stable 3 (N×2, S). There are 9 windows in total, counting the 2 upstairs.
+
+### The staircase (playtest 2026-10-21: "too small, needs more room")
+The stairwell is the taproom's south-west corner, **6 × 6 m** (x 0–6, z 10–16), open to the roof (6.8 m). Door 1 (750) is in its east wall (x 6, z 14.3–15.9) and opens into a **2.2 m vestibule** (x 3.65–6) with a doormat and a coat rack. The **flight is 3.5 m wide** (x 0.15–3.65), runs up the west wall from z 14.3 to z 9.0 (5.3 m run, 3.8 m rise, 35.6°) and lands a metre inside the upstairs hall, so the hall itself is the top landing. Its east side is open over the vestibule: newel posts and turned balusters between a curb, a mid rail and a handrail that are real colliders (nobody walks off the edge, zombies don't path over it, shots pass between the bars). The same rail turns at the stair head and runs along the hall's edge over the well (x 3.65–6 at z 10), so the hall overlooks the vestibule and the door. Dressing: a 1.5 m runner with brass rods, wainscot and a wall rail up the west wall, a panelled string along the vestibule, pictures stepping up both the west wall and the well's tall east wall, two sconces and a lantern in the well. Before this it was a 2.7 m flight in a 3 m well (x 0–3) with the door opening straight onto the bottom step. Zombies path up the flight as before; the porch-roof ledges are unchanged.
 
 ## Upper floor (Upstairs Rooms)
 
@@ -89,9 +94,9 @@ Window count: Taproom 4 (N×2, W, E), Stable 3 (N×2, S). There are 9 windows in
    #  .  .   D  .  .   D   .  C #        C crate spot "Guest Bed" (Room 3)
    #  .  $   #  .  .   #   .  . #        $ MP40 1000 (Room 1 wall)
    ####.##########.#########.####        Room doors are open (no cost)
-   #  hallway  .  .  .  .  .  . #
-   # v(stairs down: Door 1 below)#
-   ##############################
+   #  hallway  .  .  .  .  .  . #        the hall's north wall at the stair head (x < 3.65) stays bare
+   # vvv |rail  .  .  .  .  .  . #        vvv the flight lands in the hall (x 0-3.65, z 9); the hall overlooks
+   ######   well   ###############        the stairwell over a rail (x 3.65-6, z 10), Door 1 is below
    Windows: Room 1 north, Room 3 north (2 total)
 ```
 
@@ -144,10 +149,10 @@ A salt mine and research complex at night under snow. The map descends: **surfac
 ## Map 0 cellar: the Helvetia machines (T&C M2, DECISIONS T-027)
 Door 3 (**1500**, zone `CELLAR`) is in the taproom's east wall at z 10.7–12.3. The M1 Garand wall-buy moved north along that wall to z 4. Through the door:
 - **Stair hall** (x 24–28, z 10–19): a ramp down from the ground landing to the cellar floor (y −3.2).
-- **The vault** (x 24–36, z 19–31): timber ceiling, two stone pillars to loop around, and all **8 Helvetia perk machines**:
+- **The vault** (x 24–36, z 19–31): timber ceiling, two stone pillars to loop around, and all **9 Helvetia perk machines**:
   - **West row**, facing east: Ironhide, Second Wind, Trigger Tonic.
   - **East row**, facing west: Twin Barrel, Marathon, Hawkeye.
-  - **South pair**: Packmule, Blastproof.
+  - **South row**: Packmule, **Overclock Cordial** (the ninth, T-034: between the pair on the vault's axis at x 30.15, under its own bulb), Blastproof.
   - Every machine stands 1.1 m or more off the wall, so its **fine-print panel** can be read from behind.
 - **The cellar lever** (north wall, x 32.5): Map 0's power. Throwing it lights the cellar, then the taproom, upstairs and stable in sequence, plays the Operator's first fumbling power line, and emerges 3 zombies at the coal chute.
 - **The Crucible** (T-032): in a brick alcove on the vault's north wall at x 29.5, between the stair mouth and the lever, facing south. Map 0's weapon upgrades (5000; upgraded ammo 2500, `economy.json`). It is dark and refuses until the lever is thrown ("Power must be activated"), like the machines.
@@ -425,7 +430,7 @@ D  .  .  .  .  .  .  Q(part:frame)  .  W     C* crate spot (mess hall serving li
 | D_BARRACKS | Trench Gun 1500 | Ironhide | — | Part: Frame |
 | E_LIFT | — | — | — | — |
 | F_CHAPEL | BAR 1800 | Twin Barrel, Marathon | Chandelier Drop | Pylon 2, THE BELL, altar, Part: Crank |
-| G_GENERATOR | STG-44 1200 | Trigger Tonic | Live Wire Fence | Hauptschalter, Totenglocke workbench |
+| G_GENERATOR | STG-44 1200 | Trigger Tonic, **Overclock Cordial** (north wall, in the switchgear gap at x 60; T-034) | Live Wire Fence | Hauptschalter, Totenglocke workbench |
 | H_LAB | — | Hawkeye, Packmule, Blastproof | — | Pylon 3, nursery, Intake (tag) |
 | I_CORE | — | — | — | Heart, Crucible, Ledger |
 
@@ -498,6 +503,19 @@ Three **Resonance Pylons**: A_MINEHEAD (tower base), F_CHAPEL (west of altar), H
 | **6–10** | Open the Barracks (1250), drink Ironhide (2500), take the Trench Gun or MP40. Go down via the lift or the maintenance stairs. Open the Generator (1500) → **power on** around round 7–9. Bellringer round #1 (round 5–6). |
 | **11–20** | Lab Wing (2000) → Hawkeye/Packmule/Blastproof. Attune the 3 pylons (4500 total) → Core Vault → **Crucible** (5000). Gather the Totenglocke parts and build it. The Foreman's first appearance is round 12–14. The main egg starts in earnest around round 14–18. |
 | **20+** | Screamers. Glasshides (15+) have thickened. Main egg Heartstorm. Training in the Pew Loop or the Turbine Loop. |
+
+---
+
+## Campaign chain (DECISIONS T-033)
+
+Play → **Campaign** links the maps by **exfil beacons**; single-map play has none.
+
+| Leg | Beacon | Lights | Window | Retry | Then |
+|---|---|---|---|---|---|
+| Map 0 → Map 1 | "THE CARTERS' ROAD", the stable at the great doors `(18, 0, 32)`; the stable's door opens free when it lights | round 10 starts | 90 s, zombies keep coming | every 3 rounds (13, 16 …) | ~30 s cutscene (doors fall, dawn at the crossroads, title KALTENBRUNN); Map 1 starts after round 10 with a 14 s grace, round 11 next |
+| Map 1 → Map 2 | "THE NORTH GATE", inside the yard gate `(20, 0, 2.2)` (spawn zone, always open) | round 30 starts | 90 s | every 3 rounds | ~30 s cutscene (the gate rises, the north road, title TOTENHAFEN); Map 2 starts after round 30 (missing scene: "the campaign continues" screen) |
+
+Hold Use to vote; every living human must (bots follow the leader and leave with the squad). Everyone keeps character, both guns with ammo and Crucible upgrades, grenades, tactical, Scrip and perks; the round count and the Bellringer / Foreman schedule carry over. Data: `data/gravelight/campaign.json`, `map00.json` / `map01.json` `exfil`.
 
 ---
 
@@ -831,18 +849,308 @@ Triggered by holding [F] on the Rheinschalter in the Quay turbine house (free; i
 
 ---
 
-# MAP 2 — "TOTENHAFEN" (outline only)
+# MAP 2 — "TOTENHAFEN" (first playable, DECISIONS T-036)
 
-**Story question answered:** *Where is the Nachtglas going?* Into U-boats, as ballast in sealed lead coffins bound for somewhere far away.
-**New question raised:** *Who is the buyer, and why does Reinholt want the observatory at Morgenrot?*
+**Story question answered:** *Where is the Nachtglas going?* Into U-boats, as ballast in lead-sealed coffins, consigned through a neutral company to a buyer abroad.
+**New question raised:** *Who is the buyer, and why does Reinholt want the observatory at Morgenrot?* The loading manifest in the crane office names the consignee: **"Hale, L."**, care of Helvetia Automaten AG, Basel. Peg's London contact is buying the stone.
 
-A Baltic U-boat pen (fictional, near a ruined fishing town) in winter storm surf. A concrete bunker 18 m thick.
+A Baltic U-boat pen carved into a cliff below a ruined fishing town, January 1945, in a winter storm. The bunker is **18 m of concrete** over the pens; the sea comes in through the pen mouth and, every third round, **the tide comes in with it.**
 
-- **Zones:** Harbor Quay (spawn), Fish Cannery, Torpedo Workshop, Pen Hall (3 wet docks, with a U-boat in dock 2), Submarine Interior (playable, a tight corridor), Flooded Lower Pens, Signal Tower.
-- **Set-piece:** **the tide.** Every 3 rounds the water level in the Pen Hall rises and falls, changing the routes, flooding the lower pens and forcing players up onto the catwalks. Zombies in water are slowed. The Operator announces the tide like a shipping forecast.
-- **New mechanic:** **Ballast** — a carry-object system. Players carry lead-sealed Nachtglas coffins (slow move, can't shoot) to the loading crane to power the map's systems, or dump them overboard for the egg.
-- **New enemy hook:** drowned sailors ("Kielholer") that grab from water.
-- **Story beat:** Sister Agnieszka's trail (she was transferred here); a manifest naming Peg's contact, "Mr. Hale."
+**Campaign:** the squad arrives here from Kaltenbrunn at **round 31** by the north-gate exfil (T-033), carrying their weapons, Scrip and perks; the round count continues. The map also plays standalone from round 1 once unlocked (Map 1 main egg, or round 30 at Kaltenbrunn). Everything below assumes the campaign arrival (strong, rich players); the pacing table has a standalone column.
+
+Generator: `gravelight/tools_src/gen_map02.gd` → `gravelight/maps/map02_totenhafen/map02.tscn` (source of truth, same layering as gen_map01: Geometry shell → per-zone navmesh bake → Dressing → batches → lights → Gameplay). Data: `data/gravelight/map02.json` (power, tide, ballast). Frame: +X east, +Z south, y up. **The sea is north of the quay (z < 0) and south of the pens (z > 84).**
+
+## Vertical overview
+
+```
+LEVEL  0 (quay level)   B_CANNERY ─ A_QUAY (spawn) ─ C_WORKSHOP        the harbour, outdoors, storm
+                            │                            │
+LEVEL  0 (pier level)   D_PENHALL: north apron, 3 piers, east apron (crane bay) ─ E_UBOAT (dock 2, interior at −2)
+                            │ catwalks at +4                 │ stair down
+LEVEL +7 (tower)        G_SIGNAL (power, 2500) over the NE apron
+LEVEL −3 (wet)          F_LOWERPENS: the pump deck under the east apron   ← floods at high tide
+```
+
+Water: dock basins −6, **low tide −4.0, high tide −2.2**, lower-pens deck −3.0 (0.8 m of water at high tide), piers 0, catwalks +4, tower floor +7, bunker roof +12 (the 18 m of concrete is above that).
+
+## Zone connectivity
+
+```mermaid
+graph TD
+  A["A_QUAY (spawn)<br/>4W + 2 surf · Kar98k · M1 Carbine · Crate*"]
+  B["B_CANNERY<br/>3W · Trench Gun · Frag · Second Wind · Marathon · infirmary (Agnieszka's letter)"]
+  C["C_WORKSHOP<br/>3W · MP40 · STG-44 · Ironhide · Trigger Tonic · Crate* · Torpedo Trolley trap"]
+  D["D_PENHALL<br/>3 chutes + 3 catwalk · BAR · Thompson · Crate · crane · coffins · manifest"]
+  E["E_UBOAT (−2)<br/>THE CRUCIBLE (torpedo room) · 1 hatch spawn"]
+  F["F_LOWERPENS (−3, floods)<br/>PUMPENSCHALTER · Crate · Grille trap · 2 drain spawns · pump log"]
+  G["G_SIGNAL (+7, power)<br/>Overclock Cordial · Hawkeye · Crate · 2W · teletype"]
+
+  A -- "1000" --> B
+  A -- "1000" --> C
+  B -- "1500 (either side)" --> D
+  C -- "1500 (either side)" --> D
+  D -- "Gangway 1500" --> E
+  D -- "Pump stair 1500" --> F
+  D -- "2500 (power req.)" --> G
+```
+
+Door cost ladder: 1000 → 1500 → 2500 (the economy's 750/1250/2000 steps are skipped: the squad arrives with Kaltenbrunn money; standalone players reach the same prices two rounds later than on Map 1). The two **Pen Hall** doors are one link group: buying either opens both. `C*` starting crate spots: **the quay's fish shed** or **the workshop's warhead store**, at random.
+
+Zone adjacency for the "active spawns" rule: A–B, A–C, B–D, C–D, D–E, D–F, D–G.
+
+---
+
+## A. Harbour Quay (SPAWN): level 0, outdoors
+
+**Size:** 32 × 30 m of wet concrete between the cannery (west), the workshop (east), the bunker face (south, 3 m thick) and the sea wall (north, 1.1 m parapet with bollards). The harbourmaster's hut (8 × 7 m) is the loop block; a beached fishing cutter lies against the east end of the parapet.
+
+```
+ N ↑  (the sea: surf, the breakwater, snow blowing in off the water)
+   ═════S═══W═══════════════════════════W════S═══ parapet, bollards, 2 surf stairs (S), 2 sea-stair windows (W)
+   #  .  .  .  .  .  .  .  .  .  .  .  .  ╔═══ cutter wreck ═══╗  #
+   #  .  .  .  .  .  .  .  .  .  .  .  .  ║ (beached, lists)   ║  #
+   D  .  .  .  ┌────────────┐  .  .  .  .  ╚════════════════════╝  D
+   ↑  .  .  .  │HARBOURMASTR│  .  .  .  .  .  .  .  .  .  .  .  .  ↑
+ (1000 B)  .  .│  C*  $     │  .  .  .  .  .  X  X  .  .  .  .  (1000 C)
+   #  .  .  .  └────────────┘  .  .  .  .  X  X  .  .  .  .  .  .  #
+   #  .  .  nets  crates  .  .  .  .  .  .  .  .  .  drums  .  .  .  #
+   #  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  #
+   ########W########### bunker face, 3 m ########W####################
+                  "TOTENHAFEN · KRIEGSMARINE · U-BUNKER" over the pen doors
+```
+
+- **Windows (4):** two in the parapet (sea-stair landings behind them, zombies come up out of the surf) and two shutters in the bunker face (closets inside the 3 m wall).
+- **Surf spawns (2):** the surf stairs at both ends of the parapet, from round 1: the drowned come up the steps.
+- **Wall-buys:** Kar98k 200 (hut, west wall), M1 Carbine 600 (cutter's hull plate).
+- **Crate spot C\*:** inside the hut.
+- **Training loop: the Hut Loop.** Circle the hut with the cutter as the outer wall at the NE; a 6 m lane all round. Fails when the two parapet windows and the two surf stairs all feed the north lane at once (round 35+).
+- **Story:** the fishing harbour the Kriegsmarine requisitioned in 1943. The town above is empty; the cannery kept working for the garrison. The hut's log says the last boat out was the cutter, and it came back empty with its wheel lashed.
+
+## B. Fish Cannery: level 0
+
+**Size:** 30 × 30 m hall, 6 m to the roof trusses. Two gutting lines (long zinc tables), a can conveyor, brine tanks, pallets of cans. The NW corner is partitioned off as the **infirmary** (10 × 10 m: six cots, a screen, a stove).
+
+```
+   ####W####################W###########   N: sea-side windows (closets on the shingle)
+   # INFIRMARY  cots  ║ .  .  .  .  .  .  #
+   W  P(2nd Wind) Q   ║ .  ===== conveyor ===== #   Q: Agnieszka's letter on the end cot
+   #  stove  screen   ║ .  .  .  .  .  .  .  . #
+   ######  door  ######  .  .  .  .  .  .  . #
+   #  .  .  .  .  .  .  .  .  .  .  .  .  . #
+   #  [== gutting line ==]  .  [== gutting line ==]  #
+   W  .  .  .  .  .  .  .  .  .  .  .  .  . D (1000, from A)
+   #  brine  brine  .  cans  cans  .  .  .  $ Trench Gun 1500 (E wall)   $ Frag 250
+   #  .  .  .  .  .  P(Marathon)  .  .  .  . #
+   ##########D(1500 → D_PENHALL)############   S: bunker face, the pen passage at x −10
+```
+
+- **Windows (3):** N ×1 (shingle), W ×2 (the lane behind the cannery).
+- **Perks:** Second Wind (infirmary), Marathon Malt (S wall).
+- **Story item (fixed):** `INT_M2_01` *Infirmary Letter* on the end cot: Sister Agnieszka Wróbel was here, nursing laborers off the Kaltenbrunn train, until "the doctor's crates" went down to the pens and she was ordered down with them.
+- **Loop:** the Gutting-Line Loop between the two tables (narrow, 3 m: good for the Trench Gun, bad past round 36).
+
+## C. Torpedo Workshop: level 0
+
+**Size:** 30 × 30 m, 7 m high, an overhead gantry rail along the hall. Four torpedo cradles (eels on trestles), a lathe, a tool wall, the **warhead store** (a caged 8 × 6 m corner) and a narrow-gauge **trolley track** along the south wall.
+
+```
+   ####W###############################   N: 1 sea-side window
+   #  .  .  .  .  .  .  .  .  .  .  .  . W   E: 2 windows (the cliff lane)
+   D  [ torpedo ]  [ torpedo ]  .  lathe  #
+   ↑  .  .  .  .  .  .  .  .  .  .  .  . #
+ (1000 A)  [ torpedo ]  [ torpedo ]  .  .  W
+   #  P(Ironhide)  .  .  .  .  ┌─ WARHEAD ─┐
+   #  $ MP40 1000  .  .  P(Trigger)  │ STORE C*  │
+   #  $ STG-44 1200  .  .  .  .  .   │  $ E-Tool │
+   #  T =====================trolley track===== t #   T: Torpedo Trolley (runs W→E), t lever 1000
+   ##########D(1500 → D_PENHALL, at x 44)########
+```
+
+- **Windows (3):** N ×1, E ×2.
+- **Wall-buys:** MP40 1000, STG-44 1200 (W wall), Sharpened E-Tool 3000 (warhead store rack).
+- **Perks:** Ironhide Stout, Trigger Tonic.
+- **Crate spot C\*:** the warhead store.
+- **Trap: Torpedo Trolley** (the Map 1 runaway-cart rules, `traps.json ore_cart`): the lever by the pen door sends the loaded trolley down the south-wall track for 25 s; anything on the track dies.
+- **Story:** the eels were being gutted for their warheads. The warhead store holds **lead-sealed coffins** instead of warheads: the first time the player sees what the ballast is.
+
+## D. Pen Hall: level 0 (piers), +4 (catwalks)
+
+**Size:** 72 × 51 m under a 12 m ceiling (the 18 m of concrete is above it). Three wet docks run north–south from the north apron to the **pen mouth** (z 84, a half-lowered steel curtain with the storm beyond). **Dock 2 holds U-1047**, a Type VII hull with her bow to the apron and her stern out under the curtain. The east apron is the **crane bay**: the loading crane over dock 3, coffin stacks on pallets, the crane office.
+
+```
+ z 33  ####D(from B, x −10)####################################D(from C, x 44)#######   bunker face (3 m)
+       #cat  NORTH APRON  .  .  .  .  .  .  .  .  .  .  .  .  .  ^tower ramp  [SIGNAL TOWER +7]
+ z 38  #walk ╔═════╗ ~~~~~~~ ╔═════╗ ~~~~ ▄▄▄▄▄▄ ~~~~ ╔═════╗ ~~~~~~~~~~~ ╔════ EAST APRON ═════╗
+       #  ║  ║PIER ║ ~DOCK1~ ║PIER ║ ~~  ▐U-1047▌ ~~  ║PIER ║ ~~ DOCK 3 ~~ ║ coffins  D(1500 v F)║
+       #  ║  ║  0  ║ ~~~~~~~ ║  1  ║ ~~  ▐ deck ▌ ~~  ║  2  ║ ~~~~~~~~~~~ ║ crane office  Q    ║
+       #  ║  ║  C  ║ ~~~~~~~ ║ $BAR║ ~~  ▐ tower▌==D==║  $  ║ ~~~~~~~~~~~ ║   ╔═CRANE═╗  .  . ║
+       #  S  ║  .  ║ ~~~~~~~ ║  .  ║ ~~  ▐      ▌gang-║Thomp║ ~~~~~~~~~~~ ║   ║ hook  ║  ^cat ║
+       #cat  ║  .  ║ ~~~~~~~ ║  .  ║ ~~  ▐      ▌way  ║ son ║ ~~~~~~~~~~~ ║   ╚═══════╝  walk ║
+       #walk ║  .  ║ ~~~~~~~ ║  .  ║ ~~  ▐      ▌ ~~  ║  .  ║ ~~~~~~~~~~~ ║  .  .  .  .  .  S ║
+ z 84  #  ╚═╝ ~~~~~~~~~~~~~~ ╚═════╝ ~~  ▐ stern▌ ~~  ╚═════╝ ~~~~~~~~~~~ ╚═══════════════════╝
+       ═══════════ PEN MOUTH: steel curtain half down, the Baltic beyond ═══════════════════════
+       x −20      −14     −6    0      4     10    14    20            32                 52
+```
+
+- **Piers** are 6 m wide with kerbs, railings (nobody falls in) and three sodium pole lamps each (powered). **Catwalks** at +4 run the west, north and east walls; stairs up at the NW corner and on the east wall (z 60–68), each onto a landing; the north catwalk widens to a 4 m platform where the ramp to the Signal Tower door climbs beside it, so the catwalk ring stays continuous under the ramp.
+- **Spawns:** 3 **chutes** in the bunker's north wall (barricades, closets in the 3 m wall) at the apron, 3 **catwalk emerge points** (west, north, east) that are only live **while the tide is high**, 1 ground point at the east apron's sea end (the pen-mouth steps), always.
+- **Wall-buys:** BAR 1800 (pier 1 bollard post), Thompson 1200 (pier 2, by the gangway).
+- **Crate spot:** pier 0's end (under the west catwalk).
+- **Story item (fixed):** `INT_M2_03` *Loading Manifest, U-1047* nailed in the crane office: 14 "ballast units, lead, sealed" shipped "per Helvetia Automaten AG, Basel, for Hale, L." The squad's own orders came from a Mr. Hale.
+- **Coffins:** lead-sealed Nachtglas coffins on pallets along the east apron, each with a Helvetia plate, a stencilled unit number and a faint violet seam at the lid. Set dressing in this pass (see Ballast below).
+- **Loop: the Pier Loop.** Apron → pier 1 → (no way round the dock ends: the piers are dead ends). The hall is **not** a loop: it is three fingers and two aprons. The real training line is **apron ↔ east apron ↔ catwalk stair ↔ north catwalk ↔ NW stair ↔ apron** (a 120 m ring at two heights).
+
+## E. U-1047, Submarine Interior: level −2 (deck at +0.5)
+
+Through the gangway door on pier 2 (1500) onto the deck, past the conning tower, then down the open hatch aft of it (a companionway ramp into the control room).
+
+```
+   bow (z 38)                                  stern (z 86)
+   ┌──TORPEDO ROOM──┬──BUNKS──┬──CONTROL ROOM──┬────ENGINE ROOM────┐
+   │ 4 tubes   CRUCIBLE│ ▬ ▬ ▬ │  periscope  ^hatch │ diesels (dead)  S │   interior 4 × 2.6 m
+   └─────────────────┴─────────┴────────────────┴───────────────────┘
+```
+
+- **The Crucible** stands at the forward bulkhead between the torpedo tubes, where the boat's own eels were loaded. It **needs the pumps** (power): until then it answers "Power must be activated", like the perk machines.
+- **Spawn (1):** the engine room's aft escape hatch (ground, from the first round). The interior is dark red (battle lanterns, always on) until the power brings the white lamps.
+- **Story:** Deacon's map (CHARACTERS.md): the diesels are dead, he wants to rebuild them to leave. The boat's log is the next pass.
+
+## F. Flooded Lower Pens: level −3 (the pump deck)
+
+Under the east apron: a 20 × 34 m wet gallery with its west edge open to dock 3 (railings), columns, drain grates, and the **pump room** at the sea end (two tide pumps with flywheels, the **Pumpenschalter**). At low tide the water in dock 3 is a metre below the deck; **at high tide the deck is under 0.8 m of water.**
+
+```
+ z 50  ####^stair (from D, x 46–52, 1500)####
+       ║ .  .  .  .  .  .  .  .  .  .  .  . #
+       ║ S(grate) .  .  col  .  .  .  col  . #  T: grille (Live Wire rules) across the stair foot, t lever
+ dock3 ║ .  .  .  .  .  .  .  .  .  .  .  . #
+ water ║ .  .  .  col  .  .  .  col  .  Q  . #  Q: pump-room log
+       ║ .  .  .  .  .  .  .  .  .  .  .  . #
+       ║ ╔═PUMP═╗  PUMPENSCHALTER  ╔═PUMP═╗ #
+ z 84  ║ ╚══════╝  C  .  S(grate)  ╚══════╝ #
+       ═══════ sea grille (the Baltic comes through it) ═══════
+```
+
+- **Spawns (2):** drain grates (ground). **Off while flooded:** the tide controller switches them off and the three catwalk points in D on.
+- **Trap: the Grille** (`traps.json live_wire`): a live grille across the stair foot, 25 s, 1000.
+- **Crate spot:** by the pumps.
+- **Story item (fixed):** `INT_M2_02` *Pump-Room Log*: the pump keeper's book. The sister came down with the doctor's crates and went aboard with them; the boat sailed on the morning tide and the pumps were never run again.
+- **Power:** the **Pumpenschalter** (free). Throwing it starts the flywheels, sweeps the lights F → D → E → G → B → C → A, plays `OPR_POWER_ON_M2_01`, and emerges 6 zombies at the drain grates and the pen-mouth steps.
+
+## G. Signal Tower: level +7 (power required, 2500)
+
+A 10 × 5 m signal room over the NE apron, reached by the ramp from the north catwalk. Windows north (the sea) and south (the whole pen hall below). The **signal lamp** turns on the roof (its beam sweeps the hall and the quay, always on, battery). The teletype and the port's wireless rack: this is where the Ledger got into the network.
+
+- **Windows (2):** north wall (the cliff ladder; closets).
+- **Perks:** **Overclock Cordial** and Hawkeye Brandy.
+- **Crate spot:** under the teletype.
+- **Story item (fixed):** `INT_M2_04` *Teletype Strip*: the evening tally, partly in Marchbank's phrasing and partly in a child's.
+
+---
+
+## THE TIDE (set-piece, first version, data: `map02.json "tide"`)
+
+| Rule | Value |
+|---|---|
+| Schedule | **High tide on every round divisible by 3** (33, 36, 39 … in the campaign; 3, 6, 9 … standalone), from `min_round` 3. The water rises over the first `rise_seconds` (24 s) of that round and falls over the first 24 s of the next. |
+| Forecast | At the start of the round before (… 32, 35, 38) the Operator reads the forecast (`OPR_TIDE_WARN_*`). At the rise, `OPR_TIDE_RISING_*`; at the fall, `OPR_TIDE_FALLING_*`. A HUD banner each time. |
+| Water | `low_y` −4.0 → `high_y` −2.2. One water plane across the hall and out to sea (shader: wind chop, fresnel, foam at the high-water mark), plus dock 3's reflection under the lower pens. |
+| Flooded boxes | `flood_boxes` (world AABBs): the lower-pens deck. Anyone (player or zombie) inside a box and below the surface + 0.4 m **wades**: players get the `wading` status (`enemies.json status.wading move_mult` 0.55, refreshed every tick), zombies get the frost slow at `zombie_slow` 0.45. |
+| Spawns | `flood_disable` (the two drain grates) go off while the water is above the deck; `flood_enable` (the three catwalk points) come on. Zombies already wading keep coming, slowly. |
+| Zones | The piers (0) and the sub interior (−2, sealed hull) stay dry. Only F floods in this version. |
+| Pumps | The Pumpenschalter does **not** stop the tide (the pumps keep the docks from silting, not the sea out). A later pass can let a running pump shorten the flood. |
+
+The tide is a map node (`gravelight/maps/map02_totenhafen/tide_controller.gd`) driven by `GLBus.round_started`; it owns the water plane, the slow application, the spawn switches and the VO/banner, all from the json block. Co-op: the host decides; the water height is presentation and follows the round number on every peer.
+
+## BALLAST (carry mechanic) — deferred to the next pass
+
+The outline's carry-object system (carry a lead coffin to the crane hook to power the pumps, or dump it overboard for the egg) is **not in this version**: the Pumpenschalter is a normal free power switch in the pump room, and the coffins are set dressing on the east apron and in the warhead store. The `map02.json "ballast"` block already names the pieces (coffin spots, the crane hook, the carry slow `enemies.json status.ballast`), so the carry pass is data first.
+
+## KIELHOLER (drowned sailors) — deferred
+
+Reuses the Map 1 roster: Gängers (sailor and dockworker variants), Glasshides from the crated stone (`enemies.json glasshide.maps`), the Foreman and the Screamer (now listed for `map02_totenhafen`), Bellringer rounds from fog portals. The Kielholer (grabs from the water at the pier edges, surfaces during the flood) is an ENEMIES.md entry for the next pass.
+
+## Map 2 crate spots (5)
+
+| # | ID | Zone | Notes |
+|---|---|---|---|
+| 1 | `crate_hut` | A_QUAY | **Possible start (C\*)**, inside the harbourmaster's hut |
+| 2 | `crate_warheads` | C_WORKSHOP | **Possible start (C\*)**, the warhead store |
+| 3 | `crate_pier0` | D_PENHALL | pier 0's sea end, under the west catwalk |
+| 4 | `crate_pumps` | F_LOWERPENS | between the pumps (wet at high tide; the crate doesn't mind) |
+| 5 | `crate_teletype` | G_SIGNAL | under the teletype |
+
+## Map 2 wall-buys, perks, traps (quick reference)
+
+| Zone | Wall-buys | Perks | Trap | Story |
+|---|---|---|---|---|
+| A_QUAY | Kar98k 200, M1 Carbine 600 | — | — | the hut's log (intel pool) |
+| B_CANNERY | Trench Gun 1500, Frag 250 | Second Wind, Marathon Malt | — | **Infirmary Letter** (Agnieszka) |
+| C_WORKSHOP | MP40 1000, STG-44 1200, E-Tool 3000 | Ironhide, Trigger Tonic | Torpedo Trolley | the coffins in the warhead store |
+| D_PENHALL | BAR 1800, Thompson 1200 | — | — | **Loading Manifest** (Mr. Hale), the crane, U-1047 |
+| E_UBOAT | — | — | — | **THE CRUCIBLE** (power) |
+| F_LOWERPENS | — | — | the Grille | **Pump-Room Log**, Pumpenschalter |
+| G_SIGNAL | — | Overclock Cordial, Hawkeye | — | **Teletype Strip** |
+
+Perks not on this map: Twin Barrel, Packmule, Blastproof (the squad can arrive with them; nothing here sells them, and a down in co-op loses them for good). Six machines and the 4-perk cap keep late Scrip meaningful.
+
+## Map 2 spawn-point counts
+
+| Zone | Windows / chutes | Ground | Catwalk (high tide only) | Fog portals (Bellringer) |
+|---|---|---|---|---|
+| A_QUAY | 4 | 2 (surf stairs) | — | 2 |
+| B_CANNERY | 3 | 0 | — | 1 |
+| C_WORKSHOP | 3 | 0 | — | 1 |
+| D_PENHALL | 3 (chutes) | 1 (pen-mouth steps) | 3 | 3 |
+| E_UBOAT | 0 | 1 (aft hatch) | — | 1 |
+| F_LOWERPENS | 0 | 2 (drain grates, off at high tide) | — | 1 |
+| G_SIGNAL | 2 | 0 | — | 1 |
+
+Every ground point is live from round 1 (the campaign arrives at 31; standalone round 1 is a slow shamble anyway).
+
+## Map 2 choke points (camping)
+
+| Spot | Why it works | Why it fails eventually |
+|---|---|---|
+| **The hut** (A) | One door, two windows at your back are the quay's own. | Both surf stairs feed the north lane; nowhere to run but the loop. |
+| **Infirmary** (B) | One door, one window, Second Wind in reach. | The window is the shingle side; Glasshides soak the Trench Gun. |
+| **Pier 1's end** (D) | A 6 m dead end with railings: everything comes down one pier. | A dead end is a dead end; Bellringer portals open on the pier behind you. |
+| **The torpedo room** (E) | A 2 m corridor to the Crucible, one way in. | The aft hatch spawn walks the whole boat to you; the hull is a 40 m pipe with no exit but the one you came by. |
+| **The pump room** (F) | One stair, the Grille across it, a crate. | The tide. Wading at half speed with two grates behind you. |
+| **The tower** (G) | One door at the top of a ramp, two perks, a crate, the view. | Two cliff windows at your back; 2500 and the power to get in. |
+
+## Power-on event (Pumpenschalter)
+
+Hold [F] on the Pumpenschalter in the pump room (free; it needs the F door). The same shape as Map 1's Hauptschalter (`PowerSwitch`, `config_table` map02):
+
+1. **t = 0.0 s:** the lever drops, the pump flywheels spin up (`power_spinner`, 8 s), camera shake.
+2. **t = 1.5 s:** `OPR_POWER_ON_M2_01` over the pen's tannoy.
+3. **t = 2.0–5.6 s:** lights sweep **F → D → E → G → B → C → A** (0.6 s apart): the hall's sodium floods, the catwalk bulkheads, the boat's white lamps, the tower, the cannery and workshop pendants, the quay's floods.
+4. **t = 3.0 s+:** perk machines light with their zone; the Crucible's mouth glows.
+5. **t = 6.0 s:** the Signal Tower door becomes buyable.
+6. **t = 8.0 s:** 6 extra Gängers at the drain grates and the pen-mouth steps (`power_burst_points`).
+
+## Map 2 pacing
+
+| Rounds (campaign) | Rounds (standalone) | Expected player flow |
+|---|---|---|
+| **31–33** | 1–5 | Arrive armed and rich on the quay. Open the Cannery or the Workshop at once (1000), buy Ironhide / Second Wind again if they were lost, hit the first crate. First high tide at **33** (forecast at 32) is heard, not yet seen: the pens are still shut. |
+| **34–36** | 6–12 | Pen Hall (1500). The gangway (1500) → the Crucible (needs power) is a tease; the pump stair (1500) → **Pumpenschalter** around 35–36 → power. Second tide at **36** floods the pump deck under your feet if you lingered. Foreman's first visit 33–36. |
+| **37–42** | 13–20 | Signal Tower (2500) → Overclock + Hawkeye. Crucible runs (5000 each). Train the two-height ring. Glasshides in numbers; Screamers in the boat. |
+| **43+** | 21+ | Bellringer rounds in the hall; every third round the ring's lower half (the pump deck) is a wading pit and the catwalks pour. The story items are all read by now; the manifest's name is the hook into Map 3. |
+
+## Map 2 story items (fixed, LORE.md §13.2)
+
+| ID | Prop | Where |
+|---|---|---|
+| `INT_M2_01` | Letter on a cot | B, infirmary, the end cot |
+| `INT_M2_02` | Pump keeper's logbook | F, the desk by the Pumpenschalter |
+| `INT_M2_03` | Loading manifest, nailed | D, the crane office wall |
+| `INT_M2_04` | Teletype strip, pinned | G, the teletype |
+
+## Tools
+
+`smoke_map02.tscn` (headless: navmesh per zone, every door/zone reachable, spawns on the mesh, rounds 31–34 with 3 bots, the tide at 33, power, the Signal Tower door, perks, the Crucible, both traps), `perf_map02.tscn` (FPS per area with 24 zombies), `shots_map02.tscn` (every zone, power off and on). Unit test: `tests/unit/test_map02_data.gd` (door graph connected, prices, spawn/enemy ids, tide block).
 
 # MAP 3 — "MORGENROT" (outline only)
 

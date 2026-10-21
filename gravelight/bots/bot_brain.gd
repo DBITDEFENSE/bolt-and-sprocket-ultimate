@@ -94,6 +94,8 @@ var _errand: Dictionary = {}      # {node, kind, until, hold, fed}
 var _errand_cd: float = 0.0
 var _doors_bought: int = 0        # this round (shopping.doors.max_per_round_per_bot)
 var doors_bought_total: int = 0
+var upgrades: int = 0             # Crucible upgrades taken
+
 
 
 func setup(bot_player: Player, bot_squad: BotSquad, i: int) -> void:
@@ -315,6 +317,9 @@ func _decide_mode() -> void:
 	if mode == Mode.FLEE and (_near_d < danger * 1.6 or _flee_t < 1.2):
 		return   # keep kiting a moment past the last close one
 	if target != null:
+		if _crucible_sticky():
+			mode = Mode.ERRAND   # the gun is in the forge: stay at the Crucible and shoot from there
+			return
 		mode = Mode.FIGHT
 		_drop_errand()
 		return
@@ -573,7 +578,10 @@ func _start_reload() -> void:
 		return
 	_reloading = true
 	_burst_t = 0.0
+	# Overclock Cordial: the static burst at reload start (a no-op without the perk; PerkManager checks)
+	PerkManager.overclock_reload(player, PerkManager.overclock_spent(w.mag, w.mag_size()))
 	var mult: float = _reload_mult(w)
+
 	if bool(w.data.get("per_round_reload", false)) and not (w.mag == 0 and w.weapon_class() == &"bolt"):
 		_reload_per_round = true
 		_reload_t = w.f("reload_partial", 0.5) * mult
@@ -948,25 +956,29 @@ func _tick_errand(delta: float) -> void:
 		return
 	_clear_goal()
 	var aim: Vector3 = node.area.global_position if node.area != null else node.global_position + Vector3.UP
-	_turn_toward(aim, delta)
+	if _crucible_sticky() and target != null:
+		_aim_and_fire(delta)   # waiting on the forge with zombies about: shoot from the alcove
+	else:
+		_turn_toward(aim, delta)
 	_errand["hold"] = float(_errand["hold"]) + delta
 	if float(_errand["hold"]) < maxf(0.05, node.hold_time(player)):
 		return
 	_errand["hold"] = 0.0
 	var done: bool = true
-	if kind == "crucible":
-		var cr: Crucible = node as Crucible
-		if cr.phase == Crucible.Phase.IDLE and not bool(_errand.get("fed", false)):
-			if cr.can_interact(player):
-				cr.interact(player)   # feeds the gun in hand
-			_errand["fed"] = cr.phase == Crucible.Phase.FORGING
-			done = not bool(_errand["fed"])
-		elif cr.phase == Crucible.Phase.OFFERED:
-			cr.interact(player)      # takes the upgraded gun
-			done = true
-		else:
-			done = cr.phase == Crucible.Phase.IDLE   # someone else took it, or the offer ran out
+	if kind == "crucible" or kind == "crucible_ammo":
+		done = _tick_crucible(node as Crucible, kind)
 	else:
+		if kind == "gun" and player.weapons.slots.size() >= player.weapons.max_slots():
+			# a wall gun replaces the gun in hand: hold the worst non-upgraded one first; never trade an upgraded gun
+			var give: int = _slot_to_give_up()
+			if give < 0:
+				squad.release(node, player.player_id)
+				_errand = {}
+				mode = Mode.FOLLOW
+				return
+			if give != player.weapons.current_index:
+				_select(give)
+				return
 		if node.can_interact(player):
 			node.interact(player)
 		if kind == "repair":
@@ -979,6 +991,86 @@ func _tick_errand(delta: float) -> void:
 		_errand = {}
 		_errand_cd = 1.0
 		mode = Mode.FOLLOW
+
+
+## One hold at the Crucible. "crucible": feed the gun in hand (5000), wait out the forge in front of it, take the
+## upgraded gun when it is offered; only our own forge is taken (never a teammate's: the co-op steal rule).
+## "crucible_ammo": upgraded ammo (2500) for the upgraded gun in hand. Returns true when the errand is over.
+func _tick_crucible(cr: Crucible, kind: String) -> bool:
+	if not cr.is_powered():
+		return true
+	if kind == "crucible_ammo":
+		if cr.phase == Crucible.Phase.IDLE and cr.can_interact(player):
+			cr.interact(player)
+		return true
+	var fed: bool = bool(_errand.get("fed", false))
+	match cr.phase:
+		Crucible.Phase.IDLE:
+			if fed:
+				return true   # the offer ran out, or someone else took it
+			if Crucible.action_for(player.weapons.current()) != &"upgrade":
+				_select(_upgradeable_slot())   # hold the gun that can learn something
+				return _upgradeable_slot() < 0
+			if cr.can_interact(player):
+				cr.interact(player)
+			_errand["fed"] = cr.phase == Crucible.Phase.FORGING and cr._fed_by == player.player_id
+			return not bool(_errand["fed"])
+		Crucible.Phase.FORGING:
+			return not fed   # ours: wait in front of it; someone else's: come back later
+		Crucible.Phase.OFFERED:
+			if cr._fed_by != player.player_id:
+				return not fed   # not ours to take
+			cr.interact(player)   # the upgraded gun comes into the hands: raise it like a swap
+			_cancel_reload()
+			_swap_t = SWAP_TIME
+			_burst_t = 0.0
+			if player.remote_body != null:
+				var w: WeaponInstance = player.weapons.current()
+				player.remote_body.set_weapon(w.id if w != null else &"")
+			upgrades += 1
+			return true
+	return true
+
+
+## The slot a new wall gun may replace: the worst non-upgraded gun by the wishlist (unlisted = worst), or -1 when
+## every slot holds an upgraded gun (then nothing is bought).
+func _slot_to_give_up() -> int:
+	var wish: Array = (_cfg.get("shopping", {}) as Dictionary).get("weapon_wishlist", [])
+	var worst: int = -1
+	var worst_rank: int = -1
+	for i: int in player.weapons.slots.size():
+		var w: WeaponInstance = player.weapons.slots[i]
+		if w.upgraded:
+			continue
+		var r: int = wish.find(String(w.base_id()))
+		var rank: int = wish.size() + 1 if r < 0 else r
+		if rank > worst_rank:
+			worst_rank = rank
+			worst = i
+	return worst
+
+
+## The slot holding a gun the Crucible can upgrade: a wall gun before the start pistol, the one in hand first
+
+## among equals, or -1.
+func _upgradeable_slot() -> int:
+	var best: int = -1
+	var best_s: int = -1
+	for i: int in player.weapons.slots.size():
+		var w: WeaponInstance = player.weapons.slots[i]
+		if Crucible.action_for(w) != &"upgrade":
+			continue
+		var s: int = (0 if w.weapon_class() == &"pistol" else 2) + (1 if i == player.weapons.current_index else 0)
+		if s > best_s:
+			best_s = s
+			best = i
+	return best
+
+
+
+## A Crucible errand whose gun is already in the forge (or offered): not dropped for a fight.
+func _crucible_sticky() -> bool:
+	return not _errand.is_empty() and str(_errand.get("kind", "")) == "crucible" and bool(_errand.get("fed", false))
 
 
 ## Where to stand to open a door: 1.1 m out from its plane on our side (the closest navmesh point may be behind it).
@@ -1082,21 +1174,26 @@ func _choose_errand() -> Dictionary:
 			if s5 > best_s:
 				best_s = s5
 				best = {"node": nodes[di], "kind": "door"}
-	# the Crucible, when the map has one and the gun in hand can learn something
+	# the Crucible, when the map has one and a held gun can learn something: in the round break, first of all,
+	# never while the human is down. Upgraded ammo for an upgraded gun in hand that is running low.
 	var ccfg: Dictionary = scfg.get("crucible", {})
+	var econ: Dictionary = GLData.table("economy")
+	var human_down: bool = Net.session != null and squad.human() != null and Net.session.coop.is_downed(squad.human().player_id)
+	var in_break: bool = RoundManager.state != RoundManager.State.ROUND or (_zs.is_empty() and RoundManager.to_spawn <= 0)
 	var cur: WeaponInstance = player.weapons.current()
-	var cost: int = Crucible.price_for(&"upgrade", GLData.table("economy"))
-	if BotConfig.crucible_wanted(ccfg, cur != null and Crucible.action_for(cur) == &"upgrade", scrip, cost, RoundManager.current_round):
+	var want_up: bool = BotConfig.crucible_wanted(ccfg, _upgradeable_slot() >= 0, scrip, Crucible.price_for(&"upgrade", econ), RoundManager.current_round)
+	var want_ammo: bool = cur != null and BotConfig.crucible_ammo_wanted(ccfg, cur.upgraded, cur.reserve, cur.reserve_max(), scrip, Crucible.price_for(&"ammo", econ))
+	if (want_up or want_ammo) and not human_down and (in_break or not bool(ccfg.get("only_in_break", true))):
 		for cn: Node in get_tree().get_nodes_in_group(&"crucible"):
 			var cr: Crucible = cn as Crucible
-			if cr == null or cr.phase != Crucible.Phase.IDLE or not cr.can_interact(player) or _flat(cr.global_position, anchor) > range_m:
+			if cr == null or not cr.is_powered() or cr.phase != Crucible.Phase.IDLE or _flat(cr.global_position, anchor) > float(ccfg.get("max_from_leader_m", range_m)):
 				continue
 			if not squad.can_claim(cr, pid) or not _reachable(_front_of(cr)):
 				continue
-			var s6: float = 35.0 - _flat(cr.global_position, me) * 0.3
+			var s6: float = float(ccfg.get("priority", 80.0)) - _flat(cr.global_position, me) * 0.3
 			if s6 > best_s:
 				best_s = s6
-				best = {"node": cr, "kind": "crucible"}
+				best = {"node": cr, "kind": "crucible" if want_up else "crucible_ammo"}
 	if best.is_empty():
 		return {}
 	squad.claim(best["node"], pid)
@@ -1109,17 +1206,18 @@ func _choose_errand() -> Dictionary:
 
 
 
-## Where to stand to use something: 1 m out from its use area on the side the area sticks out.
+## Where to stand to use something: 1 m out from its use box on the side the box sticks out (the box offset is
+## on the Area's shape, `interact_offset`, in the node's frame: a perk machine's front, a wall-buy's chalk, the
+## Crucible's mouth, a barricade's room side).
 static func _front_of(node: Interactable) -> Vector3:
-	if node.area == null:
-		return node.global_position
-	var off: Vector3 = node.area.global_position - node.global_position
+	var off: Vector3 = node.global_basis * node.interact_offset
 	off.y = 0.0
 	if off.length() < 0.05:
 		return node.global_position
-	var p: Vector3 = node.area.global_position + off.normalized() * 1.0
+	var p: Vector3 = node.global_position + off + off.normalized() * 1.0
 	p.y = node.global_position.y
 	return p
+
 
 
 func _reachable(p: Vector3) -> bool:

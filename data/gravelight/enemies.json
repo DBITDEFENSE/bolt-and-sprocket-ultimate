@@ -61,7 +61,8 @@
       "chance_cap": 0.12,
       "max_active": 3,
       "maps": [
-        "map01_kaltenbrunn"
+        "map01_kaltenbrunn",
+        "map02_totenhafen"
       ]
     },
     "bellringer": {
@@ -146,7 +147,8 @@
       "enrage_cooldown_mult": 0.7,
       "max_active": 1,
       "maps": [
-        "map01_kaltenbrunn"
+        "map01_kaltenbrunn",
+        "map02_totenhafen"
       ]
     },
     "screamer": {
@@ -177,7 +179,8 @@
       "spawn_progress_min": 0.3,
       "spawn_progress_max": 0.7,
       "maps": [
-        "map01_kaltenbrunn"
+        "map01_kaltenbrunn",
+        "map02_totenhafen"
       ]
     }
   },
@@ -203,6 +206,14 @@
     },
     "knockdown": {
       "move_mult": 0.0
+    },
+    "wading": {
+      "_doc": "Map 2: standing in the flooded pump deck at high tide (tide_controller.gd refreshes it every tick).",
+      "move_mult": 0.55
+    },
+    "ballast": {
+      "_doc": "Map 2: carrying a lead coffin (the Ballast mechanic, deferred; data only).",
+      "move_mult": 0.5
     }
   },
   "visual": {

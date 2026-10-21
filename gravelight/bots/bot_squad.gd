@@ -36,9 +36,8 @@ func setup(map_root: MapRoot) -> void:
 	for n: Node in map.find_children("*", "WallBuy", true, false):
 		_wall_buys.append(n as WallBuy)
 	GLBus.enemy_killed.connect(_on_enemy_killed)
-	GLBus.player_downed.connect(_on_player_downed)
-	GLBus.player_revived.connect(_on_player_revived)
-	GLBus.boss_spawned.connect(_on_boss_spawned)
+	# DOWN / TEAM_DOWN / REVIVED / boss / door / buy / perk lines for bots come from VOManager (T-035), which
+	# handles every survivor's signal-driven categories in that survivor's voice at their body.
 	GLBus.round_started.connect(_on_round_started)
 
 
@@ -176,7 +175,7 @@ func callout(bot: BotBrain, category: String) -> void:
 	if chance <= 0.0 or randf() > chance:
 		return
 	var spk: StringName = GLVO.CHARACTER_SPEAKERS.get(bot.player.character_id, &"DUT")
-	if GLVO.play_category(spk, category, 1.0):
+	if GLVO.play_category(spk, category, 1.0, bot.player.player_id):   # positional, at the bot's body
 		_callout_t = float(cc.get("cooldown_s", 7.0))
 
 
@@ -200,25 +199,6 @@ func _on_enemy_killed(_enemy_id: StringName, _limb: StringName, _weapon_id: Stri
 		b.kills += 1
 
 
-func _on_player_downed(pid: int) -> void:
-	var b: BotBrain = _brain_of(pid)
-	if b != null:
-		callout(b, "DOWN")
-
-
-func _on_player_revived(pid: int, _by: int) -> void:
-	var b: BotBrain = _brain_of(pid)
-	if b != null:
-		callout(b, "REVIVED")
-
-
-func _on_boss_spawned(enemy_id: StringName) -> void:
-	if brains.is_empty():
-		return
-	var b: BotBrain = brains[randi() % brains.size()]
-	callout(b, "FOREMAN" if enemy_id == &"foreman" else "SCREAMER")
-
-
 func _on_round_started(_round: int, _special: bool) -> void:
 	_round_t = 0.0
 	_claims.clear()
@@ -231,8 +211,9 @@ func report() -> PackedStringArray:
 	var out: PackedStringArray = []
 	for b: BotBrain in brains:
 		var w: WeaponInstance = b.player.weapons.current()
-		out.append("%s (P%d, %s): kills %d shots %d hp %.0f scrip %d %s %s%s teleports %d doors %d" % [Net.display_name(b.player.player_id), b.player.player_id,
+		out.append("%s (P%d, %s): kills %d shots %d hp %.0f scrip %d %s %s%s teleports %d doors %d upgrades %d" % [Net.display_name(b.player.player_id), b.player.player_id,
 			b.skill_name(), b.kills, b.shots, b.player.hp, Economy.get_scrip(b.player.player_id), str(w.id) if w != null else "-",
-			BotBrain.Mode.keys()[b.mode], " DOWN" if b.player.downed else "", b.teleports, b.doors_bought_total])
+			BotBrain.Mode.keys()[b.mode], " DOWN" if b.player.downed else "", b.teleports, b.doors_bought_total, b.upgrades])
+
 
 	return out

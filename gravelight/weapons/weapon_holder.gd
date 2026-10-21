@@ -387,6 +387,23 @@ func apply_net(d: Dictionary) -> void:
 	tactical_count = int(d.get("tc", 0))
 
 
+## Campaign carry-over (T-033): the kit this holder left the last map with (to_net shape) comes back on the
+## next one, on the owner's own holder (so the viewmodel is rebuilt) or a bot's mirror.
+func apply_carry(d: Dictionary) -> void:
+	_cancel_reload()
+	_last_stand_stash = {}
+	_cooking = false
+	apply_net(d)
+	if slots.is_empty():
+		_set_start_loadout()
+	ads_t = 0.0
+	_swap_t = SWAP_TIME
+	visible = true
+	if not mirror:
+		_rebuild_gun()
+		_rebuild_knife()
+
+
 ## What changed since the last send: [structure (send now), ammo (send soon)].
 func net_signature() -> Array:
 	var ids: PackedStringArray = []
@@ -513,6 +530,10 @@ func tick(delta: float, intent: Dictionary) -> void:
 		w.tick_heat(delta, _fired_this_frame or (bool(intent.get("fire_held", false)) and _fire_cd > 0.0 and w.can_fire_heat()))
 		if not was_hot and w.overheat_lockout > 0.0:
 			AudioDirector.play_2d("weapon_overheat", 0.0, 0.0)
+			# Overclock Cordial: a heat-bar weapon's overheat vent counts as a full-empty reload (WEAPONS.md 20.2;
+			# the OMNI-BLASTER, "heat_per_shot"). A belt gun's overheat is a jam, not a vent, and stays out.
+			if w.data.has("heat_per_shot"):
+				PerkManager.overclock_reload(player, 1.0)
 	if not (bool(intent.get("fire_held", false)) and w != null and w.fire_mode == "auto") and not _fired_this_frame:
 		_fire_cd = maxf(_fire_cd, 0.0)
 	_look_in += intent.get("look_delta", Vector2.ZERO) as Vector2
@@ -989,6 +1010,9 @@ func start_reload() -> void:
 	_reload_queued = false
 	_reloading = true
 	ads_t = minf(ads_t, 0.4)
+	# Overclock Cordial: the start of any reload may release a static burst (once per reload, so a bolt or
+	# shell-by-shell reload counts on its first round only; later rounds go through _tick_reload).
+	PerkManager.overclock_reload(player, PerkManager.overclock_spent(w.mag, w.mag_size()))
 	var mult: float = player.reload_mult() * float(w.property("reload_mult", 1.0))
 	if bool(w.data.get("per_round_reload", false)) and not (w.mag == 0 and w.weapon_class() == &"bolt"):
 		_reload_per_round = true

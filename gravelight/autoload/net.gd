@@ -220,13 +220,24 @@ func set_ready(is_ready: bool) -> void:
 		_rpc_req_ready.rpc_id(1, is_ready)
 
 
-## Host: send everyone into `scene` (res:// path of a map scene).
-func start_match(scene: String) -> void:
+## Host: send everyone into `scene` (res:// path of a map scene). `campaign` starts the campaign chain (T-033).
+func start_match(scene: String, campaign: bool = false) -> void:
 	if not is_host() or scene == "":
 		return
 	match_seed = randi()
-	_rpc_start.rpc(scene, match_seed)
-	_begin_match(scene, match_seed)
+	_rpc_start.rpc(scene, match_seed, campaign)
+	_begin_match(scene, match_seed, campaign)
+
+
+## Host: the squad exfils to the next campaign map (T-033). `payload` is Campaign.snapshot(): every player's
+## kit, the round and the schedules; each peer stores it and restores what it owns when the map loads.
+func travel(scene: String, payload: Dictionary) -> void:
+	if not is_host() or scene == "":
+		return
+	match_seed = randi()
+	_rpc_travel.rpc(scene, match_seed, payload)
+	Campaign.carry = payload
+	_begin_match(scene, match_seed, true)
 
 
 ## Host: everyone back to the lobby (main menu opens it while online).
@@ -237,10 +248,13 @@ func return_to_lobby() -> void:
 	_to_lobby()
 
 
-func _begin_match(scene: String, seed_value: int) -> void:
+func _begin_match(scene: String, seed_value: int, campaign: bool = false) -> void:
 	map_scene = scene
 	match_seed = seed_value
 	in_match = true
+	Campaign.active = campaign
+	if not campaign:
+		Campaign.carry = {}
 	var ids: Array[int] = player_ids()
 	GameState.player_ids = ids
 	var chars: Dictionary = {}
@@ -411,8 +425,16 @@ func _rpc_req_ready(is_ready: bool) -> void:
 
 
 @rpc("authority", "call_remote", "reliable")
-func _rpc_start(scene: String, seed_value: int) -> void:
-	_begin_match(scene, seed_value)
+func _rpc_start(scene: String, seed_value: int, campaign: bool = false) -> void:
+	_begin_match(scene, seed_value, campaign)
+
+
+## Campaign exfil (T-033): the host's payload for the next map, then the same scene change as a match start.
+@rpc("authority", "call_remote", "reliable")
+func _rpc_travel(scene: String, seed_value: int, payload: Dictionary) -> void:
+	Campaign.carry = payload
+	Campaign.prepare_state(payload)
+	_begin_match(scene, seed_value, true)
 
 
 @rpc("authority", "call_remote", "reliable")

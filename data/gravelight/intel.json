@@ -307,6 +307,38 @@
    "map": "0",
    "text": "A yellowed newspaper column behind glass over the taproom benches, from the district paper, summer 1936. Translated.\n\nA HUNDRED YEARS AT THE CROSSROADS. The Gasthaus Zum Kreuzweg, last stop for the Kaltenbrunn salt carters, marks its centenary this month. Landlord Anselm Vogt tells our reporter that the mine's new deep galleries will bring the miners back, \"and the beer will be waiting.\"\n\nTucked into the corner of the frame is a smaller cutting from November 1938: \"KALTENBRUNN: BODIES TAKEN FROM MINE MORTUARY. Police suspect thieves. The two miners, Jan Pilch and Bruno Hasse, died on Friday of gas in a deep gallery.\"\n\nPencil in the margin: \"Bruno sat at the corner table on Tuesday and drank to the new gallery. The milk girl from Wilcza Góra saw him that night on the salt road, walking back toward the mine. A.V.\"",
    "placement": "fixed"
+  },
+  {
+   "id": "INT_M2_01",
+   "title": "Infirmary Letter, Totenhafen",
+   "type": "DOC",
+   "map": "2",
+   "text": "A letter in a nurse's hand, folded twice and left on the blanket of the end cot in the cannery's infirmary. Polish, with a German translation pencilled underneath by someone else. Translated.\n\nTotenhafen, 4 January 1945.\nTo whoever is sent after us. They brought us up from Kaltenbrunn on the ore train, eleven of the laborers and me, to nurse what was left of them in this fish hall. Six are still alive. The sixth is not the boy I pulled out of Gallery Seven; I looked.\nThe crates came down the line with us. Lead, sealed, cold to the touch in a warm room, the doctor's own marks on every one. The sailors will not go near them, and the officer calls them ballast and laughs.\nTonight they are taking the crates down to the pens, and I am ordered down with them, to \"attend the cargo.\" I do not know what attending a crate means. I have left my cross in the stove. If you are reading this, the stove is cold.\nTell Zofia Nowak, if she is alive, that I kept my promise as far as the water. A. W.",
+   "placement": "fixed"
+  },
+  {
+   "id": "INT_M2_02",
+   "title": "Pump-Room Log",
+   "type": "DOC",
+   "map": "2",
+   "text": "The pump keeper's day book, swollen with damp, open on the desk beside the Pumpenschalter. Entries in a seaman's capitals; the last one in a different pencil. Translated.\n\n5.I. 03:10. High water 2.2 under the deck. Both pumps running. Cargo on the apron, 14 units, lead, under tarpaulin. Nobody to sleep in the pens tonight, by order.\n5.I. 05:40. U-1047 loading. The crates go in by the forward hatch, not the torpedo hatch. The nurse goes aboard with them. She is the only one who will touch them. The second watch refused and was marched up.\n5.I. 06:55. Boat sailed on the morning ebb. Orders say she is for the south-west and a Swiss consignee. Orders say a great many things.\n6.I. 03:20. High water. Pumps stopped by order, to save the fuel. The water came up to the deck and did not go out again on the ebb. Something walks on the apron at night that is not the watch. The watch is in the cannery with the doors chained.\n(In the other pencil:) The pumps are not for the water.",
+   "placement": "fixed"
+  },
+  {
+   "id": "INT_M2_03",
+   "title": "Loading Manifest, U-1047",
+   "type": "DOC",
+   "map": "2",
+   "text": "A typed loading manifest nailed to the crane office's wall, the paper stiff with salt. Kriegsmarine letterhead over a Swiss company's shipping stamp. Translated.\n\nLOADING MANIFEST. Boat: U-1047. Berth: Pen 2, Totenhafen. Sailing: 5.I.45, morning ebb.\nCargo: 14 (fourteen) ballast units, lead, sealed, 410 kg each. Origin: Kaltenbrunn, Abt. III (Dr. A. Reinholt). Stowage: forward, in place of reloads; trim to be corrected by the engineer.\nForwarding agent: HELVETIA AUTOMATEN AG, Basel. Consignee: HALE, L., care of the agent. Delivery: as directed by the consignee at the rendezvous. Payment: settled in advance, per the agent.\nPassenger: 1 (one) medical attendant, civilian, for the cargo. Not to be landed.\nRemarks: the units are not to be opened at sea. The units are not to be stowed within 3 m of the crew's berths. In the event of loss, the agent is to be informed before the Flotilla.\n(Stamped:) HELVETIA AUTOMATEN AG. BASEL. SEIT 1921. KONTINUITÄT.",
+   "placement": "fixed"
+  },
+  {
+   "id": "INT_M2_04",
+   "title": "Teletype Strip, Signal Room",
+   "type": "DOC",
+   "map": "2",
+   "text": "A strip of teletype paper, metres of it, pinned to the signal room's wall where it spilled out of the machine. The port's own call sign at the head; after that, nothing the port ever sent. The German parts are translated; the rest came through in English.\n\nTOTENHAFEN SIGNALS TO ALL STATIONS. EVENING TALLY. EVENING TALLY.\nUNCLE LIONEL AND LIESL PRESENT THE EVENING TALLY. FOURTEEN UNITS OUTBOUND. SIX UNITS RETAINED IN THE CANNERY. ONE UNIT WALKING.\nMAMA SAYS THE SEA IS A BIG RADIO. MAMA SAYS COUNT THE BOATS.\nHIGH WATER AT THREE. HIGH WATER AT SIX. HIGH WATER AT NINE. DO STAY FOR THE WEATHER.\nTHANK YOU FOR YOUR CONTINUED ENGAGEMENT.\n(The machine typed the last line four hundred times. The ribbon ran out halfway; the rest is pressed into the paper, blank.)",
+   "placement": "fixed"
   }
  ]
 }

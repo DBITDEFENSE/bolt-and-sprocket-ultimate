@@ -39,6 +39,9 @@ var _music_loop: AudioStreamPlayer # menu theme and other looping cues
 var _ambient: AudioStreamPlayer
 var _score: AudioStreamPlayer
 var _duck_tween: Tween
+var _vo_duck_tween: Tween
+var _vo_duck_on: bool = false
+var _vo_duck_db: float = 0.0
 var _map_id: StringName = &""
 var _match_msec: int = -100000
 var _last_round_special: bool = false
@@ -418,6 +421,21 @@ func _duck(seconds: float) -> void:
 	_duck_tween.chain().tween_property(_ambient, "volume_db", _ambient_db(), 1.5)
 	if _score.playing:
 		_duck_tween.parallel().tween_property(_score, "volume_db", _score_db(), 1.5)
+
+
+## VOManager: the ambience bed and score sit `duck_db` lower while a story voice (the Operator, the radio)
+## speaks, and come back over 1.2 s when it stops. Independent of the stinger duck.
+func set_vo_duck(on: bool, duck_db: float = -5.0) -> void:
+	if _vo_duck_on == on:
+		return
+	_vo_duck_on = on
+	_vo_duck_db = duck_db if on else 0.0
+	if _vo_duck_tween != null and _vo_duck_tween.is_valid():
+		_vo_duck_tween.kill()
+	_vo_duck_tween = create_tween().set_parallel(true)
+	_vo_duck_tween.tween_property(_ambient, "volume_db", _ambient_db() + _vo_duck_db, 0.25 if on else 1.2)
+	if _score.playing:
+		_vo_duck_tween.tween_property(_score, "volume_db", maxf(SILENT_DB, _score_db() + _vo_duck_db), 0.25 if on else 1.2)
 
 
 ## The stinger a round start plays (HUD uses it with stinger_downbeat to time the round stamp).

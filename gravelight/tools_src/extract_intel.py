@@ -2,7 +2,7 @@
 dossier pages (docs/gravelight/CHARACTERS.md "Character Dossiers") to data/gravelight/dossiers.json. Re-run after
 editing those docs:  python gravelight/tools_src/extract_intel.py   (from the project root, or anywhere)
 
-Rows under "### 13.1 Map 0 fixed story items" get "placement": "fixed" (hand-placed StoryProps, never spawned at
+Rows under any "### 13.N ... fixed story items" heading (13.1 Map 0, 13.2 Map 2) get "placement": "fixed" (hand-placed StoryProps, never spawned at
 random; placements live in data/gravelight/story_props.json). In a text cell, <br> becomes a line break."""
 import json, os, re
 
@@ -13,12 +13,12 @@ DATA = os.path.join(ROOT, "data", "gravelight")
 # ---- intel
 lore = open(os.path.join(DOCS, "LORE.md"), encoding="utf-8").read()
 sec = lore[lore.index("## 13. Intel Archive"):lore.index("## 14.")]
-FIXED_HEAD = "### 13.1 Map 0 fixed story items"
+FIXED_HEAD = "fixed story items"   # 13.1 (Map 0), 13.2 (Map 2), ...
 intel = []
 fixed = False
 for line in sec.splitlines():
     if line.startswith("### "):
-        fixed = line.startswith(FIXED_HEAD)
+        fixed = FIXED_HEAD in line
     m = re.match(r"\|\s*`(INT_[A-Z0-9_]+)`\s*\|\s*(.+?)\s*\|\s*(DOC|PHOTO|CYL|RADIO|TAPE)\s*\|\s*(\w+)\s*\|\s*(.+?)\s*\|\s*$", line)
     if m:
         text = m.group(5).replace("*", "").replace("<br>", chr(10))

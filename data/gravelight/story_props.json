@@ -6,6 +6,10 @@
   {"id": "INT_M0_11", "map": "0", "style": "drawing", "position": [1.5, 5.15, 6.15], "yaw": 180, "where": "Upstairs hallway, north wall (z 6.15 face) straight ahead at the top of the stairs, a child's height"},
   {"id": "INT_M0_12", "map": "0", "style": "letter", "position": [22.3, 4.28, 4.7], "yaw": 90, "where": "Upstairs Room 3, on the bed's blanket (top 4.275)"},
   {"id": "INT_M0_13", "map": "0", "style": "docket", "position": [30.0, -1.65, 22.65], "yaw": 0, "where": "Helvetia cellar, north face of the north pillar, facing the stairs"},
-  {"id": "INT_M0_14", "map": "0", "style": "clipping", "position": [17.2, 1.75, 15.85], "yaw": 0, "where": "Taproom, south wall (z 15.85 face) above the benches, east of the east bench"}
+  {"id": "INT_M0_14", "map": "0", "style": "clipping", "position": [17.2, 1.75, 15.85], "yaw": 0, "where": "Taproom, south wall (z 15.85 face) above the benches, east of the east bench"},
+  {"id": "INT_M2_01", "map": "2", "style": "letter", "position": [-28.6, 0.55, 7.8], "yaw": -90, "where": "Cannery infirmary, the south cot's blanket (top 0.55), facing the room"},
+  {"id": "INT_M2_02", "map": "2", "style": "logbook", "position": [50.8, -2.2, 63.0], "yaw": 90, "where": "Lower pens, the keeper's desk (top -2.2) by the Pumpenschalter, facing west"},
+  {"id": "INT_M2_03", "map": "2", "style": "docket", "position": [43.97, 1.5, 54.0], "yaw": 90, "where": "Pen Hall, the crane office's west wall face (x 44), facing the apron"},
+  {"id": "INT_M2_04", "map": "2", "style": "clipping", "position": [47.0, 8.6, 33.2], "yaw": 180, "where": "Signal Tower, north wall face (z 33.2) between the two windows"}
  ]
 }

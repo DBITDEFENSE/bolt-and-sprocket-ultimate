@@ -153,6 +153,7 @@
     "perk_wishlist": [
       "hawkeye_brandy",
       "second_wind",
+      "overclock_cordial",
       "twin_barrel",
       "trigger_tonic"
     ],
@@ -172,10 +173,15 @@
       "max_from_leader_m": 30.0
     },
     "crucible": {
-      "_doc": "The Crucible upgrade for the gun in hand when the map has one: from min_round, when scrip >= the upgrade price + reserve_scrip; the bot feeds the gun, waits for the forge and takes the result.",
+      "_doc": "The Crucible when the map has one: from min_round, with the upgrade price + reserve_scrip in hand, a bot feeds a gun that can learn something (the one in hand first), waits out the forge in front of it (shooting from there if it must) and takes its own result; never a teammate's. Only in the round break when only_in_break, never while the human is down; priority is its errand score (above boards 30, ammo 60). Upgraded ammo for the upgraded gun in hand under ammo_below_frac when the ammo price + ammo_reserve_scrip is in hand.",
       "enabled": true,
       "reserve_scrip": 500,
-      "min_round": 8
+      "min_round": 8,
+      "only_in_break": true,
+      "priority": 80.0,
+      "ammo_below_frac": 0.35,
+      "ammo_reserve_scrip": 300,
+      "max_from_leader_m": 30.0
     }
   },
   "callouts": {

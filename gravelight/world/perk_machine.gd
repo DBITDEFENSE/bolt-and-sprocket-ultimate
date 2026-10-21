@@ -16,9 +16,19 @@ var _footprint: Vector3 = Vector3(1.0, 2.0, 0.7)
 var _lit: MeshInstance3D          # neon tubes + lamp globe, lit
 var _unlit: MeshInstance3D        # the same glass, dark
 var _light: OmniLight3D
-var _anim: Node3D                 # idle-motion part (dome bottle, periscope head, tin sign, safe wheel)
+var _anim: Node3D                 # idle-motion part (dome bottle, periscope head, tin sign, safe wheel, coil arc)
 var _anim_shape: String = ""
 var _anim_t: float = 0.0
+# Overclock Cordial (shape "coil"): the arc snaps every 3-7 s, the gauge needle rests at LEER and swings to VOLL
+# when a burst lands within 6 m (JINGLES.md section 10, WEAPONS.md section 20.2).
+const NEEDLE_LEER: float = -1.05   # +Z rotation points the needle to -X, the viewer's right; LEER is on the left
+const NEEDLE_VOLL: float = 1.05
+const GAUGE_RANGE: float = 6.0
+var _needle: Node3D = null
+var _needle_target: float = NEEDLE_LEER
+var _needle_hold: float = 0.0
+var _arc_next: float = 2.0
+var _arc_on: float = 0.0
 
 
 func _ready() -> void:
@@ -50,6 +60,12 @@ func _data() -> Dictionary:
 
 func _brand() -> Color:
 	return Color(str(_data().get("color", "#d8b84a")))
+
+
+## The neon / lamp colour: the brand colour unless perks.json gives a separate "neon" (Overclock's violet spark).
+func _neon() -> Color:
+	var d: Dictionary = _data()
+	return Color(str(d.get("neon", d.get("color", "#d8b84a"))))
 
 
 func is_powered() -> bool:
@@ -84,6 +100,11 @@ func interact(player: Player) -> void:
 	_drinking = true
 	var pid: int = player.player_id
 	# The dispense sound is AudioDirector's (GLBus.purchase_made -> perk_dispense at this machine).
+	_play_jingle()
+	if perk_id == PerkManager.OVERCLOCK and AudioDirector.has_sound("perk_overclock_capoff"):
+		# the signature cap-off: a capacitor whine, a fat ZAP and the two-tone bee-boop (JINGLES.md section 10)
+		get_tree().create_timer(1.1).timeout.connect(func() -> void:
+			AudioDirector.play_3d("perk_overclock_capoff", global_position + Vector3.UP * 1.2, -2.0, 0.03))
 	get_tree().create_timer(float(GLData.table("perks").get("drink_seconds", 1.2))).timeout.connect(func() -> void:
 		_drinking = false
 		PerkManager.grant(pid, perk_id))
@@ -95,7 +116,7 @@ func _refresh_power() -> void:
 	if _panel_mat == null:
 		return
 	var on: bool = is_powered() and not _gone
-	var c: Color = _brand()
+	var c: Color = _neon()
 	_panel_mat.emission = c if on else Color(0.35, 0.15, 0.55)
 	_panel_mat.emission_energy_multiplier = 2.5 if on else 0.22
 	if _sign != null:
@@ -132,6 +153,7 @@ static func _shape_footprint(shape: String) -> Vector3:
 		"periscope": return Vector3(0.9, 1.8, 0.65)
 		"wagon": return Vector3(1.7, 1.7, 0.85)
 		"safe": return Vector3(1.1, 1.9, 0.95)
+		"coil": return Vector3(0.8, 2.3, 0.6)   # Overclock Cordial: the cabinet footprint (Map 0 placement relies on it)
 	return Vector3(1.0, 2.0, 0.7)
 
 
@@ -143,12 +165,13 @@ func build_greybox() -> void:
 	var shape: String = str(d.get("shape", "cabinet"))
 	var fp: Vector3 = _shape_footprint(shape)
 	var brand: Color = _brand()
+	var neon: Color = _neon()
 	var lay: Dictionary = InteractableArt.perk_layout(shape, fp)
 	# the dispenser (cached per perk), and its neon/lamp glass in a lit and an unlit set (shown by power state)
 	InteractableArt.place(_greybox, "perk_body_" + String(perk_id),
 		func(r: Node3D) -> void: InteractableArt.perk_body(r, shape, fp, brand))
 	_lit = InteractableArt.place(_greybox, "perk_lit_" + String(perk_id),
-		func(r: Node3D) -> void: InteractableArt.perk_tubes(r, shape, fp, "neon:" + InteractableArt.hex(brand)), Vector3.ZERO, false)
+		func(r: Node3D) -> void: InteractableArt.perk_tubes(r, shape, fp, "neon:" + InteractableArt.hex(neon)), Vector3.ZERO, false)
 	_unlit = InteractableArt.place(_greybox, "perk_unlit_" + shape,
 		func(r: Node3D) -> void: InteractableArt.perk_tubes(r, shape, fp, "neon_off"), Vector3.ZERO, false)
 	# the backlight behind the bottles: faint Nachtglas violet unpowered, the brand colour when powered
@@ -164,7 +187,7 @@ func build_greybox() -> void:
 	panel.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_light = OmniLight3D.new()
 	_light.name = "PerkGlow"
-	_light.light_color = brand.lightened(0.25)
+	_light.light_color = neon.lightened(0.25)
 	_light.light_energy = 0.9
 	_light.omni_range = 3.2
 	_light.position = Vector3(0, minf(fp.y * 0.75, 1.6), -fp.z * 0.5 - 0.45)
@@ -201,6 +224,28 @@ func build_greybox() -> void:
 			_anim.position = Vector3(0.24, 0.98, -fp.z * 0.5 - 0.09)
 			_greybox.add_child(_anim)
 			InteractableArt.place(_anim, "perk_safe_wheel", func(r: Node3D) -> void: InteractableArt.safe_wheel(r))
+		"coil":
+			# the arc (shown for a flash every few seconds) at the coil's top turn
+			_anim = Node3D.new()
+			_anim.position = Vector3(0, 2.43, 0.05)
+			_anim.visible = false
+			_greybox.add_child(_anim)
+			InteractableArt.place(_anim, "perk_coil_arc", func(r: Node3D) -> void: InteractableArt.coil_arc(r), Vector3.ZERO, false)
+			# the gauge needle on the dial above the porthole
+			_needle = Node3D.new()
+			_needle.position = Vector3(0, 1.62, -fp.z * 0.5 - 0.05)
+			_needle.rotation.z = NEEDLE_LEER
+			_greybox.add_child(_needle)
+			InteractableArt.place(_needle, "perk_gauge_needle", func(r: Node3D) -> void: InteractableArt.gauge_needle(r), Vector3.ZERO, false)
+			var gz: float = -fp.z * 0.5 - 0.05
+			for mark: Array in [["LEER", 0.21, 1.74], ["HALB", 0.0, 1.86], ["VOLL", -0.21, 1.74]]:   # viewer's left to right
+				var ml: Label3D = add_label(_greybox, str(mark[0]), Vector3(float(mark[1]), float(mark[2]), gz), 10, Color(0.12, 0.08, 0.05, 1.0))
+				ml.outline_size = 0
+			# "Cordial" in a smaller, friendlier line under the zigzag capitals
+			var sub: Label3D = add_label(_greybox, "Cordial", (lay["sign"] as Vector3) + Vector3(0, -0.085, -0.01), 14, Color(neon.lightened(0.6), 1.0) * 1.3)
+			sub.outline_modulate = Color(0, 0, 0, 0.9)
+			_arc_next = randf_range(1.5, 4.0)
+			GLBus.overclock_burst.connect(_on_overclock_burst)
 	_anim_shape = shape
 	set_process(_anim != null)
 
@@ -230,6 +275,61 @@ func _process(delta: float) -> void:
 			if on:
 				var k: float = fmod(_anim_t, 9.0)
 				_anim.rotation.z = -floorf(_anim_t / 9.0) * PI * 0.5 - (smoothstep(8.4, 9.0, k) * PI * 0.5)
+		"coil":
+			_tick_coil(delta, on)
+
+
+## Overclock Cordial idle: the coil arcs on a randomized 3-7 s timer (a violet flash on the lamp light), the
+## needle twitches near LEER and swings to VOLL for a moment after a nearby burst. Unpowered, nothing moves.
+func _tick_coil(delta: float, on: bool) -> void:
+	if not on:
+		_anim.visible = false
+		if _needle != null:
+			_needle.rotation.z = NEEDLE_LEER
+		return
+	if _arc_on > 0.0:
+		_arc_on -= delta
+		if _arc_on <= 0.0:
+			_anim.visible = false
+			_light.light_energy = 0.9
+		else:
+			_anim.rotation.y = randf_range(-0.4, 0.4)
+	else:
+		_arc_next -= delta
+		if _arc_next <= 0.0:
+			_arc_next = randf_range(3.0, 7.0)
+			_arc_on = randf_range(0.06, 0.14)
+			_anim.visible = true
+			_light.light_energy = 2.4
+			if AudioDirector.has_sound("perk_overclock_arc"):
+				AudioDirector.play_3d("perk_overclock_arc", global_position + Vector3.UP * 2.4, -10.0, 0.1)
+	if _needle != null:
+		if _needle_hold > 0.0:
+			_needle_hold -= delta
+			if _needle_hold <= 0.0:
+				_needle_target = NEEDLE_LEER
+		var jitter: float = sin(_anim_t * 11.0) * 0.03 + sin(_anim_t * 2.3) * 0.04
+		var want: float = _needle_target + (jitter if _needle_target == NEEDLE_LEER else 0.0)
+		_needle.rotation.z = lerpf(_needle.rotation.z, want, clampf(delta * (14.0 if _needle_hold > 0.0 else 3.0), 0.0, 1.0))
+
+
+func _on_overclock_burst(_player: int, at: Vector3, spent: float, _radius: float) -> void:
+	if _gone or not is_powered() or global_position.distance_to(at) > GAUGE_RANGE:
+		return
+	_needle_target = lerpf(NEEDLE_LEER, NEEDLE_VOLL, clampf(spent, 0.0, 1.0))
+	_needle_hold = 1.2
+	_arc_next = minf(_arc_next, 0.2)
+
+
+## The machine's jingle, if its key exists in audio.json ("jingle_<perk_id>"). Played at the cabinet on the
+## Jingles bus after a purchase. Overclock's ends on the cracked F-sharp until the profile holds fp_ch5_done,
+## then the resolved pressing plays (JINGLES.md section 10).
+func _play_jingle() -> void:
+	var key: String = "jingle_" + String(perk_id)
+	if _fine_print_done() and AudioDirector.has_sound(key + "_resolved"):
+		key += "_resolved"
+	if AudioDirector.has_sound(key):
+		AudioDirector.play_3d(key, global_position + Vector3.UP * 1.6, 0.0, 0.0)
 
 
 func _cyl(radius: float, height: float, pos: Vector3, mat: Material) -> MeshInstance3D:
@@ -267,7 +367,12 @@ func _build_lore() -> void:
 	var front_z: float = -(fp.z * 0.5) - 0.02
 	var plate: Label3D = Label3D.new()
 	plate.name = "MakersPlate"
-	plate.text = "HELVETIA AUTOMATEN AG · BASEL\nRezeptur: %s" % _short_human(str(lo.get("human", "")))
+	var human: String = str(lo.get("human", ""))
+	if human.to_lower().begins_with("no human"):
+		# Overclock: the only Plan with no human behind the formula. The plate says so, in Vendelin's words.
+		plate.text = "HELVETIA AUTOMATEN AG · BASEL\nPrototyp · Rezeptur: ein Freund"
+	else:
+		plate.text = "HELVETIA AUTOMATEN AG · BASEL\nRezeptur: %s" % _short_human(human)
 	plate.font_size = 20
 	plate.pixel_size = 0.0018
 	plate.modulate = Color(0.85, 0.72, 0.42)
@@ -285,6 +390,8 @@ func _build_lore() -> void:
 	_stencil.outline_size = 0
 	_stencil.position = Vector3(0, 0.25, front_z - 0.004)
 	_stencil.rotation.y = PI
+	if perk_id == PerkManager.OVERCLOCK:
+		_stencil.rotation.z = 0.07   # stenciled in haste on the night of 17-18 March 1945: slightly crooked
 	add_child(_stencil)
 	_stencil_always = _fine_print_done()
 	if _stencil_always:

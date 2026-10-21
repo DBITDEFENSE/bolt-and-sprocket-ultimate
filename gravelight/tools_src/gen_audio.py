@@ -37,12 +37,14 @@ from scipy import signal
 
 SR = 44100
 SEED = 19450508
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-AUDIO_JSON = os.path.join(ROOT, "data", "audio.json")
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # project root
+GL = os.path.join(ROOT, "gravelight")                                                   # res://gravelight
+AUDIO_JSON = os.path.join(ROOT, "data", "gravelight", "audio.json")
 
 KEYS: dict[str, dict] = {}      # key -> {"files": [...], meta}
 STATS: list[tuple[str, float]] = []
-ONLY: str = sys.argv[1] if len(sys.argv) > 1 else ""
+# key prefixes to (re)write, comma separated; empty = everything. Every key is still registered in the manifest.
+ONLY: list[str] = [a for a in sys.argv[1].split(",") if a] if len(sys.argv) > 1 else []
 
 
 # ═════════════════════════════════════════════════════════════════ DSP core
@@ -580,16 +582,16 @@ def emit(key: str, rel: str, x, peak_db: float = -1.0, loop: bool = False, **met
         entry[k] = v
     if loop:
         entry["loop"] = True
-    res = "res://audio/" + rel + ".wav"
+    res = "res://gravelight/audio/" + rel + ".wav"
     entry["files"].append(res)
-    if ONLY and not key.startswith(ONLY):
+    if ONLY and not any(key.startswith(o) for o in ONLY):
         return
     x = np.nan_to_num(np.asarray(x, dtype=float))
     x = x - np.mean(x, axis=0)
     x = nrm(x, 10 ** (peak_db / 20.0))
     if not loop:
         x = fade(x, 0.0005, 0.01)
-    write_wav(os.path.join(ROOT, "audio", rel + ".wav"), x, loop)
+    write_wav(os.path.join(GL, "audio", rel + ".wav"), x, loop)
     STATS.append((rel, len(x) / SR))
 
 
@@ -1471,7 +1473,8 @@ def gen_crate():
 
 
 PERK_ROOTS = {"ironhide_stout": "Bb2", "second_wind": "F3", "trigger_tonic": "Eb3", "twin_barrel": "D3",
-              "marathon_malt": "G2", "hawkeye_brandy": "C3", "packmule_porter": "A2", "blastproof_bock": "F2"}
+              "marathon_malt": "G2", "hawkeye_brandy": "C3", "packmule_porter": "A2", "blastproof_bock": "F2",
+              "overclock_cordial": "F#2"}   # the cracked reed's note: this Plan never resolves
 
 
 def gen_perks():
@@ -1485,6 +1488,13 @@ def gen_perks():
         f = periodic(hz(root), dur)
         tone = (np.sin(2 * np.pi * f * t) + 0.3 * np.sin(2 * np.pi * 2 * f * t)) * (0.8 + 0.2 * np.sin(2 * np.pi * 0.25 * t))
         x = 0.35 * mains + neon + 0.45 * tone
+        if pid == "overclock_cordial":
+            # a capacitor whine wandering above the mains, and two spark-gap snaps per loop
+            whine = np.sin(2 * np.pi * phase_of(2600.0 * (1 + 0.01 * smooth_rand(r, dur, 0.7)), n)) * (0.5 + 0.5 * np.sin(2 * np.pi * 0.5 * t))
+            x = x + 0.06 * whine
+            for t0 in (0.9, 2.7):
+                place(x, nrm(hp(white(r, 0.03), 2500)) * expenv(N(0.03), 0.004), t0, 0.35)
+            x = loopify(x, 0.2)
         emit(f"perk_hum_{pid}", f"sfx/world/perks/hum_{pid}", x, -6.0, loop=True, bus="SFX", volume_db=-10.0,
              pitch=[1.0, 1.0], max_voices=1, attenuation="hum")
     for i in variants(2):
@@ -1501,6 +1511,124 @@ def gen_perks():
         place(x, nrm(bp(white(r, 0.35), 3000, 9000)) * expenv(N(0.35), 0.12), 1.26, 0.2)  # fizz
         emit("perk_dispense", f"sfx/world/perks/dispense_{i:02d}", reverb(x, r, 0.5, 0.15), -1.0, bus="SFX", volume_db=-3.0,
              max_voices=1, attenuation="world")
+
+
+def zap(r, sec: float = 0.6, big: float = 1.0):
+    """A fat electric ZAP: a crack, a dropping buzz with harmonics, a downward noise sweep, a crackle tail."""
+    n = N(sec)
+    t = tax(n)
+    x = zeros(sec)
+    place(x, nrm(hp(white(r, 0.02), 1500)) * expenv(N(0.02), 0.003), 0.0, 0.9)
+    f = 160.0 * np.exp(-t / 0.1) + 55.0 * big
+    ph = phase_of(f, n)
+    buzz = sum(a * np.sin(2 * np.pi * h * ph) for h, a in [(1, 1.0), (2, 0.6), (3, 0.45), (5, 0.3), (7, 0.2), (11, 0.1)])
+    x += buzz * expenv(n, 0.07 + 0.05 * big) * 0.9
+    place(x, sweep_noise(r, 0.32, 5000, 260, 3) * expenv(N(0.32), 0.08), 0.0, 0.7)
+    place(x, crackle(r, sec - 0.05, 260, 1.0, 1500, 9000) * expenv(N(sec - 0.05), 0.11 * big), 0.02, 0.55)
+    return reverb(sat(x, 2.2), r, 0.6, 0.2, 7000)
+
+
+def bee_boop(r):
+    """The tiny two-tone robotic bee-boop: a tube-and-telephone square wave, very pleased with itself."""
+    x = zeros(0.3)
+    for f, t0, d in [(hz("C6"), 0.0, 0.09), (hz("G5"), 0.12, 0.14)]:
+        tone = lp(square(f * (1 + 0.004 * np.sin(2 * np.pi * 30 * tax(N(d)))), d), 3200, 2) * adsr(N(d), 0.004, 0.02, 0.8, 0.03)
+        place(x, tone, t0, 0.8)
+    return bp(x, 400, 3600, 1)
+
+
+def novachord(r, f: float, sec: float, rel: float = 0.12, bright: float = 1.3):
+    """The 1939 electric-organ lead: organ bars plus a filtered saw, doubled an octave down by a 'clarinet'."""
+    n = N(sec + rel)
+    lead = organ(r, f, sec, 0.02, rel, bright)
+    sw = lp(saw(f * 1.003, sec + rel) + saw(f * 0.997, sec + rel), 2600, 2) * adsr(n, 0.015, 0.1, 0.8, rel)
+    cl = sum(a * sine(f * 0.5 * h * (1 + 0.0004 * h), sec + rel) for h, a in [(1, 1.0), (3, 0.35), (5, 0.15)]) * adsr(n, 0.03, 0.1, 0.85, rel)
+    return (0.7 * lead + 0.2 * sw + 0.25 * cl) * vib(r, n, 5.4, 0.003, 0.15)
+
+
+def cracked_fsharp(r, f: float, sec: float = 1.5):
+    """The harmonium's cracked F-sharp reed: a beating detune, an inharmonic partial, a 9 Hz flutter and a rattle."""
+    n = N(sec)
+    t = tax(n)
+    y = organ(r, f, sec - 0.5, 0.03, 0.5, 1.4) + 0.6 * organ(r, f * 1.013, sec - 0.5, 0.03, 0.5, 1.0)
+    y += 0.25 * sine(f * 1.47, sec) * adsr(n, 0.05, 0.3, 0.5, 0.5)
+    y *= 1.0 + 0.22 * np.sin(2 * np.pi * 9.0 * t)
+    rattle = bp(white(r, sec), 1800, 4200, 2) * (0.5 + 0.5 * np.sign(np.sin(2 * np.pi * 27.0 * t))) * adsr(n, 0.05, 0.2, 0.6, 0.6)
+    return y * adsr(n, 0.02, 0.0, 1.0, 0.45) + 0.12 * rattle
+
+
+def overclock_jingle(r, resolved: bool):
+    """\"Overclock Cordial\" incipit: electric novelty swing at 152 BPM in B-flat, four bars of the organ incipit
+    (JINGLES.md section 10): I Bb D F Bb, II Eb G Bb G, III F A C F, IV Bb F Bb F#. Novachord lead doubled by
+    clarinet, walking bass, brushed snare, spark-gap snaps, a theremin swoop between the phrases. The last note
+    is the cracked F-sharp and there is no final chord, unless `resolved` (after The Fine Print Ch. 5): then a
+    B-flat major chord with Sprocket's off-key bass under it, and the bee-boop."""
+    beat = 60.0 / 152.0
+    bars = [["Bb4", "D5", "F5", "Bb5"], ["Eb5", "G5", "Bb5", "G5"], ["F5", "A5", "C6", "F5"], ["Bb5", "F5", "Bb5", None]]
+    bass = [["Bb2", "D3", "F3", "D3"], ["Eb3", "G3", "Bb3", "G3"], ["F3", "A3", "C4", "A3"], ["Bb2", "F3", "Bb2", None]]
+    total = beat * 16 + 1.8 + (1.6 if resolved else 0.0)
+    x = zeros(total)
+    for b, bar in enumerate(bars):
+        for k, note in enumerate(bar):
+            t0 = (b * 4 + k) * beat
+            if note is None:
+                place(x, cracked_fsharp(r, hz("F#5")), t0, 0.55)
+                continue
+            swing = 0.04 if k % 2 == 1 else 0.0
+            place(x, novachord(r, hz(note), beat * 0.86), t0 + swing, 0.5)
+            bn = bass[b][k]
+            bl = sine(hz(bn), beat * 0.9) + 0.4 * sine(hz(bn) * 2, beat * 0.9)
+            place(x, bl * adsr(N(beat * 0.9), 0.005, 0.12, 0.5, 0.08), t0, 0.4)
+            if k in (1, 3):
+                place(x, snare(r, 0.45, 190, 0.22, 0.5, 5000), t0 + 0.01, 0.35)
+            else:
+                place(x, kick(r, 0.5, 120, 48, 0.05, 0.25), t0, 0.35)
+            if b < 3:
+                place(x, nrm(hp(white(r, 0.012), 3000)) * expenv(N(0.012), 0.002), t0 + beat * 0.66, 0.2)   # spark-gap snap
+    # theremin swoop between the phrases (end of bar II into bar III)
+    ts = beat * 7.4
+    n = N(beat * 1.2)
+    curve = hz("F5") * (hz("Bb5") / hz("F5")) ** (np.linspace(0, 1, n) ** 0.7)
+    th = sine(curve * (1 + 0.012 * np.sin(2 * np.pi * 6.5 * tax(n)))) * adsr(n, 0.15, 0.1, 0.9, 0.25)
+    place(x, th, ts, 0.22)
+    if resolved:
+        t1 = beat * 16 + 1.1
+        for nm in ["Bb4", "D5", "F5", "Bb5"]:
+            place(x, novachord(r, hz(nm), 1.1, 0.4), t1, 0.4)
+        wrong = hz("Bb2") * 1.03   # he hummed the bass line wrong; I left it in
+        place(x, (sine(wrong, 1.4) + 0.3 * sine(wrong * 2, 1.4)) * adsr(N(1.4), 0.01, 0.2, 0.6, 0.4), t1, 0.45)
+        place(x, bee_boop(r), t1 + 1.25, 0.5)
+    return reverb(x, r, 1.1, 0.22, 7500)
+
+
+def gen_overclock():
+    """Overclock Cordial (T-034): the reload burst, the idle arc, the cap-off, and the machine's jingle."""
+    for i in variants(2):
+        r = rng_for(f"oc_burst{i}")
+        emit("perk_overclock_burst", f"sfx/world/perks/overclock_burst_{i:02d}", zap(r, 0.65, 1.0 + 0.15 * i), -1.0,
+             bus="SFX", volume_db=-2.0, max_voices=3, pitch=[0.94, 1.06], attenuation="loud")
+    r = rng_for("oc_arc")
+    x = zeros(0.16)
+    place(x, nrm(hp(white(r, 0.012), 2500)) * expenv(N(0.012), 0.0025), 0.0, 1.0)
+    place(x, sweep_noise(r, 0.12, 6000, 900, 4) * expenv(N(0.12), 0.03), 0.004, 0.5)
+    place(x, crackle(r, 0.14, 300, 1.0, 2000, 9000) * expenv(N(0.14), 0.04), 0.01, 0.4)
+    emit("perk_overclock_arc", "sfx/world/perks/overclock_arc_01", reverb(x, r, 0.4, 0.12), -2.0, bus="SFX", volume_db=-6.0,
+         max_voices=2, pitch=[0.9, 1.1], attenuation="quiet")
+    r = rng_for("oc_capoff")
+    x = zeros(1.9)
+    n = N(0.7)
+    whine = np.sin(2 * np.pi * phase_of(np.geomspace(900.0, 4200.0, n), n)) * adsr(n, 0.05, 0.0, 1.0, 0.05) * (0.7 + 0.3 * np.sin(2 * np.pi * 40 * tax(n)))
+    place(x, whine, 0.0, 0.35)                                   # capacitor whine rising on dispense
+    place(x, zap(r, 0.55, 1.1), 0.72, 0.9)                        # the fat ZAP on cap-off
+    place(x, bee_boop(r), 1.45, 0.6)                              # bee-boop (added on Helvetia Works)
+    emit("perk_overclock_capoff", "sfx/world/perks/overclock_capoff_01", x, -1.0, bus="SFX", volume_db=-3.0,
+         max_voices=1, pitch=[1.0, 1.0], attenuation="world")
+    r = rng_for("oc_jingle")
+    emit("jingle_overclock_cordial", "jingles/overclock_cordial_01", overclock_jingle(r, False), -2.0, bus="Jingles",
+         volume_db=-4.0, max_voices=1, pitch=[1.0, 1.0], attenuation="world")
+    r = rng_for("oc_jingle_resolved")
+    emit("jingle_overclock_cordial_resolved", "jingles/overclock_cordial_resolved_01", overclock_jingle(r, True), -2.0,
+         bus="Jingles", volume_db=-4.0, max_voices=1, pitch=[1.0, 1.0], attenuation="world")
 
 
 POWERUP_CHORDS = {"resupply": ["C5", "E5", "G5", "C6"], "deaths_door": ["D4", "F4", "Ab4", "D5"],
@@ -2118,12 +2246,13 @@ def main():
     gen_zombies()
     gen_player()
     gen_world()
+    gen_overclock()
     gen_ambience()
     gen_music()
     legacy_aliases()
     write_manifest()
     total = sum(d for _, d in STATS)
-    print(f"gen_audio: wrote {len(STATS)} files ({total:.1f} s of audio), {len(KEYS)} keys -> data/audio.json")
+    print(f"gen_audio: wrote {len(STATS)} files ({total:.1f} s of audio), {len(KEYS)} keys -> data/gravelight/audio.json")
 
 
 if __name__ == "__main__":

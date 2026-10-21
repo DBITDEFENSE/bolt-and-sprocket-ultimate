@@ -56,7 +56,8 @@ Each line is a row in `data/vo/*.tres` (one resource per speaker) with these fie
 | `PERK_*` (player drink) | n/a | 100% |
 | `IDLE_SELFAWARE` (Operator) | 240 s | 50%, gated by round (see §3.12) |
 | `HINT_*` (characters, soft objectives) | 120 s per hint ID | 100% if hint mode on, else 40% |
-| `BNT_*` (pair banter) | 180 s | 30%, between rounds only |
+| `BNT_*` (pair banter) | 180 s | 30%, rolled at each round end from round 2 (`rules.json` `banter`); starts once the Operator and the radio are quiet, may run into the first seconds of the next round, gives up 20 s after it was due |
+| `DOWN` / `TEAM_DOWN` / `REVIVE` / `REVIVED` (squad) | 0 / 8 / 5 / 5 s | tier **2** for the squad (`rules.json` `player_category_priority`): they skip the chatter gap, cut a quip, and are sticky in a queue (never expire). **Deterministic down sequence** (`down_sequence`, `squad_second_channel`): the downed player's `DOWN` at once on the player channel; `TEAM_DOWN` on a second squad channel 1 s later, speaker chosen when it starts (never the downed one or the reviver; dropped only if nobody else stands or 8 s passed); the reviver's `REVIVE` queues behind it on that channel (said at revive completion instead if the reviver's line never got out); `REVIVED` on the player channel when the revive lands, overlapping whatever the others still say. Two voices at once, never more than ~4 s of waiting. |
 
 ### 1.5 Subtitle format
 - Default **on**. Format: `SPEAKER NAME: Line text.`, speaker name in the speaker's color, line in off-white.
@@ -75,6 +76,40 @@ Each line is a row in `data/vo/*.tres` (one resource per speaker) with these fie
 ---
 
 ## 2. Trigger table (EventBus signal → VO category)
+
+**As wired in `gravelight/autoload/vo_manager.gd` (T-035 voice pass).** Every survivor in the match speaks, not only the local player: a line triggered by player `pid` is spoken by that player's character (`GLVO.say_as`), positioned at their body when they are a teammate or a bot, 2D for the local player and the story voices. Squad reactions to an announcement wait a beat (2.5–5 s) so they never talk over the Operator. The categories below marked *squad* use `rules.json` `player_category_cooldown` overrides where present.
+
+| Signal | Operator | Squad (speaker) | Notes |
+|---|---|---|---|
+| `match_started` | `MATCH_START` (`_M0` on Map 0) | `SPAWN` (local first, then each teammate 5 s apart) | |
+| `round_started` | `ROUND_START` / `SPECIAL_START` | `ROUND_START` (one random survivor, 20%), `BELL` on a special round, `EXHAUST` from round 50 | |
+| `round_ended` | `ROUND_END` / `SPECIAL_END` (after a special round) | `ROUND_END` (20%); then a **banter** roll (`rules.json` `banter`: 30%, 180 s cooldown, round 2+, two standing survivors within 15 m, once per exchange per match) | |
+| `special_round_warning` | `SPECIAL_WARN` | `BELL` (40%) | |
+| `boss_spawned` | `BOSS_FOREMAN` / `BOSS_SCREAMER` | `FOREMAN` / `SCREAMER` (one survivor, 60%) | |
+| `enemy_killed` | `BOSS_FOREMAN_DEAD` | killer: `GLASSHIDE` (30%), humans: `STREAK` / `HEADSHOT`; bots roll their own rarer `HEADSHOT` in `BotBrain` | |
+| `powerup_collected` | `PWR_{TYPE}` | grabber: `PWR_{TYPE}` | |
+| `powerup_expired` | `PWR_EXPIRE` (Death's Door / Double Scrip, 30%) | | |
+| `weapon_acquired` (wall) | | buyer: `BUY_{CLASS}` | |
+| `weapon_acquired` (crucible) | | taker: `CRUCIBLE` | |
+| `ammo_bought` | | buyer: `BUY_AMMO` | new lines, CHARACTERS.md §8 |
+| `crate_result` | | opener: `CRATE_GOOD` / `CRATE_BAD` / `CRATE_WONDER` | |
+| `crate_drummer` / `crate_moved` | `CRATE_MOVE` / `CRATE_MOVE_ARRIVE` (25%) | local: `CRATE_DRUMMER` | |
+| `perk_bought` / `perk_denied` | | buyer: `PERK_{PERK}` / `DENY_NO_POWER` / `DENY_CAP` / `DENY_NO_SCRIP` | |
+| `door_opened` | | opener: `DOOR` (40%) | |
+| `zone_opened` | | local: `ZONE_{ZONE}` when such lines exist | |
+| `power_activated` | `POWER_ON` (`POWER_ON_M0` for the cellar lever) | `POWER` | skipped when the map starts powered |
+| `crucible_started` / `crucible_ready` / `crucible_expired` | `CRUCIBLE_FIRST` (once), `CRUCIBLE_START` (70%) / `CRUCIBLE_READY` (70%) / `CRUCIBLE_EXPIRE` | | new signals |
+| `trap_activated` | `TRAP` (20%) | puller: `TRAP` (30%) | |
+| `player_downed` | `DOWNED` (50%) | downed: `DOWN`; another survivor: `TEAM_DOWN` (80%) | |
+| `player_revived` | | revived: `REVIVED`; a human reviver: `REVIVE`; a bot says `REVIVE` when it starts the revive | |
+| `self_revive` | `SECOND_WIND_{n}` | | |
+| `low_ammo` / `no_ammo` | | owner: `AMMO_LOW` / `AMMO_NONE` | |
+| `intel_found` | | local: `INTEL` | |
+| `game_over` | `GAME_OVER` | | |
+| `radio_tuned` (Map 0) | `M0_WRONG` | FAS → `M0_FREQ{n}` | |
+| quest data (`vo`, `vo_category`, `vo_player`, `vo_start`...) | `PYLON_*`, `VAULT`, `BELL_WRONG`, `QUEST_*`, `EXFIL_*` | `BUILD`, `EE_*` | driven by `QuestManager` / the campaign, not by the table |
+
+Original first-pass table (intent; kept for reference):
 
 | EventBus signal | Payload | Speaker(s) → Category |
 |---|---|---|
@@ -355,7 +390,50 @@ Gated by round. Each tier unlocks only once the previous tier has played at leas
 | OPR_GAME_OVER_05 | Round {fifty}-something! I'll remember you. I remember {everyone}. | round 50+ |
 | OPR_GAME_OVER_M0_01 | [static] ...{closed}... | Map 0 |
 
+### 3.15 Campaign exfil (`EXFIL_*`, tier 3; cutscene lines `CUT_EXFIL*`, tier 4) — DECISIONS T-033
+The campaign beacon lights at round 10 on Map 0 (the stable's great doors, "THE CARTERS' ROAD") and round 30 on Map 1 (the yard's north gate). On Map 0 the Operator is still half-formed (M0 variants); on Map 1 he is on the air.
+
+| ID | Line | When |
+|---|---|---|
+| OPR_EXFIL_OPEN_M0_01 | [static, half-formed, through the inn's horn] ...the carters' road... is {open}. Nine kilometres. The {Ledger}... will keep your places warm. | Map 0, the beacon lights |
+| OPR_EXFIL_OPEN_01 | [bright] Attention, valued {guests}: the north gate is open and the road is {clear}! Transport to Totenhafen departs from the beacon. Mind the gap in the fence. | Map 1, the beacon lights |
+| OPR_EXFIL_WAIT_01 | Now boarding! Every account travels {with} you. Everyone to the beacon, please. I do so hate a {late} departure. | co-op, some have voted (every ~25 s) |
+| OPR_EXFIL_WAIT_02 | The lamp is lit and the clock is running. Gather at the beacon, all of you. The dead don't wait, and neither does the {timetable}. | as above |
+| OPR_EXFIL_MISSED_M0_01 | [static] ...departure... {postponed}... *[tape squeal]* | Map 0, the window closed |
+| OPR_EXFIL_MISSED_01 | Oh dear. Departure {missed}. Never mind: the dead are patient, and so am {I}. We'll try again in a few rounds. | Map 1, the window closed |
+
+**Transition cutscene, Map 0 → Map 1 (~30 s, `exfil_m0_m1` in `data/gravelight/campaign.json`):**
+
+| Shot | Time | Visual | VO |
+|---|---|---|---|
+| 1 | 0:00 | Inside the stable: the squad at the lit beacon, the great doors' bar lifts and the doors fall outward into the snow. | OPR_EXFIL_GO_M0_01: [the crackle clearing, a voice finding itself] ...there you are. Dawn on the {Kreuzweg}. Follow the signpost. Kaltenbrunn is... {expecting} you. |
+| 2 | 0:08 | The crossroads at first light: the signpost (KALTENBRUNN 9 km), the inn behind, the moon turns into a low winter sun. | FAS_EXFIL_M0_01: [radio, hurried] Fasbender. If you are leaving the inn: the salt road, east, nine kilometres. Whatever you hear at Kaltenbrunn... do not let the {bell} ring. |
+| 3 | 0:20 | Down the east road. Title card **KALTENBRUNN** · *Kaltenbrunn salt mine · 9 km east · dawn, 24 December 1944*. Fade. | OPR_EXFIL_ROAD_M0_01: Bring everything you carry. Every gun, every {coin}. The books come with you. The books {always} come with you. |
+
+**Transition cutscene, Map 1 → Map 2 (~30 s, `exfil_m1_m2`):**
+
+| Shot | Time | Visual | VO |
+|---|---|---|---|
+| 1 | 0:00 | The Minehead Yard from the headframe side; the north gate rises. | OPR_EXFIL_GO_01: Your Friend at the Ledger, signing off from Sender Kaltenbrunn... [a beat] ...no. Not signing off. {Transferring}. North, to the sea. |
+| 2 | 0:08 | Through the gate and up the north road at dawn. | (wind) |
+| 3 | 0:20 | A high pull-out over the yard. Title card **TOTENHAFEN** · *The Baltic coast · 300 km north · the trail leads to the sea*. Fade. | OPR_EXFIL_ROAD_01: Totenhafen. A harbour of {sealed} cargo and patient tides. Keep your accounts in order. I'll be there before you are. I'm {always} there before you are. |
+
+Both are skippable with Use after 3 s (co-op: every human).
+
 ---
+
+### 3.16 Map 2 Totenhafen: the pumps and the tide (`POWER_ON_M2`, `TIDE_*`, tier 3) — DECISIONS T-036
+The Pumpenschalter is Map 2's power (MAPS.md Map 2). The tide comes in on every third round (`map02.json "tide"`): the Operator reads the shipping forecast the round before, then calls the rise and the fall. He has been in the port's radio network since the manifests went through it, so the forecast is in the real cadence, with the Ledger's numbers underneath.
+
+| ID | Line | When |
+|---|---|---|
+| OPR_POWER_ON_M2_01 | [the tannoy clears its throat, half under water] *Ladies and gentlemen*, the pumps are running! The lights are on in Totenhafen, the refreshment machines are cold, and the {harbour} is open for business. Do mind the tide. | the Pumpenschalter, once |
+| OPR_TIDE_WARN_01 | And now the shipping forecast. Totenhafen, Totenhafen. Wind north-west, force nine, {rising}. Sea state: hungry. High water {next round}. Visibility: poor, and getting worse. | the round before a high tide |
+| OPR_TIDE_WARN_02 | Shipping forecast, issued by the Ledger at the hour. Totenhafen: gale warning in force. High water {next round}. Low spirits, becoming {lower}. | the round before a high tide |
+| OPR_TIDE_RISING_01 | High water, Totenhafen! The sea is coming in through the lower pens. Do keep your feet dry. Or don't. I'm not your {mother}. | the tide rises |
+| OPR_TIDE_RISING_02 | The tide is in! Everything below the apron is now a {bath}. Guests on the catwalks: the dead will be joining you {shortly}. | the tide rises |
+| OPR_TIDE_FALLING_01 | And the tide is going out. Totenhafen, Totenhafen: falling slowly, good, occasionally {poor}. Mind what it left behind. | the tide falls |
+| OPR_TIDE_FALLING_02 | Low water. The pens are draining, the pumps are {laughing}, and so am I. Until the {next} one. | the tide falls |
 
 ## 4. Dr. Emil Fasbender (`FAS`)
 
@@ -535,6 +613,8 @@ The VOManager expects these categories for each of `DUT`, `PEG`, `DEA`, `WRN` (I
 `SPAWN`, `ROUND_START`, `ROUND_END`, `EXHAUST` (round 50+), `BUY_WEAPON_PISTOL`, `BUY_WEAPON_RIFLE`, `BUY_WEAPON_SMG`, `BUY_WEAPON_SHOTGUN`, `BUY_WEAPON_LMG`, `BUY_WEAPON_LAUNCHER`, `BUY_WEAPON_MELEE`, `BUY_AMMO`, `CRATE_GOOD`, `CRATE_BAD`, `CRATE_WONDER`, `CRATE_DRUMMER`, `PERK_{IRONHIDE, SECONDWIND, TRIGGER, TWINBARREL, MARATHON, HAWKEYE, PACKMULE, BLASTPROOF}`, `PWR_GRAB_{RESUPPLY, DEATHSDOOR, DOUBLESCRIP, BLACKOUT, FORTIFY, CLEARANCE}`, `SPECIAL_START`, `BOSS_FOREMAN`, `BOSS_SCREAMER`, `KILL_GLASSHIDE`, `LOW_AMMO`, `NO_AMMO`, `DOWNED`, `TEAM_DOWN`, `REVIVE`, `REVIVED`, `STREAK`, `HEADSHOT`, `DENY_NO_POWER`, `DENY_CAP`, `DENY_NO_SCRIP`, `DOOR`, `ZONE_{ZONE}`, `POWER_ON`, `TRAP`, `INTEL`, `HINT_{STEP}`, `EE_{STEP}`, `EE_SONG`, `EE_DOGTAG` (Wren/Dutch exchange), `EE_END_*`, banter lines use the `BNT_*` prefix (e.g. `BNT_DUT_WRN_01`).
 
 `PERK_*` short tokens map to perk IDs as follows: `IRONHIDE` → `ironhide_stout`, `SECONDWIND` → `second_wind`, `TRIGGER` → `trigger_tonic`, `TWINBARREL` → `twin_barrel`, `MARATHON` → `marathon_malt`, `HAWKEYE` → `hawkeye_brandy`, `PACKMULE` → `packmule_porter`, `BLASTPROOF` → `blastproof_bock`.
+
+**(T-035 voice pass)** The squad categories that existed in this list but had no lines now do: `SPAWN`, `ROUND_START`, `ROUND_END`, `BUY_AMMO`, `TEAM_DOWN`, `INTEL`, `DENY_NO_POWER` / `DENY_CAP` / `DENY_NO_SCRIP` (CHARACTERS.md §8). The implemented ids use the short forms already in CHARACTERS.md: `BUY_{CLASS}` (not `BUY_WEAPON_*`), `AMMO_LOW` / `AMMO_NONE`, `DOWN`, `FOREMAN` / `SCREAMER` (not `BOSS_*`), `GLASSHIDE`, `BELL` for a special round. Twelve more short banter exchanges (`BNT_*_04` / `_05`). Every line has baked placeholder audio (`gen_vo.py`, `data/gravelight/vo/audio_manifest.json`).
 
 **(§11 amendment)**
 - **New perk tokens:** `FERNET` → `fine_print_fernet`, `OVERCLOCK` → `overclock_cordial` (squad lines in CHARACTERS.md §5).

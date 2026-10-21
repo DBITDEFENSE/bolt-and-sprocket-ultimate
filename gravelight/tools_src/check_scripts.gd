@@ -2,8 +2,10 @@ extends SceneTree
 ## Loads every .gd under the project dirs and reports scripts that fail to compile.
 ## Usage: godot --headless --path . --script res://gravelight/tools_src/check_scripts.gd
 
-const DIRS: PackedStringArray = ["res://autoload", "res://player", "res://weapons", "res://enemies",
-	"res://world", "res://ui", "res://maps", "res://tests", "res://net"]
+## Merged project (T-034 fix): the Gravelight tree lives under res://gravelight; res://tests is the shared suite.
+const DIRS: PackedStringArray = ["res://gravelight/autoload", "res://gravelight/player", "res://gravelight/weapons",
+	"res://gravelight/enemies", "res://gravelight/world", "res://gravelight/ui", "res://gravelight/maps",
+	"res://gravelight/tests", "res://gravelight/net", "res://gravelight/bots", "res://gravelight/tools_src", "res://tests"]
 
 
 func _initialize() -> void:

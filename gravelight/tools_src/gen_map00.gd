@@ -20,6 +20,13 @@ const WIN_SILL: float = 0.9
 const WIN_TOP: float = 2.2
 const DOOR_H: float = 2.4
 const WAINSCOT_H: float = 1.1
+## The staircase to the guest rooms (playtest 2026-10-21: the old 2.7 m flight in a 3 m well was too cramped). The well is
+## x 0..STAIR_X1, z 10..16, full height: the flight runs up the west wall, open on its east side over a 2.2 m
+## vestibule that Door 1 opens into, and lands a metre inside the upstairs hall; the hall overlooks the well.
+const STAIR_X1: float = 6.0        # the well's east wall (Door 1 is in it)
+const FLIGHT_X1: float = 3.65      # the flight's open edge; the vestibule is x FLIGHT_X1..STAIR_X1
+const STAIR_Z0: float = 14.3       # the foot of the flight (its first riser)
+const STAIR_Z1: float = 9.0        # its head, in the hall
 
 ## Old greybox keys -> material library keys (world/materials.gd).
 const MAT_MAP: Dictionary = {
@@ -188,7 +195,10 @@ func wall_z(name_: String, x: float, z0: float, z1: float, y0: float, y1: float,
 
 
 ## A straight ramp (stairs) along Z between two heights. Collision is one slab; treads/risers are dressing.
-func ramp_z(name_: String, x0: float, x1: float, z_low: float, z_high: float, y_low: float, y_high: float) -> void:
+## hollow_z: steps past it (toward z_high, which must be the smaller z) are drawn as shells over a plaster soffit
+## instead of solid blocks, for a flight that passes over another room. east_rail: the plain rail on the +X side.
+func ramp_z(name_: String, x0: float, x1: float, z_low: float, z_high: float, y_low: float, y_high: float,
+		hollow_z: float = -1e9, east_rail: bool = true) -> void:
 	var run: float = absf(z_high - z_low)
 	var rise: float = y_high - y_low
 	var length: float = sqrt(run * run + rise * rise)
@@ -209,10 +219,40 @@ func ramp_z(name_: String, x0: float, x1: float, z_low: float, z_high: float, y_
 	body.add_child(cs)
 	geo.add_child(body)
 	_count += 1
-	_stair_dressing.append([x0, x1, z_low, z_high, y_low, y_high])
+	_stair_dressing.append([x0, x1, z_low, z_high, y_low, y_high, hollow_z, east_rail])
 
 
 var _stair_dressing: Array = []
+
+
+## Height of the main staircase's tread line at z.
+func _stair_y(z: float) -> float:
+	return UP_Y * (STAIR_Z0 - z) / (STAIR_Z0 - STAIR_Z1)
+
+
+## A collider bar from a to b (the rails and curbs of the balustrades): a box body along the segment, drawn in
+## `mat_key` unless it is empty. Three thin bars stop the player and cut the navmesh at an edge while shots pass
+## between them.
+func bar(parent: Node3D, name_: String, a: Vector3, b: Vector3, w: float, h: float, mat_key: String = "") -> void:
+	var d: Vector3 = b - a
+	var body: StaticBody3D = StaticBody3D.new()
+	body.name = name_
+	body.collision_layer = 1
+	body.collision_mask = 0
+	body.transform = Transform3D(Basis.looking_at(d.normalized(), Vector3.UP), (a + b) * 0.5)
+	var cs: CollisionShape3D = CollisionShape3D.new()
+	var shape: BoxShape3D = BoxShape3D.new()
+	shape.size = Vector3(w, h, d.length())
+	cs.shape = shape
+	body.add_child(cs)
+	if mat_key != "":
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.mesh = Props.unit_box()
+		mi.scale = shape.size
+		mi.material_override = mat(mat_key)
+		body.add_child(mi)
+	parent.add_child(body)
+	_count += 1
 
 
 func _own(n: Node, owner_node: Node) -> void:
@@ -237,16 +277,33 @@ func build_geometry() -> void:
 	wall_x("TapN", 0.0, -T * 0.5, 24 + T * 0.5, 0, TAP_H, [[6.2, 7.8] + win, [16.2, 17.8] + win], "wall", 1)
 	wall_z("TapW", 0.0, 0, 10, 0, TAP_H, [[5.2, 6.8] + win], "wall", 1)
 	wall_z("TapE", 24.0, 0, 16, 0, TAP_H, [[7.2, 8.8] + win, [10.7, 12.3, 0.0, DOOR_H]], "wall", -1)
-	wall_x("TapS", 16.0, 3, 24 + T * 0.5, 0, TAP_H, [[19.0, 21.0, 0.0, DOOR_H]], "wall", -1)
-	# stairwell enclosure (x 0..3, z 10..16), full height; Door 1 opening on its east wall
+	wall_x("TapS", 16.0, STAIR_X1, 24 + T * 0.5, 0, TAP_H, [[19.0, 21.0, 0.0, DOOR_H]], "wall", -1)
+	# stairwell (x 0..6, z 10..16), full height: the flight along the west wall (3.5 m wide, z 14.3 -> 9.0, so it
+	# lands a metre inside the hall), the vestibule beside it with Door 1 in the east wall, the hall overlooking it
 	wall_z("StairW", 0.0, 10, 16 + T * 0.5, 0, UP_TOP, [], "wall", 1)
-	wall_x("StairS", 16.0, -T * 0.5, 3, 0, UP_TOP, [], "wall", -1)
-	wall_z("StairE", 3.0, 10, 16, 0, UP_TOP, [[14.3, 15.9, 0.0, DOOR_H]], "wall", 2)
-	box(geo, "StairRoof", Vector3(-T * 0.5, UP_TOP, 10), Vector3(3 + T * 0.5, UP_TOP + 0.2, 16 + T * 0.5), "roof")
-	ramp_z("Stairs", 0.15, 2.85, 15.0, 10.0, 0.0, UP_Y)
-	# ceiling slabs: A = upstairs floor (z 0..10), B = taproom roof south of it
-	box(geo, "SlabA", Vector3(-T * 0.5, TAP_H, -T * 0.5), Vector3(24 + T * 0.5, UP_Y, 10), "floor_wood")
-	box(geo, "SlabB", Vector3(3, TAP_H, 10), Vector3(24 + T * 0.5, UP_Y, 16 + T * 0.5), "floor_wood")
+	wall_x("StairS", 16.0, -T * 0.5, STAIR_X1, 0, UP_TOP, [], "wall", -1)
+	wall_z("StairE", STAIR_X1, 10, 16, 0, UP_TOP, [[14.3, 15.9, 0.0, DOOR_H]], "wall", 2)
+	wall_x("StairN", 10.0, FLIGHT_X1, STAIR_X1 + T * 0.5, 0, UP_Y, [], "wall", 2)   # under the hall floor: closes the vestibule from the taproom
+	wall_x("StairNu", 10.0, -T * 0.5, FLIGHT_X1, 0, _stair_y(10.15) - 0.42, [], "wall", -1)   # under the flight's soffit
+	box(geo, "StairRoof", Vector3(-T * 0.5, UP_TOP, 10), Vector3(STAIR_X1 + T * 0.5, UP_TOP + 0.2, 16 + T * 0.5), "roof")
+	ramp_z("Stairs", 0.15, FLIGHT_X1, STAIR_Z0, STAIR_Z1, 0.0, UP_Y, 10.0, false)
+	# the under-stair is solid (the step blocks draw it): invisible boxes stepped under the soffit line keep the
+	# navmesh out of it
+	for seg: Array in [[10.15, 11.0], [11.0, 12.0], [12.0, 13.0]]:
+		box(geo, "StairUnder", Vector3(0.15, 0, float(seg[0])), Vector3(FLIGHT_X1, _stair_y(float(seg[1])) - 0.42, float(seg[1])), "wall", true, false)
+	# balustrades: a curb, a mid rail and a handrail up the flight's open side, round the stair head and along
+	# the hall's edge over the well (the balusters are dressing)
+	var bx: float = FLIGHT_X1 - 0.05
+	var hz: float = 10.0 - 0.05
+	for r: Array in [[0.06, 0.06, 0.12], [0.47, 0.035, 0.04], [0.92, 0.07, 0.07]]:   # [centre height, width, height]
+		var hy: float = float(r[0])
+		bar(geo, "StairRail", Vector3(bx, hy, STAIR_Z0), Vector3(bx, UP_Y + hy, STAIR_Z1), float(r[1]), float(r[2]), "furniture")
+		bar(geo, "StairRail", Vector3(bx, UP_Y + hy, STAIR_Z1 - 0.03), Vector3(bx, UP_Y + hy, hz), float(r[1]), float(r[2]), "furniture")
+		bar(geo, "HallRail", Vector3(bx - 0.03, UP_Y + hy, hz), Vector3(STAIR_X1 - T * 0.5, UP_Y + hy, hz), float(r[1]), float(r[2]), "furniture")
+	# ceiling slabs: A = upstairs floor (z 0..10; the flight lands in it west of the vestibule), B = taproom roof
+	box(geo, "SlabA", Vector3(-T * 0.5, TAP_H, -T * 0.5), Vector3(FLIGHT_X1, UP_Y, STAIR_Z1), "floor_wood")
+	box(geo, "SlabA2", Vector3(FLIGHT_X1, TAP_H, -T * 0.5), Vector3(24 + T * 0.5, UP_Y, 10), "floor_wood")
+	box(geo, "SlabB", Vector3(STAIR_X1, TAP_H, 10), Vector3(24 + T * 0.5, UP_Y, 16 + T * 0.5), "floor_wood")
 	# fireplace + chimney (north wall): collision only, drawn by the dressing pass
 	box(geo, "Hearth", Vector3(10.9, 0, 0.15), Vector3(13.1, 1.5, 0.95), "stone", true, false)
 	box(geo, "Chimney", Vector3(11.2, 1.5, 0.15), Vector3(12.8, TAP_H, 0.6), "stone")
@@ -262,7 +319,7 @@ func build_geometry() -> void:
 	wall_x("UpN", 0.0, -T * 0.5, 24 + T * 0.5, UP_Y, UP_TOP, [[3.2, 4.8] + up_win, [19.2, 20.8] + up_win], "wall_upper", 1)
 	wall_z("UpW", 0.0, 0, 10, UP_Y, UP_TOP, [], "wall_upper", 1)
 	wall_z("UpE", 24.0, 0, 10, UP_Y, UP_TOP, [], "wall_upper", -1)
-	wall_x("UpS", 10.0, 3, 24 + T * 0.5, UP_Y, UP_TOP, [], "wall_upper", -1)
+	wall_x("UpS", 10.0, STAIR_X1 - T * 0.5, 24 + T * 0.5, UP_Y, UP_TOP, [], "wall_upper", -1)
 	var room_door: Array = [UP_Y, UP_Y + 2.2]
 	wall_x("UpHall", 6.0, 0, 24, UP_Y, UP_TOP, [[5.0, 6.5] + room_door, [11.0, 12.5] + room_door, [19.5, 21.0] + room_door], "wall_upper", 2)
 	wall_z("UpRoom12", 8.0, 0, 6, UP_Y, UP_TOP, [], "wall_upper", 2)
@@ -285,7 +342,10 @@ func build_geometry() -> void:
 
 	# ---------------- STABLE (x 6..24, z 22..34, ceiling 7)
 	wall_x("StbN", 22.0, 6 - T * 0.5, 24 + T * 0.5, 0, STABLE_H, [[8.2, 9.8] + win, [13.2, 14.8] + win, [18.5, 21.5, 0.0, 2.6]], "stable")
-	wall_x("StbS", 34.0, 6 - T * 0.5, 24 + T * 0.5, 0, STABLE_H, [[11.2, 12.8] + win], "stable")
+	# the great doors' opening is drawn (the doors themselves are dressing, so the exfil cutscene can drop them)
+	# but filled with an invisible collider: the navmesh and collision stay a solid wall, nobody walks out
+	wall_x("StbS", 34.0, 6 - T * 0.5, 24 + T * 0.5, 0, STABLE_H, [[11.2, 12.8] + win, [16.0, 20.0, 0.0, 4.2]], "stable")
+	box(geo, "GreatDoorsBlock", Vector3(16.0, 0, 34.0 - T * 0.5), Vector3(20.0, 4.2, 34.0 + T * 0.5), "stable", true, false)
 	wall_z("StbW", 6.0, 22, 34, 0, STABLE_H, [], "stable")
 	wall_z("StbE", 24.0, 22, 34, 0, STABLE_H, [], "stable")
 	box(geo, "StbRoof", Vector3(6 - T * 0.5, STABLE_H, 22 - T * 0.5), Vector3(24 + T * 0.5, STABLE_H + 0.2, 34 + T * 0.5), "planks")
@@ -323,6 +383,8 @@ const CELLAR_PERKS: Array = [
 	["twin_barrel", Vector3(34.1, CELLAR_Y, 21.6), 90.0], ["marathon_malt", Vector3(34.1, CELLAR_Y, 24.6), 90.0],
 	["hawkeye_brandy", Vector3(34.1, CELLAR_Y, 27.6), 90.0],
 	["packmule_porter", Vector3(28.6, CELLAR_Y, 29.4), 0.0], ["blastproof_bock", Vector3(31.4, CELLAR_Y, 29.4), 0.0],
+	# the ninth (M3): between the south pair, on the vault's axis, under its own bulb
+	["overclock_cordial", Vector3(30.15, CELLAR_Y, 29.4), 0.0],
 ]
 ## Same as PerkMachine._shape_footprint (that script needs the autoloads, which a --script run doesn't have).
 ## Keep the two in step.
@@ -330,13 +392,14 @@ const MACHINE_FOOTPRINTS: Dictionary = {
 	"barrel": Vector3(1.2, 1.9, 1.2), "cabinet": Vector3(0.8, 2.3, 0.6), "crate": Vector3(1.0, 2.0, 0.65),
 	"twin": Vector3(1.2, 2.1, 0.6), "teardrop": Vector3(1.0, 2.4, 0.9), "periscope": Vector3(0.9, 1.8, 0.65),
 	"wagon": Vector3(1.7, 1.7, 0.85), "safe": Vector3(1.1, 1.9, 0.95),
+	"coil": Vector3(0.8, 2.3, 0.6),   # Overclock Cordial: cabinet-sized (perks.json)
 }
 ## crate spots: [name, position, yaw, can_start]
 const CRATES: Array = [["Hearth", Vector3(22.9, 0, 14.0), 90.0, true], ["GuestBed", Vector3(22.0, UP_Y, 0.8), 180.0, false],
 	["TackRoom", Vector3(22.9, 0, 31.5), 90.0, true]]
 ## the cellar's hanging bulbs (bulb glass position; the power lights sit just under them): one pool per machine row
 const CELLAR_BULBS: Array = [Vector3(27.0, CELLAR_Y + 2.55, 22.5), Vector3(33.0, CELLAR_Y + 2.55, 22.5),
-	Vector3(26.5, CELLAR_Y + 2.55, 27.5), Vector3(33.5, CELLAR_Y + 2.55, 27.5)]
+	Vector3(26.5, CELLAR_Y + 2.55, 27.5), Vector3(33.5, CELLAR_Y + 2.55, 27.5), Vector3(30.35, CELLAR_Y + 2.55, 28.7)]
 var _cellar_lit: Node3D   # holder for the lit bulb glass (shown with the first CellarBulb light)
 
 
@@ -420,17 +483,20 @@ func build_dressing() -> void:
 	_dress_stable()
 	_dress_cellar()
 	_dress_exterior()
+	_dress_carters_road()
 	_dress_wreck()
 
 
 func _dress_floors_and_ceilings() -> void:
 	Props.block(dress, Vector3(0.15, 0.0, 0.15), Vector3(23.85, 0.012, 15.85), "floorboards")
-	Props.block(dress, Vector3(0.15, 0.0, 10.0), Vector3(2.85, 0.012, 15.85), "floorboards")
 	Props.block(dress, Vector3(6.15, 0.0, 22.15), Vector3(23.85, 0.012, 33.85), "dirt")
 	Props.block(dress, Vector3(18.15, 0.0, 16.0), Vector3(21.85, 0.012, 22.0), "dirt")
 	# taproom ceiling beams (north-south) and a summer beam
 	for x: float in [5.0, 8.0, 11.0, 14.0, 17.0, 20.0, 23.0]:
-		Props.block(dress, Vector3(x - 0.14, TAP_H - 0.28, 0.15), Vector3(x + 0.14, TAP_H, 15.85), "beam")
+		Props.block(dress, Vector3(x - 0.14, TAP_H - 0.28, 0.15), Vector3(x + 0.14, TAP_H, 9.85 if x < STAIR_X1 else 15.85), "beam")
+	# the stairwell's ceiling beams
+	for z: float in [12.0, 14.0]:
+		Props.block(dress, Vector3(0.15, UP_TOP - 0.24, z - 0.12), Vector3(STAIR_X1 - 0.15, UP_TOP, z + 0.12), "beam")
 	Props.block(dress, Vector3(3.0, TAP_H - 0.36, 7.85), Vector3(23.85, TAP_H - 0.06, 8.15), "beam")
 	for x: float in [8.0, 14.0, 20.0]:
 		Props.block(dress, Vector3(x - 0.15, 0, 0.15), Vector3(x + 0.15, TAP_H, 0.42), "beam")
@@ -490,18 +556,25 @@ func _dress_windows_and_doors() -> void:
 	_window(Vector3(9.0, 0, 22.0), 0.0, false)
 	_window(Vector3(14.0, 0, 22.0), 0.0, false)
 	_window(Vector3(12.0, 0, 34.0), 180.0, false)
-	_door_frame(Vector3(3.0, 0, 15.1), 90.0, 1.6, DOOR_H)
+	_door_frame(Vector3(STAIR_X1, 0, 15.1), 90.0, 1.6, DOOR_H)
 	_door_frame(Vector3(20.0, 0, 16.0), 0.0, 2.0, DOOR_H)
 	_door_frame(Vector3(24.0, 0, 11.5), -90.0, 1.6, DOOR_H)
 	_door_frame(Vector3(20.0, 0, 22.0), 0.0, 3.0, 2.6)
 	for dx: float in [5.75, 11.75, 20.25]:
 		_door_frame(Vector3(dx, UP_Y, 6.0), 0.0, 1.5, 2.2)
 	# the great doors at the stable's south end (barred)
+	# (the campaign exfil cutscene tweens this group's rotation.x so the doors fall outward: its meshes stay
+	# un-batched, hence the "keep" meta)
+	for jx: float in [16.0, 20.0]:   # jambs and a lintel round the opening
+		Props.block(dress, Vector3(jx - 0.16, 0, 33.8), Vector3(jx + 0.16, 4.35, 34.2), "beam")
+	Props.block(dress, Vector3(15.7, 4.2, 33.8), Vector3(20.3, 4.5, 34.2), "beam")
 	var gd: Node3D = Props.group(dress, "GreatDoors", Vector3(18, 0, 33.82))
 	Props.block(gd, Vector3(-2.0, 0, -0.06), Vector3(2.0, 4.2, 0.0), "planks")
 	Props.obox(gd, Vector3(0, 2.1, -0.12), Vector3(0.2, 4.6, 0.1), "beam", Vector3(0, 0, 60))
 	Props.obox(gd, Vector3(0, 2.1, -0.12), Vector3(0.2, 4.6, 0.1), "beam", Vector3(0, 0, -60))
 	Props.block(gd, Vector3(-2.2, 1.6, -0.24), Vector3(2.2, 1.8, -0.12), "iron")
+	for m: Node in gd.get_children():
+		m.set_meta("keep", true)
 
 
 func _dress_stairs() -> void:
@@ -512,16 +585,28 @@ func _dress_stairs() -> void:
 		var z_high: float = s[3]
 		var y_low: float = s[4]
 		var y_high: float = s[5]
+		var hollow_z: float = s[6]
 		var rise: float = y_high - y_low
 		var steps: int = int(ceil(rise / 0.22))
+		var slope_ang: float = rad_to_deg(atan2(rise, absf(z_high - z_low))) * (1.0 if z_high < z_low else -1.0)
 		for k: int in steps:
 			var t0: float = float(k) / float(steps)
 			var t1: float = float(k + 1) / float(steps)
 			var za: float = lerpf(z_low, z_high, t0)
 			var zb: float = lerpf(z_low, z_high, t1)
 			var yb: float = lerpf(y_low, y_high, t1)
-			Props.block(dress, Vector3(x0, y_low, minf(za, zb)), Vector3(x1, yb - 0.05, maxf(za, zb)), "beam")
+			var bottom: float = y_low
+			if minf(za, zb) < hollow_z + 0.35:   # a shell over the soffit (the sawtooth hides behind it)
+				bottom = lerpf(y_low, y_high, t1) - 0.3
+			Props.block(dress, Vector3(x0, bottom, minf(za, zb)), Vector3(x1, yb - 0.05, maxf(za, zb)), "beam")
 			Props.block(dress, Vector3(x0, yb - 0.05, minf(za, zb) - 0.02), Vector3(x1, yb, maxf(za, zb) + 0.02), "furniture")
+		if hollow_z > -1e8:
+			var zs: float = hollow_z + 0.4
+			var mid_z: float = (z_high + zs) * 0.5
+			var y_mid: float = lerpf(y_low, y_high, (z_low - mid_z) / (z_low - z_high)) - 0.35
+			Props.obox(dress, Vector3((x0 + x1) * 0.5, y_mid, mid_z), Vector3(x1 - x0, 0.1, (zs - z_high) / cos(deg_to_rad(slope_ang)) + 0.1), "plaster", Vector3(slope_ang, 0, 0))
+		if not bool(s[7]):
+			continue
 		# a handrail on the east side
 		var rail_x: float = x1 - 0.05
 		var mid: Vector3 = Vector3(rail_x, (y_low + y_high) * 0.5 + 0.95, (z_low + z_high) * 0.5)
@@ -536,64 +621,93 @@ func _dress_stairs() -> void:
 			Props.block(dress, Vector3(rail_x - 0.02, py, pz - 0.02), Vector3(rail_x + 0.02, py + 0.95, pz + 0.02), "beam")
 
 
-## The staircase to the guest rooms (x 0.15..2.85, z 15 -> 10, y 0 -> 3.8): newel posts and balusters on the
-## open side, a wall rail, a runner with brass stair rods, wainscot panels following the flight, a sconce, and
-## framed pictures stepping up both walls. The hall's north wall straight ahead at the top stays free.
+## The staircase to the guest rooms (see STAIR_*): a 1.5 m runner with brass stair rods, newel posts and turned
+## balusters between the rail bars on the open side and round the hall's edge, a panelled string along the
+## vestibule, a wall rail, wainscot following the flight, sconces, framed pictures stepping up the west wall and
+## the well's tall east wall, a lantern in the well. The hall's north wall straight ahead at the top stays free.
 func _dress_staircase() -> void:
 	var g: Node3D = Props.group(dress, "Staircase", Vector3.ZERO)
 	var x0: float = 0.15
-	var x1: float = 2.85
-	var z_low: float = 15.0
-	var z_high: float = 10.0
+	var x1: float = FLIGHT_X1
+	var z_low: float = STAIR_Z0
+	var z_high: float = STAIR_Z1
 	var rise: float = UP_Y
 	var steps: int = int(ceil(rise / 0.22))
 	var ang: float = rad_to_deg(atan2(rise, z_low - z_high))
 	var slope_len: float = Vector2(z_low - z_high, rise).length()
-	# runner (1.3 m wide) over each tread and riser, with a brass rod at the back of every tread
+	var rc: float = (x0 + x1) * 0.5
+	var rw: float = 0.75
+	# runner over each tread and riser, with a brass rod at the back of every tread; it runs on to the hall runner
 	for k: int in steps:
 		var za: float = lerpf(z_low, z_high, float(k) / float(steps))
 		var zb: float = lerpf(z_low, z_high, float(k + 1) / float(steps))
 		var yb: float = lerpf(0.0, rise, float(k + 1) / float(steps))
 		var yn: float = lerpf(0.0, rise, float(k + 2) / float(steps))
-		Props.block(g, Vector3(0.85, yb, zb + 0.012), Vector3(2.15, yb + 0.012, za + 0.022), "runner", false)
+		Props.block(g, Vector3(rc - rw, yb, zb + 0.012), Vector3(rc + rw, yb + 0.012, za + 0.022), "runner", false)
 		if k < steps - 1:
-			Props.block(g, Vector3(0.85, yb, zb), Vector3(2.15, yn, zb + 0.012), "runner", false)
-		Props.cyl(g, Vector3(1.5, yb + 0.014, zb + 0.03), 0.011, 1.34, "brass", Vector3(0, 0, 90))
-	Props.block(g, Vector3(0.85, UP_Y + 0.012, 9.3), Vector3(2.15, UP_Y + 0.024, 10.0), "runner", false)
-	# newel posts and turned balusters between the existing square posts
-	Props.newel(g, Vector3(x1 - 0.05, 0.0, z_low + 0.02), 1.05)
-	Props.newel(g, Vector3(x1 - 0.05, rise, z_high - 0.02), 1.05)
-	var posts: int = int(slope_len / 0.6)
-	for k2: int in posts:
-		var t: float = (float(k2) + 0.5) / float(maxi(1, posts))
-		Props.cyl(g, Vector3(x1 - 0.05, lerpf(0.0, rise, t) + 0.46, lerpf(z_low, z_high, t)), 0.018, 0.9, "furniture")
+			Props.block(g, Vector3(rc - rw, yb, zb), Vector3(rc + rw, yn, zb + 0.012), "runner", false)
+		Props.cyl(g, Vector3(rc, yb + 0.014, zb + 0.03), 0.011, rw * 2.0 + 0.04, "brass", Vector3(0, 0, 90))
+	Props.block(g, Vector3(rc - rw, UP_Y + 0.012, 8.6), Vector3(rc + rw, UP_Y + 0.024, z_high), "runner", false)
+	Props.block(g, Vector3(rc - rw, 0.012, z_low), Vector3(rc + rw, 0.024, 15.7), "runner", false)   # the foot
+	Props.block(g, Vector3(x1 + 0.3, 0.012, 14.2), Vector3(STAIR_X1 - 0.3, 0.024, 15.7), "rug", false)   # the doormat
+	# newel posts: foot, stair head, the corner of the hall rail and its end at the east wall
+	var nx: float = x1 - 0.05
+	Props.newel(g, Vector3(nx, 0.0, z_low + 0.02), 1.05)
+	Props.newel(g, Vector3(nx, rise, z_high), 1.05)
+	Props.newel(g, Vector3(nx, rise, 9.95), 1.05)
+	Props.newel(g, Vector3(STAIR_X1 - 0.22, rise, 9.95), 1.05)
+	# turned balusters between the curb and the handrail (the rail bars are collision geometry)
+	var n: int = int(slope_len / 0.18)
+	for k2: int in n:
+		var t: float = (float(k2) + 0.5) / float(n)
+		Props.cyl(g, Vector3(nx, lerpf(0.0, rise, t) + 0.46, lerpf(z_low, z_high, t)), 0.018, 0.9, "furniture")
+	for zz: float in [9.2, 9.4, 9.6, 9.8]:
+		Props.cyl(g, Vector3(nx, rise + 0.46, zz), 0.018, 0.9, "furniture")
+	var hx: float = nx + 0.2
+	while hx < STAIR_X1 - 0.35:
+		Props.cyl(g, Vector3(hx, rise + 0.46, 9.95), 0.018, 0.9, "furniture")
+		hx += 0.18
+	# the string and the panelled under-stair along the vestibule (the panels' tops hide behind the string)
+	var mid_z: float = (z_low + z_high) * 0.5
+	var mid_y: float = rise * 0.5
+	Props.obox(g, Vector3(x1 + 0.01, mid_y - 0.05, mid_z), Vector3(0.05, 0.34, slope_len + 0.2), "beam", Vector3(ang, 0, 0))
+	for k3: int in steps:
+		var za2: float = lerpf(z_low, z_high, float(k3) / float(steps))
+		var zb2: float = lerpf(z_low, z_high, float(k3 + 1) / float(steps))
+		if zb2 < 10.15:
+			break
+		Props.block(g, Vector3(x1, 0.0, zb2), Vector3(x1 + 0.03, _stair_y(zb2) - 0.2, za2), "wainscot")
+	Props.block(g, Vector3(x1, 0.0, 10.15), Vector3(x1 + 0.045, 0.14, z_low), "beam")
+	# casing over the hall floor's edge and the wall end exposed at the stair head (only the heights that show)
+	Props.block(g, Vector3(nx, 3.45, z_high), Vector3(x1 + 0.03, UP_Y, 10.15), "beam")
+	Props.block(g, Vector3(nx, 2.95, 9.85), Vector3(x1 + 0.03, 3.45, 10.15), "beam")
 	# wall rail on the west wall with iron brackets
 	Props.strut(g, Vector3(0.24, 0.98, z_low), Vector3(0.24, rise + 0.98, z_high), 0.045, "furniture", true)
 	for t2: float in [0.1, 0.4, 0.7, 0.95]:
 		Props.block(g, Vector3(0.15, lerpf(0.0, rise, t2) + 0.9, lerpf(z_low, z_high, t2) - 0.02), Vector3(0.24, lerpf(0.0, rise, t2) + 0.94, lerpf(z_low, z_high, t2) + 0.02), "iron")
-	# wainscot following the flight (west wall full length, east wall up to the door) with a chair rail
-	var mid_z: float = (z_low + z_high) * 0.5
-	var mid_y: float = rise * 0.5
+	# wainscot following the flight up the west wall, with a chair rail and skirting
 	Props.obox(g, Vector3(0.165, mid_y + 0.57, mid_z), Vector3(0.03, 0.9, slope_len - 0.1), "wainscot_matte", Vector3(ang, 0, 0))
 	Props.obox(g, Vector3(0.18, mid_y + 1.14, mid_z), Vector3(0.06, 0.07, slope_len - 0.1), "beam", Vector3(ang, 0, 0))
 	Props.obox(g, Vector3(0.17, mid_y + 0.09, mid_z), Vector3(0.045, 0.14, slope_len - 0.1), "beam", Vector3(ang, 0, 0))
-	var ez: float = (14.3 + z_high) * 0.5
-	var el: float = (14.3 - z_high) / cos(deg_to_rad(ang))
-	var ey: float = rise * (z_low - ez) / (z_low - z_high)
-	Props.obox(g, Vector3(2.835, ey + 0.57, ez), Vector3(0.03, 0.9, el - 0.1), "wainscot_matte", Vector3(ang, 0, 0))
-	Props.obox(g, Vector3(2.82, ey + 1.14, ez), Vector3(0.06, 0.07, el - 0.1), "beam", Vector3(ang, 0, 0))
-	# sconce on the west wall, mid-flight
-	Props.wall_lamp(g, Vector3(0.16, 3.7, 12.5), -90.0)
-	# pictures stepping up the west wall (yaw -90) and the east wall (yaw 90)
-	Props.painting(g, Vector3(0.16, 2.15, 14.2), -90.0, 0.42, 0.55, "portrait", 0, "frame_walnut")
-	Props.painting(g, Vector3(0.16, 2.85, 13.3), -90.0, 0.7, 0.5, "landscape", 1, "frame_gold")
-	Props.painting(g, Vector3(0.16, 3.62, 12.3), -90.0, 0.4, 0.32, "photo", 0, "frame_black", 2.0, true)
-	Props.painting(g, Vector3(0.16, 4.35, 11.3), -90.0, 0.6, 0.45, "hunting", 1, "frame_walnut")
-	Props.painting(g, Vector3(0.16, 5.08, 10.45), -90.0, 0.4, 0.5, "portrait", 1, "frame_gold", -1.5)
-	Props.painting(g, Vector3(2.84, 3.15, 13.0), 90.0, 0.4, 0.5, "licence", 0, "frame_black")
-	Props.painting(g, Vector3(2.84, 4.55, 11.2), 90.0, 0.6, 0.42, "landscape", 0, "frame_walnut")
-	Props.painting(g, Vector3(2.84, 3.4, 15.1), 90.0, 0.55, 0.4, "stilllife", 1, "frame_gold")   # over the door
-	Props.cobweb(g, Vector3(0.15, UP_TOP - 0.01, 10.15), 0.0, 0.7)
+	# sconces: mid-flight on the west wall, and over the vestibule on the east wall
+	Props.wall_lamp(g, Vector3(0.16, _stair_y(12.1) + 1.75, 12.1), -90.0)
+	Props.wall_lamp(g, Vector3(STAIR_X1 - 0.16, 2.3, 12.9), 90.0)
+	# pictures stepping up the west wall (yaw -90) and the well's east wall (yaw 90), one over the door
+	var ex: float = STAIR_X1 - 0.16
+	Props.painting(g, Vector3(0.16, _stair_y(13.5) + 1.65, 13.5), -90.0, 0.42, 0.55, "portrait", 0, "frame_walnut")
+	Props.painting(g, Vector3(0.16, _stair_y(12.7) + 1.65, 12.7), -90.0, 0.7, 0.5, "landscape", 1, "frame_gold")
+	Props.painting(g, Vector3(0.16, _stair_y(11.5) + 1.6, 11.5), -90.0, 0.4, 0.32, "photo", 0, "frame_black", 2.0, true)
+	Props.painting(g, Vector3(0.16, _stair_y(10.6) + 1.7, 10.6), -90.0, 0.6, 0.45, "hunting", 1, "frame_walnut")
+	Props.painting(g, Vector3(0.16, _stair_y(9.7) + 1.65, 9.7), -90.0, 0.4, 0.5, "portrait", 1, "frame_gold", -1.5)
+	Props.painting(g, Vector3(ex, 1.75, 11.3), 90.0, 0.55, 0.42, "licence", 0, "frame_black")
+	Props.painting(g, Vector3(ex, 3.2, 12.0), 90.0, 0.7, 0.5, "landscape", 0, "frame_walnut")
+	Props.painting(g, Vector3(ex, 4.45, 11.4), 90.0, 0.42, 0.55, "portrait", 2, "frame_gold", 1.0)
+	Props.painting(g, Vector3(ex, 3.35, 13.4), 90.0, 0.4, 0.32, "photo", 1, "frame_black", 0.0, true)
+	Props.painting(g, Vector3(ex, 3.3, 15.1), 90.0, 0.55, 0.4, "stilllife", 1, "frame_gold")   # over the door
+	# the vestibule: a coat rack in its north-east corner, cobwebs high in the well
+	Props.coat_rack(g, Vector3(STAIR_X1 - 0.45, 0, 10.5))
+	Props.cobweb(g, Vector3(STAIR_X1 - 0.15, UP_TOP - 0.01, 15.85), 180.0, 0.9)
+	Props.cobweb(g, Vector3(0.15, UP_TOP - 0.01, 15.85), 90.0, 0.7)
 
 
 ## The Helvetia cellar: stone ribs and corbels under the brick soffit, pillar plinths, puddles, a drain, the
@@ -646,6 +760,7 @@ func _dress_cellar() -> void:
 	Props.cable(g, Vector3(31.0, cl, 22.5), Vector3(33.0, cl, 22.5), 0.04, 0.015, 5)
 	Props.cable(g, Vector3(27.0, cl, 22.5), Vector3(26.5, cl, 27.5), 0.06, 0.015, 8)
 	Props.cable(g, Vector3(33.0, cl, 22.5), Vector3(33.5, cl, 27.5), 0.06, 0.015, 8)
+	Props.cable(g, Vector3(33.5, cl, 27.5), Vector3(30.35, cl, 28.7), 0.05, 0.015, 7)   # to the ninth machine's bulb
 	for bp: Vector3 in CELLAR_BULBS:
 		Props.pendant(g, bp, top - 0.02, _cellar_lit, "tin")
 	Props.bake(_cellar_lit)
@@ -835,7 +950,6 @@ func _dress_taproom() -> void:
 	Props.bench(g, Vector3(14.5, 0, 15.45), 0.0, 3.0)
 	Props.block(g, Vector3(9.8, 0.012, 1.8), Vector3(14.2, 0.025, 4.8), "rug", false)
 	Props.coat_rack(g, Vector3(22.6, 0, 15.3))
-	Props.coat_rack(g, Vector3(3.6, 0, 10.6))
 	# pictures and lamps (the south wall east of the benches is kept for story items)
 	Props.painting(g, Vector3(3.0, 2.2, 0.16), 180.0, 0.7, 0.5, "landscape", 0, "frame_gold")
 	Props.painting(g, Vector3(21.5, 2.3, 0.16), 180.0, 0.9, 0.6, "hunting", 0, "frame_walnut")
@@ -903,7 +1017,7 @@ func _dress_upstairs() -> void:
 		Props.cyl(g, ns + Vector3(0.05, 0.7, 0.02), 0.012, 0.1, "candle")
 	for p: Vector3 in [Vector3(4.0, UP_Y + 2.2, 3.0), Vector3(12.0, UP_Y + 2.2, 3.0), Vector3(20.0, UP_Y + 2.2, 3.0), Vector3(12.0, UP_Y + 2.2, 8.0)]:
 		Props.lantern(g, p, UP_TOP - 0.24)
-	Props.lantern(g, Vector3(1.5, 5.7, 13.0), UP_TOP)
+	Props.lantern(g, Vector3(3.2, 4.6, 12.5), UP_TOP)   # in the stairwell
 
 
 func _dress_stable() -> void:
@@ -965,14 +1079,14 @@ func _dress_exterior() -> void:
 		Props.obox(g, Vector3(x0 + 1.5, UP_Y + 1.5, -0.22), Vector3(0.18, 3.6, 0.08), "beam", Vector3(0, 0, 40 if i % 2 == 0 else -40))
 	# pitched roofs with snow (inn, stair tower, stable) and the chimney stack
 	_gable(g, Vector3(-0.6, UP_TOP + 0.2, -0.8), Vector3(24.6, UP_TOP + 0.2, 10.8), 3.4)
-	_gable(g, Vector3(2.6, TAP_H + 0.3, 9.8), Vector3(24.6, TAP_H + 0.3, 16.6), 1.0)
+	_gable(g, Vector3(STAIR_X1 + 0.1, TAP_H + 0.3, 9.8), Vector3(24.6, TAP_H + 0.3, 16.6), 1.0)
 	_gable(g, Vector3(5.6, STABLE_H + 0.2, 21.6), Vector3(24.6, STABLE_H + 0.2, 34.4), 3.2)
 	Props.block(g, Vector3(11.3, UP_TOP, 0.0), Vector3(12.7, 11.4, 1.0), "stone")
 	Props.block(g, Vector3(11.2, 11.3, -0.1), Vector3(12.8, 11.5, 1.1), "snow")
 	Props.smoke(g, Vector3(12.0, 11.6, 0.5), 0.3, 1.2, 14)
 	# porch posts' snow caps and drifts against the walls
 	for d: Array in [[Vector3(-1.2, 0, 6), Vector3(2.4, 0.9, 7)], [Vector3(25.4, 0, 3), Vector3(2.0, 0.8, 5)], [Vector3(12, 0, -1.0), Vector3(6, 0.7, 1.8)],
-			[Vector3(4, 0, 17.5), Vector3(5, 1.0, 2.2)], [Vector3(25.3, 0.25, 27), Vector3(2.2, 0.8, 8)], [Vector3(14, 0, 35.4), Vector3(9, 1.0, 2.2)],   # kept above the cellar ceiling
+			[Vector3(4, 0, 17.5), Vector3(5, 1.0, 2.2)], [Vector3(25.3, 0.25, 27), Vector3(2.2, 0.8, 8)], [Vector3(11, 0, 35.4), Vector3(8, 1.0, 2.2)],   # kept above the cellar ceiling
 			[Vector3(4.6, 0, 28), Vector3(2.4, 1.0, 9)], [Vector3(-3, 0, -6), Vector3(5, 0.6, 4)], [Vector3(32, 0, 7), Vector3(6, 0.8, 5)]]:
 		Props.snow_drift(g, d[0], d[1])
 	Props.block(g, Vector3(1.5, UP_Y, -2.4), Vector3(6.5, UP_Y + 0.08, -0.15), "snow", false)
@@ -984,7 +1098,8 @@ func _dress_exterior() -> void:
 	Props.fence(g, Vector3(-20, 0, -13), Vector3(-13.5, 0, -13), 3)
 	Props.fence(g, Vector3(-8, 0, -13), Vector3(30, 0, -13), 4)
 	Props.fence(g, Vector3(-20, 0, -4), Vector3(-20, 0, 40), 5)
-	Props.fence(g, Vector3(-8, 0, 40), Vector3(34, 0, 40), 6)
+	Props.fence(g, Vector3(-8, 0, 40), Vector3(15.2, 0, 40), 6)
+	Props.fence(g, Vector3(21.8, 0, 40), Vector3(34, 0, 40), 6)
 	Props.fence(g, Vector3(34, 0, 40), Vector3(34, 0, 20), 7)
 	var trees: Array = [Vector3(-16, 0, -22), Vector3(-26, 0, 8), Vector3(-15, 0, 30), Vector3(30, 0, -20), Vector3(55, 0, 30),
 		Vector3(5, 0, 48), Vector3(-30, 0, -30), Vector3(40, 0, -25), Vector3(-24, 0, 50), Vector3(60, 0, -10)]
@@ -1011,6 +1126,46 @@ func _dress_exterior() -> void:
 	motes.set("areas", [AABB(Vector3(1, 0.3, 1), Vector3(22, 3.0, 14)), AABB(Vector3(7, 0.3, 23), Vector3(16, 6, 10))] as Array[AABB])
 	motes.set("motes", true)
 	map_root.add_child(motes)
+
+
+## The carters' road behind the stable's great doors (the campaign exfil, T-033: the doors fall outward at
+## round 10 and the squad walks out; the Map 0 -> Map 1 cutscene looks down this road). Cutscene-only, so all of
+## it is dressing: a trodden track south through a gap in the yard fence, bending east toward Kaltenbrunn, with
+## gateposts and a signpost at the gap, drifts, dead trees, and low snowy rises on the horizon (the ground slab
+## ends at z 75 / x 70; the rises hide its edge behind the fog). Cheap: ~40 primitives.
+func _dress_carters_road() -> void:
+	var g: Node3D = Props.group(dress, "CartersRoad", Vector3.ZERO)
+	# the track: out of the doorway, through the fence gap, then a bend to the south-east
+	Props.block(g, Vector3(16.0, 0.0, 34.2), Vector3(20.2, 0.018, 41.5), "snow_trodden", false)
+	Props.block(g, Vector3(16.3, 0.0, 41.0), Vector3(20.5, 0.018, 48.0), "snow_trodden", false)
+	Props.obox(g, Vector3(23.5, 0.009, 52.0), Vector3(4.4, 0.018, 12.0), "snow_trodden", Vector3(0, 40, 0))
+	Props.obox(g, Vector3(32.0, 0.009, 60.5), Vector3(4.6, 0.018, 16.0), "snow_trodden", Vector3(0, 55, 0))
+	Props.obox(g, Vector3(45.0, 0.009, 68.0), Vector3(5.0, 0.018, 22.0), "snow_trodden", Vector3(0, 68, 0))
+	# ruts and a cart's furrow where the doors land
+	for dx: float in [-0.9, 0.9]:
+		Props.block(g, Vector3(18.0 + dx - 0.08, 0.012, 34.3), Vector3(18.0 + dx + 0.08, 0.026, 47.5), "dirt", false)
+	# gateposts at the fence gap, a signpost beside them, a lantern post that has gone out
+	for gx: float in [15.2, 21.8]:
+		Props.block(g, Vector3(gx - 0.14, 0, 39.86), Vector3(gx + 0.14, 1.9, 40.14), "beam")
+		Props.block(g, Vector3(gx - 0.2, 1.9, 39.8), Vector3(gx + 0.2, 2.05, 40.2), "snow", false)
+	Props.signpost(g, Vector3(22.9, 0, 41.4), [["KALTENBRUNN  9 km", 120.0], ["WILCZA GÓRA  6 km", -150.0], ["GASTHAUS ZUM KREUZWEG", 0.0]])
+	Props.cyl(g, Vector3(14.4, 1.3, 41.0), 0.07, 2.6, "beam", Vector3(0, 0, 3.0))
+	Props.block(g, Vector3(14.2, 2.5, 40.8), Vector3(14.6, 2.9, 41.2), "window_dark")
+	# drifts along the stable's south wall and the fence, a broken cart wheel in the snow
+	Props.snow_drift(g, Vector3(23.5, 0, 35.3), Vector3(4.5, 0.9, 2.0))
+	Props.snow_drift(g, Vector3(8, 0, 41.2), Vector3(12, 0.8, 2.4))
+	Props.snow_drift(g, Vector3(29, 0, 41.0), Vector3(9, 0.9, 2.2))
+	Props.snow_drift(g, Vector3(24.5, 0, 46.0), Vector3(5, 0.6, 3.0))
+	Props.cyl(g, Vector3(13.0, 0.35, 37.2), 0.55, 0.08, "beam", Vector3(70, 20, 0))
+	# dead trees along the road and the horizon's rises (half-buried domes of snow past the fog)
+	Props.dead_tree(g, Vector3(26, 0, 45), 131, 7.0)
+	Props.dead_tree(g, Vector3(12, 0, 55), 132, 8.5)
+	Props.dead_tree(g, Vector3(38, 0, 52), 133, 6.5)
+	Props.dead_tree(g, Vector3(22, 0, 66), 134, 9.0)
+	Props.dead_tree(g, Vector3(52, 0, 60), 135, 7.5)
+	for r: Array in [[Vector3(10, -3.0, 92), Vector3(130, 16, 50)], [Vector3(75, -3.0, 70), Vector3(90, 12, 60)],
+			[Vector3(100, -3.0, -8), Vector3(50, 14, 150)], [Vector3(-40, -3.0, 95), Vector3(90, 10, 50)]]:
+		Props._noshadow(Props.ball(g, r[0], r[1], "snow"))
 
 
 ## A gable roof (ridge along X) over the rectangle a..b (a.y = eave height), with a snow layer on top.
@@ -1185,8 +1340,9 @@ func build_environment() -> void:
 	_lamp("TapLamp3", Vector3(19.5, 2.45, 13.0), warm, 2.38, 10.0, false, true, 0.08)
 	_lamp("TapLamp4", Vector3(14.0, 2.45, 8.0), warm, 2.21, 10.0, false, true, 0.08)
 	_lamp("BarLamp", Vector3(5.0, 2.4, 4.5), warm, 1.70, 7.0, false, true, 0.1)
-	_lamp("StairLamp", Vector3(1.5, 5.55, 13.0), warm, 1.70, 9.0, false, true, 0.08)
-	_lamp("StairSconce", Vector3(0.55, 3.75, 12.5), warm, 0.75, 5.0, false, true, 0.1)
+	_lamp("StairLamp", Vector3(3.2, 4.45, 12.5), warm, 1.70, 10.0, false, true, 0.08)
+	_lamp("StairSconce", Vector3(0.55, _stair_y(12.1) + 1.8, 12.1), warm, 0.75, 5.0, false, true, 0.1)
+	_lamp("StairSconce2", Vector3(STAIR_X1 - 0.55, 2.35, 12.9), warm, 0.75, 5.0, false, true, 0.1)
 	_lamp("Room1Lamp", Vector3(4.0, UP_Y + 2.05, 3.0), warm, 1.70, 8.0, false, true, 0.08)
 	_lamp("Room2Lamp", Vector3(12.0, UP_Y + 2.05, 3.0), warm, 1.53, 8.0, false, true, 0.08)
 	_lamp("Room3Lamp", Vector3(20.0, UP_Y + 2.05, 3.0), warm, 1.70, 8.0, false, true, 0.08)
@@ -1301,7 +1457,7 @@ func build_gameplay() -> void:
 	# doors
 	var d1: Node3D = _scripted(Node3D.new(), "res://gravelight/world/door.gd", "Door_Upstairs", {
 		"door_id": &"door_upstairs", "opens_zone": &"UPSTAIRS", "cost": 750, "size": Vector3(1.6, DOOR_H, 0.25), "label": "Upstairs"})
-	d1.position = Vector3(3.0, 0, 15.1)
+	d1.position = Vector3(STAIR_X1, 0, 15.1)
 	d1.rotation.y = deg_to_rad(90)
 	gameplay.add_child(d1)
 	var d2: Node3D = _scripted(Node3D.new(), "res://gravelight/world/door.gd", "Door_Stable", {
@@ -1336,7 +1492,7 @@ func build_gameplay() -> void:
 	var zones: Array = [
 		[&"TAPROOM", Vector3(12, 0, 8), Vector3(24, 3.5, 16)],
 		[&"UPSTAIRS", Vector3(12, UP_Y - 0.2, 5), Vector3(24, 3.2, 10)],
-		[&"UPSTAIRS", Vector3(1.5, 0, 13), Vector3(3, 7, 6)],
+		[&"UPSTAIRS", Vector3(STAIR_X1 * 0.5, 0, 13), Vector3(STAIR_X1, 7, 6)],
 		[&"STABLE", Vector3(15, 0, 28), Vector3(18, 7, 12)],
 		[&"STABLE", Vector3(20, 0, 19), Vector3(4, 3, 6)],
 	]
@@ -1370,7 +1526,7 @@ func build_gameplay() -> void:
 		gameplay.add_child(note)
 
 
-## Door 3 (1500) -> the Helvetia cellar: all 8 perk machines, the cellar lever (Map 0's power), a coal chute
+## Door 3 (1500) -> the Helvetia cellar: all 9 perk machines, the cellar lever (Map 0's power), a coal chute
 ## that starts spawning at round 6, and the power-on burst points. Machines stand 1.1 m+ off the walls so the
 ## fine-print panels on their backs can be read (JINGLES.md section 0.3). T&C M2, DECISIONS T-027.
 func build_cellar_gameplay() -> void:

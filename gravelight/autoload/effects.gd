@@ -1,10 +1,15 @@
 extends Node3D
-## Pooled, cheap greybox VFX: bullet impacts, blood puffs, tracers, explosions. Presentation only.
+## Pooled, cheap greybox VFX: bullet impacts, blood puffs, tracers, explosions, Overclock static bursts.
+## Presentation only.
 
 const IMPACTS: int = 48
 const BLOOD: int = 16
 const TRACERS: int = 12
 const BLASTS: int = 4
+const STATICS: int = 4
+const STATIC_LIFE: float = 0.42
+const STATIC_TEAL: Color = Color(0.25, 0.85, 0.8)
+const STATIC_VIOLET: Color = Color(0.72, 0.42, 1.0)
 
 var _impacts: Array[MeshInstance3D] = []
 var _impact_life: Array[float] = []
@@ -13,10 +18,13 @@ var _tracers: Array[MeshInstance3D] = []
 var _tracer_life: Array[float] = []
 var _blasts: Array[Node3D] = []
 var _blast_life: Array[float] = []
+var _statics: Array[Node3D] = []
+var _static_life: Array[float] = []
 var _ni: int = 0
 var _nb: int = 0
 var _nt: int = 0
 var _nx: int = 0
+var _ns: int = 0
 
 
 func _ready() -> void:
@@ -94,6 +102,64 @@ func _ready() -> void:
 		add_child(root)
 		_blasts.append(root)
 		_blast_life.append(0.0)
+	# Overclock Cordial's static burst: a flat ring that races out to the burst radius, a core flash, sparks
+	# and a violet light (WEAPONS.md section 20.2 "a teal-violet ring pulse").
+	var ring_mat: StandardMaterial3D = StandardMaterial3D.new()
+	ring_mat.albedo_color = Color(STATIC_TEAL, 0.9)
+	ring_mat.emission_enabled = true
+	ring_mat.emission = STATIC_TEAL
+	ring_mat.emission_energy_multiplier = 2.5
+	ring_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	ring_mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	ring_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	ring_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	var ring_mesh: TorusMesh = TorusMesh.new()
+	ring_mesh.inner_radius = 0.9
+	ring_mesh.outer_radius = 1.0
+	ring_mesh.rings = 48
+	ring_mesh.ring_segments = 6
+	var spark_mesh: BoxMesh = BoxMesh.new()
+	spark_mesh.size = Vector3(0.03, 0.03, 0.2)
+	spark_mesh.material = ring_mat
+	for i: int in STATICS:
+		var root: Node3D = Node3D.new()
+		var ring_: MeshInstance3D = MeshInstance3D.new()
+		ring_.name = "Ring"
+		ring_.mesh = ring_mesh
+		ring_.material_override = ring_mat.duplicate()
+		ring_.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(ring_)
+		var core: MeshInstance3D = MeshInstance3D.new()
+		core.name = "Core"
+		core.mesh = sphere
+		core.material_override = ring_mat.duplicate()
+		core.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(core)
+		var sparks: CPUParticles3D = CPUParticles3D.new()
+		sparks.name = "Sparks"
+		sparks.emitting = false
+		sparks.one_shot = true
+		sparks.amount = 36
+		sparks.lifetime = 0.35
+		sparks.explosiveness = 1.0
+		sparks.mesh = spark_mesh
+		sparks.direction = Vector3(0, 0.3, 0)
+		sparks.spread = 180.0
+		sparks.initial_velocity_min = 6.0
+		sparks.initial_velocity_max = 14.0
+		sparks.gravity = Vector3(0, -4.0, 0)
+		sparks.scale_amount_min = 0.5
+		sparks.scale_amount_max = 1.6
+		root.add_child(sparks)
+		var light: OmniLight3D = OmniLight3D.new()
+		light.name = "Light"
+		light.light_color = STATIC_VIOLET
+		light.omni_range = 9.0
+		root.add_child(light)
+		root.hide()
+		add_child(root)
+		_statics.append(root)
+		_static_life.append(0.0)
 
 
 func _process(delta: float) -> void:
@@ -118,6 +184,24 @@ func _process(delta: float) -> void:
 			(_blasts[i].get_node("Light") as OmniLight3D).light_energy = k * 6.0
 			if _blast_life[i] <= 0.0:
 				_blasts[i].hide()
+	for i: int in STATICS:
+		if _static_life[i] > 0.0:
+			_static_life[i] -= delta
+			var k: float = clampf(_static_life[i] / STATIC_LIFE, 0.0, 1.0)   # 1 at birth -> 0
+			var grow: float = 1.0 - k * k
+			var radius: float = float(_statics[i].get_meta("radius", 3.0))
+			var ring_: MeshInstance3D = _statics[i].get_node("Ring")
+			ring_.scale = Vector3(1, 1, 1) * maxf(0.05, radius * grow)
+			var tint: Color = STATIC_TEAL.lerp(STATIC_VIOLET, 1.0 - k)
+			var rm: StandardMaterial3D = ring_.material_override
+			rm.albedo_color = Color(tint, k * 0.9)
+			rm.emission = tint
+			var core: MeshInstance3D = _statics[i].get_node("Core")
+			core.scale = Vector3.ONE * lerpf(0.15, 0.9, 1.0 - k) * 0.5
+			(core.material_override as StandardMaterial3D).albedo_color = Color(STATIC_VIOLET, k * k * 0.8)
+			(_statics[i].get_node("Light") as OmniLight3D).light_energy = k * 5.0
+			if _static_life[i] <= 0.0:
+				_statics[i].hide()
 
 
 func impact(pos: Vector3, normal: Vector3) -> void:
@@ -165,3 +249,17 @@ func explosion(pos: Vector3, radius: float) -> void:
 	b.set_meta("radius", radius)
 	b.global_position = pos
 	b.show()
+
+
+## Overclock Cordial's static burst at `pos`, racing out to `radius` (WEAPONS.md section 20.2).
+func static_burst(pos: Vector3, radius: float) -> void:
+	var b: Node3D = _statics[_ns]
+	_static_life[_ns] = STATIC_LIFE
+	_ns = (_ns + 1) % STATICS
+	b.set_meta("radius", radius)
+	b.global_position = pos
+	b.show()
+	(b.get_node("Ring") as MeshInstance3D).scale = Vector3.ONE * 0.05   # a TorusMesh already lies flat (XZ)
+	var sparks: CPUParticles3D = b.get_node("Sparks")
+	sparks.restart()
+	sparks.emitting = true

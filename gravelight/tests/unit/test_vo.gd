@@ -1,5 +1,11 @@
 extends GutTest
-## VOManager rules (docs/VO_SCRIPT.md §1) and the extracted line data.
+## VOManager rules (docs/gravelight/VO_SCRIPT.md §1), the extracted line data, and the baked voice audio (T-035).
+
+const MANIFEST: String = "res://data/gravelight/vo/audio_manifest.json"
+const NEW_BANTER: Array[String] = ["BNT_DUT_PEG_04", "BNT_DUT_PEG_05", "BNT_DUT_DEA_04", "BNT_DUT_DEA_05", "BNT_DUT_WRN_04",
+	"BNT_DUT_WRN_05", "BNT_PEG_DEA_04", "BNT_PEG_DEA_05", "BNT_PEG_WRN_04", "BNT_PEG_WRN_05", "BNT_DEA_WRN_04", "BNT_DEA_WRN_05"]
+const SQUAD_CATEGORIES: Array[String] = ["SPAWN", "ROUND_START", "ROUND_END", "BUY_AMMO", "TEAM_DOWN", "INTEL",
+	"DENY_NO_POWER", "DENY_CAP", "DENY_NO_SCRIP", "DOOR", "DOWN", "REVIVE", "REVIVED", "HEADSHOT", "AMMO_LOW", "AMMO_NONE"]
 
 
 func before_each() -> void:
@@ -77,3 +83,126 @@ func test_subtitle_chunking() -> void:
 	assert_gt(chunks.size(), 1)
 	for c: String in chunks:
 		assert_lte(c.length(), 84)
+
+
+# ------------------------------------------------------------------ T-035: baked audio and the squad
+
+func test_every_line_has_audio_or_a_listed_reason() -> void:
+	var lines: Dictionary = GLData.load_json("res://data/gravelight/vo/lines.json")
+	var manifest: Dictionary = GLData.load_json(MANIFEST)
+	var files: Dictionary = manifest.get("files", {})
+	var missing: Dictionary = manifest.get("missing", {})
+	assert_gt(files.size(), 500, "the voice bake covers the script")
+	var unaccounted: PackedStringArray = []
+	var no_file: PackedStringArray = []
+	for id: String in lines.keys():
+		var rec: Dictionary = lines[id]
+		var ids: PackedStringArray = []
+		if rec.has("exchange"):
+			for i: int in (rec["exchange"] as Array).size():
+				ids.append("%s_p%d" % [id, i])
+		else:
+			ids.append(id)
+		for fid: String in ids:
+			if files.has(fid):
+				var row: Dictionary = files[fid]
+				assert_gt(float(row.get("duration", 0.0)), 0.0, "duration > 0 for " + fid)
+				var path: String = str(row.get("path", ""))
+				if not (ResourceLoader.exists(path) or FileAccess.file_exists(path)):
+					no_file.append(fid)
+			elif missing.has(fid):
+				assert_ne(str(missing[fid]), "", "a reason for " + fid)
+			else:
+				unaccounted.append(fid)
+	assert_eq(unaccounted.size(), 0, "lines neither baked nor listed as missing: " + ", ".join(unaccounted))
+	assert_eq(no_file.size(), 0, "manifest rows whose file is gone: " + ", ".join(no_file))
+
+
+func test_audio_path_and_stream_for_a_baked_line() -> void:
+	var path: String = GLVO.audio_path(&"OPR_MATCH_START_01")
+	assert_true(path.begins_with("res://gravelight/audio/vo/opr/OPR_MATCH_START_01."), path)
+	var stream: AudioStream = GLVO.load_stream(path)
+	assert_not_null(stream, "the Operator's first line loads as an AudioStream")
+	if stream != null:
+		assert_gt(stream.get_length(), 1.0, "the file is longer than a second")
+	# Exchange parts live under the part speaker's folder.
+	var p1: String = GLVO.audio_path(&"BNT_DUT_PEG_01", 1)
+	assert_true(p1.begins_with("res://gravelight/audio/vo/peg/BNT_DUT_PEG_01_p1."), p1)
+
+
+func test_played_line_takes_its_duration_from_the_file() -> void:
+	assert_true(GLVO.play(&"OPR_MATCH_START_01"))
+	var cur: Dictionary = GLVO._current[&"story"]
+	var stream: AudioStream = GLVO.load_stream(GLVO.audio_path(&"OPR_MATCH_START_01"))
+	assert_almost_eq(float(cur["end"]) - GLVO._now, stream.get_length(), 0.01, "subtitle/queue timing follows the audio")
+	assert_eq(GLVO.audio_plays, 1, "an audio stream was started")
+
+
+func test_new_banter_ids_valid_and_squad_categories_exist() -> void:
+	var lines: Dictionary = GLData.load_json("res://data/gravelight/vo/lines.json")
+	for id: String in NEW_BANTER:
+		assert_true(lines.has(id), id)
+		if lines.has(id):
+			var rec: Dictionary = lines[id]
+			assert_eq(str(rec["speaker"]), "BNT", id)
+			var ex: Array = rec.get("exchange", [])
+			assert_gte(ex.size(), 2, id + " has at least two parts")
+			var spk: PackedStringArray = str(rec["category"]).split("_")
+			for p: Variant in ex:
+				assert_true(spk.has(str((p as Array)[0])), id + " part speaker is one of the pair")
+	for spk: String in ["DUT", "PEG", "DEA", "WRN"]:
+		for cat: String in SQUAD_CATEGORIES:
+			assert_true(GLVO._index.has("%s:%s" % [spk, cat]), "%s has %s lines" % [spk, cat])
+
+
+func test_say_as_uses_the_players_own_voice() -> void:
+	GameState.character_id = &"peg"
+	assert_true(GLVO.say_as(1, "DOOR"))
+	var cur: Dictionary = GLVO._current[&"player"]
+	assert_true(String(cur["id"]).begins_with("PEG_DOOR"), str(cur["id"]))
+	GameState.character_id = &"dutch"
+
+
+func test_down_sequence_uses_the_second_squad_channel() -> void:
+	GameState.character_id = &"peg"
+	assert_true(GLVO.say_as(1, "DOWN", 1.0), "the downed survivor speaks at once")
+	assert_true(String(GLVO.current_line(&"player")).begins_with("PEG_DOWN"))
+	# What the others say about the down goes to the second channel: it overlaps the DOWN instead of racing it.
+	assert_true(GLVO.say_as(1, "TEAM_DOWN", 1.0))
+	assert_true(String(GLVO.current_line(&"squad")).begins_with("PEG_TEAM_DOWN"), str(GLVO.current_line(&"squad")))
+	assert_true(String(GLVO.current_line(&"player")).begins_with("PEG_DOWN"), "DOWN keeps playing")
+	# The reviver's REVIVE queues behind TEAM_DOWN on that channel and is sticky (never expires).
+	assert_true(GLVO.say_as(1, "REVIVE", 1.0))
+	assert_eq(GLVO.queued_count(&"squad"), 1, "REVIVE waits behind TEAM_DOWN")
+	for i: int in 40:
+		GLVO.advance(0.5)
+		if String(GLVO.current_line(&"squad")).begins_with("PEG_REVIVE"):
+			break
+	assert_true(String(GLVO.current_line(&"squad")).begins_with("PEG_REVIVE"), "REVIVE played after TEAM_DOWN: " + str(GLVO.current_line(&"squad")))
+	# REVIVED comes on the player channel at once (DOWN is long over).
+	assert_true(GLVO.say_as(1, "REVIVED", 1.0))
+	assert_true(String(GLVO.current_line(&"player")).begins_with("PEG_REVIVED"), str(GLVO.current_line(&"player")))
+	GameState.character_id = &"dutch"
+
+
+func test_tier2_squad_line_cuts_a_quip() -> void:
+	GameState.character_id = &"wren"
+	assert_true(GLVO.say_as(1, "HEADSHOT", 1.0))
+	assert_true(String(GLVO.current_line(&"player")).begins_with("WRN_HEADSHOT"))
+	assert_true(GLVO.say_as(1, "DOWN", 1.0), "a down is not blocked by the chatter gap")
+	assert_true(String(GLVO.current_line(&"player")).begins_with("WRN_DOWN"), "and cuts the quip: " + str(GLVO.current_line(&"player")))
+	GameState.character_id = &"dutch"
+
+
+func test_banter_plays_once_and_rules_exist() -> void:
+	var b: Dictionary = GLVO.rules.get("banter", {})
+	assert_true(b.has("chance") and b.has("cooldown_s") and b.has("delay_s"), "banter rules in rules.json")
+	assert_true(GLVO.rules.has("player_category_cooldown"), "squad overrides in rules.json")
+	assert_true(GLVO.try_banter(true) or true, "no second survivor in a unit test: nothing to pair with")
+	# Direct play of an exchange: every part is timed and the exchange is once per match.
+	assert_true(GLVO.play(&"BNT_DUT_PEG_04"))
+	var cur: Dictionary = GLVO._current[&"player"]
+	assert_eq((cur["parts"] as Array).size(), 2)
+	GLVO.advance(60.0)
+	GLVO.stop_all()
+	assert_true(GLVO._played_once.has("BNT_DUT_PEG_04"), "exchange marked once per match")

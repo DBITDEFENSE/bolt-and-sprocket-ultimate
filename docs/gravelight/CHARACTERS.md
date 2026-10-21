@@ -606,9 +606,70 @@ The Crucible plaque line `gl.map01.deacon.plaque.01` is in `docs/gravelight/LORE
 
 ---
 
+## 8. Squad callouts for the voice pass (T-035)
+
+The categories VO_SCRIPT §8 expected but nobody had written: spawn, round start and end, ammo, a teammate down, intel, and the three perk refusals (`DENY_NO_POWER` / `DENY_CAP` / `DENY_NO_SCRIP`, from `perk_denied` reasons `no_power` / `cap` / `no_scrip`). Same rules as the other squad lines: tier 1, shuffle bag, cooldowns in `data/gravelight/vo/rules.json`. Bots speak these in their own survivor's voice, positioned at their body.
+
+| ID | Line |
+|---|---|
+| `DUT_SPAWN_01` | "Kaltenbrunn. Smells like the mill with the lights off. Let's get to work." |
+| `DUT_SPAWN_02` | "All right. Boots on, heads down. Nobody dies before payday." |
+| `DUT_ROUND_START_01` | "Here they come. Same shift, different faces." |
+| `DUT_ROUND_START_02` | "Punch in, fellas. Clock's running." |
+| `DUT_ROUND_END_01` | "Whistle. Breathe while you can." |
+| `DUT_ROUND_END_02` | "That's the round. Anybody hurt? Anybody care?" |
+| `DUT_BUY_AMMO_01` | "Topped off. Costs more than beer, hits about the same." |
+| `DUT_TEAM_DOWN_01` | "Man down! Hold on, I'm coming!" |
+| `DUT_TEAM_DOWN_02` | "Somebody's on the floor. Cover me, I'll get 'em." |
+| `DUT_INTEL_01` | "Paper. Somebody wrote this down for a reason. Hang onto it." |
+| `DUT_DENY_NO_POWER_01` | "Dead as a doornail. Needs juice." |
+| `DUT_DENY_CAP_01` | "I'm full up. Any more of this stuff and I'll float." |
+| `DUT_DENY_NO_SCRIP_01` | "Short again. Story of my paycheck." |
+| `PEG_SPAWN_01` | "Kaltenbrunn. Right. Weapons ready, manners optional." |
+| `PEG_SPAWN_02` | "Everyone stay close and try not to die. It's such a bother for the paperwork." |
+| `PEG_ROUND_START_01` | "Company. Do form a queue, there's good chaps." |
+| `PEG_ROUND_START_02` | "And we're on again. Splendid." |
+| `PEG_ROUND_END_01` | "Quiet. One does cherish these little intervals." |
+| `PEG_ROUND_END_02` | "That's the lot. Reload, regroup, and for heaven's sake someone find the tea." |
+| `PEG_BUY_AMMO_01` | "Restocked. The Crown will reimburse me. Eventually." |
+| `PEG_TEAM_DOWN_01` | "Someone's down. Keep them talking, I'm on my way." |
+| `PEG_TEAM_DOWN_02` | "Casualty. Do try not to bleed on anything important." |
+| `PEG_INTEL_01` | "A document. Mr. Hale will want this. Everyone wants everything." |
+| `PEG_DENY_NO_POWER_01` | "No power. Of course not. Nothing in this country works without a committee." |
+| `PEG_DENY_CAP_01` | "I think that's quite enough of the local spirits, thank you." |
+| `PEG_DENY_NO_SCRIP_01` | "Insufficient funds. How terribly common." |
+| `DEA_SPAWN_01` | "Lord, look at this place. All right. Hands to work, hearts to You." |
+| `DEA_SPAWN_02` | "Kaltenbrunn. Something down here's humming, and it ain't a hymn." |
+| `DEA_ROUND_START_01` | "Here they come, children. Stay close now." |
+| `DEA_ROUND_START_02` | "Round's on. Steady hands, steady hearts." |
+| `DEA_ROUND_END_01` | "That's a round. Amen, and I mean it." |
+| `DEA_ROUND_END_02` | "Quiet spell. Check your guns, check your friends." |
+| `DEA_BUY_AMMO_01` | "There you go, girl. Fed and ready." |
+| `DEA_TEAM_DOWN_01` | "Hold on, now! Don't you go nowhere, I'm coming!" |
+| `DEA_TEAM_DOWN_02` | "Somebody's hurt. Lord, give me quick feet." |
+| `DEA_INTEL_01` | "Somebody wrote this in a hurry. Folks only write in a hurry when it matters." |
+| `DEA_DENY_NO_POWER_01` | "She's cold. No juice in her. We gotta wake the turbine first." |
+| `DEA_DENY_CAP_01` | "No, ma'am. Any more and I'll be preaching to the zombies." |
+| `DEA_DENY_NO_SCRIP_01` | "Not enough. Machine don't take promises." |
+| `WRN_SPAWN_01` | "Kaltenbrunn. Six kilometers from home. Good. Then I know the way out." |
+| `WRN_SPAWN_02` | "Rifle, book, pencil. I am ready." |
+| `WRN_ROUND_START_01` | "They come. Count them." |
+| `WRN_ROUND_START_02` | "Again. Good. I have pages left." |
+| `WRN_ROUND_END_01` | "Finished. Reload. Do not relax." |
+| `WRN_ROUND_END_02` | "Quiet. It will not last. It never does." |
+| `WRN_BUY_AMMO_01` | "Ammunition. The only thing here worth the price." |
+| `WRN_TEAM_DOWN_01` | "You are down. Stay down, shoot low. I come." |
+| `WRN_TEAM_DOWN_02` | "One of us is on the floor. Cover me." |
+| `WRN_INTEL_01` | "Papers. Their papers. I keep everything they write." |
+| `WRN_DENY_NO_POWER_01` | "No current. The machine sleeps." |
+| `WRN_DENY_CAP_01` | "Enough. A sniper does not drink four bottles." |
+| `WRN_DENY_NO_SCRIP_01` | "Too little Scrip. Later." |
+
+---
+
 ## Banter
 
-Banter triggers between rounds (in the round transition break) when two characters are within 15 m and no higher-priority VO is playing. Each exchange plays once per match. The initiating speaker is the first line. See `docs/VO_SCRIPT.md` for trigger rules.
+Banter triggers between rounds (in the round transition break) when two characters are within 15 m and no higher-priority VO is playing. Each exchange plays once per match. The initiating speaker is the first line. See `docs/VO_SCRIPT.md` for trigger rules. The `_04` / `_05` exchanges (T-035) are the short two- and three-line ones the round break has room for.
 
 ### Dutch & Peg
 **BNT_DUT_PEG_01**
@@ -627,6 +688,15 @@ Banter triggers between rounds (in the round transition break) when two characte
 - DUT: "What's in your pack, Lieutenant? You keep checking it."
 - PEG: "Charges. Detonators. Tea."
 - DUT: "Uh-huh."
+
+**BNT_DUT_PEG_04**
+- DUT: "Lieutenant, you ever miss anything? Ever once?"
+- PEG: "Breakfast, Sergeant. Every single day."
+
+**BNT_DUT_PEG_05**
+- PEG: "You're humming, Sergeant."
+- DUT: "Yeah. Babcia's tune. Keeps my hands steady."
+- PEG: "Carry on, then. Quietly."
 
 ### Dutch & Deacon
 **BNT_DUT_DEA_01**
@@ -647,6 +717,15 @@ Banter triggers between rounds (in the round transition break) when two characte
 - DUT: "Wanna trade?"
 - DEA: "Not for all the gold in the salt."
 
+**BNT_DUT_DEA_04**
+- DEA: "You hear that hum, Sarge? Down in the floor?"
+- DUT: "I hear it. I'm choosing not to."
+
+**BNT_DUT_DEA_05**
+- DUT: "Your gun got a name too?"
+- DEA: "Ruth. She's patient."
+- DUT: "Mine's called 'the gun.'"
+
 ### Dutch & Wren
 **BNT_DUT_WRN_01**
 - DUT: "*Jestem głodna.*"
@@ -666,6 +745,17 @@ Banter triggers between rounds (in the round transition break) when two characte
 - DUT: "That's a lot of ink."
 - WRN: "It is a lot of Germans."
 
+**BNT_DUT_WRN_04**
+- DUT: "*Dzienkuje*, Wren."
+- WRN: "Dziękuję. You thank me like a man chewing gravel."
+- DUT: "That's how Babcia said it."
+- WRN: "Then Babcia chewed gravel."
+
+**BNT_DUT_WRN_05**
+- WRN: "How many tonight?"
+- DUT: "I don't count."
+- WRN: "Thirty-one. I count for you."
+
 ### Peg & Deacon
 **BNT_PEG_DEA_01**
 - DEA: "Lieutenant, that Crucible... you looked at it a little too long."
@@ -683,6 +773,14 @@ Banter triggers between rounds (in the round transition break) when two characte
 - DEA: "You ever think about after, Lieutenant?"
 - PEG: "Constantly. It's the 'during' I try not to think about."
 
+**BNT_PEG_DEA_04**
+- PEG: "Corporal, must you talk to the machines?"
+- DEA: "They're the only ones here that answer polite, ma'am."
+
+**BNT_PEG_DEA_05**
+- DEA: "You ever lose your temper, Lieutenant?"
+- PEG: "Once. In 1941. It was most inconvenient."
+
 ### Peg & Wren
 **BNT_PEG_WRN_01**
 - WRN: "You did not come for Fasbender."
@@ -699,6 +797,16 @@ Banter triggers between rounds (in the round transition break) when two characte
 **BNT_PEG_WRN_03**
 - PEG: "When this is done, there's a flight to London. You could come."
 - WRN: "When this is done, I will still be Polish. London will not fix that."
+
+**BNT_PEG_WRN_04**
+- WRN: "Your orders. Do they say to bring us out?"
+- PEG: "They say to bring the asset out."
+- WRN: "I asked about us."
+
+**BNT_PEG_WRN_05**
+- PEG: "Thirty-one tonight. I counted."
+- WRN: "Thirty-two. You missed the one in the fog."
+- PEG: "...So I did."
 
 ### Deacon & Wren
 **BNT_DEA_WRN_01**
@@ -718,6 +826,16 @@ Banter triggers between rounds (in the round transition break) when two characte
 - WRN: "Is that about me?"
 - DEA: "Might be."
 - WRN: "Finish it. Then never sing it again."
+
+**BNT_DEA_WRN_04**
+- DEA: "You ever sing, Wren?"
+- WRN: "In church. Before."
+- DEA: "Then you'll sing again. After."
+
+**BNT_DEA_WRN_05**
+- WRN: "Your machine. Hattie. She is loud."
+- DEA: "Loud means alive."
+- WRN: "Then I am very alive tonight."
 
 ---
 

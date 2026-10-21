@@ -362,9 +362,10 @@ func add_intel(intel_id: StringName) -> void:
 
 ## Helvetia cabinets in the Archive (T&C section 11.2): each machine's fine-print panel ("panel.<perk>", filed
 ## when read) with the story of the human behind the formula, and its plan-ID stencil ("plan.<perk>", filed when
-## an upgraded muzzle flash reveals it). Only the eight standard perks; the two prototypes come with Helvetia Works.
+## an upgraded muzzle flash reveals it). The eight standard perks and Overclock Cordial (in the game since T-034);
+## Fine Print Fernet joins when it ships with Helvetia Works.
 const CABINET_PERKS: PackedStringArray = ["ironhide_stout", "second_wind", "trigger_tonic", "twin_barrel",
-	"marathon_malt", "hawkeye_brandy", "packmule_porter", "blastproof_bock"]
+	"marathon_malt", "hawkeye_brandy", "packmule_porter", "blastproof_bock", "overclock_cordial"]
 
 
 func _add_cabinet_rows() -> void:

@@ -271,3 +271,25 @@ func test_backpedal_radius_sits_between_knife_and_danger() -> void:
 	var cb: Dictionary = cfg["combat"]
 	assert_gt(float(cb["backpedal_radius_m"]), float(cb["melee_range_m"]))
 	assert_lt(float(cb["backpedal_radius_m"]), float(cb["danger_radius_m"]))
+
+
+func test_crucible_ammo_wanted() -> void:
+	var c: Dictionary = cfg["shopping"]["crucible"]
+	for key: String in ["only_in_break", "priority", "ammo_below_frac", "ammo_reserve_scrip"]:
+		assert_true(c.has(key), key)
+	var cost: int = int(GLData.table("economy")["crucible_upgraded_ammo"])
+	var need: int = cost + int(c["ammo_reserve_scrip"])
+	assert_true(BotConfig.crucible_ammo_wanted(c, true, 10, 100, need, cost), "low reserve, price + reserve in hand")
+	assert_false(BotConfig.crucible_ammo_wanted(c, true, 10, 100, need - 1, cost), "keeps the reserve Scrip")
+	assert_false(BotConfig.crucible_ammo_wanted(c, true, 90, 100, 99999, cost), "reserve still fine")
+	assert_false(BotConfig.crucible_ammo_wanted(c, false, 0, 100, 99999, cost), "only for an upgraded gun")
+	assert_false(BotConfig.crucible_ammo_wanted(c, true, 0, 0, 99999, cost), "no reserve pool at all")
+	assert_true(bool(c["only_in_break"]), "upgrades are a round-break errand")
+	assert_gt(float(c["priority"]), 60.0, "the Crucible outranks ammo (60) and boards (30) in the break")
+
+
+func test_overclock_cordial_is_on_the_perk_wishlist() -> void:
+	assert_true((cfg["shopping"]["perk_wishlist"] as Array).has("overclock_cordial"), "bots buy the ninth perk when a machine is there")
+	assert_true((GLData.table("perks")["perks"] as Dictionary).has("overclock_cordial"))
+	assert_almost_eq(PerkManager.overclock_spent(0, 8), 1.0, 0.001, "an empty mag is a full burst")
+	assert_almost_eq(PerkManager.overclock_spent(8, 8), 0.0, 0.001)

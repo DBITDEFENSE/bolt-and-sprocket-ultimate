@@ -6,6 +6,8 @@ extends Marker3D
 @export var window_path: NodePath
 @export var kind: StringName = &"window"   # window | ground
 @export var min_round: int = 1
+## Off = never chosen (Map 2's tide switches the flooded pump deck's points off and the catwalk points on).
+@export var enabled: bool = true
 
 
 func _ready() -> void:
@@ -19,4 +21,4 @@ func window() -> Barricade:
 
 
 func is_active(round_number: int) -> bool:
-	return round_number >= min_round and GameState.is_zone_open(zone_id)
+	return enabled and round_number >= min_round and GameState.is_zone_open(zone_id)

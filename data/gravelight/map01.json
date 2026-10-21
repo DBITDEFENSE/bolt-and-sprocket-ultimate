@@ -1,5 +1,5 @@
 {
-  "_doc": "Map 1 world machinery tuning (MAPS.md: power-on event, pylon holdouts, lift).",
+  "_doc": "Map 1 world machinery tuning (MAPS.md: power-on event, pylon holdouts, lift). exfil: the campaign beacon at the yard gate (T-033), see map00.json for the fields.",
   "power": {
     "vo_delay": 1.5,
     "light_sweep_start": 2.0,
@@ -30,5 +30,24 @@
   },
   "blast_door": {
     "open_seconds": 3.0
+  },
+  "exfil": {
+    "round": 30,
+    "target": "map02_totenhafen",
+    "position": [
+      20.0,
+      0.0,
+      2.2
+    ],
+    "yaw": 180.0,
+    "zone": "A_MINEHEAD",
+    "opens_zone": false,
+    "window_seconds": 90.0,
+    "retry_rounds": 3,
+    "cutscene": "exfil_m1_m2",
+    "label": "THE NORTH GATE",
+    "vo_open": "OPR_EXFIL_OPEN_01",
+    "vo_wait": "OPR_EXFIL_WAIT_01",
+    "vo_missed": "OPR_EXFIL_MISSED_01"
   }
 }

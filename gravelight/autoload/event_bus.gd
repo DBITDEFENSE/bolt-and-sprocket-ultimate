@@ -40,11 +40,17 @@ signal perk_bought(player: int, perk_id: StringName)
 signal perk_denied(player: int, perk_id: StringName, reason: StringName)
 signal perks_lost(player: int)
 signal perks_changed(player: int)
+## Overclock Cordial's static burst landed (WEAPONS.md section 20.2): spent = how empty the mag was (0.25..1).
+signal overclock_burst(player: int, position: Vector3, spent: float, radius: float)
 signal crate_opened(player: int)
 signal crate_result(player: int, weapon_id: StringName, quality: StringName)
 signal crate_drummer(location_index: int)
 signal crate_moved(new_location_index: int)
 signal weapon_upgraded(player: int, weapon_id: StringName)
+## The Crucible: a weapon went in (the Operator's CRUCIBLE_START), the forge finished (CRUCIBLE_READY), nobody took it (CRUCIBLE_EXPIRE).
+signal crucible_started(player: int, weapon_id: StringName)
+signal crucible_ready(weapon_id: StringName)
+signal crucible_expired(weapon_id: StringName)
 
 # Power-ups
 signal powerup_spawned(powerup_id: StringName, position: Vector3)
