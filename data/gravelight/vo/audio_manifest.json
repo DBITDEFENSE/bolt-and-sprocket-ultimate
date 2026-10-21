@@ -3492,6 +3492,26 @@
    "voice": "Mark",
    "chain": "tannoy"
   },
+  "OPR_CRUCIBLE_THRICE_01": {
+   "line": "OPR_CRUCIBLE_THRICE_01",
+   "speaker": "OPR",
+   "hash": "5a904c292d1e973c",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRUCIBLE_THRICE_01.ogg",
+   "format": "ogg",
+   "duration": 5.922,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_CRUCIBLE_TWICE_01": {
+   "line": "OPR_CRUCIBLE_TWICE_01",
+   "speaker": "OPR",
+   "hash": "60eee626eee6f59d",
+   "path": "res://gravelight/audio/vo/opr/OPR_CRUCIBLE_TWICE_01.ogg",
+   "format": "ogg",
+   "duration": 5.216,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
   "OPR_DOWNED_01": {
    "line": "OPR_DOWNED_01",
    "speaker": "OPR",

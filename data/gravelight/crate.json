@@ -1,121 +1,126 @@
 {
-  "_doc": "Lost Requisition Crate. Weapon weights live in data/weapons.json (crate_weight).",
-  "cost": 950,
-  "cycle_seconds": 4.5,
-  "pickup_window_seconds": 12.0,
-  "drummer_after_uses_min": 4,
-  "drummer_after_uses_max": 12,
-  "pity_first_pulls": 3,
-  "move_beam_seconds": 20.0,
-  "pool": [
-    {
-      "id": "ppsh41",
-      "tier": "A",
-      "weight": 10
-    },
-    {
-      "id": "mg42",
-      "tier": "A",
-      "weight": 10
-    },
-    {
-      "id": "m1919",
-      "tier": "A",
-      "weight": 8
-    },
-    {
-      "id": "panzerschreck",
-      "tier": "A",
-      "weight": 6
-    },
-    {
-      "id": "ptrs41",
-      "tier": "A",
-      "weight": 6
-    },
-    {
-      "id": "ashlight",
-      "tier": "A",
-      "weight": 3
-    },
-    {
-      "id": "sawed_off",
-      "tier": "B",
-      "weight": 8
-    },
-    {
-      "id": "type100",
-      "tier": "B",
-      "weight": 8
-    },
-    {
-      "id": "springfield",
-      "tier": "B",
-      "weight": 6
-    },
-    {
-      "id": "flamethrower",
-      "tier": "B",
-      "weight": 5
-    },
-    {
-      "id": "gramophone",
-      "tier": "B",
-      "weight": 6
-    },
-    {
-      "id": "thompson",
-      "tier": "B",
-      "weight": 5
-    },
-    {
-      "id": "stg44",
-      "tier": "B",
-      "weight": 5
-    },
-    {
-      "id": "trench_gun",
-      "tier": "B",
-      "weight": 5
-    },
-    {
-      "id": "bar",
-      "tier": "B",
-      "weight": 5
-    },
-    {
-      "id": "mp40",
-      "tier": "C",
-      "weight": 4
-    },
-    {
-      "id": "m1_carbine",
-      "tier": "C",
-      "weight": 3
-    },
-    {
-      "id": "m1_garand",
-      "tier": "C",
-      "weight": 3
-    },
-    {
-      "id": "gewehr43",
-      "tier": "C",
-      "weight": 3
-    },
-    {
-      "id": "kar98k",
-      "tier": "C",
-      "weight": 3
-    }
-  ],
-  "pity_tiers": [
-    "A",
-    "B"
-  ],
-  "dud_breaker_c_streak": 2,
-  "a_breaker_pulls": 5,
-  "wonder_bonus_every": 6,
-  "wonder_max_weight": 9,
-  "drummer_never_first_pulls_at_location": 2
+ "_doc": "Lost Requisition Crate. Weapon weights live in data/weapons.json (crate_weight).",
+ "cost": 950,
+ "cycle_seconds": 4.5,
+ "pickup_window_seconds": 12.0,
+ "drummer_after_uses_min": 4,
+ "drummer_after_uses_max": 12,
+ "pity_first_pulls": 3,
+ "move_beam_seconds": 20.0,
+ "pool": [
+  {
+   "id": "ppsh41",
+   "tier": "A",
+   "weight": 10
+  },
+  {
+   "id": "mg42",
+   "tier": "A",
+   "weight": 10
+  },
+  {
+   "id": "m1919",
+   "tier": "A",
+   "weight": 8
+  },
+  {
+   "id": "panzerschreck",
+   "tier": "A",
+   "weight": 6
+  },
+  {
+   "id": "ptrs41",
+   "tier": "A",
+   "weight": 6
+  },
+  {
+   "id": "ashlight",
+   "tier": "A",
+   "weight": 3
+  },
+  {
+   "id": "elmsfeuer",
+   "tier": "A",
+   "weight": 3
+  },
+  {
+   "id": "sawed_off",
+   "tier": "B",
+   "weight": 8
+  },
+  {
+   "id": "type100",
+   "tier": "B",
+   "weight": 8
+  },
+  {
+   "id": "springfield",
+   "tier": "B",
+   "weight": 6
+  },
+  {
+   "id": "flamethrower",
+   "tier": "B",
+   "weight": 5
+  },
+  {
+   "id": "gramophone",
+   "tier": "B",
+   "weight": 6
+  },
+  {
+   "id": "thompson",
+   "tier": "B",
+   "weight": 5
+  },
+  {
+   "id": "stg44",
+   "tier": "B",
+   "weight": 5
+  },
+  {
+   "id": "trench_gun",
+   "tier": "B",
+   "weight": 5
+  },
+  {
+   "id": "bar",
+   "tier": "B",
+   "weight": 5
+  },
+  {
+   "id": "mp40",
+   "tier": "C",
+   "weight": 4
+  },
+  {
+   "id": "m1_carbine",
+   "tier": "C",
+   "weight": 3
+  },
+  {
+   "id": "m1_garand",
+   "tier": "C",
+   "weight": 3
+  },
+  {
+   "id": "gewehr43",
+   "tier": "C",
+   "weight": 3
+  },
+  {
+   "id": "kar98k",
+   "tier": "C",
+   "weight": 3
+  }
+ ],
+ "pity_tiers": [
+  "A",
+  "B"
+ ],
+ "dud_breaker_c_streak": 2,
+ "a_breaker_pulls": 5,
+ "wonder_bonus_every": 6,
+ "wonder_max_weight": 9,
+ "drummer_never_first_pulls_at_location": 2
 }

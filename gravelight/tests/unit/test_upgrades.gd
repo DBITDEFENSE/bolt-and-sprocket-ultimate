@@ -29,11 +29,56 @@ func test_crucible_actions_and_prices() -> void:
 	var lr: WeaponInstance = WeaponInstance.create(&"m1911_up")
 	assert_true(lr.upgraded)
 	assert_eq(lr.display_name(), "Last Rites")
-	assert_eq(Crucible.action_for(lr), &"full")
+	assert_eq(Crucible.action_for(lr), &"upgrade", "a full taught weapon can be re-taught (tier 2)")
+	assert_eq(Crucible.price_for(&"upgrade", econ, lr.tier), 7500)
 	lr.mag = 0
-	assert_eq(Crucible.action_for(lr), &"ammo")
+	assert_eq(Crucible.action_for(lr), &"ammo", "an unfilled taught weapon gets the refill offer first")
 	assert_eq(Crucible.price_for(&"ammo", econ), 2500)
-	assert_eq(lr.upgrade_id(), &"", "upgraded weapons can't be upgraded again")
+	assert_eq(lr.upgrade_id(), &"m1911_up", "re-teaching keeps the id; the tier climbs")
+	lr.tier = WeaponInstance.max_tier()
+	lr.refill()   # the top tier holds more, so fill it at its own size
+	assert_eq(Crucible.action_for(lr), &"full", "the top tier is the end of it")
+	assert_eq(lr.upgrade_id(), &"", "top-tier weapons can't be taught again")
+
+
+func test_crucible_tiers_scale_the_taught_row() -> void:
+	assert_eq(WeaponInstance.max_tier(), 3, "double and triple teaching")
+	var econ: Dictionary = GLData.table("economy")
+	assert_eq(Crucible.price_for(&"upgrade", econ, 0), 5000)
+	assert_eq(Crucible.price_for(&"upgrade", econ, 1), 7500)
+	assert_eq(Crucible.price_for(&"upgrade", econ, 2), 10000)
+	var lr: WeaponInstance = WeaponInstance.create(&"m1911_up")
+	var d1: float = lr.f("damage")
+	var m1: int = lr.mag_size()
+	lr.tier = 2
+	assert_eq(lr.display_name(), "Last Rites II")
+	assert_almost_eq(lr.f("damage"), d1 * 1.5, 0.01)
+	assert_eq(lr.mag_size(), ceili(m1 * 1.25))
+	assert_almost_eq(lr.f("reload_partial"), 1.2 * 0.9, 0.001)
+	lr.tier = 3
+	assert_eq(lr.display_name(), "Last Rites III")
+	assert_almost_eq(lr.f("damage"), d1 * 2.0, 0.01)
+	assert_eq(lr.reserve_max(), ceili(120 * 1.5))
+	var base: WeaponInstance = WeaponInstance.create(&"m1911")
+	assert_eq(base.tier, 0)
+	assert_eq(base.display_name(), "M1911", "base weapons carry no suffix")
+
+
+func test_third_wonder_weapon_rows() -> void:
+	var t: Dictionary = GLData.table("weapons")
+	assert_true(t["weapons"].has("elmsfeuer") and t["upgraded"].has("elmsfeuer_up"))
+	var w: WeaponInstance = WeaponInstance.create(&"elmsfeuer")
+	assert_eq(w.weapon_class(), &"wonder")
+	assert_eq(int(w.property("chain", 0)), 3, "the bolt chains")
+	assert_true(w.data.has("projectile"))
+	assert_eq(w.upgrade_id(), &"elmsfeuer_up")
+	assert_true(CrateManager.is_wonder(&"elmsfeuer") and CrateManager.is_wonder(&"ashlight") and not CrateManager.is_wonder(&"mp40"))
+	var in_pool: bool = false
+	for e: Dictionary in GLData.table("crate")["pool"]:
+		if str(e["id"]) == "elmsfeuer":
+			in_pool = true
+	assert_true(in_pool, "Sankt-Elmsfeuer is in the crate pool")
+	assert_true(WeaponModels.known_ids().has("elmsfeuer"), "it has a model")
 
 
 func test_fire_mode_toggle() -> void:

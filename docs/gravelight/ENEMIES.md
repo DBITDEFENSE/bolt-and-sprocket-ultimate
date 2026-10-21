@@ -468,3 +468,43 @@ phase_hp: [0.5, 0.2]
 audit_phase_times_s: [60, 120]
 withdraw_time: 240        # 180 during map_hw_clausezero step s6
 ```
+
+---
+
+## 6. Morgenrot enemies (Map 3, ULTIMATE PROMPT v2 §3; design only, built in M8.5 on the MZ animation framework)
+
+Rule (v2 §0): **no laborer appears as a zombie, ever.** The Morgenrot Gänger outfit kit is rocket troops, white-coat technicians, cable-car staff and mountain troops; the existing `laborer` variant is retired in MZ (ZOMBIE_ANIM_SPEC.md).
+
+### Data-ready summary (Morgenrot)
+| id | HP formula | Speed | Melee dmg | Attack rate | Scrip | Round gate | Spawn source | Weight / cap | Tell |
+|---|---|---|---|---|---|---|---|---|---|
+| `ganger` (Morgenrot kits) | `health(r)` | tier mix §1.5 | 50 | as §2.1 | as §2.1 | r1+ | windows, ground, chutes | default fill | — |
+| `treibstoff` | `health(r) × 1.1` | walk / jog | 55 | 1 / 1.2 s | 70 / 80 / 120 / 150 | r8+ | ground (depot, lanes, Kessel) | 8% of spawns, cap 4 active | dripping, sloshing footsteps; a fuel sheen |
+| `frostbiss` | `health(r) × 1.6`, shatters at 0 like a Glasshide | shamble / walk (1.3 / 2.0) | 85, hit = `frost_vent` slow on the player 2 s | 1 / 1.6 s, 0.7 s windup | 90 / 100 / 160 / 200 | r12+ | ground near the depot and dam | 5% of spawns, cap 3 | ice creak, breath fog |
+| `bergwacht` | `health(r) × 1.2` | jog / run; climb 1.8 m/s | 60 (axe) | 1 / 1.1 s | 75 / 85 / 130 / 160 | r15+ | **climb volumes** (crater wall, dam face, netting poles, dome) | 6% of spawns, cap 5 | crampon scrape, axe clink; they drop from above |
+| `faller` (LUFTALARM) | `health(r) × 0.7` | run after landing | 40 + landing shockwave 60 in 3 m | 1 / 0.9 s | 60 / 70 / 110 / 140 | special rounds only | searchlight-marked impact circles | whole round, packs of 4–8 | siren wind-up, searchlights, a whistle before impact |
+| `startmeister` | `3200 × r × P_hp[p]` | 2.2 walk, bowser ram 7.5 | 70 arc burn + 15/s, 110 ram | phases below | 600 on kill | r14–16 first, then every 6–8 | the Kessel ring (boss point) | max 1 | the bowser's chains, the valve-wheel hiss |
+| `reinholt_wiederkehr` | 3 phases, egg only | floats / clings | shield, summons, engine light | see MAP3 §4.2 step 9 | — | egg step 9 | the Kessel storm | 1 | her voice on every speaker |
+
+### 6.1 Treibstoff-Gänger (`treibstoff`)
+Launch crew in rubberized fuel suits, dripping alcohol. **Killed by fire or an explosive they burst into a burning puddle** (the flamethrower's burning-ground rules: 2.2 m, 5 s, 45 dps to anyone, zombies included). Shot normally they just die. Use them.
+
+### 6.2 Frostbiss (`frostbiss`)
+LOX-burned, frost-crusted, slow and hard-hitting; a hit frost-slows the player (`frost_vent`, move ×0.6, 2 s). Armour like a Glasshide (torso ×0.5); they **shatter** at death with the Glasshide shockwave, and a frozen one (Die Lange Nacht) shatters to a single melee.
+
+### 6.3 Bergwacht (`bergwacht`)
+Mountain troops with crampons and ice axes. New spawn behaviour: **they climb** cliff faces, the dam, the netting poles and the dome via authored climb volumes (`NavigationLink3D` links that trigger the Climb state; ZOMBIE_ANIM_SPEC §3) and drop in from above. On a climb they cannot attack and take ×1.5 damage; they lunge on landing.
+
+### 6.4 LUFTALARM (special round, replaces Bellringers on Morgenrot)
+Every 5–7 rounds: sirens wind up (8 s), searchlights sweep and settle on **impact circles** (3 m rings on the ground, 2.5 s before impact); **Fallers** — burnt test-launch casualties glowing hot — plunge out of the night sky into the circles with a 60-damage shockwave, then run. Stay out of the lit circles. Roofed zones (the Stollen, the depot) get none. Clearing the round guarantees a Resupply drop at the last impact.
+
+### 6.5 DER STARTMEISTER (`startmeister`), Morgenrot boss
+The launch officer fused into a pressure suit and a towed fuel bowser. **Phase 1:** sprays burning alcohol in 70° arcs (ignites players 15/s for 3 s). **Phase 2** (bowser at 60%): drags the bowser round the ring to ram (110, knockdown). **Phase 3** (bowser breached): he runs, trailing fire (burning ground behind him). Weak point: the **valve wheel on his back** (×4). Drops **Schlüssel I** when killed inside the Kessel with the gantry floodlights on (egg step 6). Scrip 600.
+
+### 6.6 REINHOLT, "WIEDERKEHR" (final boss, egg step 9 only)
+Dosed with her fragment she floats in the Kessel inside a violet storm, shielded by the Liesl apparition (Nachtglas light; the tin drummer at her feet). **Phase 1:** freeze the shield with Die Lange Nacht and shatter it. **Phase 2:** she summons the dead of Kaltenbrunn (Map 1 variants, the Foreman). **Phase 3:** she clings to the gantry as the Sonnenspeer's engines light; the fight ends with the two keys, not her death. Her lines are grief (VO_SCRIPT §11.3).
+
+### 6.7 Spawning additions (Morgenrot)
+- Climb volumes are a third spawn source beside windows and ground: a `ZombieSpawn` of kind `climb` with a link path; only the Bergwacht use them.
+- LUFTALARM impact circles are placed by the director on open-sky zones only (`zone.roofed = false`).
+- The Launch Clock's fueling surge raises the Kessel's spawn weight ×1.5 while players are away from it (so the crater is never quiet).

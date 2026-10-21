@@ -360,7 +360,7 @@ func reset_loadout() -> void:
 func to_net() -> Dictionary:
 	var s: Array = []
 	for w: WeaponInstance in slots:
-		s.append([String(w.id), w.mag, w.reserve, w.fire_mode, w.underbarrel_active, w.underbarrel_ammo])
+		s.append([String(w.id), w.mag, w.reserve, w.fire_mode, w.underbarrel_active, w.underbarrel_ammo, w.tier])
 	return {"s": s, "c": current_index, "m": String(melee_id), "g": grenades, "t": String(tactical_id), "tc": tactical_count}
 
 
@@ -379,6 +379,8 @@ func apply_net(d: Dictionary) -> void:
 		w.fire_mode = str(a[3])
 		w.underbarrel_active = bool(a[4])
 		w.underbarrel_ammo = int(a[5])
+		if a.size() > 6:
+			w.tier = maxi(w.tier, int(a[6]))
 		slots.append(w)
 	current_index = clampi(int(d.get("c", 0)), 0, maxi(0, slots.size() - 1))
 	melee_id = StringName(str(d.get("m", "trench_knife")))
@@ -1883,6 +1885,10 @@ func _animate(delta: float, sprinting: bool) -> void:
 		# sleeve. compress^2 matches the uncompressed render (checked side by side with vm_shots --compress=1).
 		var glow: OmniLight3D = _model.get_node("Nachtglow") as OmniLight3D
 		glow.light_energy = (0.32 + 0.16 * sin(_idle_t * 2.3) + _flash_t * 6.0) * _vm_compress * _vm_compress
+		var cw: WeaponInstance = current()
+		if cw != null and cw.tier >= 2:   # re-taught (T-037): the veins run amber at II and white-hot at III
+			glow.light_color = Color(1.0, 0.62, 0.3) if cw.tier == 2 else Color(1.0, 0.92, 0.85)
+			glow.light_energy *= 1.4
 	# ---- flamethrower stream
 	var flaming: bool = _flame != null and is_instance_valid(_flame) and _flame_t > 0.0
 	var mxf: Transform3D = _muzzle_world() if (_flash_t > 0.0 or flaming) else global_transform.orthonormalized()

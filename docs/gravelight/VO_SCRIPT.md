@@ -298,6 +298,8 @@ Original first-pass table (intent; kept for reference):
 | OPR_CRUCIBLE_EXPIRE_01 | Uncollected! Into the {lost property}. |
 | OPR_CRUCIBLE_EXPIRE_02 | Oh dear. The furnace has kept it. The furnace keeps {everything}. |
 | OPR_CRUCIBLE_FIRST_01 | Our first {graduate}! I'm so proud. (once per match) |
+| OPR_CRUCIBLE_TWICE_01 | Back for {seconds}! The furnace remembers this one. It remembers {everything}. |
+| OPR_CRUCIBLE_THRICE_01 | A third time! Ladies and gentlemen, that is no longer a weapon. That is a {grudge}. |
 
 ### 3.9 Crate moves (`CRATE_MOVE`)
 | ID | Line |
@@ -732,7 +734,9 @@ The Omega Forge's Blartz lines and the Operator's disclaimers are in WEAPONS.md 
 ### 9.7 Map 3 reservation
 | ID | Trigger | Line |
 |---|---|---|
-| `gl.map03.opr.refuse.01` | Map 3 **Refuse** ending, last Operator line (LORE.md §9.3) | *[unspliced, slowing]* Cancellation... cannot be... {processed}— *[the station goes off the air]* |
+| `gl.map03.opr.refuse.01` | Map 3 **Refuse** ending, last Operator line (LORE.md §9.3; kept for the Reinholt "pull her out" branch) | *[unspliced, slowing]* Cancellation... cannot be... {processed}— *[the station goes off the air]* |
+
+The full Morgenrot line plan is §11 (ids reserved; the lines are written in M8.5).
 
 ---
 
@@ -770,3 +774,23 @@ map_mult: Map 0 = 0 before round 15, then 0.5 (the Operator is barely formed)
 - Slips are never the Woman in Violet's own voice. The single exception is the Clause Zero finale's last line (`fp.c5.finale`), which is a story line, not a slip.
 
 **Data:** `data/vo/vo_rules.tres` gains `slip_base: 0.01`, `slip_per_round: 0.0022`, `slip_cap: 0.12`, `slip_map_cap: 0.20`, `slip_map_mult: {map00: 0.5, map01: 1.0, map_hw_helvetia: 2.0, map02: 1.5, map03: 2.0}`, `slip_map00_min_round: 15`, `slip_cooldown_s: 300`, `slip_cooldown_hw_map03_s: 240`, `slip_tail_delay_s: 0.6`.
+
+---
+
+## 11. MORGENROT (Map 3) line plan — ids reserved for M8.5 (ULTIMATE PROMPT v2 §8; design doc `docs/MAP3_MORGENROT.md`)
+
+The ids below are **reserved and not yet written**: this table is a plan, so `extract_vo.py` does not pick them up (no `ID` column). Each block is written in full, with the §1 rules, when M8.5 starts; every one is baked by `gen_vo.py` and listed in `audio_manifest.json`. Counts are minimums.
+
+| Block | Speaker | Line ids (reserved) | Count | Notes |
+|---|---|---|---|---|
+| 11.1 Rollout | OPR | `OPR_M3_ROLLOUT_01..06` (power on, "regional rollout in N cycles" at 20 / 10 / 5 / 2 / 1, zero), `OPR_M3_HOLD_01..03` (scrubs), `OPR_M3_SURGE_01..02` | 11 | the Operator's countdown is the clock's voice; §10 slips run at ×2 on this map |
+| 11.2 Fasbender | FAS | `FAS_M3_CELL_01..04` (the chalk hint, the keys, the abort sequence), `FAS_M3_FOLLOW_01..06` (hints while following), `FAS_M3_MOON_01` ("...at the MOON? Ha. Ha!"), `FAS_END_LAUNCH_01`, `FAS_END_ABORT_01` | 13 | two endings for him (came along / left behind) |
+| 11.3 Reinholt | REI | `REI_M3_PA_01..05` (hijacks as the clock drops), `REI_M3_HEARTSTORM_01` ("No more delays."), `REI_M3_PHASE_01..03`, `REI_END_01`, `REI_END_LETGO_01` ("Mein Schatz."), `REI_END_PULLED_01` | 12 | grief, never villainy |
+| 11.4 Startmeister barks | NPC | `STM_BARK_01..06`, `STM_PHASE_01..03`, `STM_DEATH_01` | 10 | through the pressure-suit radio |
+| 11.5 PA countdown | PA | `PA_COUNT_10..01`, `PA_HOLD_01`, `PA_ZERO_01` | 12 | German, subtitled; the only German-language block |
+| 11.6 Endings | OPR / cast | `OPR_END_ABORT_01` (Sable Vantage's real voice), `OPR_END_LAUNCH_01`, `OPR_END_MOON_01`, `OPR_END_MOONB_01`, `WRN_END_NAMES_01..06`, `WRN_END_CLOSE_01`, `PEG_END_DESTROY_01`, `PEG_END_KEEP_01`, `DUT_END_MOON_01`, `DEA_END_MOON_01`, `PEG_END_MOON_01`, `WRN_END_MOON_01`, `BLT_END_MOON_01`, `SPR_END_MOON_01`, `VEN_END_MOON_01`, `*_END_MOONB_01` ×6, epilogue cards ×8 (text) | 34 | CUTSCENES_MORGENROT.md |
+| 11.7 Witnesses' marks | NPC (whispers) | `MARK_01..12` (a name and a hometown each; `MARK_TOMASZ_01` is always among the six), `WRN_M3_TOMASZ_01..03` | 15 | the memorial lines are read plainly, never performed |
+| 11.8 Squad quote packs | DUT / PEG / DEA / WRN / BLT / VEN | `*_M3_ARRIVE_01..02`, `*_M3_ROCKET_01..02`, `*_M3_CHALK_01`, `*_M3_CLOCK_01..02`, `*_M3_SABOTAGE_01..03`, `*_M3_KESSEL_01`, `*_M3_SUMMIT_01`, `*_M3_LANGE_NACHT_01`, `*_M3_STARTMEISTER_01`, `*_M3_LUFTALARM_01` | 14 × 6 = 84 | Vendelin: the Darkmatter part in the rocket; Bolt / Sprocket: the Moon crack memo |
+| 11.9 New enemy tells | — | sound only (ENEMIES.md §6): no lines | 0 | |
+
+Total planned: ~190 lines. Bolt's and Vendelin's packs are gated on v1 §11.9 (playable after Helvetia Works).

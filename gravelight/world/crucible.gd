@@ -6,6 +6,10 @@ extends Interactable
 ## Co-op: one weapon in the forge at a time ("The Crucible is occupied" for everyone else while it forges);
 ## the host runs it and mirrors the forge / offer / reset to every peer. A steal gets an Operator remark.
 ## Local -Z faces the player; origin = floor center.
+## Second and third teaching (T-037, "double and triple pack-a-punch"): a full, Crucible-taught weapon can be fed
+## again (economy "crucible_upgrade_tiers") up to WeaponInstance.max_tier(); it comes back at the next tier
+## (weapons.json "crucible_tiers": damage, mag, reserve, reload, a name suffix). An unfilled taught weapon gets
+## the ammo refill first, so the two offers never compete for the prompt.
 
 enum Phase { IDLE, FORGING, OFFERED }
 
@@ -17,6 +21,7 @@ enum Phase { IDLE, FORGING, OFFERED }
 var phase: Phase = Phase.IDLE
 var _t: float = 0.0
 var _result: StringName = &""
+var _result_tier: int = 1
 var _fed_by: int = 0
 var _glow: OmniLight3D
 var _mouth: MeshInstance3D
@@ -32,15 +37,21 @@ static func action_for(w: WeaponInstance) -> StringName:
 	if w == null:
 		return &"none"
 	if w.upgraded:
-		return &"full" if w.is_full() else &"ammo"
+		if not w.is_full():
+			return &"ammo"
+		return &"upgrade" if w.tier < WeaponInstance.max_tier() else &"full"
 	if w.upgrade_id() == &"":
 		return &"nothing"
 	return &"upgrade"
 
 
-static func price_for(action: StringName, econ: Dictionary) -> int:
+## `tier` = the tier of the weapon being fed (0 base): the first teaching costs crucible_upgrade, the later ones
+## economy "crucible_upgrade_tiers"[next tier].
+static func price_for(action: StringName, econ: Dictionary, tier: int = 0) -> int:
 	match action:
 		&"upgrade":
+			if tier >= 1:
+				return int((econ.get("crucible_upgrade_tiers", {}) as Dictionary).get(str(tier + 1), int(econ["crucible_upgrade"]) * 2))
 			return int(econ["crucible_upgrade"])
 		&"ammo":
 			return int(econ["crucible_upgraded_ammo"])
@@ -170,11 +181,13 @@ func get_prompt(player: Player) -> String:
 		Phase.FORGING:
 			return "" if player.player_id == _fed_by or GameState.is_solo() else "The Crucible is occupied."
 		Phase.OFFERED:
-			return "Hold [%s] to take %s" % [key, _display(_result)]
+			return "Hold [%s] to take %s" % [key, _display(_result, _result_tier)]
 	var w: WeaponInstance = player.weapons.current()
 	var econ: Dictionary = GLData.table("economy")
 	match action_for(w):
 		&"upgrade":
+			if w.upgraded:
+				return "Hold [%s] to re-teach %s [%d]" % [key, w.display_name(), price_for(&"upgrade", econ, w.tier)]
 			return "Hold [%s] to feed the Crucible [%d]" % [key, price_for(&"upgrade", econ)]
 		&"ammo":
 			return "Hold [%s] for upgraded ammo [%d]" % [key, price_for(&"ammo", econ)]
@@ -218,17 +231,21 @@ func interact(player: Player) -> void:
 				player.weapons.refill_weapon(w.id)
 				feedback_2d(player, "reload_end")
 		&"upgrade":
-			if try_purchase(player, &"crucible", price_for(&"upgrade", econ)):
+			if try_purchase(player, &"crucible", price_for(&"upgrade", econ, w.tier)):
 				var up: StringName = w.upgrade_id()
+				var next_tier: int = w.tier + 1
 				player.weapons.remove_current()
-				_forge(player.player_id, String(up))
-				Net.mirror(self, &"_forge", [player.player_id, String(up)])
+				_forge(player.player_id, String(up), next_tier)
+				Net.mirror(self, &"_forge", [player.player_id, String(up), next_tier])
 
 
 ## The weapon goes in and the forge roars (host, then every peer).
-func _forge(fed_by: int, result: String) -> void:
+func _forge(fed_by: int, result: String, tier: int = 1) -> void:
 	_result = StringName(result)
+	_result_tier = tier
 	_fed_by = fed_by
+	if tier >= 2 and Net.is_authority():
+		GLVO.play(StringName("OPR_CRUCIBLE_%s_01" % ("TWICE" if tier == 2 else "THRICE")))
 	phase = Phase.FORGING
 	_t = 0.0
 	_roar_t = 0.0
@@ -258,7 +275,7 @@ func _offer() -> void:
 	_t = 0.0
 	GLBus.crucible_ready.emit(_result)
 	if _float != null:
-		_float_label.text = _display(_result)
+		_float_label.text = _display(_result, _result_tier)
 		_float.show()
 	if _embers != null:
 		_embers.emitting = false
@@ -270,6 +287,11 @@ func _offer() -> void:
 func _take(player: Player) -> void:
 	var id: StringName = _result
 	player.weapons.give_weapon(id)
+	var got: WeaponInstance = player.weapons.find_weapon(id)
+	if got != null and _result_tier >= 2:
+		got.tier = _result_tier
+		got.refill()
+		player.weapons.call("_rebuild_gun")
 	GLBus.weapon_upgraded.emit(player.player_id, id)
 	GLBus.weapon_acquired.emit(player.player_id, id, &"crucible")
 	if player.player_id != _fed_by and not GameState.is_solo():
@@ -282,6 +304,7 @@ func _reset() -> void:
 	phase = Phase.IDLE
 	_t = 0.0
 	_result = &""
+	_result_tier = 1
 	if _float != null:
 		_float.hide()
 	if _glow != null:
@@ -292,7 +315,11 @@ func _reset() -> void:
 		_embers.emitting = false
 
 
-static func _display(id: StringName) -> String:
+static func _display(id: StringName, tier: int = 1) -> String:
 	var t: Dictionary = GLData.table("weapons")
 	var row: Dictionary = t.get("upgraded", {}).get(String(id), t["weapons"].get(String(id), {}))
-	return str(row.get("name", id))
+	var suffix: String = ""
+	for tc: Dictionary in t.get("crucible_tiers", []):
+		if int(tc.get("tier", 1)) == tier:
+			suffix = str(tc.get("suffix", ""))
+	return str(row.get("name", id)) + suffix

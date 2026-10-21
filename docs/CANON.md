@@ -188,7 +188,7 @@ When Vendelin overrides Clause 0 and **cuts Darkmatter's fold**, the fold **retu
 - Bolt & Sprocket are pulled home to the far future.
 - The squad is put back in **late December 1944**, still within their one impossible night.
 
-The squad later remembers Basel as a fever dream, and the dates in Peg's notebook don't add up. Map 2 Totenhafen (January 1945) and Map 3 Morgenrot (March 1945) follow as written. Vendelin stays in March 1945 to help shut the substrate down. That leaves him alive in the world of Map 3, for "Season Two."
+The squad later remembers Basel as a fever dream, and the dates in Peg's notebook don't add up. Map 2 Totenhafen (January 1945, built) follows as written; Map 3 is now **Morgenrot, April 1945** (`docs/MAP3_MORGENROT.md`, v2): Projekt Wiederkehr's dawn salvo from the Hohe Wacht, the Sonnenspeer carrying Reinholt's fragment as her payment for Liesl, the Operator calling it "the regional rollout". Its canon ending is ABORT; the LAUNCH ending is non-canon; the MOON ending leaves a violet smile on the Moon and a light that blinks back ("MONDLICHT", the Season Two hook). Vendelin stays in 1945 to help shut the substrate down, which leaves him alive in the world of Map 3. Canon rules for the map (v2 §0): the forced laborers who built the rockets are never zombies and are the reason the player wins; no real Nazi symbols anywhere (the fictional Sunburst-and-Split-Bell, `docs/ART_FACTIONS.md`); civilians only as skylines and sirens; rocket detail at placard level.
 
 ---
 

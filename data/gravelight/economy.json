@@ -2,11 +2,22 @@
   "_doc": "All Scrip values. See docs/GDD.md §Economy.",
   "starting_scrip": 500,
   "hit_nonlethal": 10,
-  "kill": { "body": 50, "neck": 60, "head": 100, "melee": 130 },
+  "kill": {
+    "body": 50,
+    "neck": 60,
+    "head": 100,
+    "melee": 130
+  },
   "board_repair": 10,
   "board_repair_cap_per_round": 500,
   "revive_bonus": 100,
-  "door_cost_by_depth": [750, 1000, 1250, 1500, 2000],
+  "door_cost_by_depth": [
+    750,
+    1000,
+    1250,
+    1500,
+    2000
+  ],
   "wallbuy_ammo_fraction": 0.5,
   "wallbuy_upgraded_ammo": 4500,
   "crucible_upgrade": 5000,
@@ -15,5 +26,9 @@
   "clearance_crate_cost": 10,
   "trap_cost": 1000,
   "pylon_cost": 1500,
-  "double_scrip_multiplier": 2
+  "double_scrip_multiplier": 2,
+  "crucible_upgrade_tiers": {
+    "2": 7500,
+    "3": 10000
+  }
 }

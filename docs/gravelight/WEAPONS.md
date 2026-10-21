@@ -193,6 +193,25 @@ A brass-and-glass pistol with a Nachtglas capsule in the grip. Fasbender's "reso
 
 ---
 
+## 7.1 Sankt-Elmsfeuer (`elmsfeuer`), the third wonder weapon (T-037)
+
+A ship's arc projector rebuilt as a carbine by U-1047's electrician: a copper induction coil in a glass sleeve over a brass bore, a navy-grey magneto breech with a hand crank, a wooden stock, porcelain insulators for sights, and a violet discharge gap at the muzzle. Crate-only, every map.
+
+| Stat | Value |
+|---|---|
+| Projectile | A crackling bolt at 70 m/s, gravity 0; one ricochet off world geometry |
+| Direct damage | 1100 to the target hit |
+| Chain | Arcs to **3** more zombies within 6 m of the first hit, at 70% damage (`chain` property, the Ashlight Corona rule) |
+| Splash | 350 within 2 m, falling off to 40% |
+| Self-damage | 30 per splash within 2 m |
+| Mag / reserve / RPM | 8 / 48 / 100, semi |
+| Crate weight | 3 (tier A), shares the wonder bad-luck protection with the Ashlight |
+| Upgrade: **Kugelblitz** (`elmsfeuer_up`) | 1600 direct, chain **6**, splash 600 / 2.6 m, two ricochets, 12 / 72, and every arc frosts (35% slow for 2 s) |
+| Flavor | *"The pens' arc lamp, rewired by a boat's electrician who had stopped sleeping. It jumps from one of them to the next, the way the stories said the saint's fire jumped from mast to mast."* |
+| Upgrade flavor | *"Ball lightning. It goes where it likes, and it likes company."* |
+
+---
+
 ## 8. Totenglocke (`totenglocke`), Map 1 buildable
 
 A handheld bell-cannon: a bronze bell bolted into a firing frame, with a hand crank.
@@ -300,7 +319,7 @@ Total base weight: 112 (A 43, B 53, C 16). The Totenglocke is never in the Crate
 | Process | Feed the weapon in (you're left holding nothing). The forge roars for **5 s**, then presents the weapon for **15 s**. If no one takes it, it's lost. |
 | Stealing | In co-op, any player can take the presented weapon (classic behavior). The Operator comments. |
 | Ammo | Upgrading refills mag + reserve. |
-| Not allowed | Melee, frags, Siren Gramophone, and weapons that are already upgraded (those get the 2500 refill instead) |
+| Not allowed | Melee, frags, Siren Gramophone. An upgraded weapon that is not full gets the 2500 refill instead; a **full** upgraded weapon can be re-taught (§11.1). |
 | Lockout | One weapon in the forge at a time. A second player sees "The Crucible is occupied." |
 | Death's Door / Double Scrip | Don't affect the price. |
 | Flavor | *"The Crucible doesn't improve a weapon. It reminds it what it was for."* |
@@ -308,6 +327,18 @@ Total base weight: 112 (A 43, B 53, C 16). The Totenglocke is never in the Crate
 | **Other locations (§11 amendment)** | Helvetia Works has a second Crucible Mod. R-E: a crated "next shipment" unit on **the Barge** (`HW_BARGE`), with identical rules, cost and plaque. The Barge also holds the **Original Omega Forge** (§17), the second upgrade tier. |
 
 ---
+
+### 11.1 Second and third teaching ("double and triple Pack-a-Punch", T-037)
+
+Any Crucible (Map 0 cellar, Map 1 Core, Map 2 U-1047) teaches a weapon up to **three times**. The first teaching is the §5 variant; the second and third are the same variant scaled (`weapons.json "crucible_tiers"`), with the name suffixed **II** / **III**, an amber then white-hot Nachtglas glow on the viewmodel, and the Operator's TWICE / THRICE lines at the forge. This is not the Omega Forge (§17), which stays Helvetia Works' single prototype with its own names and properties.
+
+| Teaching | Cost (`economy.json`) | Damage | Mag / reserve | Reload | Name |
+|---|---|---|---|---|---|
+| I (the §5 variant) | 5000 `crucible_upgrade` | §5 | §5 | §5 | §5 name |
+| II | 7500 `crucible_upgrade_tiers.2` | ×1.5 | ×1.25 (rounded up) | ×0.9 | *name* II |
+| III | 10000 `crucible_upgrade_tiers.3` | ×2.0 | ×1.5 (rounded up) | ×0.8 | *name* III |
+
+Rules: only a **full** taught weapon is offered the next teaching (an unfilled one gets the 2500 refill first, so the two offers never share a prompt); the tier rides with the kit through co-op mirroring and the campaign exfil (`WeaponHolder.to_net` entry 7); wall-buy and Crucible ammo prices don't change with the tier; bots re-teach when their Scrip covers the next price (`BotConfig.crucible_wanted`). Flavor: *"The second time it remembers. The third time it won't forget."*
 
 ## 12. Shots-to-kill sanity table (torso hits, no perks, no falloff)
 
@@ -712,3 +743,34 @@ New IDs: `k31`, `mp43_44`, `return_policy`, `omni_blaster`, `bs_lawn_dart`, `bs_
 - Buildable IDs: `ob_part_grip`, `ob_part_coil`, `ob_part_emitter`, `ob_workbench`.
 - New status: `served` (Cease & Desist).
 - New WeaponData fields: `omega: WeaponData` (null when not Omega-able), `anomalous: bool`, `heat_per_shot`, `heat_cool_rate`, `vent_time` (OMNI-BLASTER), `return_threshold`, `return_chain` (Return Policy).
+
+---
+
+## 22. Morgenrot weapons (Map 3, ULTIMATE PROMPT v2 §3; design only, built in M8.5)
+
+### 22.1 Wonder weapon: DIE LANGE NACHT (`lange_nacht`), buildable
+Parts: a **LOX flask** (Treibstofflager), a **nozzle** (Assembly Hall), a **pressure regulator** (Dam); built at the Leitstand workbench (the Totenglocke's buildable rules, `buildable: true`).
+
+| Stat | Value |
+|---|---|
+| Archetype | `stream` (the flamethrower's cone), `frost` instead of `ignite`: reach 9 m, cone 30°, 20 ticks/s |
+| Freeze | a zombie in the cone for **1.2 s** freezes solid (`frozen` status: no movement, no attack, 8 s); frozen zombies **shatter** to one melee hit or 150 bullet damage (the Glasshide shatter shockwave, 60 in 2 m, which also damages zombies) |
+| Damage | 18 per tick while in the cone (so a frozen zombie taken out by bullets still counts a kill for the lance) |
+| Fuel | 80 units, 8 s continuous; refills at the Crucible (2500) or by the LOX flask part respawning every 3 rounds at the depot |
+| Bosses | the Startmeister's arcs are put out by the cone; Reinholt's shield is the only thing it freezes in step 9 |
+| Crucible: **Polarnacht** (`lange_nacht_up`) | reach 12 m, cone 40°, freeze in 0.9 s, and a frozen target **spreads the freeze** to zombies within 3 m (`freeze_spread`); 120 fuel |
+| Flavor | *"The rocket's own fuel, turned against it."* / Polarnacht: *"Nothing moves at the pole. Nothing needs to."* |
+
+### 22.2 Crate additions (Morgenrot pool, tier A unless noted)
+
+| Base ID | Name | Archetype | Crucible name | Notes |
+|---|---|---|---|---|
+| `panzerfaust` | Panzerfaust | single-shot `projectile` rocket (1 / 6, slow reload 3.2 s), 1400 + 900 splash in 3.5 m | **Late Postage** (`panzerfaust_up`): 2 / 10, `cluster: 4` bomblets | tier A, weight 5 |
+| `g1_lance` | Gewehr 1-Lance | a fictional lance-pattern anti-tank rifle: bolt, 5 / 30, 520 dmg, `penetration: 6` | **Point of Order** (`g1_lance_up`): 820 dmg, `pen_ramp: +0.10`, `stagger: 0.5` | tier A, weight 5 |
+| `fsg_rifle` | Fallschirm-pattern automatic rifle (fictional) | auto 550 RPM, 20 / 200, 110 dmg, `fire_modes: [auto, semi]` | **Second Descent** (`fsg_rifle_up`): 160 dmg, 30 / 300, `headshot_refund: 1` | tier B, weight 6 |
+| `gramophone` | Siren Gramophone, new record "Lili vom Berg" | as §6 | — | tier B |
+
+All names are invented; no real manufacturer or unit is named on the models (ART_FACTIONS.md).
+
+### 22.3 Freeze family (shared data, `enemies.json status`)
+`frost_vent` (players: move ×0.6; from depot vents, Frostbiss hits, the Spillway Gate) and `frozen` (zombies: Die Lange Nacht) sit beside Totenhafen's `wading` and `ballast`. The Crucible tiers (§11.1) apply to every Morgenrot weapon.

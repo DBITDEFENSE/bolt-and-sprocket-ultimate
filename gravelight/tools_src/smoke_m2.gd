@@ -77,7 +77,7 @@ func _run() -> void:
 
 	# ---- crate
 	var spots: Array[Node] = get_tree().get_nodes_in_group(&"crate_spots")
-	_check(spots.size() == 3, "3 crate spots on Map 0")
+	_check(spots.size() == 4, "4 crate spots on Map 0 (taproom, upstairs, stable, the yard well)")
 	var crate: MysteryCrate = null
 	for s: Node in spots:
 		if (s as MysteryCrate).spot_index == CrateManager.location_index:

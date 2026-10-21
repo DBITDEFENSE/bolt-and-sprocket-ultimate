@@ -85,7 +85,13 @@ func _record(st: Dictionary, result: Dictionary) -> void:
 	var tier: String = str(result["tier"])
 	st["c_streak"] = int(st["c_streak"]) + 1 if tier == "C" else 0
 	st["since_a"] = 0 if tier == "A" else int(st["since_a"]) + 1
-	st["since_wonder"] = 0 if StringName(result["id"]) == &"ashlight" else int(st["since_wonder"]) + 1
+	st["since_wonder"] = 0 if is_wonder(StringName(result["id"])) else int(st["since_wonder"]) + 1
+
+
+## A wonder-class weapon (Ashlight, Sankt-Elmsfeuer...): the bad-luck protection counts pulls since the last one.
+static func is_wonder(id: StringName) -> bool:
+	var row: Dictionary = (GLData.table("weapons")["weapons"] as Dictionary).get(String(id), {})
+	return str(row.get("class", "")) == "wonder"
 
 
 func _tier_of(id: StringName) -> String:

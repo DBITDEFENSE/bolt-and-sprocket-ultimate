@@ -13,9 +13,12 @@ Each milestone ends with: tests passing headless, the game launched and played, 
 | M6 | B&S side modes & extras | |
 | M7 | The Fine Print Ch. 1–4 | |
 | M8 | Helvetia Works + finale | |
+| **M8.5** | **MORGENROT, the Gravelight finale** (v2): the full map, Treibstoff-Gänger / Frostbiss / Bergwacht / LUFTALARM Fallers / Der Startmeister / Reinholt "Wiederkehr", Die Lange Nacht, the Launch Clock, "Letztes Licht", "Mondfahrt", the three ending cutscenes + Aftermath, all VO, 10 Archive entries. Design docs done: `docs/MAP3_MORGENROT.md`, `CUTSCENES_MORGENROT.md`, `ART_FACTIONS.md`. Acceptance: power-on through either ending in solo with dev skips, and a full un-skipped Relaxed run. | design done, paused for review |
+| **MZ** | **Zombie animation & design upgrade** (v2 §7; `docs/ZOMBIE_ANIM_SPEC.md`): shared humanoid skeleton + retargeting, AnimationTree with root motion, per-instance variation and posture traits, foot IK / look-at, barricade / climb / attack sets, flinches / stagger / knockdown / 8+ deaths into ragdoll, dismemberment with a gore setting, outfit kits per map and the infection shader, animation LOD; retrofits every map. **Goes before M8.5** (as early as the schedule allows). Acceptance: the §7.7 side-by-side capture, no foot-sliding, 24 zombies at 60 FPS. | spec done, paused for review |
 | M9 | Unified front end & meta | |
 | M10 | Art/audio pass & polish | |
 | M11 | (stretch) Online co-op | |
+| — | **MONDLICHT** (the Moon-ending hook): outline only, never built in this plan. The Moon has a smile and something on it blinked back; the Operator calls it a new market. | hook |
 
 **Gravelight campaign chain (T-033, 2026-10-21):** Map 0 → Map 1 → Map 2 linked by exfil beacons at rounds 10 and 30 with full carry-over (weapons, ammo, upgrades, Scrip, perks, rounds) and in-engine transition cutscenes; the third map falls back to a "campaign continues" screen until its scene lands.
 

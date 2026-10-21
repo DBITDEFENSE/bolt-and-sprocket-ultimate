@@ -2,12 +2,15 @@ class_name WeaponInstance
 extends RefCounted
 ## One weapon a player is holding: its data row plus live state (ammo, fire mode, underbarrel, heat).
 ## Upgraded variants (Crucible) come from the "upgraded" table and carry a "properties" dictionary.
+## `tier` (T-037): 0 = base, 1 = Crucible-taught (the "_up" row), 2 and 3 = re-taught twice / thrice: the same row
+## scaled by weapons.json "crucible_tiers" (damage, mag, reserve, reload) with a name suffix.
 
 var id: StringName
 var data: Dictionary
 var mag: int = 0
 var reserve: int = 0
 var upgraded: bool = false
+var tier: int = 0
 var fire_mode: String = "semi"
 var underbarrel_active: bool = false
 var underbarrel_ammo: int = 0
@@ -24,6 +27,7 @@ static func create(weapon_id: StringName) -> WeaponInstance:
 	else:
 		w.data = t["upgraded"][String(weapon_id)]
 		w.upgraded = true
+		w.tier = 1
 	w.fire_mode = str(w.fire_modes()[0])
 	w.refill()
 	return w
@@ -42,10 +46,34 @@ func has_property(key: String) -> bool:
 	return (data.get("properties", {}) as Dictionary).has(key)
 
 
-## The upgraded weapon id this weapon becomes in the Crucible, or &"" if it can't be upgraded.
+## The Crucible's tier table (weapons.json "crucible_tiers"): [{tier, suffix, damage_mult, mag_mult, reserve_mult, reload_mult}].
+static func tiers() -> Array:
+	return GLData.table("weapons").get("crucible_tiers", [])
+
+
+## The highest tier the Crucible teaches (1 when the table is empty).
+static func max_tier() -> int:
+	var m: int = 1
+	for t: Dictionary in tiers():
+		m = maxi(m, int(t.get("tier", 1)))
+	return m
+
+
+## This weapon's tier row ({} for base and first-tier weapons).
+func tier_cfg() -> Dictionary:
+	if tier < 2:
+		return {}
+	for t: Dictionary in tiers():
+		if int(t.get("tier", 1)) == tier:
+			return t
+	return {}
+
+
+## The upgraded weapon id this weapon becomes in the Crucible, or &"" if it can't be upgraded. A taught weapon
+## below the top tier returns its own id: the Crucible re-teaches it (tier + 1).
 func upgrade_id() -> StringName:
 	if upgraded:
-		return &""
+		return id if tier < max_tier() else &""
 	var up: String = str(data.get("upgraded", ""))
 	if up == "" or not (GLData.table("weapons").get("upgraded", {}) as Dictionary).has(up):
 		return &""
@@ -53,7 +81,7 @@ func upgrade_id() -> StringName:
 
 
 func display_name() -> String:
-	var n: String = str(data.get("name", id))
+	var n: String = str(data.get("name", id)) + str(tier_cfg().get("suffix", ""))
 	if overheat_lockout > 0.0:
 		return n + "  [OVERHEATED]"
 	if can_overheat() and heat > 0.5:
@@ -66,11 +94,11 @@ func display_name() -> String:
 
 
 func mag_size() -> int:
-	return int(data["mag"])
+	return ceili(int(data["mag"]) * float(tier_cfg().get("mag_mult", 1.0)))
 
 
 func reserve_max() -> int:
-	return int(data["reserve"])
+	return ceili(int(data["reserve"]) * float(tier_cfg().get("reserve_mult", 1.0)))
 
 
 func refill() -> void:
@@ -90,8 +118,17 @@ func weapon_class() -> StringName:
 	return StringName(str(data.get("class", "rifle")))
 
 
+## A numeric stat; damage and the reload times scale with the Crucible tier (T-037).
 func f(key: String, fallback: float = 0.0) -> float:
-	return float(data.get(key, fallback))
+	var v: float = float(data.get(key, fallback))
+	if tier >= 2:
+		var tc: Dictionary = tier_cfg()
+		match key:
+			"damage":
+				v *= float(tc.get("damage_mult", 1.0))
+			"reload_partial", "reload_empty":
+				v *= float(tc.get("reload_mult", 1.0))
+	return v
 
 
 ## Damage multiplier at a distance (full to falloff_start, linear to falloff_min at falloff_end).

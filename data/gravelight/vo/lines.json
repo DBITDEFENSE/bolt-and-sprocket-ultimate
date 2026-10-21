@@ -414,6 +414,16 @@
   "category": "CRUCIBLE_FIRST",
   "text": "Our first {graduate}! I'm so proud. (once per match)"
  },
+ "OPR_CRUCIBLE_TWICE_01": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_TWICE",
+  "text": "Back for {seconds}! The furnace remembers this one. It remembers {everything}."
+ },
+ "OPR_CRUCIBLE_THRICE_01": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_THRICE",
+  "text": "A third time! Ladies and gentlemen, that is no longer a weapon. That is a {grudge}."
+ },
  "OPR_CRATE_MOVE_01": {
   "speaker": "OPR",
   "category": "CRATE_MOVE",

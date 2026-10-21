@@ -132,7 +132,7 @@ static func merge_static(n: Node3D) -> void:
 static func known_ids() -> PackedStringArray:
 	return PackedStringArray(["m1911", "kar98k", "m1_garand", "gewehr43", "m1_carbine", "mp40", "thompson", "stg44",
 		"trench_gun", "bar", "ppsh41", "mg42", "m1919", "sawed_off", "type100", "ptrs41", "springfield", "panzerschreck",
-		"flamethrower", "ashlight", "totenglocke", "gramophone", "trench_knife", "etool", "frag"])
+		"flamethrower", "ashlight", "totenglocke", "elmsfeuer", "gramophone", "trench_knife", "etool", "frag"])
 
 
 # ================================================================== materials
@@ -1489,6 +1489,39 @@ func _w_totenglocke() -> void:
 	marker("Muzzle", Vector3(0, 0.06, -0.46))
 	lhand(Vector3(0, -0.042, -0.2), "y", 0.017)
 	meta(Vector3(0, 0.2, 0.0), "bell", 0.5, 0.2)
+
+
+## Sankt-Elmsfeuer: a ship's arc projector rebuilt as a carbine. A copper induction coil in a glass sleeve over
+## a brass tube, a navy-grey breech with a crank magneto, a wooden stock with a brass butt plate, twin
+## porcelain insulators as "sights", and a violet discharge gap at the muzzle.
+func _w_elmsfeuer() -> void:
+	prof(P([[0.12, 0.0], [-0.1, 0.0], [-0.16, 0.05], [-0.4, 0.05], [-0.4, 0.015], [-0.2, 0.0], [0.12, 0.0]]), 0.034, "wood")   # stock
+	box(Vector3(0.036, 0.055, 0.012), Vector3(0, 0.0, -0.405), "brass")                                                    # butt plate
+	box(Vector3(0.05, 0.07, 0.2), Vector3(0, 0.05, -0.1), "navy")                                                           # breech / magneto housing
+	box(Vector3(0.052, 0.012, 0.21), Vector3(0, 0.088, -0.1), "brass")
+	tube(0.014, 0.014, 0.34, Vector3(0, 0.05, -0.37), "brass")                                                               # bore
+	tube(0.03, 0.03, 0.2, Vector3(0, 0.05, -0.3), "glass")                                                                   # coil sleeve
+	for i: int in 9:
+		ring(0.015, 0.026, Vector3(0, 0.05, -0.215 - i * 0.02), "bronze")                                                     # the coil
+	tube(0.034, 0.034, 0.012, Vector3(0, 0.05, -0.2), "brass")
+	tube(0.034, 0.034, 0.012, Vector3(0, 0.05, -0.4), "brass")
+	for i2: int in 3:
+		ring(0.016, 0.022, Vector3(0, 0.05, -0.44 - i2 * 0.02), "copper")                                                     # discharge gap
+	tube(0.008, 0.008, 0.08, Vector3(0, 0.05, -0.5), "glow_violet")
+	for sx: float in [-0.012, 0.012]:                                                                                        # insulator "sights"
+		tube(0.006, 0.006, 0.022, Vector3(sx, 0.106, -0.2), "white", "y")
+		tube(0.004, 0.004, 0.01, Vector3(sx, 0.122, -0.2), "copper", "y")
+	var crank: Node3D = group("Crank", Vector3(0.03, 0.05, -0.12))
+	tube(0.006, 0.006, 0.04, Vector3.ZERO, "blued", "x", crank)
+	box(Vector3(0.01, 0.045, 0.01), Vector3(0.04, 0.02, 0), "blued", Vector3.ZERO, crank)
+	tube(0.007, 0.007, 0.03, Vector3(0.045, 0.045, 0), "wood", "y", crank)
+	var dial: Node3D = group("Dial", Vector3(-0.026, 0.07, -0.08))
+	tube(0.012, 0.012, 0.004, Vector3.ZERO, "cream", "x", dial)
+	trigger_group(-0.02, 0.0, "brass")
+	grip(0.045, 0.0, 0.1, "wood", 16.0, 0.042, 0.032)
+	marker("Muzzle", Vector3(0, 0.05, -0.54))
+	lhand(Vector3(0, -0.012, -0.25), "z", 0.03)
+	meta(Vector3(0, 0.11, -0.2), "crank", 0.54, 0.32)
 
 
 func _w_gramophone() -> void:

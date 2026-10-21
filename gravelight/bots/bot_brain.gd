@@ -1181,7 +1181,9 @@ func _choose_errand() -> Dictionary:
 	var human_down: bool = Net.session != null and squad.human() != null and Net.session.coop.is_downed(squad.human().player_id)
 	var in_break: bool = RoundManager.state != RoundManager.State.ROUND or (_zs.is_empty() and RoundManager.to_spawn <= 0)
 	var cur: WeaponInstance = player.weapons.current()
-	var want_up: bool = BotConfig.crucible_wanted(ccfg, _upgradeable_slot() >= 0, scrip, Crucible.price_for(&"upgrade", econ), RoundManager.current_round)
+	var up_slot: int = _upgradeable_slot()
+	var up_tier: int = player.weapons.slots[up_slot].tier if up_slot >= 0 else 0
+	var want_up: bool = BotConfig.crucible_wanted(ccfg, up_slot >= 0, scrip, Crucible.price_for(&"upgrade", econ, up_tier), RoundManager.current_round)
 	var want_ammo: bool = cur != null and BotConfig.crucible_ammo_wanted(ccfg, cur.upgraded, cur.reserve, cur.reserve_max(), scrip, Crucible.price_for(&"ammo", econ))
 	if (want_up or want_ammo) and not human_down and (in_break or not bool(ccfg.get("only_in_break", true))):
 		for cn: Node in get_tree().get_nodes_in_group(&"crucible"):
