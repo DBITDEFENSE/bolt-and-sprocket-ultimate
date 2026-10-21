@@ -45,8 +45,10 @@ graph LR
   TAPROOM["TAPROOM (spawn)<br/>4 windows · Kar98k · M1 Garand<br/>Radio · Crate*"]
   UPSTAIRS["UPSTAIRS ROOMS<br/>2 windows · MP40 · Crate"]
   STABLE["STABLE / BARN<br/>3 windows · Trench Gun · Crate*<br/>Hayloft perch"]
+  YARD["THE CARTERS' YARD (outdoors)<br/>4 fence gaps + 1 drift · Thompson · Crate<br/>the well, the gate, the road"]
   TAPROOM -- "Door 1: 750<br/>(stair vestibule)" --> UPSTAIRS
   TAPROOM -- "Door 2: 1000<br/>(kitchen back door)" --> STABLE
+  STABLE -- "Door 4: 1250<br/>(the stable's south door)" --> YARD
 ```
 
 \* = possible starting crate spot (`C*`). The crate starts at one of the two, chosen at random.
@@ -81,7 +83,27 @@ graph LR
 
 **The great doors and the carters' road (campaign exfil, T-033):** the doors (x 16–20 in the stable's south wall, 4 × 4.2 m) are dressing in a drawn opening that is filled with an invisible collider, so the navmesh and collision stay a solid wall; the exfil beacon stands just inside at (18, 0, 32) and the Map 0 → Map 1 cutscene tweens the `GreatDoors` group so they fall outward. Behind them, cutscene-only dressing: a trodden track south through a gap in the yard fence (gateposts, a dead lantern post, a signpost "Kaltenbrunn 9 km / Wilcza Góra 6 km / Gasthaus zum Kreuzweg"), bending south-east past dead trees and drifts toward low snowy rises on the horizon. Nothing out there is walkable.
 
-Window count: Taproom 4 (N×2, W, E), Stable 3 (N×2, S). There are 9 windows in total, counting the 2 upstairs.
+Window count: Taproom 4 (N×2, W, E), Stable 3 (N×2, S), Yard 4 (fence gaps W, E, S×2). There are 13 windows in total, counting the 2 upstairs.
+
+## The Carters' Yard (YARD): level 0, outdoors (T-036 follow-up, "let them go outside")
+
+**Size:** 32 × 14 m of fenced forecourt south of the stable (x 2–34, z 34–48), reached through **Door 4 (1250)** in the stable's south wall at x 8 (the great doors stay barred for the campaign cutscene). The fences are 1.2 m timber but their colliders are 2.3 m (the player can jump); four **fence gaps** carry barricades, and the carters' road leaves through a **barred gate** (x 16–20) at the south line, with the gateposts, the lit lantern and the signpost outside it.
+
+```
+   ###STABLE S WALL###D4(1250)##W(stable S)###great doors (barred)#####==fence==#
+   #  woodpile  .  .  .  $ Thompson 1200 (stable's outside wall, x 22)         #
+   W  .  ┌well┐  C  .  .  .  .  .  track  .  .  .  ┌cart┐  .  .  .  .  .  W   W/E gaps: x 2 and x 34 at z 41
+   #  .  └────┘  .  .  .  .  .  .  .  .  .  .  .  └────┘  .  trough  .  #   C crate spot "Well" (x 13.5, z 42)
+   #  S(drift)  sledge  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  #   S ground spawn, round 4+
+   ####W#####################GATE#####################W###################   S gaps: x 9 and x 27 at z 48
+                 ↓ the carters' road, the signpost, Kaltenbrunn 9 km
+```
+
+- **Spawns:** 4 fence-gap windows (zombies come across the field and vault the sill), 1 ground spawn in the SW drift (round 4+). Zone YARD opens with Door 4.
+- **Wall-buy:** Thompson 1200 chalked on the stable's outside wall by the lamp.
+- **Crate spot:** by the well (not a start spot).
+- **Loop:** the Well Loop — out of the door, round the well and the crate, along the gate line past the cart and the trough, back along the stable wall. 40 m, open sky, every window at your back at some point. Fails when the two south gaps and the drift feed it together.
+- **Story:** the salt carters' forecourt. The well is where the horses drank; the woodpile is the innkeeper's winter; the gate was chained the night the plane came down, from the outside.
 
 ### The staircase (playtest 2026-10-21: "too small, needs more room")
 The stairwell is the taproom's south-west corner, **6 × 6 m** (x 0–6, z 10–16), open to the roof (6.8 m). Door 1 (750) is in its east wall (x 6, z 14.3–15.9) and opens into a **2.2 m vestibule** (x 3.65–6) with a doormat and a coat rack. The **flight is 3.5 m wide** (x 0.15–3.65), runs up the west wall from z 14.3 to z 9.0 (5.3 m run, 3.8 m rise, 35.6°) and lands a metre inside the upstairs hall, so the hall itself is the top landing. Its east side is open over the vestibule: newel posts and turned balusters between a curb, a mid rail and a handrail that are real colliders (nobody walks off the edge, zombies don't path over it, shots pass between the bars). The same rail turns at the stair head and runs along the hall's edge over the well (x 3.65–6 at z 10), so the hall overlooks the vestibule and the door. Dressing: a 1.5 m runner with brass rods, wainscot and a wall rail up the west wall, a panelled string along the vestibule, pictures stepping up both the west wall and the well's tall east wall, two sconces and a lantern in the well. Before this it was a 2.7 m flight in a 3 m well (x 0–3) with the door opening straight onto the bottom step. Zombies path up the flight as before; the porch-roof ledges are unchanged.
@@ -109,6 +131,7 @@ Hayloft (Stable upper, 9 × 12 m): there's a ladder up and a single drop-down ed
 | TAPROOM | 4 | 0 | always |
 | UPSTAIRS | 2 | 0 | Door 1 open |
 | STABLE | 3 | 1 (hay pile behind stalls, rounds 6+) | Door 2 open |
+| YARD | 4 (fence gaps) | 1 (SW drift, rounds 4+) | Door 4 open |
 
 ## Map 0 room story
 
@@ -126,7 +149,7 @@ The details are in `EASTER_EGGS.md` §Map 0. The radio is behind the bar. Three 
 |---|---|
 | 1–3 | Knife and pistol, repair the 4 taproom windows. Learn barricades. Buy the Kar98k (200). |
 | 3–5 | Buy the M1 Garand (600) or save for Door 1 (750). First power-up drops are taught by the Operator line. |
-| 5–8 | Open Door 1 → MP40, first Crate pulls. Open the Stable (1000) → Trench Gun. Find the radio notes. |
+| 5–8 | Open Door 1 → MP40, first Crate pulls. Open the Stable (1000) → Trench Gun. Find the radio notes. Door 4 (1250) → the yard, the Thompson and the Well Loop. |
 | 8–12 | Crate cycling and the Hayloft perch. The radio quest finishes around here. Round 10 unlocks Map 1. |
 
 ## Map 0 choke points
@@ -134,6 +157,7 @@ The details are in `EASTER_EGGS.md` §Map 0. The radio is behind the bar. Three 
 1. **Upstairs hallway, east end:** the windows are behind you, and only 2 approaches (Room 3 window and the stairs). Easy to hold, easy to get pinched.
 2. **Hayloft:** a single ladder that zombies climb one at a time. It is leaky by design because the stable's S window spills under the loft.
 3. **Behind the bar:** a shallow choke. Good for rounds 1–5 only.
+4. **The yard door, from inside the stable:** one door to watch, the stable's own windows behind you. Fails once the hay pile wakes (round 6) and the yard gaps start feeding the door from outside.
 
 Training loop (light): around the taproom tables and bar, clockwise. It's tight on purpose. Map 0 is about holding, not running.
 

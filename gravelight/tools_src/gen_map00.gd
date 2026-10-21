@@ -344,7 +344,7 @@ func build_geometry() -> void:
 	wall_x("StbN", 22.0, 6 - T * 0.5, 24 + T * 0.5, 0, STABLE_H, [[8.2, 9.8] + win, [13.2, 14.8] + win, [18.5, 21.5, 0.0, 2.6]], "stable")
 	# the great doors' opening is drawn (the doors themselves are dressing, so the exfil cutscene can drop them)
 	# but filled with an invisible collider: the navmesh and collision stay a solid wall, nobody walks out
-	wall_x("StbS", 34.0, 6 - T * 0.5, 24 + T * 0.5, 0, STABLE_H, [[11.2, 12.8] + win, [16.0, 20.0, 0.0, 4.2]], "stable")
+	wall_x("StbS", 34.0, 6 - T * 0.5, 24 + T * 0.5, 0, STABLE_H, [[7.0, 9.0, 0.0, DOOR_H], [11.2, 12.8] + win, [16.0, 20.0, 0.0, 4.2]], "stable")
 	box(geo, "GreatDoorsBlock", Vector3(16.0, 0, 34.0 - T * 0.5), Vector3(20.0, 4.2, 34.0 + T * 0.5), "stable", true, false)
 	wall_z("StbW", 6.0, 22, 34, 0, STABLE_H, [], "stable")
 	wall_z("StbE", 24.0, 22, 34, 0, STABLE_H, [], "stable")
@@ -355,8 +355,8 @@ func build_geometry() -> void:
 	box(geo, "HayLanding", Vector3(15, 3.2, 25.5), Vector3(17.0, 3.5, 27.5), "floor_wood")
 	ramp_z("HayStairs", 15.0, 17.0, 32.5, 27.5, 0.0, 3.5)
 	box(geo, "HayBales", Vector3(6.3, 3.5, 30.5), Vector3(9.5, 4.4, 33.7), "hay", true, false)
-	box(geo, "CartCol", Vector3(7.0, 0, 31.4), Vector3(9.8, 1.1, 33.4), "furniture", true, false)
 
+	build_yard()
 	build_cellar()
 	build_nav_blocks()
 
@@ -368,6 +368,36 @@ func build_geometry() -> void:
 	geo.add_child(wreck)
 	box(wreck, "Fuselage", Vector3(-1.4, 0, -7), Vector3(1.4, 2.6, 6), "wreck", true, false)
 	box(wreck, "Wing", Vector3(-9, 0.4, -1.5), Vector3(7, 0.7, 1.5), "wreck", true, false)
+
+
+## THE CARTERS' YARD (zone YARD, "go outside"): the fenced forecourt south of the stable, x 2..34, z 34..48, out of
+## the stable's new south door (Door 4, 1250). Fences are invisible 2.3 m colliders (the player can jump; the
+## drawn fence is 1.2 m) with four barricaded gaps zombies vault, a barred gate on the carters' road, the well,
+## a woodpile and a snowed cart to run round. The field beyond stays navmesh for the window zombies.
+func build_yard() -> void:
+	var fh: float = 2.3
+	var win: Array = [WIN_SILL, WIN_TOP]
+	# west fence (x 2) with a gap at z 40.2..41.8; east fence (x 34) with a gap at z 40.2..41.8
+	for fx: float in [2.0, 34.0]:
+		box(geo, "YardFence", Vector3(fx - 0.1, 0, 34.0), Vector3(fx + 0.1, fh, 40.2), "snow", true, false)
+		box(geo, "YardFence", Vector3(fx - 0.1, 0, 41.8), Vector3(fx + 0.1, fh, 48.1), "snow", true, false)
+		box(geo, "YardSill", Vector3(fx - 0.1, 0, 40.2), Vector3(fx + 0.1, WIN_SILL, 41.8), "snow", true, false)
+		box(geo, "YardTop", Vector3(fx - 0.1, WIN_TOP, 40.2), Vector3(fx + 0.1, fh, 41.8), "snow", true, false)
+	# south fence (z 48) with gaps at x 8.2..9.8 and 26.2..27.8, and the barred gate at x 16..20
+	for seg: Array in [[2.0, 8.2], [9.8, 16.0], [20.0, 26.2], [27.8, 34.0]]:
+		box(geo, "YardFence", Vector3(float(seg[0]), 0, 47.9), Vector3(float(seg[1]), fh, 48.1), "snow", true, false)
+	for gx: float in [8.2, 26.2]:
+		box(geo, "YardSill", Vector3(gx, 0, 47.9), Vector3(gx + 1.6, WIN_SILL, 48.1), "snow", true, false)
+		box(geo, "YardTop", Vector3(gx, WIN_TOP, 47.9), Vector3(gx + 1.6, fh, 48.1), "snow", true, false)
+	box(geo, "YardGate", Vector3(16.0, 0, 47.9), Vector3(20.0, fh, 48.1), "snow", true, false)
+	# the plot's north edges beside the stable (keeps the yard off the cellar's roof and the inn's east side)
+	box(geo, "YardFence", Vector3(24.0, 0, 33.9), Vector3(34.1, fh, 34.1), "snow", true, false)
+	box(geo, "YardFence", Vector3(1.9, 0, 33.9), Vector3(6.0, fh, 34.1), "snow", true, false)
+	# the well, the woodpile against the stable, the snowed cart
+	box(geo, "Well", Vector3(9.0, 0, 41.0), Vector3(11.0, 1.0, 43.0), "stone", true, false)
+	box(geo, "Woodpile", Vector3(10.5, 0, 34.15), Vector3(14.5, 1.3, 35.4), "furniture", true, false)
+	box(geo, "YardCart", Vector3(27.0, 0, 37.0), Vector3(29.6, 1.1, 39.2), "furniture", true, false)
+	box(geo, "YardTrough", Vector3(30.5, 0, 44.0), Vector3(33.5, 0.7, 45.0), "furniture", true, false)
 
 
 ## The Helvetia cellar (T&C M2; Appendix A asks for the 8 perk machines in a cellar behind a 1500 door for the
@@ -396,7 +426,7 @@ const MACHINE_FOOTPRINTS: Dictionary = {
 }
 ## crate spots: [name, position, yaw, can_start]
 const CRATES: Array = [["Hearth", Vector3(22.9, 0, 14.0), 90.0, true], ["GuestBed", Vector3(22.0, UP_Y, 0.8), 180.0, false],
-	["TackRoom", Vector3(22.9, 0, 31.5), 90.0, true]]
+	["TackRoom", Vector3(22.9, 0, 31.5), 90.0, true], ["Well", Vector3(13.5, 0, 42.0), 90.0, false]]
 ## the cellar's hanging bulbs (bulb glass position; the power lights sit just under them): one pool per machine row
 const CELLAR_BULBS: Array = [Vector3(27.0, CELLAR_Y + 2.55, 22.5), Vector3(33.0, CELLAR_Y + 2.55, 22.5),
 	Vector3(26.5, CELLAR_Y + 2.55, 27.5), Vector3(33.5, CELLAR_Y + 2.55, 27.5), Vector3(30.35, CELLAR_Y + 2.55, 28.7)]
@@ -484,6 +514,7 @@ func build_dressing() -> void:
 	_dress_cellar()
 	_dress_exterior()
 	_dress_carters_road()
+	_dress_yard()
 	_dress_wreck()
 
 
@@ -1046,7 +1077,6 @@ func _dress_stable() -> void:
 			Props.hay_bale(g, Vector3(6.9 + xi * 0.95, 3.5, 30.85 + zi * 0.55), 0.0 if (xi + zi) % 2 == 0 else 3.0)
 	Props.hay_bale(g, Vector3(7.8, 3.95, 31.4), 8.0)
 	Props.hay_bale(g, Vector3(8.6, 3.95, 32.4), -6.0)
-	Props.cart(g, Vector3(8.4, 0, 32.4), 90.0)
 	Props.block(g, Vector3(6.15, 1.2, 25.5), Vector3(6.25, 1.3, 27.5), "beam")   # tack rail
 	Props.block(g, Vector3(6.25, 1.0, 25.9), Vector3(6.6, 1.35, 26.5), "cloth_red")   # saddle blanket
 	Props.block(g, Vector3(6.25, 0.9, 26.8), Vector3(6.45, 1.3, 27.2), "furniture")    # bridle/strap
@@ -1098,9 +1128,8 @@ func _dress_exterior() -> void:
 	Props.fence(g, Vector3(-20, 0, -13), Vector3(-13.5, 0, -13), 3)
 	Props.fence(g, Vector3(-8, 0, -13), Vector3(30, 0, -13), 4)
 	Props.fence(g, Vector3(-20, 0, -4), Vector3(-20, 0, 40), 5)
-	Props.fence(g, Vector3(-8, 0, 40), Vector3(15.2, 0, 40), 6)
-	Props.fence(g, Vector3(21.8, 0, 40), Vector3(34, 0, 40), 6)
-	Props.fence(g, Vector3(34, 0, 40), Vector3(34, 0, 20), 7)
+	Props.fence(g, Vector3(-8, 0, 48), Vector3(2, 0, 48), 6)
+	Props.fence(g, Vector3(34, 0, 34), Vector3(34, 0, 20), 7)
 	var trees: Array = [Vector3(-16, 0, -22), Vector3(-26, 0, 8), Vector3(-15, 0, 30), Vector3(30, 0, -20), Vector3(55, 0, 30),
 		Vector3(5, 0, 48), Vector3(-30, 0, -30), Vector3(40, 0, -25), Vector3(-24, 0, 50), Vector3(60, 0, -10)]
 	for i: int in trees.size():
@@ -1117,7 +1146,7 @@ func _dress_exterior() -> void:
 	snow.name = "Snowfall"
 	snow.set("areas", [AABB(Vector3(-40, 0, -40), Vector3(105, 22, 37)), AABB(Vector3(-40, 0, -3), Vector3(37, 22, 43)),
 		AABB(Vector3(27, 0, -3), Vector3(38, 22, 43)), AABB(Vector3(-40, 0, 37), Vector3(105, 22, 33)),
-		AABB(Vector3(0, 0, 16.6), Vector3(17.6, 14, 5.2))] as Array[AABB])
+		AABB(Vector3(0, 0, 16.6), Vector3(17.6, 14, 5.2)), AABB(Vector3(2, 0, 34), Vector3(32, 16, 14))] as Array[AABB])
 	snow.set("density", 0.4)
 	map_root.add_child(snow)
 	var motes: Node3D = Node3D.new()
@@ -1137,28 +1166,26 @@ func _dress_carters_road() -> void:
 	var g: Node3D = Props.group(dress, "CartersRoad", Vector3.ZERO)
 	# the track: out of the doorway, through the fence gap, then a bend to the south-east
 	Props.block(g, Vector3(16.0, 0.0, 34.2), Vector3(20.2, 0.018, 41.5), "snow_trodden", false)
-	Props.block(g, Vector3(16.3, 0.0, 41.0), Vector3(20.5, 0.018, 48.0), "snow_trodden", false)
-	Props.obox(g, Vector3(23.5, 0.009, 52.0), Vector3(4.4, 0.018, 12.0), "snow_trodden", Vector3(0, 40, 0))
+	Props.block(g, Vector3(16.3, 0.0, 41.0), Vector3(20.5, 0.018, 50.0), "snow_trodden", false)
+	Props.obox(g, Vector3(23.5, 0.009, 54.0), Vector3(4.4, 0.018, 12.0), "snow_trodden", Vector3(0, 40, 0))
 	Props.obox(g, Vector3(32.0, 0.009, 60.5), Vector3(4.6, 0.018, 16.0), "snow_trodden", Vector3(0, 55, 0))
 	Props.obox(g, Vector3(45.0, 0.009, 68.0), Vector3(5.0, 0.018, 22.0), "snow_trodden", Vector3(0, 68, 0))
 	# ruts and a cart's furrow where the doors land
 	for dx: float in [-0.9, 0.9]:
-		Props.block(g, Vector3(18.0 + dx - 0.08, 0.012, 34.3), Vector3(18.0 + dx + 0.08, 0.026, 47.5), "dirt", false)
+		Props.block(g, Vector3(18.0 + dx - 0.08, 0.012, 34.3), Vector3(18.0 + dx + 0.08, 0.026, 47.7), "dirt", false)
 	# gateposts at the fence gap, a signpost beside them, a lantern post that has gone out
-	for gx: float in [15.2, 21.8]:
-		Props.block(g, Vector3(gx - 0.14, 0, 39.86), Vector3(gx + 0.14, 1.9, 40.14), "beam")
-		Props.block(g, Vector3(gx - 0.2, 1.9, 39.8), Vector3(gx + 0.2, 2.05, 40.2), "snow", false)
-	Props.signpost(g, Vector3(22.9, 0, 41.4), [["KALTENBRUNN  9 km", 120.0], ["WILCZA GÓRA  6 km", -150.0], ["GASTHAUS ZUM KREUZWEG", 0.0]])
-	Props.cyl(g, Vector3(14.4, 1.3, 41.0), 0.07, 2.6, "beam", Vector3(0, 0, 3.0))
-	Props.block(g, Vector3(14.2, 2.5, 40.8), Vector3(14.6, 2.9, 41.2), "window_dark")
+	for gx: float in [15.8, 20.2]:
+		Props.block(g, Vector3(gx - 0.16, 0, 47.84), Vector3(gx + 0.16, 2.3, 48.16), "beam")
+		Props.block(g, Vector3(gx - 0.22, 2.3, 47.78), Vector3(gx + 0.22, 2.45, 48.22), "snow", false)
+	Props.signpost(g, Vector3(22.9, 0, 49.6), [["KALTENBRUNN  9 km", 120.0], ["WILCZA GÓRA  6 km", -150.0], ["GASTHAUS ZUM KREUZWEG", 0.0]])
 	# drifts along the stable's south wall and the fence, a broken cart wheel in the snow
 	Props.snow_drift(g, Vector3(23.5, 0, 35.3), Vector3(4.5, 0.9, 2.0))
-	Props.snow_drift(g, Vector3(8, 0, 41.2), Vector3(12, 0.8, 2.4))
-	Props.snow_drift(g, Vector3(29, 0, 41.0), Vector3(9, 0.9, 2.2))
+	Props.snow_drift(g, Vector3(8, 0, 49.2), Vector3(10, 0.8, 2.4))
+	Props.snow_drift(g, Vector3(29, 0, 49.0), Vector3(8, 0.9, 2.2))
 	Props.snow_drift(g, Vector3(24.5, 0, 46.0), Vector3(5, 0.6, 3.0))
 	Props.cyl(g, Vector3(13.0, 0.35, 37.2), 0.55, 0.08, "beam", Vector3(70, 20, 0))
 	# dead trees along the road and the horizon's rises (half-buried domes of snow past the fog)
-	Props.dead_tree(g, Vector3(26, 0, 45), 131, 7.0)
+	Props.dead_tree(g, Vector3(31, 0, 52), 131, 7.0)
 	Props.dead_tree(g, Vector3(12, 0, 55), 132, 8.5)
 	Props.dead_tree(g, Vector3(38, 0, 52), 133, 6.5)
 	Props.dead_tree(g, Vector3(22, 0, 66), 134, 9.0)
@@ -1166,6 +1193,79 @@ func _dress_carters_road() -> void:
 	for r: Array in [[Vector3(10, -3.0, 92), Vector3(130, 16, 50)], [Vector3(75, -3.0, 70), Vector3(90, 12, 60)],
 			[Vector3(100, -3.0, -8), Vector3(50, 14, 150)], [Vector3(-40, -3.0, 95), Vector3(90, 10, 50)]]:
 		Props._noshadow(Props.ball(g, r[0], r[1], "snow"))
+
+
+## The Carters' Yard: the drawn fences over the colliders, the barred gate, the well with its windlass, the
+## woodpile, the snowed cart and trough, a lit lantern on the gatepost, a lamp over the yard door, paths, drifts.
+func _dress_yard() -> void:
+	var g: Node3D = Props.group(dress, "Yard", Vector3.ZERO)
+	Props.fence(g, Vector3(2, 0, 34), Vector3(2, 0, 40.2), 11)
+	Props.fence(g, Vector3(2, 0, 41.8), Vector3(2, 0, 48), 12)
+	Props.fence(g, Vector3(34, 0, 34), Vector3(34, 0, 40.2), 13)
+	Props.fence(g, Vector3(34, 0, 41.8), Vector3(34, 0, 48), 14)
+	Props.fence(g, Vector3(2, 0, 48), Vector3(8.2, 0, 48), 15)
+	Props.fence(g, Vector3(9.8, 0, 48), Vector3(15.8, 0, 48), 16)
+	Props.fence(g, Vector3(20.2, 0, 48), Vector3(26.2, 0, 48), 17)
+	Props.fence(g, Vector3(27.8, 0, 48), Vector3(34, 0, 48), 18)
+	Props.fence(g, Vector3(24.2, 0, 34), Vector3(34, 0, 34), 19)
+	Props.fence(g, Vector3(2, 0, 34), Vector3(5.8, 0, 34), 20)
+	# the fence gaps: a post either side and a snow-capped sill rail (the barricades hang in them)
+	for gp: Array in [[Vector3(2, 0, 40.2), Vector3(2, 0, 41.8)], [Vector3(34, 0, 40.2), Vector3(34, 0, 41.8)],
+			[Vector3(8.2, 0, 48), Vector3(9.8, 0, 48)], [Vector3(26.2, 0, 48), Vector3(27.8, 0, 48)]]:
+		for e: Vector3 in [gp[0], gp[1]]:
+			Props.block(g, e + Vector3(-0.1, 0, -0.1), e + Vector3(0.1, 2.4, 0.1), "beam")
+		var lo: Vector3 = gp[0]
+		var hi: Vector3 = gp[1]
+		Props.block(g, Vector3(minf(lo.x, hi.x) - 0.08, WIN_SILL - 0.1, minf(lo.z, hi.z) - 0.08), Vector3(maxf(lo.x, hi.x) + 0.08, WIN_SILL, maxf(lo.z, hi.z) + 0.08), "beam")
+	# the gate: two leaves of three rails on a diagonal brace, chained shut
+	for lx: float in [16.0, 18.0]:
+		for ry: float in [0.35, 0.95, 1.55]:
+			Props.block(g, Vector3(lx + 0.05, ry - 0.07, 47.92), Vector3(lx + 1.95, ry + 0.07, 48.08), "planks")
+		Props.block(g, Vector3(lx + 0.05, 0.2, 47.9), Vector3(lx + 0.17, 1.75, 48.1), "planks")
+		Props.block(g, Vector3(lx + 1.83, 0.2, 47.9), Vector3(lx + 1.95, 1.75, 48.1), "planks")
+		Props.obox(g, Vector3(lx + 1.0, 0.95, 48.0), Vector3(2.3, 0.12, 0.05), "planks", Vector3(0, 0, 33))
+	Props.cable(g, Vector3(17.6, 1.0, 47.85), Vector3(18.4, 1.0, 47.85), 0.15, 0.02, 4, "iron")
+	# the well: a stone ring, two posts, a windlass and a bucket; the crate spot's lantern stake stands beside it
+	Props.cyl(g, Vector3(10.0, 0.5, 42.0), 1.05, 1.0, "stone")
+	Props.cyl(g, Vector3(10.0, 1.02, 42.0), 1.1, 0.06, "snow")
+	Props._noshadow(Props.cyl(g, Vector3(10.0, 0.6, 42.0), 0.78, 0.9, "char"))
+	for px: float in [9.1, 10.9]:
+		Props.block(g, Vector3(px - 0.08, 1.0, 41.92), Vector3(px + 0.08, 2.3, 42.08), "beam")
+	Props.block(g, Vector3(8.9, 2.3, 41.6), Vector3(11.1, 2.42, 42.4), "planks")
+	Props.cyl(g, Vector3(10.0, 2.0, 42.0), 0.09, 1.9, "beam", Vector3(0, 0, 90))
+	Props.cable(g, Vector3(10.0, 2.0, 42.0), Vector3(10.0, 1.1, 42.0), 0.0, 0.015, 2, "rope")
+	Props.cyl(g, Vector3(10.0, 1.2, 42.0), 0.16, 0.24, "tin")
+	# the woodpile: stacked split logs against the stable wall, an axe in the block
+	var wr: RandomNumberGenerator = RandomNumberGenerator.new()
+	wr.seed = 44
+	for row: int in 4:
+		for k: int in 9:
+			Props.cyl(g, Vector3(10.75 + k * 0.42, 0.18 + row * 0.3, 34.75), 0.15, 1.1, "pine" if (row + k) % 2 == 0 else "beam", Vector3(90, 0, wr.randf_range(-6, 6)))
+	Props.cyl(g, Vector3(9.4, 0.3, 36.2), 0.3, 0.6, "pine")
+	Props.obox(g, Vector3(9.4, 0.78, 36.2), Vector3(0.06, 0.4, 0.22), "iron", Vector3(0, 20, 0))
+	Props.obox(g, Vector3(9.55, 0.9, 36.1), Vector3(0.05, 0.9, 0.05), "beam", Vector3(60, 20, 0))
+	# the snowed cart and the trough
+	Props.cart(g, Vector3(28.3, 0, 38.1), 100.0)
+	Props._noshadow(Props.ball(g, Vector3(28.3, 1.2, 38.1), Vector3(2.4, 0.5, 1.6), "snow"))
+	Props.block(g, Vector3(30.5, 0, 44.0), Vector3(33.5, 0.7, 45.0), "planks")
+	Props.block(g, Vector3(30.6, 0.55, 44.1), Vector3(33.4, 0.62, 44.9), "snow")
+	# paths, drifts, a dropped sledge
+	Props.block(g, Vector3(7.2, 0.0, 34.2), Vector3(9.0, 0.015, 48.0), "snow_trodden", false)
+	Props.block(g, Vector3(7.2, 0.0, 41.3), Vector3(16.0, 0.015, 42.7), "snow_trodden", false)
+	Props.snow_drift(g, Vector3(3.2, 0, 36.5), Vector3(2.4, 0.9, 4.0))
+	Props.snow_drift(g, Vector3(32.6, 0, 36.0), Vector3(2.6, 0.8, 3.0))
+	Props.snow_drift(g, Vector3(4.6, 0, 46.2), Vector3(3.6, 0.7, 2.6))
+	Props.block(g, Vector3(22.0, 0.05, 44.0), Vector3(23.0, 0.12, 46.2), "planks")
+	Props.block(g, Vector3(21.95, 0.0, 44.0), Vector3(22.05, 0.08, 46.2), "iron")
+	Props.block(g, Vector3(22.95, 0.0, 44.0), Vector3(23.05, 0.08, 46.2), "iron")
+	# lights: a lantern on the gatepost, a lamp over the yard door, the stable's south-wall lamp by the Thompson
+	Props.block(g, Vector3(20.36, 1.9, 47.9), Vector3(20.72, 2.3, 48.1), "lantern_glass")
+	_lamp("GateLantern", Vector3(20.5, 2.1, 47.4), Color(1.0, 0.68, 0.38), 1.6, 9.0, false, true, 0.25)
+	Props.wall_lamp(g, Vector3(8.0, 2.75, 34.2), 180.0)
+	_lamp("YardDoorLamp", Vector3(8.0, 2.6, 34.9), Color(1.0, 0.72, 0.45), 1.8, 9.0, false, true, 0.15)
+	Props.wall_lamp(g, Vector3(22.0, 2.75, 34.2), 180.0)
+	_lamp("YardWallLamp", Vector3(22.0, 2.6, 34.9), Color(1.0, 0.72, 0.45), 1.4, 8.0, false, true, 0.15)
+	_lamp("YardMoonFill", Vector3(18.0, 6.0, 41.0), Color(0.5, 0.6, 0.85), 0.5, 22.0, false, false)
 
 
 ## A gable roof (ridge along X) over the rectangle a..b (a.y = eave height), with a snow layer on top.
@@ -1432,6 +1532,10 @@ func build_gameplay() -> void:
 		["W_STB_N1", &"STABLE", Vector3(9.0, 0, 22.0), 0.0],
 		["W_STB_N2", &"STABLE", Vector3(14.0, 0, 22.0), 0.0],
 		["W_STB_S", &"STABLE", Vector3(12.0, 0, 34.0), 180.0],
+		["W_YARD_W", &"YARD", Vector3(2.0, 0, 41.0), 90.0],
+		["W_YARD_E", &"YARD", Vector3(34.0, 0, 41.0), -90.0],
+		["W_YARD_S1", &"YARD", Vector3(9.0, 0, 48.0), 180.0],
+		["W_YARD_S2", &"YARD", Vector3(27.0, 0, 48.0), 180.0],
 	]
 	for w: Array in windows:
 		var bar: Node3D = _scripted(Node3D.new(), "res://gravelight/world/barricade.gd", str(w[0]), {
@@ -1453,6 +1557,11 @@ func build_gameplay() -> void:
 		"zone_id": &"STABLE", "kind": &"ground", "min_round": 6}) as Marker3D
 	hay.position = Vector3(22.6, 0, 24.0)
 	gameplay.add_child(hay)
+	# ground spawn: the drift in the yard's south-west corner (round 4+)
+	var mound: Marker3D = _scripted(Marker3D.new(), "res://gravelight/enemies/zombie_spawn.gd", "Spawn_YardMound", {
+		"zone_id": &"YARD", "kind": &"ground", "min_round": 4}) as Marker3D
+	mound.position = Vector3(5.0, 0, 44.5)
+	gameplay.add_child(mound)
 
 	# doors
 	var d1: Node3D = _scripted(Node3D.new(), "res://gravelight/world/door.gd", "Door_Upstairs", {
@@ -1464,6 +1573,10 @@ func build_gameplay() -> void:
 		"door_id": &"door_stable", "opens_zone": &"STABLE", "cost": 1000, "size": Vector3(2.0, DOOR_H, 0.25), "label": "Stable"})
 	d2.position = Vector3(20.0, 0, 16.0)
 	gameplay.add_child(d2)
+	var d4: Node3D = _scripted(Node3D.new(), "res://gravelight/world/door.gd", "Door_Yard", {
+		"door_id": &"door_yard", "opens_zone": &"YARD", "cost": 1250, "size": Vector3(2.0, DOOR_H, 0.25), "label": "The Yard"})
+	d4.position = Vector3(8.0, 0, 34.0)
+	gameplay.add_child(d4)
 
 	build_cellar_gameplay()
 
@@ -1473,6 +1586,7 @@ func build_gameplay() -> void:
 		[&"m1_garand", Vector3(24 - T * 0.5 - 0.04, 1.5, 4.0), 90.0],   # moved from z 12.5 for the cellar door (T-027)
 		[&"mp40", Vector3(T * 0.5 + 0.04, UP_Y + 1.5, 3.4), -90.0],
 		[&"trench_gun", Vector3(6 + T * 0.5 + 0.01, 1.5, 29.5), -90.0],
+		[&"thompson", Vector3(22.0, 1.5, 34 + T * 0.5 + 0.04), 180.0],   # the yard: chalked on the stable's outside wall
 	]
 	for b: Array in buys:
 		var wb: Node3D = _scripted(Node3D.new(), "res://gravelight/world/wall_buy.gd", "WallBuy_" + String(b[0]), {"weapon_id": b[0]})
@@ -1495,6 +1609,7 @@ func build_gameplay() -> void:
 		[&"UPSTAIRS", Vector3(STAIR_X1 * 0.5, 0, 13), Vector3(STAIR_X1, 7, 6)],
 		[&"STABLE", Vector3(15, 0, 28), Vector3(18, 7, 12)],
 		[&"STABLE", Vector3(20, 0, 19), Vector3(4, 3, 6)],
+		[&"YARD", Vector3(18, 0, 41), Vector3(32, 4, 14)],
 	]
 	var zi: int = 0
 	for z: Array in zones:

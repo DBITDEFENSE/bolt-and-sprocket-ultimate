@@ -19,6 +19,10 @@ var _shots: Array = [
 	["stable", Vector3(20, 0, 23.5), 150.0, -8.0],
 	["upstairs_hall", Vector3(20, 3.8, 8), 90.0, -4.0],
 	["outside_wreck", Vector3(30, 0, -4), -60.0, 2.0],
+	["yard_door", Vector3(8, 0.1, 30.5), 180.0, 4.0],
+	["yard", Vector3(9, 0.1, 35.5), 150.0, 4.0],
+	["yard_gate", Vector3(18, 0.1, 40), 180.0, 2.0],
+	["yard_well", Vector3(16, 0.1, 46), -120.0, 2.0],
 ]
 var _out: String = "user://shots"
 var _i: int = 0

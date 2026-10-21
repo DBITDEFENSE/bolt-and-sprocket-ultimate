@@ -89,6 +89,10 @@ func _check_paths() -> void:
 		["outside N -> taproom (must NOT connect)", Vector3(7, 0, -6), Vector3(14, 0, 8), false],
 		["outside W -> outside E (around the inn)", Vector3(-6, 0, 6), Vector3(30, 0, 8), true],
 		["ledge -> upstairs (must NOT connect)", Vector3(2.5, 3.8, -1.5), Vector3(4, 3.8, 3), false],
+		["stable -> the yard (the yard door)", Vector3(15, 0, 29), Vector3(18, 0, 41), true],
+		["yard -> round the well and the cart", Vector3(8, 0, 36), Vector3(31, 0, 46), true],
+		["yard -> the field (must NOT connect)", Vector3(18, 0, 41), Vector3(18, 0, 56), false],
+		["yard -> the cellar's roof (must NOT connect)", Vector3(18, 0, 41), Vector3(30, 0, 22), false],
 	]
 	for c: Array in checks:
 		var path: PackedVector3Array = NavigationServer3D.map_get_path(map_rid, c[1], c[2], true)
