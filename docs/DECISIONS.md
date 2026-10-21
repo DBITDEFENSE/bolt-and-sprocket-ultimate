@@ -252,3 +252,18 @@ Fixes:
   - opened from the planet summary's STAR MAP button, and from the hub once Scrapheap is cleared
   - the full port (cockpit, mission tracker, travel sequence, flyovers) is M4
 - **M3 builders** work against `docs/M3_CONTRACTS.md`: A for the arsenal and Forge, B for Rustvane, C for Nova Plaza, D for enemies and bosses.
+
+**T-030, 2026-10-20: M3 paused at the user's request ("come to a stopping point").**
+- **State:** all four builders' work is committed as "M3 WIP" (not tagged).
+- **Verified:** compile is clean, 404/404 tests pass, and every smoke passes.
+- **Lead changes at the pause:**
+  - `run_tests.sh` timeout 300 → 900 s (the suite now takes about 308 s)
+  - the new line files are added to `VOManager.LINE_SOURCES`
+- **Builder decisions kept:**
+  - Tether-Hook gates are vertical only: Bolt already covers about 31 m flat and 5.4 m up alone.
+  - The Sentinel fights on the Quarry Floor.
+  - Rustvane's shield reveal plays on the Return Relay, before the summary.
+  - Nova walkways add a 2.5 m/s floor carry (the source push alone barely moves a standing Bolt).
+  - The Zoning Board is a controller that spawns 3 pylons.
+  - Bosses run on a new `PatternBoss` base.
+- **Open items:** listed in ROADMAP "M3 status".

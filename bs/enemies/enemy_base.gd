@@ -90,6 +90,8 @@ var tele_light: OmniLight3D
 var nav: NavigationAgent3D
 var hitbox: Area3D
 var opts: Dictionary = {}
+var aura_bonus: float = 0.0             # outgoing-damage bonus from an ally aura (Surge Drone Peak Hours), while aura_t > 0
+var aura_t: float = 0.0
 
 var _built: bool = false
 var _active: bool = false
@@ -135,6 +137,7 @@ func _load_tables() -> void:
 
 
 func _build_body() -> void:
+	EnemyBase.register_lines()
 	add_to_group(&"damageable")
 	add_to_group(&"enemies")
 	collision_layer = LAYER_ENEMY
@@ -595,6 +598,7 @@ func _timers(delta: float) -> void:
 	var r: float = attack_rate()
 	contact_cd -= delta
 	fire_cd -= delta * r
+	aura_t -= delta
 	spawn_invuln -= delta
 	state_t += delta
 	if _alert_delay > 0.0:
@@ -946,7 +950,7 @@ func cancel_attack() -> void:
 func hurt_target(amount: float, knock: float = 6.0, kind: Combat.Type = Combat.Type.KINETIC) -> bool:
 	if target == null:
 		return false
-	var h: Combat.Hit = Combat.Hit.make(amount * dmg_mult, kind, self)
+	var h: Combat.Hit = Combat.Hit.make(amount * out_mult(), kind, self)
 	h.point = target_center()
 	var d: Vector3 = target_pos() - global_position
 	h.dir = Vector3(d.x, 0, d.z).normalized()
@@ -957,6 +961,43 @@ func hurt_target(amount: float, knock: float = 6.0, kind: Combat.Type = Combat.T
 	if target.has_method("take_damage"):
 		return bool(target.call("take_damage", h))
 	return false
+
+
+## Multiplier on everything this enemy deals: NG+ x1.35, Meter Maid elite DOUBLE PARKED (+20%),
+## Surge Drone elite PEAK HOURS aura (+5% per enemy).
+func out_mult() -> float:
+	var m: float = dmg_mult
+	if status.has(&"double_parked"):
+		m *= float(S.get("double_parked", {}).get("damage_mult", 1.2))
+	if aura_t > 0.0:
+		m *= 1.0 + aura_bonus
+	return m
+
+
+## Copies new bs.* lines from enemies.json / bosses.json "lines" into VOManager when its sources don't
+## have them yet (the lead adds these files to VOManager.LINE_SOURCES; until then this keeps them playable).
+static var _lines_registered: bool = false
+
+static func register_lines(force: bool = false) -> void:
+	if _lines_registered and not force:
+		return
+	_lines_registered = true
+	var store: Variant = VOManager.get("_lines")
+	if not store is Dictionary:
+		return
+	for tbl: String in ["bs/enemies", "bs/bosses"]:
+		var t: Variant = Data.table(tbl)
+		if not t is Dictionary:
+			continue
+		var lines: Dictionary = (t as Dictionary).get("lines", {})
+		for k: Variant in lines.keys():
+			if not str(k).begins_with("_") and not VOManager.has_line(str(k)):
+				(store as Dictionary)[str(k)] = lines[k]
+
+
+static func line_text(line_id: String) -> String:
+	EnemyBase.register_lines()
+	return str(VOManager.line(line_id).get("text", ""))
 
 
 ## The one place enemies hurt Bolt: applies LIEN's +15% damage taken. Returns true if damage landed.

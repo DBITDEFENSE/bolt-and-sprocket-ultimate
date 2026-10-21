@@ -74,6 +74,54 @@ func _draw() -> void:
 		_text(font, "%d" % am, c + Vector2(30.0 * k, 22.0 * k), 16.0 * k, Color(1, 0.35, 0.3) if low else Color(1, 1, 1, 0.85), HORIZONTAL_ALIGNMENT_LEFT)
 	if bool(s.get("amplify", false)):
 		_text(font, "AMP", c + Vector2(0, -30.0 * k), 14.0 * k, col)
+	_draw_m3(s, c, k, col, font)
+
+
+## M3 guns: scope, interest ticker, spin-up ring, paint pips, acquisition ring, frost bar, deployable counts and
+## the alt-fire cooldown arc. Every key is optional in hud_state().
+func _draw_m3(s: Dictionary, c: Vector2, k: float, col: Color, font: Font) -> void:
+	var sc: float = float(s.get("scope", 0.0))
+	if sc > 0.01:
+		var r0: float = size.y * 0.42
+		draw_arc(c, r0, 0.0, TAU, 64, Color(0, 0, 0, 0.55 * sc), size.y * 0.25)
+		draw_arc(c, r0 * 0.7, 0.0, TAU, 64, Color(col, 0.5 * sc), 2.0 * k)
+		draw_line(c + Vector2(-r0 * 0.7, 0), c + Vector2(-14 * k, 0), Color(col, 0.6 * sc), 1.0)
+		draw_line(c + Vector2(14 * k, 0), c + Vector2(r0 * 0.7, 0), Color(col, 0.6 * sc), 1.0)
+	if s.has("read"):
+		var w: float = 70.0 * k
+		var rr: Rect2 = Rect2(c + Vector2(-w * 0.5, 46.0 * k), Vector2(w, 4.0 * k))
+		draw_rect(rr, Color(0, 0, 0, 0.5))
+		draw_rect(Rect2(rr.position, Vector2(w * float(s["read"]), rr.size.y)), Color(1, 0.9, 0.5) if bool(s.get("reading", false)) else Color(col, 0.8))
+		if bool(s.get("reading", false)):
+			_text(font, WeaponText.text("bs.weapon.fx.read"), c + Vector2(0, 66.0 * k), 13.0 * k, Color(1, 0.9, 0.5))
+	if s.has("interest"):
+		var it: float = float(s["interest"])
+		var hot: Color = Color.WHITE.lerp(Color(1.0, 0.25, 0.2), clampf((it - 1.0) / maxf(0.01, float(s.get("interest_max", 2.0)) - 1.0), 0.0, 1.0))
+		_text(font, WeaponText.text("bs.weapon.fx.interest") % roundi((it - 1.0) * 100.0), c + Vector2(0, 40.0 * k), 15.0 * k, hot)
+		if bool(s.get("grace", false)):
+			_text(font, WeaponText.text("bs.weapon.fx.grace"), c + Vector2(0, 58.0 * k), 12.0 * k, Color(1, 0.85, 0.3))
+	if s.has("spin"):
+		var sp: float = float(s["spin"])
+		draw_arc(c, 22.0 * k, -PI / 2.0, -PI / 2.0 + TAU * sp, 40, col if sp >= 1.0 else Color(col, 0.5), 3.0 * k)
+		if bool(s.get("door_ready", false)):
+			_text(font, WeaponText.text("bs.weapon.fx.doorbuster"), c + Vector2(0, 44.0 * k), 12.0 * k, col)
+	if s.has("painted"):
+		for i: int in int(s.get("paint_max", 3)):
+			var p: Vector2 = c + Vector2((i - 1) * 12.0 * k, 34.0 * k)
+			draw_circle(p, 4.0 * k, col if i < int(s["painted"]) else Color(0.2, 0.2, 0.22, 0.8))
+		var pp: float = float(s.get("paint_progress", 0.0))
+		if pp > 0.0:
+			draw_arc(c, 16.0 * k, -PI / 2.0, -PI / 2.0 + TAU * pp, 32, col, 2.0 * k)
+	if float(s.get("acquire", 0.0)) > 0.0:
+		draw_arc(c, 26.0 * k, -PI / 2.0, -PI / 2.0 + TAU * float(s["acquire"]), 48, col, 4.0 * k)
+	if s.has("frost"):
+		draw_arc(c, 19.0 * k, PI * 0.15, PI * 0.15 + PI * 0.7 * float(s["frost"]), 24, Color("#cdeeff"), 3.0 * k)
+	for key: Array in [["drones", "drones_max"], ["plants", "plants_max"], ["subs", "subs_max"]]:
+		if s.has(key[0]):
+			_text(font, "%d/%d" % [int(s[key[0]]), int(s[key[1]])], c + Vector2(-30.0 * k, 22.0 * k), 13.0 * k, col, HORIZONTAL_ALIGNMENT_LEFT)
+	var acd: float = float(s.get("alt_cd", 0.0))
+	if acd > 0.0:
+		draw_arc(c, 12.0 * k, -PI / 2.0, -PI / 2.0 + TAU * minf(1.0, acd / 6.0), 20, Color(1, 1, 1, 0.35), 2.0 * k)
 
 
 func _text(font: Font, t: String, at: Vector2, fs: float, col: Color, align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_CENTER) -> void:

@@ -1,0 +1,50 @@
+{
+  "_doc": "Bolt & Sprocket gadgets (BS_LEVELS §0.5). Ownership is BS flag 'gadget.<id>'; GadgetManager.attach_to(bolt) adds the owned ones to Bolt and routes the 'gadget' input action (K / D-pad down) to the primary gadget. Every tuning number lives here. Lines under 'lines' are registered into VOManager by GadgetManager (add 'bs/gadgets' / 'lines' to VOManager.LINE_SOURCES).",
+  "order": ["tether_hook"],
+  "gadgets": {
+    "tether_hook": {
+      "name": "TETHER-HOOK",
+      "script": "res://bs/gadgets/tether_hook.gd",
+      "earned": "Rustvane Canyon, Old Co-op Camp (BS_LEVELS §3.2)",
+      "_src": "BS_LEVELS §0.5 / §3.5 (new; not in the web build)",
+      "acquire_range": 16.0,
+      "acquire_cone_deg": 30.0,
+      "rope_min": 5.0,
+      "rope_max": 14.0,
+      "reel_rate": 10.0,
+      "swing_gravity": 38.0,
+      "pump_accel": 6.0,
+      "max_swing_speed": 18.0,
+      "release_up": 4.0,
+      "land_release_after": 0.3,
+      "max_swing_time": 12.0,
+      "pull_speed": 20.0,
+      "pull_hop": 6.0,
+      "pull_hop_forward": 3.5,
+      "pull_arrive": 1.2,
+      "pull_max_time": 2.5,
+      "pull_land_offset": [0.0, 1.4, 0.0],
+      "mantle_up": 1.2,
+      "mantle_in": 1.4,
+      "mantle_speed": 8.0,
+      "mantle_exit_speed": 2.0,
+      "_pull": "a pull reels to ring + land_offset (on the approach side of the lip, a little above), then mantles: up to mantle_up above the ring, in mantle_in past it (toward the ledge), and steps off at mantle_exit_speed. A ring whose land_offset has no sideways part ends in a pull_hop / pull_hop_forward hop instead.",
+      "refire": 0.25,
+      "fly_time": 0.12,
+      "sprocket_anchor_offset": [0.0, 0.45, 0.0],
+      "weight_bark_every": 4,
+      "weight_bark_cd": 20.0,
+      "colors": {"swing": "#ff9d2e", "pull": "#7ad04a", "cable": "#ffd23e"}
+    }
+  },
+  "lines": {
+    "bs.gadget.tether.name": {"who": "banner", "text": "TETHER-HOOK", "kind": "ui"},
+    "bs.gadget.tether.how": {"who": "hint", "text": "TETHER-HOOK: look at an ORANGE ring and press K / D-pad down to swing. GREEN rings reel you in. Press again or JUMP to let go.", "kind": "ui"},
+    "bs.gadget.tether.no_target": {"who": "hint", "text": "No ring in range. Look straight at an orange or green cable ring.", "kind": "ui"},
+    "bs.gadget.tether.weight.01": {"who": "sprocket", "text": "For the record, my weight limit is one mechanic. ONE. You've been eating.", "kind": "bark"},
+    "bs.gadget.tether.weight.02": {"who": "sprocket", "text": "I am a load-bearing toaster now. Put that on my résumé.", "kind": "bark"},
+    "bs.gadget.tether.weight.03": {"who": "sprocket", "text": "Swing gently. My warranty does not cover being a pendulum.", "kind": "bark"},
+    "bs.gadget.tether.weight.04": {"who": "sprocket", "text": "Holding. Holding. My arms are ninety percent servo and ten percent spite.", "kind": "bark"},
+    "bs.gadget.tether.pull.01": {"who": "sprocket", "text": "Reeling! Tuck your knees, this ring was rated for ore carts.", "kind": "bark"}
+  }
+}

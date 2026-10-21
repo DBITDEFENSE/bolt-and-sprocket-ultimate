@@ -26,16 +26,15 @@ var _mesh: MeshInstance3D
 func _ready() -> void:
 	top_level = true
 	_mesh = MeshInstance3D.new()
-	var s: SphereMesh = SphereMesh.new()
-	s.radius = size
-	s.height = size * 2.0
-	s.radial_segments = 10
-	s.rings = 6
-	_mesh.mesh = s
+	_mesh.mesh = WeaponFX.shot_mesh(str(data.get("shape", "sphere")), size)
 	_mesh.material_override = WeaponFX.glow_mat(color)
 	if stretch > 0.0:
 		_mesh.scale = Vector3(1, 1, stretch)
 	add_child(_mesh)
+
+
+func mesh() -> MeshInstance3D:
+	return _mesh
 
 
 func _physics_process(dt: float) -> void:
@@ -84,7 +83,7 @@ func _physics_process(dt: float) -> void:
 			return
 		return
 	global_position = to
-	if stretch > 0.0 and vel.length_squared() > 0.01:
+	if (stretch > 0.0 or bool(data.get("orient", false))) and vel.length_squared() > 0.01:
 		look_at(global_position + vel, Vector3.UP if absf(vel.normalized().y) < 0.99 else Vector3.RIGHT)
 	# shoot down fragile enemy projectiles (5478)
 	for n2: Node in get_tree().get_nodes_in_group(&"enemy_projectiles"):

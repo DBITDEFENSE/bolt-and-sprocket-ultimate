@@ -7,7 +7,7 @@ Each milestone ends with: tests passing headless, the game launched and played, 
 | M0 | Port inventory, bible, skeleton | done (tag m0) |
 | M1 | Shared core + Bolt vertical slice (Scrapheap Junction) | done (tag m1); gaps listed in T-023 |
 | M2 | Gravelight vertical slice (migration of the built GRAVELIGHT project + §11 on Map 0) | done (tag m2): cellar + 8 machines, lore, slips, playtest fixes (T-024..T-028) |
-| M3 | Full B&S arsenal + Acts 1–2 (Rustvane, Nova Plaza) | **in progress** (4 builders, docs/M3_CONTRACTS.md) |
+| M3 | Full B&S arsenal + Acts 1–2 (Rustvane, Nova Plaza) | **partway (WIP, not tagged)**: see "M3 status" below |
 | M4 | B&S complete campaign | |
 | M5 | Gravelight Map 1 Kaltenbrunn (with §11) | |
 | M6 | B&S side modes & extras | |
@@ -63,6 +63,50 @@ Each milestone ends with: tests passing headless, the game launched and played, 
 - The settings merge.
 
 **Acceptance:** round 15 on Map 0 feels tense and fair, and the existing GRAVELIGHT QA suite passes inside the new project.
+
+## M3 status (paused 2026-10-20, committed as "M3 WIP", not tagged)
+**Verified at the pause:**
+- 349 scripts compile.
+- 404 tests pass.
+- These smokes all pass: Scrapheap, Rustvane, Nova, bosses, arsenal, and GRAVELIGHT Map 0.
+
+**Finished:**
+- **All 16 weapons**, each with V1–V5, alt-fire, Ω and both Signature Mods (`bs/weapons/guns/`, `data/bs/weapons.json`). Shared hit rules include the Super Sprocket ×2.
+- **Omega Forge:** station, UI, and `ForgeDebug` helpers (`bs/forge/`, `ui/bs/forge_ui.gd`). Locked until `blartzRescue` (M4); not placed in any level yet.
+- **Enemies:** 4 Rustvane enemies, plus 4 Nova Plaza enemies and the Zoning Board.
+- **Bosses:** Rustvane Sentinel, The Content Creator, The Algorithm (on `PatternBoss`).
+- **Rustvane Canyon** is complete and playable: the Tether-Hook and gadget framework, the GLAMBOT defection, the shield reveal on the Return Relay, and both boss arenas.
+- **Nova Plaza** is complete and playable: HOA Compliance Eyes, moving walkways, the Permit Office, the Transit Loop, and The Algorithm in FineTree Plaza.
+- **Lead work:**
+  - Super Sprocket's Bulwark and Zip modes
+  - per-planet splash quips
+  - a minimal star map: Scrapheap → Rustvane → Nova Plaza travel, unlocked by clearing the previous planet
+  - all new line files are voiced
+
+**Left to finish M3:**
+1. **Lead integration:**
+   - Public `CutscenePlayer.play_steps` (B and C call its internal `_start`).
+   - `GadgetManager.attach_to(bolt)` from `BSLevel`, for all planets.
+   - Dev-console commands for `ForgeDebug`.
+   - Weapon ad vignettes on `WeaponManager.first_equip`.
+   - Unify the `blartzRescue` / `blartzRescued` flag between `shop.json` and weapons/forge.
+   - Speakers `middleman_a`, `middleman_b`, `statue`.
+   - `BoltMotor` reading the `bs_move_mult` meta (Clearance Rack).
+   - HUD stamps for slowed / clamped / blinded.
+   - Boss music: there's no B&S music system yet; bosses emit `music:push`/`music:pop` beats.
+2. **Cross-builder fixes:**
+   - The Algorithm reverses every walkway on the level; it should filter to its arena.
+   - `delayed_blast.gd` uses a freed source after a boss dies (one script error).
+   - Mallet and Sprocket damage don't apply the gun-only hit rules: MARKED, TERMS APPLY, Braces, armour markdown.
+   - Enemies don't read `silenced`, `acquired`, `marked` or plates (`pop_plate`, `plate_pierce`).
+   - `marked_down_stacks` meta handoff between weapons and enemies.
+3. **Review:**
+   - Rendered screenshot tour of Rustvane: built but not yet looked at.
+   - Bot or human playtest of both planets end to end.
+   - Fix `BS_LEVELS` §3.10: the Sentinel fights on the Quarry Floor.
+   - Then tag `m3`.
+
+**How to resume:** read `docs/M3_CONTRACTS.md` and this list, then work through items 1–3. The builders' full reports are summarised in DECISIONS T-030.
 
 ## M3: Full B&S arsenal + Act 1–2
 All 16 weapons with V1–V5, mods and Signature Mods. Rustvane Canyon complete (Sentinel, Content Creator, GLAMBOT defection, Tether-Hook). The shield reveal. Nova Plaza complete (The Algorithm). The Omega Forge built and testable through the dev console.

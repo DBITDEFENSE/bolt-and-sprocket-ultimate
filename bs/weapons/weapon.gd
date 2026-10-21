@@ -189,6 +189,17 @@ func aim() -> Vector3:
 	return mgr.aim_dir()
 
 
+## Direction from the muzzle to whatever the aim ray hits (world, or the point at max_range): projectiles converge
+## on the reticle even when the gun model's muzzle is off the camera ray (hip height, side offset).
+func fire_dir(max_range: float = 80.0) -> Vector3:
+	var o: Vector3 = origin()
+	var a: Vector3 = aim()
+	var hit: Dictionary = mgr.ray_world(o, o + a * max_range)
+	var p: Vector3 = hit["position"] if not hit.is_empty() else o + a * max_range
+	var d: Vector3 = p - mgr.muzzle_pos()
+	return d.normalized() if d.length() > 1.5 else a
+
+
 func spawn_projectile(pos: Vector3, vel: Vector3, opts: Dictionary = {}) -> BSProjectile:
 	var pr: BSProjectile = BSProjectile.new()
 	pr.weapon = self
@@ -306,6 +317,74 @@ func on_projectile_expire(_pr: BSProjectile) -> void:
 
 func on_projectile_tick(_pr: BSProjectile, _dt: float) -> void:
 	pass
+
+
+## Called by the manager after every hit this gun dealt (killed = the hit killed it).
+func on_hit_dealt(_target: Node3D, _hit: Combat.Hit, _killed: bool) -> void:
+	pass
+
+
+## Called for every EnemyBase hit in the level (EventBus.enemy_hit), from any source.
+func on_any_hit(_enemy: Node, _hit: Combat.Hit, _killed: bool) -> void:
+	pass
+
+
+# ------------------------------------------------------------------ shared targeting helpers
+
+static func alive(e: Node) -> bool:
+	return e != null and is_instance_valid(e) and e.is_inside_tree() and bool(e.call("is_alive"))
+
+
+static func center_of(e: Node3D) -> Vector3:
+	return e.call("get_center") if e.has_method("get_center") else e.global_position
+
+
+## Living enemies (group "enemies"), minus `exclude` and (unless allow_subs) our Hostile Takeover subsidiaries.
+func enemies(exclude: Array = [], allow_subs: bool = false) -> Array[Node3D]:
+	var out: Array[Node3D] = []
+	for n: Node in get_tree().get_nodes_in_group(&"enemies"):
+		var e: Node3D = n as Node3D
+		if e == null or not alive(e) or exclude.has(e) or (not allow_subs and e.has_meta(&"bs_subsidiary")):
+			continue
+		out.append(e)
+	return out
+
+
+func nearest_enemy(pos: Vector3, rng_m: float, exclude: Array = [], min_d: float = 0.0) -> Node3D:
+	var best: Node3D = null
+	var bd: float = rng_m
+	for e: Node3D in enemies(exclude):
+		var dd: float = center_of(e).distance_to(pos)
+		if dd < bd and dd >= min_d:
+			bd = dd
+			best = e
+	return best
+
+
+## The enemy nearest the aim ray inside a cone (dot > min_dot) within range, with line of sight.
+func aimed_enemy(rng_m: float, min_dot: float, allow_subs: bool = false) -> Node3D:
+	var best: Node3D = null
+	var bs: float = min_dot
+	var from: Vector3 = origin()
+	var dir: Vector3 = aim()
+	for e: Node3D in enemies([], allow_subs):
+		var to: Vector3 = center_of(e) - from
+		if to.length() > rng_m:
+			continue
+		var a: float = to.normalized().dot(dir)
+		if a > bs and mgr.ray_world(from, center_of(e)).is_empty():
+			bs = a
+			best = e
+	return best
+
+
+func shake(a: float) -> void:
+	if mgr != null and mgr.bolt != null and mgr.bolt.camera != null:
+		mgr.bolt.camera.shake(a)
+
+
+func tier_mul() -> float:
+	return WeaponData.visual_mul(mod_tier("dmg"))
 
 
 func hud_state() -> Dictionary:

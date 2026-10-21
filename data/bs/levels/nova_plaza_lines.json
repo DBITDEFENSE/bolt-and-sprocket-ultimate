@@ -1,0 +1,605 @@
+{
+ "_doc": "Level-owned lines for Nova Plaza (bs.nova.*), same shape as scrapheap_lines.json (id -> who/text/kind). LevelKit.register_lines merges them into VOManager at level load; the lead adds bs/levels/nova_plaza_lines to VOManager.LINE_SOURCES. Original lines (st.nova*, cs.nova*, q.q4*, memo.16-20/38, code.*) stay in the story data and are referenced by id.",
+ "lines": {
+  "bs.nova.sign_welcome": {
+   "who": "sign",
+   "text": "WELCOME HOME, RESIDENT",
+   "kind": "sign"
+  },
+  "bs.nova.sign_perimeter": {
+   "who": "sign",
+   "text": "HOA PERIMETER\nRESIDENTS MAY NOT LEAVE UNTIL BALANCE IS PAID",
+   "kind": "sign"
+  },
+  "bs.nova.sign_grandfathered": {
+   "who": "sign",
+   "text": "GRANDFATHERED",
+   "kind": "sign"
+  },
+  "bs.nova.sign_civic": {
+   "who": "sign",
+   "text": "CIVIC COMPLIANCE CENTER",
+   "kind": "sign"
+  },
+  "bs.nova.sign_statue": {
+   "who": "sign",
+   "text": "THE IDEAL RESIDENT\n(ABSENT)",
+   "kind": "sign"
+  },
+  "bs.nova.sign_civic_station": {
+   "who": "sign",
+   "text": "NOVA LOOP · CIVIC CENTER STATION",
+   "kind": "sign"
+  },
+  "bs.nova.sign_hub_station": {
+   "who": "sign",
+   "text": "HUB STATION\nOUT OF SERVICE: NO RESIDENTS",
+   "kind": "sign"
+  },
+  "bs.nova.sign_hoa_gate": {
+   "who": "sign",
+   "text": "NOVA PLAZA HOA DISTRICT\nCOMPLIANCE IS A LIFESTYLE",
+   "kind": "sign"
+  },
+  "bs.nova.sign_clubhouse": {
+   "who": "sign",
+   "text": "HOA CLUBHOUSE",
+   "kind": "sign"
+  },
+  "bs.nova.sign_rules": {
+   "who": "sign",
+   "text": "CLUBHOUSE RULES\n1. NO RUNNING\n2. NO HORSEPLAY\n3. NO JUMPING ON THE LAWN\nViolators will be issued a VARIANCE.\n(Variances are a violation.)",
+   "kind": "sign"
+  },
+  "bs.nova.sign_notices": {
+   "who": "sign",
+   "text": "NOTICES",
+   "kind": "sign"
+  },
+  "bs.nova.sign_pump_closet": {
+   "who": "sign",
+   "text": "PUMP CLOSET\nAUTHORIZED FOUNTAINS ONLY",
+   "kind": "sign"
+  },
+  "bs.nova.sign_server_closet": {
+   "who": "sign",
+   "text": "RESIDENT REWARDS\nSERVER CLOSET",
+   "kind": "sign"
+  },
+  "bs.nova.home_notice": {
+   "who": "sign",
+   "text": "VACANT\nBALANCE DUE",
+   "kind": "sign"
+  },
+  "bs.nova.home_placard": {
+   "who": "sign",
+   "text": "FINED",
+   "kind": "sign"
+  },
+  "bs.nova.sign_underpass": {
+   "who": "sign",
+   "text": "THE UNDERPASS\nWhere the fined went when the fines came due",
+   "kind": "sign"
+  },
+  "bs.nova.sign_soup": {
+   "who": "sign",
+   "text": "SOUP LINE\n(NO SOUP)",
+   "kind": "sign"
+  },
+  "bs.nova.sign_parking": {
+   "who": "sign",
+   "text": "PERMIT PARKING ONLY",
+   "kind": "sign"
+  },
+  "bs.nova.sign_tow": {
+   "who": "sign",
+   "text": "TOW-AWAY ZONE\nEVEN FOR FEET",
+   "kind": "sign"
+  },
+  "bs.nova.sign_consumption": {
+   "who": "sign",
+   "text": "THE CONSUMPTION ZONE™",
+   "kind": "sign"
+  },
+  "bs.nova.sign_permits": {
+   "who": "sign",
+   "text": "DEPARTMENT OF PERMITS\nTAKE A NUMBER",
+   "kind": "sign"
+  },
+  "bs.nova.sign_now_serving": {
+   "who": "sign",
+   "text": "NOW SERVING: 0\nYOUR NUMBER: 4,051,227",
+   "kind": "sign"
+  },
+  "bs.nova.sign_counter": {
+   "who": "sign",
+   "text": "PERMITS: APPROACH · EXISTENCE · PERMITS",
+   "kind": "sign"
+  },
+  "bs.nova.sign_basement": {
+   "who": "sign",
+   "text": "RECORDS BASEMENT",
+   "kind": "sign"
+  },
+  "bs.nova.sign_janitorial": {
+   "who": "sign",
+   "text": "JANITORIAL\nDO NOT TELL THE BOTS",
+   "kind": "sign"
+  },
+  "bs.nova.sign_records": {
+   "who": "sign",
+   "text": "RECORDS HALLWAY\nEVERY FINE, FOREVER",
+   "kind": "sign"
+  },
+  "bs.nova.sign_cancellations": {
+   "who": "sign",
+   "text": "CANCELLATIONS DEPARTMENT",
+   "kind": "sign"
+  },
+  "bs.nova.sign_vent": {
+   "who": "sign",
+   "text": "VENTILATION\nPEAK PRICING IN EFFECT",
+   "kind": "sign"
+  },
+  "bs.nova.sign_pump_room": {
+   "who": "sign",
+   "text": "PUMP ROOM\nDO NOT OPEN — WORK ORDER PENDING",
+   "kind": "sign"
+  },
+  "bs.nova.sign_finetree": {
+   "who": "sign",
+   "text": "FINETREE™ PLAZA",
+   "kind": "sign"
+  },
+  "bs.nova.sign_variance": {
+   "who": "sign",
+   "text": "VARIANCE",
+   "kind": "sign"
+  },
+  "bs.nova.sign_permit": {
+   "who": "sign",
+   "text": "PERMIT",
+   "kind": "sign"
+  },
+  "bs.nova.sign_service": {
+   "who": "sign",
+   "text": "SERVICE LEVEL\nNO RESIDENT ACCESS",
+   "kind": "sign"
+  },
+  "bs.nova.sign_dead_train": {
+   "who": "sign",
+   "text": "OUT OF SERVICE\nSINCE THE LAST RESIDENT",
+   "kind": "sign"
+  },
+  "bs.nova.sign_spur": {
+   "who": "sign",
+   "text": "SPUR CLOSED",
+   "kind": "sign"
+  },
+  "bs.nova.sign_air": {
+   "who": "sign",
+   "text": "AIR — PEAK PRICING",
+   "kind": "sign"
+  },
+  "bs.nova.eye_label": {
+   "who": "sign",
+   "text": "COMPLIANCE EYE™",
+   "kind": "sign"
+  },
+  "bs.nova.train_sign": {
+   "who": "sign",
+   "text": "NOVA LOOP · NEXT STOP: NOBODY",
+   "kind": "sign"
+  },
+  "bs.nova.complaint_kiosk": {
+   "who": "sign",
+   "text": "FILE A COMPLAINT",
+   "kind": "sign"
+  },
+  "bs.nova.fine_o_meter": {
+   "who": "sign",
+   "text": "FINE-O-METER",
+   "kind": "sign"
+  },
+  "bs.nova.fine_o_meter_screen": {
+   "who": "sign",
+   "text": "$ $ $",
+   "kind": "sign"
+  },
+  "bs.nova.algorithm_wall": {
+   "who": "sign",
+   "text": "RECOMMENDED FOR YOU",
+   "kind": "sign"
+  },
+  "bs.nova.ad_welcome": {
+   "who": "sign",
+   "text": "NOVA PLAZA\nLIVE HERE (DO NOT LIVE HERE)",
+   "kind": "sign"
+  },
+  "bs.nova.ad_hoa": {
+   "who": "sign",
+   "text": "YOUR LAWN IS 2 mm OVER REGULATION",
+   "kind": "sign"
+  },
+  "bs.nova.ad_mall": {
+   "who": "sign",
+   "text": "THE CONSUMPTION ZONE™\nNOW CLOSED FOR SHOPPING",
+   "kind": "sign"
+  },
+  "bs.nova.ad_air": {
+   "who": "sign",
+   "text": "AIR PREMIUM™\nBREATHE RESPONSIBLY",
+   "kind": "sign"
+  },
+  "bs.nova.ad_finetree_live": {
+   "who": "sign",
+   "text": "FINETREE™ LIVE\nNEW FINE ISSUED: BOLT\nUNAUTHORIZED HEROISM (2ND OFFENSE)",
+   "kind": "sign"
+  },
+  "bs.nova.ad_surge": {
+   "who": "sign",
+   "text": "HIGH DEMAND IN YOUR AREA",
+   "kind": "sign"
+  },
+  "bs.nova.ad_hoa_fines": {
+   "who": "sign",
+   "text": "THIS MONTH'S MOST FINED HOME: ALL OF THEM",
+   "kind": "sign"
+  },
+  "bs.nova.fine_01": {
+   "who": "sign",
+   "text": "LOITERING · 40 BOLTS",
+   "kind": "sign"
+  },
+  "bs.nova.fine_02": {
+   "who": "sign",
+   "text": "UNAPPROVED SMILING · 15",
+   "kind": "sign"
+  },
+  "bs.nova.fine_03": {
+   "who": "sign",
+   "text": "LAWN TOO GREEN · 90",
+   "kind": "sign"
+  },
+  "bs.nova.fine_04": {
+   "who": "sign",
+   "text": "BREATHING (PEAK) · 12",
+   "kind": "sign"
+  },
+  "bs.nova.fine_05": {
+   "who": "sign",
+   "text": "EXISTING · 300",
+   "kind": "sign"
+  },
+  "bs.nova.fine_06": {
+   "who": "sign",
+   "text": "LATE FEE ON A LATE FEE · 77",
+   "kind": "sign"
+  },
+  "bs.nova.fine_07": {
+   "who": "sign",
+   "text": "LEAVING · BALANCE DUE",
+   "kind": "sign"
+  },
+  "bs.nova.fine_08": {
+   "who": "sign",
+   "text": "STAYING · BALANCE DUE",
+   "kind": "sign"
+  },
+  "bs.nova.relay_pad": {
+   "who": "banner",
+   "text": "LANDING PAD",
+   "kind": "ui"
+  },
+  "bs.nova.relay_civic": {
+   "who": "banner",
+   "text": "CIVIC CENTER",
+   "kind": "ui"
+  },
+  "bs.nova.relay_hoa": {
+   "who": "banner",
+   "text": "HOA DISTRICT",
+   "kind": "ui"
+  },
+  "bs.nova.relay_underpass": {
+   "who": "banner",
+   "text": "THE UNDERPASS · GATE",
+   "kind": "ui"
+  },
+  "bs.nova.relay_permit": {
+   "who": "banner",
+   "text": "PERMIT OFFICE",
+   "kind": "ui"
+  },
+  "bs.nova.relay_finetree": {
+   "who": "banner",
+   "text": "FINETREE DECK",
+   "kind": "ui"
+  },
+  "bs.nova.board_prompt": {
+   "who": "hint",
+   "text": "Board the Nova Loop",
+   "kind": "ui"
+  },
+  "bs.nova.vending_prompt": {
+   "who": "hint",
+   "text": "AIR PREMIUM™ vending machine",
+   "kind": "ui"
+  },
+  "bs.nova.take_number_prompt": {
+   "who": "hint",
+   "text": "Take a number",
+   "kind": "ui"
+  },
+  "bs.nova.counter_prompt": {
+   "who": "hint",
+   "text": "Request a Permit to Approach",
+   "kind": "ui"
+  },
+  "bs.nova.obj_stamps": {
+   "who": "ui",
+   "text": "Get an HOA Variance (HOA District, west) and a Permit to Approach (Permit Office, east)",
+   "kind": "ui"
+  },
+  "bs.nova.obj_train": {
+   "who": "ui",
+   "text": "Ride the Nova Loop from the Civic Center station to the FineTree",
+   "kind": "ui"
+  },
+  "bs.nova.obj_core": {
+   "who": "ui",
+   "text": "Grab the Keystone Core behind the server wall",
+   "kind": "ui"
+  },
+  "bs.nova.obj_exit": {
+   "who": "ui",
+   "text": "Back to the landing pad: the Return Relay is lit",
+   "kind": "ui"
+  },
+  "bs.nova.variance_banner": {
+   "who": "banner",
+   "text": "HOA VARIANCE ISSUED",
+   "kind": "ui"
+  },
+  "bs.nova.variance_sub": {
+   "who": "banner",
+   "text": "Officially in contravention",
+   "kind": "ui"
+  },
+  "bs.nova.contravention_banner": {
+   "who": "banner",
+   "text": "FOUND IN CONTRAVENTION",
+   "kind": "ui"
+  },
+  "bs.nova.contravention_sub": {
+   "who": "banner",
+   "text": "A variance has been printed at the clubhouse counter",
+   "kind": "ui"
+  },
+  "bs.nova.permit_banner": {
+   "who": "banner",
+   "text": "PERMIT TO APPROACH",
+   "kind": "ui"
+  },
+  "bs.nova.permit_sub": {
+   "who": "banner",
+   "text": "Valid for one (1) approach",
+   "kind": "ui"
+  },
+  "bs.nova.stamps_banner": {
+   "who": "banner",
+   "text": "STAMPS COMPLETE",
+   "kind": "ui"
+  },
+  "bs.nova.stamps_sub": {
+   "who": "banner",
+   "text": "The Nova Loop will now carry you",
+   "kind": "ui"
+  },
+  "bs.nova.rewards_banner": {
+   "who": "banner",
+   "text": "RESIDENT REWARDS REBOOTED",
+   "kind": "ui"
+  },
+  "bs.nova.rewards_sub": {
+   "who": "banner",
+   "text": "120 bolts for the last resident standing",
+   "kind": "ui"
+  },
+  "bs.nova.fares_banner": {
+   "who": "banner",
+   "text": "LOST FARES",
+   "kind": "ui"
+  },
+  "bs.nova.fares_sub": {
+   "who": "banner",
+   "text": "100 bolts nobody rode for",
+   "kind": "ui"
+  },
+  "bs.nova.cushion_banner": {
+   "who": "banner",
+   "text": "THE SPARE BENCH CUSHION",
+   "kind": "ui"
+  },
+  "bs.nova.cushion_sub": {
+   "who": "banner",
+   "text": "The Squatter will be insufferable about this",
+   "kind": "ui"
+  },
+  "bs.nova.plaza_banner": {
+   "who": "banner",
+   "text": "PERMIT PARKING ONLY",
+   "kind": "ui"
+  },
+  "bs.nova.tow_banner": {
+   "who": "banner",
+   "text": "TOW ZONE",
+   "kind": "ui"
+  },
+  "bs.nova.tow_sub": {
+   "who": "banner",
+   "text": "GLAMBOT Pop-Up Segment: survive five waves",
+   "kind": "ui"
+  },
+  "bs.nova.tow_done": {
+   "who": "banner",
+   "text": "TOW ZONE CLEARED",
+   "kind": "ui"
+  },
+  "bs.nova.tow_done_sub": {
+   "who": "banner",
+   "text": "220 bolts, nothing towed",
+   "kind": "ui"
+  },
+  "bs.nova.hint_walkway": {
+   "who": "hint",
+   "text": "Moving walkways carry you along their arrows. Stand still and enjoy the ride.",
+   "kind": "ui"
+  },
+  "bs.nova.hint_violation": {
+   "who": "hint",
+   "text": "COMPLIANCE EYE! Sprinting, jumping on a walkway or fighting inside its yellow cone reverses every walkway in the district. Throw the mallet at an Eye to blind it for 20 s.",
+   "kind": "ui"
+  },
+  "bs.nova.hint_rules": {
+   "who": "hint",
+   "text": "Clubhouse rules: NO RUNNING, NO HORSEPLAY, NO JUMPING ON THE LAWN. Break all three in front of the three Eyes to be issued a variance.",
+   "kind": "ui"
+  },
+  "bs.nova.hint_hall": {
+   "who": "hint",
+   "text": "The take-a-number hall: ride the walkways to the counter. They reverse whenever an Eye logs a violation.",
+   "kind": "ui"
+  },
+  "bs.nova.hint_train": {
+   "who": "hint",
+   "text": "Both stamps! Board the Nova Loop at the Civic Center station, up the long ramp.",
+   "kind": "ui"
+  },
+  "bs.nova.hint_plaza": {
+   "who": "hint",
+   "text": "Feed the Algorithm paperwork: punt the complaint canisters into the intake slots on its wall.",
+   "kind": "ui"
+  },
+  "bs.nova.hint_updraft": {
+   "who": "hint",
+   "text": "A ventilation updraft! Jump in and ride it up.",
+   "kind": "ui"
+  },
+  "bs.nova.hint_lamps": {
+   "who": "hint",
+   "text": "Smart lamp posts carry orange anchor rings: Tether-Hook points.",
+   "kind": "ui"
+  },
+  "bs.nova.train_locked": {
+   "who": "pa",
+   "text": "NOW BOARDING: RESIDENTS HOLDING AN HOA VARIANCE AND A PERMIT TO APPROACH. CURRENT ELIGIBLE RESIDENTS: ZERO.",
+   "kind": "bark"
+  },
+  "bs.nova.ticket_taken": {
+   "who": "pa",
+   "text": "YOUR NUMBER IS 4,051,227. NOW SERVING: 0. PLEASE ENJOY THE WALKWAYS.",
+   "kind": "bark"
+  },
+  "bs.nova.ticket_again": {
+   "who": "sprocket",
+   "text": "You already have a number, Bolt. It's very large. Treasure it.",
+   "kind": "bark"
+  },
+  "bs.nova.counter_take_number": {
+   "who": "pa",
+   "text": "PLEASE TAKE A NUMBER.",
+   "kind": "bark"
+  },
+  "bs.nova.counter_permit": {
+   "who": "pa",
+   "text": "NOW SERVING: 4,051,227. CONGRATULATIONS. YOU MAY APPROACH. DO NOT APPROACH TOO CLOSELY.",
+   "kind": "bark"
+  },
+  "bs.nova.counter_done": {
+   "who": "pa",
+   "text": "YOUR PERMIT IS VALID. YOUR PERMIT IS BEING WATCHED.",
+   "kind": "bark"
+  },
+  "bs.nova.variance_line": {
+   "who": "sprocket",
+   "text": "We broke every rule they had and they gave us paperwork for it. I love bureaucracy. I hate that I love it.",
+   "kind": "bark"
+  },
+  "bs.nova.contravention_line": {
+   "who": "pa",
+   "text": "RESIDENT FOUND IN CONTRAVENTION. A VARIANCE HAS BEEN ISSUED. THANK YOU FOR YOUR NONCOMPLIANCE.",
+   "kind": "bark"
+  },
+  "bs.nova.stamps_line": {
+   "who": "sprocket",
+   "text": "A variance AND a permit. Bolt, we're the first legal residents Nova Plaza's had in years. The monorail's ours.",
+   "kind": "bark"
+  },
+  "bs.nova.pa_violation_sprint": {
+   "who": "pa",
+   "text": "VIOLATION LOGGED: RUNNING. WALKWAYS WILL NOW REVERSE FOR YOUR CONVENIENCE.",
+   "kind": "bark"
+  },
+  "bs.nova.pa_violation_walkway_jump": {
+   "who": "pa",
+   "text": "VIOLATION LOGGED: JUMPING ON A WALKWAY. MOVING FLOORS ARE FOR STANDING.",
+   "kind": "bark"
+  },
+  "bs.nova.pa_violation_fight": {
+   "who": "pa",
+   "text": "VIOLATION LOGGED: HORSEPLAY. PLEASE BE VIOLENT QUIETLY.",
+   "kind": "bark"
+  },
+  "bs.nova.pa_violation_jump": {
+   "who": "pa",
+   "text": "VIOLATION LOGGED: JUMPING. THE GROUND IS THERE FOR A REASON.",
+   "kind": "bark"
+  },
+  "bs.nova.pa_rule_run": {
+   "who": "pa",
+   "text": "RULE 1 VIOLATED: NO RUNNING. YOU ARE ONE STEP CLOSER TO A VARIANCE.",
+   "kind": "bark"
+  },
+  "bs.nova.pa_rule_horseplay": {
+   "who": "pa",
+   "text": "RULE 2 VIOLATED: NO HORSEPLAY. NOTED. FILED. ADMIRED.",
+   "kind": "bark"
+  },
+  "bs.nova.pa_rule_lawn": {
+   "who": "pa",
+   "text": "RULE 3 VIOLATED: NO JUMPING ON THE LAWN. THE LAWN HAS BEEN INFORMED.",
+   "kind": "bark"
+  },
+  "bs.nova.underpass_01": {
+   "who": "squat",
+   "text": "\"I had a house. Then I had a fine for the house. Now I just have the fine.\"",
+   "kind": "bark"
+  },
+  "bs.nova.underpass_02": {
+   "who": "squat",
+   "text": "\"The soup line's been empty since the soup got a parking ticket.\"",
+   "kind": "bark"
+  },
+  "bs.nova.underpass_03": {
+   "who": "intern",
+   "text": "\"They fined me for sleeping under the highway. Then they fined me for the highway.\"",
+   "kind": "bark"
+  },
+  "bs.nova.underpass_04": {
+   "who": "intern",
+   "text": "\"Cardboard's still free. The HOA has formed a committee about that.\"",
+   "kind": "bark"
+  },
+  "bs.nova.qhint_q4a": {
+   "who": "sprocket",
+   "text": "Hear that whirring? Ticket printers. A Meter Maid's close, and she's already writing.",
+   "kind": "bark"
+  },
+  "bs.nova.qhint_q4b": {
+   "who": "sprocket",
+   "text": "Water gurgling in a pipe. One of the Squatter's fountain chips is around here.",
+   "kind": "bark"
+  }
+ }
+}

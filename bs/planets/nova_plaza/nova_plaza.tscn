@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://bs/planets/nova_plaza/nova_plaza.gd" id="1_nova"]
+
+[node name="NovaPlaza" type="Node3D"]
+script = ExtResource("1_nova")
+level_id = "nova_plaza"
+level_name = "NOVA PLAZA"
+planet_index = 5

@@ -34,7 +34,7 @@ func release(c: float, held: float) -> void:
 	if not use_ammo(1):
 		return
 	var tm: float = WeaponData.visual_mul(mod_tier("dmg"))
-	var dir: Vector3 = aim()
+	var dir: Vector3 = fire_dir()
 	var pr: BSProjectile = spawn_projectile(mgr.muzzle_pos(), dir * (P("speed", 20.0) + P("speed_per_charge", 6.0) * c), {
 		"gravity": P("gravity", 4.0), "life": P("life", 3.0), "size": (0.32 + c * 0.26) * tm * 0.6,
 		"dmg": dmg(float(d.get("damage", 30)) + P("dmg_per_charge", 35.0) * c) * mul,

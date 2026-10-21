@@ -163,3 +163,20 @@ class DebrisChunk extends Node3D:
 			scale *= maxf(0.0, 1.0 - delta * 3.5)
 		if life <= 0.0:
 			queue_free()
+
+
+## A thin glowing bar from a to b (beam guide lines, links). Creates the mesh when `mi` is null.
+static func segment(parent: Node3D, mi: MeshInstance3D, a: Vector3, b: Vector3, thickness: float, c: Color, alpha: float = 0.35) -> MeshInstance3D:
+	if mi == null:
+		mi = box(parent, Vector3.ONE, Vector3.ZERO, glow(c, alpha))
+		mi.set_meta(&"no_rim", true)
+	if not mi.is_inside_tree():
+		return mi
+	var d: Vector3 = b - a
+	var l: float = maxf(d.length(), 0.01)
+	mi.global_position = a + d * 0.5
+	var fwd: Vector3 = d / l
+	var up: Vector3 = Vector3.UP if absf(fwd.dot(Vector3.UP)) < 0.98 else Vector3.RIGHT
+	var bb: Basis = Basis.looking_at(fwd, up)
+	mi.global_basis = Basis(bb.x * thickness, bb.y * thickness, bb.z * l)
+	return mi

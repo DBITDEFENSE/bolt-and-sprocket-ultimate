@@ -6,4 +6,4 @@ GODOT="${GODOT:-tools/dl_godot/Godot_v4.7.2-stable_win64_console.exe}"
 if [ ! -d .godot ]; then
   timeout 200 "$GODOT" --headless --editor --quit-after 300 --path . >/dev/null 2>&1
 fi
-timeout 300 "$GODOT" --headless --path . -s addons/gut/gut_cmdln.gd -gconfig=res://.gutconfig.json
+timeout 900 "$GODOT" --headless --path . -s addons/gut/gut_cmdln.gd -gconfig=res://.gutconfig.json

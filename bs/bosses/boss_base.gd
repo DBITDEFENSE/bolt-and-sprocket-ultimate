@@ -11,10 +11,14 @@ extends EnemyBase
 ## Immune to freeze, dance, root, clump, launch, stun (except BREAK), acquire; SERVED works.
 ## Events: EventBus.boss_started / boss_health (every physics frame while fighting) / boss_defeated.
 ## The title card plays once per save (flag "boss_intro_<id>").
+## Music: there is no B&S music system yet, so a fight emits music_cue(cue, true) on start and (cue, false) on
+## defeat, and mirrors it on EventBus.story_beat as "music:push:<cue>" / "music:pop:<cue>" (cue = bosses.json
+## "<boss>.music", default "bs_boss_<id>"). The lead's music system can listen to either.
 
 signal phase_changed(phase: int)
 signal broke
 signal fight_started
+signal music_cue(cue: String, push: bool)
 
 var boss_id: StringName = &""
 var display_name: String = ""
@@ -33,19 +37,8 @@ var _line_queue: Array = []       # [[seconds_left, line_id], ...]
 
 
 ## Copies new bs.boss.* lines from bosses.json into VOManager when its index doesn't have them yet.
-static func register_lines() -> void:
-	var t: Dictionary = Data.table("bs/bosses")
-	var lines: Dictionary = t.get("lines", {})
-	var store: Variant = VOManager.get("_lines")
-	if not store is Dictionary:
-		return
-	for k: Variant in lines.keys():
-		if not VOManager.has_line(str(k)):
-			(store as Dictionary)[str(k)] = lines[k]
-
-
-static func line_text(line_id: String) -> String:
-	return str(VOManager.line(line_id).get("text", ""))
+static func register_lines(force: bool = false) -> void:
+	EnemyBase.register_lines(force)
 
 
 func _load_tables() -> void:
@@ -126,7 +119,18 @@ func start_fight() -> void:
 	EventBus.banner.emit(display_name, line_text(str(L.get("start_banner_sub", "code.bossStart.01"))), 2.2)
 	if L.has("aggro"):
 		queue_line(str(L["aggro"]), 0.0 if not L.has("intro") else float(L.get("intro_gap", 6.0)) * (L["intro"] as Array).size())
+	_music(true)
 	fight_started.emit()
+
+
+func music_id() -> String:
+	return str(bdef.get("music", "bs_boss_%s" % boss_id))
+
+
+func _music(push: bool) -> void:
+	var cue: String = music_id()
+	music_cue.emit(cue, push)
+	EventBus.story_beat.emit("music:%s:%s" % ["push" if push else "pop", cue])
 
 
 ## Plays a line after `delay` seconds of fight time (0 = now).
@@ -166,7 +170,10 @@ func _modify_damage(amount: float, hit: Combat.Hit, crit: bool) -> float:
 		if phase_invuln > 0.0:
 			return 0.0
 	var a: float = amount
-	if not crit:
+	var ov: float = _armor_override(hit, crit)
+	if ov >= 0.0:
+		a *= ov
+	elif not crit:
 		a *= float(BR["armor"])
 	if status.has(&"dancing"):
 		a *= float(S["dancing"]["boss_damage_mult"])
@@ -227,6 +234,7 @@ func _enter_phase(p: int) -> void:
 
 func _on_died(hit: Combat.Hit) -> void:
 	defeated = true
+	_music(false)
 	EventBus.boss_health.emit(boss_id, 0.0, 0.0)
 	EventBus.boss_defeated.emit(boss_id)
 	var L: Dictionary = bdef.get("lines", {})
@@ -254,6 +262,12 @@ func _boss_activate() -> void:
 
 func _boss_modify(amount: float, _hit: Combat.Hit, _crit: bool) -> float:
 	return amount
+
+
+## A damage multiplier that replaces the 45% armour rule for this hit (>= 0), or -1 for the default.
+## (The Content Creator's SPOTLIGHT SHIELD: 25% everywhere, even on the weak point.)
+func _armor_override(_hit: Combat.Hit, _crit: bool) -> float:
+	return -1.0
 
 
 func _boss_on_hurt(_hit: Combat.Hit, _amount: float, _crit: bool) -> void:

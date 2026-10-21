@@ -1,58 +1,865 @@
 {
   "_doc": "B&S boss tuning (BS_ENEMIES.md §4). 'break' is the v13 BREAK meter exactly as damageEnemy L5289-5296 / bossBreak L7628 / updateEnemies L6387-6390. 'lines' are new bs.boss.* lines registered with VOManager at runtime if the line index does not have them yet.",
-  "break": {"threshold_frac": 0.12, "decay_frac_per_s": 0.035, "crit_fill_mult": 2.0, "stagger": 3.2, "cooldown": 14.0, "damage_mult": 1.5, "slowmo": 0.28, "armor": 0.45, "phase_invuln": 1.2,
-            "barks": ["code.bossBreak.03", "code.bossBreak.04", "code.bossBreak.05"], "bark_chance": 0.6, "banner": ["code.bossBreak.01", "code.bossBreak.02"]},
+  "break": {
+    "threshold_frac": 0.12,
+    "decay_frac_per_s": 0.035,
+    "crit_fill_mult": 2.0,
+    "stagger": 3.2,
+    "cooldown": 14.0,
+    "damage_mult": 1.5,
+    "slowmo": 0.28,
+    "armor": 0.45,
+    "phase_invuln": 1.2,
+    "barks": [
+      "code.bossBreak.03",
+      "code.bossBreak.04",
+      "code.bossBreak.05"
+    ],
+    "bark_chance": 0.6,
+    "banner": [
+      "code.bossBreak.01",
+      "code.bossBreak.02"
+    ]
+  },
   "repo_tron": {
     "name": "REPO-TRON",
     "src": "spawnEnemy 'repotron' hp 380 L6276; killEnemy drops 40; makeRepoTron L7039; updateRepoTron L7072-7194",
-    "hp": 380, "drops": 40, "trophy": "paid_in_full", "radius": 2.8, "height": 4.8,
+    "hp": 380,
+    "drops": 40,
+    "trophy": "paid_in_full",
+    "radius": 2.8,
+    "height": 4.8,
     "chunk_color": "#8a5a30",
     "aggro_radius": 24.0,
-    "phases": [0.66, 0.33],
+    "phases": [
+      0.66,
+      0.33
+    ],
     "hold_distance": 7.0,
-    "move_speed": [2.4, 3.4, 3.4],
-    "turn_idle": 2.2, "turn_busy": 0.8,
+    "move_speed": [
+      2.4,
+      3.4,
+      3.4
+    ],
+    "turn_idle": 2.2,
+    "turn_busy": 0.8,
     "first_idle": 1.6,
-    "swipe": {"range": 7.5, "tele": [0.62, 0.62, 0.5], "ring_offset": 3.2, "ring_r": 4.6, "dmg": 18, "knock": 12.0, "arc_dot": 0.25, "idle_after": [1.7, 1.0, 0.9], "roll": 0.5},
-    "magnet": {"min_range": 6.0, "tele": 0.75, "pull_time": 1.5, "pull_accel": 26.0, "car_every": [0.5, 0.35, 0.35], "car_first": 0.2, "car_dmg": 14, "car_r": 2.2, "car_height": 9.0, "car_gravity": 22.0, "car_ring": 0.55, "idle_after": 1.6, "roll": [0.8, 0.55, 0.55], "steal_radius": 4.0, "bark_chance": 0.35},
-    "charge": {"tele": 0.6, "time": 1.1, "speed": [14.0, 14.0, 17.0], "dmg": 20, "knock": 13.0, "lane_len": 16.0, "lane_w": 4.0, "idle_after": [1.5, 1.5, 0.9], "roll": 0.85, "wall_stun": 1.5, "wall_break_frac": 0.4, "home_leash": 30.0},
-    "compact": {"tele": 0.95, "ring_r": 9.0, "wave_speed": [10.5, 13.0, 13.0], "wave_dmg": 16, "break_frac_max_hp": 0.03, "idle_after": [2.4, 1.6, 1.6], "recovery_window": 1.2, "push_back": 2.0, "push_break_frac_max_hp": 0.03},
-    "hook": {"hp": 60, "break_frac": 0.3, "steal_bark_delay": 4.0},
-    "adds": {"id": "scrap_mutt", "every": 11.0, "count": 2, "max_alive": 3, "first": 6.0, "spread": 5.0, "leash": 30.0},
-    "walls": {"advance": 1.0, "every": 10.0, "min_gap": 14.0, "move_time": 1.0, "height": 6.0, "thickness": 1.0},
-    "weak_point": {"part": "stamp", "radius": 0.9, "exposed_radius": 2.6},
+    "swipe": {
+      "range": 7.5,
+      "tele": [
+        0.62,
+        0.62,
+        0.5
+      ],
+      "ring_offset": 3.2,
+      "ring_r": 4.6,
+      "dmg": 18,
+      "knock": 12.0,
+      "arc_dot": 0.25,
+      "idle_after": [
+        1.7,
+        1.0,
+        0.9
+      ],
+      "roll": 0.5
+    },
+    "magnet": {
+      "min_range": 6.0,
+      "tele": 0.75,
+      "pull_time": 1.5,
+      "pull_accel": 26.0,
+      "car_every": [
+        0.5,
+        0.35,
+        0.35
+      ],
+      "car_first": 0.2,
+      "car_dmg": 14,
+      "car_r": 2.2,
+      "car_height": 9.0,
+      "car_gravity": 22.0,
+      "car_ring": 0.55,
+      "idle_after": 1.6,
+      "roll": [
+        0.8,
+        0.55,
+        0.55
+      ],
+      "steal_radius": 4.0,
+      "bark_chance": 0.35
+    },
+    "charge": {
+      "tele": 0.6,
+      "time": 1.1,
+      "speed": [
+        14.0,
+        14.0,
+        17.0
+      ],
+      "dmg": 20,
+      "knock": 13.0,
+      "lane_len": 16.0,
+      "lane_w": 4.0,
+      "idle_after": [
+        1.5,
+        1.5,
+        0.9
+      ],
+      "roll": 0.85,
+      "wall_stun": 1.5,
+      "wall_break_frac": 0.4,
+      "home_leash": 30.0
+    },
+    "compact": {
+      "tele": 0.95,
+      "ring_r": 9.0,
+      "wave_speed": [
+        10.5,
+        13.0,
+        13.0
+      ],
+      "wave_dmg": 16,
+      "break_frac_max_hp": 0.03,
+      "idle_after": [
+        2.4,
+        1.6,
+        1.6
+      ],
+      "recovery_window": 1.2,
+      "push_back": 2.0,
+      "push_break_frac_max_hp": 0.03
+    },
+    "hook": {
+      "hp": 60,
+      "break_frac": 0.3,
+      "steal_bark_delay": 4.0
+    },
+    "adds": {
+      "id": "scrap_mutt",
+      "every": 11.0,
+      "count": 2,
+      "max_alive": 3,
+      "first": 6.0,
+      "spread": 5.0,
+      "leash": 30.0
+    },
+    "walls": {
+      "advance": 1.0,
+      "every": 10.0,
+      "min_gap": 14.0,
+      "move_time": 1.0,
+      "height": 6.0,
+      "thickness": 1.0
+    },
+    "weak_point": {
+      "part": "stamp",
+      "radius": 0.9,
+      "exposed_radius": 2.6
+    },
     "lines": {
       "aggro": "code.updateRepoTron.02",
-      "phase2_banner": ["code.updateRepoTron.03", "code.updateRepoTron.04"],
+      "phase2_banner": [
+        "code.updateRepoTron.03",
+        "code.updateRepoTron.04"
+      ],
       "phase2": "code.updateRepoTron.05",
-      "magnet": ["code.updateRepoTron.06", "code.updateRepoTron.07", "code.updateRepoTron.08"],
+      "magnet": [
+        "code.updateRepoTron.06",
+        "code.updateRepoTron.07",
+        "code.updateRepoTron.08"
+      ],
       "magnet_hint": "code.updateRepoTron.09",
       "press_hint": "code.updateRepoTron.11",
       "adds": "code.updateRepoTron.13",
       "defeat": "code.onDeath.03",
-      "defeat_banner": ["code.onDeath.01", "code.onDeath.02"],
-      "intro": ["bs.boss.repotron.intro.01", "bs.boss.repotron.intro.02"],
+      "defeat_banner": [
+        "code.onDeath.01",
+        "code.onDeath.02"
+      ],
+      "intro": [
+        "bs.boss.repotron.intro.01",
+        "bs.boss.repotron.intro.02"
+      ],
       "intro_gap": 6.5,
       "steal": "bs.boss.repotron.steal.01",
       "steal_first": "bs.boss.repotron.steal.02",
       "steal_hint": "bs.boss.repotron.steal.03",
       "phase3": "bs.boss.repotron.compact.01",
-      "phase3_banner": ["bs.boss.repotron.banner.compaction.01", "bs.boss.repotron.banner.compaction.02"],
+      "phase3_banner": [
+        "bs.boss.repotron.banner.compaction.01",
+        "bs.boss.repotron.banner.compaction.02"
+      ],
       "first_wall": "bs.boss.repotron.compact.02",
       "walls_back": "bs.boss.repotron.compact.03",
       "start_banner_sub": "code.bossStart.01"
-    }
+    },
+    "music": "bs_boss_repo_tron"
   },
   "lines": {
-    "bs.boss.repotron.intro.01": {"who": "glambot", "text": "LIVE from the Scrapheap, it's REPOSSESSION OF THE WEEK! In the compactor corner — eleven tonnes of PAST DUE — it's REPO-TROOOON!"},
-    "bs.boss.repotron.intro.02": {"who": "sprocket", "text": "He's reading off cue cards. You can see them. OmniScrap is paying him by the exclamation point."},
-    "bs.boss.repotron.steal.01": {"who": "pa", "text": "ITEM REPOSSESSED. YOU MAY REPURCHASE IT AT A REASONABLE MARKUP."},
-    "bs.boss.repotron.steal.02": {"who": "bolt", "text": "Hey! I was USING that!"},
-    "bs.boss.repotron.steal.03": {"who": "sprocket", "text": "The hook, Bolt. Smash the hook. It's literally hanging your stuff in front of you."},
-    "bs.boss.repotron.compact.01": {"who": "pa", "text": "COMPACTION IN PROGRESS. PLEASE REMAIN FLAT."},
-    "bs.boss.repotron.compact.02": {"who": "sprocket", "text": "The walls are moving. I'd like to file a complaint with the walls."},
-    "bs.boss.repotron.compact.03": {"who": "pa", "text": "PROCESSING ERROR. ASSET HAS RESISTED COMPACTION."},
-    "bs.boss.repotron.banner.compaction.01": {"who": "banner", "text": "COMPACTION"},
-    "bs.boss.repotron.banner.compaction.02": {"who": "banner", "text": "The walls are closing in. Hit the PAST DUE stamp after a slam to push them back."}
+    "bs.boss.repotron.intro.01": {
+      "who": "glambot",
+      "text": "LIVE from the Scrapheap, it's REPOSSESSION OF THE WEEK! In the compactor corner — eleven tonnes of PAST DUE — it's REPO-TROOOON!"
+    },
+    "bs.boss.repotron.intro.02": {
+      "who": "sprocket",
+      "text": "He's reading off cue cards. You can see them. OmniScrap is paying him by the exclamation point."
+    },
+    "bs.boss.repotron.steal.01": {
+      "who": "pa",
+      "text": "ITEM REPOSSESSED. YOU MAY REPURCHASE IT AT A REASONABLE MARKUP."
+    },
+    "bs.boss.repotron.steal.02": {
+      "who": "bolt",
+      "text": "Hey! I was USING that!"
+    },
+    "bs.boss.repotron.steal.03": {
+      "who": "sprocket",
+      "text": "The hook, Bolt. Smash the hook. It's literally hanging your stuff in front of you."
+    },
+    "bs.boss.repotron.compact.01": {
+      "who": "pa",
+      "text": "COMPACTION IN PROGRESS. PLEASE REMAIN FLAT."
+    },
+    "bs.boss.repotron.compact.02": {
+      "who": "sprocket",
+      "text": "The walls are moving. I'd like to file a complaint with the walls."
+    },
+    "bs.boss.repotron.compact.03": {
+      "who": "pa",
+      "text": "PROCESSING ERROR. ASSET HAS RESISTED COMPACTION."
+    },
+    "bs.boss.repotron.banner.compaction.01": {
+      "who": "banner",
+      "text": "COMPACTION"
+    },
+    "bs.boss.repotron.banner.compaction.02": {
+      "who": "banner",
+      "text": "The walls are closing in. Hit the PAST DUE stamp after a slam to push them back."
+    },
+    "bs.boss.sentinel.intro.01": {
+      "who": "glambot",
+      "text": "Pool-deck security, darlings! It checks wristbands, it checks IDs, it checks your PULSE — the RUSTVANE SENTINELLL!"
+    },
+    "bs.boss.sentinel.intro.02": {
+      "who": "bolt",
+      "text": "Do we have wristbands?"
+    },
+    "bs.boss.sentinel.intro.03": {
+      "who": "sprocket",
+      "text": "We have a mallet. It's like a wristband, but for its face."
+    },
+    "bs.boss.sentinel.bark.01": {
+      "who": "pa",
+      "text": "GUEST, YOU ARE IN A STAFF-ONLY QUARRY. PLEASE RETURN TO THE FUN."
+    },
+    "bs.boss.sentinel.bark.02": {
+      "who": "pa",
+      "text": "LOCKDOWN. THE RESORT IS NOW CLOSED FOR YOUR SAFETY. YOUR SAFETY IS NOW CLOSED."
+    },
+    "bs.boss.sentinel.bark.03": {
+      "who": "sprocket",
+      "text": "It's got a searchlight. Of course it does. Everything on this planet wants to be looked at."
+    },
+    "bs.boss.sentinel.bark.04": {
+      "who": "pa",
+      "text": "RESORT POLICY: NO RUNNING. NO SWIMMING. NO SURVIVING."
+    },
+    "bs.boss.sentinel.bark.05": {
+      "who": "sprocket",
+      "text": "Security's down. The Content Creator's pool deck is open. I hope it doesn't want to collab."
+    },
+    "bs.boss.sentinel.banner.lockdown.01": {
+      "who": "banner",
+      "text": "LOCKDOWN"
+    },
+    "bs.boss.sentinel.banner.lockdown.02": {
+      "who": "banner",
+      "text": "Armor off. Twin beams. Stay out of the searchlight."
+    },
+    "bs.boss.sentinel.banner.policy.01": {
+      "who": "banner",
+      "text": "RESORT POLICY"
+    },
+    "bs.boss.sentinel.banner.policy.02": {
+      "who": "banner",
+      "text": "Treads engaged. Make it ram a pillar."
+    },
+    "bs.boss.sentinel.banner.defeat.01": {
+      "who": "banner",
+      "text": "SECURITY BREACHED"
+    },
+    "bs.boss.sentinel.banner.defeat.02": {
+      "who": "banner",
+      "text": "Wristbands are now optional"
+    },
+    "bs.boss.sentinel.hint.spotted.01": {
+      "who": "hint",
+      "text": "SPOTTED — the next mortars are coming for YOU. Keep moving!"
+    },
+    "bs.boss.cc.unbox.01": {
+      "who": "cc",
+      "text": "Okay chat, what's in the box?! Smash that like if you think it's DANGER!"
+    },
+    "bs.boss.cc.unbox.02": {
+      "who": "cc",
+      "text": "Oh my GOD it's a bomb. This is SO sponsored."
+    },
+    "bs.boss.cc.collab.01": {
+      "who": "cc",
+      "text": "Collab time! Say hi to my co-host, who is also me, but with better lighting!"
+    },
+    "bs.boss.cc.collab.02": {
+      "who": "sprocket",
+      "text": "It collabed with a hologram of itself. That's the most honest thing it's done."
+    },
+    "bs.boss.cc.live.01": {
+      "who": "cc",
+      "text": "We are LIVE, scrap-fam! Chat, do your thing!"
+    },
+    "bs.boss.cc.live.02": {
+      "who": "cc",
+      "text": "Chat says \"boil the pool.\" Chat is never wrong."
+    },
+    "bs.boss.cc.drones.01": {
+      "who": "cc",
+      "text": "My CREW! Who's filming me?! If nobody's filming me, do I even EXIST?!"
+    },
+    "bs.boss.cc.drones.02": {
+      "who": "sprocket",
+      "text": "No cameras, no shield. It's like a vampire, but for engagement."
+    },
+    "bs.boss.cc.banner.demonetized.02": {
+      "who": "banner",
+      "text": "The Content Creator sheds its armor!"
+    },
+    "bs.boss.cc.banner.collab.01": {
+      "who": "banner",
+      "text": "COLLAB"
+    },
+    "bs.boss.cc.banner.collab.02": {
+      "who": "banner",
+      "text": "A very special guest. Who is also the Content Creator."
+    },
+    "bs.boss.cc.banner.live.01": {
+      "who": "banner",
+      "text": "GOING LIVE"
+    },
+    "bs.boss.cc.banner.live.02": {
+      "who": "banner",
+      "text": "Chat has taken over. Stay on the dark tiles."
+    },
+    "bs.boss.cc.banner.defeat.01": {
+      "who": "banner",
+      "text": "UNSUBSCRIBED"
+    },
+    "bs.boss.cc.banner.defeat.02": {
+      "who": "banner",
+      "text": "The stream has ended"
+    },
+    "bs.boss.cc.hint.chat.01": {
+      "who": "hint",
+      "text": "Chat is typing... Get out of the glowing lanes!"
+    },
+    "bs.boss.algorithm.feed.01": {
+      "who": "pa",
+      "text": "RECOMMENDED FOR YOU: MORE OF THIS."
+    },
+    "bs.boss.algorithm.feed.02": {
+      "who": "pa",
+      "text": "BASED ON YOUR INTERESTS: PAIN."
+    },
+    "bs.boss.algorithm.feed.03": {
+      "who": "pa",
+      "text": "YOU MAY ALSO LIKE: A FINE."
+    },
+    "bs.boss.algorithm.overload.01": {
+      "who": "sprocket",
+      "text": "Feed it paperwork! It can't process legal documents. Nothing can!"
+    },
+    "bs.boss.algorithm.overload.02": {
+      "who": "pa",
+      "text": "ERROR: CONTENT POLICY VIOLATES CONTENT POLICY."
+    },
+    "bs.boss.algorithm.viral.01": {
+      "who": "pa",
+      "text": "YOU HAVE REACHED THE END OF THE FEED. GENERATING MORE FEED."
+    },
+    "bs.boss.algorithm.viral.02": {
+      "who": "sprocket",
+      "text": "The floor is a timeline now. Don't look at it too long, you'll start agreeing with it."
+    },
+    "bs.boss.algorithm.card.01": {
+      "who": "ui",
+      "text": "Because you killed a Meter Maid..."
+    },
+    "bs.boss.algorithm.card.02": {
+      "who": "ui",
+      "text": "Because you dented an HOA Enforcer..."
+    },
+    "bs.boss.algorithm.card.03": {
+      "who": "ui",
+      "text": "Trending in your area: enforcement"
+    },
+    "bs.boss.algorithm.banner.viral.01": {
+      "who": "banner",
+      "text": "VIRAL"
+    },
+    "bs.boss.algorithm.banner.viral.02": {
+      "who": "banner",
+      "text": "The feed is scrolling. Get up on a platform!"
+    },
+    "bs.boss.algorithm.banner.defeat.01": {
+      "who": "banner",
+      "text": "SHADOWBANNED"
+    },
+    "bs.boss.algorithm.banner.defeat.02": {
+      "who": "banner",
+      "text": "The Algorithm has stopped recommending things"
+    },
+    "bs.boss.algorithm.hint.mega.01": {
+      "who": "hint",
+      "text": "MEGA-FINE incoming — get onto a platform!"
+    }
+  },
+  "rustvane_sentinel": {
+    "name": "RUSTVANE SENTINEL",
+    "src": "NEW split of the original 'miniboss' tank (makeMiniBoss L2505, updateMiniBoss L7337-7420): 300 HP (~70% of 420), 30 bolts. BS_ENEMIES 4.2",
+    "hp": 300,
+    "drops": 30,
+    "trophy": "wristband_optional",
+    "radius": 2.4,
+    "height": 3.0,
+    "chunk_color": "#7a3b2a",
+    "music": "bs_boss_rustvane_sentinel",
+    "aggro_radius": 22.0,
+    "phases": [
+      0.66,
+      0.33
+    ],
+    "arena_size": [
+      36,
+      36
+    ],
+    "first_idle": 1.6,
+    "phase_idle": 1.0,
+    "hold_distance": 12.0,
+    "move_speed": [
+      1.6,
+      1.8,
+      2.2
+    ],
+    "turn_idle": 1.2,
+    "idle": [
+      [
+        1.6,
+        2.6
+      ],
+      [
+        1.4,
+        2.2
+      ],
+      [
+        1.1,
+        1.8
+      ]
+    ],
+    "turret": {
+      "track_idle": 1.6,
+      "track_busy": 0.6
+    },
+    "beam": {
+      "tele": [
+        1.25,
+        0.95,
+        0.95
+      ],
+      "length": 30.0,
+      "r": 0.45,
+      "dmg": 14,
+      "life": 0.9,
+      "twin_deg": 35.0,
+      "twin_r": 0.4,
+      "twin_dmg": 12,
+      "muzzle_r": 0.9,
+      "muzzle_break_frac": 0.25,
+      "src": "addBeam(a, b, 0.45, 14, 0.9); twin yawW + 0.6 rad, 0.4, 12 (L7387-7392)"
+    },
+    "mortar": {
+      "every": [
+        3.6,
+        3.6,
+        3.0
+      ],
+      "first": 3.0,
+      "count": 2,
+      "dmg": 14,
+      "flight": 0.9,
+      "spread": 2.0,
+      "lead": 0.8,
+      "blast_r": 1.6,
+      "src": "fireCd 3.6, 2 shells 14 dmg, grav 14 (L7404-7416); landing rings new"
+    },
+    "searchlight": {
+      "period": 4.0,
+      "sweep_deg": 60.0,
+      "cone_deg": 12.0,
+      "range": 28.0,
+      "cooldown": 3.0,
+      "spot_chime": 0.5
+    },
+    "ram": {
+      "tele": 0.7,
+      "lane_len": 18.0,
+      "lane_w": 4.5,
+      "speed": 16.0,
+      "time": 1.3,
+      "dmg": 18,
+      "knock": 12.0,
+      "stun": 1.5,
+      "stun_break_frac": 0.4,
+      "idle_after": 1.2
+    },
+    "adds": {
+      "id": "ambassadog",
+      "count": 2
+    },
+    "weak_point": {
+      "part": "reactor_core",
+      "radius": 0.9
+    },
+    "default_arena": {
+      "pillar_ring": 11.0
+    },
+    "lines": {
+      "intro": [
+        "bs.boss.sentinel.intro.01",
+        "bs.boss.sentinel.intro.02",
+        "bs.boss.sentinel.intro.03"
+      ],
+      "intro_gap": 5.0,
+      "aggro": "bs.boss.sentinel.bark.01",
+      "phase2": "bs.boss.sentinel.bark.02",
+      "phase2_banner": [
+        "bs.boss.sentinel.banner.lockdown.01",
+        "bs.boss.sentinel.banner.lockdown.02"
+      ],
+      "first_searchlight": "bs.boss.sentinel.bark.03",
+      "phase3": "bs.boss.sentinel.bark.04",
+      "phase3_banner": [
+        "bs.boss.sentinel.banner.policy.01",
+        "bs.boss.sentinel.banner.policy.02"
+      ],
+      "defeat": "bs.boss.sentinel.bark.05",
+      "defeat_banner": [
+        "bs.boss.sentinel.banner.defeat.01",
+        "bs.boss.sentinel.banner.defeat.02"
+      ],
+      "spotted_hint": "bs.boss.sentinel.hint.spotted.01",
+      "start_banner_sub": "code.bossStart.01"
+    }
+  },
+  "content_creator": {
+    "name": "THE CONTENT CREATOR",
+    "src": "spawnEnemy 'miniboss' hp 420, drops 45 (kept); makeMiniBoss L2505 ring light; updateMiniBoss L7337 (beam 1.25 s / 0.95 s, camera crew at 50%). Remake BS_ENEMIES 4.3",
+    "hp": 420,
+    "drops": 45,
+    "trophy": "unsubscribed",
+    "radius": 1.0,
+    "height": 4.6,
+    "chunk_color": "#c8d0dc",
+    "music": "bs_boss_content_creator",
+    "aggro_radius": 26.0,
+    "phases": [
+      0.66,
+      0.33
+    ],
+    "arena_size": [
+      40,
+      40
+    ],
+    "first_idle": 2.0,
+    "phase_idle": 1.2,
+    "adds_die_with_boss": false,
+    "idle": [
+      [
+        1.4,
+        2.2
+      ],
+      [
+        1.2,
+        2.0
+      ],
+      [
+        1.0,
+        1.6
+      ]
+    ],
+    "pool_r": 7.0,
+    "deck_w": 9.0,
+    "hover": {
+      "height": 2.5,
+      "orbit_rate": 0.12,
+      "follow": 1.4
+    },
+    "drones": {
+      "count": 3,
+      "shield_mult": 0.25,
+      "kill_break_frac": 0.2,
+      "respawn_every": 6.0,
+      "opening_every": 0.3
+    },
+    "unbox": {
+      "roll": 0.5,
+      "fall_time": 0.8,
+      "open_delay": 1.5,
+      "drop_height": 9.0,
+      "contents": [
+        "sentries",
+        "lifeguard",
+        "bomb"
+      ],
+      "sentries": 2,
+      "bomb_r": 4.0,
+      "bomb_dmg": 20,
+      "bomb_fuse": 1.0,
+      "shot_break_frac": 0.25
+    },
+    "beam": {
+      "tele": [
+        1.25,
+        0.95,
+        1.25
+      ],
+      "length": 30.0,
+      "r": 0.45,
+      "dmg": 14,
+      "twin_dmg": 12,
+      "life": 0.9,
+      "twin_deg": 35.0,
+      "track_busy": 0.8
+    },
+    "mortar": {
+      "tele": 0.6,
+      "per_caster": 2,
+      "dmg": 14,
+      "flight": 0.9,
+      "spread": 2.5,
+      "blast_r": 1.6
+    },
+    "fans": {
+      "id": "ambassadog",
+      "count": 3
+    },
+    "chat": {
+      "warn": 1.0,
+      "time": 4.0,
+      "lanes": 3,
+      "lane_gap": 3.2,
+      "lane_len": 12.0,
+      "lane_w": 1.6,
+      "every": 0.22,
+      "height": 9.0,
+      "fall_speed": 9.0,
+      "dmg": 6
+    },
+    "likes": {
+      "tele": 0.8,
+      "dmg": 16,
+      "tile": 2.0,
+      "grid_half": 3,
+      "arena_reach": 7.0
+    },
+    "sweep": {
+      "arc_deg": 80.0,
+      "time": 1.6,
+      "water_mult": 2.0
+    },
+    "weak_point": {
+      "part": "ring_light_core",
+      "radius": 0.8
+    },
+    "lines": {
+      "intro": [
+        "cs.introCC.01"
+      ],
+      "intro_gap": 5.0,
+      "phase2": "bs.boss.cc.collab.01",
+      "phase2_banner": [
+        "bs.boss.cc.banner.collab.01",
+        "bs.boss.cc.banner.collab.02"
+      ],
+      "first_twin": "bs.boss.cc.collab.02",
+      "phase3": "bs.boss.cc.live.01",
+      "phase3_banner": [
+        "bs.boss.cc.banner.live.01",
+        "bs.boss.cc.banner.live.02"
+      ],
+      "pool_sweep": "bs.boss.cc.live.02",
+      "unbox": "bs.boss.cc.unbox.01",
+      "unbox_bomb": "bs.boss.cc.unbox.02",
+      "drones_spawn": "code.updateMiniBoss.04",
+      "drones_down": "bs.boss.cc.drones.01",
+      "drones_down_first": "bs.boss.cc.drones.02",
+      "demonetized_banner": [
+        "code.updateMiniBoss.02",
+        "bs.boss.cc.banner.demonetized.02"
+      ],
+      "chat_typing": "bs.boss.cc.hint.chat.01",
+      "defeat_banner": [
+        "bs.boss.cc.banner.defeat.01",
+        "bs.boss.cc.banner.defeat.02"
+      ],
+      "defeat_beat": "l2_glambot",
+      "intro_scene": "ccIntro",
+      "start_banner_sub": "code.bossStart.01"
+    }
+  },
+  "the_algorithm": {
+    "name": "THE ALGORITHM",
+    "src": "spawnEnemy 'algorithm' hp 520, drops 45 (kept); makeAlgorithm L6821; updateAlgorithm L6840-6880 (zones r3.4 1.2 s 18 dmg every 3.4 s; summons every 8 s cap 3; TRENDING x0.62, zones 2 s, summons 5 s cap 5). Remake BS_ENEMIES 4.4",
+    "hp": 520,
+    "drops": 45,
+    "trophy": "shadowbanned",
+    "radius": 3.4,
+    "height": 7.0,
+    "chunk_color": "#14203a",
+    "music": "bs_boss_the_algorithm",
+    "aggro_radius": 26.0,
+    "phases": [
+      0.66,
+      0.33
+    ],
+    "arena_size": [
+      40,
+      40
+    ],
+    "first_idle": 2.0,
+    "phase_idle": 1.0,
+    "center_ahead": 14.0,
+    "trending_mult": 0.62,
+    "platform_clear": 1.2,
+    "idle3": [
+      1.6,
+      2.4
+    ],
+    "zones": {
+      "every": [
+        3.4,
+        2.0,
+        2.0
+      ],
+      "first": 2.5,
+      "r": 3.4,
+      "tele": 1.2,
+      "dmg": 18
+    },
+    "summon": {
+      "every": [
+        8.0,
+        5.0,
+        5.0
+      ],
+      "first": 3.0,
+      "cap": [
+        3,
+        5,
+        5
+      ],
+      "card_time": 1.0,
+      "ids": [
+        "meter_maid",
+        "hoa_enforcer"
+      ]
+    },
+    "rain": {
+      "every": 4.0,
+      "first": 2.0,
+      "lanes": 3,
+      "lane_gap": 3.0,
+      "lane_len": 14.0,
+      "lane_w": 1.4,
+      "tele": 0.8,
+      "per_lane": 4,
+      "height": 7.0,
+      "fall_speed": 8.0,
+      "dmg": 10
+    },
+    "walkways": {
+      "every": 6.0,
+      "chime": 0.8
+    },
+    "doomscroll": {
+      "speed": 3.0
+    },
+    "orbs": {
+      "tele": 0.6,
+      "count": 3,
+      "dmg": 9,
+      "homing": 1.4,
+      "speed": 6.0,
+      "life": 6.0
+    },
+    "mega_fine": {
+      "r": 7.0,
+      "tele": 1.6,
+      "dmg": 24
+    },
+    "overload": {
+      "cd_frac": 0.04,
+      "class_action_frac": 0.1,
+      "bat_frac": 0.04,
+      "shot_near_frac": 0.01,
+      "shot_near_r": 8.0,
+      "complaint_frac": 0.02,
+      "complaint_r": 6.0
+    },
+    "weak_point": {
+      "part": "core",
+      "radius": 0.9
+    },
+    "lines": {
+      "intro": [
+        "cs.introAlgorithm.01",
+        "cs.introAlgorithm.02"
+      ],
+      "intro_gap": 6.0,
+      "phase2_banner": [
+        "code.updateAlgorithm.02",
+        "code.updateAlgorithm.03"
+      ],
+      "phase3": "bs.boss.algorithm.viral.01",
+      "phase3_banner": [
+        "bs.boss.algorithm.banner.viral.01",
+        "bs.boss.algorithm.banner.viral.02"
+      ],
+      "doomscroll": "bs.boss.algorithm.viral.02",
+      "summon": "code.updateAlgorithm.04",
+      "zone_hit": "code.updateAlgorithm.05",
+      "feed": [
+        "bs.boss.algorithm.feed.01",
+        "bs.boss.algorithm.feed.02"
+      ],
+      "rain": "bs.boss.algorithm.feed.03",
+      "cards": [
+        "bs.boss.algorithm.card.01",
+        "bs.boss.algorithm.card.02",
+        "bs.boss.algorithm.card.03"
+      ],
+      "first_cd": "bs.boss.algorithm.overload.01",
+      "overload": "bs.boss.algorithm.overload.02",
+      "mega_hint": "bs.boss.algorithm.hint.mega.01",
+      "defeat_banner": [
+        "bs.boss.algorithm.banner.defeat.01",
+        "bs.boss.algorithm.banner.defeat.02"
+      ],
+      "defeat_scene": "coreNova",
+      "start_banner_sub": "code.bossStart.01"
+    },
+    "arena_wall": {
+      "face_out": 1.3,
+      "core_h": 4.5,
+      "wheel_h": 5.0,
+      "errors_h": 2.6
+    }
   }
 }

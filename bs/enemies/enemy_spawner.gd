@@ -5,6 +5,8 @@ extends RefCounted
 ##   EnemySpawner.spawn(&"scrap_mutt", pos, parent)            -> Node3D (an EnemyBase / BoltCrate / boss)
 ##   EnemySpawner.spawn(&"vulture_drone", pos, parent, {"elite": true})
 ##   opts: elite (bool), aggro (bool), leash (float), is_add (bool), ng_plus (bool), spawn_time (float)
+##   bosses also take opts["arena"] (a Node3D; see the arena contract at the top of each boss script)
+##   zoning_board returns a ZoningBoard controller (not an EnemyBase) that spawns three zoning_pylon enemies
 ##   EnemySpawner.prewarm(&"scrap_mutt", 12)                     pre-instantiate into the pool
 ##   EnemySpawner.clear_pool()                                   free pooled instances (level exit, tests)
 ## `parent` defaults to the current scene. Original ids ("scrapmutt", "vulture", "crate") are aliases.
@@ -16,6 +18,22 @@ const SCRIPTS: Dictionary = {
 	"lien_crawler": "res://bs/enemies/lien_crawler.gd",
 	"bolt_crate": "res://bs/enemies/bolt_crate.gd",
 	"repo_tron": "res://bs/bosses/repo_tron.gd",
+	# Rustvane Canyon (BS_ENEMIES §3.2)
+	"ambassadog": "res://bs/enemies/ambassadog.gd",
+	"selfie_sentry": "res://bs/enemies/selfie_sentry.gd",
+	"lifeguard_bot": "res://bs/enemies/lifeguard_bot.gd",
+	"review_bomber": "res://bs/enemies/review_bomber.gd",
+	# Nova Plaza (BS_ENEMIES §3.3)
+	"meter_maid": "res://bs/enemies/meter_maid.gd",
+	"hoa_enforcer": "res://bs/enemies/hoa_enforcer.gd",
+	"surge_drone": "res://bs/enemies/surge_drone.gd",
+	"zoning_board": "res://bs/enemies/zoning_board.gd",
+	"zoning_pylon": "res://bs/enemies/zoning_pylon.gd",
+	# bosses (BS_ENEMIES §4.2-4.4) and their parts
+	"rustvane_sentinel": "res://bs/bosses/rustvane_sentinel.gd",
+	"content_creator": "res://bs/bosses/content_creator.gd",
+	"cc_camera_drone": "res://bs/bosses/camera_drone.gd",
+	"the_algorithm": "res://bs/bosses/the_algorithm.gd",
 }
 
 static var _pool: Dictionary = {}   # id -> Array of inactive EnemyBase
@@ -32,6 +50,11 @@ static func def_for(id: StringName) -> Dictionary:
 	return ((t["enemies"] as Dictionary).get(String(resolve_id(id)), {}) as Dictionary)
 
 
+## Every id the spawner knows (enemies, props, bosses, boss parts).
+static func known_ids() -> PackedStringArray:
+	return PackedStringArray(SCRIPTS.keys())
+
+
 static func spawn(id: StringName, pos: Vector3, parent: Node = null, opts: Dictionary = {}) -> Node3D:
 	id = resolve_id(id)
 	if not SCRIPTS.has(String(id)):
@@ -44,6 +67,8 @@ static func spawn(id: StringName, pos: Vector3, parent: Node = null, opts: Dicti
 	var e: EnemyBase = n as EnemyBase
 	if e != null:
 		e.configure(id, def_for(id), opts)
+	elif n.has_method("configure_spawn"):
+		n.call("configure_spawn", id, def_for(id), opts)
 	n.position = pos
 	parent.add_child(n)
 	n.global_position = pos

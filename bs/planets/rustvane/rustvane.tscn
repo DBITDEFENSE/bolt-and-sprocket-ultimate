@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://bs/planets/rustvane/rustvane.gd" id="1_rust"]
+
+[node name="Rustvane" type="Node3D"]
+script = ExtResource("1_rust")
+level_id = "rustvane"
+level_name = "RUSTVANE CANYON"
+planet_index = 1

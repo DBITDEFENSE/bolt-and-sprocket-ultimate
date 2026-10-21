@@ -115,3 +115,103 @@ static func disc(parent: Node3D, r: float, c: Color, alpha: float = 0.4) -> Mesh
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	parent.add_child(mi)
 	return mi
+
+
+## Mesh for a shot in flight by shape: sphere (default), disc (saw blade, flat in XZ), card (paper document),
+## dart (cone pointing -Z), seed (small egg), gear (cooling fan / cog), box.
+static func shot_mesh(shape: String, size: float) -> Mesh:
+	match shape:
+		"disc":
+			var c: CylinderMesh = CylinderMesh.new()
+			c.top_radius = size
+			c.bottom_radius = size
+			c.height = maxf(0.03, size * 0.2)
+			c.radial_segments = 12
+			c.rings = 1
+			return c
+		"card":
+			var b: BoxMesh = BoxMesh.new()
+			b.size = Vector3(size * 1.5, size * 0.12, size * 2.0)
+			return b
+		"dart":
+			var d: CylinderMesh = CylinderMesh.new()
+			d.top_radius = 0.0
+			d.bottom_radius = size * 0.6
+			d.height = size * 3.0
+			d.radial_segments = 6
+			d.rings = 1
+			return d
+		"gear":
+			var g: CylinderMesh = CylinderMesh.new()
+			g.top_radius = size
+			g.bottom_radius = size
+			g.height = size * 0.25
+			g.radial_segments = 8
+			g.rings = 1
+			return g
+		"box":
+			var bx: BoxMesh = BoxMesh.new()
+			bx.size = Vector3.ONE * size * 1.6
+			return bx
+		"seed":
+			var e: SphereMesh = SphereMesh.new()
+			e.radius = size
+			e.height = size * 2.6
+			e.radial_segments = 8
+			e.rings = 4
+			return e
+	var s: SphereMesh = SphereMesh.new()
+	s.radius = size
+	s.height = size * 2.0
+	s.radial_segments = 10
+	s.rings = 6
+	return s
+
+
+## A handful of tiny fast-fading sparks (bounces, plate pops, impacts).
+static func sparks(world: Node, pos: Vector3, c: Color, n: int = 4, spread: float = 0.35, rng: RandomNumberGenerator = null) -> void:
+	for i: int in n:
+		var off: Vector3 = Vector3((rng.randf() if rng else randf()) - 0.5, (rng.randf() if rng else randf()) - 0.3, (rng.randf() if rng else randf()) - 0.5) * spread * 2.0
+		tracer(world, pos, pos + off, c, 0.03, 0.12)
+
+
+## A short flat cone of flashes (shotgun blasts, the Doorbuster).
+static func cone(world: Node, from: Vector3, dir: Vector3, length: float, half_deg: float, c: Color, rays: int = 7) -> void:
+	var flat: Vector3 = Vector3(dir.x, 0, dir.z).normalized() if Vector3(dir.x, 0, dir.z).length() > 0.01 else Vector3.FORWARD
+	for i: int in rays:
+		var a: float = deg_to_rad(lerpf(-half_deg, half_deg, float(i) / maxf(1.0, rays - 1)))
+		tracer(world, from, from + flat.rotated(Vector3.UP, a) * length, c, 0.08, 0.12)
+
+
+## A persistent glowing box child (walls, plaques, greybox props).
+static func block(parent: Node3D, size: Vector3, pos: Vector3, c: Color, alpha: float = 1.0) -> MeshInstance3D:
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	var bm: BoxMesh = BoxMesh.new()
+	bm.size = size
+	mi.mesh = bm
+	mi.position = pos
+	mi.material_override = glow_mat(c, alpha)
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(mi)
+	return mi
+
+
+## A small floating Label3D that rises and fades (in-world callouts like BULLSEYE / SERVED).
+static func callout(world: Node, pos: Vector3, text: String, c: Color, life: float = 0.8) -> void:
+	if world == null or not world.is_inside_tree():
+		return
+	var l: Label3D = Label3D.new()
+	l.text = text
+	l.modulate = c
+	l.outline_modulate = Color(0, 0, 0, 0.8)
+	l.font_size = 48
+	l.outline_size = 10
+	l.pixel_size = 0.006
+	l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	l.no_depth_test = true
+	world.add_child(l)
+	l.global_position = pos + Vector3(0, 0.4, 0)
+	var tw: Tween = l.create_tween()
+	tw.tween_property(l, "global_position", l.global_position + Vector3(0, 0.9, 0), life)
+	tw.parallel().tween_property(l, "modulate:a", 0.0, life)
+	tw.tween_callback(l.queue_free)

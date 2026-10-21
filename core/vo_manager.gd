@@ -7,7 +7,8 @@ extends Node
 ## Every source of voiced lines: [data table, key inside it ("" = the table itself)]. New per-system line
 ## files (UI, bosses, Fine Print, Gravelight) register here; keys starting with "_" are docs.
 const LINE_SOURCES: Array = [["bs/story/lines_index", ""], ["bs/ui_lines", ""], ["bs/bosses", "lines"],
-	["bs/weapons", "lines"], ["bs/levels/scrapheap_lines", "lines"]]
+	["bs/weapons", "lines"], ["bs/levels/scrapheap_lines", "lines"], ["bs/levels/rustvane_lines", "lines"],
+	["bs/levels/nova_plaza_lines", "lines"], ["bs/gadgets", "lines"], ["bs/forge", "lines"], ["bs/enemies", "lines"]]
 const VO_DIR: String = "res://audio/vo/"
 
 var _lines: Dictionary = {}

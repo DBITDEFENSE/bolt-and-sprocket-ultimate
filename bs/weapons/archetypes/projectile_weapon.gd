@@ -15,7 +15,7 @@ func _fire() -> void:
 
 
 func launch(amount: float, extra: Dictionary) -> BSProjectile:
-	var dir: Vector3 = aim()
+	var dir: Vector3 = fire_dir()
 	var vel: Vector3 = dir * P("speed", 30.0) + Vector3.UP * P("up", 0.0)
 	var tm: float = WeaponData.visual_mul(mod_tier("dmg"))
 	var opts: Dictionary = {"gravity": P("gravity", 0.0), "life": P("life", 2.0), "size": P("size", 0.18) * tm,

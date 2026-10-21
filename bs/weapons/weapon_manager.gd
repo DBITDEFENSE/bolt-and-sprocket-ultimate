@@ -29,6 +29,7 @@ var holstered: bool = false
 var locked: Dictionary = {}             # id -> true while repossessed (Repo-Tron)
 var xp_enabled: bool = true             # false in the Firing Range (no farming)
 var ammo_drops_enabled: bool = true
+var callouts_enabled: bool = true      # floating BULLSEYE / SERVED / ... text in the world
 var scripted: Dictionary = {}           # {"fire": bool, "alt": bool} replaces device input when non-empty
 var aim_override: Vector3 = Vector3.ZERO
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -145,9 +146,16 @@ func _sync_weapons() -> Dictionary:
 			w = _archetype_for(id)
 		w.setup(id, self)
 		add_child(w)
-		w.popup.connect(func(t: String, pos: Vector3) -> void: popup.emit(t, pos))
+		w.popup.connect(_on_gun_popup.bind(id))
 		weapons[id] = w
 	return weapons
+
+
+## A gun's popup (a line id, or already-formatted text): re-emitted for the HUD and shown as an in-world callout.
+func _on_gun_popup(t: String, pos: Vector3, gun_id: StringName) -> void:
+	popup.emit(t, pos)
+	if callouts_enabled and pos != Vector3.ZERO:
+		WeaponFX.callout(world(), pos, WeaponText.text(t), WeaponData.color(gun_id).lerp(Color.WHITE, 0.35))
 
 
 func _archetype_for(id: StringName) -> BSWeapon:
@@ -298,10 +306,15 @@ func deal_damage(target: Node3D, hit: Combat.Hit) -> bool:
 		return false
 	if not hit.weak_point and target.has_method("is_weak_point"):
 		hit.weak_point = bool(target.call("is_weak_point", hit.point))
+	var gun: BSWeapon = weapons.get(hit.weapon_id, null) as BSWeapon if hit.weapon_id != &"" else null
+	if gun != null and not WeaponRules.pre_hit(self, target, hit):
+		return false
 	for s: Variant in hit.status.keys():
 		apply_status(target, StringName(str(s)), float(hit.status[s]))
 	var before: float = float(target.get("hp")) if "hp" in target else -1.0
 	var killed: bool = bool(target.call("take_damage", hit))
+	if gun != null:
+		gun.on_hit_dealt(target, hit, killed)
 	var removed: float = hit.amount
 	if before >= 0.0:
 		removed = clampf(before - maxf(0.0, float(target.get("hp"))), 0.0, before)
@@ -351,6 +364,10 @@ func _on_enemy_hit(enemy: Node, hit: RefCounted, _killed: bool) -> void:
 	var h: Combat.Hit = hit as Combat.Hit
 	if h == null or enemy == null:
 		return
+	if h.status.has("shatter") and weapons.has(&"frostbyte") and enemy is Node3D:
+		weapons[&"frostbyte"].call("on_shatter", enemy)
+	for w: Variant in weapons.values():
+		(w as BSWeapon).on_any_hit(enemy, h, _killed)
 	var owners: Dictionary = WeaponData.doc().get("status_owner", {})
 	var st: StatusEffects = status_node(enemy)
 	if st == null:

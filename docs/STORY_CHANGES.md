@@ -48,3 +48,10 @@ Every change to an **existing** line from the original web build is logged here 
 - Jingles and back panels: `JINGLES.md`
 - Gravelight §11 additions: `gravelight/*.md`, `gl.*` and `op.slip.*` IDs
 - New boss title cards and the 4 new ad vignettes: `BS_ENEMIES.md`, `BS_WEAPONS.md`, `bs.*` IDs
+
+## M3 (builders A–D, logged at the M3 WIP pause)
+- `bs.weapon.middleman.argue.01` was two speakers in one line; it's split into `.01` (middleman_a) and `.01b` (middleman_b). Nothing cut.
+- `code.buildLevel2.07` and `.09` (Rustvane hints) are no longer used. Their text no longer matched the remade spots. They're replaced by `bs.rustvane.hint_mine` and `bs.rustvane.hint_roost`.
+- `code.populateLife.16` (Nova Plaza squatter): now said when you interact with the vending machine by his bench, instead of being dropped. `.15` stays his idle line.
+- The Content Creator's DEMONETIZED banner subtitle now reads "The Content Creator sheds its armor!" (`bs.boss.cc.banner.demonetized.02`).
+- New content, not changes: the "NO JUMPING ON THE LAWN" HOA rule (Nova Plaza clubhouse puzzle); `bs.forge.*`, `bs.rustvane.*`, `bs.gadget.tether.*`, `bs.nova.*` (120 lines), `bs.boss.*` and `bs.enemy.*` lines.
