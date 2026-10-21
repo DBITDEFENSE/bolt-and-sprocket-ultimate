@@ -195,3 +195,47 @@ Fixes:
 - Stair navmesh tighter than a player-sized body.
 - Approximate zone boxes.
 - A first-use shader hitch.
+
+**T-027, 2026-10-20: M2 on Map 0. The Helvetia cellar, machine lore, corporate slips.**
+
+**The cellar** (Appendix A's vertical-slice note; built in `gen_map00.gd`, the map's source of truth):
+- **Door 3** (1500, zone CELLAR) in the taproom's east wall, then a stair hall and ramp down to a 12 × 12 m vaulted cellar under the east yard.
+- **Contents:**
+  - all 8 perk machines, standing 1.1 m or more off the walls so their back panels are reachable (JINGLES.md §0.3)
+  - two pillars, to loop around
+  - "the cellar lever", Map 0's power: `PowerSwitch` is now data-driven per map (`config_table`), with a new `data/gravelight/map00.json` and an original Operator line, `OPR_POWER_ON_M0_01`
+  - a coal-chute ground spawn from round 6
+- **Garand wall-buy moved** from z 12.5 to z 4 on the same taproom wall to make room for the door.
+
+**Answers to the two open Map 0 questions** (the user didn't pick):
+- **Harsh solo:** cellar perks first. Ironhide gives 5 hits and Second Wind self-revives, which is the canon fix. A mild round 1–3 easing comes only if round-15 playtests still say it's too harsh.
+- **Spare points:** the cellar door (1500), the perks (500–4000) and the 4-perk cap give scrip a purpose all game.
+
+**Machine lore** (§10.2 and §11.2–3):
+- `tools/build_perk_lore.py` turns docs/JINGLES.md into `data/gravelight/perk_lore.json`: plan IDs, the human behind each formula, and the panels.
+- Each machine gets:
+  - a brass maker's plate ("Rezeptur: <name>")
+  - a matte-violet plan-ID stencil. It's revealed for 1.2 s, plus a 0.4 s fade, when an upgraded weapon fires within 8 m with the machine inside a 60° cone, or always once `fp_ch5_done` is set. The first reveal shows the hint "A stencil under the enamel." It uses a new `GLBus.weapon_fired` signal.
+  - a readable `FinePrintPanel` on the back, with a full-screen brass-plate reader. The reader closes if you're hit.
+- Panels and stencils file into the Intel Archive as `panel.<perk>` (with the formula-maker's story) and `plan.<perk>`, under "Helvetia Automaten AG".
+
+**Corporate slips** (§11.5):
+- All 32 lines, `op.slip.*` from script_ch5 §3.8, are added to `data/gravelight/vo/lines.json`.
+- **Rules:**
+  - they play per VO_SCRIPT §10, which owns the playback rules
+  - per-line tier rounds come from the Ch. 5 table (A 10 / B 20 / C 30)
+- **Conflicts resolved toward VO_SCRIPT §10**, which declares itself the owner:
+  - **Map 0:** slips are allowed from round 15 at half rate; the Ch. 5 table said "never on Map 0".
+  - **Squad reactions:** none ("no character reacts to a slip"). The Ch. 5 squad reaction lines stay in the script, unused. They're new content, not original B&S canon.
+- **Re-extraction warning:** lines.json was originally built by `gravelight/tools_src/extract_vo.py`; re-running that extractor would drop these lines.
+
+**FP controller on the shared core:** deferred to M7. GRAVELIGHT's `Player` is the complete first-person controller and nothing else needs one yet. The Fine Print's Field Unit (Vendelin, M7) is the second user, so the shared base is extracted then, with both users in hand.
+
+**T-028, 2026-10-20: Zombie bugs found by the round-15 Map 0 playtests** (all GRAVELIGHT, so they also apply to Map 1).
+1. **Runtime colliders were missing from the navmesh.** Perk-machine and mystery-crate bodies are created at runtime, after the bake, so zombies pathed into them and stuck. `gen_map00.gd` now bakes invisible nav blocks for their footprints (`MACHINE_FOOTPRINTS` mirrors `PerkMachine._shape_footprint`). Map 1's machines sit against walls; they get the same treatment in M5.
+2. **Zombies stacked on each other's heads.** Two zombies emerging on one spot (the power-on burst, a busy ground spawn) ended with one standing on the other, stuck in mid-air.
+   - Ground emergences now take the first free slot on a ring, at least 0.9 m from every active zombie (`ZombieDirector._scatter`).
+   - Any zombie whose floor is another zombie steps off sideways (`Zombie._slide_off_zombie`).
+3. **Bellringer portals snapped onto furniture.** A portal's offset point could snap onto a bed top. Offsets that change height by more than 0.4 m now fall back to the portal point.
+4. **Closed-door test fixed.** "Does this path cross a closed door" is now a real plane crossing between the jambs (`ZombieDirector.door_crossed`). The old distance test rejected any path that merely started next to a door.
+5. **Cellar zone box** stops below the ceiling, so the yard above isn't counted as "cellar".

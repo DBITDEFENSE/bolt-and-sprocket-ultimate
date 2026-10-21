@@ -91,6 +91,7 @@ func _on_line(_id: StringName, speaker: StringName, text: String, duration: floa
 	row["i"] = 0
 	row["t"] = times[0] if times.size() > 0 else duration
 	row["speaker"] = speaker
+	row["slip"] = String(_id).begins_with("op.slip")
 	_show(row)
 
 
@@ -104,7 +105,8 @@ func _show(row: Dictionary) -> void:
 	var spk: StringName = row["speaker"]
 	var col: Color = COLORS.get(spk, Color(0.9, 0.9, 0.9))
 	var name_str: String = str(NAMES.get(spk, String(spk)))
-	l.text = "[center][color=#%s]%s:[/color] [color=#ece6d6]%s[/color][/center]" % [col.to_html(false), name_str, chunks[i].replace("[", "[lb]")]
+	var body_col: String = "c07dff" if bool(row.get("slip", false)) else "ece6d6"   # a slip: Darkmatter violet
+	l.text = "[center][color=#%s]%s:[/color] [color=#%s]%s[/color][/center]" % [col.to_html(false), name_str, body_col, chunks[i].replace("[", "[lb]")]
 	l.visible = true
 
 

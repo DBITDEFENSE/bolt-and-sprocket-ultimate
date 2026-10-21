@@ -99,3 +99,44 @@ After the fixes:
 - When cornered it backs into walls.
 
 Its survival numbers are a floor, not a measure of how hard the map is for a person.
+
+
+---
+
+## M2 follow-up: Map 0 to round 15, with the Helvetia cellar
+
+**Setup:** the same bot, after the cellar, perks, lore and slips landed (T-027, T-028).
+
+**God mode, seeds 8 and 9: both reached and cleared round 15.**
+
+| | Seed 8 |
+|---|---|
+| Game time | 19.8 min |
+| Kills | 376 |
+| Spending | cellar door in round 3, then the 4-perk cap: Ironhide, Second Wind, Twin Barrel, Marathon |
+| Peak | 24 zombies alive from round 12 on |
+| Rounds 12–15 | 74–153 s each |
+| Frame time | p50 1.5 ms, p99 5.6 ms |
+| Script errors | 0 |
+| Stuck-zombie reports | 0 |
+
+**What the round-15 runs found, all fixed** (DECISIONS T-028):
+- **Machines and crates missing from the navmesh.** Their bodies are made at runtime, so zombies walked into them.
+- **Zombies stacked on each other's heads.** Two emerging on one spot ended with one wedged into the cellar ceiling. The fix: occupancy-aware scatter, stepping off another zombie's head, and recycling a zombie wedged above the floor.
+- **Bellringer pack members spawned outside the walls.** Offsets snapped to navmesh through a wall. Pack members now need a clear line from the portal.
+- **Portals on top of furniture.**
+- **Corner snags.** Zombies now sidestep when blocked for 0.5 s.
+- **The closed-door crossing test,** for paths with a corner in the doorway.
+- **The cellar lever** couldn't be thrown from an angle.
+- **The west row of machines blocked the foot of the stairs.** Moved 1.4 m further in.
+
+**Real difficulty** (bot, no god mode): it went down in rounds 2–6 across many seeds, often in corners and in the pockets behind machines. That reflects the bot, not the map. Unlike a person, it doesn't hold the stair choke, train zombies, or use the crate. A real player at the lever, at a machine front, or walking through the Upstairs door has no trouble (checked with scripted walks).
+
+**"Tense and fair" at round 15:**
+- **Tense:** by round 12, 24 zombies are alive at once, and rounds run two minutes or more.
+- **Fair:** the cellar perks are reachable by round 3–5, and every death the bot suffered traced to its own positioning.
+- **Caveats:**
+  - The round-15 judgement needs a human pass.
+  - After the 4-perk cap, points pile up (42,000 by round 15) with only the crate left to spend on.
+
+**Decision (T-027):** no early-round easing for now. Revisit after a human round-15 run.

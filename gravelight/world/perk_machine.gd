@@ -38,6 +38,7 @@ func _ready() -> void:
 	_body.add_child(cs)
 	add_child(_body)
 	GLBus.power_activated.connect(_refresh_power)
+	_build_lore()
 	if perk_id == &"second_wind":
 		PerkManager.second_wind_retired.connect(_retire)
 	_refresh_power()
@@ -242,3 +243,100 @@ func _cyl(radius: float, height: float, pos: Vector3, mat: Material) -> MeshInst
 	mi.position = pos
 	_greybox.add_child(mi)
 	return mi
+
+
+# ------------------------------------------------------------------ T&C section 11.2: plate, stencil, back panel
+
+const STENCIL_COLOR: Color = Color("#c07dff")
+const STENCIL_RANGE: float = 8.0
+const STENCIL_CONE_DEG: float = 30.0      # half of the 60-degree flash cone
+const STENCIL_HOLD: float = 1.2
+const STENCIL_FADE: float = 0.4
+
+var _stencil: Label3D = null
+var _stencil_t: float = 0.0
+var _stencil_always: bool = false
+
+
+## Maker's plate (front), the plan-ID stencil under the enamel (front, low), and the fine-print panel (back).
+func _build_lore() -> void:
+	var lo: Dictionary = FinePrintReader.lore(perk_id)
+	if lo.is_empty():
+		return
+	var fp: Vector3 = _footprint
+	var front_z: float = -(fp.z * 0.5) - 0.02
+	var plate: Label3D = Label3D.new()
+	plate.name = "MakersPlate"
+	plate.text = "HELVETIA AUTOMATEN AG · BASEL\nRezeptur: %s" % _short_human(str(lo.get("human", "")))
+	plate.font_size = 20
+	plate.pixel_size = 0.0018
+	plate.modulate = Color(0.85, 0.72, 0.42)
+	plate.outline_size = 4
+	plate.outline_modulate = Color(0.1, 0.07, 0.03)
+	plate.position = Vector3(0, 0.09, front_z)
+	plate.rotation.y = PI   # Label3D faces +Z; the front is -Z
+	add_child(plate)
+	_stencil = Label3D.new()
+	_stencil.name = "PlanStencil"
+	_stencil.text = "%s · %s" % [lo.get("plan_id", ""), str(lo.get("plan_name", "")).split(" (")[0]]
+	_stencil.font_size = 26
+	_stencil.pixel_size = 0.0016
+	_stencil.modulate = Color(STENCIL_COLOR, 0.0)
+	_stencil.outline_size = 0
+	_stencil.position = Vector3(0, 0.25, front_z - 0.004)
+	_stencil.rotation.y = PI
+	add_child(_stencil)
+	_stencil_always = _fine_print_done()
+	if _stencil_always:
+		_stencil.modulate.a = 0.55
+	else:
+		GLBus.weapon_fired.connect(_on_weapon_fired)
+	var panel: FinePrintPanel = FinePrintPanel.new()
+	panel.name = "FinePrintPanel"
+	panel.perk_id = perk_id
+	panel.width = fp.x
+	panel.position = Vector3(0, 0, fp.z * 0.5 + 0.03)
+	panel.rotation.y = PI   # its -Z (reader side) points out of the machine's back
+	add_child(panel)
+
+
+static func _short_human(h: String) -> String:
+	h = h.split(" (")[0].split(",")[0].strip_edges().trim_suffix(".")
+	return h.substr(0, 1).to_upper() + h.substr(1)
+
+
+## The Fine Print completed (the shared T&C profile holds the unlock).
+static func _fine_print_done() -> bool:
+	var sp: Node = Engine.get_main_loop().root.get_node_or_null(^"/root/SaveProfile") if Engine.get_main_loop() is SceneTree else null
+	if sp == null:
+		return false
+	var doc: Dictionary = sp.get("doc")
+	return (doc.get("unlocks", []) as Array).has("fp_ch5_done")
+
+
+func _on_weapon_fired(_pid: int, _weapon: StringName, upgraded: bool, origin: Vector3, dir: Vector3) -> void:
+	if not upgraded or _stencil == null:
+		return
+	var to: Vector3 = _stencil.global_position - origin
+	if to.length() > STENCIL_RANGE or to.length() < 0.01:
+		return
+	if rad_to_deg(dir.angle_to(to)) > STENCIL_CONE_DEG:
+		return
+	var first: bool = _stencil_t <= 0.0 and _stencil.modulate.a <= 0.01
+	_stencil_t = STENCIL_HOLD + STENCIL_FADE
+	if first:
+		GLBus.intel_found.emit(StringName("plan." + String(perk_id)))
+		var key: String = "stencil_hint_shown"
+		if not bool(ProfileSave.profile.get(key, false)):
+			ProfileSave.profile[key] = true
+			var hud: Node = get_tree().get_first_node_in_group(&"hud")
+			if hud != null:
+				hud.call("show_banner", "A stencil under the enamel.", 2.2)
+
+
+func _physics_process(delta: float) -> void:
+	if _stencil == null or _stencil_always or _stencil_t <= 0.0:
+		return
+	_stencil_t -= delta
+	_stencil.modulate.a = clampf(_stencil_t / STENCIL_FADE, 0.0, 1.0) * 0.9
+

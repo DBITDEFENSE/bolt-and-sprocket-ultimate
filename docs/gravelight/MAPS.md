@@ -141,6 +141,20 @@ Training loop (light): around the taproom tables and bar, clockwise. It's tight 
 
 A salt mine and research complex at night under snow. The map descends: **surface → administration → mine depths (level −2) → the heart (level −3).**
 
+## Map 0 cellar: the Helvetia machines (T&C M2, DECISIONS T-027)
+Door 3 (**1500**, zone `CELLAR`) is in the taproom's east wall at z 10.7–12.3. The M1 Garand wall-buy moved north along that wall to z 4. Through the door:
+- **Stair hall** (x 24–28, z 10–19): a ramp down from the ground landing to the cellar floor (y −3.2).
+- **The vault** (x 24–36, z 19–31): timber ceiling, two stone pillars to loop around, and all **8 Helvetia perk machines**:
+  - **West row**, facing east: Ironhide, Second Wind, Trigger Tonic.
+  - **East row**, facing west: Twin Barrel, Marathon, Hawkeye.
+  - **South pair**: Packmule, Blastproof.
+  - Every machine stands 1.1 m or more off the wall, so its **fine-print panel** can be read from behind.
+- **The cellar lever** (north wall, x 32.5): Map 0's power. Throwing it lights the cellar, then the taproom, upstairs and stable in sequence, plays the Operator's first fumbling power line, and emerges 3 zombies at the coal chute.
+- **Coal chute** (SE corner): a ground spawn from round 6.
+- Machine and crate footprints are baked into the navmesh, so zombies path round them.
+
+Pacing intent: the cellar is the first big spend (round 3–5 for a careful player). Ironhide (5 hits) and Second Wind (solo self-revive) are what make rounds 10–15 survivable; the remaining machines and the 4-perk cap give scrip a purpose for the rest of the match.
+
 ## Vertical overview
 
 ```

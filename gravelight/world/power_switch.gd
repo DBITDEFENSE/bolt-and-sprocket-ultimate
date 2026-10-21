@@ -8,6 +8,11 @@ extends Interactable
 @export var zone_order: PackedStringArray = ["G_GENERATOR", "F_CHAPEL", "H_LAB", "I_CORE", "E_LIFT",
 	"D_BARRACKS", "C_ADMIN", "B_RAILYARD", "A_MINEHEAD"]
 
+## Which data/gravelight/<table>.json holds this map's "power" block (map00: the Crossroads cellar lever).
+@export var config_table: String = "map01"
+## What the prompt calls it.
+@export var label: String = "the Hauptschalter"
+
 var _thrown: bool = false
 var _lever: Node3D
 var _lamps: Array[MeshInstance3D] = []   # [AUS (red), EIN (green)]
@@ -16,8 +21,9 @@ var _beacon: OmniLight3D                 # a red glow that marks the switch in t
 
 func _ready() -> void:
 	add_to_group(&"power_switch")
-	interact_size = Vector3(1.4, 1.6, 0.3)
-	interact_offset = Vector3(0, 1.0, -0.35)
+	# wraps the front and sides of the panel, so it can be thrown from an angle, not only dead-on (T-028)
+	interact_size = Vector3(1.8, 1.8, 0.9)
+	interact_offset = Vector3(0, 1.0, -0.3)
 	super._ready()
 	# Lights start dark until the switch is thrown (unless power is already on).
 	for n: Node in get_tree().get_nodes_in_group(&"power_lights"):
@@ -76,7 +82,7 @@ func _refresh_lamps() -> void:
 func get_prompt(_player: Player) -> String:
 	if _thrown or GameState.power_on:
 		return ""
-	return "Hold [%s] to throw the Hauptschalter" % prompt_key(&"interact")
+	return "Hold [%s] to throw %s" % [prompt_key(&"interact"), label]
 
 
 func can_interact(_player: Player) -> bool:
@@ -130,7 +136,9 @@ static func map01() -> Dictionary:
 
 
 func _cfg() -> Dictionary:
-	return map01()["power"]
+	if config_table == "map01":
+		return map01()["power"]
+	return GLData.load_json("res://data/gravelight/%s.json" % config_table)["power"]
 
 
 func _light_zone(zone: StringName) -> void:

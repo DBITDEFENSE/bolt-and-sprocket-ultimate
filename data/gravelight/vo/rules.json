@@ -1,205 +1,221 @@
 {
-  "_doc": "VO playback rules (docs/VO_SCRIPT.md \u00a71). priority: 4 CRITICAL, 3 ANNOUNCE, 2 EVENT, 1 CHATTER, 0 AMBIENT.",
-  "story_speakers": [
-    "OPR",
-    "FAS",
-    "REI",
-    "LSL",
-    "CUT",
-    "NPC"
+ "_doc": "VO playback rules (docs/VO_SCRIPT.md §1). priority: 4 CRITICAL, 3 ANNOUNCE, 2 EVENT, 1 CHATTER, 0 AMBIENT.",
+ "story_speakers": [
+  "OPR",
+  "FAS",
+  "REI",
+  "LSL",
+  "CUT",
+  "NPC"
+ ],
+ "player_speakers": [
+  "DUT",
+  "PEG",
+  "DEA",
+  "WRN",
+  "BNT",
+  "TAG"
+ ],
+ "speaker_default_priority": {
+  "OPR": 2,
+  "FAS": 4,
+  "REI": 4,
+  "LSL": 4,
+  "CUT": 4,
+  "NPC": 2,
+  "DUT": 1,
+  "PEG": 1,
+  "DEA": 1,
+  "WRN": 1,
+  "BNT": 0,
+  "TAG": 4
+ },
+ "category_priority": {
+  "PWR_EXPIRE": 2,
+  "PWR_GRAB": 1,
+  "PWR": 3,
+  "POWER_ON": 3,
+  "PYLON": 3,
+  "VAULT": 3,
+  "SPECIAL": 3,
+  "GAME_OVER": 3,
+  "BOSS": 3,
+  "MATCH_START": 2,
+  "ROUND_START": 2,
+  "ROUND_END": 2,
+  "CRATE_MOVE": 2,
+  "CRUCIBLE": 2,
+  "TRAP": 2,
+  "SECOND_WIND": 3,
+  "QUEST": 4,
+  "M0": 4,
+  "M1": 4,
+  "IDLE_SELFAWARE": 0,
+  "SELFAWARE": 0,
+  "EXHAUST": 1
+ },
+ "category_cooldown": {
+  "ROUND_START": [
+   0,
+   0.35
   ],
-  "player_speakers": [
-    "DUT",
-    "PEG",
-    "DEA",
-    "WRN",
-    "BNT",
-    "TAG"
+  "ROUND_END": [
+   0,
+   0.35
   ],
-  "speaker_default_priority": {
-    "OPR": 2,
-    "FAS": 4,
-    "REI": 4,
-    "LSL": 4,
-    "CUT": 4,
-    "NPC": 2,
-    "DUT": 1,
-    "PEG": 1,
-    "DEA": 1,
-    "WRN": 1,
-    "BNT": 0,
-    "TAG": 4
-  },
-  "category_priority": {
-    "PWR_EXPIRE": 2,
-    "PWR_GRAB": 1,
-    "PWR": 3,
-    "POWER_ON": 3,
-    "PYLON": 3,
-    "VAULT": 3,
-    "SPECIAL": 3,
-    "GAME_OVER": 3,
-    "BOSS": 3,
-    "MATCH_START": 2,
-    "ROUND_START": 2,
-    "ROUND_END": 2,
-    "CRATE_MOVE": 2,
-    "CRUCIBLE": 2,
-    "TRAP": 2,
-    "SECOND_WIND": 3,
-    "QUEST": 4,
-    "M0": 4,
-    "M1": 4,
-    "IDLE_SELFAWARE": 0,
-    "SELFAWARE": 0,
-    "EXHAUST": 1
-  },
-  "category_cooldown": {
-    "ROUND_START": [
-      0,
-      0.35
-    ],
-    "ROUND_END": [
-      0,
-      0.35
-    ],
-    "PWR_GRAB": [
-      6,
-      0.6
-    ],
-    "PWR_EXPIRE": [
-      0,
-      0.3
-    ],
-    "PWR": [
-      0,
-      1.0
-    ],
-    "CRATE_GOOD": [
-      20,
-      0.7
-    ],
-    "CRATE_BAD": [
-      20,
-      0.7
-    ],
-    "CRATE_WONDER": [
-      20,
-      1.0
-    ],
-    "CRATE_MOVE": [
-      0,
-      1.0
-    ],
-    "CRATE_DRUMMER": [
-      20,
-      0.7
-    ],
-    "HEADSHOT": [
-      25,
-      0.2
-    ],
-    "STREAK": [
-      40,
-      0.5
-    ],
-    "LOW_AMMO": [
-      30,
-      0.7
-    ],
-    "NO_AMMO": [
-      30,
-      0.7
-    ],
-    "KILL": [
-      15,
-      0.1
-    ],
-    "BUY": [
-      10,
-      0.8
-    ],
-    "PERK": [
-      0,
-      1.0
-    ],
-    "IDLE_SELFAWARE": [
-      240,
-      0.5
-    ],
-    "SELFAWARE": [
-      240,
-      1.0
-    ],
-    "HINT": [
-      120,
-      0.4
-    ],
-    "BNT": [
-      180,
-      0.3
-    ],
-    "DOWNED": [
-      0,
-      1.0
-    ],
-    "REVIVE": [
-      5,
-      0.8
-    ],
-    "REVIVED": [
-      5,
-      0.8
-    ],
-    "DENY": [
-      8,
-      0.8
-    ],
-    "DOOR": [
-      20,
-      0.4
-    ],
-    "MATCH_START": [
-      0,
-      1.0
-    ],
-    "SPAWN": [
-      0,
-      0.6
-    ],
-    "GAME_OVER": [
-      0,
-      1.0
-    ],
-    "POWER_ON": [
-      0,
-      1.0
-    ],
-    "INTEL": [
-      10,
-      1.0
-    ]
-  },
-  "round_start_always": [
-    1,
-    5,
-    10,
-    15,
-    20,
-    25,
-    30,
-    50
+  "PWR_GRAB": [
+   6,
+   0.6
   ],
-  "queue_expiry": {
-    "0": 4.0,
-    "1": 4.0,
-    "2": 4.0,
-    "3": 20.0,
-    "4": -1.0
-  },
-  "player_chatter_gap": 3.5,
-  "ambient_gap": 45.0,
-  "chars_per_second_inv": 0.065,
-  "min_duration": 1.5,
-  "exchange_gap": 0.4
+  "PWR_EXPIRE": [
+   0,
+   0.3
+  ],
+  "PWR": [
+   0,
+   1.0
+  ],
+  "CRATE_GOOD": [
+   20,
+   0.7
+  ],
+  "CRATE_BAD": [
+   20,
+   0.7
+  ],
+  "CRATE_WONDER": [
+   20,
+   1.0
+  ],
+  "CRATE_MOVE": [
+   0,
+   1.0
+  ],
+  "CRATE_DRUMMER": [
+   20,
+   0.7
+  ],
+  "HEADSHOT": [
+   25,
+   0.2
+  ],
+  "STREAK": [
+   40,
+   0.5
+  ],
+  "LOW_AMMO": [
+   30,
+   0.7
+  ],
+  "NO_AMMO": [
+   30,
+   0.7
+  ],
+  "KILL": [
+   15,
+   0.1
+  ],
+  "BUY": [
+   10,
+   0.8
+  ],
+  "PERK": [
+   0,
+   1.0
+  ],
+  "IDLE_SELFAWARE": [
+   240,
+   0.5
+  ],
+  "SELFAWARE": [
+   240,
+   1.0
+  ],
+  "HINT": [
+   120,
+   0.4
+  ],
+  "BNT": [
+   180,
+   0.3
+  ],
+  "DOWNED": [
+   0,
+   1.0
+  ],
+  "REVIVE": [
+   5,
+   0.8
+  ],
+  "REVIVED": [
+   5,
+   0.8
+  ],
+  "DENY": [
+   8,
+   0.8
+  ],
+  "DOOR": [
+   20,
+   0.4
+  ],
+  "MATCH_START": [
+   0,
+   1.0
+  ],
+  "SPAWN": [
+   0,
+   0.6
+  ],
+  "GAME_OVER": [
+   0,
+   1.0
+  ],
+  "POWER_ON": [
+   0,
+   1.0
+  ],
+  "INTEL": [
+   10,
+   1.0
+  ]
+ },
+ "round_start_always": [
+  1,
+  5,
+  10,
+  15,
+  20,
+  25,
+  30,
+  50
+ ],
+ "queue_expiry": {
+  "0": 4.0,
+  "1": 4.0,
+  "2": 4.0,
+  "3": 20.0,
+  "4": -1.0
+ },
+ "player_chatter_gap": 3.5,
+ "ambient_gap": 45.0,
+ "chars_per_second_inv": 0.065,
+ "min_duration": 1.5,
+ "exchange_gap": 0.4,
+ "slip_base": 0.01,
+ "slip_per_round": 0.0022,
+ "slip_cap": 0.12,
+ "slip_map_cap": 0.2,
+ "slip_map_mult": {
+  "map00": 0.5,
+  "map01": 1.0,
+  "map_hw_helvetia": 2.0,
+  "map02": 1.5,
+  "map03": 2.0
+ },
+ "slip_map00_min_round": 15,
+ "slip_cooldown_s": 300.0,
+ "slip_cooldown_hw_map03_s": 240.0,
+ "slip_tail_delay_s": 0.6,
+ "slip_after_down_s": 10.0
 }

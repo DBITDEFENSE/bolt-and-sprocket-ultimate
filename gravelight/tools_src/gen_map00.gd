@@ -226,13 +226,17 @@ func _own(n: Node, owner_node: Node) -> void:
 # ================================================================== collision shell (navmesh source)
 
 func build_geometry() -> void:
-	box(geo, "Ground", Vector3(-45, -0.5, -40), Vector3(70, 0.0, 75), "snow")
+	# ground slab, with a hole over the cellar annex (x 24..36, z 10..31; T&C M2, DECISIONS T-027)
+	box(geo, "Ground", Vector3(-45, -0.5, -40), Vector3(24, 0.0, 75), "snow")
+	box(geo, "GroundE", Vector3(36, -0.5, -40), Vector3(70, 0.0, 75), "snow")
+	box(geo, "GroundN", Vector3(24, -0.5, -40), Vector3(36, 0.0, 10), "snow")
+	box(geo, "GroundS", Vector3(24, -0.5, 31), Vector3(36, 0.0, 75), "snow")
 
 	# ---------------- TAPROOM (ground floor)
 	var win: Array = [WIN_SILL, WIN_TOP]
 	wall_x("TapN", 0.0, -T * 0.5, 24 + T * 0.5, 0, TAP_H, [[6.2, 7.8] + win, [16.2, 17.8] + win], "wall", 1)
 	wall_z("TapW", 0.0, 0, 10, 0, TAP_H, [[5.2, 6.8] + win], "wall", 1)
-	wall_z("TapE", 24.0, 0, 16, 0, TAP_H, [[7.2, 8.8] + win], "wall", -1)
+	wall_z("TapE", 24.0, 0, 16, 0, TAP_H, [[7.2, 8.8] + win, [10.7, 12.3, 0.0, DOOR_H]], "wall", -1)
 	wall_x("TapS", 16.0, 3, 24 + T * 0.5, 0, TAP_H, [[19.0, 21.0, 0.0, DOOR_H]], "wall", -1)
 	# stairwell enclosure (x 0..3, z 10..16), full height; Door 1 opening on its east wall
 	wall_z("StairW", 0.0, 10, 16 + T * 0.5, 0, UP_TOP, [], "wall", 1)
@@ -293,6 +297,9 @@ func build_geometry() -> void:
 	box(geo, "HayBales", Vector3(6.3, 3.5, 30.5), Vector3(9.5, 4.4, 33.7), "hay", true, false)
 	box(geo, "CartCol", Vector3(7.0, 0, 31.4), Vector3(9.8, 1.1, 33.4), "furniture", true, false)
 
+	build_cellar()
+	build_nav_blocks()
+
 	# ---------------- crash site (east field): GRAVELIGHT ONE (collision for the hull only)
 	var wreck: Node3D = Node3D.new()
 	wreck.name = "Wreck"
@@ -301,6 +308,76 @@ func build_geometry() -> void:
 	geo.add_child(wreck)
 	box(wreck, "Fuselage", Vector3(-1.4, 0, -7), Vector3(1.4, 2.6, 6), "wreck", true, false)
 	box(wreck, "Wing", Vector3(-9, 0.4, -1.5), Vector3(7, 0.7, 1.5), "wreck", true, false)
+
+
+## The Helvetia cellar (T&C M2; Appendix A asks for the 8 perk machines in a cellar behind a 1500 door for the
+## vertical slice). Door 3 in the taproom's east wall -> stair hall (x 24..28, z 10..19) with a ramp down to the
+## vaulted cellar (x 24..36, z 19..31, floor CELLAR_Y). Its roof is the yard's ground surface.
+const CELLAR_Y: float = -3.2
+const CELLAR_TOP: float = -0.2
+## machines: [perk, pos, yaw]; front (local -Z) faces the middle of the vault
+const CELLAR_PERKS: Array = [
+	# west row starts 4 m from the foot of the stairs, so the ramp spills into open floor (playtest, T-028)
+	["ironhide_stout", Vector3(25.9, CELLAR_Y, 23.0), -90.0], ["second_wind", Vector3(25.9, CELLAR_Y, 25.8), -90.0],
+	["trigger_tonic", Vector3(25.9, CELLAR_Y, 28.6), -90.0],
+	["twin_barrel", Vector3(34.1, CELLAR_Y, 21.6), 90.0], ["marathon_malt", Vector3(34.1, CELLAR_Y, 24.6), 90.0],
+	["hawkeye_brandy", Vector3(34.1, CELLAR_Y, 27.6), 90.0],
+	["packmule_porter", Vector3(28.6, CELLAR_Y, 29.4), 0.0], ["blastproof_bock", Vector3(31.4, CELLAR_Y, 29.4), 0.0],
+]
+## Same as PerkMachine._shape_footprint (that script needs the autoloads, which a --script run doesn't have).
+## Keep the two in step.
+const MACHINE_FOOTPRINTS: Dictionary = {
+	"barrel": Vector3(1.2, 1.9, 1.2), "cabinet": Vector3(0.8, 2.3, 0.6), "crate": Vector3(1.0, 2.0, 0.65),
+	"twin": Vector3(1.2, 2.1, 0.6), "teardrop": Vector3(1.0, 2.4, 0.9), "periscope": Vector3(0.9, 1.8, 0.65),
+	"wagon": Vector3(1.7, 1.7, 0.85), "safe": Vector3(1.1, 1.9, 0.95),
+}
+## crate spots: [name, position, yaw, can_start]
+const CRATES: Array = [["Hearth", Vector3(22.9, 0, 14.0), 90.0, true], ["GuestBed", Vector3(22.0, UP_Y, 0.8), 180.0, false],
+	["TackRoom", Vector3(22.9, 0, 31.5), 90.0, true]]
+
+
+## Perk machines and crates make their collision bodies at runtime, after the bake. Their footprints go into
+## the navmesh here (invisible colliders) so zombies path round them instead of into them (T-027).
+func build_nav_blocks() -> void:
+	var pdata: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perks.json"))["perks"]
+	for pk: Array in CELLAR_PERKS:
+		var fp: Vector3 = MACHINE_FOOTPRINTS.get(str((pdata[str(pk[0])] as Dictionary).get("shape", "cabinet")), Vector3(1.0, 2.0, 0.7))
+		if absf(float(pk[2])) == 90.0:
+			fp = Vector3(fp.z, fp.y, fp.x)
+		var c: Vector3 = pk[1]
+		box(geo, "NavBlock_" + str(pk[0]), c - Vector3(fp.x * 0.5, 0, fp.z * 0.5), c + Vector3(fp.x * 0.5, fp.y, fp.z * 0.5), "metal", true, false)
+	for cr: Array in CRATES:
+		var half: Vector3 = Vector3(0.7, 0, 0.35) if absf(float(cr[2])) != 90.0 else Vector3(0.35, 0, 0.7)
+		var p: Vector3 = cr[1]
+		box(geo, "NavBlock_Crate", p - half, p + half + Vector3(0, 0.75, 0), "metal", true, false)
+
+
+func build_cellar() -> void:
+	var cy: float = CELLAR_Y
+	# stair hall: landing at ground level, then the ramp down (south)
+	box(geo, "CellarLanding", Vector3(24.15, -0.5, 10.15), Vector3(28.0, 0.0, 13.0), "floor_wood")
+	ramp_z("CellarStairs", 24.3, 27.85, 19.0, 13.0, cy, 0.0)
+	wall_x("HallN", 10.0, 24.0, 28.0 + T * 0.5, cy, 3.0, [], "stone")
+	wall_z("HallE", 28.0, 10.0, 19.0, cy, 3.0, [], "stone")
+	wall_z("HallW", 24.0, 16.0, 19.0, cy, 3.0, [], "stone")
+	box(geo, "HallWLow", Vector3(24.0 - T * 0.5, cy, 10.0), Vector3(24.0 + T * 0.5, 0.0, 16.0), "stone")
+	box(geo, "HallS", Vector3(24.0 - T * 0.5, CELLAR_TOP, 19.0 - T * 0.5), Vector3(28.0 + T * 0.5, 3.0, 19.0 + T * 0.5), "stone")
+	box(geo, "HallRoof", Vector3(24.0, 3.0, 10.0 - T * 0.5), Vector3(28.0 + T * 0.5, 3.2, 19.0), "roof")
+	box(geo, "HallUnder", Vector3(24.15, cy - 0.5, 13.0), Vector3(28.0, cy, 19.0), "stone")
+	# the cellar
+	box(geo, "CellarFloor", Vector3(24.0, cy - 0.5, 19.0), Vector3(36.0, cy, 31.0), "stone")
+	box(geo, "CellarRoof", Vector3(24.0 - T * 0.5, CELLAR_TOP, 19.0), Vector3(36.0 + T * 0.5, -0.04, 31.0 + T * 0.5), "floor_wood")
+	box(geo, "CellarRoofSnow", Vector3(24.0 - T * 0.5, -0.04, 19.0), Vector3(36.0 + T * 0.5, 0.0, 31.0 + T * 0.5), "snow")
+	for bz: float in [21.0, 25.0, 29.0]:   # joists under the boards
+		box(geo, "CellarJoist", Vector3(24.0, CELLAR_TOP - 0.25, bz - 0.12), Vector3(36.0, CELLAR_TOP, bz + 0.12), "furniture", false)
+	wall_z("CelW", 24.0, 19.0, 31.0, cy, CELLAR_TOP, [], "stone")
+	wall_z("CelE", 36.0, 19.0, 31.0, cy, CELLAR_TOP, [], "stone")
+	wall_x("CelS", 31.0, 24.0 - T * 0.5, 36.0 + T * 0.5, cy, CELLAR_TOP, [], "stone")
+	wall_x("CelN", 19.0, 28.0, 36.0 + T * 0.5, cy, CELLAR_TOP, [], "stone")
+	box(geo, "CelNLintel", Vector3(24.0, cy + 2.6, 19.0 - T * 0.5), Vector3(28.0, CELLAR_TOP, 19.0 + T * 0.5), "stone")
+	# vault pillars (cover, and something to run a loop around)
+	for p: Vector2 in [Vector2(30.0, 23.0), Vector2(30.0, 27.0)]:
+		box(geo, "CellarPillar", Vector3(p.x - 0.35, cy, p.y - 0.35), Vector3(p.x + 0.35, CELLAR_TOP, p.y + 0.35), "stone")
 
 
 func bake_navmesh() -> void:
@@ -404,6 +481,7 @@ func _dress_windows_and_doors() -> void:
 	_window(Vector3(12.0, 0, 34.0), 180.0, false)
 	_door_frame(Vector3(3.0, 0, 15.1), 90.0, 1.6, DOOR_H)
 	_door_frame(Vector3(20.0, 0, 16.0), 0.0, 2.0, DOOR_H)
+	_door_frame(Vector3(24.0, 0, 11.5), -90.0, 1.6, DOOR_H)
 	_door_frame(Vector3(20.0, 0, 22.0), 0.0, 3.0, 2.6)
 	for dx: float in [5.75, 11.75, 20.25]:
 		_door_frame(Vector3(dx, UP_Y, 6.0), 0.0, 1.5, 2.2)
@@ -606,7 +684,11 @@ func _dress_exterior() -> void:
 	for y: float in [0.25, TAP_H, UP_TOP - 0.1]:
 		Props.block(g, Vector3(-0.27, y - 0.12, -0.27), Vector3(24.27, y + 0.12, -0.15), "beam")
 		Props.block(g, Vector3(-0.27, y - 0.12, -0.15), Vector3(-0.15, y + 0.12, 16.15), "beam")
-		Props.block(g, Vector3(24.15, y - 0.12, -0.15), Vector3(24.27, y + 0.12, 16.15 if y < 4.0 else 10.15), "beam")
+		if y < 1.0:   # the cellar door (z 10.7..12.3) breaks the sill beam
+			Props.block(g, Vector3(24.15, y - 0.12, -0.15), Vector3(24.27, y + 0.12, 10.6), "beam")
+			Props.block(g, Vector3(24.15, y - 0.12, 12.4), Vector3(24.27, y + 0.12, 16.15), "beam")
+		else:
+			Props.block(g, Vector3(24.15, y - 0.12, -0.15), Vector3(24.27, y + 0.12, 16.15 if y < 4.0 else 10.15), "beam")
 	for i: int in 6:
 		var x0: float = 0.2 + i * 4.0
 		Props.obox(g, Vector3(x0 + 1.5, UP_Y + 1.5, -0.22), Vector3(0.18, 3.6, 0.08), "beam", Vector3(0, 0, 40 if i % 2 == 0 else -40))
@@ -620,7 +702,7 @@ func _dress_exterior() -> void:
 	# porch posts' snow caps and drifts against the walls
 	for d: Array in [[Vector3(-1.2, 0, 6), Vector3(2.4, 0.9, 7)], [Vector3(25.4, 0, 3), Vector3(2.0, 0.8, 5)], [Vector3(12, 0, -1.0), Vector3(6, 0.7, 1.8)],
 			[Vector3(4, 0, 17.5), Vector3(5, 1.0, 2.2)], [Vector3(25.3, 0, 27), Vector3(2.2, 1.1, 8)], [Vector3(14, 0, 35.4), Vector3(9, 1.0, 2.2)],
-			[Vector3(4.6, 0, 28), Vector3(2.4, 1.0, 9)], [Vector3(-3, 0, -6), Vector3(5, 0.6, 4)], [Vector3(30, 0, 18), Vector3(6, 0.8, 5)]]:
+			[Vector3(4.6, 0, 28), Vector3(2.4, 1.0, 9)], [Vector3(-3, 0, -6), Vector3(5, 0.6, 4)], [Vector3(32, 0, 7), Vector3(6, 0.8, 5)]]:
 		Props.snow_drift(g, d[0], d[1])
 	Props.block(g, Vector3(1.5, UP_Y, -2.4), Vector3(6.5, UP_Y + 0.08, -0.15), "snow", false)
 	Props.block(g, Vector3(17.5, UP_Y, -2.4), Vector3(22.5, UP_Y + 0.08, -0.15), "snow", false)
@@ -955,10 +1037,12 @@ func build_gameplay() -> void:
 	d2.position = Vector3(20.0, 0, 16.0)
 	gameplay.add_child(d2)
 
+	build_cellar_gameplay()
+
 	# wall-buys: [weapon, position, yaw so local -Z faces the room]. Nudged off the wall past the timber trim.
 	var buys: Array = [
 		[&"kar98k", Vector3(T * 0.5 + 0.04, 1.5, 8.6), -90.0],
-		[&"m1_garand", Vector3(24 - T * 0.5 - 0.04, 1.5, 12.5), 90.0],
+		[&"m1_garand", Vector3(24 - T * 0.5 - 0.04, 1.5, 4.0), 90.0],   # moved from z 12.5 for the cellar door (T-027)
 		[&"mp40", Vector3(T * 0.5 + 0.04, UP_Y + 1.5, 3.4), -90.0],
 		[&"trench_gun", Vector3(6 + T * 0.5 + 0.01, 1.5, 29.5), -90.0],
 	]
@@ -993,8 +1077,7 @@ func build_gameplay() -> void:
 
 	# crate spots: [name, position, yaw (local -Z faces the room), can_start]. MAPS.md: start = Taproom or Stable.
 	var ci: int = 0
-	for c: Array in [["Hearth", Vector3(22.9, 0, 14.0), 90.0, true], ["GuestBed", Vector3(22.0, UP_Y, 0.8), 180.0, false],
-			["TackRoom", Vector3(22.9, 0, 31.5), 90.0, true]]:
+	for c: Array in CRATES:
 		var cr: Node3D = _scripted(Node3D.new(), "res://gravelight/world/mystery_crate.gd", "Crate_" + str(c[0]), {
 			"spot_index": ci, "can_start": c[3], "spot_name": c[0]})
 		cr.position = c[1]
@@ -1013,3 +1096,57 @@ func build_gameplay() -> void:
 			"tag": &"radio_note", "item_id": StringName(str(n[1])), "note_text": n[2], "numeral": n[3]})
 		note.position = n[4]
 		gameplay.add_child(note)
+
+
+## Door 3 (1500) -> the Helvetia cellar: all 8 perk machines, the cellar lever (Map 0's power), a coal chute
+## that starts spawning at round 6, and the power-on burst points. Machines stand 1.1 m+ off the walls so the
+## fine-print panels on their backs can be read (JINGLES.md section 0.3). T&C M2, DECISIONS T-027.
+func build_cellar_gameplay() -> void:
+	var cy: float = CELLAR_Y
+	var d3: Node3D = _scripted(Node3D.new(), "res://gravelight/world/door.gd", "Door_Cellar", {
+		"door_id": &"door_cellar", "opens_zone": &"CELLAR", "cost": 1500, "size": Vector3(1.6, DOOR_H, 0.25), "label": "Cellar"})
+	d3.position = Vector3(24.0, 0, 11.5)
+	d3.rotation.y = deg_to_rad(90)
+	gameplay.add_child(d3)
+	for z: Array in [[Vector3(26, cy, 14.5), Vector3(4, 6.5, 9)], [Vector3(30, cy, 25), Vector3(12, 2.7, 12)]]:   # top stays under the ceiling, so the yard above is not "cellar"
+		var zv: Node3D = _scripted(Node3D.new(), "res://gravelight/world/zone_volume.gd", "Zone_CELLAR", {"zone_id": &"CELLAR", "size": z[1]})
+		zv.position = z[0]
+		gameplay.add_child(zv)
+	for pk: Array in CELLAR_PERKS:
+		var m: Node3D = _scripted(Node3D.new(), "res://gravelight/world/perk_machine.gd", "Perk_" + str(pk[0]), {"perk_id": StringName(str(pk[0]))})
+		m.position = pk[1]
+		m.rotation.y = deg_to_rad(float(pk[2]))
+		gameplay.add_child(m)
+	var sw: Node3D = _scripted(Node3D.new(), "res://gravelight/world/power_switch.gd", "Kellerschalter", {
+		"config_table": "map00", "label": "the cellar lever", "zone_order": PackedStringArray(["CELLAR", "TAPROOM", "UPSTAIRS", "STABLE"])})
+	sw.position = Vector3(32.5, cy + 0.3, 19.35)
+	sw.rotation.y = deg_to_rad(180)
+	gameplay.add_child(sw)
+	# lights: one oil lamp at the foot of the stairs always lit; the bulbs over the machines wait for the lever
+	_lamp("CellarHallLamp", Vector3(26.0, 2.5, 10.8), Color(1.0, 0.72, 0.45), 0.7, 5.0, false, true)
+	_lamp("CellarStairLamp", Vector3(26.0, cy + 2.4, 19.6), Color(1.0, 0.7, 0.4), 0.9, 6.0, false, true)
+	for lp: Vector3 in [Vector3(27.0, cy + 2.6, 23.0), Vector3(33.0, cy + 2.6, 23.0), Vector3(30.0, cy + 2.6, 28.5)]:
+		var l: OmniLight3D = OmniLight3D.new()
+		l.name = "CellarBulb"
+		l.position = lp
+		l.light_color = Color(1.0, 0.85, 0.6)
+		l.light_energy = 1.4
+		l.omni_range = 7.0
+		l.omni_attenuation = 1.4
+		l.visible = false
+		l.set_meta("zone", &"CELLAR")
+		l.set_meta("energy", 1.4)
+		l.add_to_group(&"power_lights", true)
+		map_root.add_child(l)
+	# the coal chute: a ground spawn in the far corner from round 6
+	var chute: Marker3D = _scripted(Marker3D.new(), "res://gravelight/enemies/zombie_spawn.gd", "Spawn_CoalChute", {
+		"zone_id": &"CELLAR", "kind": &"ground", "min_round": 6}) as Marker3D
+	chute.position = Vector3(34.2, cy, 29.6)
+	gameplay.add_child(chute)
+	for bp: Vector3 in [Vector3(34.2, cy, 29.6), Vector3(25.6, cy, 29.9)]:
+		var mk: Marker3D = Marker3D.new()
+		mk.name = "BurstPoint"
+		mk.position = bp
+		mk.add_to_group(&"power_burst_points", true)
+		gameplay.add_child(mk)
+

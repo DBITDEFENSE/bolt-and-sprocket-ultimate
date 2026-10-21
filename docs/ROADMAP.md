@@ -6,8 +6,8 @@ Each milestone ends with: tests passing headless, the game launched and played, 
 |---|---|---|
 | M0 | Port inventory, bible, skeleton | done (tag m0) |
 | M1 | Shared core + Bolt vertical slice (Scrapheap Junction) | done (tag m1); gaps listed in T-023 |
-| M2 | Gravelight vertical slice (migration of the built GRAVELIGHT project + §11 on Map 0) | **in progress**: migration, front end and playtest fixes done (T-024 to T-026); §11 cellar/perks next |
-| M3 | Full B&S arsenal + Acts 1–2 (Rustvane, Nova Plaza) | |
+| M2 | Gravelight vertical slice (migration of the built GRAVELIGHT project + §11 on Map 0) | done (tag m2): cellar + 8 machines, lore, slips, playtest fixes (T-024..T-028) |
+| M3 | Full B&S arsenal + Acts 1–2 (Rustvane, Nova Plaza) | **in progress** (4 builders, docs/M3_CONTRACTS.md) |
 | M4 | B&S complete campaign | |
 | M5 | Gravelight Map 1 Kaltenbrunn (with §11) | |
 | M6 | B&S side modes & extras | |

@@ -42,6 +42,7 @@ var _stuck_t: float = 0.0
 var _round_t0: float = 0.0
 var _done: bool = false
 var _settle: int = 0
+var _errand_aiming: bool = false
 var _shots_dir: String = ""
 var _shot_t: float = 8.0
 var _shot_n: int = 0
@@ -58,7 +59,10 @@ var damage_taken: float = 0.0
 var purchases: PackedStringArray = []
 var denied: PackedStringArray = []
 var powerups: PackedStringArray = []
-var _z_track: Dictionary = {}         # zombie id -> {pos, t, state}
+var _z_track: Dictionary = {}
+var _z_hist: Dictionary = {}     # zombie id -> Array of [t, pos, state] at 1 Hz
+var _z_hist_t: float = 0.0
+var _z_origin: Dictionary = {}   # zombie id -> [first position, round, state]         # zombie id -> {pos, t, state}
 var _round_kills: int = 0
 var _round_dmg: float = 0.0
 var _phys_us: Array[float] = []
@@ -238,6 +242,9 @@ func _physics_process(delta: float) -> void:
 		var gn: Interactable = _goal["node"] as Interactable
 		aim_at = gn.area.global_position if gn.area != null else gn.global_position
 	var on_target: bool = false
+	if _errand_aiming:
+		aim_at = Vector3.INF   # the errand is lining up its own look this frame (it turns in _run_errand)
+		_errand_aiming = false
 	if aim_at != Vector3.INF:
 		on_target = _turn_toward(aim_at, delta) < 0.045
 	# --- weapon handling, in priority order ---
@@ -250,8 +257,10 @@ func _physics_process(delta: float) -> void:
 			if inst != w:
 				other_mag = other_mag or inst.mag > 0
 				other_any = other_any or inst.mag > 0 or inst.reserve > 0
-		if w.mag == 0 and near_d < 1.8:
-			Input.action_press(&"melee")                       # 1. something is on us and we're empty
+		if god and w.mag == 0 and w.reserve == 0:
+			w.refill()   # god-mode runs test systems, not ammo management
+		if w.mag == 0 and w.reserve == 0 and near_d < 1.8 and not other_mag:
+			Input.action_press(&"melee")                       # 1. empty everything and something is on us
 		elif w.mag == 0 and not busy and ((other_mag and near_d < 4.5) or (w.reserve == 0 and other_any)):
 			Input.action_press(&"swap_weapon")                 # 2. a loaded gun beats a reload up close
 		elif w.mag == 0 and w.reserve > 0 and not reloading:
@@ -264,7 +273,9 @@ func _physics_process(delta: float) -> void:
 		elif _target == null and w.mag < w.mag_size() * 0.5 and w.reserve > 0 and not reloading:
 			Input.action_press(&"reload")                      # 5. top up when it's quiet
 	# --- movement ---
-	if near != null and near_d < DANGER_R:
+	if god and _ammo_low():
+		_errands()   # can't die: walk through them for ammo rather than stalemate in a corner
+	elif near != null and near_d < DANGER_R:
 		_goal = {}
 		Input.action_release(&"interact")
 		if _repath_t <= 0.0 or _path.is_empty() or _path_i >= _path.size():
@@ -275,8 +286,8 @@ func _physics_process(delta: float) -> void:
 				dry = false
 		if dry and near_d < 2.6:
 			Input.action_press(&"sprint")   # sprinting cancels reloads, so only when there's nothing to load
-	elif _target == null or near_d > 9.0 or (_ammo_low() and near_d > 5.5):
-		_errands()
+	elif (zs.is_empty() or (near_d > 12.0 and zs.size() <= 3) or (_ammo_low() and near_d > 5.5)) and _target == null or zs.is_empty():
+		_errands()   # shop like a person: between rounds, or with the last stragglers far away
 	else:
 		_hold_position()
 	_follow_path(delta)
@@ -369,28 +380,23 @@ func _open_path(from: Vector3, dest: Vector3) -> PackedVector3Array:
 		var d: BuyDoor = n as BuyDoor
 		if d == null or d.is_open:
 			continue
-		var dp: Vector3 = d.global_position
-		var half: float = maxf(d.size.x, d.size.z) * 0.5 + 0.3
-		if Vector2(dest.x - dp.x, dest.z - dp.z).length() < half + 1.0:
-			continue   # walking up to this door (to buy it)
-		for i: int in range(1, path.size()):
-			var a: Vector3 = path[i - 1]
-			var b: Vector3 = path[i]
-			if absf((a.y + b.y) * 0.5 - dp.y) > 2.0:
-				continue
-			var cp: Vector3 = Geometry3D.get_closest_point_to_segment(Vector3(dp.x, 0, dp.z), Vector3(a.x, 0, a.z), Vector3(b.x, 0, b.z))
-			if cp.distance_to(Vector3(dp.x, 0, dp.z)) < half:
-				return PackedVector3Array()
+		if ZombieDirector.door_crossed(d, path):
+			return PackedVector3Array()
 	return path
 
 
 ## Waypoint -> number of neighbours within 3 m (open floor scores high; corners and dead ends low).
 func _openness() -> void:
+	# counts only neighbours in plain sight (a machine, a crate or a wall in between doesn't count), so the
+	# pockets behind the perk machines score as the dead ends they are
+	var space: PhysicsDirectSpaceState3D = player.get_world_3d().direct_space_state
 	for a: Vector3 in _waypoints:
 		var n: int = 0
 		for b: Vector3 in _waypoints:
 			if a.distance_squared_to(b) < 9.0 and absf(a.y - b.y) < 1.0:
-				n += 1
+				var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(a + Vector3.UP * 0.6, b + Vector3.UP * 0.6, 1)
+				if space.intersect_ray(q).is_empty():
+					n += 1
 		_open_n[a] = n
 
 
@@ -427,7 +433,8 @@ func _follow_path(delta: float) -> void:
 
 
 func _retreat(zs: Array[Zombie]) -> void:
-	var cands: Array = []
+	# Kiting, v2: go somewhere open (not a corner), well clear of every zombie, by a route that doesn't brush
+	# past one. Prefers moving away from the crowd but will circle round it when "away" is a wall.
 	var me: Vector3 = player.global_position
 	var centroid: Vector3 = Vector3.ZERO
 	var n: int = 0
@@ -441,21 +448,49 @@ func _retreat(zs: Array[Zombie]) -> void:
 	var away: Vector3 = (me - centroid)
 	away.y = 0
 	away = away.normalized()
-	for w: Vector3 in _waypoints:
-		var d: float = w.distance_to(me)
-		if d < 3.0 or d > 14.0 or absf(w.y - me.y) > 2.5:
-			continue
-		var dir: Vector3 = Vector3(w.x - me.x, 0, w.z - me.z).normalized()
-		var clear: float = INF
-		for z: Zombie in zs:
-			clear = minf(clear, z.global_position.distance_to(w))
-		var s: float = clear * 1.0 + dir.dot(away) * 4.0 - d * 0.15 + float(_open_n.get(w, 0)) * 0.35
-		cands.append([s, w])
-	cands.sort_custom(func(a: Array, b: Array) -> bool: return float(a[0]) > float(b[0]))
-	for c: Array in cands.slice(0, 8):
-		if not _open_path(me, c[1]).is_empty():
+	var max_open: int = 1
+	for v: Variant in _open_n.values():
+		max_open = maxi(max_open, int(v))
+	# strict first, then progressively relaxed (cornered players take whatever opening there is)
+	for tier: Array in [[0.6, 3.0, 1.6], [0.35, 2.0, 1.2], [0.0, 1.2, 0.8]]:
+		var cands: Array = []
+		for w: Vector3 in _waypoints:
+			var d: float = w.distance_to(me)
+			if d < 2.5 or d > 12.0 or absf(w.y - me.y) > 2.5:
+				continue
+			var openness: float = float(_open_n.get(w, 0)) / float(max_open)
+			if openness < float(tier[0]):
+				continue
+			var dir: Vector3 = Vector3(w.x - me.x, 0, w.z - me.z).normalized()
+			var clear: float = INF
+			for z: Zombie in zs:
+				clear = minf(clear, z.global_position.distance_to(w))
+			if clear < float(tier[1]):
+				continue
+			var s: float = minf(clear, 9.0) * 1.5 + dir.dot(away) * 3.0 - d * 0.2 + openness * 6.0
+			cands.append([s, w])
+		cands.sort_custom(func(x: Array, y: Array) -> bool: return float(x[0]) > float(y[0]))
+		for c: Array in cands.slice(0, 10):
+			var path: PackedVector3Array = _open_path(me, c[1])
+			if path.is_empty() or _path_brushes_zombie(path, zs, float(tier[2])):
+				continue
 			_path_to(c[1])
 			return
+	# truly boxed in: back straight away from the nearest one (the stick, no path)
+	_path = PackedVector3Array([me, me + away * 2.0])
+	_path_i = 1
+	_repath_t = 0.3
+
+
+func _path_brushes_zombie(path: PackedVector3Array, zs: Array[Zombie], radius: float) -> bool:
+	for z: Zombie in zs:
+		var zp: Vector2 = Vector2(z.global_position.x, z.global_position.z)
+		for i: int in range(1, path.size()):
+			var a: Vector2 = Vector2(path[i - 1].x, path[i - 1].z)
+			var b: Vector2 = Vector2(path[i].x, path[i].z)
+			if Geometry2D.get_closest_point_to_segment(zp, a, b).distance_to(zp) < radius:
+				return true
+	return false
 
 
 func _hold_position() -> void:
@@ -501,8 +536,11 @@ func _dump_buyables() -> void:
 ## the power, or a door. Walks there, looks at it, holds Use.
 func _errands() -> void:
 	if not _goal.is_empty():
+		if not is_instance_valid(_goal["node"]):
+			_goal = {}   # its target was freed (a retired Second Wind machine, a used pickup)
+			return
 		var node: Interactable = _goal["node"] as Interactable
-		if not is_instance_valid(node) or _t > float(_goal["until"]):
+		if _t > float(_goal["until"]):
 			if is_instance_valid(node) and str(_goal["kind"]) != "repair":
 				_issue("errand timed out: %s %s at %s" % [_goal["kind"], _goal["label"], _v(node.global_position)])
 				print("[bot]     (me %s, target %s, prompt '%s', scrip %d)" % [_v(player.global_position), str(player.interact_target), player.prompt_text, Economy.get_scrip(1)])
@@ -525,8 +563,10 @@ func _run_errand(node: Interactable) -> void:
 	var me: Vector3 = player.global_position
 	var at: Vector3 = node.global_position
 	var flat_d: float = Vector2(at.x - me.x, at.z - me.z).length()
-	if flat_d > 1.6 or absf(at.y - me.y) > 1.8:
-		var approach: Vector3 = at
+	var front: Vector3 = _front_of(node)
+	var at_front: bool = Vector2(front.x - me.x, front.z - me.z).length() < 0.8 or (front == node.global_position and flat_d <= 1.6)
+	if not at_front or absf(at.y - me.y) > 1.8:
+		var approach: Vector3 = _front_of(node)
 		if node is BuyDoor:
 			# stand on our side of a closed door (the closest navmesh point may be behind it)
 			var side: Vector3 = node.global_basis.z
@@ -544,6 +584,7 @@ func _run_errand(node: Interactable) -> void:
 		if cur != null and _wall_price(cur.base_id()) > _worst_held_price() and not player.weapons.is_busy():
 			Input.action_press(&"swap_weapon")
 			return
+	_errand_aiming = true
 	var aim: Vector3 = node.area.global_position if node.area != null else node.global_position + node.interact_offset
 	var err: float = _turn_toward(aim, get_physics_process_delta_time())
 	if player.interact_target == node or err < 0.15:
@@ -574,6 +615,13 @@ func _wall_price(base: StringName) -> int:
 	return 0
 
 
+func _cellar_closed() -> bool:
+	for n: Node in get_tree().get_nodes_in_group(&"doors"):
+		if n is BuyDoor and (n as BuyDoor).door_id == &"door_cellar":
+			return not (n as BuyDoor).is_open
+	return false
+
+
 func _ammo_low() -> bool:
 	var total: int = 0
 	var cap: int = 0
@@ -595,6 +643,20 @@ func _worst_held_price() -> int:
 				price = (n as WallBuy).price()
 		worst = mini(worst, price)
 	return worst
+
+
+## Where to stand to use something: 1 m out from its use area, on the side the area sticks out (a perk
+## machine's front, a wall-buy's chalk); the node itself when the area is centred.
+func _front_of(node: Interactable) -> Vector3:
+	if node.area == null:
+		return node.global_position
+	var off: Vector3 = node.area.global_position - node.global_position
+	off.y = 0.0
+	if off.length() < 0.05:
+		return node.global_position
+	var p: Vector3 = node.area.global_position + off.normalized() * 1.0
+	p.y = node.global_position.y
+	return p
 
 
 func _barricade_damaged(n: Node) -> bool:
@@ -626,11 +688,11 @@ func _choose_errand() -> Dictionary:
 		if d > 60.0:
 			continue
 		var path: PackedVector3Array = _open_path(me,
-			NavigationServer3D.map_get_closest_point(player.get_world_3d().navigation_map, it.global_position))
+			NavigationServer3D.map_get_closest_point(player.get_world_3d().navigation_map, _front_of(it)))
 		if it is BuyDoor:
 			path = NavigationServer3D.map_get_path(player.get_world_3d().navigation_map, me,
 				NavigationServer3D.map_get_closest_point(player.get_world_3d().navigation_map, it.global_position), true)
-		if path.is_empty() or path[path.size() - 1].distance_to(it.global_position) > 2.5:
+		if path.is_empty() or path[path.size() - 1].distance_to(_front_of(it)) > 2.5:
 			continue
 		var s: float = -INF
 		var kind: String = ""
@@ -662,10 +724,11 @@ func _choose_errand() -> Dictionary:
 			s = 50.0 - d
 		elif it is BuyDoor and not (it as BuyDoor).is_open and it.can_interact(player):
 			var door: BuyDoor = it as BuyDoor
-			if scrip >= door.cost + 400:
+			var cellar_first: bool = door.door_id != &"door_cellar" and _cellar_closed() and scrip < door.cost + 2500
+			if scrip >= door.cost + 400 and not cellar_first:
 				kind = "door"
 				label = door.label
-				s = 10.0 - d
+				s = (55.0 if door.door_id == &"door_cellar" else 10.0) - d   # the cellar = perks
 		if kind != "" and s > best_s:
 			best_s = s
 			best = {"node": it, "kind": kind, "label": label}
@@ -676,12 +739,24 @@ func _choose_errand() -> Dictionary:
 
 func _watch_zombies(delta: float) -> void:
 	var seen: Dictionary = {}
+	_z_hist_t -= delta
+	var sample: bool = _z_hist_t <= 0.0
+	if sample:
+		_z_hist_t = 1.0
 	for z: Zombie in director.active_zombies():
 		var id: int = z.get_instance_id()
 		seen[id] = true
 		if z.global_position.y < -15.0:
 			_issue("zombie fell out of the world near %s" % _v(Vector3(z.global_position.x, 0, z.global_position.z).snapped(Vector3.ONE * 2)))
 			continue
+		if sample:
+			var h: Array = _z_hist.get(id, [])
+			h.append("%.0f:%s%s" % [_t, _v(z.global_position.snapped(Vector3.ONE * 0.1)), str(Zombie.State.keys()[z.state]).substr(0, 2)])
+			if h.size() > 40:
+				h.pop_front()
+			_z_hist[id] = h
+		if not _z_origin.has(id):
+			_z_origin[id] = [z.global_position, RoundManager.current_round, Zombie.State.keys()[z.state]]
 		var tr: Dictionary = _z_track.get(id, {})
 		if tr.is_empty() or z.global_position.distance_to(tr["pos"]) > 1.0 or z.state != tr["state"]:
 			_z_track[id] = {"pos": z.global_position, "t": 0.0, "state": z.state}
@@ -690,12 +765,35 @@ func _watch_zombies(delta: float) -> void:
 		var limit: float = 30.0 if z.state in [Zombie.State.WAIT_WINDOW, Zombie.State.TEAR] else 20.0
 		if float(tr["t"]) > limit and not bool(tr.get("flag", false)):
 			tr["flag"] = true
-			print("[bot]     idle zombie %s: clear_to_player=%s zone=%s hp %.0f" % [z.enemy_id, z.call("_clear_to", player), ZoneVolume.zone_at(get_tree(), z.global_position), z.hp])
+			var org: Array = _z_origin.get(id, [Vector3.ZERO, 0, "?"])
+			print("[bot]     idle zombie %s: clear_to_player=%s zone=%s hp %.0f | first seen r%d at %s in %s | window %s" % [z.enemy_id, z.call("_clear_to", player),
+				ZoneVolume.zone_at(get_tree(), z.global_position), z.hp, org[1], _v(org[0]), org[2], z.window.window_id if z.window != null else "-"])
+			print("[bot]     trail: ", " ".join(PackedStringArray(_z_hist.get(id, []))))
+			var dq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(z.global_position + Vector3.UP * 0.3, z.global_position + Vector3.DOWN * 3.0, 0xFFFFFFFF, [z.get_rid()])
+			var dh: Dictionary = z.get_world_3d().direct_space_state.intersect_ray(dq)
+			var cq: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+			var cap: CapsuleShape3D = CapsuleShape3D.new()
+			cap.radius = 0.5
+			cap.height = 2.6
+			cq.shape = cap
+			cq.transform = Transform3D(Basis(), z.global_position + Vector3(0, 0.2, 0))
+			cq.exclude = [z.get_rid()]
+			var near_bodies: Array = z.get_world_3d().direct_space_state.intersect_shape(cq, 8).map(func(h: Dictionary) -> String: return str((h["collider"] as Node).get_path()).get_file())
+			var slides: Array = []
+			for si: int in z.get_slide_collision_count():
+				slides.append("%s n%s" % [str((z.get_slide_collision(si).get_collider() as Node).name), z.get_slide_collision(si).get_normal().snapped(Vector3.ONE * 0.1)])
+			print("[bot]     overlaps %s | slides %s" % [near_bodies, slides])
+			print("[bot]     standing on: %s at y %.2f (on_floor %s, crawler %s, vel %s)" % [(dh["collider"] as Node).get_path() if dh else "nothing", (dh["position"] as Vector3).y if dh else 0.0,
+				z.is_on_floor(), z.is_crawler, z.velocity.snapped(Vector3.ONE * 0.1)])
 			_issue("zombie idle >%ds in %s at %s (player at %s)" % [int(limit), Zombie.State.keys()[z.state],
 				_v(z.global_position.snapped(Vector3.ONE)), _v(player.global_position.snapped(Vector3.ONE))])
 	for id: int in _z_track.keys():
 		if not seen.has(id):
 			_z_track.erase(id)
+	for id: int in _z_origin.keys():
+		if not seen.has(id):
+			_z_origin.erase(id)
+			_z_hist.erase(id)
 
 
 func _snap_shot() -> void:

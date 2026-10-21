@@ -25,6 +25,7 @@ func _ready() -> void:
 	_dossiers = GLData.load_json("res://data/gravelight/dossiers.json")
 	for row: Dictionary in GLData.load_json("res://data/gravelight/intel.json").get("intel", []):
 		_intel[str(row["id"])] = row
+	_add_cabinet_rows()
 	load_profile()
 	GLBus.match_started.connect(_on_match_started)
 	GLBus.game_over.connect(_on_game_over)
@@ -357,6 +358,29 @@ func add_intel(intel_id: StringName) -> void:
 	if not list.has(String(intel_id)):
 		list.append(String(intel_id))
 		profile["intel"] = list
+
+
+## Helvetia cabinets in the Archive (T&C section 11.2): each machine's fine-print panel ("panel.<perk>", filed
+## when read) with the story of the human behind the formula, and its plan-ID stencil ("plan.<perk>", filed when
+## an upgraded muzzle flash reveals it). Only the eight standard perks; the two prototypes come with Helvetia Works.
+const CABINET_PERKS: PackedStringArray = ["ironhide_stout", "second_wind", "trigger_tonic", "twin_barrel",
+	"marathon_malt", "hawkeye_brandy", "packmule_porter", "blastproof_bock"]
+
+
+func _add_cabinet_rows() -> void:
+	var lore: Dictionary = GLData.load_json("res://data/gravelight/perk_lore.json").get("perks", {})
+	var strip: RegEx = RegEx.create_from_string("\\[/?[a-z]+\\]")
+	for pid: String in CABINET_PERKS:
+		var lo: Dictionary = lore.get(pid, {})
+		if lo.is_empty():
+			continue
+		var panel: String = strip.sub("\n".join(PackedStringArray((lo.get("panel", []) as Array).map(func(x: Variant) -> String: return str(x)))), "", true)
+		var story: String = strip.sub(str(lo.get("human_story", "")), "", true)
+		_intel["panel." + pid] = {"id": "panel." + pid, "title": "Conditions of Use: %s" % lo.get("name", pid), "type": "PANEL",
+			"map": "cabinets", "text": "%s\n\nTHE FORMULA: %s\n%s" % [panel, lo.get("human", ""), story]}
+		_intel["plan." + pid] = {"id": "plan." + pid, "title": "Vitality Plan: %s" % str(lo.get("plan_name", "")).split(" (")[0], "type": "STENCIL",
+			"map": "cabinets", "text": "%s · %s\n\nA stencil under the enamel of the %s cabinet, matte violet on bare steel.\n\nSee also: The Fine Print, Chapter 3." % [
+				lo.get("plan_id", ""), lo.get("plan_name", ""), lo.get("name", pid)]}
 
 
 func intel_rows() -> Array:

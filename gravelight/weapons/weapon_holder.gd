@@ -533,6 +533,8 @@ func _select(index: int) -> void:
 func _fire(w: WeaponInstance) -> void:
 	w.mag -= 1
 	_fired_this_frame = true
+	if player.camera != null:
+		GLBus.weapon_fired.emit(player.player_id, w.id, w.upgraded, player.camera.global_position, -player.camera.global_basis.z)
 	var rpm: float = maxf(1.0, w.f("rpm", 300.0) * float(PerkManager.stat(player.player_id, "fire_rate_mult", 1.0)))
 	_fire_cd = minf(_fire_cd, 0.0) + 60.0 / rpm
 	if w.data.has("stream"):

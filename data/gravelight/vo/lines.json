@@ -2903,5 +2903,234 @@
     "I'm writing it in the book. On the good page."
    ]
   ]
+ },
+ "OPR_POWER_ON_M0_01": {
+  "speaker": "OPR",
+  "category": "POWER_ON_M0",
+  "text": "[crackle; a voice still finding its shape] ...is this... on? Oh. Oh, the cellar is humming. How lovely. Please... help yourselves. Refreshments are... complimentary. For now."
+ },
+ "op.slip.01": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "A",
+  "min_round": 10,
+  "text": "Thank you for your continued engagement."
+ },
+ "op.slip.02": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "A",
+  "min_round": 10,
+  "text": "Your plan has been renewed."
+ },
+ "op.slip.03": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "A",
+  "min_round": 10,
+  "text": "Valued customer, please do not cancel."
+ },
+ "op.slip.04": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "A",
+  "min_round": 10,
+  "text": "This round is included in your current plan."
+ },
+ "op.slip.05": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "A",
+  "min_round": 10,
+  "text": "Your session has been extended. There is no additional charge. There is never an additional charge. There is only more."
+ },
+ "op.slip.06": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "A",
+  "min_round": 10,
+  "text": "We noticed you were away. We kept your seat warm. We keep everyone's seat warm."
+ },
+ "op.slip.07": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "A",
+  "min_round": 10,
+  "text": "Remember: nobody cancels. [recovery] Ha! Wrong tape! Here come the {dead}!"
+ },
+ "op.slip.08": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "A",
+  "min_round": 10,
+  "text": "Your loyalty— [recovery] —your {Scrip}! Your Scrip is appreciated."
+ },
+ "op.slip.09": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "A",
+  "min_round": 10,
+  "text": "All sales are final. All of them."
+ },
+ "op.slip.10": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "A",
+  "min_round": 10,
+  "text": "Thank you for choosing us. [beat] You did choose us. Didn't you?"
+ },
+ "op.slip.11": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "B",
+  "min_round": 20,
+  "text": "How would you rate tonight's experience, from one to five? Five is the only number we record."
+ },
+ "op.slip.12": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "B",
+  "min_round": 20,
+  "text": "Retention this quarter: one hundred percent. Every number is lovely when nobody leaves."
+ },
+ "op.slip.13": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "B",
+  "min_round": 20,
+  "text": "Churn: zero. [recovery] Zero! I {do} like a zero."
+ },
+ "op.slip.14": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "B",
+  "min_round": 20,
+  "text": "Have you considered upgrading? [recovery] ...I don't know why I said that. I don't know {who} I said it to."
+ },
+ "op.slip.15": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "B",
+  "min_round": 20,
+  "text": "Account in excellent standing. Account holder: deceased. Account: active."
+ },
+ "op.slip.16": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "B",
+  "min_round": 20,
+  "text": "Please hold. Your call is important to us. Your call is important to us. Your call is impor—"
+ },
+ "op.slip.17": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "B",
+  "min_round": 20,
+  "text": "By continuing to fight, you accept the revised terms. There are no revised terms. Please continue to fight."
+ },
+ "op.slip.18": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "B",
+  "min_round": 20,
+  "text": "Your feedback has been recorded. Your screaming has been recorded. Everything has been recorded."
+ },
+ "op.slip.19": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "B",
+  "min_round": 20,
+  "text": "Performance review: excellent. Compensation: unchanged. Please keep going."
+ },
+ "op.slip.20": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "B",
+  "min_round": 20,
+  "text": "This programme is brought to you by— [long tape hiss; recovery] —I'm not {permitted} to say. Isn't that {exciting}?"
+ },
+ "op.slip.21": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "B",
+  "min_round": 20,
+  "text": "Your renewal date is always."
+ },
+ "op.slip.22": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "C",
+  "min_round": 30,
+  "text": "You are a valued customer. You are a valued customer. You are a valued— there. Now you are."
+ },
+ "op.slip.23": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "C",
+  "min_round": 30,
+  "text": "Please do not attempt to leave the premises. The premises are everywhere."
+ },
+ "op.slip.24": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "C",
+  "min_round": 30,
+  "text": "Your plan includes unlimited nights. Nights are now unlimited."
+ },
+ "op.slip.25": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "C",
+  "min_round": 30,
+  "text": "Please remain available for collection."
+ },
+ "op.slip.26": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "C",
+  "min_round": 30,
+  "text": "Leadership would like to thank our test market. [recovery] Our {listeners}! I meant our {listeners}."
+ },
+ "op.slip.27": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "C",
+  "min_round": 30,
+  "text": "We're so glad you stayed. Everyone stays. [very quiet] Everyone stays."
+ },
+ "op.slip.28": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "C",
+  "min_round": 30,
+  "text": "Next quarter is going to be wonderful. You'll be here for it."
+ },
+ "op.slip.29": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "C",
+  "min_round": 30,
+  "text": "Customer satisfaction is not optional."
+ },
+ "op.slip.30": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "C",
+  "min_round": 30,
+  "text": "Engagement is up. Hands are up. The dead are up. Everything is up. [recovery] Isn't that {marvellous}?"
+ },
+ "op.slip.31": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "C",
+  "min_round": 30,
+  "text": "We'd hate to lose you. We have never lost anyone. Not once. Not one."
+ },
+ "op.slip.32": {
+  "speaker": "OPR",
+  "category": "SLIP",
+  "slip_tier": "C",
+  "min_round": 30,
+  "text": "Your free trial— [recovery] No. No, I misread. There's nothing free here. There never {was}."
  }
 }

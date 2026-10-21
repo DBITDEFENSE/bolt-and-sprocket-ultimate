@@ -64,6 +64,9 @@ signal item_picked_up(item_id: StringName, by_player: int)
 signal buildable_completed(buildable_id: StringName, by_player: int)
 signal cylinder_played(index: int)
 signal shootable_hit(target_id: StringName, weapon_id: StringName, upgraded: bool, by_player: int)
+## Every trigger pull that fires (muzzle origin + aim direction). Perk machines use it to reveal their plan-ID
+## stencils in an upgraded weapon's muzzle flash (T&C section 11.2).
+signal weapon_fired(player: int, weapon_id: StringName, upgraded: bool, origin: Vector3, direction: Vector3)
 signal intel_found(intel_id: StringName)
 
 # VO / presentation

@@ -1,0 +1,11 @@
+{
+  "_doc": "Map 0 (Crossroads Inn) settings not in the generic tables. power: the cellar lever (T&C M2, T-027).",
+  "power": {
+    "vo_delay": 1.5,
+    "light_sweep_start": 1.0,
+    "light_zone_gap": 0.5,
+    "burst_delay": 6.0,
+    "burst_count": 3,
+    "vo_line": "OPR_POWER_ON_M0_01"
+  }
+}

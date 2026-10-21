@@ -440,6 +440,12 @@ func _update_chase(delta: float) -> void:
 	if is_last and not is_crawler:
 		spd = maxf(spd, float(GLData.table("enemies")["tiers"]["jog"]))
 	_nav_move(target.global_position, spd, delta, interval)
+	# Wedged well above the walkable floor (pushed out of an overlap into a ceiling, etc.): recycle it now.
+	_wedge_t = _wedge_t + delta if _off_navmesh_height() > 1.0 else 0.0
+	if _wedge_t > 3.0:
+		_wedge_t = 0.0
+		recycle()
+		return
 	# Stuck check: barely moved for a long time while far from the player -> recycle into the queue.
 	_stuck_t += delta
 	if _stuck_t > float(_cfg["stuck_respawn_seconds"]):
@@ -509,6 +515,9 @@ func _nav_move(goal: Vector3, spd: float, delta: float, repath_interval: float) 
 	dir.y = 0.0
 	spd *= frost_speed_mult()
 	var desired: Vector3 = dir.normalized() * spd if dir.length_squared() > 0.0001 else Vector3.ZERO
+	if _sidestep_t > 0.0:
+		_sidestep_t -= delta
+		desired = _sidestep_dir * spd
 	_agent.max_speed = spd
 	if _agent.avoidance_enabled:
 		_agent.velocity = desired
@@ -517,7 +526,20 @@ func _nav_move(goal: Vector3, spd: float, delta: float, repath_interval: float) 
 	velocity.x = _safe_vel.x
 	velocity.z = _safe_vel.z
 	_apply_gravity(delta)
+	var before: Vector3 = global_position
 	move_and_slide()
+	# Corner snag: it wants to move but the wall/corner eats all of it -> sidestep at ~75 degrees for a moment,
+	# alternating sides, then resume the path (playtest fix, T-028).
+	var moved: float = Vector2(global_position.x - before.x, global_position.z - before.z).length()
+	if desired.length() > 0.3 and moved < desired.length() * delta * 0.2 and _sidestep_t <= 0.0:
+		_blocked_t += delta
+		if _blocked_t > 0.5:
+			_blocked_t = 0.0
+			_sidestep_side = -_sidestep_side
+			_sidestep_dir = desired.normalized().rotated(Vector3.UP, deg_to_rad(75.0) * _sidestep_side)
+			_sidestep_t = 0.6
+	else:
+		_blocked_t = 0.0
 	var flat: Vector3 = Vector3(velocity.x, 0, velocity.z)
 	if flat.length_squared() > 0.05:
 		_face(global_position + flat)
@@ -525,6 +547,22 @@ func _nav_move(goal: Vector3, spd: float, delta: float, repath_interval: float) 
 
 func _on_velocity_computed(safe: Vector3) -> void:
 	_safe_vel = safe
+
+
+var _wedge_t: float = 0.0
+var _blocked_t: float = 0.0
+var _sidestep_t: float = 0.0
+var _sidestep_dir: Vector3 = Vector3.ZERO
+var _sidestep_side: float = 1.0
+
+
+## How far this zombie's feet are above the closest walkable navmesh point (about 0 when walking normally).
+func _off_navmesh_height() -> float:
+	var nav: RID = get_world_3d().navigation_map
+	var c: Vector3 = NavigationServer3D.map_get_closest_point(nav, global_position)
+	if Vector2(c.x - global_position.x, c.z - global_position.z).length() > 1.5:
+		return 0.0   # nowhere near the mesh horizontally (climbing, scripted moves): not this check's business
+	return global_position.y - c.y
 
 
 func _halt(delta: float) -> void:
@@ -540,8 +578,26 @@ func _halt(delta: float) -> void:
 func _apply_gravity(delta: float) -> void:
 	if is_on_floor():
 		velocity.y = -0.5
+		_slide_off_zombie()
 	else:
 		velocity.y -= GRAVITY * delta
+
+
+## A zombie must never stand on another zombie's head (two emerging on one spot, or a crush at a window):
+## it steps off sideways, away from the one beneath (playtest fix, T-027).
+func _slide_off_zombie() -> void:
+	for i: int in get_slide_collision_count():
+		var c: KinematicCollision3D = get_slide_collision(i)
+		if c.get_normal().y > 0.6 and c.get_collider() is Zombie:
+			var under: Node3D = c.get_collider() as Node3D
+			var away: Vector3 = global_position - under.global_position
+			away.y = 0.0
+			if away.length_squared() < 0.0001:
+				away = Vector3(cos(float(get_instance_id() % 628) * 0.01), 0, sin(float(get_instance_id() % 628) * 0.01))
+			away = away.normalized()
+			velocity.x = away.x * 3.0
+			velocity.z = away.z * 3.0
+			return
 
 
 func _face(p: Vector3) -> void:

@@ -199,7 +199,10 @@ func _update_special(delta: float) -> void:
 			break
 		var spec: Dictionary = _spec_for(&"bellringer", RoundManager.take_spawn())
 		var off: Vector3 = Vector3(_rng.randf_range(-1.6, 1.6), 0, _rng.randf_range(-1.6, 1.6))
-		_activate_at(spec, _snap(center + off))
+		var at: Vector3 = _snap(center + off)
+		if absf(at.y - center.y) > 0.4 or not _same_room(center, at):
+			at = center   # snapped onto furniture, or through a wall to the outside: emerge at the portal itself
+		_activate_at(spec, at)
 	_pack_t = float(e.get("pack_gap_seconds", 3.5))
 
 
@@ -246,22 +249,89 @@ func _in_open_zone(pt: Vector3) -> bool:
 	return zone != &"" and GameState.is_zone_open(zone)
 
 
-## True when a nav path runs through a door that's still shut (doors are colliders, not navmesh cuts).
+## True when a nav path runs through a door that's still shut (doors are colliders, not navmesh cuts): some
+## segment crosses the door's plane between its jambs.
 func _crosses_closed_door(path: PackedVector3Array) -> bool:
 	for n: Node in get_tree().get_nodes_in_group(&"doors"):
 		var d: BuyDoor = n as BuyDoor
-		if d == null or d.is_open:
-			continue
-		var dp: Vector2 = Vector2(d.global_position.x, d.global_position.z)
-		var half: float = maxf(d.size.x, d.size.z) * 0.5 + 0.3
-		for i: int in range(1, path.size()):
-			var a: Vector3 = path[i - 1]
-			var b: Vector3 = path[i]
-			if absf((a.y + b.y) * 0.5 - d.global_position.y) > 2.0:
-				continue
-			if Geometry2D.get_closest_point_to_segment(dp, Vector2(a.x, a.z), Vector2(b.x, b.z)).distance_to(dp) < half:
-				return true
+		if d != null and not d.is_open and door_crossed(d, path):
+			return true
 	return false
+
+
+static func door_crossed(d: BuyDoor, path: PackedVector3Array) -> bool:
+	var dp: Vector3 = d.global_position
+	var nrm: Vector3 = d.global_basis.z
+	nrm.y = 0.0
+	nrm = nrm.normalized()
+	var along: Vector3 = d.global_basis.x
+	along.y = 0.0
+	along = along.normalized()
+	var half: float = d.size.x * 0.5 + 0.3
+	# walk the path keeping the last point that was clearly on one side; a corner exactly in the doorway
+	# (string-pulled paths love those) must not hide the crossing
+	var last_side: float = 0.0
+	var last_p: Vector3 = Vector3.ZERO
+	for p: Vector3 in path:
+		if absf(p.y - dp.y) > 2.2:
+			last_side = 0.0
+			continue
+		var dist: float = nrm.dot(p - dp)
+		if absf(dist) < 0.02:
+			if absf(along.dot(p - dp)) <= half and last_side != 0.0:
+				return true   # standing in the doorway, having come from one side
+			continue
+		var side: float = signf(dist)
+		if last_side != 0.0 and side != last_side:
+			var dl: float = nrm.dot(last_p - dp)
+			var t: float = dl / (dl - dist)
+			var hit: Vector3 = last_p.lerp(p, t)
+			if absf(along.dot(hit - dp)) <= half:
+				return true
+		last_side = side
+		last_p = p
+	return false
+
+
+## Ground emergences fan out around their point (ring slot i, 0.9 m apart) so two zombies never rise inside each
+## other and end up one standing on the other's head (playtest fix, T-027). Snapped to the navmesh, same level.
+func _scatter(p: Vector3, i: int) -> Vector3:
+	# the first free slot on a golden-angle ring: at least 0.9 m from every active zombie
+	var base: Vector3 = _snap(p)   # the navmesh floats a little above the floor: compare like with like
+	for k: int in 8:
+		var slot: int = i + k
+		var q: Vector3 = p
+		if slot > 0:
+			var a: float = float(slot) * 2.399 + _rng.randf() * 0.4
+			var r: float = 0.9 + 0.35 * float(slot / 6)
+			q = _snap(p + Vector3(cos(a) * r, 0, sin(a) * r))
+			if absf(q.y - base.y) > 0.4 or not _same_room(p, q):
+				continue   # a different level (furniture, a step) or the far side of a wall: not here
+			q.y = p.y
+		var free: bool = true
+		for z: Zombie in active_zombies():
+			if Vector2(z.global_position.x - q.x, z.global_position.z - q.z).length() < 0.9 and absf(z.global_position.y - q.y) < 2.0:
+				free = false
+				break
+		if free:
+			return q
+	return p
+
+
+## _scatter for a zombie that's already active (it mustn't count itself as occupying the spot).
+func _scatter_excluding(z: Zombie, p: Vector3) -> Vector3:
+	var keep: Vector3 = z.global_position
+	z.global_position = Vector3(0, -200, 0)
+	var q: Vector3 = _scatter(p, 0)
+	z.global_position = keep
+	return q
+
+
+## True when nothing solid (wall, closed door) stands between a and b at waist height: a snapped point is in
+## the same room, not through the wall on the outside (T-028).
+func _same_room(a: Vector3, b: Vector3) -> bool:
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(a + Vector3.UP * 0.9, b + Vector3.UP * 0.9, 1 | (1 << 8))
+	return get_world_3d().direct_space_state.intersect_ray(q).is_empty()
 
 
 func _snap(p: Vector3) -> Vector3:
@@ -487,6 +557,8 @@ func _spawn_one() -> bool:
 		spec = _spec_for(&"glasshide", spec)
 	var z: Zombie = _free.pop_back()
 	z.activate(spec, sp, _any_player())
+	if sp.kind == &"ground":
+		z.global_position = _scatter_excluding(z, sp.global_position)
 	GLBus.enemy_spawned.emit(z.enemy_id, z.get_instance_id())
 	return true
 
@@ -674,6 +746,7 @@ func spawn_burst(points: Array, count: int) -> int:
 		sp.kind = &"ground"
 		add_child(sp)
 		sp.global_position = points[i % points.size()] as Vector3
+		sp.global_position = _scatter(sp.global_position, i)
 		var spec: Dictionary = RoundManager.take_extra_spawn()
 		spec["variant"] = _pick_variant()
 		_free.pop_back().activate(spec, sp, _any_player())

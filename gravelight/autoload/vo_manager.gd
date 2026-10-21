@@ -42,6 +42,12 @@ var _streak_times: Array[float] = []
 var _audio: AudioStreamPlayer
 var _subtitles: CanvasLayer
 var _duck_on: bool = false
+# Operator corporate slips (VO_SCRIPT section 10)
+var _slip_last: float = -INF
+var _slip_round: int = -1
+var _slip_round_count: int = 0
+var _slip_pending_at: float = INF
+var _last_down_at: float = -INF
 
 
 func _ready() -> void:
@@ -80,6 +86,11 @@ func reset_match() -> void:
 	_last_ambient = -999.0
 	_idle_t = 0.0
 	_streak_times.clear()
+	_slip_last = -INF
+	_slip_round = -1
+	_slip_round_count = 0
+	_slip_pending_at = INF
+	_last_down_at = -INF
 
 
 func stop_all() -> void:
@@ -349,7 +360,12 @@ func _next_part(group: StringName) -> void:
 
 
 func _finish(group: StringName) -> void:
+	var done: Dictionary = _current[group]
 	_current[group] = {}
+	if not done.is_empty() and StringName(done.get("speaker", &"")) == &"OPR" and not String(done["id"]).begins_with("op.slip") \
+			and int(done.get("priority", 0)) in [Priority.EVENT, Priority.ANNOUNCE] and _slip_pending_at == INF:
+		if _slip_roll(slip_chance()):
+			_slip_pending_at = _now + float(rules.get("slip_tail_delay_s", 0.6))
 	var q: Array = _queue[group]
 	while not q.is_empty():
 		var nxt: Dictionary = q.pop_front()
@@ -389,6 +405,9 @@ func advance(delta: float) -> void:
 		if not cur.is_empty() and _now >= float(cur["end"]):
 			_next_part(StringName(g))
 	_tick_idle(delta)
+	if _now >= _slip_pending_at:
+		_slip_pending_at = INF
+		play_slip()
 
 
 func _process(delta: float) -> void:
@@ -576,6 +595,7 @@ func _on_no_ammo(player: int, _weapon_id: StringName) -> void:
 
 
 func _on_player_downed(player: int) -> void:
+	_last_down_at = _now
 	if player == _local_player():
 		say_player("DOWN", 1.0)
 
@@ -622,7 +642,86 @@ func _tick_idle(delta: float) -> void:
 	_idle_t = 0.0
 	if not always_pass_chance and rng.randf() > 0.5:
 		return
+	# A corporate slip can replace the musing (VO_SCRIPT section 10: min(0.5, 3 x p_map)).
+	if _slip_roll(minf(0.5, 3.0 * slip_chance())) and play_slip():
+		return
 	# Highest unlocked tier first (each tier's lines carry a "round N+" condition).
 	for t: int in range(5, 0, -1):
 		if play_category(&"OPR", "SELFAWARE_T%d" % t, 1.0):
 			return
+
+
+# ================================================================== corporate slips (VO_SCRIPT section 10, T&C 11.5)
+
+## Chance per eligible Operator line this round on this map: min(0.12, 0.01 + 0.0022 r) x map_mult (cap 0.20).
+## Map 0: nothing before round 15, then half rate (the Operator is barely formed there).
+func slip_chance(round_number: int = -1, map_id: String = "") -> float:
+	var r: int = RoundManager.current_round if round_number < 0 else round_number
+	var m: String = String(GameState.map_id) if map_id == "" else map_id
+	var key: String = "map00" if m.begins_with("map00") else ("map01" if m.begins_with("map01") else m)
+	if key == "map00" and r < int(rules.get("slip_map00_min_round", 15)):
+		return 0.0
+	var p: float = minf(float(rules.get("slip_cap", 0.12)), float(rules.get("slip_base", 0.01)) + float(rules.get("slip_per_round", 0.0022)) * r)
+	var mult: float = float((rules.get("slip_map_mult", {}) as Dictionary).get(key, 1.0))
+	return minf(float(rules.get("slip_map_cap", 0.2)), p * mult)
+
+
+func _slip_roll(p: float) -> bool:
+	if p <= 0.0:
+		return false
+	return always_pass_chance or rng.randf() < p
+
+
+## Whether a slip may play right now (cooldown, per-round cap, never near a down, a cutscene or a tier-4 line,
+## never in the first 3 rounds of a player's first-ever match).
+func slip_allowed() -> bool:
+	if GameState.phase != GameState.Phase.PLAYING:
+		return false
+	var cd: float = float(rules.get("slip_cooldown_s", 300.0))
+	if String(GameState.map_id).begins_with("map_hw") or String(GameState.map_id).begins_with("map03"):
+		cd = float(rules.get("slip_cooldown_hw_map03_s", 240.0))
+	if _now - _slip_last < cd:
+		return false
+	if _now - _last_down_at < float(rules.get("slip_after_down_s", 10.0)):
+		return false
+	var r: int = RoundManager.current_round
+	if _slip_round != r:
+		_slip_round = r
+		_slip_round_count = 0
+	if _slip_round_count >= (2 if r >= 25 else 1):
+		return false
+	var story: Dictionary = _current[GROUP_STORY]
+	if not story.is_empty() and int(story.get("priority", 0)) >= Priority.CRITICAL:
+		return false
+	if int((ProfileSave.profile.get("stats", {}) as Dictionary).get("matches", 0)) == 0 and r <= 3:
+		return false
+	return true
+
+
+## Plays the next slip from the profile-wide shuffle bag (every slip once before any repeats), honoring each
+## line's tier round. Returns false when nothing may play.
+func play_slip() -> bool:
+	if not slip_allowed():
+		return false
+	var bag: Array = ProfileSave.profile.get("slip_bag", [])
+	if bag.is_empty():
+		for id: String in lines.keys():
+			if id.begins_with("op.slip."):
+				bag.append(id)
+		bag.shuffle()
+	var r: int = RoundManager.current_round
+	var hw: bool = String(GameState.map_id).begins_with("map_hw")
+	for i: int in bag.size():
+		var id: String = str(bag[i])
+		var need: int = int((lines.get(id, {}) as Dictionary).get("min_round", 10)) - (5 if hw else 0)
+		if r < need:
+			continue
+		bag.remove_at(i)
+		ProfileSave.profile["slip_bag"] = bag
+		_slip_last = _now
+		_slip_round_count += 1
+		_submit(StringName(id), Priority.ANNOUNCE)
+		return true
+	ProfileSave.profile["slip_bag"] = bag
+	return false
+
