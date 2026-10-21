@@ -434,6 +434,9 @@ The Pumpenschalter is Map 2's power (MAPS.md Map 2). The tide comes in on every 
 | OPR_TIDE_RISING_02 | The tide is in! Everything below the apron is now a {bath}. Guests on the catwalks: the dead will be joining you {shortly}. | the tide rises |
 | OPR_TIDE_FALLING_01 | And the tide is going out. Totenhafen, Totenhafen: falling slowly, good, occasionally {poor}. Mind what it left behind. | the tide falls |
 | OPR_TIDE_FALLING_02 | Low water. The pens are draining, the pumps are {laughing}, and so am I. Until the {next} one. | the tide falls |
+| OPR_BALLAST_LIFT_01 | Oh, do be careful with that. It's {ballast}. It's {heavy}. It's... somebody. | a coffin is lifted |
+| OPR_BALLAST_LIFT_02 | One unit in transit. Please walk, don't run. You can't run, I know. {Walk}. | a coffin is lifted |
+| OPR_BALLAST_HOOKED_01 | Ballast on the hook! The pumps are {cleared} to run. The cargo thanks you. The cargo {always} thanks you. | the crane takes the coffin |
 
 ## 4. Dr. Emil Fasbender (`FAS`)
 

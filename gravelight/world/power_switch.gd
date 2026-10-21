@@ -12,6 +12,9 @@ extends Interactable
 @export var config_table: String = "map01"
 ## What the prompt calls it.
 @export var label: String = "the Hauptschalter"
+## Optional: the switch refuses until this GameState flag is set (Map 2: `ballast_loaded`, the crane hook).
+@export var requires_flag: StringName = &""
+@export var requires_text: String = "The crane wants ballast first"
 
 var _thrown: bool = false
 var _lever: Node3D
@@ -82,10 +85,14 @@ func _refresh_lamps() -> void:
 func get_prompt(_player: Player) -> String:
 	if _thrown or GameState.power_on:
 		return ""
+	if requires_flag != &"" and not GameState.has_flag(requires_flag):
+		return requires_text
 	return "Hold [%s] to throw %s" % [prompt_key(&"interact"), label]
 
 
 func can_interact(_player: Player) -> bool:
+	if requires_flag != &"" and not GameState.has_flag(requires_flag):
+		return false
 	return not _thrown and not GameState.power_on
 
 

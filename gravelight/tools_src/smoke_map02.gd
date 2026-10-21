@@ -186,6 +186,23 @@ func _run() -> void:
 	_check(sig.get_prompt(_p) == "Power must be activated", "Signal Tower door: 'Power must be activated'")
 	var cru: Node = _g("Crucible")
 	_check((cru as Interactable).get_prompt(_p).contains("Power"), "Crucible refuses before the pumps")
+	# ballast: the switch refuses, a coffin is lifted (slow), hooked on the crane, then the switch takes the throw
+	var sw: Interactable = _g("Pumpenschalter") as Interactable
+	_check(sw.get_prompt(_p).contains("ballast") and not sw.can_interact(_p), "Pumpenschalter refuses without ballast (" + sw.get_prompt(_p) + ")")
+	var coffin: Interactable = _g("Coffin_0") as Interactable
+	var hook: Interactable = _g("BallastHook") as Interactable
+	await _tp(Vector3(36.5, 0.2, 41.5), 0.0)
+	_check(coffin.can_interact(_p) and coffin.get_prompt(_p).contains("lift"), "coffin prompt: " + coffin.get_prompt(_p))
+	coffin.interact(_p)
+	await _secs(0.6)
+	_check(int(coffin.get("carrier")) == 1 and _p.has_status(&"ballast") and _p.status_move_mult() <= 0.5, "carrying the coffin slows the carrier (x%.2f)" % _p.status_move_mult())
+	_check(not (_g("Coffin_1") as Interactable).can_interact(_p), "a carrier can't lift a second coffin")
+	await _tp(Vector3(40.0, 0.2, 61.0), 0.0)
+	_check(hook.can_interact(_p) and hook.get_prompt(_p).contains("hook"), "hook prompt: " + hook.get_prompt(_p))
+	hook.interact(_p)
+	await _frames(3)
+	_check(GameState.has_flag(&"ballast_loaded") and bool(coffin.get("delivered")) and int(coffin.get("carrier")) == 0, "the crane took the coffin and set ballast_loaded")
+	_check(sw.can_interact(_p) and sw.get_prompt(_p).contains("throw"), "Pumpenschalter takes the throw after ballast (" + sw.get_prompt(_p) + ")")
 	# the pumps
 	var alive0: int = RoundManager.alive
 	(_g("Pumpenschalter")).call("run_sequence", 1)

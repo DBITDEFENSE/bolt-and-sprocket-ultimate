@@ -997,7 +997,7 @@ Zone adjacency for the "active spawns" rule: A–B, A–C, B–D, C–D, D–E, 
 - **Wall-buys:** BAR 1800 (pier 1 bollard post), Thompson 1200 (pier 2, by the gangway).
 - **Crate spot:** pier 0's end (under the west catwalk).
 - **Story item (fixed):** `INT_M2_03` *Loading Manifest, U-1047* nailed in the crane office: 14 "ballast units, lead, sealed" shipped "per Helvetia Automaten AG, Basel, for Hale, L." The squad's own orders came from a Mr. Hale.
-- **Coffins:** lead-sealed Nachtglas coffins on pallets along the east apron, each with a Helvetia plate, a stencilled unit number and a faint violet seam at the lid. Set dressing in this pass (see Ballast below).
+- **Coffins:** lead-sealed Nachtglas coffins on pallets along the east apron, each with a Helvetia plate, a stencilled unit number and a faint violet seam at the lid. Three of them (first pallet, sea-end pallet, the warhead store) can be lifted and carried to the crane hook (see Ballast below); the rest are dressing.
 - **Loop: the Pier Loop.** Apron → pier 1 → (no way round the dock ends: the piers are dead ends). The hall is **not** a loop: it is three fingers and two aprons. The real training line is **apron ↔ east apron ↔ catwalk stair ↔ north catwalk ↔ NW stair ↔ apron** (a 120 m ring at two heights).
 
 ## E. U-1047, Submarine Interior: level −2 (deck at +0.5)
@@ -1062,9 +1062,9 @@ A 10 × 5 m signal room over the NE apron, reached by the ramp from the north ca
 
 The tide is a map node (`gravelight/maps/map02_totenhafen/tide_controller.gd`) driven by `GLBus.round_started`; it owns the water plane, the slow application, the spawn switches and the VO/banner, all from the json block. Co-op: the host decides; the water height is presentation and follows the round number on every peer.
 
-## BALLAST (carry mechanic) — deferred to the next pass
+## BALLAST (carry mechanic, simple first version; data: `map02.json "ballast"`)
 
-The outline's carry-object system (carry a lead coffin to the crane hook to power the pumps, or dump it overboard for the egg) is **not in this version**: the Pumpenschalter is a normal free power switch in the pump room, and the coffins are set dressing on the east apron and in the warhead store. The `map02.json "ballast"` block already names the pieces (coffin spots, the crane hook, the carry slow `enemies.json status.ballast`), so the carry pass is data first.
+Three of the lead coffins are **BallastCoffin** interactables (`world/ballast_coffin.gd`): one on the east apron's first pallet, one on the sea-end pallet, one in the warhead store. Hold [F] 1.2 s to lift one: it rides in your arms (a Props coffin under the camera), you get the `ballast` status (move ×0.5, `enemies.json`), and you can still shoot in this version. Carry it to the **crane hook** over the painted loading square on the east apron (`world/ballast_hook.gd`, "BALLAST" on the floor) and hold [F] 1.5 s: the coffin swings up into the slings, the Operator calls it, and the flag `ballast_loaded` is set. **The Pumpenschalter refuses until then** ("The pumps want ballast on the crane first", `PowerSwitch.requires_flag`). One coffin is `needed`. A carrier who goes down drops the coffin back onto its pallet. Dumping coffins overboard for the egg, bots carrying, and the no-shooting rule are the next pass.
 
 ## KIELHOLER (drowned sailors) — deferred
 

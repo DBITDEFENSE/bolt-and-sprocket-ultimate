@@ -156,3 +156,13 @@ func test_scene_matches_the_table() -> void:
 	assert_true(_nodes.has("Pumpenschalter") and str((_nodes["Pumpenschalter"] as Dictionary).get("config_table", "")) == "map02", "the Pumpenschalter reads map02.json")
 	assert_true(_nodes.has("Tide") and _nodes.has("TideWater"), "the tide controller and its water plane")
 	assert_true(_nodes.has("Crucible") and bool((_nodes["Crucible"] as Dictionary).get("needs_power", false)), "the Crucible needs the pumps")
+	var b: Dictionary = cfg["ballast"]
+	assert_true(_nodes.has("BallastHook"), "the crane hook is placed")
+	var coffins: int = 0
+	for n2: String in _nodes.keys():
+		if n2.begins_with("Coffin_"):
+			coffins += 1
+	assert_eq(coffins, (b["coffin_spots"] as Array).size(), "every coffin spot has a BallastCoffin")
+	assert_gte(coffins, int(b["needed"]), "enough coffins for the crane")
+	assert_eq(str((_nodes["Pumpenschalter"] as Dictionary).get("requires_flag", "")), str(b["flag"]), "the Pumpenschalter waits for the crane's flag")
+	assert_true((GLData.table("enemies")["status"] as Dictionary).has(str(b["carry_status"])), "the ballast carry status exists")

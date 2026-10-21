@@ -821,6 +821,21 @@
   "category": "TIDE_FALLING",
   "text": "Low water. The pens are draining, the pumps are {laughing}, and so am I. Until the {next} one."
  },
+ "OPR_BALLAST_LIFT_01": {
+  "speaker": "OPR",
+  "category": "BALLAST_LIFT",
+  "text": "Oh, do be careful with that. It's {ballast}. It's {heavy}. It's... somebody."
+ },
+ "OPR_BALLAST_LIFT_02": {
+  "speaker": "OPR",
+  "category": "BALLAST_LIFT",
+  "text": "One unit in transit. Please walk, don't run. You can't run, I know. {Walk}."
+ },
+ "OPR_BALLAST_HOOKED_01": {
+  "speaker": "OPR",
+  "category": "BALLAST_HOOKED",
+  "text": "Ballast on the hook! The pumps are {cleared} to run. The cargo thanks you. The cargo {always} thanks you."
+ },
  "FAS_M0_R1_01": {
   "speaker": "FAS",
   "category": "M0_R1",

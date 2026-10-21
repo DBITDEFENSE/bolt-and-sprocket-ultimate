@@ -55,7 +55,8 @@
   "EXHAUST": 1,
   "EXFIL": 3,
   "CUT_EXFIL": 4,
-  "TIDE": 3
+  "TIDE": 3,
+  "BALLAST": 3
  },
  "category_cooldown": {
   "ROUND_START": [
@@ -275,6 +276,10 @@
    0.7
   ],
   "TIDE": [
+   0,
+   1.0
+  ],
+  "BALLAST": [
    0,
    1.0
   ]

@@ -1384,12 +1384,10 @@ func _dress_workshop() -> void:
 			B(Vector3(51.985, y - 0.4, 16.05 + k * 0.3), Vector3(52.015, y + 0.4, 16.08 + k * 0.3), "iron")
 			B(Vector3(52.05 + k * 0.38, y - 0.4, 15.985), Vector3(52.08 + k * 0.38, y + 0.4, 16.015), "iron")
 	B(Vector3(51.9, 2.5, 15.9), Vector3(62.0, 2.6, 24.0), "iron")
-	Props.coffin(dress, Vector3(56.0, 0, 22.5), 0.0, "BLST-07")
-	Props.coffin(dress, Vector3(56.0, 0.74, 22.5), 0.0, "BLST-08", false)
 	Props.coffin(dress, Vector3(60.5, 0, 23.0), 0.0, "BLST-11")
 	_noshadow(Props.ball(dress, Vector3(60.5, 1.1, 23.0), Vector3(2.6, 0.7, 1.4), "tarp"))
 	B(Vector3(61.6, 0.0, 18.8), Vector3(61.84, 2.2, 21.2), "black_paint")
-	_label("SPRENGKÖPFE · ZUTRITT VERBOTEN", Vector3(51.97, 2.8, 20.0), 90.0, 22, Color(0.85, 0.3, 0.2, 0.9))
+	_label("SPRENGKÖPFE · ZUTRITT VERBOTEN", Vector3(51.97, 2.8, 20.0), -90.0, 22, Color(0.85, 0.3, 0.2, 0.9))
 	# the trolley track along the south wall
 	for k: int in 44:
 		B(Vector3(34.0 + k * 0.6, 0, 26.3), Vector3(34.1 + k * 0.6, 0.07, 27.7), "beam")
@@ -1470,9 +1468,6 @@ func _dress_penhall() -> void:
 	Props.cable(dress, Vector3(40.0, 8.9, 60.0), Vector3(40.0, 3.4, 60.0), 0.0, 0.03, 2, "iron")
 	CYL(Vector3(40.0, 3.2, 60.0), 0.18, 0.4, "iron")
 	Props.strut(dress, Vector3(40.0, 3.0, 60.0), Vector3(40.0, 2.5, 60.3), 0.12, "iron", true)
-	Props.cable(dress, Vector3(40.0, 2.5, 60.3), Vector3(39.0, 1.6, 60.0), 0.0, 0.03, 2, "rope")
-	Props.cable(dress, Vector3(40.0, 2.5, 60.3), Vector3(41.0, 1.6, 60.0), 0.0, 0.03, 2, "rope")
-	Props.coffin(dress, Vector3(40.0, 1.0, 60.0), 0.0, "BLST-02", false)
 	# the crane office: a timber cabin on the apron, lit window, the manifest's board on its west wall
 	var co: Node3D = Props.group(dress, "CraneOffice", Vector3(47, 0, 54.5), 0.0)
 	Props.block(co, Vector3(-3.0, 0, -2.5), Vector3(3.0, 3.0, 2.5), "planks")
@@ -1485,13 +1480,10 @@ func _dress_penhall() -> void:
 	Props.wall_lamp(co, Vector3(-3.05, 2.5, 0.0), 90.0)
 	lamp(Vector3(43.3, 2.4, 54.5), INCAND, 1.0, 8.0, 0.1)
 	lamp(Vector3(47.0, 1.8, 54.5), INCAND, 0.6, 5.0, 0.05)
-	_label("KRANFÜHRER", Vector3(43.97, 2.75, 54.5), 90.0, 24)
+	_label("KRANFÜHRER", Vector3(43.97, 2.75, 54.5), -90.0, 24)
 	# coffins on pallets along the east apron (the colliders are the Pallet_Coffin boxes)
-	Props.coffin(dress, Vector3(36.5, 0, 40.0), 0.0, "BLST-03")
 	Props.coffin(dress, Vector3(38.6, 0, 40.0), 0.0, "BLST-04")
 	Props.coffin(dress, Vector3(36.5, 0, 42.4), 0.0, "BLST-05")
-	Props.coffin(dress, Vector3(50.0, 0, 70.0), 0.0, "BLST-09")
-	Props.coffin(dress, Vector3(50.0, 0.74, 70.0), 0.0, "BLST-10", false)
 	Props.sack(dress, Vector3(34.0, 0, 44.0), 20.0)
 	for dp: Vector3 in [Vector3(34.5, 0, 48.6), Vector3(35.4, 0, 49.4)]:
 		Props.oil_drum(dress, dp, "rust")
@@ -1507,7 +1499,7 @@ func _dress_penhall() -> void:
 	# the pump stair's mouth: a hazard chevron, the pit's walls lined
 	for k4: int in 6:
 		_noshadow(B(Vector3(46.0 + k4 * 1.0, 0.005, 41.6), Vector3(46.5 + k4 * 1.0, 0.012, 41.9), "yellow_paint" if k4 % 2 == 0 else "black_paint", false))
-	_label("PUMPENRAUM", Vector3(49.0, 2.9, 41.85), 0.0, 30)
+	_label("PUMPENRAUM", Vector3(49.0, 2.9, 41.85), 180.0, 30)
 	# lights: mercury floods high on both long walls (powered), bulkheads along the catwalks, emergency reds,
 	# hurricane lanterns on the piers, the north apron's pendants
 	for fz: float in [44.0, 62.0, 80.0]:
@@ -1592,7 +1584,7 @@ func _dress_uboat() -> void:
 		_noshadow(Props.ball(hull, Vector3(3.0, HIGH_TIDE - (SY - 0.3) - 0.2, wz), Vector3(0.5, 0.3, 1.6), "weed"))
 	# the gangway: plank treads and a sign; the deck's hatch coaming
 	B(Vector3(10.0, DECK + 0.0, 57.0), Vector3(10.4, DECK + 0.1, 59.0), "iron")
-	_label("ZUTRITT NUR MIT AUSWEIS", Vector3(14.17, 1.9, 58.0), -90.0, 20, Color(0.85, 0.3, 0.2, 0.9))
+	_label("ZUTRITT NUR MIT AUSWEIS", Vector3(14.17, 1.9, 58.0), 90.0, 20, Color(0.85, 0.3, 0.2, 0.9))
 	B(Vector3(4.9, DECK, 60.9), Vector3(7.1, DECK + 0.25, 61.0), "iron")
 	B(Vector3(4.9, DECK, 60.9), Vector3(5.0, DECK + 0.25, 66.1), "iron")
 	B(Vector3(7.0, DECK, 60.9), Vector3(7.1, DECK + 0.25, 66.1), "iron")
@@ -1691,8 +1683,8 @@ func _dress_lowerpens() -> void:
 			Props.obox(fw, Vector3(0, cos(a) * 0.5, sin(a) * 0.5), Vector3(0.06, 0.1, 1.0), "iron", Vector3(rad_to_deg(a), 0, 0))
 		_bake_local(fw, false)
 	B(Vector3(36.9, y + 2.5, 83.7), Vector3(47.1, y + 2.7, 84.0), "rust")
-	_label("GEZEITENPUMPE I", Vector3(37.0, y + 2.1, 75.99), 0.0, 22)
-	_label("GEZEITENPUMPE II", Vector3(47.0, y + 2.1, 75.99), 0.0, 22)
+	_label("GEZEITENPUMPE I", Vector3(37.0, y + 2.1, 75.99), 180.0, 22)
+	_label("GEZEITENPUMPE II", Vector3(47.0, y + 2.1, 75.99), 180.0, 22)
 	# the Pumpenschalter's dais and conduit, the keeper's desk and lamp, a stool, the log's shelf
 	B(Vector3(50.5, y, 68.5), Vector3(52, y + 0.3, 71.5), "steel_grate")
 	Props.pipe(dress, Vector3(51.8, y + 1.9, 70.0), Vector3(51.8, y + 2.6, 70.0), 0.03)
@@ -1748,7 +1740,7 @@ func _dress_tower() -> void:
 		B(Vector3(mx - 0.04, y + 0.9, 37.85), Vector3(mx + 0.04, y + 2.6, 38.15), "iron")
 	B(Vector3(43.9, y + 2.6, 37.85), Vector3(50.6, y + 2.72, 38.15), "iron")
 	B(Vector3(43.9, y + 0.78, 37.85), Vector3(50.6, y + 0.9, 38.15), "iron")
-	_label("SIGNALSTELLE", Vector3(42.17, y + 2.9, 35.0), -90.0, 22)
+	_label("SIGNALSTELLE", Vector3(42.17, y + 2.9, 35.0), 90.0, 22)
 	# lights: a powered pendant and a desk lamp, the rack's standby glow
 	pendant("G_SIGNAL", Vector3(47.0, y + 2.6, 35.5), y + 4.0, "enamel_green", 1.0)
 	power("G_SIGNAL", Vector3(47.0, y + 2.4, 35.5), 9.0, 0.9, SODIUM)
@@ -2180,8 +2172,19 @@ func build_gameplay() -> void:
 		ci += 1
 	# world machinery: the Pumpenschalter, the Crucible in the boat, two traps, the tide
 	_node("res://gravelight/world/power_switch.gd", "Pumpenschalter", {"config_table": "map02", "label": "the Pumpenschalter",
+		"requires_flag": &"ballast_loaded", "requires_text": "The pumps want ballast on the crane first",
 		"zone_order": PackedStringArray(["F_LOWERPENS", "D_PENHALL", "E_UBOAT", "G_SIGNAL", "B_CANNERY", "C_WORKSHOP", "A_QUAY"])},
 		Vector3(50.9, LY + 0.3, 70.0), 90.0)
+	# Ballast: the coffins a player can carry, and the crane hook that wants one before the pumps will run
+	var bcfg: Dictionary = (JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/map02.json")) as Dictionary).get("ballast", {})
+	var bi: int = 0
+	for cs: Array in bcfg.get("coffin_spots", []):
+		_node("res://gravelight/world/ballast_coffin.gd", "Coffin_%d" % bi, {"coffin_id": StringName("coffin_%d" % bi), "unit": str(cs[3]), "config_table": "map02"},
+			Vector3(float(cs[0]), float(cs[1]), float(cs[2])), 0.0)
+		bi += 1
+	var hk: Array = bcfg.get("crane_hook", [40.0, 0.0, 60.0])
+	_node("res://gravelight/world/ballast_hook.gd", "BallastHook", {"config_table": "map02", "flag": StringName(str(bcfg.get("flag", "ballast_loaded")))},
+		Vector3(float(hk[0]), float(hk[1]), float(hk[2])), 0.0)
 	_node("res://gravelight/world/crucible.gd", "Crucible", {"needs_power": true}, Vector3(7.0, SY, 40.0), 180.0)
 	var cart: Node3D = _node("res://gravelight/world/trap_ore_cart.gd", "Trap_Trolley", {"track_start": Vector3(0, 0, 0), "track_end": Vector3(0, 0, 26)}, Vector3(34, 0, 27), 90.0)
 	_node("res://gravelight/world/trap_lever.gd", "Lever_Trolley", {"trap_path": NodePath("../" + cart.name), "trap_id": &"ore_cart"}, Vector3(48.0, 0, 29.6), 0.0)

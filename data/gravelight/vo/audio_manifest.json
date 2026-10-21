@@ -3162,6 +3162,36 @@
    "voice": "Zira",
    "chain": "phono"
   },
+  "OPR_BALLAST_HOOKED_01": {
+   "line": "OPR_BALLAST_HOOKED_01",
+   "speaker": "OPR",
+   "hash": "1db88640e126e642",
+   "path": "res://gravelight/audio/vo/opr/OPR_BALLAST_HOOKED_01.ogg",
+   "format": "ogg",
+   "duration": 7.704,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_BALLAST_LIFT_01": {
+   "line": "OPR_BALLAST_LIFT_01",
+   "speaker": "OPR",
+   "hash": "daf5db8fab120f7c",
+   "path": "res://gravelight/audio/vo/opr/OPR_BALLAST_LIFT_01.ogg",
+   "format": "ogg",
+   "duration": 5.727,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_BALLAST_LIFT_02": {
+   "line": "OPR_BALLAST_LIFT_02",
+   "speaker": "OPR",
+   "hash": "bf9c5b6270d2e93b",
+   "path": "res://gravelight/audio/vo/opr/OPR_BALLAST_LIFT_02.ogg",
+   "format": "ogg",
+   "duration": 6.445,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
   "OPR_BELL_WRONG_01": {
    "line": "OPR_BELL_WRONG_01",
    "speaker": "OPR",
