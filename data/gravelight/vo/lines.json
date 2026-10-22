@@ -1189,6 +1189,386 @@
   "category": "REC_HIDE",
   "text": "[whisper] ...ninety-eight... ninety-nine..."
  },
+ "DUT_RELOAD_01": {
+  "speaker": "DUT",
+  "category": "RELOAD",
+  "text": "Reloading!"
+ },
+ "DUT_RELOAD_02": {
+  "speaker": "DUT",
+  "category": "RELOAD",
+  "text": "Changing mags, cover me!"
+ },
+ "DUT_BOARD_01": {
+  "speaker": "DUT",
+  "category": "BOARD",
+  "text": "Board's up!"
+ },
+ "DUT_BOARD_02": {
+  "speaker": "DUT",
+  "category": "BOARD",
+  "text": "Window's shut. For now."
+ },
+ "DUT_REVIVE_10": {
+  "speaker": "DUT",
+  "category": "REVIVE",
+  "text": "I've got you, hold on!"
+ },
+ "DUT_POWERUP_SEEN_01": {
+  "speaker": "DUT",
+  "category": "POWERUP_SEEN",
+  "text": "Something shiny over there. Grab it."
+ },
+ "DUT_CMD_FOLLOW_01": {
+  "speaker": "DUT",
+  "category": "CMD_FOLLOW",
+  "text": "Right behind you."
+ },
+ "DUT_CMD_HOLD_01": {
+  "speaker": "DUT",
+  "category": "CMD_HOLD",
+  "text": "Holding here. Nobody gets past."
+ },
+ "DUT_CMD_REPAIR_01": {
+  "speaker": "DUT",
+  "category": "CMD_REPAIR",
+  "text": "Hammer time. I'll do the windows."
+ },
+ "DUT_CMD_REVIVE_01": {
+  "speaker": "DUT",
+  "category": "CMD_REVIVE",
+  "text": "Anybody drops, I'm on 'em."
+ },
+ "DUT_BONUS_IRONHIDE_01": {
+  "speaker": "DUT",
+  "category": "BONUS_IRONHIDE",
+  "text": "That stout's still in my blood. I can take a hit."
+ },
+ "DUT_BONUS_SECONDWIND_01": {
+  "speaker": "DUT",
+  "category": "BONUS_SECONDWIND",
+  "text": "Schnapps in me already. Up you get, quick as you like."
+ },
+ "DUT_BONUS_TRIGGER_01": {
+  "speaker": "DUT",
+  "category": "BONUS_TRIGGER",
+  "text": "Hands are fast tonight. Must be the tonic in my canteen."
+ },
+ "DUT_BONUS_TWINBARREL_01": {
+  "speaker": "DUT",
+  "category": "BONUS_TWINBARREL",
+  "text": "This thing's spitting faster than it should. I'm not complaining."
+ },
+ "DUT_BONUS_MARATHON_01": {
+  "speaker": "DUT",
+  "category": "BONUS_MARATHON",
+  "text": "Legs feel twenty again. Twenty and stupid."
+ },
+ "DUT_BONUS_HAWKEYE_01": {
+  "speaker": "DUT",
+  "category": "BONUS_HAWKEYE",
+  "text": "Brandy steadies the eye. Ma always said so. She meant something else."
+ },
+ "DUT_BONUS_PACKMULE_01": {
+  "speaker": "DUT",
+  "category": "BONUS_PACKMULE",
+  "text": "Three guns. Like carrying the whole mill on my back."
+ },
+ "DUT_BONUS_BLASTPROOF_01": {
+  "speaker": "DUT",
+  "category": "BONUS_BLASTPROOF",
+  "text": "That should've hurt. The bock says no."
+ },
+ "DUT_BONUS_OVERCLOCK_01": {
+  "speaker": "DUT",
+  "category": "BONUS_OVERCLOCK",
+  "text": "My gun just bit them. I didn't tell it to."
+ },
+ "PEG_RELOAD_01": {
+  "speaker": "PEG",
+  "category": "RELOAD",
+  "text": "Reloading!"
+ },
+ "PEG_RELOAD_02": {
+  "speaker": "PEG",
+  "category": "RELOAD",
+  "text": "Magazine, one moment."
+ },
+ "PEG_BOARD_01": {
+  "speaker": "PEG",
+  "category": "BOARD",
+  "text": "Board's up!"
+ },
+ "PEG_BOARD_02": {
+  "speaker": "PEG",
+  "category": "BOARD",
+  "text": "That window is closed for business."
+ },
+ "PEG_REVIVE_10": {
+  "speaker": "PEG",
+  "category": "REVIVE",
+  "text": "I've got you, hold on. Eyes on me."
+ },
+ "PEG_POWERUP_SEEN_01": {
+  "speaker": "PEG",
+  "category": "POWERUP_SEEN",
+  "text": "Something's dropped. Do pick it up before it sulks off."
+ },
+ "PEG_CMD_FOLLOW_01": {
+  "speaker": "PEG",
+  "category": "CMD_FOLLOW",
+  "text": "Lead on."
+ },
+ "PEG_CMD_HOLD_01": {
+  "speaker": "PEG",
+  "category": "CMD_HOLD",
+  "text": "We hold. Understood."
+ },
+ "PEG_CMD_REPAIR_01": {
+  "speaker": "PEG",
+  "category": "CMD_REPAIR",
+  "text": "Windows. Right. I'll see to them."
+ },
+ "PEG_CMD_REVIVE_01": {
+  "speaker": "PEG",
+  "category": "CMD_REVIVE",
+  "text": "Nobody stays down. That's an order, even to me."
+ },
+ "PEG_BONUS_IRONHIDE_01": {
+  "speaker": "PEG",
+  "category": "BONUS_IRONHIDE",
+  "text": "I had a stout before we set out. Medicinal. It's holding up rather well."
+ },
+ "PEG_BONUS_SECONDWIND_01": {
+  "speaker": "PEG",
+  "category": "BONUS_SECONDWIND",
+  "text": "The schnapps is still with me. I'll have you up in a jiffy."
+ },
+ "PEG_BONUS_TRIGGER_01": {
+  "speaker": "PEG",
+  "category": "BONUS_TRIGGER",
+  "text": "One does reload faster with a tonic. Noted for the report."
+ },
+ "PEG_BONUS_TWINBARREL_01": {
+  "speaker": "PEG",
+  "category": "BONUS_TWINBARREL",
+  "text": "Goodness. This rate of fire is frankly indecent."
+ },
+ "PEG_BONUS_MARATHON_01": {
+  "speaker": "PEG",
+  "category": "BONUS_MARATHON",
+  "text": "I could run to Calais. Please don't make me."
+ },
+ "PEG_BONUS_HAWKEYE_01": {
+  "speaker": "PEG",
+  "category": "BONUS_HAWKEYE",
+  "text": "The brandy's done wonders for my aim. And my mood."
+ },
+ "PEG_BONUS_PACKMULE_01": {
+  "speaker": "PEG",
+  "category": "BONUS_PACKMULE",
+  "text": "Three weapons. Ungainly, but thorough."
+ },
+ "PEG_BONUS_BLASTPROOF_01": {
+  "speaker": "PEG",
+  "category": "BONUS_BLASTPROOF",
+  "text": "Bang. Nothing. Splendid. Remind me to thank the brewer."
+ },
+ "PEG_BONUS_OVERCLOCK_01": {
+  "speaker": "PEG",
+  "category": "BONUS_OVERCLOCK",
+  "text": "My rifle just electrocuted someone. How very modern."
+ },
+ "DEA_RELOAD_01": {
+  "speaker": "DEA",
+  "category": "RELOAD",
+  "text": "Reloading!"
+ },
+ "DEA_RELOAD_02": {
+  "speaker": "DEA",
+  "category": "RELOAD",
+  "text": "Feeding her. Give me a second."
+ },
+ "DEA_BOARD_01": {
+  "speaker": "DEA",
+  "category": "BOARD",
+  "text": "Board's up!"
+ },
+ "DEA_BOARD_02": {
+  "speaker": "DEA",
+  "category": "BOARD",
+  "text": "Window's fixed. Good as new. Well. Good."
+ },
+ "DEA_REVIVE_10": {
+  "speaker": "DEA",
+  "category": "REVIVE",
+  "text": "I've got you, hold on. Breathe with me."
+ },
+ "DEA_POWERUP_SEEN_01": {
+  "speaker": "DEA",
+  "category": "POWERUP_SEEN",
+  "text": "Blessing on the floor over there. Don't let it go to waste."
+ },
+ "DEA_CMD_FOLLOW_01": {
+  "speaker": "DEA",
+  "category": "CMD_FOLLOW",
+  "text": "With you."
+ },
+ "DEA_CMD_HOLD_01": {
+  "speaker": "DEA",
+  "category": "CMD_HOLD",
+  "text": "Planting my feet. They come to us."
+ },
+ "DEA_CMD_REPAIR_01": {
+  "speaker": "DEA",
+  "category": "CMD_REPAIR",
+  "text": "Repairs. Now you're speaking my language."
+ },
+ "DEA_CMD_REVIVE_01": {
+  "speaker": "DEA",
+  "category": "CMD_REVIVE",
+  "text": "Anybody falls, I'm the one picking them up."
+ },
+ "DEA_BONUS_IRONHIDE_01": {
+  "speaker": "DEA",
+  "category": "BONUS_IRONHIDE",
+  "text": "Stout's still in me. I'm built like a Sherman today."
+ },
+ "DEA_BONUS_SECONDWIND_01": {
+  "speaker": "DEA",
+  "category": "BONUS_SECONDWIND",
+  "text": "Schnapps working. I'll have you back on your feet before the Lord notices."
+ },
+ "DEA_BONUS_TRIGGER_01": {
+  "speaker": "DEA",
+  "category": "BONUS_TRIGGER",
+  "text": "Hands are quicker than they ought to be. I'll take it."
+ },
+ "DEA_BONUS_TWINBARREL_01": {
+  "speaker": "DEA",
+  "category": "BONUS_TWINBARREL",
+  "text": "Timing's advanced on this gun. Runs hot. Runs good."
+ },
+ "DEA_BONUS_MARATHON_01": {
+  "speaker": "DEA",
+  "category": "BONUS_MARATHON",
+  "text": "Engine's tuned. I could run all night."
+ },
+ "DEA_BONUS_HAWKEYE_01": {
+  "speaker": "DEA",
+  "category": "BONUS_HAWKEYE",
+  "text": "Eyes are clear as Sunday morning."
+ },
+ "DEA_BONUS_PACKMULE_01": {
+  "speaker": "DEA",
+  "category": "BONUS_PACKMULE",
+  "text": "Room for one more tool on the belt. Always is."
+ },
+ "DEA_BONUS_BLASTPROOF_01": {
+  "speaker": "DEA",
+  "category": "BONUS_BLASTPROOF",
+  "text": "Blast washed right over me. Armor plating, the bottle said."
+ },
+ "DEA_BONUS_OVERCLOCK_01": {
+  "speaker": "DEA",
+  "category": "BONUS_OVERCLOCK",
+  "text": "Something in this gun's wired wrong. Wired wrong the right way."
+ },
+ "WRN_RELOAD_01": {
+  "speaker": "WRN",
+  "category": "RELOAD",
+  "text": "Reloading!"
+ },
+ "WRN_RELOAD_02": {
+  "speaker": "WRN",
+  "category": "RELOAD",
+  "text": "Empty. One moment."
+ },
+ "WRN_BOARD_01": {
+  "speaker": "WRN",
+  "category": "BOARD",
+  "text": "Board's up!"
+ },
+ "WRN_BOARD_02": {
+  "speaker": "WRN",
+  "category": "BOARD",
+  "text": "Window closed."
+ },
+ "WRN_REVIVE_10": {
+  "speaker": "WRN",
+  "category": "REVIVE",
+  "text": "I've got you. Hold on. Hold on."
+ },
+ "WRN_POWERUP_SEEN_01": {
+  "speaker": "WRN",
+  "category": "POWERUP_SEEN",
+  "text": "There. Something fell. Take it."
+ },
+ "WRN_CMD_FOLLOW_01": {
+  "speaker": "WRN",
+  "category": "CMD_FOLLOW",
+  "text": "I follow."
+ },
+ "WRN_CMD_HOLD_01": {
+  "speaker": "WRN",
+  "category": "CMD_HOLD",
+  "text": "I hold. They come, I count them."
+ },
+ "WRN_CMD_REPAIR_01": {
+  "speaker": "WRN",
+  "category": "CMD_REPAIR",
+  "text": "Boards. Yes."
+ },
+ "WRN_CMD_REVIVE_01": {
+  "speaker": "WRN",
+  "category": "CMD_REVIVE",
+  "text": "Nobody stays on the floor. Not here."
+ },
+ "WRN_BONUS_IRONHIDE_01": {
+  "speaker": "WRN",
+  "category": "BONUS_IRONHIDE",
+  "text": "The stout is still in me. Hit me. They will see."
+ },
+ "WRN_BONUS_SECONDWIND_01": {
+  "speaker": "WRN",
+  "category": "BONUS_SECONDWIND",
+  "text": "Schnapps. Quick hands for lifting. Good."
+ },
+ "WRN_BONUS_TRIGGER_01": {
+  "speaker": "WRN",
+  "category": "BONUS_TRIGGER",
+  "text": "Reload, fast. The tonic is still in my fingers."
+ },
+ "WRN_BONUS_TWINBARREL_01": {
+  "speaker": "WRN",
+  "category": "BONUS_TWINBARREL",
+  "text": "Faster. The gun is hungry tonight."
+ },
+ "WRN_BONUS_MARATHON_01": {
+  "speaker": "WRN",
+  "category": "BONUS_MARATHON",
+  "text": "I can run forever. I ran here from Kraków, almost."
+ },
+ "WRN_BONUS_HAWKEYE_01": {
+  "speaker": "WRN",
+  "category": "BONUS_HAWKEYE",
+  "text": "The brandy. My eye is clear. Into the book."
+ },
+ "WRN_BONUS_PACKMULE_01": {
+  "speaker": "WRN",
+  "category": "BONUS_PACKMULE",
+  "text": "Three guns. More marks in the notebook."
+ },
+ "WRN_BONUS_BLASTPROOF_01": {
+  "speaker": "WRN",
+  "category": "BONUS_BLASTPROOF",
+  "text": "Fire, and I am still here. Good beer."
+ },
+ "WRN_BONUS_OVERCLOCK_01": {
+  "speaker": "WRN",
+  "category": "BONUS_OVERCLOCK",
+  "text": "Lightning from my rifle. I will not write how."
+ },
  "OPR_M0_WRONG_01": {
   "speaker": "OPR",
   "category": "M0_WRONG",

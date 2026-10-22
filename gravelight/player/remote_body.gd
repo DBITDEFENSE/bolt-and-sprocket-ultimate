@@ -319,12 +319,12 @@ func _gear_wren(wd: float) -> void:
 	_box(_chest, Vector3(0.38 * wd, 0.06, 0.04), Vector3(0, 0.08, -0.12), "jacket")             # smock drawstring hem
 	var sling: Node3D = Node3D.new()
 	sling.name = "SlungRifle"
-	sling.position = Vector3(0.0, 0.3, 0.165)
+	sling.position = Vector3(-0.04, 0.34, 0.165)
 	_chest.add_child(sling)
 	sling.basis = Basis.looking_at(Vector3(-0.55, 0.83, 0.0), Vector3.BACK)   # barrel up over the left shoulder
 	var rifle: Node3D = WeaponModels.build(&"springfield")
 	sling.add_child(rifle)
-	rifle.position = Vector3(0, 0, 0.5)
+	rifle.position = Vector3(0, 0, 0.38)
 	for n: Node in rifle.find_children("*", "OmniLight3D", true, false):
 		(n as Node3D).queue_free()
 	_box(_chest, Vector3(0.03, 0.62, 0.015), Vector3(0.02, 0.3, -0.125), "strap", Vector3(0, 0, -0.85))   # the sling across the chest

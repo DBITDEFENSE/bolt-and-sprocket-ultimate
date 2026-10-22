@@ -245,6 +245,11 @@ static func pick_bonus_perks(bcfg: Dictionary, map_perks: Array, kit_perks: Arra
 	return out
 
 
+## Bonus perks are on: the "Bot Bonus Perk" setting (bot_bonus_perk, default on) and bots.json bonus_perk.enabled.
+static func bonus_enabled(settings_values: Dictionary, bcfg: Dictionary) -> bool:
+	return bool(settings_values.get("bot_bonus_perk", true)) and bool(bcfg.get("enabled", true))
+
+
 ## The bonus perk's announcement trigger (bots.json bonus_perk.triggers): "reload", "fire", "sprint",
 ## "headshot", "swap", "explosion", "overclock", "hurt", "revive"; "" = only the round fallback.
 static func bonus_trigger(bcfg: Dictionary, perk_id: StringName) -> String:

@@ -215,7 +215,8 @@
   "repair": {
     "radius_m": 9.0,
     "max_from_leader_m": 14.0,
-    "quiet_radius_m": 7.0
+    "quiet_radius_m": 7.0,
+    "break_radius_mult": 1.6
   },
   "shopping": {
     "max_from_leader_m": 24.0,

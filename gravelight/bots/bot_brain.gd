@@ -411,8 +411,9 @@ func _decide_mode() -> void:
 	if _reviving:
 		_stop_revive()
 	_revive_pid = 0
-	if _near_d < danger and (hurt or _crowd >= int(_combat.get("crowd_count", 3)) or not loaded):
-
+	# something faster than a walking man (a Bellringer, a sprinter) can't be outrun: stand, shoot, knife it
+	var outrun: bool = _near_z != null and _near_z.speed >= float(_pcfg["walk_speed"]) * float(_combat.get("outrun_speed_frac", 0.9))
+	if _near_d < danger and (hurt or _crowd >= int(_combat.get("crowd_count", 3)) or not loaded) and not (outrun and _crowd < int(_combat.get("crowd_count", 3)) + 2):
 		if mode != Mode.FLEE:
 			_flee_t = 0.0
 		mode = Mode.FLEE

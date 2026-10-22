@@ -87,7 +87,7 @@ func add_brain(p: Player, options: Dictionary = {}, i: int = -1) -> BotBrain:
 ## (a companion's options.perks = false) get none.
 func _assign_bonus_perks() -> void:
 	var bcfg: Dictionary = _cfg.get("bonus_perk", {})
-	if not bool(GLSettings.values.get("bot_bonus_perk", true)) or not bool(bcfg.get("enabled", true)) or not Net.is_authority():
+	if not BotConfig.bonus_enabled(GLSettings.values, bcfg) or not Net.is_authority():
 		return
 	var takers: Array[BotBrain] = []
 	for b: BotBrain in brains:
