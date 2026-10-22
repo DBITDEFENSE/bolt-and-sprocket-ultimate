@@ -116,3 +116,15 @@ func _in_cart(p: Vector3, cart: Vector3, axis: Vector3) -> bool:
 	var along: float = absf(d.dot(axis))
 	var side: float = (d - axis * d.dot(axis)).length()
 	return along <= 1.3 and side <= width * 0.5 + 0.3
+
+
+## Bots keep out (BotBrain._in_trap): true from the warning bell until the cart stops, anywhere on its strip.
+func danger_contains(p: Vector3) -> bool:
+	if not active:
+		return false
+	var a: Vector3 = to_global(track_start)
+	var b: Vector3 = to_global(track_end)
+	var ab: Vector3 = b - a
+	var t: float = clampf((p - a).dot(ab) / maxf(0.001, ab.length_squared()), -0.05, 1.05)
+	var c: Vector3 = a + ab * t
+	return absf(p.y - c.y) < 2.0 and Vector2(p.x - c.x, p.z - c.z).length() <= width * 0.5 + 0.8

@@ -161,7 +161,10 @@ func _tick_revive(sq: BotSquad) -> void:
 		return
 	if _phase_t > 2.0 and not _downed_checked:
 		_downed_checked = true
-		_check(_downed_bot.downed and PerkManager.owned(_downed_bot.player_id).is_empty(), "a downed bot loses its perks (co-op rule)")
+		# co-op rule: every perk goes, except the bot's bonus perk (U02 section 5: its trait)
+		var left: Array = PerkManager.owned(_downed_bot.player_id).duplicate()
+		left.erase(PerkManager.bonus_perk(_downed_bot.player_id))
+		_check(_downed_bot.downed and left.is_empty(), "a downed bot loses its perks except the bonus perk (co-op rule)")
 	if not _downed_bot.downed and _phase_t > 2.5:
 		await get_tree().physics_frame
 		await get_tree().physics_frame

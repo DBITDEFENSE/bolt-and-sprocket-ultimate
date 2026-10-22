@@ -10,6 +10,7 @@ const ACTION_NAMES: Dictionary = {
 	"reload": "Reload", "interact": "Use / buy", "melee": "Knife", "lethal": "Grenade", "tactical": "Tactical",
 	"swap_weapon": "Swap weapon", "weapon_1": "Weapon 1", "weapon_2": "Weapon 2", "weapon_3": "Weapon 3",
 	"lean_left": "Lean left", "lean_right": "Lean right", "pause": "Pause", "ui_scoreboard": "Scoreboard",
+	"bot_command": "Squad orders (hold)",
 	"look_left": "Look left", "look_right": "Look right", "look_up": "Look up", "look_down": "Look down",
 	"dev_console": "Dev console",
 }
@@ -63,6 +64,7 @@ func _gameplay() -> void:
 	content.add_child(MenuKit.check("Classic Rules (no character traits)", bool(v["classic_rules"]), _setter("classic_rules")))
 	content.add_child(MenuKit.check("Hint mode (show the next objective)", bool(v["hint_mode"]), _setter("hint_mode")))
 	content.add_child(MenuKit.check("Homage Bosses (the Cousins, Map 0 round 10)", bool(v.get("homage_bosses", true)), _setter("homage_bosses")))
+	content.add_child(MenuKit.check("Bot Bonus Perk (each AI teammate gets one random perk)", bool(v.get("bot_bonus_perk", true)), _setter("bot_bonus_perk")))
 	var name_modes: PackedStringArray = ["real", "world"]
 	var ncur: int = maxi(0, name_modes.find(str(v.get("homage_names", "real"))))
 	content.add_child(MenuKit.row("Homage Names", MenuKit.options(PackedStringArray(["Real", "In-World"]), ncur,

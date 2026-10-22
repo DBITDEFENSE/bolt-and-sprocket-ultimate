@@ -1027,3 +1027,102 @@ Total planned: ~190 lines. Bolt's and Vendelin's packs are gated on v1 §11.9 (p
 | `VEN_SLENDER_DEAD_01` | his death | He kept watch because he wanted to, not because anyone made him. That is the difference, and it is everything. |
 
 **Counts:** Operator 21; the Cousins 35; Paul 22; the Slender 20; the squad 66; Bolt, Sprocket and Vendelin 25. **189 lines.** The Watch-Book templates are Archive text, not VO.
+
+
+## 13. AI teammate barks, orders and bonus perks (Update 02 §5, DECISIONS T-050)
+
+Spoken by the squad when they are bots (BotSquad.callout, positional at the bot, rate-limited per bot and for the
+squad: data/gravelight/bots.json `callouts`). The same character voices as §8 / CHARACTERS.md. Categories:
+`RELOAD` (a bot reloads a long gun with zombies near), `BOARD` (it finished a window), `REVIVE` (it starts a
+revive; these join the §8 REVIVE lines), `POWERUP_SEEN` (a drop it can see), `CMD_FOLLOW` / `CMD_HOLD` /
+`CMD_REPAIR` / `CMD_REVIVE` (the nearest bot acknowledges an order from the command wheel), and `BONUS_<perk>`:
+the bot's random bonus perk, said once, the first time it matters (bots.json `bonus_perk.triggers`: Trigger Tonic
+on the first reload, Twin Barrel on the first burst, Marathon Malt on the first sprint, Hawkeye on the first
+headshot kill, Packmule on the first weapon swap, Blastproof at the first explosion, Overclock at the first burst,
+Ironhide when first hurt, Second Wind on the first revive; otherwise at the start of round 4).
+
+### 13.1 Dutch (`DUT`)
+- `DUT_RELOAD_01`: "Reloading!"
+- `DUT_RELOAD_02`: "Changing mags, cover me!"
+- `DUT_BOARD_01`: "Board's up!"
+- `DUT_BOARD_02`: "Window's shut. For now."
+- `DUT_REVIVE_10`: "I've got you, hold on!"
+- `DUT_POWERUP_SEEN_01`: "Something shiny over there. Grab it."
+- `DUT_CMD_FOLLOW_01`: "Right behind you."
+- `DUT_CMD_HOLD_01`: "Holding here. Nobody gets past."
+- `DUT_CMD_REPAIR_01`: "Hammer time. I'll do the windows."
+- `DUT_CMD_REVIVE_01`: "Anybody drops, I'm on 'em."
+- `DUT_BONUS_IRONHIDE_01`: "That stout's still in my blood. I can take a hit."
+- `DUT_BONUS_SECONDWIND_01`: "Schnapps in me already. Up you get, quick as you like."
+- `DUT_BONUS_TRIGGER_01`: "Hands are fast tonight. Must be the tonic in my canteen."
+- `DUT_BONUS_TWINBARREL_01`: "This thing's spitting faster than it should. I'm not complaining."
+- `DUT_BONUS_MARATHON_01`: "Legs feel twenty again. Twenty and stupid."
+- `DUT_BONUS_HAWKEYE_01`: "Brandy steadies the eye. Ma always said so. She meant something else."
+- `DUT_BONUS_PACKMULE_01`: "Three guns. Like carrying the whole mill on my back."
+- `DUT_BONUS_BLASTPROOF_01`: "That should've hurt. The bock says no."
+- `DUT_BONUS_OVERCLOCK_01`: "My gun just bit them. I didn't tell it to."
+
+### 13.2 Peg (`PEG`)
+- `PEG_RELOAD_01`: "Reloading!"
+- `PEG_RELOAD_02`: "Magazine, one moment."
+- `PEG_BOARD_01`: "Board's up!"
+- `PEG_BOARD_02`: "That window is closed for business."
+- `PEG_REVIVE_10`: "I've got you, hold on. Eyes on me."
+- `PEG_POWERUP_SEEN_01`: "Something's dropped. Do pick it up before it sulks off."
+- `PEG_CMD_FOLLOW_01`: "Lead on."
+- `PEG_CMD_HOLD_01`: "We hold. Understood."
+- `PEG_CMD_REPAIR_01`: "Windows. Right. I'll see to them."
+- `PEG_CMD_REVIVE_01`: "Nobody stays down. That's an order, even to me."
+- `PEG_BONUS_IRONHIDE_01`: "I had a stout before we set out. Medicinal. It's holding up rather well."
+- `PEG_BONUS_SECONDWIND_01`: "The schnapps is still with me. I'll have you up in a jiffy."
+- `PEG_BONUS_TRIGGER_01`: "One does reload faster with a tonic. Noted for the report."
+- `PEG_BONUS_TWINBARREL_01`: "Goodness. This rate of fire is frankly indecent."
+- `PEG_BONUS_MARATHON_01`: "I could run to Calais. Please don't make me."
+- `PEG_BONUS_HAWKEYE_01`: "The brandy's done wonders for my aim. And my mood."
+- `PEG_BONUS_PACKMULE_01`: "Three weapons. Ungainly, but thorough."
+- `PEG_BONUS_BLASTPROOF_01`: "Bang. Nothing. Splendid. Remind me to thank the brewer."
+- `PEG_BONUS_OVERCLOCK_01`: "My rifle just electrocuted someone. How very modern."
+
+### 13.3 Deacon (`DEA`)
+- `DEA_RELOAD_01`: "Reloading!"
+- `DEA_RELOAD_02`: "Feeding her. Give me a second."
+- `DEA_BOARD_01`: "Board's up!"
+- `DEA_BOARD_02`: "Window's fixed. Good as new. Well. Good."
+- `DEA_REVIVE_10`: "I've got you, hold on. Breathe with me."
+- `DEA_POWERUP_SEEN_01`: "Blessing on the floor over there. Don't let it go to waste."
+- `DEA_CMD_FOLLOW_01`: "With you."
+- `DEA_CMD_HOLD_01`: "Planting my feet. They come to us."
+- `DEA_CMD_REPAIR_01`: "Repairs. Now you're speaking my language."
+- `DEA_CMD_REVIVE_01`: "Anybody falls, I'm the one picking them up."
+- `DEA_BONUS_IRONHIDE_01`: "Stout's still in me. I'm built like a Sherman today."
+- `DEA_BONUS_SECONDWIND_01`: "Schnapps working. I'll have you back on your feet before the Lord notices."
+- `DEA_BONUS_TRIGGER_01`: "Hands are quicker than they ought to be. I'll take it."
+- `DEA_BONUS_TWINBARREL_01`: "Timing's advanced on this gun. Runs hot. Runs good."
+- `DEA_BONUS_MARATHON_01`: "Engine's tuned. I could run all night."
+- `DEA_BONUS_HAWKEYE_01`: "Eyes are clear as Sunday morning."
+- `DEA_BONUS_PACKMULE_01`: "Room for one more tool on the belt. Always is."
+- `DEA_BONUS_BLASTPROOF_01`: "Blast washed right over me. Armor plating, the bottle said."
+- `DEA_BONUS_OVERCLOCK_01`: "Something in this gun's wired wrong. Wired wrong the right way."
+
+### 13.4 Wren (`WRN`)
+- `WRN_RELOAD_01`: "Reloading!"
+- `WRN_RELOAD_02`: "Empty. One moment."
+- `WRN_BOARD_01`: "Board's up!"
+- `WRN_BOARD_02`: "Window closed."
+- `WRN_REVIVE_10`: "I've got you. Hold on. Hold on."
+- `WRN_POWERUP_SEEN_01`: "There. Something fell. Take it."
+- `WRN_CMD_FOLLOW_01`: "I follow."
+- `WRN_CMD_HOLD_01`: "I hold. They come, I count them."
+- `WRN_CMD_REPAIR_01`: "Boards. Yes."
+- `WRN_CMD_REVIVE_01`: "Nobody stays on the floor. Not here."
+- `WRN_BONUS_IRONHIDE_01`: "The stout is still in me. Hit me. They will see."
+- `WRN_BONUS_SECONDWIND_01`: "Schnapps. Quick hands for lifting. Good."
+- `WRN_BONUS_TRIGGER_01`: "Reload, fast. The tonic is still in my fingers."
+- `WRN_BONUS_TWINBARREL_01`: "Faster. The gun is hungry tonight."
+- `WRN_BONUS_MARATHON_01`: "I can run forever. I ran here from Kraków, almost."
+- `WRN_BONUS_HAWKEYE_01`: "The brandy. My eye is clear. Into the book."
+- `WRN_BONUS_PACKMULE_01`: "Three guns. More marks in the notebook."
+- `WRN_BONUS_BLASTPROOF_01`: "Fire, and I am still here. Good beer."
+- `WRN_BONUS_OVERCLOCK_01`: "Lightning from my rifle. I will not write how."
+
+**Counts:** 4 × (2 RELOAD + 2 BOARD + 1 REVIVE + 1 POWERUP_SEEN + 4 CMD + 9 BONUS) = **76 lines.**

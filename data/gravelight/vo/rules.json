@@ -282,6 +282,26 @@
   "BALLAST": [
    0,
    1.0
+  ],
+  "RELOAD": [
+   0,
+   1.0
+  ],
+  "BOARD": [
+   0,
+   1.0
+  ],
+  "CMD": [
+   0,
+   1.0
+  ],
+  "BONUS": [
+   0,
+   1.0
+  ],
+  "POWERUP_SEEN": [
+   0,
+   1.0
   ]
  },
  "round_start_always": [

@@ -574,7 +574,11 @@ func local_fired(kind: int, weapon_id: StringName, origin: Vector3, end: Vector3
 ## A player went down (MapRoot._on_player_downed in co-op): perks are lost, the bleed-out clock starts.
 func coop_downed(pid: int) -> void:
 	PerkManager.on_player_downed(pid)
-	coop.down(pid, float(GLData.table("player")["bleedout_seconds"]))
+	var bleed: float = float(GLData.table("player")["bleedout_seconds"])
+	var dp: Player = players.get(pid) as Player
+	if dp != null and dp.bleedout_seconds > 0.0:
+		bleed = dp.bleedout_seconds   # a companion's own clock (U02 section 6: Jakub bleeds out after 60 s)
+	coop.down(pid, bleed)
 	if coop.everyone_down():
 		map._game_over()
 

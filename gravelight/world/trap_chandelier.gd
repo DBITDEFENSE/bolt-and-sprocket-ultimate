@@ -97,6 +97,17 @@ func _near(p: Vector3, at: Vector3) -> bool:
 	return Vector2(p.x - at.x, p.z - at.z).length() <= radius and absf(p.y - at.y) < 3.0
 
 
+## Bots keep out (BotBrain._in_trap): true while the chandeliers fall and `p` is under one (a metre of margin).
+func danger_contains(p: Vector3) -> bool:
+	if not _falling:
+		return false
+	for dp: Vector3 in drop_points:
+		var at: Vector3 = to_global(dp)
+		if Vector2(p.x - at.x, p.z - at.z).length() <= radius + 1.0 and absf(p.y - at.y) < 3.0:
+			return true
+	return false
+
+
 ## Next round: the chandeliers are hoisted back up.
 func reset() -> void:
 	used_this_round = false

@@ -103,5 +103,9 @@
     "key": "B",
     "mouse": "MIDDLE",
     "pad": "DPAD_RIGHT"
+  },
+  "bot_command": {
+    "key": "T",
+    "pad": "DPAD_DOWN"
   }
 }

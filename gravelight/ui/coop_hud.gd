@@ -4,7 +4,8 @@ extends CanvasLayer
 ##  - "<name> is down" markers on screen (clamped to the edges) with the distance, so a teammate can be found
 ##  - your own last stand: the bleed-out bar and "being revived by ..."; spectating after bleeding out
 ## Solo with AI teammates (T-031) uses the same ledger through the offline session: bots show their health
-## (known here) and everyone's kills come from the BotSquad's count.
+## (known here) and everyone's kills come from the BotSquad's count. A bot's bonus perk (U02 section 5) shows as a
+## gold-ringed bottle cap at the end of its row.
 
 const INK: Color = Color(0.62, 0.09, 0.08)
 const PAPER: Color = Color(0.93, 0.89, 0.8)
@@ -14,6 +15,7 @@ var _font: SystemFont
 var _stamp: SystemFont
 var _list: VBoxContainer
 var _rows: Dictionary = {}      # pid -> Label
+var _caps: Dictionary = {}      # pid -> PerkCap (the bonus perk)
 var _center: Label
 var _bar: ProgressBar
 var _markers: Markers
@@ -112,8 +114,9 @@ func _update_list(s: NetMatch) -> void:
 	ids.sort()
 	for pid: Variant in _rows.keys():
 		if not ids.has(int(pid)):
-			(_rows[pid] as Label).queue_free()
+			(_rows[pid] as Label).get_parent().queue_free()
 			_rows.erase(pid)
+			_caps.erase(pid)
 	for pid2: int in ids:
 		if not _rows.has(pid2):
 			var l: Label = Label.new()
@@ -121,8 +124,19 @@ func _update_list(s: NetMatch) -> void:
 			l.add_theme_font_size_override("font_size", 20)
 			l.add_theme_constant_override("outline_size", 4)
 			l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.75))
-			_list.add_child(l)
+			var hb: HBoxContainer = HBoxContainer.new()
+			hb.add_theme_constant_override("separation", 16)
+			hb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_list.add_child(hb)
+			hb.add_child(l)
+			var cap: PerkCap = PerkCap.new()
+			cap.custom_minimum_size = Vector2(22, 22)
+			cap.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+			cap.bonus = true
+			cap.font = _stamp
+			hb.add_child(cap)
 			_rows[pid2] = l
+			_caps[pid2] = cap
 		var row: Label = _rows[pid2]
 		var state: String = ""
 		if s.coop.is_downed(pid2):
@@ -138,6 +152,14 @@ func _update_list(s: NetMatch) -> void:
 		if sq != null:
 			extra += "  %d kills" % int(sq.kills.get(pid2, 0))
 		row.text = "■ %-7s ǂ%-6d%s%s%s" % [Net.display_name(pid2), Economy.get_scrip(pid2), extra, state, me]
+		var bp: StringName = PerkManager.bonus_perk(pid2)
+		var cap2: PerkCap = _caps.get(pid2) as PerkCap
+		if cap2 != null:
+			cap2.visible = bp != &""
+			if cap2.perk_id != bp:
+				cap2.perk_id = bp
+				cap2.tooltip_text = "Bonus perk: %s" % PerkManager.display_name(bp)
+				cap2.queue_redraw()
 		row.add_theme_color_override("font_color", Net.player_color(pid2) if state == "" else INK.lightened(0.35))
 
 

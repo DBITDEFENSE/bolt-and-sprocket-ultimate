@@ -26,6 +26,22 @@ extends Node
 ## Every bot gets the spawn kit (BotSquad.apply_kit) at the start and again when it gets up.
 ## Weapons are the bot Player's mirrored WeaponHolder (inventory only); shots are traced here with the same
 ## damage rules as WeaponHolder._trace, and shown through the RemoteBody (flash, sound, tracer).
+##
+## Update 02 section 5 (T-050):
+##   - the formation moves with the leader: while the human moves (training), the slots sit beside and a little
+##     ahead of their heading (BotConfig.moving_slot_offset), predicted follow.lead_s ahead, and a fighting bot
+##     keeps moving with them instead of holding its ground;
+##   - it makes way: a human walking into it (a nudge), or it standing in a choke point (an open doorway, a
+##     staircase, a narrow passage) with the human close, sends it aside (BotConfig.should_step_aside); it never
+##     parks in a choke and reports one longer than follow.choke_report_s (BotSquad.choke_events, the soak test);
+##   - squad orders (BotSquad.set_command): follow, hold (a ring round a spot), repair (boards first, wider),
+##     revive (revive under fire, no shopping, a tight follow);
+##   - it stays out of live traps (any node in "traps" with danger_contains(point)), and an ordinary bot (no
+##     planner) never notifies quest shootables (bells, the drummer): only the local-AI planner does egg steps;
+##   - its bonus perk (BotSquad) is announced in character the first time it matters (bots.json bonus_perk.triggers);
+##   - barks: "Reloading!", "Board's up!", low ammo; the body plays reload / revive / repair / drink / buy actions.
+## Companion hooks (U02 section 6): `options` (perks, bonus_perk, shopping, kit, accuracy_mult) are set before
+## setup by BotSquad.add_brain; Player.bleedout_seconds gives a companion its own bleed-out clock.
 
 enum Mode { FOLLOW, FIGHT, FLEE, REVIVE, ERRAND, DOWNED, OUT }
 
@@ -109,6 +125,25 @@ var objectives_done: int = 0
 var _was_down: bool = false
 var _was_out: bool = false
 var _stand_cache: Dictionary = {}  # node instance id -> [time, stand point]
+# U02 section 5 (T-050)
+## Brain options (BotSquad.add_brain merges overrides before setup): perks = drinks perks (kit, bonus, shopping);
+## bonus_perk = may get the bonus perk; shopping = buys guns / ammo / doors / the Crucible; kit = the spawn kit;
+## accuracy_mult = scales the aim error (a companion at ~70% of a player's accuracy uses about 1.4).
+var options: Dictionary = {"perks": true, "bonus_perk": true, "shopping": true, "kit": true, "accuracy_mult": 1.0}
+var bonus_perk: StringName = &""
+var bonus_said: bool = false
+var revives: int = 0
+var command: StringName = &"follow"
+var choke_reports: int = 0
+var _choke_t: float = 0.0
+var _choke_kind: String = ""
+var _choke_reported: bool = false
+var _narrow: bool = false
+var _aside_cd: float = 0.0
+var _sprint_t: float = 0.0
+var _traps: Array[Node] = []
+var _low_ammo_said: bool = false
+var _bonus_due_t: float = INF      # the round fallback is due: retried every few seconds until a line starts
 
 
 
@@ -126,6 +161,12 @@ func setup(bot_player: Player, bot_squad: BotSquad, i: int) -> void:
 	player.bot_damage_mult = float(_sk.get("damage_taken_mult", 1.0))
 	_yaw = player.rotation.y
 	_last_pos = player.global_position
+	command = squad.command
+	GLBus.explosion.connect(_on_explosion)
+	GLBus.player_damaged.connect(_on_player_damaged)
+	PerkManager.overclock_triggered.connect(func(pid: int, _spent: float) -> void:
+		if pid == player.player_id:
+			_bonus_event("overclock"))
 
 
 func skill_name() -> String:
@@ -136,6 +177,42 @@ func _ready() -> void:
 	for n: Node in get_tree().get_nodes_in_group(&"doors"):
 		if n is BuyDoor:
 			_doors.append(n as BuyDoor)
+	for t: Node in get_tree().get_nodes_in_group(&"traps"):
+		if t.has_method("danger_contains"):
+			_traps.append(t)
+
+
+## A squad order (BotSquad.set_command): "follow", "hold", "repair", "revive".
+func on_command(cmd: StringName) -> void:
+	command = cmd
+	_drop_errand()
+	_errand_cd = 0.0
+	_clear_goal()
+	_away_t = 0.0
+
+
+## The bonus perk's moment (bots.json bonus_perk.triggers): the first time its trigger happens the bot says
+## its line (BONUS_<perk token>); a line that couldn't start is tried again at the next one.
+func _bonus_event(kind: String) -> void:
+	if bonus_said or bonus_perk == &"" or player.downed:
+		return
+	var bcfg: Dictionary = _cfg.get("bonus_perk", {})
+	if kind != "fallback" and BotConfig.bonus_trigger(bcfg, bonus_perk) != kind:
+		return
+	if not GLVO.PERK_TOKENS.has(bonus_perk):
+		bonus_said = true
+		return
+	bonus_said = squad.callout(self, "BONUS_" + str(GLVO.PERK_TOKENS[bonus_perk]), true)
+
+
+func _on_explosion(pos: Vector3, radius: float) -> void:
+	if player != null and player.is_inside_tree() and pos.distance_to(player.global_position) < radius + 3.0:
+		_bonus_event("explosion")
+
+
+func _on_player_damaged(pid: int, amount: float) -> void:
+	if pid == player.player_id and amount > 0.0 and player.hp < player.max_hp * 0.6:
+		_bonus_event("hurt")
 
 
 ## New round: the start pistol is topped up (bots have no ammo HUD; this keeps them useful without carrying).
@@ -147,6 +224,9 @@ func on_round_started() -> void:
 	_errand = {}
 	_errand_cd = 0.0
 	_doors_bought = 0
+	_low_ammo_said = false
+	if RoundManager.current_round >= int((_cfg.get("bonus_perk", {}) as Dictionary).get("fallback_round", 4)) and not bonus_said:
+		_bonus_due_t = squad.time() + 6.0   # after the round-start lines
 
 
 # ================================================================== per-frame
@@ -171,6 +251,7 @@ func _physics_process(delta: float) -> void:
 	_aim_err_t -= delta
 	_repath_t -= delta
 	_errand_cd -= delta
+	_aside_cd -= delta
 	_tick_reload(delta)
 	if player.spectating:
 		mode = Mode.OUT
@@ -232,6 +313,10 @@ func _think() -> void:
 		return
 	_pick_target(float((_cfg.get("perception", {}) as Dictionary).get("engage_range_m", 26.0)))
 	_weapon_logic()
+	_watch_choke()
+	if not bonus_said and squad.time() >= _bonus_due_t:
+		_bonus_due_t = squad.time() + 4.0
+		_bonus_event("fallback")
 	_decide_mode()
 
 
@@ -320,7 +405,7 @@ func _decide_mode() -> void:
 	if rt != null:
 		# a swarmed or hurt reviver helps nobody: kite first, unless the clock is nearly out
 		var urgent: bool = Net.session != null and Net.session.coop.bleed_left(rt.player_id) <= float((_cfg.get("revive", {}) as Dictionary).get("risk_bleed_s", 15.0))
-		if not swarmed or urgent:
+		if not swarmed or urgent or command == &"revive":
 			if mode != Mode.REVIVE or _revive_pid != rt.player_id:
 				_reviving = false
 				_revive_hold = 0.0
@@ -330,8 +415,9 @@ func _decide_mode() -> void:
 	if _reviving:
 		_stop_revive()
 	_revive_pid = 0
-	if _near_d < danger and (hurt or _crowd >= int(_combat.get("crowd_count", 3)) or not loaded):
-
+	# something faster than a walking man (a Bellringer, a sprinter) can't be outrun: stand, shoot, knife it
+	var outrun: bool = _near_z != null and _near_z.speed >= float(_pcfg["walk_speed"]) * float(_combat.get("outrun_speed_frac", 0.9))
+	if _near_d < danger and (hurt or _crowd >= int(_combat.get("crowd_count", 3)) or not loaded) and not (outrun and _crowd < int(_combat.get("crowd_count", 3)) + 2):
 		if mode != Mode.FLEE:
 			_flee_t = 0.0
 		mode = Mode.FLEE
@@ -349,7 +435,10 @@ func _decide_mode() -> void:
 		mode = Mode.ERRAND
 		return
 	var quiet: bool = _zs.is_empty() or RoundManager.state != RoundManager.State.ROUND \
-		or (_near_d > float((_cfg.get("repair", {}) as Dictionary).get("quiet_radius_m", 7.0)) and _zs.size() <= 3)
+		or (_near_d > float((_cfg.get("repair", {}) as Dictionary).get("quiet_radius_m", 7.0)) and _zs.size() <= 3) \
+		or (command == &"repair" and _near_d > float((_cfg.get("commands", {}) as Dictionary).get("repair_quiet_m", 6.0))) 		or (_ammo_starved() and _near_d > float(_combat.get("resupply_clear_m", 6.0)))
+	if quiet and RoundManager.is_special_round and RoundManager.state == RoundManager.State.ROUND and not _ammo_starved():
+		quiet = false   # a Bellringer pack round: stay with the squad, no errands unless running dry
 	if quiet:
 		if _errand.is_empty() and _errand_cd <= 0.0:
 			_errand_cd = 0.7
@@ -360,6 +449,17 @@ func _decide_mode() -> void:
 	else:
 		_drop_errand()
 	mode = Mode.FOLLOW
+
+
+## Running dry: the best long gun carried is under combat.starved_frac of its ammo (mag + reserve). A bot then
+## goes for ammo (a wall-buy, an ammo box) mid-round as soon as nothing is within combat.resupply_clear_m.
+func _ammo_starved() -> bool:
+	var best: float = -1.0
+	for w: WeaponInstance in player.weapons.slots:
+		if w.weapon_class() == &"pistol" or w.reserve_max() <= 0:
+			continue
+		best = maxf(best, float(w.mag + w.reserve) / float(w.mag_size() + w.reserve_max()))
+	return best >= 0.0 and best < float(_combat.get("starved_frac", 0.25))
 
 
 func _drop_errand() -> void:
@@ -483,7 +583,7 @@ func _perceived(z: Zombie) -> Vector3:
 	var p: Vector3 = _aim_point(z)
 	if _aim_err_t <= 0.0:
 		_aim_err_t = _rng.randf_range(0.2, 0.4)
-		var e: float = deg_to_rad(BotConfig.aim_error_deg(_sk, _target_t))
+		var e: float = deg_to_rad(BotConfig.aim_error_deg(_sk, _target_t)) * float(options.get("accuracy_mult", 1.0))
 		if player.horizontal_speed() > 1.0:
 			e *= 1.25
 		if player.downed:
@@ -567,9 +667,12 @@ func _fire(w: WeaponInstance) -> void:
 		var killed: bool = zz.take_damage(float(h["dmg"]) * float(_combat.get("damage_mult", 1.0)), limb, w.id, pid, &"bullet", piercing)
 		if killed and limb == &"head":
 			squad.callout(self, "HEADSHOT")
+			_bonus_event("headshot")
 	_bloom = minf(_bloom + (1.2 if pellets == 1 else 0.0), 6.0)
 	player.remote_fire(0, w.id, origin, last_hit)
 	GLBus.weapon_fired.emit(pid, w.id, w.upgraded, origin, -basis.z)
+	if target != null:
+		_bonus_event("fire")
 	if w.mag <= 0 and w.reserve > 0:
 		_start_reload()
 
@@ -623,7 +726,8 @@ func _trace(origin: Vector3, dir: Vector3, w: WeaponInstance, hits: Dictionary) 
 			from = pos + dir * 0.05
 		else:
 			var shootable: Node = WeaponHolder.shootable_of(col)
-			if shootable != null:
+			if shootable != null and planner != null:
+				# quest shootables (bells, the drummer) are egg steps: only the local-AI planner bot does those
 				WeaponHolder.notify_shot(shootable, w.id, w.upgraded, player.player_id)
 			Effects.impact(pos, res["normal"])
 			break
@@ -656,7 +760,10 @@ func _weapon_logic() -> void:
 			other_loaded = i
 		if (inst.mag > 0 or inst.reserve > 0) and other_any < 0:
 			other_any = i
-	if w.mag == 0 and ((other_loaded >= 0 and _near_d < 6.0) or (w.reserve == 0 and other_any >= 0)):
+	# an empty long gun is reloaded (kiting if it must); the start pistol is only for a gun with nothing left, or
+	# for something already at arm's length
+	var swap_ok: bool = other_loaded >= 0 and (player.weapons.slots[other_loaded].weapon_class() != &"pistol" or _near_d < float(_combat.get("pistol_swap_m", 2.2)) or w.reserve == 0)
+	if w.mag == 0 and ((swap_ok and _near_d < 6.0) or (w.reserve == 0 and other_any >= 0)):
 		_select(other_loaded if other_loaded >= 0 else other_any)
 	elif w.mag == 0 and w.reserve > 0 and not _reloading:
 		_start_reload()
@@ -664,6 +771,8 @@ func _weapon_logic() -> void:
 		_start_reload()
 	if w.mag == 0 and w.reserve == 0 and other_any < 0:
 		squad.callout(self, "AMMO_NONE")
+	elif not _low_ammo_said and w.weapon_class() != &"pistol" and w.reserve_max() > 0 and w.mag + w.reserve < int(float(w.mag_size() + w.reserve_max()) * 0.2):
+		_low_ammo_said = squad.callout(self, "AMMO_LOW")
 
 
 func _select(i: int) -> void:
@@ -671,6 +780,7 @@ func _select(i: int) -> void:
 		return
 	_cancel_reload()
 	player.weapons.current_index = i
+	_bonus_event("swap")
 	_swap_t = SWAP_TIME
 	_burst_t = 0.0
 	AudioDirector.play_3d("weapon_raise", _eye(), -10.0)
@@ -700,6 +810,9 @@ func _start_reload() -> void:
 		_reload_per_round = false
 		_reload_t = (w.f("reload_empty", 2.5) if w.mag == 0 else w.f("reload_partial", 2.0)) * mult
 	AudioDirector.play_3d("reload_start", _eye(), -9.0)
+	if _near_d < 12.0 and w.weapon_class() != &"pistol":
+		squad.callout(self, "RELOAD")
+	_bonus_event("reload")
 
 
 func _cancel_reload() -> void:
@@ -778,8 +891,12 @@ func _tick_fight(delta: float) -> void:
 		away.y = 0.0
 		if away.length() > 0.01 and (_goal == Vector3.INF or _reached() or _repath_t <= 0.0):
 			_set_goal(_snap(player.global_position + away.normalized() * 2.5), true)
-	elif not roaming() and leader != null and leader != player and _flat(leader.global_position, player.global_position) > float(_follow.get("far_m", 6.5)) * 1.6:
-		_set_goal(_slot_point(leader), false)
+	elif not roaming() and leader != null and leader != player and _keep_up(leader):
+		_follow_to(_follow_point(leader))   # training: shoot on the move with the leader instead of holding ground
+	elif _make_way():
+		pass
+	elif _choke_kind != "" and _choke_t > 0.8:
+		_leave_choke(leader)
 	else:
 		_clear_goal()
 
@@ -886,6 +1003,8 @@ func _tick_revive(delta: float) -> void:
 	var reach: float = float(rcfg.get("reach_m", 1.4))
 	# zombies on top of us with time to spare: fight first (the bleed-out clock keeps running, so not for long)
 	var risky: bool = _near_d < float(rcfg.get("safe_radius_m", 3.0)) and session.coop.bleed_left(_revive_pid) > float(rcfg.get("risk_bleed_s", 15.0))
+	if command == &"revive":
+		risky = _near_d < float(_combat.get("melee_range_m", 1.7))   # revive priority: only something in knife reach stops it
 	if risky and target != null:
 		if _reviving:
 			_stop_revive()
@@ -908,10 +1027,14 @@ func _tick_revive(delta: float) -> void:
 		squad.callout(self, "REVIVE")
 	var need: float = CoopState.revive_seconds(float(_pcfg["revive_seconds"]), float(PerkManager.stat(player.player_id, "revive_speed_mult", 1.0)))
 	_revive_hold += delta
+	if player.remote_body != null:
+		player.remote_body.hold_action(&"revive")
 	if _revive_hold >= need:
 		_reviving = false
 		_revive_hold = 0.0
 		session.coop_revive(_revive_pid, player.player_id)
+		revives += 1
+		_bonus_event("revive")
 		mode = Mode.FOLLOW
 
 
@@ -924,28 +1047,209 @@ func _stop_revive() -> void:
 
 func _tick_follow(delta: float) -> void:
 	var leader: Player = squad.leader_for(self)
-	if leader == null or leader == player:
+	var hold: bool = command == &"hold" and squad.hold_point != Vector3.INF
+	if (leader == null or leader == player) and not hold:
 		_clear_goal()
 		_idle_look(delta)
 		return
 	var me: Vector3 = player.global_position
-	var d_leader: float = _flat(leader.global_position, me)
-	var slot: Vector3 = _slot_point(leader)
+	var d_leader: float = _flat(leader.global_position, me) if leader != null else 0.0
+	var slot: Vector3 = _follow_point(leader)
 	var d_slot: float = _flat(slot, me)
-	_sprint = d_leader > float(_follow.get("catchup_sprint_m", 11.0))
-	if d_leader > float(_follow.get("far_m", 6.5)) or d_slot > float(_follow.get("near_m", 2.5)) + 1.0:
-		_set_goal(slot, false)
+	var moving: bool = not hold and _leader_moving(leader)
+	var near: float = float((_cfg.get("commands", {}) as Dictionary).get("revive_follow_m", 3.5)) if command == &"revive" else float(_follow.get("near_m", 2.5))
+	if RoundManager.is_special_round and RoundManager.state == RoundManager.State.ROUND:
+		near = minf(near, float(_follow.get("special_near_m", 2.0)))   # packs: close up round the leader
+	_sprint = (not hold and d_leader > float(_follow.get("catchup_sprint_m", 11.0))) or d_slot > 6.0
+	if _make_way():
+		pass
+	elif moving or d_slot > near + 1.0 or (not hold and d_leader > float(_follow.get("far_m", 6.5))):
+		_follow_to(slot)
 	elif _goal != Vector3.INF and _reached():
 		_clear_goal()
 	if _goal == Vector3.INF:
-		_keep_out_of_the_way(leader, delta)
+		if not hold and leader != null and leader != player:
+			_keep_out_of_the_way(leader, delta)
+		if _goal == Vector3.INF and _choke_kind != "" and _choke_t > 0.6:
+			_leave_choke(leader)
 	_idle_look(delta, leader)
+	if hold or leader == null or leader == player:
+		_away_t = 0.0
+		return
 	# cut off for a while (a door the human bought while we were elsewhere, a ledge): catch up by teleport
 	var lost: bool = d_leader > float(_follow.get("teleport_min_dist_m", 14.0)) and (_path.is_empty() or _path_i >= _path.size())
 	_away_t = _away_t + delta if lost else 0.0
 	if _away_t > float(_follow.get("teleport_after_s", 8.0)) or me.y < -20.0:
 		_teleport_to(leader)
 		_away_t = 0.0
+
+
+## The leader is on the move (training): faster than follow.moving_speed_mps (the human's smoothed velocity).
+func _leader_moving(leader: Player) -> bool:
+	if leader == null or leader == player or leader.downed:
+		return false
+	var v: Vector3 = squad.leader_vel if leader == squad.human() else Vector3(leader.velocity.x, 0.0, leader.velocity.z)
+	return v.length() > float(_follow.get("moving_speed_mps", 1.6))
+
+
+## While fighting: keep up with the leader (they're training, or getting away), unless holding a spot.
+func _keep_up(leader: Player) -> bool:
+	if command == &"hold" and squad.hold_point != Vector3.INF:
+		return _flat(_follow_point(leader), player.global_position) > 2.5
+	var off_slot: float = _flat(_slot_point(leader), player.global_position)
+	return (_leader_moving(leader) and off_slot > float(_follow.get("fight_slack_m", 3.0))) or _flat(leader.global_position, player.global_position) > float(_follow.get("far_m", 6.5)) * 1.2
+
+
+## Where this bot wants to be: its hold spot under a "hold" order, else its formation slot.
+func _follow_point(leader: Player) -> Vector3:
+	if command == &"hold" and squad.hold_point != Vector3.INF:
+		var hs: Vector3 = squad.hold_spot(self)
+		var p: Vector3 = _snap(hs)
+		return p if p.distance_to(hs) < 1.5 else _snap(squad.hold_point)
+	return _slot_point(leader)
+
+
+## Follows a moving point without re-pathing every frame: a new path when the point drifted 1.5 m or the
+## repath timer ran out.
+func _follow_to(p: Vector3) -> void:
+	if _repath_t > 0.0 and _path_goal != Vector3.INF and _path_goal.distance_to(p) < 1.5 and not _path.is_empty() and _path_i < _path.size():
+		return
+	_set_goal(p, true)
+
+
+## Makes way for the human (BotConfig.should_step_aside): they walk into it (a nudge), or it is parked in a choke
+## (a doorway, stairs, a narrow passage) with them close. Picks a navmesh spot aside, out of chokes and off the
+## human's feet. True while stepping aside.
+func _make_way() -> bool:
+	var h: Player = squad.human()
+	if h == null or not is_instance_valid(h) or h.spectating or h.downed:
+		return false
+	if _aside_cd > 0.0 and _goal != Vector3.INF:
+		return true
+	var me: Vector3 = player.global_position
+	var parked: bool = player.horizontal_speed() < 0.6
+	var in_choke: bool = (_choke_kind != "" or _narrow) and parked
+	if not BotConfig.should_step_aside(me, h.global_position, h.velocity, in_choke, _follow):
+		return false
+	var dir: Vector3 = BotConfig.step_aside_dir(me, h.global_position, h.velocity)
+	var step: float = float(_follow.get("step_aside_m", 1.8))
+	var cands: Array[Vector3] = []
+	if _choke_kind != "":
+		cands.append_array(_choke_exits(h.global_position))
+	cands.append(me + dir * step)
+	cands.append(me + dir * step * 0.6)
+	var hv: Vector3 = Vector3(h.velocity.x, 0.0, h.velocity.z)
+	if hv.length() > 0.5:
+		cands.append(me + hv.normalized() * 3.0 + dir * 1.0)   # or move on ahead of them, out of the way
+	cands.append(me - dir * step)
+	for c: Vector3 in cands:
+		var p: Vector3 = _snap(c)
+		if p.distance_to(c) > 1.0 or absf(p.y - me.y) > 1.5 or _flat(p, h.global_position) < 1.2:
+			continue
+		if not squad.choke_at(p).is_empty() or _in_trap(p):
+			continue
+		_set_goal(p, true)
+		_aside_cd = 0.9
+		return true
+	return false
+
+
+## Out of the choke it is parked in, toward where it wants to be.
+func _leave_choke(leader: Player) -> void:
+	var want: Vector3 = _follow_point(leader) if leader != null and leader != player else player.global_position
+	var best: Vector3 = Vector3.INF
+	var best_d: float = INF
+	for c: Vector3 in _choke_exits(Vector3.INF):
+		var p: Vector3 = _snap(c)
+		if p.distance_to(c) > 1.0 or not squad.choke_at(p).is_empty() or _in_trap(p):
+			continue
+		var d: float = _flat(p, want) + _flat(p, player.global_position) * 0.5
+		if d < best_d:
+			best_d = d
+			best = p
+	if best != Vector3.INF:
+		_set_goal(best, true)
+		_aside_cd = 0.9
+
+
+## Points just outside the choke box the bot stands in (both ends along x and z): the side away from `avoid`
+## (the human) first, else the nearest first.
+func _choke_exits(avoid: Vector3) -> Array[Vector3]:
+	var out: Array[Vector3] = []
+	var c: Dictionary = squad.choke_at(player.global_position)
+	if c.is_empty():
+		return out
+	var box: AABB = c["box"]
+	var me: Vector3 = player.global_position
+	for cand: Vector3 in [Vector3(box.position.x - 0.7, me.y, me.z), Vector3(box.end.x + 0.7, me.y, me.z),
+			Vector3(me.x, me.y, box.position.z - 0.7), Vector3(me.x, me.y, box.end.z + 0.7)]:
+		out.append(cand)
+	if avoid != Vector3.INF:
+		out.sort_custom(func(a: Vector3, b: Vector3) -> bool: return _flat(a, avoid) > _flat(b, avoid))
+	else:
+		out.sort_custom(func(a: Vector3, b: Vector3) -> bool: return _flat(a, me) < _flat(b, me))
+	return out
+
+
+## Choke watch (at think rate): which choke it stands in, whether it is in a narrow passage with the human
+## close, and the soak report when it stays in one past follow.choke_report_s (not while reviving).
+func _watch_choke() -> void:
+	var dt: float = _think_t_len()
+	var me: Vector3 = player.global_position
+	var c: Dictionary = squad.choke_at(me)
+	_choke_kind = str(c.get("kind", "")) if not c.is_empty() else ""
+	_narrow = false
+	var h: Player = squad.human()
+	if _choke_kind == "" and h != null and _flat(h.global_position, me) < float(_follow.get("choke_near_m", 4.0)) and player.horizontal_speed() < 0.6:
+		_narrow = _narrow_here(h.global_position)
+	if _choke_kind != "" and mode != Mode.REVIVE:
+		_choke_t += dt
+		if _choke_t > float(_follow.get("choke_report_s", 3.0)) and not _choke_reported:
+			_choke_reported = true
+			choke_reports += 1
+			squad.report_choke(self, _choke_kind, me, _choke_t)
+	else:
+		_choke_t = 0.0
+		_choke_reported = false
+
+
+## Walls close on both sides across the human-to-bot line (BotConfig.is_narrow): a corridor or an archway.
+func _narrow_here(human_pos: Vector3) -> bool:
+	var me: Vector3 = player.global_position
+	var axis: Vector3 = me - human_pos
+	axis.y = 0.0
+	if axis.length() < 0.05:
+		axis = -player.global_basis.z
+	axis = axis.normalized()
+	var side: Vector3 = Vector3(-axis.z, 0.0, axis.x)
+	var from: Vector3 = me + Vector3.UP * 1.0
+	var space: PhysicsDirectSpaceState3D = player.get_world_3d().direct_space_state
+	var dists: Array[float] = []
+	for sgn: float in [1.0, -1.0]:
+		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, from + side * sgn * 1.5, MASK_LOS, [player.get_rid()])
+		var r: Dictionary = space.intersect_ray(q)
+		dists.append(from.distance_to(r["position"]) if not r.is_empty() else 99.0)
+	return BotConfig.is_narrow(dists[0], dists[1], float(_follow.get("narrow_half_width_m", 0.85)))
+
+
+## A live trap would hurt someone at `p` (any "traps" node with danger_contains).
+func _in_trap(p: Vector3) -> bool:
+	for t: Node in _traps:
+		if is_instance_valid(t) and bool(t.call("danger_contains", p)):
+			return true
+	return false
+
+
+## Inside a live trap: the nearest navmesh spot out of it, now.
+func _escape_trap() -> void:
+	var me: Vector3 = player.global_position
+	for r: float in [2.5, 4.0, 6.0]:
+		for k: int in 8:
+			var a: float = float(k) / 8.0 * TAU
+			var p: Vector3 = _snap(me + Vector3(cos(a) * r, 0.0, sin(a) * r))
+			if absf(p.y - me.y) < 1.5 and not _in_trap(p):
+				_set_goal(p, true)
+				return
 
 
 ## Out of the leader's line of fire; never parked in a doorway.
@@ -988,17 +1292,35 @@ func _idle_look(delta: float, leader: Player = null) -> void:
 		_turn_toward(_eye() + fwd * 10.0, delta, 0.4)
 
 
-## The formation slot on the navmesh; off it (a wall behind the leader) the same slot closer in, then mirrored,
-## then straight behind, so two bots don't end up on one fallback point.
+## The formation slot on the navmesh. Standing still: slot_angles_deg round the leader's facing; off the navmesh (a
+## wall behind the leader) the same slot closer in, then mirrored, then straight behind, so two bots don't end up
+## on one fallback point. On the move (training): beside and a little ahead of the heading, predicted lead_s on
+## (BotConfig.moving_slot_offset). Slots in a choke point (a doorway, stairs) are passed over while another fits.
 func _slot_point(leader: Player) -> Vector3:
-	var off: Vector3 = BotConfig.slot_offset(_follow, index)
 	var nav: RID = player.get_world_3d().navigation_map
-	var mirrored: Vector3 = Vector3(-off.x, off.y, off.z)
-	for cand: Vector3 in [off, off * 0.6, mirrored, mirrored * 0.6, Vector3(0.0, 0.0, 1.5 + 0.8 * float(index))]:
-		var want: Vector3 = leader.global_position + leader.global_basis * cand
+	var cands: Array[Vector3] = []   # world positions
+	if _leader_moving(leader):
+		var v: Vector3 = squad.leader_vel if leader == squad.human() else Vector3(leader.velocity.x, 0.0, leader.velocity.z)
+		var base: Vector3 = leader.global_position + v * float(_follow.get("lead_s", 0.6))
+		var off: Vector3 = BotConfig.moving_slot_offset(_follow, index, v)
+		var left: Vector3 = Vector3(v.z, 0.0, -v.x).normalized()
+		var mirrored: Vector3 = off - left * 2.0 * off.dot(left)
+		for cand: Vector3 in [off, off * 0.6, mirrored, mirrored * 0.6]:
+			cands.append(base + cand)
+	var off2: Vector3 = BotConfig.slot_offset(_follow, index)
+	var mirrored2: Vector3 = Vector3(-off2.x, off2.y, off2.z)
+	for cand2: Vector3 in [off2, off2 * 0.6, mirrored2, mirrored2 * 0.6, Vector3(0.0, 0.0, 1.5 + 0.8 * float(index))]:
+		cands.append(leader.global_position + leader.global_basis * cand2)
+	var fallback: Vector3 = Vector3.INF
+	for want: Vector3 in cands:
 		var p: Vector3 = NavigationServer3D.map_get_closest_point(nav, want)
 		if p.distance_to(want) < 1.0 and absf(p.y - leader.global_position.y) < 1.5:
-			return p
+			if squad.choke_at(p).is_empty() and not _in_trap(p):
+				return p
+			if fallback == Vector3.INF:
+				fallback = p
+	if fallback != Vector3.INF:
+		return fallback
 	return NavigationServer3D.map_get_closest_point(nav, leader.global_position + leader.global_basis.z * 1.5)
 
 
@@ -1014,6 +1336,8 @@ func _teleport_to(leader: Player) -> void:
 			continue
 		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(leader.global_position + Vector3.UP * 0.9, p + Vector3.UP * 0.9, MASK_LOS)
 		if not player.get_world_3d().direct_space_state.intersect_ray(q).is_empty():
+			continue
+		if not squad.choke_at(p).is_empty() and k < 5:
 			continue
 		player.global_position = p + Vector3.UP * 0.05
 		player.velocity = Vector3.ZERO
@@ -1072,6 +1396,8 @@ func _tick_errand(delta: float) -> void:
 	else:
 		_turn_toward(aim, delta)
 	_errand["hold"] = float(_errand["hold"]) + delta
+	if player.remote_body != null:
+		player.remote_body.hold_action(&"repair" if kind == "repair" else &"buy")
 	if float(_errand["hold"]) < maxf(0.05, node.hold_time(player)):
 		return
 	_errand["hold"] = 0.0
@@ -1098,6 +1424,8 @@ func _tick_errand(delta: float) -> void:
 			node.interact(player)
 		if kind == "repair":
 			done = not (node is Barricade and (node as Barricade).boards < (node as Barricade).max_boards)
+			if done:
+				squad.callout(self, "BOARD")
 		elif kind == "door" and (node as BuyDoor).is_open:
 			_doors_bought += 1
 			doors_bought_total += 1
@@ -1202,6 +1530,8 @@ static func _door_side(door: BuyDoor, me: Vector3) -> Vector3:
 func _choose_errand() -> Dictionary:
 	var leader: Player = squad.leader_for(self)
 	var anchor: Vector3 = leader.global_position if leader != null else player.global_position
+	if command == &"hold" and squad.hold_point != Vector3.INF:
+		anchor = squad.hold_point
 	var best: Dictionary = {}
 	var best_s: float = -INF
 	for c: Dictionary in errand_candidates(anchor, 1.0):
@@ -1228,22 +1558,40 @@ func errand_candidates(anchor: Vector3, range_mult: float) -> Array[Dictionary]:
 	var rcfg: Dictionary = _cfg.get("repair", {})
 	var scfg: Dictionary = _cfg.get("shopping", {})
 	var pid: int = player.player_id
-	# boards
+	# boards: wider between waves and under a "repair" order; only round the spot under "hold"
+	var ccmd: Dictionary = _cfg.get("commands", {})
+	var board_r: float = float(rcfg.get("radius_m", 9.0)) * minf(range_mult, 2.0)
+	var board_lead: float = float(rcfg.get("max_from_leader_m", 14.0)) * range_mult
+	var board_bonus: float = 0.0
+	if command == &"repair":
+		board_r = maxf(board_r, float(ccmd.get("repair_range_m", 30.0)))
+		board_lead = maxf(board_lead, float(ccmd.get("repair_range_m", 30.0)))
+		board_bonus = 40.0
+	elif command == &"hold":
+		board_r = float(ccmd.get("hold_repair_radius_m", 8.0))
+		board_lead = board_r
+	elif RoundManager.state != RoundManager.State.ROUND:
+		board_r *= float(rcfg.get("break_radius_mult", 1.6))
 	var best_board: Dictionary = {}
 	for n: Node in get_tree().get_nodes_in_group(&"barricades"):
 		var b: Barricade = n as Barricade
 		if b == null or b.boards >= b.max_boards:
 			continue
 		var d: float = _flat(b.global_position, me)
-		if d > float(rcfg.get("radius_m", 9.0)) * minf(range_mult, 2.0) or _flat(b.global_position, anchor) > float(rcfg.get("max_from_leader_m", 14.0)) * range_mult:
+		if d > board_r or _flat(b.global_position, anchor) > board_lead:
 			continue
-		if not squad.can_claim(b, pid) or not _reachable(_front_of(b)):
+		if not squad.can_claim(b, pid) or not _reachable(_front_of(b)) or _in_trap(_front_of(b)):
 			continue
-		var s: float = 30.0 - d
+		var s: float = 30.0 + board_bonus - d
 		if best_board.is_empty() or s > float(best_board["score"]):
 			best_board = {"node": b, "kind": "repair", "score": s, "label": "rebuild the boards at a window %d m away" % int(d)}
 	if not best_board.is_empty():
 		out.append(best_board)
+	var box_c: Dictionary = ammo_box_candidate(anchor, float(scfg.get("max_from_leader_m", 24.0)) * range_mult, Economy.get_scrip(pid), scfg)
+	if not box_c.is_empty():
+		out.append(box_c)   # ammo boxes (U02 section 4) even while holding a spot or on revive priority
+	if not bool(options.get("shopping", true)) or command == &"hold" or command == &"revive":
+		return out   # holding a spot / revive priority / a companion that doesn't shop: boards and ammo only
 	# shopping (only inside shopping range of the anchor, so a follower does not wander off across the map)
 	var scrip: int = Economy.get_scrip(pid)
 	var range_m: float = float(scfg.get("max_from_leader_m", 24.0)) * range_mult
@@ -1271,10 +1619,7 @@ func errand_candidates(anchor: Vector3, range_mult: float) -> Array[Dictionary]:
 			if scrip >= wb3.ammo_price(player):
 				out.append({"node": wb3, "kind": "ammo", "score": 60.0 - _flat(wb3.global_position, me) * 0.5,
 					"label": "buy ammo for the %s (%d Scrip)" % [w2.display_name(), wb3.ammo_price(player)]})
-	var box_c: Dictionary = ammo_box_candidate(anchor, range_m, scrip, scfg)
-	if not box_c.is_empty():
-		out.append(box_c)
-	if RoundManager.current_round >= int(scfg.get("perk_min_round", 3)):
+	if RoundManager.current_round >= int(scfg.get("perk_min_round", 3)) and bool(options.get("perks", true)):
 		var pprices: Dictionary = {}
 		var machines: Dictionary = {}
 		for n3: Node in get_tree().get_nodes_in_group(&"perk_machines"):
@@ -1283,7 +1628,8 @@ func errand_candidates(anchor: Vector3, range_mult: float) -> Array[Dictionary]:
 				continue
 			pprices[String(pm.perk_id)] = PerkManager.price(pm.perk_id)
 			machines[String(pm.perk_id)] = pm
-		var perk: StringName = BotConfig.pick_perk(scfg.get("perk_wishlist", []), PerkManager.owned(pid), scrip, pprices, int(scfg.get("max_perks", 2)), int(scfg.get("perk_buffer_scrip", 400)))
+		var bonus_n: int = PerkManager.owned(pid).size() - PerkManager.capped_count(pid)   # the bonus perk is outside the cap
+		var perk: StringName = BotConfig.pick_perk(scfg.get("perk_wishlist", []), PerkManager.owned(pid), scrip, pprices, int(scfg.get("max_perks", 2)) + bonus_n, int(scfg.get("perk_buffer_scrip", 400)))
 		if perk != &"":
 			var pm2: PerkMachine = machines[String(perk)]
 			out.append({"node": pm2, "kind": "perk", "score": 45.0 - _flat(pm2.global_position, me) * 0.5,
@@ -1345,8 +1691,13 @@ func ammo_box_candidate(anchor: Vector3, range_m: float, scrip: int, scfg: Dicti
 	var econ: Dictionary = AmmoBox.cfg()
 	var slot: int = -1
 	var worst: float = float(acfg.get("below_frac", scfg.get("ammo_below_frac", 0.35)))
+	var long_gun: bool = false
+	for lw: WeaponInstance in player.weapons.slots:
+		long_gun = long_gun or lw.weapon_class() != &"pistol"
 	for i: int in player.weapons.slots.size():
 		var w: WeaponInstance = player.weapons.slots[i]
+		if long_gun and w.weapon_class() == &"pistol":
+			continue   # (U02 s5) the start pistol isn't worth a box while a long gun is carried
 		var frac: float = float(w.reserve) / float(maxi(1, w.reserve_max()))
 		if frac < worst:
 			worst = frac
@@ -1463,6 +1814,12 @@ func _reached() -> bool:
 
 func _move(delta: float) -> void:
 	var wish: Vector3 = Vector3.ZERO
+	if not _traps.is_empty():
+		if _in_trap(player.global_position):
+			if _goal == Vector3.INF or _in_trap(_goal) or _repath_t <= 0.0:
+				_escape_trap()
+		elif (_goal != Vector3.INF and _in_trap(_goal)) or (_path_i < _path.size() and _in_trap(_path[_path_i])):
+			_clear_goal()   # wait outside until it is safe
 	if not _path.is_empty() and _path_i < _path.size():
 		var p: Vector3 = _path[_path_i]
 		var flat: Vector3 = Vector3(p.x - player.global_position.x, 0.0, p.z - player.global_position.z)
@@ -1495,6 +1852,9 @@ func _move(delta: float) -> void:
 	player.velocity.z = horizontal.z
 	player.velocity.y = -0.5 if on_floor and player.velocity.y < 0.0 else player.velocity.y - GRAVITY * delta
 	player.sprinting = _sprint and wish != Vector3.ZERO and target == null
+	_sprint_t = _sprint_t + delta if player.sprinting else 0.0
+	if _sprint_t > 1.0:
+		_bonus_event("sprint")
 	player.crouching = false
 	player._set_crouch_shape(false)
 	player.head.position.y = player._eye
@@ -1533,6 +1893,7 @@ func _pose(delta: float) -> void:
 		flags |= NetMatch.PF_RELOAD
 	player.net_flags = flags
 	if player.remote_body != null:
+		player.remote_body.calm = mode == Mode.FOLLOW and target == null and _near_d > 9.0 and _goal == Vector3.INF
 		player.remote_body.update_pose(delta, player.horizontal_speed(), _pitch, flags)
 
 

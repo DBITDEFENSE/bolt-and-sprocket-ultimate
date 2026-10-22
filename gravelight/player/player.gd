@@ -48,6 +48,7 @@ var spectating: bool = false      # co-op: bled out, watching a teammate until t
 var net_flags: int = 0            # remote: the last replicated state flags (see NetMatch.PF_*)
 var interp: InterpBuffer = null   # remote: interpolation samples
 var bot_damage_mult: float = 1.0  # bot: skill preset damage_taken_mult (bots.json)
+var bleedout_seconds: float = 0.0  # > 0: this player's own co-op bleed-out clock (a companion; 0 = player.json)
 
 var camera: Camera3D
 var head: Node3D
@@ -260,8 +261,8 @@ func _apply_look(rel: Vector2) -> void:
 
 func _pad_look(delta: float) -> void:
 	var v: Vector2 = Input.get_vector(&"look_left", &"look_right", &"look_up", &"look_down", 0.15)
-	if v.length_squared() < 0.0001:
-		return
+	if v.length_squared() < 0.0001 or BotCommandWheel.capturing:
+		return   # (the squad command wheel uses the stick while it is open)
 	v = v * v.length()   # response curve
 	var rate: float = 2.8 * GLSettings.get_f("pad_sensitivity")
 	if weapons.ads_t > 0.5:

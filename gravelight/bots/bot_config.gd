@@ -216,3 +216,136 @@ static func blocks_shot(a: Vector3, b: Vector3, p: Vector3, radius: float) -> bo
 	if t <= 0.02 or t >= 0.98:
 		return false
 	return (a + ab * t).distance_to(p) < radius
+
+
+# ---------------------------------------------------------------- U02 section 5: bonus perk, commands, doorways
+
+## The squad's bonus perks (bots.json bonus_perk): one per bot, drawn from the perks the map sells (`map_perks`,
+## the perk machines on it), never a spawn-kit perk (`kit_perks`) or an `exclude` one, no two bots the same.
+## When the pool runs out the later bots get &"". `rng` makes the draw repeatable in tests.
+static func pick_bonus_perks(bcfg: Dictionary, map_perks: Array, kit_perks: Array, n: int, rng: RandomNumberGenerator) -> Array[StringName]:
+	var out: Array[StringName] = []
+	if not bool(bcfg.get("enabled", true)) or n <= 0:
+		return out
+	var excl: Array = bcfg.get("exclude", [])
+	var pool: Array[String] = []
+	for p: Variant in map_perks:
+		var pid: String = str(p)
+		if pid == "" or pool.has(pid) or excl.has(pid) or kit_perks.has(pid) or kit_perks.has(StringName(pid)):
+			continue
+		pool.append(pid)
+	pool.sort()   # the draw depends on the rng only, not on the scene's node order
+	for i: int in range(pool.size() - 1, 0, -1):
+		var j: int = rng.randi_range(0, i)
+		var t: String = pool[i]
+		pool[i] = pool[j]
+		pool[j] = t
+	for k: int in n:
+		out.append(StringName(pool[k]) if k < pool.size() else &"")
+	return out
+
+
+## Bonus perks are on: the "Bot Bonus Perk" setting (bot_bonus_perk, default on) and bots.json bonus_perk.enabled.
+static func bonus_enabled(settings_values: Dictionary, bcfg: Dictionary) -> bool:
+	return bool(settings_values.get("bot_bonus_perk", true)) and bool(bcfg.get("enabled", true))
+
+
+## The bonus perk's announcement trigger (bots.json bonus_perk.triggers): "reload", "fire", "sprint",
+## "headshot", "swap", "explosion", "overclock", "hurt", "revive"; "" = only the round fallback.
+static func bonus_trigger(bcfg: Dictionary, perk_id: StringName) -> String:
+	return str((bcfg.get("triggers", {}) as Dictionary).get(String(perk_id), ""))
+
+
+## The squad orders built into the brains (BotBrain.on_command). The wheel's list itself is data
+## (bots.json commands.orders); an order id the brains don't know is still emitted (BotSquad.order_given) for
+## whatever handles it (a later AI layer), and the bots keep their current order.
+const COMMANDS: Array[StringName] = [&"follow", &"hold", &"repair", &"revive"]
+
+
+## The command wheel's orders, clockwise from the top (bots.json commands.orders: [{"id", "label", "vo"?}]).
+## Falls back to COMMANDS when the table has none.
+static func orders(c: Dictionary) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for o: Variant in (c.get("commands", {}) as Dictionary).get("orders", []):
+		if o is Dictionary and str((o as Dictionary).get("id", "")) != "":
+			out.append(o as Dictionary)
+	if out.is_empty():
+		for id: StringName in COMMANDS:
+			out.append({"id": String(id), "label": String(id).capitalize()})
+	return out
+
+
+static func order_ids(c: Dictionary) -> Array[StringName]:
+	var out: Array[StringName] = []
+	for o: Dictionary in orders(c):
+		out.append(StringName(str(o["id"])))
+	return out
+
+
+## An order's label for people ("Hold here"); the id capitalised when the table has none.
+static func order_label(c: Dictionary, id: StringName) -> String:
+	for o: Dictionary in orders(c):
+		if StringName(str(o["id"])) == id:
+			return str(o.get("label", String(id).capitalize()))
+	return String(id).capitalize()
+
+
+## The wheel segment a look vector points at (screen space, -y up): 0 at the top, clockwise; -1 inside the
+## dead zone.
+static func wheel_index(v: Vector2, segments: int, deadzone: float) -> int:
+	if segments <= 0 or v.length() < deadzone:
+		return -1
+	var a: float = fposmod(atan2(v.x, -v.y), TAU)   # 0 = up, clockwise
+	var step: float = TAU / float(segments)
+	return int(floor(fposmod(a + step * 0.5, TAU) / step)) % segments
+
+
+## Nudge / doorway rule: should a bot at `me` step aside for a human at `human` moving with velocity `hv`?
+## True when the human is within `near_m`, moving at least `min_speed` and heading at the bot (within
+## `cone_deg`), or when the bot stands in a choke point (`in_choke`) with the human within `choke_near_m`.
+static func should_step_aside(me: Vector3, human: Vector3, hv: Vector3, in_choke: bool, f: Dictionary) -> bool:
+	var to_me: Vector3 = me - human
+	to_me.y = 0.0
+	var d: float = to_me.length()
+	if in_choke and d < float(f.get("choke_near_m", 4.0)):
+		return true
+	var flat_v: Vector3 = Vector3(hv.x, 0.0, hv.z)
+	if d > float(f.get("nudge_near_m", 1.6)) or d < 0.01 or flat_v.length() < float(f.get("nudge_min_speed", 1.0)):
+		return false
+	return flat_v.normalized().angle_to(to_me / d) < deg_to_rad(float(f.get("nudge_cone_deg", 50.0)))
+
+
+## Which way to step: perpendicular to the human's heading `hv`, on the side the bot already leans to (`me`
+## relative to `human`); straight away from the human when they stand still.
+static func step_aside_dir(me: Vector3, human: Vector3, hv: Vector3) -> Vector3:
+	var to_me: Vector3 = me - human
+	to_me.y = 0.0
+	var flat_v: Vector3 = Vector3(hv.x, 0.0, hv.z)
+	if flat_v.length() < 0.2:
+		return to_me.normalized() if to_me.length() > 0.01 else Vector3.RIGHT
+	var fwd: Vector3 = flat_v.normalized()
+	var side: Vector3 = Vector3(-fwd.z, 0.0, fwd.x)
+	if side.dot(to_me) < 0.0:
+		side = -side
+	return side
+
+
+## A narrow passage: walls within `half_width_m` on both sides.
+static func is_narrow(left_m: float, right_m: float, half_width_m: float) -> bool:
+	return left_m <= half_width_m and right_m <= half_width_m
+
+
+## Formation slot for the i-th bot while the leader moves (training): beside and a little ahead of the leader's
+## heading, so the bots move with them and never fill the space behind them (where the leader backs into and the
+## horde follows). `heading` is the leader's flat velocity direction; follow.moving_slots = [[lateral_m, ahead_m],
+## ...] (+lateral = the heading's left). Returns a world-space offset.
+static func moving_slot_offset(follow: Dictionary, i: int, heading: Vector3) -> Vector3:
+	var fwd: Vector3 = Vector3(heading.x, 0.0, heading.z)
+	if fwd.length() < 0.01:
+		return Vector3.ZERO
+	fwd = fwd.normalized()
+	var left: Vector3 = Vector3(fwd.z, 0.0, -fwd.x)
+	var slots: Array = follow.get("moving_slots", [[2.2, 0.8], [-2.2, 0.8], [3.4, 2.2]])
+	var s: Array = slots[i % slots.size()]
+	var extra: float = 0.6 * float(i / slots.size())
+	return left * (float(s[0]) + signf(float(s[0])) * extra) + fwd * float(s[1])
