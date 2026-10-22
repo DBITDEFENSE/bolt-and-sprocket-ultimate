@@ -64,7 +64,7 @@ func _run() -> void:
 	Economy.grant(1, 4500)   # 5000 total
 
 	# 1. Wall-buy (Kar98k on the taproom west wall, 200)
-	await _place(Vector3(1.3, 0, 8.6), 90.0)
+	await _place(Vector3(1.3, 0, 3.1), 90.0)   # (moved from z 8.6 for the Old Cellar door, T-051)
 	_check(_p.prompt_text.contains("Kar98k"), "wall-buy prompt shows: " + _p.prompt_text)
 	var before: int = Economy.get_scrip(1)
 	await _hold(&"interact", 0.6)

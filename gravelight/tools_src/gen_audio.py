@@ -2074,6 +2074,21 @@ def gen_ambience():
     x = x + events
     emit("ambient_map01", "sfx/ambience/map01_kaltenbrunn_bed", loopify(x, xf), -4.0, loop=True, bus="Ambience",
          volume_db=0.0, pitch=[1.0, 1.0], max_voices=1)
+    # Map 0's Old Cellar (Update 02 section 6.1): single drips into a puddle under a stone vault (DripPoint plays one
+    # per drop): a rising plip, a tiny low "bloop" body, a short wet room tail.
+    for i in variants(4):
+        r = rng_for(f"cellar_drip{i}")
+        d = 0.06
+        f0 = r.uniform(1000, 1600)
+        plip = np.sin(2 * np.pi * np.cumsum(np.linspace(f0, f0 * r.uniform(1.9, 2.6), N(d))) / SR) * expenv(N(d), 0.014)
+        body = np.sin(2 * np.pi * np.cumsum(np.linspace(r.uniform(260, 380), 520, N(0.05))) / SR) * expenv(N(0.05), 0.012) * 0.35
+        x = zeros(0.9)
+        place(x, plip, 0.005)
+        place(x, body, 0.008)
+        place(x, nrm(hp(white(r, 0.012), 3000)) * expenv(N(0.012), 0.002) * 0.15, 0.0)
+        x = lp(reverb(x, r, 0.9, 0.35, 4000, 0.02), 7000)[:N(0.9)]
+        emit("cellar_drip", f"sfx/world/cellar_drip_{i:02d}", x, -3.0, bus="Ambience", volume_db=-6.0, max_voices=3,
+             attenuation="quiet", pitch=[0.92, 1.1])
 
 
 # ═════════════════════════════════════════════════════════════════ MUSIC (all original)

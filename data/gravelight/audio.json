@@ -369,6 +369,19 @@
    "bus": "SFX",
    "attenuation": "world"
   },
+  "cellar_drip": {
+   "files": [
+    "res://gravelight/audio/sfx/world/cellar_drip_01.wav",
+    "res://gravelight/audio/sfx/world/cellar_drip_02.wav",
+    "res://gravelight/audio/sfx/world/cellar_drip_03.wav",
+    "res://gravelight/audio/sfx/world/cellar_drip_04.wav"
+   ],
+   "bus": "Ambience",
+   "volume_db": -6.0,
+   "max_voices": 3,
+   "attenuation": "quiet",
+   "pitch": [0.92, 1.1]
+  },
   "chandelier_crash": {
    "files": [
     "res://gravelight/audio/sfx/world/traps/chandelier_crash_01.wav"

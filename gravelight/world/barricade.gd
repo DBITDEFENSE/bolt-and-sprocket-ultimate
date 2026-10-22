@@ -11,6 +11,10 @@ const LAYER_BARRICADE: int = 1 << 5
 @export var width: float = 1.6
 @export var sill_height: float = 0.9
 @export var top_height: float = 2.2
+## A cellar window in a light well (Map 0's Old Cellar, Update 02 section 6.1): the room's floor is this far below
+## the origin (the well's floor). Zombies climb in and drop to the room floor (the drop clip plays once the fall is
+## over anim.json climb.high_window_m), and the repair area hangs low enough to reach from the room floor.
+@export var inside_drop: float = 0.0
 
 var boards: int = 6
 var max_boards: int = 6
@@ -25,6 +29,11 @@ func _ready() -> void:
 	# Thin and flush with the inner face, so the player's view ray can never start inside it.
 	interact_size = Vector3(width + 0.6, 2.2, 0.3)
 	interact_offset = Vector3(0, 1.3, 0.3)
+	if inside_drop > 0.0:
+		# from 0.7 m above the room floor up to the window's top, just inside the wall
+		var lo: float = 0.7 - inside_drop
+		interact_size = Vector3(width + 0.6, top_height - lo, 0.3)
+		interact_offset = Vector3(0, (top_height + lo) * 0.5, 0.35)
 	super._ready()
 	var body: StaticBody3D = StaticBody3D.new()
 	body.collision_layer = LAYER_BARRICADE
@@ -59,7 +68,7 @@ func outside_point() -> Vector3:
 
 
 func inside_point() -> Vector3:
-	return to_global(Vector3(0, 0, 1.0))
+	return to_global(Vector3(0, -inside_drop, 1.0))
 
 
 ## Where waiting zombies stand, further out from the window.
