@@ -144,6 +144,8 @@ var _sprint_t: float = 0.0
 var _traps: Array[Node] = []
 var _low_ammo_said: bool = false
 var _bonus_due_t: float = INF      # the round fallback is due: retried every few seconds until a line starts
+## U03 section 3 locomotion adapter (T-056): the body's movement layer when bots.json "locomotion" is "v2".
+var loco: BotLocomotion = null
 
 
 
@@ -162,6 +164,9 @@ func setup(bot_player: Player, bot_squad: BotSquad, i: int) -> void:
 	_yaw = player.rotation.y
 	_last_pos = player.global_position
 	command = squad.command
+	if BotLocomotion.enabled(_cfg):   # U03 section 3 locomotion adapter
+		loco = BotLocomotion.new()
+		loco.setup(player, squad)
 	GLBus.explosion.connect(_on_explosion)
 	GLBus.player_damaged.connect(_on_player_damaged)
 	PerkManager.overclock_triggered.connect(func(pid: int, _spent: float) -> void:
@@ -1325,6 +1330,11 @@ func _slot_point(leader: Player) -> Vector3:
 
 
 func _teleport_to(leader: Player) -> void:
+	if loco != null:   # U03 section 3 locomotion adapter: only where no human sees it happen
+		if loco.teleport_near(leader):
+			_clear_goal()
+			teleports += 1
+		return
 	var nav: RID = player.get_world_3d().navigation_map
 	var back: Vector3 = leader.global_basis.z
 	for k: int in 6:
@@ -1814,6 +1824,9 @@ func _reached() -> bool:
 
 
 func _move(delta: float) -> void:
+	if loco != null:
+		_loco_move(delta)   # U03 section 3 locomotion adapter
+		return
 	var wish: Vector3 = Vector3.ZERO
 	if not _traps.is_empty():
 		if _in_trap(player.global_position):
@@ -1875,6 +1888,40 @@ func _move(delta: float) -> void:
 		else:
 			_stuck_t = 0.0
 	_last_pos = player.global_position
+
+
+# ================================================================== U03 section 3 locomotion adapter (T-056)
+# With bots.json "locomotion": "v2" the body moves through BotLocomotion (the human's own movement code,
+# danger-costed paths, personal space, stuck recovery and its metrics) instead of the code in _move: this brain's
+# goal becomes a move_to / stop each frame, its aim a look_at_dir. The Update 03 brain calls the layer directly
+# and drops this block.
+func _loco_move(delta: float) -> void:
+	if _goal != Vector3.INF:
+		var urgency: float = 0.45
+		if _sprint and target == null:
+			urgency = 0.9
+		elif mode == Mode.FLEE:
+			urgency = 0.8
+		loco.move_to(_goal, urgency, 0.45)
+	else:
+		loco.stop()
+	if _goal == Vector3.INF or target != null or (_near_z != null and _near_d < 5.0):
+		loco.look_at_dir(_facing())   # standing, shooting, or something close: the brain's aim
+	else:
+		loco.clear_look()             # walking: face the way it goes
+	loco.tick(delta)
+	_yaw = player.rotation.y
+	_pitch = player.head.rotation.x
+	var me: Vector3 = player.global_position
+	while _path_i < _path.size() and _flat(_path[_path_i], me) < 0.6:
+		_path_i += 1   # this brain's own path index follows the body (its _reached() test)
+	if _goal != Vector3.INF and loco.arrived():
+		_path_i = _path.size()
+	if not loco.fire_ready():
+		_fire_cd = maxf(_fire_cd, loco.sprint_out_left())   # the gun's sprint-out after a sprint
+	_sprint_t = _sprint_t + delta if player.sprinting else 0.0
+	if _sprint_t > 1.0:
+		_bonus_event("sprint")
 
 
 ## The body: yaw and pitch go to the Player (head) and the third-person pose follows the state flags.
