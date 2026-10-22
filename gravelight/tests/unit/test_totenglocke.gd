@@ -166,7 +166,7 @@ func test_reload_crank_turns_six_times() -> void:
 func test_hitstop_restores_time_scale() -> void:
 	assert_almost_eq(Engine.time_scale, 1.0, 0.0001)
 	var ok: bool = Totenglocke.hitstop(get_tree(), 0.2, 0.05)
-	if Net.session != null:
+	if Net.is_online():
 		assert_false(ok, "never in co-op")
 		return
 	assert_true(ok)

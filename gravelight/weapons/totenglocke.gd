@@ -21,6 +21,8 @@ const SHARD_META: StringName = &"tg_shard_kills"
 const MAX_PIECES_PER_TOLL: int = 5           # zombies whose severed parts fly as props (ZombieGore caps live pieces)
 
 static var _hitstop_on: bool = false
+static var hitstops: int = 0                 # how many hitstops ran (tests / the clip harness)
+static var last_result: Dictionary = {}      # the last toll's tally (resolve), for the clip harness
 
 var holder: WeaponHolder
 var _hold_t: float = 0.0
@@ -159,9 +161,13 @@ static func resolve(ctx: Node3D, origin: Vector3, fwd: Vector3, w: WeaponInstanc
 			continue
 		var chest: Vector3 = z.global_position + Vector3.UP * (0.5 if z.is_crawler else 1.0)
 		if not in_cone(origin, fwd, chest, cone.x, cone.y, close_r):
+			if OS.get_environment("TG_DEBUG") != "":
+				print("[tgdbg] cone miss d=%.1f ang=%.0f" % [origin.distance_to(chest), rad_to_deg(fwd.angle_to(chest - origin))])
 			continue
 		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(origin, chest, MASK_LOS)
 		if not space.intersect_ray(q).is_empty():
+			if OS.get_environment("TG_DEBUG") != "":
+				print("[tgdbg] LOS miss d=%.1f hit %s y=%.2f" % [origin.distance_to(chest), str(space.intersect_ray(q).get("collider")), z.global_position.y])
 			continue
 		hit_set[z] = true
 		if _strike(z, origin, w, pid, great, b, out):
@@ -397,6 +403,9 @@ func _tick_reload_sound() -> void:
 func pose_parts(crank: Node3D, model: Node3D) -> void:
 	var w: WeaponInstance = holder.current()
 	if w == null or not w.data.has("bell") or model == null:
+		if _holding or (_hum != null and is_instance_valid(_hum) and _hum.playing):
+			_stop_wind()   # swapped away (or went down) mid-wind: the hum stops, nothing rings
+		_buffered = false
 		return
 	if crank != null and not holder.is_reloading():
 		crank.rotation.x += _crank_a
@@ -446,6 +455,7 @@ func toll(w: WeaponInstance, great: bool) -> void:
 	var fwd: Vector3 = -cam.global_basis.z
 	GLBus.weapon_fired.emit(p.player_id, w.id, w.upgraded, origin, fwd)
 	var res: Dictionary = resolve(holder, origin, fwd, w, p.player_id, great)
+	last_result = res
 	_feedback(w, b, great, res, origin, fwd)
 	drop_shards(p, b, res["kill_pos"])
 	if w.mag <= 0 and w.reserve > 0:
@@ -491,11 +501,47 @@ static func _chain_fx(ctx: Node3D, res: Dictionary) -> void:
 	var chains: Array = res.get("chains", [])
 	for i: int in chains.size():
 		var pair: Array = chains[i]
-		Effects.tracer(pair[0] as Vector3, pair[1] as Vector3)
-		Effects.tracer(pair[0] as Vector3 + Vector3.UP * 0.1, pair[1] as Vector3)
+		arc(ctx, pair[0] as Vector3, pair[1] as Vector3, res.get("color", Color(0.65, 0.35, 1.0)) as Color)
 		if i < 3:
 			ctx.get_tree().create_timer(0.08 + 0.07 * i).timeout.connect(
 				func() -> void: AudioDirector.play_3d("totenglocke_midnight", pair[1] as Vector3, -8.0, 0.1))
+
+
+## A chain-ring arc: a jagged, glowing line from one zombie to the next that fades in a third of a second.
+static func arc(ctx: Node3D, from: Vector3, to: Vector3, color: Color) -> void:
+	if ctx == null or not ctx.is_inside_tree():
+		return
+	var host: Node = ctx.get_tree().current_scene if ctx.get_tree().current_scene != null else ctx.get_tree().root
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	m.albedo_color = Color(color.lightened(0.25), 1.0)
+	var root: Node3D = Node3D.new()
+	host.add_child(root)
+	var pts: Array[Vector3] = [from]
+	for k: int in 3:
+		var u: float = float(k + 1) / 4.0
+		pts.append(from.lerp(to, u) + Vector3(randf_range(-0.35, 0.35), randf_range(-0.25, 0.45), randf_range(-0.35, 0.35)))
+	pts.append(to)
+	for k: int in pts.size() - 1:
+		var a: Vector3 = pts[k]
+		var c: Vector3 = pts[k + 1]
+		var seg_len: float = a.distance_to(c)
+		if seg_len < 0.01:
+			continue
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		var bm: BoxMesh = BoxMesh.new()
+		bm.size = Vector3(0.045, 0.045, seg_len)
+		mi.mesh = bm
+		mi.material_override = m
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(mi)
+		var up: Vector3 = Vector3.UP if absf((c - a).normalized().dot(Vector3.UP)) < 0.98 else Vector3.RIGHT
+		mi.global_transform = Transform3D(Basis.looking_at(c - a, up), a.lerp(c, 0.5))
+	var tw: Tween = root.create_tween()
+	tw.tween_property(m, "albedo_color:a", 0.0, 0.38).set_ease(Tween.EASE_IN)
+	tw.tween_callback(root.queue_free)
 
 
 ## Alt-fire: plant the Bell Dome at your feet (one at a time; costs `dome_cost` charges).
@@ -563,9 +609,10 @@ static func rumble(p: Player, weak: float, strong: float, seconds: float) -> voi
 ## a single machine (co-op peers would desync) and only when nothing else (a smoke, the dev console) has changed
 ## the time scale; it never stacks, and the restore runs even while paused.
 static func hitstop(tree: SceneTree, scale: float, seconds: float) -> bool:
-	if tree == null or _hitstop_on or Net.session != null or absf(Engine.time_scale - 1.0) > 0.0001:
+	if tree == null or _hitstop_on or Net.is_online() or absf(Engine.time_scale - 1.0) > 0.0001:
 		return false
 	_hitstop_on = true
+	hitstops += 1
 	Engine.time_scale = scale
 	tree.create_timer(seconds, true, false, true).timeout.connect(func() -> void:
 		if absf(Engine.time_scale - scale) < 0.0001:
@@ -766,7 +813,7 @@ static func screen_ring(h: WeaponHolder, strength: float, seconds: float, color:
 	mat.set_shader_parameter("t", 0.0)
 	rect.material = mat
 	layer.add_child(rect)
-	h.get_viewport().add_child(layer)
+	h.get_viewport().add_child.call_deferred(layer)
 	var tw: Tween = layer.create_tween()
 	tw.tween_method(func(v: float) -> void: mat.set_shader_parameter("t", v), 0.0, 1.0, seconds).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 	tw.tween_callback(layer.queue_free)

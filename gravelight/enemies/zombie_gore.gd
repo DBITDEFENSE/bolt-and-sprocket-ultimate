@@ -103,9 +103,11 @@ static func _throw_piece(z: Zombie, bone: String, impulse: Vector3) -> void:
 	body.linear_velocity = impulse
 	body.angular_velocity = Vector3(randf_range(-8, 8), randf_range(-8, 8), randf_range(-8, 8))
 	_pieces.append(body)
+	var ref: WeakRef = weakref(body)   # the piece cap may free it first (a freed lambda capture logs an error)
 	host.get_tree().create_timer(float(c.get("piece_seconds", 4.0))).timeout.connect(func() -> void:
-		if is_instance_valid(body):
-			body.queue_free())
+		var b: RigidBody3D = ref.get_ref() as RigidBody3D
+		if b != null:
+			b.queue_free())
 
 
 static func live_pieces() -> int:
