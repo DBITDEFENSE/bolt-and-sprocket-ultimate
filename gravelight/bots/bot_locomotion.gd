@@ -953,6 +953,9 @@ func _tick_yield(delta: float) -> void:
 		return
 	var me: Vector3 = player.global_position
 	var stopped: bool = _arrived or _goal == Vector3.INF
+	if stopped and _near_downed(me):
+		_choke_t = 0.0
+		return   # reviving (or covering) a downed teammate: stay put, even in a doorway
 	var horizon: float = float(_g("space", "horizon_s", 1.2))
 	var pass_m: float = float(_g("space", "pass_m", 1.3))
 	var in_choke: bool = not squad.choke_at(me).is_empty()
@@ -970,6 +973,14 @@ func _tick_yield(delta: float) -> void:
 	if _choke_t > float(_g("space", "choke_leave_s", 0.6)):
 		_step_aside(me, me + Vector3(_rng.randf_range(-1, 1), 0, _rng.randf_range(-1, 1)), Vector3.ZERO)
 		_choke_t = 0.0
+
+
+## A downed teammate within 2 m (the bot is reviving or covering them).
+func _near_downed(me: Vector3) -> bool:
+	for p: Player in squad.all_players():
+		if p != player and p.downed and not p.spectating and is_instance_valid(p) and _flat(p.global_position, me) < 2.0:
+			return true
+	return false
 
 
 ## On the human's training line: within line_clear_m of where their velocity takes them in the next line_s.
