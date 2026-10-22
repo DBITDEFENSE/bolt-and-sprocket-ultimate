@@ -160,6 +160,9 @@ func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 	_leg_damage = 0.0
 	_attack_cd = 0.0
 	_stuck_t = 0.0
+	_progress_target = null
+	_progress_best = INF
+	_progress_t = 0.0
 	_burn_t = 0.0
 	_frost_t = 0.0
 	_frost_slow = 0.0
@@ -600,6 +603,26 @@ func _update_chase(delta: float) -> void:
 			return
 		_stuck_t = 0.0
 		_stuck_origin = global_position
+	# No progress (T-057): a zombie that hasn't got 1 m closer to its target in no_progress_respawn_seconds while
+	# still well out of reach is on ground it can't leave (a navmesh island, the far side of something) or going
+	# round in circles; the stuck check above misses those when it keeps moving. Recycled, it re-enters through a
+	# window. (Map 1 soak: a scripted player alone looped for 140 minutes and the round never ended.)
+	var np: float = float(_cfg.get("no_progress_respawn_seconds", 0.0))
+	if np > 0.0 and not is_crawler:
+		if target != _progress_target or dist < _progress_best - 1.0:
+			_progress_target = target
+			_progress_best = dist
+			_progress_t = 0.0
+		else:
+			_progress_t += delta
+			if _progress_t > np and dist > float(_cfg.get("no_progress_min_m", 8.0)):
+				_progress_t = 0.0
+				recycle()
+
+
+var _progress_target: Player = null
+var _progress_best: float = INF
+var _progress_t: float = 0.0
 
 
 func _attack_range() -> float:

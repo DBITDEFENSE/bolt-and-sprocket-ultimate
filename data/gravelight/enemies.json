@@ -26,6 +26,8 @@
       "stagger_seconds": 0.35,
       "last_zombie_seconds": 20.0,
       "stuck_respawn_seconds": 15.0,
+      "no_progress_respawn_seconds": 40.0,
+      "no_progress_min_m": 8.0,
       "variants": {
         "soldier": 0.6,
         "miner": 0.15,
