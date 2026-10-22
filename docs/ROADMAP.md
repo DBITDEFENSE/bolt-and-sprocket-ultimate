@@ -113,6 +113,10 @@ Each milestone ends with: tests passing headless, the game launched and played, 
 
 **How to resume:** read `docs/M3_CONTRACTS.md` and this list, then work through items 1–3. The builders' full reports are summarised in DECISIONS T-030.
 
+## M4 status (in progress)
+- **Verdant Sink (T-039)** is the first M4 planet built and playable end to end: the Sprocket Glide, murk pools and bounce mushrooms, the four Verdant enemies and the neutral Picket Corn, the Compost King with the mercy ending, all six story beats, q7a/q7b, the Picket Line pop-up. 26 unit tests, `smoke_verdant` passes. Open follow-ups are listed in DECISIONS T-039.
+- Still to build: Glacius Vault (Grind Soles), the Grand Galleria, Core Foundry, the ending.
+
 ## M3: Full B&S arsenal + Act 1–2
 All 16 weapons with V1–V5, mods and Signature Mods. Rustvane Canyon complete (Sentinel, Content Creator, GLAMBOT defection, Tether-Hook). The shield reveal. Nova Plaza complete (The Algorithm). The Omega Forge built and testable through the dev console.
 

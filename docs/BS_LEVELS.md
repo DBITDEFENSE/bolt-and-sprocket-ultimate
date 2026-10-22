@@ -983,6 +983,9 @@ In the Root Cellar plaza. Four waves of Gloomstalkers and Pollinators come for s
 
 ---
 
+### 6.13 Built (T-039)
+Verdant Sink is playable: `data/bs/levels/verdant.json` + `verdant_lines.json`, `bs/planets/verdant/`, `bs/world/verdant/` (director, dressing, murk pools, bounce mushrooms, threshing drums, coolant valves, the lagoon arena), `bs/gadgets/sprocket_glide.gd`, the four enemies and the Compost King. Where the build departs from the plan above: the murk lake is a reset (water zone) rather than a kill plane; the grain boom runs 28 m from the canopy C5 (46, −62) to a broken end over the lake at (30, −84) and the glide into the cab (0, −88, y 8.5) is 28 m from an 11 m drop; the harvester's broken arm is reached from its roof by a puffball; the three coolant leaks are W (ground, behind a root arch), E (the pipe stack, bounce mushroom) and N (the reactor collar on the lagoon's north wall, a glide from the arm); q7b's third core sits in the cab (as §6.8 says); the "q7b seals the N valve early" payoff is not wired yet.
+
 ## 7. Grand Galleria (Planet 7, `LEVELS[9]`)
 
 ### 7.1 Original (`buildGalleria` L10541)

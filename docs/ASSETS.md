@@ -94,3 +94,8 @@ All code-built, nothing downloaded (`gravelight/world/materials.gd` `_build_map2
 
 ### Morgenrot and the zombie animation upgrade (design stage, v2)
 Nothing is built yet. Rules for when it is: the faction mark is the fictional Sunburst-and-Split-Bell (`docs/ART_FACTIONS.md`); no real insignia, no real manufacturer names on the rocket, the Panzerfaust, the lance rifle or the Fallschirm-pattern rifle (all three are invented patterns); rocket surfaces use a black-and-white roll pattern "in spirit". **MZ** will import animation clips: every clip's source and license goes in a new §7 table here before it is used (Mixamo: Adobe royalty-free, no raw redistribution; CC0 packs by name and URL); in-engine-authored clips are ours. The lunar plates, the Moon shots and the London / Antwerp / Paris skylines are procedural (no photographs).
+
+## Bolt & Sprocket: Verdant Sink (first playable, T-039)
+- All original procedural greybox-plus (LevelKit / EnemyFx primitives): the boardwalk hub, the silo-barn, the root ridges and giant mushroom caps (four glow colours), the Mega-Harvester shell with its cab and guts, the lagoon's root walls and reactor collar, glow-vines, picket signs, frog-bots, firefly fields. Palette: dark teal fog (35–150 m), bioluminescent emissives (`#5affc8`, `#ff6ad5`, `#4fc3ff`, `#ffd23e`, coolant `#39ff88`).
+- Enemies and the King are greybox meshes with emissive eyes/bulb/core; the Glide's sail is a husk-silk box with two ribs and lines.
+- For the M10 pass: cap and stalk textures, murk shader, coolant jet particles, the sail cloth, corn husks, the King's moss and junk crown; voiced lines for `bs.verdant.*`, `bs.boss.compost.*`, `bs.gadget.glide.*` (none baked yet).

@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://bs/planets/verdant/verdant.gd" id="1_verd"]
+
+[node name="Verdant" type="Node3D"]
+script = ExtResource("1_verd")
+level_id = "verdant"
+level_name = "VERDANT SINK"
+planet_index = 7

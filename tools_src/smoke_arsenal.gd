@@ -254,11 +254,13 @@ func _run() -> void:
 	BS.bolts = 2000
 	check(f.evolve(&"buzzkill") == "", "the Forge evolves a ready gun")
 	check(BS.bolts == 0 and wm.weapon(&"buzzkill").omega(), "2,000 bolts -> Ω MOOD KILLER")
-	var waited: int = 0
-	while f.playing and waited < 900:
+	# the cutscene runs on wall-clock beats (forge.json "cutscene"), so wait on time, not on a frame count
+	var deadline: float = f.cutscene_length() + 3.0
+	var waited: float = 0.0
+	while f.playing and waited < deadline:
+		waited += get_process_delta_time()
 		await get_tree().process_frame
-		waited += 1
-	check(not f.playing, "the evolution cutscene finishes")
+	check(not f.playing, "the evolution cutscene finishes (%.1fs of %.1fs)" % [waited, f.cutscene_length()])
 	_finish()
 
 

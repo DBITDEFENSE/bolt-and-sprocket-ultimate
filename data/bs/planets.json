@@ -33,7 +33,7 @@
   {
    "index": 7,
    "level_id": "verdant",
-   "scene": "",
+   "scene": "res://bs/planets/verdant/verdant.tscn",
    "lock": "cleared:rustvane",
    "gold_total": 4,
    "milestone": "M4"

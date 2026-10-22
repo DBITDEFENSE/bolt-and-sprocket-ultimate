@@ -16,7 +16,14 @@
     "zoningboard": "zoning_board",
     "miniboss": "content_creator",
     "algorithm": "the_algorithm",
-    "sentinel": "rustvane_sentinel"
+    "sentinel": "rustvane_sentinel",
+    "gloom": "gloomstalker",
+    "lobber": "sporelobber",
+    "spore_lobber": "sporelobber",
+    "corn": "picket_corn",
+    "picketcorn": "picket_corn",
+    "compost": "compost_king",
+    "compostking": "compost_king"
   },
   "globals": {
     "aggro_radius": 14.0,
@@ -866,6 +873,223 @@
         "src": "NEW: a shutter click and a fizzle",
         "intent": "no more footage"
       }
+    },
+    "gloomstalker": {
+      "name": "Gloomstalker",
+      "src": "ENEMY_DEFS gloomstalker (hp 32, speed 6.0, dmg 12, drops 7; cloak never implemented in v14); BS_ENEMIES 3.5",
+      "arch": "chaser",
+      "modules": [
+        "pounce",
+        "cloak"
+      ],
+      "hp": 32,
+      "speed": 6.0,
+      "dmg": 12,
+      "drops": 7,
+      "chunk_color": "#243a2a",
+      "body_color": "#243a2a",
+      "radius": 0.6,
+      "height": 0.9,
+      "heavy": false,
+      "pounce": {
+        "range_max": 5.0,
+        "range_min": 1.2,
+        "leap_time": 0.38,
+        "arc_height": 1.5,
+        "contact_cd": 1.4,
+        "after_cd": 1.0,
+        "knock": 8.0,
+        "hit_reach": 1.0,
+        "recover": 0.6
+      },
+      "cloak": {
+        "transparency": 0.9,
+        "range": 6.0,
+        "recloak_after": 2.0,
+        "hurt_reveal": 3.0,
+        "marked_reveal": 6.0
+      },
+      "telegraphs": {
+        "pounce": {
+          "pose": "decloak_crouch",
+          "sfx": "gloom_purr",
+          "light": "#5affc8",
+          "dur": 0.5,
+          "ring": 0.0
+        }
+      },
+      "weak_point": null,
+      "elite": {
+        "rim": "#2a4a3a",
+        "trick": "ghost_account"
+      },
+      "die_sfx": {
+        "src": "NEW: rising triangle 300 -> 900 Hz, a confused chirp",
+        "intent": "brand safety, caught"
+      },
+      "satire_note": "OmniScrap's brand-safety team. You never see them, but they're always there."
+    },
+    "sporelobber": {
+      "name": "Spore Lobber",
+      "src": "ENEMY_DEFS sporelobber (hp 40, turret, 10 + r2.2 blast, drops 8); BS_ENEMIES 3.5",
+      "arch": "turret",
+      "modules": [
+        "lob",
+        "spore_cloud"
+      ],
+      "hp": 40,
+      "speed": 0.0,
+      "dmg": 10,
+      "drops": 8,
+      "chunk_color": "#7a3a8a",
+      "body_color": "#4a6a2a",
+      "radius": 0.7,
+      "height": 1.8,
+      "heavy": false,
+      "lobber": {
+        "track_radius": 26.0,
+        "fire_radius": 22.0,
+        "fire_every": 2.2,
+        "flight": 1.1,
+        "grav": 14.0,
+        "blast_r": 2.2,
+        "lead": 0.35,
+        "glob_size": 0.32,
+        "glob_color": "#9dff5a",
+        "cloud": {
+          "r": 2.2,
+          "life": 2.0,
+          "tick_dmg": 3.0,
+          "slow": 0.0
+        },
+        "split_spread": 2.6
+      },
+      "telegraphs": {
+        "lob": {
+          "pose": "bulb_swell",
+          "sfx": "spore_inhale",
+          "light": "#5affc8",
+          "dur": 0.55,
+          "ring": 2.2
+        }
+      },
+      "weak_point": {
+        "part": "bulb",
+        "radius": 0.5
+      },
+      "elite": {
+        "rim": "#6a3a6a",
+        "trick": "organic_certified"
+      },
+      "die_sfx": {
+        "src": "NEW: soft noise burst + falling triangle 400 -> 100 Hz",
+        "intent": "a deflating pod"
+      },
+      "satire_note": "Pesticide-resistant crops OmniScrap tried to monetize as 'artisanal spores'."
+    },
+    "pollinator": {
+      "name": "Pollinator",
+      "src": "ENEMY_DEFS pollinator (hp 10, flyer, 5 dmg, drops 3; buffer never implemented in v14); BS_ENEMIES 3.5",
+      "arch": "flyer",
+      "modules": [
+        "buffer",
+        "sting"
+      ],
+      "hp": 10,
+      "speed": 4.5,
+      "dmg": 5,
+      "drops": 3,
+      "chunk_color": "#ffcf4d",
+      "body_color": "#ffcf4d",
+      "radius": 0.35,
+      "height": 0.5,
+      "heavy": false,
+      "pollinator": {
+        "dust_every": 3.0,
+        "dust_range": 20.0,
+        "dust_reach": 4.0,
+        "flee_range": 8.0,
+        "hover_height": 2.5,
+        "sting_range": 2.0,
+        "sting_every": 1.6,
+        "buff": {
+          "damage": 0.3,
+          "speed": 0.2,
+          "time": 6.0,
+          "elite_stack": 0.45
+        }
+      },
+      "telegraphs": {
+        "dust": {
+          "pose": "sac_pulse",
+          "sfx": "buzz_crescendo",
+          "light": "#ffd23e",
+          "dur": 0.4,
+          "ring": 0.0
+        },
+        "sting": {
+          "pose": "dive",
+          "sfx": "buzz_sharp",
+          "light": "#ffd23e",
+          "dur": 0.3,
+          "ring": 0.0
+        }
+      },
+      "weak_point": null,
+      "elite": {
+        "rim": "#ffcf4d",
+        "trick": "swarm_pricing"
+      },
+      "die_sfx": {
+        "src": "NEW: short falling sawtooth 1400 -> 500 Hz",
+        "intent": "a popped bubble"
+      },
+      "satire_note": "Scab labour: it crosses the corn's picket line to buff management's goons."
+    },
+    "picket_corn": {
+      "name": "Picket Corn",
+      "src": "NEW (BS_ENEMIES 3.5): neutral faction, 50 HP / 2.5 / 8 sign-bash when hostile / 5 bolts",
+      "arch": "chaser",
+      "modules": [
+        "neutral",
+        "march"
+      ],
+      "hp": 50,
+      "speed": 2.5,
+      "dmg": 8,
+      "drops": 5,
+      "chunk_color": "#ffd23e",
+      "body_color": "#8fc24a",
+      "radius": 0.45,
+      "height": 1.9,
+      "heavy": false,
+      "corn": {
+        "march_speed": 2.5,
+        "hostile_speed": 3.2,
+        "hostile_time": 20.0,
+        "bash_range": 2.0,
+        "bash_cd": 1.6,
+        "knock": 6.0
+      },
+      "telegraphs": {
+        "bash": {
+          "pose": "sign_overhead",
+          "sfx": "corn_shout",
+          "light": "#d42f2f",
+          "dur": 0.5,
+          "ring": 0.0
+        }
+      },
+      "weak_point": null,
+      "elite": {
+        "rim": "#d42f2f",
+        "trick": "shop_steward"
+      },
+      "die_sfx": {
+        "src": "NEW: a popcorn pop and a sad kazoo (noise 0.08 s at 3 kHz + triangle 500 -> 300 Hz)",
+        "intent": "never gory"
+      },
+      "satire_note": "The terraforming crops unionized. They're the only reasonable people on the planet."
     }
   },
   "lines_cfg": {

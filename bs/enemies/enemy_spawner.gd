@@ -34,6 +34,12 @@ const SCRIPTS: Dictionary = {
 	"content_creator": "res://bs/bosses/content_creator.gd",
 	"cc_camera_drone": "res://bs/bosses/camera_drone.gd",
 	"the_algorithm": "res://bs/bosses/the_algorithm.gd",
+	# Verdant Sink (BS_ENEMIES §3.5, §4.6)
+	"gloomstalker": "res://bs/enemies/gloomstalker.gd",
+	"sporelobber": "res://bs/enemies/sporelobber.gd",
+	"pollinator": "res://bs/enemies/pollinator.gd",
+	"picket_corn": "res://bs/enemies/picket_corn.gd",
+	"compost_king": "res://bs/bosses/compost_king.gd",
 }
 
 static var _pool: Dictionary = {}   # id -> Array of inactive EnemyBase

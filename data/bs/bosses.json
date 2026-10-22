@@ -419,6 +419,70 @@
     "bs.boss.algorithm.hint.mega.01": {
       "who": "hint",
       "text": "MEGA-FINE incoming — get onto a platform!"
+    },
+    "bs.boss.compost.leak.01": {
+      "who": "sprocket",
+      "text": "Those pipes are poisoning him. He's not attacking us — he's in PAIN. Seal the leaks!"
+    },
+    "bs.boss.compost.leak.02": {
+      "who": "corn",
+      "text": "...That. Felt. Better."
+    },
+    "bs.boss.compost.leak.03": {
+      "who": "corn",
+      "text": "NO! The pipes! THE PIPES!"
+    },
+    "bs.boss.compost.mercy.01": {
+      "who": "sprocket",
+      "text": "Bolt. Put the mallet down. He just wants the leaking to stop."
+    },
+    "bs.boss.compost.mercy.02": {
+      "who": "corn",
+      "text": "You... sealed it. All of it. Nobody has ever sealed it."
+    },
+    "bs.boss.compost.mercy.03": {
+      "who": "corn",
+      "text": "Take the core. Take it! And tell the harvester's owners the swamp sends its regards. Rudely."
+    },
+    "bs.boss.compost.mercy.04": {
+      "who": "bolt",
+      "text": "Best negotiation I've ever been in. Also the only one."
+    },
+    "bs.boss.compost.enrage.01": {
+      "who": "corn",
+      "text": "You talk peace with the pipes still OPEN?!"
+    },
+    "bs.boss.compost.defeat.01": {
+      "who": "corn",
+      "text": "The rot... settles. Tell the corn I was never a monster. Tell them I was a COMMUNITY."
+    },
+    "bs.boss.compost.banner.thrash.01": {
+      "who": "banner",
+      "text": "THRASHING"
+    },
+    "bs.boss.compost.banner.thrash.02": {
+      "who": "banner",
+      "text": "The leaks burst. Seal them while he swings."
+    },
+    "bs.boss.compost.banner.talk": {
+      "who": "banner",
+      "text": "let's talk!"
+    },
+    "bs.boss.compost.banner.mercy.01": {
+      "who": "banner",
+      "text": "COLLECTIVE BARGAINING"
+    },
+    "bs.boss.compost.banner.mercy.02": {
+      "who": "banner",
+      "text": "He stands down. The swamp calms."
+    },
+    "bs.boss.compost.banner.defeat.01": {
+      "who": "banner",
+      "text": "COMPOSTED"
+    },
+    "bs.boss.compost.banner.defeat.02": {
+      "who": "banner",
+      "text": "The outfall drains. Something glows at the centre."
     }
   },
   "rustvane_sentinel": {
@@ -860,6 +924,157 @@
       "core_h": 4.5,
       "wheel_h": 5.0,
       "errors_h": 2.6
+    }
+  },
+  "compost_king": {
+    "name": "THE COMPOST KING",
+    "src": "updateCompostKing: 560 HP, 45 bolts, slam 20 dmg within 7 m every 3 s (1.8 enraged), 3-glob volley 0.28 rad fan 12 dmg r2 every 3.6 s (2 s enraged), NEGOTIATION at 30% (4.2 s invulnerable), enraged after. Remake: BS_ENEMIES 4.6 (leaks, telegraphs, the 8 s plea, the mercy ending).",
+    "hp": 560,
+    "drops": 45,
+    "trophy": "zero_waste",
+    "mercy_trophy": "collective_bargaining",
+    "mercy_bonus": 60,
+    "radius": 2.0,
+    "height": 3.4,
+    "chunk_color": "#4a6a2a",
+    "music": "bs_boss_compost_king",
+    "aggro_radius": 20.0,
+    "phases": [
+      0.6,
+      0.3
+    ],
+    "arena_size": [
+      40,
+      32
+    ],
+    "first_idle": 1.6,
+    "phase_idle": 1.0,
+    "hold_distance": 6.0,
+    "move_speed": [
+      3.2,
+      3.2,
+      3.2
+    ],
+    "idle": [
+      [
+        1.4,
+        2.2
+      ],
+      [
+        1.2,
+        1.8
+      ],
+      [
+        0.9,
+        1.4
+      ]
+    ],
+    "slam": {
+      "tele": 0.6,
+      "dmg": 20,
+      "r": 5.0,
+      "reach": 3.0,
+      "range": 8.0,
+      "every": [
+        3.0,
+        3.0,
+        3.0
+      ],
+      "knock": 10.0,
+      "src": "slamCd 3 (1.8 enraged), 20 dmg within 7 m, no telegraph (0.22 s raise)"
+    },
+    "volley": {
+      "tele": 0.5,
+      "count": 3,
+      "fan_deg": 16.0,
+      "dmg": 12,
+      "blast_r": 2.0,
+      "flight": 0.9,
+      "every": [
+        3.6,
+        3.6,
+        3.6
+      ],
+      "src": "3 globs 0.28 rad fan, 12 dmg r2, every 3.6 (2 enraged)"
+    },
+    "thrash": {
+      "tele": 0.7,
+      "dmg": 16,
+      "r": 4.5,
+      "jump_clear": 1.0
+    },
+    "wave": {
+      "tele": 0.8,
+      "dmg": 10,
+      "speed": 6.0,
+      "width": 1.2,
+      "slow": 0.3,
+      "slow_time": 2.0,
+      "jump_clear": 1.0
+    },
+    "leak": {
+      "first_open": "W",
+      "heal_frac": 0.01,
+      "enraged_heal_frac": 0.02,
+      "seal_break_frac": 0.35,
+      "seal_stun": 1.0,
+      "crack_range": 5.0,
+      "crack_tele": 1.0,
+      "hint_delay": 5.0
+    },
+    "negotiation": {
+      "at": 0.3,
+      "plea": 8.0,
+      "stand_down": 8.0,
+      "src": "4.2 s invulnerable plea in the source; 8 s here so there is time to choose"
+    },
+    "enrage": {
+      "timer_mult": 0.6,
+      "speed": 5.0
+    },
+    "default_arena": {
+      "valve_ring": 8.0
+    },
+    "lines": {
+      "intro": [
+        "cs.introCompost.01",
+        "cs.introCompost.02"
+      ],
+      "intro_gap": 5.0,
+      "leak_hint": "bs.boss.compost.leak.01",
+      "leak_sealed": "bs.boss.compost.leak.02",
+      "phase2": "bs.boss.compost.leak.03",
+      "phase2_banner": [
+        "bs.boss.compost.banner.thrash.01",
+        "bs.boss.compost.banner.thrash.02"
+      ],
+      "plea": "code.updateCompostKing.04",
+      "plea_banner": [
+        "code.updateCompostKing.02",
+        "code.updateCompostKing.03"
+      ],
+      "talk_banner": "bs.boss.compost.banner.talk",
+      "plea_leaks_open": "bs.boss.compost.enrage.01",
+      "mercy_offer": "bs.boss.compost.mercy.01",
+      "failed": "code.updateCompostKing.07",
+      "failed_banner": [
+        "code.updateCompostKing.05",
+        "code.updateCompostKing.06"
+      ],
+      "mercy_banner": [
+        "bs.boss.compost.banner.mercy.01",
+        "bs.boss.compost.banner.mercy.02"
+      ],
+      "mercy_accepted": "bs.boss.compost.mercy.02",
+      "mercy_core": "bs.boss.compost.mercy.03",
+      "mercy_bolt": "bs.boss.compost.mercy.04",
+      "defeat": "bs.boss.compost.defeat.01",
+      "defeat_banner": [
+        "bs.boss.compost.banner.defeat.01",
+        "bs.boss.compost.banner.defeat.02"
+      ],
+      "defeat_scene": "coreVerdant",
+      "start_banner_sub": "code.bossStart.01"
     }
   }
 }

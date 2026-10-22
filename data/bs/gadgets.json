@@ -1,6 +1,6 @@
 {
   "_doc": "Bolt & Sprocket gadgets (BS_LEVELS §0.5). Ownership is BS flag 'gadget.<id>'; GadgetManager.attach_to(bolt) adds the owned ones to Bolt and routes the 'gadget' input action (K / D-pad down) to the primary gadget. Every tuning number lives here. Lines under 'lines' are registered into VOManager by GadgetManager (add 'bs/gadgets' / 'lines' to VOManager.LINE_SOURCES).",
-  "order": ["tether_hook"],
+  "order": ["tether_hook", "sprocket_glide"],
   "gadgets": {
     "tether_hook": {
       "name": "TETHER-HOOK",
@@ -35,6 +35,29 @@
       "weight_bark_every": 4,
       "weight_bark_cd": 20.0,
       "colors": {"swing": "#ff9d2e", "pull": "#7ad04a", "cable": "#ffd23e"}
+    },
+    "sprocket_glide": {
+      "name": "SPROCKET GLIDE",
+      "script": "res://bs/gadgets/sprocket_glide.gd",
+      "earned": "Verdant Sink, the Union Hall loft (BS_LEVELS §6.2)",
+      "_src": "BS_LEVELS §0.5 (new; not in the web build)",
+      "fall_cap": 3.0,
+      "forward_speed": 9.0,
+      "forward_accel": 6.0,
+      "turn_rate": 120.0,
+      "side_damp": 4.0,
+      "fall_ease": 12.0,
+      "updraft_cap": 11.0,
+      "hover_empty_below": 0.02,
+      "engage_below_vy": 0.5,
+      "min_air_time": 0.15,
+      "max_glide_time": 20.0,
+      "_rule": "a glide gap may be at most 3 m of horizontal distance per 1 m of drop (30 m from 10 m)",
+      "colors": {
+        "sail": "#dfe6b0",
+        "rib": "#7a4a2a",
+        "line": "#ffd23e"
+      }
     }
   },
   "lines": {
@@ -45,6 +68,10 @@
     "bs.gadget.tether.weight.02": {"who": "sprocket", "text": "I am a load-bearing toaster now. Put that on my résumé.", "kind": "bark"},
     "bs.gadget.tether.weight.03": {"who": "sprocket", "text": "Swing gently. My warranty does not cover being a pendulum.", "kind": "bark"},
     "bs.gadget.tether.weight.04": {"who": "sprocket", "text": "Holding. Holding. My arms are ninety percent servo and ten percent spite.", "kind": "bark"},
-    "bs.gadget.tether.pull.01": {"who": "sprocket", "text": "Reeling! Tuck your knees, this ring was rated for ore carts.", "kind": "bark"}
+    "bs.gadget.tether.pull.01": {"who": "sprocket", "text": "Reeling! Tuck your knees, this ring was rated for ore carts.", "kind": "bark"},
+    "bs.gadget.glide.name": {"who": "banner", "text": "SPROCKET GLIDE", "kind": "ui"},
+    "bs.gadget.glide.how": {"who": "hint", "text": "SPROCKET GLIDE: in the air, keep holding JUMP after the hover runs out and Sprocket opens the sail. Steer with the stick; let go of JUMP to drop.", "kind": "ui"},
+    "bs.gadget.glide.first.01": {"who": "sprocket", "text": "Sail's open! Three out for every one down, remember. I am NOT doing the maths mid-air.", "kind": "bark"},
+    "bs.gadget.glide.updraft.01": {"who": "sprocket", "text": "Warm air! Ride it, ride it, we're going UP for once.", "kind": "bark"}
   }
 }
