@@ -78,5 +78,21 @@ stairs/landing (27, 0, 11) ×8 and the cellar floor (34, −3, 19) ×12; zombies
 
 ## In progress
 
+Update 02 (started 2026-10-22 ~05:30). One branch + worktree (`.wt/<branch>`) per section, built in parallel,
+merged into master in the brief's order after GUT + smokes pass:
+- §1 movement & gunplay feel: `u02-1-feel` (T-046)
+- §2 ADS / SightPoint / Thompson / ads_check: `u02-2-ads` (T-047)
+- §3 Totenglocke rebuild: `u02-3-totenglocke` (T-048)
+- §4 ammo boxes: `u02-4-ammo` (T-049)
+- §5 bots (bonus perk, design, command wheel): `u02-5-bots` (T-050)
+- §6.1 bigger cellar: `u02-6-cellar` (T-051); §6.2 Jakub after §5 merges
+- §7 landscape, sky, distant war: `u02-7-landscape` (T-052)
+- §8 polish pass: after §6.1 merges (T-053)
+
+Update 03 (UPDATE_03_BOT_AI.md, arrived mid-run): smarter bots + Jakub on one utility-AI brain. U02 §5 was narrowed
+to the parts that survive the rewrite (bonus perk, looks/animations, nameplate, barks, command wheel UI); behaviour
+moves to U03. Order: U03 §0/§9 metrics + baseline soak (`u03-0-metrics`, T-054) now → after U02 §5 merges, the
+brain rewrite (U03 §1–§8, T-055) → U02 §6.2 Jakub on the new brain.
+
 
 ## BLOCKED
