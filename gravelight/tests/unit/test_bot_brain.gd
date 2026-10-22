@@ -374,3 +374,11 @@ func test_running_dry_mid_round_goes_for_ammo() -> void:
 	assert_eq(_best(c, "fight"), "resupply", "nearly dry with zombies about but not swarmed: to the ammo box")
 	c["pressure"] = 1.0
 	assert_ne(_best(c, "fight"), "resupply", "not through a swarm")
+
+
+func test_bunched_in_with_everything_dry_it_still_reloads_the_best_gun() -> void:
+	# the swap-instead-of-reload rule needs a loaded gun to swap to; the brain's _weapon_logic reloads the best
+	# gun when nothing is loaded. Here the pure part: an empty Thompson outranks an empty pistol even in danger.
+	var wc: Dictionary = combat["weapons"]
+	var hot: Dictionary = {"crowd": 6, "boss": false, "close": true, "danger": true, "near": true}
+	assert_gt(BotAim.weapon_value("smg", 0, 180, 30, hot, wc, {}), BotAim.weapon_value("pistol", 0, 60, 8, hot, wc, {}))

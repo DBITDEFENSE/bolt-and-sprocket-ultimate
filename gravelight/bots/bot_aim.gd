@@ -677,6 +677,24 @@ func _weapon_logic() -> void:
 					return
 	if reloading:
 		return
+	# nothing loaded anywhere: the best gun with a reserve goes into the hands and gets reloaded, danger or not
+	# (the swap-instead rule only holds while another gun is loaded; standing there dry helps nobody)
+	if w.mag == 0 and _other_loaded() < 0:
+		var best_i: int = -1
+		var best_v: float = 0.0
+		for i3: int in player.weapons.slots.size():
+			var o3: WeaponInstance = player.weapons.slots[i3]
+			if o3.reserve <= 0:
+				continue
+			var v3: float = float((_w.get("class_value", {}) as Dictionary).get(String(o3.weapon_class()), 0.6)) 				* float(((_pers.get("aim", {}) as Dictionary).get("class_pref", {}) as Dictionary).get(String(o3.weapon_class()), 1.0))
+			if v3 > best_v:
+				best_v = v3
+				best_i = i3
+		if best_i >= 0 and best_i != player.weapons.current_index:
+			select(best_i)
+		elif best_i >= 0:
+			start_reload()
+		return
 	var vals: Array = []
 	for i2: int in player.weapons.slots.size():
 		vals.append(slot_value(i2))

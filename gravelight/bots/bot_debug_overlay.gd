@@ -90,13 +90,13 @@ func _process(delta: float) -> void:
 			l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 			l.no_depth_test = true
 			l.fixed_size = true
-			l.pixel_size = 0.0022
-			l.font_size = 30
-			l.outline_size = 8
+			l.pixel_size = 0.0012
+			l.font_size = 26
+			l.outline_size = 6
 			l.modulate = Color(0.75, 1.0, 0.75)
 			add_child(l)
 			_labels[b.player.player_id] = l
-		l.global_position = b.player.global_position + Vector3.UP * 2.45
+		l.global_position = b.player.global_position + Vector3.UP * (2.2 + 0.28 * float(b.index % 3))
 		l.text = label_text(b)
 	if panel_on:
 		var lines: PackedStringArray = ["BLACKBOARD (t %.0fs)" % squad.time()]
@@ -115,8 +115,8 @@ static func label_text(b: BotBrain) -> String:
 	var tgt: String = "-"
 	if b.aim != null and b.aim.target != null and is_instance_valid(b.aim.target):
 		tgt = "%s %.0fm%s" % [b.aim.target.enemy_id, b.aim.target.global_position.distance_to(b.player.global_position), " head" if b.aim.aim_head else ""]
-	return "%s  [%s]\n%s\ntarget %s  threat %.2f\n%s" % [b.action.to_upper(), b.role if b.role != "" else "-",
-		Net.display_name(b.player.player_id), tgt, b.perception.pressure if b.perception != null else 0.0, "\n".join(tops)]
+	return "%s %s [%s] -> %s  threat %.2f\n%s" % [Net.display_name(b.player.player_id), b.action.to_upper(), b.role if b.role != "" else "-",
+		tgt, b.perception.pressure if b.perception != null else 0.0, "  ".join(tops)]
 
 
 func _draw_lines() -> void:
