@@ -160,6 +160,23 @@ func _restore_vo() -> void:
 
 # ---------------------------------------------------------------- queries
 
+## The quests loaded this match (for the bots' objective planner).
+func quest_ids() -> Array[StringName]:
+	var out: Array[StringName] = []
+	for qid: Variant in _quests.keys():
+		out.append(StringName(qid))
+	return out
+
+
+## A quest's step definitions, in file order.
+func steps_of(qid: StringName) -> Array:
+	return (_quests.get(qid, {}) as Dictionary).get("steps", [])
+
+
+func display_name_of(qid: StringName) -> String:
+	return str((_quests.get(qid, {}) as Dictionary).get("display_name", qid))
+
+
 func has_quest(qid: StringName) -> bool:
 	return _quests.has(qid)
 

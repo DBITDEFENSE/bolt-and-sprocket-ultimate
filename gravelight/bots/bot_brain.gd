@@ -20,6 +20,10 @@ extends Node
 ##            round, after a delay into the round; switchable off), feed the Crucible when the map has one; all
 ##            within shopping range of the leader. It never flips the power.
 ##   DOWNED   last stand: lies where it fell and keeps the pistol working until revived or bled out.
+## One bot may carry a BotPlanner (bots.json local_ai): its directive (an easter egg step, the power, a door, a
+## purchase, or "follow") becomes this bot's errand when no fight needs it; the objective kinds run in
+## _tick_objective (walk, use, enter a code, shoot a bell, chase the drummer, hold a spot, pull the crate).
+## Every bot gets the spawn kit (BotSquad.apply_kit) at the start and again when it gets up.
 ## Weapons are the bot Player's mirrored WeaponHolder (inventory only); shots are traced here with the same
 ## damage rules as WeaponHolder._trace, and shown through the RemoteBody (flash, sound, tracer).
 
@@ -31,6 +35,10 @@ const SHOT_RANGE: float = 220.0
 const SWAP_TIME: float = 0.42
 const GRAVITY: float = 14.0
 const BURST_RPM_CAP: float = 900.0
+## Errand kinds that come from the shopping rules (claimed so two bots don't queue at one machine).
+## Errand kinds only the objective planner hands out (executed by _tick_objective).
+const OBJECTIVE_KINDS: PackedStringArray = ["use", "radio", "switchboard", "shoot", "shoot_seq", "shoot_moving", "hold", "crate"]
+const SHOP_KINDS: PackedStringArray = ["repair", "gun", "ammo", "perk", "door", "crucible", "crucible_ammo"]
 
 var player: Player
 var squad: BotSquad
@@ -95,6 +103,12 @@ var _errand_cd: float = 0.0
 var _doors_bought: int = 0        # this round (shopping.doors.max_per_round_per_bot)
 var doors_bought_total: int = 0
 var upgrades: int = 0             # Crucible upgrades taken
+# the objective planner (bots.json local_ai), on one bot only: its directive becomes this bot's errand
+var planner: BotPlanner = null
+var objectives_done: int = 0
+var _was_down: bool = false
+var _was_out: bool = false
+var _stand_cache: Dictionary = {}  # node instance id -> [time, stand point]
 
 
 
@@ -160,6 +174,7 @@ func _physics_process(delta: float) -> void:
 	_tick_reload(delta)
 	if player.spectating:
 		mode = Mode.OUT
+		_was_out = true
 		_cancel_reload()
 		_drop_errand()
 		_pose(delta)
@@ -167,9 +182,16 @@ func _physics_process(delta: float) -> void:
 
 	if player.downed:
 		mode = Mode.DOWNED
+		_was_down = true
 		_tick_downed(delta)
 		_pose(delta)
 		return
+	if _was_down or _was_out:
+		# back up (revived, or respawned after a bleed-out): the spawn kit's perks again, its guns after a respawn
+		if bool((_cfg.get("spawn_kit", {}) as Dictionary).get("restore_after_down", true)):
+			squad.apply_kit(player, _was_out)
+		_was_down = false
+		_was_out = false
 	player._update_health(delta)   # regen (and status timers), the same as a local player's
 	match mode:
 		Mode.FIGHT:
@@ -317,11 +339,14 @@ func _decide_mode() -> void:
 	if mode == Mode.FLEE and (_near_d < danger * 1.6 or _flee_t < 1.2):
 		return   # keep kiting a moment past the last close one
 	if target != null:
-		if _crucible_sticky():
-			mode = Mode.ERRAND   # the gun is in the forge: stay at the Crucible and shoot from there
+		if _crucible_sticky() or _objective_sticky():
+			mode = Mode.ERRAND   # the gun is in the forge / holding an objective: stay and shoot from there
 			return
 		mode = Mode.FIGHT
 		_drop_errand()
+		return
+	if planner != null and _planner_errand():
+		mode = Mode.ERRAND
 		return
 	var quiet: bool = _zs.is_empty() or RoundManager.state != RoundManager.State.ROUND \
 		or (_near_d > float((_cfg.get("repair", {}) as Dictionary).get("quiet_radius_m", 7.0)) and _zs.size() <= 3)
@@ -341,6 +366,72 @@ func _drop_errand() -> void:
 	if not _errand.is_empty() and is_instance_valid(_errand.get("node")):
 		squad.release(_errand["node"] as Node, player.player_id)
 	_errand = {}
+
+
+## The errand is over (done, or given up when `ok` is false): the claim goes, the planner hears of it.
+func _finish_errand(ok: bool) -> void:
+	var id: String = str(_errand.get("id", ""))
+	_drop_errand()
+	_errand_cd = 1.0
+	mode = Mode.FOLLOW
+	if ok and id != "":
+		objectives_done += 1
+	if planner != null and id != "":
+		planner.on_errand_finished(id, ok)
+
+
+## The planner's directive as this bot's errand (built once per directive; rebuilt after a fight dropped it).
+## False for "follow" (then this bot behaves like any other) or when the directive can't be started.
+func _planner_errand() -> bool:
+	var dv: Dictionary = planner.directive
+	if dv.is_empty() or str(dv.get("kind", "")) == "follow":
+		return false
+	if not _errand.is_empty() and str(_errand.get("id", "")) == str(dv.get("id", "")):
+		return true
+	if _errand_cd > 0.0:
+		return false
+	_drop_errand()
+	_errand = _errand_from_directive(dv)
+	if _errand.is_empty():
+		planner.on_errand_finished(str(dv.get("id", "")), false)
+		return false
+	return true
+
+
+func _errand_from_directive(dv: Dictionary) -> Dictionary:
+	var node: Variant = dv.get("node")
+	if node == null or not is_instance_valid(node):
+		return {}
+	var kind: String = str(dv.get("kind", ""))
+	var pid: int = player.player_id
+	if SHOP_KINDS.has(kind):
+		if not squad.can_claim(node as Node, pid):
+			return {}
+		squad.claim(node as Node, pid)
+	var e: Dictionary = dv.duplicate()
+	e["hold"] = 0.0
+	e["t0"] = squad.time()
+	var timeout: float = float((_cfg.get("local_ai", {}) as Dictionary).get("errand_timeout_s", 60.0))
+	if kind == "crucible" and node is Crucible:
+		timeout += (node as Crucible).forge_seconds + (node as Crucible).offer_seconds
+	e["until"] = squad.time() + timeout + float(dv.get("extra_s", 0.0))
+	return e
+
+
+## Objective errands that keep the bot where it is through a fight: holding a spot (a pylon ring, the Chapel,
+## the heart, the Heartstorm), chasing the drummer, waiting on a crate it paid for.
+func _objective_sticky() -> bool:
+	if _errand.is_empty() or not _errand.has("id"):
+		return false
+	var kind: String = str(_errand.get("kind", ""))
+	if kind == "hold" or kind == "shoot_moving":
+		return true
+	return kind == "crate" and bool(_errand.get("paid", false))
+
+
+## On an objective of its own (not "follow"): the planner bot then fights where it stands instead of following.
+func roaming() -> bool:
+	return planner != null and not planner.directive.is_empty() and str(planner.directive.get("kind", "")) != "follow"
 
 
 # ================================================================== aiming and shooting
@@ -464,6 +555,7 @@ func _fire(w: WeaponInstance) -> void:
 		var zz: Zombie = z as Zombie
 		var h: Dictionary = hits[z]
 		var limb: StringName = StringName(h["limb"])
+		zz.last_hit_bone = str(h.get("bone", ""))
 		var killed: bool = zz.take_damage(float(h["dmg"]) * float(_combat.get("damage_mult", 1.0)), limb, w.id, pid, &"bullet", piercing)
 		if killed and limb == &"head":
 			squad.callout(self, "HEADSHOT")
@@ -515,6 +607,7 @@ func _trace(origin: Vector3, dir: Vector3, w: WeaponInstance, hits: Dictionary) 
 			if mult > float(cur["mult"]):
 				cur["mult"] = mult
 				cur["limb"] = String(hb.limb)
+				cur["bone"] = hb.bone
 			hits[z] = cur
 			Effects.blood(pos, -dir)
 			for rid: RID in z.hitbox_rids():
@@ -535,6 +628,16 @@ func _weapon_logic() -> void:
 	var w: WeaponInstance = player.weapons.current()
 	if w == null or _swap_t > 0.0:
 		return
+	# an objective that needs a particular gun in hand (the Totenglocke at the heart, an upgraded gun for the bell)
+	var forced: int = _forced_slot()
+	if forced >= 0:
+		if forced != player.weapons.current_index:
+			_select(forced)
+			return
+		if w.mag > 0 or w.reserve > 0 or str(_errand.get("kind", "")) == "crucible_ammo":
+			if w.mag == 0 and w.reserve > 0 and not _reloading:
+				_start_reload()
+			return
 	var other_loaded: int = -1
 	var other_any: int = -1
 	for i: int in player.weapons.slots.size():
@@ -667,7 +770,7 @@ func _tick_fight(delta: float) -> void:
 		away.y = 0.0
 		if away.length() > 0.01 and (_goal == Vector3.INF or _reached() or _repath_t <= 0.0):
 			_set_goal(_snap(player.global_position + away.normalized() * 2.5), true)
-	elif leader != null and leader != player and _flat(leader.global_position, player.global_position) > float(_follow.get("far_m", 6.5)) * 1.6:
+	elif not roaming() and leader != null and leader != player and _flat(leader.global_position, player.global_position) > float(_follow.get("far_m", 6.5)) * 1.6:
 		_set_goal(_slot_point(leader), false)
 	else:
 		_clear_goal()
@@ -935,15 +1038,15 @@ func _tick_downed(delta: float) -> void:
 
 func _tick_errand(delta: float) -> void:
 	if _errand.is_empty() or not is_instance_valid(_errand.get("node")):
-		_errand = {}
-		mode = Mode.FOLLOW
+		_finish_errand(str(_errand.get("kind", "")) == "shoot_moving")   # a shot drummer is gone: that was the point
+		return
+	if squad.time() > float(_errand["until"]):
+		_finish_errand(false)
+		return
+	if OBJECTIVE_KINDS.has(str(_errand.get("kind", ""))):
+		_tick_objective(delta)
 		return
 	var node: Interactable = _errand["node"] as Interactable
-	if squad.time() > float(_errand["until"]):
-		squad.release(node, player.player_id)
-		_errand = {}
-		mode = Mode.FOLLOW
-		return
 	_sprint = false
 	var me: Vector3 = player.global_position
 	var kind: String = str(_errand["kind"])
@@ -972,9 +1075,7 @@ func _tick_errand(delta: float) -> void:
 			# a wall gun replaces the gun in hand: hold the worst non-upgraded one first; never trade an upgraded gun
 			var give: int = _slot_to_give_up()
 			if give < 0:
-				squad.release(node, player.player_id)
-				_errand = {}
-				mode = Mode.FOLLOW
+				_finish_errand(false)
 				return
 			if give != player.weapons.current_index:
 				_select(give)
@@ -987,10 +1088,7 @@ func _tick_errand(delta: float) -> void:
 			_doors_bought += 1
 			doors_bought_total += 1
 	if done:
-		squad.release(node, player.player_id)
-		_errand = {}
-		_errand_cd = 1.0
-		mode = Mode.FOLLOW
+		_finish_errand(true)
 
 
 ## One hold at the Crucible. "crucible": feed the gun in hand (5000), wait out the forge in front of it, take the
@@ -1000,6 +1098,10 @@ func _tick_crucible(cr: Crucible, kind: String) -> bool:
 	if not cr.is_powered():
 		return true
 	if kind == "crucible_ammo":
+		var slot: int = int(_errand.get("slot", -1))
+		if slot >= 0 and slot < player.weapons.slots.size() and slot != player.weapons.current_index:
+			_select(slot)   # the upgraded gun that wants the ammo goes into the hands first
+			return false
 		if cr.phase == Crucible.Phase.IDLE and cr.can_interact(player):
 			cr.interact(player)
 		return true
@@ -1086,34 +1188,55 @@ static func _door_side(door: BuyDoor, me: Vector3) -> Vector3:
 func _choose_errand() -> Dictionary:
 	var leader: Player = squad.leader_for(self)
 	var anchor: Vector3 = leader.global_position if leader != null else player.global_position
+	var best: Dictionary = {}
+	var best_s: float = -INF
+	for c: Dictionary in errand_candidates(anchor, 1.0):
+		if float(c["score"]) > best_s:
+			best_s = float(c["score"])
+			best = c
+	if best.is_empty():
+		return {}
+	squad.claim(best["node"], player.player_id)
+	var extra: float = 0.0
+	if str(best["kind"]) == "crucible":
+		extra = (best["node"] as Crucible).forge_seconds + (best["node"] as Crucible).offer_seconds
+	best["until"] = squad.time() + float((_cfg.get("shopping", {}) as Dictionary).get("errand_timeout_s", 20.0)) + extra
+	best["hold"] = 0.0
+	return best
+
+
+## Every errand the shopping rules allow right now, scored: [{node, kind, score, label}]. Ranges are measured
+## from `anchor` (the leader for a follower) and scaled by `range_mult` (the planner bot roams: a big one).
+## Nothing is claimed here.
+func errand_candidates(anchor: Vector3, range_mult: float) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
 	var me: Vector3 = player.global_position
 	var rcfg: Dictionary = _cfg.get("repair", {})
 	var scfg: Dictionary = _cfg.get("shopping", {})
 	var pid: int = player.player_id
-	var best: Dictionary = {}
-	var best_s: float = -INF
 	# boards
+	var best_board: Dictionary = {}
 	for n: Node in get_tree().get_nodes_in_group(&"barricades"):
 		var b: Barricade = n as Barricade
 		if b == null or b.boards >= b.max_boards:
 			continue
 		var d: float = _flat(b.global_position, me)
-		if d > float(rcfg.get("radius_m", 9.0)) or _flat(b.global_position, anchor) > float(rcfg.get("max_from_leader_m", 14.0)):
+		if d > float(rcfg.get("radius_m", 9.0)) * minf(range_mult, 2.0) or _flat(b.global_position, anchor) > float(rcfg.get("max_from_leader_m", 14.0)) * range_mult:
 			continue
 		if not squad.can_claim(b, pid) or not _reachable(_front_of(b)):
 			continue
 		var s: float = 30.0 - d
-		if s > best_s:
-			best_s = s
-			best = {"node": b, "kind": "repair"}
-	# shopping (only inside shopping range of the leader, so the bot doesn't wander off across the map)
+		if best_board.is_empty() or s > float(best_board["score"]):
+			best_board = {"node": b, "kind": "repair", "score": s, "label": "rebuild the boards at a window %d m away" % int(d)}
+	if not best_board.is_empty():
+		out.append(best_board)
+	# shopping (only inside shopping range of the anchor, so a follower does not wander off across the map)
 	var scrip: int = Economy.get_scrip(pid)
-	var range_m: float = float(scfg.get("max_from_leader_m", 24.0))
+	var range_m: float = float(scfg.get("max_from_leader_m", 24.0)) * range_mult
 	var prices: Dictionary = {}
 	var walls: Dictionary = {}
 	for wb: WallBuy in squad.wall_buys():
 		if not is_instance_valid(wb) or not wb.is_visible_in_tree() or _flat(wb.global_position, anchor) > range_m:
-
 			continue
 		if not _reachable(_front_of(wb)):
 			continue
@@ -1125,19 +1248,15 @@ func _choose_errand() -> Dictionary:
 	var want: StringName = BotConfig.pick_weapon(scfg.get("weapon_wishlist", []), held, scrip, prices, int(scfg.get("weapon_buffer_scrip", 150)))
 	if want != &"" and walls.has(String(want)):
 		var wb2: WallBuy = walls[String(want)]
-		var s2: float = 20.0 + float(wb2.price()) / 50.0 - _flat(wb2.global_position, me) * 0.5
-		if s2 > best_s:
-			best_s = s2
-			best = {"node": wb2, "kind": "gun"}
+		out.append({"node": wb2, "kind": "gun", "score": 20.0 + float(wb2.price()) / 50.0 - _flat(wb2.global_position, me) * 0.5,
+			"label": "buy the %s wall gun (%d Scrip)" % [weapon_name(want), wb2.price()]})
 	for w2: WeaponInstance in player.weapons.slots:
 		var wid: String = String(w2.base_id())
 		if walls.has(wid) and w2.reserve < int(float(w2.reserve_max()) * float(scfg.get("ammo_below_frac", 0.35))):
 			var wb3: WallBuy = walls[wid]
 			if scrip >= wb3.ammo_price(player):
-				var s3: float = 60.0 - _flat(wb3.global_position, me) * 0.5
-				if s3 > best_s:
-					best_s = s3
-					best = {"node": wb3, "kind": "ammo"}
+				out.append({"node": wb3, "kind": "ammo", "score": 60.0 - _flat(wb3.global_position, me) * 0.5,
+					"label": "buy ammo for the %s (%d Scrip)" % [w2.display_name(), wb3.ammo_price(player)]})
 	if RoundManager.current_round >= int(scfg.get("perk_min_round", 3)):
 		var pprices: Dictionary = {}
 		var machines: Dictionary = {}
@@ -1150,17 +1269,15 @@ func _choose_errand() -> Dictionary:
 		var perk: StringName = BotConfig.pick_perk(scfg.get("perk_wishlist", []), PerkManager.owned(pid), scrip, pprices, int(scfg.get("max_perks", 2)), int(scfg.get("perk_buffer_scrip", 400)))
 		if perk != &"":
 			var pm2: PerkMachine = machines[String(perk)]
-			var s4: float = 45.0 - _flat(pm2.global_position, me) * 0.5
-			if s4 > best_s:
-				best_s = s4
-				best = {"node": pm2, "kind": "perk"}
+			out.append({"node": pm2, "kind": "perk", "score": 45.0 - _flat(pm2.global_position, me) * 0.5,
+				"label": "drink %s (%d Scrip)" % [PerkManager.display_name(perk), int(pprices[String(perk)])]})
 	# doors: the one the human looks at or stands nearest, with a reserve left, after the delay into the round
 	var dcfg: Dictionary = scfg.get("doors", {})
 	if BotConfig.door_allowed(dcfg, squad.round_time(), _doors_bought):
 		var infos: Array = []
 		var nodes: Array[BuyDoor] = []
 		for dn: BuyDoor in _doors:
-			if not is_instance_valid(dn) or dn.is_open or _flat(dn.global_position, anchor) > float(dcfg.get("max_from_leader_m", 30.0)):
+			if not is_instance_valid(dn) or dn.is_open or _flat(dn.global_position, anchor) > float(dcfg.get("max_from_leader_m", 30.0)) * range_mult:
 				continue
 			var ok: bool = dn.can_interact(player) and squad.can_claim(dn, pid) and _reachable(_door_side(dn, me))
 			infos.append({"cost": dn.cost, "pos": dn.global_position, "ok": ok})
@@ -1170,10 +1287,8 @@ func _choose_errand() -> Dictionary:
 		var hfwd: Vector3 = -human.camera.global_basis.z if human != null and human.camera != null else -player.global_basis.z
 		var di: int = BotConfig.pick_door(dcfg, infos, scrip, hpos, hfwd)
 		if di >= 0:
-			var s5: float = 25.0 - _flat(nodes[di].global_position, me) * 0.3
-			if s5 > best_s:
-				best_s = s5
-				best = {"node": nodes[di], "kind": "door"}
+			out.append({"node": nodes[di], "kind": "door", "score": 25.0 - _flat(nodes[di].global_position, me) * 0.3,
+				"label": "open the %s (%d Scrip)" % [door_label(nodes[di]), nodes[di].cost]})
 	# the Crucible, when the map has one and a held gun can learn something: in the round break, first of all,
 	# never while the human is down. Upgraded ammo for an upgraded gun in hand that is running low.
 	var ccfg: Dictionary = scfg.get("crucible", {})
@@ -1183,28 +1298,46 @@ func _choose_errand() -> Dictionary:
 	var cur: WeaponInstance = player.weapons.current()
 	var up_slot: int = _upgradeable_slot()
 	var up_tier: int = player.weapons.slots[up_slot].tier if up_slot >= 0 else 0
-	var want_up: bool = BotConfig.crucible_wanted(ccfg, up_slot >= 0, scrip, Crucible.price_for(&"upgrade", econ, up_tier), RoundManager.current_round)
-	var want_ammo: bool = cur != null and BotConfig.crucible_ammo_wanted(ccfg, cur.upgraded, cur.reserve, cur.reserve_max(), scrip, Crucible.price_for(&"ammo", econ))
+	var up_cost: int = Crucible.price_for(&"upgrade", econ, up_tier)
+	var want_up: bool = BotConfig.crucible_wanted(ccfg, up_slot >= 0, scrip, up_cost, RoundManager.current_round)
+	# upgraded ammo: the upgraded gun in hand first, else any upgraded gun carried (a dry one gets swapped away)
+	var ammo_slot: int = -1
+	for ai: int in player.weapons.slots.size():
+		var aw: WeaponInstance = player.weapons.slots[ai]
+		if BotConfig.crucible_ammo_wanted(ccfg, aw.upgraded, aw.reserve, aw.reserve_max(), scrip, Crucible.price_for(&"ammo", econ)):
+			if ammo_slot < 0 or aw == cur:
+				ammo_slot = ai
+	var want_ammo: bool = ammo_slot >= 0
 	if (want_up or want_ammo) and not human_down and (in_break or not bool(ccfg.get("only_in_break", true))):
-		for cn: Node in get_tree().get_nodes_in_group(&"crucible"):
-			var cr: Crucible = cn as Crucible
-			if cr == null or not cr.is_powered() or cr.phase != Crucible.Phase.IDLE or _flat(cr.global_position, anchor) > float(ccfg.get("max_from_leader_m", range_m)):
-				continue
-			if not squad.can_claim(cr, pid) or not _reachable(_front_of(cr)):
-				continue
-			var s6: float = float(ccfg.get("priority", 80.0)) - _flat(cr.global_position, me) * 0.3
-			if s6 > best_s:
-				best_s = s6
-				best = {"node": cr, "kind": "crucible" if want_up else "crucible_ammo"}
-	if best.is_empty():
-		return {}
-	squad.claim(best["node"], pid)
-	var extra: float = 0.0
-	if str(best["kind"]) == "crucible":
-		extra = (best["node"] as Crucible).forge_seconds + (best["node"] as Crucible).offer_seconds
-	best["until"] = squad.time() + float(scfg.get("errand_timeout_s", 20.0)) + extra
-	best["hold"] = 0.0
-	return best
+		var cr: Crucible = crucible_for_me(float(ccfg.get("max_from_leader_m", 30.0)) * range_mult, anchor)
+		if cr != null:
+			# a dry upgraded gun first (cheaper, and it is the gun that matters), then the next teaching
+			out.append({"node": cr, "kind": "crucible_ammo" if want_ammo else "crucible", "slot": ammo_slot,
+				"score": float(ccfg.get("priority", 80.0)) - _flat(cr.global_position, me) * 0.3,
+				"label": "buy upgraded ammo at the Crucible" if want_ammo else ("feed the %s to the Crucible (%d Scrip)" % [player.weapons.slots[up_slot].display_name(), up_cost])})
+	return out
+
+
+## A powered, idle Crucible within `range_m` of `anchor` that this bot may claim and reach, or null.
+func crucible_for_me(range_m: float, anchor: Vector3) -> Crucible:
+	for cn: Node in get_tree().get_nodes_in_group(&"crucible"):
+		var cr: Crucible = cn as Crucible
+		if cr == null or not cr.is_powered() or cr.phase != Crucible.Phase.IDLE or _flat(cr.global_position, anchor) > range_m:
+			continue
+		if not squad.can_claim(cr, player.player_id) or not _reachable(_front_of(cr)):
+			continue
+		return cr
+	return null
+
+
+static func weapon_name(wid: StringName) -> String:
+	var row: Dictionary = (GLData.table("weapons")["weapons"] as Dictionary).get(String(wid), {})
+	return str(row.get("name", wid))
+
+
+## A door's name for people: its id without the "door_" prefix ("the stable door").
+static func door_label(d: BuyDoor) -> String:
+	return "%s door" % String(d.door_id).trim_prefix("door_").replace("_", " ")
 
 
 
@@ -1345,3 +1478,399 @@ func _pose(delta: float) -> void:
 	player.net_flags = flags
 	if player.remote_body != null:
 		player.remote_body.update_pose(delta, player.horizontal_speed(), _pitch, flags)
+
+
+
+# ================================================================== objectives (the planner's errands)
+# The errand dictionary a BotPlanner directive turns into (see BotPlanner._options): {id, kind, node, label,
+# stand / vantage / pos / radius, qid, sid, cond, weapon, need_upgraded, ...}. Movement is the same nav-path
+# walking as everything else; the use itself is the object's own method (interact, lock_frequency, plug,
+# a real traced shot), the same calls a person's hold or shot makes.
+
+func _tick_objective(delta: float) -> void:
+	var e: Dictionary = _errand
+	var node: Node3D = e.get("node") as Node3D
+	if node == null or not is_instance_valid(node):
+		_finish_errand(str(e.get("kind", "")) == "shoot_moving")
+		return
+	_sprint = false
+	match str(e["kind"]):
+		"use":
+			_obj_use(delta, e, node)
+		"radio", "switchboard":
+			_obj_inputs(delta, e, node)
+		"shoot":
+			_obj_shoot(delta, e, node)
+		"shoot_seq":
+			_obj_bells(delta, e)
+		"shoot_moving":
+			_obj_moving(delta, e, node)
+		"hold":
+			_obj_hold(delta, e, node)
+		"crate":
+			_obj_crate(delta, e, node as MysteryCrate)
+		_:
+			_finish_errand(false)
+
+
+## Walks toward `p`; true once within `tol` (flat) on the same floor. Gives up on the errand after 4 s without a
+## route (a door closed in the way, a ledge).
+func _walk_to(p: Vector3, tol: float, e: Dictionary) -> bool:
+	var me: Vector3 = player.global_position
+	if _flat(p, me) <= tol and absf(p.y - me.y) < 1.8:
+		_clear_goal()
+		e["nopath_t"] = 0.0
+		return true
+	_sprint = _flat(p, me) > 9.0 and target == null
+	_set_goal(p, false)
+	if _path.is_empty():
+		e["nopath_t"] = float(e.get("nopath_t", 0.0)) + get_physics_process_delta_time()
+		if float(e["nopath_t"]) > 4.0:
+			_finish_errand(false)
+	else:
+		e["nopath_t"] = 0.0
+	if target != null:
+		_aim_and_fire(get_physics_process_delta_time(), 0.8)   # shoot on the way
+	else:
+		_idle_look(get_physics_process_delta_time())
+	return false
+
+
+## Walk to it, hold use for its hold time, use it. A pylon then becomes a hold inside its ring until attuned.
+func _obj_use(delta: float, e: Dictionary, node: Node3D) -> void:
+	var it: Interactable = node as Interactable
+	if it == null or not it.can_interact(player):
+		_finish_errand(false)
+		return
+	if not _walk_to(e.get("stand", node.global_position), 0.6, e):
+		e["hold"] = 0.0
+		return
+	_turn_toward(it.area.global_position if it.area != null else node.global_position, delta)
+	e["hold"] = float(e["hold"]) + delta
+	if float(e["hold"]) < maxf(0.3, it.hold_time(player)):
+		return
+	it.interact(player)
+	if it is Pylon and (it as Pylon).state == Pylon.State.CHARGING:
+		e["kind"] = "hold"
+		e["cond"] = "pylon"
+		e["pos"] = _snap(it.global_position)
+		e["radius"] = (it as Pylon).radius * 0.45
+		e["until"] = squad.time() + 120.0
+		return
+	_finish_errand(true)
+
+
+## The radio's frequencies / the switchboard's digits, one every 0.6 s from where the step stands.
+func _obj_inputs(delta: float, e: Dictionary, node: Node3D) -> void:
+	var qid: StringName = StringName(str(e.get("qid", "")))
+	var sid: StringName = StringName(str(e.get("sid", "")))
+	if QuestManager.is_step_done(qid, sid):
+		_finish_errand(true)
+		return
+	if not QuestManager.is_active(qid, sid):
+		_finish_errand(false)
+		return
+	if not _walk_to(e.get("stand", node.global_position), 0.6, e):
+		e["hold"] = 0.0
+		return
+	_turn_toward(node.global_position + Vector3.UP * 0.3, delta)
+	e["hold"] = float(e["hold"]) + delta
+	if float(e["hold"]) < 0.9:
+		return
+	e["hold"] = 0.3
+	var inputs: Array = QuestManager.sequence_inputs(qid, sid)
+	var prog: Variant = QuestManager.progress(qid, sid)
+	var idx: int = int(prog) if prog != null else 0
+	if idx >= inputs.size():
+		_finish_errand(true)
+		return
+	var res: String = ""
+	if node is FieldRadio:
+		res = (node as FieldRadio).lock_frequency(str(inputs[idx]))
+	elif node is Switchboard:
+		res = (node as Switchboard).plug(int(str(inputs[idx])))
+	if res == "done":
+		_finish_errand(true)
+	elif res != "ok":
+		e["tries"] = int(e.get("tries", 0)) + 1
+		if int(e["tries"]) > 3:
+			_finish_errand(false)
+
+
+## One aimed shot at a thing (the Chapel bell needs an upgraded gun in hand) from a spot that sees it.
+func _obj_shoot(delta: float, e: Dictionary, node: Node3D) -> void:
+	if bool(e.get("need_upgraded", false)) and _forced_slot() < 0:
+		_finish_errand(false)
+		return
+	if str(e.get("cond", "")) != "" and _cond_met(e, node):
+		_finish_errand(true)
+		return
+	if not _walk_to(e.get("vantage", node.global_position), 0.8, e):
+		return
+	var aim: Vector3 = node.global_position + (e.get("aim_offset", Vector3.ZERO) as Vector3)
+	if _shoot_at(aim, delta, 1.2):
+		e["shots"] = int(e.get("shots", 0)) + 1
+		if int(e["shots"]) > 14:
+			_finish_errand(false)
+
+
+## The Four Bells in melody order (the step's inputs from its progress): walk to a spot that sees the next bell,
+## shoot it, move on. A wrong ring resets the melody (the quest's own rule); the walk starts again at bell one.
+func _obj_bells(delta: float, e: Dictionary) -> void:
+	var qid: StringName = StringName(str(e.get("qid", "")))
+	var sid: StringName = StringName(str(e.get("sid", "")))
+	if QuestManager.is_step_done(qid, sid):
+		_finish_errand(true)
+		return
+	var inputs: Array = QuestManager.sequence_inputs(qid, sid)
+	var prog: Variant = QuestManager.progress(qid, sid)
+	var idx: int = int(prog) if prog != null else 0
+	if idx >= inputs.size():
+		_finish_errand(true)
+		return
+	var note: String = str(inputs[idx])
+	var bells: Dictionary = e.get("bells", {})
+	var bell: Node3D = bells.get(note) as Node3D
+	if bell == null or not is_instance_valid(bell):
+		_finish_errand(false)
+		return
+	var vps: Dictionary = e.get("vantages", {})
+	if not vps.has(note):
+		vps[note] = vantage_for(bell.global_position)
+		e["vantages"] = vps
+	var vp: Vector3 = vps[note]
+	if vp == Vector3.INF:
+		_finish_errand(false)
+		return
+	if not _walk_to(vp, 0.8, e):
+		return
+	if int(e.get("at_idx", -1)) != idx:
+		e["at_idx"] = idx
+		e["shots"] = 0
+	if _shoot_at(bell.global_position, delta, 1.0):
+		e["shots"] = int(e["shots"]) + 1
+		_fire_cd = maxf(_fire_cd, 0.6)   # let the ring register before the next one
+		if int(e["shots"]) > 10:
+			_finish_errand(false)
+
+
+## Herr Tamtam on the march: shoot him when he is in sight, otherwise run after him.
+func _obj_moving(delta: float, e: Dictionary, node: Node3D) -> void:
+	var aim: Vector3 = node.global_position + Vector3.UP * 0.35
+	var d: float = _eye().distance_to(aim)
+	if d < 32.0 and los_point(_eye(), aim):
+		_clear_goal()
+		_shoot_at(aim, delta, 2.0)
+		return
+	_sprint = true
+	if _repath_t <= 0.0 or _goal == Vector3.INF:
+		_set_goal(_snap(node.global_position), true)
+	_turn_toward(aim, delta, 0.8)
+
+
+## Stand inside a spot and fight from there until the condition ends it (a pylon attuned, the Chapel bell out,
+## a kill count done, the Heartstorm over). Leaves the spot only to come straight back.
+func _obj_hold(delta: float, e: Dictionary, node: Node3D) -> void:
+	if _cond_met(e, node):
+		_finish_errand(true)
+		return
+	var p: Vector3 = e.get("pos", node.global_position)
+	var r: float = float(e.get("radius", 2.0))
+	if _flat(p, player.global_position) > r or absf(p.y - player.global_position.y) > 1.8:
+		_set_goal(p, false)
+		if target != null:
+			_aim_and_fire(delta, 0.8)
+		return
+	_clear_goal()
+	if target != null:
+		_aim_and_fire(delta)
+	else:
+		_idle_look(delta)
+
+
+## The Requisition Crate (the drummer chase needs pulls): pay, wait out the cycle, take the gun when it beats the
+## worst held one (never trading an upgraded gun), and end the errand on the drummer or an empty-handed close.
+func _obj_crate(delta: float, e: Dictionary, crate: MysteryCrate) -> void:
+	if crate == null:
+		_finish_errand(false)
+		return
+	var paid: bool = bool(e.get("paid", false))
+	match crate.phase:
+		MysteryCrate.Phase.CLOSED:
+			if paid:
+				_finish_errand(true)
+				return
+			if not _walk_to(e.get("stand", crate.global_position), 0.6, e):
+				e["hold"] = 0.0
+				return
+			_turn_toward(crate.global_position + Vector3.UP * 0.6, delta)
+			e["hold"] = float(e["hold"]) + delta
+			if float(e["hold"]) < 0.5:
+				return
+			if Economy.get_scrip(player.player_id) < CrateManager.cost():
+				_finish_errand(false)
+				return
+			crate.interact(player)
+			e["paid"] = crate.phase != MysteryCrate.Phase.CLOSED
+			e["until"] = squad.time() + 25.0
+			if not bool(e["paid"]):
+				_finish_errand(false)
+		MysteryCrate.Phase.CYCLING:
+			_turn_toward(crate.global_position + Vector3.UP * 0.8, delta)
+		MysteryCrate.Phase.OFFERED:
+			if not paid or int(crate.get("_owner_player")) != player.player_id:
+				_finish_errand(false)
+				return
+			var got: StringName = StringName(str(crate.get("_result")))
+			if _wants_crate_weapon(got):
+				if player.weapons.slots.size() >= player.weapons.max_slots():
+					var give: int = _slot_to_give_up()
+					if give < 0:
+						_finish_errand(true)
+						return
+					if give != player.weapons.current_index:
+						_select(give)
+						return
+				crate.interact(player)
+				if player.remote_body != null:
+					var w: WeaponInstance = player.weapons.current()
+					player.remote_body.set_weapon(w.id if w != null else &"")
+			_finish_errand(true)
+		_:
+			_finish_errand(paid)   # the drummer (the planner sends us after him next) or hidden
+
+
+## A crate gun worth taking: a free slot, a wonder weapon, or better than the worst held non-upgraded gun.
+func _wants_crate_weapon(wid: StringName) -> bool:
+	if not (GLData.table("weapons")["weapons"] as Dictionary).has(String(wid)):
+		return false   # a tactical (grenades): leave it
+	if wid == &"ashlight" or player.weapons.slots.size() < player.weapons.max_slots():
+		return true
+	var wish: Array = (_cfg.get("shopping", {}) as Dictionary).get("weapon_wishlist", [])
+	var r: int = wish.find(String(wid))
+	if r < 0:
+		return false
+	var give: int = _slot_to_give_up()
+	if give < 0:
+		return false
+	var worst: int = wish.find(String(player.weapons.slots[give].base_id()))
+	return worst < 0 or r < worst
+
+
+## Hold / shoot end conditions.
+func _cond_met(e: Dictionary, node: Node3D) -> bool:
+	var qid: StringName = StringName(str(e.get("qid", "")))
+	var sid: StringName = StringName(str(e.get("sid", "")))
+	match str(e.get("cond", "")):
+		"pylon":
+			return not (node is Pylon) or (node as Pylon).state != Pylon.State.CHARGING
+		"bell_lit":
+			return GameState.has_flag(&"chapel_bell_lit") or QuestManager.is_step_done(qid, sid)
+		"chapel":
+			return QuestManager.is_step_done(qid, sid) or not GameState.has_flag(&"chapel_bell_lit")
+		"step":
+			return QuestManager.is_step_done(qid, sid) or not QuestManager.is_active(qid, sid)
+		"holdout":
+			return QuestManager.is_step_done(qid, sid) or QuestManager.holdout_state(qid, sid).is_empty()
+	return false
+
+
+## The slot an objective needs in hand: its `weapon` (base id), or any upgraded gun when `need_upgraded`; -1.
+func _forced_slot() -> int:
+	if str(_errand.get("kind", "")) == "crucible_ammo":
+		var cs: int = int(_errand.get("slot", -1))
+		return cs if cs >= 0 and cs < player.weapons.slots.size() else -1
+	if _errand.is_empty() or not _errand.has("id"):
+		return -1
+	var want: String = str(_errand.get("weapon", ""))
+	var need_up: bool = bool(_errand.get("need_upgraded", false))
+	if want == "" and not need_up:
+		return -1
+	for i: int in player.weapons.slots.size():
+		var w: WeaponInstance = player.weapons.slots[i]
+		if want != "" and String(w.base_id()) == want:
+			return i
+		if need_up and w.upgraded:
+			return i
+	return -1
+
+
+## Turns onto `p` and fires one aimed shot when on it (single shots, whatever the gun's fire mode). True on a shot.
+func _shoot_at(p: Vector3, delta: float, tol_deg: float) -> bool:
+	var err: float = _turn_toward(p, delta)
+	var w: WeaponInstance = player.weapons.current()
+	if w == null or _reloading or _swap_t > 0.0:
+		return false
+	if w.mag <= 0:
+		if w.reserve > 0:
+			_start_reload()
+		return false
+	if err > deg_to_rad(tol_deg) or _fire_cd > 0.0 or _teammate_in_the_way(p):
+		return false
+	_fire(w)
+	_fire_cd = maxf(_fire_cd, 0.3)
+	return true
+
+
+# ---------------------------------------------------------------- spatial helpers for the planner
+
+## Nothing solid between two points (walls, closed doors).
+func los_point(from: Vector3, to: Vector3) -> bool:
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to, MASK_LOS, [player.get_rid()])
+	return player.get_world_3d().direct_space_state.intersect_ray(q).is_empty()
+
+
+func reachable(p: Vector3) -> bool:
+	return _reachable(p)
+
+
+func flat_distance(p: Vector3) -> float:
+	return _flat(p, player.global_position)
+
+
+## Where to stand to use `node`: its use box's front, its own spot, or a ring around it, on the navmesh and
+## reachable without crossing a closed door; Vector3.INF when there is none. Cached for a few seconds.
+func stand_point(node: Node3D) -> Vector3:
+	var key: int = node.get_instance_id()
+	var c: Variant = _stand_cache.get(key)
+	if c is Array and squad.time() - float((c as Array)[0]) < 4.0:
+		return (c as Array)[1]
+	var base: Vector3 = node.global_position
+	var cands: Array[Vector3] = []
+	if node is Interactable:
+		cands.append(_front_of(node as Interactable))
+	cands.append(base)
+	for r: float in [0.9, 1.5]:
+		for k: int in 8:
+			var a: float = float(k) / 8.0 * TAU
+			cands.append(base + Vector3(cos(a) * r, 0.0, sin(a) * r))
+	var out: Vector3 = Vector3.INF
+	for cand: Vector3 in cands:
+		for dy: float in [0.0, -1.5, -3.0]:
+			var s: Vector3 = _snap(cand + Vector3(0.0, dy, 0.0))
+			if _flat(s, base) < 1.8 and base.y - s.y < 3.2 and s.y - base.y < 1.2 and _reachable(s):
+				out = s
+				break
+		if out != Vector3.INF:
+			break
+	_stand_cache[key] = [squad.time(), out]
+	return out
+
+
+## A reachable navmesh spot that sees `target` (a bell overhead, a bell on a rafter), nearest rings first;
+## Vector3.INF when nothing within 12 m sees it.
+func vantage_for(target: Vector3) -> Vector3:
+	var eye_h: float = float((_cfg.get("perception", {}) as Dictionary).get("eye_height", 1.55))
+	for r: float in [2.5, 4.5, 7.0, 10.0, 12.0]:
+		for k: int in 12:
+			var a: float = float(k) / 12.0 * TAU
+			for dy: float in [-1.5, -4.0, -7.0, -11.0]:
+				var want: Vector3 = target + Vector3(cos(a) * r, dy, sin(a) * r)
+				var s: Vector3 = _snap(want)
+				if s.distance_to(want) > 1.6 or s.y > target.y:
+					continue
+				if not los_point(s + Vector3.UP * eye_h, target):
+					continue
+				if _reachable(s):
+					return s
+	return Vector3.INF

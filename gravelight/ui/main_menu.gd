@@ -48,6 +48,7 @@ func _ready() -> void:
 
 func _build() -> void:
 	GameState.bot_count = 0   # only Play (MenuCharacter) sends bots into a match (T-031)
+	GameState.bot_ai_mode = "off"
 	for c: Node in _menu.get_children():
 		_menu.remove_child(c)
 		c.queue_free()

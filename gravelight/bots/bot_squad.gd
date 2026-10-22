@@ -32,13 +32,69 @@ func setup(map_root: MapRoot) -> void:
 		p.add_child(b)
 		b.setup(p, self, i)
 		brains.append(b)
+		apply_kit(p, true)
 		i += 1
+	_start_planner()
 	for n: Node in map.find_children("*", "WallBuy", true, false):
 		_wall_buys.append(n as WallBuy)
 	GLBus.enemy_killed.connect(_on_enemy_killed)
 	# DOWN / TEAM_DOWN / REVIVED / boss / door / buy / perk lines for bots come from VOManager (T-035), which
 	# handles every survivor's signal-driven categories in that survivor's voice at their body.
 	GLBus.round_started.connect(_on_round_started)
+
+
+## The spawn kit (bots.json spawn_kit): the kit guns (when `weapons`: at the start and on a respawn) with the
+## `hold` gun in hand, and the kit perks (Ironhide Stout, Second Wind Schnapps), free. A full loadout (a campaign
+## arrival) is never overwritten. Called at the start, and by the brain when its bot gets up again.
+func apply_kit(p: Player, weapons: bool) -> void:
+	if p == null or not Net.is_authority():
+		return
+	var kit: Dictionary = _cfg.get("spawn_kit", {})
+	if weapons and p.weapons != null:
+		var held: Array = []
+		for w: WeaponInstance in p.weapons.slots:
+			held.append(String(w.base_id()))
+		for wid: StringName in BotConfig.kit_weapons_missing(kit, held):
+			if p.weapons.slots.size() >= p.weapons.max_slots():
+				break
+			if not (GLData.table("weapons")["weapons"] as Dictionary).has(String(wid)):
+				push_warning("bots.json spawn_kit: no weapon '%s'" % wid)
+				continue
+			p.weapons.give_weapon(wid)
+		var hold: String = str(kit.get("hold", ""))
+		if hold != "":
+			for k: int in p.weapons.slots.size():
+				if String(p.weapons.slots[k].base_id()) == hold:
+					p.weapons.current_index = k
+					break
+		if p.remote_body != null:
+			var cw: WeaponInstance = p.weapons.current()
+			p.remote_body.set_weapon(cw.id if cw != null else &"")
+	for perk: StringName in BotConfig.kit_perks_missing(kit, PerkManager.owned(p.player_id)):
+		if PerkManager.perk_data(perk).is_empty():
+			push_warning("bots.json spawn_kit: no perk '%s'" % perk)
+			continue
+		PerkManager.grant(p.player_id, perk)
+
+
+## The objective planner (bots.json local_ai) on one bot, when the menu turned it on.
+func _start_planner() -> void:
+	if GameState.bot_ai_mode == "off" or brains.is_empty():
+		return
+	var lc: Dictionary = _cfg.get("local_ai", {})
+	var idx: int = clampi(int(lc.get("bot_index", 0)), 0, brains.size() - 1)
+	var pl: BotPlanner = BotPlanner.new()
+	pl.name = "Planner"
+	brains[idx].add_child(pl)
+	pl.setup(brains[idx], self, GameState.bot_ai_mode == "local")
+	brains[idx].planner = pl
+
+
+func planner() -> BotPlanner:
+	for b: BotBrain in brains:
+		if b.planner != null:
+			return b.planner
+	return null
 
 
 func _process(delta: float) -> void:
@@ -214,6 +270,8 @@ func report() -> PackedStringArray:
 		out.append("%s (P%d, %s): kills %d shots %d hp %.0f scrip %d %s %s%s teleports %d doors %d upgrades %d" % [Net.display_name(b.player.player_id), b.player.player_id,
 			b.skill_name(), b.kills, b.shots, b.player.hp, Economy.get_scrip(b.player.player_id), str(w.id) if w != null else "-",
 			BotBrain.Mode.keys()[b.mode], " DOWN" if b.player.downed else "", b.teleports, b.doors_bought_total, b.upgrades])
+		if b.planner != null:
+			out.append("  " + b.planner.status_line())
 
 
 	return out

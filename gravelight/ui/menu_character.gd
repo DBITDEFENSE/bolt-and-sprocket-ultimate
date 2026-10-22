@@ -97,14 +97,22 @@ func _build_squad() -> void:
 	s.custom_minimum_size = Vector2(240, 44)
 	s.disabled = bots <= 0
 	row.add_child(s)
+	var ai_on: bool = bool(GLSettings.values.get("bot_local_ai", true))
+	var ai: Button = MenuKit.button("Local AI bot: %s" % ("On" if ai_on else "Off"), func() -> void:
+		GLSettings.set_value("bot_local_ai", not ai_on)
+		rebuild(), 22)
+	ai.custom_minimum_size = Vector2(240, 44)
+	ai.disabled = bots <= 0
+	row.add_child(ai)
 	if bots > 0:
 		var others: Array[StringName] = BotConfig.assign_characters([_picked], bots)
 		var who: PackedStringArray = []
 		for ch: StringName in others:
 			who.append(str(Net.DISPLAY.get(String(ch), String(ch))))
-		content.add_child(MenuKit.para("%s fight alongside you: they follow, shoot, rebuild boards, buy their own guns, open doors with their own Scrip, and revive you (and you them). Zombies scale as for %d players." % [
+		content.add_child(MenuKit.para("%s fight alongside you: they follow, shoot, rebuild boards, buy their own guns, open doors with their own Scrip, and revive you (and you them). They spawn with a Thompson, Ironhide Stout and Second Wind. With the local AI on, %s runs on a local model (Ollama) and works the map's tasks and easter egg on its own. Zombies scale as for %d players." % [
 
 			" and ".join(who) if who.size() <= 2 else ", ".join(who.slice(0, who.size() - 1)) + " and " + who[who.size() - 1],
+			who[clampi(int((c.get("local_ai", {}) as Dictionary).get("bot_index", 0)), 0, who.size() - 1)] if not who.is_empty() else "one bot",
 			BotConfig.scaled_player_count(1, bots, c)], 16, MenuKit.DIM))
 
 
@@ -113,6 +121,7 @@ func _start(scene: String, campaign: bool = false) -> void:
 		return
 	GameState.bot_count = BotConfig.clamp_bots(BotConfig.cfg(), int(GLSettings.values.get("bots", 0)))
 	GameState.bot_skill = str(GLSettings.values.get("bot_skill", "regular"))
+	GameState.bot_ai_mode = BotConfig.ai_mode_from_settings(GLSettings.values, GameState.bot_count)
 	if campaign:
 		Campaign.begin()
 	else:

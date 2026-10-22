@@ -14,6 +14,9 @@ var characters: Dictionary = {}           # co-op: player id -> survivor (empty 
 var bot_count: int = 0
 var bot_skill: String = "regular"
 var bot_ids: Array[int] = []
+## The objective planner on one bot (data/gravelight/bots.json "local_ai"): "off", "scripted" (its own scores)
+## or "local" (a local LLM through Ollama picks, the scores are the fallback).
+var bot_ai_mode: String = "off"
 var power_on: bool = false
 var open_zones: Dictionary = {}    # zone_id -> true
 var flags: Dictionary = {}         # e.g. {&"crate_has_moved": true}

@@ -425,7 +425,19 @@ func _check_fight(root: MapRoot) -> void:
 		elif _door_ids.has(item):
 			doors += 1
 	if guns == 0:
-		_fail("no bot bought a wall weapon")
+		# bots spawn with the kit gun (bots.json spawn_kit: a Thompson), which outranks the early wall guns:
+		# no purchase is fine then, as long as every bot still holds a kit gun or better
+		var kit: Array = (BotConfig.cfg().get("spawn_kit", {}) as Dictionary).get("weapons", [])
+		var kitted: bool = not kit.is_empty()
+		for bp: Player in _bots():
+			var has_kit: bool = false
+			for w: WeaponInstance in bp.weapons.slots:
+				has_kit = has_kit or kit.has(String(w.base_id())) or w.weapon_class() != &"pistol"
+			kitted = kitted and has_kit
+		if kitted:
+			_note("no wall weapon bought: every bot still carries its kit gun or better")
+		else:
+			_fail("no bot bought a wall weapon")
 	if doors == 0:
 		_fail("no bot opened a door (bot purchases: %s)" % str(_bot_buys))
 	_note("bot purchases: %d wall guns, %d doors, %d total" % [guns, doors, _bot_buys.size()])

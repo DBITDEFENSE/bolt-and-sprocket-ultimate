@@ -1,6 +1,47 @@
 {
   "_doc": "AI teammates (T-031). Tuning for gravelight/bots/*.gd; pure rules in bot_config.gd, unit-tested in gravelight/tests/unit/test_bots.gd.",
   "max_bots": 3,
+  "spawn_kit": {
+    "_doc": "What every bot spawns with, on top of the start pistol: the guns in `weapons` (the one in `hold` goes into its hands) and the perks in `perks`, free and outside the power rule. Ironhide Stout is the Juggernog equivalent (250 health), Second Wind Schnapps the Quick Revive equivalent (2x revive speed). restore_after_down gives the kit perks back when the bot is revived or respawns (co-op loses every perk on going down); weapons come back on a respawn.",
+    "weapons": [
+      "thompson"
+    ],
+    "hold": "thompson",
+    "perks": [
+      "ironhide_stout",
+      "second_wind"
+    ],
+    "restore_after_down": true
+  },
+  "local_ai": {
+    "_doc": "One bot (squad index bot_index) gets a planner that picks its objective: the map's easter egg steps, the power, doors, perks, guns, the Crucible, boards, or sticking with the team. In mode 'local' a local LLM served by Ollama (endpoint) makes the pick every decide_every_s from a short text summary of the match and a numbered option list (structured JSON output, the option ids as an enum); the first installed model in `models` is used and kept loaded for keep_alive. When Ollama is unreachable, slow (timeout_s) or answers nonsense, the scripted planner (each option's own score) decides instead, so the bot never stalls. autostart_ollama runs `ollama serve` (hidden) when the API is down and the exe is found. The bot then roams the whole map for its objectives (no leash) and fights from where it stands. speak: the LLM's short remark as a subtitle in the bot's voice, at most every speak_cooldown_s.",
+    "bot_index": 0,
+    "endpoint": "http://127.0.0.1:11434",
+    "models": [
+      "gemma3:27b",
+      "gemma3:4b",
+      "gemma4:31b"
+    ],
+    "decide_every_s": 4.0,
+    "timeout_s": 10.0,
+    "warmup_timeout_s": 120.0,
+    "temperature": 0.3,
+    "max_tokens": 90,
+    "keep_alive": "30m",
+    "autostart_ollama": true,
+    "ollama_paths": [
+      "{LOCALAPPDATA}/Programs/Ollama/ollama.exe",
+      "ollama"
+    ],
+    "max_options": 9,
+    "fail_cooldown_s": 25.0,
+    "errand_timeout_s": 60.0,
+    "speak": true,
+    "speak_cooldown_s": 22.0,
+    "crate_reserve_scrip": 250,
+    "egg_score": 70.0,
+    "follow_score": 12.0
+  },
   "scaling": {
     "_doc": "Each bot counts as this many players for zombie counts, the Foreman's health and the Bellringer count (rounded, capped at 4). 1.0 = exactly like a human teammate.",
     "bot_player_weight": 0.75
@@ -157,7 +198,7 @@
       "twin_barrel",
       "trigger_tonic"
     ],
-    "max_perks": 2,
+    "max_perks": 4,
     "perk_min_round": 3,
     "perk_buffer_scrip": 400,
     "errand_timeout_s": 20.0,

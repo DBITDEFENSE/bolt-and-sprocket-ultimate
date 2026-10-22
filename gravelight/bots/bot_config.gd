@@ -41,6 +41,33 @@ static func assign_characters(taken: Array, n: int) -> Array[StringName]:
 	return out
 
 
+## Spawn kit (bots.json spawn_kit): the kit guns not held yet (by base id), in kit order.
+static func kit_weapons_missing(kit: Dictionary, held_bases: Array) -> Array[StringName]:
+	var out: Array[StringName] = []
+	for w: Variant in kit.get("weapons", []):
+		var wid: String = str(w)
+		if not held_bases.has(wid) and not held_bases.has(StringName(wid)):
+			out.append(StringName(wid))
+	return out
+
+
+## Spawn kit: the kit perks not owned yet, in kit order.
+static func kit_perks_missing(kit: Dictionary, owned: Array) -> Array[StringName]:
+	var out: Array[StringName] = []
+	for p: Variant in kit.get("perks", []):
+		var pid: String = str(p)
+		if not owned.has(pid) and not owned.has(StringName(pid)):
+			out.append(StringName(pid))
+	return out
+
+
+## The objective planner's mode from the menu settings: "local" when on, else "off".
+static func ai_mode_from_settings(values: Dictionary, bots: int) -> String:
+	if bots <= 0:
+		return "off"
+	return "local" if bool(values.get("bot_local_ai", true)) else "off"
+
+
 ## Players the round scaling sees: humans count 1, bots `bot_player_weight` each (rounded), 1..max_players.
 static func scaled_player_count(humans: int, bots: int, c: Dictionary, max_players: int = 4) -> int:
 	var w: float = float((c.get("scaling", {}) as Dictionary).get("bot_player_weight", 1.0))

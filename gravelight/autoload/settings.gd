@@ -40,6 +40,7 @@ var values: Dictionary = {
 	"last_join_ip": "127.0.0.1",   # co-op: the address typed in the lobby's Join field last time
 	"bots": 0,                     # AI teammates in a solo match (0-3, T-031)
 	"bot_skill": "regular",        # their skill preset (data/gravelight/bots.json "skills")
+	"bot_local_ai": true,          # one bot runs on a local LLM (Ollama) and does the map's tasks and easter egg
 	"gore": "full",                # off / low / full: dismemberment and blood (MZ, T-041); the shatter VFX always shows
 
 }
