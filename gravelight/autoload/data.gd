@@ -4,6 +4,7 @@ extends Node
 
 const DATA_DIR: String = "res://data/gravelight/"
 const TABLES: PackedStringArray = [
+	"movement",   # Update 02 §1: acceleration, sprint, mantle, camera feel (Player)
 	"economy", "rounds", "player", "perks", "powerups", "crate", "traps",
 	"weapons", "enemies", "input_defaults", "world", "map01", "net", "bots", "campaign", "anim",
 	"bosses/cousins", "bosses/likeness",   # the homage bosses (HB1): table("bosses/cousins") reads data/gravelight/bosses/cousins.json

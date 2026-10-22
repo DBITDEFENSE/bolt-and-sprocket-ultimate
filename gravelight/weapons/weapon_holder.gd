@@ -73,8 +73,7 @@ var _burst_left: int = 0
 var _burst_cd: float = 0.0
 var _ground_t: float = 0.0
 var _fired_this_frame: bool = false
-var _crank_t: float = 0.0          # Totenglocke: crank progress (seconds held)
-var _cranked: bool = false
+var _bell: Totenglocke = null      # Totenglocke wind-and-toll logic (gravelight/weapons/totenglocke.gd), made on first use
 var _bell_crank: Node3D = null
 var _fire_keys: Dictionary = {}    # base weapon id -> fire sound key (cached: "fire_<id>" or the class key)
 var _fire_buffer: float = 0.0      # a semi-auto click that arrived slightly early fires as soon as it can
@@ -83,6 +82,17 @@ var _feel: Dictionary = {}         # resolved feel/viewmodel tuning for the held
 var _cues: Array = []              # sound cues of the reload in progress (RELOAD_CUES)
 var _cue_i: int = 0
 var _sprinting: bool = false       # from this frame's intent: sprinting interrupts reloads (see _tick_reload)
+# Update 02 §1 gunplay feel
+const MOVE_FIRE_BUFFER: float = 0.75   # a fire press during sprint-out / an early slide / a mantle waits this long at most
+var _sprint_out_total: float = 0.3     # this weapon's sprint-out time (movement.json sprint_out), for the pose blend
+var _move_fire_buffer: float = 0.0     # a fire press that arrived while sprinting / sprinting out / sliding early / mantling
+var _since_shot: float = 99.0
+var _shot_i: int = 0                   # shots in the current burst (recoil pattern index)
+var _recoil: Dictionary = {}           # resolved recoil pattern for the held weapon (recoil_for), cached by id
+var _recoil_id: StringName = &""
+var _vel_prev: Vector3 = Vector3.ZERO  # weapon inertia: the player's velocity last frame
+var _inertia: Vector3 = Vector3.ZERO   # weapon inertia offset (camera space, m) and its velocity
+var _inertia_v: Vector3 = Vector3.ZERO
 var _reload_queued: bool = false   # a reload asked for while sprinting starts once the sprint ends
 ## Co-op puppet inventory (see the class doc). Set before setup().
 var mirror: bool = false
@@ -193,9 +203,15 @@ func spread_deg() -> float:
 	if w == null:
 		return 0.0
 	var sway: float = float(PerkManager.stat(player.player_id, "sway_mult", 1.0))
-	var base: float = lerpf(w.f("spread_hip", 3.0), w.f("spread_ads", 0.5) * sway, ads_t)
-	var move_pen: float = clampf(player.horizontal_speed() / 6.0, 0.0, 1.0) * 2.0 * (1.0 - ads_t)
-	return base + bloom + move_pen + (0.0 if player.is_on_floor() else 4.0)
+	var mv: Dictionary = GLData.table("movement")
+	var hip: float = w.f("spread_hip", 3.0)
+	if player.crouching or player.prone:
+		hip *= float(mv.get("crouch_spread_mult", 0.8))
+	var base: float = lerpf(hip, w.f("spread_ads", 0.5) * sway, ads_t)
+	# walking fire: allowed, with a cone penalty that grows with speed (up to walk_spread_deg at walk speed)
+	var walk: float = float(GLData.table("player")["walk_speed"])
+	var move_pen: float = clampf(player.horizontal_speed() / walk, 0.0, 1.3) * float(mv.get("walk_spread_deg", 2.2)) * (1.0 - ads_t)
+	return base + bloom * (1.0 - 0.7 * ads_t) + move_pen + (0.0 if player.is_on_floor() else 4.0)
 
 
 func fov_mult() -> float:
@@ -220,6 +236,31 @@ func ads_zoom(w: WeaponInstance) -> float:
 func move_mult() -> float:
 	var w: WeaponInstance = current()
 	return 1.0 if w == null else w.f("move_mult", 1.0)
+
+
+## ADS-walk speed as a share of the walk speed: the weapon row's ads_move_mult, else movement.json's (0.6).
+func ads_move_mult() -> float:
+	var dflt: float = float(GLData.table("movement").get("ads_move_mult", 0.6))
+	var w: WeaponInstance = current()
+	return dflt if w == null else w.f("ads_move_mult", dflt)
+
+
+## Seconds from leaving a sprint until `w` can fire (movement.json sprint_out: per class, per-weapon overrides).
+static func sprint_out_time(w: WeaponInstance) -> float:
+	var so: Dictionary = GLData.table("movement").get("sprint_out", {})
+	var dflt: float = float(so.get("default", 0.3))
+	if w == null:
+		return dflt
+	var per: Dictionary = so.get("weapons", {})
+	if per.has(String(w.base_id())):
+		return float(per[String(w.base_id())])
+	return float(so.get(String(w.weapon_class()), dflt))
+
+
+## True while a fire press is waiting for the sprint-out / slide / mantle to finish (the Player keeps the
+## sprint off meanwhile so the shot is never lost).
+func fire_pending() -> bool:
+	return _move_fire_buffer > 0.0
 
 
 # ---------------------------------------------------------------- inventory
@@ -471,17 +512,21 @@ func tick(delta: float, intent: Dictionary) -> void:
 	_fire_cd = maxf(-0.05, _fire_cd - delta)
 	_fire_buffer = maxf(0.0, _fire_buffer - delta)
 	_swap_t = maxf(0.0, _swap_t - delta)
-	bloom = move_toward(bloom, 0.0, delta * 8.0)
+	_since_shot += delta
+	_move_fire_buffer = maxf(0.0, _move_fire_buffer - delta)
+	_tick_bloom(delta)
 	_kick = move_toward(_kick, 0.0, delta * 6.0)
 	var sprinting: bool = bool(intent.get("sprinting", false))
 	_sprinting = sprinting
+	var w: WeaponInstance = current()
 	if sprinting:
-		_sprint_out_t = 0.16
+		_sprint_out_total = sprint_out_time(w)
+		_sprint_out_t = _sprint_out_total     # held full while sprinting; runs down from the moment the sprint ends
 	else:
 		_sprint_out_t = maxf(0.0, _sprint_out_t - delta)
-	var w: WeaponInstance = current()
+	var fire_block: bool = bool(intent.get("fire_block", false))
 	# ADS
-	var want_ads: bool = bool(intent.get("ads", false)) and not sprinting and _melee_t <= 0.0
+	var want_ads: bool = bool(intent.get("ads", false)) and not sprinting and _melee_t <= 0.0 and not bool(intent.get("mantle", false))
 	var ads_time: float = 0.25 if w == null else maxf(0.05, w.f("ads_time", 0.25) * float(PerkManager.stat(player.player_id, "ads_time_mult", 1.0)))
 	ads_t = move_toward(ads_t, 1.0 if want_ads else 0.0, delta / ads_time)
 	# Swap
@@ -512,7 +557,11 @@ func tick(delta: float, intent: Dictionary) -> void:
 	# Fire
 	_fired_this_frame = false
 	_burst_cd = maxf(0.0, _burst_cd - delta)
-	var can_shoot: bool = w != null and not sprinting and _sprint_out_t <= 0.0 and _swap_t <= 0.0 and _melee_t <= 0.0 and not _cooking
+	var can_shoot: bool = w != null and not sprinting and _sprint_out_t <= 0.0 and _swap_t <= 0.0 and _melee_t <= 0.0 and not _cooking and not fire_block
+	# A press while the gun is still coming out of a sprint (or early in a slide, or mid-mantle) is remembered and
+	# fires the moment it can: the input is never eaten.
+	if bool(intent.get("fire_pressed", false)) and w != null and (sprinting or _sprint_out_t > 0.0 or fire_block) and _swap_t <= 0.0 and _melee_t <= 0.0:
+		_move_fire_buffer = MOVE_FIRE_BUFFER
 	if w != null and w.data.has("bell"):
 		_tick_bell(w, delta, can_shoot and bool(intent.get("fire_held", false)), bool(intent.get("fire_pressed", false)))
 	elif can_shoot and _burst_left > 0 and _burst_cd <= 0.0 and w.mag > 0:
@@ -525,8 +574,10 @@ func tick(delta: float, intent: Dictionary) -> void:
 		if pressed and mode != "auto" and _fire_cd > 0.0 and _fire_cd <= FIRE_BUFFER:
 			_fire_buffer = FIRE_BUFFER
 		var trigger: bool = bool(intent.get("fire_held", false)) if mode == "auto" else (pressed or _fire_buffer > 0.0)
+		trigger = trigger or _move_fire_buffer > 0.0
 		if trigger and _fire_cd <= 0.0:
 			_fire_buffer = 0.0
+			_move_fire_buffer = 0.0
 			if w.underbarrel_active:
 				_fire_underbarrel(w)
 			elif w.mag > 0 and (not _reloading or _reload_per_round):
@@ -569,6 +620,8 @@ func _select(index: int) -> void:
 func _fire(w: WeaponInstance) -> void:
 	w.mag -= 1
 	_fired_this_frame = true
+	if w.mag == 0 and w.mag_size() > 1 and not w.data.has("stream"):
+		AudioDirector.play_2d("last_round_click", -3.0, 0.0)   # the "last bullet" tell: a light hollow click
 	if player.camera != null:
 		GLBus.weapon_fired.emit(player.player_id, w.id, w.upgraded, player.camera.global_position, -player.camera.global_basis.z)
 	var rpm: float = maxf(1.0, w.f("rpm", 300.0) * float(PerkManager.stat(player.player_id, "fire_rate_mult", 1.0)))
@@ -613,7 +666,8 @@ func _fire(w: WeaponInstance) -> void:
 		_ricochet(w, hits)
 	NetMatch.shot_dir = Vector3.ZERO
 	_report_fire(0, w.id, cam.global_position, _last_impact)
-	bloom = minf(bloom + (1.2 if pellets == 1 else 0.0), 6.0)
+	var rc: Dictionary = recoil_cfg(w)
+	bloom = minf(bloom + float(rc.get("bloom", 1.0)) * (1.0 if pellets == 1 else 0.35), float(rc.get("bloom_max", 6.0)))
 	AudioDirector.play_2d(_fire_key(w), float(_feel.get("fire_db", -2.0)))
 	_glassy_layer(w)
 	_shot_feedback(w)
@@ -724,6 +778,9 @@ func _fire_stream(w: WeaponInstance) -> void:
 # ---------------------------------------------------------------- upgraded-weapon behavior (Crucible)
 
 func _alt_fire(w: WeaponInstance) -> void:
+	if w.data.has("bell"):
+		bell_logic().alt_fire(w)   # the Bell Dome
+		return
 	if w.has_property("volley"):
 		_volley(w)
 		return
@@ -904,9 +961,13 @@ func _trace(origin: Vector3, dir: Vector3, w: WeaponInstance, hits: Dictionary) 
 				cur["limb"] = String(hb.limb)
 				cur["bone"] = hb.bone
 			hits[z] = cur
-			Effects.blood(pos, -dir)
-			if fx != null:
-				fx.blood_mist(pos, -dir)
+			if z.enemy_id == &"glasshide" and (hb.limb == &"torso" or hb.limb == &"arms"):
+				if fx != null:
+					fx.nachtglas_spark(pos, -dir)       # the crystal plates throw glints, not blood
+			else:
+				Effects.blood(pos, -dir)
+				if fx != null:
+					fx.blood_mist(pos, -dir)
 			for rid: RID in z.hitbox_rids():
 				exclude.append(rid)
 			from = pos + dir * 0.05
@@ -914,9 +975,10 @@ func _trace(origin: Vector3, dir: Vector3, w: WeaponInstance, hits: Dictionary) 
 			var target: Node = shootable_of(col)
 			if target != null:
 				notify_shot(target, w.id, w.upgraded, player.player_id)
-			Effects.impact(pos, res["normal"])
+			var surf: String = GunFx.surface_of(col, pos, res["normal"], space)
+			Effects.impact(pos, res["normal"], surf)
 			if fx != null:
-				fx.impact(pos, res["normal"], col)
+				fx.impact(pos, res["normal"], col, surf)
 			break
 	_last_impact = last_hit
 	Effects.tracer(_muzzle_world().origin, last_hit)
@@ -945,74 +1007,17 @@ static func notify_shot(target: Node, weapon_id: StringName, upgraded: bool, by_
 	GLBus.shootable_hit.emit(tid, weapon_id, upgraded, by_player)
 
 
-# ---------------------------------------------------------------- Totenglocke (crank, then ring)
+# ---------------------------------------------------------------- Totenglocke (wind and toll, T-048)
 
+## The bell's logic lives in Totenglocke (tap = toll, hold = wind for the Great Toll, alt = Bell Dome).
 func _tick_bell(w: WeaponInstance, delta: float, held: bool, pressed: bool) -> void:
-	var b: Dictionary = w.data["bell"]
-	if w.mag <= 0:
-		_crank_t = 0.0
-		_cranked = false
-		if pressed:
-			AudioDirector.play_2d("gun_dry", -4.0)
-			start_reload()
-		return
-	if held and not _reloading:
-		_crank_t += delta
-		if _bell_crank != null:
-			_bell_crank.rotation.x += delta * 14.0
-		if not _cranked and _crank_t >= float(b["crank_seconds"]):
-			_cranked = true
-			AudioDirector.play_2d("totenglocke_crank", -2.0)
-	elif not held:
-		if _cranked:
-			_ring(w)
-		_crank_t = 0.0
-		_cranked = false
+	bell_logic().tick(w, delta, held, pressed)
 
 
-static func bell_damage(b: Dictionary, base_damage: float, dist: float) -> float:
-	var full: float = float(b.get("full_radius", 4.0))
-	var rng: float = float(b.get("range", 8.0))
-	if dist <= full:
-		return base_damage
-	return base_damage * lerpf(1.0, float(b.get("edge_mult", 0.6)), clampf((dist - full) / maxf(0.01, rng - full), 0.0, 1.0))
-
-
-func _ring(w: WeaponInstance) -> void:
-	var b: Dictionary = w.data["bell"]
-	w.mag -= 1
-	_fired_this_frame = true
-	var cam: Camera3D = player.camera
-	var fwd: Vector3 = -cam.global_basis.z
-	var cos_cone: float = cos(deg_to_rad(float(b["cone_deg"]) * 0.5))
-	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
-	var pid: int = player.player_id
-	for z: Zombie in _director_zombies():
-		var chest: Vector3 = z.global_position + Vector3.UP * 1.0
-		var to_z: Vector3 = chest - cam.global_position
-		var d: float = to_z.length()
-		if d > float(b["range"]) or (d > 1.2 and fwd.dot(to_z / maxf(d, 0.01)) < cos_cone):
-			continue
-		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(cam.global_position, chest, 1 | (1 << 8))
-		if not space.intersect_ray(q).is_empty():
-			continue
-		var killed: bool = z.take_damage(bell_damage(b, w.f("damage", 3000.0), d), &"torso", w.id, pid, &"wonder", true)
-		GLBus.enemy_hit_feedback.emit(pid, killed, false)
-		for i: int in 3:
-			Effects.blood(chest + Vector3(randf_range(-0.3, 0.3), randf_range(-0.5, 0.5), randf_range(-0.3, 0.3)), to_z)
-	_vm_kick(2.0)
-	player.add_recoil(3.0)
-	player.set("_shake", 0.6)
-	var ring_key: String = str(b.get("ring_sound", "totenglocke_ring"))
-	AudioDirector.play_2d(ring_key, 2.0, 0.0)
-	if w.upgraded:
-		# Mitternacht: the double ring.
-		get_tree().create_timer(0.14).timeout.connect(func() -> void: AudioDirector.play_2d(ring_key, -1.0, 0.0))
-	Effects.explosion(cam.global_position + fwd * 3.0, float(b["range"]) * 0.3)
-	_on_shot_fx(0.08)
-	if w.mag <= 0 and w.reserve > 0:
-		get_tree().create_timer(0.4).timeout.connect(start_reload)
-	_ammo_warnings(w)
+func bell_logic() -> Totenglocke:
+	if _bell == null:
+		_bell = Totenglocke.new(self)
+	return _bell
 
 
 func start_reload() -> void:
@@ -1803,12 +1808,16 @@ func _pose_arm(hand_node: Node3D, limbs: Array[MeshInstance3D], forearm: MeshIns
 func _animate(delta: float, sprinting: bool) -> void:
 	_tick_debris(delta)
 	_update_rig_scale()
+	_feel_rig(delta)
 	var w: WeaponInstance = current()
 	var ads_e: float = smoothstep(0.0, 1.0, ads_t)
 	var hip_k: float = 1.0 - ads_e
 	# ---- eased blends: sprint, crouch, grenade cook, reload tilt
-	var sprint_on: bool = sprinting or _sprint_out_t > 0.0
-	_sprint_b = move_toward(_sprint_b, 1.0 if sprint_on else 0.0, delta * (4.5 if sprint_on else 6.5))
+	# sprint-out: the pose comes down over exactly the weapon's sprint-out time, so the gun is up when it can fire
+	if sprinting:
+		_sprint_b = move_toward(_sprint_b, 1.0, delta * 4.5)
+	else:
+		_sprint_b = minf(move_toward(_sprint_b, 0.0, delta * 6.5), _sprint_out_t / maxf(0.05, _sprint_out_total))
 	var sprint_e: float = smoothstep(0.0, 1.0, _sprint_b)
 	_crouch_b = move_toward(_crouch_b, 1.0 if (player.crouching or player.sliding) else 0.0, delta * 4.0)
 	var crouch_e: float = smoothstep(0.0, 1.0, _crouch_b) * hip_k
@@ -1864,6 +1873,8 @@ func _animate(delta: float, sprinting: bool) -> void:
 		pos += Vector3(0.02, -0.17, 0.05) * k
 		rot += Vector3(-0.85, 0.15, 0.35) * k
 	_reset_parts()
+	if _bell != null:
+		_bell.pose_parts(_bell_crank, _model)   # wind-up crank spin, the bell's ring-out vibration
 	var lh_override: Variant = null      # support-hand target in gun space, if a reload moves it
 	var tilt: float = 0.0
 	if _reloading and w != null:
@@ -2125,8 +2136,12 @@ func _shot_feedback(w: WeaponInstance) -> void:
 	_kick = 1.0
 	var f: Dictionary = _feel
 	var ads_k: float = lerpf(1.0, float(f.get("ads_recoil", 0.65)), ads_t)
-	player.kick_camera(float(f.get("cam_pitch", 1.0)) * ads_k, float(f.get("cam_yaw", 0.3)) * ads_k, float(f.get("cam_keep", 0.3)),
+	# Aim recoil = the weapon's pattern (_apply_recoil_pattern); the camera kick on top is a short visual punch
+	# that springs fully back (punch share of the feel numbers), and the viewmodel kick is separate again.
+	var punch: float = float(recoil_cfg(w).get("punch", 0.45))
+	player.kick_camera(float(f.get("cam_pitch", 1.0)) * ads_k * punch, float(f.get("cam_yaw", 0.3)) * ads_k * punch, 0.0,
 		float(f.get("cam_recover", 12.0)), float(f.get("shake", 0.05)) * ads_k, float(f.get("fov_punch", 0.5)) * ads_k)
+	_apply_recoil_pattern(w, ads_k)
 	_vm_kick(1.0)
 	_on_shot_fx(float(f.get("flash_time", 0.05)))
 	if bool(f.get("smoke", false)) and _muzzle != null and is_inside_tree():
@@ -2147,6 +2162,93 @@ func _vm_kick(strength: float) -> void:
 	var roll: float = deg_to_rad(float(f.get("vm_roll", 2.0)))
 	_vk_pv += Vector3(randf_range(-0.15, 0.15) * back, back * float(f.get("vm_lift", 0.12)), back) * amp
 	_vk_rv += Vector3(climb, randf_range(-0.4, 0.4) * roll, randf_range(-1.0, 1.0) * roll) * amp
+
+
+## Resolved recoil pattern for a weapon: weapons.json recoil.classes.default < classes[<class>] <
+## recoil.weapons[<base id>] < the weapon row's "recoil" (base row, then the upgraded row).
+static func recoil_for(w: WeaponInstance) -> Dictionary:
+	var t: Dictionary = GLData.table("weapons")
+	var root: Dictionary = t.get("recoil", {})
+	var classes: Dictionary = root.get("classes", {})
+	var out: Dictionary = {}
+	out.merge(classes.get("default", {}) as Dictionary, true)
+	out.merge(classes.get(String(w.weapon_class()), {}) as Dictionary, true)
+	out.merge((root.get("weapons", {}) as Dictionary).get(String(w.base_id()), {}) as Dictionary, true)
+	var base_row: Dictionary = (t["weapons"] as Dictionary).get(String(w.base_id()), {})
+	out.merge(base_row.get("recoil", {}) as Dictionary, true)
+	if w.upgraded:
+		out.merge(w.data.get("recoil", {}) as Dictionary, true)
+	return out
+
+
+func recoil_cfg(w: WeaponInstance) -> Dictionary:
+	if w == null:
+		return {}
+	if w.id != _recoil_id:
+		_recoil_id = w.id
+		_recoil = recoil_for(w)
+	return _recoil
+
+
+## The per-weapon recoil pattern (deterministic per shot index; separate from the viewmodel's visual kick):
+## shot i climbs v x min(v_max_mult, 1 + v_growth x i) degrees, swings sideways along h_swing x sin(i x h_freq
+## + phase) plus a small random +-h, and (1 - keep) of the burst drifts back after recover_delay. The index
+## resets after `reset` seconds without a shot.
+func _apply_recoil_pattern(w: WeaponInstance, ads_k: float) -> void:
+	var rc: Dictionary = recoil_cfg(w)
+	if _since_shot > float(rc.get("reset", 0.35)):
+		_shot_i = 0
+	var i: float = float(_shot_i)
+	var v: float = float(rc.get("v", 0.6)) * minf(float(rc.get("v_max_mult", 1.5)), 1.0 + float(rc.get("v_growth", 0.0)) * i)
+	var phase: float = float(absi(hash(String(w.base_id()))) % 628) * 0.01
+	var h: float = float(rc.get("h_swing", 0.0)) * sin(i * float(rc.get("h_freq", 0.7)) + phase) + randf_range(-1.0, 1.0) * float(rc.get("h", 0.15))
+	var crouch_k: float = float(rc.get("crouch_mult", 0.85)) if (player.crouching or player.prone) else 1.0
+	player.apply_recoil_pattern(v * ads_k * crouch_k, h * ads_k * crouch_k, float(rc.get("keep", 0.3)), float(rc.get("recover", 7.0)),
+		float(rc.get("recover_delay", 0.12)))
+	_shot_i += 1
+	_since_shot = 0.0
+
+
+## Hip bloom: grows with each shot (recoil "bloom"), holds while you keep firing, then shrinks: fast standing
+## still, slower on the move, faster again crouched.
+func _tick_bloom(delta: float) -> void:
+	if bloom <= 0.0 or _since_shot < 0.09:
+		return
+	var rc: Dictionary = recoil_cfg(current())
+	var still: bool = player == null or player.horizontal_speed() < 0.6
+	var rate: float = float(rc.get("bloom_still", 9.0)) if still else float(rc.get("bloom_move", 4.5))
+	if player != null and (player.crouching or player.prone):
+		rate *= 1.4
+	bloom = move_toward(bloom, 0.0, rate * delta)
+
+
+## Movement feel on the whole first-person rig (on top of the hip / ADS pose, so the sight picture is untouched
+## when aimed): weapon inertia (the gun lags changes of velocity), and the mantle dip / roll.
+func _feel_rig(delta: float) -> void:
+	if player == null or _rig == null:
+		return
+	var C: Dictionary = GLData.table("movement").get("camera", {})
+	var hip_k: float = 1.0 - smoothstep(0.0, 1.0, ads_t)
+	var dv: Vector3 = (player.velocity - _vel_prev)
+	_vel_prev = player.velocity
+	var local_dv: Vector3 = global_basis.inverse() * dv          # camera space: x right, y up, z back
+	var push: Vector3 = Vector3(-local_dv.x, -local_dv.y * 0.6, -local_dv.z * 0.5) * float(C.get("inertia", 0.0042))
+	_inertia_v += push * 40.0
+	var r: Array = _spring3(_inertia, _inertia_v, 11.0, 0.7, delta)
+	_inertia = (r[0] as Vector3).limit_length(float(C.get("inertia_max", 0.03)))
+	_inertia_v = r[1]
+	var mk: float = player.mantle_k() if player.has_method("mantle_k") else 0.0
+	var off: Vector3 = (_inertia + Vector3(0.015, -0.07, 0.03) * mk) * hip_k
+	_rig.position += off * _vm_compress
+	_rig.rotation = Vector3(-0.35 * mk, 0.0, 0.25 * mk) * hip_k
+
+
+## Jump take-off: the gun dips (and a hair of roll) on the same spring as the shot kick.
+func on_jump() -> void:
+	var wv: float = float(_feel.get("vm_spring", 20.0))
+	var k: float = float((GLData.table("movement").get("jump", {}) as Dictionary).get("takeoff_dip", 0.6))
+	_vk_pv += Vector3(0.0, -0.03, 0.006) * k * wv * 2.0
+	_vk_rv += Vector3(-0.05, 0.0, -0.02) * k * wv * 2.0
 
 
 ## Landing: a dip proportional to the fall speed, on the same spring as the shot kick.
@@ -2354,7 +2456,5 @@ func _animate_reload(p: float) -> Variant:
 				valve.rotation.z = TAU * 1.5 * _seg(p, 0.2, 0.8)
 				return lh_home.lerp(valve.position + Vector3(-0.03, 0.0, 0.0), _seg(p, 0.05, 0.2) * (1.0 - _seg(p, 0.85, 0.98)))
 		"bell":
-			var crank: Node3D = _part("Crank")
-			if crank != null:
-				crank.rotation.x = TAU * 3.0 * p
+			return bell_logic().reload_hand(p, _part("Crank"), lh_home)   # the crank IS the reload
 	return null

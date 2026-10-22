@@ -85,6 +85,8 @@ var _flinch_dir: float = 1.0
 var armor_torso_mult: float = 1.0
 var _frost_t: float = 0.0
 var _frost_slow: float = 0.0
+var _vuln_mult: float = 1.0        # Bell Dome (Totenglocke, T-048): damage taken x this until _vuln_until_ms
+var _vuln_until_ms: int = 0
 var _kind_nodes: Dictionary = {}   # "glass" / "lantern" -> Node3D, shown per kind
 var _lantern_light: OmniLight3D
 var _lunge_dir: Vector3 = Vector3.ZERO
@@ -847,6 +849,17 @@ func frost_speed_mult() -> float:
 	return 1.0 - _frost_slow if _frost_t > 0.0 else 1.0
 
 
+## Bell Dome (Totenglocke alt-fire, T-048): takes `mult` x damage for the next `seconds` (real time; the dome
+## refreshes it every tick while the zombie is inside).
+func set_vulnerable(mult: float, seconds: float) -> void:
+	_vuln_mult = mult
+	_vuln_until_ms = Time.get_ticks_msec() + int(seconds * 1000.0)
+
+
+func vulnerability() -> float:
+	return _vuln_mult if _vuln_until_ms > Time.get_ticks_msec() else 1.0
+
+
 ## Interrupts the current attack/chase (Ironmonger stagger rounds).
 func force_stagger() -> void:
 	if puppet:
@@ -904,6 +917,7 @@ func take_damage(amount: float, limb: StringName, weapon_id: StringName, by_play
 		return false
 	if (limb == &"torso" or limb == &"arms") and kind == &"bullet" and not armor_piercing:
 		amount *= armor_torso_mult
+	amount *= vulnerability()
 	if GameState.has_flag(&"deaths_door") and kind != &"world":
 		amount = hp + 1.0
 	hp -= amount

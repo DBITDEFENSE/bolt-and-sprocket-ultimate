@@ -11,7 +11,17 @@ const STATIC_LIFE: float = 0.42
 const STATIC_TEAL: Color = Color(0.25, 0.85, 0.8)
 const STATIC_VIOLET: Color = Color(0.72, 0.42, 1.0)
 
+## Bullet-hole decals per surface (Update 02 §1): hole and rim colors, size (m), rim width, how ragged.
+const DECALS: Dictionary = {
+	"wood": {"hole": Color(0.07, 0.045, 0.03, 0.95), "rim": Color(0.62, 0.46, 0.3, 0.9), "size": 0.075, "rim_w": 0.32, "rag": 0.55},
+	"stone": {"hole": Color(0.09, 0.09, 0.09, 0.9), "rim": Color(0.66, 0.64, 0.6, 0.8), "size": 0.09, "rim_w": 0.45, "rag": 0.35},
+	"snow": {"hole": Color(0.42, 0.47, 0.56, 0.55), "rim": Color(0.92, 0.95, 1.0, 0.5), "size": 0.13, "rim_w": 0.55, "rag": 0.2},
+	"metal": {"hole": Color(0.04, 0.04, 0.045, 0.95), "rim": Color(0.82, 0.82, 0.85, 0.9), "size": 0.05, "rim_w": 0.22, "rag": 0.08},
+	"hay": {"hole": Color(0.14, 0.11, 0.05, 0.8), "rim": Color(0.75, 0.62, 0.3, 0.5), "size": 0.07, "rim_w": 0.4, "rag": 0.7},
+}
+
 var _impacts: Array[MeshInstance3D] = []
+var _decal_mats: Dictionary = {}       # surface -> material (DECALS); "" = the plain dark mark
 var _impact_life: Array[float] = []
 var _blood: Array[CPUParticles3D] = []
 var _tracers: Array[MeshInstance3D] = []
@@ -33,6 +43,9 @@ func _ready() -> void:
 	dark.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	var quad: QuadMesh = QuadMesh.new()
 	quad.size = Vector2(0.07, 0.07)
+	_decal_mats[""] = dark
+	for surf: String in DECALS.keys():
+		_decal_mats[surf] = _decal_mat(DECALS[surf])
 	for i: int in IMPACTS:
 		var mi: MeshInstance3D = MeshInstance3D.new()
 		mi.mesh = quad
@@ -204,10 +217,14 @@ func _process(delta: float) -> void:
 				_statics[i].hide()
 
 
-func impact(pos: Vector3, normal: Vector3) -> void:
+## A bullet hole at `pos` facing `normal`, styled by `surface` (wood / stone / snow / metal / hay; "" = plain).
+func impact(pos: Vector3, normal: Vector3, surface: String = "") -> void:
 	var mi: MeshInstance3D = _impacts[_ni]
-	_impact_life[_ni] = 8.0
+	_impact_life[_ni] = 8.0 if surface != "snow" else 5.0
 	_ni = (_ni + 1) % IMPACTS
+	mi.material_override = _decal_mats.get(surface, _decal_mats[""])
+	var size: float = float((DECALS.get(surface, {}) as Dictionary).get("size", 0.07))
+	mi.scale = Vector3.ONE * (size / 0.07) * randf_range(0.85, 1.15)
 	mi.show()
 	mi.global_position = pos + normal * 0.01
 	if absf(normal.dot(Vector3.UP)) > 0.99:
@@ -215,6 +232,44 @@ func impact(pos: Vector3, normal: Vector3) -> void:
 	else:
 		mi.look_at(pos + normal, Vector3.UP)
 	mi.rotate_object_local(Vector3.UP, PI)
+	mi.rotate_object_local(Vector3.BACK, randf() * TAU)
+
+
+## A procedural bullet-hole texture: a dark ragged hole with a lighter chipped / splintered rim that fades out.
+static func _decal_mat(d: Dictionary) -> StandardMaterial3D:
+	var n: int = 64
+	var img: Image = Image.create(n, n, false, Image.FORMAT_RGBA8)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = hash(str(d.get("rim")))
+	var lobes: Array[float] = []
+	for i: int in 9:
+		lobes.append(rng.randf_range(-1.0, 1.0))
+	var hole: Color = d["hole"]
+	var rim: Color = d["rim"]
+	var rag: float = float(d.get("rag", 0.3))
+	var rim_w: float = float(d.get("rim_w", 0.35))
+	for y: int in n:
+		for x: int in n:
+			var v: Vector2 = Vector2(x + 0.5 - n * 0.5, y + 0.5 - n * 0.5) / (n * 0.5)
+			var r: float = v.length()
+			var a: float = atan2(v.y, v.x)
+			var wob: float = 0.0
+			for k: int in lobes.size():
+				wob += lobes[k] * sin(a * float(k + 2) + float(k)) / float(k + 2)
+			var edge: float = 0.32 * (1.0 + wob * rag)
+			var c: Color = Color(0, 0, 0, 0)
+			if r < edge:
+				c = hole
+			elif r < edge + rim_w * (1.0 + wob * rag * 0.8):
+				var t: float = (r - edge) / maxf(0.01, rim_w)
+				c = Color(rim.r, rim.g, rim.b, rim.a * (1.0 - t) * (0.7 + 0.3 * rng.randf()))
+			img.set_pixel(x, y, c)
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.albedo_texture = ImageTexture.create_from_image(img)
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.roughness = 1.0
+	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR
+	return m
 
 
 func blood(pos: Vector3, toward: Vector3) -> void:

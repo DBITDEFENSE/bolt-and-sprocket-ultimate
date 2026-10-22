@@ -107,6 +107,7 @@ func _ready() -> void:
 		col.add_child(MenuKit.button(str(b[0]), func() -> void: _start_gl(bscene, br, boss), 22, "ui_confirm"))
 	col.add_child(_header("Update 02 tests"))
 	col.add_child(MenuKit.button("Weapon range — ADS check  ( [ / ] cycle guns )", func() -> void: AdsRange.launch(get_tree()), 22, "ui_confirm"))
+	col.add_child(MenuKit.button("Kaltenbrunn — Totenglocke test (round 15, god mode)", func() -> void: get_tree().change_scene_to_file("res://gravelight/tools_src/range_totenglocke.tscn"), 22, "ui_confirm"))
 	col.add_child(_header("Bolt & Sprocket"))
 	for l: Array in BS_LEVELS:
 		var lscene: String = str(l[1])
