@@ -1,0 +1,49 @@
+{
+  "_doc": "Personality (Update 03 section 8): a weight profile for one character's bot (and Jakub). actions: multipliers on the action scores (actions.json). role_bias: how much it wants each squad role. aim.class_pref: weapon class multipliers for weapon choice (and the wall guns it wants). aim.head_bias: added to the headshot preference. aim.specials_first: extra target priority for specials and bosses. combat: retreat_hp (the HP fraction it starts thinking about retreating, multiplies the retreat input), melee_crawlers (knifes crawlers), grenade_bias (more / fewer grenades), keep_distance_m (preferred fighting distance), ammo_conserve (shorter bursts), aggression (pushes the fight score). economy: save_bias (multiplies the Scrip it keeps in reserve), perk_order (its perk plan; empty = economy.json default), perk_skill (better perk picks). callouts: boss_first (calls bosses and specials before anyone), kill_tally (keeps a running tally in her lines), grumble_on_move (grumbles when ordered to move), comments_by (a second voice comments on its decisions). chatter: lines between rounds.",
+  "character": "peg",
+  "_summary": "Tactician. Best grenade and explosive use, prefers to flank, calls out bosses and specials first, saves Scrip.",
+  "actions": {
+    "fight": 1.0,
+    "train": 1.1,
+    "retreat": 1.0,
+    "buy": 0.85,
+    "crate": 0.8
+  },
+  "role_bias": {
+    "anchor": 0.3,
+    "runner": 1.0,
+    "medic": 0.4,
+    "builder": 0.3
+  },
+  "aim": {
+    "class_pref": {
+      "assault": 1.2,
+      "smg": 1.15,
+      "rifle": 1.05,
+      "launcher": 1.4,
+      "lmg": 1.0
+    },
+    "head_bias": 0.05,
+    "specials_first": 0.35
+  },
+  "combat": {
+    "retreat_hp": 1.0,
+    "melee_crawlers": false,
+    "grenade_bias": 1.6,
+    "keep_distance_m": 7.0,
+    "ammo_conserve": 0.1,
+    "aggression": 0.0,
+    "flank": true
+  },
+  "economy": {
+    "save_bias": 1.5,
+    "perk_order": [],
+    "perk_skill": 0.8
+  },
+  "callouts": {
+    "boss_first": true,
+    "kill_tally": false,
+    "grumble_on_move": false,
+    "comments_by": ""
+  }
+}

@@ -36,9 +36,19 @@ var seed_base: int = 1
 var max_round: int = 0
 var speed: float = 1.0
 var max_minutes: float = 150.0
-var skill: String = "regular"
+var skill: String = "veteran"
 var map_key: String = ""
 var god: bool = false   # --god: the scripted player can't be hurt (it outlives the bots: T-057's stalled-round hunt)
+## --trace=N: every N game seconds, one status line per bot (action, top scores, gun, threat) and its task.
+var trace_s: float = 0.0
+var _trace_t: float = 0.0
+## --orders=N: every N game seconds the scripted player gives the squad a command-wheel order (cycling follow,
+## hold, train, repair, revive, buy_perks), so BotMetrics measures the command response time. Off by default
+## (the baseline had no orders).
+var orders_s: float = 0.0
+var _order_t: float = 0.0
+var _order_i: int = 0
+const SOAK_ORDERS: Array[StringName] = [&"hold", &"follow", &"train", &"repair", &"revive", &"buy_perks"]
 
 var _run: int = 0
 var _map: MapRoot = null
@@ -76,6 +86,10 @@ func _ready() -> void:
 			map_key = a.substr(6)
 		elif a == "--god":
 			god = true
+		elif a.begins_with("--trace="):
+			trace_s = float(a.substr(8))
+		elif a.begins_with("--orders="):
+			orders_s = float(a.substr(9))
 		elif a.begins_with("--loco="):
 			BotLocomotion.force_mode = a.substr(7)   # U03 section 3: v1 / v2 against bots.json locomotion
 	if not ["player3", "bots3", "cousins", "kaltenbrunn"].has(scenario):
@@ -141,6 +155,19 @@ func _physics_process(delta: float) -> void:
 	if _dummy != null:
 		_dummy.call("tick", delta)
 	_watch_stall()
+	if orders_s > 0.0 and _map.squad != null and _map.player != null and not _map.player.spectating:
+		_order_t += delta
+		if _order_t >= orders_s:
+			_order_t = 0.0
+			var o: StringName = SOAK_ORDERS[_order_i % SOAK_ORDERS.size()]
+			_order_i += 1
+			_map.squad.set_command(o, _map.player.global_position if o == &"hold" else Vector3.INF)
+	if trace_s > 0.0 and _map.squad != null:
+		_trace_t -= delta
+		if _trace_t <= 0.0:
+			_trace_t = trace_s
+			for b: BotBrain in _map.squad.brains:
+				print("[trace] t=%.0f r%d %s | task %s" % [_game_t, RoundManager.current_round, b.status_line(), str(b.task.get("label", "-"))])
 	if _metrics.finished:
 		_end_run(_metrics.end_reason)
 	elif max_round > 0 and RoundManager.current_round > max_round:
@@ -225,7 +252,11 @@ func _end_run(why: String) -> void:
 	_metrics.extra["wall_s"] = snappedf(float(Time.get_ticks_msec() - _wall0) / 1000.0, 0.1)
 	_metrics.extra["frame_ms"] = snappedf(_phys_us / maxf(1.0, float(_frames)) / 1000.0, 0.01)
 	_metrics.extra["speed"] = speed
-	if _map.squad != null:   # U03 section 3: the locomotion layer's own cost per bot (tick incl. body movement)
+	if _map.squad != null:
+		var ts: Dictionary = _map.squad.think_stats()
+		_metrics.extra["brain_ms_per_bot_frame"] = snappedf(float(ts["ms_per_bot_frame"]), 0.001)
+		_metrics.extra["brain_ms_per_think"] = snappedf(float(ts["ms_per_think"]), 0.001)
+	if _map.squad != null and _map.squad.brains.size() > 0:   # U03 section 3: the locomotion layer's own cost per bot (tick incl. body movement)
 		var us: Array = []
 		for b: BotBrain in _map.squad.brains:
 			if b.loco != null:

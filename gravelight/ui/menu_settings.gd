@@ -65,6 +65,12 @@ func _gameplay() -> void:
 	content.add_child(MenuKit.check("Hint mode (show the next objective)", bool(v["hint_mode"]), _setter("hint_mode")))
 	content.add_child(MenuKit.check("Homage Bosses (the Cousins, Map 0 round 10)", bool(v.get("homage_bosses", true)), _setter("homage_bosses")))
 	content.add_child(MenuKit.check("Bot Bonus Perk (each AI teammate gets one random perk)", bool(v.get("bot_bonus_perk", true)), _setter("bot_bonus_perk")))
+	var bc: Dictionary = BotConfig.cfg()
+	var skill_ids: Array = bc.get("skill_order", ["recruit", "veteran", "elite"])
+	var skill_cur: int = maxi(0, skill_ids.find(BotConfig.skill_key(bc, str(v.get("bot_skill", "veteran")))))
+	var skill_labels: PackedStringArray = PackedStringArray(skill_ids.map(func(k: Variant) -> String: return str(k).capitalize()))
+	content.add_child(MenuKit.row("Bot Skill (AI teammates)", MenuKit.options(skill_labels, skill_cur,
+		func(i: int) -> void: GLSettings.set_value("bot_skill", str(skill_ids[i])))))
 	var name_modes: PackedStringArray = ["real", "world"]
 	var ncur: int = maxi(0, name_modes.find(str(v.get("homage_names", "real"))))
 	content.add_child(MenuKit.row("Homage Names", MenuKit.options(PackedStringArray(["Real", "In-World"]), ncur,

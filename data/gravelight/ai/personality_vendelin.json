@@ -1,0 +1,48 @@
+{
+  "_doc": "Personality (Update 03 section 8): a weight profile for one character's bot (and Jakub). actions: multipliers on the action scores (actions.json). role_bias: how much it wants each squad role. aim.class_pref: weapon class multipliers for weapon choice (and the wall guns it wants). aim.head_bias: added to the headshot preference. aim.specials_first: extra target priority for specials and bosses. combat: retreat_hp (the HP fraction it starts thinking about retreating, multiplies the retreat input), melee_crawlers (knifes crawlers), grenade_bias (more / fewer grenades), keep_distance_m (preferred fighting distance), ammo_conserve (shorter bursts), aggression (pushes the fight score). economy: save_bias (multiplies the Scrip it keeps in reserve), perk_order (its perk plan; empty = economy.json default), perk_skill (better perk picks). callouts: boss_first (calls bosses and specials before anyone), kill_tally (keeps a running tally in her lines), grumble_on_move (grumbles when ordered to move), comments_by (a second voice comments on its decisions). chatter: lines between rounds.",
+  "character": "vendelin",
+  "_summary": "Cautious (when unlocked). Keeps distance, very good with perk economy, avoids fire.",
+  "actions": {
+    "retreat": 1.25,
+    "fight": 0.9,
+    "train": 1.05,
+    "buy": 1.15
+  },
+  "role_bias": {
+    "anchor": 0.2,
+    "runner": 0.6,
+    "medic": 0.6,
+    "builder": 0.5
+  },
+  "aim": {
+    "class_pref": {
+      "rifle": 1.2,
+      "assault": 1.15,
+      "smg": 1.0,
+      "shotgun": 0.7,
+      "flamethrower": 0.3
+    },
+    "head_bias": 0.1,
+    "specials_first": 0.2
+  },
+  "combat": {
+    "retreat_hp": 1.35,
+    "melee_crawlers": false,
+    "grenade_bias": 0.9,
+    "keep_distance_m": 10.0,
+    "ammo_conserve": 0.2,
+    "aggression": -0.1,
+    "avoid_fire": true
+  },
+  "economy": {
+    "save_bias": 1.2,
+    "perk_order": [],
+    "perk_skill": 1.0
+  },
+  "callouts": {
+    "boss_first": false,
+    "kill_tally": false,
+    "grumble_on_move": false,
+    "comments_by": ""
+  }
+}

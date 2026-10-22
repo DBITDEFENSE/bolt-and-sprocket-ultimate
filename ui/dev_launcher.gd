@@ -108,6 +108,13 @@ func _ready() -> void:
 	col.add_child(_header("Update 02 tests"))
 	col.add_child(MenuKit.button("Weapon range — ADS check  ( [ / ] cycle guns )", func() -> void: AdsRange.launch(get_tree()), 22, "ui_confirm"))
 	col.add_child(MenuKit.button("Kaltenbrunn — Totenglocke test (round 15, god mode)", func() -> void: get_tree().change_scene_to_file("res://gravelight/tools_src/range_totenglocke.tscn"), 22, "ui_confirm"))
+	col.add_child(_header("Update 03 bot tests"))
+	var map0: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
+	col.add_child(MenuKit.button("Bot test — Map 0 round 15 (3 bots, you play)", func() -> void: _start_gl(map0, 15, "", 3), 22, "ui_confirm"))
+	col.add_child(MenuKit.button("Bot test — Map 0 round 15 (watch: chase camera + AI labels)", func() -> void: _spawn_tool("res://gravelight/tools_src/clip_bots.tscn", ["--shot=train"], false), 22, "ui_confirm"))
+	col.add_child(MenuKit.button("Bot test — Cousins round (3 bots, you play)", func() -> void: _start_gl(map0, 10, "cousins", 3), 22, "ui_confirm"))
+	col.add_child(MenuKit.button("Bot test — Cousins round (watch)", func() -> void: _spawn_tool("res://gravelight/tools_src/clip_bots.tscn", ["--shot=cousins"], false), 22, "ui_confirm"))
+	col.add_child(MenuKit.button("Bot soak (headless, writes CSV to logs/ai_runs/)", func() -> void: _spawn_tool("res://tools_src/ai_soak.tscn", ["--scenario=player3", "--runs=3"], true), 22, "ui_confirm"))
 	col.add_child(_header("Bolt & Sprocket"))
 	for l: Array in BS_LEVELS:
 		var lscene: String = str(l[1])
@@ -126,11 +133,11 @@ func _header(text: String) -> Label:
 	return l
 
 
-func _start_gl(scene: String, start_round: int, boss: String = "") -> void:
+func _start_gl(scene: String, start_round: int, boss: String = "", force_bots: int = -1) -> void:
 	if not ResourceLoader.exists(scene):
 		_status.text = "Missing scene: %s" % scene
 		return
-	var bots: int = _bots.selected
+	var bots: int = _bots.selected if force_bots < 0 else force_bots
 	GLSettings.set_value("bots", bots)
 	GLSettings.set_value("bot_local_ai", _ai.button_pressed)
 	GameState.character_id = StringName(CHARACTERS[_char.selected])
@@ -154,6 +161,24 @@ func _start_bs(scene: String) -> void:
 	BS.god_mode = _god.button_pressed
 	BSLevel.pending_cutscene = ""
 	get_tree().change_scene_to_file(scene)
+
+
+## Runs a tool scene in a second Godot process (this one keeps the launcher): windowed to watch it, or
+## headless and silent for a soak (its results land in the project's logs/ folder).
+func _spawn_tool(scene: String, args: Array, headless: bool) -> void:
+	var argv: PackedStringArray = []
+	if headless:
+		argv.append_array(["--headless", "--audio-driver", "Dummy", "--fixed-fps", "60"])
+	argv.append_array(["--path", ProjectSettings.globalize_path("res://"), scene, "--"])
+	for a: Variant in args:
+		argv.append(str(a))
+	var pid: int = OS.create_process(OS.get_executable_path(), argv, false)
+	if pid <= 0:
+		_status.text = "Could not start %s" % scene
+	elif headless:
+		_status.text = "Soak running in the background (pid %d): results in logs/ai_runs/ when it finishes (about 15-30 min)." % pid
+	else:
+		_status.text = "Opened %s in a new window." % scene.get_file()
 
 
 ## Late-round Scrip so a skipped-to round can be played like one: about what a good player has by then (pure).

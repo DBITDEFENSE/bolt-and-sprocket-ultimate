@@ -1160,3 +1160,107 @@ empty. **[OPEN]**: where Flight Lieutenant Selwyn went is not answered on Map 0.
 - `PEG_MIDNIGHT_01`: "Midnight. Happy Christmas Eve, everyone. Do try not to die on it."
 - `DEA_MIDNIGHT_01`: "Christmas Eve. Ruthie's asleep by now. ...Good. That's good."
 - `WRN_MIDNIGHT_01`: "Twelve. It's the twenty-fourth. Wigilia. Somewhere my mother is looking at the first star."
+
+
+## 15. AI teammate callouts, orders and chatter (Update 03 §5, DECISIONS T-055)
+
+Spoken by the squad when they are bots (BotSquad.callout, positional at the bot, rate-limited per bot and for the
+squad: data/gravelight/bots.json `callouts`). Most callouts also flash a small world-space ping at the spot
+(BotPings), labelled with the game's own names. Categories: `SPRINTER_BEHIND` (a sprinter close behind a teammate,
+coming for them), `BOSS_INCOMING` (a boss spawns; Peg calls bosses first), `CRATE_MOVED`, `WINDOW_OPEN` (a window
+with no boards, zombies climbing, nobody fixing it), `COVER` (covering a revive), `PING_<power-up>` (a dropped
+power-up by its name: Resupply, Death's Door, Double Scrip, Blackout, Fortify, Clearance; falls back to
+`POWERUP_SEEN`), `CMD_TRAIN` / `CMD_BUY_PERKS` / `CMD_SAVE_SCRIP` / `CMD_OPEN_DOOR` / `CMD_FETCH_PART` (the command
+wheel's new orders, acknowledged by the nearest bot), `GRUMBLE` (Dutch, sometimes, when told to move), `TALLY_<n>`
+(Wren's running kill tally at 25, 50, 100, 150, 200 and 300 kills) and `CHATTER` (between waves, now and then).
+The ids carry `SQ3` so the voice bake can run them alone (`python gravelight/tools_src/gen_vo.py --only=DUT_SQ3`).
+
+### 15.1 Dutch (`DUT`)
+- `DUT_SQ3_SPRINTER_BEHIND_01`: "Runner on your back! Move!"
+- `DUT_SQ3_SPRINTER_BEHIND_02`: "Behind you! Fast one!"
+- `DUT_SQ3_BOSS_INCOMING_01`: "Big one coming. Get ready."
+- `DUT_SQ3_CRATE_MOVED_01`: "Crate's moved. Somebody find it."
+- `DUT_SQ3_WINDOW_OPEN_01`: "Window's wide open over here!"
+- `DUT_SQ3_COVER_01`: "I got your back. Get 'em up."
+- `DUT_SQ3_PING_RESUPPLY_01`: "Resupply! Over here!"
+- `DUT_SQ3_PING_DEATHSDOOR_01`: "Death's Door, right there. Your call."
+- `DUT_SQ3_PING_DOUBLESCRIP_01`: "Double Scrip on the floor!"
+- `DUT_SQ3_PING_BLACKOUT_01`: "Blackout! Grab it when you want it."
+- `DUT_SQ3_PING_FORTIFY_01`: "Fortify, over here!"
+- `DUT_SQ3_PING_CLEARANCE_01`: "Clearance! Cheap crate, folks."
+- `DUT_SQ3_CMD_TRAIN_01`: "Right with you. Keep 'em moving."
+- `DUT_SQ3_CMD_BUY_PERKS_01`: "Drinks are on me. Well. On me."
+- `DUT_SQ3_CMD_SAVE_SCRIP_01`: "Wallet's shut."
+- `DUT_SQ3_CMD_OPEN_DOOR_01`: "I'll get the door."
+- `DUT_SQ3_CMD_FETCH_PART_01`: "I'll go grab it."
+- `DUT_SQ3_GRUMBLE_01`: "Fine. Moving. Again."
+- `DUT_SQ3_GRUMBLE_02`: "Had a good spot, too."
+- `DUT_SQ3_CHATTER_01`: "My knees are older than this inn."
+- `DUT_SQ3_CHATTER_02`: "Back home the worst thing in the dark was a coyote."
+
+### 15.2 Peg (`PEG`)
+- `PEG_SQ3_SPRINTER_BEHIND_01`: "Sprinter, behind you!"
+- `PEG_SQ3_SPRINTER_BEHIND_02`: "Check your six, it's a quick one!"
+- `PEG_SQ3_BOSS_INCOMING_01`: "Boss incoming. Spread out, don't bunch up."
+- `PEG_SQ3_CRATE_MOVED_01`: "The crate's moved. Of course it has."
+- `PEG_SQ3_WINDOW_OPEN_01`: "Window's open! Someone board it!"
+- `PEG_SQ3_COVER_01`: "Covering you. Go."
+- `PEG_SQ3_PING_RESUPPLY_01`: "Resupply, over here!"
+- `PEG_SQ3_PING_DEATHSDOOR_01`: "Death's Door. Do try not to waste it."
+- `PEG_SQ3_PING_DOUBLESCRIP_01`: "Double Scrip. Spend it wisely."
+- `PEG_SQ3_PING_BLACKOUT_01`: "A Blackout's dropped, here."
+- `PEG_SQ3_PING_FORTIFY_01`: "Fortify! The windows will thank us."
+- `PEG_SQ3_PING_CLEARANCE_01`: "Clearance! The crate's a bargain."
+- `PEG_SQ3_CMD_TRAIN_01`: "Train them. Yes, I know the drill."
+- `PEG_SQ3_CMD_BUY_PERKS_01`: "A drink for the road. Several, in fact."
+- `PEG_SQ3_CMD_SAVE_SCRIP_01`: "Saving. Frugality is a virtue."
+- `PEG_SQ3_CMD_OPEN_DOOR_01`: "That door? Consider it opened."
+- `PEG_SQ3_CMD_FETCH_PART_01`: "I'll fetch it. Mind the shop."
+- `PEG_SQ3_CHATTER_01`: "If anyone at Bletchley asks, this was a quiet posting."
+- `PEG_SQ3_CHATTER_02`: "Two minutes. Check your ammunition, not your watch."
+
+### 15.3 Deacon (`DEA`)
+- `DEA_SQ3_SPRINTER_BEHIND_01`: "Fast one behind you, brother!"
+- `DEA_SQ3_BOSS_INCOMING_01`: "Lord, here comes a big one."
+- `DEA_SQ3_CRATE_MOVED_01`: "Crate's gone and moved itself."
+- `DEA_SQ3_WINDOW_OPEN_01`: "That window's open! Somebody get a board on it!"
+- `DEA_SQ3_COVER_01`: "Go on, get 'em up. I'm watching."
+- `DEA_SQ3_PING_RESUPPLY_01`: "Resupply over here! Blessing on the floor."
+- `DEA_SQ3_PING_DEATHSDOOR_01`: "Death's Door, right here."
+- `DEA_SQ3_PING_DOUBLESCRIP_01`: "Double Scrip! Make it count."
+- `DEA_SQ3_PING_BLACKOUT_01`: "Blackout on the floor."
+- `DEA_SQ3_PING_FORTIFY_01`: "Fortify! Every board at once. My kind of miracle."
+- `DEA_SQ3_PING_CLEARANCE_01`: "Clearance! Crate's half off."
+- `DEA_SQ3_CMD_TRAIN_01`: "Keep 'em on a string. I'm with you."
+- `DEA_SQ3_CMD_BUY_PERKS_01`: "Machines take Scrip, and I've got Scrip."
+- `DEA_SQ3_CMD_SAVE_SCRIP_01`: "I'll hold onto it."
+- `DEA_SQ3_CMD_OPEN_DOOR_01`: "I'll open her up."
+- `DEA_SQ3_CMD_FETCH_PART_01`: "Parts? Now you're talking."
+- `DEA_SQ3_CHATTER_01`: "This machine's got a rattle. Hush now, sweetheart."
+- `DEA_SQ3_CHATTER_02`: "Pass me the wrench when we're done. Something in there's loose."
+
+### 15.4 Wren (`WRN`)
+- `WRN_SQ3_SPRINTER_BEHIND_01`: "Behind you. Fast."
+- `WRN_SQ3_BOSS_INCOMING_01`: "Big one. Coming now."
+- `WRN_SQ3_CRATE_MOVED_01`: "Crate moved."
+- `WRN_SQ3_WINDOW_OPEN_01`: "Window. Open. There."
+- `WRN_SQ3_COVER_01`: "Go. I watch."
+- `WRN_SQ3_PING_RESUPPLY_01`: "Resupply. Here."
+- `WRN_SQ3_PING_DEATHSDOOR_01`: "Death's Door. Here."
+- `WRN_SQ3_PING_DOUBLESCRIP_01`: "Double Scrip. Here."
+- `WRN_SQ3_PING_BLACKOUT_01`: "Blackout. Here."
+- `WRN_SQ3_PING_FORTIFY_01`: "Fortify. Here."
+- `WRN_SQ3_PING_CLEARANCE_01`: "Clearance. The crate is cheap."
+- `WRN_SQ3_CMD_TRAIN_01`: "Yes. We run them."
+- `WRN_SQ3_CMD_BUY_PERKS_01`: "I drink. Fine."
+- `WRN_SQ3_CMD_SAVE_SCRIP_01`: "I save."
+- `WRN_SQ3_CMD_OPEN_DOOR_01`: "The door. Yes."
+- `WRN_SQ3_CMD_FETCH_PART_01`: "I bring it."
+- `WRN_SQ3_TALLY_25_01`: "Twenty-five."
+- `WRN_SQ3_TALLY_50_01`: "Fifty. I am counting."
+- `WRN_SQ3_TALLY_100_01`: "One hundred. I write it down."
+- `WRN_SQ3_TALLY_150_01`: "One hundred fifty."
+- `WRN_SQ3_TALLY_200_01`: "Two hundred. For my brother."
+- `WRN_SQ3_TALLY_300_01`: "Three hundred. Still counting."
+- `WRN_SQ3_CHATTER_01`: "I write down their number. Someone should."
+- `WRN_SQ3_CHATTER_02`: "My brother would like this inn. He liked any place with a fire."

@@ -1,0 +1,47 @@
+{
+  "_doc": "Personality (Update 03 section 8): a weight profile for one character's bot (and Jakub). actions: multipliers on the action scores (actions.json). role_bias: how much it wants each squad role. aim.class_pref: weapon class multipliers for weapon choice (and the wall guns it wants). aim.head_bias: added to the headshot preference. aim.specials_first: extra target priority for specials and bosses. combat: retreat_hp (the HP fraction it starts thinking about retreating, multiplies the retreat input), melee_crawlers (knifes crawlers), grenade_bias (more / fewer grenades), keep_distance_m (preferred fighting distance), ammo_conserve (shorter bursts), aggression (pushes the fight score). economy: save_bias (multiplies the Scrip it keeps in reserve), perk_order (its perk plan; empty = economy.json default), perk_skill (better perk picks). callouts: boss_first (calls bosses and specials before anyone), kill_tally (keeps a running tally in her lines), grumble_on_move (grumbles when ordered to move), comments_by (a second voice comments on its decisions). chatter: lines between rounds.",
+  "character": "deacon",
+  "_summary": "Medic / Builder. Highest revive priority, repairs barricades every break, picks up buildable parts when allowed, talks to machines.",
+  "actions": {
+    "revive": 1.3,
+    "cover": 1.15,
+    "repair": 1.45,
+    "fight": 0.95,
+    "chatter": 1.3
+  },
+  "role_bias": {
+    "anchor": 0.4,
+    "runner": 0.2,
+    "medic": 1.0,
+    "builder": 0.95
+  },
+  "aim": {
+    "class_pref": {
+      "shotgun": 1.25,
+      "smg": 1.1,
+      "lmg": 1.05
+    },
+    "head_bias": 0.0,
+    "specials_first": 0.0
+  },
+  "combat": {
+    "retreat_hp": 1.05,
+    "melee_crawlers": false,
+    "grenade_bias": 0.8,
+    "keep_distance_m": 5.0,
+    "ammo_conserve": 0.1,
+    "aggression": 0.0
+  },
+  "economy": {
+    "save_bias": 1.0,
+    "perk_order": [],
+    "perk_skill": 0.7,
+    "parts_when_allowed": true
+  },
+  "callouts": {
+    "boss_first": false,
+    "kill_tally": false,
+    "grumble_on_move": false,
+    "comments_by": ""
+  }
+}

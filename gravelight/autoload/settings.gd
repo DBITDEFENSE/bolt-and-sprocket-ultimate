@@ -41,7 +41,7 @@ var values: Dictionary = {
 	"screen_shake": 1.0,       # 0..1.5: camera shake + recoil FOV punch (weapons, explosions)
 	"last_join_ip": "127.0.0.1",   # co-op: the address typed in the lobby's Join field last time
 	"bots": 0,                     # AI teammates in a solo match (0-3, T-031)
-	"bot_skill": "regular",        # their skill preset (data/gravelight/bots.json "skills")
+	"bot_skill": "veteran",        # Bot Skill: recruit / veteran / elite (Update 03 section 7; bots.json skills + ai/skills.json)
 	"bot_local_ai": true,          # one bot runs on a local LLM (Ollama) and does the map's tasks and easter egg
 	"bot_bonus_perk": true,        # each bot gets one random bonus perk at match start (U02 section 5, bots.json bonus_perk)
 	"gore": "full",                # off / low / full: dismemberment and blood (MZ, T-041); the shatter VFX always shows
