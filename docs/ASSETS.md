@@ -92,8 +92,35 @@ All code-built, nothing downloaded (`gravelight/world/materials.gd` `_build_map2
 - Materials: shuttered bunker concrete with damp streaks, wet quay concrete, tide-stained pier faces, the boat's anti-fouling and red-lead hull, grey-green pressure-hull paint, lead (the sealed coffins), hemp rope, matted nets, zinc, the high-water slime band, bladderwrack, shingle, the headland rock, crane yellow.
 - Props: bollards, lead coffins on pallets (Helvetia plate, an invented unit stencil, a violet seam), rope coils, life rings, torpedoes on trestles, net heaps, ladders, can stacks, valve wheels, sea grilles, railings, bulkhead lamps. The U-boat is cylinders, cones and plates; the "U 1047" and every stencil are invented. No real boat, port, unit or person is depicted.
 
-### Morgenrot and the zombie animation upgrade (design stage, v2)
-Nothing is built yet. Rules for when it is: the faction mark is the fictional Sunburst-and-Split-Bell (`docs/ART_FACTIONS.md`); no real insignia, no real manufacturer names on the rocket, the Panzerfaust, the lance rifle or the Fallschirm-pattern rifle (all three are invented patterns); rocket surfaces use a black-and-white roll pattern "in spirit". **MZ** will import animation clips: every clip's source and license goes in a new §7 table here before it is used (Mixamo: Adobe royalty-free, no raw redistribution; CC0 packs by name and URL); in-engine-authored clips are ours. The lunar plates, the Moon shots and the London / Antwerp / Paris skylines are procedural (no photographs).
+### MZ, the zombie animation and design upgrade (built, T-041)
+Nothing is imported: every animation, body, kit and shader is generated in-engine (`gravelight/enemies/zombie_rig.gd`, `zombie_clips.gd`, `zombie_body.gd`):
+- **Rig:** a hand-defined `Skeleton3D` named after Godot's `SkeletonProfileHumanoid` with a `BoneMap` (ours; the profile and BoneMap are engine resources, MIT).
+- **Animation clips (ours):** 70-odd procedural pose functions sampled at 30 Hz into `Animation` resources (locomotion per tier with lean variants, turns, tears, vaults, emerges, climb, attacks, reactions, deaths, posture traits, flinches). No Mixamo, no CC0 pack, nothing from any game. If a licensed pack is ever retargeted onto the rig, its row goes here first.
+- **Bodies and kits (ours):** cylinder / sphere / box primitives skinned to the rig; kits soldier, villager, miner, labstaff, technician, sailor, dockworker, bellringer, nurse and the gear pieces. Marks per `ART_FACTIONS.md` only (the technician armband carries a plain light plate, no symbol). The `laborer` kit is retired.
+- **Shaders (ours):** the Nachtglas infection skin shader (noise, ridged-noise cracks, cellular veins, dirt / frost / char / fuel / dissolve instance uniforms) and the vertex-colour kit shader.
+- **Legacy:** `gravelight/tools_src/legacy_zombie_body.gd` / `legacy_zombie_dummy.gd` are copies of the pre-MZ body and pose code kept only for the before/after capture (`shots_zombie_anim.tscn`).
+
+### Morgenrot (design stage, v2)
+Nothing of the map is built yet. Rules for when it is: the faction mark is the fictional Sunburst-and-Split-Bell (`docs/ART_FACTIONS.md`); no real insignia, no real manufacturer names on the rocket, the Panzerfaust, the lance rifle or the Fallschirm-pattern rifle (all three are invented patterns); rocket surfaces use a black-and-white roll pattern "in spirit". The lunar plates, the Moon shots and the London / Antwerp / Paris skylines are procedural (no photographs).
+
+### Homage bosses: the Cousins, PAUL, the Slender (design stage, v3; HB1–HB3, `docs/HOMAGE_BOSSES.md`)
+Nothing is built yet. Rules for when it is:
+- **Real people, so consent comes first.** The bosses are homages to real people (Devin's cousins, his friend Paul, Devin).
+  - The models are **stylized, procedural MZ bodies** (`zombie_body.gd` kits plus boss extras), never photoreal.
+  - **No photo, face scan or likeness reference** is used unless it sits in `assets/user_supplied/likeness/` with a `CONSENT.txt` note saying that person agreed. Today that folder doesn't exist, so nothing is used, and `likeness.json` has `consent.photo_scans_allowed: false`.
+  - **No real person's voice** is recorded, sampled or imitated without the same written consent. The lines ship as the usual placeholder TTS (T-009, T-035).
+- **The look comes from the Likeness Sheet** (`data/gravelight/bosses/likeness.json`): hair, build, signature items. No real body feature is exaggerated for a joke. The Cousins are young women in modest period clothing, never sexualized: the camera and pose rules are in HOMAGE_BOSSES §1.2.
+- **Originality:**
+  - the Slender is not the internet "Slender Man": he has a face, a grey watchman's greatcoat and a cap, two arms (HOMAGE_BOSSES §6.2);
+  - Paul is not Marvel's Hulk: iron-red skin, no green, no purple trousers;
+  - the Cousins' rhyme ("Drei Kusinen") and every boss cue are original;
+  - Paul's death phrase is an original bugle-like line, not "Taps".
+- **Ours, procedural:**
+  - the rigs: the MZ humanoid plus appended bones (telescoping arms, the torso arm chain, the bottle rack, coat chains);
+  - every boss clip;
+  - the Kinderhammer, the Ironhide bottles (the existing Helvetia label art), the brass lantern, the key ring, the watch-book, the Watch Room set, the ice-cellar room and its chalk drawings, the handprint decal, the title-card stamp (the HUD round stamp's font);
+  - the charms and calling cards ("Three Ribbons", "Violet Lantern", "The Game Is Over", "Carried My Share", "Night Shift").
+  - Unit insignia on Paul's sleeve stay a worn, unreadable patch shape until `[PAUL_UNIT]` is decided. A real US unit patch is a period fact, not a brand, but it is drawn by hand, never traced.
 
 ## Bolt & Sprocket: Verdant Sink (first playable, T-039)
 - All original procedural greybox-plus (LevelKit / EnemyFx primitives): the boardwalk hub, the silo-barn, the root ridges and giant mushroom caps (four glow colours), the Mega-Harvester shell with its cab and guts, the lagoon's root walls and reactor collar, glow-vines, picket signs, frog-bots, firefly fields. Palette: dark teal fog (35–150 m), bioluminescent emissives (`#5affc8`, `#ff6ad5`, `#4fc3ff`, `#ffd23e`, coolant `#39ff88`).

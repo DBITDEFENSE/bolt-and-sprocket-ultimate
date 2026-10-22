@@ -130,15 +130,29 @@ Readability rules:
 ### 2.1 Gänger (`ganger`)
 **Soldier slang, short for *Wiedergänger* ("one who walks again").** These are the standard undead, built to be read instantly.
 
-**Visual variants.** All variants share the same skeleton, hitboxes, and animation set. Only the mesh and material change.
+**Visual variants (outfit kits).** Every kit is built on the same shared rig, hitboxes and animation set (§2.1.1); only the clothes, gear pieces and skin tone change. Kits per map: `enemies.json ganger.variants_by_map` (default `variants` = Map 0); the kit geometry is `anim.json kits` + `zombie_body.gd`.
 | Variant ID | Who they were | Silhouette | Spawn weighting |
 |---|---|---|---|
 | `ganger_soldier` | Wehrmacht guard garrison, Volkssturm call-ups | Stahlhelm and greatcoat, wide at the shoulders. Some still wear rifle slings. | Map 0: 60%. Map 1: 30% |
 | `ganger_miner` | Salt miners, the civilian workforce from before the war | Soft cap with carbide lamp (unlit, cracked lens), leather apron, hunched | Map 0: 15%. Map 1: 30% |
 | `ganger_labstaff` | Projekt Wiederkehr technicians, orderlies | Long coat (stained grey, not white), rubber gloves, some wear gas-mask goggles pushed up | Map 0: 5%. Map 1: 15% (Lab Wing 40%) |
-| `ganger_laborer` | Forced laborers (Polish, Soviet POW, others) | Thin, striped or patched work clothes, wooden-soled shoes, a stencilled ID tag on the chest | Map 0: 20%. Map 1: 25% |
+| `ganger_villager` (Map 0) | Crossroads villagers: the innkeeper's people, carters, a farm wife | Wool jacket and waistcoat or a long skirt and shawl, flat cap, scarf, apron; men and women | Map 0: 20% |
+| `ganger_technician` (Map 1) | Projekt Wiederkehr fitters and gallery technicians | Grey coverall with a tool belt, rubber boots, a plain P·W·K armband, cap, tool pack | Map 1: 25% |
+| `ganger_sailor` / `ganger_dockworker` (Map 2) | Kriegsmarine ratings; Totenhafen dock hands | Navy pea jacket with brass buttons and the collar flap, round cap; knit jumper, oilskin and hood, rubber boots, a rope over the shoulder | Map 2: 40% / 35% (soldiers 25%) |
+| ~~`ganger_laborer`~~ | **Retired (MZ, T-041; v2 §0.1): forced laborers are never zombies.** The Map 1 Intake keeps them as story only. | | |
 
 **Common features.** Every Gänger has violet eye-glow (emissive, blooms in fog). Violet-amber hairline cracks run from the eyes and the hands, because Nachtglas spreads along the last nerves to fire. The cracks brighten as the round number climbs (a material parameter `crack_intensity = clamp(r/30, 0.1, 1.0)`), which also tells the player the round is getting harder.
+
+#### 2.1.1 Animation and body (MZ, T-041; `docs/ZOMBIE_ANIM_SPEC.md`, `data/gravelight/anim.json`)
+- **Rig:** one shared humanoid `Skeleton3D` (`zombie_rig.gd`, 19 bones named after `SkeletonProfileHumanoid` with a `BoneMap`, identity rests) for every Gänger kind, the Bellringer, the Glasshide and the Screamer; the Foreman keeps his own body. The procedural body is one skinned mesh per kit/build/sex (`ZombieBody.build_skinned`): surface 0 skin (the infection shader), surface 1 everything else (vertex-coloured, one shared shader), so a body is two draw calls. Gear (helmets, caps, goggles, armbands, packs...) hangs on bone attachments and is rolled per spawn. Base bodies: thin / medium / heavy × two heights, male and female.
+- **Clips:** all procedural, baked in-engine by `zombie_clips.gd` into one shared `AnimationLibrary` (no imported animation). Locomotion per tier: shamble ×3, walk ×3, jog ×2, run ×3, sprint ×2, crawler ×2 (belly drag, four-limb scuttle), each with lean-left/right variants; turn-in-place ×2; idle, window wait; tears ×3 (grab-and-rip, two-hand wrench, shoulder slam); vault ×2 and a drop-down; emerges ×5 (dig-out, roll-up, portal step, chute drop, wade-up); climb loop + mantle; attacks: 4 swipes, lunge, sprinter grab, crawler bite, headbutt, window swipe; stagger, knockdown front/back, get-up front/back, fall-into-crawler; 9 deaths (headshot snap, gut collapse, spin, knee-drop, backward fall, face-plant, sit-down, sprint tumble, headless walk) + a crawler death; 8 posture traits; 7 directional flinches.
+- **Tree:** `AnimationTree` state machine Spawn / Emerge / Climb / Barricade / Locomotion (BlendSpace2D speed × turn) / Attack (BlendSpace1D variant) / React / Crawl / Death, plus an additive posture layer (Add2) and an additive OneShot for flinches. Locomotion clips carry root motion on a Root bone whose speed equals the tier speed; the zombie sets the time scale from its nav velocity (and its height scale), so **root motion = nav speed, no foot-sliding** (`smoke_zombie_anim` compares the stride distance with the body travel over half-second windows and requires 5%; measured worst 0.8–1.3%). Every zombie keeps its own stride phase (random start, transitions into Locomotion do not reset) and rolls one posture trait.
+- **Senses and IK:** foot IK (two rays per physics step within 15 m, hips drop to the lower foot, analytic two-bone legs, off beyond 25 m) and head look-at toward the nearest player (`LookAtModifier3D`, 60° cone, 0.2 s), both in `zombie_modifier.gd` / `_update_senses`. Hit springs on the arm chains and the head stand in for the partial ragdoll on flinches.
+- **Reactions:** directional additive flinch by hit zone and side (the hitbox bone the weapon reports), stagger (melee / explosive / ≥ 40% of max HP), knockdown + get-up (explosives and the Glasshide shatter, interruptible), fall-into-crawler on a leg loss at speed.
+- **Deaths and corpses:** the clip plays to its key pose (0.55 s), then a `PhysicalBoneSimulator3D` ragdoll takes over (pin joints, damped; explosive deaths throw the trunk). At most 6 live ragdolls (`ragdoll.max_live`; rigs freeze after 3 s; a death at the cap holds its authored pose). Corpses stay 8–12 s then dissolve (the shader's `inst_dissolve`), sooner when the pool runs low.
+- **Dismemberment:** forearms, upper arms, lower legs, head (pops on a headshot kill, sometimes on an explosive one) and jaw come off as physics pieces with stump caps (4 s, at most 12 live). An arm lost removes that arm's swipes; both gone → headbutt; the legs at the hip → crawler (with the fall transition). **Gore setting** (Settings → Video): Off (limbs stay on, no blood; the shatter VFX stays), Low (severs, no spray), Full.
+- **Look:** the Nachtglas shader: violet veins pulsing with the map hum (`gl_hum`, AudioDirector's envelope), cracks whose density grows with the round (`gl_round_k`), glowing eyes; per-instance tint / dirt / frost (per map), burn char while burning, frost crust while frosted; fuel / LOX uniforms reserved for Morgenrot.
+- **LOD and audio:** the tree advances every frame within 15 m, every 2nd to 35 m, every 4th beyond; IK and look-at off beyond 25 m. Footsteps fire from the locomotion cycle (surface-aware by collider metadata / name hints, culled at 18 m, rate-capped across the horde), rip grunts from the tear cycle, snarls on the attack windup.
 
 **Audio tells.**
 - Idle/chase: a wet, low "hum-groan" pitched to sit *under* the Nachtglas hum. They are droning at the same frequency as the stone.
@@ -508,3 +522,74 @@ Dosed with her fragment she floats in the Kessel inside a violet storm, shielded
 - Climb volumes are a third spawn source beside windows and ground: a `ZombieSpawn` of kind `climb` with a link path; only the Bergwacht use them.
 - LUFTALARM impact circles are placed by the director on open-sky zones only (`zone.roofed = false`).
 - The Launch Clock's fueling surge raises the Kessel's spawn weight ×1.5 while players are away from it (so the crater is never quiet).
+
+---
+
+## 7. Homage bosses (ULTIMATE PROMPT v3; design only, built in HB1–HB3 on the MZ framework)
+
+Three bosses are homages to real people: Devin's cousins, his friend Paul, and Devin. They are love letters: terrifying in the game, flattering out of it. **The full design is `docs/HOMAGE_BOSSES.md`**: moves, telegraphs, animation lists, VO, rewards and the Likeness Sheet. Canon is in LORE.md §15, and the tuning will be `data/gravelight/bosses/*.json`.
+
+**Rules:**
+- **Settings → Gameplay:** "Homage Bosses: On / Off" (default On; Off plays a normal round) and "Homage Names: Real / In-World".
+- **HP:** `base × S(p)`, `S(p) = 1 + 0.75 × (p − 1)` (the Foreman's `P_hp`).
+- **Rounds:** a boss round is never a special round or a Foreman / Startmeister round (those move +1), and the normal horde keeps coming at a reduced rate.
+- **Bosses:** they ignore barricades, never crawl, are never last-zombie culled, and take Death's Door as double damage, not instant death.
+
+### Data-ready summary (homage bosses)
+| id | HP (solo base) | Speed | Key damage | Round gate | Spawn | Weak points | Scrip | Tell |
+|---|---|---|---|---|---|---|---|---|
+| `cousin_hammer` | 6,000 | 3.4 skip-walk, +20% per cousin death | maul 50; Mallet Throw 45 per pass (out and back); Overhead Split 80 + splinter slow | Map 0 **r10** (replaces the round; 40% horde) | the stairwell (maul thrown down first) | **×1.5 to everything while the maul is in the air**, a melee hit staggers; head ×2 | 400 / player | sparks of the dragged maul; **she stops humming one beat before a throw** |
+| `cousin_reach` | 5,000 | 3.0 hunched, ceiling crawl 2.6 | swipe 45; Long Reach Grab to 12 m → Hug-Crush 120; Through-the-Wall 60; Window Spider 40 | r10, +30 s | the stable hayloft (arms through the taproom windows first) | **wrists ×2 while extended**; a severed arm (Gore Low/Full) regrows in 20 s | 300 / player + Fortify + 500 | counting fingers; **dust and creaking 0.6 s** before a punch-through; every barricade rattles before Window Spider |
+| `cousin_alix` | 7,500 | 1.8 within 8 m; **ObservedFreeze** beyond (frozen when seen, 6.0 unseen) | **2× zombie damage**: swipe 100; Holding Hand 30/s; Lash 90 (crouch under) | when a cousin is < 50% (or dies, or 3:00) | **the trapdoor behind the bar** (this round only) | **the Third Hand's palm ×2**; ×2 while she holds a dead cousin's hand (3 s) | 500 / player | silent steps, only the dress rustling; **arms rise to her ears 0.9 s** before a Lash |
+| `paul` | 30,000 (+35% per return) | 2.6 / 3.6 / 6.2 by rage stage | haymaker 70; zombie throw 60; squeeze 25/s; ground pound 50; rip-throw 90; leap 100; thunderclap 40 + strips boards; charge 90; dive 130 | Map 1 **r15**, then returns every 8–10 rounds **until beaten** (60% horde) | the headframe (PA roar, then the leap and crater) | **the 6 IV bottles** (−20 rage each); **back of the neck ×2 facing away**; a big blast = knee-down ×1.5 | 2,000 / player + Double Scrip + Paul's Last Round | the dog tags, the chest beat; his shadow growing before a leap or dive |
+| `slender` | 35,000 | 1.6 walk (never runs); 15 m teleport only while unobserved | Key Ring Lash 85 + stagger; quarantine → downed on failure | Morgenrot **r20** (needs power; never during the Heartstorm / Reinholt; 50% horde) | the Meiller Lanes forest | **can only be hurt while lit** (floodlights, truck headlights, flares, muzzle flash < 5 m, Die Lange Nacht's freeze); the lantern ×2 (break = 6 s stun); the book shot loose = 4 s ×1.5 | 2,500 / player + Overwatch | **the keys go silent before he attacks**; the LOGGED tiers (grain → violet static → dropouts → behind you) |
+
+### 7.1 The Cousins (`cousin_hammer`, `cousin_reach`, `cousin_alix`), Map 0 round 10
+- **Setup:** at the end of round 9 the lamps go out one by one, the fire dies, a child's handprint smears across a taproom window from outside, then there is clapping upstairs.
+- **Arrival:** the Hammer, then the Reach 30 s later, then Alix from a cellar trapdoor nobody knew was there.
+- **While all three live** they hum in harmony. **Each death removes a voice** and enrages the survivors (+20% speed and a new move: Ricochet Throw, Both Hands, Double Lash). The last one sings alone. One lamp group relights per death.
+- **Fail-safe:** at 6:00 they "get bored", retreat laughing, and return on round 15 at full HP.
+- **Clear:** Death's Door, Resupply, 1,500 Scrip per player, "The Game Is Over" card, "Three Ribbons" charm, the aunt's letter.
+- **Drops:** the Hammer drops the **Kinderhammer** (WEAPONS §23.1).
+- **Their deaths are authored** (no ragdoll), and they are never sexualized (HOMAGE_BOSSES §1.2).
+
+### 7.2 PAUL (`paul`), Map 1 round 15
+**Pvt. Paul**, a US combat engineer dosed past the limit with Ironhide Stout. Last impulse: protect my guys.
+
+**The rage meter (0–100, a stout bottle on his bar)**:
+- **Fills from:** damage taken, players fleeing, and the sight of downed players.
+- **Stages:**
+  - Calm 0–33: stomp, haymakers, zombie throws.
+  - Angry 34–66: ×1.15 size, ripping ore carts and rails.
+  - BERSERK 67–100: ×1.30, steam, Leap Slam across zones, Thunderclap, Charge through doors, the Headframe Climb and Dive.
+- **Cooling:** shooting the six IV bottles cools him −20 each.
+
+**Never on a Foreman round.**
+
+**Death and the twist:**
+- On his knees, he recognizes an Allied soldier and gives a per-character last line ("...Hey. You found me. Tell the guys I carried my share."), hands over his crushed tin cup, and falls forward slowly.
+- Rewards: Paul's Last Round (WEAPONS §23.3), 2,000 Scrip per player, Double Scrip, "Carried My Share".
+
+### 7.3 THE SLENDER (`slender`), Morgenrot round 20
+The Hohe Wacht's night watchman, still on his rounds. He has a face, a greatcoat and a lantern: **not** Slender Man (HOMAGE_BOSSES §6.2).
+
+**The LOGGED meter:** every player has a hidden LOGGED meter.
+- **Fills:** his lantern light, staring at him, standing still in the dark, unsuppressed fire in the forest.
+- **Drains:** breaking line of sight, floodlight or flare light, staying near teammates.
+- **At 100 he quarantines you into the Watch Room:** find and tear out your page within 25 s (35 s solo) or be downed. Teammates' lantern hits release you early.
+
+**Phases:**
+- **Shift Change** (< 50%): three Watchmen; the steady lantern is the real one, and shooting a decoy logs you.
+- **End of Shift** (< 20%): 30 s of total darkness and the floodlights fail until a generator lever is held for 5 s.
+
+**Death:** he sets down the book and the lantern, blows it out, and sits against a pine for the rest of the match; zombies leave him be.
+
+**Rewards:** Overwatch (WEAPONS §23.4), the generated Watch-Book Archive entry, 2,500 Scrip per player, "Night Shift", "Violet Lantern".
+
+### 7.4 Spawning additions (homage bosses)
+- Boss spawns are scripted entrances, not spawn points:
+  - Map 0: the stair head, the hayloft, the bar trapdoor (a hidden prop in round 10 only);
+  - Map 1: the headframe top;
+  - Morgenrot: the Meiller Lanes' far end.
+- **ObservedFreeze** (Alix, the Slender's teleport) is a shared component, shared later with B&S's Galleria mannequins. **AnimJitter** steps animation at 12 fps for short bursts (the Hammer's hitch, the Reach's retract).
+- The campaign: on Map 0 with Homage Bosses On, the exfil beacon opens on round 11, after the Cousins (HOMAGE_BOSSES §4.2).
