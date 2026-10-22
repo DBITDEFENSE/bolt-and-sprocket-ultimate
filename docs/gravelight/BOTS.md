@@ -85,7 +85,13 @@ order to every bot (`BotSquad.set_command`); release in the middle to cancel. Th
   nothing is within `repair_quiet_m`.
 - **Revive priority** (left): revive at once even under fire (only something in knife reach stops it), no
   shopping, a tight follow (`revive_follow_m`).
-The nearest bot acknowledges (VO `CMD_*`) and a banner shows the order.
+The nearest bot acknowledges (VO `CMD_<ID>`) and a banner shows the order.
+
+**The order list is data:** `bots.json → commands.orders` (`[{"id", "label"}]`, clockwise from the top; the wheel
+splits into as many segments as there are entries). Every order given emits `BotSquad.order_given(order_id, at)`;
+the brains act on the four built-in ids (`BotConfig.COMMANDS`), any other id (Update 03: "train", "buy_perks",
+"save_scrip", "open_door", "fetch_part") is only emitted, for the new AI layer to handle. API:
+`BotSquad.set_command(id, at)`, `BotConfig.orders / order_ids / order_label`, `BotCommandState` (pure, tested).
 
 ### Formation and making way
 - **Training:** while you move faster than `follow.moving_speed_mps`, the slots sit **beside and a little ahead**
@@ -98,6 +104,14 @@ The nearest bot acknowledges (VO `CMD_*`) and a banner shows the order.
   points; a bot never parks in one (`_leave_choke`).
 - **Soak check:** every time a bot stays inside a door / stair volume longer than `choke_report_s` (3 s, not
   while reviving) `BotSquad.choke_events` gets a line; the squad report prints them (`CHOKE ...`).
+
+### Survival (measured, not reached)
+Playtest bot, Map 0, solo + 3 regular bots, 13-round target, 4 runs per batch. Baseline (before): wiped round 5.
+After the formation / make-way / revive / resupply changes: rounds reached 5–8 (batches a–d: 8, 6, 6, 8 / 7, 7, 5, 8 /
+5, 7, 6, 8 / 6, 7, 8, 7), bot revives of the human 0–3 per run, revives between bots 0–2. **Round 12 is not reached.**
+The down log (`DOWN ...` lines in the squad report) shows the pattern: the human goes down first (cellar, stair hall),
+the bots' main guns run dry mid-round and they fall back to kiting with the start pistol in cramped rooms. Update 03
+replaces the decision layer; the telemetry (down log, choke reports) is there for it.
 
 ### Other behaviour
 - **Traps:** any node in the `traps` group with `danger_contains(point)` (the live wire, the ore cart, the
