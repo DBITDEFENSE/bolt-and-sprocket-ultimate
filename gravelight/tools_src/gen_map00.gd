@@ -35,6 +35,10 @@ const MAT_MAP: Dictionary = {
 	"stairs": "furniture", "metal": "iron", "quest": "nachtglas", "fire": "fire", "hay": "hay", "wreck": "wreck",
 }
 
+## Invisible colliders whose dressing fills them closely enough for bullet holes to stay (Effects.persists_on;
+## every other invisible collider is tagged "decal_persist" false: tables, rail panels, fences, the great doors).
+const PERSIST_HIDDEN: Array = ["Hearth", "BarFront", "BarSide", "Bed1", "Bed2", "Bed3", "TechTrunk", "HayBales", "YardTrough", "Well"]
+
 var map_root: Node3D
 var nav: NavigationRegion3D
 var geo: Node3D
@@ -78,6 +82,7 @@ func _process(_delta: float) -> bool:
 	build_environment()
 	build_landscape()
 	build_gameplay()
+	build_reactive()
 	_own(map_root, map_root)
 	var packed: PackedScene = PackedScene.new()
 	var err: int = packed.pack(map_root)
@@ -118,6 +123,8 @@ func box(parent: Node3D, name_: String, a: Vector3, b: Vector3, mat_key: String,
 	body.position = center
 	body.collision_layer = 1
 	body.collision_mask = 0
+	if not visible and not PERSIST_HIDDEN.has(name_):
+		body.set_meta("decal_persist", false)   # an invisible collider: a hole in it would float (T-053)
 	var cs: CollisionShape3D = CollisionShape3D.new()
 	var shape: BoxShape3D = BoxShape3D.new()
 	shape.size = size
@@ -323,7 +330,7 @@ func build_geometry() -> void:
 	# bar (counter front + side) and back shelf: collision only
 	box(geo, "BarFront", Vector3(5.0, 0, 8.0), Vector3(9.0, 1.1, 8.8), "furniture", true, false)
 	box(geo, "BarSide", Vector3(8.2, 0, 3.0), Vector3(9.0, 1.1, 8.0), "furniture", true, false)
-	box(geo, "BackShelf", Vector3(4.6, 0, 3.0), Vector3(5.0, 2.0, 8.0), "furniture", true, false)
+	box(geo, "BackShelf", Vector3(4.6, 0, 3.0), Vector3(5.0, 2.0, 8.0), "furniture", true, false).set_meta("shot_through", true)   # open shelving: shots reach the bottles (T-053)
 	for p: Vector2 in [Vector2(12.5, 11.5), Vector2(16.5, 11.5), Vector2(20.0, 4.5)]:
 		box(geo, "Table", Vector3(p.x - 0.6, 0, p.y - 0.6), Vector3(p.x + 0.6, 0.75, p.y + 0.6), "furniture", true, false)
 
@@ -706,6 +713,7 @@ func build_dressing() -> void:
 	_dress_carters_road()
 	_dress_yard()
 	_dress_wreck()
+	_dress_polish()
 
 
 func _dress_floors_and_ceilings() -> void:
@@ -733,8 +741,9 @@ func _dress_floors_and_ceilings() -> void:
 			Props.block(dress, Vector3(x - 0.15, 0, z - 0.15), Vector3(x + 0.15, STABLE_H - 0.3, z + 0.15), "beam")
 
 
-## Frames, sills (with snow outside), shutters and curtains for a window opening.
-func _window(pos: Vector3, yaw: float, curtains: bool, sill: float = WIN_SILL, top: float = WIN_TOP) -> void:
+## Frames, sills (with snow outside), shutters and curtains for a window opening. The curtains are DraftCurtains
+## (T-053): they billow in the draught, harder as `win_id`'s barricade loses boards.
+func _window(pos: Vector3, yaw: float, curtains: bool, sill: float = WIN_SILL, top: float = WIN_TOP, win_id: String = "") -> void:
 	var g: Node3D = Props.group(dress, "WindowDress", pos, yaw)   # local +Z = inside
 	var hw: float = 0.8
 	for side: float in [1.0, -1.0]:
@@ -753,8 +762,13 @@ func _window(pos: Vector3, yaw: float, curtains: bool, sill: float = WIN_SILL, t
 		Props.block(sh, Vector3(-0.03, 0, 0), Vector3(0.03, top - sill + 0.1, side * -0.75), "planks")
 		sh.rotation.z = deg_to_rad(side * 3.0)
 	if curtains:
-		Props.curtain(g, Vector3(-hw - 0.25, top + 0.05, T * 0.5 + 0.08), 180.0, top - sill + 0.4, "cloth_red")
-		Props.curtain(g, Vector3(hw + 0.25, top + 0.05, T * 0.5 + 0.08), 180.0, top - sill + 0.4, "cloth_red")
+		for cx: float in [-hw - 0.25, hw + 0.25]:
+			var dc: Node3D = _scripted(Node3D.new(), "res://gravelight/world/reactive/draft_curtain.gd", "DraftCurtainL" if cx < 0.0 else "DraftCurtainR", {
+				"height": top - sill + 0.4, "mat_key": "cloth_red",
+				"window": NodePath("../../../Gameplay/" + win_id) if win_id != "" else NodePath("")})
+			dc.position = Vector3(cx, top + 0.05, T * 0.5 + 0.08)
+			dc.rotation.y = PI
+			g.add_child(dc)
 		Props.block(g, Vector3(-hw - 0.5, top + 0.15, T * 0.5 + 0.06), Vector3(hw + 0.5, top + 0.18, T * 0.5 + 0.1), "iron")
 
 
@@ -768,12 +782,12 @@ func _door_frame(pos: Vector3, yaw: float, width: float, height: float) -> void:
 
 
 func _dress_windows_and_doors() -> void:
-	_window(Vector3(7.0, 0, 0), 0.0, true)
-	_window(Vector3(17.0, 0, 0), 0.0, true)
-	_window(Vector3(0, 0, 6.0), 90.0, true)
-	_window(Vector3(24.0, 0, 8.0), -90.0, true)
-	_window(Vector3(4.0, UP_Y, 0), 0.0, true, UP_Y + WIN_SILL - UP_Y, UP_Y + WIN_TOP - UP_Y)
-	_window(Vector3(20.0, UP_Y, 0), 0.0, true, WIN_SILL, WIN_TOP)
+	_window(Vector3(7.0, 0, 0), 0.0, true, WIN_SILL, WIN_TOP, "W_TAP_N1")
+	_window(Vector3(17.0, 0, 0), 0.0, true, WIN_SILL, WIN_TOP, "W_TAP_N2")
+	_window(Vector3(0, 0, 6.0), 90.0, true, WIN_SILL, WIN_TOP, "W_TAP_W")
+	_window(Vector3(24.0, 0, 8.0), -90.0, true, WIN_SILL, WIN_TOP, "W_TAP_E")
+	_window(Vector3(4.0, UP_Y, 0), 0.0, true, UP_Y + WIN_SILL - UP_Y, UP_Y + WIN_TOP - UP_Y, "W_UP_R1")
+	_window(Vector3(20.0, UP_Y, 0), 0.0, true, WIN_SILL, WIN_TOP, "W_UP_R3")
 	_window(Vector3(9.0, 0, 22.0), 0.0, false)
 	_window(Vector3(14.0, 0, 22.0), 0.0, false)
 	_window(Vector3(12.0, 0, 34.0), 180.0, false)
@@ -1388,6 +1402,28 @@ func _dress_hearth() -> void:
 	Props.block(g, Vector3(10.2, 0, 0.3), Vector3(10.3, 0.9, 0.4), "iron")            # poker
 
 
+## Glassware that breaks when shot (T-053): collected per set here, built as ShatterSets by build_reactive().
+## [base position, ShatterSet kind, height scale]
+var _glass: Dictionary = {}
+
+
+func _glassware(set_name: String, base: Vector3, kind: String, h: float = 1.0) -> void:
+	(_glass.get_or_add(set_name, []) as Array).append([base, kind, h])
+
+
+## A shelf line of bottles and steins from a to b (both on the board's top), like Props.bottles but shootable.
+func _bottle_row(set_name: String, a: Vector3, b: Vector3, count: int, seed_v: int) -> void:
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = seed_v
+	var kinds: Array = ["bottle_green", "bottle_amber", "stein"]
+	for i: int in count:
+		var k: String = kinds[rng.randi() % kinds.size()]
+		var t: float = (float(i) + rng.randf_range(0.1, 0.9)) / float(count)
+		var p: Vector3 = a.lerp(b, t) + Vector3(rng.randf_range(-0.06, 0.06), 0, 0)   # a little in and out on the board
+		var h: float = rng.randf_range(0.83, 1.15) if k != "stein" else 1.0
+		_glassware(set_name, p, k, h)
+
+
 func _dress_bar() -> void:
 	var g: Node3D = Props.group(dress, "Bar", Vector3.ZERO)
 	# counter: panelled body, overhanging top, brass foot rail
@@ -1407,16 +1443,23 @@ func _dress_bar() -> void:
 	for y: float in [0.45, 0.95, 1.45, 1.95]:
 		Props.block(g, Vector3(4.6, y, 3.0), Vector3(5.0, y + 0.05, 8.0), "furniture")
 	Props.block(g, Vector3(4.55, 0, 3.0), Vector3(4.6, 2.0, 8.0), "wainscot")
-	Props.bottles(g, Vector3(4.8, 0.5, 3.1), Vector3(4.8, 0.5, 7.9), 22, 11)
-	Props.bottles(g, Vector3(4.8, 1.0, 3.1), Vector3(4.8, 1.0, 7.9), 20, 12)
-	Props.bottles(g, Vector3(4.8, 1.5, 3.1), Vector3(4.8, 1.5, 7.9), 18, 13)
-	Props.bottles(g, Vector3(4.8, 2.0, 5.6), Vector3(4.8, 2.0, 7.9), 6, 14)   # left of the radio
+	# the bottles break when shot (a ShatterSet, T-053; built by build_reactive). The 1.5 m board keeps a gap
+	# under the radio for Käthe's frequency notes pinned to the back board.
+	_bottle_row("Bar", Vector3(4.8, 0.5, 3.1), Vector3(4.8, 0.5, 7.9), 22, 11)
+	_bottle_row("Bar", Vector3(4.8, 1.0, 3.1), Vector3(4.8, 1.0, 7.9), 20, 12)
+	_bottle_row("Bar", Vector3(4.8, 1.5, 3.1), Vector3(4.8, 1.5, 3.9), 3, 13)
+	_bottle_row("Bar", Vector3(4.8, 1.5, 4.95), Vector3(4.8, 1.5, 7.9), 11, 15)
+	_bottle_row("Bar", Vector3(4.8, 2.0, 5.6), Vector3(4.8, 2.0, 7.9), 6, 14)   # left of the radio
 	# a keg, glasses and a ledger on the counter
 	Props.cyl(g, Vector3(6.0, 0.4, 3.6), 0.32, 0.8, "planks", Vector3(90, 90, 0))
 	Props.cyl(g, Vector3(7.4, 0.35, 3.5), 0.3, 0.7, "planks")
 	Props.block(g, Vector3(6.6, 1.1, 8.2), Vector3(7.0, 1.14, 8.5), "paper")
 	for x: float in [5.4, 5.6, 7.8, 8.6]:
-		Props.cyl(g, Vector3(x, 1.18, 8.35), 0.04, 0.16, "stein")
+		_glassware("Bar", Vector3(x, 1.1, 8.35), "stein", 0.94)
+	# the last round poured and not drunk: schnapps glasses and the bottle on the counter
+	for gp: Vector3 in [Vector3(6.2, 1.1, 8.45), Vector3(6.36, 1.1, 8.3), Vector3(7.3, 1.1, 8.55)]:
+		_glassware("Bar", gp, "glass", 0.8)
+	_glassware("Bar", Vector3(6.05, 1.1, 8.22), "bottle_green", 1.0)
 	Props.wall_lamp(g, Vector3(4.6, 2.5, 4.5), -90.0)
 
 
@@ -1430,7 +1473,7 @@ func _dress_taproom() -> void:
 			var a: float = TAU * float(k) / 4.0 + 0.4
 			var cp: Vector3 = Vector3(p.x + cos(a) * 0.95, 0, p.y + sin(a) * 0.95)
 			Props.chair(g, cp, rad_to_deg(atan2(-(cp.x - p.x), -(cp.z - p.y))) + 180.0 + rng.randf_range(-20, 20), rng.randf() < 0.12)
-		Props.cyl(g, Vector3(p.x - 0.2, 0.83, p.y + 0.1), 0.045, 0.16, "stein")
+		_glassware("Taproom", Vector3(p.x - 0.2, 0.75, p.y + 0.1), "stein", 0.94)
 		Props.cyl(g, Vector3(p.x + 0.25, 0.8, p.y - 0.2), 0.03, 0.1, "candle")
 		Props.block(g, Vector3(p.x + 0.05, 0.751, p.y - 0.05), Vector3(p.x + 0.25, 0.755, p.y + 0.2), "paper", false)
 	# benches along the south wall, a rug in front of the hearth, coat rack by the stable door
@@ -1457,7 +1500,7 @@ func _dress_taproom() -> void:
 	Props.cyl(clk, Vector3(0, -0.18, -0.125), 0.04, 0.008, "brass", Vector3(90, 0, 0))
 	Props.block(g, Vector3(8.2, 2.0, 0.15), Vector3(10.6, 2.04, 0.4), "furniture")
 	for i: int in 6:
-		Props.cyl(g, Vector3(8.4 + i * 0.4, 2.12, 0.28), 0.055, 0.16, "stein")
+		_glassware("Taproom", Vector3(8.4 + i * 0.4, 2.04, 0.28), "stein", 0.94)
 	Props.block(g, Vector3(8.2, 1.9, 0.15), Vector3(8.24, 2.0, 0.38), "furniture")
 	Props.block(g, Vector3(10.56, 1.9, 0.15), Vector3(10.6, 2.0, 0.38), "furniture")
 	Props.lantern(g, Vector3(6.5, 2.6, 11.5), TAP_H - 0.28)
@@ -1785,6 +1828,265 @@ func _dress_wreck() -> void:
 			Vector3(rng.randf_range(-20, 20), rng.randf_range(0, 360), rng.randf_range(-20, 20)))
 	# a scorched trail through the snow toward the impact
 	Props.block(dress, Vector3(52, 0.0, -25), Vector3(55, 0.016, 2), "char", false)
+
+
+# ================================================================== Update 02 section 8: the small-detail polish (T-053)
+
+## Room by room (docs/MAP0_POLISH.md): story props, wear (worn boards, grime and soot, water stains, scuffs,
+## cobwebs, snow blown in at the broken windows). Everything here is dressing (no collision, batched). The
+## reactive pieces (glass, curtains, doors, hay, footprints, sound) are build_reactive()'s. Nothing goes in front of
+## a buy, a door or a window, or in a walking line.
+func _dress_polish() -> void:
+	var g: Node3D = Props.group(dress, "Polish", Vector3.ZERO)
+	_polish_taproom(g)
+	_polish_upstairs(g)
+	_polish_stable(g)
+	_polish_cellars(g)
+
+
+func _polish_taproom(g: Node3D) -> void:
+	# ---- the meal the patrol left: their table (16.5, 11.5) with the map, a helmet, a mess tin, cold soup; a chair
+	# knocked over as they got up; a greatcoat on the bench; a gas-mask canister and the map case under the table
+	PropsStory.soup_bowl(g, Vector3(16.15, 0.75, 11.15), 20.0, 0.45)
+	PropsStory.mess_tin(g, Vector3(15.95, 0.75, 11.95), -30.0)
+	PropsStory.helmet(g, Vector3(17.05, 0.75, 11.05), 35.0)
+	PropsStory.loaf(g, Vector3(16.95, 0.75, 11.95), 70.0)
+	Props.chair(g, Vector3(18.0, 0, 12.75), 110.0, true)
+	PropsStory.coat_drape(g, Vector3(15.6, 0.5, 15.45), 0.0)
+	PropsStory.gasmask_can(g, Vector3(17.35, 0, 12.25), 40.0)
+	PropsStory.map_case(g, Vector3(15.75, 0, 12.55), -20.0)
+	# the table by the hearth (12.5, 11.5): two suppers half eaten, the bread
+	PropsStory.plate_meal(g, Vector3(12.2, 0.75, 11.15), 15.0, 0.6)
+	PropsStory.soup_bowl(g, Vector3(12.85, 0.75, 11.9), -40.0, 0.3)
+	PropsStory.plate_meal(g, Vector3(12.9, 0.75, 11.05), 120.0, 0.2)
+	PropsStory.loaf(g, Vector3(12.15, 0.75, 11.85), -15.0)
+	# the signals table (20, 4.5): a crust, a mug of ersatz coffee beside the logbook
+	PropsStory.plate_meal(g, Vector3(19.8, 0.75, 4.05), -10.0, 0.95)
+	PropsStory.mug(g, Vector3(20.3, 0.75, 4.9))
+	# "Soup kept warm" (the guest book, 21.XII): the pot on the hearthstone, its ladle
+	Props.cyl(g, Vector3(12.75, 0.24, 1.22), 0.17, 0.24, "iron")
+	Props.cyl(g, Vector3(12.75, 0.37, 1.22), 0.175, 0.02, "iron")
+	Props.obox(g, Vector3(12.85, 0.5, 1.2), Vector3(0.02, 0.35, 0.02), "steel", Vector3(0, 0, -25))
+	# Lene's apron on its hook by the bar end of the north wall, and a cloth on the peg beside it
+	PropsStory.apron_on_hook(g, Vector3(9.05, 1.78, 0.15), 180.0)
+	Props.block(g, Vector3(8.62, 1.76, 0.15), Vector3(8.66, 1.8, 0.21), "iron")
+	Props.obox(g, Vector3(8.64, 1.6, 0.21), Vector3(0.2, 0.32, 0.01), "linen", Vector3(4, 0, 2))
+	# ---- wear: boards scrubbed pale where people walk (the bar, the spawn, every doorway)
+	for wp: Array in [[Vector3(5.2, 0, 8.95), Vector3(9.4, 0, 10.1)], [Vector3(9.25, 0, 3.4), Vector3(10.7, 0, 9.8)],
+			[Vector3(6.15, 0, 13.9), Vector3(8.2, 0, 15.85)], [Vector3(18.8, 0, 13.6), Vector3(21.2, 0, 15.85)],
+			[Vector3(22.2, 0, 10.4), Vector3(23.85, 0, 12.6)], [Vector3(0.15, 0, 8.0), Vector3(1.8, 0, 10.1)],
+			[Vector3(13.0, 0, 5.2), Vector3(17.0, 0, 9.7)], [Vector3(10.6, 0, 4.9), Vector3(13.4, 0, 6.3)]]:
+		var a: Vector3 = wp[0]
+		var b: Vector3 = wp[1]
+		PropsStory.stain(g, Vector3(a.x, 0.0125, a.z), Vector3(b.x, 0.0135, b.z), "floor_worn")
+	# soot: the chimney breast, the lintel and the ceiling over the hearth, and a smudge over each lantern
+	PropsStory.stain(g, Vector3(11.2, 1.5, 0.603), Vector3(12.8, 3.45, 0.607), "soot")
+	PropsStory.stain(g, Vector3(11.4, 1.0, 0.953), Vector3(12.6, 1.42, 0.957), "soot")
+	PropsStory.stain(g, Vector3(10.4, 3.493, 0.15), Vector3(13.6, 3.497, 1.9), "soot")
+	for lp: Vector2 in [Vector2(6.5, 11.5), Vector2(17.5, 4.0), Vector2(19.5, 13.0), Vector2(14.0, 8.0)]:
+		PropsStory.stain(g, Vector3(lp.x - 0.4, 3.493, lp.y - 0.4), Vector3(lp.x + 0.4, 3.497, lp.y + 0.4), "soot")
+	# water stains: the ceiling in the north-west corner and over the east window, streaks under the north windows
+	PropsStory.stain(g, Vector3(0.3, 3.492, 0.3), Vector3(2.8, 3.496, 2.3), "water_stain")
+	PropsStory.stain(g, Vector3(22.4, 3.492, 6.6), Vector3(23.85, 3.496, 9.6), "water_stain")
+	for wx: float in [6.0, 7.9, 16.05, 17.9]:
+		PropsStory.stain(g, Vector3(wx - 0.08, 1.1, 0.152), Vector3(wx + 0.12, 2.2, 0.156), "water_stain")
+	# scuffs: the bar front and side at boot height, the wainscot beside the doors
+	PropsStory.stain(g, Vector3(5.1, 0.04, 8.803), Vector3(8.95, 0.42, 8.807), "scuff")
+	PropsStory.stain(g, Vector3(9.003, 0.04, 3.1), Vector3(9.007, 0.42, 7.95), "scuff")
+	PropsStory.stain(g, Vector3(18.4, 0.05, 15.81), Vector3(21.6, 0.6, 15.814), "scuff")
+	PropsStory.stain(g, Vector3(6.186, 0.05, 13.6), Vector3(6.19, 0.6, 16.0), "scuff")
+	# grime round the door frames, at hand height
+	for gz: Array in [[13.85, 14.25], [15.95, 16.0]]:
+		PropsStory.stain(g, Vector3(6.152, 1.1, float(gz[0])), Vector3(6.156, 2.1, float(gz[1])), "grime")
+	for gx: Array in [[18.55, 18.9], [21.1, 21.45]]:
+		PropsStory.stain(g, Vector3(float(gx[0]), 1.1, 15.843), Vector3(float(gx[1]), 2.2, 15.847), "grime")
+	PropsStory.stain(g, Vector3(23.843, 1.1, 10.2), Vector3(23.847, 2.3, 10.58), "grime")
+	PropsStory.stain(g, Vector3(23.843, 1.1, 12.42), Vector3(23.847, 2.3, 12.8), "grime")
+	# cobwebs in the taproom's high corners
+	Props.cobweb(g, Vector3(0.15, TAP_H - 0.02, 0.15), 0.0, 0.8)
+	Props.cobweb(g, Vector3(23.85, TAP_H - 0.02, 0.15), -90.0, 0.7)
+	Props.cobweb(g, Vector3(23.85, TAP_H - 0.02, 15.85), 180.0, 0.8)
+	# snow blown in at the four broken windows
+	PropsStory.snow_blown_in(g, Vector3(7.0, 0, 0), Vector3(0, 0, 1), WIN_SILL)
+	PropsStory.snow_blown_in(g, Vector3(17.0, 0, 0), Vector3(0, 0, 1), WIN_SILL)
+	PropsStory.snow_blown_in(g, Vector3(0, 0, 6.0), Vector3(1, 0, 0), WIN_SILL)
+	PropsStory.snow_blown_in(g, Vector3(24.0, 0, 8.0), Vector3(-1, 0, 0), WIN_SILL)
+
+
+func _polish_upstairs(g: Node3D) -> void:
+	var y: float = UP_Y
+	# ---- Room 1: the cousins' room. Modest period clothes (HOMAGE_BOSSES 1.2): a Sunday dress on the wardrobe, a
+	# cardigan folded at the bed's foot, a suitcase open on the bed, three pairs of shoes, a winter coat and a scarf
+	# on the pegs, the red ribbon and a brush on the blanket, a straw tick rolled in the corner (three girls, one
+	# bed). Their childhood drawings are pinned on the south wall (PaperDecor, build_reactive).
+	PropsStory.dress_on_hanger(g, Vector3(1.25, y + 1.98, 5.05), 0.0, "cloth_navy")
+	PropsStory.cardigan_folded(g, Vector3(1.25, y + 0.476, 2.3), 0.0, "cloth_cream")
+	PropsStory.suitcase_open(g, Vector3(1.25, y + 0.476, 1.6), 180.0)
+	PropsStory.ribbon_and_brush(g, Vector3(0.75, y + 0.476, 0.95), 30.0)
+	PropsStory.shoes(g, Vector3(2.45, y, 2.2), 95.0, "leather")
+	PropsStory.shoes(g, Vector3(2.5, y, 1.62), 80.0, "black_paint")
+	PropsStory.shoes(g, Vector3(2.05, y, 5.75), 180.0, "leather")
+	Props.block(g, Vector3(7.8, y + 1.6, 4.3), Vector3(7.85, y + 1.68, 5.7), "beam")   # a peg rail on the east wall
+	for pz: float in [4.6, 5.3]:
+		Props.cyl(g, Vector3(7.78, y + 1.63, pz), 0.02, 0.1, "beam", Vector3(0, 0, 90))
+	var coat: Node3D = Props.group(g, "Coat", Vector3(7.73, y + 1.63, 4.6), -90.0)
+	Props.obox(coat, Vector3(0, -0.12, 0), Vector3(0.4, 0.2, 0.12), "cloth_navy")
+	Props.obox(coat, Vector3(0, -0.62, 0.0), Vector3(0.46, 0.85, 0.11), "cloth_navy", Vector3(-3, 0, 0))
+	Props.obox(coat, Vector3(0, -0.3, -0.06), Vector3(0.05, 0.4, 0.02), "cloth_cream")   # a lining showing
+	var scarf: Node3D = Props.group(g, "Scarf", Vector3(7.75, y + 1.63, 5.3), -90.0)
+	Props.obox(scarf, Vector3(0.04, -0.3, 0), Vector3(0.12, 0.6, 0.03), "plaster_upper")
+	Props.obox(scarf, Vector3(-0.06, -0.24, 0.01), Vector3(0.12, 0.48, 0.03), "plaster_upper")
+	PropsStory.rolled_mattress(g, Vector3(7.5, y, 0.6))
+	Props.cobweb(g, Vector3(0.15, UP_TOP - 0.02, 0.15), 0.0, 0.7)
+	PropsStory.stain(g, Vector3(5.6, UP_TOP - 0.008, 0.3), Vector3(7.7, UP_TOP - 0.004, 2.0), "water_stain")
+	PropsStory.stain(g, Vector3(2.4, y + 0.0125, 3.0), Vector3(6.4, y + 0.0135, 5.8), "floor_worn")
+	# ---- Room 2: the works' gentleman's things: a briefcase by the bed, a hat on the trunk's corner
+	var bc: Node3D = Props.group(g, "Briefcase", Vector3(13.25, y, 2.95), 80.0)
+	Props.block(bc, Vector3(-0.2, 0, -0.05), Vector3(0.2, 0.3, 0.05), "leather")
+	Props.block(bc, Vector3(-0.06, 0.3, -0.01), Vector3(0.06, 0.34, 0.01), "leather")
+	Props.cyl(g, Vector3(11.45, y + 0.53, 1.0), 0.17, 0.02, "black_paint")
+	Props.cyl(g, Vector3(11.45, y + 0.58, 1.0), 0.1, 0.1, "black_paint")
+	Props.cobweb(g, Vector3(15.85, UP_TOP - 0.02, 0.15), -90.0, 0.7)
+	PropsStory.stain(g, Vector3(8.6, UP_TOP - 0.008, 3.6), Vector3(10.6, UP_TOP - 0.004, 5.6), "water_stain")
+	PropsStory.stain(g, Vector3(10.6, y + 0.0125, 3.2), Vector3(13.0, y + 0.0135, 5.8), "floor_worn")
+	# ---- Room 3: Josef's overcoat on the chair; the coffee he didn't finish
+	PropsStory.coat_drape(g, Vector3(17.93, y + 0.93, 1.11), 200.0, "cloth_navy")
+	PropsStory.mug(g, Vector3(21.0, y + 0.622, 5.15))
+	Props.cobweb(g, Vector3(23.85, UP_TOP - 0.02, 0.15), -90.0, 0.8)
+	PropsStory.stain(g, Vector3(18.6, y + 0.0125, 3.0), Vector3(21.2, y + 0.0135, 5.8), "floor_worn")
+	# ---- the hall: cobwebs at its east end, a stain where the roof leaks, the runner worn to the threads
+	Props.cobweb(g, Vector3(23.85, UP_TOP - 0.02, 6.15), -90.0, 0.7)
+	Props.cobweb(g, Vector3(23.85, UP_TOP - 0.02, 9.85), 180.0, 0.8)
+	PropsStory.stain(g, Vector3(20.6, UP_TOP - 0.008, 6.4), Vector3(23.6, UP_TOP - 0.004, 9.6), "water_stain")
+	PropsStory.stain(g, Vector3(3.8, y + 0.026, 7.5), Vector3(13.0, y + 0.028, 8.5), "floor_worn")
+	PropsStory.stain(g, Vector3(0.3, UP_TOP - 0.008, 11.0), Vector3(2.2, UP_TOP - 0.004, 13.2), "water_stain")   # over the stairwell
+	# snow in at the two upstairs windows
+	PropsStory.snow_blown_in(g, Vector3(4.0, y, 0), Vector3(0, 0, 1), WIN_SILL)
+	PropsStory.snow_blown_in(g, Vector3(20.0, y, 0), Vector3(0, 0, 1), WIN_SILL)
+
+
+func _polish_stable(g: Node3D) -> void:
+	# ---- the horse's stall: her name board over the manger, the halter on its peg, the water bucket, the blanket.
+	# You hear her in the first rounds (AudioZone); after that the stall is just empty. Nothing shows why.
+	Props.block(g, Vector3(11.55, 1.86, 22.15), Vector3(12.45, 2.1, 22.19), "planks")
+	Props.stencil(g, Vector3(12.0, 1.98, 22.2), 180.0, "FANNY", 44, Color(0.62, 0.56, 0.44, 0.85), 0.0036).shaded = true   # paint, lit like the board
+	var halter: Node3D = Props.group(g, "Halter", Vector3(11.0, 1.55, 25.33), 0.0)
+	Props.cyl(halter, Vector3(0, 0, 0), 0.02, 0.08, "iron", Vector3(90, 0, 0))
+	Props.obox(halter, Vector3(-0.06, -0.18, 0.04), Vector3(0.03, 0.36, 0.01), "leather", Vector3(0, 0, -12))
+	Props.obox(halter, Vector3(0.06, -0.18, 0.04), Vector3(0.03, 0.36, 0.01), "leather", Vector3(0, 0, 12))
+	Props.obox(halter, Vector3(0, -0.36, 0.04), Vector3(0.2, 0.03, 0.01), "leather")
+	Props.cyl(halter, Vector3(0, -0.5, 0.04), 0.025, 0.25, "rope")
+	Props.cyl(g, Vector3(11.6, 0.15, 22.75), 0.15, 0.3, "tin")
+	Props.cyl(g, Vector3(11.6, 0.29, 22.75), 0.135, 0.01, "puddle")
+	Props.block(g, Vector3(11.85, 0.85, 22.18), Vector3(12.95, 1.1, 22.24), "cloth_green")   # a horse blanket over the manger
+	# hay pulled from the manger and trodden into the floor of the stall
+	for hp: Vector3 in [Vector3(12.4, 0, 23.2), Vector3(11.8, 0, 24.3)]:
+		Props.obox(g, hp + Vector3(0, 0.012, 0), Vector3(0.9, 0.02, 0.6), "straw_floor", Vector3(0, 25, 0))
+	# the loft: loose straw over the boards
+	var lr: RandomNumberGenerator = RandomNumberGenerator.new()
+	lr.seed = 3401
+	for k: int in 14:
+		Props.obox(g, Vector3(lr.randf_range(6.6, 14.4), 3.512, lr.randf_range(22.6, 30.0)), Vector3(lr.randf_range(0.4, 1.0), 0.02, lr.randf_range(0.3, 0.6)),
+			"straw_floor", Vector3(0, lr.randf_range(0, 180), 0))
+	# cobwebs in the roof corners and on the trusses
+	Props.cobweb(g, Vector3(6.15, STABLE_H - 0.02, 22.15), 0.0, 1.0)
+	Props.cobweb(g, Vector3(23.85, STABLE_H - 0.02, 22.15), -90.0, 0.9)
+	Props.cobweb(g, Vector3(23.85, STABLE_H - 0.02, 33.85), 180.0, 1.0)
+	Props.cobweb(g, Vector3(6.15, STABLE_H - 0.02, 33.85), 90.0, 0.9)
+	Props.cobweb(g, Vector3(6.55, STABLE_H - 0.62, 24.65), 0.0, 0.6)
+	# snow in at the stable's windows
+	PropsStory.snow_blown_in(g, Vector3(9.0, 0, 22.0), Vector3(0, 0, 1), WIN_SILL)
+	PropsStory.snow_blown_in(g, Vector3(14.0, 0, 22.0), Vector3(0, 0, 1), WIN_SILL)
+	PropsStory.snow_blown_in(g, Vector3(12.0, 0, 34.0), Vector3(0, 0, -1), WIN_SILL)
+
+
+func _polish_cellars(g: Node3D) -> void:
+	# the Helvetia cellar's stair hall: a stain where the yard's melt comes through, boots worn into the landing
+	PropsStory.stain(g, Vector3(24.4, 2.993, 10.4), Vector3(26.6, 2.997, 12.6), "water_stain")
+	PropsStory.stain(g, Vector3(24.3, 0.0125, 10.5), Vector3(27.6, 0.0135, 13.0), "floor_worn")
+
+
+# ================================================================== the reactive pieces (T-053)
+
+## The parts that react, as runtime nodes under "Reactive" (they build their art at load time, so the .tscn holds
+## only their settings): the glassware ShatterSets, the swinging room doors, the hay zones, the snow footprints,
+## the audio zones (hearth, wind at the windows, the stable, the horse), the paper dressing (the calendar, the
+## patrol's map, Käthe's notes, the cousins' drawings), and two drips for the Helvetia cellar.
+func build_reactive() -> void:
+	var r: Node3D = Node3D.new()
+	r.name = "Reactive"
+	map_root.add_child(r)
+	for set_name: String in _glass.keys():
+		var ss: Node3D = _scripted(Node3D.new(), "res://gravelight/world/reactive/shatter_set.gd", "Glass_" + set_name, {"items": _glass[set_name]})
+		r.add_child(ss)
+	# the paper: [kind, position, yaw, flat, tilt]
+	var pi_: int = 0
+	for pd: Array in [["calendar", Vector3(5.45, 1.75, 0.16), 180.0, false, 1.5],
+			["freq_notes", Vector3(4.605, 1.72, 4.25), -90.0, false, -4.0], ["freq_notes", Vector3(4.605, 1.69, 4.62), -90.0, false, 6.0],
+			["map", Vector3(16.5, 0.752, 11.55), 168.0, true, 0.0],
+			["drawing_inn", Vector3(2.35, UP_Y + 1.6, 5.85), 0.0, false, -3.0],
+			["drawing_horse", Vector3(3.2, UP_Y + 1.5, 5.85), 0.0, false, 4.0],
+			["drawing_jam", Vector3(4.05, UP_Y + 1.62, 5.85), 0.0, false, -2.0]]:
+		pi_ += 1
+		var paper: Node3D = _scripted(Node3D.new(), "res://gravelight/world/paper_decor.gd", "Paper%d_%s" % [pi_, str(pd[0])], {
+			"kind": pd[0], "flat": pd[3], "tilt_deg": pd[4]})
+		paper.position = pd[1]
+		paper.rotation.y = deg_to_rad(float(pd[2]))
+		r.add_child(paper)
+	# the guest rooms' doors, left ajar, opening into the room: Room 1's hinged on its east jamb so the leaf never
+	# hides the MP40 on the west wall from the doorway; Rooms 2 and 3 on their west jambs
+	for dd: Array in [[6.5, true, 1], [11.0, false, 2], [19.5, false, 3]]:
+		var sd: Node3D = _scripted(Node3D.new(), "res://gravelight/world/reactive/swing_door.gd", "RoomDoor%d" % int(dd[2]), {
+			"width": 1.5, "height": 2.15, "rest_deg": 70.0, "open_deg": 100.0, "flip": dd[1]})
+		sd.position = Vector3(float(dd[0]), UP_Y, 6.0 - T * 0.5)
+		r.add_child(sd)
+	# hay that puffs underfoot: the straw on the stable floor, the hay pile, the loft's boards
+	var hi_: int = 0
+	for hz: Array in [[Vector3(12.5, 0, 23.6), Vector3(2.2, 0.8, 1.8)], [Vector3(14.0, 0, 24.0), Vector3(2.2, 0.8, 1.8)],
+			[Vector3(19.5, 0, 24.5), Vector3(2.2, 0.8, 1.8)], [Vector3(9.0, 0, 27.0), Vector3(2.2, 0.8, 1.8)],
+			[Vector3(20.0, 0, 31.0), Vector3(2.2, 0.8, 1.8)], [Vector3(22.6, 0, 23.95), Vector3(2.6, 1.0, 3.2)],
+			[Vector3(10.5, 3.5, 26.3), Vector3(8.0, 0.8, 7.6)]]:
+		hi_ += 1
+		var hp: Node3D = _scripted(Area3D.new(), "res://gravelight/world/reactive/hay_puff_zone.gd", "HayPuff%d" % hi_, {"size": hz[1]})
+		hp.position = hz[0]
+		r.add_child(hp)
+	# footprints on the open snow (the snowfall's areas, the strip in front of the inn); not over the light wells
+	var fp: Node3D = _scripted(Node3D.new(), "res://gravelight/world/reactive/snow_footprints.gd", "SnowFootprints", {
+		"areas": [AABB(Vector3(-40, -1, -40), Vector3(105, 3, 37)), AABB(Vector3(-40, -1, -3), Vector3(37, 3, 43)),
+			AABB(Vector3(27, -1, -3), Vector3(38, 3, 43)), AABB(Vector3(-40, -1, 37), Vector3(105, 3, 33)),
+			AABB(Vector3(0, -1, 16.6), Vector3(17.6, 3, 5.2)), AABB(Vector3(2, -1, 34.2), Vector3(32, 3, 13.8)),
+			AABB(Vector3(-3, -1, -3), Vector3(30, 3, 2.75)), AABB(Vector3(24.2, -1, -3), Vector3(2.8, 3, 13))] as Array[AABB],
+		"holes": [AABB(Vector3(1.85, -2, -4.65), Vector3(3.2, 4, 4.5)), AABB(Vector3(24.0, -2, -2.1), Vector3(2.35, 4, 5.45)),
+			AABB(Vector3(23.8, -2, 9.8), Vector3(4.5, 4, 9.4))] as Array[AABB]})   # the light wells, the cellar's stair hall
+	map_root.add_child(fp)
+	# sound: the hearth (dies with its light), wind through each broken window (louder in gusts and as the boards go),
+	# the stable's old frame creaking, the horse in her stall in the first two rounds
+	var hearth: Node3D = _scripted(Node3D.new(), "res://gravelight/world/reactive/audio_zone.gd", "HearthCrackle", {
+		"sound": "fire_crackle", "mode": "loop", "volume_db": 0.0, "follow_light": NodePath("../../Hearthfire"), "max_distance": 20.0})
+	hearth.position = Vector3(12.0, 0.6, 1.0)
+	r.add_child(hearth)
+	for w: Array in [["W_TAP_N1", Vector3(7.0, 1.5, 0.4)], ["W_TAP_N2", Vector3(17.0, 1.5, 0.4)], ["W_TAP_W", Vector3(0.4, 1.5, 6.0)],
+			["W_TAP_E", Vector3(23.6, 1.5, 8.0)], ["W_UP_R1", Vector3(4.0, UP_Y + 1.5, 0.4)], ["W_UP_R3", Vector3(20.0, UP_Y + 1.5, 0.4)],
+			["W_STB_N1", Vector3(9.0, 1.5, 22.4)], ["W_STB_N2", Vector3(14.0, 1.5, 22.4)], ["W_STB_S", Vector3(12.0, 1.5, 33.6)]]:
+		var wz: Node3D = _scripted(Node3D.new(), "res://gravelight/world/reactive/audio_zone.gd", "WindHowl_" + str(w[0]), {
+			"sound": "wind_howl", "mode": "loop", "volume_db": -14.0, "wind_db": 7.0, "broken_db": 8.0,
+			"window": NodePath("../../Gameplay/" + str(w[0])), "max_distance": 11.0})
+		wz.position = w[1]
+		r.add_child(wz)
+	var creak: Node3D = _scripted(Node3D.new(), "res://gravelight/world/reactive/audio_zone.gd", "StableCreaks", {
+		"sound": "stable_creak", "mode": "random", "volume_db": -2.0, "interval": Vector2(12.0, 30.0), "spread": Vector3(8.0, 2.0, 5.0)})
+	creak.position = Vector3(15.0, 4.5, 28.0)
+	r.add_child(creak)
+	var horse: Node3D = _scripted(Node3D.new(), "res://gravelight/world/reactive/audio_zone.gd", "HorseInTheStall", {
+		"sound": "horse_whinny", "mode": "random", "volume_db": -4.0, "interval": Vector2(30.0, 65.0), "spread": Vector3(1.2, 0.2, 0.8),
+		"max_round": 2, "max_plays": 3})
+	horse.position = Vector3(12.6, 1.4, 23.4)
+	r.add_child(horse)
+	# the Helvetia cellar drips too, over its puddles
+	for dp: Vector3 in [Vector3(30.1, CELLAR_TOP - 0.02, 25.0), Vector3(27.4, CELLAR_TOP - 0.02, 30.0)]:
+		var drip: Node3D = _scripted(Node3D.new(), "res://gravelight/world/drip_point.gd", "Drip", {"height": CELLAR_TOP - 0.02 - CELLAR_Y})
+		drip.position = dp
+		gameplay.add_child(drip)
 
 
 # ================================================================== batching

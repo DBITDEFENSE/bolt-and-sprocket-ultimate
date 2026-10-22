@@ -228,6 +228,8 @@ static func lantern(parent: Node3D, pos: Vector3, ceiling_y: float) -> void:
 	body.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	body.set_meta("keep", true)
 	pivot.add_child(body)
+	# Update 02 section 8 (T-053): a shot swings it (a "decor" hit volume; DecorTarget)
+	DecorHit.make_target(pivot, body.position, 0.16, &"lamp")
 
 
 ## The lantern's cage, cap and glass as one shared mesh (surface 0 iron, surface 1 the lit glass).

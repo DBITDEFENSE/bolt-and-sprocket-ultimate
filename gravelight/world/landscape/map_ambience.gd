@@ -74,9 +74,16 @@ var _sky_dirty: bool = true
 
 
 func _ready() -> void:
+	add_to_group(&"map_ambience")
 	cfg = GLData.load_json(config_path)
 	_rng.randomize()
 	_setup.call_deferred()
+
+
+## The wind right now, ~0.15 (lull) .. ~1.1 (a full gust): the reactive dressing (curtains, wind at the broken
+## windows; Update 02 section 8, T-053) reads it through ReactiveWind.
+func wind_strength() -> float:
+	return _wind
 
 
 # ================================================================== pure rules (unit-tested)

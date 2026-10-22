@@ -124,6 +124,8 @@ func _open_visual() -> void:
 	_body.collision_layer = 0
 	area.collision_layer = 0
 	AudioDirector.play_3d("door_open", global_position + Vector3(0, 1, 0))
+	if AudioDirector.has_sound("door_creak"):   # the old hinges give as it goes (Update 02 section 8, T-053)
+		AudioDirector.play_3d("door_creak", global_position + Vector3(0, 1.6, 0), -2.0)
 	var target: Node3D = get_node_or_null("Visual") as Node3D
 	if target == null:
 		target = _visual
