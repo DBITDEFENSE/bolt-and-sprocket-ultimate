@@ -1150,4 +1150,15 @@ static func _build_map2(key: String) -> Material:
 			return _flat(Color(0.58, 0.58, 0.55), 0.35, 0.8)
 		"dial_red":
 			return _flat(Color(0.5, 0.08, 0.06), 0.5)
+		# ---- the ammo boxes (Update 02 section 4): olive-drab paint on planks, worn pale at the edges; steel cans
+		"olive_drab":
+			return _surface(_tex(_noise(simplex, 0.09, 5, 701), _ramp([[0.0, Color(0.13, 0.14, 0.08)], [0.45, Color(0.22, 0.23, 0.13)],
+				[0.85, Color(0.27, 0.28, 0.16)], [1.0, Color(0.36, 0.35, 0.24)]])),
+				_normal(_noise(simplex, 0.35, 3, 702), 1.2), Vector3(1.4, 1.4, 1.4), 0.78)
+		"olive_steel":
+			return _surface(_tex(_noise(simplex, 0.12, 4, 705), _ramp([[0.0, Color(0.10, 0.11, 0.07)], [0.6, Color(0.19, 0.20, 0.12)], [1.0, Color(0.29, 0.28, 0.20)]])),
+				_normal(_noise(simplex, 0.5, 2, 706), 0.6), Vector3(2.0, 2.0, 2.0), 0.55, 1.0, 0.35)
+		"cardboard":
+			return _surface(_tex(_noise(simplex, 0.2, 3, 709), _ramp([[0.0, Color(0.30, 0.22, 0.13)], [1.0, Color(0.42, 0.32, 0.19)]])),
+				null, Vector3(2.0, 2.0, 2.0), 0.95)
 	return null

@@ -49,7 +49,7 @@
   }
  },
  "feel": {
-  "_doc": "Gun feel + viewmodel framing (WeaponHolder.feel_for). Resolution: classes.default < classes[<class>] < base weapon row 'feel' < upgraded row 'feel'. viewmodel_fov: the guns are drawn as if at this vertical FOV whatever the FOV setting. Camera recoil per shot: cam_pitch deg up, cam_yaw deg random +-, cam_keep = share that stays in your aim (rest springs back at cam_recover rad/s), ads_recoil multiplier while aimed. Viewmodel kick on a damped spring (vm_spring rad/s, vm_damp ratio): vm_back m, vm_lift share of vm_back, vm_climb deg, vm_roll deg, ads_kick multiplier. shake / fov_punch (deg) scale with the Screen Shake setting. flash_light energy, flash_time s, smoke puff (smoke_k size), casing pistol|rifle|shell|none, fire_db. Poses (camera space, m / deg): hip, hip_rot, sprint_pos, sprint_rot, reload_pos, reload_rot (x reload_tilt), eye_relief overrides the model's. sway_mult, bob_mult.",
+  "_doc": "Gun feel + viewmodel framing (WeaponHolder.feel_for). Resolution: classes.default < classes[<class>] < base weapon row 'feel' < upgraded row 'feel'. viewmodel_fov: the guns are drawn as if at this vertical FOV whatever the FOV setting. Camera recoil per shot: cam_pitch deg up, cam_yaw deg random +-, cam_keep = share that stays in your aim (rest springs back at cam_recover rad/s), ads_recoil multiplier while aimed. Viewmodel kick on a damped spring (vm_spring rad/s, vm_damp ratio): vm_back m, vm_lift share of vm_back, vm_climb deg, vm_roll deg, ads_kick multiplier. shake / fov_punch (deg) scale with the Screen Shake setting. flash_light energy, flash_time s, smoke puff (smoke_k size), casing pistol|rifle|shell|none, fire_db. Poses (camera space, m / deg): hip, hip_rot, sprint_pos, sprint_rot, reload_pos, reload_rot (x reload_tilt), ADS (T-047): eye_relief = metres from the eye to the model's SightPoint marker when aimed (the gun is placed so SightPoint and FrontSight sit on the screen center); ads_zoom = camera FOV multiplier when fully aimed (per weapon, class value as the fallback); the weapon row's 'sway' scales ADS sway (turn lag + figure-8), ads_sway_mult scales it further. sway_mult, bob_mult.",
   "viewmodel_fov": 54,
   "classes": {
    "default": {
@@ -103,7 +103,9 @@
     "smoke": false,
     "smoke_k": 1.0,
     "casing": "rifle",
-    "fire_db": -2.0
+    "fire_db": -2.0,
+    "eye_relief": 0.25,
+    "ads_zoom": 0.8
    },
    "pistol": {
     "hip": [
@@ -149,7 +151,8 @@
     "shake": 0.05,
     "fov_punch": 0.5,
     "flash_light": 1.6,
-    "casing": "pistol"
+    "casing": "pistol",
+    "ads_zoom": 0.9
    },
    "bolt": {
     "cam_pitch": 3.4,
@@ -168,7 +171,8 @@
     "flash_time": 0.06,
     "smoke": true,
     "smoke_k": 0.8,
-    "fire_db": -1.0
+    "fire_db": -1.0,
+    "ads_zoom": 0.72
    },
    "rifle": {
     "cam_pitch": 1.9,
@@ -184,7 +188,8 @@
     "fov_punch": 1.3,
     "flash_light": 2.6,
     "smoke": false,
-    "fire_db": -1.5
+    "fire_db": -1.5,
+    "ads_zoom": 0.75
    },
    "smg": {
     "cam_pitch": 0.5,
@@ -200,7 +205,8 @@
     "fov_punch": 0.2,
     "flash_light": 1.8,
     "flash_time": 0.035,
-    "casing": "pistol"
+    "casing": "pistol",
+    "ads_zoom": 0.85
    },
    "assault": {
     "cam_pitch": 0.65,
@@ -215,7 +221,8 @@
     "shake": 0.04,
     "fov_punch": 0.3,
     "flash_light": 2.0,
-    "flash_time": 0.04
+    "flash_time": 0.04,
+    "ads_zoom": 0.8
    },
    "shotgun": {
     "cam_pitch": 4.2,
@@ -235,7 +242,8 @@
     "smoke": true,
     "smoke_k": 1.3,
     "casing": "shell",
-    "fire_db": -1.0
+    "fire_db": -1.0,
+    "ads_zoom": 0.9
    },
    "lmg": {
     "hip": [
@@ -259,7 +267,8 @@
     "flash_time": 0.04,
     "smoke": true,
     "smoke_k": 0.6,
-    "sway_mult": 1.2
+    "sway_mult": 1.2,
+    "ads_zoom": 0.85
    },
    "sniper": {
     "cam_pitch": 4.0,
@@ -277,7 +286,8 @@
     "flash_time": 0.065,
     "smoke": true,
     "smoke_k": 1.0,
-    "fire_db": -1.0
+    "fire_db": -1.0,
+    "ads_zoom": 0.45
    },
    "launcher": {
     "hip": [
@@ -317,7 +327,8 @@
     "smoke": true,
     "smoke_k": 2.0,
     "casing": "none",
-    "fire_db": -1.0
+    "fire_db": -1.0,
+    "ads_zoom": 0.8
    },
    "special": {
     "cam_pitch": 0.08,
@@ -331,7 +342,8 @@
     "shake": 0.02,
     "fov_punch": 0.0,
     "flash_light": 0.0,
-    "casing": "none"
+    "casing": "none",
+    "ads_zoom": 0.95
    },
    "wonder": {
     "cam_pitch": 1.6,
@@ -342,12 +354,17 @@
     "vm_climb": 6.0,
     "shake": 0.12,
     "fov_punch": 1.5,
-    "casing": "none"
+    "casing": "none",
+    "ads_zoom": 0.85
    }
   }
  },
  "weapons": {
   "m1911": {
+   "feel": {
+    "eye_relief": 0.34,
+    "ads_zoom": 0.92
+   },
    "name": "M1911",
    "class": "pistol",
    "damage": 40,
@@ -373,6 +390,10 @@
    "upgraded": "m1911_up"
   },
   "kar98k": {
+   "feel": {
+    "eye_relief": 0.36,
+    "ads_zoom": 0.72
+   },
    "name": "Kar98k",
    "class": "bolt",
    "damage": 100,
@@ -399,6 +420,10 @@
    "bolt_time": 1.2
   },
   "m1_garand": {
+   "feel": {
+    "eye_relief": 0.24,
+    "ads_zoom": 0.78
+   },
    "name": "M1 Garand",
    "class": "rifle",
    "damage": 105,
@@ -424,6 +449,10 @@
    "upgraded": "m1_garand_up"
   },
   "gewehr43": {
+   "feel": {
+    "eye_relief": 0.32,
+    "ads_zoom": 0.78
+   },
    "name": "Gewehr 43",
    "class": "rifle",
    "damage": 115,
@@ -455,7 +484,9 @@
     "vm_climb": 5.0,
     "shake": 0.08,
     "fov_punch": 0.8,
-    "casing": "pistol"
+    "casing": "pistol",
+    "eye_relief": 0.24,
+    "ads_zoom": 0.82
    },
    "name": "M1 Carbine",
    "class": "rifle",
@@ -482,6 +513,10 @@
    "upgraded": "m1_carbine_up"
   },
   "mp40": {
+   "feel": {
+    "eye_relief": 0.3,
+    "ads_zoom": 0.88
+   },
    "name": "MP40",
    "class": "smg",
    "damage": 50,
@@ -508,8 +543,19 @@
   },
   "thompson": {
    "feel": {
-    "cam_pitch": 0.6,
-    "vm_back": 0.02
+    "cam_pitch": 0.85,
+    "cam_yaw": 0.18,
+    "cam_keep": 0.5,
+    "cam_recover": 16.0,
+    "vm_spring": 26.0,
+    "vm_back": 0.026,
+    "vm_climb": 2.8,
+    "vm_roll": 1.2,
+    "shake": 0.05,
+    "fov_punch": 0.35,
+    "fire_db": -1.0,
+    "eye_relief": 0.12,
+    "ads_zoom": 0.9
    },
    "name": "Thompson M1A1",
    "class": "smg",
@@ -536,6 +582,10 @@
    "upgraded": "thompson_up"
   },
   "stg44": {
+   "feel": {
+    "eye_relief": 0.34,
+    "ads_zoom": 0.82
+   },
    "name": "STG-44",
    "class": "assault",
    "damage": 65,
@@ -561,6 +611,10 @@
    "upgraded": "stg44_up"
   },
   "trench_gun": {
+   "feel": {
+    "eye_relief": 0.34,
+    "ads_zoom": 0.92
+   },
    "name": "Trench Gun",
    "class": "shotgun",
    "damage": 40,
@@ -594,7 +648,9 @@
     "cam_yaw": 0.45,
     "vm_back": 0.03,
     "vm_climb": 3.0,
-    "smoke": false
+    "smoke": false,
+    "eye_relief": 0.32,
+    "ads_zoom": 0.8
    },
    "name": "BAR",
    "class": "lmg",
@@ -625,7 +681,9 @@
     "cam_pitch": 0.42,
     "cam_yaw": 0.45,
     "vm_spring": 32.0,
-    "vm_back": 0.014
+    "vm_back": 0.014,
+    "eye_relief": 0.28,
+    "ads_zoom": 0.88
    },
    "name": "PPSh-41",
    "class": "smg",
@@ -658,7 +716,9 @@
     "cam_keep": 0.38,
     "vm_spring": 26.0,
     "vm_back": 0.022,
-    "shake": 0.08
+    "shake": 0.08,
+    "eye_relief": 0.36,
+    "ads_zoom": 0.84
    },
    "name": "MG42",
    "class": "lmg",
@@ -687,7 +747,9 @@
   "m1919": {
    "feel": {
     "cam_pitch": 0.85,
-    "cam_yaw": 0.5
+    "cam_yaw": 0.5,
+    "eye_relief": 0.36,
+    "ads_zoom": 0.84
    },
    "name": "Browning M1919",
    "class": "lmg",
@@ -723,7 +785,9 @@
     "vm_climb": 16.0,
     "shake": 0.4,
     "fov_punch": 3.5,
-    "smoke_k": 1.6
+    "smoke_k": 1.6,
+    "eye_relief": 0.34,
+    "ads_zoom": 0.95
    },
    "name": "Double-Barrel Sawed-Off",
    "class": "shotgun",
@@ -753,6 +817,10 @@
    "upgraded": "sawed_off_up"
   },
   "type100": {
+   "feel": {
+    "eye_relief": 0.28,
+    "ads_zoom": 0.88
+   },
    "name": "Type 100",
    "class": "smg",
    "damage": 55,
@@ -795,7 +863,9 @@
     "shake": 0.45,
     "fov_punch": 4.0,
     "flash_light": 4.0,
-    "smoke_k": 1.6
+    "smoke_k": 1.6,
+    "eye_relief": 0.4,
+    "ads_zoom": 0.55
    },
    "name": "PTRS-41",
    "class": "sniper",
@@ -826,7 +896,9 @@
   },
   "springfield": {
    "feel": {
-    "cam_pitch": 3.6
+    "cam_pitch": 3.6,
+    "eye_relief": 0.07,
+    "ads_zoom": 0.3
    },
    "name": "Springfield M1903",
    "class": "sniper",
@@ -873,7 +945,9 @@
      -0.04,
      -0.12
     ],
-    "wall_rot": 0.3
+    "wall_rot": 0.3,
+    "eye_relief": 0.46,
+    "ads_zoom": 0.8
    },
    "name": "Panzerschreck",
    "class": "launcher",
@@ -919,7 +993,9 @@
      7,
      2
     ],
-    "sway_mult": 1.2
+    "sway_mult": 1.2,
+    "eye_relief": 0.2,
+    "ads_zoom": 0.95
    },
    "name": "M2 Flamethrower",
    "class": "special",
@@ -976,7 +1052,9 @@
     ],
     "cam_pitch": 1.4,
     "vm_spring": 20.0,
-    "vm_climb": 8.0
+    "vm_climb": 8.0,
+    "eye_relief": 0.3,
+    "ads_zoom": 0.85
    },
    "name": "Ashlight",
    "class": "wonder",
@@ -1031,7 +1109,9 @@
     "fov_punch": 3.0,
     "vm_back": 0.06,
     "vm_climb": 5.0,
-    "vm_spring": 11.0
+    "vm_spring": 11.0,
+    "eye_relief": 0.42,
+    "ads_zoom": 0.95
    },
    "name": "Totenglocke",
    "class": "wonder",
@@ -1094,7 +1174,9 @@
     "cam_pitch": 1.8,
     "shake": 0.2,
     "vm_spring": 16.0,
-    "vm_climb": 7.0
+    "vm_climb": 7.0,
+    "eye_relief": 0.32,
+    "ads_zoom": 0.85
    },
    "name": "Sankt-Elmsfeuer",
    "class": "wonder",

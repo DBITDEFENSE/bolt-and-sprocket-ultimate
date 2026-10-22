@@ -824,3 +824,26 @@ Squad-wide, for the rest of the match, and it uses no perk slot.
 - **Zombies within 12 m are outlined through walls in faint violet** (a depth-ignoring rim on the MZ infection shader, at most 24).
 - It is shown as a small violet eye beside the perk caps.
 - "Reduce screen effects" thins the rim; it never removes it.
+
+## 24. Aiming down sights: sight markers, ADS zoom, the alignment check (Update 02 §2, T-047)
+
+- **Sights are markers, not numbers.** Every weapon model carries a `SightPoint` Marker3D (rear notch, peep
+  aperture, shotgun receiver groove, or scope eyepiece) and a `FrontSight` Marker3D (front post tip, bead, or
+  scope objective). The `WeaponModels` sight helpers place them (`rear_notch`, `rear_aperture`, `rear_groove`,
+  `front_post`, `front_blade`, `front_bead`, `scope_sight`), so a new gun built with them aims correctly.
+- **ADS pose.** `WeaponHolder._compute_ads_pose()` puts `SightPoint` on the camera's center ray at the weapon's
+  eye relief and turns the gun so `FrontSight` is on the same ray. There are no hand-tuned ADS offsets. The
+  viewmodel FOV scale and the anti-clipping compression scale about the eye, which leaves the center ray where it
+  is. Aimed, the rig follows the shaken eye, so screen shake can't knock the sights off the center either.
+- **Data** (`weapons.json`, the row's `feel`; upgraded rows inherit it): `eye_relief` is the distance in metres
+  from the eye to `SightPoint`; `ads_zoom` is the camera FOV multiplier at full aim (Thompson 0.9, about a 10% zoom;
+  Springfield 0.3 with the scope picture). Each class in `feel.classes` has an `ads_zoom` that serves as the
+  fallback. The row's `sway` stat scales ADS sway: the turning lag, a slow figure-8 drift while idle and a
+  stride-paced figure-8 while walking. `ads_sway_mult` in `feel` scales it further.
+- **Check after any weapon change:** `tools/ads_check.sh`. It aims every gun (base and upgraded) with sway off,
+  prints where each one's rear and front sights land on screen (in pixels from the center, at 1280x720) as
+  PASS/FAIL within 1.5 px, and saves `morning/screenshots/ads/<weapon>.png` with a center-dot overlay. The exit
+  code is the number of failures. GUT `test_ads_alignment.gd` checks the same projection with math only: several
+  FOVs and compressions, a wall pull, and screen shake.
+- **By hand:** `AdsRange.launch(get_tree(), [ids])` starts the Test Range with those guns. Press `]` / `[` to cycle
+  through them; a center dot shows while you're fully aimed.
