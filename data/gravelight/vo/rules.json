@@ -338,6 +338,29 @@
   "map03": 2.0
  },
  "slip_map00_min_round": 15,
+ "map_lines_doc": "Lines that only play on one map (T-057): ones that name a place. Lines with an M0/M1/M2 token in their category, or a 'Map N' condition, are map lines without being listed here.",
+ "map_lines": {
+  "map01": [
+   "DUT_SPAWN_01",
+   "PEG_SPAWN_01",
+   "DEA_SPAWN_02",
+   "WRN_SPAWN_01",
+   "OPR_MATCH_START_01",
+   "OPR_MATCH_START_03",
+   "OPR_ROUND_START_09",
+   "OPR_ROUND_END_03",
+   "OPR_POWER_ON_01",
+   "OPR_VAULT_01",
+   "OPR_EXFIL_GO_01",
+   "BNT_PEG_DEA_02",
+   "REI_CYL1_01"
+  ],
+  "map02": [
+   "OPR_EXFIL_ROAD_01",
+   "OPR_TIDE_WARN_01",
+   "OPR_TIDE_RISING_01"
+  ]
+ },
  "slip_cooldown_s": 300.0,
  "slip_cooldown_hw_map03_s": 240.0,
  "slip_tail_delay_s": 0.6,
