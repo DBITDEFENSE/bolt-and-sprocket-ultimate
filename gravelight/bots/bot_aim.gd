@@ -595,7 +595,19 @@ func situation() -> Dictionary:
 	var per: BotPerception = brain.perception
 	return {"crowd": per.n10, "boss": per.boss_near != null, "close": per.nearest_d < float(_w.get("close_m", 6.0)),
 		"danger": per.sprinter_close or per.nearest_d < float(_r.get("near_block_m", 2.6)),
-		"near": per.nearest_d < float(_w.get("empty_swap_m", 6.0))}
+		"near": per.nearest_d < float(_w.get("empty_swap_m", 6.0)), "weak_pistol": _weak_pistol_round()}
+
+
+## T-058: from combat.json weapons.weak_pistol_after_round on, a plain pistol's magazine no longer kills one zombie
+## (8 x 40 against 650+ health): swapping to it with the main gun dry only trades a reload for a pistol nobody
+## needs. It is then worth weak_pistol_mult, and it doesn't count as "another loaded gun" for the swap-instead-of-
+## reload rule (the bot reloads the main gun, backing off, or knifes).
+func _weak_pistol_round() -> bool:
+	return RoundManager.current_round > int(_w.get("weak_pistol_after_round", 99))
+
+
+func _weak(w: WeaponInstance) -> bool:
+	return w.weapon_class() == &"pistol" and not w.upgraded and _weak_pistol_round()
 
 
 ## Pure: a weapon's value for a situation. Empty magazine: x empty_mag_mult, or almost nothing while in danger
@@ -606,6 +618,8 @@ static func weapon_value(cls: String, mag: int, reserve: int, mag_size: int, sit
 	var v: float = float((wcfg.get("class_value", {}) as Dictionary).get(cls, 0.6)) * float(class_pref.get(cls, 1.0))
 	if upgraded:
 		v *= 1.35
+	elif cls == "pistol" and bool(sit.get("weak_pistol", false)):
+		v *= float(wcfg.get("weak_pistol_mult", 0.1))
 	if int(sit.get("crowd", 0)) >= int(wcfg.get("crowd_n", 5)) and (wcfg.get("crowd_classes", []) as Array).has(cls):
 		v *= float(wcfg.get("crowd_bonus", 1.3))
 	if bool(sit.get("boss", false)) and (wcfg.get("single_classes", []) as Array).has(cls):
@@ -642,7 +656,7 @@ static func preferred_slot(values: Array, current: int, cur_mag: int, nearest_d:
 
 func _other_loaded() -> int:
 	for i: int in player.weapons.slots.size():
-		if i != player.weapons.current_index and player.weapons.slots[i].mag > 0:
+		if i != player.weapons.current_index and player.weapons.slots[i].mag > 0 and not _weak(player.weapons.slots[i]):
 			return i
 	return -1
 
@@ -808,8 +822,22 @@ func _try_melee_target() -> void:
 	var dry: bool = w == null or w.mag <= 0 or reloading
 	var lone: bool = RoundManager.current_round <= int(_m.get("early_round_max", 5)) and per.count_near(player.global_position, float(_m.get("lone_radius_m", 6.0))) <= 1
 	var pc: Dictionary = _pers.get("combat", {})
+	# T-058: a swing cancels the reload. Dry with something in reach, it only knifes what the knife kills (a
+	# 150-damage stab doesn't stop a 650-health zombie, and a bot that knifed and restarted its reload every swing
+	# never reloaded at all); otherwise it finishes the reload while the executor backs it off.
+	if dry and not knife_kills(z) and not z.is_crawler:
+		return
 	if z.is_crawler or dry or lone or (bool(pc.get("melee_lone", false)) and per.n5 <= 1):
 		melee(z)
+
+
+## True when one knife swing kills `z` (its health left against the knife's damage, Dutch's trait included).
+func knife_kills(z: Zombie) -> bool:
+	var md: Dictionary = (GLData.table("weapons")["melee"] as Dictionary).get(String(player.weapons.melee_id), {})
+	var dmg: float = float(md.get("damage", 150.0))
+	if GameState.player_has_trait(player.player_id, &"dutch"):
+		dmg *= float(GLData.table("player")["traits"]["dutch_melee_mult"])
+	return z != null and z.hp <= dmg
 
 
 ## Melee with no firearm (Jakub's coal shovel): any non-boss in reach.

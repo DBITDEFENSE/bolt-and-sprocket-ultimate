@@ -229,8 +229,9 @@ func test_perks_in_plan_order_with_the_weapon_perk() -> void:
 	var all: Dictionary = {"ironhide_stout": 2500, "second_wind": 500, "trigger_tonic": 3000, "twin_barrel": 2000, "hawkeye_brandy": 1500}
 	assert_eq(BotEconomy.perk_wanted(eco, plan, [], all, "smg", true, 4, 9000, 500), &"ironhide_stout", "Ironhide first")
 	assert_eq(BotEconomy.perk_wanted(eco, plan, ["ironhide_stout"], all, "smg", true, 4, 9000, 500), &"second_wind", "then Second Wind in co-op")
-	assert_eq(BotEconomy.perk_wanted(eco, plan, ["ironhide_stout"], all, "smg", false, 4, 9000, 500), &"twin_barrel", "solo: no Second Wind")
-	assert_eq(BotEconomy.perk_wanted(eco, plan, ["ironhide_stout", "second_wind"], all, "smg", true, 4, 9000, 500), &"twin_barrel", "an SMG: Twin Barrel")
+	assert_eq(BotEconomy.perk_wanted(eco, plan, ["ironhide_stout"], all, "smg", false, 4, 9000, 500), &"trigger_tonic", "solo: no Second Wind")
+	assert_eq(BotEconomy.perk_wanted(eco, plan, ["ironhide_stout", "second_wind"], all, "smg", true, 4, 9000, 500), &"trigger_tonic", "an SMG: Trigger Tonic (T-058: magazine-bound, the half reload)")
+	assert_eq(BotEconomy.perk_wanted(eco, plan, ["ironhide_stout", "second_wind"], all, "rifle", true, 4, 9000, 500), &"twin_barrel", "a semi rifle: Twin Barrel")
 	assert_eq(BotEconomy.perk_wanted(eco, plan, ["ironhide_stout", "second_wind"], all, "lmg", true, 4, 9000, 500), &"trigger_tonic", "an LMG: Trigger Tonic")
 	assert_eq(BotEconomy.perk_wanted(eco, plan, [], all, "smg", true, 0, 9000, 500), &"", "the cap is full")
 	assert_eq(BotEconomy.perk_wanted(eco, plan, [], all, "smg", true, 4, 2800, 500), &"", "it saves for Ironhide instead of skipping to a cheaper perk")

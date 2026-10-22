@@ -59,7 +59,10 @@
     "empty_swap_m": 6.0,
     "swap_margin": 0.12,
     "swap_back_safe_m": 3.5,
-    "swap_cooldown_s": 1.2
+    "swap_cooldown_s": 1.2,
+    "weak_pistol_after_round": 4,
+    "weak_pistol_mult": 0.1,
+    "_weak_doc": "T-058: after weak_pistol_after_round a plain (not upgraded) pistol is worth weak_pistol_mult and isn't a loaded gun to swap to instead of reloading: its magazine no longer kills one zombie."
   },
   "reload": {
     "_doc": "Reload intelligence: reload when the magazine is under low_frac and the pressure under low_pressure with nothing within near_block_m, or when it's empty. Never with a sprinter within sprinter_block_m or anything within near_block_m: swap to another loaded gun instead, or knife. Between waves every gun is topped up.",
@@ -105,18 +108,35 @@
     "cover_threat": 0.35,
     "cover_ring_m": 3.5,
     "max_claim_path_m": 45.0,
-    "gramophone_first": true
+    "gramophone_first": true,
+    "self_swarm_m": 2.2,
+    "self_swarm_n": 2,
+    "self_swarm_bleed_s": 14.0,
+    "_self_swarm_doc": "T-058: a reviver with self_swarm_n or more zombies within self_swarm_m of itself deals with them first (the revive counts as blocked: cover / fight / back off) while more than self_swarm_bleed_s of bleed-out are left."
   },
   "train": {
     "_doc": "The squad's training route: the usable TrainingRoute (data/gravelight/ai/routes_<map>.json) whose line passes nearest the leader, within route_max_m on their floor; else the locomotion layer's free loop round the human.",
     "route_max_m": 12.0
+  },
+  "fight": {
+    "_doc": "T-058: Fight backs off (shooting) from the nearest zombie inside backpedal_base_m + its speed x backpedal_per_speed_s (a reach plus what it closes in a reaction), clamped to backpedal_min_m..backpedal_max_m: earlier from a runner than from a walker.",
+    "backpedal_base_m": 1.7,
+    "backpedal_per_speed_s": 0.55,
+    "backpedal_min_m": 2.6,
+    "backpedal_max_m": 4.4
   },
   "retreat": {
     "samples": 12,
     "min_m": 4.0,
     "max_m": 7.0,
     "min_clear_m": 2.0,
-    "min_s": 1.0
+    "min_s": 1.0,
+    "_doc": "T-058: it sprints clear (no shooting) only from something at least sprint_from_speed fast within sprint_within_m (runners, sprinters); slower ones it out-walks while shooting. Still within cornered_m after sprint_cornered_s of that: it turns and fights for fight_back_s.",
+    "sprint_from_speed": 4.2,
+    "sprint_within_m": 3.2,
+    "cornered_m": 1.6,
+    "sprint_cornered_s": 0.8,
+    "fight_back_s": 1.5
   },
   "powerups": {
     "_doc": "Power-up etiquette: always_take when it's safe; the rest (Death's Door, Double Scrip, Blackout, Clearance) only with the human within shared_m of it too, or no human in the match. Never one the human is walking toward (within toward_cone_deg of their heading, within toward_m).",
@@ -130,7 +150,7 @@
     "_doc": "Early rounds: bots hold windows in pairs (a window claimed by up to pair_size bots) and rebuild between kills; the window's room side, spread stand_spread_m apart. Later the utility scores move them to training.",
     "pair_size": 2,
     "max_from_leader_m": 12.0,
-    "stand_back_m": 2.2,
+    "stand_back_m": 3.6,
     "stand_spread_m": 1.4,
     "until_round": 7
   },

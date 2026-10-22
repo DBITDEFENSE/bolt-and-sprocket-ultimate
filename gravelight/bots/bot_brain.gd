@@ -131,6 +131,8 @@ var _revive_path_m: float = INF
 var _revive_path_t: float = -10.0
 var _human_used_traps: Dictionary = {}
 var _task_block_t: float = -1.0
+## The last few thinks in short (soak diagnostics: BotSquad's down log prints them when this bot goes down).
+var recent: PackedStringArray = PackedStringArray()
 
 
 func setup(bot_player: Player, bot_squad: BotSquad, i: int) -> void:
@@ -414,6 +416,12 @@ func _think() -> void:
 		actions.enter(best)
 	if not _order_reported and order_response(_order_id).has(action):
 		_report_order()
+	var cw2: WeaponInstance = aim.cur()
+	recent.append("%s %s %d/%d hp%.0f n%.1f k%d s%d v%.1f st%.1f%s%s" % [action, str(cw2.id) if cw2 != null else "-", cw2.mag if cw2 != null else 0,
+		cw2.reserve if cw2 != null else 0, player.hp, minf(perception.nearest_d, 99.0), perception.n5, aim.shots, player.horizontal_speed(),
+		float(player.get("_stamina")), " R" if aim.reloading else "", " S" if player.sprinting else ""])
+	if recent.size() > 12:
+		recent.remove_at(0)
 
 
 ## The normalised considerations (actions.json _inputs).
@@ -459,6 +467,9 @@ func context(now: float) -> Dictionary:
 		c["revive_bleed"] = clampf(left / maxf(1.0, full), 0.0, 1.0)
 		var swarmed: bool = per.count_near(rt.global_position, float(rc.get("blocked_crowd_m", 3.0))) >= int(rc.get("blocked_crowd", 2))
 		var blocked: bool = (per.sprinter_near(rt.global_position, float(rc.get("blocked_sprinter_m", 6.0))) and left >= float(rc.get("blocked_bleed_s", 10.0))) 			or (swarmed and left >= float(rc.get("blocked_crowd_bleed_s", 20.0)))
+		# T-058: zombies on the reviver itself: deal with them first (fight, back off), unless time is short
+		if not actions.reviving() and per.count_near(player.global_position, float(rc.get("self_swarm_m", 2.2))) >= int(rc.get("self_swarm_n", 2)) 				and left >= float(rc.get("self_swarm_bleed_s", 14.0)):
+			blocked = true
 		if left < float(rc.get("last_chance_s", 8.0)):
 			blocked = false
 		c["revive_blocked"] = 1.0 if blocked else 0.0
@@ -635,7 +646,7 @@ func start_task(kind: String) -> void:
 		if not squad.blackboard.claim(str(c["key"]), pid, str(c.get("kind", "")), now, now + 30.0):
 			_task_unavailable(kind)
 			return
-	elif ["gun", "ammo", "perk", "door", "crucible", "crucible_ammo", "ammo_box", "crate", "trap"].has(str(c.get("kind", ""))):
+	elif ["gun", "ammo", "perk", "door", "crucible", "crucible_ammo", "ammo_box", "crate", "trap", "power"].has(str(c.get("kind", ""))):
 		if not squad.can_claim(node, pid):
 			_task_unavailable(kind)
 			return
@@ -827,6 +838,8 @@ func hold_spot() -> Dictionary:
 	_hold_t = now
 	var leader: Player = squad.leader_for(self)
 	var anc: Vector3 = leader.global_position if leader != null else player.global_position
+	if squad.home != null and squad.bot_led():
+		anc = squad.home.center()   # T-058: a self-led squad holds the windows round its home loop
 	var bb: BotBlackboard = squad.blackboard
 	var best: Barricade = null
 	var best_s: float = -INF
@@ -866,7 +879,8 @@ func hold_spot() -> Dictionary:
 	var side: Vector3 = Vector3(-out_dir.z, 0.0, out_dir.x) * float(hc.get("stand_spread_m", 1.4)) * (0.5 if slot <= 0 else -0.5)
 	var p: Vector3 = Vector3.INF
 	# never on the human's training line: further back into the room, or wider, else no hold here
-	for back: float in [float(hc.get("stand_back_m", 2.2)), 3.4, 4.6, 1.4]:
+	var sb: float = float(hc.get("stand_back_m", 2.2))
+	for back: float in [sb, sb + 1.2, sb - 1.0, sb - 1.8]:   # T-058: back from the sill, so what climbs in is shot before it reaches us
 		for wide: float in [1.0, 2.2, -1.0]:
 			var c: Vector3 = snap(front + out_dir * back + side * wide)
 			if not squad.on_human_line(c) and squad.choke_at(c).is_empty():

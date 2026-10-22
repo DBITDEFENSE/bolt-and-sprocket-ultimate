@@ -9,9 +9,14 @@ extends RefCounted
 ##     of reachable points around the spawn. It turns back when the next stretch of the loop is full of zombies.
 ##   - shoots the nearest zombie in sight within ENGAGE_M (a human reaction delay, a capped turn rate, aim noise,
 ##     heads), reloads when empty or when nothing is close, knifes what reaches it with an empty gun.
-##   - buys nothing: it carries the bots' spawn kit (the Thompson, Ironhide Stout, Second Wind; again after a
-##     revive / respawn, like the bots) and its reserve is topped up at every round start (it doesn't shop, and
-##     running dry would measure the dummy, not the bots).
+##   - kit "baseline" (the default, the Update 03 baseline's player): buys nothing: it carries the bots' spawn kit
+##     (the Thompson, Ironhide Stout, Second Wind; again after a revive / respawn, like the bots) and its reserve is
+##     topped up at every round start (it doesn't shop, and running dry would measure the dummy, not the bots).
+##   - kit "realistic" (--player-kit=realistic, T-058): plays the economy like a person who knows the map: the
+##     Thompson only (the gun a player buys early), no free perks; once it is calm (the break, or nothing within
+##     10 m and a few zombies left) and it has the Scrip, it opens the way to the power (Map 0: the cellar door),
+##     throws the power switch (by round 3-4), then drinks Ironhide Stout and Second Wind, and buys them again after
+##     losing them to a down. The round-start reserve top-up stays (it doesn't buy ammo). It still revives nobody.
 ##   - can be downed (it then shoots from the ground with whatever it holds), revived and bleed out like anyone.
 
 const TURN_RATE: float = 6.0       # rad/s
@@ -28,6 +33,16 @@ const MAP00_TAPROOM: Array[Vector3] = [Vector3(10.5, 0, 3.0), Vector3(16.5, 0, 2
 ## east half of the stable (the hay stairs block the middle), and back.
 const MAP00_STABLE: Array[Vector3] = [Vector3(20.0, 0, 15.4), Vector3(20.0, 0, 19.0), Vector3(20.2, 0, 23.8), Vector3(22.6, 0, 27.5),
 	Vector3(21.8, 0, 32.6), Vector3(18.4, 0, 31.5), Vector3(18.4, 0, 26.8), Vector3(20.0, 0, 23.8), Vector3(20.0, 0, 19.0), Vector3(20.0, 0, 15.4)]
+
+## "baseline" or "realistic" (see the class doc).
+var kit: String = "baseline"
+## Realistic kit: the perks it drinks, in order, once the power is on.
+const REALISTIC_PERKS: Array[StringName] = [&"ironhide_stout", &"second_wind"]
+## Realistic kit: from this round it goes for the power as soon as it can afford the way there.
+const POWER_FROM_ROUND: int = 2
+var power_round: int = 0
+var perks_bought: int = 0
+var doors_bought: int = 0
 
 var player: Player
 var map: MapRoot
@@ -51,22 +66,52 @@ var _toggle: bool = false
 var _was_down: bool = false
 var _was_out: bool = false
 var _start_i: int = 0
+## Realistic kit: the errand under way ({} none): {node, stand, kind}.
+var _errand: Dictionary = {}
+var _errand_t: float = 0.0
+var _errand_cd: float = 0.0
 
 
-func setup(p: Player, m: MapRoot, seed_value: int) -> void:
+func setup(p: Player, m: MapRoot, seed_value: int, kit_mode: String = "baseline") -> void:
 	player = p
 	map = m
 	squad = m.squad
+	kit = kit_mode
 	rng.seed = seed_value
-	if squad != null:
-		squad.apply_kit(player, true)
+	_give_kit(true)
 	GLBus.round_started.connect(_on_round_started)
+	GLBus.power_activated.connect(_on_power)
 	_build_route()
+
+
+## The kit: baseline = the bots' spawn kit (guns + free perks); realistic = the Thompson only.
+func _give_kit(weapons: bool) -> void:
+	if kit != "realistic":
+		if squad != null:
+			squad.apply_kit(player, weapons)
+		return
+	if not weapons or player.weapons == null:
+		return
+	var has: bool = false
+	for w: WeaponInstance in player.weapons.slots:
+		has = has or w.base_id() == &"thompson"
+	if not has:
+		player.weapons.give_weapon(&"thompson")
+	for k: int in player.weapons.slots.size():
+		if player.weapons.slots[k].base_id() == &"thompson":
+			player.weapons.current_index = k
+
+
+func _on_power() -> void:
+	if power_round == 0:
+		power_round = RoundManager.current_round
 
 
 func shutdown() -> void:
 	if GLBus.round_started.is_connected(_on_round_started):
 		GLBus.round_started.disconnect(_on_round_started)
+	if GLBus.power_activated.is_connected(_on_power):
+		GLBus.power_activated.disconnect(_on_power)
 	_release()
 
 
@@ -145,8 +190,8 @@ func tick(delta: float) -> void:
 		_shoot(delta, _zombies(), true)
 		return
 	if _was_down or _was_out:
-		if squad != null:
-			squad.apply_kit(player, _was_out)   # the kit again, like the bots (perks are lost on going down)
+		_give_kit(_was_out)   # baseline: the kit again, like the bots (perks are lost on going down); realistic: rebuys
+		_errand = {}
 		_was_down = false
 		_was_out = false
 		_path = PackedVector3Array()
@@ -156,7 +201,103 @@ func tick(delta: float) -> void:
 	_repath_t -= delta
 	var zs: Array[Zombie] = _zombies()
 	var aiming: bool = _shoot(delta, zs, false)
+	if kit == "realistic":
+		_errands(delta, zs)
 	_walk(delta, zs, aiming)
+
+
+# ---------------------------------------------------------------- the realistic kit's shopping
+
+## Picks and runs the next errand: the way to the power, the power switch, then the perks (and their rebuys).
+## Only when it is calm; an errand that takes over 40 s is dropped (and the next try waits 10 s).
+func _errands(delta: float, zs: Array[Zombie]) -> void:
+	_errand_cd -= delta
+	var near_d: float = INF
+	for z: Zombie in zs:
+		near_d = minf(near_d, z.global_position.distance_to(player.global_position))
+	var calm: bool = near_d > 10.0 and (RoundManager.state != RoundManager.State.ROUND or zs.size() <= 3)
+	if not _errand.is_empty():
+		_errand_t += delta
+		var n: Node = _errand.get("node")
+		if n == null or not is_instance_valid(n) or _errand_t > 40.0 or near_d < 3.0:
+			if _errand_t > 40.0:
+				print("[dummy] r%d gave up on %s at %s (stand %s)" % [RoundManager.current_round, str(_errand.get("kind", "")), str(player.global_position), str(_errand.get("stand", ""))])
+			_errand_cd = 10.0 if _errand_t > 40.0 else 2.0
+			_errand = {}
+			return
+		var st: Vector3 = _errand["stand"]
+		if _flat(st, player.global_position) < 1.2 and absf(st.y - player.global_position.y) < 1.6:
+			var it: Interactable = n as Interactable
+			if it != null and it.can_interact(player):
+				var before: int = Economy.get_scrip(player.player_id)
+				it.interact(player)
+				if Economy.get_scrip(player.player_id) < before or GameState.power_on:
+					print("[dummy] r%d %s %s (%d Scrip left)" % [RoundManager.current_round, str(_errand["kind"]), n.name, Economy.get_scrip(player.player_id)])
+				if Economy.get_scrip(player.player_id) < before:
+					if str(_errand["kind"]) == "perk":
+						perks_bought += 1
+					elif str(_errand["kind"]) == "door":
+						doors_bought += 1
+			_errand = {}
+			_errand_cd = 1.5
+		return
+	if not calm or _errand_cd > 0.0:
+		return
+	_errand = _next_errand()
+	_errand_t = 0.0
+	_path = PackedVector3Array()
+
+
+func _next_errand() -> Dictionary:
+	var scrip: int = Economy.get_scrip(player.player_id)
+	var me: Vector3 = player.global_position
+	if not GameState.power_on:
+		if RoundManager.current_round < POWER_FROM_ROUND:
+			return {}
+		for n: Node in player.get_tree().get_nodes_in_group(&"power_switch"):
+			var sw: PowerSwitch = n as PowerSwitch
+			if sw == null or not sw.can_interact(player):
+				continue
+			var st: Vector3 = _stand(BotBrain._front_of(sw))
+			if _reachable(st):
+				return {"node": sw, "stand": st, "kind": "power"}
+			# the way to it: the closed door its path crosses that we can reach and afford
+			var path: PackedVector3Array = NavigationServer3D.map_get_path(_nav(), me, _stand(sw.global_position), true)
+			for d: Node in player.get_tree().get_nodes_in_group(&"doors"):
+				var bd: BuyDoor = d as BuyDoor
+				if bd == null or bd.is_open or not ZombieDirector.door_crossed(bd, path) or scrip < bd.cost:
+					continue
+				var ds: Vector3 = _stand(BotBrain._door_side(bd, me))
+				if _reachable(ds):
+					return {"node": bd, "stand": ds, "kind": "door"}
+		return {}
+	for perk: StringName in REALISTIC_PERKS:
+		if PerkManager.has_perk(player.player_id, perk):
+			continue
+		for n2: Node in player.get_tree().get_nodes_in_group(&"perk_machines"):
+			var pm: PerkMachine = n2 as PerkMachine
+			if pm == null or pm.perk_id != perk or not pm.can_interact(player) or scrip < PerkManager.price(perk):
+				continue
+			var st2: Vector3 = _stand(BotBrain._front_of(pm))
+			if _reachable(st2):
+				return {"node": pm, "stand": st2, "kind": "perk"}
+		return {}   # saving for this one first
+	return {}
+
+
+func _stand(p: Vector3) -> Vector3:
+	return NavigationServer3D.map_get_closest_point(_nav(), p)
+
+
+## A path that ends at `p` and crosses no closed door.
+func _reachable(p: Vector3) -> bool:
+	var path: PackedVector3Array = NavigationServer3D.map_get_path(_nav(), player.global_position, p, true)
+	if path.is_empty() or path[path.size() - 1].distance_to(p) > 1.2:
+		return false
+	for d: Node in player.get_tree().get_nodes_in_group(&"doors"):
+		if d is BuyDoor and not (d as BuyDoor).is_open and ZombieDirector.door_crossed(d as BuyDoor, path):
+			return false
+	return true
 
 
 func _zombies() -> Array[Zombie]:
@@ -251,11 +392,14 @@ func _walk(delta: float, zs: Array[Zombie], aiming: bool) -> void:
 		return
 	var me: Vector3 = player.global_position
 	var wp: Vector3 = _route[_i]
-	if _flat(wp, me) < REACH_M and absf(wp.y - me.y) < 1.5:
+	var errand: bool = not _errand.is_empty()
+	if errand:
+		wp = _errand["stand"]   # the realistic kit's errand: walk there instead of the loop
+	elif _flat(wp, me) < REACH_M and absf(wp.y - me.y) < 1.5:
 		_advance()
 		wp = _route[_i]
 	# turn back when the stretch ahead is full of zombies (train them the other way)
-	if _rev_cd <= 0.0 and _blocked(me, wp, zs):
+	if not errand and _rev_cd <= 0.0 and _blocked(me, wp, zs):
 		_dir = -_dir
 		reversals += 1
 		_rev_cd = 2.5

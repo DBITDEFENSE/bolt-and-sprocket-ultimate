@@ -23,9 +23,12 @@ var cum: PackedFloat32Array = PackedFloat32Array()      # loop distance at each 
 var ring_width: float = 4.0
 var requires_doors: PackedStringArray = PackedStringArray()   # every one of these BuyDoor ids open
 var requires_zones: PackedStringArray = PackedStringArray()   # every one of these zones open (GameState)
+## A squad with no human leading it makes its home on the open route with the highest `home` (0 = never; T-058).
+var home: float = 0.0
 var _len: float = 0.0
 
 static var _cache: Dictionary = {}   # map key -> Array[TrainingRoute]
+static var _hg_cache: Dictionary = {}   # map key -> Array[Dictionary] (high_ground)
 
 
 ## A route from authored points (closed loop). `smooth` = Chaikin iterations.
@@ -46,6 +49,7 @@ static func from_dict(d: Dictionary, map_key: String) -> TrainingRoute:
 	var r: TrainingRoute = make(str(d.get("id", "")), pts, float(d.get("ring_width", 4.0)), int(d.get("smooth", 2)))
 	r.map = map_key
 	r.label = str(d.get("label", r.id))
+	r.home = float(d.get("home", 0.0))
 	for door: Variant in d.get("requires_doors", []):
 		r.requires_doors.append(str(door))
 	for z: Variant in d.get("requires_zones", []):
@@ -110,6 +114,37 @@ func zones_ok(open_zones: Variant) -> bool:
 		if open_zones is Array and not ((open_zones as Array).has(StringName(z)) or (open_zones as Array).has(z)):
 			return false
 	return true
+
+
+## High-ground spots authored for a map (routes_<map>.json "high_ground", T-058): [{id, pos, watch_m,
+## requires_doors}] whose doors are all open now. A precision shooter (Wren, personality combat.high_ground) fights
+## from one when the fight is within its watch_m.
+static func high_ground_for(map_id: String) -> Array[Dictionary]:
+	var key: String = map_key_of(map_id)
+	if not _hg_cache.has(key):
+		var all: Array[Dictionary] = []
+		var path: String = DATA_DIR + "routes_%s.json" % key
+		if FileAccess.file_exists(path):
+			for d: Variant in GLData.load_json(path).get("high_ground", []):
+				var dd: Dictionary = d as Dictionary
+				var a: Array = dd.get("pos", [0, 0, 0])
+				all.append({"id": str(dd.get("id", "")), "pos": Vector3(float(a[0]), float(a[1]), float(a[2])),
+					"watch_m": float(dd.get("watch_m", 12.0)), "requires_doors": dd.get("requires_doors", [])})
+		_hg_cache[key] = all
+	var open: Dictionary = {}
+	var tree: SceneTree = Engine.get_main_loop() as SceneTree
+	if tree != null:
+		for n: Node in tree.get_nodes_in_group(&"doors"):
+			if n is BuyDoor and (n as BuyDoor).is_open:
+				open[String((n as BuyDoor).door_id)] = true
+	var out: Array[Dictionary] = []
+	for h: Dictionary in _hg_cache[key]:
+		var ok: bool = true
+		for door: Variant in h["requires_doors"]:
+			ok = ok and open.has(str(door))
+		if ok:
+			out.append(h)
+	return out
 
 
 func length() -> float:

@@ -15,6 +15,8 @@ var player: Player
 var eco: Dictionary = {}
 var _cache_t: float = -10.0
 var _cache: Dictionary = {}
+var _power_t: float = -10.0
+var _power: Dictionary = {}
 ## Doors the human opened this match (BotSquad keeps the count; read here).
 var crate_pulls_this_round: int = 0
 
@@ -141,16 +143,31 @@ static func door_allowed(e: Dictionary, ordered: bool, bot_led: bool, human_open
 
 ## The never-touch rule: easter-egg objects ("quest"), traps ("trap"), the power switch ("power") and buildable
 ## parts ("part") only when ordered onto that object, or (traps) when the human already used that one, or for the
-## local-AI planner bot (the user-sanctioned exception) when its setting is on. Everything else is fine.
-static func may_touch(kind: String, ordered: bool, planner: bool, human_did: bool) -> bool:
+## local-AI planner bot (the user-sanctioned exception) when its setting is on. `self_led` (T-058): no human is in
+## the match (BotSquad.bots_alone()), so the squad is its own leader and throws the power itself (the rule
+## protects a human's choices; with no human there is nobody to take the step from). Easter eggs, parts and
+## traps stay off limits even then. Everything else is fine.
+static func may_touch(kind: String, ordered: bool, planner: bool, human_did: bool, self_led: bool = false) -> bool:
 	match kind:
 		"quest", "part":
 			return ordered or planner
 		"power":
-			return ordered or planner
+			return ordered or planner or self_led
 		"trap":
 			return ordered or planner or human_did
 	return true
+
+
+## Self-led (T-058): may a squad leading itself buy this door? Only doors it has a use for: the one on the way to
+## the power switch (while the power is off), or one an authored training route needs (`route_door`). While the
+## power door is still to be bought (`saving_for` its price, 0 = not saving), any other door must leave that much
+## (plus the reserve) in hand, so the Scrip goes to the power first.
+static func self_led_door_ok(is_power_door: bool, route_door: bool, scrip: int, cost: int, saving_for: int, reserve: int) -> bool:
+	if is_power_door:
+		return true
+	if not route_door:
+		return false
+	return scrip - cost - saving_for >= reserve
 
 
 ## The value (0..1) of a shopping candidate: its priority, a little less the farther it is.
@@ -264,6 +281,23 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 		out.append(box_c)
 	if not shopping or order == &"revive":
 		return out
+	# ---- the power (T-058): bots alone (no human in the match) open the way to the power switch and throw it;
+	# with a human in the match it waits for them (or an order), even while they sit out a round bled out. Other
+	# doors wait for the power door. (Doors and range follow bot_led(): nobody human leading right now.)
+	var pw: Dictionary = eco.get("power", {})
+	var power_door: BuyDoor = null
+	var saving_for: int = 0
+	var self_led: bool = squad.bot_led()
+	if squad.bots_alone() and not GameState.power_on and may_touch("power", false, false, false, true) and rnd >= int(pw.get("min_round", 2)):
+		var plan_p: Dictionary = power_plan(now)
+		if plan_p.has("switch"):
+			var sw: Node3D = plan_p["switch"]
+			if squad.can_claim(sw, pid):
+				out.append({"node": sw, "kind": "power", "stand": plan_p["stand"], "value": value_of(eco, "power", _flat(sw.global_position, me)),
+					"cost": 0, "label": "throw the power switch (nobody else will)"})
+		elif plan_p.has("door"):
+			power_door = plan_p["door"]
+			saving_for = power_door.cost
 	# ---- perks
 	if bool(brain.options.get("perks", true)) and rnd >= int(eco.get("perk_min_round", 2)):
 		var avail: Dictionary = {}
@@ -320,21 +354,30 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	if bool(dcfg.get("enabled", true)) and squad.round_time() >= float(dcfg.get("round_delay_s", 20.0)) * (0.0 if ordered_door != null else 1.0) \
 			and brain.doors_bought_round < int(dcfg.get("max_per_round_per_bot", 1)):
 		var human: Player = squad.human()
+		var route_doors: Dictionary = _route_doors() if self_led else {}
 		for dn: BuyDoor in brain.loco_doors():
 			if not is_instance_valid(dn) or dn.is_open or not dn.can_interact(player):
 				continue
 			var ordered: bool = ordered_door == dn
 			var hd: float = _flat(dn.global_position, human.global_position) if human != null and not human.spectating else INF
-			if not door_allowed(eco, ordered, squad.bot_led(), squad.human_doors_opened, hd):
+			if not door_allowed(eco, ordered, self_led, squad.human_doors_opened, hd):
 				continue
-			if not ordered and (_flat(dn.global_position, anc) > float(dcfg.get("max_from_leader_m", 30.0)) * range_mult * (2.0 if squad.bot_led() else 1.0)):
+			var is_pd: bool = dn == power_door
+			var keep: int = 0 if ordered else maxi(reserve, int(dcfg.get("reserve_scrip", 300)))
+			if is_pd:
+				keep = int(pw.get("door_reserve_scrip", 300))   # the way to the power is the revive-critical spend
+			if self_led and not ordered and bool(pw.get("self_led_useful_doors_only", true)) \
+					and not self_led_door_ok(is_pd, route_doors.has(String(dn.door_id)), scrip, dn.cost, saving_for, keep):
+				continue   # a squad leading itself opens only doors it has a use for, the power's first
+			if not ordered and not is_pd and (_flat(dn.global_position, anc) > float(dcfg.get("max_from_leader_m", 30.0)) * range_mult * (2.0 if self_led else 1.0)):
 				continue
-			if scrip < dn.cost + (0 if ordered else maxi(reserve, int(dcfg.get("reserve_scrip", 300)))):
+			if scrip < dn.cost + keep:
 				continue
 			if not squad.can_claim(dn, pid) or not brain.reachable(BotBrain._door_side(dn, me)):
 				continue
-			out.append({"node": dn, "kind": "door", "value": 0.95 if ordered else value_of(eco, "door", _flat(dn.global_position, me)), "cost": dn.cost,
-				"label": "open the %s (%d Scrip)" % [BotBrain.door_label(dn), dn.cost]})
+			var dv: float = 0.95 if ordered else value_of(eco, "power_door" if is_pd else "door", _flat(dn.global_position, me))
+			out.append({"node": dn, "kind": "door", "value": dv, "cost": dn.cost,
+				"label": "open the %s (%d Scrip)%s" % [BotBrain.door_label(dn), dn.cost, " on the way to the power" if is_pd else ""]})
 	# ---- the Requisition Crate (never someone else's open crate)
 	var best_tier: float = 0.0
 	for h: Variant in held:
@@ -377,6 +420,65 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 			out.append({"node": cr2, "kind": kind, "slot": ammo_slot, "value": value_of(eco, kind, _flat(cr2.global_position, me)),
 				"cost": Crucible.price_for(&"ammo", econ) if ammo_slot >= 0 else up_cost,
 				"label": "buy upgraded ammo at the Crucible" if ammo_slot >= 0 else ("feed the %s to the Crucible (%d Scrip)" % [player.weapons.slots[up_slot].display_name(), up_cost])})
+	return out
+
+
+## The way to the power (T-058, cached for 3 s): {"switch": the PowerSwitch, "stand": where to stand} when it can
+## be reached now; {"door": the closed BuyDoor in the way} when it can't (the navmesh runs through doors: the
+## nearest closed door the path crosses whose near side this bot can reach); {} when the power is on or there is
+## no switch it may throw.
+func power_plan(now: float) -> Dictionary:
+	if now - _power_t < 3.0:
+		var ok: bool = true
+		for k: String in ["switch", "door"]:
+			if _power.has(k) and not is_instance_valid(_power[k]):
+				ok = false
+		if _power.has("door") and is_instance_valid(_power["door"]) and (_power["door"] as BuyDoor).is_open:
+			ok = false
+		if ok:
+			return _power
+	_power_t = now
+	_power = {}
+	if GameState.power_on:
+		return _power
+	var sw: PowerSwitch = null
+	for n: Node in brain.get_tree().get_nodes_in_group(&"power_switch"):
+		if n is PowerSwitch and (n as PowerSwitch).can_interact(player) and (n as PowerSwitch).is_visible_in_tree():
+			sw = n as PowerSwitch
+			break
+	if sw == null:
+		return _power
+	var st: Vector3 = brain.stand_point(sw)
+	if st != Vector3.INF:
+		_power = {"switch": sw, "stand": st}
+		return _power
+	var me: Vector3 = player.global_position
+	var path: PackedVector3Array = NavigationServer3D.map_get_path(player.get_world_3d().navigation_map, me, brain.snap(sw.global_position), true, brain.squad.nav_mask())
+	if path.is_empty():
+		return _power
+	var best: BuyDoor = null
+	var best_d: float = INF
+	for d: BuyDoor in brain.loco_doors():
+		if not is_instance_valid(d) or d.is_open or not ZombieDirector.door_crossed(d, path):
+			continue
+		var dd: float = _flat(d.global_position, me)
+		if dd < best_d and brain.reachable(BotBrain._door_side(d, me)):
+			best_d = dd
+			best = d
+	if best != null:
+		_power = {"door": best}
+	return _power
+
+
+## Doors an authored training route on this map still needs (door_id -> true): a squad leading itself opens them
+## once the power is on (T-058).
+func _route_doors() -> Dictionary:
+	var out: Dictionary = {}
+	if brain.squad.map == null:
+		return out
+	for r: TrainingRoute in TrainingRoute.all_for_map(String(brain.squad.map.map_id)):
+		for d: String in r.requires_doors:
+			out[d] = true
 	return out
 
 
