@@ -1150,9 +1150,9 @@ func status_line() -> String:
 	var tops: PackedStringArray = []
 	for t: Variant in top3:
 		tops.append("%s %.2f" % [str((t as Array)[0]), float((t as Array)[1])])
-	return "%s [%s] %s | %s | gun %s %d/%d | threat %.2f known %d" % [Net.display_name(player.player_id), role if role != "" else "-", action,
-		", ".join(tops), str(w.id) if w != null else "-", w.mag if w != null else 0, w.reserve if w != null else 0,
-		perception.pressure if perception != null else 0.0, perception.known.size() if perception != null else 0]
+	return "%s [%s] %s | %s | gun %s %d/%d | hp %.0f threat %.2f known %d near %.1f" % [Net.display_name(player.player_id), role if role != "" else "-", action,
+		", ".join(tops), str(w.id) if w != null else "-", w.mag if w != null else 0, w.reserve if w != null else 0, player.hp,
+		perception.pressure if perception != null else 0.0, perception.known.size() if perception != null else 0, minf(perception.nearest_d, 99.0) if perception != null else 99.0]
 
 
 func _flat(a: Vector3, b: Vector3) -> float:

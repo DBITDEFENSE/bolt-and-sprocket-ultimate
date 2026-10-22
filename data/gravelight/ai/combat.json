@@ -6,8 +6,8 @@
     "sight_range_m": 40.0,
     "rays_per_think": 6,
     "memory_s": 4.0,
-    "groan_m": 4.5,
-    "sprinter_m": 13.0,
+    "groan_m": 9.0,
+    "sprinter_m": 15.0,
     "tear_m": 16.0,
     "boss_m": 28.0,
     "gunfire_look_s": 1.2,
@@ -28,7 +28,7 @@
   "aim": {
     "_doc": "Target choice: threat x the counters' priority, + specials_first (personality) for specials/bosses, x vulnerable_priority / grab_priority (counters), x escort_bonus for what goes for the escorted player; kill-steal etiquette until kill_steal_until_round: a zombie under kill_steal_hp_frac of its health that the human is shooting is left to them unless it threatens someone. Headshot chance = base_head by weapon class x skill head_aim_mult + personality / counter head_bias, + slow_or_close_head for slow or close targets. Fire discipline: autos burst (burst_s / pause_s) beyond burst_range_m and fire freely inside it; semi rifles single shots at the skill's semi_max_rpm; nothing beyond max_range_m[class] (no spraying what it can't hit); never through a teammate (a 0.6 m line-of-fire check).",
     "reacquire_lost_s": 0.8,
-    "base_head": {"pistol": 0.3, "rifle": 0.6, "bolt": 0.7, "sniper": 0.75, "smg": 0.35, "assault": 0.4, "lmg": 0.25, "shotgun": 0.1, "launcher": 0.0, "special": 0.0, "wonder": 0.1},
+    "base_head": {"pistol": 0.55, "rifle": 0.8, "bolt": 0.85, "sniper": 0.85, "smg": 0.6, "assault": 0.65, "lmg": 0.45, "shotgun": 0.15, "launcher": 0.0, "special": 0.0, "wonder": 0.1},
     "slow_or_close_head": 0.15,
     "max_range_m": {"pistol": 25.0, "rifle": 60.0, "bolt": 70.0, "sniper": 90.0, "smg": 30.0, "assault": 40.0, "lmg": 45.0, "shotgun": 13.0, "launcher": 40.0, "special": 9.0, "wonder": 30.0},
     "burst_range_m": 9.0,
@@ -39,7 +39,9 @@
     "kill_steal_hp_frac": 0.4,
     "escort_bonus": 1.5,
     "line_of_fire_radius_m": 0.6,
-    "moving_spread_mult": 1.6
+    "moving_spread_mult": 1.6,
+    "ads_max_speed": 2.6,
+    "ads_min_m": 3.0
   },
   "weapons": {
     "_doc": "Weapon choice: the class value (class_value) x the personality's class_pref x the situation (crowd_bonus for crowd classes when crowd_n or more are within 10 m, single_bonus for single-target classes on a boss, close_bonus for close classes within close_m) x ammo (an empty magazine: empty_mag_mult; nothing at all: 0). The pistol trap fix: the bot goes back to its best gun as soon as nothing is within swap_back_safe_m (or the worse gun runs dry), and never stays on the pistol while a better gun has ammo.",

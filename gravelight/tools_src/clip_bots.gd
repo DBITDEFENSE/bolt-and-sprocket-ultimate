@@ -6,6 +6,9 @@ extends Node
 ##                   the middle of it (a revive under pressure) and a Resupply drops (a callout with its ping)
 ##   --shot=cousins  round 10, the Cousins: who shoots the Hammer while her mallet is in the air, who breaks a
 ##                   Reach grab, how close anyone gets to Alix
+##   --shot=perf     the performance check: round 15, the horde kept at 24 zombies, 3 bots; after a warm-up the
+##                   frame times (average fps, 1% low) and the brains' cost per bot per frame (run it rendered,
+##                   without --write-movie and without --fixed-fps)
 ## Prints "[clip] ..." lines and RESULT PASS/FAIL. Silent, off-screen, never holds the mouse:
 ##   godot --audio-driver Dummy --position -4000,-4000 --resolution 1280x720 --write-movie <abs>.avi --fixed-fps 30
 ##         --quit-after 1500 --path . res://gravelight/tools_src/clip_bots.tscn -- --shot=train
@@ -37,6 +40,12 @@ var _grab_list: Array[Dictionary] = []
 var _grab_breaks: Array = []
 var _alix_min: float = INF
 var _cousin_kills: Array = []
+# perf
+var _frame_ms: PackedFloat32Array = PackedFloat32Array()
+var _zmax: int = 0
+var _zsum: int = 0
+var _brain_us0: float = 0.0
+var _brain_frames0: int = 0
 
 
 func _ready() -> void:
@@ -78,8 +87,9 @@ func _ready() -> void:
 			print("[clip] t=%.1f %s killed by P%d" % [_t, eid, by]))
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE   # never hold the mouse
+	_process_perf_frame(delta)
 
 
 func _physics_process(delta: float) -> void:
@@ -99,6 +109,8 @@ func _physics_process(delta: float) -> void:
 			_tick_train()
 		"cousins":
 			_tick_cousins()
+		"perf":
+			_tick_perf(delta)
 	if _t >= _secs_total:
 		_finish()
 
@@ -114,7 +126,7 @@ func _try_live() -> void:
 	_dummy.call("setup", _map.player, _map, 7)
 	for pid: int in GameState.player_ids:
 		Economy.award(pid, 4000)
-	if _shot == "train":
+	if _shot == "train" or _shot == "perf":
 		RoundManager.debug_set_round(15)
 	else:
 		RoundManager.debug_set_round(10)
@@ -191,6 +203,31 @@ func _tick_train() -> void:
 			print("[clip] t=%.1f downed %s on purpose, %d zombies within 8 m" % [_t, Net.display_name(best.player_id), best_n])
 
 
+# ---------------------------------------------------------------- the perf shot
+
+func _process_perf_frame(delta: float) -> void:
+	if _shot == "perf" and _live and _t > 12.0:
+		_frame_ms.append(delta * 1000.0)
+
+
+func _tick_perf(_delta: float) -> void:
+	var n: int = _map.director.active_zombies().size()
+	if _t > 12.0:
+		if _brain_frames0 == 0:
+			for b: BotBrain in _map.squad.brains:
+				_brain_us0 += b.us_total
+				_brain_frames0 += b.frames
+		_zmax = maxi(_zmax, n)
+		_zsum += n
+	# keep the horde topped up to the round's cap (24 alive)
+	if n < 24 and RoundManager.state == RoundManager.State.ROUND and Engine.get_physics_frames() % 20 == 0:
+		var pts: Array = []
+		for s: Node in get_tree().get_nodes_in_group(&"zombie_spawns"):
+			pts.append((s as Node3D).global_position)
+		if not pts.is_empty():
+			_map.director.spawn_burst(pts.slice(0, 4), mini(4, 24 - n))
+
+
 # ---------------------------------------------------------------- the Cousins shot
 
 func _on_enemy_damaged(eid: StringName, _limb: StringName, _amount: float, by: int) -> void:
@@ -234,7 +271,25 @@ func _finish() -> void:
 	set_physics_process(false)
 	if _dummy != null:
 		_dummy.call("shutdown")
-	if _shot == "train":
+	if _shot == "perf":
+		var sorted: PackedFloat32Array = _frame_ms.duplicate()
+		sorted.sort()
+		var avg: float = 0.0
+		for f: float in _frame_ms:
+			avg += f
+		avg /= float(maxi(1, _frame_ms.size()))
+		var p99: float = sorted[int(sorted.size() * 0.99)] if not sorted.is_empty() else 0.0
+		var us: float = 0.0
+		var fr: int = 0
+		for b: BotBrain in _map.squad.brains:
+			us += b.us_total
+			fr += b.frames
+		var per_bot: float = (us - _brain_us0) / 1000.0 / float(maxi(1, (fr - _brain_frames0) / maxi(1, _map.squad.brains.size()))) / float(maxi(1, _map.squad.brains.size()))
+		print("[clip] perf: %d frames, average %.2f ms (%.0f fps), 1%% low %.2f ms (%.0f fps); zombies alive max %d, mean %.1f; brain %.3f ms per bot per frame" % [
+			_frame_ms.size(), avg, 1000.0 / maxf(0.01, avg), p99, 1000.0 / maxf(0.01, p99), _zmax, float(_zsum) / float(maxi(1, int((_t - 12.0) * 60.0))), per_bot])
+		_check(_zmax >= 20, "the horde reached 20+ alive (%d)" % _zmax)
+		_check(per_bot <= 0.5, "the brain stays within 0.5 ms per bot per frame (%.3f)" % per_bot)
+	elif _shot == "train":
 		_check(RoundManager.current_round >= 15, "round 15+ (round %d)" % RoundManager.current_round)
 		_check(_down_t >= 0.0, "a bot went down under pressure (%.0f zombies within 8 m)" % _revive_threat)
 		_check(_revived_t >= 0.0, "and was revived (%.1f s after going down)" % (_revived_t - _down_t if _revived_t >= 0.0 else -1.0))

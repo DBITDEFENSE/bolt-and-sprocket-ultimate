@@ -92,7 +92,7 @@ func tick_timers(delta: float) -> void:
 	_swap_cd -= delta
 	melee_cd = maxf(0.0, melee_cd - delta)
 	_grenade_cd -= delta
-	_bloom = move_toward(_bloom, 0.0, delta * 8.0)
+	_bloom = move_toward(_bloom, 0.0, delta * (9.0 if player.horizontal_speed() < 1.0 else 4.5))
 	_target_t += delta
 	_react_t -= delta
 	_tick_reload(delta)
@@ -441,7 +441,10 @@ func fire(w: WeaponInstance) -> void:
 		if w.mag <= 0 and w.reserve > 0:
 			start_reload()
 		return
-	var spread: float = (lerpf(w.f("spread_hip", 3.0), w.f("spread_ads", 0.5), 0.6) + _bloom) * float(_sk.get("spread_mult", 1.0))
+	# aimed like a player: down the sights when standing (or walking slowly) at anything not in its face, from the
+	# hip on the run or point-blank; bloom counts x (1 - 0.7 x ads), as WeaponHolder.spread_deg does
+	var ads: float = ads_amount()
+	var spread: float = (lerpf(w.f("spread_hip", 3.0), w.f("spread_ads", 0.5), ads) + _bloom * (1.0 - 0.7 * ads)) * float(_sk.get("spread_mult", 1.0))
 	if player.horizontal_speed() > 1.0:
 		spread *= float(_a.get("moving_spread_mult", 1.6))
 	var pellets: int = maxi(1, int(w.data.get("pellets", 1)))
@@ -460,7 +463,7 @@ func fire(w: WeaponInstance) -> void:
 		if killed and limb == &"head":
 			brain.squad.callout(brain, "HEADSHOT")
 			brain.bonus_event("headshot")
-	_bloom = minf(_bloom + (1.2 if pellets == 1 else 0.0), 6.0)
+	_bloom = minf(_bloom + (1.0 if pellets == 1 else 0.35), 6.0)
 	player.remote_fire(0, w.id, origin, last_hit)
 	GLBus.weapon_fired.emit(pid, w.id, w.upgraded, origin, fwd)
 	if target != null:
@@ -468,6 +471,15 @@ func fire(w: WeaponInstance) -> void:
 	var danger: bool = brain.perception.sprinter_close or brain.perception.nearest_d < float(_r.get("near_block_m", 2.6))
 	if w.mag <= 0 and w.reserve > 0 and not (danger and _other_loaded() >= 0):
 		start_reload()
+
+
+## How far down the sights it is (0 hip .. 1 aimed): aimed standing or walking slowly at a target beyond ads_min_m.
+func ads_amount() -> float:
+	if player.downed or player.horizontal_speed() > float(_a.get("ads_max_speed", 2.6)):
+		return 0.0
+	if target != null and _flat(target.global_position, player.global_position) < float(_a.get("ads_min_m", 3.0)):
+		return 0.3
+	return 1.0
 
 
 func _spread_dir(basis: Basis, spread: float) -> Vector3:

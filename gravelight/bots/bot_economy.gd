@@ -420,6 +420,8 @@ func _ammo_candidate(anc: Vector3, rng: float, scrip: int) -> Dictionary:
 	var box_below: float = float(eco.get("ammo_box_below", 0.25))
 	if brain.in_break() and pay_scrip >= int(eco.get("break_top_up_scrip", 3000)):
 		box_below = maxf(box_below, float(eco.get("break_top_up_below", 0.6)))   # Scrip to spare: top up between waves
+	elif brain.perception.known.is_empty() and pay_scrip >= int(eco.get("break_top_up_scrip", 3000)):
+		box_below = maxf(box_below, float(eco.get("calm_top_up_below", 0.5)))   # a lull mid-round: half empty is worth a box
 	if worst < box_below:
 		var price: int = int(ceil(float(AmmoBox.price_for(sw.data, sw.upgraded, AmmoBox.cfg())) * mult))
 		if pay_scrip >= price:

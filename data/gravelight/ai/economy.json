@@ -19,6 +19,7 @@
   "wall_ammo_below": 0.35,
   "break_top_up_below": 0.6,
   "break_top_up_scrip": 3000,
+  "calm_top_up_below": 0.5,
   "crate": {"min_scrip": 2500, "weak_margin": 0.4, "max_pulls_per_round": 1, "rich_scrip": 6000, "rich_until_tier": 5.5},
   "crucible": {"min_tier": 3.4, "min_round": 6},
   "doors": {"bot_led": true, "human_opened_needed": true, "near_human_m": 9.0},

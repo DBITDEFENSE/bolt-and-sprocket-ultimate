@@ -184,8 +184,8 @@ func _train(delta: float) -> void:
 	else:
 		brain.loco.train(brain.squad.blackboard.route)
 	var per: BotPerception = brain.perception
-	if per.nearest != null and per.nearest_d < 3.5 and per.nearest.speed >= 3.0 and not per.nearest.is_crawler:
-		return   # the head of the train is on its heels: run (no look: the locomotion layer sprints ahead of it)
+	if per.nearest != null and per.nearest_d < 2.2 and per.nearest.speed >= 3.0 and not per.nearest.is_crawler and player.hp < player.max_hp * 0.6:
+		return   # hurt with the train's head on its heels: just run (no look: the locomotion layer sprints ahead)
 	if not brain.aim.update(delta, true):
 		var f: Vector3 = brain.loco.train_face_dir()
 		brain.loco.look_at_dir(f + Vector3.UP * 0.05)
