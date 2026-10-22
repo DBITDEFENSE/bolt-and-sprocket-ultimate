@@ -5,6 +5,7 @@ extends Node
 ## (<batch>.md). Prints "[soak] ..." lines, the logger's "[ai_metrics] SUMMARY" line per run, and RESULT.
 ##   godot --headless --audio-driver Dummy --fixed-fps 60 --path . res://tools_src/ai_soak.tscn -- --scenario=player3
 ##         [--runs=3] [--seed=1] [--max-round=0] [--speed=1] [--skill=regular] [--max-minutes=150] [--map=map00] [--god]
+##         [--player-kit=baseline|realistic]
 ## (tools/ai_soak.sh wraps this.) Scenarios:
 ##   player3      3 bots + the scripted player (tools_src/soak_dummy.gd) on Map 0, from round 1 until the squad
 ##                wipes (or --max-round)
@@ -15,6 +16,9 @@ extends Node
 ##                (cleared, or the cousins got bored and left) or the squad wipes; every player gets 3000 Scrip
 ##   kaltenbrunn  player3 on Map 1, rounds 1 to 20 (--max-round, default 20). The Update 03 brief also forces Paul
 ##                at round 15; Paul doesn't exist yet, so that part is skipped
+## --player-kit (T-058): the scripted player's kit. "baseline" (the default, as in the Update 03 baseline): the
+## bots' free spawn kit, buys nothing, never touches the power. "realistic": the Thompson only, opens the way to the
+## power and throws it by round 3-4, drinks (and rebuys) Ironhide Stout and Second Wind (tools_src/soak_dummy.gd).
 ## The bots' local-AI planner is off (GameState.bot_ai_mode = "off"), so no run depends on Ollama.
 ## Accelerated time: headless with --fixed-fps 60 (as tools/ai_soak.sh runs it) is not tied to the clock, so a run
 ## goes as fast as the CPU allows (6-7x real time on Map 0's early rounds here) with the exact 1/60 s physics step a
@@ -38,6 +42,17 @@ var speed: float = 1.0
 var max_minutes: float = 150.0
 var skill: String = "veteran"
 var map_key: String = ""
+## --player-kit: the scripted player's kit ("baseline" or "realistic", see the doc above).
+var player_kit: String = "baseline"
+## --start-round=N (tuning only, T-058): jump to round N at go-live (RoundManager.debug_set_round) with 450 x N
+## Scrip each; not for the acceptance numbers.
+var start_round: int = 0
+## --homage=0 (tuning only): the Homage Bosses off (no Cousins round at 10 on Map 0); the default (as in every
+## Update 03 measurement) is on.
+var homage: bool = true
+## --character=<id>: the scripted player's character (default peg, so the bots are Dutch, Deacon and Wren; e.g.
+## --character=dutch puts Peg among the bots).
+var character: String = "peg"
 var god: bool = false   # --god: the scripted player can't be hurt (it outlives the bots: T-057's stalled-round hunt)
 ## --trace=N: every N game seconds, one status line per bot (action, top scores, gun, threat) and its task.
 var trace_s: float = 0.0
@@ -90,6 +105,14 @@ func _ready() -> void:
 			trace_s = float(a.substr(8))
 		elif a.begins_with("--orders="):
 			orders_s = float(a.substr(9))
+		elif a.begins_with("--player-kit="):
+			player_kit = a.substr(13)
+		elif a.begins_with("--start-round="):
+			start_round = int(a.substr(14))
+		elif a.begins_with("--character="):
+			character = a.substr(12)
+		elif a.begins_with("--homage="):
+			homage = a.substr(9) != "0"
 		elif a.begins_with("--loco="):
 			BotLocomotion.force_mode = a.substr(7)   # U03 section 3: v1 / v2 against bots.json locomotion
 	if not ["player3", "bots3", "cousins", "kaltenbrunn"].has(scenario):
@@ -106,14 +129,26 @@ func _ready() -> void:
 	ProfileSave.path = "user://_ai_soak_profile.json"
 	ProfileSave.profile = ProfileSave.new_profile()
 	GLSettings.path = "user://_ai_soak_settings.cfg"   # never write the player's own settings file
-	GLSettings.values["homage_bosses"] = true
+	GLSettings.values["homage_bosses"] = homage
 	GLSettings.values["homage_names"] = "real"
 	Engine.time_scale = speed
 	_batch = "%s_%s_x%d" % [Time.get_datetime_string_from_system(false, true).replace(":", "").replace(" ", "_").replace("-", ""), scenario, runs]
 	if BotLocomotion.force_mode != "":
 		_batch += "_loco" + BotLocomotion.force_mode
-	print("[soak] scenario %s, %d run(s), seed %d, max round %s, speed %.2fx, skill %s, map %s, local AI off" % [scenario, runs, seed_base,
-		str(max_round) if max_round > 0 else "to the wipe", speed, skill, map_key])
+	if not ["baseline", "realistic"].has(player_kit):
+		print("[soak] unknown --player-kit=%s (baseline, realistic)" % player_kit)
+		print("[soak] RESULT FAIL")
+		get_tree().quit(2)
+		return
+	if player_kit != "baseline" and scenario != "bots3":
+		_batch += "_" + player_kit
+	if not homage:
+		_batch += "_nohomage"
+	print("[soak] scenario %s, %d run(s), seed %d, max round %s, speed %.2fx, skill %s, map %s, player kit %s, local AI off" % [scenario, runs, seed_base,
+		str(max_round) if max_round > 0 else "to the wipe", speed, skill, map_key, player_kit])
+	GLBus.power_activated.connect(func() -> void:
+		if _metrics != null and not _metrics.extra.has("power_round"):
+			_metrics.extra["power_round"] = RoundManager.current_round)
 	_start_run.call_deferred()
 
 
@@ -124,7 +159,7 @@ func _start_run() -> void:
 	if RoundManager.get("rng") is RandomNumberGenerator:
 		(RoundManager.get("rng") as RandomNumberGenerator).seed = sd
 	Campaign.reset()
-	GameState.character_id = &"peg"
+	GameState.character_id = StringName(character)
 	GameState.bot_count = 3
 	GameState.bot_skill = skill
 	GameState.bot_ai_mode = "off"
@@ -197,11 +232,16 @@ func _try_go_live() -> void:
 			_bench_the_human()
 		"cousins":
 			_dummy = Dummy.new()
-			_dummy.call("setup", _map.player, _map, seed_base + _run)
+			_dummy.call("setup", _map.player, _map, seed_base + _run, player_kit)
 			_force_cousins()
 		_:
 			_dummy = Dummy.new()
-			_dummy.call("setup", _map.player, _map, seed_base + _run)
+			_dummy.call("setup", _map.player, _map, seed_base + _run, player_kit)
+	if start_round > 1 and scenario != "cousins":
+		for pid: int in GameState.player_ids:
+			Economy.award(pid, 450 * start_round)
+		RoundManager.debug_set_round(start_round)
+		_map.director.kill_all(true)
 	print("[soak] run %d/%d live: map %s, %d bots %s, route %s" % [_run, runs, _map.map_id, GameState.bot_ids.size(),
 		str(GameState.bot_ids.map(func(p: int) -> String: return Net.display_name(p))), str(_dummy.get("route_name")) if _dummy != null else "(no human: spectator)"])
 
@@ -249,6 +289,13 @@ func _end_run(why: String) -> void:
 	if _dummy != null:
 		_metrics.extra["dummy_laps"] = int(_dummy.get("laps"))
 		_metrics.extra["dummy_reversals"] = int(_dummy.get("reversals"))
+		_metrics.extra["player_kit"] = player_kit
+		_metrics.extra["dummy_power_round"] = int(_dummy.get("power_round"))
+		_metrics.extra["dummy_perks_bought"] = int(_dummy.get("perks_bought"))
+		_metrics.extra["dummy_scrip_end"] = Economy.get_scrip(_map.player.player_id)
+		_metrics.extra["dummy_unstuck"] = int(_dummy.get("unstuck"))
+	if not _metrics.extra.has("power_round"):
+		_metrics.extra["power_round"] = 0   # the power never came on
 	_metrics.extra["wall_s"] = snappedf(float(Time.get_ticks_msec() - _wall0) / 1000.0, 0.1)
 	_metrics.extra["frame_ms"] = snappedf(_phys_us / maxf(1.0, float(_frames)) / 1000.0, 0.01)
 	_metrics.extra["speed"] = speed

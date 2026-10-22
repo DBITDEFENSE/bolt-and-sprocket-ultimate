@@ -25,7 +25,7 @@ func _ctx(over: Dictionary = {}) -> Dictionary:
 		"revive_mine": 0.0, "revive_bleed": 1.0, "revive_blocked": 0.0, "revive_path": 0.2, "revive_speed": 1.0, "reviving": 0.0,
 		"cover_need": 0.0, "leader_far": 0.1, "is_leader": 0.0, "squad_far": 0.1, "break": 0.0, "round": 0.3, "loop": 1.0,
 		"hold_spot": 0.0, "repair_task": 0.0, "buy_task": 0.0, "crate_task": 0.0, "resupply_task": 0.0, "powerup_task": 0.0, "trap_task": 0.0,
-		"chatter_ok": 0.0, "objective": 0.0, "order": 0.0, "escort": 0.0, "escort_far": 0.0}
+		"chatter_ok": 0.0, "objective": 0.0, "order": 0.0, "escort": 0.0, "escort_far": 0.0, "stand_fast": 0.0}
 	c.merge(over, true)
 	return c
 
@@ -229,8 +229,9 @@ func test_perks_in_plan_order_with_the_weapon_perk() -> void:
 	var all: Dictionary = {"ironhide_stout": 2500, "second_wind": 500, "trigger_tonic": 3000, "twin_barrel": 2000, "hawkeye_brandy": 1500}
 	assert_eq(BotEconomy.perk_wanted(eco, plan, [], all, "smg", true, 4, 9000, 500), &"ironhide_stout", "Ironhide first")
 	assert_eq(BotEconomy.perk_wanted(eco, plan, ["ironhide_stout"], all, "smg", true, 4, 9000, 500), &"second_wind", "then Second Wind in co-op")
-	assert_eq(BotEconomy.perk_wanted(eco, plan, ["ironhide_stout"], all, "smg", false, 4, 9000, 500), &"twin_barrel", "solo: no Second Wind")
-	assert_eq(BotEconomy.perk_wanted(eco, plan, ["ironhide_stout", "second_wind"], all, "smg", true, 4, 9000, 500), &"twin_barrel", "an SMG: Twin Barrel")
+	assert_eq(BotEconomy.perk_wanted(eco, plan, ["ironhide_stout"], all, "smg", false, 4, 9000, 500), &"trigger_tonic", "solo: no Second Wind")
+	assert_eq(BotEconomy.perk_wanted(eco, plan, ["ironhide_stout", "second_wind"], all, "smg", true, 4, 9000, 500), &"trigger_tonic", "an SMG: Trigger Tonic (T-058: magazine-bound, the half reload)")
+	assert_eq(BotEconomy.perk_wanted(eco, plan, ["ironhide_stout", "second_wind"], all, "rifle", true, 4, 9000, 500), &"twin_barrel", "a semi rifle: Twin Barrel")
 	assert_eq(BotEconomy.perk_wanted(eco, plan, ["ironhide_stout", "second_wind"], all, "lmg", true, 4, 9000, 500), &"trigger_tonic", "an LMG: Trigger Tonic")
 	assert_eq(BotEconomy.perk_wanted(eco, plan, [], all, "smg", true, 0, 9000, 500), &"", "the cap is full")
 	assert_eq(BotEconomy.perk_wanted(eco, plan, [], all, "smg", true, 4, 2800, 500), &"", "it saves for Ironhide instead of skipping to a cheaper perk")

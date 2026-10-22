@@ -213,27 +213,43 @@ func _other_guns_ammo(b: Player, held: WeaponInstance) -> int:
 
 
 ## The revive numbers from a list of down episodes {pid, t_down, outcome ("revived" / "bled" / "pending"),
-## t_end, attempts, attempts_ok}, the match ending at `end_t`. A revive success is a down that ended in a
+## t_end, attempts, attempts_ok, reach_s}, the match ending at `end_t`. A revive success is a down that ended in a
 ## revive; failures are bleed-outs and downs still pending at the end that are PENDING_FAIL_S old (younger pending
 ## ones are the wipe and don't count either way). time-to-revive is from the down to getting up.
+## The fair rate (T-058, `fair_rate`): a down only counts against the bots when a bot could have come: `reach_s`
+## (the seconds of that down during which a teammate bot was on its feet) is PENDING_FAIL_S or more. A down that
+## bled out or was still open at the wipe while every bot was down too (the scripted player alone on its feet: it
+## revives nobody) is "excused" and not judged. Episodes without reach_s count as reachable (the old rule).
 static func revive_summary(eps: Array, end_t: float) -> Dictionary:
 	var out: Dictionary = {"downs": eps.size(), "revived": 0, "bled": 0, "pending": 0, "pending_failed": 0,
-		"attempts": 0, "attempts_ok": 0, "ttr_total": 0.0, "ttr_mean": 0.0, "success_rate": 0.0}
+		"attempts": 0, "attempts_ok": 0, "ttr_total": 0.0, "ttr_mean": 0.0, "success_rate": 0.0,
+		"excused": 0, "fair_failed": 0, "fair_rate": 0.0}
 	for e: Dictionary in eps:
 		out["attempts"] = int(out["attempts"]) + int(e.get("attempts", 0))
 		out["attempts_ok"] = int(out["attempts_ok"]) + int(e.get("attempts_ok", 0))
+		var reachable: bool = float(e.get("reach_s", INF)) >= PENDING_FAIL_S
 		match str(e.get("outcome", "pending")):
 			"revived":
 				out["revived"] = int(out["revived"]) + 1
 				out["ttr_total"] = float(out["ttr_total"]) + maxf(0.0, float(e.get("t_end", 0.0)) - float(e.get("t_down", 0.0)))
 			"bled":
 				out["bled"] = int(out["bled"]) + 1
+				if reachable:
+					out["fair_failed"] = int(out["fair_failed"]) + 1
+				else:
+					out["excused"] = int(out["excused"]) + 1
 			_:
 				out["pending"] = int(out["pending"]) + 1
 				if end_t - float(e.get("t_down", end_t)) >= PENDING_FAIL_S:
 					out["pending_failed"] = int(out["pending_failed"]) + 1
+					if reachable:
+						out["fair_failed"] = int(out["fair_failed"]) + 1
+					else:
+						out["excused"] = int(out["excused"]) + 1
 	var judged: int = int(out["revived"]) + int(out["bled"]) + int(out["pending_failed"])
 	out["success_rate"] = float(out["revived"]) / float(judged) if judged > 0 else 0.0
+	var fair_judged: int = int(out["revived"]) + int(out["fair_failed"])
+	out["fair_rate"] = float(out["revived"]) / float(fair_judged) if fair_judged > 0 else 0.0
 	out["ttr_mean"] = float(out["ttr_total"]) / float(out["revived"]) if int(out["revived"]) > 0 else 0.0
 	return out
 
@@ -355,7 +371,7 @@ func _physics_process(delta: float) -> void:
 		if b == null or not b.is_bot:
 			continue
 		_watch_bot(b, humans, zs, delta)
-	_watch_revives()
+	_watch_revives(delta)
 
 
 func _watch_bot(b: Player, humans: Array[Player], zs: Array[Zombie], delta: float) -> void:
@@ -422,12 +438,18 @@ func _watch_bot(b: Player, humans: Array[Player], zs: Array[Zombie], delta: floa
 
 
 ## Who is holding use on whom (co-op state): an attempt starts when a reviver appears; a bleed-out ends it.
-func _watch_revives() -> void:
+## reach_s adds up the time a teammate bot was on its feet (one that could come; the fair revive rate).
+func _watch_revives(delta: float) -> void:
 	var s: NetMatch = Net.session
 	if s == null:
 		return
 	for pid: Variant in _open_ep.keys():
 		var e: Dictionary = episodes[int(_open_ep[pid])]
+		for q: Variant in map.players.keys():
+			var bq: Player = map.players[q] as Player
+			if bq != null and bq.is_bot and int(q) != int(pid) and bq.is_alive() and not bq.spectating:
+				e["reach_s"] = float(e.get("reach_s", 0.0)) + delta
+				break
 		var by: int = s.coop.reviver_of(int(pid))
 		var was: int = int(_reviver.get(pid, 0))
 		if by != 0 and by != was:
@@ -467,7 +489,7 @@ func _on_downed(pid: int) -> void:
 	if _open_ep.has(pid):
 		return
 	episodes.append({"pid": pid, "t_down": t, "round": RoundManager.current_round, "outcome": "pending", "t_end": -1.0,
-		"attempts": 0, "attempts_ok": 0, "by": 0})
+		"attempts": 0, "attempts_ok": 0, "by": 0, "reach_s": 0.0})
 	_open_ep[pid] = episodes.size() - 1
 	_reviver[pid] = 0
 
@@ -592,7 +614,8 @@ func summary() -> Dictionary:
 		"minutes": t / 60.0, "bot_kills": int(_sum("kills")), "bot_headshots": int(_sum("headshots")),
 		"bot_downs": int(_sum("downs")), "bot_downs_per_round": _sum("downs") / float(played), "human_downs": humans_downs,
 		"revived": rv["revived"], "bled": rv["bled"], "pending": rv["pending"], "pending_failed": rv["pending_failed"],
-		"revive_rate": rv["success_rate"], "ttr_mean": rv["ttr_mean"], "revive_attempts": rv["attempts"], "revive_attempts_ok": rv["attempts_ok"],
+		"revive_rate": rv["success_rate"], "revive_fair_rate": rv["fair_rate"], "revive_excused": rv["excused"], "revive_fair_failed": rv["fair_failed"],
+		"ttr_mean": rv["ttr_mean"], "revive_attempts": rv["attempts"], "revive_attempts_ok": rv["attempts_ok"],
 		"stuck_events": int(_sum("stuck_events")), "stuck_time": _sum("stuck_time"), "teleports": int(_sum("teleports")),
 		"lost_time": _sum("lost_time"), "block_events": int(_sum("block_events")), "block_sustained": int(_sum("block_sustained")),
 		"block_time": _sum("block_time"), "scrip_spent": int(_sum("scrip_spent")), "scrip_wasted": int(_sum("scrip_wasted")),
@@ -608,11 +631,11 @@ func summary() -> Dictionary:
 func summary_line() -> String:
 	var s: Dictionary = summary()
 	return ("[ai_metrics] SUMMARY %s run=%s end=%s round=%d time=%.1fmin | bot kills %d (heads %d) | bot downs %d (%.2f/round), human downs %d" +
-		" | revives %d/%d judged (%.0f%%, ttr %.1fs, attempts %d ok %d, bled %d, pending %d) | stuck %d (%.1fs) teleports %d lost %.0fs" +
+		" | revives %d/%d judged (%.0f%%; fair %.0f%%, %d excused; ttr %.1fs, attempts %d ok %d, bled %d, pending %d) | stuck %d (%.1fs) teleports %d lost %.0fs" +
 		" | blocking %d events, %d sustained (%.1fs) | scrip spent %d wasted %d, kar98k>r10 %d | empty-mag %d (%.1fs) | pistol with a loaded gun %.0fs | commands %d") % [
 		s["scenario"], s["run"], s["end"], s["round_reached"], s["minutes"], s["bot_kills"], s["bot_headshots"], s["bot_downs"],
 		s["bot_downs_per_round"], s["human_downs"], s["revived"], int(s["revived"]) + int(s["bled"]) + int(s["pending_failed"]),
-		100.0 * float(s["revive_rate"]), s["ttr_mean"], s["revive_attempts"], s["revive_attempts_ok"], s["bled"], s["pending"],
+		100.0 * float(s["revive_rate"]), 100.0 * float(s["revive_fair_rate"]), s["revive_excused"], s["ttr_mean"], s["revive_attempts"], s["revive_attempts_ok"], s["bled"], s["pending"],
 		s["stuck_events"], s["stuck_time"], s["teleports"], s["lost_time"], s["block_events"], s["block_sustained"], s["block_time"],
 		s["scrip_spent"], s["scrip_wasted"], s["kar98k_late"], s["empty_mag_events"], s["empty_mag_time"], s["pistol_time"], s["commands"]]
 

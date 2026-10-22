@@ -26,6 +26,12 @@ var target_score: float = 0.0
 var aim_node: Node3D = null
 var aim_head: bool = false
 var shots: int = 0
+## Shots that hit a zombie (hits_landed), and what the misses hit first (soak diagnostics: collider class -> count).
+var hits_landed: int = 0
+var miss_on: Dictionary = {}
+var _clear_for: Object = null
+var _clear_t: float = -1.0
+var _clear_ok: bool = true
 var grenades_thrown: int = 0
 var great_tolls: int = 0
 var domes: int = 0
@@ -181,6 +187,8 @@ func target_value(z: Zombie) -> float:
 		s *= float(c.get("vulnerable_priority", 2.0))
 	if bool(c.get("break_grab", false)) and z is HomageBoss and _holds_teammate(z as HomageBoss):
 		s *= float(c.get("grab_priority", 3.0))
+	elif float(c.get("adds_first_m", 0.0)) > 0.0 and not (z is HomageBoss and (z as HomageBoss).damage_taken_mult() > 1.01) 			and per.nearest != null and per.nearest != z and not BotPerception.is_boss(per.nearest) and per.nearest_d < float(c.get("adds_first_m", 0.0)):
+		s *= float(c.get("adds_first_mult", 0.35))   # T-058: a runner at our heels first; the boss when it's clear (or vulnerable)
 	if z.state == Zombie.State.TEAR or z.state == Zombie.State.CLIMB or z.state == Zombie.State.WAIT_WINDOW:
 		s += 0.3
 	if cover_point != Vector3.INF and _flat(z.global_position, cover_point) < 7.0:
@@ -210,11 +218,19 @@ func _holds_teammate(b: HomageBoss) -> bool:
 
 
 func _acquire(z: Zombie, s: float) -> void:
+	var prev: Zombie = target
 	target = z
 	target_score = s
 	_target_t = 0.0
 	_lost_t = 0.0
 	_react_t = BotConfig.range_roll(_sk.get("reaction_s"), _rng, 0.22)
+	# T-058: switching to a zombie right next to the one it was already shooting (within quick_switch_deg of the
+	# aim) is a flick, not a new reaction: a bot whose cover / revive actions re-weighted its targets every think
+	# used to re-roll the full reaction delay each time and never fired
+	if prev != null and is_instance_valid(prev) and _react_t > 0.0:
+		var to: Vector3 = z.global_position + Vector3.UP * 1.2 - eye()
+		if to.length() > 0.1 and brain.facing().angle_to(to.normalized()) < deg_to_rad(float(_a.get("quick_switch_deg", 20.0))):
+			_react_t = float(_a.get("quick_switch_s", 0.06))
 	var w: WeaponInstance = cur()
 	var cls: String = String(w.weapon_class()) if w != null else "smg"
 	var c: Dictionary = BotAIData.counter(z.enemy_id)
@@ -320,9 +336,23 @@ func _fire_if_on(aim_dir: Vector3, aim_p: Vector3, delta: float) -> void:
 	if w == null or reloading or swap_t > 0.0 or _react_t > 0.0 or w.mag <= 0 or not brain.loco.fire_ready() or brain.loco.sprint_out_left() > 0.0:
 		return
 	var tol: float = deg_to_rad(float(_sk.get("fire_tolerance_deg", 3.0)))
+	var d: float = eye().distance_to(aim_p)
+	# T-058: up close the body fills the view: anything within the target's own width (body_half_width_m at this
+	# range) is a hit, as for a person hip-firing. The fixed 1.8 degree tolerance kept a bot with a zombie at
+	# 0.7 m (its aim point swinging across 20+ degrees) from firing at all.
+	tol = maxf(tol, atan2(float(_a.get("body_half_width_m", 0.22)), maxf(0.3, d)))
 	if brain.facing().angle_to(aim_dir) > tol:
 		return
-	var d: float = eye().distance_to(aim_p)
+	# T-058: and the sights are on the target, the way a person sees their own crosshair: the tracking error still
+	# delays the shot (and it misses inside this window), but it doesn't empty the magazine into the wall beside a
+	# window at 15 m (the soak's shot audit: 60-90% of shots hit masonry, fences and the ground before this)
+	var true_dir: Vector3 = (aim_p - eye()).normalized()
+	if brain.facing().angle_to(true_dir) > maxf(tol, atan2(float(_a.get("body_half_width_m", 0.22)) * float(_a.get("sights_on_mult", 1.6)), maxf(0.3, d))):
+		return
+	# no spraying what the cone can't hold: hip fire on the run at range scatters wider than the target (Map 1's
+	# yard: 90% of the shots hit the ground and the walls); a person stops to aim or waits until it's closer
+	if not w.data.has("bell") and current_spread_deg(w) > rad_to_deg(atan2(float(_a.get("body_half_width_m", 0.22)) * float(_a.get("spray_width_mult", 3.0)), maxf(0.3, d))):
+		return
 	if d > max_range(w):
 		return   # no spraying what it can't hit
 	var c: Dictionary = BotAIData.counter(target.enemy_id)
@@ -333,6 +363,8 @@ func _fire_if_on(aim_dir: Vector3, aim_p: Vector3, delta: float) -> void:
 				return
 	if teammate_in_the_way(aim_p):
 		return
+	if not _clear_shot(aim_p):
+		return   # T-058: the target went behind a wall / window frame since the think: no shot into the masonry
 	if w.data.has("bell") and _bell_logic(w):
 		return
 	if w.fire_mode == "auto":
@@ -453,6 +485,8 @@ func fire(w: WeaponInstance) -> void:
 	for i: int in pellets:
 		last_hit = _trace(origin, _spread_dir(basis, spread), w, hits)
 	var pid: int = player.player_id
+	if not hits.is_empty():
+		hits_landed += 1
 	var piercing: bool = bool(w.property("armor_piercing", false)) or bool(w.property("armor_ignore", false))
 	for z: Variant in hits.keys():
 		var zz: Zombie = z as Zombie
@@ -471,6 +505,15 @@ func fire(w: WeaponInstance) -> void:
 	var danger: bool = brain.perception.sprinter_close or brain.perception.nearest_d < float(_r.get("near_block_m", 2.6))
 	if w.mag <= 0 and w.reserve > 0 and not (danger and _other_loaded() >= 0):
 		start_reload()
+
+
+## The spread a shot would have now (degrees), as fire() computes it (without the random part).
+func current_spread_deg(w: WeaponInstance) -> float:
+	var ads: float = ads_amount()
+	var spread: float = (lerpf(w.f("spread_hip", 3.0), w.f("spread_ads", 0.5), ads) + _bloom * (1.0 - 0.7 * ads)) * float(_sk.get("spread_mult", 1.0))
+	if player.horizontal_speed() > 1.0:
+		spread *= float(_a.get("moving_spread_mult", 1.6))
+	return spread
 
 
 ## How far down the sights it is (0 hip .. 1 aimed): aimed standing or walking slowly at a target beyond ads_min_m.
@@ -532,6 +575,9 @@ func _trace(origin: Vector3, dir: Vector3, w: WeaponInstance, hits: Dictionary) 
 				exclude.append(hb.get_rid())
 			from = pos + dir * 0.05
 		else:
+			if hits.is_empty() and miss_on.size() < 24:
+				var cn: String = (col as Node).name if col is Node else "?"
+				miss_on[cn] = int(miss_on.get(cn, 0)) + 1
 			var shootable: Node = WeaponHolder.shootable_of(col)
 			if shootable != null and brain.may_touch_quest():
 				# quest shootables (bells, the drummer) are egg steps: only the local-AI planner bot does those
@@ -551,6 +597,19 @@ func teammate_in_the_way(to: Vector3) -> bool:
 		if BotConfig.blocks_shot(from, to, p.global_position + Vector3.UP * (0.4 if p.downed else 1.0), r):
 			return true
 	return false
+
+
+## A line of sight from the eye to the aim point right now (cached 0.1 s per target): the think's visibility is up
+## to 0.2 s old and the target memory keeps a lost target 0.8 s, and the soak found 60-80% of shots hitting walls
+## beside the windows (and Map 1's fences) before this check.
+func _clear_shot(p: Vector3) -> bool:
+	var now: float = brain.squad.time()
+	if target == _clear_for and now - _clear_t < 0.1:
+		return _clear_ok
+	_clear_for = target
+	_clear_t = now
+	_clear_ok = _los(eye(), p, target)
+	return _clear_ok
 
 
 func _los(from: Vector3, to: Vector3, z: Object) -> bool:
@@ -595,7 +654,19 @@ func situation() -> Dictionary:
 	var per: BotPerception = brain.perception
 	return {"crowd": per.n10, "boss": per.boss_near != null, "close": per.nearest_d < float(_w.get("close_m", 6.0)),
 		"danger": per.sprinter_close or per.nearest_d < float(_r.get("near_block_m", 2.6)),
-		"near": per.nearest_d < float(_w.get("empty_swap_m", 6.0))}
+		"near": per.nearest_d < float(_w.get("empty_swap_m", 6.0)), "weak_pistol": _weak_pistol_round()}
+
+
+## T-058: from combat.json weapons.weak_pistol_after_round on, a plain pistol's magazine no longer kills one zombie
+## (8 x 40 against 650+ health): swapping to it with the main gun dry only trades a reload for a pistol nobody
+## needs. It is then worth weak_pistol_mult, and it doesn't count as "another loaded gun" for the swap-instead-of-
+## reload rule (the bot reloads the main gun, backing off, or knifes).
+func _weak_pistol_round() -> bool:
+	return RoundManager.current_round > int(_w.get("weak_pistol_after_round", 99))
+
+
+func _weak(w: WeaponInstance) -> bool:
+	return w.weapon_class() == &"pistol" and not w.upgraded and _weak_pistol_round()
 
 
 ## Pure: a weapon's value for a situation. Empty magazine: x empty_mag_mult, or almost nothing while in danger
@@ -606,6 +677,8 @@ static func weapon_value(cls: String, mag: int, reserve: int, mag_size: int, sit
 	var v: float = float((wcfg.get("class_value", {}) as Dictionary).get(cls, 0.6)) * float(class_pref.get(cls, 1.0))
 	if upgraded:
 		v *= 1.35
+	elif cls == "pistol" and bool(sit.get("weak_pistol", false)):
+		v *= float(wcfg.get("weak_pistol_mult", 0.1))
 	if int(sit.get("crowd", 0)) >= int(wcfg.get("crowd_n", 5)) and (wcfg.get("crowd_classes", []) as Array).has(cls):
 		v *= float(wcfg.get("crowd_bonus", 1.3))
 	if bool(sit.get("boss", false)) and (wcfg.get("single_classes", []) as Array).has(cls):
@@ -642,7 +715,7 @@ static func preferred_slot(values: Array, current: int, cur_mag: int, nearest_d:
 
 func _other_loaded() -> int:
 	for i: int in player.weapons.slots.size():
-		if i != player.weapons.current_index and player.weapons.slots[i].mag > 0:
+		if i != player.weapons.current_index and player.weapons.slots[i].mag > 0 and not _weak(player.weapons.slots[i]):
 			return i
 	return -1
 
@@ -808,8 +881,22 @@ func _try_melee_target() -> void:
 	var dry: bool = w == null or w.mag <= 0 or reloading
 	var lone: bool = RoundManager.current_round <= int(_m.get("early_round_max", 5)) and per.count_near(player.global_position, float(_m.get("lone_radius_m", 6.0))) <= 1
 	var pc: Dictionary = _pers.get("combat", {})
+	# T-058: a swing cancels the reload. Dry with something in reach, it only knifes what the knife kills (a
+	# 150-damage stab doesn't stop a 650-health zombie, and a bot that knifed and restarted its reload every swing
+	# never reloaded at all); otherwise it finishes the reload while the executor backs it off.
+	if dry and not knife_kills(z) and not z.is_crawler:
+		return
 	if z.is_crawler or dry or lone or (bool(pc.get("melee_lone", false)) and per.n5 <= 1):
 		melee(z)
+
+
+## True when one knife swing kills `z` (its health left against the knife's damage, Dutch's trait included).
+func knife_kills(z: Zombie) -> bool:
+	var md: Dictionary = (GLData.table("weapons")["melee"] as Dictionary).get(String(player.weapons.melee_id), {})
+	var dmg: float = float(md.get("damage", 150.0))
+	if GameState.player_has_trait(player.player_id, &"dutch"):
+		dmg *= float(GLData.table("player")["traits"]["dutch_melee_mult"])
+	return z != null and z.hp <= dmg
 
 
 ## Melee with no firearm (Jakub's coal shovel): any non-boss in reach.

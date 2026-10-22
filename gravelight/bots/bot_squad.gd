@@ -40,6 +40,11 @@ var order_target: Node = null
 var chokes: Array[Dictionary] = []
 ## Soak instrumentation: every time a bot stayed inside a choke longer than follow.choke_report_s.
 var choke_events: PackedStringArray = []
+## T-058: the home loop of a squad with no human leading it (refreshed with the route; null otherwise).
+var home: TrainingRoute = null
+## T-058: the stalled round's last zombie the squad hunts (INF: none), and since when the round stalled.
+var hunt_at: Vector3 = Vector3.INF
+var _stall_since: float = -1.0
 ## The human's smoothed flat velocity (training detection for the moving formation).
 var leader_vel: Vector3 = Vector3.ZERO
 ## Doors the human opened this match (bots buy doors on the human's path only after one).
@@ -328,6 +333,16 @@ func bot_led() -> bool:
 	return h == null or not is_instance_valid(h) or h.spectating
 
 
+## T-058: no human is in the match at all (none, or one sitting the match out: out of the co-op life-cycle, like
+## the bots3 soak's benched player). Then the squad is its own leader for the power too; a human who only bled
+## out for the round is still in the match, and the power stays their step.
+func bots_alone() -> bool:
+	var h: Player = human()
+	if h == null or not is_instance_valid(h):
+		return true
+	return h.spectating and (Net.session == null or not Net.session.coop.players.has(h.player_id))
+
+
 func kill_share_ok() -> bool:
 	return BotConfig.human_share_ok(recent_kills, GameState.human_ids(), (_cfg.get("combat", {}) as Dictionary).get("kill_share", {}))
 
@@ -376,6 +391,43 @@ func update_shared(now: float) -> void:
 	if _call_t <= 0.0:
 		_call_t = 0.5
 		_squad_callouts(now)
+		_update_hunt(now)
+
+
+## T-058: the round held up by its last one or two zombies (nothing left to spawn) for hunt_after_s: the squad
+## tracks them down, the way a player follows the last zombie's groans and footsteps (a boss loose in another hall,
+## a Foreman stuck in CHASE: the smoke_map02 stall). They go on the blackboard as heard (no line of sight, so no
+## shooting through walls) and hunt_point() is where the idle / following bots walk (with a human too: it only
+## ever starts after the round has stalled).
+func _update_hunt(now: float) -> void:
+	var hc: Dictionary = BotAIData.combat("hunt")
+	hunt_at = Vector3.INF
+	var d: ZombieDirector = director()
+	if d == null or RoundManager.state != RoundManager.State.ROUND or RoundManager.to_spawn > 0:
+		_stall_since = -1.0
+		return
+	var act: Array = d.active_zombies()
+	if act.is_empty() or act.size() > int(hc.get("max_left", 2)):
+		_stall_since = -1.0
+		return
+	if _stall_since < 0.0:
+		_stall_since = now
+	if now - _stall_since < float(hc.get("after_s", 12.0)):
+		return
+	var best: Zombie = null
+	for z: Variant in act:
+		var zz: Zombie = z as Zombie
+		if zz != null and is_instance_valid(zz) and BotPerception.targetable(zz) and (best == null or BotPerception.is_boss(zz)):
+			best = zz
+	if best == null:
+		return
+	hunt_at = best.global_position
+	blackboard.sight(best, best.global_position, now, 0, best.tier, BotPerception.is_boss(best))
+
+
+## Where the squad hunts the round's last zombie (Vector3.INF: no hunt).
+func hunt_point() -> Vector3:
+	return hunt_at
 
 
 ## The training route (U03 section 3, TrainingRoute.for_map: the map's authored loops whose doors and zones are
@@ -396,8 +448,25 @@ func _pick_route() -> void:
 		if d < best_d:
 			best_d = d
 			best = r
+	home = null
+	if bot_led():
+		# T-058: a squad leading itself has a home loop (routes_<map>.json "home"); it trains there when the
+		# leader isn't by another loop
+		for r2: TrainingRoute in TrainingRoute.for_map(String(map.map_id)):
+			if r2.home > 0.0 and (home == null or r2.home > home.home):
+				home = r2
+		if best == null:
+			best = home
 	blackboard.route = best
 	blackboard.route_leader = leader.player_id
+
+
+## T-058: where a self-led squad's leader goes when it has nothing else to do: the nearest point of the home loop
+## (Vector3.INF when there is no home or a human leads).
+func home_point(from: Vector3) -> Vector3:
+	if home == null or not bot_led():
+		return Vector3.INF
+	return home.point_at(home.closest_param(from))
 
 
 ## Bosses' keep-away rings (ai_counters keep_distance_m), burning ground, Bell Domes (a soft zone: its edge).
@@ -845,6 +914,8 @@ func _log_down(pid: int) -> void:
 	down_log.append("r%d %s down at (%.0f,%.0f,%.0f): zombies <3m %d <6m %d (fast %d), %s, %s | standing: %s" % [RoundManager.current_round,
 		Net.display_name(pid), p.global_position.x, p.global_position.y, p.global_position.z, near3, near6, fast,
 		("action %s" % b.action) if b != null else "human", " ".join(guns), ", ".join(mates)])
+	if b != null and not b.recent.is_empty():
+		down_log.append("   before: " + " > ".join(b.recent.slice(maxi(0, b.recent.size() - 10))))
 
 
 ## A power-up dropped: onto the blackboard; the nearest standing bot that sees it calls it by name (our own
@@ -947,10 +1018,12 @@ func report() -> PackedStringArray:
 	var out: PackedStringArray = []
 	for b: BotBrain in brains:
 		var w: WeaponInstance = b.player.weapons.current()
-		out.append("%s (P%d, %s): kills %d shots %d hp %.0f scrip %d %s %s%s role %s teleports %d doors %d upgrades %d revives %d grenades %d tolls %d" % [
+		out.append("%s (P%d, %s): kills %d shots %d hp %.0f scrip %d %s %s%s role %s teleports %d doors %d upgrades %d revives %d grenades %d tolls %d flanks %d high ground %d perks %s" % [
 			Net.display_name(b.player.player_id), b.player.player_id, b.skill_name(), b.kills, b.shots, b.player.hp,
 			Economy.get_scrip(b.player.player_id), str(w.id) if w != null else "-", b.action, " DOWN" if b.player.downed else "",
-			b.role, b.teleports, b.doors_bought_total, b.upgrades, b.revives, b.aim.grenades_thrown, b.aim.great_tolls])
+			b.role, b.teleports, b.doors_bought_total, b.upgrades, b.revives, b.aim.grenades_thrown, b.aim.great_tolls,
+			b.actions.flanks, b.actions.high_ground_moves, ",".join(PackedStringArray(PerkManager.owned(b.player.player_id).map(func(x: Variant) -> String: return str(x))))])
+		out.append("  hits %d of %d shots; misses hit first: %s" % [b.aim.hits_landed, b.shots, str(b.aim.miss_on)])
 		if b.planner != null:
 			out.append("  " + b.planner.status_line())
 		if b.bonus_perk != &"":
@@ -960,7 +1033,7 @@ func report() -> PackedStringArray:
 		float(ts["ms_per_bot_frame"]), float(ts["ms_per_think"])])
 	for e: String in choke_events.slice(0, 8):
 		out.append("  CHOKE " + e)
-	for e2: String in down_log.slice(maxi(0, down_log.size() - 12)):
+	for e2: String in down_log.slice(maxi(0, down_log.size() - 24)):
 		out.append("  DOWN " + e2)
 	return out
 
