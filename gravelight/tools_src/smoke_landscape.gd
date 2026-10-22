@@ -48,7 +48,7 @@ func _run() -> void:
 	_check(land.find_children("PineCards*", "MultiMeshInstance3D", false, false).size() > 0, "impostor forests")
 	_check(land.sky_mat != null and land.farm_window != null and land.town_fires.size() > 0, "sky, farmhouse window, burning town")
 	_check(amb.crows != null and amb.crows.perched_count() == int(amb.cfg["crows"]["count"]), "crows perched on the wires")
-	_check(amb.frost != null and amb.frost.decals.size() >= 9, "frost decals on the walled windows (%d)" % (amb.frost.decals.size() if amb.frost else 0))
+	_check(amb.frost != null and amb.frost.decals.size() >= 9, "frost panes on the walled windows (%d)" % (amb.frost.decals.size() if amb.frost else 0))
 	var paired: int = 0
 	for e: Array in amb.sway.lamps:
 		if e[1] != null:

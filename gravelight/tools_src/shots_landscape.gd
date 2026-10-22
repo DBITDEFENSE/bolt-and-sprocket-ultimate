@@ -20,6 +20,13 @@ const VIEWS: Array = [
 	["east_window", Vector3(22.8, 1.7, 8.0), Vector3(80.0, 6.0, -6.0)],
 	["exterior_wide", Vector3(-30.0, 14.0, 70.0), Vector3(20.0, 2.0, 10.0)],
 	["north_road", Vector3(-6.0, 2.0, -30.0), Vector3(-11.0, 1.0, -70.0)],
+	# details (outside the play space too: a free camera)
+	["detail_inn_sign", Vector3(9.0, 2.6, -6.5), Vector3(11.8, 3.0, -0.8)],
+	["detail_cockpit", Vector3(36.5, 2.6, -3.0), Vector3(44.0, 1.8, 0.8)],
+	["detail_parachute", Vector3(31.0, 2.0, 30.0), Vector3(39.5, 4.5, 24.5)],
+	["detail_yard_wall", Vector3(20.0, 1.7, 44.0), Vector3(17.0, 4.6, 34.0)],
+	["detail_frost_window", Vector3(9.0, 1.6, 3.2), Vector3(7.0, 1.55, 0.0)],
+	["detail_road_car", Vector3(-3.0, 2.4, -38.0), Vector3(-8.0, 0.5, -51.0)],
 ]
 
 var _out: String = "user://shots"
@@ -27,6 +34,7 @@ var _only: PackedStringArray = []
 var _round: int = 1
 var _events: bool = false
 var _boards: bool = false
+var _hide: PackedStringArray = []
 var map: Node3D
 var cam: Camera3D
 var _n: int = 0
@@ -49,6 +57,8 @@ func _ready() -> void:
 			_round = int(a.substr(8))
 		elif a == "--events":
 			_events = true
+		elif a.begins_with("--hide="):
+			_hide = a.substr(7).split(",", false)
 		elif a == "--boards":
 			_boards = true
 	DirAccess.make_dir_recursive_absolute(_out if _out.is_absolute_path() else ProjectSettings.globalize_path(_out))
@@ -81,6 +91,10 @@ func _run() -> void:
 		for b: Node in get_tree().get_nodes_in_group(&"barricades"):
 			for k: int in 6:
 				b.call("tear_board")
+	for h: String in _hide:   # debugging: hide nodes by name
+		for n: Node in map.find_children(h, "", true, false):
+			if n is Node3D:
+				(n as Node3D).visible = false
 	RoundManager.current_round = _round
 	var amb: Node = map.find_child("MapAmbience", false, false)
 	if amb != null and amb.has_method("debug_set_round"):

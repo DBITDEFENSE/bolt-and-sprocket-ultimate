@@ -630,7 +630,7 @@ func _build_stable_light() -> void:
 	var shaft_m: ShaderMaterial = ShaderMaterial.new()
 	shaft_m.shader = beam_sh
 	shaft_m.set_shader_parameter("color", Vector3(0.55, 0.65, 1.0))
-	shaft_m.set_shader_parameter("intensity", 0.07)
+	shaft_m.set_shader_parameter("intensity", 0.11)
 	shaft_m.set_shader_parameter("length_falloff", 1.1)
 	shaft_m.set_shader_parameter("edge_power", 2.2)
 	shaft_m.set_shader_parameter("near_fade", 1.2)
@@ -653,7 +653,7 @@ func _build_stable_light() -> void:
 		slit.scale = (along * lenw + Vector3(0.0, 0.035, 0.0) + (Vector3(0, 0, 0.012) if along == Vector3.RIGHT else Vector3(0.012, 0, 0))).abs()
 		g.add_child(slit)
 		# the shaft: two crossed sheets from the slit down the moon direction toward the floor
-		var shaft_len: float = minf(p.y / maxf(0.2, -d.y), 9.0)
+		var shaft_len: float = minf(0.82 * p.y / maxf(0.2, -d.y), 7.0)
 		var mid: Vector3 = p + d * shaft_len * 0.5
 		var side: Vector3 = (along - d * along.dot(d)).normalized()
 		var across: Vector3 = d.cross(side).normalized()

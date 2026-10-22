@@ -28,12 +28,12 @@ void vertex() {
 }
 
 void fragment() {
-	float a = pow(1.0 - along, length_falloff) * smoothstep(0.0, 0.04, along);
-	float edge = pow(abs(dot(normalize(NORMAL), normalize(VIEW))), edge_power);
+	float a = pow(max(1.0 - along, 0.0001), length_falloff) * smoothstep(0.0, 0.04, along) * (1.0 - smoothstep(0.85, 1.0, along));
+	float edge = pow(clamp(abs(dot(normalize(NORMAL), normalize(VIEW))), 0.0001, 1.0), edge_power);
 	float nf = smoothstep(near_fade * 0.4, near_fade, length(VERTEX)) * smoothstep(0.0, 0.3, min(UV.x, 1.0 - UV.x));
 	float dust = 1.0;
 	if (flow > 0.0) {
 		dust = 0.65 + 0.7 * vnoise(vec2(UV.x * 9.0, along * 14.0 - TIME * flow));
 	}
-	ALBEDO = color * intensity * a * edge * nf * dust;
+	ALBEDO = clamp(color * intensity * a * edge * nf * dust, vec3(0.0), vec3(4.0));
 }
