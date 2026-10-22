@@ -1,6 +1,8 @@
 {
   "_doc": "AI teammates (T-031). Tuning for gravelight/bots/*.gd; pure rules in bot_config.gd, unit-tested in gravelight/tests/unit/test_bots.gd.",
   "max_bots": 3,
+  "locomotion": "v2",
+  "_locomotion_doc": "Update 03 section 3 (T-056): \"v2\" = bots move through BotLocomotion (gravelight/bots/bot_locomotion.gd, tuning in data/gravelight/ai/locomotion.json) on the human's own movement code; \"v1\" = the old BotBrain._move.",
   "spawn_kit": {
     "_doc": "What every bot spawns with, on top of the start pistol: the guns in `weapons` (the one in `hold` goes into its hands) and the perks in `perks`, free and outside the power rule. Ironhide Stout is the Juggernog equivalent (250 health), Second Wind Schnapps the Quick Revive equivalent (2x revive speed). restore_after_down gives the kit perks back when the bot is revived or respawns (co-op loses every perk on going down); weapons come back on a respawn.",
     "weapons": [

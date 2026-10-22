@@ -15,7 +15,7 @@ extends Node
 ##                  the Totenglocke
 ##   BotEconomy     its own Scrip by priority, a reserve kept; never easter-egg objects, traps or the power switch
 ##                  unless ordered or the human already did that step
-##   loco           the locomotion layer (BotLocomotion API; BotMoveAdapter until the U03 section 3 layer lands)
+##   loco           the locomotion layer (BotLocomotion, U03 section 3; the BotMoveAdapter as the "v1" fallback)
 ## The squad blackboard (BotSquad.blackboard) holds what they share: known zombies (4 s memory), claims (revives,
 ## covers, windows), the training route, danger zones, power-ups, pings, roles.
 ## Kept from before: the local-AI planner (its directive is the Objective action's errand, a high-weight action),
@@ -42,7 +42,9 @@ var personality: Dictionary = {}
 var think_hz: float = 5.0
 var perception: BotPerception
 var aim: BotAim
-var loco: BotMoveAdapter   # U03 section 3: BotLocomotion when u03-2-locomotion lands (the same API)
+## The locomotion layer: BotLocomotion (U03 section 3, bots.json "locomotion": "v2"), or the BotMoveAdapter over
+## the T-031 movement ("v1", the soak's --loco=v1 A/B runs). The same API either way.
+var loco
 var actions: BotActions
 var tasks: BotTasks
 var economy: BotEconomy
@@ -148,9 +150,12 @@ func setup(bot_player: Player, bot_squad: BotSquad, i: int) -> void:
 	player.bot_damage_mult = 1.0   # no hidden health buff (Update 03 section 7)
 	perception = BotPerception.new()
 	perception.setup(player, squad)
-	loco = BotMoveAdapter.new()
+	if BotLocomotion.enabled(_cfg):
+		loco = BotLocomotion.new()
+	else:
+		loco = BotMoveAdapter.new()
+		loco.index = i
 	loco.setup(player, squad)
-	loco.index = i
 	aim = BotAim.new()
 	aim.setup(self)
 	actions = BotActions.new()
@@ -343,6 +348,7 @@ func _physics_process(delta: float) -> void:
 		_think()
 		us_think += float(Time.get_ticks_usec() - tt)
 		thinks += 1
+	loco.clear_look()   # a look lasts one frame: the aim layer (or the executor) asks again every frame
 	actions.run(action, delta)
 	loco.tick(delta)
 	_sprint_t = _sprint_t + delta if player.sprinting else 0.0

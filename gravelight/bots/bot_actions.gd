@@ -141,7 +141,7 @@ func _spread_from_boss() -> bool:
 	if side.dot(player.global_position - mate.global_position) < 0.0:
 		side = -side
 	var p: Vector3 = brain.snap(player.global_position + side * 2.5)
-	if brain.loco.in_danger(p) or p.distance_to(player.global_position) < 0.8:
+	if brain.in_danger(p) or p.distance_to(player.global_position) < 0.8:
 		return false
 	brain.loco.move_to(p, 0.5, 0.5)
 	return true
@@ -168,7 +168,7 @@ func _back_off(z: Zombie, dist: float, urgency: float) -> void:
 	if away.length() < 0.01:
 		away = -player.global_basis.z
 	var p: Vector3 = brain.snap(player.global_position + away.normalized() * dist)
-	if brain.loco.in_danger(p):
+	if brain.in_danger(p):
 		p = brain.snap(player.global_position + away.normalized().rotated(Vector3.UP, 1.2) * dist)
 	brain.loco.move_to(p, urgency, 0.4)
 
@@ -183,12 +183,16 @@ func _train(delta: float) -> void:
 		brain.loco.follow(leader, brain.index)
 	else:
 		brain.loco.train(brain.squad.blackboard.route)
+	var urg: Variant = brain.loco.get("_t_urg")
+	if urg != null and float(urg) >= 0.6:
+		return   # the layer is sprinting ahead of the train's head: no look, so it can run
 	var per: BotPerception = brain.perception
-	if per.nearest != null and per.nearest_d < 2.2 and per.nearest.speed >= 3.0 and not per.nearest.is_crawler and player.hp < player.max_hp * 0.6:
-		return   # hurt with the train's head on its heels: just run (no look: the locomotion layer sprints ahead)
+	if urg == null and per.nearest != null and per.nearest_d < 2.2 and per.nearest.speed >= 3.0 and not per.nearest.is_crawler and player.hp < player.max_hp * 0.6:
+		return   # (the v1 adapter) hurt with the train's head on its heels: just run
 	if not brain.aim.update(delta, true):
 		var f: Vector3 = brain.loco.train_face_dir()
-		brain.loco.look_at_dir(f + Vector3.UP * 0.05)
+		if f != Vector3.ZERO:
+			brain.loco.look_at_dir(f)
 
 
 ## Holds a spot: the Hold order's ring, or its window pair in the early rounds (shoots from there; Repair takes
@@ -260,7 +264,7 @@ func retreat_point() -> Vector3:
 		var dir: Vector3 = Vector3(cos(a), 0.0, sin(a))
 		var want: Vector3 = me + dir * randf_range(float(rc.get("min_m", 4.0)), float(rc.get("max_m", 7.0)))
 		var p: Vector3 = brain.snap(want)
-		if p.distance_to(want) > 1.5 or absf(p.y - me.y) > 1.6 or brain.loco.in_danger(p):
+		if p.distance_to(want) > 1.5 or absf(p.y - me.y) > 1.6 or brain.in_danger(p):
 			continue
 		var clear: float = INF
 		for zp2: Vector3 in zs:
@@ -323,7 +327,7 @@ func _revive(delta: float) -> void:
 	var per: BotPerception = brain.perception
 	var left: float = session.coop.bleed_left(brain.revive_pid)
 	var reach: float = float(rc.get("reach_m", 1.4))
-	brain.loco.exempt_choke = true
+	brain.loco.set("exempt_choke", true)
 	if d > reach or absf(t.global_position.y - me.y) > 1.5:
 		if _reviving_pid != 0:
 			stop_revive()
@@ -375,7 +379,7 @@ func stop_revive() -> void:
 		Net.session.coop.set_reviver(_reviving_pid, player.player_id, false)
 	_reviving_pid = 0
 	_revive_hold = 0.0
-	brain.loco.exempt_choke = false
+	brain.loco.set("exempt_choke", false)
 
 
 func _threat_centroid(p: Vector3, r: float) -> Vector3:
@@ -404,7 +408,7 @@ func _cover(delta: float) -> void:
 	# beside the downed one on the far side from the threat, at cover_ring_m, shooting past them; never in the swarm
 	var side: Vector3 = Vector3(-out.z, 0.0, out.x) * (1.2 if brain.index % 2 == 0 else -1.2)
 	var spot: Vector3 = brain.snap(t.global_position - out * float(cfg("revive").get("cover_ring_m", 3.5)) + side)
-	brain.loco.exempt_choke = true
+	brain.loco.set("exempt_choke", true)
 	var per: BotPerception = brain.perception
 	if per.nearest != null and per.nearest_d < 3.0 and not per.nearest.is_crawler:
 		_back_off(per.nearest, 3.0, 0.9)

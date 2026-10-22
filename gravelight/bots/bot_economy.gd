@@ -239,7 +239,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 			continue
 		var key: String = "repair:%d" % b.get_instance_id()
 		var front: Vector3 = BotBrain._front_of(b)
-		if not squad.blackboard.can_claim(key, pid, now) or brain.loco.in_danger(front) or not brain.reachable(front):
+		if not squad.blackboard.can_claim(key, pid, now) or brain.in_danger(front) or not brain.reachable(front):
 			continue
 		var missing: float = float(b.max_boards - b.boards) / float(maxi(1, b.max_boards))
 		var v: float = clampf(0.35 + 0.5 * missing - d / 40.0, 0.05, 1.0)

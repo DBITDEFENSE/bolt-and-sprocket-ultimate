@@ -223,7 +223,7 @@ func describe(now: float) -> PackedStringArray:
 		var left: String = "" if float(c.get("until", INF)) == INF else " (%.0fs)" % maxf(0.0, float(c["until"]) - now)
 		out.append("%s <- %s%s" % [str(k), ", ".join(PackedStringArray((c["pids"] as Array).map(func(p: Variant) -> String: return "P%d" % int(p)))), left])
 	out.append("known zombies %d, danger zones %d, power-ups %d, route %s (leader P%d)" % [zombies.size(), danger_zones.size(), powerups.size(),
-		"free loop" if route == null else str(route.get("route_id") if route is Object else route), route_leader])
+		"free loop" if route == null else str(route.get("id") if route is Object else route), route_leader])
 	for pid: Variant in roles.keys():
 		out.append("P%d %s" % [int(pid), str(roles[pid])])
 	return out

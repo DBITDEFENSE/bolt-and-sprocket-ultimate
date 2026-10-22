@@ -346,12 +346,12 @@ func test_roles_follow_the_personalities() -> void:
 
 func test_personal_space_bubble() -> void:
 	var h: Vector3 = Vector3.ZERO
-	assert_eq(BotMoveAdapter.personal_space_push(Vector3(2.0, 0, 0), h, Vector3.ZERO), Vector3.ZERO, "outside 1.2 m: nothing")
-	var p: Vector3 = BotMoveAdapter.personal_space_push(Vector3(0.6, 0, 0), h, Vector3.ZERO)
+	assert_eq(BotLocomotion.personal_space_push(Vector3(2.0, 0, 0), h, Vector3.ZERO), Vector3.ZERO, "outside 1.2 m: nothing")
+	var p: Vector3 = BotLocomotion.personal_space_push(Vector3(0.6, 0, 0), h, Vector3.ZERO)
 	assert_gt(p.x, 0.0, "pushed away from the human")
-	var ahead: Vector3 = BotMoveAdapter.personal_space_push(Vector3(0, 0, -1.5), h, Vector3(0, 0, -3.0))
+	var ahead: Vector3 = BotLocomotion.personal_space_push(Vector3(0, 0, -1.5), h, Vector3(0, 0, -3.0))
 	assert_gt(ahead.length(), 0.0, "in front of a walking human the bubble is longer")
-	assert_eq(BotMoveAdapter.personal_space_push(Vector3(0, 0, 1.5), h, Vector3(0, 0, -3.0)), Vector3.ZERO, "behind them it isn't")
+	assert_eq(BotLocomotion.personal_space_push(Vector3(0, 0, 1.5), h, Vector3(0, 0, -3.0)), Vector3.ZERO, "behind them it isn't")
 
 
 func test_the_spending_plan_names_real_perks_and_weapons() -> void:

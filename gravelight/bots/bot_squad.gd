@@ -346,10 +346,33 @@ func update_shared(now: float) -> void:
 	if now - _roles_t >= float((BotAIData.table("actions").get("roles", {}) as Dictionary).get("roles_every_s", 2.0)):
 		_roles_t = now
 		_assign_roles()
+		_pick_route()
 	_call_t -= 0.15
 	if _call_t <= 0.0:
 		_call_t = 0.5
 		_squad_callouts(now)
+
+
+## The training route (U03 section 3, TrainingRoute.for_map: the map's authored loops whose doors and zones are
+## open): the one whose line passes nearest the leader, on their floor, within route_max_m; none (null: the
+## locomotion layer's free loop round the human) otherwise. Refreshed with the roles.
+func _pick_route() -> void:
+	var leader: Player = leader_for_player(brains[0].player) if not brains.is_empty() else null
+	if leader == null or map == null:
+		blackboard.route = null
+		return
+	var best: TrainingRoute = null
+	var best_d: float = float(BotAIData.combat("train").get("route_max_m", 12.0))
+	for r: TrainingRoute in TrainingRoute.for_map(String(map.map_id)):
+		var d: float = r.distance_to_line(leader.global_position)
+		var c: Vector3 = r.center()
+		if absf(c.y - leader.global_position.y) > 2.5:
+			continue
+		if d < best_d:
+			best_d = d
+			best = r
+	blackboard.route = best
+	blackboard.route_leader = leader.player_id
 
 
 ## Bosses' keep-away rings (ai_counters keep_distance_m), burning ground, Bell Domes (a soft zone: its edge).

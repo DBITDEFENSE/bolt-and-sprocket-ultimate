@@ -107,6 +107,10 @@
     "max_claim_path_m": 45.0,
     "gramophone_first": true
   },
+  "train": {
+    "_doc": "The squad's training route: the usable TrainingRoute (data/gravelight/ai/routes_<map>.json) whose line passes nearest the leader, within route_max_m on their floor; else the locomotion layer's free loop round the human.",
+    "route_max_m": 12.0
+  },
   "retreat": {
     "samples": 12,
     "min_m": 4.0,

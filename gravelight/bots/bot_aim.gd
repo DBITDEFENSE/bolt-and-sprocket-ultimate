@@ -317,7 +317,7 @@ func _perceived_dir(p: Vector3, delta: float) -> Vector3:
 
 func _fire_if_on(aim_dir: Vector3, aim_p: Vector3, delta: float) -> void:
 	var w: WeaponInstance = cur()
-	if w == null or reloading or swap_t > 0.0 or _react_t > 0.0 or w.mag <= 0 or not brain.loco.fire_ready():
+	if w == null or reloading or swap_t > 0.0 or _react_t > 0.0 or w.mag <= 0 or not brain.loco.fire_ready() or brain.loco.sprint_out_left() > 0.0:
 		return
 	var tol: float = deg_to_rad(float(_sk.get("fire_tolerance_deg", 3.0)))
 	if brain.facing().angle_to(aim_dir) > tol:
