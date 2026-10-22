@@ -173,9 +173,14 @@ func _run() -> void:
 	var z: Zombie = await _spawn_zombie_at(Vector3(14, 0, 4))
 	await _face(z.global_position + Vector3.UP)
 	var ex0: int = _explosions
-	for _t: int in 6:
+	# fire, then give the rocket time to fly (a loaded machine runs fewer physics steps per real second; the old
+	# 6 x 0.4 s window failed now and then in full-suite runs): up to 4 tries, each watched for 2 s
+	for _t: int in 4:
 		_p.weapons.tick(0.016, {"fire_pressed": true, "fire_held": true})
-		await _secs(0.4)
+		for _w: int in 10:
+			await _secs(0.2)
+			if _explosions > ex0:
+				break
 		if _explosions > ex0:
 			break
 	_check(_explosions > ex0, "Panzerschreck rocket exploded")
