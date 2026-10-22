@@ -346,11 +346,11 @@ func _revive(delta: float) -> void:
 			if c != Vector3.INF:
 				brain.aim.throw_gramophone(c + (c - t.global_position).normalized() * 4.0)
 	# something in knife reach with time to spare: deal with it first
-	if per.nearest != null and per.nearest_d < float(cfg("melee").get("range_m", 1.7)) and left > float(rc.get("last_chance_s", 8.0)) and not BotPerception.is_boss(per.nearest):
-		if _reviving_pid != 0:
-			stop_revive()
+	# something in knife reach with time to spare: a swing, and the hold carries on from where it was
+	if per.nearest != null and per.nearest_d < float(cfg("melee").get("range_m", 1.7)) and left > float(rc.get("last_chance_s", 8.0)) 			and not BotPerception.is_boss(per.nearest) and brain.aim.melee_cd <= 0.0:
 		brain.aim.melee(per.nearest)
-		return
+		if _reviving_pid != 0:
+			return
 	brain.loco.look_at_dir(t.global_position + Vector3.UP * 0.4 - brain.aim.eye())
 	if _reviving_pid == 0:
 		_reviving_pid = brain.revive_pid
