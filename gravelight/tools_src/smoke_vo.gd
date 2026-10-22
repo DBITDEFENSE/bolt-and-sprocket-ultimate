@@ -7,7 +7,10 @@ extends Node
 ##   - audio streams were actually started, 2D and positional (3D), on the Dummy audio driver
 ## Some triggers are nudged so the run stays short and deterministic: a bot is downed on purpose (a bot revives
 ## it), a human headshot kill, a wall buy, an ammo buy, a perk refusal and an intel pickup are emitted on GLBus
-## as the gameplay systems would, and a door is opened by a bot through BuyDoor.open().
+## as the gameplay systems would, and a door is opened by a bot through BuyDoor.open(). Squad reactions are
+## chatter, which VOManager drops by design inside the chatter gap or under a story line (and the bots' own
+## callouts take that gap often), so each scripted trigger waits for a free chatter channel, and the required
+## ones (HEADSHOT, BUY_) are re-emitted if their line still got no slot.
 ## Usage: godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/smoke_vo.tscn [-- --rounds=3]
 ## Prints "[vo] ..." lines and RESULT PASS/FAIL (exit code 0/1).
 
@@ -28,6 +31,12 @@ var _fight_rounds: int = 3
 var _done: bool = false
 var _nudged: bool = false
 var _downed_bot: Player = null
+var _down_t: float = -1.0
+var _revived_t: float = -1.0
+var _steps: Array = []          # the scripted triggers: [gap_s, Callable, required squad category prefix or ""]
+var _step_t: float = 0.0
+var _step_tries: int = 0
+var _step_before: int = -1
 var _revives: Array = []
 var _lines: Array = []          # [t, id, speaker]
 var _banter_natural: bool = false
@@ -60,7 +69,10 @@ func _ready() -> void:
 		if String(id).begins_with("BNT_") and RoundManager.state == RoundManager.State.BREAK:
 			_banter_natural = true
 		print("[vo]   %6.1fs %-4s %-28s %4.1fs  %s" % [_t, spk, id, dur, text.left(60)]))
-	GLBus.player_revived.connect(func(p: int, by: int) -> void: _revives.append([p, by]))
+	GLBus.player_revived.connect(func(p: int, by: int) -> void:
+		_revives.append([p, by])
+		if _downed_bot != null and p == _downed_bot.player_id and _revived_t < 0.0:
+			_revived_t = _t)
 	GLBus.game_over.connect(func(_s: Dictionary) -> void: _game_over = true)
 
 
@@ -119,8 +131,10 @@ func _physics_process(delta: float) -> void:
 			if not _nudged and RoundManager.current_round >= 1 and _round_t > 8.0:
 				_nudged = true
 				_nudge(root)
+			_tick_steps(delta)
 			if RoundManager.current_round >= 2 and _downed_bot == null and _round_t > 12.0:
 				_downed_bot = _bots()[0]
+				_down_t = _t
 				_downed_bot.take_hit(9999.0, null)
 				print("[vo] downed %s (P%d) on purpose at t=%.0fs" % [Net.display_name(_downed_bot.player_id), _downed_bot.player_id, _t])
 			if RoundManager.current_round > _fight_rounds or _phase_t > 400.0:
@@ -148,10 +162,10 @@ func _nudge(root: MapRoot) -> void:
 	var b1: int = bots[0].player_id
 	var b2: int = bots[1].player_id
 	print("[vo] nudging triggers at t=%.0fs" % _t)
-	GLBus.enemy_killed.emit(&"ganger", &"head", &"m1911", 1)
-	_later(4.0, func() -> void: GLBus.weapon_acquired.emit(b1, &"m1_garand", &"wall"))
-	_later(9.0, func() -> void: GLBus.ammo_bought.emit(b2, &"m1911"))
-	_later(14.0, func() -> void:
+	_steps.append([0.0, func() -> void: GLBus.enemy_killed.emit(&"ganger", &"head", &"m1911", 1), "HEADSHOT"])
+	_steps.append([4.0, func() -> void: GLBus.weapon_acquired.emit(b1, &"m1_garand", &"wall"), "BUY_"])
+	_steps.append([5.0, func() -> void: GLBus.ammo_bought.emit(b2, &"m1911"), "BUY_AMMO"])
+	_steps.append([5.0, func() -> void:
 		var door: BuyDoor = null
 		for n: Node in get_tree().get_nodes_in_group(&"doors"):
 			if n is BuyDoor and not (n as BuyDoor).is_open:
@@ -161,14 +175,54 @@ func _nudge(root: MapRoot) -> void:
 			door.open(b2)
 			print("[vo] door %s opened by P%d" % [door.door_id, b2])
 		else:
-			_fail("no closed door to open"))
-	_later(19.0, func() -> void: GLBus.perk_denied.emit(1, &"ironhide_stout", &"no_scrip"))
-	_later(24.0, func() -> void: GLBus.intel_found.emit(&"qa_note"))
-	_later(29.0, func() -> void: GLBus.trap_activated.emit(&"qa_trap", b1))
+			_fail("no closed door to open"), ""])   # (a door opens once: it just waits for a free channel)
+	_steps.append([5.0, func() -> void: GLBus.perk_denied.emit(1, &"ironhide_stout", &"no_scrip"), ""])
+	_steps.append([5.0, func() -> void: GLBus.intel_found.emit(&"qa_note"), ""])
+	_steps.append([5.0, func() -> void: GLBus.trap_activated.emit(&"qa_trap", b1), ""])
 
 
-func _later(seconds: float, f: Callable) -> void:
-	get_tree().create_timer(seconds).timeout.connect(f)
+## Runs the scripted triggers in order: each one `gap` s after the last, once the chatter channel is free (up to
+## 20 s); a required one whose squad line got no slot anyway is re-emitted (up to 5 tries).
+func _tick_steps(delta: float) -> void:
+	if _steps.is_empty():
+		return
+	_step_t += delta
+	var step: Array = _steps[0]
+	var cat: String = str(step[2])
+	if _step_before >= 0:
+		if _step_t < 0.5:
+			return
+		if _squad_count(cat) > _step_before or _step_tries >= 5:
+			_steps.pop_front()
+			_step_before = -1
+			_step_tries = 0
+			_step_t = 0.0
+			return
+		print("[vo] %s trigger got no line (try %d): again when the channel is free" % [cat, _step_tries])
+		_step_before = -1
+		_step_t = float(step[0])
+	if _step_t < float(step[0]) or (not _chatter_free() and _step_t < float(step[0]) + 20.0):
+		return
+	if cat != "":
+		_step_before = _squad_count(cat)
+		_step_tries += 1
+	(step[1] as Callable).call()
+	_step_t = 0.0
+	if cat == "":
+		_steps.pop_front()
+
+
+## VOManager would take a survivor's chatter line now: no story line, nothing on or queued for the player
+## channel, and the chatter gap since the last quip is over.
+func _chatter_free() -> bool:
+	return (GLVO._current[GLVO.GROUP_STORY] as Dictionary).is_empty() and (GLVO._current[GLVO.GROUP_PLAYER] as Dictionary).is_empty() 		and (GLVO._queue[GLVO.GROUP_PLAYER] as Array).is_empty() 		and GLVO._now - GLVO._last_chatter >= float(GLVO.rules.get("player_chatter_gap", 3.5)) + 0.1
+
+
+func _squad_count(cat_prefix: String) -> int:
+	var n: int = 0
+	for k: String in _squad_fired(cat_prefix):
+		n += int(GLVO.fired[k])
+	return n
 
 
 func _has_fired(prefix: String) -> bool:
@@ -227,7 +281,11 @@ func _finish() -> void:
 			if int((r as Array)[0]) == _downed_bot.player_id:
 				reviver_spk = String(GLVO.speaker_of(int((r as Array)[1])))
 		var said: Dictionary = {}
+		var until_t: float = (_revived_t if _revived_t >= 0.0 else _t) + 8.0
 		for l: Variant in _lines:
+			# only this down's lines (a bot downed by zombies elsewhere in the match has its own sequence)
+			if float((l as Array)[0]) < _down_t - 0.5 or float((l as Array)[0]) > until_t:
+				continue
 			var id: String = String((l as Array)[1])
 			var spk: String = String((l as Array)[2])
 			for cat: String in ["DOWN", "TEAM_DOWN", "REVIVE", "REVIVED"]:

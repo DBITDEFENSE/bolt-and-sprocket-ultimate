@@ -94,6 +94,7 @@ var _tp_try_t: float = 0.0
 var _rebase: bool = false
 var _win_t: float = 0.0
 var _win_pos: Vector3 = Vector3.ZERO
+var _stuck_at: Vector3 = Vector3.INF   # where this ladder's first nudge started (window progress must escape it)
 # yielding to humans
 var _aside_t: float = 0.0
 var _aside_to: Vector3 = Vector3.INF
@@ -1167,13 +1168,17 @@ func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bo
 		_stage_done = 0
 		return
 	# a goal that moves (a leader's slot, a train's lead point) may never get closer while the body walks fine:
-	# real movement (window_m in a window_s window, on the real goal's path) also counts as progress
+	# real movement (window_m in a window_s window, on the real goal's path) also counts as progress. Once this
+	# ladder has nudged, only movement that has left the stuck spot (escape_m) counts: walking back from a nudge
+	# to the same wall is not progress (it used to restart the ladder after every nudge, so the bot never
+	# reached the teleport and stayed stuck for good, unseen or not).
 	_win_t += delta
 	if _win_t >= float(_g("stuck", "window_s", 1.0)):
 		var net: float = _flat(now, _win_pos)
 		_win_t = 0.0
 		_win_pos = now
-		if detour == 0 and net >= float(_g("stuck", "window_m", 0.6)):
+		var escaped: bool = _stage_done < 2 or _stuck_at == Vector3.INF or _flat(now, _stuck_at) >= float(_g("stuck", "escape_m", 4.0))
+		if detour == 0 and escaped and net >= float(_g("stuck", "window_m", 0.6)):
 			_best_rem = rem
 			_no_prog_t = 0.0
 			_stage_done = 0
@@ -1187,6 +1192,7 @@ func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bo
 		BotMetrics.note(player.player_id, &"stuck")
 	elif stage >= 2 and _stage_done < 2:
 		_stage_done = 2
+		_stuck_at = now
 		_start_nudge(now)
 		BotMetrics.note(player.player_id, &"stuck")
 	elif stage >= 3 and _tp_try_t <= 0.0:
