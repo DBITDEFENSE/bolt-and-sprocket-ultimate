@@ -37,6 +37,7 @@ const MASK_BLOCK: int = 1 | (1 << 2) | (1 << 8)  # + zombie bodies (the "cut off
 const EYE_Y: float = 1.5
 
 static var _cfg_cache: Dictionary = {}
+static var force_mode: String = ""
 static var _plans_frame: int = -1
 static var _plans_used: int = 0
 static var _z_frame: int = -1000
@@ -90,6 +91,9 @@ var _nudge_to: Vector3 = Vector3.INF
 var _last_pos: Vector3 = Vector3.ZERO
 var _block_t: float = 0.0
 var _tp_try_t: float = 0.0
+var _rebase: bool = false
+var _win_t: float = 0.0
+var _win_pos: Vector3 = Vector3.ZERO
 # yielding to humans
 var _aside_t: float = 0.0
 var _aside_to: Vector3 = Vector3.INF
@@ -116,8 +120,11 @@ var _t_urg: float = 0.5
 var _plen_cache: Dictionary = {}   # Vector3i key -> [time, length]
 # budget
 var _us_total: int = 0
+var _us_body: int = 0   # of which the shared Player movement (move_and_slide), which the old brain paid too
 var _ticks: int = 0
 var _time: float = 0.0
+var _turn_rate: float = -1.0
+var _turn_skill: String = ""
 
 
 # ================================================================== config
@@ -129,8 +136,11 @@ static func cfg() -> Dictionary:
 	return _cfg_cache
 
 
-## "v2" (default) when bots.json says so: the brain then moves through this layer.
+## "v2" (default) when bots.json says so: the brain then moves through this layer. force_mode ("v1" / "v2",
+## the soak's --loco=) overrides the table for A/B runs.
 static func enabled(bots_cfg: Dictionary) -> bool:
+	if force_mode != "":
+		return force_mode == "v2"
 	return str(bots_cfg.get("locomotion", "v2")) == "v2"
 
 
@@ -265,9 +275,14 @@ func path_length_to(pos: Vector3) -> float:
 	return l
 
 
-## Average cost of tick() in microseconds (the layer's share of the 0.5 ms per bot budget).
+## Average cost of tick() in microseconds (the layer's share of the 0.5 ms per bot budget), body movement included.
 func avg_tick_us() -> float:
 	return float(_us_total) / maxf(1.0, float(_ticks))
+
+
+## Average cost of the body's movement inside tick() (Player.drive_bot: the shared movement code, move_and_slide).
+func avg_body_us() -> float:
+	return float(_us_body) / maxf(1.0, float(_ticks))
 
 
 # ================================================================== tick
@@ -297,8 +312,10 @@ func tick(delta: float) -> void:
 	# 2. yield to humans: a step aside overrides the goal for a moment
 	_tick_yield(delta)
 	var goal: Vector3 = _aside_to if _aside_t > 0.0 and _aside_to != Vector3.INF else _goal
+	var detour: int = 1 if goal != _goal else 0   # 1: stepping aside for a human (not stuck), 2: a stuck nudge
 	if _nudge_t > 0.0 and _nudge_to != Vector3.INF:
 		goal = _nudge_to
+		detour = 2
 		_nudge_t -= delta
 	# 3. the path
 	if goal != Vector3.INF:
@@ -335,6 +352,7 @@ func tick(delta: float) -> void:
 	var goal_move: bool = wish.length_squared() > 0.0004
 	# personal space / bot spacing (always on, even when standing)
 	var push: Vector3 = _space_push(me)
+	wish = _no_closer(me, wish)
 	wish += push
 	if wish.length_squared() > 1.0:
 		wish = wish.normalized()
@@ -343,13 +361,15 @@ func tick(delta: float) -> void:
 	var sprint: bool = _want_sprint(wish, remaining)
 	_face(delta, wish if wants_move else Vector3.ZERO, sprint)
 	_fill_intent(wish, sprint, remaining, delta)
+	var tb: int = Time.get_ticks_usec()
 	player.drive_bot(delta, _mi)
+	_us_body += Time.get_ticks_usec() - tb
 	# sprint-out bookkeeping (fire_ready)
 	if _was_sprinting and not player.sprinting:
 		_sprint_out = WeaponHolder.sprint_out_time(player.weapons.current() if player.weapons != null else null)
 	_was_sprinting = player.sprinting
 	# 6. stuck ladder + metrics
-	_tick_stuck(delta, me, goal, goal_move, remaining)
+	_tick_stuck(delta, me, goal, goal_move, remaining, detour)
 	_last_pos = player.global_position
 	_us_total += Time.get_ticks_usec() - t0
 	_ticks += 1
@@ -630,6 +650,9 @@ func _tick_follow_goal(delta: float) -> void:
 	var base: Vector3 = _leader.global_position + (lv * float(_g("formation", "lead_s", 0.6)) if moving else Vector3.ZERO)
 	var slots: Array = _g("formation", "moving" if moving else "still", [])
 	var off: Vector3 = wedge_offset(slots, _slot, heading)
+	# catch up at a run when the slot is far (a training leader walks at full speed)
+	var slot_d: float = _flat(base + off, player.global_position)
+	_urgency = 0.9 if slot_d > float(_g("formation", "run_m", 3.5)) else (0.6 if moving else 0.4)
 	var cands: Array[Vector3] = [base + off, base + off * 0.65]
 	var mirror: Vector3 = wedge_offset(slots, _slot, heading, true)
 	cands.append(base + mirror)
@@ -737,16 +760,29 @@ func _tick_train(delta: float) -> void:
 	# track our place on the loop (the nearest point within a window round the last one: overlapping stretches,
 	# like a lollipop's stick, never make it jump)
 	_t_param = _near_param(r, me, _t_param)
+	var off_line: float = _flat(r.point_at(_t_param), me)
 	_t_think -= delta
 	if _t_think <= 0.0:
 		_t_think = 0.2
-		_train_think(r, me)
-	var target_param: float = r.advance(_t_param, float(_g("train", "lead_m", 3.5)), _t_dir)
+		_train_think(r, me, off_line)
+	var lead: float = float(_g("train", "lead_m", 3.5))
+	var target_param: float = r.advance(_t_param, lead, _t_dir)
 	_goal = _snap(r.point_at(target_param))
 	_urgency = _t_urg
+	if r == _route and off_line < 1.5 and _nudge_t <= 0.0 and _aside_t <= 0.0:
+		# on an authored (validated) loop: its own samples are the path, no navmesh query
+		_path = PackedVector3Array()
+		var d: float = 0.5
+		while d <= lead + 0.01:
+			_path.append(r.point_at(r.advance(_t_param, d, _t_dir)))
+			d += 0.5
+		_path_i = 0
+		_path_goal = _goal
+		_need_plan = false
+		_repath_t = float(_g("path", "repath_s", 0.8))
 
 
-func _train_think(r: TrainingRoute, me: Vector3) -> void:
+func _train_think(r: TrainingRoute, me: Vector3, off_line: float) -> void:
 	var zs: Array[Zombie] = zombies()
 	var horde_r: float = float(_g("train", "horde_r", 14.0))
 	# the train's head: the nearest zombie behind us on the loop (or simply the nearest)
@@ -782,7 +818,7 @@ func _train_think(r: TrainingRoute, me: Vector3) -> void:
 		if not _t_ok:
 			_t_urg = 1.0
 	# far from the loop (just entered train mode): head for it at a run
-	if r.distance_to_line(me) > 3.0:
+	if off_line > 3.0:
 		_t_urg = maxf(_t_urg, 0.8)
 
 
@@ -890,6 +926,26 @@ func _space_push(me: Vector3) -> Vector3:
 	return push
 
 
+## Never walk into a human's bubble: the part of `wish` heading at a human inside personal_m + 0.4 is taken out
+## (the bot slides round them instead, and the push moves it out).
+func _no_closer(me: Vector3, wish: Vector3) -> Vector3:
+	if squad == null or wish == Vector3.ZERO:
+		return wish
+	var r: float = float(_g("space", "personal_m", 1.2)) + 0.4
+	for h: Player in squad.all_players():
+		if h.is_bot or h == player or h.spectating or not is_instance_valid(h):
+			continue
+		var to: Vector3 = Vector3(h.global_position.x - me.x, 0.0, h.global_position.z - me.z)
+		var d: float = to.length()
+		if d > r or d < 0.01 or absf(h.global_position.y - me.y) > 1.6:
+			continue
+		var dir: Vector3 = to / d
+		var c: float = wish.dot(dir)
+		if c > 0.0:
+			wish -= dir * c
+	return wish
+
+
 ## Steps aside: a human about to pass through us, a stopped bot in a choke (door, stairs) or on the human's
 ## training line. Sets a short-lived aside goal that overrides the brain's for ~1 s.
 func _tick_yield(delta: float) -> void:
@@ -977,7 +1033,7 @@ func _face(delta: float, wish: Vector3, sprint: bool) -> void:
 		return
 	var rate: float = turn_rate()
 	if sprint or player.sprinting:
-		rate *= float(GLData.table("movement").get("sprint_turn_mult", 0.78))
+		rate *= float(player._mv.get("sprint_turn_mult", 0.78))
 	var step: float = rate * delta
 	var want_yaw: float = atan2(-want.x, -want.z)
 	if Vector2(want.x, want.z).length_squared() > 0.0001:
@@ -990,8 +1046,10 @@ func _face(delta: float, wish: Vector3, sprint: bool) -> void:
 
 ## The skill's turn rate (bots.json skills.<skill>.turn_rate, rad/s).
 func turn_rate() -> float:
-	var sk: Dictionary = BotConfig.skill(BotConfig.cfg(), GameState.bot_skill)
-	return float(sk.get("turn_rate", 6.0))
+	if _turn_rate < 0.0 or _turn_skill != GameState.bot_skill:
+		_turn_skill = GameState.bot_skill
+		_turn_rate = float(BotConfig.skill(BotConfig.cfg(), _turn_skill).get("turn_rate", 6.0))
+	return _turn_rate
 
 
 func _fill_intent(wish: Vector3, sprint: bool, remaining: float, _delta: float) -> void:
@@ -1071,26 +1129,44 @@ static func stuck_stage(no_progress_s: float, repath_s: float = 2.0, nudge_s: fl
 	return 0
 
 
-func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bool, remaining: float) -> void:
+func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bool, remaining: float, detour: int) -> void:
 	var now: Vector3 = player.global_position
 	var moved: float = now.distance_to(me_before)
 	# the soak metric, unchanged from the old brain: wants to move, moved under 0.015 m this frame
 	if wants_move and moved < 0.015:
 		BotMetrics.note(player.player_id, &"stuck_time", delta)
 	_block_t = _block_t + delta if wants_move and moved < 0.02 * (delta * 60.0) else 0.0
-	if goal == Vector3.INF or _arrived:
+	if detour == 1:
+		return   # stepping aside for a human on purpose
+	if detour == 0 and (goal == Vector3.INF or _arrived):
 		_no_prog_t = 0.0
 		_best_rem = INF
 		_stage_done = 0
 		return
-	if not wants_move and _path.is_empty() and not _need_plan:
+	if detour == 0 and not wants_move and _path.is_empty() and not _need_plan:
 		return   # no way there (a shut door): the brain's problem, not a stuck body
-	var rem: float = remaining if remaining > 0.0 else _flat(goal, now)
-	if _best_rem == INF or rem < _best_rem - float(_g("stuck", "progress_m", 0.3)):
+	# progress is only ever measured toward the real goal (a nudge's own little walk doesn't count)
+	var rem: float = remaining if remaining > 0.0 and detour == 0 else _flat(_goal, now)
+	if detour == 0 and _rebase and remaining > 0.0:
+		_rebase = false
+		_best_rem = minf(_best_rem, rem)   # back from a nudge: where it landed is not progress by itself
+	if detour == 0 and (_best_rem == INF or rem < _best_rem - float(_g("stuck", "progress_m", 0.3))):
 		_best_rem = rem
 		_no_prog_t = 0.0
 		_stage_done = 0
 		return
+	# a goal that moves (a leader's slot, a train's lead point) may never get closer while the body walks fine:
+	# real movement (window_m in a window_s window, on the real goal's path) also counts as progress
+	_win_t += delta
+	if _win_t >= float(_g("stuck", "window_s", 1.0)):
+		var net: float = _flat(now, _win_pos)
+		_win_t = 0.0
+		_win_pos = now
+		if detour == 0 and net >= float(_g("stuck", "window_m", 0.6)):
+			_best_rem = rem
+			_no_prog_t = 0.0
+			_stage_done = 0
+			return
 	_no_prog_t += delta
 	var stage: int = stuck_stage(_no_prog_t, float(_g("stuck", "repath_s", 2.0)), float(_g("stuck", "nudge_s", 4.0)), float(_g("stuck", "teleport_s", 8.0)))
 	if stage >= 1 and _stage_done < 1:
@@ -1104,7 +1180,7 @@ func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bo
 		BotMetrics.note(player.player_id, &"stuck")
 	elif stage >= 3 and _tp_try_t <= 0.0:
 		_tp_try_t = 1.0
-		if _teleport_safe(goal):
+		if _teleport_safe(_goal):
 			_no_prog_t = 0.0
 			_best_rem = INF
 			_stage_done = 0
@@ -1121,26 +1197,28 @@ func _start_nudge(now: Vector3) -> void:
 		if _flat(p, want) < 0.8 and absf(p.y - now.y) < 1.2 and not _bad_stand(p):
 			_nudge_to = p
 			_nudge_t = float(_g("stuck", "nudge_walk_s", 1.2))
+			_rebase = true
 			_need_plan = true
 			nudges += 1
 			return
 
 
-## Teleports to the nearest safe navmesh point toward `goal` (along the planned path, 3-8 m on) when no human
-## can see the bot or the spot. Logged (BotMetrics teleport). True when it happened.
+## Teleports past what holds the bot: to the goal when it is within 8 m along the path, else to the furthest
+## path point 3-8 m on (a safe navmesh spot: no choke, trap or zombie), only when no human can see the bot or the
+## spot. Logged (BotMetrics teleport). True when it happened.
 func _teleport_safe(goal: Vector3) -> bool:
 	var me: Vector3 = player.global_position
 	var cands: Array[Vector3] = []
 	var p0: PackedVector3Array = _raw_path(me, goal) if goal != Vector3.INF else PackedVector3Array()
 	var acc: float = 0.0
 	for i: int in range(1, p0.size()):
-		acc += p0[i].distance_to(p0[i - 1])
-		if acc >= 3.0:
-			cands.append(p0[i])
-		if acc >= 8.0:
+		var seg: float = p0[i].distance_to(p0[i - 1])
+		if acc + seg > 8.0:
+			cands.push_front(p0[i - 1].lerp(p0[i], clampf((8.0 - acc) / maxf(0.01, seg), 0.0, 1.0)))
 			break
-	if goal != Vector3.INF:
-		cands.append(_snap(goal))
+		acc += seg
+		if acc >= 3.0:
+			cands.push_front(p0[i])   # the furthest first
 	for c: Vector3 in cands:
 		if _bad_stand(c) or not _unseen(me) or not _unseen(c):
 			continue

@@ -73,6 +73,8 @@ func _ready() -> void:
 			skill = a.substr(8)
 		elif a.begins_with("--map="):
 			map_key = a.substr(6)
+		elif a.begins_with("--loco="):
+			BotLocomotion.force_mode = a.substr(7)   # U03 section 3: v1 / v2 against bots.json locomotion
 	if not ["player3", "bots3", "cousins", "kaltenbrunn"].has(scenario):
 		print("[soak] unknown --scenario=%s (player3, bots3, cousins, kaltenbrunn)" % scenario)
 		print("[soak] RESULT FAIL")
@@ -91,6 +93,8 @@ func _ready() -> void:
 	GLSettings.values["homage_names"] = "real"
 	Engine.time_scale = speed
 	_batch = "%s_%s_x%d" % [Time.get_datetime_string_from_system(false, true).replace(":", "").replace(" ", "_").replace("-", ""), scenario, runs]
+	if BotLocomotion.force_mode != "":
+		_batch += "_loco" + BotLocomotion.force_mode
 	print("[soak] scenario %s, %d run(s), seed %d, max round %s, speed %.2fx, skill %s, map %s, local AI off" % [scenario, runs, seed_base,
 		str(max_round) if max_round > 0 else "to the wipe", speed, skill, map_key])
 	_start_run.call_deferred()

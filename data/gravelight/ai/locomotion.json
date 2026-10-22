@@ -39,8 +39,10 @@
     "choke_leave_s": 0.6
   },
   "stuck": {
-    "_doc": "No progress (the goal never got progress_m closer) for repath_s: re-plan; nudge_s: a local random walk (nudge_walk_s to a navmesh point nudge_r_m away); teleport_s: to the nearest safe navmesh point on the way, only when no human sees the bot or the spot (a view cone of view_cone_deg out to view_m, plus line of sight), and it is logged (BotMetrics teleport).",
+    "_doc": "No progress (the goal never got progress_m closer, and the body didn't move window_m net in any window_s: a moving goal never gets closer while the body walks fine) for repath_s: re-plan; nudge_s: a local random walk (nudge_walk_s to a navmesh point nudge_r_m away); teleport_s: to the nearest safe navmesh point on the way, only when no human sees the bot or the spot (a view cone of view_cone_deg out to view_m, plus line of sight), and it is logged (BotMetrics teleport).",
     "progress_m": 0.3,
+    "window_s": 1.0,
+    "window_m": 0.6,
     "repath_s": 2.0,
     "nudge_s": 4.0,
     "teleport_s": 8.0,
@@ -50,13 +52,14 @@
     "view_m": 60.0
   },
   "formation": {
-    "_doc": "follow(): a loose wedge round the leader, slots [angle_deg from the heading, radius_m]. still = the leader stands (heading = where they look); moving = the leader moves faster than moving_mps (heading = their velocity, the slot predicted lead_s ahead): beside and a little ahead, never in the space behind them the horde follows. Angles are spread wide so the squad never lines up in one cone.",
+    "_doc": "follow(): a loose wedge round the leader, slots [angle_deg from the heading, radius_m]. still = the leader stands (heading = where they look); moving = the leader moves faster than moving_mps (heading = their velocity, the slot predicted lead_s ahead): beside and a little ahead, never in the space behind them the horde follows. A slot further than run_m away is run to. Angles are spread wide so the squad never lines up in one cone.",
     "still": [[135.0, 2.8], [-135.0, 2.8], [180.0, 3.8], [100.0, 3.6], [-100.0, 3.6]],
     "moving": [[80.0, 2.4], [-80.0, 2.4], [40.0, 3.6], [115.0, 3.4], [-115.0, 3.4]],
     "moving_mps": 1.6,
     "lead_s": 0.6,
     "refresh_s": 0.3,
-    "near_m": 1.2
+    "near_m": 1.2,
+    "run_m": 3.5
   },
   "train": {
     "_doc": "train(route): run the loop lead_m ahead of the bot, tight: sprint when the train's head is within close_m, walk at mid range, wait (turning to shoot: train_face_dir) when it falls back past far_m. Before committing to the next check_every_m of loop it checks check_ahead_m ahead (a ray and the zombies within block_r of the line); block_count of them (or one on the line within 4 m, or the ray hitting one) means cut off: it reverses (at most every reverse_cd_s) or reports train_ok() false. The horde is the zombies within horde_r. train(null) kites a fallback_r_m ring round the leader.",
