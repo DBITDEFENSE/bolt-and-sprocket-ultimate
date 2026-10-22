@@ -320,7 +320,7 @@ func tick(delta: float) -> void:
 	# 3. the path
 	if goal != Vector3.INF:
 		if _path_goal == Vector3.INF or _path_goal.distance_to(goal) > float(_g("path", "goal_moved_m", 0.75)) or _need_plan \
-				or (_repath_t <= 0.0 and mode != Mode.MOVE and mode != Mode.HOLD):
+				or (_repath_t <= 0.0 and (_path.is_empty() or (mode != Mode.MOVE and mode != Mode.HOLD))):
 			if _take_plan_budget():
 				_plan(goal)
 	# 4. steering

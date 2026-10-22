@@ -221,6 +221,13 @@ func _end_run(why: String) -> void:
 	_metrics.extra["wall_s"] = snappedf(float(Time.get_ticks_msec() - _wall0) / 1000.0, 0.1)
 	_metrics.extra["frame_ms"] = snappedf(_phys_us / maxf(1.0, float(_frames)) / 1000.0, 0.01)
 	_metrics.extra["speed"] = speed
+	if _map.squad != null:   # U03 section 3: the locomotion layer's own cost per bot (tick incl. body movement)
+		var us: Array = []
+		for b: BotBrain in _map.squad.brains:
+			if b.loco != null:
+				us.append("%.0f/%.0f" % [b.loco.avg_tick_us(), b.loco.avg_body_us()])
+		if not us.is_empty():
+			_metrics.extra["loco_us_tick_body"] = ",".join(PackedStringArray(us))
 	var sm: Dictionary = _metrics.finish(why)
 	print(_metrics.summary_line())
 	var dir: String = BotMetrics.log_dir()

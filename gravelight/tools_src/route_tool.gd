@@ -74,9 +74,9 @@ static func validate_map(world: World3D, map_key: String) -> int:
 		return 1
 	for r: TrainingRoute in routes:
 		var res: Dictionary = r.validate_on(world)
-		print("[routes] %s %s: %.1f m loop, width min %.1f / mean %.1f m (ring %.1f), %d samples, doors %s" % [
+		print("[routes] %s %s: %.1f m loop, width min %.1f / mean %.1f m (ring %.1f), %d samples, needs %s" % [
 			"PASS" if bool(res["ok"]) else "FAIL", r.id, float(res["length"]), float(res["min_width"]), float(res["mean_width"]),
-			r.ring_width, r.samples.size(), ",".join(r.requires_doors) if not r.requires_doors.is_empty() else "-"])
+			r.ring_width, r.samples.size(), ",".join(r.requires_doors + r.requires_zones) if not (r.requires_doors + r.requires_zones).is_empty() else "-"])
 		if not bool(res["ok"]):
 			fails += 1
 			var probs: PackedStringArray = res["problems"]
