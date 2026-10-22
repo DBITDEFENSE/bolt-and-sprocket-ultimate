@@ -38,7 +38,7 @@ const BURST_RPM_CAP: float = 900.0
 ## Errand kinds that come from the shopping rules (claimed so two bots don't queue at one machine).
 ## Errand kinds only the objective planner hands out (executed by _tick_objective).
 const OBJECTIVE_KINDS: PackedStringArray = ["use", "radio", "switchboard", "shoot", "shoot_seq", "shoot_moving", "hold", "crate"]
-const SHOP_KINDS: PackedStringArray = ["repair", "gun", "ammo", "perk", "door", "crucible", "crucible_ammo"]
+const SHOP_KINDS: PackedStringArray = ["repair", "gun", "ammo", "perk", "door", "crucible", "crucible_ammo", "ammo_box"]
 
 var player: Player
 var squad: BotSquad
@@ -1080,6 +1080,12 @@ func _tick_errand(delta: float) -> void:
 			if give != player.weapons.current_index:
 				_select(give)
 				return
+		if kind == "ammo_box":
+			# the box refills the gun in hand: hold the dry one first
+			var want_slot: int = int(_errand.get("slot", -1))
+			if want_slot >= 0 and want_slot < player.weapons.slots.size() and want_slot != player.weapons.current_index:
+				_select(want_slot)
+				return
 		if node.can_interact(player):
 			node.interact(player)
 		if kind == "repair":
@@ -1257,6 +1263,9 @@ func errand_candidates(anchor: Vector3, range_mult: float) -> Array[Dictionary]:
 			if scrip >= wb3.ammo_price(player):
 				out.append({"node": wb3, "kind": "ammo", "score": 60.0 - _flat(wb3.global_position, me) * 0.5,
 					"label": "buy ammo for the %s (%d Scrip)" % [w2.display_name(), wb3.ammo_price(player)]})
+	var box_c: Dictionary = ammo_box_candidate(anchor, range_m, scrip, scfg)
+	if not box_c.is_empty():
+		out.append(box_c)
 	if RoundManager.current_round >= int(scfg.get("perk_min_round", 3)):
 		var pprices: Dictionary = {}
 		var machines: Dictionary = {}
@@ -1316,6 +1325,45 @@ func errand_candidates(anchor: Vector3, range_mult: float) -> Array[Dictionary]:
 				"score": float(ccfg.get("priority", 80.0)) - _flat(cr.global_position, me) * 0.3,
 				"label": "buy upgraded ammo at the Crucible" if want_ammo else ("feed the %s to the Crucible (%d Scrip)" % [player.weapons.slots[up_slot].display_name(), up_cost])})
 	return out
+
+
+## The "ammo_box" errand (Update 02 section 4): the nearest reachable ammo box within `range_m` of `anchor`, for the
+## carried gun lowest on reserve (under shopping.ammo_box.below_frac), when this bot's own Scrip covers that gun's
+## box price plus buffer_scrip. {} when there's nothing to do. Scored like the wall-buy ammo errand.
+func ammo_box_candidate(anchor: Vector3, range_m: float, scrip: int, scfg: Dictionary) -> Dictionary:
+	var acfg: Dictionary = scfg.get("ammo_box", {})
+	if not bool(acfg.get("enabled", true)):
+		return {}
+	var econ: Dictionary = AmmoBox.cfg()
+	var slot: int = -1
+	var worst: float = float(acfg.get("below_frac", scfg.get("ammo_below_frac", 0.35)))
+	for i: int in player.weapons.slots.size():
+		var w: WeaponInstance = player.weapons.slots[i]
+		var frac: float = float(w.reserve) / float(maxi(1, w.reserve_max()))
+		if frac < worst:
+			worst = frac
+			slot = i
+	if slot < 0:
+		return {}
+	var sw: WeaponInstance = player.weapons.slots[slot]
+	var price: int = AmmoBox.price_for(sw.data, sw.upgraded, econ)
+	if scrip < price + int(acfg.get("buffer_scrip", 100)):
+		return {}
+	var me: Vector3 = player.global_position
+	var best: AmmoBox = null
+	for n: Node in get_tree().get_nodes_in_group(&"ammo_boxes"):
+		var ab: AmmoBox = n as AmmoBox
+		if ab == null or not ab.is_visible_in_tree() or _flat(ab.global_position, anchor) > range_m:
+			continue
+		if ab.cooldown_left(player.player_id) > 0.0 or not squad.can_claim(ab, player.player_id) or not _reachable(_front_of(ab)):
+			continue
+		if best == null or _flat(ab.global_position, me) < _flat(best.global_position, me):
+			best = ab
+	if best == null:
+		return {}
+	return {"node": best, "kind": "ammo_box", "slot": slot,
+		"score": float(acfg.get("priority", 62.0)) - _flat(best.global_position, me) * 0.5,
+		"label": "refill the %s at an ammo box (%d Scrip)" % [sw.display_name(), price]}
 
 
 ## A powered, idle Crucible within `range_m` of `anchor` that this bot may claim and reach, or null.
