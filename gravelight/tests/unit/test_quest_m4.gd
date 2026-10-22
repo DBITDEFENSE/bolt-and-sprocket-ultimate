@@ -140,12 +140,13 @@ func test_every_vo_id_in_quests_exists() -> void:
 		assert_true(lines.has(id2), "code references missing VO " + id2)
 
 
-func test_totenglocke_data_and_falloff() -> void:
+func test_totenglocke_data_and_cone() -> void:
 	var w: Dictionary = GLData.table("weapons")
 	assert_true(w["weapons"].has("totenglocke"))
 	assert_true(w["upgraded"].has("totenglocke_up"))
 	var b: Dictionary = w["weapons"]["totenglocke"]["bell"]
-	assert_almost_eq(WeaponHolder.bell_damage(b, 3000.0, 3.0), 3000.0, 0.1)
-	assert_almost_eq(WeaponHolder.bell_damage(b, 3000.0, 8.0), 1800.0, 0.1)
+	# T-048: no falloff inside the cone (the wind-and-toll rules are in test_totenglocke.gd)
+	assert_true(Totenglocke.in_cone(Vector3.ZERO, Vector3.FORWARD, Vector3(0, 0, -7.9), float(b["range"]), float(b["cone_deg"]), 1.5))
+	assert_false(Totenglocke.in_cone(Vector3.ZERO, Vector3.FORWARD, Vector3(0, 0, -8.1), float(b["range"]), float(b["cone_deg"]), 1.5))
 	var up: Dictionary = w["upgraded"]["totenglocke_up"]["bell"]
 	assert_gt(float(up["range"]), float(b["range"]))

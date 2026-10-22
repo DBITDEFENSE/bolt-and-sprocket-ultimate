@@ -36,6 +36,8 @@ var values: Dictionary = {
 	"film_grain": true,
 	"graphics_preset": "high",
 	"lean_enabled": true,
+	"sprint_mode": "hold",     # hold / toggle (Update 02 §1)
+	"prone_enabled": false,    # hold crouch to go prone (Update 02 §1)
 	"screen_shake": 1.0,       # 0..1.5: camera shake + recoil FOV punch (weapons, explosions)
 	"last_join_ip": "127.0.0.1",   # co-op: the address typed in the lobby's Join field last time
 	"bots": 0,                     # AI teammates in a solo match (0-3, T-031)
