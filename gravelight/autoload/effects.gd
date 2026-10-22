@@ -47,6 +47,7 @@ var _nx: int = 0
 var _ns: int = 0
 var _holes: Dictionary = {}            # surface -> MultiMesh (persistent holes; "" = the plain mark)
 var _hole_next: Dictionary = {}        # surface -> next slot
+var _hole_used: Dictionary = {}        # surface -> Array of 0/1, 1 where a slot shows a hole (CPU-side count)
 var _snow_life: PackedFloat32Array = PackedFloat32Array()
 var _snow_alive: int = 0
 var _scorches: Array[Decal] = []
@@ -388,6 +389,10 @@ func _build_holes(quad: QuadMesh) -> void:
 		add_child(mmi)
 		_holes[surf] = mm
 		_hole_next[surf] = 0
+		var used: Array = []
+		used.resize(HOLES_PER_SURFACE)
+		used.fill(0)
+		_hole_used[surf] = used
 	_snow_life.resize(HOLES_PER_SURFACE)
 	_snow_life.fill(0.0)
 
@@ -402,6 +407,7 @@ func _persistent_hole(pos: Vector3, normal: Vector3, surface: String) -> void:
 	b = b * Basis.from_scale(Vector3.ONE * (size / 0.07) * randf_range(0.85, 1.15))
 	# a hair off the surface, a little more for each newer hole so overlapping holes don't fight
 	mm.set_instance_transform(i, Transform3D(b, pos + normal * (0.006 + 0.00002 * float(i))))
+	(_hole_used[surface] as Array)[i] = 1
 	if surface == "snow":
 		mm.set_instance_color(i, Color(1, 1, 1, 1))
 		if _snow_life[i] <= 0.0:
@@ -421,6 +427,7 @@ func _fade_snow_holes(delta: float) -> void:
 		if l <= 0.0:
 			_snow_alive -= 1
 			mm.set_instance_transform(i, Transform3D(Basis.from_scale(Vector3.ZERO), Vector3.ZERO))
+			(_hole_used["snow"] as Array)[i] = 0
 		elif l < 2.0:
 			mm.set_instance_color(i, Color(1, 1, 1, l * 0.5))
 
@@ -428,11 +435,9 @@ func _fade_snow_holes(delta: float) -> void:
 ## How many persistent holes are showing (tests and the dev overlay).
 func persistent_hole_count() -> int:
 	var n: int = 0
-	for surf: String in _holes.keys():
-		var mm: MultiMesh = _holes[surf]
-		for i: int in HOLES_PER_SURFACE:
-			if mm.get_instance_transform(i).basis.get_scale().x > 0.0001:
-				n += 1
+	for surf: String in _hole_used.keys():
+		for u: Variant in (_hole_used[surf] as Array):
+			n += int(u)
 	return n
 
 
@@ -479,6 +484,7 @@ func clear_marks() -> void:
 		for i: int in HOLES_PER_SURFACE:
 			mm.set_instance_transform(i, Transform3D(Basis.from_scale(Vector3.ZERO), Vector3.ZERO))
 		_hole_next[surf] = 0
+		(_hole_used[surf] as Array).fill(0)
 	_snow_life.fill(0.0)
 	_snow_alive = 0
 	for d: Decal in _scorches:

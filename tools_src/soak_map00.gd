@@ -62,6 +62,9 @@ func _setup() -> void:
 	for i: int in 30:
 		await get_tree().physics_frame
 	GameState.god_mode = true
+	# the homage boss round (the Cousins, round 10) is a boss fight with few zombies: it would leave the spots it
+	# lasts through with nobody to count, so the soak plays it as a normal round (the setting's Off behaviour)
+	GLSettings.values["homage_bosses"] = false
 	player = map.get_node("Player1") as Player
 	director = map.get_node("ZombieDirector") as ZombieDirector
 	for n: Node in get_tree().get_nodes_in_group(&"doors"):

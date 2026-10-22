@@ -40,9 +40,11 @@ func test_holes_persist_only_on_plain_static_world() -> void:
 
 func test_persistent_holes_are_capped_and_cleared() -> void:
 	Effects.clear_marks()
+	var holder: Node3D = Node3D.new()   # plain geometry's parent has no script (the test node does)
+	add_child_autofree(holder)
 	var body: StaticBody3D = StaticBody3D.new()
 	body.collision_layer = 1
-	add_child_autofree(body)
+	holder.add_child(body)
 	for i: int in Effects.HOLES_PER_SURFACE + 20:
 		Effects.impact(Vector3(i * 0.1, 1, 0), Vector3.BACK, "wood", body)
 	assert_eq(Effects.persistent_hole_count(), Effects.HOLES_PER_SURFACE, "a full kind reuses its oldest slot")
@@ -68,7 +70,7 @@ func test_glass_breaks_once() -> void:
 	assert_false(ss.break_item(1, Vector3.FORWARD), "already broken")
 	assert_false(ss.break_item(9), "out of range")
 	assert_eq(ss.broken_count(), 1)
-	ss._on_explosion(ss.to_global(Vector3(0, 1.1, 0)), 1.0)
+	ss._on_explosion(ss.to_global(Vector3(0, 1.1, 0)), 0.4)   # reach 0.3 m: the bottle, not the glass 0.4 m off
 	assert_eq(ss.broken_count(), 2, "a blast breaks what is in reach and no more")
 
 
