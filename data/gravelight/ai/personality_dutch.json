@@ -4,7 +4,7 @@
   "_summary": "Anchor. Holds ground, aggressive with LMGs and the BAR, slow to retreat, loves melee on crawlers, grumbles when told to move.",
   "actions": {
     "fight": 1.15,
-    "hold": 1.25,
+    "hold": 1.15,
     "retreat": 0.75,
     "train": 0.9,
     "repair": 1.0,

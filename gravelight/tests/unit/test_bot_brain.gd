@@ -251,12 +251,16 @@ func test_no_kar98k_after_round_ten_and_a_gun_good_for_the_round() -> void:
 	assert_eq(BotEconomy.gun_wanted(eco, pistol_only, walls, classes, {}, 11, 5000, 750, true), &"", "never a Kar98k after round 10")
 	assert_false(BotEconomy.gun_allowed("kar98k", 11, eco))
 	assert_true(BotEconomy.gun_allowed("thompson", 25, eco))
-	var held: Array = [{"id": "m1911", "tier": 0.5}, {"id": "thompson", "tier": 3.6}]
-	var map0: Dictionary = {"kar98k": 200, "m1_garand": 600, "mp40": 1000, "trench_gun": 1500, "thompson": 1200}
-	var got: StringName = BotEconomy.gun_wanted(eco, held, map0, classes, {}, 8, 5000, 750, false)
-	assert_true(got == &"mp40" or got == &"trench_gun", "the pistol slot gets a gun worth carrying in round 8 (%s)" % got)
-	assert_eq(BotEconomy.gun_wanted(eco, held, map0, classes, {}, 8, 1300, 750, false), &"", "not into the reserve")
-	assert_eq(BotEconomy.gun_wanted(eco, held, map0, classes, {"shotgun": 1.3}, 8, 5000, 750, false), &"trench_gun", "Deacon likes the trench gun")
+	var map0: Dictionary = {"kar98k": 200, "m1_garand": 600, "mp40": 1000, "trench_gun": 1500, "thompson": 1200, "bar": 1800}
+	var kit: Array = [{"id": "m1911", "tier": 0.5, "q": 0}, {"id": "thompson", "tier": 3.6, "q": 1200}]
+	assert_eq(BotEconomy.gun_wanted(eco, kit, map0, classes, {}, 8, 5000, 750, false), &"bar", "only a gun better than the kit's Thompson")
+	map0.erase("bar")
+	assert_eq(BotEconomy.gun_wanted(eco, kit, map0, classes, {}, 8, 5000, 750, false), &"", "nothing on Map 0 beats it: no Scrip wasted on a worse gun")
+	var mp40: Array = [{"id": "m1911", "tier": 0.5, "q": 0}, {"id": "mp40", "tier": 3.2, "q": 1000}]
+	assert_eq(BotEconomy.gun_wanted(eco, mp40, map0, classes, {}, 8, 5000, 750, false), &"thompson", "an MP40 carrier upgrades to the Thompson")
+	assert_eq(BotEconomy.gun_wanted(eco, mp40, map0, classes, {}, 8, 1300, 750, false), &"", "not into the reserve")
+	var garand: Array = [{"id": "m1911", "tier": 0.5, "q": 0}, {"id": "m1_garand", "tier": 2.4, "q": 600}]
+	assert_eq(BotEconomy.gun_wanted(eco, garand, map0, classes, {"shotgun": 1.3}, 8, 5000, 750, false), &"trench_gun", "Deacon likes the trench gun")
 
 
 func test_crate_doors_and_the_never_touch_rule() -> void:

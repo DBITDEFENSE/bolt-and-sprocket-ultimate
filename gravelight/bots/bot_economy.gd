@@ -83,16 +83,16 @@ static func perk_wanted(e: Dictionary, plan: Array, owned: Array, available: Dic
 	return &""
 
 
-## The wall gun to buy: the best tier on offer that is better than the best gun carried (by min_gain), allowed in
-## this round, affordable above reserve + the buffer. `held` = [{id, tier}], `walls` = id -> price, `prefer` =
-## class multipliers (personality) by gun id -> class. Returns &"" for nothing.
-static func gun_wanted(e: Dictionary, held: Array, walls: Dictionary, classes: Dictionary, prefer: Dictionary, round_n: int, scrip: int, reserve: int, free_slot: bool) -> StringName:
+## The wall gun to buy: the best tier on offer that is better than the best gun carried (tier + 0.2, and not cheaper
+## on the wall than it), allowed in this round, affordable above reserve + the buffer. `held` = [{id, tier, q (its
+## wall price; 1500 crate-only, 5000 upgraded)}], `walls` = id -> price, `classes` = id -> class, `prefer` = class
+## multipliers (personality). Returns &"" for nothing.
+static func gun_wanted(e: Dictionary, held: Array, walls: Dictionary, classes: Dictionary, prefer: Dictionary, round_n: int, scrip: int, reserve: int, _free_slot: bool) -> StringName:
 	var best_held: float = 0.0
-	var worst_held: float = INF
+	var best_q: int = 0
 	for h: Variant in held:
 		best_held = maxf(best_held, float((h as Dictionary)["tier"]))
-		worst_held = minf(worst_held, float((h as Dictionary)["tier"]))
-	var want: float = want_tier(round_n, e.get("want_tier_by_round", []))
+		best_q = maxi(best_q, int((h as Dictionary).get("q", 0)))
 	var pick: StringName = &""
 	var pick_v: float = 0.0
 	for wid: Variant in walls.keys():
@@ -104,9 +104,9 @@ static func gun_wanted(e: Dictionary, held: Array, walls: Dictionary, classes: D
 			continue
 		var t: float = tier_of(id, false, e)
 		var v: float = t * float(prefer.get(str(classes.get(id, "")), 1.0))
-		# a better main gun, or a better second gun in place of the worst (the start pistol)
-		var useful: bool = t > best_held + 0.2 or (t > worst_held + 0.8 and t >= want - 0.5) or (free_slot and t >= want - 0.5)
-		if not useful:
+		# only a gun better than the best one carried (by tier and by its wall price: what the soak's waste rule
+		# measures), so nothing bought is dropped or left unused
+		if t <= best_held + 0.2 or int(walls[wid]) < best_q:
 			continue
 		if scrip - int(walls[wid]) - int(e.get("gun_buffer_scrip", 150)) < reserve:
 			continue
@@ -121,6 +121,8 @@ static func crate_wanted(e: Dictionary, scrip: int, cost: int, best_tier: float,
 	var c: Dictionary = e.get("crate", {})
 	if scrip < int(c.get("min_scrip", 2500)) or scrip - cost < reserve:
 		return false
+	if scrip >= int(c.get("rich_scrip", 6000)) and best_tier < float(c.get("rich_until_tier", 5.5)):
+		return true   # Scrip to burn and no wonder weapon yet: try the crate
 	return best_tier < want_tier(round_n, e.get("want_tier_by_round", [])) + float(c.get("weak_margin", 0.4))
 
 
@@ -302,7 +304,9 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 		classes[String(wb.weapon_id)] = str((wtable.get(String(wb.weapon_id), {}) as Dictionary).get("class", ""))
 	var held: Array = []
 	for w: WeaponInstance in player.weapons.slots:
-		held.append({"id": String(w.base_id()), "tier": tier_of(String(w.base_id()), w.upgraded, eco)})
+		var wrow: Dictionary = wtable.get(String(w.base_id()), {})
+		var q: int = 5000 if w.upgraded else (int(wrow.get("wall_price", 0)) if int(wrow.get("wall_price", 0)) > 0 or w.weapon_class() == &"pistol" else 1500)
+		held.append({"id": String(w.base_id()), "tier": tier_of(String(w.base_id()), w.upgraded, eco), "q": q})
 	var free_slot: bool = player.weapons.slots.size() < player.weapons.max_slots()
 	var gun: StringName = gun_wanted(eco, held, walls, classes, (brain.personality.get("aim", {}) as Dictionary).get("class_pref", {}), rnd, scrip, reserve, free_slot)
 	if gun != &"" and nodes.has(String(gun)):
@@ -412,7 +416,10 @@ func _ammo_candidate(anc: Vector3, rng: float, scrip: int) -> Dictionary:
 	var pay_scrip: int = Economy.get_scrip(payer) if payer > 0 else scrip
 	var mult: float = float(brain.options.get("ammo_price_mult", 1.0))
 	var out: Dictionary = {}
-	if worst < float(eco.get("ammo_box_below", 0.25)):
+	var box_below: float = float(eco.get("ammo_box_below", 0.25))
+	if brain.in_break() and pay_scrip >= int(eco.get("break_top_up_scrip", 3000)):
+		box_below = maxf(box_below, float(eco.get("break_top_up_below", 0.6)))   # Scrip to spare: top up between waves
+	if worst < box_below:
 		var price: int = int(ceil(float(AmmoBox.price_for(sw.data, sw.upgraded, AmmoBox.cfg())) * mult))
 		if pay_scrip >= price:
 			var best: AmmoBox = null
@@ -427,6 +434,8 @@ func _ammo_candidate(anc: Vector3, rng: float, scrip: int) -> Dictionary:
 			if best != null:
 				out = {"node": best, "kind": "ammo_box", "slot": slot, "value": value_of(eco, "ammo_box", _flat(best.global_position, me)) + (0.25 if worst < 0.1 else 0.0),
 					"cost": price, "label": "refill the %s at an ammo box (%d Scrip)" % [sw.display_name(), price]}
+				if worst < 0.12:
+					out["value"] = 1.0   # nearly dry: this comes before anything else
 	if worst < float(eco.get("wall_ammo_below", 0.35)) and bool(brain.options.get("shopping", true)):
 		for wb: WallBuy in brain.squad.wall_buys():
 			if not is_instance_valid(wb) or wb.weapon_id != sw.base_id() or _flat(wb.global_position, anc) > rng:

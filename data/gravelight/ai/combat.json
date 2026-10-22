@@ -53,6 +53,8 @@
     "close_m": 6.0,
     "close_bonus": 1.2,
     "empty_mag_mult": 0.55,
+    "empty_near_mult": 0.3,
+    "empty_swap_m": 6.0,
     "swap_margin": 0.12,
     "swap_back_safe_m": 3.5,
     "swap_cooldown_s": 1.2
@@ -94,6 +96,8 @@
     "medic_discount_m": 6.0,
     "blocked_sprinter_m": 6.0,
     "blocked_bleed_s": 10.0,
+    "blocked_crowd": 2,
+    "blocked_crowd_m": 3.0,
     "last_chance_s": 8.0,
     "cover_threat": 0.35,
     "cover_ring_m": 2.2,

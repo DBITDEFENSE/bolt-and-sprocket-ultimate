@@ -25,6 +25,7 @@ var _pcfg: Dictionary = {}
 var _sk: Dictionary = {}
 var _mode: M = M.NONE
 var _target: Vector3 = Vector3.INF
+var _target_snap: Vector3 = Vector3.INF
 var _urgency: float = 0.0
 var _stop_dist: float = 0.6
 var _leader: Player = null
@@ -68,6 +69,7 @@ var _ring_dir: int = 1
 var _ring_pts: Array[Vector3] = []
 var _train_ok: bool = true
 var _train_check_t: float = 0.0
+var _untrain_t: float = 0.0
 ## Fired when the bot wanted to sprint this frame (the bonus perk's "sprint" moment).
 var sprinted_s: float = 0.0
 
@@ -94,6 +96,8 @@ func setup(p: Player, s: BotSquad) -> void:
 
 func move_to(pos: Vector3, urgency: float = 0.3, stop_dist: float = 0.6) -> void:
 	_mode = M.MOVE
+	if _target == Vector3.INF or pos.distance_to(_target) > 0.3 or _target_snap == Vector3.INF:
+		_target_snap = _snap(pos)
 	_target = pos
 	_urgency = urgency
 	_stop_dist = stop_dist
@@ -108,6 +112,8 @@ func follow(leader: Player, slot_index: int) -> void:
 
 func hold(pos: Vector3, facing: Vector3 = Vector3.ZERO) -> void:
 	_mode = M.HOLD
+	if _target == Vector3.INF or pos.distance_to(_target) > 0.3 or _target_snap == Vector3.INF:
+		_target_snap = _snap(pos)
 	_target = pos
 	_facing = facing
 	_stop_dist = 0.7
@@ -150,7 +156,7 @@ func train_face_dir() -> Vector3:
 func arrived() -> bool:
 	if _mode == M.NONE:
 		return true
-	var want: Vector3 = _target if _mode == M.MOVE or _mode == M.HOLD else _goal
+	var want: Vector3 = _target_snap if _mode == M.MOVE or _mode == M.HOLD else _goal
 	return want == Vector3.INF or (_flat(want, player.global_position) <= maxf(0.45, _stop_dist) and absf(want.y - player.global_position.y) < 1.8)
 
 
@@ -224,6 +230,12 @@ static func personal_space_push(me: Vector3, human: Vector3, human_vel: Vector3)
 
 func tick(delta: float) -> void:
 	_repath_t -= delta
+	if _mode != M.TRAIN:
+		_untrain_t += delta
+		if _untrain_t > 3.0:
+			_train_ok = true   # a blocked loop is worth another look after a while
+	else:
+		_untrain_t = 0.0
 	_aside_cd -= delta
 	_watch_t -= delta
 	if _watch_t <= 0.0:
@@ -232,18 +244,20 @@ func tick(delta: float) -> void:
 	match _mode:
 		M.MOVE:
 			_sprint = _urgency >= 0.7
-			if arrived():
+			if _urgency < 0.9 and _make_way():
+				pass
+			elif arrived():
 				_clear_goal()
 			else:
-				_set_goal(_snap(_target), _urgency >= 0.6)
+				_set_goal(_target_snap, _urgency >= 0.6)
 		M.FOLLOW:
 			_tick_follow(delta)
 		M.HOLD:
 			_sprint = false
 			if _make_way():
 				pass
-			elif _flat(_target, player.global_position) > _stop_dist:
-				_set_goal(_snap(_target), false)
+			elif _flat(_target_snap, player.global_position) > _stop_dist:
+				_set_goal(_target_snap, false)
 			else:
 				_clear_goal()
 		M.TRAIN:
@@ -261,6 +275,7 @@ func tick(delta: float) -> void:
 						_keep_out_of_the_way(l, delta)
 	_move(delta)
 	_turn(delta)
+	_look = Vector3.ZERO   # a look lasts one frame: the aim layer asks again every frame it aims
 
 
 func _tick_follow(delta: float) -> void:
@@ -643,6 +658,7 @@ func _move(delta: float) -> void:
 			_path_i += 1
 		else:
 			wish = flat.normalized()
+	var path_wish: Vector3 = wish
 	# personal space: bots don't collide with each other or the human; they step apart on their own
 	for p2: Player in squad.all_players():
 		if p2 == player or p2.spectating or not is_instance_valid(p2):
@@ -656,11 +672,15 @@ func _move(delta: float) -> void:
 			elif ad <= 0.01:
 				wish += Vector3(cos(float(index) * 2.1), 0.0, sin(float(index) * 2.1))
 		elif not p2.downed:
-			wish += personal_space_push(player.global_position, p2.global_position, p2.velocity) * 1.8
+			wish += personal_space_push(player.global_position, p2.global_position, p2.velocity) * 2.6
 	if wish.length_squared() > 1.0:
 		wish = wish.normalized()
 	var speed: float = float(_pcfg["walk_speed"])
 	var heading_ok: bool = _look == Vector3.ZERO or Vector3(_look.x, 0.0, _look.z).normalized().dot(wish.normalized()) > cos(deg_to_rad(70.0))
+	if _urgency >= 0.95 and _mode == M.MOVE:
+		heading_ok = true   # fleeing: run, and turn the body the way it runs (no shooting while sprinting)
+		if _sprint and wish != Vector3.ZERO:
+			_look = Vector3.ZERO
 	var sprinting: bool = _sprint and wish != Vector3.ZERO and heading_ok
 	if sprinting:
 		speed = float(_pcfg["sprint_speed"])
@@ -678,7 +698,7 @@ func _move(delta: float) -> void:
 	player._set_crouch_shape(false)
 	player.head.position.y = player._eye
 	player.move_and_slide()
-	_watch_stuck(delta, wish, on_floor)
+	_watch_stuck(delta, path_wish, on_floor)
 	_last_pos = player.global_position
 	if player.global_position.y < -20.0:
 		_teleport_safe(true)

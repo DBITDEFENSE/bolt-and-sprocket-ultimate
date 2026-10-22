@@ -400,6 +400,8 @@ func _think() -> void:
 	_was_committed = false
 	var pick: Array = BotUtility.choose(scores, action, float(_acfg.get("hysteresis", 0.1)), commit, float(skill.get("decision_noise", 0.0)), _rng)
 	var best: String = str(pick[0]) if str(pick[0]) != "" else "idle"
+	if _sticky and best != action and not (["revive", "retreat", "cover"].has(best) and float(scores.get(best, 0.0)) > 0.8):
+		best = action   # a gun in the Crucible, a paid crate, a held objective: only an emergency pulls it away
 	top3 = BotUtility.top(scores, 3)
 	if best != action and (now - _action_t >= float(_acfg.get("min_action_s", 0.4)) or action == "idle" or best == "retreat" or best == "revive"):
 		_set_action(best)
@@ -449,7 +451,8 @@ func context(now: float) -> Dictionary:
 		var left: float = Net.session.coop.bleed_left(revive_pid)
 		var full: float = rt.bleedout_seconds if rt.bleedout_seconds > 0.0 else float(_pcfg.get("bleedout_seconds", 45.0))
 		c["revive_bleed"] = clampf(left / maxf(1.0, full), 0.0, 1.0)
-		var blocked: bool = per.sprinter_near(rt.global_position, float(rc.get("blocked_sprinter_m", 6.0))) and left >= float(rc.get("blocked_bleed_s", 10.0))
+		var swarmed: bool = per.count_near(rt.global_position, float(rc.get("blocked_crowd_m", 3.0))) >= int(rc.get("blocked_crowd", 2))
+		var blocked: bool = (per.sprinter_near(rt.global_position, float(rc.get("blocked_sprinter_m", 6.0))) or swarmed) and left >= float(rc.get("blocked_bleed_s", 10.0))
 		if left < float(rc.get("last_chance_s", 8.0)):
 			blocked = false
 		c["revive_blocked"] = 1.0 if blocked else 0.0
@@ -487,6 +490,12 @@ func context(now: float) -> Dictionary:
 	var esc: Player = escort_target()
 	c["escort"] = 1.0 if esc != null else 0.0
 	c["escort_far"] = clampf(_flat(esc.global_position, player.global_position) / 15.0, 0.0, 1.0) if esc != null else 0.0
+	if not task.is_empty():
+		# the errand under way keeps its value (the economy no longer lists what it already paid for)
+		var key: String = str({"buy": "buy_task", "repair": "repair_task", "crate": "crate_task", "trap": "trap_task",
+			"objective": "objective", "order": "order"}.get(str(task.get("action", "")), ""))
+		if key != "":
+			c[key] = maxf(float(c.get(key, 0.0)), float(task.get("value", 0.7)) if key.ends_with("_task") else 1.0)
 	_sticky = not task.is_empty() and (crucible_sticky() or str(task.get("kind", "")) == "hold" or bool(task.get("paid", false)) or str(task.get("kind", "")) == "shoot_moving")
 	return c
 

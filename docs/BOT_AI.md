@@ -246,3 +246,159 @@ BotMetrics.note(pid, &"teleport")            # it was teleported
 BotMetrics.command_issued(bot_pid, cmd)      # the command wheel gave an order
 BotMetrics.command_done(bot_pid, cmd)        # the bot started acting on it
 ```
+
+## 4. The Update 03 brain (T-055)
+
+The T-031 mode machine is gone. A bot's brain is now an orchestrator of four layers, each in its own file under
+`gravelight/bots/`, with every number in `data/gravelight/ai/*.json` (the brief says `.tres`; this project keeps its
+tuning in JSON tables, T-055).
+
+```
+              squad blackboard (BotBlackboard, BotSquad.blackboard)
+  known zombies (4 s memory) . claims . route + leader . danger_zones . power-ups . pings . roles
+         ^ sightings, hearing                         | claims, roles, revive + cover assignment
+         |                                            v
+ BotPerception --> context (0..1 inputs) --> BotUtility --> action --> BotActions / BotTasks
+ sight cone,       hp, ammo, pressure,       every action   ~5 Hz,      executors: where to go
+ budgeted rays,    n5/n10, revive claim,     scores 0..1,   staggered   (locomotion), may it fire
+ hearing, threat   round, tasks, orders      hysteresis                 (aim), errands
+                                                                          |                |
+                                                    BotAim <--------------+                +--> loco (BotLocomotion API)
+                                                    target, reaction, convergence,              move_to / follow / hold / train,
+                                                    fire discipline, reloads, weapon            look_at_dir, path_length_to, ...
+                                                    choice, knife, grenades, the bell           (BotMoveAdapter until U03 s3)
+```
+
+| File | Job |
+|---|---|
+| `bot_brain.gd` (BotBrain) | The orchestrator. Each physics frame: the aim layer's timers; the think (every 1 / think_hz s, staggered across bots: perception, squad upkeep, the aim layer's think, the context, the utility pick); the action's executor; the locomotion tick; the pose. Owns the options (perks, kit, shopping, accuracy, personality, escort, armed, ammo payer, revive priority), orders, tasks, the bonus perk and the profiling counters. |
+| `bot_perception.gd` (BotPerception) | Sight: a 110 degree cone from the eye, `rays_per_think` line-of-sight rays, nearest first. Hearing without sight: groans within 4.5 m, a sprinter within 13 m, board tearing within 16 m, a boss within 28 m. Whatever any bot perceives goes on the blackboard, and every bot knows it for 4 s at the last place it was perceived. Nothing else is known (no wallhacks). Threat per zombie = proximity x speed tier x type (ai_counters) x targeting me / a downed teammate x behind me x still outside a window. Pressure = the sum / pressure_norm. |
+| `bot_utility.gd` (BotUtility) | Pure. Response curves (linear, poly, logistic, step, points) and considerations with the IAUS make-up for their count. Scores are x personality x role x the order's multiplier, + the order's boost. The pick adds hysteresis (+0.1) and the commit bonus (+0.3 while mid-task, +1.0 for tasks that must not be dropped: a gun in the Crucible, a paid crate), plus gaussian decision noise by skill. |
+| `bot_actions.gd` (BotActions) | The executors: Fight, Train, Hold, Retreat, Reload safely, Revive, Cover, Power-up, Follow, Regroup, Escort, Chatter, Idle, and the task actions (Repair, Buy, Crate, Trap, Order, Objective). |
+| `bot_tasks.gd` (BotTasks) | Errands: walk to it, hold use, use it. Covers shopping, the Crucible, the crate, an ordered door / power switch / part, and the local-AI planner's objectives (radio, switchboard, bells, the drummer, holds, pylons). |
+| `bot_aim.gd` (BotAim) | Target choice: threat x counters x specials-first x vulnerable / grab priority x escort, with kill-steal etiquette. Then the reaction delay and a damped-spring convergence with the skill's overshoot, plus a tracking error that shrinks over track_tau_s. Headshot preference by class / skill / personality / counter / slow-or-close target. Fire discipline (bursts at range, semi caps, max range per class, line of fire), reload intelligence, weapon choice (the pistol-trap fix), the knife, grenades, the Totenglocke (taps, the Great Toll on 6+ bunched, the Bell Dome for revives and covers), the gramophone. |
+| `bot_economy.gd` (BotEconomy) | Pure rules (the perk plan, a gun for the round, the reserve, the crate, doors, the never-touch rule) and the map candidates, each with a 0..1 value. |
+| `bot_blackboard.gd` (BotBlackboard) | Pure shared data: memory, claims (exclusive, or capped for window pairs), danger zones (`{pos, radius, cost, until}`, the shape the locomotion layer reads), power-ups, pings, roles. |
+| `bot_squad.gd` (BotSquad) | Revive claims (the nearest healthy bot with a safe path; the human first, then bots, then companions), cover claims, roles, danger zones (boss keep-away rings, fire, Bell Domes), the "sprinter behind you" / "window's open" callouts, callouts with pings, the nine orders, the dev console command. |
+| `bot_move_adapter.gd` (BotMoveAdapter) | The BotLocomotion API over the old movement code until the U03 section 3 layer is merged: paths that never cross closed doors, the moving formation, making way, chokes, the 1.2 m bubble. Stuck handling: 2 s repath, 4 s nudge, 8 s teleport, the last only when no human can see the bot. |
+| `bot_pings.gd`, `bot_debug_overlay.gd` | The pooled world-space ping markers, and the `ai_debug` overlay. |
+| `bot_ai_data.gd` (BotAIData) | Loads and caches `data/gravelight/ai/*.json`. |
+
+### The actions and when they win
+
+| Action | Wins when (the considerations) | What it does |
+|---|---|---|
+| Fight | a visible target; mid pressure | Shoots. Keeps up with a leader on the move, backs off what gets too close, spreads out around a boss. |
+| Train | a loop, high pressure, many known zombies, later rounds | Follows the human's moving formation, or runs the route / free loop around the leader, firing at the head of the train. |
+| Hold | a hold spot (the Hold order, or a window pair in rounds 1-7), low to mid pressure | Holds the spot and shoots from it; Repair takes over between kills. |
+| Retreat | swarmed, hurt, dry | Kites to open ground away from the crowd and toward the squad. Sprints clear of something fast and close first, then shoots on the move. |
+| Reload safely | mag under 30%, reserve left, calm, no sprinter close | Steps behind a teammate and reloads. |
+| Revive | holds the revive claim, not blocked (blocked = a sprinter within 6 m with more than 10 s of bleed-out left), bleed-out urgency, path length, Second Wind | Goes. Plants a Bell Dome / throws the gramophone if it is hot, then holds use; stops only for something in knife reach while more than 8 s are left. |
+| Cover | holds the cover claim, or its own revive is blocked | Stands beside the downed teammate on the threat's side and kills what comes near them first. |
+| Repair / Buy / Crate | the economy's best candidate, calm | The errand (BotTasks). |
+| Power-up | etiquette allows it | Walks over it. |
+| Follow / Regroup | not leading / far from the squad | Takes its formation slot / goes back to the nearest teammate. |
+| Escort | it escorts someone (Jakub) | Stays a step behind and to the side of them, never ahead, and shoots what goes for them. |
+| Trap | ordered, or a trap the human already used, with a crowd at it | Pulls the lever. |
+| Chatter | between waves, off cooldown | Says a line, turned to a teammate, with idle fidgets. |
+| Objective | the local-AI planner has a directive | Runs the planner's errand. |
+| Order | an order with its own task (open that door, fetch that part) | Runs the task. |
+
+### Teamwork
+
+- **Revives** are claimed on the blackboard (`revive:<pid>`): one bot per downed teammate, the nearest standing one
+  by path. The Medic counts 6 m closer than it is. An unsafe path (a known zombie within 1.6 m of it) counts 15 m
+  longer. When the threat at the downed spot is over `cover_threat`, a second bot claims `cover:<pid>`.
+- **Roles** (every 2 s): the assignment of Medic / Anchor / Builder / Runner that best fits the standing bots'
+  `role_bias` (Deacon the Medic, Dutch the Anchor, Peg the Runner, ...). Each role multiplies some action scores.
+- **Callouts** (BotSquad.callout), each with a world-space ping: a sprinter behind a teammate, a boss incoming
+  (Peg first), the crate moved, a window open, covering, every power-up by its own name, reloading, "I've got you",
+  low / no ammo, orders acknowledged, Dutch grumbling when he is moved, Wren's kill tally, chatter. The lines are
+  in VO_SCRIPT section 15, voiced with the offline TTS bake.
+- **Power-up etiquette**: Resupply and Fortify whenever it is safe. Death's Door, Double Scrip, Blackout and
+  Clearance only when the human is within 9 m of it too (or no human is playing). Never one the human is walking
+  toward.
+
+### Economy (data/gravelight/ai/economy.json)
+
+Each bot spends its own Scrip, by priority:
+
+1. Perks in plan order: Ironhide, Second Wind in co-op, then Trigger Tonic or Twin Barrel by the main gun's class,
+   then the rest.
+2. A wall gun, only when it beats the best gun carried, by tier and by wall price. So no Kar98k after round 10, and
+   nothing is bought only to be dropped.
+3. Ammo: an ammo box when the main gun is under 25%, or wall ammo from its own wall-buy under 35%. A nearly dry gun
+   comes before anything else. Between waves, with Scrip to spare, it tops up under 60%.
+4. Doors only when ordered, on the human's path after the human has opened one, or when no human leads.
+5. The Requisition Crate above 2,500 Scrip with a gun weak for the round, or above 6,000 without a wonder weapon.
+   Never someone else's roll.
+6. The Crucible for a gun of tier 3.4+ from round 6. Never a teammate's weapon.
+
+It keeps a reserve: a Second Wind rebuy plus an ammo box, x the personality's save_bias. It never touches
+easter-egg objects, traps or the power switch unless ordered or the human already did that step. The local-AI
+planner bot is the user-sanctioned exception.
+
+### Orders (the command wheel, bots.json commands.orders)
+
+Follow me, Hold here, Train with me, Repair windows, Revive priority, Buy perks now, Save Scrip, Go open that door
+(the door or power switch the human looks at), Fetch that part (the buildable part the human looks at). Each one is
+a boost / multiplier set in actions.json `orders` that lasts 60 s or until done. BotMetrics.command_issued fires at
+the order, command_done when the bot first runs an action that answers it.
+
+### Difficulty (Bot Skill: Recruit / Veteran / Elite, default Veteran)
+
+Set in Settings -> Gameplay -> Bot Skill, or with the squad menu's button. `skills.json` is merged over
+`bots.json skills`.
+
+| | Recruit | Veteran | Elite |
+|---|---|---|---|
+| Reaction | 0.27-0.33 s | 0.19-0.25 s | 0.14-0.17 s |
+| Initial aim error | 7 deg | 5 deg | 3.5 deg |
+| Settled aim error | 1.6 deg | 1.0 deg | 0.6 deg |
+| Overshoot | 0.35 | 0.25 | 0.15 |
+| Decision noise | 0.07 | 0.03 | 0.01 |
+| Spend smartness | 0.6 | 0.88 | 1.0 |
+
+Old saved names map: green -> recruit, regular -> veteran. No skill changes damage taken.
+
+### Cheats removed
+
+- The free start-pistol refill at every round start.
+- The hidden 10% damage reduction on the old "veteran" skill.
+- Omniscient zombie awareness: every active zombie used to be known, through walls.
+- The teleport to the leader after 8 s apart. Teleports now happen only after an 8 s stuck with no human looking,
+  or after a fall out of the world.
+
+Kept, as the user asked: the visible spawn kit (Thompson, Ironhide Stout, Second Wind) and the bonus perk.
+
+### Jakub (U02 section 6.2) on this brain
+
+```
+BotSquad.add_brain(player, {"perks": false, "bonus_perk": false, "kit": false, "shopping": false,
+    "accuracy_mult": 1.4, "personality": "jakub", "escort_pid": <the freer>, "armed": <has a gun>,
+    "ammo_payer_pid": <the freer>, "ammo_price_mult": 0.5, "revive_priority": 2})
+```
+
+- `escort_pid`: the Escort action keeps him a step behind the player who freed him, and his targets favour what goes
+  for that player.
+- `armed = false`: a coal-shovel fighter (melee only, never a boss).
+- His ammo boxes are paid from the payer's Scrip at half price (AmmoBox.use_holder).
+- He is revived after the human and the bots, and he never leads the squad.
+- His own bleed-out clock is `Player.bleedout_seconds` (60 s).
+- personality_jakub.json: bolt-actions, ammo conservation, no shopping, escort first.
+
+## 5. Tuning guide
+
+- **What a bot prefers**: `actions.json` weights and considerations. Each consideration is an input (listed in
+  `_inputs`) through a curve, written inline or named from `curves.json`. A `step` curve with `lo` 0 is a gate; an
+  order's boost never revives a gated action. Watch the effect live with `ai_debug 1` (the top three scores over
+  each bot), or in a soak with `--trace=5`.
+- **Flip-flopping**: raise `hysteresis` (0.1) or `min_action_s` (0.4 s).
+- **A character's style**: `personality_<char>.json`: `actions` multipliers, `role_bias`, `aim.class_pref` /
+  `head_bias` / `specials_first`, `combat.*`, `economy.save_bias`, `callouts.*`.
+- **Roles**: the `actions.json roles` multipliers. **Orders**: `actions.json orders` (boost, mult, duration_s).
+- **Perception, threat, aim, reloads, grenades, revive rules, power-up etiquette, early-round holds**: `combat.json`.
+- **Spending**: `economy.json`. **Special enemies**: `ai_counters.json`; add a key for a new enemy id and the
+  defaults fill the rest. **Difficulty**: `skills.json`.
+- **Checking a change**: run `tools/ai_soak.sh --scenario=player3 --runs=3` (and bots3, cousins) and compare the
+  `logs/ai_runs/<batch>.md` table with the one below. GUT `test_bot_brain.gd` pins the decision scenarios.

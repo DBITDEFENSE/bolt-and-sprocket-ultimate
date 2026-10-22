@@ -184,6 +184,9 @@ func _physics_process(delta: float) -> void:
 			_phase_t = 0.0
 		11:
 			RoundManager.break_left = maxf(RoundManager.break_left, 30.0)   # a long break: the Crucible is a break errand
+			if int(_phase_t * 60.0) % 600 == 0:
+				for b: BotBrain in root.squad.brains:
+					_note("  t+%.0f %s | task %s" % [_phase_t, b.status_line(), str(b.task.get("label", "-"))])
 			if not _upgrades.is_empty() and (_upgrades.size() >= 3 or _phase_t > 100.0):
 				_note("crucible: %d bot upgrade(s) after %.0fs: %s" % [_upgrades.size(), _phase_t, str(_upgrades)])
 				_phase = 12

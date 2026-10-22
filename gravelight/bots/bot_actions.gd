@@ -18,6 +18,7 @@ var _prep_done: bool = false
 var _cover_said: bool = false
 var _chatter_done: bool = false
 var _powerup_t: float = 0.0
+var _task_retry: float = 0.0
 
 
 func setup(b: BotBrain) -> void:
@@ -77,7 +78,7 @@ func run(id: String, delta: float) -> void:
 		"cover":
 			_cover(delta)
 		"buy", "repair", "crate", "trap", "order", "objective":
-			_task(delta)
+			_task(id, delta)
 		"powerup":
 			_powerup(delta)
 		"follow":
@@ -110,12 +111,40 @@ func _fight(delta: float) -> void:
 		_back_off(per.nearest, 2.6, 0.6)
 	elif brain.order_id() == &"hold" and brain.squad.hold_point != Vector3.INF:
 		brain.loco.hold(brain.squad.hold_spot(brain))
+	elif _spread_from_boss():
+		pass
 	elif not brain.roaming() and leader != null and leader != player and (brain.loco.leader_moving(leader) or _flat(leader.global_position, player.global_position) > 8.0):
 		brain.loco.follow(leader, brain.index)
 	elif per.nearest != null and per.nearest_d < keep * 0.6 and brain.aim.target != null:
 		_back_off(per.nearest, 1.8, 0.4)
 	else:
 		brain.loco.stop()
+
+
+## Bosses in general (ai_counters spread_out): never all in one cone. With a boss in sight and a teammate within
+## spread_m, it sidesteps across the boss's line, away from that teammate.
+func _spread_from_boss() -> bool:
+	var per: BotPerception = brain.perception
+	var boss: Zombie = per.boss_near
+	if boss == null or not per.is_visible(boss):
+		return false
+	var c: Dictionary = BotAIData.counter(boss.enemy_id)
+	var spread: float = float(c.get("spread_m", 0.0))
+	if not bool(c.get("spread_out", false)) or spread <= 0.0:
+		return false
+	var mate: Player = brain.squad.nearest_standing(player, player.global_position)
+	if mate == null or _flat(mate.global_position, player.global_position) >= spread:
+		return false
+	var to_boss: Vector3 = boss.global_position - player.global_position
+	to_boss.y = 0.0
+	var side: Vector3 = Vector3(-to_boss.z, 0.0, to_boss.x).normalized()
+	if side.dot(player.global_position - mate.global_position) < 0.0:
+		side = -side
+	var p: Vector3 = brain.snap(player.global_position + side * 2.5)
+	if brain.loco.in_danger(p) or p.distance_to(player.global_position) < 0.8:
+		return false
+	brain.loco.move_to(p, 0.5, 0.5)
+	return true
 
 
 ## No firearm (Jakub with the coal shovel): stay with the escort, swing at what reaches it.
@@ -183,10 +212,14 @@ func _retreat(delta: float) -> void:
 	if _retreat_t <= 0.0 or _retreat_p == Vector3.INF or brain.loco.arrived():
 		_retreat_t = 0.5
 		_retreat_p = retreat_point()
+	var per: BotPerception = brain.perception
+	var close: bool = per.nearest != null and per.nearest_d < 3.2 and per.nearest.speed >= 3.0
 	if _retreat_p == Vector3.INF:
 		brain.loco.stop()
 	else:
-		brain.loco.move_to(_retreat_p, 1.0, 0.5)
+		brain.loco.move_to(_retreat_p, 1.0 if close else 0.8, 0.5)   # something fast and close: sprint clear first
+	if close and _retreat_p != Vector3.INF:
+		return
 	if not brain.aim.update(delta, true):
 		brain.idle_look(delta)
 	var w: WeaponInstance = brain.aim.cur()
@@ -381,7 +414,7 @@ func _cover(delta: float) -> void:
 func _powerup(delta: float) -> void:
 	_powerup_t += delta
 	var p: Vector3 = brain.powerup_pos()
-	if p == Vector3.INF or _powerup_t > 15.0:
+	if p == Vector3.INF or _powerup_t > 15.0 or brain.loco.is_stuck():
 		brain.powerup_done()
 		brain.loco.stop()
 		return
@@ -447,10 +480,17 @@ func _chatter(delta: float) -> void:
 		player.remote_body.calm = true
 
 
-func _task(delta: float) -> void:
+func _task(id: String, delta: float) -> void:
+	if brain.task.is_empty():
+		# the last errand ended and this action won again: the next errand (at most twice a second)
+		_task_retry -= delta
+		if _task_retry <= 0.0:
+			_task_retry = 0.5
+			brain.start_task(id)
 	if brain.task.is_empty():
 		brain.loco.stop()
-		brain.aim.update(delta, true)
+		if not brain.aim.update(delta, true):
+			brain.idle_look(delta)
 		return
 	var st: String = brain.tasks.run(brain.task, delta)
 	if st == "done" or st == "failed":

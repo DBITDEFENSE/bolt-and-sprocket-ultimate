@@ -59,7 +59,7 @@
     ]},
     "hold": {"weight": 0.72, "considerations": [
       {"input": "hold_spot", "curve": "gate"},
-      {"input": "pressure", "curve": {"type": "points", "points": [[0.0, 0.85], [0.5, 0.75], [0.85, 0.3], [1.0, 0.15]]}}
+      {"input": "pressure", "curve": {"type": "points", "points": [[0.0, 0.5], [0.08, 0.85], [0.5, 0.75], [0.85, 0.3], [1.0, 0.15]]}}
     ]},
     "retreat": {"weight": 0.95, "considerations": [
       {"input": "pressure", "curve": "swarmed"},
@@ -88,7 +88,7 @@
       {"input": "pressure", "curve": "calm"},
       {"input": "has_target", "curve": "soft_not"}
     ]},
-    "buy": {"weight": 0.58, "considerations": [
+    "buy": {"weight": 0.7, "considerations": [
       {"input": "buy_task", "curve": "value"},
       {"input": "pressure", "curve": "very_calm"}
     ]},
@@ -136,7 +136,7 @@
   "roles": {
     "_doc": "Squad roles (Update 03 section 5), assigned by BotSquad every roles_every_s from the personalities' role_bias: each role's action multipliers.",
     "roles_every_s": 2.0,
-    "anchor": {"hold": 1.25, "fight": 1.1, "retreat": 0.85},
+    "anchor": {"hold": 1.1, "fight": 1.1, "retreat": 0.85},
     "runner": {"train": 1.25, "regroup": 0.9},
     "medic": {"revive": 1.2, "cover": 1.15},
     "builder": {"repair": 1.4, "buy": 1.05}

@@ -582,7 +582,8 @@ func slot_value(i: int) -> float:
 func situation() -> Dictionary:
 	var per: BotPerception = brain.perception
 	return {"crowd": per.n10, "boss": per.boss_near != null, "close": per.nearest_d < float(_w.get("close_m", 6.0)),
-		"danger": per.sprinter_close or per.nearest_d < float(_r.get("near_block_m", 2.6))}
+		"danger": per.sprinter_close or per.nearest_d < float(_r.get("near_block_m", 2.6)),
+		"near": per.nearest_d < float(_w.get("empty_swap_m", 6.0))}
 
 
 ## Pure: a weapon's value for a situation. Empty magazine: x empty_mag_mult, or almost nothing while in danger
@@ -600,7 +601,12 @@ static func weapon_value(cls: String, mag: int, reserve: int, mag_size: int, sit
 	if bool(sit.get("close", false)) and (wcfg.get("close_classes", []) as Array).has(cls):
 		v *= float(wcfg.get("close_bonus", 1.2))
 	if mag <= 0:
-		v *= 0.05 if bool(sit.get("danger", false)) else float(wcfg.get("empty_mag_mult", 0.55))
+		if bool(sit.get("danger", false)):
+			v *= 0.05   # it can't reload now
+		elif bool(sit.get("near", false)):
+			v *= float(wcfg.get("empty_near_mult", 0.3))   # something within 6 m: a loaded gun beats a 3 s reload
+		else:
+			v *= float(wcfg.get("empty_mag_mult", 0.55))
 	elif mag_size > 0 and float(mag) / float(mag_size) < 0.2 and reserve > 0 and not bool(sit.get("danger", false)):
 		v *= 0.9
 	return v
@@ -668,6 +674,8 @@ func _weapon_logic() -> void:
 		return
 	if w.mag == 0 and w.reserve > 0 and not danger:
 		start_reload()
+	elif w.reserve > 0 and float(w.mag) / float(maxi(1, w.mag_size())) < float(_r.get("low_frac", 0.3)) 			and per.pressure < float(_r.get("low_pressure", 0.25)) and per.nearest_d > float(_r.get("near_block_m", 2.6)) * 2.5:
+		start_reload()   # reload intelligence: under 30% with low pressure and nothing close
 	elif w.mag == 0 and w.reserve == 0:
 		brain.squad.callout(brain, "AMMO_NONE")
 
