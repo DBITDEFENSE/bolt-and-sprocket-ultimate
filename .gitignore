@@ -3,3 +3,4 @@ tools/node_modules/
 *.import
 export/
 /tools/dl_godot/
+.smoke_logs/
