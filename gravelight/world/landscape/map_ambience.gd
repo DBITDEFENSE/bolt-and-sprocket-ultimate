@@ -847,7 +847,7 @@ func _on_crash(pos: Vector3) -> void:
 func _squad_line(category: String) -> void:
 	if not is_inside_tree() or category == "":
 		return
-	VOManager.squad_say(category, 1.0)
+	GLVO.squad_say(category, 1.0)
 
 
 # ================================================================== the town, the wind, the inn
@@ -1094,11 +1094,11 @@ func _check_pilot_line() -> void:
 		pilot_said = true
 		_count("pilot_line")
 		var cat: String = str(pl.get("category", "WRECK_PILOT"))
-		for pid: int in VOManager.standing_pids():
-			if VOManager.speaker_of(pid) == &"DUT":
-				VOManager.say_as(pid, str(pl.get("dutch_category", cat)), 1.0)
+		for pid: int in GLVO.standing_pids():
+			if GLVO.speaker_of(pid) == &"DUT":
+				GLVO.say_as(pid, str(pl.get("dutch_category", cat)), 1.0)
 				return
-		VOManager.squad_say(cat, 1.0)
+		GLVO.squad_say(cat, 1.0)
 		return
 
 

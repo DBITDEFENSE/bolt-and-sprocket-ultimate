@@ -1031,7 +1031,8 @@ Total planned: ~190 lines. Bolt's and Vendelin's packs are gated on v1 §11.9 (p
 ## 13. Map 0's living world: the squad's reactions (Update 02 §7, DECISIONS T-052)
 
 Played by `MapAmbience` (`gravelight/world/landscape/map_ambience.gd`, data `data/gravelight/map00_ambience.json`), local
-VO (each co-op peer's sky is its own). Tier 1 squad lines, chance 100%, once per event.
+VO (each co-op peer's sky is its own). Tier 2 squad lines (rules.json player_category_priority: they queue behind a story line
+instead of being dropped), chance 100%, once per event.
 
 **`SKY_PLANE_DOWN`**: once per match from round 6, a plane is hit over the inn and goes down trailing smoke behind the
 hills (it mirrors GRAVELIGHT ONE's own fall). One random standing survivor.

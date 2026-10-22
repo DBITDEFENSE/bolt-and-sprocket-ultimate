@@ -379,7 +379,10 @@
   "DOWN": 2,
   "TEAM_DOWN": 2,
   "REVIVE": 2,
-  "REVIVED": 2
+  "REVIVED": 2,
+  "SKY_PLANE_DOWN": 2,
+  "WRECK_PILOT": 2,
+  "MIDNIGHT": 2
  },
  "squad_second_channel": [
   "TEAM_DOWN",
