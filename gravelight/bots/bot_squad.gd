@@ -57,6 +57,7 @@ func setup(map_root: MapRoot) -> void:
 	# handles every survivor's signal-driven categories in that survivor's voice at their body.
 	GLBus.round_started.connect(_on_round_started)
 	GLBus.powerup_spawned.connect(_on_powerup_spawned)
+	GLBus.player_downed.connect(_log_down)
 	if not brains.is_empty():
 		plates = BotPlates.new()
 		plates.name = "BotPlates"
@@ -422,6 +423,40 @@ func report_choke(bot: BotBrain, kind: String, pos: Vector3, seconds: float) -> 
 		pos.x, pos.y, pos.z, seconds, BotBrain.Mode.keys()[bot.mode], RoundManager.current_round])
 
 
+## Survival telemetry (dev / playtests): what the squad looked like when someone went down.
+var down_log: PackedStringArray = []
+
+
+func _log_down(pid: int) -> void:
+	var p: Player = player_by_id(pid)
+	if p == null or map == null or map.director == null:
+		return
+	var near3: int = 0
+	var near6: int = 0
+	var fast: int = 0
+	for z: Zombie in map.director.active_zombies():
+		var d: float = z.global_position.distance_to(p.global_position)
+		if d < 3.0:
+			near3 += 1
+		if d < 6.0:
+			near6 += 1
+			if z.speed >= 4.0:
+				fast += 1
+	var mates: PackedStringArray = []
+	for q: Player in standing():
+		if q != p:
+			mates.append("%s %.0fm" % [Net.display_name(q.player_id), q.global_position.distance_to(p.global_position)])
+	var b: BotBrain = _brain_of(pid)
+	var guns: PackedStringArray = []
+	if p.weapons != null:
+		for w: WeaponInstance in p.weapons.slots:
+			guns.append("%s %d/%d" % [w.id, w.mag, w.reserve])
+	down_log.append("r%d %s down at (%.0f,%.0f,%.0f): zombies <3m %d <6m %d (fast %d), %s, %s | standing: %s" % [RoundManager.current_round,
+		Net.display_name(pid), p.global_position.x, p.global_position.y, p.global_position.z, near3, near6, fast,
+		("mode %s" % BotBrain.Mode.keys()[b.mode]) if b != null else "human",
+		" ".join(guns), ", ".join(mates)])
+
+
 ## A power-up dropped: the nearest standing bot that sees it calls it out.
 func _on_powerup_spawned(_id: StringName, pos: Vector3) -> void:
 	var b: BotBrain = _nearest_standing_brain(pos)
@@ -471,6 +506,8 @@ func report() -> PackedStringArray:
 	out.append("squad: order %s, revives by bots %d, choke reports %d" % [command, revives_total(), choke_events.size()])
 	for e: String in choke_events.slice(0, 8):
 		out.append("  CHOKE " + e)
+	for e2: String in down_log.slice(maxi(0, down_log.size() - 12)):
+		out.append("  DOWN " + e2)
 	return out
 
 

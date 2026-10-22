@@ -130,7 +130,7 @@ class Wheel extends Control:
 		if wheel == null or wheel.state == null:
 			return
 		var c: Vector2 = get_viewport_rect().size * 0.5
-		var r: float = 150.0
+		var r: float = 175.0
 		var sel: int = wheel.state.selected()
 		var n: int = BotConfig.COMMANDS.size()
 		draw_circle(c, r + 8.0, Color(0.04, 0.03, 0.02, 0.62))
@@ -155,6 +155,8 @@ class Wheel extends Control:
 				var fs: int = 17
 				var w: float = font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
 				var lp: Vector2 = c + Vector2(cos(mid), sin(mid)) * (r * 0.66) + Vector2(-w * 0.5, fs * 0.35)
+				if absf(cos(mid)) > 0.7:   # left / right segments: keep the label clear of the hub
+					lp.x = c.x + 54.0 if cos(mid) > 0.0 else c.x - 54.0 - w
 				draw_string_outline(font, lp, label, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, 4, Color(0, 0, 0, 0.8))
 				draw_string(font, lp, label, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, Color(1.0, 0.93, 0.8) if i == sel else Color(0.93, 0.89, 0.8, 0.9))
 				if current:

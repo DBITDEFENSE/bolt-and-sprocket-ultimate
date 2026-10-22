@@ -9,7 +9,7 @@ extends CanvasLayer
 const OCCLUDE_HZ: float = 6.0
 const MAX_DISTANCE_M: float = 60.0
 const MASK_LOS: int = 1 | (1 << 8)   # world | doors (BotBrain.MASK_LOS)
-const PLATE_W: float = 112.0
+const PLATE_W: float = 128.0
 
 var squad: BotSquad = null
 var _canvas: Plates
@@ -122,7 +122,10 @@ class Plates extends Control:
 			a *= clampf((BotPlates.MAX_DISTANCE_M - d) / 8.0, 0.0, 1.0)
 			if a <= 0.01:
 				continue
-			_plate(p, cam.unproject_position(world), a)
+			var sp: Vector2 = cam.unproject_position(world)
+			if not get_viewport_rect().grow(150.0).has_point(sp):
+				continue   # off screen (and points near the camera plane project to huge coordinates)
+			_plate(p, sp, a)
 
 	func _plate(p: Player, at: Vector2, a: float) -> void:
 		var pid: int = p.player_id
@@ -130,17 +133,17 @@ class Plates extends Control:
 		var name_s: String = Net.display_name(pid)
 		var col: Color = Net.player_color(pid)
 		var perks: Array = PerkManager.owned(pid)
-		var cap_r: float = 8.0
-		var top: float = at.y - 40.0
+		var cap_r: float = 9.0
+		var top: float = at.y - 44.0
 		# backing
-		draw_rect(Rect2(at.x - w * 0.5, top, w, 38.0), Color(0.05, 0.04, 0.03, 0.55 * a))
-		draw_rect(Rect2(at.x - w * 0.5, top, 2.0, 38.0), Color(col, 0.9 * a))
+		draw_rect(Rect2(at.x - w * 0.5, top, w, 42.0), Color(0.05, 0.04, 0.03, 0.55 * a))
+		draw_rect(Rect2(at.x - w * 0.5, top, 2.0, 42.0), Color(col, 0.9 * a))
 		# name
-		var fs: int = 13
+		var fs: int = 15
 		var nw: float = font.get_string_size(name_s, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x if font != null else 0.0
 		if font != null:
-			draw_string_outline(font, Vector2(at.x - nw * 0.5, top + 13.0), name_s, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, 3, Color(0, 0, 0, 0.8 * a))
-			draw_string(font, Vector2(at.x - nw * 0.5, top + 13.0), name_s, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, Color(col.lightened(0.25), a))
+			draw_string_outline(font, Vector2(at.x - nw * 0.5, top + 14.0), name_s, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, 3, Color(0, 0, 0, 0.8 * a))
+			draw_string(font, Vector2(at.x - nw * 0.5, top + 14.0), name_s, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, Color(col.lightened(0.25), a))
 		# bottle caps, the bonus perk first
 		var order: Array = []
 		var bonus: StringName = PerkManager.bonus_perk(pid)
@@ -153,9 +156,9 @@ class Plates extends Control:
 		var gap: float = cap_r * 2.0 + 3.0
 		var x0: float = at.x - (float(n - 1) * gap) * 0.5
 		for i: int in n:
-			PerkCap.draw_cap(self, Vector2(x0 + float(i) * gap, top + 24.0), cap_r, order[i], order[i] == bonus, cap_font, a)
+			PerkCap.draw_cap(self, Vector2(x0 + float(i) * gap, top + 26.0), cap_r, order[i], order[i] == bonus, cap_font, a)
 		# health / bleed-out bar
-		var bar: Rect2 = Rect2(at.x - w * 0.5 + 6.0, top + 33.0, w - 12.0, 3.5)
+		var bar: Rect2 = Rect2(at.x - w * 0.5 + 6.0, top + 37.0, w - 12.0, 3.5)
 		draw_rect(bar, Color(0, 0, 0, 0.7 * a))
 		var frac: float = clampf(p.health_fraction(), 0.0, 1.0)
 		var bcol: Color = Color(0.45, 0.78, 0.36, a) if frac > 0.5 else (Color(0.92, 0.72, 0.25, a) if frac > 0.25 else Color(0.9, 0.25, 0.18, a))

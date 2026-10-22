@@ -125,7 +125,7 @@ func _update_list(s: NetMatch) -> void:
 			l.add_theme_constant_override("outline_size", 4)
 			l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.75))
 			var hb: HBoxContainer = HBoxContainer.new()
-			hb.add_theme_constant_override("separation", 8)
+			hb.add_theme_constant_override("separation", 16)
 			hb.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			_list.add_child(hb)
 			hb.add_child(l)
