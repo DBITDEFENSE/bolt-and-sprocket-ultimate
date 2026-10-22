@@ -536,7 +536,7 @@ func _trace(origin: Vector3, dir: Vector3, w: WeaponInstance, hits: Dictionary) 
 			if shootable != null and brain.may_touch_quest():
 				# quest shootables (bells, the drummer) are egg steps: only the local-AI planner bot does those
 				WeaponHolder.notify_shot(shootable, w.id, w.upgraded, player.player_id)
-			Effects.impact(pos, res["normal"])
+			Effects.impact(pos, res["normal"], "", col)
 			break
 	return last_hit
 
