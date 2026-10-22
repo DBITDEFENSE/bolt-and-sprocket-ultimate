@@ -122,7 +122,7 @@ func use_holder(holder: WeaponHolder, user_id: int, payer_id: int, price_mult: f
 	if cooldown_left(user_id) > 0.0:
 		return &"cooldown"
 	var w: WeaponInstance = q["weapon"]
-	var item: StringName = StringName(String(w.base_id()) + "_box_ammo") if bool(q["refill_weapon"]) else &"ammo_box_grenades"
+	var item: StringName = StringName(String(w.id) + "_box_ammo") if bool(q["refill_weapon"]) else &"ammo_box_grenades"
 	if not Economy.spend(payer_id, item, int(q["price"])):
 		return &"no_scrip"
 	if bool(q["refill_weapon"]):
