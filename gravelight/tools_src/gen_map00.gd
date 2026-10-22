@@ -433,6 +433,10 @@ const MACHINE_FOOTPRINTS: Dictionary = {
 ## crate spots: [name, position, yaw, can_start]
 const CRATES: Array = [["Hearth", Vector3(22.9, 0, 14.0), 90.0, true], ["GuestBed", Vector3(22.0, UP_Y, 0.8), 180.0, false],
 	["TackRoom", Vector3(22.9, 0, 31.5), 90.0, true], ["Well", Vector3(13.5, 0, 42.0), 90.0, false]]
+## Ammo boxes (Update 02 section 4, T-049): [name, floor position, yaw so local -Z faces the room]. Behind the bar
+## against the back shelf at the alcove's dead end (clear of Alix's trapdoor at 6.6, 5.6 and the alcove's mouth at
+## the north end), and on the stable's west wall under the hayloft between the trench-gun chalk and the yard door.
+const AMMO_BOXES: Array = [["Taproom", Vector3(5.34, 0, 7.3), -90.0], ["Stable", Vector3(6.48, 0, 32.0), -90.0]]
 ## the cellar's hanging bulbs (bulb glass position; the power lights sit just under them): one pool per machine row
 const CELLAR_BULBS: Array = [Vector3(27.0, CELLAR_Y + 2.55, 22.5), Vector3(33.0, CELLAR_Y + 2.55, 22.5),
 	Vector3(26.5, CELLAR_Y + 2.55, 27.5), Vector3(33.5, CELLAR_Y + 2.55, 27.5), Vector3(30.35, CELLAR_Y + 2.55, 28.7)]
@@ -453,6 +457,10 @@ func build_nav_blocks() -> void:
 		var half: Vector3 = Vector3(0.7, 0, 0.35) if absf(float(cr[2])) != 90.0 else Vector3(0.35, 0, 0.7)
 		var p: Vector3 = cr[1]
 		box(geo, "NavBlock_Crate", p - half, p + half + Vector3(0, 0.75, 0), "metal", true, false)
+	for ab: Array in AMMO_BOXES:
+		var ah: Vector3 = Vector3(0.52, 0, 0.3) if absf(float(ab[2])) != 90.0 else Vector3(0.3, 0, 0.52)
+		var ap: Vector3 = ab[1]
+		box(geo, "NavBlock_AmmoBox", ap - ah, ap + ah + Vector3(0, 0.62, 0), "metal", true, false)
 
 
 func build_cellar() -> void:
@@ -1633,6 +1641,11 @@ func build_gameplay() -> void:
 		cr.rotation.y = deg_to_rad(float(c[2]))
 		gameplay.add_child(cr)
 		ci += 1
+	for ab2: Array in AMMO_BOXES:
+		var ammo: Node3D = _scripted(Node3D.new(), "res://gravelight/world/ammo_box.gd", "AmmoBox_" + str(ab2[0]), {"box_name": str(ab2[0]).to_lower()})
+		ammo.position = ab2[1]
+		ammo.rotation.y = deg_to_rad(float(ab2[2]))
+		gameplay.add_child(ammo)
 	var radio: Node3D = _scripted(Node3D.new(), "res://gravelight/world/field_radio.gd", "FieldRadio", {})
 	radio.position = Vector3(4.8, 2.0, 4.9)
 	radio.rotation.y = deg_to_rad(-90)

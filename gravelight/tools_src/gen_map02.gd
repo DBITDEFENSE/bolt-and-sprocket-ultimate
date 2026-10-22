@@ -119,6 +119,14 @@ const DOORS: Array = [
 	["Door_Pumps", "door_pumps", "F_LOWERPENS", [], "", 1500, "Lower Pens", Vector3(49, 0, 42), 0.0, 3.0, false],
 	["Door_Signal", "door_signal", "G_SIGNAL", [], "", 2500, "Signal Tower", Vector3(42, TY, 34), 90.0, 2.0, true],
 ]
+## Ammo boxes (Update 02 section 4, T-049): [name, floor pos, yaw so local -Z faces the room]. Four, spread over the
+## route out of the quay: the Cannery's west wall between its two windows; the Workshop's east wall north of the
+## warhead cage; the Pen Hall's north apron by the west pier; the Pen Hall's east apron under the east catwalk. All
+## 4 m+ from the perk machines and the Crucible (in the boat), clear of doors, windows and the trolley track.
+const AMMO_BOXES: Array = [
+	["Cannery", Vector3(-29.52, 0, 18.0), -90.0], ["Workshop", Vector3(61.5, 0, 13.0), 90.0],
+	["PenHallWest", Vector3(0.0, 0, 33.33), 180.0], ["PenHallEast", Vector3(51.52, 0, 77.0), 90.0],
+]
 
 ## Greybox colour keys -> material library keys.
 const MAT_MAP: Dictionary = {
@@ -180,6 +188,9 @@ func _initialize() -> void:
 	build_lowerpens()
 	build_tower()
 	build_closets()
+	for ab: Array in AMMO_BOXES:   # the ammo boxes' footprints, so the navmesh is cut round them (hidden: NavBlock*)
+		var ah: Vector3 = Vector3(0.52, 0, 0.3) if absf(float(ab[2])) != 90.0 else Vector3(0.3, 0, 0.52)
+		box(geo, "NavBlock_Ammo_" + str(ab[0]), (ab[1] as Vector3) - ah, (ab[1] as Vector3) + ah + Vector3(0, 0.62, 0), "metal")
 
 
 func _process(_delta: float) -> bool:
@@ -2186,6 +2197,8 @@ func build_gameplay() -> void:
 	_node("res://gravelight/world/ballast_hook.gd", "BallastHook", {"config_table": "map02", "flag": StringName(str(bcfg.get("flag", "ballast_loaded")))},
 		Vector3(float(hk[0]), float(hk[1]), float(hk[2])), 0.0)
 	_node("res://gravelight/world/crucible.gd", "Crucible", {"needs_power": true}, Vector3(7.0, SY, 40.0), 180.0)
+	for ab2: Array in AMMO_BOXES:
+		_node("res://gravelight/world/ammo_box.gd", "AmmoBox_" + str(ab2[0]), {"box_name": str(ab2[0]).to_snake_case()}, ab2[1], float(ab2[2]))
 	var cart: Node3D = _node("res://gravelight/world/trap_ore_cart.gd", "Trap_Trolley", {"track_start": Vector3(0, 0, 0), "track_end": Vector3(0, 0, 26)}, Vector3(34, 0, 27), 90.0)
 	_node("res://gravelight/world/trap_lever.gd", "Lever_Trolley", {"trap_path": NodePath("../" + cart.name), "trap_id": &"ore_cart"}, Vector3(48.0, 0, 29.6), 0.0)
 	var wire: Node3D = _node("res://gravelight/world/trap_live_wire.gd", "Trap_Grille", {"size": Vector3(6.0, 2.6, 0.6)}, Vector3(49, LY, 50.9), 0.0)

@@ -233,6 +233,13 @@
     ],
     "weapon_buffer_scrip": 150,
     "ammo_below_frac": 0.35,
+    "ammo_box": {
+      "_doc": "Update 02 section 4: a bot refills its driest carried gun (reserve under below_frac) at the nearest ammo box when its own Scrip covers the box price plus buffer_scrip. priority is the errand score before distance (wall-buy ammo is 60).",
+      "enabled": true,
+      "below_frac": 0.35,
+      "buffer_scrip": 100,
+      "priority": 62.0
+    },
     "perk_wishlist": [
       "hawkeye_brandy",
       "second_wind",

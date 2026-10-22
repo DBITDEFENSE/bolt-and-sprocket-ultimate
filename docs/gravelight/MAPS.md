@@ -29,6 +29,28 @@ Each plan is roughly to scale: **1 character ≈ 1 m** horizontally unless noted
 
 ---
 
+## Ammo boxes, all maps (Update 02 section 4, DECISIONS T-049)
+
+An olive-drab crate with a lantern on top (`gravelight/world/ammo_box.gd`). Hold use to refill the gun in your hands
+and your lethal grenades (not tacticals): 250 Scrip, 2,500 for a Crucible-upgraded gun, 1,000 / 4,000 for wonder
+weapons; 250 for grenades alone; nothing when full; 3 s per-player cooldown (economy.json `ammo_box`). Placed by each
+map's generator (`AMMO_BOXES`), 4 m+ from every perk machine and the Crucible, flush against a bare wall:
+
+| Map | Box | Where (floor position, facing) |
+|---|---|---|
+| 0 Crossroads Inn | Taproom | behind the bar, against the back shelf at the alcove's dead end (5.3, 0, 7.3), facing east; clear of Alix's trapdoor (6.6, 5.6) |
+| 0 | Stable | west wall under the hayloft, between the Trench Gun chalk and the yard door (6.5, 0, 32.0), facing east |
+| 1 Kaltenbrunn | Rail Yard | west wall between the two doors (40.5, 0, 32.5), facing east |
+| 1 | Barracks | bunk room north wall, beside the Trench Gun chalk (-1.6, 0, 32.5), facing south |
+| 1 | Salt Chapel | east wall between a pilaster and the side-altar niche (39.4, -12, 78.5), facing west |
+| 1 | Lab Wing | intake room (south middle), east wall (83.5, -12, 95), facing west |
+| 2 Totenhafen | Cannery | west wall between the two windows (-29.5, 0, 18), facing east |
+| 2 | Workshop | east wall north of the warhead cage (61.5, 0, 13), facing west |
+| 2 | Pen Hall west | north apron by pier 1 (0, 0, 33.3), facing south |
+| 2 | Pen Hall east | east apron under the catwalk (51.5, 0, 77), facing west |
+
+Morgenrot and Helvetia Works get 4 each when they are built.
+
 # MAP 0 — "CROSSROADS INN"
 
 **Story question answered:** *Who shot us down, and who's talking to us?* Something that isn't flak brought the plane down, and a man named Glasmacher is on the radio.
