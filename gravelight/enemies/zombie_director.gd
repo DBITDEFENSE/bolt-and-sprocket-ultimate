@@ -412,9 +412,9 @@ func _set_special_fx(on: bool) -> void:
 			tw2.tween_property(_env, "fog_density", float(_env_base["fog"]), 3.0)
 			tw2.parallel().tween_property(_env, "volumetric_fog_density", float(_env_base["vol"]), 3.0)
 		for e: Array in _lights:
+			if not is_instance_valid(e[0]):
+				continue   # freed during the round (a muzzle flash, a dropped prop): a typed read of it would error
 			var l2: OmniLight3D = e[0]
-			if not is_instance_valid(l2):
-				continue
 			var base: float = float(e[1])
 			if l2.has_meta("energy") and GameState.power_on:
 				base = float(l2.get_meta("energy"))
