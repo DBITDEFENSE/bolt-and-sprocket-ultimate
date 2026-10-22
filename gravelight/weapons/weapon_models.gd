@@ -1474,9 +1474,10 @@ func _w_ashlight() -> void:
 
 
 func _w_totenglocke() -> void:
-	tube(0.135, 0.07, 0.22, Vector3(0, 0.06, -0.34), "bronze", "z", null, 24)                                    # bell, mouth forward
-	ring(0.125, 0.145, Vector3(0, 0.06, -0.45), "bronze")
-	tube(0.03, 0.03, 0.08, Vector3(0, 0.06, -0.2), "bronze")
+	var bell: Node3D = group("Bell", Vector3.ZERO)                                                                # vibrates after a toll (T-048)
+	tube(0.135, 0.07, 0.22, Vector3(0, 0.06, -0.34), "bronze", "z", bell, 24)                                    # bell, mouth forward
+	ring(0.125, 0.145, Vector3(0, 0.06, -0.45), "bronze", "z", bell)
+	tube(0.03, 0.03, 0.08, Vector3(0, 0.06, -0.2), "bronze", "z", bell)
 	prof(P([[0.1, 0.0], [-0.22, 0.0], [-0.22, 0.04], [0.1, 0.04]]), 0.05, "wood")
 	box(Vector3(0.3, 0.03, 0.03), Vector3(0, 0.17, -0.3), "blued")
 	box(Vector3(0.03, 0.12, 0.03), Vector3(-0.14, 0.11, -0.3), "blued")

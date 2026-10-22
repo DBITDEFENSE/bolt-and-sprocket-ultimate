@@ -959,6 +959,124 @@ def gen_melee_lethal():
         emit("weapon_overheat", f"sfx/weapons/overheat_{i:02d}", x, -3.0, bus="SFX", volume_db=-5.0, max_voices=1)
 
 
+def shimmer(r, f: float, sec: float, decay: float = 0.6, count: int = 9):
+    """Metallic shimmer: high inharmonic partials with fast beating, the 'zing' on top of a struck bell."""
+    n = N(sec)
+    t = tax(n)
+    y = np.zeros(n)
+    for k in range(count):
+        fr = f * (2.76 + 1.37 * k + r.uniform(-0.08, 0.08))
+        if fr > SR * 0.45:
+            break
+        beat = r.uniform(3.0, 11.0)
+        y += (0.8 / (1 + 0.35 * k)) * np.sin(2 * np.pi * fr * t + r.uniform(0, 6.28)) \
+            * (0.6 + 0.4 * np.sin(2 * np.pi * beat * t)) * np.exp(-t / (decay / (1 + 0.25 * k)))
+    return y * attack(n, 0.001)
+
+
+def toll_layers(r, f: float, sec: float, ring_out: float, body: float = 1.0, sub: float = 1.0, shim: float = 0.5,
+                strike: float = 1.0):
+    """Update 02 Totenglocke voice: low body (a long-decay bell an octave down + a sub thump), the bell itself,
+    a metallic shimmer and a ring-out tail of `ring_out` seconds."""
+    x = zeros(sec)
+    place(x, bell(r, f * 0.5, sec, decay=ring_out * 1.2, strike=0.0, bright=0.5), 0.0, 0.9 * body)
+    place(x, bell(r, f, sec, decay=ring_out, strike=1.4 * strike, bright=1.1), 0.0, 1.0)
+    place(x, shimmer(r, f, min(sec, 2.5), decay=0.7), 0.0, shim)
+    place(x, kick(r, 1.0, 85, 34, 0.45, min(sec, 1.6)), 0.0, 0.9 * sub)
+    place(x, nrm(lp(white(r, 0.6), 500)) * expenv(N(0.6), 0.12), 0.0, 0.35 * sub)
+    return sat(x, 1.25)
+
+
+def gen_totenglocke_v2():
+    """Update 02 (T-048): the rebuilt Totenglocke. Quick toll, Great Toll, wall echo, wind-up hum (loop), the
+    winding reload, Mitternacht's midnight chime, the shatter, a bronze shard pickup and the Bell Dome."""
+    for i in variants(3):
+        r = rng_for(f"tgtoll{i}")
+        x = toll_layers(r, hz("A2") * r.uniform(0.985, 1.015), 4.2, 3.0)
+        emit("totenglocke_toll", f"sfx/weapons/totenglocke_toll_{i:02d}", reverb(x, r, 2.4, 0.3, 3500, 0.02)[:N(4.2)], -0.5,
+             bus="SFX", volume_db=0.0, pitch=[0.98, 1.02], max_voices=3, attenuation="loud")
+    for i in variants(2):
+        r = rng_for(f"tggreat{i}")
+        dur = 6.0
+        x = toll_layers(r, hz("F2") * r.uniform(0.99, 1.01), dur, 3.6, body=1.3, sub=1.6, shim=0.8, strike=1.5)
+        place(x, kick(r, 1.0, 60, 24, 0.9, 2.5), 0.0, 1.0)                                       # the pressure wave
+        place(x, nrm(bp(white(r, 1.4), 120, 2400)) * expenv(N(1.4), 0.35), 0.0, 0.45)           # air shoved aside
+        place(x, bell(r, hz("F3") * 1.003, dur, decay=2.4, strike=0.6), 0.012, 0.45)              # a doubled strike
+        emit("totenglocke_great", f"sfx/weapons/totenglocke_great_{i:02d}", reverb(sat(x, 1.4), r, 3.2, 0.4, 3000, 0.03)[:N(dur)],
+             -0.3, bus="SFX", volume_db=1.0, pitch=[0.99, 1.01], max_voices=2, attenuation="loud")
+    r = rng_for("tgecho")
+    x = toll_layers(r, hz("F2"), 4.0, 2.4, body=1.0, sub=0.4, shim=0.2, strike=0.6)
+    x = lp(x, 1400) + 0.15 * x
+    emit("totenglocke_echo", "sfx/weapons/totenglocke_echo_01", reverb(x, r, 3.5, 0.9, 1800, 0.05)[:N(4.0)], -6.0,
+         bus="SFX", volume_db=-4.0, max_voices=2, attenuation="loud")
+    # the wind-up hum: steady bell partials with slow beating, whole cycles per loop (pitch rises in code)
+    loop = 2.0
+    t = tax(N(loop))
+    f0 = hz("A3")
+    y = np.zeros(N(loop))
+    for ratio, amp in [(0.5, 0.8), (1.0, 1.0), (1.183, 0.45), (1.506, 0.35), (2.0, 0.4), (2.662, 0.18), (3.011, 0.12)]:
+        fr = periodic(f0 * ratio, loop)
+        fb = periodic(f0 * ratio + 1.5, loop)
+        y += amp * (np.sin(2 * np.pi * fr * t) + 0.5 * np.sin(2 * np.pi * fb * t))
+    y += 0.25 * np.sin(2 * np.pi * periodic(55.0, loop) * t)
+    emit("totenglocke_hum", "sfx/weapons/totenglocke_hum_01", y * 0.3, -6.0, loop=True, bus="SFX", volume_db=-4.0, max_voices=2)
+    # the winding reload: a ratchet that runs six turns, a spring tightening under it, and the pawl home
+    r = rng_for("tgwind")
+    dur = 2.6
+    x = zeros(dur)
+    clicks = 30
+    for k in range(clicks):
+        u = k / clicks
+        tt = 0.25 + 1.95 * (u * u * (3 - 2 * u)) ** 1.0
+        place(x, mech_click(r, 1500 + 500 * u + 80 * (k % 3), 0.05, 0.003), tt, 0.45 + 0.25 * (k % 2))
+    spring = nrm(bp(white(r, 2.2), 600, 2400)) * np.linspace(0.05, 0.3, N(2.2)) * (0.6 + 0.4 * np.abs(smooth_rand(r, 2.2, 22)))
+    place(x, spring, 0.25, 0.4)
+    place(x, mech_click(r, 900, 0.08, 0.006), 2.35, 1.0)
+    place(x, thunk(r, 180, 0.05, 0.2), 2.36, 0.7)
+    place(x, bell(r, hz("A4"), 0.9, decay=0.5, strike=0.2, bright=1.2), 2.37, 0.18)              # the bell answers
+    emit("totenglocke_wind", "sfx/weapons/totenglocke_wind_01", reverb(x, r, 0.35, 0.1), -2.0, bus="SFX", volume_db=-3.0, max_voices=1)
+    # Mitternacht: a midnight clock chime layered on every toll
+    for i in variants(2):
+        r = rng_for(f"tgmid{i}")
+        dur = 4.5
+        x = zeros(dur)
+        place(x, bell(r, hz("E4") * r.uniform(0.995, 1.005), dur, decay=2.2, strike=0.5, bright=1.4), 0.0, 1.0)
+        place(x, bell(r, hz("B4"), dur - 0.1, decay=1.8, strike=0.3, bright=1.2), 0.09, 0.55)
+        place(x, shimmer(r, hz("E5"), 2.0, decay=0.9), 0.0, 0.35)
+        emit("totenglocke_midnight", f"sfx/weapons/totenglocke_midnight_{i:02d}", reverb(x, r, 2.8, 0.45, 6000, 0.03)[:N(dur)], -1.0,
+             bus="SFX", volume_db=-2.0, pitch=[0.99, 1.01], max_voices=3, attenuation="loud")
+    # shatter: bronze and frozen flesh coming apart
+    for i in variants(3):
+        r = rng_for(f"tgshat{i}")
+        dur = 0.9
+        x = zeros(dur)
+        for k in range(14):
+            place(x, mech_click(r, r.uniform(2500, 7000), 0.04, 0.002, q=10), r.uniform(0.0, 0.18), r.uniform(0.3, 0.8))
+        place(x, nrm(hp(white(r, 0.5), 1500)) * expenv(N(0.5), 0.06), 0.0, 0.6)
+        place(x, thunk(r, 140, 0.05, 0.3), 0.0, 0.8)
+        place(x, shimmer(r, 900, 0.8, decay=0.25), 0.01, 0.3)
+        emit("totenglocke_shatter", f"sfx/weapons/totenglocke_shatter_{i:02d}", reverb(x, r, 0.6, 0.2, 7000), -1.0,
+             bus="SFX", volume_db=-2.0, pitch=[0.9, 1.1], max_voices=4, attenuation="world")
+    r = rng_for("tgshard")
+    x = zeros(0.9)
+    place(x, bell(r, hz("A5"), 0.8, decay=0.4, strike=0.2, bright=1.3), 0.0, 0.8)
+    place(x, bell(r, hz("E6"), 0.7, decay=0.3, strike=0.1, bright=1.0), 0.06, 0.5)
+    emit("totenglocke_shard", "sfx/weapons/totenglocke_shard_01", reverb(x, r, 0.5, 0.2, 8000), -3.0, bus="SFX", volume_db=-3.0, max_voices=2)
+    # the Bell Dome: a plant (a struck ground plate) and a low, beating resonance bed (loop)
+    r = rng_for("tgdomeplant")
+    x = toll_layers(r, hz("D2"), 3.0, 2.0, body=1.2, sub=1.2, shim=0.3, strike=0.8)
+    emit("totenglocke_dome_plant", "sfx/weapons/totenglocke_dome_plant_01", reverb(x, r, 2.0, 0.35, 2500)[:N(3.0)], -1.0,
+         bus="SFX", volume_db=0.0, max_voices=2, attenuation="loud")
+    loop = 3.0
+    t = tax(N(loop))
+    y = np.zeros(N(loop))
+    for fr, amp in [(hz("D2"), 1.0), (hz("D3"), 0.5), (hz("A3"), 0.3), (hz("D4") * 1.183, 0.15)]:
+        y += amp * (np.sin(2 * np.pi * periodic(fr, loop) * t) + 0.7 * np.sin(2 * np.pi * periodic(fr + 1.0, loop) * t))
+    y *= 0.8 + 0.2 * np.sin(2 * np.pi * periodic(2.0, loop) * t)
+    emit("totenglocke_dome", "sfx/weapons/totenglocke_dome_01", y * 0.3, -5.0, loop=True, bus="SFX", volume_db=-3.0, max_voices=2,
+         attenuation="world")
+
+
 def gen_wonders():
     # Totenglocke: crank ratchet + the RING (a huge bell plus a shock front)
     r = rng_for("tgcrank")
@@ -974,6 +1092,7 @@ def gen_wonders():
         x = sat(1.0 * b + 0.8 * shock, 1.3)
         emit("totenglocke_ring", f"sfx/weapons/totenglocke_ring_{i:02d}", reverb(x, r, 3.0, 0.35, 3000, 0.03)[:N(dur)], -0.5,
              bus="SFX", volume_db=0.0, pitch=[0.99, 1.01], max_voices=2, attenuation="loud")
+    gen_totenglocke_v2()
     # Siren Gramophone: wind-up, needle drop, and the scratchy 78 rpm record loop
     r = rng_for("gwind")
     x = zeros(1.6)

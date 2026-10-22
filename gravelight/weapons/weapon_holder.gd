@@ -73,8 +73,7 @@ var _burst_left: int = 0
 var _burst_cd: float = 0.0
 var _ground_t: float = 0.0
 var _fired_this_frame: bool = false
-var _crank_t: float = 0.0          # Totenglocke: crank progress (seconds held)
-var _cranked: bool = false
+var _bell: Totenglocke = null      # Totenglocke wind-and-toll logic (gravelight/weapons/totenglocke.gd), made on first use
 var _bell_crank: Node3D = null
 var _fire_keys: Dictionary = {}    # base weapon id -> fire sound key (cached: "fire_<id>" or the class key)
 var _fire_buffer: float = 0.0      # a semi-auto click that arrived slightly early fires as soon as it can
@@ -712,6 +711,9 @@ func _fire_stream(w: WeaponInstance) -> void:
 # ---------------------------------------------------------------- upgraded-weapon behavior (Crucible)
 
 func _alt_fire(w: WeaponInstance) -> void:
+	if w.data.has("bell"):
+		bell_logic().alt_fire(w)   # the Bell Dome
+		return
 	if w.has_property("volley"):
 		_volley(w)
 		return
@@ -933,74 +935,17 @@ static func notify_shot(target: Node, weapon_id: StringName, upgraded: bool, by_
 	GLBus.shootable_hit.emit(tid, weapon_id, upgraded, by_player)
 
 
-# ---------------------------------------------------------------- Totenglocke (crank, then ring)
+# ---------------------------------------------------------------- Totenglocke (wind and toll, T-048)
 
+## The bell's logic lives in Totenglocke (tap = toll, hold = wind for the Great Toll, alt = Bell Dome).
 func _tick_bell(w: WeaponInstance, delta: float, held: bool, pressed: bool) -> void:
-	var b: Dictionary = w.data["bell"]
-	if w.mag <= 0:
-		_crank_t = 0.0
-		_cranked = false
-		if pressed:
-			AudioDirector.play_2d("gun_dry", -4.0)
-			start_reload()
-		return
-	if held and not _reloading:
-		_crank_t += delta
-		if _bell_crank != null:
-			_bell_crank.rotation.x += delta * 14.0
-		if not _cranked and _crank_t >= float(b["crank_seconds"]):
-			_cranked = true
-			AudioDirector.play_2d("totenglocke_crank", -2.0)
-	elif not held:
-		if _cranked:
-			_ring(w)
-		_crank_t = 0.0
-		_cranked = false
+	bell_logic().tick(w, delta, held, pressed)
 
 
-static func bell_damage(b: Dictionary, base_damage: float, dist: float) -> float:
-	var full: float = float(b.get("full_radius", 4.0))
-	var rng: float = float(b.get("range", 8.0))
-	if dist <= full:
-		return base_damage
-	return base_damage * lerpf(1.0, float(b.get("edge_mult", 0.6)), clampf((dist - full) / maxf(0.01, rng - full), 0.0, 1.0))
-
-
-func _ring(w: WeaponInstance) -> void:
-	var b: Dictionary = w.data["bell"]
-	w.mag -= 1
-	_fired_this_frame = true
-	var cam: Camera3D = player.camera
-	var fwd: Vector3 = -cam.global_basis.z
-	var cos_cone: float = cos(deg_to_rad(float(b["cone_deg"]) * 0.5))
-	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
-	var pid: int = player.player_id
-	for z: Zombie in _director_zombies():
-		var chest: Vector3 = z.global_position + Vector3.UP * 1.0
-		var to_z: Vector3 = chest - cam.global_position
-		var d: float = to_z.length()
-		if d > float(b["range"]) or (d > 1.2 and fwd.dot(to_z / maxf(d, 0.01)) < cos_cone):
-			continue
-		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(cam.global_position, chest, 1 | (1 << 8))
-		if not space.intersect_ray(q).is_empty():
-			continue
-		var killed: bool = z.take_damage(bell_damage(b, w.f("damage", 3000.0), d), &"torso", w.id, pid, &"wonder", true)
-		GLBus.enemy_hit_feedback.emit(pid, killed, false)
-		for i: int in 3:
-			Effects.blood(chest + Vector3(randf_range(-0.3, 0.3), randf_range(-0.5, 0.5), randf_range(-0.3, 0.3)), to_z)
-	_vm_kick(2.0)
-	player.add_recoil(3.0)
-	player.set("_shake", 0.6)
-	var ring_key: String = str(b.get("ring_sound", "totenglocke_ring"))
-	AudioDirector.play_2d(ring_key, 2.0, 0.0)
-	if w.upgraded:
-		# Mitternacht: the double ring.
-		get_tree().create_timer(0.14).timeout.connect(func() -> void: AudioDirector.play_2d(ring_key, -1.0, 0.0))
-	Effects.explosion(cam.global_position + fwd * 3.0, float(b["range"]) * 0.3)
-	_on_shot_fx(0.08)
-	if w.mag <= 0 and w.reserve > 0:
-		get_tree().create_timer(0.4).timeout.connect(start_reload)
-	_ammo_warnings(w)
+func bell_logic() -> Totenglocke:
+	if _bell == null:
+		_bell = Totenglocke.new(self)
+	return _bell
 
 
 func start_reload() -> void:
@@ -1792,6 +1737,8 @@ func _animate(delta: float, sprinting: bool) -> void:
 		pos += Vector3(0.02, -0.17, 0.05) * k
 		rot += Vector3(-0.85, 0.15, 0.35) * k
 	_reset_parts()
+	if _bell != null:
+		_bell.pose_parts(_bell_crank, _model)   # wind-up crank spin, the bell's ring-out vibration
 	var lh_override: Variant = null      # support-hand target in gun space, if a reload moves it
 	var tilt: float = 0.0
 	if _reloading and w != null:
@@ -2276,7 +2223,5 @@ func _animate_reload(p: float) -> Variant:
 				valve.rotation.z = TAU * 1.5 * _seg(p, 0.2, 0.8)
 				return lh_home.lerp(valve.position + Vector3(-0.03, 0.0, 0.0), _seg(p, 0.05, 0.2) * (1.0 - _seg(p, 0.85, 0.98)))
 		"bell":
-			var crank: Node3D = _part("Crank")
-			if crank != null:
-				crank.rotation.x = TAU * 3.0 * p
+			return bell_logic().reload_hand(p, _part("Crank"), lh_home)   # the crank IS the reload
 	return null
