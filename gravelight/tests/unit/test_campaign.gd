@@ -189,6 +189,17 @@ func test_restore_account_sets_scrip_and_perks() -> void:
 	PerkManager.reset_match()
 
 
+func test_bot_bonus_perk_carries_over() -> void:
+	Economy.reset([1, 2] as Array[int])
+	PerkManager.reset_match()
+	Campaign.restore_account(2, {"scrip": 100, "perks": ["ironhide_stout", "marathon_malt"], "bonus_perk": "marathon_malt"})
+	assert_eq(PerkManager.bonus_perk(2), &"marathon_malt", "the bot keeps its trait across maps")
+	assert_eq(PerkManager.owned(2), [&"ironhide_stout", &"marathon_malt"])
+	Campaign.restore_account(1, {"scrip": 100, "perks": ["ironhide_stout"], "bonus_perk": ""})
+	assert_eq(PerkManager.bonus_perk(1), &"", "humans have none")
+	PerkManager.reset_match()
+
+
 func test_arriving_only_for_the_carried_target() -> void:
 	Campaign.begin()
 	Campaign.carry = {"to": "map01_kaltenbrunn"}
