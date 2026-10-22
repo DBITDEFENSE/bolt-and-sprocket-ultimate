@@ -41,6 +41,13 @@ var map_key: String = ""
 ## --trace=N: every N game seconds, one status line per bot (action, top scores, gun, threat) and its task.
 var trace_s: float = 0.0
 var _trace_t: float = 0.0
+## --orders=N: every N game seconds the scripted player gives the squad a command-wheel order (cycling follow,
+## hold, train, repair, revive, buy_perks), so BotMetrics measures the command response time. Off by default
+## (the baseline had no orders).
+var orders_s: float = 0.0
+var _order_t: float = 0.0
+var _order_i: int = 0
+const SOAK_ORDERS: Array[StringName] = [&"hold", &"follow", &"train", &"repair", &"revive", &"buy_perks"]
 
 var _run: int = 0
 var _map: MapRoot = null
@@ -78,6 +85,8 @@ func _ready() -> void:
 			map_key = a.substr(6)
 		elif a.begins_with("--trace="):
 			trace_s = float(a.substr(8))
+		elif a.begins_with("--orders="):
+			orders_s = float(a.substr(9))
 		elif a.begins_with("--loco="):
 			BotLocomotion.force_mode = a.substr(7)   # U03 section 3: v1 / v2 against bots.json locomotion
 	if not ["player3", "bots3", "cousins", "kaltenbrunn"].has(scenario):
@@ -142,6 +151,13 @@ func _physics_process(delta: float) -> void:
 	_last_us = now
 	if _dummy != null:
 		_dummy.call("tick", delta)
+	if orders_s > 0.0 and _map.squad != null and _map.player != null and not _map.player.spectating:
+		_order_t += delta
+		if _order_t >= orders_s:
+			_order_t = 0.0
+			var o: StringName = SOAK_ORDERS[_order_i % SOAK_ORDERS.size()]
+			_order_i += 1
+			_map.squad.set_command(o, _map.player.global_position if o == &"hold" else Vector3.INF)
 	if trace_s > 0.0 and _map.squad != null:
 		_trace_t -= delta
 		if _trace_t <= 0.0:
