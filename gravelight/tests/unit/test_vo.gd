@@ -206,3 +206,37 @@ func test_banter_plays_once_and_rules_exist() -> void:
 	GLVO.advance(60.0)
 	GLVO.stop_all()
 	assert_true(GLVO._played_once.has("BNT_DUT_PEG_04"), "exchange marked once per match")
+
+
+func test_team_down_never_picks_the_bot_squads_claimed_reviver() -> void:
+	# T-059: a bot squad names the reviver (blackboard "revive:<pid>") long before that bot starts the hold; the
+	# TEAM_DOWN speaker, picked one second after the down, must already leave it out.
+	var fake: GDScript = GDScript.new()
+	fake.source_code = "extends Node\nvar player_id: int = 0\nvar spectating: bool = false\nvar downed: bool = false\n"
+	fake.reload()
+	var mates: Array[Node] = []
+	for pid: int in [7, 8, 9]:
+		var n: Node = Node.new()
+		n.set_script(fake)
+		n.set("player_id", pid)
+		n.set("downed", pid == 7)
+		n.add_to_group(&"players")
+		add_child_autofree(n)
+		mates.append(n)
+	var squad_script: GDScript = GDScript.new()
+	squad_script.source_code = "extends Node\nvar blackboard: BotBlackboard = BotBlackboard.new()\n"
+	squad_script.reload()
+	var sq: Node = Node.new()
+	sq.set_script(squad_script)
+	sq.add_to_group(&"bot_squad")
+	add_child_autofree(sq)
+	(sq.get("blackboard") as BotBlackboard).claim("revive:7", 9, "revive", 0.0)
+	for i: int in 20:
+		GLVO._bags.clear()
+		var item: Dictionary = {"id": &"", "priority": 2, "speaker": &"", "pid": -1,
+			"resolve": {"category": "TEAM_DOWN", "downed": 7, "exclude": [7]}}
+		assert_true(GLVO._resolve_item(item), "someone fits")
+		assert_eq(int(item["pid"]), 8, "neither the downed (7) nor the claimed reviver (9)")
+	for n: Node in mates:
+		n.remove_from_group(&"players")
+	sq.remove_from_group(&"bot_squad")

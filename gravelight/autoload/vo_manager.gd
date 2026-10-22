@@ -539,7 +539,7 @@ func _pop_start(group: StringName) -> void:
 
 
 ## A queued TEAM_DOWN picks its speaker when it actually starts: someone standing, never the downed player,
-## never whoever is (or has said they are) reviving them. False when nobody fits.
+## never whoever is (or has said they are, or the bot squad has picked to be) reviving them. False when nobody fits.
 func _resolve_item(item: Dictionary) -> bool:
 	var r: Dictionary = item["resolve"]
 	var category: String = str(r["category"])
@@ -547,6 +547,13 @@ func _resolve_item(item: Dictionary) -> bool:
 	var downed: int = int(r.get("downed", -1))
 	if downed > 0 and Net.session != null and Net.session.get("coop") != null:
 		exclude.append(int(Net.session.coop.reviver_of(downed)))
+	# A bot squad names its reviver (blackboard claim "revive:<pid>") within a moment of the down, long before
+	# that bot gets there and starts the hold (when coop.reviver_of and its REVIVE line would show it).
+	if downed > 0 and is_inside_tree():
+		for sq: Node in get_tree().get_nodes_in_group(&"bot_squad"):
+			var bb: BotBlackboard = sq.get("blackboard") as BotBlackboard
+			if bb != null:
+				exclude.append_array((bb.claims.get("revive:%d" % downed, {}) as Dictionary).get("pids", []))
 	for g: StringName in [GROUP_SQUAD, GROUP_PLAYER]:
 		var cur: Dictionary = _current[g]
 		if not cur.is_empty() and _is_category(StringName(cur["id"]), "REVIVE"):
