@@ -101,4 +101,8 @@ moves to U03. Order: U03 §0/§9 metrics + baseline soak (`u03-0-metrics`, T-054
 brain rewrite (U03 §1–§8, T-055) → U02 §6.2 Jakub on the new brain.
 
 
+## Known flaky tests (Update 02/03)
+- smoke_bot_loco "stuck: teleported once nobody saw it" fails about 1 run in 3 (the random nudge can leave the bot
+  in the human's view); smoke_m2 "Panzerschreck rocket exploded" failed once in 3. Both pass on rerun.
+
 ## BLOCKED
