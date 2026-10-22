@@ -84,6 +84,13 @@ func _run() -> void:
 			(n as CanvasLayer).visible = false
 	for v: Array in VIEWS:
 		await _shot(str(v[0]), v[1], v[2])
+	# footprints (section 8): a player's boot trail and a zombie's dragged trail laid across the snow by the inn
+	var fp: Node = map.get_node_or_null("SnowFootprints")
+	if fp != null:
+		for k: int in 12:
+			fp.call("step", 1, Vector3(10.0 + k * 0.75, 0.0, -6.6), 0.0)
+			fp.call("step", 2, Vector3(17.5 - k * 0.75, 0.0, -8.2 + sin(k * 0.7) * 0.3), 1.0)
+		await _shot("close_footprints", Vector3(13.8, 1.7, -11.2), Vector3(13.8, 0.0, -7.4))
 	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://_shots_map00_rooms_profile.json"))
 	get_tree().quit()
 

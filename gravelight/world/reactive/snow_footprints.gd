@@ -148,7 +148,7 @@ static func atlas() -> ImageTexture:
 	if _atlas != null:
 		return _atlas
 	var img: Image = Image.create(128, 64, false, Image.FORMAT_RGBA8)
-	var hollow: Color = Color(0.46, 0.52, 0.64)
+	var hollow: Color = Color(0.26, 0.31, 0.43)   # pressed snow in shadow: it reads at night
 	var rim: Color = Color(0.93, 0.95, 1.0)
 	var noise: FastNoiseLite = FastNoiseLite.new()
 	noise.seed = 1944
@@ -171,11 +171,11 @@ static func atlas() -> ImageTexture:
 			d += n
 			if d < 0.82:
 				var k: float = clampf(1.0 - d / 0.82, 0.0, 1.0)
-				c = Color(hollow.r, hollow.g, hollow.b, 0.55 + 0.3 * k)
+				c = Color(hollow.r, hollow.g, hollow.b, 0.7 + 0.25 * k)
 				if x < 64 and int(float(y) * 0.5) % 3 == 0 and d < 0.6:   # the tread
 					c = c.darkened(0.1)
 			elif d < 1.0:
-				c = Color(rim.r, rim.g, rim.b, (1.0 - (d - 0.82) / 0.18) * 0.6)
+				c = Color(rim.r, rim.g, rim.b, (1.0 - (d - 0.82) / 0.18) * 0.8)
 			img.set_pixel(x, y, c)
 	_atlas = ImageTexture.create_from_image(img)
 	return _atlas

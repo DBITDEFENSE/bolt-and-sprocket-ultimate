@@ -7,6 +7,7 @@ extends Node
 ## coming; a zombie that moves less than 1 m in 20 s outside the window states is reported as idle.
 ##   godot --headless --audio-driver Dummy --fixed-fps 60 --path . res://tools_src/soak_map00.tscn -- [--minutes=10] [--hold=30] [--start-round=8]
 ## (it jumps to --start-round first, so there are enough zombies on the map to test every spot; 0 = from round 1)
+## `--specials` makes every round a special (Bellringer) round: the fog-portal spawns get the same treatment.
 ## Prints "[soak] ..." lines and a RESULT line (FAIL if anything idled or a spot got no zombie at all). Windows that
 ## delivered nobody are listed (spawn weighting follows the player's zone, so compare against a master run).
 
@@ -26,6 +27,8 @@ const SPOTS: Array = [
 var minutes: float = 10.0
 var hold: float = 30.0
 var start_round: int = 8
+var specials: bool = false
+var _last_round: int = -1
 var map: Node3D
 var player: Player
 var director: ZombieDirector
@@ -51,6 +54,8 @@ func _ready() -> void:
 			hold = float(a.substr(7))
 		elif a.begins_with("--start-round="):
 			start_round = int(a.substr(14))
+		elif a == "--specials":
+			specials = true
 	ProfileSave.path = "user://_soak_map00_profile.json"
 	ProfileSave.profile = ProfileSave.new_profile()
 	map = (load("res://gravelight/maps/map00_crossroads/map00.tscn") as PackedScene).instantiate() as Node3D
@@ -87,6 +92,9 @@ func _physics_process(delta: float) -> void:
 	if not _ready_done:
 		return
 	_t += delta
+	if specials and RoundManager.current_round != _last_round:
+		_last_round = RoundManager.current_round
+		RoundManager.force_special_next()
 	_spot_t -= delta
 	if _spot_t <= 0.0:
 		_next_spot()
