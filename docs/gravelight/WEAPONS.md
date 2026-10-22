@@ -774,3 +774,44 @@ All names are invented; no real manufacturer or unit is named on the models (ART
 
 ### 22.3 Freeze family (shared data, `enemies.json status`)
 `frost_vent` (players: move ×0.6; from depot vents, Frostbiss hits, the Spillway Gate) and `frozen` (zombies: Die Lange Nacht) sit beside Totenhafen's `wading` and `ballast`. The Crucible tiers (§11.1) apply to every Morgenrot weapon.
+
+## 23. Homage boss rewards and the flare gun (ULTIMATE PROMPT v3; design only, built in HB1–HB3; `docs/HOMAGE_BOSSES.md`)
+
+### 23.1 The KINDERHAMMER (`kinderhammer`), melee, the Hammer's drop (HB1, Map 0)
+The Hammer's splitting maul, dropped where she topples. **The first player to pick it up keeps it for the rest of the match.** If that player bleeds out in co-op, it drops at their body for someone else.
+
+| Stat | Value |
+|---|---|
+| Slot | Replaces the melee (trench knife, E-Tool or Bolt's mallet) while held; the old melee comes back if it is lost |
+| Swing | `max(1500, 0.5 × health(r))` damage, a 0.75 s swing, 100° arc, 2.4 m reach, up to 3 targets, the knife's lunge |
+| Throw (**hold melee**, 0.4 s wind-up) | A boomerang arc up to 20 m that **curves round one corner** toward the aim point, hits on the way out **and** back, up to 5 targets per pass at `max(600, 0.6 × health(r))` each, then returns to the hand (a 3 s cooldown before the next throw). It is caught automatically, unless the thrower is downed (then it lands at their feet). |
+| Bosses | ×0.5, like Super Sprocket |
+| Bolt | If Bolt holds it, it replaces his mallet for the match and keeps his mallet's Classic Rules fallback. On pickup: *"...Oh, that's mine. Kind of."* (`BLT_KINDERHAMMER_01`) |
+| Classic Rules | Trench knife stats, no throw |
+| Crucible | Refused (melee) |
+| Flavor | *"Wood for Auntie."* |
+
+### 23.2 Leuchtpistole (`leuchtpistole`), crate tactical, Morgenrot only (HB3)
+A single-shot signal pistol, a new tier-B crate tactical in the Morgenrot pool (weight 5). It sits in the tactical slot, as the Siren Gramophone does.
+
+| Stat | Value |
+|---|---|
+| Ammo | 4 flares (6 max), +2 per Resupply |
+| Shot | A slow arcing flare (40 m/s, gravity), 150 direct + `burning` 3 s |
+| Light | **A landed flare lights a 12 m radius for 20 s**; a flare that hits the Slender sticks and lights him for 8 s. Everything in its light counts as **lit** for the Slender's damage rule (`HOMAGE_BOSSES.md` §6.5). |
+| LOGGED | Standing in flare light drains a player's LOGGED meter like the floodlights (−15/s) |
+| Crucible | **Morgenstern** (`leuchtpistole_up`): 6 flares (9 max), 24 m light for 30 s, 400 direct |
+| Flavor | *"Light one for the watchman."* / Morgenstern: *"The morning star, in your pocket."* |
+
+### 23.3 PAUL'S LAST ROUND (`pauls_last_round`), Paul's drop (HB2, Map 1)
+A battered Ironhide bottle at his body, **one per player**, personal (`HOMAGE_BOSSES.md` §13 D7). Hold Use to drink.
+- **Without Ironhide:** the Ironhide Stout effect (250 max health) **for free, without using a perk slot**, until you are downed.
+- **With Ironhide:** a one-time **+100 overshield** that takes damage first and doesn't regenerate.
+- It isn't a perk: it doesn't count toward the cap, Second Wind doesn't restore it, and Vendelin's Service Call can't refill it.
+- In data it is a power-up-like pickup with `kind: "bottle"`.
+
+### 23.4 OVERWATCH (`overwatch`), the Slender's reward (HB3, Morgenrot)
+Squad-wide, for the rest of the match, and it uses no perk slot.
+- **Zombies within 12 m are outlined through walls in faint violet** (a depth-ignoring rim on the MZ infection shader, at most 24).
+- It is shown as a small violet eye beside the perk caps.
+- "Reduce screen effects" thins the rim; it never removes it.

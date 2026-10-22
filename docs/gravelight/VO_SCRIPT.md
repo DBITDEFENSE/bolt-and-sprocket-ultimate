@@ -794,3 +794,236 @@ The ids below are **reserved and not yet written**: this table is a plan, so `ex
 | 11.9 New enemy tells | — | sound only (ENEMIES.md §6): no lines | 0 | |
 
 Total planned: ~190 lines. Bolt's and Vendelin's packs are gated on v1 §11.9 (playable after Helvetia Works).
+
+---
+
+## 12. HOMAGE BOSSES (HB1–HB3) — the Cousins, PAUL, the Slender: every line (ULTIMATE PROMPT v3 §5; design doc `docs/HOMAGE_BOSSES.md`)
+
+**Written in full, not yet extracted.** These tables are headed `Line id`, not `ID`, so `extract_vo.py` leaves them alone until their milestone. When a milestone starts (HB1: §12.1 Cousins rows, §12.2, and the Cousins / Kinderhammer rows of §12.5–12.6; HB2: the Paul rows; HB3: the Slender rows), switch that block's header to `ID`, run the extractor, and bake with `gen_vo.py` (`audio_manifest.json`). `docs/HOMAGE_BOSSES.md` §8 mirrors this section; this one is the source of truth.
+
+- **New speakers:** `HAM` the Hammer, `RCH` the Reach, `ALX` Alix, `CSN` the Cousins together, `PAU` Paul, `SLN` the Slender (subtitle names follow Settings → Gameplay → Homage Names: Real shows the Likeness Sheet's first name, In-World the epithet). Bolt / Sprocket / Vendelin use the `BLT_` / `SPR_` / `VEN_` form as §11 does; their quote-pack topic aliases are `boss_cousins`, `boss_paul`, `boss_slender`, `kinderhammer`.
+- **New channel group:** `BOSS` (positional, one line per boss at a time, not in the story group). Paul's arrival roar uses `PA`.
+- **Priority:** boss spawn / death / last lines tier 4; boss barks tier 2; squad reactions tier 1 (tier 2 where marked); the Operator tier 3. The Cousins speak German, subtitled with the English in parentheses (§1.5).
+- **Tokens:** `%COUSIN_1_NAME%`, `%COUSIN_2_NAME%`, `%DEAD_COUSIN_NAME%`, `%PAUL_LASTNAME%` come from `data/gravelight/bosses/likeness.json` (defaults when a placeholder is unfilled). A line with a real name has `conditions.homage_names: "real"` and an unnamed twin for In-World mode.
+- **Count:** 189 lines (Operator 21, Cousins 35, Paul 22, Slender 20, the squad 66, Bolt / Sprocket / Vendelin 25).
+
+### 12.1 The Operator (spawn and death lines for each boss)
+
+| Line id | Trigger | Line |
+|---|---|---|
+| `OPR_BOSS_COUSINS_M0_01` | Map 0, end of round 9, the lamps going out | [static, half-formed, through the inn's horn] ...lights {out}, children... lights... {out}... |
+| `OPR_BOSS_COUSINS_M0_02` | round 10 starts (spawn) | [static] ...it's... {playtime}. *[a child's clap on the tape]* ...{playtime}... |
+| `OPR_BOSS_COUSINS_M0_03` | Alix rises | [static] ...one more... for the {game}... |
+| `OPR_BOSS_COUSINS_DEAD_M0_01` | the first cousin dies | [static] ...{two} left... *[tape squeal]* |
+| `OPR_BOSS_COUSINS_DEAD_M0_02` | the second cousin dies | [static] ...{one}... |
+| `OPR_BOSS_COUSINS_DEAD_M0_03` | all three dead (death line) | [static, almost gentle] ...game... {over}. Good... {night}. |
+| `OPR_BOSS_COUSINS_BORED_M0_01` | the 6:00 retreat | [static] ...they'll... come {back}... *[giggling under the hiss]* |
+| `OPR_BOSS_COUSINS_RETURN_M0_01` | the round-15 return | [static] ...{ready}... or {not}... |
+| `OPR_BOSS_PAUL_01` | Map 1, after the PA roar (spawn) | Oh my! A {gentleman} from overseas has broken into the {studio}! Do give him a warm welcome! |
+| `OPR_BOSS_PAUL_02` | spawn (variant) | Ladies and gentlemen, our {strongest} account! Tremendous {tolerance}. Simply tremendous! |
+| `OPR_BOSS_PAUL_03` | a return visit | Back by popular {demand}! And bigger than {ever}! |
+| `OPR_BOSS_PAUL_RAGE_01` | his first BERSERK | Oh dear. He's gone right {off} the chart. We'll need a bigger {chart}! |
+| `OPR_BOSS_PAUL_LEFT_01` | the 6:00 retreat | And he's off to find his {friends}! Aren't we {all}. |
+| `OPR_BOSS_PAUL_DEAD_01` | his death (after the fall) | [three seconds of dead air] ...Maximum dose... {recorded}. *[and, very quietly, a splice from some other broadcast]* {Well done.} |
+| `OPR_BOSS_SLENDER_01` | Morgenrot, round 20 (spawn) | Attention, valued customers: the night {shift} is now on duty. Please have your {papers} ready. |
+| `OPR_BOSS_SLENDER_02` | spawn (variant) | Our {watchman} has never missed a night. Not {one}. Do try not to be {noticed}! |
+| `OPR_BOSS_SLENDER_03` | Shift Change | Shift {change}! Three for the price of {one}! |
+| `OPR_BOSS_SLENDER_04` | End of Shift | We are experiencing a brief {outage}. Please remain where you can be {seen}. |
+| `OPR_BOSS_SLENDER_QUAR_01` | a player quarantined | A {customer} has been taken in for {review}. |
+| `OPR_BOSS_SLENDER_LEFT_01` | the 8:00 retreat | The watch is... {rescheduled}. He'll be by again. He's always {by}. |
+| `OPR_BOSS_SLENDER_DEAD_01` | his death | The night watch has clocked {out}! And dawn is... {closer} than you think. |
+
+### 12.2 The Cousins (`HAM`, `RCH`, `ALX`, `CSN`)
+
+| Line id | Trigger | Line |
+|---|---|---|
+| `CSN_CLAP_01` | end of round 9, upstairs | [three pairs of hands clapping the rhyme's rhythm, then stopping] |
+| `CSN_HUM_01` | trio alive (stems, looped) | [the rhyme hummed in three voices: `jingle.cousins_rhyme` §9, stems A / B / C] |
+| `CSN_WHISPER_01` | after the first death | [the rhyme whispered by the two survivors] |
+| `CSN_GIGGLE_01` | random, 20–40 s | [a giggle from a room nobody is in] |
+| `CSN_GIGGLE_02` | random | [two giggles, then a shush] |
+| `CSN_BORED_01` | the 6:00 retreat | Langweilig! Morgen wieder! (Boring! Again tomorrow!) [laughing, running] |
+| `CSN_RETURN_01` | the round-15 return | Bereit oder nicht, wir kommen! (Ready or not, here we come!) |
+| `CSN_LASTLINE_01` | the ice cellar, all three chalk figures shot | [softly, three voices together, not scary] ...und wer noch übrig ist, ist dran. (...and whoever's left is it.) [a pause] Gute Nacht. (Good night.) |
+| `HAM_THROW_01` | Mallet Throw release | Fang! (Catch!) |
+| `HAM_CATCH_01` | the catch | [a giggle, cut off dead] |
+| `HAM_SEE_01` | sees a new target | Ich seh dich. (I see you.) |
+| `HAM_IT_01` | a player downed by her | Du bist dran. (You're it.) |
+| `HAM_WOOD_01` | Overhead Split | Holz für Tante! (Wood for Auntie!) |
+| `HAM_ENRAGE_01` | a cousin dies (named) | %DEAD_COUSIN_NAME%? ...%DEAD_COUSIN_NAME%! |
+| `HAM_ENRAGE_TWIN_01` | the same (twin) | Wo bist du? ...Komm raus! (Where are you? ...Come out!) |
+| `HAM_ALONE_01` | the last one standing | Jetzt sind nur noch ich. (Now there's only me.) [wrong on purpose: a child's grammar] |
+| `HAM_DEATH_01` | death (sitting) | ...Ich mag nicht mehr spielen. (...I don't want to play any more.) |
+| `RCH_COUNT_01` | idle (her fingers counting) | [whispered] Eins, zwei, drei... eins, zwei, drei... (One, two, three...) |
+| `RCH_GRAB_01` | Long Reach Grab hits | Hab dich! (Got you!) |
+| `RCH_REEL_01` | the drag | Komm her. Komm her. Komm her. (Come here. Come here. Come here.) |
+| `RCH_HUG_01` | Hug-Crush | Halt still. Ganz still. (Hold still. Very still.) |
+| `RCH_WALL_01` | Through-the-Wall, from below | [a knock under the floorboards] Hier unten... (Down here...) |
+| `RCH_WINDOW_01` | Window Spider | Alle Fenster! Alle! (Every window! Every one!) |
+| `RCH_REGROW_01` | an arm regrows | [a wet crack, then a sigh] ...nochmal. (...again.) |
+| `RCH_SHELF_01` | idle reach-up | Nur noch ein bisschen höher... (Just a little bit higher...) |
+| `RCH_ENRAGE_01` | a cousin dies | Du hast geschummelt! (You cheated!) |
+| `RCH_DEATH_01` | death (reaching) | ...wartet auf mich. (...wait for me.) |
+| `ALX_ARRIVE_01` | rising from the trapdoor | [a whisper] Ich hab sie noch. Ich halt sie noch. (I've still got them. I'm still holding on.) |
+| `ALX_HOLD_01` | Holding Hand | Nicht loslassen. (Don't let go.) |
+| `ALX_HOLD_02` | Holding Hand (variant) | Tante kommt gleich. Halt fest. (Auntie's coming soon. Hold tight.) |
+| `ALX_UNSEEN_01` | a player turns away within 12 m | [right behind them] Hinter dir. (Behind you.) |
+| `ALX_COUSIN_01` | holding a dead cousin's hand (named) | %DEAD_COUSIN_NAME%. Ich bin da. (I'm here.) |
+| `ALX_COUSIN_TWIN_01` | the same (twin) | Ich bin da. Ich bin ja da. (I'm here. I'm right here.) |
+| `ALX_ENRAGE_01` | rising enraged | Ihr habt sie losgelassen. (You let go of her.) |
+| `ALX_DEATH_01` | death (the fist closing) | ...Tante? (...Auntie?) |
+
+### 12.3 PAUL (`PAU`)
+
+| Line id | Trigger | Line |
+|---|---|---|
+| `PAU_PA_01` | arrival, over the PA (channel PA) | WHERE'S MY SQUAD?! |
+| `PAU_LAND_01` | the crater landing | [a roar with a man's voice inside it] |
+| `PAU_CALM_01` | Calm, bark | Count off! ...COUNT OFF! |
+| `PAU_CALM_02` | Calm, bark | Gimme your pack. I got it. I GOT it. |
+| `PAU_CALM_03` | Calm, bark | Nobody gets left. Nobody. |
+| `PAU_FLEE_01` | players fleeing (rage up) | DON'T YOU RUN! Nobody runs out on the squad! |
+| `PAU_DOWN_01` | sees a player go down | MAN DOWN! ...MAN DOWN! ...medic... |
+| `PAU_ANGRY_01` | becomes Angry | You're not my guys. YOU'RE NOT MY GUYS! |
+| `PAU_BERSERK_01` | becomes BERSERK | [a roar, and inside it] WHERE ARE THEY?! |
+| `PAU_GRAB_01` | Grab & Squeeze | GOT you. Who sent you? WHERE ARE THEY? |
+| `PAU_THROW_01` | Zombie Throw / Rip & Throw | Heads UP! |
+| `PAU_BOTTLE_01` | a bottle breaks | [a gasp] ...cold. That's cold. |
+| `PAU_BOTTLE_02` | a bottle breaks (variant) | ...that's enough, doc. That's enough. |
+| `PAU_CUP_01` | the tin-cup idle | [quietly, to the cup] ...coffee's on me, fellas. Whole pot. ...Fellas? |
+| `PAU_KNEE_01` | knee-down stagger | Not yet. Not YET. |
+| `PAU_LEAVE_01` | the 6:00 retreat | I'm coming, fellas! HOLD ON! |
+| `PAU_LAST_DUT_01` | death, nearest player Dutch | ...Hey. Sarge. You found me. Tell the guys I carried my share. |
+| `PAU_LAST_PEG_01` | death, Peg | ...Hey. Ma'am. You're English? Huh. You found me. Tell the guys I carried my share. |
+| `PAU_LAST_DEA_01` | death, Deacon | ...Hey. Grease on your hands. Good man. You found me. Tell the guys I carried my share. |
+| `PAU_LAST_WRN_01` | death, Wren | ...Hey. You're not one of them. You found me. Tell the guys I carried my share. |
+| `PAU_LAST_BLT_01` | death, Bolt | ...Hey. Kid. Nice hammer. You found me. Tell the guys I carried my share. |
+| `PAU_LAST_VEN_01` | death, Vendelin | ...Hey. Mister. You look like a man who keeps his word. You found me. Tell the guys I carried my share. |
+
+### 12.4 THE SLENDER (`SLN`)
+
+| Line id | Trigger | Line |
+|---|---|---|
+| `SLN_ARRIVE_01` | arrival, from the trees | [keys, then a calm voice] Evening. Don't mind me. I'm only on my rounds. |
+| `SLN_TIER_LOW_01` | a player reaches LOW | [whisper] Noted. |
+| `SLN_TIER_MED_01` | MEDIUM | [whisper] Observed. |
+| `SLN_TIER_HIGH_01` | HIGH | [whisper] Logged. |
+| `SLN_TIER_CRIT_01` | CRITICAL (he's behind you) | [right behind you, kindly] Quarantined. |
+| `SLN_WRITE_01` | writing at HIGH (pen scratch) | [writing] ...three-twelve. Subject out after curfew. Noted. |
+| `SLN_WRITE_02` | writing (variant) | [writing] ...stood very still. Thought I wouldn't see. |
+| `SLN_MIRROR_01` | the first mirror stop | You stop, I stop. That's only manners. |
+| `SLN_SWEEP_01` | Lantern Sweep | Let's have a look at you. |
+| `SLN_ROOM_01` | Watch Room entry | Everyone has a page. Find yours. |
+| `SLN_ROOM_02` | Watch Room, 12 s in | It's three o'clock. It's always three o'clock in here. |
+| `SLN_ROOM_ESCAPE_01` | page torn out | ...Fair enough. You're excused. |
+| `SLN_ROOM_FAIL_01` | the timer runs out | Noted. |
+| `SLN_DECOY_01` | Shift Change | Change of shift. |
+| `SLN_DECOY_SHOT_01` | a decoy is shot | Wrong lantern. Noted. |
+| `SLN_DARK_01` | End of Shift | Lights out. Last round of the night. |
+| `SLN_BOOK_01` | the book shot from his hands | [pages scattering] ...Ah. My book. One moment. |
+| `SLN_LANTERN_01` | the lantern broken (stun) | ...Can't see. Can't see a thing. |
+| `SLN_LEAVE_01` | the 8:00 retreat | Rounds aren't finished. I'll be back this way. |
+| `SLN_DEATH_01` | death | ...Shift's over. Someone else has the watch now. |
+
+### 12.5 The squad: Dutch, Peg, Deacon, Wren
+
+| Line id | Trigger | Line |
+|---|---|---|
+| `DUT_COUSINS_01` | the lamps going out | Lamps are going. All of 'em. ...Somebody's turning 'em down. |
+| `DUT_COUSINS_02` | the clapping upstairs | That's clapping. Upstairs. I don't like games I don't know the rules to. |
+| `DUT_HAMMER_01` | the first Mallet Throw | Mallet! Heads down, it comes back! |
+| `DUT_REACH_01` | the first Long Reach Grab | Her arms— how long are her ARMS? |
+| `DUT_ALIX_01` | Alix rises | Girl's got a hand comin' out of her chest. And it's... waitin'. Like it wants me to take it. |
+| `DUT_COUSINS_DEAD_01` | round cleared | They were just kids playin' a game. Somebody should've come back for 'em. |
+| `DUT_LETTER_01` | reads the aunt's letter | She went up for her girl and told the others to keep playin'. ...Yeah. I'd have done the same. |
+| `DUT_KINDERHAMMER_01` | picks up the Kinderhammer | Splittin' maul. Comes back when you throw it. My old man'd have sold his soul for one. |
+| `PEG_COUSINS_01` | the lamps going out | The lamps are being put out. Methodically. One does hate a methodical enemy. |
+| `PEG_COUSINS_02` | the clapping | Clapping. A children's game. ...Positions, everyone. Quietly. |
+| `PEG_HAMMER_01` | the first Mallet Throw | She's thrown it, and it's coming back. Duck on the return, not the throw. |
+| `PEG_REACH_01` | Window Spider | Mind the windows. All of them. She's at every window at once. |
+| `PEG_ALIX_01` | Alix rises | Don't take her hand. Whatever it costs you, don't take her hand. |
+| `PEG_COUSINS_DEAD_01` | round cleared | Three girls in a cellar, told to wait for someone who wasn't coming. I know a little about orders like that. |
+| `PEG_LETTER_01` | reads the letter | "Keep playing, and stay quiet until I come back." ...She meant it kindly. They always mean it kindly. |
+| `PEG_KINDERHAMMER_01` | picks it up | A splitting maul that comes back. I can think of three uses already. |
+| `DEA_COUSINS_01` | the fire dies | Fire's out. Didn't burn down. Something just... told it to stop. |
+| `DEA_COUSINS_02` | the clapping | Lord. That's a clapping game. Ruthie plays that on the porch. |
+| `DEA_HAMMER_01` | the first Mallet Throw | That's a splitting maul. She's throwing it like it weighs nothing. |
+| `DEA_REACH_01` | Through-the-Wall | Arms through the floorboards! Watch your feet! |
+| `DEA_ALIX_01` | Alix rises | She's holding her hand out like she's waiting on somebody to take it. Lord, who's she waiting on? |
+| `DEA_COUSINS_DEAD_01` | round cleared | Rest now, girls. Game's over. Somebody came. ...It was just us. |
+| `DEA_LETTER_01` | reads the letter | Ruthie's twelve. ...I'm gonna go stand outside a minute. |
+| `DEA_KINDERHAMMER_01` | picks it up | Good balance on this. Somebody took care of this tool. |
+| `WRN_COUSINS_01` | the lamps going out | The lamps. One. Two. Three. Someone is counting them out. |
+| `WRN_COUSINS_02` | the humming | A counting game. Every village has one. This one is wrong. |
+| `WRN_HAMMER_01` | the first Mallet Throw | When the hammer is in the air, she has nothing. Shoot her then. |
+| `WRN_REACH_01` | the first grab | The wrists. They glow. Shoot the wrists. |
+| `WRN_ALIX_01` | Alix's first freeze | She only moves when we look away. So nobody looks away. |
+| `WRN_COUSINS_DEAD_01` | round cleared | I will not write them in the book. They were not marks. |
+| `WRN_LETTER_01` | reads the letter | She went to get her daughter. That is all. That is the whole story. |
+| `WRN_KINDERHAMMER_01` | picks it up | Heavy. Good. It comes back, which is more than most things here. |
+| `DUT_PAUL_01` | the PA roar | That's an American voice on the PA. ...That's an American VOICE. |
+| `DUT_PAUL_02` | first sight | Big fella's wearing dog tags. Ours. Aw, hell. |
+| `DUT_PAUL_RAGE_01` | his first Angry | The bottles on his back! Shoot the bottles, calm him down! |
+| `DUT_PAUL_DEAD_01` | after the fall (tier 2) | Every unit's got one. The big one. The one who carries you. |
+| `DUT_PAUL_CUP_01` | Dutch receives the cup | [turning it over] ...I'll buy the round, Paul. I'll buy every round. |
+| `PEG_PAUL_01` | first sight | American. A private, engineers, what's left of the sleeve says so. They did this to one of ours. |
+| `PEG_PAUL_02` | his first Angry | The bottles on his back are feeding him. Break them and he cools. |
+| `PEG_PAUL_DEAD_01` | after the fall (tier 2) | Note it. Private Paul. Carried his share. ...Somebody in London ought to read that. |
+| `PEG_PAUL_DEAD_NAMED_01` | the same, when `[PAUL_LASTNAME]` is filled | Note it. Private Paul %PAUL_LASTNAME%. Carried his share. ...Somebody in London ought to read that. |
+| `PEG_PAUL_CUP_01` | Peg receives the cup | [quietly] I'll see it gets home, Private. You have my word. |
+| `DEA_PAUL_01` | first sight | That's a soldier. That's a GI. Lord have mercy, what'd they pump into him? |
+| `DEA_PAUL_02` | Calm, after a bottle breaks | Easy, big man. Easy. Nobody's leaving you. |
+| `DEA_PAUL_PRAYER_01` | after the fall: the unique kneel (tier 2) | Lord, this man carried his brothers when they couldn't carry themselves. Carry him now. He's done his share. Amen. |
+| `DEA_PAUL_CUP_01` | Deacon receives the cup | [softly] I'll keep it shined for you. |
+| `WRN_PAUL_01` | first sight | They dosed him to see when he would die. He would not die. ...I know this file. I know this kind of file. |
+| `WRN_PAUL_02` | his first turn away | The back of his neck, when he turns. The line goes in there. |
+| `WRN_PAUL_NAME_01` | after the fall: writes in her notebook (tier 2) | [writing] Paul. ...Not a mark. A name. |
+| `WRN_PAUL_CUP_01` | Wren receives the cup | [quiet] I will carry it. He carried enough. |
+| `DUT_SLENDER_01` | first sight | Tall fella with a lantern. Just watching. I hate the ones that just watch. |
+| `DUT_SLENDER_02` | Dutch at HIGH | He's writing. He's writing about ME. |
+| `DUT_QUARANTINE_01` | returned from the Watch Room | Room full of books and a clock that don't move. I'm never goin' in a library again. |
+| `DUT_SLENDER_DEAD_01` | his death | ...Shift's over, pal. Get some sleep. |
+| `PEG_SLENDER_01` | his first smoke-hit in darkness | He only bleeds in the light. Bring him to the floodlights. Politely. |
+| `PEG_SLENDER_02` | Shift Change | Three of him. Watch the lanterns. The steady one's real. |
+| `PEG_QUARANTINE_01` | returned | A clerk's office with no clerk. I've been interrogated in worse. |
+| `PEG_SLENDER_DEAD_01` | his death | A man who kept his post when everyone else ran. I've known worse men in better uniforms. |
+| `DEA_SLENDER_01` | first sight | He's just doing his rounds. Lord, he's been doing his rounds this whole time. |
+| `DEA_SLENDER_02` | his keys fall silent near Deacon | Keys went quiet— MOVE! |
+| `DEA_QUARANTINE_01` | returned | Clock stopped at three. Mama always said nothing good happens after three. |
+| `DEA_SLENDER_DEAD_01` | his death | Rest easy, watchman. We'll keep the lights on. |
+| `WRN_SLENDER_01` | the first mirror stop | He stops when I stop. He turns when I turn. ...Good. I can count on him. |
+| `WRN_SLENDER_02` | his book appears | The book! Shoot the book out of his hands! |
+| `WRN_QUARANTINE_01` | returned | My page was neat. He has better handwriting than me. |
+| `WRN_SLENDER_DEAD_01` | his death | He wrote everything down. Every hour. ...I understand him. |
+
+### 12.6 Bolt (with Sprocket) and Vendelin
+
+| Line id | Trigger | Line |
+|---|---|---|
+| `BLT_COUSINS_01` | the lamps going out | Okay. Okay. Lights going out one at a time is a BAD sign where I'm from too. |
+| `SPR_COUSINS_01` | the clapping | Bolt, my sensors say three heartbeats. Then zero. Then three again. I'd like to stop sensing now. |
+| `BLT_HAMMER_01` | the first Mallet Throw | Is she— that's a mallet throw. She's doing the throw! |
+| `BLT_ALIX_01` | Alix rises | Nope. Nope. Sprocket, don't look at it. Wait. DO look at it. Keep looking at it! |
+| `BLT_COUSINS_DEAD_01` | round cleared | ...Sprocket, don't make a joke. Not this time. |
+| `SPR_COUSINS_DEAD_01` | round cleared (after Bolt's) | [quietly] No joke. Filing it under lullabies. |
+| `BLT_KINDERHAMMER_01` | picks up the Kinderhammer | ...Oh, that's mine. Kind of. |
+| `BLT_PAUL_01` | first sight | Okay, he's huge, he's angry, and I think he's on our side? Somewhere in there? |
+| `SPR_PAUL_01` | his first bottle breaks | His vitals are mostly stout, Bolt. That is not a figure of speech. |
+| `BLT_PAUL_DEAD_01` | after the fall | He was looking for his friends the whole time. ...Sprocket, we're telling everybody about this guy. |
+| `BLT_PAUL_CUP_01` | Bolt receives the cup | I'll put it on the shelf in the garage. Front and center. Nobody touches it. |
+| `BLT_SLENDER_01` | first sight | Tall guy, lantern, keys, just WATCHING? Sprocket, is that a security guard? That's a security guard. |
+| `SPR_SLENDER_01` | Bolt at MEDIUM | He's logging us, Bolt. I've been logged before. I did not enjoy the terms. |
+| `BLT_QUARANTINE_01` | returned | There was a clock, and a desk, and a guy, and I had to tear out a PAGE, Sprocket— |
+| `BLT_SLENDER_DEAD_01` | his death | Night shift's the worst shift. ...Thanks for watching the place, man. |
+| `VEN_COUSINS_01` | the lamps going out | I sat up one night by that stove. I never heard anyone under the floor. I should have listened better. |
+| `VEN_ALIX_01` | Alix rises | That arm is not a weapon. It is a hand. Someone should take it. ...Not you. Please, not you. |
+| `VEN_COUSINS_DEAD_01` | round cleared | "Retained." That is the word they would use. I have a better one: waiting. |
+| `VEN_KINDERHAMMER_01` | picks it up | A splitting maul from the woodpile. Well kept. She kept it well. |
+| `VEN_PAUL_01` | first sight | That rack. Those are my bottles. Those are MY bottles in his back. |
+| `VEN_PAUL_DEAD_01` | after the fall | Ironhide was made so the boys would not go first. He went first for all of them. ...I am so sorry, Private. |
+| `VEN_PAUL_CUP_01` | Vendelin receives the cup | [very carefully] I will not refill it. I will keep it exactly as he left it. |
+| `VEN_SLENDER_01` | first sight | A watchman who never sleeps and writes everything down. They would have offered him a position. |
+| `VEN_QUARANTINE_01` | returned | A room where it is always three in the morning. I have worked in that room. |
+| `VEN_SLENDER_DEAD_01` | his death | He kept watch because he wanted to, not because anyone made him. That is the difference, and it is everything. |
+
+**Counts:** Operator 21; the Cousins 35; Paul 22; the Slender 20; the squad 66; Bolt, Sprocket and Vendelin 25. **189 lines.** The Watch-Book templates are Archive text, not VO.

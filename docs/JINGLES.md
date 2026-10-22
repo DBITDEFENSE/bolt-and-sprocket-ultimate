@@ -853,3 +853,84 @@ The stencil format is `<PLAN ID> · <PLAN NAME>`, e.g. `DMS-VP-DUR-01 · DURABIL
 > `jingle.hw_song.21` ...nobody has to.
 
 *Composer note:* the last organ chord leaves the third out (an open fifth, F–C), then adds it a beat late, as if someone else reached over and pressed the key. That is Sprocket; the Archive credit lists him as "bass (uncredited)."
+
+---
+
+## 13. GRAVELIGHT Map 0 song: "Drei Kusinen", the Cousins' clapping rhyme (HB1; `docs/HOMAGE_BOSSES.md` §9–§10)
+
+*Use:* the Cousins Round on Map 0 (round 10). Hummed during the setup and while all three live, whispered after the first death, sung by the last one standing; one last line in the ice cellar afterwards (`CSN_LASTLINE_01`). Not a Helvetia jingle: no machine, no plan ID, no organ ghost, no fine print. *Credit:* "Drei Kusinen": original composition, GRAVELIGHT (placeholder audio until recorded). *Speaker ids for credits/data:* `cousins_rhyme` (three stems, `CSN`).
+*Style:* a children's clapping game sung by three young women in the dark, unaccompanied at first; in the fight it sits over a toy-piano and music-box bed (D minor; never Liesl's music box). *Tempo:* 92 BPM, 4/4. *Key:* D minor, the last line landing on the major third, wrong and bright.
+
+- **Original:** words and melody are new, written for GRAVELIGHT. It counts **down from three**, with **a verse per cousin**, and it ends *"...and whoever's left is IT."*
+- **In-game:** the **German** version, subtitled with the English one.
+- **Delivery:** it is **hummed** (the setup and the trio alive), then **whispered** (after the first death), then **sung** (the last one standing, alone, with gaps where the dead cousins' lines would be).
+- **Rhythm:** a clapping game in 4/4 at 92 BPM. Each beat is: thigh-pat, clap, cross-clap with a partner, clap.
+
+Line ids `jingle.cousins_rhyme.NN`. German first, the singable English beneath.
+
+> **Drei (Three): the Hammer**
+> `jingle.cousins_rhyme.01` Drei Kusinen unterm Haus,
+> *Three little cousins under the floor,*
+> `jingle.cousins_rhyme.02` eine geht zum Holzhacken raus.
+> *one ran out to chop by the kitchen door.*
+> `jingle.cousins_rhyme.03` Wirf den Hammer, rund herum,
+> *Throw it high and round it comes,*
+> `jingle.cousins_rhyme.04` fang ihn auf und bleib schön stumm.
+> *catch it home in mittened thumbs, and hush.*
+>
+> **Zwei (Two): the Reach**
+> `jingle.cousins_rhyme.05` Zwei Kusinen unterm Haus,
+> *Two little cousins under the floor,*
+> `jingle.cousins_rhyme.06` eine streckt die Arme aus,
+> *one reached for the jam jar, a little bit more,*
+> `jingle.cousins_rhyme.07` bis zum Glas im obern Fach,
+> *stretch it, stretch it, over the shelf,*
+> `jingle.cousins_rhyme.08` länger als das ganze Dach.
+> *longer than the whole house itself.*
+>
+> **Eine (One): Alix**
+> `jingle.cousins_rhyme.09` Eine Kusine unterm Haus,
+> *One little cousin under the floor,*
+> `jingle.cousins_rhyme.10` hält die Hand zur Tür hinaus.
+> *holds out her hand to the cellar door.*
+> `jingle.cousins_rhyme.11` Halt sie fest und lass nicht los,
+> *Hold it, hold it, don't let go,*
+> `jingle.cousins_rhyme.12` Tante kommt — wo bleibt sie bloß?
+> *Auntie's coming. Auntie's slow.*
+>
+> **Keine (None): all three, or whoever is left**
+> `jingle.cousins_rhyme.13` Klatsch im Dunkeln, guck nicht hin,
+> *Clap in the dark and don't you peek,*
+> `jingle.cousins_rhyme.14` keine mehr im Keller drin.
+> *nobody laughs and nobody squeaks.*
+> `jingle.cousins_rhyme.15` Eins, zwei, drei, die Kerze an...
+> *Three, two, one, the candle's lit...*
+> `jingle.cousins_rhyme.16` ...und wer noch übrig ist, ist DRAN.
+> *...and whoever's left is IT.*
+
+**Literal sense of the German** (for the translator and the subtitle pass):
+- Verse 1: "Three cousins under the house, / one goes out to chop wood. / Throw the hammer, round and round, / catch it and keep quiet."
+- Verse 2: "Two cousins under the house, / one stretches her arms out, / up to the jar on the top shelf, / longer than the whole roof."
+- Verse 3: "One cousin under the house / holds her hand out of the door. / Hold it tight and don't let go, / Auntie's coming. Wherever can she be?"
+- Verse 4: "Clap in the dark, don't look, / no one left in the cellar. / One, two, three, the candle's lit... / and whoever is still left is IT."
+
+The English is the singable adaptation; the German is canon. (*Dran sein* is "to be it" in a children's game.)
+
+**Stems:** A = the Hammer (the melody, low, steady), B = the Reach (a high harmony a third above, breathy), C = Alix (a drone on the tonic, almost spoken). The stems mute as each cousin dies. In the solo verse, the survivor sings only her own verse's lines and the final verse. During the dead cousins' verses there are **four bars of clapping and nothing else**.
+
+### 13.2 Homage boss stingers and musical moments (HB1–HB3)
+
+- **Title-card sting (all bosses):** a rubber-stamp thunk on the downbeat, a ledger-bell ding, then a 3 s phrase in each boss's colour.
+- **The Cousins:**
+  - **Setup:** the lamps' breath-outs on the beat of the rhyme's tempo, then silence, then the clapping.
+  - **Fight:** the three stems over a toy-piano and music-box bed (D minor, distinct from Liesl's music box, which is never used here), with a low tape-warble that slows as each cousin dies.
+  - **Clear:** the bed stops mid-bar; one music-box note decays; the lamps relight.
+- **PAUL:**
+  - **Arrival:** a brass-and-war-drum cue, with the clink of stout bottles as percussion and his roar layered with a **distorted human voice** inside it (v3 §5).
+  - **Stages:** each stage adds a layer (Angry: a low brass ostinato; Berserk: a steam-whistle shriek on the downbeat).
+  - **Death:** everything cuts to a **solo trumpet playing an original 6-note bugle-like phrase**. **Not "Taps"**: no recognisable bugle call.
+- **THE SLENDER:**
+  - **Bed:** almost nothing. A slow pulse of violin harmonics, wind in the pines, and **his keys as the rhythm section**.
+  - **Before he attacks the keys stop**, and the silence is the cue: the mix ducks the ambient −6 dB in that 0.6 s.
+  - **The Watch Room:** no music; a clock that **doesn't** tick; your own breathing.
+  - **Death:** the lantern's hiss going out, then a single, warm major chord (the first in the map's score) as the sky reddens.

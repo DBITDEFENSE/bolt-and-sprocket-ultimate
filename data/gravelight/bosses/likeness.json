@@ -1,0 +1,144 @@
+{
+ "_doc": "The Likeness Sheet for the homage bosses (ULTIMATE PROMPT v3 §1; docs/HOMAGE_BOSSES.md §2). Edit this file to change a look or a name; the defaults are used until a value is filled in. PLACEHOLDER RULE: any string that starts with '[' and ends with ']' (e.g. \"[COUSIN_1_NAME]\") is an unfilled placeholder; code must never show it to a player and uses the matching *_default instead (an empty default means 'leave it out': the POW card shows the surname line blank, the art falls back to the 'defaults' look). The models are stylized and zombified, never photoreal. A photo or face scan may only be used if it sits in res://assets/user_supplied/likeness/ with a note that the person agreed (consent.note_file); none has been supplied. The Cousins are young women written as creepy-doll horror and are never sexualized (HOMAGE_BOSSES.md §1.2). Not loaded yet: HB1 adds the loader (Data.TABLES is a flat list; this lives in a subfolder on purpose).",
+ "version": 1,
+ "settings_defaults": {
+  "homage_bosses": true,
+  "homage_names": "real"
+ },
+ "consent": {
+  "dir": "res://assets/user_supplied/likeness/",
+  "note_file": "CONSENT.txt",
+  "photo_scans_allowed": false,
+  "_doc": "photo_scans_allowed stays false until a consent note for that person exists in dir; then set the person's 'scan' field to the file name."
+ },
+ "bosses": {
+  "cousin_1": {
+   "boss_id": "cousin_hammer",
+   "map": "map00_crossroads",
+   "slot": "Cousin 1",
+   "real_name": "[COUSIN_1_NAME]",
+   "real_name_default": "Mara",
+   "in_world_name": "The Hammer",
+   "title_card_real": "%REAL_NAME%",
+   "title_card_in_world": "THE HAMMER",
+   "look_from_user": "Blonde hair; carries a mallet she throws",
+   "quirk": "Throws the mallet like a boomerang and catches it",
+   "defaults": "Long braid, oversized wool coat, knitted mittens",
+   "art": {
+    "hair": "blonde, one long braid down the back, frost in it",
+    "build": "average height (about 1.65 m), sturdy from the woodpile",
+    "clothing": "an oversized man's wool overcoat buttoned to the throat, sleeves turned back twice; a long wool skirt; wool stockings; laced winter boots",
+    "signature_items": ["the inn's splitting maul (the KINDERHAMMER)", "knitted mittens, red and grey"],
+    "age_written_as": "young woman, about 22 (the eldest)"
+   },
+   "scan": null,
+   "likeness_credit": "Inspired by Alix and her cousins",
+   "placeholders": ["COUSIN_1_NAME"]
+  },
+  "cousin_2": {
+   "boss_id": "cousin_reach",
+   "map": "map00_crossroads",
+   "slot": "Cousin 2",
+   "real_name": "[COUSIN_2_NAME]",
+   "real_name_default": "Jo",
+   "in_world_name": "The Reach",
+   "title_card_real": "%REAL_NAME%",
+   "title_card_in_world": "THE REACH",
+   "look_from_user": "Brown hair; extremely long arms",
+   "quirk": "Reaching: grabs things far away, through windows and floors",
+   "defaults": "Bob haircut with bangs, nightgown under a cardigan, bare feet",
+   "art": {
+    "hair": "brown, a chin-length bob with straight bangs",
+    "build": "slight; the arms telescope to 4x length (the rig does this, the body does not change)",
+    "clothing": "an ankle-length, long-sleeved, high-collared flannel nightgown under a buttoned knitted cardigan; bare feet",
+    "signature_items": ["the jam jar from the top shelf (dressing only)"],
+    "age_written_as": "young woman, about 18 (the youngest)"
+   },
+   "scan": null,
+   "likeness_credit": "Inspired by Alix and her cousins",
+   "placeholders": ["COUSIN_2_NAME"]
+  },
+  "cousin_3": {
+   "boss_id": "cousin_alix",
+   "map": "map00_crossroads",
+   "slot": "Cousin 3",
+   "real_name": "Alix",
+   "real_name_default": "Alix",
+   "in_world_name": "The Third Hand",
+   "title_card_real": "ALIX",
+   "title_card_in_world": "THE THIRD HAND",
+   "look_from_user": "An arm that extends out of her torso; double damage",
+   "quirk": "The arm is 'the hand she was always holding'",
+   "defaults": "Dark hair in two buns, a too-big Sunday dress, a ribbon",
+   "art": {
+    "hair": "dark, in two buns",
+    "build": "average height, held perfectly upright",
+    "clothing": "a too-big navy Sunday dress, long-sleeved, below the knee, white collar; dark stockings; buckled shoes; a wide red ribbon bow at the breastbone that hides the root of the third arm",
+    "signature_items": ["the third arm (small, a child's hand, palm up)", "the red ribbon (the 'Three Ribbons' charm)"],
+    "age_written_as": "young woman, about 20"
+   },
+   "scan": null,
+   "likeness_credit": "Inspired by Alix and her cousins",
+   "placeholders": []
+  },
+  "paul": {
+   "boss_id": "paul",
+   "map": "map01_kaltenbrunn",
+   "slot": "Paul",
+   "real_name": "Paul",
+   "real_name_default": "Paul",
+   "last_name": "[PAUL_LASTNAME]",
+   "last_name_default": "",
+   "unit": "[PAUL_UNIT]",
+   "unit_default": "82nd Airborne attached engineer",
+   "in_world_name": "PAUL",
+   "title_card_real": "PAUL",
+   "title_card_in_world": "PAUL",
+   "look_from_user": "Hulk-like",
+   "quirk": "[PAUL_SIGNATURE]",
+   "quirk_default": "",
+   "_quirk_doc": "PAUL_SIGNATURE: a catchphrase, a team, an item, a tattoo... Each kind has a home: catchphrase -> an extra PAU_ bark and the last line's tail; team -> the letter's ball game and a cap or patch; item -> a second carried prop beside the cup; tattoo -> a forearm decal under the rolled sleeve.",
+   "defaults": "Big beard, rolled sleeves, dog tags, a crushed tin cup he carries everywhere",
+   "art": {
+    "hair": "short, under a torn wool cap; a big full beard",
+    "build": "powerful and heroic (a strongman, never a joke about size); three growth stages from the stout, about 2.5 m / 2.9 m / 3.25 m",
+    "clothing": "US Army wool shirt and trousers, sleeves rolled past the elbow, what is left of the engineer's sleeve insignia; boots",
+    "signature_items": ["dog tags on a chain", "a crushed tin canteen cup in his left hand", "the cracked rack of six Helvetia Ironhide bottles on his back with IV lines"],
+    "skin": "iron-red like the stout, riveted bone plates pushing through like the Ironhide barrel mascot; never green, no purple trousers (not Marvel's Hulk)"
+   },
+   "letter_details": "[PAUL_LETTER_DETAILS]",
+   "letter_details_default": "He asks about a ball game back home and promises to buy the first round.",
+   "scan": null,
+   "likeness_credit": "Inspired by Paul",
+   "placeholders": ["PAUL_SIGNATURE", "PAUL_LASTNAME", "PAUL_UNIT", "PAUL_LETTER_DETAILS"]
+  },
+  "devin": {
+   "boss_id": "slender",
+   "map": "map03_morgenrot",
+   "slot": "Devin",
+   "real_name": "Devin",
+   "real_name_default": "Devin",
+   "last_name": "[DEVIN_LASTNAME]",
+   "last_name_default": "",
+   "in_world_name": "THE SLENDER",
+   "title_card_real": "DEVIN",
+   "title_card_in_world": "THE SLENDER",
+   "look_from_user": "Based on me",
+   "quirk": "[DEVIN_SIGNATURE]",
+   "quirk_default": "",
+   "_quirk_doc": "DEVIN_SIGNATURE: hair, height, glasses, style... Rendered on the face and silhouette only if given; otherwise the defaults below.",
+   "defaults": "Very tall, thin, calm; a watchman's greatcoat; a lantern and ring of keys; works the night shift",
+   "art": {
+    "hair": "short, dark, under the cap (default)",
+    "build": "about 2.6 m, long-limbed, thin but never skeletal: a person, just too long",
+    "face": "pale, calm, tired; faint violet eyes that never blink. Always a real face: never blank, never featureless",
+    "clothing": "a long dark-grey watchman's greatcoat with brass buttons, collar up, a scarf, a peaked watchman's cap. Never a black suit and tie",
+    "signature_items": ["an old brass lantern burning violet", "a heavy ring of keys at the hip", "the watch-book under his arm"],
+    "never": ["a blank or featureless face", "a black suit and tie", "tentacles or extra limbs"]
+   },
+   "scan": null,
+   "likeness_credit": "Inspired by Devin",
+   "placeholders": ["DEVIN_SIGNATURE", "DEVIN_LASTNAME"]
+  }
+ }
+}

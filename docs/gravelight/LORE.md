@@ -607,6 +607,21 @@ Four more fixed props, Map 2 "Totenhafen" (MAPS.md Map 2, DECISIONS T-036), same
 | `INT_M2_03` | Typed manifest, nailed | D_PENHALL, the crane office's west wall, facing the apron |
 | `INT_M2_04` | Teletype strip, pinned | G_SIGNAL, the north wall between the two windows |
 
+### 13.3 Homage boss Archive entries (HB1–HB3; reserved, not extracted yet)
+
+These are **event unlocks**, not random spawns and not fixed props, so this table deliberately has **no Text column** and `extract_intel.py` skips it (it only reads five-cell `INT_` rows). The full texts are in `docs/HOMAGE_BOSSES.md` §4.7, §5.7 and §6.9. When HB1 lands, the extractor gains an `unlock` field and this table gains its Text column. `%TOKENS%` resolve from `data/gravelight/bosses/likeness.json`.
+
+| ID | Title | Type | Unlock |
+|---|---|---|---|
+| `INT_HB_01` | The Aunt's Letter | DOC | Map 0, in the ice cellar, only when the Cousins Round is cleared |
+| `INT_HB_02` | POW Card: Pvt. Paul | DOC | Map 1, in the torn-up radio room, after Paul's arrival |
+| `INT_HB_03` | Letter to the Unit | DOC | Map 1, in his cap by the headframe, after Paul's death |
+| `INT_HB_04` | The Watch-Book | DOC | Morgenrot, by the pine where the Slender sits, after his death; its pages are written from the match's own events |
+| `INT_HB_05` | Photograph: the Tin Cup | PHOTO | whoever received Paul's cup, at match end |
+| `INT_HB_06` | The Cousins Are Still Playing (×4) | PHOTO | one per later map, found as a hidden chalk drawing of three girls holding hands |
+
+Boss-intro cards (`ARC_HB_COUSINS`, `ARC_HB_PAUL`, `ARC_HB_SLENDER`) carry each boss's canon (§15), the likeness credit and the death-scene replay, viewable after the first kill.
+
 ## 14. Glossary
 | Term | Meaning |
 |---|---|
@@ -624,3 +639,78 @@ Four more fixed props, Map 2 "Totenhafen" (MAPS.md Map 2, DECISIONS T-036), same
 | *(§11 amendment)* Verlängerung | "Renewal": the one readable word on the paper at Morgenrot |
 | *(§11 amendment)* Herr Vendelin | "Herr Viktor Vendelin, Ingenieur, Basel," the founder of Helvetia Automaten AG |
 | *(§11 amendment)* MOD. R-E · PAT. PEND. BLZ-40417 | The Crucible's brass plaque |
+| *(HB, v3)* Kinderhammer | "Child's hammer": the inn's splitting maul, the Hammer's weapon and later the players' |
+| *(HB, v3)* *dran sein* | "To be it" in a children's game; the Cousins' rhyme ends *"...ist DRAN"* |
+| *(HB, v3)* Belastungsreihe EISEN | The IRON tolerance series: Abteilung III's escalating Ironhide doses on Pvt. Paul |
+| *(HB, v3)* Wachbuch | The Hohe Wacht night watchman's watch-book, "every hour of every night" |
+
+---
+
+## 15. The homage bosses (ULTIMATE PROMPT v3; HB1–HB3, design only)
+
+Three bosses are homages to real people: Devin's cousins, his friend Paul, and Devin himself. They are love letters: terrifying in the game, flattering out of it. Each is **a person first**, with a 1944–45 life and a last impulse, which is what makes the horror land. Full design: `docs/HOMAGE_BOSSES.md`. Names marked `%LIKE_THIS%` come from the Likeness Sheet (`data/gravelight/bosses/likeness.json`) and use its defaults until Devin fills them in. The cousins' defaults are "Mara" and "Jo"; Alix and Paul are real names.
+
+### 15.1 The Cousins (Map 0 "Crossroads Inn", round 10)
+
+**Who they were:**
+- Three cousins were sent down from the city to wait out the winter of 1944 with their aunt, **Helene "Lene" Vogt**: the innkeeper's wife, whose family kept the Gasthaus Zum Kreuzweg before Anselm did.
+- They had spent every childhood summer at the inn, and every night of every summer they played the same game in the dark: a clapping rhyme that counts down from three, then hide, and whoever is left is "it".
+  - **%COUSIN_1_NAME%** split the firewood with the inn's splitting maul.
+  - **%COUSIN_2_NAME%**, the youngest, was always stretching for the jam jar on the top shelf.
+  - **Alix** held the others' hands in the dark every night, so nobody was scared.
+- They are young women now: about 22, 18 and 20.
+
+**The night of 23 December 1944:**
+- At 23:41 GRAVELIGHT ONE came down burning in the east field, and the dead came up the rail line.
+- Lene would not hide the girls with the humming machines. She took them down to the **old ice cellar under the bar**, a trapdoor unused since the war began.
+- She told them to **keep playing their game, quietly, and stay down until she came back**. Then she went up for her daughter Käthe, who would not leave the wireless.
+- **She never came back.** The girls had drunk from the yard well all winter, and after the Erwachen, **the Nachtglas dust in the well water did the rest**, a few metres under the squad's feet.
+
+**Last impulse: the game.** They are still playing it, and the players are "it."
+- **The Hammer** still splits the wood: she throws the maul, and it always comes back to her hand.
+- **The Reach** never stopped stretching, and neither did her arms.
+- **Alix, the Third Hand**, would not let go when the others died. The arm growing out of her chest is **the hand she is still holding out for them**.
+
+**Their song** is an original clapping rhyme, "Drei Kusinen" (`docs/JINGLES.md` §13), sung in German.
+
+**Canon added** (consistent with §13.1; nothing [OPEN] is closed):
+- The innkeeper's wife is **Helene "Lene" Vogt**, and the inn was her family's.
+- The inn has an **old ice cellar under the bar**, separate from the Helvetia vault behind Door 3. It is hidden by a trapdoor that is revealed only in the Cousins Round.
+- Three of Lene's nieces wintered at the inn in 1944; the guest book doesn't list family.
+- **Käthe's and Anselm's fates stay [OPEN].** The aunt's letter (`INT_HB_01`) says only that Lene went up for Käthe at the wireless; the guest book still stops on 22 December.
+
+### 15.2 PAUL (Map 1 "Kaltenbrunn", round 15)
+
+**Who he was:**
+- **Pvt. Paul %PAUL_LASTNAME%**, a US Army combat engineer (%PAUL_UNIT%), captured in the Ardennes in the autumn of 1944. The date and unit are to be confirmed; see `docs/HOMAGE_BOSSES.md` §13 D4.
+- He was the strongest, loudest, most loyal man in his unit, the one who carried everyone's pack on the march.
+
+**What was done to him:**
+- Abteilung III wanted "robust specimens", and Projekt Wiederkehr chose him for one purpose: to find the **maximum dose of Ironhide Stout a human could survive**. This was the IRON tolerance series, *Belastungsreihe EISEN*.
+- They kept increasing it, and he kept surviving. **He never broke, and he never stopped asking where his buddies were.** At every session he offered to take their doses for them.
+- Then they pushed it too far. Paul grew, and kept growing:
+  - iron-red skin, like the stout;
+  - riveted bone plates through the skin, like the barrel on the Ironhide mascot;
+  - IV lines of dark stout running into his back from a cracked rack of Helvetia bottles he drags with him.
+- When the Erwachen brought the facility down he tore out of the Lab Wing, still on the drip.
+
+**Last impulse: "protect my guys."** He doesn't know who his guys are any more, so everyone looks like the enemy, until the very end. When he falls, he recognizes an Allied face for the first time, says *"...Hey. You found me. Tell the guys I carried my share,"* and hands over the crushed tin cup he carried everywhere.
+
+His intake card says he arrived in excellent condition and "refuses to stop talking"; the pencil on its back says "TELL THE GUYS I'M OK." He is the second subject in the files who was selected for unusual tolerance and kept asking for someone: the first was Tomasz Nowak (CHARACTERS.md, Wren's dossier 10). Wren notices.
+
+### 15.3 THE SLENDER (Map 3 "Morgenrot", round 20)
+
+**Who he was:**
+- **Devin %DEVIN_LASTNAME%** was the **night watchman of the Hohe Wacht observatory**. He came up the mountain before the war, when the Hohe Wacht was a civilian astronomy station with a night staff from half of Europe. He stayed on in 1939 when the Reich took it, because nobody else would sit up there all night, and because **nothing got past him**.
+- He was a tall, thin, quiet man who took the overnight shift every night for years, because he liked the silence and the stars.
+- He watched everything, with a lantern and a ring of keys: every truck on the valley road, every light in Sankt Aurel, every shadow in the pine forest.
+- He logged it all in a thick **watch-book** (*Wachbuch*), in perfect handwriting, every hour of every night.
+
+**When the facility fell he kept his post.** His last impulse is **"keep watch."** He still walks the Meiller Lanes and the Kessel ring road with his lantern raised, logging everything he sees, and now the squad is in the log. When his shift finally ends he closes the book, blows out the lantern and sits down against a pine, at peace: *"...Shift's over. Someone else has the watch now."*
+
+He is our own design and nothing like the internet "Slender Man":
+- he has a face: pale, calm, tired, with violet eyes that never blink;
+- he wears a grey watchman's greatcoat and a peaked cap, never a suit;
+- he has only his two long arms.
+
+*(Devin's creative note, kept subtle: the watch-book, the overnight shift and "nothing gets past him" quietly nod to how he really works. In the world, he is only ever a WW2 watchman.)*
