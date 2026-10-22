@@ -102,9 +102,8 @@ brain rewrite (U03 §1–§8, T-055) → U02 §6.2 Jakub on the new brain.
 
 
 ## Known flaky tests (Update 02/03)
-- smoke_bot_loco "stuck: teleported once nobody saw it" fails about 1 run in 3 (the random nudge can leave the bot
-  in the human's view); smoke_m2 "Panzerschreck rocket exploded" failed once in 3. Both pass on rerun.
-- smoke_vo: "a survivor reacts to the scripted buy/headshot triggers" sometimes gets no line (about half the runs).
+- Fixed in T-059: smoke_bot_loco "stuck" (a real ladder bug), smoke_vo TEAM_DOWN (a real speaker bug), smoke_m2
+  Panzerschreck (timing under load).
 - smoke_map02 failed once after the U03 brain merge (the squad left the Foreman alive for 420 s at round 33);
   passed on rerun; handed to the U03 tuning pass.
 
