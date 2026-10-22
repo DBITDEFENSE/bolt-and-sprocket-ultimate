@@ -9,8 +9,11 @@ extends Node3D
 var _out: String = "user://shots"
 var _bodies: Array[RemoteBody] = []
 var _cam: Camera3D
-const CHARS: Array[StringName] = [&"dutch", &"peg", &"deacon", &"wren"]
-const GUNS: Array[StringName] = [&"bar", &"thompson", &"trench_gun", &"kar98k"]
+var CHARS: Array[StringName] = [&"dutch", &"peg", &"deacon", &"wren"]
+var GUNS: Array[StringName] = [&"bar", &"thompson", &"trench_gun", &"kar98k"]
+## --jakub: Jakub Ostrowski (U02 section 6.2) with his coal shovel, with a Kar98k and wounded (the bandage), beside
+## Wren and Dutch for scale.
+var _wounded: Array[bool] = [false, false, false, false]
 
 
 func _ready() -> void:
@@ -18,6 +21,10 @@ func _ready() -> void:
 	for a: String in OS.get_cmdline_user_args():
 		if a.begins_with("--out="):
 			_out = a.substr(6)
+		elif a == "--jakub":
+			CHARS = [&"jakub", &"jakub", &"wren", &"dutch"]
+			GUNS = [&"coal_shovel", &"kar98k", &"springfield", &"bar"]
+			_wounded = [false, true, false, false]
 	DirAccess.make_dir_recursive_absolute(_out if _out.is_absolute_path() else ProjectSettings.globalize_path(_out))
 	var we: WorldEnvironment = WorldEnvironment.new()
 	var env: Environment = Environment.new()
@@ -45,6 +52,7 @@ func _ready() -> void:
 		b.position = Vector3(-3.3 + 2.2 * float(i), 0, 0)
 		b.setup(CHARS[i], 10 + i)
 		b.set_weapon(GUNS[i])
+		b.set_wounded(_wounded[i])
 		(b.get("_tag") as Label3D).text = String(CHARS[i]).capitalize()
 		_bodies.append(b)
 	_cam = Camera3D.new()

@@ -49,6 +49,10 @@ var net_flags: int = 0            # remote: the last replicated state flags (see
 var interp: InterpBuffer = null   # remote: interpolation samples
 var bot_damage_mult: float = 1.0  # bot: skill preset damage_taken_mult (bots.json)
 var bleedout_seconds: float = 0.0  # > 0: this player's own co-op bleed-out clock (a companion; 0 = player.json)
+## A companion (Jakub, U02 section 6.2): a bot-style Player that is no match player (no id in GameState.player_ids,
+## no slot, no scaling, no perks). It always goes into last stand when downed (even in solo) and never keeps a
+## solo match alive on its own (MapRoot._on_player_downed).
+var is_companion: bool = false
 
 var camera: Camera3D
 var head: Node3D
@@ -1379,7 +1383,7 @@ func down() -> void:
 	_hold_t = 0.0
 	interact_progress = 0.0
 	_set_hold_node(null)
-	if not GameState.is_solo():
+	if not GameState.is_solo() or is_companion:
 		_enter_last_stand()
 	else:
 		var tw: Tween = create_tween()

@@ -2,6 +2,36 @@
  "_doc": "Built by gravelight/tools_src/gen_vo.py. files: audio file per line (or per exchange part <id>_p<n>) with the text/profile hash that produced it; missing: ids with no audio and why. Windows OneCore TTS (Microsoft David / Mark / Zira), processed; see docs/ASSETS.md.",
  "tool_version": "1",
  "files": {
+  "BNT_DEA_JAK_01_p0": {
+   "line": "BNT_DEA_JAK_01",
+   "speaker": "DEA",
+   "hash": "001ba22079418c9b",
+   "path": "res://gravelight/audio/vo/dea/BNT_DEA_JAK_01_p0.ogg",
+   "format": "ogg",
+   "duration": 4.298,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "BNT_DEA_JAK_01_p1": {
+   "line": "BNT_DEA_JAK_01",
+   "speaker": "JAK",
+   "hash": "ddbfdfbff5b3267e",
+   "path": "res://gravelight/audio/vo/jak/BNT_DEA_JAK_01_p1.ogg",
+   "format": "ogg",
+   "duration": 5.019,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "BNT_DEA_JAK_01_p2": {
+   "line": "BNT_DEA_JAK_01",
+   "speaker": "DEA",
+   "hash": "0eebafa37300b538",
+   "path": "res://gravelight/audio/vo/dea/BNT_DEA_JAK_01_p2.ogg",
+   "format": "ogg",
+   "duration": 3.429,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
   "BNT_DEA_WRN_01_p0": {
    "line": "BNT_DEA_WRN_01",
    "speaker": "DEA",
@@ -349,6 +379,36 @@
    "path": "res://gravelight/audio/vo/dut/BNT_DUT_DEA_05_p2.ogg",
    "format": "ogg",
    "duration": 1.227,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_JAK_01_p0": {
+   "line": "BNT_DUT_JAK_01",
+   "speaker": "DUT",
+   "hash": "afcff18837020d7e",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_JAK_01_p0.ogg",
+   "format": "ogg",
+   "duration": 7.123,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "BNT_DUT_JAK_01_p1": {
+   "line": "BNT_DUT_JAK_01",
+   "speaker": "JAK",
+   "hash": "373f3e11129103e2",
+   "path": "res://gravelight/audio/vo/jak/BNT_DUT_JAK_01_p1.ogg",
+   "format": "ogg",
+   "duration": 4.356,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "BNT_DUT_JAK_01_p2": {
+   "line": "BNT_DUT_JAK_01",
+   "speaker": "DUT",
+   "hash": "e16413c93ff83a72",
+   "path": "res://gravelight/audio/vo/dut/BNT_DUT_JAK_01_p2.ogg",
+   "format": "ogg",
+   "duration": 2.133,
    "voice": "David",
    "chain": "dutch"
   },
@@ -842,6 +902,46 @@
    "voice": "Zira",
    "chain": "peg"
   },
+  "BNT_PEG_JAK_01_p0": {
+   "line": "BNT_PEG_JAK_01",
+   "speaker": "PEG",
+   "hash": "f1150ff4a3ba2492",
+   "path": "res://gravelight/audio/vo/peg/BNT_PEG_JAK_01_p0.ogg",
+   "format": "ogg",
+   "duration": 2.196,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_PEG_JAK_01_p1": {
+   "line": "BNT_PEG_JAK_01",
+   "speaker": "JAK",
+   "hash": "b3c2857ec2928a20",
+   "path": "res://gravelight/audio/vo/jak/BNT_PEG_JAK_01_p1.ogg",
+   "format": "ogg",
+   "duration": 5.985,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "BNT_PEG_JAK_01_p2": {
+   "line": "BNT_PEG_JAK_01",
+   "speaker": "PEG",
+   "hash": "78601e627b2fe729",
+   "path": "res://gravelight/audio/vo/peg/BNT_PEG_JAK_01_p2.ogg",
+   "format": "ogg",
+   "duration": 0.722,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "BNT_PEG_JAK_01_p3": {
+   "line": "BNT_PEG_JAK_01",
+   "speaker": "JAK",
+   "hash": "c89df5be3dcf4e02",
+   "path": "res://gravelight/audio/vo/jak/BNT_PEG_JAK_01_p3.ogg",
+   "format": "ogg",
+   "duration": 1.628,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
   "BNT_PEG_WRN_01_p0": {
    "line": "BNT_PEG_WRN_01",
    "speaker": "WRN",
@@ -1001,6 +1101,106 @@
    "duration": 0.805,
    "voice": "Zira",
    "chain": "peg"
+  },
+  "BNT_WRN_JAK_SCENE_01_p0": {
+   "line": "BNT_WRN_JAK_SCENE_01",
+   "speaker": "JAK",
+   "hash": "b203cd39ac1988db",
+   "path": "res://gravelight/audio/vo/jak/BNT_WRN_JAK_SCENE_01_p0.ogg",
+   "format": "ogg",
+   "duration": 6.512,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "BNT_WRN_JAK_SCENE_01_p1": {
+   "line": "BNT_WRN_JAK_SCENE_01",
+   "speaker": "WRN",
+   "hash": "a79a543b9d4d4d22",
+   "path": "res://gravelight/audio/vo/wrn/BNT_WRN_JAK_SCENE_01_p1.ogg",
+   "format": "ogg",
+   "duration": 5.094,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_WRN_JAK_SCENE_01_p2": {
+   "line": "BNT_WRN_JAK_SCENE_01",
+   "speaker": "JAK",
+   "hash": "22d5fda8685835b5",
+   "path": "res://gravelight/audio/vo/jak/BNT_WRN_JAK_SCENE_01_p2.ogg",
+   "format": "ogg",
+   "duration": 6.917,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "BNT_WRN_JAK_SCENE_01_p3": {
+   "line": "BNT_WRN_JAK_SCENE_01",
+   "speaker": "WRN",
+   "hash": "095ec2209382e08d",
+   "path": "res://gravelight/audio/vo/wrn/BNT_WRN_JAK_SCENE_01_p3.ogg",
+   "format": "ogg",
+   "duration": 2.253,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_WRN_JAK_SCENE_01_p4": {
+   "line": "BNT_WRN_JAK_SCENE_01",
+   "speaker": "JAK",
+   "hash": "c5954d2107dd032e",
+   "path": "res://gravelight/audio/vo/jak/BNT_WRN_JAK_SCENE_01_p4.ogg",
+   "format": "ogg",
+   "duration": 9.488,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "BNT_WRN_JAK_SCENE_01_p5": {
+   "line": "BNT_WRN_JAK_SCENE_01",
+   "speaker": "WRN",
+   "hash": "22e279255d2210ec",
+   "path": "res://gravelight/audio/vo/wrn/BNT_WRN_JAK_SCENE_01_p5.ogg",
+   "format": "ogg",
+   "duration": 4.875,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_WRN_JAK_SCENE_01_p6": {
+   "line": "BNT_WRN_JAK_SCENE_01",
+   "speaker": "JAK",
+   "hash": "2981ff8872aa2975",
+   "path": "res://gravelight/audio/vo/jak/BNT_WRN_JAK_SCENE_01_p6.ogg",
+   "format": "ogg",
+   "duration": 10.364,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "BNT_WRN_JAK_SCENE_01_p7": {
+   "line": "BNT_WRN_JAK_SCENE_01",
+   "speaker": "WRN",
+   "hash": "a7b7e4d9d7cce84e",
+   "path": "res://gravelight/audio/vo/wrn/BNT_WRN_JAK_SCENE_01_p7.ogg",
+   "format": "ogg",
+   "duration": 1.176,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "BNT_WRN_JAK_SCENE_01_p8": {
+   "line": "BNT_WRN_JAK_SCENE_01",
+   "speaker": "JAK",
+   "hash": "7a832b67ad29de0a",
+   "path": "res://gravelight/audio/vo/jak/BNT_WRN_JAK_SCENE_01_p8.ogg",
+   "format": "ogg",
+   "duration": 8.915,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "BNT_WRN_JAK_SCENE_01_p9": {
+   "line": "BNT_WRN_JAK_SCENE_01",
+   "speaker": "WRN",
+   "hash": "4e3a76239dd71c15",
+   "path": "res://gravelight/audio/vo/wrn/BNT_WRN_JAK_SCENE_01_p9.ogg",
+   "format": "ogg",
+   "duration": 3.23,
+   "voice": "Zira",
+   "chain": "wren"
   },
   "DEA_AMMO_LOW_01": {
    "line": "DEA_AMMO_LOW_01",
@@ -1589,6 +1789,26 @@
    "path": "res://gravelight/audio/vo/dea/DEA_INTEL_01.ogg",
    "format": "ogg",
    "duration": 4.914,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_JAKUB_FALLEN_01": {
+   "line": "DEA_JAKUB_FALLEN_01",
+   "speaker": "DEA",
+   "hash": "9faa6e1c21e996e6",
+   "path": "res://gravelight/audio/vo/dea/DEA_JAKUB_FALLEN_01.ogg",
+   "format": "ogg",
+   "duration": 6.134,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_JAKUB_MEET_01": {
+   "line": "DEA_JAKUB_MEET_01",
+   "speaker": "DEA",
+   "hash": "073fef3fde1ce839",
+   "path": "res://gravelight/audio/vo/dea/DEA_JAKUB_MEET_01.ogg",
+   "format": "ogg",
+   "duration": 8.41,
    "voice": "Mark",
    "chain": "deacon"
   },
@@ -2782,6 +3002,26 @@
    "voice": "David",
    "chain": "dutch"
   },
+  "DUT_JAKUB_FALLEN_01": {
+   "line": "DUT_JAKUB_FALLEN_01",
+   "speaker": "DUT",
+   "hash": "6aa8fb712257743a",
+   "path": "res://gravelight/audio/vo/dut/DUT_JAKUB_FALLEN_01.ogg",
+   "format": "ogg",
+   "duration": 9.05,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_JAKUB_MEET_01": {
+   "line": "DUT_JAKUB_MEET_01",
+   "speaker": "DUT",
+   "hash": "f6c8880e4d61c79c",
+   "path": "res://gravelight/audio/vo/dut/DUT_JAKUB_MEET_01.ogg",
+   "format": "ogg",
+   "duration": 9.141,
+   "voice": "David",
+   "chain": "dutch"
+  },
   "DUT_MIDNIGHT_01": {
    "line": "DUT_MIDNIGHT_01",
    "speaker": "DUT",
@@ -3921,6 +4161,1066 @@
    "duration": 5.619,
    "voice": "David",
    "chain": "radio"
+  },
+  "JAK_ALARM_01": {
+   "line": "JAK_ALARM_01",
+   "speaker": "JAK",
+   "hash": "742a095ac0231428",
+   "path": "res://gravelight/audio/vo/jak/JAK_ALARM_01.ogg",
+   "format": "ogg",
+   "duration": 2.178,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_ALARM_02": {
+   "line": "JAK_ALARM_02",
+   "speaker": "JAK",
+   "hash": "7e5e63171314040c",
+   "path": "res://gravelight/audio/vo/jak/JAK_ALARM_02.ogg",
+   "format": "ogg",
+   "duration": 2.852,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_AMMO_LOW_01": {
+   "line": "JAK_AMMO_LOW_01",
+   "speaker": "JAK",
+   "hash": "7141ae7d4dd7a45c",
+   "path": "res://gravelight/audio/vo/jak/JAK_AMMO_LOW_01.ogg",
+   "format": "ogg",
+   "duration": 2.998,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_AMMO_NONE_01": {
+   "line": "JAK_AMMO_NONE_01",
+   "speaker": "JAK",
+   "hash": "c16ddbb9d6654c07",
+   "path": "res://gravelight/audio/vo/jak/JAK_AMMO_NONE_01.ogg",
+   "format": "ogg",
+   "duration": 2.335,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_BOARD_01": {
+   "line": "JAK_BOARD_01",
+   "speaker": "JAK",
+   "hash": "75eb15d1287bc9e7",
+   "path": "res://gravelight/audio/vo/jak/JAK_BOARD_01.ogg",
+   "format": "ogg",
+   "duration": 4.334,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_BOARD_02": {
+   "line": "JAK_BOARD_02",
+   "speaker": "JAK",
+   "hash": "1a4df0701bf4991c",
+   "path": "res://gravelight/audio/vo/jak/JAK_BOARD_02.ogg",
+   "format": "ogg",
+   "duration": 1.841,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_BOSS_INCOMING_01": {
+   "line": "JAK_BOSS_INCOMING_01",
+   "speaker": "JAK",
+   "hash": "61db5a823f531ff4",
+   "path": "res://gravelight/audio/vo/jak/JAK_BOSS_INCOMING_01.ogg",
+   "format": "ogg",
+   "duration": 2.852,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_BREAKOUT_01": {
+   "line": "JAK_BREAKOUT_01",
+   "speaker": "JAK",
+   "hash": "557364b8b7eb0133",
+   "path": "res://gravelight/audio/vo/jak/JAK_BREAKOUT_01.ogg",
+   "format": "ogg",
+   "duration": 4.581,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_BREAKOUT_02": {
+   "line": "JAK_BREAKOUT_02",
+   "speaker": "JAK",
+   "hash": "0de4b5c9ac10b297",
+   "path": "res://gravelight/audio/vo/jak/JAK_BREAKOUT_02.ogg",
+   "format": "ogg",
+   "duration": 4.267,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_BREAKOUT_03": {
+   "line": "JAK_BREAKOUT_03",
+   "speaker": "JAK",
+   "hash": "f577a21bfb0a6f51",
+   "path": "res://gravelight/audio/vo/jak/JAK_BREAKOUT_03.ogg",
+   "format": "ogg",
+   "duration": 4.166,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_BREAKOUT_SELF_01": {
+   "line": "JAK_BREAKOUT_SELF_01",
+   "speaker": "JAK",
+   "hash": "c6f9a0021b6c758e",
+   "path": "res://gravelight/audio/vo/jak/JAK_BREAKOUT_SELF_01.ogg",
+   "format": "ogg",
+   "duration": 4.806,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_BUY_AMMO_01": {
+   "line": "JAK_BUY_AMMO_01",
+   "speaker": "JAK",
+   "hash": "40b8c3fbb36cdc46",
+   "path": "res://gravelight/audio/vo/jak/JAK_BUY_AMMO_01.ogg",
+   "format": "ogg",
+   "duration": 3.222,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CAGE_HELLO_01": {
+   "line": "JAK_CAGE_HELLO_01",
+   "speaker": "JAK",
+   "hash": "e997a672e7b8fdc7",
+   "path": "res://gravelight/audio/vo/jak/JAK_CAGE_HELLO_01.ogg",
+   "format": "ogg",
+   "duration": 5.457,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CAGE_HELLO_02": {
+   "line": "JAK_CAGE_HELLO_02",
+   "speaker": "JAK",
+   "hash": "36a985cc04cac049",
+   "path": "res://gravelight/audio/vo/jak/JAK_CAGE_HELLO_02.ogg",
+   "format": "ogg",
+   "duration": 8.298,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CAGE_TALK_01": {
+   "line": "JAK_CAGE_TALK_01",
+   "speaker": "JAK",
+   "hash": "61786a44a6e5b43a",
+   "path": "res://gravelight/audio/vo/jak/JAK_CAGE_TALK_01.ogg",
+   "format": "ogg",
+   "duration": 8.253,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CAGE_TALK_02": {
+   "line": "JAK_CAGE_TALK_02",
+   "speaker": "JAK",
+   "hash": "a76bcab2ea27a75b",
+   "path": "res://gravelight/audio/vo/jak/JAK_CAGE_TALK_02.ogg",
+   "format": "ogg",
+   "duration": 6.131,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CAGE_TALK_03": {
+   "line": "JAK_CAGE_TALK_03",
+   "speaker": "JAK",
+   "hash": "c8e8940f971f5429",
+   "path": "res://gravelight/audio/vo/jak/JAK_CAGE_TALK_03.ogg",
+   "format": "ogg",
+   "duration": 5.973,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CAGE_TALK_04": {
+   "line": "JAK_CAGE_TALK_04",
+   "speaker": "JAK",
+   "hash": "721fb03797b0e792",
+   "path": "res://gravelight/audio/vo/jak/JAK_CAGE_TALK_04.ogg",
+   "format": "ogg",
+   "duration": 7.669,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CALL_01": {
+   "line": "JAK_CALL_01",
+   "speaker": "JAK",
+   "hash": "c5129374f01c3718",
+   "path": "res://gravelight/audio/vo/jak/JAK_CALL_01.ogg",
+   "format": "ogg",
+   "duration": 3.986,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CALL_02": {
+   "line": "JAK_CALL_02",
+   "speaker": "JAK",
+   "hash": "51aef9a14f3ec56a",
+   "path": "res://gravelight/audio/vo/jak/JAK_CALL_02.ogg",
+   "format": "ogg",
+   "duration": 4.806,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CALL_03": {
+   "line": "JAK_CALL_03",
+   "speaker": "JAK",
+   "hash": "daec49cbf89bc9cf",
+   "path": "res://gravelight/audio/vo/jak/JAK_CALL_03.ogg",
+   "format": "ogg",
+   "duration": 3.481,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CALL_04": {
+   "line": "JAK_CALL_04",
+   "speaker": "JAK",
+   "hash": "128a78bc4560124c",
+   "path": "res://gravelight/audio/vo/jak/JAK_CALL_04.ogg",
+   "format": "ogg",
+   "duration": 6.344,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CHATTER_01": {
+   "line": "JAK_CHATTER_01",
+   "speaker": "JAK",
+   "hash": "dcc54a4531061c15",
+   "path": "res://gravelight/audio/vo/jak/JAK_CHATTER_01.ogg",
+   "format": "ogg",
+   "duration": 3.818,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CHATTER_02": {
+   "line": "JAK_CHATTER_02",
+   "speaker": "JAK",
+   "hash": "439687d29c2bb165",
+   "path": "res://gravelight/audio/vo/jak/JAK_CHATTER_02.ogg",
+   "format": "ogg",
+   "duration": 3.234,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CHATTER_03": {
+   "line": "JAK_CHATTER_03",
+   "speaker": "JAK",
+   "hash": "773a029d76fdf268",
+   "path": "res://gravelight/audio/vo/jak/JAK_CHATTER_03.ogg",
+   "format": "ogg",
+   "duration": 4.233,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CHATTER_04": {
+   "line": "JAK_CHATTER_04",
+   "speaker": "JAK",
+   "hash": "edbca51f6aac39d2",
+   "path": "res://gravelight/audio/vo/jak/JAK_CHATTER_04.ogg",
+   "format": "ogg",
+   "duration": 6.456,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CMD_BUY_PERKS_01": {
+   "line": "JAK_CMD_BUY_PERKS_01",
+   "speaker": "JAK",
+   "hash": "7e5c02e2a3020e96",
+   "path": "res://gravelight/audio/vo/jak/JAK_CMD_BUY_PERKS_01.ogg",
+   "format": "ogg",
+   "duration": 2.403,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CMD_FETCH_PART_01": {
+   "line": "JAK_CMD_FETCH_PART_01",
+   "speaker": "JAK",
+   "hash": "59053ada1a36812e",
+   "path": "res://gravelight/audio/vo/jak/JAK_CMD_FETCH_PART_01.ogg",
+   "format": "ogg",
+   "duration": 0.64,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CMD_FOLLOW_01": {
+   "line": "JAK_CMD_FOLLOW_01",
+   "speaker": "JAK",
+   "hash": "1a66adec9750492c",
+   "path": "res://gravelight/audio/vo/jak/JAK_CMD_FOLLOW_01.ogg",
+   "format": "ogg",
+   "duration": 2.504,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CMD_HOLD_01": {
+   "line": "JAK_CMD_HOLD_01",
+   "speaker": "JAK",
+   "hash": "04934c7584edb2b8",
+   "path": "res://gravelight/audio/vo/jak/JAK_CMD_HOLD_01.ogg",
+   "format": "ogg",
+   "duration": 2.571,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CMD_OPEN_DOOR_01": {
+   "line": "JAK_CMD_OPEN_DOOR_01",
+   "speaker": "JAK",
+   "hash": "ee816daaa29a6b5c",
+   "path": "res://gravelight/audio/vo/jak/JAK_CMD_OPEN_DOOR_01.ogg",
+   "format": "ogg",
+   "duration": 1.1,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CMD_REPAIR_01": {
+   "line": "JAK_CMD_REPAIR_01",
+   "speaker": "JAK",
+   "hash": "1b905b790161e033",
+   "path": "res://gravelight/audio/vo/jak/JAK_CMD_REPAIR_01.ogg",
+   "format": "ogg",
+   "duration": 2.672,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CMD_REVIVE_01": {
+   "line": "JAK_CMD_REVIVE_01",
+   "speaker": "JAK",
+   "hash": "c32aeb9619bf5825",
+   "path": "res://gravelight/audio/vo/jak/JAK_CMD_REVIVE_01.ogg",
+   "format": "ogg",
+   "duration": 1.92,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CMD_SAVE_SCRIP_01": {
+   "line": "JAK_CMD_SAVE_SCRIP_01",
+   "speaker": "JAK",
+   "hash": "2b2da4d403dff6b1",
+   "path": "res://gravelight/audio/vo/jak/JAK_CMD_SAVE_SCRIP_01.ogg",
+   "format": "ogg",
+   "duration": 3.38,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CMD_TRAIN_01": {
+   "line": "JAK_CMD_TRAIN_01",
+   "speaker": "JAK",
+   "hash": "8f48e3938b120baa",
+   "path": "res://gravelight/audio/vo/jak/JAK_CMD_TRAIN_01.ogg",
+   "format": "ogg",
+   "duration": 2.156,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_COUSINS_01": {
+   "line": "JAK_COUSINS_01",
+   "speaker": "JAK",
+   "hash": "4fb445518c99348d",
+   "path": "res://gravelight/audio/vo/jak/JAK_COUSINS_01.ogg",
+   "format": "ogg",
+   "duration": 3.649,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_COUSINS_02": {
+   "line": "JAK_COUSINS_02",
+   "speaker": "JAK",
+   "hash": "104969a3a4e72fd1",
+   "path": "res://gravelight/audio/vo/jak/JAK_COUSINS_02.ogg",
+   "format": "ogg",
+   "duration": 8.522,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_COUSINS_AFTER_01": {
+   "line": "JAK_COUSINS_AFTER_01",
+   "speaker": "JAK",
+   "hash": "970d8e910b51130c",
+   "path": "res://gravelight/audio/vo/jak/JAK_COUSINS_AFTER_01.ogg",
+   "format": "ogg",
+   "duration": 10.274,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_COVER_01": {
+   "line": "JAK_COVER_01",
+   "speaker": "JAK",
+   "hash": "ed4c480db016d5a9",
+   "path": "res://gravelight/audio/vo/jak/JAK_COVER_01.ogg",
+   "format": "ogg",
+   "duration": 3.312,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CRATE_MOVED_01": {
+   "line": "JAK_CRATE_MOVED_01",
+   "speaker": "JAK",
+   "hash": "c112c26d412c4d1c",
+   "path": "res://gravelight/audio/vo/jak/JAK_CRATE_MOVED_01.ogg",
+   "format": "ogg",
+   "duration": 4.008,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_CRAWLER_01": {
+   "line": "JAK_CRAWLER_01",
+   "speaker": "JAK",
+   "hash": "a19ac078243a4f1b",
+   "path": "res://gravelight/audio/vo/jak/JAK_CRAWLER_01.ogg",
+   "format": "ogg",
+   "duration": 2.919,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_DOWN_01": {
+   "line": "JAK_DOWN_01",
+   "speaker": "JAK",
+   "hash": "1ca1c88755adcdd0",
+   "path": "res://gravelight/audio/vo/jak/JAK_DOWN_01.ogg",
+   "format": "ogg",
+   "duration": 3.705,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_DOWN_02": {
+   "line": "JAK_DOWN_02",
+   "speaker": "JAK",
+   "hash": "c1ee17b036b070ae",
+   "path": "res://gravelight/audio/vo/jak/JAK_DOWN_02.ogg",
+   "format": "ogg",
+   "duration": 1.853,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_DOWN_03": {
+   "line": "JAK_DOWN_03",
+   "speaker": "JAK",
+   "hash": "99941940bce5e6c8",
+   "path": "res://gravelight/audio/vo/jak/JAK_DOWN_03.ogg",
+   "format": "ogg",
+   "duration": 2.841,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_FIGHT_KILL_01": {
+   "line": "JAK_FIGHT_KILL_01",
+   "speaker": "JAK",
+   "hash": "52ea6fdc9736bb35",
+   "path": "res://gravelight/audio/vo/jak/JAK_FIGHT_KILL_01.ogg",
+   "format": "ogg",
+   "duration": 4.042,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_FIGHT_KILL_02": {
+   "line": "JAK_FIGHT_KILL_02",
+   "speaker": "JAK",
+   "hash": "0bce7362cab51fda",
+   "path": "res://gravelight/audio/vo/jak/JAK_FIGHT_KILL_02.ogg",
+   "format": "ogg",
+   "duration": 3.301,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_FREED_01": {
+   "line": "JAK_FREED_01",
+   "speaker": "JAK",
+   "hash": "38133b274a27e3fd",
+   "path": "res://gravelight/audio/vo/jak/JAK_FREED_01.ogg",
+   "format": "ogg",
+   "duration": 6.602,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_FREED_02": {
+   "line": "JAK_FREED_02",
+   "speaker": "JAK",
+   "hash": "4d0f3a8f063713b9",
+   "path": "res://gravelight/audio/vo/jak/JAK_FREED_02.ogg",
+   "format": "ogg",
+   "duration": 6.389,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_GUN_AUTO_01": {
+   "line": "JAK_GUN_AUTO_01",
+   "speaker": "JAK",
+   "hash": "2a297117ca3db5b9",
+   "path": "res://gravelight/audio/vo/jak/JAK_GUN_AUTO_01.ogg",
+   "format": "ogg",
+   "duration": 5.131,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_GUN_AUTO_02": {
+   "line": "JAK_GUN_AUTO_02",
+   "speaker": "JAK",
+   "hash": "d075ca2b2c9b9642",
+   "path": "res://gravelight/audio/vo/jak/JAK_GUN_AUTO_02.ogg",
+   "format": "ogg",
+   "duration": 5.165,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_GUN_BOLT_01": {
+   "line": "JAK_GUN_BOLT_01",
+   "speaker": "JAK",
+   "hash": "11ba931f4993e7c8",
+   "path": "res://gravelight/audio/vo/jak/JAK_GUN_BOLT_01.ogg",
+   "format": "ogg",
+   "duration": 8.444,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_GUN_BOLT_02": {
+   "line": "JAK_GUN_BOLT_02",
+   "speaker": "JAK",
+   "hash": "7c5a9983972e444e",
+   "path": "res://gravelight/audio/vo/jak/JAK_GUN_BOLT_02.ogg",
+   "format": "ogg",
+   "duration": 3.874,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_GUN_OTHER_01": {
+   "line": "JAK_GUN_OTHER_01",
+   "speaker": "JAK",
+   "hash": "14167318edf3cd83",
+   "path": "res://gravelight/audio/vo/jak/JAK_GUN_OTHER_01.ogg",
+   "format": "ogg",
+   "duration": 3.829,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_GUN_PISTOL_01": {
+   "line": "JAK_GUN_PISTOL_01",
+   "speaker": "JAK",
+   "hash": "3159dcde0d12e4c1",
+   "path": "res://gravelight/audio/vo/jak/JAK_GUN_PISTOL_01.ogg",
+   "format": "ogg",
+   "duration": 3.851,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_GUN_RIFLE_01": {
+   "line": "JAK_GUN_RIFLE_01",
+   "speaker": "JAK",
+   "hash": "2de6a61a377357ed",
+   "path": "res://gravelight/audio/vo/jak/JAK_GUN_RIFLE_01.ogg",
+   "format": "ogg",
+   "duration": 5.693,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_GUN_SHOTGUN_01": {
+   "line": "JAK_GUN_SHOTGUN_01",
+   "speaker": "JAK",
+   "hash": "4c04ef99c98457d5",
+   "path": "res://gravelight/audio/vo/jak/JAK_GUN_SHOTGUN_01.ogg",
+   "format": "ogg",
+   "duration": 3.672,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_GUN_SWAP_01": {
+   "line": "JAK_GUN_SWAP_01",
+   "speaker": "JAK",
+   "hash": "345bf105bc54543b",
+   "path": "res://gravelight/audio/vo/jak/JAK_GUN_SWAP_01.ogg",
+   "format": "ogg",
+   "duration": 4.379,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_HEADSHOT_01": {
+   "line": "JAK_HEADSHOT_01",
+   "speaker": "JAK",
+   "hash": "605e0ef838586931",
+   "path": "res://gravelight/audio/vo/jak/JAK_HEADSHOT_01.ogg",
+   "format": "ogg",
+   "duration": 3.02,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_JOIN_UNARMED_01": {
+   "line": "JAK_JOIN_UNARMED_01",
+   "speaker": "JAK",
+   "hash": "521cf0f11d2387fa",
+   "path": "res://gravelight/audio/vo/jak/JAK_JOIN_UNARMED_01.ogg",
+   "format": "ogg",
+   "duration": 8.365,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_JOIN_UNARMED_02": {
+   "line": "JAK_JOIN_UNARMED_02",
+   "speaker": "JAK",
+   "hash": "4cb478702c3981f1",
+   "path": "res://gravelight/audio/vo/jak/JAK_JOIN_UNARMED_02.ogg",
+   "format": "ogg",
+   "duration": 7.107,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_M1_ARRIVE_01": {
+   "line": "JAK_M1_ARRIVE_01",
+   "speaker": "JAK",
+   "hash": "1ef6c39364408fe9",
+   "path": "res://gravelight/audio/vo/jak/JAK_M1_ARRIVE_01.ogg",
+   "format": "ogg",
+   "duration": 7.029,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_M1_ARRIVE_02": {
+   "line": "JAK_M1_ARRIVE_02",
+   "speaker": "JAK",
+   "hash": "f1ec88dbc77bfa55",
+   "path": "res://gravelight/audio/vo/jak/JAK_M1_ARRIVE_02.ogg",
+   "format": "ogg",
+   "duration": 8.612,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_M1_FOREMAN_01": {
+   "line": "JAK_M1_FOREMAN_01",
+   "speaker": "JAK",
+   "hash": "fd49251c037c5a46",
+   "path": "res://gravelight/audio/vo/jak/JAK_M1_FOREMAN_01.ogg",
+   "format": "ogg",
+   "duration": 7.86,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_M1_FOREMAN_02": {
+   "line": "JAK_M1_FOREMAN_02",
+   "speaker": "JAK",
+   "hash": "1ad1387dc80c50cf",
+   "path": "res://gravelight/audio/vo/jak/JAK_M1_FOREMAN_02.ogg",
+   "format": "ogg",
+   "duration": 6.636,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_M1_POWER_01": {
+   "line": "JAK_M1_POWER_01",
+   "speaker": "JAK",
+   "hash": "8dbe3918f550c12f",
+   "path": "res://gravelight/audio/vo/jak/JAK_M1_POWER_01.ogg",
+   "format": "ogg",
+   "duration": 5.749,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_M1_SHORTCUT_01": {
+   "line": "JAK_M1_SHORTCUT_01",
+   "speaker": "JAK",
+   "hash": "70e489ff04b54957",
+   "path": "res://gravelight/audio/vo/jak/JAK_M1_SHORTCUT_01.ogg",
+   "format": "ogg",
+   "duration": 9.791,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_M2_ARRIVE_01": {
+   "line": "JAK_M2_ARRIVE_01",
+   "speaker": "JAK",
+   "hash": "3cff9c3179ee7689",
+   "path": "res://gravelight/audio/vo/jak/JAK_M2_ARRIVE_01.ogg",
+   "format": "ogg",
+   "duration": 6.692,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_M2_ARRIVE_02": {
+   "line": "JAK_M2_ARRIVE_02",
+   "speaker": "JAK",
+   "hash": "048d729127620b23",
+   "path": "res://gravelight/audio/vo/jak/JAK_M2_ARRIVE_02.ogg",
+   "format": "ogg",
+   "duration": 5.962,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_MIDNIGHT_01": {
+   "line": "JAK_MIDNIGHT_01",
+   "speaker": "JAK",
+   "hash": "cf4508cfd16774e2",
+   "path": "res://gravelight/audio/vo/jak/JAK_MIDNIGHT_01.ogg",
+   "format": "ogg",
+   "duration": 8.095,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_MIDNIGHT_02": {
+   "line": "JAK_MIDNIGHT_02",
+   "speaker": "JAK",
+   "hash": "193464f32086ba65",
+   "path": "res://gravelight/audio/vo/jak/JAK_MIDNIGHT_02.ogg",
+   "format": "ogg",
+   "duration": 5.805,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_PERK_REFUSE_01": {
+   "line": "JAK_PERK_REFUSE_01",
+   "speaker": "JAK",
+   "hash": "04e5c71edfc8547f",
+   "path": "res://gravelight/audio/vo/jak/JAK_PERK_REFUSE_01.ogg",
+   "format": "ogg",
+   "duration": 1.651,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_PERK_REFUSE_02": {
+   "line": "JAK_PERK_REFUSE_02",
+   "speaker": "JAK",
+   "hash": "377b5e91e5cea767",
+   "path": "res://gravelight/audio/vo/jak/JAK_PERK_REFUSE_02.ogg",
+   "format": "ogg",
+   "duration": 7.164,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_PERK_REFUSE_03": {
+   "line": "JAK_PERK_REFUSE_03",
+   "speaker": "JAK",
+   "hash": "a05dfd5834253080",
+   "path": "res://gravelight/audio/vo/jak/JAK_PERK_REFUSE_03.ogg",
+   "format": "ogg",
+   "duration": 5.277,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_PING_BLACKOUT_01": {
+   "line": "JAK_PING_BLACKOUT_01",
+   "speaker": "JAK",
+   "hash": "a8c83c06dfc83e55",
+   "path": "res://gravelight/audio/vo/jak/JAK_PING_BLACKOUT_01.ogg",
+   "format": "ogg",
+   "duration": 3.088,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_PING_CLEARANCE_01": {
+   "line": "JAK_PING_CLEARANCE_01",
+   "speaker": "JAK",
+   "hash": "911c749ddb7b12a1",
+   "path": "res://gravelight/audio/vo/jak/JAK_PING_CLEARANCE_01.ogg",
+   "format": "ogg",
+   "duration": 3.211,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_PING_DEATHSDOOR_01": {
+   "line": "JAK_PING_DEATHSDOOR_01",
+   "speaker": "JAK",
+   "hash": "303091bd00b671d0",
+   "path": "res://gravelight/audio/vo/jak/JAK_PING_DEATHSDOOR_01.ogg",
+   "format": "ogg",
+   "duration": 4.682,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_PING_DOUBLESCRIP_01": {
+   "line": "JAK_PING_DOUBLESCRIP_01",
+   "speaker": "JAK",
+   "hash": "682cebae8e3abc3c",
+   "path": "res://gravelight/audio/vo/jak/JAK_PING_DOUBLESCRIP_01.ogg",
+   "format": "ogg",
+   "duration": 2.964,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_PING_FORTIFY_01": {
+   "line": "JAK_PING_FORTIFY_01",
+   "speaker": "JAK",
+   "hash": "ffa3135e57e68f1a",
+   "path": "res://gravelight/audio/vo/jak/JAK_PING_FORTIFY_01.ogg",
+   "format": "ogg",
+   "duration": 3.211,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_PING_RESUPPLY_01": {
+   "line": "JAK_PING_RESUPPLY_01",
+   "speaker": "JAK",
+   "hash": "4bcae27399d17568",
+   "path": "res://gravelight/audio/vo/jak/JAK_PING_RESUPPLY_01.ogg",
+   "format": "ogg",
+   "duration": 2.987,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_POWERUP_SEEN_01": {
+   "line": "JAK_POWERUP_SEEN_01",
+   "speaker": "JAK",
+   "hash": "b8d411470e82470f",
+   "path": "res://gravelight/audio/vo/jak/JAK_POWERUP_SEEN_01.ogg",
+   "format": "ogg",
+   "duration": 4.929,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_RELOAD_01": {
+   "line": "JAK_RELOAD_01",
+   "speaker": "JAK",
+   "hash": "b250e996e9b51f57",
+   "path": "res://gravelight/audio/vo/jak/JAK_RELOAD_01.ogg",
+   "format": "ogg",
+   "duration": 0.662,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_RELOAD_02": {
+   "line": "JAK_RELOAD_02",
+   "speaker": "JAK",
+   "hash": "d7b1933a00f2a328",
+   "path": "res://gravelight/audio/vo/jak/JAK_RELOAD_02.ogg",
+   "format": "ogg",
+   "duration": 3.2,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_RETURN_WOUNDED_01": {
+   "line": "JAK_RETURN_WOUNDED_01",
+   "speaker": "JAK",
+   "hash": "877562aa7877ed7c",
+   "path": "res://gravelight/audio/vo/jak/JAK_RETURN_WOUNDED_01.ogg",
+   "format": "ogg",
+   "duration": 1.965,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_RETURN_WOUNDED_02": {
+   "line": "JAK_RETURN_WOUNDED_02",
+   "speaker": "JAK",
+   "hash": "834d1a9258b979a8",
+   "path": "res://gravelight/audio/vo/jak/JAK_RETURN_WOUNDED_02.ogg",
+   "format": "ogg",
+   "duration": 6.804,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_REVIVED_01": {
+   "line": "JAK_REVIVED_01",
+   "speaker": "JAK",
+   "hash": "5fd2d4c85dc3373c",
+   "path": "res://gravelight/audio/vo/jak/JAK_REVIVED_01.ogg",
+   "format": "ogg",
+   "duration": 4.255,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_REVIVED_02": {
+   "line": "JAK_REVIVED_02",
+   "speaker": "JAK",
+   "hash": "a2fafd8ab247cfad",
+   "path": "res://gravelight/audio/vo/jak/JAK_REVIVED_02.ogg",
+   "format": "ogg",
+   "duration": 2.886,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_REVIVE_01": {
+   "line": "JAK_REVIVE_01",
+   "speaker": "JAK",
+   "hash": "137ec60fd9747128",
+   "path": "res://gravelight/audio/vo/jak/JAK_REVIVE_01.ogg",
+   "format": "ogg",
+   "duration": 3.413,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_REVIVE_02": {
+   "line": "JAK_REVIVE_02",
+   "speaker": "JAK",
+   "hash": "2546a9c59d9600a5",
+   "path": "res://gravelight/audio/vo/jak/JAK_REVIVE_02.ogg",
+   "format": "ogg",
+   "duration": 3.346,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_SCREAMER_01": {
+   "line": "JAK_SCREAMER_01",
+   "speaker": "JAK",
+   "hash": "e83782859e0a74f4",
+   "path": "res://gravelight/audio/vo/jak/JAK_SCREAMER_01.ogg",
+   "format": "ogg",
+   "duration": 4.143,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_SPRINTER_BEHIND_01": {
+   "line": "JAK_SPRINTER_BEHIND_01",
+   "speaker": "JAK",
+   "hash": "8aeed2c7d398fa44",
+   "path": "res://gravelight/audio/vo/jak/JAK_SPRINTER_BEHIND_01.ogg",
+   "format": "ogg",
+   "duration": 3.301,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_SPRINTER_BEHIND_02": {
+   "line": "JAK_SPRINTER_BEHIND_02",
+   "speaker": "JAK",
+   "hash": "a7be1913f0b2e21e",
+   "path": "res://gravelight/audio/vo/jak/JAK_SPRINTER_BEHIND_02.ogg",
+   "format": "ogg",
+   "duration": 1.819,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_TALK_ASK_01": {
+   "line": "JAK_TALK_ASK_01",
+   "speaker": "JAK",
+   "hash": "757eceb75f4e795c",
+   "path": "res://gravelight/audio/vo/jak/JAK_TALK_ASK_01.ogg",
+   "format": "ogg",
+   "duration": 7.512,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_TALK_ASK_02": {
+   "line": "JAK_TALK_ASK_02",
+   "speaker": "JAK",
+   "hash": "311fb54a0d936a9e",
+   "path": "res://gravelight/audio/vo/jak/JAK_TALK_ASK_02.ogg",
+   "format": "ogg",
+   "duration": 8.163,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_TEAM_DOWN_01": {
+   "line": "JAK_TEAM_DOWN_01",
+   "speaker": "JAK",
+   "hash": "cf533d680e0de6c2",
+   "path": "res://gravelight/audio/vo/jak/JAK_TEAM_DOWN_01.ogg",
+   "format": "ogg",
+   "duration": 3.054,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_TEAM_DOWN_02": {
+   "line": "JAK_TEAM_DOWN_02",
+   "speaker": "JAK",
+   "hash": "2f7e7cc451e8ddee",
+   "path": "res://gravelight/audio/vo/jak/JAK_TEAM_DOWN_02.ogg",
+   "format": "ogg",
+   "duration": 1.662,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_WINDOW_OPEN_01": {
+   "line": "JAK_WINDOW_OPEN_01",
+   "speaker": "JAK",
+   "hash": "9aa3df38ef455052",
+   "path": "res://gravelight/audio/vo/jak/JAK_WINDOW_OPEN_01.ogg",
+   "format": "ogg",
+   "duration": 2.066,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_ZONE_B_RAILYARD_01": {
+   "line": "JAK_ZONE_B_RAILYARD_01",
+   "speaker": "JAK",
+   "hash": "77b43e41d2b5a420",
+   "path": "res://gravelight/audio/vo/jak/JAK_ZONE_B_RAILYARD_01.ogg",
+   "format": "ogg",
+   "duration": 8.275,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_ZONE_C_ADMIN_01": {
+   "line": "JAK_ZONE_C_ADMIN_01",
+   "speaker": "JAK",
+   "hash": "e6a16a3753bf416f",
+   "path": "res://gravelight/audio/vo/jak/JAK_ZONE_C_ADMIN_01.ogg",
+   "format": "ogg",
+   "duration": 7.366,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_ZONE_D_BARRACKS_01": {
+   "line": "JAK_ZONE_D_BARRACKS_01",
+   "speaker": "JAK",
+   "hash": "90cf3c0229a6b557",
+   "path": "res://gravelight/audio/vo/jak/JAK_ZONE_D_BARRACKS_01.ogg",
+   "format": "ogg",
+   "duration": 5.771,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_ZONE_D_PENHALL_01": {
+   "line": "JAK_ZONE_D_PENHALL_01",
+   "speaker": "JAK",
+   "hash": "5bff4f0db00602c7",
+   "path": "res://gravelight/audio/vo/jak/JAK_ZONE_D_PENHALL_01.ogg",
+   "format": "ogg",
+   "duration": 7.871,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_ZONE_E_LIFT_01": {
+   "line": "JAK_ZONE_E_LIFT_01",
+   "speaker": "JAK",
+   "hash": "e6f0bf69a1ed75db",
+   "path": "res://gravelight/audio/vo/jak/JAK_ZONE_E_LIFT_01.ogg",
+   "format": "ogg",
+   "duration": 6.905,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_ZONE_E_UBOAT_01": {
+   "line": "JAK_ZONE_E_UBOAT_01",
+   "speaker": "JAK",
+   "hash": "fbcdd662c2bb3d25",
+   "path": "res://gravelight/audio/vo/jak/JAK_ZONE_E_UBOAT_01.ogg",
+   "format": "ogg",
+   "duration": 4.851,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_ZONE_F_CHAPEL_01": {
+   "line": "JAK_ZONE_F_CHAPEL_01",
+   "speaker": "JAK",
+   "hash": "f14147ef303aae97",
+   "path": "res://gravelight/audio/vo/jak/JAK_ZONE_F_CHAPEL_01.ogg",
+   "format": "ogg",
+   "duration": 7.725,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_ZONE_G_GENERATOR_01": {
+   "line": "JAK_ZONE_G_GENERATOR_01",
+   "speaker": "JAK",
+   "hash": "77456b6effd24d2c",
+   "path": "res://gravelight/audio/vo/jak/JAK_ZONE_G_GENERATOR_01.ogg",
+   "format": "ogg",
+   "duration": 6.771,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_ZONE_H_LAB_01": {
+   "line": "JAK_ZONE_H_LAB_01",
+   "speaker": "JAK",
+   "hash": "efb338c4756d832e",
+   "path": "res://gravelight/audio/vo/jak/JAK_ZONE_H_LAB_01.ogg",
+   "format": "ogg",
+   "duration": 8.578,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_ZONE_M_STAIRS_01": {
+   "line": "JAK_ZONE_M_STAIRS_01",
+   "speaker": "JAK",
+   "hash": "2f1fb5a030308ea5",
+   "path": "res://gravelight/audio/vo/jak/JAK_ZONE_M_STAIRS_01.ogg",
+   "format": "ogg",
+   "duration": 9.566,
+   "voice": "Mark",
+   "chain": "jakub"
   },
   "LSL_REC_CYL1_01": {
    "line": "LSL_REC_CYL1_01",
@@ -6332,6 +7632,26 @@
    "voice": "Zira",
    "chain": "peg"
   },
+  "PEG_JAKUB_FALLEN_01": {
+   "line": "PEG_JAKUB_FALLEN_01",
+   "speaker": "PEG",
+   "hash": "266095deb24b470c",
+   "path": "res://gravelight/audio/vo/peg/PEG_JAKUB_FALLEN_01.ogg",
+   "format": "ogg",
+   "duration": 5.963,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_JAKUB_MEET_01": {
+   "line": "PEG_JAKUB_MEET_01",
+   "speaker": "PEG",
+   "hash": "43f8fed03108a1e0",
+   "path": "res://gravelight/audio/vo/peg/PEG_JAKUB_MEET_01.ogg",
+   "format": "ogg",
+   "duration": 6.645,
+   "voice": "Zira",
+   "chain": "peg"
+  },
   "PEG_LANTERN_01": {
    "line": "PEG_LANTERN_01",
    "speaker": "PEG",
@@ -7859,6 +9179,26 @@
    "path": "res://gravelight/audio/vo/wrn/WRN_INTEL_01.ogg",
    "format": "ogg",
    "duration": 4.057,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_JAKUB_FALLEN_01": {
+   "line": "WRN_JAKUB_FALLEN_01",
+   "speaker": "WRN",
+   "hash": "1666338326fd9ca0",
+   "path": "res://gravelight/audio/vo/wrn/WRN_JAKUB_FALLEN_01.ogg",
+   "format": "ogg",
+   "duration": 5.951,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_JAKUB_MEET_01": {
+   "line": "WRN_JAKUB_MEET_01",
+   "speaker": "WRN",
+   "hash": "18f41fcdec43c85a",
+   "path": "res://gravelight/audio/vo/wrn/WRN_JAKUB_MEET_01.ogg",
+   "format": "ogg",
+   "duration": 5.583,
    "voice": "Zira",
    "chain": "wren"
   },

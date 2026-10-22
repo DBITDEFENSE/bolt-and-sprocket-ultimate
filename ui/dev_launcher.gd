@@ -106,6 +106,8 @@ func _ready() -> void:
 		var boss: String = str(b[3])
 		col.add_child(MenuKit.button(str(b[0]), func() -> void: _start_gl(bscene, br, boss), 22, "ui_confirm"))
 	col.add_child(_header("Update 02 tests"))
+	col.add_child(MenuKit.button("Map 0 — round 5 (Jakub: the Old Cellar is open, his cage breaks at round 5)", func() -> void: _start_jakub(), 22, "ui_confirm"))
+	col.add_child(MenuKit.button("Map 0 — round 10 (the Cousins)", func() -> void: _start_gl("res://gravelight/maps/map00_crossroads/map00.tscn", 10, "cousins"), 22, "ui_confirm"))
 	col.add_child(MenuKit.button("Weapon range — ADS check  ( [ / ] cycle guns )", func() -> void: AdsRange.launch(get_tree()), 22, "ui_confirm"))
 	col.add_child(MenuKit.button("Kaltenbrunn — Totenglocke test (round 15, god mode)", func() -> void: get_tree().change_scene_to_file("res://gravelight/tools_src/range_totenglocke.tscn"), 22, "ui_confirm"))
 	col.add_child(_header("Update 03 bot tests"))
@@ -161,6 +163,18 @@ func _start_bs(scene: String) -> void:
 	BS.god_mode = _god.button_pressed
 	BSLevel.pending_cutscene = ""
 	get_tree().change_scene_to_file(scene)
+
+
+## Map 0 with the Old Cellar open, round 4 next (Jakub's breakout is round 5): the survivor, bots and god mode
+## from the fields above (gravelight/tools_src/play_jakub.gd reads them from GameState).
+func _start_jakub() -> void:
+	var bots: int = _bots.selected
+	GLSettings.set_value("bots", bots)
+	GameState.character_id = StringName(CHARACTERS[_char.selected])
+	GameState.bot_count = BotConfig.clamp_bots(BotConfig.cfg(), bots)
+	GameState.god_mode = _god.button_pressed
+	Campaign.reset()
+	get_tree().change_scene_to_file("res://gravelight/tools_src/play_jakub.tscn")
 
 
 ## Runs a tool scene in a second Godot process (this one keeps the launcher): windowed to watch it, or

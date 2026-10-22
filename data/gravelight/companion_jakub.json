@@ -1,0 +1,48 @@
+{
+ "_doc": "Jakub Ostrowski, the prisoner companion (Update 02 section 6.2, DECISIONS T-051; gravelight/world/jakub_companion.gd). He is not a player: no player id in GameState.player_ids / bot_ids, no co-op slot, no round scaling, no perks. pid: his fixed match id (never a real peer id). breakout: the round he gets out (Map 0's coal cage), the delay into that round, how long the zombie may take before the hinge gives anyway, the shovel fight. brain: BotSquad.add_brain options (docs/BOT_AI.md section 5). bleedout_seconds: his own co-op clock. wounded_hp_mult: max health on the map after the one he bled out on. call_every_s / call_unless_within_m: while he waits by the cage he calls out (positional, subtitled Polish) whenever no survivor is near. wren_scene_m: a Wren bot this close during a break plays the scene. discounts: per map, door id -> Scrip off while he is with the squad (his Kaltenbrunn shortcut). dossier_xp: his dossier page XP per event. online: false = co-op over the network keeps him in his cage (no replication for a companion yet).",
+ "pid": 9,
+ "online": false,
+ "maps_with_cage": ["map00_crossroads"],
+ "breakout": {
+  "round": 5,
+  "delay_s": 5.0,
+  "zombie_window": "W_CEL_COAL",
+  "zombie_timeout_s": 30.0,
+  "burst_distance_m": 1.6,
+  "fight_swings": 3,
+  "swing_every_s": 0.55,
+  "zombie_health": 200
+ },
+ "max_hp": 100,
+ "bleedout_seconds": 60.0,
+ "wounded_hp_mult": 0.7,
+ "melee": "coal_shovel",
+ "talk_hold_s": 0.35,
+ "choice_timeout_s": 12.0,
+ "call_every_s": 16.0,
+ "call_unless_within_m": 9.0,
+ "wren_scene_m": 5.0,
+ "wall_buy_beside_m": 3.2,
+ "perk_comment_m": 9.0,
+ "brain": {
+  "perks": false,
+  "bonus_perk": false,
+  "kit": false,
+  "shopping": false,
+  "accuracy_mult": 1.4,
+  "personality": "jakub",
+  "ammo_price_mult": 0.5,
+  "revive_priority": 2
+ },
+ "refuses_classes": ["wonder"],
+ "discounts": {
+  "map01_kaltenbrunn": {"door_stairs": 500}
+ },
+ "dossier_xp": {
+  "joined": 3000,
+  "round_with_him": 1500,
+  "revived_him": 1000,
+  "map_arrival": 10000,
+  "wren_scene": 4000
+ }
+}

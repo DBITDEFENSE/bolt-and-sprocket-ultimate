@@ -260,6 +260,68 @@
     "title": "The secret: what happened to Tomasz.",
     "text": "Reinholt's specimen log, entry 211:\nSubject KB-4471 (Nowak, T., Polish, 20). Selected for dosage trial 7 owing to unusual tolerance. Subject asked repeatedly for his sister. Dosage at 0.4 strength: survived 11 days. Subject's final impulse (per resonance trace): \"looking for someone.\" Reanimated subject does not attack. Subject wanders toward the mine entrance and must be restrained. Of no further use. Disposal deferred.\n(Handwritten at the bottom, in Sister Agnieszka's hand, in Polish:) I let him out of the tank on the night of the 3rd. He walked toward the gate. I hope he reached the snow. — A.W.\nThis is the hook for Map 2: there is a Gänger somewhere that does not attack, and is still looking."
    }
+  ],
+  "jakub": [
+   {
+    "level": 1,
+    "kind": "record",
+    "title": "Record",
+    "text": "Ostrowski, Jakub. Born 1901, Wilcza Góra. Hewer, Kaltenbrunn salt works, from 1919. Forced labour from March 1941, tag KB-2210; deep galleries from October 1942. Escaped 21 December 1944. \"Häftling (Pole) · Flucht aus K. · 22.XII.\" on a padlock at the Kreuzweg."
+   },
+   {
+    "level": 2,
+    "kind": "backstory",
+    "title": "Wilcza Góra",
+    "text": "the last house on the lane. Marta, and Hania, sixteen now. Burek the one-eared dog. The timberman Nowak's two down the lane, Zosia and Tomek. Winter coal for the Kreuzweg every November."
+   },
+   {
+    "level": 3,
+    "kind": "outfit",
+    "title": "Outfit",
+    "text": "the greatcoat off the guardroom hook, two sizes too big, the badges cut away with a shovel blade; the cloth cap; the lamp hook. \"They took the lamp. I kept the hook. A hook is a promise you get the lamp back.\""
+   },
+   {
+    "level": 4,
+    "kind": "diary",
+    "title": "Told to Deacon, round seven",
+    "text": "\"The dead don't frighten me. Twenty years I worked where the ceiling decides if you go home. What frightens me is a man with a list.\""
+   },
+   {
+    "level": 5,
+    "kind": "quotes",
+    "title": "Quote pack 1",
+    "text": "his callouts and the shovel lines."
+   },
+   {
+    "level": 6,
+    "kind": "backstory",
+    "title": "The chalk",
+    "text": "the timbermen's marks of Wilcza Góra, turned into an alphabet in the galleries. Three strokes and a hook: weak, ours, don't trust it. The guards counted it as the shift tally. He taught it to the young ones. \"Tomek made his hook backwards. Always backwards.\""
+   },
+   {
+    "level": 7,
+    "kind": "outfit",
+    "title": "Outfit",
+    "text": "the bandage. \"Not yet. Not tonight.\""
+   },
+   {
+    "level": 8,
+    "kind": "diary",
+    "title": "The stairs",
+    "text": "the night the bell would not stop. Eleven men up the Maintenance Stairs; the guards on the third landing still shooting; a bad knee, and slow was careful, and careful was alive. He said their names at the top: Antek Wiśniewski, Staszek Kral, the two Biela brothers, Józef Mazur, little Franek Sowa, Paweł Duda, Kazimierz Lis, old Wojtek Gąsior, Mietek from Gliwice."
+   },
+   {
+    "level": 9,
+    "kind": "card",
+    "title": "Quote pack 2 + calling card",
+    "text": "\"The Hook\" (three chalk strokes and a hook on black salt)."
+   },
+   {
+    "level": 10,
+    "kind": "secret",
+    "title": "The letter to Marta",
+    "text": "(also in the Archive): written in the coal cage on the back of a coal bill.\nMarto, moja kochana (Marta, my dear),\nI am writing this with a pencil the length of my thumbnail, on the back of a coal bill, in a cage in the cellar of the Kreuzweg, where we used to sell Anselm his winter coal. Do not laugh. I know you are laughing.\nI am out of Kaltenbrunn. On the night of the twentieth the bell rang and did not stop, and the guards ran from something they would not name. We went up the old Maintenance Stairs, eleven of us, the way we planned it in the spring. The guards on the third landing were still shooting. I was slow, because of my knee, and slow is careful, and careful is alive. I am sorry to tell you I was the only one who reached the snow. I said their names at the top, and I will say them to you at our table, every one.\nI took a coat off the guardroom hook. It is too big and it smells of a stranger, and I cut the badges off with a shovel. On the road a patrol caught me and brought me here, and then they heard something on the road behind them and ran, and took the key with them.\nSomething is walking about upstairs. I am not afraid. I was under that mountain almost four years and it did not keep me. Tell Hania her father is coming home. Tell her to set the extra plate at Wigilia, for the stranger at the door. This year, God willing, the stranger is me.\nYour Jakub.\nP.S. The chalk is still on the props in Gallery Nine. Three strokes and a hook. If anyone ever asks you what it meant, tell them: we did not build their mountain well."
+   }
   ]
  }
 }

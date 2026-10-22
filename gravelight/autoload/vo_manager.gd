@@ -19,10 +19,13 @@ const GROUP_PLAYER: StringName = &"player"
 ## Second squad channel: what the *others* say about a down (TEAM_DOWN, REVIVE) so it can overlap the downed
 ## player's own DOWN / REVIVED instead of racing them (rules.json squad_second_channel, down_sequence).
 const GROUP_SQUAD: StringName = &"squad"
+## The companion's own channel (Jakub, U02 section 6.2; rules.json companion_speakers): his lines never wait behind the
+## squad's chatter (they would come out late and out of place) and never hold the squad up. Positional at his body.
+const GROUP_COMPANION: StringName = &"companion"
 const LINES_PATH: String = "res://data/gravelight/vo/lines.json"
 const RULES_PATH: String = "res://data/gravelight/vo/rules.json"
 const AUDIO_DIR: String = "res://gravelight/audio/vo/"
-const CHARACTER_SPEAKERS: Dictionary = {&"dutch": &"DUT", &"peg": &"PEG", &"deacon": &"DEA", &"wren": &"WRN"}
+const CHARACTER_SPEAKERS: Dictionary = {&"dutch": &"DUT", &"peg": &"PEG", &"deacon": &"DEA", &"wren": &"WRN", &"jakub": &"JAK"}
 const POWERUP_TOKENS: Dictionary = {&"resupply": "RESUPPLY", &"deaths_door": "DEATHSDOOR", &"double_scrip": "DOUBLESCRIP",
 	&"blackout": "BLACKOUT", &"fortify": "FORTIFY", &"clearance": "CLEARANCE"}
 const PERK_TOKENS: Dictionary = {&"ironhide_stout": "IRONHIDE", &"second_wind": "SECONDWIND", &"trigger_tonic": "TRIGGER",
@@ -65,6 +68,9 @@ var _follow: Node3D = null           # whom the 3D player tracks while it plays
 var _squad_2d: AudioStreamPlayer
 var _squad_3d: AudioStreamPlayer3D
 var _follow_b: Node3D = null
+var _comp_2d: AudioStreamPlayer
+var _comp_3d: AudioStreamPlayer3D
+var _follow_c: Node3D = null
 var _revive_line_t: Dictionary = {}  # reviver pid -> time its REVIVE line was submitted (fallback at completion)
 var _subtitles: CanvasLayer
 var _duck_on: bool = false
@@ -85,8 +91,8 @@ var _last_down_at: float = -INF
 func _ready() -> void:
 	rng.randomize()
 	load_data()
-	_current = {GROUP_STORY: {}, GROUP_PLAYER: {}, GROUP_SQUAD: {}}
-	_queue = {GROUP_STORY: [], GROUP_PLAYER: [], GROUP_SQUAD: []}
+	_current = {GROUP_STORY: {}, GROUP_PLAYER: {}, GROUP_SQUAD: {}, GROUP_COMPANION: {}}
+	_queue = {GROUP_STORY: [], GROUP_PLAYER: [], GROUP_SQUAD: [], GROUP_COMPANION: []}
 	_story_2d = AudioStreamPlayer.new()
 	_story_2d.name = "StoryVoice"
 	_story_2d.bus = &"VO"
@@ -111,6 +117,19 @@ func _ready() -> void:
 	_squad_3d.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
 	_squad_3d.panning_strength = 1.0
 	add_child(_squad_3d)
+	_comp_2d = AudioStreamPlayer.new()
+	_comp_2d.name = "CompanionVoice"
+	_comp_2d.bus = &"VO"
+	add_child(_comp_2d)
+	_comp_3d = AudioStreamPlayer3D.new()
+	_comp_3d.name = "CompanionVoice3D"
+	_comp_3d.bus = &"VO"
+	_comp_3d.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
+	_comp_3d.panning_strength = 1.0
+	var au0: Dictionary = rules.get("audio", {})
+	_comp_3d.unit_size = float(au0.get("squad_unit_size", 5.0))
+	_comp_3d.max_distance = float(au0.get("squad_max_distance", 40.0))
+	add_child(_comp_3d)
 	_subtitles = (load("res://gravelight/ui/subtitles.gd") as GDScript).new() as CanvasLayer
 	add_child(_subtitles)
 	_connect_triggers()
@@ -131,7 +150,7 @@ func load_data() -> void:
 		if m != "":
 			_line_map[str(id)] = m
 	var au: Dictionary = rules.get("audio", {})
-	for p3: AudioStreamPlayer3D in [_player_3d, _squad_3d]:
+	for p3: AudioStreamPlayer3D in [_player_3d, _squad_3d, _comp_3d]:
 		if p3 != null:
 			p3.unit_size = float(au.get("squad_unit_size", 5.0))
 			p3.max_distance = float(au.get("squad_max_distance", 40.0))
@@ -171,6 +190,7 @@ func stop_all() -> void:
 	_stop_audio(GROUP_STORY)
 	_stop_audio(GROUP_PLAYER)
 	_stop_audio(GROUP_SQUAD)
+	_stop_audio(GROUP_COMPANION)
 	_revive_line_t.clear()
 	_set_duck(false)
 
@@ -231,10 +251,24 @@ func squad_say(category: String, chance_override: float = -1.0, exclude_pid: int
 	var pool: Array[int] = []
 	for pid: int in standing_pids():
 		if pid != exclude_pid:
+			if JakubCompanion.is_companion_pid(pid) and not _index.has("%s:%s" % [speaker_of(pid), category]):
+				continue   # the companion only takes the turn for a category he has lines for
 			pool.append(pid)
 	if pool.is_empty():
 		return false
 	return say_as(pool[rng.randi_range(0, pool.size() - 1)], category, chance_override)
+
+
+## Plays an exchange record (lines.json "exchange" parts) now, each part positional at the player its speaker
+## maps to in `pid_by_speaker` ({&"WRN": 3, &"JAK": 9}); a quiet two-person scene (Jakub and Wren, U02 section
+## 6.2). Waits behind a story line like banter does. Returns true when it started or was queued.
+func play_exchange(line_id: StringName, pid_by_speaker: Dictionary) -> bool:
+	var rec: Dictionary = lines.get(String(line_id), {})
+	if rec.is_empty() or not rec.has("exchange"):
+		return false
+	var item: Dictionary = {"id": line_id, "priority": Priority.EVENT, "speaker": StringName(rec["speaker"]), "pid": -1,
+		"pid_by_speaker": pid_by_speaker, "sticky": true}
+	return _place(GROUP_PLAYER, item)
 
 
 ## The survivor speaker id (DUT/PEG/DEA/WRN) of a player id.
@@ -321,6 +355,8 @@ func load_stream(path: String) -> AudioStream:
 # ================================================================== core
 
 func _group_for(speaker: StringName) -> StringName:
+	if (rules.get("companion_speakers", []) as Array).has(String(speaker)):
+		return GROUP_COMPANION
 	if (rules.get("player_speakers", []) as Array).has(String(speaker)):
 		return GROUP_PLAYER
 	return GROUP_STORY
@@ -647,8 +683,8 @@ func _next_part(group: StringName) -> void:
 ## Story and local-player lines are 2D; another survivor's line plays at their body (3D).
 func _play_stream(group: StringName, stream: AudioStream, pid: int) -> void:
 	var au: Dictionary = rules.get("audio", {})
-	var p2d: AudioStreamPlayer = _story_2d if group == GROUP_STORY else (_squad_2d if group == GROUP_SQUAD else _player_2d)
-	var p3d: AudioStreamPlayer3D = null if group == GROUP_STORY else (_squad_3d if group == GROUP_SQUAD else _player_3d)
+	var p2d: AudioStreamPlayer = _story_2d if group == GROUP_STORY else (_squad_2d if group == GROUP_SQUAD else (_comp_2d if group == GROUP_COMPANION else _player_2d))
+	var p3d: AudioStreamPlayer3D = null if group == GROUP_STORY else (_squad_3d if group == GROUP_SQUAD else (_comp_3d if group == GROUP_COMPANION else _player_3d))
 	var node: Node3D = _player_node(pid) if p3d != null and pid > 0 and pid != _local_player() else null
 	if node != null:
 		p2d.stop()
@@ -659,6 +695,8 @@ func _play_stream(group: StringName, stream: AudioStream, pid: int) -> void:
 		p3d.play()
 		if group == GROUP_SQUAD:
 			_follow_b = node
+		elif group == GROUP_COMPANION:
+			_follow_c = node
 		else:
 			_follow = node
 		audio_plays += 1
@@ -668,6 +706,8 @@ func _play_stream(group: StringName, stream: AudioStream, pid: int) -> void:
 		p3d.stop()
 		if group == GROUP_SQUAD:
 			_follow_b = null
+		elif group == GROUP_COMPANION:
+			_follow_c = null
 		else:
 			_follow = null
 	p2d.stop()
@@ -687,6 +727,12 @@ func _stop_audio(group: StringName) -> void:
 		if _squad_3d != null:
 			_squad_3d.stop()
 		_follow_b = null
+	elif group == GROUP_COMPANION:
+		if _comp_2d != null:
+			_comp_2d.stop()
+		if _comp_3d != null:
+			_comp_3d.stop()
+		_follow_c = null
 	else:
 		if _player_2d != null:
 			_player_2d.stop()
@@ -705,6 +751,9 @@ func _player_node(pid: int) -> Node3D:
 	for n: Node in get_tree().get_nodes_in_group(&"players"):
 		if n is Node3D and int(n.get("player_id")) == pid and (n as Node3D).is_inside_tree():
 			return n as Node3D
+	for c: Node in get_tree().get_nodes_in_group(&"companions"):
+		if c is Node3D and int(c.get("player_id")) == pid and (c as Node3D).is_inside_tree():
+			return c as Node3D   # Jakub calling from his cage before he joins (positional, U02 section 6.2)
 	return null
 
 
@@ -755,6 +804,8 @@ func advance(delta: float) -> void:
 		_player_3d.global_position = _voice_pos(_follow)
 	if _follow_b != null and is_instance_valid(_follow_b) and _follow_b.is_inside_tree() and _squad_3d.playing:
 		_squad_3d.global_position = _voice_pos(_follow_b)
+	if _follow_c != null and is_instance_valid(_follow_c) and _follow_c.is_inside_tree() and _comp_3d.playing:
+		_comp_3d.global_position = _voice_pos(_follow_c)
 	for g: Variant in _queue.keys():
 		_pop_start(StringName(g))   # timed items (TEAM_DOWN's beat after the DOWN) start when due
 	_tick_delayed()
