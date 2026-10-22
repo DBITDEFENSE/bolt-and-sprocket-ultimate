@@ -443,9 +443,9 @@ func _update_flicker(delta: float) -> void:
 		return
 	_flicker_t = 0.08
 	for e: Array in _lights:
-		var l: OmniLight3D = e[0]
-		if not is_instance_valid(l):
+		if not is_instance_valid(e[0]):
 			continue
+		var l: OmniLight3D = e[0] as OmniLight3D
 		var base: float = float(e[1])
 		if l.has_meta("energy") and GameState.power_on:
 			base = float(l.get_meta("energy"))
