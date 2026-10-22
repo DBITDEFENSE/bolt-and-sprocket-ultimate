@@ -66,3 +66,4 @@ general/text_to_speech=true
 3d_physics/layer_7="projectile"
 3d_physics/layer_8="pickup"
 3d_physics/layer_9="door"
+3d_physics/layer_10="decor"

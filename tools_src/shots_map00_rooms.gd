@@ -19,7 +19,7 @@ const VIEWS: Array = [
 	["taproom_floor", Vector3(18.0, 2.6, 7.5), Vector3(11.0, 0.0, 11.5)],
 	["stairs", Vector3(5.0, 1.65, 15.2), Vector3(1.5, 3.2, 10.0)],
 	["upstairs_hall", Vector3(2.0, 5.45, 8.2), Vector3(22.0, 4.6, 8.0)],
-	["room1_cousins", Vector3(6.6, 5.45, 5.2), Vector3(1.0, 4.2, 1.0)],
+	["room1_cousins", Vector3(6.1, 5.45, 4.4), Vector3(1.0, 4.2, 1.6)],
 	["room2", Vector3(9.0, 5.45, 5.3), Vector3(14.5, 4.2, 1.0)],
 	["room3", Vector3(17.0, 5.45, 5.3), Vector3(22.5, 4.3, 2.0)],
 	["stable", Vector3(20.5, 1.65, 23.2), Vector3(12.0, 0.6, 31.0)],
@@ -31,6 +31,15 @@ const VIEWS: Array = [
 	["yard", Vector3(9.0, 1.65, 35.5), Vector3(22.0, 0.3, 45.0)],
 	["exterior_front", Vector3(8.0, 1.8, -9.0), Vector3(12.0, 1.5, 0.0)],
 	["exterior_snow", Vector3(20.0, 2.0, -6.0), Vector3(14.0, 0.0, -1.0)],
+	# close-ups of the story dressing (section 8)
+	["close_patrol_table", Vector3(15.0, 1.6, 13.4), Vector3(16.6, 0.7, 11.4)],
+	["close_calendar_apron", Vector3(7.25, 1.6, 2.4), Vector3(7.2, 1.45, 0.15)],
+	["close_radio_notes", Vector3(6.5, 1.75, 4.55), Vector3(4.6, 1.8, 4.5)],
+	["close_supper_table", Vector3(11.0, 1.55, 10.0), Vector3(12.6, 0.7, 11.5)],
+	["close_cousins_drawings", Vector3(3.2, 5.45, 3.7), Vector3(3.2, 5.3, 5.85)],
+	["close_cousins_bed", Vector3(3.6, 5.4, 3.9), Vector3(1.2, 4.2, 1.7)],
+	["close_stall", Vector3(14.6, 1.65, 25.6), Vector3(12.0, 1.1, 22.2)],
+	["close_window_snow", Vector3(7.0, 1.7, 3.4), Vector3(7.0, 0.3, 0.3)],
 ]
 
 

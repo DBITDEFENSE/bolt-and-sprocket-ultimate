@@ -9,7 +9,7 @@ extends Node3D
 ## (give_weapon, refill..., remove_current) also go to the owner's real holder (D-065). Shots made by the
 ## local player are reported to the session for remote muzzle flashes and host-validated hits.
 
-const MASK_SHOT: int = 1 | (1 << 3) | (1 << 8)   # world | zombie_hitbox | door
+const MASK_SHOT: int = 1 | (1 << 3) | (1 << 8) | DecorHit.LAYER   # world | zombie_hitbox | door | decor (T-053)
 const SHOT_RANGE: float = 220.0
 const RECOIL: Dictionary = {&"pistol": 1.3, &"rifle": 2.4, &"bolt": 3.4, &"smg": 0.55, &"assault": 0.75,
 	&"shotgun": 4.2, &"lmg": 0.9, &"sniper": 4.5}
@@ -935,7 +935,10 @@ func _trace(origin: Vector3, dir: Vector3, w: WeaponInstance, hits: Dictionary) 
 	var end_point: Vector3 = origin + dir * SHOT_RANGE
 	var last_hit: Vector3 = end_point
 	var fx: GunFx = GunFx.get_for(self)
-	for i: int in pierce + 1:
+	var passes: int = pierce + 1
+	var decor_passes: int = 0
+	while passes > 0:
+		passes -= 1
 		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, end_point, MASK_SHOT, exclude)
 		q.collide_with_areas = true
 		var res: Dictionary = space.intersect_ray(q)
@@ -944,6 +947,16 @@ func _trace(origin: Vector3, dir: Vector3, w: WeaponInstance, hits: Dictionary) 
 		var pos: Vector3 = res["position"]
 		last_hit = pos
 		var col: Object = res["collider"]
+		if DecorHit.is_decor(col):
+			# set dressing that reacts (a bottle shatters, a lamp swings; T-053): local presentation, and the shot
+			# carries on through it without spending a penetration
+			DecorHit.hit(col, pos, dir)
+			exclude.append((col as CollisionObject3D).get_rid())
+			from = pos + dir * 0.02
+			decor_passes += 1
+			if decor_passes <= DecorHit.MAX_PER_SHOT:
+				passes += 1
+			continue
 		if col is Hitbox:
 			var hb: Hitbox = col as Hitbox
 			var z: Zombie = hb.enemy as Zombie
@@ -976,7 +989,7 @@ func _trace(origin: Vector3, dir: Vector3, w: WeaponInstance, hits: Dictionary) 
 			if target != null:
 				notify_shot(target, w.id, w.upgraded, player.player_id)
 			var surf: String = GunFx.surface_of(col, pos, res["normal"], space)
-			Effects.impact(pos, res["normal"], surf)
+			Effects.impact(pos, res["normal"], surf, col)
 			if fx != null:
 				fx.impact(pos, res["normal"], col, surf)
 			break

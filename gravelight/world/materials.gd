@@ -1012,7 +1012,57 @@ static func _build_map0(key: String) -> Material:
 			var wmat: StandardMaterial3D = (get_mat("wainscot") as StandardMaterial3D).duplicate() as StandardMaterial3D
 			wmat.roughness = 0.88
 			return wmat
+		# ---- Update 02 section 8 (T-053): wear and story dressing. The stains are thin translucent layers laid a
+		# hair off a wall, floor or ceiling; their noise is world-triplanar like everything else, so no two repeat.
+		"grime":   # soot and hand-grease, darkest low on a wall or round a doorway
+			return _stain(simplex, 0.035, 611, [[0.0, Color(0.05, 0.04, 0.03, 0.0)], [0.45, Color(0.05, 0.04, 0.03, 0.12)], [1.0, Color(0.04, 0.03, 0.02, 0.55)]], 0.6)
+		"soot":   # the smoke-blackening over the hearth and on the ceiling above the lamps
+			return _stain(simplex, 0.02, 613, [[0.0, Color(0.02, 0.02, 0.02, 0.15)], [0.5, Color(0.02, 0.02, 0.02, 0.45)], [1.0, Color(0.01, 0.01, 0.01, 0.8)]], 0.5)
+		"water_stain":   # brown tide-rings where the snowmelt got through
+			var wsn: FastNoiseLite = _noise(simplex, 0.05, 2, 617)
+			wsn.fractal_type = FastNoiseLite.FRACTAL_PING_PONG
+			return _stain_n(wsn, [[0.0, Color(0.30, 0.20, 0.08, 0.0)], [0.55, Color(0.30, 0.20, 0.08, 0.05)], [0.8, Color(0.26, 0.16, 0.06, 0.38)], [1.0, Color(0.20, 0.12, 0.04, 0.6)]], 0.5)
+		"floor_worn":   # boards scrubbed pale and dull along the paths people walk
+			return _stain(simplex, 0.06, 619, [[0.0, Color(0.48, 0.38, 0.27, 0.0)], [0.4, Color(0.48, 0.38, 0.27, 0.12)], [1.0, Color(0.55, 0.45, 0.33, 0.32)]], 0.9)
+		"scuff":   # boot scuffs and knocks on the wainscot and the door frames
+			var scn: FastNoiseLite = _noise(cell, 0.12, 1, 621)
+			scn.cellular_return_type = FastNoiseLite.RETURN_DISTANCE
+			return _stain_n(scn, [[0.0, Color(0.55, 0.45, 0.32, 0.45)], [0.25, Color(0.4, 0.3, 0.2, 0.15)], [0.45, Color(0.3, 0.2, 0.1, 0.0)], [1.0, Color(0.3, 0.2, 0.1, 0.0)]], 0.8)
+		"snow_dust":   # snow blown in through a broken window, thin at its edges
+			var sd: StandardMaterial3D = _stain(simplex, 0.08, 623, [[0.0, Color(0.8, 0.84, 0.92, 0.0)], [0.4, Color(0.8, 0.84, 0.92, 0.2)], [1.0, Color(0.88, 0.91, 0.97, 0.6)]], 1.4)
+			sd.metallic_specular = 0.7
+			return sd
+		"apron":   # Lene's apron: faded blue linen, washed thin
+			return _surface(_tex(_noise(simplex, 0.25, 3, 631), _ramp([[0.0, Color(0.11, 0.15, 0.23)], [1.0, Color(0.2, 0.26, 0.35)]])), null, Vector3(3, 3, 3), 1.0)
+		"cloth_cream":   # a cardigan, a blouse
+			return _surface(_tex(_noise(simplex, 0.2, 3, 633), _ramp([[0.0, Color(0.36, 0.32, 0.25)], [1.0, Color(0.46, 0.42, 0.33)]])), null, Vector3(3, 3, 3), 1.0)
+		"cloth_navy":   # a Sunday dress, a winter coat
+			return _surface(_tex(_noise(simplex, 0.2, 3, 635), _ramp([[0.0, Color(0.07, 0.08, 0.14)], [1.0, Color(0.14, 0.15, 0.24)]])), null, Vector3(3, 3, 3), 1.0)
+		"ribbon_red":   # Alix's red ribbon (her one signature colour, HOMAGE_BOSSES 1.2)
+			return _flat(Color(0.55, 0.06, 0.05), 0.6)
+		"feldgrau":   # the patrol's kit: field-grey wool and paint
+			return _surface(_tex(_noise(simplex, 0.1, 3, 637), _ramp([[0.0, Color(0.20, 0.22, 0.19)], [1.0, Color(0.30, 0.32, 0.27)]])), null, Vector3(3, 3, 3), 0.9)
+		"helmet":   # a Stahlhelm's dull painted steel
+			return _flat(Color(0.22, 0.24, 0.21), 0.55, 0.35)
+		"enamel_plate":   # chipped white enamel plates and mugs
+			return _flat(Color(0.78, 0.77, 0.72), 0.3)
+		"bread":
+			return _surface(_tex(_noise(simplex, 0.3, 3, 641), _ramp([[0.0, Color(0.32, 0.19, 0.08)], [1.0, Color(0.55, 0.36, 0.17)]])), null, Vector3(6, 6, 6), 0.9)
+		"soup":   # cold soup, a skin on it
+			return _flat(Color(0.36, 0.25, 0.12), 0.25)
 	return null
+
+
+## A translucent stain layer: noise ramped into colour and alpha.
+static func _stain(type: FastNoiseLite.NoiseType, freq: float, seed_v: int, stops: Array, scale: float) -> StandardMaterial3D:
+	return _stain_n(_noise(type, freq, 4, seed_v), stops, scale)
+
+
+static func _stain_n(n: FastNoiseLite, stops: Array, scale: float) -> StandardMaterial3D:
+	var m: StandardMaterial3D = _surface(_tex(n, _ramp(stops)), null, Vector3(scale, scale, scale), 1.0)
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+	return m
 
 
 # ================================================================== Map 2 (Totenhafen) additions (T-036)

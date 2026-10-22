@@ -1,6 +1,12 @@
 extends Node3D
 ## Pooled, cheap greybox VFX: bullet impacts, blood puffs, tracers, explosions, Overclock static bursts.
 ## Presentation only.
+##
+## Update 02 section 8 (T-053): bullet holes in the static world persist for the match (one MultiMesh per surface
+## kind, HOLES_PER_SURFACE each; when a kind is full its oldest hole is reused, so the cost is capped), except in
+## snow, where they fill in after a few seconds. Holes in things that move or vanish (doors, seals, machines) stay
+## short-lived quads, so nothing floats in the air when a door rises. Real explosions leave a scorch mark (a
+## pooled Decal, SCORCHES of them, oldest reused). Both are wiped when a match starts.
 
 const IMPACTS: int = 48
 const BLOOD: int = 16
@@ -10,6 +16,10 @@ const STATICS: int = 4
 const STATIC_LIFE: float = 0.42
 const STATIC_TEAL: Color = Color(0.25, 0.85, 0.8)
 const STATIC_VIOLET: Color = Color(0.72, 0.42, 1.0)
+const HOLES_PER_SURFACE: int = 96
+const SNOW_HOLE_LIFE: float = 6.0
+const SCORCHES: int = 16
+const SCORCH_MIN_RADIUS: float = 1.2
 
 ## Bullet-hole decals per surface (Update 02 §1): hole and rim colors, size (m), rim width, how ragged.
 const DECALS: Dictionary = {
@@ -35,6 +45,12 @@ var _nb: int = 0
 var _nt: int = 0
 var _nx: int = 0
 var _ns: int = 0
+var _holes: Dictionary = {}            # surface -> MultiMesh (persistent holes; "" = the plain mark)
+var _hole_next: Dictionary = {}        # surface -> next slot
+var _snow_life: PackedFloat32Array = PackedFloat32Array()
+var _snow_alive: int = 0
+var _scorches: Array[Decal] = []
+var _nsc: int = 0
 
 
 func _ready() -> void:
@@ -55,6 +71,10 @@ func _ready() -> void:
 		add_child(mi)
 		_impacts.append(mi)
 		_impact_life.append(0.0)
+	_build_holes(quad)
+	_build_scorches()
+	if not GLBus.match_started.is_connected(_on_match_started):
+		GLBus.match_started.connect(_on_match_started)
 	var blood_mat: StandardMaterial3D = StandardMaterial3D.new()
 	blood_mat.albedo_color = Color(0.32, 0.03, 0.04)
 	var blood_mesh: BoxMesh = BoxMesh.new()
@@ -176,6 +196,8 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	if _snow_alive > 0:
+		_fade_snow_holes(delta)
 	for i: int in IMPACTS:
 		if _impact_life[i] > 0.0:
 			_impact_life[i] -= delta
@@ -218,7 +240,11 @@ func _process(delta: float) -> void:
 
 
 ## A bullet hole at `pos` facing `normal`, styled by `surface` (wood / stone / snow / metal / hay; "" = plain).
-func impact(pos: Vector3, normal: Vector3, surface: String = "") -> void:
+## `collider` (what was hit) decides whether the hole persists: see persists_on().
+func impact(pos: Vector3, normal: Vector3, surface: String = "", collider: Object = null) -> void:
+	if persists_on(collider) and _holes.has(surface):
+		_persistent_hole(pos, normal, surface)
+		return
 	var mi: MeshInstance3D = _impacts[_ni]
 	_impact_life[_ni] = 8.0 if surface != "snow" else 5.0
 	_ni = (_ni + 1) % IMPACTS
@@ -300,6 +326,8 @@ func tracer(from: Vector3, to: Vector3) -> void:
 
 
 func explosion(pos: Vector3, radius: float) -> void:
+	if radius >= SCORCH_MIN_RADIUS:
+		scorch(pos, radius)
 	var b: Node3D = _blasts[_nx]
 	_blast_life[_nx] = 0.45
 	_nx = (_nx + 1) % BLASTS
@@ -320,3 +348,172 @@ func static_burst(pos: Vector3, radius: float) -> void:
 	var sparks: CPUParticles3D = b.get_node("Sparks")
 	sparks.restart()
 	sparks.emitting = true
+
+
+# ================================================================== persistent marks (Update 02 section 8, T-053)
+
+## True when a hole in `collider` can stay for the match: plain static world geometry (a StaticBody3D on the world
+## layer whose parent is not a scripted gameplay node), unless it is tagged with the meta "decal_persist" (bool).
+static func persists_on(collider: Object) -> bool:
+	var n: Node = collider as Node
+	if n == null:
+		return false
+	if n.has_meta("decal_persist"):
+		return bool(n.get_meta("decal_persist"))
+	var body: StaticBody3D = n as StaticBody3D
+	if body == null or body is AnimatableBody3D or (body.collision_layer & 1) == 0 or body.get_script() != null:
+		return false
+	var p: Node = body.get_parent()
+	return p == null or p.get_script() == null
+
+
+func _build_holes(quad: QuadMesh) -> void:
+	for surf: String in _decal_mats.keys():
+		var mm: MultiMesh = MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.use_colors = surf == "snow"
+		mm.mesh = quad
+		mm.instance_count = HOLES_PER_SURFACE
+		for i: int in HOLES_PER_SURFACE:
+			mm.set_instance_transform(i, Transform3D(Basis.from_scale(Vector3.ZERO), Vector3.ZERO))
+		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
+		mmi.name = "Holes_" + (surf if surf != "" else "plain")
+		mmi.multimesh = mm
+		var m: StandardMaterial3D = (_decal_mats[surf] as StandardMaterial3D).duplicate() as StandardMaterial3D
+		if mm.use_colors:
+			m.vertex_color_use_as_albedo = true
+		mmi.material_override = m
+		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		mmi.custom_aabb = AABB(Vector3(-4000, -4000, -4000), Vector3(8000, 8000, 8000))   # never culled as a whole
+		add_child(mmi)
+		_holes[surf] = mm
+		_hole_next[surf] = 0
+	_snow_life.resize(HOLES_PER_SURFACE)
+	_snow_life.fill(0.0)
+
+
+func _persistent_hole(pos: Vector3, normal: Vector3, surface: String) -> void:
+	var mm: MultiMesh = _holes[surface]
+	var i: int = int(_hole_next[surface])
+	_hole_next[surface] = (i + 1) % HOLES_PER_SURFACE
+	var size: float = float((DECALS.get(surface, {}) as Dictionary).get("size", 0.07))
+	var up: Vector3 = Vector3.FORWARD if absf(normal.dot(Vector3.UP)) > 0.99 else Vector3.UP
+	var b: Basis = Basis.looking_at(normal, up) * Basis(Vector3.UP, PI) * Basis(Vector3.BACK, randf() * TAU)
+	b = b * Basis.from_scale(Vector3.ONE * (size / 0.07) * randf_range(0.85, 1.15))
+	# a hair off the surface, a little more for each newer hole so overlapping holes don't fight
+	mm.set_instance_transform(i, Transform3D(b, pos + normal * (0.006 + 0.00002 * float(i))))
+	if surface == "snow":
+		mm.set_instance_color(i, Color(1, 1, 1, 1))
+		if _snow_life[i] <= 0.0:
+			_snow_alive += 1
+		_snow_life[i] = SNOW_HOLE_LIFE
+
+
+## Holes in snow fill in: they fade over their last two seconds, then their slot is hidden.
+func _fade_snow_holes(delta: float) -> void:
+	var mm: MultiMesh = _holes["snow"]
+	for i: int in HOLES_PER_SURFACE:
+		var l: float = _snow_life[i]
+		if l <= 0.0:
+			continue
+		l -= delta
+		_snow_life[i] = l
+		if l <= 0.0:
+			_snow_alive -= 1
+			mm.set_instance_transform(i, Transform3D(Basis.from_scale(Vector3.ZERO), Vector3.ZERO))
+		elif l < 2.0:
+			mm.set_instance_color(i, Color(1, 1, 1, l * 0.5))
+
+
+## How many persistent holes are showing (tests and the dev overlay).
+func persistent_hole_count() -> int:
+	var n: int = 0
+	for surf: String in _holes.keys():
+		var mm: MultiMesh = _holes[surf]
+		for i: int in HOLES_PER_SURFACE:
+			if mm.get_instance_transform(i).basis.get_scale().x > 0.0001:
+				n += 1
+	return n
+
+
+func _build_scorches() -> void:
+	var tex: ImageTexture = _scorch_texture()
+	for i: int in SCORCHES:
+		var d: Decal = Decal.new()
+		d.name = "Scorch"
+		d.texture_albedo = tex
+		d.modulate = Color(1, 1, 1, 0.9)
+		d.upper_fade = 0.25
+		d.lower_fade = 0.25
+		d.distance_fade_enabled = true
+		d.distance_fade_begin = 40.0
+		d.distance_fade_length = 10.0
+		d.hide()
+		add_child(d)
+		_scorches.append(d)
+
+
+## A soot mark under an explosion at `pos` (projected straight down onto whatever is below).
+func scorch(pos: Vector3, radius: float) -> void:
+	var d: Decal = _scorches[_nsc]
+	_nsc = (_nsc + 1) % SCORCHES
+	var w: float = clampf(radius * 0.9, 1.2, 4.0)
+	d.size = Vector3(w, 2.4, w)
+	d.global_position = pos + Vector3(0, 0.6, 0)
+	d.rotation = Vector3(0, randf() * TAU, 0)
+	d.show()
+
+
+func scorch_count() -> int:
+	var n: int = 0
+	for d: Decal in _scorches:
+		if d.visible:
+			n += 1
+	return n
+
+
+## A new match: every persistent hole and scorch goes.
+func clear_marks() -> void:
+	for surf: String in _holes.keys():
+		var mm: MultiMesh = _holes[surf]
+		for i: int in HOLES_PER_SURFACE:
+			mm.set_instance_transform(i, Transform3D(Basis.from_scale(Vector3.ZERO), Vector3.ZERO))
+		_hole_next[surf] = 0
+	_snow_life.fill(0.0)
+	_snow_alive = 0
+	for d: Decal in _scorches:
+		d.hide()
+	for i: int in IMPACTS:
+		_impact_life[i] = 0.0
+		_impacts[i].hide()
+
+
+func _on_match_started(_map_id: StringName) -> void:
+	clear_marks()
+
+
+## Soot: a dark, ragged disc that thins out to the edge, with a few streaks thrown outward.
+static func _scorch_texture() -> ImageTexture:
+	var n: int = 128
+	var img: Image = Image.create(n, n, false, Image.FORMAT_RGBA8)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 5331
+	var noise: FastNoiseLite = FastNoiseLite.new()
+	noise.seed = 77
+	noise.frequency = 0.06
+	var streaks: Array[float] = []
+	for i: int in 14:
+		streaks.append(rng.randf() * TAU)
+	for y: int in n:
+		for x: int in n:
+			var v: Vector2 = Vector2(x + 0.5 - n * 0.5, y + 0.5 - n * 0.5) / (n * 0.5)
+			var r: float = v.length()
+			var a: float = atan2(v.y, v.x)
+			var ray: float = 0.0
+			for s: float in streaks:
+				ray = maxf(ray, pow(maxf(0.0, cos(a - s)), 60.0))
+			var edge: float = 0.55 + 0.25 * noise.get_noise_2d(x, y) + ray * 0.35
+			var k: float = clampf(1.0 - r / maxf(0.05, edge), 0.0, 1.0)
+			k = pow(k, 0.7) * (0.75 + 0.25 * noise.get_noise_2d(x * 3.0, y * 3.0))
+			img.set_pixel(x, y, Color(0.03, 0.025, 0.02, clampf(k * 0.95, 0.0, 0.92)))
+	return ImageTexture.create_from_image(img)
