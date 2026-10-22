@@ -54,6 +54,7 @@ static func contains(center: Vector3, r: float, zpos: Vector3) -> bool:
 
 
 func _ready() -> void:
+	add_to_group(&"bell_domes")   # the bots' locomotion keeps paths off its rim (U03 section 3)
 	_dome = MeshInstance3D.new()
 	var sm: SphereMesh = SphereMesh.new()
 	sm.radius = radius

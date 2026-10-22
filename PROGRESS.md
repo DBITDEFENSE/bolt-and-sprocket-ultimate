@@ -1,6 +1,6 @@
 # PROGRESS
 
-RESUME HERE: Update 02 (UPDATE_02_POLISH.md) in progress. Wave 1 = §1 feel, §2 ADS, §3 Totenglocke, §4 ammo boxes, §7 landscape on branches u02-1..u02-7 (worktrees in .wt/); wave 2 = §5 bots, §6 cellar + Jakub, §8 polish. Merge order follows the brief.
+RESUME HERE: Update 02 §1–§5, §6.1, §7, §8 merged to master (tag u02-sections). Running: U03 brain (u03-1-brain), U03 locomotion (u03-2-locomotion), U02 bug fixes (u02-fixes). Next: merge locomotion into the brain branch, then master; then U02 §6.2 Jakub on the new brain; then the morning report, Play.bat buttons, screenshots.
 
 ## Overnight run, 2026-10-21 → 22: the plan
 
@@ -64,6 +64,12 @@ stairs/landing (27, 0, 11) ×8 and the cellar floor (34, −3, 19) ×12; zombies
 **World:** past the yard fence it's flat snow and black sky; no distant life; the inn reads as a box in a void.
 
 ## Done
+
+**Update 02 (2026-10-22):** §1 feel (T-046) works · §2 ADS (T-047) works, 44/44 guns aligned · §3 Totenglocke (T-048)
+works · §4 ammo boxes (T-049) works, 10 boxes on 3 maps (+1 in the Old Cellar) · §5 bots (T-050) partly: bonus perk,
+looks, nameplates, barks, command wheel work; behaviour moved to U03 · §6.1 Old Cellar (T-051) works · §7 living
+world (T-052) works · §8 polish (T-053) works. U03 §0/§9 metrics + baseline (T-054) works. Campaign carry fix for
+bot bonus perks (d22d640). GUT 651/651, every smoke passes.
 
 - **Bots** (T-043, commit 33c1043): spawn kit (Thompson, Ironhide Stout, Second Wind) — works; local-AI planner bot
   (Ollama gemma3:27b) — works on Map 0's egg alone, Map 1's Requiem partly (power, doors, Totenglocke).

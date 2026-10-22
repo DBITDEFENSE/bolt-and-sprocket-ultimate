@@ -73,6 +73,8 @@ func _ready() -> void:
 			skill = a.substr(8)
 		elif a.begins_with("--map="):
 			map_key = a.substr(6)
+		elif a.begins_with("--loco="):
+			BotLocomotion.force_mode = a.substr(7)   # U03 section 3: v1 / v2 against bots.json locomotion
 	if not ["player3", "bots3", "cousins", "kaltenbrunn"].has(scenario):
 		print("[soak] unknown --scenario=%s (player3, bots3, cousins, kaltenbrunn)" % scenario)
 		print("[soak] RESULT FAIL")
@@ -91,6 +93,8 @@ func _ready() -> void:
 	GLSettings.values["homage_names"] = "real"
 	Engine.time_scale = speed
 	_batch = "%s_%s_x%d" % [Time.get_datetime_string_from_system(false, true).replace(":", "").replace(" ", "_").replace("-", ""), scenario, runs]
+	if BotLocomotion.force_mode != "":
+		_batch += "_loco" + BotLocomotion.force_mode
 	print("[soak] scenario %s, %d run(s), seed %d, max round %s, speed %.2fx, skill %s, map %s, local AI off" % [scenario, runs, seed_base,
 		str(max_round) if max_round > 0 else "to the wipe", speed, skill, map_key])
 	_start_run.call_deferred()
@@ -217,6 +221,13 @@ func _end_run(why: String) -> void:
 	_metrics.extra["wall_s"] = snappedf(float(Time.get_ticks_msec() - _wall0) / 1000.0, 0.1)
 	_metrics.extra["frame_ms"] = snappedf(_phys_us / maxf(1.0, float(_frames)) / 1000.0, 0.01)
 	_metrics.extra["speed"] = speed
+	if _map.squad != null:   # U03 section 3: the locomotion layer's own cost per bot (tick incl. body movement)
+		var us: Array = []
+		for b: BotBrain in _map.squad.brains:
+			if b.loco != null:
+				us.append("%.0f/%.0f" % [b.loco.avg_tick_us(), b.loco.avg_body_us()])
+		if not us.is_empty():
+			_metrics.extra["loco_us_tick_body"] = ",".join(PackedStringArray(us))
 	var sm: Dictionary = _metrics.finish(why)
 	print(_metrics.summary_line())
 	var dir: String = BotMetrics.log_dir()
