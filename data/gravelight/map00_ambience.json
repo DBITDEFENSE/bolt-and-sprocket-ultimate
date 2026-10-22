@@ -1,0 +1,51 @@
+{
+ "_doc": "Map 0's living world (Update 02 section 7, DECISIONS T-052), read by gravelight/world/landscape/map_ambience.gd. Presentation only: nothing here touches gameplay. Ranges are [min, max] seconds; *_late is the range at full intensity. Intensity runs 0 -> 1 from intensity.start_round to intensity.full_round (the war getting closer). Bearings are compass degrees from the inn (0 north, 90 east). Distances to the war are virtual kilometres: they set the boom's delay (seconds_per_km) and how loud and bright it is.",
+ "intensity": {"start_round": 1, "full_round": 15},
+ "bombers": {
+  "first_after": [30, 60], "interval": [120, 240], "interval_late": [100, 170],
+  "count": [7, 13], "altitude": [165, 225], "speed": 9.0, "wingspan": 6.5, "spacing": 11.0,
+  "headings": [70, 110], "offset": [-160, 120],
+  "sound": "war_bomber_drone", "volume_db": 2.0, "unit_size": 70.0, "max_distance": 900.0
+ },
+ "fighters": {
+  "first_after": [70, 130], "interval": [80, 160], "interval_late": [45, 95],
+  "altitude": [40, 85], "speed": 42.0, "pass_distance": [90, 200], "length": 640.0, "wingspan": 3.4,
+  "bursts": [2, 5], "chase_lag": 0.9,
+  "sound": "war_fighter_pass", "mg_sound": "war_fighter_mg", "volume_db": 0.0, "unit_size": 45.0, "max_distance": 700.0
+ },
+ "plane_down": {
+  "min_round": 6, "chance_per_flight": 0.6, "fighter_share": 0.35, "crash_bearing": [25, 150], "crash_radius": 255.0,
+  "crash_km": 2.4, "burn_lead": 3.0, "dive_seconds": 11.0,
+  "crash_sound": "war_crash_boom", "dive_sound": "war_plane_down", "vo_category": "SKY_PLANE_DOWN", "vo_delay": 2.5,
+  "wreck_glow_seconds": 140.0
+ },
+ "searchlights": {"bearings": [42, 88, 128], "radius": 296.0, "elevation": [38, 72], "sweep": [0.04, 0.11], "intensity": 0.11, "length": 330.0, "cloud_height": 250.0},
+ "artillery": {
+  "first_after": [6, 14], "interval": [9, 22], "interval_late": [2.5, 7.0],
+  "km": [5.5, 9.0], "km_late": [1.6, 4.6], "bearings": [12, 165], "seconds_per_km": 2.9,
+  "barrage_chance": 0.12, "barrage_chance_late": 0.35, "barrage_shells": [3, 7],
+  "sound": "war_artillery_boom", "near_sound": "war_artillery_near", "near_km": 3.0,
+  "volume_db": [-14.0, 2.0], "shake_km": 3.0, "shake": 0.3, "sway_km": 3.4, "flash": [0.5, 1.6]
+ },
+ "tracers": {"first_after": [20, 40], "interval": [16, 40], "interval_late": [5, 14], "bearings": [35, 150], "burst": [1.5, 4.0]},
+ "flares": {
+  "min_round": 2, "first_after": [40, 80], "interval": [55, 110], "interval_late": [22, 45],
+  "radius": [75, 165], "bearings": [0, 360], "height": [55, 85], "fall_speed": 2.2, "burn_seconds": 38.0,
+  "red_share": 0.4, "light_range": 150.0, "light_energy": 3.2, "sound": "war_flare_pop"
+ },
+ "machine_guns": {"first_after": [15, 35], "interval": [22, 55], "interval_late": [6, 18], "bearings": [20, 160], "km": [1.5, 4.0], "sound": "war_mg_distant"},
+ "town": {"strength": [0.3, 0.6], "flicker": 0.25},
+ "gusts": {"first_after": [15, 30], "interval": [25, 60], "seconds": [3.0, 6.0], "sound": "amb_wind_gust", "snow_push": 2.6},
+ "crows": {"count": 11, "scatter_radius": 85.0, "return_after_quiet": 28.0, "sound": "amb_crow_caw", "flap_sound": "amb_crow_flap"},
+ "dog": {"first_after": [20, 40], "interval": [25, 70], "stop_round": 10, "bearing": 312.0, "sound": "amb_dog_bark"},
+ "inn_sign": {"sound": "amb_sign_creak"},
+ "shutter": {"sound": "amb_shutter_bang"},
+ "bell": {"round": 9, "delay": 22.0, "tolls": 12, "gap": 3.4, "sound": "amb_church_bell_far", "vo_category": "MIDNIGHT", "vo_after": 3.0},
+ "farm_light": {"off_round": 8},
+ "chimney": {"fire_light": "Hearthfire", "fire_out_fraction": 0.45},
+ "cookoff": {"first_after": [10, 25], "interval": [14, 40], "sound": "amb_cookoff", "pops": [2, 6]},
+ "pilot_line": {"distance": 27.0, "look_dot": 0.86, "min_seconds": 12.0, "category": "WRECK_PILOT", "dutch_category": "WRECK_PILOT"},
+ "breath": {"interval": [2.8, 4.4], "warm_zones": ["TAPROOM", "UPSTAIRS"]},
+ "frost": {"start": 0.15, "full_round": 12, "max": 0.75, "fire_out_boost": 0.25},
+ "lamp_sway": {"impulse": 0.22, "damping": 0.55, "stiffness": 6.5}
+}

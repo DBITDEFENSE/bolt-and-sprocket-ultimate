@@ -71,6 +71,7 @@ func _process(_delta: float) -> bool:
 	var merged: int = merge_static_meshes()
 	print("merged %d static meshes into batches" % merged)
 	build_environment()
+	build_landscape()
 	build_gameplay()
 	_own(map_root, map_root)
 	var packed: PackedScene = PackedScene.new()
@@ -1174,8 +1175,8 @@ func _dress_exterior() -> void:
 ## The carters' road behind the stable's great doors (the campaign exfil, T-033: the doors fall outward at
 ## round 10 and the squad walks out; the Map 0 -> Map 1 cutscene looks down this road). Cutscene-only, so all of
 ## it is dressing: a trodden track south through a gap in the yard fence, bending east toward Kaltenbrunn, with
-## gateposts and a signpost at the gap, drifts, dead trees, and low snowy rises on the horizon (the ground slab
-## ends at z 75 / x 70; the rises hide its edge behind the fog). Cheap: ~40 primitives.
+## gateposts and a signpost at the gap, drifts and dead trees (the land past the slab's edge at z 75 / x 70 is the
+## Landscape node's terrain, T-052). Cheap: ~40 primitives.
 func _dress_carters_road() -> void:
 	var g: Node3D = Props.group(dress, "CartersRoad", Vector3.ZERO)
 	# the track: out of the doorway, through the fence gap, then a bend to the south-east
@@ -1204,9 +1205,7 @@ func _dress_carters_road() -> void:
 	Props.dead_tree(g, Vector3(38, 0, 52), 133, 6.5)
 	Props.dead_tree(g, Vector3(22, 0, 66), 134, 9.0)
 	Props.dead_tree(g, Vector3(52, 0, 60), 135, 7.5)
-	for r: Array in [[Vector3(10, -3.0, 92), Vector3(130, 16, 50)], [Vector3(75, -3.0, 70), Vector3(90, 12, 60)],
-			[Vector3(100, -3.0, -8), Vector3(50, 14, 150)], [Vector3(-40, -3.0, 95), Vector3(90, 10, 50)]]:
-		Props._noshadow(Props.ball(g, r[0], r[1], "snow"))
+	# (the horizon's rises that used to hide the slab's edge here are now the Landscape's terrain, T-052)
 
 
 ## The Carters' Yard: the drawn fences over the colliders, the barred gate, the well with its windlass, the
@@ -1486,6 +1485,22 @@ func build_environment() -> void:
 	post.set_script(load("res://gravelight/ui/postfx.gd"))
 	post.name = "PostFx"
 	map_root.add_child(post)
+
+
+## Update 02 section 7 (T-052): the living world beyond the play space. Two runtime nodes, so the .tscn stays small:
+## Landscape builds the terrain layers, sky, forests, roadside story, crash-site extras and the inn's weather details
+## at load time (world/landscape/landscape.gd); MapAmbience runs the sky events, the distant war and the ambient
+## life from data/gravelight/map00_ambience.json (world/landscape/map_ambience.gd). Neither collides.
+func build_landscape() -> void:
+	var land: Node3D = Node3D.new()
+	land.set_script(load("res://gravelight/world/landscape/landscape.gd"))
+	land.name = "Landscape"
+	map_root.add_child(land)
+	var amb: Node3D = Node3D.new()
+	amb.set_script(load("res://gravelight/world/landscape/map_ambience.gd"))
+	amb.name = "MapAmbience"
+	amb.set("config_path", "res://data/gravelight/map00_ambience.json")
+	map_root.add_child(amb)
 
 
 func _lamp(name_: String, pos: Vector3, color: Color, energy: float, range_: float, shadows: bool, flicker: bool, amount: float = 0.35) -> void:

@@ -4183,5 +4183,85 @@
   "speaker": "OPR",
   "category": "CUT_EXFIL",
   "text": "Totenhafen. A harbour of {sealed} cargo and patient tides. Keep your accounts in order. I'll be there before you are. I'm {always} there before you are."
+ },
+ "DUT_SKY_PLANE_DOWN_01": {
+  "speaker": "DUT",
+  "category": "SKY_PLANE_DOWN",
+  "text": "One's hit. He's going down behind the hills. ...Come on, pull up. Pull up."
+ },
+ "DUT_SKY_PLANE_DOWN_02": {
+  "speaker": "DUT",
+  "category": "SKY_PLANE_DOWN",
+  "text": "There goes another one. Hope somebody finds them quicker than anybody found us."
+ },
+ "PEG_SKY_PLANE_DOWN_01": {
+  "speaker": "PEG",
+  "category": "SKY_PLANE_DOWN",
+  "text": "One of ours is burning. ...Count the chutes. Come on. Count the chutes."
+ },
+ "PEG_SKY_PLANE_DOWN_02": {
+  "speaker": "PEG",
+  "category": "SKY_PLANE_DOWN",
+  "text": "Down behind the ridge. I'd tell you they'll be fine. I'd be lying."
+ },
+ "DEA_SKY_PLANE_DOWN_01": {
+  "speaker": "DEA",
+  "category": "SKY_PLANE_DOWN",
+  "text": "Engine's on fire. Lord, let that pilot glide it in like ours did."
+ },
+ "DEA_SKY_PLANE_DOWN_02": {
+  "speaker": "DEA",
+  "category": "SKY_PLANE_DOWN",
+  "text": "That's ten men in that thing. ...Somebody say a word for them."
+ },
+ "WRN_SKY_PLANE_DOWN_01": {
+  "speaker": "WRN",
+  "category": "SKY_PLANE_DOWN",
+  "text": "Burning, losing height, same bearing we came in on. I'm writing down the time."
+ },
+ "WRN_SKY_PLANE_DOWN_02": {
+  "speaker": "WRN",
+  "category": "SKY_PLANE_DOWN",
+  "text": "No violet light this time. Only flak. ...That is almost a comfort."
+ },
+ "DUT_WRECK_PILOT_01": {
+  "speaker": "DUT",
+  "category": "WRECK_PILOT",
+  "text": "Pilot's seat's empty. Selwyn was in that seat. I checked him for a pulse myself. ...So who unbuckled him?"
+ },
+ "PEG_WRECK_PILOT_01": {
+  "speaker": "PEG",
+  "category": "WRECK_PILOT",
+  "text": "The pilot's seat is empty. Dutch swore Selwyn was dead in it, and Dutch doesn't get that sort of thing wrong."
+ },
+ "DEA_WRECK_PILOT_01": {
+  "speaker": "DEA",
+  "category": "WRECK_PILOT",
+  "text": "Straps on the pilot's seat are open. Not torn. Unbuckled. Selwyn didn't walk out of there on his own."
+ },
+ "WRN_WRECK_PILOT_01": {
+  "speaker": "WRN",
+  "category": "WRECK_PILOT",
+  "text": "The pilot's seat. Empty. No tracks in the snow around the nose. Write that down. ...I am writing that down."
+ },
+ "DUT_MIDNIGHT_01": {
+  "speaker": "DUT",
+  "category": "MIDNIGHT",
+  "text": "Midnight. Christmas Eve. Babcia'd be setting an extra plate about now. For the stranger who knocks."
+ },
+ "PEG_MIDNIGHT_01": {
+  "speaker": "PEG",
+  "category": "MIDNIGHT",
+  "text": "Midnight. Happy Christmas Eve, everyone. Do try not to die on it."
+ },
+ "DEA_MIDNIGHT_01": {
+  "speaker": "DEA",
+  "category": "MIDNIGHT",
+  "text": "Christmas Eve. Ruthie's asleep by now. ...Good. That's good."
+ },
+ "WRN_MIDNIGHT_01": {
+  "speaker": "WRN",
+  "category": "MIDNIGHT",
+  "text": "Twelve. It's the twenty-fourth. Wigilia. Somewhere my mother is looking at the first star."
  }
 }

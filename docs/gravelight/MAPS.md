@@ -146,6 +146,30 @@ The stairwell is the taproom's south-west corner, **6 × 6 m** (x 0–6, z 10–
 
 Hayloft (Stable upper, 9 × 12 m): there's a ladder up and a single drop-down edge. It's a **perch**, not a fortress. Zombies can climb the ladder one at a time, so it's a strong but leaky choke point (see Choke points).
 
+## Map 0's living world: the land, the sky and the distant war (Update 02 section 7, DECISIONS T-052)
+Outside the play space (nothing here collides; the windows' barricades and the yard's 2.3 m fences keep players in):
+- **Land, in three layers** (`world/landscape/landscape.gd` + `terrain.gd`, built at load from code): the near swell
+  rising off the slab's edge and cresting ~110 m out (the slab's own snow, the map's fog); a valley with mist cards,
+  then forested hills (MultiMesh spruces, impostor cards past 225 m) under a capped "far fog"; two ridge bands of
+  mountains, tallest to the south-west. The crossroads' roads run on into the dark; the burnt field car and suitcases
+  on the north road, the tipped cart, more cases and the fallen signpost (HIRSCHFELDE / SANKT ANNA / KALTENBRUNN) on
+  the west road, a second burnt car far down the east road; the telephone line strung on both ways (one pole leaning,
+  one snapped); the frozen stream and its stone bridge on the north road (~64 m out); the farmhouse to the north-west
+  (one lit window, dark from round 8); the church with its onion dome on the ridge to the north-north-east; the town
+  burning beyond the eastern ridge.
+- **Sky and war** (`map_ambience.gd`, `data/gravelight/map00_ambience.json`): bomber streams every 2-4 min, low
+  fighter pairs with tracer, once per match from round 6 a plane hit and going down behind the hills (crash flash,
+  boom ~7 s later, a squad line), three searchlights sweeping the cloud deck, artillery along the eastern horizon with
+  the boom delayed ~2.9 s/km, flak arcs, parachute flares lighting the snow, a far MG; all closer and busier by round 15.
+- **Around the inn**: gusts (spindrift off the roofs, the snow pushed sideways), the inn sign creaking on its bracket
+  over the road, the hayloft door banging over the great doors, icicles on the eaves, crows on the wires that scatter
+  at the first shots, a far dog (stops at round 10), the church bell at midnight (round 9), chimney smoke that stops
+  when the Cousins put the fire out, breath fog in the cold rooms, frost creeping round the windows, the hanging
+  lanterns swinging when shells land close, moonlight leaking through the stable's boards, ground fog in the field.
+- **GRAVELIGHT ONE**: burning harder (engine, wing, hold, small fires in the snow), the open cockpit with the pilot's
+  seat empty (Dutch's line the first time someone looks in), the hold's cargo thrown about, a parachute caught in the
+  dead tree by the yard's north-east corner, ammunition cooking off now and then.
+
 ## Map 0 spawn points
 
 | Zone | Window spawns | Ground/other spawns | Active when |

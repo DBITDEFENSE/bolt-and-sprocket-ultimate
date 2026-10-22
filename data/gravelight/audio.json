@@ -107,6 +107,99 @@
   }
  },
  "sounds": {
+  "amb_church_bell_far": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/church_bell_far.wav"
+   ],
+   "volume_db": 0.0,
+   "pitch": [1.0, 1.0],
+   "max_voices": 3,
+   "bus": "SFX",
+   "attenuation": "loud"
+  },
+  "amb_cookoff": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/cookoff_01.wav",
+    "res://gravelight/audio/sfx/ambience/cookoff_02.wav",
+    "res://gravelight/audio/sfx/ambience/cookoff_03.wav",
+    "res://gravelight/audio/sfx/ambience/cookoff_04.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -2.0,
+   "pitch": [0.9, 1.1],
+   "max_voices": 4,
+   "attenuation": "world"
+  },
+  "amb_crow_caw": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/crow_caw_01.wav",
+    "res://gravelight/audio/sfx/ambience/crow_caw_02.wav",
+    "res://gravelight/audio/sfx/ambience/crow_caw_03.wav",
+    "res://gravelight/audio/sfx/ambience/crow_caw_04.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": 0.0,
+   "pitch": [0.94, 1.06],
+   "max_voices": 3,
+   "attenuation": "loud"
+  },
+  "amb_crow_flap": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/crow_flap.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": 0.0,
+   "pitch": [0.95, 1.05],
+   "max_voices": 1,
+   "attenuation": "loud"
+  },
+  "amb_dog_bark": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/dog_far_01.wav",
+    "res://gravelight/audio/sfx/ambience/dog_far_02.wav",
+    "res://gravelight/audio/sfx/ambience/dog_far_03.wav"
+   ],
+   "volume_db": 0.0,
+   "pitch": [0.96, 1.04],
+   "max_voices": 1,
+   "bus": "SFX",
+   "attenuation": "loud"
+  },
+  "amb_shutter_bang": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/shutter_bang_01.wav",
+    "res://gravelight/audio/sfx/ambience/shutter_bang_02.wav",
+    "res://gravelight/audio/sfx/ambience/shutter_bang_03.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": 0.0,
+   "pitch": [0.93, 1.07],
+   "max_voices": 2,
+   "attenuation": "world"
+  },
+  "amb_sign_creak": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/sign_creak_01.wav",
+    "res://gravelight/audio/sfx/ambience/sign_creak_02.wav",
+    "res://gravelight/audio/sfx/ambience/sign_creak_03.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": 0.0,
+   "pitch": [0.92, 1.08],
+   "max_voices": 1,
+   "attenuation": "world"
+  },
+  "amb_wind_gust": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/wind_gust_01.wav",
+    "res://gravelight/audio/sfx/ambience/wind_gust_02.wav",
+    "res://gravelight/audio/sfx/ambience/wind_gust_03.wav"
+   ],
+   "bus": "Ambience",
+   "volume_db": 0.0,
+   "pitch": [0.92, 1.08],
+   "max_voices": 2
+  },
   "ambient_map00": {
    "files": [
     "res://gravelight/audio/sfx/ambience/map00_crossroads_bed.wav"
@@ -2044,6 +2137,108 @@
    "volume_db": -4.0,
    "max_voices": 1,
    "pitch": [1.0, 1.0]
+  },
+  "war_artillery_boom": {
+   "files": [
+    "res://gravelight/audio/sfx/war/artillery_far_01.wav",
+    "res://gravelight/audio/sfx/war/artillery_far_02.wav",
+    "res://gravelight/audio/sfx/war/artillery_far_03.wav",
+    "res://gravelight/audio/sfx/war/artillery_far_04.wav"
+   ],
+   "volume_db": 0.0,
+   "pitch": [0.9, 1.08],
+   "max_voices": 4,
+   "bus": "SFX",
+   "attenuation": "loud"
+  },
+  "war_artillery_near": {
+   "files": [
+    "res://gravelight/audio/sfx/war/artillery_near_01.wav",
+    "res://gravelight/audio/sfx/war/artillery_near_02.wav",
+    "res://gravelight/audio/sfx/war/artillery_near_03.wav"
+   ],
+   "volume_db": 0.0,
+   "pitch": [0.92, 1.05],
+   "max_voices": 3,
+   "bus": "SFX",
+   "attenuation": "loud"
+  },
+  "war_bomber_drone": {
+   "files": [
+    "res://gravelight/audio/sfx/war/bomber_drone.wav"
+   ],
+   "volume_db": 0.0,
+   "pitch": [1.0, 1.0],
+   "max_voices": 3,
+   "bus": "SFX",
+   "attenuation": "loud",
+   "loop": true
+  },
+  "war_crash_boom": {
+   "files": [
+    "res://gravelight/audio/sfx/war/crash_boom.wav"
+   ],
+   "volume_db": 0.0,
+   "pitch": [0.97, 1.03],
+   "max_voices": 1,
+   "bus": "SFX",
+   "attenuation": "loud"
+  },
+  "war_fighter_mg": {
+   "files": [
+    "res://gravelight/audio/sfx/war/fighter_mg_01.wav",
+    "res://gravelight/audio/sfx/war/fighter_mg_02.wav",
+    "res://gravelight/audio/sfx/war/fighter_mg_03.wav"
+   ],
+   "volume_db": 0.0,
+   "pitch": [0.96, 1.04],
+   "max_voices": 2,
+   "bus": "SFX",
+   "attenuation": "loud"
+  },
+  "war_fighter_pass": {
+   "files": [
+    "res://gravelight/audio/sfx/war/fighter_pass_01.wav",
+    "res://gravelight/audio/sfx/war/fighter_pass_02.wav"
+   ],
+   "volume_db": 0.0,
+   "pitch": [0.95, 1.05],
+   "max_voices": 2,
+   "bus": "SFX",
+   "attenuation": "loud"
+  },
+  "war_flare_pop": {
+   "files": [
+    "res://gravelight/audio/sfx/war/flare_pop_01.wav",
+    "res://gravelight/audio/sfx/war/flare_pop_02.wav"
+   ],
+   "volume_db": 0.0,
+   "pitch": [0.95, 1.05],
+   "max_voices": 2,
+   "bus": "SFX",
+   "attenuation": "loud"
+  },
+  "war_mg_distant": {
+   "files": [
+    "res://gravelight/audio/sfx/war/mg_far_01.wav",
+    "res://gravelight/audio/sfx/war/mg_far_02.wav",
+    "res://gravelight/audio/sfx/war/mg_far_03.wav"
+   ],
+   "volume_db": 0.0,
+   "pitch": [0.95, 1.05],
+   "max_voices": 2,
+   "bus": "SFX",
+   "attenuation": "loud"
+  },
+  "war_plane_down": {
+   "files": [
+    "res://gravelight/audio/sfx/war/plane_down.wav"
+   ],
+   "volume_db": 0.0,
+   "pitch": [1.0, 1.0],
+   "max_voices": 1,
+   "bus": "SFX",
+   "attenuation": "loud"
   },
   "weapon_overheat": {
    "files": [
