@@ -1278,10 +1278,11 @@ Deacon (Mark, warm room). **Polish** is written as it is said, with the English 
 (subtitles show both; the bake drops the parentheses). The bake reads a phonetic respelling where a tail gives
 one: `` `[say: "..."]` `` (extract_vo.py stores it as the line's `tts`).
 
-**Where he speaks:** positional at his body (the 3D squad channel, `rules.json player_speakers`), including from his
-cage before he joins (the `companions` group). His story categories are tier 2 (`player_category_priority`): they
-queue behind a story line instead of being dropped. His squad callouts come through `BotSquad.callout` (§13, §15
-categories) with his own lines. The other survivors' lines about him are at the end of this section.
+**Where he speaks:** positional at his body, on his own channel (`VOManager.GROUP_COMPANION`, `rules.json
+companion_speakers`), so his lines never wait behind the squad's chatter and come out where they belong (a stale one
+expires after 4 s instead of playing late); that includes his calls from the cage before he joins (the `companions`
+group). His squad callouts come through `BotSquad.callout` (§13, §15 categories) with his own lines; the Wren scene and
+his banter are `BNT_*` exchanges on the squad's player channel. The other survivors' lines about him are at the end.
 
 ### 16.1 Map 0: the cage, the breakout, the choice
 

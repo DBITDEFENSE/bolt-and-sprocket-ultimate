@@ -25,6 +25,7 @@ var _first_seen: Dictionary = {}
 var _downed_at: float = -1.0
 var _revived: bool = false
 var _revived_t: float = 0.0
+var _cam_pick: Vector3 = Vector3.INF
 var _talked: bool = false
 var _gave: bool = false
 
@@ -81,14 +82,9 @@ func _physics_process(delta: float) -> void:
 				h.global_position = jp.global_position + Vector3(-0.9, 0.0, 1.5)
 				h.rotation.y = atan2(-(jp.global_position.x - h.global_position.x), -(jp.global_position.z - h.global_position.z))
 		1:
-			var eye: Vector3 = h.global_position + Vector3.UP * 1.65
-			var to: Vector3 = (jp.global_position + Vector3.UP * 1.4 - eye)
-			to.y = 0.0
-			var side: Vector3 = Vector3(-to.z, 0.0, to.x).normalized()
-			var mid: Vector3 = (eye + jp.global_position + Vector3.UP * 1.5) * 0.5
-			var a1: Vector3 = _clear_from(mid, mid + side * 1.9 - to.normalized() * 0.4)
-			var a2: Vector3 = _clear_from(mid, mid - side * 1.9 - to.normalized() * 0.4)
-			_look(a1 if a1.distance_to(mid) >= a2.distance_to(mid) else a2, jp.global_position + Vector3.UP * 1.35, delta, 1.0)
+			if _beat_t < 0.1 or _cam_pick == Vector3.INF:
+				_cam_pick = _best_cam(jp.global_position + Vector3.UP * 1.5, 2.6, 0.2)
+			_look(_cam_pick, jp.global_position + Vector3.UP * 1.35, delta, 1.0)
 			if not _talked and _beat_t > 1.0:
 				_talked = true
 				jc.on_talk(h)
@@ -119,7 +115,9 @@ func _physics_process(delta: float) -> void:
 				_downed_at = _t
 		3:
 			var c2: Vector3 = jp.global_position
-			_look(_clear_from(c2 + Vector3.UP * 1.0, c2 + Vector3(2.6, 2.0, 2.2)), c2 + Vector3.UP * 0.4, delta, 0.3)
+			if _beat_t < 0.1 or _cam_pick == Vector3.INF:
+				_cam_pick = _best_cam(c2 + Vector3.UP * 1.0, 3.2, 0.6)
+			_look(_cam_pick, c2 + Vector3.UP * 0.4, delta, 0.3)
 			if not _revived and _beat_t > 13.0 and jp.downed:
 				# the bot didn't make it in time: the human (off camera) picks him up
 				var rp: RevivePoint = jp.get_node_or_null("Revive") as RevivePoint
@@ -156,6 +154,20 @@ func _go_live() -> void:
 	print("[clip-jakub] live: beat breakout")
 
 
+## The roomiest of eight directions round `at` (`dist` m out, `up` m higher), pulled in short of walls.
+func _best_cam(at: Vector3, dist: float, up: float) -> Vector3:
+	var best: Vector3 = at + Vector3(dist, up, 0.0)
+	var best_d: float = -1.0
+	for k: int in 8:
+		var a: float = TAU * float(k) / 8.0
+		var p: Vector3 = _clear_from(at, at + Vector3(cos(a) * dist, up, sin(a) * dist))
+		var d: float = p.distance_to(at)
+		if d > best_d + 0.05:
+			best_d = d
+			best = p
+	return best
+
+
 ## A camera spot from `from` toward `want`, pulled in short of any wall (the cellar is cramped).
 func _clear_from(from: Vector3, want: Vector3) -> Vector3:
 	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, want, 1 | (1 << 8))
@@ -164,6 +176,7 @@ func _clear_from(from: Vector3, want: Vector3) -> Vector3:
 
 
 func _next(name_s: String) -> void:
+	_cam_pick = Vector3.INF
 	_beat += 1
 	_beat_t = 0.0
 	print("[clip-jakub] t=%.1f beat %s" % [_t, name_s])
