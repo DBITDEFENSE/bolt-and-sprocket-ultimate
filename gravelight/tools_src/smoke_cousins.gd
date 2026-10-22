@@ -207,6 +207,13 @@ func _case_on() -> void:
 	var full: int = RoundManager.zombie_count(10, RoundManager.players, GLData.table("rounds"))
 	_check(RoundManager.round_total == CousinsRound.horde_count(full, cr.cfg), "the horde is 40%% of round 10 (%d of %d)" % [RoundManager.round_total, full])
 	_check(cr.setup_played and cr.lamps_out >= 10, "the lamps gutter out (%d out), the fire dies" % cr.lamps_out)
+	# T-057: the lamps' glass goes dark with them (it used to keep glowing)
+	var glow: LampGlow = _map.get_node_or_null("LampGlow") as LampGlow
+	var tap1: Vector3 = (_map.find_child("TapLamp1", true, false) as Node3D).global_position
+	_check(glow != null and glow.bound_count() >= 15, "lamp glass is bound to its lights (%d)" % (glow.bound_count() if glow != null else 0))
+	if glow != null:
+		var dark: bool = await _until(func() -> bool: return glow.glow_near(tap1) >= 0.0 and glow.glow_near(tap1) < 0.1, 6.0)
+		_check(dark, "the taproom lantern's glass is dark with its light (glow %.2f)" % glow.glow_near(tap1))
 	# ---- the Hammer
 	var ham_in: bool = await _until_cull(func() -> bool: return cr.boss("hammer") != null, 5.0)
 	_check(ham_in and cr.boss("reach") == null and cr.boss("alix") == null, "the Hammer arrives first")
@@ -425,6 +432,11 @@ func _deaths(cr: CousinsRound, ham: CousinHammer, rch: CousinReach, alx: CousinA
 		"profile: the calling card, the Three Ribbons charm and the Aunt's Letter are recorded")
 	_check(cr.lines_said.has("OPR_BOSS_COUSINS_DEAD_M0_03") and cr.lines_said.has("ALX_COUSIN_01"), "the lines played (subtitles): %d lines" % cr.lines_said.size())
 	_check(cr.lamps_out == 0, "every lamp relit")
+	var glow2: LampGlow = _map.get_node_or_null("LampGlow") as LampGlow
+	if glow2 != null:
+		var tap: Vector3 = (_map.find_child("TapLamp1", true, false) as Node3D).global_position
+		var lit: bool = await _until(func() -> bool: return glow2.glow_near(tap) > 0.85, 6.0)
+		_check(lit, "the lantern glass glows again with its light (glow %.2f)" % glow2.glow_near(tap))
 	# the round ends once the horde is gone
 	var ended: bool = await _until_cull(func() -> bool: return _rounds_ended.has(10), 30.0)
 	_check(ended, "round 10 ends once the horde is cleared")

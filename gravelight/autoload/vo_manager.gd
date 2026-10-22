@@ -46,6 +46,7 @@ var audio_plays: int = 0
 var audio_plays_3d: int = 0
 
 var _index: Dictionary = {}          # "SPK:CAT" -> Array[StringName]
+var _line_map: Dictionary = {}       # line id -> the map it belongs to ("map00", "map01", ...); absent = any map
 var _bags: Dictionary = {}           # "SPK:CAT" -> Array[StringName] (remaining shuffled ids)
 var _cooldown_until: Dictionary = {} # rule key -> time
 var _played_once: Dictionary = {}    # line id -> true
@@ -119,12 +120,16 @@ func load_data() -> void:
 	lines = GLData.load_json(LINES_PATH)
 	rules = GLData.load_json(RULES_PATH)
 	_index.clear()
+	_line_map.clear()
 	for id: Variant in lines.keys():
 		var rec: Dictionary = lines[id]
 		var key: String = "%s:%s" % [rec["speaker"], rec["category"]]
 		if not _index.has(key):
 			_index[key] = []
 		(_index[key] as Array).append(StringName(str(id)))
+		var m: String = line_map_of(str(id), rec, rules)
+		if m != "":
+			_line_map[str(id)] = m
 	var au: Dictionary = rules.get("audio", {})
 	for p3: AudioStreamPlayer3D in [_player_3d, _squad_3d]:
 		if p3 != null:
@@ -399,14 +404,42 @@ func _draw(key: String) -> StringName:
 	return StringName(str(id_out))
 
 
+## The map a line belongs to ("map00", "map01", "map02"), or "" when it can play anywhere (T-057). A line is a
+## map line when its category has an M0 / M1 / M2 token (POWER_ON_M0, M1_SWITCH, CUT_EXFIL_M0), its condition
+## names a map ("Map 1, power on"), or rules.json "map_lines" lists it (lines that name a place, like the
+## survivors' "Kaltenbrunn." spawn lines).
+static func line_map_of(id: String, rec: Dictionary, rules_cfg: Dictionary) -> String:
+	var listed: Dictionary = rules_cfg.get("map_lines", {})
+	for m: Variant in listed.keys():
+		if (listed[m] as Array).has(id):
+			return str(m)
+	for tok: String in str(rec.get("category", "")).split("_"):
+		if tok.length() == 2 and tok[0] == "M" and tok[1] >= "0" and tok[1] <= "9":
+			return "map0" + tok[1]
+	var re: RegEx = RegEx.create_from_string("\\bmap (\\d)\\b")
+	var mt: RegExMatch = re.search(str(rec.get("condition", "")).to_lower())
+	if mt != null:
+		return "map0" + mt.get_string(1)
+	return ""
+
+
+## True when a line may play on the current map: an unmapped line anywhere, a map line only on its own map.
+## (No map loaded, e.g. a unit test: everything may play.)
+func map_ok(id: StringName) -> bool:
+	var m: String = str(_line_map.get(String(id), ""))
+	var here: String = String(GameState.map_id)
+	return m == "" or here == "" or here.begins_with(m)
+
+
 ## Conditions written in the docs: "round 5", "round 8+", "Map 1, power on". Triggers like
-## "round 2 start" are matched by their own handlers, so they're ignored here.
+## "round 2 start" are matched by their own handlers, so they're ignored here. A line for another map never
+## passes (map_ok).
 func _condition_ok(id: StringName) -> bool:
+	if not map_ok(id):
+		return false
 	var cond: String = str((lines.get(String(id), {}) as Dictionary).get("condition", "")).to_lower()
 	if cond == "":
 		return true
-	if cond.contains("map 1") and not String(GameState.map_id).begins_with("map01"):
-		return false
 	if cond.contains("power on") and not GameState.power_on:
 		return false
 	var re: RegEx = RegEx.create_from_string("^round (\\d+)(\\+?)$")
@@ -865,7 +898,7 @@ func _on_boss_spawned(enemy_id: StringName) -> void:
 func _play_conditioned(speaker: StringName, category: String, round_number: int, chance: float) -> bool:
 	for id: Variant in _index.get("%s:%s" % [speaker, category], []):
 		var cond: String = str((lines[String(id)] as Dictionary).get("condition", "")).to_lower().strip_edges()
-		if cond == "round %d" % round_number:
+		if cond == "round %d" % round_number and map_ok(StringName(id)):
 			if chance < 1.0 and not always_pass_chance and rng.randf() > maxf(chance, 0.35):
 				return true
 			return play_local(StringName(id))
@@ -1214,7 +1247,7 @@ func play_slip() -> bool:
 	for i: int in bag.size():
 		var id: String = str(bag[i])
 		var need: int = int((lines.get(id, {}) as Dictionary).get("min_round", 10)) - (5 if hw else 0)
-		if r < need:
+		if r < need or not map_ok(StringName(id)):
 			continue
 		bag.remove_at(i)
 		ProfileSave.profile["slip_bag"] = bag

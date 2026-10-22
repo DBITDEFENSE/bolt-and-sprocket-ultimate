@@ -200,15 +200,16 @@ func _update_special(delta: float) -> void:
 	if center == Vector3.INF:
 		_pack_t = 1.0
 		return
+	# Each member takes its own free slot round the portal (T-057): the old random offset fell back to the portal
+	# point itself, so a pack could rise inside each other, stack, and shove the top one up through the ceiling onto
+	# the roof; and an offset could snap through a window to the outside, where a chasing zombie can't get in.
 	for i: int in pack:
 		if not RoundManager.can_spawn():
 			break
-		var spec: Dictionary = _spec_for(&"bellringer", RoundManager.take_spawn())
-		var off: Vector3 = Vector3(_rng.randf_range(-1.6, 1.6), 0, _rng.randf_range(-1.6, 1.6))
-		var at: Vector3 = _snap(center + off)
-		if absf(at.y - center.y) > 0.4 or not _same_room(center, at):
-			at = center   # snapped onto furniture, or through a wall to the outside: emerge at the portal itself
-		_activate_at(spec, at)
+		var at: Vector3 = _scatter(center, i, true)
+		if at == Vector3.INF:
+			break   # no free, open spot left round this portal: the rest come with the next pack
+		_activate_at(_spec_for(&"bellringer", RoundManager.take_spawn()), at)
 	_pack_t = float(e.get("pack_gap_seconds", 3.5))
 
 
@@ -231,18 +232,83 @@ func _portal_point() -> Vector3:
 			if path.is_empty():
 				continue
 			var pt: Vector3 = path[path.size() - 1]
-			var ok: bool = absf(pt.y - p.global_position.y) < 2.5 and _in_open_zone(pt) and not _crosses_closed_door(path)
+			var ok: bool = absf(pt.y - p.global_position.y) < 2.5 and spawn_spot_ok(pt) and not _crosses_closed_door(path) \
+				and not _crosses_window(path)
 			for q: Player in players:
 				if q.global_position.distance_to(pt) < lo * relax:
 					ok = false
 			if ok:
 				return pt
-	# fallback: any active ground spawn
+	# fallback: the active ground spawn in an open zone nearest a player (never one in a shut zone or off the map)
+	var best: Vector3 = Vector3.INF
+	var best_d: float = INF
 	for n: Node in get_tree().get_nodes_in_group(&"zombie_spawns"):
 		var sp: ZombieSpawn = n as ZombieSpawn
-		if sp != null and sp.kind == &"ground" and sp.is_active(maxi(1, RoundManager.current_round)):
-			return sp.global_position
-	return Vector3.INF
+		if sp == null or sp.kind != &"ground" or not sp.is_active(maxi(1, RoundManager.current_round)) \
+				or not _in_open_zone(sp.global_position):
+			continue
+		for q: Player in players:
+			var d: float = q.global_position.distance_to(sp.global_position)
+			if d < best_d:
+				best_d = d
+				best = sp.global_position
+	return best
+
+
+## True when a zombie may rise at a navmesh point (T-057): it's in a zone the players have opened, and there's
+## room for a body there: nothing solid (furniture, a wall, a beam) inside a 0.45 m column from a hand's breadth
+## above the floor to head height. Fog portals and their packs only use spots that pass.
+func spawn_spot_ok(pt: Vector3) -> bool:
+	if not _in_open_zone(pt):
+		return false
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	var down: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(pt + Vector3.UP * 0.3, pt + Vector3.DOWN * 1.2, 1)
+	var hit: Dictionary = space.intersect_ray(down)
+	if hit.is_empty():
+		return false   # nothing under it: a navmesh scrap over a hole
+	var floor_y: float = (hit["position"] as Vector3).y
+	var col: CylinderShape3D = CylinderShape3D.new()
+	col.radius = 0.45
+	col.height = 1.4
+	var q: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+	q.shape = col
+	q.transform = Transform3D(Basis.IDENTITY, Vector3(pt.x, floor_y + 0.3 + col.height * 0.5, pt.z))
+	q.collision_mask = 1 | (1 << 8)
+	return space.intersect_shape(q, 1).is_empty()
+
+
+## True when a nav path runs through a window (zombies only come in by tearing the boards: a chasing one can't
+## climb through, T-057). Windows are planes like doors: a segment that crosses one between its jambs.
+func _crosses_window(path: PackedVector3Array) -> bool:
+	for n: Node in get_tree().get_nodes_in_group(&"barricades"):
+		var b: Barricade = n as Barricade
+		if b != null and window_crossed(b, path):
+			return true
+	return false
+
+
+static func window_crossed(b: Barricade, path: PackedVector3Array) -> bool:
+	var bp: Vector3 = b.global_position
+	var nrm: Vector3 = b.global_basis.z
+	nrm.y = 0.0
+	nrm = nrm.normalized()
+	var along: Vector3 = b.global_basis.x
+	along.y = 0.0
+	along = along.normalized()
+	var half: float = b.width * 0.5 + 0.2
+	for k: int in range(1, path.size()):
+		var a: Vector3 = path[k - 1]
+		var c: Vector3 = path[k]
+		if absf(a.y - bp.y) > 2.5 and absf(c.y - bp.y) > 2.5:
+			continue
+		var da: float = nrm.dot(a - bp)
+		var dc: float = nrm.dot(c - bp)
+		if signf(da) == signf(dc) or da == dc:
+			continue
+		var hit: Vector3 = a.lerp(c, da / (da - dc))
+		if absf(along.dot(hit - bp)) <= half:
+			return true
+	return false
 
 
 ## Fog portals only open in zones the players have bought into. Map 0 has one navmesh across closed doors
@@ -301,10 +367,12 @@ static func door_crossed(d: BuyDoor, path: PackedVector3Array) -> bool:
 
 ## Ground emergences fan out around their point (ring slot i, 0.9 m apart) so two zombies never rise inside each
 ## other and end up one standing on the other's head (playtest fix, T-027). Snapped to the navmesh, same level.
-func _scatter(p: Vector3, i: int) -> Vector3:
+## strict (fog-portal packs, T-057): every slot must also pass spawn_spot_ok, and when no slot is free the answer
+## is Vector3.INF instead of the point itself (a pack never rises inside itself).
+func _scatter(p: Vector3, i: int, strict: bool = false) -> Vector3:
 	# the first free slot on a golden-angle ring: at least 0.9 m from every active zombie
 	var base: Vector3 = _snap(p)   # the navmesh floats a little above the floor: compare like with like
-	for k: int in 8:
+	for k: int in (12 if strict else 8):
 		var slot: int = i + k
 		var q: Vector3 = p
 		if slot > 0:
@@ -313,6 +381,8 @@ func _scatter(p: Vector3, i: int) -> Vector3:
 			q = _snap(p + Vector3(cos(a) * r, 0, sin(a) * r))
 			if absf(q.y - base.y) > 0.4 or not _same_room(p, q):
 				continue   # a different level (furniture, a step) or the far side of a wall: not here
+			if strict and (not spawn_spot_ok(q) or ZoneVolume.zone_at(get_tree(), q) != ZoneVolume.zone_at(get_tree(), p)):
+				continue   # in a shut zone, outside (through a window), or with no room for a body
 			q.y = p.y
 		var free: bool = true
 		for z: Zombie in active_zombies():
@@ -321,7 +391,7 @@ func _scatter(p: Vector3, i: int) -> Vector3:
 				break
 		if free:
 			return q
-	return p
+	return Vector3.INF if strict else p
 
 
 ## _scatter for a zombie that's already active (it mustn't count itself as occupying the spot).
