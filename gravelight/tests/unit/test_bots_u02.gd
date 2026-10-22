@@ -221,7 +221,11 @@ func test_moving_formation_is_beside_and_ahead_never_behind() -> void:
 
 
 func test_orders_are_data_driven() -> void:
-	assert_eq(BotConfig.order_ids(cfg), BotConfig.COMMANDS, "the shipped wheel: the four built-in orders")
+	var shipped: Array[StringName] = BotConfig.order_ids(cfg)
+	assert_eq(shipped, [&"follow", &"hold", &"train", &"repair", &"revive", &"buy_perks", &"save_scrip", &"open_door", &"fetch_part"],
+		"the shipped wheel: Update 03's nine orders")
+	for c: StringName in BotConfig.COMMANDS:
+		assert_true(shipped.has(c), "the standing order %s is still on the wheel" % c)
 	assert_eq(BotConfig.order_label(cfg, &"hold"), "Hold here")
 	var more: Dictionary = {"commands": {"orders": [{"id": "follow", "label": "Follow me"}, {"id": "train", "label": "Train with me"},
 		{"id": "hold", "label": "Hold here"}, {"id": "buy_perks", "label": "Buy perks now"}, {"id": "repair"}, {"id": "revive"}]}}

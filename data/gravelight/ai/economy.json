@@ -1,0 +1,30 @@
+{
+  "_doc": "The bots' spending brain (Update 03 section 6; gravelight/bots/bot_economy.gd, pure rules tested in test_bot_brain.gd). Each bot spends its own Scrip by priority: perks in perk_plan order ('@weapon' = trigger_tonic or twin_barrel by the class of its main gun: weapon_perk), Second Wind only in co-op (second_wind_coop_only; there is no solo self-revive for a bot); a wall gun good for the round (weapon_tiers vs want_tier_by_round, never past weapon_max_round: no Kar98k after round 10); an ammo box when the main gun's reserve is under ammo_box_below (wall ammo when its own wall-buy is in range and the reserve is under wall_ammo_below); doors only when ordered, when the human opened a door already and stands by this one (near_human_m), or when no human leads (bot_led); the Requisition Crate above crate.min_scrip with a main gun weak for the round; the Crucible for a gun of crucible.min_tier or better. reserve: it always keeps enough for one revive-critical perk rebuy (reserve.perk's price) plus an ammo box, x the personality's save_bias. priorities are the 0..1 'buy_task' values the utility AI sees. Never: easter-egg objects, traps, the power switch (unless ordered or the human already did that step), a teammate's crate roll or Crucible weapon.",
+  "perk_plan": ["ironhide_stout", "second_wind", "@weapon", "hawkeye_brandy", "marathon_malt", "blastproof_bock", "overclock_cordial", "packmule_porter"],
+  "weapon_perk": {"trigger_tonic": ["lmg", "bolt", "shotgun", "rifle", "launcher", "sniper", "wonder"], "twin_barrel": ["smg", "assault", "pistol", "special"]},
+  "second_wind_coop_only": true,
+  "perk_min_round": 2,
+  "reserve": {"perk": "second_wind", "ammo_box": true, "min_scrip": 300},
+  "weapon_tiers": {
+    "m1911": 0.5, "kar98k": 1.0, "m1_carbine": 2.0, "m1_garand": 2.4, "gewehr43": 2.8, "springfield": 2.6, "sawed_off": 2.6,
+    "mp40": 3.2, "type100": 3.3, "trench_gun": 3.3, "thompson": 3.6, "ptrs41": 3.4, "stg44": 4.2, "ppsh41": 4.3,
+    "bar": 4.4, "m1919": 4.4, "mg42": 4.8, "flamethrower": 3.8, "panzerschreck": 4.0,
+    "ashlight": 6.0, "elmsfeuer": 6.0, "totenglocke": 6.5
+  },
+  "upgraded_tier_bonus": 1.5,
+  "weapon_max_round": {"kar98k": 10, "m1_carbine": 14, "m1_garand": 18},
+  "want_tier_by_round": [[1, 0.5], [4, 2.0], [8, 3.0], [12, 3.6], [18, 4.2], [25, 5.0]],
+  "gun_buffer_scrip": 150,
+  "ammo_box_below": 0.25,
+  "wall_ammo_below": 0.35,
+  "break_top_up_below": 0.6,
+  "break_top_up_scrip": 3000,
+  "calm_top_up_below": 0.5,
+  "crate": {"min_scrip": 2500, "weak_margin": 0.4, "max_pulls_per_round": 1, "rich_scrip": 6000, "rich_until_tier": 5.5},
+  "crucible": {"min_tier": 3.4, "min_round": 6},
+  "doors": {"bot_led": true, "human_opened_needed": true, "near_human_m": 9.0},
+  "power_switch": {"when_human_did": true, "on_order": true},
+  "priorities": {"perk": 0.95, "gun": 0.8, "ammo_box": 0.9, "wall_ammo": 0.85, "door": 0.45, "crate": 0.65, "crucible": 0.75, "crucible_ammo": 0.8, "power": 0.6},
+  "max_range_from_leader_m": 26.0,
+  "bot_led_range_m": 60.0
+}

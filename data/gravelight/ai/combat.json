@@ -1,0 +1,147 @@
+{
+  "_doc": "Perception, threat, aim and the action executors' numbers (Update 03 sections 2, 4, 5; gravelight/bots/bot_perception.gd, bot_aim.gd, bot_actions.gd).",
+  "perception": {
+    "_doc": "Sight: a fov_deg cone from the eye out to sight_range_m, rays_per_think line-of-sight rays per think (nearest first; walls and closed doors block). Hearing (no line of sight needed): any zombie within groan_m, a sprinter within sprinter_m, one tearing boards within tear_m, a boss within boss_m. What a bot or a teammate perceived stays known for memory_s (the squad blackboard), at the last place it was perceived. No wallhacks.",
+    "fov_deg": 110.0,
+    "sight_range_m": 40.0,
+    "rays_per_think": 6,
+    "memory_s": 4.0,
+    "groan_m": 9.0,
+    "sprinter_m": 15.0,
+    "tear_m": 16.0,
+    "boss_m": 28.0,
+    "gunfire_look_s": 1.2,
+    "eye_height": 1.55
+  },
+  "threat": {
+    "_doc": "Threat per zombie = proximity (1 - d / range_m)^prox_exp x the speed tier's tier_mult x the type multiplier (ai_counters.json threat_mult) x targeting_me (it chases this bot) or targeting_downed (a downed teammate) x behind (outside the bot's view cone) x outside_window (still outside a barricade). Threat pressure = the sum / pressure_norm, clamped to 0..1.",
+    "range_m": 16.0,
+    "prox_exp": 1.4,
+    "tier_mult": {"shamble": 0.55, "walk": 0.75, "jog": 1.0, "run": 1.3, "sprint": 1.7},
+    "crawler_mult": 0.5,
+    "targeting_me": 1.5,
+    "targeting_downed": 1.4,
+    "behind": 1.25,
+    "outside_window": 0.35,
+    "pressure_norm": 3.2
+  },
+  "aim": {
+    "_doc": "Target choice: threat x the counters' priority, + specials_first (personality) for specials/bosses, x vulnerable_priority / grab_priority (counters), x escort_bonus for what goes for the escorted player; kill-steal etiquette until kill_steal_until_round: a zombie under kill_steal_hp_frac of its health that the human is shooting is left to them unless it threatens someone. Headshot chance = base_head by weapon class x skill head_aim_mult + personality / counter head_bias, + slow_or_close_head for slow or close targets. Fire discipline: autos burst (burst_s / pause_s) beyond burst_range_m and fire freely inside it; semi rifles single shots at the skill's semi_max_rpm; nothing beyond max_range_m[class] (no spraying what it can't hit); never through a teammate (a 0.6 m line-of-fire check).",
+    "reacquire_lost_s": 0.8,
+    "base_head": {"pistol": 0.55, "rifle": 0.8, "bolt": 0.85, "sniper": 0.85, "smg": 0.6, "assault": 0.65, "lmg": 0.45, "shotgun": 0.15, "launcher": 0.0, "special": 0.0, "wonder": 0.1},
+    "slow_or_close_head": 0.15,
+    "max_range_m": {"pistol": 25.0, "rifle": 60.0, "bolt": 70.0, "sniper": 90.0, "smg": 30.0, "assault": 40.0, "lmg": 45.0, "shotgun": 13.0, "launcher": 40.0, "special": 9.0, "wonder": 30.0},
+    "burst_range_m": 9.0,
+    "burst_s": [0.3, 0.6],
+    "pause_s": [0.18, 0.35],
+    "conserve_pause_mult": 1.8,
+    "kill_steal_until_round": 6,
+    "kill_steal_hp_frac": 0.4,
+    "escort_bonus": 1.5,
+    "line_of_fire_radius_m": 0.6,
+    "moving_spread_mult": 1.6,
+    "ads_max_speed": 2.6,
+    "ads_min_m": 3.0
+  },
+  "weapons": {
+    "_doc": "Weapon choice: the class value (class_value) x the personality's class_pref x the situation (crowd_bonus for crowd classes when crowd_n or more are within 10 m, single_bonus for single-target classes on a boss, close_bonus for close classes within close_m) x ammo (an empty magazine: empty_mag_mult; nothing at all: 0). The pistol trap fix: the bot goes back to its best gun as soon as nothing is within swap_back_safe_m (or the worse gun runs dry), and never stays on the pistol while a better gun has ammo.",
+    "class_value": {"pistol": 0.3, "bolt": 0.55, "rifle": 0.65, "sniper": 0.6, "smg": 0.85, "assault": 0.9, "shotgun": 0.75, "lmg": 0.95, "launcher": 0.7, "special": 0.7, "wonder": 1.2},
+    "crowd_classes": ["wonder", "lmg", "shotgun", "special", "launcher"],
+    "single_classes": ["rifle", "bolt", "sniper", "launcher"],
+    "close_classes": ["shotgun", "smg", "special"],
+    "crowd_n": 5,
+    "crowd_bonus": 1.3,
+    "single_bonus": 1.25,
+    "close_m": 6.0,
+    "close_bonus": 1.2,
+    "empty_mag_mult": 0.55,
+    "empty_near_mult": 0.3,
+    "empty_swap_m": 6.0,
+    "swap_margin": 0.12,
+    "swap_back_safe_m": 3.5,
+    "swap_cooldown_s": 1.2
+  },
+  "reload": {
+    "_doc": "Reload intelligence: reload when the magazine is under low_frac and the pressure under low_pressure with nothing within near_block_m, or when it's empty. Never with a sprinter within sprinter_block_m or anything within near_block_m: swap to another loaded gun instead, or knife. Between waves every gun is topped up.",
+    "low_frac": 0.3,
+    "low_pressure": 0.25,
+    "near_block_m": 2.6,
+    "sprinter_block_m": 4.0,
+    "top_up_in_break": true
+  },
+  "grenades": {
+    "_doc": "Frags only into a group of min_group or more within group_radius_m of a point min_dist_m..max_dist_m away that no teammate is within teammate_clear_m of, or on a boss; cooldown_s between throws. personality grenade_bias scales min_group down (Peg) and the skill's grenade_skill the throw's accuracy.",
+    "min_group": 3,
+    "group_radius_m": 3.0,
+    "min_dist_m": 7.0,
+    "max_dist_m": 20.0,
+    "teammate_clear_m": 6.0,
+    "cooldown_s": 6.0,
+    "keep": 1
+  },
+  "melee": {
+    "_doc": "The knife: crawlers within range_m, or a lone zombie (nothing else within lone_radius_m) in rounds up to early_round_max for the melee Scrip; anything in reach when every gun is dry. Never a boss (never_melee).",
+    "range_m": 1.7,
+    "early_round_max": 5,
+    "lone_radius_m": 6.0
+  },
+  "totenglocke": {
+    "_doc": "The Totenglocke (the holder's rules in totenglocke.gd): quick tolls at what the cone reaches; the Great Toll only on great_min or more zombies bunched within great_bunch_m inside the great cone; the Bell Dome (dome) when reviving or covering with dome_min_pressure or more.",
+    "great_min": 6,
+    "great_bunch_m": 3.5,
+    "dome_min_pressure": 0.3
+  },
+  "revive": {
+    "_doc": "Revives (section 5): claimed on the squad blackboard by the nearest healthy bot with a safe path (path_safety_m: no known zombie that close to the path; medic_discount_m off the path length for the Medic). blocked_sprinter_m / blocked_bleed_s: no start with a sprinter that close to the downed one while more than that much bleed-out is left; last_chance_s: under that, go anyway. A second bot covers (cover claim) when the threat at the downed spot is over cover_threat. Mid-revive it only stops for something in knife reach while more than last_chance_s are left. Priority: the human, then bots, then Jakub (options.revive_priority).",
+    "reach_m": 1.4,
+    "path_safety_m": 1.6,
+    "medic_discount_m": 6.0,
+    "blocked_sprinter_m": 6.0,
+    "blocked_bleed_s": 10.0,
+    "blocked_crowd": 3,
+    "blocked_crowd_m": 2.5,
+    "blocked_crowd_bleed_s": 20.0,
+    "last_chance_s": 8.0,
+    "cover_threat": 0.35,
+    "cover_ring_m": 3.5,
+    "max_claim_path_m": 45.0,
+    "gramophone_first": true
+  },
+  "train": {
+    "_doc": "The squad's training route: the usable TrainingRoute (data/gravelight/ai/routes_<map>.json) whose line passes nearest the leader, within route_max_m on their floor; else the locomotion layer's free loop round the human.",
+    "route_max_m": 12.0
+  },
+  "retreat": {
+    "samples": 12,
+    "min_m": 4.0,
+    "max_m": 7.0,
+    "min_clear_m": 2.0,
+    "min_s": 1.0
+  },
+  "powerups": {
+    "_doc": "Power-up etiquette: always_take when it's safe; the rest (Death's Door, Double Scrip, Blackout, Clearance) only with the human within shared_m of it too, or no human in the match. Never one the human is walking toward (within toward_cone_deg of their heading, within toward_m).",
+    "always_take": ["resupply", "fortify"],
+    "shared_m": 9.0,
+    "toward_cone_deg": 30.0,
+    "toward_m": 16.0,
+    "max_path_m": 22.0
+  },
+  "hold": {
+    "_doc": "Early rounds: bots hold windows in pairs (a window claimed by up to pair_size bots) and rebuild between kills; the window's room side, spread stand_spread_m apart. Later the utility scores move them to training.",
+    "pair_size": 2,
+    "max_from_leader_m": 12.0,
+    "stand_back_m": 2.2,
+    "stand_spread_m": 1.4,
+    "until_round": 7
+  },
+  "chatter": {
+    "cooldown_s": 40.0,
+    "chance": 0.5
+  },
+  "callouts": {
+    "_doc": "Squad callouts with world pings (BotPings): sprinter_behind_m: a sprinter that close behind a teammate (outside their view) is called; ping_s: how long a ping marker stays.",
+    "sprinter_behind_m": 8.0,
+    "ping_s": 3.0,
+    "window_open_m": 18.0
+  }
+}

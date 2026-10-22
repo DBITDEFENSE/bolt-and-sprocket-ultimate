@@ -12,7 +12,7 @@ var character_id: StringName = &"dutch"     # the local player's survivor
 var characters: Dictionary = {}           # co-op: player id -> survivor (empty in solo: everyone is character_id)
 ## AI teammates (T-031): how many the menu asked for and their skill preset; the ids they got this match.
 var bot_count: int = 0
-var bot_skill: String = "regular"
+var bot_skill: String = "veteran"
 var bot_ids: Array[int] = []
 ## The objective planner on one bot (data/gravelight/bots.json "local_ai"): "off", "scripted" (its own scores)
 ## or "local" (a local LLM through Ollama picks, the scores are the fallback).

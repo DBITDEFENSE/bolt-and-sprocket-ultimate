@@ -144,6 +144,9 @@ times a second) and beyond 60 m.
 - `Player.bleedout_seconds` (> 0) gives that player its own co-op bleed-out clock (NetMatch.coop_downed).
 - Not counting as a player for zombie scaling: keep the companion out of `GameState.bot_ids` / `player_ids`
   scaling (MapRoot.scaled_player_count counts those); ammo boxes come from the §4 builder's `ammo_box` errand.
+- Update 03 adds `personality` ("jakub"), `escort_pid` (the player who freed him: he stays a step behind them),
+  `armed` (false: the coal shovel, melee only), `ammo_payer_pid` / `ammo_price_mult` (the party pays, half price:
+  AmmoBox.use_holder) and `revive_priority` (2: revived after the human and the bots). See docs/BOT_AI.md section 5.
 
 ## Update 03 section 3 (T-056): how bots move
 
@@ -154,3 +157,46 @@ on your training line, and run training loops ahead of the horde (`data/gravelig
 is really stuck it re-plans after 2 s and wriggles free after 4 s. After 8 s it teleports, but only where nobody
 can see it. Details, the API and the numbers are in `docs/BOT_AI.md` section 4. Turn it off with `bots.json`
 `"locomotion": "v1"`.
+
+## Update 03 (T-055): a new brain
+
+The bots' decisions are rebuilt from scratch. Each one weighs everything it could do several times a second
+(fight, train, hold a window, retreat, reload, revive, cover a revive, repair, buy, the crate, a power-up, follow,
+regroup, an order) and does the best, without flip-flopping. Architecture, tuning and numbers: `docs/BOT_AI.md`
+sections 5 and 6. All the tuning is in `data/gravelight/ai/*.json`.
+
+- **They play fair.** A bot knows a zombie only when it saw it (a 110 degree view and line of sight), heard it
+  (groans close by, a sprinter's scream, boards being torn off, a boss), or a teammate did, and it remembers that for
+  4 seconds. The old free pistol refill and the hidden 10 % damage reduction are gone. They keep the visible spawn
+  kit and their bonus perk.
+- **Shooting like people.** A short reaction delay, then the aim swings onto the target, a little past it and back,
+  and steadies. They prefer heads, burst at range, take single shots with rifles, never shoot through you, and don't
+  spray at what they can't hit. They reload when it's safe (never with a sprinter in their face; they swap guns
+  instead) and top up every gun between waves. A dry Thompson no longer leaves them on the start pistol all round.
+  Grenades go only into groups clear of the squad, or onto bosses. They knife crawlers, never bosses.
+- **Teamwork.** One bot claims each revive (the human first, then bots, then Jakub). It waits while a sprinter is on
+  the downed teammate unless the bleed-out clock is short, and goes anyway under 8 s. A second bot covers a hot revive
+  from the far side. The bots split roles (Anchor, Runner, Medic, Builder) by personality.
+- **Callouts with pings.** "Sprinter, behind you!", "Boss incoming!", "Crate's moved", "Window's open", "Covering
+  you", every power-up by its name, "Reloading!", "I need ammo", each with a small marker at the spot. Peg calls
+  bosses first, Wren keeps a kill tally, Dutch grumbles when you move him. New lines: VO_SCRIPT section 15.
+- **Power-ups.** They take Resupply and Fortify when it's safe. Death's Door, Double Scrip, Blackout and Clearance
+  they leave for you unless you're there too. They never take one you are walking toward.
+- **Their own Scrip.** Perks in order (Ironhide, Second Wind, then Trigger Tonic or Twin Barrel by gun), a wall gun
+  only when it beats what they carry (never a Kar98k after round 10), ammo boxes when running low, the Requisition
+  Crate with Scrip to spare, the Crucible for a good gun. They always keep a reserve. They never take your crate roll
+  or your Crucible weapon. They never touch easter-egg objects, traps or the power switch unless you order it or
+  already did that step (the local-AI planner bot is the exception you asked for). Doors: only when ordered, or when
+  you opened the way and stand by the next one.
+- **The command wheel has nine orders.** Follow me, Hold here, Train with me, Repair windows, Revive priority, Buy
+  perks now, Save Scrip, Go open that door (or the power switch you're looking at), Fetch that part (the buildable
+  part you're looking at). Each lasts 60 s or until done.
+- **Bot Skill: Recruit / Veteran / Elite** (Settings -> Gameplay, and the squad menu; default Veteran; old saves map
+  green -> Recruit, regular -> Veteran). It changes reaction, aim, decision quality and spending, never health.
+- **Personalities.** Dutch anchors and loves LMGs; Peg flanks, saves Scrip and throws the best grenades; Deacon
+  revives and repairs first; Wren takes rifles and kills specials first. Bolt, Vendelin and Jakub have profiles ready.
+- **Special enemies.** They shoot the Hammer while her mallet is in the air, shoot the Reach's wrist the moment she
+  holds someone, keep out of Alix's reach and focus her while she kneels. Counters for Paul, the Slender, Frostbiss,
+  the Bergwacht and the Treibstoff-Gaenger are in `ai_counters.json`, ready for when they exist.
+- **Debug:** dev console `ai_debug 1` (action, top scores, role and target over each bot, path lines), `ai_debug
+  panel` (the squad blackboard), `ai_debug heat` (a threat heatmap on the floor), `ai_debug 0`.

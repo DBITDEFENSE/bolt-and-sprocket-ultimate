@@ -4263,5 +4263,415 @@
   "speaker": "WRN",
   "category": "MIDNIGHT",
   "text": "Twelve. It's the twenty-fourth. Wigilia. Somewhere my mother is looking at the first star."
+ },
+ "DUT_SQ3_SPRINTER_BEHIND_01": {
+  "speaker": "DUT",
+  "category": "SPRINTER_BEHIND",
+  "text": "Runner on your back! Move!"
+ },
+ "DUT_SQ3_SPRINTER_BEHIND_02": {
+  "speaker": "DUT",
+  "category": "SPRINTER_BEHIND",
+  "text": "Behind you! Fast one!"
+ },
+ "DUT_SQ3_BOSS_INCOMING_01": {
+  "speaker": "DUT",
+  "category": "BOSS_INCOMING",
+  "text": "Big one coming. Get ready."
+ },
+ "DUT_SQ3_CRATE_MOVED_01": {
+  "speaker": "DUT",
+  "category": "CRATE_MOVED",
+  "text": "Crate's moved. Somebody find it."
+ },
+ "DUT_SQ3_WINDOW_OPEN_01": {
+  "speaker": "DUT",
+  "category": "WINDOW_OPEN",
+  "text": "Window's wide open over here!"
+ },
+ "DUT_SQ3_COVER_01": {
+  "speaker": "DUT",
+  "category": "COVER",
+  "text": "I got your back. Get 'em up."
+ },
+ "DUT_SQ3_PING_RESUPPLY_01": {
+  "speaker": "DUT",
+  "category": "PING_RESUPPLY",
+  "text": "Resupply! Over here!"
+ },
+ "DUT_SQ3_PING_DEATHSDOOR_01": {
+  "speaker": "DUT",
+  "category": "PING_DEATHSDOOR",
+  "text": "Death's Door, right there. Your call."
+ },
+ "DUT_SQ3_PING_DOUBLESCRIP_01": {
+  "speaker": "DUT",
+  "category": "PING_DOUBLESCRIP",
+  "text": "Double Scrip on the floor!"
+ },
+ "DUT_SQ3_PING_BLACKOUT_01": {
+  "speaker": "DUT",
+  "category": "PING_BLACKOUT",
+  "text": "Blackout! Grab it when you want it."
+ },
+ "DUT_SQ3_PING_FORTIFY_01": {
+  "speaker": "DUT",
+  "category": "PING_FORTIFY",
+  "text": "Fortify, over here!"
+ },
+ "DUT_SQ3_PING_CLEARANCE_01": {
+  "speaker": "DUT",
+  "category": "PING_CLEARANCE",
+  "text": "Clearance! Cheap crate, folks."
+ },
+ "DUT_SQ3_CMD_TRAIN_01": {
+  "speaker": "DUT",
+  "category": "CMD_TRAIN",
+  "text": "Right with you. Keep 'em moving."
+ },
+ "DUT_SQ3_CMD_BUY_PERKS_01": {
+  "speaker": "DUT",
+  "category": "CMD_BUY_PERKS",
+  "text": "Drinks are on me. Well. On me."
+ },
+ "DUT_SQ3_CMD_SAVE_SCRIP_01": {
+  "speaker": "DUT",
+  "category": "CMD_SAVE_SCRIP",
+  "text": "Wallet's shut."
+ },
+ "DUT_SQ3_CMD_OPEN_DOOR_01": {
+  "speaker": "DUT",
+  "category": "CMD_OPEN_DOOR",
+  "text": "I'll get the door."
+ },
+ "DUT_SQ3_CMD_FETCH_PART_01": {
+  "speaker": "DUT",
+  "category": "CMD_FETCH_PART",
+  "text": "I'll go grab it."
+ },
+ "DUT_SQ3_GRUMBLE_01": {
+  "speaker": "DUT",
+  "category": "GRUMBLE",
+  "text": "Fine. Moving. Again."
+ },
+ "DUT_SQ3_GRUMBLE_02": {
+  "speaker": "DUT",
+  "category": "GRUMBLE",
+  "text": "Had a good spot, too."
+ },
+ "DUT_SQ3_CHATTER_01": {
+  "speaker": "DUT",
+  "category": "CHATTER",
+  "text": "My knees are older than this inn."
+ },
+ "DUT_SQ3_CHATTER_02": {
+  "speaker": "DUT",
+  "category": "CHATTER",
+  "text": "Back home the worst thing in the dark was a coyote."
+ },
+ "PEG_SQ3_SPRINTER_BEHIND_01": {
+  "speaker": "PEG",
+  "category": "SPRINTER_BEHIND",
+  "text": "Sprinter, behind you!"
+ },
+ "PEG_SQ3_SPRINTER_BEHIND_02": {
+  "speaker": "PEG",
+  "category": "SPRINTER_BEHIND",
+  "text": "Check your six, it's a quick one!"
+ },
+ "PEG_SQ3_BOSS_INCOMING_01": {
+  "speaker": "PEG",
+  "category": "BOSS_INCOMING",
+  "text": "Boss incoming. Spread out, don't bunch up."
+ },
+ "PEG_SQ3_CRATE_MOVED_01": {
+  "speaker": "PEG",
+  "category": "CRATE_MOVED",
+  "text": "The crate's moved. Of course it has."
+ },
+ "PEG_SQ3_WINDOW_OPEN_01": {
+  "speaker": "PEG",
+  "category": "WINDOW_OPEN",
+  "text": "Window's open! Someone board it!"
+ },
+ "PEG_SQ3_COVER_01": {
+  "speaker": "PEG",
+  "category": "COVER",
+  "text": "Covering you. Go."
+ },
+ "PEG_SQ3_PING_RESUPPLY_01": {
+  "speaker": "PEG",
+  "category": "PING_RESUPPLY",
+  "text": "Resupply, over here!"
+ },
+ "PEG_SQ3_PING_DEATHSDOOR_01": {
+  "speaker": "PEG",
+  "category": "PING_DEATHSDOOR",
+  "text": "Death's Door. Do try not to waste it."
+ },
+ "PEG_SQ3_PING_DOUBLESCRIP_01": {
+  "speaker": "PEG",
+  "category": "PING_DOUBLESCRIP",
+  "text": "Double Scrip. Spend it wisely."
+ },
+ "PEG_SQ3_PING_BLACKOUT_01": {
+  "speaker": "PEG",
+  "category": "PING_BLACKOUT",
+  "text": "A Blackout's dropped, here."
+ },
+ "PEG_SQ3_PING_FORTIFY_01": {
+  "speaker": "PEG",
+  "category": "PING_FORTIFY",
+  "text": "Fortify! The windows will thank us."
+ },
+ "PEG_SQ3_PING_CLEARANCE_01": {
+  "speaker": "PEG",
+  "category": "PING_CLEARANCE",
+  "text": "Clearance! The crate's a bargain."
+ },
+ "PEG_SQ3_CMD_TRAIN_01": {
+  "speaker": "PEG",
+  "category": "CMD_TRAIN",
+  "text": "Train them. Yes, I know the drill."
+ },
+ "PEG_SQ3_CMD_BUY_PERKS_01": {
+  "speaker": "PEG",
+  "category": "CMD_BUY_PERKS",
+  "text": "A drink for the road. Several, in fact."
+ },
+ "PEG_SQ3_CMD_SAVE_SCRIP_01": {
+  "speaker": "PEG",
+  "category": "CMD_SAVE_SCRIP",
+  "text": "Saving. Frugality is a virtue."
+ },
+ "PEG_SQ3_CMD_OPEN_DOOR_01": {
+  "speaker": "PEG",
+  "category": "CMD_OPEN_DOOR",
+  "text": "That door? Consider it opened."
+ },
+ "PEG_SQ3_CMD_FETCH_PART_01": {
+  "speaker": "PEG",
+  "category": "CMD_FETCH_PART",
+  "text": "I'll fetch it. Mind the shop."
+ },
+ "PEG_SQ3_CHATTER_01": {
+  "speaker": "PEG",
+  "category": "CHATTER",
+  "text": "If anyone at Bletchley asks, this was a quiet posting."
+ },
+ "PEG_SQ3_CHATTER_02": {
+  "speaker": "PEG",
+  "category": "CHATTER",
+  "text": "Two minutes. Check your ammunition, not your watch."
+ },
+ "DEA_SQ3_SPRINTER_BEHIND_01": {
+  "speaker": "DEA",
+  "category": "SPRINTER_BEHIND",
+  "text": "Fast one behind you, brother!"
+ },
+ "DEA_SQ3_BOSS_INCOMING_01": {
+  "speaker": "DEA",
+  "category": "BOSS_INCOMING",
+  "text": "Lord, here comes a big one."
+ },
+ "DEA_SQ3_CRATE_MOVED_01": {
+  "speaker": "DEA",
+  "category": "CRATE_MOVED",
+  "text": "Crate's gone and moved itself."
+ },
+ "DEA_SQ3_WINDOW_OPEN_01": {
+  "speaker": "DEA",
+  "category": "WINDOW_OPEN",
+  "text": "That window's open! Somebody get a board on it!"
+ },
+ "DEA_SQ3_COVER_01": {
+  "speaker": "DEA",
+  "category": "COVER",
+  "text": "Go on, get 'em up. I'm watching."
+ },
+ "DEA_SQ3_PING_RESUPPLY_01": {
+  "speaker": "DEA",
+  "category": "PING_RESUPPLY",
+  "text": "Resupply over here! Blessing on the floor."
+ },
+ "DEA_SQ3_PING_DEATHSDOOR_01": {
+  "speaker": "DEA",
+  "category": "PING_DEATHSDOOR",
+  "text": "Death's Door, right here."
+ },
+ "DEA_SQ3_PING_DOUBLESCRIP_01": {
+  "speaker": "DEA",
+  "category": "PING_DOUBLESCRIP",
+  "text": "Double Scrip! Make it count."
+ },
+ "DEA_SQ3_PING_BLACKOUT_01": {
+  "speaker": "DEA",
+  "category": "PING_BLACKOUT",
+  "text": "Blackout on the floor."
+ },
+ "DEA_SQ3_PING_FORTIFY_01": {
+  "speaker": "DEA",
+  "category": "PING_FORTIFY",
+  "text": "Fortify! Every board at once. My kind of miracle."
+ },
+ "DEA_SQ3_PING_CLEARANCE_01": {
+  "speaker": "DEA",
+  "category": "PING_CLEARANCE",
+  "text": "Clearance! Crate's half off."
+ },
+ "DEA_SQ3_CMD_TRAIN_01": {
+  "speaker": "DEA",
+  "category": "CMD_TRAIN",
+  "text": "Keep 'em on a string. I'm with you."
+ },
+ "DEA_SQ3_CMD_BUY_PERKS_01": {
+  "speaker": "DEA",
+  "category": "CMD_BUY_PERKS",
+  "text": "Machines take Scrip, and I've got Scrip."
+ },
+ "DEA_SQ3_CMD_SAVE_SCRIP_01": {
+  "speaker": "DEA",
+  "category": "CMD_SAVE_SCRIP",
+  "text": "I'll hold onto it."
+ },
+ "DEA_SQ3_CMD_OPEN_DOOR_01": {
+  "speaker": "DEA",
+  "category": "CMD_OPEN_DOOR",
+  "text": "I'll open her up."
+ },
+ "DEA_SQ3_CMD_FETCH_PART_01": {
+  "speaker": "DEA",
+  "category": "CMD_FETCH_PART",
+  "text": "Parts? Now you're talking."
+ },
+ "DEA_SQ3_CHATTER_01": {
+  "speaker": "DEA",
+  "category": "CHATTER",
+  "text": "This machine's got a rattle. Hush now, sweetheart."
+ },
+ "DEA_SQ3_CHATTER_02": {
+  "speaker": "DEA",
+  "category": "CHATTER",
+  "text": "Pass me the wrench when we're done. Something in there's loose."
+ },
+ "WRN_SQ3_SPRINTER_BEHIND_01": {
+  "speaker": "WRN",
+  "category": "SPRINTER_BEHIND",
+  "text": "Behind you. Fast."
+ },
+ "WRN_SQ3_BOSS_INCOMING_01": {
+  "speaker": "WRN",
+  "category": "BOSS_INCOMING",
+  "text": "Big one. Coming now."
+ },
+ "WRN_SQ3_CRATE_MOVED_01": {
+  "speaker": "WRN",
+  "category": "CRATE_MOVED",
+  "text": "Crate moved."
+ },
+ "WRN_SQ3_WINDOW_OPEN_01": {
+  "speaker": "WRN",
+  "category": "WINDOW_OPEN",
+  "text": "Window. Open. There."
+ },
+ "WRN_SQ3_COVER_01": {
+  "speaker": "WRN",
+  "category": "COVER",
+  "text": "Go. I watch."
+ },
+ "WRN_SQ3_PING_RESUPPLY_01": {
+  "speaker": "WRN",
+  "category": "PING_RESUPPLY",
+  "text": "Resupply. Here."
+ },
+ "WRN_SQ3_PING_DEATHSDOOR_01": {
+  "speaker": "WRN",
+  "category": "PING_DEATHSDOOR",
+  "text": "Death's Door. Here."
+ },
+ "WRN_SQ3_PING_DOUBLESCRIP_01": {
+  "speaker": "WRN",
+  "category": "PING_DOUBLESCRIP",
+  "text": "Double Scrip. Here."
+ },
+ "WRN_SQ3_PING_BLACKOUT_01": {
+  "speaker": "WRN",
+  "category": "PING_BLACKOUT",
+  "text": "Blackout. Here."
+ },
+ "WRN_SQ3_PING_FORTIFY_01": {
+  "speaker": "WRN",
+  "category": "PING_FORTIFY",
+  "text": "Fortify. Here."
+ },
+ "WRN_SQ3_PING_CLEARANCE_01": {
+  "speaker": "WRN",
+  "category": "PING_CLEARANCE",
+  "text": "Clearance. The crate is cheap."
+ },
+ "WRN_SQ3_CMD_TRAIN_01": {
+  "speaker": "WRN",
+  "category": "CMD_TRAIN",
+  "text": "Yes. We run them."
+ },
+ "WRN_SQ3_CMD_BUY_PERKS_01": {
+  "speaker": "WRN",
+  "category": "CMD_BUY_PERKS",
+  "text": "I drink. Fine."
+ },
+ "WRN_SQ3_CMD_SAVE_SCRIP_01": {
+  "speaker": "WRN",
+  "category": "CMD_SAVE_SCRIP",
+  "text": "I save."
+ },
+ "WRN_SQ3_CMD_OPEN_DOOR_01": {
+  "speaker": "WRN",
+  "category": "CMD_OPEN_DOOR",
+  "text": "The door. Yes."
+ },
+ "WRN_SQ3_CMD_FETCH_PART_01": {
+  "speaker": "WRN",
+  "category": "CMD_FETCH_PART",
+  "text": "I bring it."
+ },
+ "WRN_SQ3_TALLY_25_01": {
+  "speaker": "WRN",
+  "category": "TALLY_25",
+  "text": "Twenty-five."
+ },
+ "WRN_SQ3_TALLY_50_01": {
+  "speaker": "WRN",
+  "category": "TALLY_50",
+  "text": "Fifty. I am counting."
+ },
+ "WRN_SQ3_TALLY_100_01": {
+  "speaker": "WRN",
+  "category": "TALLY_100",
+  "text": "One hundred. I write it down."
+ },
+ "WRN_SQ3_TALLY_150_01": {
+  "speaker": "WRN",
+  "category": "TALLY_150",
+  "text": "One hundred fifty."
+ },
+ "WRN_SQ3_TALLY_200_01": {
+  "speaker": "WRN",
+  "category": "TALLY_200",
+  "text": "Two hundred. For my brother."
+ },
+ "WRN_SQ3_TALLY_300_01": {
+  "speaker": "WRN",
+  "category": "TALLY_300",
+  "text": "Three hundred. Still counting."
+ },
+ "WRN_SQ3_CHATTER_01": {
+  "speaker": "WRN",
+  "category": "CHATTER",
+  "text": "I write down their number. Someone should."
+ },
+ "WRN_SQ3_CHATTER_02": {
+  "speaker": "WRN",
+  "category": "CHATTER",
+  "text": "My brother would like this inn. He liked any place with a fire."
  }
 }

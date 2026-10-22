@@ -11,18 +11,31 @@ static func cfg() -> Dictionary:
 	return GLData.table("bots")
 
 
-## A skill preset ("green" / "regular" / "veteran"); unknown names fall back to the default preset.
+## A skill preset's name after the old-name aliases (bots.json skill_aliases: green -> recruit, regular ->
+## veteran); unknown names give the default preset's name.
+static func skill_key(c: Dictionary, skill_name: String) -> String:
+	var aliases: Dictionary = c.get("skill_aliases", {})
+	var k: String = str(aliases.get(skill_name, skill_name))
+	if (c.get("skills", {}) as Dictionary).has(k):
+		return k
+	return str(c.get("skill_default", "veteran"))
+
+
+## A skill preset (Update 03 section 7: "recruit" / "veteran" / "elite"; the old "green" / "regular" map there):
+## bots.json skills.<name> (turn rate, bursts) with data/gravelight/ai/skills.json <name> (reaction, aim
+## convergence, decision noise, spend smartness) merged over it. Unknown names fall back to the default preset.
 static func skill(c: Dictionary, skill_name: String) -> Dictionary:
-	var skills: Dictionary = c.get("skills", {})
-	if skills.has(skill_name):
-		return skills[skill_name]
-	return skills.get(str(c.get("skill_default", "regular")), {})
+	var k: String = skill_key(c, skill_name)
+	var out: Dictionary = ((c.get("skills", {}) as Dictionary).get(k, {}) as Dictionary).duplicate()
+	out.merge(BotAIData.skill(k), true)
+	return out
 
 
-## The next skill preset in the menu cycle.
+## The next skill preset in the menu cycle (an old name counts as its new one).
 static func next_skill(c: Dictionary, current: String) -> String:
-	var order: Array = c.get("skill_order", ["regular"])
-	var i: int = order.find(current)
+	var order: Array = c.get("skill_order", ["veteran"])
+	var cur: String = str((c.get("skill_aliases", {}) as Dictionary).get(current, current))
+	var i: int = order.find(cur)
 	return str(order[(i + 1) % order.size()])
 
 
@@ -85,67 +98,6 @@ static func human_share_ok(recent: Array, human_ids: Array, ks: Dictionary) -> b
 		if human_ids.has(int(pid)):
 			human += 1
 	return float(human) / float(sample.size()) >= float(ks.get("human_min_share", 0.45))
-
-
-## The wall weapon to buy next: the first wishlist entry on the map that is better than everything held
-## (earlier in the wishlist = better; unlisted held guns count as worst) and affordable with the buffer.
-## `prices` = weapon id -> wall price for the wall-buys on this map. Returns &"" for nothing.
-static func pick_weapon(wishlist: Array, held: Array, scrip: int, prices: Dictionary, buffer: int) -> StringName:
-	var best_held: int = wishlist.size()
-	for h: Variant in held:
-		var i: int = wishlist.find(String(h))
-		if i >= 0:
-			best_held = mini(best_held, i)
-	for i2: int in range(0, mini(best_held, wishlist.size())):
-		var wid: String = str(wishlist[i2])
-		if prices.has(wid) and scrip >= int(prices[wid]) + buffer:
-			return StringName(wid)
-	return &""
-
-
-## The perk to drink next: the first wishlist perk not owned and affordable, while under max_perks.
-## `prices` = perk id -> price for machines that can sell to this bot right now.
-static func pick_perk(wishlist: Array, owned: Array, scrip: int, prices: Dictionary, max_perks: int, buffer: int) -> StringName:
-	if owned.size() >= max_perks:
-		return &""
-	for p: Variant in wishlist:
-		var pid: String = str(p)
-		if owned.has(pid) or owned.has(StringName(pid)):
-			continue
-		if prices.has(pid) and scrip >= int(prices[pid]) + buffer:
-			return StringName(pid)
-	return &""
-
-
-## Doors (shopping.doors): may this bot buy one now? `since_round_start` seconds into the round, `bought` doors
-## this bot opened this round.
-static func door_allowed(d: Dictionary, since_round_start: float, bought: int) -> bool:
-	if not bool(d.get("enabled", true)):
-		return false
-	if since_round_start < float(d.get("round_delay_s", 20.0)):
-		return false
-	return bought < int(d.get("max_per_round_per_bot", 1))
-
-
-## The door to buy: `doors` = [{"cost": int, "pos": Vector3, "ok": bool (usable and reachable)}, ...]. Affordable
-## with the reserve, preferring the one the human looks at (human_look_cone_deg) and the one nearest the human
-## (near_bonus_m - distance). Returns the index in `doors`, or -1.
-static func pick_door(d: Dictionary, doors: Array, scrip: int, human_pos: Vector3, human_fwd: Vector3) -> int:
-	var best: int = -1
-	var best_s: float = -INF
-	for i: int in doors.size():
-		var door: Dictionary = doors[i]
-		if not bool(door.get("ok", true)) or scrip < int(door.get("cost", 0)) + int(d.get("reserve_scrip", 0)):
-			continue
-		var pos: Vector3 = door.get("pos", Vector3.ZERO)
-		var dist: float = Vector2(pos.x - human_pos.x, pos.z - human_pos.z).length()
-		var s: float = maxf(0.0, float(d.get("near_bonus_m", 14.0)) - dist)
-		if in_fire_cone(human_pos, human_fwd, pos, float(d.get("human_look_cone_deg", 35.0)), 60.0):
-			s += 20.0
-		if s > best_s:
-			best_s = s
-			best = i
-	return best
 
 
 ## Crucible ammo (shopping.crucible): the upgraded gun in hand is under ammo_below_frac of its reserve and the
@@ -256,9 +208,9 @@ static func bonus_trigger(bcfg: Dictionary, perk_id: StringName) -> String:
 	return str((bcfg.get("triggers", {}) as Dictionary).get(String(perk_id), ""))
 
 
-## The squad orders built into the brains (BotBrain.on_command). The wheel's list itself is data
-## (bots.json commands.orders); an order id the brains don't know is still emitted (BotSquad.order_given) for
-## whatever handles it (a later AI layer), and the bots keep their current order.
+## The squad's standing orders (BotSquad.command, the T-031 / U02 set). Update 03: every order in the wheel's data
+## list (bots.json commands.orders) reaches the brains (BotBrain.on_order) as a high-weight action for 60 s or
+## until done (data/gravelight/ai/actions.json orders); these four also set the squad's standing order.
 const COMMANDS: Array[StringName] = [&"follow", &"hold", &"repair", &"revive"]
 
 

@@ -1,0 +1,51 @@
+{
+  "_doc": "Personality (Update 03 section 8): a weight profile for one character's bot (and Jakub). actions: multipliers on the action scores (actions.json). role_bias: how much it wants each squad role. aim.class_pref: weapon class multipliers for weapon choice (and the wall guns it wants). aim.head_bias: added to the headshot preference. aim.specials_first: extra target priority for specials and bosses. combat: retreat_hp (the HP fraction it starts thinking about retreating, multiplies the retreat input), melee_crawlers (knifes crawlers), grenade_bias (more / fewer grenades), keep_distance_m (preferred fighting distance), ammo_conserve (shorter bursts), aggression (pushes the fight score). economy: save_bias (multiplies the Scrip it keeps in reserve), perk_order (its perk plan; empty = economy.json default), perk_skill (better perk picks). callouts: boss_first (calls bosses and specials before anyone), kill_tally (keeps a running tally in her lines), grumble_on_move (grumbles when ordered to move), comments_by (a second voice comments on its decisions). chatter: lines between rounds.",
+  "character": "dutch",
+  "_summary": "Anchor. Holds ground, aggressive with LMGs and the BAR, slow to retreat, loves melee on crawlers, grumbles when told to move.",
+  "actions": {
+    "fight": 1.15,
+    "hold": 1.15,
+    "retreat": 0.75,
+    "train": 0.9,
+    "repair": 1.0,
+    "buy": 0.95
+  },
+  "role_bias": {
+    "anchor": 1.0,
+    "runner": 0.2,
+    "medic": 0.3,
+    "builder": 0.5
+  },
+  "aim": {
+    "class_pref": {
+      "lmg": 1.45,
+      "assault": 1.2,
+      "smg": 1.1,
+      "shotgun": 1.1,
+      "rifle": 0.85,
+      "bolt": 0.7,
+      "sniper": 0.7
+    },
+    "head_bias": -0.05,
+    "specials_first": 0.0
+  },
+  "combat": {
+    "retreat_hp": 0.75,
+    "melee_crawlers": true,
+    "grenade_bias": 1.0,
+    "keep_distance_m": 4.0,
+    "ammo_conserve": 0.0,
+    "aggression": 0.15
+  },
+  "economy": {
+    "save_bias": 0.9,
+    "perk_order": [],
+    "perk_skill": 0.6
+  },
+  "callouts": {
+    "boss_first": false,
+    "kill_tally": false,
+    "grumble_on_move": true,
+    "comments_by": ""
+  }
+}
