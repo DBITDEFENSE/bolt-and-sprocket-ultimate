@@ -3,18 +3,33 @@ extends Node
 ## Usage: godot --path . res://gravelight/tools_src/perf_map00.tscn   (opens a window; the mouse is NOT captured)
 ## Add `-- --fire` to hold the trigger on an MG42 aimed at the floor for the whole measurement (casings,
 ## impact dust, muzzle smoke, flash light) to price the gun effects.
+## `-- --novsync` measures uncapped (vsync off); `-- --look=east` turns the player to face the east window (the
+## wreck, the landscape and the distant war on screen; Update 02 section 7) and `--look=north` the north windows.
+## `--no-landscape` strips the Landscape and MapAmbience nodes first (the A/B for section 7's cost).
 
 var _map: Node3D
 var _t: float = 0.0
 var _samples: PackedFloat32Array = []
 var _spawned: bool = false
 var _fire: bool = "--fire" in OS.get_cmdline_user_args()
+var _look: String = ""
 
 
 func _ready() -> void:
 	_map = (load("res://gravelight/maps/map00_crossroads/map00.tscn") as PackedScene).instantiate() as Node3D
+	if "--no-landscape" in OS.get_cmdline_user_args():
+		for n: String in ["Landscape", "MapAmbience"]:
+			var c: Node = _map.get_node_or_null(n)
+			if c != null:
+				_map.remove_child(c)
+				c.free()
 	get_tree().root.add_child.call_deferred(_map)
 	GameState.god_mode = true
+	for a: String in OS.get_cmdline_user_args():
+		if a == "--novsync":
+			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
+		elif a.begins_with("--look="):
+			_look = a.substr(7)
 
 
 func _process(delta: float) -> void:
@@ -24,6 +39,12 @@ func _process(delta: float) -> void:
 	var p: Player = _map.get_node_or_null("Player1") as Player
 	if p != null:
 		p.set_process_unhandled_input(false)
+		if _look == "east":
+			p.rotation.y = -PI * 0.5
+			p.set("_pitch", 0.12)
+		elif _look == "north":
+			p.rotation.y = 0.0
+			p.set("_pitch", 0.15)
 	_t += delta
 	if delta > 0.025 and _t > 0.5:
 		print("[perf] HITCH %.1f ms at t=%.2f" % [delta * 1000.0, _t])

@@ -233,9 +233,18 @@ func _process(delta: float) -> void:
 		_check_pilot_line()
 	if _sky_dirty:
 		_write_sky()
-	for f: SkyFlight in flights.duplicate():
-		if not is_instance_valid(f):
-			flights.erase(f)
+	if not flights.is_empty():
+		_prune_flights()
+
+
+## Drops flights that have flown off (freed), without touching the freed objects' types.
+func _prune_flights() -> void:
+	var keep: Array = []
+	for f: Variant in flights:
+		if is_instance_valid(f):
+			keep.append(f)
+	if keep.size() != flights.size():
+		flights.assign(keep)
 
 
 func _after(secs: float, fn: Callable) -> void:
@@ -1109,9 +1118,9 @@ func debug_set_round(r: int) -> void:
 func debug_stage_for_view(cam: Camera3D) -> void:
 	var fwd: Vector3 = -cam.global_transform.basis.z
 	var bearing: float = fposmod(rad_to_deg(atan2(fwd.x, -fwd.z)), 360.0)
+	_prune_flights()
 	for f: SkyFlight in flights:
-		if is_instance_valid(f):
-			f.queue_free()
+		f.queue_free()
 	flights.clear()
 	var fl: SkyFlight = spawn_bombers(bearing + 90.0, 0.0, 11)
 	if fl != null:
