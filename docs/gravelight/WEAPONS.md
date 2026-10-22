@@ -257,7 +257,7 @@ then x1.1 per round: r15 = 1683, r16 = 1851, r20 = 2710, r21 = 2981, r25 = 4364,
 | **Resonance mark** | A toll's survivors are *tolled* (a ringing bronze halo for 20 s); a second toll always shatters them | violet halo |
 | Survivors | Knocked down / staggered (explosive-kind hit) | same |
 | **Chain-ring** | — | Each shattered zombie rings the 3 nearest (5 m) with a quick toll |
-| **Alt-fire: Bell Dome** | Plant a 6 m field for 8 s: zombies inside move at 40% speed and take +25% damage. One at a time, 2 charges | 12 s, pulls zombies toward the bell (0.9 m/s) |
+| **Alt-fire: Bell Dome** | Plant a 6 m field for 8 s: zombies inside move at 40% speed and take +25% damage; crossing in staggers each zombie once. One at a time, 2 charges | 12 s, pulls zombies toward the bell (0.9 m/s) |
 | Toll cooldown | 0.45 s (Great Toll 0.9 s) | same |
 | Charges | 12 per mag, 48 reserve | 16 / 64 |
 | Reload = **the crank** | 2.4 s partial / 3.0 s empty: the Crank part winds six turns with a ratchet | 2.0 / 2.6 |

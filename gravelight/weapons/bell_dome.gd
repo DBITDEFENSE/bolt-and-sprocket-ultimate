@@ -2,7 +2,7 @@ class_name BellDome
 extends Node3D
 ## The Totenglocke's alt-fire (T-048): the bell's ring planted as a resonance field. For `seconds`, zombies inside
 ## `radius` move at (1 - slow) of their speed (Zombie.apply_frost, refreshed) and take `damage_mult` damage
-## (Zombie.set_vulnerable). Mitternacht's dome also pulls them toward the bell (`pull` m/s, collision-aware).
+## (Zombie.set_vulnerable); crossing into it staggers a zombie once. Mitternacht's dome also pulls them toward the bell (`pull` m/s, collision-aware).
 ## Bosses are slowed but never pulled. One per player at a time (the Totenglocke instance keeps it).
 ## Co-op: the field runs on the machine that planted it; frost is forwarded to the host by Zombie.apply_frost,
 ## the damage bonus and the pull only act on zombies this machine simulates.
@@ -27,6 +27,7 @@ var _ring_mat: StandardMaterial3D
 var _light: OmniLight3D
 var _hum: AudioStreamPlayer3D
 var _inside: int = 0
+var _seen: Dictionary = {}          # zombie instance id -> true: already shocked on entering the field
 
 const SHADER: String = """
 shader_type spatial;
@@ -37,6 +38,7 @@ uniform float t = 0.0;
 varying vec3 lp;
 void vertex() { lp = VERTEX; }
 void fragment() {
+	if (lp.y < 0.03) { discard; }   // the hemisphere's flat bottom cap
 	float fres = pow(1.0 - abs(dot(NORMAL, VIEW)), 2.5);
 	float h = clamp(lp.y / 6.0, 0.0, 1.0);
 	float bands = smoothstep(0.75, 1.0, sin(h * 38.0 - t * 5.0) * 0.5 + 0.5);
@@ -121,7 +123,7 @@ func _process(delta: float) -> void:
 	_mat.set_shader_parameter("t", _t)
 	_mat.set_shader_parameter("energy", e * (0.85 + 0.15 * sin(_t * 9.0)))
 	_ring_mat.albedo_color = Color(color, 0.85 * e)
-	_light.light_energy = 1.6 * e * (0.8 + 0.2 * sin(_t * 13.0))
+	_light.light_energy = 0.55 * e * (0.8 + 0.2 * sin(_t * 13.0))
 	if _hum != null:
 		_hum.volume_db = lerpf(-30.0, -2.0, e)
 	if _t >= seconds:
@@ -142,6 +144,11 @@ func _physics_process(delta: float) -> void:
 		if not contains(c, radius, z.global_position):
 			continue
 		n += 1
+		if not _seen.has(z.get_instance_id()):
+			# crossing into the field rings through it: a stagger, once per zombie per dome
+			_seen[z.get_instance_id()] = true
+			if not Totenglocke.is_boss(z):
+				z.force_stagger()
 		z.apply_frost(slow, TICK * 3.0)
 		z.set_vulnerable(damage_mult, 0.6)
 		if pull > 0.0 and not z.puppet and not Totenglocke.is_boss(z) and z.state == Zombie.State.CHASE:
