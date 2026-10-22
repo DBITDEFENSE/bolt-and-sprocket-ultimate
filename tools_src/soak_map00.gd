@@ -8,6 +8,7 @@ extends Node
 ##   godot --headless --audio-driver Dummy --fixed-fps 60 --path . res://tools_src/soak_map00.tscn -- [--minutes=10] [--hold=30] [--start-round=8]
 ## (it jumps to --start-round first, so there are enough zombies on the map to test every spot; 0 = from round 1)
 ## `--specials` makes every round a special (Bellringer) round: the fog-portal spawns get the same treatment.
+## `--trails` prints an idle zombie's last 40 s of positions and states (to see how it got where it stuck).
 ## Prints "[soak] ..." lines and a RESULT line (FAIL if anything idled or a spot got no zombie at all). Windows that
 ## delivered nobody are listed (spawn weighting follows the player's zone, so compare against a master run).
 
@@ -40,6 +41,10 @@ var _arrive_times: Dictionary = {}   # spot label -> Array[float]
 var _by_window: Dictionary = {}   # window id ("ground" for ground spawns) -> arrivals
 var _born: Dictionary = {}        # zombie instance id -> spawn time
 var _came_by: Dictionary = {}     # zombie instance id -> window id
+var _born_at: Dictionary = {}     # zombie instance id -> where it was first seen (its spawn point)
+var _trail: Dictionary = {}       # zombie instance id -> its last positions (every 0.5 s), printed when it idles
+var _trail_t: float = 0.0
+var trails: bool = false          # --trails: print an idle zombie's last 40 s of positions and states
 var _track: Dictionary = {}       # zombie instance id -> [pos, t, flagged]
 var _idle: PackedStringArray = []
 var _windows: PackedStringArray = []
@@ -56,6 +61,8 @@ func _ready() -> void:
 			start_round = int(a.substr(14))
 		elif a == "--specials":
 			specials = true
+		elif a == "--trails":
+			trails = true
 	ProfileSave.path = "user://_soak_map00_profile.json"
 	ProfileSave.profile = ProfileSave.new_profile()
 	map = (load("res://gravelight/maps/map00_crossroads/map00.tscn") as PackedScene).instantiate() as Node3D
@@ -101,11 +108,21 @@ func _physics_process(delta: float) -> void:
 	player.global_position = SPOTS[_spot_i][1]
 	player.velocity = Vector3.ZERO
 	var label: String = str(SPOTS[_spot_i][0])
+	_trail_t -= delta
+	var sample: bool = trails and _trail_t <= 0.0
+	if sample:
+		_trail_t = 0.5
 	for z: Zombie in director.active_zombies():
 		var id: int = z.get_instance_id()
+		if sample:
+			var tl: Array = _trail.get_or_add(id, [])
+			tl.append("%.1f %s %s" % [_t, str(z.global_position.snapped(Vector3.ONE * 0.1)), Zombie.State.keys()[z.state]])
+			if tl.size() > 80:
+				tl.pop_front()
 		if not _born.has(id):
 			_born[id] = _t
 			_came_by[id] = String(z.window.window_id) if z.window != null else "ground"
+			_born_at[id] = z.global_position
 		var flat: float = Vector2(z.global_position.x - player.global_position.x, z.global_position.z - player.global_position.z).length()
 		if flat < 2.0 and absf(z.global_position.y - player.global_position.y) < 1.5:
 			_arrived[label] = int(_arrived.get(label, 0)) + 1
@@ -113,6 +130,8 @@ func _physics_process(delta: float) -> void:
 			var w: String = str(_came_by.get(id, "?"))
 			_by_window[w] = int(_by_window.get(w, 0)) + 1
 			_born.erase(id)
+			_born_at.erase(id)
+			_trail.erase(id)
 			_came_by.erase(id)
 			_track.erase(id)
 			z.take_damage(99999.0, &"head", &"m1911", 1, &"bullet")
@@ -125,9 +144,12 @@ func _physics_process(delta: float) -> void:
 		var waiting: bool = z.state in [Zombie.State.WAIT_WINDOW, Zombie.State.TEAR, Zombie.State.CLIMB]
 		if float(tr[1]) > 20.0 and not bool(tr[2]) and not waiting:
 			tr[2] = true
-			_idle.append("t=%.0f %s idle at %s in %s (player at %s, came by %s)" % [_t, z.enemy_id, str(z.global_position.snapped(Vector3.ONE * 0.1)),
-				Zombie.State.keys()[z.state], label, str(_came_by.get(id, "?"))])
+			_idle.append("t=%.0f %s idle at %s in %s (player at %s, came by %s, spawned at %s)" % [_t, z.enemy_id,
+				str(z.global_position.snapped(Vector3.ONE * 0.1)), Zombie.State.keys()[z.state], label, str(_came_by.get(id, "?")),
+				str((_born_at.get(id, Vector3.INF) as Vector3).snapped(Vector3.ONE * 0.1))])
 			print("[soak] IDLE: ", _idle[_idle.size() - 1])
+			if trails:
+				print("[soak]   trail: ", " | ".join(PackedStringArray(_trail.get(id, []))))
 	if _t >= minutes * 60.0:
 		_finish()
 

@@ -88,6 +88,7 @@ func _ready() -> void:
 		GameState.power_on = true
 		GLBus.power_activated.emit.call_deferred()
 	AudioDirector.start_ambient()
+	(func() -> void: LampGlow.attach(self)).call_deferred()   # lamp glass dims with its light (T-057)
 	if _online and Net.is_client():
 		session.report_loaded()
 		hud.show_banner("Waiting for the host...", 2.0)

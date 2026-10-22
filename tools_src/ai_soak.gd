@@ -4,7 +4,7 @@ extends Node
 ## a CSV per run (<run>.csv), a summary row per run (summary_<scenario>.csv) and a markdown table per batch
 ## (<batch>.md). Prints "[soak] ..." lines, the logger's "[ai_metrics] SUMMARY" line per run, and RESULT.
 ##   godot --headless --audio-driver Dummy --fixed-fps 60 --path . res://tools_src/ai_soak.tscn -- --scenario=player3
-##         [--runs=3] [--seed=1] [--max-round=0] [--speed=1] [--skill=regular] [--max-minutes=150] [--map=map00]
+##         [--runs=3] [--seed=1] [--max-round=0] [--speed=1] [--skill=regular] [--max-minutes=150] [--map=map00] [--god]
 ##         [--player-kit=baseline|realistic]
 ## (tools/ai_soak.sh wraps this.) Scenarios:
 ##   player3      3 bots + the scripted player (tools_src/soak_dummy.gd) on Map 0, from round 1 until the squad
@@ -50,6 +50,7 @@ var start_round: int = 0
 ## --homage=0 (tuning only): the Homage Bosses off (no Cousins round at 10 on Map 0); the default (as in every
 ## Update 03 measurement) is on.
 var homage: bool = true
+var god: bool = false   # --god: the scripted player can't be hurt (it outlives the bots: T-057's stalled-round hunt)
 ## --trace=N: every N game seconds, one status line per bot (action, top scores, gun, threat) and its task.
 var trace_s: float = 0.0
 var _trace_t: float = 0.0
@@ -95,6 +96,8 @@ func _ready() -> void:
 			skill = a.substr(8)
 		elif a.begins_with("--map="):
 			map_key = a.substr(6)
+		elif a == "--god":
+			god = true
 		elif a.begins_with("--trace="):
 			trace_s = float(a.substr(8))
 		elif a.begins_with("--orders="):
@@ -155,7 +158,7 @@ func _start_run() -> void:
 	GameState.bot_count = 3
 	GameState.bot_skill = skill
 	GameState.bot_ai_mode = "off"
-	GameState.god_mode = false
+	GameState.god_mode = god
 	_map = (load(str(MAPS[map_key])) as PackedScene).instantiate() as MapRoot
 	get_tree().root.add_child(_map)
 	get_tree().current_scene = _map
@@ -181,6 +184,7 @@ func _physics_process(delta: float) -> void:
 	_last_us = now
 	if _dummy != null:
 		_dummy.call("tick", delta)
+	_watch_stall()
 	if orders_s > 0.0 and _map.squad != null and _map.player != null and not _map.player.spectating:
 		_order_t += delta
 		if _order_t >= orders_s:
@@ -374,3 +378,35 @@ static func _fmt(v: float, f: String) -> String:
 	if f == "%d":
 		return "%d" % roundi(v)
 	return f % v
+
+
+var _stall_round: int = -1
+var _stall_t0: float = 0.0
+var _stall_next: float = 0.0
+
+
+## A round that runs past 5 minutes gets a report once a minute (T-057): the round's counters and every live
+## zombie (kind, state, where, how far above the closest navmesh point), so a round that never ends says why.
+func _watch_stall() -> void:
+	if RoundManager.current_round != _stall_round:
+		_stall_round = RoundManager.current_round
+		_stall_t0 = _game_t
+		_stall_next = 300.0
+	if RoundManager.state != RoundManager.State.ROUND or _game_t - _stall_t0 < _stall_next:
+		return
+	_stall_next += 60.0
+	var zs: Array = _map.director.active_zombies() if _map.director != null else []
+	print("[soak] STALL round %d at %.0f s: alive %d, to_spawn %d, holdout %s, %d active zombies" % [_stall_round,
+		_game_t - _stall_t0, RoundManager.alive, RoundManager.to_spawn, str(RoundManager.is_held()), zs.size()])
+	var nav: RID = _map.get_world_3d().navigation_map
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		var pl: Player = n as Player
+		print("[soak]   player %s at %s alive %s downed %s spectating %s" % [Net.display_name(pl.player_id), pl.global_position.snapped(Vector3.ONE * 0.1),
+			pl.is_alive(), pl.get("downed"), pl.get("spectating")])
+	for z: Zombie in zs:
+		var c: Vector3 = NavigationServer3D.map_get_closest_point(nav, z.global_position)
+		var tg: Node3D = z.target
+		var path: PackedVector3Array = NavigationServer3D.map_get_path(nav, z.global_position, tg.global_position, true) if tg != null else PackedVector3Array()
+		print("[soak]   %s %s at %s (navmesh %s) -> %s, path ends %s" % [z.enemy_id, Zombie.State.keys()[z.state], z.global_position.snapped(Vector3.ONE * 0.1),
+			c.snapped(Vector3.ONE * 0.1), Net.display_name((tg as Player).player_id) if tg is Player else str(tg),
+			path[path.size() - 1].snapped(Vector3.ONE * 0.1) if not path.is_empty() else "none"])
