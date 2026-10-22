@@ -134,6 +134,9 @@ var _rc_pool: Vector2 = Vector2.ZERO     # recoil pattern still to recover (pitc
 var _rc_recover: float = 8.0
 var _rc_delay: float = 0.1
 var _rc_since: float = 99.0
+## Update 03 section 3 (T-056): the movement code reads this, not Input. The local human fills it from Input
+## each frame (_read_move_intent); a bot's BotLocomotion passes its own to drive_bot().
+var _mi: MoveIntent = MoveIntent.new()
 
 
 func _ready() -> void:
@@ -339,15 +342,42 @@ func _physics_process(delta: float) -> void:
 	_update_camera(delta)
 
 
+## The local human's movement intent, from the input actions (the same reads the movement code made before T-056).
+func _read_move_intent(mi: MoveIntent) -> void:
+	mi.move = Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_back", 0.2)
+	mi.jump_pressed = Input.is_action_just_pressed(&"jump")
+	mi.jump_held = Input.is_action_pressed(&"jump")
+	mi.sprint_pressed = Input.is_action_just_pressed(&"sprint")
+	mi.sprint_held = Input.is_action_pressed(&"sprint")
+	mi.crouch_pressed = Input.is_action_just_pressed(&"crouch")
+	mi.crouch_held = Input.is_action_pressed(&"crouch")
+	mi.fire_pressed = Input.is_action_just_pressed(&"fire")
+	mi.fire_held = Input.is_action_pressed(&"fire")
+	mi.ads_held = Input.is_action_pressed(&"ads")
+
+
+## A bot's body (BotLocomotion): one physics frame of the shared movement code driven by `intent` instead of
+## Input. The caller turns the body (rotation.y) first; `intent.move` is in the body's frame. Bots have no
+## camera update, so the head height follows the stance here.
+func drive_bot(delta: float, intent: MoveIntent) -> void:
+	if not is_bot or downed or spectating:
+		return
+	_mi = intent
+	_update_movement(delta)
+	head.position.y = _eye
+
+
 func _update_movement(delta: float) -> void:
-	var input: Vector2 = Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_back", 0.2)
+	if is_local:
+		_read_move_intent(_mi)
+	var input: Vector2 = _mi.move
 	var wish: Vector3 = (global_basis * Vector3(input.x, 0, input.y))
 	wish.y = 0.0
 	if wish.length_squared() > 1.0:
 		wish = wish.normalized()
 	if noclip:
 		var fly: Vector3 = (camera.global_basis * Vector3(input.x, 0, input.y)) * 12.0
-		if Input.is_action_pressed(&"jump"):
+		if _mi.jump_held:
 			fly.y += 8.0
 		global_position += fly * delta
 		velocity = Vector3.ZERO
@@ -361,12 +391,12 @@ func _update_movement(delta: float) -> void:
 	_update_stance_input(delta, wish, on_floor, S)
 	# mantle / vault: jump facing a waist-high ledge; a jump pressed a little early still catches the ledge
 	# (mantle_buffer s while moving forward), and so does holding jump into one while airborne
-	var jump_pressed: bool = Input.is_action_just_pressed(&"jump")
+	var jump_pressed: bool = _mi.jump_pressed
 	_mantle_buffer = float((_mv.get("mantle", {}) as Dictionary).get("buffer", 0.35)) if jump_pressed else maxf(0.0, _mantle_buffer - delta)
 	var forward: bool = input.y < -0.3
 	if jump_pressed:
 		_mantle_air = true                    # this jump may catch a ledge on the way (cleared on landing)
-	if not sliding and not prone and (jump_pressed or (forward and (_mantle_buffer > 0.0 or (not on_floor and (_mantle_air or Input.is_action_pressed(&"jump")))))):
+	if not sliding and not prone and (jump_pressed or (forward and (_mantle_buffer > 0.0 or (not on_floor and (_mantle_air or _mi.jump_held))))):
 		if _try_mantle():
 			return
 	if jump_pressed and sliding and on_floor:
@@ -460,10 +490,10 @@ func _update_movement(delta: float) -> void:
 ## slide; crouch again during one cancels it; jump out of it is a slide-jump that keeps the speed. With the Prone
 ## setting on, holding crouch goes prone (a tap while crouched stands up on release), crouch or jump gets up.
 func _update_stance_input(delta: float, wish: Vector3, on_floor: bool, S: Dictionary) -> void:
-	var prone_on: bool = bool(GLSettings.values.get("prone_enabled", false))
+	var prone_on: bool = is_local and bool(GLSettings.values.get("prone_enabled", false))   # (bots never go prone)
 	if prone and not prone_on:
 		_set_prone(false)
-	if Input.is_action_just_pressed(&"crouch"):
+	if _mi.crouch_pressed:
 		_crouch_hold_t = 0.0
 		var fast: bool = horizontal_speed() >= float(S.get("min_sprint_speed", 4.0))
 		if prone:
@@ -479,13 +509,13 @@ func _update_stance_input(delta: float, wish: Vector3, on_floor: bool, S: Dictio
 			_crouch_release_stands = true      # decided on release: a tap stands, a hold goes prone
 		else:
 			crouching = not crouching
-	if prone_on and _crouch_hold_t >= 0.0 and Input.is_action_pressed(&"crouch") and not sliding and not prone and on_floor:
+	if prone_on and _crouch_hold_t >= 0.0 and _mi.crouch_held and not sliding and not prone and on_floor:
 		_crouch_hold_t += delta
 		if _crouch_hold_t >= float((_mv.get("prone", {}) as Dictionary).get("hold", 0.45)):
 			_crouch_hold_t = -1.0
 			_crouch_release_stands = false
 			_set_prone(true)
-	if not Input.is_action_pressed(&"crouch"):
+	if not _mi.crouch_held:
 		_crouch_hold_t = -1.0
 		if _crouch_release_stands:
 			_crouch_release_stands = false
@@ -505,21 +535,21 @@ func _set_prone(on: bool) -> void:
 
 ## True while the sprint input is on: the key held (Hold mode) or toggled on (Toggle mode).
 func sprint_held() -> bool:
-	if str(GLSettings.values.get("sprint_mode", "hold")) == "toggle":
+	if is_local and str(GLSettings.values.get("sprint_mode", "hold")) == "toggle":
 		return _sprint_toggled
-	return Input.is_action_pressed(&"sprint")
+	return _mi.sprint_held
 
 
 ## Sprint: forward-ish only. Fire or ADS input cancels it at once (the gun's sprint-out runs and the shot is
 ## buffered, see WeaponHolder); Hold mode comes back once they are released, Toggle mode needs a new press.
 ## Pressing sprint while firing / aiming wins until those are let go.
 func _update_sprint(delta: float, input: Vector2, on_floor: bool) -> void:
-	var toggle_mode: bool = str(GLSettings.values.get("sprint_mode", "hold")) == "toggle"
-	var fire_in: bool = Input.is_action_pressed(&"fire")
-	var ads_in: bool = Input.is_action_pressed(&"ads") and not _status_flag("no_ads")
+	var toggle_mode: bool = is_local and str(GLSettings.values.get("sprint_mode", "hold")) == "toggle"
+	var fire_in: bool = _mi.fire_held
+	var ads_in: bool = _mi.ads_held and not _status_flag("no_ads")
 	if not fire_in and not ads_in:
 		_fire_override = false
-	if Input.is_action_just_pressed(&"sprint"):
+	if _mi.sprint_pressed:
 		if toggle_mode:
 			_sprint_toggled = not (_sprint_toggled or sprinting)
 		_sprint_block = 0.0
@@ -527,7 +557,7 @@ func _update_sprint(delta: float, input: Vector2, on_floor: bool) -> void:
 			_fire_override = true
 	if toggle_mode and (input.y > -0.3 or crouching or prone) and not sliding:
 		_sprint_toggled = false
-	var cancel: bool = (not _fire_override and (Input.is_action_just_pressed(&"fire") or fire_in or ads_in)) or weapons.fire_pending()
+	var cancel: bool = (not _fire_override and (_mi.fire_pressed or fire_in or ads_in)) or weapons.fire_pending()
 	if cancel:
 		if toggle_mode and (sprinting or _sprint_toggled) and not weapons.fire_pending():
 			_sprint_toggled = false
@@ -802,6 +832,8 @@ func mantle_k() -> float:
 
 ## One footstep on whatever is underfoot (a short ray down, only when a step lands).
 func _footstep(volume_db: float) -> void:
+	if not is_local:
+		return   # a bot driven by drive_bot(): its RemoteBody plays teammates' footsteps in 3D
 	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
 	var from: Vector3 = global_position + Vector3.UP * 0.3
 	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, from + Vector3.DOWN * 0.9, 1 | (1 << 8), [get_rid()])
@@ -901,7 +933,7 @@ func _end_slide(natural: bool) -> void:
 	var S: Dictionary = _cfg.get("slide", {})
 	var stand: bool = bool(S.get("stand_up", true)) and sprint_held() and not _head_blocked()
 	crouching = not stand
-	if natural and not stand and Input.is_action_pressed(&"crouch"):
+	if natural and not stand and _mi.crouch_held:
 		crouching = true
 	# whatever speed is left carries into the walk / sprint (the move_toward settles it)
 	velocity.x = _slide_dir.x * _slide_speed
