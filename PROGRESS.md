@@ -89,5 +89,10 @@ merged into master in the brief's order after GUT + smokes pass:
 - §7 landscape, sky, distant war: `u02-7-landscape` (T-052)
 - §8 polish pass: after §6.1 merges (T-053)
 
+Update 03 (UPDATE_03_BOT_AI.md, arrived mid-run): smarter bots + Jakub on one utility-AI brain. U02 §5 was narrowed
+to the parts that survive the rewrite (bonus perk, looks/animations, nameplate, barks, command wheel UI); behaviour
+moves to U03. Order: U03 §0/§9 metrics + baseline soak (`u03-0-metrics`, T-054) now → after U02 §5 merges, the
+brain rewrite (U03 §1–§8, T-055) → U02 §6.2 Jakub on the new brain.
+
 
 ## BLOCKED
