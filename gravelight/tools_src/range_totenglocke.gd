@@ -50,4 +50,5 @@ static func _on_match_started(_map_id: StringName) -> void:
 				var w: WeaponInstance = p.weapons.find_weapon(_weapon)
 				if w != null:
 					p.weapons.current_index = p.weapons.slots.find(w)
-					p.weapons.call("_rebuild_gun"))
+					p.weapons.call("_rebuild_gun")
+				print("[tg-range] P%d holds %s at round %d (god mode)" % [p.player_id, _weapon, _round]))
