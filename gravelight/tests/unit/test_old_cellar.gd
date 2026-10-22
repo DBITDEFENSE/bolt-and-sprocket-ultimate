@@ -79,20 +79,26 @@ func test_seal_opens_on_the_aunts_letter_only() -> void:
 func test_breach_opens_when_both_cellars_are_open() -> void:
 	GameState.open_zones.erase(&"CELLAR")
 	GameState.open_zones.erase(&"OLD_CELLAR")
+	var holder: Node3D = Node3D.new()
+	var shut: NavigationRegion3D = NavigationRegion3D.new()
+	shut.name = "Shut"
+	var open_r: NavigationRegion3D = NavigationRegion3D.new()
+	open_r.name = "Open"
+	open_r.enabled = false
+	holder.add_child(shut)
+	holder.add_child(open_r)
 	var s: SealedPassage = SealedPassage.new()
 	s.open_when_zones = PackedStringArray(["CELLAR", "OLD_CELLAR"])
-	s.nav_link_path = NodePath("Link")
-	var link: NavigationLink3D = NavigationLink3D.new()
-	link.name = "Link"
-	link.enabled = false
-	s.add_child(link)
-	add_child_autofree(s)
+	s.nav_swap_off = NodePath("../Shut")
+	s.nav_swap_on = NodePath("../Open")
+	holder.add_child(s)
+	add_child_autofree(holder)
 	GameState.open_zone(&"CELLAR")
 	assert_false(s.is_open, "one cellar is not enough")
-	assert_false(link.enabled)
+	assert_false(s.nav_open())
 	GameState.open_zone(&"OLD_CELLAR")
 	assert_true(s.is_open, "both open: the breach falls in")
-	assert_true(link.enabled, "and the navmesh link across it switches on")
+	assert_true(open_r.enabled and not shut.enabled, "and the open navmesh replaces the shut one")
 
 
 func test_generated_map_has_the_old_cellar() -> void:
@@ -106,10 +112,11 @@ func test_generated_map_has_the_old_cellar() -> void:
 	assert_not_null(br)
 	if br != null:
 		assert_eq(Array(br.get("open_when_zones")), ["CELLAR", "OLD_CELLAR"])
-		var link: NavigationLink3D = br.get_node_or_null("BreachLink") as NavigationLink3D
-		assert_not_null(link)
-		if link != null:
-			assert_false(link.enabled, "shut at the start")
+		var open_nav: NavigationRegion3D = map.get_node_or_null("NavigationBreachOpen") as NavigationRegion3D
+		assert_not_null(open_nav)
+		if open_nav != null:
+			assert_false(open_nav.enabled, "shut at the start")
+			assert_gt(open_nav.navigation_mesh.get_polygon_count(), 100)
 	for w: String in ["W_CEL_COAL", "W_CEL_VAULT"]:
 		var n: Node = map.find_child(w, true, false)
 		assert_not_null(n, w)

@@ -7,8 +7,8 @@ extends Node3D
 ## Cue: open() directly, GLBus.intel_found with `open_on_intel` (HB1 files the aunt's letter, INT_HB_01, when the
 ## Cousins round is cleared), or every zone in `open_when_zones` open (the Old Cellar's breach to the Helvetia
 ## cellar: both cellar doors bought). A gap two bricks wide is left at eye height, so you can look in before that.
-## `nav_link_path`: a NavigationLink3D switched on when it opens, for a passage the navmesh was baked shut across
-## (so no path runs through it while it is shut, unlike a door).
+## `nav_swap_off` / `nav_swap_on`: two NavigationRegion3D (the map baked with the passage shut, and open); opening
+## disables the first and enables the second, for a passage no path may run through while it is shut (unlike a door).
 
 signal opened
 
@@ -19,7 +19,8 @@ const BRICK: Vector3 = Vector3(0.25, 0.075, 0.12)   # a brick and its mortar joi
 @export var size: Vector3 = Vector3(1.6, 2.0, 0.3)
 @export var open_on_intel: StringName = &""
 @export var open_when_zones: PackedStringArray = []
-@export var nav_link_path: NodePath
+@export var nav_swap_off: NodePath
+@export var nav_swap_on: NodePath
 
 var is_open: bool = false
 var _body: StaticBody3D
@@ -56,9 +57,19 @@ func _check_zones() -> void:
 	open()
 
 
-## The NavigationLink3D this passage switches on (or null).
-func nav_link() -> NavigationLink3D:
-	return get_node_or_null(nav_link_path) as NavigationLink3D if not nav_link_path.is_empty() else null
+## Swaps the shut navmesh for the open one (when the passage has them).
+func _swap_nav() -> void:
+	var off: NavigationRegion3D = get_node_or_null(nav_swap_off) as NavigationRegion3D if not nav_swap_off.is_empty() else null
+	var on: NavigationRegion3D = get_node_or_null(nav_swap_on) as NavigationRegion3D if not nav_swap_on.is_empty() else null
+	if off != null and on != null:
+		on.enabled = true
+		off.enabled = false
+
+
+## True once the open navmesh is the live one (or the passage has none to swap).
+func nav_open() -> bool:
+	var on: NavigationRegion3D = get_node_or_null(nav_swap_on) as NavigationRegion3D if not nav_swap_on.is_empty() else null
+	return on == null or on.enabled
 
 
 func _on_intel(id: StringName) -> void:
@@ -105,8 +116,7 @@ func open() -> void:
 		return
 	is_open = true
 	_body.collision_layer = 0
-	if nav_link() != null:
-		nav_link().enabled = true
+	_swap_nav()
 	_open_visual()
 	Net.mirror(self, &"_net_open")
 	if passage_id != &"":
@@ -164,6 +174,5 @@ func _net_open() -> void:
 		return
 	is_open = true
 	_body.collision_layer = 0
-	if nav_link() != null:
-		nav_link().enabled = true
+	_swap_nav()
 	_open_visual()

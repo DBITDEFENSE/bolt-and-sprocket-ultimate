@@ -70,6 +70,7 @@ func _process(_delta: float) -> bool:
 	for n: Node in _bake_only:   # colliders that only shape the navmesh (T-051)
 		n.get_parent().remove_child(n)
 		n.free()
+	_bake_breach_open()
 	get_root().remove_child(map_root)
 	build_dressing()
 	var merged: int = merge_static_meshes()
@@ -588,7 +589,7 @@ func build_old_cellar() -> void:
 	wall_x("OCWineS", 18.5, -T * 0.5, 10.9 + T * 0.5, cy, 0.0, [], "cellar_stone")
 	wall_x("OCVaultS", 16.0, 10.9, 20.85 + T * 0.5, cy, 0.0, [], "cellar_stone")
 	wall_z("OCTunW", 20.85, 16.0, 21.3 + T * 0.5, cy, 0.0, [], "limewash")
-	# the breach is shut in the navmesh (CellarBreach + its NavigationLink3D open it at runtime): a bake-only cut
+	# the breach is shut in the main navmesh (CellarBreach swaps in the open bake at runtime): a bake-only cut
 	_bake_only.append(box(geo, "BreachNavCut", Vector3(23.85, cy, 19.45), Vector3(24.15, cy + DOOR_H, 21.05), "metal", true, false))
 	wall_x("OCTunS", 21.3, 20.85, 24.0, cy, 0.0, [], "limewash")
 	# ---- inner walls (up to the ceiling): the long middle wall with the root and wine arches, the coal / root / wine
@@ -652,6 +653,22 @@ func build_old_cellar() -> void:
 	box(geo, "CagePanel", Vector3(cg.position.x, cy, cg.end.y - 0.06), Vector3(ex + 0.06, top, cg.end.y + 0.06), "metal", true, false)
 	box(geo, "CagePanel", Vector3(ex - 0.06, cy, cg.position.y), Vector3(ex + 0.06, top, OC_CAGE_DOOR.x), "metal", true, false)
 	box(geo, "CagePanel", Vector3(ex - 0.06, cy, OC_CAGE_DOOR.y), Vector3(ex + 0.06, top, cg.end.y), "metal", true, false)
+
+
+## The second navmesh (T-051): the whole map baked again without the breach's bake-only cut, in a disabled region
+## that CellarBreach swaps in for "Navigation" when it opens.
+func _bake_breach_open() -> void:
+	var nm: NavigationMesh = nav.navigation_mesh.duplicate() as NavigationMesh
+	nm.clear_polygons()
+	var src: NavigationMeshSourceGeometryData3D = NavigationMeshSourceGeometryData3D.new()
+	NavigationServer3D.parse_source_geometry_data(nm, src, nav)
+	NavigationServer3D.bake_from_source_geometry_data(nm, src)
+	var r: NavigationRegion3D = NavigationRegion3D.new()
+	r.name = "NavigationBreachOpen"
+	r.navigation_mesh = nm
+	r.enabled = false
+	map_root.add_child(r)
+	print("navmesh (breach open) polygons: %d" % nm.get_polygon_count())
 
 
 func bake_navmesh() -> void:
@@ -2165,21 +2182,17 @@ func build_old_cellar_gameplay() -> void:
 	d5.rotation.y = deg_to_rad(90)
 	gameplay.add_child(d5)
 	# the installers' breach to the Helvetia cellar: bricked up again until both cellars are open (Door 3 and Door 5),
-	# then it falls in by itself. The navmesh was baked with the breach shut (a bake-only cut); a NavigationLink3D
-	# across it switches on when it opens, so no path ever runs through it while a door on the ring is still shut.
+	# then it falls in by itself. The map's navmesh ("Navigation") is baked with the breach shut; when it opens it
+	# swaps to "NavigationBreachOpen" (the same bake with the breach open), so no path ever runs through the breach
+	# while a door on the taproom / cellar / old cellar ring is still shut. (A NavigationLink3D across it was tried:
+	# zombies re-pathing inside the cut snapped back to the near side and dithered in the doorway.)
 	var br: Node3D = _scripted(Node3D.new(), "res://gravelight/world/sealed_passage.gd", "CellarBreach", {
 		"passage_id": &"cellar_breach", "size": Vector3(1.6, DOOR_H, 0.3),
-		"open_when_zones": PackedStringArray(["CELLAR", "OLD_CELLAR"]), "nav_link_path": NodePath("BreachLink")})
+		"open_when_zones": PackedStringArray(["CELLAR", "OLD_CELLAR"]),
+		"nav_swap_off": NodePath("../../Navigation"), "nav_swap_on": NodePath("../../NavigationBreachOpen")})
 	br.position = Vector3(24.0, cy, 20.25)
 	br.rotation.y = deg_to_rad(90)
 	gameplay.add_child(br)
-	var link: NavigationLink3D = NavigationLink3D.new()
-	link.name = "BreachLink"
-	link.bidirectional = true
-	link.enabled = false
-	link.start_position = Vector3(0, 0, -1.4)   # local: the tunnel side ...
-	link.end_position = Vector3(0, 0, 1.4)      # ... and the Helvetia cellar's side
-	br.add_child(link)
 	# zone volumes: under the taproom, the wine cellar's south bay, the breach, the stair lean-to (tops kept under
 	# the taproom's floor, so the taproom above is not "old cellar")
 	for z: Array in [[Vector3(12.0, cy, 8.0), Vector3(24.0, 2.7, 16.0)], [Vector3(5.45, cy, 17.25), Vector3(10.9, 2.7, 2.5)],

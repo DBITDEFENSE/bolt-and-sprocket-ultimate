@@ -156,7 +156,7 @@ func _check_breach(map_rid: RID) -> void:
 	GameState.open_zone(&"CELLAR")
 	GameState.open_zone(&"OLD_CELLAR")
 	var br: SealedPassage = _map.find_child("CellarBreach", true, false) as SealedPassage
-	var opened: bool = br != null and br.is_open and br.nav_link() != null and br.nav_link().enabled
+	var opened: bool = br != null and br.is_open and br.nav_open()
 	print("[smoke] the breach: shut path %.0f m (round by the taproom), opens with both cellars: %s" % [shut, str(opened)])
 	if shut < 20.0 or not opened:
 		_fails.append("the cellar breach (shut path %.1f m, opened %s)" % [shut, str(opened)])
