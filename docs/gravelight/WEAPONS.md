@@ -66,7 +66,7 @@ Legend: **Dmg** = per bullet/pellet. **Rel** = reload partial / empty (s). **ADS
 | `flamethrower` | M2 Flamethrower | Special | Crate | 40/tick (20 tick/s) | — | Stream | 160 fuel | 480 | — / 3.8 | — | — | ∞ (cone) | 0.90 |
 | `gramophone` | Siren Gramophone | Tactical | Crate | 1500 blast | — | Throw | 1 | 2 (3 max) | — | — | — | — | 1.00 |
 | `ashlight` | Ashlight | Wonder | Crate (low weight) | 900 + 600 splash | 180 | Semi | 20 | 160 | 2.0 / 2.5 | 0.20 | 0.15 | 0 | 1.00 |
-| `totenglocke` | Totenglocke | Wonder | Map 1 build | 3000 (cone) | crank | Charge | 6 charges | 24 | — / 3.0 | — | 0.20 | ∞ (cone) | 0.94 |
+| `totenglocke` | Totenglocke | Wonder | Map 1 build | toll: kill / 35% max HP (cone) | crank | Tap / wind | 12 charges | 48 | 2.4 / 3.0 (the crank) | — | 0.20 | ∞ (cone) | 0.94 |
 
 Melee and equipment are in §6.
 
@@ -137,7 +137,7 @@ Every upgraded weapon gets: the **Nachtglas camo** (violet veins with amber crac
 | `panzerschreck` | `panzerschreck_up` | **Stovepipe Sermon** | 1500 splash | 30 | 2 | 20 | — / 3.2 | — | `cluster: {count: 6, dmg: 400, r: 2.5}`: bomblets scatter on impact |
 | `flamethrower` | `flamethrower_up` | **Furnace Warrant** | 80/tick | — | 240 fuel | 720 | — / 3.4 | ∞ | `reach: 10` + `burning_ground: {dps: 150, dur: 4}` |
 | `ashlight` | `ashlight_up` | **Ashlight Corona** | 1400 + 900 splash | 200 | 40 | 200 | 1.8 / 2.2 | 0 | `chain: 3`: each bolt arcs to 3 more targets within 6 m at 70% damage |
-| `totenglocke` | `totenglocke_up` | **Totenglocke: Mitternacht** | 6000 (cone) | crank | 10 charges | 40 | — / 2.6 | ∞ | `cone: {range: 12, angle: 80}`: larger cone, more charges |
+| `totenglocke` | `totenglocke_up` | **Totenglocke: Mitternacht** | toll (cone) | crank | 16 charges | 64 | 2.0 / 2.6 | ∞ | cones +30%, Great Toll costs 2, shatters chain-ring to 3, 12 s pulling Bell Dome, midnight chime (§8) |
 
 Not upgradable: Trench Knife, Sharpened E-Tool, Mk 2 Frag, Siren Gramophone. Holding one of these up to the Crucible shows: "The Crucible has nothing to teach this."
 
@@ -235,17 +235,55 @@ A handheld bell-cannon: a bronze bell bolted into a firing frame, with a hand cr
 
 Parts are shared in co-op and shown on the HUD (a small parts strip under the Scrip counter).
 
-### Behavior
-| Stat | Base | Mitternacht |
+### Diagnosis (Update 02, before the rebuild)
+
+Why the M4 Totenglocke felt bad, measured against `RoundManager.zombie_health` (150 + 100/round to round 9,
+then x1.1 per round: r15 = 1683, r16 = 1851, r20 = 2710, r21 = 2981, r25 = 4364, r30 = 7029 HP):
+
+1. **The input ate taps.** Fire had to be *held* for 0.6 s before a release did anything; a tap or a short
+   hold was silently discarded (no ring, no dry click, no sound until the 0.6 s ratchet). The crank's spin was
+   also reset every frame by the viewmodel's part reset, so the wind-up showed nothing.
+2. **The kill line was at 4 m.** 3000 damage only inside 4 m, falling to 60% (1800) at the 8 m edge: the edge of a
+   train survived from round 16 (1851 > 1800), the whole cone from round 21. 8 m x 60 deg is barely past melee
+   range for a gun you build in three zones.
+3. **Survivors were barely touched.** The doc promised a 3 m knockback and "shatter" deaths; neither existed.
+   Damage kind `wonder` is not in the knockdown list, so survivors only flinched (or staggered when the hit
+   was over 40% of their HP). Kills played the ordinary death clips.
+4. **Weak feedback.** One bell sample, an `Effects.explosion` puff 3 m ahead, a 2.0 viewmodel kick and a 3 deg
+   recoil. No bell vibration, no screen effect, no rumble, nothing in the world reacted.
+5. **Too few charges, long reloads.** 6 per mag, 3.0 s reload: a reload every six rings, 30 rings per refill.
+6. **Mitternacht was the same gun with bigger numbers.** Its boss stagger (1.5 s) existed only in the data; the
+   "double ring" was the same sample played twice. Bots fired the bell as a single-target 3000-damage hitscan.
+
+### The rebuild: wind and toll (T-048, `gravelight/weapons/totenglocke.gd`)
+
+| | Totenglocke | Mitternacht |
 |---|---|---|
-| Fire | Hold fire to crank (0.6 s), release to ring | Crank 0.5 s |
-| Cone | 8 m range, 60° | 12 m range, 80° |
-| Damage | 3000 within 4 m, falling off to 60% at max range | 6000, falling off to 60% |
-| Effect | Gängers that die **shatter** (no ragdoll). Survivors get knocked back 3 m and staggered. | Same, plus the shockwave staggers bosses for 1.5 s |
-| Charges | 6 per "mag," 24 reserve | 10 per mag, 40 reserve |
-| Reload | 3.0 s (re-tensioning the striker) | 2.6 s |
-| Kills to | All Gängers through round ~17 in one ring; about 3 rings at round 30 | One ring to round ~24 |
-| Audio | A big, rolling bell **RING**, with sub-bass that ducks music for 0.5 s | Two tones, an octave apart |
+| **Tap** (released before the 1.5 s wind completes) | Quick toll: 8 m, 50 deg cone, no falloff; anything within 2.5 m is hit whatever the angle | 10.4 m, 65 deg |
+| Tap damage | Kills outright any zombie with max HP <= 2750 (through round 20); above that 35% of max HP | same |
+| **Hold** (wind 1.5 s: the crank speeds up, the bell hums rising in pitch) | Release for the **Great Toll**: 14 m, 70 deg, **shatters** every non-boss in the cone; costs 3 | 18.2 m, 91 deg; costs 2 |
+| Hold with too few charges | The wind stops at "not enough" (a dull clunk); release is a quick toll | same |
+| **Resonance mark** | A toll's survivors are *tolled* (a ringing bronze halo for 20 s); a second toll always shatters them | violet halo |
+| Survivors | Knocked down / staggered (explosive-kind hit) | same |
+| **Chain-ring** | — | Each shattered zombie rings the 3 nearest (5 m) with a quick toll |
+| **Alt-fire: Bell Dome** | Plant a 6 m field for 8 s: zombies inside move at 40% speed and take +25% damage; crossing in staggers each zombie once. One at a time, 2 charges | 12 s, pulls zombies toward the bell (0.9 m/s) |
+| Toll cooldown | 0.45 s (Great Toll 0.9 s) | same |
+| Charges | 12 per mag, 48 reserve | 16 / 64 |
+| Reload = **the crank** | 2.4 s partial / 3.0 s empty: the Crank part winds six turns with a ratchet | 2.0 / 2.6 |
+| Bronze shards | Every 5th Totenglocke kill drops a shard: +1 charge to whoever holding a Totenglocke walks over it (25 s) | same |
+| Bosses (Foreman, Screamer, the Cousins) | Never shattered or marked. Tap 3% / Great Toll 10% of max HP; stagger per `stagger_bosses` (0 / 1.5, unchanged) | same |
+| Feel | Layered toll (sub body + bell partials + metallic shimmer + 3 s ring-out); Great Toll: bigger strike, screen ring distortion, dust/snow blown off every surface in the cone, a delayed echo off the nearest walls, a world shockwave ring, hitstop slow-mo (0.2x for 0.16 s, solo only) on 6+ shatters; the viewmodel bell vibrates after every toll; camera kick; controller rumble | Midnight chime layered on every toll, violet shockwave and dome |
+
+Shatter = a lethal explosive-kind hit (ragdoll launch) plus the head and three limbs blown off with ZombieGore
+(pieces only for the first five zombies of a toll, so the 12-piece cap never culls them mid-flight) and a burst
+of bronze/frost shards. Ammo boxes (§4) refill it through `WeaponHolder.refill_weapon(&"totenglocke")`.
+
+Numbers live in `data/gravelight/weapons.json` (`bell` block). Pure rules (outcome, cone, cost, shard rate) are
+static in `Totenglocke` and covered by `gravelight/tests/unit/test_totenglocke.gd`.
+
+| | |
+|---|---|
+| Audio | `totenglocke_toll`, `_great`, `_echo`, `_hum` (loop), `_wind`, `_midnight`, `_shatter`, `_shard`, `_dome`, `_dome_plant` (gen_audio.py `gen_wonders`) |
 | Flavor | *"Ring it once for the living. They've had enough of that."* |
 | Upgrade flavor | *"Midnight. Every bell in Silesia, all at once."* |
 

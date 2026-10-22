@@ -1890,6 +1890,65 @@
    "volume_db": -4.0,
    "max_voices": 1
   },
+  "totenglocke_dome": {
+   "files": [
+    "res://gravelight/audio/sfx/weapons/totenglocke_dome_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -3.0,
+   "max_voices": 2,
+   "attenuation": "world",
+   "loop": true
+  },
+  "totenglocke_dome_plant": {
+   "files": [
+    "res://gravelight/audio/sfx/weapons/totenglocke_dome_plant_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": 0.0,
+   "max_voices": 2,
+   "attenuation": "loud"
+  },
+  "totenglocke_echo": {
+   "files": [
+    "res://gravelight/audio/sfx/weapons/totenglocke_echo_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -4.0,
+   "max_voices": 2,
+   "attenuation": "loud"
+  },
+  "totenglocke_great": {
+   "files": [
+    "res://gravelight/audio/sfx/weapons/totenglocke_great_01.wav",
+    "res://gravelight/audio/sfx/weapons/totenglocke_great_02.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": 1.0,
+   "pitch": [0.99, 1.01],
+   "max_voices": 2,
+   "attenuation": "loud"
+  },
+  "totenglocke_hum": {
+   "files": [
+    "res://gravelight/audio/sfx/weapons/totenglocke_hum_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -4.0,
+   "max_voices": 2,
+   "loop": true
+  },
+  "totenglocke_midnight": {
+   "files": [
+    "res://gravelight/audio/sfx/weapons/totenglocke_midnight_01.wav",
+    "res://gravelight/audio/sfx/weapons/totenglocke_midnight_02.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -2.0,
+   "pitch": [0.99, 1.01],
+   "max_voices": 3,
+   "attenuation": "loud"
+  },
   "totenglocke_ring": {
    "files": [
     "res://gravelight/audio/sfx/weapons/totenglocke_ring_01.wav",
@@ -1900,6 +1959,46 @@
    "pitch": [0.99, 1.01],
    "max_voices": 2,
    "attenuation": "loud"
+  },
+  "totenglocke_shard": {
+   "files": [
+    "res://gravelight/audio/sfx/weapons/totenglocke_shard_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -3.0,
+   "max_voices": 2
+  },
+  "totenglocke_shatter": {
+   "files": [
+    "res://gravelight/audio/sfx/weapons/totenglocke_shatter_01.wav",
+    "res://gravelight/audio/sfx/weapons/totenglocke_shatter_02.wav",
+    "res://gravelight/audio/sfx/weapons/totenglocke_shatter_03.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -2.0,
+   "pitch": [0.9, 1.1],
+   "max_voices": 4,
+   "attenuation": "world"
+  },
+  "totenglocke_toll": {
+   "files": [
+    "res://gravelight/audio/sfx/weapons/totenglocke_toll_01.wav",
+    "res://gravelight/audio/sfx/weapons/totenglocke_toll_02.wav",
+    "res://gravelight/audio/sfx/weapons/totenglocke_toll_03.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": 0.0,
+   "pitch": [0.98, 1.02],
+   "max_voices": 3,
+   "attenuation": "loud"
+  },
+  "totenglocke_wind": {
+   "files": [
+    "res://gravelight/audio/sfx/weapons/totenglocke_wind_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -3.0,
+   "max_voices": 1
   },
   "ui_back": {
    "files": [

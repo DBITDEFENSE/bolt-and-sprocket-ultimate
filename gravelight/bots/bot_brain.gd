@@ -517,6 +517,8 @@ func _aim_and_fire(delta: float, rate_mult: float = 1.0) -> void:
 		return
 	if w.mag <= 0:
 		return
+	if w.data.has("bell") and _eye().distance_to(aim) > float((w.data["bell"] as Dictionary).get("range", 8.0)) * 0.95:
+		return   # the Totenglocke only rings at what its cone reaches
 	if _teammate_in_the_way(aim):
 		return
 	var auto: bool = w.fire_mode == "auto"
@@ -541,6 +543,12 @@ func _fire(w: WeaponInstance) -> void:
 	_fire_cd = minf(_fire_cd, 0.0) + 60.0 / rpm
 	var origin: Vector3 = _eye()
 	var basis: Basis = Basis.from_euler(Vector3(_pitch, _yaw, 0.0))
+	if w.data.has("bell"):
+		# the Totenglocke: a quick toll down the bot's aim (T-048), not a bullet
+		Totenglocke.bot_toll(player, w, origin, -basis.z)
+		if w.mag <= 0 and w.reserve > 0:
+			_start_reload()
+		return
 	var spread: float = (lerpf(w.f("spread_hip", 3.0), w.f("spread_ads", 0.5), 0.6) + _bloom) * float(_sk.get("spread_mult", 1.0))
 	if player.horizontal_speed() > 1.0:
 		spread *= float(_combat.get("moving_spread_mult", 1.7))
