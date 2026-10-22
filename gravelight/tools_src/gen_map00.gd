@@ -643,7 +643,7 @@ func build_old_cellar() -> void:
 			[Vector3(5.4, cy, 0.15), Vector3(10.5, cy + 2.1, 0.55)], [Vector3(5.15, cy, 0.8), Vector3(5.5, cy + 1.9, 4.5)],   # root shelves
 			[Vector3(5.3, cy, 4.25), Vector3(8.1, cy + 0.8, 4.85)],   # sacks against the ice cellar's wall
 			[Vector3(15.6, cy, 15.4), Vector3(19.3, cy + 2.0, 15.85)], [Vector3(23.4, cy, 4.4), Vector3(23.85, cy + 2.0, 9.6)]]:   # vault racks
-		box(geo, "OCRackCol", rk[0], rk[1], "furniture", true, false)
+		box(geo, "OCRackCol", rk[0], rk[1], "furniture", true, false).set_meta("no_mantle", true)   # (nobody camps on the sacks)
 	# the holding cell: bars from floor to ceiling. Solid hidden panels along the bar lines cut the navmesh (the
 	# bars are thinner than a cell); the door gap is left open, its door is a runtime collider (HoldingCage).
 	var cg: Rect2 = OC_CAGE
