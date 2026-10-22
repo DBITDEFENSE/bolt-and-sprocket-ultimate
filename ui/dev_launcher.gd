@@ -91,9 +91,13 @@ func _ready() -> void:
 
 	# ---- the things to play
 	col.add_child(_header("GRAVELIGHT"))
+	var first: Button = null
 	for m: Array in GL_MAPS:
 		var scene: String = str(m[1])
-		col.add_child(MenuKit.button(str(m[0]), func() -> void: _start_gl(scene, int(_round.value)), 22, "ui_confirm"))
+		var mb: Button = MenuKit.button(str(m[0]), func() -> void: _start_gl(scene, int(_round.value)), 22, "ui_confirm")
+		col.add_child(mb)
+		if first == null:
+			first = mb
 	col.add_child(_header("Boss tests"))
 	for b: Array in BOSS_TESTS:
 		var bscene: String = str(b[1])
@@ -110,7 +114,7 @@ func _ready() -> void:
 	col.add_child(MenuKit.button("Quit", func() -> void: get_tree().quit(), 22, "ui_back"))
 	_status = MenuKit.para("", 16, MenuKit.VIOLET)
 	col.add_child(_status)
-	(col.get_child(3) as Control).grab_focus.call_deferred()
+	first.grab_focus.call_deferred()
 
 
 func _header(text: String) -> Label:
