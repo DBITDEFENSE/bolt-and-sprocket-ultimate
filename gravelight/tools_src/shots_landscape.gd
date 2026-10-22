@@ -15,7 +15,7 @@ const VIEWS: Array = [
 	["upstairs_window_ne", Vector3(19.6, 5.45, 0.7), Vector3(48.0, 14.0, -80.0)],
 	["stable", Vector3(10.5, 1.7, 24.5), Vector3(20.0, 2.2, 33.0)],
 	["stable_shafts", Vector3(8.0, 1.8, 23.2), Vector3(16.0, 2.6, 31.0)],
-	["field_edge", Vector3(32.8, 1.75, 40.5), Vector3(90.0, 6.0, 10.0)],
+	["field_edge", Vector3(32.6, 1.75, 41.0), Vector3(90.0, 6.0, 12.0)],
 	["field_edge_south", Vector3(18.0, 1.75, 46.5), Vector3(30.0, 6.0, 140.0)],
 	["east_window", Vector3(22.8, 1.7, 8.0), Vector3(80.0, 6.0, -6.0)],
 	["exterior_wide", Vector3(-30.0, 14.0, 70.0), Vector3(20.0, 2.0, 10.0)],

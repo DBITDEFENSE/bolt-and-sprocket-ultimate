@@ -42,7 +42,7 @@ static func texture() -> ImageTexture:
 			var v: float = float(y) / float(n - 1)
 			var edge: float = minf(minf(u, 1.0 - u), minf(v, 1.0 - v))   # 0 at the rim, 0.5 in the middle
 			# a frame of frost: thick on the wall round the opening and over the frame, thinning into the middle
-			var reach: float = 0.2 + 0.16 * (soft.get_noise_2d(x, y) * 0.5 + 0.5)
+			var reach: float = 0.08 + 0.1 * (soft.get_noise_2d(x, y) * 0.5 + 0.5)
 			var rim: float = 1.0 - smoothstep(0.02, reach, edge)
 			rim *= smoothstep(0.0, 0.03, edge)   # soft outer edge
 			var fern: float = clampf(-noise.get_noise_2d(x, y), 0.0, 1.0)

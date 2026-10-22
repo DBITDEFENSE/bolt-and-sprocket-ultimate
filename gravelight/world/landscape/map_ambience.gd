@@ -1124,8 +1124,9 @@ func debug_stage_for_view(cam: Camera3D) -> void:
 	flights.clear()
 	var fl: SkyFlight = spawn_bombers(bearing + 90.0, 0.0, 11)
 	if fl != null:
-		# put the stream in front of the camera, a little past the middle of its crossing
-		fl.position = Vector3(LandscapeTerrain.CENTER.x, fl.position.y, LandscapeTerrain.CENTER.y) + LandscapeTerrain.dir_of(bearing) * 120.0 - fl.heading * 60.0
+		# put the stream in front of the camera, ~25 degrees up, crossing the view
+		var c: Vector3 = cam.global_position + LandscapeTerrain.dir_of(bearing) * 230.0
+		fl.position = Vector3(c.x, cam.global_position.y + 100.0, c.z) - fl.heading * 45.0
 		fl.start = fl.position - fl.heading * 200.0
 	spawn_fighters(bearing + 12.0)
 	spawn_flare(bearing - 18.0, 110.0)

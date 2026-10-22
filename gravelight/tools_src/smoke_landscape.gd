@@ -54,6 +54,7 @@ func _run() -> void:
 		if e[1] != null:
 			paired += 1
 	_check(amb.sway.lamps.size() >= 12 and paired >= 10, "swinging lanterns %d (%d with their light)" % [amb.sway.lamps.size(), paired])
+	_check(amb.breath != null and amb.breath._puffs.size() >= 1, "breath fog attached to the survivors")
 	_check(amb._chimney != null and amb._fire_light != null, "chimney smoke and hearth light found")
 	_check(land.cookoff_points.size() > 0 and amb._beams.size() == 3, "cook-off points and searchlights")
 	# gunfire scatters the crows
