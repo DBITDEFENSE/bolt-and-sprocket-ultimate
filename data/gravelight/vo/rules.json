@@ -483,5 +483,13 @@
  },
  "companion_speakers": [
   "JAK"
- ]
+ ],
+ "any_map_lines": {
+  "_doc": "Lines that name a place as the past or a destination, not as where the squad stands (T-059: Jakub escaped from Kaltenbrunn): test_vo_maps lets them play on any map.",
+  "ids": [
+   "JAK_CAGE_TALK_04",
+   "JAK_PERK_REFUSE_02",
+   "BNT_PEG_JAK_01"
+  ]
+ }
 }
