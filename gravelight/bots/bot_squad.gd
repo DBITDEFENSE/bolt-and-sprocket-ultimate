@@ -998,6 +998,7 @@ func report() -> PackedStringArray:
 			Economy.get_scrip(b.player.player_id), str(w.id) if w != null else "-", b.action, " DOWN" if b.player.downed else "",
 			b.role, b.teleports, b.doors_bought_total, b.upgrades, b.revives, b.aim.grenades_thrown, b.aim.great_tolls,
 			b.actions.flanks, b.actions.high_ground_moves, ",".join(PackedStringArray(PerkManager.owned(b.player.player_id).map(func(x: Variant) -> String: return str(x))))])
+		out.append("  hits %d of %d shots; misses hit first: %s" % [b.aim.hits_landed, b.shots, str(b.aim.miss_on)])
 		if b.planner != null:
 			out.append("  " + b.planner.status_line())
 		if b.bonus_perk != &"":

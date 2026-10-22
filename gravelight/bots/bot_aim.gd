@@ -26,6 +26,12 @@ var target_score: float = 0.0
 var aim_node: Node3D = null
 var aim_head: bool = false
 var shots: int = 0
+## Shots that hit a zombie (hits_landed), and what the misses hit first (soak diagnostics: collider class -> count).
+var hits_landed: int = 0
+var miss_on: Dictionary = {}
+var _clear_for: Object = null
+var _clear_t: float = -1.0
+var _clear_ok: bool = true
 var grenades_thrown: int = 0
 var great_tolls: int = 0
 var domes: int = 0
@@ -337,6 +343,16 @@ func _fire_if_on(aim_dir: Vector3, aim_p: Vector3, delta: float) -> void:
 	tol = maxf(tol, atan2(float(_a.get("body_half_width_m", 0.22)), maxf(0.3, d)))
 	if brain.facing().angle_to(aim_dir) > tol:
 		return
+	# T-058: and the sights are on the target, the way a person sees their own crosshair: the tracking error still
+	# delays the shot (and it misses inside this window), but it doesn't empty the magazine into the wall beside a
+	# window at 15 m (the soak's shot audit: 60-90% of shots hit masonry, fences and the ground before this)
+	var true_dir: Vector3 = (aim_p - eye()).normalized()
+	if brain.facing().angle_to(true_dir) > maxf(tol, atan2(float(_a.get("body_half_width_m", 0.22)) * float(_a.get("sights_on_mult", 1.6)), maxf(0.3, d))):
+		return
+	# no spraying what the cone can't hold: hip fire on the run at range scatters wider than the target (Map 1's
+	# yard: 90% of the shots hit the ground and the walls); a person stops to aim or waits until it's closer
+	if not w.data.has("bell") and current_spread_deg(w) > rad_to_deg(atan2(float(_a.get("body_half_width_m", 0.22)) * float(_a.get("spray_width_mult", 3.0)), maxf(0.3, d))):
+		return
 	if d > max_range(w):
 		return   # no spraying what it can't hit
 	var c: Dictionary = BotAIData.counter(target.enemy_id)
@@ -347,6 +363,8 @@ func _fire_if_on(aim_dir: Vector3, aim_p: Vector3, delta: float) -> void:
 				return
 	if teammate_in_the_way(aim_p):
 		return
+	if not _clear_shot(aim_p):
+		return   # T-058: the target went behind a wall / window frame since the think: no shot into the masonry
 	if w.data.has("bell") and _bell_logic(w):
 		return
 	if w.fire_mode == "auto":
@@ -467,6 +485,8 @@ func fire(w: WeaponInstance) -> void:
 	for i: int in pellets:
 		last_hit = _trace(origin, _spread_dir(basis, spread), w, hits)
 	var pid: int = player.player_id
+	if not hits.is_empty():
+		hits_landed += 1
 	var piercing: bool = bool(w.property("armor_piercing", false)) or bool(w.property("armor_ignore", false))
 	for z: Variant in hits.keys():
 		var zz: Zombie = z as Zombie
@@ -485,6 +505,15 @@ func fire(w: WeaponInstance) -> void:
 	var danger: bool = brain.perception.sprinter_close or brain.perception.nearest_d < float(_r.get("near_block_m", 2.6))
 	if w.mag <= 0 and w.reserve > 0 and not (danger and _other_loaded() >= 0):
 		start_reload()
+
+
+## The spread a shot would have now (degrees), as fire() computes it (without the random part).
+func current_spread_deg(w: WeaponInstance) -> float:
+	var ads: float = ads_amount()
+	var spread: float = (lerpf(w.f("spread_hip", 3.0), w.f("spread_ads", 0.5), ads) + _bloom * (1.0 - 0.7 * ads)) * float(_sk.get("spread_mult", 1.0))
+	if player.horizontal_speed() > 1.0:
+		spread *= float(_a.get("moving_spread_mult", 1.6))
+	return spread
 
 
 ## How far down the sights it is (0 hip .. 1 aimed): aimed standing or walking slowly at a target beyond ads_min_m.
@@ -546,6 +575,9 @@ func _trace(origin: Vector3, dir: Vector3, w: WeaponInstance, hits: Dictionary) 
 				exclude.append(hb.get_rid())
 			from = pos + dir * 0.05
 		else:
+			if hits.is_empty() and miss_on.size() < 24:
+				var cn: String = (col as Node).name if col is Node else "?"
+				miss_on[cn] = int(miss_on.get(cn, 0)) + 1
 			var shootable: Node = WeaponHolder.shootable_of(col)
 			if shootable != null and brain.may_touch_quest():
 				# quest shootables (bells, the drummer) are egg steps: only the local-AI planner bot does those
@@ -565,6 +597,19 @@ func teammate_in_the_way(to: Vector3) -> bool:
 		if BotConfig.blocks_shot(from, to, p.global_position + Vector3.UP * (0.4 if p.downed else 1.0), r):
 			return true
 	return false
+
+
+## A line of sight from the eye to the aim point right now (cached 0.1 s per target): the think's visibility is up
+## to 0.2 s old and the target memory keeps a lost target 0.8 s, and the soak found 60-80% of shots hitting walls
+## beside the windows (and Map 1's fences) before this check.
+func _clear_shot(p: Vector3) -> bool:
+	var now: float = brain.squad.time()
+	if target == _clear_for and now - _clear_t < 0.1:
+		return _clear_ok
+	_clear_for = target
+	_clear_t = now
+	_clear_ok = _los(eye(), p, target)
+	return _clear_ok
 
 
 func _los(from: Vector3, to: Vector3, z: Object) -> bool:
