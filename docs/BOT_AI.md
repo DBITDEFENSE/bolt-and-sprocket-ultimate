@@ -366,4 +366,31 @@ while watched, nudges, a teleport once unseen); budget.
 
 ### Measured
 
-METRICS_PLACEHOLDER
+A/B on the same tree (master 9f9e0eb plus this branch): `tools/ai_soak.sh --loco=v1|v2`, 3 runs each, regular skill,
+local AI off. Two soaks shared the CPU. The section 2 baseline was measured on an older master (before the Update 02
+section 5 bots, the Old Cellar and the Map 0 polish), so the same-tree v1 column is the fair comparison.
+
+| Metric (per run, mean) | Baseline (section 2) | v1, same tree | **v2 (locomotion)** |
+|---|---|---|---|
+| player3 time stuck | 124 s | 10.0 s | **1.9 s** (after the revive fix: 2.7 s) |
+| player3 stuck recoveries / teleports | 0 / 0 | 0 / 0 | 0.3 / **0** (1.3 / 0) |
+| player3 friendly blocking events | 25.7 | 147.7 | **0** (1.0) |
+| player3 sustained blocking (> 2 s) | 0 | 5.7 | **0** (0) |
+| player3 highest round (mean) | 8.0 | 6.3 | 6.0 (6.7) |
+| player3 bot downs per round | 0.58 | 0.48 | 0.51 (0.45) |
+| bots3 time stuck | 140 s | 168.9 s | **0.8 s** |
+| bots3 teleports | 0 | 0 | 0.3 (1 in 3 runs) |
+| bots3 highest round (mean) | 5.7 | 6.7 | 7.0 |
+| Kaltenbrunn (1 run): stuck / blocking / sustained | 90 s / 6 / — | 24.3 s / 74 / 1 (90 s) | **18.9 s / 2 / 0** |
+
+An earlier pair on the pre-merge tree agreed: v1 19.6 s stuck, 269 blocking events, 13 sustained; v2 1.5 s, 0.7, 0.
+Survival and revives are the brain's job and stay within the run-to-run spread. In the v2 reruns every down came in
+the final collapse (all four within about 15 s), so the revive rate couldn't be judged. The v2 Kaltenbrunn run hit the
+150-minute cap: the three bots bled out in round 8, and the scripted player then survived alone for 140 minutes
+without the round ending. That is a soak-dummy stall, not the layer.
+
+**Cost.** `BotLocomotion.tick` averages **95–117 µs per bot** in the soaks (`loco_us_tick_body` in the soak's
+extra line), and about 50 µs of that is the body's own `move_and_slide`, which the old `_move` paid too. A training
+bot in the lab averages about 215 µs (its cut-off checks run at 5 Hz). The layer's path queries are budgeted at 2
+per physics frame for the whole squad. The soak's physics frame stayed at 3.1–3.9 ms with v2, against 3.2–3.4 ms
+with v1 (CPU shared).
