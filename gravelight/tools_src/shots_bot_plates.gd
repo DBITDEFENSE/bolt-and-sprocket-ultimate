@@ -20,6 +20,7 @@ var _shots: Array = [
 	["eyes_start", 9.0, "eyes"],
 	["behind", 14.0, "behind"],
 	["wheel", 18.0, "wheel"],
+	["occluded", 26.0, "occluded"],
 	["eyes_r1", 34.0, "eyes"],
 	["far", 40.0, "far"],
 	["downed", 60.0, "eyes_down"],
@@ -96,6 +97,19 @@ func _take(shot_name: String, mode: String) -> void:
 		_bots()[0].take_hit(9999.0, null)   # a bot goes down: its plate drops to the floor with the bleed-out bar
 		await get_tree().create_timer(1.0).timeout
 		mode = "eyes"
+	if mode == "occluded":
+		# one bot just behind the wall the human faces: its plate must fade out (the others stay)
+		var cam0: Camera3D = human.camera
+		var from: Vector3 = cam0.global_position
+		var q0: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, from - cam0.global_basis.z * 40.0, 1, [human.get_rid()])
+		var hit0: Dictionary = _map.get_world_3d().direct_space_state.intersect_ray(q0)
+		if not hit0.is_empty():
+			var b0: Player = _bots()[2]
+			b0.global_position = (hit0["position"] as Vector3) - cam0.global_basis.z * 1.5 + Vector3.DOWN * 1.2
+			b0.get_node("Brain").set_physics_process(false)
+		human.camera.current = true
+		await get_tree().create_timer(1.2).timeout
+		mode = "eyes_keep"
 	if mode == "wheel":
 		var wh: BotCommandWheel = _map.squad.wheel
 		wh.open()
@@ -103,6 +117,8 @@ func _take(shot_name: String, mode: String) -> void:
 		mode = "eyes"
 	var center: Vector3 = _squad_center() + Vector3.UP * 1.0
 	match mode:
+		"eyes_keep":
+			human.camera.current = true
 		"eyes":
 			var nearest: Player = null
 			var bd: float = INF
