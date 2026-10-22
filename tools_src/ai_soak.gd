@@ -293,6 +293,7 @@ func _end_run(why: String) -> void:
 		_metrics.extra["dummy_power_round"] = int(_dummy.get("power_round"))
 		_metrics.extra["dummy_perks_bought"] = int(_dummy.get("perks_bought"))
 		_metrics.extra["dummy_scrip_end"] = Economy.get_scrip(_map.player.player_id)
+		_metrics.extra["dummy_unstuck"] = int(_dummy.get("unstuck"))
 	if not _metrics.extra.has("power_round"):
 		_metrics.extra["power_round"] = 0   # the power never came on
 	_metrics.extra["wall_s"] = snappedf(float(Time.get_ticks_msec() - _wall0) / 1000.0, 0.1)

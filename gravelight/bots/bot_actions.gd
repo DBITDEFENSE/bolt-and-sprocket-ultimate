@@ -609,8 +609,8 @@ func _powerup(delta: float) -> void:
 ## so the squad doesn't stay wherever its last errand took it (a dead-end attic, the cellar). True while it walks.
 func _go_home() -> bool:
 	var hp0: Vector3 = brain.squad.hunt_point()
-	if hp0 != Vector3.INF and _flat(hp0, player.global_position) > 5.0:
-		brain.loco.move_to(hp0, 0.6, 5.0)   # T-058: the stalled round's last zombie: go and find it
+	if hp0 != Vector3.INF and (_flat(hp0, player.global_position) > 1.6 or absf(hp0.y - player.global_position.y) > 1.5) 			and (brain.aim.target == null or not brain.perception.is_visible(brain.aim.target)):
+		brain.loco.move_to(hp0, 0.6, 1.4)   # T-058: the stalled round's last zombie: go and find it, until it is in sight
 		return true
 	var leader: Player = brain.squad.leader_for(brain)
 	if leader != player:

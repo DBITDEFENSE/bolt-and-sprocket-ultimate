@@ -70,6 +70,10 @@ var _start_i: int = 0
 var _errand: Dictionary = {}
 var _errand_t: float = 0.0
 var _errand_cd: float = 0.0
+var _stuck_t: float = 0.0
+var _last_pos: Vector3 = Vector3.ZERO
+## Harness safeguard count: times the scripted player was put back on its loop after 15 s pinned.
+var unstuck: int = 0
 
 
 func setup(p: Player, m: MapRoot, seed_value: int, kit_mode: String = "baseline") -> void:
@@ -391,6 +395,20 @@ func _walk(delta: float, zs: Array[Zombie], aiming: bool) -> void:
 	if _route.size() < 3:
 		return
 	var me: Vector3 = player.global_position
+	# a harness safeguard (T-058): pinned against something for 6 s (a perk machine's corner after an errand), it
+	# heads for another loop point; after 15 s it is put back on the loop (logged)
+	_stuck_t = _stuck_t + delta if me.distance_to(_last_pos) < 0.02 else 0.0
+	_last_pos = me
+	if _stuck_t > 6.0 and fmod(_stuck_t, 3.0) < delta:
+		_i = posmod(_i + 2, _route.size())
+		_path = PackedVector3Array()
+		_errand = {}
+	if _stuck_t > 15.0:
+		print("[dummy] r%d stuck at %s for 15 s: back on the loop" % [RoundManager.current_round, str(me.snapped(Vector3.ONE * 0.1))])
+		player.global_position = _route[_i] + Vector3.UP * 0.2
+		_stuck_t = 0.0
+		unstuck += 1
+		return
 	var wp: Vector3 = _route[_i]
 	var errand: bool = not _errand.is_empty()
 	if errand:

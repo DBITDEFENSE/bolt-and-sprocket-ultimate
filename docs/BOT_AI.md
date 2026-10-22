@@ -218,7 +218,8 @@ and should behave the same for every brain:
   power switch (Map 0: the cellar door, 1500), throws the switch (round 3-4 in every run so far), then drinks
   Ironhide Stout and Second Wind, and buys them again after losing them to a down. The round-start reserve top-up
   stays. Each errand prints a `[dummy]` line; the run's extras carry `dummy_power_round`, `dummy_perks_bought`.
-- In both kits it doesn't revive anyone.
+- In both kits it doesn't revive anyone. A harness safeguard (T-058): pinned for 6 s it heads for another loop
+  point, after 15 s it is put back on its loop (`[dummy] ... stuck`, `dummy_unstuck` in the extras).
 - It can be downed (then it shoots from the ground), revived and bleed out like anyone.
 
 ### The metrics (`gravelight/bots/bot_metrics.gd`, `BotMetrics`)
@@ -592,6 +593,11 @@ BotSquad.add_brain(player, {"perks": false, "bonus_perk": false, "kit": false, "
 
 ## 7. Results: before and after (Update 03 section 10)
 
+The **After tuning** column (T-058, section 8) was measured on 2026-10-22 on u03-3-tuning merged with master
+66e5494 (u02-fixes, Jakub), headless `tools/ai_soak.sh`, Veteran, local AI off, 6-9 soaks at a time on a CPU other
+builders shared: player3 seeds 1-6 (baseline kit) and 1-3 (realistic kit), bots3 seeds 11-15, cousins seeds 1-3,
+kaltenbrunn seed 1. The **After the rewrite** column:
+
 Measured on 2026-10-22 on u03-1-brain (the brain, merged with the locomotion layer, master ed13950). Settings:
 headless `tools/ai_soak.sh`, Veteran, local AI off. Several other builders' Godot runs shared the CPU. The baseline
 is section 2 (the T-031 brain on an older master). player3 is 9 runs in three batches of 3 (seeds 1-3, 1-3, 21-23);
@@ -599,30 +605,59 @@ the last two batches ran the final code, the first one the code before the aim p
 final batch of 3 (seeds 11-13). cousins is 3 runs. kaltenbrunn is 1 run (40-minute cap). The orders figure comes
 from one player3 run with `--orders=30`.
 
-| Metric | Baseline | After (Update 03) | |
+| Metric | Baseline | After the rewrite (T-055) | **After tuning (T-058)** |
 |---|---|---|---|
-| player3 highest round (mean / max) | 8.0 / 9 | **8.1 / 9** (9 runs: 8, 8, 8, 9, 8, 8, 8, 8, 8) | ~ (+0.1) |
-| bots3 highest round (mean / max) | 5.7 / 6 | **7.0 / 10** (6, 10, 5; the batch before: 7, 10, 7) | better |
-| Kaltenbrunn round (1 run) | 5 | **7** | better |
-| player3 bot downs per round | 0.58 | **0.67** (49 downs in 73 rounds) | slightly worse |
-| player3 revive success (pooled) | 83% (10 of 12) | **78%** (31 of 40); 94% in one batch | **not met (> 85%)** |
-| bots3 revive success (pooled) | 0% (never) | **91%** (10 of 11, two batches) | better |
-| player3 time stuck (per run) | 124 s | **3.6 s** (-97%) | better |
-| bots3 time stuck (per run) | 140 s | **10.6 s** (-92%) | better |
-| Teleports | 0 | **0** in every run | = (target met) |
-| player3 friendly blocking events / sustained | 25.7 / 0 | **1.7 / 0** | better (zero sustained: met) |
-| Scrip wasted | 0 | **0** | = |
-| Kar98k bought after round 10 | 0 | **0** (it can't: GUT pins it) | = |
-| player3 empty-mag moments (per game minute) | 9.5 | **7.4** (67 per 9.0 min) | better |
-| bots3 empty-mag moments (per game minute) | 12.6 | **4.4** | better |
-| Time on the pistol with a loaded gun (player3, per run) | 683 s (35%) | **68 s** (~4%) | better (the pistol trap fixed) |
-| Bot kills per game minute (player3) | 14.7 | **21** | better |
-| Bot headshot share of kills (player3) | — | **58%** | |
-| Command-wheel response (median / mean) | — (no wheel orders) | **0.02 s / 3.3 s** (41 of 42 orders) | new |
-| cousins: time to the wipe (scripted player, no god mode) | 36-54 s | 30-37 s | worse |
-| cousins with a god-mode player (the clip check) | — | all three cousins cleared in 51 s; 25 of 91 Hammer hits while her mallet flew; Reach grabs broken by team fire; nobody within 2.3 m of Alix | |
+| player3 highest round (mean / max), baseline player kit | 8.0 / 9 | 8.1 / 9 (9 runs) | **9.3 / 10** (6 runs: 9, 9, 10, 8, 10, 10; the batch before the Jakub merge: 9.7 / 10) |
+| player3 highest round, **realistic** player kit (it throws the power) | — | — | **12.7 / 18** (3 runs: 18, 10, 10; the player throws the power in rounds 3-5) |
+| bots3 highest round (mean / max) | 5.7 / 6 | 7.0 / 10 | **10.0 / 13** (5 runs: 7, 10, 10, 10, 13; with the batch before the Jakub merge, 10 runs: 10.6 / 16) |
+| bots3 with the Homage Bosses off (tuning only) | — | — | 19, 17, 12 (3 runs): the Cousins at round 10 are the wall |
+| Kaltenbrunn round (1 run, 40-min cap) | 5 | 7 | **9** |
+| player3 bot downs per round | 0.58 | 0.67 | **0.41** (baseline kit), 0.45 (realistic) |
+| player3 revive success, old rule (pooled) | 83% (10 of 12) | 78% (31 of 40) | **74%** baseline kit (25 of 34, 12 runs); **96%** realistic kit (51 of 53) |
+| player3 revive success, fair rule (T-058) | — | — | **78%** baseline kit (25 of 32); **96%** realistic |
+| bots3 revive success (pooled) | 0% (never) | 91% (10 of 11) | 71% (10 of 14) |
+| player3 time stuck (per run / per game minute) | 124 s / 11.3 | 3.6 s / 0.4 | **2.4 s / 0.2** baseline kit; 51 s / 1.0 realistic (bots meeting in the cellar's Crucible alcove and at the perk machines) |
+| bots3 time stuck (per run) | 140 s | 10.6 s | **8.1 s** |
+| Teleports | 0 | 0 | **0** in every run |
+| player3 friendly blocking events / sustained | 25.7 / 0 | 1.7 / 0 | **0.5 / 0** (realistic 1.7 / 0) |
+| Scrip wasted | 0 | 0 | 0 in player3; bots3: 1,900 in one run of 5 (a G43 and an MP40 dropped a round later for crate guns) |
+| Kar98k bought after round 10 | 0 | 0 | **0** |
+| player3 empty-mag moments (per game minute) | 9.5 | 7.4 | **2.9** (realistic 1.7) |
+| bots3 empty-mag moments (per game minute) | 12.6 | 4.4 | **2.7** |
+| Time on the pistol with a loaded gun (player3, per run) | 683 s | 68 s | **0-1 s** |
+| Bot kills per game minute (player3) | 14.7 | 21 | **26.0** |
+| Bot headshot share of kills (player3) | — | 58% | 62% |
+| Bot shots that hit a zombie (new: the soak's shot audit) | — | ~25-35% (measured on the T-055 tree, rounds 1-2) | **56%** (Map 1: 10% -> 52%) |
+| The power on (bots alone) | never | never | **rounds 2-3**, every bots3 run (the bots throw it) |
+| Crucible upgrades per bots3 run | 0 | 0 | **3.2** |
+| cousins: time to the wipe (scripted player, no god mode) | 36-54 s | 30-37 s | 32-34 s (3 runs; the batch before: 29-51 s, one cousin killed) |
+| bots3 at the Cousins round (round 10) | — | always wiped | **cleared in 2 of 10 runs** (55 and 59 s, all three cousins dead); with the realistic player 2 of 3 |
+| Brain cost per bot per physics frame | — | 0.22-0.27 ms (headless) | **0.224 ms** alone (player3 to round 8); 0.29-0.37 ms with 6-9 soaks sharing the CPU |
 
-**What didn't reach its target.**
+One realistic run (seed 2) first stalled at round 16 for 150 game minutes: the last zombie of the round sat at
+the cellar stairs, a bot 4.6 m from it with no line of sight (the hunt stopped at 5 m), and the scripted player was
+pinned against a perk machine. Both were fixed (the hunt walks until it sees the zombie; the scripted player gets
+back on its loop after 15 s pinned, `dummy_unstuck` in the extras) and the seed was run again (round 10, in the
+table).
+
+**After tuning (T-058): where the targets stand.**
+- **Survival, bots alone (target round 20-25):** not met. 10.0 / 13 (10.6 / 16 over ten runs). The bots now take
+  the power in round 2-3, drink, upgrade the Thompson and pull the crate, and they get through the rounds before 10
+  with few downs (0.4-0.5 per round). The wall is **round 10, the Cousins** (Homage Bosses are on in every soak):
+  three bosses with 12,500-18,750 health at this squad size plus 30 runners. The squad clears them in 2 runs of 10
+  (55-59 s); the rest wipe there. With the Homage Bosses off the same squad reaches 19, 17 and 12. Raising this
+  further is a balance question as much as a bot one (the Cousins' health scaling counts a bot as 0.75 of a player;
+  a bot can't be ordered to skip the round).
+- **Revive success above 85% (player3):** met with the realistic player (96%, 51 of 53). With the baseline player
+  74% (old rule) / 78% (fair rule). The remaining failures are downs still open at the wipe while a bot was still on
+  its feet: the squad losing the last fight, not a bot walking past a teammate (no bleed-outs in 12 runs).
+- **Cousins scenario (round 10 forced, 3,000 Scrip, no power, no upgrades, scripted player without god mode):**
+  still a wipe in 30-50 s, as in every baseline run. The same bots clear the Cousins when they arrive with the power,
+  perks and an upgraded gun (bots3 and realistic player3 above).
+- Everything else holds or improved: zero teleports, zero sustained blocking, no Kar98k, stuck time down 98%,
+  empty-mag moments down 70%, kills per minute +77% over the baseline, the pistol trap gone, 56% of shots hit.
+
+**What didn't reach its target (T-055, before the tuning pass).**
 - **Survival.** The brief's target is round 20-25 on Veteran with bots alone; they reach 5-10. The early rounds
   are clearly better: bots3 survives about a round and a half longer on average, with a best of 10. But every run
   still collapses in rounds 7-10. Each collapse is the same. At round 8 a zombie has 850 HP, about 16 Thompson body
@@ -673,7 +708,7 @@ below came from reading those lines.
 | The crate rarely won a think (weight 0.5). | Weight 0.75, priority 0.8, two pulls a round, "rich" from 5,000. | `actions.json`, `economy.json crate` |
 | Twin Barrel for the Thompson: more rate on a 30-round magazine only empties it sooner (2.6 s of fire, 2.9 s of reload). | Magazine-bound automatics take Trigger Tonic (half reload), semi rifles and bolt guns Twin Barrel. | `economy.json weapon_perk` |
 | Bosses: the bots shot a 15,000-health cousin while the runner at their heels ate them. | `adds_first_m`: with an ordinary zombie within 5 m, a cousin's target value is x0.35, unless she is vulnerable (mallet out, Alix grieving) or holds a teammate. | `BotAim.target_value`, `ai_counters cousin_*` |
-| A round held up by its last zombie (a boss loose in another hall, a stuck straggler): the bots never went looking (the smoke_map02 Foreman stall after the brain merge). | After 12 s with nothing left to spawn and 1-2 zombies alive, the squad hears the last one (blackboard, no line of sight: nothing is shot through walls) and the bots with nothing else to do walk to it. | `BotSquad._update_hunt`, `combat.json hunt` |
+| A round held up by its last zombie (a boss loose in another hall, a stuck straggler): the bots never went looking (the smoke_map02 Foreman stall after the brain merge). | After 12 s with nothing left to spawn and 1-2 zombies alive, the squad hears the last one (blackboard, no line of sight: nothing is shot through walls) and the bots with nothing else to do walk to it until it is in sight. | `BotSquad._update_hunt`, `combat.json hunt` |
 | Shots held back by a 0.6 m line-of-fire radius round teammates standing back to back. | 0.45 m (a body). | `combat.json aim.line_of_fire_radius_m` |
 
 ### Bots alone lead themselves
