@@ -12,7 +12,9 @@ extends Node
 ##   grant(player, perk_id) -> void            gives the perk (no cost); used after the machine's drink beat
 ##   price(perk_id) -> int                     solo/co-op aware
 ##   try_self_revive(player) -> bool           consumes a Second Wind solo use if available
-##   on_player_downed(player) -> void          co-op rule: every perk is lost
+##   on_player_downed(player) -> void          co-op rule: every perk is lost (a bot's bonus perk stays)
+##   grant_bonus(player, perk_id) / bonus_perk(player) / is_bonus(player, perk_id) / capped_count(player):
+##       a bot's random bonus perk (U02 section 5, BotSquad): owned like any perk, outside the cap, kept on going down
 ##   reset_match() -> void
 ##   overclock_reload(player: Player, spent: float) -> bool   Overclock Cordial hook (WEAPONS.md section 20.2):
 ##       call at the START of a reload (or an overheat vent, spent = 1.0) with spent = 1 - mag / mag_size.
@@ -32,6 +34,7 @@ const OVERCLOCK_BOSSES: PackedStringArray = ["foreman", "underwriter"]
 
 var _owned: Dictionary = {}        # player -> Array[StringName]
 var _bonus_slots: Dictionary = {}  # player -> int (Map 1 egg reward)
+var _bonus_perk: Dictionary = {}   # player -> StringName: a bot's bonus perk (outside the cap, kept on a down)
 var solo_self_revives_left: int = 3
 var second_wind_gone: bool = false
 var _hud: CanvasLayer = null
@@ -45,6 +48,7 @@ func _ready() -> void:
 func reset_match() -> void:
 	_owned.clear()
 	_bonus_slots.clear()   # the Map 1 egg slot is re-applied on match_started
+	_bonus_perk.clear()
 	_overclock_ready_at.clear()
 	solo_self_revives_left = int(GLData.table("perks").get("solo_self_revives", 3))
 	second_wind_gone = false
@@ -116,7 +120,7 @@ func can_buy(player: int, perk_id: StringName) -> StringName:
 		return &"owned"
 	if needs_power(perk_id) and not GameState.power_on:
 		return &"no_power"
-	if owned(player).size() >= cap_for(player):
+	if capped_count(player) >= cap_for(player):
 		return &"cap"
 	return &"ok"
 
@@ -185,11 +189,42 @@ func try_self_revive(player: int) -> bool:
 	return true
 
 
-## Co-op rule (and solo without Second Wind): every perk is lost on going down.
+## A bot's bonus perk (U02 section 5): granted free and quietly (no drink line, no machine), outside the cap,
+## and kept when the bot goes down. One per player; a second call replaces the mark (not the old perk).
+func grant_bonus(player: int, perk_id: StringName) -> void:
+	if not Net.is_authority() or perk_data(perk_id).is_empty():
+		return
+	_bonus_perk[player] = perk_id
+	if not has_perk(player, perk_id):
+		if not _owned.has(player):
+			_owned[player] = []
+		(_owned[player] as Array).append(perk_id)
+	GLBus.perks_changed.emit(player)
+
+
+## The player's bonus perk (&"" for none: humans, bots with the setting off).
+func bonus_perk(player: int) -> StringName:
+	return StringName(_bonus_perk.get(player, &""))
+
+
+func is_bonus(player: int, perk_id: StringName) -> bool:
+	return perk_id != &"" and bonus_perk(player) == perk_id
+
+
+## Owned perks that count toward the cap (the bonus perk doesn't).
+func capped_count(player: int) -> int:
+	var n: int = owned(player).size()
+	if is_bonus(player, bonus_perk(player)) and has_perk(player, bonus_perk(player)):
+		n -= 1
+	return n
+
+
+## Co-op rule (and solo without Second Wind): every perk is lost on going down, except a bot's bonus perk.
 func on_player_downed(player: int) -> void:
 	if not Net.is_authority() or owned(player).is_empty():
 		return
-	_owned[player] = []
+	var keep: StringName = bonus_perk(player)
+	_owned[player] = [keep] if keep != &"" and has_perk(player, keep) else []
 	GLBus.perks_lost.emit(player)
 	GLBus.perks_changed.emit(player)
 

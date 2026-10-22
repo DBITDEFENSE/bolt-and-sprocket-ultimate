@@ -4,6 +4,12 @@ extends Node
 ## BotBrain for every bot Player, and holds what the brains share: who leads, who revives whom, the kill-share
 ## ledger (BotConfig.human_share_ok), errand claims (one bot per window or machine), per-player kill counts
 ## for the HUD, and the squad's voice (survivor VO lines as callouts, one at a time).
+##
+## Update 02 section 5 (T-050): each bot's random bonus perk (bots.json bonus_perk, PerkManager.grant_bonus), the
+## squad orders from the command wheel (`command`: follow / hold / repair / revive, applied to every brain), the
+## choke points bots must not park in (open doors, stairs; `chokes`), the nameplates (BotPlates) and the wheel
+## (BotCommandWheel). Companions (Jakub, U02 section 6) join through add_brain(player, options) with their own
+## BotBrain options (no perks, own bleed-out) and get the same orders.
 
 var map: MapRoot
 var brains: Array[BotBrain] = []
@@ -16,6 +22,18 @@ var _callout_t: float = 0.0
 var _t: float = 0.0
 var _round_t: float = 0.0
 var _wall_buys: Array[WallBuy] = []
+## The current squad order (BotConfig.COMMANDS) and, for "hold", the spot.
+var command: StringName = &"follow"
+var hold_point: Vector3 = Vector3.INF
+## Choke points (world AABBs): open doorways and staircases. [{"box": AABB, "kind": "door"/"stair", "node"}]
+var chokes: Array[Dictionary] = []
+## Soak instrumentation: every time a bot stayed inside a choke longer than follow.choke_report_s.
+var choke_events: PackedStringArray = []
+## The human's smoothed flat velocity (training detection for the moving formation).
+var leader_vel: Vector3 = Vector3.ZERO
+var plates: BotPlates = null
+var wheel: BotCommandWheel = null
+var _bot_cd: Dictionary = {}      # "pid:FAMILY" -> time a bark may come again
 
 
 func setup(map_root: MapRoot) -> void:
@@ -27,20 +45,72 @@ func setup(map_root: MapRoot) -> void:
 		var p: Player = map.players.get(pid) as Player
 		if p == null:
 			continue
-		var b: BotBrain = BotBrain.new()
-		b.name = "Brain"
-		p.add_child(b)
-		b.setup(p, self, i)
-		brains.append(b)
-		apply_kit(p, true)
+		add_brain(p, {}, i)
 		i += 1
+	_assign_bonus_perks()
 	_start_planner()
+	_build_chokes()
 	for n: Node in map.find_children("*", "WallBuy", true, false):
 		_wall_buys.append(n as WallBuy)
 	GLBus.enemy_killed.connect(_on_enemy_killed)
 	# DOWN / TEAM_DOWN / REVIVED / boss / door / buy / perk lines for bots come from VOManager (T-035), which
 	# handles every survivor's signal-driven categories in that survivor's voice at their body.
 	GLBus.round_started.connect(_on_round_started)
+	GLBus.powerup_spawned.connect(_on_powerup_spawned)
+	if not brains.is_empty():
+		plates = BotPlates.new()
+		plates.name = "BotPlates"
+		add_child(plates)
+		plates.setup(self)
+		wheel = BotCommandWheel.new()
+		wheel.name = "BotCommandWheel"
+		add_child(wheel)
+		wheel.setup(self)
+
+
+## A brain for `p` (a bot Player, or later a companion): `options` override BotBrain.options (perks,
+## bonus_perk, shopping, kit, accuracy_mult; see there). `i` = formation index (-1 = next).
+func add_brain(p: Player, options: Dictionary = {}, i: int = -1) -> BotBrain:
+	var b: BotBrain = BotBrain.new()
+	b.name = "Brain"
+	b.options.merge(options, true)
+	p.add_child(b)
+	b.setup(p, self, brains.size() if i < 0 else i)
+	brains.append(b)
+	if bool(b.options.get("kit", true)):
+		apply_kit(p, true)
+	return b
+
+
+## Bonus perks (bots.json bonus_perk, the "Bot Bonus Perk" setting): one random perk per bot from the perks
+## this map's machines sell, outside the cap, never a kit perk, no two the same. Brains that don't drink perks
+## (a companion's options.perks = false) get none.
+func _assign_bonus_perks() -> void:
+	var bcfg: Dictionary = _cfg.get("bonus_perk", {})
+	if not bool(GLSettings.values.get("bot_bonus_perk", true)) or not bool(bcfg.get("enabled", true)) or not Net.is_authority():
+		return
+	var takers: Array[BotBrain] = []
+	for b: BotBrain in brains:
+		if bool(b.options.get("perks", true)) and bool(b.options.get("bonus_perk", true)):
+			takers.append(b)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.randomize()
+	var kit: Array = (_cfg.get("spawn_kit", {}) as Dictionary).get("perks", [])
+	var picks: Array[StringName] = BotConfig.pick_bonus_perks(bcfg, map_perk_ids(), kit, takers.size(), rng)
+	for k: int in takers.size():
+		if picks[k] != &"":
+			PerkManager.grant_bonus(takers[k].player.player_id, picks[k])
+			takers[k].bonus_perk = picks[k]
+
+
+## The perks this map sells (its perk machines).
+func map_perk_ids() -> Array:
+	var out: Array = []
+	for n: Node in get_tree().get_nodes_in_group(&"perk_machines"):
+		var pm: PerkMachine = n as PerkMachine
+		if pm != null and not out.has(String(pm.perk_id)):
+			out.append(String(pm.perk_id))
+	return out
 
 
 ## The spawn kit (bots.json spawn_kit): the kit guns (when `weapons`: at the start and on a respawn) with the
@@ -101,6 +171,10 @@ func _process(delta: float) -> void:
 	_t += delta
 	_round_t += delta
 	_callout_t = maxf(0.0, _callout_t - delta)
+	var h: Player = human()
+	if h != null and is_instance_valid(h):
+		var v: Vector3 = Vector3(h.velocity.x, 0.0, h.velocity.z)
+		leader_vel = leader_vel.lerp(v, clampf(delta * 4.0, 0.0, 1.0))
 
 
 func time() -> float:
@@ -221,18 +295,138 @@ func release(node: Node, pid: int) -> void:
 		_claims.erase(id)
 
 
-## A survivor line from this bot's character (VO + subtitles), rolled against bots.json callouts.chance and
-## rate-limited for the whole squad so they don't talk over each other.
-func callout(bot: BotBrain, category: String) -> void:
+## A survivor line from this bot's character (VO + subtitles), rolled against bots.json callouts.chance (by
+## category, else its family: CMD_HOLD -> CMD) and rate-limited: one squad line at a time (cooldown_s) and a
+## per-bot gap per family (per_bot_cooldown_s). force_categories (orders, the bonus perk, downs) skip the squad
+## gap and the roll. Returns true when the line started or was queued.
+func callout(bot: BotBrain, category: String, force: bool = false) -> bool:
 	var cc: Dictionary = _cfg.get("callouts", {})
-	if _callout_t > 0.0:
-		return
-	var chance: float = float((cc.get("chance", {}) as Dictionary).get(category, 0.0))
-	if chance <= 0.0 or randf() > chance:
-		return
+	var fam: String = category.get_slice("_", 0) if (category.begins_with("CMD_") or category.begins_with("BONUS_")) else category
+	force = force or (cc.get("force_categories", []) as Array).has(fam)
+	if _callout_t > 0.0 and not force:
+		return false
+	var key: String = "%d:%s" % [bot.player.player_id, fam]
+	if _t < float(_bot_cd.get(key, -1.0)):
+		return false
+	var chances: Dictionary = cc.get("chance", {})
+	var chance: float = float(chances.get(category, chances.get(fam, 0.0)))
+	if not force and (chance <= 0.0 or randf() > chance):
+		return false
 	var spk: StringName = GLVO.CHARACTER_SPEAKERS.get(bot.player.character_id, &"DUT")
 	if GLVO.play_category(spk, category, 1.0, bot.player.player_id):   # positional, at the bot's body
 		_callout_t = float(cc.get("cooldown_s", 7.0))
+		_bot_cd[key] = _t + float((cc.get("per_bot_cooldown_s", {}) as Dictionary).get(fam, 0.0))
+		return true
+	return false
+
+
+## A squad order from the wheel (or the dev console / tests): every brain follows it; the nearest bot
+## acknowledges it. "hold" holds `at` (the spot the human points at; the human's feet when INF).
+func set_command(cmd: StringName, at: Vector3 = Vector3.INF) -> void:
+	if not BotConfig.COMMANDS.has(cmd):
+		return
+	command = cmd
+	hold_point = Vector3.INF
+	var h: Player = human()
+	if cmd == &"hold":
+		hold_point = at if at != Vector3.INF else (h.global_position if h != null else Vector3.INF)
+	for b: BotBrain in brains:
+		b.on_command(cmd)
+	var hud: Hud = get_tree().get_first_node_in_group(&"hud") as Hud
+	if hud != null:
+		hud.show_banner("Squad: %s" % command_label(cmd), 1.4)
+	var speaker: BotBrain = _nearest_standing_brain(h.global_position if h != null else Vector3.ZERO)
+	if speaker != null:
+		callout(speaker, "CMD_" + String(cmd).to_upper(), true)
+
+
+static func command_label(cmd: StringName) -> String:
+	match cmd:
+		&"hold": return "Hold here"
+		&"repair": return "Repair barricades"
+		&"revive": return "Revive priority"
+	return "Follow me"
+
+
+## Where a holding bot stands: a ring of commands.ring_radius_m around the hold point, by formation index.
+func hold_spot(bot: BotBrain) -> Vector3:
+	if hold_point == Vector3.INF:
+		return Vector3.INF
+	var r: float = float((_cfg.get("commands", {}) as Dictionary).get("ring_radius_m", 1.6))
+	var a: float = TAU * float(bot.index) / float(maxi(1, brains.size())) + 0.4
+	return hold_point + Vector3(cos(a) * r, 0.0, sin(a) * r)
+
+
+func _nearest_standing_brain(p: Vector3) -> BotBrain:
+	var best: BotBrain = null
+	var best_d: float = INF
+	for b: BotBrain in brains:
+		if not b.player.is_alive() or b.player.spectating:
+			continue
+		var d: float = b.player.global_position.distance_to(p)
+		if d < best_d:
+			best_d = d
+			best = b
+	return best
+
+
+## Choke points the bots must not park in: every buy door's doorway (both sides) and every staircase / ramp slab
+## of the map (StaticBody3D named *Stair* / *Ramp* / *Flight* / *Gangway* with a box shape).
+func _build_chokes() -> void:
+	chokes.clear()
+	for n: Node in get_tree().get_nodes_in_group(&"doors"):
+		var d: BuyDoor = n as BuyDoor
+		if d == null:
+			continue
+		var half: Vector3 = Vector3(d.size.x * 0.5 + 0.1, d.size.y * 0.5 + 0.2, d.size.z * 0.5 + 0.75)
+		var xf: Transform3D = Transform3D(d.global_basis, d.global_position + d.global_basis.y * d.size.y * 0.5)
+		chokes.append({"box": box_aabb(xf, half), "kind": "door", "node": d})
+	var re: RegEx = RegEx.create_from_string("(?i)(stair|ramp|flight|gangway)")
+	for n2: Node in map.find_children("*", "StaticBody3D", true, false):
+		if re.search(String(n2.name)) == null:
+			continue
+		for c: Node in n2.get_children():
+			var cs: CollisionShape3D = c as CollisionShape3D
+			if cs == null or not (cs.shape is BoxShape3D):
+				continue
+			var box: AABB = box_aabb(cs.global_transform, (cs.shape as BoxShape3D).size * 0.5)
+			box.size.y += 2.0   # the walking space above the slab
+			chokes.append({"box": box, "kind": "stair", "node": n2})
+
+
+## The world AABB of a box (`half` extents) placed at `xf`.
+static func box_aabb(xf: Transform3D, half: Vector3) -> AABB:
+	var box: AABB = AABB(xf.origin, Vector3.ZERO)
+	for sx: float in [-1.0, 1.0]:
+		for sy: float in [-1.0, 1.0]:
+			for sz: float in [-1.0, 1.0]:
+				box = box.expand(xf * Vector3(half.x * sx, half.y * sy, half.z * sz))
+	return box
+
+
+## The choke a point is in ({} for none). Closed doors don't count (nobody stands in them).
+func choke_at(p: Vector3) -> Dictionary:
+	var q: Vector3 = p + Vector3.UP * 0.3
+	for c: Dictionary in chokes:
+		if not (c["box"] as AABB).has_point(q):
+			continue
+		if str(c["kind"]) == "door" and is_instance_valid(c["node"]) and not (c["node"] as BuyDoor).is_open:
+			continue
+		return c
+	return {}
+
+
+## Soak instrumentation (BotBrain): a bot stayed in a choke longer than follow.choke_report_s.
+func report_choke(bot: BotBrain, kind: String, pos: Vector3, seconds: float) -> void:
+	choke_events.append("%s in a %s at (%.1f, %.1f, %.1f) for %.1fs (mode %s, round %d)" % [Net.display_name(bot.player.player_id), kind,
+		pos.x, pos.y, pos.z, seconds, BotBrain.Mode.keys()[bot.mode], RoundManager.current_round])
+
+
+## A power-up dropped: the nearest standing bot that sees it calls it out.
+func _on_powerup_spawned(_id: StringName, pos: Vector3) -> void:
+	var b: BotBrain = _nearest_standing_brain(pos)
+	if b != null and b.player.global_position.distance_to(pos) < 22.0 and b.los_point(b.player.head.global_position, pos + Vector3.UP * 0.5):
+		callout(b, "POWERUP_SEEN")
 
 
 func _brain_of(pid: int) -> BotBrain:
@@ -272,6 +466,16 @@ func report() -> PackedStringArray:
 			BotBrain.Mode.keys()[b.mode], " DOWN" if b.player.downed else "", b.teleports, b.doors_bought_total, b.upgrades])
 		if b.planner != null:
 			out.append("  " + b.planner.status_line())
-
-
+		if b.bonus_perk != &"":
+			out.append("  bonus perk %s (announced %s)" % [b.bonus_perk, str(b.bonus_said)])
+	out.append("squad: order %s, revives by bots %d, choke reports %d" % [command, revives_total(), choke_events.size()])
+	for e: String in choke_events.slice(0, 8):
+		out.append("  CHOKE " + e)
 	return out
+
+
+func revives_total() -> int:
+	var n: int = 0
+	for b: BotBrain in brains:
+		n += b.revives
+	return n

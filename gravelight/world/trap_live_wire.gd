@@ -83,6 +83,14 @@ func _contains(p: Vector3) -> bool:
 	return absf(l.x) <= size.x * 0.5 and absf(l.z) <= size.z * 0.5 + 0.35 and l.y > -0.5 and l.y < size.y
 
 
+## Bots keep out (BotBrain._in_trap): true from the buzz tell until the fence goes dead, near the wires.
+func danger_contains(p: Vector3) -> bool:
+	if not active:
+		return false
+	var l: Vector3 = to_local(p)
+	return absf(l.x) <= size.x * 0.5 + 0.4 and absf(l.z) <= size.z * 0.5 + 0.9 and l.y > -1.0 and l.y < size.y
+
+
 func _physics_process(delta: float) -> void:
 	if cooldown_left > 0.0 and not active:
 		cooldown_left = maxf(0.0, cooldown_left - delta)
