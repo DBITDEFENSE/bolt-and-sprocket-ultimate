@@ -267,15 +267,16 @@ func _own(n: Node, owner_node: Node) -> void:
 
 func build_geometry() -> void:
 	# ground slab, with a hole over the cellar annex (x 24..36, z 10..31; T&C M2, DECISIONS T-027)
-	box(geo, "Ground", Vector3(-45, -0.5, -40), Vector3(24, 0.0, 75), "snow")
+	# and holes over the Old Cellar under the taproom, its stair lean-to and its two light wells (T-051, OC_HOLES)
+	_slab_with_holes("Ground", -45.0, 24.0, -40.0, 75.0, OC_HOLES)
 	box(geo, "GroundE", Vector3(36, -0.5, -40), Vector3(70, 0.0, 75), "snow")
-	box(geo, "GroundN", Vector3(24, -0.5, -40), Vector3(36, 0.0, 10), "snow")
+	_slab_with_holes("GroundN", 24.0, 36.0, -40.0, 10.0, OC_HOLES)
 	box(geo, "GroundS", Vector3(24, -0.5, 31), Vector3(36, 0.0, 75), "snow")
 
 	# ---------------- TAPROOM (ground floor)
 	var win: Array = [WIN_SILL, WIN_TOP]
 	wall_x("TapN", 0.0, -T * 0.5, 24 + T * 0.5, 0, TAP_H, [[6.2, 7.8] + win, [16.2, 17.8] + win], "wall", 1)
-	wall_z("TapW", 0.0, 0, 10, 0, TAP_H, [[5.2, 6.8] + win], "wall", 1)
+	wall_z("TapW", 0.0, 0, 10, 0, TAP_H, [[5.2, 6.8] + win, [8.25, 9.85, 0.0, DOOR_H]], "wall", 1)   # Door 5: the Old Cellar (T-051)
 	wall_z("TapE", 24.0, 0, 16, 0, TAP_H, [[7.2, 8.8] + win, [10.7, 12.3, 0.0, DOOR_H]], "wall", -1)
 	wall_x("TapS", 16.0, STAIR_X1, 24 + T * 0.5, 0, TAP_H, [[19.0, 21.0, 0.0, DOOR_H]], "wall", -1)
 	# stairwell (x 0..6, z 10..16), full height: the flight along the west wall (3.5 m wide, z 14.3 -> 9.0, so it
@@ -439,6 +440,9 @@ const CELLAR_BULBS: Array = [Vector3(27.0, CELLAR_Y + 2.55, 22.5), Vector3(33.0,
 var _cellar_lit: Node3D   # holder for the lit bulb glass (shown with the first CellarBulb light)
 
 
+## Hidden navmesh blocks stay under the agent height: the bake rasterises a box's faces, not its volume, so a block
+## taller than agent_height (1.75) leaves a walkable island inside itself (T-051; one sat inside the Crucible's).
+const NAV_SOLID_H: float = 1.6
 ## Perk machines and crates make their collision bodies at runtime, after the bake. Their footprints go into
 ## the navmesh here (invisible colliders) so zombies path round them instead of into them (T-027).
 func build_nav_blocks() -> void:
@@ -448,7 +452,7 @@ func build_nav_blocks() -> void:
 		if absf(float(pk[2])) == 90.0:
 			fp = Vector3(fp.z, fp.y, fp.x)
 		var c: Vector3 = pk[1]
-		box(geo, "NavBlock_" + str(pk[0]), c - Vector3(fp.x * 0.5, 0, fp.z * 0.5), c + Vector3(fp.x * 0.5, fp.y, fp.z * 0.5), "metal", true, false)
+		box(geo, "NavBlock_" + str(pk[0]), c - Vector3(fp.x * 0.5, 0, fp.z * 0.5), c + Vector3(fp.x * 0.5, minf(fp.y, NAV_SOLID_H), fp.z * 0.5), "metal", true, false)
 	for cr: Array in CRATES:
 		var half: Vector3 = Vector3(0.7, 0, 0.35) if absf(float(cr[2])) != 90.0 else Vector3(0.35, 0, 0.7)
 		var p: Vector3 = cr[1]
@@ -472,7 +476,7 @@ func build_cellar() -> void:
 	box(geo, "CellarFloor", Vector3(24.0, cy - 0.5, 19.0), Vector3(36.0, cy, 31.0), "cellar_floor")
 	box(geo, "CellarRoof", Vector3(24.0 - T * 0.5, CELLAR_TOP, 19.0), Vector3(36.0 + T * 0.5, -0.04, 31.0 + T * 0.5), "brick_cellar")
 	box(geo, "CellarRoofSnow", Vector3(24.0 - T * 0.5, -0.04, 19.0), Vector3(36.0 + T * 0.5, 0.0, 31.0 + T * 0.5), "snow")
-	wall_z("CelW", 24.0, 19.0, 31.0, cy, CELLAR_TOP, [], "cellar_stone")
+	wall_z("CelW", 24.0, 19.0, 31.0, cy, CELLAR_TOP, [[19.45, 21.05, cy, cy + DOOR_H]], "cellar_stone")   # the breach to the Old Cellar (T-051)
 	wall_z("CelE", 36.0, 19.0, 31.0, cy, CELLAR_TOP, [], "cellar_stone")
 	wall_x("CelS", 31.0, 24.0 - T * 0.5, 36.0 + T * 0.5, cy, CELLAR_TOP, [], "cellar_stone")
 	wall_x("CelN", 19.0, 28.0, 36.0 + T * 0.5, cy, CELLAR_TOP, [], "cellar_stone")
@@ -482,10 +486,157 @@ func build_cellar() -> void:
 		box(geo, "CellarPillar", Vector3(p.x - 0.35, cy, p.y - 0.35), Vector3(p.x + 0.35, CELLAR_TOP, p.y + 0.35), "cellar_stone")
 	# big dressing with collision (baked into the navmesh; all against walls, outside the loops and the stair spill):
 	# the workbench + Helvetia crates on the north wall, the barrels in the NE corner, the kegs on the landing corner
-	box(geo, "NavBlock_Crucible", Vector3(28.5, cy, 19.15), Vector3(30.5, cy + 2.4, 20.75), "metal", true, false)   # the Crucible's body (T-032)
+	box(geo, "NavBlock_Crucible", Vector3(28.5, cy, 19.15), Vector3(30.5, cy + NAV_SOLID_H, 20.75), "metal", true, false)   # the Crucible's footprint (T-032)
 	box(geo, "CellarCrateCol", Vector3(30.9, cy, 19.15), Vector3(31.5, cy + 1.1, 19.76), "metal", true, false)
-	box(geo, "CellarBarrelCol", Vector3(34.35, cy, 19.15), Vector3(35.95, cy + 1.0, 20.8), "metal", true, false)
+	box(geo, "CellarBarrelCol", Vector3(33.3, cy, 19.15), Vector3(35.95, cy + 1.0, 20.8), "metal", true, false)   # (T-051: to x 33.3, no dead-end pocket behind the lever)
 	box(geo, "LandingKegCol", Vector3(27.0, 0.0, 10.15), Vector3(28.0, 0.8, 11.1), "metal", true, false)
+	build_old_cellar()
+
+
+## THE OLD CELLAR (Update 02 section 6.1, DECISIONS T-051): the inn's own cellar under the taproom, older than the
+## Helvetia vault. Door 5 (1250, zone OLD_CELLAR) in the taproom's west wall opens on the old cellar stairs in a
+## stone lean-to (x -3..0, z 8..18.5), which come down to a landing and through the foundation into:
+##   - the wine cellar (x 0..10.9, z 8..18.5): low brick arches on three piers, racks, casks, dripping water;
+##   - the coal room (x 0..5, z 0..8): the coal chute window (a light well under the porch, W_CEL_COAL) and the
+##     holding cell, an iron cage where the patrol locked Jakub (section 6.2: JakubCage, JakubSpawn, JakubWait);
+##   - the root cellar (x 5..10.9, z 0..8): preserves, sacks, hams; the cousins' jam jars on the top shelf;
+##   - the ice cellar (x 5..8.3, z 5..8), the cousins' hidden room under the bar (v3 section 4.6; Alix's trapdoor at
+##     6.6, 5.6 is right overhead), bricked off from the coal room until the Cousins round is cleared (IceCellarSeal);
+##   - the barrel vault (x 10.9..24, z 0..16): the training loop round the central barrel stack (corridors 4.8 m
+##     each side, 3.2 m past the two pillars), the Gewehr 43, the ammo-box spot, the vault window (a light well
+##     outside the east wall, W_CEL_VAULT), and the breach the Helvetia installers knocked through to their own
+##     cellar (x 20.85..24, z 16..21.3), closed by a second Cellar door (1500, linked with Door 3).
+const OC_WELL_Y: float = -1.3          # the light wells' floor (the barricade origin); the room floor is 1.9 m below
+const OC_SILL: float = 0.1             # window sill / top above the well floor: a half-height crawl-in window
+const OC_WIN_H: float = 0.85
+const OC_ANNEX_X: float = -3.0         # the stair lean-to's west wall
+## Ground-slab holes [x, z, w, d]: under the taproom, the wine cellar's south bay, the lean-to, the Helvetia breach,
+## the coal-chute light well (north) and the vault's light well (east).
+const OC_HOLES: Array = [Rect2(-0.15, -0.15, 24.15, 16.15), Rect2(-0.15, 16.0, 11.2, 2.65), Rect2(-3.15, 7.85, 3.0, 10.8),
+	Rect2(20.7, 16.0, 3.3, 5.45), Rect2(1.85, -4.65, 3.2, 4.5), Rect2(24.0, -2.1, 2.35, 5.45)]
+## The holding cell: the cage's door gap (z) on its east face (x 2.55); 1.5 m so the navmesh runs through it.
+const OC_CAGE: Rect2 = Rect2(0.15, 3.3, 2.4, 3.2)
+const OC_CAGE_DOOR: Vector2 = Vector2(4.15, 5.65)
+const OC_STACK: Rect2 = Rect2(15.9, 6.3, 3.1, 3.4)   # the barrel stack (training loop centre)
+const OC_PILLARS: Array = [Vector2(17.45, 2.7), Vector2(17.45, 13.3)]
+const OC_PIERS: Array = [Vector2(2.6, 13.2), Vector2(5.4, 13.2), Vector2(8.2, 13.2)]
+## bare bulbs (glass position) that light with the cellar lever: two over the loop, one at each end of the wine cellar
+const OC_BULBS: Array = [Vector3(17.45, CELLAR_Y + 2.45, 4.6), Vector3(17.45, CELLAR_Y + 2.45, 11.4),
+	Vector3(2.6, CELLAR_Y + 2.2, 15.9), Vector3(8.2, CELLAR_Y + 2.2, 10.6)]
+var _old_cellar_lit: Node3D   # the lit bulb glass, shown with the first OldCellarBulb light
+
+
+## A ground slab over [x0, x1] x [z0, z1] (top at y 0) with rectangular holes, as a few boxes: the plane is cut
+## on every hole edge and the cells outside all holes are merged into runs along X.
+func _slab_with_holes(name_: String, x0: float, x1: float, z0: float, z1: float, holes: Array) -> void:
+	var xs: Array[float] = [x0, x1]
+	var zs: Array[float] = [z0, z1]
+	for h: Rect2 in holes:
+		for x: float in [h.position.x, h.end.x]:
+			if x > x0 and x < x1 and not xs.has(x):
+				xs.append(x)
+		for z: float in [h.position.y, h.end.y]:
+			if z > z0 and z < z1 and not zs.has(z):
+				zs.append(z)
+	xs.sort()
+	zs.sort()
+	for j: int in zs.size() - 1:
+		var run0: float = INF
+		var run1: float = INF
+		for i: int in xs.size():
+			var solid: bool = false
+			if i < xs.size() - 1:
+				solid = true
+				var c: Vector2 = Vector2((xs[i] + xs[i + 1]) * 0.5, (zs[j] + zs[j + 1]) * 0.5)
+				for h: Rect2 in holes:
+					if h.has_point(c):
+						solid = false
+						break
+			if solid:
+				if run0 == INF:
+					run0 = xs[i]
+				run1 = xs[i + 1]
+			elif run0 != INF:
+				box(geo, name_, Vector3(run0, -0.5, zs[j]), Vector3(run1, 0.0, zs[j + 1]), "snow")
+				run0 = INF
+
+
+## The Old Cellar's collision shell (see the OC_ constants above). Floors and walls are stone, the taproom's floor
+## is the vault's plank ceiling, the outdoor parts of the roof carry snow.
+func build_old_cellar() -> void:
+	var cy: float = CELLAR_Y
+	var top: float = CELLAR_TOP
+	var wy: float = OC_WELL_Y
+	var win: Array = [wy + OC_SILL, wy + OC_WIN_H]
+	# ---- outer walls (up to the ground), the window openings at the light wells
+	wall_x("OCN", 0.0, -T * 0.5, 24 + T * 0.5, cy, 0.0, [[2.65, 4.25] + win], "cellar_stone")
+	wall_z("OCE", 24.0, 0.0, 10.0, cy, 0.0, [[1.0, 2.6] + win], "cellar_stone")
+	wall_z("OCW", 0.0, 0.0, 18.5 + T * 0.5, cy, 0.0, [[15.8, 18.2, cy, cy + 2.4]], "cellar_stone")
+	wall_x("OCWineS", 18.5, -T * 0.5, 10.9 + T * 0.5, cy, 0.0, [], "cellar_stone")
+	wall_x("OCVaultS", 16.0, 10.9, 20.85 + T * 0.5, cy, 0.0, [], "cellar_stone")
+	wall_z("OCTunW", 20.85, 16.0, 21.3 + T * 0.5, cy, 0.0, [], "limewash")
+	wall_x("OCTunS", 21.3, 20.85, 24.0, cy, 0.0, [], "limewash")
+	# ---- inner walls (up to the ceiling): the long middle wall with the root and wine arches, the coal / root / wine
+	# partitions, the ice cellar's brick box (its west wall is the coal room's, with the bricked-up chute)
+	wall_z("OCMid", 10.9, 0.0, 18.5, cy, top, [[1.6, 3.6, cy, cy + 2.4], [10.0, 13.2, cy, cy + 2.55]], "cellar_stone")
+	wall_x("OCZ8", 8.0, 0.0, 10.9, cy, top, [[2.8, 4.6, cy, cy + 2.3], [8.7, 10.6, cy, cy + 2.3]], "cellar_stone")
+	wall_z("OCX5", 5.0, 0.0, 8.0, cy, top, [[5.9, 7.5, cy, cy + 2.0]], "cellar_stone")
+	wall_x("OCIceN", 5.0, 5.0, 8.3 + T * 0.5, cy, top, [], "brick_cellar")
+	wall_z("OCIceE", 8.3, 5.0, 8.0, cy, top, [], "brick_cellar")
+	# ---- floors and ceilings
+	for f: Array in [[Vector3(-0.15, cy - 0.5, -0.15), Vector3(24.15, cy, 16.15)], [Vector3(-0.15, cy - 0.5, 16.0), Vector3(11.05, cy, 18.65)],
+			[Vector3(20.7, cy - 0.5, 16.0), Vector3(24.0, cy, 21.45)]]:
+		box(geo, "OCFloor", f[0], f[1], "cellar_floor").set_meta("surface", "stone")
+	box(geo, "OCRoof", Vector3(-T * 0.5, top, -T * 0.5), Vector3(24 + T * 0.5, 0.0, 16.0), "planks").set_meta("surface", "wood")   # the taproom's floor
+	for r: Array in [[Vector3(-0.15, top, 16.0), Vector3(11.05, 0.0, 18.65)], [Vector3(20.7, top, 16.0), Vector3(24.0, 0.0, 21.45)]]:
+		box(geo, "OCRoofOut", r[0], Vector3((r[1] as Vector3).x, -0.04, (r[1] as Vector3).z), "brick_cellar")
+		box(geo, "OCRoofSnow", Vector3((r[0] as Vector3).x, -0.04, (r[0] as Vector3).z), r[1], "snow").set_meta("surface", "snow")
+	# ---- the stair lean-to: landing behind Door 5, the flight down the west wall of the inn, the foot landing
+	var ax: float = OC_ANNEX_X
+	wall_z("OCAnnW", ax, 7.85, 18.65, cy, 2.8, [], "cellar_stone")
+	wall_x("OCAnnN", 8.0, ax - T * 0.5, 0.0, cy, 2.8, [], "cellar_stone")
+	wall_x("OCAnnS", 18.5, ax - T * 0.5, 0.0, cy, 2.8, [], "cellar_stone")
+	wall_z("OCAnnE", 0.0, 16.0 + T * 0.5, 18.65, 0.0, 2.8, [], "cellar_stone")
+	box(geo, "OCAnnRoof", Vector3(ax - T * 0.5, 2.8, 7.85), Vector3(0.0, 3.0, 18.65), "roof")
+	box(geo, "OCAnnLanding", Vector3(ax + T * 0.5, -0.5, 8.15), Vector3(-T * 0.5, 0.0, 9.95), "stone").set_meta("surface", "stone")
+	ramp_z("OCStairs", ax + T * 0.5, -T * 0.5, 15.5, 9.95, cy, 0.0)
+	box(geo, "OCAnnFloor", Vector3(ax, cy - 0.5, 15.5), Vector3(0.0, cy, 18.5), "cellar_floor").set_meta("surface", "stone")
+	# ---- the light wells: a stone-lined pit at the window, steps up to the field (zombies come down them)
+	box(geo, "WellPitN", Vector3(1.85, wy - 0.3, -2.15), Vector3(5.05, wy, -0.15), "stone").set_meta("surface", "stone")
+	box(geo, "WellSideN", Vector3(1.85, wy - 0.3, -4.65), Vector3(2.0, 0.0, -0.15), "cellar_stone")
+	box(geo, "WellSideN", Vector3(4.9, wy - 0.3, -4.65), Vector3(5.05, 0.0, -0.15), "cellar_stone")
+	ramp_z("WellStepsN", 2.0, 4.9, -2.15, -4.65, wy, 0.0, -1e9, false)
+	_stair_dressing.pop_back()   # stone steps instead (_dress_old_cellar)
+	box(geo, "WellPitE", Vector3(24.0, wy - 0.3, 0.4), Vector3(26.35, wy, 3.35), "stone").set_meta("surface", "stone")
+	box(geo, "WellSideE", Vector3(26.2, wy - 0.3, -2.1), Vector3(26.35, 0.0, 3.35), "cellar_stone")
+	box(geo, "WellSideE", Vector3(24.0, wy - 0.3, 3.2), Vector3(26.2, 0.0, 3.35), "cellar_stone")
+	box(geo, "WellSideE", Vector3(23.9, wy - 0.3, -2.1), Vector3(24.15, 0.0, 0.0), "cellar_stone")
+	ramp_z("WellStepsE", 24.15, 26.2, 0.4, -2.1, wy, 0.0, -1e9, false)
+	_stair_dressing.pop_back()
+	# ---- solid things in the rooms (baked; all with a clear 2 m+ walk past them)
+	box(geo, "OCChimneyFoot", Vector3(11.05, cy, 0.15), Vector3(13.15, top, 1.35), "brick_cellar")   # the hearth's footing
+	for p: Vector2 in OC_PILLARS:
+		box(geo, "OCPillar", Vector3(p.x - 0.35, cy, p.y - 0.35), Vector3(p.x + 0.35, top, p.y + 0.35), "cellar_stone")
+	for p2: Vector2 in OC_PIERS:
+		box(geo, "OCPier", Vector3(p2.x - 0.35, cy, p2.y - 0.35), Vector3(p2.x + 0.35, top, p2.y + 0.35), "cellar_stone")
+	var st: Rect2 = OC_STACK
+	box(geo, "OCBarrelStack", Vector3(st.position.x, cy, st.position.y), Vector3(st.end.x, cy + NAV_SOLID_H, st.end.y), "furniture", true, false)
+	# racks, casks and shelves against the walls (drawn by _dress_old_cellar)
+	for rk: Array in [[Vector3(0.15, cy, 8.15), Vector3(2.6, cy + 2.0, 8.6)], [Vector3(4.8, cy, 8.15), Vector3(8.5, cy + 2.0, 8.6)],
+			[Vector3(3.0, cy, 17.95), Vector3(9.6, cy + 2.0, 18.35)], [Vector3(0.15, cy, 9.0), Vector3(0.6, cy + 2.0, 15.4)],
+			[Vector3(9.85, cy, 13.9), Vector3(10.75, cy + 1.7, 17.9)],   # the big casks
+			[Vector3(5.4, cy, 0.15), Vector3(10.5, cy + 2.1, 0.55)], [Vector3(5.15, cy, 0.8), Vector3(5.5, cy + 1.9, 4.5)],   # root shelves
+			[Vector3(5.3, cy, 4.25), Vector3(8.1, cy + 0.8, 4.85)],   # sacks against the ice cellar's wall
+			[Vector3(15.6, cy, 15.4), Vector3(19.3, cy + 2.0, 15.85)], [Vector3(23.4, cy, 4.4), Vector3(23.85, cy + 2.0, 9.6)]]:   # vault racks
+		box(geo, "OCRackCol", rk[0], rk[1], "furniture", true, false)
+	# the holding cell: bars from floor to ceiling. Solid hidden panels along the bar lines cut the navmesh (the
+	# bars are thinner than a cell); the door gap is left open, its door is a runtime collider (HoldingCage).
+	var cg: Rect2 = OC_CAGE
+	var ex: float = cg.end.x
+	box(geo, "CagePanel", Vector3(cg.position.x, cy, cg.position.y - 0.06), Vector3(ex + 0.06, top, cg.position.y + 0.06), "metal", true, false)
+	box(geo, "CagePanel", Vector3(cg.position.x, cy, cg.end.y - 0.06), Vector3(ex + 0.06, top, cg.end.y + 0.06), "metal", true, false)
+	box(geo, "CagePanel", Vector3(ex - 0.06, cy, cg.position.y), Vector3(ex + 0.06, top, OC_CAGE_DOOR.x), "metal", true, false)
+	box(geo, "CagePanel", Vector3(ex - 0.06, cy, OC_CAGE_DOOR.y), Vector3(ex + 0.06, top, cg.end.y), "metal", true, false)
 
 
 func bake_navmesh() -> void:
@@ -807,6 +958,8 @@ func _dress_cellar() -> void:
 	Props.workbench(g, Vector3(35.15, cy, 19.5), 180.0, 1.5, 0.7)
 	Props.barrel(g, Vector3(35.5, cy, 20.4), -40.0, 0.3, 0.85)
 	Props.sack(g, Vector3(34.65, cy, 20.45), -30.0, 0.8)
+	Props.barrel(g, Vector3(33.75, cy, 20.3), 15.0, 0.32, 0.9)   # over the corner's collider (T-051)
+	Props.crate(g, Vector3(33.8, cy, 19.62), 0.6, 4.0, "HELVETIA")
 	Props.stencil(g, Vector3(35.2, cy + 1.9, 19.15), 180.0, "|||| |||| ||| ", 30, Color(0.85, 0.85, 0.8, 0.55), 0.004)
 	# ---- shelves of preserves and bottles between the machines (0.28 m deep, so the panel walk stays clear)
 	Props.shelves(g, Vector3(24.15, cy, 24.5), -90.0, 1.4, 1.9, 0.28, 3, 11)
@@ -863,6 +1016,271 @@ func _dress_cellar() -> void:
 		var hy: float = lerpf(0.0, cy, t3) + 0.9
 		Props.block(g, Vector3(24.15, hy - 0.02, hz - 0.02), Vector3(24.24, hy + 0.02, hz + 0.02), "iron")
 	Props.stencil(g, Vector3(27.85, 2.2, 12.2), 90.0, "KELLER", 44, Color(0.2, 0.18, 0.15, 0.85), 0.004)
+	_dress_old_cellar()
+
+
+## A wine rack against a wall (local z 0 = the wall, the room at local -Z): uprights, slatted boards and bottles
+## lying with their necks out; a gap left here and there.
+func _wine_rack(parent: Node3D, pos: Vector3, yaw: float, w: float, rows: int, seed_v: int, depth: float = 0.4) -> void:
+	var g: Node3D = Props.group(parent, "WineRack", pos, yaw)
+	var n_up: int = maxi(2, int(w / 1.2) + 1)
+	for k: int in n_up:
+		var x: float = -w * 0.5 + w * float(k) / float(n_up - 1)
+		Props.block(g, Vector3(x - 0.03, 0, -depth), Vector3(x + 0.03, 0.3 + rows * 0.26, 0.0), "beam")
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = seed_v
+	for row: int in rows:
+		var ry: float = 0.22 + row * 0.26
+		Props.block(g, Vector3(-w * 0.5, ry - 0.02, -depth), Vector3(w * 0.5, ry, 0.0), "furniture")
+		var cols: int = int(w / 0.1)
+		for col: int in cols:
+			if rng.randf() < 0.28:
+				continue
+			var bx: float = -w * 0.5 + 0.06 + col * 0.1
+			var key: String = "bottle_green" if rng.randf() < 0.72 else "bottle_amber"
+			Props.cyl(g, Vector3(bx, ry + 0.045, -depth * 0.55), 0.035, depth * 0.8, key, Vector3(90, 0, 0)).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
+## A child's chalk stick figure on a wall (local -Z = out of the wall): head ring, body, arms out to the sides
+## (so neighbours hold hands), two legs. `h` is its height.
+func _chalk_figure(parent: Node3D, base: Vector3, yaw: float, h: float) -> void:
+	var g: Node3D = Props.group(parent, "Chalk", base, yaw)
+	var wd: float = 0.012
+	Props._noshadow(Props.cyl(g, Vector3(0, h * 0.86, -0.004), h * 0.11, 0.004, "paper", Vector3(90, 0, 0)))
+	Props._noshadow(Props.cyl(g, Vector3(0, h * 0.86, -0.006), h * 0.085, 0.004, "brick_cellar", Vector3(90, 0, 0)))
+	Props._noshadow(Props.obox(g, Vector3(0, h * 0.5, -0.004), Vector3(wd, h * 0.42, 0.004), "paper"))
+	Props._noshadow(Props.obox(g, Vector3(0, h * 0.62, -0.004), Vector3(h * 0.62, wd, 0.004), "paper", Vector3(0, 0, -6)))
+	for s: float in [-1.0, 1.0]:
+		Props._noshadow(Props.obox(g, Vector3(s * h * 0.09, h * 0.15, -0.004), Vector3(wd, h * 0.32, 0.004), "paper", Vector3(0, 0, s * 18.0)))
+
+
+## The Old Cellar's dressing (no collision; the colliders are in build_old_cellar): the lean-to stairs, the wine
+## cellar's arches and racks, the coal room with the cage, the root cellar's stores, the cousins' ice cellar, the
+## barrel vault and the breach, the light wells outside.
+func _dress_old_cellar() -> void:
+	var cy: float = CELLAR_Y
+	var top: float = CELLAR_TOP
+	var wy: float = OC_WELL_Y
+	var g: Node3D = Props.group(dress, "OldCellar", Vector3.ZERO)
+	_old_cellar_lit = Node3D.new()
+	_old_cellar_lit.name = "OldCellarLit"
+	dress.add_child(_old_cellar_lit)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 1251
+	# ---------------- the lean-to: Door 5's frame, a snowed roof, a lantern over the flight, a lamp at the foot
+	_door_frame(Vector3(0.0, 0, 9.05), 90.0, 1.6, DOOR_H)
+	Props.block(g, Vector3(OC_ANNEX_X - 0.2, 3.0, 7.75), Vector3(0.05, 3.1, 18.75), "snow")
+	Props.block(g, Vector3(OC_ANNEX_X - 0.25, 2.75, 7.7), Vector3(0.05, 2.82, 18.8), "beam")
+	Props.snow_drift(g, Vector3(OC_ANNEX_X - 0.4, 0, 13.0), Vector3(1.2, 0.7, 9.0))
+	# its outside above the ground: weatherboards over the stone, a sill beam, corner posts
+	Props.block(g, Vector3(OC_ANNEX_X - 0.19, 0.0, 7.83), Vector3(OC_ANNEX_X - 0.15, 2.8, 18.67), "planks")
+	for ez: Array in [[7.83, 7.85], [18.65, 18.67]]:
+		Props.block(g, Vector3(OC_ANNEX_X - 0.19, 0.0, float(ez[0]) - (0.04 if ez[0] < 10.0 else 0.0)), Vector3(0.0, 2.8, float(ez[1]) + (0.04 if ez[0] > 10.0 else 0.0)), "planks")
+	Props.block(g, Vector3(OC_ANNEX_X - 0.24, 0.0, 7.8), Vector3(OC_ANNEX_X - 0.15, 0.25, 18.7), "beam")
+	for pz: float in [7.8, 13.25, 18.7]:
+		Props.block(g, Vector3(OC_ANNEX_X - 0.26, 0.0, pz - 0.1), Vector3(OC_ANNEX_X - 0.12, 2.8, pz + 0.1), "beam")
+	Props.lantern(g, Vector3(-1.5, 2.15, 12.6), 2.8)
+	Props.wall_lamp(g, Vector3(OC_ANNEX_X + 0.15, cy + 2.2, 17.0), -90.0)
+	Props.stencil(g, Vector3(OC_ANNEX_X + 0.16, 1.7, 9.0), -90.0, "VORSICHT\nSTUFEN", 34, Color(0.88, 0.85, 0.75, 0.7), 0.004)
+	Props.crate(g, Vector3(-2.4, cy, 18.0), 0.55, 12.0)
+	for i: int in 5:
+		Props.cyl(g, Vector3(-2.55 + i * 0.09, cy + 0.6, 18.0), 0.035, 0.28, "bottle_green")
+	Props.cobweb(g, Vector3(OC_ANNEX_X + 0.15, 2.78, 8.15), 0.0, 0.7)
+	Props.cobweb(g, Vector3(-0.15, top - 0.02, 18.35), 180.0, 0.7)
+	# ---------------- the wine cellar: low brick arches on three piers, racks on three walls, casks, puddles
+	var spring: float = cy + 1.55
+	var crown: float = top - 0.05
+	for p: Vector2 in OC_PIERS:
+		_arch(g, Vector3(p.x, spring, 8.15), Vector3(p.x, spring, p.y - 0.35), crown - spring)
+		_arch(g, Vector3(p.x, spring, p.y + 0.35), Vector3(p.x, spring, 18.35), crown - spring)
+		Props.block(g, Vector3(p.x - 0.43, cy, p.y - 0.43), Vector3(p.x + 0.43, cy + 0.38, p.y + 0.43), "cellar_stone")
+		Props.block(g, Vector3(p.x - 0.45, spring - 0.28, p.y - 0.45), Vector3(p.x + 0.45, spring, p.y + 0.45), "cellar_stone")
+		Props.cyl(g, Vector3(p.x + 0.38, spring + 0.04, p.y - 0.2), 0.03, 0.08, "candle")   # a stub on the capital
+	for seg: Array in [[0.15, OC_PIERS[0].x - 0.35], [OC_PIERS[0].x + 0.35, OC_PIERS[1].x - 0.35], [OC_PIERS[1].x + 0.35, OC_PIERS[2].x - 0.35],
+			[OC_PIERS[2].x + 0.35, 10.75]]:
+		_arch(g, Vector3(float(seg[0]), spring, 13.2), Vector3(float(seg[1]), spring, 13.2), crown - spring, 6)
+	Props.block(g, Vector3(0.15, top - 0.03, 8.15), Vector3(10.75, top, 18.35), "brick_cellar")   # a brick soffit
+	_wine_rack(g, Vector3(1.375, cy, 8.15), 180.0, 2.4, 6, 51)
+	_wine_rack(g, Vector3(6.65, cy, 8.15), 180.0, 3.6, 6, 52)
+	_wine_rack(g, Vector3(6.3, cy, 18.35), 0.0, 6.5, 6, 53)
+	_wine_rack(g, Vector3(0.15, cy, 10.6), -90.0, 3.1, 6, 54)
+	_wine_rack(g, Vector3(0.15, cy, 13.95), -90.0, 2.8, 6, 55)
+	for i: int in 3:   # the big casks on their cradles, heads to the room, vintages chalked on
+		var cz: float = 14.6 + i * 1.3
+		for sz: float in [-0.35, 0.35]:
+			Props.block(g, Vector3(9.9, cy, cz + sz - 0.06), Vector3(10.72, cy + 0.32, cz + sz + 0.06), "beam")
+		Props.barrel(g, Vector3(10.3, cy + 0.12, cz), 90.0, 0.55, 0.82, true)
+		Props.stencil(g, Vector3(9.87, cy + 0.67, cz), 90.0, ["1937", "1941", "1943"][i], 40, Color(0.92, 0.9, 0.85, 0.75), 0.004)
+		Props.cyl(g, Vector3(9.84, cy + 0.32, cz), 0.03, 0.08, "brass", Vector3(0, 0, 90))   # the tap
+	Props.barrel(g, Vector3(9.6, cy, 17.85), 20.0, 0.25, 0.6)
+	Props.barrel(g, Vector3(0.55, cy, 17.9), -10.0, 0.25, 0.6)
+	Props.crate(g, Vector3(1.0, cy, 9.05), 0.5, 8.0)
+	Props.stencil(g, Vector3(10.73, cy + 1.9, 15.9), 90.0, "RIESLING 38  ·  40 FL.\nROTWEIN 41  ·  22 FL.\nSCHNAPS  ·  —", 28, Color(0.9, 0.9, 0.85, 0.55), 0.0035)
+	Props.puddle(g, Vector3(6.9, cy, 15.3), 1.2, 0.8, 15.0)
+	Props.puddle(g, Vector3(1.7, cy, 11.4), 0.9, 0.7, -20.0)
+	Props.puddle(g, Vector3(4.4, cy, 17.0), 0.8, 0.5, 40.0)
+	for c: Array in [[Vector3(0.15, top - 0.02, 8.15), 0.0], [Vector3(10.75, top - 0.02, 18.35), 180.0], [Vector3(0.15, top - 0.02, 18.35), 90.0]]:
+		Props.cobweb(g, c[0], float(c[1]), 0.8)
+	# ---------------- the coal room: the chute heap under the window, soot, the cage, the patrol's leftovers
+	Props.ball(g, Vector3(3.55, cy, 0.95), Vector3(2.3, 0.75, 1.5), "coal")
+	for i2: int in 12:
+		Props.ball(g, Vector3(2.6 + rng.randf_range(0, 2.0), cy + 0.04, 1.6 + rng.randf_range(0, 1.3)), Vector3(0.15, 0.1, 0.13) * rng.randf_range(0.7, 1.4), "coal")
+	Props.obox(g, Vector3(3.45, wy + OC_SILL - 0.63, 0.58), Vector3(1.3, 0.04, 1.55), "iron", Vector3(56, 0, 0))   # the chute plate
+	Props.block(g, Vector3(0.15, cy + 0.6, 0.15), Vector3(4.85, top, 0.17), "char")   # soot up the chute wall
+	Props.block(g, Vector3(4.83, cy, 0.15), Vector3(4.85, cy + 2.2, 3.2), "char")
+	# the cage: round bars floor to ceiling on the three open sides, bands, corner posts (the door is HoldingCage)
+	var cg: Rect2 = OC_CAGE
+	var bars: Array = [[Vector2(cg.position.x + 0.05, cg.position.y), Vector2(cg.end.x, cg.position.y)],
+		[Vector2(cg.position.x + 0.05, cg.end.y), Vector2(cg.end.x, cg.end.y)],
+		[Vector2(cg.end.x, cg.position.y), Vector2(cg.end.x, OC_CAGE_DOOR.x)], [Vector2(cg.end.x, OC_CAGE_DOOR.y), Vector2(cg.end.x, cg.end.y)]]
+	for b: Array in bars:
+		var a2: Vector2 = b[0]
+		var b2: Vector2 = b[1]
+		var n: int = maxi(1, int(a2.distance_to(b2) / 0.13))
+		for k: int in n + 1:
+			var q: Vector2 = a2.lerp(b2, float(k) / float(n))
+			Props.cyl(g, Vector3(q.x, (cy + top) * 0.5, q.y), 0.022, top - cy, "iron")
+		for by: float in [cy + 0.12, cy + 1.05, top - 0.12]:
+			Props.strut(g, Vector3(a2.x, by, a2.y), Vector3(b2.x, by, b2.y), 0.05, "iron")
+	for cp: Vector2 in [Vector2(cg.end.x, cg.position.y), Vector2(cg.end.x, cg.end.y), Vector2(cg.end.x, OC_CAGE_DOOR.x), Vector2(cg.end.x, OC_CAGE_DOOR.y)]:
+		Props.block(g, Vector3(cp.x - 0.04, cy, cp.y - 0.04), Vector3(cp.x + 0.04, top, cp.y + 0.04), "iron")
+	# inside: straw, a folded blanket, a tin cup and a bucket, a miner's greeting and a tally chalked on the wall
+	Props.obox(g, Vector3(1.0, cy + 0.015, 5.3), Vector3(1.3, 0.03, 1.6), "straw_floor", Vector3(0, 8, 0))
+	Props.block(g, Vector3(0.3, cy, 5.6), Vector3(0.95, cy + 0.12, 6.3), "tarp")
+	Props.cyl(g, Vector3(1.9, cy + 0.05, 6.1), 0.045, 0.1, "tin")
+	Props.cyl(g, Vector3(0.45, cy + 0.17, 3.7), 0.15, 0.34, "iron")
+	Props.stencil(g, Vector3(0.16, cy + 1.45, 4.6), -90.0, "SZCZESC BOZE", 30, Color(0.92, 0.92, 0.88, 0.6), 0.0035)
+	Props.stencil(g, Vector3(0.16, cy + 1.1, 5.9), -90.0, "| |", 34, Color(0.92, 0.92, 0.88, 0.55), 0.0035)
+	# outside: the guard's stool and crate with a mess tin and his cigarettes, the tag on the padlock, the lantern
+	Props.stool(g, Vector3(4.2, cy, 5.1))
+	Props.crate(g, Vector3(4.3, cy, 7.25), 0.55, -8.0, "WH")
+	Props.cyl(g, Vector3(4.25, cy + 0.6, 7.2), 0.09, 0.05, "steel")
+	Props.block(g, Vector3(4.4, cy + 0.55, 7.05), Vector3(4.5, cy + 0.57, 7.12), "paper")
+	Props.stencil(g, Vector3(2.62, cy + 0.82, 5.45), -90.0, "Häftling (Pole)\nFlucht aus K.\n22.XII.", 20, Color(0.22, 0.2, 0.18, 0.9), 0.0028)
+	Props.block(g, Vector3(2.61, cy + 0.68, 5.32), Vector3(2.615, cy + 0.94, 5.6), "paper")
+	Props.lantern(g, Vector3(3.9, cy + 2.25, 3.9), top)
+	Props.cobweb(g, Vector3(0.15, top - 0.02, 0.15), 0.0, 0.8)
+	Props.cobweb(g, Vector3(4.85, top - 0.02, 7.85), 180.0, 0.6)
+	# ---------------- the root cellar: preserves and the top shelf, sacks and potatoes, hams and onions overhead
+	Props.shelves(g, Vector3(7.95, cy, 0.15), 180.0, 5.1, 2.1, 0.4, 4, 61)
+	Props.shelves(g, Vector3(5.15, cy, 2.65), -90.0, 3.7, 1.9, 0.35, 3, 62)
+	Props.block(g, Vector3(5.5, cy + 2.45, 0.15), Vector3(7.2, cy + 2.48, 0.42), "furniture")   # the top shelf
+	for bk: float in [5.55, 7.15]:
+		Props.block(g, Vector3(bk - 0.02, cy + 2.3, 0.15), Vector3(bk + 0.02, cy + 2.45, 0.4), "iron")
+	for j: int in 3:   # the cousins' jam jars (v3 section 4.1: the youngest was always stretching for them)
+		var jx: float = 5.85 + j * 0.42
+		Props.cyl(g, Vector3(jx, cy + 2.6, 0.29), 0.07, 0.22, "jar_red")
+		Props.cyl(g, Vector3(jx, cy + 2.72, 0.29), 0.085, 0.02, ["cloth_red", "linen", "cloth_green"][j])
+		Props.block(g, Vector3(jx - 0.05, cy + 2.55, 0.215), Vector3(jx + 0.05, cy + 2.63, 0.22), "paper")
+	Props.crate(g, Vector3(6.4, cy, 0.95), 0.45, 4.0)   # ...and the crate to stand on
+	for sk: Array in [[Vector3(5.6, cy, 4.55), 10.0], [Vector3(6.2, cy, 4.6), -20.0], [Vector3(6.8, cy, 4.5), 35.0], [Vector3(7.45, cy, 4.6), 0.0],
+			[Vector3(5.9, cy + 0.5, 4.6), 70.0], [Vector3(7.0, cy + 0.5, 4.55), -40.0]]:
+		Props.sack(g, sk[0], float(sk[1]), 0.95)
+	for i3: int in 10:
+		Props.ball(g, Vector3(6.3 + rng.randf_range(-0.8, 1.4), cy + 0.05, 4.05 + rng.randf_range(-0.3, 0.1)), Vector3(0.09, 0.07, 0.08), "dirt")
+	Props.cyl(g, Vector3(8.2, top - 0.15, 2.4), 0.035, 4.6, "beam", Vector3(0, 0, 90))   # the meat pole
+	for hx: float in [6.3, 7.0, 7.9, 8.8, 9.6]:
+		Props._noshadow(Props.block(g, Vector3(hx - 0.006, cy + 2.15, 2.394), Vector3(hx + 0.006, top - 0.15, 2.406), "rope"))
+		Props.ball(g, Vector3(hx, cy + 1.95, 2.4), Vector3(0.24, 0.44, 0.2), "wood_red")
+		Props.ball(g, Vector3(hx, cy + 2.15, 2.4), Vector3(0.1, 0.1, 0.1), "linen")
+	for oz: float in [5.3, 5.6]:   # onion strings on the east wall
+		for oy: int in 6:
+			Props.ball(g, Vector3(10.66, cy + 1.2 + oy * 0.1, oz), Vector3(0.08, 0.07, 0.08), "paper_old")
+	Props.cobweb(g, Vector3(10.75, top - 0.02, 0.15), 270.0, 0.8)
+	Props.puddle(g, Vector3(9.5, cy, 3.3), 0.7, 0.5, 10.0)
+	# ---------------- the ice cellar: three straw pallets, the upturned crate with the letter and the lantern burnt
+	# dry, a jam jar, red-grey mittens, the ladder to the trapdoor, three chalk girls holding hands and the aunt
+	for px: float in [5.6, 6.32, 7.04]:
+		Props.block(g, Vector3(px - 0.32, cy, 6.2), Vector3(px + 0.32, cy + 0.1, 7.8), "hay")
+		Props.block(g, Vector3(px - 0.3, cy + 0.1, 6.9), Vector3(px + 0.3, cy + 0.14, 7.75), "linen")
+	Props.block(g, Vector3(5.42, cy + 0.14, 6.95), Vector3(5.55, cy + 0.17, 7.15), "cloth_red")   # the mittens
+	Props.block(g, Vector3(5.58, cy + 0.14, 7.0), Vector3(5.71, cy + 0.17, 7.2), "tarp")
+	var ic: Node3D = Props.group(g, "UpturnedCrate", Vector3(7.75, cy, 7.4), 6.0)
+	Props.block(ic, Vector3(-0.3, 0, -0.3), Vector3(0.3, 0.4, 0.3), "planks")
+	Props.block(g, Vector3(7.5, cy + 0.4, 7.25), Vector3(7.68, cy + 0.405, 7.5), "paper")   # the letter
+	Props.block(g, Vector3(7.82, cy + 0.4, 7.25), Vector3(7.98, cy + 0.42, 7.41), "iron")   # the lantern, burnt dry
+	Props.block(g, Vector3(7.84, cy + 0.42, 7.27), Vector3(7.96, cy + 0.6, 7.39), "char")
+	Props.cyl(g, Vector3(7.95, cy + 0.47, 7.6), 0.05, 0.12, "jar_red")
+	Props.ladder(g, Vector3(6.6, cy, 5.15), 180.0, top - cy, "beam")
+	var hz: Vector3 = Vector3(6.6, top - 0.005, 5.6)
+	for e: Array in [[Vector3(-0.5, -0.06, -0.5), Vector3(0.5, 0, -0.42)], [Vector3(-0.5, -0.06, 0.42), Vector3(0.5, 0, 0.5)],
+			[Vector3(-0.5, -0.06, -0.42), Vector3(-0.42, 0, 0.42)], [Vector3(0.42, -0.06, -0.42), Vector3(0.5, 0, 0.42)]]:
+		Props.block(g, hz + (e[0] as Vector3), hz + (e[1] as Vector3), "beam")
+	Props.block(g, hz + Vector3(-0.42, -0.03, -0.42), hz + Vector3(0.42, 0, 0.42), "window_dark")
+	for k2: int in 3:
+		_chalk_figure(g, Vector3(8.14, cy + 0.8, 6.0 + k2 * 0.3), 90.0, 0.5)
+	_chalk_figure(g, Vector3(8.14, cy + 0.75, 7.6), 90.0, 0.75)
+	Props.stencil(g, Vector3(6.6, cy + 2.55, 5.16), 180.0, "EIS", 40, Color(0.75, 0.75, 0.72, 0.4), 0.004)
+	Props.puddle(g, Vector3(6.4, cy, 5.9), 0.6, 0.45, 0.0)
+	Props.cobweb(g, Vector3(8.15, top - 0.02, 7.85), 180.0, 0.6)
+	# ---------------- the barrel vault: joists and summer beams, the pillars, the barrel stack, racks, the breach
+	for x: float in [11.6, 12.8, 14.0, 15.2, 16.4, 17.6, 18.8, 20.0, 21.2, 22.4, 23.6]:
+		Props.block(g, Vector3(x - 0.07, top - 0.17, 0.15), Vector3(x + 0.07, top, 15.85), "beam")
+	for bz: float in [2.7, 13.3]:
+		Props.block(g, Vector3(11.05, top - 0.36, bz - 0.17), Vector3(23.85, top - 0.17, bz + 0.17), "beam")
+	for x2: float in [1.2, 2.4, 3.6, 4.8, 6.0, 7.2, 8.4, 9.6]:   # the root and coal rooms' joists too
+		Props.block(g, Vector3(x2 - 0.06, top - 0.14, 0.15), Vector3(x2 + 0.06, top, 4.85 if x2 > 5.0 and x2 < 8.3 else 7.85), "beam")
+	for p3: Vector2 in OC_PILLARS:
+		Props.block(g, Vector3(p3.x - 0.44, cy, p3.y - 0.44), Vector3(p3.x + 0.44, cy + 0.4, p3.y + 0.44), "cellar_stone")
+		Props.block(g, Vector3(p3.x - 0.42, top - 0.5, p3.y - 0.42), Vector3(p3.x + 0.42, top - 0.36, p3.y + 0.42), "cellar_stone")
+	var st: Rect2 = OC_STACK
+	var sx: float = st.get_center().x
+	for row: Array in [[0.0, [6.95, 8.0, 9.05], 0.52], [0.93, [7.47, 8.52], 0.52], [1.72, [8.0], 0.48]]:   # [lift, z centres, r]
+		for zc: float in row[1]:
+			for side: float in [-0.78, 0.78]:
+				Props.barrel(g, Vector3(sx + side, cy + float(row[0]), zc), 90.0, float(row[2]), 1.45, true)
+	for cz2: float in [6.5, 9.5]:   # the cradles
+		Props.block(g, Vector3(st.position.x + 0.1, cy, cz2 - 0.08), Vector3(st.end.x - 0.1, cy + 0.2, cz2 + 0.08), "beam")
+	Props.stencil(g, Vector3(sx - 1.56, cy + 0.6, 8.0), 90.0, "KREUZWEG\nHAUSWEIN", 32, Color(0.92, 0.9, 0.85, 0.65), 0.004)
+	Props.stencil(g, Vector3(sx + 1.56, cy + 0.6, 8.0), -90.0, "1942", 40, Color(0.92, 0.9, 0.85, 0.65), 0.004)
+	for kb: Vector3 in [Vector3(15.55, cy, 6.1), Vector3(19.35, cy, 9.9), Vector3(19.4, cy, 6.15)]:
+		Props.barrel(g, kb, rng.randf_range(0, 90), 0.24, 0.55)
+	Props.lantern(g, Vector3(13.4, cy + 2.35, 8.0), top - 0.17)
+	Props.lantern(g, Vector3(21.6, cy + 2.35, 8.0), top - 0.17)
+	for bp: Vector3 in OC_BULBS:
+		Props.pendant(g, bp, top - 0.02, _old_cellar_lit, "tin")
+	Props.bake(_old_cellar_lit)
+	for lit: Node in _old_cellar_lit.get_children():
+		lit.set_meta("keep", true)
+	_wine_rack(g, Vector3(23.85, cy, 7.0), 90.0, 5.2, 6, 56)
+	_wine_rack(g, Vector3(17.45, cy, 15.85), 0.0, 3.7, 6, 57)
+	Props.block(g, Vector3(11.05, cy + 0.5, 0.15), Vector3(13.15, top, 0.17), "char")   # the hearth footing's soot
+	Props.stencil(g, Vector3(13.16, cy + 1.6, 0.75), -90.0, "KAMIN", 32, Color(0.85, 0.82, 0.75, 0.45), 0.004)
+	Props.puddle(g, Vector3(20.6, cy, 4.4), 1.0, 0.7, 25.0)
+	Props.puddle(g, Vector3(13.0, cy, 12.2), 0.9, 0.6, -30.0)
+	for c2: Array in [[Vector3(23.85, top - 0.02, 15.85), 180.0], [Vector3(11.05, top - 0.02, 15.85), 90.0], [Vector3(23.85, top - 0.02, 0.15), 270.0]]:
+		Props.cobweb(g, c2[0], float(c2[1]), 0.9)
+	# the breach the installers knocked through: rubble at the jambs, two pit props, the cable run, a chalk arrow
+	for rb: Vector3 in [Vector3(21.25, cy, 16.3), Vector3(23.6, cy, 16.4), Vector3(23.7, cy, 18.9), Vector3(21.2, cy, 20.9)]:
+		Props.ball(g, rb, Vector3(0.7, 0.35, 0.6), "brick_cellar")
+	Props.pit_prop(g, Vector3(22.45, cy, 16.15), 0.0, 2.9, top - cy, "pine")
+	Props.pit_prop(g, Vector3(22.45, cy, 19.5), 90.0, 3.0, top - cy, "pine")
+	Props.cable(g, Vector3(23.8, top - 0.1, 20.3), Vector3(21.1, top - 0.1, 18.0), 0.08, 0.02, 8)
+	Props.cable(g, Vector3(21.1, top - 0.1, 18.0), Vector3(21.1, top - 0.1, 15.0), 0.08, 0.02, 6)
+	Props.stencil(g, Vector3(20.86 + 0.16, cy + 1.6, 18.6), -90.0, "→ HELVETIA\nKELLER II", 30, Color(0.92, 0.92, 0.88, 0.55), 0.004)
+	Props.bulkhead_lamp(g, Vector3(23.83, cy + 2.1, 18.3), 90.0)
+	# ---------------- the windows: timber frames in the openings, snow blown in under them, the light wells
+	for wf: Array in [[Vector3(3.45, wy, 0.0), 0.0], [Vector3(24.0, wy, 1.8), -90.0]]:
+		var fg: Node3D = Props.group(g, "WellWindow", wf[0], float(wf[1]))   # local +Z = into the room
+		for side: float in [-1.0, 1.0]:
+			Props.block(fg, Vector3(side * 0.8 - 0.07, OC_SILL - 0.03, -0.17), Vector3(side * 0.8 + 0.07, OC_WIN_H + 0.06, 0.17), "beam")
+		Props.block(fg, Vector3(-0.87, OC_WIN_H, -0.17), Vector3(0.87, OC_WIN_H + 0.09, 0.17), "beam")
+		Props.block(fg, Vector3(-0.87, OC_SILL - 0.05, -0.2), Vector3(0.87, OC_SILL, 0.22), "beam")
+		Props.block(fg, Vector3(-0.75, OC_SILL, -0.6), Vector3(0.75, OC_SILL + 0.06, -0.17), "snow")
+		Props.ball(fg, Vector3(0.1, cy - wy, 0.75), Vector3(1.2, 0.12, 0.8), "snow")   # blown in, on the room floor
+	for ws: Array in [[2.0, 4.9, -2.15, -4.65], [24.15, 26.2, 0.4, -2.1]]:   # stone steps up out of each well
+		var steps: int = int(ceil(-wy / 0.2))
+		for k4: int in steps:
+			var za: float = lerpf(float(ws[2]), float(ws[3]), float(k4) / float(steps))
+			var zb: float = lerpf(float(ws[2]), float(ws[3]), float(k4 + 1) / float(steps))
+			var yb: float = lerpf(wy, 0.0, float(k4 + 1) / float(steps))
+			Props.block(g, Vector3(float(ws[0]), wy - 0.3, minf(za, zb)), Vector3(float(ws[1]), yb - 0.04, maxf(za, zb)), "stone")
+			Props.block(g, Vector3(float(ws[0]) + 0.1, yb - 0.04, minf(za, zb)), Vector3(float(ws[1]) - 0.1, yb, maxf(za, zb)), "snow_trodden", false)
+	for curb: Array in [[Vector3(1.8, 0, -4.65), Vector3(2.0, 0.18, -0.15)], [Vector3(4.9, 0, -4.65), Vector3(5.1, 0.18, -0.15)],
+			[Vector3(26.2, 0, -2.1), Vector3(26.4, 0.18, 3.4)], [Vector3(24.0, 0, 3.2), Vector3(26.4, 0.18, 3.4)]]:
+		Props.block(g, curb[0], curb[1], "cellar_stone")
+	Props.snow_drift(g, Vector3(3.45, wy, -1.9), Vector3(2.6, 0.35, 0.6))
+	Props.snow_drift(g, Vector3(25.9, wy, 2.6), Vector3(0.6, 0.35, 1.6))
 
 
 ## The Crucible's alcove on the cellar's north wall (the Crucible itself is a gameplay node, build_cellar_gameplay):
@@ -1104,7 +1522,7 @@ func _dress_exterior() -> void:
 		Props.block(g, Vector3(x - 0.13, 0, -0.27), Vector3(x + 0.13, UP_TOP, -0.15), "beam")
 	for y: float in [0.25, TAP_H, UP_TOP - 0.1]:
 		Props.block(g, Vector3(-0.27, y - 0.12, -0.27), Vector3(24.27, y + 0.12, -0.15), "beam")
-		Props.block(g, Vector3(-0.27, y - 0.12, -0.15), Vector3(-0.15, y + 0.12, 16.15), "beam")
+		Props.block(g, Vector3(-0.27, y - 0.12, -0.15), Vector3(-0.15, y + 0.12, 16.15 if y > 3.0 else 7.85), "beam")   # (the Old Cellar's lean-to covers z 7.85+)
 		if y < 1.0:   # the cellar door (z 10.7..12.3) breaks the sill beam
 			Props.block(g, Vector3(24.15, y - 0.12, -0.15), Vector3(24.27, y + 0.12, 10.6), "beam")
 			Props.block(g, Vector3(24.15, y - 0.12, 12.4), Vector3(24.27, y + 0.12, 16.15), "beam")
@@ -1121,7 +1539,7 @@ func _dress_exterior() -> void:
 	Props.block(g, Vector3(11.2, 11.3, -0.1), Vector3(12.8, 11.5, 1.1), "snow")
 	Props.smoke(g, Vector3(12.0, 11.6, 0.5), 0.3, 1.2, 14)
 	# porch posts' snow caps and drifts against the walls
-	for d: Array in [[Vector3(-1.2, 0, 6), Vector3(2.4, 0.9, 7)], [Vector3(25.4, 0, 3), Vector3(2.0, 0.8, 5)], [Vector3(12, 0, -1.0), Vector3(6, 0.7, 1.8)],
+	for d: Array in [[Vector3(-1.2, 0, 5.4), Vector3(2.4, 0.9, 4.4)], [Vector3(25.4, 0, 5.3), Vector3(2.0, 0.8, 3.0)], [Vector3(12, 0, -1.0), Vector3(6, 0.7, 1.8)],   # (clear of the lean-to and the light wells, T-051)
 			[Vector3(4, 0, 17.5), Vector3(5, 1.0, 2.2)], [Vector3(25.3, 0.25, 27), Vector3(2.2, 0.8, 8)], [Vector3(11, 0, 35.4), Vector3(8, 1.0, 2.2)],   # kept above the cellar ceiling
 			[Vector3(4.6, 0, 28), Vector3(2.4, 1.0, 9)], [Vector3(-3, 0, -6), Vector3(5, 0.6, 4)], [Vector3(32, 0, 7), Vector3(6, 0.8, 5)]]:
 		Props.snow_drift(g, d[0], d[1])
@@ -1588,7 +2006,7 @@ func build_gameplay() -> void:
 
 	# wall-buys: [weapon, position, yaw so local -Z faces the room]. Nudged off the wall past the timber trim.
 	var buys: Array = [
-		[&"kar98k", Vector3(T * 0.5 + 0.04, 1.5, 8.6), -90.0],
+		[&"kar98k", Vector3(T * 0.5 + 0.04, 1.5, 3.1), -90.0],   # moved from z 8.6 for the Old Cellar door (T-051)
 		[&"m1_garand", Vector3(24 - T * 0.5 - 0.04, 1.5, 4.0), 90.0],   # moved from z 12.5 for the cellar door (T-027)
 		[&"mp40", Vector3(T * 0.5 + 0.04, UP_Y + 1.5, 3.4), -90.0],
 		[&"trench_gun", Vector3(6 + T * 0.5 + 0.01, 1.5, 29.5), -90.0],
@@ -1653,7 +2071,8 @@ func build_gameplay() -> void:
 func build_cellar_gameplay() -> void:
 	var cy: float = CELLAR_Y
 	var d3: Node3D = _scripted(Node3D.new(), "res://gravelight/world/door.gd", "Door_Cellar", {
-		"door_id": &"door_cellar", "opens_zone": &"CELLAR", "cost": 1500, "size": Vector3(1.6, DOOR_H, 0.25), "label": "Cellar"})
+		"door_id": &"door_cellar", "opens_zone": &"CELLAR", "cost": 1500, "size": Vector3(1.6, DOOR_H, 0.25), "label": "Cellar",
+		"link_group": &"cellar"})   # opens with the Old Cellar's breach door (T-051)
 	d3.position = Vector3(24.0, 0, 11.5)
 	d3.rotation.y = deg_to_rad(90)
 	gameplay.add_child(d3)
@@ -1673,7 +2092,7 @@ func build_cellar_gameplay() -> void:
 	cru.rotation.y = deg_to_rad(180.0)
 	gameplay.add_child(cru)
 	var sw: Node3D = _scripted(Node3D.new(), "res://gravelight/world/power_switch.gd", "Kellerschalter", {
-		"config_table": "map00", "label": "the cellar lever", "zone_order": PackedStringArray(["CELLAR", "TAPROOM", "UPSTAIRS", "STABLE"])})
+		"config_table": "map00", "label": "the cellar lever", "zone_order": PackedStringArray(["CELLAR", "OLD_CELLAR", "TAPROOM", "UPSTAIRS", "STABLE"])})
 	sw.position = Vector3(32.5, cy + 0.3, 19.35)
 	sw.rotation.y = deg_to_rad(180)
 	gameplay.add_child(sw)
@@ -1712,4 +2131,160 @@ func build_cellar_gameplay() -> void:
 		mk.position = bp
 		mk.add_to_group(&"power_burst_points", true)
 		gameplay.add_child(mk)
+	build_old_cellar_gameplay()
+
+
+## The Old Cellar's gameplay (T-051): Door 5, the breach door to the Helvetia cellar (linked with Door 3), the zone,
+## the two light-well windows and their field spawns, the Gewehr 43, the ammo-box spot, the holding cell's nodes
+## for Jakub (section 6.2), the ice cellar's seal and markers for HB1, drips, lanterns and the power bulbs.
+func build_old_cellar_gameplay() -> void:
+	var cy: float = CELLAR_Y
+	var top: float = CELLAR_TOP
+	var d5: Node3D = _scripted(Node3D.new(), "res://gravelight/world/door.gd", "Door_OldCellar", {
+		"door_id": &"door_old_cellar", "opens_zone": &"OLD_CELLAR", "cost": 1250, "size": Vector3(1.6, DOOR_H, 0.25), "label": "Old Cellar"})
+	d5.position = Vector3(0.0, 0, 9.05)
+	d5.rotation.y = deg_to_rad(90)
+	gameplay.add_child(d5)
+	var dl: Node3D = _scripted(Node3D.new(), "res://gravelight/world/door.gd", "Door_CellarLink", {
+		"door_id": &"door_cellar_link", "opens_zone": &"CELLAR", "cost": 1500, "size": Vector3(1.6, DOOR_H, 0.25), "label": "Cellar",
+		"link_group": &"cellar"})
+	dl.position = Vector3(24.0, cy, 20.25)
+	dl.rotation.y = deg_to_rad(90)
+	gameplay.add_child(dl)
+	# zone volumes: under the taproom, the wine cellar's south bay, the breach, the stair lean-to (tops kept under
+	# the taproom's floor, so the taproom above is not "old cellar")
+	for z: Array in [[Vector3(12.0, cy, 8.0), Vector3(24.0, 2.7, 16.0)], [Vector3(5.45, cy, 17.25), Vector3(10.9, 2.7, 2.5)],
+			[Vector3(22.43, cy, 18.7), Vector3(3.15, 2.7, 5.2)], [Vector3(-1.5, cy, 13.25), Vector3(3.0, 6.0, 10.5)]]:
+		var zv: Node3D = _scripted(Node3D.new(), "res://gravelight/world/zone_volume.gd", "Zone_OLD_CELLAR", {"zone_id": &"OLD_CELLAR", "size": z[1]})
+		zv.position = z[0]
+		gameplay.add_child(zv)
+	# the light-well windows: half-height crawl-ins, the room floor 1.9 m below the sill (Barricade.inside_drop);
+	# [id, origin on the well floor at the wall line, inward yaw, field spawn at the top of the well steps]
+	for w: Array in [["W_CEL_COAL", Vector3(3.45, OC_WELL_Y, 0.0), 0.0, Vector3(3.45, 0, -7.5)],
+			["W_CEL_VAULT", Vector3(24.0, OC_WELL_Y, 1.8), -90.0, Vector3(25.2, 0, -5.5)]]:
+		var bar: Node3D = _scripted(Node3D.new(), "res://gravelight/world/barricade.gd", str(w[0]), {
+			"window_id": StringName(str(w[0])), "zone_id": &"OLD_CELLAR", "width": 1.6, "sill_height": OC_SILL,
+			"top_height": OC_WIN_H, "inside_drop": OC_WELL_Y - cy})
+		bar.position = w[1]
+		bar.rotation.y = deg_to_rad(float(w[2]))
+		gameplay.add_child(bar)
+		var sp: Marker3D = _scripted(Marker3D.new(), "res://gravelight/enemies/zombie_spawn.gd", "Spawn_" + str(w[0]), {
+			"zone_id": &"OLD_CELLAR", "window_path": NodePath("../" + str(w[0])), "kind": &"window"}) as Marker3D
+		sp.position = w[3]
+		gameplay.add_child(sp)
+	# the wall-buy: the M1 Garand (taproom) and the Thompson (yard) are already on the map, so the patrol's Gewehr 43
+	# hangs on the vault's west wall, facing the loop
+	var wb: Node3D = _scripted(Node3D.new(), "res://gravelight/world/wall_buy.gd", "WallBuy_gewehr43", {"weapon_id": &"gewehr43"})
+	wb.position = Vector3(10.9 + T * 0.5 + 0.04, cy + 1.5, 6.6)
+	wb.rotation.y = deg_to_rad(-90)
+	gameplay.add_child(wb)
+	var bl: OmniLight3D = OmniLight3D.new()
+	bl.name = "BuyLight"
+	bl.light_color = Color(1.0, 0.8, 0.55)
+	bl.light_energy = 0.6
+	bl.omni_range = 1.8
+	bl.position = wb.position + Vector3(0.5, 0.75, 0)
+	gameplay.add_child(bl)
+	# the ammo box's spot (section 4's AmmoBox lands on another branch: the orchestrator swaps this marker for an
+	# AMMO_BOXES entry ["Cellar", position, 0.0]); on the vault's south wall, away from the machines and the Crucible
+	var ab: Marker3D = Marker3D.new()
+	ab.name = "AmmoBoxSpot_Cellar"
+	ab.position = Vector3(14.6, cy, 15.5)
+	ab.set_meta("yaw", 0.0)
+	ab.add_to_group(&"ammo_box_spot", true)
+	gameplay.add_child(ab)
+	# the holding cell (section 6.2): the cage's hinged door is a HoldingCage (origin on the hinge, local +X along the
+	# door, local -Z out of the cage); Jakub stands inside at JakubSpawn and waits by the cage at JakubWait
+	var cage: Node3D = _scripted(Node3D.new(), "res://gravelight/world/holding_cage.gd", "JakubCage", {
+		"door_width": OC_CAGE_DOOR.y - OC_CAGE_DOOR.x, "door_height": top - cy})
+	cage.position = Vector3(OC_CAGE.end.x, cy, OC_CAGE_DOOR.x)
+	cage.rotation.y = deg_to_rad(-90)
+	gameplay.add_child(cage)
+	_cage_door(cage)
+	for m: Array in [["JakubSpawn", Vector3(1.25, cy, 4.9), 90.0], ["JakubWait", Vector3(3.95, cy, 6.3), -90.0]]:
+		var mk: Marker3D = Marker3D.new()
+		mk.name = str(m[0])
+		mk.position = m[1]
+		mk.rotation.y = deg_to_rad(float(m[2]))   # facing out of the cage / toward the cellar door
+		gameplay.add_child(mk)
+	var shovel: Node3D = Props.group(gameplay, "CoalShovel", Vector3(2.78, cy, 3.62), 0.0)
+	Props.obox(shovel, Vector3(0, 0.62, 0.08), Vector3(0.035, 1.1, 0.035), "beam", Vector3(-14, 0, 0))
+	Props.obox(shovel, Vector3(0, 0.08, -0.06), Vector3(0.26, 0.02, 0.3), "iron", Vector3(-14, 0, 0))
+	Props.obox(shovel, Vector3(0, 1.16, 0.22), Vector3(0.14, 0.04, 0.04), "beam", Vector3(-14, 0, 0))
+	# the ice cellar: bricked off from the coal room until the Cousins round is cleared (HB1 files the aunt's letter,
+	# INT_HB_01, on the clear; the seal falls in on that cue). Markers for HB1's letter, chalk figures and hatch.
+	var seal: Node3D = _scripted(Node3D.new(), "res://gravelight/world/sealed_passage.gd", "IceCellarSeal", {
+		"passage_id": &"ice_cellar", "size": Vector3(1.6, 2.0, 0.3), "open_on_intel": &"INT_HB_01"})
+	seal.position = Vector3(5.0, cy, 6.7)
+	seal.rotation.y = deg_to_rad(90)
+	gameplay.add_child(seal)
+	for m2: Array in [["IceCellarLetter", Vector3(7.55, cy + 0.42, 7.35)], ["IceCellarChalk", Vector3(8.13, cy + 1.25, 6.3)],
+			["IceCellarHatch", Vector3(6.6, top, 5.6)]]:
+		var mk2: Marker3D = Marker3D.new()
+		mk2.name = str(m2[0])
+		mk2.position = m2[1]
+		gameplay.add_child(mk2)
+	# water dripping from the vault and the wine cellar's arches (sound + a falling drop)
+	for dp: Vector3 in [Vector3(6.9, top - 0.02, 15.3), Vector3(1.7, top - 0.02, 11.4), Vector3(20.6, top - 0.02, 4.4), Vector3(9.5, top - 0.02, 3.3)]:
+		var drip: Node3D = _scripted(Node3D.new(), "res://gravelight/world/drip_point.gd", "Drip", {"height": top - 0.02 - cy})
+		drip.position = dp
+		gameplay.add_child(drip)
+	# lights: oil lanterns always lit (the stair, wine cellar, root cellar, the guard's lamp by the cage, the vault);
+	# bare bulbs over the loop and the wine cellar wait for the cellar lever (zone OLD_CELLAR in the sweep)
+	var warm: Color = Color(1.0, 0.68, 0.4)
+	for l: Array in [["OCStairLamp", Vector3(-1.5, 1.85, 12.6), 1.0, 7.0], ["OCStairFootLamp", Vector3(-2.45, cy + 2.1, 17.0), 0.9, 6.5],
+			["OCWineLamp", Vector3(5.4, cy + 1.95, 10.7), 1.25, 8.0], ["OCWineLamp2", Vector3(4.0, cy + 1.95, 16.0), 1.0, 7.0],
+			["OCRootLamp", Vector3(7.6, cy + 1.95, 2.7), 1.0, 6.5], ["OCCageLamp", Vector3(3.9, cy + 2.0, 3.9), 1.3, 7.0],
+			["OCVaultLamp", Vector3(13.4, cy + 2.05, 8.0), 1.2, 8.5], ["OCVaultLamp2", Vector3(21.6, cy + 2.05, 8.0), 1.2, 8.5],
+			["OCBreachLamp", Vector3(22.4, cy + 2.1, 19.6), 0.8, 6.0]]:
+		_lamp(str(l[0]), l[1], warm, float(l[2]), float(l[3]), false, true, 0.12)
+	for bp: Vector3 in OC_BULBS:
+		var b: OmniLight3D = OmniLight3D.new()
+		b.name = "OldCellarBulb"
+		b.position = bp - Vector3(0, 0.05, 0)
+		b.light_color = Color(1.0, 0.85, 0.6)
+		b.light_energy = 1.3
+		b.omni_range = 7.0
+		b.omni_attenuation = 1.4
+		b.visible = false
+		b.set_meta("zone", &"OLD_CELLAR")
+		b.set_meta("energy", 1.3)
+		b.add_to_group(&"power_lights", true)
+		map_root.add_child(b)
+		if _old_cellar_lit != null and _old_cellar_lit.get_parent() == dress:
+			dress.remove_child(_old_cellar_lit)
+			b.add_child(_old_cellar_lit)
+			_old_cellar_lit.position = -b.position
+	# cold moonlight down each light well, through the boards (the windows read from across the room)
+	for wp: Array in [[Vector3(3.45, 0.9, -2.2), Vector3(3.45, cy, 2.6)], [Vector3(26.0, 0.9, 1.8), Vector3(21.4, cy, 1.8)]]:
+		var sp2: SpotLight3D = SpotLight3D.new()
+		sp2.name = "WellMoonSpill"
+		sp2.light_color = Color(0.55, 0.65, 1.0)
+		sp2.light_energy = 2.0
+		sp2.light_volumetric_fog_energy = 1.5
+		sp2.spot_range = 8.0
+		sp2.spot_angle = 22.0
+		sp2.spot_attenuation = 1.1
+		map_root.add_child(sp2)
+		sp2.look_at_from_position(wp[0], wp[1], Vector3.UP)
+
+
+## The holding cell's door leaf under the HoldingCage (local frame: +X from the hinge to the latch, -Z out of the
+## cage): flat bars, two straps, the hinge knuckles, a hasp with a padlock. Kept off the static batch (meta "keep").
+func _cage_door(cage: Node3D) -> void:
+	var w: float = OC_CAGE_DOOR.y - OC_CAGE_DOOR.x
+	var h: float = CELLAR_TOP - CELLAR_Y
+	var hinge: Node3D = Props.group(cage, "Hinge", Vector3.ZERO)
+	var n: int = int(w / 0.13)
+	for k: int in n:
+		var x: float = 0.08 + float(k) * (w - 0.16) / float(maxi(1, n - 1))
+		Props.cyl(hinge, Vector3(x, h * 0.5, 0), 0.014, h - 0.06, "iron")
+	for y: float in [0.12, 1.05, h - 0.12]:
+		Props.block(hinge, Vector3(0.0, y - 0.03, -0.02), Vector3(w, y + 0.03, 0.02), "iron")
+	for y2: float in [0.4, h - 0.5]:
+		Props.cyl(hinge, Vector3(0.0, y2, 0), 0.03, 0.14, "iron")
+	Props.block(hinge, Vector3(w - 0.12, 1.0, -0.05), Vector3(w - 0.02, 1.12, 0.0), "iron")   # the hasp
+	Props.block(hinge, Vector3(w - 0.1, 0.86, -0.07), Vector3(w - 0.03, 0.98, -0.04), "brass")   # the padlock
+	for m: Node in hinge.find_children("*", "MeshInstance3D", true, false):
+		m.set_meta("keep", true)
 

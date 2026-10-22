@@ -93,7 +93,19 @@ func _check_paths() -> void:
 		["yard -> round the well and the cart", Vector3(8, 0, 36), Vector3(31, 0, 46), true],
 		["yard -> the field (must NOT connect)", Vector3(18, 0, 41), Vector3(18, 0, 56), false],
 		["yard -> the cellar's roof (must NOT connect)", Vector3(18, 0, 41), Vector3(30, 0, 22), false],
+		# the Old Cellar (Update 02 section 6.1, T-051)
+		["taproom -> the Old Cellar's barrel vault", Vector3(14, 0, 8), Vector3(17.45, -3.2, 4.5), true],
+		["vault -> the Helvetia cellar (the breach)", Vector3(13, -3.2, 12), Vector3(30, -3.2, 25), true],
+		["the lean-to landing -> the wine cellar", Vector3(-1.5, 0, 9.0), Vector3(5, -3.2, 15), true],
+		["wine cellar -> root cellar -> vault", Vector3(5, -3.2, 10), Vector3(14, -3.2, 2.5), true],
+		["coal room -> into the cage (door gap)", Vector3(3.6, -3.2, 6.0), Vector3(1.25, -3.2, 4.9), true],
+		["coal room -> the ice cellar (behind the seal)", Vector3(3.6, -3.2, 6.8), Vector3(6.6, -3.2, 6.6), true],
+		["field -> the coal-chute light well", Vector3(3.45, 0, -8), Vector3(3.45, -1.3, -1.0), true],
+		["field -> the vault's light well", Vector3(25, 0, -6), Vector3(25.0, -1.3, 1.8), true],
+		["coal well -> coal room (must NOT connect)", Vector3(3.45, -1.3, -1.0), Vector3(3.45, -3.2, 2.0), false],
+		["vault well -> vault (must NOT connect)", Vector3(25, -1.3, 1.8), Vector3(22, -3.2, 1.8), false],
 	]
+	_check_loop(map_rid)
 	for c: Array in checks:
 		var path: PackedVector3Array = NavigationServer3D.map_get_path(map_rid, c[1], c[2], true)
 		var end_ok: bool = not path.is_empty() and path[path.size() - 1].distance_to(c[2]) < 1.0
@@ -101,3 +113,34 @@ func _check_paths() -> void:
 		print("[smoke] path %-44s %s (points %d, end %s)" % [c[0], "ok" if ok else "WRONG", path.size(), str(path[path.size() - 1]) if not path.is_empty() else "-"])
 		if not ok:
 			_fails.append("path check: " + str(c[0]))
+
+
+## T-051: the Old Cellar's training loop round the barrel stack. Every sample on the ring (one per corridor, 2 m
+## off the stack) is on the navmesh, the four link up in order, and each corridor is at least 2.2 m wide (casts
+## both ways across it against the collision shell).
+func _check_loop(map_rid: RID) -> void:
+	var ring: Array[Vector3] = [Vector3(13.6, -3.2, 8.0), Vector3(17.45, -3.2, 4.7), Vector3(21.2, -3.2, 8.0), Vector3(17.45, -3.2, 11.4)]
+	var axes: Array[Vector3] = [Vector3.RIGHT, Vector3.BACK, Vector3.RIGHT, Vector3.BACK]
+	var space: PhysicsDirectSpaceState3D = _map.get_world_3d().direct_space_state
+	var ok: bool = true
+	var widths: PackedStringArray = []
+	for i: int in ring.size():
+		var a: Vector3 = ring[i]
+		var b: Vector3 = ring[(i + 1) % ring.size()]
+		if NavigationServer3D.map_get_closest_point(map_rid, a).distance_to(a + Vector3(0, 0.5, 0)) > 0.6:
+			ok = false
+		var path: PackedVector3Array = NavigationServer3D.map_get_path(map_rid, a, b, true)
+		if path.is_empty() or path[path.size() - 1].distance_to(b) > 1.0:
+			ok = false
+		var w: float = 0.0
+		for s: float in [1.0, -1.0]:
+			var from: Vector3 = a + Vector3.UP * 1.0
+			var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, from + axes[i] * s * 8.0, 1)
+			var hit: Dictionary = space.intersect_ray(q)
+			w += 8.0 if hit.is_empty() else from.distance_to(hit["position"])
+		widths.append("%.1f" % w)
+		if w < 2.2:
+			ok = false
+	print("[smoke] Old Cellar loop round the barrel stack (widths %s m) %s" % [", ".join(widths), "ok" if ok else "WRONG"])
+	if not ok:
+		_fails.append("the Old Cellar's training loop")

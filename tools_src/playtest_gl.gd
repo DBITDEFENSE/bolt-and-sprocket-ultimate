@@ -489,7 +489,7 @@ func _build_waypoints() -> void:
 	var c: Vector3 = player.global_position
 	for x: int in range(-30, 31, 2):
 		for z: int in range(-30, 31, 2):
-			for y: float in [c.y, c.y + 3.5]:
+			for y: float in [c.y, c.y + 3.5, c.y - 3.2]:   # the floors above and the cellars below (T-051)
 				var p: Vector3 = NavigationServer3D.map_get_closest_point(nav, c + Vector3(x, y - c.y, z))
 				if p.distance_to(c + Vector3(x, y - c.y, z)) < 1.2:
 					var dup: bool = false
@@ -585,7 +585,7 @@ func _retreat(zs: Array[Zombie]) -> void:
 		var cands: Array = []
 		for w: Vector3 in _waypoints:
 			var d: float = w.distance_to(me)
-			if d < 2.5 or d > 12.0 or absf(w.y - me.y) > 2.5:
+			if d < 2.5 or d > 12.0 or absf(w.y - me.y) > 2.5 or _in_closed_doorway(w):
 				continue
 			var openness: float = float(_open_n.get(w, 0)) / float(max_open)
 			if openness < float(tier[0]):
@@ -605,10 +605,24 @@ func _retreat(zs: Array[Zombie]) -> void:
 				continue
 			_path_to(c[1])
 			return
-	# truly boxed in: back straight away from the nearest one (the stick, no path)
-	_path = PackedVector3Array([me, me + away * 2.0])
+	# truly boxed in: back straight away from the nearest one, as far as the navmesh goes (not into a wall)
+	var back: Vector3 = NavigationServer3D.map_get_closest_point(player.get_world_3d().navigation_map, me + away * 2.0)
+	_path = PackedVector3Array([me, back])
 	_path_i = 1
 	_repath_t = 0.3
+
+
+## A waypoint standing in a shut door's opening (the navmesh runs through doors: they aren't baked), where a
+## retreat would walk into the door (T-051: the stair vestibule's Door 1 stuck reports).
+func _in_closed_doorway(w: Vector3) -> bool:
+	for n: Node in get_tree().get_nodes_in_group(&"doors"):
+		var d: BuyDoor = n as BuyDoor
+		if d == null or d.is_open:
+			continue
+		var local: Vector3 = d.global_transform.affine_inverse() * w
+		if absf(local.x) < d.size.x * 0.5 + 0.6 and absf(local.z) < 1.2 and absf(local.y) < 2.0:
+			return true
+	return false
 
 
 func _path_brushes_zombie(path: PackedVector3Array, zs: Array[Zombie], radius: float) -> bool:
