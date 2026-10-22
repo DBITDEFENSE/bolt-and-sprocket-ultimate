@@ -133,6 +133,15 @@ Each milestone ends with: tests passing headless, the game launched and played, 
 - **Verdant Sink (T-039)** is the first M4 planet built and playable end to end: the Sprocket Glide, murk pools and bounce mushrooms, the four Verdant enemies and the neutral Picket Corn, the Compost King with the mercy ending, all six story beats, q7a/q7b, the Picket Line pop-up. 26 unit tests, `smoke_verdant` passes. Open follow-ups are listed in DECISIONS T-039.
 - Still to build: Glacius Vault (Grind Soles), the Grand Galleria, Core Foundry, the ending.
 
+## Update 02 (polish) and Update 03 (smarter bots): done 2026-10-22, tag `u02-u03`
+
+Work orders `UPDATE_02_POLISH.md` and `UPDATE_03_BOT_AI.md`. U02: feel (T-046), ADS by sight markers (T-047),
+Totenglocke rebuild (T-048), ammo boxes on every built map (T-049), bot bonus perk / looks / plates / wheel (T-050),
+the Old Cellar + Jakub (T-051), Map 0's living world (T-052), the room-by-room pass (T-053), follow-up fixes (T-057).
+U03: metrics + soak (T-054), utility brain (T-055), locomotion (T-056), tuning (T-058), deflake (T-059). Open: bots
+alone reach round ~10 (target 20–25, the Cousins are the wall); Jakub isn't replicated for online co-op; bots don't
+ride the Kaltenbrunn lift. Morgenrot and Helvetia Works get 4 ammo boxes and training routes when they're built.
+
 ## M3: Full B&S arsenal + Act 1–2
 All 16 weapons with V1–V5, mods and Signature Mods. Rustvane Canyon complete (Sentinel, Content Creator, GLAMBOT defection, Tether-Hook). The shield reveal. Nova Plaza complete (The Algorithm). The Omega Forge built and testable through the dev console.
 

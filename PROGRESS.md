@@ -1,6 +1,6 @@
 # PROGRESS
 
-RESUME HERE: Update 02 §1–§5, §6.1, §7, §8 merged to master (tag u02-sections). Running: U03 brain (u03-1-brain), U03 locomotion (u03-2-locomotion), U02 bug fixes (u02-fixes). Next: merge locomotion into the brain branch, then master; then U02 §6.2 Jakub on the new brain; then the morning report, Play.bat buttons, screenshots.
+RESUME HERE: Update 02 and Update 03 are finished and merged to master (tag u02-u03); read morning/MORNING_REPORT.md first. Open: the user's answers (Cousins vs bots-alone scaling, revive metric, Paul's unit, likeness placeholders, HUMOR-REVIEW). Next: HB1 extras, then HB2 PAUL on branch hb2-paul, then companion (Jakub) replication for online co-op.
 
 ## Overnight run, 2026-10-21 → 22: the plan
 
@@ -71,6 +71,11 @@ looks, nameplates, barks, command wheel work; behaviour moved to U03 · §6.1 Ol
 world (T-052) works · §8 polish (T-053) works. U03 §0/§9 metrics + baseline (T-054) works. Campaign carry fix for
 bot bonus perks (d22d640). GUT 651/651, every smoke passes.
 
+**Update 02 §6.2 + Update 03 (2026-10-22):** Jakub (T-051) works · U03 locomotion (T-056) works · U03 brain (T-055)
+works · U03 tuning (T-058) partly: bots alone reach round 10 (best 16), target 20–25; revives 96 % with a realistic
+player, 78 % with the do-nothing one · U02 follow-up fixes (T-057) · deflake (T-059). Final: GUT 729/729, all 27
+smokes pass, ads_check 44/44.
+
 - **Bots** (T-043, commit 33c1043): spawn kit (Thompson, Ironhide Stout, Second Wind) — works; local-AI planner bot
   (Ollama gemma3:27b) — works on Map 0's egg alone, Map 1's Requiem partly (power, doors, Totenglocke).
 - **MZ** (T-041 + review fixes, commit 8a7ae4f, tag `mz`) — works; GUT 525/525, all smokes pass.
@@ -82,7 +87,7 @@ bot bonus perks (d22d640). GUT 651/651, every smoke passes.
 - **Morning report:** `morning/MORNING_REPORT.md`.
 - Bolt & Sprocket: `delayed_blast.gd` freed-source script error (smoke_nova) fixed (35bdeac).
 
-## In progress
+## In progress (none: Update 02 + 03 done)
 
 Update 02 (started 2026-10-22 ~05:30). One branch + worktree (`.wt/<branch>`) per section, built in parallel,
 merged into master in the brief's order after GUT + smokes pass:

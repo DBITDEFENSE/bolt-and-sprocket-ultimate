@@ -41,7 +41,7 @@ Double-click **`Play.bat`**. The dev launcher opens; Esc in a match opens the pa
 | **U03 §10** Acceptance targets | **partly**: see the table below |
 | Bug fixes found along the way | **works**: zombies couldn't climb the Map 0 stairs from below (0/12 → 40/40); special-round zombies spawning on roofs; Peg's "Kaltenbrunn" line at the inn; lamp glass glowing in the Cousins blackout; bots getting a second bonus perk and an extra Thompson on a campaign arrival; a stuck bot that could never recover; two flaky tests |
 
-Tests at the end: TESTS_LINE
+Tests at the end: 729/729 unit tests, all 27 smoke tests pass (the Jakub smoke needed one last fix: his Cousins line was lost if he was down when they arrived), 0 script errors, all 44 guns pass the ADS check. Everything is merged into `master` (tags `u02-sections`, `u02-u03`).
 
 ## Bots: before and after (Update 03)
 Soak = 3 bots on Map 0, headless, Veteran, local AI off (`tools/ai_soak.sh`; full table in `docs/BOT_AI.md` §7).
