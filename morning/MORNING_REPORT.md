@@ -1,60 +1,117 @@
-# Morning report — overnight run, 2026-10-21 → 22
+# Morning report — Update 02 + Update 03, 2026-10-22
 
-Tonight added The Cousins round on Map 0, bots with a Thompson + Ironhide + Second Wind, one bot that runs on your
-local Gemma model and does the easter egg itself, the committed zombie animation upgrade, and a dev launcher.
+Every Update 02 section and the Update 03 bot rewrite are merged into `master` and launch. Bots now train, revive and
+stay out of your way, and Jakub breaks out at round 5. The Totenglocke is the strongest thing on Kaltenbrunn, ammo
+boxes are on every map, the Thompson's sights line up, and Map 0 has the Old Cellar, a war on the horizon and a
+room-by-room detail pass. Two Update 03 targets aren't met: bots alone reach about round 10, not 20–25, and revives
+with the do-nothing test player are at 78%, not above 85%.
 
 ## Play it
-Double-click **`Play.bat`** → the dev launcher opens.
-1. **"Boss test — The Cousins (Crossroads Inn, round 10)"**: tick God mode if you just want to watch. The lamps go
-   out, the Hammer comes down the stairs, the Reach 30 s later, Alix climbs out of a trapdoor behind the bar.
-2. **"GRAVELIGHT — Crossroads Inn"** with Bots = 2 and "One bot on local AI" ticked: Peg (the first bot) goes and does
-   the radio easter egg on her own, opening doors with her own Scrip, and talks in subtitles. Every bot spawns with a
-   Tommy gun, Ironhide Stout and Second Wind. (Needs Ollama, already installed; the game starts it. First decision
-   takes ~20–50 s while the model loads; until then she uses her built-in plan.)
-3. "Start at round" + God mode for late-round stuff; `Play.bat --menu` opens the normal hub.
+Double-click **`Play.bat`**. The dev launcher opens; Esc in a match opens the pause menu, ` opens the dev console.
+
+**Try this first**
+1. **"Map 0 — round 5 (Jakub)"**. The Old Cellar is open; round 5 is next. Go down when you hear him shouting, kill
+   the zombie at the cage, hold [F] on him, and pick *Give him a gun* or *Not yet*. Pick **Wren** in the Survivor box
+   for the quiet scene about her brother.
+2. **"Bot test — Map 0 round 15 (3 bots, you play)"**. Run the taproom loop and watch them train with you, revive,
+   call things out (with a ping on the spot), and step aside in doorways. Hold **T** for the command wheel. The
+   dev console command `ai_debug 1` shows what each bot is thinking.
+3. **"Kaltenbrunn — Totenglocke test"**. Tap fire for a quick toll, hold 1.5 s for the Great Toll, right-click for
+   the Bell Dome.
+4. **"Weapon range — ADS check"**. Aim the Thompson. `[` and `]` cycle every gun; a dot shows when you're fully
+   aimed.
+5. Any Map 0 match: sprint and press fire (it fires now), slide, vault the bar counter, shoot the bottles behind the
+   bar, and look out of the east window around round 6.
 
 ## What's done
-| Item | Status |
+| Section | Status |
 |---|---|
-| Bots spawn with Thompson + Ironhide Stout (Juggernog) + Second Wind (Quick Revive); perks return after a revive | **works** |
-| Local-AI bot (Ollama gemma3:27b) doing tasks + easter egg | **works** on Map 0 (egg done alone in ~84 s); **partly** on Map 1 (power, 6 doors, Totenglocke built; the rest of the Requiem needs you) |
-| MZ zombie animation upgrade + 8 review fixes | **works** (committed, tag `mz`) |
-| v3 Homage Bosses design docs | **done** (`docs/HOMAGE_BOSSES.md`) |
-| HB1 The Cousins (Map 0 round 10) | **partly works**: full round, all 3 cousins with core moves, rewards, toggles; missing extras below |
-| HB2 PAUL, HB3 THE SLENDER | **not started** (designed) |
-| Dev launcher, screenshot tool, smoke runner | **works** |
-| M0 / M1 / M2 from the brief | already done before tonight (tags m0–m2) |
+| **U02 §1** Movement & gunplay feel (accel/decel, sprint hold/toggle, sprint-out per class, no eaten inputs, vault, slide-fire, recoil patterns, bloom crosshair, hay footsteps, impacts) | **works** |
+| **U02 §2** Thompson ADS + SightPoint on every gun + `tools/ads_check.sh` (44/44 aligned) | **works** |
+| **U02 §3** Totenglocke "wind and toll" (tap / Great Toll / tolled marks / Bell Dome / shards / Mitternacht) | **works** |
+| **U02 §4** Ammo boxes (Map 0 ×3, Kaltenbrunn ×4, Totenhafen ×4; 250 / 2,500 / 1,000 / 4,000) | **works** |
+| **U02 §5** Bots: bonus perk, character looks and poses, nameplates, barks, command wheel | **works**; their behaviour moved to U03 |
+| **U02 §6.1** The Old Cellar (Door 5, 1250): wine cellar, coal cage, root cellar, ice cellar, barrel loop | **works** |
+| **U02 §6.2** Jakub (round-5 breakout, both choices, fights on the bot brain, downs, campaign carry, dossier, 106 lines) | **works**; not in online co-op yet (he stays caged) |
+| **U02 §7** Living world (terrain to the mountains, bombers, plane down, artillery, flares, crows, dog, frost, chimney) | **works** |
+| **U02 §8** Room-by-room polish (story props, wear, breakable bottles, swinging lamps, curtains, footprints, sound zones) | **works**; grime on window glass not done |
+| **U03 §0/§9** Bot metrics logger, scripted soak player, `tools/ai_soak.sh`, baseline | **works** |
+| **U03 §1–§8** Utility-AI brain, perception without wallhacks, aim layer, revive claims, economy, personalities, Recruit/Veteran/Elite, `ai_debug` overlay | **works** |
+| **U03 §3** Locomotion layer (bots use your movement code), training routes, personal space, stuck ladder | **works**; bots don't ride the Kaltenbrunn lift |
+| **U03 §10** Acceptance targets | **partly**: see the table below |
+| Bug fixes found along the way | **works**: zombies couldn't climb the Map 0 stairs from below (0/12 → 40/40); special-round zombies spawning on roofs; Peg's "Kaltenbrunn" line at the inn; lamp glass glowing in the Cousins blackout; bots getting a second bonus perk and an extra Thompson on a campaign arrival; a stuck bot that could never recover; two flaky tests |
 
-Tests at the end: 546/546 unit tests, all 21 smoke tests pass, 0 script errors. Everything is merged into `master`.
+Tests at the end: TESTS_LINE
 
-## Screenshots (local, not in git)
-- `morning/screenshots/hb1_cousins/` — cousins_1_trio, cousins_2_third_hand, cousins_3_title_card, cousins_4_hammer_and_bars
-- `morning/screenshots/overnight/` — map00/map01/map02 spawn + combat, the Screamer and the Foreman, Scrapheap, Verdant
+## Bots: before and after (Update 03)
+Soak = 3 bots on Map 0, headless, Veteran, local AI off (`tools/ai_soak.sh`; full table in `docs/BOT_AI.md` §7).
+
+| Metric | Before | After |
+|---|---|---|
+| Highest round, bots alone (mean / best) | 5.7 / 6 | **10.0 / 16** (19, 17, 12 with the homage bosses off) |
+| Highest round, with a scripted player who throws the power and buys perks | — | **12.7 / 18** |
+| Highest round, with the original do-nothing scripted player | 8.0 / 9 | 9.3 / 10 |
+| Revive success (realistic player / do-nothing player) | 83% | **96%** / 78% |
+| Revive success, bots alone | 0% | 71–91% |
+| Time stuck per run | 124 s | **2.4 s** |
+| Teleports | 0 | 0 |
+| Getting in your way (sustained) | 0 (25.7 short events/run) | **0** (0.5 short events/run) |
+| Kar98k bought after round 10 | 0 | 0 |
+| Empty-mag moments per minute | 9.5 | **2.9** |
+| Time on the pistol with a loaded gun | 683 s/run | **~0** |
+| Kills per minute | 14.7 | **26.0** |
+| Shots that hit | ~30% | **56%** |
+| Brain cost per bot | — | **0.22 ms** (budget 0.5) |
+
+## Clips and screenshots (local, not in git)
+- `morning/clips/u02/`: `s1_feel_before_after.mp4`, `s2_thompson_ads.mp4`, `s3_great.mp4` (12-zombie Great Toll,
+  round 16), `s3_dome.mp4` (revive under the dome), `s3_chain.mp4` (Mitternacht), `s3_r25.mp4`, `s6_jakub.mp4`,
+  `s7_sky.mp4` (bombers, plane down, barrage), `s8_polish.mp4`
+- `morning/clips/u03/`: `bots_train_r15.mp4` (training with the player, revive under pressure, ping),
+  `bots_cousins.mp4`, `s3_loco_train.mp4`
+- `morning/screenshots/ads/` (all 44 guns aimed, with the center dot) · `u02/<section>/` (before/after for §2, §6,
+  §8, every ammo box, the landscape from the spawn, the upstairs window, the stable and the field edge, bot bodies and
+  nameplates, Jakub) · `u03/` (AI debug overlay) · `u02_u03/` (fresh map shots)
 
 ## Decisions I made for you
-1. The local AI only picks the bot's *objective* every 4 s; aiming, moving and fighting stay in the normal bot code (a 1 s model can't aim, and a bad answer must never get the bot killed). If Ollama is off, it falls back to its own plan.
-2. Model order: gemma3:27b → gemma3:4b → gemma4:31b (27b ≈ 1.2 s a decision on your 5090).
-3. The AI bot won't start a Resonance Pylon unless you're near it (alone it died there and the pylon held the round open forever).
-4. Bots can still buy 2 more perks on top of the kit (perk limit raised 2 → 4).
-5. Cousins: the trapdoor is behind the bar (the canon ice cellar); bots count as "watching" Alix; Blackout/kill-all only take 25 % of a cousin's HP.
-6. Homage boss tuning is JSON (`data/gravelight/bosses/`), not `.tres`, like every other GRAVELIGHT table.
-7. `Play.bat` now opens the dev launcher (the old hub is one button away, or `Play.bat --menu`).
-8. Skipping to a later round also gives late-round Scrip, so round 10+ is playable from a skip.
-9. `master` is the main branch here (there is no `main`).
+1. Tuning stays in JSON (`data/gravelight/movement.json`, `data/gravelight/ai/*.json`), not `.tres`, like every other
+   GRAVELIGHT table.
+2. Godot tools live in `tools_src/`; `tools/ads_check.sh` and `tools/ai_soak.sh` are the wrappers.
+3. The Old Cellar has no new perk machines (all 9 are already in the Helvetia cellar); its wall gun is the Gewehr 43
+   (the Garand and Thompson are already on Map 0). It connects to the perk cellar through a breach that falls in once
+   both cellar doors are bought.
+4. Jakub breaks out at round 5 even if nobody opened the Old Cellar, and calls out until someone comes down. In pure
+   solo he can't revive you (solo rules stay); with bots or in co-op he can. A bled-out Jakub is out cold, never dead,
+   and comes back wounded on the next map.
+5. Bots never throw the power while a human is in the match. When bots play alone they lead themselves: they open
+   the path, throw the power and buy perks.
+6. The bot bonus perk is a trait for the whole campaign: it carries over, and isn't drawn again on the next map.
+7. The Totenglocke: the Bell Dome costs 2 charges and staggers each zombie once as it enters, so it visibly holds;
+   bosses take 3% / 10% of their health and are never shattered.
+8. Command wheel key is **T** (B is alt-fire).
+9. The war on the horizon sits to the east (the lore's front), and the midnight bell rings at round 9.
+10. Three of Jakub's lines name Kaltenbrunn as the place he escaped from, so they may play on any map.
 
 ## Needs you
-- **Paul's unit (D4):** the 82nd Airborne only reached the Ardennes on 18–19 Dec 1944, but Kaltenbrunn falls on 20 Dec. Pick: keep the 82nd and move his capture to Holland (Sept 1944), keep the Ardennes with a generic engineer unit, or tell me his unit.
-- **Likeness placeholders (8):** COUSIN_1_NAME (using "Mara"), COUSIN_2_NAME (using "Jo"), PAUL_SIGNATURE, PAUL_LASTNAME, PAUL_UNIT, PAUL_LETTER_DETAILS, DEVIN_SIGNATURE, DEVIN_LASTNAME. Edit `data/gravelight/bosses/likeness.json` or just tell me.
-- **HUMOR-REVIEW yes/no list:** `docs/M0_REVIEW.md` §A (6 items), if you haven't answered it yet.
-- Nothing is blocked.
+- **Bots alone vs. the Cousins:** the brief wants bots alone to reach round 20–25. They now get past round 10 in 2
+  of 10 runs; the Cousins at round 10 are the wall (with the homage bosses off they reach 12–19). Do you want the
+  Cousins to scale down for a bot-only squad, or keep them hard?
+- **Revives with the do-nothing test player** are at 78% (96% with a player who plays normally). Fine to judge it by
+  the realistic player?
+- Still open from last night: **Paul's unit** (D4), the **8 likeness placeholders**, and the **HUMOR-REVIEW** list
+  (`docs/M0_REVIEW.md` §A).
+- Jakub's canon (CANON §6.4): born 1901 in Wilcza Góra, tag KB-2210, he led Tomasz Nowak's gang in Gallery Nine, and
+  his chalk marks are Morgenrot's Witnesses' Marks. Change anything you don't like.
 
 ## Known bugs
-- Cousins in online co-op: clients see a plain zombie body, no title card; remote players are held but not dragged.
-- During the Cousins round the lamp meshes keep glowing while their lights are off; the taproom is very dark.
-- On Map 0, Peg says a "Kaltenbrunn" line (squad dialogue picks a Map 1 line).
-- The local-AI bot roams alone and can go down far from help on later rounds; Map 1's Requiem isn't finished without you.
-- Older: the Map 0 stair-head idle zombie; the Screamer has no head look-at / foot IK on the host.
+- Jakub stays caged in online co-op (companions aren't replicated yet).
+- The Bell Dome's +25% damage and pull only apply on the host in co-op.
+- Bots don't ride the Kaltenbrunn lift; with the realistic player they sometimes bump each other in the Crucible
+  alcove (51 s stuck per run there).
+- Bots on Kaltenbrunn still fire on the run at long range sometimes.
+- Grime on window glass not done; footprints don't sink into drifts; the falling plane's smoke reads light grey.
+- Older: Cousins visuals for online co-op clients; the Screamer has no head look-at.
 
 ## Next up
-HB1 extras (the Kinderhammer drop, the chalk room + free crate pull, the Reach's ceiling crawl / Window Spider / arm
-regrowth, the rhyme stems, co-op client visuals), then **HB2 PAUL** on Kaltenbrunn.
+HB1 extras (the Kinderhammer, the chalk room and its free crate pull, the Reach's ceiling crawl), then **HB2 PAUL**
+on Kaltenbrunn (needs Paul's unit), then companion replication for online co-op.

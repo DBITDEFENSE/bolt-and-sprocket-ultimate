@@ -295,6 +295,8 @@ func _case_give() -> void:
 		if jp.downed and Net.session.coop.bleed_left(jp.player_id) < 40.0:
 			_revive_jakub())
 	_check(jc.state == JakubCompanion.State.JOINED, "Jakub survives into the Cousins Round (%s)" % jc.state_name())
+	# a down at the Cousins' arrival holds the line until he's back up (JakubCompanion._later_say patience)
+	await _until(func() -> bool: return int(GLVO.fired.get("JAK:COUSINS", 0)) > 0, 15.0, _cull)
 	_check(int(GLVO.fired.get("JAK:COUSINS", 0)) > 0, "\"I know that song. Everyone in this valley knows that song.\"")
 	if cr != null:
 		cr.retreat()

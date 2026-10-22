@@ -841,8 +841,10 @@ func _say(category: String) -> bool:
 	return GLVO.play_category(&"JAK", category, 1.0, player.player_id)
 
 
-func _later_say(seconds: float, category: String) -> void:
-	_later.append([_now + seconds, category])
+## A line for later. If he's down when it comes due, or the line can't play yet (the channel is busy), it waits and
+## tries again until `patience` seconds past its time (a down at the Cousins' arrival used to lose his line for good).
+func _later_say(seconds: float, category: String, patience: float = 60.0) -> void:
+	_later.append([_now + seconds, category, _now + seconds + patience])
 
 
 func _tick_later() -> void:
@@ -853,8 +855,10 @@ func _tick_later() -> void:
 		var a: Array = e
 		if _now < float(a[0]):
 			keep.append(a)
-		elif state != State.FALLEN and not player.downed:
-			_say(str(a[1]))
+		elif state == State.FALLEN or _now > float(a[2]):
+			continue
+		elif player.downed or not _say(str(a[1])):
+			keep.append(a)
 	_later = keep
 
 
