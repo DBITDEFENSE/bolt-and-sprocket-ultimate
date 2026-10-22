@@ -21,6 +21,13 @@ static var cutscene_speed: float = 1.0
 static var _arrival: Dictionary = {}
 
 
+## True while a campaign arrival restores this player's carried kit on the current map (BotSquad then skips
+## the spawn kit and the bonus-perk draw for them: they keep what they carried).
+static func carried_player(pid: int) -> bool:
+	var players: Dictionary = _arrival.get("players", {})
+	return players.has(pid) or players.has(str(pid))
+
+
 static func cfg() -> Dictionary:
 	return GLData.table("campaign")
 
@@ -133,6 +140,7 @@ static func serialize_player(p: Player) -> Dictionary:
 		"scrip": Economy.get_scrip(pid),
 		"perks": perks,
 		"bonus_slots": int(PerkManager._bonus_slots.get(pid, 0)),
+		"bonus_perk": String(PerkManager.bonus_perk(pid)),
 	}
 
 
@@ -290,6 +298,10 @@ static func restore_account(pid: int, d: Dictionary) -> void:
 	if bonus > 0:
 		PerkManager._bonus_slots[pid] = maxi(bonus, int(PerkManager._bonus_slots.get(pid, 0)))
 	PerkManager._owned[pid] = perks
+	# a bot's bonus perk is its trait for the whole campaign: it carries over and is never drawn again (T-050)
+	var bonus_perk: StringName = StringName(str(d.get("bonus_perk", "")))
+	if bonus_perk != &"" and perks.has(bonus_perk):
+		PerkManager._bonus_perk[pid] = bonus_perk
 	GLBus.perks_changed.emit(pid)
 
 

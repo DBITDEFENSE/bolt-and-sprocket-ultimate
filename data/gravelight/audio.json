@@ -463,6 +463,18 @@
    "bus": "SFX",
    "attenuation": "world"
   },
+  "door_creak": {
+   "files": [
+    "res://gravelight/audio/sfx/world/door_creak_01.wav",
+    "res://gravelight/audio/sfx/world/door_creak_02.wav",
+    "res://gravelight/audio/sfx/world/door_creak_03.wav"
+   ],
+   "volume_db": -3.0,
+   "pitch": [0.92, 1.08],
+   "max_voices": 2,
+   "bus": "SFX",
+   "attenuation": "world"
+  },
   "door_open": {
    "files": [
     "res://gravelight/audio/sfx/world/door_open_01.wav",
@@ -509,6 +521,17 @@
    "max_voices": 6,
    "attenuation": "weapon",
    "vol_jitter_db": 0.8
+  },
+  "fire_crackle": {
+   "files": [
+    "res://gravelight/audio/sfx/world/fire_crackle.wav"
+   ],
+   "volume_db": -4.0,
+   "pitch": [1.0, 1.0],
+   "max_voices": 2,
+   "bus": "Ambience",
+   "attenuation": "quiet",
+   "loop": true
   },
   "fire_flamethrower": {
    "files": [
@@ -874,6 +897,19 @@
    "max_voices": 1,
    "vol_jitter_db": 0.0
   },
+  "glass_break": {
+   "files": [
+    "res://gravelight/audio/sfx/world/glass_break_01.wav",
+    "res://gravelight/audio/sfx/world/glass_break_02.wav",
+    "res://gravelight/audio/sfx/world/glass_break_03.wav",
+    "res://gravelight/audio/sfx/world/glass_break_04.wav"
+   ],
+   "volume_db": -2.0,
+   "pitch": [0.9, 1.12],
+   "max_voices": 3,
+   "bus": "SFX",
+   "attenuation": "world"
+  },
   "glasshide_grind": {
    "files": [
     "res://gravelight/audio/sfx/zombies/glasshide_grind_01.wav",
@@ -1112,6 +1148,17 @@
    "max_voices": 3,
    "pitch": [0.98, 1.02]
   },
+  "horse_whinny": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/horse_whinny_01.wav",
+    "res://gravelight/audio/sfx/ambience/horse_whinny_02.wav"
+   ],
+   "volume_db": -3.0,
+   "pitch": [0.95, 1.05],
+   "max_voices": 1,
+   "bus": "SFX",
+   "attenuation": "world"
+  },
   "impact_flesh": {
    "files": [
     "res://gravelight/audio/sfx/zombies/impact_flesh_01.wav",
@@ -1186,6 +1233,18 @@
    "volume_db": -3.0,
    "max_voices": 2,
    "attenuation": "quiet"
+  },
+  "lamp_knock": {
+   "files": [
+    "res://gravelight/audio/sfx/world/lamp_knock_01.wav",
+    "res://gravelight/audio/sfx/world/lamp_knock_02.wav",
+    "res://gravelight/audio/sfx/world/lamp_knock_03.wav"
+   ],
+   "volume_db": -4.0,
+   "pitch": [0.92, 1.08],
+   "max_voices": 2,
+   "bus": "SFX",
+   "attenuation": "world"
   },
   "last_round_click": {
    "files": [
@@ -1888,6 +1947,19 @@
    "bus": "SFX",
    "attenuation": "world"
   },
+  "stable_creak": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/stable_creak_01.wav",
+    "res://gravelight/audio/sfx/ambience/stable_creak_02.wav",
+    "res://gravelight/audio/sfx/ambience/stable_creak_03.wav",
+    "res://gravelight/audio/sfx/ambience/stable_creak_04.wav"
+   ],
+   "volume_db": -4.0,
+   "pitch": [0.9, 1.1],
+   "max_voices": 2,
+   "bus": "Ambience",
+   "attenuation": "world"
+  },
   "stinger_game_over": {
    "files": [
     "res://gravelight/audio/music/stinger_game_over.wav"
@@ -2274,6 +2346,17 @@
    "max_voices": 3,
    "attenuation": "quiet",
    "vol_jitter_db": 1.0
+  },
+  "wind_howl": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/wind_howl.wav"
+   ],
+   "volume_db": -6.0,
+   "pitch": [1.0, 1.0],
+   "max_voices": 4,
+   "bus": "Ambience",
+   "attenuation": "quiet",
+   "loop": true
   },
   "wire_buzz": {
    "files": [
