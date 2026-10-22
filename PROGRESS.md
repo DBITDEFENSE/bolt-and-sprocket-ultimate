@@ -1,6 +1,6 @@
 # PROGRESS
 
-RESUME HERE: overnight run 2026-10-21/22. Step 1 (bots) is written and passing its own tests (GUT 517/517, smoke_bot_ai PASS on Map 0 scripted and with gemma3:27b); waiting on the full smoke suite (tools/run_smokes.sh), the Map 1 planner run, the MZ review-fix agent and the v3 docs agent. Then: commit MZ, commit bots + launcher on branches, merge to master, start HB1.
+RESUME HERE: overnight run. Bots, MZ, the v3 docs and the morning kit are committed and merged to master (efb3be3, tag mz). HB1 The Cousins is being built on branch hb1-cousins by a helper agent (uncommitted in the working tree); when it reports: run check_scripts, GUT, tools/run_smokes.sh, commit on hb1-cousins, merge to master, capture `tools/capture.sh overnight`, write morning/MORNING_REPORT.md.
 
 ## Overnight run, 2026-10-21 → 22: the plan
 
@@ -23,14 +23,16 @@ Rules: `master` is the main branch and must always launch; each step is merged o
 
 ## Done
 
+- **Bots** (T-043, commit 33c1043): spawn kit (Thompson, Ironhide Stout, Second Wind) — works; local-AI planner bot
+  (Ollama gemma3:27b) — works on Map 0's egg alone, Map 1's Requiem partly (power, doors, Totenglocke).
+- **MZ** (T-041 + review fixes, commit 8a7ae4f, tag `mz`) — works; GUT 525/525, all smokes pass.
+- **v3 Homage Bosses docs** (T-042, commit f594eaf) — done.
+- **Morning kit** (T-044, commits 85ee6cb, efb3be3): `Play.bat` dev launcher, `tools/capture.sh`, `tools/run_smokes.sh`
+  — works; screenshots in `morning/screenshots/overnight/` (git-ignored).
+- Bolt & Sprocket: `delayed_blast.gd` freed-source script error (smoke_nova) fixed (35bdeac).
+
 ## In progress
 
-- Bots: spawn kit (Thompson, Ironhide Stout, Second Wind) + local-AI planner bot (`gravelight/bots/bot_planner.gd`,
-  `local_ai.gd`, docs `docs/gravelight/BOTS.md`). Tests: `test_bot_planner.gd`, `smoke_bot_ai.tscn` — pass.
-- Morning kit: `Play.bat` now opens `res://ui/dev_launcher.tscn` (maps, boss tests, B&S planets, start round, god
-  mode, survivor, bots, local AI); `tools/capture.sh` → `tools_src/capture.gd` → `morning/screenshots/<milestone>/`
-  (tested on Map 0); `tools/run_smokes.sh` runs every smoke silently.
-- MZ review fixes (8 findings from the /code-review) — a helper agent is fixing them in `gravelight/enemies/`.
-- v3 Homage Bosses design docs — a helper agent is writing them.
+- **HB1 The Cousins** (branch `hb1-cousins`): being built by a helper agent from `docs/HOMAGE_BOSSES.md`.
 
 ## BLOCKED
