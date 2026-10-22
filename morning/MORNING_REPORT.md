@@ -3,8 +3,8 @@
 Every Update 02 section and the Update 03 bot rewrite are merged into `master` and launch. Bots now train, revive and
 stay out of your way, and Jakub breaks out at round 5. The Totenglocke is the strongest thing on Kaltenbrunn, ammo
 boxes are on every map, the Thompson's sights line up, and Map 0 has the Old Cellar, a war on the horizon and a
-room-by-room detail pass. Two Update 03 targets aren't met: bots alone reach about round 10, not 20–25, and revives
-with the do-nothing test player are at 78%, not above 85%.
+room-by-room detail pass. Since then the Cousins scale for bot-only squads (your call), and bots alone now reach
+round 14.7 on average (best 20; the target is 20–25). Revives with the do-nothing test player are at 78%, not above 85%.
 
 ## Play it
 Double-click **`Play.bat`**. The dev launcher opens; Esc in a match opens the pause menu, ` opens the dev console.
@@ -41,14 +41,14 @@ Double-click **`Play.bat`**. The dev launcher opens; Esc in a match opens the pa
 | **U03 §10** Acceptance targets | **partly**: see the table below |
 | Bug fixes found along the way | **works**: zombies couldn't climb the Map 0 stairs from below (0/12 → 40/40); special-round zombies spawning on roofs; Peg's "Kaltenbrunn" line at the inn; lamp glass glowing in the Cousins blackout; bots getting a second bonus perk and an extra Thompson on a campaign arrival; a stuck bot that could never recover; two flaky tests |
 
-Tests at the end: 729/729 unit tests, all 27 smoke tests pass (the Jakub smoke needed one last fix: his Cousins line was lost if he was down when they arrived), 0 script errors, all 44 guns pass the ADS check. Everything is merged into `master` (tags `u02-sections`, `u02-u03`).
+Tests at the end: 733/733 unit tests (after T-060), all 27 smoke tests pass (the Jakub smoke needed one last fix: his Cousins line was lost if he was down when they arrived), 0 script errors, all 44 guns pass the ADS check. Everything is merged into `master` (tags `u02-sections`, `u02-u03`).
 
 ## Bots: before and after (Update 03)
 Soak = 3 bots on Map 0, headless, Veteran, local AI off (`tools/ai_soak.sh`; full table in `docs/BOT_AI.md` §7).
 
 | Metric | Before | After |
 |---|---|---|
-| Highest round, bots alone (mean / best) | 5.7 / 6 | **10.0 / 16** (19, 17, 12 with the homage bosses off) |
+| Highest round, bots alone (mean / best) | 5.7 / 6 | 10.0 / 16; **14.7 / 20** with the Cousins scaling (T-060) |
 | Highest round, with a scripted player who throws the power and buys perks | — | **12.7 / 18** |
 | Highest round, with the original do-nothing scripted player | 8.0 / 9 | 9.3 / 10 |
 | Revive success (realistic player / do-nothing player) | 83% | **96%** / 78% |
@@ -93,9 +93,9 @@ Soak = 3 bots on Map 0, headless, Veteran, local AI off (`tools/ai_soak.sh`; ful
 10. Three of Jakub's lines name Kaltenbrunn as the place he escaped from, so they may play on any map.
 
 ## Needs you
-- **Bots alone vs. the Cousins:** the brief wants bots alone to reach round 20–25. They now get past round 10 in 2
-  of 10 runs; the Cousins at round 10 are the wall (with the homage bosses off they reach 12–19). Do you want the
-  Cousins to scale down for a bot-only squad, or keep them hard?
+- ~~Bots alone vs. the Cousins~~ **answered: they scale.** While no human is standing the Cousins drop to half
+  health, 60% damage, slower moves and a thinner horde (T-060, `cousins.json "bots_alone"`). Bots alone now clear
+  them 5 of 5 times and reach rounds 7–20 (mean 14.7, best 20).
 - **Revives with the do-nothing test player** are at 78% (96% with a player who plays normally). Fine to judge it by
   the realistic player?
 - Still open from last night: **Paul's unit** (D4), the **8 likeness placeholders**, and the **HUMOR-REVIEW** list

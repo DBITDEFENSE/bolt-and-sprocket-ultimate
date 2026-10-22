@@ -648,6 +648,11 @@ table).
   (55-59 s); the rest wipe there. With the Homage Bosses off the same squad reaches 19, 17 and 12. Raising this
   further is a balance question as much as a bot one (the Cousins' health scaling counts a bot as 0.75 of a player;
   a bot can't be ordered to skip the round).
+  **T-060 (user call: the Cousins scale):** while no human is standing, the Cousins take 50 % health, 60 % damage,
+  1.3x cooldowns, 0.9x speed and a 60 % horde (`cousins.json "bots_alone"`). bots3, 6 runs (seeds 11-16): the
+  Cousins cleared 5 of 5 times reached; highest rounds 7, 11, 14, 16, 20, 20 (**mean 14.7, best 20**). The same
+  soaks found a stall (a bot rebuilding the window the round's last zombie was tearing at, two hours on round 2):
+  bots no longer board windows during the last-zombie hunt unless ordered.
 - **Revive success above 85% (player3):** met with the realistic player (96%, 51 of 53). With the baseline player
   74% (old rule) / 78% (fair rule). The remaining failures are downs still open at the wipe while a bot was still on
   its feet: the squad losing the last fight, not a bot walking past a teammate (no bleed-outs in 12 runs).

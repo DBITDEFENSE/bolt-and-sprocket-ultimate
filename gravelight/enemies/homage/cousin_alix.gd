@@ -119,7 +119,7 @@ func _think(delta: float) -> void:
 			_halt(delta)
 			return
 		var before: Vector3 = global_position
-		walk_to(target.global_position, delta, float(c["unseen_speed"]) * speed_mult())
+		walk_to(target.global_position, delta, float(c["unseen_speed"]) * speed_mult() * squad_speed_mult)
 		unseen_moves += before.distance_to(global_position)
 		return
 	frozen = false

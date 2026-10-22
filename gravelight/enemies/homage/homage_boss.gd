@@ -48,6 +48,11 @@ var _hum_mute: float = 0.0
 var _death_t: float = 0.0
 var _parts_built: bool = false
 var _retreat_t: float = 0.0
+# Squad scaling (cousins.json "bots_alone"): set by the CousinsRound while no human is on their feet.
+var squad_hp_mult: float = 1.0
+var squad_damage_mult: float = 1.0
+var squad_cd_mult: float = 1.0
+var squad_speed_mult: float = 1.0
 
 
 # ================================================================== statics: data, HP, names
@@ -147,6 +152,10 @@ func spawn_homage(at: Vector3, health: float) -> void:
 	_cfg = Zombie.kind_config(&"ganger")
 	max_hp = health
 	hp = health
+	squad_hp_mult = 1.0
+	squad_damage_mult = 1.0
+	squad_cd_mult = 1.0
+	squad_speed_mult = 1.0
 	tier = StringName(str(bcfg.get("tier", "walk")))
 	speed = float(bcfg.get("speed", 2.0))
 	armor_torso_mult = 1.0
@@ -256,12 +265,26 @@ func speed_mult() -> float:
 
 
 func move_speed() -> float:
-	return float(bcfg.get("speed", 2.0)) * speed_mult()
+	return float(bcfg.get("speed", 2.0)) * speed_mult() * squad_speed_mult
 
 
-## A move's cooldown, shortened by the enrage steps (+20% attack speed each).
+## A move's cooldown, shortened by the enrage steps (+20% attack speed each), longer while the squad is bots alone.
 func cd_for(seconds: float) -> float:
-	return seconds / speed_mult()
+	return seconds / speed_mult() * squad_cd_mult
+
+
+## Squad scaling: health, damage, cooldowns and speed for the squad fighting (1.0 = the normal scaling). Health
+## keeps its fraction, so the bar doesn't jump: max_hp and hp are both rescaled from the unscaled max.
+func set_squad_scale(hp_m: float, dmg_m: float, cd_m: float, spd_m: float) -> void:
+	var f: float = hp_fraction()
+	var base: float = max_hp / maxf(0.0001, squad_hp_mult)
+	squad_hp_mult = hp_m
+	squad_damage_mult = dmg_m
+	squad_cd_mult = cd_m
+	squad_speed_mult = spd_m
+	max_hp = base * hp_m
+	if hp > 0.0:
+		hp = maxf(1.0, max_hp * f)
 
 
 func cd_ready(id: String) -> bool:
@@ -375,10 +398,10 @@ func alive_players() -> Array[Player]:
 	return out
 
 
-## Hits a player for `amount` (x the boss's damage_mult: Alix's double damage).
+## Hits a player for `amount` (x the boss's damage_mult: Alix's double damage; x the squad scaling).
 func hit_player(p: Player, amount: float) -> void:
 	if p != null and p.is_alive():
-		p.take_hit(amount * float(bcfg.get("damage_mult", 1.0)), self)
+		p.take_hit(amount * float(bcfg.get("damage_mult", 1.0)) * squad_damage_mult, self)
 
 
 ## World-space points ObservedFreeze rays at (head and chest).

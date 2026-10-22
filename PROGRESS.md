@@ -1,6 +1,6 @@
 # PROGRESS
 
-RESUME HERE: Update 02 and Update 03 are finished and merged to master (tag u02-u03); read morning/MORNING_REPORT.md first. Open: the user's answers (Cousins vs bots-alone scaling, revive metric, Paul's unit, likeness placeholders, HUMOR-REVIEW). Next: HB1 extras, then HB2 PAUL on branch hb2-paul, then companion (Jakub) replication for online co-op.
+RESUME HERE: Update 02 and Update 03 are finished and merged to master (tag u02-u03); read morning/MORNING_REPORT.md first. Cousins now scale for bot-only squads (T-060). Open: the user's answers (revive metric, Paul's unit, likeness placeholders, HUMOR-REVIEW). Next: HB1 extras, then HB2 PAUL on branch hb2-paul, then companion (Jakub) replication for online co-op.
 
 ## Overnight run, 2026-10-21 → 22: the plan
 

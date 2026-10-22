@@ -285,3 +285,49 @@ func test_reserved_rounds_clear_on_stop() -> void:
 	assert_true(RoundManager.is_reserved(15))
 	RoundManager.stop()
 	assert_false(RoundManager.is_reserved(15))
+
+
+# ---------------------------------------------------------------- bots alone (squad scaling)
+
+func test_bots_alone_when_no_human_is_up() -> void:
+	assert_true(CousinsRound.squad_is_bots_alone(0, 1), "the human is down or bled out")
+	assert_true(CousinsRound.squad_is_bots_alone(0, 0), "nobody but bots")
+	assert_false(CousinsRound.squad_is_bots_alone(1, 1), "a human on their feet")
+	assert_false(CousinsRound.squad_is_bots_alone(1, 2), "one of two humans up")
+
+
+func test_bots_alone_mults_come_from_the_table() -> void:
+	var ba: Dictionary = CousinsRound.bots_alone_cfg(cfg)
+	assert_true(bool(ba["enabled"]))
+	assert_eq(CousinsRound.squad_mults(false, ba), [1.0, 1.0, 1.0, 1.0] as Array[float], "off: the normal scaling")
+	var on: Array[float] = CousinsRound.squad_mults(true, ba)
+	assert_lt(on[0], 1.0, "less health")
+	assert_lt(on[1], 1.0, "softer hits")
+	assert_gt(on[2], 1.0, "longer cooldowns")
+	assert_lte(on[3], 1.0, "never faster")
+	ba["enabled"] = false
+	assert_eq(CousinsRound.squad_mults(true, ba), [1.0, 1.0, 1.0, 1.0] as Array[float], "disabled in the table")
+
+
+func test_squad_scale_keeps_the_bar_fraction_and_round_trips() -> void:
+	var b: CousinHammer = CousinHammer.new()
+	b.max_hp = 15000.0
+	b.hp = 9000.0   # 60%
+	b.set_squad_scale(0.5, 0.6, 1.3, 0.9)
+	assert_almost_eq(b.max_hp, 7500.0, 0.01)
+	assert_almost_eq(b.hp, 4500.0, 0.01, "still 60%")
+	b.hp = 1500.0   # 20% while bots alone
+	b.set_squad_scale(1.0, 1.0, 1.0, 1.0)
+	assert_almost_eq(b.max_hp, 15000.0, 0.01, "back to the unscaled max")
+	assert_almost_eq(b.hp, 3000.0, 0.01, "still 20%")
+	b.free()
+
+
+func test_bots_alone_thins_the_queued_horde() -> void:
+	var ba: Dictionary = CousinsRound.bots_alone_cfg(cfg)
+	ba["horde_mult"] = 0.6
+	assert_eq(CousinsRound.cut_horde(30, ba), 18)
+	assert_eq(CousinsRound.cut_horde(1, ba), 1, "never cut to zero while one is queued")
+	assert_eq(CousinsRound.cut_horde(0, ba), 0)
+	ba["horde_mult"] = 1.5
+	assert_eq(CousinsRound.cut_horde(10, ba), 10, "never adds zombies")

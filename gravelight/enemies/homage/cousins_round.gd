@@ -19,6 +19,10 @@ extends Node3D
 ## Rewards (all three dead): Death's Door + Resupply at the last body (outside the drop cap: spawned directly),
 ## 1500 Scrip per player, the profile unlocks (calling card, the Three Ribbons charm, the Archive card; record-only)
 ## and the Aunt's Letter (INT_HB_01) filed through the intel channel.
+## Bots alone (cousins.json "bots_alone"): while no human is on their feet (solo with bots and the human down or
+## bled out, or a bots-only squad), the three scale down: less health (the bar keeps its fraction), softer hits,
+## slower moves and cooldowns. It switches on after engage_after seconds without a human up and off again
+## release_after seconds after one is back up, so a quick down and revive doesn't flip it.
 ## Lines: cousins.json "lines" (no baked audio yet): the subtitle shows silently when lines.json lacks the line.
 
 enum Phase { IDLE, ACTIVE, CLEARED, BORED }
@@ -51,6 +55,11 @@ var _hatch: Node3D
 var _hatch_lid: Node3D
 var _handprint: Node3D
 var _last_spawn_t: float = 0.0
+var bots_alone: bool = false          # the squad scaling is on (no human on their feet)
+var bots_alone_switches: int = 0      # times it switched on (tests / the soak)
+var _no_human_t: float = 0.0
+var _horde_cut: bool = false          # the bots-alone horde cut is once per encounter
+var _human_t: float = 0.0
 
 
 # ================================================================== pure rules (unit-tested)
@@ -61,6 +70,87 @@ static func applies(map_id: StringName, c: Dictionary) -> bool:
 
 static func is_event_round(r: int, the_round: int, on: bool) -> bool:
 	return on and r == the_round
+
+
+## The bots-alone scaling block with its defaults filled in.
+static func bots_alone_cfg(c: Dictionary) -> Dictionary:
+	var d: Dictionary = {"enabled": true, "hp_mult": 0.5, "damage_mult": 0.6, "cooldown_mult": 1.3, "speed_mult": 0.9,
+		"horde_mult": 0.6, "engage_after": 4.0, "release_after": 2.0}
+	d.merge(c.get("bots_alone", {}) as Dictionary, true)
+	return d
+
+
+## True when the scaling should be on: no human on their feet. `humans_up` = humans standing (not downed, not
+## spectating); `humans_total` = humans in the match. A match with nobody but bots counts as bots alone.
+static func squad_is_bots_alone(humans_up: int, _humans_total: int) -> bool:
+	return humans_up <= 0
+
+
+## The horde still queued after the bots-alone cut: ceil(queued x horde_mult), never more than queued.
+static func cut_horde(queued: int, ba: Dictionary) -> int:
+	return clampi(ceili(float(maxi(0, queued)) * float(ba.get("horde_mult", 1.0))), 0, maxi(0, queued))
+
+
+## The scaling multipliers for a state: [hp, damage, cooldown, speed] (all 1.0 when off).
+static func squad_mults(on: bool, ba: Dictionary) -> Array[float]:
+	if not on or not bool(ba.get("enabled", true)):
+		return [1.0, 1.0, 1.0, 1.0] as Array[float]
+	return [float(ba["hp_mult"]), float(ba["damage_mult"]), float(ba["cooldown_mult"]), float(ba["speed_mult"])] as Array[float]
+
+
+## Humans standing / humans in the match (bots and companions like Jakub don't count).
+func human_counts() -> Vector2i:
+	var up: int = 0
+	var total: int = 0
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		var p: Player = n as Player
+		if p == null or p.is_bot or p.is_companion:
+			continue
+		total += 1
+		if not p.downed and not p.spectating:
+			up += 1
+	return Vector2i(up, total)
+
+
+## Steps the bots-alone switch (called every frame of the fight; `now` forces it on the first check).
+func _tick_bots_alone(delta: float, now: bool = false) -> void:
+	var ba: Dictionary = bots_alone_cfg(cfg)
+	if not bool(ba.get("enabled", true)):
+		return
+	var hc: Vector2i = human_counts()
+	var alone: bool = squad_is_bots_alone(hc.x, hc.y)
+	if alone:
+		_no_human_t += delta
+		_human_t = 0.0
+	else:
+		_human_t += delta
+		_no_human_t = 0.0
+	if not bots_alone and alone and (now or _no_human_t >= float(ba["engage_after"])):
+		_set_bots_alone(true)
+	elif bots_alone and not alone and _human_t >= float(ba["release_after"]):
+		_set_bots_alone(false)
+
+
+func _set_bots_alone(on: bool) -> void:
+	bots_alone = on
+	if on:
+		bots_alone_switches += 1
+		if not _horde_cut:
+			# the horde still queued thins once (it is what downs the bots while they focus the three)
+			_horde_cut = true
+			var left: int = cut_horde(RoundManager.to_spawn, bots_alone_cfg(cfg))
+			RoundManager.round_total -= RoundManager.to_spawn - left
+			RoundManager.to_spawn = left
+	for k: Variant in bosses.keys():
+		var b: HomageBoss = boss(str(k))
+		if b != null and b.is_active():
+			_apply_squad_scale(b)
+	print("[cousins] bots alone %s (t=%.1f)" % ["on: the cousins scale down" if on else "off: a human is back up", t])
+
+
+func _apply_squad_scale(b: HomageBoss) -> void:
+	var m: Array[float] = squad_mults(bots_alone, bots_alone_cfg(cfg))
+	b.set_squad_scale(m[0], m[1], m[2], m[3])
 
 
 ## The horde during the fight: horde_fraction of the round's count (never zero).
@@ -160,11 +250,16 @@ func begin(r: int) -> void:
 	bosses.clear()
 	_fallen.clear()
 	rewards_given = false
+	bots_alone = false
+	_horde_cut = false
+	_no_human_t = 0.0
+	_human_t = 0.0
 	RoundManager.reserve_round(r)
 	RoundManager.round_total = horde_count(RoundManager.round_total, cfg)
 	RoundManager.to_spawn = mini(RoundManager.to_spawn, RoundManager.round_total)
 	RoundManager.reserve_alive(KEYS.size())
 	reserved_left = KEYS.size()
+	_tick_bots_alone(0.0, true)   # after the horde is set: a bots-alone start thins it
 	if director != null:
 		director._screamer_at = -1.0
 	if not setup_played:
@@ -197,6 +292,7 @@ func _process(delta: float) -> void:
 	if phase != Phase.ACTIVE:
 		return
 	t += delta
+	_tick_bots_alone(delta)
 	for e: Array in _sched.duplicate():
 		if t >= float(e[0]):
 			_sched.erase(e)
@@ -246,6 +342,8 @@ func _spawn(key: String, at: Vector3) -> HomageBoss:
 	b.name = "Cousin_" + key
 	director.add_extra(b)
 	b.spawn_homage(_snap(at), boss_hp(key, RoundManager.players, cfg))
+	if bots_alone:
+		_apply_squad_scale(b)
 	for i: int in enrage_steps_now():
 		b.enrage_steps += 1   # a late arrival comes in already angry (no new-move line: she wasn't there)
 	bosses[key] = b
@@ -254,7 +352,7 @@ func _spawn(key: String, at: Vector3) -> HomageBoss:
 	if hud != null:
 		hud.add_bar(key, b, tl[0], tl[1])
 	_last_spawn_t = t
-	print("[cousins] %s arrives at %s (t=%.1f, hp %d; round alive %d, queued %d)" % [key, str(b.global_position.snapped(Vector3.ONE * 0.1)), t, int(b.max_hp), RoundManager.alive, RoundManager.to_spawn])
+	print("[cousins] %s arrives at %s (t=%.1f, hp %d%s; round alive %d, queued %d)" % [key, str(b.global_position.snapped(Vector3.ONE * 0.1)), t, int(b.max_hp), ", bots alone" if bots_alone else "", RoundManager.alive, RoundManager.to_spawn])
 	return b
 
 
@@ -790,4 +888,4 @@ func status() -> String:
 	for k: String in KEYS:
 		var b: HomageBoss = boss(k)
 		parts.append("%s %s" % [k, "dead" if dead.has(k) else ("-" if b == null else "%d/%d hp, enrage %d" % [int(b.hp), int(b.max_hp), b.enrage_steps])])
-	return "Cousins: %s, round %d, t=%.0f s | %s" % [Phase.keys()[phase], event_round, t, ", ".join(parts)]
+	return "Cousins: %s, round %d, t=%.0f s%s | %s" % [Phase.keys()[phase], event_round, t, ", bots alone" if bots_alone else "", ", ".join(parts)]

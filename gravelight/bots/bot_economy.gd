@@ -247,7 +247,10 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	elif brain.in_break():
 		board_r *= float(rcfg.get("break_radius_mult", 1.6)) * (1.4 if builder else 1.0)
 	var best_board: Dictionary = {}
-	for n: Node in brain.get_tree().get_nodes_in_group(&"barricades"):
+	# While the squad hunts a stalled round's last zombie, no boards go up unless ordered: that zombie may be the
+	# one tearing at a window, and rebuilding it keeps it outside forever (a bots3 soak stalled two hours on round 2).
+	var hunting: bool = squad.hunt_point() != Vector3.INF and order != &"repair"
+	for n: Node in ([] if hunting else brain.get_tree().get_nodes_in_group(&"barricades")):
 		var b: Barricade = n as Barricade
 		if b == null or b.boards >= b.max_boards:
 			continue

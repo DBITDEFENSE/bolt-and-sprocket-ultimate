@@ -9,6 +9,17 @@
  "failsafe_seconds": 360.0,
  "enrage_speed_step": 0.2,
  "observers_include_bots": true,
+ "bots_alone": {
+  "_doc": "Squad scaling (user call 2026-10-22: the Cousins scale for bot-only squads). While no human is on their feet (solo with bots and the human down or bled out, or bots alone) the three take hp_mult of their health (the bar keeps its fraction), deal damage_mult damage, wait cooldown_mult as long between moves and move at speed_mult; the horde still queued is cut to horde_mult once per fight (the horde, not the three, downs bots while they focus the bosses). On after engage_after s without a human up, off release_after s after one is back.",
+  "enabled": true,
+  "hp_mult": 0.5,
+  "damage_mult": 0.6,
+  "cooldown_mult": 1.3,
+  "speed_mult": 0.9,
+  "horde_mult": 0.6,
+  "engage_after": 4.0,
+  "release_after": 2.0
+ },
  "arrival": {
   "hammer_maul_lead": 1.5,
   "reach_after": 30.0,
