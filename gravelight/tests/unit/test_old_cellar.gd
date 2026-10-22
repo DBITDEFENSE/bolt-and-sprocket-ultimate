@@ -1,7 +1,7 @@
 extends GutTest
 ## Map 0's Old Cellar (Update 02 section 6.1, DECISIONS T-051): the light-well windows (Barricade.inside_drop), the
-## holding cage's burst, the ice cellar's seal, and the generated map's nodes (Door 5, the linked breach door, the
-## windows, the Gewehr 43, the ammo-box spot, Jakub's markers).
+## holding cage's burst, the ice cellar's seal, and the generated map's nodes (Door 5, the breach, the
+## windows, the Gewehr 43, the ammo box, Jakub's markers).
 
 const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 
@@ -76,20 +76,23 @@ func test_seal_opens_on_the_aunts_letter_only() -> void:
 	assert_true(bool(GameState.flags.get(&"passage_ice_cellar_open", false)))
 
 
-func test_linked_cellar_doors_open_together() -> void:
-	var a: BuyDoor = BuyDoor.new()
-	a.door_id = &"door_cellar"
-	a.opens_zone = &"CELLAR"
-	a.link_group = &"cellar"
-	var b: BuyDoor = BuyDoor.new()
-	b.door_id = &"door_cellar_link"
-	b.opens_zone = &"CELLAR"
-	b.link_group = &"cellar"
-	add_child_autofree(a)
-	add_child_autofree(b)
-	b.open(1)
-	assert_true(a.is_open, "buying the breach door opens Door 3 too")
-	assert_true(GameState.is_zone_open(&"CELLAR"))
+func test_breach_opens_when_both_cellars_are_open() -> void:
+	GameState.open_zones.erase(&"CELLAR")
+	GameState.open_zones.erase(&"OLD_CELLAR")
+	var s: SealedPassage = SealedPassage.new()
+	s.open_when_zones = PackedStringArray(["CELLAR", "OLD_CELLAR"])
+	s.nav_link_path = NodePath("Link")
+	var link: NavigationLink3D = NavigationLink3D.new()
+	link.name = "Link"
+	link.enabled = false
+	s.add_child(link)
+	add_child_autofree(s)
+	GameState.open_zone(&"CELLAR")
+	assert_false(s.is_open, "one cellar is not enough")
+	assert_false(link.enabled)
+	GameState.open_zone(&"OLD_CELLAR")
+	assert_true(s.is_open, "both open: the breach falls in")
+	assert_true(link.enabled, "and the navmesh link across it switches on")
 
 
 func test_generated_map_has_the_old_cellar() -> void:
@@ -99,12 +102,14 @@ func test_generated_map_has_the_old_cellar() -> void:
 	if d5 != null:
 		assert_eq(int(d5.get("cost")), 1250)
 		assert_eq(StringName(d5.get("opens_zone")), &"OLD_CELLAR")
-	var dl: Node = map.find_child("Door_CellarLink", true, false)
-	var d3: Node = map.find_child("Door_Cellar", true, false)
-	assert_not_null(dl)
-	if dl != null and d3 != null:
-		assert_eq(StringName(dl.get("link_group")), StringName(d3.get("link_group")))
-		assert_eq(int(dl.get("cost")), int(d3.get("cost")))
+	var br: Node = map.find_child("CellarBreach", true, false)
+	assert_not_null(br)
+	if br != null:
+		assert_eq(Array(br.get("open_when_zones")), ["CELLAR", "OLD_CELLAR"])
+		var link: NavigationLink3D = br.get_node_or_null("BreachLink") as NavigationLink3D
+		assert_not_null(link)
+		if link != null:
+			assert_false(link.enabled, "shut at the start")
 	for w: String in ["W_CEL_COAL", "W_CEL_VAULT"]:
 		var n: Node = map.find_child(w, true, false)
 		assert_not_null(n, w)
@@ -116,8 +121,5 @@ func test_generated_map_has_the_old_cellar() -> void:
 	assert_not_null(wb)
 	for m: String in ["JakubCage", "JakubSpawn", "JakubWait", "CoalShovel", "IceCellarSeal", "IceCellarLetter", "IceCellarChalk", "IceCellarHatch"]:
 		assert_not_null(map.find_child(m, true, false), m)
-	var spot: Node = map.find_child("AmmoBoxSpot_Cellar", true, false)
-	assert_not_null(spot)
-	if spot != null:
-		assert_true(spot.is_in_group(&"ammo_box_spot"))
+	assert_not_null(map.find_child("AmmoBox_Cellar", true, false))
 	map.free()

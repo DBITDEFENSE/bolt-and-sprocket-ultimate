@@ -4,8 +4,11 @@ extends Node3D
 ## coal room and the cousins' ice cellar under the bar). The bricks are a runtime collider on the "door" layer, so
 ## the navmesh already runs through the opening and paths open the moment the bricks go, like a BuyDoor.
 ## Frame: the origin is the middle of the opening on the floor, local X along the wall, local Z through it.
-## Cue: open() directly, or GLBus.intel_found with `open_on_intel` (HB1 files the aunt's letter, INT_HB_01, when
-## the Cousins round is cleared). A gap two bricks wide is left at eye height, so you can look in before that.
+## Cue: open() directly, GLBus.intel_found with `open_on_intel` (HB1 files the aunt's letter, INT_HB_01, when the
+## Cousins round is cleared), or every zone in `open_when_zones` open (the Old Cellar's breach to the Helvetia
+## cellar: both cellar doors bought). A gap two bricks wide is left at eye height, so you can look in before that.
+## `nav_link_path`: a NavigationLink3D switched on when it opens, for a passage the navmesh was baked shut across
+## (so no path runs through it while it is shut, unlike a door).
 
 signal opened
 
@@ -15,6 +18,8 @@ const BRICK: Vector3 = Vector3(0.25, 0.075, 0.12)   # a brick and its mortar joi
 @export var passage_id: StringName = &""
 @export var size: Vector3 = Vector3(1.6, 2.0, 0.3)
 @export var open_on_intel: StringName = &""
+@export var open_when_zones: PackedStringArray = []
+@export var nav_link_path: NodePath
 
 var is_open: bool = false
 var _body: StaticBody3D
@@ -37,6 +42,23 @@ func _ready() -> void:
 	_build_bricks()
 	if open_on_intel != &"":
 		GLBus.intel_found.connect(_on_intel)
+	if not open_when_zones.is_empty():
+		GLBus.zone_opened.connect(func(_z: StringName) -> void: _check_zones())
+		_check_zones.call_deferred()
+
+
+func _check_zones() -> void:
+	if is_open or open_when_zones.is_empty():
+		return
+	for z: String in open_when_zones:
+		if not GameState.is_zone_open(StringName(z)):
+			return
+	open()
+
+
+## The NavigationLink3D this passage switches on (or null).
+func nav_link() -> NavigationLink3D:
+	return get_node_or_null(nav_link_path) as NavigationLink3D if not nav_link_path.is_empty() else null
 
 
 func _on_intel(id: StringName) -> void:
@@ -83,6 +105,8 @@ func open() -> void:
 		return
 	is_open = true
 	_body.collision_layer = 0
+	if nav_link() != null:
+		nav_link().enabled = true
 	_open_visual()
 	Net.mirror(self, &"_net_open")
 	if passage_id != &"":
@@ -140,4 +164,6 @@ func _net_open() -> void:
 		return
 	is_open = true
 	_body.collision_layer = 0
+	if nav_link() != null:
+		nav_link().enabled = true
 	_open_visual()

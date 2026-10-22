@@ -7,8 +7,10 @@ extends RefCounted
 ##   Real-world scale in meters.
 ##   Named children for animation: "Muzzle", "LeftHand" (support-hand target), and when present
 ##   "Mag", "Bolt", "Slide", "Pump", "Cover", "Barrels", "Crank", "Rocket", "Valve".
-##   Meta: "sight" (Vector3, a point on the sight line just in front of the rear sight),
-##         "reload" (String kind for WeaponHolder animations), "eye_relief" (float), "length" (float).
+##   Sights: "SightPoint" (rear notch / aperture / scope eyepiece) and "FrontSight" (front post tip / bead)
+##   Marker3D nodes, placed by the sight helpers (rear_notch, rear_aperture, front_post, ...). ADS aims along
+##   them (WeaponHolder); eye relief and ADS zoom are per-weapon data (weapons.json feel), not model metas.
+##   Meta: "reload" (String kind for WeaponHolder animations), "length" (float).
 ## Upgraded weapons get the Nachtglas look; `camo` (ProfileSave.camo_for) tints the furniture.
 
 ## Finished-steel material kinds (worn-edge chamfers, Nachtglas when upgraded).
@@ -46,8 +48,6 @@ static func _build_new(weapon_id: StringName, is_upgraded: bool, camo_id: String
 		b.upgraded = true
 	b.root.name = "Model_" + base
 	b.root.set_meta("reload", "mag")
-	b.root.set_meta("eye_relief", 0.14)
-	b.root.set_meta("sight", Vector3(0, 0.05, 0))
 	b.root.set_meta("length", 0.6)
 	if b.has_method("_w_" + base):
 		b.call("_w_" + base)
@@ -675,15 +675,35 @@ static func _inset(poly: PackedVector2Array, d: float) -> PackedVector2Array:
 	return out
 
 
-func meta(sight: Vector3, reload_kind: String, length: float, relief: float = 0.14) -> void:
-	root.set_meta("sight", sight)
+func meta(reload_kind: String, length: float) -> void:
 	root.set_meta("reload", reload_kind)
 	root.set_meta("length", length)
-	root.set_meta("eye_relief", relief)
+
+
+# ---- sights (T-047). Every sight helper drops a marker on the sight line: "SightPoint" at the rear notch /
+# aperture (or scope eyepiece), "FrontSight" at the front post tip (or bead / objective). WeaponHolder aims by
+# putting SightPoint on the camera's center ray at the weapon's data eye relief, pitched so FrontSight is on
+# the same ray, so a model only has to build its sights with these helpers to aim correctly.
+
+## Puts (or moves) a sight marker. `p` is in `parent` space (the model root when null), so a sight on a
+## moving part (the pistol slide) rides with it.
+func sight_mark(n: String, p: Vector3, parent: Node3D = null) -> Marker3D:
+	var host: Node3D = parent if parent != null else root
+	var mk: Marker3D = host.get_node_or_null(n) as Marker3D
+	if mk == null:
+		var old: Node = root.find_child(n, true, false)
+		if old != null:
+			old.get_parent().remove_child(old)
+			old.free()
+		mk = Marker3D.new()
+		mk.name = n
+		host.add_child(mk)
+	mk.position = p
+	return mk
 
 
 ## Open-notch rear sight: a base block from y_base with two ears leaving a notch; the sight line runs through
-## the notch just below the ear tops. Sets the "sight" meta and returns that point.
+## the notch just below the ear tops. Places SightPoint there and returns it (in `parent` space).
 func rear_notch(z: float, y_base: float, h: float, kind: String = "blued", width: float = 0.016, gap: float = 0.0042,
 		parent: Node3D = null) -> Vector3:
 	var ear: float = (width - gap) * 0.5
@@ -692,11 +712,11 @@ func rear_notch(z: float, y_base: float, h: float, kind: String = "blued", width
 	for s: float in [-1.0, 1.0]:
 		box(Vector3(ear, h - base_h, 0.007), Vector3(s * (gap + ear) * 0.5, y_base + base_h + (h - base_h) * 0.5, z), kind, Vector3.ZERO, parent)
 	var p: Vector3 = Vector3(0, y_base + h - 0.0012, z - 0.004)
-	root.set_meta("sight", p if parent == null else parent.position + p)
+	sight_mark("SightPoint", p, parent)
 	return p
 
 
-## Peep (aperture) rear sight: a ring on a short post with protective ears. Sight line = ring center.
+## Peep (aperture) rear sight: a ring on a short post with protective ears. SightPoint = ring center.
 func rear_aperture(z: float, y_center: float, y_base: float, kind: String = "park", r_in: float = 0.0034,
 		r_out: float = 0.0085, ears: bool = true) -> Vector3:
 	ring(r_in, r_out, Vector3(0, y_center, z), kind)
@@ -705,14 +725,39 @@ func rear_aperture(z: float, y_center: float, y_base: float, kind: String = "par
 		for s: float in [-1.0, 1.0]:
 			box(Vector3(0.0045, y_center + 0.004 - y_base, 0.016), Vector3(s * (r_out + 0.0045), (y_center + 0.004 + y_base) * 0.5, z + 0.004), kind)
 	var p: Vector3 = Vector3(0, y_center, z - 0.004)
-	root.set_meta("sight", p)
+	sight_mark("SightPoint", p)
 	return p
 
 
-## Front post with an optional hood (an arch you see the post inside). Sets the "front" meta (post tip).
-func front_post(z: float, y_base: float, tip: float, kind: String = "blued", hood: bool = true, hood_r: float = 0.011) -> void:
-	box(Vector3(0.0028, tip - y_base, 0.004), Vector3(0, (tip + y_base) * 0.5, z), kind)
-	wedge(Vector3(0.0028, 0.002, 0.004), Vector3(0, tip - 0.0002, z), kind)
+## Shotgun-style rear "sight": the matted groove along the receiver top (two low rails). SightPoint sits
+## in the groove at `y_top` (the receiver top) + `depth`.
+func rear_groove(z: float, y_top: float, length: float = 0.05, kind: String = "blued", depth: float = 0.0025,
+		gap: float = 0.005, parent: Node3D = null) -> Vector3:
+	for s: float in [-1.0, 1.0]:
+		box(Vector3(0.003, depth, length), Vector3(s * (gap + 0.003) * 0.5, y_top + depth * 0.5, z - length * 0.5), kind, Vector3.ZERO, parent)
+	var p: Vector3 = Vector3(0, y_top + depth * 0.6, z)
+	sight_mark("SightPoint", p, parent)
+	return p
+
+
+## Plain front blade from y_base up to `tip` (no hood or band). Places FrontSight at the tip.
+func front_blade(z: float, y_base: float, tip: float, kind: String = "blued", width: float = 0.0028, depth: float = 0.004,
+		parent: Node3D = null) -> void:
+	box(Vector3(width, tip - y_base, depth), Vector3(0, (tip + y_base) * 0.5, z), kind, Vector3.ZERO, parent)
+	sight_mark("FrontSight", Vector3(0, tip, z), parent)
+
+
+## Front bead (shotguns, wonder weapons): a ball whose top is the aim point. Places FrontSight there.
+func front_bead(pos: Vector3, r: float = 0.003, kind: String = "brass", parent: Node3D = null) -> void:
+	ball(r, pos, kind, Vector3.ONE, parent)
+	sight_mark("FrontSight", pos + Vector3(0, r * 0.7, 0), parent)
+
+
+## Front post with an optional hood (an arch you see the post inside). Places FrontSight at the post tip.
+func front_post(z: float, y_base: float, tip: float, kind: String = "blued", hood: bool = true, hood_r: float = 0.011,
+		width: float = 0.0028) -> void:
+	front_blade(z, y_base, tip, kind, width)
+	wedge(Vector3(width, 0.002, 0.004), Vector3(0, tip - 0.0002, z), kind)
 	box(Vector3(0.012, 0.005, 0.016), Vector3(0, y_base + 0.0025, z), kind)              # sight base / band
 	if hood:
 		var hood_c: Vector3 = Vector3(0, tip - 0.002, z)
@@ -725,7 +770,13 @@ func front_post(z: float, y_base: float, tip: float, kind: String = "blued", hoo
 		cm.cap_top = false
 		cm.cap_bottom = false
 		t.material_override = two_sided(kind)
-	root.set_meta("front", Vector3(0, tip, z))
+
+
+## Telescopic sight: SightPoint at the eyepiece center, FrontSight at the objective center (the tube axis is
+## the sight line). The tube itself is built by the caller.
+func scope_sight(eyepiece: Vector3, objective: Vector3) -> void:
+	sight_mark("SightPoint", eyepiece)
+	sight_mark("FrontSight", objective)
 
 
 ## Double-sided variant of a material (open tubes: hoods, scope bodies).
@@ -827,7 +878,8 @@ func _w_m1911() -> void:
 	tube(0.0017, 0.0017, 0.001, Vector3(0, 0.0162, -0.1709), "black", "z", sl, 8)             # plug dimple
 	# sights: tapered front blade, notched rear on a dovetail
 	prof(P([[-0.1612, TOP - 0.0004], [-0.1502, TOP - 0.0004], [-0.1528, 0.0566], [-0.1585, 0.0566]]), 0.0032, "park_slide", 0.0, sl)
-	var rs: Vector3 = rear_notch(0.0392, TOP - 0.0004, 0.0072, "park_slide", 0.0158, 0.0036, sl)
+	sight_mark("FrontSight", Vector3(0, 0.0566, (-0.1528 - 0.1585) * 0.5), sl)                    # the blade's flat top
+	rear_notch(0.0392, TOP - 0.0004, 0.0072, "park_slide", 0.0158, 0.0036, sl)
 	box(Vector3(0.0215, 0.0016, 0.0085), Vector3(0, TOP - 0.0002, 0.0392), "park_slide", Vector3.ZERO, sl)  # dovetail
 	box(Vector3(0.011, 0.0145, 0.0012), Vector3(0, 0.0375, 0.0465), "blued", Vector3.ZERO, sl)           # firing-pin stop
 	tube(0.0021, 0.0021, 0.0012, Vector3(0, BY, 0.0472), "steel", "z", sl, 10)                         # firing pin
@@ -937,8 +989,7 @@ func _w_m1911() -> void:
 	marker("Muzzle", Vector3(0, BY, -0.1725))
 	rhand(Vector3(0, -0.05, 0.053), 20.0, 0.017)
 	lhand(Vector3(-0.006, -0.056, 0.05), "y", 0.03)
-	meta(rs, "pistol", 0.216, 0.42)
-	root.set_meta("front", Vector3(0, 0.0566, -0.1556))
+	meta("pistol", 0.216)
 	root.set_meta("port", Vector3(0.0125, 0.0405, -0.02))
 	root.set_meta("bore", 0.0057)
 
@@ -974,7 +1025,7 @@ func _w_kar98k() -> void:
 	tube(0.026, 0.022, 0.035, Vector3(0, 0.014, -0.5), "blued")                                            # nose cap
 	front_post(-0.705, 0.042, 0.06, "blued", true, 0.0105)                                              # hooded barleycorn
 	prof(P([[-0.125, 0.043], [-0.21, 0.043], [-0.21, 0.049], [-0.14, 0.054], [-0.125, 0.054]]), 0.02, "blued")  # tangent leaf base
-	var rs: Vector3 = rear_notch(-0.13, 0.052, 0.0105, "blued", 0.018, 0.0045)
+	rear_notch(-0.13, 0.052, 0.0105, "blued", 0.018, 0.0045)
 	tube(0.003, 0.003, 0.36, Vector3(0, -0.012, -0.55), "steel")                                           # cleaning rod
 	box(Vector3(0.024, 0.008, 0.085), Vector3(0, -0.035, -0.06), "blued")                                 # floorplate
 	trigger_group(0.01, 0.0)
@@ -983,8 +1034,7 @@ func _w_kar98k() -> void:
 	marker("Muzzle", Vector3(0, 0.032, -0.73))
 	rhand(Vector3(0, -0.03, 0.065), 38.0, 0.02)
 	lhand(Vector3(0, 0.002, -0.33), "z", 0.026)
-	meta(rs, "bolt", 1.11, 0.36)
-	root.set_meta("front", Vector3(0, 0.06, -0.705))
+	meta("bolt", 1.11)
 	root.set_meta("port", Vector3(0.012, 0.045, 0.0))
 	root.set_meta("bore", 0.0045)
 
@@ -1007,6 +1057,7 @@ func _w_springfield() -> void:
 	box(Vector3(0.018, 0.012, 0.03), Vector3(0, 0.092, -0.05), "black")                                    # turret
 	tube(0.0155, 0.0155, 0.002, Vector3(0, 0.09, 0.126), "glass")
 	tube(0.019, 0.019, 0.002, Vector3(0, 0.09, -0.236), "glass")
+	scope_sight(Vector3(0, 0.09, 0.126), Vector3(0, 0.09, -0.236))                                         # eyepiece -> objective
 	trigger_group(0.03, 0.0, "park")
 	var bolt: Node3D = group("Bolt", Vector3(0, 0.032, 0.05))
 	tube(0.0095, 0.0095, 0.13, Vector3(0, 0, -0.025), "steel", "z", bolt)
@@ -1018,9 +1069,8 @@ func _w_springfield() -> void:
 	marker("Muzzle", Vector3(0, 0.032, -0.73))
 	rhand(Vector3(0, -0.022, 0.062), 38.0, 0.02)
 	lhand(Vector3(0, 0.002, -0.31), "z", 0.026)
-	meta(Vector3(0, 0.09, 0.14), "bolt", 1.1, 0.07)
+	meta("bolt", 1.1)
 	root.set_meta("scope", 4.0)          # magnification hint; ADS shows the scope picture (HUD) instead of the model
-	root.set_meta("front", Vector3(0, 0.09, -0.236))
 	root.set_meta("port", Vector3(0.012, 0.045, 0.0))
 	root.set_meta("bore", 0.0045)
 
@@ -1037,8 +1087,8 @@ func _w_m1_garand() -> void:
 	tube(0.0135, 0.0135, 0.05, Vector3(0, 0.032, -0.73), "park")                                              # gas cylinder
 	for x: float in [-0.0085, 0.0085]:
 		box(Vector3(0.003, 0.022, 0.014), Vector3(x, 0.061, -0.735), "park")                                  # front sight ears
-	box(Vector3(0.0028, 0.019, 0.004), Vector3(0, 0.0595, -0.735), "park")                                   # front blade
-	var rs: Vector3 = rear_aperture(0.05, 0.075, 0.06, "park", 0.0032, 0.008)
+	front_blade(-0.735, 0.05, 0.069, "park")
+	rear_aperture(0.05, 0.075, 0.06, "park", 0.0032, 0.008)
 	var op: Node3D = group("Bolt", Vector3(0.025, 0.035, -0.07))
 	tube(0.0045, 0.0045, 0.36, Vector3(0, -0.005, -0.18), "park", "z", op)
 	prof(P([[0.0, -0.01], [0.03, -0.01], [0.03, 0.012], [0.0, 0.012]]), 0.016, "park", 0.006, op)
@@ -1050,8 +1100,7 @@ func _w_m1_garand() -> void:
 	marker("Muzzle", Vector3(0, 0.04, -0.76))
 	rhand(Vector3(0, -0.026, 0.072), 38.0, 0.02)
 	lhand(Vector3(0, 0.008, -0.26), "z", 0.027)
-	meta(rs, "enbloc", 1.1, 0.24)
-	root.set_meta("front", Vector3(0, 0.069, -0.735))
+	meta("enbloc", 1.1)
 	root.set_meta("port", Vector3(0.012, 0.06, -0.03))
 	root.set_meta("bore", 0.0045)
 
@@ -1066,7 +1115,7 @@ func _w_gewehr43() -> void:
 	tube(0.0085, 0.0085, 0.26, Vector3(0, 0.06, -0.3), "blued")
 	front_post(-0.615, 0.047, 0.068, "blued", true, 0.0105)
 	prof(P([[-0.095, 0.055], [-0.15, 0.055], [-0.15, 0.06], [-0.095, 0.061]]), 0.02, "blued")
-	var rs: Vector3 = rear_notch(-0.1, 0.058, 0.0115, "blued", 0.018, 0.0045)
+	rear_notch(-0.1, 0.058, 0.0115, "blued", 0.018, 0.0045)
 	box(Vector3(0.006, 0.012, 0.1), Vector3(0.022, 0.045, -0.04), "blued")                                    # scope rail
 	var bolt: Node3D = group("Bolt", Vector3(-0.024, 0.042, 0.0))
 	box(Vector3(0.012, 0.012, 0.022), Vector3.ZERO, "steel", Vector3.ZERO, bolt)
@@ -1076,8 +1125,7 @@ func _w_gewehr43() -> void:
 	marker("Muzzle", Vector3(0, 0.034, -0.64))
 	rhand(Vector3(0, -0.03, 0.05), 38.0, 0.02)
 	lhand(Vector3(0, 0.01, -0.25), "z", 0.026)
-	meta(rs, "mag", 1.13, 0.32)
-	root.set_meta("front", Vector3(0, 0.068, -0.615))
+	meta("mag", 1.13)
 	root.set_meta("port", Vector3(0.02, 0.045, -0.03))
 	root.set_meta("bore", 0.0045)
 
@@ -1093,8 +1141,8 @@ func _w_m1_carbine() -> void:
 	box(Vector3(0.012, 0.016, 0.008), Vector3(0, -0.005, -0.34), "park")                                         # sling swivel
 	for x: float in [-0.008, 0.008]:
 		box(Vector3(0.0028, 0.02, 0.014), Vector3(x, 0.057, -0.525), "park")                                       # front ears
-	box(Vector3(0.0028, 0.022, 0.004), Vector3(0, 0.057, -0.525), "park")
-	var rs: Vector3 = rear_aperture(0.055, 0.0705, 0.055, "park", 0.003, 0.0075)
+	front_blade(-0.525, 0.046, 0.068, "park")
+	rear_aperture(0.055, 0.0705, 0.055, "park", 0.003, 0.0075)
 	var bolt: Node3D = group("Bolt", Vector3(0.022, 0.038, -0.04))
 	box(Vector3(0.012, 0.01, 0.02), Vector3.ZERO, "park", Vector3.ZERO, bolt)
 	tube(0.004, 0.004, 0.14, Vector3(-0.006, 0, -0.07), "park", "z", bolt)
@@ -1104,8 +1152,7 @@ func _w_m1_carbine() -> void:
 	marker("Muzzle", Vector3(0, 0.038, -0.55))
 	rhand(Vector3(0, -0.022, 0.075), 36.0, 0.019)
 	lhand(Vector3(0, 0.012, -0.22), "z", 0.024)
-	meta(rs, "mag", 0.9, 0.24)
-	root.set_meta("front", Vector3(0, 0.068, -0.525))
+	meta("mag", 0.9)
 	root.set_meta("port", Vector3(0.017, 0.045, -0.02))
 	root.set_meta("bore", 0.004)
 
@@ -1119,7 +1166,7 @@ func _w_mp40() -> void:
 	prof(P([[-0.33, 0.026], [-0.36, 0.026], [-0.37, -0.012], [-0.34, -0.012]]), 0.014, "blued")              # resting bar
 	front_post(-0.385, 0.04, 0.061, "blued", true, 0.0095)                                                  # hooded front sight
 	prof(P([[0.02, 0.048], [0.05, 0.048], [0.05, 0.052], [0.025, 0.052]]), 0.018, "blued")                    # rear sight base
-	var rs: Vector3 = rear_notch(0.035, 0.051, 0.011, "blued", 0.016, 0.0045)
+	rear_notch(0.035, 0.051, 0.011, "blued", 0.016, 0.0045)
 	prof(P([[-0.105, 0.015], [-0.16, 0.015], [-0.16, -0.06], [-0.105, -0.06]]), 0.034, "blued")             # mag housing
 	grip(0.035, -0.005, 0.1, "bakelite", 20.0, 0.042, 0.032)
 	# folding stock, extended
@@ -1134,36 +1181,41 @@ func _w_mp40() -> void:
 	box(Vector3(0.026, 0.008, 0.038), Vector3(0, -0.244, 0.0), "blued", Vector3.ZERO, mag)
 	marker("Muzzle", Vector3(0, 0.03, -0.39))
 	lhand(Vector3(0, -0.06, -0.132), "y", 0.02)
-	meta(rs, "mag", 0.63, 0.3)
-	root.set_meta("front", Vector3(0, 0.061, -0.385))
+	meta("mag", 0.63)
 	root.set_meta("port", Vector3(0.02, 0.035, -0.08))
 	root.set_meta("bore", 0.0055)
 
 
 func _w_thompson() -> void:
 	prof(P([[0.1, 0.04], [-0.17, 0.04], [-0.17, 0.0], [0.1, 0.0]]), 0.042, "park")                            # receiver
-	prof(P([[0.1, 0.06], [-0.1, 0.06], [-0.12, 0.04], [0.1, 0.04]]), 0.036, "park")                           # top
+	prof(P([[0.1, 0.052], [0.088, 0.06], [-0.1, 0.06], [-0.12, 0.04], [0.1, 0.04]]), 0.036, "park")           # top
 	prof(P([[0.06, 0.0], [-0.12, 0.0], [-0.12, -0.02], [0.06, -0.02]]), 0.034, "park")                         # trigger frame
 	tube(0.012, 0.012, 0.3, Vector3(0, 0.03, -0.32), "park")
 	for i: int in 9:
 		tube(0.019, 0.019, 0.005, Vector3(0, 0.03, -0.19 - i * 0.016), "park")                                  # cooling fins
 	tube(0.016, 0.015, 0.055, Vector3(0, 0.03, -0.49), "park")                                                 # compensator
-	box(Vector3(0.003, 0.03, 0.006), Vector3(0, 0.054, -0.485), "park")                                      # front blade
-	var rs: Vector3 = rear_aperture(0.07, 0.074, 0.06, "park", 0.0032, 0.0078)
-	box(Vector3(0.006, 0.014, 0.012), Vector3(0, 0.068, -0.02), "park")                                       # cocking knob base
+	# Sights (T-047): a broad blade on the compensator and an M1A1-style fixed peep with tall ears, set high
+	# enough that the line clears the receiver top. The peep is opened up (a game sight picture: the blurry
+	# ring frames the blade, the blade tip sits in its center); the cocking knob rides on the right side.
+	box(Vector3(0.012, 0.006, 0.02), Vector3(0, 0.048, -0.485), "park")                                      # blade base
+	front_blade(-0.485, 0.046, 0.073, "park", 0.007, 0.006)
+	rear_aperture(0.075, 0.078, 0.06, "park", 0.0074, 0.0098, false)
+	for s: float in [-1.0, 1.0]:                                                                               # protective ears
+		prof(P([[0.083, 0.06], [0.064, 0.06], [0.07, 0.079], [0.079, 0.079]]), 0.0028, "park", s * 0.0128)
+	box(Vector3(0.002, 0.004, 0.13), Vector3(0.0212, 0.048, -0.03), "black")                                  # knob slot (right)
 	prof(P([[0.1, 0.035], [0.37, 0.022], [0.38, -0.115], [0.33, -0.118], [0.1, -0.03]]), 0.04, "wood")        # butt
 	box(Vector3(0.042, 0.135, 0.01), Vector3(0, -0.047, 0.383), "park")
 	grip(0.04, -0.015, 0.1, "wood", 18.0, 0.042, 0.032)
 	tube(0.017, 0.019, 0.1, Vector3(0, -0.04, -0.26), "wood", "y")                                            # vertical foregrip
 	trigger_group(0.02, 0.0, "park")
-	var bolt: Node3D = group("Bolt", Vector3(0, 0.074, -0.02))
-	ball(0.008, Vector3.ZERO, "park", Vector3.ONE, bolt)
+	var bolt: Node3D = group("Bolt", Vector3(0.025, 0.048, -0.02))
+	tube(0.0035, 0.0035, 0.008, Vector3(-0.002, 0, 0), "park", "x", bolt)
+	ball(0.0065, Vector3(0.006, 0, 0), "park", Vector3.ONE, bolt)
 	var mag: Node3D = group("Mag", Vector3(0, -0.02, -0.09))
 	prof(P([[0.02, 0.0], [-0.02, 0.0], [-0.02, -0.2], [0.02, -0.2]]), 0.025, "park", 0.0, mag)
 	marker("Muzzle", Vector3(0, 0.03, -0.52))
 	lhand(Vector3(0, -0.05, -0.26), "y", 0.019)
-	meta(rs, "mag", 0.81, 0.28)
-	root.set_meta("front", Vector3(0, 0.069, -0.485))
+	meta("mag", 0.81)
 	root.set_meta("port", Vector3(0.021, 0.045, -0.04))
 	root.set_meta("bore", 0.0065)
 
@@ -1176,7 +1228,7 @@ func _w_stg44() -> void:
 	prof(P([[-0.16, 0.022], [-0.3, 0.022], [-0.3, 0.05], [-0.16, 0.05]]), 0.034, "fieldgray")                  # handguard
 	front_post(-0.492, 0.045, 0.073, "blued", true, 0.0105)                                                   # hooded front sight
 	prof(P([[-0.095, 0.06], [-0.15, 0.06], [-0.15, 0.064], [-0.095, 0.066]]), 0.02, "blued")                  # tangent leaf base
-	var rs: Vector3 = rear_notch(-0.1, 0.064, 0.0105, "blued", 0.018, 0.0045)
+	rear_notch(-0.1, 0.064, 0.0105, "blued", 0.018, 0.0045)
 	prof(P([[0.11, 0.04], [0.37, 0.02], [0.38, -0.115], [0.33, -0.12], [0.11, -0.01]]), 0.04, "wood_light")   # butt
 	box(Vector3(0.042, 0.14, 0.01), Vector3(0, -0.05, 0.383), "blued")
 	grip(0.035, -0.015, 0.1, "wood_light", 18.0, 0.042, 0.03)
@@ -1187,8 +1239,7 @@ func _w_stg44() -> void:
 	prof(P([[0.018, 0.0], [-0.022, 0.0], [-0.04, -0.09], [-0.08, -0.19], [-0.04, -0.205], [-0.005, -0.1]]), 0.022, "fieldgray", 0.0, mag)
 	marker("Muzzle", Vector3(0, 0.03, -0.51))
 	lhand(Vector3(0, 0.034, -0.24), "z", 0.02)
-	meta(rs, "mag", 0.94, 0.34)
-	root.set_meta("front", Vector3(0, 0.073, -0.492))
+	meta("mag", 0.94)
 	root.set_meta("port", Vector3(0.018, 0.04, -0.05))
 	root.set_meta("bore", 0.0045)
 
@@ -1197,15 +1248,17 @@ func _w_trench_gun() -> void:
 	prof(P([[0.08, 0.02], [0.4, -0.01], [0.41, -0.14], [0.36, -0.145], [0.12, -0.05], [0.07, -0.03]]), 0.042, "wood")   # stock
 	box(Vector3(0.044, 0.135, 0.01), Vector3(0, -0.075, 0.405), "blued", Vector3(-8, 0, 0))
 	prof(P([[0.09, 0.06], [-0.13, 0.06], [-0.13, -0.005], [-0.04, -0.03], [0.09, -0.02]]), 0.044, "blued")       # receiver
-	prof(P([[0.05, 0.06], [0.07, 0.078], [0.08, 0.073], [0.065, 0.056]]), 0.012, "blued")                        # exposed hammer
+	prof(P([[0.05, 0.057], [0.085, 0.062], [0.09, 0.059], [0.066, 0.053]]), 0.012, "blued")                     # exposed hammer (cocked, under the sight line)
 	box(Vector3(0.002, 0.03, 0.06), Vector3(0.0225, 0.035, -0.05), "black")                                      # ejection port
 	tube(0.0125, 0.0125, 0.52, Vector3(0, 0.042, -0.39), "blued")
 	tube(0.011, 0.011, 0.46, Vector3(0, 0.012, -0.36), "blued")                                                   # mag tube
-	tube(0.0195, 0.0195, 0.38, Vector3(0, 0.048, -0.36), "perforated")                                           # heat shield
+	tube(0.0185, 0.0185, 0.38, Vector3(0, 0.044, -0.36), "perforated")                                           # heat shield
 	for z: float in [-0.17, -0.55]:
-		tube(0.021, 0.021, 0.012, Vector3(0, 0.046, z), "blued")
+		tube(0.02, 0.02, 0.012, Vector3(0, 0.043, z), "blued")
+	rear_groove(0.0, 0.06, 0.07, "blued", 0.008)                                                                  # matted groove on the receiver
+	box(Vector3(0.006, 0.009, 0.012), Vector3(0, 0.0585, -0.635), "blued")                                        # bead stud
 	prof(P([[-0.6, 0.03], [-0.65, 0.03], [-0.65, -0.005], [-0.6, -0.005]]), 0.016, "blued")                     # bayonet lug
-	ball(0.004, Vector3(0, 0.058, -0.645), "brass")
+	front_bead(Vector3(0, 0.0655, -0.635), 0.004, "brass")
 	trigger_group(0.03, 0.0)
 	var pump: Node3D = group("Pump", Vector3(0, 0.012, -0.27))
 	tube(0.022, 0.022, 0.15, Vector3.ZERO, "wood", "z", pump)
@@ -1215,8 +1268,7 @@ func _w_trench_gun() -> void:
 	marker("Muzzle", Vector3(0, 0.042, -0.65))
 	rhand(Vector3(0, -0.012, 0.1), 36.0, 0.02)
 	lhand(Vector3(0, 0.012, -0.27), "z", 0.024)
-	meta(Vector3(0, 0.0625, 0.0), "shell", 1.0, 0.34)
-	root.set_meta("front", Vector3(0, 0.0625, -0.645))
+	meta("shell", 1.0)
 	root.set_meta("port", Vector3(0.022, 0.035, -0.05))
 	root.set_meta("bore", 0.0095)
 
@@ -1232,12 +1284,12 @@ func _w_sawed_off() -> void:
 		tube(0.0115, 0.0115, 0.32, Vector3(x, 0.012, -0.16), "blued", "z", br)
 	box(Vector3(0.006, 0.006, 0.31), Vector3(0, 0.027, -0.16), "blued", Vector3.ZERO, br)
 	prof(P([[0.0, 0.0], [-0.17, 0.0], [-0.18, -0.02], [0.0, -0.03]]), 0.036, "wood", 0.0, br)                   # forend
-	ball(0.0028, Vector3(0, 0.0325, -0.305), "brass", Vector3.ONE, br)                                             # bead on the rib
+	front_bead(Vector3(0, 0.0325, -0.305), 0.0028, "brass", br)                                                    # bead on the rib
+	rear_groove(0.03, 0.05, 0.05, "blued", 0.002)                                                                  # groove on the action top
 	marker("Muzzle", Vector3(0, 0.032, -0.37))
 	rhand(Vector3(0, -0.012, 0.085), 32.0, 0.02)
 	lhand(Vector3(0, 0.016, -0.14), "z", 0.026)
-	meta(Vector3(0, 0.0545, 0.03), "break", 0.52, 0.34)
-	root.set_meta("front", Vector3(0, 0.0553, -0.355))
+	meta("break", 0.52)
 
 
 func _w_bar() -> void:
@@ -1253,7 +1305,7 @@ func _w_bar() -> void:
 		tube(0.0045, 0.0045, 0.3, Vector3(s * 0.016, 0.016, -0.56), "park", "z")
 		ball(0.0065, Vector3(s * 0.016, 0.016, -0.41), "park")
 	box(Vector3(0.045, 0.014, 0.022), Vector3(0, 0.028, -0.71), "park")                                         # bipod clamp
-	var rs: Vector3 = rear_aperture(0.0, 0.082, 0.055, "park", 0.0034, 0.0085)                                  # rear peep on its tower
+	rear_aperture(0.0, 0.082, 0.055, "park", 0.0034, 0.0085)                                  # rear peep on its tower
 	front_post(-0.755, 0.05, 0.079, "park", true, 0.011)
 	trigger_group(0.06, 0.0, "park")
 	var bolt: Node3D = group("Bolt", Vector3(-0.026, 0.02, -0.12))
@@ -1262,8 +1314,7 @@ func _w_bar() -> void:
 	prof(P([[0.035, 0.0], [-0.035, 0.0], [-0.035, -0.12], [0.035, -0.12]]), 0.032, "park", 0.0, mag)
 	marker("Muzzle", Vector3(0, 0.04, -0.78))
 	lhand(Vector3(0, 0.014, -0.32), "z", 0.026)
-	meta(rs, "mag", 1.21, 0.32)
-	root.set_meta("front", Vector3(0, 0.079, -0.755))
+	meta("mag", 1.21)
 	root.set_meta("port", Vector3(0.024, 0.03, -0.06))
 	root.set_meta("bore", 0.0055)
 
@@ -1275,7 +1326,7 @@ func _w_ppsh41() -> void:
 	tube(0.022, 0.022, 0.26, Vector3(0, 0.038, -0.25), "perforated")
 	prof(P([[-0.38, 0.06], [-0.42, 0.045], [-0.42, 0.015], [-0.38, 0.015]]), 0.04, "blued")                     # slanted compensator
 	front_post(-0.395, 0.058, 0.074, "blued", true, 0.0095)
-	var rs: Vector3 = rear_notch(0.055, 0.06, 0.0115, "blued", 0.018, 0.0045)
+	rear_notch(0.055, 0.06, 0.0115, "blued", 0.018, 0.0045)
 	trigger_group(0.02, 0.01)
 	var bolt: Node3D = group("Bolt", Vector3(0.026, 0.04, -0.03))
 	tube(0.006, 0.006, 0.02, Vector3(0.005, 0, 0), "steel", "x", bolt)
@@ -1286,9 +1337,8 @@ func _w_ppsh41() -> void:
 	box(Vector3(0.03, 0.04, 0.04), Vector3(0, 0.07, 0.0), "blued", Vector3.ZERO, mag)
 	marker("Muzzle", Vector3(0, 0.038, -0.42))
 	rhand(Vector3(0, -0.03, 0.08), 36.0, 0.021)
-	lhand(Vector3(0, 0.036, -0.23), "z", 0.024)
-	meta(rs, "drum", 0.84, 0.28)
-	root.set_meta("front", Vector3(0, 0.074, -0.395))
+	lhand(Vector3(0, 0.02, -0.23), "z", 0.024)            # low on the jacket: the fingers stay under the sight line
+	meta("drum", 0.84)
 	root.set_meta("port", Vector3(0.023, 0.05, -0.04))
 	root.set_meta("bore", 0.0055)
 
@@ -1303,7 +1353,7 @@ func _w_type100() -> void:
 	front_post(-0.37, 0.045, 0.066, "blued", false)
 	for x: float in [-0.0085, 0.0085]:
 		box(Vector3(0.003, 0.018, 0.012), Vector3(x, 0.058, -0.37), "blued")                                        # front guards
-	var rs: Vector3 = rear_notch(0.01, 0.05, 0.016, "blued", 0.018, 0.0045)
+	rear_notch(0.01, 0.05, 0.016, "blued", 0.018, 0.0045)
 	trigger_group(0.03, -0.005)
 	var bolt: Node3D = group("Bolt", Vector3(0.022, 0.035, 0.0))
 	box(Vector3(0.012, 0.01, 0.014), Vector3.ZERO, "steel", Vector3.ZERO, bolt)
@@ -1312,8 +1362,7 @@ func _w_type100() -> void:
 	marker("Muzzle", Vector3(0, 0.032, -0.4))
 	rhand(Vector3(0, -0.025, 0.07), 36.0, 0.02)
 	lhand(Vector3(0, 0.006, -0.19), "z", 0.025)
-	meta(rs, "mag", 0.87, 0.28)
-	root.set_meta("front", Vector3(0, 0.066, -0.37))
+	meta("mag", 0.87)
 	root.set_meta("port", Vector3(0.018, 0.04, -0.06))
 	root.set_meta("bore", 0.005)
 
@@ -1341,9 +1390,8 @@ func _w_mg42() -> void:
 		tube(0.005, 0.005, 0.045, Vector3(0.045 + i * 0.005, 0.04 + i * 0.008, 0.0), "brass", "x", mag)
 	marker("Muzzle", Vector3(0, 0.038, -0.72))
 	lhand(Vector3(0, 0.03, -0.36), "z", 0.03)
-	var rs: Vector3 = rear_notch(-0.045, 0.09, 0.0125, "blued", 0.02, 0.005)
-	meta(rs, "belt", 1.22, 0.36)
-	root.set_meta("front", Vector3(0, 0.101, -0.59))
+	rear_notch(-0.045, 0.09, 0.0125, "blued", 0.02, 0.005)
+	meta("belt", 1.22)
 	root.set_meta("port", Vector3(0.0, -0.01, -0.04))
 	root.set_meta("bore", 0.0065)
 
@@ -1354,7 +1402,7 @@ func _w_m1919() -> void:
 	prof(P([[0.0, 0.0], [-0.17, 0.0], [-0.17, 0.016], [0.0, 0.02]]), 0.06, "park", 0.0, cover)
 	tube(0.024, 0.024, 0.4, Vector3(0, 0.035, -0.42), "perforated")
 	tube(0.012, 0.016, 0.06, Vector3(0, 0.035, -0.65), "park")
-	var rs: Vector3 = rear_aperture(0.04, 0.092, 0.065, "park", 0.0034, 0.0085)
+	rear_aperture(0.04, 0.092, 0.065, "park", 0.0034, 0.0085)
 	box(Vector3(0.016, 0.026, 0.014), Vector3(0, 0.072, -0.6), "park")                                          # front sight base
 	front_post(-0.6, 0.082, 0.09, "park", false)
 	prof(P([[0.1, 0.03], [0.32, -0.02], [0.33, -0.1], [0.28, -0.11], [0.1, -0.03]]), 0.04, "wood")
@@ -1372,8 +1420,7 @@ func _w_m1919() -> void:
 		tube(0.005, 0.005, 0.045, Vector3(0.045 + i * 0.007, 0.035 + i * 0.008, 0.0), "brass", "x", mag)
 	marker("Muzzle", Vector3(0, 0.035, -0.68))
 	lhand(Vector3(0, 0.035, -0.3), "z", 0.026)
-	meta(rs, "belt", 1.0, 0.36)
-	root.set_meta("front", Vector3(0, 0.09, -0.6))
+	meta("belt", 1.0)
 	root.set_meta("port", Vector3(0.0, -0.016, -0.03))
 	root.set_meta("bore", 0.0055)
 
@@ -1387,7 +1434,7 @@ func _w_ptrs41() -> void:
 	prof(P([[-1.12, 0.06], [-1.2, 0.06], [-1.2, 0.01], [-1.12, 0.01]]), 0.07, "blued")
 	for z: float in [-1.14, -1.165, -1.19]:
 		box(Vector3(0.075, 0.03, 0.008), Vector3(0, 0.035, z), "black")
-	var rs: Vector3 = rear_notch(-0.07, 0.06, 0.024, "blued", 0.022, 0.005)
+	rear_notch(-0.07, 0.06, 0.024, "blued", 0.022, 0.005)
 	for s: float in [-1.0, 1.0]:                                                                                   # bipod, folded back
 		tube(0.0055, 0.0055, 0.38, Vector3(s * 0.022, 0.012, -0.53), "blued", "z")
 		ball(0.008, Vector3(s * 0.022, 0.012, -0.34), "blued")
@@ -1400,8 +1447,7 @@ func _w_ptrs41() -> void:
 	prof(P([[0.07, 0.0], [-0.07, 0.0], [-0.07, -0.09], [0.07, -0.09]]), 0.04, "blued", 0.0, mag)
 	marker("Muzzle", Vector3(0, 0.035, -1.2))
 	lhand(Vector3(0, 0.035, -0.36), "z", 0.022)
-	meta(rs, "mag", 1.2, 0.4)
-	root.set_meta("front", Vector3(0, 0.082, -1.0))
+	meta("mag", 1.2)
 	root.set_meta("port", Vector3(0.026, 0.045, -0.02))
 	root.set_meta("bore", 0.0085)
 
@@ -1426,10 +1472,16 @@ func _w_panzerschreck() -> void:
 	box(Vector3(0.05, 0.06, 0.12), Vector3(0, 0.005, 0.35), "rubber")
 	grip(0.0, 0.025, 0.1, "wood", 10.0, 0.04, 0.03)
 	grip(-0.45, 0.025, 0.09, "wood", 0.0, 0.035, 0.03)
-	box(Vector3(0.05, 0.004, 0.004), Vector3(-0.075, 0.15, -0.75), "olive")                                      # front sight frame
-	box(Vector3(0.004, 0.03, 0.004), Vector3(-0.075, 0.14, -0.75), "olive")
-	box(Vector3(0.004, 0.08, 0.004), Vector3(-0.075, 0.11, -0.2), "olive")                                       # rear sight post (seen through the window)
-	box(Vector3(0.02, 0.004, 0.004), Vector3(-0.075, 0.15, -0.2), "olive")
+	# sights, left of the tube on the sighting line through the window: a notch plate on a post at the rear, a
+	# post inside an open frame at the front
+	var sg: Node3D = group("Sights", Vector3(-0.075, 0, 0))
+	box(Vector3(0.05, 0.004, 0.004), Vector3(0, 0.168, -0.75), "olive", Vector3.ZERO, sg)                      # front sight frame
+	for sx: float in [-0.023, 0.023]:
+		box(Vector3(0.004, 0.05, 0.004), Vector3(sx, 0.145, -0.75), "olive", Vector3.ZERO, sg)
+	box(Vector3(0.05, 0.004, 0.004), Vector3(0, 0.12, -0.75), "olive", Vector3.ZERO, sg)
+	front_blade(-0.75, 0.12, 0.1528, "olive", 0.004, 0.004, sg)
+	box(Vector3(0.004, 0.072, 0.004), Vector3(0, 0.106, -0.2), "olive", Vector3.ZERO, sg)                      # rear sight post (seen through the window)
+	rear_notch(-0.2, 0.142, 0.012, "olive", 0.024, 0.006, sg)
 	trigger_group(0.02, 0.025, "olive")
 	var rocket: Node3D = group("Rocket", Vector3(0, 0.07, 0.62))
 	tube(0.04, 0.04, 0.25, Vector3(0, 0, 0), "fieldgray", "z", rocket)
@@ -1437,13 +1489,15 @@ func _w_panzerschreck() -> void:
 	rocket.hide()
 	marker("Muzzle", Vector3(0, 0.07, -1.12))
 	lhand(Vector3(0, -0.017, -0.45), "y", 0.017)
-	meta(Vector3(-0.075, 0.15, -0.2), "rocket", 1.5, 0.46)   # eye back by the shoulder rest, well behind the shield
+	meta("rocket", 1.5)
 
 
 func _w_flamethrower() -> void:
 	tube(0.016, 0.016, 0.6, Vector3(0, 0.03, -0.2), "olive")
 	tube(0.022, 0.016, 0.06, Vector3(0, 0.03, -0.53), "black")
 	box(Vector3(0.03, 0.03, 0.05), Vector3(0, 0.055, -0.5), "black")
+	front_post(-0.5, 0.07, 0.0768, "black", false)                                                              # aiming post on the nozzle
+	rear_notch(0.0, 0.046, 0.032, "olive", 0.018, 0.005)                                                       # notch plate over the valve
 	ball(0.012, Vector3(0, 0.03, -0.565), "glow_amber")
 	grip(0.02, 0.015, 0.09, "wood", 15.0, 0.04, 0.03)
 	grip(-0.32, 0.015, 0.09, "wood", 0.0, 0.035, 0.03)
@@ -1454,7 +1508,7 @@ func _w_flamethrower() -> void:
 	marker("Mag", Vector3(0, 0.03, 0.1))
 	marker("Muzzle", Vector3(0, 0.03, -0.58))
 	lhand(Vector3(0, -0.027, -0.32), "y", 0.017)
-	meta(Vector3(0, 0.08, 0.0), "fuel", 0.6, 0.2)
+	meta("fuel", 0.6)
 
 
 func _w_ashlight() -> void:
@@ -1464,13 +1518,15 @@ func _w_ashlight() -> void:
 		ring(0.012, 0.02, Vector3(0, 0.035, -0.14 - i * 0.03), "bronze")
 	tube(0.019, 0.019, 0.07, Vector3(0, 0.068, -0.03), "glass")
 	tube(0.032, 0.022, 0.03, Vector3(0, 0.035, -0.29), "bronze")
+	front_post(-0.282, 0.062, 0.0958, "bronze", true, 0.008)                                                   # post over the emitter bell
+	rear_notch(0.03, 0.05, 0.047, "brass", 0.018, 0.005)                                                       # notch leaf behind the capsule
 	grip(0.035, 0.005, 0.1, "wood", 18.0, 0.042, 0.032)
 	trigger_group(-0.01, 0.01, "brass")
 	var mag: Node3D = group("Mag", Vector3(0, 0.068, -0.03))
 	tube(0.011, 0.011, 0.05, Vector3.ZERO, "glow_violet", "z", mag)
 	marker("Muzzle", Vector3(0, 0.035, -0.31))
 	lhand(Vector3(-0.006, -0.042, 0.052), "y", 0.03)
-	meta(Vector3(0, 0.09, 0.0), "capsule", 0.32, 0.3)
+	meta("capsule", 0.32)
 
 
 func _w_totenglocke() -> void:
@@ -1481,6 +1537,8 @@ func _w_totenglocke() -> void:
 	box(Vector3(0.3, 0.03, 0.03), Vector3(0, 0.17, -0.3), "blued")
 	box(Vector3(0.03, 0.12, 0.03), Vector3(-0.14, 0.11, -0.3), "blued")
 	box(Vector3(0.03, 0.12, 0.03), Vector3(0.14, 0.11, -0.3), "blued")
+	rear_notch(-0.29, 0.185, 0.03, "blued", 0.03, 0.008)                                                       # notch on the frame's crossbar
+	front_bead(Vector3(0, 0.2095, -0.45), 0.005, "brass")                                                       # bead on the bell rim
 	grip(0.04, 0.0, 0.1, "wood", 15.0, 0.042, 0.034)
 	grip(-0.2, 0.0, 0.09, "wood", 0.0, 0.035, 0.03)
 	var crank: Node3D = group("Crank", Vector3(0.06, 0.02, -0.05))
@@ -1488,7 +1546,7 @@ func _w_totenglocke() -> void:
 	tube(0.01, 0.01, 0.05, Vector3(0.025, 0.11, 0), "wood", "x", crank)
 	marker("Muzzle", Vector3(0, 0.06, -0.46))
 	lhand(Vector3(0, -0.042, -0.2), "y", 0.017)
-	meta(Vector3(0, 0.2, 0.0), "bell", 0.5, 0.2)
+	meta("bell", 0.5)
 
 
 ## Sankt-Elmsfeuer: a ship's arc projector rebuilt as a carbine. A copper induction coil in a glass sleeve over
@@ -1511,6 +1569,8 @@ func _w_elmsfeuer() -> void:
 	for sx: float in [-0.012, 0.012]:                                                                                        # insulator "sights"
 		tube(0.006, 0.006, 0.022, Vector3(sx, 0.106, -0.2), "white", "y")
 		tube(0.004, 0.004, 0.01, Vector3(sx, 0.122, -0.2), "copper", "y")
+	rear_notch(0.0, 0.094, 0.014, "brass", 0.018, 0.005)                                                       # notch at the breech end
+	front_post(-0.4, 0.084, 0.1068, "copper", false)                                                            # post on the muzzle band
 	var crank: Node3D = group("Crank", Vector3(0.03, 0.05, -0.12))
 	tube(0.006, 0.006, 0.04, Vector3.ZERO, "blued", "x", crank)
 	box(Vector3(0.01, 0.045, 0.01), Vector3(0.04, 0.02, 0), "blued", Vector3.ZERO, crank)
@@ -1521,7 +1581,7 @@ func _w_elmsfeuer() -> void:
 	grip(0.045, 0.0, 0.1, "wood", 16.0, 0.042, 0.032)
 	marker("Muzzle", Vector3(0, 0.05, -0.54))
 	lhand(Vector3(0, -0.012, -0.25), "z", 0.03)
-	meta(Vector3(0, 0.11, -0.2), "crank", 0.54, 0.32)
+	meta("crank", 0.54)
 
 
 func _w_gramophone() -> void:
@@ -1531,7 +1591,7 @@ func _w_gramophone() -> void:
 	tube(0.006, 0.006, 0.15, Vector3(0.08, 0.1, 0.02), "brass", "y")
 	tube(0.012, 0.12, 0.22, Vector3(0.08, 0.2, -0.08), "brass").rotation_degrees = Vector3(60, 0, 0)
 	tube(0.006, 0.006, 0.05, Vector3(0.12, 0.0, 0.0), "brass", "x")
-	meta(Vector3(0, 0.2, 0), "none", 0.25, 0.3)
+	meta("none", 0.25)
 
 
 func _w_trench_knife() -> void:
@@ -1544,7 +1604,7 @@ func _w_trench_knife() -> void:
 	box(Vector3(0.0055, 0.002, 0.14), Vector3(0, 0.0, -0.1), "blued")                                              # fuller
 	ball(0.01, Vector3(0, 0, 0.09), "brass")
 	marker("Muzzle", Vector3(0, 0, -0.22))
-	meta(Vector3.ZERO, "none", 0.25, 0.3)
+	meta("none", 0.25)
 
 
 func _w_etool() -> void:
@@ -1553,7 +1613,7 @@ func _w_etool() -> void:
 	prof(P([[-0.38, 0.075], [-0.52, 0.075], [-0.57, 0.0], [-0.52, -0.075], [-0.38, -0.075]]), 0.004, "olive")     # spade
 	prof(P([[-0.52, 0.075], [-0.575, 0.002], [-0.56, 0.002], [-0.51, 0.07]]), 0.0045, "steel")                     # sharpened edge
 	marker("Muzzle", Vector3(0, 0, -0.57))
-	meta(Vector3.ZERO, "none", 0.55, 0.3)
+	meta("none", 0.55)
 
 
 func _w_frag() -> void:
@@ -1566,7 +1626,7 @@ func _w_frag() -> void:
 	tube(0.01, 0.01, 0.02, Vector3(0, 0.04, 0), "steel", "y")
 	box(Vector3(0.01, 0.07, 0.004), Vector3(0.02, 0.02, 0), "steel", Vector3(0, 0, -10))
 	ring(0.008, 0.011, Vector3(-0.012, 0.05, 0), "steel", "z")
-	meta(Vector3.ZERO, "none", 0.08, 0.3)
+	meta("none", 0.08)
 
 
 func _w_generic() -> void:
@@ -1574,9 +1634,11 @@ func _w_generic() -> void:
 	tube(0.012, 0.012, 0.4, Vector3(0, 0.03, -0.4), "blued")
 	prof(P([[0.1, 0.04], [0.36, 0.01], [0.37, -0.11], [0.3, -0.12], [0.1, -0.03]]), 0.04, "wood")
 	grip(0.04, -0.005, 0.09, "wood")
+	rear_notch(0.0, 0.05, 0.012)
+	front_post(-0.58, 0.042, 0.0608, "blued", false)
 	var mag: Node3D = group("Mag", Vector3(0, 0.0, -0.08))
 	box(Vector3(0.025, 0.15, 0.04), Vector3(0, -0.075, 0), "blued", Vector3.ZERO, mag)
-	meta(Vector3(0, 0.06, 0.0), "mag", 0.6)
+	meta("mag", 0.6)
 
 
 ## Upgraded weapons: a faint violet light so the veins read in the dark.

@@ -105,6 +105,8 @@ func _ready() -> void:
 		var br: int = int(b[2])
 		var boss: String = str(b[3])
 		col.add_child(MenuKit.button(str(b[0]), func() -> void: _start_gl(bscene, br, boss), 22, "ui_confirm"))
+	col.add_child(_header("Update 02 tests"))
+	col.add_child(MenuKit.button("Weapon range — ADS check  ( [ / ] cycle guns )", func() -> void: AdsRange.launch(get_tree()), 22, "ui_confirm"))
 	col.add_child(_header("Bolt & Sprocket"))
 	for l: Array in BS_LEVELS:
 		var lscene: String = str(l[1])

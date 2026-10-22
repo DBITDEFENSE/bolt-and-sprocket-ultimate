@@ -202,7 +202,19 @@ func fov_mult() -> float:
 	var w: WeaponInstance = current()
 	if w == null:
 		return 1.0
-	return lerpf(1.0, float(ADS_ZOOM.get(w.weapon_class(), 0.8)), ads_t)
+	return lerpf(1.0, ads_zoom(w), ads_t)
+
+
+var _zoom_cache: Dictionary = {}   # weapon id -> ADS FOV multiplier
+
+
+## ADS FOV multiplier for a weapon (T-047): weapons.json feel "ads_zoom" (per weapon, upgraded rows inherit
+## the base row's, class value as the fallback), else the old per-class ADS_ZOOM table.
+func ads_zoom(w: WeaponInstance) -> float:
+	if not _zoom_cache.has(w.id):
+		var fallback: float = float(ADS_ZOOM.get(w.weapon_class(), 0.8))
+		_zoom_cache[w.id] = clampf(float(feel_for(w).get("ads_zoom", fallback)), 0.1, 1.0)
+	return float(_zoom_cache[w.id])
 
 
 func move_mult() -> float:
@@ -1258,7 +1270,9 @@ var _hip: Vector3 = Vector3(0.16, -0.19, -0.3)
 var _hip_rot: Vector3 = Vector3.ZERO     # extra hip-only rotation (radians), from data vm_hip_rot
 var _reload_tilt: float = 1.0            # how far the gun rolls toward the face while reloading (data vm_reload_tilt)
 var _ads: Vector3 = Vector3(0.0, -0.06, -0.2)
-var _ads_rot: Vector3 = Vector3.ZERO       # ADS pitch that lines the front sight up with the rear
+var _ads_rot: Vector3 = Vector3.ZERO       # ADS turn that lines the front sight up with the rear (_compute_ads_pose)
+## Tools only (ads_check, vm_shots): pose the viewmodel without sway, bob, breathing or kick.
+var steady: bool = false
 var _sprint_style: String = "rifle"
 var _rig: Node3D                            # viewmodel-FOV scale node (see _build_viewmodel)
 var _sprint_b: float = 0.0
@@ -1387,16 +1401,7 @@ func _rebuild_gun() -> void:
 	_hip_rot = _v3(_feel.get("hip_rot", [0, 0, 0])) * (PI / 180.0)
 	_reload_tilt = float(_feel.get("reload_tilt", 1.0))
 	_sprint_style = str(_feel.get("sprint", "rifle"))
-	# ADS: put the rear sight on the camera axis at the eye-relief distance, pitched so the front sight
-	# sits on the same line (sight picture: post centered in the notch / aperture, both on the crosshair).
-	var sight: Vector3 = _model.get_meta("sight", Vector3(0, 0.05, 0))
-	var relief: float = float(_feel.get("eye_relief", _model.get_meta("eye_relief", 0.14)))
-	var pitch: float = 0.0
-	if _model.has_meta("front"):
-		var fr: Vector3 = _model.get_meta("front")
-		pitch = -atan2(fr.y - sight.y, maxf(0.05, sight.z - fr.z))
-	_ads_rot = Vector3(pitch, 0, 0)
-	_ads = Vector3(0, 0, -relief) - Basis.from_euler(_ads_rot) * sight
+	_compute_ads_pose()
 	_grip_r = _model.get_meta("grip_r", Transform3D(Basis(), Vector3(0, -0.04, 0.05)))
 	_grip_r_radius = float(_model.get_meta("grip_r_radius", WeaponModels.HAND_R0))
 	_lh_axis = str(_model.get_meta("lh_axis", "z"))
@@ -1440,6 +1445,67 @@ func _rebuild_gun() -> void:
 	# Empty Garand: the clip is gone and the bolt is locked back until a new en-bloc goes in.
 	if _reload_kind == "enbloc" and w.mag == 0 and _parts.has("Mag"):
 		(_parts["Mag"] as Node3D).hide()
+
+
+## ADS pose (T-047): the gun is placed so its SightPoint marker sits exactly on the camera's center ray at
+## the weapon's eye relief (data: weapons.json feel.eye_relief), turned so its FrontSight marker lies on the
+## same ray. Nothing else offsets the aimed pose: a model only has to build its sights with the WeaponModels
+## sight helpers. The viewmodel FOV scale and the anti-clipping compression (_update_rig_scale) scale about
+## the eye, which maps the center ray onto itself, so they cannot move the sight picture.
+func _compute_ads_pose() -> void:
+	var marks: Array = sight_marks_model()
+	var sight: Vector3 = marks[0]
+	var d: Vector3 = (marks[1] as Vector3) - sight
+	var relief: float = maxf(0.05, float(_feel.get("eye_relief", 0.25)))
+	var b: Basis = Basis.IDENTITY
+	if d.length() > 0.01:
+		b = Basis.looking_at(d.normalized(), Vector3.UP).inverse()   # sight line (rear -> front) onto -Z, no roll
+	_ads_rot = b.get_euler()
+	_ads = Vector3(0, 0, -relief) - b * sight
+
+
+## The held model's [SightPoint, FrontSight] in model space. `rest`: as built (moving parts at rest), else
+## as they are this frame. Without markers (no gun): a point above the grip and one straight ahead.
+func sight_marks_model(rest: bool = true) -> Array:
+	var out: Array = [Vector3(0, 0.05, 0), Vector3(0, 0.05, -0.5)]
+	if _model == null:
+		return out
+	var names: Array = ["SightPoint", "FrontSight"]
+	for i: int in 2:
+		var n: Node3D = _model.find_child(names[i], true, false) as Node3D
+		if n == null:
+			continue
+		var xf: Transform3D = n.transform
+		var p: Node = n.get_parent()
+		while p != null and p != _model:
+			var pxf: Transform3D = (p as Node3D).transform
+			if rest and _rest.has(String(p.name)):
+				pxf = _rest[String(p.name)]
+			xf = pxf * xf
+			p = p.get_parent()
+		out[i] = xf.origin
+	return out
+
+
+## Camera-space [SightPoint, FrontSight]. `live`: where the viewmodel draws them this frame (sway, kick and
+## all); otherwise the pure ADS pose through the same rig transform (what the alignment math promises).
+func sight_marks_camera(live: bool = false) -> Array:
+	if _model == null or _rig == null:
+		return []
+	_update_rig_scale()
+	var vm_xf: Transform3D = _vm.transform if live else Transform3D(Basis.from_euler(_ads_rot), _ads)
+	var xf: Transform3D = _rig.transform * vm_xf * _gun.transform * _model.transform
+	var m: Array = sight_marks_model(not live)
+	return [xf * (m[0] as Vector3), xf * (m[1] as Vector3)]
+
+
+## Pixel offset from the screen center (+x right, +y down) of a camera-space point, for a camera with vertical
+## FOV `fov_deg` drawing `height` px tall (Camera3D keep-height). Used by the ADS checks.
+static func project_offset_px(p: Vector3, fov_deg: float, height: float) -> Vector2:
+	if p.z > -0.0001:
+		return Vector2(INF, INF)
+	var f: float = height * 0.5 / tan(deg_to_rad(fov_deg) * 0.5)
+	return Vector2(p.x / -p.z, -p.y / -p.z) * f
 
 
 func _rebuild_knife() -> void:
@@ -1758,13 +1824,19 @@ func _animate(delta: float, sprinting: bool) -> void:
 	var bob_pos: Vector3 = Vector3(sw * 0.009, -dip * 0.011 + 0.005, 0.0) * bob_k * (1.0 + sprint_e * 0.9)
 	var bob_rot: Vector3 = Vector3(-dip * 0.012, sw * 0.012, sw * 0.022) * bob_k + Vector3(-dip * 0.03, sw * 0.06, sw * 0.05) * sprint_e * _bob_amt
 	_idle_t += delta
-	var idle_k: float = (1.0 - ads_e * 0.85) * (1.0 - _bob_amt * 0.7)
+	var idle_k: float = (1.0 - ads_e) * (1.0 - _bob_amt * 0.7)
 	var breathe_pos: Vector3 = Vector3(sin(_idle_t * 0.83) * 0.0016, sin(_idle_t * 1.61) * 0.0022, 0.0) * idle_k
 	var breathe_rot: Vector3 = Vector3(sin(_idle_t * 1.21) * 0.004, sin(_idle_t * 0.7) * 0.005, 0.0) * idle_k
 	# ---- look sway: the gun lags behind fast turns on a spring and overshoots a little when you stop
 	var rate: Vector2 = _look_in / maxf(delta, 0.001)
 	_look_in = Vector2.ZERO
-	var sway_k: float = lerpf(1.0, 0.22, ads_e) * float(_feel.get("sway_mult", 1.0))
+	# ADS sway (T-047) scales with the weapon's "sway" stat (x the perk sway_mult): aimed, the turn lag is a
+	# fraction of the hip's, and the gun traces a slow figure-8 (idle) / a stride-paced one (walking).
+	var ads_sway: float = 0.3 if w == null else w.f("sway", 0.3) * float(PerkManager.stat(player.player_id, "sway_mult", 1.0))
+	var sway_k: float = lerpf(1.0, 0.3 * ads_sway, ads_e) * float(_feel.get("sway_mult", 1.0))
+	var idle8: Vector2 = Vector2(sin(_idle_t * 0.9), sin(_idle_t * 1.8) * 0.5) * 0.005 * (1.0 - _bob_amt * 0.6)
+	var walk8: Vector2 = Vector2(sin(ph), sin(ph * 2.0) * 0.5) * 0.028 * _bob_amt
+	var s8: Vector2 = (idle8 + walk8) * ads_sway * ads_e * float(_feel.get("ads_sway_mult", 1.0))
 	var target: Vector2 = (rate * 0.000045 * sway_k).limit_length(0.075)
 	var spr: Array = _spring2(_sway, _sway_v, target, 13.0, 0.55, delta)
 	_sway = spr[0]
@@ -1826,6 +1898,10 @@ func _animate(delta: float, sprinting: bool) -> void:
 	_rig.visible = not scoped()
 	_vm.position = pos + bob_pos + breathe_pos + _vk_p + Vector3(-_sway.x * 0.045, _sway.y * 0.04, 0.0)
 	_vm.rotation = rot + bob_rot + breathe_rot + _vk_r + Vector3(_sway.y * 0.8, _sway.x * 0.8, _sway.x * 0.6)
+	_vm.rotation += Vector3(s8.y, s8.x, 0.0)                     # ADS figure-8 (pitch, yaw)
+	if steady:   # check tools (ads_check): the bare pose, no sway / bob / breathing / kick
+		_vm.position = pos
+		_vm.rotation = rot
 	# ---- arms
 	var melee: bool = _melee_t > 0.0
 	_gun.visible = not melee
@@ -1970,7 +2046,9 @@ func _update_rig_scale() -> void:
 	_eye_off = Vector3.ZERO
 	if player != null and player.camera != null:
 		_eye_off = Vector3(player.camera.h_offset, player.camera.v_offset, 0.0)
-	_rig.position = _eye_off * (1.0 - _vm_compress)
+	# Aimed, the rig rides the shaken eye fully (T-047), so screen shake can't knock the sights off the
+	# center ray; at the hip it keeps the D-062 behaviour.
+	_rig.position = _eye_off * (1.0 - _vm_compress * (1.0 - smoothstep(0.0, 1.0, ads_t)))
 
 
 ## Maps compressed viewmodel space back to where the viewmodel visually is in the world (undoes the

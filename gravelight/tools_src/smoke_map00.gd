@@ -95,7 +95,7 @@ func _check_paths() -> void:
 		["yard -> the cellar's roof (must NOT connect)", Vector3(18, 0, 41), Vector3(30, 0, 22), false],
 		# the Old Cellar (Update 02 section 6.1, T-051)
 		["taproom -> the Old Cellar's barrel vault", Vector3(14, 0, 8), Vector3(17.45, -3.2, 4.5), true],
-		["vault -> the Helvetia cellar (the breach)", Vector3(13, -3.2, 12), Vector3(30, -3.2, 25), true],
+		["vault -> the Helvetia cellar (round by the taproom)", Vector3(13, -3.2, 12), Vector3(30, -3.2, 25), true],
 		["the lean-to landing -> the wine cellar", Vector3(-1.5, 0, 9.0), Vector3(5, -3.2, 15), true],
 		["wine cellar -> root cellar -> vault", Vector3(5, -3.2, 10), Vector3(14, -3.2, 2.5), true],
 		["coal room -> into the cage (door gap)", Vector3(3.6, -3.2, 6.0), Vector3(1.25, -3.2, 4.9), true],
@@ -106,6 +106,7 @@ func _check_paths() -> void:
 		["vault well -> vault (must NOT connect)", Vector3(25, -1.3, 1.8), Vector3(22, -3.2, 1.8), false],
 	]
 	_check_loop(map_rid)
+	_check_breach(map_rid)
 	for c: Array in checks:
 		var path: PackedVector3Array = NavigationServer3D.map_get_path(map_rid, c[1], c[2], true)
 		var end_ok: bool = not path.is_empty() and path[path.size() - 1].distance_to(c[2]) < 1.0
@@ -144,3 +145,25 @@ func _check_loop(map_rid: RID) -> void:
 	print("[smoke] Old Cellar loop round the barrel stack (widths %s m) %s" % [", ".join(widths), "ok" if ok else "WRONG"])
 	if not ok:
 		_fails.append("the Old Cellar's training loop")
+
+
+## T-051: the breach between the Old Cellar and the Helvetia cellar is shut in the navmesh until both cellar
+## doors are bought (no path may run through it while a door on that ring is shut), then opens on its own.
+func _check_breach(map_rid: RID) -> void:
+	var a: Vector3 = Vector3(22.4, -3.2, 19.0)
+	var b: Vector3 = Vector3(25.6, -3.2, 20.25)
+	var shut: float = _path_len(NavigationServer3D.map_get_path(map_rid, a, b, true))
+	GameState.open_zone(&"CELLAR")
+	GameState.open_zone(&"OLD_CELLAR")
+	var br: SealedPassage = _map.find_child("CellarBreach", true, false) as SealedPassage
+	var opened: bool = br != null and br.is_open and br.nav_link() != null and br.nav_link().enabled
+	print("[smoke] the breach: shut path %.0f m (round by the taproom), opens with both cellars: %s" % [shut, str(opened)])
+	if shut < 20.0 or not opened:
+		_fails.append("the cellar breach (shut path %.1f m, opened %s)" % [shut, str(opened)])
+
+
+func _path_len(path: PackedVector3Array) -> float:
+	var l: float = 0.0
+	for i: int in range(1, path.size()):
+		l += path[i - 1].distance_to(path[i])
+	return l

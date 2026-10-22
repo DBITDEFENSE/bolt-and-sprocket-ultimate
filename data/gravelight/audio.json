@@ -617,8 +617,8 @@
     "res://gravelight/audio/sfx/weapons/fire_thompson_03.wav"
    ],
    "bus": "SFX",
-   "volume_db": -1.0,
-   "pitch": [0.97, 1.03],
+   "volume_db": 0.0,
+   "pitch": [0.9, 0.95],
    "max_voices": 6,
    "attenuation": "weapon",
    "vol_jitter_db": 0.8

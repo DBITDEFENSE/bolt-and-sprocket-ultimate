@@ -41,6 +41,7 @@ var geo: Node3D
 var dress: Node3D
 var gameplay: Node3D
 var _count: int = 0
+var _bake_only: Array[Node] = []
 var _frames: int = 0
 
 
@@ -66,6 +67,9 @@ func _process(_delta: float) -> bool:
 	if _frames < 3:
 		return false
 	bake_navmesh()
+	for n: Node in _bake_only:   # colliders that only shape the navmesh (T-051)
+		n.get_parent().remove_child(n)
+		n.free()
 	get_root().remove_child(map_root)
 	build_dressing()
 	var merged: int = merge_static_meshes()
@@ -434,6 +438,11 @@ const MACHINE_FOOTPRINTS: Dictionary = {
 ## crate spots: [name, position, yaw, can_start]
 const CRATES: Array = [["Hearth", Vector3(22.9, 0, 14.0), 90.0, true], ["GuestBed", Vector3(22.0, UP_Y, 0.8), 180.0, false],
 	["TackRoom", Vector3(22.9, 0, 31.5), 90.0, true], ["Well", Vector3(13.5, 0, 42.0), 90.0, false]]
+## Ammo boxes (Update 02 section 4, T-049): [name, floor position, yaw so local -Z faces the room]. Behind the bar
+## against the back shelf at the alcove's dead end (clear of Alix's trapdoor at 6.6, 5.6 and the alcove's mouth at
+## the north end), and on the stable's west wall under the hayloft between the trench-gun chalk and the yard door.
+const AMMO_BOXES: Array = [["Taproom", Vector3(5.34, 0, 7.3), -90.0], ["Stable", Vector3(6.48, 0, 32.0), -90.0],
+	["Cellar", Vector3(14.6, -3.2, 15.5), 0.0]]   # the Old Cellar's barrel vault, south wall (T-051)
 ## the cellar's hanging bulbs (bulb glass position; the power lights sit just under them): one pool per machine row
 const CELLAR_BULBS: Array = [Vector3(27.0, CELLAR_Y + 2.55, 22.5), Vector3(33.0, CELLAR_Y + 2.55, 22.5),
 	Vector3(26.5, CELLAR_Y + 2.55, 27.5), Vector3(33.5, CELLAR_Y + 2.55, 27.5), Vector3(30.35, CELLAR_Y + 2.55, 28.7)]
@@ -457,6 +466,10 @@ func build_nav_blocks() -> void:
 		var half: Vector3 = Vector3(0.7, 0, 0.35) if absf(float(cr[2])) != 90.0 else Vector3(0.35, 0, 0.7)
 		var p: Vector3 = cr[1]
 		box(geo, "NavBlock_Crate", p - half, p + half + Vector3(0, 0.75, 0), "metal", true, false)
+	for ab: Array in AMMO_BOXES:
+		var ah: Vector3 = Vector3(0.52, 0, 0.3) if absf(float(ab[2])) != 90.0 else Vector3(0.3, 0, 0.52)
+		var ap: Vector3 = ab[1]
+		box(geo, "NavBlock_AmmoBox", ap - ah, ap + ah + Vector3(0, 0.62, 0), "metal", true, false)
 
 
 func build_cellar() -> void:
@@ -503,9 +516,9 @@ func build_cellar() -> void:
 ##   - the ice cellar (x 5..8.3, z 5..8), the cousins' hidden room under the bar (v3 section 4.6; Alix's trapdoor at
 ##     6.6, 5.6 is right overhead), bricked off from the coal room until the Cousins round is cleared (IceCellarSeal);
 ##   - the barrel vault (x 10.9..24, z 0..16): the training loop round the central barrel stack (corridors 4.8 m
-##     each side, 3.2 m past the two pillars), the Gewehr 43, the ammo-box spot, the vault window (a light well
+##     each side, 3.2 m past the two pillars), the Gewehr 43, an ammo box, the vault window (a light well
 ##     outside the east wall, W_CEL_VAULT), and the breach the Helvetia installers knocked through to their own
-##     cellar (x 20.85..24, z 16..21.3), closed by a second Cellar door (1500, linked with Door 3).
+##     cellar (x 20.85..24, z 16..21.3), bricked up until both Door 3 and Door 5 are bought (CellarBreach).
 const OC_WELL_Y: float = -1.3          # the light wells' floor (the barricade origin); the room floor is 1.9 m below
 const OC_SILL: float = 0.1             # window sill / top above the well floor: a half-height crawl-in window
 const OC_WIN_H: float = 0.85
@@ -575,6 +588,8 @@ func build_old_cellar() -> void:
 	wall_x("OCWineS", 18.5, -T * 0.5, 10.9 + T * 0.5, cy, 0.0, [], "cellar_stone")
 	wall_x("OCVaultS", 16.0, 10.9, 20.85 + T * 0.5, cy, 0.0, [], "cellar_stone")
 	wall_z("OCTunW", 20.85, 16.0, 21.3 + T * 0.5, cy, 0.0, [], "limewash")
+	# the breach is shut in the navmesh (CellarBreach + its NavigationLink3D open it at runtime): a bake-only cut
+	_bake_only.append(box(geo, "BreachNavCut", Vector3(23.85, cy, 19.45), Vector3(24.15, cy + DOOR_H, 21.05), "metal", true, false))
 	wall_x("OCTunS", 21.3, 20.85, 24.0, cy, 0.0, [], "limewash")
 	# ---- inner walls (up to the ceiling): the long middle wall with the root and wine arches, the coal / root / wine
 	# partitions, the ice cellar's brick box (its west wall is the coal room's, with the bricked-up chute)
@@ -2051,6 +2066,11 @@ func build_gameplay() -> void:
 		cr.rotation.y = deg_to_rad(float(c[2]))
 		gameplay.add_child(cr)
 		ci += 1
+	for ab2: Array in AMMO_BOXES:
+		var ammo: Node3D = _scripted(Node3D.new(), "res://gravelight/world/ammo_box.gd", "AmmoBox_" + str(ab2[0]), {"box_name": str(ab2[0]).to_lower()})
+		ammo.position = ab2[1]
+		ammo.rotation.y = deg_to_rad(float(ab2[2]))
+		gameplay.add_child(ammo)
 	var radio: Node3D = _scripted(Node3D.new(), "res://gravelight/world/field_radio.gd", "FieldRadio", {})
 	radio.position = Vector3(4.8, 2.0, 4.9)
 	radio.rotation.y = deg_to_rad(-90)
@@ -2071,8 +2091,7 @@ func build_gameplay() -> void:
 func build_cellar_gameplay() -> void:
 	var cy: float = CELLAR_Y
 	var d3: Node3D = _scripted(Node3D.new(), "res://gravelight/world/door.gd", "Door_Cellar", {
-		"door_id": &"door_cellar", "opens_zone": &"CELLAR", "cost": 1500, "size": Vector3(1.6, DOOR_H, 0.25), "label": "Cellar",
-		"link_group": &"cellar"})   # opens with the Old Cellar's breach door (T-051)
+		"door_id": &"door_cellar", "opens_zone": &"CELLAR", "cost": 1500, "size": Vector3(1.6, DOOR_H, 0.25), "label": "Cellar"})
 	d3.position = Vector3(24.0, 0, 11.5)
 	d3.rotation.y = deg_to_rad(90)
 	gameplay.add_child(d3)
@@ -2134,8 +2153,8 @@ func build_cellar_gameplay() -> void:
 	build_old_cellar_gameplay()
 
 
-## The Old Cellar's gameplay (T-051): Door 5, the breach door to the Helvetia cellar (linked with Door 3), the zone,
-## the two light-well windows and their field spawns, the Gewehr 43, the ammo-box spot, the holding cell's nodes
+## The Old Cellar's gameplay (T-051): Door 5, the breach to the Helvetia cellar, the zone,
+## the two light-well windows and their field spawns, the Gewehr 43, the holding cell's nodes
 ## for Jakub (section 6.2), the ice cellar's seal and markers for HB1, drips, lanterns and the power bulbs.
 func build_old_cellar_gameplay() -> void:
 	var cy: float = CELLAR_Y
@@ -2145,12 +2164,22 @@ func build_old_cellar_gameplay() -> void:
 	d5.position = Vector3(0.0, 0, 9.05)
 	d5.rotation.y = deg_to_rad(90)
 	gameplay.add_child(d5)
-	var dl: Node3D = _scripted(Node3D.new(), "res://gravelight/world/door.gd", "Door_CellarLink", {
-		"door_id": &"door_cellar_link", "opens_zone": &"CELLAR", "cost": 1500, "size": Vector3(1.6, DOOR_H, 0.25), "label": "Cellar",
-		"link_group": &"cellar"})
-	dl.position = Vector3(24.0, cy, 20.25)
-	dl.rotation.y = deg_to_rad(90)
-	gameplay.add_child(dl)
+	# the installers' breach to the Helvetia cellar: bricked up again until both cellars are open (Door 3 and Door 5),
+	# then it falls in by itself. The navmesh was baked with the breach shut (a bake-only cut); a NavigationLink3D
+	# across it switches on when it opens, so no path ever runs through it while a door on the ring is still shut.
+	var br: Node3D = _scripted(Node3D.new(), "res://gravelight/world/sealed_passage.gd", "CellarBreach", {
+		"passage_id": &"cellar_breach", "size": Vector3(1.6, DOOR_H, 0.3),
+		"open_when_zones": PackedStringArray(["CELLAR", "OLD_CELLAR"]), "nav_link_path": NodePath("BreachLink")})
+	br.position = Vector3(24.0, cy, 20.25)
+	br.rotation.y = deg_to_rad(90)
+	gameplay.add_child(br)
+	var link: NavigationLink3D = NavigationLink3D.new()
+	link.name = "BreachLink"
+	link.bidirectional = true
+	link.enabled = false
+	link.start_position = Vector3(0, 0, -1.4)   # local: the tunnel side ...
+	link.end_position = Vector3(0, 0, 1.4)      # ... and the Helvetia cellar's side
+	br.add_child(link)
 	# zone volumes: under the taproom, the wine cellar's south bay, the breach, the stair lean-to (tops kept under
 	# the taproom's floor, so the taproom above is not "old cellar")
 	for z: Array in [[Vector3(12.0, cy, 8.0), Vector3(24.0, 2.7, 16.0)], [Vector3(5.45, cy, 17.25), Vector3(10.9, 2.7, 2.5)],
@@ -2185,14 +2214,7 @@ func build_old_cellar_gameplay() -> void:
 	bl.omni_range = 1.8
 	bl.position = wb.position + Vector3(0.5, 0.75, 0)
 	gameplay.add_child(bl)
-	# the ammo box's spot (section 4's AmmoBox lands on another branch: the orchestrator swaps this marker for an
-	# AMMO_BOXES entry ["Cellar", position, 0.0]); on the vault's south wall, away from the machines and the Crucible
-	var ab: Marker3D = Marker3D.new()
-	ab.name = "AmmoBoxSpot_Cellar"
-	ab.position = Vector3(14.6, cy, 15.5)
-	ab.set_meta("yaw", 0.0)
-	ab.add_to_group(&"ammo_box_spot", true)
-	gameplay.add_child(ab)
+	# (the ammo box is AMMO_BOXES "Cellar", on the vault's south wall, 11 m+ from the machines and the Crucible)
 	# the holding cell (section 6.2): the cage's hinged door is a HoldingCage (origin on the hinge, local +X along the
 	# door, local -Z out of the cage); Jakub stands inside at JakubSpawn and waits by the cage at JakubWait
 	var cage: Node3D = _scripted(Node3D.new(), "res://gravelight/world/holding_cage.gd", "JakubCage", {

@@ -29,6 +29,29 @@ Each plan is roughly to scale: **1 character ≈ 1 m** horizontally unless noted
 
 ---
 
+## Ammo boxes, all maps (Update 02 section 4, DECISIONS T-049)
+
+An olive-drab crate with a lantern on top (`gravelight/world/ammo_box.gd`). Hold use to refill the gun in your hands
+and your lethal grenades (not tacticals): 250 Scrip, 2,500 for a Crucible-upgraded gun, 1,000 / 4,000 for wonder
+weapons; 250 for grenades alone; nothing when full; 3 s per-player cooldown (economy.json `ammo_box`). Placed by each
+map's generator (`AMMO_BOXES`), 4 m+ from every perk machine and the Crucible, flush against a bare wall:
+
+| Map | Box | Where (floor position, facing) |
+|---|---|---|
+| 0 Crossroads Inn | Taproom | behind the bar, against the back shelf at the alcove's dead end (5.3, 0, 7.3), facing east; clear of Alix's trapdoor (6.6, 5.6) |
+| 0 | Stable | west wall under the hayloft, between the Trench Gun chalk and the yard door (6.5, 0, 32.0), facing east |
+| 0 | Cellar | the Old Cellar's barrel vault, south wall west of the wine rack (14.6, -3.2, 15.5), facing north (T-051) |
+| 1 Kaltenbrunn | Rail Yard | west wall between the two doors (40.5, 0, 32.5), facing east |
+| 1 | Barracks | bunk room north wall, beside the Trench Gun chalk (-1.6, 0, 32.5), facing south |
+| 1 | Salt Chapel | east wall between a pilaster and the side-altar niche (39.4, -12, 78.5), facing west |
+| 1 | Lab Wing | intake room (south middle), east wall (83.5, -12, 95), facing west |
+| 2 Totenhafen | Cannery | west wall between the two windows (-29.5, 0, 18), facing east |
+| 2 | Workshop | east wall north of the warhead cage (61.5, 0, 13), facing west |
+| 2 | Pen Hall west | north apron by pier 1 (0, 0, 33.3), facing south |
+| 2 | Pen Hall east | east apron under the catwalk (51.5, 0, 77), facing west |
+
+Morgenrot and Helvetia Works get 4 each when they are built.
+
 # MAP 0 — "CROSSROADS INN"
 
 **Story question answered:** *Who shot us down, and who's talking to us?* Something that isn't flak brought the plane down, and a man named Glasmacher is on the radio.
@@ -49,6 +72,11 @@ graph LR
   TAPROOM -- "Door 1: 750<br/>(stair vestibule)" --> UPSTAIRS
   TAPROOM -- "Door 2: 1000<br/>(kitchen back door)" --> STABLE
   STABLE -- "Door 4: 1250<br/>(the stable's south door)" --> YARD
+  CELLAR["HELVETIA CELLAR (-3.2)<br/>9 perk machines · Crucible · the lever"]
+  OLD_CELLAR["THE OLD CELLAR (-3.2)<br/>2 light-well windows · Gewehr 43 · ammo box<br/>wine cellar · coal room + cage · root cellar · barrel vault"]
+  TAPROOM -- "Door 3: 1500<br/>(east wall, ramp down)" --> CELLAR
+  TAPROOM -- "Door 5: 1250<br/>(west wall, the lean-to stairs)" --> OLD_CELLAR
+  OLD_CELLAR -. "the breach<br/>(falls in once both are open)" .- CELLAR
 ```
 
 \* = possible starting crate spot (`C*`). The crate starts at one of the two, chosen at random.
@@ -62,7 +90,7 @@ graph LR
    W  .  ┌──────┐  .  .  .   W          ceiling 3.5 m
    #  .  │ BAR  │ Q(radio)    #          X = player spawn (4 points, co-op)
    #  .  │      │  .  X  X    #
-   #  $  └──────┘  .  X  X    #          $ (W wall) Kar98k 200
+   #  $  └──────┘  .  X  X    #          $ (W wall, z 3.1) Kar98k 200; Door 5 (1250) at z 9: the Old Cellar
    #  .   tables  .  .  .  $  #          $ (E wall) M1 Garand 600
    #  .  .  .  .  .  .   C*   #          C* crate spot "Hearth" (SE corner)
    # ^^^ |D1  .  .  .  .  .   kitchen      stairwell 6 x 6 m in the SW corner: the flight (^^^) up the west
@@ -83,7 +111,7 @@ graph LR
 
 **The great doors and the carters' road (campaign exfil, T-033):** the doors (x 16–20 in the stable's south wall, 4 × 4.2 m) are dressing in a drawn opening that is filled with an invisible collider, so the navmesh and collision stay a solid wall; the exfil beacon stands just inside at (18, 0, 32) and the Map 0 → Map 1 cutscene tweens the `GreatDoors` group so they fall outward. Behind them, cutscene-only dressing: a trodden track south through a gap in the yard fence (gateposts, a dead lantern post, a signpost "Kaltenbrunn 9 km / Wilcza Góra 6 km / Gasthaus zum Kreuzweg"), bending south-east past dead trees and drifts toward low snowy rises on the horizon. Nothing out there is walkable.
 
-Window count: Taproom 4 (N×2, W, E), Stable 3 (N×2, S), Yard 4 (fence gaps W, E, S×2). There are 13 windows in total, counting the 2 upstairs.
+Window count: Taproom 4 (N×2, W, E), Stable 3 (N×2, S), Yard 4 (fence gaps W, E, S×2), Old Cellar 2 (light wells). There are 15 windows in total, counting the 2 upstairs.
 
 ## The Carters' Yard (YARD): level 0, outdoors (T-036 follow-up, "let them go outside")
 
@@ -132,6 +160,8 @@ Hayloft (Stable upper, 9 × 12 m): there's a ladder up and a single drop-down ed
 | UPSTAIRS | 2 | 0 | Door 1 open |
 | STABLE | 3 | 1 (hay pile behind stalls, rounds 6+) | Door 2 open |
 | YARD | 4 (fence gaps) | 1 (SW drift, rounds 4+) | Door 4 open |
+| CELLAR | 0 | 1 (the coal chute, rounds 6+) + the power-on burst | Door 3 open |
+| OLD_CELLAR | 2 (light wells: the coal chute N, the vault E) | 0 | Door 5 open |
 
 ## Map 0 room story
 
@@ -184,6 +214,35 @@ Door 3 (**1500**, zone `CELLAR`) is in the taproom's east wall at z 10.7–12.3.
 - Machine and crate footprints are baked into the navmesh, so zombies path round them.
 
 Pacing intent: the cellar is the first big spend (round 3–5 for a careful player). Ironhide (5 hits) and Second Wind (solo self-revive) are what make rounds 10–15 survivable; the remaining machines and the 4-perk cap give scrip a purpose for the rest of the match.
+
+## Map 0 the Old Cellar (Update 02 section 6.1, DECISIONS T-051)
+The inn's own cellar, under the taproom: older than the Helvetia vault, with nothing of Helvetia's in it except the hole their installers knocked through. Zone `OLD_CELLAR`, floor y −3.2, ceiling −0.2 (the taproom's floorboards on joists). Generator: `build_old_cellar` (collision), `_dress_old_cellar`, `build_old_cellar_gameplay` in `gen_map00.gd`. Screenshots: `tools_src/shots_old_cellar.tscn`.
+
+```
+ N ↑  (x →)   0          5      8.3   10.9                                     24
+   z 0  ┌───W(coal)──┬──────────────┬─────────────────────────────────────────┐
+        │ COAL ROOM  │ ROOT CELLAR  │ footing      BARREL VAULT     [P1]      W (vault, z 1.8)
+        │ ┌cage┐     │ jars, hams   ║ (z 1.6–3.6)                            │
+        │ │ J  D     ├──ICE──┐      │ G43     ┌─ barrel stack ─┐             │
+        │ └────┘ seal║ CELLAR│      │         │                │  ← loop →   │
+   z 8  ├──┤door├────┴──rack─┴─┤door├─        └────────────────┘             │
+        │ WINE CELLAR: three piers, low arches ║ (z 10–13.2)        [P2]     │
+ stairs │ racks · casks 1937/41/43 · drips     │  A (ammo box)  rack  ┌breach┘
+ ◄──────┤ (the lean-to, x −3..0)               ├── z 16 ──────────────┤ x 20.85–24 → the Helvetia cellar
+ z 18.5 └──────────────────────────────────────┘                      └ (z 19.45–21.05)
+```
+
+- **Door 5 (1250)** in the taproom's west wall (z 8.25–9.85; the Kar98k moved along that wall to z 3.1). It opens on a stone lean-to (x −3..0, z 8–18.5): a landing, a 2.7 m flight down the inn's wall (z 9.95 → 15.5, 30°) and a foot landing that turns east through the foundation into the wine cellar.
+- **Wine cellar** (x 0–10.9, z 8–18.5): three piers on z 13.2 carry low brick arches (springing at 1.55 m); bottle racks on three walls, three big casks on cradles (1937, 1941, 1943), the cellar book chalked on the wall, puddles, water dripping from the arches (`DripPoint`: a falling drop, a splash, the `cellar_drip` plip). Doorways north to the coal room (x 2.8–4.6) and the root cellar (x 8.7–10.6), a 3.2 m arch east into the vault (z 10–13.2).
+- **Coal room / the holding cell** (x 0–5, z 0–8): the coal-chute window in a light well under the porch (`W_CEL_COAL`), the heap under the chute, soot. The **cage** (x 0.15–2.55, z 3.3–6.5) is built against the west wall: bars floor to ceiling, a hinged door on its east face (z 4.15–5.65) that is `JakubCage` (`HoldingCage.burst_open()`), straw, a blanket, a tin cup, the Polish miners' greeting ("SZCZESC BOZE", the font has no Ę/Ś/Ż) and two tally marks chalked inside, the patrol's tag on the padlock ("Häftling (Pole) · Flucht aus K. · 22.XII."), the guard's stool, crate and lantern, the coal shovel leaning on the bars (`CoalShovel`, a gameplay node so section 6.2 can take it).
+- **Root cellar** (x 5–10.9, z 0–8, round the ice cellar): preserves on two walls, potato sacks against the ice cellar, hams and onions; a short **top shelf** with **the cousins' three jam jars** and a crate under it to stand on (v3 §4.1).
+- **The ice cellar** (x 5–8.3, z 5–8): the Cousins' hidden room (v3 §4.6), right under **Alix's trapdoor (6.6, 0, 5.6)**, so HB1's runtime hatch needs no change (the taproom floor stays solid there; the hatch's underside and a ladder are drawn below). Three straw pallets, red-grey mittens, the upturned crate with the letter and the lantern burnt dry, a jam jar, three chalk girls holding hands and a taller fourth in the corner. Its only door is the old ice chute from the coal room, bricked up (`IceCellarSeal`, a `SealedPassage`): you can peek through a gap; it falls in when HB1 files the aunt's letter (`INT_HB_01`, the Cousins round cleared). It is navmesh (a dead end zombies can follow you into), not a ladder-only room as v3 had it, so it is never a safe camp.
+- **Barrel vault** (x 10.9–24, z 0–16): **the training loop** round the central barrel stack (x 15.9–19, z 6.3–9.7): corridors 4.9 m (west), 4.4 m (east, past the wine rack), 3.2 m (north and south, between the stack and the two pillars); smoke_map00 checks all four are ≥ 2.2 m and connected. The **Gewehr 43** (900) on the west wall facing the loop (the Garand and the Thompson are already on the map), the **ammo box** on the south wall, the hearth's footing in the north-west corner, the **vault window** in a light well outside the east wall (`W_CEL_VAULT`).
+- **The breach** (x 20.85–24, z 16–21.3): the Helvetia installers' tunnel, pit-propped, with their cable run. At its east end (the Helvetia cellar's west wall, z 19.45–21.05) it is bricked up (`CellarBreach`) until **both** Door 3 and Door 5 are bought, then it falls in by itself. The navmesh is baked with it shut and a `NavigationLink3D` opens with it, so no zombie path ever runs through it while a door on the taproom–cellar–old cellar ring is still shut (Map 0 has one navmesh region, and paths run through shut doors). The perk cellar's own route (Door 3, 1500) is unchanged.
+- **Windows:** both are half-height crawl-ins (0.75 m) at ground level, in stone-lined light wells with steps up to the field: the zombie comes down the steps, tears the boards, crawls through and drops 1.9 m to the floor (`Barricade.inside_drop`; the drop clip plays). Repair them from the floor (the use area hangs down to 0.7 m above it). Spawns at the top of each well's steps; active once Door 5 is open.
+- **Light:** oil lanterns always lit (stairs, wine cellar ×2, root cellar, the guard's lamp, vault ×2, breach), bare bulbs over the loop and the wine cellar that come on with the cellar lever (zone `OLD_CELLAR` in the sweep after `CELLAR`), cold moonlight down each light well.
+- **Perk machines:** none down here. Appendix A §A9's "8 perk machines in a cellar" are all (9) in the Helvetia cellar already (T-027, T-034).
+- **For section 6.2 (Jakub):** `Gameplay/JakubCage` (a `HoldingCage`, origin on the hinge at (2.55, −3.2, 4.15), local −Z out of the cage; `burst_open(by)`, `is_open`, signal `burst`, `front_point()`, `inside_point()`, `reset()`), `Gameplay/JakubSpawn` (1.25, −3.2, 4.9) inside the cage, `Gameplay/JakubWait` (3.95, −3.2, 6.3) by the cage, `Gameplay/CoalShovel` (2.78, −3.2, 3.62), and the coal window `Gameplay/W_CEL_COAL` 3 m from the cage (its zombie is the natural one to burst the hinge). The cage door's gap is navmesh, so Jakub can walk out once it is open.
 
 ## Vertical overview
 
