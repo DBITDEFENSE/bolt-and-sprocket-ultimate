@@ -636,6 +636,21 @@
    "attenuation": "weapon",
    "vol_jitter_db": 0.8
   },
+  "footstep_hay": {
+   "files": [
+    "res://gravelight/audio/sfx/player/footstep_hay_01.wav",
+    "res://gravelight/audio/sfx/player/footstep_hay_02.wav",
+    "res://gravelight/audio/sfx/player/footstep_hay_03.wav",
+    "res://gravelight/audio/sfx/player/footstep_hay_04.wav",
+    "res://gravelight/audio/sfx/player/footstep_hay_05.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -12.0,
+   "pitch": [0.94, 1.06],
+   "vol_jitter_db": 2.0,
+   "max_voices": 3,
+   "attenuation": "quiet"
+  },
   "footstep_metal": {
    "files": [
     "res://gravelight/audio/sfx/player/footstep_metal_01.wav",
@@ -1063,6 +1078,17 @@
    ],
    "bus": "SFX",
    "volume_db": -3.0,
+   "max_voices": 2,
+   "attenuation": "quiet"
+  },
+  "last_round_click": {
+   "files": [
+    "res://gravelight/audio/sfx/weapons/foley/last_round_01.wav",
+    "res://gravelight/audio/sfx/weapons/foley/last_round_02.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -6.0,
+   "pitch": [0.98, 1.02],
    "max_voices": 2,
    "attenuation": "quiet"
   },

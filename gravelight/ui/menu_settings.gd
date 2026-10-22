@@ -71,6 +71,11 @@ func _gameplay() -> void:
 
 
 func _controls() -> void:
+	var sprint_modes: PackedStringArray = ["hold", "toggle"]
+	var scur: int = maxi(0, sprint_modes.find(str(GLSettings.values.get("sprint_mode", "hold"))))
+	content.add_child(MenuKit.row("Sprint", MenuKit.options(PackedStringArray(["Hold", "Toggle"]), scur,
+		func(i: int) -> void: GLSettings.set_value("sprint_mode", sprint_modes[i]))))
+	content.add_child(MenuKit.check("Prone (hold Crouch)", bool(GLSettings.values.get("prone_enabled", false)), _setter("prone_enabled")))
 	content.add_child(MenuKit.para("Select a binding, then press the new key / button. Esc cancels.", 18, MenuKit.DIM))
 	_wait_label = MenuKit.label("", 20, MenuKit.GOLD)
 	content.add_child(_wait_label)

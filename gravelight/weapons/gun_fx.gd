@@ -11,6 +11,15 @@ const SMOKE: int = 6
 const DUST: int = 10
 const SPARKS: int = 8
 const MIST: int = 8
+const GLASS: int = 6
+## Impact dust tint per surface (Update 02 §1): snow throws white powder, wood brown splinters, hay chaff.
+const DUST_TINT: Dictionary = {
+	"snow": [Color(0.92, 0.94, 0.98, 0.85), Color(0.85, 0.88, 0.94, 0.0)],
+	"wood": [Color(0.5, 0.36, 0.22, 0.8), Color(0.42, 0.32, 0.22, 0.0)],
+	"hay": [Color(0.78, 0.66, 0.34, 0.8), Color(0.7, 0.6, 0.35, 0.0)],
+	"stone": [Color(0.62, 0.6, 0.56, 0.8), Color(0.5, 0.49, 0.47, 0.0)],
+	"metal": [Color(0.4, 0.38, 0.36, 0.5), Color(0.35, 0.34, 0.33, 0.0)],
+}
 ## Collider-name hints for surfaces that throw sparks (stone and metal) instead of only dust.
 const SPARK_HINTS: PackedStringArray = ["lift", "cage", "grate", "catwalk", "deck", "boxcar", "locomotive", "rail",
 	"metal", "iron", "steel", "pipe", "turbine", "stone", "rock", "wall_stone", "brick", "core", "vault", "machine"]
@@ -22,6 +31,9 @@ var _smoke: Array[CPUParticles3D] = []
 var _dust: Array[CPUParticles3D] = []
 var _sparks: Array[CPUParticles3D] = []
 var _mist: Array[CPUParticles3D] = []
+var _glass: Array[CPUParticles3D] = []
+var _ng: int = 0
+var _dust_ramps: Dictionary = {}        # surface -> Gradient (DUST_TINT); "" = the default
 var _ns: int = 0
 var _nd: int = 0
 var _nk: int = 0
@@ -78,6 +90,15 @@ func _ready() -> void:
 		var sp: CPUParticles3D = _make_particles(spark_mat, 0.012, 7, 0.22, 3.0, 7.0, 35.0, Vector3(0, -9.8, 0),
 			_ramp(Color(1.0, 0.85, 0.5, 1.0), Color(1.0, 0.4, 0.1, 0.0)), 0.6, 1.0)
 		_sparks.append(sp)
+	# Nachtglas sparks: teal-violet glints off a Glasshide's crystal plates
+	var glass_mat: StandardMaterial3D = spark_mat.duplicate() as StandardMaterial3D
+	glass_mat.albedo_color = Color(1.2, 2.6, 2.6)
+	for i: int in GLASS:
+		_glass.append(_make_particles(glass_mat, 0.016, 9, 0.3, 2.0, 6.0, 50.0, Vector3(0, -6.0, 0),
+			_ramp(Color(0.55, 1.0, 0.95, 1.0), Color(0.7, 0.4, 1.0, 0.0)), 0.6, 1.0))
+	_dust_ramps[""] = _dust[0].color_ramp
+	for surf: String in DUST_TINT.keys():
+		_dust_ramps[surf] = _ramp(DUST_TINT[surf][0], DUST_TINT[surf][1])
 	for i: int in MIST:
 		_mist.append(_make_particles(_puff_mat(soft, Color(0.45, 0.02, 0.03, 0.8)), 0.11, 7, 0.4, 0.4, 1.6, 30.0, Vector3(0, -1.5, 0),
 			_ramp(Color(0.5, 0.03, 0.04, 0.85), Color(0.3, 0.0, 0.01, 0.0)), 0.7, 2.6))
@@ -148,15 +169,61 @@ func smoke(at: Vector3, dir: Vector3, strength: float = 1.0) -> void:
 	p.initial_velocity_max = 0.7 + 0.8 * strength
 
 
-## Bullet strike on world geometry: a dust puff along the normal, plus sparks on stone / metal.
-func impact(at: Vector3, normal: Vector3, collider: Object) -> void:
+## Bullet strike on world geometry: a dust puff along the normal (tinted by `surface` when given: snow powder,
+## wood splinters, hay chaff), plus sparks on stone / metal.
+func impact(at: Vector3, normal: Vector3, collider: Object, surface: String = "") -> void:
 	var d: CPUParticles3D = _dust[_nd]
 	_nd = (_nd + 1) % DUST
+	d.color_ramp = _dust_ramps.get(surface, _dust_ramps.get("", d.color_ramp))
 	_fire_at(d, at + normal * 0.02, normal)
-	if _sparky(collider):
+	if (surface in ["metal", "stone"]) if surface != "" else _sparky(collider):
 		var s: CPUParticles3D = _sparks[_nk]
 		_nk = (_nk + 1) % SPARKS
 		_fire_at(s, at + normal * 0.01, normal)
+
+
+## A bullet glancing off Nachtglas (a Glasshide's crystal plates): teal-violet glints instead of blood.
+func nachtglas_spark(at: Vector3, toward: Vector3) -> void:
+	var g: CPUParticles3D = _glass[_ng]
+	_ng = (_ng + 1) % GLASS
+	_fire_at(g, at, toward)
+
+
+## What a bullet hit is made of, for decals and dust: the collider's (or its parent's) "surface" meta, then the
+## Player's footstep name hints, then by map and facing: open ground is snow (boards under a roof on Map 0),
+## other floors wood on Map 0 / stone elsewhere, walls plaster-like "stone".
+static func surface_of(collider: Object, at: Vector3, normal: Vector3, space: PhysicsDirectSpaceState3D) -> String:
+	var n: Node = collider as Node
+	if n == null:
+		return "stone"
+	for k: Node in [n, n.get_parent()]:
+		if k != null and k.has_meta("surface"):
+			return str(k.get_meta("surface"))
+	if n is AnimatableBody3D:
+		return "metal"
+	var nm: String = String(n.name).to_lower()
+	for h: String in Player.METAL_HINTS:
+		if nm.contains(h):
+			return "metal"
+	for h: String in Player.HAY_HINTS:
+		if nm.contains(h):
+			return "hay"
+	var map0: bool = GameState.map_id == &"map00_crossroads"
+	if nm.begins_with("ground"):
+		if space != null:
+			var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(at + Vector3.UP * 0.3, at + Vector3.UP * 10.0, 1)
+			if space.intersect_ray(q).is_empty():
+				return "snow" if GameState.map_id != &"map01_kaltenbrunn" else "stone"
+		return "wood" if map0 else "stone"
+	for h: String in Player.STONE_HINTS:
+		if nm.contains(h):
+			return "stone"
+	for h: String in Player.WOOD_HINTS:
+		if nm.contains(h):
+			return "wood"
+	if absf(normal.y) > 0.6:
+		return "wood" if map0 else "stone"
+	return "stone"
 
 
 func blood_mist(at: Vector3, toward: Vector3) -> void:

@@ -211,7 +211,9 @@ func _process(delta: float) -> void:
 	_hold_bar.value = player.interact_progress
 	# crosshair
 	_crosshair.spread = player.weapons.spread_deg()
-	_crosshair.visible = player.weapons.ads_t < 0.5 and not player.sprinting and not player.downed
+	_crosshair.fov = player.camera.fov if player.camera != null else 80.0
+	_crosshair.target_alpha = 0.0 if (player.weapons.ads_t >= 0.5 or player.sprinting or player.mantling) else 1.0
+	_crosshair.visible = not player.downed
 	_scope.visible = player.weapons.scoped() and not player.downed
 	# vignette: hurt + low health pulse
 	var hurt: float = 1.0 - player.health_fraction()
@@ -282,20 +284,33 @@ func _on_overlay(overlay: StringName, enabled: bool) -> void:
 			_show_zombies = enabled
 
 
+## Hip crosshair: the four ticks sit on the edge of the real shot cone (spread_deg projected through the camera
+## FOV), so bloom, walking and jumping visibly open it; it eases between sizes and fades out while sprinting / aiming.
 class Crosshair extends Control:
 	var spread: float = 2.0
+	var fov: float = 80.0
+	var target_alpha: float = 1.0
+	var _gap: float = 12.0
+	var _alpha: float = 1.0
 
 	func _init() -> void:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	func _process(_d: float) -> void:
+	func _process(d: float) -> void:
+		var half_h: float = get_viewport_rect().size.y * 0.5
+		var px: float = half_h * tan(deg_to_rad(clampf(spread, 0.0, 40.0))) / tan(deg_to_rad(clampf(fov, 20.0, 150.0)) * 0.5)
+		var want: float = clampf(px, 5.0, half_h * 0.6)
+		_gap = lerpf(_gap, want, 1.0 - exp(-(22.0 if want > _gap else 10.0) * d))
+		_alpha = move_toward(_alpha, target_alpha, d * 8.0)
 		queue_redraw()
 
 	func _draw() -> void:
-		var gap: float = 6.0 + spread * 5.0
-		var c: Color = Color(0.95, 0.92, 0.85, 0.85)
+		if _alpha <= 0.01:
+			return
+		var c: Color = Color(0.95, 0.92, 0.85, 0.85 * _alpha)
 		for d: Vector2 in [Vector2.UP, Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT]:
-			draw_line(d * gap, d * (gap + 9.0), c, 2.0)
+			draw_line(d * (_gap + 1.0) + Vector2(1, 1), d * (_gap + 10.0) + Vector2(1, 1), Color(0, 0, 0, 0.35 * _alpha), 2.0)
+			draw_line(d * _gap, d * (_gap + 9.0), c, 2.0)
 
 
 ## Hit confirmation: a white tick for a hit, larger amber ticks for a headshot, and a thick red X that pops

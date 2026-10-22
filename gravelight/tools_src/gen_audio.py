@@ -903,6 +903,15 @@ def gen_weapons():
             x = reverb(x, r, 0.25, 0.08, 6000, 0.004)
             emit(key, f"sfx/weapons/foley/{name}_{i:02d}", x, -1.0, bus="SFX", volume_db=-4.0,
                  pitch=[0.97, 1.03], max_voices=3, attenuation="quiet", vol_jitter_db=1.0)
+    # the "last bullet" tell (Update 02 §1): a light, hollow follower click as the final round leaves the magazine
+    for i in variants(2):
+        r = rng_for(f"last_round{i}")
+        x = zeros(0.18)
+        place(x, mech_click(r, r.uniform(3300, 3700), 0.05, 0.004, 22), 0.0, 0.9)
+        place(x, mech_click(r, r.uniform(1750, 1950), 0.08, 0.008, 30), 0.004, 0.5)
+        x = reverb(x, r, 0.2, 0.06, 7000, 0.003)
+        emit("last_round_click", f"sfx/weapons/foley/last_round_{i:02d}", x, -2.0, bus="SFX", volume_db=-6.0,
+             pitch=[0.98, 1.02], max_voices=2, attenuation="quiet")
     gen_melee_lethal()
     gen_wonders()
 
@@ -1261,6 +1270,18 @@ def footstep(r, surface: str):
         place(x, thunk(r, 70, 0.025, 0.12), 0.0, 0.7)
         place(x, scrape(r, 0.1, 1500, 6000, 150) * 0.3, 0.005)
         return x
+    if surface == "hay":
+        # straw and chaff: a soft dry crunch of many fine grains over a muffled thump (Update 02 §1)
+        x = zeros(0.36)
+        grains = np.zeros(N(0.24))
+        cnt = r.integers(140, 220)
+        pos = (r.beta(1.3, 2.6, cnt) * len(grains)).astype(int)
+        grains[pos] = r.uniform(-1, 1, cnt)
+        g = bp(grains, 1800, 9000) + 0.5 * bp(white(r, 0.24), 2500, 7000) * expenv(N(0.24), 0.05)
+        g = nrm(g) * adsr(len(g), 0.015, 0.0, 1.0, 0.12)
+        place(x, g, 0.0, 0.7)
+        place(x, thunk(r, 65, 0.03, 0.1), 0.005, 0.45)
+        return lp(x, 8000)
     if surface == "metal":
         dur = 0.6
         n = N(dur)
@@ -1276,7 +1297,7 @@ def footstep(r, surface: str):
 
 
 def gen_player():
-    for surface in ["snow", "wood", "stone", "metal"]:
+    for surface in ["snow", "wood", "stone", "metal", "hay"]:
         for i in variants(5):
             r = rng_for(f"step_{surface}{i}")
             x = reverb(footstep(r, surface), r, 0.3 if surface != "metal" else 0.6, 0.06, 5000)
