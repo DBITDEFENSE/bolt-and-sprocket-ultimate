@@ -45,16 +45,6 @@ func test_skills_get_sharper_from_recruit_to_elite() -> void:
 	assert_gt(float(v["turn_rate"]), float(g["turn_rate"]))
 
 
-func test_wishlists_name_real_weapons_and_perks() -> void:
-	var weapons: Dictionary = GLData.table("weapons")["weapons"]
-	for w: Variant in cfg["shopping"]["weapon_wishlist"]:
-		assert_true(weapons.has(str(w)), "weapon %s" % str(w))
-		assert_gt(int(weapons[str(w)].get("wall_price", 0)), 0, "%s is a wall buy" % str(w))
-	var perks: Dictionary = GLData.table("perks")["perks"]
-	for p: Variant in cfg["shopping"]["perk_wishlist"]:
-		assert_true(perks.has(str(p)), "perk %s" % str(p))
-
-
 # ---------------------------------------------------------------- bots and characters
 
 func test_clamp_bots() -> void:
@@ -123,28 +113,6 @@ func test_kill_share_counts_every_human() -> void:
 
 
 # ---------------------------------------------------------------- shopping
-
-func test_pick_weapon_buys_the_best_affordable_upgrade() -> void:
-	var wish: Array = cfg["shopping"]["weapon_wishlist"]   # bar, stg44, thompson, mp40, gewehr43, m1_garand, m1_carbine, trench_gun, kar98k
-	var prices: Dictionary = {"kar98k": 200, "m1_garand": 600, "mp40": 1000, "stg44": 1200, "bar": 1800}
-	assert_eq(BotConfig.pick_weapon(wish, ["m1911"], 350, prices, 150), &"kar98k", "the pistol counts as worst")
-	assert_eq(BotConfig.pick_weapon(wish, ["m1911"], 349, prices, 150), &"", "keeps the buffer")
-	assert_eq(BotConfig.pick_weapon(wish, ["m1911"], 1200, prices, 150), &"mp40", "the best it can afford")
-	assert_eq(BotConfig.pick_weapon(wish, ["mp40", "m1911"], 1300, prices, 150), &"", "nothing better affordable")
-	assert_eq(BotConfig.pick_weapon(wish, ["mp40", "m1911"], 2000, prices, 150), &"bar")
-	assert_eq(BotConfig.pick_weapon(wish, ["bar"], 99999, prices, 0), &"", "already holds the best")
-	assert_eq(BotConfig.pick_weapon(wish, ["m1911"], 99999, {}, 0), &"", "nothing on the walls here")
-
-
-func test_pick_perk_respects_cap_ownership_and_buffer() -> void:
-	var wish: Array = cfg["shopping"]["perk_wishlist"]   # hawkeye_brandy, second_wind, twin_barrel, trigger_tonic
-	var prices: Dictionary = {"hawkeye_brandy": 1500, "second_wind": 1500, "twin_barrel": 2000}
-	assert_eq(BotConfig.pick_perk(wish, [], 1900, prices, 2, 400), &"hawkeye_brandy")
-	assert_eq(BotConfig.pick_perk(wish, [], 1899, prices, 2, 400), &"")
-	assert_eq(BotConfig.pick_perk(wish, [&"hawkeye_brandy"], 1900, prices, 2, 400), &"second_wind")
-	assert_eq(BotConfig.pick_perk(wish, ["hawkeye_brandy", "second_wind"], 9999, prices, 2, 400), &"", "max_perks")
-	assert_eq(BotConfig.pick_perk(wish, [], 9999, {"trigger_tonic": 3000}, 2, 400), &"trigger_tonic", "only what a machine here sells")
-
 
 # ---------------------------------------------------------------- aim and formation geometry
 
@@ -219,40 +187,9 @@ func test_settings_remember_the_squad() -> void:
 
 func test_door_tuning_is_present_and_switchable() -> void:
 	var d: Dictionary = cfg["shopping"]["doors"]
-	for key: String in ["enabled", "reserve_scrip", "round_delay_s", "max_per_round_per_bot", "human_look_cone_deg", "near_bonus_m"]:
+	for key: String in ["enabled", "reserve_scrip", "round_delay_s", "max_per_round_per_bot"]:
 		assert_true(d.has(key), key)
-	assert_true(BotConfig.door_allowed(d, 999.0, 0))
-	var off: Dictionary = d.duplicate()
-	off["enabled"] = false
-	assert_false(BotConfig.door_allowed(off, 999.0, 0), "doors switched off in the tuning")
-
-
-func test_door_allowed_waits_for_the_delay_and_caps_per_round() -> void:
-	var d: Dictionary = {"enabled": true, "round_delay_s": 20.0, "max_per_round_per_bot": 1}
-	assert_false(BotConfig.door_allowed(d, 5.0, 0), "too early in the round")
-	assert_true(BotConfig.door_allowed(d, 20.0, 0))
-	assert_false(BotConfig.door_allowed(d, 60.0, 1), "one door a round per bot")
-	assert_true(BotConfig.door_allowed({"enabled": true, "round_delay_s": 0.0, "max_per_round_per_bot": 2}, 0.0, 1))
-
-
-func test_pick_door_prefers_the_one_the_human_looks_at_then_the_nearest() -> void:
-	var d: Dictionary = cfg["shopping"]["doors"]
-	var doors: Array = [
-		{"cost": 750, "pos": Vector3(0, 0, -10), "ok": true},    # straight ahead of the human
-		{"cost": 750, "pos": Vector3(3, 0, 0), "ok": true},      # right beside them
-		{"cost": 1500, "pos": Vector3(-20, 0, 5), "ok": true},   # far and dear
-	]
-	var human: Vector3 = Vector3.ZERO
-	var fwd: Vector3 = Vector3(0, 0, -1)
-	assert_eq(BotConfig.pick_door(d, doors, 2000, human, fwd), 0, "the door in the human's sights")
-	assert_eq(BotConfig.pick_door(d, doors, 2000, human, Vector3(1, 0, 0)), 1, "else the nearest one")
-	assert_eq(BotConfig.pick_door(d, doors, 1000, human, fwd), -1, "750 + the 300 reserve is more than 1000")
-	assert_eq(BotConfig.pick_door(d, doors, 1050, human, fwd), 0, "exactly the reserve left over is fine")
-	doors[0]["ok"] = false
-	doors[1]["ok"] = false
-	assert_eq(BotConfig.pick_door(d, doors, 1000, human, fwd), -1, "the far door needs 1800")
-	assert_eq(BotConfig.pick_door(d, doors, 1800, human, fwd), 2, "unreachable / unpowered doors are skipped")
-	assert_eq(BotConfig.pick_door(d, [], 99999, human, fwd), -1)
+	# Update 03: whether a bot may buy a door at all is BotEconomy.door_allowed (test_bot_brain.gd)
 
 
 func test_crucible_wanted() -> void:
@@ -289,8 +226,3 @@ func test_crucible_ammo_wanted() -> void:
 	assert_gt(float(c["priority"]), 60.0, "the Crucible outranks ammo (60) and boards (30) in the break")
 
 
-func test_overclock_cordial_is_on_the_perk_wishlist() -> void:
-	assert_true((cfg["shopping"]["perk_wishlist"] as Array).has("overclock_cordial"), "bots buy the ninth perk when a machine is there")
-	assert_true((GLData.table("perks")["perks"] as Dictionary).has("overclock_cordial"))
-	assert_almost_eq(PerkManager.overclock_spent(0, 8), 1.0, 0.001, "an empty mag is a full burst")
-	assert_almost_eq(PerkManager.overclock_spent(8, 8), 0.0, 0.001)

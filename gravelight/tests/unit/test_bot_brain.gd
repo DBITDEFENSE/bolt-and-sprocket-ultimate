@@ -352,3 +352,18 @@ func test_personal_space_bubble() -> void:
 	var ahead: Vector3 = BotMoveAdapter.personal_space_push(Vector3(0, 0, -1.5), h, Vector3(0, 0, -3.0))
 	assert_gt(ahead.length(), 0.0, "in front of a walking human the bubble is longer")
 	assert_eq(BotMoveAdapter.personal_space_push(Vector3(0, 0, 1.5), h, Vector3(0, 0, -3.0)), Vector3.ZERO, "behind them it isn't")
+
+
+func test_the_spending_plan_names_real_perks_and_weapons() -> void:
+	var perks: Dictionary = GLData.table("perks")["perks"]
+	for p: Variant in eco["perk_plan"]:
+		if str(p) != "@weapon":
+			assert_true(perks.has(str(p)), "perk %s" % p)
+	for k: Variant in (eco["weapon_perk"] as Dictionary).keys():
+		assert_true(perks.has(str(k)), "weapon perk %s" % k)
+	var weapons: Dictionary = GLData.table("weapons")["weapons"]
+	for w: Variant in (eco["weapon_tiers"] as Dictionary).keys():
+		assert_true(weapons.has(str(w)), "weapon %s" % w)
+	for w2: Variant in weapons.keys():
+		if not str(w2).ends_with("_up"):
+			assert_true((eco["weapon_tiers"] as Dictionary).has(str(w2)), "a tier for %s" % w2)

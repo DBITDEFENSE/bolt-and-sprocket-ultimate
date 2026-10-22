@@ -100,67 +100,6 @@ static func human_share_ok(recent: Array, human_ids: Array, ks: Dictionary) -> b
 	return float(human) / float(sample.size()) >= float(ks.get("human_min_share", 0.45))
 
 
-## The wall weapon to buy next: the first wishlist entry on the map that is better than everything held
-## (earlier in the wishlist = better; unlisted held guns count as worst) and affordable with the buffer.
-## `prices` = weapon id -> wall price for the wall-buys on this map. Returns &"" for nothing.
-static func pick_weapon(wishlist: Array, held: Array, scrip: int, prices: Dictionary, buffer: int) -> StringName:
-	var best_held: int = wishlist.size()
-	for h: Variant in held:
-		var i: int = wishlist.find(String(h))
-		if i >= 0:
-			best_held = mini(best_held, i)
-	for i2: int in range(0, mini(best_held, wishlist.size())):
-		var wid: String = str(wishlist[i2])
-		if prices.has(wid) and scrip >= int(prices[wid]) + buffer:
-			return StringName(wid)
-	return &""
-
-
-## The perk to drink next: the first wishlist perk not owned and affordable, while under max_perks.
-## `prices` = perk id -> price for machines that can sell to this bot right now.
-static func pick_perk(wishlist: Array, owned: Array, scrip: int, prices: Dictionary, max_perks: int, buffer: int) -> StringName:
-	if owned.size() >= max_perks:
-		return &""
-	for p: Variant in wishlist:
-		var pid: String = str(p)
-		if owned.has(pid) or owned.has(StringName(pid)):
-			continue
-		if prices.has(pid) and scrip >= int(prices[pid]) + buffer:
-			return StringName(pid)
-	return &""
-
-
-## Doors (shopping.doors): may this bot buy one now? `since_round_start` seconds into the round, `bought` doors
-## this bot opened this round.
-static func door_allowed(d: Dictionary, since_round_start: float, bought: int) -> bool:
-	if not bool(d.get("enabled", true)):
-		return false
-	if since_round_start < float(d.get("round_delay_s", 20.0)):
-		return false
-	return bought < int(d.get("max_per_round_per_bot", 1))
-
-
-## The door to buy: `doors` = [{"cost": int, "pos": Vector3, "ok": bool (usable and reachable)}, ...]. Affordable
-## with the reserve, preferring the one the human looks at (human_look_cone_deg) and the one nearest the human
-## (near_bonus_m - distance). Returns the index in `doors`, or -1.
-static func pick_door(d: Dictionary, doors: Array, scrip: int, human_pos: Vector3, human_fwd: Vector3) -> int:
-	var best: int = -1
-	var best_s: float = -INF
-	for i: int in doors.size():
-		var door: Dictionary = doors[i]
-		if not bool(door.get("ok", true)) or scrip < int(door.get("cost", 0)) + int(d.get("reserve_scrip", 0)):
-			continue
-		var pos: Vector3 = door.get("pos", Vector3.ZERO)
-		var dist: float = Vector2(pos.x - human_pos.x, pos.z - human_pos.z).length()
-		var s: float = maxf(0.0, float(d.get("near_bonus_m", 14.0)) - dist)
-		if in_fire_cone(human_pos, human_fwd, pos, float(d.get("human_look_cone_deg", 35.0)), 60.0):
-			s += 20.0
-		if s > best_s:
-			best_s = s
-			best = i
-	return best
-
-
 ## Crucible ammo (shopping.crucible): the upgraded gun in hand is under ammo_below_frac of its reserve and the
 ## ammo price plus ammo_reserve_scrip is in hand.
 static func crucible_ammo_wanted(c: Dictionary, upgraded: bool, reserve: int, reserve_max: int, scrip: int, cost: int) -> bool:

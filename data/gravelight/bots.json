@@ -230,38 +230,13 @@
   },
   "shopping": {
     "max_from_leader_m": 24.0,
-    "weapon_wishlist": [
-      "bar",
-      "stg44",
-      "thompson",
-      "mp40",
-      "gewehr43",
-      "m1_garand",
-      "m1_carbine",
-      "trench_gun",
-      "kar98k"
-    ],
-    "weapon_buffer_scrip": 150,
-    "ammo_below_frac": 0.5,
     "ammo_box": {
-      "_doc": "Update 02 section 4: a bot refills its driest carried gun (reserve under below_frac) at the nearest ammo box when its own Scrip covers the box price plus buffer_scrip. priority is the errand score before distance (wall-buy ammo is 60).",
+      "_doc": "Update 02 section 4 / Update 03: a bot refills its main gun at the nearest ammo box (economy.json ammo_box_below, 25%; 60% between waves with Scrip to spare) when its own Scrip (or a companion's payer) covers the box price plus buffer_scrip.",
       "enabled": true,
-      "below_frac": 0.5,
-      "buffer_scrip": 100,
-      "priority": 62.0
+      "buffer_scrip": 100
     },
-    "perk_wishlist": [
-      "hawkeye_brandy",
-      "second_wind",
-      "overclock_cordial",
-      "twin_barrel",
-      "trigger_tonic"
-    ],
-    "max_perks": 4,
-    "perk_min_round": 3,
-    "perk_buffer_scrip": 400,
     "errand_timeout_s": 20.0,
-    "_doc": "What a bot spends its own Scrip on between fights, within max_from_leader_m of the leader: wall guns from the wishlist (best affordable first, keeping weapon_buffer_scrip), ammo for a held gun under ammo_below_frac, up to max_perks cheap perks from perk_min_round, doors (see doors) and the Crucible upgrade (see crucible).",
+    "_doc": "Update 03: the spending plan is data/gravelight/ai/economy.json (perk plan, guns for the round, the reserve, the crate, doors). What stays here: max_from_leader_m (T-031 errands), errand_timeout_s, the ammo box tuning, doors (round delay, per-round cap, door reserve) and the Crucible (min round, reserves, only in the break).",
     "doors": {
       "_doc": "Bots buy closed doors: enabled, when scrip >= cost + reserve_scrip, at least round_delay_s after the round started, at most max_per_round_per_bot per bot per round; the door the human is looking at (within human_look_cone_deg) or nearest to is preferred (near_bonus_m - distance), within max_from_leader_m of the leader. Doors needing the power wait for it.",
       "enabled": true,

@@ -35,8 +35,10 @@ func test_kit_missing_skips_what_is_held() -> void:
 
 
 func test_kit_perks_leave_room_to_buy_more() -> void:
-	assert_gt(int(cfg["shopping"]["max_perks"]), (cfg["spawn_kit"]["perks"] as Array).size(), "bots still shop for perks on top of the kit")
-	assert_lte(int(cfg["shopping"]["max_perks"]), int(GLData.table("perks")["cap"]))
+	# Update 03: the perk plan (data/gravelight/ai/economy.json) goes past the kit, up to the game's perk cap
+	var plan: Array = BotAIData.table("economy")["perk_plan"]
+	assert_gt(plan.size(), (cfg["spawn_kit"]["perks"] as Array).size(), "bots still shop for perks on top of the kit")
+	assert_gt(int(GLData.table("perks")["cap"]), (cfg["spawn_kit"]["perks"] as Array).size(), "the kit leaves room under the cap")
 
 
 func test_ai_mode_from_settings() -> void:
