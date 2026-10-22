@@ -42,6 +42,9 @@ var chokes: Array[Dictionary] = []
 var choke_events: PackedStringArray = []
 ## T-058: the home loop of a squad with no human leading it (refreshed with the route; null otherwise).
 var home: TrainingRoute = null
+## T-058: the stalled round's last zombie the squad hunts (INF: none), and since when the round stalled.
+var hunt_at: Vector3 = Vector3.INF
+var _stall_since: float = -1.0
 ## The human's smoothed flat velocity (training detection for the moving formation).
 var leader_vel: Vector3 = Vector3.ZERO
 ## Doors the human opened this match (bots buy doors on the human's path only after one).
@@ -363,6 +366,43 @@ func update_shared(now: float) -> void:
 	if _call_t <= 0.0:
 		_call_t = 0.5
 		_squad_callouts(now)
+		_update_hunt(now)
+
+
+## T-058: the round held up by its last one or two zombies (nothing left to spawn) for hunt_after_s: the squad
+## tracks them down, the way a player follows the last zombie's groans and footsteps (a boss loose in another hall,
+## a Foreman stuck in CHASE: the smoke_map02 stall). They go on the blackboard as heard (no line of sight, so no
+## shooting through walls) and hunt_point() is where the idle / following bots walk (with a human too: it only
+## ever starts after the round has stalled).
+func _update_hunt(now: float) -> void:
+	var hc: Dictionary = BotAIData.combat("hunt")
+	hunt_at = Vector3.INF
+	var d: ZombieDirector = director()
+	if d == null or RoundManager.state != RoundManager.State.ROUND or RoundManager.to_spawn > 0:
+		_stall_since = -1.0
+		return
+	var act: Array = d.active_zombies()
+	if act.is_empty() or act.size() > int(hc.get("max_left", 2)):
+		_stall_since = -1.0
+		return
+	if _stall_since < 0.0:
+		_stall_since = now
+	if now - _stall_since < float(hc.get("after_s", 12.0)):
+		return
+	var best: Zombie = null
+	for z: Variant in act:
+		var zz: Zombie = z as Zombie
+		if zz != null and is_instance_valid(zz) and BotPerception.targetable(zz) and (best == null or BotPerception.is_boss(zz)):
+			best = zz
+	if best == null:
+		return
+	hunt_at = best.global_position
+	blackboard.sight(best, best.global_position, now, 0, best.tier, BotPerception.is_boss(best))
+
+
+## Where the squad hunts the round's last zombie (Vector3.INF: no hunt).
+func hunt_point() -> Vector3:
+	return hunt_at
 
 
 ## The training route (U03 section 3, TrainingRoute.for_map: the map's authored loops whose doors and zones are

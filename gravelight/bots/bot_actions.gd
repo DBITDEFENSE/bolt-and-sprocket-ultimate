@@ -14,6 +14,7 @@ var _retreat_p: Vector3 = Vector3.INF
 var _retreat_since: float = 0.0
 var _cornered_t: float = 0.0
 var _back_p: Vector3 = Vector3.INF
+var _no_hold_until: float = -1.0
 var _back_until: float = -1.0
 var _flank_p: Vector3 = Vector3.INF
 var _flank_t: float = 0.0
@@ -118,8 +119,14 @@ func _fight(delta: float) -> void:
 	var leader: Player = brain.squad.leader_for(brain)
 	var back_r: float = backpedal_radius(per.nearest.speed if per.nearest != null else 0.0, cfg("fight"), float(BotConfig.cfg().get("combat", {}).get("backpedal_radius_m", 2.6)))
 	var keep: float = brain.personality_combat("keep_distance_m", 4.0)
+	var stand: bool = brain.stand_fast() or brain.nearest_holds_ground()
+	if stand:
+		back_r = 0.0   # T-058: backing away from a Bellringer only turns its lunge into a chase
+	var mate: Player = brain.squad.nearest_standing(player, player.global_position) if stand else null
 	if per.nearest != null and per.nearest_d < back_r and not (per.nearest.is_crawler and brain.personality_combat("melee_crawlers", false)):
 		_back_off(per.nearest, 2.6, 0.6)
+	elif mate != null and _flat(mate.global_position, player.global_position) > float(cfg("fight").get("stack_m", 3.0)) and per.nearest_d > 2.5:
+		brain.loco.move_to(mate.global_position, 0.55, float(cfg("fight").get("stack_m", 3.0)) * 0.6)   # back to back with a teammate
 	elif brain.order_id() == &"hold" and brain.squad.hold_point != Vector3.INF:
 		brain.loco.hold(brain.squad.hold_spot(brain))
 	elif _flank():
@@ -128,7 +135,7 @@ func _fight(delta: float) -> void:
 		pass
 	elif not brain.roaming() and leader != null and leader != player and (brain.leader_moving(leader) or _flat(leader.global_position, player.global_position) > 8.0):
 		brain.loco.follow(leader, brain.index)
-	elif per.nearest != null and per.nearest_d < keep * 0.6 and brain.aim.target != null:
+	elif not stand and per.nearest != null and per.nearest_d < keep * 0.6 and brain.aim.target != null:
 		_back_off(per.nearest, 1.8, 0.4)
 	elif _high_ground():
 		pass
@@ -317,7 +324,7 @@ func _train(delta: float) -> void:
 	else:
 		brain.loco.train(brain.squad.blackboard.route)
 	var urg: Variant = brain.loco.get("_t_urg")
-	if urg != null and float(urg) >= 0.6 and (player.sprinting or brain.perception.nearest_d > 2.2):
+	if urg != null and float(urg) >= 0.6 and ((player.sprinting and player.horizontal_speed() > 2.5) or brain.perception.nearest_d > 2.2):
 		return   # the layer is sprinting ahead of the train's head: no look, so it can run
 	# (T-058: out of stamina or boxed in with the head in reach, it turns and shoots instead of standing there)
 	var per: BotPerception = brain.perception
@@ -358,7 +365,7 @@ func _retreat(delta: float) -> void:
 	# something faster than a walk on its heels: sprint clear first (no shooting at a run). Slower ones (joggers,
 	# walkers) are out-walked while shooting (T-058: joggers used to trigger the sprint, so a bot kiting a crowd of
 	# joggers never fired). Cornered (still in reach after sprint_cornered_s of sprinting): turn and shoot.
-	var close: bool = per.nearest != null and per.nearest_d < float(rc.get("sprint_within_m", 3.2)) and per.nearest.speed >= float(rc.get("sprint_from_speed", 4.2))
+	var close: bool = per.nearest != null and per.nearest_d < float(rc.get("sprint_within_m", 3.2)) and per.nearest.speed >= float(rc.get("sprint_from_speed", 4.2)) 		and not brain.nearest_holds_ground()   # (nobody outruns a Bellringer: walk and shoot)
 	_fight_back_t -= delta
 	if close and per.nearest_d < float(rc.get("cornered_m", 1.6)):
 		_cornered_t += delta
@@ -500,6 +507,15 @@ func _revive(delta: float) -> void:
 		if _reviving_pid != 0:
 			return
 	brain.loco.look_at_dir(t.global_position + Vector3.UP * 0.4 - brain.aim.eye())
+	# T-058: being torn apart mid-hold with time on the clock: let go and fight (the claim stays; the self-swarm
+	# rule blocks the revive until it is clear, or the last-chance rule sends it back in)
+	if _reviving_pid != 0 and player.hp < player.max_hp * float(rc.get("abort_hp_frac", 0.4)) and left > float(rc.get("last_chance_s", 8.0)) 			and brain.revive_seconds() - _revive_hold > float(rc.get("abort_min_left_s", 0.6)) and per.nearest_d < 2.0:
+		stop_revive()
+		_no_hold_until = brain.squad.time() + 1.2
+	if _reviving_pid == 0 and brain.squad.time() < _no_hold_until:
+		if not brain.aim.update(delta, true):
+			brain.idle_look(delta)
+		return
 	if _reviving_pid == 0:
 		_reviving_pid = brain.revive_pid
 		_revive_hold = 0.0
@@ -586,6 +602,10 @@ func _powerup(delta: float) -> void:
 ## T-058: the leader of a squad with no human leading it goes back to the home loop when it has nothing to do,
 ## so the squad doesn't stay wherever its last errand took it (a dead-end attic, the cellar). True while it walks.
 func _go_home() -> bool:
+	var hp0: Vector3 = brain.squad.hunt_point()
+	if hp0 != Vector3.INF and _flat(hp0, player.global_position) > 5.0:
+		brain.loco.move_to(hp0, 0.6, 5.0)   # T-058: the stalled round's last zombie: go and find it
+		return true
 	var leader: Player = brain.squad.leader_for(brain)
 	if leader != player:
 		return false
@@ -598,7 +618,7 @@ func _go_home() -> bool:
 
 func _follow(delta: float) -> void:
 	var leader: Player = brain.squad.leader_for(brain)
-	if leader == null or leader == player:
+	if leader == null or leader == player or brain.squad.hunt_point() != Vector3.INF:
 		if not _go_home():
 			brain.loco.stop()
 	else:

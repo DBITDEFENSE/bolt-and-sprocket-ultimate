@@ -131,6 +131,7 @@ var _revive_path_m: float = INF
 var _revive_path_t: float = -10.0
 var _human_used_traps: Dictionary = {}
 var _task_block_t: float = -1.0
+var _swarm_block_until: float = -1.0
 ## The last few thinks in short (soak diagnostics: BotSquad's down log prints them when this bot goes down).
 var recent: PackedStringArray = PackedStringArray()
 
@@ -469,7 +470,9 @@ func context(now: float) -> Dictionary:
 		var blocked: bool = (per.sprinter_near(rt.global_position, float(rc.get("blocked_sprinter_m", 6.0))) and left >= float(rc.get("blocked_bleed_s", 10.0))) 			or (swarmed and left >= float(rc.get("blocked_crowd_bleed_s", 20.0)))
 		# T-058: zombies on the reviver itself: deal with them first (fight, back off), unless time is short
 		if not actions.reviving() and per.count_near(player.global_position, float(rc.get("self_swarm_m", 2.2))) >= int(rc.get("self_swarm_n", 2)) 				and left >= float(rc.get("self_swarm_bleed_s", 14.0)):
-			blocked = true
+			_swarm_block_until = now + float(rc.get("self_swarm_latch_s", 1.2))
+		if not actions.reviving() and now < _swarm_block_until and left >= float(rc.get("self_swarm_bleed_s", 14.0)):
+			blocked = true   # latched: a revive / cover flip every think used to restart the hold each time
 		if left < float(rc.get("last_chance_s", 8.0)):
 			blocked = false
 		c["revive_blocked"] = 1.0 if blocked else 0.0
@@ -490,6 +493,7 @@ func context(now: float) -> Dictionary:
 		c["squad_far"] = 0.0
 		c["leader_far"] = 0.0
 	c["break"] = 1.0 if in_break() else 0.0
+	c["stand_fast"] = 1.0 if stand_fast() else 0.0
 	c["round"] = clampf(float(RoundManager.current_round) / 30.0, 0.0, 1.0)
 	c["loop"] = 1.0 if loco.train_ok() and armed_ else 0.0
 	c["hold_spot"] = 0.0 if hold_spot().is_empty() else 1.0
@@ -553,6 +557,19 @@ func armed() -> bool:
 
 func in_break() -> bool:
 	return RoundManager.state != RoundManager.State.ROUND or (RoundManager.to_spawn <= 0 and perception.known.is_empty() and squad.director() != null and squad.director().active_zombies().is_empty())
+
+
+## T-058: a special round (the Bellringers come out of portals, not windows, at 5.4 m/s with a lunge): no window
+## holds, no training, no running off alone; the squad stands together and shoots (combat.json / ai_counters
+## hold_ground).
+func stand_fast() -> bool:
+	return RoundManager.is_special_round and RoundManager.state == RoundManager.State.ROUND
+
+
+## The nearest zombie is one nobody outruns or backs away from (ai_counters hold_ground).
+func nearest_holds_ground() -> bool:
+	var z: Zombie = perception.nearest
+	return z != null and is_instance_valid(z) and bool(BotAIData.counter(z.enemy_id).get("hold_ground", false))
 
 
 func escort_target() -> Player:
@@ -829,7 +846,7 @@ func hold_spot() -> Dictionary:
 	if order_id() == &"hold" and squad.hold_point != Vector3.INF:
 		return {"pos": squad.hold_spot(self), "facing": Vector3.ZERO}
 	var hc: Dictionary = BotAIData.combat("hold")
-	if RoundManager.current_round > int(hc.get("until_round", 7)) or in_break() or roaming():
+	if RoundManager.current_round > int(hc.get("until_round", 7)) or in_break() or roaming() or stand_fast():
 		release_hold_claim()
 		return {}
 	var now: float = squad.time()

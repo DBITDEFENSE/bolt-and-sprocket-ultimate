@@ -47,6 +47,9 @@ var player_kit: String = "baseline"
 ## --start-round=N (tuning only, T-058): jump to round N at go-live (RoundManager.debug_set_round) with 450 x N
 ## Scrip each; not for the acceptance numbers.
 var start_round: int = 0
+## --homage=0 (tuning only): the Homage Bosses off (no Cousins round at 10 on Map 0); the default (as in every
+## Update 03 measurement) is on.
+var homage: bool = true
 ## --trace=N: every N game seconds, one status line per bot (action, top scores, gun, threat) and its task.
 var trace_s: float = 0.0
 var _trace_t: float = 0.0
@@ -100,6 +103,8 @@ func _ready() -> void:
 			player_kit = a.substr(13)
 		elif a.begins_with("--start-round="):
 			start_round = int(a.substr(14))
+		elif a.begins_with("--homage="):
+			homage = a.substr(9) != "0"
 		elif a.begins_with("--loco="):
 			BotLocomotion.force_mode = a.substr(7)   # U03 section 3: v1 / v2 against bots.json locomotion
 	if not ["player3", "bots3", "cousins", "kaltenbrunn"].has(scenario):
@@ -116,7 +121,7 @@ func _ready() -> void:
 	ProfileSave.path = "user://_ai_soak_profile.json"
 	ProfileSave.profile = ProfileSave.new_profile()
 	GLSettings.path = "user://_ai_soak_settings.cfg"   # never write the player's own settings file
-	GLSettings.values["homage_bosses"] = true
+	GLSettings.values["homage_bosses"] = homage
 	GLSettings.values["homage_names"] = "real"
 	Engine.time_scale = speed
 	_batch = "%s_%s_x%d" % [Time.get_datetime_string_from_system(false, true).replace(":", "").replace(" ", "_").replace("-", ""), scenario, runs]
@@ -129,6 +134,8 @@ func _ready() -> void:
 		return
 	if player_kit != "baseline" and scenario != "bots3":
 		_batch += "_" + player_kit
+	if not homage:
+		_batch += "_nohomage"
 	print("[soak] scenario %s, %d run(s), seed %d, max round %s, speed %.2fx, skill %s, map %s, player kit %s, local AI off" % [scenario, runs, seed_base,
 		str(max_round) if max_round > 0 else "to the wipe", speed, skill, map_key, player_kit])
 	GLBus.power_activated.connect(func() -> void:

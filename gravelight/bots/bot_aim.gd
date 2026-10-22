@@ -181,6 +181,8 @@ func target_value(z: Zombie) -> float:
 		s *= float(c.get("vulnerable_priority", 2.0))
 	if bool(c.get("break_grab", false)) and z is HomageBoss and _holds_teammate(z as HomageBoss):
 		s *= float(c.get("grab_priority", 3.0))
+	elif float(c.get("adds_first_m", 0.0)) > 0.0 and not (z is HomageBoss and (z as HomageBoss).damage_taken_mult() > 1.01) 			and per.nearest != null and per.nearest != z and not BotPerception.is_boss(per.nearest) and per.nearest_d < float(c.get("adds_first_m", 0.0)):
+		s *= float(c.get("adds_first_mult", 0.35))   # T-058: a runner at our heels first; the boss when it's clear (or vulnerable)
 	if z.state == Zombie.State.TEAR or z.state == Zombie.State.CLIMB or z.state == Zombie.State.WAIT_WINDOW:
 		s += 0.3
 	if cover_point != Vector3.INF and _flat(z.global_position, cover_point) < 7.0:
@@ -210,11 +212,19 @@ func _holds_teammate(b: HomageBoss) -> bool:
 
 
 func _acquire(z: Zombie, s: float) -> void:
+	var prev: Zombie = target
 	target = z
 	target_score = s
 	_target_t = 0.0
 	_lost_t = 0.0
 	_react_t = BotConfig.range_roll(_sk.get("reaction_s"), _rng, 0.22)
+	# T-058: switching to a zombie right next to the one it was already shooting (within quick_switch_deg of the
+	# aim) is a flick, not a new reaction: a bot whose cover / revive actions re-weighted its targets every think
+	# used to re-roll the full reaction delay each time and never fired
+	if prev != null and is_instance_valid(prev) and _react_t > 0.0:
+		var to: Vector3 = z.global_position + Vector3.UP * 1.2 - eye()
+		if to.length() > 0.1 and brain.facing().angle_to(to.normalized()) < deg_to_rad(float(_a.get("quick_switch_deg", 20.0))):
+			_react_t = float(_a.get("quick_switch_s", 0.06))
 	var w: WeaponInstance = cur()
 	var cls: String = String(w.weapon_class()) if w != null else "smg"
 	var c: Dictionary = BotAIData.counter(z.enemy_id)
@@ -320,9 +330,13 @@ func _fire_if_on(aim_dir: Vector3, aim_p: Vector3, delta: float) -> void:
 	if w == null or reloading or swap_t > 0.0 or _react_t > 0.0 or w.mag <= 0 or not brain.loco.fire_ready() or brain.loco.sprint_out_left() > 0.0:
 		return
 	var tol: float = deg_to_rad(float(_sk.get("fire_tolerance_deg", 3.0)))
+	var d: float = eye().distance_to(aim_p)
+	# T-058: up close the body fills the view: anything within the target's own width (body_half_width_m at this
+	# range) is a hit, as for a person hip-firing. The fixed 1.8 degree tolerance kept a bot with a zombie at
+	# 0.7 m (its aim point swinging across 20+ degrees) from firing at all.
+	tol = maxf(tol, atan2(float(_a.get("body_half_width_m", 0.22)), maxf(0.3, d)))
 	if brain.facing().angle_to(aim_dir) > tol:
 		return
-	var d: float = eye().distance_to(aim_p)
 	if d > max_range(w):
 		return   # no spraying what it can't hit
 	var c: Dictionary = BotAIData.counter(target.enemy_id)

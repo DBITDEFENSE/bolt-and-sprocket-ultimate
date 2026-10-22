@@ -28,6 +28,11 @@
   "aim": {
     "_doc": "Target choice: threat x the counters' priority, + specials_first (personality) for specials/bosses, x vulnerable_priority / grab_priority (counters), x escort_bonus for what goes for the escorted player; kill-steal etiquette until kill_steal_until_round: a zombie under kill_steal_hp_frac of its health that the human is shooting is left to them unless it threatens someone. Headshot chance = base_head by weapon class x skill head_aim_mult + personality / counter head_bias, + slow_or_close_head for slow or close targets. Fire discipline: autos burst (burst_s / pause_s) beyond burst_range_m and fire freely inside it; semi rifles single shots at the skill's semi_max_rpm; nothing beyond max_range_m[class] (no spraying what it can't hit); never through a teammate (a 0.6 m line-of-fire check).",
     "reacquire_lost_s": 0.8,
+    "body_half_width_m": 0.22,
+    "_body_doc": "T-058: the fire tolerance never goes below the angle a target's half width (body_half_width_m) covers at its range: point-blank, anything on the body is a hit.",
+    "quick_switch_deg": 20.0,
+    "quick_switch_s": 0.06,
+    "_quick_switch_doc": "T-058: a new target within quick_switch_deg of where it already aims is a flick (quick_switch_s), not a fresh reaction delay.",
     "base_head": {"pistol": 0.55, "rifle": 0.8, "bolt": 0.85, "sniper": 0.85, "smg": 0.6, "assault": 0.65, "lmg": 0.45, "shotgun": 0.15, "launcher": 0.0, "special": 0.0, "wonder": 0.1},
     "slow_or_close_head": 0.15,
     "max_range_m": {"pistol": 25.0, "rifle": 60.0, "bolt": 70.0, "sniper": 90.0, "smg": 30.0, "assault": 40.0, "lmg": 45.0, "shotgun": 13.0, "launcher": 40.0, "special": 9.0, "wonder": 30.0},
@@ -112,6 +117,10 @@
     "self_swarm_m": 2.2,
     "self_swarm_n": 2,
     "self_swarm_bleed_s": 14.0,
+    "self_swarm_latch_s": 1.2,
+    "abort_hp_frac": 0.4,
+    "abort_min_left_s": 0.6,
+    "_abort_doc": "T-058: mid-hold, under abort_hp_frac health with something within 2 m and more than abort_min_left_s of the hold to go (and more than last_chance_s of bleed-out), it lets go and fights.",
     "_self_swarm_doc": "T-058: a reviver with self_swarm_n or more zombies within self_swarm_m of itself deals with them first (the revive counts as blocked: cover / fight / back off) while more than self_swarm_bleed_s of bleed-out are left."
   },
   "train": {
@@ -123,7 +132,14 @@
     "backpedal_base_m": 1.7,
     "backpedal_per_speed_s": 0.55,
     "backpedal_min_m": 2.6,
-    "backpedal_max_m": 4.4
+    "backpedal_max_m": 4.4,
+    "stack_m": 3.0,
+    "_stack_doc": "In a special round (or against a hold_ground enemy) there is no backpedal; a bot more than stack_m from its nearest teammate (with nothing within 2.5 m) closes up to stand back to back."
+  },
+  "hunt": {
+    "_doc": "T-058: when a round has nothing left to spawn and only max_left zombies alive for after_s seconds (a boss loose elsewhere, a stuck straggler), the squad hears the last one (blackboard, no line of sight) and the bots with nothing else to do walk to it.",
+    "max_left": 2,
+    "after_s": 12.0
   },
   "retreat": {
     "samples": 12,
