@@ -1,8 +1,10 @@
 class_name MenuDossiers
 extends MenuScreen
-## Character dossiers: level 1–10 from playing that survivor; each level opens a page.
+## Character dossiers: level 1–10 from playing that survivor; each level opens a page. Jakub Ostrowski (the
+## companion, U02 section 6.2) gets a tab once he has joined you (profile companion_jakub = joined); his pages open
+## with the XP earned alongside him.
 
-const NAMES: Dictionary = {"dutch": "Dutch", "peg": "Peg", "deacon": "Deacon", "wren": "Wren"}
+const NAMES: Dictionary = {"dutch": "Dutch", "peg": "Peg", "deacon": "Deacon", "wren": "Wren", "jakub": "Jakub"}
 
 var _char: String = "dutch"
 var _reader: Label
@@ -17,6 +19,8 @@ func build() -> void:
 	tabs.add_theme_constant_override("separation", 12)
 	content.add_child(tabs)
 	for c: String in NAMES.keys():
+		if c == "jakub" and not JakubCompanion.joined_profile():
+			continue   # no spoiler before he is freed
 		var b: Button = MenuKit.button(("> " if c == _char else "") + str(NAMES[c]), _select.bind(c), 22)
 		b.custom_minimum_size = Vector2(170, 44)
 		tabs.add_child(b)
@@ -60,4 +64,4 @@ func _show(page: Dictionary, open: bool) -> void:
 	if open:
 		_reader.text = "%s\n\n%s" % [page["title"], page["text"]]
 	else:
-		_reader.text = "Play as %s to raise this dossier." % NAMES[_char]
+		_reader.text = ("Fight alongside Jakub to raise his dossier." if _char == "jakub" else "Play as %s to raise this dossier." % NAMES[_char])

@@ -4,12 +4,12 @@ extends CanvasLayer
 
 const NAMES: Dictionary = {
 	&"OPR": "THE OPERATOR", &"FAS": "FASBENDER (RADIO)", &"REI": "REINHOLT", &"LSL": "LIESL",
-	&"DUT": "DUTCH", &"PEG": "PEG", &"DEA": "DEACON", &"WRN": "WREN",
+	&"DUT": "DUTCH", &"PEG": "PEG", &"DEA": "DEACON", &"WRN": "WREN", &"JAK": "JAKUB",
 }
 const COLORS: Dictionary = {
 	&"OPR": Color(1.0, 0.78, 0.35), &"FAS": Color(0.62, 0.9, 0.62), &"REI": Color(0.72, 0.5, 1.0),
 	&"LSL": Color(1.0, 0.7, 0.78), &"DUT": Color(0.55, 0.7, 0.9), &"PEG": Color(0.86, 0.22, 0.25),
-	&"DEA": Color(0.85, 0.68, 0.3), &"WRN": Color(1.0, 1.0, 1.0),
+	&"DEA": Color(0.85, 0.68, 0.3), &"WRN": Color(1.0, 1.0, 1.0), &"JAK": Color(0.72, 0.8, 0.62),
 }
 const STORY: Array[StringName] = [&"OPR", &"FAS", &"REI", &"LSL"]
 const CHUNK_CHARS: int = 84

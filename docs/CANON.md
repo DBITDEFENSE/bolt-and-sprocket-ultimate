@@ -155,11 +155,76 @@ Gravelight's 4-perk cap stays; the two new perks never break it. Each plan ID is
 - **Dr. Augusta Reinholt** is a Darkmatter *customer*, which is why she is tragic rather than evil. The Woman in Violet offered Liesl back as a service, and Map 3's moral choice includes refusing that offer for her.
 - **The Operator** is the Ledger's voice. It slips into corporate language rarely and unsettlingly, more often at high rounds: "Thank you for your continued engagement." The slip lines are `op.slip.*`.
 - **Liesl's tin drummer** is the one true mystery.
+- **Jakub Ostrowski** is the prisoner companion (U02 §6.2): a Polish miner from Wilcza Góra who walked out of Kaltenbrunn
+  on 21 December 1944, was caged at the Crossroads Inn by a fleeing patrol, and knew Wren's brother. His story and his arc
+  toward Morgenrot are in §6.4.
 
 ### 6.3 The Fine Print cast (`docs/FINEPRINT_LORE.md`)
 - **Vendelin** (V-1) is polite, precise, lonely and learning. He is Sprocket's mirror.
 - **Res Gähwiler** is a delivery driver from Grindelwald, Vendelin's only friend, and the human heart of Ch. 2–3. His grandmother's malt became Marathon Malt. His cousin **Anni Gähwiler** is the SOE's Basel contact, which is why Peg's orders exist.
 - **Sable Vantage**, **The Underwriter** and **The Board** are described in §2.1.
+
+### 6.4 Jakub Ostrowski, the prisoner companion (Update 02 §6.2, DECISIONS T-051)
+**Respect rule (v2 §0.1):** Jakub is a person and a hero. He is never a joke, never a zombie, never spectacle. In
+play, a bled-out Jakub is out cold, never dead; he comes back on the next map ("Not yet. Not tonight.").
+
+**Who he is.** **Jakub Ostrowski**, born 1901 in **Wilcza Góra**, the valley village below Kaltenbrunn (the Nowaks' village,
+and Dutch's Babcia's). A hewer at the Kaltenbrunn salt works from 1919, on the civilian upper levels. When the Amt für
+Sonderforschung took the mine (1939) the Polish miners were kept on; in **March 1941** their pay stopped and their families'
+ration cards were held against them, and they became forced labourers in all but the word (tag **KB-2210**). In **October
+1942**, when the forced labour moved into the deep galleries, he was sent down to **Gallery Nine** the same month the
+occupation took **Tomasz Nowak** (KB-4471), Wren's brother, and he was Tomasz's gang leader for five months. In the spring of
+1943 the doctors came for "young men with good lungs" and took Tomasz to the Laboratory Wing; Jakub never saw him again
+(consistent with Agnieszka's note, CHARACTERS.md Wren). In June 1943 he was on the night shift when Mahlknecht locked the
+gates on Gallery Seven: his shift lived. Wife **Marta**, daughter **Hania** (b. 1928), both in Wilcza Góra; a one-eared dog,
+Burek. He knew the Nowak children as the timberman's two down the lane (Zosia shot the crows off his roof at nine). He
+sold the Kreuzweg its winter coal before the war. No relation to Dr. Hanne Ostrowski of the Marathon Malt trials
+(Ostrowski is a common name).
+
+**The chalk.** Wilcza Góra's timbermen marked props with chalk; at Kaltenbrunn Jakub's gangs turned the marks into a quiet
+alphabet for sabotage. **Three strokes and a hook** means "weak, ours, don't trust it": a prop left loose, a load stacked to
+slip, a fuse that won't. The guards took it for a shift tally. He taught it to the young ones, Tomasz among them, who made
+his hook **backwards**, always. His own marks are on the props in Gallery Nine and on the rail of the Maintenance Stairs.
+
+**The escape (20–22 December 1944).** On the night of the Erwachen (20 Dec) the bell rang and did not stop and the guards ran.
+Eleven men went up the old Maintenance Stairs, as planned since the spring; the guards on the third landing were still
+shooting; slow (a bad knee) was careful, and careful was alive: he alone reached the snow (21 Dec) and said their names at
+the top. He took a greatcoat off the guardroom hook (two sizes too big; he cut the badges off with a shovel blade, so it
+carries no insignia) and kept the hook of the miner's lamp they had taken from him. On the 22nd a retreating road patrol
+caught him on the Kaltenbrunn road, tagged the padlock "Häftling (Pole) · Flucht aus K. · 22.XII.", locked him in the
+Crossroads Inn's coal cage, heard something on the road behind them and fled with the key. In the cage he wrote to Marta on
+the back of a coal bill (the Archive's `INT_JAK_01`).
+
+**Map 0 (23–24 Dec).** Round 5: a Gänger tears in through the coal chute and bursts the cage hinge trying to reach him; he
+kills it with the coal shovel. The survivor who comes down chooses: give him a gun, or not yet. He follows that survivor.
+He refuses perks ("I've seen what they put in those": he carried the cabinets' crates at Kaltenbrunn). He knows the
+Cousins' rhyme: every schoolyard in the valley claps it; he sold Lene Vogt coal, and remembers her nieces small.
+**Wren:** the first time she talks to him, the quiet scene (VO_SCRIPT §16.5): Tomek, the rats, the Laboratory Wing, the
+backwards hook.
+
+**Map 1, Kaltenbrunn (25 Dec).** He walks back into the place he walked out of four days before, as the squad's guide: his
+mine lines per zone, the Maintenance Stairs' rusted lock (500 Scrip less while he is with you), his own chalk mark on the
+stair rail. **The Return Trip (CANON §9):** he does not step into the fold. He stays at the rail siding at dawn to keep
+Fasbender from running ("somebody has to"), so the squad finds both of them there when Basel returns them; he is not in
+Helvetia Works.
+
+**Map 2, Totenhafen (Jan 1945).** He comes to the coast because Wren goes, and because the Kaltenbrunn transfer lists name the
+Baltic pens. His first sea. The pens were poured by hand by men like him; he sees it in the walls.
+
+**[PLAN] Map 3, Morgenrot (April 1945): his arc's end.** The men transferred from Kaltenbrunn to the Hohe Wacht carried his
+chalk alphabet with them: the **Witnesses' Marks** (v2 §4.2 step 3) are written in it. With Jakub in the match:
+- each mark he stands by gets his reading in a second line, low and plain ("Three strokes and a hook. This weld is ours.
+  Don't trust it."), so the marks' meaning (the weld, the gyro, the valve) is spoken by someone who made them;
+- **Tomasz's mark** (always one of the six) is a **backwards hook**. Jakub sees it first and says nothing; he goes and stands
+  by Wren while she finds it (her scene, `WRN_M3_TOMASZ_*`, with his one line at the end). The mark does not answer what
+  happened to Tomasz between the Laboratory Wing and the transfer list; it only proves he held chalk at the Hohe Wacht.
+  (The specimen log, Agnieszka's release and the transfer list stay the open question CANON already leaves open.)
+- The forced labourers are never zombies here either: Jakub's lines are about the living men who left the marks;
+- **ABORT ending (canon):** he does not take the last cable car. At dawn he walks down the mountain road toward Sankt
+  Aurel with the handful of labourers the squad found alive in the Depot, leading them out the way he led eleven men up
+  the stairs, and this time all of them reach the snow. His last line, to Wren: "It is a long way to Wilcza Góra. I have
+  walked worse." The epilogue card: Marta's reply, one line, dated May 1945.
+- He never dies in canon. In LAUNCH (non-canon) the card says only that he was seen walking north.
 
 ---
 

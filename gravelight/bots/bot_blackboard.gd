@@ -46,8 +46,8 @@ func forget(now: float) -> void:
 	for id: Variant in zombies.keys():
 		var e: Dictionary = zombies[id]
 		var n: Variant = e.get("node")
-		if now - float(e["t"]) > memory_s or (n != null and not is_instance_valid(n)):
-			zombies.erase(id)
+		if now - float(e["t"]) > memory_s or (typeof(n) == TYPE_OBJECT and not is_instance_valid(n)):
+			zombies.erase(id)   # (a freed node, e.g. a Homage boss that left, compares equal to null: test it first)
 		elif n is Object and (n as Object).has_method("is_active") and not bool((n as Object).call("is_active")):
 			zombies.erase(id)
 
@@ -57,6 +57,9 @@ func known(now: float) -> Array:
 	var out: Array = []
 	for e: Variant in zombies.values():
 		if now - float((e as Dictionary)["t"]) <= memory_s:
+			var n: Variant = (e as Dictionary).get("node")
+			if typeof(n) == TYPE_OBJECT and not is_instance_valid(n):
+				continue   # freed since it was seen (not pooled: a boss that retreated): never handed out
 			out.append(e)
 	return out
 

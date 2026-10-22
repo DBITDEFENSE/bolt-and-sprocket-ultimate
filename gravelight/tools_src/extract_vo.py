@@ -28,6 +28,8 @@ def category_of(line_id):
     body = parts[1:]
     if body and re.fullmatch(r"\d+", body[-1]):
         body = body[:-1]
+    if len(body) > 1 and re.fullmatch(r"SQ\d+", body[0]):
+        body = body[1:]   # a bake tag (DUT_SQ3_SPRINTER_BEHIND_01 is category SPRINTER_BEHIND), not a category word
     return "_".join(body)
 
 
@@ -85,6 +87,9 @@ def parse_bullets(md):
         if tr:
             text = text + " (" + tr.group(1) + ")"
         add(line_id, text)
+        say = re.search(r'\[say:\s*"([^"]+)"', tail)   # a phonetic respelling for the TTS bake (Jakub's Polish)
+        if say and line_id in lines:
+            lines[line_id]["tts"] = say.group(1)
 
 
 def parse_exchanges(md):
@@ -162,15 +167,15 @@ for k, v in existing.items():
     else:
         # keep hand-added fields (once_per_match, min_round...) the docs don't carry
         for field, val in v.items():
-            if field not in ("speaker", "category", "text", "condition", "exchange"):
+            if field not in ("speaker", "category", "text", "condition", "exchange", "tts"):
                 lines[k].setdefault(field, val)
 
 rules_defaults = {
     "_doc": "VO playback rules (docs/VO_SCRIPT.md §1). priority: 4 CRITICAL, 3 ANNOUNCE, 2 EVENT, 1 CHATTER, 0 AMBIENT.",
     "story_speakers": ["OPR", "FAS", "REI", "LSL", "CUT", "NPC"],
-    "player_speakers": ["DUT", "PEG", "DEA", "WRN", "BNT", "TAG"],
+    "player_speakers": ["DUT", "PEG", "DEA", "WRN", "JAK", "BNT", "TAG"],
     "speaker_default_priority": {"OPR": 2, "FAS": 4, "REI": 4, "LSL": 4, "CUT": 4, "NPC": 2,
-                                 "DUT": 1, "PEG": 1, "DEA": 1, "WRN": 1, "BNT": 0, "TAG": 4},
+                                 "DUT": 1, "PEG": 1, "DEA": 1, "WRN": 1, "JAK": 1, "BNT": 0, "TAG": 4},
     # category prefix -> priority (longest prefix wins); applies to any speaker
     "category_priority": {"PWR_EXPIRE": 2, "PWR_GRAB": 1, "PWR": 3, "POWER_ON": 3, "PYLON": 3, "VAULT": 3,
                           "SPECIAL": 3, "GAME_OVER": 3, "BOSS": 3, "MATCH_START": 2, "ROUND_START": 2,
@@ -227,9 +232,14 @@ for k, v in rules_defaults.items():
                 rules[k][kk] = vv
                 added_rules += 1
 
+# keep the existing file's order (new ids go at the end), so a re-run's diff shows only what changed
+ordered = {k: lines[k] for k in existing if k in lines}
+for k, v in lines.items():
+    ordered.setdefault(k, v)
+lines = ordered
 os.makedirs(os.path.dirname(LINES_PATH), exist_ok=True)
-json.dump(lines, open(LINES_PATH, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
-json.dump(rules, open(RULES_PATH, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
+json.dump(lines, open(LINES_PATH, "w", encoding="utf-8", newline="\n"), indent=1, ensure_ascii=False)
+json.dump(rules, open(RULES_PATH, "w", encoding="utf-8", newline="\n"), indent=1, ensure_ascii=False)
 counts = collections.Counter(v["speaker"] for v in lines.values())
 print("total", len(lines), "(kept %d ids that only exist in lines.json; %d rule keys added)" % (kept, added_rules))
 for k, v in sorted(counts.items()):

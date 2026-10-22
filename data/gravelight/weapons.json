@@ -28,6 +28,17 @@
    "arc_deg": 100,
    "targets": 2,
    "wall_price": 3000
+  },
+  "coal_shovel": {
+   "_doc": "Jakub's coal shovel from the Old Cellar (U02 section 6.2): the companion's weak melee while he has no gun. Never a wall-buy.",
+   "name": "Coal Shovel",
+   "damage": 110,
+   "swing": 0.85,
+   "lunge_range": 0.0,
+   "lunge_distance": 0.0,
+   "reach": 1.9,
+   "arc_deg": 90,
+   "targets": 1
   }
  },
  "lethal": {

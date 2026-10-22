@@ -535,6 +535,9 @@ BotSquad.add_brain(player, {"perks": false, "bonus_perk": false, "kit": false, "
 - He is revived after the human and the bots, and he never leads the squad.
 - His own bleed-out clock is `Player.bleedout_seconds` (60 s).
 - personality_jakub.json: bolt-actions, ammo conservation, no shopping, escort first.
+- Built in U02 §6.2 (T-051): `JakubCompanion` makes these calls (`JakubCompanion.brain_options`, from
+  `companion_jakub.json "brain"`); the gun-in-hand rules, the wall-buy for him, the breakout and the carry are there.
+  With no gun the body carries his coal shovel (`BotBrain` shows `melee_id` for a companion with empty hands).
 
 ## 6. Tuning guide
 
