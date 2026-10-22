@@ -602,7 +602,8 @@ func _resolve_item(item: Dictionary) -> bool:
 			exclude.append(pid)
 	var pool: Array[int] = []
 	for pid: int in standing_pids():
-		if not exclude.has(pid):
+		# (only someone with lines for it: a companion without TEAM_DOWN lines would drop the whole line)
+		if not exclude.has(pid) and _index.has("%s:%s" % [speaker_of(pid), category]):
 			pool.append(pid)
 	if pool.is_empty():
 		return false
