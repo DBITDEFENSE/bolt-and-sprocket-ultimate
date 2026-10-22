@@ -79,6 +79,8 @@ func _physics_process(delta: float) -> void:
 		return
 	done = true
 	var hit_player: bool = false
+	if not is_instance_valid(source):
+		source = null   # the enemy that laid the blast died before it went off (a freed object == null)
 	var bolt: Node3D = get_tree().get_first_node_in_group(&"player") as Node3D
 	if bolt != null and bool(bolt.call("is_alive")) and contains(bolt.global_position):
 		var h: Combat.Hit = Combat.Hit.make(dmg, Combat.Type.KINETIC, source)
