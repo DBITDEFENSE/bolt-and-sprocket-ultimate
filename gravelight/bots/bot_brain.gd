@@ -1011,6 +1011,7 @@ func _teleport_to(leader: Player) -> void:
 		player.velocity = Vector3.ZERO
 		_clear_goal()
 		teleports += 1
+		BotMetrics.note(player.player_id, &"teleport")
 		return
 
 
@@ -1495,9 +1496,11 @@ func _move(delta: float) -> void:
 	if wish != Vector3.ZERO:
 		if player.global_position.distance_to(_last_pos) < 0.015:
 			_stuck_t += delta
+			BotMetrics.note(player.player_id, &"stuck_time", delta)   # Update 03 metrics (no-op without a logger)
 			if _stuck_t > 1.2 and on_floor:
 				player.velocity.y = float(_pcfg["jump_velocity"]) * 0.8
 			if _stuck_t > 3.0:
+				BotMetrics.note(player.player_id, &"stuck")
 				_stuck_t = 0.0
 				_clear_goal()
 				_repath_t = 0.0
