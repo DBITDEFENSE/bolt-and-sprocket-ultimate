@@ -566,7 +566,26 @@ BotSquad.add_brain(player, {"perks": false, "bonus_perk": false, "kit": false, "
 - **Spending**: `economy.json`. **Special enemies**: `ai_counters.json`; add a key for a new enemy id and the
   defaults fill the rest. **Difficulty**: `skills.json`.
 - **Checking a change**: run `tools/ai_soak.sh --scenario=player3 --runs=3` (and bots3, cousins) and compare the
-  `logs/ai_runs/<batch>.md` table with the one below. GUT `test_bot_brain.gd` pins the decision scenarios.
+  `logs/ai_runs/<batch>.md` table with the one below. GUT `test_bot_brain.gd` pins the decision scenarios,
+  `test_bot_tuning.gd` the T-058 rules.
+- **Why did it die?** (T-058) Every down prints the bot's last ten thinks in the soak log (`[soak] DOWN before:`
+  action, gun mag/reserve, health, nearest zombie, zombies within 5 m, shots so far, speed, stamina, `R` reloading,
+  `S` sprinting). Shots that don't rise while a zombie is at 0.7 m, `v0.0` with `S`, `R` that never ends: each was a
+  bug. The squad report adds each bot's hits / shots and what its misses hit first (`TapN_1`: the taproom's north
+  wall beside a window). Use `--trace=N` for the action scores over time, and `--start-round=N` / `--homage=0` /
+  `--character=<id>` (Peg among the bots) to get to a situation quickly (tuning only, not the acceptance numbers).
+- **Fire discipline** (`combat.json aim`): `body_half_width_m` (point-blank tolerance), `sights_on_mult` (how far
+  off the real target the sights may be when it fires), `spray_width_mult` (how wide a spread it accepts at range),
+  `quick_switch_*`, `line_of_fire_radius_m`.
+- **Moving under pressure** (`combat.json fight`, `retreat`): the backpedal radius by zombie speed, the boss
+  margin, `stack_m` in special rounds, when retreat sprints and when a boxed-in bot turns to fight.
+- **Revives** (`combat.json revive`): `self_swarm_*` (zombies on the reviver itself), `abort_*` (letting go
+  mid-hold), `last_chance_s` overrides both.
+- **Special enemies** (`ai_counters.json`): `hold_ground` (no backpedal / sprint-away: the Bellringers),
+  `adds_first_m` (the runner at its heels before the boss), `keep_distance_m` (paths avoid it, on foot it is backed
+  out of with `fight.boss_margin_m`).
+- **Bots alone** (`economy.json power`, `self_led_mid_round_m`; `routes_<map>.json` `home`, `high_ground`): see
+  section 8. The last-zombie hunt: `combat.json hunt`.
 
 ## 7. Results: before and after (Update 03 section 10)
 

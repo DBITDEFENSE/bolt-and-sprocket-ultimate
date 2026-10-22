@@ -222,7 +222,8 @@ func test_crucible_ammo_wanted() -> void:
 	assert_false(BotConfig.crucible_ammo_wanted(c, true, 90, 100, 99999, cost), "reserve still fine")
 	assert_false(BotConfig.crucible_ammo_wanted(c, false, 0, 100, 99999, cost), "only for an upgraded gun")
 	assert_false(BotConfig.crucible_ammo_wanted(c, true, 0, 0, 99999, cost), "no reserve pool at all")
-	assert_true(bool(c["only_in_break"]), "upgrades are a round-break errand")
+	assert_false(bool(c["only_in_break"]), "T-058: upgrades mid-round too when it is calm (break-only, the Crucible never happened)")
+	assert_lte(int(c["min_round"]), 6, "T-058: the Thompson goes in from round 5")
 	assert_gt(float(c["priority"]), 60.0, "the Crucible outranks ammo (60) and boards (30) in the break")
 
 
