@@ -109,8 +109,8 @@ func add_brain(p: Player, options: Dictionary = {}, i: int = -1) -> BotBrain:
 	p.add_child(b)
 	b.setup(p, self, brains.size() if i < 0 else i)
 	brains.append(b)
-	if bool(b.options.get("kit", true)):
-		apply_kit(p, true)
+	if bool(b.options.get("kit", true)) and not Campaign.carried_player(p.player_id):
+		apply_kit(p, true)   # a campaign arrival keeps the carried kit instead
 	return b
 
 
@@ -121,10 +121,17 @@ func _assign_bonus_perks() -> void:
 	var takers: Array[BotBrain] = []
 	for b: BotBrain in brains:
 		if bool(b.options.get("perks", true)) and bool(b.options.get("bonus_perk", true)):
-			takers.append(b)
+			var had: StringName = PerkManager.bonus_perk(b.player.player_id)
+			if had != &"":
+				b.bonus_perk = had   # carried over a campaign transition: the same trait, no second draw
+			else:
+				takers.append(b)
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.randomize()
-	var kit: Array = (_cfg.get("spawn_kit", {}) as Dictionary).get("perks", [])
+	var kit: Array = ((_cfg.get("spawn_kit", {}) as Dictionary).get("perks", []) as Array).duplicate()
+	for b: BotBrain in brains:
+		if b.bonus_perk != &"":
+			kit.append(String(b.bonus_perk))   # no two bots share one, carried ones included
 	var picks: Array[StringName] = BotConfig.pick_bonus_perks(bcfg, map_perk_ids(), kit, takers.size(), rng)
 	for k: int in takers.size():
 		if picks[k] != &"":
