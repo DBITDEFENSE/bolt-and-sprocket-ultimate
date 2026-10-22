@@ -132,6 +132,11 @@ func _video() -> void:
 		func(i: int) -> void: GLSettings.set_value("graphics_preset", presets[i]))))
 	content.add_child(MenuKit.para("Low: no volumetric fog, smaller shadows, 75% render scale. Medium: 90% scale. High: full.", 16, MenuKit.DIM))
 	content.add_child(MenuKit.check("Film grain", bool(GLSettings.values.get("film_grain", true)), _setter("film_grain")))
+	var gore_levels: PackedStringArray = ["off", "low", "full"]
+	var gcur: int = maxi(0, gore_levels.find(str(GLSettings.values.get("gore", "full"))))
+	content.add_child(MenuKit.row("Gore", MenuKit.options(PackedStringArray(["Off", "Low", "Full"]), gcur,
+		func(i: int) -> void: GLSettings.set_value("gore", gore_levels[i]))))
+	content.add_child(MenuKit.para("Off: no dismemberment or blood (the Nachtglas shatter stays). Low: limbs come off, no spray. Full: everything.", 16, MenuKit.DIM))
 	var fs: bool = DisplayServer.get_name() != "headless" and DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
 	content.add_child(MenuKit.check("Fullscreen", fs, func(on: bool) -> void:
 		if DisplayServer.get_name() != "headless":

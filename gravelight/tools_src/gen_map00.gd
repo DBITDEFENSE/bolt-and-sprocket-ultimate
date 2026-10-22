@@ -300,6 +300,12 @@ func build_geometry() -> void:
 		bar(geo, "StairRail", Vector3(bx, hy, STAIR_Z0), Vector3(bx, UP_Y + hy, STAIR_Z1), float(r[1]), float(r[2]), "furniture")
 		bar(geo, "StairRail", Vector3(bx, UP_Y + hy, STAIR_Z1 - 0.03), Vector3(bx, UP_Y + hy, hz), float(r[1]), float(r[2]), "furniture")
 		bar(geo, "HallRail", Vector3(bx - 0.03, UP_Y + hy, hz), Vector3(STAIR_X1 - T * 0.5, UP_Y + hy, hz), float(r[1]), float(r[2]), "furniture")
+	# the balustrade for the navmesh bake: the rail bars are thinner than a navmesh cell, so the bake saw the
+	# flight's open edge as walkable into the vestibule and zombies wedged on the mid rail at the foot and the
+	# head (T-040 playtest). Two hidden panels along the rail lines cut it properly; the flight still meets the
+	# landing at its foot and the hall at its head.
+	box(geo, "StairRailPanel", Vector3(bx - 0.08, 0.0, STAIR_Z1 - 0.05), Vector3(bx + 0.08, UP_Y + 1.0, STAIR_Z0), "wall", true, false)
+	box(geo, "HallRailPanel", Vector3(bx - 0.08, UP_Y, hz - 0.08), Vector3(STAIR_X1 - T * 0.5, UP_Y + 1.0, hz + 0.08), "wall", true, false)
 	# ceiling slabs: A = upstairs floor (z 0..10; the flight lands in it west of the vestibule), B = taproom roof
 	box(geo, "SlabA", Vector3(-T * 0.5, TAP_H, -T * 0.5), Vector3(FLIGHT_X1, UP_Y, STAIR_Z1), "floor_wood")
 	box(geo, "SlabA2", Vector3(FLIGHT_X1, TAP_H, -T * 0.5), Vector3(24 + T * 0.5, UP_Y, 10), "floor_wood")
@@ -395,7 +401,7 @@ func build_yard() -> void:
 	box(geo, "YardFence", Vector3(1.9, 0, 33.9), Vector3(6.0, fh, 34.1), "snow", true, false)
 	# the well, the woodpile against the stable, the snowed cart
 	box(geo, "Well", Vector3(9.0, 0, 41.0), Vector3(11.0, 1.0, 43.0), "stone", true, false)
-	box(geo, "Woodpile", Vector3(10.5, 0, 34.15), Vector3(14.5, 1.3, 35.4), "furniture", true, false)
+	box(geo, "Woodpile", Vector3(13.3, 0, 34.15), Vector3(15.9, 1.3, 35.4), "furniture", true, false)   # east of the window W_STB_S (x 11.2..12.8), which the zombies need clear (T-040)
 	box(geo, "YardCart", Vector3(27.0, 0, 37.0), Vector3(29.6, 1.1, 39.2), "furniture", true, false)
 	box(geo, "YardTrough", Vector3(30.5, 0, 44.0), Vector3(33.5, 0.7, 45.0), "furniture", true, false)
 
@@ -1239,8 +1245,8 @@ func _dress_yard() -> void:
 	var wr: RandomNumberGenerator = RandomNumberGenerator.new()
 	wr.seed = 44
 	for row: int in 4:
-		for k: int in 9:
-			Props.cyl(g, Vector3(10.75 + k * 0.42, 0.18 + row * 0.3, 34.75), 0.15, 1.1, "pine" if (row + k) % 2 == 0 else "beam", Vector3(90, 0, wr.randf_range(-6, 6)))
+		for k: int in 6:
+			Props.cyl(g, Vector3(13.55 + k * 0.42, 0.18 + row * 0.3, 34.75), 0.15, 1.1, "pine" if (row + k) % 2 == 0 else "beam", Vector3(90, 0, wr.randf_range(-6, 6)))
 	Props.cyl(g, Vector3(9.4, 0.3, 36.2), 0.3, 0.6, "pine")
 	Props.obox(g, Vector3(9.4, 0.78, 36.2), Vector3(0.06, 0.4, 0.22), "iron", Vector3(0, 20, 0))
 	Props.obox(g, Vector3(9.55, 0.9, 36.1), Vector3(0.05, 0.9, 0.05), "beam", Vector3(60, 20, 0))
@@ -1559,7 +1565,7 @@ func build_gameplay() -> void:
 	gameplay.add_child(hay)
 	# ground spawn: the drift in the yard's south-west corner (round 4+)
 	var mound: Marker3D = _scripted(Marker3D.new(), "res://gravelight/enemies/zombie_spawn.gd", "Spawn_YardMound", {
-		"zone_id": &"YARD", "kind": &"ground", "min_round": 4}) as Marker3D
+		"zone_id": &"YARD", "kind": &"ground", "min_round": 7}) as Marker3D
 	mound.position = Vector3(5.0, 0, 44.5)
 	gameplay.add_child(mound)
 

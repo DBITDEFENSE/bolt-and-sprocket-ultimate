@@ -276,6 +276,7 @@ func _has_los(p: Node3D) -> bool:
 func take_damage(amount: float, limb: StringName, weapon_id: StringName, by_player: int, kind: StringName = &"bullet", _armor_piercing: bool = false) -> bool:
 	if puppet:
 		return _puppet_damage(amount, limb, weapon_id, by_player, kind, _armor_piercing)
+	last_hit_bone = ""   # his body has no rig bones; the weapon's report is simply consumed
 	if not is_active():
 		return false
 	var mult: float = 1.0

@@ -218,6 +218,8 @@ func impact(pos: Vector3, normal: Vector3) -> void:
 
 
 func blood(pos: Vector3, toward: Vector3) -> void:
+	if str(GLSettings.values.get("gore", "full")) != "full":
+		return   # the Gore setting (MZ, T-041): Off and Low show no spray
 	var p: CPUParticles3D = _blood[_nb]
 	_nb = (_nb + 1) % BLOOD
 	p.global_position = pos

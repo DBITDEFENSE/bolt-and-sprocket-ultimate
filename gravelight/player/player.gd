@@ -76,6 +76,11 @@ var _stamina: float = 4.0
 var _stamina_wait: float = 0.0
 var _slide_t: float = 0.0
 var _slide_dir: Vector3 = Vector3.ZERO
+var _slide_speed: float = 0.0            # current slide speed (decays with friction, slopes add or take)
+var _slide_cd: float = 0.0               # seconds until the next slide may start
+var _slide_k: float = 0.0                # 0..1 camera blend for the slide dip / tilt
+var slides: int = 0                      # slides started this match (tools / HUD)
+var slide_jumps: int = 0
 var _lunge_t: float = 0.0
 var _lunge_vel: Vector3 = Vector3.ZERO
 var _status: Dictionary = {}      # effect -> seconds left (scream, shard_slow, whip_slow, knockdown)
@@ -303,13 +308,21 @@ func _update_movement(delta: float) -> void:
 		velocity = Vector3.ZERO
 		return
 	var on_floor: bool = is_on_floor()
-	# crouch toggle / slide
+	_slide_cd = maxf(0.0, _slide_cd - delta)
+	var S: Dictionary = _cfg.get("slide", {})
+	# crouch toggle / slide: crouch while sprinting (or carrying sprint speed) drops into a slide; crouch again
+	# during one cancels it; jump out of it is a slide-jump that keeps the speed
 	if Input.is_action_just_pressed(&"crouch"):
-		if sprinting and on_floor and not sliding:
+		var fast: bool = horizontal_speed() >= float(S.get("min_sprint_speed", 4.0))
+		if sliding:
+			_end_slide(false)
+		elif (sprinting or (fast and Input.is_action_pressed(&"sprint"))) and on_floor and _slide_cd <= 0.0:
 			_start_slide(wish)
 		else:
 			crouching = not crouching
-	if Input.is_action_just_pressed(&"jump") and crouching and not sliding:
+	if Input.is_action_just_pressed(&"jump") and sliding and on_floor:
+		_slide_jump()
+	elif Input.is_action_just_pressed(&"jump") and crouching and not sliding:
 		crouching = false
 	# sprint (forward-ish only, not while aiming)
 	var unlimited: bool = bool(PerkManager.stat(player_id, "unlimited_sprint", false))
@@ -334,11 +347,21 @@ func _update_movement(delta: float) -> void:
 	var horizontal: Vector3 = Vector3(velocity.x, 0, velocity.z)
 	if sliding:
 		_slide_t -= delta
-		var k: float = clampf(_slide_t / float(_cfg["slide_duration"]), 0.0, 1.0)
-		horizontal = _slide_dir * lerpf(float(_cfg["crouch_speed"]), float(_cfg["slide_speed"]), k)
-		if _slide_t <= 0.0 or not on_floor:
-			sliding = false
-			crouching = true
+		# steer a little toward the stick, lose speed to friction, gain it downhill (lose it uphill)
+		if wish.length_squared() > 0.01:
+			var want: Vector3 = wish.normalized()
+			var ang: float = _slide_dir.signed_angle_to(want, Vector3.UP)
+			_slide_dir = _slide_dir.rotated(Vector3.UP, clampf(ang, -float(S.get("steer", 1.6)) * delta, float(S.get("steer", 1.6)) * delta)).normalized()
+		var slope: float = 0.0
+		if on_floor:
+			slope = get_floor_normal().dot(_slide_dir)           # > 0 heading downhill (the normal leans that way)
+		_slide_speed -= float(S.get("friction", 7.5)) * delta
+		_slide_speed += slope * float(S.get("slope_accel", 9.0)) * delta
+		horizontal = _slide_dir * _slide_speed * minf(1.0, status_move_mult())
+		if _slide_t <= 0.0 or _slide_speed <= float(S.get("min_speed", 3.2)):
+			_end_slide(true)
+		elif not on_floor:
+			_end_slide(false)                                      # left the ground: keep the momentum
 	elif _lunge_t > 0.0:
 		_lunge_t -= delta
 		horizontal = _lunge_vel
@@ -348,13 +371,14 @@ func _update_movement(delta: float) -> void:
 	velocity.x = horizontal.x
 	velocity.z = horizontal.z
 	if on_floor:
-		if Input.is_action_just_pressed(&"jump") and not crouching:
+		if Input.is_action_just_pressed(&"jump") and not crouching and velocity.y <= 0.0:
 			velocity.y = float(_cfg["jump_velocity"])
 		elif velocity.y < 0.0:
 			velocity.y = -0.5
 	else:
 		velocity.y -= GRAVITY * delta
 	_set_crouch_shape(crouching or sliding)
+	_slide_k = move_toward(_slide_k, 1.0 if sliding else 0.0, delta * (9.0 if sliding else 5.0))
 	var fall_speed: float = -velocity.y
 	move_and_slide()
 	if not _was_on_floor and is_on_floor():
@@ -427,11 +451,20 @@ func _classify_floor(n: Node) -> String:
 
 
 func _start_slide(wish: Vector3) -> void:
+	var S: Dictionary = _cfg.get("slide", {})
 	sliding = true
 	sprinting = false
 	crouching = true
-	_slide_t = float(_cfg["slide_duration"])
+	slides += 1
+	_slide_t = float(S.get("duration", _cfg.get("slide_duration", 0.7)))
 	_slide_dir = wish.normalized() if wish.length_squared() > 0.01 else -global_basis.z
+	_slide_dir.y = 0.0
+	_slide_dir = _slide_dir.normalized()
+	_slide_speed = maxf(float(S.get("speed", _cfg.get("slide_speed", 8.5))), horizontal_speed() + 1.0)
+	_slide_cd = float(S.get("cooldown", 0.45))
+	_shake = maxf(_shake, 0.08)
+	_footstep(-3.0)                                                 # the scrape as the knees hit the floor
+	weapons.on_landed(2.0)                                          # a small viewmodel dip
 	# Blastproof Bock: sliding releases a small concussive shockwave (no self damage).
 	var shock: float = float(PerkManager.stat(player_id, "slide_shockwave_damage", 0.0))
 	if shock > 0.0:
@@ -443,6 +476,38 @@ func _start_slide(wish: Vector3) -> void:
 					z.take_damage(shock, &"torso", &"blastproof_bock", player_id, &"explosive")
 		Effects.explosion(global_position + Vector3.UP * 0.3, r * 0.6)
 		AudioDirector.play_3d("grenade_explode", global_position, -8.0, 0.2)
+
+
+## The slide is over: pop back up when sprint is still held and the head is clear (COD), else stay crouched.
+func _end_slide(natural: bool) -> void:
+	if not sliding:
+		return
+	sliding = false
+	var S: Dictionary = _cfg.get("slide", {})
+	var stand: bool = bool(S.get("stand_up", true)) and Input.is_action_pressed(&"sprint") and not _head_blocked()
+	crouching = not stand
+	if natural and not stand and Input.is_action_pressed(&"crouch"):
+		crouching = true
+	# whatever speed is left carries into the walk / sprint (the move_toward settles it)
+	velocity.x = _slide_dir.x * _slide_speed
+	velocity.z = _slide_dir.z * _slide_speed
+
+
+## Jump out of a slide: keep the slide speed along its direction, a slightly bigger hop, stand up.
+func _slide_jump() -> void:
+	var S: Dictionary = _cfg.get("slide", {})
+	var spd: float = _slide_speed
+	sliding = false
+	crouching = _head_blocked()
+	slide_jumps += 1
+	velocity.x = _slide_dir.x * spd
+	velocity.z = _slide_dir.z * spd
+	velocity.y = float(_cfg["jump_velocity"]) + float(S.get("jump_boost", 0.6))
+	_slide_cd = maxf(_slide_cd, float(S.get("cooldown", 0.45)))
+
+
+func is_sliding() -> bool:
+	return sliding
 
 
 func _set_crouch_shape(crouch: bool) -> void:
@@ -608,16 +673,21 @@ func _update_camera(delta: float) -> void:
 	for i: int in steps:
 		_rk_v += (-_rk * _rk_w * _rk_w - _rk_v * 2.0 * _rk_w) * dt
 		_rk += _rk_v * dt
-	head.position.y = _eye
+	var S: Dictionary = _cfg.get("slide", {})
+	var dip: float = _slide_k * float(S.get("cam_dip", 0.22)) * (0.75 + 0.25 * sin(_shake_t * 0.9))
+	head.position.y = _eye - dip
 	head.rotation.x = _pitch + _rk.x
 	head.rotation.y = _rk.y
-	# lean
+	# lean (and the slide's roll: the body leans into the slide direction)
 	var lean_in: float = 0.0
 	if bool(GLSettings.values.get("lean_enabled", true)):
 		lean_in = Input.get_action_strength(&"lean_right") - Input.get_action_strength(&"lean_left")
 	_lean = move_toward(_lean, lean_in, delta * 5.0)
 	head.position.x = _lean * 0.35
-	camera.rotation.z = -_lean * 0.12
+	var side: float = 0.0
+	if _slide_k > 0.001:
+		side = global_basis.x.dot(_slide_dir)                      # +1 sliding to the right
+	camera.rotation.z = -_lean * 0.12 - _slide_k * (deg_to_rad(float(S.get("cam_tilt_deg", 3.5))) * (0.6 + 0.4 * side))
 	# shake (smooth pseudo-noise rather than per-frame white noise, scaled by the Screen Shake setting)
 	_shake = maxf(0.0, _shake - delta * 1.8)
 	_shake_t += delta * 38.0
@@ -629,6 +699,7 @@ func _update_camera(delta: float) -> void:
 	var fov: float = GLSettings.get_f("fov") * weapons.fov_mult()
 	if sprinting:
 		fov *= 1.06
+	fov *= lerpf(1.0, float(S.get("fov_mult", 1.09)), _slide_k)
 	if _fov_base <= 0.0:
 		_fov_base = camera.fov
 	_fov_base = lerpf(_fov_base, fov, clampf(delta * 12.0, 0.0, 1.0))
@@ -738,6 +809,7 @@ func down() -> void:
 	downed = true
 	sprinting = false
 	sliding = false
+	_slide_k = 0.0
 	velocity = Vector3.ZERO
 	_set_heartbeat(false)
 	_hold_t = 0.0

@@ -30,7 +30,21 @@
         "soldier": 0.6,
         "miner": 0.15,
         "labstaff": 0.05,
-        "laborer": 0.2
+        "villager": 0.2
+      },
+      "variants_by_map": {
+        "_doc": "Outfit kits per map (MZ, T-041; kits in anim.json). The retired laborer share is the villager kit on Map 0 and the technician kit on Map 1; the Map 1 Intake laborers are story only.",
+        "map01_kaltenbrunn": {
+          "soldier": 0.3,
+          "miner": 0.3,
+          "labstaff": 0.15,
+          "technician": 0.25
+        },
+        "map02_totenhafen": {
+          "sailor": 0.4,
+          "dockworker": 0.35,
+          "soldier": 0.25
+        }
       }
     },
     "glasshide": {

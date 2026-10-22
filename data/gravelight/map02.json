@@ -196,6 +196,11 @@
       "ground": 0
     }
   },
+  "climb_links": [
+    {"name": "Ladder_CatwalkW", "zone": "D_PENHALL", "from": [-16.2, 0.0, 60.0], "to": [-19.0, 4.0, 60.0], "_doc": "pier 0 -> west catwalk ladder (MZ climb volume, T-041)"},
+    {"name": "Ladder_CatwalkE", "zone": "D_PENHALL", "from": [48.2, 0.0, 60.0], "to": [51.0, 4.0, 60.0], "_doc": "east apron -> east catwalk ladder"},
+    {"name": "Ladder_CatwalkN", "zone": "D_PENHALL", "from": [17.0, 0.0, 37.5], "to": [17.0, 4.0, 34.0], "_doc": "apron -> north catwalk ladder"}
+  ],
   "ballast": {
     "_doc": "The Ballast carry mechanic (T-036 follow-up): BallastCoffin interactables at coffin_spots can be lifted (lift_seconds) and carried (carry_status from enemies.json, carry_offset in the carrier's frame) to the BallastHook at crane_hook (hook_seconds); once `needed` coffins hang there the flag `flag` is set and the Pumpenschalter (PowerSwitch.requires_flag) will take the throw. A carrier who goes down drops the coffin back onto its pallet.",
     "enabled": true,

@@ -1,35 +1,24 @@
 class_name ZombieBody
 extends RefCounted
-## Procedural zombie bodies: shared materials (noise-textured skin with glowing Nachtglas cracks, dirty cloth,
-## stripes, leather, steel) and one merged ArrayMesh per (variant, bone), cached and shared by the whole pool.
-## Bones hang along -Y (limbs) or stack along +Y (spine), so poses are plain local rotations.
-## Variants: soldier, miner, labstaff, laborer, bellringer, nurse.
+## Procedural zombie bodies (ZOMBIE_ANIM_SPEC §1 and §6, T-041). Nothing is imported: every body is cylinders,
+## spheres and boxes authored here, now **skinned to the shared ZombieRig skeleton**: `build_skinned()` merges a
+## base body (build x height x sex) and an outfit kit into one ArrayMesh with bone weights, two surfaces:
+##   0 "skin": the Nachtglas infection shader (veins pulsing with the map hum, cracks growing with the round,
+##             per-instance tint / dirt / frost / char / fuel / dissolve as instance uniforms)
+##   1 "kit":  one shared shader for cloth, leather, metal, eyes and crystal, albedo from vertex colour and
+##             roughness / metallic / emission from CUSTOM0, so a whole horde is two draw calls per body.
+## Gear pieces (helmets, caps, armbands...) are small meshes hung on bone attachments and rolled per instance.
+## The old per-bone StandardMaterial3D path (`material()`, `build_mesh()`, `_cyl()`...) stays for the Foreman's
+## own body, the kind parts (crystal plates, lantern) and the Screamer's throat.
+## Kits: soldier, villager, miner, labstaff, technician, sailor, dockworker, bellringer, nurse. `laborer` is
+## retired (forced laborers are never zombies, v2 §0.1).
 
-const VARIANTS: PackedStringArray = ["soldier", "miner", "labstaff", "laborer", "bellringer", "nurse"]
-const MESH_BONES: PackedStringArray = ["hips", "thigh_l", "thigh_r", "shin_l", "shin_r", "abdomen", "chest", "neck",
-	"head", "jaw", "sh_l", "sh_r", "el_l", "el_r"]
+const KITS: PackedStringArray = ["soldier", "villager", "miner", "labstaff", "technician", "sailor", "dockworker", "bellringer", "nurse"]
+const BUILDS: PackedStringArray = ["thin", "medium", "heavy"]
+const LIMB_BONES: PackedStringArray = ["LeftUpperLeg", "RightUpperLeg", "LeftLowerLeg", "RightLowerLeg", "LeftFoot", "RightFoot",
+	"LeftUpperArm", "RightUpperArm", "LeftLowerArm", "RightLowerArm", "LeftHand", "RightHand", "Neck", "Head"]
 
-## Bone layout: [name, parent, rest position (parent-local)].
-const SKELETON: Array = [
-	["hips", "", Vector3(0, 0.95, 0)],
-	["thigh_l", "hips", Vector3(-0.1, -0.04, 0)],
-	["thigh_r", "hips", Vector3(0.1, -0.04, 0)],
-	["shin_l", "thigh_l", Vector3(0, -0.44, 0)],
-	["shin_r", "thigh_r", Vector3(0, -0.44, 0)],
-	["abdomen", "hips", Vector3(0, 0.05, 0)],
-	["chest", "abdomen", Vector3(0, 0.21, 0)],
-	["neck", "chest", Vector3(0, 0.3, 0)],
-	["head", "neck", Vector3(0, 0.08, 0)],
-	["jaw", "head", Vector3(0, 0.06, -0.025)],
-	["sh_l", "chest", Vector3(-0.2, 0.25, 0)],
-	["sh_r", "chest", Vector3(0.2, 0.25, 0)],
-	["el_l", "sh_l", Vector3(0, -0.3, 0)],
-	["el_r", "sh_r", Vector3(0, -0.3, 0)],
-	["hand_l", "el_l", Vector3(0, -0.29, 0)],
-	["hand_r", "el_r", Vector3(0, -0.29, 0)],
-]
-
-## Hitboxes: [bone, limb, size, center] — limb names are the gameplay contract (head/neck/torso/arms/legs).
+## Legacy bone names for the hitbox layout (the gameplay contract: head/neck/torso/arms/legs).
 const HITBOXES: Array = [
 	["head", &"head", Vector3(0.24, 0.27, 0.25), Vector3(0, 0.11, -0.01)],
 	["neck", &"neck", Vector3(0.12, 0.11, 0.12), Vector3(0, 0.05, 0)],
@@ -41,17 +30,59 @@ const HITBOXES: Array = [
 	["el_r", &"arms", Vector3(0.11, 0.42, 0.11), Vector3(0, -0.2, -0.01)],
 	["thigh_l", &"legs", Vector3(0.17, 0.46, 0.17), Vector3(0, -0.22, 0)],
 	["thigh_r", &"legs", Vector3(0.17, 0.46, 0.17), Vector3(0, -0.22, 0)],
-	["shin_l", &"legs", Vector3(0.14, 0.48, 0.17), Vector3(0, -0.23, -0.02)],
-	["shin_r", &"legs", Vector3(0.14, 0.48, 0.17), Vector3(0, -0.23, -0.02)],
+	["shin_l", &"legs", Vector3(0.14, 0.52, 0.17), Vector3(0, -0.25, -0.02)],
+	["shin_r", &"legs", Vector3(0.14, 0.52, 0.17), Vector3(0, -0.25, -0.02)],
 ]
+
+## Colour / roughness / metallic / emission per material key (vertex-baked into the kit surface).
+const KEY_LOOK: Dictionary = {
+	"dark": [Color(0.05, 0.03, 0.04), 1.0, 0.0, 0.0],
+	"eye": [Color(0.7, 0.3, 1.0), 0.3, 0.0, 3.2],
+	"teeth": [Color(0.58, 0.54, 0.4), 0.5, 0.0, 0.0],
+	"leather": [Color(0.2, 0.13, 0.08), 0.6, 0.0, 0.0],
+	"metal": [Color(0.3, 0.3, 0.31), 0.45, 0.7, 0.0],
+	"helmet": [Color(0.27, 0.3, 0.25), 0.55, 0.45, 0.0],
+	"wood": [Color(0.42, 0.3, 0.18), 0.85, 0.0, 0.0],
+	"lens": [Color(0.9, 0.75, 0.4), 0.2, 0.0, 0.6],
+	"white": [Color(0.86, 0.84, 0.8), 0.9, 0.0, 0.0],
+	"patch": [Color(0.85, 0.83, 0.75), 0.9, 0.0, 0.0],
+	"crystal": [Color(0.42, 0.18, 0.78), 0.1, 0.4, 1.3],
+	"glove": [Color(0.1, 0.14, 0.1), 0.35, 0.0, 0.0],
+	"hair": [Color(0.1, 0.08, 0.07), 0.9, 0.0, 0.0],
+	"hat": [Color(0.15, 0.13, 0.11), 0.9, 0.0, 0.0],
+	"navy": [Color(0.12, 0.14, 0.22), 0.9, 0.0, 0.0],
+	"oilskin": [Color(0.5, 0.42, 0.2), 0.3, 0.0, 0.0],
+	"rubber": [Color(0.14, 0.14, 0.15), 0.35, 0.0, 0.0],
+	"knit": [Color(0.3, 0.28, 0.24), 1.0, 0.0, 0.0],
+	"armband": [Color(0.08, 0.08, 0.09), 0.9, 0.0, 0.0],
+	"brass": [Color(0.6, 0.5, 0.25), 0.4, 0.8, 0.0],
+	"rope": [Color(0.5, 0.42, 0.28), 1.0, 0.0, 0.0],
+	"stump": [Color(0.3, 0.02, 0.03), 0.35, 0.0, 0.0],
+}
+## Kit cloth colours [cloth, cloth2].
+const KIT_CLOTH: Dictionary = {
+	"soldier": [Color(0.34, 0.36, 0.29), Color(0.25, 0.26, 0.23)],
+	"villager": [Color(0.36, 0.3, 0.24), Color(0.3, 0.3, 0.32)],
+	"miner": [Color(0.33, 0.27, 0.2), Color(0.19, 0.17, 0.15)],
+	"labstaff": [Color(0.56, 0.56, 0.52), Color(0.21, 0.21, 0.23)],
+	"technician": [Color(0.38, 0.4, 0.4), Color(0.24, 0.25, 0.26)],
+	"sailor": [Color(0.12, 0.14, 0.22), Color(0.15, 0.16, 0.2)],
+	"dockworker": [Color(0.3, 0.28, 0.24), Color(0.22, 0.2, 0.18)],
+	"bellringer": [Color(0.22, 0.19, 0.16), Color(0.17, 0.15, 0.13)],
+	"nurse": [Color(0.37, 0.41, 0.52), Color(0.15, 0.17, 0.28)],
+}
 
 static var _mats: Dictionary = {}
 static var _meshes: Dictionary = {}
 static var _crack_round: int = -999
 static var _blood: StandardMaterial3D
+static var _skin_shader: Shader
+static var _kit_shader: Shader
+static var _globals_ready: bool = false
+static var _stump: ArrayMesh
 
 
-# ================================================================== materials
+# ================================================================== materials (legacy StandardMaterial path)
 
 static func _noise_tex(seed_v: int, freq: float, lo: Color, hi: Color, cellular: bool = false) -> NoiseTexture2D:
 	var n: FastNoiseLite = FastNoiseLite.new()
@@ -96,13 +127,36 @@ static func _crack_tex() -> NoiseTexture2D:
 	return t
 
 
-static func _stripe_tex(a: Color, b: Color) -> ImageTexture:
-	var img: Image = Image.create(16, 4, false, Image.FORMAT_RGB8)
-	for x: int in 16:
-		for y: int in 4:
-			var c: Color = a if (x / 4) % 2 == 0 else b
-			img.set_pixel(x, y, c.darkened(randf_range(0.0, 0.12)))
-	return ImageTexture.create_from_image(img)
+## Raw ridged noise (the crack density mask the shader thresholds by round).
+static func _ridge_tex() -> NoiseTexture2D:
+	var n: FastNoiseLite = FastNoiseLite.new()
+	n.seed = 911
+	n.noise_type = FastNoiseLite.TYPE_SIMPLEX
+	n.frequency = 0.035
+	n.fractal_type = FastNoiseLite.FRACTAL_RIDGED
+	n.fractal_octaves = 3
+	var t: NoiseTexture2D = NoiseTexture2D.new()
+	t.width = 128
+	t.height = 128
+	t.seamless = true
+	t.noise = n
+	return t
+
+
+## Cellular noise: the edges are the veins.
+static func _vein_tex() -> NoiseTexture2D:
+	var n: FastNoiseLite = FastNoiseLite.new()
+	n.seed = 313
+	n.frequency = 0.08
+	n.noise_type = FastNoiseLite.TYPE_CELLULAR
+	n.cellular_return_type = FastNoiseLite.RETURN_DISTANCE2_SUB
+	n.fractal_type = FastNoiseLite.FRACTAL_NONE
+	var t: NoiseTexture2D = NoiseTexture2D.new()
+	t.width = 128
+	t.height = 128
+	t.seamless = true
+	t.noise = n
+	return t
 
 
 static func _cloth(c: Color, seed_v: int, scale: float = 4.0) -> StandardMaterial3D:
@@ -123,7 +177,7 @@ static func _skin(tint: Color, crack_color: Color) -> StandardMaterial3D:
 	m.emission_enabled = true
 	m.emission = crack_color
 	m.emission_texture = _crack_tex()
-	m.emission_operator = BaseMaterial3D.EMISSION_OP_MULTIPLY   # ADD would glow everywhere
+	m.emission_operator = BaseMaterial3D.EMISSION_OP_MULTIPLY
 	m.emission_energy_multiplier = 0.4
 	return m
 
@@ -140,7 +194,7 @@ static func _plain(c: Color, rough: float = 0.8, metal: float = 0.0, emit: float
 	return m
 
 
-## Material for a generic key resolved against a variant (cloth colors differ per variant).
+## Legacy material for a key resolved against a kit (the Foreman, kind parts, the Screamer's throat, gibs).
 static func material(variant: String, key: String) -> StandardMaterial3D:
 	var cache_key: String = variant + ":" + key
 	if _mats.has(cache_key):
@@ -164,55 +218,30 @@ static func material(variant: String, key: String) -> StandardMaterial3D:
 			m = _skin(Color(0.42, 0.38, 0.52), Color(0.8, 0.4, 1.0))
 			m.metallic = 0.25
 			m.roughness = 0.35
-		"dark":
-			m = _plain(Color(0.05, 0.03, 0.04), 1.0)
-		"eye":
-			m = _plain(Color(0.7, 0.3, 1.0), 0.3, 0.0, 3.2)
-		"teeth":
-			m = _plain(Color(0.58, 0.54, 0.4), 0.5)
+		"cloth", "cloth2":
+			var pair: Array = KIT_CLOTH.get(variant, KIT_CLOTH["soldier"])
+			m = _cloth(pair[0] if key == "cloth" else pair[1], hash(variant + key) % 1000)
 		"leather":
 			m = _cloth(Color(0.2, 0.13, 0.08), 41, 5.0)
 			m.roughness = 0.6
-		"metal":
-			m = _plain(Color(0.3, 0.3, 0.31), 0.45, 0.7)
 		"helmet":
 			m = _cloth(Color(0.27, 0.3, 0.25), 12, 3.0)
 			m.metallic = 0.45
 			m.roughness = 0.55
 		"wood":
 			m = _cloth(Color(0.42, 0.3, 0.18), 63, 6.0)
-		"lens":
-			m = _plain(Color(0.9, 0.75, 0.4), 0.2, 0.0, 0.6)
 		"white":
 			m = _cloth(Color(0.86, 0.84, 0.8), 88, 3.0)
-		"patch":
-			m = _plain(Color(0.85, 0.83, 0.75), 0.9)
-		"crystal":
-			m = _plain(Color(0.42, 0.18, 0.78), 0.1, 0.4, 1.3)
-		"glove":
-			m = _plain(Color(0.1, 0.14, 0.1), 0.35)
 		"hair":
 			m = _cloth(Color(0.1, 0.08, 0.07), 5, 8.0)
 		"hat":
 			m = _cloth(Color(0.15, 0.13, 0.11), 21, 4.0)
-		"stripe":
-			m = StandardMaterial3D.new()
-			m.albedo_texture = _stripe_tex(Color(0.36, 0.4, 0.48), Color(0.62, 0.62, 0.6))
-			m.uv1_scale = Vector3(5, 1, 1)
-			m.roughness = 0.95
-		"cloth", "cloth2":
-			var cols: Dictionary = {
-				"soldier": [Color(0.34, 0.36, 0.29), Color(0.25, 0.26, 0.23)],
-				"miner": [Color(0.33, 0.27, 0.2), Color(0.19, 0.17, 0.15)],
-				"labstaff": [Color(0.56, 0.56, 0.52), Color(0.21, 0.21, 0.23)],
-				"laborer": [Color(0.4, 0.42, 0.48), Color(0.35, 0.37, 0.42)],
-				"bellringer": [Color(0.22, 0.19, 0.16), Color(0.17, 0.15, 0.13)],
-				"nurse": [Color(0.37, 0.41, 0.52), Color(0.15, 0.17, 0.28)],
-			}
-			var pair: Array = cols.get(variant, cols["soldier"])
-			m = _cloth(pair[0] if key == "cloth" else pair[1], hash(variant + key) % 1000)
 		_:
-			m = _plain(Color(1, 0, 1))
+			if KEY_LOOK.has(key):
+				var l: Array = KEY_LOOK[key]
+				m = _plain(l[0], float(l[1]), float(l[2]), float(l[3]))
+			else:
+				m = _plain(Color(1, 0, 1))
 	_mats[cache_key] = m
 	return m
 
@@ -238,28 +267,223 @@ static func blood_material() -> StandardMaterial3D:
 	return _blood
 
 
-## Crack glow follows the round (crack_intensity = clamp(r/30, 0.1, 1.0)). Cheap: runs once per round change.
+## Crack glow follows the round: the global gl_round_k = clamp(r/30, 0.1, 1) the infection shader reads, and
+## the legacy skin materials' emission. Cheap: runs once per round change.
 static func update_cracks(round_number: int, max_energy: float) -> void:
 	if round_number == _crack_round:
 		return
 	_crack_round = round_number
 	var k: float = clampf(float(round_number) / 30.0, 0.1, 1.0)
+	ensure_globals()
+	RenderingServer.global_shader_parameter_set("gl_round_k", k)
 	for key: String in ["_:skin_base", "_:skin_bell", "_:skin_nurse", "_:skin_glass"]:
 		if _mats.has(key):
 			(_mats[key] as StandardMaterial3D).emission_energy_multiplier = k * max_energy * (1.6 if key == "_:skin_glass" else 1.0)
 
 
-## Builds every variant's meshes and the shared materials up front (avoids a hitch on first spawn).
-static func warm_up() -> void:
-	for v: String in VARIANTS:
-		for b: String in MESH_BONES:
-			mesh_for(v, b)
+## Global shader parameters the infection shader reads (registered at runtime so no project.godot entry is needed).
+static func ensure_globals() -> void:
+	if _globals_ready:
+		return
+	_globals_ready = true
+	# not in project.godot (shader_globals), so they exist only once this process adds them; the static flag
+	# keeps the add to one call (global_shader_parameter_get_list is editor-only)
+	RenderingServer.global_shader_parameter_add("gl_hum", RenderingServer.GLOBAL_VAR_TYPE_FLOAT, 0.5)
+	RenderingServer.global_shader_parameter_add("gl_round_k", RenderingServer.GLOBAL_VAR_TYPE_FLOAT, 0.1)
+
+
+# ================================================================== shaders (skinned path)
+
+const TRIPLANAR: String = """
+vec3 tri(sampler2D t, vec3 p, vec3 n, float s) {
+	vec3 w = abs(n); w = w / max(0.0001, w.x + w.y + w.z);
+	return texture(t, p.yz * s).rgb * w.x + texture(t, p.xz * s).rgb * w.y + texture(t, p.xy * s).rgb * w.z;
+}
+"""
+
+static func skin_shader() -> Shader:
+	if _skin_shader != null:
+		return _skin_shader
+	ensure_globals()
+	_skin_shader = Shader.new()
+	_skin_shader.code = """
+shader_type spatial;
+render_mode cull_back;
+global uniform float gl_hum;
+global uniform float gl_round_k;
+uniform sampler2D noise_tex : filter_linear_mipmap, repeat_enable;
+uniform sampler2D ridge_tex : filter_linear_mipmap, repeat_enable;
+uniform sampler2D vein_tex : filter_linear_mipmap, repeat_enable;
+uniform vec3 skin_mul = vec3(1.0);
+uniform vec3 crack_color : source_color = vec3(1.0, 0.65, 0.3);
+uniform vec3 crack_edge : source_color = vec3(0.75, 0.3, 1.0);
+uniform vec3 vein_color : source_color = vec3(0.55, 0.2, 1.0);
+uniform float crack_energy = 2.6;
+uniform float vein_energy = 1.4;
+uniform float hum_pulse = 0.7;
+uniform float roughness = 0.68;
+uniform float metallic = 0.0;
+instance uniform vec4 inst_tint : source_color = vec4(1.0);
+instance uniform float inst_dirt = 0.3;
+instance uniform float inst_frost = 0.0;
+instance uniform float inst_char = 0.0;
+instance uniform float inst_fuel = 0.0;
+instance uniform float inst_dissolve = 0.0;
+varying vec3 v_pos;
+varying vec3 v_nrm;
+varying vec4 v_col;
+varying float v_h;
+""" + TRIPLANAR + """
+void vertex() {
+	v_pos = CUSTOM1.xyz;
+	v_nrm = NORMAL;
+	v_col = COLOR;
+	v_h = VERTEX.y;
+}
+void fragment() {
+	vec3 nz = tri(noise_tex, v_pos, v_nrm, 3.0);
+	float n = nz.r;
+	vec3 base = v_col.rgb * skin_mul * inst_tint.rgb * mix(0.62, 1.1, n);
+	float dirt = inst_dirt * (1.0 - smoothstep(0.0, 1.3, v_h)) * (0.4 + 0.6 * n);
+	base = mix(base, base * vec3(0.5, 0.42, 0.38), dirt);
+	float up = clamp(v_nrm.y, 0.0, 1.0);
+	float frost = inst_frost * smoothstep(0.35, 0.9, n * 0.55 + up * 0.55);
+	base = mix(base, vec3(0.86, 0.9, 0.96), frost);
+	base = mix(base, vec3(0.03, 0.02, 0.02), clamp(inst_char * smoothstep(0.15, 0.75, n + inst_char * 0.4), 0.0, 1.0));
+	ALBEDO = base;
+	ROUGHNESS = mix(roughness, 0.2, max(inst_fuel, frost * 0.6));
+	METALLIC = metallic;
+	// cracks: the ridged noise thresholded by the round (more of the body crystallises as rounds climb)
+	float ridge = tri(ridge_tex, v_pos, v_nrm, 3.0).r;
+	float thr = mix(0.93, 0.74, gl_round_k);
+	float cr = smoothstep(thr, thr + 0.03, ridge);
+	float cr_edge = smoothstep(thr - 0.05, thr, ridge) * (1.0 - cr);
+	// veins: cellular edges under the skin, pulsing with the map's hum
+	float cell = tri(vein_tex, v_pos, v_nrm, 2.2).r;
+	float vein = (1.0 - smoothstep(0.0, 0.09, cell)) * 0.55;
+	float pulse = 0.35 + hum_pulse * gl_hum;
+	vec3 em = crack_color * cr * crack_energy * gl_round_k + crack_edge * cr_edge * crack_energy * 0.35 * gl_round_k
+		+ vein_color * vein * vein_energy * pulse * (0.35 + 0.65 * gl_round_k);
+	em *= (1.0 - frost * 0.7) * (1.0 - clamp(inst_char, 0.0, 1.0) * 0.5);
+	if (inst_dissolve > 0.0) {
+		if (n < inst_dissolve) { discard; }
+		em += vec3(0.55, 0.25, 1.0) * smoothstep(inst_dissolve + 0.08, inst_dissolve, n) * 4.0;
+	}
+	EMISSION = em;
+}
+"""
+	return _skin_shader
+
+
+static func kit_shader() -> Shader:
+	if _kit_shader != null:
+		return _kit_shader
+	ensure_globals()
+	_kit_shader = Shader.new()
+	_kit_shader.code = """
+shader_type spatial;
+render_mode cull_back;
+global uniform float gl_hum;
+uniform sampler2D noise_tex : filter_linear_mipmap, repeat_enable;
+instance uniform vec4 inst_tint : source_color = vec4(1.0);
+instance uniform float inst_dirt = 0.3;
+instance uniform float inst_frost = 0.0;
+instance uniform float inst_char = 0.0;
+instance uniform float inst_fuel = 0.0;
+instance uniform float inst_dissolve = 0.0;
+varying vec3 v_pos;
+varying vec3 v_nrm;
+varying vec4 v_col;
+varying vec4 v_cus;
+varying float v_h;
+""" + TRIPLANAR + """
+void vertex() {
+	v_pos = CUSTOM1.xyz;
+	v_nrm = NORMAL;
+	v_col = COLOR;
+	v_cus = CUSTOM0;
+	v_h = VERTEX.y;
+}
+void fragment() {
+	float n = tri(noise_tex, v_pos, v_nrm, 4.0).r;
+	float emit = v_cus.b;
+	vec3 base = v_col.rgb * mix(0.7, 1.08, n);
+	if (emit < 0.01) { base *= inst_tint.rgb; }
+	float dirt = inst_dirt * (1.0 - smoothstep(0.0, 1.3, v_h)) * (0.4 + 0.6 * n) * (1.0 - step(0.01, emit));
+	base = mix(base, base * vec3(0.5, 0.45, 0.4), dirt);
+	float up = clamp(v_nrm.y, 0.0, 1.0);
+	float frost = inst_frost * smoothstep(0.35, 0.9, n * 0.55 + up * 0.55) * (1.0 - step(0.01, emit));
+	base = mix(base, vec3(0.86, 0.9, 0.96), frost);
+	base = mix(base, vec3(0.03, 0.02, 0.02), clamp(inst_char * smoothstep(0.15, 0.75, n + inst_char * 0.4), 0.0, 1.0) * (1.0 - step(0.01, emit)));
+	ALBEDO = base;
+	ROUGHNESS = mix(v_cus.r, 0.2, max(inst_fuel, frost * 0.6));
+	METALLIC = v_cus.g;
+	vec3 em = v_col.rgb * emit * (1.0 + 0.35 * gl_hum * step(2.0, emit));
+	if (inst_dissolve > 0.0) {
+		if (n < inst_dissolve) { discard; }
+		em += vec3(0.55, 0.25, 1.0) * smoothstep(inst_dissolve + 0.08, inst_dissolve, n) * 4.0;
+	}
+	EMISSION = em;
+}
+"""
+	return _kit_shader
+
+
+## The shared skin material (one per look: base, bellringer amber, nurse pale, glasshide glassy).
+static func skin_material(look: String = "base") -> ShaderMaterial:
+	var key: String = "shader:skin:" + look
+	if _mats.has(key):
+		return _mats[key]
+	var inf: Dictionary = GLData.table("anim")["infection"]
+	var m: ShaderMaterial = ShaderMaterial.new()
+	m.shader = skin_shader()
+	m.set_shader_parameter("noise_tex", _noise_tex(77, 0.07, Color(0.62, 0.62, 0.62), Color(1.1, 1.1, 1.1)))
+	m.set_shader_parameter("ridge_tex", _ridge_tex())
+	m.set_shader_parameter("vein_tex", _vein_tex())
+	m.set_shader_parameter("crack_energy", float(inf.get("crack_energy", 2.6)))
+	m.set_shader_parameter("vein_energy", float(inf.get("vein_energy", 1.4)))
+	m.set_shader_parameter("hum_pulse", float(inf.get("hum_pulse", 0.7)))
+	match look:
+		"bell":
+			m.set_shader_parameter("crack_color", Color(1.0, 0.6, 0.3))
+			m.set_shader_parameter("crack_edge", Color(1.0, 0.75, 0.4))
+			m.set_shader_parameter("vein_color", Color(1.0, 0.5, 0.2))
+		"glass":
+			m.set_shader_parameter("skin_mul", Vector3(0.75, 0.65, 0.85))
+			m.set_shader_parameter("metallic", 0.25)
+			m.set_shader_parameter("roughness", 0.35)
+			m.set_shader_parameter("crack_energy", float(inf.get("crack_energy_glass", 4.2)))
+	_mats[key] = m
+	return m
+
+
+static func kit_material() -> ShaderMaterial:
+	if _mats.has("shader:kit"):
+		return _mats["shader:kit"]
+	var m: ShaderMaterial = ShaderMaterial.new()
+	m.shader = kit_shader()
+	m.set_shader_parameter("noise_tex", _noise_tex(31, 0.06, Color(0.65, 0.65, 0.65), Color(1.08, 1.08, 1.08)))
+	_mats["shader:kit"] = m
+	return m
+
+
+## Builds the kits a map uses up front (avoids a hitch on first spawn).
+static func warm_up(kits: PackedStringArray = KITS) -> void:
+	for k: String in kits:
+		for b: String in BUILDS:
+			build_skinned(k, b, false)
+		build_skinned(k, "thin", true)
+	skin_material("base")
+	skin_material("glass")
+	kit_material()
 	material("_", "skin_glass")
 	material("_", "crystal")
 	blood_material()
+	stump_mesh()
+	ZombieClips.library()
 
 
-# ================================================================== geometry
+# ================================================================== geometry primitives
 
 static func _cyl(top: float, bottom: float, h: float, pos: Vector3, mat: String, rot: Vector3 = Vector3.ZERO, scl: Vector3 = Vector3.ONE, segs: int = 9, caps: bool = true) -> Array:
 	var c: CylinderMesh = CylinderMesh.new()
@@ -289,17 +513,7 @@ static func _box(size: Vector3, pos: Vector3, mat: String, rot: Vector3 = Vector
 	return [b, Transform3D(Basis.from_euler(rot), pos), mat]
 
 
-## Shared merged mesh for one bone of one variant (one surface per material).
-static func mesh_for(variant: String, bone: String) -> ArrayMesh:
-	var key: String = variant + "/" + bone
-	if _meshes.has(key):
-		return _meshes[key]
-	var mesh: ArrayMesh = build_mesh(variant, spec(variant, bone))
-	_meshes[key] = mesh
-	return mesh
-
-
-## Builds an ArrayMesh from [primitive, transform, material key] parts, grouped by material.
+## Legacy: an ArrayMesh from [primitive, transform, material key] parts, one StandardMaterial3D surface per key.
 static func build_mesh(variant: String, parts: Array) -> ArrayMesh:
 	var groups: Dictionary = {}
 	for p: Array in parts:
@@ -319,22 +533,246 @@ static func build_mesh(variant: String, parts: Array) -> ArrayMesh:
 	return mesh
 
 
-static func _thin(v: String) -> bool:
-	return v == "laborer" or v == "bellringer"
+# ================================================================== the skinned body
+
+static func _look(kit: String, key: String) -> Array:
+	if key == "cloth" or key == "cloth2":
+		var pair: Array = KIT_CLOTH.get(kit, KIT_CLOTH["soldier"])
+		return [pair[0] if key == "cloth" else pair[1], 0.95, 0.0, 0.0]
+	if key == "skin":
+		var tone: Array = (GLData.table("anim")["kits"] as Dictionary).get(kit, {}).get("skin", [0.55, 0.6, 0.62])
+		return [Color(float(tone[0]), float(tone[1]), float(tone[2])), 0.68, 0.0, 0.0]
+	return KEY_LOOK.get(key, [Color(1, 0, 1), 0.8, 0.0, 0.0])
 
 
-static func spec(v: String, bone: String) -> Array:
-	var thin: bool = _thin(v)
-	var w: float = 0.85 if thin else 1.0
-	var leg_mat: String = "stripe" if v == "laborer" else "cloth2"
-	var sleeve: String = "stripe" if v == "laborer" else ("skin" if v == "bellringer" else "cloth")
+static func _cache_key(kit: String, build: String, female: bool) -> String:
+	return "%s/%s/%s" % [kit, build, "f" if female else "m"]
+
+
+## The whole body as one skinned ArrayMesh (surface 0 skin, surface 1 kit). Cached per kit/build/sex.
+static func build_skinned(kit: String, build: String = "medium", female: bool = false) -> ArrayMesh:
+	var key: String = "skinned:" + _cache_key(kit, build, female)
+	if _meshes.has(key):
+		return _meshes[key]
+	var parts_by_bone: Dictionary = body_parts(kit, build, female)
+	var mesh: ArrayMesh = _skin_parts(parts_by_bone, kit)
+	_meshes[key] = mesh
+	return mesh
+
+
+## Merges bone-local parts into skinned surfaces. parts_by_bone: bone -> [[primitive, xform, key], ...].
+static func _skin_parts(parts_by_bone: Dictionary, kit: String, root_bone: String = "") -> ArrayMesh:
+	var blend: float = float(GLData.table("anim")["skeleton"].get("joint_blend_m", 0.05))
+	var root_inv: Transform3D = Transform3D.IDENTITY if root_bone == "" else ZombieRig.rest_global(root_bone).affine_inverse()
+	var surf: Dictionary = {"skin": _SurfaceAcc.new(), "kit": _SurfaceAcc.new()}
+	for bone: String in parts_by_bone.keys():
+		var bi: int = ZombieRig.bone_index(bone)
+		var parent: String = ZombieRig.parent_of(bone)
+		var pi: int = ZombieRig.bone_index(parent) if parent != "" else bi
+		var rest: Transform3D = root_inv * ZombieRig.rest_global(bone)
+		for p: Array in parts_by_bone[bone]:
+			var prim: Mesh = p[0]
+			var xf: Transform3D = p[1]
+			var mkey: String = str(p[2])
+			var look: Array = _look(kit, mkey)
+			var acc: _SurfaceAcc = surf["skin"] if mkey == "skin" else surf["kit"]
+			var arrays: Array = prim.surface_get_arrays(0)
+			var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+			var norms: PackedVector3Array = arrays[Mesh.ARRAY_NORMAL]
+			var idx: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+			var base: int = acc.verts.size()
+			var nb: Basis = (rest.basis * xf.basis).inverse().transposed()
+			for i: int in verts.size():
+				var local: Vector3 = xf * verts[i]           # bone-local
+				var model: Vector3 = rest * local
+				acc.verts.append(model)
+				acc.norms.append((nb * norms[i]).normalized())
+				acc.cols.append(look[0] as Color)
+				acc.cus0.append_array(PackedFloat32Array([float(look[1]), float(look[2]), float(look[3]), 0.0]))
+				acc.cus1.append_array(PackedFloat32Array([model.x, model.y, model.z, 0.0]))
+				var w_parent: float = 0.0
+				if LIMB_BONES.has(bone) and pi != bi and local.y > -blend and mkey != "eye":
+					w_parent = clampf(0.5 * (local.y + blend) / blend, 0.0, 0.5)
+				acc.bones.append_array(PackedInt32Array([bi, pi, 0, 0]))
+				acc.weights.append_array(PackedFloat32Array([1.0 - w_parent, w_parent, 0.0, 0.0]))
+			for i: int in idx.size():
+				acc.index.append(idx[i] + base)
+	var mesh: ArrayMesh = ArrayMesh.new()
+	for name: String in ["skin", "kit"]:
+		var acc2: _SurfaceAcc = surf[name]
+		if acc2.verts.is_empty():
+			continue
+		var arr: Array = []
+		arr.resize(Mesh.ARRAY_MAX)
+		arr[Mesh.ARRAY_VERTEX] = acc2.verts
+		arr[Mesh.ARRAY_NORMAL] = acc2.norms
+		arr[Mesh.ARRAY_COLOR] = acc2.cols
+		arr[Mesh.ARRAY_CUSTOM0] = acc2.cus0
+		arr[Mesh.ARRAY_CUSTOM1] = acc2.cus1
+		arr[Mesh.ARRAY_BONES] = acc2.bones
+		arr[Mesh.ARRAY_WEIGHTS] = acc2.weights
+		arr[Mesh.ARRAY_INDEX] = acc2.index
+		var flags: int = (Mesh.ARRAY_CUSTOM_RGBA_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM0_SHIFT) | (Mesh.ARRAY_CUSTOM_RGBA_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM1_SHIFT)
+		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr, [], {}, flags)
+		var si: int = mesh.get_surface_count() - 1
+		mesh.surface_set_name(si, name)
+		mesh.surface_set_material(si, skin_material(_skin_look(kit)) if name == "skin" else kit_material())
+	return mesh
+
+
+static func _skin_look(kit: String) -> String:
+	return "bell" if kit == "bellringer" else "base"
+
+
+class _SurfaceAcc:
+	var verts: PackedVector3Array = []
+	var norms: PackedVector3Array = []
+	var cols: PackedColorArray = []
+	var cus0: PackedFloat32Array = []
+	var cus1: PackedFloat32Array = []
+	var bones: PackedInt32Array = []
+	var weights: PackedFloat32Array = []
+	var index: PackedInt32Array = []
+
+
+## A detachable piece (a severed forearm, a head): the chain under `root_bone` as an unskinned mesh in that
+## bone's frame, legacy materials (the piece is a short-lived prop).
+static func piece_mesh(kit: String, build: String, female: bool, root_bone: String) -> ArrayMesh:
+	var key: String = "piece:%s:%s" % [_cache_key(kit, build, female), root_bone]
+	if _meshes.has(key):
+		return _meshes[key]
+	var all: Dictionary = body_parts(kit, build, female)
+	var parts: Array = []
+	var root_inv: Transform3D = ZombieRig.rest_global(root_bone).affine_inverse()
+	for bone: String in ZombieRig.chain_of(root_bone):
+		var rel: Transform3D = root_inv * ZombieRig.rest_global(bone)
+		for p: Array in all.get(bone, []):
+			parts.append([p[0], rel * (p[1] as Transform3D), p[2]])
+	var mesh: ArrayMesh = build_mesh(kit, parts)
+	_meshes[key] = mesh
+	return mesh
+
+
+## The stump cap: a dark disc with a raw red core, placed at a severed joint.
+static func stump_mesh() -> ArrayMesh:
+	if _stump != null:
+		return _stump
+	_stump = build_mesh("_", [
+		_cyl(0.055, 0.06, 0.03, Vector3(0, -0.01, 0), "dark", Vector3.ZERO, Vector3.ONE, 8),
+		_cyl(0.04, 0.045, 0.012, Vector3(0, -0.028, 0), "stump", Vector3.ZERO, Vector3.ONE, 8),
+		_sph(0.03, Vector3(0, -0.02, 0), "stump", Vector3(1.0, 0.5, 1.0))])
+	return _stump
+
+
+## Gear pieces hung on a bone attachment: name -> [bone, ArrayMesh]. Rolled per instance from the kit's gear table.
+static func gear_mesh(piece: String, female: bool = false) -> Array:
+	var key: String = "gear:%s:%s" % [piece, "f" if female else "m"]
+	if _meshes.has(key):
+		return _meshes[key]
+	var bone: String = "Head"
+	var parts: Array = []
+	match piece:
+		"helmet":
+			parts = [_sph(0.145, Vector3(0, 0.15, 0.008), "helmet", Vector3(1.0, 0.76, 1.06), true, 12),
+				_cyl(0.142, 0.172, 0.055, Vector3(0, 0.13, 0.015), "helmet", Vector3(0.12, 0, 0), Vector3(1.0, 1.0, 1.04), 12, false),
+				_box(Vector3(0.012, 0.11, 0.012), Vector3(-0.1, 0.06, -0.02), "leather")]
+		"cap":
+			parts = [_cyl(0.125, 0.128, 0.06, Vector3(0, 0.2, 0), "hat", Vector3.ZERO, Vector3(1, 1, 1.05), 10),
+				_box(Vector3(0.13, 0.012, 0.08), Vector3(0, 0.18, -0.14), "hat", Vector3(-0.15, 0, 0))]
+		"lamp_cap":
+			parts = [_cyl(0.125, 0.13, 0.075, Vector3(0, 0.2, 0), "hat", Vector3.ZERO, Vector3(1, 1, 1.05), 10),
+				_box(Vector3(0.14, 0.014, 0.09), Vector3(0, 0.17, -0.14), "hat", Vector3(-0.18, 0, 0)),
+				_cyl(0.026, 0.026, 0.07, Vector3(0, 0.215, -0.14), "metal", Vector3(PI * 0.5, 0, 0), Vector3.ONE, 8),
+				_cyl(0.021, 0.021, 0.012, Vector3(0, 0.215, -0.177), "lens", Vector3(PI * 0.5, 0, 0), Vector3.ONE, 8)]
+		"goggles":
+			parts = [_cyl(0.118, 0.118, 0.022, Vector3(0, 0.17, 0), "leather", Vector3(0.1, 0, 0), Vector3(0.9, 1, 1.01), 12, false),
+				_cyl(0.03, 0.03, 0.035, Vector3(-0.042, 0.175, -0.105), "metal", Vector3(PI * 0.5 + 0.3, 0, 0), Vector3.ONE, 8),
+				_cyl(0.03, 0.03, 0.035, Vector3(0.042, 0.175, -0.105), "metal", Vector3(PI * 0.5 + 0.3, 0, 0), Vector3.ONE, 8),
+				_cyl(0.024, 0.024, 0.01, Vector3(-0.042, 0.181, -0.122), "lens", Vector3(PI * 0.5 + 0.3, 0, 0), Vector3.ONE, 8),
+				_cyl(0.024, 0.024, 0.01, Vector3(0.042, 0.181, -0.122), "lens", Vector3(PI * 0.5 + 0.3, 0, 0), Vector3.ONE, 8)]
+		"wimple":
+			parts = [_box(Vector3(0.2, 0.07, 0.24), Vector3(0, 0.2, 0.01), "white"),
+				_box(Vector3(0.28, 0.03, 0.2), Vector3(-0.16, 0.22, 0.02), "white", Vector3(0, 0, 0.5)),
+				_box(Vector3(0.28, 0.03, 0.2), Vector3(0.16, 0.22, 0.02), "white", Vector3(0, 0, -0.5)),
+				_box(Vector3(0.22, 0.24, 0.03), Vector3(0, 0.06, 0.1), "white")]
+		"sailor_cap":
+			parts = [_cyl(0.13, 0.12, 0.05, Vector3(0, 0.2, 0), "navy", Vector3.ZERO, Vector3(1, 1, 1.05), 10),
+				_cyl(0.125, 0.125, 0.018, Vector3(0, 0.175, 0), "dark", Vector3.ZERO, Vector3.ONE, 10),
+				_box(Vector3(0.035, 0.012, 0.012), Vector3(0.0, 0.23, 0.0), "white")]
+		"hood":
+			parts = [_sph(0.14, Vector3(0, 0.13, 0.02), "oilskin", Vector3(1.0, 0.95, 1.05), true, 10),
+				_box(Vector3(0.26, 0.12, 0.02), Vector3(0, 0.06, 0.13), "oilskin", Vector3(-0.3, 0, 0))]
+		"scarf":
+			bone = "Chest"
+			parts = [_cyl(0.075, 0.08, 0.06, Vector3(0, 0.3, 0), "knit", Vector3.ZERO, Vector3(1.1, 1, 0.9), 9),
+				_box(Vector3(0.07, 0.22, 0.012), Vector3(0.05, 0.17, -0.13), "knit", Vector3(0.1, 0, 0.15))]
+		"armband":
+			bone = "LeftUpperArm"
+			parts = [_cyl(0.062, 0.058, 0.045, Vector3(0, -0.11, 0), "armband", Vector3.ZERO, Vector3.ONE, 9, false),
+				_box(Vector3(0.028, 0.03, 0.006), Vector3(-0.058, -0.11, 0), "patch")]
+		"sling":
+			bone = "Chest"
+			parts = [_box(Vector3(0.035, 0.6, 0.014), Vector3(0.0, 0.13, -0.122), "leather", Vector3(0, 0, 0.72))]
+		"apron":
+			bone = "Spine"
+			parts = [_box(Vector3(0.3, 0.56, 0.02), Vector3(0, -0.2, -0.13), "leather", Vector3(0.08, 0, 0)),
+				_box(Vector3(0.24, 0.22, 0.015), Vector3(0, 0.14, -0.12), "leather")]
+		"pack":
+			bone = "Chest"
+			parts = [_box(Vector3(0.26, 0.3, 0.14), Vector3(0, 0.1, 0.19), "cloth2"),
+				_box(Vector3(0.03, 0.4, 0.012), Vector3(-0.1, 0.1, -0.12), "leather"),
+				_box(Vector3(0.03, 0.4, 0.012), Vector3(0.1, 0.1, -0.12), "leather")]
+		"collar":
+			bone = "Chest"
+			parts = [_box(Vector3(0.3, 0.26, 0.012), Vector3(0, 0.12, 0.13), "white", Vector3(0.1, 0, 0)),
+				_box(Vector3(0.12, 0.08, 0.012), Vector3(0, 0.26, -0.11), "white", Vector3(0.3, 0, 0))]
+		"oilskin":
+			bone = "Spine"
+			parts = [_cyl(0.19, 0.3, 0.7, Vector3(0, -0.3, 0.01), "oilskin", Vector3.ZERO, Vector3(1.05, 1, 0.85), 11, false)]
+	var m: ArrayMesh = build_mesh("_", parts)
+	var out: Array = [bone, m]
+	_meshes[key] = out
+	return out
+
+
+# ================================================================== body parts
+
+## Every part of a body keyed by profile bone: the base body for the build / sex, then the kit's clothes.
+static func body_parts(kit: String, build: String, female: bool) -> Dictionary:
+	var builds: Dictionary = GLData.table("anim")["builds"]
+	var b: Dictionary = builds.get(build, builds["medium"])
+	var w: float = float(b.get("w", 1.0))
+	var sh: float = float(b.get("shoulder", 1.0))
+	var hipw: float = 1.0
+	if female:
+		var f: Dictionary = builds["female"]
+		w *= float(f.get("w", 0.92))
+		sh *= float(f.get("shoulder", 0.88))
+		hipw = float(f.get("hip", 1.08))
+	if kit == "bellringer":
+		w *= 0.85
+	var out: Dictionary = {}
+	for bone: String in ZombieRig.bone_names():
+		var parts: Array = _bone_parts(kit, bone, w, sh, hipw, female)
+		if not parts.is_empty():
+			out[bone] = parts
+	return out
+
+
+static func _bone_parts(v: String, bone: String, w: float, sh: float, hipw: float, female: bool) -> Array:
 	var p: Array = []
+	var bell: bool = v == "bellringer"
+	var sleeve: String = "skin" if bell else ("navy" if v == "sailor" else ("knit" if v == "dockworker" else "cloth"))
+	var leg_mat: String = "cloth2" if not bell else "cloth2"
+	if v == "sailor":
+		leg_mat = "navy"
+	elif v == "technician":
+		leg_mat = "cloth"
 	match bone:
-		"hips":
-			p.append(_cyl(0.135 * w, 0.13 * w, 0.17, Vector3.ZERO, leg_mat, Vector3.ZERO, Vector3(1.25, 1, 0.82)))
+		"Hips":
+			p.append(_cyl(0.135 * w * hipw, 0.13 * w * hipw, 0.17, Vector3.ZERO, leg_mat, Vector3.ZERO, Vector3(1.25, 1, 0.82)))
 			match v:
 				"soldier":
-					# greatcoat skirt flaring to the knees, torn at the hem
 					p.append(_cyl(0.18, 0.27, 0.56, Vector3(0, -0.27, 0.01), "cloth", Vector3.ZERO, Vector3(1.05, 1, 0.82), 11, false))
 					p.append(_box(Vector3(0.09, 0.17, 0.012), Vector3(0.2, -0.6, -0.12), "cloth", Vector3(0.1, 0.3, 0.25)))
 					p.append(_box(Vector3(0.07, 0.13, 0.012), Vector3(-0.15, -0.6, 0.2), "cloth", Vector3(-0.15, 0, -0.2)))
@@ -349,29 +787,65 @@ static func spec(v: String, bone: String) -> Array:
 				"nurse":
 					p.append(_cyl(0.165, 0.31, 0.8, Vector3(0, -0.39, 0), "cloth", Vector3.ZERO, Vector3(1.05, 1, 0.9), 12, false))
 					p.append(_box(Vector3(0.28, 0.62, 0.015), Vector3(0, -0.3, -0.22), "white", Vector3(0.18, 0, 0)))
-		"thigh_l", "thigh_r":
-			p.append(_cyl(0.075 * w, 0.058 * w, 0.44, Vector3(0, -0.22, 0), leg_mat))
-			if v == "bellringer":
+				"villager":
+					if female:
+						p.append(_cyl(0.17, 0.3, 0.78, Vector3(0, -0.38, 0), "cloth2", Vector3.ZERO, Vector3(1.05, 1, 0.9), 12, false))
+					else:
+						p.append(_cyl(0.15, 0.16, 0.12, Vector3(0, -0.04, 0), "cloth", Vector3.ZERO, Vector3(1.22, 1, 0.84), 10, false))
+						p.append(_box(Vector3(0.14, 0.02, 0.02), Vector3(0, 0.07, -0.12), "leather"))
+				"technician":
+					p.append(_cyl(0.152, 0.152, 0.045, Vector3(0, 0.03, 0), "leather", Vector3.ZERO, Vector3(1.24, 1, 0.86)))
+					p.append(_box(Vector3(0.09, 0.09, 0.04), Vector3(0.1, -0.05, -0.12), "cloth2"))
+				"sailor":
+					p.append(_box(Vector3(0.2, 0.09, 0.03), Vector3(0, -0.03, -0.118), "navy"))
+					for i: int in 3:
+						p.append(_sph(0.009, Vector3(-0.05 + 0.05 * float(i), -0.03, -0.136), "brass"))
+				"dockworker":
+					p.append(_cyl(0.155, 0.155, 0.045, Vector3(0, 0.03, 0), "leather", Vector3.ZERO, Vector3(1.24, 1, 0.86)))
+					p.append(_box(Vector3(0.05, 0.035, 0.02), Vector3(0, 0.03, -0.13), "metal"))
+		"LeftUpperLeg", "RightUpperLeg":
+			var flare: float = 1.0
+			if v == "sailor":
+				flare = 1.12
+			p.append(_cyl(0.075 * w, 0.058 * w * flare, 0.44, Vector3(0, -0.22, 0), leg_mat))
+			if bell:
 				p.append(_box(Vector3(0.05, 0.12, 0.012), Vector3(0.05, -0.3, -0.06), "skin", Vector3(0, 0, 0.3)))
-		"shin_l", "shin_r":
+		"LeftLowerLeg", "RightLowerLeg":
 			match v:
 				"soldier":
 					p.append(_cyl(0.056, 0.045, 0.2, Vector3(0, -0.1, 0), "cloth2"))
-					p.append(_cyl(0.063, 0.055, 0.27, Vector3(0, -0.29, 0), "leather"))
-					p.append(_box(Vector3(0.095, 0.07, 0.22), Vector3(0, -0.43, -0.05), "leather"))
-				"laborer":
-					p.append(_cyl(0.048, 0.04, 0.36, Vector3(0, -0.18, 0), "stripe"))
-					p.append(_cyl(0.036, 0.034, 0.06, Vector3(0, -0.38, 0), "skin"))
-					p.append(_box(Vector3(0.11, 0.08, 0.25), Vector3(0, -0.43, -0.05), "wood"))
+					p.append(_cyl(0.063, 0.055, 0.23, Vector3(0, -0.29, 0), "leather"))
 				"bellringer":
 					p.append(_cyl(0.045, 0.036, 0.22, Vector3(0, -0.11, 0), "cloth2"))
-					p.append(_cyl(0.035, 0.03, 0.2, Vector3(0, -0.31, 0), "skin"))
-					p.append(_box(Vector3(0.08, 0.05, 0.2), Vector3(0, -0.43, -0.05), "skin"))
+					p.append(_cyl(0.035, 0.03, 0.18, Vector3(0, -0.31, 0), "skin"))
+				"technician":
+					p.append(_cyl(0.052, 0.044, 0.18, Vector3(0, -0.09, 0), "cloth"))
+					p.append(_cyl(0.06, 0.054, 0.24, Vector3(0, -0.29, 0), "rubber"))
+				"sailor":
+					p.append(_cyl(0.058, 0.07, 0.4, Vector3(0, -0.2, 0), "navy"))
+				"dockworker":
+					p.append(_cyl(0.055, 0.046, 0.16, Vector3(0, -0.08, 0), "cloth2"))
+					p.append(_cyl(0.064, 0.058, 0.26, Vector3(0, -0.28, 0), "rubber"))
+				"villager":
+					if female:
+						p.append(_cyl(0.05, 0.04, 0.4, Vector3(0, -0.2, 0), "dark"))
+					else:
+						p.append(_cyl(0.055, 0.043, 0.4, Vector3(0, -0.2, 0), leg_mat))
+						p.append(_box(Vector3(0.04, 0.06, 0.012), Vector3(0.02, -0.15, -0.045), "patch", Vector3(0, 0, 0.2)))
 				_:
 					p.append(_cyl(0.055, 0.043, 0.4, Vector3(0, -0.2, 0), leg_mat))
-					p.append(_box(Vector3(0.09, 0.07, 0.21), Vector3(0, -0.43, -0.05), "leather"))
-		"abdomen":
-			var ab_mat: String = "stripe" if v == "laborer" else ("skin" if v == "bellringer" else "cloth")
+		"LeftFoot", "RightFoot":
+			var boot: String = "leather"
+			match v:
+				"bellringer":
+					boot = "skin"
+				"technician", "dockworker":
+					boot = "rubber"
+				"nurse", "labstaff":
+					boot = "dark"
+			p.append(_box(Vector3(0.095, 0.07, 0.22), Vector3(0, -0.03, -0.05), boot))
+		"Spine":
+			var ab_mat: String = "skin" if bell else ("navy" if v == "sailor" else ("knit" if v == "dockworker" else "cloth"))
 			p.append(_cyl(0.145 * w, 0.135 * w, 0.24, Vector3(0, 0.11, 0), ab_mat, Vector3.ZERO, Vector3(1.2, 1, 0.82)))
 			match v:
 				"soldier":
@@ -389,17 +863,28 @@ static func spec(v: String, bone: String) -> Array:
 					p.append(_box(Vector3(0.05, 0.08, 0.015), Vector3(0.07, 0.15, -0.12), "dark", Vector3(0, 0, 0.4)))
 				"nurse":
 					p.append(_box(Vector3(0.24, 0.22, 0.015), Vector3(0, 0.12, -0.12), "white"))
-		"chest":
-			var ch_mat: String = "stripe" if v == "laborer" else ("skin" if v == "bellringer" else "cloth")
-			var cw: float = 1.05 if thin else 1.3
-			p.append(_cyl(0.17, 0.145, 0.3, Vector3(0, 0.15, 0), ch_mat, Vector3.ZERO, Vector3(cw, 1, 0.78)))
-			var sh_mat: String = sleeve
-			p.append(_sph(0.075 * w, Vector3(-0.19 * w, 0.25, 0), sh_mat))
-			p.append(_sph(0.075 * w, Vector3(0.19 * w, 0.25, 0), sh_mat))
+				"villager":
+					p.append(_box(Vector3(0.26, 0.2, 0.014), Vector3(0, 0.12, -0.117), "cloth2"))
+					for i: int in 3:
+						p.append(_sph(0.009, Vector3(0.0, 0.05 + 0.06 * float(i), -0.126), "dark"))
+				"technician":
+					p.append(_box(Vector3(0.1, 0.12, 0.02), Vector3(-0.07, 0.1, -0.12), "cloth2"))
+					p.append(_box(Vector3(0.1, 0.12, 0.02), Vector3(0.07, 0.1, -0.12), "cloth2"))
+				"sailor":
+					for i: int in 2:
+						p.append(_sph(0.009, Vector3(-0.045 + 0.09 * float(i), 0.12, -0.122), "brass"))
+		"Chest":
+			var ch_mat: String = "skin" if bell else ("navy" if v == "sailor" else ("knit" if v == "dockworker" else "cloth"))
+			var cw: float = (1.05 if bell or w < 0.95 else 1.3) * sh
+			p.append(_cyl(0.17 * w, 0.145 * w, 0.3, Vector3(0, 0.15, 0), ch_mat, Vector3.ZERO, Vector3(cw, 1, 0.78)))
+			p.append(_sph(0.075 * w, Vector3(-0.19 * w * sh, 0.25, 0), sleeve))
+			p.append(_sph(0.075 * w, Vector3(0.19 * w * sh, 0.25, 0), sleeve))
+			if female and not bell:
+				p.append(_sph(0.055, Vector3(-0.06, 0.15, -0.09), ch_mat, Vector3(1.0, 0.8, 0.7)))
+				p.append(_sph(0.055, Vector3(0.06, 0.15, -0.09), ch_mat, Vector3(1.0, 0.8, 0.7)))
 			match v:
 				"soldier":
 					p.append(_cyl(0.085, 0.13, 0.08, Vector3(0, 0.31, 0), "cloth", Vector3.ZERO, Vector3(1.1, 1, 0.9)))
-					p.append(_box(Vector3(0.035, 0.6, 0.014), Vector3(0.0, 0.13, -0.122), "leather", Vector3(0, 0, 0.72)))
 					for i: int in 3:
 						p.append(_sph(0.011, Vector3(-0.04, 0.06 + i * 0.08, -0.12), "metal"))
 					p.append(_box(Vector3(0.1, 0.16, 0.012), Vector3(0.14, 0.05, -0.1), "dark", Vector3(0, 0, -0.3)))
@@ -410,10 +895,6 @@ static func spec(v: String, bone: String) -> Array:
 				"miner":
 					p.append(_box(Vector3(0.03, 0.32, 0.014), Vector3(-0.08, 0.14, -0.116), "leather"))
 					p.append(_box(Vector3(0.03, 0.32, 0.014), Vector3(0.08, 0.14, -0.116), "leather"))
-				"laborer":
-					p.append(_box(Vector3(0.075, 0.05, 0.01), Vector3(0.07, 0.2, -0.122), "patch"))
-					p.append(_box(Vector3(0.055, 0.008, 0.004), Vector3(0.07, 0.205, -0.128), "dark"))
-					p.append(_box(Vector3(0.04, 0.008, 0.004), Vector3(0.065, 0.19, -0.128), "dark"))
 				"bellringer":
 					for i: int in 4:
 						p.append(_box(Vector3(0.24, 0.014, 0.02), Vector3(0, 0.06 + i * 0.05, -0.112), "dark"))
@@ -422,11 +903,28 @@ static func spec(v: String, bone: String) -> Array:
 					p.append(_box(Vector3(0.2, 0.2, 0.014), Vector3(0, 0.13, -0.117), "white"))
 					p.append(_box(Vector3(0.46, 0.55, 0.02), Vector3(0, 0.05, 0.13), "cloth2", Vector3(-0.08, 0, 0)))
 					p.append(_cyl(0.085, 0.11, 0.06, Vector3(0, 0.31, 0), "white"))
-		"neck":
-			p.append(_cyl(0.048, 0.055, 0.11, Vector3(0, 0.05, 0), "skin"))
+				"villager":
+					p.append(_box(Vector3(0.05, 0.26, 0.012), Vector3(-0.055, 0.14, -0.118), "cloth2", Vector3(0, 0, 0.12)))
+					p.append(_box(Vector3(0.05, 0.26, 0.012), Vector3(0.055, 0.14, -0.118), "cloth2", Vector3(0, 0, -0.12)))
+					if female:
+						p.append(_box(Vector3(0.4, 0.3, 0.02), Vector3(0, 0.15, 0.1), "knit", Vector3(-0.15, 0, 0)))
+				"technician":
+					p.append(_box(Vector3(0.03, 0.3, 0.012), Vector3(0, 0.15, -0.12), "cloth2"))
+					p.append(_box(Vector3(0.07, 0.05, 0.01), Vector3(-0.09, 0.22, -0.123), "patch"))
+					p.append(_box(Vector3(0.1, 0.07, 0.03), Vector3(0.1, 0.08, -0.115), "cloth2"))
+				"sailor":
+					for i: int in 3:
+						p.append(_sph(0.01, Vector3(-0.05, 0.05 + i * 0.08, -0.122), "brass"))
+						p.append(_sph(0.01, Vector3(0.05, 0.05 + i * 0.08, -0.122), "brass"))
+					p.append(_box(Vector3(0.1, 0.1, 0.01), Vector3(0, 0.26, -0.11), "white", Vector3(0.3, 0, 0)))
+				"dockworker":
+					p.append(_cyl(0.08, 0.1, 0.06, Vector3(0, 0.31, 0), "knit", Vector3.ZERO, Vector3(1.1, 1, 0.9)))
+					p.append(_cyl(0.02, 0.02, 0.5, Vector3(0.1, 0.14, 0.0), "rope", Vector3(0.0, 0, 0.5), Vector3.ONE, 6))
+		"Neck":
+			p.append(_cyl(0.048 * w, 0.055 * w, 0.11, Vector3(0, 0.05, 0), "skin"))
 			p.append(_box(Vector3(0.03, 0.06, 0.012), Vector3(0.03, 0.05, -0.048), "dark", Vector3(0, 0, 0.3)))
-		"head":
-			p.append(_sph(0.115, Vector3(0, 0.11, 0), "skin", Vector3(0.88, 1.08, 1.0)))
+		"Head":
+			p.append(_sph(0.115, Vector3(0, 0.11, 0), "skin", Vector3(0.88 * (0.96 if female else 1.0), 1.08, 1.0)))
 			p.append(_sph(0.034, Vector3(-0.042, 0.125, -0.086), "dark", Vector3(1.25, 0.85, 0.6)))
 			p.append(_sph(0.034, Vector3(0.042, 0.125, -0.086), "dark", Vector3(1.25, 0.85, 0.6)))
 			p.append(_sph(0.0135, Vector3(-0.042, 0.124, -0.102), "eye"))
@@ -438,47 +936,32 @@ static func spec(v: String, bone: String) -> Array:
 			p.append(_box(Vector3(0.02, 0.05, 0.04), Vector3(-0.1, 0.11, 0), "skin"))
 			p.append(_box(Vector3(0.02, 0.05, 0.04), Vector3(0.1, 0.11, 0), "skin"))
 			p.append(_box(Vector3(0.04, 0.012, 0.004), Vector3(0.05, 0.19, -0.092), "dark", Vector3(0, 0, 0.6)))
-			match v:
-				"soldier":
-					p.append(_sph(0.145, Vector3(0, 0.15, 0.008), "helmet", Vector3(1.0, 0.76, 1.06), true, 12))
-					p.append(_cyl(0.142, 0.172, 0.055, Vector3(0, 0.13, 0.015), "helmet", Vector3(0.12, 0, 0), Vector3(1.0, 1.0, 1.04), 12, false))
-					p.append(_box(Vector3(0.012, 0.11, 0.012), Vector3(-0.1, 0.06, -0.02), "leather"))
-				"miner":
-					p.append(_cyl(0.125, 0.13, 0.075, Vector3(0, 0.2, 0), "hat", Vector3.ZERO, Vector3(1, 1, 1.05), 10))
-					p.append(_box(Vector3(0.14, 0.014, 0.09), Vector3(0, 0.17, -0.14), "hat", Vector3(-0.18, 0, 0)))
-					p.append(_cyl(0.026, 0.026, 0.07, Vector3(0, 0.215, -0.14), "metal", Vector3(PI * 0.5, 0, 0), Vector3.ONE, 8))
-					p.append(_cyl(0.021, 0.021, 0.012, Vector3(0, 0.215, -0.177), "lens", Vector3(PI * 0.5, 0, 0), Vector3.ONE, 8))
-				"labstaff":
-					p.append(_sph(0.118, Vector3(0, 0.13, 0.005), "hair", Vector3(0.9, 0.95, 1.0), true))
-					p.append(_cyl(0.118, 0.118, 0.022, Vector3(0, 0.17, 0), "leather", Vector3(0.1, 0, 0), Vector3(0.9, 1, 1.01), 12, false))
-					p.append(_cyl(0.03, 0.03, 0.035, Vector3(-0.042, 0.175, -0.105), "metal", Vector3(PI * 0.5 + 0.3, 0, 0), Vector3.ONE, 8))
-					p.append(_cyl(0.03, 0.03, 0.035, Vector3(0.042, 0.175, -0.105), "metal", Vector3(PI * 0.5 + 0.3, 0, 0), Vector3.ONE, 8))
-					p.append(_cyl(0.024, 0.024, 0.01, Vector3(-0.042, 0.181, -0.122), "lens", Vector3(PI * 0.5 + 0.3, 0, 0), Vector3.ONE, 8))
-					p.append(_cyl(0.024, 0.024, 0.01, Vector3(0.042, 0.181, -0.122), "lens", Vector3(PI * 0.5 + 0.3, 0, 0), Vector3.ONE, 8))
-				"bellringer":
-					p.append(_box(Vector3(0.012, 0.06, 0.012), Vector3(-0.04, 0.22, 0.02), "hair", Vector3(0, 0, 0.5)))
-					p.append(_box(Vector3(0.012, 0.05, 0.012), Vector3(0.05, 0.21, 0.04), "hair", Vector3(0, 0, -0.6)))
-				"nurse":
-					p.append(_box(Vector3(0.2, 0.07, 0.24), Vector3(0, 0.2, 0.01), "white"))
-					p.append(_box(Vector3(0.28, 0.03, 0.2), Vector3(-0.16, 0.22, 0.02), "white", Vector3(0, 0, 0.5)))
-					p.append(_box(Vector3(0.28, 0.03, 0.2), Vector3(0.16, 0.22, 0.02), "white", Vector3(0, 0, -0.5)))
-					p.append(_box(Vector3(0.22, 0.24, 0.03), Vector3(0, 0.06, 0.1), "white"))
-		"jaw":
+			if female and v != "nurse":
+				p.append(_sph(0.12, Vector3(0, 0.14, 0.02), "hair", Vector3(0.92, 0.9, 1.0), true))
+				p.append(_sph(0.06, Vector3(0, 0.08, 0.1), "hair", Vector3(1.0, 1.2, 0.8)))
+			elif v in ["labstaff", "villager", "sailor", "dockworker", "technician"]:
+				p.append(_sph(0.118, Vector3(0, 0.13, 0.005), "hair", Vector3(0.9, 0.95, 1.0), true))
+			elif bell:
+				p.append(_box(Vector3(0.012, 0.06, 0.012), Vector3(-0.04, 0.22, 0.02), "hair", Vector3(0, 0, 0.5)))
+				p.append(_box(Vector3(0.012, 0.05, 0.012), Vector3(0.05, 0.21, 0.04), "hair", Vector3(0, 0, -0.6)))
+		"Jaw":
 			p.append(_box(Vector3(0.085, 0.035, 0.085), Vector3(0, -0.012, -0.045), "skin"))
 			p.append(_box(Vector3(0.055, 0.011, 0.008), Vector3(0, 0.008, -0.086), "teeth"))
-		"sh_l", "sh_r":
+		"LeftUpperArm", "RightUpperArm":
 			p.append(_cyl(0.055 * w, 0.046 * w, 0.31, Vector3(0, -0.15, 0), sleeve))
 			if v == "soldier" or v == "labstaff":
 				p.append(_box(Vector3(0.05, 0.1, 0.012), Vector3(0.0, -0.22, 0.05), "cloth", Vector3(0.3, 0, 0)))
-		"el_l", "el_r":
-			var hand: String = "glove" if v == "labstaff" else "skin"
-			if v == "laborer" or v == "bellringer":
+		"LeftLowerArm", "RightLowerArm":
+			var hand: String = "glove" if v == "labstaff" else ("rubber" if v == "technician" else "skin")
+			if bell:
 				p.append(_cyl(0.042 * w, 0.033 * w, 0.27, Vector3(0, -0.135, 0), "skin"))
 			else:
-				p.append(_cyl(0.05, 0.047, 0.13, Vector3(0, -0.065, 0), sleeve))
-				p.append(_cyl(0.04, 0.033, 0.16, Vector3(0, -0.19, 0), hand if v == "labstaff" else "skin"))
-			p.append(_box(Vector3(0.06, 0.085, 0.03), Vector3(0, -0.31, -0.005), hand))
+				p.append(_cyl(0.05 * w, 0.047 * w, 0.13, Vector3(0, -0.065, 0), sleeve))
+				p.append(_cyl(0.04 * w, 0.033 * w, 0.16, Vector3(0, -0.19, 0), hand if v in ["labstaff", "technician"] else "skin"))
+		"LeftHand", "RightHand":
+			var hand2: String = "glove" if v == "labstaff" else ("rubber" if v == "technician" else "skin")
+			p.append(_box(Vector3(0.06, 0.085, 0.03), Vector3(0, -0.02, -0.005), hand2))
 			for f: float in [-0.021, 0.0, 0.021]:
-				p.append(_box(Vector3(0.013, 0.075, 0.013), Vector3(f, -0.375, -0.025), hand, Vector3(0.55, 0, 0)))
-			p.append(_box(Vector3(0.014, 0.05, 0.014), Vector3(0.036, -0.31, -0.02), hand, Vector3(0.3, 0, -0.5)))
+				p.append(_box(Vector3(0.013, 0.075, 0.013), Vector3(f, -0.085, -0.025), hand2, Vector3(0.55, 0, 0)))
+			p.append(_box(Vector3(0.014, 0.05, 0.014), Vector3(0.036, -0.02, -0.02), hand2, Vector3(0.3, 0, -0.5)))
 	return p

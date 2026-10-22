@@ -53,6 +53,7 @@ func _ready() -> void:
 	add_child(director)
 	if not nav_zone_bits.is_empty():
 		director.configure_navigation(nav_zone_bits, nav_always_bits, zone_adjacency)
+	ClimbLink.spawn_all(self, map_id, nav_zone_bits)   # authored climb volumes from the map's json (MZ, T-041)
 	_spawn_players()
 	hud = Hud.new()
 	add_child(hud)

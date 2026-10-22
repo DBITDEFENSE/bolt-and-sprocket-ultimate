@@ -3,22 +3,29 @@ extends CharacterBody3D
 ## Gänger: the standard undead, plus the pooled variants that share its body and state machine:
 ## Glasshide (crystal-plated, torso armor) and Bellringer (special-round lantern miner, lunge attack).
 ## Pooled by ZombieDirector, never freed mid-match. Bosses (Foreman, Screamer) subclass this script.
-## States: SPAWN -> (window) TO_WINDOW -> WAIT/TEAR -> CLIMB -> CHASE <-> ATTACK, STAGGER, DEAD.
+## States: SPAWN -> (window) TO_WINDOW -> WAIT/TEAR -> CLIMB -> CHASE <-> ATTACK, STAGGER, KNOCKDOWN/GETUP,
+## CLIMB_LINK (authored climb volumes), DEAD.
 ## All tuning comes from data/enemies.json; health and tier come from the RoundManager spawn spec.
+##
+## Animation (MZ, T-041, docs/ZOMBIE_ANIM_SPEC.md): the body is a procedural skinned mesh on the shared ZombieRig
+## skeleton, driven by an AnimationTree (ZombieClips) whose parameters this script sets from the state machine:
+## locomotion matched to the nav velocity by time scale (root motion = nav speed, no foot-sliding), per-instance
+## clip picks, posture trait and start phase, additive flinches with hit springs, foot IK and head look-at within
+## range, authored deaths into a ragdoll, dismemberment (ZombieGore), outfit kits and the infection shader
+## (ZombieBody). Everything tunable lives in data/gravelight/anim.json.
 ##
 ## Co-op (M7): the host simulates every zombie. On a client each zombie is a *puppet* (`puppet = true`): no AI,
 ## no navigation; it is placed from interpolated snapshots, animates from the replicated state, and plays its
 ## death from the host's death event (variant, side, head pop). Damage from the client's own weapons is
 ## predicted locally (hit markers, wounds) and sent to the host with the shot ray (NetMatch.send_hit).
 
-enum State { INACTIVE, EMERGE, TO_WINDOW, WAIT_WINDOW, TEAR, CLIMB, CHASE, ATTACK, STAGGER, DEAD }
+enum State { INACTIVE, EMERGE, TO_WINDOW, WAIT_WINDOW, TEAR, CLIMB, CHASE, ATTACK, STAGGER, DEAD, KNOCKDOWN, GETUP, CLIMB_LINK }
 
 const LAYER_WORLD: int = 1
 const LAYER_PLAYER: int = 1 << 1
 const LAYER_ZBODY: int = 1 << 2
 const LAYER_DOOR: int = 1 << 8
 const GRAVITY: float = 18.0
-const TIER_LEAN: Dictionary = {&"shamble": 0.08, &"walk": 0.14, &"jog": 0.3, &"run": 0.45, &"sprint": 0.6}
 
 ## Shared per-physics-frame repath budget, reset by the director.
 static var repath_budget: int = 6
@@ -34,6 +41,9 @@ var is_last: bool = false
 var window: Barricade = null
 var target: Player = null
 var director: Node = null
+## The hitbox bone of the last shot that landed (weapon_holder / bot_brain set it before take_damage), for the
+## side of arm and leg hits. "" = unknown: a side is rolled.
+var last_hit_bone: String = ""
 ## Co-op replication (see the class doc).
 var net_id: int = -1
 var puppet: bool = false
@@ -42,10 +52,11 @@ var interp: InterpBuffer = null
 var _pred_dmg: float = 0.0
 
 var _cfg: Dictionary = {}
+var _anim: Dictionary = {}
 var _agent: NavigationAgent3D
 var _safe_vel: Vector3 = Vector3.ZERO
 var _pivot: Node3D
-var _parts: Dictionary = {}       # name -> Node3D (pivot or mesh)
+var _parts: Dictionary = {}       # name -> Node3D (the Foreman's own parts)
 var _hitboxes: Array[Hitbox] = []
 var _collision: CollisionShape3D
 var _state_t: float = 0.0
@@ -58,7 +69,7 @@ var _climb_to: Vector3
 var _climb_mid: Vector3
 var _queue_index: int = 0
 var _leg_damage: float = 0.0
-var _phase: float = 0.0
+var _phase: float = 0.0           # the Foreman's own walk cycle (foreman.gd); the shared body uses the tree
 var _groan_t: float = 3.0
 var _stuck_t: float = 0.0
 var _stuck_origin: Vector3 = Vector3.ZERO
@@ -78,12 +89,8 @@ var _kind_nodes: Dictionary = {}   # "glass" / "lantern" -> Node3D, shown per ki
 var _lantern_light: OmniLight3D
 var _lunge_dir: Vector3 = Vector3.ZERO
 var _ring_t: float = 0.0
-var _zstep_t: float = 0.0
 ## Shared across zombies: the last time any zombie played a footstep (global rate cap for a 24-zombie horde).
 static var _last_step_msec: int = 0
-const STEP_INTERVAL: float = 0.6
-const STEP_RANGE_SQ: float = 18.0 * 18.0
-const STEP_GAP_MSEC: int = 70
 
 
 func _init() -> void:
@@ -96,6 +103,7 @@ func _init() -> void:
 
 func _ready() -> void:
 	_cfg = GLData.table("enemies")["enemies"]["ganger"]
+	_anim = GLData.table("anim")
 	_collision = CollisionShape3D.new()
 	var cap: CapsuleShape3D = CapsuleShape3D.new()
 	cap.radius = 0.3
@@ -116,6 +124,7 @@ func _ready() -> void:
 	_agent.avoidance_layers = 1
 	_agent.avoidance_mask = 1
 	_agent.velocity_computed.connect(_on_velocity_computed)
+	_agent.link_reached.connect(_on_link_reached)
 	add_child(_agent)
 	_build_body()
 	deactivate()
@@ -154,6 +163,7 @@ func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 	_frost_slow = 0.0
 	armor_torso_mult = float(_cfg.get("armor_mult", 1.0))
 	target = at_target
+	_reset_presentation()
 	_set_crawl_pose(false)
 	_apply_variant(String(spec.get("variant", "soldier")))
 	_apply_kind()
@@ -173,12 +183,14 @@ func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 	_agent.avoidance_enabled = true
 	_repath_t = randf_range(0.0, 0.2)
 	_groan_t = randf_range(0.5, 3.0)
+	_emerge_kind = _emerge_kind_for(spawn)
 	if spawn.kind == &"ground":
 		_enter(State.EMERGE)
 	elif window != null:
 		_enter(State.TO_WINDOW)
 	else:
 		_enter(State.CHASE)
+	_random_phase()
 	if tier == &"sprint":
 		AudioDirector.play_3d("zombie_sprint", global_position + Vector3.UP * 1.6, 2.0)
 	if enemy_id == &"bellringer":
@@ -190,6 +202,7 @@ func deactivate() -> void:
 	if window != null:
 		window.release(self)
 	window = null
+	_end_ragdoll()
 	hide()
 	collision_layer = 0
 	for hb: Hitbox in _hitboxes:
@@ -216,11 +229,35 @@ func _enter(s: State) -> void:
 	match s:
 		State.TEAR:
 			_tear_t = _tear_interval() * 0.6
+			_tear_clip = _pick(_anim["clips"]["tear"])
+			_tree_play("Barricade", _tear_clip, ZombieClips.TEAR_CYCLE / _tear_interval())
 		State.ATTACK:
 			_attack_hit_done = false
-			AudioDirector.play_3d("zombie_attack", global_position + Vector3.UP * 1.5, -2.0)
+			_attack_clip = _pick_attack()
+			AudioDirector.play_3d("zombie_attack", global_position + Vector3.UP * 1.5, float(_anim["vocals"].get("attack_snarl_db", -2.0)))
+			_tree_attack(_attack_clip)
 		State.EMERGE:
-			_pivot.position.y = -1.7
+			_tree_emerge()
+		State.STAGGER:
+			if _react_clip == "":
+				_react_clip = str(_anim["clips"]["react"]["stagger"])
+				_react_len = float(_cfg["stagger_seconds"])
+			_tree_play("React", _react_clip, ZombieClips.length_of(_react_clip) / maxf(0.05, _react_len))
+		State.KNOCKDOWN:
+			_getup_restarted = false
+			var kd: String = str(_anim["clips"]["react"]["knockdown_front" if _down_front else "knockdown_back"])
+			_tree_play("React", kd, 1.0)
+		State.GETUP:
+			var gu: String = str(_anim["clips"]["react"]["getup_front" if _down_front else "getup_back"])
+			_tree_play("React", gu, 1.0)
+		State.CLIMB:
+			_tree_play("Climb", _climb_clip, ZombieClips.length_of(_climb_clip) / maxf(0.1, _climb_dur()))
+		State.CLIMB_LINK:
+			_tree_play("Climb", str(_anim["clips"]["climb"]["loop"]), 1.0)
+		State.DEAD:
+			_tree_play("Death", _death_clip, 1.0)
+		State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW:
+			_tree_locomotion(true)
 
 
 # ---------------------------------------------------------------- frame update
@@ -233,10 +270,10 @@ func _physics_process(delta: float) -> void:
 	_attack_cd = maxf(0.0, _attack_cd - delta)
 	match state:
 		State.EMERGE:
-			var t: float = clampf(_state_t / (0.7 if enemy_id == &"bellringer" else 1.4), 0.0, 1.0)
-			_pivot.position.y = lerpf(-1.7, 0.0, t * t * (3.0 - 2.0 * t))
-			if t >= 1.0:
+			if _state_t >= _emerge_seconds():
 				_enter(State.CHASE)
+			else:
+				_halt(delta)
 		State.TO_WINDOW:
 			_update_to_window(delta)
 		State.WAIT_WINDOW:
@@ -245,13 +282,24 @@ func _physics_process(delta: float) -> void:
 			_update_tear(delta)
 		State.CLIMB:
 			_update_climb(delta)
+		State.CLIMB_LINK:
+			_update_link_climb(delta)
 		State.CHASE:
 			_update_chase(delta)
 		State.ATTACK:
 			_update_attack(delta)
 		State.STAGGER:
 			_halt(delta)
-			if _state_t >= float(_cfg["stagger_seconds"]):
+			if _state_t >= _react_len:
+				_react_clip = ""
+				_enter(State.CHASE)
+		State.KNOCKDOWN:
+			_halt(delta)
+			if _state_t >= float(_anim["knockdown"]["down_seconds"]):
+				_enter(State.GETUP)
+		State.GETUP:
+			_halt(delta)
+			if _state_t >= float(_anim["knockdown"]["getup_seconds"]):
 				_enter(State.CHASE)
 		State.DEAD:
 			_update_dead(delta)
@@ -260,17 +308,27 @@ func _physics_process(delta: float) -> void:
 	_update_burn(delta)
 	if _frost_t > 0.0:
 		_frost_t -= delta
+	if _grab_t > 0.0:
+		_update_grab(delta)
 	_update_audio(delta)
+	_update_senses(delta)
 
 
 func _process(delta: float) -> void:
-	# Cheap procedural animation; distant zombies animate at a lower rate.
-	_anim_skip += 1
-	var far: bool = target != null and global_position.distance_squared_to(target.global_position) > 1600.0
-	if far and _anim_skip % 4 != 0:
+	# Animation LOD: full rate within lod.full_m, half to lod.half_m, quarter beyond (anim.json).
+	if state == State.INACTIVE:
 		return
-	var dt: float = delta * (4.0 if far else 1.0)
-	_animate(dt)
+	_anim_skip += 1
+	var d2: float = global_position.distance_squared_to(target.global_position) if target != null else 0.0
+	var lod: Dictionary = _anim["lod"]
+	var div: int = 1
+	if d2 > float(lod["half_m"]) * float(lod["half_m"]):
+		div = 4
+	elif d2 > float(lod["full_m"]) * float(lod["full_m"]):
+		div = 2
+	if _anim_skip % div != 0:
+		return
+	_animate(delta * float(div))
 
 
 func _update_to_window(delta: float) -> void:
@@ -323,24 +381,42 @@ func _update_tear(delta: float) -> void:
 			_attack_cd = float(_cfg["attack_interval"])
 			_window_swipe()
 	_tear_t -= delta
+	if _swipe_t > 0.0:
+		_swipe_t -= delta
+		if _swipe_t <= 0.0:
+			_tree_play("Barricade", _tear_clip, ZombieClips.TEAR_CYCLE / _tear_interval())
 	if _tear_t > 0.0:
 		return
 	if window.boards > 0:
 		window.tear_board()
-		_yank = 0.4
 		_tear_t = _tear_interval()
+		AudioDirector.play_3d("zombie_groan", global_position + Vector3.UP * 1.5, float(_anim["vocals"].get("rip_db", -4.0)), 0.1)
 	else:
 		_start_climb()
 
 
+## The reach-through swipe: the window_swipe clip plays over the tear, the hit lands at the windup if the
+## player is still at the boards and the hand reaches them (anim.json attack.window_reach_m / hand_reach_m).
 func _window_swipe() -> void:
 	AudioDirector.play_3d("zombie_attack", global_position + Vector3.UP * 1.5, -2.0)
 	var t: Player = target
+	var clip: String = str(_anim["clips"]["attack"]["window"])
+	_tree_attack(clip)
+	_swipe_t = ZombieClips.length_of(clip) * float(_cfg["attack_windup"]) / ZombieClips.ATTACK_WINDUP
 	var tw: Tween = create_tween()
 	tw.tween_interval(float(_cfg["attack_windup"]))
 	tw.tween_callback(func() -> void:
-		if is_active() and window != null and is_instance_valid(t) and _window_reach_ok(t, 0.2):
+		if is_active() and window != null and is_instance_valid(t) and _window_reach_ok(t, 0.2) and _hand_reaches(t):
 			t.take_hit(float(_cfg["damage"]), self))
+
+
+## The reach-through hitbox: the swinging hand must get within attack.hand_reach_m of the player's chest.
+func _hand_reaches(t: Player) -> bool:
+	var hand: Node3D = bone_attachment("RightHand")
+	if hand == null:
+		return true
+	var reach: float = float(_anim["attack"].get("hand_reach_m", 0.75)) + float(_anim["attack"].get("window_reach_m", 0.95))
+	return hand.global_position.distance_to(t.global_position + Vector3.UP * 1.2) <= reach
 
 
 ## Melee needs a clear line to the target: no wall or closed door in between. Without it a long-reach
@@ -377,6 +453,7 @@ func _window_reach_ok(t: Player, grace: float) -> bool:
 func on_board_repaired() -> void:
 	if state == State.TEAR:
 		_tear_t = _tear_interval()
+		_tree_play("Barricade", _tear_clip, ZombieClips.TEAR_CYCLE / _tear_interval())
 
 
 func _tear_interval() -> float:
@@ -391,12 +468,17 @@ func _start_climb() -> void:
 	_climb_to = window.inside_point()
 	collision_mask = 0
 	_agent.avoidance_enabled = false
+	var high: bool = _climb_mid.y - _climb_to.y > float(_anim["climb"].get("high_window_m", 1.2))
+	_climb_clip = str(_anim["clips"]["drop"]) if high else _pick(_anim["clips"]["vault"])
 	_enter(State.CLIMB)
 
 
+func _climb_dur() -> float:
+	return float(_cfg["climb_seconds"]) * (1.6 if is_crawler else 1.0)
+
+
 func _update_climb(_delta: float) -> void:
-	var dur: float = float(_cfg["climb_seconds"]) * (1.6 if is_crawler else 1.0)
-	var t: float = clampf(_state_t / dur, 0.0, 1.0)
+	var t: float = clampf(_state_t / _climb_dur(), 0.0, 1.0)
 	var a: Vector3 = _climb_from.lerp(_climb_mid, t)
 	var b: Vector3 = _climb_mid.lerp(_climb_to, t)
 	global_position = a.lerp(b, t)
@@ -409,6 +491,66 @@ func _update_climb(_delta: float) -> void:
 		window = null
 		_stuck_origin = global_position
 		_enter(State.CHASE)
+
+
+# ---------------------------------------------------------------- climb volumes (NavigationLink3D with meta "climb")
+
+## The agent reached a navigation link: a climb link starts the scripted climb (vulnerable, no attacks).
+func _on_link_reached(details: Dictionary) -> void:
+	if puppet or state != State.CHASE or is_crawler:
+		return
+	var owner_v: Variant = details.get("owner", null)
+	var link: NavigationLink3D = owner_v as NavigationLink3D
+	if link == null or not link.has_meta("climb"):
+		return
+	var start: Vector3 = details.get("link_entry_position", global_position)
+	var end: Vector3 = details.get("link_exit_position", global_position)
+	if end.y - start.y < 0.5:
+		return   # a drop or a flat link: walk it
+	_climb_from = start
+	_climb_to = end
+	_climb_dist = start.distance_to(end)
+	collision_mask = 0
+	_agent.avoidance_enabled = false
+	_enter(State.CLIMB_LINK)
+
+
+func _update_link_climb(_delta: float) -> void:
+	var spd: float = float(_anim["climb"]["speed_mps"])
+	var mantle: float = float(_anim["climb"]["mantle_seconds"])
+	var dur: float = _climb_dist / maxf(0.2, spd) + mantle
+	var t: float = clampf(_state_t / maxf(0.05, dur), 0.0, 1.0)
+	global_position = _climb_from.lerp(_climb_to, t)
+	var face_to: Vector3 = _climb_to + (_climb_to - _climb_from)
+	face_to.y = global_position.y
+	_face(face_to)
+	if not _mantling and _state_t >= dur - mantle:
+		_mantling = true
+		_tree_play("Climb", str(_anim["clips"]["climb"]["mantle"]), 1.0)
+	if t >= 1.0:
+		_mantling = false
+		collision_mask = LAYER_WORLD | LAYER_PLAYER | LAYER_ZBODY | LAYER_DOOR
+		_agent.avoidance_enabled = true
+		_stuck_origin = global_position
+		_enter(State.CHASE)
+
+
+## Dev / tools: re-tier a live zombie (speed from enemies.json tiers, a fresh locomotion clip for the tier).
+func debug_set_tier(t: StringName) -> void:
+	tier = t
+	speed = float(GLData.table("enemies")["tiers"].get(String(t), speed))
+	_agent.max_speed = speed
+	_pick_locomotion()
+
+
+## Dev / tools: start a climb between two points as if a link had been reached.
+func debug_climb(from: Vector3, to: Vector3) -> void:
+	_climb_from = from
+	_climb_to = to
+	_climb_dist = from.distance_to(to)
+	collision_mask = 0
+	_agent.avoidance_enabled = false
+	_enter(State.CLIMB_LINK)
 
 
 func _update_chase(delta: float) -> void:
@@ -427,7 +569,7 @@ func _update_chase(delta: float) -> void:
 		return
 	var to_t: Vector3 = target.global_position - global_position
 	var dist: float = to_t.length()
-	if dist <= float(_cfg["attack_range"]) and absf(to_t.y) < 1.3 and _attack_cd <= 0.0 and _clear_to(target):
+	if dist <= _attack_range() and absf(to_t.y) < 1.3 and _attack_cd <= 0.0 and _clear_to(target):
 		_enter(State.ATTACK)
 		return
 	var rp: Dictionary = GLData.table("enemies")["repath"]
@@ -458,13 +600,18 @@ func _update_chase(delta: float) -> void:
 		_stuck_origin = global_position
 
 
+func _attack_range() -> float:
+	return float(_cfg["attack_range"])
+
+
 func _update_attack(delta: float) -> void:
 	var windup: float = float(_cfg["attack_windup"])
-	if enemy_id == &"bellringer" and _state_t >= windup * 0.5 and _state_t < windup + 0.15 and target != null:
+	var lunging: bool = enemy_id == &"bellringer" or _attack_clip == str(_anim["clips"]["attack"]["lunge"])
+	if lunging and _state_t >= windup * 0.5 and _state_t < windup + 0.15 and target != null:
 		# Lunge: a short leap at the target during the windup.
 		var to_t: Vector3 = target.global_position - global_position
 		to_t.y = 0.0
-		var leap: float = float(_cfg.get("lunge_distance", 2.0)) / maxf(0.05, windup * 0.5 + 0.15)
+		var leap: float = float(_cfg.get("lunge_distance", 2.0 if enemy_id == &"bellringer" else 1.2)) / maxf(0.05, windup * 0.5 + 0.15)
 		if to_t.length() > 0.9:
 			velocity.x = to_t.normalized().x * leap
 			velocity.z = to_t.normalized().z * leap
@@ -478,21 +625,55 @@ func _update_attack(delta: float) -> void:
 		_attack_hit_done = true
 		if target != null and target.is_alive():
 			var d: float = global_position.distance_to(target.global_position)
-			if d <= float(_cfg["attack_range"]) + 0.5 and _clear_to(target):
+			if d <= _attack_range() + 0.5 and _clear_to(target):
 				target.take_hit(float(_cfg["damage"]), self)
 				if _cfg.has("hit_slow"):
 					target.apply_status(&"shard_slow", float(_cfg.get("hit_slow_seconds", 0.5)))
 				if enemy_id == &"bellringer":
 					AudioDirector.play_3d("bellringer_lantern", global_position + Vector3.UP * 1.4, 2.0)
+				if _attack_clip == str(_anim["clips"]["attack"]["grab"]):
+					_start_grab(target)
 	if _state_t >= windup + 0.35:
 		_attack_cd = maxf(0.0, float(_cfg["attack_interval"]) - windup - 0.35)
 		_enter(State.CHASE)
 
 
+## The sprinter grab: the hit pulls the player's view for attack.grab.seconds (cancelled by a melee hit on
+## this zombie). Presentation only: the damage is the normal hit.
+func _start_grab(t: Player) -> void:
+	var g: Dictionary = _anim["attack"]["grab"]
+	_grab_target = t
+	_grab_t = float(g.get("seconds", 0.4))
+	t.kick_camera(float(g.get("pitch_deg", 9.0)), float(g.get("yaw_deg", 22.0)), 0.45, float(g.get("recover", 7.0)), 0.35, 0.0)
+
+
+func _update_grab(delta: float) -> void:
+	_grab_t -= delta
+	if _grab_target == null or not is_instance_valid(_grab_target) or not is_active():
+		_grab_t = 0.0
+		return
+	# A steady pull while held: pitch only (kick_camera rolls a fresh yaw sign per call, which per frame is
+	# jitter; the opening kick in _start_grab already yanked the yaw) and keep 0, so it all goes into the
+	# recoil spring and the view settles back once the grab ends instead of drifting for good.
+	var g: Dictionary = _anim["attack"]["grab"]
+	_grab_target.kick_camera(float(g.get("pitch_deg", 9.0)) * 2.5 * delta, 0.0, 0.0, float(g.get("recover", 7.0)), 0.0, 0.0)
+
+
 func _update_dead(delta: float) -> void:
-	if _state_t > 1.6:
-		_pivot.position.y -= delta * 0.8
-	if _state_t > 2.4:
+	var rd: Dictionary = _anim["ragdoll"]
+	if not _ragdoll_started and _state_t >= float(rd.get("key_pose_seconds", 0.55)):
+		_ragdoll_started = true
+		_begin_ragdoll()
+	if _ragdoll != null:
+		ZombieRagdoll.tick()
+		ZombieRagdoll.sync(_ragdoll, _skel)
+	var corpse: float = _corpse_seconds
+	if director != null and director.has_method("free_count") and int(director.call("free_count")) < int(rd.get("pool_pressure_free", 4)):
+		corpse = minf(corpse, float(rd.get("pool_pressure_corpse_seconds", 1.6)))
+	var dissolve: float = float(rd.get("dissolve_seconds", 1.4))
+	if _state_t > corpse:
+		_set_inst("inst_dissolve", clampf((_state_t - corpse) / dissolve, 0.0, 1.0))
+	if _state_t > corpse + dissolve:
 		deactivate()
 		if director != null:
 			director.call("on_zombie_returned", self)
@@ -500,9 +681,26 @@ func _update_dead(delta: float) -> void:
 
 # ---------------------------------------------------------------- movement helpers
 
+## True while the agent's current path point is a NavigationLink (a door seam between two zone regions): a
+## re-path from inside the seam's eroded gap would start back on the region it came from and the zombie would
+## shuttle on the spot (playtest T-040), so links are crossed before the path is recomputed.
+func _crossing_link() -> bool:
+	var res: NavigationPathQueryResult3D = _agent.get_current_navigation_result()
+	if res == null:
+		return false
+	var types: PackedInt32Array = res.get_path_types()
+	var i: int = _agent.get_current_navigation_path_index()
+	return i > 0 and i < types.size() and types[i] == NavigationPathQueryResult3D.PATH_SEGMENT_TYPE_LINK
+
+
+var _link_t: float = 0.0          # seconds spent on the current link point (the re-path hold has a limit)
+
+
 func _nav_move(goal: Vector3, spd: float, delta: float, repath_interval: float) -> void:
 	_repath_t -= delta
-	if _repath_t <= 0.0 and Zombie.repath_budget > 0:
+	var on_link: bool = _crossing_link()
+	_link_t = _link_t + delta if on_link else 0.0
+	if _repath_t <= 0.0 and Zombie.repath_budget > 0 and not (on_link and _link_t < 3.0):
 		Zombie.repath_budget -= 1
 		if director != null:
 			_agent.navigation_layers = (director as ZombieDirector).nav_mask
@@ -606,7 +804,9 @@ func _face(p: Vector3) -> void:
 	if d.length_squared() < 0.0001:
 		return
 	var yaw: float = atan2(-d.x, -d.z)
+	var before: float = rotation.y
 	rotation.y = lerp_angle(rotation.y, yaw, 0.25)
+	_turn_rate = wrapf(rotation.y - before, -PI, PI) / maxf(0.001, get_physics_process_delta_time())
 
 
 func _flat_dist(p: Vector3) -> float:
@@ -654,6 +854,7 @@ func force_stagger() -> void:
 			Net.session.send_zombie_effect(self, &"stagger")
 		return
 	if state == State.CHASE or state == State.ATTACK:
+		_react_clip = ""
 		_enter(State.STAGGER)
 
 
@@ -666,10 +867,12 @@ func _update_burn(delta: float) -> void:
 		return
 	_burn_t -= delta
 	_burn_tick -= delta
+	_char = minf(1.0, _char + delta * 0.25)
 	if _burn_tick <= 0.0:
 		_burn_tick = 0.25
 		take_damage(_burn_dps * 0.25, &"torso", &"fire", _burn_by, &"fire")
-		Effects.blood(global_position + Vector3.UP * randf_range(0.6, 1.6), Vector3.UP)
+		if ZombieGore.blood_allowed():
+			Effects.blood(global_position + Vector3.UP * randf_range(0.6, 1.6), Vector3.UP)
 
 
 func _nearest_player() -> Player:
@@ -693,6 +896,10 @@ func _nearest_player() -> Player:
 func take_damage(amount: float, limb: StringName, weapon_id: StringName, by_player: int, kind: StringName = &"bullet", armor_piercing: bool = false) -> bool:
 	if puppet:
 		return _puppet_damage(amount, limb, weapon_id, by_player, kind, armor_piercing)
+	# the caller's hitbox bone belongs to this hit only: consumed before any early return so it can never leak
+	# into a later boneless hit (explosions, fire) as the wrong wound side
+	var side: String = _hit_side(limb)
+	last_hit_bone = ""
 	if not is_active():
 		return false
 	if (limb == &"torso" or limb == &"arms") and kind == &"bullet" and not armor_piercing:
@@ -702,16 +909,18 @@ func take_damage(amount: float, limb: StringName, weapon_id: StringName, by_play
 	hp -= amount
 	GLBus.enemy_damaged.emit(enemy_id, limb, amount, by_player)
 	if kind != &"fire" and kind != &"world":
-		_wound(limb)
+		_wound(limb, side)
 	if kind == &"bullet":
 		AudioDirector.play_3d("impact_flesh", global_position + Vector3.UP * 1.2, 0.0, 0.0)
+	if kind == &"melee" and _grab_t > 0.0:
+		_grab_t = 0.0   # a knife to the grabbing zombie breaks the grab
 	if hp <= 0.0:
 		_die(limb, weapon_id, by_player, kind)
 		return true
 	if by_player > 0 and kind != &"fire":
 		Economy.award(by_player, int(GLData.table("economy")["hit_nonlethal"]))
-	_flinch = 0.18
-	_flinch_dir = -1.0 if randf() < 0.5 else 1.0
+	if kind != &"fire":
+		_play_flinch(limb, side)
 	# Crawlers: a leg damage pool, or a chance from explosions.
 	if not is_crawler and bool(_cfg.get("can_crawl", true)):
 		if limb == &"legs":
@@ -722,10 +931,91 @@ func take_damage(amount: float, limb: StringName, weapon_id: StringName, by_play
 					become_crawler()
 		elif kind == &"explosive" and randf() < float(_cfg["explosive_crawler_chance"]):
 			become_crawler()
+	# Arms: a damage pool per side; an emptied pool can take the forearm or the whole arm (anim.json gore).
+	if limb == &"arms" and bool(_cfg.get("can_crawl", true)):
+		_arm_hit(amount, side)
+	elif limb == &"head" and kind == &"bullet" and randf() < float(_anim["gore"].get("jaw_chance_on_head_hit", 0.12)):
+		ZombieGore.sever(self, "Jaw", _away_from_target() * 2.0 + Vector3.UP * 2.0)
+	var kd: Dictionary = _anim["knockdown"]
+	var knock: bool = (kd["kinds"] as Array).has(String(kind)) or (kd["weapons"] as Array).has(String(weapon_id))
+	if knock and amount >= max_hp * float(kd.get("min_fraction", 0.08)) and state in [State.CHASE, State.ATTACK, State.STAGGER] and not is_crawler and bool(_cfg.get("can_crawl", true)):
+		_knockdown()
+		return false
+	if state == State.GETUP:
+		# A real hit knocks it back down once per knockdown; fire / trap ticks (every 0.25 s) and the rest of an
+		# automatic burst don't, so continuous damage can never pin a zombie on the floor.
+		if kind != &"fire" and kind != &"world" and not _getup_restarted:
+			_getup_restarted = true
+			_enter(State.GETUP)
+		return false
 	var stagger_ok: bool = kind != &"bullet" or bool(_cfg.get("bullet_stagger", true))
-	if stagger_ok and (kind == &"melee" or kind == &"explosive" or amount >= max_hp * 0.4) and state == State.CHASE:
+	if stagger_ok and (kind == &"melee" or kind == &"explosive" or amount >= max_hp * float(_anim["stagger"].get("damage_fraction", 0.4))) and state == State.CHASE:
+		_react_clip = ""
 		_enter(State.STAGGER)
 	return false
+
+
+## Which side an arm / leg hit landed on, from the hitbox bone the weapon reported (or a coin toss).
+func _hit_side(limb: StringName) -> String:
+	if limb != &"arms" and limb != &"legs":
+		return ""
+	var b: String = ZombieRig.legacy_name(last_hit_bone)
+	if b.begins_with("Left"):
+		return "l"
+	if b.begins_with("Right"):
+		return "r"
+	return "l" if randf() < 0.5 else "r"
+
+
+func _arm_hit(amount: float, side: String) -> void:
+	var g: Dictionary = _anim["gore"]
+	_arm_damage[side] = float(_arm_damage.get(side, 0.0)) + amount
+	if _arm_damage[side] >= max_hp * float(g.get("arm_pool_fraction", 0.28)):
+		_arm_damage[side] = -INF
+		if randf() < float(g.get("arm_sever_chance", 0.55)):
+			var upper: String = "LeftUpperArm" if side == "l" else "RightUpperArm"
+			var fore: String = "LeftLowerArm" if side == "l" else "RightLowerArm"
+			var bone: String = fore if randf() < float(g.get("forearm_vs_upper", 0.65)) else upper
+			sever_limb(bone)
+
+
+## Severs a chain (gameplay + presentation): arm pieces change the attack set, legs at the hip make a crawler.
+func sever_limb(bone: String) -> void:
+	if puppet and not Net.applying:
+		return
+	var imp: Vector3 = _away_from_target() * randf_range(1.5, 3.0) + Vector3.UP * randf_range(2.0, 3.5)
+	if ZombieGore.severs_allowed() and not is_severed(bone):
+		AudioDirector.play_3d("zombie_gib", global_position + Vector3.UP * 1.2, -3.0)
+	ZombieGore.sever(self, bone, imp)
+	_severed_logic[bone] = true
+	if Net.replicating():
+		Net.session.zombie_event(self, &"fx", [&"sever", bone, imp])
+
+
+func arms_lost() -> int:
+	var n: int = 0
+	for side: String in ["Left", "Right"]:
+		if _severed_logic.has(side + "UpperArm") or _severed_logic.has(side + "LowerArm"):
+			n += 1
+	return n
+
+
+func _away_from_target() -> Vector3:
+	var away: Vector3 = global_position - (target.global_position if target != null else global_position + global_basis.z)
+	away.y = 0.0
+	return away.normalized() if away.length_squared() > 0.001 else -global_basis.z
+
+
+func _knockdown() -> void:
+	# a blast from the front throws the zombie onto its back
+	var from_front: bool = true
+	if target != null:
+		var to_t: Vector3 = target.global_position - global_position
+		from_front = (-global_basis.z).dot(to_t) > 0.0
+	_down_front = not from_front
+	if Net.replicating():
+		Net.session.zombie_event(self, &"fx", [&"knockdown", _down_front])
+	_enter(State.KNOCKDOWN)
 
 
 func become_crawler() -> void:
@@ -739,10 +1029,19 @@ func become_crawler() -> void:
 	if Net.replicating():
 		Net.session.zombie_event(self, &"crawl", [])
 	AudioDirector.play_3d("zombie_gib", global_position + Vector3.UP * 0.6)
-	for leg: String in ["thigh_l", "thigh_r"]:
-		_gib(leg, Vector3(randf_range(-1.5, 1.5), 2.0, randf_range(-1.5, 1.5)), 8.0)
-	Effects.blood((_bones["hips"] as Node3D).global_position, Vector3.UP)
+	var moving: bool = Vector2(velocity.x, velocity.z).length() > 1.5
+	for leg: String in ["LeftUpperLeg", "RightUpperLeg"]:
+		ZombieGore.sever(self, leg, Vector3(randf_range(-1.5, 1.5), 2.0, randf_range(-1.5, 1.5)))
+	if ZombieGore.blood_allowed():
+		Effects.blood(global_position + Vector3.UP * 0.9, Vector3.UP)
 	_set_crawl_pose(true)
+	# the fall-into-crawler transition: a stumble that ends in the crawl pose, then the crawl locomotion
+	if not puppet and state in [State.CHASE, State.ATTACK, State.STAGGER, State.TO_WINDOW, State.WAIT_WINDOW] and moving:
+		_react_clip = str(_anim["clips"]["react"]["fall_crawl"])
+		_react_len = ZombieClips.length_of(_react_clip)
+		_enter(State.STAGGER)
+	elif state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW]:
+		_tree_locomotion(true)
 
 
 func _die(limb: StringName, weapon_id: StringName, by_player: int, kind: StringName) -> void:
@@ -756,6 +1055,7 @@ func _die(limb: StringName, weapon_id: StringName, by_player: int, kind: StringN
 	_agent.avoidance_enabled = false
 	_safe_vel = Vector3.ZERO
 	velocity = Vector3.ZERO
+	_grab_t = 0.0
 	if by_player > 0:
 		var econ: Dictionary = GLData.table("economy")
 		var value: int = Economy.kill_value(limb, kind == &"melee", econ)
@@ -766,19 +1066,76 @@ func _die(limb: StringName, weapon_id: StringName, by_player: int, kind: StringN
 		Economy.award(by_player, value)
 	AudioDirector.play_3d("zombie_death", global_position + Vector3.UP * 1.2, -1.0)
 	_death_burst()
-	state = State.DEAD
-	_state_t = 0.0
 	GLBus.enemy_killed.emit(enemy_id, limb, weapon_id, by_player)
 	GLBus.enemy_killed_at.emit(enemy_id, global_position, by_player)
 	RoundManager.on_zombie_died()
-	_death_kind = randi() % 4
+	_death_kind = _pick_death(limb, kind)
 	_death_side = -1.0 if randf() < 0.5 else 1.0
-	if limb == &"head" and kind != &"world":
+	_death_explosive = kind == &"explosive"
+	var pop: bool = false
+	if limb == &"head" and kind != &"world" and _death_clip != "death_head_snap":
+		pop = true
+	elif kind == &"explosive" and randf() < float(_anim["gore"].get("head_pop_explosive_chance", 0.35)):
+		pop = true
+	_start_death()
+	if pop:
 		_pop_head()
-	elif kind == &"explosive" and randf() < 0.35:
-		_pop_head()
+	if kind == &"explosive" and ZombieGore.severs_allowed() and randf() < 0.5:
+		var loose: String = _pick(["LeftLowerLeg", "RightLowerLeg", "LeftLowerArm", "RightLowerArm"])
+		ZombieGore.sever(self, loose, _away_from_target() * 4.0 + Vector3.UP * 4.0)
 	if Net.replicating():
 		Net.session.zombie_died(self, limb, kind, _death_kind, _death_side, _head_popped)
+
+
+## The death clip for the cause: head kills snap or walk headless, sprinters tumble, blasts throw (anim.json).
+func _pick_death(limb: StringName, kind: StringName) -> int:
+	var deaths: Array = _anim["clips"]["death"]
+	var by: Dictionary = _anim["clips"].get("death_by_cause", {})
+	var pool: Array = []
+	if is_crawler:
+		_death_clip = str(_anim["clips"]["death_crawler"])
+		return deaths.size()
+	if limb == &"head" and kind != &"world":
+		pool = (by.get("head", []) as Array).duplicate()
+		if randf() >= float(_anim["gore"].get("headless_stagger_chance", 0.5)):
+			pool.erase("death_headless")
+	elif kind == &"explosive":
+		pool = (by.get("explosive", []) as Array).duplicate()
+	elif tier == &"sprint":
+		pool = (by.get("sprint", []) as Array).duplicate()
+	if pool.is_empty():
+		pool = deaths.duplicate()
+		pool.erase("death_headless")
+		pool.erase("death_head_snap")
+	_death_clip = str(_pick(pool))
+	return maxi(0, deaths.find(_death_clip))
+
+
+func _start_death() -> void:
+	state = State.DEAD
+	_state_t = 0.0
+	_ragdoll_started = false
+	var rd: Array = _anim["ragdoll"].get("corpse_seconds", [8.0, 12.0])
+	_corpse_seconds = randf_range(float(rd[0]), float(rd[1]))
+	if has_rig():
+		_look.active = false
+		_modifier.ik_weight = 0.0
+	_enter(State.DEAD)
+
+
+func _begin_ragdoll() -> void:
+	var launch: Vector3 = Vector3.ZERO
+	if _death_explosive:
+		launch = _away_from_target() * float(_anim["ragdoll"].get("explosive_launch", 5.0)) + Vector3.UP * 3.0
+	_ragdoll = ZombieRagdoll.start(_skel, launch)
+	# the tree stays active (deactivating an AnimationTree resets the rendered skin to rest); it simply is not
+	# advanced any more while the ragdoll writes the bones (_animate)
+
+
+func _end_ragdoll() -> void:
+	if _ragdoll != null:
+		ZombieRagdoll.stop(_ragdoll)
+		_ragdoll = null
 
 
 ## Removes this zombie without a kill (stuck or unreachable) and puts it back in the round queue.
@@ -798,110 +1155,368 @@ func kill_silently() -> void:
 		_die(&"torso", &"none", 0, &"world")
 
 
-# ---------------------------------------------------------------- body (procedural skeleton, see ZombieBody)
+# ---------------------------------------------------------------- body (skinned procedural body on the shared rig)
 
-const TIER_GAIT: Dictionary = {
-	# step length (m), hip swing, knee bend, forward lean, bob, arm mode
-	&"shamble": [0.42, 0.3, 0.38, 0.14, 0.022, 0],
-	&"walk": [0.58, 0.42, 0.55, 0.18, 0.03, 1],
-	&"jog": [0.85, 0.62, 0.95, 0.32, 0.05, 2],
-	&"run": [1.15, 0.8, 1.25, 0.46, 0.065, 3],
-	&"sprint": [1.3, 0.95, 1.45, 0.6, 0.075, 4],
-}
-
-var _bones: Dictionary = {}        # bone name -> Node3D
-var _bone_mi: Dictionary = {}      # bone name -> MeshInstance3D
+var _skel: Skeleton3D
+var _body: MeshInstance3D
+var _ap: AnimationPlayer
+var _tree: AnimationTree
+var _sm: AnimationNodeStateMachine
+var _playback: AnimationNodeStateMachinePlayback
+var _anim_nodes: Dictionary = {}     # state -> AnimationNodeAnimation (one-shot states)
+var _loco_bs: AnimationNodeBlendSpace2D
+var _crawl_bs: AnimationNodeBlendSpace1D
+var _posture_node: AnimationNodeAnimation
+var _flinch_node: AnimationNodeAnimation
+var _modifier: ZombieBodyModifier
+var _look: LookAtModifier3D
+var _look_target: Node3D
+var _bones: Dictionary = {}          # profile bone name -> BoneAttachment3D (lazy)
+var _gear: Array[MeshInstance3D] = []
+var _caps: Dictionary = {}           # bone -> stump cap MeshInstance3D
+var _severed: Dictionary = {}        # visual
+var _severed_logic: Dictionary = {}  # gameplay (also set on puppets from the host's event)
+var _arm_damage: Dictionary = {}
 var _variant: String = "soldier"
-var _asym: Dictionary = {}
+var _build: String = "medium"
+var _female: bool = false
+var _height: float = 1.0
 var _death_kind: int = 0
 var _death_side: float = 1.0
-var _yank: float = 0.0
+var _death_clip: String = "death_back"
+var _death_explosive: bool = false
+var _corpse_seconds: float = 10.0
+var _ragdoll: PhysicalBoneSimulator3D = null
+var _ragdoll_started: bool = false
 var _decals: Array[MeshInstance3D] = []
 var _decal_i: int = 0
 var _head_popped: bool = false
+var _tree_state: String = ""
+var _loco_clip: String = "walk_a"
+var _loco_speed: float = 2.0
+var _loco_x: float = 0.0
+var _loco_turn: float = 0.0
+var _turn_rate: float = 0.0
+var _cycle: float = 0.0
+var _cycle_len: float = 1.0
+var _attack_clip: String = "swipe_l"
+var _tear_clip: String = "tear_rip"
+var _climb_clip: String = "vault_a"
+var _react_clip: String = ""
+var _react_len: float = 0.35
+var _emerge_kind: String = "ground"
+var _emerge_clip: String = "emerge_dig"
+var _down_front: bool = false
+var _getup_restarted: bool = false   # this knockdown's get-up was already restarted by a hit (one restart max)
+var _climb_dist: float = 1.0
+var _mantling: bool = false
+var _swipe_t: float = 0.0
+var _grab_t: float = 0.0
+var _grab_target: Player = null
+var _char: float = 0.0
+var _frost_base: float = 0.0
+var _inst: Dictionary = {}
+var _rm_dist: float = 0.0
+var _rm_time: float = 0.0
+var _rm_speed: float = 0.0
+var _body_dist: float = 0.0
+var _body_speed: float = 0.0
+var _rm_pos_last: Vector3 = Vector3.ZERO
+var _foot_idx: PackedInt32Array = [-1, -1]
 
 
 func _build_body() -> void:
 	_pivot = Node3D.new()
 	_pivot.name = "Pivot"
 	add_child(_pivot)
-	for b: Array in ZombieBody.SKELETON:
-		var n: Node3D = Node3D.new()
-		n.name = str(b[0])
-		n.position = b[2]
-		var parent: Node3D = _pivot if str(b[1]) == "" else _bones[str(b[1])]
-		parent.add_child(n)
-		n.set_meta("rest", b[2])
-		_bones[str(b[0])] = n
-	for bone: String in ZombieBody.MESH_BONES:
-		var mi: MeshInstance3D = MeshInstance3D.new()
-		mi.name = "M"
-		# only the big pieces cast shadows; small bones are skipped (big win with 24+ zombies)
-		if not bone in ["hips", "chest", "head"]:
-			mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		(_bones[bone] as Node3D).add_child(mi)
-		_bone_mi[bone] = mi
+	_skel = ZombieRig.build_skeleton()
+	_pivot.add_child(_skel)
+	_body = MeshInstance3D.new()
+	_body.name = "Body"
+	_body.mesh = ZombieBody.build_skinned("soldier", "medium", false)
+	_skel.add_child(_body)
+	_body.skeleton = NodePath("..")   # explicit: the default path does not survive the skin being set first
+	_body.skin = _skel.create_skin_from_rest_transforms()
+	_foot_idx = [_skel.find_bone("LeftFoot"), _skel.find_bone("RightFoot")]
 	for h: Array in ZombieBody.HITBOXES:
 		var hb: Hitbox = Hitbox.new()
+		var bone: String = ZombieRig.legacy_name(str(h[0]))
 		hb.setup(self, h[1], h[2])
+		hb.bone = bone
 		hb.position = h[3]
-		(_bones[str(h[0])] as Node3D).add_child(hb)
+		bone_attachment(bone).add_child(hb)
 		_hitboxes.append(hb)
-	# compatibility names used elsewhere (Screamer, kind extras)
-	_parts["hip_l"] = _bones["thigh_l"]
-	_parts["hip_r"] = _bones["thigh_r"]
-	_parts["torso"] = _bones["chest"]
-	_parts["head"] = _bones["head"]
-	_parts["sh_l"] = _bones["sh_l"]
-	_parts["sh_r"] = _bones["sh_r"]
-	_parts["hips"] = _bones["hips"]
-	_parts["hat"] = Node3D.new()
-	_pivot.add_child(_parts["hat"] as Node3D)
-	_mats["skin"] = ZombieBody.material("soldier", "skin")
-	_mats["coat"] = ZombieBody.material("soldier", "cloth")
-	_set_variant_meshes("soldier")
+	# the animation tree
+	_ap = AnimationPlayer.new()
+	_ap.name = "AP"
+	_ap.root_node = NodePath("..")
+	_ap.add_animation_library(&"", ZombieClips.library())
+	_pivot.add_child(_ap)
+	_tree = AnimationTree.new()
+	_tree.name = "AT"
+	_pivot.add_child(_tree)
+	_tree.anim_player = _tree.get_path_to(_ap)
+	var root: AnimationNodeBlendTree = ZombieClips.build_tree_root()
+	_tree.tree_root = root
+	_tree.root_motion_track = NodePath("Skel:Root")
+	_tree.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
+	_tree.active = true
+	_sm = root.get_node("SM") as AnimationNodeStateMachine
+	_posture_node = root.get_node("PostureAnim") as AnimationNodeAnimation
+	_flinch_node = root.get_node("FlinchAnim") as AnimationNodeAnimation
+	for s: String in ZombieClips.STATES:
+		var st: AnimationNodeBlendTree = _sm.get_node(s) as AnimationNodeBlendTree
+		var an: AnimationNode = st.get_node("Anim")
+		if an is AnimationNodeAnimation:
+			_anim_nodes[s] = an
+		elif s == "Locomotion":
+			_loco_bs = an as AnimationNodeBlendSpace2D
+		elif s == "Crawl":
+			_crawl_bs = an as AnimationNodeBlendSpace1D
+	_playback = _tree.get("parameters/SM/playback") as AnimationNodeStateMachinePlayback
+	# modifiers: head look-at, then foot IK + hit springs
+	_look_target = Node3D.new()
+	_look_target.name = "LookTarget"
+	add_child(_look_target)
+	_look = LookAtModifier3D.new()
+	_look.name = "LookAt"
+	_look.bone_name = "Head"
+	_look.forward_axis = SkeletonModifier3D.BONE_AXIS_MINUS_Z
+	_look.primary_rotation_axis = Vector3.AXIS_Y
+	_look.use_secondary_rotation = true
+	_look.use_angle_limitation = true
+	_look.symmetry_limitation = true
+	_look.primary_limit_angle = deg_to_rad(float(_anim["look_at"].get("cone_deg", 60.0)))
+	_look.secondary_limit_angle = deg_to_rad(40.0)
+	_look.duration = float(_anim["look_at"].get("smooth_s", 0.2))
+	_look.active = false
+	_skel.add_child(_look)
+	_look.target_node = _look.get_path_to(_look_target)
+	_modifier = ZombieBodyModifier.new()
+	_modifier.name = "BodyMod"
+	_modifier.setup(_anim["foot_ik"], _anim["flinch"]["spring"])
+	_skel.add_child(_modifier)
 	_build_kind_parts()
+	_apply_variant("soldier")
 
 
-func _set_variant_meshes(variant: String) -> void:
-	_variant = variant
-	for bone: String in ZombieBody.MESH_BONES:
-		var mi: MeshInstance3D = _bone_mi[bone]
-		mi.mesh = ZombieBody.mesh_for(variant, bone)
-		for i: int in mi.get_surface_override_material_count():
-			mi.set_surface_override_material(i, null)
-		mi.show()
+# ---- the public body API ZombieGore / tools use
+
+## True when this body runs on the shared MZ rig (skeleton, AnimationTree, modifiers). The Foreman builds his
+## own body in an overriding _ready() and has none of it, so every shared path that drives the rig (senses,
+## flinches, tree states, death setup) checks this first; on a co-op client his puppet goes through them.
+func has_rig() -> bool:
+	return _tree != null and _modifier != null and _look != null and _flinch_node != null
 
 
-## Swap every skin surface for another material (Glasshide).
-func _override_skin(m: Material) -> void:
-	for bone: String in ZombieBody.MESH_BONES:
-		var mi: MeshInstance3D = _bone_mi[bone]
-		var am: ArrayMesh = mi.mesh as ArrayMesh
-		if am == null:
-			continue
-		var idx: int = am.surface_find_by_name("skin")
-		if idx >= 0:
-			mi.set_surface_override_material(idx, m)
+func skeleton() -> Skeleton3D:
+	return _skel
+
+
+func body_mesh() -> MeshInstance3D:
+	return _body
+
+
+func kit_name() -> String:
+	return _variant
+
+
+func build_name() -> String:
+	return _build
+
+
+func is_female() -> bool:
+	return _female
+
+
+func pivot_scale() -> Vector3:
+	return _pivot.scale
+
+
+func is_severed(bone: String) -> bool:
+	return _severed.has(bone)
+
+
+func mark_severed(bone: String) -> void:
+	_severed[bone] = true
+
+
+func clear_severed() -> void:
+	_severed.clear()
+	for c: MeshInstance3D in _caps.values():
+		c.hide()
+
+
+func stump_cap(bone: String) -> MeshInstance3D:
+	if _caps.has(bone):
+		return _caps[bone]
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.mesh = ZombieBody.stump_mesh()
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_caps[bone] = mi
+	return mi
+
+
+## A BoneAttachment3D for a profile (or legacy) bone name, created on first use.
+func bone_attachment(name: String) -> BoneAttachment3D:
+	var bone: String = ZombieRig.legacy_name(name)
+	if _bones.has(bone):
+		return _bones[bone]
+	if _skel == null or _skel.find_bone(bone) < 0:
+		return null
+	var at: BoneAttachment3D = BoneAttachment3D.new()
+	at.name = "At_" + bone
+	at.bone_name = bone
+	_skel.add_child(at)
+	_bones[bone] = at
+	return at
+
+
+## Legacy accessor (Screamer's throat): bone name -> the attachment node.
+func _bone(n: String) -> Node3D:
+	return bone_attachment(n)
+
+
+## Root-motion speed of the current animation (m/s, averaged over the last half second of full-gait locomotion):
+## the foot-slide check compares it to body_speed() over the same window.
+func anim_speed() -> float:
+	return _rm_speed
+
+
+## Horizontal body speed over the same window as anim_speed().
+func body_speed() -> float:
+	return _body_speed
+
+
+func current_clip_state() -> String:
+	return _tree_state
+
+
+func _set_inst(key: String, v: Variant) -> void:
+	if _inst.get(key, null) == v:
+		return
+	_inst[key] = v
+	_body.set_instance_shader_parameter(key, v)
+	for g: MeshInstance3D in _gear:
+		g.set_instance_shader_parameter(key, v)
+
+
+func _reset_presentation() -> void:
+	_end_ragdoll()
+	ZombieGore.restore(self)
+	_severed_logic.clear()
+	_arm_damage = {"l": 0.0, "r": 0.0}
+	_char = 0.0
+	_grab_t = 0.0
+	_swipe_t = 0.0
+	_mantling = false
+	_react_clip = ""
+	_head_popped = false
+	_set_inst("inst_dissolve", 0.0)
+	_set_inst("inst_char", 0.0)
+	_tree_state = ""
+	_skel.reset_bone_poses()
+	for g: MeshInstance3D in _gear:
+		g.hide()
 
 
 func _apply_variant(variant: String) -> void:
-	_set_variant_meshes(variant)
-	_head_popped = false
-	(_bones["head"] as Node3D).show()
+	var kits: Dictionary = _anim["kits"]
+	if not kits.has(variant):
+		variant = "soldier"
+	var kit: Dictionary = kits[variant]
+	_variant = variant
+	var builds: Array = kit.get("builds", ["medium"])
+	_build = str(_pick(builds))
+	_female = randf() < float(kit.get("female", 0.0))
+	var heights: Array = _anim["builds"].get("heights", [0.95, 1.04])
+	_height = randf_range(float(heights[0]), float(heights[1]))
+	_body.mesh = ZombieBody.build_skinned(_variant, _build, _female)
+	_body.set_surface_override_material(0, null)
+	_pivot.scale = Vector3.ONE * _height
 	for d: MeshInstance3D in _decals:
 		d.hide()
-	# per-spawn asymmetry: nobody walks the same way
-	_asym = {
-		"tilt": randf_range(-0.28, 0.28), "yaw": randf_range(-0.2, 0.2),
-		"hang_l": randf_range(-0.25, 0.3), "hang_r": randf_range(-0.25, 0.3),
-		"limp": randf_range(0.0, 1.0) if randf() < 0.45 else 0.0, "limp_side": -1.0 if randf() < 0.5 else 1.0,
-		"hunch": randf_range(0.0, 0.28), "jaw": randf_range(0.05, 0.45), "phase": randf() * TAU,
-		"spine_roll": randf_range(-0.08, 0.08),
-	}
-	var s: float = 1.0 + randf_range(-0.06, 0.06)
-	_pivot.scale = Vector3.ONE * s
-	_phase = float(_asym["phase"])
+	# gear pieces
+	for g: MeshInstance3D in _gear:
+		g.hide()
+	var gi: int = 0
+	var gear: Dictionary = kit.get("gear", {})
+	for piece: String in gear.keys():
+		if randf() >= float(gear[piece]):
+			continue
+		var spec: Array = ZombieBody.gear_mesh(piece, _female)
+		var at: BoneAttachment3D = bone_attachment(str(spec[0]))
+		if at == null:
+			continue
+		var mi: MeshInstance3D
+		if gi < _gear.size():
+			mi = _gear[gi]
+		else:
+			mi = MeshInstance3D.new()
+			mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			_gear.append(mi)
+		gi += 1
+		if mi.get_parent() != at:
+			if mi.get_parent() != null:
+				mi.get_parent().remove_child(mi)
+			at.add_child(mi)
+		mi.mesh = spec[1]
+		mi.show()
+	# per-instance look: tint, dirt, frost (anim.json variation)
+	var va: Dictionary = _anim["variation"]
+	var t: float = float(va.get("tint", 0.08))
+	_set_inst("inst_tint", Color(1.0 + randf_range(-t, t), 1.0 + randf_range(-t, t), 1.0 + randf_range(-t, t), 1.0))
+	var dirt: Array = va.get("dirt", [0.1, 0.8])
+	_set_inst("inst_dirt", randf_range(float(dirt[0]), float(dirt[1])))
+	var fbm: Dictionary = va.get("frost_by_map", {})
+	var fr: Array = fbm.get(String(GameState.map_id), fbm.get("default", [0.0, 0.2]))
+	_frost_base = randf_range(float(fr[0]), float(fr[1]))
+	_set_inst("inst_frost", _frost_base)
+	_set_inst("inst_fuel", 0.0)
+	# posture trait, locomotion clip and the cadence
+	_roll_posture()
+	_pick_locomotion()
+
+
+func _roll_posture() -> void:
+	var w: Dictionary = _anim["postures"]["weights"]
+	var total: float = 0.0
+	for k: String in w.keys():
+		total += float(w[k])
+	var roll: float = randf() * total
+	var posture: String = "none"
+	for k: String in w.keys():
+		roll -= float(w[k])
+		if roll <= 0.0:
+			posture = k
+			break
+	var amt: Array = _anim["postures"].get("amount", [0.6, 1.0])
+	set_posture(posture, randf_range(float(amt[0]), float(amt[1])))
+
+
+## Fixes the posture trait (a postures clip name, or "none") at `amount` of the additive layer: the authored
+## characters (Bellringer, the Screamer) keep theirs instead of the random roll.
+func set_posture(posture: String, amount: float) -> void:
+	if _posture_node == null:
+		return
+	_posture_node.animation = StringName("posture_none" if posture == "none" else posture)
+	_tree.set("parameters/Posture/add_amount", 0.0 if posture == "none" else amount)
+
+
+func _pick_locomotion() -> void:
+	var loco: Dictionary = _anim["clips"]["locomotion"]
+	var key: String = String(tier) if loco.has(String(tier)) else "walk"
+	_loco_clip = str(_pick(loco[key]))
+	_loco_speed = float(_anim["gait"][key]["speed"])
+	_cycle_len = ZombieClips.length_of(_loco_clip)
+	for i: int in 3:
+		(_loco_bs.get_blend_point_node(1 + i) as AnimationNodeAnimation).animation = StringName(_loco_clip if i == 0 else _loco_clip + ("_lean_l" if i == 1 else "_lean_r"))
+	var crawl: String = str(_pick(loco["crawl"]))
+	(_crawl_bs.get_blend_point_node(1) as AnimationNodeAnimation).animation = StringName(crawl)
+
+
+func _pick(arr: Array) -> Variant:
+	return arr[randi() % arr.size()]
 
 
 ## Shows the variant's extra pieces (crystal plates, lantern) and adjusts the body.
@@ -912,11 +1527,14 @@ func _apply_kind() -> void:
 	_lantern_light.light_energy = 1.6 if enemy_id == &"bellringer" else 0.0
 	match enemy_id:
 		&"bellringer":
-			_set_variant_meshes("bellringer")
+			_body.mesh = ZombieBody.build_skinned("bellringer", "thin", false)
+			_variant = "bellringer"
+			_build = "thin"
+			_female = false
 			_pivot.scale = Vector3.ONE * 1.04
-			_asym["hunch"] = 0.35
+			set_posture("hunch", 0.9)
 		&"glasshide":
-			_override_skin(ZombieBody.material("_", "skin_glass"))
+			_body.set_surface_override_material(0, ZombieBody.skin_material("glass"))
 			_pivot.scale = Vector3.ONE * 1.1
 	_mats["skin"] = ZombieBody.material(_variant, "skin")
 	_mats["coat"] = ZombieBody.material(_variant, "cloth")
@@ -925,10 +1543,9 @@ func _apply_kind() -> void:
 func _build_kind_parts() -> void:
 	var glass: Node3D = Node3D.new()
 	glass.name = "GlassPlates"
-	(_bones["chest"] as Node3D).add_child(glass)
+	bone_attachment("Chest").add_child(glass)
 	var crystal: Array = []
 	# chest plates and a jagged cluster growing out of one shoulder (reads at 30 m)
-	# overlapping angled crystal plates grown through the coat (front and back), not one slab
 	for k: int in 6:
 		var fx: float = -0.12 + 0.05 * float(k)
 		crystal.append(ZombieBody._box(Vector3(0.11, 0.16 + 0.03 * float(k % 3), 0.03), Vector3(fx, 0.12 + 0.03 * float(k % 2), -0.125),
@@ -944,7 +1561,7 @@ func _build_kind_parts() -> void:
 	glass.add_child(gm)
 	_kind_nodes["glass"] = glass
 	var glass_arm: Node3D = Node3D.new()
-	(_bones["el_r"] as Node3D).add_child(glass_arm)
+	bone_attachment("RightLowerArm").add_child(glass_arm)
 	var gm2: MeshInstance3D = MeshInstance3D.new()
 	gm2.mesh = ZombieBody.build_mesh("_", [
 		ZombieBody._cyl(0.0, 0.035, 0.22, Vector3(0.04, -0.12, 0), "crystal", Vector3(0, 0, -1.1), Vector3.ONE, 4),
@@ -954,7 +1571,7 @@ func _build_kind_parts() -> void:
 	var lantern: Node3D = Node3D.new()
 	lantern.name = "Lantern"
 	lantern.position = Vector3(0, -0.06, -0.02)
-	(_bones["hand_r"] as Node3D).add_child(lantern)
+	bone_attachment("RightHand").add_child(lantern)
 	var lm: MeshInstance3D = MeshInstance3D.new()
 	lm.mesh = ZombieBody.build_mesh("_", [
 		ZombieBody._box(Vector3(0.012, 0.12, 0.012), Vector3(0, -0.03, 0), "metal"),
@@ -1036,89 +1653,55 @@ func _portal_flash() -> void:
 func _set_crawl_pose(crawl: bool) -> void:
 	var cap: CapsuleShape3D = _collision.shape as CapsuleShape3D
 	if crawl:
-		for b: String in ["thigh_l", "thigh_r"]:
-			(_bones[b] as Node3D).hide()
 		for hb: Hitbox in _hitboxes:
 			if hb.limb == &"legs":
 				hb.collision_layer = 0
-		_pivot.rotation.x = -1.35
-		_pivot.position = Vector3(0, 0.0, 0.75)
 		cap.height = 0.7
 		cap.radius = 0.3
 		_collision.position = Vector3(0, 0.35, 0)
 	else:
-		for b: String in ["thigh_l", "thigh_r"]:
-			(_bones[b] as Node3D).show()
-		_pivot.rotation.x = 0.0
-		_pivot.position = Vector3.ZERO
 		cap.height = 1.75
 		_collision.position = Vector3(0, 0.875, 0)
 
 
 # ---------------------------------------------------------------- gore (presentation only)
 
-## Throws a copy of one bone mesh away from the body (head pops, severed legs).
-func _gib(bone: String, impulse: Vector3, life: float) -> void:
-	var host: Node = get_parent()
-	var src: Node3D = _bones[bone]
-	if host == null or not _bone_mi.has(bone):
-		return
-	var body: RigidBody3D = RigidBody3D.new()
-	body.collision_layer = 0
-	body.collision_mask = 1
-	body.mass = 3.0
-	var cs: CollisionShape3D = CollisionShape3D.new()
-	var sh: SphereShape3D = SphereShape3D.new()
-	sh.radius = 0.09
-	cs.shape = sh
-	body.add_child(cs)
-	var mi: MeshInstance3D = MeshInstance3D.new()
-	mi.mesh = (_bone_mi[bone] as MeshInstance3D).mesh
-	mi.scale = _pivot.scale
-	body.add_child(mi)
-	if bone.begins_with("thigh"):
-		var shin: MeshInstance3D = MeshInstance3D.new()
-		shin.mesh = (_bone_mi["shin" + bone.substr(5)] as MeshInstance3D).mesh
-		shin.position = Vector3(0, -0.44, 0) * _pivot.scale.y
-		shin.scale = _pivot.scale
-		body.add_child(shin)
-	host.add_child(body)
-	body.global_transform = src.global_transform
-	body.linear_velocity = impulse
-	body.angular_velocity = Vector3(randf_range(-8, 8), randf_range(-8, 8), randf_range(-8, 8))
-	host.get_tree().create_timer(life).timeout.connect(body.queue_free)
-
-
 func _pop_head() -> void:
 	if _head_popped:
 		return
 	_head_popped = true
 	AudioDirector.play_3d("zombie_gib", global_position + Vector3.UP * 1.7)
-	var head: Node3D = _bones["head"]
-	var away: Vector3 = (global_position - (target.global_position if target != null else global_position + global_basis.z)).normalized()
-	_gib("head", Vector3(away.x * 3.0, 4.5, away.z * 3.0), 6.0)
-	head.hide()
-	for i: int in 3:
-		Effects.blood(head.global_position, Vector3(randf_range(-0.4, 0.4), 1.0, randf_range(-0.4, 0.4)))
+	var away: Vector3 = _away_from_target()
+	ZombieGore.sever(self, "Head", Vector3(away.x * 3.0, 4.5, away.z * 3.0))
+	if ZombieGore.blood_allowed():
+		var at: Node3D = bone_attachment("Neck")
+		var p: Vector3 = at.global_position if at != null else global_position + Vector3.UP * 1.6
+		for i: int in 3:
+			Effects.blood(p, Vector3(randf_range(-0.4, 0.4), 1.0, randf_range(-0.4, 0.4)))
 
 
 ## A wound decal on the struck limb (cheap quads, recycled per zombie).
-func _wound(limb: StringName) -> void:
+func _wound(limb: StringName, side: String = "") -> void:
+	if ZombieGore.level() == "off":
+		return
 	var choices: Array = []
 	match limb:
 		&"head":
-			choices = ["head"]
+			choices = ["Head"]
 		&"neck":
-			choices = ["neck"]
+			choices = ["Neck"]
 		&"torso":
-			choices = ["chest", "abdomen"]
+			choices = ["Chest", "Spine"]
 		&"arms":
-			choices = ["sh_l", "sh_r", "el_l", "el_r"]
+			choices = ["LeftUpperArm", "LeftLowerArm"] if side == "l" else ["RightUpperArm", "RightLowerArm"]
 		&"legs":
-			choices = ["thigh_l", "thigh_r", "shin_l", "shin_r"]
+			choices = ["LeftUpperLeg", "LeftLowerLeg"] if side == "l" else ["RightUpperLeg", "RightLowerLeg"]
 		_:
-			choices = ["chest"]
-	var bone: Node3D = _bones[choices[randi() % choices.size()]]
+			choices = ["Chest"]
+	var bone_name: String = str(choices[randi() % choices.size()])
+	var bone: Node3D = bone_attachment(bone_name)
+	if bone == null:
+		return
 	var d: MeshInstance3D
 	if _decals.size() < 6:
 		d = MeshInstance3D.new()
@@ -1136,8 +1719,8 @@ func _wound(limb: StringName) -> void:
 			d.get_parent().remove_child(d)
 		bone.add_child(d)
 	var a: float = randf() * TAU
-	var up: bool = bone.name == "chest" or bone.name == "abdomen" or bone.name == "head" or bone.name == "neck"
-	var r: float = 0.14 if bone.name == "chest" else (0.12 if bone.name == "head" else 0.07)
+	var up: bool = bone_name in ["Chest", "Spine", "Head", "Neck"]
+	var r: float = 0.14 if bone_name == "Chest" else (0.12 if bone_name == "Head" else 0.07)
 	var y: float = randf_range(0.05, 0.25) if up else -randf_range(0.05, 0.35)
 	var out: Vector3 = Vector3(cos(a), 0, sin(a))
 	d.position = out * r + Vector3(0, y, 0)
@@ -1145,271 +1728,233 @@ func _wound(limb: StringName) -> void:
 	d.show()
 
 
-# ---------------------------------------------------------------- animation
+# ---------------------------------------------------------------- animation (AnimationTree parameters)
 
-func _bone(n: String) -> Node3D:
-	return _bones[n]
-
-
-func _animate(dt: float) -> void:
-	if state == State.INACTIVE:
+func _tree_play(st: String, clip: String, time_scale: float) -> void:
+	if _tree == null or _playback == null:
 		return
-	ZombieBody.update_cracks(RoundManager.current_round, float(GLData.table("enemies").get("visual", {}).get("crack_energy", 2.6)))
-	var g: Array = TIER_GAIT.get(tier, TIER_GAIT[&"walk"])
-	var spd: float = Vector2(velocity.x, velocity.z).length()
-	var moving: bool = state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW] and spd > 0.2
+	if _anim_nodes.has(st):
+		(_anim_nodes[st] as AnimationNodeAnimation).animation = StringName(clip)
+	_tree.set("parameters/SM/%s/TimeScale/scale" % st, maxf(0.01, time_scale))
+	# One-shot states share one AnimationNodeAnimation per state; travel() to the state already playing restarts
+	# it from 0 in Godot 4.7 (reset_on_teleport), so a swapped clip (knockdown -> get-up, climb loop -> mantle)
+	# starts at its first frame. test_zombie_mz_fixes guards that engine behaviour.
+	_playback.travel(st)
+	_tree_state = st
+	_cycle = 0.0
+
+
+func _tree_attack(clip: String) -> void:
+	_tree.set("parameters/SM/Attack/Anim/blend_position", ZombieClips.attack_index(clip))
+	_tree_play("Attack", clip, ZombieClips.ATTACK_WINDUP / maxf(0.05, float(_cfg["attack_windup"])))
+
+
+func _tree_emerge() -> void:
+	var em: Dictionary = _anim["clips"]["emerge"]
+	match _emerge_kind:
+		"portal":
+			_emerge_clip = str(em["portal"])
+		"ceiling":
+			_emerge_clip = str(em["ceiling"])
+		"water":
+			_emerge_clip = str(em["water"])
+		_:
+			_emerge_clip = str(_pick(em["ground"]))
+	_tree_play("Emerge", _emerge_clip, ZombieClips.length_of(_emerge_clip) / maxf(0.05, _emerge_seconds()))
+
+
+func _emerge_seconds() -> float:
+	var e: Dictionary = _anim["emerge"]
+	match _emerge_kind:
+		"portal":
+			return float(e["portal_seconds"])
+		"ceiling":
+			return float(e["ceiling_seconds"])
+		"water":
+			return float(e["water_seconds"])
+	return float(e["ground_seconds"])
+
+
+## Spawn kind -> emerge clip family: Bellringers step out of portals; a spawn's name prefix can pick the chute
+## drop or the wade-up (anim.json emerge_by_spawn_prefix per map).
+func _emerge_kind_for(spawn: ZombieSpawn) -> String:
+	if enemy_id == &"bellringer":
+		return "portal"
+	var by: Dictionary = (_anim.get("emerge_by_spawn_prefix", {}) as Dictionary).get(String(GameState.map_id), {})
+	for prefix: String in by.keys():
+		if spawn.name.begins_with(prefix):
+			return str(by[prefix])
+	return "ground"
+
+
+func _tree_locomotion(force: bool = false) -> void:
+	var st: String = "Crawl" if is_crawler else "Locomotion"
+	if _playback == null:
+		return
+	if _tree_state != st or force:
+		_playback.travel(st)
+		_tree_state = st
+
+
+func _random_phase() -> void:
+	if _tree_state == "Locomotion" or _tree_state == "Crawl":
+		_tree.advance(randf() * _cycle_len)
+
+
+func _pick_attack() -> String:
+	var at: Dictionary = _anim["clips"]["attack"]
 	if is_crawler:
-		_phase += dt * (2.2 + spd * 3.0)
-	elif moving:
-		_phase += dt * PI * spd / float(g[0])
-	var t: float = Time.get_ticks_msec() * 0.001
-	var p: float = _phase
-	var hip_a: float = float(g[1])
-	var knee_a: float = float(g[2])
-	var lean: float = float(g[3]) + float(_asym.get("hunch", 0.0))
-	var bob: float = float(g[4])
-	var mode: int = int(g[5])
-	var limp: float = float(_asym.get("limp", 0.0))
-	var limp_side: float = float(_asym.get("limp_side", 1.0))
-	# --- rest values
-	var hips_y: float = 0.95
-	var hips_roll: float = 0.0
-	var hips_x: float = 0.0
-	var ab_x: float = -lean * 0.35
-	var ch_x: float = -lean * 0.65
-	var ch_y: float = 0.0
-	var ch_z: float = float(_asym.get("spine_roll", 0.0))
-	var nk_x: float = lean * 0.55
-	var hd_x: float = 0.15
-	var hd_z: float = float(_asym.get("tilt", 0.0))
-	var hd_y: float = float(_asym.get("yaw", 0.0))
-	var jaw: float = float(_asym.get("jaw", 0.2))
-	var tl: float = 0.0
-	var tr: float = 0.0
-	var kl: float = -0.06
-	var kr: float = -0.06
-	var sl: Vector3 = Vector3(1.0 + float(_asym.get("hang_l", 0.0)), 0, -0.08)
-	var sr: Vector3 = Vector3(1.0 + float(_asym.get("hang_r", 0.0)), 0, 0.08)
-	var el: float = 0.3
-	var er: float = 0.3
-	# --- locomotion
-	if moving and not is_crawler:
-		var amp_l: float = hip_a * (1.0 - limp * 0.6 * (1.0 if limp_side < 0.0 else 0.0))
-		var amp_r: float = hip_a * (1.0 - limp * 0.6 * (1.0 if limp_side > 0.0 else 0.0))
-		tl = sin(p) * amp_l
-		tr = sin(p + PI) * amp_r
-		kl = -knee_a * maxf(0.0, cos(p)) - 0.08
-		kr = -knee_a * maxf(0.0, cos(p + PI)) - 0.08
-		if tier == &"shamble":
-			# dragged foot: the limp side barely lifts
-			if limp_side < 0.0:
-				kl *= 0.25
-			else:
-				kr *= 0.25
-			hips_roll = sin(p) * 0.12
-			ch_z += -sin(p) * 0.1
-		hips_y -= bob * (0.5 + 0.5 * cos(2.0 * p)) + limp * 0.04 * maxf(0.0, sin(p) * limp_side)
-		ch_y = sin(p) * 0.12
-		match mode:
-			0:
-				sl.x = 0.55 + float(_asym.get("hang_l", 0.0)) + sin(p) * 0.12
-				sr.x = 0.45 + float(_asym.get("hang_r", 0.0)) - sin(p) * 0.12
-				el = 0.35
-				er = 0.25
-			1:
-				sl.x = 1.25 + sin(p * 0.5 + 1.0) * 0.12
-				sr.x = 1.2 - sin(p * 0.5) * 0.12
-				el = 0.3
-				er = 0.4
-			2:
-				sl.x = 1.3 + sin(p) * 0.35
-				sr.x = 1.3 - sin(p) * 0.35
-				el = 0.75
-				er = 0.75
-			3:
-				sl.x = 1.5 + sin(p) * 0.5
-				sr.x = 1.5 - sin(p) * 0.5
-				el = 0.95
-				er = 0.95
-				hd_x -= 0.15
-			4:
-				sl.x = 1.4 + sin(p * 1.7) * 0.8
-				sr.x = 1.4 + sin(p * 1.7 + 2.1) * 0.8
-				sl.z = -0.3 + sin(p * 2.3) * 0.3
-				sr.z = 0.3 + sin(p * 2.1) * 0.3
-				el = 1.0 + sin(p * 3.1) * 0.4
-				er = 1.0 + cos(p * 2.7) * 0.4
-				hd_z += sin(t * 17.0) * 0.12
-				jaw = 0.55
-	elif not moving and not is_crawler:
-		# idle sway
-		hips_roll = sin(t * 1.3 + _phase) * 0.04
-		ch_x += sin(t * 0.9 + _phase) * 0.04
-		hd_z += sin(t * 0.7 + _phase) * 0.08
-		sl.x = 0.95 + sin(t * 1.1) * 0.06 + float(_asym.get("hang_l", 0.0))
-		sr.x = 0.9 + sin(t * 1.2 + 1.0) * 0.06 + float(_asym.get("hang_r", 0.0))
-	# --- crawler pull-along (pivot already pitched forward by the crawl pose)
-	if is_crawler and state != State.DEAD:
-		var c: float = sin(p)
-		sl = Vector3(2.5 + c * 0.55, 0, -0.35)
-		sr = Vector3(2.5 - c * 0.55, 0, 0.35)
-		el = 0.25 + maxf(0.0, -c) * 0.9
-		er = 0.25 + maxf(0.0, c) * 0.9
-		nk_x = 0.9
-		hd_x = 0.35
-		hips_roll = c * 0.1
-		ch_x = 0.15
-		ab_x = 0.1
-		jaw = 0.5
-	# --- actions
-	match state:
-		State.ATTACK:
-			var w: float = float(_cfg["attack_windup"])
-			if _state_t < w:
-				var k: float = clampf(_state_t / w, 0.0, 1.0)
-				sl.x = lerpf(sl.x, 2.75, k)
-				sr.x = lerpf(sr.x, 2.6, k)
-				el = lerpf(el, 0.9, k)
-				er = lerpf(er, 0.9, k)
-				ch_x += 0.22 * k
-				jaw = 0.6
-			else:
-				var k2: float = clampf((_state_t - w) / 0.16, 0.0, 1.0)
-				sl.x = lerpf(2.75, 0.45, k2)
-				sr.x = lerpf(2.6, 0.55, k2)
-				el = lerpf(0.9, 0.15, k2)
-				er = lerpf(0.9, 0.15, k2)
-				ch_x -= 0.45 * k2
-				ch_y = 0.25 * k2
-		State.TEAR:
-			var k3: float = sin(_state_t * 6.5)
-			_yank = maxf(0.0, _yank - dt * 2.5)
-			sl = Vector3(1.6 + k3 * 0.18, 0, -0.15)
-			sr = Vector3(1.6 - k3 * 0.18, 0, 0.15)
-			el = 0.5 - k3 * 0.3
-			er = 0.5 + k3 * 0.3
-			ch_x = -0.25 + k3 * 0.12 + _yank
-			ab_x = -0.1 + _yank * 0.5
-			jaw = 0.5
-		State.WAIT_WINDOW:
-			if not moving:
-				sl.x = 1.6
-				sr.x = 1.45
-				jaw = 0.4
-		State.CLIMB:
-			ch_x = -0.75
-			ab_x = -0.3
-			sl = Vector3(1.0, 0, -0.2)
-			sr = Vector3(1.1, 0, 0.2)
-			el = 0.2
-			er = 0.2
-			tl = 1.45
-			kl = -1.6
-			tr = -0.15
-			kr = -0.3
-		State.EMERGE:
-			sl.x = 2.65 + sin(_state_t * 8.0) * 0.35
-			sr.x = 2.45 + cos(_state_t * 8.0) * 0.35
-			el = 0.6
-			er = 0.7
-			ch_x = -0.3
-			hd_x = -0.3
-			jaw = 0.7
-		State.STAGGER:
-			ch_x += 0.4
-			hd_x -= 0.45
-			sl.x = 0.35
-			sr.x = 0.5
-			ch_y = 0.3 * _flinch_dir
-		State.DEAD:
-			_pose_dead(dt)
-			return
-	# flinch overlay
+		return str(at["bite"])
+	var lost: int = arms_lost()
+	if lost >= 2:
+		return str(at["headbutt"])
+	if (_anim["attack"]["grab_tiers"] as Array).has(String(tier)) and randf() < 0.5 and lost == 0:
+		return str(at["grab"])
+	if (_anim["attack"]["lunge_tiers"] as Array).has(String(tier)) and randf() < 0.3 and enemy_id == &"ganger":
+		return str(at["lunge"])
+	var swipes: Array = (at["swipe"] as Array).duplicate()
+	if _severed_logic.has("LeftUpperArm") or _severed_logic.has("LeftLowerArm"):
+		swipes = swipes.filter(func(s: String) -> bool: return s == "swipe_r")
+	elif _severed_logic.has("RightUpperArm") or _severed_logic.has("RightLowerArm"):
+		swipes = swipes.filter(func(s: String) -> bool: return s == "swipe_l")
+	return str(_pick(swipes))
+
+
+func _play_flinch(limb: StringName, side: String) -> void:
+	if not has_rig():
+		return
+	var zone: String = "torso"
+	var chain: int = -1
+	var kick: Vector3 = Vector3.ZERO
+	var imp: float = float(_anim["flinch"]["spring"].get("impulse", 0.9))
+	match limb:
+		&"head", &"neck":
+			zone = "head"
+			chain = 2
+			kick = Vector3(-imp * 4.0, randf_range(-imp, imp) * 2.0, randf_range(-imp, imp) * 2.0)
+		&"arms":
+			zone = "arm_" + side
+			chain = 0 if side == "l" else 1
+			kick = Vector3(imp * 3.0, 0, (-imp if side == "l" else imp) * 4.0)
+		&"legs":
+			zone = "leg_" + side
+		_:
+			zone = "torso"
+			chain = 0 if randf() < 0.5 else 1
+			kick = Vector3(imp * 2.0, 0, (-imp if chain == 0 else imp) * 2.0)
+	_flinch_node.animation = StringName(str(_anim["clips"]["flinch"].get(zone, "flinch_torso")))
+	_tree.set("parameters/Flinch/request", AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
+	if chain >= 0:
+		_modifier.kick(chain, kick)
+	_flinch = float(_anim["flinch"].get("seconds", 0.25))
+	_flinch_dir = -1.0 if side == "l" else 1.0
+
+
+## Per visual tick: tree parameters from the state and velocity, LOD-rated advance, animation events.
+func _animate(dt: float) -> void:
+	if state == State.INACTIVE or _tree == null or _ragdoll != null:
+		return   # a ragdolling corpse: the physics bodies drive the bones (ZombieRagdoll.sync)
+	ZombieBody.update_cracks(RoundManager.current_round, float(GLData.table("enemies").get("visual", {}).get("crack_energy", 2.6)))
+	var spd: float = Vector2(velocity.x, velocity.z).length()
+	var moving_state: bool = state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW]
+	if moving_state:
+		if state == State.WAIT_WINDOW and spd < 0.2:
+			if _tree_state != "Barricade":
+				_tree_play("Barricade", str(_anim["clips"]["wait"]), 1.0)
+		else:
+			_tree_locomotion()
+	if _tree_state == "Locomotion":
+		var below: float = float(_anim["turn"].get("in_place_below_mps", 0.5))
+		var target_x: float = 1.0 if spd > below else 0.0
+		_loco_x = move_toward(_loco_x, target_x, dt * 6.0)
+		var lean_t: Dictionary = _anim["turn"]["lean_tiers"]
+		var lean: float = float(lean_t.get(String(tier), 0.0))
+		var turn_norm: float = clampf(_turn_rate / float(_anim["turn"].get("full_turn_rate", 2.5)), -1.0, 1.0)
+		var want_turn: float = turn_norm * (lean / 0.18 if spd > below else 1.0)
+		_loco_turn = move_toward(_loco_turn, want_turn if absf(turn_norm) > 0.15 else 0.0, dt * 5.0)
+		_tree.set("parameters/SM/Locomotion/Anim/blend_position", Vector2(_loco_x, _loco_turn))
+		# the clip's root motion is in rig space: the height scale on the pivot stretches every stride by that much
+		var scale: float = maxf(spd, 0.15) / maxf(0.1, _loco_speed * _pivot.scale.y) if _loco_x > 0.01 else 1.0
+		_tree.set("parameters/SM/Locomotion/TimeScale/scale", scale)
+		if _loco_x > 0.5:
+			var before: float = _cycle
+			_cycle = fmod(_cycle + dt * scale / _cycle_len, 1.0)
+			if (before < 0.5 and _cycle >= 0.5) or _cycle < before:
+				_footstep(_cycle < before)
+	elif _tree_state == "Crawl":
+		var cx: float = clampf(spd / float(_cfg["crawler_speed"]), 0.0, 1.0)
+		_tree.set("parameters/SM/Crawl/Anim/blend_position", cx)
+		var cs: float = maxf(spd, 0.1) / (float(_anim["gait"]["crawl"]["speed"]) * _pivot.scale.y) if cx > 0.05 else 1.0
+		_tree.set("parameters/SM/Crawl/TimeScale/scale", cs)
+	_turn_rate = move_toward(_turn_rate, 0.0, dt * 8.0)
 	if _flinch > 0.0:
 		_flinch = maxf(0.0, _flinch - dt)
-		var fk: float = _flinch / 0.18
-		ch_x += 0.3 * fk
-		ch_y += 0.35 * fk * _flinch_dir
-		hd_x -= 0.4 * fk
-	# --- apply (smoothed so state changes don't snap)
-	var a: float = clampf(dt * 14.0, 0.0, 1.0)
-	var hips: Node3D = _bone("hips")
-	hips.position.y = lerpf(hips.position.y, hips_y, a)
-	hips.rotation = hips.rotation.lerp(Vector3(hips_x, 0, hips_roll), a)
-	_lerp_rot("abdomen", Vector3(ab_x, ch_y * 0.4, ch_z * 0.5), a)
-	_lerp_rot("chest", Vector3(ch_x, ch_y, ch_z), a)
-	_lerp_rot("neck", Vector3(nk_x, 0, 0), a)
-	_lerp_rot("head", Vector3(hd_x, hd_y, hd_z), a)
-	_lerp_rot("jaw", Vector3(jaw * 0.6, 0, 0), a)
-	if not is_crawler:
-		_lerp_rot("thigh_l", Vector3(tl, 0, 0.03), a)
-		_lerp_rot("thigh_r", Vector3(tr, 0, -0.03), a)
-		_lerp_rot("shin_l", Vector3(kl, 0, 0), a)
-		_lerp_rot("shin_r", Vector3(kr, 0, 0), a)
-	_lerp_rot("sh_l", sl, a)
-	_lerp_rot("sh_r", sr, a)
-	_lerp_rot("el_l", Vector3(el, 0, 0), a)
-	_lerp_rot("el_r", Vector3(er, 0, 0), a)
+	_tree.advance(dt)
+	# root motion bookkeeping for the foot-slide check: the clip's stride distance against the body's travel
+	# over the same window, only while fully in the gait (the idle blend scales the root motion down)
+	var rm: Vector3 = _tree.get_root_motion_position()
+	var here: Vector3 = Vector3(global_position.x, 0, global_position.z)
+	if _tree_state == "Locomotion" and _loco_x >= 0.95 and _rm_time > 0.0:
+		_rm_dist += rm.length() * _pivot.scale.y
+		_body_dist += (here - _rm_pos_last).length()
+	elif _tree_state != "Locomotion" or _loco_x < 0.95:
+		_rm_dist = 0.0
+		_body_dist = 0.0
+		_rm_time = 0.0
+	_rm_pos_last = here
+	_rm_time += dt
+	if _rm_time >= 0.5:
+		_rm_speed = _rm_dist / _rm_time
+		_body_speed = _body_dist / _rm_time
+		_rm_dist = 0.0
+		_body_dist = 0.0
+		_rm_time = 0.0
 
 
-func _lerp_rot(n: String, r: Vector3, a: float) -> void:
-	var b: Node3D = _bones[n]
-	b.rotation = b.rotation.lerp(r, a)
-
-
-## Death falls: 0 backward, 1 forward, 2 crumple to the knees then forward, 3 twist and fall sideways.
-func _pose_dead(dt: float) -> void:
-	var t: float = _state_t
-	var a: float = clampf(dt * 10.0, 0.0, 1.0)
-	if is_crawler:
-		_lerp_rot("sh_l", Vector3(2.2, 0, -0.6), a)
-		_lerp_rot("sh_r", Vector3(1.8, 0, 0.7), a)
-		_lerp_rot("neck", Vector3(-0.2, 0, 0.4), a)
+## Foot IK rays, look-at target and the per-distance modifier gates (physics step).
+func _update_senses(delta: float) -> void:
+	if state == State.INACTIVE or state == State.DEAD or not has_rig():
 		return
-	var k: float = clampf(t / 0.75, 0.0, 1.0)
-	var e: float = k * k
-	match _death_kind:
-		0:
-			_pivot.rotation.x = lerpf(0.0, 1.5, e)
-			_lerp_rot("thigh_l", Vector3(0.6, 0, 0.1), a)
-			_lerp_rot("thigh_r", Vector3(0.2, 0, -0.15), a)
-			_lerp_rot("shin_l", Vector3(-0.9, 0, 0), a)
-			_lerp_rot("sh_l", Vector3(2.4, 0, -0.9), a)
-			_lerp_rot("sh_r", Vector3(2.0, 0, 1.0), a)
-			_lerp_rot("head", Vector3(-0.5, 0.3, 0), a)
-		1:
-			_pivot.rotation.x = lerpf(0.0, -1.45, e)
-			_lerp_rot("sh_l", Vector3(0.3, 0, -0.3), a)
-			_lerp_rot("sh_r", Vector3(2.6, 0, 0.4), a)
-			_lerp_rot("head", Vector3(0.3, -0.5, 0.2), a)
-		2:
-			var kneel: float = clampf(t / 0.35, 0.0, 1.0)
-			_pivot.position.y = lerpf(0.0, -0.42, kneel)
-			_lerp_rot("thigh_l", Vector3(1.4, 0, 0.1), a)
-			_lerp_rot("thigh_r", Vector3(1.3, 0, -0.1), a)
-			_lerp_rot("shin_l", Vector3(-2.3, 0, 0), a)
-			_lerp_rot("shin_r", Vector3(-2.2, 0, 0), a)
-			_lerp_rot("sh_l", Vector3(0.2, 0, -0.2), a)
-			_lerp_rot("sh_r", Vector3(0.1, 0, 0.2), a)
-			if t > 0.45:
-				_pivot.rotation.x = lerpf(_pivot.rotation.x, -1.25, clampf(dt * 5.0, 0.0, 1.0))
-				_pivot.position.y = lerpf(_pivot.position.y, -0.62, clampf(dt * 5.0, 0.0, 1.0))
-			_lerp_rot("head", Vector3(0.6, 0, 0.3), a)
-		_:
-			_pivot.rotation.z = lerpf(0.0, 1.45 * _death_side, e)
-			_pivot.rotation.y = lerpf(0.0, 0.6 * _death_side, k)
-			_lerp_rot("chest", Vector3(-0.2, 0.5 * _death_side, 0), a)
-			_lerp_rot("sh_l", Vector3(1.6, 0, -1.2), a)
-			_lerp_rot("sh_r", Vector3(0.6, 0, 0.6), a)
-	_lerp_rot("jaw", Vector3(0.5, 0, 0), a)
+	var d: float = global_position.distance_to(target.global_position) if target != null else 999.0
+	var fi: Dictionary = _anim["foot_ik"]
+	var la: Dictionary = _anim["look_at"]
+	var ik_on: bool = d <= float(fi["range_m"]) and is_on_floor() and state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW, State.TEAR, State.ATTACK, State.STAGGER] and not is_crawler
+	_modifier.active = d <= float(fi["off_m"]) or _modifier.springs_active()
+	if ik_on:
+		var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+		for i: int in 2:
+			var fidx: int = _foot_idx[i]
+			if fidx < 0:
+				_modifier.foot_ground_y[i] = NAN
+				continue
+			var foot_g: Vector3 = _skel.to_global(_skel.get_bone_global_pose(fidx).origin)
+			var from: Vector3 = Vector3(foot_g.x, global_position.y + float(fi["ray_up"]), foot_g.z)
+			var to: Vector3 = Vector3(foot_g.x, global_position.y - float(fi["ray_down"]), foot_g.z)
+			var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to, LAYER_WORLD, [get_rid()])
+			var hit: Dictionary = space.intersect_ray(q)
+			_modifier.foot_ground_y[i] = (_skel.to_local(hit["position"] as Vector3).y) if not hit.is_empty() else NAN
+		_modifier.ik_weight = move_toward(_modifier.ik_weight, 1.0, delta * 4.0)
+	else:
+		_modifier.ik_weight = move_toward(_modifier.ik_weight, 0.0, delta * 4.0)
+	var look_on: bool = target != null and d <= float(la["range_m"]) and state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW, State.TEAR, State.ATTACK] and not is_severed("Head")
+	if look_on:
+		_look_target.global_position = target.global_position + Vector3.UP * 1.6
+	_look.active = look_on
+	# damage-state materials: burn char builds while burning, frost crust while frosted
+	_set_inst("inst_char", snappedf(_char, 0.05))
+	_set_inst("inst_frost", snappedf(_frost_base + (0.5 if _frost_t > 0.0 else 0.0), 0.05))
 
+
+# ---------------------------------------------------------------- audio
 
 func _update_audio(delta: float) -> void:
 	if not is_active():
 		return
 	_groan_t -= delta
 	if _groan_t <= 0.0:
-		_groan_t = randf_range(2.5, 3.5) if tier == &"sprint" else randf_range(3.5, 8.0)
+		var v: Dictionary = _anim["vocals"]
+		var every: Array = v["sprint_every"] if tier == &"sprint" else v["breath_every"]
+		_groan_t = randf_range(float(every[0]), float(every[1]))
 		var snd: String = "zombie_sprint" if tier == &"sprint" else "zombie_groan"
 		if enemy_id == &"bellringer":
 			snd = "bellringer_wheeze"
@@ -1420,25 +1965,44 @@ func _update_audio(delta: float) -> void:
 		_ring_t = 1.6 if enemy_id == &"glasshide" else 0.45
 		var ring_key: String = "glasshide_grind" if enemy_id == &"glasshide" else "bellringer_lantern"
 		AudioDirector.play_3d(ring_key, global_position + Vector3.UP, -8.0, 0.0)
-	_update_steps(delta)
 
 
-## Shuffling footsteps while moving: throttled per zombie, culled by distance to its target player, and
-## rate-capped across the whole horde (the bank's max_voices steals the rest).
-func _update_steps(delta: float) -> void:
-	_zstep_t -= delta
-	if _zstep_t > 0.0:
+## A footstep from the locomotion clip's events (phase 0 and 0.5), surface-aware: culled by distance to the
+## target player and rate-capped across the horde (anim.json footsteps).
+func _footstep(_left: bool) -> void:
+	var fs: Dictionary = _anim["footsteps"]
+	if (not puppet and not is_on_floor()) or target == null:
 		return
-	_zstep_t = STEP_INTERVAL * randf_range(0.85, 1.15) * (0.7 if tier == &"sprint" else 1.0)
-	if is_crawler or (not puppet and not is_on_floor()) or velocity.x * velocity.x + velocity.z * velocity.z < 0.25:
-		return
-	if target == null or global_position.distance_squared_to(target.global_position) > STEP_RANGE_SQ:
+	var r: float = float(fs.get("range_m", 18.0))
+	if global_position.distance_squared_to(target.global_position) > r * r:
 		return
 	var now: int = Time.get_ticks_msec()
-	if now - _last_step_msec < STEP_GAP_MSEC:
+	if now - _last_step_msec < int(fs.get("gap_ms", 70)):
 		return
 	_last_step_msec = now
-	AudioDirector.play_3d("zombie_step", global_position, 0.0, 0.0)
+	var surface: String = _floor_surface()
+	var key: String = "footstep_" + surface
+	if surface == "water" or not AudioDirector.bank.has(key):
+		key = "zombie_step"
+	AudioDirector.play_3d(key, global_position, float(fs.get("volume_db", -3.0)), 0.08)
+
+
+## What the zombie stands on, from the floor collider's "surface" metadata or name hints (anim.json footsteps).
+func _floor_surface() -> String:
+	var fs: Dictionary = _anim["footsteps"]
+	var col: Object = get_last_slide_collision().get_collider() if get_slide_collision_count() > 0 else null
+	var n: Node = col as Node
+	if n != null:
+		for m: Node in [n, n.get_parent()]:
+			if m != null and m.has_meta("surface"):
+				return str(m.get_meta("surface"))
+		var lname: String = n.name.to_lower()
+		for s: String in (fs["surfaces"] as Dictionary).keys():
+			for hint: String in fs["surfaces"][s]:
+				if lname.contains(hint):
+					return s
+	var defaults: Dictionary = fs["default_by_map"]
+	return str(defaults.get(String(GameState.map_id), defaults.get("default", "stone")))
 
 
 # ---------------------------------------------------------------- co-op puppet (client side, M7)
@@ -1473,12 +2037,15 @@ func puppet_activate(enemy: StringName, tier_v: StringName, variant: String, hp_
 	_burn_t = 0.0
 	armor_torso_mult = float(_cfg.get("armor_mult", 1.0))
 	target = local_p
+	_reset_presentation()
 	_set_crawl_pose(false)
 	_apply_variant(variant)
 	_apply_kind()
 	_puppet_show(pos, yaw)
 	state = State.CHASE
+	_emerge_kind = "portal" if enemy_id == &"bellringer" else "ground"
 	_puppet_enter(st, sub)
+	_random_phase()
 	if tier == &"sprint":
 		AudioDirector.play_3d("zombie_sprint", global_position + Vector3.UP * 1.6, 2.0)
 	if enemy_id == &"bellringer":
@@ -1506,6 +2073,8 @@ func _puppet_enter(st: int, _sub: int) -> void:
 	var s: State = st as State
 	if s == State.INACTIVE or s == State.DEAD or s == state:
 		return
+	if s == State.CLIMB:
+		_climb_clip = _pick(_anim["clips"]["vault"])
 	_enter(s)
 
 
@@ -1520,7 +2089,9 @@ func _puppet_tick(delta: float) -> void:
 	if Net.session != null and interp.sample(Net.session.render_time_ms()):
 		var prev: Vector3 = global_position
 		global_position = interp.pos
+		var before: float = rotation.y
 		rotation.y = interp.yaw
+		_turn_rate = wrapf(rotation.y - before, -PI, PI) / maxf(delta, 0.0001)
 		velocity = (global_position - prev) / maxf(delta, 0.0001)
 		velocity.y = 0.0
 		var zf: int = (interp.flags >> 8) & 0xFF
@@ -1533,14 +2104,11 @@ func _puppet_tick(delta: float) -> void:
 		_puppet_enter(interp.flags & 0xFF, interp.aux & 0xFF)
 	_puppet_visual_tick(delta)
 	_update_audio(delta)
+	_update_senses(delta)
 
 
 func _puppet_visual_tick(_delta: float) -> void:
-	if state == State.EMERGE:
-		var t: float = clampf(_state_t / (0.7 if enemy_id == &"bellringer" else 1.4), 0.0, 1.0)
-		_pivot.position.y = lerpf(-1.7, 0.0, t * t * (3.0 - 2.0 * t))
-	elif not is_crawler and _pivot.position.y < 0.0:
-		_pivot.position.y = 0.0
+	pass
 
 
 func _puppet_dead(delta: float) -> void:
@@ -1550,6 +2118,8 @@ func _puppet_dead(delta: float) -> void:
 
 ## A hit from this client's own weapon: wounds, flinch and the hit marker now (predicted); the host decides.
 func _puppet_damage(amount: float, limb: StringName, weapon_id: StringName, by_player: int, kind: StringName, armor_piercing: bool) -> bool:
+	var side: String = _hit_side(limb)
+	last_hit_bone = ""   # consumed by this hit even when it is not predicted here (see take_damage)
 	if not is_active() or Net.session == null or by_player != Net.local_player_id() or Net.applying:
 		return false
 	Net.session.send_hit(self, amount, limb, weapon_id, kind, armor_piercing)
@@ -1560,16 +2130,16 @@ func _puppet_damage(amount: float, limb: StringName, weapon_id: StringName, by_p
 		eff = hp + 1.0
 	_pred_dmg += eff
 	if kind != &"fire" and kind != &"world":
-		_wound(limb)
+		_wound(limb, side)
 	if kind == &"bullet":
 		AudioDirector.play_3d("impact_flesh", global_position + Vector3.UP * 1.2, 0.0, 0.0)
-	_flinch = 0.18
-	_flinch_dir = -1.0 if randf() < 0.5 else 1.0
+	if kind != &"fire":
+		_play_flinch(limb, side)
 	return hp - _pred_dmg <= 0.0
 
 
 ## The host's death: the same fall, the same head pop, at the host's position.
-func puppet_die(_limb: StringName, _kind: StringName, death_kind: int, side: float, pop: bool, pos: Vector3) -> void:
+func puppet_die(_limb: StringName, kind: StringName, death_kind: int, side: float, pop: bool, pos: Vector3) -> void:
 	if state == State.DEAD or state == State.INACTIVE:
 		return
 	if pos.is_finite():
@@ -1577,10 +2147,12 @@ func puppet_die(_limb: StringName, _kind: StringName, death_kind: int, side: flo
 	_puppet_hide_hitboxes()
 	AudioDirector.play_3d("zombie_death", global_position + Vector3.UP * 1.2, -1.0)
 	_death_burst()
-	state = State.DEAD
-	_state_t = 0.0
+	var deaths: Array = _anim["clips"]["death"]
 	_death_kind = death_kind
 	_death_side = side
+	_death_explosive = kind == &"explosive"
+	_death_clip = str(_anim["clips"]["death_crawler"]) if (is_crawler or death_kind >= deaths.size()) else str(deaths[clampi(death_kind, 0, deaths.size() - 1)])
+	_start_death()
 	if pop:
 		_pop_head()
 
@@ -1601,6 +2173,15 @@ func puppet_gone() -> void:
 		queue_free()
 
 
-## A one-off presentation event from the host (boss attacks).
-func puppet_fx(_what: StringName, _args: Array) -> void:
-	pass
+## A one-off presentation event from the host (boss attacks; severs and knockdown sides for the shared body).
+func puppet_fx(what: StringName, args: Array) -> void:
+	match what:
+		&"sever":
+			if args.size() >= 2:
+				Net.applying = true
+				_severed_logic[str(args[0])] = true
+				ZombieGore.sever(self, str(args[0]), args[1] as Vector3)
+				Net.applying = false
+		&"knockdown":
+			if args.size() >= 1:
+				_down_front = bool(args[0])

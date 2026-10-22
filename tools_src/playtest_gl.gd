@@ -5,12 +5,18 @@ extends Node
 ## repairs barricades, buys wall guns / ammo / doors / power / perks. Watches for bugs while it plays:
 ## stuck or fallen zombies, stalled rounds, a stuck player, failed purchases, and reports every round.
 ##   godot --headless --audio-driver Dummy --fixed-fps 60 --path . res://tools_src/playtest_gl.tscn -- --rounds=10 [--map=map00] [--god] [--seed=1] [--bots=3] [--bot-skill=regular]
+##        [--perks] [--crucible=3] [--gun=thompson]
 ## Prints "[bot] ..." lines and a final "[bot] REPORT" block. Own save profile (deleted afterwards).
 ## --bots=N (T-031) plays with N AI teammates: the report then adds the squad's kills, downs and revives.
+## --perks gives every perk to the player and every bot at the start; --crucible=N hands everyone the --gun
+## (default thompson) forged to Crucible tier N (1 = the V variant, 2 = VV, 3 = VVV). The bot also slides
+## (sprint + crouch, T-040) when it retreats or crosses open ground, and reports slides, slide-jumps and any
+## slide that ended inside geometry or below the floor.
 
 const MAPS: Dictionary = {
 	"map00": "res://gravelight/maps/map00_crossroads/map00.tscn",
 	"map01": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+	"map02": "res://gravelight/maps/map02_totenhafen/map02.tscn",
 }
 const PROFILE: String = "user://_bot_profile.json"
 const TURN_RATE: float = 7.0          # rad/s, a quick but human flick
@@ -21,6 +27,14 @@ const MAX_MINUTES: float = 75.0       # game-time safety cap
 
 var target_rounds: int = 10
 var god: bool = false
+var give_perks: bool = false
+var crucible_tier: int = 0
+var gun_id: String = "thompson"
+var _kitted: bool = false
+var _slide_cd: float = 0.0
+var _slide_watch: bool = false
+var _slide_from: Vector3 = Vector3.ZERO
+var slide_issues: int = 0
 var map_key: String = "map00"
 var bots: int = 0
 var bot_kills: int = 0
@@ -98,6 +112,12 @@ func _ready() -> void:
 			bots = int(a.substr(7))
 		elif a.begins_with("--bot-skill="):
 			GameState.bot_skill = a.substr(12)
+		elif a == "--perks":
+			give_perks = true
+		elif a.begins_with("--crucible="):
+			crucible_tier = clampi(int(a.substr(11)), 0, 3)
+		elif a.begins_with("--gun="):
+			gun_id = a.substr(6)
 	ProfileSave.path = PROFILE
 	ProfileSave.profile = ProfileSave.new_profile()
 	GameState.bot_count = bots
@@ -211,7 +231,11 @@ func _physics_process(delta: float) -> void:
 		_dump_buyables()
 		_last_pos = player.global_position
 		return
+	if not _kitted and RoundManager.current_round >= 1:
+		_kit_out()
 	_t += delta
+	_slide_cd -= delta
+	_watch_slide()
 	var now: int = Time.get_ticks_usec()
 	var pms: float = (now - _last_us) / 1000.0
 	_last_us = now
@@ -307,10 +331,15 @@ func _physics_process(delta: float) -> void:
 		for inst: WeaponInstance in player.weapons.slots:
 			if inst.mag > 0 or inst.reserve > 0:
 				dry = false
-		if dry and near_d < 2.6:
-			Input.action_press(&"sprint")   # sprinting cancels reloads, so only when there's nothing to load
+		var loaded: bool = w != null and w.mag > 0 and not player.weapons.is_reloading()
+		if (dry and near_d < 2.6) or (loaded and near_d < 3.2 and not player.crouching):
+			Input.action_press(&"sprint")   # sprinting cancels reloads, so only with nothing to load or a loaded gun
+		_maybe_slide(near_d)
 	elif (zs.is_empty() or (near_d > 12.0 and zs.size() <= 3) or (_ammo_low() and near_d > 5.5)) and _target == null or zs.is_empty():
 		_errands()   # shop like a person: between rounds, or with the last stragglers far away
+		if _path.size() - _path_i > 4 and not player.weapons.is_reloading() and not player.crouching:
+			Input.action_press(&"sprint")
+			_maybe_slide(near_d)
 	else:
 		_hold_position()
 	_follow_path(delta)
@@ -319,10 +348,87 @@ func _physics_process(delta: float) -> void:
 
 func _release_all() -> void:
 	for a: StringName in [&"fire", &"reload", &"melee", &"interact", &"swap_weapon", &"move_forward", &"move_back",
-			&"move_left", &"move_right", &"sprint"]:
+			&"move_left", &"move_right", &"sprint", &"crouch", &"jump"]:
 		if a == &"interact" and not _goal.is_empty() and bool(_goal.get("holding", false)):
 			continue
 		Input.action_release(a)
+
+
+## --perks / --crucible: every perk for everyone, and the chosen gun forged to the tier, like a late-round kit.
+func _kit_out() -> void:
+	_kitted = true
+	var sq: BotSquad = get_tree().get_first_node_in_group(&"bot_squad") as BotSquad
+	var everyone: Array[Player] = [player]
+	if sq != null:
+		for p: Player in sq.all_players():
+			if p != player and not everyone.has(p):
+				everyone.append(p)
+	if give_perks:
+		for p: Player in everyone:
+			PerkManager.grant_all(p.player_id)
+		print("[bot] kit: every perk for %d players: %s" % [everyone.size(), str(PerkManager.owned(1))])
+	if crucible_tier > 0:
+		var up: StringName = StringName(gun_id + "_up")
+		var tbl: Dictionary = GLData.table("weapons")
+		if not (tbl.get("upgraded", {}) as Dictionary).has(String(up)):
+			_issue("--crucible: no upgraded row for %s" % gun_id)
+			return
+		for p: Player in everyone:
+			p.weapons.give_weapon(up)
+			var got: WeaponInstance = p.weapons.find_weapon(up)
+			if got == null:
+				_issue("--crucible: %s did not take %s" % [Net.display_name(p.player_id), up])
+				continue
+			got.tier = crucible_tier
+			got.refill()
+			p.weapons.call("_rebuild_gun")
+		var mine: WeaponInstance = player.weapons.find_weapon(up)
+		print("[bot] kit: %s tier %d for everyone (%s, dmg %.0f, mag %d/%d)" % [up, crucible_tier, mine.display_name() if mine else "?",
+			mine.f("damage", 0.0) if mine else 0.0, mine.mag if mine else 0, mine.reserve if mine else 0])
+
+
+## Slide like a player would: when something is on us and we're sprinting away, or crossing open ground.
+func _maybe_slide(near_d: float) -> void:
+	if _slide_cd > 0.0 or player.sliding or not player.is_on_floor() or player.crouching:
+		return
+	if not (player.sprinting or player.horizontal_speed() > 5.5):
+		return
+	if near_d < 3.2 or rng.randf() < 0.03:
+		Input.action_press(&"sprint")
+		Input.action_press(&"crouch")
+		_slide_cd = rng.randf_range(1.5, 3.5)
+		_slide_from = player.global_position
+		_slide_watch = true
+		if rng.randf() < 0.35:
+			_jump_after = 0.35 + rng.randf() * 0.3
+
+
+var _jump_after: float = -1.0
+
+
+## Checks every slide: it must end upright on the floor, not inside a wall and not below where it started.
+func _watch_slide() -> void:
+	if _jump_after > 0.0:
+		_jump_after -= get_physics_process_delta_time()
+		if _jump_after <= 0.0 and player.sliding:
+			Input.action_press(&"jump")
+	if not _slide_watch:
+		return
+	if player.sliding:
+		return
+	_slide_watch = false
+	var p: Vector3 = player.global_position
+	if p.y < _slide_from.y - 3.0:
+		_issue("slide ended far below where it started (%.1f m): fell through something?" % (_slide_from.y - p.y))
+		slide_issues += 1
+	var space: PhysicsDirectSpaceState3D = player.get_world_3d().direct_space_state
+	var q: PhysicsPointQueryParameters3D = PhysicsPointQueryParameters3D.new()
+	q.position = p + Vector3.UP * 0.9
+	q.collision_mask = 1
+	q.exclude = [player.get_rid()]
+	if not space.intersect_point(q, 1).is_empty():
+		_issue("slide ended inside world geometry at %s" % _v(p.snapped(Vector3.ONE * 0.5)))
+		slide_issues += 1
 
 
 # ------------------------------------------------------------------------------------------------ aiming
@@ -660,6 +766,8 @@ func _worst_held_price() -> int:
 		return 0
 	var worst: int = 1 << 30
 	for inst: WeaponInstance in player.weapons.slots:
+		if inst.tier > 0:
+			continue                      # a forged gun is never the one to give up for a wall buy
 		var price: int = 0
 		for n: Node in map.find_children("*", "WallBuy", true, false):
 			if (n as WallBuy).weapon_id == inst.base_id():
@@ -846,6 +954,7 @@ func _finish(why: String) -> void:
 
 	print("[bot] kills %d (headshots %d, %.0f%%) | trigger pulls %d | downs %d | damage taken %.0f" % [
 		kills, heads, 100.0 * heads / maxf(1, kills), shots, downs, damage_taken])
+	print("[bot] movement: slides %d, slide-jumps %d, slide issues %d | kit: perks=%s crucible=%d %s" % [player.slides, player.slide_jumps, slide_issues, give_perks, crucible_tier, gun_id])
 	print("[bot] rounds fired %d, hit events %d (%.0f%% hit rate), %.1f rounds per kill" % [fired, hits, 100.0 * hits / maxf(1, fired), fired / maxf(1, kills)])
 	print("[bot] frame ms (real, incl. bot) p50 %.2f p99 %.2f max %.0f" % [p50, p99, _phys_us.back() if not _phys_us.is_empty() else 0.0])
 	for r: Dictionary in rounds:

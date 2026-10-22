@@ -358,7 +358,7 @@ func win(c: float, y: float) -> Array:
 	return [c - 0.8, c + 0.8, y + SILL, y + WTOP]
 
 
-func door(c: float, y: float, w: float = 2.0) -> Array:
+func door(c: float, y: float, w: float = 2.6) -> Array:
 	return [c - w * 0.5, c + w * 0.5, y, y + DOOR_H]
 
 
@@ -2301,7 +2301,7 @@ func _dress_readability() -> void:
 			for e: Array in [[float(s[0]) + 0.08, float(s[0]) + 0.42], [float(s[1]) - 0.42, float(s[1]) - 0.08]]:
 				_noshadow(B(Vector3(float(e[0]), yb + 0.004, nz - 0.025), Vector3(float(e[1]), yb + 0.012, nz + 0.025), "lumi_paint", false))
 	# depths doorways: luminous jamb strips on both faces (door, width, yaw)
-	for d: Array in [[Vector3(40, y, 72), 2.0, 90.0, true], [Vector3(60, y, 82), 2.0, 0.0, true], [Vector3(44.5, y, 82), 5.0, 0.0, true],
+	for d: Array in [[Vector3(40, y, 72), 2.6, 90.0, true], [Vector3(60, y, 82), 2.6, 0.0, true], [Vector3(44.5, y, 82), 5.0, 0.0, true],
 			[Vector3(25, y, 60), 4.0, 0.0, false], [Vector3(-12, y, 60), 3.0, 0.0, false], [Vector3(20, y, 90), 4.0, 0.0, false],
 			[Vector3(74, y, 98), 4.0, 0.0, true], [Vector3(20, CY, 101), 4.0, 0.0, true], [Vector3(44.5, CY, 101), 5.0, 0.0, true],
 			[Vector3(49, CY, 115), 4.0, 90.0, true]]:
@@ -2860,14 +2860,14 @@ func build_gameplay() -> void:
 
 	# doors: [name, door_id, zone, also, link, cost, label, pos, yaw, width, needs_power]
 	var doors: Array = [
-		["Door_RailYard", "door_a_b", "B_RAILYARD", [], "", 750, "Rail Yard", Vector3(40, 0, 25), 90.0, 2.0, false],
-		["Door_Admin", "door_a_c", "C_ADMIN", [], "", 1000, "Administration", Vector3(0, 0, 25), 90.0, 2.0, false],
-		["Door_Barracks_C", "door_barracks", "D_BARRACKS", [], "barracks", 1250, "Barracks", Vector3(-8, 0, 32), 0.0, 2.0, false],
-		["Door_Barracks_B", "door_barracks", "D_BARRACKS", [], "barracks", 1250, "Barracks", Vector3(40, 0, 40), 90.0, 2.0, false],
-		["Door_Lift", "door_lift", "E_LIFT", ["F_CHAPEL"], "", 1250, "Lift", Vector3(25, 0, 46), 0.0, 2.0, false],
-		["Door_Stairs", "door_stairs", "M_STAIRS", ["F_CHAPEL"], "", 1500, "Maintenance Stairs", Vector3(-10, 0, 46), 0.0, 2.0, false],
-		["Door_Generator", "door_gen", "G_GENERATOR", [], "", 1500, "Generator Hall", Vector3(40, DY, 72), 90.0, 2.0, false],
-		["Door_Lab", "door_lab", "H_LAB", [], "", 2000, "Laboratory Wing", Vector3(60, DY, 82), 0.0, 2.0, true],
+		["Door_RailYard", "door_a_b", "B_RAILYARD", [], "", 750, "Rail Yard", Vector3(40, 0, 25), 90.0, 2.6, false],
+		["Door_Admin", "door_a_c", "C_ADMIN", [], "", 1000, "Administration", Vector3(0, 0, 25), 90.0, 2.6, false],
+		["Door_Barracks_C", "door_barracks", "D_BARRACKS", [], "barracks", 1250, "Barracks", Vector3(-8, 0, 32), 0.0, 2.6, false],
+		["Door_Barracks_B", "door_barracks", "D_BARRACKS", [], "barracks", 1250, "Barracks", Vector3(40, 0, 40), 90.0, 2.6, false],
+		["Door_Lift", "door_lift", "E_LIFT", ["F_CHAPEL"], "", 1250, "Lift", Vector3(25, 0, 46), 0.0, 2.6, false],
+		["Door_Stairs", "door_stairs", "M_STAIRS", ["F_CHAPEL"], "", 1500, "Maintenance Stairs", Vector3(-10, 0, 46), 0.0, 2.6, false],
+		["Door_Generator", "door_gen", "G_GENERATOR", [], "", 1500, "Generator Hall", Vector3(40, DY, 72), 90.0, 2.6, false],
+		["Door_Lab", "door_lab", "H_LAB", [], "", 2000, "Laboratory Wing", Vector3(60, DY, 82), 0.0, 2.6, true],
 	]
 	for d: Array in doors:
 		_node("res://gravelight/world/door.gd", str(d[0]), {"door_id": StringName(d[1]), "opens_zone": StringName(d[2]),

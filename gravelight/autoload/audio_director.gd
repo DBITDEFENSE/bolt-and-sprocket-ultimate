@@ -582,9 +582,37 @@ func _on_power_activated() -> void:
 		_event_2d("power_activated")
 
 
+# ================================================================== the map's low hum (shader sync, MZ T-041)
+
+var _hum_phase: float = 0.0
+var _hum_level: float = 0.5
+var _hum_global_ok: bool = false
+
+
+## The Nachtglas hum envelope the infection shader's veins pulse with (global shader parameter gl_hum, 0..1):
+## a slow breathing LFO at audio.json "hum_hz" (default anim.json infection.hum_hz) while the ambient bed plays,
+## flattening to a faint glow when it is silent.
+func _update_hum_envelope(delta: float) -> void:
+	var hz: float = float(bank.get("hum_hz", 0.42))
+	_hum_phase = fmod(_hum_phase + delta * hz * TAU, TAU)
+	var playing: bool = _ambient != null and _ambient.playing
+	var target: float = (0.5 + 0.5 * sin(_hum_phase)) if playing else 0.25
+	_hum_level = lerpf(_hum_level, target, clampf(delta * 6.0, 0.0, 1.0))
+	if not _hum_global_ok:
+		ZombieBody.ensure_globals()   # registers gl_hum / gl_round_k at runtime
+		_hum_global_ok = true
+	RenderingServer.global_shader_parameter_set("gl_hum", _hum_level)
+
+
+## The current hum envelope (0..1).
+func hum_level() -> float:
+	return _hum_level
+
+
 # ================================================================== perk-machine hums
 
 func _process(delta: float) -> void:
+	_update_hum_envelope(delta)
 	_hum_t -= delta
 	if _hum_t > 0.0:
 		return

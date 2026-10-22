@@ -5,7 +5,7 @@ extends Node
 const DATA_DIR: String = "res://data/gravelight/"
 const TABLES: PackedStringArray = [
 	"economy", "rounds", "player", "perks", "powerups", "crate", "traps",
-	"weapons", "enemies", "input_defaults", "world", "map01", "net", "bots", "campaign",
+	"weapons", "enemies", "input_defaults", "world", "map01", "net", "bots", "campaign", "anim",
 
 ]
 

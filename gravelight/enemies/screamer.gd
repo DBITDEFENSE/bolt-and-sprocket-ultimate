@@ -34,8 +34,7 @@ func spawn_screamer(at: Vector3, health: float) -> void:
 	if not _dress_built:
 		_build_dress()
 	_apply_variant("nurse")
-	_asym["hunch"] = 0.05
-	_asym["jaw"] = 0.15
+	set_posture("hunch", 0.35)   # Schwester Ilse's slight stoop, never a rolled limp or broken neck
 	_pivot.scale = Vector3.ONE * 1.05
 	(_kind_nodes["glass"] as Node3D).hide()
 	(_kind_nodes["glass_arm"] as Node3D).hide()
@@ -201,7 +200,7 @@ func _build_dress() -> void:
 	_dress_built = true
 	# The winged wimple, cape and apron are part of the "nurse" body variant (ZombieBody).
 	# Here: the Nachtglas-saturated throat that glows brighter as she winds up.
-	var neck: Node3D = _bones["neck"]
+	var neck: Node3D = _bone("neck")
 	var throat_mesh: MeshInstance3D = MeshInstance3D.new()
 	throat_mesh.mesh = ZombieBody.build_mesh("_", [
 		ZombieBody._cyl(0.035, 0.04, 0.09, Vector3(0, 0.05, -0.022), "crystal", Vector3.ZERO, Vector3(1.0, 1, 0.6), 8),

@@ -6,6 +6,9 @@ const LAYER_HITBOX: int = 1 << 3
 
 var enemy: Node3D
 var limb: StringName = &"torso"
+## The rig bone this box rides (profile name, e.g. "LeftLowerArm"); weapons hand it to Zombie.last_hit_bone so
+## arm / leg hits know their side (dismemberment, directional flinches).
+var bone: String = ""
 
 
 func setup(owner_enemy: Node3D, limb_name: StringName, size: Vector3) -> void:

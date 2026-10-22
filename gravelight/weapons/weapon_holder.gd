@@ -591,6 +591,7 @@ func _fire(w: WeaponInstance) -> void:
 		var h: Dictionary = hits[z]
 		var limb: StringName = StringName(h["limb"])
 		var pos: Vector3 = zz.global_position + Vector3.UP * 1.6
+		zz.last_hit_bone = str(h.get("bone", ""))
 		var killed: bool = zz.take_damage(float(h["dmg"]), limb, w.id, pid, &"bullet", piercing)
 		var head: bool = limb == &"head"
 		GLBus.enemy_hit_feedback.emit(pid, killed, head)
@@ -889,6 +890,7 @@ func _trace(origin: Vector3, dir: Vector3, w: WeaponInstance, hits: Dictionary) 
 			if mult > float(cur["mult"]):
 				cur["mult"] = mult
 				cur["limb"] = String(hb.limb)
+				cur["bone"] = hb.bone
 			hits[z] = cur
 			Effects.blood(pos, -dir)
 			if fx != null:

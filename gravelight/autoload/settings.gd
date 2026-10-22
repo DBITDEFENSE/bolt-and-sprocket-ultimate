@@ -40,6 +40,7 @@ var values: Dictionary = {
 	"last_join_ip": "127.0.0.1",   # co-op: the address typed in the lobby's Join field last time
 	"bots": 0,                     # AI teammates in a solo match (0-3, T-031)
 	"bot_skill": "regular",        # their skill preset (data/gravelight/bots.json "skills")
+	"gore": "full",                # off / low / full: dismemberment and blood (MZ, T-041); the shatter VFX always shows
 
 }
 ## User binding overrides: action -> {"kb": spec, "pad": spec}. A spec is a plain Dictionary (see event_to_spec).

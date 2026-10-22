@@ -41,7 +41,7 @@ var _flicker_t: float = 0.0
 
 
 func _ready() -> void:
-	ZombieBody.warm_up()
+	ZombieBody.warm_up(map_kits())
 	_rng.randomize()
 	var n: int = int(GLData.table("enemies")["pool_size"])
 	for i: int in n:
@@ -622,8 +622,35 @@ func _choose_spawn(ground_only: bool = false) -> ZombieSpawn:
 	return candidates.back()
 
 
+## The Gänger outfit kits this map spawns: enemies.json ganger.variants_by_map[map] over the default variants
+## (MZ: Crossroads villagers and soldiers, Kaltenbrunn miners / lab staff / technicians, Totenhafen sailors and
+## dockworkers; `laborer` is retired).
+static func variant_table() -> Dictionary:
+	var g: Dictionary = GLData.table("enemies")["enemies"]["ganger"]
+	var by_map: Dictionary = g.get("variants_by_map", {})
+	if by_map.has(String(GameState.map_id)):
+		return by_map[String(GameState.map_id)]
+	return g["variants"]
+
+
+## Kits to build up front: the map's Gänger kits plus the specials that share the body.
+static func map_kits() -> PackedStringArray:
+	var out: PackedStringArray = []
+	for k: Variant in variant_table().keys():
+		out.append(str(k))
+	for extra: String in ["bellringer", "nurse"]:
+		if not out.has(extra):
+			out.append(extra)
+	return out
+
+
+## Free pool slots (corpses hurry their dissolve when this runs low, Zombie._update_dead).
+func free_count() -> int:
+	return _free.size()
+
+
 func _pick_variant() -> String:
-	var v: Dictionary = GLData.table("enemies")["enemies"]["ganger"]["variants"]
+	var v: Dictionary = variant_table()
 	var roll: float = _rng.randf()
 	for key: Variant in v.keys():
 		roll -= float(v[key])
