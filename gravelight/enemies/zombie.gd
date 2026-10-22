@@ -709,8 +709,14 @@ func _nav_move(goal: Vector3, spd: float, delta: float, repath_interval: float) 
 		_agent.target_position = goal
 		_repath_t = repath_interval
 	var next: Vector3 = _agent.get_next_path_position()
+	if _corner_t > 0.0:
+		_corner_t -= delta
+		if Vector2(_corner_pt.x - global_position.x, _corner_pt.z - global_position.z).length() < 0.12:
+			_corner_t = 0.0   # back on the corner: the path's own next point is clear from here
+		else:
+			next = _corner_pt
 	var dir: Vector3 = next - global_position
-	if _agent.is_navigation_finished() or dir.length_squared() < 0.0004:
+	if _agent.is_navigation_finished() or (dir.length_squared() < 0.0004 and _corner_t <= 0.0):
 		dir = goal - global_position
 	dir.y = 0.0
 	spd *= frost_speed_mult()
@@ -731,18 +737,74 @@ func _nav_move(goal: Vector3, spd: float, delta: float, repath_interval: float) 
 	# Corner snag: it wants to move but the wall/corner eats all of it -> sidestep at ~75 degrees for a moment,
 	# alternating sides, then resume the path (playtest fix, T-028).
 	var moved: float = Vector2(global_position.x - before.x, global_position.z - before.z).length()
+	if desired.length() > 0.3 and moved < desired.length() * delta * 0.2 and is_on_floor() and _step_up(desired):
+		moved = desired.length() * delta
 	if desired.length() > 0.3 and moved < desired.length() * delta * 0.2 and _sidestep_t <= 0.0:
 		_blocked_t += delta
 		if _blocked_t > 0.5:
 			_blocked_t = 0.0
-			_sidestep_side = -_sidestep_side
-			_sidestep_dir = desired.normalized().rotated(Vector3.UP, deg_to_rad(75.0) * _sidestep_side)
-			_sidestep_t = 0.6
+			_start_sidestep(desired)
 	else:
 		_blocked_t = 0.0
+	# Progress over a 0.4 s window (T-057): a body jittering against a rail end moves just enough on some frames
+	# to reset the per-frame check above, so it never sidestepped. Snagged -> back onto the corner it cut if
+	# there is one, else the sidestep.
+	if _sidestep_t <= 0.0 and _corner_t <= 0.0:
+		_prog_want += desired.length() * delta
+	_prog_t += delta
+	if _prog_t >= 0.4:
+		var got: float = Vector2(global_position.x - _prog_from.x, global_position.z - _prog_from.z).length()
+		if _prog_want > 0.6 and got < _prog_want * 0.25:
+			var corner: Vector3 = _skipped_corner()
+			if corner != Vector3.INF:
+				_corner_pt = corner
+				_corner_t = 0.8
+			elif _sidestep_t <= 0.0:
+				_start_sidestep(desired)
+		_prog_t = 0.0
+		_prog_want = 0.0
+		_prog_from = global_position
 	var flat: Vector3 = Vector3(velocity.x, 0, velocity.z)
 	if flat.length_squared() > 0.05:
 		_face(global_position + flat)
+
+
+## A small step up (T-057): at the crest of Map 0's staircase the ramp meets the hall floor in a seam the slide
+## treats as a wall, and a walker stopped dead there (the stair-head idle near (3, 3.8, 9)). When it's blocked
+## on the floor and there's room 0.25 m up and a little ahead, lift it over; gravity and the floor snap set it down.
+func _step_up(desired: Vector3) -> bool:
+	var fwd: Vector3 = Vector3(desired.x, 0.0, desired.z).normalized() * 0.12
+	var up: Vector3 = Vector3.UP * 0.25
+	if test_move(global_transform, up):
+		return false
+	if test_move(global_transform.translated(up), fwd):
+		return false
+	global_position += up + fwd
+	return true
+
+
+func _start_sidestep(desired: Vector3) -> void:
+	if desired.length_squared() < 0.0001:
+		return
+	_sidestep_side = -_sidestep_side
+	_sidestep_dir = desired.normalized().rotated(Vector3.UP, deg_to_rad(75.0) * _sidestep_side)
+	_sidestep_t = 0.6
+
+
+## The path corner the agent has just passed when it's snagged (T-057). NavigationAgent3D moves on to the next
+## point once it is within path_desired_distance (0.6 m) of a corner, so a fast zombie turns early and runs into
+## what the corner goes round: the stair foot's balustrade end (Map 0, at about (3.6, 0, 14.6)) caught every runner
+## heading upstairs. Walking back onto the skipped corner first clears it. INF when there is none worth it.
+func _skipped_corner() -> Vector3:
+	var path: PackedVector3Array = _agent.get_current_navigation_path()
+	var i: int = _agent.get_current_navigation_path_index()
+	if i < 1 or i >= path.size():
+		return Vector3.INF
+	var c: Vector3 = path[i - 1]
+	var d: float = Vector2(c.x - global_position.x, c.z - global_position.z).length()
+	if d < 0.15 or d > 1.5 or absf(c.y - global_position.y) > 1.0:
+		return Vector3.INF
+	return c
 
 
 func _on_velocity_computed(safe: Vector3) -> void:
@@ -751,6 +813,11 @@ func _on_velocity_computed(safe: Vector3) -> void:
 
 var _wedge_t: float = 0.0
 var _blocked_t: float = 0.0
+var _corner_t: float = 0.0        # seconds left steering back onto a path corner it cut (T-057)
+var _corner_pt: Vector3 = Vector3.ZERO
+var _prog_t: float = 0.0          # the 0.4 s progress window (T-057): time in it, metres wanted, where it began
+var _prog_want: float = 0.0
+var _prog_from: Vector3 = Vector3.ZERO
 var _sidestep_t: float = 0.0
 var _sidestep_dir: Vector3 = Vector3.ZERO
 var _sidestep_side: float = 1.0
