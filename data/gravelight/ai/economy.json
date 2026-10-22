@@ -28,5 +28,7 @@
   "power": {"_doc": "T-058: with no human in the match or leading (BotSquad.bot_led), the squad is its own leader: from min_round it buys the closed door on the way to the power switch (keeping only door_reserve_scrip back) and throws the switch; until then every other door must leave the power door's price in hand. self_led_useful_doors_only: a self-led squad opens only the power's door and the doors an authored training route needs (routes_<map>.json requires_doors). With a human, the old rule stands: the power only when ordered (perks follow once the human threw it).", "min_round": 2, "door_reserve_scrip": 300, "self_led_useful_doors_only": true},
   "priorities": {"perk": 0.95, "gun": 0.8, "ammo_box": 0.9, "wall_ammo": 0.85, "door": 0.45, "crate": 0.8, "crucible": 1.0, "crucible_ammo": 0.85, "power": 0.92, "power_door": 0.9},
   "max_range_from_leader_m": 26.0,
+  "self_led_mid_round_m": 16.0,
+  "_self_led_mid_round_doc": "T-058: a squad with no human leading it shops beyond this distance from its home loop (or its leader) only between waves.",
   "bot_led_range_m": 60.0
 }

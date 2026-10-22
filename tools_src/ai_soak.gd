@@ -50,6 +50,9 @@ var start_round: int = 0
 ## --homage=0 (tuning only): the Homage Bosses off (no Cousins round at 10 on Map 0); the default (as in every
 ## Update 03 measurement) is on.
 var homage: bool = true
+## --character=<id>: the scripted player's character (default peg, so the bots are Dutch, Deacon and Wren; e.g.
+## --character=dutch puts Peg among the bots).
+var character: String = "peg"
 var god: bool = false   # --god: the scripted player can't be hurt (it outlives the bots: T-057's stalled-round hunt)
 ## --trace=N: every N game seconds, one status line per bot (action, top scores, gun, threat) and its task.
 var trace_s: float = 0.0
@@ -106,6 +109,8 @@ func _ready() -> void:
 			player_kit = a.substr(13)
 		elif a.begins_with("--start-round="):
 			start_round = int(a.substr(14))
+		elif a.begins_with("--character="):
+			character = a.substr(12)
 		elif a.begins_with("--homage="):
 			homage = a.substr(9) != "0"
 		elif a.begins_with("--loco="):
@@ -154,7 +159,7 @@ func _start_run() -> void:
 	if RoundManager.get("rng") is RandomNumberGenerator:
 		(RoundManager.get("rng") as RandomNumberGenerator).seed = sd
 	Campaign.reset()
-	GameState.character_id = &"peg"
+	GameState.character_id = StringName(character)
 	GameState.bot_count = 3
 	GameState.bot_skill = skill
 	GameState.bot_ai_mode = "off"

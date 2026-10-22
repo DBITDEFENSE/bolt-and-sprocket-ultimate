@@ -122,6 +122,10 @@ func _fight(delta: float) -> void:
 	var stand: bool = brain.stand_fast() or brain.nearest_holds_ground()
 	if stand:
 		back_r = 0.0   # T-058: backing away from a Bellringer only turns its lunge into a chase
+	if per.nearest != null and BotPerception.is_boss(per.nearest):
+		# T-058: a boss's keep-away ring (ai_counters keep_distance_m: Alix's Holding Hand reaches 2 m) is backed out
+		# of with a margin even on foot, not only avoided by paths
+		back_r = maxf(back_r, float(BotAIData.counter(per.nearest.enemy_id).get("keep_distance_m", 0.0)) + float(cfg("fight").get("boss_margin_m", 0.8)))
 	var mate: Player = brain.squad.nearest_standing(player, player.global_position) if stand else null
 	if per.nearest != null and per.nearest_d < back_r and not (per.nearest.is_crawler and brain.personality_combat("melee_crawlers", false)):
 		_back_off(per.nearest, 2.6, 0.6)
@@ -212,6 +216,8 @@ func _high_ground() -> bool:
 				continue
 			if brain.perception.count_near(hp, 4.0) > 0 or brain.in_danger(hp):
 				continue
+			if brain.perception.boss_near != null and _flat(brain.perception.boss_near.global_position, hp) < 20.0:
+				continue   # (a boss about: the Reach drops into the hayloft; no perch near a boss)
 			var sp: Vector3 = brain.snap(hp)
 			if sp.distance_to(hp) > 1.0 or brain.loco.path_length_to(sp) > 24.0:
 				continue
@@ -367,8 +373,8 @@ func _retreat(delta: float) -> void:
 	# joggers never fired). Cornered (still in reach after sprint_cornered_s of sprinting): turn and shoot.
 	var close: bool = per.nearest != null and per.nearest_d < float(rc.get("sprint_within_m", 3.2)) and per.nearest.speed >= float(rc.get("sprint_from_speed", 4.2)) 		and not brain.nearest_holds_ground()   # (nobody outruns a Bellringer: walk and shoot)
 	_fight_back_t -= delta
-	if close and per.nearest_d < float(rc.get("cornered_m", 1.6)):
-		_cornered_t += delta
+	if close and (per.nearest_d < float(rc.get("cornered_m", 1.6)) or player.horizontal_speed() < 1.5):
+		_cornered_t += delta   # (in reach, or not getting anywhere: boxed in)
 		if _cornered_t > float(rc.get("sprint_cornered_s", 0.8)):
 			_fight_back_t = float(rc.get("fight_back_s", 1.5))
 			_cornered_t = 0.0

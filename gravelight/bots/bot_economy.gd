@@ -292,7 +292,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 		var plan_p: Dictionary = power_plan(now)
 		if plan_p.has("switch"):
 			var sw: Node3D = plan_p["switch"]
-			if squad.can_claim(sw, pid):
+			if squad.can_claim(sw, pid) and _near_enough(sw.global_position):
 				out.append({"node": sw, "kind": "power", "stand": plan_p["stand"], "value": value_of(eco, "power", _flat(sw.global_position, me)),
 					"cost": 0, "label": "throw the power switch (nobody else will)"})
 		elif plan_p.has("door"):
@@ -304,7 +304,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 		var machines: Dictionary = {}
 		for n3: Node in brain.get_tree().get_nodes_in_group(&"perk_machines"):
 			var pm: PerkMachine = n3 as PerkMachine
-			if pm == null or not pm.can_interact(player) or not pm.is_powered() or _flat(pm.global_position, anc) > rng * 1.3:
+			if pm == null or not pm.can_interact(player) or not pm.is_powered() or _flat(pm.global_position, anc) > rng * 1.3 or not _near_enough(pm.global_position):
 				continue
 			if not squad.can_claim(pm, pid):
 				continue   # a teammate is at that machine
@@ -386,7 +386,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	if crate_pulls_this_round < int(ccrate.get("max_pulls_per_round", 1)) and crate_wanted(eco, scrip, CrateManager.cost(), best_tier, rnd, reserve):
 		for cn: Node in brain.get_tree().get_nodes_in_group(&"crate_spots"):
 			var cr: MysteryCrate = cn as MysteryCrate
-			if cr == null or cr.phase != MysteryCrate.Phase.CLOSED or not cr.is_visible_in_tree() or _flat(cr.global_position, anc) > rng * 1.5:
+			if cr == null or cr.phase != MysteryCrate.Phase.CLOSED or not cr.is_visible_in_tree() or _flat(cr.global_position, anc) > rng * 1.5 or not _near_enough(cr.global_position):
 				continue
 			if not squad.can_claim(cr, pid):
 				continue
@@ -415,7 +415,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 				ammo_slot = ai
 	if (want_up or ammo_slot >= 0) and not human_down and (in_break or not bool(crc.get("only_in_break", true))):
 		var cr2: Crucible = brain.crucible_for_me(float(crc.get("max_from_leader_m", 30.0)) * range_mult * (2.0 if squad.bot_led() else 1.0), anc)
-		if cr2 != null:
+		if cr2 != null and _near_enough(cr2.global_position):
 			var kind: String = "crucible_ammo" if ammo_slot >= 0 else "crucible"
 			out.append({"node": cr2, "kind": kind, "slot": ammo_slot, "value": value_of(eco, kind, _flat(cr2.global_position, me)),
 				"cost": Crucible.price_for(&"ammo", econ) if ammo_slot >= 0 else up_cost,
@@ -480,6 +480,17 @@ func _route_doors() -> Dictionary:
 		for d: String in r.requires_doors:
 			out[d] = true
 	return out
+
+
+## T-058: a squad leading itself does its far errands (the cellar's perks, the Crucible, the power, a crate across
+## the inn) between waves: mid-round only within economy.json self_led_mid_round_m of its home (or leader), so
+## nobody walks off alone into a spawn room while the round is on (the bots3 downs in the cellar).
+func _near_enough(p: Vector3) -> bool:
+	var squad: BotSquad = brain.squad
+	if not squad.bot_led() or brain.in_break():
+		return true
+	var home: Vector3 = squad.home.center() if squad.home != null else anchor()
+	return _flat(p, home) <= float(eco.get("self_led_mid_round_m", 16.0)) and absf(p.y - home.y) < 2.5
 
 
 ## The main gun: the best-tier gun carried that isn't the start pistol (else whatever it holds).

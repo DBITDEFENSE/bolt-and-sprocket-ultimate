@@ -43,7 +43,7 @@
     "kill_steal_until_round": 6,
     "kill_steal_hp_frac": 0.4,
     "escort_bonus": 1.5,
-    "line_of_fire_radius_m": 0.6,
+    "line_of_fire_radius_m": 0.45,
     "moving_spread_mult": 1.6,
     "ads_max_speed": 2.6,
     "ads_min_m": 3.0
@@ -134,6 +134,7 @@
     "backpedal_min_m": 2.6,
     "backpedal_max_m": 4.4,
     "stack_m": 3.0,
+    "boss_margin_m": 0.8,
     "_stack_doc": "In a special round (or against a hold_ground enemy) there is no backpedal; a bot more than stack_m from its nearest teammate (with nothing within 2.5 m) closes up to stand back to back."
   },
   "hunt": {

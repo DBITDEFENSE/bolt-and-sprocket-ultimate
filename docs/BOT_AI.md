@@ -168,6 +168,9 @@ tools/ai_soak.sh --scenario=cousins
 tools/ai_soak.sh --scenario=kaltenbrunn          # rounds 1-20 on Map 1
    options: --runs=N  --seed=S (run k uses S+k-1)  --max-round=R (stop when round R+1 starts; 0 = to the wipe)
             --skill=green|regular|veteran  --max-minutes=150 (game-time cap)  --speed=N (Engine.time_scale)
+            --player-kit=baseline|realistic (T-058: the scripted player's kit, below; baseline is the default)
+            --god (the scripted player can't be hurt)  --trace=N  --orders=N
+            tuning only, not for the acceptance numbers: --homage=0 (no Cousins round)  --start-round=N
 ```
 
 The Update 03 brief names it `tools/ai_soak.gd`. In this repo the Godot tools live in `tools_src/` (next to
@@ -205,9 +208,17 @@ and should behave the same for every brain:
   more zombies sit on the next stretch within 7 m.
 - It shoots the nearest zombie in sight within 14 m (0.25 s reaction, 6 rad/s turn, aim noise, heads), reloads when
   empty or when nothing is within 8 m, and knifes what reaches it with an empty gun.
-- It buys nothing. It carries the bots' spawn kit (the Thompson, Ironhide Stout, Second Wind; restored after a
-  revive or respawn like the bots' kit) and its reserve is topped up at each round start. Otherwise the run would
-  measure the dummy running dry, not the bots. It doesn't revive anyone.
+- **Kit "baseline"** (the default; every number in sections 2, 4 and 7 before T-058): it buys nothing. It carries
+  the bots' spawn kit (the Thompson, Ironhide Stout, Second Wind; restored after a revive or respawn like the bots'
+  kit) and its reserve is topped up at each round start. Otherwise the run would measure the dummy running dry, not
+  the bots. It never throws the power, so the bots never get perks or the Crucible in this mode.
+- **Kit "realistic"** (`--player-kit=realistic`, T-058): it plays the economy like a person who knows the map. The
+  Thompson only (the gun a player buys early), no free perks. When it is calm (the break, or nothing within 10 m
+  and three or fewer zombies left) and it has the Scrip, from round 2 it opens the closed door on its way to the
+  power switch (Map 0: the cellar door, 1500), throws the switch (round 3-4 in every run so far), then drinks
+  Ironhide Stout and Second Wind, and buys them again after losing them to a down. The round-start reserve top-up
+  stays. Each errand prints a `[dummy]` line; the run's extras carry `dummy_power_round`, `dummy_perks_bought`.
+- In both kits it doesn't revive anyone.
 - It can be downed (then it shoots from the ground), revived and bleed out like anyone.
 
 ### The metrics (`gravelight/bots/bot_metrics.gd`, `BotMetrics`)
@@ -223,6 +234,7 @@ column says "human".
 | kills / headshots | `enemy_killed` by each bot (limb `head`). |
 | downs per round | `player_downed` of a bot, per round; the table shows bot downs ÷ rounds reached. |
 | revive success rate | The share of downs (bots and the human) that ended in a revive. Failures are bleed-outs and downs still open when the match ended that were 10 s old or more. Younger open downs are the wipe itself (nobody was left standing) and don't count either way. |
+| fair revive rate (T-058) | The same, but a down counts against the bots only when a bot could have come: `reach_s`, the seconds of that down during which a teammate **bot** was on its feet, is 10 s or more. A down that bled out or was still open at the wipe while every bot was down too (the scripted player alone on its feet, and it revives nobody) is **excused**. The old rate stays in the tables for the comparison with the baseline. |
 | revive attempts / ok | An attempt starts when a reviver appears in the co-op state (`coop.reviver_of`); it is ok when that down ends in `player_revived`. |
 | time to revive (ttr) | From the down to getting up, for the revived ones. |
 | stuck events / stuck time | Reported by the brain through the hook (see below). Stuck time adds up the stretches of "wants to move, isn't moving" longer than 0.5 s (all of each such stretch). Stretches over 1.5 s are also logged with the position. |
@@ -478,14 +490,18 @@ Each bot spends its own Scrip, by priority:
    nothing is bought only to be dropped.
 3. Ammo: an ammo box when the main gun is under 25%, or wall ammo from its own wall-buy under 35%. A nearly dry gun
    comes before anything else. Between waves, with Scrip to spare, it tops up under 60%.
-4. Doors only when ordered, on the human's path after the human has opened one, or when no human leads.
+4. Doors only when ordered, on the human's path after the human has opened one, or when no human leads. A squad
+   leading itself opens only the doors it has a use for: the one on the way to the power (bots alone), then the
+   doors an authored training route needs (T-058).
 5. The Requisition Crate above 2,500 Scrip with a gun weak for the round, or above 6,000 without a wonder weapon.
    Never someone else's roll.
-6. The Crucible for a gun of tier 3.4+ from round 6. Never a teammate's weapon.
+6. The Crucible for a gun of tier 3.4+ from round 5, mid-round too when it is calm (T-058; it was the break only,
+   from round 8, and the Crucible never happened). Never a teammate's weapon.
 
 It keeps a reserve: a Second Wind rebuy plus an ammo box, x the personality's save_bias. It never touches
 easter-egg objects, traps or the power switch unless ordered or the human already did that step. The local-AI
-planner bot is the user-sanctioned exception.
+planner bot is the user-sanctioned exception. **Bots alone** (no human in the match, T-058) are their own leader:
+they open the way to the power switch and throw it (section 8).
 
 ### Orders (the command wheel, bots.json commands.orders)
 
@@ -609,3 +625,72 @@ per bot every 0.2 s). BotLocomotion.tick is about 100 µs of that.
 taproom; a bot downed under pressure and revived, callouts ("Sprinter, behind you!", the window, a Resupply with its
 ping). `morning/clips/u03/bots_cousins.mp4`: the Cousins round. The rendered clip runs showed the Hammer killed,
 6 hits while the mallet was in the air, three Reach grabs broken by the bots' fire, and nobody within 2.3 m of Alix.
+
+## 8. The tuning pass (T-058)
+
+The brain of section 5 was right in shape but lost its squads to a handful of concrete faults. The soak's down log
+now prints the last ten thinks of every bot that goes down (action, gun, mag/reserve, health, nearest zombie,
+zombies within 5 m, shots fired, speed, stamina, reloading, sprinting: `[soak] DOWN before: ...`), and every fix
+below came from reading those lines.
+
+### What was wrong, and the fix
+
+| Fault (from the down logs) | Fix | Where |
+|---|---|---|
+| A bot with an empty magazine and a zombie in knife reach knifed it (150 damage against 650+ health), which cancelled the reload, which restarted on the next think: it never reloaded and died with a full reserve. | Dry, it only knifes what one swing kills (or a crawler); otherwise it finishes the reload while the executor backs it off. The revive's "deal with what's in knife reach" uses the same rule. | `BotAim._try_melee_target`, `knife_kills`, `BotActions._revive` |
+| The fire tolerance (1.8 degrees on Veteran) held at any range: with a zombie at 0.7 m its aim point swings across 20+ degrees, so a bot with a full magazine didn't fire while it was torn apart. | The tolerance never goes below the angle the target's half width covers at its range (`aim.body_half_width_m`). Point-blank, anything on the body is a hit. | `BotAim._fire_if_on` |
+| Retreat sprinted (no shooting) from anything at 3 m/s or faster: joggers too, which a walking bot out-walks while shooting. Boxed in, it kept "sprinting" at 0 m/s. | It sprints only from runners and sprinters (`retreat.sprint_from_speed` 4.2); still in reach or not moving after 0.8 s of that, it turns and fights for 1.5 s. Never from a Bellringer. | `BotActions._retreat`, `combat.json retreat` |
+| Train skipped aiming while the locomotion layer wanted a sprint, even out of stamina and stuck against the train's head. | It only skips aiming while it really runs (sprinting above 2.5 m/s, or the head beyond 2.2 m). | `BotActions._train` |
+| From round 5 the start pistol (8 x 40 damage) was still "a loaded gun to swap to" with the main gun dry, so the bot swapped instead of reloading. | After `weapons.weak_pistol_after_round` (4) a plain pistol is worth 0.1x and doesn't count as a loaded gun; an upgraded one still does. | `BotAim.weapon_value`, `_other_loaded` |
+| Cover and Revive re-weighted the targets every think; every target change re-rolled the full reaction delay, so no shot came out. | A new target within 20 degrees of the aim is a flick (0.06 s). | `BotAim._acquire`, `aim.quick_switch_*` |
+| A reviver walked into the swarm round the downed teammate; once there, it held use through 4-5 hits; Revive and Cover flipped every think and restarted the hold each time. | Two zombies within 2.2 m of the reviver itself block the revive (latched 1.2 s) while more than 14 s of bleed-out are left; mid-hold under 40% health with something within 2 m it lets go and fights for 1.2 s; the last-chance rule (under 8 s) still overrides both. | `BotBrain.context`, `BotActions._revive`, `combat.json revive` |
+| Backpedal started at 2.6 m whatever the zombie: a runner closes that in half a second. The straight-back spot snapped into the wall behind a cornered bot. | Backpedal radius = 1.7 m + speed x 0.55 s (2.6-4.4 m), plus a boss's keep-away ring + 0.8 m (Alix's 2 m Holding Hand); the spot is the clearest of seven angles off the straight line (re-planned 4x a second). | `BotActions.backpedal_radius`, `_back_off`, `combat.json fight` |
+| Rounds 5-7 collapsed in most runs: that is the first **special round** (Bellringers: 5.4 m/s with a 2 m lunge, out of portals). The bots backpedalled, trained and sprinted off alone and were run down one by one. | In a special round (and against any `hold_ground` enemy) no window holds, no training (x0.15), less retreat, no backpedal, no sprint-away; a bot more than 3 m from its nearest teammate closes up (back to back). | `BotBrain.stand_fast`, `actions.json stand_fast`, `ai_counters bellringer.hold_ground` |
+| Window holds stood 2.2 m inside the sill: what climbed in was already in reach. | `hold.stand_back_m` 3.6. | `BotBrain.hold_spot` |
+| The Crucible never happened (break only, from round 8; its errand lost to repairs and power-ups). | From round 5, mid-round when calm; priority 1.0 (the buy weight 0.8). | `bots.json shopping.crucible`, `economy.json` |
+| The crate rarely won a think (weight 0.5). | Weight 0.75, priority 0.8, two pulls a round, "rich" from 5,000. | `actions.json`, `economy.json crate` |
+| Twin Barrel for the Thompson: more rate on a 30-round magazine only empties it sooner (2.6 s of fire, 2.9 s of reload). | Magazine-bound automatics take Trigger Tonic (half reload), semi rifles and bolt guns Twin Barrel. | `economy.json weapon_perk` |
+| Bosses: the bots shot a 15,000-health cousin while the runner at their heels ate them. | `adds_first_m`: with an ordinary zombie within 5 m, a cousin's target value is x0.35, unless she is vulnerable (mallet out, Alix grieving) or holds a teammate. | `BotAim.target_value`, `ai_counters cousin_*` |
+| A round held up by its last zombie (a boss loose in another hall, a stuck straggler): the bots never went looking (the smoke_map02 Foreman stall after the brain merge). | After 12 s with nothing left to spawn and 1-2 zombies alive, the squad hears the last one (blackboard, no line of sight: nothing is shot through walls) and the bots with nothing else to do walk to it. | `BotSquad._update_hunt`, `combat.json hunt` |
+| Shots held back by a 0.6 m line-of-fire radius round teammates standing back to back. | 0.45 m (a body). | `combat.json aim.line_of_fire_radius_m` |
+
+### Bots alone lead themselves
+
+With **no human in the match** (`BotSquad.bots_alone()`: no local player, or one sitting the match out of the
+co-op life-cycle like the bots3 soak's benched player) the squad is its own leader: the never-touch rule protects
+a human's choices, and there is no human to take the step from.
+
+- **The power.** From round 2 (`economy.json power.min_round`) a bot buys the closed door on the way to the power
+  switch (the navmesh runs through doors: the nearest closed door the path to the switch crosses whose near side it
+  can reach; Map 0: the cellar door) keeping only 300 Scrip back, then throws the switch. Until that door is bought,
+  any other door must leave its price in hand. In the soaks the power came on in round 2 or 3 every time.
+- **Useful doors only** (`power.self_led_useful_doors_only`; also while a human has only bled out for the round):
+  the power's door, then the doors an authored training route needs (`routes_<map>.json requires_doors`). No more
+  attic doors that took the squad upstairs to die.
+- **A home.** Routes may carry `home` (Map 0: the taproom loop). The squad holds the windows round its home (early
+  rounds), trains on it when the leader isn't by another loop, and the leader walks back to it when it has nothing
+  else to do.
+- **Far errands between waves.** Mid-round it only shops within 16 m of home (`self_led_mid_round_m`); the cellar's
+  perks, the Crucible and the switch wait for the break (bots used to die alone in the cellar while the coal chute
+  spawned on them).
+- Then the usual plan: Ironhide and Second Wind come with the kit; Trigger Tonic, then Hawkeye Brandy (the cap is 4);
+  the crate when rich; the Crucible for the Thompson from round 5.
+- Easter-egg objects, buildable parts and traps stay off limits even then.
+
+**With a human in the match** nothing changed: the power only on an order, and once the human threw it (the
+power is on) the bots drink in plan order (GUT `test_bot_tuning.gd`). A human who bled out for the round is still
+in the match: the bots don't throw the power behind their back.
+
+### Personality movement
+
+- **Peg flanks** (`personality.combat.flank`): on a boss or a special (counter priority 1.3+) she doesn't stand
+  behind the squad's guns but moves to its flank: her `keep_distance_m` (7) from it, 70 degrees round from the
+  line between it and the squad, on her side, on a reachable navmesh spot with a line of sight and no danger zone,
+  re-planned every 1.5 s (`BotActions._flank`, the pure `flank_point`). Peg is the player character in every soak
+  (`GameState.character_id`), so the soaks never show her flanking; a Peg bot does it in a match where the human
+  plays someone else.
+- **Wren takes high ground** (`personality.combat.high_ground`): with the fight within a map high-ground spot's
+  `watch_m` and the squad within 14 m of it, she fights from up there (`routes_<map>.json high_ground`; Map 0: the
+  stable's hayloft edge, two spots, needs the stable door). Never with a boss within 20 m of the spot (the Reach
+  drops into that hayloft). Checked every 2 s (`BotActions._high_ground`).
+- The soak's squad report counts both (`flanks`, `high ground`), and the bonus and bought perks at the end.
