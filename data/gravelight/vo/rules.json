@@ -457,5 +457,8 @@
   "team_down_delay_s": 1.0,
   "team_down_window_s": 8.0,
   "revive_fallback_s": 12.0
- }
+ },
+ "companion_speakers": [
+  "JAK"
+ ]
 }

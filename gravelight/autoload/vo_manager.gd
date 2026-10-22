@@ -19,6 +19,9 @@ const GROUP_PLAYER: StringName = &"player"
 ## Second squad channel: what the *others* say about a down (TEAM_DOWN, REVIVE) so it can overlap the downed
 ## player's own DOWN / REVIVED instead of racing them (rules.json squad_second_channel, down_sequence).
 const GROUP_SQUAD: StringName = &"squad"
+## The companion's own channel (Jakub, U02 section 6.2; rules.json companion_speakers): his lines never wait behind the
+## squad's chatter (they would come out late and out of place) and never hold the squad up. Positional at his body.
+const GROUP_COMPANION: StringName = &"companion"
 const LINES_PATH: String = "res://data/gravelight/vo/lines.json"
 const RULES_PATH: String = "res://data/gravelight/vo/rules.json"
 const AUDIO_DIR: String = "res://gravelight/audio/vo/"
@@ -64,6 +67,9 @@ var _follow: Node3D = null           # whom the 3D player tracks while it plays
 var _squad_2d: AudioStreamPlayer
 var _squad_3d: AudioStreamPlayer3D
 var _follow_b: Node3D = null
+var _comp_2d: AudioStreamPlayer
+var _comp_3d: AudioStreamPlayer3D
+var _follow_c: Node3D = null
 var _revive_line_t: Dictionary = {}  # reviver pid -> time its REVIVE line was submitted (fallback at completion)
 var _subtitles: CanvasLayer
 var _duck_on: bool = false
@@ -84,8 +90,8 @@ var _last_down_at: float = -INF
 func _ready() -> void:
 	rng.randomize()
 	load_data()
-	_current = {GROUP_STORY: {}, GROUP_PLAYER: {}, GROUP_SQUAD: {}}
-	_queue = {GROUP_STORY: [], GROUP_PLAYER: [], GROUP_SQUAD: []}
+	_current = {GROUP_STORY: {}, GROUP_PLAYER: {}, GROUP_SQUAD: {}, GROUP_COMPANION: {}}
+	_queue = {GROUP_STORY: [], GROUP_PLAYER: [], GROUP_SQUAD: [], GROUP_COMPANION: []}
 	_story_2d = AudioStreamPlayer.new()
 	_story_2d.name = "StoryVoice"
 	_story_2d.bus = &"VO"
@@ -110,6 +116,19 @@ func _ready() -> void:
 	_squad_3d.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
 	_squad_3d.panning_strength = 1.0
 	add_child(_squad_3d)
+	_comp_2d = AudioStreamPlayer.new()
+	_comp_2d.name = "CompanionVoice"
+	_comp_2d.bus = &"VO"
+	add_child(_comp_2d)
+	_comp_3d = AudioStreamPlayer3D.new()
+	_comp_3d.name = "CompanionVoice3D"
+	_comp_3d.bus = &"VO"
+	_comp_3d.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
+	_comp_3d.panning_strength = 1.0
+	var au0: Dictionary = rules.get("audio", {})
+	_comp_3d.unit_size = float(au0.get("squad_unit_size", 5.0))
+	_comp_3d.max_distance = float(au0.get("squad_max_distance", 40.0))
+	add_child(_comp_3d)
 	_subtitles = (load("res://gravelight/ui/subtitles.gd") as GDScript).new() as CanvasLayer
 	add_child(_subtitles)
 	_connect_triggers()
@@ -126,7 +145,7 @@ func load_data() -> void:
 			_index[key] = []
 		(_index[key] as Array).append(StringName(str(id)))
 	var au: Dictionary = rules.get("audio", {})
-	for p3: AudioStreamPlayer3D in [_player_3d, _squad_3d]:
+	for p3: AudioStreamPlayer3D in [_player_3d, _squad_3d, _comp_3d]:
 		if p3 != null:
 			p3.unit_size = float(au.get("squad_unit_size", 5.0))
 			p3.max_distance = float(au.get("squad_max_distance", 40.0))
@@ -166,6 +185,7 @@ func stop_all() -> void:
 	_stop_audio(GROUP_STORY)
 	_stop_audio(GROUP_PLAYER)
 	_stop_audio(GROUP_SQUAD)
+	_stop_audio(GROUP_COMPANION)
 	_revive_line_t.clear()
 	_set_duck(false)
 
@@ -330,6 +350,8 @@ func load_stream(path: String) -> AudioStream:
 # ================================================================== core
 
 func _group_for(speaker: StringName) -> StringName:
+	if (rules.get("companion_speakers", []) as Array).has(String(speaker)):
+		return GROUP_COMPANION
 	if (rules.get("player_speakers", []) as Array).has(String(speaker)):
 		return GROUP_PLAYER
 	return GROUP_STORY
@@ -621,8 +643,8 @@ func _next_part(group: StringName) -> void:
 ## Story and local-player lines are 2D; another survivor's line plays at their body (3D).
 func _play_stream(group: StringName, stream: AudioStream, pid: int) -> void:
 	var au: Dictionary = rules.get("audio", {})
-	var p2d: AudioStreamPlayer = _story_2d if group == GROUP_STORY else (_squad_2d if group == GROUP_SQUAD else _player_2d)
-	var p3d: AudioStreamPlayer3D = null if group == GROUP_STORY else (_squad_3d if group == GROUP_SQUAD else _player_3d)
+	var p2d: AudioStreamPlayer = _story_2d if group == GROUP_STORY else (_squad_2d if group == GROUP_SQUAD else (_comp_2d if group == GROUP_COMPANION else _player_2d))
+	var p3d: AudioStreamPlayer3D = null if group == GROUP_STORY else (_squad_3d if group == GROUP_SQUAD else (_comp_3d if group == GROUP_COMPANION else _player_3d))
 	var node: Node3D = _player_node(pid) if p3d != null and pid > 0 and pid != _local_player() else null
 	if node != null:
 		p2d.stop()
@@ -633,6 +655,8 @@ func _play_stream(group: StringName, stream: AudioStream, pid: int) -> void:
 		p3d.play()
 		if group == GROUP_SQUAD:
 			_follow_b = node
+		elif group == GROUP_COMPANION:
+			_follow_c = node
 		else:
 			_follow = node
 		audio_plays += 1
@@ -642,6 +666,8 @@ func _play_stream(group: StringName, stream: AudioStream, pid: int) -> void:
 		p3d.stop()
 		if group == GROUP_SQUAD:
 			_follow_b = null
+		elif group == GROUP_COMPANION:
+			_follow_c = null
 		else:
 			_follow = null
 	p2d.stop()
@@ -661,6 +687,12 @@ func _stop_audio(group: StringName) -> void:
 		if _squad_3d != null:
 			_squad_3d.stop()
 		_follow_b = null
+	elif group == GROUP_COMPANION:
+		if _comp_2d != null:
+			_comp_2d.stop()
+		if _comp_3d != null:
+			_comp_3d.stop()
+		_follow_c = null
 	else:
 		if _player_2d != null:
 			_player_2d.stop()
@@ -732,6 +764,8 @@ func advance(delta: float) -> void:
 		_player_3d.global_position = _voice_pos(_follow)
 	if _follow_b != null and is_instance_valid(_follow_b) and _follow_b.is_inside_tree() and _squad_3d.playing:
 		_squad_3d.global_position = _voice_pos(_follow_b)
+	if _follow_c != null and is_instance_valid(_follow_c) and _follow_c.is_inside_tree() and _comp_3d.playing:
+		_comp_3d.global_position = _voice_pos(_follow_c)
 	for g: Variant in _queue.keys():
 		_pop_start(StringName(g))   # timed items (TEAM_DOWN's beat after the DOWN) start when due
 	_tick_delayed()

@@ -252,6 +252,7 @@ func setup(map_root: MapRoot, mode: String, carried: Dictionary, cage_node: Hold
 		"cage":
 			var mk: Node3D = map.find_child("JakubSpawn", true, false) as Node3D
 			_make_body(mk.global_transform if mk != null else cage.global_transform)
+			_cage_lamp(mk.global_position if mk != null else cage.inside_point())
 			state = State.CAGED
 			_event("caged")
 		"carried":
@@ -302,6 +303,19 @@ func _make_body(xf: Transform3D) -> void:
 	talk.companion = self
 	p.add_child(talk)
 	player = p
+
+
+## The patrol's storm lantern on its nail by the cage: a low, warm pool on him so he reads in the dark coal room.
+func _cage_lamp(at: Vector3) -> void:
+	var l: OmniLight3D = OmniLight3D.new()
+	l.name = "JakubCageLamp"
+	l.light_color = Color(1.0, 0.72, 0.42)
+	l.light_energy = 0.55
+	l.omni_range = 3.2
+	l.omni_attenuation = 1.4
+	l.shadow_enabled = false
+	map.add_child(l)
+	l.global_position = at + Vector3(0.9, 2.1, 0.0)
 
 
 ## Beside a survivor's spawn marker, a step behind.

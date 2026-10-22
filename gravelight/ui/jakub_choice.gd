@@ -24,8 +24,8 @@ func _ready() -> void:
 	font.font_names = PackedStringArray(["Courier New", "Consolas"])
 	font.font_weight = 700
 	var panel: PanelContainer = PanelContainer.new()
-	panel.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	panel.position = Vector2(-380, -360)
+	panel.set_anchors_preset(Control.PRESET_CENTER)
+	panel.position = Vector2(-380, -250)   # above the prompt and the subtitles
 	panel.custom_minimum_size = Vector2(760, 210)
 	var sb: StyleBoxFlat = StyleBoxFlat.new()
 	sb.bg_color = Color(0.07, 0.07, 0.06, 0.93)

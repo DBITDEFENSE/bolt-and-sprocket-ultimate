@@ -11,8 +11,8 @@ extends Node
 ## Prints "[clip-jakub] ..." beats and RESULT PASS/FAIL.
 
 const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
-const COAL_CAM: Vector3 = Vector3(4.7, -1.55, 7.7)
-const COAL_LOOK: Vector3 = Vector3(2.0, -2.5, 3.2)
+const COAL_CAM: Vector3 = Vector3(4.55, -1.45, 6.9)
+const COAL_LOOK: Vector3 = Vector3(1.7, -2.15, 4.3)
 
 var _map: MapRoot
 var _cam: Camera3D
@@ -24,6 +24,7 @@ var _fails: PackedStringArray = []
 var _first_seen: Dictionary = {}
 var _downed_at: float = -1.0
 var _revived: bool = false
+var _revived_t: float = 0.0
 var _talked: bool = false
 var _gave: bool = false
 
@@ -46,6 +47,7 @@ func _ready() -> void:
 	GLBus.player_revived.connect(func(p: int, by: int) -> void:
 		if p == JakubCompanion.pid():
 			_revived = true
+			_revived_t = _t
 			print("[clip-jakub] t=%.1f Jakub revived by P%d" % [_t, by]))
 
 
@@ -81,7 +83,12 @@ func _physics_process(delta: float) -> void:
 		1:
 			var eye: Vector3 = h.global_position + Vector3.UP * 1.65
 			var to: Vector3 = (jp.global_position + Vector3.UP * 1.4 - eye)
-			_look(eye - to.normalized() * 0.9 + Vector3(0.35, 0.15, 0.0), jp.global_position + Vector3.UP * 1.35, delta, 1.0)
+			to.y = 0.0
+			var side: Vector3 = Vector3(-to.z, 0.0, to.x).normalized()
+			var mid: Vector3 = (eye + jp.global_position + Vector3.UP * 1.5) * 0.5
+			var a1: Vector3 = _clear_from(mid, mid + side * 1.9 - to.normalized() * 0.4)
+			var a2: Vector3 = _clear_from(mid, mid - side * 1.9 - to.normalized() * 0.4)
+			_look(a1 if a1.distance_to(mid) >= a2.distance_to(mid) else a2, jp.global_position + Vector3.UP * 1.35, delta, 1.0)
 			if not _talked and _beat_t > 1.0:
 				_talked = true
 				jc.on_talk(h)
@@ -98,21 +105,28 @@ func _physics_process(delta: float) -> void:
 					jc.choose(h, true)
 			if _gave and _beat_t > 9.0:
 				_next("fight")
-				h.global_position = Vector3(9.0, -3.2, 4.0)
+				h.global_position = Vector3(9.5, -3.2, 3.6)
 		2:
 			var back: Vector3 = jp.global_basis.z
 			back.y = 0.0
-			_look(jp.global_position + back.normalized() * 2.4 + Vector3.UP * 2.0 + jp.global_basis.x * 0.7,
+			var head: Vector3 = jp.global_position + Vector3.UP * 1.6
+			_look(_clear_from(head, head + back.normalized() * 2.6 + Vector3.UP * 0.7 + jp.global_basis.x * 0.8),
 				jp.global_position - jp.global_basis.z * 6.0 + Vector3.UP * 1.0, delta, 0.25)
-			if _beat_t > 28.0:
+			if _beat_t > 22.0:
 				_next("revive")
 				if not jp.downed:
 					jp.take_hit(jp.hp + 1.0, null)
 				_downed_at = _t
 		3:
 			var c2: Vector3 = jp.global_position
-			_look(c2 + Vector3(3.2, 2.2, 2.6), c2 + Vector3.UP * 0.4, delta, 0.3)
-			if _revived and _beat_t > 15.0 or _beat_t > 22.0:
+			_look(_clear_from(c2 + Vector3.UP * 1.0, c2 + Vector3(2.6, 2.0, 2.2)), c2 + Vector3.UP * 0.4, delta, 0.3)
+			if not _revived and _beat_t > 13.0 and jp.downed:
+				# the bot didn't make it in time: the human (off camera) picks him up
+				var rp: RevivePoint = jp.get_node_or_null("Revive") as RevivePoint
+				h.global_position = jp.global_position + Vector3(0.9, 0.0, 0.0)
+				if rp != null:
+					rp.interact(h)
+			if (_revived and _t - _revived_t > 4.0) or _beat_t > 24.0:
 				_finish()
 	if jp.downed and _beat == 2:
 		jp.revive(1)   # the fight beat keeps him up; the revive beat is next
@@ -127,6 +141,8 @@ func _go_live() -> void:
 		if d != null and d.door_id == &"door_old_cellar":
 			d.open(1)
 	_map.director.kill_all(true)
+	GameState.power_on = true   # the cellar bulbs (the clip only: they light the beats)
+	GLBus.power_activated.emit()
 	RoundManager.debug_set_round(5)
 	_map.player.global_position = Vector3(14, 0, 8)
 	_cam = Camera3D.new()
@@ -138,6 +154,13 @@ func _go_live() -> void:
 	_cam.look_at(COAL_LOOK, Vector3.UP)
 	_cam.make_current()
 	print("[clip-jakub] live: beat breakout")
+
+
+## A camera spot from `from` toward `want`, pulled in short of any wall (the cellar is cramped).
+func _clear_from(from: Vector3, want: Vector3) -> Vector3:
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, want, 1 | (1 << 8))
+	var r: Dictionary = _map.get_world_3d().direct_space_state.intersect_ray(q)
+	return want if r.is_empty() else from.lerp(r["position"], 0.8)
 
 
 func _next(name_s: String) -> void:
