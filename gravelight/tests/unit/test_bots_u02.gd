@@ -218,3 +218,19 @@ func test_moving_formation_is_beside_and_ahead_never_behind() -> void:
 		sides.append(signf(off.x))
 	assert_true(sides.has(1.0) and sides.has(-1.0), "both sides covered")
 	assert_eq(BotConfig.moving_slot_offset(f, 0, Vector3.ZERO), Vector3.ZERO)
+
+
+func test_orders_are_data_driven() -> void:
+	assert_eq(BotConfig.order_ids(cfg), BotConfig.COMMANDS, "the shipped wheel: the four built-in orders")
+	assert_eq(BotConfig.order_label(cfg, &"hold"), "Hold here")
+	var more: Dictionary = {"commands": {"orders": [{"id": "follow", "label": "Follow me"}, {"id": "train", "label": "Train with me"},
+		{"id": "hold", "label": "Hold here"}, {"id": "buy_perks", "label": "Buy perks now"}, {"id": "repair"}, {"id": "revive"}]}}
+	var ids: Array[StringName] = BotConfig.order_ids(more)
+	assert_eq(ids.size(), 6)
+	assert_eq(BotConfig.order_label(more, &"buy_perks"), "Buy perks now")
+	assert_eq(BotConfig.order_label(more, &"repair"), "Repair", "no label: the id capitalised")
+	var st: BotCommandState = BotCommandState.new(120.0, 28.0, ids)
+	st.press()
+	st.look(Vector2(110, -60))   # 60 degrees: the second of six segments
+	assert_eq(st.release(), &"train", "a new order is picked like any other")
+	assert_eq(BotConfig.order_ids({}), BotConfig.COMMANDS, "no table: the built-in orders")

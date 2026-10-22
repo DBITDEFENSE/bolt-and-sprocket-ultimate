@@ -22,7 +22,11 @@ var _callout_t: float = 0.0
 var _t: float = 0.0
 var _round_t: float = 0.0
 var _wall_buys: Array[WallBuy] = []
-## The current squad order (BotConfig.COMMANDS) and, for "hold", the spot.
+## Emitted for every order given from the wheel (or set_command), known to the brains or not: the hook for a
+## later AI layer (Update 03) and for companions. `at` is the pointed spot (INF when none).
+signal order_given(order_id: StringName, at: Vector3)
+
+## The current squad order (one of BotConfig.COMMANDS) and, for "hold", the spot.
 var command: StringName = &"follow"
 var hold_point: Vector3 = Vector3.INF
 ## Choke points (world AABBs): open doorways and staircases. [{"box": AABB, "kind": "door"/"stair", "node"}]
@@ -324,8 +328,11 @@ func callout(bot: BotBrain, category: String, force: bool = false) -> bool:
 ## A squad order from the wheel (or the dev console / tests): every brain follows it; the nearest bot
 ## acknowledges it. "hold" holds `at` (the spot the human points at; the human's feet when INF).
 func set_command(cmd: StringName, at: Vector3 = Vector3.INF) -> void:
-	if not BotConfig.COMMANDS.has(cmd):
+	if cmd == &"":
 		return
+	order_given.emit(cmd, at)
+	if not BotConfig.COMMANDS.has(cmd):
+		return   # an order from the data the brains don't know yet: only the signal
 	command = cmd
 	hold_point = Vector3.INF
 	var h: Player = human()
@@ -342,11 +349,7 @@ func set_command(cmd: StringName, at: Vector3 = Vector3.INF) -> void:
 
 
 static func command_label(cmd: StringName) -> String:
-	match cmd:
-		&"hold": return "Hold here"
-		&"repair": return "Repair barricades"
-		&"revive": return "Revive priority"
-	return "Follow me"
+	return BotConfig.order_label(BotConfig.cfg(), cmd)
 
 
 ## Where a holding bot stands: a ring of commands.ring_radius_m around the hold point, by formation index.

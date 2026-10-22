@@ -185,7 +185,9 @@
     "step_aside_m": 1.8,
     "choke_near_m": 4.0,
     "narrow_half_width_m": 0.85,
-    "choke_report_s": 3.0
+    "choke_report_s": 3.0,
+    "fight_slack_m": 3.0,
+    "special_near_m": 2.0
   },
   "combat": {
     "kill_share": {
@@ -205,11 +207,15 @@
     "damage_mult": 1.0,
     "round_start_pistol_refill": true,
     "backpedal_radius_m": 2.6,
+    "outrun_speed_frac": 0.9,
+    "starved_frac": 0.25,
+    "pistol_swap_m": 2.2,
+    "resupply_clear_m": 6.0,
     "_doc": "window_target_priority raises zombies at windows; a bot backs away from anything closer than backpedal_radius_m while it shoots; melee_range_m is the knife; danger_radius_m / crowd_count / flee_hp_frac decide when it kites instead."
   },
   "revive": {
     "safe_radius_m": 3.0,
-    "risk_bleed_s": 15.0,
+    "risk_bleed_s": 25.0,
     "reach_m": 1.4
   },
   "repair": {
@@ -232,11 +238,11 @@
       "kar98k"
     ],
     "weapon_buffer_scrip": 150,
-    "ammo_below_frac": 0.35,
+    "ammo_below_frac": 0.5,
     "ammo_box": {
       "_doc": "Update 02 section 4: a bot refills its driest carried gun (reserve under below_frac) at the nearest ammo box when its own Scrip covers the box price plus buffer_scrip. priority is the errand score before distance (wall-buy ammo is 60).",
       "enabled": true,
-      "below_frac": 0.35,
+      "below_frac": 0.5,
       "buffer_scrip": 100,
       "priority": 62.0
     },
@@ -306,7 +312,7 @@
     ]
   },
   "commands": {
-    "_doc": "The squad command wheel (hold bot_command, default T / D-pad down): follow (default), hold (the bots hold the spot the human points at, in a ring of ring_radius_m, and only repair boards within hold_repair_radius_m of it), repair (boards anywhere within repair_range_m of the leader, also mid-round when nothing is within repair_quiet_m), revive (revives first, even under fire; no shopping; a tight follow at revive_follow_m). Applies to every BotBrain (and later companions). point_range_m: how far the hold spot can be pointed. wheel_deadzone_px / wheel_radius_px: mouse travel to pick a segment.",
+    "_doc": "The squad command wheel (hold bot_command, default T / D-pad down): follow (default), hold (the bots hold the spot the human points at, in a ring of ring_radius_m, and only repair boards within hold_repair_radius_m of it), repair (boards anywhere within repair_range_m of the leader, also mid-round when nothing is within repair_quiet_m), revive (revives first, even under fire; no shopping; a tight follow at revive_follow_m). Applies to every BotBrain (and later companions). point_range_m: how far the hold spot can be pointed. wheel_deadzone_px / wheel_radius_px: mouse travel to pick a segment. orders: the wheel's segments, clockwise from the top, each {id, label}; the brains act on follow / hold / repair / revive (BotConfig.COMMANDS), any other id is only emitted (BotSquad.order_given) for a later AI layer to handle. The acknowledging line is VO category CMD_<ID>.",
     "hold_point_range_m": 20.0,
     "ring_radius_m": 1.6,
     "hold_repair_radius_m": 8.0,
@@ -314,6 +320,24 @@
     "repair_quiet_m": 6.0,
     "revive_follow_m": 3.5,
     "wheel_deadzone_px": 28.0,
-    "wheel_radius_px": 120.0
+    "wheel_radius_px": 120.0,
+    "orders": [
+      {
+        "id": "follow",
+        "label": "Follow me"
+      },
+      {
+        "id": "hold",
+        "label": "Hold here"
+      },
+      {
+        "id": "repair",
+        "label": "Repair barricades"
+      },
+      {
+        "id": "revive",
+        "label": "Revive priority"
+      }
+    ]
   }
 }

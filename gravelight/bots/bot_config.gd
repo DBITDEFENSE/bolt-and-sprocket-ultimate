@@ -256,9 +256,38 @@ static func bonus_trigger(bcfg: Dictionary, perk_id: StringName) -> String:
 	return str((bcfg.get("triggers", {}) as Dictionary).get(String(perk_id), ""))
 
 
-## Squad orders from the command wheel (bots.json commands). Index order = the wheel's segments, clockwise from
-## the top.
+## The squad orders built into the brains (BotBrain.on_command). The wheel's list itself is data
+## (bots.json commands.orders); an order id the brains don't know is still emitted (BotSquad.order_given) for
+## whatever handles it (a later AI layer), and the bots keep their current order.
 const COMMANDS: Array[StringName] = [&"follow", &"hold", &"repair", &"revive"]
+
+
+## The command wheel's orders, clockwise from the top (bots.json commands.orders: [{"id", "label", "vo"?}]).
+## Falls back to COMMANDS when the table has none.
+static func orders(c: Dictionary) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for o: Variant in (c.get("commands", {}) as Dictionary).get("orders", []):
+		if o is Dictionary and str((o as Dictionary).get("id", "")) != "":
+			out.append(o as Dictionary)
+	if out.is_empty():
+		for id: StringName in COMMANDS:
+			out.append({"id": String(id), "label": String(id).capitalize()})
+	return out
+
+
+static func order_ids(c: Dictionary) -> Array[StringName]:
+	var out: Array[StringName] = []
+	for o: Dictionary in orders(c):
+		out.append(StringName(str(o["id"])))
+	return out
+
+
+## An order's label for people ("Hold here"); the id capitalised when the table has none.
+static func order_label(c: Dictionary, id: StringName) -> String:
+	for o: Dictionary in orders(c):
+		if StringName(str(o["id"])) == id:
+			return str(o.get("label", String(id).capitalize()))
+	return String(id).capitalize()
 
 
 ## The wheel segment a look vector points at (screen space, -y up): 0 at the top, clockwise; -1 inside the

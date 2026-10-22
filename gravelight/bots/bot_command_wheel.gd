@@ -25,7 +25,7 @@ func _init() -> void:
 func setup(s: BotSquad) -> void:
 	squad = s
 	_ccfg = BotConfig.cfg().get("commands", {})
-	state = BotCommandState.new(float(_ccfg.get("wheel_radius_px", 120.0)), float(_ccfg.get("wheel_deadzone_px", 28.0)))
+	state = BotCommandState.new(float(_ccfg.get("wheel_radius_px", 120.0)), float(_ccfg.get("wheel_deadzone_px", 28.0)), BotConfig.order_ids(BotConfig.cfg()))
 	_canvas = Wheel.new()
 	_canvas.wheel = self
 	_canvas.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -132,7 +132,7 @@ class Wheel extends Control:
 		var c: Vector2 = get_viewport_rect().size * 0.5
 		var r: float = 175.0
 		var sel: int = wheel.state.selected()
-		var n: int = BotConfig.COMMANDS.size()
+		var n: int = wheel.state.order_list.size()
 		draw_circle(c, r + 8.0, Color(0.04, 0.03, 0.02, 0.62))
 		for i: int in n:
 			var a0: float = -PI * 0.5 + TAU * (float(i) - 0.5) / float(n)
@@ -144,14 +144,14 @@ class Wheel extends Control:
 			for k2: int in range(12, -1, -1):
 				var a2: float = lerpf(a0, a1, float(k2) / 12.0)
 				pts.append(c + Vector2(cos(a2), sin(a2)) * 42.0)
-			var cmd: StringName = BotConfig.COMMANDS[i]
+			var cmd: StringName = wheel.state.order_list[i]
 			var current: bool = wheel.squad != null and wheel.squad.command == cmd
 			var fill: Color = Color(0.62, 0.12, 0.09, 0.85) if i == sel else (Color(0.3, 0.26, 0.17, 0.55) if current else Color(0.16, 0.14, 0.11, 0.55))
 			draw_colored_polygon(pts, fill)
 			var mid: float = (a0 + a1) * 0.5
 			draw_line(c + Vector2(cos(a0), sin(a0)) * 42.0, c + Vector2(cos(a0), sin(a0)) * r, Color(0.93, 0.89, 0.8, 0.35), 1.5)
 			if font != null:
-				var label: String = BotSquad.command_label(cmd).to_upper()
+				var label: String = BotConfig.order_label(BotConfig.cfg(), cmd).to_upper()
 				var fs: int = 17
 				var w: float = font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
 				var lp: Vector2 = c + Vector2(cos(mid), sin(mid)) * (r * 0.66) + Vector2(-w * 0.5, fs * 0.35)

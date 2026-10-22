@@ -2,19 +2,23 @@ class_name BotCommandState
 extends RefCounted
 ## The squad command wheel's state (U02 section 5), pure so it is unit-tested: press opens it, look deltas (mouse)
 ## or a stick direction move the pointer inside `radius`, the segment under the pointer is the selection
-## (BotConfig.wheel_index; nothing inside `deadzone`), release closes it and returns the chosen order
-## (BotConfig.COMMANDS) or &"" when nothing was picked; cancel closes it without one.
+## (BotConfig.wheel_index; nothing inside `deadzone`), release closes it and returns the chosen order id (from
+## `order_list`, the data-driven bots.json commands.orders) or &"" when nothing was picked; cancel closes it
+## without one.
 
 var is_open: bool = false
 var pointer: Vector2 = Vector2.ZERO
 var radius: float = 120.0
 var deadzone: float = 28.0
-var segments: int = BotConfig.COMMANDS.size()
+var order_list: Array[StringName] = []
+var segments: int = 0
 
 
-func _init(radius_px: float = 120.0, deadzone_px: float = 28.0) -> void:
+func _init(radius_px: float = 120.0, deadzone_px: float = 28.0, ids: Array[StringName] = BotConfig.COMMANDS) -> void:
 	radius = radius_px
 	deadzone = deadzone_px
+	order_list = ids.duplicate()
+	segments = order_list.size()
 
 
 func press() -> void:
@@ -43,7 +47,7 @@ func selected() -> int:
 
 func selected_command() -> StringName:
 	var i: int = selected()
-	return BotConfig.COMMANDS[i] if i >= 0 and i < BotConfig.COMMANDS.size() else &""
+	return order_list[i] if i >= 0 and i < order_list.size() else &""
 
 
 func release() -> StringName:

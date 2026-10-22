@@ -432,7 +432,9 @@ func _decide_mode() -> void:
 		return
 	var quiet: bool = _zs.is_empty() or RoundManager.state != RoundManager.State.ROUND \
 		or (_near_d > float((_cfg.get("repair", {}) as Dictionary).get("quiet_radius_m", 7.0)) and _zs.size() <= 3) \
-		or (command == &"repair" and _near_d > float((_cfg.get("commands", {}) as Dictionary).get("repair_quiet_m", 6.0)))
+		or (command == &"repair" and _near_d > float((_cfg.get("commands", {}) as Dictionary).get("repair_quiet_m", 6.0))) 		or (_ammo_starved() and _near_d > float(_combat.get("resupply_clear_m", 6.0)))
+	if quiet and RoundManager.is_special_round and RoundManager.state == RoundManager.State.ROUND and not _ammo_starved():
+		quiet = false   # a Bellringer pack round: stay with the squad, no errands unless running dry
 	if quiet:
 		if _errand.is_empty() and _errand_cd <= 0.0:
 			_errand_cd = 0.7
@@ -443,6 +445,17 @@ func _decide_mode() -> void:
 	else:
 		_drop_errand()
 	mode = Mode.FOLLOW
+
+
+## Running dry: the best long gun carried is under combat.starved_frac of its ammo (mag + reserve). A bot then
+## goes for ammo (a wall-buy, an ammo box) mid-round as soon as nothing is within combat.resupply_clear_m.
+func _ammo_starved() -> bool:
+	var best: float = -1.0
+	for w: WeaponInstance in player.weapons.slots:
+		if w.weapon_class() == &"pistol" or w.reserve_max() <= 0:
+			continue
+		best = maxf(best, float(w.mag + w.reserve) / float(w.mag_size() + w.reserve_max()))
+	return best >= 0.0 and best < float(_combat.get("starved_frac", 0.25))
 
 
 func _drop_errand() -> void:
@@ -735,7 +748,10 @@ func _weapon_logic() -> void:
 			other_loaded = i
 		if (inst.mag > 0 or inst.reserve > 0) and other_any < 0:
 			other_any = i
-	if w.mag == 0 and ((other_loaded >= 0 and _near_d < 6.0) or (w.reserve == 0 and other_any >= 0)):
+	# an empty long gun is reloaded (kiting if it must); the start pistol is only for a gun with nothing left, or
+	# for something already at arm's length
+	var swap_ok: bool = other_loaded >= 0 and (player.weapons.slots[other_loaded].weapon_class() != &"pistol" or _near_d < float(_combat.get("pistol_swap_m", 2.2)) or w.reserve == 0)
+	if w.mag == 0 and ((swap_ok and _near_d < 6.0) or (w.reserve == 0 and other_any >= 0)):
 		_select(other_loaded if other_loaded >= 0 else other_any)
 	elif w.mag == 0 and w.reserve > 0 and not _reloading:
 		_start_reload()
@@ -1030,6 +1046,8 @@ func _tick_follow(delta: float) -> void:
 	var d_slot: float = _flat(slot, me)
 	var moving: bool = not hold and _leader_moving(leader)
 	var near: float = float((_cfg.get("commands", {}) as Dictionary).get("revive_follow_m", 3.5)) if command == &"revive" else float(_follow.get("near_m", 2.5))
+	if RoundManager.is_special_round and RoundManager.state == RoundManager.State.ROUND:
+		near = minf(near, float(_follow.get("special_near_m", 2.0)))   # packs: close up round the leader
 	_sprint = (not hold and d_leader > float(_follow.get("catchup_sprint_m", 11.0))) or d_slot > 6.0
 	if _make_way():
 		pass
@@ -1066,7 +1084,8 @@ func _leader_moving(leader: Player) -> bool:
 func _keep_up(leader: Player) -> bool:
 	if command == &"hold" and squad.hold_point != Vector3.INF:
 		return _flat(_follow_point(leader), player.global_position) > 2.5
-	return _leader_moving(leader) or _flat(leader.global_position, player.global_position) > float(_follow.get("far_m", 6.5)) * 1.2
+	var off_slot: float = _flat(_slot_point(leader), player.global_position)
+	return (_leader_moving(leader) and off_slot > float(_follow.get("fight_slack_m", 3.0))) or _flat(leader.global_position, player.global_position) > float(_follow.get("far_m", 6.5)) * 1.2
 
 
 ## Where this bot wants to be: its hold spot under a "hold" order, else its formation slot.
@@ -1660,8 +1679,13 @@ func ammo_box_candidate(anchor: Vector3, range_m: float, scrip: int, scfg: Dicti
 	var econ: Dictionary = AmmoBox.cfg()
 	var slot: int = -1
 	var worst: float = float(acfg.get("below_frac", scfg.get("ammo_below_frac", 0.35)))
+	var long_gun: bool = false
+	for lw: WeaponInstance in player.weapons.slots:
+		long_gun = long_gun or lw.weapon_class() != &"pistol"
 	for i: int in player.weapons.slots.size():
 		var w: WeaponInstance = player.weapons.slots[i]
+		if long_gun and w.weapon_class() == &"pistol":
+			continue   # (U02 s5) the start pistol isn't worth a box while a long gun is carried
 		var frac: float = float(w.reserve) / float(maxi(1, w.reserve_max()))
 		if frac < worst:
 			worst = frac
