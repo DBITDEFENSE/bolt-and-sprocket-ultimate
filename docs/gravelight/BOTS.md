@@ -144,3 +144,13 @@ times a second) and beyond 60 m.
 - `Player.bleedout_seconds` (> 0) gives that player its own co-op bleed-out clock (NetMatch.coop_downed).
 - Not counting as a player for zombie scaling: keep the companion out of `GameState.bot_ids` / `player_ids`
   scaling (MapRoot.scaled_player_count counts those); ammo boxes come from the §4 builder's `ammo_box` errand.
+
+## Update 03 section 3 (T-056): how bots move
+
+Bots now move with the human's own movement code: the same acceleration, sprint stamina, sprint-out before the
+first shot, slide and mantle, and a player's turn rate. Their bodies face the way they walk unless they are aiming.
+They keep out of your 1.2 m personal space, step aside when you walk at them, never park in doorways, on stairs or
+on your training line, and run training loops ahead of the horde (`data/gravelight/ai/routes_<map>.json`). When one
+is really stuck it re-plans after 2 s and wriggles free after 4 s. After 8 s it teleports, but only where nobody
+can see it. Details, the API and the numbers are in `docs/BOT_AI.md` section 4. Turn it off with `bots.json`
+`"locomotion": "v1"`.

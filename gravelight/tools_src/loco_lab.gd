@@ -449,9 +449,9 @@ func _setup_train() -> void:
 	if _clip:
 		_cam = Camera3D.new()
 		_map.add_child(_cam)
-		_cam.global_position = Vector3(23.0, 3.25, 15.0)
-		_cam.look_at(Vector3(15.0, 0.0, 6.5))
-		_cam.fov = 80.0
+		_cam.global_position = Vector3(8.6, 2.5, 15.2)
+		_cam.look_at(Vector3(17.5, 0.3, 6.5))
+		_cam.fov = 78.0
 		_cam.current = true
 
 

@@ -246,3 +246,124 @@ BotMetrics.note(pid, &"teleport")            # it was teleported
 BotMetrics.command_issued(bot_pid, cmd)      # the command wheel gave an order
 BotMetrics.command_done(bot_pid, cmd)        # the bot started acting on it
 ```
+
+With the locomotion layer on (section 4), `BotLocomotion` makes the first three calls. A brain that moves through
+it must not call them again.
+
+## 4. Locomotion layer (Update 03 section 3, T-056)
+
+The brain decides WHAT to do; `BotLocomotion` (`gravelight/bots/bot_locomotion.gd`, tuning in
+`data/gravelight/ai/locomotion.json`) decides HOW the body gets there. It is on by default (`bots.json`
+`"locomotion": "v2"`; `"v1"` = the old `BotBrain._move`; the soak's `--loco=v1|v2` overrides it for A/B runs).
+
+### The same movement as the human
+
+`Player` movement no longer reads `Input` directly. It reads a `MoveIntent` (`gravelight/player/move_intent.gd`:
+the move stick in the body's frame, jump, sprint, crouch, and fire/ADS for the sprint cancel). The local human fills
+it from the input actions each frame (`Player._read_move_intent`, the same reads as before, so `smoke_feel`,
+`test_feel_u02`, the playtest bot and the soak dummy are unchanged). A bot's locomotion fills its own and calls
+`Player.drive_bot(delta, intent)`. Bots therefore get the acceleration curves, sprint stamina, sprint only within
+~70° of where the body faces, slide physics and the mantle/vault probe. They cannot sprint while strafing or
+aiming. After a sprint, `fire_ready()` stays false for the gun's `movement.json sprint_out` time. The body turns at
+`bots.json skills.<skill>.turn_rate` (× `sprint_turn_mult` at a run). Without a look it faces where it moves (no
+moonwalking). With `look_at_dir` it faces the look and strafes. Bot footsteps stay with the RemoteBody (3D);
+`Player._footstep` is skipped for non-local players.
+
+### API (the brain codes against this)
+
+```gdscript
+loco.setup(player, squad)
+# every physics frame: exactly one of
+loco.move_to(pos, urgency := 0.5, stop_dist := 1.0)  # urgency 0 walk, >= 0.7 sprint (no look), 1 flee
+loco.follow(leader, slot_index)                      # loose wedge (formation.still / formation.moving)
+loco.hold(pos, facing)
+loco.train(route)                                    # TrainingRoute or null (a ring round the leader)
+loco.stop()
+loco.look_at_dir(dir) / loco.clear_look()            # 3D aim direction (yaw + pitch), turn-rate limited
+loco.tick(delta)
+# queries
+loco.arrived(), loco.is_stuck(), loco.path_length_to(pos), loco.current_target(), loco.debug_path()
+loco.train_face_dir(), loco.train_ok(), loco.fire_ready(), loco.sprint_out_left(), loco.avg_tick_us()
+loco.teleport_near(leader)                           # catch-up teleport, same unseen rule
+# pure (GUT: test_bot_locomotion.gd)
+BotLocomotion.personal_space_push(me, human, human_vel) -> Vector3
+BotLocomotion.wedge_offset(slots, i, heading, mirrored) / should_yield(...) / stuck_stage(...)
+BotLocomotion.path_crosses_door(...) / lift_ok(...)
+TrainingRoute.for_map(map_key) -> Array[TrainingRoute]   # routes whose doors / zones are open now
+```
+
+Locomotion owns the facing and calls the BotMetrics hooks. The brain keeps `net_flags` and the RemoteBody pose.
+Until the Update 03 brain lands, a thin adapter in `BotBrain` (`_loco_move`, marked "U03 section 3 locomotion
+adapter") turns the old brain's `_goal`/`_sprint`/aim into these calls.
+
+### What it does
+
+- **Paths:** `NavigationServer3D.map_get_path` with the squad's nav mask, rejected when it crosses a shut `BuyDoor`
+  (the same rule as `ZombieDirector.door_crossed`; Map 0's navmesh runs through doors). Danger is a post-path
+  cost: the path is sampled every metre against zombies (falling off over 2.5 m), live traps (`danger_contains`), a
+  Bell Dome's rim (group `bell_domes`), `fire_hazards` nodes, the blackboard's `danger_zones` (duck-typed) and an
+  unsafe lift cage. When that cost passes `alt_threshold`, detours through points 2.5 m and 4.5 m to either side of
+  the worst spot are planned and the cheapest wins. Godot 4.7 region travel costs can't express small moving
+  dangers, so this approach was chosen and measured instead. Path queries are budgeted at `plans_per_frame` (2) for
+  the whole squad. On an authored training loop the route's own validated samples are the path (no query).
+- **Never block a human:** a 1.2 m bubble, stretched up to 1 m ahead of a moving human, pushes the bot out, mostly
+  sideways off their line. A bot never steers into a human's bubble (that part of its wish is removed). A human whose
+  straight line passes within 1.3 m in the next 1.2 s makes it step aside, and so does standing on the human's
+  training line (their velocity 3 s ahead). A stopped bot leaves doorways and stairs (squad chokes) after 0.6 s.
+  Bots keep 0.9 m from each other.
+- **Formation:** `follow()` uses wedge slots `[angle from heading, radius]`. Standing: 135°/−135°/180° at
+  2.8–3.8 m. While the leader moves: 80°/−80°/40° at 2.4–3.6 m, predicted 0.6 s ahead, beside and ahead and never
+  behind (the horde's side). Slots snap to the navmesh and skip chokes, traps and danger zones (mirrored and
+  shrunk fallbacks). A slot more than 3.5 m away is run to.
+- **Training:** `train(route)` runs `lead_m` (3.5 m) ahead of its place on the loop. It sprints when the train's
+  head is within 3 m, walks at mid range, and waits when the head falls back past 7.5 m (turning to it:
+  `train_face_dir()`). Every 2 m it checks the next 6 m (zombies within 1.6 m of the line, a ray along it). If cut
+  off, it reverses (at most every 1.5 s), or `train_ok()` goes false when both ways are blocked.
+- **Stuck ladder:** no progress means the goal hasn't come 0.3 m closer and the body hasn't moved 0.6 m net in a
+  1 s window, so a moving goal isn't "stuck". At 2 s it repaths; at 4 s it nudges (a 1.2 s walk to a random
+  navmesh spot 1.5–3 m away); at 8 s it teleports past the obstacle (the goal, or the furthest path point 3–8 m on).
+  The teleport happens only when no human sees the bot or the spot (a 65° view cone to 60 m plus line of sight, and
+  never within 2 m of a human). Every teleport is logged. While watched it keeps nudging and retries every second.
+- **Lift (Kaltenbrunn):** a cage is a danger cost unless every standing teammate is in it and no zombie is within
+  10 m (`lift_ok`). Riding it (the button) is the brain's job.
+- **Mantle / slide:** blocked for 0.35 s walking into something `Player.probe_mantle()` accepts → jump (the shared
+  vault). Fleeing at a sprint (urgency ≥ 0.9) with a zombie within 4 m behind and 6 m of straight path → slide.
+
+### Training routes
+
+`TrainingRoute` (`gravelight/bots/training_route.gd`) is a closed loop. Its points are smoothed (Chaikin, with the
+cut capped at 1.2 m from each corner) and resampled every 0.5 m. It has `closest_param`, `point_at`, `advance`,
+`length`, `contains_ring`, `distance_along` and `tangent_at`. The brief asks for `TrainingRoute` resources; this
+project keeps tuning in JSON, so routes are data in `data/gravelight/ai/routes_<map>.json`. Validate them with
+`gravelight/tools_src/route_tool.tscn -- --map=map00 --validate`. The validator checks that every sample is on the
+navmesh, that there is room on both sides (physics rays at knee and chest height), that the ring width holds along
+85% of the loop, and that sample i to i+4 is walkable on the navmesh without a detour. `--dump=x0,z0,x1,z1,y`
+prints the navmesh as ASCII for authoring.
+
+| route | map | loop | needs |
+|---|---|---|---|
+| `map00_taproom` | 0 | 41 m round the taproom tables (the soak dummy's loop) | — |
+| `map00_taproom_stable` | 0 | 80 m: the taproom loop, out through the kitchen door, round the stable's east half, back | door_stable |
+| `map00_stable` | 0 | 21 m in the stable's east half | door_stable |
+| `map00_cellar_barrels` | 0 | 27 m round the Old Cellar barrel stack | door_old_cellar |
+| `map01_headframe` | 1 | 56 m round the headframe tower base, between the gatehouse and the coal shed | — |
+| `map01_pews` | 1 | 128 m, the Salt Chapel's outer aisles round the four pew blocks | zone F_CHAPEL |
+| `map01_turbines` | 1 | 48 m round turbine 1 (the T2–T3 gap is the Live Wire Fence's) | zone G_GENERATOR |
+
+Map notes found on the way: the navmesh has no way round the north end of Map 0's hay stairs (the stalls and the
+space under the landing), so the stable loop uses the east half. Map 1's navmesh has walkable islands inside the
+headframe tower base and the gatehouse (closest-point queries can land there; paths go round correctly).
+
+### The lab and the smoke
+
+`gravelight/tools_src/loco_lab.tscn` (`-- --only=<phase>`, `--clip`) and `smoke_bot_loco.tscn` use the same
+script. They run Map 0 with the bots' brains paused and drive the layer directly. Checks: the routes validate;
+follow (close, out of the bubble, spread ≥ 25°, no chokes); following a training human (within 7 m ≥ 80% of the
+time, no sustained blocking, no moonwalking); yield (a human walks through a holding bot's spot at full speed);
+hold (spot and facing); mantle (a waist-high box the navmesh doesn't know); door (never through the shut stable
+door); train (a lap ahead of 6 zombies, in the ring, the train tight, turning back when cut off); stuck (no teleport
+while watched, nudges, a teleport once unseen); budget.
+
+### Measured
+
+METRICS_PLACEHOLDER

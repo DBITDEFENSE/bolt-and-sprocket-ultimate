@@ -921,7 +921,7 @@ func _space_push(me: Vector3) -> Vector3:
 			var d: float = off.length()
 			if d < bm:
 				push += (off / d if d > 0.01 else Vector3(cos(float(player.player_id) * 2.1), 0.0, sin(float(player.player_id) * 2.1))) * (1.0 - d / bm) * 0.8
-		else:
+		elif not p.downed:
 			push += personal_space_push(me, p.global_position, p.velocity, pm, am) * 1.4   # humans weigh more
 	return push
 
@@ -933,8 +933,8 @@ func _no_closer(me: Vector3, wish: Vector3) -> Vector3:
 		return wish
 	var r: float = float(_g("space", "personal_m", 1.2)) + 0.4
 	for h: Player in squad.all_players():
-		if h.is_bot or h == player or h.spectating or not is_instance_valid(h):
-			continue
+		if h.is_bot or h == player or h.spectating or h.downed or not is_instance_valid(h):
+			continue   # (a downed human is someone to revive, not to give way to)
 		var to: Vector3 = Vector3(h.global_position.x - me.x, 0.0, h.global_position.z - me.z)
 		var d: float = to.length()
 		if d > r or d < 0.01 or absf(h.global_position.y - me.y) > 1.6:
