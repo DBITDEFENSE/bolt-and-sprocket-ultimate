@@ -11,18 +11,31 @@ static func cfg() -> Dictionary:
 	return GLData.table("bots")
 
 
-## A skill preset ("green" / "regular" / "veteran"); unknown names fall back to the default preset.
+## A skill preset's name after the old-name aliases (bots.json skill_aliases: green -> recruit, regular ->
+## veteran); unknown names give the default preset's name.
+static func skill_key(c: Dictionary, skill_name: String) -> String:
+	var aliases: Dictionary = c.get("skill_aliases", {})
+	var k: String = str(aliases.get(skill_name, skill_name))
+	if (c.get("skills", {}) as Dictionary).has(k):
+		return k
+	return str(c.get("skill_default", "veteran"))
+
+
+## A skill preset (Update 03 section 7: "recruit" / "veteran" / "elite"; the old "green" / "regular" map there):
+## bots.json skills.<name> (turn rate, bursts) with data/gravelight/ai/skills.json <name> (reaction, aim
+## convergence, decision noise, spend smartness) merged over it. Unknown names fall back to the default preset.
 static func skill(c: Dictionary, skill_name: String) -> Dictionary:
-	var skills: Dictionary = c.get("skills", {})
-	if skills.has(skill_name):
-		return skills[skill_name]
-	return skills.get(str(c.get("skill_default", "regular")), {})
+	var k: String = skill_key(c, skill_name)
+	var out: Dictionary = ((c.get("skills", {}) as Dictionary).get(k, {}) as Dictionary).duplicate()
+	out.merge(BotAIData.skill(k), true)
+	return out
 
 
-## The next skill preset in the menu cycle.
+## The next skill preset in the menu cycle (an old name counts as its new one).
 static func next_skill(c: Dictionary, current: String) -> String:
-	var order: Array = c.get("skill_order", ["regular"])
-	var i: int = order.find(current)
+	var order: Array = c.get("skill_order", ["veteran"])
+	var cur: String = str((c.get("skill_aliases", {}) as Dictionary).get(current, current))
+	var i: int = order.find(cur)
 	return str(order[(i + 1) % order.size()])
 
 
@@ -256,9 +269,9 @@ static func bonus_trigger(bcfg: Dictionary, perk_id: StringName) -> String:
 	return str((bcfg.get("triggers", {}) as Dictionary).get(String(perk_id), ""))
 
 
-## The squad orders built into the brains (BotBrain.on_command). The wheel's list itself is data
-## (bots.json commands.orders); an order id the brains don't know is still emitted (BotSquad.order_given) for
-## whatever handles it (a later AI layer), and the bots keep their current order.
+## The squad's standing orders (BotSquad.command, the T-031 / U02 set). Update 03: every order in the wheel's data
+## list (bots.json commands.orders) reaches the brains (BotBrain.on_order) as a high-weight action for 60 s or
+## until done (data/gravelight/ai/actions.json orders); these four also set the squad's standing order.
 const COMMANDS: Array[StringName] = [&"follow", &"hold", &"repair", &"revive"]
 
 

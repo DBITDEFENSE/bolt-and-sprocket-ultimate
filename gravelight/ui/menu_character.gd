@@ -81,7 +81,7 @@ func _unpick() -> void:
 func _build_squad() -> void:
 	var c: Dictionary = BotConfig.cfg()
 	var bots: int = BotConfig.clamp_bots(c, int(GLSettings.values.get("bots", 0)))
-	var skill: String = str(GLSettings.values.get("bot_skill", c.get("skill_default", "regular")))
+	var skill: String = BotConfig.skill_key(c, str(GLSettings.values.get("bot_skill", c.get("skill_default", "veteran"))))
 	var row: HBoxContainer = HBoxContainer.new()
 	row.add_theme_constant_override("separation", 10)
 	content.add_child(row)
@@ -120,7 +120,7 @@ func _start(scene: String, campaign: bool = false) -> void:
 	if scene == "":
 		return
 	GameState.bot_count = BotConfig.clamp_bots(BotConfig.cfg(), int(GLSettings.values.get("bots", 0)))
-	GameState.bot_skill = str(GLSettings.values.get("bot_skill", "regular"))
+	GameState.bot_skill = BotConfig.skill_key(BotConfig.cfg(), str(GLSettings.values.get("bot_skill", "veteran")))
 	GameState.bot_ai_mode = BotConfig.ai_mode_from_settings(GLSettings.values, GameState.bot_count)
 	if campaign:
 		Campaign.begin()

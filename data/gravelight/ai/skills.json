@@ -1,0 +1,42 @@
+{
+  "_doc": "The Bot Skill setting (Update 03 section 7): Recruit / Veteran / Elite (default Veteran). Merged over bots.json skills.<name> (turn rate, bursts, the movement layer's keys) by BotConfig.skill(). reaction_s: delay before the first shot at a new target. aim_error_deg: the initial miss when the aim swings onto a target; it converges with overshoot (overshoot: fraction swung past) and the tracking error shrinks from aim_error_deg to settle_error_deg over track_tau_s on a steady target. head_aim_mult scales the headshot preference. decision_noise: gaussian noise added to every action score (how often it picks the second-best idea). spend_smartness: chance it buys by the plan's first priority (else the second). The old names map here (bots.json skill_aliases: green -> recruit, regular -> veteran). No skill changes damage taken, ammo or health (no cheats).",
+  "recruit": {
+    "reaction_s": [0.27, 0.33],
+    "aim_error_deg": 7.0,
+    "settle_error_deg": 1.6,
+    "track_tau_s": 0.5,
+    "overshoot": 0.35,
+    "head_aim_mult": 0.6,
+    "fire_tolerance_deg": 4.0,
+    "decision_noise": 0.07,
+    "spend_smartness": 0.6,
+    "grenade_skill": 0.5,
+    "think_hz_mult": 0.8
+  },
+  "veteran": {
+    "reaction_s": [0.19, 0.25],
+    "aim_error_deg": 5.0,
+    "settle_error_deg": 1.0,
+    "track_tau_s": 0.4,
+    "overshoot": 0.25,
+    "head_aim_mult": 1.0,
+    "fire_tolerance_deg": 3.0,
+    "decision_noise": 0.03,
+    "spend_smartness": 0.88,
+    "grenade_skill": 0.75,
+    "think_hz_mult": 1.0
+  },
+  "elite": {
+    "reaction_s": [0.14, 0.17],
+    "aim_error_deg": 3.5,
+    "settle_error_deg": 0.6,
+    "track_tau_s": 0.32,
+    "overshoot": 0.15,
+    "head_aim_mult": 1.35,
+    "fire_tolerance_deg": 2.2,
+    "decision_noise": 0.01,
+    "spend_smartness": 1.0,
+    "grenade_skill": 0.95,
+    "think_hz_mult": 1.2
+  }
+}

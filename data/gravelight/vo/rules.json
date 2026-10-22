@@ -402,7 +402,11 @@
   "REVIVED": 2,
   "SKY_PLANE_DOWN": 2,
   "WRECK_PILOT": 2,
-  "MIDNIGHT": 2
+  "MIDNIGHT": 2,
+  "SPRINTER_BEHIND": 2,
+  "BOSS_INCOMING": 2,
+  "COVER": 2,
+  "WINDOW_OPEN": 2
  },
  "squad_second_channel": [
   "TEAM_DOWN",

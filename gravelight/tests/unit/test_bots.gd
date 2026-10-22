@@ -30,14 +30,15 @@ func test_every_skill_in_the_menu_cycle_exists() -> void:
 
 func test_skill_lookup_falls_back_to_the_default() -> void:
 	assert_eq(BotConfig.skill(cfg, "nonsense"), BotConfig.skill(cfg, str(cfg["skill_default"])))
-	assert_eq(BotConfig.next_skill(cfg, "green"), "regular")
-	assert_eq(BotConfig.next_skill(cfg, "veteran"), "green", "the cycle wraps")
-	assert_eq(BotConfig.next_skill(cfg, "???"), "green", "unknown restarts the cycle")
+	assert_eq(BotConfig.next_skill(cfg, "recruit"), "veteran")
+	assert_eq(BotConfig.next_skill(cfg, "elite"), "recruit", "the cycle wraps")
+	assert_eq(BotConfig.next_skill(cfg, "???"), "recruit", "unknown restarts the cycle")
+	assert_eq(BotConfig.next_skill(cfg, "green"), "veteran", "an old name counts as its new one (U03)")
 
 
-func test_skills_get_sharper_from_green_to_veteran() -> void:
-	var g: Dictionary = BotConfig.skill(cfg, "green")
-	var v: Dictionary = BotConfig.skill(cfg, "veteran")
+func test_skills_get_sharper_from_recruit_to_elite() -> void:
+	var g: Dictionary = BotConfig.skill(cfg, "recruit")
+	var v: Dictionary = BotConfig.skill(cfg, "elite")
 	assert_lt(float(v["aim_error_deg"]), float(g["aim_error_deg"]))
 	assert_lt(float(v["reaction_s"][1]), float(g["reaction_s"][1]))
 	assert_gt(float(v["head_aim_chance"]), float(g["head_aim_chance"]))

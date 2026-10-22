@@ -1,48 +1,65 @@
 class_name BotSquad
 extends Node
-## The AI teammates of a match (T-031), a child of the MapRoot in a solo match that asked for bots. Builds a
-## BotBrain for every bot Player, and holds what the brains share: who leads, who revives whom, the kill-share
-## ledger (BotConfig.human_share_ok), errand claims (one bot per window or machine), per-player kill counts
-## for the HUD, and the squad's voice (survivor VO lines as callouts, one at a time).
-##
-## Update 02 section 5 (T-050): each bot's random bonus perk (bots.json bonus_perk, PerkManager.grant_bonus), the
-## squad orders from the command wheel (`command`: follow / hold / repair / revive, applied to every brain), the
-## choke points bots must not park in (open doors, stairs; `chokes`), the nameplates (BotPlates) and the wheel
-## (BotCommandWheel). Companions (Jakub, U02 section 6) join through add_brain(player, options) with their own
-## BotBrain options (no perks, own bleed-out) and get the same orders.
+## The AI teammates of a match (T-031; Update 03, T-055), a child of the MapRoot in a solo match that asked for
+## bots. Builds a BotBrain for every bot Player, and holds what the brains share:
+##   - the squad blackboard (`blackboard`, BotBlackboard): known zombies (4 s memory), claimed tasks (who
+##     revives whom, who covers, who holds which window), the training route and its leader, danger zones (boss
+##     keep-away rings, fire, Bell Domes), power-ups, callout pings, roles;
+##   - update_shared(): revive claims (the nearest healthy bot with a safe path; the human first, then bots,
+##     then companions), a second bot covering a hot revive, squad roles (Anchor / Runner / Medic / Builder from
+##     the personalities), danger zones, the "sprinter behind you" and "window's open" callouts;
+##   - who leads (the human; the first standing bot when the human is out), the kill-share ledger, the errand
+##     node claims, per-player kill counts;
+##   - the squad's voice (callout(): survivor VO lines one at a time with cooldowns, each with a world-space ping
+##     marker, BotPings), the command wheel (BotCommandWheel; set_command for every order in bots.json
+##     commands.orders, each a high-weight action for 60 s or until done), the nameplates (BotPlates), and the
+##     dev console's `ai_debug` overlay (BotDebugOverlay).
+## U02 section 5: bonus perks, the spawn kit, choke points. Companions (Jakub, U02 section 6) join through
+## add_brain(player, options).
 
 var map: MapRoot
 var brains: Array[BotBrain] = []
+var blackboard: BotBlackboard = BotBlackboard.new()
 var kills: Dictionary = {}          # pid -> kills (humans too, for the ledger)
 var recent_kills: Array = []        # killer pids, newest last (kill share)
 var _cfg: Dictionary = {}
-var _claims: Dictionary = {}        # node instance id -> pid
-var _revivers: Dictionary = {}      # downed pid -> bot pid
+var _claims: Dictionary = {}        # node instance id -> pid (errand nodes: machines, doors, wall-buys)
 var _callout_t: float = 0.0
 var _t: float = 0.0
 var _round_t: float = 0.0
 var _wall_buys: Array[WallBuy] = []
-## Emitted for every order given from the wheel (or set_command), known to the brains or not: the hook for a
-## later AI layer (Update 03) and for companions. `at` is the pointed spot (INF when none).
+## Emitted for every order given from the wheel (or set_command). `at` is the pointed spot (INF when none).
 signal order_given(order_id: StringName, at: Vector3)
 
-## The current squad order (one of BotConfig.COMMANDS) and, for "hold", the spot.
+## The legacy squad order (one of BotConfig.COMMANDS) and, for "hold", the spot.
 var command: StringName = &"follow"
 var hold_point: Vector3 = Vector3.INF
+## The node the last open_door / fetch_part order pointed at.
+var order_target: Node = null
 ## Choke points (world AABBs): open doorways and staircases. [{"box": AABB, "kind": "door"/"stair", "node"}]
 var chokes: Array[Dictionary] = []
 ## Soak instrumentation: every time a bot stayed inside a choke longer than follow.choke_report_s.
 var choke_events: PackedStringArray = []
 ## The human's smoothed flat velocity (training detection for the moving formation).
 var leader_vel: Vector3 = Vector3.ZERO
+## Doors the human opened this match (bots buy doors on the human's path only after one).
+var human_doors_opened: int = 0
 var plates: BotPlates = null
 var wheel: BotCommandWheel = null
+var pings: BotPings = null
+var debug: BotDebugOverlay = null
 var _bot_cd: Dictionary = {}      # "pid:FAMILY" -> time a bark may come again
+var _shared_t: float = -1.0
+var _roles_t: float = -10.0
+var _call_t: float = 0.0
+var _window_said: Dictionary = {}
+var _tallies: Dictionary = {}
 
 
 func setup(map_root: MapRoot) -> void:
 	map = map_root
 	_cfg = BotConfig.cfg()
+	blackboard.memory_s = float(BotAIData.combat("perception").get("memory_s", 4.0))
 	add_to_group(&"bot_squad")
 	var i: int = 0
 	for pid: int in GameState.bot_ids:
@@ -57,10 +74,14 @@ func setup(map_root: MapRoot) -> void:
 	for n: Node in map.find_children("*", "WallBuy", true, false):
 		_wall_buys.append(n as WallBuy)
 	GLBus.enemy_killed.connect(_on_enemy_killed)
-	# DOWN / TEAM_DOWN / REVIVED / boss / door / buy / perk lines for bots come from VOManager (T-035), which
-	# handles every survivor's signal-driven categories in that survivor's voice at their body.
+	# DOWN / TEAM_DOWN / REVIVED / boss / door / buy / perk lines for bots come from VOManager (T-035).
 	GLBus.round_started.connect(_on_round_started)
 	GLBus.powerup_spawned.connect(_on_powerup_spawned)
+	GLBus.powerup_collected.connect(func(id: StringName, _by: int) -> void: blackboard.remove_powerup_at(id, Vector3.INF))
+	GLBus.powerup_expired.connect(func(id: StringName) -> void: blackboard.remove_powerup_at(id, Vector3.INF))
+	GLBus.boss_spawned.connect(_on_boss_spawned)
+	GLBus.crate_moved.connect(_on_crate_moved)
+	GLBus.door_opened.connect(_on_door_opened)
 	GLBus.player_downed.connect(_log_down)
 	if not brains.is_empty():
 		plates = BotPlates.new()
@@ -71,10 +92,16 @@ func setup(map_root: MapRoot) -> void:
 		wheel.name = "BotCommandWheel"
 		add_child(wheel)
 		wheel.setup(self)
+		pings = BotPings.new()
+		pings.name = "BotPings"
+		add_child(pings)
+	var con: Node = get_node_or_null("/root/GLConsole")
+	if con != null and con.has_method("register"):
+		con.call("register", "ai_debug", _cmd_ai_debug, "ai_debug 1|0|heat|panel: the bot AI overlay (actions, scores, roles, targets, paths, the blackboard, a threat heatmap)")
 
 
-## A brain for `p` (a bot Player, or later a companion): `options` override BotBrain.options (perks,
-## bonus_perk, shopping, kit, accuracy_mult; see there). `i` = formation index (-1 = next).
+## A brain for `p` (a bot Player, or a companion): `options` override BotBrain.options (see there).
+## `i` = formation index (-1 = next).
 func add_brain(p: Player, options: Dictionary = {}, i: int = -1) -> BotBrain:
 	var b: BotBrain = BotBrain.new()
 	b.name = "Brain"
@@ -87,9 +114,6 @@ func add_brain(p: Player, options: Dictionary = {}, i: int = -1) -> BotBrain:
 	return b
 
 
-## Bonus perks (bots.json bonus_perk, the "Bot Bonus Perk" setting): one random perk per bot from the perks
-## this map's machines sell, outside the cap, never a kit perk, no two the same. Brains that don't drink perks
-## (a companion's options.perks = false) get none.
 func _assign_bonus_perks() -> void:
 	var bcfg: Dictionary = _cfg.get("bonus_perk", {})
 	if not BotConfig.bonus_enabled(GLSettings.values, bcfg) or not Net.is_authority():
@@ -108,7 +132,6 @@ func _assign_bonus_perks() -> void:
 			takers[k].bonus_perk = picks[k]
 
 
-## The perks this map sells (its perk machines).
 func map_perk_ids() -> Array:
 	var out: Array = []
 	for n: Node in get_tree().get_nodes_in_group(&"perk_machines"):
@@ -118,9 +141,8 @@ func map_perk_ids() -> Array:
 	return out
 
 
-## The spawn kit (bots.json spawn_kit): the kit guns (when `weapons`: at the start and on a respawn) with the
-## `hold` gun in hand, and the kit perks (Ironhide Stout, Second Wind Schnapps), free. A full loadout (a campaign
-## arrival) is never overwritten. Called at the start, and by the brain when its bot gets up again.
+## The spawn kit (bots.json spawn_kit): the kit guns (at the start and on a respawn) with the `hold` gun in hand,
+## and the kit perks, free. A full loadout (a campaign arrival) is never overwritten.
 func apply_kit(p: Player, weapons: bool) -> void:
 	if p == null or not Net.is_authority():
 		return
@@ -152,7 +174,6 @@ func apply_kit(p: Player, weapons: bool) -> void:
 		PerkManager.grant(p.player_id, perk)
 
 
-## The objective planner (bots.json local_ai) on one bot, when the menu turned it on.
 func _start_planner() -> void:
 	if GameState.bot_ai_mode == "off" or brains.is_empty():
 		return
@@ -186,7 +207,6 @@ func time() -> float:
 	return _t
 
 
-## Seconds since the current round started (door purchases wait shopping.doors.round_delay_s).
 func round_time() -> float:
 	return _round_t
 
@@ -215,6 +235,9 @@ func all_players() -> Array[Player]:
 	var out: Array[Player] = []
 	for pid: Variant in map.players.keys():
 		out.append(map.players[pid] as Player)
+	for b: BotBrain in brains:
+		if not out.has(b.player):
+			out.append(b.player)   # a companion that isn't in the match's player table
 	return out
 
 
@@ -222,67 +245,54 @@ func all_players() -> Array[Player]:
 func standing() -> Array[Player]:
 	var out: Array[Player] = []
 	for p: Player in all_players():
-		if p.is_alive() and not p.spectating:
+		if is_instance_valid(p) and p.is_alive() and not p.spectating:
 			out.append(p)
 	return out
 
 
+## The nearest standing teammate of `me` to `pos` (null when alone).
+func nearest_standing(me: Player, pos: Vector3) -> Player:
+	var best: Player = null
+	var bd: float = INF
+	for p: Player in standing():
+		if p == me:
+			continue
+		var d: float = p.global_position.distance_to(pos)
+		if d < bd:
+			bd = d
+			best = p
+	return best
+
+
 ## Whom a bot follows: the human while they are in the match (standing or crawling), otherwise the first
-## standing bot (which then holds its ground: its leader is itself).
+## standing bot (which then leads: its leader is itself).
 func leader_for(bot: BotBrain) -> Player:
+	return leader_for_player(bot.player)
+
+
+func leader_for_player(p: Player) -> Player:
 	var h: Player = human()
 	if h != null and not h.spectating:
 		return h
 	for b: BotBrain in brains:
-		if b.player.is_alive() and not b.player.spectating:
+		if b.player.is_alive() and not b.player.spectating and int(b.options.get("escort_pid", 0)) == 0:
 			return b.player
-	return bot.player
+	return p
 
 
-## Kill share (bots.json combat.kill_share): false when the human has had too few of the recent kills.
+## No human leads (benched, bled out): the bots decide doors and range themselves.
+func bot_led() -> bool:
+	var h: Player = human()
+	return h == null or not is_instance_valid(h) or h.spectating
+
+
 func kill_share_ok() -> bool:
 	return BotConfig.human_share_ok(recent_kills, GameState.human_ids(), (_cfg.get("combat", {}) as Dictionary).get("kill_share", {}))
 
 
-## The downed player this bot should revive, if it is the one for the job: the human first, then bots, each
-## with the nearest standing bot that isn't already busy with someone else.
+## Kept for T-031 callers: the downed player this bot holds the revive claim on.
 func revive_target_for(bot: BotBrain) -> Player:
-	var s: NetMatch = Net.session
-	if s == null:
-		return null
-	var downed: Array[Player] = []
-	var h: Player = human()
-	if h != null and s.coop.is_downed(h.player_id):
-		downed.append(h)
-	for b: BotBrain in brains:
-		if s.coop.is_downed(b.player.player_id):
-			downed.append(b.player)
-	for pid: Variant in _revivers.keys():
-		var r: Player = player_by_id(int(_revivers[pid]))
-		if not s.coop.is_downed(int(pid)) or r == null or not r.is_alive() or r.spectating:
-			_revivers.erase(pid)
-	for t: Player in downed:
-		var pid2: int = t.player_id
-		if _revivers.has(pid2):
-			if int(_revivers[pid2]) == bot.player.player_id:
-				return t
-			continue
-		var best: BotBrain = null
-		var best_d: float = INF
-		for b2: BotBrain in brains:
-			if not b2.player.is_alive() or b2.player.spectating or b2.player == t:
-				continue
-			if _revivers.values().has(b2.player.player_id):
-				continue
-			var d: float = b2.player.global_position.distance_to(t.global_position)
-			if d < best_d:
-				best_d = d
-				best = b2
-		if best != null:
-			_revivers[pid2] = best.player.player_id
-			if best == bot:
-				return t
-	return null
+	return player_by_id(bot.revive_pid) if bot.revive_pid != 0 else null
 
 
 func can_claim(node: Node, pid: int) -> bool:
@@ -300,13 +310,258 @@ func release(node: Node, pid: int) -> void:
 		_claims.erase(id)
 
 
+## An ordered door / part already taken by another bot (one goes; the rest follow).
+func ordered_door_taken(node: Node, pid: int) -> bool:
+	return not can_claim(node, pid)
+
+
+# ================================================================== shared state (the brains call this at think)
+
+## Rate-limited squad upkeep: memory, danger zones, revive and cover claims, roles, squad callouts.
+func update_shared(now: float) -> void:
+	if now - _shared_t < 0.15:
+		return
+	_shared_t = now
+	blackboard.forget(now)
+	blackboard.prune_danger(now)
+	_update_danger(now)
+	_assign_revives(now)
+	if now - _roles_t >= float((BotAIData.table("actions").get("roles", {}) as Dictionary).get("roles_every_s", 2.0)):
+		_roles_t = now
+		_assign_roles()
+	_call_t -= 0.15
+	if _call_t <= 0.0:
+		_call_t = 0.5
+		_squad_callouts(now)
+
+
+## Bosses' keep-away rings (ai_counters keep_distance_m), burning ground, Bell Domes (a soft zone: its edge).
+func _update_danger(now: float) -> void:
+	for e: Variant in blackboard.known(now):
+		var z: Zombie = (e as Dictionary).get("node") as Zombie
+		if z == null or not is_instance_valid(z):
+			continue
+		var kd: float = float(BotAIData.counter(z.enemy_id).get("keep_distance_m", 0.0))
+		if kd > 0.0:
+			blackboard.add_danger(z.global_position, kd, 2.0, now + 0.6, "boss:%d" % z.get_instance_id())
+	var root: Node = map
+	for n: Node in root.get_children():
+		if n is BurningGround:
+			blackboard.add_danger((n as Node3D).global_position, float((n as BurningGround).radius) + 0.4, 1.5, now + 0.6, "fire:%d" % n.get_instance_id())
+		elif n is BellDome:
+			blackboard.add_danger((n as Node3D).global_position, float((n as BellDome).radius), 0.4, now + 0.6, "dome:%d" % n.get_instance_id())
+
+
+## Revive claims: per downed teammate (the human first, then bots, then companions) the nearest standing brain
+## with a safe path claims it; when the spot is hot (combat.json revive cover_threat) another covers.
+func _assign_revives(now: float) -> void:
+	var s: NetMatch = Net.session
+	if s == null:
+		return
+	var rc: Dictionary = BotAIData.combat("revive")
+	var downed: Array = []
+	for p: Player in all_players():
+		if is_instance_valid(p) and s.coop.is_downed(p.player_id):
+			downed.append(p)
+	# claims on people who are up again (or gone) go
+	for k: Variant in blackboard.claims.keys():
+		var key: String = str(k)
+		if key.begins_with("revive:") or key.begins_with("cover:"):
+			var pid: int = int(key.get_slice(":", 1))
+			if not s.coop.is_downed(pid):
+				blackboard.claims.erase(k)
+	downed.sort_custom(func(a: Player, b: Player) -> bool: return _revive_priority(a) < _revive_priority(b))
+	for t: Player in downed:
+		var key2: String = "revive:%d" % t.player_id
+		var holder: int = blackboard.claimer(key2, now)
+		var hb: BotBrain = _brain_of(holder)
+		if hb != null and hb.player.is_alive() and not hb.player.spectating:
+			_maybe_cover(t, holder, now, rc)
+			continue
+		if holder != 0:
+			blackboard.claims.erase(key2)
+		var best: BotBrain = null
+		var best_s: float = INF
+		for b: BotBrain in brains:
+			if b.player == t or not b.player.is_alive() or b.player.spectating or b.player.downed:
+				continue
+			if not blackboard.held_by(b.player.player_id, "revive:").is_empty():
+				continue
+			var path: PackedVector3Array = b.open_path(b.player.global_position, b.snap(t.global_position))
+			if path.is_empty():
+				continue
+			var plen: float = 0.0
+			for i: int in range(1, path.size()):
+				plen += path[i - 1].distance_to(path[i])
+			if plen > float(rc.get("max_claim_path_m", 45.0)):
+				continue
+			var sc: float = plen
+			if str(blackboard.roles.get(b.player.player_id, "")) == "medic":
+				sc -= float(rc.get("medic_discount_m", 6.0))
+			if not _path_safe(path, float(rc.get("path_safety_m", 1.6)), now):
+				sc += 15.0
+			if b.action == "revive" or b.action == "cover":
+				sc -= 2.0
+			if sc < best_s:
+				best_s = sc
+				best = b
+		if best != null:
+			blackboard.claim(key2, best.player.player_id, "revive", now, INF, t)
+			_maybe_cover(t, best.player.player_id, now, rc)
+
+
+func _revive_priority(p: Player) -> int:
+	if GameState.human_ids().has(p.player_id) or p == human():
+		return 0
+	var b: BotBrain = _brain_of(p.player_id)
+	return int(b.options.get("revive_priority", 1)) if b != null else 1
+
+
+func _maybe_cover(t: Player, reviver: int, now: float, rc: Dictionary) -> void:
+	var key: String = "cover:%d" % t.player_id
+	if blackboard.claimer(key, now) != 0:
+		return
+	var rb: BotBrain = _brain_of(reviver)
+	if rb == null or rb.perception.threat_near(t.global_position, 8.0) < float(rc.get("cover_threat", 0.35)):
+		return
+	var best: BotBrain = null
+	var bd: float = INF
+	for b: BotBrain in brains:
+		var pid: int = b.player.player_id
+		if pid == reviver or b.player == t or not b.player.is_alive() or b.player.spectating or b.player.downed:
+			continue
+		if not blackboard.held_by(pid, "revive:").is_empty() or not blackboard.held_by(pid, "cover:").is_empty():
+			continue
+		var d: float = b.player.global_position.distance_to(t.global_position)
+		if d < bd and d < 30.0:
+			bd = d
+			best = b
+	if best != null:
+		blackboard.claim(key, best.player.player_id, "cover", now, INF, t)
+
+
+func _path_safe(path: PackedVector3Array, r: float, now: float) -> bool:
+	for e: Variant in blackboard.known(now):
+		var zp: Vector3 = (e as Dictionary)["pos"]
+		var z2: Vector2 = Vector2(zp.x, zp.z)
+		for i: int in range(1, path.size()):
+			var a: Vector2 = Vector2(path[i - 1].x, path[i - 1].z)
+			var b: Vector2 = Vector2(path[i].x, path[i].z)
+			if Geometry2D.get_closest_point_to_segment(z2, a, b).distance_to(z2) < r:
+				return false
+	return true
+
+
+## A revive finished: the claims on that player go.
+func revive_done(pid: int) -> void:
+	blackboard.claims.erase("revive:%d" % pid)
+	blackboard.claims.erase("cover:%d" % pid)
+
+
+## Squad roles (Update 03 section 5): the assignment of Medic / Anchor / Builder / Runner that best fits the
+## standing brains' personality role_bias (every brain gets one; with fewer brains the best-fitting roles).
+func _assign_roles() -> void:
+	var bs: Array[BotBrain] = []
+	for b: BotBrain in brains:
+		if b.player.is_alive() and not b.player.spectating:
+			bs.append(b)
+	var roles: Array[String] = ["medic", "anchor", "builder", "runner"]
+	var biases: Array = []
+	for b2: BotBrain in bs:
+		biases.append((b2.personality.get("role_bias", {}) as Dictionary))
+	var pick: Array = BotSquad.best_roles(biases, roles)
+	blackboard.roles.clear()
+	for i: int in bs.size():
+		if i < pick.size() and str(pick[i]) != "":
+			blackboard.roles[bs[i].player.player_id] = str(pick[i])
+
+
+## Pure: the role per brain (index-aligned with `biases`, each {role: weight}) maximising the summed bias, every
+## role used at most once; brains beyond the roles get "". Ties go to the earlier role in `roles`.
+static func best_roles(biases: Array, roles: Array[String]) -> Array:
+	var st: Dictionary = {"best": [], "score": -INF}
+	var used: Array[bool] = []
+	used.resize(roles.size())
+	used.fill(false)
+	var cur: Array = []
+	cur.resize(biases.size())
+	cur.fill("")
+	_roles_rec(biases, roles, 0, 0.0, used, cur, st)
+	return st["best"]
+
+
+static func _roles_rec(biases: Array, roles: Array[String], i: int, s: float, used: Array[bool], cur: Array, st: Dictionary) -> void:
+	if i >= biases.size():
+		if s > float(st["score"]) + 0.0001:
+			st["score"] = s
+			st["best"] = cur.duplicate()
+		return
+	var any: bool = false
+	for r: int in roles.size():
+		if used[r]:
+			continue
+		any = true
+		used[r] = true
+		cur[i] = roles[r]
+		_roles_rec(biases, roles, i + 1, s + float((biases[i] as Dictionary).get(roles[r], 0.0)), used, cur, st)
+		used[r] = false
+	if not any:
+		cur[i] = ""
+		_roles_rec(biases, roles, i + 1, s, used, cur, st)
+
+
+## "Sprinter, behind you!" (a known sprinter close behind a teammate, coming for them) and "Window's open!"
+## (a window with no boards and zombies at it, nobody fixing it), each with a ping.
+func _squad_callouts(now: float) -> void:
+	var cc: Dictionary = BotAIData.combat("callouts")
+	var behind_m: float = float(cc.get("sprinter_behind_m", 8.0))
+	for p: Player in standing():
+		var fwd: Vector3 = -p.global_basis.z
+		fwd.y = 0.0
+		for e: Variant in blackboard.known(now):
+			var z: Zombie = (e as Dictionary).get("node") as Zombie
+			if z == null or not is_instance_valid(z) or z.tier != &"sprint" or z.target != p:
+				continue
+			var to: Vector3 = z.global_position - p.global_position
+			to.y = 0.0
+			if to.length() > behind_m or to.length() < 1.0 or fwd.angle_to(to.normalized()) < deg_to_rad(80.0):
+				continue
+			var caller: BotBrain = _nearest_standing_brain(p.global_position, p)
+			if caller != null:
+				callout(caller, "SPRINTER_BEHIND", false, z.global_position, "SPRINTER")
+			return
+	for n: Node in get_tree().get_nodes_in_group(&"barricades"):
+		var b: Barricade = n as Barricade
+		if b == null or b.boards > 0:
+			continue
+		if float(_window_said.get(b.get_instance_id(), -INF)) > now - 25.0:
+			continue
+		var climbing: bool = false
+		for e2: Variant in blackboard.known(now):
+			var z2: Zombie = (e2 as Dictionary).get("node") as Zombie
+			if z2 != null and is_instance_valid(z2) and z2.window == b and (z2.state == Zombie.State.CLIMB or z2.state == Zombie.State.WAIT_WINDOW):
+				climbing = true
+		if not climbing or blackboard.claimer("repair:%d" % b.get_instance_id(), now) != 0:
+			continue
+		var h: Player = human()
+		var ref: Vector3 = h.global_position if h != null else b.global_position
+		if b.global_position.distance_to(ref) > float(cc.get("window_open_m", 18.0)):
+			continue
+		var caller2: BotBrain = _nearest_standing_brain(b.global_position)
+		if caller2 != null and callout(caller2, "WINDOW_OPEN", false, b.global_position + Vector3.UP * 1.2, "WINDOW OPEN"):
+			_window_said[b.get_instance_id()] = now
+			return
+
+
+# ================================================================== the voice and the pings
+
 ## A survivor line from this bot's character (VO + subtitles), rolled against bots.json callouts.chance (by
 ## category, else its family: CMD_HOLD -> CMD) and rate-limited: one squad line at a time (cooldown_s) and a
-## per-bot gap per family (per_bot_cooldown_s). force_categories (orders, the bonus perk, downs) skip the squad
-## gap and the roll. Returns true when the line started or was queued.
-func callout(bot: BotBrain, category: String, force: bool = false) -> bool:
+## per-bot gap per family (per_bot_cooldown_s). force_categories skip the squad gap and the roll. With `ping_at`
+## a world-space ping marker (BotPings) flashes there, labelled `ping_text`. Returns true when the line started.
+func callout(bot: BotBrain, category: String, force: bool = false, ping_at: Vector3 = Vector3.INF, ping_text: String = "") -> bool:
 	var cc: Dictionary = _cfg.get("callouts", {})
-	var fam: String = category.get_slice("_", 0) if (category.begins_with("CMD_") or category.begins_with("BONUS_")) else category
+	var fam: String = category.get_slice("_", 0) if (category.begins_with("CMD_") or category.begins_with("BONUS_") or category.begins_with("PING_") or category.begins_with("TALLY_")) else category
 	force = force or (cc.get("force_categories", []) as Array).has(fam)
 	if _callout_t > 0.0 and not force:
 		return false
@@ -317,35 +572,92 @@ func callout(bot: BotBrain, category: String, force: bool = false) -> bool:
 	var chance: float = float(chances.get(category, chances.get(fam, 0.0)))
 	if not force and (chance <= 0.0 or randf() > chance):
 		return false
-	var spk: StringName = GLVO.CHARACTER_SPEAKERS.get(bot.player.character_id, &"DUT")
-	if GLVO.play_category(spk, category, 1.0, bot.player.player_id):   # positional, at the bot's body
+	var spk: StringName = GLVO.CHARACTER_SPEAKERS.get(bot.player.character_id, &"")
+	if spk == &"":
+		return false   # a companion without bark lines here (Jakub's own VO comes with him)
+	var ok: bool = GLVO.play_category(spk, category, 1.0, bot.player.player_id)
+	if not ok and category.begins_with("PING_"):
+		ok = GLVO.play_category(spk, "POWERUP_SEEN", 1.0, bot.player.player_id)
+	if ok:
 		_callout_t = float(cc.get("cooldown_s", 7.0))
 		_bot_cd[key] = _t + float((cc.get("per_bot_cooldown_s", {}) as Dictionary).get(fam, 0.0))
+		if ping_at != Vector3.INF:
+			ping(ping_at, ping_text if ping_text != "" else category.replace("_", " "), bot)
 		return true
 	return false
 
 
-## A squad order from the wheel (or the dev console / tests): every brain follows it; the nearest bot
-## acknowledges it. "hold" holds `at` (the spot the human points at; the human's feet when INF).
-func set_command(cmd: StringName, at: Vector3 = Vector3.INF) -> void:
+## A world-space ping (and the blackboard's log of it).
+func ping(at: Vector3, text: String, bot: BotBrain = null) -> void:
+	blackboard.ping(at, text, text, _t, bot.player.player_id if bot != null else 0)
+	if pings != null:
+		pings.ping(at, text, float(BotAIData.combat("callouts").get("ping_s", 3.0)))
+
+
+# ================================================================== orders (the command wheel)
+
+## A squad order from the wheel (or the dev console / tests), any id in bots.json commands.orders: every brain
+## takes it as a high-weight action for 60 s or until done (actions.json orders). "hold" holds `at` (the spot
+## the human points at; their feet when INF); "open_door" / "fetch_part" act on the door, power switch or
+## buildable part the human is looking at (`target`, or found along their view). The nearest bot acknowledges.
+func set_command(cmd: StringName, at: Vector3 = Vector3.INF, target: Node = null) -> void:
 	if cmd == &"":
 		return
 	order_given.emit(cmd, at)
-	if not BotConfig.COMMANDS.has(cmd):
-		return   # an order from the data the brains don't know yet: only the signal
-	command = cmd
-	hold_point = Vector3.INF
 	var h: Player = human()
 	if cmd == &"hold":
 		hold_point = at if at != Vector3.INF else (h.global_position if h != null else Vector3.INF)
+	if BotConfig.COMMANDS.has(cmd):
+		command = cmd
+	order_target = null
+	if cmd == &"open_door" or cmd == &"fetch_part":
+		order_target = target if target != null else looked_at(cmd)
 	for b: BotBrain in brains:
-		b.on_command(cmd)
-	var hud: Hud = get_tree().get_first_node_in_group(&"hud") as Hud
-	if hud != null:
-		hud.show_banner("Squad: %s" % command_label(cmd), 1.4)
+		b.on_order(cmd, at, order_target)
+	var hud: Node = get_tree().get_first_node_in_group(&"hud")
+	if hud != null and hud.has_method("show_banner"):
+		hud.call("show_banner", "Squad: %s" % command_label(cmd), 1.4)
 	var speaker: BotBrain = _nearest_standing_brain(h.global_position if h != null else Vector3.ZERO)
 	if speaker != null:
+		var moved: bool = cmd == &"follow" or cmd == &"train" or cmd == &"open_door" or cmd == &"fetch_part"
+		if moved and bool((speaker.personality.get("callouts", {}) as Dictionary).get("grumble_on_move", false)) and randf() < 0.5 \
+				and callout(speaker, "GRUMBLE", true):
+			return
 		callout(speaker, "CMD_" + String(cmd).to_upper(), true)
+
+
+## What the human is looking at for open_door / fetch_part: the nearest door (or the power switch for
+## open_door; a buildable part for fetch_part) inside a 14 degree cone of their view within 30 m, in sight.
+func looked_at(cmd: StringName) -> Node:
+	var h: Player = human()
+	if h == null or h.camera == null:
+		return null
+	var cam: Camera3D = h.camera
+	var from: Vector3 = cam.global_position
+	var fwd: Vector3 = -cam.global_basis.z
+	var cands: Array[Node] = []
+	if cmd == &"open_door":
+		for n: Node in get_tree().get_nodes_in_group(&"doors"):
+			if n is BuyDoor and not (n as BuyDoor).is_open:
+				cands.append(n)
+		for n2: Node in get_tree().get_nodes_in_group(&"power_switch"):
+			cands.append(n2)
+	else:
+		for n3: Node in get_tree().get_nodes_in_group(&"buildable_parts"):
+			if n3 is Interactable and (n3 as Node3D).is_visible_in_tree() and (n3 as Interactable).can_interact(h):
+				cands.append(n3)
+	var best: Node = null
+	var best_a: float = deg_to_rad(14.0)
+	for c: Node in cands:
+		var p: Vector3 = (c as Node3D).global_position + Vector3.UP * 1.0
+		var to: Vector3 = p - from
+		if to.length() > 30.0:
+			continue
+		var a: float = fwd.angle_to(to.normalized())
+		if a < best_a:
+			best_a = a
+			best = c
+	return best
 
 
 static func command_label(cmd: StringName) -> String:
@@ -358,14 +670,16 @@ func hold_spot(bot: BotBrain) -> Vector3:
 		return Vector3.INF
 	var r: float = float((_cfg.get("commands", {}) as Dictionary).get("ring_radius_m", 1.6))
 	var a: float = TAU * float(bot.index) / float(maxi(1, brains.size())) + 0.4
-	return hold_point + Vector3(cos(a) * r, 0.0, sin(a) * r)
+	var p: Vector3 = hold_point + Vector3(cos(a) * r, 0.0, sin(a) * r)
+	var s: Vector3 = bot.snap(p)
+	return s if s.distance_to(p) < 1.5 else bot.snap(hold_point)
 
 
-func _nearest_standing_brain(p: Vector3) -> BotBrain:
+func _nearest_standing_brain(p: Vector3, not_player: Player = null) -> BotBrain:
 	var best: BotBrain = null
 	var best_d: float = INF
 	for b: BotBrain in brains:
-		if not b.player.is_alive() or b.player.spectating:
+		if not b.player.is_alive() or b.player.spectating or b.player == not_player:
 			continue
 		var d: float = b.player.global_position.distance_to(p)
 		if d < best_d:
@@ -374,8 +688,8 @@ func _nearest_standing_brain(p: Vector3) -> BotBrain:
 	return best
 
 
-## Choke points the bots must not park in: every buy door's doorway (both sides) and every staircase / ramp slab
-## of the map (StaticBody3D named *Stair* / *Ramp* / *Flight* / *Gangway* with a box shape).
+# ================================================================== choke points (U02 section 5)
+
 func _build_chokes() -> void:
 	chokes.clear()
 	for n: Node in get_tree().get_nodes_in_group(&"doors"):
@@ -394,11 +708,10 @@ func _build_chokes() -> void:
 			if cs == null or not (cs.shape is BoxShape3D):
 				continue
 			var box: AABB = box_aabb(cs.global_transform, (cs.shape as BoxShape3D).size * 0.5)
-			box.size.y += 2.0   # the walking space above the slab
+			box.size.y += 2.0
 			chokes.append({"box": box, "kind": "stair", "node": n2})
 
 
-## The world AABB of a box (`half` extents) placed at `xf`.
 static func box_aabb(xf: Transform3D, half: Vector3) -> AABB:
 	var box: AABB = AABB(xf.origin, Vector3.ZERO)
 	for sx: float in [-1.0, 1.0]:
@@ -408,7 +721,6 @@ static func box_aabb(xf: Transform3D, half: Vector3) -> AABB:
 	return box
 
 
-## The choke a point is in ({} for none). Closed doors don't count (nobody stands in them).
 func choke_at(p: Vector3) -> Dictionary:
 	var q: Vector3 = p + Vector3.UP * 0.3
 	for c: Dictionary in chokes:
@@ -420,13 +732,15 @@ func choke_at(p: Vector3) -> Dictionary:
 	return {}
 
 
-## Soak instrumentation (BotBrain): a bot stayed in a choke longer than follow.choke_report_s.
-func report_choke(bot: BotBrain, kind: String, pos: Vector3, seconds: float) -> void:
-	choke_events.append("%s in a %s at (%.1f, %.1f, %.1f) for %.1fs (mode %s, round %d)" % [Net.display_name(bot.player.player_id), kind,
-		pos.x, pos.y, pos.z, seconds, BotBrain.Mode.keys()[bot.mode], RoundManager.current_round])
+## Soak instrumentation (the locomotion layer): a bot stayed in a choke longer than follow.choke_report_s.
+func report_choke_for(p: Player, kind: String, pos: Vector3, seconds: float, tag: String = "") -> void:
+	var b: BotBrain = _brain_of(p.player_id)
+	choke_events.append("%s in a %s at (%.1f, %.1f, %.1f) for %.1fs (%s, round %d)" % [Net.display_name(p.player_id), kind,
+		pos.x, pos.y, pos.z, seconds, tag if tag != "" else (b.action if b != null else "-"), RoundManager.current_round])
 
 
-## Survival telemetry (dev / playtests): what the squad looked like when someone went down.
+# ================================================================== telemetry and events
+
 var down_log: PackedStringArray = []
 
 
@@ -456,15 +770,58 @@ func _log_down(pid: int) -> void:
 			guns.append("%s %d/%d" % [w.id, w.mag, w.reserve])
 	down_log.append("r%d %s down at (%.0f,%.0f,%.0f): zombies <3m %d <6m %d (fast %d), %s, %s | standing: %s" % [RoundManager.current_round,
 		Net.display_name(pid), p.global_position.x, p.global_position.y, p.global_position.z, near3, near6, fast,
-		("mode %s" % BotBrain.Mode.keys()[b.mode]) if b != null else "human",
-		" ".join(guns), ", ".join(mates)])
+		("action %s" % b.action) if b != null else "human", " ".join(guns), ", ".join(mates)])
 
 
-## A power-up dropped: the nearest standing bot that sees it calls it out.
-func _on_powerup_spawned(_id: StringName, pos: Vector3) -> void:
+## A power-up dropped: onto the blackboard; the nearest standing bot that sees it calls it by name (our own
+## power-up names only) with a ping.
+func _on_powerup_spawned(id: StringName, pos: Vector3) -> void:
+	var node: Node = null
+	for n: Node in map.find_children("*", "PowerupPickup", true, false):
+		if (n as Node3D).global_position.distance_to(pos) < 1.5:
+			node = n
+	blackboard.add_powerup(node, id, pos, _t)
 	var b: BotBrain = _nearest_standing_brain(pos)
 	if b != null and b.player.global_position.distance_to(pos) < 22.0 and b.los_point(b.player.head.global_position, pos + Vector3.UP * 0.5):
-		callout(b, "POWERUP_SEEN")
+		var names: Dictionary = GLData.table("powerups").get("names", {})
+		var tok: String = str(GLVO.POWERUP_TOKENS.get(id, String(id).to_upper()))
+		callout(b, "PING_" + tok, false, pos + Vector3.UP * 0.8, str(names.get(String(id), String(id).to_upper())))
+
+
+## A boss: the squad's boss-caller (Peg) first, else the nearest bot.
+func _on_boss_spawned(enemy_id: StringName) -> void:
+	var caller: BotBrain = null
+	for b: BotBrain in brains:
+		if b.player.is_alive() and not b.player.spectating and bool((b.personality.get("callouts", {}) as Dictionary).get("boss_first", false)):
+			caller = b
+	if caller == null:
+		var h: Player = human()
+		caller = _nearest_standing_brain(h.global_position if h != null else Vector3.ZERO)
+	if caller == null:
+		return
+	var at: Vector3 = Vector3.INF
+	if map.director != null:
+		for z: Zombie in map.director.active_zombies():
+			if z.enemy_id == enemy_id:
+				at = z.global_position + Vector3.UP * 2.2
+	callout(caller, "BOSS_INCOMING", false, at, "BOSS")
+
+
+func _on_crate_moved(_index: int) -> void:
+	var crate: Node3D = null
+	for n: Node in get_tree().get_nodes_in_group(&"crate_spots"):
+		var c: MysteryCrate = n as MysteryCrate
+		if c != null and c.phase != MysteryCrate.Phase.HIDDEN:
+			crate = c
+	var h: Player = human()
+	var b: BotBrain = _nearest_standing_brain(h.global_position if h != null else Vector3.ZERO)
+	if b != null and crate != null:
+		callout(b, "CRATE_MOVED", false, crate.global_position + Vector3.UP * 1.4, "CRATE")
+
+
+func _on_door_opened(_door_id: StringName, by_player: int) -> void:
+	if GameState.human_ids().has(by_player):
+		human_doors_opened += 1
 
 
 func _brain_of(pid: int) -> BotBrain:
@@ -485,28 +842,48 @@ func _on_enemy_killed(_enemy_id: StringName, _limb: StringName, _weapon_id: Stri
 	var b: BotBrain = _brain_of(by_player)
 	if b != null:
 		b.kills += 1
+		# Wren keeps a running tally
+		if bool((b.personality.get("callouts", {}) as Dictionary).get("kill_tally", false)) and [25, 50, 100, 150, 200, 300].has(b.kills):
+			callout(b, "TALLY_%d" % b.kills, true)
 
 
 func _on_round_started(_round: int, _special: bool) -> void:
 	_round_t = 0.0
 	_claims.clear()
+	blackboard.clear_round_claims()
 	for b: BotBrain in brains:
 		b.on_round_started()
 
 
-## Dev / tests: one line per bot.
+# ================================================================== dev: report, profiling, the overlay
+
+## Average milliseconds per bot per physics frame (the 0.5 ms budget) and per think.
+func think_stats() -> Dictionary:
+	var ms: float = 0.0
+	var think_ms: float = 0.0
+	var n: int = 0
+	for b: BotBrain in brains:
+		ms += b.ms_per_frame()
+		think_ms += b.us_think / 1000.0 / float(maxi(1, b.thinks))
+		n += 1
+	return {"ms_per_bot_frame": ms / float(maxi(1, n)), "ms_per_think": think_ms / float(maxi(1, n)), "bots": n}
+
+
 func report() -> PackedStringArray:
 	var out: PackedStringArray = []
 	for b: BotBrain in brains:
 		var w: WeaponInstance = b.player.weapons.current()
-		out.append("%s (P%d, %s): kills %d shots %d hp %.0f scrip %d %s %s%s teleports %d doors %d upgrades %d" % [Net.display_name(b.player.player_id), b.player.player_id,
-			b.skill_name(), b.kills, b.shots, b.player.hp, Economy.get_scrip(b.player.player_id), str(w.id) if w != null else "-",
-			BotBrain.Mode.keys()[b.mode], " DOWN" if b.player.downed else "", b.teleports, b.doors_bought_total, b.upgrades])
+		out.append("%s (P%d, %s): kills %d shots %d hp %.0f scrip %d %s %s%s role %s teleports %d doors %d upgrades %d revives %d grenades %d tolls %d" % [
+			Net.display_name(b.player.player_id), b.player.player_id, b.skill_name(), b.kills, b.shots, b.player.hp,
+			Economy.get_scrip(b.player.player_id), str(w.id) if w != null else "-", b.action, " DOWN" if b.player.downed else "",
+			b.role, b.teleports, b.doors_bought_total, b.upgrades, b.revives, b.aim.grenades_thrown, b.aim.great_tolls])
 		if b.planner != null:
 			out.append("  " + b.planner.status_line())
 		if b.bonus_perk != &"":
 			out.append("  bonus perk %s (announced %s)" % [b.bonus_perk, str(b.bonus_said)])
-	out.append("squad: order %s, revives by bots %d, choke reports %d" % [command, revives_total(), choke_events.size()])
+	var ts: Dictionary = think_stats()
+	out.append("squad: order %s, revives by bots %d, choke reports %d, brain %.3f ms/bot/frame (think %.3f ms)" % [command, revives_total(), choke_events.size(),
+		float(ts["ms_per_bot_frame"]), float(ts["ms_per_think"])])
 	for e: String in choke_events.slice(0, 8):
 		out.append("  CHOKE " + e)
 	for e2: String in down_log.slice(maxi(0, down_log.size() - 12)):
@@ -519,3 +896,26 @@ func revives_total() -> int:
 	for b: BotBrain in brains:
 		n += b.revives
 	return n
+
+
+func _cmd_ai_debug(a: PackedStringArray) -> String:
+	var arg: String = a[0] if a.size() > 0 else "1"
+	if debug == null:
+		debug = BotDebugOverlay.new()
+		debug.name = "BotDebugOverlay"
+		add_child(debug)
+		debug.setup(self)
+	match arg:
+		"0", "off":
+			debug.set_enabled(false)
+			return "AI debug off"
+		"heat":
+			debug.set_enabled(true)
+			debug.heatmap = not debug.heatmap
+			return "AI debug threat heatmap %s" % ("on" if debug.heatmap else "off")
+		"panel":
+			debug.set_enabled(true)
+			debug.panel_on = not debug.panel_on
+			return "AI debug blackboard panel %s" % ("on" if debug.panel_on else "off")
+	debug.set_enabled(true)
+	return "AI debug on (ai_debug heat: threat heatmap, ai_debug panel: blackboard, ai_debug 0: off)"

@@ -3,7 +3,9 @@ extends Node
 ## at the spawn. Checks, in order:
 ##   1. three bot Players with distinct survivors, the offline session and revive points, scaled round size
 ##   2. the bots fight: rounds advance, every bot fires, the squad kills zombies, nobody drifts off or errors;
-##      they shop: a bot buys a wall weapon and a bot opens a door (each bot is handed 1200 Scrip at round 2)
+##      they shop: a bot buys a wall weapon and a bot opens a door (each bot is handed 1200 Scrip at round 2;
+##      Update 03: bots open doors only when ordered or on the human's path, so at round 3 the smoke gives the
+##      "Go open that door" order for the nearest closed door)
 ##   3. a bot goes down and a teammate revives it
 ##   4. the human goes down and a bot revives them
 ##   5. the human bleeds out, spectates, and respawns at the next round
@@ -79,7 +81,9 @@ func _ready() -> void:
 		if r == 2:
 			for pid: int in GameState.bot_ids:
 				Economy.grant(pid, 1200)   # enough for a wall gun and a door this early
-			print("[bots] handed every bot 1200 Scrip"))
+			print("[bots] handed every bot 1200 Scrip")
+		if r == 3:
+			_order_door())
 	GLBus.purchase_made.connect(func(p: int, item: StringName, cost: int) -> void:
 		if GameState.is_bot(p):
 			_bot_buys.append([p, item])
@@ -99,6 +103,22 @@ func _ready() -> void:
 	GLBus.game_over.connect(func(_s: Dictionary) -> void:
 		_game_over = true
 		print("[bots] game over at t=%.0fs" % _t))
+
+
+## Update 03: the command wheel's "Go open that door" for the cheapest closed door (the bots never buy doors on
+## their own while a human leads who hasn't opened one).
+func _order_door() -> void:
+	var root: MapRoot = _root()
+	if root == null or root.squad == null:
+		return
+	var best: BuyDoor = null
+	for n: Node in get_tree().get_nodes_in_group(&"doors"):
+		var d: BuyDoor = n as BuyDoor
+		if d != null and not d.is_open and d.can_interact(root.player) and (best == null or d.cost < best.cost):
+			best = d
+	if best != null:
+		root.squad.set_command(&"open_door", Vector3.INF, best)
+		print("[bots] ordered: open %s (%d Scrip) at t=%.0fs" % [best.door_id, best.cost, _t])
 
 
 func _fail(msg: String) -> void:

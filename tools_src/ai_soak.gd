@@ -36,8 +36,11 @@ var seed_base: int = 1
 var max_round: int = 0
 var speed: float = 1.0
 var max_minutes: float = 150.0
-var skill: String = "regular"
+var skill: String = "veteran"
 var map_key: String = ""
+## --trace=N: every N game seconds, one status line per bot (action, top scores, gun, threat) and its task.
+var trace_s: float = 0.0
+var _trace_t: float = 0.0
 
 var _run: int = 0
 var _map: MapRoot = null
@@ -73,6 +76,8 @@ func _ready() -> void:
 			skill = a.substr(8)
 		elif a.begins_with("--map="):
 			map_key = a.substr(6)
+		elif a.begins_with("--trace="):
+			trace_s = float(a.substr(8))
 	if not ["player3", "bots3", "cousins", "kaltenbrunn"].has(scenario):
 		print("[soak] unknown --scenario=%s (player3, bots3, cousins, kaltenbrunn)" % scenario)
 		print("[soak] RESULT FAIL")
@@ -133,6 +138,12 @@ func _physics_process(delta: float) -> void:
 	_last_us = now
 	if _dummy != null:
 		_dummy.call("tick", delta)
+	if trace_s > 0.0 and _map.squad != null:
+		_trace_t -= delta
+		if _trace_t <= 0.0:
+			_trace_t = trace_s
+			for b: BotBrain in _map.squad.brains:
+				print("[trace] t=%.0f r%d %s | task %s" % [_game_t, RoundManager.current_round, b.status_line(), str(b.task.get("label", "-"))])
 	if _metrics.finished:
 		_end_run(_metrics.end_reason)
 	elif max_round > 0 and RoundManager.current_round > max_round:
@@ -217,6 +228,10 @@ func _end_run(why: String) -> void:
 	_metrics.extra["wall_s"] = snappedf(float(Time.get_ticks_msec() - _wall0) / 1000.0, 0.1)
 	_metrics.extra["frame_ms"] = snappedf(_phys_us / maxf(1.0, float(_frames)) / 1000.0, 0.01)
 	_metrics.extra["speed"] = speed
+	if _map.squad != null:
+		var ts: Dictionary = _map.squad.think_stats()
+		_metrics.extra["brain_ms_per_bot_frame"] = snappedf(float(ts["ms_per_bot_frame"]), 0.001)
+		_metrics.extra["brain_ms_per_think"] = snappedf(float(ts["ms_per_think"]), 0.001)
 	var sm: Dictionary = _metrics.finish(why)
 	print(_metrics.summary_line())
 	var dir: String = BotMetrics.log_dir()

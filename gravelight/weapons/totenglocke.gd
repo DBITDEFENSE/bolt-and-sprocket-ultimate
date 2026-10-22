@@ -273,19 +273,42 @@ static func drop_shards(p: Player, b: Dictionary, kill_pos: Array) -> void:
 		s.global_position = (kill_pos[kill_pos.size() - 1 - (i % kill_pos.size())] as Vector3) + Vector3.UP * 0.35
 
 
-## A bot's toll (bots press no buttons: BotBrain._fire calls this; the caller spends the charge).
-static func bot_toll(p: Player, w: WeaponInstance, origin: Vector3, fwd: Vector3) -> Dictionary:
+## A bot's toll (bots press no buttons: BotAim.fire calls this; the caller spends the charge). `great` = the
+## Great Toll (U03: the bot's aim layer decides it on a bunched crowd; the caller spends great_cost charges).
+static func bot_toll(p: Player, w: WeaponInstance, origin: Vector3, fwd: Vector3, great: bool = false) -> Dictionary:
 	var b: Dictionary = w.data["bell"]
-	var res: Dictionary = resolve(p, origin, fwd, w, p.player_id, false)
-	AudioDirector.play_3d(str(b.get("ring_sound", "totenglocke_toll")), origin, 0.0, 0.0)
+	var res: Dictionary = resolve(p, origin, fwd, w, p.player_id, great)
+	AudioDirector.play_3d(str(b.get("ring_sound", "totenglocke_toll")), origin, 4.0 if great else 0.0, 0.0)
 	var chime: String = str(b.get("chime_sound", ""))
 	if chime != "":
 		AudioDirector.play_3d(chime, origin, -4.0, 0.0)
-	shock_ring(p, origin, fwd, cone_for(b, false).x, color_of(b), false)
+	shock_ring(p, origin, fwd, cone_for(b, great).x, color_of(b), great)
 	drop_shards(p, b, res["kill_pos"])
 	_chain_fx(p, res)
 	GLBus.weapon_fired.emit(p.player_id, w.id, w.upgraded, origin, fwd)
 	return res
+
+
+## A bot plants the Bell Dome at its feet (U03: revives and covering), the same field as alt_fire. Spends
+## dome_cost charges; returns the dome, or null without the charges.
+static func bot_dome(p: Player, w: WeaponInstance) -> BellDome:
+	var b: Dictionary = w.data["bell"]
+	var cost: int = int(b.get("dome_cost", 2))
+	if w.mag < cost or p == null or not p.is_inside_tree():
+		return null
+	w.mag -= cost
+	var d: BellDome = BellDome.new()
+	d.radius = float(b.get("dome_radius", 6.0))
+	d.seconds = float(b.get("dome_seconds", 8.0))
+	d.slow = float(b.get("dome_slow", 0.6))
+	d.damage_mult = float(b.get("dome_damage_mult", 1.25))
+	d.pull = float(b.get("dome_pull", 0.0))
+	d.color = color_of(b)
+	d.upgraded = w.upgraded
+	d.by_player = p.player_id
+	p.get_parent().add_child(d)
+	d.global_position = p.global_position
+	return d
 
 
 # ================================================================== per-frame (the holder's player)

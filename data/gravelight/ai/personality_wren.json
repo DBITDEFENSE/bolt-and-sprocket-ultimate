@@ -1,0 +1,50 @@
+{
+  "_doc": "Personality (Update 03 section 8): a weight profile for one character's bot (and Jakub). actions: multipliers on the action scores (actions.json). role_bias: how much it wants each squad role. aim.class_pref: weapon class multipliers for weapon choice (and the wall guns it wants). aim.head_bias: added to the headshot preference. aim.specials_first: extra target priority for specials and bosses. combat: retreat_hp (the HP fraction it starts thinking about retreating, multiplies the retreat input), melee_crawlers (knifes crawlers), grenade_bias (more / fewer grenades), keep_distance_m (preferred fighting distance), ammo_conserve (shorter bursts), aggression (pushes the fight score). economy: save_bias (multiplies the Scrip it keeps in reserve), perk_order (its perk plan; empty = economy.json default), perk_skill (better perk picks). callouts: boss_first (calls bosses and specials before anyone), kill_tally (keeps a running tally in her lines), grumble_on_move (grumbles when ordered to move), comments_by (a second voice comments on its decisions). chatter: lines between rounds.",
+  "character": "wren",
+  "_summary": "Precision shooter. High ground, rifles, best headshot rate, kills specials first, keeps a running kill tally in her callouts.",
+  "actions": {
+    "fight": 1.1,
+    "train": 0.95,
+    "hold": 1.1,
+    "retreat": 1.0
+  },
+  "role_bias": {
+    "anchor": 0.7,
+    "runner": 0.5,
+    "medic": 0.3,
+    "builder": 0.2
+  },
+  "aim": {
+    "class_pref": {
+      "rifle": 1.45,
+      "bolt": 1.3,
+      "sniper": 1.5,
+      "assault": 1.1,
+      "smg": 0.95,
+      "shotgun": 0.75,
+      "lmg": 0.9
+    },
+    "head_bias": 0.3,
+    "specials_first": 0.6
+  },
+  "combat": {
+    "retreat_hp": 0.95,
+    "melee_crawlers": false,
+    "grenade_bias": 0.8,
+    "keep_distance_m": 9.0,
+    "ammo_conserve": 0.3,
+    "aggression": 0.05,
+    "high_ground": true
+  },
+  "economy": {
+    "save_bias": 1.1,
+    "perk_order": [],
+    "perk_skill": 0.75
+  },
+  "callouts": {
+    "boss_first": false,
+    "kill_tally": true,
+    "grumble_on_move": false,
+    "comments_by": ""
+  }
+}

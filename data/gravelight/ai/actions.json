@@ -1,0 +1,156 @@
+{
+  "_doc": "The bots' utility AI (Update 03 section 1; gravelight/bots/bot_utility.gd scores, bot_actions.gd runs them). Every think (think_hz, staggered across bots) each action scores weight x the product of its considerations (each an input from _inputs through a curve from curves.json or inline; the product is compensated for the number of considerations, the usual IAUS make-up), x the personality's action weight (personality_<char>.json actions), x the role's (roles), + an active order's boost (orders), + gaussian decision noise (skills.json decision_noise), + hysteresis for the action already running (+ commit_bonus while it is mid-task: holding a revive, a buy, a repair). The highest wins. Tuning here never needs a code change.",
+  "think_hz": 5.0,
+  "hysteresis": 0.1,
+  "commit_bonus": 0.3,
+  "min_action_s": 0.4,
+  "_inputs": {
+    "hp": "own health fraction",
+    "mag": "magazine fraction of the gun in hand",
+    "mag_reserve": "1 when the gun in hand has reserve ammo",
+    "ammo": "best long gun's (mag + reserve) / max",
+    "any_ammo": "1 when any carried gun has ammo",
+    "armed": "1 when it carries a firearm (Jakub unarmed: 0)",
+    "reloading": "1 while reloading",
+    "pressure": "threat pressure (perception), sum of nearby threat / pressure_norm",
+    "near": "nearest known zombie / 20 m (1 = none within 20 m)",
+    "n5": "known zombies within 5 m / 6",
+    "n10": "known zombies within 10 m / 12",
+    "known": "known zombies / 12",
+    "sprinter_close": "1 when a sprinter is within 4 m",
+    "has_target": "1 when the aim layer has a visible target",
+    "revive_mine": "1 when this bot holds a revive claim",
+    "revive_bleed": "the claimed downed teammate's bleed-out left / full",
+    "revive_blocked": "1 when a sprinter is within 6 m of the downed one and more than 10 s are left (under 8 s it is always 0: go anyway)",
+    "revive_path": "path length to the downed one / 30 m",
+    "revive_speed": "2 / revive seconds (Second Wind halves the hold), clamped",
+    "reviving": "1 while holding use on someone",
+    "cover_need": "1 when this bot covers a revive (cover claim), or its own revive is blocked",
+    "leader_far": "distance to the leader / 20 m (0 when it leads)",
+    "is_leader": "1 when it leads the squad",
+    "squad_far": "distance to the nearest standing teammate / 20 m",
+    "break": "1 between waves",
+    "round": "round / 30",
+    "loop": "1 when a training route (or the free kite loop) is usable here",
+    "hold_spot": "1 when it has a spot to hold (a Hold order, or a window pair in the early rounds)",
+    "repair_task": "value of the best barricade to rebuild (0 none)",
+    "buy_task": "value of the best purchase (bot_economy.gd, 0 none)",
+    "crate_task": "value of a Requisition Crate pull (0 none)",
+    "powerup_task": "value of a power-up it may take (etiquette, 0 none)",
+    "trap_task": "value of a trap it may pull (only when ordered or the player used it, 0 none)",
+    "chatter_ok": "1 when a chatter line is off cooldown",
+    "objective": "1 when the local-AI planner has a directive for it",
+    "order": "strength of an order with its own task (open a door, fetch a part)",
+    "escort": "1 when it escorts someone (Jakub)",
+    "escort_far": "distance to the escorted player / 15 m"
+  },
+  "actions": {
+    "fight": {"weight": 0.72, "considerations": [
+      {"input": "has_target", "curve": "gate"},
+      {"input": "pressure", "curve": {"type": "points", "points": [[0.0, 0.6], [0.4, 1.0], [0.75, 0.8], [1.0, 0.45]]}},
+      {"input": "any_ammo", "curve": "soft_gate"}
+    ]},
+    "train": {"weight": 0.9, "considerations": [
+      {"input": "loop", "curve": "gate"},
+      {"input": "pressure", "curve": {"type": "points", "points": [[0.0, 0.0], [0.3, 0.2], [0.55, 0.8], [0.8, 1.0]]}},
+      {"input": "known", "curve": {"type": "points", "points": [[0.0, 0.0], [0.25, 0.3], [0.5, 0.9], [1.0, 1.0]]}},
+      {"input": "round", "curve": {"type": "points", "points": [[0.0, 0.3], [0.15, 0.55], [0.25, 0.9], [1.0, 1.0]]}},
+      {"input": "any_ammo", "curve": "soft_gate"}
+    ]},
+    "hold": {"weight": 0.72, "considerations": [
+      {"input": "hold_spot", "curve": "gate"},
+      {"input": "pressure", "curve": {"type": "points", "points": [[0.0, 0.85], [0.5, 0.75], [0.85, 0.3], [1.0, 0.15]]}}
+    ]},
+    "retreat": {"weight": 0.95, "considerations": [
+      {"input": "pressure", "curve": "swarmed"},
+      {"input": "hp", "curve": {"type": "points", "points": [[0.0, 1.0], [0.4, 0.85], [0.7, 0.55], [1.0, 0.4]]}},
+      {"input": "mag", "curve": {"type": "points", "points": [[0.0, 1.0], [0.25, 0.75], [0.5, 0.55], [1.0, 0.45]]}}
+    ]},
+    "reload": {"weight": 0.85, "considerations": [
+      {"input": "mag", "curve": "empty_or_low"},
+      {"input": "mag_reserve", "curve": "gate"},
+      {"input": "pressure", "curve": "calm"},
+      {"input": "sprinter_close", "curve": "not"}
+    ]},
+    "revive": {"weight": 1.25, "considerations": [
+      {"input": "revive_mine", "curve": "gate"},
+      {"input": "revive_blocked", "curve": "not"},
+      {"input": "revive_bleed", "curve": "bleed_urgency"},
+      {"input": "revive_path", "curve": {"type": "points", "points": [[0.0, 1.0], [0.5, 0.85], [1.0, 0.65]]}},
+      {"input": "revive_speed", "curve": {"type": "points", "points": [[0.0, 0.7], [0.5, 0.85], [1.0, 1.0]]}}
+    ]},
+    "cover": {"weight": 0.97, "considerations": [
+      {"input": "cover_need", "curve": "gate"},
+      {"input": "pressure", "curve": {"type": "points", "points": [[0.0, 0.6], [0.3, 0.9], [1.0, 1.0]]}}
+    ]},
+    "repair": {"weight": 0.55, "considerations": [
+      {"input": "repair_task", "curve": "value"},
+      {"input": "pressure", "curve": "calm"},
+      {"input": "has_target", "curve": "soft_not"}
+    ]},
+    "buy": {"weight": 0.58, "considerations": [
+      {"input": "buy_task", "curve": "value"},
+      {"input": "pressure", "curve": "very_calm"}
+    ]},
+    "crate": {"weight": 0.5, "considerations": [
+      {"input": "crate_task", "curve": "value"},
+      {"input": "pressure", "curve": "very_calm"}
+    ]},
+    "powerup": {"weight": 0.72, "considerations": [
+      {"input": "powerup_task", "curve": "value"},
+      {"input": "pressure", "curve": "calm"}
+    ]},
+    "follow": {"weight": 0.36, "considerations": [
+      {"input": "is_leader", "curve": "not"},
+      {"input": "leader_far", "curve": {"type": "points", "points": [[0.0, 0.55], [0.2, 0.8], [0.5, 1.0]]}}
+    ]},
+    "regroup": {"weight": 0.62, "considerations": [
+      {"input": "squad_far", "curve": "far"},
+      {"input": "has_target", "curve": "soft_not"},
+      {"input": "pressure", "curve": "calm"}
+    ]},
+    "escort": {"weight": 0.7, "considerations": [
+      {"input": "escort", "curve": "gate"},
+      {"input": "escort_far", "curve": {"type": "points", "points": [[0.0, 0.5], [0.15, 0.7], [0.4, 1.0]]}}
+    ]},
+    "trap": {"weight": 0.6, "considerations": [
+      {"input": "trap_task", "curve": "value"},
+      {"input": "pressure", "curve": "busy"}
+    ]},
+    "chatter": {"weight": 0.22, "considerations": [
+      {"input": "chatter_ok", "curve": "gate"},
+      {"input": "break", "curve": "gate"},
+      {"input": "known", "curve": "inverse"}
+    ]},
+    "objective": {"weight": 0.66, "considerations": [
+      {"input": "objective", "curve": "gate"},
+      {"input": "pressure", "curve": {"type": "points", "points": [[0.0, 1.0], [0.4, 0.8], [0.7, 0.3], [1.0, 0.1]]}},
+      {"input": "hp", "curve": "healthy"}
+    ]},
+    "order": {"weight": 0.9, "considerations": [
+      {"input": "order", "curve": "order"},
+      {"input": "pressure", "curve": {"type": "points", "points": [[0.0, 1.0], [0.6, 0.8], [1.0, 0.4]]}}
+    ]},
+    "idle": {"weight": 0.08, "considerations": []}
+  },
+  "roles": {
+    "_doc": "Squad roles (Update 03 section 5), assigned by BotSquad every roles_every_s from the personalities' role_bias: each role's action multipliers.",
+    "roles_every_s": 2.0,
+    "anchor": {"hold": 1.25, "fight": 1.1, "retreat": 0.85},
+    "runner": {"train": 1.25, "regroup": 0.9},
+    "medic": {"revive": 1.2, "cover": 1.15},
+    "builder": {"repair": 1.4, "buy": 1.05}
+  },
+  "orders": {
+    "_doc": "Command wheel orders (bots.json commands.orders): each is a high-weight boost for `duration_s` (60) or until done. boost adds to an action's score, mult multiplies it.",
+    "follow": {"duration_s": 60.0, "boost": {"follow": 0.45, "regroup": 0.3}, "mult": {"buy": 0.6, "crate": 0.5, "repair": 0.7}},
+    "hold": {"duration_s": 60.0, "boost": {"hold": 0.8}, "mult": {"follow": 0.2, "train": 0.2, "regroup": 0.2, "buy": 0.4, "crate": 0.3}},
+    "train": {"duration_s": 60.0, "boost": {"train": 0.6, "follow": 0.25}, "mult": {"hold": 0.3, "buy": 0.5}},
+    "repair": {"duration_s": 60.0, "boost": {"repair": 0.55}, "mult": {"buy": 0.6}},
+    "revive": {"duration_s": 60.0, "boost": {"revive": 0.5, "cover": 0.3}, "mult": {"buy": 0.0, "crate": 0.0}},
+    "buy_perks": {"duration_s": 60.0, "boost": {"buy": 0.6}},
+    "save_scrip": {"duration_s": 60.0, "mult": {"buy": 0.0, "crate": 0.0}},
+    "open_door": {"duration_s": 60.0, "boost": {"order": 0.0}},
+    "fetch_part": {"duration_s": 60.0, "boost": {"order": 0.0}}
+  }
+}

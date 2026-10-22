@@ -63,14 +63,19 @@
     "_doc": "Each bot counts as this many players for zombie counts, the Foreman's health and the Bellringer count (rounded, capped at 4). 1.0 = exactly like a human teammate.",
     "bot_player_weight": 0.75
   },
-  "skill_default": "regular",
+  "skill_default": "veteran",
   "skill_order": [
-    "green",
-    "regular",
-    "veteran"
+    "recruit",
+    "veteran",
+    "elite"
   ],
+  "skill_aliases": {
+    "_doc": "Update 03 section 7: the Bot Skill setting is Recruit / Veteran / Elite (default Veteran). The old preset names map here (a saved 'regular' plays as Veteran). The brain-layer numbers (reaction, aim convergence, decision noise, spend smartness) are in data/gravelight/ai/skills.json, merged over these by BotConfig.skill(). No skill changes damage taken (no hidden health buff).",
+    "green": "recruit",
+    "regular": "veteran"
+  },
   "skills": {
-    "green": {
+    "recruit": {
       "reaction_s": [
         0.45,
         0.8
@@ -93,12 +98,12 @@
       ],
       "damage_taken_mult": 1.0
     },
-    "regular": {
+    "veteran": {
       "reaction_s": [
         0.3,
         0.6
       ],
-      "turn_rate": 6.0,
+      "turn_rate": 6.5,
       "aim_error_deg": 3.5,
       "settle_error_deg": 1.1,
       "settle_s": 0.5,
@@ -116,12 +121,12 @@
       ],
       "damage_taken_mult": 1.0
     },
-    "veteran": {
+    "elite": {
       "reaction_s": [
         0.2,
         0.42
       ],
-      "turn_rate": 8.0,
+      "turn_rate": 8.5,
       "aim_error_deg": 2.5,
       "settle_error_deg": 0.7,
       "settle_s": 0.35,
@@ -137,7 +142,7 @@
         0.15,
         0.3
       ],
-      "damage_taken_mult": 0.9
+      "damage_taken_mult": 1.0
     }
   },
   "perception": {
@@ -205,13 +210,12 @@
     "flee_hp_frac": 0.4,
     "moving_spread_mult": 1.7,
     "damage_mult": 1.0,
-    "round_start_pistol_refill": true,
     "backpedal_radius_m": 2.6,
     "outrun_speed_frac": 0.9,
     "starved_frac": 0.25,
     "pistol_swap_m": 2.2,
     "resupply_clear_m": 6.0,
-    "_doc": "window_target_priority raises zombies at windows; a bot backs away from anything closer than backpedal_radius_m while it shoots; melee_range_m is the knife; danger_radius_m / crowd_count / flee_hp_frac decide when it kites instead."
+    "_doc": "window_target_priority raises zombies at windows; a bot backs away from anything closer than backpedal_radius_m while it shoots; melee_range_m is the knife; danger_radius_m / crowd_count / flee_hp_frac decide when it kites instead. Update 03: the free pistol refill at every round start is gone (no cheats); the decisions now come from data/gravelight/ai/*.json (actions, combat, economy)."
   },
   "revive": {
     "safe_radius_m": 3.0,
@@ -296,23 +300,39 @@
       "AMMO_LOW": 0.6,
       "POWERUP_SEEN": 0.6,
       "CMD": 1.0,
-      "BONUS": 1.0
+      "BONUS": 1.0,
+      "SPRINTER_BEHIND": 1.0,
+      "BOSS_INCOMING": 1.0,
+      "CRATE_MOVED": 0.8,
+      "WINDOW_OPEN": 0.8,
+      "COVER": 0.7,
+      "PING": 0.9,
+      "CHATTER": 1.0,
+      "GRUMBLE": 1.0,
+      "TALLY": 1.0
     },
     "_doc": "Squad barks (BotSquad.callout): chance per category, one squad line at a time (cooldown_s), and per-bot per-category min gaps (per_bot_cooldown_s). RELOAD 'Reloading!', BOARD 'Board's up!', REVIVE 'I've got you', AMMO_LOW, POWERUP_SEEN, boss sightings, command acknowledgements (CMD_*), the bonus perk (BONUS_*).",
     "per_bot_cooldown_s": {
       "RELOAD": 14.0,
       "BOARD": 12.0,
       "AMMO_LOW": 30.0,
-      "POWERUP_SEEN": 10.0
+      "POWERUP_SEEN": 10.0,
+      "SPRINTER_BEHIND": 8.0,
+      "WINDOW_OPEN": 15.0,
+      "COVER": 12.0,
+      "PING": 6.0,
+      "CHATTER": 30.0
     },
     "force_categories": [
       "CMD",
       "BONUS",
-      "DOWN"
+      "DOWN",
+      "GRUMBLE",
+      "TALLY"
     ]
   },
   "commands": {
-    "_doc": "The squad command wheel (hold bot_command, default T / D-pad down): follow (default), hold (the bots hold the spot the human points at, in a ring of ring_radius_m, and only repair boards within hold_repair_radius_m of it), repair (boards anywhere within repair_range_m of the leader, also mid-round when nothing is within repair_quiet_m), revive (revives first, even under fire; no shopping; a tight follow at revive_follow_m). Applies to every BotBrain (and later companions). point_range_m: how far the hold spot can be pointed. wheel_deadzone_px / wheel_radius_px: mouse travel to pick a segment. orders: the wheel's segments, clockwise from the top, each {id, label}; the brains act on follow / hold / repair / revive (BotConfig.COMMANDS), any other id is only emitted (BotSquad.order_given) for a later AI layer to handle. The acknowledging line is VO category CMD_<ID>.",
+    "_doc": "The squad command wheel (hold bot_command, default T / D-pad down): follow (default), hold (the bots hold the spot the human points at, in a ring of ring_radius_m, and only repair boards within hold_repair_radius_m of it), repair (boards anywhere within repair_range_m of the leader, also mid-round when nothing is within repair_quiet_m), revive (revives first, even under fire; no shopping; a tight follow at revive_follow_m). Applies to every BotBrain (and later companions). point_range_m: how far the hold spot can be pointed. wheel_deadzone_px / wheel_radius_px: mouse travel to pick a segment. orders: the wheel's segments, clockwise from the top, each {id, label}; Update 03: every order is a high-weight action for 60 s or until done (data/gravelight/ai/actions.json orders): follow, hold, train (with the human's loop), repair, revive, buy_perks (perks now, the reserve ignored), save_scrip (no shopping), open_door (the door or power switch the human looks at), fetch_part (the buildable part the human looks at). The acknowledging line is VO category CMD_<ID>.",
     "hold_point_range_m": 20.0,
     "ring_radius_m": 1.6,
     "hold_repair_radius_m": 8.0,
@@ -331,12 +351,32 @@
         "label": "Hold here"
       },
       {
+        "id": "train",
+        "label": "Train with me"
+      },
+      {
         "id": "repair",
-        "label": "Repair barricades"
+        "label": "Repair windows"
       },
       {
         "id": "revive",
         "label": "Revive priority"
+      },
+      {
+        "id": "buy_perks",
+        "label": "Buy perks now"
+      },
+      {
+        "id": "save_scrip",
+        "label": "Save Scrip"
+      },
+      {
+        "id": "open_door",
+        "label": "Go open that door"
+      },
+      {
+        "id": "fetch_part",
+        "label": "Fetch that part"
       }
     ]
   }
