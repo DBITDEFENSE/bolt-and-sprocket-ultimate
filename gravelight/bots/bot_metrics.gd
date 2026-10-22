@@ -198,6 +198,20 @@ static func empty_mag_moment(mag: int, nearest_zombie_m: float) -> bool:
 	return mag <= 0 and nearest_zombie_m < EMPTY_MAG_RADIUS_M
 
 
+## A bot holding a pistol (`held_class`) while it carries another gun with `other_ammo` rounds (mag + reserve):
+## the pistol-time metric.
+static func pistol_while_armed(held_class: StringName, other_ammo: int) -> bool:
+	return held_class == &"pistol" and other_ammo > 0
+
+
+func _other_guns_ammo(b: Player, held: WeaponInstance) -> int:
+	var n: int = 0
+	for wi: WeaponInstance in b.weapons.slots:
+		if wi != held and wi.weapon_class() != &"pistol":
+			n += wi.mag + wi.reserve
+	return n
+
+
 ## The revive numbers from a list of down episodes {pid, t_down, outcome ("revived" / "bled" / "pending"),
 ## t_end, attempts, attempts_ok}, the match ending at `end_t`. A revive success is a down that ended in a
 ## revive; failures are bleed-outs and downs still pending at the end that are PENDING_FAIL_S old (younger pending
@@ -292,7 +306,7 @@ func _blank(pid: int) -> Dictionary:
 		"kills": 0, "headshots": 0, "downs": 0, "revives_done": 0, "revive_attempts": 0, "bleed_outs": 0,
 		"stuck_events": 0, "stuck_time": 0.0, "teleports": 0, "lost_time": 0.0,
 		"block_events": 0, "block_sustained": 0, "block_time": 0.0,
-		"empty_mag_events": 0, "empty_mag_time": 0.0,
+		"empty_mag_events": 0, "empty_mag_time": 0.0, "pistol_time": 0.0,
 		"scrip_spent": 0, "scrip_wasted": 0, "kar98k_late": 0, "spent": {}, "commands": 0, "command_time": 0.0,
 		"scrip_end": 0}
 
@@ -378,6 +392,9 @@ func _watch_bot(b: Player, humans: Array[Player], zs: Array[Zombie], delta: floa
 			s["empty_mag_events"] = int(s["empty_mag_events"]) + 1
 			_event(pid, "empty_mag", 1.0, "%s, zombie %.1f m" % [str(w.id), near])
 	_empty[pid] = empty
+	# on the start pistol while carrying a better gun that still has ammo
+	if up and w != null and pistol_while_armed(w.weapon_class(), _other_guns_ammo(b, w)):
+		s["pistol_time"] = float(s["pistol_time"]) + delta
 	# lost: far from the human for a while
 	var lost: bool = false
 	if up:
@@ -506,7 +523,8 @@ func _on_round_started(r: int, _special: bool) -> void:
 
 
 func _on_game_over(_stats: Dictionary) -> void:
-	finish("wipe")
+	# deferred: the wipe is announced from inside the last player_downed, before this logger has heard that down
+	finish.call_deferred("wipe")
 
 
 # ================================================================== the report
@@ -579,6 +597,7 @@ func summary() -> Dictionary:
 		"lost_time": _sum("lost_time"), "block_events": int(_sum("block_events")), "block_sustained": int(_sum("block_sustained")),
 		"block_time": _sum("block_time"), "scrip_spent": int(_sum("scrip_spent")), "scrip_wasted": int(_sum("scrip_wasted")),
 		"kar98k_late": int(_sum("kar98k_late")), "empty_mag_events": int(_sum("empty_mag_events")), "empty_mag_time": _sum("empty_mag_time"),
+		"pistol_time": _sum("pistol_time"),
 		"commands": int(cmds), "command_time_mean": _sum("command_time") / cmds if cmds > 0.0 else 0.0}
 	for k: Variant in extra.keys():
 		out[k] = extra[k]
@@ -590,12 +609,12 @@ func summary_line() -> String:
 	var s: Dictionary = summary()
 	return ("[ai_metrics] SUMMARY %s run=%s end=%s round=%d time=%.1fmin | bot kills %d (heads %d) | bot downs %d (%.2f/round), human downs %d" +
 		" | revives %d/%d judged (%.0f%%, ttr %.1fs, attempts %d ok %d, bled %d, pending %d) | stuck %d (%.1fs) teleports %d lost %.0fs" +
-		" | blocking %d events, %d sustained (%.1fs) | scrip spent %d wasted %d, kar98k>r10 %d | empty-mag %d (%.1fs) | commands %d") % [
+		" | blocking %d events, %d sustained (%.1fs) | scrip spent %d wasted %d, kar98k>r10 %d | empty-mag %d (%.1fs) | pistol with a loaded gun %.0fs | commands %d") % [
 		s["scenario"], s["run"], s["end"], s["round_reached"], s["minutes"], s["bot_kills"], s["bot_headshots"], s["bot_downs"],
 		s["bot_downs_per_round"], s["human_downs"], s["revived"], int(s["revived"]) + int(s["bled"]) + int(s["pending_failed"]),
 		100.0 * float(s["revive_rate"]), s["ttr_mean"], s["revive_attempts"], s["revive_attempts_ok"], s["bled"], s["pending"],
 		s["stuck_events"], s["stuck_time"], s["teleports"], s["lost_time"], s["block_events"], s["block_sustained"], s["block_time"],
-		s["scrip_spent"], s["scrip_wasted"], s["kar98k_late"], s["empty_mag_events"], s["empty_mag_time"], s["commands"]]
+		s["scrip_spent"], s["scrip_wasted"], s["kar98k_late"], s["empty_mag_events"], s["empty_mag_time"], s["pistol_time"], s["commands"]]
 
 
 static func _csv(v: Variant) -> String:
@@ -653,12 +672,20 @@ func write_csv(dir: String) -> String:
 		f.store_line(head + "event,%d,%d,%s,%s,%s,%s" % [int(e[1]), int(e[2]), _csv(nm), _csv(e[3]), _csv(e[4]), _csv("t=%.1f %s" % [float(e[0]), str(e[5])])])
 	f.close()
 	var sp: String = dir.path_join("summary_%s.csv" % scenario)
+	var header: String = ",".join(PackedStringArray(sm.keys().map(func(k3: Variant) -> String: return str(k3))))
+	if FileAccess.file_exists(sp):
+		var old: FileAccess = FileAccess.open(sp, FileAccess.READ)
+		var old_header: String = old.get_line() if old != null else ""
+		if old != null:
+			old.close()
+		if old_header != header:   # the columns changed (a new metric): keep the old file, start a new one
+			DirAccess.rename_absolute(sp, sp.get_basename() + "_until_%d.csv" % int(Time.get_unix_time_from_system()))
 	var fresh: bool = not FileAccess.file_exists(sp)
 	var sf: FileAccess = FileAccess.open(sp, FileAccess.READ_WRITE if not fresh else FileAccess.WRITE)
 	if sf != null:
 		sf.seek_end()
 		if fresh:
-			sf.store_line(",".join(PackedStringArray(sm.keys().map(func(k3: Variant) -> String: return str(k3)))))
+			sf.store_line(header)
 		sf.store_line(",".join(PackedStringArray(sm.values().map(func(v: Variant) -> String: return _csv(v)))))
 		sf.close()
 	return path

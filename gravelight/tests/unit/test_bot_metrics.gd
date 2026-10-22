@@ -66,6 +66,12 @@ func test_empty_mag_moment() -> void:
 	assert_false(BotMetrics.empty_mag_moment(3, 1.0), "rounds in the mag")
 
 
+func test_pistol_while_armed() -> void:
+	assert_true(BotMetrics.pistol_while_armed(&"pistol", 30), "pistol out, the Thompson still has rounds")
+	assert_false(BotMetrics.pistol_while_armed(&"pistol", 0), "nothing else to shoot")
+	assert_false(BotMetrics.pistol_while_armed(&"smg", 30), "the good gun is in hand")
+
+
 # ---------------------------------------------------------------- revives
 
 func test_revive_success_accounting() -> void:

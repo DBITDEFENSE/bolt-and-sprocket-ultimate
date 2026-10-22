@@ -16,9 +16,11 @@ extends Node
 ##   kaltenbrunn  player3 on Map 1, rounds 1 to 20 (--max-round, default 20). The Update 03 brief also forces Paul
 ##                at round 15; Paul doesn't exist yet, so that part is skipped
 ## The bots' local-AI planner is off (GameState.bot_ai_mode = "off"), so no run depends on Ollama.
-## --speed=N sets Engine.time_scale (N physics-seconds per tick-second): headless with --fixed-fps 60 already runs
-## as fast as the CPU allows; --speed > 1 also lengthens every physics step (fewer steps per game second). The bots'
-## and the game's timers all run on the scaled delta. docs/BOT_AI.md has a 1x vs 2x comparison.
+## Accelerated time: headless with --fixed-fps 60 (as tools/ai_soak.sh runs it) is not tied to the clock, so a run
+## goes as fast as the CPU allows (6-7x real time on Map 0's early rounds here) with the exact 1/60 s physics step a
+## real-time match uses; every bot and game timer runs on that delta. --speed=N also sets Engine.time_scale, but
+## under --fixed-fps that gains nothing: measured, the physics step stays ~1/60 s and a game minute costs the same
+## wall time (docs/BOT_AI.md has the real-time vs accelerated and the time_scale 1 vs 2 comparisons).
 ## --seed seeds the global RNG and the round manager; the bots roll their own RNG (randomize), so runs are not
 ## bit-for-bit repeatable: compare averages over several runs.
 
@@ -195,7 +197,6 @@ func _cousins_over() -> bool:
 	_metrics.extra["cousins_dead"] = cr.dead_count()
 	if cr.phase == CousinsRound.Phase.CLEARED or cr.cleared_count > 0:
 		_metrics.extra["cousins"] = "cleared"
-		_metrics.extra["cousins_time_s"] = snappedf(cr.t, 0.1)
 		return RoundManager.state != RoundManager.State.ROUND
 	if cr.phase == CousinsRound.Phase.BORED or cr.bored_count > 0:
 		_metrics.extra["cousins"] = "left (bored)"
@@ -204,8 +205,12 @@ func _cousins_over() -> bool:
 
 
 func _end_run(why: String) -> void:
-	if scenario == "cousins" and not _metrics.extra.has("cousins"):
-		_metrics.extra["cousins"] = "wipe" if why == "wipe" else why
+	if scenario == "cousins":
+		if not _metrics.extra.has("cousins"):
+			_metrics.extra["cousins"] = "wipe" if why == "wipe" else why
+		var cr: CousinsRound = _map.director.cousins if _map.director != null else null
+		_metrics.extra["cousins_dead"] = cr.dead_count() if cr != null else 0
+		_metrics.extra["cousins_time_s"] = snappedf(cr.t, 0.1) if cr != null else 0.0
 	if _dummy != null:
 		_metrics.extra["dummy_laps"] = int(_dummy.get("laps"))
 		_metrics.extra["dummy_reversals"] = int(_dummy.get("reversals"))
@@ -249,7 +254,8 @@ func _write_table(dir: String) -> void:
 		["revive %", "revive_rate", "pct"], ["revived", "revived", "%d"], ["bled", "bled", "%d"], ["ttr s", "ttr_mean", "%.1f"],
 		["stuck", "stuck_events", "%d"], ["stuck s", "stuck_time", "%.1f"], ["teleports", "teleports", "%d"], ["lost s", "lost_time", "%.0f"],
 		["block ev", "block_events", "%d"], ["sustained", "block_sustained", "%d"], ["spent", "scrip_spent", "%d"],
-		["wasted", "scrip_wasted", "%d"], ["kar98k>r10", "kar98k_late", "%d"], ["empty-mag", "empty_mag_events", "%d"]]
+		["wasted", "scrip_wasted", "%d"], ["kar98k>r10", "kar98k_late", "%d"], ["empty-mag", "empty_mag_events", "%d"], ["empty-mag s", "empty_mag_time", "%.0f"],
+		["pistol s", "pistol_time", "%.0f"]]
 	var lines: PackedStringArray = []
 	lines.append("| run | end | " + " | ".join(PackedStringArray(cols.map(func(c: Array) -> String: return str(c[0])))) + " |")
 	lines.append("|---|---|" + "---|".repeat(cols.size()))
