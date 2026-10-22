@@ -1,0 +1,89 @@
+{
+  "_doc": "Bot locomotion layer (Update 03 section 3, T-056; gravelight/bots/bot_locomotion.gd). How bots move once the brain has decided where: paths with danger costs, formation slots, training loops, personal space, stuck recovery. Bots walk on the human Player's own movement code (MoveIntent), so speeds, acceleration, stamina, slide and mantle come from player.json / movement.json; the turn rate is bots.json skills.<skill>.turn_rate (x movement.json sprint_turn_mult while sprinting). Distances m, times s, angles deg.",
+  "path": {
+    "_doc": "repath_s: a moving goal is re-planned at most this often unless it moved goal_moved_m; waypoint_m: a path corner counts as passed this close; plans_per_frame: path queries the whole squad may start in one physics frame (the rest wait a frame).",
+    "repath_s": 0.8,
+    "goal_moved_m": 0.75,
+    "waypoint_m": 0.45,
+    "plans_per_frame": 2
+  },
+  "danger": {
+    "_doc": "Path cost = length + the danger along it, sampled every sample_m: zombies within zombie_r (cost x (1 - d / zombie_r)), live traps (danger_contains), the rim of a Bell Dome (|d - radius| < dome_edge_m), fire_hazards group nodes (radius), the squad blackboard's danger_zones and a lift cage nobody should ride. When the plain path costs more than alt_threshold, detours through points beside its worst spot (alt_offsets_m, both sides) are tried and the cheapest wins.",
+    "sample_m": 1.0,
+    "zombie_r": 2.5,
+    "zombie_cost": 5.0,
+    "trap_cost": 40.0,
+    "dome_edge_m": 1.2,
+    "dome_cost": 8.0,
+    "fire_cost": 25.0,
+    "lift_cost": 30.0,
+    "alt_threshold": 6.0,
+    "alt_offsets_m": [2.5, 4.5]
+  },
+  "speed": {
+    "_doc": "urgency (0 walk .. 1 flee) >= sprint_urgency sprints when no look is set, the path ahead is at least sprint_min_m and the body faces within sprint_face_deg of it (the shared code only sprints forward-ish). arrive_slow_m: slows into the stop.",
+    "sprint_urgency": 0.7,
+    "sprint_min_m": 3.0,
+    "sprint_face_deg": 55.0,
+    "arrive_slow_m": 1.2
+  },
+  "space": {
+    "_doc": "Never block a human: the personal_m bubble (stretched ahead_m along their velocity) pushes the bot out sideways; a human whose path passes within pass_m of the bot in the next horizon_s makes it step aside; a stopped bot never stands in a choke (doorway, stairs) or within line_clear_m of the human's training line (their velocity line_s ahead). Bots keep bot_m apart from each other.",
+    "personal_m": 1.2,
+    "ahead_m": 1.0,
+    "bot_m": 0.9,
+    "horizon_s": 1.2,
+    "pass_m": 1.3,
+    "line_s": 3.0,
+    "line_clear_m": 1.1,
+    "choke_leave_s": 0.6
+  },
+  "stuck": {
+    "_doc": "No progress (the goal never got progress_m closer, and the body didn't move window_m net in any window_s: a moving goal never gets closer while the body walks fine) for repath_s: re-plan; nudge_s: a local random walk (nudge_walk_s to a navmesh point nudge_r_m away); teleport_s: to the nearest safe navmesh point on the way, only when no human sees the bot or the spot (a view cone of view_cone_deg out to view_m, plus line of sight), and it is logged (BotMetrics teleport).",
+    "progress_m": 0.3,
+    "window_s": 1.0,
+    "window_m": 0.6,
+    "repath_s": 2.0,
+    "nudge_s": 4.0,
+    "teleport_s": 8.0,
+    "nudge_walk_s": 1.2,
+    "nudge_r_m": [1.5, 3.0],
+    "view_cone_deg": 65.0,
+    "view_m": 60.0
+  },
+  "formation": {
+    "_doc": "follow(): a loose wedge round the leader, slots [angle_deg from the heading, radius_m]. still = the leader stands (heading = where they look); moving = the leader moves faster than moving_mps (heading = their velocity, the slot predicted lead_s ahead): beside and a little ahead, never in the space behind them the horde follows. A slot further than run_m away is run to. Angles are spread wide so the squad never lines up in one cone.",
+    "still": [[135.0, 2.8], [-135.0, 2.8], [180.0, 3.8], [100.0, 3.6], [-100.0, 3.6]],
+    "moving": [[80.0, 2.4], [-80.0, 2.4], [40.0, 3.6], [115.0, 3.4], [-115.0, 3.4]],
+    "moving_mps": 1.6,
+    "lead_s": 0.6,
+    "refresh_s": 0.3,
+    "near_m": 1.2,
+    "run_m": 3.5
+  },
+  "train": {
+    "_doc": "train(route): run the loop lead_m ahead of the bot, tight: sprint when the train's head is within close_m, walk at mid range, wait (turning to shoot: train_face_dir) when it falls back past far_m. Before committing to the next check_every_m of loop it checks check_ahead_m ahead (a ray and the zombies within block_r of the line); block_count of them (or one on the line within 4 m, or the ray hitting one) means cut off: it reverses (at most every reverse_cd_s) or reports train_ok() false. The horde is the zombies within horde_r. train(null) kites a fallback_r_m ring round the leader.",
+    "lead_m": 3.5,
+    "close_m": 3.0,
+    "far_m": 7.5,
+    "check_ahead_m": 6.0,
+    "check_every_m": 2.0,
+    "block_r": 1.6,
+    "block_count": 2,
+    "reverse_cd_s": 1.5,
+    "horde_r": 14.0,
+    "fallback_r_m": 5.5
+  },
+  "lift": {
+    "_doc": "A lift cage (group lifts) is only for the whole squad: bots keep out of it (a danger cost) unless every standing teammate is in it and no zombie is within train_near_m.",
+    "train_near_m": 10.0
+  },
+  "slide": {
+    "_doc": "A bot fleeing (urgency >= urgency) at a sprint with a zombie within chaser_m behind and at least straight_m of straight path ahead slides (the shared slide physics), at most every cooldown_s.",
+    "urgency": 0.9,
+    "chaser_m": 4.0,
+    "straight_m": 6.0,
+    "cooldown_s": 4.0
+  },
+  "mantle_after_s": 0.35
+}

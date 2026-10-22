@@ -1,0 +1,34 @@
+{
+  "_doc": "Training loops for Map 1 Kaltenbrunn (Update 03 section 3, T-056). Same format as routes_map00.json. Validate: gravelight/tools_src/route_tool.tscn -- --map=map01 --validate.",
+  "routes": [
+    {
+      "id": "map01_headframe",
+      "label": "round the headframe",
+      "notes": "The Minehead Yard (spawn): round the tower base (x 15-25, z 10-20), between the gatehouse and the coal shed on the north side.",
+      "points": [[13.8, 0, 7.5], [20.0, 0, 6.5], [26.4, 0, 7.5], [26.6, 0, 10.4], [28.6, 0, 12.0], [28.5, 0, 15.0], [27.5, 0, 22.0], [20.0, 0, 23.5], [12.5, 0, 22.0], [11.5, 0, 15.0], [12.0, 0, 11.8], [13.4, 0, 10.5]],
+      "ring_width": 4.0,
+      "smooth": 2,
+      "requires_doors": []
+    },
+    {
+      "id": "map01_pews",
+      "label": "the Pew Loop",
+      "notes": "The Salt Chapel's outer aisles round the four pew blocks; the north aisle passes south of the font, the south one between the pews and the salt columns.",
+      "points": [[-13.0, -12, 63.0], [12.0, -12, 63.0], [37.0, -12, 63.0], [37.0, -12, 71.0], [37.0, -12, 79.0], [12.0, -12, 79.0], [-13.0, -12, 79.0], [-13.0, -12, 71.0]],
+      "ring_width": 3.0,
+      "smooth": 2,
+      "requires_doors": [],
+      "requires_zones": ["F_CHAPEL"]
+    },
+    {
+      "id": "map01_turbines",
+      "label": "round turbine 1",
+      "notes": "The Generator Hall: round the first turbine (x 45-54, z 67-73), through the T1-T2 gap; the T2-T3 gap is the Live Wire Fence's, so it stays off the loop.",
+      "points": [[42.5, -12, 64.0], [49.5, -12, 63.6], [56.0, -12, 64.0], [56.0, -12, 70.0], [56.0, -12, 76.0], [49.5, -12, 76.5], [42.5, -12, 76.0], [42.5, -12, 70.0]],
+      "ring_width": 3.5,
+      "smooth": 2,
+      "requires_doors": [],
+      "requires_zones": ["G_GENERATOR"]
+    }
+  ]
+}
