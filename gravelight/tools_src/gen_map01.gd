@@ -95,6 +95,15 @@ const BUYS: Array = [
 	["bar", Vector3(-15.83, DY + 1.5, 78), -90.0],
 	["stg44", Vector3(56, DY + 1.5, 81.83), 0.0], ["etool", Vector3(51, DY + 1.5, 81.83), 0.0],
 ]
+## Ammo boxes (Update 02 section 4, T-049): [name, floor pos, yaw so local -Z faces the room]. One per zone the brief
+## names, each on a bare wall 4 m+ from any perk machine or the Crucible, clear of windows, doors and the ore-cart
+## track and the dressing: the Rail Yard's west wall between its two doors; the bunk room's north wall by the
+## trench-gun chalk (west of the lockers); the Chapel's east wall between a pilaster and the side-altar niche; the
+## Lab's south-middle (intake) room, on its east wall.
+const AMMO_BOXES: Array = [
+	["RailYard", Vector3(40.48, 0, 32.5), -90.0], ["Barracks", Vector3(-1.6, 0, 32.48), 180.0],
+	["SaltChapel", Vector3(39.43, DY, 78.5), 90.0], ["LabWing", Vector3(83.5, DY, 95.0), 90.0],
+]
 
 ## Greybox colour keys -> material library keys (world/materials.gd).
 const MAT_MAP: Dictionary = {
@@ -126,6 +135,7 @@ const HIDE: Array = [
 	"Rail", "TowerLeg", "TowerHead", "SnowMound?", "Drift", "Boxcar", "Locomotive", "LocoCab", "BufferStop", "SignalBox",
 	"Gate", "FilingA", "Bunk", "MessTable", "ServingLine", "Pews", "Altar", "AltarTop", "Bell", "Font", "ChandelierVis",
 	"Confessional", "Turbine", "Catwalk", "Tank", "NurseryBed", "AdminStairs", "FlightA", "FlightB", "FlightC",
+	"NavBlock_Ammo*",
 ]
 const SODIUM: Color = Color(1.0, 0.66, 0.36)
 const INCAND: Color = Color(1.0, 0.78, 0.55)
@@ -167,6 +177,7 @@ func _initialize() -> void:
 	build_lab()
 	build_core()
 	build_closets()
+	build_ammo_blocks()
 
 
 func _process(_delta: float) -> bool:
@@ -694,6 +705,15 @@ func build_closets() -> void:
 			var sp: Vector3 = center + side * 1.4 * s
 			box(geo, "ClosetSide", sp - half_out - side.abs() * 0.15 + Vector3(0, p.y - sp.y, 0),
 				sp + half_out + side.abs() * 0.15 + Vector3(0, 3.0, 0), "rock")
+
+
+## The ammo boxes' footprints as hidden colliders, so the navmesh is cut round them (the boxes are placed in
+## build_gameplay and make their own runtime collision).
+func build_ammo_blocks() -> void:
+	for ab: Array in AMMO_BOXES:
+		var h: Vector3 = Vector3(0.52, 0, 0.3) if absf(float(ab[2])) != 90.0 else Vector3(0.3, 0, 0.52)
+		var p: Vector3 = ab[1]
+		box(geo, "NavBlock_Ammo_" + str(ab[0]), p - h, p + h + Vector3(0, 0.62, 0), "metal")
 
 
 # ================================================================== navigation
@@ -2923,6 +2943,8 @@ func build_gameplay() -> void:
 	var chand: Node3D = _node("res://gravelight/world/trap_chandelier.gd", "Trap_Chandelier", {"drop_points": PackedVector3Array([Vector3(0, 0, -5), Vector3(0, 0, 0), Vector3(0, 0, 5)])}, Vector3(12, DY, 71), 0.0)
 	_node("res://gravelight/world/trap_lever.gd", "Lever_Chandelier", {"trap_path": NodePath("../" + chand.name), "trap_id": &"chandelier"}, Vector3(14.5, DY, 61.8), 180.0)
 	_node("res://gravelight/world/crucible.gd", "Crucible", {}, Vector3(46.2, CY, 124), 90.0)
+	for ab2: Array in AMMO_BOXES:
+		_node("res://gravelight/world/ammo_box.gd", "AmmoBox_" + str(ab2[0]), {"box_name": str(ab2[0]).to_snake_case()}, ab2[1], float(ab2[2]))
 	build_quest_objects()
 	# power-on burst points (G and F ground)
 	for bp: Vector3 in [Vector3(50, DY, 64), Vector3(78, DY, 79), Vector3(0, DY, 88), Vector3(24, DY, 88)]:
