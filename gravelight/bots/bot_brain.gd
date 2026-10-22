@@ -393,7 +393,10 @@ func _think() -> void:
 	_read_claims(now)
 	if player.remote_body != null:
 		var cw: WeaponInstance = aim.cur()
-		player.remote_body.set_weapon(cw.id if cw != null else &"")
+		var shown: StringName = cw.id if cw != null else &""
+		if shown == &"" and player.is_companion:
+			shown = player.weapons.melee_id   # Jakub with no gun carries his coal shovel
+		player.remote_body.set_weapon(shown)
 	if not bonus_said and now >= _bonus_due_t:
 		_bonus_due_t = now + 4.0
 		bonus_event("fallback")

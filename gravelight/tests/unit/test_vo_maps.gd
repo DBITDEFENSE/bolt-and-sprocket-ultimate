@@ -30,9 +30,11 @@ func test_tagging() -> void:
 
 ## The survivors' Kaltenbrunn lines (and every other line that names the place) are map lines.
 func test_every_kaltenbrunn_line_is_a_map_line() -> void:
+	# rules.json any_map_lines: the place named as the past or a destination (Jakub escaped from it), not as here
+	var any_map: Array = (GLVO.rules.get("any_map_lines", {}) as Dictionary).get("ids", [])
 	for id: Variant in GLVO.lines.keys():
 		var rec: Dictionary = GLVO.lines[id]
-		if str(rec.get("text", "")).contains("Kaltenbrunn"):
+		if str(rec.get("text", "")).contains("Kaltenbrunn") and not any_map.has(str(id)):
 			assert_ne(GLVO.line_map_of(str(id), rec, GLVO.rules), "", "%s names Kaltenbrunn but plays on any map" % id)
 
 
