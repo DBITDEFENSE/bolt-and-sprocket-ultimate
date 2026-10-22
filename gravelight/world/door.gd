@@ -21,6 +21,7 @@ var is_open: bool = false
 var _body: StaticBody3D
 var _visual: Node3D
 var _lock_lamp: MeshInstance3D   # powered doors: red until the power is on, then green
+var _cost_labels: Array[Label3D] = []
 
 
 func _ready() -> void:
@@ -68,6 +69,15 @@ func build_greybox() -> void:
 		var z: float = float(lz[0]) - 0.005 if side < 0.0 else float(lz[1]) + 0.005
 		var l: Label3D = add_label(_visual, "%s\n%d" % [label, cost], Vector3(0, size.y * 0.6, z), 28, Color(1.0, 0.92, 0.75, 0.95))
 		l.rotation.y = 0.0 if side > 0 else PI
+		_cost_labels.append(l)
+
+
+## A new price (Jakub's Kaltenbrunn shortcut, U02 section 6.2): the prompt and both painted labels follow.
+func set_cost(new_cost: int) -> void:
+	cost = maxi(0, new_cost)
+	for l: Label3D in _cost_labels:
+		if is_instance_valid(l):
+			l.text = "%s\n%d" % [label, cost]
 
 
 func _refresh_lock_lamp() -> void:

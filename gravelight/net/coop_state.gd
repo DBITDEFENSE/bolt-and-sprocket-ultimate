@@ -8,6 +8,9 @@ extends RefCounted
 enum Life { ALIVE, DOWNED, DEAD }
 
 var players: Dictionary = {}   # pid -> {"life": Life, "bleed": float, "reviver": int}
+## Companions (Jakub, U02 section 6.2): they go down, bleed out and get revived like anyone, but they never keep
+## a match alive on their own (alive_count / everyone_down skip them) and never respawn (respawn_dead skips them).
+var companions: Dictionary = {}   # pid -> true
 
 
 func add(pid: int) -> void:
@@ -16,6 +19,17 @@ func add(pid: int) -> void:
 
 func remove(pid: int) -> void:
 	players.erase(pid)
+	companions.erase(pid)
+
+
+## A companion's life cycle (see `companions`).
+func add_companion(pid: int) -> void:
+	add(pid)
+	companions[pid] = true
+
+
+func is_companion(pid: int) -> bool:
+	return companions.has(pid)
 
 
 func life(pid: int) -> Life:
@@ -90,7 +104,7 @@ func tick(dt: float, pause_while_reviving: bool = true) -> Array[int]:
 func respawn_dead() -> Array[int]:
 	var out: Array[int] = []
 	for pid: Variant in players.keys():
-		if int((players[pid] as Dictionary)["life"]) == Life.DEAD:
+		if int((players[pid] as Dictionary)["life"]) == Life.DEAD and not companions.has(int(pid)):
 			players[pid] = {"life": Life.ALIVE, "bleed": 0.0, "reviver": 0}
 			out.append(int(pid))
 	return out
@@ -99,14 +113,15 @@ func respawn_dead() -> Array[int]:
 func alive_count() -> int:
 	var n: int = 0
 	for pid: Variant in players.keys():
-		if int((players[pid] as Dictionary)["life"]) == Life.ALIVE:
+		if int((players[pid] as Dictionary)["life"]) == Life.ALIVE and not companions.has(int(pid)):
 			n += 1
 	return n
 
 
-## Game over: there are players and none of them is standing (downed and dead both count as down).
+## Game over: there are players and none of them is standing (downed and dead both count as down). A companion
+## still standing does not keep the match going.
 func everyone_down() -> bool:
-	return not players.is_empty() and alive_count() == 0
+	return players.size() > companions.size() and alive_count() == 0
 
 
 ## Revive hold time for a reviver whose perks give `revive_speed_mult` (Second Wind: 2x -> 2 s).

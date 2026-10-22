@@ -58,6 +58,9 @@ static var shot_dir: Vector3 = Vector3.ZERO
 var map: MapRoot
 var local_player: Player
 var players: Dictionary = {}       # pid -> Player
+## Companions on this machine (Jakub, U02 section 6.2): pid -> Player. Not in `players` (they are no player slot),
+## but their downs, revives and bleed-outs run through the same co-op rules (CoopState.companions).
+var companions: Dictionary = {}
 var coop: CoopState = CoopState.new()
 var begun: bool = false
 var _cfg: Dictionary = {}
@@ -571,11 +574,27 @@ func local_fired(kind: int, weapon_id: StringName, origin: Vector3, end: Vector3
 
 # ---------------------------------------------------------------- co-op rules (host)
 
+## A companion joins the life cycle (offline sessions only): downed, revived, bled out; never respawned.
+func add_companion(p: Player) -> void:
+	companions[p.player_id] = p
+	coop.add_companion(p.player_id)
+
+
+func remove_companion(pid: int) -> void:
+	companions.erase(pid)
+	coop.remove(pid)
+
+
+## The Player for an id: a match player, else a companion.
+func player_of(pid: int) -> Player:
+	var p: Player = players.get(pid) as Player
+	return p if p != null else companions.get(pid) as Player
+
 ## A player went down (MapRoot._on_player_downed in co-op): perks are lost, the bleed-out clock starts.
 func coop_downed(pid: int) -> void:
 	PerkManager.on_player_downed(pid)
 	var bleed: float = float(GLData.table("player")["bleedout_seconds"])
-	var dp: Player = players.get(pid) as Player
+	var dp: Player = player_of(pid)
 	if dp != null and dp.bleedout_seconds > 0.0:
 		bleed = dp.bleedout_seconds   # a companion's own clock (U02 section 6: Jakub bleeds out after 60 s)
 	coop.down(pid, bleed)
@@ -587,7 +606,7 @@ func coop_downed(pid: int) -> void:
 func coop_revive(target_pid: int, by_pid: int) -> void:
 	if not coop.revive(target_pid):
 		return
-	var t: Player = players.get(target_pid) as Player
+	var t: Player = player_of(target_pid)
 	if t == null:
 		return
 	if t.is_local or t.is_bot:
@@ -601,7 +620,7 @@ func coop_revive(target_pid: int, by_pid: int) -> void:
 
 
 func _bleed_out(pid: int) -> void:
-	var t: Player = players.get(pid) as Player
+	var t: Player = player_of(pid)
 	if t == null:
 		return
 	if t.is_local:

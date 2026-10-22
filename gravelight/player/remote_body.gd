@@ -28,6 +28,9 @@ const OUTFITS: Dictionary = {
 	&"peg": [Color(0.45, 0.38, 0.25), Color(0.4, 0.34, 0.23), Color(0.45, 0.12, 0.13), Color(0.92, 0.76, 0.66), Color(0.55, 0.36, 0.22), "beret"],
 	&"deacon": [Color(0.24, 0.27, 0.24), Color(0.24, 0.27, 0.24), Color(0.13, 0.13, 0.14), Color(0.36, 0.24, 0.17), Color(0.5, 0.42, 0.3), "knit"],
 	&"wren": [Color(0.86, 0.86, 0.82), Color(0.33, 0.3, 0.27), Color(0.4, 0.38, 0.36), Color(0.9, 0.75, 0.65), Color(0.85, 0.1, 0.12), "knit"],
+	# Jakub Ostrowski (U02 section 6.2): a field-grey army greatcoat two sizes too big over brown work clothes,
+	# a tweed cloth cap, the miner's lamp hook on his belt
+	&"jakub": [Color(0.36, 0.38, 0.32), Color(0.33, 0.26, 0.19), Color(0.23, 0.21, 0.19), Color(0.78, 0.65, 0.56), Color(0.52, 0.4, 0.22), "cap"],
 }
 ## character -> build: chest width scale, stance half-width, gun drop (BAR posture), lean, fidget kind
 const BUILDS: Dictionary = {
@@ -35,6 +38,7 @@ const BUILDS: Dictionary = {
 	&"peg": {"width": 0.92, "stance": 0.095, "gun_drop": 0.0, "lean": 0.0, "fidget": "watch"},
 	&"deacon": {"width": 1.04, "stance": 0.11, "gun_drop": 0.02, "lean": 0.03, "fidget": "tap"},
 	&"wren": {"width": 0.88, "stance": 0.09, "gun_drop": 0.0, "lean": 0.04, "fidget": "write"},
+	&"jakub": {"width": 0.86, "stance": 0.1, "gun_drop": 0.03, "lean": 0.07, "fidget": "warm"},
 }
 ## Timed actions (seconds).
 const ACTION_SECONDS: Dictionary = {&"drink": 1.7, &"buy": 0.9, &"repair": 0.75, &"revive": 0.5}
@@ -97,11 +101,12 @@ func setup(character_id: StringName, player_id: int) -> void:
 		"canvas": _mat(Color(0.38, 0.35, 0.24)), "white": _mat(Color(0.93, 0.92, 0.88)), "glass": _mat(Color(0.25, 0.15, 0.08), 0.3),
 		"paper": _mat(Color(0.85, 0.8, 0.66)), "wood": _mat(Color(0.48, 0.34, 0.2)), "scarf": _mat(Color(0.42, 0.16, 0.14)),
 		"grease": _mat(Color(0.12, 0.11, 0.1)), "net": _mat(Color(0.2, 0.22, 0.14)),
+		"stubble": _mat(Color(0.3, 0.27, 0.25)), "shirt": _mat(Color(0.42, 0.37, 0.3)), "bandage": _mat(Color(0.86, 0.83, 0.76)),
 	}
 	_build_body(str(o[5]))
 	set_weapon(&"m1911")
-	if GameState.is_bot(pid):
-		_tag.visible = false   # bots wear the screen-space nameplate (BotPlates)
+	if _ai():
+		_tag.visible = false   # bots (and Jakub) wear the screen-space nameplate (BotPlates)
 	GLBus.perk_bought.connect(func(p: int, _perk: StringName) -> void:
 		if p == pid:
 			play_action(&"drink"))
@@ -203,6 +208,10 @@ func _build_body(headgear: String) -> void:
 	_sphere(_head, 0.11, Vector3(0, 0.14, -0.01), "skin", Vector3(0.95, 1.1, 1.0))
 	_sphere(_head, 0.018, Vector3(0.0, 0.13, -0.115), "skin")                          # nose
 	match headgear:
+		"cap":
+			# a flat cloth cap: the crown pulled forward over a short peak
+			_sphere(_head, 0.122, Vector3(0, 0.235, -0.012), "head", Vector3(1.06, 0.34, 1.12))
+			_box(_head, Vector3(0.17, 0.016, 0.085), Vector3(0, 0.215, -0.135), "head", Vector3(-0.18, 0, 0))
 		"helmet":
 			_sphere(_head, 0.15, Vector3(0, 0.2, 0), "head", Vector3(1.0, 0.62, 1.05))
 			_cyl(_head, 0.165, 0.012, Vector3(0, 0.165, 0), "head")                         # brim
@@ -231,6 +240,7 @@ func _build_body(headgear: String) -> void:
 		&"peg": _gear_peg(wd)
 		&"deacon": _gear_deacon(wd)
 		&"wren": _gear_wren(wd)
+		&"jakub": _gear_jakub(wd)
 	_build_props()
 	_flash = MeshInstance3D.new()
 	_flash.mesh = WeaponModels.muzzle_flash_mesh()
@@ -330,6 +340,87 @@ func _gear_wren(wd: float) -> void:
 	_box(_chest, Vector3(0.03, 0.62, 0.015), Vector3(0.02, 0.3, -0.125), "strap", Vector3(0, 0, -0.85))   # the sling across the chest
 
 
+## Jakub: gaunt in a greatcoat two sizes too big. The skirt hangs open to the knees over his work shirt, the
+## shoulders sit wide of his own, the collar is turned up; two rows of buttons; stubble on hollow cheeks; the
+## empty miner's lamp hook clipped to his belt; a bandage round his head when he comes back wounded.
+func _gear_jakub(wd: float) -> void:
+	_box(_chest, Vector3(0.5 * wd, 0.1, 0.29), Vector3(0, 0.49, 0), "jacket")                    # wide, slumped shoulders
+	_box(_chest, Vector3(0.3, 0.1, 0.05), Vector3(0, 0.55, 0.1), "jacket", Vector3(0.3, 0, 0))     # turned-up collar
+	_box(_chest, Vector3(0.14, 0.4, 0.01), Vector3(0, 0.26, -0.124), "shirt")                     # the work shirt in the gap
+	for side: float in [-1.0, 1.0]:
+		for k: int in 3:
+			_box(_chest, Vector3(0.018, 0.018, 0.01), Vector3(side * 0.1, 0.4 - 0.11 * float(k), -0.126), "metal")   # buttons
+		var skirt: MeshInstance3D = _box(_hips, Vector3(0.22 * wd, 0.52, 0.03), Vector3(side * 0.12 * wd, -0.25, -0.12), "jacket")
+		skirt.rotation = Vector3(-0.08, side * 0.18, side * 0.05)                                  # front panels, open
+		_box(_hips, Vector3(0.03, 0.52, 0.24), Vector3(side * 0.22 * wd, -0.25, 0.0), "jacket", Vector3(0, 0, side * 0.06))
+	_box(_hips, Vector3(0.44 * wd, 0.54, 0.03), Vector3(0, -0.26, 0.125), "jacket", Vector3(0.06, 0, 0))   # back of the coat
+	_box(_head, Vector3(0.15, 0.07, 0.04), Vector3(0, 0.075, -0.085), "stubble")                 # stubble
+	_box(_head, Vector3(0.025, 0.06, 0.1), Vector3(-0.1, 0.1, -0.03), "stubble")
+	_box(_head, Vector3(0.025, 0.06, 0.1), Vector3(0.1, 0.1, -0.03), "stubble")
+	var hook: Node3D = Node3D.new()
+	hook.name = "LampHook"
+	hook.position = Vector3(0.21 * wd, 0.06, -0.08)
+	_hips.add_child(hook)
+	_box(hook, Vector3(0.012, 0.1, 0.012), Vector3(0, -0.05, 0), "metal")                        # the lamp hook
+	_box(hook, Vector3(0.04, 0.012, 0.012), Vector3(0.014, -0.1, 0), "metal")
+	_box(hook, Vector3(0.012, 0.03, 0.012), Vector3(0.03, -0.088, 0), "metal")
+	var band: Node3D = Node3D.new()
+	band.name = "Bandage"
+	_head.add_child(band)
+	_cyl(band, 0.118, 0.045, Vector3(0, 0.18, 0), "bandage")
+	_box(band, Vector3(0.05, 0.04, 0.02), Vector3(0.06, 0.18, -0.11), "grease")                 # dried blood
+	band.visible = false
+
+
+## Jakub back on the next map after a bleed-out: the bandage round his head (U02 section 6.2).
+func set_wounded(on: bool) -> void:
+	var band: Node3D = find_child("Bandage", true, false) as Node3D
+	if band != null:
+		band.visible = on
+
+
+## An AI-driven body (bots, the companion): screen-space nameplate, calm from the brain.
+func _ai() -> bool:
+	return GameState.is_bot(pid) or character == &"jakub"
+
+
+## Jakub's coal shovel in both hands (his melee while he has no gun): a long wooden shaft with a D-grip, the
+## iron blade low and forward. Built like a gun model (origin at the right hand, "LeftHand" on the shaft).
+static func build_shovel(mats: Dictionary) -> Node3D:
+	var root: Node3D = Node3D.new()
+	root.name = "CoalShovel"
+	var shaft: MeshInstance3D = MeshInstance3D.new()
+	var cm: CylinderMesh = CylinderMesh.new()
+	cm.top_radius = 0.016
+	cm.bottom_radius = 0.018
+	cm.height = 1.0
+	shaft.mesh = cm
+	shaft.material_override = mats["wood"]
+	shaft.rotation.x = -PI * 0.5
+	shaft.position = Vector3(0, 0, -0.3)
+	root.add_child(shaft)
+	var grip: MeshInstance3D = MeshInstance3D.new()
+	var gb: BoxMesh = BoxMesh.new()
+	gb.size = Vector3(0.1, 0.02, 0.03)
+	grip.mesh = gb
+	grip.material_override = mats["wood"]
+	grip.position = Vector3(0, 0, 0.2)
+	root.add_child(grip)
+	var blade: MeshInstance3D = MeshInstance3D.new()
+	var bb: BoxMesh = BoxMesh.new()
+	bb.size = Vector3(0.24, 0.02, 0.28)
+	blade.mesh = bb
+	blade.material_override = mats["metal"]
+	blade.position = Vector3(0, -0.02, -0.92)
+	blade.rotation.x = 0.18
+	root.add_child(blade)
+	var lh: Node3D = Node3D.new()
+	lh.name = "LeftHand"
+	lh.position = Vector3(0, 0, -0.42)
+	root.add_child(lh)
+	return root
+
+
 ## Hand-held props for actions and fidgets (hidden until used).
 func _build_props() -> void:
 	var rh: Node3D = _joints["hand_r"]
@@ -381,6 +472,13 @@ func set_weapon(weapon_id: StringName) -> void:
 	_gun = null
 	_muzzle = null
 	if weapon_id == &"":
+		return
+	if weapon_id == &"coal_shovel":
+		_gun = build_shovel(_mats)
+		_gun_pivot.add_child(_gun)
+		_gun.position = Vector3(0.12, -0.02, -0.18)
+		for n0: Node in _gun.find_children("*", "MeshInstance3D", true, false):
+			(n0 as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		return
 	var base: StringName = StringName(String(weapon_id).trim_suffix("_up"))
 	_gun = WeaponModels.build(base, String(weapon_id).ends_with("_up"))
@@ -483,7 +581,7 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 		_hold[k] = maxf(0.0, float(_hold[k]) - delta)
 	_co_op_revive_hint()
 	# idle fidgets: calm (or, for a remote human, still and not shooting) for a while
-	var calm_now: bool = (calm if GameState.is_bot(pid) else _since_shot > 5.0) and not moving and not downed and not reloading
+	var calm_now: bool = (calm if _ai() else _since_shot > 5.0) and not moving and not downed and not reloading
 	if calm_now:
 		_still_t += delta
 		if _still_t > 2.5:
@@ -495,7 +593,7 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 		if _fidget_t > 0.0:
 			_fidget_t = -_rng.randf_range(1.0, 2.0)
 	var pose: StringName = _active_pose(downed, moving)
-	for name_k: StringName in [&"revive", &"repair", &"drink", &"buy", &"stretch", &"watch", &"tap", &"write"]:
+	for name_k: StringName in [&"revive", &"repair", &"drink", &"buy", &"stretch", &"watch", &"tap", &"write", &"warm"]:
 		_blend[name_k] = move_toward(float(_blend.get(name_k, 0.0)), 1.0 if pose == name_k else 0.0, delta * 5.0)
 	_down_b = move_toward(_down_b, 1.0 if downed else 0.0, delta * 3.0)
 	_crouch_b = move_toward(_crouch_b, 1.0 if crouch else 0.0, delta * 6.0)
@@ -526,8 +624,9 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 	var b_watch: float = float(_blend[&"watch"])
 	var b_tap: float = float(_blend[&"tap"])
 	var b_write: float = float(_blend[&"write"])
+	var b_warm: float = float(_blend[&"warm"])   # Jakub blows into his cupped hands
 	# both hands busy: the gun goes on the sling across the back; one hand busy: held low in the other
-	var sling: float = maxf(maxf(kneel, b_rep), maxf(b_write, b_stretch))
+	var sling: float = maxf(maxf(kneel, b_rep), maxf(maxf(b_write, b_stretch), b_warm))
 	var low: float = maxf(maxf(b_drink, b_buy), maxf(b_watch, b_tap))
 	# --- body
 	_pivot.rotation.x = lerpf(0.0, -1.47, _down_b)
@@ -544,7 +643,7 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 	_chest.rotation.y = sin(p) * 0.08 * swing + 0.25 * b_stretch * sin(t_now * 1.3)
 	var aim: float = clampf(pitch, -1.2, 1.2)
 	var head_x: float = lerpf(aim * 0.6, 0.6, _down_b) - _chest.rotation.x * 0.4
-	head_x += 0.35 * b_drink * clampf((1.7 - _act_t) * 2.0, 0.0, 1.0) - 0.55 * b_watch - 0.5 * b_write - 0.25 * kneel + 0.3 * b_stretch
+	head_x += 0.35 * b_drink * clampf((1.7 - _act_t) * 2.0, 0.0, 1.0) - 0.55 * b_watch - 0.5 * b_write - 0.25 * kneel + 0.3 * b_stretch - 0.12 * b_warm
 	_head.rotation.x = head_x
 	_head.rotation.y = 0.35 * b_tap * sin(t_now * 0.7)
 	# gun: aimed in both hands -> held low -> slung on the back
@@ -641,6 +740,10 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 		elif b_stretch > 0.0:
 			l_job = _hips.global_transform * Vector3(-0.12, 0.12, 0.16)
 			r_job2 = _hips.global_transform * Vector3(0.12, 0.12, 0.16)
+		elif b_warm > 0.0:
+			var rub: float = 0.012 * sin(t_now * 9.0)
+			l_job = cp2 * Vector3(-0.035 + rub, 0.6, -0.2)
+			r_job2 = cp2 * Vector3(0.035 - rub, 0.6, -0.2)
 		left = left.lerp(l_job, sling)
 		right = right.lerp(r_job2, sling)
 	for side2: int in [0, 1]:
@@ -686,7 +789,7 @@ func _update_props(b_drink: float, b_write: float, b_rep: float, b_tap: float) -
 
 ## Co-op: a remote teammate holding a revive on someone (the host's reviver state) kneels like a bot does.
 func _co_op_revive_hint() -> void:
-	if GameState.is_bot(pid):
+	if _ai():
 		return
 	var s: NetMatch = Net.session
 	if s == null or s.coop == null:

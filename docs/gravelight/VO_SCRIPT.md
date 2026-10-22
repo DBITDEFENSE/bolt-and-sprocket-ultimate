@@ -1264,3 +1264,229 @@ The ids carry `SQ3` so the voice bake can run them alone (`python gravelight/too
 - `WRN_SQ3_TALLY_300_01`: "Three hundred. Still counting."
 - `WRN_SQ3_CHATTER_01`: "I write down their number. Someone should."
 - `WRN_SQ3_CHATTER_02`: "My brother would like this inn. He liked any place with a fire."
+
+
+## 16. Jakub Ostrowski (`JAK`), the prisoner companion (Update 02 §6.2, DECISIONS T-051)
+
+A Polish miner from Wilcza Góra, 43, who walked out of Kaltenbrunn on 21 December 1944 and was locked in the
+Crossroads Inn's coal cage by a fleeing patrol (CANON §6.4, CHARACTERS.md "Jakub Ostrowski"). Calm, wry, polite.
+He has seen worse than zombies and isn't impressed by them. He is a person and a hero: never a joke, never a zombie.
+
+**Voice:** the offline TTS bake (`gen_vo.py` profile `JAK`): Microsoft Mark, slower and lower than Deacon, a
+smaller "size" shift and a dry, close, slightly rough chain (`jakub`), so he never sounds like Dutch (David) or
+Deacon (Mark, warm room). **Polish** is written as it is said, with the English in parentheses right after it
+(subtitles show both; the bake drops the parentheses). The bake reads a phonetic respelling where a tail gives
+one: `` `[say: "..."]` `` (extract_vo.py stores it as the line's `tts`).
+
+**Where he speaks:** positional at his body (the 3D squad channel, `rules.json player_speakers`), including from his
+cage before he joins (the `companions` group). His story categories are tier 2 (`player_category_priority`): they
+queue behind a story line instead of being dropped. His squad callouts come through `BotSquad.callout` (§13, §15
+categories) with his own lines. The other survivors' lines about him are at the end of this section.
+
+### 16.1 Map 0: the cage, the breakout, the choice
+
+**`CAGE_HELLO`** (the first time a survivor comes within 6 m of the cage, before round 5):
+- `JAK_CAGE_HELLO_01`: "Szczęść Boże (God grant you luck). Forgive me if I don't get up. The door is not my idea." `[say: "Shchench Bozheh. Forgive me if I don't get up. The door is not my idea."]`
+- `JAK_CAGE_HELLO_02`: "Ah. Not one of them. Good evening. I am Jakub. I would shake your hand, but the patrol kept the key."
+
+**`CAGE_TALK`** ("Talk to Jakub" through the bars):
+- `JAK_CAGE_TALK_01`: "The patrol locked me in and ran. They said the dead were walking. I said, then let me walk too. They did not laugh."
+- `JAK_CAGE_TALK_02`: "The hinge is old. Something will break it sooner or later. I pray it is not something hungry."
+- `JAK_CAGE_TALK_03`: "No, no. Don't waste your bullets on the lock. Keep them for the ones upstairs."
+- `JAK_CAGE_TALK_04`: "Two days ago I was in Kaltenbrunn. Now I am in a coal cage at a crossroads. This is what they call progress."
+
+**`ALARM`** (round 5: something tears at the coal-chute window):
+- `JAK_ALARM_01`: "Kto tam? (Who's there?) ...Jezus Maria (Jesus, Mary)." `[say: "Kto tahm? ... Yezoos Maria."]`
+- `JAK_ALARM_02`: "Boże (God). It is coming down the coal chute." `[say: "Bozheh. It is coming down the coal chute."]`
+
+**`BREAKOUT`** (the zombie bursts the cage hinge; he grabs the coal shovel; shouted, heard through the floor):
+- `JAK_BREAKOUT_01`: "Precz! Precz ode mnie! (Get away! Get away from me!) Chodź tu, ty draniu! (Come here, you swine!)" `[say: "Prech! Prech odeh mnyeh! Hoach too, tih drahnyoo!"]`
+- `JAK_BREAKOUT_02`: "Jezus Maria! (Jesus, Mary!) The hinge! It has taken the hinge!" `[say: "Yezoos Maria! The hinge! It has taken the hinge!"]`
+- `JAK_BREAKOUT_03`: "Psiakrew! (Dog's blood!) Na dole! Tutaj, na dole! (Downstairs! Here, down here!)" `[say: "Pshahkref! Nah doleh! Tootie, nah doleh!"]`
+
+**`BREAKOUT_SELF`** (the zombie fell before it reached him; he shoulders the loose hinge himself):
+- `JAK_BREAKOUT_SELF_01`: "The hinge was half off already. One good shove. Dzięki Bogu (thank God)." `[say: "The hinge was half off already. One good shove. Jenkee Bogoo."]`
+
+**`FIGHT_KILL`** (the shovel comes down for the last time):
+- `JAK_FIGHT_KILL_01`: "Spokojnie (easy). ...Stay down. Stay down this time." `[say: "Spokoynyeh. Stay down. Stay down this time."]`
+- `JAK_FIGHT_KILL_02`: "Twenty years of coal. A shovel knows what to do."
+
+**`FREED`** (he steps out and waits by the cage):
+- `JAK_FREED_01`: "Dzięki Bogu (thank God). Whoever is up there, come down. I will not bite. That one tried." `[say: "Jenkee Bogoo. Whoever is up there, come down. I will not bite. That one tried."]`
+- `JAK_FREED_02`: "I am out. And now I stand by the cage like a fool, waiting to be told where to go. Habit."
+
+**`CALL`** (while he waits and nobody is near; every 16 s; positional, so the voice comes up through the floor):
+- `JAK_CALL_01`: "Halo! Jest tu kto? (Hello! Is anyone here?) I am down in the cellar!" `[say: "Hahlo! Yest too kto? I am down in the cellar!"]`
+- `JAK_CALL_02`: "Hej! Na dole! (Hey! Downstairs!) There is a man down here, and he has a shovel!" `[say: "Hey! Nah doleh! There is a man down here, and he has a shovel!"]`
+- `JAK_CALL_03`: "Is anyone still alive up there? Jest tam kto? (Is anyone there?)" `[say: "Is anyone still alive up there? Yest tahm kto?"]`
+- `JAK_CALL_04`: "I can hear you shooting. Good. When you are finished, the cellar door. Please."
+
+**`TALK_ASK`** ("Talk to Jakub" once he is out: the choice card opens):
+- `JAK_TALK_ASK_01`: "You came down. Thank you. Now a question: do I come with you as a man with a gun, or a man with a shovel?"
+- `JAK_TALK_ASK_02`: "I can carry a rifle. I carried worse for two years. Or I carry this shovel and keep out of your way. You decide."
+
+**`JOIN_UNARMED`** (NOT YET):
+- `JAK_JOIN_UNARMED_01`: "Not yet. I understand. A stranger from a cage. I would not give me a gun either. I walk behind you."
+- `JAK_JOIN_UNARMED_02`: "The shovel, then. I will mend your windows and keep my eyes open. When you trust me, you will tell me."
+
+**`GUN_*`** (GIVE HIM A GUN, or a wall-buy bought for him; by the gun's class):
+- `JAK_GUN_BOLT_01`: "A bolt-action. Good. We had these in thirty-nine. You count every shot. That is how a poor man shoots."
+- `JAK_GUN_BOLT_02`: "Five rounds and a bolt. Now we speak the same language."
+- `JAK_GUN_RIFLE_01`: "A rifle. Thank you. I will try to give it back with a better story than it has now."
+- `JAK_GUN_AUTO_01`: "Bolt-actions, please. I don't trust things that fire by themselves."
+- `JAK_GUN_AUTO_02`: "This one shoots like it is late for something. ...I will hold it. I won't love it."
+- `JAK_GUN_PISTOL_01`: "A pistol. Well. In the mine they gave us less."
+- `JAK_GUN_SHOTGUN_01`: "For close work. Down here everything is close work."
+- `JAK_GUN_OTHER_01`: "I don't know this one. It will learn me, or I will learn it."
+- `JAK_GUN_SWAP_01`: "Take mine, then. A fair trade. It is still warm."
+
+**`PERK_REFUSE`** (he never drinks a perk: the first time he stands by a machine, or when a survivor drinks one near him):
+- `JAK_PERK_REFUSE_01`: "I've seen what they put in those."
+- `JAK_PERK_REFUSE_02`: "No, thank you. I carried the crates for those machines at Kaltenbrunn. I know what comes out of that mountain."
+- `JAK_PERK_REFUSE_03`: "Drink if you must. I have seen men drink that and keep walking after they should have stopped."
+
+**`COUSINS`** / **`COUSINS_AFTER`** (round 10, the Cousins Round; the rhyme the three of them hum):
+- `JAK_COUSINS_01`: "I know that song. Everyone in this valley knows that song."
+- `JAK_COUSINS_02`: "That rhyme. The children clap it in every schoolyard here. It counts down. ...It was never supposed to count down to anything."
+- `JAK_COUSINS_AFTER_01`: "Lene Vogt's nieces. They came every summer when they were small and clapped that rhyme on the steps. I sold their aunt coal. ...Lord, have mercy on them."
+
+**`MIDNIGHT`** (round 9: the far church rings twelve; Christmas Eve):
+- `JAK_MIDNIGHT_01`: "Wigilia (Christmas Eve). My Marta will have set an extra plate, for the stranger at the door. She has set it every year since they took me." `[say: "Vigeelya. My Marta will have set an extra plate, for the stranger at the door. She has set it every year since they took me."]`
+- `JAK_MIDNIGHT_02`: "Midnight. Wesołych Świąt (Merry Christmas). ...Say it back. It is bad luck not to." `[say: "Midnight. Vesowih Shvyont. Say it back. It is bad luck not to."]`
+
+### 16.2 The next maps: Kaltenbrunn (his guide lines) and Totenhafen
+
+**`RETURN_WOUNDED`** (he bled out on the map before, and finds the squad on this one, a bandage round his head):
+- `JAK_RETURN_WOUNDED_01`: "Not yet. Not tonight."
+- `JAK_RETURN_WOUNDED_02`: "Jeszcze nie (not yet). They will have to try harder than that. No, don't help me. I can walk." `[say: "Yesh-cheh nyeh. They will have to try harder than that. No, don't help me. I can walk."]`
+
+**`M1_ARRIVE`** (Kaltenbrunn):
+- `JAK_M1_ARRIVE_01`: "Kaltenbrunn. I walked out of this place three days ago. I did not think I would walk back in with friends."
+- `JAK_M1_ARRIVE_02`: "Listen to me here. Stay on the planks. Don't touch the black glass in the walls. And if the bell rings, walk toward it."
+
+**`M1_SHORTCUT`** (he shows the Maintenance Stairs: 500 Scrip off while he is with you):
+- `JAK_M1_SHORTCUT_01`: "The Maintenance Stairs. That is how I got out. The lock is rusted through. Let me show you where to kick it, and it costs you five hundred less."
+
+**`M1_POWER`**:
+- `JAK_M1_POWER_01`: "The lights. Two years down here and I never saw it lit like this. It looks worse."
+
+**`M1_FOREMAN`** (the Foreman, Obersteiger Mahlknecht):
+- `JAK_M1_FOREMAN_01`: "Nadsztygar Mahlknecht (the head overman). He locked the gates on Gallery Seven. I was on the night shift. My shift lived." `[say: "Nad-shtigar Mahlknecht. He locked the gates on Gallery Seven. I was on the night shift. My shift lived."]`
+- `JAK_M1_FOREMAN_02`: "Him. I would know that walk anywhere. Don't let him reach you. He never let go of anything."
+
+**`SCREAMER`**:
+- `JAK_SCREAMER_01`: "That voice. In the deep levels you learn not to answer voices."
+
+**`ZONE_*`** (a door opens on a part of the mine he knows):
+- `JAK_ZONE_B_RAILYARD_01`: "The rail yard. They brought us in through here. The wagon slats were nailed shut. You count the gaps of light to know the time."
+- `JAK_ZONE_C_ADMIN_01`: "Administration. They kept our names in there. Numbers first, then names, then only numbers."
+- `JAK_ZONE_D_BARRACKS_01`: "The guards' barracks. Warm stoves. We could smell their coffee from the galleries."
+- `JAK_ZONE_E_LIFT_01`: "The cage lift. Sixty men to a cage. Hold the rail. It drops faster than you think."
+- `JAK_ZONE_M_STAIRS_01`: "The stairs. Mind the third landing, the steps are rotten. See the chalk by the rail? Three strokes and a hook. That one is mine."
+- `JAK_ZONE_F_CHAPEL_01`: "The salt chapel. Miners carved it a hundred years ago. When the bell rang, we came here. Some of us."
+- `JAK_ZONE_G_GENERATOR_01`: "The generator hall. Listen. It hums like the walls do. We used to say the mountain was breathing."
+- `JAK_ZONE_H_LAB_01`: "The Laboratory Wing. ...I will go in. I don't want to. Don't ask me what they did in there. I only know who went in."
+
+**`M2_ARRIVE`** (Totenhafen):
+- `JAK_M2_ARRIVE_01`: "The sea. I have never seen the sea. ...I thought it would be bigger. No. It is bigger."
+- `JAK_M2_ARRIVE_02`: "Totenhafen. Another place named for the dead. At least this salt I don't have to dig."
+- `JAK_ZONE_D_PENHALL_01`: "Somebody poured this concrete by hand. Men like me, I think. I know that kind of tired when I see it in a wall."
+- `JAK_ZONE_E_UBOAT_01`: "A boat that goes under the water on purpose. In the mine we prayed for the opposite."
+
+### 16.3 In the fight (squad categories, §13 and §15, in his voice)
+
+- `JAK_DOWN_01`: "I'm down. Don't run to me. Think first."
+- `JAK_DOWN_02`: "Jezus Maria (Jesus, Mary)... my leg." `[say: "Yezoos Maria... my leg."]`
+- `JAK_DOWN_03`: "On the floor again. Come when it is safe."
+- `JAK_REVIVED_01`: "Dzięki (thanks). I owe you a drink. Not from those machines." `[say: "Jenkee. I owe you a drink. Not from those machines."]`
+- `JAK_REVIVED_02`: "Up. Up. I am still here."
+- `JAK_REVIVE_01`: "I've got you. Hold still, like in the shaft."
+- `JAK_REVIVE_02`: "Easy. Breathe. I am pulling you up."
+- `JAK_TEAM_DOWN_01`: "Someone is down! Go, I'll cover you!"
+- `JAK_TEAM_DOWN_02`: "They have one of ours on the floor!"
+- `JAK_RELOAD_01`: "Reloading."
+- `JAK_RELOAD_02`: "Wait. Reloading. Count with me."
+- `JAK_BOARD_01`: "Boarded. Like a shaft mouth. It holds until it doesn't."
+- `JAK_BOARD_02`: "Done. Nailed shut."
+- `JAK_AMMO_LOW_01`: "I am running low. Every shot counts now."
+- `JAK_AMMO_NONE_01`: "Empty. The shovel, then."
+- `JAK_BUY_AMMO_01`: "Thank you. I will make every one of these count."
+- `JAK_POWERUP_SEEN_01`: "Something glowing, over there. You take it. You know what it does."
+- `JAK_PING_RESUPPLY_01`: "Resupply, over there! Ammunition!"
+- `JAK_PING_DEATHSDOOR_01`: "Death's Door, there. I don't touch that one. You decide."
+- `JAK_PING_DOUBLESCRIP_01`: "Double Scrip, on the floor! Take it."
+- `JAK_PING_BLACKOUT_01`: "Blackout, there. Pick it up when you need it."
+- `JAK_PING_FORTIFY_01`: "Fortify! For the windows, over here!"
+- `JAK_PING_CLEARANCE_01`: "Clearance, there. The crate is cheap now."
+- `JAK_SPRINTER_BEHIND_01`: "Uwaga! Za tobą! (Look out! Behind you!) A fast one!" `[say: "Oovahga! Zah tobom! A fast one!"]`
+- `JAK_SPRINTER_BEHIND_02`: "Behind you! Running!"
+- `JAK_BOSS_INCOMING_01`: "Something big is coming. Stay together."
+- `JAK_CRATE_MOVED_01`: "The crate has moved. I heard it go. Over that way."
+- `JAK_WINDOW_OPEN_01`: "The window is open! Here!"
+- `JAK_COVER_01`: "Go, pick them up. I am watching your back."
+- `JAK_CMD_FOLLOW_01`: "Behind you. Always behind you."
+- `JAK_CMD_HOLD_01`: "I stay here. Nobody passes."
+- `JAK_CMD_REPAIR_01`: "I'll do the windows. I know boards."
+- `JAK_CMD_REVIVE_01`: "If anyone falls, I go."
+- `JAK_CMD_TRAIN_01`: "I follow. Keep them moving."
+- `JAK_CMD_BUY_PERKS_01`: "Buy what you like. Not for me."
+- `JAK_CMD_SAVE_SCRIP_01`: "Good. Save. A poor man's wisdom."
+- `JAK_CMD_OPEN_DOOR_01`: "I'll open it for you."
+- `JAK_CMD_FETCH_PART_01`: "I'll bring it."
+- `JAK_HEADSHOT_01`: "The head. Like splitting coal along the seam."
+- `JAK_CRAWLER_01`: "This one crawls. Mind your ankles."
+- `JAK_CHATTER_01`: "In the mine we sang to keep time. Here I count rounds."
+- `JAK_CHATTER_02`: "My Marta would say I look thin. She would be right."
+- `JAK_CHATTER_03`: "You fight well. Your mothers should be proud. Write to them."
+- `JAK_CHATTER_04`: "I used to hate the dark. Then I worked in it for twenty years. Now I only hate what lives in it."
+
+### 16.4 The squad about Jakub
+
+**`JAKUB_MEET`** (the survivor who freed him, as he joins):
+- `DUT_JAKUB_MEET_01`: "Walter Kowalczyk. Call me Dutch. My Babcia came from Wilcza Góra. ...Maybe our families knew each other."
+- `PEG_JAKUB_MEET_01`: "Lieutenant Ashworth. Stay close, keep your head down, and if you know a way out of here, I want it."
+- `DEA_JAKUB_MEET_01`: "Elijah Brooks. Folks call me Deacon. You've been through it, haven't you. Well. You're with us now."
+- `WRN_JAKUB_MEET_01`: "Ostrowski. From Wilcza Góra. ...I know your face. I was a girl."
+
+**`JAKUB_FALLEN`** (he bled out: out cold, breathing, left where he fell; he comes back on the next map):
+- `DUT_JAKUB_FALLEN_01`: "Jakub's out cold. He's breathing. We can't carry him and fight. ...We'll come back for you, old man."
+- `PEG_JAKUB_FALLEN_01`: "He's breathing, but he won't wake. Leave him where he lies. They've no interest in him now."
+- `DEA_JAKUB_FALLEN_01`: "Lord, keep that man breathing. He's out. We'll come back for him, you hear me?"
+- `WRN_JAKUB_FALLEN_01`: "Jakub. ...He breathes. Leave him. He has walked out of worse places than this."
+
+### 16.5 Banter and the Wren scene
+
+Round-break banter (§1.4 `BNT_*`, rolled like the others):
+
+**BNT_DUT_JAK_01**
+- DUT: "Your village. Wilcza Góra. My Babcia sang a song about lanterns going down a shaft."
+- JAK: "And coming back up. Everyone sings the coming-back-up part louder."
+- DUT: "Yeah. She did too."
+
+**BNT_PEG_JAK_01**
+- PEG: "You walked out of Kaltenbrunn on your own?"
+- JAK: "Not on my own. Eleven of us went up the stairs. I was the one slow enough to be careful."
+- PEG: "...I'm sorry."
+- JAK: "So am I, Lieutenant."
+
+**BNT_DEA_JAK_01**
+- DEA: "You talk to the machines down there, Jakub? I talk to mine."
+- JAK: "To the rock. The rock tells you when it will fall. Machines only lie."
+- DEA: "Now that's the truest thing anybody's said to me all week."
+
+**The Wren scene** (`BNT_WRN_JAK_SCENE_01`, category `WRN_JAK_SCENE`: never rolled as banter). Once per match, the first
+time Wren talks to him: the human playing Wren after the choice, or a Wren bot within 5 m of him in a quiet moment.
+Positional, both voices at their bodies. He knew her brother (CANON §6.4, consistent with CHARACTERS.md "Wren" and
+LORE §12.1: Jakub saw Tomasz taken to the Laboratory Wing and nothing after; the chalk is the Morgenrot seed).
+
+**BNT_WRN_JAK_SCENE_01**
+- JAK: "You are Zosia. Nowak the timberman's girl. You shot the crows off my roof when you were nine."
+- WRN: "...Pan Ostrowski. From the end of the lane. You had a dog with one ear."
+- JAK: "Burek. Zosia, I worked beside your brother. In Gallery Nine, from the autumn they took him."
+- WRN: "Tomek. You saw Tomek."
+- JAK: "Every day, for five months. He threw stones at the rats and never once hit one. He laughed every time. The guards hated that laugh."
+- WRN: "He wrote that. That he practised on the rats. That he still missed."
+- JAK: "In the spring the doctors came for young men with good lungs. They took him to the Laboratory Wing. I did not see him after. I am sorry. I looked."
+- WRN: "...Thank you for looking."
+- JAK: "Before they took him, I taught him the chalk. The marks we left for each other. He made his hook backwards. Always backwards."
+- WRN: "Then if I ever see a backwards hook, I'll know it's his."

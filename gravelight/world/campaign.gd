@@ -23,6 +23,11 @@ static var _arrival: Dictionary = {}
 
 ## True while a campaign arrival restores this player's carried kit on the current map (BotSquad then skips
 ## the spawn kit and the bonus-perk draw for them: they keep what they carried).
+## The companion's payload on the map being arrived at ({} when none): JakubCompanion reads it in MapRoot._ready.
+static func arrival_companion() -> Dictionary:
+	return _arrival.get("companion", {}) if not _arrival.is_empty() else {}
+
+
 static func carried_player(pid: int) -> bool:
 	var players: Dictionary = _arrival.get("players", {})
 	return players.has(pid) or players.has(str(pid))
@@ -178,6 +183,7 @@ static func snapshot(map: MapRoot, target: StringName, cutscene_id: String) -> D
 		"character_id": String(GameState.character_id),
 		"characters": chars,
 		"god_mode": GameState.god_mode,
+		"companion": JakubCompanion.snapshot_of(map),   # Jakub (U02 section 6.2): {} unless he is with the squad
 	}
 
 

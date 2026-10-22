@@ -40,6 +40,8 @@ var is_crawler: bool = false
 var is_last: bool = false
 var window: Barricade = null
 var target: Player = null
+## A scripted target that wins over the nearest player while it stands (Jakub's breakout zombie, U02 section 6.2).
+var forced_target: Player = null
 var director: Node = null
 ## The hitbox bone of the last shot that landed (weapon_holder / bot_brain set it before take_damage), for the
 ## side of arm and leg hits. "" = unknown: a side is rolled.
@@ -201,6 +203,7 @@ func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 
 func deactivate() -> void:
 	state = State.INACTIVE
+	forced_target = null
 	if window != null:
 		window.release(self)
 	window = null
@@ -889,6 +892,10 @@ func _update_burn(delta: float) -> void:
 
 
 func _nearest_player() -> Player:
+	if forced_target != null:
+		if is_instance_valid(forced_target) and forced_target.is_alive() and forced_target.is_inside_tree():
+			return forced_target
+		forced_target = null
 	var best: Player = null
 	var best_d: float = INF
 	for n: Node in get_tree().get_nodes_in_group(&"players"):

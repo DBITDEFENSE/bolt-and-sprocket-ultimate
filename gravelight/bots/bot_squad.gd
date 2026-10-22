@@ -87,17 +87,7 @@ func setup(map_root: MapRoot) -> void:
 	GLBus.door_opened.connect(_on_door_opened)
 	GLBus.player_downed.connect(_log_down)
 	if not brains.is_empty():
-		plates = BotPlates.new()
-		plates.name = "BotPlates"
-		add_child(plates)
-		plates.setup(self)
-		wheel = BotCommandWheel.new()
-		wheel.name = "BotCommandWheel"
-		add_child(wheel)
-		wheel.setup(self)
-		pings = BotPings.new()
-		pings.name = "BotPings"
-		add_child(pings)
+		_ensure_ui()
 	var con: Node = get_node_or_null("/root/GLConsole")
 	if con != null and con.has_method("register"):
 		con.call("register", "ai_debug", _cmd_ai_debug, "ai_debug 1|0|heat|panel: the bot AI overlay (actions, scores, roles, targets, paths, the blackboard, a threat heatmap)")
@@ -114,7 +104,37 @@ func add_brain(p: Player, options: Dictionary = {}, i: int = -1) -> BotBrain:
 	brains.append(b)
 	if bool(b.options.get("kit", true)) and not Campaign.carried_player(p.player_id):
 		apply_kit(p, true)   # a campaign arrival keeps the carried kit instead
+	if is_inside_tree():
+		_ensure_ui()   # a companion joining a squad that had no bots (solo): the plates, the wheel, the pings
 	return b
+
+
+## Takes a brain out of the squad (a companion that bled out): its claims go, the brain is freed.
+func remove_brain(b: BotBrain) -> void:
+	if b == null:
+		return
+	brains.erase(b)
+	blackboard.release_all(b.player.player_id)
+	if is_instance_valid(b):
+		b.queue_free()
+
+
+## The nameplates, the command wheel and the ping markers (once there is a brain to show or order).
+func _ensure_ui() -> void:
+	if plates == null:
+		plates = BotPlates.new()
+		plates.name = "BotPlates"
+		add_child(plates)
+		plates.setup(self)
+	if wheel == null:
+		wheel = BotCommandWheel.new()
+		wheel.name = "BotCommandWheel"
+		add_child(wheel)
+		wheel.setup(self)
+	if pings == null:
+		pings = BotPings.new()
+		pings.name = "BotPings"
+		add_child(pings)
 
 
 func _assign_bonus_perks() -> void:
@@ -245,7 +265,12 @@ func wall_buys() -> Array[WallBuy]:
 
 
 func player_by_id(pid: int) -> Player:
-	return map.players.get(pid) as Player
+	var p: Player = map.players.get(pid) as Player
+	if p == null:
+		for b: BotBrain in brains:
+			if b.player.player_id == pid:
+				return b.player   # a companion (Jakub) is no match player
+	return p
 
 
 func all_players() -> Array[Player]:

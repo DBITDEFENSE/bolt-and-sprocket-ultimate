@@ -75,6 +75,9 @@ PROFILES: dict[str, dict] = {
     "DEA":      dict(voice="Mark",  rate="-7%",  pitch="-7%",  size=0.97, chain="deacon",    gain_db=0.0),
     # Wren Nowak: economical, accented, never a wasted word.
     "WRN":      dict(voice="Zira",  rate="-4%",  pitch="+6%",  size=1.07, chain="wren",      gain_db=0.0),
+    # Jakub Ostrowski (U02 section 6.2): a Polish miner in his forties. Mark, slower and lower than Deacon, a slightly
+    # larger "size" (older, chestier), dry and close with a little grit: calm, wry, unhurried.
+    "JAK":      dict(voice="Mark",  rate="-13%", pitch="-11%", size=0.95, chain="jakub",     gain_db=0.0),
 }
 # Reinholt's cylinders and diary samples are phonograph recordings; everything else of hers is the PA.
 REI_PHONO_CATEGORIES = ("CYL", "SAMPLE", "HEART_END", "END")
@@ -471,7 +474,17 @@ def chain_wren(x, r, cues):
     return x
 
 
-CHAINS = {"tannoy": chain_tannoy, "corporate": chain_corporate, "radio": chain_radio, "pa": chain_pa,
+def chain_jakub(x, r, cues):
+    x = highpass(x, 85, 1)
+    x = boost(x, 350, 800, 2.5)       # chest
+    x = boost(x, 2600, 4200, -2.0)    # no shine: tired, older
+    x = saturate(x, 1.35)             # a little grit
+    x = lowpass(x, 6200, 1)
+    x = compress(x, -22.0, 2.2)
+    return x
+
+
+CHAINS = {"jakub": chain_jakub, "tannoy": chain_tannoy, "corporate": chain_corporate, "radio": chain_radio, "pa": chain_pa,
           "phono": chain_phono, "dutch": chain_dutch, "peg": chain_peg, "deacon": chain_deacon, "wren": chain_wren}
 
 
@@ -591,7 +604,8 @@ def main() -> int:
         if rec.get("exchange"):
             parts_src = [(str(p[0]), str(p[1])) for p in rec["exchange"]]
         else:
-            parts_src = [(speaker, str(rec.get("text", "")))]
+            # "tts": a phonetic respelling for the English voices (Jakub's Polish); the subtitle keeps "text"
+            parts_src = [(speaker, str(rec.get("tts") or rec.get("text", "")))]
         multi = len(parts_src) > 1 or bool(rec.get("exchange"))
         for i, (spk, text) in enumerate(parts_src):
             file_id = "%s_p%d" % (line_id, i) if multi else line_id

@@ -22,7 +22,7 @@ signal console_reply(text: String)
 enum Mode { OFFLINE, HOST, CLIENT }
 
 const CHARACTERS: PackedStringArray = ["dutch", "peg", "deacon", "wren"]
-const DISPLAY: Dictionary = {"dutch": "Dutch", "peg": "Peg", "deacon": "Deacon", "wren": "Wren"}
+const DISPLAY: Dictionary = {"dutch": "Dutch", "peg": "Peg", "deacon": "Deacon", "wren": "Wren", "jakub": "Jakub"}
 
 var mode: Mode = Mode.OFFLINE
 var local_pid: int = 1

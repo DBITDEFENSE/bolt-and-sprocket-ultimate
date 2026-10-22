@@ -22,7 +22,7 @@ const GROUP_SQUAD: StringName = &"squad"
 const LINES_PATH: String = "res://data/gravelight/vo/lines.json"
 const RULES_PATH: String = "res://data/gravelight/vo/rules.json"
 const AUDIO_DIR: String = "res://gravelight/audio/vo/"
-const CHARACTER_SPEAKERS: Dictionary = {&"dutch": &"DUT", &"peg": &"PEG", &"deacon": &"DEA", &"wren": &"WRN"}
+const CHARACTER_SPEAKERS: Dictionary = {&"dutch": &"DUT", &"peg": &"PEG", &"deacon": &"DEA", &"wren": &"WRN", &"jakub": &"JAK"}
 const POWERUP_TOKENS: Dictionary = {&"resupply": "RESUPPLY", &"deaths_door": "DEATHSDOOR", &"double_scrip": "DOUBLESCRIP",
 	&"blackout": "BLACKOUT", &"fortify": "FORTIFY", &"clearance": "CLEARANCE"}
 const PERK_TOKENS: Dictionary = {&"ironhide_stout": "IRONHIDE", &"second_wind": "SECONDWIND", &"trigger_tonic": "TRIGGER",
@@ -226,10 +226,24 @@ func squad_say(category: String, chance_override: float = -1.0, exclude_pid: int
 	var pool: Array[int] = []
 	for pid: int in standing_pids():
 		if pid != exclude_pid:
+			if JakubCompanion.is_companion_pid(pid) and not _index.has("%s:%s" % [speaker_of(pid), category]):
+				continue   # the companion only takes the turn for a category he has lines for
 			pool.append(pid)
 	if pool.is_empty():
 		return false
 	return say_as(pool[rng.randi_range(0, pool.size() - 1)], category, chance_override)
+
+
+## Plays an exchange record (lines.json "exchange" parts) now, each part positional at the player its speaker
+## maps to in `pid_by_speaker` ({&"WRN": 3, &"JAK": 9}); a quiet two-person scene (Jakub and Wren, U02 section
+## 6.2). Waits behind a story line like banter does. Returns true when it started or was queued.
+func play_exchange(line_id: StringName, pid_by_speaker: Dictionary) -> bool:
+	var rec: Dictionary = lines.get(String(line_id), {})
+	if rec.is_empty() or not rec.has("exchange"):
+		return false
+	var item: Dictionary = {"id": line_id, "priority": Priority.EVENT, "speaker": StringName(rec["speaker"]), "pid": -1,
+		"pid_by_speaker": pid_by_speaker, "sticky": true}
+	return _place(GROUP_PLAYER, item)
 
 
 ## The survivor speaker id (DUT/PEG/DEA/WRN) of a player id.
@@ -665,6 +679,9 @@ func _player_node(pid: int) -> Node3D:
 	for n: Node in get_tree().get_nodes_in_group(&"players"):
 		if n is Node3D and int(n.get("player_id")) == pid and (n as Node3D).is_inside_tree():
 			return n as Node3D
+	for c: Node in get_tree().get_nodes_in_group(&"companions"):
+		if c is Node3D and int(c.get("player_id")) == pid and (c as Node3D).is_inside_tree():
+			return c as Node3D   # Jakub calling from his cage before he joins (positional, U02 section 6.2)
 	return null
 
 

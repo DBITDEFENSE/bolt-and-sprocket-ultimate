@@ -77,6 +77,7 @@ func _ready() -> void:
 		add_child(coop_hud)
 	elif not GameState.bot_ids.is_empty():
 		_start_bot_session()
+	JakubCompanion.attach(self)   # the prisoner companion (U02 section 6.2): his cage on Map 0, or he travels with you
 	GLBus.match_started.emit(map_id)
 	for q: String in quest_files:
 		QuestManager.load_quest(q)
@@ -151,6 +152,26 @@ func _start_bot_session() -> void:
 	squad.setup(self)
 
 
+## A companion joins a solo match that has no bots (U02 section 6.2): the offline session (his downs, revives and
+## bleed-out; the human keeps the solo rules) and an empty BotSquad for his brain. No co-op HUD. Returns the squad.
+func ensure_companion_session() -> BotSquad:
+	if _online:
+		return squad
+	if session == null:
+		session = NetMatch.new()
+		session.name = "NetMatch"
+		add_child(session)
+		session.setup(self)
+		Net.session = session
+		session.begun = true
+	if squad == null:
+		squad = BotSquad.new()
+		squad.name = "BotSquad"
+		add_child(squad)
+		squad.setup(self)
+	return squad
+
+
 func _spawn_players() -> void:
 	var local_pid: int = Net.local_player_id() if _online else 1
 	for pid: int in GameState.player_ids:
@@ -208,7 +229,7 @@ func _spawn_intel() -> void:
 	for row: Dictionary in GLData.load_json("res://data/gravelight/intel.json").get("intel", []):
 		var m: String = str(row.get("map", ""))
 		var id: String = str(row["id"])
-		if str(row.get("placement", "")) == "fixed":
+		if str(row.get("placement", "")) in ["fixed", "companion"]:   # companion: filed by Jakub (his letter), never spawned
 			continue
 		if (m == map_key or m == "all") and not ProfileSave.has_intel(id):
 			if id == "INT_GEN_02" and ProfileSave.dossier_level(&"peg") < 5:
@@ -267,6 +288,10 @@ func _player_spawn() -> Node3D:
 func _on_player_downed(pid: int) -> void:
 	if not Net.is_authority():
 		return   # a client hears this relayed from the host, which already decided
+	if JakubCompanion.is_companion_pid(pid):
+		if session != null:
+			session.coop_downed(pid)   # a companion's own bleed-out clock, in solo too (he is no player)
+		return
 	# Solo Second Wind: self-revive and keep the other perks.
 	if GameState.is_solo() and PerkManager.try_self_revive(pid):
 		player.begin_self_revive(float(GLData.table("player").get("self_revive_seconds", 3.5)))
@@ -276,8 +301,8 @@ func _on_player_downed(pid: int) -> void:
 		return
 	PerkManager.on_player_downed(pid)
 	for n: Node in get_tree().get_nodes_in_group(&"players"):
-		if (n as Player).is_alive():
-			return
+		if (n as Player).is_alive() and not (n as Player).is_companion:
+			return   # (a companion standing never keeps a solo match going)
 	_game_over()
 
 

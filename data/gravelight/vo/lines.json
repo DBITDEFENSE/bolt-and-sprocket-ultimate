@@ -4673,5 +4673,702 @@
   "speaker": "WRN",
   "category": "CHATTER",
   "text": "My brother would like this inn. He liked any place with a fire."
+ },
+ "JAK_CAGE_HELLO_01": {
+  "speaker": "JAK",
+  "category": "CAGE_HELLO",
+  "text": "Szczęść Boże (God grant you luck). Forgive me if I don't get up. The door is not my idea.",
+  "tts": "Shchench Bozheh. Forgive me if I don't get up. The door is not my idea."
+ },
+ "JAK_CAGE_HELLO_02": {
+  "speaker": "JAK",
+  "category": "CAGE_HELLO",
+  "text": "Ah. Not one of them. Good evening. I am Jakub. I would shake your hand, but the patrol kept the key."
+ },
+ "JAK_CAGE_TALK_01": {
+  "speaker": "JAK",
+  "category": "CAGE_TALK",
+  "text": "The patrol locked me in and ran. They said the dead were walking. I said, then let me walk too. They did not laugh."
+ },
+ "JAK_CAGE_TALK_02": {
+  "speaker": "JAK",
+  "category": "CAGE_TALK",
+  "text": "The hinge is old. Something will break it sooner or later. I pray it is not something hungry."
+ },
+ "JAK_CAGE_TALK_03": {
+  "speaker": "JAK",
+  "category": "CAGE_TALK",
+  "text": "No, no. Don't waste your bullets on the lock. Keep them for the ones upstairs."
+ },
+ "JAK_CAGE_TALK_04": {
+  "speaker": "JAK",
+  "category": "CAGE_TALK",
+  "text": "Two days ago I was in Kaltenbrunn. Now I am in a coal cage at a crossroads. This is what they call progress."
+ },
+ "JAK_ALARM_01": {
+  "speaker": "JAK",
+  "category": "ALARM",
+  "text": "Kto tam? (Who's there?) ...Jezus Maria (Jesus, Mary).",
+  "tts": "Kto tahm? ... Yezoos Maria."
+ },
+ "JAK_ALARM_02": {
+  "speaker": "JAK",
+  "category": "ALARM",
+  "text": "Boże (God). It is coming down the coal chute.",
+  "tts": "Bozheh. It is coming down the coal chute."
+ },
+ "JAK_BREAKOUT_01": {
+  "speaker": "JAK",
+  "category": "BREAKOUT",
+  "text": "Precz! Precz ode mnie! (Get away! Get away from me!) Chodź tu, ty draniu! (Come here, you swine!)",
+  "tts": "Prech! Prech odeh mnyeh! Hoach too, tih drahnyoo!"
+ },
+ "JAK_BREAKOUT_02": {
+  "speaker": "JAK",
+  "category": "BREAKOUT",
+  "text": "Jezus Maria! (Jesus, Mary!) The hinge! It has taken the hinge!",
+  "tts": "Yezoos Maria! The hinge! It has taken the hinge!"
+ },
+ "JAK_BREAKOUT_03": {
+  "speaker": "JAK",
+  "category": "BREAKOUT",
+  "text": "Psiakrew! (Dog's blood!) Na dole! Tutaj, na dole! (Downstairs! Here, down here!)",
+  "tts": "Pshahkref! Nah doleh! Tootie, nah doleh!"
+ },
+ "JAK_BREAKOUT_SELF_01": {
+  "speaker": "JAK",
+  "category": "BREAKOUT_SELF",
+  "text": "The hinge was half off already. One good shove. Dzięki Bogu (thank God).",
+  "tts": "The hinge was half off already. One good shove. Jenkee Bogoo."
+ },
+ "JAK_FIGHT_KILL_01": {
+  "speaker": "JAK",
+  "category": "FIGHT_KILL",
+  "text": "Spokojnie (easy). ...Stay down. Stay down this time.",
+  "tts": "Spokoynyeh. Stay down. Stay down this time."
+ },
+ "JAK_FIGHT_KILL_02": {
+  "speaker": "JAK",
+  "category": "FIGHT_KILL",
+  "text": "Twenty years of coal. A shovel knows what to do."
+ },
+ "JAK_FREED_01": {
+  "speaker": "JAK",
+  "category": "FREED",
+  "text": "Dzięki Bogu (thank God). Whoever is up there, come down. I will not bite. That one tried.",
+  "tts": "Jenkee Bogoo. Whoever is up there, come down. I will not bite. That one tried."
+ },
+ "JAK_FREED_02": {
+  "speaker": "JAK",
+  "category": "FREED",
+  "text": "I am out. And now I stand by the cage like a fool, waiting to be told where to go. Habit."
+ },
+ "JAK_CALL_01": {
+  "speaker": "JAK",
+  "category": "CALL",
+  "text": "Halo! Jest tu kto? (Hello! Is anyone here?) I am down in the cellar!",
+  "tts": "Hahlo! Yest too kto? I am down in the cellar!"
+ },
+ "JAK_CALL_02": {
+  "speaker": "JAK",
+  "category": "CALL",
+  "text": "Hej! Na dole! (Hey! Downstairs!) There is a man down here, and he has a shovel!",
+  "tts": "Hey! Nah doleh! There is a man down here, and he has a shovel!"
+ },
+ "JAK_CALL_03": {
+  "speaker": "JAK",
+  "category": "CALL",
+  "text": "Is anyone still alive up there? Jest tam kto? (Is anyone there?)",
+  "tts": "Is anyone still alive up there? Yest tahm kto?"
+ },
+ "JAK_CALL_04": {
+  "speaker": "JAK",
+  "category": "CALL",
+  "text": "I can hear you shooting. Good. When you are finished, the cellar door. Please."
+ },
+ "JAK_TALK_ASK_01": {
+  "speaker": "JAK",
+  "category": "TALK_ASK",
+  "text": "You came down. Thank you. Now a question: do I come with you as a man with a gun, or a man with a shovel?"
+ },
+ "JAK_TALK_ASK_02": {
+  "speaker": "JAK",
+  "category": "TALK_ASK",
+  "text": "I can carry a rifle. I carried worse for two years. Or I carry this shovel and keep out of your way. You decide."
+ },
+ "JAK_JOIN_UNARMED_01": {
+  "speaker": "JAK",
+  "category": "JOIN_UNARMED",
+  "text": "Not yet. I understand. A stranger from a cage. I would not give me a gun either. I walk behind you."
+ },
+ "JAK_JOIN_UNARMED_02": {
+  "speaker": "JAK",
+  "category": "JOIN_UNARMED",
+  "text": "The shovel, then. I will mend your windows and keep my eyes open. When you trust me, you will tell me."
+ },
+ "JAK_GUN_BOLT_01": {
+  "speaker": "JAK",
+  "category": "GUN_BOLT",
+  "text": "A bolt-action. Good. We had these in thirty-nine. You count every shot. That is how a poor man shoots."
+ },
+ "JAK_GUN_BOLT_02": {
+  "speaker": "JAK",
+  "category": "GUN_BOLT",
+  "text": "Five rounds and a bolt. Now we speak the same language."
+ },
+ "JAK_GUN_RIFLE_01": {
+  "speaker": "JAK",
+  "category": "GUN_RIFLE",
+  "text": "A rifle. Thank you. I will try to give it back with a better story than it has now."
+ },
+ "JAK_GUN_AUTO_01": {
+  "speaker": "JAK",
+  "category": "GUN_AUTO",
+  "text": "Bolt-actions, please. I don't trust things that fire by themselves."
+ },
+ "JAK_GUN_AUTO_02": {
+  "speaker": "JAK",
+  "category": "GUN_AUTO",
+  "text": "This one shoots like it is late for something. ...I will hold it. I won't love it."
+ },
+ "JAK_GUN_PISTOL_01": {
+  "speaker": "JAK",
+  "category": "GUN_PISTOL",
+  "text": "A pistol. Well. In the mine they gave us less."
+ },
+ "JAK_GUN_SHOTGUN_01": {
+  "speaker": "JAK",
+  "category": "GUN_SHOTGUN",
+  "text": "For close work. Down here everything is close work."
+ },
+ "JAK_GUN_OTHER_01": {
+  "speaker": "JAK",
+  "category": "GUN_OTHER",
+  "text": "I don't know this one. It will learn me, or I will learn it."
+ },
+ "JAK_GUN_SWAP_01": {
+  "speaker": "JAK",
+  "category": "GUN_SWAP",
+  "text": "Take mine, then. A fair trade. It is still warm."
+ },
+ "JAK_PERK_REFUSE_01": {
+  "speaker": "JAK",
+  "category": "PERK_REFUSE",
+  "text": "I've seen what they put in those."
+ },
+ "JAK_PERK_REFUSE_02": {
+  "speaker": "JAK",
+  "category": "PERK_REFUSE",
+  "text": "No, thank you. I carried the crates for those machines at Kaltenbrunn. I know what comes out of that mountain."
+ },
+ "JAK_PERK_REFUSE_03": {
+  "speaker": "JAK",
+  "category": "PERK_REFUSE",
+  "text": "Drink if you must. I have seen men drink that and keep walking after they should have stopped."
+ },
+ "JAK_COUSINS_01": {
+  "speaker": "JAK",
+  "category": "COUSINS",
+  "text": "I know that song. Everyone in this valley knows that song."
+ },
+ "JAK_COUSINS_02": {
+  "speaker": "JAK",
+  "category": "COUSINS",
+  "text": "That rhyme. The children clap it in every schoolyard here. It counts down. ...It was never supposed to count down to anything."
+ },
+ "JAK_COUSINS_AFTER_01": {
+  "speaker": "JAK",
+  "category": "COUSINS_AFTER",
+  "text": "Lene Vogt's nieces. They came every summer when they were small and clapped that rhyme on the steps. I sold their aunt coal. ...Lord, have mercy on them."
+ },
+ "JAK_MIDNIGHT_01": {
+  "speaker": "JAK",
+  "category": "MIDNIGHT",
+  "text": "Wigilia (Christmas Eve). My Marta will have set an extra plate, for the stranger at the door. She has set it every year since they took me.",
+  "tts": "Vigeelya. My Marta will have set an extra plate, for the stranger at the door. She has set it every year since they took me."
+ },
+ "JAK_MIDNIGHT_02": {
+  "speaker": "JAK",
+  "category": "MIDNIGHT",
+  "text": "Midnight. Wesołych Świąt (Merry Christmas). ...Say it back. It is bad luck not to.",
+  "tts": "Midnight. Vesowih Shvyont. Say it back. It is bad luck not to."
+ },
+ "JAK_RETURN_WOUNDED_01": {
+  "speaker": "JAK",
+  "category": "RETURN_WOUNDED",
+  "text": "Not yet. Not tonight."
+ },
+ "JAK_RETURN_WOUNDED_02": {
+  "speaker": "JAK",
+  "category": "RETURN_WOUNDED",
+  "text": "Jeszcze nie (not yet). They will have to try harder than that. No, don't help me. I can walk.",
+  "tts": "Yesh-cheh nyeh. They will have to try harder than that. No, don't help me. I can walk."
+ },
+ "JAK_M1_ARRIVE_01": {
+  "speaker": "JAK",
+  "category": "M1_ARRIVE",
+  "text": "Kaltenbrunn. I walked out of this place three days ago. I did not think I would walk back in with friends."
+ },
+ "JAK_M1_ARRIVE_02": {
+  "speaker": "JAK",
+  "category": "M1_ARRIVE",
+  "text": "Listen to me here. Stay on the planks. Don't touch the black glass in the walls. And if the bell rings, walk toward it."
+ },
+ "JAK_M1_SHORTCUT_01": {
+  "speaker": "JAK",
+  "category": "M1_SHORTCUT",
+  "text": "The Maintenance Stairs. That is how I got out. The lock is rusted through. Let me show you where to kick it, and it costs you five hundred less."
+ },
+ "JAK_M1_POWER_01": {
+  "speaker": "JAK",
+  "category": "M1_POWER",
+  "text": "The lights. Two years down here and I never saw it lit like this. It looks worse."
+ },
+ "JAK_M1_FOREMAN_01": {
+  "speaker": "JAK",
+  "category": "M1_FOREMAN",
+  "text": "Nadsztygar Mahlknecht (the head overman). He locked the gates on Gallery Seven. I was on the night shift. My shift lived.",
+  "tts": "Nad-shtigar Mahlknecht. He locked the gates on Gallery Seven. I was on the night shift. My shift lived."
+ },
+ "JAK_M1_FOREMAN_02": {
+  "speaker": "JAK",
+  "category": "M1_FOREMAN",
+  "text": "Him. I would know that walk anywhere. Don't let him reach you. He never let go of anything."
+ },
+ "JAK_SCREAMER_01": {
+  "speaker": "JAK",
+  "category": "SCREAMER",
+  "text": "That voice. In the deep levels you learn not to answer voices."
+ },
+ "JAK_ZONE_B_RAILYARD_01": {
+  "speaker": "JAK",
+  "category": "ZONE_B_RAILYARD",
+  "text": "The rail yard. They brought us in through here. The wagon slats were nailed shut. You count the gaps of light to know the time."
+ },
+ "JAK_ZONE_C_ADMIN_01": {
+  "speaker": "JAK",
+  "category": "ZONE_C_ADMIN",
+  "text": "Administration. They kept our names in there. Numbers first, then names, then only numbers."
+ },
+ "JAK_ZONE_D_BARRACKS_01": {
+  "speaker": "JAK",
+  "category": "ZONE_D_BARRACKS",
+  "text": "The guards' barracks. Warm stoves. We could smell their coffee from the galleries."
+ },
+ "JAK_ZONE_E_LIFT_01": {
+  "speaker": "JAK",
+  "category": "ZONE_E_LIFT",
+  "text": "The cage lift. Sixty men to a cage. Hold the rail. It drops faster than you think."
+ },
+ "JAK_ZONE_M_STAIRS_01": {
+  "speaker": "JAK",
+  "category": "ZONE_M_STAIRS",
+  "text": "The stairs. Mind the third landing, the steps are rotten. See the chalk by the rail? Three strokes and a hook. That one is mine."
+ },
+ "JAK_ZONE_F_CHAPEL_01": {
+  "speaker": "JAK",
+  "category": "ZONE_F_CHAPEL",
+  "text": "The salt chapel. Miners carved it a hundred years ago. When the bell rang, we came here. Some of us."
+ },
+ "JAK_ZONE_G_GENERATOR_01": {
+  "speaker": "JAK",
+  "category": "ZONE_G_GENERATOR",
+  "text": "The generator hall. Listen. It hums like the walls do. We used to say the mountain was breathing."
+ },
+ "JAK_ZONE_H_LAB_01": {
+  "speaker": "JAK",
+  "category": "ZONE_H_LAB",
+  "text": "The Laboratory Wing. ...I will go in. I don't want to. Don't ask me what they did in there. I only know who went in."
+ },
+ "JAK_M2_ARRIVE_01": {
+  "speaker": "JAK",
+  "category": "M2_ARRIVE",
+  "text": "The sea. I have never seen the sea. ...I thought it would be bigger. No. It is bigger."
+ },
+ "JAK_M2_ARRIVE_02": {
+  "speaker": "JAK",
+  "category": "M2_ARRIVE",
+  "text": "Totenhafen. Another place named for the dead. At least this salt I don't have to dig."
+ },
+ "JAK_ZONE_D_PENHALL_01": {
+  "speaker": "JAK",
+  "category": "ZONE_D_PENHALL",
+  "text": "Somebody poured this concrete by hand. Men like me, I think. I know that kind of tired when I see it in a wall."
+ },
+ "JAK_ZONE_E_UBOAT_01": {
+  "speaker": "JAK",
+  "category": "ZONE_E_UBOAT",
+  "text": "A boat that goes under the water on purpose. In the mine we prayed for the opposite."
+ },
+ "JAK_DOWN_01": {
+  "speaker": "JAK",
+  "category": "DOWN",
+  "text": "I'm down. Don't run to me. Think first."
+ },
+ "JAK_DOWN_02": {
+  "speaker": "JAK",
+  "category": "DOWN",
+  "text": "Jezus Maria (Jesus, Mary)... my leg.",
+  "tts": "Yezoos Maria... my leg."
+ },
+ "JAK_DOWN_03": {
+  "speaker": "JAK",
+  "category": "DOWN",
+  "text": "On the floor again. Come when it is safe."
+ },
+ "JAK_REVIVED_01": {
+  "speaker": "JAK",
+  "category": "REVIVED",
+  "text": "Dzięki (thanks). I owe you a drink. Not from those machines.",
+  "tts": "Jenkee. I owe you a drink. Not from those machines."
+ },
+ "JAK_REVIVED_02": {
+  "speaker": "JAK",
+  "category": "REVIVED",
+  "text": "Up. Up. I am still here."
+ },
+ "JAK_REVIVE_01": {
+  "speaker": "JAK",
+  "category": "REVIVE",
+  "text": "I've got you. Hold still, like in the shaft."
+ },
+ "JAK_REVIVE_02": {
+  "speaker": "JAK",
+  "category": "REVIVE",
+  "text": "Easy. Breathe. I am pulling you up."
+ },
+ "JAK_TEAM_DOWN_01": {
+  "speaker": "JAK",
+  "category": "TEAM_DOWN",
+  "text": "Someone is down! Go, I'll cover you!"
+ },
+ "JAK_TEAM_DOWN_02": {
+  "speaker": "JAK",
+  "category": "TEAM_DOWN",
+  "text": "They have one of ours on the floor!"
+ },
+ "JAK_RELOAD_01": {
+  "speaker": "JAK",
+  "category": "RELOAD",
+  "text": "Reloading."
+ },
+ "JAK_RELOAD_02": {
+  "speaker": "JAK",
+  "category": "RELOAD",
+  "text": "Wait. Reloading. Count with me."
+ },
+ "JAK_BOARD_01": {
+  "speaker": "JAK",
+  "category": "BOARD",
+  "text": "Boarded. Like a shaft mouth. It holds until it doesn't."
+ },
+ "JAK_BOARD_02": {
+  "speaker": "JAK",
+  "category": "BOARD",
+  "text": "Done. Nailed shut."
+ },
+ "JAK_AMMO_LOW_01": {
+  "speaker": "JAK",
+  "category": "AMMO_LOW",
+  "text": "I am running low. Every shot counts now."
+ },
+ "JAK_AMMO_NONE_01": {
+  "speaker": "JAK",
+  "category": "AMMO_NONE",
+  "text": "Empty. The shovel, then."
+ },
+ "JAK_BUY_AMMO_01": {
+  "speaker": "JAK",
+  "category": "BUY_AMMO",
+  "text": "Thank you. I will make every one of these count."
+ },
+ "JAK_POWERUP_SEEN_01": {
+  "speaker": "JAK",
+  "category": "POWERUP_SEEN",
+  "text": "Something glowing, over there. You take it. You know what it does."
+ },
+ "JAK_PING_RESUPPLY_01": {
+  "speaker": "JAK",
+  "category": "PING_RESUPPLY",
+  "text": "Resupply, over there! Ammunition!"
+ },
+ "JAK_PING_DEATHSDOOR_01": {
+  "speaker": "JAK",
+  "category": "PING_DEATHSDOOR",
+  "text": "Death's Door, there. I don't touch that one. You decide."
+ },
+ "JAK_PING_DOUBLESCRIP_01": {
+  "speaker": "JAK",
+  "category": "PING_DOUBLESCRIP",
+  "text": "Double Scrip, on the floor! Take it."
+ },
+ "JAK_PING_BLACKOUT_01": {
+  "speaker": "JAK",
+  "category": "PING_BLACKOUT",
+  "text": "Blackout, there. Pick it up when you need it."
+ },
+ "JAK_PING_FORTIFY_01": {
+  "speaker": "JAK",
+  "category": "PING_FORTIFY",
+  "text": "Fortify! For the windows, over here!"
+ },
+ "JAK_PING_CLEARANCE_01": {
+  "speaker": "JAK",
+  "category": "PING_CLEARANCE",
+  "text": "Clearance, there. The crate is cheap now."
+ },
+ "JAK_SPRINTER_BEHIND_01": {
+  "speaker": "JAK",
+  "category": "SPRINTER_BEHIND",
+  "text": "Uwaga! Za tobą! (Look out! Behind you!) A fast one!",
+  "tts": "Oovahga! Zah tobom! A fast one!"
+ },
+ "JAK_SPRINTER_BEHIND_02": {
+  "speaker": "JAK",
+  "category": "SPRINTER_BEHIND",
+  "text": "Behind you! Running!"
+ },
+ "JAK_BOSS_INCOMING_01": {
+  "speaker": "JAK",
+  "category": "BOSS_INCOMING",
+  "text": "Something big is coming. Stay together."
+ },
+ "JAK_CRATE_MOVED_01": {
+  "speaker": "JAK",
+  "category": "CRATE_MOVED",
+  "text": "The crate has moved. I heard it go. Over that way."
+ },
+ "JAK_WINDOW_OPEN_01": {
+  "speaker": "JAK",
+  "category": "WINDOW_OPEN",
+  "text": "The window is open! Here!"
+ },
+ "JAK_COVER_01": {
+  "speaker": "JAK",
+  "category": "COVER",
+  "text": "Go, pick them up. I am watching your back."
+ },
+ "JAK_CMD_FOLLOW_01": {
+  "speaker": "JAK",
+  "category": "CMD_FOLLOW",
+  "text": "Behind you. Always behind you."
+ },
+ "JAK_CMD_HOLD_01": {
+  "speaker": "JAK",
+  "category": "CMD_HOLD",
+  "text": "I stay here. Nobody passes."
+ },
+ "JAK_CMD_REPAIR_01": {
+  "speaker": "JAK",
+  "category": "CMD_REPAIR",
+  "text": "I'll do the windows. I know boards."
+ },
+ "JAK_CMD_REVIVE_01": {
+  "speaker": "JAK",
+  "category": "CMD_REVIVE",
+  "text": "If anyone falls, I go."
+ },
+ "JAK_CMD_TRAIN_01": {
+  "speaker": "JAK",
+  "category": "CMD_TRAIN",
+  "text": "I follow. Keep them moving."
+ },
+ "JAK_CMD_BUY_PERKS_01": {
+  "speaker": "JAK",
+  "category": "CMD_BUY_PERKS",
+  "text": "Buy what you like. Not for me."
+ },
+ "JAK_CMD_SAVE_SCRIP_01": {
+  "speaker": "JAK",
+  "category": "CMD_SAVE_SCRIP",
+  "text": "Good. Save. A poor man's wisdom."
+ },
+ "JAK_CMD_OPEN_DOOR_01": {
+  "speaker": "JAK",
+  "category": "CMD_OPEN_DOOR",
+  "text": "I'll open it for you."
+ },
+ "JAK_CMD_FETCH_PART_01": {
+  "speaker": "JAK",
+  "category": "CMD_FETCH_PART",
+  "text": "I'll bring it."
+ },
+ "JAK_HEADSHOT_01": {
+  "speaker": "JAK",
+  "category": "HEADSHOT",
+  "text": "The head. Like splitting coal along the seam."
+ },
+ "JAK_CRAWLER_01": {
+  "speaker": "JAK",
+  "category": "CRAWLER",
+  "text": "This one crawls. Mind your ankles."
+ },
+ "JAK_CHATTER_01": {
+  "speaker": "JAK",
+  "category": "CHATTER",
+  "text": "In the mine we sang to keep time. Here I count rounds."
+ },
+ "JAK_CHATTER_02": {
+  "speaker": "JAK",
+  "category": "CHATTER",
+  "text": "My Marta would say I look thin. She would be right."
+ },
+ "JAK_CHATTER_03": {
+  "speaker": "JAK",
+  "category": "CHATTER",
+  "text": "You fight well. Your mothers should be proud. Write to them."
+ },
+ "JAK_CHATTER_04": {
+  "speaker": "JAK",
+  "category": "CHATTER",
+  "text": "I used to hate the dark. Then I worked in it for twenty years. Now I only hate what lives in it."
+ },
+ "DUT_JAKUB_MEET_01": {
+  "speaker": "DUT",
+  "category": "JAKUB_MEET",
+  "text": "Walter Kowalczyk. Call me Dutch. My Babcia came from Wilcza Góra. ...Maybe our families knew each other."
+ },
+ "PEG_JAKUB_MEET_01": {
+  "speaker": "PEG",
+  "category": "JAKUB_MEET",
+  "text": "Lieutenant Ashworth. Stay close, keep your head down, and if you know a way out of here, I want it."
+ },
+ "DEA_JAKUB_MEET_01": {
+  "speaker": "DEA",
+  "category": "JAKUB_MEET",
+  "text": "Elijah Brooks. Folks call me Deacon. You've been through it, haven't you. Well. You're with us now."
+ },
+ "WRN_JAKUB_MEET_01": {
+  "speaker": "WRN",
+  "category": "JAKUB_MEET",
+  "text": "Ostrowski. From Wilcza Góra. ...I know your face. I was a girl."
+ },
+ "DUT_JAKUB_FALLEN_01": {
+  "speaker": "DUT",
+  "category": "JAKUB_FALLEN",
+  "text": "Jakub's out cold. He's breathing. We can't carry him and fight. ...We'll come back for you, old man."
+ },
+ "PEG_JAKUB_FALLEN_01": {
+  "speaker": "PEG",
+  "category": "JAKUB_FALLEN",
+  "text": "He's breathing, but he won't wake. Leave him where he lies. They've no interest in him now."
+ },
+ "DEA_JAKUB_FALLEN_01": {
+  "speaker": "DEA",
+  "category": "JAKUB_FALLEN",
+  "text": "Lord, keep that man breathing. He's out. We'll come back for him, you hear me?"
+ },
+ "WRN_JAKUB_FALLEN_01": {
+  "speaker": "WRN",
+  "category": "JAKUB_FALLEN",
+  "text": "Jakub. ...He breathes. Leave him. He has walked out of worse places than this."
+ },
+ "BNT_DUT_JAK_01": {
+  "speaker": "BNT",
+  "category": "DUT_JAK",
+  "text": "Your village. Wilcza Góra. My Babcia sang a song about lanterns going down a shaft.",
+  "exchange": [
+   [
+    "DUT",
+    "Your village. Wilcza Góra. My Babcia sang a song about lanterns going down a shaft."
+   ],
+   [
+    "JAK",
+    "And coming back up. Everyone sings the coming-back-up part louder."
+   ],
+   [
+    "DUT",
+    "Yeah. She did too."
+   ]
+  ]
+ },
+ "BNT_PEG_JAK_01": {
+  "speaker": "BNT",
+  "category": "PEG_JAK",
+  "text": "You walked out of Kaltenbrunn on your own?",
+  "exchange": [
+   [
+    "PEG",
+    "You walked out of Kaltenbrunn on your own?"
+   ],
+   [
+    "JAK",
+    "Not on my own. Eleven of us went up the stairs. I was the one slow enough to be careful."
+   ],
+   [
+    "PEG",
+    "...I'm sorry."
+   ],
+   [
+    "JAK",
+    "So am I, Lieutenant."
+   ]
+  ]
+ },
+ "BNT_DEA_JAK_01": {
+  "speaker": "BNT",
+  "category": "DEA_JAK",
+  "text": "You talk to the machines down there, Jakub? I talk to mine.",
+  "exchange": [
+   [
+    "DEA",
+    "You talk to the machines down there, Jakub? I talk to mine."
+   ],
+   [
+    "JAK",
+    "To the rock. The rock tells you when it will fall. Machines only lie."
+   ],
+   [
+    "DEA",
+    "Now that's the truest thing anybody's said to me all week."
+   ]
+  ]
+ },
+ "BNT_WRN_JAK_SCENE_01": {
+  "speaker": "BNT",
+  "category": "WRN_JAK_SCENE",
+  "text": "You are Zosia. Nowak the timberman's girl. You shot the crows off my roof when you were nine.",
+  "exchange": [
+   [
+    "JAK",
+    "You are Zosia. Nowak the timberman's girl. You shot the crows off my roof when you were nine."
+   ],
+   [
+    "WRN",
+    "...Pan Ostrowski. From the end of the lane. You had a dog with one ear."
+   ],
+   [
+    "JAK",
+    "Burek. Zosia, I worked beside your brother. In Gallery Nine, from the autumn they took him."
+   ],
+   [
+    "WRN",
+    "Tomek. You saw Tomek."
+   ],
+   [
+    "JAK",
+    "Every day, for five months. He threw stones at the rats and never once hit one. He laughed every time. The guards hated that laugh."
+   ],
+   [
+    "WRN",
+    "He wrote that. That he practised on the rats. That he still missed."
+   ],
+   [
+    "JAK",
+    "In the spring the doctors came for young men with good lungs. They took him to the Laboratory Wing. I did not see him after. I am sorry. I looked."
+   ],
+   [
+    "WRN",
+    "...Thank you for looking."
+   ],
+   [
+    "JAK",
+    "Before they took him, I taught him the chalk. The marks we left for each other. He made his hook backwards. Always backwards."
+   ],
+   [
+    "WRN",
+    "Then if I ever see a backwards hook, I'll know it's his."
+   ]
+  ]
  }
 }

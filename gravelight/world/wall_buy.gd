@@ -2,6 +2,7 @@ class_name WallBuy
 extends Interactable
 ## Chalk outline on a wall. Buys the weapon, or ammo for it if you already own it.
 ## Special ids: "frag" refills grenades, "etool" swaps the knife for the E-Tool.
+## With Jakub (U02 section 6.2) standing beside it and no gun of his own, a gun wall-buy sells to him instead.
 ## Local -Z faces out of the wall toward the player.
 
 @export var weapon_id: StringName = &"kar98k"
@@ -43,6 +44,8 @@ func _mode(player: Player) -> StringName:
 func get_prompt(player: Player) -> String:
 	var d: Dictionary = _weapon_data()
 	var key: String = prompt_key(&"interact")
+	if JakubCompanion.buys_here(self, player):
+		return "Hold [%s] to buy the %s for Jakub [%d]" % [key, d.get("name", ""), price()]
 	match _mode(player):
 		&"frag":
 			if player.weapons.grenades >= player.weapons.grenade_max():
@@ -60,6 +63,8 @@ func get_prompt(player: Player) -> String:
 
 
 func can_interact(player: Player) -> bool:
+	if JakubCompanion.buys_here(self, player):
+		return true
 	match _mode(player):
 		&"frag":
 			return player.weapons.grenades < player.weapons.grenade_max()
@@ -71,6 +76,11 @@ func can_interact(player: Player) -> bool:
 
 
 func interact(player: Player) -> void:
+	if JakubCompanion.buys_here(self, player):
+		# Jakub beside you and no gun of his own: you buy this one for him at the normal price (U02 section 6.2)
+		if try_purchase(player, StringName(String(weapon_id) + "_for_jakub"), price()):
+			JakubCompanion.bought_for_him(self, player)
+		return
 	match _mode(player):
 		&"frag":
 			if try_purchase(player, weapon_id, price()):
