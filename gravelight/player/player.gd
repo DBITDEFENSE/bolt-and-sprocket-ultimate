@@ -252,7 +252,10 @@ func _apply_look(rel: Vector2) -> void:
 		rel *= float(_mv.get("sprint_turn_mult", 1.0))   # a little heavier to turn at a run
 	rotate_y(-rel.x)
 	var inv: float = -1.0 if bool(GLSettings.values.get("invert_y", false)) else 1.0
+	var before: float = _pitch
 	_pitch = clampf(_pitch - rel.y * inv, deg_to_rad(-88.0), deg_to_rad(88.0))
+	if _pitch < before and _rc_pool.x > 0.0:
+		_rc_pool.x = maxf(0.0, _rc_pool.x - (before - _pitch))   # pulling down already paid back that much recoil
 
 
 func _pad_look(delta: float) -> void:

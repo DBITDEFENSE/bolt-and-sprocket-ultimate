@@ -102,6 +102,15 @@ Falloff: full damage up to **Start**, linear down to **Min ×** at **End**, then
 
 ---
 
+## 4.1 Handling: sprint-out, ADS, recoil and bloom (Update 02 §1, T-046)
+
+- **Sprint-out** (time from leaving a sprint until the gun fires; the sprint-out pose plays meanwhile), `data/gravelight/movement.json` `sprint_out`: pistol 0.15 s, SMG 0.2, rifle / bolt / assault / shotgun 0.3, sniper 0.35, LMG 0.45, flamethrower 0.45, launcher 0.5; wonder weapons: Ashlight 0.2, Elmsfeuer 0.25, Totenglocke 0.35. Fire or ADS input cancels a sprint at once and a fire press is buffered until the sprint-out ends, so it is never lost.
+- **ADS time** (`ads_time`, per weapon): SMG 0.18 s, rifles 0.25, LMG 0.4 (pistol 0.15, shotguns 0.2–0.25, snipers 0.4–0.55, launcher 0.5 unchanged). **ADS-walk** is 60% of the walk speed (`movement.json ads_move_mult`; a weapon row may set its own `ads_move_mult`).
+- **Recoil pattern** (`weapons.json` `recoil`: classes, then per weapon, then a row's own `recoil`): each shot moves the aim up `v × min(v_max_mult, 1 + v_growth × shot index)` degrees (the same climb every burst) and sideways along a per-weapon swing `h_swing × sin(i × h_freq + phase)` plus a small random `±h`. After `recover_delay` without a shot, `1 − keep` of the burst drifts back at `recover` (1/s). The camera punch (feel `cam_*` × `punch`) springs fully back and the viewmodel kick (`vm_*`) is separate again. ADS × `ads_recoil`, crouched × `crouch_mult`.
+- **Hip bloom**: + `bloom` degrees a shot (pellet guns 35%), up to `bloom_max`; it holds while you fire, then shrinks at `bloom_still` deg/s standing still, `bloom_move` on the move, ×1.4 crouched. Walking adds up to `walk_spread_deg` (2.2°) at walk speed; crouched hip spread ×0.8. The crosshair ticks sit on the real cone edge.
+- **Slides**: hip fire is allowed from 50% through a slide (`slide_fire_from`); an earlier press is buffered. No firing while mantling.
+- **Last round**: firing the last round of a magazine plays `last_round_click`.
+
 ## 5. Upgraded variants (The Crucible)
 
 Every upgraded weapon gets: the **Nachtglas camo** (violet veins with amber cracks), an extra firing-sound layer (a low glassy hum under the shot), a new display name, and **one bonus property**. Upgrading refills all ammo.
