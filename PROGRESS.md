@@ -1,6 +1,6 @@
 # PROGRESS
 
-RESUME HERE: overnight run. Bots, MZ, the v3 docs and the morning kit are committed and merged to master (efb3be3, tag mz). HB1 The Cousins is being built on branch hb1-cousins by a helper agent (uncommitted in the working tree); when it reports: run check_scripts, GUT, tools/run_smokes.sh, commit on hb1-cousins, merge to master, capture `tools/capture.sh overnight`, write morning/MORNING_REPORT.md.
+RESUME HERE: overnight run finished; everything is merged to master (tags mz, hb1-wip). Next session: HB1 extras (Kinderhammer, chalk room + free crate pull, Reach ceiling crawl / Window Spider / arm regrowth, rhyme stems, co-op client visuals for the Cousins), then HB2 PAUL (docs/HOMAGE_BOSSES.md §5) on branch hb2-paul. Read morning/MORNING_REPORT.md first.
 
 ## Overnight run, 2026-10-21 → 22: the plan
 
@@ -29,10 +29,12 @@ Rules: `master` is the main branch and must always launch; each step is merged o
 - **v3 Homage Bosses docs** (T-042, commit f594eaf) — done.
 - **Morning kit** (T-044, commits 85ee6cb, efb3be3): `Play.bat` dev launcher, `tools/capture.sh`, `tools/run_smokes.sh`
   — works; screenshots in `morning/screenshots/overnight/` (git-ignored).
+- **HB1 The Cousins** (T-045, commit 143156c, tag `hb1-wip`) — partly works: the round, three cousins with core moves,
+  rewards, toggles, console verbs; extras listed in HOMAGE_BOSSES "HB1 build notes". GUT 546/546, all 21 smokes pass.
+- **Morning report:** `morning/MORNING_REPORT.md`.
 - Bolt & Sprocket: `delayed_blast.gd` freed-source script error (smoke_nova) fixed (35bdeac).
 
 ## In progress
 
-- **HB1 The Cousins** (branch `hb1-cousins`): being built by a helper agent from `docs/HOMAGE_BOSSES.md`.
 
 ## BLOCKED
