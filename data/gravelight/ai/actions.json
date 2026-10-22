@@ -36,6 +36,7 @@
     "repair_task": "value of the best barricade to rebuild (0 none)",
     "buy_task": "value of the best purchase (bot_economy.gd, 0 none)",
     "crate_task": "value of a Requisition Crate pull (0 none)",
+    "resupply_task": "value of an ammo box / wall ammo for the main gun (0 none; 1 when nearly dry)",
     "powerup_task": "value of a power-up it may take (etiquette, 0 none)",
     "trap_task": "value of a trap it may pull (only when ordered or the player used it, 0 none)",
     "chatter_ok": "1 when a chatter line is off cooldown",
@@ -79,9 +80,10 @@
       {"input": "revive_path", "curve": {"type": "points", "points": [[0.0, 1.0], [0.5, 0.85], [1.0, 0.65]]}},
       {"input": "revive_speed", "curve": {"type": "points", "points": [[0.0, 0.7], [0.5, 0.85], [1.0, 1.0]]}}
     ]},
-    "cover": {"weight": 0.97, "considerations": [
+    "cover": {"weight": 0.92, "considerations": [
       {"input": "cover_need", "curve": "gate"},
-      {"input": "pressure", "curve": {"type": "points", "points": [[0.0, 0.6], [0.3, 0.9], [1.0, 1.0]]}}
+      {"input": "pressure", "curve": {"type": "points", "points": [[0.0, 0.6], [0.3, 0.9], [0.8, 0.95], [1.0, 0.8]]}},
+      {"input": "hp", "curve": {"type": "points", "points": [[0.0, 0.3], [0.35, 0.6], [0.6, 1.0]]}}
     ]},
     "repair": {"weight": 0.55, "considerations": [
       {"input": "repair_task", "curve": "value"},
@@ -91,6 +93,11 @@
     "buy": {"weight": 0.7, "considerations": [
       {"input": "buy_task", "curve": "value"},
       {"input": "pressure", "curve": "very_calm"}
+    ]},
+    "resupply": {"weight": 0.95, "considerations": [
+      {"input": "resupply_task", "curve": "value"},
+      {"input": "ammo", "curve": {"type": "points", "points": [[0.0, 1.0], [0.15, 0.95], [0.3, 0.7], [0.6, 0.4], [0.8, 0.0]]}},
+      {"input": "pressure", "curve": {"type": "points", "points": [[0.0, 1.0], [0.3, 0.85], [0.6, 0.5], [0.85, 0.15], [1.0, 0.0]]}}
     ]},
     "crate": {"weight": 0.5, "considerations": [
       {"input": "crate_task", "curve": "value"},

@@ -452,7 +452,7 @@ func context(now: float) -> Dictionary:
 		var full: float = rt.bleedout_seconds if rt.bleedout_seconds > 0.0 else float(_pcfg.get("bleedout_seconds", 45.0))
 		c["revive_bleed"] = clampf(left / maxf(1.0, full), 0.0, 1.0)
 		var swarmed: bool = per.count_near(rt.global_position, float(rc.get("blocked_crowd_m", 3.0))) >= int(rc.get("blocked_crowd", 2))
-		var blocked: bool = (per.sprinter_near(rt.global_position, float(rc.get("blocked_sprinter_m", 6.0))) or swarmed) and left >= float(rc.get("blocked_bleed_s", 10.0))
+		var blocked: bool = (per.sprinter_near(rt.global_position, float(rc.get("blocked_sprinter_m", 6.0))) and left >= float(rc.get("blocked_bleed_s", 10.0))) 			or (swarmed and left >= float(rc.get("blocked_crowd_bleed_s", 20.0)))
 		if left < float(rc.get("last_chance_s", 8.0)):
 			blocked = false
 		c["revive_blocked"] = 1.0 if blocked else 0.0
@@ -482,6 +482,8 @@ func context(now: float) -> Dictionary:
 	c["repair_task"] = float((b.get("repair", {}) as Dictionary).get("value", 0.0))
 	c["buy_task"] = float((b.get("buy", {}) as Dictionary).get("value", 0.0))
 	c["crate_task"] = float((b.get("crate", {}) as Dictionary).get("value", 0.0))
+	var rb: Dictionary = economy.best(now) if per.pressure < 0.85 and now >= _task_block_t else {}
+	c["resupply_task"] = float((rb.get("resupply", {}) as Dictionary).get("value", 0.0))
 	c["powerup_task"] = _powerup_value(now)
 	c["trap_task"] = _trap_value()
 	c["chatter_ok"] = 1.0 if now >= _chatter_next else 0.0
@@ -492,7 +494,7 @@ func context(now: float) -> Dictionary:
 	c["escort_far"] = clampf(_flat(esc.global_position, player.global_position) / 15.0, 0.0, 1.0) if esc != null else 0.0
 	if not task.is_empty():
 		# the errand under way keeps its value (the economy no longer lists what it already paid for)
-		var key: String = str({"buy": "buy_task", "repair": "repair_task", "crate": "crate_task", "trap": "trap_task",
+		var key: String = str({"buy": "buy_task", "repair": "repair_task", "crate": "crate_task", "trap": "trap_task", "resupply": "resupply_task",
 			"objective": "objective", "order": "order"}.get(str(task.get("action", "")), ""))
 		if key != "":
 			c[key] = maxf(float(c.get(key, 0.0)), float(task.get("value", 0.7)) if key.ends_with("_task") else 1.0)
@@ -610,7 +612,7 @@ func start_task(kind: String) -> void:
 	var now: float = squad.time()
 	var c: Dictionary = {}
 	match kind:
-		"buy", "repair", "crate":
+		"buy", "repair", "crate", "resupply":
 			c = (economy.best(now).get(kind, {}) as Dictionary)
 		"trap":
 			c = _trap_c
@@ -647,7 +649,7 @@ func start_task(kind: String) -> void:
 ## A task action won the think but its errand can't start (taken, gone): the shopping inputs go quiet for a
 ## moment so the next think picks something it can do.
 func _task_unavailable(kind: String) -> void:
-	if kind == "buy" or kind == "repair" or kind == "crate":
+	if kind == "buy" or kind == "repair" or kind == "crate" or kind == "resupply":
 		_task_block_t = squad.time() + 1.5
 		economy.invalidate()
 	elif kind == "objective":
@@ -856,7 +858,21 @@ func hold_spot() -> Dictionary:
 	out_dir = out_dir.normalized() if out_dir.length() > 0.01 else Vector3.FORWARD
 	var slot: int = bb.holders(key2, now).find(player.player_id)
 	var side: Vector3 = Vector3(-out_dir.z, 0.0, out_dir.x) * float(hc.get("stand_spread_m", 1.4)) * (0.5 if slot <= 0 else -0.5)
-	var p: Vector3 = snap(front + out_dir * float(hc.get("stand_back_m", 2.2)) + side)
+	var p: Vector3 = Vector3.INF
+	# never on the human's training line: further back into the room, or wider, else no hold here
+	for back: float in [float(hc.get("stand_back_m", 2.2)), 3.4, 4.6, 1.4]:
+		for wide: float in [1.0, 2.2, -1.0]:
+			var c: Vector3 = snap(front + out_dir * back + side * wide)
+			if not squad.on_human_line(c) and squad.choke_at(c).is_empty():
+				p = c
+				break
+		if p != Vector3.INF:
+			break
+	if p == Vector3.INF:
+		release_hold_claim()
+		_hold_key = "none"
+		_hold = {}
+		return {}
 	_hold = {"pos": p, "facing": -out_dir, "window": best}
 	return _hold
 

@@ -69,7 +69,7 @@
   },
   "grenades": {
     "_doc": "Frags only into a group of min_group or more within group_radius_m of a point min_dist_m..max_dist_m away that no teammate is within teammate_clear_m of, or on a boss; cooldown_s between throws. personality grenade_bias scales min_group down (Peg) and the skill's grenade_skill the throw's accuracy.",
-    "min_group": 4,
+    "min_group": 3,
     "group_radius_m": 3.0,
     "min_dist_m": 7.0,
     "max_dist_m": 20.0,
@@ -98,9 +98,10 @@
     "blocked_bleed_s": 10.0,
     "blocked_crowd": 2,
     "blocked_crowd_m": 3.0,
+    "blocked_crowd_bleed_s": 20.0,
     "last_chance_s": 8.0,
     "cover_threat": 0.35,
-    "cover_ring_m": 2.2,
+    "cover_ring_m": 3.5,
     "max_claim_path_m": 45.0,
     "gramophone_first": true
   },

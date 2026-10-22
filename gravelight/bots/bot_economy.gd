@@ -179,7 +179,7 @@ func range_m() -> float:
 func best(now: float) -> Dictionary:
 	if now - _cache_t < 1.0 and not _cache.is_empty():
 		var ok: bool = true
-		for k: String in ["repair", "buy", "crate"]:
+		for k: String in ["repair", "buy", "crate", "resupply"]:
 			var c: Dictionary = _cache.get(k, {})
 			if not c.is_empty() and not is_instance_valid(c.get("node")):
 				ok = false
@@ -187,9 +187,10 @@ func best(now: float) -> Dictionary:
 			return _cache
 	_cache_t = now
 	var all: Array[Dictionary] = candidates(anchor(), 1.0)
-	var out: Dictionary = {"repair": {}, "buy": {}, "crate": {}, "all": all}
+	var out: Dictionary = {"repair": {}, "buy": {}, "crate": {}, "resupply": {}, "all": all}
 	for c2: Dictionary in all:
-		var slot: String = "repair" if str(c2["kind"]) == "repair" else ("crate" if str(c2["kind"]) == "crate" else "buy")
+		var k: String = str(c2["kind"])
+		var slot: String = "repair" if k == "repair" else ("crate" if k == "crate" else ("resupply" if k == "ammo_box" or k == "ammo" else "buy"))
 		if (out[slot] as Dictionary).is_empty() or float(c2["value"]) > float((out[slot] as Dictionary)["value"]):
 			out[slot] = c2
 	_cache = out

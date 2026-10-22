@@ -49,6 +49,9 @@ var wheel: BotCommandWheel = null
 var pings: BotPings = null
 var debug: BotDebugOverlay = null
 var _bot_cd: Dictionary = {}      # "pid:FAMILY" -> time a bark may come again
+## The human's recent walking line (their training loop): ~24 s of breadcrumbs. Bots never park on it.
+var human_line: PackedVector3Array = PackedVector3Array()
+var _crumb_t: float = 0.0
 var _shared_t: float = -1.0
 var _roles_t: float = -10.0
 var _call_t: float = 0.0
@@ -208,6 +211,13 @@ func _process(delta: float) -> void:
 	if h != null and is_instance_valid(h):
 		var v: Vector3 = Vector3(h.velocity.x, 0.0, h.velocity.z)
 		leader_vel = leader_vel.lerp(v, clampf(delta * 4.0, 0.0, 1.0))
+		_crumb_t -= delta
+		if _crumb_t <= 0.0 and not h.spectating:
+			_crumb_t = 0.4
+			if v.length() > 1.0 and (human_line.is_empty() or human_line[human_line.size() - 1].distance_to(h.global_position) > 0.8):
+				human_line.append(h.global_position)
+				if human_line.size() > 60:
+					human_line.remove_at(0)
 
 
 func time() -> float:
@@ -457,6 +467,15 @@ func _path_safe(path: PackedVector3Array, r: float, now: float) -> bool:
 			if Geometry2D.get_closest_point_to_segment(z2, a, b).distance_to(z2) < r:
 				return false
 	return true
+
+
+## Is `p` on the human's recent walking line (within `r`, same floor)? Holding spots, formation slots and idle
+## bots keep off it, so a training player never runs into a bot.
+func on_human_line(p: Vector3, r: float = 1.4) -> bool:
+	for c: Vector3 in human_line:
+		if Vector2(c.x - p.x, c.z - p.z).length() < r and absf(c.y - p.y) < 1.8:
+			return true
+	return false
 
 
 ## A revive finished: the claims on that player go.

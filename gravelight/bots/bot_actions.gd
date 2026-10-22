@@ -45,7 +45,7 @@ func enter(id: String) -> void:
 			_chatter_done = false
 		"powerup":
 			_powerup_t = 0.0
-		"buy", "repair", "crate", "trap", "order", "objective":
+		"buy", "repair", "crate", "resupply", "trap", "order", "objective":
 			brain.start_task(id)
 
 
@@ -56,7 +56,7 @@ func exit(id: String) -> void:
 			stop_revive()
 		"hold":
 			brain.release_hold_claim()
-		"buy", "repair", "crate", "trap", "order", "objective":
+		"buy", "repair", "crate", "resupply", "trap", "order", "objective":
 			if not brain.task.is_empty():
 				brain.drop_task()
 
@@ -77,7 +77,7 @@ func run(id: String, delta: float) -> void:
 			_revive(delta)
 		"cover":
 			_cover(delta)
-		"buy", "repair", "crate", "trap", "order", "objective":
+		"buy", "repair", "crate", "resupply", "trap", "order", "objective":
 			_task(id, delta)
 		"powerup":
 			_powerup(delta)
@@ -113,7 +113,7 @@ func _fight(delta: float) -> void:
 		brain.loco.hold(brain.squad.hold_spot(brain))
 	elif _spread_from_boss():
 		pass
-	elif not brain.roaming() and leader != null and leader != player and (brain.loco.leader_moving(leader) or _flat(leader.global_position, player.global_position) > 8.0):
+	elif not brain.roaming() and leader != null and leader != player and (brain.leader_moving(leader) or _flat(leader.global_position, player.global_position) > 8.0):
 		brain.loco.follow(leader, brain.index)
 	elif per.nearest != null and per.nearest_d < keep * 0.6 and brain.aim.target != null:
 		_back_off(per.nearest, 1.8, 0.4)
@@ -179,10 +179,13 @@ func _back_off(z: Zombie, dist: float, urgency: float) -> void:
 func _train(delta: float) -> void:
 	var leader: Player = brain.squad.leader_for(brain)
 	var human: Player = brain.squad.human()
-	if leader == human and leader != null and leader != player and brain.loco.leader_moving(leader):
+	if leader == human and leader != null and leader != player and brain.leader_moving(leader):
 		brain.loco.follow(leader, brain.index)
 	else:
 		brain.loco.train(brain.squad.blackboard.route)
+	var per: BotPerception = brain.perception
+	if per.nearest != null and per.nearest_d < 3.5 and per.nearest.speed >= 3.0 and not per.nearest.is_crawler:
+		return   # the head of the train is on its heels: run (no look: the locomotion layer sprints ahead of it)
 	if not brain.aim.update(delta, true):
 		var f: Vector3 = brain.loco.train_face_dir()
 		brain.loco.look_at_dir(f + Vector3.UP * 0.05)
@@ -398,10 +401,15 @@ func _cover(delta: float) -> void:
 	var out: Vector3 = (c - t.global_position) if c != Vector3.INF else -t.global_basis.z
 	out.y = 0.0
 	out = out.normalized() if out.length() > 0.01 else Vector3.FORWARD
-	var side: Vector3 = Vector3(-out.z, 0.0, out.x) * (0.8 if brain.index % 2 == 0 else -0.8)
-	var spot: Vector3 = brain.snap(t.global_position + out * float(cfg("revive").get("cover_ring_m", 2.2)) + side)
+	# beside the downed one on the far side from the threat, at cover_ring_m, shooting past them; never in the swarm
+	var side: Vector3 = Vector3(-out.z, 0.0, out.x) * (1.2 if brain.index % 2 == 0 else -1.2)
+	var spot: Vector3 = brain.snap(t.global_position - out * float(cfg("revive").get("cover_ring_m", 3.5)) + side)
 	brain.loco.exempt_choke = true
-	brain.loco.hold(spot, out)
+	var per: BotPerception = brain.perception
+	if per.nearest != null and per.nearest_d < 3.0 and not per.nearest.is_crawler:
+		_back_off(per.nearest, 3.0, 0.9)
+	else:
+		brain.loco.hold(spot, out)
 	brain.aim.cover_point = t.global_position
 	if not _cover_said:
 		_cover_said = brain.squad.callout(brain, "COVER", false, t.global_position, "COVERING")

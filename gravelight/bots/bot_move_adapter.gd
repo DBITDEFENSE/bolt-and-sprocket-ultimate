@@ -254,7 +254,7 @@ func tick(delta: float) -> void:
 			_tick_follow(delta)
 		M.HOLD:
 			_sprint = false
-			if _make_way():
+			if _make_way() or _off_the_line():
 				pass
 			elif _flat(_target_snap, player.global_position) > _stop_dist:
 				_set_goal(_target_snap, false)
@@ -273,6 +273,8 @@ func tick(delta: float) -> void:
 					var l: Player = squad.leader_for_player(player)
 					if l != null and l != player:
 						_keep_out_of_the_way(l, delta)
+					if _goal == Vector3.INF:
+						_off_the_line()
 	_move(delta)
 	_turn(delta)
 	_look = Vector3.ZERO   # a look lasts one frame: the aim layer asks again every frame it aims
@@ -346,7 +348,13 @@ func _tick_train(delta: float) -> void:
 				_train_ok = true
 		else:
 			_train_ok = true
+	# run ahead of the train: sprint while its head is on our heels and nothing asks us to look elsewhere
 	_sprint = false
+	var me2: Vector3 = player.global_position
+	for e: Variant in squad.blackboard.known(squad.time()):
+		if _flat((e as Dictionary)["pos"], me2) < 3.5:
+			_sprint = true
+			break
 	if _make_way():
 		return
 	_set_goal(nxt, true)
@@ -431,7 +439,7 @@ func slot_point(leader: Player) -> Vector3:
 	for want: Vector3 in cands:
 		var p: Vector3 = NavigationServer3D.map_get_closest_point(nav, want)
 		if p.distance_to(want) < 1.0 and absf(p.y - leader.global_position.y) < 1.5:
-			if squad.choke_at(p).is_empty() and not in_danger(p):
+			if squad.choke_at(p).is_empty() and not in_danger(p) and not squad.on_human_line(p, 1.1):
 				return p
 			if fallback == Vector3.INF:
 				fallback = p
@@ -568,6 +576,27 @@ func _escape_danger() -> void:
 			if absf(p.y - me.y) < 1.5 and not in_danger(p):
 				_set_goal(p, true)
 				return
+
+
+## Standing on the human's walking line with the human coming (within 9 m): a step off it. True while moving off.
+func _off_the_line() -> bool:
+	var h: Player = squad.human()
+	if h == null or not is_instance_valid(h) or h.spectating or player.horizontal_speed() > 0.8:
+		return _aside_cd > 0.0 and _goal != Vector3.INF and h != null and is_instance_valid(h) and not h.spectating
+	var me: Vector3 = player.global_position
+	if _flat(h.global_position, me) > 9.0 or not squad.on_human_line(me, 1.1):
+		return false
+	if _aside_cd > 0.0 and _goal != Vector3.INF:
+		return true
+	for r: float in [1.6, 2.4, 3.2]:
+		for k: int in 8:
+			var a: float = float(k) / 8.0 * TAU
+			var p: Vector3 = _snap(me + Vector3(cos(a) * r, 0.0, sin(a) * r))
+			if absf(p.y - me.y) < 1.2 and not squad.on_human_line(p, 1.2) and squad.choke_at(p).is_empty() and not in_danger(p) and _flat(p, h.global_position) > 1.5:
+				_set_goal(p, true)
+				_aside_cd = 1.2
+				return true
+	return false
 
 
 ## Out of the leader's line of fire; never parked in a doorway.

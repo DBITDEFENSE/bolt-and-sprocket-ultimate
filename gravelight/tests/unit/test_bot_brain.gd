@@ -24,7 +24,7 @@ func _ctx(over: Dictionary = {}) -> Dictionary:
 		"pressure": 0.0, "near": 1.0, "n5": 0.0, "n10": 0.0, "known": 0.0, "sprinter_close": 0.0, "has_target": 0.0,
 		"revive_mine": 0.0, "revive_bleed": 1.0, "revive_blocked": 0.0, "revive_path": 0.2, "revive_speed": 1.0, "reviving": 0.0,
 		"cover_need": 0.0, "leader_far": 0.1, "is_leader": 0.0, "squad_far": 0.1, "break": 0.0, "round": 0.3, "loop": 1.0,
-		"hold_spot": 0.0, "repair_task": 0.0, "buy_task": 0.0, "crate_task": 0.0, "powerup_task": 0.0, "trap_task": 0.0,
+		"hold_spot": 0.0, "repair_task": 0.0, "buy_task": 0.0, "crate_task": 0.0, "resupply_task": 0.0, "powerup_task": 0.0, "trap_task": 0.0,
 		"chatter_ok": 0.0, "objective": 0.0, "order": 0.0, "escort": 0.0, "escort_far": 0.0}
 	c.merge(over, true)
 	return c
@@ -367,3 +367,10 @@ func test_the_spending_plan_names_real_perks_and_weapons() -> void:
 	for w2: Variant in weapons.keys():
 		if not str(w2).ends_with("_up"):
 			assert_true((eco["weapon_tiers"] as Dictionary).has(str(w2)), "a tier for %s" % w2)
+
+
+func test_running_dry_mid_round_goes_for_ammo() -> void:
+	var c: Dictionary = _ctx({"ammo": 0.08, "resupply_task": 1.0, "pressure": 0.35, "has_target": 1.0, "known": 0.3, "mag": 0.3})
+	assert_eq(_best(c, "fight"), "resupply", "nearly dry with zombies about but not swarmed: to the ammo box")
+	c["pressure"] = 1.0
+	assert_ne(_best(c, "fight"), "resupply", "not through a swarm")
