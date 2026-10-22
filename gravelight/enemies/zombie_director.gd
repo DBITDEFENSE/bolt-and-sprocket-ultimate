@@ -38,6 +38,8 @@ var _env: Environment = null
 var _env_base: Dictionary = {}
 var _lights: Array = []            # [OmniLight3D, base energy, uses_base_energy_prop]
 var _flicker_t: float = 0.0
+## The homage-boss encounter on its map (HB1: the Cousins Round on Map 0); null elsewhere and on co-op clients.
+var cousins: CousinsRound = null
 
 
 func _ready() -> void:
@@ -59,6 +61,10 @@ func _ready() -> void:
 	GLBus.special_round_warning.connect(_on_special_warning)
 	GLBus.enemy_killed_at.connect(_on_enemy_killed_at)
 	GLBus.zone_opened.connect(func(_z: StringName) -> void: recompute_nav_mask())
+	if not puppet_mode and CousinsRound.applies(GameState.map_id, HomageBoss.cfg()):
+		cousins = CousinsRound.new()
+		cousins.director = self
+		add_child(cousins)
 
 
 ## Called by the map: zone -> nav layer bit, always-on bits, and the adjacency graph.
@@ -490,10 +496,33 @@ func _update_screamer() -> void:
 		summon_boss(&"screamer", at)
 
 
+## A boss made elsewhere (the homage bosses): joins the extras (not pooled; freed when it is returned).
+func add_extra(z: Zombie) -> void:
+	z.director = self
+	if Net.session != null:
+		z.net_id = Net.session.next_extra_id()
+	add_child(z)
+	_extras.append(z)
+
+
 ## Creates a Foreman or Screamer at `at`. Counts as alive for round-end, outside the round queue.
+## Homage bosses: "cousins" starts the Cousins Round on its map; "hammer" / "reach" / "alix" (or their
+## cousin_* ids) bring one cousin alone (testing; no encounter around her).
 func summon_boss(enemy_id: StringName, at: Vector3) -> Node3D:
 	var z: Zombie = null
 	match enemy_id:
+		&"cousins":
+			if cousins != null:
+				cousins.start_now()
+			return cousins
+		&"hammer", &"reach", &"alix", &"cousin_hammer", &"cousin_reach", &"cousin_alix":
+			var key: String = String(enemy_id).trim_prefix("cousin_")
+			var hb: HomageBoss = CousinHammer.new() if key == "hammer" else (CousinReach.new() if key == "reach" else CousinAlix.new())
+			add_extra(hb)
+			RoundManager.take_extra_spawn()
+			hb.spawn_homage(_snap(at), CousinsRound.boss_hp(key, RoundManager.players, HomageBoss.cfg()))
+			GLBus.enemy_spawned.emit(hb.enemy_id, hb.get_instance_id())
+			return hb
 		&"foreman":
 			var f: Foreman = Foreman.new()
 			f.director = self

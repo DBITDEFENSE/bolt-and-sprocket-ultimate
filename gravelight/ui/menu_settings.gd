@@ -62,6 +62,12 @@ func _gameplay() -> void:
 	content.add_child(MenuKit.check("Lean (Z / E)", bool(v.get("lean_enabled", true)), _setter("lean_enabled")))
 	content.add_child(MenuKit.check("Classic Rules (no character traits)", bool(v["classic_rules"]), _setter("classic_rules")))
 	content.add_child(MenuKit.check("Hint mode (show the next objective)", bool(v["hint_mode"]), _setter("hint_mode")))
+	content.add_child(MenuKit.check("Homage Bosses (the Cousins, Map 0 round 10)", bool(v.get("homage_bosses", true)), _setter("homage_bosses")))
+	var name_modes: PackedStringArray = ["real", "world"]
+	var ncur: int = maxi(0, name_modes.find(str(v.get("homage_names", "real"))))
+	content.add_child(MenuKit.row("Homage Names", MenuKit.options(PackedStringArray(["Real", "In-World"]), ncur,
+		func(i: int) -> void: GLSettings.set_value("homage_names", name_modes[i]))))
+	content.add_child(MenuKit.para("Homage Bosses are tributes to real people. Real shows their first names on the title cards and boss bars; In-World shows only the in-world names. In co-op the host's settings decide.", 16, MenuKit.DIM))
 
 
 func _controls() -> void:

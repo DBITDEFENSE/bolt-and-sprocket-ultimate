@@ -32,6 +32,10 @@ func _ready() -> void:
 	Campaign.begin()
 	Campaign.cutscene_speed = 12.0
 	GameState.god_mode = true
+	# This smoke is the plain chain (beacon at round 10). With Homage Bosses On the Map 0 beacon waits for the
+	# Cousins Round and opens on round 11 (HB1; test_homage_cousins covers that shift): off here, in memory only.
+	GLSettings.path = "user://_qa_campaign_settings.cfg"   # never write the player's own settings file
+	GLSettings.values["homage_bosses"] = false
 	GLBus.round_started.connect(func(r: int, _s: bool) -> void:
 		_rounds.append(r)
 		print("[campaign] round %d started on %s (zombies %d, scaling players %d) t=%.0f" % [r, GameState.map_id, RoundManager.round_total, RoundManager.players, _t]))

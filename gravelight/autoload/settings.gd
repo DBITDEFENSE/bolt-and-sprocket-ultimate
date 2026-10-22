@@ -42,6 +42,8 @@ var values: Dictionary = {
 	"bot_skill": "regular",        # their skill preset (data/gravelight/bots.json "skills")
 	"bot_local_ai": true,          # one bot runs on a local LLM (Ollama) and does the map's tasks and easter egg
 	"gore": "full",                # off / low / full: dismemberment and blood (MZ, T-041); the shatter VFX always shows
+	"homage_bosses": true,         # the homage bosses (HB1: the Cousins on Map 0 round 10); Off = those rounds play normally
+	"homage_names": "real",        # real / world: real first names on the title cards, bars and subtitles, or the in-world names only
 
 }
 ## User binding overrides: action -> {"kb": spec, "pad": spec}. A spec is a plain Dictionary (see event_to_spec).

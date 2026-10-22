@@ -172,6 +172,10 @@ func _register_builtins() -> void:
 	register("traits", _cmd_traits, "traits [dutch|peg|deacon|wren]: set character for trait testing")
 	register("quest", _cmd_quest, "quest list|skip <q> <step>|skipto <q> <step>|reset <q> [step]|reveal|seed <n>")
 	register("boss", _cmd_boss, "boss <foreman|screamer>: summon a boss in front of you")
+	register("spawn_boss", _cmd_spawn_boss, "spawn_boss cousins|hammer|reach|alix: start the Cousins Round now (Map 0), or one cousin alone")
+	register("cousins", _cmd_cousins, "cousins [status|kill <hammer|reach|alix|all>|bored]: the Cousins Round")
+	register("homage", _cmd_homage, "homage on|off: the Homage Bosses setting (this session)")
+	register("homage_names", _cmd_homage_names, "homage_names real|world: the Homage Names setting (this session)")
 	register("spawn_special", _cmd_spawn_special, "spawn_special <ganger|glasshide|bellringer|foreman|screamer> [n]")
 	register("special_round", _cmd_special_round, "Make the next round a Bellringer round")
 	register("bell_lit", _cmd_bell_lit, "Light the Chapel bell (as if shot with an upgraded weapon)")
@@ -307,6 +311,59 @@ func _cmd_boss(a: PackedStringArray) -> String:
 	var id: StringName = StringName(a[0]) if a.size() > 0 else &"foreman"
 	QuestManager.summon_boss(id, p.global_position - p.global_basis.z * 8.0)
 	return "Summoned " + String(id)
+
+
+func _cousins() -> CousinsRound:
+	var d: ZombieDirector = _director()
+	return d.cousins if d != null else null
+
+
+func _cmd_spawn_boss(a: PackedStringArray) -> String:
+	var which: String = a[0] if a.size() > 0 else "cousins"
+	var c: Dictionary = HomageBoss.cfg()
+	if which == "cousins":
+		var cr: CousinsRound = _cousins()
+		if cr == null:
+			return "The Cousins live on %s (Crossroads Inn); this is %s" % [str(c.get("map", "map00_crossroads")), String(GameState.map_id)]
+		return cr.start_now()
+	if not ["hammer", "reach", "alix"].has(which):
+		return "usage: spawn_boss cousins|hammer|reach|alix"
+	var p: Player = _player()
+	if p == null:
+		return "No player"
+	QuestManager.summon_boss(StringName(which), p.global_position - p.global_basis.z * 8.0)
+	return "Summoned %s alone" % which
+
+
+func _cmd_cousins(a: PackedStringArray) -> String:
+	var cr: CousinsRound = _cousins()
+	if cr == null:
+		return "No Cousins Round on this map"
+	var sub: String = a[0] if a.size() > 0 else "status"
+	match sub:
+		"kill":
+			var who: String = a[1] if a.size() > 1 else "all"
+			for k: String in CousinsRound.KEYS:
+				var b: HomageBoss = cr.boss(k)
+				if b != null and (who == "all" or who == k):
+					b.debug_kill(_ctx_pid)
+			return cr.status()
+		"bored":
+			cr.retreat()
+			return cr.status()
+	return cr.status()
+
+
+func _cmd_homage(a: PackedStringArray) -> String:
+	if a.size() > 0:
+		GLSettings.values["homage_bosses"] = a[0] != "off"
+	return "Homage Bosses %s" % ("ON" if HomageBoss.homage_on() else "off")
+
+
+func _cmd_homage_names(a: PackedStringArray) -> String:
+	if a.size() > 0:
+		GLSettings.values["homage_names"] = "world" if a[0].begins_with("w") or a[0] == "in-world" else "real"
+	return "Homage Names: %s" % ("Real" if HomageBoss.names_real() else "In-World")
 
 
 func _cmd_spawn_special(a: PackedStringArray) -> String:

@@ -42,7 +42,7 @@ static func spawn(map: MapRoot) -> ExfilPoint:
 		push_warning("[campaign] %s exfil block invalid: %s" % [map.map_id, ", ".join(errors)])
 		return null
 	var x: ExfilPoint = ExfilPoint.new()
-	x.cfg = e
+	x.cfg = CousinsRound.adjust_exfil(map.map_id, e, HomageBoss.homage_on())   # HB1: the beacon waits for the Cousins Round
 	x.name = "ExfilPoint"
 	x.position = Campaign.exfil_position(e)
 	x.rotation.y = deg_to_rad(float(e.get("yaw", 0.0)))

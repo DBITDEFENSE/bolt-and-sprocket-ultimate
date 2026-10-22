@@ -225,7 +225,24 @@
       "_doc": "Map 2: standing in the flooded pump deck at high tide (tide_controller.gd refreshes it every tick).",
       "move_mult": 0.55
     },
-    "ballast": {
+    "boss_grab": {
+   "_doc": "HB1: held by a homage boss's grab (the Reach's Long Reach, Alix's Holding Hand); the boss drags the player. Refreshed every tick while held.",
+   "move_mult": 0.0
+  },
+  "held_hand": {
+   "_doc": "HB1: Alix's Holding Hand (the vignette + the audio low-pass of the status FX).",
+   "move_mult": 0.0,
+   "fx": true
+  },
+  "splinters": {
+   "_doc": "HB1: the Hammer's Overhead Split floor zone.",
+   "move_mult": 0.6
+  },
+  "reach_slow": {
+   "_doc": "HB1: the Reach's Through-the-Wall punch.",
+   "move_mult": 0.7
+  },
+  "ballast": {
       "_doc": "Map 2: carrying a lead coffin (the Ballast mechanic, deferred; data only).",
       "move_mult": 0.5
     }

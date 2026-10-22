@@ -15,6 +15,7 @@ const GL_MAPS: Array = [
 const BOSS_TESTS: Array = [
 	["Boss test — The Foreman (Kaltenbrunn, round 12)", "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", 12, "foreman"],
 	["Boss test — The Screamer (Crossroads Inn, round 8)", "res://gravelight/maps/map00_crossroads/map00.tscn", 8, "screamer"],
+	["Boss test — The Cousins (Crossroads Inn, round 10)", "res://gravelight/maps/map00_crossroads/map00.tscn", 10, "cousins"],
 ]
 const BS_LEVELS: Array = [
 	["Bolt & Sprocket — Scrapheap Junction", "res://bs/planets/scrapheap/scrapheap.tscn"],
@@ -168,6 +169,8 @@ static func _on_match_started(_map_id: StringName) -> void:
 			Economy.grant.call_deferred(pid, _pending_scrip)
 	_pending_round = 0
 	_pending_scrip = 0
+	if _pending_boss == "cousins":
+		_pending_boss = ""   # round 10 on Map 0 is the Cousins Round itself (HB1): nothing to summon
 	if _pending_boss != "":
 		var boss: StringName = StringName(_pending_boss)
 		_pending_boss = ""

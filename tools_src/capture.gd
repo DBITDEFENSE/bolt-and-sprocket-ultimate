@@ -12,6 +12,7 @@ const TARGETS: Array = [
 	["map00", "res://gravelight/maps/map00_crossroads/map00.tscn", "gl", "screamer"],
 	["map01", "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", "gl", "foreman"],
 	["map02", "res://gravelight/maps/map02_totenhafen/map02.tscn", "gl", ""],
+	["cousins", "res://gravelight/maps/map00_crossroads/map00.tscn", "cousins", ""],
 	["scrapheap", "res://bs/planets/scrapheap/scrapheap.tscn", "bs", ""],
 	["verdant", "res://bs/planets/verdant/verdant.tscn", "bs", ""],
 ]
@@ -67,6 +68,8 @@ func _run() -> void:
 			continue
 		if str(t[2]) == "gl":
 			await _gl(key, str(t[1]), str(t[3]))
+		elif str(t[2]) == "cousins":
+			await _cousins(key, str(t[1]))
 		else:
 			await _bs(key, str(t[1]))
 		if _scene != null and is_instance_valid(_scene):
@@ -117,6 +120,57 @@ func _gl(key: String, path: String, boss: String) -> void:
 			await _shot("%s_3_boss_%s" % [key, boss])
 			await _secs(2.5)
 			await _shot("%s_4_boss_%s" % [key, boss])
+	GameState.god_mode = false
+
+
+## HB1: the three Cousins side by side at eye level in the taproom (full figure), the third arm close, then the
+## encounter's title card and boss bars.
+func _cousins(key: String, path: String) -> void:
+	GameState.character_id = &"dutch"
+	GameState.bot_count = 0
+	Campaign.reset()
+	var map: MapRoot = _load(path) as MapRoot
+	GameState.god_mode = true
+	await _secs(3.0)
+	RoundManager.stop()
+	var p: Player = map.player
+	var dir: ZombieDirector = map.director
+	if p == null or dir == null:
+		return
+	p.set_process_unhandled_input(false)
+	p.global_position = Vector3(14.0, 0.0, 12.5)
+	p.rotation.y = 0.0   # facing -Z, toward the hearth
+	p.set("_pitch", deg_to_rad(-4.0))
+	var spots: Array = [Vector3(12.6, 0, 8.6), Vector3(14.0, 0, 8.4), Vector3(15.4, 0, 8.6)]
+	var ids: Array = [&"hammer", &"reach", &"alix"]
+	var made: Array = []
+	for i: int in 3:
+		var b: Node = dir.summon_boss(ids[i], spots[i])
+		if b != null:
+			b.set_physics_process(false)   # posed: no brain, the idle animation still runs
+			(b as Node3D).rotation.y = PI
+			made.append(b)
+	await _secs(2.5)
+	await _shot("%s_1_trio" % key)
+	for b: Node in made:
+		if is_instance_valid(b):
+			(b as Node3D).rotation.y = PI * 0.75
+	p.global_position = Vector3(15.6, 0.0, 10.4)
+	p.rotation.y = deg_to_rad(15.0)
+	await _secs(1.0)
+	await _shot("%s_2_third_hand" % key)
+	for b: Node in made:
+		if is_instance_valid(b):
+			(b as HomageBoss).cleanup()
+	await _secs(0.5)
+	p.global_position = Vector3(14.0, 0.0, 12.5)
+	p.rotation.y = 0.0
+	if dir.cousins != null:
+		RoundManager.debug_set_round(10)
+		await _secs(3.6)
+		await _shot("%s_3_title_card" % key)
+		await _secs(4.0)
+		await _shot("%s_4_hammer_and_bars" % key)
 	GameState.god_mode = false
 
 

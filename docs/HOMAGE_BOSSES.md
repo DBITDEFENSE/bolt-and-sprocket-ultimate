@@ -1175,3 +1175,87 @@ The English is the singable adaptation; the German is canon. (*Dran sein* is "to
 8. **`[DEVIN_LASTNAME]`**: Devin's surname (the watch-book's flyleaf, the Archive).
 
 Optional, any time: a different look or default for any row of the sheet, the cousins' ages if they should differ from about 22 / 18 / 20, and consent notes plus reference photos in `assets/user_supplied/likeness/` if real likeness references should ever be used.
+
+---
+
+## HB1 build notes (The Cousins, built 2026-10-22, overnight run)
+
+**What's in (playable, tested):**
+- **Data:** `data/gravelight/bosses/cousins.json` (HP, speeds, every move's telegraph / damage / cooldown / break numbers, the round rules, arrival points, lamp groups, rewards, the Cousins' subtitle lines). Loaded through `GLData` (`table("bosses/cousins")`, `table("bosses/likeness")`). Four player statuses added to `enemies.json` (`boss_grab`, `held_hand`, `splinters`, `reach_slow`).
+- **Framework:**
+  - `gravelight/enemies/homage/homage_boss.gd` (`HomageBoss`): HP scaling, boss limb multipliers (the weapon's own default divided back out), state multipliers, Death's Door doubles the damage while Blackout takes 25%, the move clock and enrage steps, the shared grab + break-free helper, authored deaths, retreat.
+  - `homage_pose_mod.gd`: a post-animation SkeletonModifier3D that adds extra rotation / translation / scale per bone, plus a whole-skeleton hold.
+  - `homage_arm.gd`: the stretchable arm segment with its weak-point hitbox (the Reach's telescoping forearms, her through-the-floor arm, Alix's Third Hand).
+  - `gravelight/enemies/components/observed_freeze.gd`: reusable. It checks every living player's camera frustum (widened 5 deg) plus line of sight, at 20 Hz with 0.1 s hysteresis.
+  - `gravelight/ui/boss_hud.gd`: the red ledger-stamp title card with its date line, the three stacked boss bars, and the pencil strike through a dead cousin's bar.
+- **The round:** `cousins_round.gd` (`CousinsRound`), created by the ZombieDirector on Map 0, runs on the host / in solo.
+  - **Setup** at the end of round 9: the 17 lamps gutter out (taproom, then upstairs, then stable), the fire dies to embers, a violet handprint smears the north-west window, then clapping upstairs. A skip straight to round 10 compresses this into about 2 s.
+  - **Arrival:** the horde runs at 40%.
+    - The Hammer first: her title card, her maul tumbling down the stairwell, and Door 1 split open for free.
+    - The Reach at 0:30: her arms come through two taproom windows first. She comes from the hayloft if the stable door is open, else through the east window.
+    - Alix out of a runtime trapdoor behind the bar, when a cousin is under 50%, a cousin dies, or 3:00 at the latest.
+  - **Each death:** her bar is struck, one lamp group relights, the survivors get +20% move and attack speed (stacking), and Alix goes to hold the body's hand. The three hold the round open as reserved "alive" slots.
+  - **Clear:** Death's Door + Resupply at the last body and 1500 Scrip each. `card_the_game_is_over`, `charm_three_ribbons` and `ARC_HB_COUSINS` are recorded in ProfileSave, and `INT_HB_01` is filed through `intel_found`.
+  - **Fail-safe at 6:00:** they leave with no rewards and return on round 15 at full HP, then every 5 rounds.
+- **The Hammer:**
+  - Moves: the swipe; the Mallet Throw; the Ricochet when enraged (real wall banks, 2 bounces); the Overhead Split with its splinter zone; the unarmed slap.
+  - The Mallet Throw's telegraph: the hum stops, a wind-up spin, the maul head flares. Then:
+    - the maul boomerangs out and back, homing at up to 90 deg/s, and hits on both passes; crouching or sliding ducks it;
+    - she catches it blind, then freezes for 0.3 s.
+  - While the maul flies she takes x1.5, and a melee hit staggers her and drops the maul (a 1 s stoop to pick it up).
+  - Creepy layers: the head locked on with a 175 deg limit, a hitch on every third step.
+  - Death: she sits, then topples over stiffly like a doll.
+  - Costume: the braid, the coat buttoned to the throat, a long skirt, red-grey mittens, the maul prop.
+- **The Reach:**
+  - Moves: the swipe; Both Hands when enraged.
+    - **Long Reach Grab:** 12 m, drags at 2.5 m/s, then the Hug-Crush (120 over 1.5 s). It breaks on the wrist (x2) taking 8% of her HP, 6 melee presses, 250 team damage, or 6 s.
+    - **Through-the-Wall:** 0.6 s of dust and creaking at the player's spot, then an arm up through the floor for 60 + a slow.
+  - Costume: a bob with bangs, a high-collared ankle-length nightgown, a buttoned cardigan. Her arms are long even at rest: the forearm and hand bones are translated and the stretched skin is filled in.
+  - Death: both arms reach toward the nearest cousin, then drop. She drops Fortify + 500 Scrip each.
+- **Alix:**
+  - Every hit does 2x; her swipe is 100.
+  - **Holding Hand:** 2 m, 30 / s, dragging the player toward the trapdoor, with the held_hand screen FX. It breaks on 3 melee hits, 300 team damage, or 6 s.
+  - **Lash:** both hands to her ears for 0.9 s, then the third arm whips a 5 m arc at chest height; crouch or slide under it. It becomes Double Lash after grieving.
+  - **ObservedFreeze** beyond 8 m: frozen while seen, 6 m/s while unseen.
+  - **The grief window:** a 3 s kneel holding the fallen cousin's hand, taking x2 damage; it ends early at 20% of her HP. She rises with the violet drip light.
+  - Costume: two buns, a navy Sunday dress, a white collar, a red ribbon bow over the third arm's root, dark stockings.
+  - Death: the third arm reaches up and closes into a fist.
+- **Settings:** `homage_bosses` (On / Off) and `homage_names` (Real / In-World) in Settings -> Gameplay. In-World hides real names on the card, the bar and the subtitles, and swaps named lines for their unnamed twins.
+- **Campaign:** with Homage Bosses On, Map 0's beacon opens on round 11 (retries on 14, 17 ...); Off leaves it unchanged. A Bellringer round or a Foreman that would land on a Cousins round moves to the next round (`RoundManager.reserve_round`).
+- **Dev:**
+  - Console:
+    - `spawn_boss cousins|hammer|reach|alix`;
+    - `cousins [status|kill <who|all>|bored]`;
+    - `homage on|off` and `homage_names real|world`;
+    - `boss <...>` unchanged, and it accepts the cousin ids too.
+  - Dev launcher: "Boss test — The Cousins (Crossroads Inn, round 10)".
+  - Capture: `tools/capture.sh <milestone> cousins` (the trio, the third hand, the title card, the bars).
+- **Tests:** `gravelight/tests/unit/test_homage_cousins.gd` (21 tests) and `gravelight/tools_src/smoke_cousins.tscn` (cases ON, BORED and OFF).
+
+**Stubbed / not built (HB1 scope cuts):**
+- **Moves and extras:**
+  - the Reach's ceiling crawl, Window Spider, and arm sever with its 20 s regrowth;
+  - the Hammer's head-lock grab and the Kinderhammer drop;
+  - the after-round ice-cellar room, its chalk figures and the free crate pull;
+  - the "Cousins Are Still Playing" chalk collectibles.
+- **Audio:**
+  - No baked VO for the HAM / RCH / ALX / CSN / OPR_BOSS_COUSINS lines (VO_SCRIPT section 12 is still headed `Line id`), so every line falls back silently to its subtitle.
+  - The rhyme stems, the toy-piano bed and the title-card sting are not composed. The hum is the Screamer's lullaby sample, pitched per cousin; the clapping is pitched knife hits.
+- **Animation:** no new baked clips (`homage_clips.gd`) and no extra bones. The shapes are the shared MZ clips plus the pose layer; the third arm and the long reach are mesh segments, not bone chains. AnimJitter covers only the Hammer's hitch.
+- **Co-op:** the host runs everything. A client sees each cousin as the generic puppet body, with no title card, bars or boss subtitles. Remote players are held by grabs but not dragged.
+- **Small gaps:**
+  - Fasbender's round-10 radio line still plays at round 10's start, not its end.
+  - The lamp meshes keep glowing while their lights are out.
+  - The Archive card for `INT_HB_01` won't show in the Archive until LORE section 13.3 is extracted into `intel.json`; the id is already filed in the profile.
+
+**Decisions taken in the build:**
+- **The trapdoor:** Alix's trapdoor is behind the bar (the canon ice cellar, section 4.1). It is a runtime node; `map00.tscn` was not regenerated.
+- **Bots observe:** bots count as ObservedFreeze observers, as section 3.3 says. `observers_include_bots` in the JSON turns it off.
+- **Limb multipliers:** for hitscan hits the boss's limb multipliers replace the weapon's defaults (a head shot: weapon x4 becomes boss x2). Melee, explosive and wonder hits use the boss table only for the weak points.
+- **Instant kills:** Blackout and the console's `kill_all` take 25% of a boss's max HP instead of killing it; `cousins kill` kills.
+- **Break damage:** teammates' damage counts in full on the grabbing limb or weak point and at half elsewhere, so bot fire (which aims at bodies) still frees a held player.
+- **The held hand's effect:** Holding Hand's "vignette + audio drop" is the existing status FX (screen distortion + SFX low-pass), through the `held_hand` status.
+- **Bodies and costumes:** the cousins use the female villager MZ body (thin build) with costume shells on bone attachments; the skirts and coats are sized to cover the base body. Faces are the shared stylized zombie face, paled.
+- **Late arrivals:** a cousin who arrives after a death comes in with the current enrage steps. Alix gets Double Lash only from a grief window.
+- **The bodies:** they stay until 12 s after the round ends, so the deaths play out and Alix can reach a fallen cousin, then they go.
+- **smoke_campaign:** it runs with Homage Bosses Off (in memory, on a QA settings path) so it keeps testing the plain round-10 beacon. The shift to round 11 is unit-tested.

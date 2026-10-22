@@ -22,6 +22,10 @@ var is_special_round: bool = false
 var next_special: int = 5
 var next_boss: int = 13
 var _warned: bool = false
+## Rounds an event owns (HB1: the Cousins Round on Map 0): no Bellringer round and no Foreman lands on one;
+## either is pushed to the next free round, as the Foreman already is by a Bellringer round. Set by the map's
+## event (CousinsRound) when it is created; cleared by stop() when the map is left.
+var _reserved: Dictionary = {}
 
 
 static func zombie_health(round_number: int, cfg: Dictionary) -> int:
@@ -124,10 +128,44 @@ func start_game(player_count: int) -> void:
 	alive = 0
 	state = State.BREAK
 	break_left = INTRO_SECONDS
+	_skip_reserved()
 
 
 func stop() -> void:
 	state = State.IDLE
+	_reserved.clear()
+
+
+## An event owns round `r` (no special / Foreman on it; see _reserved).
+func reserve_round(r: int) -> void:
+	_reserved[r] = true
+	_skip_reserved()
+
+
+func unreserve_round(r: int) -> void:
+	_reserved.erase(r)
+
+
+func is_reserved(r: int) -> bool:
+	return _reserved.has(r)
+
+
+func _skip_reserved() -> void:
+	while _reserved.has(next_special):
+		next_special += 1
+	while _reserved.has(next_boss):
+		next_boss += 1
+
+
+## Event bosses that are not out yet still hold the round open: they count as alive from now (each one's death
+## calls on_zombie_died like any zombie). release_alive gives back the ones that never died (they left).
+func reserve_alive(n: int) -> void:
+	alive += maxi(0, n)
+
+
+func release_alive(n: int) -> void:
+	for i: int in maxi(0, n):
+		on_zombie_died()
 
 
 func _process(delta: float) -> void:
@@ -155,6 +193,7 @@ func advance_round() -> void:
 	# The Foreman never comes on a Bellringer round: push him back a round.
 	if next_boss == current_round and is_special_round:
 		next_boss += 1
+	_skip_reserved()
 	to_spawn = round_total
 	_sprint_streak = 0
 	state = State.ROUND
@@ -277,6 +316,7 @@ func resume_at(left_on: int, carried_special: int, carried_boss: int, grace: flo
 	alive = 0
 	state = State.BREAK
 	break_left = maxf(0.5, grace)
+	_skip_reserved()
 	GameState.stats[&"round"] = current_round
 
 
@@ -287,6 +327,7 @@ func debug_set_round(target: int) -> void:
 		next_special = target + rng.randi_range(2, 5)
 	if next_boss < target:
 		next_boss = target + rng.randi_range(1, 3)
+	_skip_reserved()
 	is_special_round = false
 	_warned = false
 	to_spawn = 0
