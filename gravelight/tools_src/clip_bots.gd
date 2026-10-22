@@ -10,6 +10,7 @@ extends Node
 ##                   frame times (average fps, 1% low) and the brains' cost per bot per frame (run it rendered,
 ##                   without --write-movie and without --fixed-fps)
 ## Prints "[clip] ..." lines and RESULT PASS/FAIL. Silent, off-screen, never holds the mouse:
+## (--overlay=full adds the blackboard panel and the threat heatmap to the labels.)
 ##   godot --audio-driver Dummy --position -4000,-4000 --resolution 1280x720 --write-movie <abs>.avi --fixed-fps 30
 ##         --quit-after 1500 --path . res://gravelight/tools_src/clip_bots.tscn -- --shot=train
 ## (also runs headless as a check: --headless --audio-driver Dummy --fixed-fps 60).
@@ -138,7 +139,10 @@ func _try_live() -> void:
 	_cam.make_current()
 	if _labels:
 		GLConsole.call("run", "ai_debug 1")
-		GLConsole.call("run", "ai_debug panel")   # labels and path lines only, no blackboard panel
+		if Array(OS.get_cmdline_user_args()).has("--overlay=full"):
+			GLConsole.call("run", "ai_debug heat")   # labels, paths, the blackboard panel and the threat heatmap
+		else:
+			GLConsole.call("run", "ai_debug panel")   # labels and path lines only, no blackboard panel
 	print("[clip] live: shot %s, round %d" % [_shot, RoundManager.current_round + 1])
 
 

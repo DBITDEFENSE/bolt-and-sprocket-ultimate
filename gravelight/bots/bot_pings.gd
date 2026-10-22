@@ -17,9 +17,9 @@ func _ready() -> void:
 		root.name = "Ping%d" % i
 		root.visible = false
 		add_child(root)
-		var mark: Label3D = _label("◆", 96, 0.0)
+		var mark: Label3D = _label("◆", 44, 0.0)
 		root.add_child(mark)
-		var lab: Label3D = _label("", 40, 0.32)
+		var lab: Label3D = _label("", 30, 0.18)
 		root.add_child(lab)
 		_items.append({"node": root, "label": lab, "mark": mark, "t": 0.0, "life": 0.0, "pos": Vector3.ZERO})
 
@@ -28,7 +28,7 @@ func _label(text: String, size: int, y: float) -> Label3D:
 	var l: Label3D = Label3D.new()
 	l.text = text
 	l.font_size = size
-	l.pixel_size = 0.0035
+	l.pixel_size = 0.0016
 	l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	l.no_depth_test = true
 	l.fixed_size = true

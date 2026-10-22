@@ -428,7 +428,8 @@ tuning in JSON tables, T-055).
 | `bot_economy.gd` (BotEconomy) | Pure rules (the perk plan, a gun for the round, the reserve, the crate, doors, the never-touch rule) and the map candidates, each with a 0..1 value. |
 | `bot_blackboard.gd` (BotBlackboard) | Pure shared data: memory, claims (exclusive, or capped for window pairs), danger zones (`{pos, radius, cost, until}`, the shape the locomotion layer reads), power-ups, pings, roles. |
 | `bot_squad.gd` (BotSquad) | Revive claims (the nearest healthy bot with a safe path; the human first, then bots, then companions), cover claims, roles, danger zones (boss keep-away rings, fire, Bell Domes), the "sprinter behind you" / "window's open" callouts, callouts with pings, the nine orders, the dev console command. |
-| `bot_move_adapter.gd` (BotMoveAdapter) | The BotLocomotion API over the old movement code until the U03 section 3 layer is merged: paths that never cross closed doors, the moving formation, making way, chokes, the 1.2 m bubble. Stuck handling: 2 s repath, 4 s nudge, 8 s teleport, the last only when no human can see the bot. |
+| `bot_locomotion.gd` (BotLocomotion) | How it moves: section 4. The brain calls move_to / follow / hold / train / stop and look_at_dir each frame. |
+| `bot_move_adapter.gd` (BotMoveAdapter) | The "v1" fallback (bots.json `"locomotion": "v1"`, the soak's `--loco=v1`): the same API over the old movement code: paths that never cross closed doors, the moving formation, making way, chokes, the 1.2 m bubble. Stuck handling: 2 s repath, 4 s nudge, 8 s teleport, the last only when no human can see the bot. |
 | `bot_pings.gd`, `bot_debug_overlay.gd` | The pooled world-space ping markers, and the `ai_debug` overlay. |
 | `bot_ai_data.gd` (BotAIData) | Loads and caches `data/gravelight/ai/*.json`. |
 
@@ -550,3 +551,61 @@ BotSquad.add_brain(player, {"perks": false, "bonus_perk": false, "kit": false, "
   defaults fill the rest. **Difficulty**: `skills.json`.
 - **Checking a change**: run `tools/ai_soak.sh --scenario=player3 --runs=3` (and bots3, cousins) and compare the
   `logs/ai_runs/<batch>.md` table with the one below. GUT `test_bot_brain.gd` pins the decision scenarios.
+
+## 7. Results: before and after (Update 03 section 10)
+
+Measured on 2026-10-22 on u03-1-brain (the brain, merged with the locomotion layer, master ed13950). Settings:
+headless `tools/ai_soak.sh`, Veteran, local AI off. Several other builders' Godot runs shared the CPU. The baseline
+is section 2 (the T-031 brain on an older master). player3 is 9 runs in three batches of 3 (seeds 1-3, 1-3, 21-23);
+the last two batches ran the final code, the first one the code before the aim presets were sharpened. bots3 is the
+final batch of 3 (seeds 11-13). cousins is 3 runs. kaltenbrunn is 1 run (40-minute cap). The orders figure comes
+from one player3 run with `--orders=30`.
+
+| Metric | Baseline | After (Update 03) | |
+|---|---|---|---|
+| player3 highest round (mean / max) | 8.0 / 9 | **8.1 / 9** (9 runs: 8, 8, 8, 9, 8, 8, 8, 8, 8) | ~ (+0.1) |
+| bots3 highest round (mean / max) | 5.7 / 6 | **7.0 / 10** (6, 10, 5; the batch before: 7, 10, 7) | better |
+| Kaltenbrunn round (1 run) | 5 | **7** | better |
+| player3 bot downs per round | 0.58 | **0.67** (49 downs in 73 rounds) | slightly worse |
+| player3 revive success (pooled) | 83% (10 of 12) | **78%** (31 of 40); 94% in one batch | **not met (> 85%)** |
+| bots3 revive success (pooled) | 0% (never) | **91%** (10 of 11, two batches) | better |
+| player3 time stuck (per run) | 124 s | **3.6 s** (-97%) | better |
+| bots3 time stuck (per run) | 140 s | **10.6 s** (-92%) | better |
+| Teleports | 0 | **0** in every run | = (target met) |
+| player3 friendly blocking events / sustained | 25.7 / 0 | **1.7 / 0** | better (zero sustained: met) |
+| Scrip wasted | 0 | **0** | = |
+| Kar98k bought after round 10 | 0 | **0** (it can't: GUT pins it) | = |
+| player3 empty-mag moments (per game minute) | 9.5 | **7.4** (67 per 9.0 min) | better |
+| bots3 empty-mag moments (per game minute) | 12.6 | **4.4** | better |
+| Time on the pistol with a loaded gun (player3, per run) | 683 s (35%) | **68 s** (~4%) | better (the pistol trap fixed) |
+| Bot kills per game minute (player3) | 14.7 | **21** | better |
+| Bot headshot share of kills (player3) | — | **58%** | |
+| Command-wheel response (median / mean) | — (no wheel orders) | **0.02 s / 3.3 s** (41 of 42 orders) | new |
+| cousins: time to the wipe (scripted player, no god mode) | 36-54 s | 30-37 s | worse |
+| cousins with a god-mode player (the clip check) | — | all three cousins cleared in 51 s; 25 of 91 Hammer hits while her mallet flew; Reach grabs broken by team fire; nobody within 2.3 m of Alix | |
+
+**What didn't reach its target.**
+- **Survival.** The brief's target is round 20-25 on Veteran with bots alone; they reach 5-10. The early rounds
+  are clearly better: bots3 survives about a round and a half longer on average, with a best of 10. But every run
+  still collapses in rounds 7-10. Each collapse is the same. At round 8 a zombie has 850 HP, about 16 Thompson body
+  hits, and the squad has no perks beyond the kit: perks and the Crucible need the power, and bots never throw the
+  power switch. So 6-8 runners and joggers arriving together put the squad down within 10-20 s. The brain now trains,
+  aims down the sights, prefers heads (x4), resupplies under fire and reloads sensibly; what's left is damage
+  output. The levers are a human (or the local-AI planner bot) turning the power on, wonder weapons from the crate,
+  and Veteran's aim numbers in `skills.json`. Tuning those is a design call for the user.
+- **Revive success above 85% (player3).** Most failures are downs still open in the final collapse. The metric
+  counts a down that is 10 s or more old at the wipe as a failure. Outside the collapse, revives almost always
+  succeed: 17 of 18 in one batch, 10 of 11 in bots3.
+- **The Cousins scenario** (round 10 forced, scripted player without god mode) still wipes; it did every baseline
+  run too. With the player kept alive, the bots focus the cousins correctly and the round clears.
+
+**Performance.** Rendered (1280x720, RTX 5090, vsync on, other builders' Godot runs sharing the CPU), Map 0 round 15
+with 3 bots and the horde topped up to 24 alive (`clip_bots.tscn -- --shot=perf`): **63 fps average** (15.9 ms),
+1% low 34 fps. The brain (perception, utility, aim, executors, locomotion) costs **0.35 ms per bot per frame**, inside
+the 0.5 ms budget. The headless soaks measure 0.22-0.27 ms per bot per frame and 0.5-0.9 ms per think (one think
+per bot every 0.2 s). BotLocomotion.tick is about 100 µs of that.
+
+**Clips.** `morning/clips/u03/bots_train_r15.mp4`: round 15, the squad training with the scripted player in the
+taproom; a bot downed under pressure and revived, callouts ("Sprinter, behind you!", the window, a Resupply with its
+ping). `morning/clips/u03/bots_cousins.mp4`: the Cousins round. The rendered clip runs showed the Hammer killed,
+6 hits while the mallet was in the air, three Reach grabs broken by the bots' fire, and nobody within 2.3 m of Alix.

@@ -111,9 +111,7 @@ func _physics_process(delta: float) -> void:
 		print("[loco] dbg t=%.1f pos=%s yaw=%.2f arrived=%s look=%s goal=%s block=%.2f probe=%s path=%d/%d floor=%s v=%.2f" % [_phase_t, b0.global_position, b0.rotation.y,
 			l0._arrived, l0._look_set, l0._goal, l0._block_t, not b0.probe_mantle().is_empty(), l0._path_i, l0._path.size(), b0.is_on_floor(), b0.horizontal_speed()])
 	for i: int in _bots.size():
-		_brains[i]._yaw = _bots[i].rotation.y   # (as the brain's adapter does: the layer owns the facing)
-		_brains[i]._pitch = _bots[i].head.rotation.x
-		_brains[i]._pose(delta)   # the paused brain's body pose (RemoteBody, net flags)
+		_brains[i]._pose(delta)   # the paused brain's body pose (RemoteBody, net flags; the layer owns the facing)
 
 
 func _boot() -> bool:
@@ -552,8 +550,8 @@ func _ph_stuck(delta: float) -> void:
 		_check(_locos[0].is_stuck(), "stuck: is_stuck() says so")
 		_human.rotation.y = PI * 0.5   # look away (west)
 	var tp: int = _locos[0].teleports - int(_s["tp0"])
-	if tp == 0 and _phase_t < 16.0:
-		return
+	if tp == 0 and _phase_t < 20.0:
+		return   # one full ladder: a nudge made while still watched (at 8 s) counts as progress and restarts it
 	_check(tp >= 1, "stuck: teleported once nobody saw it (%.1f s after the human looked away)" % (_phase_t - 11.0))
 	_check(b.global_position.x > 16.5, "stuck: it ended up past the wall (x %.1f)" % b.global_position.x)
 	_next()
