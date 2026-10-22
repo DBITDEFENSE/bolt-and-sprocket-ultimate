@@ -1027,3 +1027,36 @@ Total planned: ~190 lines. Bolt's and Vendelin's packs are gated on v1 §11.9 (p
 | `VEN_SLENDER_DEAD_01` | his death | He kept watch because he wanted to, not because anyone made him. That is the difference, and it is everything. |
 
 **Counts:** Operator 21; the Cousins 35; Paul 22; the Slender 20; the squad 66; Bolt, Sprocket and Vendelin 25. **189 lines.** The Watch-Book templates are Archive text, not VO.
+
+## 13. Map 0's living world: the squad's reactions (Update 02 §7, DECISIONS T-052)
+
+Played by `MapAmbience` (`gravelight/world/landscape/map_ambience.gd`, data `data/gravelight/map00_ambience.json`), local
+VO (each co-op peer's sky is its own). Tier 1 squad lines, chance 100%, once per event.
+
+**`SKY_PLANE_DOWN`**: once per match from round 6, a plane is hit over the inn and goes down trailing smoke behind the
+hills (it mirrors GRAVELIGHT ONE's own fall). One random standing survivor.
+
+- `DUT_SKY_PLANE_DOWN_01`: "One's hit. He's going down behind the hills. ...Come on, pull up. Pull up."
+- `DUT_SKY_PLANE_DOWN_02`: "There goes another one. Hope somebody finds them quicker than anybody found us."
+- `PEG_SKY_PLANE_DOWN_01`: "One of ours is burning. ...Count the chutes. Come on. Count the chutes."
+- `PEG_SKY_PLANE_DOWN_02`: "Down behind the ridge. I'd tell you they'll be fine. I'd be lying."
+- `DEA_SKY_PLANE_DOWN_01`: "Engine's on fire. Lord, let that pilot glide it in like ours did."
+- `DEA_SKY_PLANE_DOWN_02`: "That's ten men in that thing. ...Somebody say a word for them."
+- `WRN_SKY_PLANE_DOWN_01`: "Burning, losing height, same bearing we came in on. I'm writing down the time."
+- `WRN_SKY_PLANE_DOWN_02`: "No violet light this time. Only flak. ...That is almost a comfort."
+
+**`WRECK_PILOT`**: the first time a survivor gets a clear look at GRAVELIGHT ONE's open cockpit (within ~27 m, looking at
+it). Dutch says it if he is in the match; otherwise whoever is. The pilots died in the crash (LORE.md §9.2); the seat is
+empty. **[OPEN]**: where Flight Lieutenant Selwyn went is not answered on Map 0.
+
+- `DUT_WRECK_PILOT_01`: "Pilot's seat's empty. Selwyn was in that seat. I checked him for a pulse myself. ...So who unbuckled him?"
+- `PEG_WRECK_PILOT_01`: "The pilot's seat is empty. Dutch swore Selwyn was dead in it, and Dutch doesn't get that sort of thing wrong."
+- `DEA_WRECK_PILOT_01`: "Straps on the pilot's seat are open. Not torn. Unbuckled. Selwyn didn't walk out of there on his own."
+- `WRN_WRECK_PILOT_01`: "The pilot's seat. Empty. No tracks in the snow around the nose. Write that down. ...I am writing that down."
+
+**`MIDNIGHT`**: the church on the far hill rings twelve during round 9: it is the twenty-fourth, Christmas Eve (Wigilia).
+
+- `DUT_MIDNIGHT_01`: "Midnight. Christmas Eve. Babcia'd be setting an extra plate about now. For the stranger who knocks."
+- `PEG_MIDNIGHT_01`: "Midnight. Happy Christmas Eve, everyone. Do try not to die on it."
+- `DEA_MIDNIGHT_01`: "Christmas Eve. Ruthie's asleep by now. ...Good. That's good."
+- `WRN_MIDNIGHT_01`: "Twelve. It's the twenty-fourth. Wigilia. Somewhere my mother is looking at the first star."

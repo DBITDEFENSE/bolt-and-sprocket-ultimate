@@ -1472,6 +1472,16 @@
    "voice": "Mark",
    "chain": "deacon"
   },
+  "DEA_MIDNIGHT_01": {
+   "line": "DEA_MIDNIGHT_01",
+   "speaker": "DEA",
+   "hash": "b8912bd280c5612b",
+   "path": "res://gravelight/audio/vo/dea/DEA_MIDNIGHT_01.ogg",
+   "format": "ogg",
+   "duration": 5.496,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
   "DEA_PERK_BLASTPROOF_01": {
    "line": "DEA_PERK_BLASTPROOF_01",
    "speaker": "DEA",
@@ -1752,6 +1762,26 @@
    "voice": "Mark",
    "chain": "deacon"
   },
+  "DEA_SKY_PLANE_DOWN_01": {
+   "line": "DEA_SKY_PLANE_DOWN_01",
+   "speaker": "DEA",
+   "hash": "46ea910df7084778",
+   "path": "res://gravelight/audio/vo/dea/DEA_SKY_PLANE_DOWN_01.ogg",
+   "format": "ogg",
+   "duration": 4.837,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_SKY_PLANE_DOWN_02": {
+   "line": "DEA_SKY_PLANE_DOWN_02",
+   "speaker": "DEA",
+   "hash": "220fa6af5d24c612",
+   "path": "res://gravelight/audio/vo/dea/DEA_SKY_PLANE_DOWN_02.ogg",
+   "format": "ogg",
+   "duration": 3.825,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
   "DEA_SPAWN_01": {
    "line": "DEA_SPAWN_01",
    "speaker": "DEA",
@@ -1819,6 +1849,16 @@
    "path": "res://gravelight/audio/vo/dea/DEA_TRAP_01.ogg",
    "format": "ogg",
    "duration": 2.846,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_WRECK_PILOT_01": {
+   "line": "DEA_WRECK_PILOT_01",
+   "speaker": "DEA",
+   "hash": "64c9a2821c40b321",
+   "path": "res://gravelight/audio/vo/dea/DEA_WRECK_PILOT_01.ogg",
+   "format": "ogg",
+   "duration": 7.619,
    "voice": "Mark",
    "chain": "deacon"
   },
@@ -2222,6 +2262,16 @@
    "voice": "David",
    "chain": "dutch"
   },
+  "DUT_MIDNIGHT_01": {
+   "line": "DUT_MIDNIGHT_01",
+   "speaker": "DUT",
+   "hash": "a4f8bde255a1a379",
+   "path": "res://gravelight/audio/vo/dut/DUT_MIDNIGHT_01.ogg",
+   "format": "ogg",
+   "duration": 8.568,
+   "voice": "David",
+   "chain": "dutch"
+  },
   "DUT_PERK_BLASTPROOF_01": {
    "line": "DUT_PERK_BLASTPROOF_01",
    "speaker": "DUT",
@@ -2532,6 +2582,26 @@
    "voice": "David",
    "chain": "dutch"
   },
+  "DUT_SKY_PLANE_DOWN_01": {
+   "line": "DUT_SKY_PLANE_DOWN_01",
+   "speaker": "DUT",
+   "hash": "e56c8dee62a3f98f",
+   "path": "res://gravelight/audio/vo/dut/DUT_SKY_PLANE_DOWN_01.ogg",
+   "format": "ogg",
+   "duration": 7.731,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_SKY_PLANE_DOWN_02": {
+   "line": "DUT_SKY_PLANE_DOWN_02",
+   "speaker": "DUT",
+   "hash": "b124f7c940257361",
+   "path": "res://gravelight/audio/vo/dut/DUT_SKY_PLANE_DOWN_02.ogg",
+   "format": "ogg",
+   "duration": 5.482,
+   "voice": "David",
+   "chain": "dutch"
+  },
   "DUT_SPAWN_01": {
    "line": "DUT_SPAWN_01",
    "speaker": "DUT",
@@ -2599,6 +2669,16 @@
    "path": "res://gravelight/audio/vo/dut/DUT_TRAP_01.ogg",
    "format": "ogg",
    "duration": 2.191,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_WRECK_PILOT_01": {
+   "line": "DUT_WRECK_PILOT_01",
+   "speaker": "DUT",
+   "hash": "d106a68672c898a0",
+   "path": "res://gravelight/audio/vo/dut/DUT_WRECK_PILOT_01.ogg",
+   "format": "ogg",
+   "duration": 9.05,
    "voice": "David",
    "chain": "dutch"
   },
@@ -5362,6 +5442,16 @@
    "voice": "Zira",
    "chain": "peg"
   },
+  "PEG_MIDNIGHT_01": {
+   "line": "PEG_MIDNIGHT_01",
+   "speaker": "PEG",
+   "hash": "c1e95306785255a9",
+   "path": "res://gravelight/audio/vo/peg/PEG_MIDNIGHT_01.ogg",
+   "format": "ogg",
+   "duration": 5.214,
+   "voice": "Zira",
+   "chain": "peg"
+  },
   "PEG_PERK_BLASTPROOF_01": {
    "line": "PEG_PERK_BLASTPROOF_01",
    "speaker": "PEG",
@@ -5632,6 +5722,26 @@
    "voice": "Zira",
    "chain": "peg"
   },
+  "PEG_SKY_PLANE_DOWN_01": {
+   "line": "PEG_SKY_PLANE_DOWN_01",
+   "speaker": "PEG",
+   "hash": "2ac70beb964b4679",
+   "path": "res://gravelight/audio/vo/peg/PEG_SKY_PLANE_DOWN_01.ogg",
+   "format": "ogg",
+   "duration": 5.764,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_SKY_PLANE_DOWN_02": {
+   "line": "PEG_SKY_PLANE_DOWN_02",
+   "speaker": "PEG",
+   "hash": "a8303a89626ddd6f",
+   "path": "res://gravelight/audio/vo/peg/PEG_SKY_PLANE_DOWN_02.ogg",
+   "format": "ogg",
+   "duration": 4.773,
+   "voice": "Zira",
+   "chain": "peg"
+  },
   "PEG_SPAWN_01": {
    "line": "PEG_SPAWN_01",
    "speaker": "PEG",
@@ -5699,6 +5809,16 @@
    "path": "res://gravelight/audio/vo/peg/PEG_TRAP_01.ogg",
    "format": "ogg",
    "duration": 2.423,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_WRECK_PILOT_01": {
+   "line": "PEG_WRECK_PILOT_01",
+   "speaker": "PEG",
+   "hash": "61594134d57bcd8e",
+   "path": "res://gravelight/audio/vo/peg/PEG_WRECK_PILOT_01.ogg",
+   "format": "ogg",
+   "duration": 6.366,
    "voice": "Zira",
    "chain": "peg"
   },
@@ -6442,6 +6562,16 @@
    "voice": "Zira",
    "chain": "wren"
   },
+  "WRN_MIDNIGHT_01": {
+   "line": "WRN_MIDNIGHT_01",
+   "speaker": "WRN",
+   "hash": "0dd0aff2a302f15f",
+   "path": "res://gravelight/audio/vo/wrn/WRN_MIDNIGHT_01.ogg",
+   "format": "ogg",
+   "duration": 6.799,
+   "voice": "Zira",
+   "chain": "wren"
+  },
   "WRN_PERK_BLASTPROOF_01": {
    "line": "WRN_PERK_BLASTPROOF_01",
    "speaker": "WRN",
@@ -6762,6 +6892,26 @@
    "voice": "Zira",
    "chain": "wren"
   },
+  "WRN_SKY_PLANE_DOWN_01": {
+   "line": "WRN_SKY_PLANE_DOWN_01",
+   "speaker": "WRN",
+   "hash": "2e9df5c8a3aefd60",
+   "path": "res://gravelight/audio/vo/wrn/WRN_SKY_PLANE_DOWN_01.ogg",
+   "format": "ogg",
+   "duration": 5.144,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_SKY_PLANE_DOWN_02": {
+   "line": "WRN_SKY_PLANE_DOWN_02",
+   "speaker": "WRN",
+   "hash": "8a922de0014fd495",
+   "path": "res://gravelight/audio/vo/wrn/WRN_SKY_PLANE_DOWN_02.ogg",
+   "format": "ogg",
+   "duration": 4.955,
+   "voice": "Zira",
+   "chain": "wren"
+  },
   "WRN_SPAWN_01": {
    "line": "WRN_SPAWN_01",
    "speaker": "WRN",
@@ -6829,6 +6979,16 @@
    "path": "res://gravelight/audio/vo/wrn/WRN_TRAP_01.ogg",
    "format": "ogg",
    "duration": 3.011,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_WRECK_PILOT_01": {
+   "line": "WRN_WRECK_PILOT_01",
+   "speaker": "WRN",
+   "hash": "f30f5b83f358d043",
+   "path": "res://gravelight/audio/vo/wrn/WRN_WRECK_PILOT_01.ogg",
+   "format": "ogg",
+   "duration": 8.194,
    "voice": "Zira",
    "chain": "wren"
   },

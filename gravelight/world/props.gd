@@ -208,16 +208,50 @@ static func bottles(parent: Node3D, a: Vector3, b: Vector3, count: int, seed_v: 
 		parent.add_child(mmi)
 
 
+static var _lantern_body: ArrayMesh
+
+
+## A hanging lantern on its chain. Update 02 section 7 (T-052): it hangs from a pivot at the ceiling (group
+## "swing_lamps", meta "keep" so the static batching leaves it whole) so LampSway can swing it, and the lamp's
+## light with it, when shells land close or something hits it. Two draw calls: the chain and the body.
 static func lantern(parent: Node3D, pos: Vector3, ceiling_y: float) -> void:
 	var g: Node3D = group(parent, "Lantern", pos)
 	var chain: float = maxf(0.05, ceiling_y - pos.y - 0.25)
-	block(g, Vector3(-0.01, 0.25, -0.01), Vector3(0.01, 0.25 + chain, 0.01), "iron", false)
-	block(g, Vector3(-0.1, 0.16, -0.1), Vector3(0.1, 0.22, 0.1), "iron", false)
-	block(g, Vector3(-0.08, -0.16, -0.08), Vector3(0.08, 0.16, 0.08), "lantern_glass", false)
-	block(g, Vector3(-0.11, -0.2, -0.11), Vector3(0.11, -0.16, 0.11), "iron", false)
+	var pivot: Node3D = group(g, "LanternSwing", Vector3(0, 0.25 + chain, 0))
+	pivot.add_to_group(&"swing_lamps", true)
+	var c: MeshInstance3D = block(pivot, Vector3(-0.01, -chain, -0.01), Vector3(0.01, 0.0, 0.01), "iron", false)
+	c.set_meta("keep", true)
+	var body: MeshInstance3D = MeshInstance3D.new()
+	body.name = "LanternBody"
+	body.mesh = lantern_body()
+	body.position = Vector3(0, -0.25 - chain, 0)
+	body.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	body.set_meta("keep", true)
+	pivot.add_child(body)
+
+
+## The lantern's cage, cap and glass as one shared mesh (surface 0 iron, surface 1 the lit glass).
+static func lantern_body() -> ArrayMesh:
+	if _lantern_body != null:
+		return _lantern_body
+	var iron: SurfaceTool = SurfaceTool.new()
+	iron.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var glass: SurfaceTool = SurfaceTool.new()
+	glass.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var boxes: Array = [[Vector3(-0.1, 0.16, -0.1), Vector3(0.1, 0.22, 0.1)], [Vector3(-0.11, -0.2, -0.11), Vector3(0.11, -0.16, 0.11)]]
 	for sx: float in [-1.0, 1.0]:
 		for sz: float in [-1.0, 1.0]:
-			block(g, Vector3(sx * 0.09 - 0.01, -0.18, sz * 0.09 - 0.01), Vector3(sx * 0.09 + 0.01, 0.18, sz * 0.09 + 0.01), "iron", false)
+			boxes.append([Vector3(sx * 0.09 - 0.01, -0.18, sz * 0.09 - 0.01), Vector3(sx * 0.09 + 0.01, 0.18, sz * 0.09 + 0.01)])
+	for b: Array in boxes:
+		var lo: Vector3 = b[0]
+		var hi: Vector3 = b[1]
+		iron.append_from(unit_box(), 0, Transform3D(Basis.from_scale(hi - lo), (lo + hi) * 0.5))
+	glass.append_from(unit_box(), 0, Transform3D(Basis.from_scale(Vector3(0.16, 0.32, 0.16)), Vector3.ZERO))
+	_lantern_body = iron.commit()
+	glass.commit(_lantern_body)
+	_lantern_body.surface_set_material(0, Mats.get_mat("iron"))
+	_lantern_body.surface_set_material(1, Mats.get_mat("lantern_glass"))
+	return _lantern_body
 
 
 static func wall_lamp(parent: Node3D, pos: Vector3, yaw: float) -> void:

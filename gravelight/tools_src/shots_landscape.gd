@@ -12,7 +12,7 @@ const VIEWS: Array = [
 	["spawn", Vector3(15.0, 1.7, 9.0), Vector3(8.5, 2.6, -40.0)],
 	["spawn_east", Vector3(14.0, 1.7, 8.0), Vector3(60.0, 4.0, 0.0)],
 	["upstairs_window", Vector3(20.0, 5.45, 1.2), Vector3(4.0, 9.0, -80.0)],
-	["upstairs_window_ne", Vector3(20.3, 5.45, 0.9), Vector3(70.0, 12.0, -80.0)],
+	["upstairs_window_ne", Vector3(19.6, 5.45, 0.7), Vector3(48.0, 14.0, -80.0)],
 	["stable", Vector3(10.5, 1.7, 24.5), Vector3(20.0, 2.2, 33.0)],
 	["stable_shafts", Vector3(8.0, 1.8, 23.2), Vector3(16.0, 2.6, 31.0)],
 	["field_edge", Vector3(32.8, 1.75, 40.5), Vector3(90.0, 6.0, 10.0)],
