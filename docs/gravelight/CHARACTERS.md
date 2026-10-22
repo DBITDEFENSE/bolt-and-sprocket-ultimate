@@ -11,10 +11,11 @@
 6. [New perk lines for the squad (§11 amendment)](#5-new-perk-lines-for-the-squad-11-amendment)
 7. [Bolt (§11 amendment)](#6-bolt-playable-on-gravelight-maps-11-amendment)
 8. [Vendelin (§11 amendment)](#7-vendelin-playable-on-gravelight-maps-11-amendment)
-9. [Banter](#banter)
-10. [The Tag: KB-4471](#the-tag-kb-4471)
-11. [NPC Voice Profiles](#npc-voice-profiles)
-12. [Character Dossiers (Levels 1–10)](#character-dossiers)
+9. [Jakub Ostrowski (companion)](#9-jakub-ostrowski-the-prisoner-companion-update-02-62)
+10. [Banter](#banter)
+11. [The Tag: KB-4471](#the-tag-kb-4471)
+12. [NPC Voice Profiles](#npc-voice-profiles)
+13. [Character Dossiers (Levels 1–10)](#character-dossiers)
 
 ---
 
@@ -667,6 +668,41 @@ The categories VO_SCRIPT §8 expected but nobody had written: spawn, round start
 
 ---
 
+## 9. Jakub Ostrowski (the prisoner companion, Update 02 §6.2)
+
+Not playable: an AI companion who joins on Map 0 and travels with the squad (`gravelight/world/jakub_companion.gd`,
+DECISIONS T-051). Canon, dates and his arc: `docs/CANON.md` §6.4. Every line: `docs/gravelight/VO_SCRIPT.md` §16 (`JAK`).
+
+### Bio
+Born 1901 in Wilcza Góra, a hewer at the Kaltenbrunn salt works from the age of eighteen. Kept on as forced labour when the
+pay stopped in 1941 (tag KB-2210), sent down to the deep galleries in October 1942, Wren's brother Tomasz's gang leader in
+Gallery Nine for five months. He walked out on the night of the Erwachen, alone of the eleven who went up the Maintenance
+Stairs, and a fleeing patrol locked him in the Crossroads Inn's coal cage two days later. Wife Marta, daughter Hania.
+
+### Look
+Gaunt, a week of grey stubble, hollow cheeks. A field-grey army greatcoat two sizes too big (off a guardroom hook, the
+badges cut away), open over brown work clothes; a tweed cloth cap; the empty hook of a miner's lamp clipped to his belt; the
+Old Cellar's coal shovel until someone gives him a gun. Stooped, a bad knee. When he is calm he blows into his cupped hands.
+Wounded (after a bleed-out on the map before): a bandage round his head. Procedural body: `RemoteBody` outfit `jakub`.
+
+### Voice notes
+- Calm, wry, polite. Slow, careful English learned from a German foreman and Polish newspapers; Polish when it matters
+  (shouting, praying, his wife's name), always with the English beside it in the subtitle.
+- He has seen worse than zombies and isn't impressed by them. Dry humour about himself, never about the dead.
+- Never raises his voice except at the breakout. Under fire he stays steady.
+
+### How he plays (Update 03 §8, `personality_jakub.json`)
+Careful: conserves ammo, prefers bolt-actions ("Bolt-actions, please. I don't trust things that fire by themselves."),
+refuses perks ("I've seen what they put in those."), always covers the player who freed him, never runs ahead. Unarmed he
+mends windows, swings the shovel at what reaches you, and calls out sprinters, power-ups and the crate.
+
+### Personal stake
+Marta's extra plate at Wigilia, and the names of the ten men on the stairs.
+
+### Secret
+The chalk. Three strokes and a hook: the sabotage alphabet his gangs left on Kaltenbrunn's props. He taught it to the young
+ones, and Tomasz made his hook backwards (Morgenrot, CANON §6.4).
+
 ## Banter
 
 Banter triggers between rounds (in the round transition break) when two characters are within 15 m and no higher-priority VO is playing. Each exchange plays once per match. The initiating speaker is the first line. See `docs/VO_SCRIPT.md` for trigger rules. The `_04` / `_05` exchanges (T-035) are the short two- and three-line ones the round break has room for.
@@ -992,3 +1028,30 @@ Dossier XP comes from playing as that character (any map). Each level unlocks it
     > (Handwritten at the bottom, in Sister Agnieszka's hand, in Polish:) *I let him out of the tank on the night of the 3rd. He walked toward the gate. I hope he reached the snow. — A.W.*
     >
     > *This is the hook for Map 2: there is a Gänger somewhere that does not attack, and is still looking.*
+
+### Jakub's dossier
+Not a survivor you play: his pages open with his own dossier XP, earned alongside him (`companion_jakub.json`
+`dossier_xp`: when he joins, each round he lives through, each time you pick him up, each new map with him, Wren's scene).
+1. **Record:** Ostrowski, Jakub. Born 1901, Wilcza Góra. Hewer, Kaltenbrunn salt works, from 1919. Forced labour from March 1941, tag KB-2210; deep galleries from October 1942. Escaped 21 December 1944. "Häftling (Pole) · Flucht aus K. · 22.XII." on a padlock at the Kreuzweg.
+2. **Wilcza Góra:** the last house on the lane. Marta, and Hania, sixteen now. Burek the one-eared dog. The timberman Nowak's two down the lane, Zosia and Tomek. Winter coal for the Kreuzweg every November.
+3. **Outfit:** the greatcoat off the guardroom hook, two sizes too big, the badges cut away with a shovel blade; the cloth cap; the lamp hook. "They took the lamp. I kept the hook. A hook is a promise you get the lamp back."
+4. **Told to Deacon, round seven:** "The dead don't frighten me. Twenty years I worked where the ceiling decides if you go home. What frightens me is a man with a list."
+5. **Quote pack 1:** his callouts and the shovel lines.
+6. **The chalk:** the timbermen's marks of Wilcza Góra, turned into an alphabet in the galleries. Three strokes and a hook: weak, ours, don't trust it. The guards counted it as the shift tally. He taught it to the young ones. "Tomek made his hook backwards. Always backwards."
+7. **Outfit:** the bandage. "Not yet. Not tonight."
+8. **The stairs:** the night the bell would not stop. Eleven men up the Maintenance Stairs; the guards on the third landing still shooting; a bad knee, and slow was careful, and careful was alive. He said their names at the top: Antek Wiśniewski, Staszek Kral, the two Biela brothers, Józef Mazur, little Franek Sowa, Paweł Duda, Kazimierz Lis, old Wojtek Gąsior, Mietek from Gliwice.
+9. **Quote pack 2 + calling card:** "The Hook" (three chalk strokes and a hook on black salt).
+10. **The letter to Marta** (also in the Archive): written in the coal cage on the back of a coal bill.
+    > Marto, moja kochana (Marta, my dear),
+    >
+    > I am writing this with a pencil the length of my thumbnail, on the back of a coal bill, in a cage in the cellar of the Kreuzweg, where we used to sell Anselm his winter coal. Do not laugh. I know you are laughing.
+    >
+    > I am out of Kaltenbrunn. On the night of the twentieth the bell rang and did not stop, and the guards ran from something they would not name. We went up the old Maintenance Stairs, eleven of us, the way we planned it in the spring. The guards on the third landing were still shooting. I was slow, because of my knee, and slow is careful, and careful is alive. I am sorry to tell you I was the only one who reached the snow. I said their names at the top, and I will say them to you at our table, every one.
+    >
+    > I took a coat off the guardroom hook. It is too big and it smells of a stranger, and I cut the badges off with a shovel. On the road a patrol caught me and brought me here, and then they heard something on the road behind them and ran, and took the key with them.
+    >
+    > Something is walking about upstairs. I am not afraid. I was under that mountain almost four years and it did not keep me. Tell Hania her father is coming home. Tell her to set the extra plate at Wigilia, for the stranger at the door. This year, God willing, the stranger is me.
+    >
+    > Your Jakub.
+    >
+    > P.S. The chalk is still on the props in Gallery Nine. Three strokes and a hook. If anyone ever asks you what it meant, tell them: we did not build their mountain well.

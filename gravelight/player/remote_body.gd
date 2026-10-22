@@ -477,6 +477,7 @@ func set_weapon(weapon_id: StringName) -> void:
 		_gun = build_shovel(_mats)
 		_gun_pivot.add_child(_gun)
 		_gun.position = Vector3(0.12, -0.02, -0.18)
+		_gun.add_child(_flash)   # never shown (melee only), but kept in the tree with the model
 		for n0: Node in _gun.find_children("*", "MeshInstance3D", true, false):
 			(n0 as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		return

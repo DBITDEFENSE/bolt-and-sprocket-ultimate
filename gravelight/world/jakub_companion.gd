@@ -64,6 +64,7 @@ var _path: PackedVector3Array = PackedVector3Array()
 var _walk_t: float = 0.0
 var _mi: MoveIntent = MoveIntent.new()
 var _call_t: float = 0.0
+var _calls: int = 0
 var _talk_cd: float = 0.0
 var _said: Dictionary = {}
 var _later: Array = []            # [at, category]
@@ -504,7 +505,9 @@ func _tick_waiting(delta: float) -> void:
 	_call_t -= delta
 	var near: Player = _nearest_human(float(cfg().get("call_unless_within_m", 9.0)))
 	if near == null and _call_t <= 0.0:
-		_call_t = float(cfg().get("call_every_s", 16.0))
+		# every call_every_s at first, then slower (never more than a minute apart) if nobody comes for a long while
+		_calls += 1
+		_call_t = minf(60.0, float(cfg().get("call_every_s", 16.0)) * (1.0 + float(_calls) / 4.0))
 		_say("CALL")
 
 

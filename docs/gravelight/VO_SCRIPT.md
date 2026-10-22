@@ -1361,7 +1361,7 @@ categories) with his own lines. The other survivors' lines about him are at the 
 - `JAK_RETURN_WOUNDED_02`: "Jeszcze nie (not yet). They will have to try harder than that. No, don't help me. I can walk." `[say: "Yesh-cheh nyeh. They will have to try harder than that. No, don't help me. I can walk."]`
 
 **`M1_ARRIVE`** (Kaltenbrunn):
-- `JAK_M1_ARRIVE_01`: "Kaltenbrunn. I walked out of this place three days ago. I did not think I would walk back in with friends."
+- `JAK_M1_ARRIVE_01`: "Kaltenbrunn. I walked out of this place four days ago. I did not think I would walk back in with friends."
 - `JAK_M1_ARRIVE_02`: "Listen to me here. Stay on the planks. Don't touch the black glass in the walls. And if the bell rings, walk toward it."
 
 **`M1_SHORTCUT`** (he shows the Maintenance Stairs: 500 Scrip off while he is with you):

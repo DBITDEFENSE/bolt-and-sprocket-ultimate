@@ -13,7 +13,7 @@ func _init() -> void:
 
 
 func build() -> void:
-	var rows: Array = ProfileSave.intel_rows()
+	var rows: Array = _grouped(ProfileSave.intel_rows())
 	var found: int = 0
 	for r: Dictionary in rows:
 		if ProfileSave.has_intel(str(r["id"])):
@@ -43,8 +43,25 @@ func build() -> void:
 		list.add_child(b)
 
 
+## The rows grouped by map, each map's rows in their own order (one header per map even when a later section of the
+## table adds to an earlier map, like Jakub's letter).
+static func _grouped(rows: Array) -> Array:
+	var order: Array = []
+	for r: Variant in rows:
+		var m: String = str((r as Dictionary).get("map", ""))
+		if not order.has(m):
+			order.append(m)
+	var out: Array = []
+	for m2: Variant in order:
+		for r2: Variant in rows:
+			if str((r2 as Dictionary).get("map", "")) == str(m2):
+				out.append(r2)
+	return out
+
+
 func _show(r: Dictionary, have: bool) -> void:
 	if have:
 		_reader.text = "%s\n%s\n\n%s" % [r["title"], TYPE_NAMES.get(str(r["type"]), r["type"]), r["text"]]
 	else:
-		_reader.text = "Not yet recovered.\n\nIntel turns up at random spots during matches."
+		_reader.text = "Not yet recovered.\n\n" + ("Somebody in the Crossroads Inn's cellar is waiting to be let out." if str(r.get("placement", "")) == "companion" \
+			else "Intel turns up at random spots during matches.")

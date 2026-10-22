@@ -101,6 +101,7 @@ This is the **unspoken threat over the playable squad.** Every tonic they drink 
 | Nov 1944 | SOE/OSS form **Operation Gravelight**. **Lt. Margaret "Peg" Ashworth** is given command, plus sealed orders: **Directive LANTERN**. |
 | 20 Dec 1944 | Reinholt's "great attempt": she drives the Heart to full resonance to reach Liesl. The **Erwachen** (Awakening). Every dead body within 30 km begins to move. Most of the garrison dies within hours and rises. |
 | 21–22 Dec | The Ledger begins tallying with no operator present. The PA keeps announcing. |
+| 20–22 Dec *(U02 §6.2, new row)* | On the night of the Erwachen eleven forced labourers go up the Maintenance Stairs; the guards on the third landing are still shooting, and only **Jakub Ostrowski** (KB-2210, of Wilcza Góra; Tomasz Nowak's gang leader in Gallery Nine in 1942–43) reaches the snow (21 Dec). On the 22nd a retreating road patrol catches him and locks him in the Kreuzweg's coal cage, then flees with the key. He writes to his wife Marta on the back of a coal bill (`INT_JAK_01`). CANON §6.4. |
 | **23 Dec 1944** | **GRAVELIGHT ONE** (C-47, out of Brindisi) crosses the Silesian border at 23:10. At 23:41, a violet light rises from the hills, the engines lose all power at once, and the plane comes down near the **Gasthaus Zum Kreuzweg** (the Crossroads Inn, kept by Anselm Vogt). The pilots die. The four passengers survive. |
 | **23–24 Dec** | **MAP 0: Crossroads Inn.** The squad holds out through the night. Fasbender's radio finds them. |
 | **25 Dec 1944 →** | **MAP 1: Kaltenbrunn.** The squad follows the rail line to the mine. |
@@ -621,6 +622,15 @@ These are **event unlocks**, not random spawns and not fixed props, so this tabl
 | `INT_HB_06` | The Cousins Are Still Playing (×4) | PHOTO | one per later map, found as a hidden chalk drawing of three girls holding hands |
 
 Boss-intro cards (`ARC_HB_COUSINS`, `ARC_HB_PAUL`, `ARC_HB_SLENDER`) carry each boss's canon (§15), the likeness credit and the death-scene replay, viewable after the first kill.
+
+### 13.4 Companion entries (filed by the companion, never spawned)
+
+Filed straight into the Archive when Jakub Ostrowski joins the squad (Update 02 §6.2, DECISIONS T-051; `JakubCompanion.mark_joined`);
+`extract_intel.py` marks these rows `"placement": "companion"` so the random intel spawn never places them.
+
+| ID | Title | Type | Map | Text |
+|---|---|---|---|---|
+| `INT_JAK_01` | Jakub's Letter to Marta (written in the coal cage) | DOC | 0 | Marto, moja kochana (Marta, my dear),<br><br>I am writing this with a pencil the length of my thumbnail, on the back of a coal bill, in a cage in the cellar of the Kreuzweg, where we used to sell Anselm his winter coal. Do not laugh. I know you are laughing.<br><br>I am out of Kaltenbrunn. On the night of the twentieth the bell rang and did not stop, and the guards ran from something they would not name. We went up the old Maintenance Stairs, eleven of us, the way we planned it in the spring. The guards on the third landing were still shooting. I was slow, because of my knee, and slow is careful, and careful is alive. I am sorry to tell you I was the only one who reached the snow. I said their names at the top, and I will say them to you at our table, every one.<br><br>I took a coat off the guardroom hook. It is too big and it smells of a stranger, and I cut the badges off with a shovel. On the road a patrol caught me and brought me here, and then they heard something on the road behind them and ran, and took the key with them.<br><br>Something is walking about upstairs. I am not afraid. I was under that mountain almost four years and it did not keep me. Tell Hania her father is coming home. Tell her to set the extra plate at Wigilia, for the stranger at the door. This year, God willing, the stranger is me.<br><br>Your Jakub.<br><br>P.S. The chalk is still on the props in Gallery Nine. Three strokes and a hook. If anyone ever asks you what it meant, tell them: we did not build their mountain well. |
 
 ## 14. Glossary
 | Term | Meaning |

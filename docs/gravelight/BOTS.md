@@ -147,6 +147,15 @@ times a second) and beyond 60 m.
 - Update 03 adds `personality` ("jakub"), `escort_pid` (the player who freed him: he stays a step behind them),
   `armed` (false: the coal shovel, melee only), `ammo_payer_pid` / `ammo_price_mult` (the party pays, half price:
   AmmoBox.use_holder) and `revive_priority` (2: revived after the human and the bots). See docs/BOT_AI.md section 5.
+- **Built (U02 §6.2, T-051): `JakubCompanion`** (`gravelight/world/jakub_companion.gd`, data `companion_jakub.json`).
+  He is a bot-style Player with `is_companion` and a fixed pid (9) that is in no `GameState.player_ids` / `bot_ids`, no
+  `MapRoot.players`, no lobby slot and no round scaling. In a solo match without bots `MapRoot.ensure_companion_session()`
+  makes the offline session and an empty BotSquad for him (no co-op HUD; the human keeps the solo rules: Jakub can't pick
+  you up in pure solo, he can with bots or in co-op). `NetMatch.add_companion` / `CoopState.companions`: he goes down,
+  is revived and bleeds out (60 s) like anyone, never respawns, and never keeps a match alive alone. `BotSquad.add_brain`
+  now builds the plates / wheel / pings for a squad that had no bots, `player_by_id` finds companions, `remove_brain`
+  drops a bled-out one. `Zombie.forced_target` is how the breakout zombie goes for him. The blackboard never hands out a
+  freed zombie any more (a Homage boss that retreats is freed, not pooled; that raised "freed object" errors).
 
 ## Update 03 section 3 (T-056): how bots move
 
