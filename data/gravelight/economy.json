@@ -30,5 +30,14 @@
   "crucible_upgrade_tiers": {
     "2": 7500,
     "3": 10000
+  },
+  "ammo_box": {
+    "_doc": "Ammo boxes (Update 02 section 4, T-049): hold use to refill the weapon in hand (mag + reserve) and lethal grenades (not tacticals). Price by what you hold: normal / Crucible-upgraded, wonder weapons (class wonder) wonder / wonder_upgraded. grenades_only = the price when the gun is full but grenades are short (or nothing is held). cooldown_s = per player, after a purchase.",
+    "normal": 250,
+    "upgraded": 2500,
+    "wonder": 1000,
+    "wonder_upgraded": 4000,
+    "grenades_only": 250,
+    "cooldown_s": 3.0
   }
 }
