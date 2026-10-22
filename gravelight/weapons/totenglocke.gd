@@ -153,7 +153,7 @@ static func resolve(ctx: Node3D, origin: Vector3, fwd: Vector3, w: WeaponInstanc
 		return out
 	var zs: Array[Zombie] = dir.active_zombies()
 	var space: PhysicsDirectSpaceState3D = ctx.get_world_3d().direct_space_state
-	var close_r: float = float(b.get("close_radius", 1.5))
+	var close_r: float = float(b.get("close_radius", 2.5))
 	var hit_set: Dictionary = {}
 	var shatter_from: Array[Vector3] = []
 	for z: Zombie in zs:
@@ -161,13 +161,9 @@ static func resolve(ctx: Node3D, origin: Vector3, fwd: Vector3, w: WeaponInstanc
 			continue
 		var chest: Vector3 = z.global_position + Vector3.UP * (0.5 if z.is_crawler else 1.0)
 		if not in_cone(origin, fwd, chest, cone.x, cone.y, close_r):
-			if OS.get_environment("TG_DEBUG") != "":
-				print("[tgdbg] cone miss d=%.1f ang=%.0f" % [origin.distance_to(chest), rad_to_deg(fwd.angle_to(chest - origin))])
 			continue
 		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(origin, chest, MASK_LOS)
 		if not space.intersect_ray(q).is_empty():
-			if OS.get_environment("TG_DEBUG") != "":
-				print("[tgdbg] LOS miss d=%.1f hit %s y=%.2f" % [origin.distance_to(chest), str(space.intersect_ray(q).get("collider")), z.global_position.y])
 			continue
 		hit_set[z] = true
 		if _strike(z, origin, w, pid, great, b, out):
@@ -416,6 +412,7 @@ func pose_parts(crank: Node3D, model: Node3D) -> void:
 		_bell_node = bell
 		_bell_rest = bell.transform
 	var a: float = _vibe_amp * pow(_vibe_t / maxf(0.01, _vibe_total), 1.5)
+	_glow(bell, w, a)
 	if a <= 0.0005:
 		bell.transform = _bell_rest
 		return
@@ -423,6 +420,25 @@ func pose_parts(crank: Node3D, model: Node3D) -> void:
 	var off: Vector3 = Vector3(sin(t * TAU * 37.0), sin(t * TAU * 43.0 + 1.3) * 0.7, sin(t * TAU * 23.0 + 0.4) * 0.4) * 0.0055 * a
 	var rot: Basis = Basis.from_euler(Vector3(sin(t * TAU * 31.0) * 0.03, 0.0, sin(t * TAU * 29.0 + 0.8) * 0.05) * a)
 	bell.transform = Transform3D(_bell_rest.basis * rot, _bell_rest.origin + off)
+
+
+## The bell glows from inside while it rings and while the wind hums (so it reads in a dark map), in the
+## viewmodel's compressed space (the same falloff rule as the holder's Nachtglas glow).
+func _glow(bell: Node3D, w: WeaponInstance, amp: float) -> void:
+	var l: OmniLight3D = bell.get_node_or_null("BellGlow") as OmniLight3D
+	if l == null:
+		l = OmniLight3D.new()
+		l.name = "BellGlow"
+		l.shadow_enabled = false
+		l.position = Vector3(0, 0.06, -0.3)
+		bell.add_child(l)
+	var k: float = holder._vm_compress
+	l.light_color = color_of(w.data["bell"])
+	l.omni_range = 0.9 * k
+	var wind: float = 0.0
+	if _holding:
+		wind = 0.35 + (0.5 if _great_ready else 0.25 * clampf(_hold_t / 1.5, 0.0, 1.0))
+	l.light_energy = (0.12 + wind + 1.6 * minf(amp, 1.6)) * k * k * 6.0
 
 
 ## Left-hand target during the winding reload: it reaches for the crank handle and turns it.

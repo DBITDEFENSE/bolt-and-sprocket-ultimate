@@ -166,14 +166,14 @@ func _clip_great() -> void:
 	RoundManager.current_round = 16
 	var w: WeaponInstance = _bell()
 	_check(w != null and w.data.has("bell") and w.mag == 12 and w.reserve == 48, "Totenglocke in hand, 12 / 48 charges")
-	await _spawn(_train_points(17.0, 12), 12)
+	await _spawn(_train_points(20.0, 12), 12)
 	var hp: float = _alive()[0].max_hp if not _alive().is_empty() else 0.0
 	print("[tg] round 16 zombie HP %.0f, %d spawned" % [hp, _alive().size()])
 	await _secs(1.2)
 	var mag0: int = w.mag
 	var hs0: int = Totenglocke.hitstops
 	var before: int = _alive().size()
-	var cam: Callable = func() -> bool: return _near(SPOT, 9.5) >= 10 or _near(SPOT, 4.0) >= 3
+	var cam: Callable = func() -> bool: return _near(SPOT, 8.0) >= 10 or _near(SPOT, 3.5) >= 3
 	await _great(cam, 6.0)
 	await _frames(3)
 	var gone: int = before - _alive().size()

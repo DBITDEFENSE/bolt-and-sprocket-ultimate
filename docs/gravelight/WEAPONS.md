@@ -250,7 +250,7 @@ then x1.1 per round: r15 = 1683, r16 = 1851, r20 = 2710, r21 = 2981, r25 = 4364,
 
 | | Totenglocke | Mitternacht |
 |---|---|---|
-| **Tap** (released before the 1.5 s wind completes) | Quick toll: 8 m, 50 deg cone, no falloff | 10.4 m, 65 deg |
+| **Tap** (released before the 1.5 s wind completes) | Quick toll: 8 m, 50 deg cone, no falloff; anything within 2.5 m is hit whatever the angle | 10.4 m, 65 deg |
 | Tap damage | Kills outright any zombie with max HP <= 2750 (through round 20); above that 35% of max HP | same |
 | **Hold** (wind 1.5 s: the crank speeds up, the bell hums rising in pitch) | Release for the **Great Toll**: 14 m, 70 deg, **shatters** every non-boss in the cone; costs 3 | 18.2 m, 91 deg; costs 2 |
 | Hold with too few charges | The wind stops at "not enough" (a dull clunk); release is a quick toll | same |
