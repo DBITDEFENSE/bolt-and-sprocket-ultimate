@@ -1,6 +1,6 @@
 # PROGRESS
 
-RESUME HERE: overnight run finished; everything is merged to master (tags mz, hb1-wip). Next session: HB1 extras (Kinderhammer, chalk room + free crate pull, Reach ceiling crawl / Window Spider / arm regrowth, rhyme stems, co-op client visuals for the Cousins), then HB2 PAUL (docs/HOMAGE_BOSSES.md §5) on branch hb2-paul. Read morning/MORNING_REPORT.md first.
+RESUME HERE: Update 02 (UPDATE_02_POLISH.md) in progress. Wave 1 = §1 feel, §2 ADS, §3 Totenglocke, §4 ammo boxes, §7 landscape on branches u02-1..u02-7 (worktrees in .wt/); wave 2 = §5 bots, §6 cellar + Jakub, §8 polish. Merge order follows the brief.
 
 ## Overnight run, 2026-10-21 → 22: the plan
 
@@ -20,6 +20,48 @@ So from the overnight work order only these remain, in this order:
    screenshots into `morning/screenshots/`, `morning/MORNING_REPORT.md`.
 
 Rules: `master` is the main branch and must always launch; each step is merged only after GUT + the smokes pass.
+
+## Update 02 — baseline playtest, 2026-10-22 (before any change)
+
+Played Map 0 to round 10 with the playtest bot (`tools_src/playtest_gl.tscn`, which drives the real Player through
+the input actions): one god-mode run with the Thompson, and one honest solo run with 3 squad bots. Plus viewmodel
+contact sheets (`vm_shots`) and a read of the movement / weapon code. What feels wrong:
+
+**Movement**
+- Ground speed snaps: 45 m/s² acceleration (walk speed in 0.1 s) and the same instant stop; no slide on stop.
+- Sprint is hold-only; there's no toggle setting. Turn speed doesn't change while sprinting. The sprint FOV is a flat ×1.06 inside the overall
+  FOV lerp, with no own smoothing, and the head-bob barely differs from walking.
+- **Eaten inputs:** while sprint is held, `fire` and `ads` are ignored (can_shoot needs not-sprinting, and ADS needs
+  not-sprinting), so pressing fire mid-sprint does nothing until you let go of sprint. Sprint-out is a fixed 0.16 s
+  for every class.
+- No mantle/vault (bar counter, fences, low walls block training loops); no prone; crouch height snaps in 0.12 m
+  steps (reads as a lerp but at fixed per-frame steps, frame-rate dependent).
+- Landing shake is fixed (0.15), not scaled by fall height. No strafe roll, no weapon inertia beyond the look sway,
+  no damage punch.
+
+**Gunplay**
+- Recoil is a random yaw kick per shot plus a pitch spring: no learnable per-weapon pattern.
+- Bloom exists but decays at a fixed rate regardless of stance; the crosshair doesn't show crouch/still benefits.
+- Hitmarker: one kind (no red kill tint, no headshot sound).
+- Reload cancel by sprint/swap exists partly (sprint queues the reload instead of cancelling it).
+
+**Thompson ADS:** the rear aperture fills the view and the front blade is hidden under the receiver top; the hand
+and the mag/drum read into the lower view; sway at ADS is the SMG class sway (0.3) and drifts noticeably.
+
+**Totenglocke:** each ring needs a 0.6 s hold *then* release (feels like a delay, not a gun); only 6 charges a mag
+and 24 reserve (30 rings a refill); damage falls off to 60 % at the cone edge so edge zombies survive from round ~15;
+no stagger on survivors; the feedback is one explosion puff 3 m ahead and a single bell sample; the reload is a flat
+3 s. It doesn't feel like the strongest thing on the map.
+
+**Bots / squad (3 bots, regular):** the squad wiped on round 5 (every bot down in the same round, 0 revives between
+bots, 0 revives of the player); they camp where they stand instead of moving with the player; bots ended on the
+M1911 (last-stand pistol) after going down.
+
+**Map 0 navigation (god run):** the player got stuck on nav paths at the stair vestibule (6, 0, 15) ×18, the cellar
+stairs/landing (27, 0, 11) ×8 and the cellar floor (34, −3, 19) ×12; zombies idled in CHASE at the stair head
+(1, 3, 1) and in the taproom (15, 0, −1).
+
+**World:** past the yard fence it's flat snow and black sky; no distant life; the inn reads as a box in a void.
 
 ## Done
 

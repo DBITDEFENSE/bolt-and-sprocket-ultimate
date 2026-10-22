@@ -5,3 +5,5 @@ export/
 /tools/dl_godot/
 .smoke_logs/
 morning/screenshots/
+.wt/
+morning/clips/
