@@ -143,6 +143,7 @@ var _aside_cd: float = 0.0
 var _sprint_t: float = 0.0
 var _traps: Array[Node] = []
 var _low_ammo_said: bool = false
+var _bonus_due_t: float = INF      # the round fallback is due: retried every few seconds until a line starts
 
 
 
@@ -224,8 +225,8 @@ func on_round_started() -> void:
 	_errand_cd = 0.0
 	_doors_bought = 0
 	_low_ammo_said = false
-	if RoundManager.current_round >= int((_cfg.get("bonus_perk", {}) as Dictionary).get("fallback_round", 4)):
-		_bonus_event("fallback")
+	if RoundManager.current_round >= int((_cfg.get("bonus_perk", {}) as Dictionary).get("fallback_round", 4)) and not bonus_said:
+		_bonus_due_t = squad.time() + 6.0   # after the round-start lines
 
 
 # ================================================================== per-frame
@@ -313,6 +314,9 @@ func _think() -> void:
 	_pick_target(float((_cfg.get("perception", {}) as Dictionary).get("engage_range_m", 26.0)))
 	_weapon_logic()
 	_watch_choke()
+	if not bonus_said and squad.time() >= _bonus_due_t:
+		_bonus_due_t = squad.time() + 4.0
+		_bonus_event("fallback")
 	_decide_mode()
 
 
