@@ -605,11 +605,22 @@ func _retreat(zs: Array[Zombie]) -> void:
 				continue
 			_path_to(c[1])
 			return
-	# truly boxed in: back straight away from the nearest one, as far as the navmesh goes (not into a wall)
-	var back: Vector3 = NavigationServer3D.map_get_closest_point(player.get_world_3d().navigation_map, me + away * 2.0)
-	_path = PackedVector3Array([me, back])
-	_path_i = 1
-	_repath_t = 0.3
+	# truly boxed in: back away from the crowd in the first direction with 2 m of clear floor (straight away, then
+	# turning further and further off it), never into a wall (T-051: the corner at Door 1 swallowed this)
+	var space: PhysicsDirectSpaceState3D = player.get_world_3d().direct_space_state
+	var nav: RID = player.get_world_3d().navigation_map
+	for ang: float in [0.0, 50.0, -50.0, 100.0, -100.0, 150.0, -150.0]:
+		var d: Vector3 = away.rotated(Vector3.UP, deg_to_rad(ang))
+		var from: Vector3 = me + Vector3.UP * 0.6
+		if not space.intersect_ray(PhysicsRayQueryParameters3D.create(from, from + d * 2.4, 1 | (1 << 8), [player.get_rid()])).is_empty():
+			continue
+		var back: Vector3 = NavigationServer3D.map_get_closest_point(nav, me + d * 2.0)
+		if Vector2(back.x - me.x - d.x * 2.0, back.z - me.z - d.z * 2.0).length() < 0.7:
+			_path = PackedVector3Array([me, back])
+			_path_i = 1
+			_repath_t = 0.3
+			return
+	_path = PackedVector3Array()   # nowhere to go: stand and fight
 
 
 ## A waypoint standing in a shut door's opening (the navmesh runs through doors: they aren't baked), where a
@@ -645,7 +656,16 @@ func _check_player_stuck(delta: float) -> void:
 	if moving_wanted and player.global_position.distance_to(_last_pos) < 0.02:
 		_stuck_t += delta
 		if _stuck_t > 2.5:
-			_issue("player stuck while walking a nav path near %s" % _v(player.global_position.snapped(Vector3.ONE)))
+			var msg: String = "player stuck while walking a nav path near %s" % _v(player.global_position.snapped(Vector3.ONE))
+			if not issues.has(msg):   # the first time: what it was walking to and what is in the way (T-051)
+				var nxt: Vector3 = _path[mini(_path_i, _path.size() - 1)]
+				var from: Vector3 = player.global_position + Vector3.UP * 0.5
+				var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, from + (Vector3(nxt.x, from.y, nxt.z) - from).normalized() * 0.8, 0xFFFFFFFF, [player.get_rid()])
+				var hit: Dictionary = player.get_world_3d().direct_space_state.intersect_ray(q)
+				print("[bot]     at %s next %s (point %d/%d, goal %s), in the way: %s, errand %s, zombies near %d" % [_v(player.global_position), _v(nxt), _path_i, _path.size(),
+					_v(_path[_path.size() - 1]), str((hit["collider"] as Node).name) if not hit.is_empty() else "nothing", str(_goal.get("kind", "-")),
+					director.active_zombies().filter(func(z: Zombie) -> bool: return z.global_position.distance_to(player.global_position) < 4.0).size()])
+			_issue(msg)
 			_path = PackedVector3Array()
 			_goal = {}
 			_stuck_t = 0.0

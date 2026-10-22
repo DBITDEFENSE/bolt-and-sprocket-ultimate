@@ -1286,7 +1286,7 @@ func _dress_old_cellar() -> void:
 	for rb: Vector3 in [Vector3(21.25, cy, 16.3), Vector3(23.6, cy, 16.4), Vector3(23.7, cy, 18.9), Vector3(21.2, cy, 20.9)]:
 		Props.ball(g, rb, Vector3(0.7, 0.35, 0.6), "brick_cellar")
 	Props.pit_prop(g, Vector3(22.45, cy, 16.15), 0.0, 2.9, top - cy, "pine")
-	Props.pit_prop(g, Vector3(22.45, cy, 19.5), 90.0, 3.0, top - cy, "pine")
+	Props.pit_prop(g, Vector3(22.43, cy, 18.2), 0.0, 2.85, top - cy, "pine")
 	Props.cable(g, Vector3(23.8, top - 0.1, 20.3), Vector3(21.1, top - 0.1, 18.0), 0.08, 0.02, 8)
 	Props.cable(g, Vector3(21.1, top - 0.1, 18.0), Vector3(21.1, top - 0.1, 15.0), 0.08, 0.02, 6)
 	Props.stencil(g, Vector3(20.86 + 0.16, cy + 1.6, 18.6), -90.0, "→ HELVETIA\nKELLER II", 30, Color(0.92, 0.92, 0.88, 0.55), 0.004)
