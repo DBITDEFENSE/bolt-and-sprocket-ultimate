@@ -543,8 +543,17 @@
   },
   "thompson": {
    "feel": {
-    "cam_pitch": 0.6,
-    "vm_back": 0.02,
+    "cam_pitch": 0.85,
+    "cam_yaw": 0.18,
+    "cam_keep": 0.5,
+    "cam_recover": 16.0,
+    "vm_spring": 26.0,
+    "vm_back": 0.026,
+    "vm_climb": 2.8,
+    "vm_roll": 1.2,
+    "shake": 0.05,
+    "fov_punch": 0.35,
+    "fire_db": -1.0,
     "eye_relief": 0.12,
     "ads_zoom": 0.9
    },

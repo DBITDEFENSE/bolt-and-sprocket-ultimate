@@ -238,6 +238,7 @@ func _finish() -> void:
 		if f != null:
 			f.store_string("\n".join(_rows) + "\n")
 	_busy = true
+	_fake.free()        # never entered the tree, so nothing else frees it
 	get_tree().quit(_fails)
 
 
