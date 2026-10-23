@@ -234,6 +234,7 @@ func _do_ui() -> void:
 	_holder = WeaponHolder.new()
 	_cam.add_child(_holder)
 	_holder.setup(_fake)
+	_fake.weapons = _holder
 	var ids: Array[int] = [1]
 	Economy.reset(ids)
 	Economy.grant(1, 6000)
@@ -259,7 +260,8 @@ func _do_ui() -> void:
 		await _frames(40)
 		var img: Image = await _grab()
 		img.save_png(_out.path_join("bench_ui_%02d.png" % i))
-		_ui.queue_free()
+		if is_instance_valid(_ui):
+			_ui.queue_free()
 		await _frames(2)
 	GameState.power_on = false
 	print("[kit_shots] saved %d bench screens" % states.size())

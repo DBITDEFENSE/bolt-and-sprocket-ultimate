@@ -158,6 +158,10 @@ const FIRE: Color = Color(1.0, 0.55, 0.22)
 const BRAZIERS: Array = [["Quay", Vector3(29.6, 0, 23.0)], ["QuayBunker", Vector3(16.6, 0, 27.6)], ["CraneBay", Vector3(50.9, 0, 52.6)]]
 ## Coke stoves (lighting pass T-063): [name, floor pos, yaw so local -Z (the fire door) faces the room].
 const STOVES: Array = [["Workshop", Vector3(61.0, 0, 27.8), 90.0], ["WorkshopNW", Vector3(33.0, 0, 2.2), -90.0]]
+## The Armorer's Bench (UPDATE_04 section 6, T-068; the order names no Totenhafen spot, so it goes near spawn like the
+## other maps): [floor position against the wall, yaw so local -Z faces the quay]. On the harbourmaster's hut's
+## south face, east of its window and sign, facing the spawn.
+const ARMORERS_BENCH: Array = [Vector3(16.3, 0, 17.0 + T * 0.5 + 0.01), 180.0]
 const POWER_GAIN: float = 2.2
 const LAMP_GAIN: float = 1.7
 
@@ -199,6 +203,8 @@ func _initialize() -> void:
 	for ab: Array in AMMO_BOXES:   # the ammo boxes' footprints, so the navmesh is cut round them (hidden: NavBlock*)
 		var ah: Vector3 = Vector3(0.52, 0, 0.3) if absf(float(ab[2])) != 90.0 else Vector3(0.3, 0, 0.52)
 		box(geo, "NavBlock_Ammo_" + str(ab[0]), (ab[1] as Vector3) - ah, (ab[1] as Vector3) + ah + Vector3(0, 0.62, 0), "metal")
+	var bp: Vector3 = ARMORERS_BENCH[0]   # the Armorer's Bench: 0.72 m out from the hut, 1.5 m along it
+	box(geo, "NavBlock_ArmorersBench", bp + Vector3(-0.75, 0, 0), bp + Vector3(0.75, 0.9, 0.72), "metal")
 	for sv: Array in STOVES:   # the coke stoves' footprints
 		box(geo, "NavBlock_Stove_" + str(sv[0]), (sv[1] as Vector3) - Vector3(0.5, 0, 0.5), (sv[1] as Vector3) + Vector3(0.5, 1.1, 0.5), "metal")
 	for br: Array in BRAZIERS:   # the fire barrels' footprints (dressed in build_dressing)
@@ -2325,6 +2331,7 @@ func build_gameplay() -> void:
 	_node("res://gravelight/world/crucible.gd", "Crucible", {"needs_power": true}, Vector3(7.0, SY, 40.0), 180.0)
 	for ab2: Array in AMMO_BOXES:
 		_node("res://gravelight/world/ammo_box.gd", "AmmoBox_" + str(ab2[0]), {"box_name": str(ab2[0]).to_snake_case()}, ab2[1], float(ab2[2]))
+	_node("res://gravelight/world/armorers_bench.gd", "ArmorersBench", {}, ARMORERS_BENCH[0], float(ARMORERS_BENCH[1]))
 	var cart: Node3D = _node("res://gravelight/world/trap_ore_cart.gd", "Trap_Trolley", {"track_start": Vector3(0, 0, 0), "track_end": Vector3(0, 0, 26)}, Vector3(34, 0, 27), 90.0)
 	_node("res://gravelight/world/trap_lever.gd", "Lever_Trolley", {"trap_path": NodePath("../" + cart.name), "trap_id": &"ore_cart"}, Vector3(48.0, 0, 29.6), 0.0)
 	var wire: Node3D = _node("res://gravelight/world/trap_live_wire.gd", "Trap_Grille", {"size": Vector3(6.0, 2.6, 0.6)}, Vector3(49, LY, 50.9), 0.0)

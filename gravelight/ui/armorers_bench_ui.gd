@@ -166,17 +166,21 @@ func _build_scene() -> void:
 	_vp.add_child(env)
 	var root: Node3D = Node3D.new()
 	_vp.add_child(root)
-	# the bench top and the vise (the pistol's frame sits between the jaws at y 0..0.03)
-	Props.block(root, Vector3(-0.6, -0.17, -0.5), Vector3(0.6, -0.12, 0.6), "furniture")
-	Props.block(root, Vector3(-0.07, -0.12, -0.2), Vector3(0.07, -0.06, -0.02), "machine_green")
-	for s: float in [-1.0, 1.0]:
-		Props.block(root, Vector3(s * 0.013, -0.06, -0.15), Vector3(s * 0.06, 0.012, -0.06), "machine_green")
-		Props.block(root, Vector3(s * 0.0125, -0.02, -0.148), Vector3(s * 0.0175, 0.014, -0.062), "leather")
-	Props.strut(root, Vector3(0.06, -0.03, -0.1), Vector3(0.2, -0.03, -0.1), 0.012, "steel", true)
-	Props.strut(root, Vector3(0.2, -0.08, -0.1), Vector3(0.2, 0.02, -0.1), 0.01, "steel", true)
+	# the bench top and the vise: a column on the bench, two leather-faced jaws gripping the pistol's dust cover
+	# (model z -0.145..-0.065, y below 0.012); the grip and anything under it hang free behind the column
+	Props.block(root, Vector3(-0.6, -0.36, -0.6), Vector3(0.6, -0.31, 0.6), "furniture")
+	Props.block(root, Vector3(-0.05, -0.31, -0.26), Vector3(0.05, -0.27, -0.03), "machine_green")
+	Props.block(root, Vector3(-0.032, -0.27, -0.2), Vector3(0.032, -0.075, -0.07), "machine_green")
+	for s2: float in [-1.0, 1.0]:
+		var x0: float = 0.0125 * s2
+		var x1: float = 0.034 * s2
+		Props.block(root, Vector3(minf(x0, x1), -0.075, -0.15), Vector3(maxf(x0, x1), 0.012, -0.06), "machine_green")
+		Props.block(root, Vector3(minf(x0, x0 + 0.004 * s2), -0.03, -0.148), Vector3(maxf(x0, x0 + 0.004 * s2), 0.013, -0.062), "leather")
+	Props.strut(root, Vector3(0.034, -0.03, -0.105), Vector3(0.16, -0.03, -0.105), 0.01, "steel", true)
+	Props.strut(root, Vector3(0.16, -0.09, -0.105), Vector3(0.16, 0.03, -0.105), 0.008, "steel", true)
 	for k: int in 3:
-		Props.obox(root, Vector3(-0.25 + k * 0.03, -0.115, 0.25), Vector3(0.008, 0.008, 0.14), "steel", Vector3(0, 12 - k * 9, 0))
-	Props.cyl(root, Vector3(0.3, -0.07, 0.3), 0.04, 0.1, "red_paint")
+		Props.obox(root, Vector3(-0.25 + k * 0.03, -0.305, 0.22), Vector3(0.008, 0.008, 0.14), "steel", Vector3(0, 12 - k * 9, 0))
+	Props.cyl(root, Vector3(0.3, -0.26, 0.28), 0.04, 0.1, "red_paint")
 	_pivot = Node3D.new()
 	root.add_child(_pivot)
 	var key: SpotLight3D = SpotLight3D.new()
@@ -185,7 +189,7 @@ func _build_scene() -> void:
 	key.spot_range = 3.0
 	key.spot_angle = 38.0
 	key.shadow_enabled = true
-	key.position = Vector3(0.25, 0.75, 0.2)
+	key.position = Vector3(0.3, 0.6, 0.25)
 	root.add_child(key)
 	key.look_at(Vector3(0, 0, 0.05), Vector3.UP)
 	var rim: OmniLight3D = OmniLight3D.new()
@@ -195,7 +199,7 @@ func _build_scene() -> void:
 	rim.position = Vector3(-0.5, 0.25, -0.4)
 	root.add_child(rim)
 	_cam = Camera3D.new()
-	_cam.fov = 42.0
+	_cam.fov = 38.0
 	_cam.near = 0.02
 	root.add_child(_cam)
 	_cam.current = true
@@ -232,7 +236,7 @@ func _rebuild_gun() -> void:
 	_gun_len = front + back
 	_pivot.position = Vector3(0, 0, (back - front) * 0.5 + 0.0)
 	_gun.position = -_pivot.position
-	_orbit = clampf(0.5 + _gun_len * 0.75, 0.55, 1.05)
+	_orbit = clampf(0.3 + _gun_len * 0.8, 0.42, 1.0)
 
 
 func _process(delta: float) -> void:
@@ -240,15 +244,19 @@ func _process(delta: float) -> void:
 			or GameState.phase != GameState.Phase.PLAYING:
 		queue_free()
 		return
-	var a: float = Time.get_ticks_msec() * 0.00032
-	var c: Vector3 = _pivot.position + Vector3(0, -0.02, 0)
-	_cam.position = c + Vector3(sin(a) * _orbit, 0.16 + 0.05 * sin(a * 0.7), cos(a) * _orbit)
+	_orbit_t += delta
+	var a: float = orbit_phase + _orbit_t * 0.32
+	var c: Vector3 = _pivot.position + Vector3(0, -0.035, 0)
+	_cam.position = c + Vector3(sin(a) * _orbit, 0.1 + 0.04 * sin(a * 0.7), cos(a) * _orbit)
 	_cam.look_at(c, Vector3.UP)
 	if _bump_t > 0.0:
 		_bump_t -= delta
 
 
 var _bump_t: float = 0.0
+var _orbit_t: float = 0.0
+## Where the orbit starts (radians; -PI/2 = the pistol's left side, the side the viewmodel shows).
+var orbit_phase: float = -1.75
 
 
 # ================================================================== refresh
