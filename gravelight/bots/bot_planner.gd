@@ -1,12 +1,10 @@
 class_name BotPlanner
 extends Node
 ## The objective planner of one AI teammate (bots.json "local_ai"), a child of its BotBrain. Every
-## `decide_every_s` it lists what the bot could set out to do right now (BotPlanner.gather):
-##   the map's easter egg (every active step of every loaded quest, read from the QuestManager: pick up notes /
-##   radios / parts / items, tune the radio, plug the switchboard, attune pylons, light the Chapel bell and hold
-##   the Chapel for the Foreman, the altar, ring the Four Bells in order, pull the crate for the drummer and shoot
-##   him, kill with the Totenglocke at the heart, start and hold the Heartstorm), the power, a door that blocks one
-##   of those, the usual shopping (perks, wall guns, ammo, doors, the Crucible, boards), and sticking with the team.
+## `decide_every_s` it lists what the bot could set out to do right now (BotPlanner.gather): the power, the usual
+## shopping (perks, wall guns, ammo, doors, the Crucible, boards), and sticking with the team. The easter egg moved
+## out in Update 04 (T-067): every bot can work it now through BotEE / BotEEHub under the "Bot Easter-Egg Help"
+## setting (the step list became the quest data's bot_task blocks), so this planner no longer lists egg steps.
 ## Each option has a score. In mode "local" a local LLM (LocalAI, Ollama) reads a short summary of the match and
 ## the option list and picks one id (structured output, the ids as an enum); otherwise, and whenever the model is
 ## offline, busy past its timeout or answers nonsense, the highest score wins. The pick becomes `directive`, which
@@ -29,8 +27,6 @@ var _t: float = 1.0
 var _failed: Dictionary = {}          # option id -> squad time until it may be picked again
 var _speak_t: float = 0.0
 var _announced: bool = false
-var _nodes: Array[Node] = []          # quest objects without a group (notes, pickups, altar, radio...)
-var _nodes_t: float = -INF
 
 
 func setup(b: BotBrain, s: BotSquad, llm: bool) -> void:
@@ -200,7 +196,7 @@ static func reply_schema(ids: Array) -> Dictionary:
 
 
 const SYSTEM_PROMPT: String = """You are %s, a survivor in GRAVELIGHT, a round-based co-op zombie game like Call of Duty Zombies, fighting next to a human teammate. You decide what you set out to do next; your body handles walking, aiming and shooting, and always fights back, revives and flees on its own.
-Your goals, in order: stay alive and keep the team alive; finish the map's easter egg quest, one step at a time; turn the power on; open doors that block the quest; buy perks and better guns with your own Scrip; rebuild boards.
+Your goals, in order: stay alive and keep the team alive; turn the power on; buy perks and better guns with your own Scrip; rebuild boards. The easter egg is handled by the squad's easter-egg help, not by you.
 Keep your current objective unless it is finished, impossible, or a clearly better one appeared. Regroup with the team when the human is hurt or swarmed. Do not spend Scrip the next quest step needs.
 Each option shows a suggested priority score; higher is usually better.
 Reply only with JSON: {"choice": "<one option id>", "say": "<a short in-character remark, at most 12 words>"}."""
@@ -268,10 +264,6 @@ func _state_lines() -> PackedStringArray:
 ## Everything the bot could set out to do now, best score first, at most max_options (the current one kept).
 func gather() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
-	if squad.time() - _nodes_t > 8.0:
-		_nodes_t = squad.time()
-		_nodes = squad.map.find_children("*", "Interactable", true, false)
-	_egg_options(out)
 	_power_option(out)
 	var me: Vector3 = brain.player.global_position
 	for c: Dictionary in brain.errand_candidates(me, 6.0):
@@ -312,184 +304,6 @@ func _egg_score() -> float:
 
 func _dist_cost(n: Node3D) -> float:
 	return brain.flat_distance(n.global_position) * 0.25
-
-
-func _egg_options(out: Array[Dictionary]) -> void:
-	var qids: Array[StringName] = QuestManager.quest_ids()
-	for qi: int in qids.size():
-		var qid: StringName = qids[qi]
-		if QuestManager.is_complete(qid):
-			continue
-		var base: float = _egg_score() - (0.0 if qi == 0 else 18.0)   # the first quest file is the main egg
-		var qname: String = QuestManager.display_name_of(qid)
-		for step: Variant in QuestManager.steps_of(qid):
-			var sd: Dictionary = step as Dictionary
-			var sid: StringName = StringName(str(sd["id"]))
-			if QuestManager.is_active(qid, sid):
-				_step_options(out, qid, sid, sd, base, "Easter egg \"%s\"" % qname)
-	# quest items lying about (the Nachtglas shard after the drummer is shot)
-	for n: Node in _nodes:
-		var qp: QuestPickup = n as QuestPickup
-		if qp != null and is_instance_valid(qp) and qp.item_id != &"" and qp.is_visible_in_tree() and qp.can_interact(brain.player):
-			_use_option(out, "egg:item:%s" % qp.name, qp, _egg_score() + 20.0, "Easter egg: pick up %s" % qp.label, {})
-
-
-## The options for one active quest step, by step type.
-func _step_options(out: Array[Dictionary], qid: StringName, sid: StringName, step: Dictionary, base: float, tag: String) -> void:
-	var p: Dictionary = step.get("params", {})
-	var ctx: Dictionary = {"qid": String(qid), "sid": String(sid)}
-	var me: Player = brain.player
-	match str(step.get("type", "")):
-		"collect":
-			var t: StringName = StringName(str(p.get("tag", "")))
-			var got: Variant = QuestManager.progress(qid, sid)
-			var have: int = (got as Array).size() if got is Array else 0
-			for n: Node3D in _collectables(t, got if got is Array else []):
-				_use_option(out, "egg:%s:%s" % [sid, n.name], n, base, "%s: pick up %s (%d/%d found)" % [tag, _thing_name(n), have, int(p.get("count", 1))], ctx)
-		"sequence":
-			var target: StringName = StringName(str(p.get("target", "")))
-			if target == &"four_bells":
-				var bells: Dictionary = {}
-				for b: Node in get_tree().get_nodes_in_group(&"quest_bells"):
-					var qb: QuestBell = b as QuestBell
-					if qb.kind == &"small" and qb.visible:
-						bells[String(qb.note)] = qb
-				if not bells.is_empty():
-					var first: Node3D = bells.values()[0]
-					var o: Dictionary = {"id": "egg:%s" % sid, "kind": "shoot_seq", "node": first, "bells": bells, "vantages": {},
-						"score": base + 5.0, "label": "%s: ring the Four Bells in the music box's order" % tag, "extra_s": 120.0}
-					o.merge(ctx)
-					out.append(o)
-				return
-			for n2: Node in _nodes:
-				var hit: bool = (n2 is FieldRadio and (n2 as FieldRadio).quest_target == target) or (n2 is Switchboard and (n2 as Switchboard).target == target)
-				if not hit or not is_instance_valid(n2):
-					continue
-				var what: String = "tune the radio to the notes' frequencies" if n2 is FieldRadio else "plug the radio code into the switchboard"
-				_use_option(out, "egg:%s" % sid, n2 as Node3D, base + 5.0, "%s: %s" % [tag, what], ctx, "radio" if n2 is FieldRadio else "switchboard")
-		"interact":
-			var target2: StringName = StringName(str(p.get("target", "")))
-			if not QuestManager.interact_ready(target2):
-				return
-			var node: Node3D = _interact_node(target2)
-			if node != null:
-				_use_option(out, "egg:%s" % sid, node, base + 5.0, "%s: use the %s" % [tag, _thing_name(node)], ctx)
-		"build":
-			if BuildablePart.parts_held() < 3:
-				for n3: Node in get_tree().get_nodes_in_group(&"buildable_parts"):
-					var bp: BuildablePart = n3 as BuildablePart
-					if bp.visible and bp.can_interact(me):
-						_use_option(out, "egg:%s:%s" % [sid, bp.name], bp, base, "%s: pick up %s (%d/3)" % [tag, BuildablePart.NAMES.get(bp.part_id, "a part"), BuildablePart.parts_held()], ctx)
-			else:
-				for n4: Node in get_tree().get_nodes_in_group(&"workbenches"):
-					var wb: Workbench = n4 as Workbench
-					if not wb.built and wb.can_interact(me):
-						_use_option(out, "egg:%s" % sid, wb, base + 5.0, "%s: build the %s at the workbench" % [tag, String(wb.buildable_id).capitalize()], ctx)
-		"flag":
-			var flag: String = str(p.get("flag", ""))
-			if flag == "power_on":
-				return   # the power option carries the egg bonus (_power_option)
-			if flag == "core_vault_open":
-				for n5: Node in get_tree().get_nodes_in_group(&"pylons"):
-					var py: Pylon = n5 as Pylon
-					if py.state == Pylon.State.CHARGING:
-						var oh: Dictionary = {"id": "egg:%s:%s" % [sid, py.name], "kind": "hold", "node": py, "cond": "pylon",
-							"pos": brain._snap(py.global_position), "radius": py.radius * 0.45, "extra_s": 90.0,
-							"score": base + 12.0 - _dist_cost(py), "label": "%s: stand in the charging pylon's ring" % tag}
-						oh.merge(ctx)
-						out.append(oh)
-					elif py.can_interact(me) and Economy.get_scrip(me.player_id) >= int(Pylon.cfg().get("cost", 1500)) and _human_near(py.global_position, 22.0):
-						# a pylon is a 45 s holdout with doubled spawns that holds the round open: only with the
-						# human close by, never alone across the map
-						_use_option(out, "egg:%s:%s" % [sid, py.name], py, base, "%s: attune a Resonance Pylon with %s (%d Scrip, then hold its ring)" % [tag, Net.display_name(squad.human().player_id), int(Pylon.cfg().get("cost", 1500))], ctx)
-		"kill_condition":
-			_chapel_options(out, qid, sid, p, base, tag, ctx)
-		"chase":
-			var drummers: Array[Node] = get_tree().get_nodes_in_group(&"quest_drummers")
-			if not drummers.is_empty():
-				var od: Dictionary = {"id": "egg:%s:shoot" % sid, "kind": "shoot_moving", "node": drummers[0], "score": base + 30.0,
-					"label": "%s: shoot Herr Tamtam before he marches off" % tag, "extra_s": 0.0}
-				od.merge(ctx)
-				out.append(od)
-				return
-			var crate: MysteryCrate = _current_crate()
-			if crate != null and Economy.get_scrip(me.player_id) >= CrateManager.cost() + int(_cfg.get("crate_reserve_scrip", 250)):
-				_use_option(out, "egg:%s:crate" % sid, crate, base - 6.0, "%s: pull the Requisition Crate until Herr Tamtam hops out (%d Scrip)" % [tag, CrateManager.cost()], ctx, "crate")
-		"kill_count":
-			var weps: Array = p.get("weapon", []) if p.get("weapon") is Array else [p.get("weapon", "")]
-			var held: String = ""
-			for w: WeaponInstance in me.weapons.slots:
-				if weps.has(String(w.id)) or weps.has(String(w.base_id())):
-					held = String(w.base_id())
-			if held == "":
-				for n6: Node in get_tree().get_nodes_in_group(&"workbenches"):
-					var wb2: Workbench = n6 as Workbench
-					if wb2.built and wb2.can_interact(me):
-						_use_option(out, "egg:%s:take" % sid, wb2, base + 5.0, "%s: take the %s from the workbench" % [tag, String(weps[0]).capitalize()], ctx)
-				return
-			var c: Array = p.get("center", [0, 0, 0])
-			var center: Vector3 = Vector3(float(c[0]), float(c[1]), float(c[2]))
-			var ok: Dictionary = {"id": "egg:%s" % sid, "kind": "hold", "node": squad.map, "cond": "step", "weapon": held,
-				"pos": brain._snap(center), "radius": minf(float(p.get("radius", 15.0)) * 0.4, 5.0), "extra_s": 240.0,
-				"score": base + 5.0, "label": "%s: kill zombies with the %s near the heart (%s)" % [tag, held.capitalize(), str(QuestManager.progress(qid, sid))]}
-			ok.merge(ctx)
-			out.append(ok)
-		"holdout":
-			if not QuestManager.holdout_state(qid, sid).is_empty():
-				var pts: Array = p.get("points", [])
-				var sum: Vector3 = Vector3.ZERO
-				for pt: Variant in pts:
-					sum += Vector3(float(pt[0]), float(pt[1]), float(pt[2]))
-				var mid: Vector3 = sum / maxf(1.0, float(pts.size())) if not pts.is_empty() else brain.player.global_position
-				var oh2: Dictionary = {"id": "egg:%s:hold" % sid, "kind": "hold", "node": squad.map, "cond": "holdout",
-					"pos": brain._snap(mid), "radius": 5.0, "extra_s": float(p.get("duration", 120.0)) + 30.0,
-					"score": base + 30.0, "label": "%s: hold the zone through the holdout" % tag}
-				oh2.merge(ctx)
-				out.append(oh2)
-				return
-			var st: StringName = StringName(str(p.get("start_target", "")))
-			if QuestManager.interact_ready(st):
-				var node2: Node3D = _interact_node(st)
-				if node2 != null:
-					_use_option(out, "egg:%s:start" % sid, node2, base - 5.0, "%s: begin the holdout at the %s (%d s, a hard fight)" % [tag, _thing_name(node2), int(p.get("duration", 120.0))], ctx)
-
-
-## Step 4 of the Requiem shape: light the Chapel bell with an upgraded gun, then hold the Chapel for the Foreman.
-func _chapel_options(out: Array[Dictionary], _qid: StringName, sid: StringName, p: Dictionary, base: float, tag: String, ctx: Dictionary) -> void:
-	var flag: StringName = StringName(str(p.get("world_flag", "")))
-	var bell: QuestBell = null
-	for b: Node in get_tree().get_nodes_in_group(&"quest_bells"):
-		if (b as QuestBell).kind == &"chapel":
-			bell = b as QuestBell
-	if bell == null:
-		return
-	var vp: Vector3 = brain.vantage_for(bell.global_position)
-	if vp == Vector3.INF:
-		_blocked(out, bell, base - 4.0, tag)
-		return
-	if flag != &"" and GameState.has_flag(flag):
-		var o: Dictionary = {"id": "egg:%s:hold" % sid, "kind": "hold", "node": bell, "cond": "chapel", "pos": vp, "radius": 4.0,
-			"extra_s": 100.0, "score": base + 20.0, "label": "%s: hold the lit Chapel and kill the %s there" % [tag, str(p.get("enemy", "boss")).capitalize()]}
-		o.merge(ctx)
-		out.append(o)
-		return
-	var has_up: bool = false
-	for w: WeaponInstance in brain.player.weapons.slots:
-		has_up = has_up or w.upgraded
-	if has_up:
-		var o2: Dictionary = {"id": "egg:%s:bell" % sid, "kind": "shoot", "node": bell, "vantage": vp, "need_upgraded": true,
-			"cond": "bell_lit", "score": base + 5.0 - _dist_cost(bell), "label": "%s: light the Chapel bell with an upgraded gun" % tag}
-		o2.merge(ctx)
-		out.append(o2)
-		return
-	# no upgraded gun yet: the Crucible first, early if need be
-	var econ: Dictionary = GLData.table("economy")
-	var cost: int = Crucible.price_for(&"upgrade", econ)
-	if Economy.get_scrip(brain.player.player_id) >= cost and brain._upgradeable_slot() >= 0:
-		var cr: Crucible = brain.crucible_for_me(INF, brain.player.global_position)
-		if cr != null:
-			out.append({"id": "crucible:%s" % cr.name, "kind": "crucible", "node": cr, "score": base,
-				"label": "%s: upgrade a gun at the Crucible (%d Scrip) to light the Chapel bell" % [tag, cost]})
 
 
 ## A use/radio/switchboard/crate option at `node` (reachable stand point required), or the door in the way.
@@ -542,14 +356,6 @@ func _power_option(out: Array[Dictionary]) -> void:
 			_use_option(out, "power:%s" % ps.name, ps, score, "throw the power switch (perks, the Crucible and powered doors need it)", {})
 
 
-## The human is standing within `r` metres (flat) of `p`.
-func _human_near(p: Vector3, r: float) -> bool:
-	var h: Player = squad.human()
-	if h == null or h.spectating or h.downed:
-		return false
-	return Vector2(h.global_position.x - p.x, h.global_position.z - p.z).length() <= r
-
-
 func _follow_option() -> Dictionary:
 	var h: Player = squad.human()
 	var score: float = float(_cfg.get("follow_score", 12.0))
@@ -566,59 +372,3 @@ func _follow_option() -> Dictionary:
 			score += 20.0
 		label = "regroup with %s and fight (%d zombies near them, health %d)" % [Net.display_name(h.player_id), near, int(h.hp)]
 	return {"id": "follow", "kind": "follow", "node": h if h != null else brain.player, "score": score, "label": label}
-
-
-func _collectables(tag: StringName, got: Array) -> Array[Node3D]:
-	var out: Array[Node3D] = []
-	var me: Player = brain.player
-	for n: Node in _nodes:
-		if not is_instance_valid(n):
-			continue
-		if n is QuestNote and (n as QuestNote).tag == tag and (n as QuestNote).can_interact(me):
-			out.append(n as Node3D)
-		elif n is QuestPickup and (n as QuestPickup).collect_tag == tag and (n as QuestPickup).can_interact(me) and (n as QuestPickup).is_visible_in_tree():
-			out.append(n as Node3D)
-		elif n is QuestRadio and tag == &"quest_radio" and (n as QuestRadio).can_interact(me) and not got.has((n as QuestRadio).radio_id):
-			out.append(n as Node3D)
-	return out
-
-
-func _interact_node(target: StringName) -> Node3D:
-	for n: Node in _nodes:
-		if not is_instance_valid(n):
-			continue
-		match target:
-			&"altar":
-				if n is AltarReliquary:
-					return n as Node3D
-			&"phonograph":
-				if n is Phonograph:
-					return n as Node3D
-			&"crucible_shard", &"crucible_heartstorm":
-				if n is Crucible:
-					return n as Node3D
-		if n is QuestPickup and (n as QuestPickup).interact_target == target and (n as QuestPickup).can_interact(brain.player):
-			return n as Node3D
-	return null
-
-
-func _current_crate() -> MysteryCrate:
-	for s: Node in get_tree().get_nodes_in_group(&"crate_spots"):
-		var c: MysteryCrate = s as MysteryCrate
-		if c != null and c.spot_index == CrateManager.location_index and c.phase == MysteryCrate.Phase.CLOSED:
-			return c
-	return null
-
-
-static func _thing_name(n: Node) -> String:
-	if n is QuestNote:
-		return "radio note %s" % (n as QuestNote).numeral
-	if n is QuestPickup:
-		return (n as QuestPickup).label
-	if n is QuestRadio:
-		return "the calling radio"
-	if n is AltarReliquary:
-		return "altar reliquary"
-	if n is Crucible:
-		return "Crucible"
-	return String(n.name).to_snake_case().replace("_", " ")

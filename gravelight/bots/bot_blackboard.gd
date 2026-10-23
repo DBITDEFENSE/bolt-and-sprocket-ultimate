@@ -12,6 +12,7 @@ extends RefCounted
 ##   powerups      instance id -> {id, pos, t, node}
 ##   pings         [{pos, kind, text, t, by}] (the callout markers, newest last)
 ##   roles         pid -> "anchor" / "runner" / "medic" / "builder"
+##   ee_known      what the squad has discovered about the easter egg (BotEEKnowledge, Update 04 section 5)
 
 var memory_s: float = 4.0
 var zombies: Dictionary = {}
@@ -22,6 +23,7 @@ var danger_zones: Array = []
 var powerups: Dictionary = {}
 var pings: Array = []
 var roles: Dictionary = {}
+var ee_known: BotEEKnowledge = null
 
 
 # ---------------------------------------------------------------- zombie memory

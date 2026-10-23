@@ -71,6 +71,10 @@ func _gameplay() -> void:
 	var skill_labels: PackedStringArray = PackedStringArray(skill_ids.map(func(k: Variant) -> String: return str(k).capitalize()))
 	content.add_child(MenuKit.row("Bot Skill (AI teammates)", MenuKit.options(skill_labels, skill_cur,
 		func(i: int) -> void: GLSettings.set_value("bot_skill", str(skill_ids[i])))))
+	var ee_cur: int = maxi(0, BotEECatalog.MODES.find(BotEECatalog.mode_of(v)))
+	content.add_child(MenuKit.row("Bot Easter-Egg Help", MenuKit.options(BotEECatalog.MODE_LABELS, ee_cur,
+		func(i: int) -> void: GLSettings.set_value(BotEECatalog.SETTING, BotEECatalog.MODES[i]))))
+	content.add_child(MenuKit.para("Off: bots never touch easter-egg objects. When Asked: only steps you give them (Objectives tab, a map mark, the ping key). Full Partner: they work open steps alongside you and say what they're doing; the last steps wait for you.", 16, MenuKit.DIM))
 	var name_modes: PackedStringArray = ["real", "world"]
 	var ncur: int = maxi(0, name_modes.find(str(v.get("homage_names", "real"))))
 	content.add_child(MenuKit.row("Homage Names", MenuKit.options(PackedStringArray(["Real", "In-World"]), ncur,

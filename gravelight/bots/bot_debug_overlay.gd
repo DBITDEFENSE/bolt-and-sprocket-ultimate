@@ -2,7 +2,7 @@ class_name BotDebugOverlay
 extends Node3D
 ## The AI debug overlay (Update 03 section 9; dev console `ai_debug 1`, `ai_debug heat`, `ai_debug panel`,
 ## `ai_debug 0`). Above each bot: its current action, its top three action scores, its role, its target; its
-## path line (the locomotion layer's debug_path()) and a line to its target. A blackboard panel lists the claimed
+## path line (the locomotion layer's debug_path()) and a line to its target; its easter-egg task (T-067). A blackboard panel lists the claimed
 ## tasks, the known zombies, the route and the roles. The threat heatmap colours the floor round each bot by the
 ## threat its perception knows of (green calm .. red).
 
@@ -101,6 +101,8 @@ func _process(delta: float) -> void:
 	if panel_on:
 		var lines: PackedStringArray = ["BLACKBOARD (t %.0fs)" % squad.time()]
 		lines.append_array(squad.blackboard.describe(squad.time()))
+		if squad.ee != null:
+			lines.append_array(squad.ee.report())
 		var ts: Dictionary = squad.think_stats()
 		lines.append("brain cost %.3f ms/bot/frame, think %.3f ms" % [float(ts["ms_per_bot_frame"]), float(ts["ms_per_think"])])
 		_panel_label.text = "\n".join(lines)
@@ -115,8 +117,12 @@ static func label_text(b: BotBrain) -> String:
 	var tgt: String = "-"
 	if b.aim != null and b.aim.target != null and is_instance_valid(b.aim.target):
 		tgt = "%s %.0fm%s" % [b.aim.target.enemy_id, b.aim.target.global_position.distance_to(b.player.global_position), " head" if b.aim.aim_head else ""]
-	return "%s %s [%s] -> %s  threat %.2f\n%s" % [Net.display_name(b.player.player_id), b.action.to_upper(), b.role if b.role != "" else "-",
-		tgt, b.perception.pressure if b.perception != null else 0.0, "  ".join(tops)]
+	var ee_line: String = ""
+	if b.ee != null and b.ee.active():
+		var d: Dictionary = b.ee.describe()
+		ee_line = "\nEE %s/%s: %s" % [str(d.get("quest_id", "")), str(d.get("step_id", "")), str(d.get("label", ""))]
+	return "%s %s [%s] -> %s  threat %.2f\n%s%s" % [Net.display_name(b.player.player_id), b.action.to_upper(), b.role if b.role != "" else "-",
+		tgt, b.perception.pressure if b.perception != null else 0.0, "  ".join(tops), ee_line]
 
 
 func _draw_lines() -> void:

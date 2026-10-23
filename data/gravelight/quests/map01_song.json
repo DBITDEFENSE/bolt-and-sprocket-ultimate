@@ -7,6 +7,7 @@
     {
       "id": "s1_cylinders",
       "type": "collect",
+      "bot_task": {"type": "collect", "targets": {"class": "QuestPickup", "where": {"collect_tag": "cylinder"}}, "id_prop": "name", "what": "the phonograph cylinders", "ping": "CYLINDER"},
       "params": {
         "tag": "cylinder",
         "count": 3
@@ -16,6 +17,7 @@
     {
       "id": "s2_phonograph",
       "type": "interact",
+      "bot_task": {"player_only": "final", "target": {"class": "Phonograph"}, "what": "the phonograph"},
       "params": {
         "target": "phonograph"
       },

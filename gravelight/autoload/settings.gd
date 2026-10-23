@@ -44,6 +44,7 @@ var values: Dictionary = {
 	"bot_skill": "veteran",        # Bot Skill: recruit / veteran / elite (Update 03 section 7; bots.json skills + ai/skills.json)
 	"bot_local_ai": true,          # one bot runs on a local LLM (Ollama) and does the map's tasks and easter egg
 	"bot_bonus_perk": true,        # each bot gets one random bonus perk at match start (U02 section 5, bots.json bonus_perk)
+	"bot_ee_help": "ask",          # Bot Easter-Egg Help: off / ask (When Asked) / full (Full Partner) (Update 04 section 5, T-067)
 	"gore": "full",                # off / low / full: dismemberment and blood (MZ, T-041); the shatter VFX always shows
 	"homage_bosses": true,         # the homage bosses (HB1: the Cousins on Map 0 round 10); Off = those rounds play normally
 	"homage_names": "real",        # real / world: real first names on the title cards, bars and subtitles, or the in-world names only

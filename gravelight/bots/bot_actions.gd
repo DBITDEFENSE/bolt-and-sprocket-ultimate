@@ -3,7 +3,7 @@ extends RefCounted
 ## The utility actions' executors (Update 03 section 1): what a bot does each physics frame for the action the
 ## utility AI picked (bot_utility.gd, data/gravelight/ai/actions.json). Each executor tells the locomotion layer
 ## where to go (move_to / follow / hold / train / stop) and the aim layer whether it may fire; task actions (Buy,
-## Repair, Crate, Trap, Order, Objective) hand their errand to BotTasks. Movement HOW is the locomotion layer's;
+## Repair, Crate, Trap, Order, Objective) hand their errand to BotTasks; the easter-egg task (ee_task, T-067) runs in BotEE. Movement HOW is the locomotion layer's;
 ## this decides WHAT.
 
 var brain: BotBrain
@@ -59,6 +59,9 @@ func enter(id: String) -> void:
 			_powerup_t = 0.0
 		"buy", "repair", "crate", "resupply", "trap", "order", "objective":
 			brain.start_task(id)
+		"ee_task":
+			if not brain.task.is_empty():
+				brain.drop_task()
 
 
 ## Leaving an action: let go of what it held.
@@ -71,6 +74,9 @@ func exit(id: String) -> void:
 		"buy", "repair", "crate", "resupply", "trap", "order", "objective":
 			if not brain.task.is_empty():
 				brain.drop_task()
+		"ee_task":
+			if brain.ee != null:
+				brain.ee.on_exit()
 
 
 func run(id: String, delta: float) -> void:
@@ -93,6 +99,11 @@ func run(id: String, delta: float) -> void:
 			_task(id, delta)
 		"powerup":
 			_powerup(delta)
+		"ee_task":
+			if brain.ee != null:
+				brain.ee.run(delta)
+			else:
+				_idle(delta)
 		"follow":
 			_follow(delta)
 		"regroup":

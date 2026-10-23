@@ -5370,5 +5370,542 @@
     "Then if I ever see a backwards hook, I'll know it's his."
    ]
   ]
+ },
+ "DUT_SQ4_EE_ACK_01": {
+  "speaker": "DUT",
+  "category": "EE_ACK",
+  "text": "On it. Keep 'em off my back."
+ },
+ "DUT_SQ4_EE_ACK_COLLECT_01": {
+  "speaker": "DUT",
+  "category": "EE_ACK_COLLECT",
+  "text": "I'll go pick those up. Cover the windows."
+ },
+ "DUT_SQ4_EE_ACK_COLLECT_02": {
+  "speaker": "DUT",
+  "category": "EE_ACK_COLLECT",
+  "text": "Leave the scavenging to me."
+ },
+ "DUT_SQ4_EE_ACK_SHOOT_TARGET_01": {
+  "speaker": "DUT",
+  "category": "EE_ACK_SHOOT_TARGET",
+  "text": "I see it. Give me a clean shot."
+ },
+ "DUT_SQ4_EE_ACK_HOLD_ZONE_01": {
+  "speaker": "DUT",
+  "category": "EE_ACK_HOLD_ZONE",
+  "text": "I'll plant myself right there. Nobody moves me."
+ },
+ "DUT_SQ4_EE_ACK_CARRY_01": {
+  "speaker": "DUT",
+  "category": "EE_ACK_CARRY",
+  "text": "I'll haul it over. Don't let 'em jump me."
+ },
+ "DUT_SQ4_EE_ACK_INTERACT_SEQUENCE_01": {
+  "speaker": "DUT",
+  "category": "EE_ACK_INTERACT_SEQUENCE",
+  "text": "I'll work the dials. Holler if it gets hairy."
+ },
+ "DUT_SQ4_EE_ACK_KILL_WITH_WEAPON_01": {
+  "speaker": "DUT",
+  "category": "EE_ACK_KILL_WITH_WEAPON",
+  "text": "Bell gun and a crowd. Now we're talking."
+ },
+ "DUT_SQ4_EE_ACK_TURN_KEY_01": {
+  "speaker": "DUT",
+  "category": "EE_ACK_TURN_KEY",
+  "text": "I'm on my key. Say when."
+ },
+ "DUT_SQ4_EE_PLAYER_ONLY_01": {
+  "speaker": "DUT",
+  "category": "EE_PLAYER_ONLY",
+  "text": "That one's yours, partner. I'll watch your back."
+ },
+ "DUT_SQ4_EE_PROGRESS_01": {
+  "speaker": "DUT",
+  "category": "EE_PROGRESS",
+  "text": "Got one. Moving on."
+ },
+ "DUT_SQ4_EE_PROGRESS_02": {
+  "speaker": "DUT",
+  "category": "EE_PROGRESS",
+  "text": "That's another. Still at it."
+ },
+ "DUT_SQ4_EE_DONE_01": {
+  "speaker": "DUT",
+  "category": "EE_DONE",
+  "text": "Done. Whatever that was for."
+ },
+ "DUT_SQ4_EE_HANDOFF_01": {
+  "speaker": "DUT",
+  "category": "EE_HANDOFF",
+  "text": "Got it all set up. Last one's yours."
+ },
+ "DUT_SQ4_EE_CANT_01": {
+  "speaker": "DUT",
+  "category": "EE_CANT",
+  "text": "Can't do that one right now."
+ },
+ "DUT_SQ4_EE_CANT_INFO_01": {
+  "speaker": "DUT",
+  "category": "EE_CANT_INFO",
+  "text": "Wish I could. Nobody's told me how yet."
+ },
+ "DUT_SQ4_EE_CANT_FIND_01": {
+  "speaker": "DUT",
+  "category": "EE_CANT_FIND",
+  "text": "Haven't laid eyes on it yet. Show me where."
+ },
+ "DUT_SQ4_EE_CANT_RISKY_01": {
+  "speaker": "DUT",
+  "category": "EE_CANT_RISKY",
+  "text": "That could blow up on us. Your call, not mine."
+ },
+ "DUT_SQ4_EE_WAIT_PLAYER_01": {
+  "speaker": "DUT",
+  "category": "EE_WAIT_PLAYER",
+  "text": "This part needs you here. I'll wait."
+ },
+ "DUT_SQ4_EE_INTERRUPTED_01": {
+  "speaker": "DUT",
+  "category": "EE_INTERRUPTED",
+  "text": "Hold that thought. Got company."
+ },
+ "DUT_SQ4_EE_RESUME_01": {
+  "speaker": "DUT",
+  "category": "EE_RESUME",
+  "text": "Back to it."
+ },
+ "DUT_SQ4_EE_RESUME_02": {
+  "speaker": "DUT",
+  "category": "EE_RESUME",
+  "text": "Right. Where was I."
+ },
+ "PEG_SQ4_EE_ACK_01": {
+  "speaker": "PEG",
+  "category": "EE_ACK",
+  "text": "Leave it with me."
+ },
+ "PEG_SQ4_EE_ACK_COLLECT_01": {
+  "speaker": "PEG",
+  "category": "EE_ACK_COLLECT",
+  "text": "I'll collect them. Do keep the windows shut."
+ },
+ "PEG_SQ4_EE_ACK_COLLECT_02": {
+  "speaker": "PEG",
+  "category": "EE_ACK_COLLECT",
+  "text": "Fetching. Try not to miss me."
+ },
+ "PEG_SQ4_EE_ACK_SHOOT_TARGET_01": {
+  "speaker": "PEG",
+  "category": "EE_ACK_SHOOT_TARGET",
+  "text": "I have the mark. One clean shot."
+ },
+ "PEG_SQ4_EE_ACK_HOLD_ZONE_01": {
+  "speaker": "PEG",
+  "category": "EE_ACK_HOLD_ZONE",
+  "text": "I'll hold the spot. Bring them to me if you must."
+ },
+ "PEG_SQ4_EE_ACK_CARRY_01": {
+  "speaker": "PEG",
+  "category": "EE_ACK_CARRY",
+  "text": "I'll carry it across. Clear me a path."
+ },
+ "PEG_SQ4_EE_ACK_INTERACT_SEQUENCE_01": {
+  "speaker": "PEG",
+  "category": "EE_ACK_INTERACT_SEQUENCE",
+  "text": "Dials and wires. Finally, something I'm trained for."
+ },
+ "PEG_SQ4_EE_ACK_KILL_WITH_WEAPON_01": {
+  "speaker": "PEG",
+  "category": "EE_ACK_KILL_WITH_WEAPON",
+  "text": "Right weapon, right place. Send them in."
+ },
+ "PEG_SQ4_EE_ACK_TURN_KEY_01": {
+  "speaker": "PEG",
+  "category": "EE_ACK_TURN_KEY",
+  "text": "At my key. On your count."
+ },
+ "PEG_SQ4_EE_PLAYER_ONLY_01": {
+  "speaker": "PEG",
+  "category": "EE_PLAYER_ONLY",
+  "text": "That one is yours. I'll keep them off you."
+ },
+ "PEG_SQ4_EE_PROGRESS_01": {
+  "speaker": "PEG",
+  "category": "EE_PROGRESS",
+  "text": "One more accounted for."
+ },
+ "PEG_SQ4_EE_PROGRESS_02": {
+  "speaker": "PEG",
+  "category": "EE_PROGRESS",
+  "text": "Progress. Don't celebrate yet."
+ },
+ "PEG_SQ4_EE_DONE_01": {
+  "speaker": "PEG",
+  "category": "EE_DONE",
+  "text": "Done. Neatly, I might add."
+ },
+ "PEG_SQ4_EE_HANDOFF_01": {
+  "speaker": "PEG",
+  "category": "EE_HANDOFF",
+  "text": "Everything's set. The last move is yours."
+ },
+ "PEG_SQ4_EE_CANT_01": {
+  "speaker": "PEG",
+  "category": "EE_CANT",
+  "text": "Not possible just now, I'm afraid."
+ },
+ "PEG_SQ4_EE_CANT_INFO_01": {
+  "speaker": "PEG",
+  "category": "EE_CANT_INFO",
+  "text": "Not yet. We're missing the information, and I won't guess."
+ },
+ "PEG_SQ4_EE_CANT_FIND_01": {
+  "speaker": "PEG",
+  "category": "EE_CANT_FIND",
+  "text": "We haven't found it yet. Point me at it."
+ },
+ "PEG_SQ4_EE_CANT_RISKY_01": {
+  "speaker": "PEG",
+  "category": "EE_CANT_RISKY",
+  "text": "That could undo the whole thing. Say so and I'll do it."
+ },
+ "PEG_SQ4_EE_WAIT_PLAYER_01": {
+  "speaker": "PEG",
+  "category": "EE_WAIT_PLAYER",
+  "text": "This part wants you present. I'll wait."
+ },
+ "PEG_SQ4_EE_INTERRUPTED_01": {
+  "speaker": "PEG",
+  "category": "EE_INTERRUPTED",
+  "text": "Pausing. They've other plans for us."
+ },
+ "PEG_SQ4_EE_RESUME_01": {
+  "speaker": "PEG",
+  "category": "EE_RESUME",
+  "text": "Back to it."
+ },
+ "PEG_SQ4_EE_RESUME_02": {
+  "speaker": "PEG",
+  "category": "EE_RESUME",
+  "text": "Now. Where were we."
+ },
+ "DEA_SQ4_EE_ACK_01": {
+  "speaker": "DEA",
+  "category": "EE_ACK",
+  "text": "I got it, brother."
+ },
+ "DEA_SQ4_EE_ACK_COLLECT_01": {
+  "speaker": "DEA",
+  "category": "EE_ACK_COLLECT",
+  "text": "I'll go round 'em up. Keep those windows boarded."
+ },
+ "DEA_SQ4_EE_ACK_COLLECT_02": {
+  "speaker": "DEA",
+  "category": "EE_ACK_COLLECT",
+  "text": "Picking those up. Won't be long."
+ },
+ "DEA_SQ4_EE_ACK_SHOOT_TARGET_01": {
+  "speaker": "DEA",
+  "category": "EE_ACK_SHOOT_TARGET",
+  "text": "Lord, steady my hand. Taking the shot."
+ },
+ "DEA_SQ4_EE_ACK_HOLD_ZONE_01": {
+  "speaker": "DEA",
+  "category": "EE_ACK_HOLD_ZONE",
+  "text": "I'll stand right here like a fence post."
+ },
+ "DEA_SQ4_EE_ACK_CARRY_01": {
+  "speaker": "DEA",
+  "category": "EE_ACK_CARRY",
+  "text": "I'll tote it over. Heavy things are my ministry."
+ },
+ "DEA_SQ4_EE_ACK_INTERACT_SEQUENCE_01": {
+  "speaker": "DEA",
+  "category": "EE_ACK_INTERACT_SEQUENCE",
+  "text": "Let me at that machine. She'll talk to me."
+ },
+ "DEA_SQ4_EE_ACK_KILL_WITH_WEAPON_01": {
+  "speaker": "DEA",
+  "category": "EE_ACK_KILL_WITH_WEAPON",
+  "text": "Ring that bell, sweetheart. Bring 'em close."
+ },
+ "DEA_SQ4_EE_ACK_TURN_KEY_01": {
+  "speaker": "DEA",
+  "category": "EE_ACK_TURN_KEY",
+  "text": "Hand's on the key. Waiting on yours."
+ },
+ "DEA_SQ4_EE_PLAYER_ONLY_01": {
+  "speaker": "DEA",
+  "category": "EE_PLAYER_ONLY",
+  "text": "That's yours to do. I'll keep the wolves off."
+ },
+ "DEA_SQ4_EE_PROGRESS_01": {
+  "speaker": "DEA",
+  "category": "EE_PROGRESS",
+  "text": "There's one. Praise be."
+ },
+ "DEA_SQ4_EE_PROGRESS_02": {
+  "speaker": "DEA",
+  "category": "EE_PROGRESS",
+  "text": "Another one done. Keep it coming."
+ },
+ "DEA_SQ4_EE_DONE_01": {
+  "speaker": "DEA",
+  "category": "EE_DONE",
+  "text": "That's done. Amen."
+ },
+ "DEA_SQ4_EE_HANDOFF_01": {
+  "speaker": "DEA",
+  "category": "EE_HANDOFF",
+  "text": "She's ready. The last turn's yours."
+ },
+ "DEA_SQ4_EE_CANT_01": {
+  "speaker": "DEA",
+  "category": "EE_CANT",
+  "text": "Can't manage that one right now."
+ },
+ "DEA_SQ4_EE_CANT_INFO_01": {
+  "speaker": "DEA",
+  "category": "EE_CANT_INFO",
+  "text": "Not yet. I don't know the words to that hymn."
+ },
+ "DEA_SQ4_EE_CANT_FIND_01": {
+  "speaker": "DEA",
+  "category": "EE_CANT_FIND",
+  "text": "Haven't found it yet. Lead me to it."
+ },
+ "DEA_SQ4_EE_CANT_RISKY_01": {
+  "speaker": "DEA",
+  "category": "EE_CANT_RISKY",
+  "text": "That could bring the roof down on us. You say the word."
+ },
+ "DEA_SQ4_EE_WAIT_PLAYER_01": {
+  "speaker": "DEA",
+  "category": "EE_WAIT_PLAYER",
+  "text": "This part needs you with me."
+ },
+ "DEA_SQ4_EE_INTERRUPTED_01": {
+  "speaker": "DEA",
+  "category": "EE_INTERRUPTED",
+  "text": "Hold on now. Trouble first."
+ },
+ "DEA_SQ4_EE_RESUME_01": {
+  "speaker": "DEA",
+  "category": "EE_RESUME",
+  "text": "Back to it."
+ },
+ "DEA_SQ4_EE_RESUME_02": {
+  "speaker": "DEA",
+  "category": "EE_RESUME",
+  "text": "Alright. Back to the Lord's work."
+ },
+ "WRN_SQ4_EE_ACK_01": {
+  "speaker": "WRN",
+  "category": "EE_ACK",
+  "text": "Yes. I do it."
+ },
+ "WRN_SQ4_EE_ACK_COLLECT_01": {
+  "speaker": "WRN",
+  "category": "EE_ACK_COLLECT",
+  "text": "I find them. You hold the windows."
+ },
+ "WRN_SQ4_EE_ACK_COLLECT_02": {
+  "speaker": "WRN",
+  "category": "EE_ACK_COLLECT",
+  "text": "I bring them."
+ },
+ "WRN_SQ4_EE_ACK_SHOOT_TARGET_01": {
+  "speaker": "WRN",
+  "category": "EE_ACK_SHOOT_TARGET",
+  "text": "I see it. One shot."
+ },
+ "WRN_SQ4_EE_ACK_HOLD_ZONE_01": {
+  "speaker": "WRN",
+  "category": "EE_ACK_HOLD_ZONE",
+  "text": "I stand here. Nobody passes."
+ },
+ "WRN_SQ4_EE_ACK_CARRY_01": {
+  "speaker": "WRN",
+  "category": "EE_ACK_CARRY",
+  "text": "I carry it. Cover me."
+ },
+ "WRN_SQ4_EE_ACK_INTERACT_SEQUENCE_01": {
+  "speaker": "WRN",
+  "category": "EE_ACK_INTERACT_SEQUENCE",
+  "text": "I do the machine."
+ },
+ "WRN_SQ4_EE_ACK_KILL_WITH_WEAPON_01": {
+  "speaker": "WRN",
+  "category": "EE_ACK_KILL_WITH_WEAPON",
+  "text": "Good. Send them here."
+ },
+ "WRN_SQ4_EE_ACK_TURN_KEY_01": {
+  "speaker": "WRN",
+  "category": "EE_ACK_TURN_KEY",
+  "text": "My key. Tell me when."
+ },
+ "WRN_SQ4_EE_PLAYER_ONLY_01": {
+  "speaker": "WRN",
+  "category": "EE_PLAYER_ONLY",
+  "text": "This is yours. I watch."
+ },
+ "WRN_SQ4_EE_PROGRESS_01": {
+  "speaker": "WRN",
+  "category": "EE_PROGRESS",
+  "text": "One more."
+ },
+ "WRN_SQ4_EE_PROGRESS_02": {
+  "speaker": "WRN",
+  "category": "EE_PROGRESS",
+  "text": "Again. Good."
+ },
+ "WRN_SQ4_EE_DONE_01": {
+  "speaker": "WRN",
+  "category": "EE_DONE",
+  "text": "Done."
+ },
+ "WRN_SQ4_EE_HANDOFF_01": {
+  "speaker": "WRN",
+  "category": "EE_HANDOFF",
+  "text": "Ready. The last one is yours."
+ },
+ "WRN_SQ4_EE_CANT_01": {
+  "speaker": "WRN",
+  "category": "EE_CANT",
+  "text": "No. Not now."
+ },
+ "WRN_SQ4_EE_CANT_INFO_01": {
+  "speaker": "WRN",
+  "category": "EE_CANT_INFO",
+  "text": "We do not know it yet. I don't guess."
+ },
+ "WRN_SQ4_EE_CANT_FIND_01": {
+  "speaker": "WRN",
+  "category": "EE_CANT_FIND",
+  "text": "Not found yet. Show me."
+ },
+ "WRN_SQ4_EE_CANT_RISKY_01": {
+  "speaker": "WRN",
+  "category": "EE_CANT_RISKY",
+  "text": "This can go wrong. You say, I do."
+ },
+ "WRN_SQ4_EE_WAIT_PLAYER_01": {
+  "speaker": "WRN",
+  "category": "EE_WAIT_PLAYER",
+  "text": "You must be here for this."
+ },
+ "WRN_SQ4_EE_INTERRUPTED_01": {
+  "speaker": "WRN",
+  "category": "EE_INTERRUPTED",
+  "text": "Wait. Fight first."
+ },
+ "WRN_SQ4_EE_RESUME_01": {
+  "speaker": "WRN",
+  "category": "EE_RESUME",
+  "text": "Back to it."
+ },
+ "WRN_SQ4_EE_RESUME_02": {
+  "speaker": "WRN",
+  "category": "EE_RESUME",
+  "text": "Now again."
+ },
+ "JAK_SQ4_EE_ACK_COLLECT_01": {
+  "speaker": "JAK",
+  "category": "EE_ACK_COLLECT",
+  "text": "I'll gather them. Like picking coal off the belt."
+ },
+ "JAK_SQ4_EE_ACK_COLLECT_02": {
+  "speaker": "JAK",
+  "category": "EE_ACK_COLLECT",
+  "text": "Dobrze (good). I'll find them and bring them.",
+  "tts": "Dob-zheh. I'll find them and bring them."
+ },
+ "JAK_SQ4_EE_ACK_HOLD_ZONE_01": {
+  "speaker": "JAK",
+  "category": "EE_ACK_HOLD_ZONE",
+  "text": "I'll stand here. I have stood in worse places."
+ },
+ "JAK_SQ4_EE_ACK_CARRY_01": {
+  "speaker": "JAK",
+  "category": "EE_ACK_CARRY",
+  "text": "Give it to me. I have carried heavier things out of the dark."
+ },
+ "JAK_SQ4_EE_PLAYER_ONLY_01": {
+  "speaker": "JAK",
+  "category": "EE_PLAYER_ONLY",
+  "text": "That is for you to do. I'll stand behind you."
+ },
+ "JAK_SQ4_EE_PROGRESS_01": {
+  "speaker": "JAK",
+  "category": "EE_PROGRESS",
+  "text": "One. Next."
+ },
+ "JAK_SQ4_EE_PROGRESS_02": {
+  "speaker": "JAK",
+  "category": "EE_PROGRESS",
+  "text": "That's another. Slowly, carefully."
+ },
+ "JAK_SQ4_EE_DONE_01": {
+  "speaker": "JAK",
+  "category": "EE_DONE",
+  "text": "Done. It is where it should be."
+ },
+ "JAK_SQ4_EE_CANT_01": {
+  "speaker": "JAK",
+  "category": "EE_CANT",
+  "text": "Not now. I'm sorry."
+ },
+ "JAK_SQ4_EE_CANT_INFO_01": {
+  "speaker": "JAK",
+  "category": "EE_CANT_INFO",
+  "text": "We don't know enough yet. In the mine you don't guess. You wait for the lamp."
+ },
+ "JAK_SQ4_EE_CANT_FIND_01": {
+  "speaker": "JAK",
+  "category": "EE_CANT_FIND",
+  "text": "I haven't seen it. Show me where, and I'll go."
+ },
+ "JAK_SQ4_EE_WAIT_PLAYER_01": {
+  "speaker": "JAK",
+  "category": "EE_WAIT_PLAYER",
+  "text": "This needs you here. I'll wait with it."
+ },
+ "JAK_SQ4_EE_INTERRUPTED_01": {
+  "speaker": "JAK",
+  "category": "EE_INTERRUPTED",
+  "text": "Wait. First these ones."
+ },
+ "JAK_SQ4_EE_RESUME_01": {
+  "speaker": "JAK",
+  "category": "EE_RESUME",
+  "text": "Back to it."
+ },
+ "JAK_SQ4_EE_RESUME_02": {
+  "speaker": "JAK",
+  "category": "EE_RESUME",
+  "text": "Spokojnie (easy). Back to work.",
+  "tts": "Spo-koy-nyeh. Back to work."
+ },
+ "JAK_SQ4_EE_REFUSE_CRUCIBLE_01": {
+  "speaker": "JAK",
+  "category": "EE_REFUSE_CRUCIBLE",
+  "text": "Not the furnace. I saw what they fed into it at Kaltenbrunn. Ask me anything else."
+ },
+ "JAK_SQ4_EE_REFUSE_CRUCIBLE_02": {
+  "speaker": "JAK",
+  "category": "EE_REFUSE_CRUCIBLE",
+  "text": "No. I won't put my hands near that fire. Give me something to carry."
+ },
+ "JAK_SQ4_EE_REFUSE_PERK_01": {
+  "speaker": "JAK",
+  "category": "EE_REFUSE_PERK",
+  "text": "Those machines? No. I don't touch them, and I don't drink from them."
+ },
+ "JAK_SQ4_EE_REFUSE_TYPE_01": {
+  "speaker": "JAK",
+  "category": "EE_REFUSE_TYPE",
+  "text": "That needs a steady rifle and a good eye. I can carry, gather, and hold ground."
  }
 }
