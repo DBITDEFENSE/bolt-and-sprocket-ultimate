@@ -189,6 +189,13 @@ func _label(parent: Control, text: String, size: int, color: Color, font: Font) 
 	return l
 
 
+## A label's font colour, set only when it changes: every add_theme_color_override re-themes the label, which
+## the HUD did twice a frame (T-070).
+static func _font_color(l: Label, c: Color) -> void:
+	if not l.has_theme_color_override("font_color") or l.get_theme_color("font_color") != c:
+		l.add_theme_color_override("font_color", c)
+
+
 func _process(delta: float) -> void:
 	if player == null:
 		return
@@ -199,7 +206,7 @@ func _process(delta: float) -> void:
 		_weapon_label.text = w.display_name()
 		_ammo_label.text = "%d | %d" % [w.mag, w.reserve]
 		var low: bool = w.mag <= int(ceil(w.mag_size() * 0.25))
-		_ammo_label.add_theme_color_override("font_color", INK.lightened(0.25) if low else PAPER)
+		_font_color(_ammo_label, INK.lightened(0.25) if low else PAPER)
 	var cook: float = player.weapons.cook_left()
 	var nades: String = "◆ ".repeat(player.weapons.grenades).strip_edges()
 	if player.weapons.tactical_id != &"":
@@ -210,7 +217,7 @@ func _process(delta: float) -> void:
 	# prompt
 	_denied_t = maxf(0.0, _denied_t - delta)
 	_prompt.text = player.prompt_text
-	_prompt.add_theme_color_override("font_color", INK.lightened(0.3) if _denied_t > 0.0 else PAPER)
+	_font_color(_prompt, INK.lightened(0.3) if _denied_t > 0.0 else PAPER)
 	_hold_bar.visible = player.interact_progress > 0.02 and player.prompt_text != ""
 	_hold_bar.value = player.interact_progress
 	# crosshair
