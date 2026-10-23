@@ -375,8 +375,8 @@ class MapLayer extends Node2D:
 		return true
 
 	func _draw() -> void:
-		if canvas == null or canvas.state == null:
-			return
+		if canvas == null or canvas.state == null or _zoom <= 0.0:
+			return   # not synced yet (a draw queued by set_state before the first frame)
 		var t0: int = Time.get_ticks_usec()
 		_paint()
 		MapCanvas._draw_acc += Time.get_ticks_usec() - t0

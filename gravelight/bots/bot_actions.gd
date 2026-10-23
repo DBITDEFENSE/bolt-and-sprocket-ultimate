@@ -59,7 +59,7 @@ func enter(id: String) -> void:
 			_powerup_t = 0.0
 		"buy", "repair", "crate", "resupply", "trap", "order", "objective":
 			brain.start_task(id)
-		"ee_task":
+		"ee_task", "mark_order":
 			if not brain.task.is_empty():
 				brain.drop_task()
 
@@ -77,6 +77,9 @@ func exit(id: String) -> void:
 		"ee_task":
 			if brain.ee != null:
 				brain.ee.on_exit()
+		"mark_order":
+			if brain.mark != null:
+				brain.mark.on_exit()
 
 
 func run(id: String, delta: float) -> void:
@@ -102,6 +105,11 @@ func run(id: String, delta: float) -> void:
 		"ee_task":
 			if brain.ee != null:
 				brain.ee.run(delta)
+			else:
+				_idle(delta)
+		"mark_order":
+			if brain.mark != null:
+				brain.mark.run(delta)
 			else:
 				_idle(delta)
 		"follow":

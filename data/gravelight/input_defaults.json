@@ -101,8 +101,11 @@
   },
   "alt_fire": {
     "key": "B",
-    "mouse": "MIDDLE",
     "pad": "DPAD_RIGHT"
+  },
+  "ping": {
+    "mouse": "MIDDLE",
+    "pad": "DPAD_UP"
   },
   "bot_command": {
     "key": "T",

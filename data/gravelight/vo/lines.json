@@ -5962,5 +5962,1240 @@
   "speaker": "JAK",
   "category": "EE_REFUSE_TYPE",
   "text": "That needs a steady rifle and a good eye. I can carry, gather, and hold ground."
+ },
+ "DUT_SQ5_MARK_ACK_01": {
+  "speaker": "DUT",
+  "category": "MARK_ACK",
+  "text": "On it."
+ },
+ "DUT_SQ5_MARK_ACK_02": {
+  "speaker": "DUT",
+  "category": "MARK_ACK",
+  "text": "You got it, boss."
+ },
+ "DUT_SQ5_MARK_ACK_BUY_01": {
+  "speaker": "DUT",
+  "category": "MARK_ACK_BUY",
+  "text": "I'll go buy it. My Scrip, your idea."
+ },
+ "DUT_SQ5_MARK_ACK_BUY_02": {
+  "speaker": "DUT",
+  "category": "MARK_ACK_BUY",
+  "text": "Shopping run. Back in a minute."
+ },
+ "DUT_SQ5_MARK_ACK_FOR_YOU_01": {
+  "speaker": "DUT",
+  "category": "MARK_ACK_FOR_YOU",
+  "text": "I'll pick one up for you."
+ },
+ "DUT_SQ5_MARK_ACK_GO_01": {
+  "speaker": "DUT",
+  "category": "MARK_ACK_GO",
+  "text": "Heading over."
+ },
+ "DUT_SQ5_MARK_ACK_DEFEND_01": {
+  "speaker": "DUT",
+  "category": "MARK_ACK_DEFEND",
+  "text": "I'll dig in there. Nobody gets past."
+ },
+ "DUT_SQ5_MARK_ACK_REGROUP_01": {
+  "speaker": "DUT",
+  "category": "MARK_ACK_REGROUP",
+  "text": "Coming to you. Everybody in."
+ },
+ "DUT_SQ5_MARK_DANGER_01": {
+  "speaker": "DUT",
+  "category": "MARK_DANGER",
+  "text": "Bad spot, there. Steer clear of it."
+ },
+ "DUT_SQ5_MARK_DANGER_02": {
+  "speaker": "DUT",
+  "category": "MARK_DANGER",
+  "text": "Stay away from that corner. I mean it."
+ },
+ "DUT_SQ5_MARK_AFFORD_01": {
+  "speaker": "DUT",
+  "category": "MARK_AFFORD",
+  "text": "Got the Scrip now. On my way."
+ },
+ "DUT_SQ5_MARK_BOUGHT_01": {
+  "speaker": "DUT",
+  "category": "MARK_BOUGHT",
+  "text": "Done, boss."
+ },
+ "DUT_SQ5_MARK_BOUGHT_IRONHIDE_01": {
+  "speaker": "DUT",
+  "category": "MARK_BOUGHT_IRONHIDE",
+  "text": "Got the Ironhide. Feel like a barrel."
+ },
+ "DUT_SQ5_MARK_BOUGHT_SECONDWIND_01": {
+  "speaker": "DUT",
+  "category": "MARK_BOUGHT_SECONDWIND",
+  "text": "Second Wind's in me. I'll get you up quick."
+ },
+ "DUT_SQ5_MARK_BOUGHT_TRIGGER_01": {
+  "speaker": "DUT",
+  "category": "MARK_BOUGHT_TRIGGER",
+  "text": "Trigger Tonic. Hands feel faster already."
+ },
+ "DUT_SQ5_MARK_BOUGHT_TWINBARREL_01": {
+  "speaker": "DUT",
+  "category": "MARK_BOUGHT_TWINBARREL",
+  "text": "Twin Barrel. Twice the noise."
+ },
+ "DUT_SQ5_MARK_BOUGHT_MARATHON_01": {
+  "speaker": "DUT",
+  "category": "MARK_BOUGHT_MARATHON",
+  "text": "Marathon Malt. My knees thank you."
+ },
+ "DUT_SQ5_MARK_BOUGHT_HAWKEYE_01": {
+  "speaker": "DUT",
+  "category": "MARK_BOUGHT_HAWKEYE",
+  "text": "Hawkeye. I see every whisker on 'em."
+ },
+ "DUT_SQ5_MARK_BOUGHT_PACKMULE_01": {
+  "speaker": "DUT",
+  "category": "MARK_BOUGHT_PACKMULE",
+  "text": "Packmule. Room for one more gun."
+ },
+ "DUT_SQ5_MARK_BOUGHT_BLASTPROOF_01": {
+  "speaker": "DUT",
+  "category": "MARK_BOUGHT_BLASTPROOF",
+  "text": "Blastproof. Let 'em throw things."
+ },
+ "DUT_SQ5_MARK_BOUGHT_OVERCLOCK_01": {
+  "speaker": "DUT",
+  "category": "MARK_BOUGHT_OVERCLOCK",
+  "text": "Overclock. My teeth are humming."
+ },
+ "DUT_SQ5_MARK_BOUGHT_GUN_01": {
+  "speaker": "DUT",
+  "category": "MARK_BOUGHT_GUN",
+  "text": "Picked it up. She'll do."
+ },
+ "DUT_SQ5_MARK_BOUGHT_DOOR_01": {
+  "speaker": "DUT",
+  "category": "MARK_BOUGHT_DOOR",
+  "text": "Door's open. Watch what comes through."
+ },
+ "DUT_SQ5_MARK_BOUGHT_AMMO_01": {
+  "speaker": "DUT",
+  "category": "MARK_BOUGHT_AMMO",
+  "text": "Topped up."
+ },
+ "DUT_SQ5_MARK_BOUGHT_CRATE_01": {
+  "speaker": "DUT",
+  "category": "MARK_BOUGHT_CRATE",
+  "text": "Pulled the crate. Let's see what it coughs up."
+ },
+ "DUT_SQ5_MARK_BOUGHT_CRUCIBLE_01": {
+  "speaker": "DUT",
+  "category": "MARK_BOUGHT_CRUCIBLE",
+  "text": "Gun's in the fire. Cover me while she cooks."
+ },
+ "DUT_SQ5_MARK_BOUGHT_TRAP_01": {
+  "speaker": "DUT",
+  "category": "MARK_BOUGHT_TRAP",
+  "text": "Trap's live. Keep clear."
+ },
+ "DUT_SQ5_MARK_BOUGHT_BENCH_01": {
+  "speaker": "DUT",
+  "category": "MARK_BOUGHT_BENCH",
+  "text": "Bench work's done. Pistol's better for it."
+ },
+ "DUT_SQ5_MARK_DONE_POWER_01": {
+  "speaker": "DUT",
+  "category": "MARK_DONE_POWER",
+  "text": "Power's on. Lights and all."
+ },
+ "DUT_SQ5_MARK_SHORT_100_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_100",
+  "text": "Need 100 more for that, boss."
+ },
+ "DUT_SQ5_MARK_SHORT_200_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_200",
+  "text": "Need 200 more for that, boss."
+ },
+ "DUT_SQ5_MARK_SHORT_300_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_300",
+  "text": "Need 300 more for that, boss."
+ },
+ "DUT_SQ5_MARK_SHORT_400_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_400",
+  "text": "Need 400 more for that, boss."
+ },
+ "DUT_SQ5_MARK_SHORT_500_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_500",
+  "text": "Need 500 more for that, boss."
+ },
+ "DUT_SQ5_MARK_SHORT_600_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_600",
+  "text": "Need 600 more for that, boss."
+ },
+ "DUT_SQ5_MARK_SHORT_700_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_700",
+  "text": "Need 700 more for that, boss."
+ },
+ "DUT_SQ5_MARK_SHORT_800_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_800",
+  "text": "Need 800 more for that, boss."
+ },
+ "DUT_SQ5_MARK_SHORT_900_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_900",
+  "text": "Need 900 more for that, boss."
+ },
+ "DUT_SQ5_MARK_SHORT_1000_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_1000",
+  "text": "Need 1,000 more for that, boss."
+ },
+ "DUT_SQ5_MARK_SHORT_1250_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_1250",
+  "text": "Need 1,250 more for that, boss."
+ },
+ "DUT_SQ5_MARK_SHORT_1500_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_1500",
+  "text": "Need 1,500 more for that, boss."
+ },
+ "DUT_SQ5_MARK_SHORT_2000_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_2000",
+  "text": "Need 2,000 more for that, boss."
+ },
+ "DUT_SQ5_MARK_SHORT_2500_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_2500",
+  "text": "Need 2,500 more for that, boss."
+ },
+ "DUT_SQ5_MARK_SHORT_3000_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_3000",
+  "text": "Need 3,000 more for that, boss."
+ },
+ "DUT_SQ5_MARK_SHORT_4000_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_4000",
+  "text": "Need 4,000 more for that, boss."
+ },
+ "DUT_SQ5_MARK_SHORT_5000_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_5000",
+  "text": "Need 5,000 more for that, boss."
+ },
+ "DUT_SQ5_MARK_SHORT_LOTS_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT_LOTS",
+  "text": "That's a lot more Scrip than I've got. Give me time."
+ },
+ "DUT_SQ5_MARK_SHORT_01": {
+  "speaker": "DUT",
+  "category": "MARK_SHORT",
+  "text": "I'm short on Scrip for that. Give me a bit."
+ },
+ "DUT_SQ5_MARK_EXPIRED_01": {
+  "speaker": "DUT",
+  "category": "MARK_EXPIRED",
+  "text": "Couldn't scrape it together. Dropping that one."
+ },
+ "DUT_SQ5_MARK_FOR_YOU_HOLD_01": {
+  "speaker": "DUT",
+  "category": "MARK_FOR_YOU_HOLD",
+  "text": "Got it for you. Come take it off me."
+ },
+ "DUT_SQ5_MARK_FOR_YOU_DROP_01": {
+  "speaker": "DUT",
+  "category": "MARK_FOR_YOU_DROP",
+  "text": "Dropped it at your feet. Don't say I never got you nothing."
+ },
+ "DUT_SQ5_MARK_RESUME_01": {
+  "speaker": "DUT",
+  "category": "MARK_RESUME",
+  "text": "Back to it."
+ },
+ "DUT_SQ5_MARK_RESUME_02": {
+  "speaker": "DUT",
+  "category": "MARK_RESUME",
+  "text": "Right. Where was I. Back to it."
+ },
+ "DUT_SQ5_MARK_CANT_01": {
+  "speaker": "DUT",
+  "category": "MARK_CANT",
+  "text": "Can't do that one."
+ },
+ "DUT_SQ5_MARK_CANT_OWNED_01": {
+  "speaker": "DUT",
+  "category": "MARK_CANT_OWNED",
+  "text": "Already got that one."
+ },
+ "DUT_SQ5_MARK_CANT_POWER_01": {
+  "speaker": "DUT",
+  "category": "MARK_CANT_POWER",
+  "text": "No power to it. Throw the lever first."
+ },
+ "DUT_SQ5_MARK_CANT_CAP_01": {
+  "speaker": "DUT",
+  "category": "MARK_CANT_CAP",
+  "text": "Can't fit another bottle in me."
+ },
+ "DUT_SQ5_MARK_CANT_REACH_01": {
+  "speaker": "DUT",
+  "category": "MARK_CANT_REACH",
+  "text": "Can't get there from here. Something's in the way."
+ },
+ "DUT_SQ5_MARK_CANT_FULL_01": {
+  "speaker": "DUT",
+  "category": "MARK_CANT_FULL",
+  "text": "My hands are full of good guns. Not swapping."
+ },
+ "PEG_SQ5_MARK_ACK_01": {
+  "speaker": "PEG",
+  "category": "MARK_ACK",
+  "text": "Understood."
+ },
+ "PEG_SQ5_MARK_ACK_02": {
+  "speaker": "PEG",
+  "category": "MARK_ACK",
+  "text": "Right away."
+ },
+ "PEG_SQ5_MARK_ACK_BUY_01": {
+  "speaker": "PEG",
+  "category": "MARK_ACK_BUY",
+  "text": "I'll see to it. On my account."
+ },
+ "PEG_SQ5_MARK_ACK_BUY_02": {
+  "speaker": "PEG",
+  "category": "MARK_ACK_BUY",
+  "text": "Leave the purchasing to me."
+ },
+ "PEG_SQ5_MARK_ACK_FOR_YOU_01": {
+  "speaker": "PEG",
+  "category": "MARK_ACK_FOR_YOU",
+  "text": "I'll buy you one. You can owe me."
+ },
+ "PEG_SQ5_MARK_ACK_GO_01": {
+  "speaker": "PEG",
+  "category": "MARK_ACK_GO",
+  "text": "Moving there now."
+ },
+ "PEG_SQ5_MARK_ACK_DEFEND_01": {
+  "speaker": "PEG",
+  "category": "MARK_ACK_DEFEND",
+  "text": "I'll hold that spot."
+ },
+ "PEG_SQ5_MARK_ACK_REGROUP_01": {
+  "speaker": "PEG",
+  "category": "MARK_ACK_REGROUP",
+  "text": "Regrouping. On you."
+ },
+ "PEG_SQ5_MARK_DANGER_01": {
+  "speaker": "PEG",
+  "category": "MARK_DANGER",
+  "text": "Avoid that area. I mean it."
+ },
+ "PEG_SQ5_MARK_DANGER_02": {
+  "speaker": "PEG",
+  "category": "MARK_DANGER",
+  "text": "That spot's bad. Keep out of it."
+ },
+ "PEG_SQ5_MARK_AFFORD_01": {
+  "speaker": "PEG",
+  "category": "MARK_AFFORD",
+  "text": "Funds in hand. Going now."
+ },
+ "PEG_SQ5_MARK_BOUGHT_01": {
+  "speaker": "PEG",
+  "category": "MARK_BOUGHT",
+  "text": "Done."
+ },
+ "PEG_SQ5_MARK_BOUGHT_IRONHIDE_01": {
+  "speaker": "PEG",
+  "category": "MARK_BOUGHT_IRONHIDE",
+  "text": "Ironhide. I feel positively armoured."
+ },
+ "PEG_SQ5_MARK_BOUGHT_SECONDWIND_01": {
+  "speaker": "PEG",
+  "category": "MARK_BOUGHT_SECONDWIND",
+  "text": "Second Wind. I'll have you up in a jiffy."
+ },
+ "PEG_SQ5_MARK_BOUGHT_TRIGGER_01": {
+  "speaker": "PEG",
+  "category": "MARK_BOUGHT_TRIGGER",
+  "text": "Trigger Tonic. Quick hands, quicker reloads."
+ },
+ "PEG_SQ5_MARK_BOUGHT_TWINBARREL_01": {
+  "speaker": "PEG",
+  "category": "MARK_BOUGHT_TWINBARREL",
+  "text": "Twin Barrel. Rather loud, isn't it."
+ },
+ "PEG_SQ5_MARK_BOUGHT_MARATHON_01": {
+  "speaker": "PEG",
+  "category": "MARK_BOUGHT_MARATHON",
+  "text": "Marathon Malt. I could run to Dover."
+ },
+ "PEG_SQ5_MARK_BOUGHT_HAWKEYE_01": {
+  "speaker": "PEG",
+  "category": "MARK_BOUGHT_HAWKEYE",
+  "text": "Hawkeye. Everything's terribly sharp."
+ },
+ "PEG_SQ5_MARK_BOUGHT_PACKMULE_01": {
+  "speaker": "PEG",
+  "category": "MARK_BOUGHT_PACKMULE",
+  "text": "Packmule. Room for another."
+ },
+ "PEG_SQ5_MARK_BOUGHT_BLASTPROOF_01": {
+  "speaker": "PEG",
+  "category": "MARK_BOUGHT_BLASTPROOF",
+  "text": "Blastproof. My satchels and I are friends again."
+ },
+ "PEG_SQ5_MARK_BOUGHT_OVERCLOCK_01": {
+  "speaker": "PEG",
+  "category": "MARK_BOUGHT_OVERCLOCK",
+  "text": "Overclock. That fizzes."
+ },
+ "PEG_SQ5_MARK_BOUGHT_GUN_01": {
+  "speaker": "PEG",
+  "category": "MARK_BOUGHT_GUN",
+  "text": "Bought. Not my usual, but it'll serve."
+ },
+ "PEG_SQ5_MARK_BOUGHT_DOOR_01": {
+  "speaker": "PEG",
+  "category": "MARK_BOUGHT_DOOR",
+  "text": "Door's open. Mind what follows."
+ },
+ "PEG_SQ5_MARK_BOUGHT_AMMO_01": {
+  "speaker": "PEG",
+  "category": "MARK_BOUGHT_AMMO",
+  "text": "Ammunition replenished."
+ },
+ "PEG_SQ5_MARK_BOUGHT_CRATE_01": {
+  "speaker": "PEG",
+  "category": "MARK_BOUGHT_CRATE",
+  "text": "Crate's open. Fingers crossed."
+ },
+ "PEG_SQ5_MARK_BOUGHT_CRUCIBLE_01": {
+  "speaker": "PEG",
+  "category": "MARK_BOUGHT_CRUCIBLE",
+  "text": "Into the fire it goes. Keep them off me."
+ },
+ "PEG_SQ5_MARK_BOUGHT_TRAP_01": {
+  "speaker": "PEG",
+  "category": "MARK_BOUGHT_TRAP",
+  "text": "Trap's sprung. Stand clear."
+ },
+ "PEG_SQ5_MARK_BOUGHT_BENCH_01": {
+  "speaker": "PEG",
+  "category": "MARK_BOUGHT_BENCH",
+  "text": "Fitted. A proper job."
+ },
+ "PEG_SQ5_MARK_DONE_POWER_01": {
+  "speaker": "PEG",
+  "category": "MARK_DONE_POWER",
+  "text": "Power's on. Finally."
+ },
+ "PEG_SQ5_MARK_SHORT_100_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_100",
+  "text": "I'm 100 short, I'm afraid. Give me a moment."
+ },
+ "PEG_SQ5_MARK_SHORT_200_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_200",
+  "text": "I'm 200 short, I'm afraid. Give me a moment."
+ },
+ "PEG_SQ5_MARK_SHORT_300_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_300",
+  "text": "I'm 300 short, I'm afraid. Give me a moment."
+ },
+ "PEG_SQ5_MARK_SHORT_400_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_400",
+  "text": "I'm 400 short, I'm afraid. Give me a moment."
+ },
+ "PEG_SQ5_MARK_SHORT_500_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_500",
+  "text": "I'm 500 short, I'm afraid. Give me a moment."
+ },
+ "PEG_SQ5_MARK_SHORT_600_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_600",
+  "text": "I'm 600 short, I'm afraid. Give me a moment."
+ },
+ "PEG_SQ5_MARK_SHORT_700_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_700",
+  "text": "I'm 700 short, I'm afraid. Give me a moment."
+ },
+ "PEG_SQ5_MARK_SHORT_800_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_800",
+  "text": "I'm 800 short, I'm afraid. Give me a moment."
+ },
+ "PEG_SQ5_MARK_SHORT_900_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_900",
+  "text": "I'm 900 short, I'm afraid. Give me a moment."
+ },
+ "PEG_SQ5_MARK_SHORT_1000_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_1000",
+  "text": "I'm 1,000 short, I'm afraid. Give me a moment."
+ },
+ "PEG_SQ5_MARK_SHORT_1250_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_1250",
+  "text": "I'm 1,250 short, I'm afraid. Give me a moment."
+ },
+ "PEG_SQ5_MARK_SHORT_1500_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_1500",
+  "text": "I'm 1,500 short, I'm afraid. Give me a moment."
+ },
+ "PEG_SQ5_MARK_SHORT_2000_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_2000",
+  "text": "I'm 2,000 short, I'm afraid. Give me a moment."
+ },
+ "PEG_SQ5_MARK_SHORT_2500_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_2500",
+  "text": "I'm 2,500 short, I'm afraid. Give me a moment."
+ },
+ "PEG_SQ5_MARK_SHORT_3000_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_3000",
+  "text": "I'm 3,000 short, I'm afraid. Give me a moment."
+ },
+ "PEG_SQ5_MARK_SHORT_4000_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_4000",
+  "text": "I'm 4,000 short, I'm afraid. Give me a moment."
+ },
+ "PEG_SQ5_MARK_SHORT_5000_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_5000",
+  "text": "I'm 5,000 short, I'm afraid. Give me a moment."
+ },
+ "PEG_SQ5_MARK_SHORT_LOTS_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT_LOTS",
+  "text": "I'm nowhere near that. Give me a few rounds."
+ },
+ "PEG_SQ5_MARK_SHORT_01": {
+  "speaker": "PEG",
+  "category": "MARK_SHORT",
+  "text": "I can't afford that yet."
+ },
+ "PEG_SQ5_MARK_EXPIRED_01": {
+  "speaker": "PEG",
+  "category": "MARK_EXPIRED",
+  "text": "Couldn't raise the funds. I've let that one go."
+ },
+ "PEG_SQ5_MARK_FOR_YOU_HOLD_01": {
+  "speaker": "PEG",
+  "category": "MARK_FOR_YOU_HOLD",
+  "text": "Bought it for you. Come and collect."
+ },
+ "PEG_SQ5_MARK_FOR_YOU_DROP_01": {
+  "speaker": "PEG",
+  "category": "MARK_FOR_YOU_DROP",
+  "text": "It's at your feet. Do look after it."
+ },
+ "PEG_SQ5_MARK_RESUME_01": {
+  "speaker": "PEG",
+  "category": "MARK_RESUME",
+  "text": "Back to it."
+ },
+ "PEG_SQ5_MARK_RESUME_02": {
+  "speaker": "PEG",
+  "category": "MARK_RESUME",
+  "text": "Now. Where was I. Back to it."
+ },
+ "PEG_SQ5_MARK_CANT_01": {
+  "speaker": "PEG",
+  "category": "MARK_CANT",
+  "text": "I can't do that."
+ },
+ "PEG_SQ5_MARK_CANT_OWNED_01": {
+  "speaker": "PEG",
+  "category": "MARK_CANT_OWNED",
+  "text": "I have that already."
+ },
+ "PEG_SQ5_MARK_CANT_POWER_01": {
+  "speaker": "PEG",
+  "category": "MARK_CANT_POWER",
+  "text": "It's dead. We need the power."
+ },
+ "PEG_SQ5_MARK_CANT_CAP_01": {
+  "speaker": "PEG",
+  "category": "MARK_CANT_CAP",
+  "text": "No room for another tonic."
+ },
+ "PEG_SQ5_MARK_CANT_REACH_01": {
+  "speaker": "PEG",
+  "category": "MARK_CANT_REACH",
+  "text": "There's no way through from here."
+ },
+ "PEG_SQ5_MARK_CANT_FULL_01": {
+  "speaker": "PEG",
+  "category": "MARK_CANT_FULL",
+  "text": "My hands are full of better guns."
+ },
+ "DEA_SQ5_MARK_ACK_01": {
+  "speaker": "DEA",
+  "category": "MARK_ACK",
+  "text": "Yes sir."
+ },
+ "DEA_SQ5_MARK_ACK_02": {
+  "speaker": "DEA",
+  "category": "MARK_ACK",
+  "text": "Consider it done."
+ },
+ "DEA_SQ5_MARK_ACK_BUY_01": {
+  "speaker": "DEA",
+  "category": "MARK_ACK_BUY",
+  "text": "I'll go buy it. Good use of Scrip."
+ },
+ "DEA_SQ5_MARK_ACK_BUY_02": {
+  "speaker": "DEA",
+  "category": "MARK_ACK_BUY",
+  "text": "On my dime. I'll fetch it."
+ },
+ "DEA_SQ5_MARK_ACK_FOR_YOU_01": {
+  "speaker": "DEA",
+  "category": "MARK_ACK_FOR_YOU",
+  "text": "I'll get you one, brother."
+ },
+ "DEA_SQ5_MARK_ACK_GO_01": {
+  "speaker": "DEA",
+  "category": "MARK_ACK_GO",
+  "text": "Heading that way."
+ },
+ "DEA_SQ5_MARK_ACK_DEFEND_01": {
+  "speaker": "DEA",
+  "category": "MARK_ACK_DEFEND",
+  "text": "I'll keep watch there and mend what breaks."
+ },
+ "DEA_SQ5_MARK_ACK_REGROUP_01": {
+  "speaker": "DEA",
+  "category": "MARK_ACK_REGROUP",
+  "text": "Gathering up. Coming."
+ },
+ "DEA_SQ5_MARK_DANGER_01": {
+  "speaker": "DEA",
+  "category": "MARK_DANGER",
+  "text": "Lord, stay away from that spot."
+ },
+ "DEA_SQ5_MARK_DANGER_02": {
+  "speaker": "DEA",
+  "category": "MARK_DANGER",
+  "text": "Keep clear of there, brother."
+ },
+ "DEA_SQ5_MARK_AFFORD_01": {
+  "speaker": "DEA",
+  "category": "MARK_AFFORD",
+  "text": "I've got enough now. Going."
+ },
+ "DEA_SQ5_MARK_BOUGHT_01": {
+  "speaker": "DEA",
+  "category": "MARK_BOUGHT",
+  "text": "Done and done."
+ },
+ "DEA_SQ5_MARK_BOUGHT_IRONHIDE_01": {
+  "speaker": "DEA",
+  "category": "MARK_BOUGHT_IRONHIDE",
+  "text": "Ironhide. Feel like a boiler plate."
+ },
+ "DEA_SQ5_MARK_BOUGHT_SECONDWIND_01": {
+  "speaker": "DEA",
+  "category": "MARK_BOUGHT_SECONDWIND",
+  "text": "Second Wind. I'll get folks up faster."
+ },
+ "DEA_SQ5_MARK_BOUGHT_TRIGGER_01": {
+  "speaker": "DEA",
+  "category": "MARK_BOUGHT_TRIGGER",
+  "text": "Trigger Tonic. Oiled and quick."
+ },
+ "DEA_SQ5_MARK_BOUGHT_TWINBARREL_01": {
+  "speaker": "DEA",
+  "category": "MARK_BOUGHT_TWINBARREL",
+  "text": "Twin Barrel. Double the work."
+ },
+ "DEA_SQ5_MARK_BOUGHT_MARATHON_01": {
+  "speaker": "DEA",
+  "category": "MARK_BOUGHT_MARATHON",
+  "text": "Marathon Malt. Legs like pistons."
+ },
+ "DEA_SQ5_MARK_BOUGHT_HAWKEYE_01": {
+  "speaker": "DEA",
+  "category": "MARK_BOUGHT_HAWKEYE",
+  "text": "Hawkeye. I can read the rivets."
+ },
+ "DEA_SQ5_MARK_BOUGHT_PACKMULE_01": {
+  "speaker": "DEA",
+  "category": "MARK_BOUGHT_PACKMULE",
+  "text": "Packmule. Another toolbox for the belt."
+ },
+ "DEA_SQ5_MARK_BOUGHT_BLASTPROOF_01": {
+  "speaker": "DEA",
+  "category": "MARK_BOUGHT_BLASTPROOF",
+  "text": "Blastproof. Let it bang."
+ },
+ "DEA_SQ5_MARK_BOUGHT_OVERCLOCK_01": {
+  "speaker": "DEA",
+  "category": "MARK_BOUGHT_OVERCLOCK",
+  "text": "Overclock. That's got some current in it."
+ },
+ "DEA_SQ5_MARK_BOUGHT_GUN_01": {
+  "speaker": "DEA",
+  "category": "MARK_BOUGHT_GUN",
+  "text": "Bought it. Fine piece of machinery."
+ },
+ "DEA_SQ5_MARK_BOUGHT_DOOR_01": {
+  "speaker": "DEA",
+  "category": "MARK_BOUGHT_DOOR",
+  "text": "Door's open. Watch it now."
+ },
+ "DEA_SQ5_MARK_BOUGHT_AMMO_01": {
+  "speaker": "DEA",
+  "category": "MARK_BOUGHT_AMMO",
+  "text": "Loaded up."
+ },
+ "DEA_SQ5_MARK_BOUGHT_CRATE_01": {
+  "speaker": "DEA",
+  "category": "MARK_BOUGHT_CRATE",
+  "text": "Crate's turning. Let's pray on it."
+ },
+ "DEA_SQ5_MARK_BOUGHT_CRUCIBLE_01": {
+  "speaker": "DEA",
+  "category": "MARK_BOUGHT_CRUCIBLE",
+  "text": "She's in the forge. Keep 'em off me a minute."
+ },
+ "DEA_SQ5_MARK_BOUGHT_TRAP_01": {
+  "speaker": "DEA",
+  "category": "MARK_BOUGHT_TRAP",
+  "text": "Trap's running. Stand back."
+ },
+ "DEA_SQ5_MARK_BOUGHT_BENCH_01": {
+  "speaker": "DEA",
+  "category": "MARK_BOUGHT_BENCH",
+  "text": "Bench work's finished. Fits like it grew there."
+ },
+ "DEA_SQ5_MARK_DONE_POWER_01": {
+  "speaker": "DEA",
+  "category": "MARK_DONE_POWER",
+  "text": "Power's flowing. Hear that hum?"
+ },
+ "DEA_SQ5_MARK_SHORT_100_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_100",
+  "text": "I'm 100 shy, brother. I'll earn it."
+ },
+ "DEA_SQ5_MARK_SHORT_200_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_200",
+  "text": "I'm 200 shy, brother. I'll earn it."
+ },
+ "DEA_SQ5_MARK_SHORT_300_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_300",
+  "text": "I'm 300 shy, brother. I'll earn it."
+ },
+ "DEA_SQ5_MARK_SHORT_400_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_400",
+  "text": "I'm 400 shy, brother. I'll earn it."
+ },
+ "DEA_SQ5_MARK_SHORT_500_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_500",
+  "text": "I'm 500 shy, brother. I'll earn it."
+ },
+ "DEA_SQ5_MARK_SHORT_600_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_600",
+  "text": "I'm 600 shy, brother. I'll earn it."
+ },
+ "DEA_SQ5_MARK_SHORT_700_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_700",
+  "text": "I'm 700 shy, brother. I'll earn it."
+ },
+ "DEA_SQ5_MARK_SHORT_800_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_800",
+  "text": "I'm 800 shy, brother. I'll earn it."
+ },
+ "DEA_SQ5_MARK_SHORT_900_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_900",
+  "text": "I'm 900 shy, brother. I'll earn it."
+ },
+ "DEA_SQ5_MARK_SHORT_1000_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_1000",
+  "text": "I'm 1,000 shy, brother. I'll earn it."
+ },
+ "DEA_SQ5_MARK_SHORT_1250_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_1250",
+  "text": "I'm 1,250 shy, brother. I'll earn it."
+ },
+ "DEA_SQ5_MARK_SHORT_1500_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_1500",
+  "text": "I'm 1,500 shy, brother. I'll earn it."
+ },
+ "DEA_SQ5_MARK_SHORT_2000_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_2000",
+  "text": "I'm 2,000 shy, brother. I'll earn it."
+ },
+ "DEA_SQ5_MARK_SHORT_2500_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_2500",
+  "text": "I'm 2,500 shy, brother. I'll earn it."
+ },
+ "DEA_SQ5_MARK_SHORT_3000_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_3000",
+  "text": "I'm 3,000 shy, brother. I'll earn it."
+ },
+ "DEA_SQ5_MARK_SHORT_4000_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_4000",
+  "text": "I'm 4,000 shy, brother. I'll earn it."
+ },
+ "DEA_SQ5_MARK_SHORT_5000_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_5000",
+  "text": "I'm 5,000 shy, brother. I'll earn it."
+ },
+ "DEA_SQ5_MARK_SHORT_LOTS_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT_LOTS",
+  "text": "That's more Scrip than I've seen all week. I'll work on it."
+ },
+ "DEA_SQ5_MARK_SHORT_01": {
+  "speaker": "DEA",
+  "category": "MARK_SHORT",
+  "text": "Can't cover that yet. I'll earn it."
+ },
+ "DEA_SQ5_MARK_EXPIRED_01": {
+  "speaker": "DEA",
+  "category": "MARK_EXPIRED",
+  "text": "Couldn't come up with it. Letting that one go."
+ },
+ "DEA_SQ5_MARK_FOR_YOU_HOLD_01": {
+  "speaker": "DEA",
+  "category": "MARK_FOR_YOU_HOLD",
+  "text": "Got it for you. Come take it."
+ },
+ "DEA_SQ5_MARK_FOR_YOU_DROP_01": {
+  "speaker": "DEA",
+  "category": "MARK_FOR_YOU_DROP",
+  "text": "Left it at your feet. Take good care of her."
+ },
+ "DEA_SQ5_MARK_RESUME_01": {
+  "speaker": "DEA",
+  "category": "MARK_RESUME",
+  "text": "Back to it."
+ },
+ "DEA_SQ5_MARK_RESUME_02": {
+  "speaker": "DEA",
+  "category": "MARK_RESUME",
+  "text": "Now, back to it."
+ },
+ "DEA_SQ5_MARK_CANT_01": {
+  "speaker": "DEA",
+  "category": "MARK_CANT",
+  "text": "Can't manage that one."
+ },
+ "DEA_SQ5_MARK_CANT_OWNED_01": {
+  "speaker": "DEA",
+  "category": "MARK_CANT_OWNED",
+  "text": "Already got it."
+ },
+ "DEA_SQ5_MARK_CANT_POWER_01": {
+  "speaker": "DEA",
+  "category": "MARK_CANT_POWER",
+  "text": "No juice to it. Power first."
+ },
+ "DEA_SQ5_MARK_CANT_CAP_01": {
+  "speaker": "DEA",
+  "category": "MARK_CANT_CAP",
+  "text": "Can't hold another bottle, brother."
+ },
+ "DEA_SQ5_MARK_CANT_REACH_01": {
+  "speaker": "DEA",
+  "category": "MARK_CANT_REACH",
+  "text": "Can't get through from here."
+ },
+ "DEA_SQ5_MARK_CANT_FULL_01": {
+  "speaker": "DEA",
+  "category": "MARK_CANT_FULL",
+  "text": "I've got my hands full of forged iron. Not trading."
+ },
+ "WRN_SQ5_MARK_ACK_01": {
+  "speaker": "WRN",
+  "category": "MARK_ACK",
+  "text": "Yes."
+ },
+ "WRN_SQ5_MARK_ACK_02": {
+  "speaker": "WRN",
+  "category": "MARK_ACK",
+  "text": "I go."
+ },
+ "WRN_SQ5_MARK_ACK_BUY_01": {
+  "speaker": "WRN",
+  "category": "MARK_ACK_BUY",
+  "text": "I buy it. My Scrip."
+ },
+ "WRN_SQ5_MARK_ACK_BUY_02": {
+  "speaker": "WRN",
+  "category": "MARK_ACK_BUY",
+  "text": "Yes. I buy."
+ },
+ "WRN_SQ5_MARK_ACK_FOR_YOU_01": {
+  "speaker": "WRN",
+  "category": "MARK_ACK_FOR_YOU",
+  "text": "I buy one for you."
+ },
+ "WRN_SQ5_MARK_ACK_GO_01": {
+  "speaker": "WRN",
+  "category": "MARK_ACK_GO",
+  "text": "I go there."
+ },
+ "WRN_SQ5_MARK_ACK_DEFEND_01": {
+  "speaker": "WRN",
+  "category": "MARK_ACK_DEFEND",
+  "text": "I hold there."
+ },
+ "WRN_SQ5_MARK_ACK_REGROUP_01": {
+  "speaker": "WRN",
+  "category": "MARK_ACK_REGROUP",
+  "text": "Coming."
+ },
+ "WRN_SQ5_MARK_DANGER_01": {
+  "speaker": "WRN",
+  "category": "MARK_DANGER",
+  "text": "Bad place. Stay away."
+ },
+ "WRN_SQ5_MARK_DANGER_02": {
+  "speaker": "WRN",
+  "category": "MARK_DANGER",
+  "text": "Not there. Danger."
+ },
+ "WRN_SQ5_MARK_AFFORD_01": {
+  "speaker": "WRN",
+  "category": "MARK_AFFORD",
+  "text": "Now I have enough. I go."
+ },
+ "WRN_SQ5_MARK_BOUGHT_01": {
+  "speaker": "WRN",
+  "category": "MARK_BOUGHT",
+  "text": "Done."
+ },
+ "WRN_SQ5_MARK_BOUGHT_IRONHIDE_01": {
+  "speaker": "WRN",
+  "category": "MARK_BOUGHT_IRONHIDE",
+  "text": "Ironhide. Good."
+ },
+ "WRN_SQ5_MARK_BOUGHT_SECONDWIND_01": {
+  "speaker": "WRN",
+  "category": "MARK_BOUGHT_SECONDWIND",
+  "text": "Second Wind. I lift you faster."
+ },
+ "WRN_SQ5_MARK_BOUGHT_TRIGGER_01": {
+  "speaker": "WRN",
+  "category": "MARK_BOUGHT_TRIGGER",
+  "text": "Trigger Tonic. Fast hands."
+ },
+ "WRN_SQ5_MARK_BOUGHT_TWINBARREL_01": {
+  "speaker": "WRN",
+  "category": "MARK_BOUGHT_TWINBARREL",
+  "text": "Twin Barrel. Two."
+ },
+ "WRN_SQ5_MARK_BOUGHT_MARATHON_01": {
+  "speaker": "WRN",
+  "category": "MARK_BOUGHT_MARATHON",
+  "text": "Marathon Malt. I run."
+ },
+ "WRN_SQ5_MARK_BOUGHT_HAWKEYE_01": {
+  "speaker": "WRN",
+  "category": "MARK_BOUGHT_HAWKEYE",
+  "text": "Hawkeye. Now I see everything."
+ },
+ "WRN_SQ5_MARK_BOUGHT_PACKMULE_01": {
+  "speaker": "WRN",
+  "category": "MARK_BOUGHT_PACKMULE",
+  "text": "Packmule. One more rifle."
+ },
+ "WRN_SQ5_MARK_BOUGHT_BLASTPROOF_01": {
+  "speaker": "WRN",
+  "category": "MARK_BOUGHT_BLASTPROOF",
+  "text": "Blastproof. Good."
+ },
+ "WRN_SQ5_MARK_BOUGHT_OVERCLOCK_01": {
+  "speaker": "WRN",
+  "category": "MARK_BOUGHT_OVERCLOCK",
+  "text": "Overclock. It burns."
+ },
+ "WRN_SQ5_MARK_BOUGHT_GUN_01": {
+  "speaker": "WRN",
+  "category": "MARK_BOUGHT_GUN",
+  "text": "Bought."
+ },
+ "WRN_SQ5_MARK_BOUGHT_DOOR_01": {
+  "speaker": "WRN",
+  "category": "MARK_BOUGHT_DOOR",
+  "text": "Door is open."
+ },
+ "WRN_SQ5_MARK_BOUGHT_AMMO_01": {
+  "speaker": "WRN",
+  "category": "MARK_BOUGHT_AMMO",
+  "text": "Full again."
+ },
+ "WRN_SQ5_MARK_BOUGHT_CRATE_01": {
+  "speaker": "WRN",
+  "category": "MARK_BOUGHT_CRATE",
+  "text": "Crate. We see."
+ },
+ "WRN_SQ5_MARK_BOUGHT_CRUCIBLE_01": {
+  "speaker": "WRN",
+  "category": "MARK_BOUGHT_CRUCIBLE",
+  "text": "In the fire. Cover me."
+ },
+ "WRN_SQ5_MARK_BOUGHT_TRAP_01": {
+  "speaker": "WRN",
+  "category": "MARK_BOUGHT_TRAP",
+  "text": "Trap is on."
+ },
+ "WRN_SQ5_MARK_BOUGHT_BENCH_01": {
+  "speaker": "WRN",
+  "category": "MARK_BOUGHT_BENCH",
+  "text": "Pistol is better now."
+ },
+ "WRN_SQ5_MARK_DONE_POWER_01": {
+  "speaker": "WRN",
+  "category": "MARK_DONE_POWER",
+  "text": "Power. On."
+ },
+ "WRN_SQ5_MARK_SHORT_100_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_100",
+  "text": "Need 100 more. I earn it."
+ },
+ "WRN_SQ5_MARK_SHORT_200_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_200",
+  "text": "Need 200 more. I earn it."
+ },
+ "WRN_SQ5_MARK_SHORT_300_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_300",
+  "text": "Need 300 more. I earn it."
+ },
+ "WRN_SQ5_MARK_SHORT_400_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_400",
+  "text": "Need 400 more. I earn it."
+ },
+ "WRN_SQ5_MARK_SHORT_500_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_500",
+  "text": "Need 500 more. I earn it."
+ },
+ "WRN_SQ5_MARK_SHORT_600_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_600",
+  "text": "Need 600 more. I earn it."
+ },
+ "WRN_SQ5_MARK_SHORT_700_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_700",
+  "text": "Need 700 more. I earn it."
+ },
+ "WRN_SQ5_MARK_SHORT_800_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_800",
+  "text": "Need 800 more. I earn it."
+ },
+ "WRN_SQ5_MARK_SHORT_900_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_900",
+  "text": "Need 900 more. I earn it."
+ },
+ "WRN_SQ5_MARK_SHORT_1000_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_1000",
+  "text": "Need 1,000 more. I earn it."
+ },
+ "WRN_SQ5_MARK_SHORT_1250_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_1250",
+  "text": "Need 1,250 more. I earn it."
+ },
+ "WRN_SQ5_MARK_SHORT_1500_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_1500",
+  "text": "Need 1,500 more. I earn it."
+ },
+ "WRN_SQ5_MARK_SHORT_2000_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_2000",
+  "text": "Need 2,000 more. I earn it."
+ },
+ "WRN_SQ5_MARK_SHORT_2500_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_2500",
+  "text": "Need 2,500 more. I earn it."
+ },
+ "WRN_SQ5_MARK_SHORT_3000_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_3000",
+  "text": "Need 3,000 more. I earn it."
+ },
+ "WRN_SQ5_MARK_SHORT_4000_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_4000",
+  "text": "Need 4,000 more. I earn it."
+ },
+ "WRN_SQ5_MARK_SHORT_5000_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_5000",
+  "text": "Need 5,000 more. I earn it."
+ },
+ "WRN_SQ5_MARK_SHORT_LOTS_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT_LOTS",
+  "text": "Too much. I earn it slowly."
+ },
+ "WRN_SQ5_MARK_SHORT_01": {
+  "speaker": "WRN",
+  "category": "MARK_SHORT",
+  "text": "Not enough Scrip. Wait."
+ },
+ "WRN_SQ5_MARK_EXPIRED_01": {
+  "speaker": "WRN",
+  "category": "MARK_EXPIRED",
+  "text": "Not enough. I stop."
+ },
+ "WRN_SQ5_MARK_FOR_YOU_HOLD_01": {
+  "speaker": "WRN",
+  "category": "MARK_FOR_YOU_HOLD",
+  "text": "For you. Take it from me."
+ },
+ "WRN_SQ5_MARK_FOR_YOU_DROP_01": {
+  "speaker": "WRN",
+  "category": "MARK_FOR_YOU_DROP",
+  "text": "At your feet. Take."
+ },
+ "WRN_SQ5_MARK_RESUME_01": {
+  "speaker": "WRN",
+  "category": "MARK_RESUME",
+  "text": "Back to it."
+ },
+ "WRN_SQ5_MARK_RESUME_02": {
+  "speaker": "WRN",
+  "category": "MARK_RESUME",
+  "text": "Again. Back to it."
+ },
+ "WRN_SQ5_MARK_CANT_01": {
+  "speaker": "WRN",
+  "category": "MARK_CANT",
+  "text": "No. Cannot."
+ },
+ "WRN_SQ5_MARK_CANT_OWNED_01": {
+  "speaker": "WRN",
+  "category": "MARK_CANT_OWNED",
+  "text": "I have it."
+ },
+ "WRN_SQ5_MARK_CANT_POWER_01": {
+  "speaker": "WRN",
+  "category": "MARK_CANT_POWER",
+  "text": "No power."
+ },
+ "WRN_SQ5_MARK_CANT_CAP_01": {
+  "speaker": "WRN",
+  "category": "MARK_CANT_CAP",
+  "text": "No more bottles."
+ },
+ "WRN_SQ5_MARK_CANT_REACH_01": {
+  "speaker": "WRN",
+  "category": "MARK_CANT_REACH",
+  "text": "No way there."
+ },
+ "WRN_SQ5_MARK_CANT_FULL_01": {
+  "speaker": "WRN",
+  "category": "MARK_CANT_FULL",
+  "text": "My guns are better. No."
+ },
+ "JAK_SQ5_MARK_ACK_01": {
+  "speaker": "JAK",
+  "category": "MARK_ACK",
+  "text": "Yes. I go."
+ },
+ "JAK_SQ5_MARK_ACK_GO_01": {
+  "speaker": "JAK",
+  "category": "MARK_ACK_GO",
+  "text": "I'll go there. Slowly."
+ },
+ "JAK_SQ5_MARK_ACK_DEFEND_01": {
+  "speaker": "JAK",
+  "category": "MARK_ACK_DEFEND",
+  "text": "I'll stand there and keep them back."
+ },
+ "JAK_SQ5_MARK_ACK_REGROUP_01": {
+  "speaker": "JAK",
+  "category": "MARK_ACK_REGROUP",
+  "text": "I'm coming. Wait for me."
+ },
+ "JAK_SQ5_MARK_DANGER_01": {
+  "speaker": "JAK",
+  "category": "MARK_DANGER",
+  "text": "Not there. That place is bad."
+ },
+ "JAK_SQ5_MARK_DANGER_02": {
+  "speaker": "JAK",
+  "category": "MARK_DANGER",
+  "text": "Stay away from there. Trust me."
+ },
+ "JAK_SQ5_MARK_RESUME_01": {
+  "speaker": "JAK",
+  "category": "MARK_RESUME",
+  "text": "Back to it."
+ },
+ "JAK_SQ5_MARK_REFUSE_BUY_01": {
+  "speaker": "JAK",
+  "category": "MARK_REFUSE_BUY",
+  "text": "I have no Scrip, friend. Only coal dust in my pockets."
+ },
+ "JAK_SQ5_MARK_REFUSE_BUY_02": {
+  "speaker": "JAK",
+  "category": "MARK_REFUSE_BUY",
+  "text": "I can't buy anything. They paid us in nothing, down there."
+ },
+ "JAK_SQ5_MARK_CANT_REACH_01": {
+  "speaker": "JAK",
+  "category": "MARK_CANT_REACH",
+  "text": "I can't get there. Show me another way."
+ },
+ "JAK_SQ5_MARK_CANT_01": {
+  "speaker": "JAK",
+  "category": "MARK_CANT",
+  "text": "I can't do that. I'm sorry."
  }
 }

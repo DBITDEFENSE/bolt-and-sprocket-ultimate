@@ -58,6 +58,8 @@ var pings: BotPings = null
 var debug: BotDebugOverlay = null
 ## The easter-egg help (T-067): assignments, Full Partner, what the squad has discovered.
 var ee: BotEEHub = null
+## Map-mark orders (Update 04 section 3, T-069): the MapMarks order handler; each brain's BotMarkTask.
+var mark_orders: BotMarkOrders = null
 var _bot_cd: Dictionary = {}      # "pid:FAMILY" -> time a bark may come again
 ## The human's recent walking line (their training loop): ~24 s of breadcrumbs. Bots never park on it.
 var human_line: PackedVector3Array = PackedVector3Array()
@@ -84,6 +86,7 @@ func setup(map_root: MapRoot) -> void:
 	_assign_bonus_perks()
 	_start_planner()
 	_start_ee()
+	_start_marks()
 	_build_chokes()
 	for n: Node in map.find_children("*", "WallBuy", true, false):
 		_wall_buys.append(n as WallBuy)
@@ -115,6 +118,8 @@ func add_brain(p: Player, options: Dictionary = {}, i: int = -1) -> BotBrain:
 	brains.append(b)
 	if ee != null:
 		ee.attach(b)
+	if mark_orders != null:
+		mark_orders.attach(b)
 	if bool(b.options.get("kit", true)) and not Campaign.carried_player(p.player_id):
 		apply_kit(p, true)   # a campaign arrival keeps the carried kit instead
 	if is_inside_tree():
@@ -233,6 +238,13 @@ func _start_ee() -> void:
 	ee = BotEEHub.new()
 	add_child(ee)
 	ee.setup(self)
+
+
+func _start_marks() -> void:
+	mark_orders = BotMarkOrders.new()
+	mark_orders.name = "MarkOrders"
+	add_child(mark_orders)
+	mark_orders.setup(self)
 
 
 # ================================================================== the easter egg (Update 04 section 5, T-067)
@@ -1084,6 +1096,8 @@ func report() -> PackedStringArray:
 		float(ts["ms_per_bot_frame"]), float(ts["ms_per_think"])])
 	if ee != null:
 		out.append_array(ee.report())
+	if mark_orders != null:
+		out.append_array(mark_orders.report())
 	for e: String in choke_events.slice(0, 8):
 		out.append("  CHOKE " + e)
 	for e2: String in down_log.slice(maxi(0, down_log.size() - 24)):

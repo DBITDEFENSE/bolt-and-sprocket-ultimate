@@ -14,6 +14,7 @@ const ACTION_NAMES: Dictionary = {
 	"look_left": "Look left", "look_right": "Look right", "look_up": "Look up", "look_down": "Look down",
 	"dev_console": "Dev console",
 	"minimap_zoom": "Minimap zoom",
+	"ping": "Ping / mark (double-tap: danger)",
 }
 
 var _tab: int = 0

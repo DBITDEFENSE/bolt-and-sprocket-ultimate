@@ -496,6 +496,8 @@ func _full_partner() -> void:
 			continue
 		if b2.player.is_companion:
 			continue   # Jakub stays at the side of the one he covers: egg work only when asked
+		if b2.mark != null and b2.mark.active():
+			continue   # on the player's map-mark order (T-069)
 		var best: Dictionary = {}
 		for qi: int in qids.size():
 			var qid: StringName = qids[qi]

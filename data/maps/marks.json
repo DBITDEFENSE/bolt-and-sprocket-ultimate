@@ -1,0 +1,59 @@
+{
+  "_doc": "Map marks (Update 04 section 3, DECISIONS T-069): limits, lifetimes, colours, the in-world markers and the note presets. Read by core/map/map_marks.gd (MapMarks), core/map/world_marks.gd (WorldMarks), the pause map (gravelight/ui/pause_map_view.gd) and the ping key (gravelight/ui/mark_ping.gd). What bots do with marks is in data/gravelight/ai/marks.json.",
+  "limits": {
+    "_doc": "personal: your own waypoints (go, note, buy-for-yourself), the oldest goes when a new one would pass the cap. danger: danger marks per player. regroup: one regroup mark at a time. Orders: one per bot (a new one replaces it).",
+    "personal": 3,
+    "danger": 3,
+    "regroup": 1
+  },
+  "lifetime_s": {
+    "_doc": "Marks that end by themselves (0 = until removed). Orders end when the bot is done or gives up (the bots' marks.json).",
+    "danger": 60.0,
+    "regroup": 60.0,
+    "go": 0.0,
+    "note": 0.0
+  },
+  "colors": {
+    "go": "#2f6fd6",
+    "defend": "#2e8b3a",
+    "danger": "#c4241c",
+    "regroup": "#d9a21b",
+    "note": "#5a4a3a",
+    "buy": "#b8860b",
+    "collect": "#7d3fc9"
+  },
+  "names": {
+    "go": "Go here",
+    "defend": "Defend here",
+    "danger": "Danger",
+    "regroup": "Regroup",
+    "note": "Note",
+    "buy": "Buy this",
+    "collect": "Collect / activate"
+  },
+  "note_max_chars": 28,
+  "note_presets": ["Meet here", "Loop here", "Watch this window", "Crate was here", "Careful", "Ammo here", "Hold the stairs"],
+  "remove_radius_px": 18.0,
+  "ping": {
+    "_doc": "The ping key (GRAVELIGHT ping: middle mouse / D-pad up; B&S bs_ping: G / Back). range_m: how far it reaches; double_tap_s: a second press this fast makes a Danger mark; confirm_s: a second press on a door within this confirms 'open this door'; remove_m: pinging within this of one of your marks removes it.",
+    "range_m": 45.0,
+    "double_tap_s": 0.35,
+    "confirm_s": 3.0,
+    "remove_m": 1.4
+  },
+  "world": {
+    "_doc": "In-world markers: GRAVELIGHT a chalk X on the floor, B&S a holo pin; a label (icon + distance) above each. fade_begin_m..hide_m: the label fades out; labels_max: only the nearest few carry a label; near_hide_m: standing on it hides the label.",
+    "x_size_m": 1.4,
+    "chalk_glow": 0.5,
+    "fade_begin_m": 12.0,
+    "fade_end_alpha": 0.35,
+    "hide_m": 70.0,
+    "labels_max": 4,
+    "label_gap_px": 170.0,
+    "label_gap_y_px": 26.0,
+    "near_hide_m": 2.2,
+    "label_height_m": 1.7,
+    "decal_fade_begin_m": 30.0,
+    "decal_fade_length_m": 25.0
+  }
+}

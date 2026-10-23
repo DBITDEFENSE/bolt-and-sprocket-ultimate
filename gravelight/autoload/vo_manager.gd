@@ -235,6 +235,13 @@ func play_category(speaker: StringName, category: String, chance_override: float
 	return true
 
 
+## Keeps a speaker's category quiet for `seconds` (a scripted line is about to say the same thing better: a bot's
+## map-mark confirmation over its automatic perk / buy / door line; Update 04 section 3, T-069).
+func hold_category(speaker: StringName, category: String, seconds: float) -> void:
+	var rk: String = _rule_key(speaker, category)
+	_cooldown_until[rk] = maxf(float(_cooldown_until.get(rk, -1.0)), _now + seconds)
+
+
 ## A line from the local player's character (DUT/PEG/DEA/WRN).
 func say_player(category: String, chance_override: float = -1.0) -> bool:
 	return say_as(_local_player(), category, chance_override)
