@@ -1,13 +1,13 @@
 extends Node3D
 ## Captures for the M1911 attachments (UPDATE_04 section 6, T-068). Off-screen and silent:
 ##   godot --audio-driver Dummy --position -4000,-4000 --resolution 1280x720 --path . \
-##       res://gravelight/tools_src/kit_shots.tscn -- --mode=<models|fp|ui|world|bench> --out=<dir> [--builds=...]
+##       res://gravelight/tools_src/kit_shots.tscn -- --mode=<models|fp|ui> --out=<dir> [--builds=...]
 ## A build is "<weapon>[:slot=option,...][,finish=<id>]", e.g. "m1911_up:mag=drum,barrel=compensator,finish=nickel";
 ## builds are separated by ";". Modes:
 ##   models  a contact sheet of side views (both sides) of every build: <out>/kit_models.png
 ##   fp      first person, hip and aimed, in a lamp-lit room: <out>/fp_<n>_<build>.png
 ##   ui      the Armorer's Bench screen on a few states: <out>/bench_ui_<n>.png
-##   world   third person (a squad-mate's body holding each build) and the bench itself: <out>/world_<n>.png
+## Third person and the benches on the real maps: bench_shots.tscn.
 ## Uses Players that never enter the tree (the mouse is never touched).
 
 const W: int = 1280
@@ -116,8 +116,6 @@ func _process(_delta: float) -> void:
 			await _do_fp()
 		"ui":
 			await _do_ui()
-		"world":
-			await _do_world()
 	print("[kit_shots] RESULT done")
 	if _fake != null:
 		_fake.free()
@@ -265,46 +263,3 @@ func _do_ui() -> void:
 		await _frames(2)
 	GameState.power_on = false
 	print("[kit_shots] saved %d bench screens" % states.size())
-
-
-# ================================================================== third person and the bench
-
-func _do_world() -> void:
-	_room(true)
-	var bench: ArmorersBench = ArmorersBench.new()
-	_scene.add_child(bench)
-	bench.position = Vector3(-1.6, -1.6, -2.4)
-	bench.rotation_degrees = Vector3(0, 30, 0)
-	var bodies: Array = []
-	var builds: Array = ["m1911:mag=drum,barrel=compensator,sights=radium", "m1911:mag=extended,barrel=suppressor,sights=raised_target,grip=stock",
-		"m1911_up:mag=drum,barrel=compensator,grip=checkered,ammo=nachtglas"]
-	var chars: Array = [&"dutch", &"peg", &"deacon"]
-	for i: int in builds.size():
-		var w: WeaponInstance = make(str(builds[i]))
-		var rb: RemoteBody = RemoteBody.new()
-		rb.look_weapon = w
-		_scene.add_child(rb)
-		rb.setup(chars[i], 10 + i)
-		rb.set_weapon(w.id)
-		rb.refresh_weapon()
-		rb.position = Vector3(0.6 + i * 0.95, -1.6, -2.6 + i * 0.25)
-		rb.rotation_degrees = Vector3(0, -150 + i * 12, 0)
-		bodies.append(rb)
-	_cam.fov = 50.0
-	_cam.position = Vector3(0.7, -0.3, 0.2)
-	_cam.look_at(Vector3(0.4, -0.55, -2.4), Vector3.UP)
-	await _frames(20)
-	(await _grab()).save_png(_out.path_join("world_00_squad.png"))
-	# close on the middle body's gun
-	_cam.fov = 30.0
-	_cam.position = Vector3(1.3, -0.35, -1.5)
-	_cam.look_at((bodies[1] as Node3D).position + Vector3(-0.1, 1.15, -0.2), Vector3.UP)
-	await _frames(5)
-	(await _grab()).save_png(_out.path_join("world_01_close.png"))
-	# the bench
-	_cam.fov = 55.0
-	_cam.position = bench.position + Vector3(0.6, 1.55, 1.2)
-	_cam.look_at(bench.global_transform * Vector3(0, 1.0, -0.35), Vector3.UP)
-	await _frames(5)
-	(await _grab()).save_png(_out.path_join("world_02_bench.png"))
-	print("[kit_shots] saved world shots")

@@ -100,6 +100,7 @@ func _run() -> void:
 
 
 func _map(key: String, path: String) -> void:
+	GameState.bot_count = 2 if key == "map00" else 0
 	var map: MapRoot = _load(path)
 	GameState.god_mode = true
 	await _secs(3.0)
@@ -121,6 +122,7 @@ func _map(key: String, path: String) -> void:
 	await _secs(0.6)
 	await _shot("%s_bench_room" % key)
 	cam.queue_free()
+	p.visible = true   # (the viewmodel hangs off the player's camera)
 	p.camera.make_current()
 	# 2. first person at the bench, then the bench screen
 	stand_at(p, bench)
@@ -144,8 +146,43 @@ func _map(key: String, path: String) -> void:
 	p.rotation.y = bench.global_rotation.y   # turned round: the kitted pistol against the room
 	await _secs(1.0)
 	await _shot("%s_bench_kitted" % key)
+	if key == "map00":
+		await _bots_at_bench(map, bench)
 	GameState.power_on = false
 	GameState.god_mode = false
+
+
+## Two squad-mates buy builds through the bench API (the path a map-mark order uses) and stand by the bench: the
+## attachments on the third-person guns.
+func _bots_at_bench(map: MapRoot, bench: ArmorersBench) -> void:
+	var builds: Array = [[["mag", "drum"], ["barrel", "compensator"], ["sights", "raised_target"]],
+		[["mag", "extended"], ["barrel", "suppressor"], ["grip", "stock"]]]
+	var bots: Array = []
+	for n: Node in get_tree().get_nodes_in_group(&"bots"):
+		var b: Player = n as Player
+		if b != null and not b.is_companion and bots.size() < 2:
+			bots.append(b)
+	for i: int in bots.size():
+		var b2: Player = bots[i]
+		Economy.grant(b2.player_id, 6000)
+		for so: Array in builds[i]:
+			print("[bench_shots] bot %d buy %s/%s -> %s" % [b2.player_id, so[0], so[1], ArmorersBench.buy(b2, str(so[0]), str(so[1]))])
+	var cam: Camera3D = Camera3D.new()
+	cam.fov = 40.0
+	map.add_child(cam)
+	cam.global_position = bench.global_transform * Vector3(0.2, 1.45, -3.6)
+	cam.look_at(bench.global_transform * Vector3(0.0, 1.15, -1.5), Vector3.UP)
+	cam.make_current()
+	for f: int in 20:
+		for i2: int in bots.size():
+			var b3: Player = bots[i2]
+			b3.global_position = bench.global_transform * Vector3(-0.55 + i2 * 1.1, 0.05, -1.5)
+			b3.velocity = Vector3.ZERO
+			b3.rotation.y = bench.global_rotation.y + (0.9 if i2 == 0 else -0.9)
+		await get_tree().process_frame
+	await _shot("map00_bots_kitted_third_person")
+	cam.queue_free()
+	map.player.camera.make_current()
 
 
 func _play_test() -> void:
