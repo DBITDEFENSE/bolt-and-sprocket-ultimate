@@ -215,6 +215,27 @@ The details are in `EASTER_EGGS.md` §Map 0. The radio is behind the bar. Three 
 
 Training loop (light): around the taproom tables and bar, clockwise. It's tight on purpose. Map 0 is about holding, not running.
 
+## Map 0 lighting (DECISIONS T-061)
+A warm refuge you're about to lose, in a bitterly cold, huge night. All of it is built by `build_environment` and
+`_dress_lighting` in `gen_map00.gd`; shots from fixed viewpoints: `data/gravelight/lighting/shots_map00.json` (light_shots).
+- **Environment:** SDFGI bounce (High) and SSIL (Medium+) on top of SSAO; the flat cold ambient is Low's fallback. The
+  background colour's energy feeds the GI's sky light only (the sky is Landscape's dome mesh). Volumetric fog takes little
+  of the GI (`volumetric_fog_gi_inject` 0.3) so the field's ground fog stays dark blue, not milky.
+- **Inside, power off:** shadow-casting lanterns (TapLamp1-4, HallLamp, StableLamp1-2, the hearth) whose halos show in
+  the haze; candles on the taproom tables and guest-room nightstands; hall sconces at both ends; a sconce on the
+  hayloft; an oil lamp over the Old Cellar's ammo box; the installers' lantern in the perk vault (the vault was black).
+  Cold moonlight through the taproom and guest-room windows (shadowed in the taproom, so the barricade boards stripe
+  the floor) and down both light wells (the coal well's lands in Jakub's cage).
+- **The power:** the lever's sweep now reaches the inn: bare bulbs under tin shades (TapBulb1-3, HallBulb1-2,
+  Room1-3Bulb, PassBulb, StableBulb1-2) come on zone by zone after the cellars, whiter than the oil lamps.
+- **Outside:** lamplight spills from every window onto the snow (`WindowSpill`), GRAVELIGHT ONE's fire glows orange in
+  the ground fog (`WreckGlow`) and through the taproom's east window (`WreckSpill`), bigger warm pools from the yard's
+  lamps.
+- **Following lights:** every light the pass added that belongs to a lamp (window spills, wreck glow and spill, candles)
+  runs `maps/map00_crossroads/follow_light.gd` and follows its lamp's level, so the Cousins' blackout, the Bellringer's
+  stutter and the fire dying darken them too. The new bulbs and sconces are in `cousins.json` setup.lamp_groups;
+  `lit_glass.gd` hides a bulb's glass whenever the bulb is out.
+
 ---
 
 # MAP 1 — "KALTENBRUNN"

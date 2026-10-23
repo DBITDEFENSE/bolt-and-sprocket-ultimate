@@ -22,7 +22,7 @@
   {"name": "08_hayloft", "from": [7.0, 5.1, 33.0], "look": [20.0, 1.5, 25.0], "fov": 75, "wait": 2.0},
   {"name": "09_yard", "from": [31.0, 1.6, 46.0], "look": [10.0, 2.0, 36.0], "fov": 75, "wait": 2.0},
   {"name": "10_field_wreck", "from": [33.0, 1.7, 36.0], "look": [45.0, 2.0, 5.0], "fov": 70, "wait": 2.0},
-  {"name": "11_cellar_vault", "from": [25.6, -1.6, 30.2], "look": [32.0, -2.0, 21.0], "fov": 80, "wait": 2.0},
+  {"name": "11_cellar_vault", "from": [27.8, -1.6, 28.4], "look": [29.6, -2.1, 19.6], "fov": 80, "wait": 2.0},
   {"name": "12_oldcellar_vault", "from": [12.0, -1.6, 14.6], "look": [21.0, -2.2, 2.5], "fov": 80, "wait": 2.0},
   {"name": "13_oldcellar_cage", "from": [4.6, -1.6, 7.5], "look": [1.0, -2.2, 4.2], "fov": 80, "wait": 2.0},
   {"name": "14_wide_inn", "from": [52.0, 14.0, 58.0], "look": [14.0, 2.0, 16.0], "fov": 65, "wait": 2.0},
