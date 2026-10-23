@@ -1,6 +1,6 @@
 # PROGRESS
 
-RESUME HERE: Update 02 and Update 03 are finished and merged to master (tag u02-u03); read morning/MORNING_REPORT.md first. Cousins now scale for bot-only squads (T-060). Lighting pass on all three maps done (T-060a..T-063, tag lighting-pass; shots in morning/screenshots/lighting/). Open: the user's answers (revive metric, Paul's unit, likeness placeholders, HUMOR-REVIEW). Next: HB1 extras, then HB2 PAUL on branch hb2-paul, then companion (Jakub) replication for online co-op.
+RESUME HERE: Update 04 (minimap, pause map & marks, quest log, bots on the EE, M1911 attachments; work order bolt-and-sprocket/UPDATE_04_MAP_QUESTS_PISTOL.md) in progress. Phase A builders in .wt/: u04-1-minimap (s1+s2, T-065), u04-4-objectives (s4, T-066), u04-5-ee (s5, T-067), u04-6-pistol (s6, T-068); phase B after s1 merges: u04-3-marks (s3, T-069). Merge each with --no-ff after GUT + smokes. Earlier: Update 02/03 (tag u02-u03), T-060 Cousins scaling, lighting pass (tag lighting-pass).
 
 ## Overnight run, 2026-10-21 → 22: the plan
 
