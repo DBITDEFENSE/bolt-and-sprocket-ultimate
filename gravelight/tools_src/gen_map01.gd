@@ -105,6 +105,9 @@ const AMMO_BOXES: Array = [
 	["RailYard", Vector3(40.48, 0, 32.5), -90.0], ["Barracks", Vector3(-1.6, 0, 32.48), 180.0],
 	["SaltChapel", Vector3(39.43, DY, 78.5), 90.0], ["LabWing", Vector3(83.5, DY, 95.0), 90.0],
 ]
+## The Armorer's Bench (UPDATE_04 section 6, T-068): [floor position against the wall, yaw so local -Z faces the yard].
+## At the gatehouse, against its east face north of the Kar98k corner, clear of the shelf by its door.
+const ARMORERS_BENCH: Array = [Vector3(12.01, 0, 8.8), -90.0]
 
 ## Greybox colour keys -> material library keys (world/materials.gd).
 const MAT_MAP: Dictionary = {
@@ -136,7 +139,7 @@ const HIDE: Array = [
 	"Rail", "TowerLeg", "TowerHead", "SnowMound?", "Drift", "Boxcar", "Locomotive", "LocoCab", "BufferStop", "SignalBox",
 	"Gate", "FilingA", "Bunk", "MessTable", "ServingLine", "Pews", "Altar", "AltarTop", "Bell", "Font", "ChandelierVis",
 	"Confessional", "Turbine", "Catwalk", "Tank", "NurseryBed", "AdminStairs", "FlightA", "FlightB", "FlightC",
-	"NavBlock_Ammo*",
+	"NavBlock_Ammo*", "NavBlock_ArmorersBench",
 ]
 const SODIUM: Color = Color(1.0, 0.66, 0.36)
 const INCAND: Color = Color(1.0, 0.78, 0.55)
@@ -718,6 +721,8 @@ func build_ammo_blocks() -> void:
 		var h: Vector3 = Vector3(0.52, 0, 0.3) if absf(float(ab[2])) != 90.0 else Vector3(0.3, 0, 0.52)
 		var p: Vector3 = ab[1]
 		box(geo, "NavBlock_Ammo_" + str(ab[0]), p - h, p + h + Vector3(0, 0.62, 0), "metal")
+	var bp: Vector3 = ARMORERS_BENCH[0]   # the Armorer's Bench: 0.72 m out from the gatehouse, 1.5 m along it
+	box(geo, "NavBlock_ArmorersBench", bp + Vector3(0, 0, -0.75), bp + Vector3(0.72, 0.9, 0.75), "metal")
 
 
 # ================================================================== navigation
@@ -3155,6 +3160,7 @@ func build_gameplay() -> void:
 	_node("res://gravelight/world/crucible.gd", "Crucible", {}, Vector3(46.2, CY, 124), 90.0)
 	for ab2: Array in AMMO_BOXES:
 		_node("res://gravelight/world/ammo_box.gd", "AmmoBox_" + str(ab2[0]), {"box_name": str(ab2[0]).to_snake_case()}, ab2[1], float(ab2[2]))
+	_node("res://gravelight/world/armorers_bench.gd", "ArmorersBench", {}, ARMORERS_BENCH[0], float(ARMORERS_BENCH[1]))
 	build_quest_objects()
 	# power-on burst points (G and F ground)
 	for bp: Vector3 in [Vector3(50, DY, 64), Vector3(78, DY, 79), Vector3(0, DY, 88), Vector3(24, DY, 88)]:

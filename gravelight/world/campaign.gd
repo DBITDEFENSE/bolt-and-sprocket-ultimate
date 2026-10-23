@@ -154,8 +154,7 @@ static func stash_to_net(w: WeaponHolder) -> Dictionary:
 	var stash: Dictionary = w._last_stand_stash
 	var s: Array = []
 	for sw: Variant in stash.get("slots", []):
-		var wi: WeaponInstance = sw as WeaponInstance
-		s.append([String(wi.id), wi.mag, wi.reserve, wi.fire_mode, wi.underbarrel_active, wi.underbarrel_ammo])
+		s.append(WeaponHolder.net_entry(sw as WeaponInstance))   # with the tier and the M1911 attachments
 	return {"s": s, "c": int(stash.get("current", 0)), "m": String(w.melee_id), "g": w.grenades, "t": String(w.tactical_id), "tc": w.tactical_count}
 
 

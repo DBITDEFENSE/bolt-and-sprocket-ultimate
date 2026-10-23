@@ -452,6 +452,10 @@ const CRATES: Array = [["Hearth", Vector3(22.9, 0, 14.0), 90.0, true], ["GuestBe
 ## the north end), and on the stable's west wall under the hayloft between the trench-gun chalk and the yard door.
 const AMMO_BOXES: Array = [["Taproom", Vector3(5.34, 0, 7.3), -90.0], ["Stable", Vector3(6.48, 0, 32.0), -90.0],
 	["Cellar", Vector3(14.6, -3.2, 15.5), 0.0]]   # the Old Cellar's barrel vault, south wall (T-051)
+## The Armorer's Bench (UPDATE_04 section 6, T-068): [floor position against the wall, yaw so local -Z faces the room].
+## The inn has no walled tack room: the bench stands in the stable's tack corner on the west wall, under the tack rail
+## and saddle blanket (raised above its pegboard), between the hay-stair end and the trench-gun chalk.
+const ARMORERS_BENCH: Array = [Vector3(6 + T * 0.5 + 0.01, 0, 26.5), -90.0]
 ## the cellar's hanging bulbs (bulb glass position; the power lights sit just under them): one pool per machine row
 const CELLAR_BULBS: Array = [Vector3(27.0, CELLAR_Y + 2.55, 22.5), Vector3(33.0, CELLAR_Y + 2.55, 22.5),
 	Vector3(26.5, CELLAR_Y + 2.55, 27.5), Vector3(33.5, CELLAR_Y + 2.55, 27.5), Vector3(30.35, CELLAR_Y + 2.55, 28.7)]
@@ -479,6 +483,8 @@ func build_nav_blocks() -> void:
 		var ah: Vector3 = Vector3(0.52, 0, 0.3) if absf(float(ab[2])) != 90.0 else Vector3(0.3, 0, 0.52)
 		var ap: Vector3 = ab[1]
 		box(geo, "NavBlock_AmmoBox", ap - ah, ap + ah + Vector3(0, 0.62, 0), "metal", true, false)
+	var bp: Vector3 = ARMORERS_BENCH[0]   # the bench runs 0.72 m out from the west wall, 1.5 m along it
+	box(geo, "NavBlock_ArmorersBench", bp + Vector3(0, 0, -0.75), bp + Vector3(0.72, 0.9, 0.75), "metal", true, false)
 
 
 func build_cellar() -> void:
@@ -1578,9 +1584,10 @@ func _dress_stable() -> void:
 			Props.hay_bale(g, Vector3(6.9 + xi * 0.95, 3.5, 30.85 + zi * 0.55), 0.0 if (xi + zi) % 2 == 0 else 3.0)
 	Props.hay_bale(g, Vector3(7.8, 3.95, 31.4), 8.0)
 	Props.hay_bale(g, Vector3(8.6, 3.95, 32.4), -6.0)
-	Props.block(g, Vector3(6.15, 1.2, 25.5), Vector3(6.25, 1.3, 27.5), "beam")   # tack rail
-	Props.block(g, Vector3(6.25, 1.0, 25.9), Vector3(6.6, 1.35, 26.5), "cloth_red")   # saddle blanket
-	Props.block(g, Vector3(6.25, 0.9, 26.8), Vector3(6.45, 1.3, 27.2), "furniture")    # bridle/strap
+	# tack rail, saddle blanket, bridle: hung above the Armorer's Bench (T-068), which stands under them
+	Props.block(g, Vector3(6.15, 2.0, 25.5), Vector3(6.25, 2.1, 27.5), "beam")   # tack rail
+	Props.block(g, Vector3(6.25, 1.8, 25.9), Vector3(6.6, 2.15, 26.5), "cloth_red")   # saddle blanket
+	Props.block(g, Vector3(6.25, 1.78, 26.8), Vector3(6.45, 2.1, 27.2), "furniture")    # bridle/strap
 	Props.crate(g, Vector3(22.9, 0, 33.2), 0.6, 15.0)
 	# loft edge rail near the stair head
 	Props.block(g, Vector3(14.9, 3.5, 22.15), Vector3(15.0, 4.5, 25.5), "beam")
@@ -2601,6 +2608,10 @@ func build_gameplay() -> void:
 		ammo.position = ab2[1]
 		ammo.rotation.y = deg_to_rad(float(ab2[2]))
 		gameplay.add_child(ammo)
+	var bench: Node3D = _scripted(Node3D.new(), "res://gravelight/world/armorers_bench.gd", "ArmorersBench", {})
+	bench.position = ARMORERS_BENCH[0]
+	bench.rotation.y = deg_to_rad(float(ARMORERS_BENCH[1]))
+	gameplay.add_child(bench)
 	var radio: Node3D = _scripted(Node3D.new(), "res://gravelight/world/field_radio.gd", "FieldRadio", {})
 	radio.position = Vector3(4.8, 2.0, 4.9)
 	radio.rotation.y = deg_to_rad(-90)

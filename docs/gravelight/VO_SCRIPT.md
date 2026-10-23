@@ -1491,3 +1491,26 @@ LORE §12.1: Jakub saw Tomasz taken to the Laboratory Wing and nothing after; th
 - WRN: "...Thank you for looking."
 - JAK: "Before they took him, I taught him the chalk. The marks we left for each other. He made his hook backwards. Always backwards."
 - WRN: "Then if I ever see a backwards hook, I'll know it's his."
+
+## 17. The Armorer's Bench: Gunsmith lines (Update 04 §6, DECISIONS T-068)
+
+Each survivor says one of these when they fit an attachment to their M1911 at the Armorer's Bench (the first
+purchase of the match always, then 45% of the time; `m1911_attachments.json` "vo"). Player channel, chatter
+priority, positional at the buyer. Jakub has one for the day a bot order sends him to the bench, and he refuses the
+Nachtglas rounds (`GUNSMITH_REFUSE`, when the bench API is asked to load them into his pistol, or when you try to
+hand him a pistol already loaded with them). Unbaked lines play as subtitles until the TTS bake.
+
+**`GUNSMITH`** (an attachment fitted):
+- `DUT_GUNSMITH_01`: "There. Same old forty-five, just meaner."
+- `DUT_GUNSMITH_02`: "My uncle fixed tractors with less. This'll do."
+- `PEG_GUNSMITH_01`: "Section Five would have killed for a bench like this. Possibly literally."
+- `PEG_GUNSMITH_02`: "Better. Now it does what it's told."
+- `DEA_GUNSMITH_01`: "Every engine wants a little love. Guns too. Mostly guns."
+- `DEA_GUNSMITH_02`: "Seated, snug, and squared away. Like a good track pin."
+- `WRN_GUNSMITH_01`: "Not my rifle. But it's learning."
+- `WRN_GUNSMITH_02`: "Sights right, grip right. Now it only has to be honest."
+- `JAK_GUNSMITH_01`: "In the mine we mended everything twice. Here, once will have to do."
+
+**`GUNSMITH_REFUSE`** (Jakub and the Nachtglas rounds):
+- `JAK_GUNSMITH_REFUSE_01`: "No. Not the glass. I dug that stuff out of the walls. It does not go in my hands."
+- `JAK_GUNSMITH_REFUSE_02`: "Keep the purple ones. I have seen what they do to the men who carry them."

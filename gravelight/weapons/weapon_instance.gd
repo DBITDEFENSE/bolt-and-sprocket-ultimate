@@ -16,6 +16,12 @@ var underbarrel_active: bool = false
 var underbarrel_ammo: int = 0
 var heat: float = 0.0              # seconds of continuous fire (overheating weapons)
 var overheat_lockout: float = 0.0  # seconds left before it can fire again
+## M1911 attachments (UPDATE_04 section 6, M1911Kit): slot -> option id, and the cosmetic finish. They belong to
+## this pistol, so they go wherever it goes. Call refresh_kit() after changing `kit` directly.
+var kit: Dictionary = {}
+var finish: StringName = &""
+var _kit_mods: Dictionary = {}     # M1911Kit.compile(kit, upgraded), rebuilt by refresh_kit()
+var _kit_stats: Dictionary = {}    # its "stats" block (f() multipliers), kept apart for speed
 
 
 static func create(weapon_id: StringName) -> WeaponInstance:
@@ -39,11 +45,59 @@ func base_id() -> StringName:
 
 
 func property(key: String, fallback: Variant = null) -> Variant:
+	if not _kit_mods.is_empty() and (_kit_mods["props"] as Dictionary).has(key):
+		return (_kit_mods["props"] as Dictionary)[key]
 	return (data.get("properties", {}) as Dictionary).get(key, fallback)
 
 
 func has_property(key: String) -> bool:
+	if not _kit_mods.is_empty() and (_kit_mods["props"] as Dictionary).has(key):
+		return true
 	return (data.get("properties", {}) as Dictionary).has(key)
+
+
+# ---------------------------------------------------------------- M1911 attachments (M1911Kit)
+
+## Recompiles the attachment modifiers after `kit` changed (M1911Kit.install does this for you).
+func refresh_kit() -> void:
+	if kit.is_empty():
+		_kit_mods = {}
+		_kit_stats = {}
+		return
+	_kit_mods = M1911Kit.compile(kit, upgraded)
+	_kit_stats = _kit_mods["stats"]
+
+
+## The compiled attachment modifiers ({} without attachments): see M1911Kit.compile.
+func kit_mods() -> Dictionary:
+	return _kit_mods
+
+
+## True with a suppressor fitted: its shots don't reveal on the minimap (UPDATE_04 section 2's firing reveal).
+func is_suppressed() -> bool:
+	return bool(property("suppressed", false))
+
+
+## Raise-time multiplier after a swap (the shoulder stock is slower to draw, checkered grips faster).
+func draw_mult() -> float:
+	return float(_kit_mods.get("draw", 1.0)) if not _kit_mods.is_empty() else 1.0
+
+
+## The fitted attachments by name (Last Rites names on an upgraded pistol), then the finish: what the pause menu's
+## LOADOUT tab lists under the gun (PauseMenu.attachment_text calls this).
+func attachment_labels() -> PackedStringArray:
+	var out: PackedStringArray = []
+	for d: Dictionary in M1911Kit.describe(self):
+		if str(d["option"]) != "":
+			out.append(str(d["name"]))
+	if finish != &"":
+		out.append("%s finish" % str(M1911Kit.finish_def(finish).get("name", String(finish))))
+	return out
+
+
+## Cache key part for anything the attachments or finish change (models, recoil, ADS zoom).
+func kit_sig() -> String:
+	return M1911Kit.signature(kit, finish) if not kit.is_empty() or finish != &"" else ""
 
 
 ## The Crucible's tier table (weapons.json "crucible_tiers"): [{tier, suffix, damage_mult, mag_mult, reserve_mult, reload_mult}].
@@ -94,11 +148,17 @@ func display_name() -> String:
 
 
 func mag_size() -> int:
-	return ceili(int(data["mag"]) * float(tier_cfg().get("mag_mult", 1.0)))
+	var base: int = int(data["mag"])
+	if not _kit_mods.is_empty():
+		base = int((_kit_mods["set"] as Dictionary).get("mag", base))
+	return ceili(base * float(tier_cfg().get("mag_mult", 1.0)))
 
 
 func reserve_max() -> int:
-	return ceili(int(data["reserve"]) * float(tier_cfg().get("reserve_mult", 1.0)))
+	var base: int = int(data["reserve"])
+	if not _kit_mods.is_empty():
+		base = int((_kit_mods["set"] as Dictionary).get("reserve", base))
+	return ceili(base * float(tier_cfg().get("reserve_mult", 1.0)))
 
 
 func refill() -> void:
@@ -128,6 +188,8 @@ func f(key: String, fallback: float = 0.0) -> float:
 				v *= float(tc.get("damage_mult", 1.0))
 			"reload_partial", "reload_empty":
 				v *= float(tc.get("reload_mult", 1.0))
+	if not _kit_stats.is_empty():
+		v *= float(_kit_stats.get(key, 1.0))
 	return v
 
 
@@ -153,6 +215,8 @@ func limb_mult(limb: StringName) -> float:
 		m = float(GLData.table("weapons")["default_limb_mults"].get(String(limb), 1.0))
 	if has_property("hollow_point") and (limb == &"arms" or limb == &"legs"):
 		m *= 1.5
+	if not _kit_mods.is_empty():
+		m *= float((_kit_mods["limb"] as Dictionary).get(String(limb), 1.0))
 	return m
 
 

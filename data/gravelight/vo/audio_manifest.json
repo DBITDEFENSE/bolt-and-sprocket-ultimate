@@ -1762,6 +1762,26 @@
    "voice": "Mark",
    "chain": "deacon"
   },
+  "DEA_GUNSMITH_01": {
+   "line": "DEA_GUNSMITH_01",
+   "speaker": "DEA",
+   "hash": "bb9525232c84eca1",
+   "path": "res://gravelight/audio/vo/dea/DEA_GUNSMITH_01.ogg",
+   "format": "ogg",
+   "duration": 5.045,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_GUNSMITH_02": {
+   "line": "DEA_GUNSMITH_02",
+   "speaker": "DEA",
+   "hash": "50d9e2a386fc2377",
+   "path": "res://gravelight/audio/vo/dea/DEA_GUNSMITH_02.ogg",
+   "format": "ogg",
+   "duration": 4.705,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
   "DEA_HEADSHOT_01": {
    "line": "DEA_HEADSHOT_01",
    "speaker": "DEA",
@@ -2969,6 +2989,26 @@
    "path": "res://gravelight/audio/vo/dut/DUT_GLASSHIDE_01.ogg",
    "format": "ogg",
    "duration": 3.418,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_GUNSMITH_01": {
+   "line": "DUT_GUNSMITH_01",
+   "speaker": "DUT",
+   "hash": "4c265b553297435b",
+   "path": "res://gravelight/audio/vo/dut/DUT_GUNSMITH_01.ogg",
+   "format": "ogg",
+   "duration": 4.083,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_GUNSMITH_02": {
+   "line": "DUT_GUNSMITH_02",
+   "speaker": "DUT",
+   "hash": "58d1d7fe2bfbd2be",
+   "path": "res://gravelight/audio/vo/dut/DUT_GUNSMITH_02.ogg",
+   "format": "ogg",
+   "duration": 3.877,
    "voice": "David",
    "chain": "dutch"
   },
@@ -4639,6 +4679,36 @@
    "path": "res://gravelight/audio/vo/jak/JAK_FREED_02.ogg",
    "format": "ogg",
    "duration": 6.389,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_GUNSMITH_01": {
+   "line": "JAK_GUNSMITH_01",
+   "speaker": "JAK",
+   "hash": "482c3d3715f48427",
+   "path": "res://gravelight/audio/vo/jak/JAK_GUNSMITH_01.ogg",
+   "format": "ogg",
+   "duration": 4.648,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_GUNSMITH_REFUSE_01": {
+   "line": "JAK_GUNSMITH_REFUSE_01",
+   "speaker": "JAK",
+   "hash": "438647e29ab8f499",
+   "path": "res://gravelight/audio/vo/jak/JAK_GUNSMITH_REFUSE_01.ogg",
+   "format": "ogg",
+   "duration": 6.737,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_GUNSMITH_REFUSE_02": {
+   "line": "JAK_GUNSMITH_REFUSE_02",
+   "speaker": "JAK",
+   "hash": "4f4121cce12ef5fe",
+   "path": "res://gravelight/audio/vo/jak/JAK_GUNSMITH_REFUSE_02.ogg",
+   "format": "ogg",
+   "duration": 4.244,
    "voice": "Mark",
    "chain": "jakub"
   },
@@ -7602,6 +7672,26 @@
    "voice": "Zira",
    "chain": "peg"
   },
+  "PEG_GUNSMITH_01": {
+   "line": "PEG_GUNSMITH_01",
+   "speaker": "PEG",
+   "hash": "81fc793af2139ab6",
+   "path": "res://gravelight/audio/vo/peg/PEG_GUNSMITH_01.ogg",
+   "format": "ogg",
+   "duration": 4.491,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_GUNSMITH_02": {
+   "line": "PEG_GUNSMITH_02",
+   "speaker": "PEG",
+   "hash": "63937ad1717de567",
+   "path": "res://gravelight/audio/vo/peg/PEG_GUNSMITH_02.ogg",
+   "format": "ogg",
+   "duration": 2.461,
+   "voice": "Zira",
+   "chain": "peg"
+  },
   "PEG_HEADSHOT_01": {
    "line": "PEG_HEADSHOT_01",
    "speaker": "PEG",
@@ -9139,6 +9229,26 @@
    "path": "res://gravelight/audio/vo/wrn/WRN_GLASSHIDE_01.ogg",
    "format": "ogg",
    "duration": 4.336,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_GUNSMITH_01": {
+   "line": "WRN_GUNSMITH_01",
+   "speaker": "WRN",
+   "hash": "45e3960ca4e356b6",
+   "path": "res://gravelight/audio/vo/wrn/WRN_GUNSMITH_01.ogg",
+   "format": "ogg",
+   "duration": 2.413,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_GUNSMITH_02": {
+   "line": "WRN_GUNSMITH_02",
+   "speaker": "WRN",
+   "hash": "e9232bbf5ec25295",
+   "path": "res://gravelight/audio/vo/wrn/WRN_GUNSMITH_02.ogg",
+   "format": "ogg",
+   "duration": 4.067,
    "voice": "Zira",
    "chain": "wren"
   },

@@ -79,6 +79,36 @@ func _gameplay() -> void:
 	content.add_child(MenuKit.row("Homage Names", MenuKit.options(PackedStringArray(["Real", "In-World"]), ncur,
 		func(i: int) -> void: GLSettings.set_value("homage_names", name_modes[i]))))
 	content.add_child(MenuKit.para("Homage Bosses are tributes to real people. Real shows their first names on the title cards and boss bars; In-World shows only the in-world names. In co-op the host's settings decide.", 16, MenuKit.DIM))
+	m1911_rows(content)
+
+
+## The starting pistol's cosmetic finish and Loadout Pick (UPDATE_04 section 6, M1911Kit): unlocked by lifetime
+## M1911 kills. Static so the pause menu's LOADOUT tab can build the same rows into its own container.
+static func m1911_rows(into: Control) -> void:
+	var kills: int = ProfileSave.weapon_kills(&"m1911")
+	into.add_child(MenuKit.label("M1911  (%d kills)" % kills, 22, MenuKit.GOLD))
+	var rows: Array = M1911Kit.finish_rows(kills)
+	var names: PackedStringArray = []
+	var cur: int = 0
+	for i: int in rows.size():
+		var r: Dictionary = rows[i]
+		names.append(str(r["name"]) if bool(r["unlocked"]) else "%s  (%d kills)" % [str(r["name"]), int(r["kills"])])
+		if StringName(str(r["id"])) == M1911Kit.equipped_finish():
+			cur = i
+	var fin: OptionButton = MenuKit.options(names, cur, func(i: int) -> void: M1911Kit.set_finish(StringName(str(rows[i]["id"]))))
+	for i2: int in rows.size():
+		fin.set_item_disabled(i2, not bool(rows[i2]["unlocked"]))
+	into.add_child(MenuKit.row("Finish", fin))
+	var picks: Array = [""] + M1911Kit.pick_choices()
+	var pick_names: PackedStringArray = ["None"]
+	for c: Variant in M1911Kit.pick_choices():
+		var parts: PackedStringArray = str(c).split(":")
+		pick_names.append(M1911Kit.option_name(parts[0], parts[1]))
+	var pick: OptionButton = MenuKit.options(pick_names, maxi(0, picks.find(M1911Kit.equipped_pick())),
+		func(i: int) -> void: M1911Kit.set_loadout_pick(str(picks[i])))
+	pick.disabled = not M1911Kit.pick_unlocked(kills)
+	into.add_child(MenuKit.row("Loadout Pick" if not pick.disabled else "Loadout Pick  (%d kills)" % M1911Kit.pick_kills(), pick))
+	into.add_child(MenuKit.para("Your starting M1911 wears the finish, and the Loadout Pick comes fitted every match. Buy the rest at an Armorer's Bench.", 16, MenuKit.DIM))
 
 
 func _controls() -> void:

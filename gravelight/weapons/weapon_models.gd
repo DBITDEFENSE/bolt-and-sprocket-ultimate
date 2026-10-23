@@ -22,15 +22,17 @@ static var _tex_cache: Dictionary = {}
 var root: Node3D
 var upgraded: bool = false
 var camo: StringName = &""
+## M1911 attachments and finish (M1911KitModels.look_of): {kit, finish, sig}; {} for every other gun.
+var look: Dictionary = {}
 
 
 static var _templates: Dictionary = {}     # "id|up|camo" -> built model; build() hands out duplicates
 
 
-static func build(weapon_id: StringName, is_upgraded: bool = false, camo_id: StringName = &"") -> Node3D:
-	var key: String = "%s|%s|%s" % [weapon_id, is_upgraded, camo_id]
+static func build(weapon_id: StringName, is_upgraded: bool = false, camo_id: StringName = &"", look_d: Dictionary = {}) -> Node3D:
+	var key: String = "%s|%s|%s|%s" % [weapon_id, is_upgraded, camo_id, str(look_d.get("sig", ""))]
 	if not _templates.has(key):
-		_templates[key] = _build_new(weapon_id, is_upgraded, camo_id)
+		_templates[key] = _build_new(weapon_id, is_upgraded, camo_id, look_d)
 	var t: Node3D = _templates[key]
 	var copy: Node3D = t.duplicate() as Node3D
 	for k: StringName in t.get_meta_list():
@@ -38,10 +40,11 @@ static func build(weapon_id: StringName, is_upgraded: bool = false, camo_id: Str
 	return copy
 
 
-static func _build_new(weapon_id: StringName, is_upgraded: bool, camo_id: StringName) -> Node3D:
+static func _build_new(weapon_id: StringName, is_upgraded: bool, camo_id: StringName, look_d: Dictionary = {}) -> Node3D:
 	var b: WeaponModels = WeaponModels.new()
 	b.upgraded = is_upgraded
 	b.camo = camo_id
+	b.look = look_d
 	b.root = Node3D.new()
 	var base: String = String(weapon_id).trim_suffix("_up")
 	if String(weapon_id).ends_with("_up"):
@@ -53,6 +56,8 @@ static func _build_new(weapon_id: StringName, is_upgraded: bool, camo_id: String
 		b.call("_w_" + base)
 	else:
 		b._w_generic()
+	if not b.look.is_empty():
+		M1911KitModels.dress(b)   # attachments and finish (UPDATE_04 section 6)
 	if b.root.get_node_or_null("Muzzle") == null:
 		b.marker("Muzzle", Vector3(0, 0.04, -float(b.root.get_meta("length"))))
 	if b.root.has_meta("bore"):
@@ -66,6 +71,8 @@ static func _build_new(weapon_id: StringName, is_upgraded: bool, camo_id: String
 	if b.upgraded:
 		b._nachtglas_glow()
 	merge_static(b.root)
+	if b.root.has_node("KitFlash"):
+		(b.root.get_node("KitFlash") as Node3D).hide()
 	return b.root
 
 
@@ -402,6 +409,8 @@ func m(kind: String) -> Material:
 	var is_metal: bool = kind in METAL_KINDS
 	if upgraded and (is_wood or is_metal):
 		return base_mat("nachtglas_wood" if is_wood else "nachtglas")
+	if is_metal and not look.is_empty() and str(look.get("finish", "")) != "":
+		return M1911KitModels.finish_mat(kind, StringName(str(look["finish"])))
 	if is_wood and camo != &"" and CAMO_TINT.has(camo):
 		var key: String = "%s_camo_%s" % [kind, camo]
 		if not _mat_cache.has(key):
@@ -876,11 +885,12 @@ func _w_m1911() -> void:
 	box(Vector3(0.004, 0.0035, 0.0034), Vector3(0.0082, BY - 0.0058, -0.1691), "blued", Vector3(0, 0, 40), sl)  # bushing lug
 	tube(0.0056, 0.0056, 0.0032, Vector3(0, 0.0162, -0.1692), "park_frame", "z", sl, 14)      # recoil-spring plug
 	tube(0.0017, 0.0017, 0.001, Vector3(0, 0.0162, -0.1709), "black", "z", sl, 8)             # plug dimple
-	# sights: tapered front blade, notched rear on a dovetail
-	prof(P([[-0.1612, TOP - 0.0004], [-0.1502, TOP - 0.0004], [-0.1528, 0.0566], [-0.1585, 0.0566]]), 0.0032, "park_slide", 0.0, sl)
-	sight_mark("FrontSight", Vector3(0, 0.0566, (-0.1528 - 0.1585) * 0.5), sl)                    # the blade's flat top
-	rear_notch(0.0392, TOP - 0.0004, 0.0072, "park_slide", 0.0158, 0.0036, sl)
-	box(Vector3(0.0215, 0.0016, 0.0085), Vector3(0, TOP - 0.0002, 0.0392), "park_slide", Vector3.ZERO, sl)  # dovetail
+	# sights: tapered front blade, notched rear on a dovetail (an attachment may fit its own: M1911KitModels)
+	if not M1911KitModels.build_sights(self, sl, TOP):
+		prof(P([[-0.1612, TOP - 0.0004], [-0.1502, TOP - 0.0004], [-0.1528, 0.0566], [-0.1585, 0.0566]]), 0.0032, "park_slide", 0.0, sl)
+		sight_mark("FrontSight", Vector3(0, 0.0566, (-0.1528 - 0.1585) * 0.5), sl)                    # the blade's flat top
+		rear_notch(0.0392, TOP - 0.0004, 0.0072, "park_slide", 0.0158, 0.0036, sl)
+		box(Vector3(0.0215, 0.0016, 0.0085), Vector3(0, TOP - 0.0002, 0.0392), "park_slide", Vector3.ZERO, sl)  # dovetail
 	box(Vector3(0.011, 0.0145, 0.0012), Vector3(0, 0.0375, 0.0465), "blued", Vector3.ZERO, sl)           # firing-pin stop
 	tube(0.0021, 0.0021, 0.0012, Vector3(0, BY, 0.0472), "steel", "z", sl, 10)                         # firing pin
 	# invented arsenal stamp on the left flat: two short lines of dashes and a small proof ring (no real marks)
@@ -970,6 +980,7 @@ func _w_m1911() -> void:
 	var bb: float = 0.0555 + (0.003 - yb) * 0.343 - 0.0042
 	var gpts: Array = [[ft + 0.002, yt], [bt - 0.003, yt], [bt, yt - 0.003], [bb, yb + 0.003], [bb - 0.003, yb], [fb + 0.003, yb],
 		[fb, yb + 0.003], [ft, yt - 0.003]]
+	root.set_meta("grip_panel", gpts)   # the outline, for attachment grips (M1911KitModels)
 	for s: float in [-1.0, 1.0]:
 		var px: float = s * (FW + 0.0016)
 		prof(P(gpts), 0.0032, "wood_check", px)

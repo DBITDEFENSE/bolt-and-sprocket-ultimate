@@ -80,3 +80,16 @@ signal vo_line_started(line_id: StringName, speaker: StringName, text: String, d
 
 # Debug
 signal dev_overlay_toggled(overlay: StringName, enabled: bool)
+
+## Suppressed shots (UPDATE_04 section 6): the shooter marks each shot just before weapon_fired is emitted, so a
+## weapon_fired listener can ask shot_is_suppressed(player) during the emit (the minimap skips its firing reveal
+## for a suppressed M1911). WeaponInstance.is_suppressed() answers the same for a held weapon.
+var _suppressed_shot: Dictionary = {}
+
+
+func mark_shot(player: int, suppressed: bool) -> void:
+	_suppressed_shot[player] = suppressed
+
+
+func shot_is_suppressed(player: int) -> bool:
+	return bool(_suppressed_shot.get(player, false))
