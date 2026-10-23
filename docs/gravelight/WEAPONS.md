@@ -885,3 +885,59 @@ Squad-wide, for the rest of the match, and it uses no perk slot.
   FOVs and compressions, a wall pull, and screen shake.
 - **By hand:** `AdsRange.launch(get_tree(), [ids])` starts the Test Range with those guns. Press `]` / `[` to cycle
   through them; a center dot shows while you're fully aimed.
+
+## 25. The Armorer's Bench: M1911 attachments (Update 04 §6, DECISIONS T-068)
+
+The starting M1911 (and Last Rites, and its II / III teachings) takes attachments at an **Armorer's Bench**: a
+gunsmith's bench with a vise holding a display pistol, a pegboard of files and drifts, a parts tray, an oil can and a
+gooseneck lamp (`gravelight/world/armorers_bench.gd`, art built procedurally like the other interactables). One per
+map near spawn: the Crossroads Inn's stable (its tack corner on the west wall, under the tack rail: the inn has no
+walled tack room), Kaltenbrunn's gatehouse (east face), Totenhafen's harbourmaster's hut (south face, facing the spawn).
+Helvetia Works and Morgenrot will just place the node. The B&S OMNI-BLASTER is untouched.
+
+All numbers are in `data/gravelight/weapons/m1911_attachments.json` (JSON, the project's data convention, instead of
+the order's `.tres`). Five slots, **one option per slot**: buying another option in a slot replaces the fitted one.
+
+| Slot | Option | Scrip | Effect | On Last Rites |
+|---|---|---|---|---|
+| Magazine | Extended Mag | 750 | 12 rounds (96 reserve); the box sticks out of the grip | **Penitent's Magazine**: 18 / 144 |
+| | Drum Mag | 1500 | 30 rounds (150), reload ×1.45, ADS ×1.35, move ×0.97, draw ×1.15; hangs under the grip | **Rosary Drum**: 40 / 200, reload ×1.3, ADS ×1.25, a string of brass beads |
+| Barrel | Match Barrel | 1000 | damage ×1.15, range (falloff) ×1.5; stands proud of the slide | **Vesper Match**: ×1.25, range ×1.8, +1 penetration |
+| | Compensator | 1000 | recoil −40%, RPM ×1.1; ported, its flash jets out of the ports | **Censer Compensator**: −50%, ×1.15; the violet flare ignites zombies hit within 6 m (80/s, 3 s) |
+| | Suppressor | 1000 | the OSS trials "can" (stencilled EXPERIMENTAL): shots don't reveal on the minimap, damage ×0.9, a muffled report, a tiny flash | **Vow of Silence**: no damage loss, head ×1.15 |
+| Sights | Radium Night Sights | 600 | ADS ×0.75; three glowing dots | **Vigil Sights**: ADS ×0.65, aimed spread ×0.8, violet dots |
+| | Raised Target Sight | 600 | aimed spread ×0.5, ADS zoom 0.86; a tall adjustable rear and high blade | **Steeple Sight**: aimed spread ×0.35, sway ×0.85, zoom 0.82 |
+| Grip / Stock | Detachable Shoulder Stock | 900 | ADS sway −60%, recoil ×0.8, aimed spread ×0.85, move ×0.98, draw ×1.25; a walnut board stock on the heel | **Pallbearer Stock**: sway ×0.3, recoil ×0.65, draw ×1.15 |
+| | Checkered Grips | 500 | hip spread ×0.7, draw ×0.75; black checkered panels | **Confessor's Grips**: hip ×0.6, draw ×0.65, move ×1.03 |
+| Ammo | Hollow-Points | 1200 | head ×1.35; a dark cavity in the top round, a red band on the magazine | **Last Word Hollow-Points**: head ×1.5, neck ×1.2 |
+| | Nachtglas-Tipped | 2000 | **after the power is on** ("under the counter"); damage ×1.2, 6% of hits slow 30% for 1.5 s; violet noses and band | **Nachtglas Benediction**: ×1.3, 12%, 35% for 2 s |
+
+**Rules.** The kit lives on the pistol (`WeaponInstance.kit`): it stays for the match; the Crucible keeps it and every
+part becomes its upgraded version (the forge carries it to whoever takes the weapon); a wall-buy that takes the
+pistol's slot takes the kit with it; giving the pistol to Jakub gives him the kit (and his gun handed back keeps its
+own); the campaign carry and co-op inventory carry it (`WeaponHolder.to_net` entries 7–8). Jakub refuses the
+Nachtglas rounds: the bench won't load them for him, and he won't take a pistol loaded with them. Stat multipliers
+act through `WeaponInstance.f()`, so they stack with the Crucible tiers.
+
+**The bench screen** (`gravelight/ui/armorers_bench_ui.gd`): your pistol in the vise under the lamp with the camera
+orbiting it, rebuilt live for the option you are looking at; the slot tabs; the options with prices; six bars
+(damage, range, recoil, ADS speed, mobility, capacity) with the change in green or red; BUY. Each survivor has a
+"Gunsmith" line (VO_SCRIPT §17).
+
+**On the gun.** Every part is on the model (`gravelight/weapons/m1911_kit_models.gd`): first person, third person
+(RemoteBody reads the owner's kit) and the bench. The sights are built with the sight helpers, so `tools/ads_check.sh`
+checks every sights × stock combination of the M1911 and Last Rites (16 builds; all centred, 0.00 px). Under the
+default hip and aim poses the grip's base sits below the frame, so the Drum and the magazine bands show in the reload,
+in third person and at the bench rather than at the hip.
+
+**Meta.** Lifetime M1911 kills (Last Rites counts) unlock cosmetic finishes: Blued 25, Battle-Worn 100, Nickel 250,
+Engraved 500, Nachtglas Inlay 1000 (Last Rites always shows the Crucible's Nachtglas); and at 75 kills one **Loadout
+Pick**, Extended Mag or Checkered Grips only, fitted to your starting pistol every match. Both are chosen in Settings
+→ Gameplay (`MenuSettings.m1911_rows`), stored in the profile (`equipped.m1911_finish`, `equipped.m1911_pick`).
+
+**APIs.** `ArmorersBench.buy(player, slot, option) -> {ok, reason, price}`, `ArmorersBench.options_for(player)`,
+`ArmorersBench.nearest / in_reach / stand_point` (bots and map marks); `M1911Kit.loadout_rows(player)` (the LOADOUT
+tab); `WeaponInstance.is_suppressed()` and `GLBus.shot_is_suppressed(pid)` during `weapon_fired` (the minimap's
+firing reveal). Dev console: `kit list | <slot> <option> | free <slot> <option> | clear [slot] | finish <id>`.
+Sounds: `python gravelight/tools_src/gen_audio_kit.py`. Captures: `kit_shots.tscn`, `bench_shots.tscn`
+(`-- --play` is the launcher's bench test).
