@@ -15,8 +15,8 @@
     504,
     576
   ],
-  "baked_at": "2026-10-23T12:19:12",
-  "poi_signature": "468486931410c12b58a257f776467ec3",
+  "baked_at": "2026-10-23T13:30:50",
+  "poi_signature": "b9e954f249dcd3ea3b003e7a4c359ab0",
   "floors": [
     {
       "id": "cellar",
@@ -885,6 +885,23 @@
       "key": "Gameplay/WallBuy_trench_gun",
       "data": {
         "weapon_id": "trench_gun"
+      }
+    },
+    {
+      "id": "workbench:Gameplay/ArmorersBench",
+      "type": "workbench",
+      "pos": [
+        6.16,
+        0.0,
+        26.5
+      ],
+      "floor": 1,
+      "label": "Armorer's Bench (M1911 attachments)",
+      "price": 0,
+      "node_path": "Gameplay/ArmorersBench",
+      "key": "Gameplay/ArmorersBench",
+      "data": {
+        "bench": "armorer"
       }
     }
   ],

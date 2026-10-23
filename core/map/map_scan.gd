@@ -139,6 +139,10 @@ static func _gl_poi(n: Node, path: String, key: String, root: Node, weapons: Dic
 		t = "workbench"
 		label = "Workbench (%s)" % String((n as Workbench).buildable_id).capitalize()
 		extra = {"buildable_id": String((n as Workbench).buildable_id)}
+	elif n is ArmorersBench:
+		t = "workbench"   # the M1911 gunsmith (Update 04 section 6): drawn with the workbench icon
+		label = "Armorer's Bench (M1911 attachments)"
+		extra = {"bench": "armorer"}
 	elif n is TrapLever:
 		var tl: TrapLever = n as TrapLever
 		t = "trap"
