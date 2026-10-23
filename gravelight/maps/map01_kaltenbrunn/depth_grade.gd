@@ -15,18 +15,18 @@ extends WorldEnvironment
 @export var surface_exposure: float = 1.4
 @export var surface_saturation: float = 0.8
 @export_group("Depths")
-@export var depth_ambient: Color = Color(0.30, 0.28, 0.27)
+@export var depth_ambient: Color = Color(0.27, 0.28, 0.32)
 @export var depth_ambient_energy: float = 0.62
 @export var depth_fog: Color = Color(0.05, 0.045, 0.04)
 @export var depth_fog_glow: Color = Color(0.004, 0.004, 0.004)
 @export var depth_exposure: float = 1.5
 @export var depth_saturation: float = 0.85
 @export_group("Core")
-@export var core_ambient: Color = Color(0.20, 0.12, 0.30)
-@export var core_ambient_energy: float = 0.4
+@export var core_ambient: Color = Color(0.26, 0.2, 0.42)
+@export var core_ambient_energy: float = 0.62
 @export var core_fog: Color = Color(0.04, 0.02, 0.06)
-@export var core_fog_glow: Color = Color(0.006, 0.0, 0.012)
-@export var core_exposure: float = 1.25
+@export var core_fog_glow: Color = Color(0.009, 0.003, 0.018)
+@export var core_exposure: float = 1.45
 ## The heart is the one saturated colour in the game (GDD 17): the vault keeps its violet.
 @export var core_saturation: float = 1.0
 @export_group("Blend")
@@ -38,6 +38,11 @@ extends WorldEnvironment
 @export var core_full: float = -16.0
 ## Flat ambient multiplier while SDFGI is on.
 @export var gi_ambient_scale: float = 0.7
+## Extra Core fill when the preset has no volumetric fog (Low): the heart's halo in the haze is most of the vault's
+## light, so without it the chamber would go black.
+@export var core_no_fog_fill: float = 1.6
+## ... and extra Core exposure in that case.
+@export var core_no_fog_exposure: float = 0.6
 ## How fast the grade follows the camera (1/s); a jump of more than 8 m snaps.
 @export var follow: float = 2.5
 
@@ -50,7 +55,7 @@ func _process(delta: float) -> void:
 	if cam == null or environment == null:
 		return
 	var p: Vector3 = cam.global_position
-	var want: Dictionary = target_for(p.y, environment.sdfgi_enabled)
+	var want: Dictionary = target_for(p.y, environment.sdfgi_enabled, environment.volumetric_fog_enabled)
 	var k: float = 1.0 - exp(-delta * follow)
 	if _cur.is_empty() or p.distance_to(_last_cam) > 8.0:
 		k = 1.0
@@ -68,18 +73,22 @@ func _process(delta: float) -> void:
 
 
 ## The grade wanted at camera height `y` (blends surface → depths → core).
-func target_for(y: float, gi: bool) -> Dictionary:
+func target_for(y: float, gi: bool, vol_fog: bool = true) -> Dictionary:
 	var d: float = smoothstep(depth_top, depth_full, y)
 	var c: float = smoothstep(core_top, core_full, y)
 	var amb: Color = surface_ambient.lerp(depth_ambient, d).lerp(core_ambient, c)
 	var amb_e: float = lerpf(lerpf(surface_ambient_energy, depth_ambient_energy, d), core_ambient_energy, c)
 	if gi:
 		amb_e *= gi_ambient_scale
+	var expo: float = lerpf(lerpf(surface_exposure, depth_exposure, d), core_exposure, c)
+	if not vol_fog:
+		amb_e += c * core_no_fog_fill
+		expo += c * core_no_fog_exposure
 	return {
 		"ambient": amb,
 		"ambient_energy": amb_e,
 		"fog": surface_fog.lerp(depth_fog, d).lerp(core_fog, c),
 		"glow": surface_fog_glow.lerp(depth_fog_glow, d).lerp(core_fog_glow, c),
-		"exposure": lerpf(lerpf(surface_exposure, depth_exposure, d), core_exposure, c),
+		"exposure": expo,
 		"saturation": lerpf(lerpf(surface_saturation, depth_saturation, d), core_saturation, c),
 	}

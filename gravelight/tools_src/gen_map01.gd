@@ -142,7 +142,7 @@ const SODIUM: Color = Color(1.0, 0.66, 0.36)
 const INCAND: Color = Color(1.0, 0.78, 0.55)
 const FLOOD: Color = Color(1.0, 0.84, 0.64)    # incandescent floods: warm pools on the moon-blue snow (T-062)
 const CHAPEL_LAMP: Color = Color(1.0, 0.75, 0.5)   # the salt chandeliers: warm white, so the salt reads pale
-const LAB_LAMP: Color = Color(1.0, 0.88, 0.74)   # the lab's enamel pendants: a whiter, clinical incandescent
+const LAB_LAMP: Color = Color(1.0, 0.84, 0.66)   # the lab's enamel pendants: a whiter, clinical incandescent
 const AMBER: Color = Color(1.0, 0.52, 0.16)    # the glowing cracks in the Nachtglas (GDD 17: violet with amber cracks)
 const RED: Color = Color(1.0, 0.22, 0.14)
 const VIOLET: Color = Color(0.62, 0.28, 1.0)
@@ -1561,8 +1561,8 @@ func _dress_stairwell() -> void:
 	emergency(Vector3(-9.0, DY + 2.8, 59.83), 0.0, 0.8, 8.0)
 	emergency(Vector3(-15.83, -6.0, 55.5), -90.0, 0.6, 8.0)
 	bulkhead("", Vector3(-10.0, 3.2, 46.17), 180.0)
-	for hl: Vector3 in [Vector3(-5.0, -4.0, 56.5), Vector3(-6.0, -8.0, 46.6), Vector3(-5.0, DY, 58.8)]:
-		_hurricane(hl, 0.9)
+	for hl: Vector3 in [Vector3(-5.0, -4.0, 56.5), Vector3(-6.0, -8.0, 46.6), Vector3(-5.0, DY, 58.8), Vector3(-15.4, -4.0, 56.6)]:
+		_hurricane(hl, 1.3)
 	for bh: Array in [[Vector3(-15.83, -1.4, 55.5), -90.0], [Vector3(-4.17, -5.4, 47.0), 90.0], [Vector3(-4.17, DY + 2.6, 57.5), 90.0]]:
 		bulkhead("E_LIFT", bh[0], float(bh[1]), "sodium")
 		power("E_LIFT", (bh[0] as Vector3) + Basis(Vector3.UP, deg_to_rad(float(bh[1]))) * Vector3(0, -0.2, -0.6), 10.0, 1.2, SODIUM, false, {}, 0.4)
@@ -1675,13 +1675,19 @@ func _dress_chapel() -> void:
 	for chx: float in [10.8, 13.2]:
 		_noshadow(B(Vector3(chx - 0.03, y + 12.1, 84.97), Vector3(chx + 0.03, y + 14.0, 85.03), "iron"))
 	# standing candelabras halfway down the centre aisle (warm light on the aisle and pews before the power)
+	for fz: Array in [[8.6, 63.0], [15.4, 63.0]]:
+		var fp: Vector3 = Vector3(float(fz[0]), y, float(fz[1]))
+		CYL(fp + Vector3(0, 0.8, 0), 0.05, 1.6, "brass")
+		CYL(fp + Vector3(0, 0.05, 0), 0.22, 0.1, "brass")
+		_noshadow(CYL(fp + Vector3(0, 1.72, 0), 0.03, 0.2, "candle"))
+		lamp(fp + Vector3(0, 2.0, 0), Color(1.0, 0.62, 0.3), 1.0, 8.0, 0.2, 0.4)
 	for cdx: float in [10.25, 13.75]:
 		CYL(Vector3(cdx, y + 0.8, 71.0), 0.05, 1.6, "brass")
 		CYL(Vector3(cdx, y + 0.05, 71.0), 0.22, 0.1, "brass")
 		B(Vector3(cdx, y + 1.6, 70.7), Vector3(cdx + 0.04, y + 1.64, 71.3), "brass")
 		for o2: float in [-0.25, 0.0, 0.25]:
 			_noshadow(CYL(Vector3(cdx, y + 1.75, 71.0 + o2), 0.03, 0.2, "candle"))
-		lamp(Vector3(cdx, y + 2.1, 71.0), Color(1.0, 0.62, 0.3), 0.9, 8.0, 0.2, 0.4)
+		lamp(Vector3(cdx, y + 2.1, 71.0), Color(1.0, 0.62, 0.3), 1.2, 9.0, 0.2, 0.4)
 	# font
 	CYL(Vector3(12.0, y + 0.35, 61.8), 0.3, 0.7, carved)
 	CYL(Vector3(12.0, y + 0.85, 61.8), 0.58, 0.3, carved)
@@ -2015,12 +2021,19 @@ func _dress_lab() -> void:
 		Props.gauge(dress, c + Vector3(0.0, 0.2, 0.98), 180.0, 0.08)
 		_bubbles(c + Vector3(0, 0.5, 0), 0.6)
 		# the tanks' glow stays close to the glass (deep violet bleeding onto the tiles), not a room-wide wash (T-062)
-		lamp(c + Vector3(0, 1.5, 0), Color(0.55, 0.16, 1.0), 1.3, 3.6, 0.08, 0.2, false, 2.0)
+		lamp(c + Vector3(0, 1.5, 0), Color(0.58, 0.22, 1.0), 1.5, 6.0, 0.08, 0.2, false, 2.0)
 		ti += 1
 	# specimen room: cabinet on the generator wall, a gurney, instrument trolley
 	Props.cabinet(dress, Vector3(64.0, y, 82.45), 180.0, 2.4, 2.1, 0.45)
 	Props.gurney(dress, Vector3(62.5, y, 86.4), 90.0, true)
 	_trolley(Vector3(58.5, y, 84.2))
+	# a crate of specimen jars left in the hall's west end on the way to the cold store: their violet is the
+	# corridor's cool light before the power (T-062 second pass)
+	Props.crate(dress, Vector3(52.6, y, 91.4), 0.8, 4.0)
+	for jx: Array in [[52.4, 91.25], [52.8, 91.55], [52.7, 91.15]]:
+		_noshadow(CYL(Vector3(float(jx[0]), y + 0.95, float(jx[1])), 0.11, 0.3, "glass"))
+		_noshadow(CYL(Vector3(float(jx[0]), y + 0.92, float(jx[1])), 0.09, 0.22, "nachtglas_liquid"))
+	lamp(Vector3(53.2, y + 1.3, 91.0), Color(0.58, 0.22, 1.0), 1.2, 9.0, 0.08, 0.2, false, 2.0)
 	_hurricane(Vector3(58.3, y + 0.83, 84.1), 0.9)
 	# Fasbender's laboratory: bench top and glassware, operating table under the big lamp
 	B(Vector3(69.95, y + 0.95, 82.35), Vector3(74.05, y + 1.02, 83.65), "enamel_white")
@@ -2112,12 +2125,12 @@ func _dress_lab() -> void:
 		decal(st[0], Vector3(float(st[1]), 0.8, float(st[1]) * 0.8), Color(0.18, 0.03, 0.02, 0.55), float(st[1]) * 70.0)
 	# lights (powered): a pendant per room and three in the hall
 	var lamps: Array = [[Vector3(60.0, y + 2.75, 85.0), 8.0], [Vector3(76.0, y + 2.75, 84.6), 8.0], [Vector3(93.0, y + 2.75, 85.2), 8.0],
-		[Vector3(57.0, y + 2.75, 90.0), 8.0], [Vector3(76.0, y + 2.75, 90.0), 9.0], [Vector3(95.0, y + 2.75, 90.0), 8.0],
+		[Vector3(57.0, y + 2.75, 90.0), 0.0], [Vector3(76.0, y + 2.75, 90.0), 9.0], [Vector3(95.0, y + 2.75, 90.0), 8.0],
 		[Vector3(60.0, y + 2.75, 95.0), 8.0], [Vector3(76.0, y + 2.75, 95.0), 8.0], [Vector3(93.0, y + 2.75, 95.0), 8.0]]
 	for lp: Array in lamps:
 		pendant("H_LAB", lp[0], y + 3.5, "enamel_white")
 		if float(lp[1]) > 0.0:
-			power("H_LAB", (lp[0] as Vector3) + Vector3(0, -0.2, 0), float(lp[1]), 0.85, LAB_LAMP, false, {}, 0.3)
+			power("H_LAB", (lp[0] as Vector3) + Vector3(0, -0.2, 0), float(lp[1]), 1.15, LAB_LAMP, false, {}, 0.3)
 	power("H_LAB", Vector3(80.5, y + 2.1, 85.5), 5.0, 1.0, Color(0.95, 0.95, 1.0))
 	emergency(Vector3(68.0, y + 2.75, 88.17), 180.0, 0.8, 9.0)
 	emergency(Vector3(86.0, y + 2.75, 91.83), 0.0, 0.6, 8.0)
@@ -2276,7 +2289,7 @@ func _dress_core() -> void:
 	pendant("I_CORE", Vector3(34.0, y + 3.9, 134.5), y + 5.0, "enamel_green")
 	power("I_CORE", Vector3(34.0, y + 3.7, 134.5), 9.0, 1.2, INCAND)
 	# power: the vault's violet floods come on with the sweep
-	power("I_CORE", Vector3(34.0, y + 9.0, 116.0), 30.0, 2.0, Color(0.6, 0.2, 1.0), false, {}, 0.25)
+	power("I_CORE", Vector3(34.0, y + 9.0, 116.0), 30.0, 2.4, Color(0.62, 0.26, 1.0), false, {}, 1.0)
 	power("I_CORE", Vector3(44.0, y + 4.0, 124.0), 8.0, 1.2, Color(1.0, 0.6, 0.35))
 
 
@@ -2455,7 +2468,7 @@ func _dress_readability() -> void:
 	# a dim bounce over the pews (the nave is 56 m wide and its chandeliers need the power): the votive racks'
 	# and the altar candles' amber off the salt, with only a little of the emergency red in it (T-062)
 	for fx: float in [0.0, 24.0]:
-		lamp(Vector3(fx, y + 5.5, 72.0), Color(1.0, 0.56, 0.34), 0.85, 15.0, 0.0)
+		lamp(Vector3(fx, y + 5.5, 72.0), Color(1.0, 0.56, 0.34), 1.05, 15.0, 0.0)
 	# Core ramps and the H corridor: luminous strips on both floor edges and a stripe along both walls at hip height
 	var ramps: Array = [[17.5, 22.5, 90.0, 101.0], [41.5, 47.5, 82.0, 101.0], [71.5, 76.5, 98.0, 112.0]]
 	for r: Array in ramps:
@@ -2944,15 +2957,15 @@ func build_lights() -> void:
 	# the heart: a slow violet pulse that casts the cage's shadow over the vault
 	var hl: OmniLight3D = OmniLight3D.new()
 	hl.set_script(load("res://gravelight/world/flicker_light.gd"))
-	hl.set("base_energy", 2.6)
+	hl.set("base_energy", 3.4)
 	hl.set("amount", 0.3)
 	hl.set("speed", 1.6)
 	hl.name = "HeartGlow"
 	hl.position = Vector3(34, CY + 7.0, 116)
-	hl.light_color = Color(0.66, 0.22, 1.0)
-	hl.light_energy = 2.6
-	hl.omni_range = 24.0
-	hl.light_volumetric_fog_energy = 1.0
+	hl.light_color = Color(0.62, 0.24, 1.0)
+	hl.light_energy = 3.4
+	hl.omni_range = 26.0
+	hl.light_volumetric_fog_energy = 2.4   # the heart's halo in the vault haze (T-062 second pass)
 	hl.shadow_enabled = true
 	map_root.add_child(hl)
 	# the pit: amber light leaking up out of the cracks under the heart (warms the cage's underside and the rim)
@@ -2970,7 +2983,7 @@ func build_lights() -> void:
 	pl.light_volumetric_fog_energy = 0.8
 	map_root.add_child(pl)
 	# local fog: violet haze in the vault, a dark throat down the lift shaft, a little salt dust in the chapel
-	_fog("VaultFog", Vector3(34, CY + 5, 116), Vector3(30, 10, 30), 0.012, Color(0.62, 0.36, 0.85), Color(0.01, 0.0, 0.016))
+	_fog("VaultFog", Vector3(34, CY + 5, 116), Vector3(30, 10, 30), 0.022, Color(0.72, 0.55, 1.0), Color(0.03, 0.0, 0.06))
 	_fog("ShaftFog", Vector3(25, DY + 5.5, 51), Vector3(4.4, 11, 4.4), 0.5, Color(0.1, 0.1, 0.12), Color(0, 0, 0))
 	_fog("ChapelHaze", Vector3(12, DY + 5, 75), Vector3(56, 10, 30), 0.012, Color(1.0, 0.92, 0.9), Color(0, 0, 0))
 	_fog("StairHaze", Vector3(-10, -6, 53), Vector3(12, 12, 14), 0.02, Color(0.9, 0.9, 0.95), Color(0, 0, 0))
