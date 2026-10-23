@@ -124,6 +124,11 @@ func random_value(qid: StringName, key: String) -> Variant:
 	return (_random.get(qid, {}) as Dictionary).get(key, null)
 
 
+## Every seeded value of one quest (a copy; the OBJECTIVES tab's Full Guide and map highlights read it).
+func random_values(qid: StringName) -> Dictionary:
+	return (_random.get(qid, {}) as Dictionary).duplicate(true)
+
+
 func reveal() -> String:
 	var out: PackedStringArray = ["match seed %d" % match_seed]
 	for qid: Variant in _random.keys():

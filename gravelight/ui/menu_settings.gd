@@ -63,6 +63,9 @@ func _gameplay() -> void:
 	content.add_child(MenuKit.check("Lean (Z / E)", bool(v.get("lean_enabled", true)), _setter("lean_enabled")))
 	content.add_child(MenuKit.check("Classic Rules (no character traits)", bool(v["classic_rules"]), _setter("classic_rules")))
 	content.add_child(MenuKit.check("Hint mode (show the next objective)", bool(v["hint_mode"]), _setter("hint_mode")))
+	var spoil: int = maxi(0, ObjectiveLog.LEVELS.find(ObjectiveLog.level(v.get("objective_spoilers", "hints"))))
+	content.add_child(MenuKit.row("Objective spoilers (pause OBJECTIVES tab)", MenuKit.options(ObjectiveLog.LEVEL_NAMES, spoil,
+		func(i: int) -> void: GLSettings.set_value("objective_spoilers", ObjectiveLog.LEVELS[i]))))
 	content.add_child(MenuKit.check("Homage Bosses (the Cousins, Map 0 round 10)", bool(v.get("homage_bosses", true)), _setter("homage_bosses")))
 	content.add_child(MenuKit.check("Bot Bonus Perk (each AI teammate gets one random perk)", bool(v.get("bot_bonus_perk", true)), _setter("bot_bonus_perk")))
 	var bc: Dictionary = BotConfig.cfg()
