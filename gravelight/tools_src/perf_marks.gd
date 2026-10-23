@@ -43,7 +43,8 @@ var _lights: Array = []   # [light, position at the census]: which shadowed ligh
 var _added: PackedStringArray = []
 var _added_prev: PackedStringArray = []
 ## `-- --ab=a,b` experiments (diagnosis only, they change what is drawn or run): hide_zombies, no_shadows,
-## no_omni_shadows, no_dir_shadows, no_sdfgi, no_fog, no_anim, no_ssao, no_glow, no_lights, no_shadow_proxy
+## no_omni_shadows, no_dir_shadows, no_sdfgi, no_fog, no_anim, no_ssao, no_glow, no_lights, no_shadow_proxy,
+## hide_movers (zombies and players hidden), omni_dp (dual-paraboloid omni shadows), no_spot_shadows
 var _ab: PackedStringArray = []
 
 
@@ -391,6 +392,20 @@ func _census() -> void:
 		elif not (n is AnimationMixer or n is NavigationAgent3D or n is CollisionObject3D or n is RayCast3D or n is GPUParticles3D or n is CPUParticles3D or n is AudioStreamPlayer3D or n is Skeleton3D):
 			continue
 		counts[k] = int(counts.get(k, 0)) + 1
+	var casters: Dictionary = {}   # the shadow casters by the map's top-level child they sit under
+	for n: Node in _all_nodes():
+		if n is GeometryInstance3D and (n as GeometryInstance3D).cast_shadow != GeometryInstance3D.SHADOW_CASTING_SETTING_OFF and (n as Node3D).is_visible_in_tree() and _map.is_ancestor_of(n):
+			var top: Node = n
+			while top.get_parent() != _map:
+				top = top.get_parent()
+			var tk: String = str(top.name) + ("/" + str(n.get_parent().name) if n.get_parent() != top and n.get_parent() != _map else "")
+			casters[tk] = int(casters.get(tk, 0)) + 1
+	var ck: Array = casters.keys()
+	ck.sort_custom(func(a: String, b: String) -> bool: return int(casters[a]) > int(casters[b]))
+	var cparts: PackedStringArray = []
+	for k2: String in ck.slice(0, 25):
+		cparts.append("%s %d" % [k2, casters[k2]])
+	print("[perf] shadow casters by place: " + ", ".join(cparts))
 	var keys: Array = counts.keys()
 	keys.sort()
 	var parts: PackedStringArray = []
@@ -431,8 +446,14 @@ func _apply_ab() -> void:
 				l.shadow_enabled = false
 			if "no_lights" in _ab and not (l is DirectionalLight3D):
 				l.visible = false
-		if "hide_zombies" in _ab and n is Zombie:
+		if ("hide_zombies" in _ab or "hide_movers" in _ab) and n is Zombie:
 			(n as Node3D).visible = false
+		if "hide_movers" in _ab and n is Player:
+			(n as Node3D).visible = false
+		if "omni_dp" in _ab and n is OmniLight3D:
+			(n as OmniLight3D).omni_shadow_mode = OmniLight3D.SHADOW_DUAL_PARABOLOID
+		if "no_spot_shadows" in _ab and n is SpotLight3D:
+			(n as SpotLight3D).shadow_enabled = false
 		if "no_anim" in _ab and n is AnimationMixer and _is_under_zombie(n):
 			(n as AnimationMixer).active = false
 	if env != null:
