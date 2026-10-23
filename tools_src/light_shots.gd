@@ -30,6 +30,7 @@ func _ready() -> void:
 		_out = ProjectSettings.globalize_path("res://").path_join("morning/screenshots/lighting").path_join(_tag)
 	DirAccess.make_dir_recursive_absolute(_out)
 	AudioServer.set_bus_mute(AudioServer.get_bus_index("Master"), true)
+	GLSettings.values["subtitles"] = false   # no VO subtitles over the shots
 	ProfileSave.path = "user://_qa_light_profile.json"
 	ProfileSave.profile = ProfileSave.new_profile()
 	_run.call_deferred()
