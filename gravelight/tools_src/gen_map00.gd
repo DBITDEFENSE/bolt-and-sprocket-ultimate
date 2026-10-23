@@ -1759,12 +1759,12 @@ func _dress_yard() -> void:
 	Props.block(g, Vector3(22.95, 0.0, 44.0), Vector3(23.05, 0.08, 46.2), "iron")
 	# lights: a lantern on the gatepost, a lamp over the yard door, the stable's south-wall lamp by the Thompson
 	Props.block(g, Vector3(20.36, 1.9, 47.9), Vector3(20.72, 2.3, 48.1), "lantern_glass")
-	_lamp("GateLantern", Vector3(20.5, 2.1, 47.4), Color(1.0, 0.68, 0.38), 2.4, 12.0, false, true, 0.25)
+	_lamp("GateLantern", Vector3(20.5, 2.1, 47.4), Color(1.0, 0.62, 0.3), 6.0, 15.0, false, true, 0.25)
 	Props.wall_lamp(g, Vector3(8.0, 2.75, 34.2), 180.0)
-	_lamp("YardDoorLamp", Vector3(8.0, 2.6, 34.9), Color(1.0, 0.72, 0.45), 2.6, 12.0, true, true, 0.15)
+	_lamp("YardDoorLamp", Vector3(8.0, 2.6, 34.9), Color(1.0, 0.62, 0.32), 7.5, 16.0, true, true, 0.15)
 	Props.wall_lamp(g, Vector3(22.0, 2.75, 34.2), 180.0)
-	_lamp("YardWallLamp", Vector3(22.0, 2.6, 34.9), Color(1.0, 0.72, 0.45), 2.2, 11.0, false, true, 0.15)
-	_lamp("YardMoonFill", Vector3(18.0, 6.0, 41.0), Color(0.5, 0.6, 0.85), 0.5, 22.0, false, false)
+	_lamp("YardWallLamp", Vector3(22.0, 2.6, 34.9), Color(1.0, 0.62, 0.32), 6.5, 15.0, false, true, 0.15)
+	_lamp("YardMoonFill", Vector3(18.0, 6.0, 41.0), Color(0.5, 0.6, 0.85), 0.25, 22.0, false, false)
 
 
 ## A gable roof (ridge along X) over the rectangle a..b (a.y = eave height), with a snow layer on top.
@@ -2180,6 +2180,8 @@ func _dress_lighting() -> void:
 	# lamp over the Old Cellar's ammo box
 	Props.wall_lamp(g, Vector3(0.16, UP_Y + 1.85, 6.7), -90.0)
 	Props.wall_lamp(g, Vector3(23.84, UP_Y + 1.85, 8.0), 90.0)
+	Props.wall_lamp(g, Vector3(8.6, UP_Y + 1.85, 6.16), 180.0)   # mid-hall, between the room doors (pass 2)
+	Props.wall_lamp(g, Vector3(16.0, UP_Y + 1.85, 6.16), 180.0)
 	Props.wall_lamp(g, Vector3(13.6, CELLAR_Y + 2.0, 15.84), 0.0)
 	Props.wall_lamp(g, Vector3(6.16, 5.3, 32.4), -90.0)   # the hayloft's south end, over the bales
 
@@ -2240,7 +2242,7 @@ func build_environment() -> void:
 	var moon: DirectionalLight3D = DirectionalLight3D.new()
 	moon.name = "Moon"
 	moon.light_color = Color(0.5, 0.6, 0.95)
-	moon.light_energy = 0.5
+	moon.light_energy = 0.42
 	moon.light_volumetric_fog_energy = 0.35
 	moon.shadow_enabled = true
 	moon.directional_shadow_max_distance = 70.0
@@ -2269,6 +2271,8 @@ func build_environment() -> void:
 	_lamp("WreckFire2", Vector3(42.5, 1.6, 6.8), Color(1.0, 0.4, 0.1), 3.0, 14.0, false, true)
 	_lamp("HallSconce", Vector3(0.55, UP_Y + 1.8, 6.7), warm, 0.9, 6.5, false, true, 0.1)
 	_lamp("HallSconce2", Vector3(23.45, UP_Y + 1.8, 8.0), warm, 0.9, 6.5, false, true, 0.1)
+	_lamp("HallSconce3", Vector3(8.6, UP_Y + 1.8, 6.55), warm, 1.0, 7.0, false, true, 0.1)
+	_lamp("HallSconce4", Vector3(16.0, UP_Y + 1.8, 6.55), warm, 1.0, 7.0, false, true, 0.1)
 	_lamp("LoftSconce", Vector3(6.55, 5.25, 32.4), warm, 1.1, 7.0, false, true, 0.1)
 	_lamp("OCAmmoLamp", Vector3(13.6, CELLAR_Y + 1.9, 15.45), Color(1.0, 0.68, 0.4), 1.0, 7.0, false, true, 0.12)
 	_lamp("CellarLantern", Vector3(28.2, CELLAR_Y + 2.05, 25.0), Color(1.0, 0.7, 0.4), 1.8, 9.5, false, true, 0.1)
@@ -2344,13 +2348,30 @@ func _follow_lights() -> void:
 			[Vector3(12.0, 1.55, 34.35), Vector3(0, 0, 1), "StableLamp2", 1.0]]:
 		var at: Vector3 = w[0]
 		var out: Vector3 = w[1]
-		var sp: SpotLight3D = _follower(SpotLight3D.new(), "WindowSpill", at, str(w[2]), float(w[3]), 0.0) as SpotLight3D
+		var sp: SpotLight3D = _follower(SpotLight3D.new(), "WindowSpill", at, str(w[2]), float(w[3]) * 5.0, 0.0) as SpotLight3D
 		sp.light_color = spill
-		sp.spot_range = 9.0 + at.y
-		sp.spot_angle = 42.0
-		sp.spot_attenuation = 1.3
+		sp.spot_range = 10.0 + at.y
+		sp.spot_angle = 50.0
+		sp.spot_attenuation = 1.1
 		sp.light_volumetric_fog_energy = 0.6
 		sp.look_at_from_position(at, at + out * 2.2 + Vector3(0, -at.y * 0.55 - 0.4, 0), Vector3.UP)
+		# the lit window itself, seen from outside between the barricade boards (pass 2): a warm card on the wall's
+		# inner face, facing out (culled from inside), out of the GI, dimming with its lamp (follow_light.gd "Glow")
+		var card: MeshInstance3D = MeshInstance3D.new()
+		card.name = "Glow"
+		var q: QuadMesh = QuadMesh.new()
+		q.size = Vector2(1.6, 1.3)
+		card.mesh = q
+		var gm: StandardMaterial3D = StandardMaterial3D.new()
+		gm.albedo_color = Color.BLACK
+		gm.emission_enabled = true
+		gm.emission = Color(1.0, 0.6, 0.3)
+		gm.emission_energy_multiplier = 4.0
+		card.material_override = gm
+		card.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		card.gi_mode = GeometryInstance3D.GI_MODE_DISABLED
+		sp.add_child(card)
+		card.transform = sp.transform.affine_inverse() * Transform3D(Basis.looking_at(-out, Vector3.UP), at - out * 0.48)
 	# GRAVELIGHT ONE burning in the field, through the east window (the wreck's own light is too far off to reach in)
 	var ws: SpotLight3D = _follower(SpotLight3D.new(), "WreckSpill", Vector3(26.5, 2.7, 7.4), "WreckFire", 2.6, 0.0) as SpotLight3D
 	ws.light_color = Color(1.0, 0.55, 0.2)
@@ -2368,9 +2389,9 @@ func _follow_lights() -> void:
 	# the candles on the taproom tables and the guest rooms' nightstands
 	for c: Array in [[Vector3(12.75, 0.95, 11.3), "TapLamp1"], [Vector3(16.75, 0.95, 11.3), "TapLamp3"], [Vector3(20.25, 0.95, 4.3), "TapLamp2"],
 			[Vector3(2.6, UP_Y + 0.85, 0.57), "Room1Lamp"], [Vector3(13.15, UP_Y + 0.85, 0.57), "Room2Lamp"], [Vector3(21.15, UP_Y + 0.85, 5.32), "Room3Lamp"]]:
-		var cl: OmniLight3D = _follower(OmniLight3D.new(), "CandleLight", c[0], str(c[1]), 0.35, 0.18) as OmniLight3D
+		var cl: OmniLight3D = _follower(OmniLight3D.new(), "CandleLight", c[0], str(c[1]), 0.7, 0.18) as OmniLight3D
 		cl.light_color = Color(1.0, 0.6, 0.28)
-		cl.omni_range = 2.4
+		cl.omni_range = 3.2
 		cl.omni_attenuation = 1.5
 
 
@@ -2406,9 +2427,10 @@ func build_landscape() -> void:
 
 ## The few lanterns whose light the volumetric fog catches (a soft halo in the room's haze), T-061. Kept to a
 ## handful: every fog-lit light costs in the froxel pass.
-const LAMP_HALOS: Dictionary = {"TapLamp1": 0.9, "TapLamp2": 0.9, "TapLamp3": 0.9, "TapLamp4": 0.9, "HallLamp": 0.9,
-	"StableLamp1": 1.0, "StableLamp2": 1.0, "PassLamp": 0.7, "YardDoorLamp": 1.2, "YardWallLamp": 1.2, "GateLantern": 1.2,
-	"OCVaultLamp": 0.8, "OCWineLamp": 0.8, "CellarLantern": 0.8}
+const INNER_GAIN: float = 1.5
+const LAMP_HALOS: Dictionary = {"TapLamp1": 0.5, "TapLamp2": 0.5, "TapLamp3": 0.5, "TapLamp4": 0.5, "HallLamp": 0.5,
+	"StableLamp1": 0.5, "StableLamp2": 0.5, "PassLamp": 0.4, "YardDoorLamp": 1.2, "YardWallLamp": 1.2, "GateLantern": 1.2,
+	"OCVaultLamp": 0.5, "OCWineLamp": 0.5, "CellarLantern": 0.5}
 
 
 func _lamp(name_: String, pos: Vector3, color: Color, energy: float, range_: float, shadows: bool, flicker: bool, amount: float = 0.35) -> void:
@@ -2423,6 +2445,16 @@ func _lamp(name_: String, pos: Vector3, color: Color, energy: float, range_: flo
 	l.light_energy = energy
 	l.omni_range = range_
 	l.omni_attenuation = 1.6
+	# T-061 pass 2: the inn's and the cellars' lamps throw wider, stronger pools and feed the GI bounce harder (the
+	# flat ambient they used to sit in is gone under SDFGI); the yard's and the wreck's are tuned where they're built
+	if not (name_.begins_with("Wreck") or name_.begins_with("Yard") or name_.begins_with("Gate")):
+		energy *= INNER_GAIN
+		l.light_energy = energy
+		if flicker:
+			l.set("base_energy", energy)
+		l.omni_range = range_ * 1.25
+		l.omni_attenuation = 1.25
+		l.light_indirect_energy = 2.0
 	# Only the big fires feed the volumetric fog; lanterns light surfaces (much cheaper).
 	l.light_volumetric_fog_energy = 1.4 if (name_.begins_with("Hearth") or name_.begins_with("Wreck")) else float(LAMP_HALOS.get(name_, 0.0))
 	l.shadow_enabled = shadows

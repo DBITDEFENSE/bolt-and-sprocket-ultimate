@@ -6,7 +6,7 @@
  "power_settle": 9.0,
  "blackout": {
   "_doc": "The Cousins round's setup (data/gravelight/bosses/cousins.json setup.lamp_groups + fire), with the power on.",
-  "lights": ["TapLamp1", "TapLamp2", "TapLamp3", "TapLamp4", "BarLamp", "StairLamp", "StairSconce", "StairSconce2", "Room1Lamp", "Room2Lamp", "Room3Lamp", "HallLamp", "HallSconce", "HallSconce2", "PassLamp", "StableLamp1", "StableLamp2", "StableLamp3", "LoftLamp", "LoftSconce",
+  "lights": ["TapLamp1", "TapLamp2", "TapLamp3", "TapLamp4", "BarLamp", "StairLamp", "StairSconce", "StairSconce2", "Room1Lamp", "Room2Lamp", "Room3Lamp", "HallLamp", "HallSconce", "HallSconce2", "HallSconce3", "HallSconce4", "PassLamp", "StableLamp1", "StableLamp2", "StableLamp3", "LoftLamp", "LoftSconce",
    "TapBulb1", "TapBulb2", "TapBulb3", "HallBulb1", "HallBulb2", "Room1Bulb", "Room2Bulb", "Room3Bulb", "PassBulb", "StableBulb1", "StableBulb2"],
   "ember": {"Hearthfire": 0.5},
   "views": ["01_taproom_spawn", "02_taproom_east", "04_upstairs_hall", "07_stable"]

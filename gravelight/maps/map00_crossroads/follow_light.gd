@@ -5,6 +5,7 @@ extends Light3D
 ## Cousins round guttering the inn's lamps (cousins.json setup.lamp_groups), a Bellringer round's stutter, the fire
 ## dying, a flicker. Its own energy each frame = full_energy x (the source's energy now / its energy at load),
 ## times an optional flicker of its own. A source tied to the power (meta "energy") is measured against that.
+## A MeshInstance3D child named "Glow" (a lit window seen from outside) has its emission scaled the same way.
 ## Deliberately has no "base_energy" property: LampGlow, the Cousins and the Bellringer read that name as
 ## "a FlickerLight's steady energy", and this light's level is not its own to keep.
 
@@ -15,6 +16,9 @@ extends Light3D
 var _src: Light3D
 var _ref: float = 1.0
 var _t: float = 0.0
+var _glow: StandardMaterial3D
+var _glow_base: float = 0.0
+var _glow_k: float = -1.0
 
 
 func _ready() -> void:
@@ -22,6 +26,10 @@ func _ready() -> void:
 	if _src != null:
 		_ref = maxf(0.001, float(_src.get_meta("energy")) if _src.has_meta("energy") else LampGlow.energy_of(_src))
 	_t = randf() * 100.0
+	var g: MeshInstance3D = get_node_or_null("Glow") as MeshInstance3D
+	if g != null and g.material_override is StandardMaterial3D:
+		_glow = g.material_override as StandardMaterial3D
+		_glow_base = _glow.emission_energy_multiplier
 	_apply(0.0)
 
 
@@ -42,4 +50,8 @@ func _apply(delta: float) -> void:
 	if own_flicker > 0.0:
 		_t += delta * 9.0
 		f += (sin(_t) * 0.5 + sin(_t * 2.31) * 0.3 + sin(_t * 5.7) * 0.2) * own_flicker
-	light_energy = full_energy * level() * f
+	var k: float = level()
+	light_energy = full_energy * k * f
+	if _glow != null and absf(k - _glow_k) > 0.01:
+		_glow_k = k
+		_glow.emission_energy_multiplier = _glow_base * k
