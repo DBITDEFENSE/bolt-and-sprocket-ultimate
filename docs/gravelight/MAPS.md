@@ -1240,6 +1240,15 @@ Hold [F] on the Pumpenschalter in the pump room (free; it needs the F door). The
 5. **t = 6.0 s:** the Signal Tower door becomes buyable.
 6. **t = 8.0 s:** 6 extra Gängers at the drain grates and the pen-mouth steps (`power_burst_points`).
 
+## Map 2 lighting (T-063)
+
+Cold sea night outside, warm practical pools inside, red in the boat; the power adds sodium and mercury on top. All of it is in `gen_map02.gd` (`_dress_light()`, the lamp helpers, `build_lights()`).
+
+- **Before the power** every pool has a source you can see: fire barrels (`BRAZIERS`: two on the quay, one in the crane bay) and coke stoves (`STOVES`, the workshop) with flickering warm lights; dockers' hurricane lanterns on tables, crates and piers in every zone; moonlight through the cannery's, workshop's and tower's windows and the hall's three vents (shadowed spots in the window closets, `MoonShaft_*`, so the boards cut shafts in the fog); the sea's cold light in under the half-lowered curtain (`SeaLight_Mouth`, 4 shadowed spots) and through the lower pens' grille (`SeaLight_Grille`); red battle lanterns on both sides of the boat; the emergency reds; the signal lamp's beam (40 energy, 11°, pitched −18°, now shadowed: it used to sweep the workshop through its roof).
+- **The power** (unchanged sweep F → D → E → G → B → C → A): the hall's west-wall floods are sodium and the east-wall floods mercury (warm vs cold across the hall), the quay's two main floods sodium; flood beams put 0.35 into the fog; the flood lens hosts are dimmer (no blown wall patches); two new powered bulkheads over the quay's vent windows; the boat's and lower pens' powered bulkheads sit lower and softer (no blown ceiling discs).
+- **Environment:** SDFGI + SSIL + SSR on (settings.gd strips them per preset), sky reflections, AgX exposure 2.0, lighter blue-grey depth fog, thinner global volumetric fog (0.012) with a little emission and ambient inject so silhouettes read against it, moon 0.75.
+- **Shots:** `data/gravelight/lighting/shots_map02.json` (14 views, power off and on) via `tools/light_shots.sh`.
+
 ## Map 2 pacing
 
 | Rounds (campaign) | Rounds (standalone) | Expected player flow |
