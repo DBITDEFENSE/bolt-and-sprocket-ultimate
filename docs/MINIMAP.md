@@ -35,4 +35,7 @@ list is required automatically: the bake check fails until it is baked.
 
 The minimap (`ui/map/minimap.gd`) is a `MapCanvas` in a circular / rounded-square clip with the bezel; settings are in
 `GLSettings.values` (`classic_hud`, `minimap_*`) and the Gameplay tab's "Minimap" rows; the zoom key is
-`minimap_zoom` (N / D-pad left). Cost: 50-150 us per frame measured (`minimap perf`), under the 300 us budget.
+`minimap_zoom` (N / D-pad left). Cost: 50-150 us per frame measured (`minimap perf`), under the 300 us budget; in the
+busy perf_marks scene (24 zombie dots, 4 squad icons) it measured 300-360 us before the T-070 pass and ~190-280 us after
+(the bezel is retained: its ticks / letters move instead of redrawing; zombie dots take a lean path; only rim-pinned marks
+are placed per frame). See docs/gravelight/PERFORMANCE.md.

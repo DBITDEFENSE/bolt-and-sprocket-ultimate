@@ -113,6 +113,7 @@ func _update_list(s: NetMatch) -> void:
 	for pid: Variant in s.players.keys():
 		ids.append(int(pid))
 	ids.sort()
+	var sq: BotSquad = get_tree().get_first_node_in_group(&"bot_squad") as BotSquad
 	for pid: Variant in _rows.keys():
 		if not ids.has(int(pid)):
 			(_rows[pid] as Label).get_parent().queue_free()
@@ -149,7 +150,6 @@ func _update_list(s: NetMatch) -> void:
 		var extra: String = ""
 		if p != null and p.is_bot and state == "":
 			extra = "  %s" % _health_bar(p.health_fraction())
-		var sq: BotSquad = get_tree().get_first_node_in_group(&"bot_squad") as BotSquad
 		if sq != null:
 			extra += "  %d kills" % int(sq.kills.get(pid2, 0))
 		row.text = "■ %-7s ǂ%-6d%s%s%s" % [Net.display_name(pid2), Economy.get_scrip(pid2), extra, state, me]
@@ -161,7 +161,9 @@ func _update_list(s: NetMatch) -> void:
 				cap2.perk_id = bp
 				cap2.tooltip_text = "Bonus perk: %s" % PerkManager.display_name(bp)
 				cap2.queue_redraw()
-		row.add_theme_color_override("font_color", Net.player_color(pid2) if state == "" else INK.lightened(0.35))
+		var col: Color = Net.player_color(pid2) if state == "" else INK.lightened(0.35)
+		if not row.has_theme_color_override("font_color") or row.get_theme_color("font_color") != col:
+			row.add_theme_color_override("font_color", col)   # only on a change: each set re-themes the row (T-070)
 
 
 static func _health_bar(frac: float) -> String:

@@ -49,7 +49,11 @@ var _avg_usec: float = 0.0
 var _rotate: bool = true
 var _pos_tr: bool = false
 var _label_t: float = 0.0
-var _layout_key: String = ""
+var _layout_vp: Vector2 = Vector2(-1, -1)
+var _layout_diam: float = -1.0
+var _layout_tr: bool = false
+var _layout_zone: String = ""
+var _layout_floor: String = ""
 var _frame_heading: float = INF
 
 
@@ -176,13 +180,17 @@ func _process(delta: float) -> void:
 			_label_t = 0.25
 			_zone.text = short_label(_state.data.zone_label_at(pos), _state.data.display_name).to_upper()
 			_floor.text = _state.data.floor_name(fi) if _state.data.floors.size() > 1 else ""
-	var key: String = "%s|%s|%s|%s|%s" % [get_viewport().get_visible_rect().size, _diam, _pos_tr, _zone.text, _floor.text]
-	if key != _layout_key:   # the layout only when something it depends on changed
-		_layout_key = key
+	var vps: Vector2 = get_viewport().get_visible_rect().size
+	if vps != _layout_vp or _diam != _layout_diam or _pos_tr != _layout_tr or _zone.text != _layout_zone or _floor.text != _layout_floor:
+		_layout_vp = vps   # the layout only when something it depends on changed
+		_layout_diam = _diam
+		_layout_tr = _pos_tr
+		_layout_zone = _zone.text
+		_layout_floor = _floor.text
 		_layout()
 	if not is_equal_approx(_frame_heading, canvas.heading):
 		_frame_heading = canvas.heading
-		_frame.queue_redraw()
+		_frame.turn(canvas.heading)   # the ticks and letters move; nothing is redrawn (T-070)
 	_process_usec = Time.get_ticks_usec() - t0
 	_avg_usec = lerpf(_avg_usec, float(_process_usec + canvas.cost_usec + canvas.draw_usec), 0.05)
 
@@ -259,66 +267,136 @@ class ShapeMask extends Control:
 
 
 ## The bezel: brass compass ring (GRAVELIGHT) or holo ring (B&S), with the cardinal points turning with the map.
+## Retained (T-070): the rings are drawn once; the tick ring is a child turned by the heading and each cardinal
+## letter a child moved round the ring, so a turning player moves four nodes instead of redrawing ~90 shapes a frame.
 class Frame extends Control:
 	var owner_map: Minimap
-	var square: bool = false
+	var square: bool = false:
+		set(v):
+			if v == square:
+				return
+			square = v
+			queue_redraw()
+			if _ticks != null:
+				_ticks.visible = not v
+	var _ticks: Ticks
+	var _letters: Array[Letter] = []
+	var _lubber: Lubber
+	var _heading: float = 0.0
 
 	func _init() -> void:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_ticks = Ticks.new()
+		_ticks.frame = self
+		add_child(_ticks)
+		for k: int in 4:
+			var l: Letter = Letter.new()
+			l.frame = self
+			l.k = k
+			add_child(l)
+			_letters.append(l)
+		_lubber = Lubber.new()
+		_lubber.frame = self
+		add_child(_lubber)
+
+	func _notification(what: int) -> void:
+		if what == NOTIFICATION_RESIZED:
+			queue_redraw()
+			for n: CanvasItem in [_ticks, _lubber] + _letters:
+				n.queue_redraw()
+			turn(_heading)
+
+	func gl() -> bool:
+		return owner_map == null or owner_map.game == "gravelight"
+
+	func r_out() -> float:
+		return size.x * 0.5
+
+	func r_in() -> float:
+		return r_out() - 14.0
+
+	## Places the turning parts for the map's heading (MapCanvas.heading).
+	func turn(heading: float) -> void:
+		_heading = heading
+		var c: Vector2 = size * 0.5
+		_ticks.position = c
+		_ticks.rotation = heading
+		_lubber.position = c
+		for l: Letter in _letters:
+			l.position = c + Minimap.cardinal_dir(l.k, heading) * (r_out() - 7.0)
 
 	func _draw() -> void:
 		var c: Vector2 = size * 0.5
-		var r_out: float = size.x * 0.5
-		var r_in: float = r_out - 14.0
-		var heading: float = owner_map.canvas.heading if owner_map != null and owner_map.canvas != null else 0.0
-		var gl: bool = owner_map == null or owner_map.game == "gravelight"
+		var ro: float = r_out()
+		var ri: float = r_in()
 		if square:
-			_square_frame(c, r_out, r_in, gl)
-		elif gl:
-			draw_arc(c, r_out - 1.0, 0.0, TAU, 96, BRASS_DARK, 3.0, true)
-			draw_arc(c, r_out - 7.0, 0.0, TAU, 96, BRASS, 10.0, true)
-			draw_arc(c, r_out - 5.0, PI * 1.05, PI * 1.6, 32, BRASS_HI, 3.0, true)   # the light on the brass
-			draw_arc(c, r_in, 0.0, TAU, 96, BRASS_DARK, 2.0, true)
-			for i: int in 72:
-				var a: float = TAU * i / 72.0 + heading
-				var dir: Vector2 = Vector2(sin(a), -cos(a))
-				var long: bool = i % 9 == 0
-				draw_line(c + dir * (r_in + 1.0), c + dir * (r_in + (8.0 if long else 4.0)), BRASS_DARK, 2.0 if long else 1.0)
+			_square_frame(c, ro, ri, gl())
+		elif gl():
+			draw_arc(c, ro - 1.0, 0.0, TAU, 96, BRASS_DARK, 3.0, true)
+			draw_arc(c, ro - 7.0, 0.0, TAU, 96, BRASS, 10.0, true)
+			draw_arc(c, ro - 5.0, PI * 1.05, PI * 1.6, 32, BRASS_HI, 3.0, true)   # the light on the brass
+			draw_arc(c, ri, 0.0, TAU, 96, BRASS_DARK, 2.0, true)
 		else:
-			draw_arc(c, r_in + 3.0, 0.0, TAU, 96, Color(HOLO.r, HOLO.g, HOLO.b, 0.25), 9.0, true)
-			draw_arc(c, r_in + 3.0, 0.0, TAU, 96, HOLO, 2.5, true)
-			for i2: int in 4:
-				var a2: float = TAU * i2 / 4.0 + heading
-				var d2: Vector2 = Vector2(sin(a2), -cos(a2))
-				draw_line(c + d2 * (r_in - 2.0), c + d2 * (r_in + 9.0), HOLO_ORANGE, 3.0)
-		# cardinal letters
-		var f: Font = MapIcons.font()
-		var letters: Array = ["N", "E", "S", "W"]
-		for k: int in 4:
-			var d3: Vector2 = Minimap.cardinal_dir(k, heading)
-			var p: Vector2 = c + d3 * (r_out - 7.0)
-			var fs: int = 15 if k == 0 else 12
-			var w: float = f.get_string_size(letters[k], HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
-			var col: Color = (INK if k == 0 else Color(0.15, 0.1, 0.05)) if gl else (HOLO_ORANGE if k == 0 else HOLO)
-			if gl:
-				draw_circle(p, 8.0, BRASS_HI if k == 0 else BRASS)
-			else:
-				draw_circle(p, 8.0, Color(0.03, 0.08, 0.14, 0.9))
-			draw_string(f, p + Vector2(-w * 0.5, fs * 0.36), letters[k], HORIZONTAL_ALIGNMENT_LEFT, -1, fs, col)
-		# lubber mark: "ahead" at the top
-		var top: Vector2 = c + Vector2(0, -r_in + 2.0)
-		draw_colored_polygon(PackedVector2Array([top + Vector2(0, 7), top + Vector2(-5, -2), top + Vector2(5, -2)]), INK if gl else HOLO_ORANGE)
+			draw_arc(c, ri + 3.0, 0.0, TAU, 96, Color(HOLO.r, HOLO.g, HOLO.b, 0.25), 9.0, true)
+			draw_arc(c, ri + 3.0, 0.0, TAU, 96, HOLO, 2.5, true)
 
-	func _square_frame(c: Vector2, r_out: float, r_in: float, gl: bool) -> void:
+	func _square_frame(c: Vector2, ro: float, ri: float, is_gl: bool) -> void:
 		var sb: StyleBoxFlat = StyleBoxFlat.new()
 		sb.bg_color = Color(0, 0, 0, 0)
-		sb.set_corner_radius_all(int((r_in * 2.0) * 0.12) + 12)
-		sb.border_color = BRASS if gl else HOLO
-		sb.set_border_width_all(10 if gl else 3)
-		draw_style_box(sb, Rect2(c - Vector2(r_out, r_out) + Vector2(2, 2), Vector2(r_out, r_out) * 2.0 - Vector2(4, 4)))
+		sb.set_corner_radius_all(int((ri * 2.0) * 0.12) + 12)
+		sb.border_color = BRASS if is_gl else HOLO
+		sb.set_border_width_all(10 if is_gl else 3)
+		draw_style_box(sb, Rect2(c - Vector2(ro, ro) + Vector2(2, 2), Vector2(ro, ro) * 2.0 - Vector2(4, 4)))
 		var sb2: StyleBoxFlat = StyleBoxFlat.new()
 		sb2.bg_color = Color(0, 0, 0, 0)
-		sb2.set_corner_radius_all(int((r_in * 2.0) * 0.12) + 2)
-		sb2.border_color = BRASS_DARK if gl else Color(HOLO.r, HOLO.g, HOLO.b, 0.3)
+		sb2.set_corner_radius_all(int((ri * 2.0) * 0.12) + 2)
+		sb2.border_color = BRASS_DARK if is_gl else Color(HOLO.r, HOLO.g, HOLO.b, 0.3)
 		sb2.set_border_width_all(2)
-		draw_style_box(sb2, Rect2(c - Vector2(r_in, r_in) - Vector2(1, 1), Vector2(r_in, r_in) * 2.0 + Vector2(2, 2)))
+		draw_style_box(sb2, Rect2(c - Vector2(ri, ri) - Vector2(1, 1), Vector2(ri, ri) * 2.0 + Vector2(2, 2)))
+
+
+## The bezel's tick ring, drawn north-up around its origin; Frame.turn rotates it by the heading.
+class Ticks extends Node2D:
+	var frame: Frame
+
+	func _draw() -> void:
+		var ri: float = frame.r_in()
+		if frame.gl():
+			for i: int in 72:
+				var a: float = TAU * i / 72.0
+				var dir: Vector2 = Vector2(sin(a), -cos(a))
+				var long: bool = i % 9 == 0
+				draw_line(dir * (ri + 1.0), dir * (ri + (8.0 if long else 4.0)), BRASS_DARK, 2.0 if long else 1.0)
+		else:
+			for i2: int in 4:
+				var a2: float = TAU * i2 / 4.0
+				var d2: Vector2 = Vector2(sin(a2), -cos(a2))
+				draw_line(d2 * (ri - 2.0), d2 * (ri + 9.0), HOLO_ORANGE, 3.0)
+
+
+## One cardinal letter on its disc, upright; Frame.turn moves it round the ring.
+class Letter extends Node2D:
+	var frame: Frame
+	var k: int = 0
+
+	func _draw() -> void:
+		var is_gl: bool = frame.gl()
+		var f: Font = MapIcons.font()
+		var letter: String = ["N", "E", "S", "W"][k]
+		var fs: int = 15 if k == 0 else 12
+		var w: float = f.get_string_size(letter, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+		var col: Color = (INK if k == 0 else Color(0.15, 0.1, 0.05)) if is_gl else (HOLO_ORANGE if k == 0 else HOLO)
+		if is_gl:
+			draw_circle(Vector2.ZERO, 8.0, BRASS_HI if k == 0 else BRASS)
+		else:
+			draw_circle(Vector2.ZERO, 8.0, Color(0.03, 0.08, 0.14, 0.9))
+		draw_string(f, Vector2(-w * 0.5, fs * 0.36), letter, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, col)
+
+
+## The lubber mark, "ahead" at the top (drawn last, over the ring).
+class Lubber extends Node2D:
+	var frame: Frame
+
+	func _draw() -> void:
+		var top: Vector2 = Vector2(0, -frame.r_in() + 2.0)
+		draw_colored_polygon(PackedVector2Array([top + Vector2(0, 7), top + Vector2(-5, -2), top + Vector2(5, -2)]), INK if frame.gl() else HOLO_ORANGE)

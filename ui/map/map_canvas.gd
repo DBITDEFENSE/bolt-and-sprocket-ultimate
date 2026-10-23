@@ -62,11 +62,13 @@ var _icon_root: Control               # marks and live icons: placed every frame
 var _spool: Array[IconNode] = []
 var _pool: Array[IconNode] = []
 var _static: Array[Dictionary] = []   # POIs / connectors / objectives / marks: {kind, wpos, size, color, opts, ref_key, ref, rim?}
+var _rim_static: Array[Dictionary] = []   # the "rim" ones of _static (marks: placed every frame)
 var _static_zoom: float = -1.0
 var _static_heading: float = INF
 var _static_used: int = 0
 var _refresh_t: float = 0.0
 var _floor_seen: int = -1
+var _hex_colors: Dictionary = {}      # "#rrggbb" -> Color (icon_color)
 
 
 func _init() -> void:
@@ -107,7 +109,14 @@ func set_state(ms: MapState) -> void:
 
 
 func icon_color(kind: String) -> Color:
-	return Color(str(icon_colors.get(kind, "#ffffff")))
+	var hex: Variant = icon_colors.get(kind, "#ffffff")
+	if hex is Color:
+		return hex
+	var c: Variant = _hex_colors.get(hex)
+	if c == null:   # parsed once per colour string (it ran per icon per frame: T-070)
+		c = Color(str(hex))
+		_hex_colors[hex] = c
+	return c
 
 
 func _on_fog(fi: int) -> void:
@@ -234,9 +243,11 @@ func _rebuild_static() -> void:
 	# the fixed ones go on the static layer now (positions in world px); marks stay dynamic (pinned to the rim)
 	_static_zoom = zoom
 	_static_heading = INF
+	_rim_static.clear()
 	var used: int = 0
 	for e: Dictionary in _static:
 		if bool(e.get("rim", false)):
+			_rim_static.append(e)
 			continue
 		while used >= _spool.size():
 			var n: IconNode = IconNode.new()
@@ -261,10 +272,9 @@ func _place_icons() -> void:
 		_static_heading = heading
 		for i: int in _static_used:
 			_spool[i].rotation = -heading   # icons stay upright while the map turns
-	for e: Dictionary in _static:
+	# without hit records (the minimap) only the rim-pinned marks need placing; the rest ride the static layer
+	for e: Dictionary in (_static if record_hits else _rim_static):
 		var rim: bool = bool(e.get("rim", false))
-		if not rim and not record_hits:
-			continue
 		var cp: Vector2 = world_to_canvas(e["wpos"] as Vector3)
 		if rim:
 			cp = _rim(cp, float(e["size"]))
@@ -290,8 +300,27 @@ func _place_icons() -> void:
 		var tl: int = Time.get_ticks_usec()
 		var lives: Array[Dictionary] = state.live_icons()
 		prof["live"] = lerpf(float(prof["live"]), float(Time.get_ticks_usec() - tl), 0.05)
+		var zcol: Color = icon_color("zombie")
+		zcol.a = 1.0
+		var zsz: float = s * 0.55
+		var half: Vector2 = size * 0.5
 		for l: Dictionary in lives:
-			var k: String = str(l["kind"])
+			var k: String = l["kind"]
+			if k == "zombie":   # the common case, kept lean (T-070): same icon, size and colour every time, full alpha
+				var zp: Vector3 = l["pos"]
+				var zc: Vector2 = half + (Vector2(zp.x, zp.z) - center).rotated(heading) * zoom   # world_to_canvas
+				if not view.has_point(zc):
+					continue
+				var zn: IconNode = _icon(used)
+				used += 1
+				if zn.kind != k or zn.icon_size != zsz or zn.color != zcol:
+					zn.show_icon(k, zsz, zcol, NO_OPTS)
+				zn.position = zc
+				if zn.rotation != 0.0:
+					zn.rotation = 0.0
+				if record_hits:
+					hits.append({"pos": zc, "r": zsz, "kind": k, "live": l})
+				continue
 			if bool(l.get("blink", false)) and not blink_on:
 				continue
 			var lp: Vector3 = l["pos"]
@@ -301,16 +330,13 @@ func _place_icons() -> void:
 				cp2 = _rim(cp2, s)
 			elif not view.has_point(cp2):
 				continue
-			var col2: Color = l.get("color", icon_color(k)) if k in ["ally", "bot", "jakub"] else icon_color(k)
-			col2.a = 1.0 if lf == floor_index or k == "zombie" else 0.5
-			var sz: float = s * (0.55 if k == "zombie" else (1.25 if k == "boss" else 1.0))
+			var col2: Color = (l["color"] as Color) if l.has("color") and k in ["ally", "bot", "jakub"] else icon_color(k)
+			col2.a = 1.0 if lf == floor_index else 0.5
+			var sz: float = s * (1.25 if k == "boss" else 1.0)
 			var node2: IconNode = _icon(used)
 			used += 1
-			if k == "zombie":
-				node2.show_icon(k, sz, col2, NO_OPTS)
-			else:
-				node2.show_icon(k, sz, col2, {"initial": str(l.get("initial", "")), "bleed": snappedf(float(l.get("bleed", 1.0)), 0.02),
-					"up": lf > floor_index, "down": lf < floor_index})
+			node2.show_icon(k, sz, col2, {"initial": str(l.get("initial", "")), "bleed": snappedf(float(l.get("bleed", 1.0)), 0.02),
+				"up": lf > floor_index, "down": lf < floor_index})
 			node2.position = cp2
 			node2.rotation = 0.0
 			if record_hits:
