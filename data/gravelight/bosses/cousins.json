@@ -41,9 +41,9 @@
   "lamp_gap": 0.35,
   "group_gap": 0.8,
   "lamp_groups": {
-   "taproom": ["TapLamp1", "TapLamp2", "TapLamp3", "TapLamp4", "BarLamp"],
-   "upstairs": ["StairLamp", "StairSconce", "StairSconce2", "Room1Lamp", "Room2Lamp", "Room3Lamp", "HallLamp"],
-   "stable": ["PassLamp", "StableLamp1", "StableLamp2", "StableLamp3", "LoftLamp"]
+   "taproom": ["TapLamp1", "TapLamp2", "TapLamp3", "TapLamp4", "BarLamp", "TapBulb1", "TapBulb2", "TapBulb3"],
+   "upstairs": ["StairLamp", "StairSconce", "StairSconce2", "Room1Lamp", "Room2Lamp", "Room3Lamp", "HallLamp", "HallSconce", "HallSconce2", "HallBulb1", "HallBulb2", "Room1Bulb", "Room2Bulb", "Room3Bulb"],
+   "stable": ["PassLamp", "StableLamp1", "StableLamp2", "StableLamp3", "LoftLamp", "LoftSconce", "PassBulb", "StableBulb1", "StableBulb2"]
   },
   "group_order": ["taproom", "upstairs", "stable"],
   "fire": "Hearthfire",

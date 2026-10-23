@@ -8,12 +8,20 @@ extends Node
 ##   godot --audio-driver Dummy --position -4000,-4000 --resolution 1280x720 --path . res://tools_src/light_shots.tscn \
 ##     -- --maps=map00,map01,map02 --tag=before [--out=DIR] [--preset=high]
 ## Output: morning/screenshots/lighting/<tag>/<map>_<view>[_power].png
+## Optional "blackout": {"lights": ["Name", ...], "ember": {"Name": energy}, "views": ["view name", ...]}: after the
+## power views, those lights go dark (a FlickerLight's base_energy, else light_energy; "ember" ones dim to that
+## energy) and the named views are shot again as <map>_<view>_blackout.png (Map 0's Cousins round guttering).
+## Each shot also logs the frame rate and the GPU frame time; fps.txt in the output folder holds the summary.
 
 var _out: String = ""
 var _tag: String = "now"
 var _maps: PackedStringArray = ["map00", "map01", "map02"]
 var _scene: Node = null
 var _saved: int = 0
+var _perf: PackedStringArray = []
+var _gpu_sum: float = 0.0
+var _fps_sum: float = 0.0
+var _perf_n: int = 0
 
 
 func _ready() -> void:
@@ -29,7 +37,9 @@ func _ready() -> void:
 	if _out == "":
 		_out = ProjectSettings.globalize_path("res://").path_join("morning/screenshots/lighting").path_join(_tag)
 	DirAccess.make_dir_recursive_absolute(_out)
+	RenderingServer.viewport_set_measure_render_time(get_viewport().get_viewport_rid(), true)
 	AudioServer.set_bus_mute(AudioServer.get_bus_index("Master"), true)
+	GLSettings.values["subtitles"] = false   # the Operator's lines would sit over the shots
 	ProfileSave.path = "user://_qa_light_profile.json"
 	ProfileSave.profile = ProfileSave.new_profile()
 	_run.call_deferred()
@@ -63,6 +73,14 @@ func _run() -> void:
 			_scene = null
 		await _secs(1.0)
 	print("[light_shots] %d shots in %s" % [_saved, _out])
+	if _perf_n > 0:
+		_perf.append("mean fps %.1f, mean GPU %.2f ms over %d shots" % [_fps_sum / _perf_n, _gpu_sum / _perf_n, _perf_n])
+		print("[light_shots] ", _perf[_perf.size() - 1])
+		var pf: FileAccess = FileAccess.open(_out.path_join("fps.txt"), FileAccess.WRITE)
+		if pf != null:
+			pf.store_string("
+".join(_perf) + "
+")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(ProfileSave.path))
 	get_tree().quit()
 
@@ -100,6 +118,8 @@ func _map(key: String, cfg: Dictionary) -> void:
 			if map != null and map.director != null:
 				map.director.kill_all(true)
 			await _views(key, cfg, cam, "_power")
+	if cfg.has("blackout"):
+		await _blackout(key, cfg, cam)
 	GameState.god_mode = false
 
 
@@ -111,7 +131,43 @@ func _views(key: String, cfg: Dictionary, cam: Camera3D, suffix: String) -> void
 		cam.global_position = from
 		cam.look_at(look, Vector3.UP)
 		await _secs(float(v.get("wait", 0.6)))   # volumetric fog and SDFGI catch up with the move
+		await _probe("%s_%s%s" % [key, str(v["name"]), suffix])
 		await _shot("%s_%s%s" % [key, str(v["name"]), suffix])
+
+
+## Frame rate (frames counted over half a second, clear of the last PNG save's hitch) and GPU time at this view
+## (the viewport's measured render time, so vsync doesn't hide it).
+func _probe(name: String) -> void:
+	var rid: RID = get_viewport().get_viewport_rid()
+	var f0: int = Engine.get_frames_drawn()
+	var t0: int = Time.get_ticks_usec()
+	await _secs(0.5)
+	var fps: float = float(Engine.get_frames_drawn() - f0) / maxf(0.001, float(Time.get_ticks_usec() - t0) / 1000000.0)
+	var gpu: float = RenderingServer.viewport_get_measured_render_time_gpu(rid)
+	_gpu_sum += gpu
+	_fps_sum += fps
+	_perf_n += 1
+	_perf.append("%s  fps %.0f  gpu %.2f ms" % [name, fps, gpu])
+
+
+func _blackout(key: String, cfg: Dictionary, cam: Camera3D) -> void:
+	var b: Dictionary = cfg["blackout"]
+	var ember: Dictionary = b.get("ember", {})
+	var names: Array = (b.get("lights", []) as Array) + ember.keys()
+	for n: Variant in names:
+		var l: Light3D = _scene.find_child(str(n), true, false) as Light3D
+		if l == null:
+			print("[light_shots] blackout: no light %s" % n)
+			continue
+		var to: float = float(ember.get(n, 0.0))
+		if l.get("base_energy") != null:
+			l.set("base_energy", to)
+		else:
+			l.light_energy = to
+	await _secs(1.5)
+	var only: Array = b.get("views", [])
+	var views: Array = (cfg.get("views", []) as Array).filter(func(v: Dictionary) -> bool: return only.is_empty() or only.has(str(v["name"])))
+	await _views(key, {"views": views}, cam, "_blackout")
 
 
 static func _v3(a: Variant) -> Vector3:

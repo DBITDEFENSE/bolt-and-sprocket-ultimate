@@ -1,0 +1,31 @@
+{
+ "_doc": "Lighting shots for Map 0, the Crossroads Inn (tools_src/light_shots.gd). Eye ~1.6 m over each floor (taproom 0, upstairs 3.8, hayloft 3.5, cellars -3.2). Every zone, the exterior and two wide views.",
+ "scene": "res://gravelight/maps/map00_crossroads/map00.tscn",
+ "power": true,
+ "settle": 4.0,
+ "power_settle": 9.0,
+ "blackout": {
+  "_doc": "The Cousins round's setup (data/gravelight/bosses/cousins.json setup.lamp_groups + fire), with the power on.",
+  "lights": ["TapLamp1", "TapLamp2", "TapLamp3", "TapLamp4", "BarLamp", "StairLamp", "StairSconce", "StairSconce2", "Room1Lamp", "Room2Lamp", "Room3Lamp", "HallLamp", "HallSconce", "HallSconce2", "PassLamp", "StableLamp1", "StableLamp2", "StableLamp3", "LoftLamp", "LoftSconce",
+   "TapBulb1", "TapBulb2", "TapBulb3", "HallBulb1", "HallBulb2", "Room1Bulb", "Room2Bulb", "Room3Bulb", "PassBulb", "StableBulb1", "StableBulb2"],
+  "ember": {"Hearthfire": 0.5},
+  "views": ["01_taproom_spawn", "02_taproom_east", "04_upstairs_hall", "07_stable"]
+ },
+ "views": [
+  {"name": "01_taproom_spawn", "from": [19.5, 1.6, 13.5], "look": [7.0, 1.3, 2.0], "fov": 75, "wait": 2.0},
+  {"name": "02_taproom_east", "from": [9.0, 1.6, 12.5], "look": [24.0, 1.4, 7.0], "fov": 75, "wait": 2.0},
+  {"name": "03_stairwell", "from": [5.3, 1.6, 15.4], "look": [1.6, 3.6, 10.0], "fov": 75, "wait": 2.0},
+  {"name": "04_upstairs_hall", "from": [1.8, 5.4, 8.2], "look": [22.0, 5.0, 7.8], "fov": 75, "wait": 2.0},
+  {"name": "05_upstairs_room3", "from": [22.8, 5.4, 5.4], "look": [17.0, 4.6, 0.6], "fov": 80, "wait": 2.0},
+  {"name": "06_passage", "from": [20.0, 1.6, 16.6], "look": [20.0, 1.2, 26.0], "fov": 75, "wait": 2.0},
+  {"name": "07_stable", "from": [22.5, 1.6, 32.5], "look": [8.0, 2.4, 24.5], "fov": 80, "wait": 2.0},
+  {"name": "08_hayloft", "from": [7.0, 5.1, 33.0], "look": [20.0, 1.5, 25.0], "fov": 75, "wait": 2.0},
+  {"name": "09_yard", "from": [31.0, 1.6, 46.0], "look": [10.0, 2.0, 36.0], "fov": 75, "wait": 2.0},
+  {"name": "10_field_wreck", "from": [33.0, 1.7, 36.0], "look": [45.0, 2.0, 5.0], "fov": 70, "wait": 2.0},
+  {"name": "11_cellar_vault", "from": [25.6, -1.6, 30.2], "look": [32.0, -2.0, 21.0], "fov": 80, "wait": 2.0},
+  {"name": "12_oldcellar_vault", "from": [12.0, -1.6, 14.6], "look": [21.0, -2.2, 2.5], "fov": 80, "wait": 2.0},
+  {"name": "13_oldcellar_cage", "from": [4.6, -1.6, 7.5], "look": [1.0, -2.2, 4.2], "fov": 80, "wait": 2.0},
+  {"name": "14_wide_inn", "from": [52.0, 14.0, 58.0], "look": [14.0, 2.0, 16.0], "fov": 65, "wait": 2.0},
+  {"name": "15_wide_north", "from": [12.0, 9.0, -34.0], "look": [14.0, 3.0, 10.0], "fov": 70, "wait": 2.0}
+ ]
+}
