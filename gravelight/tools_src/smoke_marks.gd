@@ -121,6 +121,15 @@ func _free_perk(pids: Array, min_price: int) -> PerkMachine:
 				free = false
 		if free and (best == null or PerkManager.price(pm.perk_id) < PerkManager.price(best.perk_id)):
 			best = pm
+	if best == null:   # the bots' random kit perks took every pricey one: free the cheapest (setup, not under test)
+		for n2: Node in get_tree().get_nodes_in_group(&"perk_machines"):
+			var pm2: PerkMachine = n2 as PerkMachine
+			if pm2 != null and pm2.perk_id != _perk1 and PerkManager.price(pm2.perk_id) >= min_price and (best == null or PerkManager.price(pm2.perk_id) < PerkManager.price(best.perk_id)):
+				best = pm2
+		if best != null:
+			for pid2: Variant in pids:
+				if PerkManager.has_perk(int(pid2), best.perk_id):
+					PerkManager.remove(int(pid2), best.perk_id)
 	return best
 
 
