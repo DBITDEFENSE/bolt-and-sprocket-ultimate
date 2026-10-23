@@ -67,6 +67,7 @@ var _static_heading: float = INF
 var _static_used: int = 0
 var _refresh_t: float = 0.0
 var _floor_seen: int = -1
+var _hex_colors: Dictionary = {}      # "#rrggbb" -> Color (icon_color)
 
 
 func _init() -> void:
@@ -107,7 +108,14 @@ func set_state(ms: MapState) -> void:
 
 
 func icon_color(kind: String) -> Color:
-	return Color(str(icon_colors.get(kind, "#ffffff")))
+	var hex: Variant = icon_colors.get(kind, "#ffffff")
+	if hex is Color:
+		return hex
+	var c: Variant = _hex_colors.get(hex)
+	if c == null:   # parsed once per colour string (it ran per icon per frame: T-070)
+		c = Color(str(hex))
+		_hex_colors[hex] = c
+	return c
 
 
 func _on_fog(fi: int) -> void:
@@ -295,18 +303,20 @@ func _place_icons() -> void:
 			if bool(l.get("blink", false)) and not blink_on:
 				continue
 			var lp: Vector3 = l["pos"]
-			var lf: int = md.floor_at(lp + Vector3.UP * 0.2)
+			var zombie: bool = k == "zombie"
+			# zombies only show on (about) this floor (MapState.live_icons) and are drawn full alpha either way
+			var lf: int = floor_index if zombie else md.floor_at(lp + Vector3.UP * 0.2)
 			var cp2: Vector2 = world_to_canvas(lp)
 			if k in ["ally", "bot", "jakub", "downed", "boss"]:
 				cp2 = _rim(cp2, s)
 			elif not view.has_point(cp2):
 				continue
-			var col2: Color = l.get("color", icon_color(k)) if k in ["ally", "bot", "jakub"] else icon_color(k)
-			col2.a = 1.0 if lf == floor_index or k == "zombie" else 0.5
-			var sz: float = s * (0.55 if k == "zombie" else (1.25 if k == "boss" else 1.0))
+			var col2: Color = (l["color"] as Color) if l.has("color") and k in ["ally", "bot", "jakub"] else icon_color(k)
+			col2.a = 1.0 if lf == floor_index or zombie else 0.5
+			var sz: float = s * (0.55 if zombie else (1.25 if k == "boss" else 1.0))
 			var node2: IconNode = _icon(used)
 			used += 1
-			if k == "zombie":
+			if zombie:
 				node2.show_icon(k, sz, col2, NO_OPTS)
 			else:
 				node2.show_icon(k, sz, col2, {"initial": str(l.get("initial", "")), "bleed": snappedf(float(l.get("bleed", 1.0)), 0.02),
