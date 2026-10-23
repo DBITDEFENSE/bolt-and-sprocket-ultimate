@@ -4,6 +4,8 @@ extends CanvasLayer
 ## RESTART PLANET, MAIN MENU. Opens on the pause action only while nothing else owns the input.
 ## OBJECTIVES (Update 04 section 4, T-066): the planet's quest log in the holo skin (ObjectivesView over
 ## ObjectiveLog.build_bs): the mission, side quests, gold bolts, memos and planet challenges.
+## MAP (Update 04 section 3, T-069): the planet's holo map (PauseMapView in the holo skin): floors, pan / zoom, hover,
+## and your own marks (B&S has no bots: Go here, Danger, notes; also the bs_ping key, G / Back, in play).
 
 signal restart_requested
 signal quit_requested
@@ -16,6 +18,7 @@ var _resume: Button
 var _settings: SettingsMenu = null
 var _objectives: Control = null
 var _obj_view: ObjectivesView = null
+var _map_layer: Control = null
 
 
 func _ready() -> void:
@@ -46,6 +49,9 @@ func _ready() -> void:
 	var ob: Button = BSStyle.button("OBJECTIVES", BSStyle.CYAN, 26)
 	ob.pressed.connect(open_objectives)
 	v.add_child(ob)
+	var mb: Button = BSStyle.button("MAP", BSStyle.CYAN, 26)
+	mb.pressed.connect(open_map)
+	v.add_child(mb)
 	var r: Button = BSStyle.button(BSText.text("html.btnRestart.001"), BSStyle.ORANGE, 26)
 	r.pressed.connect(func() -> void:
 		close()
@@ -117,6 +123,53 @@ func open_objectives() -> void:
 	_obj_view.focus_list.call_deferred()
 
 
+## The planet's holo map over the pause panel (Back, Esc or pad B returns; B removes a mark under the cursor first).
+func open_map() -> void:
+	if _map_layer != null or MapState.current() == null:
+		return
+	($Holder as Control).visible = false
+	var layer_root: Control = Control.new()
+	layer_root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var dim: ColorRect = ColorRect.new()
+	dim.color = Color(0.02, 0.03, 0.06, 0.8)
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	layer_root.add_child(dim)
+	var margin: MarginContainer = MarginContainer.new()
+	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	for side: String in ["left", "right", "top", "bottom"]:
+		margin.add_theme_constant_override("margin_" + side, 40)
+	layer_root.add_child(margin)
+	var v: VBoxContainer = VBoxContainer.new()
+	v.add_theme_constant_override("separation", 10)
+	margin.add_child(v)
+	var head: HBoxContainer = HBoxContainer.new()
+	v.add_child(head)
+	var t: Label = BSStyle.label("MAP", 40, BSStyle.YELLOW, 10)
+	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(t)
+	var back: Button = BSStyle.button("BACK", BSStyle.PINK, 22)
+	back.pressed.connect(close_map)
+	head.add_child(back)
+	var holder: Control = Control.new()
+	holder.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	v.add_child(holder)
+	var view: PauseMapView = PauseMapView.new()
+	view.skin = "holo"
+	holder.add_child(view)
+	_map_layer = layer_root
+	add_child(layer_root)
+
+
+func close_map() -> void:
+	if _map_layer == null:
+		return
+	_map_layer.queue_free()
+	_map_layer = null
+	if is_open:
+		($Holder as Control).visible = true
+		_resume.grab_focus.call_deferred()
+
+
 func refresh_objectives() -> void:
 	if _obj_view == null:
 		return
@@ -142,6 +195,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	if _objectives != null:
 		if event.is_action_pressed(&"pause") or event.is_action_pressed(&"ui_cancel"):
 			close_objectives()
+			get_viewport().set_input_as_handled()
+		return
+	if _map_layer != null:
+		if event.is_action_pressed(&"pause") or event.is_action_pressed(&"ui_cancel"):
+			close_map()
 			get_viewport().set_input_as_handled()
 		return
 	if not event.is_action_pressed(&"pause"):
@@ -171,6 +229,7 @@ func close() -> void:
 		return
 	is_open = false
 	close_objectives()
+	close_map()
 	BS.ui_block = maxi(0, BS.ui_block - 1)
 	get_tree().paused = false
 	($Holder as Control).visible = false

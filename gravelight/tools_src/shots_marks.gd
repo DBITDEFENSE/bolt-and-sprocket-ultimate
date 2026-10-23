@@ -59,6 +59,10 @@ func _first(cls: String) -> Node:
 
 
 func _run() -> void:
+	if _which == "bs":
+		await _run_bs()
+		get_tree().quit()
+		return
 	_map = (load(MAPS[_which]) as PackedScene).instantiate() as MapRoot
 	get_tree().root.add_child(_map)
 	get_tree().current_scene = _map
@@ -194,6 +198,42 @@ func _run() -> void:
 	print("[shots] done -> ", _out)
 	get_tree().paused = false
 	get_tree().quit()
+
+
+## B&S (Scrapheap Junction): personal holo pins from the ping key, the pause panel's MAP in the holo skin.
+func _run_bs() -> void:
+	SaveProfile.path = "user://_shots_marks_bs.json"
+	SaveProfile.doc = SaveProfile.blank()
+	BS.load_from_profile()
+	BS.flags.clear()
+	BSLevel.pending_cutscene = ""
+	var lvl: Node = (load("res://bs/planets/scrapheap/scrapheap.tscn") as PackedScene).instantiate()
+	lvl.set("play_arrival", false)
+	get_tree().root.add_child(lvl)
+	get_tree().current_scene = lvl
+	await _frames(60)
+	var mm: MapMarks = MapMarks.current()
+	if mm == null:
+		print("[shots] bs: no MapMarks")
+		return
+	var bolt: Node3D = lvl.get("bolt") as Node3D
+	var fwd: Vector3 = -bolt.global_basis.z
+	fwd.y = 0.0
+	fwd = fwd.normalized() if fwd.length() > 0.1 else Vector3.FORWARD
+	mm.place({"kind": "go", "pos": bolt.global_position + fwd * 5.0, "target": "me", "label": "Meet here"})
+	mm.place({"kind": "danger", "pos": bolt.global_position + fwd * 9.0 + fwd.cross(Vector3.UP) * 3.0, "label": "Turret"})
+	var r: Dictionary = mm.ping.ping() if mm.ping.can_ping() else {}
+	print("[shots] bs ping: ", r)
+	await _frames(30)
+	await _shot("bs_holo_pins")
+	MapState.current().discover_all()   # the shot shows the whole planet (in play the holo map fills in as you explore)
+	var pm: BSPauseMenu = lvl.get("pause_menu") as BSPauseMenu
+	pm.open()
+	pm.open_map()
+	await _frames(12)
+	await _shot("bs_pause_map")
+	pm.close()
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(SaveProfile.path))
 
 
 func _set_scrip(pid: int, n: int) -> void:

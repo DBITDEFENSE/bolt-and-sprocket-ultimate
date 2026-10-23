@@ -259,3 +259,25 @@ The local-AI planner no longer lists egg steps (every bot works the egg through 
   the object belongs to and makes it the task's focus: that note, that bell).
 - **Tests:** `gravelight/tests/unit/test_bot_ee.gd`; smokes `smoke_ee_bots` (When Asked: marks, assignments, the
   hand-over, Off) and `smoke_bot_ai` (Full Partner); soak `tools/ai_soak.sh --scenario=ee_full --runs=3`.
+
+
+## Update 04 section 3 (T-069): map marks and the ping key
+
+Mark something on the pause page's MAP tab (or with the ping key: middle mouse / D-pad up) and pick who it is for: a
+bot by its portrait, Any bot (the closest free one that can afford it), Jakub, or yourself. A mark for a bot is its
+order (one each; a new one replaces the old), the action `mark_order` on the utility AI. Revives come first; the order
+resumes after ("Back to it.").
+
+- **BUY THIS** (perk, wall weapon, ammo, a door you confirmed, the crate, the Crucible, a trap, the Armorer's Bench):
+  it says it's on it, checks its Scrip, walks over and buys it, and says so; short, it tells you by how much ("Need
+  600 more for that, boss.") and waits up to 60 s while it earns. A wall weapon marked **for me**: it buys it with its
+  own Scrip and drops it at your feet (or you take it off the bot).
+- **DEFEND HERE** (holds ~4 m, rebuilds the windows close by), **REGROUP** (every bot comes), **DANGER** (every bot's
+  paths avoid it for 60 s; the nearest calls it out), **GO HERE**, **COLLECT / ACTIVATE** (an egg object goes to the
+  section 5 egg help: the setting, what the squad knows, Jakub's limits).
+- The map shows each bot's order line by its portrait ("Going to buy Ironhide Stout (1,200 short)", "Defending Rail
+  Yard", "Doing: ...", "Idle").
+- Jakub goes, defends, regroups and does what section 5 lets him on the egg; he never buys anything.
+
+Details, the APIs and the tuning: `docs/gravelight/MARKS.md`; lines: VO_SCRIPT section 19; tests: `test_mark_orders.gd`,
+`smoke_marks`.

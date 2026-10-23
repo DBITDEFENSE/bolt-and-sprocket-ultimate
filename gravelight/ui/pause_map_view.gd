@@ -494,8 +494,8 @@ func _input(event: InputEvent) -> void:
 			JOY_BUTTON_B:
 				if _popup_open():
 					_close_popups()
-				else:
-					remove_at(cursor)
+				elif not remove_at(cursor):
+					return   # nothing to remove: B goes on to the page (B&S: back)
 			JOY_BUTTON_Y:
 				center_on_me()
 			JOY_BUTTON_DPAD_UP:
@@ -1217,8 +1217,7 @@ class Legend extends Control:
 
 	func _init() -> void:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
-		custom_minimum_size = Vector2(250, 150)
-		size = custom_minimum_size
+		size = Vector2(250, 150)
 
 	func _draw() -> void:
 		if view == null:
