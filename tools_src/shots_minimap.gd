@@ -84,7 +84,14 @@ func _shot(label: String, scene: String, pos: Vector3, yaw: float, bots: int) ->
 		body.rotation.y = deg_to_rad(yaw)
 		if body is CharacterBody3D:
 			(body as CharacterBody3D).velocity = Vector3.ZERO
-	await _frames(20)
+	for turn: int in 4:   # look around: discovery is by sight
+		if body != null:
+			body.rotation.y = deg_to_rad(yaw + 90.0 * turn)
+		await _frames(30)
+	if body != null:
+		body.rotation.y = deg_to_rad(yaw)
+	print("[shots_minimap]   %s: %d POIs discovered by sight after looking around for 2 s, %.0f%% of the floor revealed" % [label, ms.discovered.size(),
+		ms.revealed_fraction(ms.local_floor()) * 100.0])
 	ms.discover_all()
 	if body != null:
 		var fwd: Vector3 = -body.global_basis.z

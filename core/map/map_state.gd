@@ -223,7 +223,7 @@ func _discovery_step() -> void:
 			return
 		if str(p["type"]) == "crate_spot" and not _crate_here(p):
 			return
-		var target: Vector3 = poi_world_pos(p) + Vector3.UP * 1.0
+		var target: Vector3 = poi_world_pos(p) + Vector3.UP * (0.0 if str(p["type"]) == "wall_buy" else 1.0)   # chalk is at eye height
 		if in_view(view[0], view[1], target, float(dc.get("range_m", 16.0)), float(dc.get("fov_deg", 80.0))) \
 				and _line_clear(view[0], target, float(dc.get("hit_slack_m", 1.6))):
 			discover(id)
