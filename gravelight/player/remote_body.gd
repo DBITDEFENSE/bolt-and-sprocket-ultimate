@@ -497,15 +497,19 @@ func set_weapon(weapon_id: StringName) -> void:
 
 
 var _look_sig: String = ""
+## Tools: the weapon to dress the held gun from when the body has no Player above it (kit_shots).
+var look_weapon: WeaponInstance = null
 
 
 ## The M1911 attachments on the gun in the owner's hands (their WeaponHolder, a mirror for bots and remote players),
 ## when it is this weapon: {} otherwise (UPDATE_04 section 6).
 func _owner_look(weapon_id: StringName) -> Dictionary:
 	var p: Player = get_parent() as Player
-	if p == null or p.weapons == null:
+	var w: WeaponInstance = look_weapon
+	if w == null and (p == null or p.weapons == null):
 		return {}
-	var w: WeaponInstance = p.weapons.current()
+	if w == null:
+		w = p.weapons.current()
 	return M1911KitModels.look_of(w) if w != null and w.id == weapon_id else {}
 
 

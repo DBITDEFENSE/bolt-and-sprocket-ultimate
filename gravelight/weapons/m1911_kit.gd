@@ -243,6 +243,47 @@ static func copy(from: WeaponInstance, to: WeaponInstance) -> void:
 	to.refresh_kit()
 
 
+## A weapon from a build string "<weapon id>[:slot=option,...,finish=<id>]" (tools: ads_check, kit_shots, tests).
+static func from_build(build: String) -> WeaponInstance:
+	var parts: PackedStringArray = build.split(":", true, 1)
+	var w: WeaponInstance = WeaponInstance.create(StringName(parts[0]))
+	if parts.size() > 1:
+		for kv: String in parts[1].split(",", false):
+			var p: PackedStringArray = kv.split("=")
+			if p.size() != 2:
+				continue
+			if p[0] == "finish":
+				w.finish = StringName(p[1])
+			else:
+				w.kit[p[0]] = p[1]
+	w.refresh_kit()
+	w.refill()
+	return w
+
+
+## A build string as a file name ("m1911_up__sights-radium_grip-stock").
+static func build_file_name(build: String) -> String:
+	return build.replace(":", "__").replace(",", "_").replace("=", "-")
+
+
+## Every M1911 / Last Rites combination that changes the sights or the stock (tools/ads_check.sh checks them all):
+## sights (standard, radium, raised target) x grip (standard, stock, checkered), minus the two plain guns.
+static func sight_stock_builds() -> PackedStringArray:
+	var out: PackedStringArray = []
+	for wid: String in ["m1911", "m1911_up"]:
+		for s: String in [""] + options("sights"):
+			for g: String in [""] + options("grip"):
+				if s == "" and g == "":
+					continue
+				var kv: PackedStringArray = []
+				if s != "":
+					kv.append("sights=" + s)
+				if g != "":
+					kv.append("grip=" + g)
+				out.append(wid + ":" + ",".join(kv))
+	return out
+
+
 ## A short signature of the kit and finish (cache keys: models, recoil, ADS zoom).
 static func signature(kit: Dictionary, finish: StringName = &"") -> String:
 	if kit.is_empty() and finish == &"":

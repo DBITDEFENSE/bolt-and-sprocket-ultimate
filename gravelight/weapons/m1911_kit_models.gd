@@ -213,7 +213,7 @@ static func _mag_drum(b: WeaponModels) -> void:
 	var mag: Node3D = _mag(b)
 	var r: float = 0.05 if b.upgraded else 0.043
 	var wdt: float = 0.04 if b.upgraded else 0.036
-	var c: Vector3 = Vector3(0, -0.112 - r, 0.083)
+	var c: Vector3 = Vector3(0, -0.112 - r, 0.072)
 	b.prof(WeaponModels.P([[0.0505, -0.1], [0.0915, -0.1], [0.098, -0.118], [0.058, -0.118]]), 0.0185, "blued", 0.0, mag)   # feed tower
 	b.tube(r, r, wdt, c, "blued", "x", mag, 28)
 	for s: float in [-1.0, 1.0]:
@@ -354,7 +354,7 @@ static func _ammo(b: WeaponModels) -> void:
 	var bottom: float = float(mag.get_meta("bottom", -0.1078))
 	var bz: float = 0.0705 + (-0.1028 - bottom) * 0.3368
 	if _opt(b, "mag") == "drum":
-		var d: MeshInstance3D = b.box(Vector3(0.042 if b.upgraded else 0.038, 0.004, 0.012), Vector3(0, bottom + 0.0015, 0.083), "white", Vector3.ZERO, mag)
+		var d: MeshInstance3D = b.box(Vector3(0.042 if b.upgraded else 0.038, 0.004, 0.012), Vector3(0, bottom + 0.0015, 0.072), "white", Vector3.ZERO, mag)
 		d.material_override = band
 	else:
 		var p: MeshInstance3D = b.box(Vector3(0.0222, 0.002, 0.03), Vector3(0, bottom + 0.0012, bz), "white", Vector3.ZERO, mag)
