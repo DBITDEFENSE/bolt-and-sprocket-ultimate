@@ -102,6 +102,19 @@ func _fire(p: CPUParticles3D, at: Vector3, dir: Vector3, tint: Color) -> void:
 	p.emitting = true
 
 
+## One burst of each kind at `at`, a thousandth of the size (nothing shows), from throwaway copies of the emitters:
+## the first draw of these materials compiles their shaders, which stalled the frame of the first real burst
+## (RenderWarm calls this at map load, T-070). Not counted in `counts`.
+func warm(at: Vector3) -> void:
+	for src: CPUParticles3D in [_glass[0], _splash[0], _chaff[0]]:
+		var p: CPUParticles3D = src.duplicate() as CPUParticles3D
+		p.scale_amount_min = 0.001
+		p.scale_amount_max = 0.001
+		add_child(p)
+		_fire(p, at, Vector3.UP, Color(1, 1, 1, 0.5))
+		get_tree().create_timer(p.lifetime + 0.5).timeout.connect(p.queue_free)
+
+
 ## A glass vessel bursting at `at`, the shot travelling along `dir`; `liquid` tints the splash (alpha 0 = empty).
 func glass(at: Vector3, dir: Vector3, glass_tint: Color, liquid: Color) -> void:
 	var away: Vector3 = (dir.normalized() * 0.6 + Vector3.UP * 0.8).normalized()
