@@ -730,11 +730,17 @@ func live_icons() -> Array[Dictionary]:
 		var zc: Dictionary = cfg.get("zombies", {})
 		var near_r: float = float(zc.get("always_radius_m", 24.0))
 		var tol: float = float(zc.get("floor_tolerance_m", 2.6))
+		var mp: Vector3 = me.global_position
+		var always: bool = mode == "always"
 		for z: Variant in _zombies():
 			var zn: Node3D = z as Node3D
-			if zn == null or zn.is_in_group(&"bosses"):
+			if zn == null:
 				continue
-			var show: bool = is_zombie_revealed(zn) or (mode == "always" and zn.global_position.distance_to(me.global_position) <= near_r)
-			if show and absf(zn.global_position.y - me.global_position.y) <= tol:
-				_live.append({"kind": "zombie", "pos": zn.global_position, "blink": false})
+			var revealed: bool = _revealed_z.has(zn.get_instance_id())   # is_zombie_revealed, inlined (per zombie per frame)
+			if not revealed and not always:
+				continue
+			var zp: Vector3 = zn.global_position
+			var show: bool = revealed or zp.distance_to(mp) <= near_r
+			if show and absf(zp.y - mp.y) <= tol and not zn.is_in_group(&"bosses"):
+				_live.append({"kind": "zombie", "pos": zp, "blink": false})
 	return _live
