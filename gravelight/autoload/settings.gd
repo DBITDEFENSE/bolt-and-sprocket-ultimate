@@ -17,9 +17,9 @@ const PAD_AXES: Dictionary = {
 }
 const COLORBLIND_MODES: PackedStringArray = ["off", "protanopia", "deuteranopia", "tritanopia"]
 const PRESETS: Dictionary = {
-	"low": {"msaa": Viewport.MSAA_DISABLED, "scale": 0.75, "dir_shadow": 1024, "pos_shadow": 1024, "vol_fog": false},
-	"medium": {"msaa": Viewport.MSAA_2X, "scale": 0.9, "dir_shadow": 2048, "pos_shadow": 2048, "vol_fog": true},
-	"high": {"msaa": Viewport.MSAA_2X, "scale": 1.0, "dir_shadow": 4096, "pos_shadow": 4096, "vol_fog": true},
+	"low": {"msaa": Viewport.MSAA_DISABLED, "scale": 0.75, "dir_shadow": 1024, "pos_shadow": 1024, "vol_fog": false, "sdfgi": false, "ssil": false, "ssr": false},
+	"medium": {"msaa": Viewport.MSAA_2X, "scale": 0.9, "dir_shadow": 2048, "pos_shadow": 2048, "vol_fog": true, "sdfgi": false, "ssil": true, "ssr": false},
+	"high": {"msaa": Viewport.MSAA_2X, "scale": 1.0, "dir_shadow": 4096, "pos_shadow": 4096, "vol_fog": true, "sdfgi": true, "ssil": true, "ssr": true},
 }
 
 var values: Dictionary = {
@@ -342,9 +342,20 @@ func apply_visuals() -> void:
 		_apply_env(n as WorldEnvironment)
 
 
+## The preset gates the costly lighting a map asks for: a map's generator turns an effect on in its Environment
+## (SDFGI bounce light, SSIL, SSR) and the preset can only take it away, never add it to a map that didn't want it.
+## The map's own choice is remembered in the Environment's metadata ("gl_want_<effect>") the first time it is seen.
 func _apply_env(we: WorldEnvironment) -> void:
-	if we != null and we.environment != null:
-		we.environment.volumetric_fog_enabled = bool(preset()["vol_fog"])
+	if we == null or we.environment == null:
+		return
+	var env: Environment = we.environment
+	var p: Dictionary = preset()
+	env.volumetric_fog_enabled = bool(p["vol_fog"])
+	for fx: String in ["sdfgi", "ssil", "ssr"]:
+		var key: String = "gl_want_" + fx
+		if not env.has_meta(key):
+			env.set_meta(key, bool(env.get(fx + "_enabled")))
+		env.set(fx + "_enabled", bool(env.get_meta(key)) and bool(p.get(fx, true)))
 
 
 ## The shared game hosts several modes: Gravelight's bindings, screen overlays (colorblind, film grain) and
