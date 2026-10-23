@@ -148,6 +148,13 @@ func _small_button(text: String, cb: Callable, size: int = 15) -> Button:
 	b.add_theme_color_override("font_color", _ink())
 	b.add_theme_color_override("font_hover_color", _ink())
 	b.add_theme_color_override("font_pressed_color", Color(0.98, 0.95, 0.88))
+	var fo: StyleBoxFlat = h.duplicate() as StyleBoxFlat
+	fo.border_color = _red()
+	fo.set_border_width_all(3)
+	fo.draw_center = false
+	b.add_theme_stylebox_override("focus", fo)
+	b.add_theme_color_override("font_focus_color", _ink())
+	b.add_theme_color_override("font_hover_pressed_color", Color(0.98, 0.95, 0.88))
 	b.pressed.connect(cb)
 	return b
 
@@ -671,12 +678,16 @@ func click(at: Vector2) -> void:
 	var pos: Vector3 = _world_at(at)
 	pending = {"pos": pos, "at": at, "c": {"kind": "go", "sub": "", "label": "", "price": 0, "node": null}}
 	var entries: Array = []
+	if str(h.get("kind", "")) == "marker":
+		# a mark: Remove it, and whatever it sits on (a machine with a buy mark) keeps its own options
+		var m: Dictionary = h["marker"]
+		pending["mark_id"] = int(m["id"])
+		pending["pos"] = m["pos"]
+		entries.append({"id": "remove", "label": "Remove mark"})
+		h = _under_mark(at)
 	match str(h.get("kind", "")):
 		"marker":
-			var m: Dictionary = h["marker"]
-			pending["mark_id"] = int(m["id"])
-			pending["pos"] = m["pos"]
-			entries.append({"id": "remove", "label": "Remove mark"})
+			pass
 		"objective":
 			var o: Dictionary = h["objective"]
 			var on: Variant = o.get("node")
@@ -700,6 +711,20 @@ func click(at: Vector2) -> void:
 				pending["c"] = MarkTargets.classify_poi(poi, state)
 	entries.append_array(radial_for(pending["c"], marks.has_bots(), skin == "holo"))
 	radial.open(at, entries, _radial_title(pending["c"]))
+
+
+## The nearest icon at `at` that isn't a mark ({} none).
+func _under_mark(at: Vector2) -> Dictionary:
+	var best: Dictionary = {}
+	var bd: float = 16.0
+	for hh: Dictionary in canvas.hits:
+		if str(hh.get("kind", "")) == "marker":
+			continue
+		var d: float = (hh["pos"] as Vector2).distance_to(at) - float(hh.get("r", 0.0)) * 0.5
+		if d <= bd:
+			bd = d
+			best = hh
+	return best
 
 
 func _radial_title(c: Dictionary) -> String:
@@ -1271,7 +1296,10 @@ class WhoChip extends Button:
 			draw_string(f, Vector2((size.x - w) * 0.5, y + i * 15.0 + 8.0), lines[i], HORIZONTAL_ALIGNMENT_LEFT, -1, fs, ink)
 		if status != "" and portrait:
 			var tf: Font = MenuKit.type_font()
-			var s: String = status if status.length() < 22 else status.substr(0, 20) + ".."
+			var s: String = status
+			while s.length() > 4 and tf.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x > size.x - 10.0:
+				s = s.substr(0, s.length() - 3) + ".."
+				s = s.replace("....", "..")
 			var w2: float = tf.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x
 			draw_string(tf, Vector2((size.x - w2) * 0.5, size.y - 6.0), s, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(ink.r, ink.g, ink.b, 0.75))
 

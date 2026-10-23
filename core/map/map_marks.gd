@@ -75,11 +75,21 @@ func _ready() -> void:
 		_world = WorldMarks.new()
 		_world.name = "WorldMarks"
 		_world.setup(self)
-		state.level_root.add_child.call_deferred(_world)
+		_add_world.call_deferred()
 	ping = MarkPing.new()
 	ping.name = "MarkPing"
 	ping.setup(self)
 	add_child(ping)
+
+
+func _add_world() -> void:
+	if _world != null and is_instance_valid(_world) and not _world.is_inside_tree() and state != null and is_instance_valid(state.level_root):
+		state.level_root.add_child(_world)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE and _world != null and is_instance_valid(_world) and not _world.is_inside_tree():
+		_world.free()   # never added (the level went first)
 
 
 func _process(_delta: float) -> void:

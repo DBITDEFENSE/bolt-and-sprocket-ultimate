@@ -61,13 +61,14 @@ func _make(m: Dictionary) -> Dictionary:
 		d.size = Vector3(s, 2.4, s)
 		d.position = Vector3(0, 0.6, 0)
 		d.texture_albedo = chalk_x_texture()
+		d.texture_emission = chalk_x_texture()   # chalk catches what little light there is: it reads in a dark cellar
+		d.emission_energy = float(_wc.get("chalk_glow", 0.35))
 		d.albedo_mix = 1.0
 		d.upper_fade = 0.2
 		d.lower_fade = 0.4
 		d.distance_fade_enabled = true
 		d.distance_fade_begin = float(_wc.get("decal_fade_begin_m", 30.0))
 		d.distance_fade_length = float(_wc.get("decal_fade_length_m", 25.0))
-		d.cull_mask = 1   # the world, not the viewmodel or bodies
 		root.add_child(d)
 		it["decal"] = d
 	else:
@@ -146,6 +147,8 @@ func _process(_delta: float) -> void:
 		rows.append([eye.distance_to(p), it])
 	rows.sort_custom(func(a: Array, b: Array) -> bool: return float(a[0]) < float(b[0]))
 	var shown: int = 0
+	var placed: Array[Vector2] = []
+	var gap: Vector2 = Vector2(float(_wc.get("label_gap_px", 170.0)), float(_wc.get("label_gap_y_px", 26.0)))
 	var fb: float = float(_wc.get("fade_begin_m", 12.0))
 	var hide_m: float = float(_wc.get("hide_m", 70.0))
 	var low: float = float(_wc.get("fade_end_alpha", 0.35))
@@ -155,6 +158,19 @@ func _process(_delta: float) -> void:
 		var l: Label3D = it2["label"]
 		var m: Dictionary = it2["mark"]
 		var vis: bool = d < hide_m and d > float(_wc.get("near_hide_m", 2.2)) and shown < int(_wc.get("labels_max", 4))
+		if vis:
+			# never cluttered: a label that would sit on a nearer one's is left out
+			var lp: Vector3 = l.global_position
+			if cam.is_position_behind(lp):
+				vis = false
+			else:
+				var sp: Vector2 = cam.unproject_position(lp)
+				for q: Vector2 in placed:
+					if absf(q.x - sp.x) < gap.x and absf(q.y - sp.y) < gap.y:
+						vis = false
+						break
+				if vis:
+					placed.append(sp)
 		l.visible = vis
 		(it2["root"] as Node3D).visible = d < hide_m * 1.2
 		if not vis:
@@ -185,7 +201,7 @@ static func chalk_x_texture() -> Texture2D:
 		return _x_tex
 	var n: int = 128
 	var img: Image = Image.create(n, n, false, Image.FORMAT_RGBA8)
-	img.fill(Color(1, 1, 1, 0))
+	img.fill(Color(0, 0, 0, 0))   # black where empty: the emission texture reads RGB only
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = 7341
 	var strokes: Array = [[Vector2(0.14, 0.17), Vector2(0.86, 0.83)], [Vector2(0.84, 0.15), Vector2(0.17, 0.86)]]
@@ -197,14 +213,14 @@ static func chalk_x_texture() -> Texture2D:
 			var t: float = float(i) / float(steps - 1)
 			var c: Vector2 = a.lerp(b, t) + Vector2(sin(t * 9.0) * 1.6, cos(t * 7.0) * 1.2)
 			var w: float = lerpf(7.5, 5.0, t) + rng.randf_range(-1.0, 1.0)
-			for k: int in 10:
+			for k: int in 18:
 				var q: Vector2 = c + Vector2(rng.randf_range(-w, w), rng.randf_range(-w, w))
 				var x: int = int(q.x)
 				var y: int = int(q.y)
 				if x < 0 or y < 0 or x >= n or y >= n:
 					continue
 				var edge: float = 1.0 - clampf(c.distance_to(q) / w, 0.0, 1.0)
-				var al: float = clampf(edge * 1.6, 0.0, 1.0) * rng.randf_range(0.55, 1.0)
+				var al: float = clampf(edge * 2.2, 0.0, 1.0) * rng.randf_range(0.7, 1.0)
 				var cur: Color = img.get_pixel(x, y)
 				if al > cur.a:
 					img.set_pixel(x, y, Color(1, 1, 1, al))

@@ -85,6 +85,27 @@ static func best_bot(cands: Array, price: int, tune: Dictionary, allow_companion
 	return best
 
 
+## How a mark of `kind` on a target classified `c` (MarkTargets.classify) is carried out: "ee" (the squad's egg API),
+## "buy", "powerup", "power" (the power switch: a purchase with no price), "go", "defend", or "refuse".
+static func route(kind: String, c: Dictionary) -> String:
+	var ck: String = str(c.get("kind", "go"))
+	var sub: String = str(c.get("sub", ""))
+	match kind:
+		"buy":
+			if ck == "buy":
+				return "buy"
+			return "power" if ck == "activate" else "refuse"
+		"collect":
+			if sub == "quest":
+				return "ee"
+			if sub == "powerup":
+				return "powerup"
+			return "power" if ck == "activate" else "refuse"
+		"go", "defend":
+			return kind
+	return "refuse"
+
+
 ## Why a bot can't take a purchase ("" = it can), from plain facts: sub, companion, perk_state (PerkManager.can_buy
 ## result), powered, owned (already has this gun / door open), confirmed (a door), slots_free (a gun: false when
 ## every slot holds an upgraded gun).
@@ -256,8 +277,11 @@ func place_order(spec: Dictionary, mark_id: int) -> Dictionary:
 		want_pid = int(str(target))
 	var pos: Vector3 = spec.get("pos", Vector3.ZERO)
 	var where: String = _where(pos)
+	var how: String = route(kind, c)
+	if how == "refuse":
+		return {"ok": false, "reason": "There's nothing to buy there." if kind == "buy" else ("Nothing to collect there." if kind == "collect" else "Not an order."), "pid": -1}
 	# ---- easter-egg objects: the squad's egg API decides (and speaks)
-	if kind == "collect" and str(c.get("sub", "")) == "quest":
+	if how == "ee":
 		var r: Dictionary = squad.ee_assign_node(node, want_pid)
 		if not bool(r.get("ok", false)):
 			return {"ok": false, "reason": str(r.get("reason", "")), "pid": int(r.get("pid", -1))}
@@ -272,10 +296,8 @@ func place_order(spec: Dictionary, mark_id: int) -> Dictionary:
 		return {"ok": true, "pid": pid_e, "reason": str(r.get("reason", "")), "label": str(c.get("label", "Collect"))}
 	var o: Dictionary = {"mark_id": mark_id, "pos": pos, "where": where, "node": node, "label": str(spec.get("label", ""))}
 	var price: int = 0
-	match kind:
+	match how:
 		"buy":
-			if str(c.get("kind", "")) != "buy" and str(c.get("kind", "")) != "activate":
-				return {"ok": false, "reason": "There's nothing to buy there.", "pid": -1}
 			o["kind"] = "buy"
 			o["sub"] = str(c.get("sub", ""))
 			o["label"] = str(c.get("label", ""))
@@ -286,21 +308,16 @@ func place_order(spec: Dictionary, mark_id: int) -> Dictionary:
 				o["slot"] = str(spec.get("slot", ""))
 				o["option"] = str(spec.get("option", ""))
 			price = int(o["price"])
-		"collect":
-			if str(c.get("sub", "")) == "powerup":
-				o["kind"] = "powerup"
-				o["label"] = str(c.get("label", "power-up"))
-			elif str(c.get("kind", "")) == "activate":
-				o["kind"] = "buy"
-				o["sub"] = "power"
-				o["label"] = "the power"
-			else:
-				return {"ok": false, "reason": "Nothing to collect there.", "pid": -1}
-		"go", "defend":
-			o["kind"] = kind
-			o["label"] = where
+		"powerup":
+			o["kind"] = "powerup"
+			o["label"] = str(c.get("label", "power-up"))
+		"power":
+			o["kind"] = "buy"
+			o["sub"] = "power"
+			o["label"] = "the power"
 		_:
-			return {"ok": false, "reason": "Not an order.", "pid": -1}
+			o["kind"] = how
+			o["label"] = where if where != "" else MapMarks.kind_name(how)
 	# ---- who
 	var pid: int = want_pid
 	if pid < 0:

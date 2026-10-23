@@ -200,12 +200,13 @@ func tick_think(now: float) -> void:
 		if (t.is_empty() or gone) and now - float(order.get("created", now)) > 1.0:
 			_finish(true, "ee task over" if t.is_empty() else "marked object done")   # the step itself may go on
 		return
-	if player.downed or player.spectating:
+	var away: String = away_kind(brain.action, player.downed, player.spectating)
+	if away != "":
 		_was_away = true
-		return
-	if brain.action == "revive" or brain.action == "cover":
-		_was_away = true
-		order["interrupted"] = true
+		if away == "revive":
+			order["interrupted"] = true
+		if away == "down":
+			return
 	if now - float(order.get("created", now)) > float(_cfg.get("order_s", 120.0)) and str(order.get("kind", "")) != "defend":
 		_finish(false, "timed out")
 		return
@@ -245,11 +246,27 @@ func tick_think(now: float) -> void:
 			_finish(true, "held")
 
 
+## Why a bot is off its order now: "revive" (reviving or covering a revive: the emergency that interrupts orders),
+## "down" (downed or out), "" (it isn't).
+static func away_kind(action: String, downed: bool, out: bool) -> String:
+	if downed or out:
+		return "down"
+	if action == "revive" or action == "cover":
+		return "revive"
+	return ""
+
+
+## Back on the order after being away: say "Back to it." only when a revive interrupted it.
+static func resume_due(was_away: bool, interrupted: bool) -> bool:
+	return was_away and interrupted
+
+
 ## Back from a revive (or a down): "Back to it." once.
 func _on_return() -> void:
 	if _was_away and active():
+		var say: bool = resume_due(_was_away, bool(order.get("interrupted", false)))
 		_was_away = false
-		if bool(order.get("interrupted", false)):
+		if say:
 			order["interrupted"] = false
 			resumed += 1
 			_say(["MARK_RESUME", "EE_RESUME"])

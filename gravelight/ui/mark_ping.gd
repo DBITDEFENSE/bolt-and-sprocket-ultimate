@@ -72,6 +72,26 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
+## What a press of the ping key does (pure): "confirm_door" (a second press on the door it just asked about),
+## "danger" (a double-tap), "remove" (on one of your marks), "ask_door" (a door with bots: ask first), "buy",
+## "collect", "go". `c` = MarkTargets.classify of what is looked at; `since_last_ms` since the last press;
+## `door_pending` = this door was asked about within confirm_s; `on_mark` = a mark of yours is right there.
+static func decide(c: Dictionary, has_bots: bool, since_last_ms: int, door_pending: bool, on_mark: bool, cfg: Dictionary) -> String:
+	var sub: String = str(c.get("sub", ""))
+	if sub == "door" and door_pending:
+		return "confirm_door"
+	if since_last_ms <= int(float(cfg.get("double_tap_s", 0.35)) * 1000.0):
+		return "danger"
+	if on_mark:
+		return "remove"
+	match MarkTargets.mark_kind(c):
+		"buy":
+			return "ask_door" if sub == "door" and has_bots else "buy"
+		"collect":
+			return "collect"
+	return "go"
+
+
 ## What the view ray hits: {pos, normal, node} ({} nothing within range).
 func look_hit() -> Dictionary:
 	var ms: MapState = marks.state
@@ -89,73 +109,73 @@ func look_hit() -> Dictionary:
 	return {"pos": r["position"], "normal": r["normal"], "node": r["collider"], "from": from, "fwd": fwd}
 
 
-## A press of the ping key: see the class doc. Returns the MapMarks.place result (or {ok, removed / confirm}).
+## A press of the ping key: see the class doc (decide()). Returns the MapMarks.place result (or {ok, removed /
+## confirm}).
 func ping() -> Dictionary:
 	var now: int = Time.get_ticks_msec()
 	var h: Dictionary = look_hit()
-	var res: Dictionary = {}
 	if h.is_empty():
 		_feedback("Nothing there to mark.")
 		return {"ok": false, "reason": "nothing"}
-	var node: Node = h.get("node") as Node
 	var gl: bool = marks.state.game == "gravelight"
-	var c: Dictionary = MarkTargets.classify(node) if gl else {"kind": "go", "sub": "", "label": "", "price": 0, "node": null}
-	# a second press on the same door confirms it
-	if gl and str(c.get("sub", "")) == "door" and c.get("node") == _door and now - _door_t <= int(float(_pc.get("confirm_s", 3.0)) * 1000.0):
-		_door = null
-		res = marks.place({"kind": "buy", "pos": (c["node"] as Node3D).global_position, "node": c["node"], "target": "any", "confirmed": true, "label": str(c["label"])})
-		_report(res, "Open the %s" % str(c["label"]))
-		return res
-	# double-tap: the last ping becomes Danger
-	if now - _last_t <= int(float(_pc.get("double_tap_s", 0.35)) * 1000.0) and _last_pos != Vector3.INF:
-		var at: Vector3 = _last_pos
-		if _last_id > 0:
-			marks.remove(_last_id, "replaced")
-		_last_t = -100000
-		_last_id = -1
-		res = marks.place({"kind": "danger", "pos": at, "label": _zone(at)})
-		_report(res, "Danger")
-		return res
+	var c: Dictionary = MarkTargets.classify(h.get("node") as Node) if gl else {"kind": "go", "sub": "", "label": "", "price": 0, "node": null}
 	var floor_pos: Vector3 = _floor_point(h)
-	# pinging one of your marks takes it off
-	var near: Dictionary = marks.nearest(floor_pos, float(_pc.get("remove_m", 1.4)))
+	var rm: float = float(_pc.get("remove_m", 1.4))
+	var near: Dictionary = marks.nearest(floor_pos, rm)
 	if near.is_empty() and c.get("node") is Node3D:
-		near = marks.nearest((c["node"] as Node3D).global_position, float(_pc.get("remove_m", 1.4)))
-	if not near.is_empty() and (int(near.get("owner", -1)) == Net.local_player_id() or bool(near.get("order", false))):
-		marks.remove(int(near["id"]))
-		_last_t = now
-		_last_id = -1
-		_last_pos = Vector3.INF
-		_feedback("Mark removed.")
-		return {"ok": true, "removed": true}
+		near = marks.nearest((c["node"] as Node3D).global_position, rm)
+	var mine: bool = not near.is_empty() and (int(near.get("owner", -1)) == Net.local_player_id() or bool(near.get("order", false)))
+	var door_pending: bool = c.get("node") != null and c.get("node") == _door and now - _door_t <= int(float(_pc.get("confirm_s", 3.0)) * 1000.0)
+	var since: int = now - _last_t if _last_pos != Vector3.INF else 1000000
 	var bots: bool = marks.has_bots()
-	var kind: String = MarkTargets.mark_kind(c) if gl else "go"
-	var spec: Dictionary = {"kind": kind, "pos": floor_pos, "label": str(c.get("label", ""))}
+	var what: String = decide(c, bots, since, door_pending, mine, _pc)
+	var res: Dictionary = {}
+	match what:
+		"confirm_door":
+			_door = null
+			res = marks.place({"kind": "buy", "pos": (c["node"] as Node3D).global_position, "node": c["node"], "target": "any", "confirmed": true, "label": str(c["label"])})
+			_report(res, "Open the %s" % str(c["label"]))
+			return res
+		"danger":
+			var at: Vector3 = _last_pos
+			if _last_id > 0:
+				marks.remove(_last_id, "replaced")
+			_last_t = -100000
+			_last_id = -1
+			res = marks.place({"kind": "danger", "pos": at, "label": _zone(at)})
+			_report(res, "Danger")
+			return res
+		"remove":
+			marks.remove(int(near["id"]))
+			_last_t = now
+			_last_id = -1
+			_last_pos = Vector3.INF
+			_feedback("Mark removed.")
+			return {"ok": true, "removed": true}
+		"ask_door":
+			_door = c["node"]
+			_door_t = now
+			_last_t = now
+			_last_pos = floor_pos
+			_last_id = -1
+			_feedback("%s  ·  Ping again to have a bot open it" % MarkTargets.door_question(int(c.get("price", 0))))
+			return {"ok": false, "confirm": true, "reason": "confirm"}
+	var spec: Dictionary = {"kind": what, "pos": floor_pos, "label": str(c.get("label", ""))}
 	if c.get("node") is Node3D:
 		spec["node"] = c["node"]
 		spec["pos"] = (c["node"] as Node3D).global_position
-	match kind:
-		"buy":
-			if str(c.get("sub", "")) == "door" and bots:
-				_door = c["node"]
-				_door_t = now
-				_last_t = now
-				_last_pos = floor_pos
-				_last_id = -1
-				_feedback("%s  ·  Ping again to have a bot open it" % MarkTargets.door_question(int(c.get("price", 0))))
-				return {"ok": false, "confirm": true, "reason": "confirm"}
-			spec["target"] = "any" if bots else "me"
-		"collect":
-			spec["target"] = "any" if bots else "me"
-		_:
-			spec["kind"] = "go"
-			spec["target"] = "me"
-			spec["label"] = _zone(floor_pos)
+	if what == "go":
+		spec["target"] = "me"
+		spec["label"] = _zone(floor_pos)
+		spec.erase("node")
+		spec["pos"] = floor_pos
+	else:
+		spec["target"] = "any" if bots else "me"
 	res = marks.place(spec)
 	_last_t = now
 	_last_pos = floor_pos
 	_last_id = int(res.get("id", -1)) if bool(res.get("ok", false)) else -1
-	_report(res, MapMarks.kind_name(str(spec["kind"])))
+	_report(res, MapMarks.kind_name(what))
 	return res
 
 
