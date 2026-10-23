@@ -30,7 +30,7 @@ list is required automatically: the bake check fails until it is baked.
 | `MapState.current()` | the match's state (added by `MapRoot` / `BSLevel`): `discovered`, `is_discovered(id)`, `discover(id)`, `visible_pois(floor, fog_on)`, `poi_state(poi)` ({open, locked, powered, ready, price, label, here}), `poi_node(poi)`, `is_revealed(pos, floor)`, `fog_textures[floor]`, `live_icons()`, `objectives()`, `add_objective_provider(callable)`, `reveal_zombies(origin, r, s)`, `local_body()`, `local_floor()` |
 | marks | `MapState.add_marker({pos, kind, label, color, owner, target, poi_id}) -> id`, `update_marker(id, changes)`, `remove_marker(id)`, `clear_markers(owner)`, `markers()`, signal `markers_changed`; `Minimap.add_marker(...)` forwards. The minimap / map draw them (pin + letter by kind: go, defend, danger, regroup, note, buy, collect). Limits are the caller's job. |
 | suppressor | `MapState.suppressed_check = func(pid, weapon_id) -> bool`, or give `WeaponInstance` an `is_suppressed()` method / `suppressed` property / meta. |
-| spoilers | objectives read `GLSettings.values["quest_spoilers"]` = `hidden` / `hints` / `full` (`MapState.SPOILER_KEY`). |
+| spoilers | objectives read `GLSettings.values["objective_spoilers"] (section 4's key)` = `hidden` / `hints` / `full` (`MapState.SPOILER_KEY`). |
 | `MapCanvas` | the drawing Control for any map view: `set_state(ms)`, `floor_index`, `center` (world XZ), `zoom` (px/m), `heading`, `show_*` flags, `show_zone_labels`, `fit_floor()`, `world_to_canvas` / `canvas_to_world`, `icon_at(pt)` (hover: {kind, poi/live/marker/objective/connector, state}), `record_hits`. |
 
 The minimap (`ui/map/minimap.gd`) is a `MapCanvas` in a circular / rounded-square clip with the bezel; settings are in

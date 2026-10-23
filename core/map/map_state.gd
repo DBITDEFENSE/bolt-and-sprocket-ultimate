@@ -18,7 +18,7 @@ extends Node
 ##     near the shooter for a second) and, with "Show nearby zombies: Always", the ones near the player
 ##     (setting minimap_zombies: off / firing / always);
 ##   - objectives come from providers (add_objective_provider); the built-in one lists the quest objects in the
-##     level while a quest is running, filtered by the spoiler setting (GLSettings "quest_spoilers":
+##     level while a quest is running, filtered by the spoiler setting (GLSettings "objective_spoilers", section 4:
 ##     hidden / hints / full): hidden shows none, hints the ones seen in person, full all of them.
 
 signal poi_discovered(id: String)
@@ -26,7 +26,7 @@ signal markers_changed
 signal fog_changed(floor_index: int)
 
 const CONFIG: String = "res://data/maps/minimap.json"
-const SPOILER_KEY: String = "quest_spoilers"
+const SPOILER_KEY: String = "objective_spoilers"   # the section 4 setting (ObjectiveLog.LEVELS)
 
 static var _current: MapState = null
 ## Section 6 (the M1911 suppressor) can plug in here: func(pid: int, weapon_id: StringName) -> bool, true when that
