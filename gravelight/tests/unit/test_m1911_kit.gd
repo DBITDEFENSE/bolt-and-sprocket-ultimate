@@ -267,6 +267,7 @@ func test_loadout_rows_list_the_pistol() -> void:
 	assert_eq(rows.size(), 5)
 	assert_eq(rows[2]["name"], "Raised Target Sight")
 	assert_eq(rows[0]["name"], "Standard")
+	assert_eq(p.weapons.current().attachment_labels(), PackedStringArray(["Raised Target Sight"]), "the LOADOUT tab's hook")
 
 
 # ---------------------------------------------------------------- meta

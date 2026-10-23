@@ -83,6 +83,18 @@ func draw_mult() -> float:
 	return float(_kit_mods.get("draw", 1.0)) if not _kit_mods.is_empty() else 1.0
 
 
+## The fitted attachments by name (Last Rites names on an upgraded pistol), then the finish: what the pause menu's
+## LOADOUT tab lists under the gun (PauseMenu.attachment_text calls this).
+func attachment_labels() -> PackedStringArray:
+	var out: PackedStringArray = []
+	for d: Dictionary in M1911Kit.describe(self):
+		if str(d["option"]) != "":
+			out.append(str(d["name"]))
+	if finish != &"":
+		out.append("%s finish" % str(M1911Kit.finish_def(finish).get("name", String(finish))))
+	return out
+
+
 ## Cache key part for anything the attachments or finish change (models, recoil, ADS zoom).
 func kit_sig() -> String:
 	return M1911Kit.signature(kit, finish) if not kit.is_empty() or finish != &"" else ""
