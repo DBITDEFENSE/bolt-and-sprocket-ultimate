@@ -44,6 +44,7 @@ var _forced: Dictionary = {}          # {"weapon": [ids]} or {"upgraded": true}
 var _last_tick: float = -INF
 var _line_t: Dictionary = {}          # category -> squad time it was said
 var _failed_nodes: Dictionary = {}    # instance id -> squad time it may be tried again
+var _fail_count: Dictionary = {}      # instance id -> failures this task (3: given up)
 var _hold_t: float = 0.0
 var _vantage: Dictionary = {}         # instance id -> Vector3
 var _replan: bool = true
@@ -80,6 +81,7 @@ func start(qid: StringName, sid: StringName, t: Dictionary, ordered: bool, sourc
 	_errand = {}
 	_replan = true
 	_failed_nodes.clear()
+	_fail_count.clear()
 	_log("start %s/%s (%s, %s%s)" % [qid, sid, task["type"], source, ", ordered" if ordered else ""])
 	_announce_start()
 
@@ -351,7 +353,7 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 					if n3 == null:
 						continue
 					rows.append({"node": n3, "id": BotEECatalog.target_id(n3, t), "ok": _eligible(n3, t) and not hub.targeted_by_other(n3, brain),
-						"d": _flat(n3.global_position, player.global_position)})
+						"retry": _retry_later(n3), "d": _flat(n3.global_position, player.global_position)})
 			w["nodes"] = rows
 		"interact_sequence":
 			w["node"] = _first(t.get("target", {}), focus)
@@ -486,6 +488,9 @@ static func plan_collect(_t: Dictionary, w: Dictionary) -> Dictionary:
 		return {"do": "use", "node": cur["node"]}   # stays with the one it set out for (no dithering between two)
 	if not best.is_empty():
 		return {"do": "use", "node": best["node"]}
+	for r2: Variant in w.get("nodes", []):
+		if bool((r2 as Dictionary).get("retry", false)) and not got.has(str((r2 as Dictionary).get("id", ""))):
+			return {"do": "wait"}   # one it couldn't reach just now: tries again after a moment
 	if int(w.get("picked", 0)) > 0:
 		return {"do": "done"}
 	return {"do": "fail", "code": "not_found"}
@@ -737,7 +742,8 @@ func _do_use(n: Node3D, delta: float) -> void:
 	if sp == Vector3.INF:
 		if _try_door(n.global_position):
 			return
-		_failed_nodes[n.get_instance_id()] = _now() + 30.0
+		_log("can't reach %s" % n.name)
+		_mark_failed(n, 20.0)
 		_replan = true
 		_idle(delta)
 		return
@@ -754,7 +760,8 @@ func _do_use(n: Node3D, delta: float) -> void:
 		_unclaim()
 		_replan = true
 	elif r == "failed":
-		_failed_nodes[n.get_instance_id()] = _now() + 20.0
+		_log("couldn't use %s" % n.name)
+		_mark_failed(n, 15.0)
 		task["cur"] = null
 		_unclaim()
 		_replan = true
@@ -1002,6 +1009,18 @@ func _eligible(n: Node3D, t: Dictionary) -> bool:
 		return false
 	var key: String = "ee:%d" % n.get_instance_id()
 	return brain.squad.blackboard.can_claim(key, player.player_id, _now())
+
+
+## A target this bot failed on a moment ago but may try again (at most 3 failures each).
+func _retry_later(n: Node3D) -> bool:
+	var id: int = n.get_instance_id()
+	return float(_failed_nodes.get(id, -INF)) > _now() and int(_fail_count.get(id, 0)) < 3 and n.is_visible_in_tree() 		and (not (n is Interactable) or (n as Interactable).can_interact(player))
+
+
+func _mark_failed(n: Node, seconds: float) -> void:
+	var id: int = n.get_instance_id()
+	_fail_count[id] = int(_fail_count.get(id, 0)) + 1
+	_failed_nodes[id] = _now() + (seconds if int(_fail_count[id]) < 3 else 1.0e9)
 
 
 func _claim(n: Node) -> bool:

@@ -220,6 +220,8 @@ func test_collect_plan() -> void:
 	assert_eq(BotEE.plan_collect({}, {"nodes": rows, "got": [], "focus": a})["node"], a, "the marked one first")
 	assert_eq(str(BotEE.plan_collect({}, {"nodes": rows, "got": ["note_a", "note_b"], "picked": 1})["do"]), "done", "its part done (the rest is claimed)")
 	assert_eq(str(BotEE.plan_collect({}, {"nodes": rows, "got": ["note_a", "note_b"]})["code"]), "not_found")
+	var rows2: Array = [{"node": a, "id": "note_a", "ok": false, "retry": true, "d": 9.0}]
+	assert_eq(str(BotEE.plan_collect({}, {"nodes": rows2, "got": [], "picked": 1})["do"]), "wait", "one it couldn't reach just now: try again, don't call it done")
 	assert_eq(str(BotEE.plan("collect", {}, {"step_done": true})["do"]), "done")
 
 
