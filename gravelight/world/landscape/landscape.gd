@@ -668,19 +668,51 @@ func _build_stable_light() -> void:
 			shaft.transform = Transform3D(Basis(xa, d, xa.cross(d).normalized()), mid)
 			g.add_child(shaft)
 			shaft.set_instance_shader_parameter("beam_len", shaft_len)
-	for sp: Array in [[Vector3(12.0, 6.0, 34.6), 0.22], [Vector3(24.6, 5.4, 28.0), 0.18]]:
+	# T-061: brighter and wider (a third over the middle of the floor); the stripes themselves are decals, below
+	for sp: Array in [[Vector3(12.0, 6.0, 34.6), 3.0], [Vector3(24.6, 5.4, 28.0), 2.5], [Vector3(18.3, 5.8, 34.6), 3.0]]:
 		var s2: SpotLight3D = SpotLight3D.new()
 		s2.name = "MoonLeakSpot"
 		s2.light_color = Color(0.55, 0.66, 1.0)
 		s2.light_energy = float(sp[1])
-		s2.light_volumetric_fog_energy = 2.5
-		s2.spot_range = 11.0
-		s2.spot_angle = 9.0
-		s2.spot_attenuation = 0.8
+		s2.light_volumetric_fog_energy = 1.2
+		s2.spot_range = 12.0
+		s2.spot_angle = 13.0
+		s2.spot_attenuation = 0.6
 		s2.shadow_enabled = false
 		add_child(s2)
 		s2.global_position = sp[0]
 		s2.look_at(s2.global_position + d, Vector3.UP if absf(d.y) < 0.99 else Vector3.RIGHT)
+	# where the slits' moonlight lands on the straw: cold stripes of board gaps (emissive decals, so they read
+	# even under the lanterns and stay when the Cousins put the lamps out). T-061 pass 2.
+	var stripes: ImageTexture = _board_gap_texture()
+	for s3: Array in slits:
+		var p3: Vector3 = s3[0]
+		var land: Vector3 = p3 + d * (p3.y / maxf(0.2, -d.y))
+		if land.x < 6.6 or land.x > 23.4 or land.z < 22.6 or land.z > 33.4:
+			continue   # lands under a wall or outside the stable
+		var dc: Decal = Decal.new()
+		dc.name = "MoonStripes"
+		dc.size = Vector3(float(s3[1]) * 1.1, 0.8, 1.4)
+		dc.texture_emission = stripes
+		dc.emission_energy = 1.0
+		dc.modulate = Color(0.55, 0.66, 1.0)
+		dc.cull_mask = 1
+		add_child(dc)
+		dc.global_position = land + Vector3(0, 0.1, 0)
+		# the bars run along the slit (local X along the wall), stretched along the moon's direction across it
+		dc.rotation.y = 0.0 if s3[2] == Vector3.RIGHT else PI * 0.5
+
+
+## Moonlight through gaps between boards (T-061): a few bright bars of uneven width on black, for the MoonStripes decals.
+func _board_gap_texture() -> ImageTexture:
+	var img: Image = Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	img.fill(Color.BLACK)
+	for bar: Array in [[6, 3], [17, 5], [29, 2], [38, 4], [51, 3]]:
+		for x: int in range(int(bar[0]), int(bar[0]) + int(bar[1])):
+			for y: int in 64:
+				var edge: float = 1.0 - absf(float(y) - 31.5) / 32.0
+				img.set_pixel(x, y, Color(1, 1, 1) * clampf(edge * 2.5, 0.0, 1.0))
+	return ImageTexture.create_from_image(img)
 
 
 ## Ground fog over the east field (around the wreck) and a thinner skin over the yard and the road: FogVolumes,

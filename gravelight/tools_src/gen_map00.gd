@@ -714,6 +714,7 @@ func build_dressing() -> void:
 	_dress_yard()
 	_dress_wreck()
 	_dress_polish()
+	_dress_lighting()
 
 
 func _dress_floors_and_ceilings() -> void:
@@ -1758,12 +1759,12 @@ func _dress_yard() -> void:
 	Props.block(g, Vector3(22.95, 0.0, 44.0), Vector3(23.05, 0.08, 46.2), "iron")
 	# lights: a lantern on the gatepost, a lamp over the yard door, the stable's south-wall lamp by the Thompson
 	Props.block(g, Vector3(20.36, 1.9, 47.9), Vector3(20.72, 2.3, 48.1), "lantern_glass")
-	_lamp("GateLantern", Vector3(20.5, 2.1, 47.4), Color(1.0, 0.68, 0.38), 1.6, 9.0, false, true, 0.25)
+	_lamp("GateLantern", Vector3(20.5, 2.1, 47.4), Color(1.0, 0.62, 0.3), 6.0, 15.0, false, true, 0.25)
 	Props.wall_lamp(g, Vector3(8.0, 2.75, 34.2), 180.0)
-	_lamp("YardDoorLamp", Vector3(8.0, 2.6, 34.9), Color(1.0, 0.72, 0.45), 1.8, 9.0, false, true, 0.15)
+	_lamp("YardDoorLamp", Vector3(8.0, 2.6, 34.9), Color(1.0, 0.62, 0.32), 7.5, 16.0, true, true, 0.15)
 	Props.wall_lamp(g, Vector3(22.0, 2.75, 34.2), 180.0)
-	_lamp("YardWallLamp", Vector3(22.0, 2.6, 34.9), Color(1.0, 0.72, 0.45), 1.4, 8.0, false, true, 0.15)
-	_lamp("YardMoonFill", Vector3(18.0, 6.0, 41.0), Color(0.5, 0.6, 0.85), 0.5, 22.0, false, false)
+	_lamp("YardWallLamp", Vector3(22.0, 2.6, 34.9), Color(1.0, 0.62, 0.32), 6.5, 15.0, false, true, 0.15)
+	_lamp("YardMoonFill", Vector3(18.0, 6.0, 41.0), Color(0.5, 0.6, 0.85), 0.25, 22.0, false, false)
 
 
 ## A gable roof (ridge along X) over the rectangle a..b (a.y = eave height), with a snow layer on top.
@@ -2145,12 +2146,58 @@ func _xform_to_root(n: Node3D) -> Transform3D:
 
 # ================================================================== lighting & environment
 
+# ================================================================== the lighting pass (T-061)
+
+## The inn's electric bulbs (T-061): the cellar lever's sweep reaches the taproom, upstairs and the stable, so each
+## gets a few bare bulbs under tin shades that light with it. [light name, zone, bulb position, ceiling y, energy,
+## range]. The names are in cousins.json setup.lamp_groups, so the Cousins round gutters them with the oil lamps.
+const INN_BULBS: Array = [
+	["TapBulb1", "TAPROOM", Vector3(9.6, 2.8, 5.6), TAP_H, 1.5, 8.5], ["TapBulb2", "TAPROOM", Vector3(14.5, 2.85, 11.6), TAP_H, 1.6, 9.0],
+	["TapBulb3", "TAPROOM", Vector3(21.2, 2.85, 8.2), TAP_H, 1.4, 8.5],
+	["HallBulb1", "UPSTAIRS", Vector3(7.2, UP_Y + 2.35, 8.0), UP_TOP, 1.3, 8.0], ["HallBulb2", "UPSTAIRS", Vector3(17.0, UP_Y + 2.35, 8.0), UP_TOP, 1.3, 8.0],
+	["Room1Bulb", "UPSTAIRS", Vector3(5.6, UP_Y + 2.35, 1.6), UP_TOP, 0.9, 6.0], ["Room2Bulb", "UPSTAIRS", Vector3(9.8, UP_Y + 2.35, 4.2), UP_TOP, 0.9, 6.0],
+	["Room3Bulb", "UPSTAIRS", Vector3(21.8, UP_Y + 2.35, 2.6), UP_TOP, 0.8, 6.0],
+	["PassBulb", "STABLE", Vector3(20.0, 2.55, 17.1), 3.0, 1.1, 6.5],
+	["StableBulb1", "STABLE", Vector3(21.4, 4.6, 28.8), STABLE_H - 0.6, 1.9, 11.0], ["StableBulb2", "STABLE", Vector3(12.6, 2.75, 31.2), 3.2, 1.3, 8.0],
+]
+const BULB_COLOR: Color = Color(1.0, 0.84, 0.62)
+var _bulb_lit: Dictionary = {}   # light name -> holder of its lit glass (moved under the light in build_environment)
+
+
+## Dressing for the lighting pass: the inn's bulb pendants (their lit glass in a holder per bulb) and the lantern
+## the Helvetia installers left hanging in the perk vault (the vault is otherwise black until the lever is thrown).
+func _dress_lighting() -> void:
+	var g: Node3D = Props.group(dress, "Lighting", Vector3.ZERO)
+	for b: Array in INN_BULBS:
+		var holder: Node3D = Node3D.new()
+		holder.name = str(b[0]) + "Lit"
+		holder.set_script(load("res://gravelight/maps/map00_crossroads/lit_glass.gd"))
+		dress.add_child(holder)
+		Props.pendant(g, b[2], float(b[3]) - 0.02, holder, "tin")
+		_bulb_lit[str(b[0])] = holder
+	Props.lantern(g, Vector3(28.2, CELLAR_Y + 2.2, 25.0), CELLAR_TOP - 0.1)
+	# the upstairs hall's two ends (the hall lamp alone left the stair head and the east end in the dark), and a
+	# lamp over the Old Cellar's ammo box
+	Props.wall_lamp(g, Vector3(0.16, UP_Y + 1.85, 6.7), -90.0)
+	Props.wall_lamp(g, Vector3(23.84, UP_Y + 1.85, 8.0), 90.0)
+	Props.wall_lamp(g, Vector3(8.6, UP_Y + 1.85, 6.16), 180.0)   # mid-hall, between the room doors (pass 2)
+	Props.wall_lamp(g, Vector3(16.0, UP_Y + 1.85, 6.16), 180.0)
+	Props.wall_lamp(g, Vector3(13.6, CELLAR_Y + 2.0, 15.84), 0.0)
+	Props.wall_lamp(g, Vector3(6.16, 5.3, 32.4), -90.0)   # the hayloft's south end, over the bales
+
+
+## The night (T-061 lighting pass): cold moonlight and snow outside, warm lamp pools inside, fog that catches both.
+## High adds SDFGI bounce light (the lamps' warmth on ceilings and in corners, the moonlit snow's cold fill through
+## the windows, the wreck's glow on the field) and SSIL; Medium keeps SSIL; Low falls back to the flat ambient below
+## (GLSettings presets take effects away, never add them). The sky dome is a mesh (Landscape), so the background
+## colour only feeds the dome's tint and the GI's sky light (background_energy_multiplier).
 func build_environment() -> void:
 	var we: WorldEnvironment = WorldEnvironment.new()
 	we.name = "WorldEnvironment"
 	var env: Environment = Environment.new()
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = Color(0.012, 0.016, 0.03)
+	env.background_energy_multiplier = 1.5
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color(0.22, 0.27, 0.4)
 	env.ambient_light_energy = 0.3
@@ -2160,42 +2207,53 @@ func build_environment() -> void:
 	env.ssao_radius = 1.4
 	env.ssao_intensity = 2.2
 	env.ssao_power = 1.6
+	env.ssil_enabled = true
+	env.ssil_radius = 4.0
+	env.ssil_intensity = 1.2
+	env.sdfgi_enabled = true
+	env.sdfgi_use_occlusion = true
+	env.sdfgi_read_sky_light = true
+	env.sdfgi_cascades = 4
+	env.sdfgi_min_cell_size = 0.15
+	env.sdfgi_energy = 3.0
+	env.sdfgi_bounce_feedback = 0.6
 	env.glow_enabled = true
-	env.glow_intensity = 0.75
-	env.glow_bloom = 0.06
+	env.glow_intensity = 0.85
+	env.glow_bloom = 0.08
 	env.glow_hdr_threshold = 1.1
 	env.fog_enabled = true
 	env.fog_light_color = Color(0.07, 0.09, 0.15)
 	env.fog_light_energy = 1.0
-	env.fog_density = 0.022
+	env.fog_density = 0.016
 	env.fog_sky_affect = 1.0
 	env.volumetric_fog_enabled = true
-	env.volumetric_fog_density = 0.02
+	env.volumetric_fog_density = 0.022
 	env.volumetric_fog_albedo = Color(0.75, 0.8, 0.9)
 	env.volumetric_fog_emission = Color(0.01, 0.012, 0.02)
 	env.volumetric_fog_length = 40.0
 	env.volumetric_fog_anisotropy = 0.45
+	env.volumetric_fog_gi_inject = 0.3   # SDFGI's bounce would turn the field's ground fog milky
 	env.adjustment_enabled = true
 	env.adjustment_saturation = 0.78
-	env.adjustment_contrast = 1.1
+	env.adjustment_contrast = 1.14
 	env.adjustment_brightness = 1.0
 	we.environment = env
 	map_root.add_child(we)
 	var moon: DirectionalLight3D = DirectionalLight3D.new()
 	moon.name = "Moon"
 	moon.light_color = Color(0.5, 0.6, 0.95)
-	moon.light_energy = 0.45
-	moon.light_volumetric_fog_energy = 0.6
+	moon.light_energy = 0.42
+	moon.light_volumetric_fog_energy = 0.35
 	moon.shadow_enabled = true
 	moon.directional_shadow_max_distance = 70.0
 	moon.rotation = Vector3(deg_to_rad(-40), deg_to_rad(28), 0)
 	map_root.add_child(moon)
 	var warm: Color = Color(1.0, 0.66, 0.36)
-	_lamp("Hearthfire", Vector3(12, 0.8, 1.4), Color(1.0, 0.5, 0.2), 4.5, 12.0, true, true)
-	_lamp("TapLamp1", Vector3(6.5, 2.45, 11.5), warm, 2.72, 11.0, false, true, 0.08)
-	_lamp("TapLamp2", Vector3(17.5, 2.45, 4.0), warm, 2.38, 11.0, false, true, 0.08)
-	_lamp("TapLamp3", Vector3(19.5, 2.45, 13.0), warm, 2.38, 10.0, false, true, 0.08)
-	_lamp("TapLamp4", Vector3(14.0, 2.45, 8.0), warm, 2.21, 10.0, false, true, 0.08)
+	_lamp("Hearthfire", Vector3(12, 0.8, 1.4), Color(1.0, 0.5, 0.2), 5.5, 13.0, true, true)
+	_lamp("TapLamp1", Vector3(6.5, 2.45, 11.5), warm, 2.72, 11.0, true, true, 0.08)
+	_lamp("TapLamp2", Vector3(17.5, 2.45, 4.0), warm, 2.38, 11.0, true, true, 0.08)
+	_lamp("TapLamp3", Vector3(19.5, 2.45, 13.0), warm, 2.38, 10.0, true, true, 0.08)
+	_lamp("TapLamp4", Vector3(14.0, 2.45, 8.0), warm, 2.21, 10.0, true, true, 0.08)
 	_lamp("BarLamp", Vector3(5.0, 2.4, 4.5), warm, 1.70, 7.0, false, true, 0.1)
 	_lamp("StairLamp", Vector3(3.2, 4.45, 12.5), warm, 1.70, 10.0, false, true, 0.08)
 	_lamp("StairSconce", Vector3(0.55, _stair_y(12.1) + 1.8, 12.1), warm, 0.75, 5.0, false, true, 0.1)
@@ -2203,32 +2261,152 @@ func build_environment() -> void:
 	_lamp("Room1Lamp", Vector3(4.0, UP_Y + 2.05, 3.0), warm, 1.70, 8.0, false, true, 0.08)
 	_lamp("Room2Lamp", Vector3(12.0, UP_Y + 2.05, 3.0), warm, 1.53, 8.0, false, true, 0.08)
 	_lamp("Room3Lamp", Vector3(20.0, UP_Y + 2.05, 3.0), warm, 1.70, 8.0, false, true, 0.08)
-	_lamp("HallLamp", Vector3(12.0, UP_Y + 2.05, 8.0), warm, 1.87, 11.0, false, true, 0.08)
+	_lamp("HallLamp", Vector3(12.0, UP_Y + 2.05, 8.0), warm, 1.87, 11.0, true, true, 0.08)
 	_lamp("PassLamp", Vector3(20.0, 2.25, 19.0), warm, 2.21, 10.0, false, true)
 	_lamp("StableLamp1", Vector3(19.0, 3.85, 26.0), warm, 3.82, 14.0, true, true)
-	_lamp("StableLamp2", Vector3(19.0, 3.85, 31.5), warm, 3.26, 13.0, false, true)
+	_lamp("StableLamp2", Vector3(19.0, 3.85, 31.5), warm, 3.26, 13.0, true, true)
 	_lamp("StableLamp3", Vector3(10.0, 2.15, 28.0), warm, 2.99, 12.0, false, true)
 	_lamp("LoftLamp", Vector3(10.0, 5.45, 28.0), warm, 2.29, 11.0, false, true)
 	_lamp("WreckFire", Vector3(45, 3.5, 5), Color(1.0, 0.45, 0.15), 8.0, 34.0, true, true)
 	_lamp("WreckFire2", Vector3(42.5, 1.6, 6.8), Color(1.0, 0.4, 0.1), 3.0, 14.0, false, true)
+	_lamp("HallSconce", Vector3(0.55, UP_Y + 1.8, 6.7), warm, 0.9, 6.5, false, true, 0.1)
+	_lamp("HallSconce2", Vector3(23.45, UP_Y + 1.8, 8.0), warm, 0.9, 6.5, false, true, 0.1)
+	_lamp("HallSconce3", Vector3(8.6, UP_Y + 1.8, 6.55), warm, 1.0, 7.0, false, true, 0.1)
+	_lamp("HallSconce4", Vector3(16.0, UP_Y + 1.8, 6.55), warm, 1.0, 7.0, false, true, 0.1)
+	_lamp("LoftSconce", Vector3(6.55, 5.25, 32.4), warm, 1.1, 7.0, false, true, 0.1)
+	_lamp("OCAmmoLamp", Vector3(13.6, CELLAR_Y + 1.9, 15.45), Color(1.0, 0.68, 0.4), 1.0, 7.0, false, true, 0.12)
+	_lamp("CellarLantern", Vector3(28.2, CELLAR_Y + 2.05, 25.0), Color(1.0, 0.7, 0.4), 1.8, 9.5, false, true, 0.1)
 	# cold moonlight spilling through the taproom windows (no shadows; aimed through the openings)
-	for wp: Array in [[Vector3(7.0, 4.2, -3.5), Vector3(7.0, 0.0, 3.0)], [Vector3(17.0, 4.2, -3.5), Vector3(17.0, 0.0, 3.0)],
-			[Vector3(-3.5, 4.2, 6.0), Vector3(3.0, 0.0, 6.0)], [Vector3(27.5, 4.2, 8.0), Vector3(21.0, 0.0, 8.0)]]:
+	for wp: Array in [[Vector3(7.0, 3.7, -3.2), Vector3(7.0, 0.0, 3.6)], [Vector3(17.0, 3.7, -3.2), Vector3(17.0, 0.0, 3.6)],
+			[Vector3(-3.2, 3.7, 6.0), Vector3(3.6, 0.0, 6.0)], [Vector3(27.2, 3.7, 8.0), Vector3(20.4, 0.0, 8.0)]]:
 		var sp: SpotLight3D = SpotLight3D.new()
 		sp.name = "MoonSpill"
 		sp.position = wp[0]
 		sp.light_color = Color(0.55, 0.65, 1.0)
-		sp.light_energy = 2.2
-		sp.light_volumetric_fog_energy = 2.5
-		sp.spot_range = 9.0
-		sp.spot_angle = 16.0
-		sp.spot_attenuation = 1.2
+		sp.light_energy = 6.0
+		sp.light_volumetric_fog_energy = 3.5
+		sp.spot_range = 10.0
+		sp.spot_angle = 22.0
+		sp.spot_attenuation = 1.1
+		sp.shadow_enabled = true   # the barricade boards stripe the floor (and change as they're torn off)
 		map_root.add_child(sp)
 		sp.look_at_from_position(wp[0], wp[1], Vector3.UP)
+	# and through the two guest-room windows upstairs (their pools also give the hall a little cold bounce, so the
+	# Cousins' blackout there is dark, not black)
+	for wp2: Array in [[Vector3(4.0, UP_Y + 3.4, -3.0), Vector3(4.0, UP_Y, 3.4)], [Vector3(20.0, UP_Y + 3.4, -3.0), Vector3(20.0, UP_Y, 3.4)]]:
+		var su: SpotLight3D = SpotLight3D.new()
+		su.name = "MoonSpillUp"
+		su.light_color = Color(0.55, 0.65, 1.0)
+		su.light_energy = 4.0
+		su.light_volumetric_fog_energy = 2.5
+		su.spot_range = 9.0
+		su.spot_angle = 22.0
+		su.spot_attenuation = 1.1
+		map_root.add_child(su)
+		su.look_at_from_position(wp2[0], wp2[1], Vector3.UP)
+	_inn_bulbs()
+	_follow_lights()
 	var post: CanvasLayer = CanvasLayer.new()
 	post.set_script(load("res://gravelight/ui/postfx.gd"))
 	post.name = "PostFx"
 	map_root.add_child(post)
+
+
+## The inn's electric bulbs (INN_BULBS): dark until the cellar lever's sweep reaches their zone, their lit glass
+## under them (lit_glass.gd hides it whenever the bulb is out: the Cousins round, the sweep's flicker).
+func _inn_bulbs() -> void:
+	for b: Array in INN_BULBS:
+		var l: OmniLight3D = OmniLight3D.new()
+		l.name = str(b[0])
+		l.position = (b[2] as Vector3) - Vector3(0, 0.08, 0)
+		l.light_color = BULB_COLOR
+		l.light_energy = float(b[4])
+		l.omni_range = float(b[5])
+		l.omni_attenuation = 1.4
+		l.visible = false
+		l.set_meta("zone", StringName(str(b[1])))
+		l.set_meta("energy", float(b[4]))
+		l.add_to_group(&"power_lights", true)
+		map_root.add_child(l)
+		var holder: Node3D = _bulb_lit.get(str(b[0]))
+		if holder != null:
+			holder.get_parent().remove_child(holder)
+			l.add_child(holder)
+			holder.position = -l.position
+
+
+## Lights that belong to a lamp and follow its level (follow_light.gd): lamplight spilling out of the windows onto
+## the snow (the inn reads as a warm refuge from the yard and the field, and goes dark from outside when the Cousins
+## put the lamps out), the burning wreck through the taproom's east window, the candles on the tables.
+func _follow_lights() -> void:
+	var spill: Color = Color(1.0, 0.6, 0.3)
+	# [window centre on its outer face, outward normal, source lamp, energy]
+	for w: Array in [[Vector3(7.0, 1.55, -0.35), Vector3(0, 0, -1), "Hearthfire", 1.3], [Vector3(17.0, 1.55, -0.35), Vector3(0, 0, -1), "TapLamp2", 1.4],
+			[Vector3(-0.35, 1.55, 6.0), Vector3(-1, 0, 0), "BarLamp", 1.2], [Vector3(24.35, 1.55, 8.0), Vector3(1, 0, 0), "TapLamp4", 1.2],
+			[Vector3(4.0, UP_Y + 1.55, -0.35), Vector3(0, 0, -1), "Room1Lamp", 1.0], [Vector3(20.0, UP_Y + 1.55, -0.35), Vector3(0, 0, -1), "Room3Lamp", 1.0],
+			[Vector3(9.0, 1.55, 21.65), Vector3(0, 0, -1), "StableLamp3", 0.9], [Vector3(14.0, 1.55, 21.65), Vector3(0, 0, -1), "StableLamp1", 0.9],
+			[Vector3(12.0, 1.55, 34.35), Vector3(0, 0, 1), "StableLamp2", 1.0]]:
+		var at: Vector3 = w[0]
+		var out: Vector3 = w[1]
+		var sp: SpotLight3D = _follower(SpotLight3D.new(), "WindowSpill", at, str(w[2]), float(w[3]) * 5.0, 0.0) as SpotLight3D
+		sp.light_color = spill
+		sp.spot_range = 10.0 + at.y
+		sp.spot_angle = 50.0
+		sp.spot_attenuation = 1.1
+		sp.light_volumetric_fog_energy = 0.6
+		sp.look_at_from_position(at, at + out * 2.2 + Vector3(0, -at.y * 0.55 - 0.4, 0), Vector3.UP)
+		# the lit window itself, seen from outside between the barricade boards (pass 2): a warm card on the wall's
+		# inner face, facing out (culled from inside), out of the GI, dimming with its lamp (follow_light.gd "Glow")
+		var card: MeshInstance3D = MeshInstance3D.new()
+		card.name = "Glow"
+		var q: QuadMesh = QuadMesh.new()
+		q.size = Vector2(1.6, 1.3)
+		card.mesh = q
+		var gm: StandardMaterial3D = StandardMaterial3D.new()
+		gm.albedo_color = Color.BLACK
+		gm.emission_enabled = true
+		gm.emission = Color(1.0, 0.6, 0.3)
+		gm.emission_energy_multiplier = 4.0
+		card.material_override = gm
+		card.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		card.gi_mode = GeometryInstance3D.GI_MODE_DISABLED
+		sp.add_child(card)
+		card.transform = sp.transform.affine_inverse() * Transform3D(Basis.looking_at(-out, Vector3.UP), at - out * 0.48)
+	# GRAVELIGHT ONE burning in the field, through the east window (the wreck's own light is too far off to reach in)
+	var ws: SpotLight3D = _follower(SpotLight3D.new(), "WreckSpill", Vector3(26.5, 2.7, 7.4), "WreckFire", 2.6, 0.0) as SpotLight3D
+	ws.light_color = Color(1.0, 0.55, 0.2)
+	ws.spot_range = 12.0
+	ws.spot_angle = 18.0
+	ws.spot_attenuation = 1.0
+	ws.light_volumetric_fog_energy = 1.2
+	ws.look_at_from_position(ws.position, Vector3(19.0, 0.2, 8.6), Vector3.UP)
+	# the wreck's glow on the field and in the ground fog round it
+	var wg: OmniLight3D = _follower(OmniLight3D.new(), "WreckGlow", Vector3(45.0, 7.0, 6.0), "WreckFire", 3.5, 0.0) as OmniLight3D
+	wg.light_color = Color(1.0, 0.58, 0.26)
+	wg.omni_range = 22.0
+	wg.omni_attenuation = 0.9
+	wg.light_volumetric_fog_energy = 2.0
+	# the candles on the taproom tables and the guest rooms' nightstands
+	for c: Array in [[Vector3(12.75, 0.95, 11.3), "TapLamp1"], [Vector3(16.75, 0.95, 11.3), "TapLamp3"], [Vector3(20.25, 0.95, 4.3), "TapLamp2"],
+			[Vector3(2.6, UP_Y + 0.85, 0.57), "Room1Lamp"], [Vector3(13.15, UP_Y + 0.85, 0.57), "Room2Lamp"], [Vector3(21.15, UP_Y + 0.85, 5.32), "Room3Lamp"]]:
+		var cl: OmniLight3D = _follower(OmniLight3D.new(), "CandleLight", c[0], str(c[1]), 0.7, 0.18) as OmniLight3D
+		cl.light_color = Color(1.0, 0.6, 0.28)
+		cl.omni_range = 3.2
+		cl.omni_attenuation = 1.5
+
+
+## A follow_light.gd light at `pos` under the map root, following the lamp `source` (by name, under the map root).
+func _follower(l: Light3D, name_: String, pos: Vector3, source: String, energy: float, flicker: float) -> Light3D:
+	l.set_script(load("res://gravelight/maps/map00_crossroads/follow_light.gd"))
+	l.name = name_
+	l.position = pos
+	l.set("source", NodePath("../" + source))
+	l.set("full_energy", energy)
+	l.set("own_flicker", flicker)
+	l.light_energy = energy
+	l.shadow_enabled = false
+	map_root.add_child(l)
+	return l
 
 
 ## Update 02 section 7 (T-052): the living world beyond the play space. Two runtime nodes, so the .tscn stays small:
@@ -2247,6 +2425,14 @@ func build_landscape() -> void:
 	map_root.add_child(amb)
 
 
+## The few lanterns whose light the volumetric fog catches (a soft halo in the room's haze), T-061. Kept to a
+## handful: every fog-lit light costs in the froxel pass.
+const INNER_GAIN: float = 1.5
+const LAMP_HALOS: Dictionary = {"TapLamp1": 0.5, "TapLamp2": 0.5, "TapLamp3": 0.5, "TapLamp4": 0.5, "HallLamp": 0.5,
+	"StableLamp1": 0.5, "StableLamp2": 0.5, "PassLamp": 0.4, "YardDoorLamp": 1.2, "YardWallLamp": 1.2, "GateLantern": 1.2,
+	"OCVaultLamp": 0.5, "OCWineLamp": 0.5, "CellarLantern": 0.5}
+
+
 func _lamp(name_: String, pos: Vector3, color: Color, energy: float, range_: float, shadows: bool, flicker: bool, amount: float = 0.35) -> void:
 	var l: OmniLight3D = OmniLight3D.new()
 	if flicker:
@@ -2259,8 +2445,18 @@ func _lamp(name_: String, pos: Vector3, color: Color, energy: float, range_: flo
 	l.light_energy = energy
 	l.omni_range = range_
 	l.omni_attenuation = 1.6
+	# T-061 pass 2: the inn's and the cellars' lamps throw wider, stronger pools and feed the GI bounce harder (the
+	# flat ambient they used to sit in is gone under SDFGI); the yard's and the wreck's are tuned where they're built
+	if not (name_.begins_with("Wreck") or name_.begins_with("Yard") or name_.begins_with("Gate")):
+		energy *= INNER_GAIN
+		l.light_energy = energy
+		if flicker:
+			l.set("base_energy", energy)
+		l.omni_range = range_ * 1.25
+		l.omni_attenuation = 1.25
+		l.light_indirect_energy = 2.0
 	# Only the big fires feed the volumetric fog; lanterns light surfaces (much cheaper).
-	l.light_volumetric_fog_energy = 1.4 if (name_.begins_with("Hearth") or name_.begins_with("Wreck")) else 0.0
+	l.light_volumetric_fog_energy = 1.4 if (name_.begins_with("Hearth") or name_.begins_with("Wreck")) else float(LAMP_HALOS.get(name_, 0.0))
 	l.shadow_enabled = shadows
 	map_root.add_child(l)
 
@@ -2585,9 +2781,9 @@ func build_old_cellar_gameplay() -> void:
 	# bare bulbs over the loop and the wine cellar wait for the cellar lever (zone OLD_CELLAR in the sweep)
 	var warm: Color = Color(1.0, 0.68, 0.4)
 	for l: Array in [["OCStairLamp", Vector3(-1.5, 1.85, 12.6), 1.0, 7.0], ["OCStairFootLamp", Vector3(-2.45, cy + 2.1, 17.0), 0.9, 6.5],
-			["OCWineLamp", Vector3(5.4, cy + 1.95, 10.7), 1.25, 8.0], ["OCWineLamp2", Vector3(4.0, cy + 1.95, 16.0), 1.0, 7.0],
-			["OCRootLamp", Vector3(7.6, cy + 1.95, 2.7), 1.0, 6.5], ["OCCageLamp", Vector3(3.9, cy + 2.0, 3.9), 1.3, 7.0],
-			["OCVaultLamp", Vector3(13.4, cy + 2.05, 8.0), 1.2, 8.5], ["OCVaultLamp2", Vector3(21.6, cy + 2.05, 8.0), 1.2, 8.5],
+			["OCWineLamp", Vector3(5.4, cy + 1.95, 10.7), 1.5, 9.0], ["OCWineLamp2", Vector3(4.0, cy + 1.95, 16.0), 1.2, 8.0],
+			["OCRootLamp", Vector3(7.6, cy + 1.95, 2.7), 1.2, 7.5], ["OCCageLamp", Vector3(3.9, cy + 2.0, 3.9), 1.5, 8.0],
+			["OCVaultLamp", Vector3(13.4, cy + 2.05, 8.0), 1.6, 10.0], ["OCVaultLamp2", Vector3(21.6, cy + 2.05, 8.0), 1.6, 10.0],
 			["OCBreachLamp", Vector3(22.4, cy + 2.1, 19.6), 0.8, 6.0]]:
 		_lamp(str(l[0]), l[1], warm, float(l[2]), float(l[3]), false, true, 0.12)
 	for bp: Vector3 in OC_BULBS:
@@ -2608,15 +2804,17 @@ func build_old_cellar_gameplay() -> void:
 			b.add_child(_old_cellar_lit)
 			_old_cellar_lit.position = -b.position
 	# cold moonlight down each light well, through the boards (the windows read from across the room)
-	for wp: Array in [[Vector3(3.45, 0.9, -2.2), Vector3(3.45, cy, 2.6)], [Vector3(26.0, 0.9, 1.8), Vector3(21.4, cy, 1.8)]]:
+	# (T-061: brighter, shadowed so the window's boards stripe it, the coal well's aimed into the cage)
+	for wp: Array in [[Vector3(3.45, 0.9, -2.2), Vector3(2.3, cy, 3.9)], [Vector3(26.0, 0.9, 1.8), Vector3(21.4, cy, 1.8)]]:
 		var sp2: SpotLight3D = SpotLight3D.new()
 		sp2.name = "WellMoonSpill"
 		sp2.light_color = Color(0.55, 0.65, 1.0)
-		sp2.light_energy = 2.0
-		sp2.light_volumetric_fog_energy = 1.5
-		sp2.spot_range = 8.0
-		sp2.spot_angle = 22.0
-		sp2.spot_attenuation = 1.1
+		sp2.light_energy = 4.5
+		sp2.light_volumetric_fog_energy = 2.5
+		sp2.spot_range = 9.0
+		sp2.spot_angle = 26.0
+		sp2.spot_attenuation = 1.0
+		sp2.shadow_enabled = true
 		map_root.add_child(sp2)
 		sp2.look_at_from_position(wp[0], wp[1], Vector3.UP)
 

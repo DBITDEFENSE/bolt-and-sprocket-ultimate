@@ -215,6 +215,29 @@ The details are in `EASTER_EGGS.md` §Map 0. The radio is behind the bar. Three 
 
 Training loop (light): around the taproom tables and bar, clockwise. It's tight on purpose. Map 0 is about holding, not running.
 
+## Map 0 lighting (DECISIONS T-061)
+A warm refuge you're about to lose, in a bitterly cold, huge night. All of it is built by `build_environment` and
+`_dress_lighting` in `gen_map00.gd`; shots from fixed viewpoints: `data/gravelight/lighting/shots_map00.json` (light_shots).
+- **Environment:** SDFGI bounce (High) and SSIL (Medium+) on top of SSAO; the flat cold ambient is Low's fallback. The
+  background colour's energy feeds the GI's sky light only (the sky is Landscape's dome mesh). Volumetric fog takes little
+  of the GI (`volumetric_fog_gi_inject` 0.3) so the field's ground fog stays dark blue, not milky.
+- **Inside, power off:** shadow-casting lanterns (TapLamp1-4, HallLamp, StableLamp1-2, the hearth) whose halos show in
+  the haze; candles on the taproom tables and guest-room nightstands; four hall sconces (both ends, two mid-hall); a sconce on the
+  hayloft; an oil lamp over the Old Cellar's ammo box; the installers' lantern in the perk vault (the vault was black).
+  Cold moonlight through the taproom and guest-room windows (shadowed in the taproom, so the barricade boards stripe
+  the floor) and down both light wells (the coal well's lands in Jakub's cage).
+- **The power:** the lever's sweep now reaches the inn: bare bulbs under tin shades (TapBulb1-3, HallBulb1-2,
+  Room1-3Bulb, PassBulb, StableBulb1-2) come on zone by zone after the cellars, whiter than the oil lamps.
+- **Pass 2:** every inn and cellar lamp x1.5 with 25% more reach and double GI bounce (`INNER_GAIN`), since SDFGI
+  replaced the flat ambient; the stable's moonlight lands on the straw as stripes (`MoonStripes` decals, landscape.gd).
+- **Outside:** lamplight spills from every window onto the snow (`WindowSpill`, with a lit card `Glow` in each window), GRAVELIGHT ONE's fire glows orange in
+  the ground fog (`WreckGlow`) and through the taproom's east window (`WreckSpill`), bigger warm pools from the yard's
+  lamps.
+- **Following lights:** every light the pass added that belongs to a lamp (window spills, wreck glow and spill, candles)
+  runs `maps/map00_crossroads/follow_light.gd` and follows its lamp's level, so the Cousins' blackout, the Bellringer's
+  stutter and the fire dying darken them too. The new bulbs and sconces are in `cousins.json` setup.lamp_groups;
+  `lit_glass.gd` hides a bulb's glass whenever the bulb is out.
+
 ---
 
 # MAP 1 — "KALTENBRUNN"
@@ -626,6 +649,15 @@ Play → **Campaign** links the maps by **exfil beacons**; single-map play has n
 | Map 1 → Map 2 | "THE NORTH GATE", inside the yard gate `(20, 0, 2.2)` (spawn zone, always open) | round 30 starts | 90 s | every 3 rounds | ~30 s cutscene (the gate rises, the north road, title TOTENHAFEN); Map 2 starts after round 30 (missing scene: "the campaign continues" screen) |
 
 Hold Use to vote; every living human must (bots follow the leader and leave with the squad). Everyone keeps character, both guns with ammo and Crucible upgrades, grenades, tactical, Scrip and perks; the round count and the Bellringer / Foreman schedule carry over. Data: `data/gravelight/campaign.json`, `map00.json` / `map01.json` `exfil`.
+
+## Map 1 lighting (DECISIONS T-062)
+
+Three levels, three grades. `gravelight/maps/map01_kaltenbrunn/depth_grade.gd` (on the WorldEnvironment) moves the flat fill, far-fog colour, fog glow, exposure and saturation with the camera's height: moon-blue on the surface, a neutral salt-grey in the depths (y ≈ -12), violet-black and full saturation in the Core (y ≈ -18). The flat fill is cut to 70 % while SDFGI runs (High). Bounce light: SDFGI (High), SSIL (High/Medium), SSAO everywhere; Low keeps the full flat fill, and since Low has no volumetric fog (so no halo round the heart) the Core gets extra fill and exposure there.
+
+- **Before the power** every space reads by a source you can see: braziers, oil lanterns and wall lamps on the surface (a lit window or two in Admin), the barracks stove and five hanging lanterns, hurricane lanterns on the lift motor, the stair landings, the turbine plinths, the Hauptschalter dais and halfway down each vault ramp, candelabras and votive racks in the Chapel, the emergency red in the Generator Hall, the tanks' violet in the Lab and a crate of violet specimen jars at the hall's west end. The Core's own glow: violet crystals that bleed into the rock, the pit's amber cracks (a warm light from below the heart), amber cracks on the heart itself.
+- **The sweep** (G → F → H → I → E → D → C → B → A) lights sodium pendants with a halo in the haze (Generator, Chapel chandeliers in a warmer white so the salt reads pale), clinical white pendants in the Lab, sodium bulkheads on the stair landings (with the lift) and both ends of each vault ramp, sodium goosenecks on the yard and rail-yard walls, a banker's lamp upstairs in Admin, and warm incandescent floods on the headframe.
+- Power-light helpers in `gen_map01.gd`: `power(... fog)` sets a light's halo in the volumetric fog; `goose()` is the yard gooseneck.
+- Shots: `data/gravelight/lighting/shots_map01.json` (18 views, power off and on), `tools_src/light_shots.gd -- --fps` for a frame-time probe.
 
 ---
 
@@ -1239,6 +1271,15 @@ Hold [F] on the Pumpenschalter in the pump room (free; it needs the F door). The
 4. **t = 3.0 s+:** perk machines light with their zone; the Crucible's mouth glows.
 5. **t = 6.0 s:** the Signal Tower door becomes buyable.
 6. **t = 8.0 s:** 6 extra Gängers at the drain grates and the pen-mouth steps (`power_burst_points`).
+
+## Map 2 lighting (T-063)
+
+Cold sea night outside, warm practical pools inside, red in the boat; the power adds sodium and mercury on top. All of it is in `gen_map02.gd` (`_dress_light()`, the lamp helpers, `build_lights()`).
+
+- **Before the power** every pool has a source you can see: fire barrels (`BRAZIERS`: two on the quay, one in the crane bay) and coke stoves (`STOVES`, the workshop) with flickering warm lights; dockers' hurricane lanterns on tables, crates and piers in every zone; moonlight through the cannery's, workshop's and tower's windows and the hall's three vents (shadowed spots in the window closets, `MoonShaft_*`, so the boards cut shafts in the fog); the sea's cold light in under the half-lowered curtain (`SeaLight_Mouth`, 4 shadowed spots) and through the lower pens' grille (`SeaLight_Grille`); red battle lanterns on both sides of the boat; the emergency reds; the signal lamp's beam (40 energy, 11°, pitched −18°, now shadowed: it used to sweep the workshop through its roof).
+- **The power** (unchanged sweep F → D → E → G → B → C → A): the hall's west-wall floods are sodium and the east-wall floods mercury (warm vs cold across the hall), the quay's two main floods sodium; flood beams put 0.35 into the fog; the flood lens hosts are dimmer (no blown wall patches); two new powered bulkheads over the quay's vent windows; the boat's and lower pens' powered bulkheads sit lower and softer (no blown ceiling discs).
+- **Environment:** SDFGI + SSIL + SSR on (settings.gd strips them per preset), sky reflections, AgX exposure 2.0, lighter blue-grey depth fog, thinner global volumetric fog (0.012) with a little emission and ambient inject so silhouettes read against it, moon 0.75.
+- **Shots:** `data/gravelight/lighting/shots_map02.json` (14 views, power off and on) via `tools/light_shots.sh`.
 
 ## Map 2 pacing
 
