@@ -311,7 +311,8 @@ static func scan_bs(level_id: String) -> Dictionary:
 
 # ================================================================== shared
 
-## Merges zone boxes per zone id into map zones {id, name, y_min, y_max, polys} (one rectangle polygon per box).
+## Merges zone boxes per zone id into map zones {id, name, y_min, y_max, polys, ys} (one rectangle polygon per box;
+## ys[i] = [bottom, top] of box i, so a cellar box under the taproom never claims the taproom).
 static func zones_from_boxes(boxes: Array, names: Dictionary) -> Array[Dictionary]:
 	var by_id: Dictionary = {}
 	var order: Array[String] = []
@@ -319,12 +320,13 @@ static func zones_from_boxes(boxes: Array, names: Dictionary) -> Array[Dictionar
 		var id: String = str(b["id"])
 		var ab: AABB = b["aabb"]
 		if not by_id.has(id):
-			by_id[id] = {"id": id, "name": str(names.get(id, id.capitalize())), "y_min": ab.position.y, "y_max": ab.end.y, "polys": []}
+			by_id[id] = {"id": id, "name": str(names.get(id, id.capitalize())), "y_min": ab.position.y, "y_max": ab.end.y, "polys": [], "ys": []}
 			order.append(id)
 		var z: Dictionary = by_id[id]
 		z["y_min"] = minf(float(z["y_min"]), ab.position.y)
 		z["y_max"] = maxf(float(z["y_max"]), ab.end.y)
 		(z["polys"] as Array).append(_rect_poly(Rect2(ab.position.x, ab.position.z, ab.size.x, ab.size.z)))
+		(z["ys"] as Array).append([snappedf(ab.position.y, 0.01), snappedf(ab.end.y, 0.01)])   # each box keeps its own heights
 	var out: Array[Dictionary] = []
 	for id2: String in order:
 		var zz: Dictionary = by_id[id2]

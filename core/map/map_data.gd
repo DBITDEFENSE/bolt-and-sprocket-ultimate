@@ -277,10 +277,22 @@ func zone_at(pos: Vector3) -> String:
 	for z: Dictionary in zones:
 		if pos.y < float(z["y_min"]) or pos.y > float(z["y_max"]):
 			continue
-		for poly: PackedVector2Array in z["polys"]:
-			if Geometry2D.is_point_in_polygon(p2, poly):
+		var polys: Array = z["polys"]
+		var ys: Array = z.get("ys", [])
+		for i: int in polys.size():
+			if i < ys.size() and (pos.y < float(ys[i][0]) or pos.y > float(ys[i][1])):
+				continue
+			if Geometry2D.is_point_in_polygon(p2, polys[i] as PackedVector2Array):
 				return str(z["id"])
 	return ""
+
+
+## Whether polygon `i` of zone `z` reaches into floor `f`'s height band.
+static func poly_on_floor(z: Dictionary, i: int, f: Dictionary) -> bool:
+	var ys: Array = z.get("ys", [])
+	var lo: float = float(ys[i][0]) if i < ys.size() else float(z["y_min"])
+	var hi: float = float(ys[i][1]) if i < ys.size() else float(z["y_max"])
+	return hi >= float(f["y_min"]) and lo < float(f["y_max"])
 
 
 func zone_name(id: String) -> String:

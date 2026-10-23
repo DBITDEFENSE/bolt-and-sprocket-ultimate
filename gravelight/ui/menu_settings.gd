@@ -13,6 +13,7 @@ const ACTION_NAMES: Dictionary = {
 	"bot_command": "Squad orders (hold)",
 	"look_left": "Look left", "look_right": "Look right", "look_up": "Look up", "look_down": "Look down",
 	"dev_console": "Dev console",
+	"minimap_zoom": "Minimap zoom",
 }
 
 var _tab: int = 0
@@ -76,6 +77,7 @@ func _gameplay() -> void:
 	content.add_child(MenuKit.row("Homage Names", MenuKit.options(PackedStringArray(["Real", "In-World"]), ncur,
 		func(i: int) -> void: GLSettings.set_value("homage_names", name_modes[i]))))
 	content.add_child(MenuKit.para("Homage Bosses are tributes to real people. Real shows their first names on the title cards and boss bars; In-World shows only the in-world names. In co-op the host's settings decide.", 16, MenuKit.DIM))
+	_minimap_rows()
 
 
 func _controls() -> void:
@@ -182,3 +184,30 @@ func _unhandled_input(event: InputEvent) -> void:
 			_set_tab(_tab + 1)
 			return
 	super._unhandled_input(event)
+
+
+## The minimap (Update 04 section 2, DECISIONS T-065): Classic HUD turns it off; the rest shapes it.
+func _minimap_rows() -> void:
+	var v: Dictionary = GLSettings.values
+	content.add_child(MenuKit.label("Minimap", 22, MenuKit.GOLD))
+	content.add_child(MenuKit.check("Classic HUD (no minimap)", bool(v.get("classic_hud", false)), _setter("classic_hud")))
+	content.add_child(MenuKit.check("Minimap turns with you (off: north up)", bool(v.get("minimap_rotate", true)), _setter("minimap_rotate")))
+	content.add_child(MenuKit.row("Minimap zoom", MenuKit.options(PackedStringArray(["Close", "Medium", "Far"]), clampi(int(v.get("minimap_zoom", 1)), 0, 2),
+		func(i: int) -> void: GLSettings.set_value("minimap_zoom", i))))
+	content.add_child(MenuKit.row("Minimap size", MenuKit.slider(0.7, 1.5, 0.05, float(v.get("minimap_size", 1.0)), _setter("minimap_size"))))
+	content.add_child(MenuKit.row("Minimap opacity", MenuKit.slider(0.3, 1.0, 0.05, float(v.get("minimap_opacity", 0.92)), _setter("minimap_opacity"))))
+	content.add_child(MenuKit.row("Minimap icon size", MenuKit.slider(0.7, 1.8, 0.05, float(v.get("minimap_icon_scale", 1.0)), _setter("minimap_icon_scale"))))
+	var corners: PackedStringArray = ["tl", "tr"]
+	content.add_child(MenuKit.row("Minimap corner", MenuKit.options(PackedStringArray(["Top left", "Top right"]), maxi(0, corners.find(str(v.get("minimap_position", "tl")))),
+		func(i: int) -> void: GLSettings.set_value("minimap_position", corners[i]))))
+	var shapes: PackedStringArray = ["circle", "square"]
+	content.add_child(MenuKit.row("Minimap shape", MenuKit.options(PackedStringArray(["Circle", "Rounded square"]), maxi(0, shapes.find(str(v.get("minimap_shape", "circle")))),
+		func(i: int) -> void: GLSettings.set_value("minimap_shape", shapes[i]))))
+	var zmodes: PackedStringArray = ["off", "firing", "always"]
+	content.add_child(MenuKit.row("Show nearby zombies", MenuKit.options(PackedStringArray(["Off", "Firing only", "Always"]), maxi(0, zmodes.find(str(v.get("minimap_zombies", "firing")))),
+		func(i: int) -> void: GLSettings.set_value("minimap_zombies", zmodes[i]))))
+	var fmodes: PackedStringArray = ["visit", "always"]
+	content.add_child(MenuKit.row("Map areas", MenuKit.options(PackedStringArray(["Reveal as you go", "Always visible"]), maxi(0, fmodes.find(str(v.get("minimap_fog", "visit")))),
+		func(i: int) -> void: GLSettings.set_value("minimap_fog", fmodes[i]))))
+	content.add_child(MenuKit.check("Colourblind-safe map icons (letters on the shapes)", bool(v.get("minimap_cb_shapes", false)), _setter("minimap_cb_shapes")))
+	content.add_child(MenuKit.para("Firing only: an unsuppressed shot shows the zombies near the shooter for a second. Always: zombies near you are always on the minimap. The minimap zoom key (N / D-pad left) cycles the zoom in a match.", 16, MenuKit.DIM))

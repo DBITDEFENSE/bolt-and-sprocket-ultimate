@@ -180,6 +180,7 @@ func _register_builtins() -> void:
 	register("special_round", _cmd_special_round, "Make the next round a Bellringer round")
 	register("bell_lit", _cmd_bell_lit, "Light the Chapel bell (as if shot with an upgraded weapon)")
 	register("net", _cmd_net, "Co-op status: mode, your slot, the squad")
+	MapDevCommands.register_all(self)   # bake_minimap / minimap (Update 04, T-065)
 
 
 func _cmd_help(_a: PackedStringArray) -> String:

@@ -56,6 +56,8 @@ var _debug: Label
 var _vignette: ColorRect
 var _flash: float = 0.0
 var _summary: PanelContainer = null
+var _vitals: PanelContainer = null   # the HP panel: under the minimap when that is top-left (Update 04, T-065)
+var _minimap: Minimap = null
 
 
 func _ready() -> void:
@@ -98,6 +100,10 @@ func _build() -> void:
 	var vit: PanelContainer = _panel(BSStyle.CYAN)
 	vit.position = Vector2(26, 22)
 	_stats.add_child(vit)
+	_vitals = vit
+	_minimap = Minimap.new()
+	_minimap.game = "bs"
+	_stats.add_child(_minimap)
 	var vv: VBoxContainer = VBoxContainer.new()
 	vit.add_child(vv)
 	var hr: HBoxContainer = HBoxContainer.new()
@@ -345,6 +351,9 @@ func show_summary(level_name: String, bolts: int, gold: String, time_s: float, o
 func _process(delta: float) -> void:
 	var dt: float = minf(delta, 0.1)
 	_stats.visible = not BS.blocked() or _summary != null
+	var mm_y: float = Minimap.layout_bottom + 8.0 if Minimap.layout_bottom > 0.0 else 22.0
+	_vitals.position.y = mm_y
+	_obj.position.y = mm_y + 228.0
 	if bolt != null and is_instance_valid(bolt):
 		_hp.value = clampf(bolt.hp / maxf(1.0, bolt.max_hp), 0.0, 1.0)
 		_hp_text.text = "%d / %d" % [maxi(0, ceili(bolt.hp)), int(bolt.max_hp)]

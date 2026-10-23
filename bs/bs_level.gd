@@ -122,6 +122,7 @@ func _spawn_player() -> void:
 
 
 func _spawn_ui() -> void:
+	MapState.attach(self, StringName(level_id), "bs")   # the planet's holo minimap (Update 04, T-065)
 	hud = BSHud.new()
 	hud.name = "HUD"
 	hud.bolt = bolt
