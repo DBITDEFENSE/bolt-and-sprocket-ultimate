@@ -222,13 +222,15 @@ A warm refuge you're about to lose, in a bitterly cold, huge night. All of it is
   background colour's energy feeds the GI's sky light only (the sky is Landscape's dome mesh). Volumetric fog takes little
   of the GI (`volumetric_fog_gi_inject` 0.3) so the field's ground fog stays dark blue, not milky.
 - **Inside, power off:** shadow-casting lanterns (TapLamp1-4, HallLamp, StableLamp1-2, the hearth) whose halos show in
-  the haze; candles on the taproom tables and guest-room nightstands; hall sconces at both ends; a sconce on the
+  the haze; candles on the taproom tables and guest-room nightstands; four hall sconces (both ends, two mid-hall); a sconce on the
   hayloft; an oil lamp over the Old Cellar's ammo box; the installers' lantern in the perk vault (the vault was black).
   Cold moonlight through the taproom and guest-room windows (shadowed in the taproom, so the barricade boards stripe
   the floor) and down both light wells (the coal well's lands in Jakub's cage).
 - **The power:** the lever's sweep now reaches the inn: bare bulbs under tin shades (TapBulb1-3, HallBulb1-2,
   Room1-3Bulb, PassBulb, StableBulb1-2) come on zone by zone after the cellars, whiter than the oil lamps.
-- **Outside:** lamplight spills from every window onto the snow (`WindowSpill`), GRAVELIGHT ONE's fire glows orange in
+- **Pass 2:** every inn and cellar lamp x1.5 with 25% more reach and double GI bounce (`INNER_GAIN`), since SDFGI
+  replaced the flat ambient; the stable's moonlight lands on the straw as stripes (`MoonStripes` decals, landscape.gd).
+- **Outside:** lamplight spills from every window onto the snow (`WindowSpill`, with a lit card `Glow` in each window), GRAVELIGHT ONE's fire glows orange in
   the ground fog (`WreckGlow`) and through the taproom's east window (`WreckSpill`), bigger warm pools from the yard's
   lamps.
 - **Following lights:** every light the pass added that belongs to a lamp (window spills, wreck glow and spill, candles)
