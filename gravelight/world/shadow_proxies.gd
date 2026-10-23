@@ -5,13 +5,15 @@ extends RefCounted
 ## re-renders: an omni lamp re-renders all six cube faces whenever anything in its range moves (a zombie, a bot, a
 ## swinging lantern), so Map 0's eleven shadowed lamps and the sun's four cascades drew ~5000 depth calls a frame,
 ## the CPU's biggest single cost. Depth does not care about the material, so this merges the batches' casting
-## geometry once at load into one positions-only mesh per cell (and per cull mode / render layers), drawn only into
+## geometry once at load into one positions-and-normals mesh per cell (and per cull mode / render layers), drawn only into
 ## shadow maps (SHADOWS_ONLY), and turns the batches' own casting off. Same triangles, same transforms, same cull
 ## mode, so the shadows are identical; the lit pass is untouched.
 ##
 ## A batch is merged only when its depth pass is plain: an opaque StandardMaterial3D / ORMMaterial3D override (no
 ## alpha, grow, billboard or vertex-displacing shader), no visibility range. Anything else keeps its own shadow.
-## Generic: any map with a StaticBatches node gets it (MapRoot calls build at load).
+## Generic: any map with a StaticBatches node gets it (MapRoot calls build at load: ~0.1 s on Map 0). Measured on
+## Map 0's perf_marks scene: ~5000 -> ~3600 draw calls a frame, +10% average FPS with the separate render thread;
+## screenshots before / after differ no more than two plain shots do (the normals are kept for the normal bias).
 
 const CELL: Vector3 = Vector3(12.0, 6.0, 12.0)
 
@@ -58,11 +60,13 @@ static func build(map_root: Node, batch_root_name: String = "StaticBatches") -> 
 					any = true
 		if not any:
 			continue
-		# positions and indices only: a depth pass reads nothing else
+		# positions, normals (the shadow pass pushes vertices along them: the lights' normal bias) and indices; a
+		# depth pass reads nothing else
 		var full: Array = st.commit_to_arrays()
 		var arrays: Array = []
 		arrays.resize(Mesh.ARRAY_MAX)
 		arrays[Mesh.ARRAY_VERTEX] = full[Mesh.ARRAY_VERTEX]
+		arrays[Mesh.ARRAY_NORMAL] = full[Mesh.ARRAY_NORMAL]
 		var ind: Variant = full[Mesh.ARRAY_INDEX]
 		arrays[Mesh.ARRAY_INDEX] = ind if ind is PackedInt32Array and not (ind as PackedInt32Array).is_empty() else null
 		var mesh: ArrayMesh = ArrayMesh.new()
@@ -77,11 +81,28 @@ static func build(map_root: Node, batch_root_name: String = "StaticBatches") -> 
 		root.add_child(proxy)
 		out["proxies"] = int(out["proxies"]) + 1
 	for mi: MeshInstance3D in victims:
+		mi.set_meta("shadow_proxied", mi.cast_shadow)
 		if mi.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY:
 			mi.visible = false   # it drew nothing but its shadow, which the proxy draws now
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	out["batches"] = victims.size()
 	return out
+
+
+## Puts the batches' own shadows back and removes the proxies (perf_marks --ab=no_shadow_proxy, a diagnosis A/B).
+static func undo(map_root: Node, batch_root_name: String = "StaticBatches") -> void:
+	var root: Node3D = map_root.get_node_or_null(batch_root_name) as Node3D
+	if root == null or not root.has_meta("shadow_proxies"):
+		return
+	root.remove_meta("shadow_proxies")
+	for n: Node in root.get_children():
+		if n.name.begins_with("ShadowProxy_"):
+			n.queue_free()
+		elif n is MeshInstance3D and n.has_meta("shadow_proxied"):
+			var mi: MeshInstance3D = n as MeshInstance3D
+			mi.cast_shadow = int(mi.get_meta("shadow_proxied")) as GeometryInstance3D.ShadowCastingSetting
+			mi.visible = true
+			mi.remove_meta("shadow_proxied")
 
 
 ## The cull mode the batch's shadow pass uses (BaseMaterial3D.CULL_*), or -1 when its depth pass is not plain

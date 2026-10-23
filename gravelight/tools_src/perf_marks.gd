@@ -43,7 +43,7 @@ var _lights: Array = []   # [light, position at the census]: which shadowed ligh
 var _added: PackedStringArray = []
 var _added_prev: PackedStringArray = []
 ## `-- --ab=a,b` experiments (diagnosis only, they change what is drawn or run): hide_zombies, no_shadows,
-## no_omni_shadows, no_dir_shadows, no_sdfgi, no_fog, no_anim, no_ssao, no_glow, no_lights
+## no_omni_shadows, no_dir_shadows, no_sdfgi, no_fog, no_anim, no_ssao, no_glow, no_lights, no_shadow_proxy
 var _ab: PackedStringArray = []
 
 
@@ -116,6 +116,8 @@ func _process(delta: float) -> void:
 					_probe_scan()
 			if "--ts" in OS.get_cmdline_user_args() and _t > 15.0 and _t - delta <= 15.0:
 				_print_timestamps()
+			if "--mm-bench" in OS.get_cmdline_user_args() and _t > 16.0 and _t - delta <= 16.0:
+				_minimap_bench()
 			if _t > 9.0 and _t < 24.0:
 				_samples.append(delta)
 				_frame_stats(delta)
@@ -419,10 +421,8 @@ func _apply_ab() -> void:
 	if _ab.is_empty():
 		return
 	print("[perf] A/B: " + ",".join(_ab))
-	if "shadow_proxy" in _ab:
-		var t0: int = Time.get_ticks_usec()
-		var r: Dictionary = ShadowProxies.build(_map)
-		print("[perf] shadow proxies: %s in %.1f ms" % [str(r), (Time.get_ticks_usec() - t0) / 1000.0])
+	if "no_shadow_proxy" in _ab:   # the batches cast their own shadows again (before T-070's ShadowProxies)
+		ShadowProxies.undo(_map)
 	var env: Environment = _env()
 	for n: Node in _all_nodes():
 		if n is Light3D:
@@ -469,3 +469,28 @@ func _print_timestamps() -> void:
 	var g0: int = rd.get_captured_timestamp_gpu_time(0)
 	for i: int in n:
 		print("[perf]   %-40s cpu %.3f gpu %.3f" % [rd.get_captured_timestamp_name(i), (rd.get_captured_timestamp_cpu_time(i) - c0) / 1000.0, (rd.get_captured_timestamp_gpu_time(i) - g0) / 1000000.0])
+
+
+## `-- --mm-bench`: the minimap's parts timed in a tight loop (200 calls each, no frame noise), microseconds per call.
+func _minimap_bench() -> void:
+	var mm: Minimap = _map.find_child("Minimap", true, false) as Minimap
+	if mm == null:
+		return
+	var ms: MapState = MapState.current()
+	var n: int = 200
+	var t0: int = Time.get_ticks_usec()
+	for i: int in n:
+		ms.set("_live_frame", -1)
+		ms.live_icons()
+	var t1: int = Time.get_ticks_usec()
+	for i: int in n:
+		mm.canvas.call("_place_icons")
+	var t2: int = Time.get_ticks_usec()
+	for i: int in n:
+		mm.canvas.call("_rebuild_static")
+	var t3: int = Time.get_ticks_usec()
+	for i: int in n:
+		mm.call("_process", 0.0)
+	var t4: int = Time.get_ticks_usec()
+	print("[perf] minimap bench (us per call): live list %.1f, place icons (list cached) %.1f, static rebuild %.1f, minimap+canvas _process %.1f; live icons %d" % [
+		(t1 - t0) / float(n), (t2 - t1) / float(n), (t3 - t2) / float(n), (t4 - t3) / float(n), ms.live_icons().size()])
