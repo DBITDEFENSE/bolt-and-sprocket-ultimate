@@ -2,6 +2,8 @@ class_name BSPauseMenu
 extends CanvasLayer
 ## Pause screen (setPause, index.html:17584): pauses the tree, saves, frees the mouse. RESUME,
 ## RESTART PLANET, MAIN MENU. Opens on the pause action only while nothing else owns the input.
+## OBJECTIVES (Update 04 section 4, T-066): the planet's quest log in the holo skin (ObjectivesView over
+## ObjectiveLog.build_bs): the mission, side quests, gold bolts, memos and planet challenges.
 
 signal restart_requested
 signal quit_requested
@@ -12,6 +14,8 @@ var is_open: bool = false
 var _panel: PanelContainer
 var _resume: Button
 var _settings: SettingsMenu = null
+var _objectives: Control = null
+var _obj_view: ObjectivesView = null
 
 
 func _ready() -> void:
@@ -39,6 +43,9 @@ func _ready() -> void:
 	_resume = BSStyle.button(BSText.text("html.btnResume.001"), BSStyle.CYAN, 26)
 	_resume.pressed.connect(close)
 	v.add_child(_resume)
+	var ob: Button = BSStyle.button("OBJECTIVES", BSStyle.CYAN, 26)
+	ob.pressed.connect(open_objectives)
+	v.add_child(ob)
 	var r: Button = BSStyle.button(BSText.text("html.btnRestart.001"), BSStyle.ORANGE, 26)
 	r.pressed.connect(func() -> void:
 		close()
@@ -69,9 +76,74 @@ func open_settings() -> void:
 			_resume.grab_focus.call_deferred())
 
 
+## The planet's quest log over the pause panel (Back, Esc or pad B returns to the panel).
+func open_objectives() -> void:
+	if _objectives != null:
+		return
+	($Holder as Control).visible = false
+	var layer_root: Control = Control.new()
+	layer_root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var dim: ColorRect = ColorRect.new()
+	dim.color = Color(0.02, 0.03, 0.06, 0.7)
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	layer_root.add_child(dim)
+	var margin: MarginContainer = MarginContainer.new()
+	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	for side: String in ["left", "right", "top", "bottom"]:
+		margin.add_theme_constant_override("margin_" + side, 48)
+	layer_root.add_child(margin)
+	var v: VBoxContainer = VBoxContainer.new()
+	v.add_theme_constant_override("separation", 10)
+	margin.add_child(v)
+	var head: HBoxContainer = HBoxContainer.new()
+	v.add_child(head)
+	var t: Label = BSStyle.label("OBJECTIVES", 40, BSStyle.YELLOW, 10)
+	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(t)
+	var back: Button = BSStyle.button("BACK", BSStyle.PINK, 22)
+	back.pressed.connect(close_objectives)
+	head.add_child(back)
+	_obj_view = ObjectivesView.new("holo")
+	_obj_view.spoiler_changed.connect(func(lv: String) -> void:
+		var gs: Node = get_node_or_null(^"/root/GLSettings")
+		if gs != null:
+			(gs.get("values") as Dictionary)["objective_spoilers"] = lv   # no set_value: that re-applies Gravelight's visuals
+			gs.call("save_settings")
+		refresh_objectives())
+	v.add_child(_obj_view)
+	_objectives = layer_root
+	add_child(layer_root)
+	refresh_objectives()
+	_obj_view.focus_list.call_deferred()
+
+
+func refresh_objectives() -> void:
+	if _obj_view == null:
+		return
+	var gs: Node = get_node_or_null(^"/root/GLSettings")
+	var lv: String = str((gs.get("values") as Dictionary).get("objective_spoilers", "hints")) if gs != null else "hints"
+	_obj_view.show_log(ObjectiveLog.build_bs(ObjectiveSnapshot.bs(get_parent()), {}, lv))
+
+
+func close_objectives() -> void:
+	if _objectives == null:
+		return
+	_objectives.queue_free()
+	_objectives = null
+	_obj_view = null
+	if is_open:
+		($Holder as Control).visible = true
+		_resume.grab_focus.call_deferred()
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if _settings != null:
 		return   # the settings screen handles its own back / pause
+	if _objectives != null:
+		if event.is_action_pressed(&"pause") or event.is_action_pressed(&"ui_cancel"):
+			close_objectives()
+			get_viewport().set_input_as_handled()
+		return
 	if not event.is_action_pressed(&"pause"):
 		return
 	if is_open:
@@ -98,6 +170,7 @@ func close() -> void:
 	if not is_open:
 		return
 	is_open = false
+	close_objectives()
 	BS.ui_block = maxi(0, BS.ui_block - 1)
 	get_tree().paused = false
 	($Holder as Control).visible = false

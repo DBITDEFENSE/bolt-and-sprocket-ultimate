@@ -47,6 +47,7 @@ var values: Dictionary = {
 	"gore": "full",                # off / low / full: dismemberment and blood (MZ, T-041); the shatter VFX always shows
 	"homage_bosses": true,         # the homage bosses (HB1: the Cousins on Map 0 round 10); Off = those rounds play normally
 	"homage_names": "real",        # real / world: real first names on the title cards, bars and subtitles, or the in-world names only
+	"objective_spoilers": "hints", # hidden / hints / full: the pause OBJECTIVES tab (Update 04 section 4, ObjectiveLog)
 
 }
 ## User binding overrides: action -> {"kb": spec, "pad": spec}. A spec is a plain Dictionary (see event_to_spec).
