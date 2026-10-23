@@ -661,7 +661,9 @@ func _capture_lamps() -> void:
 		if l == null:
 			continue
 		var has_base: bool = l.get("base_energy") != null
-		_lamps[str(n)] = [l, float(l.get("base_energy")) if has_base else l.light_energy, has_base]
+		# the inn's electric bulbs (T-061) relight to their powered energy, whatever they were at the setup
+		var e: float = float(l.get("base_energy")) if has_base else (float(l.get_meta("energy")) if l.has_meta("energy") else l.light_energy)
+		_lamps[str(n)] = [l, e, has_base]
 
 
 func _lamp_node(n: String) -> Light3D:
@@ -671,7 +673,7 @@ func _lamp_node(n: String) -> Light3D:
 
 func _gutter_lamp(n: String, delay: float) -> void:
 	var l: Light3D = _lamp_node(n)
-	if l == null:
+	if l == null or not l.is_visible_in_tree():   # a bulb with the power still off has nothing to gutter
 		return
 	lamps_out += 1
 	_tween_energy(l, 0.0, 0.6, delay)
