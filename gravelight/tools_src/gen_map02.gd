@@ -151,6 +151,13 @@ const MERCURY: Color = Color(0.72, 0.84, 1.0)
 const INCAND: Color = Color(1.0, 0.78, 0.55)
 const RED: Color = Color(1.0, 0.22, 0.14)
 const VIOLET: Color = Color(0.62, 0.28, 1.0)
+const MOONLIGHT: Color = Color(0.55, 0.66, 0.95)
+const SEALIGHT: Color = Color(0.5, 0.64, 0.8)
+const FIRE: Color = Color(1.0, 0.55, 0.22)
+## Fire barrels (lighting pass T-063): [name, floor pos]. Warm pools the players can read the dark by.
+const BRAZIERS: Array = [["Quay", Vector3(29.6, 0, 23.0)], ["QuayBunker", Vector3(16.6, 0, 27.6)], ["CraneBay", Vector3(50.9, 0, 52.6)]]
+## Coke stoves (lighting pass T-063): [name, floor pos, yaw so local -Z (the fire door) faces the room].
+const STOVES: Array = [["Workshop", Vector3(61.0, 0, 27.8), 90.0], ["WorkshopNW", Vector3(33.0, 0, 2.2), -90.0]]
 const POWER_GAIN: float = 2.2
 const LAMP_GAIN: float = 1.7
 
@@ -165,6 +172,7 @@ var _stairs: Array = []           # [axis ("z"/"x"), a0, a1 (across), low, high 
 var _glow: Dictionary = {}
 var _power: Array = []
 var _static_lights: Array = []
+var _spots: Array = []            # always-on spot lights (moon through the windows, sea light at the mouth)
 var _decal_tex: Dictionary = {}
 var _decals: Node3D
 var _water: MeshInstance3D
@@ -191,6 +199,10 @@ func _initialize() -> void:
 	for ab: Array in AMMO_BOXES:   # the ammo boxes' footprints, so the navmesh is cut round them (hidden: NavBlock*)
 		var ah: Vector3 = Vector3(0.52, 0, 0.3) if absf(float(ab[2])) != 90.0 else Vector3(0.3, 0, 0.52)
 		box(geo, "NavBlock_Ammo_" + str(ab[0]), (ab[1] as Vector3) - ah, (ab[1] as Vector3) + ah + Vector3(0, 0.62, 0), "metal")
+	for sv: Array in STOVES:   # the coke stoves' footprints
+		box(geo, "NavBlock_Stove_" + str(sv[0]), (sv[1] as Vector3) - Vector3(0.5, 0, 0.5), (sv[1] as Vector3) + Vector3(0.5, 1.1, 0.5), "metal")
+	for br: Array in BRAZIERS:   # the fire barrels' footprints (dressed in build_dressing)
+		box(geo, "NavBlock_Brazier_" + str(br[0]), (br[1] as Vector3) - Vector3(0.32, 0, 0.32), (br[1] as Vector3) + Vector3(0.32, 0.9, 0.32), "metal")
 
 
 func _process(_delta: float) -> bool:
@@ -852,6 +864,50 @@ func lamp(pos: Vector3, color: Color, energy: float, range_: float, flicker: flo
 		"shadow": shadow, "speed": speed})
 
 
+## An always-on spot light from `pos` aimed at `aim` (moonlight through a window, the sea's light under the
+## curtain). Shadowed spots are what shape a shaft through the volumetric fog, so keep them few.
+func shaft(n: String, pos: Vector3, aim: Vector3, color: Color, energy: float, range_: float, angle: float,
+		fog: float = 1.5, shadow: bool = true) -> void:
+	_spots.append({"name": n, "pos": pos, "aim": aim, "color": color, "energy": energy, "range": range_, "angle": angle,
+		"fog": fog, "shadow": shadow})
+
+
+## Moonlight in through a window: a cold shadowed spot up in the window's closet (outside the room) aimed down
+## through the opening onto the floor inside, so the boards and the frame cut the shaft.
+func moon_window(id: String, energy: float = 1.0) -> void:
+	for w: Array in WINDOWS:
+		if str(w[0]) != id:
+			continue
+		var p: Vector3 = w[2]
+		var inward: Vector3 = Basis(Vector3.UP, deg_to_rad(float(w[3]))) * Vector3(0, 0, 1)
+		shaft("MoonShaft_" + id, p - inward * 2.5 + Vector3(0, 2.75, 0), p + inward * 3.6, MOONLIGHT, 10.0 * energy, 14.0, 28.0, 3.0)
+
+
+## A fire barrel: a rusted drum with a coal fire in it, flames, embers and a flickering warm light. The
+## footprint's collider is a hidden NavBlock box added in _initialize (BRAZIERS), so the navmesh goes round it.
+func brazier(p: Vector3) -> void:
+	Props.cyl(dress, p + Vector3(0, 0.42, 0), 0.3, 0.84, "rust")
+	for h: float in [0.25, 0.6]:
+		Props.cyl(dress, p + Vector3(0, h, 0), 0.31, 0.03, "iron")
+	_noshadow(Props.cyl(dress, p + Vector3(0, 0.8, 0), 0.27, 0.06, "ember"))
+	Props.flames(dress, p + Vector3(0, 0.84, 0), 0.45, 0.7, 26)
+	Props.embers(dress, p + Vector3(0, 1.0, 0), 0.2, 8)
+	lamp(p + Vector3(0, 1.35, 0), FIRE, 1.6, 9.0, 0.22, 0.6, false, 7.0)
+
+
+## A cast-iron coke stove with its fire door ajar (local -Z faces the room), a flue to the roof and a warm,
+## flickering light that spills out of the door onto the floor.
+func stove(p: Vector3, yaw: float, flue_top: float) -> void:
+	var g: Node3D = Props.group(dress, "CokeStove", p, yaw)
+	Props.block(g, Vector3(-0.42, 0.0, -0.42), Vector3(0.42, 0.95, 0.42), "iron")
+	Props.block(g, Vector3(-0.46, 0.95, -0.46), Vector3(0.46, 1.02, 0.46), "rust")
+	_noshadow(Props.block(g, Vector3(-0.22, 0.2, -0.44), Vector3(0.22, 0.52, -0.42), "ember", false))
+	Props.block(g, Vector3(0.22, 0.2, -0.75), Vector3(0.25, 0.52, -0.44), "iron")
+	Props.cyl(g, Vector3(0, (flue_top + 1.02) * 0.5, 0.1), 0.09, flue_top - 1.02, "iron")
+	var out: Vector3 = Basis(Vector3.UP, deg_to_rad(yaw)) * Vector3(0, 0, -0.9)
+	lamp(p + out + Vector3(0, 0.45, 0), FIRE, 1.4, 8.0, 0.18, 0.4, false, 5.0)
+
+
 ## Hanging lamp: cord, enamel shade, bulb. The lit bulb belongs to the zone's power holder.
 func pendant(zone: String, p: Vector3, ceil_y: float, shade: String = "enamel_green", s: float = 1.0, glow_key: String = "bulb_warm") -> void:
 	_noshadow(B(p + Vector3(-0.012, 0.2 * s, -0.012), Vector3(p.x + 0.012, ceil_y, p.z + 0.012), "iron", false))
@@ -873,7 +929,7 @@ func bulkhead(zone: String, p: Vector3, yaw: float, glow_key: String = "bulb_war
 func emergency(p: Vector3, yaw: float, energy: float = 0.9, range_: float = 9.0, flick: float = 0.12) -> void:
 	Props.bulkhead_lamp(dress, p, yaw, "emergency_red")
 	var out: Vector3 = Basis(Vector3.UP, deg_to_rad(yaw)) * Vector3(0, 0, -0.5)
-	lamp(p + out, RED, energy * 1.3, range_ + 2.0, flick, 0.0, false, 3.0)
+	lamp(p + out, RED, energy * 1.3, range_ + 2.0, flick, 0.3, false, 3.0)
 
 
 ## Floodlight on a bracket aimed at `aim`; lens glow and a cold spot come on with the zone's power.
@@ -893,7 +949,7 @@ func flood(zone: String, p: Vector3, aim: Vector3, spot_range: float = 30.0, spo
 	gg.transform = g.transform
 	G(zone).add_child(gg)
 	_noshadow(Props.block(gg, Vector3(-0.29, -0.22, -0.085), Vector3(0.29, 0.22, -0.06), "flood_glass"))
-	power(zone, p + dir * 0.6, 7.0, 0.8, color, false, {"dir": dir, "range": spot_range, "energy": spot_energy, "angle": angle, "color": color})
+	power(zone, p + dir * 0.9, 4.0, 0.15, color, false, {"dir": dir, "range": spot_range, "energy": spot_energy, "angle": angle, "color": color})
 
 
 ## Flat radial stain projected downward.
@@ -958,7 +1014,7 @@ func _hurricane(p: Vector3) -> void:
 		Props.strut(dress, p + o + Vector3(0, 0.05, 0), p + o + Vector3(0, 0.26, 0), 0.01, "rust")
 	Props.cyl(dress, p + Vector3(0, 0.27, 0), 0.05, 0.03, "rust")
 	Props.cable(dress, p + Vector3(-0.07, 0.28, 0), p + Vector3(0.07, 0.28, 0), -0.08, 0.006, 4, "iron")
-	lamp(p + Vector3(0, 0.3, 0), Color(1.0, 0.62, 0.3), 0.55, 6.0, 0.15, 0.0, false, 6.0)
+	lamp(p + Vector3(0, 0.3, 0), Color(1.0, 0.62, 0.3), 0.95, 7.5, 0.15, 0.4, false, 6.0)
 
 
 ## A straight luminous-paint strip from a to b (on a floor, or a wall stripe if `wall`).
@@ -1134,7 +1190,9 @@ func _dress_weather() -> void:
 	dress.add_child(motes)
 	motes.set_meta("keep", true)
 	# spray at the pen mouth and over the parapet
-	for sp: Vector3 in [Vector3(-8, 1.0, 84), Vector3(16, 1.0, 84), Vector3(40, 1.0, 84), Vector3(8, 1.2, -0.5), Vector3(24, 1.2, -0.5)]:
+	# (the quay parapet's two spray emitters went in the lighting pass: lit by the moon they read as brown smoke; the
+	# QuaySpray fog volume carries the spray now)
+	for sp: Vector3 in [Vector3(-8, 1.0, 84), Vector3(16, 1.0, 84), Vector3(40, 1.0, 84)]:
 		Props.smoke(dress, sp, 3.0, 2.4, 40)
 
 
@@ -1194,6 +1252,32 @@ func build_dressing() -> void:
 	_dress_rails()
 	_dress_readability()
 	_dress_weather()
+	_dress_light()
+
+
+## Lighting pass (T-063): the light that is there before the pumps run, each from a source you can see. Moonlight
+## through the cannery's, workshop's and tower's windows and the hall's vents; the sea's cold light in under the
+## half-lowered curtain and through the lower pens' grille; fire barrels on the quay and in the crane bay.
+func _dress_light() -> void:
+	for br: Array in BRAZIERS:
+		brazier(br[1])
+	for sv2: Array in STOVES:
+		stove(sv2[1], float(sv2[2]), 7.0)
+	for id: String in ["W_B_N", "W_B_W1", "W_B_W2", "W_C_N"]:
+		moon_window(id, 1.0)
+	for id2: String in ["W_C_E1", "W_C_E2", "W_G_N1", "W_G_N2"]:
+		moon_window(id2, 0.6)
+	for id3: String in ["W_D_N1", "W_D_N2", "W_D_N3"]:
+		moon_window(id3, 0.8)
+	for mx: float in [-10.0, 7.0, 26.0, 42.0]:
+		shaft("SeaLight_Mouth", Vector3(mx, 1.9, 97.0), Vector3(mx, -0.8, 52.0), SEALIGHT, 10.0, 60.0, 38.0, 1.0)
+	# lanterns the dockers left burning: warm pools between the dark stretches (on tables, crates, the floor)
+	for hp: Vector3 in [Vector3(-7.0, 0.95, 19.0), Vector3(-4.0, 1.0, 4.8), Vector3(-12.5, 1.2, 26.0), Vector3(-26.5, 0, 16.5),
+			Vector3(40.5, 1.3, 14.5), Vector3(58.5, 1.3, 6.0), Vector3(55.0, 0, 28.5),
+			Vector3(-3.0, 0, 72.0), Vector3(17.0, 0, 46.0), Vector3(25.0, 0, 36.6), Vector3(-19.2, CATY, 60.0), Vector3(51.2, CATY, 56.0),
+			Vector3(50.5, LY, 75.0), Vector3(33.5, LY, 72.0), Vector3(4.0, 0, 13.0)]:
+		_hurricane(hp)
+	shaft("SeaLight_Grille", Vector3(42.0, -2.0, 100.0), Vector3(42.0, LY - 0.3, 70.0), SEALIGHT, 3.0, 46.0, 22.0, 0.8)
 
 
 func _dress_quay() -> void:
@@ -1270,8 +1354,8 @@ func _dress_quay() -> void:
 	for dp2: Vector3 in [Vector3(-10, 3.0, 29.9), Vector3(44, 3.0, 29.9)]:
 		bulkhead("A_QUAY", dp2, 180.0)
 		power("A_QUAY", dp2 + Vector3(0, 0, -0.6), 9.0, 1.0, SODIUM)
-	flood("A_QUAY", Vector3(8.0, 9.5, 29.6), Vector3(12.0, 0.0, 10.0), 38.0, 9.0, 46.0)
-	flood("A_QUAY", Vector3(24.0, 9.5, 29.6), Vector3(22.0, 0.0, 6.0), 38.0, 9.0, 46.0)
+	flood("A_QUAY", Vector3(8.0, 9.5, 29.6), Vector3(12.0, 0.0, 10.0), 38.0, 9.0, 46.0, SODIUM)
+	flood("A_QUAY", Vector3(24.0, 9.5, 29.6), Vector3(22.0, 0.0, 6.0), 38.0, 9.0, 46.0, SODIUM)
 	lamp(Vector3(16.0, 6.0, 15.0), Color(0.5, 0.6, 0.78), 0.6, 30.0, 0.0, 0.1)
 	flood("A_QUAY", Vector3(-20.0, 9.5, 29.6), Vector3(-14.0, 0.0, 4.0), 30.0, 4.0, 42.0)
 	flood("A_QUAY", Vector3(50.0, 9.5, 29.6), Vector3(46.0, 0.0, 4.0), 30.0, 4.0, 42.0)
@@ -1514,31 +1598,31 @@ func _dress_penhall() -> void:
 	# lights: mercury floods high on both long walls (powered), bulkheads along the catwalks, emergency reds,
 	# hurricane lanterns on the piers, the north apron's pendants
 	for fz: float in [44.0, 62.0, 80.0]:
-		flood("D_PENHALL", Vector3(-19.6, 9.0, fz), Vector3(-10.0, 0.0, fz + 4.0), 34.0, 8.0, 50.0)
+		flood("D_PENHALL", Vector3(-19.6, 9.0, fz), Vector3(-10.0, 0.0, fz + 4.0), 34.0, 8.0, 50.0, SODIUM)
 		flood("D_PENHALL", Vector3(51.6, 9.0, fz), Vector3(40.0, 0.0, fz - 4.0), 34.0, 8.0, 50.0)
 	flood("D_PENHALL", Vector3(16.0, 11.0, 34.0), Vector3(16.0, 0.0, 60.0), 44.0, 9.0, 44.0)
 	for bz4: float in [40.0, 52.0, 64.0, 76.0]:
 		bulkhead("D_PENHALL", Vector3(-19.83, CATY + 1.8, bz4), -90.0, "bulb_cold")
-		power("D_PENHALL", Vector3(-19.2, CATY + 1.8, bz4), 7.0, 0.5, MERCURY)
+		power("D_PENHALL", Vector3(-19.2, CATY + 1.8, bz4), 7.0, 0.4, MERCURY)
 		bulkhead("D_PENHALL", Vector3(51.83, CATY + 1.8, bz4), 90.0, "bulb_cold")
-		power("D_PENHALL", Vector3(51.2, CATY + 1.8, bz4), 7.0, 0.5, MERCURY)
+		power("D_PENHALL", Vector3(51.2, CATY + 1.8, bz4), 7.0, 0.4, MERCURY)
 	for px: float in [-10.0, 20.0, 38.0]:
 		pendant("D_PENHALL", Vector3(px, 3.0, 35.5), ROOF - 0.9, "enamel_green", 1.2)
 		power("D_PENHALL", Vector3(px, 2.8, 35.5), 9.0, 0.7, SODIUM)
 	for ppx: float in [-17.0, -3.0, 17.0, 42.0]:
 		for ppz: float in [50.0, 64.0, 78.0]:
 			_pole_lamp("D_PENHALL", Vector3(ppx + (0.0 if ppx < 40.0 else 4.0), 0, ppz))
-	lamp(Vector3(16.0, 8.0, 50.0), Color(0.5, 0.6, 0.78), 0.7, 40.0, 0.0, 0.25)
-	lamp(Vector3(-8.0, 6.0, 72.0), Color(0.5, 0.6, 0.78), 0.5, 26.0, 0.0, 0.1)
-	lamp(Vector3(40.0, 6.0, 72.0), Color(0.5, 0.6, 0.78), 0.5, 26.0, 0.0, 0.1)
+	lamp(Vector3(16.0, 8.0, 50.0), Color(0.5, 0.6, 0.78), 1.0, 40.0, 0.0, 0.5)
+	lamp(Vector3(-8.0, 6.0, 72.0), Color(0.5, 0.6, 0.78), 0.75, 26.0, 0.0, 0.3)
+	lamp(Vector3(40.0, 6.0, 72.0), Color(0.5, 0.6, 0.78), 0.75, 26.0, 0.0, 0.3)
 	for e: Array in [[Vector3(-19.83, 2.8, 48.0), -90.0], [Vector3(-19.83, 2.8, 70.0), -90.0], [Vector3(51.83, 2.8, 48.0), 90.0],
 			[Vector3(51.83, 2.8, 78.0), 90.0], [Vector3(0.0, 2.8, 33.17), 0.0], [Vector3(36.0, 2.8, 33.17), 0.0]]:
 		emergency(e[0], float(e[1]), 0.9, 11.0)
 	for hp: Vector3 in [Vector3(-16.6, 0, 60.0), Vector3(-2.6, 0, 56.0), Vector3(16.4, 0, 70.0), Vector3(34.4, 0, 58.0), Vector3(44.0, 0, 46.0)]:
 		_hurricane(hp)
-	lamp(Vector3(16.0, 6.0, 60.0), Color(0.5, 0.62, 0.8), 0.5, 26.0, 0.0, 0.3)
+	lamp(Vector3(16.0, 6.0, 60.0), Color(0.5, 0.62, 0.8), 0.75, 26.0, 0.0, 0.5)
 	# the signal lamp on the tower's roof: a turning spot (battery, always on)
-	var sl: Node3D = spinner(dress, "SignalLamp", Vector3(47.0, TY + 4.9, 35.5), Vector3.UP, 0.7, false)
+	var sl: Node3D = spinner(dress, "SignalLamp", Vector3(47.0, TY + 4.65, 35.5), Vector3.UP, 0.7, false)
 	Props.cyl(sl, Vector3(0, -0.35, 0), 0.3, 0.3, "iron")
 	Props.block(sl, Vector3(-0.3, -0.2, -0.3), Vector3(0.3, 0.4, 0.3), "machine_grey")
 	var lens: MeshInstance3D = Props.cyl(sl, Vector3(0, 0.1, -0.33), 0.2, 0.08, "signal_glass", Vector3(90, 0, 0))
@@ -1546,13 +1630,14 @@ func _dress_penhall() -> void:
 	var beam: SpotLight3D = SpotLight3D.new()
 	beam.name = "Beam"
 	beam.position = Vector3(0, 0.1, -0.4)
-	beam.rotation.x = deg_to_rad(-12.0)
+	beam.rotation.x = deg_to_rad(-18.0)
 	beam.light_color = Color(1.0, 0.92, 0.75)
-	beam.light_energy = 6.0
+	beam.light_energy = 40.0
+	beam.shadow_enabled = true   # the slab and the roofs stop it (it used to sweep the workshop through its roof)
 	beam.spot_range = 70.0
-	beam.spot_angle = 14.0
+	beam.spot_angle = 11.0
 	beam.spot_attenuation = 0.5
-	beam.light_volumetric_fog_energy = 1.6
+	beam.light_volumetric_fog_energy = 4.0
 	sl.add_child(beam)
 	_bake_local(sl, false)
 
@@ -1653,9 +1738,9 @@ func _dress_uboat() -> void:
 	# lights inside: red battle lanterns (always), white bulkheads (powered)
 	for lz: float in [42.0, 48.0, 54.0, 60.0, 66.0, 74.0, 82.0]:
 		Props.bulkhead_lamp(dress, Vector3(9.44, 0.3, lz), 90.0, "lamp_red_lit")
-		lamp(Vector3(9.0, 0.2, lz), RED, 0.55, 6.0, 0.06, 0.2, false, 2.0)
+		lamp(Vector3(9.0, 0.2, lz), RED, 0.8, 7.0, 0.06, 0.35, false, 2.0)
 		bulkhead("E_UBOAT", Vector3(4.56, 0.3, lz + 3.0), -90.0, "bulb_cold")
-		power("E_UBOAT", Vector3(5.0, 0.2, lz + 3.0), 6.0, 0.6, MERCURY)
+		power("E_UBOAT", Vector3(5.3, -0.3, lz + 3.0), 6.5, 0.4, MERCURY)
 	emergency(Vector3(5.9, DECK + 2.2, 58.33), 180.0, 0.7, 6.0)
 
 
@@ -1716,7 +1801,7 @@ func _dress_lowerpens() -> void:
 	for cx2: float in [38.0, 46.0]:
 		for cz2: float in [58.0, 74.0]:
 			bulkhead("F_LOWERPENS", Vector3(cx2, y + 2.2, cz2 - 0.41), 0.0, "bulb_cold")
-			power("F_LOWERPENS", Vector3(cx2, y + 2.2, cz2 - 1.0), 8.0, 0.7, MERCURY)
+			power("F_LOWERPENS", Vector3(cx2, y + 1.7, cz2 - 1.3), 8.5, 0.45, MERCURY)
 	bulkhead("F_LOWERPENS", Vector3(42.0, y + 2.2, 83.7), 180.0, "bulb_warm")
 	power("F_LOWERPENS", Vector3(42.0, y + 2.2, 83.0), 8.0, 0.6, SODIUM)
 	emergency(Vector3(51.83, y + 2.3, 56.0), 90.0, 0.9, 10.0)
@@ -1925,28 +2010,46 @@ func build_lights() -> void:
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color(0.22, 0.27, 0.36)
-	env.ambient_light_energy = 0.6
-	env.reflected_light_source = Environment.REFLECTION_SOURCE_DISABLED
+	env.ambient_light_energy = 0.75
+	env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
 	env.tonemap_mode = Environment.TONE_MAPPER_AGX
-	env.tonemap_exposure = 1.45
+	env.tonemap_exposure = 1.85
 	env.ssao_enabled = true
 	env.ssao_radius = 1.4
 	env.ssao_intensity = 2.0
 	env.ssao_power = 1.5
+	# bounce light (High: SDFGI + SSIL + SSR; Medium keeps SSIL; Low none — settings.gd gates them)
+	env.sdfgi_enabled = true
+	env.sdfgi_use_occlusion = true
+	env.sdfgi_read_sky_light = true
+	env.sdfgi_cascades = 4
+	env.sdfgi_min_cell_size = 0.2
+	env.sdfgi_y_scale = Environment.SDFGI_Y_SCALE_75_PERCENT
+	env.sdfgi_bounce_feedback = 0.5
+	env.sdfgi_energy = 2.0
+	env.ssil_enabled = true
+	env.ssil_radius = 6.0
+	env.ssil_intensity = 1.2
+	env.ssr_enabled = true
+	env.ssr_max_steps = 64
+	env.ssr_fade_in = 0.15
+	env.ssr_fade_out = 2.0
+	env.ssr_depth_tolerance = 0.3
 	env.glow_enabled = true
 	env.glow_intensity = 0.8
 	env.glow_bloom = 0.06
 	env.glow_hdr_threshold = 1.1
 	env.fog_enabled = true
-	env.fog_light_color = Color(0.07, 0.085, 0.11)
-	env.fog_density = 0.011
+	env.fog_light_color = Color(0.11, 0.13, 0.17)
+	env.fog_density = 0.009
 	env.fog_sky_affect = 0.5
 	env.volumetric_fog_enabled = true
-	env.volumetric_fog_density = 0.018
-	env.volumetric_fog_albedo = Color(0.72, 0.78, 0.86)
-	env.volumetric_fog_emission = Color(0.008, 0.01, 0.015)
-	env.volumetric_fog_length = 52.0
-	env.volumetric_fog_anisotropy = 0.45
+	env.volumetric_fog_density = 0.012
+	env.volumetric_fog_albedo = Color(0.75, 0.8, 0.88)
+	env.volumetric_fog_emission = Color(0.015, 0.019, 0.028)
+	env.volumetric_fog_length = 64.0
+	env.volumetric_fog_anisotropy = 0.5
+	env.volumetric_fog_ambient_inject = 0.25
 	env.adjustment_enabled = true
 	env.adjustment_saturation = 0.8
 	env.adjustment_contrast = 1.1
@@ -1957,8 +2060,8 @@ func build_lights() -> void:
 	moon.name = "Moon"
 	moon.set("below_y", -1.0)
 	moon.light_color = Color(0.5, 0.6, 0.9)
-	moon.light_energy = 0.4
-	moon.light_volumetric_fog_energy = 0.5
+	moon.light_energy = 0.75
+	moon.light_volumetric_fog_energy = 1.0
 	moon.shadow_enabled = true
 	moon.directional_shadow_max_distance = 70.0
 	moon.rotation = Vector3(deg_to_rad(-42), deg_to_rad(-150), 0)
@@ -1992,7 +2095,7 @@ func build_lights() -> void:
 			s.spot_range = float(sp["range"])
 			s.spot_angle = float(sp["angle"])
 			s.spot_attenuation = 0.6
-			s.light_volumetric_fog_energy = 0.25
+			s.light_volumetric_fog_energy = 0.45
 			s.shadow_enabled = zone == "D_PENHALL" and i % 3 == 0
 			l.add_child(s)
 		if not first.has(zone):
@@ -2046,6 +2149,24 @@ func build_lights() -> void:
 		l2.shadow_enabled = bool(e2["shadow"])
 		map_root.add_child(l2)
 		si += 1
+	var names: Dictionary = {}
+	for e3: Dictionary in _spots:
+		var s3: SpotLight3D = SpotLight3D.new()
+		var n3: String = str(e3["name"])
+		names[n3] = int(names.get(n3, -1)) + 1
+		s3.name = n3 if int(names[n3]) == 0 else "%s_%d" % [n3, int(names[n3])]
+		var dir3: Vector3 = ((e3["aim"] as Vector3) - (e3["pos"] as Vector3)).normalized()
+		s3.transform = Transform3D(Basis.looking_at(dir3, Vector3.UP if absf(dir3.y) < 0.95 else Vector3.FORWARD), e3["pos"])
+		s3.light_color = e3["color"]
+		s3.light_energy = float(e3["energy"])
+		s3.spot_range = float(e3["range"])
+		s3.spot_angle = float(e3["angle"])
+		s3.spot_attenuation = 0.8
+		s3.spot_angle_attenuation = 1.6
+		s3.light_volumetric_fog_energy = float(e3["fog"])
+		s3.shadow_enabled = bool(e3["shadow"])
+		s3.shadow_blur = 1.5
+		map_root.add_child(s3)
 	# local fog: sea mist at the pen mouth, a cold haze over the docks, drips in the pump deck, the boat's air
 	_fog("MouthMist", Vector3(16, 4, 86), Vector3(74, 10, 10), 0.05, Color(0.7, 0.78, 0.85), Color(0, 0, 0))
 	_fog("DockHaze", Vector3(16, 2, 60), Vector3(70, 8, 46), 0.012, Color(0.75, 0.8, 0.9), Color(0, 0, 0))
