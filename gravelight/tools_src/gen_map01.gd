@@ -142,6 +142,7 @@ const SODIUM: Color = Color(1.0, 0.66, 0.36)
 const INCAND: Color = Color(1.0, 0.78, 0.55)
 const FLOOD: Color = Color(1.0, 0.84, 0.64)    # incandescent floods: warm pools on the moon-blue snow (T-062)
 const CHAPEL_LAMP: Color = Color(1.0, 0.75, 0.5)   # the salt chandeliers: warm white, so the salt reads pale
+const LAB_LAMP: Color = Color(1.0, 0.88, 0.74)   # the lab's enamel pendants: a whiter, clinical incandescent
 const AMBER: Color = Color(1.0, 0.52, 0.16)    # the glowing cracks in the Nachtglas (GDD 17: violet with amber cracks)
 const RED: Color = Color(1.0, 0.22, 0.14)
 const VIOLET: Color = Color(0.62, 0.28, 1.0)
@@ -1131,8 +1132,8 @@ func _dress_headframe() -> void:
 	_label("SCHACHT II", Vector3(20, 3.6, 20.05), 0.0, 90, Color(0.85, 0.82, 0.72, 0.85))
 	B(Vector3(18.6, 0.0, 9.95), Vector3(21.4, 2.4, 10.0), "iron")
 	# floodlights on the frame (powered)
-	flood("A_MINEHEAD", Vector3(20.0, 22.0, 18.6), Vector3(17.0, 0.0, 28.0), 38.0, 4.5, 36.0)
-	flood("A_MINEHEAD", Vector3(20.0, 22.0, 11.4), Vector3(22.0, 0.0, 2.0), 34.0, 3.5, 36.0)
+	flood("A_MINEHEAD", Vector3(20.0, 22.0, 18.6), Vector3(17.0, 0.0, 28.0), 38.0, 3.2, 26.0)
+	flood("A_MINEHEAD", Vector3(20.0, 22.0, 11.4), Vector3(22.0, 0.0, 2.0), 34.0, 2.6, 26.0)
 	flood("A_MINEHEAD", Vector3(4.0, 4.6, 0.45), Vector3(10.0, 0.0, 14.0), 22.0, 3.0, 45.0)
 	flood("A_MINEHEAD", Vector3(36.0, 4.6, 0.45), Vector3(31.0, 0.0, 16.0), 22.0, 3.0, 45.0)
 	for fp: Vector3 in [Vector3(4.0, 4.12, 0.3), Vector3(36.0, 4.12, 0.3)]:
@@ -1156,9 +1157,15 @@ func _dress_admin() -> void:
 		[Vector3(0.15, 0, 12.0), 90.0], [Vector3(0.15, 0, 18.0), 90.0], [Vector3(0.15, 3.8, 20.0), 90.0], [Vector3(0.15, 3.8, 26.0), 90.0],
 		[Vector3(-16.15, 0, 14.0), -90.0], [Vector3(-16.15, 0, 22.0), -90.0], [Vector3(-16.15, 3.8, 14.0), -90.0], [Vector3(-16.15, 3.8, 24.0), -90.0],
 	]
+	var fi: int = 0
 	for f: Array in fakes:
 		var g: Node3D = Props.group(dress, "FakeWindow", f[0], float(f[1]))   # local +Z = outward
-		Props.block(g, Vector3(-0.8, SILL, 0.0), Vector3(0.8, WTOP, 0.02), "window_dark")
+		var pane: MeshInstance3D = Props.block(g, Vector3(-0.8, SILL, 0.0), Vector3(0.8, WTOP, 0.02), "window_dark")
+		# the rooms with an oil lamp burning show it at the glass (night lamp, upstairs lantern, the filing room)
+		if fi in [0, 5, 7] and pane != null:
+			pane.material_override = _lit_window()
+			_noshadow(pane)
+		fi += 1
 		Props.block(g, Vector3(-0.04, SILL, 0.0), Vector3(0.04, WTOP, 0.05), "beam")
 		Props.block(g, Vector3(-0.8, (SILL + WTOP) * 0.5 - 0.03, 0.0), Vector3(0.8, (SILL + WTOP) * 0.5 + 0.03, 0.05), "beam")
 		_admin_surround(g, true)
@@ -1169,6 +1176,7 @@ func _dress_admin() -> void:
 		Props.strut(dress, Vector3(0.15, 2.0, bz), Vector3(1.2, 2.66, bz), 0.07, "iron")
 	_label("VERWALTUNG", Vector3(0.18, 3.1, 25.0), 90.0, 40)
 	Props.wall_lamp(dress, Vector3(0.17, 2.3, 23.2), -90.0)
+	lamp(Vector3(0.9, 2.2, 23.2), Color(1.0, 0.68, 0.38), 0.9, 8.0, 0.1)
 	# balcony brackets and railing; the north canopy's brackets
 	for bz2: float in [12.3, 14.0, 15.7]:
 		Props.strut(dress, Vector3(0.15, 2.7, bz2), Vector3(2.4, 3.5, bz2), 0.12, "beam")
@@ -1236,8 +1244,15 @@ func _dress_admin() -> void:
 	pendant("C_ADMIN", Vector3(-8, 6.45, 24.0), 6.78, "enamel_white")
 	power("C_ADMIN", Vector3(-8, 2.8, 13.0), 10.0, 1.4, INCAND)
 	power("C_ADMIN", Vector3(-8, 2.8, 24.0), 10.0, 1.4, INCAND)
-	power("C_ADMIN", Vector3(-8, 6.3, 12.0), 9.0, 1.2, INCAND)
-	power("C_ADMIN", Vector3(-8, 6.3, 24.0), 10.0, 1.2, INCAND)
+	power("C_ADMIN", Vector3(-8, 6.3, 12.0), 9.0, 1.5, INCAND)
+	power("C_ADMIN", Vector3(-8, 6.3, 24.0), 10.0, 1.5, INCAND)
+	# a green banker's lamp on the upstairs desk (comes on with the Admin sweep)
+	CYL(Vector3(-6.75, 4.6, 25.85), 0.07, 0.03, "brass")
+	CYL(Vector3(-6.75, 4.75, 25.85), 0.012, 0.3, "brass")
+	Props.cone(dress, Vector3(-6.75, 4.92, 25.85), 0.14, 0.1, "enamel_green")
+	_noshadow(Props.ball(dress, Vector3(-6.75, 4.86, 25.85), Vector3(0.07, 0.05, 0.07), "bulb_off"))
+	_noshadow(Props.ball(G("C_ADMIN"), Vector3(-6.75, 4.86, 25.85), Vector3(0.08, 0.06, 0.08), "bulb_warm"))
+	power("C_ADMIN", Vector3(-6.75, 4.75, 25.75), 6.0, 0.9, INCAND, false, {}, 0.3)
 	Props.lantern(dress, Vector3(-8.0, 2.6, 18.0), 3.28)
 	lamp(Vector3(-8.0, 2.45, 18.0), Color(1.0, 0.7, 0.4), 1.1, 9.0, 0.08)
 	_hurricane(Vector3(-14.95, 1.6, 10.5), 1.0)
@@ -1246,7 +1261,7 @@ func _dress_admin() -> void:
 	Props.wall_lamp(dress, Vector3(-11.4, 2.3, 31.8), 0.0)
 	lamp(Vector3(-11.4, 2.2, 31.1), Color(1.0, 0.68, 0.38), 0.9, 8.0, 0.1)
 	Props.lantern(dress, Vector3(-4.0, 6.1, 28.0), 6.78)
-	lamp(Vector3(-4.0, 5.95, 28.0), Color(1.0, 0.7, 0.4), 0.7, 7.0, 0.08)
+	lamp(Vector3(-4.0, 5.95, 28.0), Color(1.0, 0.7, 0.4), 1.1, 9.0, 0.08)
 
 
 func _desk(p: Vector3, yaw: float, w: float = 1.5) -> void:
@@ -1999,12 +2014,14 @@ func _dress_lab() -> void:
 			CYL(c + Vector3(px, 3.05, 0), 0.06, 0.9, "copper")
 		Props.gauge(dress, c + Vector3(0.0, 0.2, 0.98), 180.0, 0.08)
 		_bubbles(c + Vector3(0, 0.5, 0), 0.6)
-		lamp(c + Vector3(0, 1.5, 0), VIOLET, 1.1, 5.5, 0.08, 0.0, false, 2.0)
+		# the tanks' glow stays close to the glass (deep violet bleeding onto the tiles), not a room-wide wash (T-062)
+		lamp(c + Vector3(0, 1.5, 0), Color(0.55, 0.16, 1.0), 1.3, 3.6, 0.08, 0.2, false, 2.0)
 		ti += 1
 	# specimen room: cabinet on the generator wall, a gurney, instrument trolley
 	Props.cabinet(dress, Vector3(64.0, y, 82.45), 180.0, 2.4, 2.1, 0.45)
 	Props.gurney(dress, Vector3(62.5, y, 86.4), 90.0, true)
 	_trolley(Vector3(58.5, y, 84.2))
+	_hurricane(Vector3(58.3, y + 0.83, 84.1), 0.9)
 	# Fasbender's laboratory: bench top and glassware, operating table under the big lamp
 	B(Vector3(69.95, y + 0.95, 82.35), Vector3(74.05, y + 1.02, 83.65), "enamel_white")
 	Props.bottles(dress, Vector3(70.3, y + 1.02, 82.8), Vector3(73.7, y + 1.02, 82.8), 12, 21)
@@ -2095,12 +2112,12 @@ func _dress_lab() -> void:
 		decal(st[0], Vector3(float(st[1]), 0.8, float(st[1]) * 0.8), Color(0.18, 0.03, 0.02, 0.55), float(st[1]) * 70.0)
 	# lights (powered): a pendant per room and three in the hall
 	var lamps: Array = [[Vector3(60.0, y + 2.75, 85.0), 8.0], [Vector3(76.0, y + 2.75, 84.6), 8.0], [Vector3(93.0, y + 2.75, 85.2), 8.0],
-		[Vector3(57.0, y + 2.75, 90.0), 0.0], [Vector3(76.0, y + 2.75, 90.0), 9.0], [Vector3(95.0, y + 2.75, 90.0), 0.0],
+		[Vector3(57.0, y + 2.75, 90.0), 8.0], [Vector3(76.0, y + 2.75, 90.0), 9.0], [Vector3(95.0, y + 2.75, 90.0), 8.0],
 		[Vector3(60.0, y + 2.75, 95.0), 8.0], [Vector3(76.0, y + 2.75, 95.0), 8.0], [Vector3(93.0, y + 2.75, 95.0), 8.0]]
 	for lp: Array in lamps:
 		pendant("H_LAB", lp[0], y + 3.5, "enamel_white")
 		if float(lp[1]) > 0.0:
-			power("H_LAB", (lp[0] as Vector3) + Vector3(0, -0.2, 0), float(lp[1]), 1.2, INCAND)
+			power("H_LAB", (lp[0] as Vector3) + Vector3(0, -0.2, 0), float(lp[1]), 0.85, LAB_LAMP, false, {}, 0.3)
 	power("H_LAB", Vector3(80.5, y + 2.1, 85.5), 5.0, 1.0, Color(0.95, 0.95, 1.0))
 	emergency(Vector3(68.0, y + 2.75, 88.17), 180.0, 0.8, 9.0)
 	emergency(Vector3(86.0, y + 2.75, 91.83), 0.0, 0.6, 8.0)
@@ -2259,11 +2276,24 @@ func _dress_core() -> void:
 	pendant("I_CORE", Vector3(34.0, y + 3.9, 134.5), y + 5.0, "enamel_green")
 	power("I_CORE", Vector3(34.0, y + 3.7, 134.5), 9.0, 1.2, INCAND)
 	# power: the vault's violet floods come on with the sweep
-	power("I_CORE", Vector3(34.0, y + 9.0, 116.0), 30.0, 2.0, VIOLET, false, {}, 0.5)
+	power("I_CORE", Vector3(34.0, y + 9.0, 116.0), 30.0, 2.0, Color(0.6, 0.2, 1.0), false, {}, 0.25)
 	power("I_CORE", Vector3(44.0, y + 4.0, 124.0), 8.0, 1.2, Color(1.0, 0.6, 0.35))
 
 
 var _amber: StandardMaterial3D
+var _litwin: StandardMaterial3D
+
+
+## A curtained window with an oil lamp somewhere behind it (Map 1's own: dimmer and warmer than lantern glass).
+func _lit_window() -> StandardMaterial3D:
+	if _litwin == null:
+		_litwin = StandardMaterial3D.new()
+		_litwin.albedo_color = Color(0.08, 0.05, 0.03)
+		_litwin.roughness = 0.4
+		_litwin.emission_enabled = true
+		_litwin.emission = Color(1.0, 0.6, 0.3)
+		_litwin.emission_energy_multiplier = 1.1
+	return _litwin
 var _core_mats: Dictionary = {}
 
 
@@ -2372,6 +2402,13 @@ func _dress_ramps() -> void:
 		var my: float = lerpf(float(r[4]), float(r[5]), mid_t)
 		bulkhead("I_CORE", Vector3(x0 + 0.17, my + 2.4, mz), -90.0, "sodium")
 		power("I_CORE", Vector3(x0 + 0.8, my + 2.3, mz), 9.0, 1.2)
+		var tz: float = lerpf(z0, z1, 0.25)
+		var ty: float = lerpf(float(r[4]), float(r[5]), 0.25)
+		bulkhead("I_CORE", Vector3(x1 - 0.17, ty + 2.2, tz), 90.0, "sodium")
+		power("I_CORE", Vector3(x1 - 0.8, ty + 2.1, tz), 8.0, 1.0)
+		# unpowered: a lantern left halfway down, and the heart's violet climbing the ramp from the vault door
+		_hurricane(Vector3(x0 + 0.55, lerpf(float(r[4]), float(r[5]), 0.45) - 0.05, lerpf(z0, z1, 0.45)), 0.9)
+		lamp(Vector3((x0 + x1) * 0.5, float(r[5]) + 1.6, z1 - 1.2), Color(0.58, 0.2, 1.0), 0.9, 8.0, 0.1, 0.3, false, 1.4)
 		emergency(Vector3(x1 - 0.17, float(r[4]) + 2.4, z0 + 1.0), 90.0, 0.6, 7.0)
 	for rx: float in [44.05, 44.95]:
 		Props.strut(dress, Vector3(rx, DY + 0.06, 82.2), Vector3(rx, CY + 0.06, 100.8), 0.06, "rust")
@@ -2402,12 +2439,15 @@ func _dress_readability() -> void:
 			[Vector3(40.17, y + 2.8, 66.0), -90.0], [Vector3(40.17, y + 2.8, 78.5), -90.0], [Vector3(83.83, y + 2.8, 66.0), 90.0]]:
 		emergency(e[0], float(e[1]), 0.9, 10.0)
 	# a broad, shadowless red fill between the turbines (the emergency lamps' bounce)
-	lamp(Vector3(56.0, y + 6.0, 75.5), Color(1.0, 0.4, 0.28), 0.7, 16.0, 0.0)
-	lamp(Vector3(72.0, y + 6.0, 64.5), Color(1.0, 0.4, 0.28), 0.7, 16.0, 0.0)
+	lamp(Vector3(56.0, y + 6.0, 75.5), Color(1.0, 0.42, 0.3), 1.1, 18.0, 0.0)
+	lamp(Vector3(72.0, y + 6.0, 64.5), Color(1.0, 0.42, 0.3), 1.1, 18.0, 0.0)
+	lamp(Vector3(46.0, y + 5.0, 66.0), Color(1.0, 0.42, 0.3), 0.8, 14.0, 0.0)
 	# hurricane lanterns left on the turbine plinths and the crates by the shift crews
 	for lp: Vector3 in [Vector3(53.5, y + 0.7, 67.35), Vector3(66.5, y + 0.7, 72.65), Vector3(71.5, y + 0.7, 67.35), Vector3(43.2, y + 0.9, 81.0),
-			Vector3(40.6, y + 1.0, 60.6)]:
+			Vector3(40.6, y + 1.0, 60.6), Vector3(47.6, y + 0.7, 72.7), Vector3(60.4, y + 0.7, 72.7)]:
 		_hurricane(lp, 1.1)
+	# the shift's lantern left on the floor by the Hauptschalter's dais (the switch reads in the dark)
+	_hurricane(Vector3(44.1, y, 62.9), 1.4)
 	# Chapel: emergency lamps on the long walls and the south wall
 	for e2: Array in [[Vector3(-15.83, y + 2.9, 75.0), -90.0], [Vector3(39.83, y + 2.9, 66.0), 90.0], [Vector3(39.83, y + 2.9, 84.0), 90.0],
 			[Vector3(2.0, y + 3.0, 89.64), 0.0]]:
@@ -2808,7 +2848,7 @@ func build_lights() -> void:
 	moon.set_script(load("res://gravelight/maps/map01_kaltenbrunn/moon_switch.gd"))
 	moon.name = "Moon"
 	moon.light_color = Color(0.55, 0.65, 0.95)
-	moon.light_energy = 0.65   # T-062: a firmer moon (shadows on the snow) over less flat fill
+	moon.light_energy = 0.8   # T-062: a firmer moon (shadows on the snow) over less flat fill
 	moon.light_volumetric_fog_energy = 0.5
 	moon.shadow_enabled = true
 	moon.directional_shadow_max_distance = 70.0

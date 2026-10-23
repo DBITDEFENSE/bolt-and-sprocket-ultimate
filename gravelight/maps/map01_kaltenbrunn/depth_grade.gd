@@ -9,14 +9,14 @@ extends WorldEnvironment
 
 @export_group("Surface")
 @export var surface_ambient: Color = Color(0.22, 0.27, 0.40)
-@export var surface_ambient_energy: float = 0.36
+@export var surface_ambient_energy: float = 0.3
 @export var surface_fog: Color = Color(0.085, 0.095, 0.13)
 @export var surface_fog_glow: Color = Color(0.008, 0.009, 0.014)
 @export var surface_exposure: float = 1.4
 @export var surface_saturation: float = 0.8
 @export_group("Depths")
 @export var depth_ambient: Color = Color(0.30, 0.28, 0.27)
-@export var depth_ambient_energy: float = 0.35
+@export var depth_ambient_energy: float = 0.62
 @export var depth_fog: Color = Color(0.05, 0.045, 0.04)
 @export var depth_fog_glow: Color = Color(0.004, 0.004, 0.004)
 @export var depth_exposure: float = 1.5
@@ -37,7 +37,7 @@ extends WorldEnvironment
 @export var core_top: float = -12.6
 @export var core_full: float = -16.0
 ## Flat ambient multiplier while SDFGI is on.
-@export var gi_ambient_scale: float = 0.5
+@export var gi_ambient_scale: float = 0.7
 ## How fast the grade follows the camera (1/s); a jump of more than 8 m snaps.
 @export var follow: float = 2.5
 
