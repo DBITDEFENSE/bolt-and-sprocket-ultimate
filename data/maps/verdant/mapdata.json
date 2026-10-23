@@ -1,0 +1,388 @@
+{
+  "_doc": "Baked map data (Update 04 section 1, DECISIONS T-065). Written by tools/bake_minimap.sh; do not edit by hand (edit data/maps/bake_config.json and re-bake). world_rect = [min x, min z, width, depth] in metres, every floor image covers it, north (-Z) up.",
+  "map_id": "verdant",
+  "game": "bs",
+  "style": "holo",
+  "display_name": "VERDANT SINK",
+  "world_rect": [
+    -120.0,
+    -146.0,
+    182.0,
+    182.0
+  ],
+  "px_per_m": 4.0,
+  "image_size": [
+    728,
+    728
+  ],
+  "baked_at": "2026-10-23T12:06:20",
+  "poi_signature": "f0d5ae45a1c58414424d560c8330688f",
+  "floors": [
+    {
+      "id": "surface",
+      "name": "Surface",
+      "y_min": -1000.0,
+      "y_max": 1000.0,
+      "base_y": 0.0,
+      "cut": 60.0,
+      "depth": 200.0,
+      "rects": [],
+      "image": "floor_0_surface.png"
+    }
+  ],
+  "zones": [
+    {
+      "id": "glow_marsh",
+      "name": "Glow Marsh (hub)",
+      "polys": [
+        [
+          [
+            -17.0,
+            -4.0
+          ],
+          [
+            17.0,
+            -4.0
+          ],
+          [
+            17.0,
+            24.0
+          ],
+          [
+            -17.0,
+            24.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "swamp_flats",
+      "name": "Swamp flats",
+      "polys": [
+        [
+          [
+            -40.0,
+            -55.0
+          ],
+          [
+            40.0,
+            -55.0
+          ],
+          [
+            40.0,
+            -5.0
+          ],
+          [
+            -40.0,
+            -5.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "union_hall",
+      "name": "Union Hall (Local 404)",
+      "polys": [
+        [
+          [
+            -45.0,
+            -65.0
+          ],
+          [
+            -19.0,
+            -65.0
+          ],
+          [
+            -19.0,
+            -45.0
+          ],
+          [
+            -45.0,
+            -45.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "root_cellar",
+      "name": "The Root Cellar (annex)",
+      "polys": [
+        [
+          [
+            -108.0,
+            -28.0
+          ],
+          [
+            -72.0,
+            -28.0
+          ],
+          [
+            -72.0,
+            4.0
+          ],
+          [
+            -108.0,
+            4.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "spore_groves",
+      "name": "Spore Groves",
+      "polys": [
+        [
+          [
+            14.0,
+            -73.0
+          ],
+          [
+            50.0,
+            -73.0
+          ],
+          [
+            50.0,
+            -37.0
+          ],
+          [
+            14.0,
+            -37.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "harvester",
+      "name": "Mega-Harvester HR-9",
+      "polys": [
+        [
+          [
+            -11.0,
+            -100.0
+          ],
+          [
+            11.0,
+            -100.0
+          ],
+          [
+            11.0,
+            -84.0
+          ],
+          [
+            -11.0,
+            -84.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "coolant_lagoon",
+      "name": "Coolant Lagoon",
+      "polys": [
+        [
+          [
+            -20.0,
+            -134.0
+          ],
+          [
+            20.0,
+            -134.0
+          ],
+          [
+            20.0,
+            -102.0
+          ],
+          [
+            -20.0,
+            -102.0
+          ]
+        ]
+      ]
+    }
+  ],
+  "pois": [
+    {
+      "id": "checkpoint:bay",
+      "type": "checkpoint",
+      "pos": [
+        -6.0,
+        -0.3,
+        -97.0
+      ],
+      "floor": 0,
+      "label": "Relay: Bay",
+      "price": 0,
+      "node_path": "",
+      "key": "bay"
+    },
+    {
+      "id": "checkpoint:cab",
+      "type": "checkpoint",
+      "pos": [
+        2.5,
+        8.5,
+        -86.0
+      ],
+      "floor": 0,
+      "label": "Relay: Cab",
+      "price": 0,
+      "node_path": "",
+      "key": "cab"
+    },
+    {
+      "id": "checkpoint:groves",
+      "type": "checkpoint",
+      "pos": [
+        18.0,
+        4.0,
+        -45.0
+      ],
+      "floor": 0,
+      "label": "Relay: Groves",
+      "price": 0,
+      "node_path": "",
+      "key": "groves"
+    },
+    {
+      "id": "checkpoint:hall",
+      "type": "checkpoint",
+      "pos": [
+        -23.0,
+        4.0,
+        -48.0
+      ],
+      "floor": 0,
+      "label": "Relay: Hall",
+      "price": 0,
+      "node_path": "",
+      "key": "hall"
+    },
+    {
+      "id": "checkpoint:pad",
+      "type": "checkpoint",
+      "pos": [
+        4.0,
+        0.6,
+        20.0
+      ],
+      "floor": 0,
+      "label": "Relay: Pad",
+      "price": 0,
+      "node_path": "",
+      "key": "pad"
+    },
+    {
+      "id": "exit:teleporter",
+      "type": "exit",
+      "pos": [
+        12.0,
+        0.6,
+        24.0
+      ],
+      "floor": 0,
+      "label": "Teleporter",
+      "price": 0,
+      "node_path": "",
+      "key": "teleporter"
+    },
+    {
+      "id": "gate:annex_gate",
+      "type": "gate",
+      "pos": [
+        -46.0,
+        1.3,
+        -12.0
+      ],
+      "floor": 0,
+      "label": "Annex Gate",
+      "price": 0,
+      "node_path": "",
+      "key": "annex_gate"
+    },
+    {
+      "id": "gate:lagoon_gate",
+      "type": "gate",
+      "pos": [
+        0.0,
+        1.6,
+        -102.0
+      ],
+      "floor": 0,
+      "label": "Lagoon Gate",
+      "price": 0,
+      "node_path": "",
+      "key": "lagoon_gate"
+    },
+    {
+      "id": "gate:vine_curtain",
+      "type": "gate",
+      "pos": [
+        -44.75,
+        5.5,
+        -61.0
+      ],
+      "floor": 0,
+      "label": "Vine Curtain",
+      "price": 0,
+      "node_path": "",
+      "key": "vine_curtain"
+    },
+    {
+      "id": "npc:cornelius",
+      "type": "npc",
+      "pos": [
+        -6.0,
+        -0.3,
+        12.0
+      ],
+      "floor": 0,
+      "label": "Shop Steward Cornelius",
+      "price": 0,
+      "node_path": "",
+      "key": "cornelius"
+    },
+    {
+      "id": "save:beacon",
+      "type": "save",
+      "pos": [
+        -4.0,
+        0.6,
+        20.0
+      ],
+      "floor": 0,
+      "label": "Save beacon",
+      "price": 0,
+      "node_path": "",
+      "key": "beacon"
+    },
+    {
+      "id": "ship:ship",
+      "type": "ship",
+      "pos": [
+        -7.5,
+        0.6,
+        19.5
+      ],
+      "floor": 0,
+      "label": "Your ship",
+      "price": 0,
+      "node_path": "",
+      "key": "ship"
+    },
+    {
+      "id": "vendor:kiosk",
+      "type": "vendor",
+      "pos": [
+        8.0,
+        0.6,
+        18.0
+      ],
+      "floor": 0,
+      "label": "Gadgetron Vendor",
+      "price": 0,
+      "node_path": "",
+      "key": "kiosk"
+    }
+  ],
+  "connectors": []
+}

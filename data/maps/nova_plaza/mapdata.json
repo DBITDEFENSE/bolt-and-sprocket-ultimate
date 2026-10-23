@@ -1,0 +1,512 @@
+{
+  "_doc": "Baked map data (Update 04 section 1, DECISIONS T-065). Written by tools/bake_minimap.sh; do not edit by hand (edit data/maps/bake_config.json and re-bake). world_rect = [min x, min z, width, depth] in metres, every floor image covers it, north (-Z) up.",
+  "map_id": "nova_plaza",
+  "game": "bs",
+  "style": "holo",
+  "display_name": "NOVA PLAZA",
+  "world_rect": [
+    -123.0,
+    -130.0,
+    191.0,
+    162.0
+  ],
+  "px_per_m": 4.0,
+  "image_size": [
+    764,
+    648
+  ],
+  "baked_at": "2026-10-23T12:06:10",
+  "poi_signature": "1ef737790ca3bff8bd09308c57aa0823",
+  "floors": [
+    {
+      "id": "surface",
+      "name": "Surface",
+      "y_min": -1000.0,
+      "y_max": 1000.0,
+      "base_y": 0.0,
+      "cut": 60.0,
+      "depth": 200.0,
+      "rects": [],
+      "image": "floor_0_surface.png"
+    }
+  ],
+  "zones": [
+    {
+      "id": "fountain_plaza",
+      "name": "Fountain Plaza (hub)",
+      "polys": [
+        [
+          [
+            -16.0,
+            -4.0
+          ],
+          [
+            16.0,
+            -4.0
+          ],
+          [
+            16.0,
+            20.0
+          ],
+          [
+            -16.0,
+            20.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "civic_center",
+      "name": "Civic Center",
+      "polys": [
+        [
+          [
+            -15.0,
+            -43.0
+          ],
+          [
+            15.0,
+            -43.0
+          ],
+          [
+            15.0,
+            -17.0
+          ],
+          [
+            -15.0,
+            -17.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "hoa_district",
+      "name": "HOA District",
+      "polys": [
+        [
+          [
+            -60.0,
+            -75.0
+          ],
+          [
+            -20.0,
+            -75.0
+          ],
+          [
+            -20.0,
+            -41.0
+          ],
+          [
+            -60.0,
+            -41.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "hoa_clubhouse",
+      "name": "HOA Clubhouse",
+      "polys": [
+        [
+          [
+            -36.0,
+            -74.0
+          ],
+          [
+            -24.0,
+            -74.0
+          ],
+          [
+            -24.0,
+            -66.0
+          ],
+          [
+            -36.0,
+            -66.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "underpass",
+      "name": "The Underpass",
+      "polys": [
+        [
+          [
+            -110.0,
+            -23.0
+          ],
+          [
+            -46.0,
+            -23.0
+          ],
+          [
+            -46.0,
+            -1.0
+          ],
+          [
+            -110.0,
+            -1.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "permit_office",
+      "name": "Permit Office (take-a-number hall)",
+      "polys": [
+        [
+          [
+            20.0,
+            -73.0
+          ],
+          [
+            56.0,
+            -73.0
+          ],
+          [
+            56.0,
+            -43.0
+          ],
+          [
+            20.0,
+            -43.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "records_hallway",
+      "name": "Records Hallway",
+      "polys": [
+        [
+          [
+            44.0,
+            -104.0
+          ],
+          [
+            52.0,
+            -104.0
+          ],
+          [
+            52.0,
+            -44.0
+          ],
+          [
+            44.0,
+            -44.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "transit_loop",
+      "name": "Transit Loop: Civic Center station",
+      "polys": [
+        [
+          [
+            -13.0,
+            -22.7
+          ],
+          [
+            -8.0,
+            -22.7
+          ],
+          [
+            -8.0,
+            -17.7
+          ],
+          [
+            -13.0,
+            -17.7
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "finetree_deck",
+      "name": "Transit Loop: FineTree deck",
+      "polys": [
+        [
+          [
+            -7.0,
+            -91.0
+          ],
+          [
+            7.0,
+            -91.0
+          ],
+          [
+            7.0,
+            -84.0
+          ],
+          [
+            -7.0,
+            -84.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "finetree_plaza",
+      "name": "FineTree Plaza (boss)",
+      "polys": [
+        [
+          [
+            -18.0,
+            -118.0
+          ],
+          [
+            18.0,
+            -118.0
+          ],
+          [
+            18.0,
+            -82.0
+          ],
+          [
+            -18.0,
+            -82.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "dead_train",
+      "name": "The dead train (secret)",
+      "polys": [
+        [
+          [
+            30.5,
+            -90.5
+          ],
+          [
+            33.5,
+            -90.5
+          ],
+          [
+            33.5,
+            -81.5
+          ],
+          [
+            30.5,
+            -81.5
+          ]
+        ]
+      ]
+    }
+  ],
+  "pois": [
+    {
+      "id": "checkpoint:civic",
+      "type": "checkpoint",
+      "pos": [
+        3.0,
+        4.5,
+        -20.0
+      ],
+      "floor": 0,
+      "label": "Relay: Civic",
+      "price": 0,
+      "node_path": "",
+      "key": "civic"
+    },
+    {
+      "id": "checkpoint:finetree",
+      "type": "checkpoint",
+      "pos": [
+        -4.5,
+        12.0,
+        -85.6
+      ],
+      "floor": 0,
+      "label": "Relay: Finetree",
+      "price": 0,
+      "node_path": "",
+      "key": "finetree"
+    },
+    {
+      "id": "checkpoint:hoa",
+      "type": "checkpoint",
+      "pos": [
+        -28.0,
+        6.0,
+        -43.5
+      ],
+      "floor": 0,
+      "label": "Relay: Hoa",
+      "price": 0,
+      "node_path": "",
+      "key": "hoa"
+    },
+    {
+      "id": "checkpoint:pad",
+      "type": "checkpoint",
+      "pos": [
+        4.0,
+        0.0,
+        20.0
+      ],
+      "floor": 0,
+      "label": "Relay: Pad",
+      "price": 0,
+      "node_path": "",
+      "key": "pad"
+    },
+    {
+      "id": "checkpoint:permit",
+      "type": "checkpoint",
+      "pos": [
+        32.0,
+        3.0,
+        -38.0
+      ],
+      "floor": 0,
+      "label": "Relay: Permit",
+      "price": 0,
+      "node_path": "",
+      "key": "permit"
+    },
+    {
+      "id": "checkpoint:underpass",
+      "type": "checkpoint",
+      "pos": [
+        -50.0,
+        0.0,
+        -12.0
+      ],
+      "floor": 0,
+      "label": "Relay: Underpass",
+      "price": 0,
+      "node_path": "",
+      "key": "underpass"
+    },
+    {
+      "id": "exit:teleporter",
+      "type": "exit",
+      "pos": [
+        12.0,
+        0.05,
+        20.0
+      ],
+      "floor": 0,
+      "label": "Teleporter",
+      "price": 0,
+      "node_path": "",
+      "key": "teleporter"
+    },
+    {
+      "id": "gate:finetree_gate",
+      "type": "gate",
+      "pos": [
+        0.0,
+        14.2,
+        -88.6
+      ],
+      "floor": 0,
+      "label": "Finetree Gate",
+      "price": 0,
+      "node_path": "",
+      "key": "finetree_gate"
+    },
+    {
+      "id": "gate:plaza_exit",
+      "type": "gate",
+      "pos": [
+        -12.2,
+        7.2,
+        -87.8
+      ],
+      "floor": 0,
+      "label": "Plaza Exit",
+      "price": 0,
+      "node_path": "",
+      "key": "plaza_exit"
+    },
+    {
+      "id": "gate:pump_hatch",
+      "type": "gate",
+      "pos": [
+        12.1,
+        1.2,
+        11.0
+      ],
+      "floor": 0,
+      "label": "Pump Hatch",
+      "price": 0,
+      "node_path": "",
+      "key": "pump_hatch"
+    },
+    {
+      "id": "gate:vault_cage",
+      "type": "gate",
+      "pos": [
+        -111.0,
+        10.0,
+        -11.1
+      ],
+      "floor": 0,
+      "label": "Vault Cage",
+      "price": 0,
+      "node_path": "",
+      "key": "vault_cage"
+    },
+    {
+      "id": "npc:squatter",
+      "type": "npc",
+      "pos": [
+        -6.0,
+        0.0,
+        12.3
+      ],
+      "floor": 0,
+      "label": "The Squatter",
+      "price": 0,
+      "node_path": "",
+      "key": "squatter"
+    },
+    {
+      "id": "save:beacon",
+      "type": "save",
+      "pos": [
+        -2.0,
+        0.0,
+        20.0
+      ],
+      "floor": 0,
+      "label": "Save beacon",
+      "price": 0,
+      "node_path": "",
+      "key": "beacon"
+    },
+    {
+      "id": "ship:ship",
+      "type": "ship",
+      "pos": [
+        -7.5,
+        0.0,
+        19.5
+      ],
+      "floor": 0,
+      "label": "Your ship",
+      "price": 0,
+      "node_path": "",
+      "key": "ship"
+    },
+    {
+      "id": "vendor:kiosk",
+      "type": "vendor",
+      "pos": [
+        8.0,
+        0.0,
+        16.0
+      ],
+      "floor": 0,
+      "label": "Gadgetron Vendor",
+      "price": 0,
+      "node_path": "",
+      "key": "kiosk"
+    }
+  ],
+  "connectors": []
+}

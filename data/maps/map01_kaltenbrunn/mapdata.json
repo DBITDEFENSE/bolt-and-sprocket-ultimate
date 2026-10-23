@@ -1,0 +1,1264 @@
+{
+  "_doc": "Baked map data (Update 04 section 1, DECISIONS T-065). Written by tools/bake_minimap.sh; do not edit by hand (edit data/maps/bake_config.json and re-bake). world_rect = [min x, min z, width, depth] in metres, every floor image covers it, north (-Z) up.",
+  "map_id": "map01_kaltenbrunn",
+  "game": "gravelight",
+  "style": "ink",
+  "display_name": "Kaltenbrunn",
+  "world_rect": [
+    -28.0,
+    -12.0,
+    142.0,
+    163.0
+  ],
+  "px_per_m": 8.0,
+  "image_size": [
+    1136,
+    1304
+  ],
+  "baked_at": "2026-10-23T12:19:23",
+  "poi_signature": "649d749297940e857574491370fa4699",
+  "floors": [
+    {
+      "id": "vault",
+      "name": "Core Vault (-3)",
+      "y_min": -40.0,
+      "y_max": -12.35,
+      "base_y": -18.0,
+      "cut": -12.6,
+      "rects": [
+        [
+          17.0,
+          82.0,
+          60.0,
+          57.0
+        ]
+      ],
+      "depth": 0.6,
+      "image": "floor_0_vault.png"
+    },
+    {
+      "id": "level_2",
+      "name": "Level -2",
+      "y_min": -12.35,
+      "y_max": -5.0,
+      "base_y": -12.0,
+      "cut": -10.4,
+      "rects": [],
+      "depth": 0.6,
+      "image": "floor_1_level_2.png"
+    },
+    {
+      "id": "surface",
+      "name": "Surface",
+      "y_min": -5.0,
+      "y_max": 3.0,
+      "base_y": 0.0,
+      "cut": 1.6,
+      "mask_zones": [
+        "A_MINEHEAD",
+        "B_RAILYARD",
+        "C_ADMIN",
+        "D_BARRACKS",
+        "E_LIFT",
+        "M_STAIRS"
+      ],
+      "mask_grow": 4.0,
+      "rects": [],
+      "depth": 0.6,
+      "image": "floor_2_surface.png"
+    },
+    {
+      "id": "admin",
+      "name": "Admin upper floor",
+      "y_min": 3.0,
+      "y_max": 40.0,
+      "base_y": 3.8,
+      "cut": 5.4,
+      "rects": [
+        [
+          -16.0,
+          8.0,
+          16.0,
+          24.0
+        ]
+      ],
+      "depth": 0.6,
+      "image": "floor_3_admin.png"
+    }
+  ],
+  "zones": [
+    {
+      "id": "A_MINEHEAD",
+      "name": "Minehead Yard",
+      "y_min": -1.5,
+      "y_max": 9.0,
+      "polys": [
+        [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            40.0,
+            0.0
+          ],
+          [
+            40.0,
+            32.0
+          ],
+          [
+            0.0,
+            32.0
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          9.0
+        ]
+      ]
+    },
+    {
+      "id": "B_RAILYARD",
+      "name": "Rail Yard",
+      "y_min": -1.5,
+      "y_max": 9.0,
+      "polys": [
+        [
+          [
+            40.0,
+            14.0
+          ],
+          [
+            60.0,
+            14.0
+          ],
+          [
+            60.0,
+            48.0
+          ],
+          [
+            40.0,
+            48.0
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          9.0
+        ]
+      ]
+    },
+    {
+      "id": "C_ADMIN",
+      "name": "Administration Block",
+      "y_min": -1.5,
+      "y_max": 9.0,
+      "polys": [
+        [
+          [
+            -16.0,
+            8.0
+          ],
+          [
+            0.0,
+            8.0
+          ],
+          [
+            0.0,
+            32.0
+          ],
+          [
+            -16.0,
+            32.0
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          9.0
+        ]
+      ]
+    },
+    {
+      "id": "D_BARRACKS",
+      "name": "Barracks & Mess Hall",
+      "y_min": -1.5,
+      "y_max": 9.0,
+      "polys": [
+        [
+          [
+            -16.0,
+            32.0
+          ],
+          [
+            40.0,
+            32.0
+          ],
+          [
+            40.0,
+            46.0
+          ],
+          [
+            -16.0,
+            46.0
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          9.0
+        ]
+      ]
+    },
+    {
+      "id": "E_LIFT",
+      "name": "Lift Shaft",
+      "y_min": -13.5,
+      "y_max": 9.0,
+      "polys": [
+        [
+          [
+            20.0,
+            46.0
+          ],
+          [
+            30.0,
+            46.0
+          ],
+          [
+            30.0,
+            60.0
+          ],
+          [
+            20.0,
+            60.0
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -13.5,
+          9.0
+        ]
+      ]
+    },
+    {
+      "id": "M_STAIRS",
+      "name": "Maintenance Stairs",
+      "y_min": -13.5,
+      "y_max": 5.0,
+      "polys": [
+        [
+          [
+            -16.0,
+            46.0
+          ],
+          [
+            -4.0,
+            46.0
+          ],
+          [
+            -4.0,
+            60.0
+          ],
+          [
+            -16.0,
+            60.0
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -13.5,
+          5.0
+        ]
+      ]
+    },
+    {
+      "id": "F_CHAPEL",
+      "name": "Salt Chapel",
+      "y_min": -13.5,
+      "y_max": 3.0,
+      "polys": [
+        [
+          [
+            -16.0,
+            60.0
+          ],
+          [
+            40.0,
+            60.0
+          ],
+          [
+            40.0,
+            90.0
+          ],
+          [
+            -16.0,
+            90.0
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -13.5,
+          3.0
+        ]
+      ]
+    },
+    {
+      "id": "G_GENERATOR",
+      "name": "Generator Hall",
+      "y_min": -13.5,
+      "y_max": -1.0,
+      "polys": [
+        [
+          [
+            40.0,
+            60.0
+          ],
+          [
+            84.0,
+            60.0
+          ],
+          [
+            84.0,
+            82.0
+          ],
+          [
+            40.0,
+            82.0
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -13.5,
+          -1.0
+        ]
+      ]
+    },
+    {
+      "id": "H_LAB",
+      "name": "Laboratory Wing",
+      "y_min": -13.5,
+      "y_max": -7.0,
+      "polys": [
+        [
+          [
+            52.0,
+            82.0
+          ],
+          [
+            102.0,
+            82.0
+          ],
+          [
+            102.0,
+            98.0
+          ],
+          [
+            52.0,
+            98.0
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -13.5,
+          -7.0
+        ]
+      ]
+    },
+    {
+      "id": "I_CORE",
+      "name": "Core Vault",
+      "y_min": -19.5,
+      "y_max": -12.3999996185303,
+      "polys": [
+        [
+          [
+            17.0,
+            82.0
+          ],
+          [
+            77.0,
+            82.0
+          ],
+          [
+            77.0,
+            139.0
+          ],
+          [
+            17.0,
+            139.0
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -19.5,
+          -12.4
+        ]
+      ]
+    }
+  ],
+  "pois": [
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Barracks",
+      "type": "ammo_box",
+      "pos": [
+        -1.6,
+        0.0,
+        32.48
+      ],
+      "floor": 2,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Barracks",
+      "key": "Gameplay/AmmoBox_Barracks"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_LabWing",
+      "type": "ammo_box",
+      "pos": [
+        83.5,
+        -12.0,
+        95.0
+      ],
+      "floor": 1,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_LabWing",
+      "key": "Gameplay/AmmoBox_LabWing"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_RailYard",
+      "type": "ammo_box",
+      "pos": [
+        40.48,
+        0.0,
+        32.5
+      ],
+      "floor": 2,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_RailYard",
+      "key": "Gameplay/AmmoBox_RailYard"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_SaltChapel",
+      "type": "ammo_box",
+      "pos": [
+        39.43,
+        -12.0,
+        78.5
+      ],
+      "floor": 1,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_SaltChapel",
+      "key": "Gameplay/AmmoBox_SaltChapel"
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_Boxcar",
+      "type": "crate_spot",
+      "pos": [
+        54.6,
+        0.0,
+        24.0
+      ],
+      "floor": 2,
+      "label": "Requisition Crate (Boxcar)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_Boxcar",
+      "key": "Gameplay/Crate_Boxcar",
+      "data": {
+        "spot_index": 0,
+        "can_start": true
+      }
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_Fasbender",
+      "type": "crate_spot",
+      "pos": [
+        76.0,
+        -12.0,
+        83.4
+      ],
+      "floor": 1,
+      "label": "Requisition Crate (Fasbender)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_Fasbender",
+      "key": "Gameplay/Crate_Fasbender",
+      "data": {
+        "spot_index": 4,
+        "can_start": false
+      }
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_GenCatwalk",
+      "type": "crate_spot",
+      "pos": [
+        82.6,
+        -12.0,
+        78.0
+      ],
+      "floor": 1,
+      "label": "Requisition Crate (GenCatwalk)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_GenCatwalk",
+      "key": "Gameplay/Crate_GenCatwalk",
+      "data": {
+        "spot_index": 3,
+        "can_start": false
+      }
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_Mess",
+      "type": "crate_spot",
+      "pos": [
+        34.0,
+        0.0,
+        41.0
+      ],
+      "floor": 2,
+      "label": "Requisition Crate (Mess)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_Mess",
+      "key": "Gameplay/Crate_Mess",
+      "data": {
+        "spot_index": 1,
+        "can_start": true
+      }
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_SideAltar",
+      "type": "crate_spot",
+      "pos": [
+        38.2,
+        -12.0,
+        82.0
+      ],
+      "floor": 1,
+      "label": "Requisition Crate (SideAltar)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_SideAltar",
+      "key": "Gameplay/Crate_SideAltar",
+      "data": {
+        "spot_index": 2,
+        "can_start": false
+      }
+    },
+    {
+      "id": "crucible:Gameplay/Crucible",
+      "type": "crucible",
+      "pos": [
+        46.2,
+        -18.0,
+        124.0
+      ],
+      "floor": 0,
+      "label": "The Crucible",
+      "price": 5000,
+      "node_path": "Gameplay/Crucible",
+      "key": "Gameplay/Crucible",
+      "data": {
+        "needs_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/BlastDoor_F",
+      "type": "door",
+      "pos": [
+        20.0,
+        -12.0,
+        90.0
+      ],
+      "floor": 1,
+      "label": "Blast door",
+      "price": 0,
+      "node_path": "Gameplay/BlastDoor_F",
+      "key": "Gameplay/BlastDoor_F",
+      "data": {
+        "flag": "core_vault_open",
+        "locked": true
+      }
+    },
+    {
+      "id": "door:Gameplay/BlastDoor_G",
+      "type": "door",
+      "pos": [
+        44.5,
+        -12.0,
+        82.0
+      ],
+      "floor": 1,
+      "label": "Blast door",
+      "price": 0,
+      "node_path": "Gameplay/BlastDoor_G",
+      "key": "Gameplay/BlastDoor_G",
+      "data": {
+        "flag": "core_vault_open",
+        "locked": true
+      }
+    },
+    {
+      "id": "door:Gameplay/BlastDoor_H",
+      "type": "door",
+      "pos": [
+        74.0,
+        -12.0,
+        98.0
+      ],
+      "floor": 1,
+      "label": "Blast door",
+      "price": 0,
+      "node_path": "Gameplay/BlastDoor_H",
+      "key": "Gameplay/BlastDoor_H",
+      "data": {
+        "flag": "core_vault_open",
+        "locked": true
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Admin",
+      "type": "door",
+      "pos": [
+        0.0,
+        0.0,
+        25.0
+      ],
+      "floor": 2,
+      "label": "Administration",
+      "price": 1000,
+      "node_path": "Gameplay/Door_Admin",
+      "key": "Gameplay/Door_Admin",
+      "data": {
+        "door_id": "door_a_c",
+        "opens_zone": "C_ADMIN",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Barracks_B",
+      "type": "door",
+      "pos": [
+        40.0,
+        0.0,
+        40.0
+      ],
+      "floor": 2,
+      "label": "Barracks",
+      "price": 1250,
+      "node_path": "Gameplay/Door_Barracks_B",
+      "key": "Gameplay/Door_Barracks_B",
+      "data": {
+        "door_id": "door_barracks",
+        "opens_zone": "D_BARRACKS",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Barracks_C",
+      "type": "door",
+      "pos": [
+        -8.0,
+        0.0,
+        32.0
+      ],
+      "floor": 2,
+      "label": "Barracks",
+      "price": 1250,
+      "node_path": "Gameplay/Door_Barracks_C",
+      "key": "Gameplay/Door_Barracks_C",
+      "data": {
+        "door_id": "door_barracks",
+        "opens_zone": "D_BARRACKS",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Generator",
+      "type": "door",
+      "pos": [
+        40.0,
+        -12.0,
+        72.0
+      ],
+      "floor": 1,
+      "label": "Generator Hall",
+      "price": 1500,
+      "node_path": "Gameplay/Door_Generator",
+      "key": "Gameplay/Door_Generator",
+      "data": {
+        "door_id": "door_gen",
+        "opens_zone": "G_GENERATOR",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Lab",
+      "type": "door",
+      "pos": [
+        60.0,
+        -12.0,
+        82.0
+      ],
+      "floor": 1,
+      "label": "Laboratory Wing",
+      "price": 2000,
+      "node_path": "Gameplay/Door_Lab",
+      "key": "Gameplay/Door_Lab",
+      "data": {
+        "door_id": "door_lab",
+        "opens_zone": "H_LAB",
+        "requires_power": true
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Lift",
+      "type": "door",
+      "pos": [
+        25.0,
+        0.0,
+        46.0
+      ],
+      "floor": 2,
+      "label": "Lift",
+      "price": 1250,
+      "node_path": "Gameplay/Door_Lift",
+      "key": "Gameplay/Door_Lift",
+      "data": {
+        "door_id": "door_lift",
+        "opens_zone": "E_LIFT",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_RailYard",
+      "type": "door",
+      "pos": [
+        40.0,
+        0.0,
+        25.0
+      ],
+      "floor": 2,
+      "label": "Rail Yard",
+      "price": 750,
+      "node_path": "Gameplay/Door_RailYard",
+      "key": "Gameplay/Door_RailYard",
+      "data": {
+        "door_id": "door_a_b",
+        "opens_zone": "B_RAILYARD",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Stairs",
+      "type": "door",
+      "pos": [
+        -10.0,
+        0.0,
+        46.0
+      ],
+      "floor": 2,
+      "label": "Maintenance Stairs",
+      "price": 1500,
+      "node_path": "Gameplay/Door_Stairs",
+      "key": "Gameplay/Door_Stairs",
+      "data": {
+        "door_id": "door_stairs",
+        "opens_zone": "M_STAIRS",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "lift:Gameplay/Lift",
+      "type": "lift",
+      "pos": [
+        25.0,
+        0.0,
+        51.0
+      ],
+      "floor": 2,
+      "label": "Lift",
+      "price": 0,
+      "node_path": "Gameplay/Lift",
+      "key": "Gameplay/Lift"
+    },
+    {
+      "id": "perk:Gameplay/Perk_blastproof_bock",
+      "type": "perk",
+      "pos": [
+        64.0,
+        -12.0,
+        97.2
+      ],
+      "floor": 1,
+      "label": "Blastproof Bock",
+      "price": 2000,
+      "node_path": "Gameplay/Perk_blastproof_bock",
+      "key": "Gameplay/Perk_blastproof_bock",
+      "data": {
+        "perk_id": "blastproof_bock"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_hawkeye_brandy",
+      "type": "perk",
+      "pos": [
+        55.0,
+        -12.0,
+        88.8
+      ],
+      "floor": 1,
+      "label": "Hawkeye Brandy",
+      "price": 1500,
+      "node_path": "Gameplay/Perk_hawkeye_brandy",
+      "key": "Gameplay/Perk_hawkeye_brandy",
+      "data": {
+        "perk_id": "hawkeye_brandy"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_ironhide_stout",
+      "type": "perk",
+      "pos": [
+        24.0,
+        0.0,
+        32.8
+      ],
+      "floor": 2,
+      "label": "Ironhide Stout",
+      "price": 2500,
+      "node_path": "Gameplay/Perk_ironhide_stout",
+      "key": "Gameplay/Perk_ironhide_stout",
+      "data": {
+        "perk_id": "ironhide_stout"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_marathon_malt",
+      "type": "perk",
+      "pos": [
+        2.0,
+        -12.0,
+        60.8
+      ],
+      "floor": 1,
+      "label": "Marathon Malt",
+      "price": 2000,
+      "node_path": "Gameplay/Perk_marathon_malt",
+      "key": "Gameplay/Perk_marathon_malt",
+      "data": {
+        "perk_id": "marathon_malt"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_overclock_cordial",
+      "type": "perk",
+      "pos": [
+        60.25,
+        -12.0,
+        60.45
+      ],
+      "floor": 1,
+      "label": "Overclock Cordial",
+      "price": 2500,
+      "node_path": "Gameplay/Perk_overclock_cordial",
+      "key": "Gameplay/Perk_overclock_cordial",
+      "data": {
+        "perk_id": "overclock_cordial"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_packmule_porter",
+      "type": "perk",
+      "pos": [
+        96.0,
+        -12.0,
+        88.8
+      ],
+      "floor": 1,
+      "label": "Packmule Porter",
+      "price": 4000,
+      "node_path": "Gameplay/Perk_packmule_porter",
+      "key": "Gameplay/Perk_packmule_porter",
+      "data": {
+        "perk_id": "packmule_porter"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_second_wind",
+      "type": "perk",
+      "pos": [
+        -15.2,
+        0.0,
+        14.0
+      ],
+      "floor": 2,
+      "label": "Second Wind Schnapps",
+      "price": 500,
+      "node_path": "Gameplay/Perk_second_wind",
+      "key": "Gameplay/Perk_second_wind",
+      "data": {
+        "perk_id": "second_wind"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_trigger_tonic",
+      "type": "perk",
+      "pos": [
+        68.0,
+        -12.0,
+        81.2
+      ],
+      "floor": 1,
+      "label": "Trigger Tonic",
+      "price": 3000,
+      "node_path": "Gameplay/Perk_trigger_tonic",
+      "key": "Gameplay/Perk_trigger_tonic",
+      "data": {
+        "perk_id": "trigger_tonic"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_twin_barrel",
+      "type": "perk",
+      "pos": [
+        34.0,
+        -12.0,
+        60.8
+      ],
+      "floor": 1,
+      "label": "Twin Barrel Bitters",
+      "price": 2000,
+      "node_path": "Gameplay/Perk_twin_barrel",
+      "key": "Gameplay/Perk_twin_barrel",
+      "data": {
+        "perk_id": "twin_barrel"
+      }
+    },
+    {
+      "id": "power_switch:Gameplay/Hauptschalter",
+      "type": "power_switch",
+      "pos": [
+        46.5,
+        -11.7,
+        61.2
+      ],
+      "floor": 1,
+      "label": "Power: the Hauptschalter",
+      "price": 0,
+      "node_path": "Gameplay/Hauptschalter",
+      "key": "Gameplay/Hauptschalter"
+    },
+    {
+      "id": "trap:Gameplay/Lever_Chandelier",
+      "type": "trap",
+      "pos": [
+        14.5,
+        -12.0,
+        61.8
+      ],
+      "floor": 1,
+      "label": "Chandelier Drop",
+      "price": 1000,
+      "node_path": "Gameplay/Lever_Chandelier",
+      "key": "Gameplay/Lever_Chandelier",
+      "data": {
+        "trap_id": "chandelier",
+        "kind": "chandelier"
+      }
+    },
+    {
+      "id": "trap:Gameplay/Lever_LiveWire",
+      "type": "trap",
+      "pos": [
+        73.5,
+        -12.0,
+        76.5
+      ],
+      "floor": 1,
+      "label": "Live Wire Fence",
+      "price": 1000,
+      "node_path": "Gameplay/Lever_LiveWire",
+      "key": "Gameplay/Lever_LiveWire",
+      "data": {
+        "trap_id": "live_wire",
+        "kind": "live_wire"
+      }
+    },
+    {
+      "id": "trap:Gameplay/Lever_OreCart",
+      "type": "trap",
+      "pos": [
+        41.0,
+        0.0,
+        46.6
+      ],
+      "floor": 2,
+      "label": "Runaway Ore Cart",
+      "price": 1000,
+      "node_path": "Gameplay/Lever_OreCart",
+      "key": "Gameplay/Lever_OreCart",
+      "data": {
+        "trap_id": "ore_cart",
+        "kind": "ore_cart"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_bar",
+      "type": "wall_buy",
+      "pos": [
+        -15.83,
+        -10.5,
+        78.0
+      ],
+      "floor": 1,
+      "label": "BAR",
+      "price": 1800,
+      "node_path": "Gameplay/WallBuy_bar",
+      "key": "Gameplay/WallBuy_bar",
+      "data": {
+        "weapon_id": "bar"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_etool",
+      "type": "wall_buy",
+      "pos": [
+        51.0,
+        -10.5,
+        81.83
+      ],
+      "floor": 1,
+      "label": "Sharpened E-Tool",
+      "price": 3000,
+      "node_path": "Gameplay/WallBuy_etool",
+      "key": "Gameplay/WallBuy_etool",
+      "data": {
+        "weapon_id": "etool"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_frag",
+      "type": "wall_buy",
+      "pos": [
+        59.83,
+        1.5,
+        42.0
+      ],
+      "floor": 2,
+      "label": "Mk 2 Frag",
+      "price": 250,
+      "node_path": "Gameplay/WallBuy_frag",
+      "key": "Gameplay/WallBuy_frag",
+      "data": {
+        "weapon_id": "frag"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_gewehr43",
+      "type": "wall_buy",
+      "pos": [
+        -12.0,
+        1.5,
+        8.17
+      ],
+      "floor": 2,
+      "label": "Gewehr 43",
+      "price": 900,
+      "node_path": "Gameplay/WallBuy_gewehr43",
+      "key": "Gameplay/WallBuy_gewehr43",
+      "data": {
+        "weapon_id": "gewehr43"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_kar98k",
+      "type": "wall_buy",
+      "pos": [
+        8.0,
+        1.5,
+        10.02
+      ],
+      "floor": 2,
+      "label": "Kar98k",
+      "price": 200,
+      "node_path": "Gameplay/WallBuy_kar98k",
+      "key": "Gameplay/WallBuy_kar98k",
+      "data": {
+        "weapon_id": "kar98k"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_m1_carbine",
+      "type": "wall_buy",
+      "pos": [
+        33.0,
+        1.5,
+        10.02
+      ],
+      "floor": 2,
+      "label": "M1 Carbine",
+      "price": 600,
+      "node_path": "Gameplay/WallBuy_m1_carbine",
+      "key": "Gameplay/WallBuy_m1_carbine",
+      "data": {
+        "weapon_id": "m1_carbine"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_mp40",
+      "type": "wall_buy",
+      "pos": [
+        59.83,
+        1.5,
+        36.0
+      ],
+      "floor": 2,
+      "label": "MP40",
+      "price": 1000,
+      "node_path": "Gameplay/WallBuy_mp40",
+      "key": "Gameplay/WallBuy_mp40",
+      "data": {
+        "weapon_id": "mp40"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_stg44",
+      "type": "wall_buy",
+      "pos": [
+        56.0,
+        -10.5,
+        81.83
+      ],
+      "floor": 1,
+      "label": "STG-44",
+      "price": 1200,
+      "node_path": "Gameplay/WallBuy_stg44",
+      "key": "Gameplay/WallBuy_stg44",
+      "data": {
+        "weapon_id": "stg44"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_trench_gun",
+      "type": "wall_buy",
+      "pos": [
+        -4.0,
+        1.5,
+        32.17
+      ],
+      "floor": 2,
+      "label": "Trench Gun",
+      "price": 1500,
+      "node_path": "Gameplay/WallBuy_trench_gun",
+      "key": "Gameplay/WallBuy_trench_gun",
+      "data": {
+        "weapon_id": "trench_gun"
+      }
+    },
+    {
+      "id": "workbench:Gameplay/Workbench",
+      "type": "workbench",
+      "pos": [
+        41.65,
+        -12.0,
+        62.0
+      ],
+      "floor": 1,
+      "label": "Workbench (Totenglocke)",
+      "price": 0,
+      "node_path": "Gameplay/Workbench",
+      "key": "Gameplay/Workbench",
+      "data": {
+        "buildable_id": "totenglocke"
+      }
+    }
+  ],
+  "connectors": [
+    {
+      "kind": "stairs",
+      "a": [
+        -13.7,
+        -0.18,
+        24.45
+      ],
+      "b": [
+        -13.7,
+        3.8,
+        24.45
+      ],
+      "floor_a": 2,
+      "floor_b": 3
+    },
+    {
+      "kind": "stairs",
+      "a": [
+        20.0,
+        -18.18,
+        95.45
+      ],
+      "b": [
+        20.0,
+        -12.0,
+        95.45
+      ],
+      "floor_a": 0,
+      "floor_b": 1
+    },
+    {
+      "kind": "stairs",
+      "a": [
+        44.5,
+        -18.19,
+        91.47
+      ],
+      "b": [
+        44.5,
+        -12.0,
+        91.47
+      ],
+      "floor_a": 0,
+      "floor_b": 1
+    },
+    {
+      "kind": "stairs",
+      "a": [
+        74.0,
+        -18.18,
+        104.96
+      ],
+      "b": [
+        74.0,
+        -12.0,
+        104.96
+      ],
+      "floor_a": 0,
+      "floor_b": 1
+    },
+    {
+      "kind": "lift",
+      "a": [
+        25.0,
+        -12.0,
+        51.0
+      ],
+      "b": [
+        25.0,
+        0.0,
+        51.0
+      ],
+      "floor_a": 1,
+      "floor_b": 2
+    }
+  ]
+}

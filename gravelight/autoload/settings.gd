@@ -48,6 +48,17 @@ var values: Dictionary = {
 	"homage_bosses": true,         # the homage bosses (HB1: the Cousins on Map 0 round 10); Off = those rounds play normally
 	"homage_names": "real",        # real / world: real first names on the title cards, bars and subtitles, or the in-world names only
 	"objective_spoilers": "hints", # hidden / hints / full: the pause OBJECTIVES tab (Update 04 section 4, ObjectiveLog)
+	"classic_hud": false,          # Update 04 section 2: true = no minimap (the v1 classic HUD)
+	"minimap_rotate": true,        # the minimap turns with the player (false = north up)
+	"minimap_zoom": 1,             # 0..2 (data/maps/minimap.json view_radius_m); the minimap_zoom key cycles it
+	"minimap_size": 1.0,           # x the 250 px diameter
+	"minimap_opacity": 0.92,
+	"minimap_position": "tl",      # tl / tr
+	"minimap_icon_scale": 1.0,
+	"minimap_shape": "circle",     # circle / square (rounded)
+	"minimap_cb_shapes": false,    # colourblind-safe: letters on the buyable shapes too
+	"minimap_zombies": "firing",   # off / firing (shots reveal nearby zombies for 1 s) / always (nearby zombies)
+	"minimap_fog": "visit",        # visit (areas reveal as you go) / always (the whole map)
 
 }
 ## User binding overrides: action -> {"kb": spec, "pad": spec}. A spec is a plain Dictionary (see event_to_spec).

@@ -1,0 +1,20 @@
+{
+  "_doc": "Minimap / map-state tuning (Update 04 section 2, DECISIONS T-065). discovery: a buyable's icon appears once the local player has seen it in person (within range_m, inside fov_deg of the view, nothing in the way; a ray hit within hit_slack_m of the POI counts, it is usually the machine itself); checks_per_frame POIs are tested per frame, round robin. discover_types: per game, the POI types that need that (the rest show when their area is revealed). fog: the map reveals in cell_m cells within reveal_radius_m of the local player on their floor. zombies: a shot that is not suppressed reveals zombies within reveal_radius_m of the shooter for reveal_seconds; 'Always' shows those within always_radius_m of the player; zombies more than floor_tolerance_m above/below the player's floor height are left out. view_radius_m: the three zoom levels (metres from the centre to the rim). size_px: the minimap's diameter at size 1.0 (1920x1080 canvas). icons: per style, the colours of the icon kinds.",
+  "discovery": {"range_m": 16.0, "fov_deg": 80.0, "checks_per_frame": 3, "hit_slack_m": 1.6},
+  "discover_types": {
+    "gravelight": ["perk", "wall_buy", "ammo_box", "crate_spot", "crucible", "workbench", "trap", "power_switch"],
+    "bs": []
+  },
+  "fog": {"cell_m": 1.0, "reveal_radius_m": 9.0, "update_hz": 5.0},
+  "zombies": {"reveal_radius_m": 25.0, "reveal_seconds": 1.0, "always_radius_m": 24.0, "floor_tolerance_m": 2.6},
+  "objectives": {"refresh_s": 1.0},
+  "view_radius_m": [16.0, 26.0, 42.0],
+  "size_px": 250.0,
+  "margin_px": [26.0, 24.0],
+  "blink_hz": 2.2,
+  "icons": {
+    "ink": {"door": "#5b3a1e", "door_open": "#7a6a4f", "perk": "#9e1b17", "wall_buy": "#2a2118", "ammo_box": "#4b5320", "crate_spot": "#7a4a12", "crucible": "#6a2a8a", "workbench": "#3c4a5a", "trap": "#b04a10", "power_switch": "#b08a10", "lift": "#2a2118", "objective": "#7d3fc9", "powerup": "#e0a400", "boss": "#9e1b17", "zombie": "#b3201b", "marker": "#1f5fa8", "connector": "#2a2118", "player": "#9e1b17"},
+    "holo": {"door": "#ff9a3c", "door_open": "#7fa0b0", "vendor": "#ffd23f", "save": "#7dff9a", "checkpoint": "#4fe6ff", "exit": "#ff4d9d", "npc": "#ffcf4d", "ship": "#ffffff", "gate": "#ff9a3c", "lift": "#4fe6ff", "objective": "#ff4d9d", "powerup": "#ffd23f", "boss": "#ff5d5d", "zombie": "#ff5d5d", "marker": "#ffd23f", "connector": "#4fe6ff", "player": "#ffd23f"},
+    "blueprint": {"door": "#e2231a", "door_open": "#9fb6d8", "perk": "#ffd23f", "wall_buy": "#ffffff", "ammo_box": "#bfe3ff", "crate_spot": "#ffd23f", "crucible": "#ff8ac2", "workbench": "#ffffff", "trap": "#ff9a3c", "power_switch": "#ffd23f", "lift": "#ffffff", "objective": "#ff8ac2", "powerup": "#ffd23f", "boss": "#e2231a", "zombie": "#e2231a", "marker": "#ffd23f", "connector": "#ffffff", "player": "#e2231a"}
+  }
+}

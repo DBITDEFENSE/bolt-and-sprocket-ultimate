@@ -28,6 +28,7 @@ var _show_zombies: bool = false
 var _denied_t: float = 0.0
 var _stamp_font: SystemFont
 var _type_font: SystemFont
+var _minimap: Minimap   # Update 04 section 2 (T-065): top-left, the zone stamped under it
 
 
 func _init() -> void:
@@ -69,6 +70,9 @@ func _ready() -> void:
 	_vignette.texture = gt
 	_vignette.modulate.a = 0.0
 	root.add_child(_vignette)
+	_minimap = Minimap.new()
+	_minimap.game = "gravelight"
+	root.add_child(_minimap)
 	# round stamp (bottom-left)
 	_stamp_panel = PanelContainer.new()
 	var sb: StyleBoxFlat = StyleBoxFlat.new()
@@ -230,6 +234,7 @@ func _process(delta: float) -> void:
 	if GameState.god_mode:
 		lines.append("GOD MODE")
 	_debug_label.text = "\n".join(lines)
+	_debug_label.position = Vector2(16, 12) if Minimap.layout_bottom <= 0.0 else Vector2(16, Minimap.layout_bottom + 10.0)   # under the minimap
 
 
 func show_banner(text: String, hold: float = 3.0) -> void:

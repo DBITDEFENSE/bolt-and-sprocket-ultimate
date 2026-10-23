@@ -76,6 +76,7 @@ func _process(delta: float) -> void:
 	if not enabled or squad == null:
 		return
 	_panel.visible = panel_on
+	_panel_label.position.x = 16.0 if Minimap.layout_rect.size.x <= 0.0 or Minimap.layout_rect.position.x > 400.0 else Minimap.layout_rect.end.x + 16.0   # beside the minimap
 	_t -= delta
 	_draw_lines()
 	if _t > 0.0:

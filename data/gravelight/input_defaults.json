@@ -107,5 +107,9 @@
   "bot_command": {
     "key": "T",
     "pad": "DPAD_DOWN"
+  },
+  "minimap_zoom": {
+    "key": "N",
+    "pad": "DPAD_LEFT"
   }
 }

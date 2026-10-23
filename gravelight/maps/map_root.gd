@@ -55,6 +55,7 @@ func _ready() -> void:
 		director.configure_navigation(nav_zone_bits, nav_always_bits, zone_adjacency)
 	ClimbLink.spawn_all(self, map_id, nav_zone_bits)   # authored climb volumes from the map's json (MZ, T-041)
 	_spawn_players()
+	MapState.attach(self, map_id)   # what the minimap / pause map know this match (Update 04, T-065)
 	hud = Hud.new()
 	add_child(hud)
 	hud.setup(player)

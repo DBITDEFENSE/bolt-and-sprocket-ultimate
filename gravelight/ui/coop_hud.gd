@@ -101,6 +101,7 @@ func _process(_delta: float) -> void:
 	if s == null:
 		return
 	visible = GameState.phase != GameState.Phase.MENU
+	_list.position.y = maxf(300.0, Minimap.layout_bottom + 50.0)   # clear of the minimap (Update 04, T-065)
 	_update_list(s)
 	_update_center(s)
 	_markers.session = s
