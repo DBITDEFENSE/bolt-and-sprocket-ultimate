@@ -70,6 +70,9 @@ var objectives_done: int = 0
 var planner: BotPlanner = null
 ## Its easter-egg work (Update 04 section 5, T-067; BotEE, given by the squad's BotEEHub): the utility action ee_task.
 var ee: BotEE = null
+## Its map-mark order (Update 04 section 3, T-069; BotMarkTask, given by the squad's BotMarkOrders): the utility
+## action mark_order.
+var mark: BotMarkTask = null
 var bonus_perk: StringName = &""
 var bonus_said: bool = false
 ## The legacy squad order (BotConfig.COMMANDS) this bot follows; `order_id()` is the full one.
@@ -395,6 +398,8 @@ func _think() -> void:
 	_read_claims(now)
 	if ee != null:
 		ee.tick_think(now)
+	if mark != null:
+		mark.tick_think(now)
 	if player.remote_body != null:
 		var cw: WeaponInstance = aim.cur()
 		var shown: StringName = cw.id if cw != null else &""
@@ -518,6 +523,7 @@ func context(now: float) -> Dictionary:
 	c["objective"] = 1.0 if _planner_ready() else 0.0
 	c["order"] = 1.0 if not _order_task().is_empty() else 0.0
 	c["ee_task"] = ee.value() if ee != null else 0.0
+	c["mark_order"] = mark.value() if mark != null else 0.0
 	var esc: Player = escort_target()
 	c["escort"] = 1.0 if esc != null else 0.0
 	c["escort_far"] = clampf(_flat(esc.global_position, player.global_position) / 15.0, 0.0, 1.0) if esc != null else 0.0
@@ -608,6 +614,8 @@ func may_touch_quest(shootable: Node = null) -> bool:
 
 ## On an objective of its own (the planner, not "follow"): it fights where it stands instead of following.
 func roaming() -> bool:
+	if mark != null and mark.roaming():
+		return true   # on a map-mark order (T-069)
 	if ee != null and ee.value() > 0.0 and str(ee.task.get("type", "")) != "escort":
 		return true   # on an egg task of its own (T-067)
 	return planner != null and not planner.directive.is_empty() and str(planner.directive.get("kind", "")) != "follow"

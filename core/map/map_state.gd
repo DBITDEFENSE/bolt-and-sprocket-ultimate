@@ -118,6 +118,8 @@ func _ready() -> void:
 		GLBus.crate_moved.connect(_on_crate_moved)
 	_scan_quest_nodes.call_deferred()
 	get_tree().node_added.connect(_on_node_added)
+	if get_node_or_null(^"MapMarks") == null:
+		MapMarks.attach(self)   # the marks' rules and the in-world markers (Update 04 section 3, T-069)
 
 
 func _process(delta: float) -> void:

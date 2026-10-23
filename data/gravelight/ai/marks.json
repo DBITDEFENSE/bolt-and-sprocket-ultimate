@@ -1,0 +1,42 @@
+{
+  "_doc": "What bots do with map marks (Update 04 section 3, DECISIONS T-069; gravelight/bots/bot_mark_orders.gd + bot_mark_task.gd). A mark for a bot becomes its order: one per bot, a high-weight utility action (actions.json mark_order) whose input is BotMarkTask.value(). Revives win over it (revive weight 1.25); a bot that was pulled away says so when it comes back.",
+  "queue_s": 60.0,
+  "_queue_doc": "An order it can't afford yet waits this long while the bot earns (then it gives up and says so). Every other order also ends after order_s.",
+  "order_s": 120.0,
+  "go_wait_s": 45.0,
+  "_go_doc": "A bot sent to a spot waits there this long after arriving, then goes back to following.",
+  "defend_radius_m": 4.0,
+  "defend_repair_m": 7.0,
+  "defend_s": 90.0,
+  "regroup_radius_m": 3.0,
+  "regroup_linger_s": 6.0,
+  "danger_radius_m": 4.5,
+  "danger_cost": 3.0,
+  "danger_callout_m": 40.0,
+  "deliver_m": 2.2,
+  "_deliver_doc": "Buy for teammate: the bot drops the gun at the player's feet within this; until then it holds it (the player can take it from the bot).",
+  "reserve_kept": 0,
+  "_reserve_doc": "Scrip a bot keeps back on an order (0: the player asked, so it spends what it has).",
+  "value": {
+    "_doc": "BotMarkTask.value() by state: the mark_order action's input (0 = it doesn't run: waiting for Scrip, done).",
+    "buy": 0.85,
+    "go": 0.8,
+    "defend": 0.95,
+    "regroup": 0.9,
+    "deliver": 0.85,
+    "powerup": 0.8,
+    "activate": 0.85
+  },
+  "best_bot": {
+    "_doc": "Choosing 'Any bot' for a purchase: closest by path among those not down or reviving; one who can afford it beats one who can't; short_penalty_m metres added per 100 Scrip short for the rest.",
+    "short_penalty_m": 4.0,
+    "busy_penalty_m": 6.0
+  },
+  "bench_prefs": [["grip", "checkered"], ["mag", "extended"], ["sights", "radium"], ["barrel", "compensator"], ["ammo", "hollow_points"], ["mag", "drum"], ["grip", "stock"], ["sights", "raised_target"], ["barrel", "match"]],
+  "_bench_doc": "An Armorer's Bench mark without a slot picked: the bot takes the first of these it hasn't fitted and can afford (else saves for the cheapest).",
+  "lines": {
+    "_doc": "VO categories (VO_SCRIPT section 19). short_buckets: the amounts a bot says it is short (rounded up to the next one; above the last: MARK_SHORT_LOTS).",
+    "short_buckets": [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1250, 1500, 2000, 2500, 3000, 4000, 5000],
+    "hold_auto_s": 4.0
+  }
+}
