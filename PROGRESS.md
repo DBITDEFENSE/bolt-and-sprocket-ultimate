@@ -1,6 +1,6 @@
 # PROGRESS
 
-RESUME HERE: Update 04 (minimap, pause map & marks, quest log, bots on the EE, M1911 attachments; work order bolt-and-sprocket/UPDATE_04_MAP_QUESTS_PISTOL.md) in progress. Phase A builders in .wt/: u04-1-minimap (s1+s2, T-065), u04-4-objectives (s4, T-066), u04-5-ee (s5, T-067), u04-6-pistol (s6, T-068); phase B after s1 merges: u04-3-marks (s3, T-069). Merge each with --no-ff after GUT + smokes. Earlier: Update 02/03 (tag u02-u03), T-060 Cousins scaling, lighting pass (tag lighting-pass).
+RESUME HERE: Update 04 is merged to master (T-064..T-070, tag u04); read morning/MORNING_REPORT.md first. Next: player 'bot mode' (a local agent drives the player, training zombies first) on branch bot-mode. Open: on-screen FPS check (needs the user's OK; no rendered runs without it), Map 1 EE soak, controller marking, Paul's unit, likeness placeholders, HUMOR-REVIEW.
 
 ## Overnight run, 2026-10-21 → 22: the plan
 

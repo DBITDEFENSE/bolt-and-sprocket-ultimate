@@ -1,3 +1,45 @@
+# Morning report — Update 04 (minimap, pause map & marks, quest log, bots on the egg, M1911 attachments), 2026-10-23
+
+All five sections are merged into `master` and launch. Tests: 857/857 unit tests, every smoke test passes (two
+timing-flaky checks noted below), the map-data check passes, all 60 pistol ADS combinations line up.
+
+## Try it (Play.bat → "Update 04 tests")
+1. **Map 0 — Pause map & marks test**: Esc opens the MAP tab. Click a perk → BUY THIS → a bot; click the floor →
+   Go Here / Defend / Danger. Middle mouse (D-pad up) pings what you look at. Watch the bots' order lines.
+2. **Kaltenbrunn — Bots Full Partner EE test**: the bots work the egg on their own and call out what they do.
+3. **Armorer's Bench test**: 20,000 Scrip at the bench; fit the five slots, then Crucible it for Last Rites.
+4. Any match: the minimap top-left; Settings → Gameplay → Minimap (Classic HUD turns it off); the OBJECTIVES tab
+   with the spoiler setting.
+
+## Status
+| Section | Status |
+|---|---|
+| §1 Map data for every map (7 levels, baked floors, POI check in the tests) | **works** |
+| §2 Minimap (bezel, discovery, floors, settings, zombies on firing) | **works**; ~0.2–0.3 ms a frame |
+| §3 Pause map, marks, bots carrying out marks, ping key | **works**; controller paths not driven by a pad yet |
+| §4 Objectives tab, 3 spoiler levels, side quests, challenges, intel; B&S holo view | **works** |
+| §5 Bots on the easter egg (Off / When Asked / Full Partner) | **works** on Map 0 (3/3 soak runs, 0 failed-egg events); Map 1 not soaked end to end |
+| §6 M1911 attachments, Armorer's Bench ×3, Last Rites versions, finishes, Loadout Pick | **works**; the drum sits below the frame at the hip pose |
+| §7 60 FPS with minimap + 3 bots + Jakub + 24 zombies | **partly**: avg ~87, worst frame 26 ms (was 124+), 1% low 42–49 (target 45); final on-screen check not run (rendered runs paused at your request) |
+| §8 PLAY.bat buttons, this report | **works** |
+
+## Decisions (DECISIONS T-064..T-070)
+- JSON, not `.tres`, for map data and attachments (project convention).
+- Helvetia Works, Morgenrot, Zonga, the Colosseum and B&S arenas don't exist yet: everything is data-driven, and the
+  map check will refuse a new map without its minimap. Totenhafen got a bench too.
+- Minimap zombies default to "Firing only" (your order lists it as a default exception); "Off" means none.
+- The old local-AI planner bot no longer works the egg unasked (When Asked is the default).
+- Bots lock 2 of 3 radio frequencies and leave the last to you; risky egg steps only on your order.
+- Middle mouse is the ping key now; alt-fire keeps B and D-pad right.
+- Fixed along the way: Jakub's Cousins line could be lost in a busy voice channel; benches added to the minimap.
+
+## Questions for you
+- OK to run one on-screen frame-rate check (a Godot window shows briefly)?
+- Should Map 0's Hints show the Cousins quest's first hint before you've found it?
+- Still open: Paul's unit, the 8 likeness placeholders, the humor-review list, the revive metric.
+
+---
+
 # Morning report — Update 02 + Update 03, 2026-10-22
 
 Every Update 02 section and the Update 03 bot rewrite are merged into `master` and launch. Bots now train, revive and

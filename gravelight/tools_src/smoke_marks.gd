@@ -211,7 +211,14 @@ func _run() -> void:
 		var pid3: int = int(r3["pid"])
 		_focus_pid = pid3
 		_check(bool(r3["ok"]) and pid3 > 0, "M1 Garand marked for me: P%d buys it" % pid3)
-		var paid: bool = await _until(func() -> bool: return Economy.get_scrip(pid3) <= 900, 60.0)
+		# the payment is a single drop of the gun's price; kills on the way add Scrip, so the balance alone can't tell
+		var watch: Dictionary = {"prev": Economy.get_scrip(pid3), "paid": false}
+		var paid: bool = await _until(func() -> bool:
+			var now_s: int = Economy.get_scrip(pid3)
+			if int(watch["prev"]) - now_s >= 600:
+				watch["paid"] = true
+			watch["prev"] = now_s
+			return bool(watch["paid"]), 60.0)
 		_check(paid, "the bot paid 600 of its own Scrip (%d left)" % Economy.get_scrip(pid3))
 		_check(_sq().player_by_id(pid3).weapons.find_weapon_base(&"m1_garand") == null, "and the gun isn't in the bot's hands")
 		var dropped: bool = await _until(func() -> bool:
