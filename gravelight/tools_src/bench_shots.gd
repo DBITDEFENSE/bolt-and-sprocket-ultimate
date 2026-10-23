@@ -34,6 +34,11 @@ func _ready() -> void:
 			_play = true
 		elif a.begins_with("--map="):
 			_play_map = a.substr(6)
+	# The dev launcher's "Armorer's Bench test" button can't pass args: it leaves the map in Engine metadata.
+	if Engine.has_meta(&"bench_play_map"):
+		_play = true
+		_play_map = str(Engine.get_meta(&"bench_play_map"))
+		Engine.remove_meta(&"bench_play_map")
 	if _out == "":
 		_out = ProjectSettings.globalize_path("res://").path_join("morning/screenshots/u04/pistol")
 	if not _play:

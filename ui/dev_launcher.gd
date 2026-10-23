@@ -117,6 +117,12 @@ func _ready() -> void:
 	col.add_child(MenuKit.button("Bot test — Cousins round (3 bots, you play)", func() -> void: _start_gl(map0, 10, "cousins", 3), 22, "ui_confirm"))
 	col.add_child(MenuKit.button("Bot test — Cousins round (watch)", func() -> void: _spawn_tool("res://gravelight/tools_src/clip_bots.tscn", ["--shot=cousins"], false), 22, "ui_confirm"))
 	col.add_child(MenuKit.button("Bot soak (headless, writes CSV to logs/ai_runs/)", func() -> void: _spawn_tool("res://tools_src/ai_soak.tscn", ["--scenario=player3", "--runs=3"], true), 22, "ui_confirm"))
+	col.add_child(_header("Update 04 tests"))
+	col.add_child(MenuKit.button("Map 0 — Pause map & marks test (3 bots, marks placed, the map open)", func() -> void: _start_tool_scene("res://gravelight/tools_src/play_marks.tscn"), 22, "ui_confirm"))
+	col.add_child(MenuKit.button("Kaltenbrunn — Bots Full Partner EE test (3 bots work the egg)", func() -> void: _start_tool_scene("res://gravelight/tools_src/play_ee_full.tscn"), 22, "ui_confirm"))
+	col.add_child(MenuKit.button("Armorer's Bench test (Map 0, at the bench, 20,000 Scrip, power on)", func() -> void:
+		Engine.set_meta(&"bench_play_map", "map00")
+		_start_tool_scene("res://gravelight/tools_src/bench_shots.tscn"), 22, "ui_confirm"))
 	col.add_child(_header("Bolt & Sprocket"))
 	for l: Array in BS_LEVELS:
 		var lscene: String = str(l[1])
@@ -175,6 +181,15 @@ func _start_jakub() -> void:
 	GameState.god_mode = _god.button_pressed
 	Campaign.reset()
 	get_tree().change_scene_to_file("res://gravelight/tools_src/play_jakub.tscn")
+
+
+## Opens an Update 04 test scene in this process with the survivor and god mode from the fields above (each scene
+## sets its own bots, Scrip and setup).
+func _start_tool_scene(scene: String) -> void:
+	GameState.character_id = StringName(CHARACTERS[_char.selected])
+	GameState.god_mode = _god.button_pressed
+	Campaign.reset()
+	get_tree().change_scene_to_file(scene)
 
 
 ## Runs a tool scene in a second Godot process (this one keeps the launcher): windowed to watch it, or
