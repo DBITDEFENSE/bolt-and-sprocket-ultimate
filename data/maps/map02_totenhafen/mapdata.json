@@ -1,0 +1,1313 @@
+{
+  "_doc": "Baked map data (Update 04 section 1, DECISIONS T-065). Written by tools/bake_minimap.sh; do not edit by hand (edit data/maps/bake_config.json and re-bake). world_rect = [min x, min z, width, depth] in metres, every floor image covers it, north (-Z) up.",
+  "map_id": "map02_totenhafen",
+  "game": "gravelight",
+  "style": "ink",
+  "display_name": "Totenhafen",
+  "world_rect": [
+    -42.0,
+    -12.0,
+    116.0,
+    110.0
+  ],
+  "px_per_m": 8.0,
+  "image_size": [
+    928,
+    880
+  ],
+  "baked_at": "2026-10-23T12:05:39",
+  "poi_signature": "c13057c00a9109c37cdb4422501efde3",
+  "floors": [
+    {
+      "id": "lower",
+      "name": "Lower Pens & U-1047",
+      "y_min": -12.0,
+      "y_max": -1.0,
+      "base_y": -3.0,
+      "cut": -1.3,
+      "rects": [],
+      "depth": 0.6,
+      "image": "floor_0_lower.png"
+    },
+    {
+      "id": "quay",
+      "name": "Quay & Piers",
+      "y_min": -1.0,
+      "y_max": 3.0,
+      "base_y": 0.0,
+      "cut": 1.7,
+      "rects": [],
+      "depth": 0.6,
+      "image": "floor_1_quay.png"
+    },
+    {
+      "id": "catwalks",
+      "name": "Catwalks (+4)",
+      "y_min": 3.0,
+      "y_max": 6.2,
+      "base_y": 4.0,
+      "cut": 5.6,
+      "rects": [
+        [
+          -20.0,
+          33.0,
+          24.0,
+          51.0
+        ],
+        [
+          10.0,
+          33.0,
+          42.0,
+          9.0
+        ],
+        [
+          -11.0,
+          30.0,
+          2.0,
+          3.0
+        ],
+        [
+          43.0,
+          30.0,
+          2.0,
+          3.0
+        ],
+        [
+          -17.55,
+          30.05,
+          3.1,
+          2.95
+        ],
+        [
+          9.45,
+          30.05,
+          3.1,
+          2.95
+        ],
+        [
+          28.45,
+          30.05,
+          3.1,
+          2.95
+        ],
+        [
+          10.0,
+          42.0,
+          36.0,
+          8.0
+        ],
+        [
+          10.0,
+          50.0,
+          42.0,
+          34.0
+        ],
+        [
+          4.0,
+          33.0,
+          6.0,
+          5.0
+        ],
+        [
+          46.0,
+          42.0,
+          6.0,
+          8.0
+        ],
+        [
+          32.0,
+          50.0,
+          20.0,
+          34.0
+        ],
+        [
+          46.0,
+          42.0,
+          6.0,
+          8.0
+        ]
+      ],
+      "depth": 0.6,
+      "image": "floor_2_catwalks.png"
+    },
+    {
+      "id": "tower",
+      "name": "Signal Tower (+7)",
+      "y_min": 6.2,
+      "y_max": 40.0,
+      "base_y": 7.0,
+      "cut": 8.6,
+      "rects": [
+        [
+          43.45,
+          30.05,
+          3.1,
+          2.95
+        ],
+        [
+          47.45,
+          30.05,
+          3.1,
+          2.95
+        ],
+        [
+          29.0,
+          33.0,
+          23.0,
+          5.0
+        ]
+      ],
+      "depth": 0.6,
+      "image": "floor_3_tower.png"
+    }
+  ],
+  "zones": [
+    {
+      "id": "A_QUAY",
+      "name": "Harbour Quay",
+      "y_min": -1.5,
+      "y_max": 8.0,
+      "polys": [
+        [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            32.0,
+            0.0
+          ],
+          [
+            32.0,
+            30.0
+          ],
+          [
+            0.0,
+            30.0
+          ]
+        ],
+        [
+          [
+            4.45,
+            30.0
+          ],
+          [
+            7.55,
+            30.0
+          ],
+          [
+            7.55,
+            32.95
+          ],
+          [
+            4.45,
+            32.95
+          ]
+        ],
+        [
+          [
+            24.45,
+            30.0
+          ],
+          [
+            27.55,
+            30.0
+          ],
+          [
+            27.55,
+            32.95
+          ],
+          [
+            24.45,
+            32.95
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "B_CANNERY",
+      "name": "Fish Cannery",
+      "y_min": -1.5,
+      "y_max": 8.0,
+      "polys": [
+        [
+          [
+            -30.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            30.0
+          ],
+          [
+            -30.0,
+            30.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "C_WORKSHOP",
+      "name": "Torpedo Workshop",
+      "y_min": -1.5,
+      "y_max": 8.0,
+      "polys": [
+        [
+          [
+            32.0,
+            0.0
+          ],
+          [
+            62.0,
+            0.0
+          ],
+          [
+            62.0,
+            30.0
+          ],
+          [
+            32.0,
+            30.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "D_PENHALL",
+      "name": "Pen Hall",
+      "y_min": -1.0,
+      "y_max": 5.90000009536743,
+      "polys": [
+        [
+          [
+            -20.0,
+            33.0
+          ],
+          [
+            4.0,
+            33.0
+          ],
+          [
+            4.0,
+            84.0
+          ],
+          [
+            -20.0,
+            84.0
+          ]
+        ],
+        [
+          [
+            10.0,
+            33.0
+          ],
+          [
+            52.0,
+            33.0
+          ],
+          [
+            52.0,
+            42.0
+          ],
+          [
+            10.0,
+            42.0
+          ]
+        ],
+        [
+          [
+            -11.0,
+            30.0
+          ],
+          [
+            -9.0,
+            30.0
+          ],
+          [
+            -9.0,
+            33.0
+          ],
+          [
+            -11.0,
+            33.0
+          ]
+        ],
+        [
+          [
+            43.0,
+            30.0
+          ],
+          [
+            45.0,
+            30.0
+          ],
+          [
+            45.0,
+            33.0
+          ],
+          [
+            43.0,
+            33.0
+          ]
+        ],
+        [
+          [
+            -17.55,
+            30.05
+          ],
+          [
+            -14.45,
+            30.05
+          ],
+          [
+            -14.45,
+            33.0
+          ],
+          [
+            -17.55,
+            33.0
+          ]
+        ],
+        [
+          [
+            9.45,
+            30.05
+          ],
+          [
+            12.55,
+            30.05
+          ],
+          [
+            12.55,
+            33.0
+          ],
+          [
+            9.45,
+            33.0
+          ]
+        ],
+        [
+          [
+            28.45,
+            30.05
+          ],
+          [
+            31.55,
+            30.05
+          ],
+          [
+            31.55,
+            33.0
+          ],
+          [
+            28.45,
+            33.0
+          ]
+        ],
+        [
+          [
+            10.0,
+            42.0
+          ],
+          [
+            46.0,
+            42.0
+          ],
+          [
+            46.0,
+            50.0
+          ],
+          [
+            10.0,
+            50.0
+          ]
+        ],
+        [
+          [
+            10.0,
+            50.0
+          ],
+          [
+            52.0,
+            50.0
+          ],
+          [
+            52.0,
+            84.0
+          ],
+          [
+            10.0,
+            84.0
+          ]
+        ],
+        [
+          [
+            4.0,
+            33.0
+          ],
+          [
+            10.0,
+            33.0
+          ],
+          [
+            10.0,
+            38.0
+          ],
+          [
+            4.0,
+            38.0
+          ]
+        ],
+        [
+          [
+            46.0,
+            42.0
+          ],
+          [
+            52.0,
+            42.0
+          ],
+          [
+            52.0,
+            50.0
+          ],
+          [
+            46.0,
+            50.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "G_SIGNAL",
+      "name": "Signal Tower",
+      "y_min": 5.44999980926514,
+      "y_max": 12.0,
+      "polys": [
+        [
+          [
+            43.45,
+            30.05
+          ],
+          [
+            46.55,
+            30.05
+          ],
+          [
+            46.55,
+            33.0
+          ],
+          [
+            43.45,
+            33.0
+          ]
+        ],
+        [
+          [
+            47.45,
+            30.05
+          ],
+          [
+            50.55,
+            30.05
+          ],
+          [
+            50.55,
+            33.0
+          ],
+          [
+            47.45,
+            33.0
+          ]
+        ],
+        [
+          [
+            29.0,
+            33.0
+          ],
+          [
+            52.0,
+            33.0
+          ],
+          [
+            52.0,
+            38.0
+          ],
+          [
+            29.0,
+            38.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "E_UBOAT",
+      "name": "U-1047",
+      "y_min": -3.09999990463257,
+      "y_max": 1.5,
+      "polys": [
+        [
+          [
+            4.0,
+            38.0
+          ],
+          [
+            10.0,
+            38.0
+          ],
+          [
+            10.0,
+            86.0
+          ],
+          [
+            4.0,
+            86.0
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "F_LOWERPENS",
+      "name": "Lower Pens",
+      "y_min": -4.5,
+      "y_max": 2.5,
+      "polys": [
+        [
+          [
+            32.0,
+            50.0
+          ],
+          [
+            52.0,
+            50.0
+          ],
+          [
+            52.0,
+            84.0
+          ],
+          [
+            32.0,
+            84.0
+          ]
+        ],
+        [
+          [
+            46.0,
+            42.0
+          ],
+          [
+            52.0,
+            42.0
+          ],
+          [
+            52.0,
+            50.0
+          ],
+          [
+            46.0,
+            50.0
+          ]
+        ]
+      ]
+    }
+  ],
+  "pois": [
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Cannery",
+      "type": "ammo_box",
+      "pos": [
+        -29.52,
+        0.0,
+        18.0
+      ],
+      "floor": 1,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Cannery",
+      "key": "Gameplay/AmmoBox_Cannery"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_PenHallEast",
+      "type": "ammo_box",
+      "pos": [
+        51.52,
+        0.0,
+        77.0
+      ],
+      "floor": 1,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_PenHallEast",
+      "key": "Gameplay/AmmoBox_PenHallEast"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_PenHallWest",
+      "type": "ammo_box",
+      "pos": [
+        0.0,
+        0.0,
+        33.33
+      ],
+      "floor": 1,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_PenHallWest",
+      "key": "Gameplay/AmmoBox_PenHallWest"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Workshop",
+      "type": "ammo_box",
+      "pos": [
+        61.5,
+        0.0,
+        13.0
+      ],
+      "floor": 1,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Workshop",
+      "key": "Gameplay/AmmoBox_Workshop"
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_Hut",
+      "type": "crate_spot",
+      "pos": [
+        16.6,
+        0.0,
+        11.4
+      ],
+      "floor": 1,
+      "label": "Requisition Crate (Hut)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_Hut",
+      "key": "Gameplay/Crate_Hut",
+      "data": {
+        "spot_index": 0,
+        "can_start": true
+      }
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_Pier0",
+      "type": "crate_spot",
+      "pos": [
+        -18.5,
+        0.0,
+        81.0
+      ],
+      "floor": 1,
+      "label": "Requisition Crate (Pier0)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_Pier0",
+      "key": "Gameplay/Crate_Pier0",
+      "data": {
+        "spot_index": 2,
+        "can_start": false
+      }
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_Pumps",
+      "type": "crate_spot",
+      "pos": [
+        42.0,
+        -3.0,
+        79.0
+      ],
+      "floor": 0,
+      "label": "Requisition Crate (Pumps)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_Pumps",
+      "key": "Gameplay/Crate_Pumps",
+      "data": {
+        "spot_index": 3,
+        "can_start": false
+      }
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_Teletype",
+      "type": "crate_spot",
+      "pos": [
+        49.4,
+        7.0,
+        34.6
+      ],
+      "floor": 3,
+      "label": "Requisition Crate (Teletype)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_Teletype",
+      "key": "Gameplay/Crate_Teletype",
+      "data": {
+        "spot_index": 4,
+        "can_start": false
+      }
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_Warheads",
+      "type": "crate_spot",
+      "pos": [
+        58.6,
+        0.0,
+        19.0
+      ],
+      "floor": 1,
+      "label": "Requisition Crate (Warheads)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_Warheads",
+      "key": "Gameplay/Crate_Warheads",
+      "data": {
+        "spot_index": 1,
+        "can_start": true
+      }
+    },
+    {
+      "id": "crucible:Gameplay/Crucible",
+      "type": "crucible",
+      "pos": [
+        7.0,
+        -2.0,
+        40.0
+      ],
+      "floor": 0,
+      "label": "The Crucible",
+      "price": 5000,
+      "node_path": "Gameplay/Crucible",
+      "key": "Gameplay/Crucible",
+      "data": {
+        "needs_power": true
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Cannery",
+      "type": "door",
+      "pos": [
+        0.0,
+        0.0,
+        15.0
+      ],
+      "floor": 1,
+      "label": "Fish Cannery",
+      "price": 1000,
+      "node_path": "Gameplay/Door_Cannery",
+      "key": "Gameplay/Door_Cannery",
+      "data": {
+        "door_id": "door_cannery",
+        "opens_zone": "B_CANNERY",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Gangway",
+      "type": "door",
+      "pos": [
+        14.0,
+        0.0,
+        58.0
+      ],
+      "floor": 1,
+      "label": "U-1047 Gangway",
+      "price": 1500,
+      "node_path": "Gameplay/Door_Gangway",
+      "key": "Gameplay/Door_Gangway",
+      "data": {
+        "door_id": "door_gangway",
+        "opens_zone": "E_UBOAT",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_PenHall_E",
+      "type": "door",
+      "pos": [
+        44.0,
+        0.0,
+        31.5
+      ],
+      "floor": 1,
+      "label": "Pen Hall",
+      "price": 1500,
+      "node_path": "Gameplay/Door_PenHall_E",
+      "key": "Gameplay/Door_PenHall_E",
+      "data": {
+        "door_id": "door_penhall",
+        "opens_zone": "D_PENHALL",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_PenHall_W",
+      "type": "door",
+      "pos": [
+        -10.0,
+        0.0,
+        31.5
+      ],
+      "floor": 1,
+      "label": "Pen Hall",
+      "price": 1500,
+      "node_path": "Gameplay/Door_PenHall_W",
+      "key": "Gameplay/Door_PenHall_W",
+      "data": {
+        "door_id": "door_penhall",
+        "opens_zone": "D_PENHALL",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Pumps",
+      "type": "door",
+      "pos": [
+        49.0,
+        0.0,
+        42.0
+      ],
+      "floor": 1,
+      "label": "Lower Pens",
+      "price": 1500,
+      "node_path": "Gameplay/Door_Pumps",
+      "key": "Gameplay/Door_Pumps",
+      "data": {
+        "door_id": "door_pumps",
+        "opens_zone": "F_LOWERPENS",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Signal",
+      "type": "door",
+      "pos": [
+        42.0,
+        7.0,
+        34.0
+      ],
+      "floor": 3,
+      "label": "Signal Tower",
+      "price": 2500,
+      "node_path": "Gameplay/Door_Signal",
+      "key": "Gameplay/Door_Signal",
+      "data": {
+        "door_id": "door_signal",
+        "opens_zone": "G_SIGNAL",
+        "requires_power": true
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Workshop",
+      "type": "door",
+      "pos": [
+        32.0,
+        0.0,
+        15.0
+      ],
+      "floor": 1,
+      "label": "Torpedo Workshop",
+      "price": 1000,
+      "node_path": "Gameplay/Door_Workshop",
+      "key": "Gameplay/Door_Workshop",
+      "data": {
+        "door_id": "door_workshop",
+        "opens_zone": "C_WORKSHOP",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_hawkeye_brandy",
+      "type": "perk",
+      "pos": [
+        51.4,
+        7.0,
+        36.3
+      ],
+      "floor": 3,
+      "label": "Hawkeye Brandy",
+      "price": 1500,
+      "node_path": "Gameplay/Perk_hawkeye_brandy",
+      "key": "Gameplay/Perk_hawkeye_brandy",
+      "data": {
+        "perk_id": "hawkeye_brandy"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_ironhide_stout",
+      "type": "perk",
+      "pos": [
+        32.8,
+        0.0,
+        8.0
+      ],
+      "floor": 1,
+      "label": "Ironhide Stout",
+      "price": 2500,
+      "node_path": "Gameplay/Perk_ironhide_stout",
+      "key": "Gameplay/Perk_ironhide_stout",
+      "data": {
+        "perk_id": "ironhide_stout"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_marathon_malt",
+      "type": "perk",
+      "pos": [
+        -5.0,
+        0.0,
+        29.3
+      ],
+      "floor": 1,
+      "label": "Marathon Malt",
+      "price": 2000,
+      "node_path": "Gameplay/Perk_marathon_malt",
+      "key": "Gameplay/Perk_marathon_malt",
+      "data": {
+        "perk_id": "marathon_malt"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_overclock_cordial",
+      "type": "perk",
+      "pos": [
+        42.9,
+        7.0,
+        36.7
+      ],
+      "floor": 3,
+      "label": "Overclock Cordial",
+      "price": 2500,
+      "node_path": "Gameplay/Perk_overclock_cordial",
+      "key": "Gameplay/Perk_overclock_cordial",
+      "data": {
+        "perk_id": "overclock_cordial"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_second_wind",
+      "type": "perk",
+      "pos": [
+        -26.0,
+        0.0,
+        0.9
+      ],
+      "floor": 1,
+      "label": "Second Wind Schnapps",
+      "price": 500,
+      "node_path": "Gameplay/Perk_second_wind",
+      "key": "Gameplay/Perk_second_wind",
+      "data": {
+        "perk_id": "second_wind"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_trigger_tonic",
+      "type": "perk",
+      "pos": [
+        40.0,
+        0.0,
+        0.8
+      ],
+      "floor": 1,
+      "label": "Trigger Tonic",
+      "price": 3000,
+      "node_path": "Gameplay/Perk_trigger_tonic",
+      "key": "Gameplay/Perk_trigger_tonic",
+      "data": {
+        "perk_id": "trigger_tonic"
+      }
+    },
+    {
+      "id": "power_switch:Gameplay/Pumpenschalter",
+      "type": "power_switch",
+      "pos": [
+        50.9,
+        -2.7,
+        70.0
+      ],
+      "floor": 0,
+      "label": "Power: the Pumpenschalter",
+      "price": 0,
+      "node_path": "Gameplay/Pumpenschalter",
+      "key": "Gameplay/Pumpenschalter"
+    },
+    {
+      "id": "trap:Gameplay/Lever_Grille",
+      "type": "trap",
+      "pos": [
+        44.0,
+        -3.0,
+        50.7
+      ],
+      "floor": 0,
+      "label": "Live Wire Fence",
+      "price": 1000,
+      "node_path": "Gameplay/Lever_Grille",
+      "key": "Gameplay/Lever_Grille",
+      "data": {
+        "trap_id": "live_wire",
+        "kind": "live_wire"
+      }
+    },
+    {
+      "id": "trap:Gameplay/Lever_Trolley",
+      "type": "trap",
+      "pos": [
+        48.0,
+        0.0,
+        29.6
+      ],
+      "floor": 1,
+      "label": "Runaway Ore Cart",
+      "price": 1000,
+      "node_path": "Gameplay/Lever_Trolley",
+      "key": "Gameplay/Lever_Trolley",
+      "data": {
+        "trap_id": "ore_cart",
+        "kind": "ore_cart"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_bar",
+      "type": "wall_buy",
+      "pos": [
+        -5.83,
+        1.5,
+        70.0
+      ],
+      "floor": 1,
+      "label": "BAR",
+      "price": 1800,
+      "node_path": "Gameplay/WallBuy_bar",
+      "key": "Gameplay/WallBuy_bar",
+      "data": {
+        "weapon_id": "bar"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_etool",
+      "type": "wall_buy",
+      "pos": [
+        61.83,
+        1.5,
+        20.0
+      ],
+      "floor": 1,
+      "label": "Sharpened E-Tool",
+      "price": 3000,
+      "node_path": "Gameplay/WallBuy_etool",
+      "key": "Gameplay/WallBuy_etool",
+      "data": {
+        "weapon_id": "etool"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_frag",
+      "type": "wall_buy",
+      "pos": [
+        -0.17,
+        1.5,
+        26.0
+      ],
+      "floor": 1,
+      "label": "Mk 2 Frag",
+      "price": 250,
+      "node_path": "Gameplay/WallBuy_frag",
+      "key": "Gameplay/WallBuy_frag",
+      "data": {
+        "weapon_id": "frag"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_kar98k",
+      "type": "wall_buy",
+      "pos": [
+        9.83,
+        1.5,
+        13.5
+      ],
+      "floor": 1,
+      "label": "Kar98k",
+      "price": 200,
+      "node_path": "Gameplay/WallBuy_kar98k",
+      "key": "Gameplay/WallBuy_kar98k",
+      "data": {
+        "weapon_id": "kar98k"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_m1_carbine",
+      "type": "wall_buy",
+      "pos": [
+        20.83,
+        1.5,
+        5.0
+      ],
+      "floor": 1,
+      "label": "M1 Carbine",
+      "price": 600,
+      "node_path": "Gameplay/WallBuy_m1_carbine",
+      "key": "Gameplay/WallBuy_m1_carbine",
+      "data": {
+        "weapon_id": "m1_carbine"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_mp40",
+      "type": "wall_buy",
+      "pos": [
+        32.17,
+        1.5,
+        20.0
+      ],
+      "floor": 1,
+      "label": "MP40",
+      "price": 1000,
+      "node_path": "Gameplay/WallBuy_mp40",
+      "key": "Gameplay/WallBuy_mp40",
+      "data": {
+        "weapon_id": "mp40"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_stg44",
+      "type": "wall_buy",
+      "pos": [
+        32.17,
+        1.5,
+        24.0
+      ],
+      "floor": 1,
+      "label": "STG-44",
+      "price": 1200,
+      "node_path": "Gameplay/WallBuy_stg44",
+      "key": "Gameplay/WallBuy_stg44",
+      "data": {
+        "weapon_id": "stg44"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_thompson",
+      "type": "wall_buy",
+      "pos": [
+        19.83,
+        1.5,
+        50.0
+      ],
+      "floor": 1,
+      "label": "Thompson M1A1",
+      "price": 1200,
+      "node_path": "Gameplay/WallBuy_thompson",
+      "key": "Gameplay/WallBuy_thompson",
+      "data": {
+        "weapon_id": "thompson"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_trench_gun",
+      "type": "wall_buy",
+      "pos": [
+        -0.17,
+        1.5,
+        22.0
+      ],
+      "floor": 1,
+      "label": "Trench Gun",
+      "price": 1500,
+      "node_path": "Gameplay/WallBuy_trench_gun",
+      "key": "Gameplay/WallBuy_trench_gun",
+      "data": {
+        "weapon_id": "trench_gun"
+      }
+    }
+  ],
+  "connectors": [
+    {
+      "kind": "stairs",
+      "a": [
+        49.0,
+        -3.18,
+        46.96
+      ],
+      "b": [
+        49.0,
+        0.0,
+        46.96
+      ],
+      "floor_a": 0,
+      "floor_b": 1
+    },
+    {
+      "kind": "stairs",
+      "a": [
+        35.02,
+        3.81,
+        34.0
+      ],
+      "b": [
+        35.02,
+        7.0,
+        34.0
+      ],
+      "floor_a": 2,
+      "floor_b": 3
+    },
+    {
+      "kind": "stairs",
+      "a": [
+        6.0,
+        -2.17,
+        63.45
+      ],
+      "b": [
+        6.0,
+        1.0,
+        63.45
+      ],
+      "floor_a": 0,
+      "floor_b": 1
+    },
+    {
+      "kind": "ladder",
+      "a": [
+        -16.2,
+        0.0,
+        60.0
+      ],
+      "b": [
+        -19.0,
+        4.0,
+        60.0
+      ],
+      "floor_a": 1,
+      "floor_b": 2
+    },
+    {
+      "kind": "ladder",
+      "a": [
+        48.2,
+        0.0,
+        60.0
+      ],
+      "b": [
+        51.0,
+        4.0,
+        60.0
+      ],
+      "floor_a": 1,
+      "floor_b": 2
+    },
+    {
+      "kind": "ladder",
+      "a": [
+        17.0,
+        0.0,
+        37.5
+      ],
+      "b": [
+        17.0,
+        4.0,
+        34.0
+      ],
+      "floor_a": 1,
+      "floor_b": 2
+    }
+  ]
+}
