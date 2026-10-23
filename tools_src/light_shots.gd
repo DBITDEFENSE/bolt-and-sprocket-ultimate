@@ -85,9 +85,7 @@ func _run() -> void:
 		print("[light_shots] ", _perf[_perf.size() - 1])
 		var pf: FileAccess = FileAccess.open(_out.path_join("fps.txt"), FileAccess.WRITE)
 		if pf != null:
-			pf.store_string("
-".join(_perf) + "
-")
+			pf.store_string("\n".join(_perf) + "\n")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(ProfileSave.path))
 	get_tree().quit()
 
