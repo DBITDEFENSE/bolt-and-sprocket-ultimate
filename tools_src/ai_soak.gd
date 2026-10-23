@@ -16,6 +16,11 @@ extends Node
 ##                (cleared, or the cousins got bored and left) or the squad wipes; every player gets 3000 Scrip
 ##   kaltenbrunn  player3 on Map 1, rounds 1 to 20 (--max-round, default 20). The Update 03 brief also forces Paul
 ##                at round 15; Paul doesn't exist yet, so that part is skipped
+##   ee_full      (Update 04 section 5, T-067) player3 on Map 0 with "Bot Easter-Egg Help" on Full Partner: the bots
+##                work "Glasmacher Calling" (the notes, then the radio up to its last frequency, which is the player's
+##                commit; the harness then locks it as the player). Ends when the egg is complete, the squad wipes or
+##                at --max-round (default 12). Logs the egg numbers (steps, inputs, egg-failure events).
+## --ee=off|ask|full: Bot Easter-Egg Help for any scenario (default: the setting, When Asked; ee_full: full).
 ## --player-kit (T-058): the scripted player's kit. "baseline" (the default, as in the Update 03 baseline): the
 ## bots' free spawn kit, buys nothing, never touches the power. "realistic": the Thompson only, opens the way to the
 ## power and throws it by round 3-4, drinks (and rebuys) Ironhide Stout and Second Wind (tools_src/soak_dummy.gd).
@@ -63,6 +68,10 @@ var _trace_t: float = 0.0
 var orders_s: float = 0.0
 var _order_t: float = 0.0
 var _order_i: int = 0
+## --ee: the Bot Easter-Egg Help mode for the run ("" = the setting); ee_full forces "full".
+var ee_mode: String = ""
+var _ee_committed_t: float = -1.0
+var _ee_events: PackedStringArray = []
 const SOAK_ORDERS: Array[StringName] = [&"hold", &"follow", &"train", &"repair", &"revive", &"buy_perks"]
 
 var _run: int = 0
@@ -113,10 +122,12 @@ func _ready() -> void:
 			character = a.substr(12)
 		elif a.begins_with("--homage="):
 			homage = a.substr(9) != "0"
+		elif a.begins_with("--ee="):
+			ee_mode = a.substr(5)
 		elif a.begins_with("--loco="):
 			BotLocomotion.force_mode = a.substr(7)   # U03 section 3: v1 / v2 against bots.json locomotion
-	if not ["player3", "bots3", "cousins", "kaltenbrunn"].has(scenario):
-		print("[soak] unknown --scenario=%s (player3, bots3, cousins, kaltenbrunn)" % scenario)
+	if not ["player3", "bots3", "cousins", "kaltenbrunn", "ee_full"].has(scenario):
+		print("[soak] unknown --scenario=%s (player3, bots3, cousins, kaltenbrunn, ee_full)" % scenario)
 		print("[soak] RESULT FAIL")
 		get_tree().quit(2)
 		return
@@ -126,6 +137,16 @@ func _ready() -> void:
 		max_round = 20
 	if scenario == "cousins":
 		max_round = 10
+	if scenario == "ee_full":
+		ee_mode = "full"
+		if max_round <= 0:
+			max_round = 12
+	GLBus.quest_step_completed.connect(func(q: StringName, st: StringName) -> void:
+		if _live:
+			_ee_events.append("r%d %.0fs %s/%s done" % [RoundManager.current_round, _game_t, q, st]))
+	GLBus.quest_step_failed.connect(func(q: StringName, st: StringName, r: StringName) -> void:
+		if _live:
+			_ee_events.append("r%d %.0fs %s/%s FAILED (%s)" % [RoundManager.current_round, _game_t, q, st, r]))
 	ProfileSave.path = "user://_ai_soak_profile.json"
 	ProfileSave.profile = ProfileSave.new_profile()
 	GLSettings.path = "user://_ai_soak_settings.cfg"   # never write the player's own settings file
@@ -203,8 +224,12 @@ func _physics_process(delta: float) -> void:
 			_trace_t = trace_s
 			for b: BotBrain in _map.squad.brains:
 				print("[trace] t=%.0f r%d %s | task %s" % [_game_t, RoundManager.current_round, b.status_line(), str(b.task.get("label", "-"))])
+	if scenario == "ee_full":
+		_tick_ee()
 	if _metrics.finished:
 		_end_run(_metrics.end_reason)
+	elif scenario == "ee_full" and QuestManager.is_complete(&"map00_radio"):
+		_end_run("egg complete")
 	elif max_round > 0 and RoundManager.current_round > max_round:
 		_end_run("reached round %d" % RoundManager.current_round)
 	elif scenario == "cousins" and _cousins_over():
@@ -237,6 +262,10 @@ func _try_go_live() -> void:
 		_:
 			_dummy = Dummy.new()
 			_dummy.call("setup", _map.player, _map, seed_base + _run, player_kit)
+	_ee_committed_t = -1.0
+	_ee_events = PackedStringArray()
+	if ee_mode != "" and _map.squad != null and _map.squad.ee != null:
+		_map.squad.ee.set_mode(ee_mode)
 	if start_round > 1 and scenario != "cousins":
 		for pid: int in GameState.player_ids:
 			Economy.award(pid, 450 * start_round)
@@ -244,6 +273,21 @@ func _try_go_live() -> void:
 		_map.director.kill_all(true)
 	print("[soak] run %d/%d live: map %s, %d bots %s, route %s" % [_run, runs, _map.map_id, GameState.bot_ids.size(),
 		str(GameState.bot_ids.map(func(p: int) -> String: return Net.display_name(p))), str(_dummy.get("route_name")) if _dummy != null else "(no human: spectator)"])
+
+
+## ee_full: once the bots have tuned the radio up to its last frequency (they never take the player's commit), the
+## harness locks it as the player would.
+func _tick_ee() -> void:
+	var q: StringName = &"map00_radio"
+	if _ee_committed_t >= 0.0 or not QuestManager.is_active(q, &"s2_tune"):
+		return
+	var prog: Variant = QuestManager.progress(q, &"s2_tune")
+	if (int(prog) if prog != null else 0) < 2:
+		return
+	_ee_committed_t = _game_t
+	_ee_events.append("r%d %.0fs the bots handed over the last frequency; the player locks it" % [RoundManager.current_round, _game_t])
+	for n: Node in _map.find_children("*", "FieldRadio", true, false):
+		(n as FieldRadio).lock_frequency("7.440")
 
 
 ## bots3: the local Player can't be removed (the HUD, the camera and the round code expect one), so it sits the
@@ -296,6 +340,23 @@ func _end_run(why: String) -> void:
 		_metrics.extra["dummy_unstuck"] = int(_dummy.get("unstuck"))
 	if not _metrics.extra.has("power_round"):
 		_metrics.extra["power_round"] = 0   # the power never came on
+	if _map.squad != null and _map.squad.ee != null:
+		var hub: BotEEHub = _map.squad.ee
+		_metrics.extra["ee_mode"] = hub.mode()
+		_metrics.extra["ee_tasks"] = hub.tasks_started
+		_metrics.extra["ee_steps_by_bots"] = hub.steps_by_bots
+		_metrics.extra["ee_inputs_by_bots"] = hub.inputs_by_bots
+		_metrics.extra["ee_egg_failures"] = hub.egg_failures
+		_metrics.extra["ee_egg_failures_on_bot_steps"] = hub.egg_failures_bot
+		if QuestManager.has_quest(&"map00_radio"):
+			var got: Variant = QuestManager.progress(&"map00_radio", &"s1_notes")
+			_metrics.extra["ee_notes"] = 3 if QuestManager.is_step_done(&"map00_radio", &"s1_notes") else ((got as Array).size() if got is Array else 0)
+			var tp: Variant = QuestManager.progress(&"map00_radio", &"s2_tune")
+			_metrics.extra["ee_tune_locks"] = 3 if QuestManager.is_step_done(&"map00_radio", &"s2_tune") else (int(tp) if tp != null else 0)
+			_metrics.extra["ee_handoff_s"] = snappedf(_ee_committed_t, 1.0)
+			_metrics.extra["ee_complete"] = QuestManager.is_complete(&"map00_radio")
+		for e: String in _ee_events:
+			print("[soak]   EE ", e)
 	_metrics.extra["wall_s"] = snappedf(float(Time.get_ticks_msec() - _wall0) / 1000.0, 0.1)
 	_metrics.extra["frame_ms"] = snappedf(_phys_us / maxf(1.0, float(_frames)) / 1000.0, 0.01)
 	_metrics.extra["speed"] = speed

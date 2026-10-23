@@ -41,6 +41,7 @@
     "trap_task": "value of a trap it may pull (only when ordered or the player used it, 0 none)",
     "chatter_ok": "1 when a chatter line is off cooldown",
     "objective": "1 when the local-AI planner has a directive for it",
+    "ee_task": "the value of its easter-egg task (BotEE.value, ee.json value: 0 when it has none, it is paused or waiting; T-067)",
     "order": "strength of an order with its own task (open a door, fetch a part)",
     "escort": "1 when it escorts someone (Jakub)",
     "escort_far": "distance to the escorted player / 15 m",
@@ -136,6 +137,10 @@
       {"input": "objective", "curve": "gate"},
       {"input": "pressure", "curve": {"type": "points", "points": [[0.0, 1.0], [0.4, 0.8], [0.7, 0.3], [1.0, 0.1]]}},
       {"input": "hp", "curve": "healthy"}
+    ]},
+    "ee_task": {"weight": 0.88, "considerations": [
+      {"input": "ee_task", "curve": "order"},
+      {"input": "pressure", "curve": {"type": "points", "points": [[0.0, 1.0], [0.6, 0.85], [1.0, 0.5]]}}
     ]},
     "order": {"weight": 0.9, "considerations": [
       {"input": "order", "curve": "order"},

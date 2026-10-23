@@ -68,6 +68,8 @@ var doors_bought_round: int = 0
 var upgrades: int = 0
 var objectives_done: int = 0
 var planner: BotPlanner = null
+## Its easter-egg work (Update 04 section 5, T-067; BotEE, given by the squad's BotEEHub): the utility action ee_task.
+var ee: BotEE = null
 var bonus_perk: StringName = &""
 var bonus_said: bool = false
 ## The legacy squad order (BotConfig.COMMANDS) this bot follows; `order_id()` is the full one.
@@ -391,6 +393,8 @@ func _think() -> void:
 		aim.cover_point = Vector3.INF
 	aim.think(now)
 	_read_claims(now)
+	if ee != null:
+		ee.tick_think(now)
 	if player.remote_body != null:
 		var cw: WeaponInstance = aim.cur()
 		var shown: StringName = cw.id if cw != null else &""
@@ -513,6 +517,7 @@ func context(now: float) -> Dictionary:
 	c["chatter_ok"] = 1.0 if now >= _chatter_next else 0.0
 	c["objective"] = 1.0 if _planner_ready() else 0.0
 	c["order"] = 1.0 if not _order_task().is_empty() else 0.0
+	c["ee_task"] = ee.value() if ee != null else 0.0
 	var esc: Player = escort_target()
 	c["escort"] = 1.0 if esc != null else 0.0
 	c["escort_far"] = clampf(_flat(esc.global_position, player.global_position) / 15.0, 0.0, 1.0) if esc != null else 0.0
@@ -595,13 +600,16 @@ func personality_economy(key: String, fallback: Variant) -> Variant:
 	return (personality.get("economy", {}) as Dictionary).get(key, fallback)
 
 
-## Easter-egg shootables (bells, the drummer) react to this bot's shots: only the local-AI planner bot.
-func may_touch_quest() -> bool:
-	return planner != null
+## Easter-egg shootables (bells, the drummer) react to this bot's shot only when its egg task aims at exactly that
+## one this frame (T-067: the never-sequence-break rule; BotEE.shot_allowed).
+func may_touch_quest(shootable: Node = null) -> bool:
+	return ee != null and ee.shot_allowed(shootable)
 
 
 ## On an objective of its own (the planner, not "follow"): it fights where it stands instead of following.
 func roaming() -> bool:
+	if ee != null and ee.value() > 0.0 and str(ee.task.get("type", "")) != "escort":
+		return true   # on an egg task of its own (T-067)
 	return planner != null and not planner.directive.is_empty() and str(planner.directive.get("kind", "")) != "follow"
 
 
@@ -1050,6 +1058,10 @@ func wants_crate_weapon(wid: StringName) -> bool:
 ## The slot the current errand needs in hand: its `weapon`, any upgraded gun for `need_upgraded`, the Crucible
 ## ammo's gun; -1.
 func forced_slot() -> int:
+	if ee != null and action == "ee_task":
+		var es: int = ee.forced_slot()
+		if es >= 0:
+			return es
 	if str(task.get("kind", "")) == "crucible_ammo":
 		var cs: int = int(task.get("slot", -1))
 		return cs if cs >= 0 and cs < player.weapons.slots.size() else -1
@@ -1164,6 +1176,11 @@ func stand_point(node: Node3D) -> Vector3:
 			break
 	_stand_cache[key] = [squad.time(), out]
 	return out
+
+
+## Forget the cached stand points (a door just opened: what was out of reach may not be now).
+func invalidate_stand_cache() -> void:
+	_stand_cache.clear()
 
 
 ## A reachable navmesh spot that sees `target` (a bell overhead), nearest rings first; INF when none within 12 m.

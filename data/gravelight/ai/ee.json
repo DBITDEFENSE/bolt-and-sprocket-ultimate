@@ -1,0 +1,35 @@
+{
+  "_doc": "Bots on the easter egg (Update 04 section 5, T-067; gravelight/bots/bot_ee*.gd, docs/gravelight/BOTS.md). The setting 'Bot Easter-Egg Help' (GLSettings bot_ee_help): off / ask (When Asked, the default) / full (Full Partner). Each quest step's bot_task (data/gravelight/quests/*.json) says how a bot does it; these are the shared numbers.",
+  "default_mode": "ask",
+  "pick_every_s": 1.0,
+  "full_max_bots": 2,
+  "_full_max_bots": "Full Partner: at most this many bots on egg work at once (the rest stay with the player).",
+  "presence_m": 20.0,
+  "_presence_m": "A final step in Full Partner mode needs the player within this many metres of its spot (and they must not wander off past 1.5x while the bot works).",
+  "open_blocking_doors": {"ask": true, "full": true},
+  "_open_blocking_doors": "A closed door between the bot and its egg target: it opens it with its own Scrip (affordable only), per mode.",
+  "pause": {
+    "pressure": 0.65,
+    "resume_pressure": 0.45,
+    "min_pause_s": 3.0,
+    "round_end_left": 2,
+    "round_end_max_s": 20.0,
+    "no_threat_pause_types": ["hold_zone", "escort", "kill_with_weapon"],
+    "no_down_pause_types": ["hold_zone"],
+    "full_drop_after_s": 60.0,
+    "_doc": "EE work pauses when the bot's threat pressure is at or over `pressure` (and resumes under resume_pressure, after min_pause_s at least), a teammate is down, or the round is ending (nothing left to spawn, at most round_end_left zombies up; for round_end_max_s at most, so a round that drags on doesn't stop the work), then resumes ('Back to it.'). Holding a zone keeps holding through threat and downs (that is the job). In Full Partner a task paused longer than full_drop_after_s is dropped and picked again later."
+  },
+  "value": {"hold_zone": 0.95, "kill_with_weapon": 0.9, "escort": 0.75, "default": 0.8, "_doc": "The utility input ee_task while a task runs (actions.json ee_task)."},
+  "scores": {"main_quest": 70.0, "side_quest": 52.0, "per_m": 0.25, "carry": 6.0, "shoot_target": 5.0, "interact_sequence": 5.0, "hold_zone": 10.0, "kill_with_weapon": 5.0, "collect": 0.0, "_doc": "Full Partner: which open step a free bot picks (higher wins; minus per_m per metre to its spot)."},
+  "sight": {"every_s": 0.5, "sight_m": 26.0, "hear_m": 12.0, "rays_per_sweep": 10, "_doc": "The squad's discoveries: a findable egg object (find: seen) is discovered once a squad member (the player or a bot) is within sight_m with a clear line of sight to it; an audible one (find: heard) within its hear_m (task hear_m overrides)."},
+  "lines": {"progress_gap_s": 15.0, "interrupt_gap_s": 30.0, "cant_gap_s": 6.0},
+  "hold_fight_m": 2.2,
+  "_hold_fight_m": "Holding a zone: a zombie closer than this and the bot fights it the normal way (backs off, knifes) for that moment.",
+  "errand_timeout_s": 45.0,
+  "wait_timeout_s": 150.0,
+  "jakub": {
+    "types": ["collect", "hold_zone", "carry", "escort"],
+    "refuses": ["crucible", "perk"],
+    "_doc": "Jakub (the companion) does Collect, Hold and Carry (and stays at the side of whoever he covers); he refuses anything involving the Crucible or the perk machines, in character (JAK_SQ4_EE_REFUSE_*)."
+  }
+}

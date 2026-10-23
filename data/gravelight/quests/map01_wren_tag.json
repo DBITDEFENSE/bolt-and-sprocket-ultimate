@@ -7,6 +7,7 @@
     {
       "id": "s1_tag",
       "type": "interact",
+      "bot_task": {"player_only": "final", "target": {"class": "QuestPickup", "where": {"interact_target": "kb4471"}}, "what": "the tag KB-4471"},
       "params": {
         "target": "kb4471"
       },

@@ -3,6 +3,7 @@
   "display_name": "Requiem for Kaltenbrunn",
   "map": "map01_kaltenbrunn",
   "version": 1,
+  "bot_knowledge": {"code": {"label": "heard Fasbender's code on the three radios", "on_collect": {"tag": "quest_radio", "count": 3}}, "melody": {"label": "heard the music box's melody", "on_vo": ["MUSIC_BOX"]}, "bells": {"label": "found where the four little bells hang", "on_seen": {"group": "quest_bells", "where": {"kind": "small", "visible": true}, "count": 4}}},
   "random": {
     "radios": {
       "type": "pick_per_group",
@@ -99,6 +100,7 @@
     {
       "id": "s0_power",
       "type": "flag",
+      "bot_task": {"type": "interact_sequence", "target": {"group": "power_switch"}, "what": "the power switch", "ping": "POWER"},
       "params": {
         "flag": "power_on"
       },
@@ -108,6 +110,7 @@
     {
       "id": "s1_vault",
       "type": "flag",
+      "bot_task": {"type": "hold_zone", "anchors": {"group": "pylons"}, "start": "interact", "start_needs_player_m": 22.0, "radius_mult": 0.45, "what": "the Resonance Pylons", "ping": "PYLON"},
       "params": {
         "flag": "core_vault_open"
       },
@@ -130,6 +133,7 @@
     {
       "id": "s2a_radios",
       "type": "collect",
+      "bot_task": {"type": "collect", "targets": {"group": "quest_radios"}, "id_prop": "radio_id", "find": "heard", "hear_m": 12.0, "what": "the calling radios", "ping": "RADIO"},
       "params": {
         "tag": "quest_radio",
         "count": 3
@@ -141,6 +145,7 @@
     {
       "id": "s2b_switchboard",
       "type": "sequence",
+      "bot_task": {"type": "interact_sequence", "target": {"class": "Switchboard"}, "input": {"method": "plug", "arg": "int"}, "needs": ["code"], "what": "the switchboard", "ping": "SWITCHBOARD"},
       "params": {
         "target": "switchboard",
         "inputs_from": "code"
@@ -179,6 +184,7 @@
     {
       "id": "s3_build",
       "type": "build",
+      "bot_task": {"type": "carry", "pickups": {"group": "buildable_parts", "where": {"visible": true}}, "find": "seen", "deliver": {"group": "workbenches"}, "what": "the Totenglocke parts", "ping": "PART"},
       "params": {
         "buildable": "totenglocke"
       },
@@ -201,6 +207,7 @@
     {
       "id": "s4_key",
       "type": "kill_condition",
+      "bot_task": {"type": "shoot_target", "target": {"group": "quest_bells", "where": {"kind": "chapel"}}, "need_upgraded": true, "lit_flag": "chapel_bell_lit", "risky": "shoot", "then_hold": {"radius": 4.0}, "what": "the Chapel bell", "ping": "BELL"},
       "params": {
         "enemy": "foreman",
         "zone": "F_CHAPEL",
@@ -235,6 +242,7 @@
     {
       "id": "s5_reliquary",
       "type": "interact",
+      "bot_task": {"type": "carry", "item": "overseers_key", "deliver": {"class": "AltarReliquary"}, "deliver_ready": "altar", "what": "the Overseer's Key", "ping": "ALTAR"},
       "params": {
         "target": "altar",
         "requires_item": "overseers_key"
@@ -269,6 +277,7 @@
     {
       "id": "s6_bells",
       "type": "sequence",
+      "bot_task": {"type": "shoot_target", "sequence": {"group": "quest_bells", "where": {"kind": "small", "visible": true}, "value_prop": "note"}, "needs": ["melody", "bells"], "what": "the Four Bells", "ping": "BELL"},
       "params": {
         "target": "four_bells",
         "inputs_from": "melody"
@@ -310,6 +319,7 @@
     {
       "id": "s7_drummer",
       "type": "chase",
+      "bot_task": {"type": "shoot_target", "target": {"group": "quest_drummers"}, "moving": true, "trigger": "crate", "risky": "trigger", "then_pickup": {"class": "QuestPickup", "where": {"item_id": "nachtglas_shard", "visible": true}}, "what": "Herr Tamtam", "ping": "DRUMMER"},
       "params": {
         "actor": "drummer",
         "item": "nachtglas_shard",
@@ -345,6 +355,7 @@
     {
       "id": "s8a_place",
       "type": "interact",
+      "bot_task": {"type": "carry", "item": "nachtglas_shard", "pickup": {"class": "QuestPickup", "where": {"item_id": "nachtglas_shard", "visible": true}}, "deliver": {"class": "Crucible"}, "deliver_ready": "crucible_shard", "touches": ["crucible"], "what": "the Nachtglas shard", "ping": "CRUCIBLE"},
       "params": {
         "target": "crucible_shard",
         "requires_item": "nachtglas_shard"
@@ -369,6 +380,7 @@
     {
       "id": "s8b_charge",
       "type": "kill_count",
+      "bot_task": {"type": "kill_with_weapon", "weapon": ["totenglocke", "totenglocke_up"], "get_weapon": {"group": "workbenches"}, "what": "the shard's charge", "ping": "HEART"},
       "params": {
         "weapon": [
           "totenglocke",
@@ -409,6 +421,7 @@
     {
       "id": "s9_heartstorm",
       "type": "holdout",
+      "bot_task": {"type": "hold_zone", "while": "holdout", "start": "player", "final": true, "radius": 5.0, "target": {"class": "Crucible"}, "what": "the Heartstorm", "ping": "CORE"},
       "params": {
         "start_target": "crucible_heartstorm",
         "duration": 120.0,
@@ -558,6 +571,7 @@
     {
       "id": "s10_ending",
       "type": "cutscene",
+      "bot_task": {"player_only": "cutscene", "what": "the ending"},
       "params": {
         "runner": "res://gravelight/world/requiem_ending.gd",
         "seconds": 40.0

@@ -16,6 +16,9 @@ extends Node
 ##     dev console's `ai_debug` overlay (BotDebugOverlay).
 ## U02 section 5: bonus perks, the spawn kit, choke points. Companions (Jakub, U02 section 6) join through
 ## add_brain(player, options).
+## Update 04 section 5 (T-067): the easter-egg help (`ee`, BotEEHub; the setting "Bot Easter-Egg Help") and its
+## public API: ee_assign / ee_can_assign / ee_task_of / ee_cancel / ee_assign_node (the Objectives tab, map marks
+## and the ping key call these).
 
 var map: MapRoot
 var brains: Array[BotBrain] = []
@@ -53,6 +56,8 @@ var plates: BotPlates = null
 var wheel: BotCommandWheel = null
 var pings: BotPings = null
 var debug: BotDebugOverlay = null
+## The easter-egg help (T-067): assignments, Full Partner, what the squad has discovered.
+var ee: BotEEHub = null
 var _bot_cd: Dictionary = {}      # "pid:FAMILY" -> time a bark may come again
 ## The human's recent walking line (their training loop): ~24 s of breadcrumbs. Bots never park on it.
 var human_line: PackedVector3Array = PackedVector3Array()
@@ -78,6 +83,7 @@ func setup(map_root: MapRoot) -> void:
 		i += 1
 	_assign_bonus_perks()
 	_start_planner()
+	_start_ee()
 	_build_chokes()
 	for n: Node in map.find_children("*", "WallBuy", true, false):
 		_wall_buys.append(n as WallBuy)
@@ -107,6 +113,8 @@ func add_brain(p: Player, options: Dictionary = {}, i: int = -1) -> BotBrain:
 	p.add_child(b)
 	b.setup(p, self, brains.size() if i < 0 else i)
 	brains.append(b)
+	if ee != null:
+		ee.attach(b)
 	if bool(b.options.get("kit", true)) and not Campaign.carried_player(p.player_id):
 		apply_kit(p, true)   # a campaign arrival keeps the carried kit instead
 	if is_inside_tree():
@@ -219,6 +227,49 @@ func _start_planner() -> void:
 	brains[idx].add_child(pl)
 	pl.setup(brains[idx], self, GameState.bot_ai_mode == "local")
 	brains[idx].planner = pl
+
+
+func _start_ee() -> void:
+	ee = BotEEHub.new()
+	add_child(ee)
+	ee.setup(self)
+
+
+# ================================================================== the easter egg (Update 04 section 5, T-067)
+
+## Gives an easter-egg step to a bot: {"ok": bool, "reason": String, "pid": int}. pid -1 = the best available bot
+## (closest to the step, able to do it, not busy reviving). A player-only step comes back ok with the bot covering
+## the player instead (reason says so). Refusals carry the reason ("Can't do that yet: we haven't heard the music
+## box's melody.") and the bot says it.
+func ee_assign(quest_id: StringName, step_id: StringName, pid: int = -1) -> Dictionary:
+	if ee == null:
+		return {"ok": false, "reason": "No bots in this match.", "pid": -1}
+	return ee.assign(quest_id, step_id, pid, null, "ask")
+
+
+## Could a bot be given this step right now? (the Objectives tab's "Assign to bot")
+func ee_can_assign(quest_id: StringName, step_id: StringName) -> bool:
+	return ee != null and ee.can_assign(quest_id, step_id)
+
+
+## The bot's current egg task for status lines ({} none): {quest_id, step_id, type, label ("Collecting the radio
+## notes (2/3)"), state ("use" / "input" / "hold" / "escort" / "wait" / "paused" ...), paused, source, ordered, pid}.
+func ee_task_of(pid: int) -> Dictionary:
+	return ee.task_of(pid) if ee != null else {}
+
+
+## Cancels a bot's egg task (pid -1: every bot's).
+func ee_cancel(pid: int = -1) -> void:
+	if ee != null:
+		ee.cancel(pid, "cancelled by the player")
+
+
+## A map mark or the ping key on an egg object / part / power-up: the open step that object belongs to goes to the
+## bot (pid -1 = the best one), with that object as its focus. Same return as ee_assign.
+func ee_assign_node(node: Node, pid: int = -1) -> Dictionary:
+	if ee == null:
+		return {"ok": false, "reason": "No bots in this match.", "pid": -1}
+	return ee.assign_node(node, pid, "mark")
 
 
 func planner() -> BotPlanner:
@@ -1031,6 +1082,8 @@ func report() -> PackedStringArray:
 	var ts: Dictionary = think_stats()
 	out.append("squad: order %s, revives by bots %d, choke reports %d, brain %.3f ms/bot/frame (think %.3f ms)" % [command, revives_total(), choke_events.size(),
 		float(ts["ms_per_bot_frame"]), float(ts["ms_per_think"])])
+	if ee != null:
+		out.append_array(ee.report())
 	for e: String in choke_events.slice(0, 8):
 		out.append("  CHOKE " + e)
 	for e2: String in down_log.slice(maxi(0, down_log.size() - 24)):

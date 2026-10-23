@@ -3,10 +3,12 @@
   "display_name": "Glasmacher Calling",
   "map": "map00_crossroads",
   "version": 1,
+  "bot_knowledge": {"frequencies": {"label": "read the three notes' frequencies", "on_collect": {"tag": "radio_note", "count": 3}}},
   "steps": [
     {
       "id": "s1_notes",
       "type": "collect",
+      "bot_task": {"type": "collect", "targets": {"class": "QuestNote", "where": {"tag": "radio_note"}}, "id_prop": "item_id", "what": "the radio notes", "ping": "NOTE"},
       "params": { "tag": "radio_note", "count": 3 },
       "requires": [],
       "debug_skip": "quest skip map00_radio s1_notes"
@@ -14,6 +16,7 @@
     {
       "id": "s2_tune",
       "type": "sequence",
+      "bot_task": {"type": "interact_sequence", "target": {"class": "FieldRadio", "where": {"quest_target": "radio_m0"}}, "input": {"method": "lock_frequency", "arg": "string"}, "needs": ["frequencies"], "final": true, "commit": "last_input", "what": "the radio", "ping": "RADIO"},
       "params": { "target": "radio_m0", "inputs": ["3.120", "5.785", "7.440"] },
       "requires": ["s1_notes"],
       "reset": { "on": "wrong_input", "actions": [] },

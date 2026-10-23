@@ -209,3 +209,53 @@ sections 5 and 6. All the tuning is in `data/gravelight/ai/*.json`.
   the Bergwacht and the Treibstoff-Gaenger are in `ai_counters.json`, ready for when they exist.
 - **Debug:** dev console `ai_debug 1` (action, top scores, role and target over each bot, path lines), `ai_debug
   panel` (the squad blackboard), `ai_debug heat` (a threat heatmap on the floor), `ai_debug 0`.
+
+
+## Update 04 section 5 (T-067): bots on the easter egg
+
+UPDATE_03 said bots never touch easter-egg objects. Now they can, when you allow it: **Settings -> Gameplay -> Bot
+Easter-Egg Help**:
+
+- **Off:** bots never touch egg objects (the local-AI planner bot doesn't either, any more).
+- **When Asked** (the default): a bot only does a step you give it: the Objectives tab's "Assign to bot", a map mark
+  or the ping key on an egg object, part or power-up, or the dev console. The best bot takes it (closest, able, not
+  busy reviving) unless you pick one.
+- **Full Partner:** up to two bots at a time pick open steps they can do themselves, one task each, and say so ("I'll
+  go pick those up. Cover the windows." with a ping on the note). The last steps wait for you to be there.
+
+How a bot does a step is data: every step in `data/gravelight/quests/*.json` has a `bot_task` (task types Collect,
+Shoot target, Hold zone, Carry, Interact sequence, Kill with weapon X near Y, Escort/defend the player, Turn key; the
+schema is in `docs/gravelight/EASTER_EGGS.md` section 9). Code: `gravelight/bots/bot_ee_catalog.gd` (the rules, pure),
+`bot_ee_knowledge.gd` (what the squad knows), `bot_ee.gd` (one bot's task: a planner and an executor per type),
+`bot_ee_hub.gd` (the setting, assignments, Full Partner, discoveries, console). Numbers: `data/gravelight/ai/ee.json`.
+The local-AI planner no longer lists egg steps (every bot works the egg through this now).
+
+- **Puzzle knowledge.** Bots know only what the squad found out: the frequencies once all three notes are read, the
+  switchboard code once the three radios were heard, the bell order once the music box played, where the four little
+  bells and the Totenglocke parts are once someone (you or a bot) saw them, the calling radios once someone heard them.
+  Until then: "Can't do that yet: we haven't heard the music box's melody." A debug-skipped step teaches nothing.
+- **Never breaks the egg.** A bot only ever makes the input the sequence expects next (read from the quest, never a
+  guess); its bullets ring only the bell it is aiming at; it never makes the input that finishes a step whose last
+  input is your commit (Map 0's radio: it locks two frequencies and says "Last one's yours"); it never pulls the
+  crate for the drummer or lights the Chapel bell (both can fail a step) unless you ordered it; at the Crucible it
+  only places the shard while the quest is ready for it, so it never hands its gun to the forge by mistake.
+- **Player-only steps** (cutscenes, the final step's commit, story choices, the Crucible weapon handoff, giving Jakub
+  a gun): asked to do one, the bot covers you while you do it ("That one's yours, partner. I'll watch your back.").
+  Today: the Requiem ending, the phonograph, Wren's tag; the Heartstorm's start (the bots hold the Core once it runs).
+- **One task at a time, and the fight first.** Egg work pauses when the bot is under pressure, a teammate is down or
+  the round is ending (for 20 s at most, so a round that drags on doesn't stop the work), and resumes ("Back to it.").
+  Holding a zone keeps holding through all that: that is the job. A bot opens a door in the way with its own Scrip
+  (the first closed door on the way there).
+- **Jakub** carries, collects and holds ground; he refuses the Crucible, the perk machines and anything else, in
+  character ("Not the furnace. I have seen what fires like that get fed. Ask me anything else.").
+- **Voice:** VO_SCRIPT section 18 (acknowledge per task type, progress, done, the hand-over, can't with the reason,
+  interrupted, back to it), every survivor and Jakub; unbaked for now, they play as subtitles.
+- **Debug:** `ai_debug 1` shows each bot's egg task over it ("EE map00_radio/s1_notes: Collecting the radio notes
+  (2/3)") and the panel lists the squad's discoveries; `ee_bot_mode off|ask|full`, `ee_bot_assign <step> [quest]
+  [pid]` (`ee_bot_assign cancel`), `ee_bot_status`.
+- **API** (the Objectives tab and the map marks call these): `BotSquad.ee_assign(quest_id, step_id, pid = -1) ->
+  {ok, reason, pid}`, `ee_can_assign(quest_id, step_id) -> bool`, `ee_task_of(pid) -> {quest_id, step_id, type, label,
+  state, paused, source, ordered, pid}`, `ee_cancel(pid = -1)`, `ee_assign_node(node, pid = -1)` (finds the open step
+  the object belongs to and makes it the task's focus: that note, that bell).
+- **Tests:** `gravelight/tests/unit/test_bot_ee.gd`; smokes `smoke_ee_bots` (When Asked: marks, assignments, the
+  hand-over, Off) and `smoke_bot_ai` (Full Partner); soak `tools/ai_soak.sh --scenario=ee_full --runs=3`.

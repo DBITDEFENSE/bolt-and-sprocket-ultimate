@@ -178,6 +178,11 @@ func steps_of(qid: StringName) -> Array:
 	return (_quests.get(qid, {}) as Dictionary).get("steps", [])
 
 
+## A loaded quest's whole definition ({} unknown): the bots read its "bot_knowledge" block (T-067).
+func definition(qid: StringName) -> Dictionary:
+	return _quests.get(qid, {})
+
+
 func display_name_of(qid: StringName) -> String:
 	return str((_quests.get(qid, {}) as Dictionary).get("display_name", qid))
 

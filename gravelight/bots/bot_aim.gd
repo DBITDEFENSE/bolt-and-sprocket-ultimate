@@ -580,8 +580,8 @@ func _trace(origin: Vector3, dir: Vector3, w: WeaponInstance, hits: Dictionary) 
 				var cn: String = (col as Node).name if col is Node else "?"
 				miss_on[cn] = int(miss_on.get(cn, 0)) + 1
 			var shootable: Node = WeaponHolder.shootable_of(col)
-			if shootable != null and brain.may_touch_quest():
-				# quest shootables (bells, the drummer) are egg steps: only the local-AI planner bot does those
+			if shootable != null and brain.may_touch_quest(shootable):
+				# quest shootables (bells, the drummer) are egg steps: only the one this bot's egg task aims at (T-067)
 				WeaponHolder.notify_shot(shootable, w.id, w.upgraded, player.player_id)
 			Effects.impact(pos, res["normal"], "", col)
 			break

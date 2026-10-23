@@ -756,3 +756,37 @@ in the match: the bots don't throw the power behind their back.
   stable's hayloft edge, two spots, needs the stable door). Never with a boss within 20 m of the spot (the Reach
   drops into that hayloft). Checked every 2 s (`BotActions._high_ground`).
 - The soak's squad report counts both (`flanks`, `high ground`), and the bonus and bought perks at the end.
+
+
+## 9. Bots on the easter egg (Update 04 section 5, T-067)
+
+UPDATE_03's "never touch easter-egg objects" became a setting, "Bot Easter-Egg Help" (Off / When Asked, the default /
+Full Partner). The local-AI planner's egg step list (BotPlanner._egg_options, which only the planner bot used) moved
+into the quest data as a `bot_task` per step and into four files every bot uses:
+
+| File | Job |
+|---|---|
+| `bot_ee_catalog.gd` (BotEECatalog) | Pure rules: the mode, the gate (mode, step state, player-only, Jakub's limits, the discovered-info gate, risky stages, final steps need the player), the never-sequence-break guard (`safe_input`, `commit_blocked`), the pause rule (threat with hysteresis, a teammate down, the round ending), node specs. |
+| `bot_ee_knowledge.gd` (BotEEKnowledge) | What the squad has discovered (on the blackboard as `ee_known`). |
+| `bot_ee.gd` (BotEE) | One bot's task: a pure planner per task type (`plan_collect`, `plan_inputs`, `plan_shoot`, `plan_hold`, `plan_carry`, `plan_kill`, `plan_escort`, `plan_turn_key`) over a world snapshot, and the executor that carries the move out through BotTasks errands, BotAim and the locomotion layer. Opens the first closed door on the way with its own Scrip. |
+| `bot_ee_hub.gd` (BotEEHub, `squad.ee`) | The setting, the public API (`BotSquad.ee_assign / ee_can_assign / ee_task_of / ee_cancel / ee_assign_node`), Full Partner's picks, the discovery feeds and sight sweep, the failed-egg counter, the console. |
+
+The brain gets one utility action, **ee_task** (actions.json: weight 0.88, the `order` curve on the task's value,
+falling with pressure). Its input is `BotEE.value()`: 0 with no task, while paused or while waiting, else 0.8 (0.95
+holding a zone, 0.9 killing with a weapon, 0.75 covering the player). So a calm bot works the task, a fight or a revive
+wins, and the task resumes. Holding a zone never pauses for threat (it fights in place, and anything at arm's length is
+fought the normal way). A quest shootable only reacts to a bot's bullet when that bot's task aimed at exactly it this
+frame (`BotEE.shot_allowed`, `BotBrain.may_touch_quest(shootable)`).
+
+Measured (`tools/ai_soak.sh --scenario=ee_full --runs=3 --seed=1`: Map 0, 3 bots + the scripted player, Full Partner;
+the run ends when the egg is complete):
+
+| run (seed) | notes taken by bots | radio locks by bots | handed to the player at | egg complete | egg-failure events |
+|---|---|---|---|---|---|
+| 1 (1) | 3/3 | 2/3 | 83 s (round 2) | yes, 1.4 game min | 0 |
+| 2 (2) | 3/3 | 2/3 | 143 s (round 2) | yes, 2.4 game min | 0 |
+| 3 (3) | 3/3 | 2/3 | 78 s (round 2) | yes, 1.3 game min | 0 |
+
+Every step a bot can do on Map 0 was done by the bots (opening the upstairs and stable doors with their own Scrip on the
+way); the last frequency is the player's commit, which the harness locks. Zero quest_step_failed events in all runs.
+Brain cost with the egg work: 0.23-0.26 ms per bot per frame (the 0.5 ms budget holds).
