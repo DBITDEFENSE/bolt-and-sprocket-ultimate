@@ -235,12 +235,19 @@ func start_on(b: BotBrain, qid: StringName, sid: StringName, t: Dictionary, orde
 	b.ee.start(qid, sid, t, ordered, source, focus, as_kind)
 
 
-func on_task_finished(_b: BotBrain, t: Dictionary, ok: bool, _code: String) -> void:
-	if ok and QuestManager.is_step_done(t["qid"], t["sid"]):
-		steps_by_bots += 1
+func on_task_finished(_b: BotBrain, _t: Dictionary, ok: bool, _code: String) -> void:
 	if not ok:
 		tasks_failed += 1
-	inputs_by_bots += int(t.get("inputs", 0))
+
+
+## Is a teammate's egg task already going for this object (its plan's target or its claim)?
+func targeted_by_other(n: Node, me: BotBrain) -> bool:
+	for b: BotBrain in squad.brains:
+		if b == me or b.ee == null or not b.ee.active():
+			continue
+		if b.ee._plan.get("node") == n or b.ee._claim_key == "ee:%d" % n.get_instance_id():
+			return true
+	return false
 
 
 ## Where a step happens (its first named object; the holdout / kill spot), INF unknown.
@@ -369,8 +376,15 @@ func _on_flag(_f: StringName, _v: Variant) -> void:
 	_sweep_t = minf(_sweep_t, 0.05)
 
 
-func _on_step_completed(_q: StringName, _s: StringName) -> void:
+func _on_step_completed(q: StringName, s: StringName) -> void:
 	_sweep_t = minf(_sweep_t, 0.05)
+	if squad == null:
+		return
+	_poll_knowledge()   # what the step taught (all three notes read) is known at once
+	for b: BotBrain in squad.brains:
+		if b.ee != null and b.ee.active() and b.ee.task["qid"] == q and b.ee.task["sid"] == s and str(b.ee.task.get("type", "")) != "escort":
+			steps_by_bots += 1   # a step finished while a bot worked it (the player may have made the commit)
+			return
 
 
 ## The objects to be found: every active step's findable targets and the on_seen specs.

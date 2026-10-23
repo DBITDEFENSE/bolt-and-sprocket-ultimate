@@ -1178,6 +1178,11 @@ func stand_point(node: Node3D) -> Vector3:
 	return out
 
 
+## Forget the cached stand points (a door just opened: what was out of reach may not be now).
+func invalidate_stand_cache() -> void:
+	_stand_cache.clear()
+
+
 ## A reachable navmesh spot that sees `target` (a bell overhead), nearest rings first; INF when none within 12 m.
 func vantage_for(target_p: Vector3) -> Vector3:
 	var eye_h: float = float(BotAIData.combat("perception").get("eye_height", 1.55))

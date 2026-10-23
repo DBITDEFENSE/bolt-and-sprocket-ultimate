@@ -47,6 +47,7 @@ var _failed_nodes: Dictionary = {}    # instance id -> squad time it may be trie
 var _hold_t: float = 0.0
 var _vantage: Dictionary = {}         # instance id -> Vector3
 var _replan: bool = true
+var _round_end_skip: int = -1         # the round whose dragging end no longer pauses the task
 
 
 func setup(b: BotBrain) -> void:
@@ -195,8 +196,12 @@ func _pause_state() -> Dictionary:
 			if p != player and is_instance_valid(p) and not p.spectating and Net.session.coop.is_downed(p.player_id):
 				down = true
 	var left: int = -1
-	if RoundManager.state == RoundManager.State.ROUND and RoundManager.to_spawn <= 0 and brain.squad.director() != null:
+	if RoundManager.state == RoundManager.State.ROUND and RoundManager.to_spawn <= 0 and brain.squad.director() != null and _round_end_skip != RoundManager.current_round:
 		left = brain.squad.director().active_zombies().size()
+		# a round that drags on (the last zombie stuck somewhere): back to the task after round_end_max_s
+		if str(task.get("paused", "")) == "round_end" and _now() - float(task.get("paused_t", _now())) > float((_cfg().get("pause", {}) as Dictionary).get("round_end_max_s", 20.0)):
+			_round_end_skip = RoundManager.current_round
+			left = -1
 	var away: bool = false
 	var t: Dictionary = task["def"]
 	if bool(t.get("final", false)) and not bool(task.get("ordered", false)) and str(task["type"]) != "escort":
@@ -281,6 +286,10 @@ func _refresh_plan() -> void:
 	_replan = false
 	if not active():
 		return
+	if str(_plan.get("do", "")) == "door":
+		var dn: BuyDoor = _plan.get("node") as BuyDoor
+		if dn != null and is_instance_valid(dn) and not dn.is_open and float(_failed_nodes.get(dn.get_instance_id(), -INF)) <= _now():
+			return   # on the way to open a door: no second-guessing every think
 	var w: Dictionary = snapshot(task["qid"], task["sid"], task["def"], task.get("focus"), bool(task["ordered"]), str(task["type"]))
 	_plan = plan(str(task["type"]), task["def"], w)
 	var d: String = str(_plan.get("do", ""))
@@ -318,7 +327,8 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 	var params: Dictionary = step.get("params", {})
 	var prog: Variant = QuestManager.progress(qid, sid)
 	var w: Dictionary = {"step_done": QuestManager.is_step_done(qid, sid), "step_active": QuestManager.is_active(qid, sid), "ordered": ordered,
-		"focus": focus if focus is Node and is_instance_valid(focus) else null, "picked": int(task.get("picked", 0)) if active() else 0, "me": player.global_position}
+		"focus": focus if focus is Node and is_instance_valid(focus) else null, "picked": int(task.get("picked", 0)) if active() else 0, "me": player.global_position,
+		"current": task.get("cur") if active() and is_instance_valid(task.get("cur")) else null}
 	var hub_ok: bool = hub != null
 	match ty:
 		"collect":
@@ -333,7 +343,8 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 					var n3: Node3D = n as Node3D
 					if n3 == null:
 						continue
-					rows.append({"node": n3, "id": BotEECatalog.target_id(n3, t), "ok": _eligible(n3, t), "d": _flat(n3.global_position, player.global_position)})
+					rows.append({"node": n3, "id": BotEECatalog.target_id(n3, t), "ok": _eligible(n3, t) and not hub.targeted_by_other(n3, brain),
+						"d": _flat(n3.global_position, player.global_position)})
 			w["nodes"] = rows
 		"interact_sequence":
 			w["node"] = _first(t.get("target", {}), focus)
@@ -384,7 +395,7 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 			if t.has("pickups") and hub_ok:
 				for pn: Node in hub.resolve(t["pickups"]):
 					var p3: Node3D = pn as Node3D
-					if p3 != null and _eligible(p3, t):
+					if p3 != null and _eligible(p3, t) and not hub.targeted_by_other(p3, brain):
 						prow.append({"node": p3, "d": _flat(p3.global_position, player.global_position)})
 			w["pickups"] = prow
 			var dn: Node = _first(t.get("deliver", {}), null)
@@ -453,14 +464,19 @@ static func plan_collect(_t: Dictionary, w: Dictionary) -> Dictionary:
 	var got: Array = w.get("got", [])
 	var focus: Variant = w.get("focus")
 	var best: Dictionary = {}
+	var cur: Dictionary = {}
 	for r: Variant in w.get("nodes", []):
 		var row: Dictionary = r
 		if not bool(row.get("ok", false)) or got.has(str(row.get("id", ""))):
 			continue
 		if focus != null and row.get("node") == focus:
 			return {"do": "use", "node": row["node"]}
+		if w.get("current") != null and row.get("node") == w["current"]:
+			cur = row
 		if best.is_empty() or float(row.get("d", 0.0)) < float(best.get("d", 0.0)):
 			best = row
+	if not cur.is_empty():
+		return {"do": "use", "node": cur["node"]}   # stays with the one it set out for (no dithering between two)
 	if not best.is_empty():
 		return {"do": "use", "node": best["node"]}
 	if int(w.get("picked", 0)) > 0:
@@ -582,6 +598,9 @@ static func plan_carry(t: Dictionary, w: Dictionary) -> Dictionary:
 		var best: Dictionary = {}
 		for r: Variant in w.get("pickups", []):
 			var row: Dictionary = r
+			if w.get("current") != null and row["node"] == w["current"]:
+				best = row
+				break
 			if best.is_empty() or float(row["d"]) < float(best["d"]):
 				best = row
 		if not best.is_empty():
@@ -719,14 +738,17 @@ func _do_use(n: Node3D, delta: float) -> void:
 		_failed_nodes[n.get_instance_id()] = _now() + 8.0
 		_replan = true
 		return
+	task["cur"] = n
 	var r: String = _run_errand({"kind": "use", "node": n, "stand": sp}, delta)
 	if r == "done":
 		task["picked"] = int(task["picked"]) + 1
+		task["cur"] = null
 		_progress_line(n)
 		_unclaim()
 		_replan = true
 	elif r == "failed":
 		_failed_nodes[n.get_instance_id()] = _now() + 20.0
+		task["cur"] = null
 		_unclaim()
 		_replan = true
 
@@ -766,6 +788,8 @@ func _do_input(n: Node3D, delta: float) -> void:
 	else:
 		res = str(QuestManager.submit(StringName(str(inp.get("target", ""))), value).get("result", ""))
 	task["inputs"] = int(task["inputs"]) + 1
+	if hub != null:
+		hub.inputs_by_bots += 1
 	_replan = true
 	if res == "done":
 		_finish(true)
@@ -887,6 +911,7 @@ func _do_door(delta: float) -> void:
 		_replan = true
 		return
 	if not brain.squad.can_claim(d, player.player_id):
+		_failed_nodes[d.get_instance_id()] = _now() + 10.0   # a teammate is on it
 		_replan = true
 		return
 	brain.squad.claim(d, player.player_id)
@@ -896,24 +921,44 @@ func _do_door(delta: float) -> void:
 	var r: String = _run_errand({"kind": "door", "node": d}, delta)
 	if r != "running":
 		brain.squad.release(d, player.player_id)
+		if r == "failed" or not d.is_open:
+			_failed_nodes[d.get_instance_id()] = _now() + 30.0
+			_log("couldn't open %s" % BotBrain.door_label(d))
+		else:
+			_log("opened %s for %s" % [BotBrain.door_label(d), str((task["def"] as Dictionary).get("what", "the egg"))])
+		brain.invalidate_stand_cache()
 		_replan = true
 
 
-## The closed door that most likely stands between the bot and `goal`: affordable, usable, its near side reachable,
-## nearest the goal (the planner's rule, T-031).
+## The closed door between the bot and `goal`: the first closed door the navmesh path to it crosses (the path
+## ignoring doors; doors aren't baked into the navmesh), if this bot can open it (usable, affordable, not failed just
+## now). null when the way is open or the door isn't ours to open.
 func _blocking_door(goal: Vector3) -> BuyDoor:
-	var scrip: int = Economy.get_scrip(player.player_id)
+	var nav: RID = player.get_world_3d().navigation_map
+	var dest: Vector3 = Vector3.INF
+	for dy: float in [0.0, -1.5, -3.0]:
+		var sn: Vector3 = brain.snap(goal + Vector3(0.0, dy, 0.0))
+		if _flat(sn, goal) < 2.0 and absf(sn.y - goal.y) < 3.5:
+			dest = sn
+			break
+	if dest == Vector3.INF:
+		return null
+	var path: PackedVector3Array = NavigationServer3D.map_get_path(nav, player.global_position, dest, true, brain.squad.nav_mask())
+	if path.is_empty() or path[path.size() - 1].distance_to(dest) > 1.5:
+		return null
 	var best: BuyDoor = null
 	var best_d: float = INF
 	for d: BuyDoor in brain.loco_doors():
-		if d == null or not is_instance_valid(d) or d.is_open or not d.can_interact(player) or scrip < d.cost:
+		if d == null or not is_instance_valid(d) or d.is_open or not ZombieDirector.door_crossed(d, path):
 			continue
-		if not brain.reachable(BotBrain._door_side(d, player.global_position)):
-			continue
-		var dd: float = Vector2(d.global_position.x - goal.x, d.global_position.z - goal.z).length()
+		var dd: float = _flat(d.global_position, player.global_position)
 		if dd < best_d:
 			best_d = dd
 			best = d
+	if best == null or not best.can_interact(player) or Economy.get_scrip(player.player_id) < best.cost:
+		return null
+	if float(_failed_nodes.get(best.get_instance_id(), -INF)) > _now():
+		return null
 	return best
 
 
