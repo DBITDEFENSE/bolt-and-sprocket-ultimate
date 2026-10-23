@@ -67,7 +67,7 @@ var _call_t: float = 0.0
 var _calls: int = 0
 var _talk_cd: float = 0.0
 var _said: Dictionary = {}
-var _later: Array = []            # [at, category]
+var _later: Array = []            # [due, category, give up at, heard-check until (-1 = not submitted), fired count before]
 var _wren_done: bool = false
 var _choice: JakubChoice = null
 var _discounted: Dictionary = {}  # BuyDoor -> its own cost
@@ -849,8 +849,12 @@ func _say(category: String) -> bool:
 
 ## A line for later. If he's down when it comes due, or the line can't play yet (the channel is busy), it waits and
 ## tries again until `patience` seconds past its time (a down at the Cousins' arrival used to lose his line for good).
+## A line the VOManager only queued isn't counted as said: a queued quip expires after a few seconds in a busy
+## channel, so the entry waits `HEARD_WAIT` s for the line to actually start (GLVO.fired) and otherwise tries again.
+const HEARD_WAIT: float = 6.0
+
 func _later_say(seconds: float, category: String, patience: float = 60.0) -> void:
-	_later.append([_now + seconds, category, _now + seconds + patience])
+	_later.append([_now + seconds, category, _now + seconds + patience, -1.0, 0])
 
 
 func _tick_later() -> void:
@@ -859,11 +863,26 @@ func _tick_later() -> void:
 	var keep: Array = []
 	for e: Variant in _later:
 		var a: Array = e
+		var key: String = "JAK:" + str(a[1])
+		if float(a[3]) >= 0.0:
+			# submitted: done once it has started; past HEARD_WAIT it was dropped from the queue, so try again
+			if int(GLVO.fired.get(key, 0)) > int(a[4]):
+				continue
+			if _now < float(a[3]):
+				keep.append(a)
+				continue
+			a[3] = -1.0
 		if _now < float(a[0]):
 			keep.append(a)
 		elif state == State.FALLEN or _now > float(a[2]):
 			continue
-		elif player.downed or not _say(str(a[1])):
+		elif player.downed:
+			keep.append(a)
+		else:
+			var before: int = int(GLVO.fired.get(key, 0))
+			if _say(str(a[1])):
+				a[3] = _now + HEARD_WAIT
+				a[4] = before
 			keep.append(a)
 	_later = keep
 
