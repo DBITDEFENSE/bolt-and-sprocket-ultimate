@@ -168,14 +168,14 @@ func _run() -> void:
 		_focus_pid = pid
 		var b: BotBrain = _brain(pid)
 		var price1: int = PerkManager.price(pm.perk_id)
-		_check(b != null and b.mark.active() and str(b.mark.order.get("state", "")) == "wait_scrip", "1,000 Scrip for a %d perk: it waits for the Scrip" % price1)
+		_check(b != null and b.mark.active() and str(b.mark.order.get("state", "")) == "wait_scrip", "1,000 Scrip for a %s perk: it waits for the Scrip" % MarkTargets.money(price1))
 		_check(mm.status_of(pid).contains("%s short" % MarkTargets.money(price1 - 1000)), "the status line: \"%s\"" % mm.status_of(pid))
-		await _wait(2.0)
+		await _wait(2.0 if not _clip else 5.0)
 		_check(not PerkManager.has_perk(pid, _perk1), "it didn't buy what it couldn't afford")
 		_set_scrip(pid, price1 + 400)
 		var got: bool = await _until(func() -> bool: return PerkManager.has_perk(pid, _perk1), 70.0)
 		_check(got, "given the Scrip it walked down and bought it (%s)" % mm.status_of(pid))
-		await _wait(0.5)
+		await _wait(0.5 if not _clip else 4.0)
 		_check(not b.mark.active() and mm.mark(int(r["id"])).is_empty(), "the order and its mark are done")
 		_check(b.mark.bought >= 1, "the bot's bought counter (%d)" % b.mark.bought)
 
@@ -261,6 +261,8 @@ func _run() -> void:
 			var got: Variant = QuestManager.progress(&"map00_radio", &"s1_notes")
 			return got is Array and (got as Array).has(&"note_a"), 90.0)
 		_check(took, "the bot picked up the marked note")
+		if _clip:
+			await _wait(3.0)
 		var off: bool = await _until(func() -> bool: return mm.mark(int(r6["id"])).is_empty(), 10.0)
 		_check(off, "the egg mark went when the task ended")
 		sq.ee_cancel()
@@ -364,7 +366,7 @@ func _run() -> void:
 	if _phase("11 pause map"):
 		await _pause_map()
 
-	_check(_lines.size() >= 4, "the bots spoke their mark lines (%d: %s)" % [_lines.size(), ", ".join(_lines.slice(0, 8))])
+	_check(_only != "" or _lines.size() >= 4, "the bots spoke their mark lines (%d: %s)" % [_lines.size(), ", ".join(_lines.slice(0, 8))])
 	_finish()
 
 
@@ -465,6 +467,8 @@ func _start_clip() -> void:
 func _drive_camera(delta: float) -> void:
 	if _cam == null or _map == null or _focus_pid <= 0 or _map.squad == null:
 		return
+	if not _cam.current:
+		_cam.make_current()   # the player's own camera takes over on spawn
 	var tgt: Player = _map.squad.player_by_id(_focus_pid)
 	if tgt == null:
 		return
