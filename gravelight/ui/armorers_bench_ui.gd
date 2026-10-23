@@ -249,11 +249,8 @@ func _process(delta: float) -> void:
 	var c: Vector3 = _pivot.position + Vector3(0, -0.035, 0)
 	_cam.position = c + Vector3(sin(a) * _orbit, 0.1 + 0.04 * sin(a * 0.7), cos(a) * _orbit)
 	_cam.look_at(c, Vector3.UP)
-	if _bump_t > 0.0:
-		_bump_t -= delta
 
 
-var _bump_t: float = 0.0
 var _orbit_t: float = 0.0
 ## Where the orbit starts (radians; -PI/2 = the pistol's left side, the side the viewmodel shows).
 var orbit_phase: float = -1.75
