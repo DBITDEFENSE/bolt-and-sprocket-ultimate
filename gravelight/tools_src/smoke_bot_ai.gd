@@ -2,9 +2,11 @@ extends Node
 ## Headless smoke test for the bots' spawn kit and the objective planner (bots.json "spawn_kit" / "local_ai").
 ## A solo match with 2 bots and a god-mode human standing at the spawn:
 ##   1. every bot spawns holding a Thompson with Ironhide Stout and Second Wind Schnapps (and 250 max health)
-##   2. the planner bot runs the map's easter egg on its own: on Map 0 "Glasmacher Calling" (opening the doors to
-##      the three radio notes with its own Scrip, taking them, tuning the radio); on Map 1 the first Requiem steps
-##      (power, a pylon) as far as the time allows (--map=map01, report only)
+##   2. the bots work the map's easter egg with "Bot Easter-Egg Help" on Full Partner (T-067; before Update 04 the
+##      planner bot did this alone): on Map 0 "Glasmacher Calling" (opening the doors to the three radio notes with
+##      their own Scrip, taking them, tuning the radio up to the last frequency, which is the player's commit: this
+##      harness then locks it as the player); on Map 1 the first Requiem steps (power, a pylon) as far as the time
+##      allows (--map=map01, report only). No egg step may fail on the bots' account.
 ##   3. a bot that goes down and is revived gets its kit perks back
 ## --llm uses the real local model (Ollama must be installed; the planner falls back to its scores if not);
 ## the default is the scripted planner, so the run is deterministic.
@@ -25,6 +27,7 @@ var _steps: PackedStringArray = []
 var _report_t: float = 0.0
 var _downed_bot: Player = null
 var _downed_checked: bool = false
+var _committed: bool = false
 
 
 func _ready() -> void:
@@ -95,6 +98,8 @@ func _physics_process(delta: float) -> void:
 			_check(sq.planner() != null, "one bot has the objective planner (%s)" % GameState.bot_ai_mode)
 			for pid: int in GameState.bot_ids:
 				Economy.grant(pid, 6000)   # doors and the odd perk on the way: the egg needs ~3000 on Map 0
+			_check(sq.ee != null and sq.ee.mode() == "ask", "Bot Easter-Egg Help defaults to When Asked (%s)" % (sq.ee.mode() if sq.ee != null else "-"))
+			sq.ee.set_mode("full")
 			_next()
 		1:
 			_tick_egg(sq)
@@ -128,13 +133,22 @@ func _main_quest() -> StringName:
 func _tick_egg(sq: BotSquad) -> void:
 	var qid: StringName = _main_quest()
 	var done: bool = qid != &"" and QuestManager.is_complete(qid)
+	if _map_key == "map00" and not done and not _committed and QuestManager.is_active(qid, &"s2_tune") and int(QuestManager.progress(qid, &"s2_tune") if QuestManager.progress(qid, &"s2_tune") != null else 0) >= 2:
+		# the bots stop before the last frequency (the commit is the player's): the harness locks it as the player
+		_committed = true
+		print("[botai] the bots tuned 2 of 3 at t=%.0fs; the player locks the last one" % _t)
+		_check(QuestManager.is_step_done(qid, &"s1_notes"), "the bots took all three radio notes")
+		for n: Node in _map.find_children("*", "FieldRadio", true, false):
+			(n as FieldRadio).lock_frequency("7.440")
+		return
 	if done or _phase_t > _timeout:
 		var pl: BotPlanner = sq.planner()
 		if _map_key == "map00":
-			_check(done, "the planner bot finished \"%s\" on its own (%.0fs)" % [QuestManager.display_name_of(qid), _phase_t])
+			_check(done and _committed, "the bots worked \"%s\" up to the player's commit (%.0fs)" % [QuestManager.display_name_of(qid), _phase_t])
+			_check(sq.ee.egg_failures_bot == 0, "no egg step failed while a bot worked it (%d)" % sq.ee.egg_failures_bot)
 		else:
 			print("[botai] (report) %s: steps done %s" % [qid, str(_steps)])
-			_check(not _steps.is_empty(), "the planner bot completed at least one Requiem step")
+			_check(not _steps.is_empty(), "the squad completed at least one Requiem step")
 		if pl != null:
 			for h: String in pl.history:
 				print("[botai]   pick ", h)

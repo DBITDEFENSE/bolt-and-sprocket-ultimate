@@ -193,14 +193,16 @@ static func task_value(ty: String, c: Dictionary) -> float:
 
 
 ## Should this task pause? `s`: {type, pressure, teammate_down, round_left (zombies up with nothing to spawn, -1 = the
-## round isn't ending), player_away}. Returns the reason ("" = keep going): threat, teammate_down, round_end,
+## round isn't ending), player_away, was (the current pause reason, for the threat hysteresis)}. Returns the reason ("" = keep going): threat, teammate_down, round_end,
 ## player_away.
 static func pause_reason(s: Dictionary, c: Dictionary) -> String:
 	var pc: Dictionary = c.get("pause", {})
 	var ty: String = str(s.get("type", ""))
 	if bool(s.get("player_away", false)):
 		return "player_away"
-	if not (pc.get("no_threat_pause_types", []) as Array).has(ty) and float(s.get("pressure", 0.0)) >= float(pc.get("pressure", 0.65)):
+	# hysteresis: once paused for threat it waits for the pressure to drop to resume_pressure
+	var limit: float = float(pc.get("resume_pressure", 0.45)) if str(s.get("was", "")) == "threat" else float(pc.get("pressure", 0.65))
+	if not (pc.get("no_threat_pause_types", []) as Array).has(ty) and float(s.get("pressure", 0.0)) >= limit:
 		return "threat"
 	if bool(s.get("teammate_down", false)) and not (pc.get("no_down_pause_types", []) as Array).has(ty):
 		return "teammate_down"

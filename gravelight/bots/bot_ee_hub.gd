@@ -322,21 +322,10 @@ func _poll_knowledge() -> void:
 			if knowledge.knows(key):
 				continue
 			var e: Dictionary = bk[k]
-			if e.get("on_collect") is Dictionary:
-				var oc: Dictionary = e["on_collect"]
-				for step: Variant in QuestManager.steps_of(qid):
-					var sd: Dictionary = step as Dictionary
-					if str(sd.get("type", "")) != "collect" or str((sd.get("params", {}) as Dictionary).get("tag", "")) != str(oc.get("tag", "")):
-						continue
-					var got: Variant = QuestManager.progress(qid, StringName(str(sd["id"])))
-					if got is Array and (got as Array).size() >= int(oc.get("count", 1)):
-						knowledge.learn(key, 0, now, "collect")
-			for s: Variant in e.get("on_step", []):
-				if QuestManager.is_step_done(qid, StringName(str(s))):
-					knowledge.learn(key, 0, now, "step")
-			for f: Variant in e.get("on_flag", []):
-				if GameState.has_flag(StringName(str(f))):
-					knowledge.learn(key, 0, now, "flag")
+			var how: String = BotEEHub.entry_due(qid, e)
+			if how != "":
+				knowledge.learn(key, 0, now, how)
+				continue
 			if e.get("on_seen") is Dictionary:
 				var os: Dictionary = e["on_seen"]
 				var n_seen: int = 0
@@ -345,6 +334,27 @@ func _poll_knowledge() -> void:
 						n_seen += 1
 				if n_seen >= int(os.get("count", 1)):
 					knowledge.learn(key, 0, now, "seen")
+
+
+## Is a bot_knowledge entry learned by the quest state now (on_collect / on_step / on_flag)? Its "how" ("" = not yet).
+## Pure over the QuestManager and the flags (unit-tested).
+static func entry_due(qid: StringName, e: Dictionary) -> String:
+	if e.get("on_collect") is Dictionary:
+		var oc: Dictionary = e["on_collect"]
+		for step: Variant in QuestManager.steps_of(qid):
+			var sd: Dictionary = step as Dictionary
+			if str(sd.get("type", "")) != "collect" or str((sd.get("params", {}) as Dictionary).get("tag", "")) != str(oc.get("tag", "")):
+				continue
+			var got: Variant = QuestManager.progress(qid, StringName(str(sd["id"])))
+			if got is Array and (got as Array).size() >= int(oc.get("count", 1)):
+				return "collect"
+	for st: Variant in e.get("on_step", []):
+		if QuestManager.is_step_done(qid, StringName(str(st))):
+			return "step"
+	for f: Variant in e.get("on_flag", []):
+		if GameState.has_flag(StringName(str(f))):
+			return "flag"
+	return ""
 
 
 func _on_vo(line_id: StringName, _speaker: StringName, _text: String, _dur: float) -> void:

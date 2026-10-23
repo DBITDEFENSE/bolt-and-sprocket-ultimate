@@ -159,8 +159,12 @@ func tick_think(now: float) -> void:
 	if not QuestManager.is_active(qid, sid):
 		_finish(false, "locked")
 		return
-	var why: String = BotEECatalog.pause_reason(_pause_state(), _cfg())
 	var was: String = str(task.get("paused", ""))
+	var ps: Dictionary = _pause_state()
+	ps["was"] = was
+	var why: String = BotEECatalog.pause_reason(ps, _cfg())
+	if why == "" and was != "" and now - float(task.get("paused_t", now)) < float((_cfg().get("pause", {}) as Dictionary).get("min_pause_s", 3.0)):
+		why = was   # a pause lasts a moment at least (no flicker between fighting and the task)
 	if why != was:
 		task["paused"] = why
 		if why != "":

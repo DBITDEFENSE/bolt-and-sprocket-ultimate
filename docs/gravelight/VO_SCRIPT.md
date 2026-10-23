@@ -1621,7 +1621,7 @@ them alone (`python gravelight/tools_src/gen_vo.py --only=DUT_SQ4`).
 - `JAK_SQ4_EE_INTERRUPTED_01`: "Wait. First these ones."
 - `JAK_SQ4_EE_RESUME_01`: "Back to it."
 - `JAK_SQ4_EE_RESUME_02`: "Spokojnie (easy). Back to work." `[say: "Spo-koy-nyeh. Back to work."]`
-- `JAK_SQ4_EE_REFUSE_CRUCIBLE_01`: "Not the furnace. I saw what they fed into it at Kaltenbrunn. Ask me anything else."
+- `JAK_SQ4_EE_REFUSE_CRUCIBLE_01`: "Not the furnace. I have seen what fires like that get fed. Ask me anything else."
 - `JAK_SQ4_EE_REFUSE_CRUCIBLE_02`: "No. I won't put my hands near that fire. Give me something to carry."
 - `JAK_SQ4_EE_REFUSE_PERK_01`: "Those machines? No. I don't touch them, and I don't drink from them."
 - `JAK_SQ4_EE_REFUSE_TYPE_01`: "That needs a steady rifle and a good eye. I can carry, gather, and hold ground."
