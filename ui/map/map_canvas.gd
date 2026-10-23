@@ -323,7 +323,7 @@ func _place_icons() -> void:
 			used += 1
 			node3.show_icon("player", 16.0 * icon_scale * 1.15, pc, {})
 			node3.position = world_to_canvas(me.global_position)
-			node3.rotation = heading - me.global_rotation.y
+			node3.rotation = heading - state.facing_yaw()   # the arrow points where the body faces
 	for i: int in range(used, _pool.size()):
 		_pool[i].visible = false
 

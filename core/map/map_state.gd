@@ -155,10 +155,57 @@ func local_view() -> Array:
 	var body: Node3D = local_body()
 	if body == null:
 		return [Vector3.ZERO, Vector3.FORWARD]
-	var cam: Variant = body.get("camera")
-	if cam is Camera3D and (cam as Camera3D).is_inside_tree():
-		return [(cam as Camera3D).global_position, -(cam as Camera3D).global_basis.z]
+	var cam: Camera3D = view_camera()
+	if cam != null:
+		return [cam.global_position, -cam.global_basis.z]
 	return [body.global_position + Vector3.UP * 1.5, -body.global_basis.z]
+
+
+## The local player's view camera: GRAVELIGHT Player.camera (first person), B&S BoltCamera.cam (third person).
+func view_camera() -> Camera3D:
+	var body: Node3D = local_body()
+	if body == null:
+		return null
+	var cam: Variant = body.get("camera")
+	if cam is Node and not (cam is Camera3D):
+		cam = (cam as Node).get("cam")   # B&S: BoltCamera holds its Camera3D in "cam"
+	if cam is Camera3D and (cam as Camera3D).is_inside_tree():
+		return cam as Camera3D
+	return null
+
+
+## Godot-convention yaw (forward = (-sin y, 0, -cos y); 0 = facing north, -PI/2 = facing east) of a direction.
+static func yaw_of(forward: Vector3) -> float:
+	return atan2(-forward.x, -forward.z)
+
+
+## Where the view looks, as a yaw: the minimap turns by this in "turns with you" mode, so what is ahead on screen
+## is up on the map (first person: the player's facing; B&S: the chase camera's direction, not Bolt's).
+func view_yaw() -> float:
+	var cam: Camera3D = view_camera()
+	if cam != null:
+		var f: Vector3 = -cam.global_basis.z
+		if Vector2(f.x, f.z).length() > 0.01:
+			return yaw_of(f)
+	var body: Node3D = local_body()
+	return body.global_rotation.y if body != null else 0.0
+
+
+## The local player's body facing, as a yaw (the arrow): GRAVELIGHT the body's rotation; B&S Bolt's motor.yaw,
+## which uses the web build's atan2(x, z) convention (forward = (sin m, 0, cos m)), so it is turned by PI.
+func facing_yaw() -> float:
+	var body: Node3D = local_body()
+	if body == null:
+		return 0.0
+	var motor: Variant = body.get("motor")
+	if motor is Object and (motor as Object).get("yaw") != null:
+		return bs_yaw_to_godot(float((motor as Object).get("yaw")))
+	return body.global_rotation.y
+
+
+## B&S motor yaw (forward = (sin m, 0, cos m)) -> Godot yaw (forward = (-sin y, 0, -cos y)).
+static func bs_yaw_to_godot(m: float) -> float:
+	return wrapf(m + PI, -PI, PI)
 
 
 func local_floor() -> int:

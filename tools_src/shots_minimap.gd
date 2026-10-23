@@ -7,14 +7,18 @@ extends Node
 ## "[shots_minimap] perf <shot> <us>" lines and "RESULT PASS" at the end.
 
 const SHOTS: Array = [
-	# [label, scene, player pos, yaw deg, bots, settings overrides]
-	["map00_taproom", "res://gravelight/maps/map00_crossroads/map00.tscn", Vector3(9.0, 0.1, 9.0), 200.0, 2, {}],
-	["map00_cellar_northup", "res://gravelight/maps/map00_crossroads/map00.tscn", Vector3(30.0, -3.1, 24.0), 90.0, 0, {"minimap_shape": "square", "minimap_zoom": 2}],
-	["map01_surface", "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", Vector3(20.0, 0.1, 22.0), 160.0, 3, {}],
-	["map01_chapel_square", "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", Vector3(12.0, -11.9, 74.0), 30.0, 0, {"minimap_shape": "square", "minimap_zoom": 2}],
-	["map02_quay", "res://gravelight/maps/map02_totenhafen/map02.tscn", Vector3(16.0, 0.1, 16.0), 180.0, 2, {}],
-	["scrapheap_holo", "res://bs/planets/scrapheap/scrapheap.tscn", Vector3.INF, 0.0, 0, {}],
+	# [label, scene, player pos, yaw deg (Godot: 0 faces north -Z, 90 faces west, -90 faces east), bots, settings]
+	# north-up checks (Map 0: the wreck east of the inn, the stairwell in the taproom's south-west, the stable south)
+	["map00_northup", "res://gravelight/maps/map00_crossroads/map00.tscn", Vector3(12.0, 0.1, 8.0), -90.0, 2, {"minimap_rotate": false, "minimap_zoom": 2}],
+	["map00_rotate_west", "res://gravelight/maps/map00_crossroads/map00.tscn", Vector3(30.0, -3.1, 24.0), 90.0, 0, {}],
+	["map01_northup", "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", Vector3(20.0, 0.1, 22.0), 160.0, 3, {"minimap_rotate": false, "minimap_zoom": 2}],
+	["map01_rotate_chapel_square", "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", Vector3(12.0, -11.9, 74.0), -90.0, 0, {"minimap_shape": "square"}],
+	["map02_northup", "res://gravelight/maps/map02_totenhafen/map02.tscn", Vector3(16.0, 0.1, 16.0), 180.0, 2, {"minimap_rotate": false, "minimap_zoom": 2}],
+	["map02_rotate_south", "res://gravelight/maps/map02_totenhafen/map02.tscn", Vector3(16.0, 0.1, 16.0), 180.0, 2, {}],
+	["scrapheap_northup", "res://bs/planets/scrapheap/scrapheap.tscn", Vector3.INF, 0.0, 0, {"minimap_rotate": false}],
+	["scrapheap_rotate_east", "res://bs/planets/scrapheap/scrapheap.tscn", Vector3.INF, -90.0, 0, {}],
 ]
+
 
 var _out: String = "user://shots_minimap"
 var _only: String = ""
@@ -90,6 +94,9 @@ func _shot(label: String, scene: String, pos: Vector3, yaw: float, bots: int) ->
 		await _frames(30)
 	if body != null:
 		body.rotation.y = deg_to_rad(yaw)
+	await _aim_bs_camera(lvl, yaw)
+	await _frames(2)
+	print("[shots_minimap]   %s: asked yaw %.0f, body facing %.0f, view %.0f" % [label, yaw, rad_to_deg(ms.facing_yaw()), rad_to_deg(ms.view_yaw())])
 	print("[shots_minimap]   %s: %d POIs discovered by sight after looking around for 2 s, %.0f%% of the floor revealed" % [label, ms.discovered.size(),
 		ms.revealed_fraction(ms.local_floor()) * 100.0])
 	ms.discover_all()
@@ -129,3 +136,17 @@ func _shot(label: String, scene: String, pos: Vector3, yaw: float, bots: int) ->
 	get_tree().paused = false
 	lvl.queue_free()
 	await _frames(10)
+
+
+## B&S: the minimap turns with the chase camera. BoltCamera.yaw is already a Godot yaw (the boom points along
+## (sin, cos) of it, so the camera looks along (-sin, -cos)); set it, let the camera settle, print what MapState reads.
+func _aim_bs_camera(lvl: Node, godot_yaw_deg: float) -> void:
+	var bc: Variant = lvl.get("camera")
+	if bc == null or not (bc is Node) or (bc as Node).get("yaw") == null:
+		return
+	for k: int in 30:
+		(bc as Node).set("yaw", deg_to_rad(godot_yaw_deg))
+		await get_tree().process_frame
+	var ms: MapState = MapState.current()
+	if ms != null:
+		print("[shots_minimap]   B&S view yaw now %.0f deg (asked %.0f)" % [rad_to_deg(ms.view_yaw()), godot_yaw_deg])

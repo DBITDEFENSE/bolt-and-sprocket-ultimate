@@ -168,7 +168,7 @@ func _process(delta: float) -> void:
 		var fi: int = _state.data.floor_at(pos + Vector3.UP * 0.2)
 		canvas.floor_index = fi
 		canvas.center = Vector2(pos.x, pos.z)
-		canvas.heading = body.global_rotation.y if _rotate else 0.0
+		canvas.heading = _state.view_yaw() if _rotate else 0.0   # ahead on screen = up on the map
 		var radii: Array = _cfg.get("view_radius_m", [16.0, 26.0, 42.0])
 		canvas.zoom = (_diam * 0.5) / float(radii[clampi(zoom_level, 0, radii.size() - 1)])
 		_label_t -= delta
@@ -185,6 +185,13 @@ func _process(delta: float) -> void:
 		_frame.queue_redraw()
 	_process_usec = Time.get_ticks_usec() - t0
 	_avg_usec = lerpf(_avg_usec, float(_process_usec + canvas.cost_usec + canvas.draw_usec), 0.05)
+
+
+## Where cardinal point k (0 N, 1 E, 2 S, 3 W) sits on the bezel, as a unit canvas direction, when the map is turned
+## by `heading` (MapCanvas.heading): exactly where MapCanvas draws that world direction, so letters and map agree.
+static func cardinal_dir(k: int, heading: float) -> Vector2:
+	var world: Vector2 = [Vector2(0, -1), Vector2(1, 0), Vector2(0, 1), Vector2(-1, 0)][k]   # XZ: north = -Z, east = +X
+	return world.rotated(heading)
 
 
 ## The zone label for the stamp: "" -> the map's name; long names keep the part after a colon ("The Junction:
@@ -288,8 +295,7 @@ class Frame extends Control:
 		var f: Font = MapIcons.font()
 		var letters: Array = ["N", "E", "S", "W"]
 		for k: int in 4:
-			var a3: float = TAU * k / 4.0 + heading
-			var d3: Vector2 = Vector2(sin(a3), -cos(a3))
+			var d3: Vector2 = Minimap.cardinal_dir(k, heading)
 			var p: Vector2 = c + d3 * (r_out - 7.0)
 			var fs: int = 15 if k == 0 else 12
 			var w: float = f.get_string_size(letters[k], HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
