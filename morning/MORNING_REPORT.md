@@ -92,6 +92,19 @@ Soak = 3 bots on Map 0, headless, Veteran, local AI off (`tools/ai_soak.sh`; ful
 9. The war on the horizon sits to the east (the lore's front), and the midnight bell rings at round 9.
 10. Three of Jakub's lines name Kaltenbrunn as the place he escaped from, so they may play on any map.
 
+## Lighting pass (all three maps, T-061..T-063)
+Every map got bounce lighting (SDFGI and SSIL on High, SSIL on Medium, the old flat fill on Low) and new light
+sources you can see: lanterns, candles, fire barrels, stoves, moonlight through boarded windows, window glow on the
+snow. Judged per view by brightness, power off, before → after; no view got darker.
+- **Crossroads Inn:** a warm refuge against a cold blue night; the power lever now lights 11 bulbs in the inn; the
+  perk cellar isn't pitch black any more; the windows glow from outside; the Cousins blackout still works. 12–56 → 26–71.
+- **Kaltenbrunn:** moon-blue surface, salt-grey depths, a violet Core with amber cracks; barracks and mess hall
+  went from pitch black to readable; sodium lamps glow in the haze. Low: the Core is a little darker than before.
+- **Totenhafen:** no longer too dark (interiors ~8 → 20–50); fire barrels, stoves, dock lanterns, sea light under
+  the pen doors, warm/cold floods on power.
+- Before / after shots: `morning/screenshots/lighting/<map>/before|after|after_low`. Retake: `tools/light_shots.sh <tag>`.
+- Frame rate on High at 1280x720: 117+ fps (Inn), ~221 (Kaltenbrunn), 154+ (Totenhafen).
+
 ## Needs you
 - ~~Bots alone vs. the Cousins~~ **answered: they scale.** While no human is standing the Cousins drop to half
   health, 60% damage, slower moves and a thinner horde (T-060, `cousins.json "bots_alone"`). Bots alone now clear
