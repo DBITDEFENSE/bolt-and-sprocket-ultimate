@@ -186,6 +186,13 @@ func tick_think(now: float) -> void:
 	if now - float(task.get("t0", now)) > float(_cfg().get("wait_timeout_s", 150.0)) and str(_plan.get("do", "")) == "wait" and str(task.get("source", "")) == "full":
 		cancel("nothing to do")
 		return
+	if str(task["type"]) == "escort" and str(task.get("source", "")) == "full" and hub != null:
+		# Full Partner covers the player at a player-only step while they are at it; they walked off: done
+		var a: Vector3 = hub.step_anchor(qid, sid, task["def"])
+		var h: Player = brain.squad.human()
+		if a != Vector3.INF and (h == null or not is_instance_valid(h) or _flat(h.global_position, a) > float(_cfg().get("presence_m", 20.0))):
+			cancel("the player left")
+			return
 	_refresh_plan()
 
 
@@ -850,6 +857,9 @@ func _do_hold(delta: float) -> void:
 		if fs >= 0 and player.weapons.current_index != fs:
 			brain.aim.select(fs)
 	brain.committed = true
+	if brain.perception.nearest_d < float(_cfg().get("hold_fight_m", 2.2)):
+		brain.actions.run("fight", delta)   # something at arm's length: fight it properly (back off, knife), then back to the spot
+		return
 	if _flat(pos, player.global_position) > r or absf(pos.y - player.global_position.y) > 1.8:
 		brain.loco.move_to(pos, 0.45, r * 0.6)
 		brain.aim.update(delta, true)

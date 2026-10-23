@@ -494,6 +494,8 @@ func _full_partner() -> void:
 			return
 		if b2.ee == null or b2.ee.active() or b2.player.downed or b2.player.spectating or _reviving(b2):
 			continue
+		if b2.player.is_companion:
+			continue   # Jakub stays at the side of the one he covers: egg work only when asked
 		var best: Dictionary = {}
 		for qi: int in qids.size():
 			var qid: StringName = qids[qi]

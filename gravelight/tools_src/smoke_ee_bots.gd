@@ -104,10 +104,10 @@ func _physics_process(delta: float) -> void:
 						b.player.horizontal_speed(), float(b.ee._errand.get("until", -1.0)) - sq.time()])
 	match _phase:
 		0:
-			if _phase_t < 15.0:
+			if _phase_t < (4.0 if _clip else 15.0):
 				return
 			var got: Variant = QuestManager.progress(Q, &"s1_notes")
-			_check(not (got is Array and not (got as Array).is_empty()), "When Asked: no bot took a note on its own in 15 s")
+			_check(not (got is Array and not (got as Array).is_empty()), "When Asked: no bot took a note on its own (%.0f s)" % _phase_t)
 			var r: Dictionary = sq.ee_assign(Q, &"s2_tune")
 			_check(not bool(r["ok"]) and str(r["reason"]).contains("open"), "the radio before the notes: refused (\"%s\")" % r["reason"])
 			_check(not sq.ee_can_assign(Q, &"s2_tune") and sq.ee_can_assign(Q, &"s1_notes"), "ee_can_assign: the notes yes, the radio not yet")

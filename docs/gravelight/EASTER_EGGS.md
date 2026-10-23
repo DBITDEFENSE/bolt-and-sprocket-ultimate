@@ -528,3 +528,64 @@ Enamel plates in Vendelin's hand-set type, cream on grey. Each is stamped in its
   - Each machine played counts once per profile. All **10** unlock the cosmetic jingle mix **"First Drafts"** (`altmix.<perk_id>.true`). This is a profile option: the machines on every map play Vendelin's harmonium first drafts instead of the orchestral canon.
   - It completes the Ch. 3 alt-mix set (`docs/fineprint/script_ch3.md`, jingle phase).
 - No fail. The free-play harmonium is never used as Clause Zero's step 4b input.
+
+
+---
+
+## 9. BOTS ON THE EGG: the `bot_task` schema (Update 04 section 5, DECISIONS T-067)
+
+Every step can carry a `bot_task`: the data that tells an AI teammate how to do it (`gravelight/bots/bot_ee*.gd`;
+behaviour and the setting "Bot Easter-Egg Help" in `docs/gravelight/BOTS.md`). A quest can also carry a
+`bot_knowledge` block: what the squad must have discovered before a bot may do a step that `needs` it. A new map's
+egg (Helvetia Works, Morgenrot...) only adds this data.
+
+**Task types** (`type`) and their fields:
+
+| type | does | fields |
+|---|---|---|
+| `collect` | takes each target not counted yet, nearest first (a teammate takes another) | `targets` (node spec), `id_prop` (the property the step counts: `item_id`, `radio_id`, `name`), `find` |
+| `interact_sequence` | one use (no `input`), or the step's ordered inputs read from the quest itself | `target`, `input` {`method`, `arg`: string / int}, `ready` (a QuestManager interact target that must be ready) |
+| `shoot_target` | one target, a `sequence` in the quest's order, or a `moving` target | `target` or `sequence` {spec + `value_prop`}, `need_upgraded`, `lit_flag` + `then_hold` {radius}, `moving`, `trigger`: "crate", `then_pickup` |
+| `hold_zone` | stands in the zone: an anchor's ring while it charges, or the step's holdout | `anchors` + `start`: "interact" + `start_needs_player_m` + `radius_mult`; or `while`: "holdout" + `start`: "player" + `radius` |
+| `carry` | fetches the item or the parts, then delivers them | `item` + `pickup`, or `pickups`; `deliver` (spec), `deliver_ready` (an interact target) |
+| `kill_with_weapon` | takes the weapon, then kills near the step's `center` (within its `radius`) with it in hand | `weapon` (ids), `get_weapon` (spec) |
+| `escort` | covers the player while they do the step | (none) |
+| `turn_key` | at its key, turns it only once the player is at (or has turned) the other one: Morgenrot's two-key abort, v2 §4.2 step 10 | `key`, `partner_key` (specs; a key node has `turn(by)` and `is_turned()`), `partner_m`, `reach_m` |
+
+**Common fields:** `what` (the status line's words: "the radio notes"), `ping` (the world ping's label), `needs` (keys
+of the quest's `bot_knowledge`), `find`: "seen" / "heard" (+ `hear_m`): each target must have been found by a squad
+member first, `final` (a last step: Full Partner needs the player within `presence_m`), `commit`: "last_input" (the
+input that would finish the step is the player's), `risky`: true / "shoot" / "trigger" (that part can fail or set off
+the egg: only when the player ordered it), `touches`: ["crucible"] / ["perk"] (Jakub refuses those), `player_only`:
+"cutscene" / "final" / "choice" / "handoff" (no bot does it; asked, a bot covers the player instead).
+
+**Node specs:** `{"group": "quest_bells"}` or `{"class": "QuestNote"}` (a script class among the map's
+Interactables), with `"where": {"kind": "small", "visible": true}` (property values; `visible` = shown in the tree).
+
+**`bot_knowledge`** entries (key -> {`label`, one trigger}): `on_collect` {tag, count} (that many of a collect step's
+items taken: the notes read, the radios heard), `on_vo` [line ids] (heard: the music box's `MUSIC_BOX`), `on_step`
+[step ids], `on_flag` [flags], `on_seen` {spec, count} (that many matching objects seen by a squad member). The label
+completes "Can't do that yet: we haven't ...".
+
+**Today's data:**
+
+| quest / step | bot_task | notes |
+|---|---|---|
+| map00_radio s1_notes | collect the three notes | fixed spots (no find) |
+| map00_radio s2_tune | interact_sequence, the radio dial | needs `frequencies`; final; commit last_input: the bot locks two, the player the third |
+| map01_requiem s0_power | interact_sequence, the power switch | |
+| s1_vault | hold_zone, the pylons | starts one only with the player within 22 m (1500 Scrip and a hard holdout) |
+| s2a_radios | collect, the calling radios | find heard (12 m) |
+| s2b_switchboard | interact_sequence, the jacks | needs `code` |
+| s3_build | carry the three parts to the bench | find seen |
+| s4_key | shoot_target, the Chapel bell with an upgraded gun, then hold the Chapel | risky "shoot": lighting it brings the Foreman (only on an order); holding the Chapel once you lit it is fine |
+| s5_reliquary | carry the Overseer's Key to the altar | |
+| s6_bells | shoot_target, the Four Bells in order | needs `melody` and `bells` |
+| s7_drummer | shoot_target, Herr Tamtam (moving), then his shard | risky "trigger": the crate pull only on an order |
+| s8a_place | carry the shard to the Crucible | touches the Crucible (Jakub refuses); only while the Crucible is ready for it |
+| s8b_charge | kill_with_weapon, the Totenglocke near the heart | takes one from the bench |
+| s9_heartstorm | hold_zone while the holdout runs | final; start "player": the bots hold the Core once you start it |
+| s10_ending | player_only: cutscene | |
+| map01_song s1_cylinders | collect | |
+| map01_song s2_phonograph | player_only: final | |
+| map01_wren_tag s1_tag | player_only: final | |

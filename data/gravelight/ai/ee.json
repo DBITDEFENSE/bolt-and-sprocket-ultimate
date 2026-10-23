@@ -23,6 +23,8 @@
   "scores": {"main_quest": 70.0, "side_quest": 52.0, "per_m": 0.25, "carry": 6.0, "shoot_target": 5.0, "interact_sequence": 5.0, "hold_zone": 10.0, "kill_with_weapon": 5.0, "collect": 0.0, "_doc": "Full Partner: which open step a free bot picks (higher wins; minus per_m per metre to its spot)."},
   "sight": {"every_s": 0.5, "sight_m": 26.0, "hear_m": 12.0, "rays_per_sweep": 10, "_doc": "The squad's discoveries: a findable egg object (find: seen) is discovered once a squad member (the player or a bot) is within sight_m with a clear line of sight to it; an audible one (find: heard) within its hear_m (task hear_m overrides)."},
   "lines": {"progress_gap_s": 15.0, "interrupt_gap_s": 30.0, "cant_gap_s": 6.0},
+  "hold_fight_m": 2.2,
+  "_hold_fight_m": "Holding a zone: a zombie closer than this and the bot fights it the normal way (backs off, knifes) for that moment.",
   "errand_timeout_s": 45.0,
   "wait_timeout_s": 150.0,
   "jakub": {
