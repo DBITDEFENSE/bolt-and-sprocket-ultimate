@@ -1,0 +1,85 @@
+extends WorldEnvironment
+## Map 1 (Kaltenbrunn), presentation only. One Environment serves a moonlit snow yard, the salt depths 12 m down
+## and the Nachtglas vault 18 m down, so the fill light (flat ambient), the far-fog colour, the fog glow, the
+## exposure and the saturation follow the active camera's height: cold moon-blue on the surface, a dark neutral
+## salt-grey in the depths, violet-black at the heart. The lift ride and the stairs blend one into the next.
+## With SDFGI on (the High preset) bounce light does most of the filling, so the flat ambient drops to
+## `gi_ambient_scale` of itself; without it (Medium/Low) the full ambient keeps the unpowered depths readable (D-063).
+## Fog density is left alone (the Bellringer's fog tweens it in zombie_director.gd).
+
+@export_group("Surface")
+@export var surface_ambient: Color = Color(0.22, 0.27, 0.40)
+@export var surface_ambient_energy: float = 0.36
+@export var surface_fog: Color = Color(0.085, 0.095, 0.13)
+@export var surface_fog_glow: Color = Color(0.008, 0.009, 0.014)
+@export var surface_exposure: float = 1.4
+@export var surface_saturation: float = 0.8
+@export_group("Depths")
+@export var depth_ambient: Color = Color(0.30, 0.28, 0.27)
+@export var depth_ambient_energy: float = 0.35
+@export var depth_fog: Color = Color(0.05, 0.045, 0.04)
+@export var depth_fog_glow: Color = Color(0.004, 0.004, 0.004)
+@export var depth_exposure: float = 1.5
+@export var depth_saturation: float = 0.85
+@export_group("Core")
+@export var core_ambient: Color = Color(0.20, 0.12, 0.30)
+@export var core_ambient_energy: float = 0.4
+@export var core_fog: Color = Color(0.04, 0.02, 0.06)
+@export var core_fog_glow: Color = Color(0.006, 0.0, 0.012)
+@export var core_exposure: float = 1.25
+## The heart is the one saturated colour in the game (GDD 17): the vault keeps its violet.
+@export var core_saturation: float = 1.0
+@export_group("Blend")
+## Camera heights (m) between which the surface grade fades into the depths grade.
+@export var depth_top: float = -2.5
+@export var depth_full: float = -9.0
+## Camera heights between which the depths grade fades into the core grade (the vault ramps run -12 → -18).
+@export var core_top: float = -12.6
+@export var core_full: float = -16.0
+## Flat ambient multiplier while SDFGI is on.
+@export var gi_ambient_scale: float = 0.5
+## How fast the grade follows the camera (1/s); a jump of more than 8 m snaps.
+@export var follow: float = 2.5
+
+var _cur: Dictionary = {}
+var _last_cam: Vector3 = Vector3.INF
+
+
+func _process(delta: float) -> void:
+	var cam: Camera3D = get_viewport().get_camera_3d()
+	if cam == null or environment == null:
+		return
+	var p: Vector3 = cam.global_position
+	var want: Dictionary = target_for(p.y, environment.sdfgi_enabled)
+	var k: float = 1.0 - exp(-delta * follow)
+	if _cur.is_empty() or p.distance_to(_last_cam) > 8.0:
+		k = 1.0
+	_last_cam = p
+	if _cur.is_empty():
+		_cur = want.duplicate()
+	for key: String in want.keys():
+		_cur[key] = lerp(_cur[key], want[key], k)
+	environment.ambient_light_color = _cur["ambient"]
+	environment.ambient_light_energy = _cur["ambient_energy"]
+	environment.fog_light_color = _cur["fog"]
+	environment.volumetric_fog_emission = _cur["glow"]
+	environment.tonemap_exposure = _cur["exposure"]
+	environment.adjustment_saturation = _cur["saturation"]
+
+
+## The grade wanted at camera height `y` (blends surface → depths → core).
+func target_for(y: float, gi: bool) -> Dictionary:
+	var d: float = smoothstep(depth_top, depth_full, y)
+	var c: float = smoothstep(core_top, core_full, y)
+	var amb: Color = surface_ambient.lerp(depth_ambient, d).lerp(core_ambient, c)
+	var amb_e: float = lerpf(lerpf(surface_ambient_energy, depth_ambient_energy, d), core_ambient_energy, c)
+	if gi:
+		amb_e *= gi_ambient_scale
+	return {
+		"ambient": amb,
+		"ambient_energy": amb_e,
+		"fog": surface_fog.lerp(depth_fog, d).lerp(core_fog, c),
+		"glow": surface_fog_glow.lerp(depth_fog_glow, d).lerp(core_fog_glow, c),
+		"exposure": lerpf(lerpf(surface_exposure, depth_exposure, d), core_exposure, c),
+		"saturation": lerpf(lerpf(surface_saturation, depth_saturation, d), core_saturation, c),
+	}

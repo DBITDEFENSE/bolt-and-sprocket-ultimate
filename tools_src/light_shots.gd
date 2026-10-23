@@ -8,12 +8,18 @@ extends Node
 ##   godot --audio-driver Dummy --position -4000,-4000 --resolution 1280x720 --path . res://tools_src/light_shots.tscn \
 ##     -- --maps=map00,map01,map02 --tag=before [--out=DIR] [--preset=high]
 ## Output: morning/screenshots/lighting/<tag>/<map>_<view>[_power].png
+## --dbg=N: viewport debug draw mode N (e.g. 18 = the GI buffer, to see what SDFGI adds).
+## --fps: vsync off, and after each shot the frames rendered in the next second are counted; per-view numbers and
+## the GPU time of the frame (ms, measured even when the driver caps the frame rate) go to <out>/fps.txt (a rough
+## probe, not a benchmark).
 
 var _out: String = ""
 var _tag: String = "now"
 var _maps: PackedStringArray = ["map00", "map01", "map02"]
 var _scene: Node = null
 var _saved: int = 0
+var _fps: bool = false
+var _fps_lines: PackedStringArray = []
 
 
 func _ready() -> void:
@@ -24,11 +30,19 @@ func _ready() -> void:
 			_tag = a.substr(6)
 		elif a.begins_with("--out="):
 			_out = a.substr(6)
+		elif a.begins_with("--dbg="):
+			get_viewport().debug_draw = int(a.substr(6)) as Viewport.DebugDraw
+		elif a == "--fps":
+			_fps = true
 		elif a.begins_with("--preset="):
 			GLSettings.values["graphics_preset"] = a.substr(9)
 	if _out == "":
 		_out = ProjectSettings.globalize_path("res://").path_join("morning/screenshots/lighting").path_join(_tag)
 	DirAccess.make_dir_recursive_absolute(_out)
+	if _fps:
+		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
+		Engine.max_fps = 0
+		RenderingServer.viewport_set_measure_render_time(get_viewport().get_viewport_rid(), true)
 	AudioServer.set_bus_mute(AudioServer.get_bus_index("Master"), true)
 	ProfileSave.path = "user://_qa_light_profile.json"
 	ProfileSave.profile = ProfileSave.new_profile()
@@ -63,6 +77,9 @@ func _run() -> void:
 			_scene = null
 		await _secs(1.0)
 	print("[light_shots] %d shots in %s" % [_saved, _out])
+	if _fps:
+		var fa: FileAccess = FileAccess.open(_out.path_join("fps.txt"), FileAccess.WRITE)
+		fa.store_string("\n".join(_fps_lines) + "\n")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(ProfileSave.path))
 	get_tree().quit()
 
@@ -112,6 +129,18 @@ func _views(key: String, cfg: Dictionary, cam: Camera3D, suffix: String) -> void
 		cam.look_at(look, Vector3.UP)
 		await _secs(float(v.get("wait", 0.6)))   # volumetric fog and SDFGI catch up with the move
 		await _shot("%s_%s%s" % [key, str(v["name"]), suffix])
+		if _fps:
+			var f0: int = Engine.get_frames_drawn()
+			var t0: int = Time.get_ticks_usec()
+			var gpu: float = 0.0
+			var n: int = 0
+			while Time.get_ticks_usec() - t0 < 1000000:
+				await RenderingServer.frame_post_draw
+				gpu += RenderingServer.viewport_get_measured_render_time_gpu(get_viewport().get_viewport_rid())
+				n += 1
+			var fps: float = float(Engine.get_frames_drawn() - f0) / (float(Time.get_ticks_usec() - t0) / 1000000.0)
+			_fps_lines.append("%s_%s%s %.1f %.2f" % [key, str(v["name"]), suffix, fps, gpu / maxf(1.0, float(n))])
+			print("[light_shots] fps %.1f gpu %.2f ms" % [fps, gpu / maxf(1.0, float(n))])
 
 
 static func _v3(a: Variant) -> Vector3:
