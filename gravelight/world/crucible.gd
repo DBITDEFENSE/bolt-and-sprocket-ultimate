@@ -22,6 +22,8 @@ var phase: Phase = Phase.IDLE
 var _t: float = 0.0
 var _result: StringName = &""
 var _result_tier: int = 1
+var _result_kit: Array = []        # the M1911's attachments (M1911Kit.encode): Last Rites comes out wearing them
+var _result_finish: String = ""
 var _fed_by: int = 0
 var _glow: OmniLight3D
 var _mouth: MeshInstance3D
@@ -234,15 +236,19 @@ func interact(player: Player) -> void:
 			if try_purchase(player, &"crucible", price_for(&"upgrade", econ, w.tier)):
 				var up: StringName = w.upgrade_id()
 				var next_tier: int = w.tier + 1
+				var kit: Array = M1911Kit.encode(w.kit)
+				var fin: String = String(w.finish)
 				player.weapons.remove_current()
-				_forge(player.player_id, String(up), next_tier)
-				Net.mirror(self, &"_forge", [player.player_id, String(up), next_tier])
+				_forge(player.player_id, String(up), next_tier, kit, fin)
+				Net.mirror(self, &"_forge", [player.player_id, String(up), next_tier, kit, fin])
 
 
 ## The weapon goes in and the forge roars (host, then every peer).
-func _forge(fed_by: int, result: String, tier: int = 1) -> void:
+func _forge(fed_by: int, result: String, tier: int = 1, kit: Array = [], finish: String = "") -> void:
 	_result = StringName(result)
 	_result_tier = tier
+	_result_kit = kit
+	_result_finish = finish
 	_fed_by = fed_by
 	if tier >= 2 and Net.is_authority():
 		GLVO.play(StringName("OPR_CRUCIBLE_%s_01" % ("TWICE" if tier == 2 else "THRICE")))
@@ -292,6 +298,8 @@ func _take(player: Player) -> void:
 		got.tier = _result_tier
 		got.refill()
 		player.weapons.call("_rebuild_gun")
+	if got != null and (not _result_kit.is_empty() or _result_finish != ""):
+		player.weapons.set_kit(id, _result_kit, _result_finish)
 	GLBus.weapon_upgraded.emit(player.player_id, id)
 	GLBus.weapon_acquired.emit(player.player_id, id, &"crucible")
 	if player.player_id != _fed_by and not GameState.is_solo():
@@ -305,6 +313,8 @@ func _reset() -> void:
 	_t = 0.0
 	_result = &""
 	_result_tier = 1
+	_result_kit = []
+	_result_finish = ""
 	if _float != null:
 		_float.hide()
 	if _glow != null:

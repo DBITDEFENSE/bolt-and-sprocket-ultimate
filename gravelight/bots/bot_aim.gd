@@ -499,6 +499,7 @@ func fire(w: WeaponInstance) -> void:
 			brain.bonus_event("headshot")
 	_bloom = minf(_bloom + (1.0 if pellets == 1 else 0.35), 6.0)
 	player.remote_fire(0, w.id, origin, last_hit)
+	GLBus.mark_shot(pid, w.is_suppressed())   # a bot's suppressed M1911 stays off the minimap too
 	GLBus.weapon_fired.emit(pid, w.id, w.upgraded, origin, fwd)
 	if target != null:
 		brain.bonus_event("fire")

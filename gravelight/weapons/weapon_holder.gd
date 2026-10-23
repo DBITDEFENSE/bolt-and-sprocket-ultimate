@@ -113,11 +113,20 @@ func setup(owner_player: Player) -> void:
 func _set_start_loadout() -> void:
 	var loadout: Dictionary = GLData.table("player")["start_loadout"]
 	slots = [WeaponInstance.create(StringName(loadout["primary"]))]
+	_apply_profile_kit(slots[0])
 	melee_id = StringName(loadout["melee"])
 	grenades = int(loadout["lethal_count"])
 	tactical_id = &""
 	tactical_count = 0
 	current_index = 0
+
+
+## The local human's starting M1911 gets their Loadout Pick and finish (UPDATE_04 section 6, M1911Kit). Bots, Jakub,
+## mirrors and tools (a Player outside the tree) start plain.
+func _apply_profile_kit(w: WeaponInstance) -> void:
+	if player == null or mirror or player.is_bot or player.is_companion or not player.is_local or not player.is_inside_tree():
+		return
+	M1911Kit.apply_start(w, M1911Kit.equipped_pick(), M1911Kit.equipped_finish())
 
 
 # ---------------------------------------------------------------- queries
@@ -227,10 +236,11 @@ var _zoom_cache: Dictionary = {}   # weapon id -> ADS FOV multiplier
 ## ADS FOV multiplier for a weapon (T-047): weapons.json feel "ads_zoom" (per weapon, upgraded rows inherit
 ## the base row's, class value as the fallback), else the old per-class ADS_ZOOM table.
 func ads_zoom(w: WeaponInstance) -> float:
-	if not _zoom_cache.has(w.id):
+	var key: String = String(w.id) + w.kit_sig()
+	if not _zoom_cache.has(key):
 		var fallback: float = float(ADS_ZOOM.get(w.weapon_class(), 0.8))
-		_zoom_cache[w.id] = clampf(float(feel_for(w).get("ads_zoom", fallback)), 0.1, 1.0)
-	return float(_zoom_cache[w.id])
+		_zoom_cache[key] = clampf(float(feel_for(w).get("ads_zoom", fallback)), 0.1, 1.0)
+	return float(_zoom_cache[key])
 
 
 func move_mult() -> float:
@@ -280,6 +290,53 @@ func give_weapon(weapon_id: StringName) -> void:
 	_cancel_reload()
 	_swap_t = SWAP_TIME
 	_rebuild_gun()
+
+
+## Puts an existing weapon (with its ammo and attachments) into the hands: the gun Jakub hands back. Takes the
+## current slot when the slots are full, like a wall-buy.
+func give_instance(w: WeaponInstance) -> void:
+	if w == null:
+		return
+	if slots.size() < max_slots():
+		slots.append(w)
+		current_index = slots.size() - 1
+	else:
+		slots[current_index] = w
+	_cancel_reload()
+	_swap_t = SWAP_TIME * w.draw_mult()
+	_rebuild_gun()
+
+
+## Fits one M1911 attachment to the held weapon `weapon_id` (the Armorer's Bench; "" clears the slot). Co-op: the
+## host's puppet forwards it to the owner's real holder like the other inventory ops.
+func fit_attachment(weapon_id: StringName, slot: String, option: String) -> void:
+	_forward_op(&"fit_attachment", [weapon_id, slot, option])
+	var w: WeaponInstance = find_weapon(weapon_id)
+	if w == null or not M1911Kit.applies_to(w):
+		return
+	M1911Kit.install(w, slot, option)
+	_kit_changed(w)
+
+
+## Replaces the whole kit (and finish) of `weapon_id`, full ammo (the Crucible hands Last Rites back with the
+## pistol's attachments, each one now its upgraded version).
+func set_kit(weapon_id: StringName, kit_list: Array, finish: String) -> void:
+	_forward_op(&"set_kit", [weapon_id, kit_list, finish])
+	var w: WeaponInstance = find_weapon(weapon_id)
+	if w == null or not M1911Kit.applies_to(w):
+		return
+	w.kit = M1911Kit.decode(kit_list)
+	w.finish = StringName(finish)
+	w.refresh_kit()
+	w.refill()
+	_kit_changed(w)
+
+
+func _kit_changed(w: WeaponInstance) -> void:
+	if w == current():
+		_rebuild_gun()
+	if player != null and player.remote_body != null and is_instance_valid(player.remote_body):
+		player.remote_body.refresh_weapon()
 
 
 func set_melee(weapon_id: StringName) -> void:
@@ -413,8 +470,15 @@ func reset_loadout() -> void:
 func to_net() -> Dictionary:
 	var s: Array = []
 	for w: WeaponInstance in slots:
-		s.append([String(w.id), w.mag, w.reserve, w.fire_mode, w.underbarrel_active, w.underbarrel_ammo, w.tier])
+		s.append(net_entry(w))
 	return {"s": s, "c": current_index, "m": String(melee_id), "g": grenades, "t": String(tactical_id), "tc": tactical_count}
+
+
+## One weapon in to_net shape: [id, mag, reserve, fire mode, underbarrel on, underbarrel ammo, tier, attachments
+## (M1911Kit.encode), finish].
+static func net_entry(w: WeaponInstance) -> Array:
+	return [String(w.id), w.mag, w.reserve, w.fire_mode, w.underbarrel_active, w.underbarrel_ammo, w.tier,
+		M1911Kit.encode(w.kit), String(w.finish)]
 
 
 ## Mirror only: becomes the owner's inventory.
@@ -434,6 +498,12 @@ func apply_net(d: Dictionary) -> void:
 		w.underbarrel_ammo = int(a[5])
 		if a.size() > 6:
 			w.tier = maxi(w.tier, int(a[6]))
+		if a.size() > 7 and M1911Kit.applies_to(w):
+			w.kit = M1911Kit.decode(a[7])
+			w.finish = StringName(str(a[8])) if a.size() > 8 else &""
+			w.refresh_kit()
+			w.mag = int(a[1])
+			w.reserve = int(a[2])
 		slots.append(w)
 	current_index = clampi(int(d.get("c", 0)), 0, maxi(0, slots.size() - 1))
 	melee_id = StringName(str(d.get("m", "trench_knife")))
@@ -464,7 +534,7 @@ func net_signature() -> Array:
 	var ids: PackedStringArray = []
 	var ammo: int = 0
 	for w: WeaponInstance in slots:
-		ids.append(String(w.id))
+		ids.append(String(w.id) + w.kit_sig())
 		ammo = ammo * 31 + w.mag * 1000 + w.reserve
 	return ["%s|%d|%s|%d|%s|%d" % [",".join(ids), current_index, melee_id, grenades, tactical_id, tactical_count], ammo]
 
@@ -609,7 +679,7 @@ func _select(index: int) -> void:
 	current_index = index
 	_cancel_reload()
 	_reload_queued = false
-	_swap_t = SWAP_TIME
+	_swap_t = SWAP_TIME * (current().draw_mult() if current() != null else 1.0)
 	ads_t = 0.0
 	AudioDirector.play_2d("weapon_raise", -6.0)
 	_rebuild_gun()
@@ -623,6 +693,7 @@ func _fire(w: WeaponInstance) -> void:
 	if w.mag == 0 and w.mag_size() > 1 and not w.data.has("stream"):
 		AudioDirector.play_2d("last_round_click", -3.0, 0.0)   # the "last bullet" tell: a light hollow click
 	if player.camera != null:
+		GLBus.mark_shot(player.player_id, w.is_suppressed())   # read by weapon_fired listeners (the minimap's reveal)
 		GLBus.weapon_fired.emit(player.player_id, w.id, w.upgraded, player.camera.global_position, -player.camera.global_basis.z)
 	var rpm: float = maxf(1.0, w.f("rpm", 300.0) * float(PerkManager.stat(player.player_id, "fire_rate_mult", 1.0)))
 	_fire_cd = minf(_fire_cd, 0.0) + 60.0 / rpm
@@ -669,6 +740,8 @@ func _fire(w: WeaponInstance) -> void:
 	var rc: Dictionary = recoil_cfg(w)
 	bloom = minf(bloom + float(rc.get("bloom", 1.0)) * (1.0 if pellets == 1 else 0.35), float(rc.get("bloom_max", 6.0)))
 	AudioDirector.play_2d(_fire_key(w), float(_feel.get("fire_db", -2.0)))
+	if not w.kit.is_empty():
+		_kit_fire_layer(w)
 	_glassy_layer(w)
 	_shot_feedback(w)
 	var cyc_mode: String = str(w.data.get("mode", ""))
@@ -687,6 +760,10 @@ var _warned_low: Dictionary = {}
 
 ## "fire_<base id>" when the bank has it, else the class sound. Cached per weapon so firing builds no strings.
 func _fire_key(w: WeaponInstance) -> String:
+	if w.is_suppressed():
+		var sk: String = str((M1911Kit.cfg().get("sounds", {}) as Dictionary).get("suppressed_fire", ""))
+		if sk != "" and AudioDirector.has_sound(sk):
+			return sk
 	var base: StringName = w.base_id()
 	var k: Variant = _fire_keys.get(base)
 	if k == null:
@@ -695,6 +772,13 @@ func _fire_key(w: WeaponInstance) -> String:
 		k = own if AudioDirector.has_sound(own) else fallback
 		_fire_keys[base] = k
 	return str(k)
+
+
+## The compensator's side blast under the shot (M1911 attachments).
+func _kit_fire_layer(w: WeaponInstance) -> void:
+	var fl: String = str(w.kit_mods().get("flash", ""))
+	if fl == "comp" or fl == "censer":
+		AudioDirector.play_2d(str((M1911Kit.cfg().get("sounds", {}) as Dictionary).get("comp_layer", "kit_comp_blast")), -5.0, 0.06)
 
 
 func _ammo_warnings(w: WeaponInstance) -> void:
@@ -832,6 +916,9 @@ func _fire_underbarrel(w: WeaponInstance) -> void:
 
 ## Per-zombie on-hit bonuses for upgraded bullets.
 func _on_hit_effects(w: WeaponInstance, z: Zombie, limb: StringName, killed: bool, head_pos: Vector3) -> void:
+	if not w.kit.is_empty():
+		var eye: Vector3 = player.camera.global_position if player.camera != null else player.global_position
+		M1911Kit.on_hit(w, z, killed, eye.distance_to(head_pos), player.player_id)
 	if not w.upgraded:
 		return
 	var pid: int = player.player_id
@@ -930,7 +1017,7 @@ var _last_impact: Vector3 = Vector3.ZERO
 func _trace(origin: Vector3, dir: Vector3, w: WeaponInstance, hits: Dictionary) -> void:
 	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
 	var exclude: Array[RID] = [player.get_rid()]
-	var pierce: int = int(w.data.get("penetration", 0))
+	var pierce: int = int(w.data.get("penetration", 0)) + int(w.property("kit_penetration", 0))
 	var from: Vector3 = origin
 	var end_point: Vector3 = origin + dir * SHOT_RANGE
 	var last_hit: Vector3 = end_point
@@ -1056,6 +1143,8 @@ func start_reload() -> void:
 		_reload_t = (w.f("reload_empty", 2.5) if w.mag == 0 else w.f("reload_partial", 2.0)) * mult
 	_on_reload_started(w)
 	_set_reload_cues()
+	if M1911Kit.has_option(w, "mag", "drum"):
+		AudioDirector.play_2d(str((M1911Kit.cfg().get("sounds", {}) as Dictionary).get("drum_reload", "kit_drum_wind")), -4.0, 0.0)
 	if _cues.is_empty():
 		AudioDirector.play_2d("reload_start", -5.0)
 
@@ -1401,7 +1490,7 @@ func _rebuild_gun() -> void:
 		_flame = null
 		return
 	var camo: StringName = &"" if w.upgraded else ProfileSave.camo_for(w.base_id())
-	_model = WeaponModels.build(w.base_id(), w.upgraded, camo)
+	_model = WeaponModels.build(w.base_id(), w.upgraded, camo, M1911KitModels.look_of(w))
 	_gun.add_child(_model)
 	for part: String in ["Mag", "Bolt", "Slide", "Pump", "Cover", "Barrels", "Crank", "Rocket", "Valve"]:
 		var n: Node3D = _model.get_node_or_null(part) as Node3D
@@ -1433,7 +1522,7 @@ func _rebuild_gun() -> void:
 	_flash_mesh.name = "Flash"
 	_flash_mesh.mesh = WeaponModels.muzzle_flash_mesh()
 	_flash_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	_flash_mesh.set_meta("size", float(FLASH_SCALE.get(w.weapon_class(), 1.0)))
+	_flash_mesh.set_meta("size", float(FLASH_SCALE.get(w.weapon_class(), 1.0)) * M1911KitModels.flash_scale(w))
 	_muzzle.add_child(_flash_mesh)
 	_flash_mesh.hide()
 	_flame = CPUParticles3D.new()
@@ -1769,6 +1858,8 @@ func _on_shot_fx(seconds: float) -> void:
 	var k: float = float(_flash_mesh.get_meta("size", 1.0)) * randf_range(0.8, 1.15)
 	_flash_mesh.transform = Transform3D(Basis(Vector3.BACK, randf() * TAU).scaled(Vector3(k, k, k * randf_range(0.75, 1.3))), Vector3(0, 0, -0.015))
 	_flash_mesh.show()
+	if _model != null and _model.has_node("KitFlash"):
+		M1911KitModels.pulse_flash(_model.get_node("KitFlash") as Node3D, seconds)
 
 
 ## Support-hand orientation for the held part: along the barrel (palm under, fingers up the right side)
@@ -2039,6 +2130,8 @@ static func feel_for(w: WeaponInstance) -> Dictionary:
 	out.merge(base_row.get("feel", {}) as Dictionary, true)
 	if w.upgraded:
 		out.merge(w.data.get("feel", {}) as Dictionary, true)
+	if not w.kit.is_empty():
+		out.merge(w.kit_mods().get("feel", {}) as Dictionary, true)   # M1911 attachments (zoom, flash, sound)
 	return out
 
 
@@ -2191,14 +2284,17 @@ static func recoil_for(w: WeaponInstance) -> Dictionary:
 	out.merge(base_row.get("recoil", {}) as Dictionary, true)
 	if w.upgraded:
 		out.merge(w.data.get("recoil", {}) as Dictionary, true)
+	if not w.kit.is_empty():
+		out = M1911Kit.apply_recoil(out, w)   # M1911 attachments (compensator, stock)
 	return out
 
 
 func recoil_cfg(w: WeaponInstance) -> Dictionary:
 	if w == null:
 		return {}
-	if w.id != _recoil_id:
-		_recoil_id = w.id
+	var key: StringName = StringName(String(w.id) + w.kit_sig())
+	if key != _recoil_id:
+		_recoil_id = key
 		_recoil = recoil_for(w)
 	return _recoil
 

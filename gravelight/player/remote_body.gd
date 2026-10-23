@@ -462,9 +462,11 @@ func _build_props() -> void:
 
 ## The weapon in their hands (from the replicated inventory). &"" = empty hands.
 func set_weapon(weapon_id: StringName) -> void:
-	if weapon_id == _weapon_id and _gun != null:
+	var look: Dictionary = _owner_look(weapon_id)
+	if weapon_id == _weapon_id and _gun != null and str(look.get("sig", "")) == _look_sig:
 		return
 	_weapon_id = weapon_id
+	_look_sig = str(look.get("sig", ""))
 	if _gun != null and is_instance_valid(_gun):
 		if _flash.get_parent() != null:
 			_flash.get_parent().remove_child(_flash)
@@ -482,7 +484,7 @@ func set_weapon(weapon_id: StringName) -> void:
 			(n0 as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		return
 	var base: StringName = StringName(String(weapon_id).trim_suffix("_up"))
-	_gun = WeaponModels.build(base, String(weapon_id).ends_with("_up"))
+	_gun = WeaponModels.build(base, String(weapon_id).ends_with("_up"), &"", look)
 	_gun_pivot.add_child(_gun)
 	_gun.position = Vector3(0.12, -0.02, -0.28)
 	for n: Node in _gun.find_children("*", "MeshInstance3D", true, false):
@@ -492,6 +494,26 @@ func set_weapon(weapon_id: StringName) -> void:
 	_muzzle = _gun.get_node_or_null("Muzzle") as Node3D
 	if _muzzle != null:
 		_muzzle.add_child(_flash)
+
+
+var _look_sig: String = ""
+
+
+## The M1911 attachments on the gun in the owner's hands (their WeaponHolder, a mirror for bots and remote players),
+## when it is this weapon: {} otherwise (UPDATE_04 section 6).
+func _owner_look(weapon_id: StringName) -> Dictionary:
+	var p: Player = get_parent() as Player
+	if p == null or p.weapons == null:
+		return {}
+	var w: WeaponInstance = p.weapons.current()
+	return M1911KitModels.look_of(w) if w != null and w.id == weapon_id else {}
+
+
+## Rebuilds the held gun after its attachments changed (the Armorer's Bench).
+func refresh_weapon() -> void:
+	var id: StringName = _weapon_id
+	_weapon_id = &""
+	set_weapon(id)
 
 
 ## kind: 0 bullet, 1 projectile, 2 stream, 3 melee, 4 throw.
@@ -517,7 +539,18 @@ func fire(kind: int, weapon_id: StringName, origin: Vector3, end: Vector3) -> vo
 	_flash.rotation.z = randf() * TAU
 	_flash_light.global_position = mz
 	_flash_light.light_energy = 2.4
-	AudioDirector.play_3d(fire_key(weapon_id, kind), mz, 0.0, 0.08)
+	var p: Player = get_parent() as Player
+	var cw: WeaponInstance = p.weapons.current() if p != null and p.weapons != null else null
+	var key: String = fire_key(weapon_id, kind)
+	if cw != null and cw.id == weapon_id and cw.is_suppressed():
+		var sk: String = str((M1911Kit.cfg().get("sounds", {}) as Dictionary).get("suppressed_fire", ""))
+		if AudioDirector.has_sound(sk):
+			key = sk
+		_flash_light.light_energy = 0.3
+		_flash.scale = Vector3.ONE * 0.6
+	else:
+		_flash.scale = Vector3.ONE * 2.2
+	AudioDirector.play_3d(key, mz, 0.0, 0.08)
 	if kind == 0 and origin.distance_squared_to(end) > 1.0:
 		Effects.tracer(mz, end)
 

@@ -571,7 +571,7 @@ func talk_prompt(p: Player) -> String:
 			var o: Dictionary = gun_offer(p)
 			if bool(o.get("ok", false)):
 				return "Hold [%s] to give Jakub your %s%s" % [key, str(o["name"]), " (he gives you his)" if not player.weapons.slots.is_empty() else ""]
-			if str(o.get("code", "")) == "only_gun" or str(o.get("code", "")) == "refused":
+			if str(o.get("code", "")) in ["only_gun", "refused", "nachtglas"]:
 				return "Jakub: %s" % str(o.get("reason", ""))
 	return ""
 
@@ -615,8 +615,11 @@ func gun_offer(p: Player) -> Dictionary:
 	var w: WeaponInstance = p.weapons.current()
 	var code: String = offer_rule(p.weapons.slots.size() if w != null else 0, w.weapon_class() if w != null else &"",
 		p.weapons.in_last_stand(), cfg().get("refuses_classes", []))
+	if code == "" and w != null and not M1911Kit.companion_accepts(w):
+		code = "nachtglas"   # UPDATE_04 section 6: he won't carry the Nachtglas rounds
 	var reasons: Dictionary = {"down": "not while you are down", "empty": "nothing in your hands",
-		"only_gun": "keep it, it's your only gun (buy him one at a wall)", "refused": "he won't touch that one"}
+		"only_gun": "keep it, it's your only gun (buy him one at a wall)", "refused": "he won't touch that one",
+		"nachtglas": "he won't carry Nachtglas rounds"}
 	if code != "":
 		return {"ok": false, "code": code, "reason": str(reasons.get(code, code)), "name": w.display_name() if w != null else ""}
 	return {"ok": true, "code": "", "name": w.display_name(), "weapon": w}
@@ -657,11 +660,14 @@ func _receive(w: WeaponInstance, from: Player, bought: bool) -> void:
 	player.weapons.slots.append(w)
 	player.weapons.current_index = 0
 	if old != null and from != null and from.weapons != null and not bought:
-		from.weapons.give_weapon(old.id)   # "Take mine, then."
-		var back: WeaponInstance = from.weapons.find_weapon(old.id)
-		if back != null:
-			back.mag = old.mag
-			back.reserve = old.reserve
+		if from.weapons.find_weapon(old.id) == null:
+			from.weapons.give_instance(old)   # "Take mine, then." (the very gun: its ammo and M1911 attachments)
+		else:
+			from.weapons.give_weapon(old.id)
+			var back: WeaponInstance = from.weapons.find_weapon(old.id)
+			if back != null:
+				back.mag = old.mag
+				back.reserve = old.reserve
 		_later_say(0.2, "GUN_SWAP")
 	_set_armed(true)
 	_event("armed:%s" % w.id)

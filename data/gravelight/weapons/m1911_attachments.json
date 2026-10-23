@@ -1,0 +1,146 @@
+{
+ "_doc": "M1911 attachments at the Armorer's Bench (UPDATE_04 section 6, DECISIONS T-068; docs/gravelight/WEAPONS.md section 25). Read by gravelight/weapons/m1911_kit.gd. Five slots, one option per slot (buying another option in a slot replaces the one there). Prices in Scrip. 'stats' multiply WeaponInstance.f(<key>) (so they stack with the Crucible tiers); 'set' replaces the magazine / reserve size; 'limb' multiplies a hitbox multiplier; 'recoil' multiplies the resolved recoil pattern; 'feel' overrides the viewmodel feel; 'draw' multiplies the raise time after a swap; 'props' are flags the weapon code reads (suppressed, kit_slow, kit_flare). Every option has an 'upgraded' block used on Last Rites (m1911_up): its own name and numbers, replacing the base block's.",
+ "weapons": ["m1911"],
+ "slot_order": ["mag", "barrel", "sights", "grip", "ammo"],
+ "slots": {
+  "mag": {"name": "Magazine", "sound": "kit_mag"},
+  "barrel": {"name": "Barrel", "sound": "kit_barrel"},
+  "sights": {"name": "Sights", "sound": "kit_sight"},
+  "grip": {"name": "Grip / Stock", "sound": "kit_grip"},
+  "ammo": {"name": "Ammo", "sound": "kit_ammo"}
+ },
+ "options": {
+  "mag": {
+   "extended": {
+    "name": "Extended Mag", "price": 750,
+    "desc": "A longer twelve-round box that sticks out of the grip. More rounds before the reload.",
+    "set": {"mag": 12, "reserve": 96},
+    "upgraded": {"name": "Penitent's Magazine", "desc": "Eighteen rounds of Last Rites, every one of them sorry.", "set": {"mag": 18, "reserve": 144}}
+   },
+   "drum": {
+    "name": "Drum Mag", "price": 1500,
+    "desc": "A thirty-round drum hung under the grip. Heavy: a slower reload and a slower aim.",
+    "set": {"mag": 30, "reserve": 150},
+    "stats": {"reload_partial": 1.45, "reload_empty": 1.45, "ads_time": 1.35, "move_mult": 0.97},
+    "draw": 1.15,
+    "upgraded": {"name": "Rosary Drum", "desc": "Forty beads on the string, and every one of them a prayer.", "set": {"mag": 40, "reserve": 200},
+     "stats": {"reload_partial": 1.3, "reload_empty": 1.3, "ads_time": 1.25, "move_mult": 0.98}, "draw": 1.1}
+   }
+  },
+  "barrel": {
+   "match": {
+    "name": "Match Barrel", "price": 1000,
+    "desc": "A hand-fitted target barrel and bushing. Hits harder and carries further.",
+    "stats": {"damage": 1.15, "falloff_start": 1.5, "falloff_end": 1.5},
+    "upgraded": {"name": "Vesper Match", "desc": "Fitted by candlelight. It reaches the back row, and one past it.",
+     "stats": {"damage": 1.25, "falloff_start": 1.8, "falloff_end": 1.8}, "props": {"kit_penetration": 1}}
+   },
+   "compensator": {
+    "name": "Compensator", "price": 1000,
+    "desc": "A ported muzzle brake. Recoil down 40%, and the next shot comes sooner.",
+    "stats": {"rpm": 1.1},
+    "recoil": {"v": 0.6, "h": 0.6, "h_swing": 0.6, "punch": 0.6, "recover": 1.25},
+    "feel": {"flash_light": 2.6},
+    "flash": "comp",
+    "upgraded": {"name": "Censer Compensator", "desc": "The ports throw a Nachtglas flare. Anything it touches at close range catches fire.",
+     "stats": {"rpm": 1.15}, "recoil": {"v": 0.5, "h": 0.5, "h_swing": 0.5, "punch": 0.5, "recover": 1.35}, "feel": {"flash_light": 3.2},
+     "flash": "censer", "props": {"kit_flare": {"range": 6.0, "dps": 80, "dur": 3.0}}}
+   },
+   "suppressor": {
+    "name": "Suppressor", "price": 1000,
+    "desc": "EXPERIMENTAL. An OSS trials \"can\", stencilled and numbered, never issued. Quiet: your shots don't show on the map. -10% damage.",
+    "stats": {"damage": 0.9},
+    "feel": {"flash_light": 0.25, "fire_db": -9.0},
+    "flash": "suppressed",
+    "props": {"suppressed": true},
+    "upgraded": {"name": "Vow of Silence", "desc": "The can has taken its vows. Still off the map, no damage lost, and +15% on a headshot.",
+     "stats": {"damage": 1.0}, "limb": {"head": 1.15}, "feel": {"flash_light": 0.2, "fire_db": -10.0}, "flash": "suppressed", "props": {"suppressed": true}}
+   }
+  },
+  "sights": {
+   "radium": {
+    "name": "Radium Night Sights", "price": 600,
+    "desc": "Three radium dots, painted by hand. They glow in the dark and come up faster.",
+    "stats": {"ads_time": 0.75},
+    "glow": [0.55, 1.0, 0.45],
+    "upgraded": {"name": "Vigil Sights", "desc": "The dots burn violet now, and they never close their eyes.", "stats": {"ads_time": 0.65, "spread_ads": 0.8}, "glow": [0.8, 0.45, 1.0]}
+   },
+   "raised_target": {
+    "name": "Raised Target Sight", "price": 600,
+    "desc": "A tall, adjustable target rear and a high blade. A finer sight picture: tighter shots aimed.",
+    "stats": {"spread_ads": 0.5},
+    "feel": {"ads_zoom": 0.86},
+    "upgraded": {"name": "Steeple Sight", "desc": "Tall as a church spire and just as patient.", "stats": {"spread_ads": 0.35, "sway": 0.85}, "feel": {"ads_zoom": 0.82}}
+   }
+  },
+  "grip": {
+   "stock": {
+    "name": "Detachable Shoulder Stock", "price": 900,
+    "desc": "A walnut board stock that clips to the heel of the grip. Rifle-steady: ADS sway -60%, less kick. A little slower to draw.",
+    "stats": {"sway": 0.4, "spread_ads": 0.85, "move_mult": 0.98},
+    "recoil": {"v": 0.8, "h": 0.75, "h_swing": 0.75},
+    "draw": 1.25,
+    "upgraded": {"name": "Pallbearer Stock", "desc": "It carries the weight so you don't have to.", "stats": {"sway": 0.3, "spread_ads": 0.75, "move_mult": 0.99},
+     "recoil": {"v": 0.65, "h": 0.65, "h_swing": 0.65}, "draw": 1.15}
+   },
+   "checkered": {
+    "name": "Checkered Grips", "price": 500,
+    "desc": "Deep-cut checkered panels and a stippled front strap. Steadier from the hip, and out of the holster faster.",
+    "stats": {"spread_hip": 0.7},
+    "draw": 0.75,
+    "upgraded": {"name": "Confessor's Grips", "desc": "Your hand knows what it's done. It holds on anyway.", "stats": {"spread_hip": 0.6, "move_mult": 1.03}, "draw": 0.65}
+   }
+  },
+  "ammo": {
+   "hollow_points": {
+    "name": "Hollow-Points", "price": 1200,
+    "desc": ".45 ACP hollow-points from a private box. Headshots hit a lot harder.",
+    "limb": {"head": 1.35},
+    "tip": "hollow",
+    "upgraded": {"name": "Last Word Hollow-Points", "desc": "Every round has the last word, and the word is final.", "limb": {"head": 1.5, "neck": 1.2}, "tip": "hollow"}
+   },
+   "nachtglas": {
+    "name": "Nachtglas-Tipped", "price": 2000,
+    "desc": "Sold under the counter. Violet glass in every nose: +20% damage, and now and then a hit slows the target.",
+    "requires_power": true,
+    "locked_text": "Under the counter. Come back when the lights are on.",
+    "stats": {"damage": 1.2},
+    "props": {"kit_slow": {"chance": 0.06, "slow": 0.3, "dur": 1.5}},
+    "tip": "nachtglas",
+    "upgraded": {"name": "Nachtglas Benediction", "desc": "The glass has been blessed. It is not sure by whom.", "stats": {"damage": 1.3},
+     "props": {"kit_slow": {"chance": 0.12, "slow": 0.35, "dur": 2.0}}, "tip": "nachtglas"}
+   }
+  }
+ },
+ "flash_scale": {"comp": 1.25, "censer": 1.45, "suppressed": 0.25},
+ "sounds": {
+  "suppressed_fire": "fire_m1911_suppressed",
+  "comp_layer": "kit_comp_blast",
+  "drum_reload": "kit_drum_wind",
+  "vise": "bench_vise",
+  "open": "bench_open"
+ },
+ "companion_refuses": ["nachtglas"],
+ "vo": {"category": "GUNSMITH", "first_chance": 1.0, "chance": 0.45, "refuse": "GUNSMITH_REFUSE"},
+ "stat_bars": {
+  "_doc": "The bench's six bars, each 0..1: damage (per shot) / damage_max; range (falloff end) / range_max; recoil (vertical kick x punch, relative to the plain M1911: lower is better); ADS speed ads_speed_ref / ads time; mobility (move speed / sqrt(draw)) / mobility_max; capacity mag / capacity_max.",
+  "damage_max": 200.0, "range_max": 60.0, "recoil_ref": 1.0, "ads_speed_ref": 0.075, "mobility_max": 1.2, "capacity_max": 40.0
+ },
+ "finishes": {
+  "_doc": "Cosmetic pistol finishes unlocked by lifetime M1911 kills (Last Rites kills count, as for weapon mastery). Chosen in Settings > Gameplay; ProfileSave.profile.equipped.m1911_finish. Last Rites always shows the Crucible's Nachtglas instead.",
+  "order": ["", "blued", "battle_worn", "nickel", "engraved", "nachtglas_inlay"],
+  "rows": {
+   "": {"name": "Service Parkerized", "kills": 0},
+   "blued": {"name": "Blued", "kills": 25, "color": [0.1, 0.12, 0.17], "metallic": 0.75, "roughness": 0.28},
+   "battle_worn": {"name": "Battle-Worn", "kills": 100, "color": [0.42, 0.41, 0.38], "metallic": 0.6, "roughness": 0.6},
+   "nickel": {"name": "Nickel", "kills": 250, "color": [0.8, 0.79, 0.76], "metallic": 1.0, "roughness": 0.18},
+   "engraved": {"name": "Engraved", "kills": 500, "color": [0.74, 0.72, 0.68], "metallic": 1.0, "roughness": 0.22, "engraved": true},
+   "nachtglas_inlay": {"name": "Nachtglas Inlay", "kills": 1000, "color": [0.08, 0.08, 0.1], "metallic": 0.8, "roughness": 0.3, "inlay": [0.62, 0.3, 1.0]}
+  }
+ },
+ "loadout_pick": {
+  "_doc": "One attachment installed on your starting M1911 every match (cheap and never pay-to-win: Extended Mag or Checkered Grips only). Unlocked by lifetime M1911 kills; ProfileSave.profile.equipped.m1911_pick = 'mag:extended' / 'grip:checkered' / ''.",
+  "kills": 75,
+  "choices": ["mag:extended", "grip:checkered"]
+ }
+}

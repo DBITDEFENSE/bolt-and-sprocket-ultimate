@@ -49,7 +49,7 @@ const RELAY: PackedStringArray = [
 const QUEST_RELAY: PackedStringArray = ["sequence_progress", "sequence_reset", "holdout_changed"]
 ## Inventory calls the host may make on an owner's real WeaponHolder (WeaponHolder._forward_op).
 const INV_OPS: PackedStringArray = ["give_weapon", "set_melee", "refill_grenades", "refill_weapon", "refill_all",
-	"give_tactical", "remove_current"]
+	"give_tactical", "remove_current", "fit_attachment", "set_kit"]   # the last two: M1911 attachments (UPDATE_04 section 6)
 
 ## The ray of the shot being resolved right now (WeaponHolder._fire), sent with hits for host validation.
 static var shot_origin: Vector3 = Vector3.ZERO
