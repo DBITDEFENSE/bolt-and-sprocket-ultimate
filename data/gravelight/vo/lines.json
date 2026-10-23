@@ -5370,5 +5370,60 @@
     "Then if I ever see a backwards hook, I'll know it's his."
    ]
   ]
+ },
+ "DUT_GUNSMITH_01": {
+  "speaker": "DUT",
+  "category": "GUNSMITH",
+  "text": "There. Same old forty-five, just meaner."
+ },
+ "DUT_GUNSMITH_02": {
+  "speaker": "DUT",
+  "category": "GUNSMITH",
+  "text": "My uncle fixed tractors with less. This'll do."
+ },
+ "PEG_GUNSMITH_01": {
+  "speaker": "PEG",
+  "category": "GUNSMITH",
+  "text": "Section Five would have killed for a bench like this. Possibly literally."
+ },
+ "PEG_GUNSMITH_02": {
+  "speaker": "PEG",
+  "category": "GUNSMITH",
+  "text": "Better. Now it does what it's told."
+ },
+ "DEA_GUNSMITH_01": {
+  "speaker": "DEA",
+  "category": "GUNSMITH",
+  "text": "Every engine wants a little love. Guns too. Mostly guns."
+ },
+ "DEA_GUNSMITH_02": {
+  "speaker": "DEA",
+  "category": "GUNSMITH",
+  "text": "Seated, snug, and squared away. Like a good track pin."
+ },
+ "WRN_GUNSMITH_01": {
+  "speaker": "WRN",
+  "category": "GUNSMITH",
+  "text": "Not my rifle. But it's learning."
+ },
+ "WRN_GUNSMITH_02": {
+  "speaker": "WRN",
+  "category": "GUNSMITH",
+  "text": "Sights right, grip right. Now it only has to be honest."
+ },
+ "JAK_GUNSMITH_01": {
+  "speaker": "JAK",
+  "category": "GUNSMITH",
+  "text": "In the mine we mended everything twice. Here, once will have to do."
+ },
+ "JAK_GUNSMITH_REFUSE_01": {
+  "speaker": "JAK",
+  "category": "GUNSMITH_REFUSE",
+  "text": "No. Not the glass. I dug that stuff out of the walls. It does not go in my hands."
+ },
+ "JAK_GUNSMITH_REFUSE_02": {
+  "speaker": "JAK",
+  "category": "GUNSMITH_REFUSE",
+  "text": "Keep the purple ones. I have seen what they do to the men who carry them."
  }
 }

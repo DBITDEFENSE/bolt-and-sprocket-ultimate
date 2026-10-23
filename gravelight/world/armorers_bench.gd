@@ -38,6 +38,10 @@ func _ready() -> void:
 	cs.position = Vector3(0, TOP * 0.5, -0.36)
 	body.add_child(cs)
 	add_child(body)
+	var con: Node = get_node_or_null("/root/GLConsole")
+	if con != null and con.has_method("register"):
+		con.call("register", "kit", _cmd_kit, "kit [list | <slot> <option> | free <slot> <option> | clear [slot] | finish <id>]: M1911 attachments (UPDATE_04 section 6)")
+	ArmorersBench.reset_match()
 
 
 func build_greybox() -> void:
@@ -175,7 +179,7 @@ static func buy(player: Player, slot: String, option: String) -> Dictionary:
 		if code == "refused" and player != null:
 			GLVO.say_as(player.player_id, str((M1911Kit.cfg().get("vo", {}) as Dictionary).get("refuse", "GUNSMITH_REFUSE")), 1.0)
 		return res
-	if Net.is_client() and player.is_local:
+	if Net.is_client() and player.is_local and player.is_inside_tree():
 		var bench: ArmorersBench = nearest(player.get_tree(), player.global_position)
 		if bench != null and Net.session != null:
 			Net.session.request_call(bench, &"buy_for", [player.player_id, slot, option])
@@ -188,12 +192,13 @@ static func buy(player: Player, slot: String, option: String) -> Dictionary:
 			AudioDirector.play_2d("deny", -2.0)
 		return res
 	player.weapons.fit_attachment(w.id, slot, option)
-	var at: Vector3 = player.global_position + Vector3.UP
-	var b2: ArmorersBench = nearest(player.get_tree(), player.global_position) if player.is_inside_tree() else null
-	if b2 != null:
-		at = b2.global_position + Vector3(0, TOP + 0.2, 0)
-	AudioDirector.play_3d(M1911Kit.slot_sound(slot), at, -2.0)
-	Net.sfx_all(M1911Kit.slot_sound(slot), at, -2.0)
+	if player.is_inside_tree():
+		var at: Vector3 = player.global_position + Vector3.UP
+		var b2: ArmorersBench = nearest(player.get_tree(), player.global_position)
+		if b2 != null:
+			at = b2.global_position + Vector3(0, TOP + 0.2, 0)
+		AudioDirector.play_3d(M1911Kit.slot_sound(slot), at, -2.0)
+		Net.sfx_all(M1911Kit.slot_sound(slot), at, -2.0)
 	_gunsmith_line(player)
 	res["ok"] = true
 	return res
@@ -218,6 +223,42 @@ static func options_for(player: Player) -> Array:
 				"desc": str(M1911Kit.variant(slot, o, up).get("desc", "")), "price": p, "installed": M1911Kit.has_option(w, slot, o),
 				"reason": code, "short": short})
 	return out
+
+
+## Dev console: `kit` lists the bench, `kit mag drum` buys like the bench, `kit free mag drum` fits without paying,
+## `kit clear [slot]` takes parts off, `kit finish nickel` sets the finish on the held pistol.
+func _cmd_kit(a: PackedStringArray) -> String:
+	var p: Player = null
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		var pl: Player = n as Player
+		if pl != null and pl.is_local and not pl.is_bot:
+			p = pl
+	var w: WeaponInstance = M1911Kit.pistol_of(p)
+	if p == null or w == null:
+		return "kit: no M1911 in hand"
+	if a.is_empty() or a[0] == "list":
+		var lines: PackedStringArray = []
+		for r: Dictionary in options_for(p):
+			lines.append("%s %s  %d  %s%s" % [r["slot"], r["option"], int(r["price"]), "FITTED " if bool(r["installed"]) else "", str(r["reason"])])
+		return "\n".join(lines)
+	match a[0]:
+		"clear":
+			for slot: Variant in (M1911Kit.slot_order() if a.size() < 2 else [a[1]]):
+				p.weapons.fit_attachment(w.id, str(slot), "")
+			return "kit: cleared"
+		"free":
+			if a.size() < 3 or not M1911Kit.is_known(a[1], a[2]):
+				return "usage: kit free <slot> <option>"
+			p.weapons.fit_attachment(w.id, a[1], a[2])
+			return "kit: fitted %s" % M1911Kit.option_name(a[1], a[2], w.upgraded)
+		"finish":
+			w.finish = StringName(a[1] if a.size() > 1 else "")
+			w.refresh_kit()
+			p.weapons.set_kit(w.id, M1911Kit.encode(w.kit), String(w.finish))
+			return "kit: finish %s" % String(w.finish)
+	if a.size() < 2:
+		return "usage: kit <slot> <option>"
+	return "kit: %s" % str(buy(p, a[0], a[1]))
 
 
 ## The closest bench to `pos` (null on a map without one).
