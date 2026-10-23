@@ -56,7 +56,7 @@ func build_greybox() -> void:
 	lamp.shadow_enabled = false
 	lamp.position = Vector3(0.38, TOP + 0.42, -0.42)
 	add_child(lamp)
-	add_label(self, "ARMORER", Vector3(0, TOP + 0.98, -0.06), 22, Color(0.95, 0.82, 0.55))
+	add_label(self, "ARMORER", Vector3(0, TOP + 0.78, -0.045), 18, Color(0.95, 0.82, 0.55))   # on the sign board
 
 
 ## The bench, built once into a cached mesh (InteractableArt): oak top and legs, a shelf, the pegboard with its
