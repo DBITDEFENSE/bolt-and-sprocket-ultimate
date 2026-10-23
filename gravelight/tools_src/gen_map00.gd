@@ -2772,15 +2772,17 @@ func build_old_cellar_gameplay() -> void:
 			b.add_child(_old_cellar_lit)
 			_old_cellar_lit.position = -b.position
 	# cold moonlight down each light well, through the boards (the windows read from across the room)
-	for wp: Array in [[Vector3(3.45, 0.9, -2.2), Vector3(3.45, cy, 2.6)], [Vector3(26.0, 0.9, 1.8), Vector3(21.4, cy, 1.8)]]:
+	# (T-061: brighter, shadowed so the window's boards stripe it, the coal well's aimed into the cage)
+	for wp: Array in [[Vector3(3.45, 0.9, -2.2), Vector3(2.3, cy, 3.9)], [Vector3(26.0, 0.9, 1.8), Vector3(21.4, cy, 1.8)]]:
 		var sp2: SpotLight3D = SpotLight3D.new()
 		sp2.name = "WellMoonSpill"
 		sp2.light_color = Color(0.55, 0.65, 1.0)
-		sp2.light_energy = 2.0
-		sp2.light_volumetric_fog_energy = 1.5
-		sp2.spot_range = 8.0
-		sp2.spot_angle = 22.0
-		sp2.spot_attenuation = 1.1
+		sp2.light_energy = 4.5
+		sp2.light_volumetric_fog_energy = 2.5
+		sp2.spot_range = 9.0
+		sp2.spot_angle = 26.0
+		sp2.spot_attenuation = 1.0
+		sp2.shadow_enabled = true
 		map_root.add_child(sp2)
 		sp2.look_at_from_position(wp[0], wp[1], Vector3.UP)
 
