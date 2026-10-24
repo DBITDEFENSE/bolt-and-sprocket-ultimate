@@ -666,6 +666,7 @@ func _build_stable_light() -> void:
 			shaft.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			var xa: Vector3 = sheet[0]
 			shaft.transform = Transform3D(Basis(xa, d, xa.cross(d).normalized()), mid)
+			shaft.set_meta(&"clearance_ignore", true)   # light, not a thing in a doorway (DoorClearance, T-072)
 			g.add_child(shaft)
 			shaft.set_instance_shader_parameter("beam_len", shaft_len)
 	# T-061: brighter and wider (a third over the middle of the floor); the stripes themselves are decals, below
