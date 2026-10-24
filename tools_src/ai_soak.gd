@@ -284,6 +284,8 @@ func _try_go_live() -> void:
 		_pb_rounds = {}
 		if _pb.trainer != null:
 			_pb.trainer.verbose_hits = trace_s > 0.0
+		if OS.get_cmdline_user_args().has("--no-trainer"):
+			_pb.brain.trainer = null   # (tuning only) the plain brain: fight / retreat / train, no BotTrainer
 		if player_kit == "bots" and _map.squad != null:
 			_map.squad.apply_kit(_map.player, true)   # --player-kit=bots (tuning only): the bots' free spawn kit for the agent
 	if _map.squad == null:
@@ -393,6 +395,9 @@ func _end_run(why: String) -> void:
 		_metrics.extra["pb_training_share"] = snappedf(float(ts.get("training_s", 0.0)) / maxf(1.0, _game_t), 0.01)
 		_metrics.extra["pb_hits_per_min_training"] = snappedf(float(ts.get("hits_training", 0)) / maxf(0.01, float(ts.get("training_s", 0.0)) / 60.0), 0.01)
 		_metrics.extra["pb_bots"] = bots_n
+		if _pb.brain != null:
+			_metrics.extra["pb_shots"] = _pb.brain.aim.shots
+			_metrics.extra["pb_hit_share"] = snappedf(float(_pb.brain.aim.hits_landed) / float(maxi(1, _pb.brain.aim.shots)), 0.01)
 		_metrics.extra["pb_handbacks"] = _pb.handbacks
 		_metrics.extra["pb_scrip_end"] = Economy.get_scrip(1)
 		_metrics.extra["pb_perks"] = ",".join(PackedStringArray(PerkManager.owned(1).map(func(x: Variant) -> String: return str(x))))

@@ -74,6 +74,12 @@ var _cut_mode: String = ""
 ## A purchase on the way (a wall gun, its ammo, an ammo box within shop_near_m of the agent while the train is far
 ## enough back): the economy's own candidate, done through BotTasks without leaving the loop for long.
 var _shop: Dictionary = {}
+## The known zombies on this floor as [position (dead-reckoned when unseen), speed, reach], for the kite.
+var _threats: Array = []
+var _kite_dir: Vector3 = Vector3.ZERO
+var _kite_t: float = 0.0
+var _kite_score: float = 0.0
+var _against_t: float = 0.0
 var _cut_until: float = 0.0
 var _pass_off: float = 0.0
 ## Zombies at windows ahead on the loop (outside, tearing or about to climb in): the nearest one's loop distance.
@@ -320,7 +326,7 @@ func run(delta: float) -> void:
 	# transitions
 	match phase:
 		Phase.IDLE, Phase.TRAVEL, Phase.RUN:
-			if cut:
+			if cut and mag > 0 and head_d >= _f("cut_kill_gap_m", 5.0):
 				_set_phase(Phase.CUT)
 			elif (phase_t >= _f("run_min_s", 0.45) or phase != Phase.RUN) and brain.loco.fire_ready() and not brain.aim.reloading \
 					and (safe_to_turn(head_d, gap, minf(ahead_d, window_ahead_m + _f("ahead_need_m", 6.0) - _f("window_turn_m", 4.0)), bunched, followers, mag, c) \
@@ -331,11 +337,11 @@ func run(delta: float) -> void:
 				_set_phase(Phase.RUN)
 		Phase.FACE:
 			if cut and ahead_d < _f("cut_m", 6.0) * 0.8:
-				_set_phase(Phase.CUT)
+				_set_phase(Phase.CUT if mag > 0 and head_d >= _f("cut_kill_gap_m", 5.0) else Phase.RUN)
 			elif head_d < gap or mag <= 0 or (phase_t > _f("face_max_s", 2.4) and (followers > 0 or player.horizontal_speed() > 1.0)):
 				_set_phase(Phase.RUN)
 		Phase.CUT:
-			if not cut:
+			if not cut or mag <= 0 or head_d < _f("cut_kill_gap_m", 5.0) - 1.5:
 				_set_phase(Phase.RUN)
 	match phase:
 		Phase.RUN:
@@ -381,7 +387,7 @@ func _run(delta: float, gap: float, w: WeaponInstance) -> void:
 	if w != null and not brain.aim.reloading and w.reserve > 0 and float(w.mag) / float(maxi(1, w.mag_size())) < _f("reload_frac", 0.4) \
 			and head_d > gap + _f("reload_gap_extra_m", 1.0) and urg < 0.7:
 		brain.aim.start_reload()
-	_steer(dir, lateral, urg)
+	_kite(delta, urg)
 	if urg < 0.7 and brain.aim.target != null and brain.perception.is_visible(brain.aim.target):
 		var to: Vector3 = brain.aim.target.global_position - player.global_position
 		to.y = 0.0
@@ -407,7 +413,7 @@ func _face(delta: float, gap: float) -> void:
 	if head == null or head_d > gap + _f("turn_extra_m", 1.6) + _f("hold_extra_m", 4.0):
 		brain.loco.stop()
 	else:
-		_steer(dir, lateral, 0.5)
+		_kite(delta, 0.5)
 
 
 ## A zombie on the loop ahead.
@@ -572,7 +578,7 @@ func _hold_ground(delta: float) -> void:
 	if z == null or near_d > reach_of(z) + _f("hold_back_m", 1.5):
 		brain.loco.stop()
 	else:
-		_steer(-dir if z == ahead else dir, 0.0, 0.5)
+		_kite(delta, 0.5, brain.perception.pos_of(z))
 
 
 func _reverse() -> void:
@@ -622,6 +628,95 @@ func _steer(d: int, lat: float, urgency: float) -> void:
 	brain.loco.steer_path(pts, urgency)
 
 
+## Steering for an open room (the taproom is a ring round three small tables: zombies cut straight across):
+## every kite_every_s, of kite_dirs directions, the one that best goes on round the loop (toward the point lead_m
+## ahead on it) while keeping clear of where every known zombie will be in kite_horizon_s (its reach + a margin,
+## squared penalty, and a penalty for a straight line that brushes past one) and of walls (a ray per direction);
+## a little hysteresis keeps the choice steady. A cutter is swerved round on whichever side is open; a loop whose
+## best way stays against the travel direction for kite_reverse_after_s is reversed. `away_from` (not INF): head
+## away from that point instead of round the loop (holding ground).
+func _kite(delta: float, urgency: float, away_from: Vector3 = Vector3.INF) -> void:
+	var me: Vector3 = player.global_position
+	_kite_t -= delta
+	if _kite_t <= 0.0 or _kite_dir == Vector3.ZERO:
+		_kite_t = _f("kite_every_s", 0.1)
+		_kite_dir = _best_dir(me, urgency, away_from)
+		var tan: Vector3 = route.tangent_at(param) * float(dir)
+		if away_from == Vector3.INF and _kite_dir.dot(tan) < -0.45:
+			_against_t += _f("kite_every_s", 0.1)
+			if _against_t >= _f("kite_reverse_after_s", 0.5) and _rev_cd <= 0.0:
+				dir = -dir
+				_rev_cd = _f("reverse_cd_s", 2.0)
+				_against_t = 0.0
+				stats["reversals"] = int(stats["reversals"]) + 1
+		else:
+			_against_t = 0.0
+	var pts: PackedVector3Array = PackedVector3Array([me + _kite_dir * 1.2, me + _kite_dir * 2.4, me + _kite_dir * 3.6])
+	brain.loco.steer_path(pts, urgency)
+
+
+func _best_dir(me: Vector3, urgency: float, away_from: Vector3) -> Vector3:
+	var speed: float = float(GLData.table("player").get("sprint_speed" if urgency >= 0.7 else "walk_speed", 4.5))
+	var horizon: float = _f("kite_horizon_s", 0.7)
+	var desired: Vector3
+	if away_from != Vector3.INF:
+		desired = Vector3(me.x - away_from.x, 0.0, me.z - away_from.z)
+	else:
+		var tgt: Vector3 = route.point_at(route.advance(param, _f("lead_m", 3.5), dir))
+		desired = Vector3(tgt.x - me.x, 0.0, tgt.z - me.z)
+	desired = desired.normalized() if desired.length() > 0.05 else (route.tangent_at(param) * float(dir))
+	var space: PhysicsDirectSpaceState3D = player.get_world_3d().direct_space_state
+	var w: Dictionary = {"align": _f("kite_w_align", 2.0), "wall": _f("kite_w_wall", 2.5), "zombie": _f("kite_w_zombie", 3.0),
+		"cross": _f("kite_w_cross", 4.0), "margin": _f("kite_margin_m", 1.2), "keep": _f("kite_w_keep", 0.3)}
+	var best: Vector3 = desired
+	var best_s: float = -INF
+	var n: int = int(_f("kite_dirs", 16.0))
+	var knee: Vector3 = me + Vector3.UP * 0.5
+	for k: int in n:
+		var a: float = float(k) / float(n) * TAU
+		var d: Vector3 = Vector3(cos(a), 0.0, sin(a))
+		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(knee, knee + d * 3.0, BotLocomotion.MASK_WORLD, [player.get_rid()])
+		var hit: Dictionary = space.intersect_ray(q)
+		var free: float = knee.distance_to(hit["position"]) if not hit.is_empty() else 3.0
+		if free < 0.8:
+			continue
+		var sc: float = kite_score(me, d, free, desired, _kite_dir, speed, horizon, _threats, w)
+		if sc > best_s:
+			best_s = sc
+			best = d
+	_kite_score = best_s
+	return best
+
+
+## Pure (unit-tested): how good moving `d` (flat unit) is: toward `desired`, a little for keeping `prev`, away from
+## walls (`free` metres open that way), and clear of every threat [pos, speed, reach]: where it will be in
+## `horizon` s (coming at where we will be) inside its reach + margin costs the square of the overlap; a straight
+## line there that brushes past it costs too. w: {align, wall, zombie, cross, margin, keep}.
+static func kite_score(me: Vector3, d: Vector3, free: float, desired: Vector3, prev: Vector3, speed: float, horizon: float, threats: Array, w: Dictionary) -> float:
+	var sc: float = float(w.get("align", 2.0)) * d.dot(desired) - float(w.get("wall", 2.5)) * maxf(0.0, 2.2 - free) + float(w.get("keep", 0.3)) * d.dot(prev)
+	var p1: Vector3 = me + d * minf(maxf(0.0, free - 0.4), speed * horizon)
+	var a2: Vector2 = Vector2(me.x, me.z)
+	var b2: Vector2 = Vector2(p1.x, p1.z)
+	var margin: float = float(w.get("margin", 1.2))
+	for t: Variant in threats:
+		var zp: Vector3 = (t as Array)[0]
+		var zr: float = float((t as Array)[2])
+		var to_me: Vector3 = Vector3(p1.x - zp.x, 0.0, p1.z - zp.z)
+		var dz: float = to_me.length()
+		if dz > 10.0:
+			continue
+		var zf: Vector3 = zp + (to_me / maxf(0.01, dz)) * minf(float((t as Array)[1]) * horizon, maxf(0.0, dz - 0.5))
+		var dist: float = Vector2(p1.x - zf.x, p1.z - zf.z).length()
+		var rr: float = zr + margin
+		if dist < rr:
+			sc -= float(w.get("zombie", 3.0)) * (rr - dist) * (rr - dist)
+		var z2: Vector2 = Vector2(zp.x, zp.z)
+		var cpa: float = Geometry2D.get_closest_point_to_segment(z2, a2, b2).distance_to(z2)
+		if cpa < zr + 0.6:
+			sc -= float(w.get("cross", 4.0)) * (zr + 0.6 - cpa)
+	return sc
+
+
 # ================================================================== the picture
 
 func _think(now: float, me: Vector3) -> void:
@@ -640,6 +735,7 @@ func _think(now: float, me: Vector3) -> void:
 	window_ahead_m = INF
 	behind_clear_m = INF
 	followers = 0
+	_threats.clear()
 	var cap: float = _f("dead_reckon_s", 2.0)
 	var travel: Vector3 = route.tangent_at(param) * float(dir)
 	for e: Variant in per.known:
@@ -658,6 +754,8 @@ func _think(now: float, me: Vector3) -> void:
 		var on: Vector3 = route.point_at(zt)
 		var lat: float = _flat(on, zp)
 		var fwd: float = route.distance_along(param, zt, dir)
+		if not at_window:
+			_threats.append([zp, z.speed, reach_of(z)])
 		if at_window:
 			# still outside a window (on its way, waiting or tearing the boards): not on the loop yet, but that window
 			# will spill onto it; noted for the turn rule
