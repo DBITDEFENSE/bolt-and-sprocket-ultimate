@@ -1,0 +1,2747 @@
+{
+ "_doc": "Attachments for every gun at the Armorer's Bench (UPDATE_04 section 6, DECISIONS T-068 / T-074; docs/gravelight/WEAPONS.md section 25). Read by gravelight/weapons/weapon_kit.gd (WeaponKit). Every gun's table is resolved from its weapons.json class ('classes', a class may be 'like' another and override it) plus the per-weapon entry in 'weapons' (keyed by base id): 'options' there is merged option by option onto the class table (null removes an option, a dict's keys replace the class option's keys or add a new option), 'slot_order' / 'slot_names' replace the class's; 'own_table': true means the entry IS the whole table (the M1911, unchanged from T-068); 'refuse' is the bench's in-character refusal (wonder weapons, melee, tacticals). A class with no table here (wonder) is refused with refuse_classes. Slots: mag, barrel, sights, grip, ammo; one option per slot. Prices in Scrip. Option keys: 'stats' multiply WeaponInstance.f(<key>); 'scale' multiplies the magazine / reserve; 'set' replaces them; 'limb' multiplies a hitbox multiplier; 'recoil' multiplies the recoil pattern; 'feel' overrides the viewmodel feel; 'draw' multiplies the raise time; 'props' are flags the weapon code reads (suppressed, kit_slow, kit_flare, kit_ignite, kit_penetration, reach); 'requires_power' gates it; 'model' names the part WeaponKitModels builds (+ its numbers). 'upgraded' is the Crucible version: its name and text, and its own numbers; on a class table, a number group the upgraded block leaves out comes from the base option with upgrade_boost applied (benefits grow by that factor, drawbacks shrink to 60%).",
+ "slot_ids": [
+  "mag",
+  "barrel",
+  "sights",
+  "grip",
+  "ammo"
+ ],
+ "slots": {
+  "mag": {
+   "name": "Magazine",
+   "sound": "kit_mag"
+  },
+  "barrel": {
+   "name": "Barrel",
+   "sound": "kit_barrel"
+  },
+  "sights": {
+   "name": "Sights",
+   "sound": "kit_sight"
+  },
+  "grip": {
+   "name": "Grip / Stock",
+   "sound": "kit_grip"
+  },
+  "ammo": {
+   "name": "Ammo",
+   "sound": "kit_ammo"
+  }
+ },
+ "upgrade_boost": 1.35,
+ "classes": {
+  "pistol": {
+   "_doc": "Any future sidearm. The M1911 has its own table (weapons.m1911).",
+   "slot_order": [
+    "mag",
+    "barrel",
+    "sights",
+    "grip",
+    "ammo"
+   ],
+   "options": {
+    "mag": {
+     "extended": {
+      "name": "Extended Mag",
+      "price": 750,
+      "desc": "A longer box that sticks out of the grip. More rounds before the reload.",
+      "scale": {
+       "mag": 1.5,
+       "reserve": 1.2
+      },
+      "stats": {
+       "reload_partial": 1.0,
+       "reload_empty": 1.0
+      },
+      "model": "mag_ext",
+      "ext": 0.4,
+      "upgraded": {
+       "name": "Penitent's Magazine",
+       "desc": "Half again as many, every one of them sorry."
+      }
+     }
+    },
+    "barrel": {
+     "compensator": {
+      "name": "Compensator",
+      "price": 1000,
+      "desc": "A ported muzzle brake. Recoil down, and the next shot comes sooner.",
+      "recoil": {
+       "v": 0.7,
+       "h": 0.75,
+       "h_swing": 0.75,
+       "punch": 0.8,
+       "recover": 1.2
+      },
+      "feel": {
+       "flash_light": 2.2
+      },
+      "flash": "comp",
+      "model": "comp",
+      "upgraded": {
+       "name": "Choir Compensator",
+       "desc": "The ports sing on every shot. The muzzle doesn't move to listen."
+      }
+     },
+     "suppressor": {
+      "name": "Suppressor",
+      "price": 1000,
+      "desc": "EXPERIMENTAL. An OSS trials \"can\", stencilled and numbered, never issued. Quiet: your shots don't show on the map. -10% damage.",
+      "stats": {
+       "damage": 0.9
+      },
+      "feel": {
+       "flash_light": 0.25,
+       "fire_db": -9.0
+      },
+      "flash": "suppressed",
+      "props": {
+       "suppressed": true
+      },
+      "model": "can",
+      "len": 0.14,
+      "upgraded": {
+       "name": "Vow of Silence",
+       "desc": "The can has taken its vows. Still off the map, no damage lost, and +15% on a headshot.",
+       "stats": {
+        "damage": 1.0
+       },
+       "limb": {
+        "head": 1.15
+       },
+       "feel": {
+        "flash_light": 0.2,
+        "fire_db": -10.0
+       },
+       "flash": "suppressed",
+       "props": {
+        "suppressed": true
+       }
+      }
+     }
+    },
+    "sights": {
+     "radium": {
+      "name": "Radium Night Sights",
+      "price": 600,
+      "desc": "Radium dots painted on the front and rear sights by hand. They glow in the dark and come up faster.",
+      "stats": {
+       "ads_time": 0.8
+      },
+      "glow": [
+       0.55,
+       1.0,
+       0.45
+      ],
+      "model": "radium",
+      "upgraded": {
+       "name": "Vigil Sights",
+       "desc": "The dots burn violet now, and they never close their eyes.",
+       "glow": [
+        0.8,
+        0.45,
+        1.0
+       ]
+      }
+     }
+    },
+    "grip": {
+     "checkered": {
+      "name": "Checkered Grips",
+      "price": 500,
+      "desc": "Deep-cut checkered panels. Steadier from the hip, and out of the holster faster.",
+      "stats": {
+       "spread_hip": 0.7
+      },
+      "draw": 0.75,
+      "upgraded": {
+       "name": "Confessor's Grips",
+       "desc": "Your hand knows what it's done. It holds on anyway."
+      }
+     }
+    },
+    "ammo": {
+     "hollow_points": {
+      "name": "Hollow-Points",
+      "price": 1200,
+      "desc": "Hollow-points from a private box. Headshots hit a lot harder.",
+      "limb": {
+       "head": 1.3
+      },
+      "model": "band",
+      "band": "red",
+      "upgraded": {
+       "name": "Last Word Hollow-Points",
+       "desc": "Every round has the last word, and the word is final.",
+       "limb": {
+        "head": 1.45,
+        "neck": 1.2
+       }
+      }
+     },
+     "nachtglas": {
+      "name": "Nachtglas-Tipped",
+      "price": 2000,
+      "desc": "Sold under the counter. Violet glass in every nose: +20% damage, and now and then a hit slows the target.",
+      "requires_power": true,
+      "locked_text": "Under the counter. Come back when the lights are on.",
+      "stats": {
+       "damage": 1.2
+      },
+      "props": {
+       "kit_slow": {
+        "chance": 0.05,
+        "slow": 0.3,
+        "dur": 1.5
+       }
+      },
+      "tip": "nachtglas",
+      "model": "band",
+      "band": "nachtglas",
+      "upgraded": {
+       "name": "Nachtglas Benediction",
+       "desc": "The glass has been blessed. It is not sure by whom.",
+       "stats": {
+        "damage": 1.3
+       },
+       "props": {
+        "kit_slow": {
+         "chance": 0.1,
+         "slow": 0.35,
+         "dur": 2.0
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "smg": {
+   "slot_order": [
+    "mag",
+    "barrel",
+    "sights",
+    "grip",
+    "ammo"
+   ],
+   "slot_names": {
+    "grip": "Grip / Sling"
+   },
+   "options": {
+    "mag": {
+     "extended": {
+      "name": "Extended Mag",
+      "price": 1250,
+      "desc": "A longer box, welded up from two. Half again the rounds; a slightly slower change.",
+      "scale": {
+       "mag": 1.5,
+       "reserve": 1.2
+      },
+      "stats": {
+       "reload_partial": 1.1,
+       "reload_empty": 1.1
+      },
+      "model": "mag_ext",
+      "ext": 0.4,
+      "upgraded": {
+       "name": "Litany Magazine",
+       "desc": "It keeps going long after you'd stop counting."
+      }
+     },
+     "drum": {
+      "name": "Drum Magazine",
+      "price": 2250,
+      "desc": "A heavy round drum. Twice the rounds; slower to reload, slower to aim, and you feel it on the run.",
+      "scale": {
+       "mag": 2.2,
+       "reserve": 1.4
+      },
+      "stats": {
+       "reload_partial": 1.4,
+       "reload_empty": 1.4,
+       "ads_time": 1.25,
+       "move_mult": 0.96
+      },
+      "draw": 1.15,
+      "model": "drum",
+      "r": 0.06,
+      "w": 0.05,
+      "upgraded": {
+       "name": "Rosary Drum",
+       "desc": "Every bead a prayer, and the string goes all the way round."
+      }
+     }
+    },
+    "barrel": {
+     "compensator": {
+      "name": "Cutts Compensator",
+      "price": 1000,
+      "desc": "A slotted Cutts compensator: the gas goes up, the muzzle stays down. Recoil -30%.",
+      "recoil": {
+       "v": 0.7,
+       "h": 0.75,
+       "h_swing": 0.75,
+       "punch": 0.8,
+       "recover": 1.2
+      },
+      "feel": {
+       "flash_light": 2.2
+      },
+      "flash": "comp",
+      "model": "comp",
+      "upgraded": {
+       "name": "Choir Compensator",
+       "desc": "The ports sing on every shot. The muzzle doesn't move to listen."
+      }
+     },
+     "suppressor": {
+      "name": "Suppressor",
+      "price": 1500,
+      "desc": "EXPERIMENTAL. An OSS trials \"can\", stencilled and numbered, never issued. Quiet: your shots don't show on the map. -10% damage.",
+      "stats": {
+       "damage": 0.9
+      },
+      "feel": {
+       "flash_light": 0.25,
+       "fire_db": -9.0
+      },
+      "flash": "suppressed",
+      "props": {
+       "suppressed": true
+      },
+      "model": "can",
+      "len": 0.18,
+      "upgraded": {
+       "name": "Vow of Silence",
+       "desc": "The can has taken its vows. Still off the map, no damage lost, and +15% on a headshot.",
+       "stats": {
+        "damage": 1.0
+       },
+       "limb": {
+        "head": 1.15
+       },
+       "feel": {
+        "flash_light": 0.2,
+        "fire_db": -10.0
+       },
+       "flash": "suppressed",
+       "props": {
+        "suppressed": true
+       }
+      }
+     },
+     "long_barrel": {
+      "name": "Long Barrel",
+      "price": 1000,
+      "desc": "A longer, heavier barrel. Hits a little harder and carries further; a touch slower to aim.",
+      "stats": {
+       "damage": 1.08,
+       "falloff_start": 1.4,
+       "falloff_end": 1.4,
+       "ads_time": 1.08
+      },
+      "model": "barrel_ext",
+      "upgraded": {
+       "name": "Vesper Barrel",
+       "desc": "Lapped by candlelight. It reaches the back row, and one past it.",
+       "props": {
+        "kit_penetration": 1
+       }
+      }
+     }
+    },
+    "sights": {
+     "radium": {
+      "name": "Radium Night Sights",
+      "price": 600,
+      "desc": "Radium dots painted on the front and rear sights by hand. They glow in the dark and come up faster.",
+      "stats": {
+       "ads_time": 0.8
+      },
+      "glow": [
+       0.55,
+       1.0,
+       0.45
+      ],
+      "model": "radium",
+      "upgraded": {
+       "name": "Vigil Sights",
+       "desc": "The dots burn violet now, and they never close their eyes.",
+       "glow": [
+        0.8,
+        0.45,
+        1.0
+       ]
+      }
+     },
+     "aperture": {
+      "name": "Peep Sight Insert",
+      "price": 750,
+      "desc": "A finer rear aperture. A tighter sight picture: tighter shots aimed, a hair slower to come up.",
+      "stats": {
+       "spread_ads": 0.65,
+       "ads_time": 1.05
+      },
+      "upgraded": {
+       "name": "Keyhole Sight",
+       "desc": "You see through it into the next room. And the next."
+      }
+     }
+    },
+    "grip": {
+     "foregrip": {
+      "name": "Vertical Foregrip",
+      "price": 900,
+      "desc": "A wooden front grip. Steadier from the hip and less side-to-side kick.",
+      "stats": {
+       "spread_hip": 0.75
+      },
+      "recoil": {
+       "h": 0.75,
+       "h_swing": 0.75
+      },
+      "model": "foregrip",
+      "upgraded": {
+       "name": "Gravedigger's Handle",
+       "desc": "Worn smooth by a lot of honest work."
+      }
+     },
+     "sling": {
+      "name": "Leather Sling",
+      "price": 600,
+      "desc": "A proper two-point leather sling, wrapped round the arm when you aim. Steadier aim, quicker on the draw.",
+      "stats": {
+       "sway": 0.6
+      },
+      "draw": 0.85,
+      "model": "sling",
+      "upgraded": {
+       "name": "Pallbearer's Strap",
+       "desc": "It has carried heavier things than this."
+      }
+     }
+    },
+    "ammo": {
+     "hollow_points": {
+      "name": "Hollow-Points",
+      "price": 1200,
+      "desc": "Hollow-points from a private box. Headshots hit a lot harder.",
+      "limb": {
+       "head": 1.3
+      },
+      "model": "band",
+      "band": "red",
+      "upgraded": {
+       "name": "Last Word Hollow-Points",
+       "desc": "Every round has the last word, and the word is final.",
+       "limb": {
+        "head": 1.45,
+        "neck": 1.2
+       }
+      }
+     },
+     "ap": {
+      "name": "Armour-Piercing",
+      "price": 1200,
+      "desc": "Steel-core armour-piercing rounds, black tips. They punch through one more body, and hit a little harder.",
+      "stats": {
+       "damage": 1.05
+      },
+      "props": {
+       "kit_penetration": 1
+      },
+      "model": "band",
+      "band": "black",
+      "upgraded": {
+       "name": "Iron Psalm",
+       "desc": "Each one goes through the line and keeps going.",
+       "props": {
+        "kit_penetration": 2
+       }
+      }
+     },
+     "nachtglas": {
+      "name": "Nachtglas-Tipped",
+      "price": 2500,
+      "desc": "Sold under the counter. Violet glass in every nose: +20% damage, and now and then a hit slows the target.",
+      "requires_power": true,
+      "locked_text": "Under the counter. Come back when the lights are on.",
+      "stats": {
+       "damage": 1.2
+      },
+      "props": {
+       "kit_slow": {
+        "chance": 0.05,
+        "slow": 0.3,
+        "dur": 1.5
+       }
+      },
+      "tip": "nachtglas",
+      "model": "band",
+      "band": "nachtglas",
+      "upgraded": {
+       "name": "Nachtglas Benediction",
+       "desc": "The glass has been blessed. It is not sure by whom.",
+       "stats": {
+        "damage": 1.3
+       },
+       "props": {
+        "kit_slow": {
+         "chance": 0.1,
+         "slow": 0.35,
+         "dur": 2.0
+        }
+       }
+      }
+     }
+    }
+   },
+   "stat_bars": {
+    "damage_max": 120,
+    "range_max": 80,
+    "ads_speed_ref": 0.12,
+    "capacity_max": 160
+   }
+  },
+  "assault": {
+   "like": "smg",
+   "_doc": "The STG-44: the SMG table, with the experimental Vampir night scope instead of a drum.",
+   "options": {
+    "mag": {
+     "drum": null
+    },
+    "sights": {
+     "scope": {
+      "name": "ZG 1229 'Vampir' Scope",
+      "price": 2000,
+      "desc": "EXPERIMENTAL. An infrared night sight from a crate marked VAMPIR, with the lamp taken off. A real scope: tight aimed fire, slow to come up.",
+      "stats": {
+       "ads_time": 1.3,
+       "spread_ads": 0.4,
+       "sway": 0.85,
+       "falloff_start": 1.25,
+       "falloff_end": 1.25
+      },
+      "feel": {
+       "ads_zoom": 0.5,
+       "eye_relief": 0.12
+      },
+      "model": "scope",
+      "scope": 2.5,
+      "upgraded": {
+       "name": "Nightwatch Glass",
+       "desc": "It was made to see in the dark. It has seen what lives there.",
+       "feel": {
+        "ads_zoom": 0.45,
+        "eye_relief": 0.12
+       }
+      }
+     }
+    }
+   },
+   "stat_bars": {
+    "damage_max": 140,
+    "range_max": 100,
+    "ads_speed_ref": 0.15,
+    "capacity_max": 90
+   }
+  },
+  "rifle": {
+   "_doc": "Semi-auto rifles: M1 Garand, Gewehr 43, M1 Carbine.",
+   "slot_order": [
+    "mag",
+    "barrel",
+    "sights",
+    "grip",
+    "ammo"
+   ],
+   "slot_names": {
+    "grip": "Stock / Sling"
+   },
+   "options": {
+    "mag": {
+     "extended": {
+      "name": "Extended Magazine",
+      "price": 1250,
+      "desc": "A longer box magazine. More rounds before the reload, a little slower to change.",
+      "scale": {
+       "mag": 1.6,
+       "reserve": 1.2
+      },
+      "stats": {
+       "reload_partial": 1.1,
+       "reload_empty": 1.1
+      },
+      "model": "mag_ext",
+      "ext": 0.4,
+      "upgraded": {
+       "name": "Requiem Magazine",
+       "desc": "Long enough for the whole service."
+      }
+     }
+    },
+    "barrel": {
+     "flash_hider": {
+      "name": "Flash Hider",
+      "price": 900,
+      "desc": "A slotted cone on the muzzle. Less flash in your eyes, a little less climb.",
+      "recoil": {
+       "v": 0.85,
+       "h": 0.85
+      },
+      "feel": {
+       "flash_light": 0.5
+      },
+      "flash": "hider",
+      "model": "hider",
+      "upgraded": {
+       "name": "Veil of Ashes",
+       "desc": "The flash goes somewhere else. Nobody asks where."
+      }
+     },
+     "match": {
+      "name": "National Match Barrel",
+      "price": 1000,
+      "desc": "A hand-picked match barrel. Hits harder and carries further.",
+      "stats": {
+       "damage": 1.1,
+       "falloff_start": 1.35,
+       "falloff_end": 1.35
+      },
+      "model": "barrel_band",
+      "upgraded": {
+       "name": "Vesper Barrel",
+       "desc": "Lapped by candlelight. It reaches the back row, and one past it.",
+       "props": {
+        "kit_penetration": 1
+       }
+      }
+     },
+     "suppressor": {
+      "name": "Suppressor",
+      "price": 1500,
+      "desc": "EXPERIMENTAL. An OSS trials \"can\", stencilled and numbered, never issued. Quiet: your shots don't show on the map. -10% damage.",
+      "stats": {
+       "damage": 0.9
+      },
+      "feel": {
+       "flash_light": 0.25,
+       "fire_db": -9.0
+      },
+      "flash": "suppressed",
+      "props": {
+       "suppressed": true
+      },
+      "model": "can",
+      "len": 0.2,
+      "upgraded": {
+       "name": "Vow of Silence",
+       "desc": "The can has taken its vows. Still off the map, no damage lost, and +15% on a headshot.",
+       "stats": {
+        "damage": 1.0
+       },
+       "limb": {
+        "head": 1.15
+       },
+       "feel": {
+        "flash_light": 0.2,
+        "fire_db": -10.0
+       },
+       "flash": "suppressed",
+       "props": {
+        "suppressed": true
+       }
+      }
+     }
+    },
+    "sights": {
+     "scope": {
+      "name": "Rifle Scope",
+      "price": 1500,
+      "desc": "A 2.5x hunting-pattern scope on a side rail. Tight aimed fire at range; slower to come up.",
+      "stats": {
+       "ads_time": 1.3,
+       "spread_ads": 0.4,
+       "sway": 0.85,
+       "falloff_start": 1.25,
+       "falloff_end": 1.25
+      },
+      "feel": {
+       "ads_zoom": 0.45,
+       "eye_relief": 0.12
+      },
+      "model": "scope",
+      "scope": 2.5,
+      "upgraded": {
+       "name": "Watchman's Glass",
+       "desc": "It sees the ones still standing, and it waits.",
+       "feel": {
+        "ads_zoom": 0.41,
+        "eye_relief": 0.12
+       }
+      }
+     },
+     "radium": {
+      "name": "Radium Night Sights",
+      "price": 600,
+      "desc": "Radium dots painted on the front and rear sights by hand. They glow in the dark and come up faster.",
+      "stats": {
+       "ads_time": 0.82
+      },
+      "glow": [
+       0.55,
+       1.0,
+       0.45
+      ],
+      "model": "radium",
+      "upgraded": {
+       "name": "Vigil Sights",
+       "desc": "The dots burn violet now, and they never close their eyes.",
+       "glow": [
+        0.8,
+        0.45,
+        1.0
+       ]
+      }
+     }
+    },
+    "grip": {
+     "sling": {
+      "name": "Leather Sling",
+      "price": 600,
+      "desc": "A proper two-point leather sling, wrapped round the arm when you aim. Steadier aim, quicker on the draw.",
+      "stats": {
+       "sway": 0.6
+      },
+      "draw": 0.85,
+      "model": "sling",
+      "upgraded": {
+       "name": "Pallbearer's Strap",
+       "desc": "It has carried heavier things than this."
+      }
+     },
+     "cheek_pad": {
+      "name": "Cheek Pad",
+      "price": 700,
+      "desc": "A laced leather cheek pad on the stock. A steadier cheek weld: tighter aimed shots, less muzzle climb.",
+      "stats": {
+       "spread_ads": 0.7
+      },
+      "recoil": {
+       "v": 0.85
+      },
+      "model": "cheek_pad",
+      "upgraded": {
+       "name": "Mourner's Rest",
+       "desc": "Lay your head down. It's all right."
+      }
+     }
+    },
+    "ammo": {
+     "ap": {
+      "name": "Armour-Piercing",
+      "price": 1200,
+      "desc": "Steel-core armour-piercing rounds, black tips. They punch through one more body, and hit a little harder.",
+      "stats": {
+       "damage": 1.05
+      },
+      "props": {
+       "kit_penetration": 1
+      },
+      "model": "band",
+      "band": "black",
+      "upgraded": {
+       "name": "Iron Psalm",
+       "desc": "Each one goes through the line and keeps going.",
+       "props": {
+        "kit_penetration": 2
+       }
+      }
+     },
+     "incendiary": {
+      "name": "Incendiary Rounds",
+      "price": 1500,
+      "desc": "Blue-tipped incendiary rounds. Now and then a hit sets the target alight.",
+      "props": {
+       "kit_ignite": {
+        "chance": 0.12,
+        "dps": 60,
+        "dur": 3.0
+       }
+      },
+      "model": "band",
+      "band": "blue",
+      "upgraded": {
+       "name": "Pyre Rounds",
+       "desc": "They were meant for a funeral. Any funeral.",
+       "props": {
+        "kit_ignite": {
+         "chance": 0.22,
+         "dps": 90,
+         "dur": 3.5
+        }
+       }
+      }
+     },
+     "nachtglas": {
+      "name": "Nachtglas-Tipped",
+      "price": 2500,
+      "desc": "Sold under the counter. Violet glass in every nose: +20% damage, and now and then a hit slows the target.",
+      "requires_power": true,
+      "locked_text": "Under the counter. Come back when the lights are on.",
+      "stats": {
+       "damage": 1.2
+      },
+      "props": {
+       "kit_slow": {
+        "chance": 0.05,
+        "slow": 0.3,
+        "dur": 1.5
+       }
+      },
+      "tip": "nachtglas",
+      "model": "band",
+      "band": "nachtglas",
+      "upgraded": {
+       "name": "Nachtglas Benediction",
+       "desc": "The glass has been blessed. It is not sure by whom.",
+       "stats": {
+        "damage": 1.3
+       },
+       "props": {
+        "kit_slow": {
+         "chance": 0.1,
+         "slow": 0.35,
+         "dur": 2.0
+        }
+       }
+      }
+     }
+    }
+   },
+   "stat_bars": {
+    "damage_max": 220,
+    "range_max": 200,
+    "ads_speed_ref": 0.15,
+    "capacity_max": 60
+   }
+  },
+  "bolt": {
+   "_doc": "Bolt-action rifles: the Kar98k. Snipers (Springfield, PTRS-41) are 'like' this.",
+   "slot_order": [
+    "mag",
+    "barrel",
+    "sights",
+    "grip",
+    "ammo"
+   ],
+   "slot_names": {
+    "mag": "Magazine / Clips",
+    "grip": "Stock / Sling"
+   },
+   "options": {
+    "mag": {
+     "stripper": {
+      "name": "Stripper Clip Pouch",
+      "price": 750,
+      "desc": "A bandolier of five-round stripper clips where your hand can find them. Faster reloads.",
+      "stats": {
+       "reload_partial": 0.75,
+       "reload_empty": 0.8
+      },
+      "upgraded": {
+       "name": "Rosary Bandolier",
+       "desc": "The clips come to your fingers like beads."
+      }
+     }
+    },
+    "barrel": {
+     "match": {
+      "name": "Match Barrel",
+      "price": 1000,
+      "desc": "A hand-lapped target barrel. Hits harder and carries further.",
+      "stats": {
+       "damage": 1.1,
+       "falloff_start": 1.35,
+       "falloff_end": 1.35
+      },
+      "model": "barrel_band",
+      "upgraded": {
+       "name": "Vesper Barrel",
+       "desc": "Lapped by candlelight. It reaches the back row, and one past it.",
+       "props": {
+        "kit_penetration": 1
+       }
+      }
+     },
+     "flash_hider": {
+      "name": "Flash Hider",
+      "price": 900,
+      "desc": "A slotted cone on the muzzle. Less flash in your eyes, a little less climb.",
+      "recoil": {
+       "v": 0.85,
+       "h": 0.85
+      },
+      "feel": {
+       "flash_light": 0.5
+      },
+      "flash": "hider",
+      "model": "hider",
+      "upgraded": {
+       "name": "Veil of Ashes",
+       "desc": "The flash goes somewhere else. Nobody asks where."
+      }
+     },
+     "suppressor": {
+      "name": "Suppressor",
+      "price": 1500,
+      "desc": "EXPERIMENTAL. A long trials can on a bayonet-lug clamp. Quiet: your shots don't show on the map. -10% damage.",
+      "stats": {
+       "damage": 0.9
+      },
+      "feel": {
+       "flash_light": 0.25,
+       "fire_db": -9.0
+      },
+      "flash": "suppressed",
+      "props": {
+       "suppressed": true
+      },
+      "model": "can",
+      "len": 0.22,
+      "upgraded": {
+       "name": "Vow of Silence",
+       "desc": "The can has taken its vows. Still off the map, no damage lost, and +15% on a headshot.",
+       "stats": {
+        "damage": 1.0
+       },
+       "limb": {
+        "head": 1.15
+       },
+       "feel": {
+        "flash_light": 0.2,
+        "fire_db": -10.0
+       },
+       "flash": "suppressed",
+       "props": {
+        "suppressed": true
+       }
+      }
+     }
+    },
+    "sights": {
+     "scope": {
+      "name": "Rifle Scope",
+      "price": 1500,
+      "desc": "A 4x scope in low rings. Long, tight aimed shots; slower to come up.",
+      "stats": {
+       "ads_time": 1.3,
+       "spread_ads": 0.4,
+       "sway": 0.85,
+       "falloff_start": 1.25,
+       "falloff_end": 1.25
+      },
+      "feel": {
+       "ads_zoom": 0.32,
+       "eye_relief": 0.12
+      },
+      "model": "scope",
+      "scope": 4.0,
+      "upgraded": {
+       "name": "Watchman's Glass",
+       "desc": "It sees the ones still standing, and it waits.",
+       "feel": {
+        "ads_zoom": 0.29,
+        "eye_relief": 0.12
+       }
+      }
+     },
+     "radium": {
+      "name": "Radium Night Sights",
+      "price": 600,
+      "desc": "Radium dots painted on the front and rear sights by hand. They glow in the dark and come up faster.",
+      "stats": {
+       "ads_time": 0.82
+      },
+      "glow": [
+       0.55,
+       1.0,
+       0.45
+      ],
+      "model": "radium",
+      "upgraded": {
+       "name": "Vigil Sights",
+       "desc": "The dots burn violet now, and they never close their eyes.",
+       "glow": [
+        0.8,
+        0.45,
+        1.0
+       ]
+      }
+     }
+    },
+    "grip": {
+     "sling": {
+      "name": "Leather Sling",
+      "price": 600,
+      "desc": "A proper two-point leather sling, wrapped round the arm when you aim. Steadier aim, quicker on the draw.",
+      "stats": {
+       "sway": 0.6
+      },
+      "draw": 0.85,
+      "model": "sling",
+      "upgraded": {
+       "name": "Pallbearer's Strap",
+       "desc": "It has carried heavier things than this."
+      }
+     },
+     "cheek_pad": {
+      "name": "Cheek Pad",
+      "price": 700,
+      "desc": "A laced leather cheek pad. Steadier aimed shots, quicker back on target.",
+      "stats": {
+       "spread_ads": 0.7,
+       "sway": 0.85
+      },
+      "recoil": {
+       "v": 0.85,
+       "recover": 1.2
+      },
+      "model": "cheek_pad",
+      "upgraded": {
+       "name": "Mourner's Rest",
+       "desc": "Lay your head down. It's all right."
+      }
+     }
+    },
+    "ammo": {
+     "ap": {
+      "name": "Armour-Piercing",
+      "price": 1200,
+      "desc": "Steel-core armour-piercing rounds, black tips. They punch through one more body, and hit a little harder.",
+      "stats": {
+       "damage": 1.05
+      },
+      "props": {
+       "kit_penetration": 1
+      },
+      "model": "band",
+      "band": "black",
+      "upgraded": {
+       "name": "Iron Psalm",
+       "desc": "Each one goes through the line and keeps going.",
+       "props": {
+        "kit_penetration": 2
+       }
+      }
+     },
+     "incendiary": {
+      "name": "Incendiary Rounds",
+      "price": 1500,
+      "desc": "Blue-tipped incendiary rounds. Now and then a hit sets the target alight.",
+      "props": {
+       "kit_ignite": {
+        "chance": 0.12,
+        "dps": 60,
+        "dur": 3.0
+       }
+      },
+      "model": "band",
+      "band": "blue",
+      "upgraded": {
+       "name": "Pyre Rounds",
+       "desc": "They were meant for a funeral. Any funeral.",
+       "props": {
+        "kit_ignite": {
+         "chance": 0.22,
+         "dps": 90,
+         "dur": 3.5
+        }
+       }
+      }
+     },
+     "nachtglas": {
+      "name": "Nachtglas-Tipped",
+      "price": 2500,
+      "desc": "Sold under the counter. Violet glass in every nose: +25% damage, and now and then a hit slows the target.",
+      "requires_power": true,
+      "locked_text": "Under the counter. Come back when the lights are on.",
+      "stats": {
+       "damage": 1.25
+      },
+      "props": {
+       "kit_slow": {
+        "chance": 0.08,
+        "slow": 0.3,
+        "dur": 1.5
+       }
+      },
+      "tip": "nachtglas",
+      "model": "band",
+      "band": "nachtglas",
+      "upgraded": {
+       "name": "Nachtglas Benediction",
+       "desc": "The glass has been blessed. It is not sure by whom.",
+       "stats": {
+        "damage": 1.35
+       },
+       "props": {
+        "kit_slow": {
+         "chance": 0.16,
+         "slow": 0.35,
+         "dur": 2.0
+        }
+       }
+      }
+     }
+    }
+   },
+   "stat_bars": {
+    "damage_max": 400,
+    "range_max": 260,
+    "ads_speed_ref": 0.15,
+    "capacity_max": 40
+   }
+  },
+  "sniper": {
+   "like": "bolt",
+   "_doc": "Scoped and anti-tank rifles: the Springfield M1903 (already scoped: a stronger glass instead), the PTRS-41.",
+   "stat_bars": {
+    "damage_max": 1500,
+    "range_max": 260,
+    "ads_speed_ref": 0.2,
+    "capacity_max": 20
+   }
+  },
+  "shotgun": {
+   "slot_order": [
+    "mag",
+    "barrel",
+    "sights",
+    "grip",
+    "ammo"
+   ],
+   "slot_names": {
+    "mag": "Tube / Shells",
+    "barrel": "Barrel / Choke",
+    "grip": "Stock / Sling"
+   },
+   "options": {
+    "mag": {
+     "bandolier": {
+      "name": "Shell Bandolier",
+      "price": 750,
+      "desc": "A canvas bandolier of shells on your chest. Faster reloads.",
+      "stats": {
+       "reload_partial": 0.78,
+       "reload_empty": 0.78
+      },
+      "model": "shell_belt",
+      "upgraded": {
+       "name": "Pallbearer's Belt",
+       "desc": "Six to carry the coffin, a few dozen to fill it."
+      }
+     },
+     "extended": {
+      "name": "Extended Tube",
+      "price": 1250,
+      "desc": "A longer magazine tube under the barrel. A third more shells.",
+      "scale": {
+       "mag": 1.35,
+       "reserve": 1.2
+      },
+      "stats": {
+       "reload_partial": 1.0,
+       "reload_empty": 1.0
+      },
+      "model": "tube_ext",
+      "ext": 0.4,
+      "upgraded": {
+       "name": "Longer Sermon",
+       "desc": "Two more shells than the congregation can stand."
+      }
+     }
+    },
+    "barrel": {
+     "choke": {
+      "name": "Full Choke",
+      "price": 900,
+      "desc": "A full-choke tube on the muzzle. A tighter pattern that carries further.",
+      "stats": {
+       "spread_hip": 0.7,
+       "spread_ads": 0.62,
+       "falloff_start": 1.35,
+       "falloff_end": 1.35
+      },
+      "model": "choke",
+      "upgraded": {
+       "name": "Narrow Gate",
+       "desc": "Strait is the gate. Everything goes through it."
+      }
+     },
+     "compensator": {
+      "name": "Cutts Compensator",
+      "price": 1000,
+      "desc": "A Cutts compensator with a spreader tube. The muzzle stays down: recoil -30%.",
+      "recoil": {
+       "v": 0.7,
+       "h": 0.75,
+       "h_swing": 0.75,
+       "punch": 0.8,
+       "recover": 1.2
+      },
+      "feel": {
+       "flash_light": 2.2
+      },
+      "flash": "comp",
+      "model": "comp",
+      "upgraded": {
+       "name": "Choir Compensator",
+       "desc": "The ports sing on every shot. The muzzle doesn't move to listen."
+      }
+     }
+    },
+    "sights": {
+     "bead": {
+      "name": "Ivory Bead & Rib",
+      "price": 500,
+      "desc": "An ivory front bead on a matted rib. Quicker on target, a tighter aimed pattern.",
+      "stats": {
+       "ads_time": 0.85,
+       "spread_ads": 0.85
+      },
+      "model": "bead",
+      "upgraded": {
+       "name": "Pale Eye",
+       "desc": "Bone-white, and it never blinks."
+      }
+     },
+     "radium": {
+      "name": "Radium Night Sights",
+      "price": 600,
+      "desc": "Radium dots painted on the front and rear sights by hand. They glow in the dark and come up faster.",
+      "stats": {
+       "ads_time": 0.8
+      },
+      "glow": [
+       0.55,
+       1.0,
+       0.45
+      ],
+      "model": "radium",
+      "upgraded": {
+       "name": "Vigil Sights",
+       "desc": "The dots burn violet now, and they never close their eyes.",
+       "glow": [
+        0.8,
+        0.45,
+        1.0
+       ]
+      }
+     }
+    },
+    "grip": {
+     "recoil_pad": {
+      "name": "Rubber Recoil Pad",
+      "price": 700,
+      "desc": "A thick rubber pad on the butt. Less kick, back on target sooner.",
+      "recoil": {
+       "v": 0.8,
+       "punch": 0.75,
+       "recover": 1.2
+      },
+      "model": "recoil_pad",
+      "upgraded": {
+       "name": "Kneeler",
+       "desc": "Soft enough to pray on."
+      }
+     },
+     "sling": {
+      "name": "Leather Sling",
+      "price": 600,
+      "desc": "A proper two-point leather sling, wrapped round the arm when you aim. Steadier aim, quicker on the draw.",
+      "stats": {
+       "sway": 0.6
+      },
+      "draw": 0.85,
+      "model": "sling",
+      "upgraded": {
+       "name": "Pallbearer's Strap",
+       "desc": "It has carried heavier things than this."
+      }
+     }
+    },
+    "ammo": {
+     "magnum": {
+      "name": "Magnum Buckshot",
+      "price": 1250,
+      "desc": "Heavy 00 magnum loads. Every pellet hits harder; it kicks harder too.",
+      "stats": {
+       "damage": 1.2
+      },
+      "recoil": {
+       "v": 1.15,
+       "punch": 1.15
+      },
+      "model": "band",
+      "band": "red",
+      "upgraded": {
+       "name": "Gravedigger's Load",
+       "desc": "One shell, one grave."
+      }
+     },
+     "dragons_breath": {
+      "name": "Dragon's Breath",
+      "price": 1750,
+      "desc": "Magnesium incendiary shells. A sheet of sparks out of the muzzle. Now and then a hit sets the target alight.",
+      "props": {
+       "kit_ignite": {
+        "chance": 0.3,
+        "dps": 50,
+        "dur": 3.0
+       }
+      },
+      "model": "band",
+      "band": "blue",
+      "upgraded": {
+       "name": "Pyre Rounds",
+       "desc": "They were meant for a funeral. Any funeral.",
+       "props": {
+        "kit_ignite": {
+         "chance": 0.22,
+         "dps": 90,
+         "dur": 3.5
+        }
+       }
+      }
+     },
+     "nachtglas": {
+      "name": "Nachtglas-Tipped",
+      "price": 2500,
+      "desc": "Sold under the counter. Violet glass in every nose: +20% damage, and now and then a hit slows the target.",
+      "requires_power": true,
+      "locked_text": "Under the counter. Come back when the lights are on.",
+      "stats": {
+       "damage": 1.2
+      },
+      "props": {
+       "kit_slow": {
+        "chance": 0.05,
+        "slow": 0.3,
+        "dur": 1.5
+       }
+      },
+      "tip": "nachtglas",
+      "model": "band",
+      "band": "nachtglas",
+      "upgraded": {
+       "name": "Nachtglas Benediction",
+       "desc": "The glass has been blessed. It is not sure by whom.",
+       "stats": {
+        "damage": 1.3
+       },
+       "props": {
+        "kit_slow": {
+         "chance": 0.1,
+         "slow": 0.35,
+         "dur": 2.0
+        }
+       }
+      }
+     }
+    }
+   },
+   "stat_bars": {
+    "damage_max": 120,
+    "range_max": 40,
+    "ads_speed_ref": 0.12,
+    "capacity_max": 16
+   }
+  },
+  "lmg": {
+   "_doc": "Machine guns: the BAR, the MG42, the Browning M1919.",
+   "slot_order": [
+    "mag",
+    "barrel",
+    "sights",
+    "grip",
+    "ammo"
+   ],
+   "slot_names": {
+    "mag": "Magazine / Belt",
+    "grip": "Bipod / Sling"
+   },
+   "options": {
+    "mag": {
+     "extended": {
+      "name": "Extended Belt",
+      "price": 1750,
+      "desc": "A bigger box: more rounds before the long reload.",
+      "scale": {
+       "mag": 1.6,
+       "reserve": 1.2
+      },
+      "stats": {
+       "reload_partial": 1.15,
+       "reload_empty": 1.15
+      },
+      "model": "mag_ext",
+      "ext": 0.5,
+      "upgraded": {
+       "name": "Endless Litany",
+       "desc": "Somewhere it ends. You won't get there."
+      }
+     }
+    },
+    "barrel": {
+     "flash_hider": {
+      "name": "Flash Hider",
+      "price": 1000,
+      "desc": "A slotted cone on the muzzle. Less flash in your eyes, a little less climb.",
+      "recoil": {
+       "v": 0.85,
+       "h": 0.85
+      },
+      "feel": {
+       "flash_light": 0.5
+      },
+      "flash": "hider",
+      "model": "hider",
+      "upgraded": {
+       "name": "Veil of Ashes",
+       "desc": "The flash goes somewhere else. Nobody asks where."
+      }
+     },
+     "heavy_barrel": {
+      "name": "Heavy Barrel",
+      "price": 1250,
+      "desc": "A thick, heavy barrel. It holds its zero: tighter bursts, it carries further; heavier on the move.",
+      "stats": {
+       "spread_hip": 0.85,
+       "spread_ads": 0.75,
+       "falloff_start": 1.25,
+       "falloff_end": 1.25,
+       "move_mult": 0.97,
+       "overheat_seconds": 1.4
+      },
+      "model": "barrel_ext",
+      "upgraded": {
+       "name": "Anvil Barrel",
+       "desc": "Hammered on the Crucible's own anvil. It does not get tired."
+      }
+     }
+    },
+    "sights": {
+     "radium": {
+      "name": "Radium Night Sights",
+      "price": 600,
+      "desc": "Radium dots painted on the front and rear sights by hand. They glow in the dark and come up faster.",
+      "stats": {
+       "ads_time": 0.8
+      },
+      "glow": [
+       0.55,
+       1.0,
+       0.45
+      ],
+      "model": "radium",
+      "upgraded": {
+       "name": "Vigil Sights",
+       "desc": "The dots burn violet now, and they never close their eyes.",
+       "glow": [
+        0.8,
+        0.45,
+        1.0
+       ]
+      }
+     },
+     "aa_sight": {
+      "name": "Spider-Web AA Sight",
+      "price": 900,
+      "desc": "A ring-and-web anti-aircraft sight. You lead your target: tighter aimed bursts, quicker to come up.",
+      "stats": {
+       "spread_ads": 0.75,
+       "ads_time": 0.85
+      },
+      "model": "aa_ring",
+      "upgraded": {
+       "name": "Halo Sight",
+       "desc": "Something always stands in the middle of it."
+      }
+     }
+    },
+    "grip": {
+     "bipod": {
+      "name": "Bipod",
+      "price": 1250,
+      "desc": "A sturdy folding bipod, legs half-down. Brace it and the bursts stay together: sway -50%, recoil -25%; heavier on the move.",
+      "stats": {
+       "sway": 0.5,
+       "spread_ads": 0.75,
+       "move_mult": 0.97
+      },
+      "recoil": {
+       "v": 0.75,
+       "h": 0.75,
+       "h_swing": 0.75
+      },
+      "draw": 1.1,
+      "model": "bipod",
+      "upgraded": {
+       "name": "Tripod of the Vigil",
+       "desc": "It kneels, and it does not get up."
+      }
+     },
+     "sling": {
+      "name": "Assault Sling",
+      "price": 900,
+      "desc": "A wide shoulder sling for firing on the move. Faster on your feet and quicker to raise.",
+      "stats": {
+       "move_mult": 1.05,
+       "spread_hip": 0.85
+      },
+      "draw": 0.8,
+      "model": "sling",
+      "upgraded": {
+       "name": "Pallbearer's Strap",
+       "desc": "It has carried heavier things than this."
+      }
+     }
+    },
+    "ammo": {
+     "tracer": {
+      "name": "Tracer Belt",
+      "price": 1000,
+      "desc": "A tracer every fourth round. You walk the fire onto them: tighter aimed bursts.",
+      "stats": {
+       "spread_ads": 0.8,
+       "spread_hip": 0.9
+      },
+      "model": "band",
+      "band": "red",
+      "upgraded": {
+       "name": "Lantern Belt",
+       "desc": "Every fourth round lights the way home."
+      }
+     },
+     "ap": {
+      "name": "Armour-Piercing",
+      "price": 1250,
+      "desc": "Steel-core armour-piercing rounds, black tips. They punch through one more body, and hit a little harder.",
+      "stats": {
+       "damage": 1.05
+      },
+      "props": {
+       "kit_penetration": 1
+      },
+      "model": "band",
+      "band": "black",
+      "upgraded": {
+       "name": "Iron Psalm",
+       "desc": "Each one goes through the line and keeps going.",
+       "props": {
+        "kit_penetration": 2
+       }
+      }
+     },
+     "incendiary": {
+      "name": "Incendiary Rounds",
+      "price": 1750,
+      "desc": "Blue-tipped incendiary rounds. Now and then a hit sets the target alight.",
+      "props": {
+       "kit_ignite": {
+        "chance": 0.12,
+        "dps": 60,
+        "dur": 3.0
+       }
+      },
+      "model": "band",
+      "band": "blue",
+      "upgraded": {
+       "name": "Pyre Rounds",
+       "desc": "They were meant for a funeral. Any funeral.",
+       "props": {
+        "kit_ignite": {
+         "chance": 0.22,
+         "dps": 90,
+         "dur": 3.5
+        }
+       }
+      }
+     },
+     "nachtglas": {
+      "name": "Nachtglas-Tipped",
+      "price": 3000,
+      "desc": "Sold under the counter. Violet glass in every nose: +20% damage, and now and then a hit slows the target.",
+      "requires_power": true,
+      "locked_text": "Under the counter. Come back when the lights are on.",
+      "stats": {
+       "damage": 1.2
+      },
+      "props": {
+       "kit_slow": {
+        "chance": 0.05,
+        "slow": 0.3,
+        "dur": 1.5
+       }
+      },
+      "tip": "nachtglas",
+      "model": "band",
+      "band": "nachtglas",
+      "upgraded": {
+       "name": "Nachtglas Benediction",
+       "desc": "The glass has been blessed. It is not sure by whom.",
+       "stats": {
+        "damage": 1.3
+       },
+       "props": {
+        "kit_slow": {
+         "chance": 0.1,
+         "slow": 0.35,
+         "dur": 2.0
+        }
+       }
+      }
+     }
+    }
+   },
+   "stat_bars": {
+    "damage_max": 200,
+    "range_max": 140,
+    "ads_speed_ref": 0.25,
+    "capacity_max": 500
+   }
+  },
+  "launcher": {
+   "_doc": "Rocket launchers: the Panzerschreck.",
+   "slot_order": [
+    "mag",
+    "barrel",
+    "sights",
+    "grip",
+    "ammo"
+   ],
+   "slot_names": {
+    "mag": "Rockets",
+    "barrel": "Tube",
+    "grip": "Shoulder"
+   },
+   "options": {
+    "mag": {
+     "ready_rack": {
+      "name": "Rocket Ready-Rack",
+      "price": 1500,
+      "desc": "A loader's carrying rack on your back. Half again the spare rockets.",
+      "scale": {
+       "reserve": 1.5
+      },
+      "stats": {
+       "move_mult": 0.97
+      },
+      "upgraded": {
+       "name": "Reliquary Rack",
+       "desc": "Each rocket in its own little coffin."
+      }
+     }
+    },
+    "barrel": {
+     "muzzle_ring": {
+      "name": "Muzzle Ring (54/1)",
+      "price": 1000,
+      "desc": "The 54/1's shorter, lighter tube with a muzzle ring. Steadier aim, quicker on target, lighter on the move.",
+      "stats": {
+       "sway": 0.78,
+       "ads_time": 0.88,
+       "move_mult": 1.03
+      },
+      "model": "barrel_band",
+      "upgraded": {
+       "name": "Censer Ring",
+       "desc": "It swings the smoke the way a censer does."
+      }
+     }
+    },
+    "sights": {
+     "range_sight": {
+      "name": "Ranging Sight",
+      "price": 750,
+      "desc": "A range-graduated rear sight with summer and winter scales. Tighter aimed shots.",
+      "stats": {
+       "spread_ads": 0.55,
+       "spread_hip": 0.8
+      },
+      "upgraded": {
+       "name": "Psalter Sight",
+       "desc": "Every distance has a verse."
+      }
+     },
+     "radium": {
+      "name": "Radium Night Sights",
+      "price": 600,
+      "desc": "Radium dots painted on the front and rear sights by hand. They glow in the dark and come up faster.",
+      "stats": {
+       "ads_time": 0.8
+      },
+      "glow": [
+       0.55,
+       1.0,
+       0.45
+      ],
+      "model": "radium",
+      "upgraded": {
+       "name": "Vigil Sights",
+       "desc": "The dots burn violet now, and they never close their eyes.",
+       "glow": [
+        0.8,
+        0.45,
+        1.0
+       ]
+      }
+     }
+    },
+    "grip": {
+     "shoulder_pad": {
+      "name": "Padded Shoulder Rest",
+      "price": 600,
+      "desc": "Felt padding on the shoulder piece. Quicker to raise and easier on the run.",
+      "stats": {
+       "move_mult": 1.04
+      },
+      "draw": 0.8,
+      "upgraded": {
+       "name": "Yoke",
+       "desc": "Take it up, and it is light."
+      }
+     }
+    },
+    "ammo": {
+     "heat": {
+      "name": "Hollow-Charge Rockets",
+      "price": 2000,
+      "desc": "Improved hollow-charge warheads. Every rocket hits a quarter harder.",
+      "stats": {
+       "damage": 1.25
+      },
+      "model": "band",
+      "band": "black",
+      "upgraded": {
+       "name": "Thunder Psalm",
+       "desc": "The last thing a great many of them will hear."
+      }
+     },
+     "nachtglas": {
+      "name": "Nachtglas-Tipped",
+      "price": 3000,
+      "desc": "Sold under the counter. Violet glass in every nose: +20% damage, and now and then a hit slows the target.",
+      "requires_power": true,
+      "locked_text": "Under the counter. Come back when the lights are on.",
+      "stats": {
+       "damage": 1.2
+      },
+      "props": {
+       "kit_slow": {
+        "chance": 0.05,
+        "slow": 0.3,
+        "dur": 1.5
+       }
+      },
+      "tip": "nachtglas",
+      "model": "band",
+      "band": "nachtglas",
+      "upgraded": {
+       "name": "Nachtglas Benediction",
+       "desc": "The glass has been blessed. It is not sure by whom.",
+       "stats": {
+        "damage": 1.3
+       },
+       "props": {
+        "kit_slow": {
+         "chance": 0.1,
+         "slow": 0.35,
+         "dur": 2.0
+        }
+       }
+      }
+     }
+    }
+   },
+   "stat_bars": {
+    "damage_max": 2500,
+    "range_max": 1000,
+    "ads_speed_ref": 0.3,
+    "capacity_max": 4
+   }
+  },
+  "special": {
+   "_doc": "The M2 flamethrower (class 'special').",
+   "slot_order": [
+    "mag",
+    "barrel",
+    "grip",
+    "ammo"
+   ],
+   "slot_names": {
+    "mag": "Fuel Tanks",
+    "barrel": "Nozzle",
+    "grip": "Harness",
+    "ammo": "Fuel"
+   },
+   "options": {
+    "mag": {
+     "extra_tank": {
+      "name": "Third Fuel Tank",
+      "price": 1750,
+      "desc": "A third tank strapped between the two. Half again the fuel; heavier on your back.",
+      "scale": {
+       "mag": 1.5,
+       "reserve": 1.25
+      },
+      "stats": {
+       "move_mult": 0.96
+      },
+      "upgraded": {
+       "name": "Trinity Tanks",
+       "desc": "Father, Son, and the third one."
+      }
+     }
+    },
+    "barrel": {
+     "long_nozzle": {
+      "name": "Long Nozzle",
+      "price": 1250,
+      "desc": "A long-reach nozzle. The stream carries further.",
+      "props": {
+       "reach": 9.0
+      },
+      "model": "nozzle",
+      "upgraded": {
+       "name": "Long Arm of the Law",
+       "desc": "It reaches anyone. Eventually.",
+       "props": {
+        "reach": 11.0
+       }
+      }
+     }
+    },
+    "grip": {
+     "harness": {
+      "name": "Pack Harness",
+      "price": 750,
+      "desc": "A properly fitted pack harness. Lighter on your feet, quicker to raise.",
+      "stats": {
+       "move_mult": 1.05
+      },
+      "draw": 0.8,
+      "upgraded": {
+       "name": "Penitent's Yoke",
+       "desc": "The weight is the point."
+      }
+     }
+    },
+    "ammo": {
+     "napalm": {
+      "name": "Thickened Fuel",
+      "price": 2000,
+      "desc": "Napalm-thickened fuel. It clings and burns hotter: +25% damage.",
+      "stats": {
+       "damage": 1.25
+      },
+      "upgraded": {
+       "name": "Brimstone",
+       "desc": "From the old recipe."
+      }
+     }
+    }
+   },
+   "stat_bars": {
+    "damage_max": 120,
+    "range_max": 1000,
+    "ads_speed_ref": 0.2,
+    "capacity_max": 400
+   }
+  }
+ },
+ "weapons": {
+  "m1911": {
+   "own_table": true,
+   "slot_order": [
+    "mag",
+    "barrel",
+    "sights",
+    "grip",
+    "ammo"
+   ],
+   "slots": {
+    "mag": {
+     "name": "Magazine",
+     "sound": "kit_mag"
+    },
+    "barrel": {
+     "name": "Barrel",
+     "sound": "kit_barrel"
+    },
+    "sights": {
+     "name": "Sights",
+     "sound": "kit_sight"
+    },
+    "grip": {
+     "name": "Grip / Stock",
+     "sound": "kit_grip"
+    },
+    "ammo": {
+     "name": "Ammo",
+     "sound": "kit_ammo"
+    }
+   },
+   "options": {
+    "mag": {
+     "extended": {
+      "name": "Extended Mag",
+      "price": 750,
+      "desc": "A longer twelve-round box that sticks out of the grip. More rounds before the reload.",
+      "set": {
+       "mag": 12,
+       "reserve": 96
+      },
+      "upgraded": {
+       "name": "Penitent's Magazine",
+       "desc": "Eighteen rounds of Last Rites, every one of them sorry.",
+       "set": {
+        "mag": 18,
+        "reserve": 144
+       }
+      }
+     },
+     "drum": {
+      "name": "Drum Mag",
+      "price": 1500,
+      "desc": "A thirty-round drum hung under the grip. Heavy: a slower reload and a slower aim.",
+      "set": {
+       "mag": 30,
+       "reserve": 150
+      },
+      "stats": {
+       "reload_partial": 1.45,
+       "reload_empty": 1.45,
+       "ads_time": 1.35,
+       "move_mult": 0.97
+      },
+      "draw": 1.15,
+      "upgraded": {
+       "name": "Rosary Drum",
+       "desc": "Forty beads on the string, and every one of them a prayer.",
+       "set": {
+        "mag": 40,
+        "reserve": 200
+       },
+       "stats": {
+        "reload_partial": 1.3,
+        "reload_empty": 1.3,
+        "ads_time": 1.25,
+        "move_mult": 0.98
+       },
+       "draw": 1.1
+      }
+     }
+    },
+    "barrel": {
+     "match": {
+      "name": "Match Barrel",
+      "price": 1000,
+      "desc": "A hand-fitted target barrel and bushing. Hits harder and carries further.",
+      "stats": {
+       "damage": 1.15,
+       "falloff_start": 1.5,
+       "falloff_end": 1.5
+      },
+      "upgraded": {
+       "name": "Vesper Match",
+       "desc": "Fitted by candlelight. It reaches the back row, and one past it.",
+       "stats": {
+        "damage": 1.25,
+        "falloff_start": 1.8,
+        "falloff_end": 1.8
+       },
+       "props": {
+        "kit_penetration": 1
+       }
+      }
+     },
+     "compensator": {
+      "name": "Compensator",
+      "price": 1000,
+      "desc": "A ported muzzle brake. Recoil down 40%, and the next shot comes sooner.",
+      "stats": {
+       "rpm": 1.1
+      },
+      "recoil": {
+       "v": 0.6,
+       "h": 0.6,
+       "h_swing": 0.6,
+       "punch": 0.6,
+       "recover": 1.25
+      },
+      "feel": {
+       "flash_light": 2.6
+      },
+      "flash": "comp",
+      "upgraded": {
+       "name": "Censer Compensator",
+       "desc": "The ports throw a Nachtglas flare. Anything it touches at close range catches fire.",
+       "stats": {
+        "rpm": 1.15
+       },
+       "recoil": {
+        "v": 0.5,
+        "h": 0.5,
+        "h_swing": 0.5,
+        "punch": 0.5,
+        "recover": 1.35
+       },
+       "feel": {
+        "flash_light": 3.2
+       },
+       "flash": "censer",
+       "props": {
+        "kit_flare": {
+         "range": 6.0,
+         "dps": 80,
+         "dur": 3.0
+        }
+       }
+      }
+     },
+     "suppressor": {
+      "name": "Suppressor",
+      "price": 1000,
+      "desc": "EXPERIMENTAL. An OSS trials \"can\", stencilled and numbered, never issued. Quiet: your shots don't show on the map. -10% damage.",
+      "stats": {
+       "damage": 0.9
+      },
+      "feel": {
+       "flash_light": 0.25,
+       "fire_db": -9.0
+      },
+      "flash": "suppressed",
+      "props": {
+       "suppressed": true
+      },
+      "upgraded": {
+       "name": "Vow of Silence",
+       "desc": "The can has taken its vows. Still off the map, no damage lost, and +15% on a headshot.",
+       "stats": {
+        "damage": 1.0
+       },
+       "limb": {
+        "head": 1.15
+       },
+       "feel": {
+        "flash_light": 0.2,
+        "fire_db": -10.0
+       },
+       "flash": "suppressed",
+       "props": {
+        "suppressed": true
+       }
+      }
+     }
+    },
+    "sights": {
+     "radium": {
+      "name": "Radium Night Sights",
+      "price": 600,
+      "desc": "Three radium dots, painted by hand. They glow in the dark and come up faster.",
+      "stats": {
+       "ads_time": 0.75
+      },
+      "glow": [
+       0.55,
+       1.0,
+       0.45
+      ],
+      "upgraded": {
+       "name": "Vigil Sights",
+       "desc": "The dots burn violet now, and they never close their eyes.",
+       "stats": {
+        "ads_time": 0.65,
+        "spread_ads": 0.8
+       },
+       "glow": [
+        0.8,
+        0.45,
+        1.0
+       ]
+      }
+     },
+     "raised_target": {
+      "name": "Raised Target Sight",
+      "price": 600,
+      "desc": "A tall, adjustable target rear and a high blade. A finer sight picture: tighter shots aimed.",
+      "stats": {
+       "spread_ads": 0.5
+      },
+      "feel": {
+       "ads_zoom": 0.86
+      },
+      "upgraded": {
+       "name": "Steeple Sight",
+       "desc": "Tall as a church spire and just as patient.",
+       "stats": {
+        "spread_ads": 0.35,
+        "sway": 0.85
+       },
+       "feel": {
+        "ads_zoom": 0.82
+       }
+      }
+     }
+    },
+    "grip": {
+     "stock": {
+      "name": "Detachable Shoulder Stock",
+      "price": 900,
+      "desc": "A walnut board stock that clips to the heel of the grip. Rifle-steady: ADS sway -60%, less kick. A little slower to draw.",
+      "stats": {
+       "sway": 0.4,
+       "spread_ads": 0.85,
+       "move_mult": 0.98
+      },
+      "recoil": {
+       "v": 0.8,
+       "h": 0.75,
+       "h_swing": 0.75
+      },
+      "draw": 1.25,
+      "upgraded": {
+       "name": "Pallbearer Stock",
+       "desc": "It carries the weight so you don't have to.",
+       "stats": {
+        "sway": 0.3,
+        "spread_ads": 0.75,
+        "move_mult": 0.99
+       },
+       "recoil": {
+        "v": 0.65,
+        "h": 0.65,
+        "h_swing": 0.65
+       },
+       "draw": 1.15
+      }
+     },
+     "checkered": {
+      "name": "Checkered Grips",
+      "price": 500,
+      "desc": "Deep-cut checkered panels and a stippled front strap. Steadier from the hip, and out of the holster faster.",
+      "stats": {
+       "spread_hip": 0.7
+      },
+      "draw": 0.75,
+      "upgraded": {
+       "name": "Confessor's Grips",
+       "desc": "Your hand knows what it's done. It holds on anyway.",
+       "stats": {
+        "spread_hip": 0.6,
+        "move_mult": 1.03
+       },
+       "draw": 0.65
+      }
+     }
+    },
+    "ammo": {
+     "hollow_points": {
+      "name": "Hollow-Points",
+      "price": 1200,
+      "desc": ".45 ACP hollow-points from a private box. Headshots hit a lot harder.",
+      "limb": {
+       "head": 1.35
+      },
+      "tip": "hollow",
+      "upgraded": {
+       "name": "Last Word Hollow-Points",
+       "desc": "Every round has the last word, and the word is final.",
+       "limb": {
+        "head": 1.5,
+        "neck": 1.2
+       },
+       "tip": "hollow"
+      }
+     },
+     "nachtglas": {
+      "name": "Nachtglas-Tipped",
+      "price": 2000,
+      "desc": "Sold under the counter. Violet glass in every nose: +20% damage, and now and then a hit slows the target.",
+      "requires_power": true,
+      "locked_text": "Under the counter. Come back when the lights are on.",
+      "stats": {
+       "damage": 1.2
+      },
+      "props": {
+       "kit_slow": {
+        "chance": 0.06,
+        "slow": 0.3,
+        "dur": 1.5
+       }
+      },
+      "tip": "nachtglas",
+      "upgraded": {
+       "name": "Nachtglas Benediction",
+       "desc": "The glass has been blessed. It is not sure by whom.",
+       "stats": {
+        "damage": 1.3
+       },
+       "props": {
+        "kit_slow": {
+         "chance": 0.12,
+         "slow": 0.35,
+         "dur": 2.0
+        }
+       },
+       "tip": "nachtglas"
+      }
+     }
+    }
+   },
+   "stat_bars": {
+    "_doc": "The bench's six bars, each 0..1: damage (per shot) / damage_max; range (falloff end) / range_max; recoil (vertical kick x punch, relative to the plain M1911: lower is better); ADS speed ads_speed_ref / ads time; mobility (move speed / sqrt(draw)) / mobility_max; capacity mag / capacity_max.",
+    "damage_max": 200.0,
+    "range_max": 60.0,
+    "recoil_ref": 1.0,
+    "ads_speed_ref": 0.075,
+    "mobility_max": 1.2,
+    "capacity_max": 40.0
+   },
+   "finishes": {
+    "_doc": "Cosmetic pistol finishes unlocked by lifetime M1911 kills (Last Rites kills count, as for weapon mastery). Chosen in Settings > Gameplay; ProfileSave.profile.equipped.m1911_finish. Last Rites always shows the Crucible's Nachtglas instead.",
+    "order": [
+     "",
+     "blued",
+     "battle_worn",
+     "nickel",
+     "engraved",
+     "nachtglas_inlay"
+    ],
+    "rows": {
+     "": {
+      "name": "Service Parkerized",
+      "kills": 0
+     },
+     "blued": {
+      "name": "Blued",
+      "kills": 25,
+      "color": [
+       0.11,
+       0.13,
+       0.2
+      ],
+      "metallic": 0.6,
+      "roughness": 0.3
+     },
+     "battle_worn": {
+      "name": "Battle-Worn",
+      "kills": 100,
+      "color": [
+       0.4,
+       0.39,
+       0.36
+      ],
+      "metallic": 0.45,
+      "roughness": 0.62
+     },
+     "nickel": {
+      "name": "Nickel",
+      "kills": 250,
+      "color": [
+       0.86,
+       0.85,
+       0.82
+      ],
+      "metallic": 0.55,
+      "roughness": 0.22
+     },
+     "engraved": {
+      "name": "Engraved",
+      "kills": 500,
+      "color": [
+       0.8,
+       0.78,
+       0.72
+      ],
+      "metallic": 0.5,
+      "roughness": 0.3,
+      "engraved": true
+     },
+     "nachtglas_inlay": {
+      "name": "Nachtglas Inlay",
+      "kills": 1000,
+      "color": [
+       0.08,
+       0.08,
+       0.1
+      ],
+      "metallic": 0.8,
+      "roughness": 0.3,
+      "inlay": [
+       0.62,
+       0.3,
+       1.0
+      ]
+     }
+    }
+   },
+   "loadout_pick": {
+    "_doc": "One attachment installed on your starting M1911 every match (cheap and never pay-to-win: Extended Mag or Checkered Grips only). Unlocked by lifetime M1911 kills; ProfileSave.profile.equipped.m1911_pick = 'mag:extended' / 'grip:checkered' / ''.",
+    "kills": 75,
+    "choices": [
+     "mag:extended",
+     "grip:checkered"
+    ]
+   }
+  },
+  "thompson": {
+   "options": {
+    "mag": {
+     "drum": {
+      "name": "50-Round L Drum",
+      "desc": "The old Chicago drum, fifty rounds. Slower to change and to aim, and it rattles.",
+      "set": {
+       "mag": 50,
+       "reserve": 250
+      },
+      "scale": {},
+      "r": 0.068,
+      "w": 0.052,
+      "hide_mag": true,
+      "upgraded": {
+       "name": "Chicago Lament: C Drum",
+       "desc": "The hundred-round drum. Nobody ever said it was practical.",
+       "set": {
+        "mag": 100,
+        "reserve": 400
+       }
+      }
+     }
+    },
+    "grip": {
+     "foregrip": {
+      "name": "Grooved Foregrip",
+      "desc": "A deep-grooved walnut foregrip in place of the plain one. Steadier from the hip.",
+      "model": ""
+     }
+    },
+    "barrel": {
+     "compensator": {
+      "name": "Recut Cutts Compensator",
+      "desc": "The Cutts comp re-slotted by hand. Recoil -30%.",
+      "model": ""
+     }
+    }
+   }
+  },
+  "mp40": {
+   "options": {
+    "mag": {
+     "drum": {
+      "name": "Twin-Mag Slide (MP40/II)",
+      "desc": "The MP40/II's sliding twin-magazine housing. Double the rounds; heavy and slow to change.",
+      "scale": {
+       "mag": 2.0,
+       "reserve": 1.4
+      },
+      "model": "twin_mag",
+      "upgraded": {
+       "name": "Twin Graves",
+       "desc": "Side by side, as they wanted."
+      }
+     }
+    }
+   }
+  },
+  "ppsh41": {
+   "options": {
+    "mag": {
+     "drum": null,
+     "extended": {
+      "name": "Sectional Box Magazine",
+      "price": 750,
+      "desc": "The 35-round curved box in place of the drum. Fewer rounds, but quick to change, quick to aim, light on the move.",
+      "set": {
+       "mag": 35,
+       "reserve": 245
+      },
+      "scale": {},
+      "stats": {
+       "reload_partial": 0.7,
+       "reload_empty": 0.7,
+       "ads_time": 0.88,
+       "move_mult": 1.03
+      },
+      "model": "",
+      "upgraded": {
+       "name": "Red Winter Box",
+       "desc": "Fifty-five in the box. Still lighter than the drum.",
+       "set": {
+        "mag": 55,
+        "reserve": 385
+       }
+      }
+     }
+    }
+   }
+  },
+  "type100": {
+   "options": {
+    "mag": {
+     "drum": null
+    }
+   }
+  },
+  "kar98k": {
+   "options": {
+    "mag": {
+     "trench": {
+      "name": "Trench Magazine",
+      "price": 1500,
+      "desc": "A twenty-five-round detachable trench magazine (Grabenmagazin) from the last war. Five times the rounds; heavy, and slow to aim.",
+      "set": {
+       "mag": 25,
+       "reserve": 150
+      },
+      "stats": {
+       "ads_time": 1.15,
+       "move_mult": 0.97
+      },
+      "model": "trench_mag",
+      "upgraded": {
+       "name": "Final Verdict: Docket",
+       "desc": "Forty cases on the docket, and every one of them guilty.",
+       "set": {
+        "mag": 40,
+        "reserve": 200
+       }
+      }
+     }
+    },
+    "sights": {
+     "scope": {
+      "name": "ZF39 Scope",
+      "desc": "A Zeiss-pattern 4x scope in turret rings. Long, tight aimed shots; slower to come up."
+     }
+    },
+    "barrel": {
+     "suppressor": {
+      "desc": "EXPERIMENTAL. A Schalldämpfer trials can on a bayonet-lug clamp. Quiet: your shots don't show on the map. -10% damage."
+     }
+    }
+   }
+  },
+  "m1_garand": {
+   "options": {
+    "mag": {
+     "extended": {
+      "name": "T20 Box Conversion",
+      "desc": "EXPERIMENTAL. A twenty-round box-magazine conversion from the T20 trials. More rounds, slower to change.",
+      "set": {
+       "mag": 20,
+       "reserve": 160
+      },
+      "scale": {},
+      "model": "trench_mag",
+      "upgraded": {
+       "name": "Eight-Ping Benediction: Twenty",
+       "desc": "Twenty pings now. Still a blessing.",
+       "set": {
+        "mag": 30,
+        "reserve": 240
+       }
+      }
+     }
+    },
+    "sights": {
+     "scope": {
+      "name": "M84 Scope (M1C)",
+      "desc": "The M1C's 2.2x M84 scope. Tight aimed fire at range; slower to come up."
+     }
+    }
+   }
+  },
+  "gewehr43": {
+   "options": {
+    "sights": {
+     "scope": {
+      "name": "ZF4 Scope",
+      "desc": "The 4x ZF4 on its dovetail rail. Tight aimed fire at range; slower to come up.",
+      "scope": 4.0,
+      "feel": {
+       "ads_zoom": 0.34,
+       "eye_relief": 0.12
+      }
+     }
+    },
+    "mag": {
+     "extended": {
+      "name": "Twenty-Round Box",
+      "desc": "A long twenty-round box. More rounds before the reload."
+     }
+    }
+   }
+  },
+  "m1_carbine": {
+   "options": {
+    "mag": {
+     "extended": {
+      "name": "30-Round Banana Mag",
+      "desc": "The new curved thirty-round magazine. Double the rounds.",
+      "scale": {
+       "mag": 2.0,
+       "reserve": 1.4
+      }
+     }
+    },
+    "sights": {
+     "scope": {
+      "name": "Weaver 330 Scope",
+      "desc": "A small 2.5x Weaver scope on a side mount. Tight aimed fire; slower to come up."
+     }
+    }
+   }
+  },
+  "stg44": {
+   "options": {
+    "mag": {
+     "extended": {
+      "name": "Twin-Pack Magazines",
+      "desc": "Two magazines clamped side by side. A faster second reload, and more rounds to start.",
+      "scale": {
+       "mag": 1.0,
+       "reserve": 1.3
+      },
+      "stats": {
+       "reload_partial": 0.7,
+       "reload_empty": 0.8
+      },
+      "model": "twin_mag"
+     }
+    }
+   }
+  },
+  "springfield": {
+   "options": {
+    "sights": {
+     "scope": null,
+     "high_power": {
+      "name": "Unertl 8x Glass",
+      "price": 1250,
+      "desc": "The scope's glass swapped for an 8x target set. A tighter, closer sight picture; slower to settle.",
+      "stats": {
+       "spread_ads": 0.6,
+       "sway": 1.1,
+       "ads_time": 1.1
+      },
+      "feel": {
+       "ads_zoom": 0.2
+      },
+      "upgraded": {
+       "name": "Long Goodbye: Far Shore",
+       "desc": "You can see the far shore from here.",
+       "feel": {
+        "ads_zoom": 0.18
+       }
+      }
+     },
+     "radium": {
+      "name": "Radium Reticle",
+      "desc": "The reticle painted with radium. Quicker on target in the dark.",
+      "model": ""
+     }
+    }
+   }
+  },
+  "ptrs41": {
+   "options": {
+    "sights": {
+     "scope": {
+      "name": "PE Scope",
+      "desc": "A 4x PE sniper scope on an improvised mount. Tight aimed fire; slower to come up."
+     }
+    },
+    "barrel": {
+     "suppressor": null,
+     "flash_hider": null,
+     "muzzle_brake": {
+      "name": "Muzzle Brake",
+      "price": 1250,
+      "desc": "A bigger, many-ported muzzle brake. The kick drops by a third.",
+      "recoil": {
+       "v": 0.65,
+       "punch": 0.7,
+       "recover": 1.25
+      },
+      "model": "brake",
+      "upgraded": {
+       "name": "Bear Tax: Exemption",
+       "desc": "The bear took its cut already."
+      }
+     }
+    },
+    "mag": {
+     "stripper": null
+    }
+   }
+  },
+  "sawed_off": {
+   "options": {
+    "mag": {
+     "extended": null
+    },
+    "barrel": {
+     "compensator": null
+    },
+    "grip": {
+     "recoil_pad": {
+      "desc": "A thick rubber pad on the sawn-off butt. Less kick."
+     }
+    }
+   }
+  },
+  "bar": {
+   "options": {
+    "mag": {
+     "extended": {
+      "name": "40-Round Magazine",
+      "desc": "The forty-round anti-aircraft magazine. Double the rounds, slower to change.",
+      "scale": {
+       "mag": 2.0,
+       "reserve": 1.3
+      }
+     }
+    },
+    "grip": {
+     "bipod": {
+      "name": "M1918A2 Bipod",
+      "desc": "The A2's spiked bipod. Brace it and the bursts stay together: sway -50%, recoil -25%."
+     }
+    }
+   }
+  },
+  "mg42": {
+   "options": {
+    "mag": {
+     "extended": {
+      "name": "250-Round Belt Box",
+      "desc": "A full belt box in place of the drum. Double the rounds before the long reload.",
+      "scale": {
+       "mag": 2.0,
+       "reserve": 1.3
+      },
+      "model": "belt_box"
+     }
+    },
+    "grip": {
+     "bipod": {
+      "name": "Heavy Zweibein",
+      "desc": "The MG42's bipod swapped for a heavy pattern, legs down. Brace it: sway -50%, recoil -25%.",
+      "replace_legs": true
+     }
+    },
+    "barrel": {
+     "flash_hider": {
+      "name": "Mündungsfeuerdämpfer",
+      "desc": "The night-firing flash hider: a cone on the muzzle booster. Less flash, a little less climb."
+     }
+    }
+   }
+  },
+  "m1919": {
+   "options": {
+    "mag": {
+     "extended": {
+      "name": "250-Round Belt Box",
+      "desc": "A full belt box. Double the rounds before the long reload.",
+      "scale": {
+       "mag": 2.0,
+       "reserve": 1.3
+      },
+      "model": "belt_box"
+     }
+    },
+    "grip": {
+     "bipod": {
+      "name": "M2 Bipod",
+      "desc": "The A6's bipod, legs half-down. Brace it: sway -50%, recoil -25%.",
+      "replace_legs": true
+     }
+    },
+    "barrel": {
+     "heavy_barrel": {
+      "name": "Spare Barrel & Asbestos Mitt",
+      "desc": "A spare heavy barrel and the mitt to change it with. Runs cooler for longer; tighter bursts.",
+      "stats": {
+       "overheat_seconds": 1.6,
+       "spread_ads": 0.8
+      },
+      "model": ""
+     }
+    }
+   }
+  },
+  "panzerschreck": {},
+  "flamethrower": {},
+  "ashlight": {
+   "refuse": "The armorer won't put a file to that. \"Whatever is inside it is still awake.\""
+  },
+  "totenglocke": {
+   "refuse": "\"A bell is a bell. I don't fit sights to a bell.\" The armorer won't touch it."
+  },
+  "elmsfeuer": {
+   "refuse": "The vise sparks when you lay it down. The armorer takes it off the bench himself: \"No.\""
+  },
+  "trench_knife": {
+   "refuse": "\"Sharpen it yourself.\" The bench works on guns."
+  },
+  "etool": {
+   "refuse": "\"That's a shovel.\" The bench works on guns."
+  },
+  "coal_shovel": {
+   "refuse": "\"That's a shovel.\" The bench works on guns."
+  },
+  "gramophone": {
+   "refuse": "\"I fix guns, not records.\""
+  }
+ },
+ "refuse_classes": {
+  "wonder": "The armorer looks at it for a long time, then pushes it back across the bench. \"Not that. Nobody knows what's inside it.\""
+ },
+ "refuse_default": "\"I can't do anything for that one.\"",
+ "flash_scale": {
+  "comp": 1.25,
+  "censer": 1.45,
+  "suppressed": 0.25,
+  "hider": 0.55
+ },
+ "sounds": {
+  "suppressed_fire": "fire_m1911_suppressed",
+  "comp_layer": "kit_comp_blast",
+  "drum_reload": "kit_drum_wind",
+  "vise": "bench_vise",
+  "open": "bench_open"
+ },
+ "companion_refuses": [
+  "nachtglas"
+ ],
+ "vo": {
+  "category": "GUNSMITH",
+  "first_chance": 1.0,
+  "chance": 0.45,
+  "refuse": "GUNSMITH_REFUSE"
+ },
+ "stat_bars": {
+  "_doc": "The bench's six bars, each 0..1: damage (per shot) / damage_max; range (falloff end) / range_max; recoil (vertical kick x punch, relative to the plain M1911: lower is better); ADS speed ads_speed_ref / ads time; mobility (move speed / sqrt(draw)) / mobility_max; capacity mag / capacity_max. Classes and weapons may override any value ('stat_bars' in their table); recoil is always relative to the plain gun.",
+  "damage_max": 200.0,
+  "range_max": 60.0,
+  "recoil_ref": 1.0,
+  "ads_speed_ref": 0.075,
+  "mobility_max": 1.2,
+  "capacity_max": 40.0
+ }
+}

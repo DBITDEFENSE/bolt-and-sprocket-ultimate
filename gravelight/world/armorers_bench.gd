@@ -1,14 +1,15 @@
 class_name ArmorersBench
 extends Interactable
 ## The Armorer's Bench (UPDATE_04 section 6, DECISIONS T-068): a gunsmith's workbench with a vise, a pegboard of
-## tools and a gooseneck lamp, where the starting M1911 (and Last Rites) takes attachments (M1911Kit). Placed by
+## tools and a gooseneck lamp, where the gun in your hands takes attachments (WeaponKit: any gun with a table in
+## data/gravelight/weapons/attachments.json, DECISIONS T-074; wonder weapons are refused in character). Placed by
 ## the map generators near each map's spawn (Crossroads Inn: the stable's tack corner; Kaltenbrunn: the gatehouse;
 ## Totenhafen: the harbourmaster's hut). A future map only needs a node with this script.
 ##
 ## Frame: the node sits on the floor against a wall, local -Z facing the room (like the ammo boxes); the bench runs
 ## from the wall (z 0) out to z -0.72, 1.5 m wide, its top at TOP.
 ##
-## Players hold Use to open the bench UI (ArmorersBenchUI: the pistol in the vise, the slots, the stat bars).
+## Players hold Use to open the bench UI (ArmorersBenchUI: the gun in the vise or cradle, its slots, the stat bars).
 ## Bots and the map-mark orders use the static API (no UI): ArmorersBench.buy(player, slot, option) and
 ## ArmorersBench.options_for(player); the caller brings the bot here first (nearest() / in_reach()). Co-op: the UI
 ## runs on the buyer's machine and a client's purchase goes to the host (buy_for, net_callable).
@@ -40,7 +41,7 @@ func _ready() -> void:
 	add_child(body)
 	var con: Node = get_node_or_null("/root/GLConsole")
 	if con != null and con.has_method("register"):
-		con.call("register", "kit", _cmd_kit, "kit [list | <slot> <option> | free <slot> <option> | clear [slot] | finish <id>]: M1911 attachments (UPDATE_04 section 6)")
+		con.call("register", "kit", _cmd_kit, "kit [list | <slot> <option> | free <slot> <option> | clear [slot] | finish <id>]: attachments on the gun in hand (UPDATE_04 section 6)")
 	ArmorersBench.reset_match()
 
 
@@ -117,13 +118,16 @@ static func bench_art(g: Node3D) -> void:
 func get_prompt(player: Player) -> String:
 	if player == null or player.is_bot:
 		return ""
-	if M1911Kit.pistol_of(player) == null:
-		return "Armorer's Bench: bring your M1911"
-	return "Hold [%s] for the Armorer's Bench (M1911 attachments)" % prompt_key(&"interact")
+	var w: WeaponInstance = WeaponKit.held(player)
+	if w == null:
+		return "Armorer's Bench: bring a gun"
+	if not WeaponKit.accepts(w):
+		return "Armorer's Bench: %s" % WeaponKit.refusal(w)
+	return "Hold [%s] for the Armorer's Bench (%s attachments)" % [prompt_key(&"interact"), str(w.data.get("name", w.id))]
 
 
 func can_interact(player: Player) -> bool:
-	return player != null and not player.is_bot and M1911Kit.pistol_of(player) != null
+	return player != null and not player.is_bot and WeaponKit.accepts(WeaponKit.held(player))
 
 
 func hold_time(_player: Player) -> float:
@@ -144,7 +148,7 @@ func interact(player: Player) -> void:
 		return
 	if _ui != null and is_instance_valid(_ui):
 		return
-	AudioDirector.play_3d(str((M1911Kit.cfg().get("sounds", {}) as Dictionary).get("open", "bench_open")), global_position + Vector3.UP, -4.0)
+	AudioDirector.play_3d(WeaponKit.sound("open", "bench_open"), global_position + Vector3.UP, -4.0)
 	if DisplayServer.get_name() == "headless":
 		return   # tools and smokes use buy() directly
 	_ui = ArmorersBenchUI.new()
@@ -166,18 +170,21 @@ func buy_for(pid: int, slot: String, option: String) -> void:
 
 # ================================================================== the public API
 
-## Buys `option` for `slot` on `player`'s M1911 (the one in their hands, else the first in their slots) and fits
-## it: {"ok": bool, "reason": "" or a code (M1911Kit.REASONS: no_pistol, wrong_weapon, unknown, installed,
-## needs_power, refused, no_scrip), "price": int}. Doesn't check distance: bring the buyer to a bench first
-## (nearest / in_reach). A different option in a slot replaces the fitted one (one choice per slot).
+## Buys `option` for `slot` on `player`'s gun (the one in their hands, else the first gun in their slots that
+## offers that option: WeaponKit.gun_of) and fits it: {"ok": bool, "reason": "" or a code (WeaponKit.REASONS:
+## no_gun, wrong_weapon (the gun in hand takes nothing: WeaponKit.refusal), unknown (not for this gun), installed,
+## needs_power, refused, no_scrip), "price": int, "weapon": id}. Doesn't check distance: bring the buyer to a bench
+## first (nearest / in_reach). A different option in a slot replaces the fitted one (one choice per slot).
 static func buy(player: Player, slot: String, option: String) -> Dictionary:
-	var res: Dictionary = {"ok": false, "reason": "", "price": M1911Kit.price(slot, option)}
-	var w: WeaponInstance = M1911Kit.pistol_of(player)
-	var code: String = M1911Kit.check(w, slot, option, GameState.power_on, player != null and player.is_companion)
+	var w: WeaponInstance = WeaponKit.gun_of(player, slot, option)
+	if w == null:
+		w = WeaponKit.held(player)
+	var res: Dictionary = {"ok": false, "reason": "", "price": WeaponKit.price(w, slot, option), "weapon": String(w.id) if w != null else ""}
+	var code: String = WeaponKit.check(w, slot, option, GameState.power_on, player != null and player.is_companion)
 	if code != "":
 		res["reason"] = code
 		if code == "refused" and player != null:
-			GLVO.say_as(player.player_id, str((M1911Kit.cfg().get("vo", {}) as Dictionary).get("refuse", "GUNSMITH_REFUSE")), 1.0)
+			GLVO.say_as(player.player_id, str((WeaponKit.cfg().get("vo", {}) as Dictionary).get("refuse", "GUNSMITH_REFUSE")), 1.0)
 		return res
 	if Net.is_client() and player.is_local and player.is_inside_tree():
 		var bench: ArmorersBench = nearest(player.get_tree(), player.global_position)
@@ -186,7 +193,7 @@ static func buy(player: Player, slot: String, option: String) -> Dictionary:
 		res["ok"] = true
 		res["reason"] = "pending"
 		return res
-	if not Economy.spend(player.player_id, StringName("m1911_%s_%s" % [slot, option]), int(res["price"])):
+	if not Economy.spend(player.player_id, StringName("%s_%s_%s" % [w.base_id(), slot, option]), int(res["price"])):
 		res["reason"] = "no_scrip"
 		if player.is_local and not player.is_bot:
 			AudioDirector.play_2d("deny", -2.0)
@@ -197,45 +204,48 @@ static func buy(player: Player, slot: String, option: String) -> Dictionary:
 		var b2: ArmorersBench = nearest(player.get_tree(), player.global_position)
 		if b2 != null:
 			at = b2.global_position + Vector3(0, TOP + 0.2, 0)
-		AudioDirector.play_3d(M1911Kit.slot_sound(slot), at, -2.0)
-		Net.sfx_all(M1911Kit.slot_sound(slot), at, -2.0)
+		AudioDirector.play_3d(WeaponKit.slot_sound(w, slot), at, -2.0)
+		Net.sfx_all(WeaponKit.slot_sound(w, slot), at, -2.0)
 	_gunsmith_line(player)
 	res["ok"] = true
 	return res
 
 
-## Everything the bench offers `player`, one row per option: {slot, slot_name, option, name, desc, price,
-## installed, reason ("" = can buy now; M1911Kit codes, "no_scrip" when short), short (Scrip missing)}.
+## Everything the bench offers for `player`'s gun (WeaponKit.gun_of: the one in hand if it takes attachments),
+## one row per option: {slot, slot_name, option, name, desc, price, installed, reason ("" = can buy now;
+## WeaponKit codes, "no_scrip" when short), short (Scrip missing), weapon (its id)}. [] when no gun takes any.
 static func options_for(player: Player) -> Array:
 	var out: Array = []
-	var w: WeaponInstance = M1911Kit.pistol_of(player)
-	var up: bool = w != null and w.upgraded
+	var w: WeaponInstance = WeaponKit.gun_of(player)
+	if w == null:
+		return out
+	var up: bool = w.upgraded
 	var pid: int = player.player_id if player != null else 0
-	for slot: String in M1911Kit.slot_order():
-		for opt: Variant in M1911Kit.options(slot):
+	for slot: String in WeaponKit.slot_order(w):
+		for opt: Variant in WeaponKit.options(w, slot):
 			var o: String = str(opt)
-			var p: int = M1911Kit.price(slot, o)
-			var code: String = M1911Kit.check(w, slot, o, GameState.power_on, player != null and player.is_companion)
+			var p: int = WeaponKit.price(w, slot, o)
+			var code: String = WeaponKit.check(w, slot, o, GameState.power_on, player != null and player.is_companion)
 			var short: int = maxi(0, p - Economy.get_scrip(pid))
 			if code == "" and short > 0:
 				code = "no_scrip"
-			out.append({"slot": slot, "slot_name": M1911Kit.slot_name(slot), "option": o, "name": M1911Kit.option_name(slot, o, up),
-				"desc": str(M1911Kit.variant(slot, o, up).get("desc", "")), "price": p, "installed": M1911Kit.has_option(w, slot, o),
-				"reason": code, "short": short})
+			out.append({"slot": slot, "slot_name": WeaponKit.slot_name(w, slot), "option": o, "name": WeaponKit.option_name(w, slot, o, up),
+				"desc": str(WeaponKit.variant(w, slot, o, up).get("desc", "")), "price": p, "installed": WeaponKit.has_option(w, slot, o),
+				"reason": code, "short": short, "weapon": String(w.id)})
 	return out
 
 
 ## Dev console: `kit` lists the bench, `kit mag drum` buys like the bench, `kit free mag drum` fits without paying,
-## `kit clear [slot]` takes parts off, `kit finish nickel` sets the finish on the held pistol.
+## `kit clear [slot]` takes parts off, `kit finish nickel` sets the finish on the held pistol (M1911 only).
 func _cmd_kit(a: PackedStringArray) -> String:
 	var p: Player = null
 	for n: Node in get_tree().get_nodes_in_group(&"players"):
 		var pl: Player = n as Player
 		if pl != null and pl.is_local and not pl.is_bot:
 			p = pl
-	var w: WeaponInstance = M1911Kit.pistol_of(p)
+	var w: WeaponInstance = WeaponKit.gun_of(p)
 	if p == null or w == null:
-		return "kit: no M1911 in hand"
+		return "kit: %s" % WeaponKit.refusal(WeaponKit.held(p))
 	if a.is_empty() or a[0] == "list":
 		var lines: PackedStringArray = []
 		for r: Dictionary in options_for(p):
@@ -243,18 +253,18 @@ func _cmd_kit(a: PackedStringArray) -> String:
 		return "\n".join(lines)
 	match a[0]:
 		"clear":
-			for slot: Variant in (M1911Kit.slot_order() if a.size() < 2 else [a[1]]):
+			for slot: Variant in (WeaponKit.slot_order(w) if a.size() < 2 else [a[1]]):
 				p.weapons.fit_attachment(w.id, str(slot), "")
 			return "kit: cleared"
 		"free":
-			if a.size() < 3 or not M1911Kit.is_known(a[1], a[2]):
-				return "usage: kit free <slot> <option>"
+			if a.size() < 3 or not WeaponKit.is_known(w, a[1], a[2]):
+				return "usage: kit free <slot> <option> (for the %s)" % str(w.data.get("name", w.id))
 			p.weapons.fit_attachment(w.id, a[1], a[2])
-			return "kit: fitted %s" % M1911Kit.option_name(a[1], a[2], w.upgraded)
+			return "kit: fitted %s" % WeaponKit.option_name(w, a[1], a[2], w.upgraded)
 		"finish":
 			w.finish = StringName(a[1] if a.size() > 1 else "")
 			w.refresh_kit()
-			p.weapons.set_kit(w.id, M1911Kit.encode(w.kit), String(w.finish))
+			p.weapons.set_kit(w.id, WeaponKit.encode(w.kit), String(w.finish))
 			return "kit: finish %s" % String(w.finish)
 	if a.size() < 2:
 		return "usage: kit <slot> <option>"
@@ -292,7 +302,7 @@ func stand_point() -> Vector3:
 
 
 static func _gunsmith_line(player: Player) -> void:
-	var vo: Dictionary = M1911Kit.cfg().get("vo", {})
+	var vo: Dictionary = WeaponKit.cfg().get("vo", {})
 	var first: bool = not _vo_done.has(player.player_id)
 	_vo_done[player.player_id] = true
 	GLVO.say_as(player.player_id, str(vo.get("category", "GUNSMITH")), float(vo.get("first_chance", 1.0)) if first else float(vo.get("chance", 0.45)))

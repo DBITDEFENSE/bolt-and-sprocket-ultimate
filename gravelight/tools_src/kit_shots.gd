@@ -70,11 +70,11 @@ func _ready() -> void:
 
 ## A WeaponInstance from a build string.
 static func make(build: String) -> WeaponInstance:
-	return M1911Kit.from_build(build)
+	return WeaponKit.from_build(build)
 
 
 static func file_name(build: String) -> String:
-	return M1911Kit.build_file_name(build)
+	return WeaponKit.build_file_name(build)
 
 
 func _room(lit_dim: bool) -> void:
@@ -160,7 +160,7 @@ func _do_models() -> void:
 		var w: WeaponInstance = make(b)
 		for c: Node in holder.get_children():
 			c.free()
-		var m: Node3D = WeaponModels.build(w.base_id(), w.upgraded, &"", M1911KitModels.look_of(w))
+		var m: Node3D = WeaponModels.build(w.base_id(), w.upgraded, &"", WeaponKitModels.look_of(w))
 		holder.add_child(m)
 		var kf: Node3D = m.get_node_or_null("KitFlash") as Node3D
 		if kf != null:

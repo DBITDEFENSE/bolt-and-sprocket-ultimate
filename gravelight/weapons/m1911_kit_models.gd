@@ -20,10 +20,9 @@ static var _mats: Dictionary = {}
 
 
 ## The look a WeaponInstance asks the model builder for ({} = the plain gun, the shared template).
+## (Any gun: the same as WeaponKitModels.look_of, which every caller uses since T-074.)
 static func look_of(w: WeaponInstance) -> Dictionary:
-	if w == null or not M1911Kit.applies_to(w) or (w.kit.is_empty() and w.finish == &""):
-		return {}
-	return {"kit": w.kit.duplicate(), "finish": String(w.finish), "sig": w.kit_sig()}
+	return WeaponKitModels.look_of(w)
 
 
 ## Flash-size multiplier for the fitted barrel (the can all but hides it; the comp spreads it).

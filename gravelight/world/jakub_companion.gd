@@ -615,7 +615,7 @@ func gun_offer(p: Player) -> Dictionary:
 	var w: WeaponInstance = p.weapons.current()
 	var code: String = offer_rule(p.weapons.slots.size() if w != null else 0, w.weapon_class() if w != null else &"",
 		p.weapons.in_last_stand(), cfg().get("refuses_classes", []))
-	if code == "" and w != null and not M1911Kit.companion_accepts(w):
+	if code == "" and w != null and not WeaponKit.companion_accepts(w):
 		code = "nachtglas"   # UPDATE_04 section 6: he won't carry the Nachtglas rounds
 	var reasons: Dictionary = {"down": "not while you are down", "empty": "nothing in your hands",
 		"only_gun": "keep it, it's your only gun (buy him one at a wall)", "refused": "he won't touch that one",
@@ -661,7 +661,7 @@ func _receive(w: WeaponInstance, from: Player, bought: bool) -> void:
 	player.weapons.current_index = 0
 	if old != null and from != null and from.weapons != null and not bought:
 		if from.weapons.find_weapon(old.id) == null:
-			from.weapons.give_instance(old)   # "Take mine, then." (the very gun: its ammo and M1911 attachments)
+			from.weapons.give_instance(old)   # "Take mine, then." (the very gun: its ammo and attachments)
 		else:
 			from.weapons.give_weapon(old.id)
 			var back: WeaponInstance = from.weapons.find_weapon(old.id)
