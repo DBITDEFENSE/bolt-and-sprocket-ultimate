@@ -314,7 +314,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	var res_perk: String = str((eco.get("reserve", {}) as Dictionary).get("perk", "second_wind"))
 	var reserve: int = reserve_scrip(eco, PerkManager.price(StringName(res_perk)) if not PerkManager.perk_data(StringName(res_perk)).is_empty() else 500,
 		box_price, float(brain.personality_economy("save_bias", 1.0)))
-	if brain.is_player_bot and not GameState.power_on:
+	if brain.is_player_bot and (not GameState.power_on or not AgentPlan.current_for(brain).is_empty()):
 		reserve = int((eco.get("reserve", {}) as Dictionary).get("min_scrip", 300))   # T-071: no perk to rebuy before the power (the gun comes first)
 	# ---- an ammo box (or wall ammo) when the main gun runs low: ammo is never held back by the reserve
 	var box_c: Dictionary = _ammo_candidate(anc, rng, scrip)
@@ -475,6 +475,8 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 			out.append({"node": cr2, "kind": kind, "slot": ammo_slot, "value": _pv(kind, _flat(cr2.global_position, me)),
 				"cost": Crucible.price_for(&"ammo", econ) if ammo_slot >= 0 else up_cost,
 				"label": "buy upgraded ammo at the Crucible" if ammo_slot >= 0 else ("feed the %s to the Crucible (%d Scrip)" % [player.weapons.slots[up_slot].display_name(), up_cost])})
+	if brain.is_player_bot:
+		return AgentPlan.filter(out, brain)   # T-071 pass 2: the agent spends by its map plan (player_bot.json plans)
 	return out
 
 

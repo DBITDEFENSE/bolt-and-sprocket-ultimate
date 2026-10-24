@@ -114,6 +114,7 @@ func _physics_process(delta: float) -> void:
 			pb.trainer.c = pb.trainer.c.duplicate()
 			pb.trainer.c["train_min"] = 2
 			pb.trainer.c["train_keep"] = 1
+			pb.trainer.c["own_force_round"] = 1   # (pass 2: the trainer owns the round here, as it does once the plan's loop is open)
 			# round 4 with a Thompson
 			p.weapons.give_weapon(&"thompson")
 			for k: int in p.weapons.slots.size():

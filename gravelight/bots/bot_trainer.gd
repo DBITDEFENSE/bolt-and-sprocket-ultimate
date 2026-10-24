@@ -222,12 +222,12 @@ static func dead_reckon(last_pos: Vector3, me: Vector3, speed: float, age_s: flo
 func value() -> float:
 	if not brain.armed() or RoundManager.state != RoundManager.State.ROUND:
 		return 0.0
-	if RoundManager.is_special_round and str(c.get("special_round", "train")) == "fight":
-		return 0.0
 	var now: float = brain.squad.time()
 	if now >= _loop_t or (route == null and _routes.is_empty()):
 		_refresh_routes(now)
 	if _routes.is_empty():
+		return 0.0
+	if RoundManager.is_special_round and (str(c.get("special_round", "train")) == "fight" or not ready_to_own()):
 		return 0.0
 	var per: BotPerception = brain.perception
 	var dirn: ZombieDirector = brain.squad.director()
@@ -242,7 +242,7 @@ func value() -> float:
 			continue
 		if _flat((e as Dictionary)["pos"], player.global_position) < _f("horde_m", 12.0):
 			chasing += 1
-	if chasing < int(_f("train_min", 4.0)) and not (_active and followers >= int(_f("train_keep", 3.0))) 			and RoundManager.current_round < int(_f("own_from_round", 3.0)) and not RoundManager.is_special_round:
+	if chasing < int(_f("train_min", 4.0)) and not (_active and followers >= int(_f("train_keep", 3.0))) 			and not (RoundManager.current_round >= int(_f("own_from_round", 3.0)) and ready_to_own()) and not RoundManager.is_special_round:
 		return 0.0
 	var v: float = 1.0
 	if ammo_frac() < _f("low_ammo_frac", 0.2):
@@ -257,7 +257,26 @@ func value() -> float:
 func owns_round() -> bool:
 	if RoundManager.current_round < int(_f("own_from_round", 3.0)) and not RoundManager.is_special_round:
 		return false
+	if not ready_to_own():
+		return false
 	return value() >= 0.99
+
+
+## Is the map plan's training ground open (its first train_at loop among the usable ones)? Until then (the early
+## rounds, the taproom with four windows feeding it) the agent holds and fights like pass 1 and trains only a
+## horde (train_min); from own_force_round it trains wherever it is. No plan or no train_at: always ready.
+func ready_to_own() -> bool:
+	if RoundManager.current_round >= int(_f("own_force_round", 99.0)):
+		return true
+	if brain.squad == null or brain.squad.map == null:
+		return true
+	var order: Array = AgentPlan.plan_for(TrainingRoute.map_key_of(String(brain.squad.map.map_id))).get("train_at", [])
+	if order.is_empty():
+		return true
+	for r: TrainingRoute in _routes:
+		if r.id == str(order[0]):
+			return true
+	return false
 
 
 ## The best (mag + reserve) / max over every carried gun.
@@ -427,6 +446,9 @@ func gather_target() -> int:
 func _travel(delta: float, _gap: float, me: Vector3) -> void:
 	var per: BotPerception = brain.perception
 	var hunt: Vector3 = brain.squad.hunt_point()
+	if per.nearest != null and per.nearest_d < _f("travel_clear_m", 1.6):
+		_kite(delta, 1.0, per.pos_of(per.nearest))   # something in reach on the way: away from it first, at a run
+		return
 	var urg: float = 1.0 if per.nearest_d < _f("travel_sprint_m", 6.0) else 0.6
 	if hunt != Vector3.INF and followers == 0 and per.known.is_empty():
 		brain.loco.move_to(hunt, 0.55, 2.0)
@@ -446,7 +468,7 @@ func _line_clear(a: Vector3, b: Vector3, now: float) -> bool:
 	if now - _lc_t < 0.25:
 		return _lc_ok
 	_lc_t = now
-	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(a + Vector3.UP * 0.5, Vector3(b.x, a.y, b.z) + Vector3.UP * 0.5, BotLocomotion.MASK_WORLD, [player.get_rid()])
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(a + Vector3.UP * 1.3, Vector3(b.x, a.y, b.z) + Vector3.UP * 1.3, BotLocomotion.MASK_WORLD, [player.get_rid()])
 	_lc_ok = player.get_world_3d().direct_space_state.intersect_ray(q).is_empty()
 	return _lc_ok
 
@@ -465,14 +487,19 @@ func _run(delta: float, gap: float, w: WeaponInstance) -> void:
 	var stamina: float = float(player.get("_stamina")) if player.get("_stamina") != null else 4.0
 	if need_sprint and (unlimited or stamina > _f("stamina_keep_s", 0.8) or head_d < gap):
 		urg = 1.0
+	# an empty gun is reloaded on the walk unless the head is right on us (sprinting and reloading don't mix: the
+	# player's own rule); a part-empty one only with the gap to spare
+	var dry: bool = w != null and w.mag <= 0 and w.reserve > 0
+	var reload_safe_m: float = head_reach + _f("reload_dry_m", 0.9)
 	if brain.aim.reloading and urg >= 0.7:
-		if head_d < gap * 0.7:
-			brain.aim.cancel_reload()   # sprinting and reloading don't mix (the player's own rule)
+		if head_d < (reload_safe_m if dry else gap * 0.7):
+			brain.aim.cancel_reload()
 		else:
 			urg = 0.5
-	if w != null and not brain.aim.reloading and w.reserve > 0 and float(w.mag) / float(maxi(1, w.mag_size())) < _f("reload_frac", 0.4) \
-			and head_d > gap + _f("reload_gap_extra_m", 1.0) and urg < 0.7:
+	if w != null and not brain.aim.reloading and w.reserve > 0 and ((dry and head_d >= reload_safe_m) \
+			or (float(w.mag) / float(maxi(1, w.mag_size())) < _f("reload_frac", 0.4) and head_d > gap + _f("reload_gap_extra_m", 1.0) and urg < 0.7)):
 		brain.aim.start_reload()
+		urg = 0.5
 	_flow(delta, urg)
 	if urg < 0.7 and brain.aim.target != null and brain.perception.is_visible(brain.aim.target) and not brain.aim.reloading:
 		var to: Vector3 = brain.aim.target.global_position - player.global_position
@@ -992,7 +1019,7 @@ func _choose_route(now: float) -> void:
 		if travel == INF:
 			continue
 		rows.append({"id": r.id, "length": r.length(), "ring_width": r.ring_width, "travel_m": travel, "windows": _windows_near(r),
-			"home": r.home, "bonus": r.agent_bonus, "current": route != null and r.id == route.id})
+			"home": r.home, "bonus": r.agent_bonus + AgentPlan.loop_bonus(r.map, r.id, _f("plan_bonus", 8.0)), "current": route != null and r.id == route.id})
 		rs.append(r)
 	var i: int = choose_loop(rows, c.get("loop_weights", {}) as Dictionary)
 	if i < 0:
