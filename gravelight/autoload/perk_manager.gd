@@ -719,7 +719,7 @@ func slide_shock_damage(pid: int, base: float) -> float:
 	var m: float = float(stat(pid, "slide_shockwave_round_mult", 0.0))
 	if m <= 0.0:
 		return base
-	return maxf(base, m * float(RoundManager.current_health()))
+	return maxf(base, m * float(RoundManager.zombie_health(maxi(1, RoundManager.current_round), GLData.table("rounds"))))
 
 
 ## One zombie in a slide shockwave: the damage, and Blastproof III knocks down what survives it (not bosses).

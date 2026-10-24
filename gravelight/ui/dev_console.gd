@@ -161,6 +161,8 @@ func _register_builtins() -> void:
 	register("goto", _cmd_goto, "goto <zone>: teleport to a zone (A..I, e.g. goto F)")
 	register("give_perks", _cmd_give_perks, "Give every perk (ignores cap, power, cost)")
 	register("perk", _cmd_perk, "perk <id>: give one perk, e.g. perk ironhide_stout")
+	register("perk_tier", _cmd_perk_tier, "perk_tier <id> <2|3>: set a carried perk's tier (no cost, no gate)")
+	register("perk_mastery", _cmd_perk_mastery, "perk_mastery <id|all> <points>: add mastery (unlocks tiers)")
 	register("powerup", _cmd_powerup, "powerup <id>: resupply|deaths_door|double_scrip|blackout|fortify|clearance")
 	register("crate_move", _cmd_crate_move, "Move the Requisition Crate now")
 	register("crate", _cmd_crate, "crate <weapon_id>: the next crate pull gives this weapon")
@@ -453,6 +455,24 @@ func _cmd_perk(a: PackedStringArray) -> String:
 		return "usage: perk <id>. Options: " + ", ".join(PackedStringArray(GLData.table("perks")["perks"].keys()))
 	PerkManager.grant(_ctx_pid, StringName(a[0]))
 	return "Gave " + a[0]
+
+
+func _cmd_perk_tier(a: PackedStringArray) -> String:
+	if a.size() < 2:
+		return "usage: perk_tier <id> <2|3>"
+	if not PerkManager.has_perk(_ctx_pid, StringName(a[0])):
+		PerkManager.grant(_ctx_pid, StringName(a[0]))
+	PerkManager.set_tier(_ctx_pid, StringName(a[0]), int(a[1]))
+	return "%s is now tier %d" % [a[0], PerkManager.tier_of(_ctx_pid, StringName(a[0]))]
+
+
+func _cmd_perk_mastery(a: PackedStringArray) -> String:
+	if a.size() < 2:
+		return "usage: perk_mastery <id|all> <points>"
+	var ids: Array = GLData.table("perks")["perks"].keys() if a[0] == "all" else [a[0]]
+	for id: Variant in ids:
+		PerkManager.add_mastery(StringName(str(id)), int(a[1]))
+	return "Mastery added"
 
 
 func _cmd_powerup(a: PackedStringArray) -> String:

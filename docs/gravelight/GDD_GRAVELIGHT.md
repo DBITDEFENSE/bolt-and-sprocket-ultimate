@@ -127,6 +127,13 @@ Cap 4 (+1 permanent slot on Map 1 after the main egg). All need power, except Se
 
 Machines hum, play their jingle now and then when you're near (on a per-machine cooldown), and show their bottle cap in the HUD when owned.
 
+**Upgrades (T-075):** every tonic has tiers **II** and **III** with a new effect each (e.g. Ironhide III: 2 s of iron
+skin after a hit that leaves you under 30%; Marathon III: sidestep a swipe while sprinting; Hawkeye II: headshot kills
+refund a round). Buy them at the machine you drank from (hold Use) once the power is on, tier II from round 8 and III
+from round 15; each tier is unlocked for the profile by **mastery** with that tonic (1 per kill, 20 per round with it).
+No extra cap slot; the tier goes with the perk. Table, balance and the in-world "regulars' measure":
+`docs/gravelight/PERKS_LORE.md` §1.
+
 ## 9. Lost Requisition Crate
 - 950 Scrip. It opens with Nachtglas light, cycles weapons for 4.2 s, and the result floats for 12 s.
 - **Pity:** the first 3 pulls per player per match always roll from the "good" tier (no duds, no weapon you already hold).
