@@ -7337,5 +7337,85 @@
   "speaker": "JAK",
   "category": "PLAQUE_CRUCIBLE",
   "text": "The cooling plant. We were told never to look inside it."
+ },
+ "ROT_INN_ARRIVE_01": {
+  "speaker": "ROT",
+  "category": "INN_ARRIVE",
+  "text": "Mother of God, look at them. Out of that plane? ...Sit, sit, before you fall down. Trudi, coffee for these."
+ },
+ "TRU_INN_ARRIVE_01": {
+  "speaker": "TRU",
+  "category": "INN_ARRIVE",
+  "text": "There's soup on the hearth. Get warm first. Then you can tell us what fell out of the sky."
+ },
+ "POH_INN_SCREAM_01": {
+  "speaker": "POH",
+  "category": "INN_SCREAM",
+  "text": "[a scream] At the window! There are people out in the snow, and they're walking. Look at them walking!"
+ },
+ "KUB_INN_WINDOW_01": {
+  "speaker": "KUB",
+  "category": "INN_WINDOW",
+  "text": "What was that? ...Something's at the boards. Something's tearing at the boards!"
+ },
+ "TRU_INN_FLEE_01": {
+  "speaker": "TRU",
+  "category": "INN_FLEE",
+  "text": "The front door! Out, all of you, out and up the road to the village!"
+ },
+ "SOB_INN_FLEE_01": {
+  "speaker": "SOB",
+  "category": "INN_FLEE",
+  "text": "Stay together! Keep together and run, don't stop for anything!"
+ },
+ "ROT_INN_DOOR_01": {
+  "speaker": "ROT",
+  "category": "INN_DOOR",
+  "text": "The bar's frozen in the brackets... help me, help me with it... there!"
+ },
+ "KUB_INN_CAUGHT_01": {
+  "speaker": "KUB",
+  "category": "INN_CAUGHT",
+  "text": "[screaming] Get off me! Get it off! Ewald! Ewald!"
+ },
+ "ROT_INN_CAUGHT_01": {
+  "speaker": "ROT",
+  "category": "INN_CAUGHT",
+  "text": "[screaming] Willi! The door, Willi, pull me in!"
+ },
+ "SOB_INN_SHUT_01": {
+  "speaker": "SOB",
+  "category": "INN_SHUT",
+  "text": "I can't... God forgive me. ...The bar! The bar, get it down!"
+ },
+ "SOB_INN_BITTEN_01": {
+  "speaker": "SOB",
+  "category": "INN_BITTEN",
+  "text": "It bit me. It's nothing. It's only a scratch, it's... it's nothing."
+ },
+ "SOB_INN_FALL_01": {
+  "speaker": "SOB",
+  "category": "INN_FALL",
+  "text": "[weak] Tell my mother... I was nearly home. Nearly home."
+ },
+ "DUT_INN_RISE_01": {
+  "speaker": "DUT",
+  "category": "INN_RISE",
+  "text": "He's getting up. ...He's getting up! That's not him any more, put him down!"
+ },
+ "PEG_INN_RISE_01": {
+  "speaker": "PEG",
+  "category": "INN_RISE",
+  "text": "Oh, no. No, no, no. Willi. ...I'm sorry, love."
+ },
+ "DEA_INN_RISE_01": {
+  "speaker": "DEA",
+  "category": "INN_RISE",
+  "text": "Lord have mercy, the boy's standing up. That isn't him. That isn't him!"
+ },
+ "WRN_INN_RISE_01": {
+  "speaker": "WRN",
+  "category": "INN_RISE",
+  "text": "The soldier. He is standing. Do not look at his face. Shoot."
  }
 }

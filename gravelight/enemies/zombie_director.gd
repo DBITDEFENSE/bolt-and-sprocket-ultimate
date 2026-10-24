@@ -862,6 +862,17 @@ func remove_temp_spawns(key: StringName) -> void:
 	_temp_spawns.erase(key)
 
 
+## Activates a zombie whose round slot was already taken off the queue (RoundManager.take_spawn) at `at`: it
+## emerges there, and the caller may change its state next (Map 0's opening: the attackers in the snow, the
+## patrons rising where they fell; T-072). null when the pool is empty (the caller gives the slot back).
+func activate_reserved(spec: Dictionary, at: Vector3) -> Zombie:
+	if puppet_mode:
+		return null
+	if not spec.has("variant"):
+		spec["variant"] = _pick_variant()
+	return _activate_at(spec, _snap(at))
+
+
 ## Spawns extra zombies at given points right away. They don't count toward the round total
 ## (power-on burst), but they must still die before the round can end.
 func spawn_burst(points: Array, count: int) -> int:

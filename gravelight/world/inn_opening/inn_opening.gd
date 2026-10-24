@@ -1,0 +1,540 @@
+class_name InnOpening
+extends Node3D
+## Map 0's round 1 opening, "the bar empties" (T-072; data: data/gravelight/map00_opening.json, which documents the
+## beats). The inn's patrons are in the taproom from the start. When round 1 begins (the first match start on the
+## map; never a later round, a dev skip or a campaign arrival) the first zombies hit the windows and the patrons run
+## for the front door and out into the snow. Two attackers rise out of the snow by the porch; two patrons are
+## caught, one is bitten at the door; those three rise as zombies a few seconds after they fall.
+##
+## Round accounting: when round 1 starts the host takes the risers' and the attackers' slots off the round's queue
+## (RoundManager.take_spawn), so they count toward round 1's total and the round can't end before they are dealt
+## with; a slot that is never used (a full pool, a cancelled opening) goes back to the queue (requeue). The round's
+## total never changes, so round 1 plays the same size as ever (8 zombies solo) with three of them risen patrons.
+##
+## The player keeps control throughout (not a cutscene); patrons are presentation only (PatronBody: no collider, no
+## hitboxes, immune to fire, ignored by bots). Co-op: the host decides and mirrors the start (or the cancel); every
+## peer runs the same timed script from the data, so patrons, the door and the lines match; the zombies are the
+## host's and replicate as usual. Lines are lines.json ids (VO_SCRIPT section 21): baked audio plays at the patron
+## when it exists, the subtitle always shows.
+
+const DATA_PATH: String = "res://data/gravelight/map00_opening.json"
+
+enum Phase { IDLE, RUNNING, DONE, CANCELLED }
+
+var phase: Phase = Phase.IDLE
+var cfg: Dictionary = {}
+## Seconds since round 1 started (RUNNING), and since the patrons appeared.
+var t: float = 0.0
+var since_ready: float = 0.0
+var patrons: Dictionary = {}      # id -> PatronBody
+var door: InnFrontDoor = null
+## Host bookkeeping, for tests and the smoke: patron id -> reserved round spec, attacker index -> spec.
+var riser_specs: Dictionary = {}
+var attacker_specs: Dictionary = {}
+var risen: Dictionary = {}        # patron id -> Zombie
+var attackers: Dictionary = {}    # attacker index -> Zombie
+var fates: Dictionary = {}        # patron id -> "escaped" / "dead" / "risen"
+var slots_returned: int = 0
+var _st: Dictionary = {}          # patron id -> runtime state
+var _done_lines: Dictionary = {}
+var _done_sfx: Dictionary = {}
+var _door_beats: Dictionary = {}
+var _arriving: bool = false
+var _flared: bool = false
+
+
+static func load_cfg() -> Dictionary:
+	return GLData.load_json(DATA_PATH)
+
+
+## The rule: only on the configured round of the configured map, only once, never on a campaign arrival.
+static func should_play(map_id: StringName, round_number: int, current_round: int, arriving: bool, already: bool, c: Dictionary) -> bool:
+	if already or arriving or c.is_empty():
+		return false
+	if String(map_id) != str(c.get("map", "")):
+		return false
+	var r: int = int(c.get("round", 1))
+	return round_number == r and current_round == r
+
+
+## How many of the round's queued slots the opening may take: risers first (they are the point), then attackers,
+## never more than the queue holds.
+static func plan_slots(to_spawn: int, risers: int, attackers_n: int) -> Dictionary:
+	var r: int = clampi(risers, 0, maxi(0, to_spawn))
+	var a: int = clampi(attackers_n, 0, maxi(0, to_spawn - r))
+	return {"risers": r, "attackers": a}
+
+
+## Patrons who rise (caught or bitten, with a rise variant).
+static func riser_ids(c: Dictionary) -> PackedStringArray:
+	var out: PackedStringArray = []
+	for row: Dictionary in c.get("patrons", []):
+		if str(row.get("fate", "")) in ["caught", "bitten"] and str(row.get("rise_variant", "")) != "":
+			out.append(str(row["id"]))
+	return out
+
+
+static func _v3(a: Array) -> Vector3:
+	return Vector3(float(a[0]), float(a[1]), float(a[2]))
+
+
+static func path_length(pts: Array) -> float:
+	var l: float = 0.0
+	for i: int in range(1, pts.size()):
+		l += _v3(pts[i - 1]).distance_to(_v3(pts[i]))
+	return l
+
+
+## When each patron goes out of the front door: in order of arrival, a beat apart, not before it opens; a patron
+## who holds the door goes when the hold ends; the bitten one never does (-1).
+static func exit_times(c: Dictionary) -> Dictionary:
+	var door_cfg: Dictionary = c.get("front_door", {})
+	var open_at: float = float(door_cfg.get("open_at", 5.0))
+	var arrive: Array = []
+	for row: Dictionary in c.get("patrons", []):
+		var pts: Array = [row["start"]]
+		pts.append_array(row.get("route", []))
+		var at: float = float(row.get("depart", 0.0)) + 0.4 + path_length(pts) / maxf(0.5, float(row.get("speed", c.get("run_speed", 3.4))))
+		arrive.append([at, str(row["id"]), row])
+	arrive.sort_custom(func(x: Array, y: Array) -> bool: return float(x[0]) < float(y[0]))
+	var out: Dictionary = {}
+	var order: int = 0
+	for e: Array in arrive:
+		var row2: Dictionary = e[2]
+		if str(row2.get("fate", "")) == "bitten":
+			out[e[1]] = -1.0
+			continue
+		if row2.has("hold"):
+			out[e[1]] = float((row2["hold"] as Dictionary).get("until", open_at))
+			continue
+		out[e[1]] = maxf(float(e[0]), open_at + 0.15 + 0.45 * order)
+		order += 1
+	return out
+
+
+# ================================================================== setup
+
+func _ready() -> void:
+	cfg = load_cfg()
+	var map: MapRoot = _map()
+	var map_id: StringName = map.map_id if map != null else &""
+	if cfg.is_empty() or String(map_id) != str(cfg.get("map", "")):
+		phase = Phase.CANCELLED
+		return
+	_arriving = Campaign.arriving(map_id)
+	if _arriving:
+		phase = Phase.CANCELLED
+		return
+	door = get_parent().get_node_or_null(str((cfg.get("front_door", {}) as Dictionary).get("node", "InnFrontDoor"))) as InnFrontDoor
+	var exits: Dictionary = exit_times(cfg)
+	for row: Dictionary in cfg.get("patrons", []):
+		var pb: PatronBody = PatronBody.new()
+		add_child(pb)
+		pb.setup(row)
+		pb.set_fall_seconds(float(cfg.get("fall_seconds", 0.7)))
+		pb.global_position = _v3(row["start"])
+		pb.rotation.y = deg_to_rad(float(row.get("yaw", 0.0)))
+		pb.global_position = pb.global_position   # (keeps _last_pos honest on the first frame)
+		patrons[str(row["id"])] = pb
+		_st[str(row["id"])] = {"row": row, "stage": "idle", "pts": [], "i": 0, "exit": float(exits.get(str(row["id"]), 0.0)), "t0": 0.0}
+	GLBus.round_started.connect(_on_round_started)
+
+
+func _map() -> MapRoot:
+	var n: Node = get_parent()
+	while n != null:
+		if n is MapRoot:
+			return n as MapRoot
+		n = n.get_parent()
+	return null
+
+
+func _director() -> ZombieDirector:
+	var map: Node = _map()
+	return map.get_node_or_null("ZombieDirector") as ZombieDirector if map != null else null
+
+
+func _on_round_started(r: int, _special: bool) -> void:
+	if phase != Phase.IDLE:
+		return
+	if not Net.is_authority():
+		return   # the host's _net_begin / _net_cancel
+	var map: MapRoot = _map()
+	if should_play(map.map_id if map != null else &"", r, RoundManager.current_round, _arriving, false, cfg):
+		begin()
+		Net.mirror(self, &"_net_begin")
+	else:
+		cancel()
+		Net.mirror(self, &"_net_cancel")
+
+
+## Round 1 started: the host takes the round slots, then the script runs (every peer).
+func begin() -> void:
+	if phase != Phase.IDLE:
+		return
+	if Net.is_authority():
+		_reserve()
+	_start_script()
+
+
+func _net_begin() -> void:
+	if phase == Phase.IDLE:
+		_start_script()
+
+
+func _net_cancel() -> void:
+	cancel()
+
+
+func _start_script() -> void:
+	phase = Phase.RUNNING
+	t = 0.0
+
+
+## Not this time (a later round, a dev skip): the patrons are simply gone, the door stays barred.
+func cancel() -> void:
+	if phase == Phase.RUNNING:
+		_finish()
+	phase = Phase.CANCELLED
+	for pb: PatronBody in patrons.values():
+		pb.catchable = false
+		pb.hide()
+
+
+func _reserve() -> void:
+	var ids: PackedStringArray = riser_ids(cfg)
+	var att: Array = cfg.get("attackers", [])
+	var plan: Dictionary = plan_slots(RoundManager.to_spawn, ids.size(), att.size())
+	for i: int in int(plan["risers"]):
+		riser_specs[ids[i]] = RoundManager.take_spawn()
+	for j: int in int(plan["attackers"]):
+		attacker_specs[j] = RoundManager.take_spawn()
+
+
+## Gives back every slot the opening took and never used.
+func _finish() -> void:
+	if not Net.is_authority():
+		return
+	for k: Variant in riser_specs.keys():
+		if not risen.has(k):
+			RoundManager.requeue()
+			slots_returned += 1
+	riser_specs.clear()
+	for j: Variant in attacker_specs.keys():
+		if not attackers.has(j):
+			RoundManager.requeue()
+			slots_returned += 1
+	attacker_specs.clear()
+
+
+# ================================================================== the script
+
+func _physics_process(delta: float) -> void:
+	since_ready += delta
+	match phase:
+		Phase.IDLE:
+			_intro_lines()
+		Phase.RUNNING:
+			t += delta
+			_beats()
+			for id: String in _st.keys():
+				_step_patron(id, delta)
+			if t >= float(cfg.get("end_by", 45.0)) or _all_resolved():
+				_finish()
+				phase = Phase.DONE
+
+
+func _intro_lines() -> void:
+	if RoundManager.current_round != 0:
+		return
+	var d: float = since_ready - float(cfg.get("intro_delay", 1.2))
+	for i: int in (cfg.get("lines", []) as Array).size():
+		var ln: Dictionary = cfg["lines"][i]
+		if bool(ln.get("intro", false)) and not _done_lines.has(i) and d >= float(ln["at"]):
+			_done_lines[i] = true
+			_say(str(ln["id"]), str(ln.get("who", "")))
+
+
+func _beats() -> void:
+	var lines: Array = cfg.get("lines", [])
+	for i: int in lines.size():
+		var ln: Dictionary = lines[i]
+		if not bool(ln.get("intro", false)) and not _done_lines.has(i) and t >= float(ln["at"]):
+			_done_lines[i] = true
+			var pb: PatronBody = patrons.get(str(ln.get("who", ""))) as PatronBody
+			if pb != null and pb.visible and pb.pose != &"dead":
+				_say(str(ln["id"]), str(ln.get("who", "")))
+	var sfx: Array = cfg.get("sfx", [])
+	for k: int in sfx.size():
+		var e: Dictionary = sfx[k]
+		if not _done_sfx.has(k) and t >= float(e["at"]):
+			_done_sfx[k] = true
+			AudioDirector.play_3d(str(e["key"]), _v3(e["pos"]), float(e.get("db", 0.0)))
+	var dc: Dictionary = cfg.get("front_door", {})
+	if door != null:
+		_door_beat("unbar", float(dc.get("open_at", 5.0)) - 0.6, func() -> void: door.unbar())
+		_door_beat("open", float(dc.get("open_at", 5.0)), func() -> void: door.open(float(dc.get("open_deg", 105.0)), float(dc.get("open_seconds", 0.7))))
+		_door_beat("close", float(dc.get("close_at", 11.0)), func() -> void: door.close(float(dc.get("close_seconds", 0.45))))
+		_door_beat("bar", float(dc.get("bar_at", 12.0)), func() -> void: door.bar())
+	var fl: Dictionary = cfg.get("flare", {})
+	if not _flared and not fl.is_empty() and t >= float(fl.get("at", 5.0)):
+		_flared = true
+		_flare(fl)
+	if Net.is_authority():
+		var att: Array = cfg.get("attackers", [])
+		for j: int in att.size():
+			if attacker_specs.has(j) and not attackers.has(j) and t >= float(att[j]["at"]):
+				_spawn_attacker(j, att[j])
+		for j2: Variant in attackers.keys():
+			var z: Zombie = attackers[j2]
+			if is_instance_valid(z) and z.is_active() and z.prey == null and z.window == null:
+				z.go_to_window(_barricade(str(att[int(j2)].get("then_window", ""))))
+
+
+func _door_beat(key: String, at: float, f: Callable) -> void:
+	if not _door_beats.has(key) and t >= at:
+		_door_beats[key] = true
+		f.call()
+
+
+## The hearth fire flares in the draught from the open door.
+func _flare(fl: Dictionary) -> void:
+	var map: Node = _map()
+	var l: Light3D = map.find_child(str(fl.get("light", "Hearthfire")), false, false) as Light3D if map != null else null
+	if l == null or not ("base_energy" in l):
+		return
+	var base: float = float(l.get("base_energy"))
+	var tw: Tween = create_tween()
+	tw.tween_property(l, "base_energy", base * float(fl.get("mult", 1.6)), 0.35)
+	tw.tween_property(l, "base_energy", base, maxf(0.2, float(fl.get("seconds", 2.0)) - 0.35))
+
+
+func _spawn_attacker(j: int, a: Dictionary) -> void:
+	var dir: ZombieDirector = _director()
+	var spec: Dictionary = attacker_specs[j]
+	var z: Zombie = dir.activate_reserved(spec, _v3(a["pos"])) if dir != null else null
+	if z == null:
+		RoundManager.requeue()
+		attacker_specs.erase(j)
+		slots_returned += 1
+		return
+	attackers[j] = z
+	var pb: PatronBody = patrons.get(str(a.get("prey", ""))) as PatronBody
+	if pb != null and pb.is_catchable():
+		z.prey = pb
+
+
+func _barricade(name_: String) -> Barricade:
+	if name_ == "":
+		return null
+	var map: Node = _map()
+	return map.find_child(name_, true, false) as Barricade if map != null else null
+
+
+func _all_resolved() -> bool:
+	for id: String in _st.keys():
+		var stg: String = str(_st[id]["stage"])
+		if stg != "gone" and stg != "risen" and stg != "corpse":
+			return false
+	return true
+
+
+# ================================================================== one patron
+
+func _step_patron(id: String, delta: float) -> void:
+	var s: Dictionary = _st[id]
+	var row: Dictionary = s["row"]
+	var pb: PatronBody = patrons[id]
+	var speed: float = float(row.get("speed", cfg.get("run_speed", 3.4)))
+	match str(s["stage"]):
+		"idle":
+			if t >= float(row.get("depart", 0.0)):
+				pb.set_pose(&"panic")
+				s["stage"] = "getup"
+				s["t0"] = t
+		"getup":
+			if t - float(s["t0"]) >= 0.4:
+				_go(s, row.get("route", []), "to_door")
+				pb.set_pose(&"run")
+		"to_door":
+			if _follow(pb, s, speed, delta):
+				if row.has("unbar") and door != null and not door.is_open:
+					s["stage"] = "unbar"
+					pb.set_pose(&"push")
+					_face_point(pb, Vector3(pb.global_position.x, 0, -1.0))
+				elif str(row.get("fate", "")) == "bitten":
+					s["stage"] = "hold"
+					pb.set_pose(&"push")
+					_face_point(pb, Vector3(pb.global_position.x, 0, -1.0))
+				else:
+					s["stage"] = "wait"
+					pb.set_pose(&"panic")
+		"unbar":
+			if door == null or door.is_open:
+				if row.has("hold"):
+					_go(s, [row["hold"]["at"]], "to_hold")
+					pb.set_pose(&"panic")
+				else:
+					s["stage"] = "wait"
+		"to_hold":
+			if _follow(pb, s, 1.6, delta):
+				s["stage"] = "wait"
+				pb.set_pose(&"panic")
+		"wait":
+			if t >= float(s["exit"]) and (door == null or door.is_open):
+				var out: Array = row.get("outside", [])
+				_go(s, out, "out")
+				pb.set_pose(&"run")
+		"out":
+			var arrived: bool = _follow(pb, s, speed, delta)
+			if str(row.get("fate", "")) == "escape":
+				var far: bool = door != null and pb.global_position.distance_to(door.global_position) > float(cfg.get("fade_distance", 32.0))
+				if arrived or far:
+					pb.catchable = false
+					pb.hide()
+					s["stage"] = "gone"
+					fates[id] = "escaped"
+			elif arrived:
+				s["stage"] = "caught"
+				s["t0"] = t
+				pb.set_pose(&"struggle")
+		"caught":
+			if t - float(s["t0"]) >= float(row.get("struggle", 2.0)):
+				_fall(id, s, pb)
+		"hold":
+			var bt: Dictionary = row.get("bitten", {})
+			var hold_until: float = float((row.get("hold", {}) as Dictionary).get("until", 10.0))
+			if not bt.is_empty() and t >= hold_until:
+				_go(s, [bt["reach"]], "reach")
+				pb.set_pose(&"push")
+		"reach":
+			var bt2: Dictionary = row["bitten"]
+			_follow(pb, s, 2.4, delta)
+			_face_point(pb, Vector3(pb.global_position.x + 0.6, 0, -2.0))
+			if t >= float(bt2.get("at", 10.5)):
+				pb.struck(null)
+				AudioDirector.play_3d("player_hurt", pb.global_position + Vector3.UP * 1.5, 0.0)
+				AudioDirector.play_3d("impact_flesh", pb.global_position + Vector3.UP * 1.2, 0.0)
+				s["stage"] = "shut"
+		"shut":
+			var bt3: Dictionary = row["bitten"]
+			if t >= float(bt3.get("shut_at", 11.4)) and pb.pose != &"push":
+				pb.set_pose(&"push")
+			if t >= float(bt3.get("bar_at", 12.0)) + 0.5:
+				_go(s, bt3.get("walk", []), "stagger")
+				pb.set_pose(&"clutch")
+		"stagger":
+			var bt4: Dictionary = row["bitten"]
+			var done: bool = _follow(pb, s, float(bt4.get("walk_speed", 0.8)), delta)
+			if done and t >= float(bt4.get("collapse_at", 17.0)):
+				_fall(id, s, pb)
+		"down":
+			if pb.pose == &"dead" and t - float(s["t0"]) >= float(cfg.get("rise_after", 6.0)):
+				_rise(id, s, pb)
+
+
+func _go(s: Dictionary, pts: Array, stage: String) -> void:
+	s["pts"] = pts
+	s["i"] = 0
+	s["stage"] = stage
+
+
+## Moves along the stage's points; true once at the last one.
+func _follow(pb: PatronBody, s: Dictionary, speed: float, delta: float) -> bool:
+	var pts: Array = s["pts"]
+	var i: int = int(s["i"])
+	var step: float = speed * delta
+	while i < pts.size():
+		var goal: Vector3 = _v3(pts[i])
+		var here: Vector3 = pb.global_position
+		var to: Vector3 = Vector3(goal.x - here.x, 0, goal.z - here.z)
+		var d: float = to.length()
+		if d <= step:
+			pb.global_position = Vector3(goal.x, goal.y, goal.z)
+			step -= d
+			i += 1
+			continue
+		pb.global_position = here + to / d * step
+		var want: float = atan2(-to.x, -to.z)
+		pb.rotation.y = lerp_angle(pb.rotation.y, want, clampf(delta * 10.0, 0.0, 1.0))
+		break
+	s["i"] = i
+	return i >= pts.size()
+
+
+func _face_point(pb: PatronBody, p: Vector3) -> void:
+	var to: Vector3 = p - pb.global_position
+	if Vector2(to.x, to.z).length() > 0.01:
+		pb.rotation.y = atan2(-to.x, -to.z)
+
+
+func _fall(id: String, s: Dictionary, pb: PatronBody) -> void:
+	pb.set_pose(&"fall")
+	AudioDirector.play_3d("player_hurt", pb.global_position + Vector3.UP * 1.4, 2.0)
+	s["stage"] = "down"
+	s["t0"] = t
+	fates[id] = "dead"
+
+
+func _rise(id: String, s: Dictionary, pb: PatronBody) -> void:
+	var row: Dictionary = s["row"]
+	if Net.is_authority():
+		if not riser_specs.has(id):
+			s["stage"] = "corpse"   # no slot for them (a tiny round queue): they stay where they fell
+			return
+		var spec: Dictionary = (riser_specs[id] as Dictionary).duplicate()
+		spec["variant"] = str(row.get("rise_variant", "villager"))
+		if row.has("female"):
+			spec["female"] = bool(row["female"])
+		var dir: ZombieDirector = _director()
+		var z: Zombie = dir.activate_reserved(spec, pb.global_position) if dir != null else null
+		if z == null:
+			RoundManager.requeue()
+			riser_specs.erase(id)
+			slots_returned += 1
+			s["stage"] = "corpse"
+			return
+		z.global_position = pb.global_position
+		z.rotation.y = pb.rotation.y
+		z.rise_from_floor(float(cfg.get("rise_getup_seconds", 2.4)), _barricade(str(row.get("rise_window", ""))))
+		risen[id] = z
+	pb.catchable = false
+	pb.hide()
+	s["stage"] = "risen"
+	fates[id] = "risen"
+	AudioDirector.play_3d("zombie_groan", pb.global_position + Vector3.UP * 0.6, 2.0, 0.1)
+	var sq: Dictionary = cfg.get("squad_line", {})
+	if str(sq.get("on_rise", "")) == id:
+		get_tree().create_timer(float(sq.get("delay", 0.6))).timeout.connect(func() -> void:
+			GLVO.squad_say(str(sq.get("category", "INN_RISE")), 1.0))
+
+
+# ================================================================== lines
+
+## A patron's line: the subtitle under their name, and the baked voice at them when there is one.
+func _say(line_id: String, who: String) -> void:
+	var rec: Dictionary = GLVO.lines.get(line_id, {})
+	if rec.is_empty():
+		return
+	var pb: PatronBody = patrons.get(who) as PatronBody
+	var display: String = who.to_upper()
+	for row: Dictionary in cfg.get("patrons", []):
+		if str(row["id"]) == who:
+			display = str(row.get("display", display))
+	var text: String = GLVO.strip_tags(str(rec.get("text", "")))
+	var dur: float = GLVO.duration_for(text, GLVO.rules)
+	var path: String = GLVO.audio_path(StringName(line_id))
+	if path != "" and pb != null:
+		var stream: AudioStream = GLVO.load_stream(path)
+		if stream != null:
+			var p: AudioStreamPlayer3D = AudioStreamPlayer3D.new()
+			p.bus = &"VO"
+			p.stream = stream
+			p.unit_size = 5.0
+			p.max_distance = 45.0
+			p.position = Vector3(0, 1.6, 0)
+			pb.add_child(p)
+			p.play()
+			p.finished.connect(p.queue_free)
+			dur = maxf(dur, stream.get_length())
+	GLBus.vo_line_started.emit(StringName(line_id), StringName(display), text, dur)

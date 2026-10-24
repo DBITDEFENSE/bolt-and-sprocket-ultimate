@@ -27,6 +27,17 @@ const STAIR_X1: float = 6.0        # the well's east wall (Door 1 is in it)
 const FLIGHT_X1: float = 3.65      # the flight's open edge; the vestibule is x FLIGHT_X1..STAIR_X1
 const STAIR_Z0: float = 14.3       # the foot of the flight (its first riser)
 const STAIR_Z1: float = 9.0        # its head, in the hall
+## The inn's front door in the taproom's north wall, under the east porch roof (T-072).
+const FRONT_DOOR_X: float = 20.0
+## The taproom's added tables (playtest: "the initial room needs more tables", T-072): [centre (x, z), width (x),
+## depth (z), seating: "chairs" (one each side) / "pair" (west and east) / "benches" (along both long sides)]. They
+## stand inside the clockwise training loop (1.4 m+ clear of its line, routes_map00.json) or west of it.
+const TAP_TABLES_NEW: Array = [
+	[Vector2(19.0, 9.0), 1.2, 1.2, "chairs"],    # the carters' table (Kubiak and Rother): cards and steins
+	[Vector2(16.0, 4.8), 1.2, 1.2, "chairs"],    # a table cleared in a hurry
+	[Vector2(12.3, 5.4), 0.9, 0.9, "pair"],      # by the hearth: Frau Pohl's coffee, her suitcase beside it
+	[Vector2(8.0, 11.8), 0.9, 2.4, "benches"],   # the long trestle by the stair wall
+]
 
 ## Old greybox keys -> material library keys (world/materials.gd).
 const MAT_MAP: Dictionary = {
@@ -159,8 +170,10 @@ func _wainscot(along_x: bool, face: float, out: float, a: float, b: float, y0: f
 
 
 ## Wall along X at depth z. openings: [[x_a, x_b, y_a, y_b], ...]. trim: 0 none, +1/-1 wainscot on the
-## +Z/-Z face, 2 = both faces.
-func wall_x(name_: String, z: float, x0: float, x1: float, y0: float, y1: float, openings: Array, mat_key: String, trim: int = 0) -> void:
+## +Z/-Z face, 2 = both faces. trim_x0/trim_x1 stop the wainscot short of the wall's ends (where the wall runs on
+## into a doorway's jamb, T-072).
+func wall_x(name_: String, z: float, x0: float, x1: float, y0: float, y1: float, openings: Array, mat_key: String, trim: int = 0,
+		trim_x0: float = -1e9, trim_x1: float = 1e9) -> void:
 	openings.sort_custom(func(p: Array, q: Array) -> bool: return float(p[0]) < float(q[0]))
 	var cur: float = x0
 	var i: int = 0
@@ -180,7 +193,7 @@ func wall_x(name_: String, z: float, x0: float, x1: float, y0: float, y1: float,
 	for s: Array in spans:
 		for side: int in [1, -1]:
 			if trim == side or trim == 2:
-				_wainscot(true, z + side * T * 0.5, float(side), float(s[0]), float(s[1]), y0, float(s[2]))
+				_wainscot(true, z + side * T * 0.5, float(side), maxf(float(s[0]), trim_x0), minf(float(s[1]), trim_x1), y0, float(s[2]))
 
 
 ## Wall along Z at x. Same conventions as wall_x (trim +1 = the +X face).
@@ -288,14 +301,17 @@ func build_geometry() -> void:
 
 	# ---------------- TAPROOM (ground floor)
 	var win: Array = [WIN_SILL, WIN_TOP]
-	wall_x("TapN", 0.0, -T * 0.5, 24 + T * 0.5, 0, TAP_H, [[6.2, 7.8] + win, [16.2, 17.8] + win], "wall", 1)
+	wall_x("TapN", 0.0, -T * 0.5, 24 + T * 0.5, 0, TAP_H, [[6.2, 7.8] + win, [16.2, 17.8] + win, [FRONT_DOOR_X - 0.8, FRONT_DOOR_X + 0.8, 0.0, DOOR_H]], "wall", 1)
+	# the inn's front door under the porch (T-072): drawn, but its opening is filled with an invisible collider like
+	# the great doors, so the navmesh and collision stay a solid wall; only the round 1 opening's patrons use it
+	box(geo, "FrontDoorBlock", Vector3(FRONT_DOOR_X - 0.8, 0, -T * 0.5), Vector3(FRONT_DOOR_X + 0.8, DOOR_H, T * 0.5), "wall", true, false)
 	wall_z("TapW", 0.0, 0, 10, 0, TAP_H, [[5.2, 6.8] + win, [8.25, 9.85, 0.0, DOOR_H]], "wall", 1)   # Door 5: the Old Cellar (T-051)
 	wall_z("TapE", 24.0, 0, 16, 0, TAP_H, [[7.2, 8.8] + win, [10.7, 12.3, 0.0, DOOR_H]], "wall", -1)
-	wall_x("TapS", 16.0, STAIR_X1, 24 + T * 0.5, 0, TAP_H, [[19.0, 21.0, 0.0, DOOR_H]], "wall", -1)
+	wall_x("TapS", 16.0, STAIR_X1, 24 + T * 0.5, 0, TAP_H, [[19.0, 21.0, 0.0, DOOR_H]], "wall", -1, STAIR_X1 + T * 0.5)   # trim clear of Door 1's jamb
 	# stairwell (x 0..6, z 10..16), full height: the flight along the west wall (3.5 m wide, z 14.3 -> 9.0, so it
 	# lands a metre inside the hall), the vestibule beside it with Door 1 in the east wall, the hall overlooking it
 	wall_z("StairW", 0.0, 10, 16 + T * 0.5, 0, UP_TOP, [], "wall", 1)
-	wall_x("StairS", 16.0, -T * 0.5, STAIR_X1, 0, UP_TOP, [], "wall", -1)
+	wall_x("StairS", 16.0, -T * 0.5, STAIR_X1, 0, UP_TOP, [], "wall", -1, -1e9, STAIR_X1 - T * 0.5)
 	wall_z("StairE", STAIR_X1, 10, 16, 0, UP_TOP, [[14.3, 15.9, 0.0, DOOR_H]], "wall", 2)
 	wall_x("StairN", 10.0, FLIGHT_X1, STAIR_X1 + T * 0.5, 0, UP_Y, [], "wall", 2)   # under the hall floor: closes the vestibule from the taproom
 	wall_x("StairNu", 10.0, -T * 0.5, FLIGHT_X1, 0, _stair_y(10.15) - 0.42, [], "wall", -1)   # under the flight's soffit
@@ -333,6 +349,10 @@ func build_geometry() -> void:
 	box(geo, "BackShelf", Vector3(4.6, 0, 3.0), Vector3(5.0, 2.0, 8.0), "furniture", true, false).set_meta("shot_through", true)   # open shelving: shots reach the bottles (T-053)
 	for p: Vector2 in [Vector2(12.5, 11.5), Vector2(16.5, 11.5), Vector2(20.0, 4.5)]:
 		box(geo, "Table", Vector3(p.x - 0.6, 0, p.y - 0.6), Vector3(p.x + 0.6, 0.75, p.y + 0.6), "furniture", true, false)
+	for t: Array in TAP_TABLES_NEW:   # the busier taproom (T-072)
+		var c: Vector2 = t[0]
+		var hs: Vector2 = Vector2(float(t[1]), float(t[2])) * 0.5
+		box(geo, "Table", Vector3(c.x - hs.x, 0, c.y - hs.y), Vector3(c.x + hs.x, 0.75, c.y + hs.y), "furniture", true, false)
 
 	# ---------------- UPSTAIRS (y 3.8 .. 6.8, z 0..10)
 	var up_win: Array = [UP_Y + WIN_SILL, UP_Y + WIN_TOP]
@@ -735,8 +755,10 @@ func _dress_floors_and_ceilings() -> void:
 		Props.block(dress, Vector3(0.15, UP_TOP - 0.24, z - 0.12), Vector3(STAIR_X1 - 0.15, UP_TOP, z + 0.12), "beam")
 	Props.block(dress, Vector3(3.0, TAP_H - 0.36, 7.85), Vector3(23.85, TAP_H - 0.06, 8.15), "beam")
 	for x: float in [8.0, 14.0, 20.0]:
-		Props.block(dress, Vector3(x - 0.15, 0, 0.15), Vector3(x + 0.15, TAP_H, 0.42), "beam")
-		Props.block(dress, Vector3(x - 0.15, 0, 15.58), Vector3(x + 0.15, TAP_H, 15.85), "beam")
+		if x != FRONT_DOOR_X:   # the north wall's x 20 post would stand in the front door (T-072)
+			Props.block(dress, Vector3(x - 0.15, 0, 0.15), Vector3(x + 0.15, TAP_H, 0.42), "beam")
+		if x != 20.0:   # the south wall's x 20 post stood in the middle of the stable door (19..21): the beam lands on the lintel (T-072)
+			Props.block(dress, Vector3(x - 0.15, 0, 15.58), Vector3(x + 0.15, TAP_H, 15.85), "beam")
 	# upstairs beams + hall runner
 	for x: float in [2.0, 6.0, 10.0, 14.0, 18.0, 22.0]:
 		Props.block(dress, Vector3(x - 0.12, UP_TOP - 0.24, 0.15), Vector3(x + 0.12, UP_TOP, 9.85), "beam")
@@ -799,6 +821,7 @@ func _dress_windows_and_doors() -> void:
 	_window(Vector3(14.0, 0, 22.0), 0.0, false)
 	_window(Vector3(12.0, 0, 34.0), 180.0, false)
 	_door_frame(Vector3(STAIR_X1, 0, 15.1), 90.0, 1.6, DOOR_H)
+	_door_frame(Vector3(FRONT_DOOR_X, 0, 0.0), 0.0, 1.6, DOOR_H)   # the front door (T-072)
 	_door_frame(Vector3(20.0, 0, 16.0), 0.0, 2.0, DOOR_H)
 	_door_frame(Vector3(24.0, 0, 11.5), -90.0, 1.6, DOOR_H)
 	_door_frame(Vector3(20.0, 0, 22.0), 0.0, 3.0, 2.6)
@@ -1483,6 +1506,7 @@ func _dress_taproom() -> void:
 		_glassware("Taproom", Vector3(p.x - 0.2, 0.75, p.y + 0.1), "stein", 0.94)
 		Props.cyl(g, Vector3(p.x + 0.25, 0.8, p.y - 0.2), 0.03, 0.1, "candle")
 		Props.block(g, Vector3(p.x + 0.05, 0.751, p.y - 0.05), Vector3(p.x + 0.25, 0.755, p.y + 0.2), "paper", false)
+	_dress_new_tables(g)
 	# benches along the south wall, a rug in front of the hearth, coat rack by the stable door
 	Props.bench(g, Vector3(9.0, 0, 15.45), 0.0, 3.0)
 	Props.bench(g, Vector3(14.5, 0, 15.45), 0.0, 3.0)
@@ -1521,6 +1545,65 @@ func _dress_taproom() -> void:
 	# boarded-up feel: spare planks leaning by a window
 	for i: int in 3:
 		Props.obox(g, Vector3(1.0 + i * 0.12, 1.0, 4.3), Vector3(0.04, 2.0, 0.18), "planks", Vector3(0, 90, 12.0 + i * 3.0))
+
+
+## The added tables (TAP_TABLES_NEW, T-072) and what the round 1 patrons leave on them as they run: steins half
+## drunk (shootable), a game of skat dropped mid-hand, a pipe, Frau Pohl's coffee cup and her suitcase, the
+## soldier's Christmas parcel on the bar. A candle on each table (the two big ones light, following their lamps).
+func _dress_new_tables(g: Node3D) -> void:
+	for t: Array in TAP_TABLES_NEW:
+		var c: Vector2 = t[0]
+		var w: float = float(t[1])
+		var d: float = float(t[2])
+		Props.table_visual(g, Vector3(c.x, 0, c.y), w, d)
+		match str(t[3]):
+			"chairs":
+				for off: Vector2 in [Vector2(-0.85, 0), Vector2(0.85, 0), Vector2(0, -0.85), Vector2(0, 0.85)]:
+					var cp: Vector3 = Vector3(c.x + off.x, 0, c.y + off.y)
+					Props.chair(g, cp, rad_to_deg(atan2(-off.x, -off.y)) + 180.0)
+			"pair":
+				for off2: Vector2 in [Vector2(-0.75, 0), Vector2(0.75, 0)]:
+					Props.chair(g, Vector3(c.x + off2.x, 0, c.y + off2.y), rad_to_deg(atan2(-off2.x, -off2.y)) + 180.0)
+			"benches":
+				for sx: float in [-1.0, 1.0]:
+					Props.bench(g, Vector3(c.x + sx * 0.75, 0, c.y), 90.0, d - 0.1)
+		Props.cyl(g, Vector3(c.x + w * 0.2, 0.8, c.y - d * 0.15), 0.03, 0.1, "candle")
+		Props.cyl(g, Vector3(c.x + w * 0.2, 0.752, c.y - d * 0.15), 0.05, 0.006, "brass")
+	# the carters' table (19, 9): steins, the skat hands face down and the pot, a pipe in the ashtray
+	_glassware("Taproom", Vector3(18.7, 0.75, 9.15), "stein", 0.94)
+	_glassware("Taproom", Vector3(19.15, 0.75, 8.55), "stein", 0.94)
+	var cr: RandomNumberGenerator = RandomNumberGenerator.new()
+	cr.seed = 1223
+	for k: int in 9:
+		Props.obox(g, Vector3(19.0 + cr.randf_range(-0.35, 0.3), 0.753 + k * 0.001, 9.0 + cr.randf_range(-0.3, 0.35)), Vector3(0.06, 0.002, 0.09),
+			"paper", Vector3(0, cr.randf_range(0, 180), 0))
+	Props.cyl(g, Vector3(19.3, 0.765, 9.3), 0.06, 0.015, "iron")             # the ashtray
+	Props.obox(g, Vector3(19.33, 0.785, 9.3), Vector3(0.012, 0.012, 0.14), "furniture", Vector3(0, 30, 0))   # the pipe's stem
+	Props.cyl(g, Vector3(19.38, 0.79, 9.36), 0.02, 0.04, "furniture")
+	for k2: int in 4:   # the pot: a few coins
+		Props.cyl(g, Vector3(18.95 + k2 * 0.03, 0.756, 9.05), 0.012, 0.004, "brass")
+	# the table cleared in a hurry (16, 4.8): a stein, a mug knocked onto its side
+	_glassware("Taproom", Vector3(15.8, 0.75, 4.6), "stein", 0.94)
+	PropsStory.mug(g, Vector3(16.25, 0.75, 5.0))
+	Props.obox(g, Vector3(16.1, 0.79, 4.45), Vector3(0.08, 0.16, 0.08), "enamel_plate", Vector3(90, 40, 0))
+	# Frau Pohl's table (12.3, 5.4): her cup of real coffee, a handkerchief; the suitcase on the floor beside her
+	PropsStory.mug(g, Vector3(12.45, 0.75, 5.35))
+	Props.obox(g, Vector3(12.15, 0.753, 5.55), Vector3(0.18, 0.004, 0.18), "linen", Vector3(0, 25, 0))
+	var sc: Node3D = Props.group(g, "PohlSuitcase", Vector3(11.35, 0, 6.15), 15.0)
+	Props.block(sc, Vector3(-0.3, 0.0, -0.1), Vector3(0.3, 0.42, 0.1), "leather")
+	for sx2: float in [-0.15, 0.15]:
+		Props.block(sc, Vector3(sx2 - 0.02, 0.0, -0.105), Vector3(sx2 + 0.02, 0.42, 0.105), "furniture")   # straps
+	Props.obox(sc, Vector3(0, 0.46, 0), Vector3(0.14, 0.03, 0.03), "leather")   # the handle
+	# the long trestle (8, 11.8): steins left in a row, a loaf
+	for k3: int in 3:
+		_glassware("Taproom", Vector3(7.85 + 0.25 * float(k3 % 2), 0.75, 11.0 + 0.7 * k3), "stein", 0.94)
+	PropsStory.loaf(g, Vector3(8.05, 0.75, 12.6), 80.0)
+	# Gefreiter Sobotta's Christmas parcel on the bar, brown paper and string: he was nearly home (T-072)
+	var pc: Node3D = Props.group(g, "ChristmasParcel", Vector3(7.9, 1.1, 8.45), 10.0)
+	Props.block(pc, Vector3(-0.16, 0.0, -0.11), Vector3(0.16, 0.13, 0.11), "paper")
+	Props.block(pc, Vector3(-0.162, 0.0, -0.01), Vector3(0.162, 0.132, 0.01), "rope")
+	Props.block(pc, Vector3(-0.01, 0.0, -0.112), Vector3(0.01, 0.132, 0.112), "rope")
+	_glassware("Taproom", Vector3(7.45, 1.1, 8.5), "stein", 0.94)
 
 
 func _dress_upstairs() -> void:
@@ -1605,7 +1688,11 @@ func _dress_exterior() -> void:
 			continue
 		Props.block(g, Vector3(x - 0.13, 0, -0.27), Vector3(x + 0.13, UP_TOP, -0.15), "beam")
 	for y: float in [0.25, TAP_H, UP_TOP - 0.1]:
-		Props.block(g, Vector3(-0.27, y - 0.12, -0.27), Vector3(24.27, y + 0.12, -0.15), "beam")
+		if y < 1.0:   # the front door (x 19.2..20.8) breaks the north sill beam (T-072)
+			Props.block(g, Vector3(-0.27, y - 0.12, -0.27), Vector3(FRONT_DOOR_X - 0.8, y + 0.12, -0.15), "beam")
+			Props.block(g, Vector3(FRONT_DOOR_X + 0.8, y - 0.12, -0.27), Vector3(24.27, y + 0.12, -0.15), "beam")
+		else:
+			Props.block(g, Vector3(-0.27, y - 0.12, -0.27), Vector3(24.27, y + 0.12, -0.15), "beam")
 		Props.block(g, Vector3(-0.27, y - 0.12, -0.15), Vector3(-0.15, y + 0.12, 16.15 if y > 3.0 else 7.85), "beam")   # (the Old Cellar's lean-to covers z 7.85+)
 		if y < 1.0:   # the cellar door (z 10.7..12.3) breaks the sill beam
 			Props.block(g, Vector3(24.15, y - 0.12, -0.15), Vector3(24.27, y + 0.12, 10.6), "beam")
@@ -1624,7 +1711,7 @@ func _dress_exterior() -> void:
 	Props.smoke(g, Vector3(12.0, 11.6, 0.5), 0.3, 1.2, 14)
 	# porch posts' snow caps and drifts against the walls
 	for d: Array in [[Vector3(-1.2, 0, 5.4), Vector3(2.4, 0.9, 4.4)], [Vector3(25.4, 0, 5.3), Vector3(2.0, 0.8, 3.0)], [Vector3(12, 0, -1.0), Vector3(6, 0.7, 1.8)],   # (clear of the lean-to and the light wells, T-051)
-			[Vector3(4, 0, 17.5), Vector3(5, 1.0, 2.2)], [Vector3(25.3, 0.25, 27), Vector3(2.2, 0.8, 8)], [Vector3(11, 0, 35.4), Vector3(8, 1.0, 2.2)],   # kept above the cellar ceiling
+			[Vector3(4, 0, 17.5), Vector3(5, 1.0, 2.2)], [Vector3(25.3, 0.25, 27), Vector3(2.2, 0.8, 8)], [Vector3(12.2, 0, 35.4), Vector3(5.6, 1.0, 2.2)],   # kept above the cellar ceiling; clear of the yard door (T-072)
 			[Vector3(4.6, 0, 28), Vector3(2.4, 1.0, 9)], [Vector3(-3, 0, -6), Vector3(5, 0.6, 4)], [Vector3(32, 0, 7), Vector3(6, 0.8, 5)]]:
 		Props.snow_drift(g, d[0], d[1])
 	Props.block(g, Vector3(1.5, UP_Y, -2.4), Vector3(6.5, UP_Y + 0.08, -0.15), "snow", false)
@@ -1901,8 +1988,9 @@ func _polish_taproom(g: Node3D) -> void:
 	# scuffs: the bar front and side at boot height, the wainscot beside the doors
 	PropsStory.stain(g, Vector3(5.1, 0.04, 8.803), Vector3(8.95, 0.42, 8.807), "scuff")
 	PropsStory.stain(g, Vector3(9.003, 0.04, 3.1), Vector3(9.007, 0.42, 7.95), "scuff")
-	PropsStory.stain(g, Vector3(18.4, 0.05, 15.81), Vector3(21.6, 0.6, 15.814), "scuff")
-	PropsStory.stain(g, Vector3(6.186, 0.05, 13.6), Vector3(6.19, 0.6, 16.0), "scuff")
+	for sx: Array in [[18.4, 18.92], [21.08, 21.6]]:   # either side of the stable door, not across it (T-072)
+		PropsStory.stain(g, Vector3(float(sx[0]), 0.05, 15.81), Vector3(float(sx[1]), 0.6, 15.814), "scuff")
+	PropsStory.stain(g, Vector3(6.186, 0.05, 13.6), Vector3(6.19, 0.6, 14.22), "scuff")
 	# grime round the door frames, at hand height
 	for gz: Array in [[13.85, 14.25], [15.95, 16.0]]:
 		PropsStory.stain(g, Vector3(6.152, 1.1, float(gz[0])), Vector3(6.156, 2.1, float(gz[1])), "grime")
@@ -2395,6 +2483,7 @@ func _follow_lights() -> void:
 	wg.light_volumetric_fog_energy = 2.0
 	# the candles on the taproom tables and the guest rooms' nightstands
 	for c: Array in [[Vector3(12.75, 0.95, 11.3), "TapLamp1"], [Vector3(16.75, 0.95, 11.3), "TapLamp3"], [Vector3(20.25, 0.95, 4.3), "TapLamp2"],
+			[Vector3(19.24, 0.95, 8.82), "TapLamp3"], [Vector3(8.18, 0.95, 11.44), "TapLamp1"],   # the added tables (T-072)
 			[Vector3(2.6, UP_Y + 0.85, 0.57), "Room1Lamp"], [Vector3(13.15, UP_Y + 0.85, 0.57), "Room2Lamp"], [Vector3(21.15, UP_Y + 0.85, 5.32), "Room3Lamp"]]:
 		var cl: OmniLight3D = _follower(OmniLight3D.new(), "CandleLight", c[0], str(c[1]), 0.7, 0.18) as OmniLight3D
 		cl.light_color = Color(1.0, 0.6, 0.28)
@@ -2553,6 +2642,15 @@ func build_gameplay() -> void:
 		"door_id": &"door_yard", "opens_zone": &"YARD", "cost": 1250, "size": Vector3(2.0, DOOR_H, 0.25), "label": "The Yard"})
 	d4.position = Vector3(8.0, 0, 34.0)
 	gameplay.add_child(d4)
+	# the front door, the round 1 opening's patrons and the gramophone they leave playing on the bar (T-072)
+	var fd: Node3D = _scripted(Node3D.new(), "res://gravelight/world/inn_opening/inn_front_door.gd", "InnFrontDoor", {"width": 1.6, "height": DOOR_H, "wall": T})
+	fd.position = Vector3(FRONT_DOOR_X, 0, 0)
+	gameplay.add_child(fd)
+	gameplay.add_child(_scripted(Node3D.new(), "res://gravelight/world/inn_opening/inn_opening.gd", "InnOpening", {}))
+	var gram: Node3D = _scripted(Node3D.new(), "res://gravelight/world/inn_opening/inn_gramophone.gd", "InnGramophone", {"stop_round": 3})
+	gram.position = Vector3(5.75, 1.1, 8.4)
+	gram.rotation.y = deg_to_rad(200.0)
+	gameplay.add_child(gram)
 
 	build_cellar_gameplay()
 

@@ -95,6 +95,14 @@ var _lunge_dir: Vector3 = Vector3.ZERO
 var _ring_t: float = 0.0
 ## Shared across zombies: the last time any zombie played a footstep (global rate cap for a 24-zombie horde).
 static var _last_step_msec: int = 0
+## Map 0's round 1 opening (T-072): an inn patron this zombie goes for before its window or a player (InnOpening
+## sets it on the host). The node answers is_catchable() and struck(zombie); it is dropped once they are down.
+var prey: Node3D = null
+var _prey_attack: bool = false
+## A patron risen from where they fell (rise_from_floor): the get-up's length, and the window to make for after it.
+var _getup_len: float = -1.0
+var _getup_window: bool = false
+var _force_female: int = -1   # a spec's "female" (a risen patron keeps their sex); -1 = rolled from the kit
 
 
 func _init() -> void:
@@ -172,7 +180,9 @@ func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 	target = at_target
 	_reset_presentation()
 	_set_crawl_pose(false)
+	_force_female = (1 if bool(spec["female"]) else 0) if spec.has("female") else -1
 	_apply_variant(String(spec.get("variant", "soldier")))
+	_force_female = -1
 	_apply_kind()
 	show()
 	process_mode = Node.PROCESS_MODE_INHERIT
@@ -207,6 +217,10 @@ func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 func deactivate() -> void:
 	state = State.INACTIVE
 	forced_target = null
+	prey = null
+	_prey_attack = false
+	_getup_len = -1.0
+	_getup_window = false
 	if window != null:
 		window.release(self)
 	window = null
@@ -295,7 +309,10 @@ func _physics_process(delta: float) -> void:
 		State.CHASE:
 			_update_chase(delta)
 		State.ATTACK:
-			_update_attack(delta)
+			if _prey_attack:
+				_update_prey_attack(delta)
+			else:
+				_update_attack(delta)
 		State.STAGGER:
 			_halt(delta)
 			if _state_t >= _react_len:
@@ -307,8 +324,11 @@ func _physics_process(delta: float) -> void:
 				_enter(State.GETUP)
 		State.GETUP:
 			_halt(delta)
-			if _state_t >= float(_anim["knockdown"]["getup_seconds"]):
-				_enter(State.CHASE)
+			if _state_t >= (_getup_len if _getup_len > 0.0 else float(_anim["knockdown"]["getup_seconds"])):
+				_getup_len = -1.0
+				var to_window: bool = _getup_window and window != null
+				_getup_window = false
+				_enter(State.TO_WINDOW if to_window else State.CHASE)
 		State.DEAD:
 			_update_dead(delta)
 	if state != State.DEAD and global_position.y < -30.0:
@@ -340,6 +360,8 @@ func _process(delta: float) -> void:
 
 
 func _update_to_window(delta: float) -> void:
+	if _update_prey(delta):
+		return
 	if window == null:
 		_enter(State.CHASE)
 		return
@@ -571,6 +593,8 @@ func _update_chase(delta: float) -> void:
 			_halt(delta)
 			_face(lure.global_position)
 		return
+	if _update_prey(delta):
+		return
 	target = _nearest_player()
 	if target == null:
 		_halt(delta)
@@ -630,6 +654,65 @@ var _progress_t: float = 0.0
 
 func _attack_range() -> float:
 	return float(_cfg["attack_range"])
+
+
+# ---------------------------------------------------------------- Map 0's round 1 opening (T-072)
+
+## Goes for `prey` (a fleeing inn patron) while they can still be caught: closes in and swipes at them. Returns true
+## while it is busy with them (the window or the player waits).
+func _update_prey(delta: float) -> bool:
+	if prey == null:
+		return false
+	if not is_instance_valid(prey) or not bool(prey.call("is_catchable")):
+		prey = null
+		return false
+	var reach: float = float(_cfg["attack_range"]) + 0.2
+	if _flat_dist(prey.global_position) > reach:
+		_nav_move(prey.global_position, speed, delta, 0.3)
+		return true
+	_halt(delta)
+	_face(prey.global_position)
+	if _attack_cd <= 0.0:
+		_prey_attack = true
+		_enter(State.ATTACK)
+	return true
+
+
+## The swipe at a patron: the attack clip, the hit at the windup (they react; their fate is the opening's script).
+func _update_prey_attack(delta: float) -> void:
+	_halt(delta)
+	var windup: float = float(_cfg["attack_windup"])
+	if prey != null and is_instance_valid(prey):
+		_face(prey.global_position)
+		if not _attack_hit_done and _state_t >= windup:
+			_attack_hit_done = true
+			prey.call("struck", self)
+			AudioDirector.play_3d("impact_flesh", prey.global_position + Vector3.UP * 1.2, 0.0)
+	if _state_t >= windup + 0.35:
+		_prey_attack = false
+		_attack_cd = maxf(0.0, float(_cfg["attack_interval"]) - windup - 0.35)
+		_enter(State.TO_WINDOW if window != null else State.CHASE)
+
+
+## Rises from the floor where a patron fell (InnOpening, after activate): the get-up from lying on the back over
+## `seconds`, then off to `after_window` if one is given (outside the inn), else the chase.
+func rise_from_floor(seconds: float, after_window: Barricade = null) -> void:
+	_down_front = false
+	if after_window != null:
+		window = after_window
+	_getup_window = after_window != null
+	_getup_len = maxf(0.3, seconds)
+	_enter(State.GETUP)
+	_tree.set("parameters/SM/React/TimeScale/scale", float(_anim["knockdown"]["getup_seconds"]) / _getup_len)
+
+
+## Sends a zombie outside the inn on to a window (an opening attacker done with its patron).
+func go_to_window(b: Barricade) -> void:
+	if b == null or not is_active():
+		return
+	window = b
+	if state == State.CHASE:
+		_enter(State.TO_WINDOW)
 
 
 func _update_attack(delta: float) -> void:
@@ -1539,7 +1622,7 @@ func _apply_variant(variant: String) -> void:
 	_variant = variant
 	var builds: Array = kit.get("builds", ["medium"])
 	_build = str(_pick(builds))
-	_female = randf() < float(kit.get("female", 0.0))
+	_female = randf() < float(kit.get("female", 0.0)) if _force_female < 0 else _force_female == 1
 	var heights: Array = _anim["builds"].get("heights", [0.95, 1.04])
 	_height = randf_range(float(heights[0]), float(heights[1]))
 	_body.mesh = ZombieBody.build_skinned(_variant, _build, _female)
