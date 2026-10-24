@@ -78,21 +78,54 @@ func get_prompt(player: Player) -> String:
 	if _gone or _drinking:
 		return ""
 	match PerkManager.can_buy(player.player_id, perk_id):
-		&"owned", &"gone":
+		&"owned":
+			return _upgrade_prompt(player)
+		&"gone":
 			return ""
 		&"no_power":
-			return "Power must be activated"
+			return "Power must be activated" + _plate_line()
 		&"cap":
-			return "You can only hold %d tonics" % PerkManager.cap_for(player.player_id)
+			return "You can only hold %d tonics" % PerkManager.cap_for(player.player_id) + _plate_line()
 	return "Hold [%s] to drink %s [%d]" % [prompt_key(&"interact"), PerkManager.display_name(perk_id), PerkManager.price(perk_id)]
 
 
+## The maker's plate one-liner under a prompt that has nothing to sell (MachineLore, PERKS_LORE.md).
+func _plate_line() -> String:
+	var line: String = MachineLore.plate(MachineLore.here(), "perk." + String(perk_id))
+	return ("\n" + line) if line != "" else ""
+
+
+## A tonic you already carry: its next tier (DECISIONS T-075), or why not yet.
+func _upgrade_prompt(player: Player) -> String:
+	var pid: int = player.player_id
+	var next: int = PerkManager.tier_of(pid, perk_id) + 1
+	var nm: String = PerkManager.tier_name(perk_id, next)
+	match PerkManager.can_upgrade(pid, perk_id):
+		&"ok":
+			return "Hold [%s] to brew %s [%d]\n%s" % [prompt_key(&"interact"), nm, PerkManager.tier_price(perk_id, next),
+				PerkManager.tier_data(perk_id, next).get("desc", "")]
+		&"no_power":
+			return "%s: power must be activated" % nm
+		&"round":
+			return "%s pours from round %d" % [nm, PerkManager.tier_min_round(next)]
+		&"locked":
+			return "%s locked · mastery %d / %d\nFight with %s in you to unlock it" % [nm, PerkManager.mastery(perk_id),
+				PerkManager.mastery_needed(next), PerkManager.display_name(perk_id)]
+	return ""
+
+
 func can_interact(player: Player) -> bool:
-	return not _gone and not _drinking and PerkManager.can_buy(player.player_id, perk_id) == &"ok"
+	if _gone or _drinking:
+		return false
+	var st: StringName = PerkManager.can_buy(player.player_id, perk_id)
+	return st == &"ok" or (st == &"owned" and PerkManager.can_upgrade(player.player_id, perk_id) == &"ok")
 
 
 func interact(player: Player) -> void:
 	if not can_interact(player):
+		return
+	if PerkManager.has_perk(player.player_id, perk_id):
+		_brew_tier(player)
 		return
 	if not try_purchase(player, perk_id, PerkManager.price(perk_id)):
 		GLBus.perk_denied.emit(player.player_id, perk_id, &"no_scrip")
@@ -108,6 +141,20 @@ func interact(player: Player) -> void:
 	get_tree().create_timer(float(GLData.table("perks").get("drink_seconds", 1.2))).timeout.connect(func() -> void:
 		_drinking = false
 		PerkManager.grant(pid, perk_id))
+
+
+## The next tier of a tonic the player carries: pay, the same drink beat and jingle, then PerkManager.set_tier.
+func _brew_tier(player: Player) -> void:
+	var pid: int = player.player_id
+	var next: int = PerkManager.tier_of(pid, perk_id) + 1
+	if not try_purchase(player, StringName("%s_t%d" % [perk_id, next]), PerkManager.tier_price(perk_id, next)):
+		GLBus.perk_denied.emit(pid, perk_id, &"no_scrip")
+		return
+	_drinking = true
+	_play_jingle()
+	get_tree().create_timer(float(GLData.table("perks").get("drink_seconds", 1.2))).timeout.connect(func() -> void:
+		_drinking = false
+		PerkManager.set_tier(pid, perk_id, next))
 
 
 # ---------------------------------------------------------------- power / retire
@@ -405,6 +452,14 @@ func _build_lore() -> void:
 	panel.position = Vector3(0, 0, fp.z * 0.5 + 0.03)
 	panel.rotation.y = PI   # its -Z (reader side) points out of the machine's back
 	add_child(panel)
+	# the maker's plate as something you can read (T-075): a thin box just in front of the machine's own, at its foot
+	var plaque: LorePlaque = LorePlaque.new()
+	plaque.name = "MakersPlatePlaque"
+	plaque.lore_key = "perk." + String(perk_id)
+	plaque.interact_size = Vector3(minf(0.8, fp.x), 0.34, 0.12)
+	plaque.interact_offset = Vector3(0, 0.17, -(fp.z * 0.5 + 0.33))
+	add_child(plaque)
+
 
 
 static func _short_human(h: String) -> String:

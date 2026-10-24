@@ -146,6 +146,7 @@ static func serialize_player(p: Player) -> Dictionary:
 		"perks": perks,
 		"bonus_slots": int(PerkManager._bonus_slots.get(pid, 0)),
 		"bonus_perk": String(PerkManager.bonus_perk(pid)),
+		"perk_tiers": PerkManager.tiers(pid),   # T-075: upgrades travel with their tonics
 	}
 
 
@@ -307,7 +308,14 @@ static func restore_account(pid: int, d: Dictionary) -> void:
 	var bonus_perk: StringName = StringName(str(d.get("bonus_perk", "")))
 	if bonus_perk != &"" and perks.has(bonus_perk):
 		PerkManager._bonus_perk[pid] = bonus_perk
+	var tiers: Dictionary = {}
+	var carried: Dictionary = d.get("perk_tiers", {})
+	for pk: Variant in carried.keys():
+		if perks.has(StringName(str(pk))) and int(carried[pk]) > 1:
+			tiers[str(pk)] = clampi(int(carried[pk]), 2, PerkManager.max_tier())
+	PerkManager._tiers[pid] = tiers
 	GLBus.perks_changed.emit(pid)
+
 
 
 ## MapRoot.start_rounds (host / solo), after RoundManager.start_game: the round count continues. The first

@@ -459,7 +459,8 @@ func throw_gramophone(at: Vector3) -> bool:
 
 ## Fires one shot (or one toll) from the eye along the body's real facing.
 func fire(w: WeaponInstance) -> void:
-	w.mag -= 1
+	if not PerkManager.round_saved(player.player_id, w):   # Twin Barrel III (T-075)
+		w.mag -= 1
 	shots += 1
 	var rpm: float = maxf(1.0, w.f("rpm", 300.0) * float(PerkManager.stat(player.player_id, "fire_rate_mult", 1.0)))
 	if w.fire_mode != "auto":
@@ -488,12 +489,15 @@ func fire(w: WeaponInstance) -> void:
 	if not hits.is_empty():
 		hits_landed += 1
 	var piercing: bool = bool(w.property("armor_piercing", false)) or bool(w.property("armor_ignore", false))
+	var tier_mult: float = PerkManager.shot_mult(pid, ads >= 0.95)   # Trigger Tonic III / Hawkeye III (T-075)
 	for z: Variant in hits.keys():
 		var zz: Zombie = z as Zombie
 		var h: Dictionary = hits[z]
 		var limb: StringName = StringName(h["limb"])
 		zz.last_hit_bone = str(h.get("bone", ""))
-		var killed: bool = zz.take_damage(float(h["dmg"]), limb, w.id, pid, &"bullet", piercing)
+		var killed: bool = zz.take_damage(float(h["dmg"]) * tier_mult, limb, w.id, pid, &"bullet", piercing)
+		if killed:
+			PerkManager.on_bullet_kill(pid, w, limb == &"head")
 		if killed and limb == &"head":
 			brain.squad.callout(brain, "HEADSHOT")
 			brain.bonus_event("headshot")
@@ -861,7 +865,9 @@ func _tick_reload(delta: float) -> void:
 		w.reserve -= take
 	reloading = false
 	_reload_per_round = false
+	PerkManager.reload_finished(player.player_id)
 	AudioDirector.play_3d("reload_end", eye(), -9.0)
+
 
 
 # ================================================================== the knife

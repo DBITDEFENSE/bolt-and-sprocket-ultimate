@@ -26,9 +26,10 @@ func price() -> int:
 
 func ammo_price(player: Player) -> int:
 	var inst: WeaponInstance = player.weapons.find_weapon_base(weapon_id)
+	var mult: float = PerkManager.ammo_price_mult(player.player_id)   # Packmule II: half price (T-075)
 	if inst != null and inst.upgraded:
-		return int(GLData.table("economy")["wallbuy_upgraded_ammo"])
-	return int(round(price() * float(GLData.table("economy")["wallbuy_ammo_fraction"])))
+		return int(round(int(GLData.table("economy")["wallbuy_upgraded_ammo"]) * mult))
+	return int(round(price() * float(GLData.table("economy")["wallbuy_ammo_fraction"]) * mult))
 
 
 func _mode(player: Player) -> StringName:
@@ -42,7 +43,20 @@ func _mode(player: Player) -> StringName:
 
 
 func get_prompt(player: Player) -> String:
+	var p: String = _prompt(player)
+	if p == "" or player.is_bot:
+		return p
+	# the chalk under the gun (T-075, PERKS_LORE.md: Standing Order 17): its line, and the map's chalk entry is filed
+	var line: String = MachineLore.plate(MachineLore.here(), "chalk." + String(weapon_id))
+	if line != "":
+		MachineLore.file_once(MachineLore.here(), "chalk")
+		return p + "\n" + line
+	return p
+
+
+func _prompt(player: Player) -> String:
 	var d: Dictionary = _weapon_data()
+
 	var key: String = prompt_key(&"interact")
 	if JakubCompanion.buys_here(self, player):
 		return "Hold [%s] to buy the %s for Jakub [%d]" % [key, d.get("name", ""), price()]

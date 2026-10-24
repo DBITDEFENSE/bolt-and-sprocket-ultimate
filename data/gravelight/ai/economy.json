@@ -5,6 +5,7 @@
   "_weapon_perk_doc": "T-058: a magazine-bound automatic (a Thompson empties its 30 in 2.6 s and reloads for 3) gains most from Trigger Tonic's half reload; a semi rifle or bolt gun from Twin Barrel's rate.",
   "second_wind_coop_only": true,
   "perk_min_round": 2,
+  "perk_upgrades": {"_doc": "T-075: perk tiers (BotEconomy.upgrade_wanted). Only when the perk plan has nothing left to buy (cap full or everything drunk), from min_round (tier III from tier3_min_round), in this plan's order ('@weapon' as in perk_plan), keeping reserve + extra_reserve; an unaffordable first choice is saved for. Gated by the host's mastery like everyone's.", "min_round": 10, "tier3_min_round": 18, "extra_reserve": 500, "plan": ["ironhide_stout", "second_wind", "@weapon", "hawkeye_brandy", "marathon_malt", "overclock_cordial", "blastproof_bock", "packmule_porter"]},
   "reserve": {"perk": "second_wind", "ammo_box": true, "min_scrip": 300},
   "weapon_tiers": {
     "m1911": 0.5, "kar98k": 1.0, "m1_carbine": 2.0, "m1_garand": 2.4, "gewehr43": 2.8, "springfield": 2.6, "sawed_off": 2.6,
