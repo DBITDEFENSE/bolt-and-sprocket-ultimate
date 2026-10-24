@@ -421,7 +421,14 @@
   "story_volume_db": 0.0,
   "duck_music_db": -6.0,
   "duck_jingles_db": -9.0,
-  "duck_ambience_db": -5.0
+  "duck_ambience_db": -5.0,
+  "occlusion_doc": "T-073: a positional voice behind world geometry or a door (occlusion_mask: physics layers 1 + 9) slides its low-pass from occlusion_open_hz down to occlusion_cutoff_hz and drops occlusion_db; one camera-to-head ray every occlusion_interval_s, smoothed by occlusion_smooth (0..1 per check).",
+  "occlusion_mask": 257,
+  "occlusion_interval_s": 0.12,
+  "occlusion_smooth": 0.5,
+  "occlusion_open_hz": 5000.0,
+  "occlusion_cutoff_hz": 1100.0,
+  "occlusion_db": -5.0
  },
  "player_category_priority": {
   "_doc": "Squad categories above tier 1 (CHATTER): they skip the chatter gap and queue behind a story line instead of being dropped. Jakub's story lines (VO_SCRIPT section 16) are tier 2 too.",
@@ -558,6 +565,15 @@
   "team_down_delay_s": 1.0,
   "team_down_window_s": 8.0,
   "revive_fallback_s": 12.0
+ },
+ "squad_echo": {
+  "_doc": "Squad anti-echo (T-073): once one survivor (or Jakub) has said a category, nobody else in the squad says it again for this many seconds (two bots both calling 'Reloading!', three 'Behind you!' for one runner). Category prefix -> seconds; the longest prefix wins. The speaker's own repeats are the cooldown's job. Downs, revives, map-mark and order acknowledgements are not listed: every bot answers for itself.",
+  "categories": {
+   "RELOAD": 5.0, "AMMO_LOW": 10.0, "AMMO_NONE": 8.0, "SPRINTER_BEHIND": 4.0, "SCREAMER": 10.0, "CRAWLER": 12.0,
+   "GLASSHIDE": 12.0, "BOSS_INCOMING": 12.0, "FOREMAN": 12.0, "POWERUP_SEEN": 8.0, "CRATE_MOVED": 12.0,
+   "WINDOW_OPEN": 6.0, "HEADSHOT": 4.0, "STREAK": 12.0, "BOARD": 4.0, "COVER": 4.0, "BELL": 12.0, "CHATTER": 20.0,
+   "GRUMBLE": 10.0, "BUY_AMMO": 6.0
+  }
  },
  "companion_speakers": [
   "JAK"

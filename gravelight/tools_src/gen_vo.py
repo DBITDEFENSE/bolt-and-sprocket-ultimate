@@ -4,26 +4,42 @@
 Pipeline per line (per part for banter / tag exchanges):
   1. the subtitle text is cleaned for speech: [stage directions] become effect cues (static, whisper, distant...),
      (parentheticals) and *markers* are dropped, {splice} words become the Operator's pitch-jumped fragments
-  2. Windows' offline OneCore voices (Microsoft David / Mark / Zira) synthesize it to WAV through
-     gen_vo_tts.ps1 with per-speaker SSML prosody (rate, pitch). File output only, never the speakers.
-  3. numpy/scipy post-processing gives each of the eight speakers a distinct timbre: a phase-vocoder
+  2. synthesis, two engines:
+     * the squad and Jakub (DUT PEG DEA WRN JAK, data/gravelight/vo/voice_cast.json; T-073): Kokoro-82M, an offline
+       neural TTS (Apache-2.0), through gen_vo_neural.py in the project-local venv (tools/venv, models in
+       tools/tts/kokoro; one-time setup: tools/setup_tts.sh). One cast voice per character (a blend of Kokoro
+       styles), misaki US/GB lexicons, Polish words in Polish phonemes, a light Polish first-language accent for
+       Wren and Jakub, and a delivery per category (calm / brisk / raised / shout / hurt / quiet / mine)
+     * everyone else (the Operator, Fasbender, Reinholt, Liesl), and the squad when the neural engine isn't set
+       up (or --engine=onecore): Windows' offline OneCore voices (Microsoft David / Mark / Zira) through
+       gen_vo_tts.ps1 with per-speaker SSML prosody (rate, pitch)
+     File output only, never the speakers.
+  3. numpy/scipy post-processing. OneCore lines: each of the speakers gets a distinct timbre from a phase-vocoder
      "size" shift (pitch and formants together), EQ, and the channel the script asks for: the Operator's
      1940s tannoy (band-pass, brass saturation, hall, tape hiss, crackle, flutter) with a cleaner "corporate"
      timbre for the op.slip.* lines, Fasbender's hand-over-the-mic radio with static, Reinholt's PA hijacks or
-     wax-cylinder phonograph, Liesl's child pitch on the phonograph, and the squad dry with per-character EQ
+     wax-cylinder phonograph, Liesl's child pitch on the phonograph. Neural lines: per-character EQ and warmth,
+     the delivery's presence / air / drive / tremor, a gentle compressor, an inhale before longer lines and in
+     the longer pauses, a small room (a mine cavern for the Kaltenbrunn arrival lines), then loudness
+     normalisation to a LUFS target (BS.1770, vo_loudness.py; the delivery moves it: shouts hotter, quiet lines
+     softer) and a true-peak limit. No pitch shifting on neural lines (no phase-vocoder artefacts).
   4. ffmpeg encodes to Ogg Vorbis, mono, ~64 kbps, at res://gravelight/audio/vo/<speaker>/<id>.ogg; if the
      encode fails the processed WAV is written there instead (VOManager accepts either)
 
 Deterministic (every effect draws from an RNG seeded by the file id) and incremental: a file is only rebuilt
-when the hash of its text, voice profile and tool version changes (data/gravelight/vo/audio_manifest.json).
+when the hash of its text, voice profile / cast entry and tool version changes (data/gravelight/vo/audio_manifest.json).
 
 Run from the repo root:
   python gravelight/tools_src/gen_vo.py                 everything (new / changed lines only)
-  python gravelight/tools_src/gen_vo.py --only=OPR      one speaker, or an id prefix (--only=BNT_DUT)
+  python gravelight/tools_src/gen_vo.py --only=OPR      one speaker, or an id prefix (--only=BNT_DUT); a comma list
+                                                        (--only=DUT,PEG); --only=SQUAD is DUT,PEG,DEA,WRN,JAK
   python gravelight/tools_src/gen_vo.py --force         rebuild regardless of the manifest
   python gravelight/tools_src/gen_vo.py --dry-run       list what would be built
+  python gravelight/tools_src/gen_vo.py --engine=onecore   squad on the old OneCore voices (the fallback)
+  python gravelight/tools_src/gen_vo.py --engine=neural    fail instead of falling back when Kokoro is missing
 Then reimport once so Godot sees the new files:  godot --headless --editor --quit-after 300 --path .
-Requires numpy + scipy and ffmpeg on PATH. Windows only (OneCore voices).
+Loudness / sanity report of what's baked: python gravelight/tools_src/vo_loudness.py
+Requires numpy + scipy and ffmpeg on PATH. Windows only (OneCore voices; the neural venv is Windows too).
 """
 from __future__ import annotations
 
@@ -39,7 +55,7 @@ import zlib
 from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
-from scipy import signal
+from scipy import ndimage, signal
 from scipy.io import wavfile
 
 TOOL_VERSION = "1"            # bump to rebuild everything (the hash includes it)
@@ -82,12 +98,59 @@ PROFILES: dict[str, dict] = {
 # Reinholt's cylinders and diary samples are phonograph recordings; everything else of hers is the PA.
 REI_PHONO_CATEGORIES = ("CYL", "SAMPLE", "HEART_END", "END")
 
-ONLY: str = ""
+# ───────────────────────────────────────────────────────────── neural cast (T-073)
+CAST_PATH = os.path.join(ROOT, "data", "gravelight", "vo", "voice_cast.json")
+NEURAL_PY = os.path.join(HERE, "gen_vo_neural.py")
+NEURAL_TOOL_VERSION = "1"     # bump to rebuild every neural line (the hash includes it)
+SQUAD = ("DUT", "PEG", "DEA", "WRN", "JAK")
+with open(CAST_PATH, encoding="utf-8") as _f:
+    CAST: dict = json.load(_f)
+
+
+def _tts_roots() -> list[str]:
+    """Where tools/venv and tools/tts may live: $GL_TTS_ROOT, this checkout, then the main checkout (a git
+    worktree shares the main checkout's git-ignored downloads)."""
+    roots = []
+    if os.environ.get("GL_TTS_ROOT"):
+        roots.append(os.environ["GL_TTS_ROOT"])
+    roots.append(ROOT)
+    try:
+        cp = subprocess.run(["git", "-C", ROOT, "rev-parse", "--git-common-dir"], capture_output=True, text=True,
+                            timeout=20)
+        common = cp.stdout.strip()
+        if cp.returncode == 0 and common:
+            if not os.path.isabs(common):
+                common = os.path.join(ROOT, common)
+            roots.append(os.path.dirname(os.path.abspath(common)))
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return roots
+
+
+def neural_env() -> tuple[str, str] | None:
+    """(venv python, Kokoro model dir) when the neural engine is set up, else None."""
+    for r in _tts_roots():
+        py = os.path.join(r, "tools", "venv", "Scripts", "python.exe")
+        if not os.path.exists(py):
+            py = os.path.join(r, "tools", "venv", "bin", "python")
+        model = os.path.join(r, "tools", "tts", "kokoro")
+        if os.path.exists(py) and os.path.exists(os.path.join(model, "kokoro-v1.0.onnx")) \
+                and os.path.exists(os.path.join(model, "voices-v1.0.bin")):
+            return py, model
+    return None
+
+
+ONLY: list[str] = []
 FORCE: bool = False
 DRY: bool = False
+ENGINE: str = "auto"          # auto | neural | onecore
 for a in sys.argv[1:]:
     if a.startswith("--only="):
-        ONLY = a[len("--only="):]
+        ONLY = [x.strip() for x in a[len("--only="):].split(",") if x.strip()]
+        if any(x.upper() == "SQUAD" for x in ONLY):
+            ONLY = [x for x in ONLY if x.upper() != "SQUAD"] + list(SQUAD)
+    elif a.startswith("--engine="):
+        ENGINE = a[len("--engine="):]
     elif a == "--force":
         FORCE = True
     elif a == "--dry-run":
@@ -525,6 +588,169 @@ def process(wav_path: str, prof: dict, cues: set[str], file_id: str) -> np.ndarr
     return fade(x)
 
 
+# ───────────────────────────────────────────────────────────── neural post-processing (T-073)
+
+NEUTRAL = {"speed": 1.0, "lufs": 0.0, "presence_db": 0.0, "air_db": 0.0, "drive": 1.0, "tremor": 0.0}
+
+
+def emotion_for(category: str, text: str, speaker: str) -> tuple[str, dict]:
+    """The delivery of a line: (name, params scaled by the speaker's emotion_scale)."""
+    cats: dict = CAST.get("categories", {})
+    best = ""
+    for prefix in cats:
+        if not prefix.startswith("_") and category.startswith(prefix) and len(prefix) > len(best):
+            best = prefix
+    name = str(cats[best]) if best else "calm"
+    if name in ("calm", "brisk") and "!" in text:
+        name = "raised"
+    emo = dict(CAST["emotions"][name])
+    scale = float(CAST["cast"][speaker].get("emotion_scale", 1.0))
+    for k, n in NEUTRAL.items():
+        emo[k] = n + scale * (float(emo.get(k, n)) - n)
+    # Only a speaker who really lets go turns the last full stop into "!" (Peg sounds bored in a crisis).
+    emo["exclaim"] = bool(emo.get("exclaim", False)) and scale >= 0.6
+    return name, emo
+
+
+def shelf_high(x, f, gain_db):
+    """Gentle high shelf: add (or remove) a high-passed copy."""
+    if abs(gain_db) < 0.05:
+        return x
+    return x + (db(gain_db) - 1.0) * highpass(x, f, 1)
+
+
+def smooth_compress(x, thresh_db, ratio, ms=12.0, release_ms=60.0):
+    """Feed-forward RMS compressor with a smoothed gain (no pumping on a single line)."""
+    env = envelope(x, ms)
+    env_db = 20 * np.log10(env + 1e-9)
+    over = np.maximum(0.0, env_db - thresh_db)
+    g_db = -over * (1.0 - 1.0 / ratio)
+    a = np.exp(-1.0 / (SR * release_ms / 1000.0))
+    g_db = signal.lfilter([1 - a], [1, -a], g_db)
+    g_db = signal.lfilter([1 - a], [1, -a], g_db[::-1])[::-1]   # zero-phase: the gain leads, never lags
+    return x * (10.0 ** (g_db / 20.0))
+
+
+def tremor(x, r, depth, hz=5.6):
+    """A hurt voice's shake: a slow amplitude wobble plus a hair of pitch wobble, irregular from line to line."""
+    if depth <= 0.0:
+        return x
+    t = np.arange(len(x)) / SR
+    drift = np.cumsum(r.standard_normal(len(x))) / np.sqrt(SR) * 0.6
+    am = 1.0 - depth * 0.5 * (1.0 + np.sin(2 * np.pi * hz * t + drift + r.uniform(0, 6.28)))
+    return wow(x * am, r, hz * 0.9, 0.0012 * depth / 0.07)
+
+
+def inhale(r, length_s, level):
+    """A soft synthesized in-breath: band-limited pink noise under an asymmetric swell."""
+    n = int(SR * length_s)
+    if n < 32:
+        return np.zeros(0)
+    b = pink(n, r)
+    b = bandpass(b, 450, 2600, 2) + 0.5 * bandpass(b, 1100, 1700, 2)
+    env = np.concatenate([np.linspace(0, 1, int(n * 0.65)) ** 1.6, np.linspace(1, 0, n - int(n * 0.65)) ** 0.8])
+    b = b * env
+    b /= np.sqrt(np.mean(b * b)) + 1e-9
+    return b * level
+
+
+def speech_rms(x):
+    env = envelope(x, 50.0)
+    active = x[env > np.max(env) * db(-30.0)]
+    return float(np.sqrt(np.mean(active * active))) if len(active) else float(np.sqrt(np.mean(x * x)) + 1e-9)
+
+
+def add_breaths(x, r, breath_db, breath_s=(0.26, 0.36)):
+    """An inhale before a line of 1.2 s or more, and in some sentence pauses of 350 ms or more."""
+    if breath_db is None or len(x) < SR * 1.2:
+        return x
+    lvl = speech_rms(x) * db(float(breath_db))
+    pre = inhale(r, r.uniform(float(breath_s[0]), float(breath_s[1])), lvl)
+    gap = np.zeros(int(SR * r.uniform(0.05, 0.09)))
+    # Inner pauses: windows where the 20 ms envelope stays 35 dB under the line's peak.
+    env = envelope(x, 20.0)
+    quiet = env < np.max(env) * db(-35.0)
+    out = x.copy()
+    i = int(SR * 0.3)
+    while i < len(x) - int(SR * 0.3):
+        if quiet[i]:
+            j = i
+            while j < len(x) and quiet[j]:
+                j += 1
+            if (j - i) >= SR * 0.35 and j < len(x) - int(SR * 0.25) and r.uniform() < 0.6:
+                blen = min(0.24, (j - i) / SR * 0.6)
+                br = inhale(r, blen, lvl * db(-3.0))
+                end = j - int(SR * 0.04)
+                st = max(i, end - len(br))
+                out[st:st + len(br)] += br[: end - st]
+            i = j
+        i += int(SR * 0.01)
+    return np.concatenate([pre, gap, out])
+
+
+def peak_limit(x, ceiling_db):
+    """Soft true-peak ceiling: a 1.5 ms look-ahead gain ride on the 4x-oversampled peak, then a hard guard."""
+    ceil = db(ceiling_db)
+    up = np.abs(signal.resample_poly(x, 4, 1))[: len(x) * 4]
+    pk = up.reshape(-1, 4).max(axis=1) if len(up) >= len(x) * 4 else np.abs(x)
+    w = max(1, int(SR * 0.0015))
+    pk = ndimage.maximum_filter1d(pk, 2 * w + 1)
+    g = np.minimum(1.0, ceil / (pk + 1e-9))
+    a = np.exp(-1.0 / (SR * 0.03))
+    g = np.minimum(g, signal.lfilter([1 - a], [1, -a], g))
+    y = x * g
+    tp = np.max(np.abs(signal.resample_poly(y, 4, 1))) + 1e-9
+    if tp > ceil:
+        y *= ceil / tp
+    return y
+
+
+def process_neural(wav_path: str, speaker: str, emo_name: str, emo: dict, cues: set[str], category: str,
+                   file_id: str) -> np.ndarray:
+    import vo_loudness
+    sr_in, data = wavfile.read(wav_path)
+    x = data.astype(np.float64)
+    if data.dtype == np.int16:
+        x /= 32768.0
+    if x.ndim > 1:
+        x = x[:, 0]
+    if sr_in != SR:
+        from math import gcd
+        g = gcd(SR, sr_in)
+        x = signal.resample_poly(x, SR // g, sr_in // g)
+    c = CAST["cast"][speaker]
+    r = rng_for("neural:" + file_id)
+    x = trim(x, -50.0, 40.0)
+    x = x * db(-20.0 - vo_loudness.integrated_lufs(x, SR)) if len(x) > SR * 0.05 else x
+    # Character: high-pass, EQ bands, warmth.
+    x = highpass(x, float(c.get("hp_hz", 80)), 2)
+    for lo, hi, gdb in c.get("eq", []):
+        x = boost(x, float(lo), float(hi), float(gdb))
+    w = float(c.get("warmth", 1.0)) * float(emo["drive"])
+    if w > 1.01:
+        # tanh warmth at the speech's level (-20 LUFS peaks near -6 dBFS): gentle harmonics, no audible fuzz
+        x = saturate(x * 2.0, w) / 2.0
+    # Delivery.
+    x = boost(x, 2000, 4500, float(emo["presence_db"]))
+    x = shelf_high(x, 5000, float(emo["air_db"]))
+    x = tremor(x, r, float(emo["tremor"]))
+    x = smooth_compress(x, -26.0, 2.4)
+    x = add_breaths(x, r, emo.get("breath_db"), emo.get("breath_s") or (0.26, 0.36))
+    # Space: a small room around the speaker; whisper / distant cues as in the old chain.
+    room = emo.get("room") or [0.3, 0.06]
+    x = reverb(x, float(room[0]), r, float(room[1]), 8.0 if room[0] < 0.6 else 22.0, 4500.0 if room[0] < 0.6 else 3200.0)
+    x = apply_cues(x, r, cues, "squad")
+    x = trim(x, -60.0, 60.0)
+    # Loudness: the target, moved by the delivery and the speaker's trim, then the true-peak ceiling.
+    lo = CAST.get("loudness", {})
+    target = float(lo.get("target_lufs", -17.5)) + float(emo["lufs"]) + float(c.get("lufs_offset", 0.0))
+    cur = vo_loudness.integrated_lufs(x, SR)
+    if np.isfinite(cur):
+        x = x * db(target - cur)
+    x = peak_limit(x, float(lo.get("true_peak_db", -1.5)))
+    return fade(x, 8.0)
+
+
 def write_wav(path: str, x: np.ndarray) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
     wavfile.write(path, SR, (np.clip(x, -1, 1) * 32767).astype(np.int16))
@@ -581,6 +807,32 @@ def encode(tmp_wav: str, speaker: str, file_id: str) -> tuple[str, str]:
     return res_path(speaker, file_id, "wav"), "wav"
 
 
+def neural_hash(speaker: str, text: str, emo_name: str, emo: dict, cues: set[str]) -> str:
+    c = CAST["cast"][speaker]
+    acc = CAST.get("accents", {}).get(str(c.get("accent", "")), {})
+    pol = CAST.get("polish", {})
+    words = set(re.findall(r"[^\W\d_]+", text.lower()))
+    pl_hit = bool(re.search(r"[ąćęłńóśźż]", text.lower())) or bool(
+        words & {w.lower() for w in pol.get("words", []) + pol.get("weak_words", [])})
+    ger = CAST.get("german", {})
+    de_hit = bool(c.get("native_german")) and bool(words & {w.lower() for w in ger.get("words", [])})
+    key = "|".join(["neural", NEURAL_TOOL_VERSION, json.dumps(c, sort_keys=True, ensure_ascii=False),
+                    json.dumps(acc, sort_keys=True, ensure_ascii=False), emo_name, json.dumps(emo, sort_keys=True),
+                    json.dumps(CAST.get("loudness", {}), sort_keys=True), ",".join(sorted(cues)),
+                    json.dumps(pol, sort_keys=True, ensure_ascii=False) if pl_hit else "", text]
+                   + ([json.dumps(ger, sort_keys=True, ensure_ascii=False)] if de_hit else []))
+    return hashlib.sha1(key.encode("utf-8")).hexdigest()[:16]
+
+
+def _wants(only: list[str], line_id: str, rec_speaker: str, part_speaker: str) -> bool:
+    if not only:
+        return True
+    for o in only:
+        if line_id.startswith(o) or o.upper() in (rec_speaker.upper(), part_speaker.upper()):
+            return True
+    return False
+
+
 def main() -> int:
     with open(LINES, encoding="utf-8") as f:
         lines: dict = json.load(f)
@@ -593,22 +845,51 @@ def main() -> int:
     files: dict = manifest["files"]
     missing: dict = manifest["missing"]
 
+    nenv = None if ENGINE == "onecore" else neural_env()
+    if ENGINE == "neural" and nenv is None:
+        print("--engine=neural but the Kokoro venv / model is missing: run tools/setup_tts.sh")
+        return 1
+    if nenv is None and ENGINE != "onecore":
+        print("note: neural voices not set up (tools/setup_tts.sh); the squad falls back to OneCore")
+    neural_speakers = set(CAST.get("cast", {}).keys()) if nenv is not None else set()
+
     # Every (file id) this lines.json wants.
     wanted: dict[str, dict] = {}
     for line_id, rec in sorted(lines.items()):
         speaker = str(rec.get("speaker", ""))
         category = str(rec.get("category", ""))
-        if ONLY and not (line_id.startswith(ONLY) or speaker == ONLY or speaker.lower() == ONLY.lower()):
-            continue
-        parts_src: list[tuple[str, str]] = []
+        parts_src: list[tuple[str, str, str]] = []
         if rec.get("exchange"):
-            parts_src = [(str(p[0]), str(p[1])) for p in rec["exchange"]]
+            parts_src = [(str(p[0]), str(p[1]), str(p[1])) for p in rec["exchange"]]
         else:
-            # "tts": a phonetic respelling for the English voices (Jakub's Polish); the subtitle keeps "text"
-            parts_src = [(speaker, str(rec.get("tts") or rec.get("text", "")))]
+            # "tts": a phonetic respelling for the OneCore voices (Jakub's Polish); the subtitle keeps "text". The
+            # neural engine reads "text" itself (it has real Polish phonemes).
+            parts_src = [(speaker, str(rec.get("tts") or rec.get("text", "")), str(rec.get("text", "")))]
         multi = len(parts_src) > 1 or bool(rec.get("exchange"))
-        for i, (spk, text) in enumerate(parts_src):
+        for i, (spk, text, raw_text) in enumerate(parts_src):
+            if not _wants(ONLY, line_id, speaker, spk):
+                continue
             file_id = "%s_p%d" % (line_id, i) if multi else line_id
+            if spk in neural_speakers:
+                parts, cues = speech_parts(raw_text)
+                say = plain_text(parts)
+                if not re.search(r"[A-Za-z0-9]", say):
+                    missing[file_id] = "no speech: stage direction only (%s)" % raw_text[:40]
+                    continue
+                emo_name, emo = emotion_for(category, say, spk)
+                c = CAST["cast"][spk]
+                wanted[file_id] = dict(line=line_id, speaker=spk, text=say, engine="kokoro",
+                                       hash=neural_hash(spk, say, emo_name, emo, cues), voice=str(c["voice"]),
+                                       emo_name=emo_name, emo=emo, cues=cues, category=category,
+                                       njob={"speaker": spk, "text": say, "voice": str(c["voice"]),
+                                             "speed": round(float(c.get("speed", 1.0)) * float(emo["speed"]), 4),
+                                             "lexicon": str(c.get("lexicon", "us")),
+                                             "accent": str(c.get("accent", "")),
+                                             "native_polish": bool(c.get("native_polish", False)),
+                                             "native_german": bool(c.get("native_german", False)),
+                                             "exclaim": bool(emo.get("exclaim", False))})
+                missing.pop(file_id, None)
+                continue
             prof = profile_for(spk, line_id, category)
             if prof is None:
                 missing[file_id] = "no voice profile for speaker %s" % spk
@@ -621,7 +902,7 @@ def main() -> int:
             splice = spk == "OPR"
             wanted[file_id] = dict(line=line_id, speaker=spk, text=say, hash=part_hash(say, prof, cues, splice),
                                    ssml=build_ssml(parts, prof, cues, splice), voice=prof["voice"], prof=prof,
-                                   cues=cues)
+                                   cues=cues, engine="onecore")
             missing.pop(file_id, None)
 
     # Drop manifest rows (and files) for lines that no longer exist (files only when not filtering).
@@ -653,49 +934,103 @@ def main() -> int:
         if not FORCE and cur is not None and cur.get("hash") == job["hash"] and on_disk:
             continue
         todo.append(fid)
-    print("lines %d, files wanted %d, to build %d, skipped (up to date) %d, no speech %d" % (
-        len(lines), len(wanted), len(todo), len(wanted) - len(todo), len(missing)))
+    n_neural = sum(1 for fid in todo if wanted[fid]["engine"] == "kokoro")
+    print("lines %d, files wanted %d, to build %d (neural %d, onecore %d), skipped (up to date) %d, no speech %d" % (
+        len(lines), len(wanted), len(todo), n_neural, len(todo) - n_neural, len(wanted) - len(todo), len(missing)))
     if DRY:
         for fid in todo:
-            print("  ", fid, "->", wanted[fid]["text"][:70])
+            w = wanted[fid]
+            tag = "kokoro:" + w["emo_name"] if w["engine"] == "kokoro" else "onecore"
+            print("  ", fid, "[%s]" % tag, "->", w["text"][:70])
         return 0
     if not todo:
         _write_manifest(manifest)
         return 0
 
     tmp = tempfile.mkdtemp(prefix="glvo_")
-    jobs = [{"id": fid, "voice": wanted[fid]["voice"], "ssml": wanted[fid]["ssml"],
-             "wav": os.path.join(tmp, fid + ".raw.wav")} for fid in todo]
-    jobs_path = os.path.join(tmp, "jobs.json")
-    result_path = os.path.join(tmp, "result.json")
-    with open(jobs_path, "w", encoding="utf-8") as f:
-        json.dump(jobs, f, ensure_ascii=False)
-    print("synthesizing %d parts with Windows OneCore voices (file output only)..." % len(jobs))
-    ps = shutil.which("powershell") or "powershell"
-    cp = subprocess.run([ps, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", PS1,
-                         "-Jobs", jobs_path, "-Result", result_path], capture_output=True, text=True, timeout=3600)
-    if cp.returncode != 0 or not os.path.exists(result_path):
-        print("TTS driver failed:", cp.stdout[-2000:], cp.stderr[-2000:])
-        return 1
-    with open(result_path, encoding="utf-8") as f:
-        res = json.load(f)
-    failed: dict = res.get("failed", {}) or {}
-    for fid, why in failed.items():
-        missing[fid] = "tts failed: %s" % why
-    ok_ids = [j["id"] for j in jobs if j["id"] not in failed]
-    print("synthesized %d, failed %d (engine %s)" % (len(ok_ids), len(failed), res.get("engine")))
+    ok_ids: list[str] = []
+    phonemes: dict[str, str] = {}
+    one_ids = [fid for fid in todo if wanted[fid]["engine"] == "onecore"]
+    neu_ids = [fid for fid in todo if wanted[fid]["engine"] == "kokoro"]
+    if one_ids:
+        jobs = [{"id": fid, "voice": wanted[fid]["voice"], "ssml": wanted[fid]["ssml"],
+                 "wav": os.path.join(tmp, fid + ".raw.wav")} for fid in one_ids]
+        jobs_path = os.path.join(tmp, "jobs.json")
+        result_path = os.path.join(tmp, "result.json")
+        with open(jobs_path, "w", encoding="utf-8") as f:
+            json.dump(jobs, f, ensure_ascii=False)
+        print("synthesizing %d parts with Windows OneCore voices (file output only)..." % len(jobs))
+        ps = shutil.which("powershell") or "powershell"
+        cp = subprocess.run([ps, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", PS1,
+                             "-Jobs", jobs_path, "-Result", result_path], capture_output=True, text=True, timeout=3600)
+        if cp.returncode != 0 or not os.path.exists(result_path):
+            print("TTS driver failed:", cp.stdout[-2000:], cp.stderr[-2000:])
+            return 1
+        with open(result_path, encoding="utf-8") as f:
+            res = json.load(f)
+        failed: dict = res.get("failed", {}) or {}
+        for fid, why in failed.items():
+            missing[fid] = "tts failed: %s" % why
+        ok1 = [j["id"] for j in jobs if j["id"] not in failed]
+        ok_ids += ok1
+        print("synthesized %d, failed %d (engine %s)" % (len(ok1), len(failed), res.get("engine")))
+    if neu_ids:
+        assert nenv is not None
+        py, model = nenv
+        # A few processes (each loads the model once; onnxruntime runs its own threads inside each).
+        nproc = max(1, min(4, (os.cpu_count() or 4) // 4, len(neu_ids) // 40 + 1))
+        chunks = [neu_ids[k::nproc] for k in range(nproc)]
+        procs = []
+        print("synthesizing %d parts with Kokoro (%d processes, offline, file output only)..." % (len(neu_ids), nproc))
+        env = dict(os.environ)
+        env["OMP_NUM_THREADS"] = str(max(1, (os.cpu_count() or 4) // nproc))
+        for k, ch in enumerate(chunks):
+            jp = os.path.join(tmp, "neural_jobs_%d.json" % k)
+            rp = os.path.join(tmp, "neural_result_%d.json" % k)
+            with open(jp, "w", encoding="utf-8") as f:
+                json.dump({"model": model, "cast": CAST, "jobs": [dict(wanted[fid]["njob"], id=fid,
+                           wav=os.path.join(tmp, fid + ".raw.wav")) for fid in ch]}, f, ensure_ascii=False)
+            procs.append((subprocess.Popen([py, "-I", NEURAL_PY, jp, rp], env=env, stdout=subprocess.PIPE,
+                                           stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace"),
+                          rp, ch))
+        for pr, rp, ch in procs:
+            out, _ = pr.communicate(timeout=7200)
+            if pr.returncode != 0 or not os.path.exists(rp):
+                print("neural driver failed:", (out or "")[-2000:])
+                for fid in ch:
+                    missing[fid] = "neural tts failed (driver exit %s)" % pr.returncode
+                continue
+            with open(rp, encoding="utf-8") as f:
+                res = json.load(f)
+            failed = res.get("failed", {}) or {}
+            for fid, why in failed.items():
+                missing[fid] = "neural tts failed: %s" % why
+            ok_ids += [fid for fid in ch if fid not in failed]
+            phonemes.update(res.get("phonemes", {}))
+        print("neural: synthesized %d of %d" % (len([f for f in neu_ids if f in set(ok_ids)]), len(neu_ids)))
 
     def build(fid: str) -> tuple[str, dict | None, str]:
         job = wanted[fid]
         raw = os.path.join(tmp, fid + ".raw.wav")
         try:
-            y = process(raw, job["prof"], job["cues"], fid)
+            if job["engine"] == "kokoro":
+                y = process_neural(raw, job["speaker"], job["emo_name"], job["emo"], job["cues"], job["category"], fid)
+            else:
+                y = process(raw, job["prof"], job["cues"], fid)
             proc = os.path.join(tmp, fid + ".proc.wav")
             write_wav(proc, y)
             path, fmt = encode(proc, job["speaker"], fid)
-            return fid, {"line": job["line"], "speaker": job["speaker"], "hash": job["hash"], "path": path,
-                         "format": fmt, "duration": round(len(y) / SR, 3), "voice": job["voice"],
-                         "chain": job["prof"]["chain"]}, ""
+            row = {"line": job["line"], "speaker": job["speaker"], "hash": job["hash"], "path": path,
+                   "format": fmt, "duration": round(len(y) / SR, 3), "voice": job["voice"], "engine": job["engine"]}
+            if job["engine"] == "kokoro":
+                import vo_loudness
+                row["delivery"] = job["emo_name"]
+                row["lufs"] = round(vo_loudness.integrated_lufs(y, SR), 2)
+                if fid in phonemes:
+                    row["phonemes"] = phonemes[fid]
+            else:
+                row["chain"] = job["prof"]["chain"]
+            return fid, row, ""
         except Exception as e:  # noqa: BLE001
             return fid, None, "%s: %s" % (type(e).__name__, e)
 
@@ -709,7 +1044,7 @@ def main() -> int:
                 files[fid] = row
                 missing.pop(fid, None)
             done += 1
-            if done % 50 == 0:
+            if done % 100 == 0:
                 print("  %d / %d" % (done, len(ok_ids)))
     shutil.rmtree(tmp, ignore_errors=True)
     _write_manifest(manifest)
@@ -720,12 +1055,16 @@ def main() -> int:
 
 def _write_manifest(manifest: dict) -> None:
     manifest["_doc"] = ("Built by gravelight/tools_src/gen_vo.py. files: audio file per line (or per exchange part "
-                        "<id>_p<n>) with the text/profile hash that produced it; missing: ids with no audio and why. "
-                        "Windows OneCore TTS (Microsoft David / Mark / Zira), processed; see docs/ASSETS.md.")
+                        "<id>_p<n>) with the text/profile hash that produced it; engine kokoro (the squad and Jakub: "
+                        "Kokoro-82M neural TTS, offline, cast in data/gravelight/vo/voice_cast.json, with the "
+                        "delivery, the measured LUFS and the phonemes it read) or onecore (Windows OneCore TTS, "
+                        "Microsoft David / Mark / Zira, processed); missing: ids with no audio and why. "
+                        "See docs/ASSETS.md.")
     manifest["tool_version"] = TOOL_VERSION
+    manifest["neural_tool_version"] = NEURAL_TOOL_VERSION
     manifest["files"] = dict(sorted(manifest["files"].items()))
     manifest["missing"] = dict(sorted(manifest["missing"].items()))
-    with open(MANIFEST, "w", encoding="utf-8") as f:
+    with open(MANIFEST, "w", encoding="utf-8", newline="\n") as f:
         json.dump(manifest, f, indent=1, ensure_ascii=False)
         f.write("\n")
 

@@ -3,8 +3,11 @@ tools/node_modules/
 *.import
 export/
 /tools/dl_godot/
+/tools/venv/
+/tools/tts/
 .smoke_logs/
 morning/screenshots/
 .wt/
 morning/clips/
 logs/
+__pycache__/

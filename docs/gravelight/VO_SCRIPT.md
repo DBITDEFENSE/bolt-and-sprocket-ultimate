@@ -1272,7 +1272,9 @@ A Polish miner from Wilcza Góra, 43, who walked out of Kaltenbrunn on 21 Decemb
 Crossroads Inn's coal cage by a fleeing patrol (CANON §6.4, CHARACTERS.md "Jakub Ostrowski"). Calm, wry, polite.
 He has seen worse than zombies and isn't impressed by them. He is a person and a hero: never a joke, never a zombie.
 
-**Voice:** the offline TTS bake (`gen_vo.py` profile `JAK`): Microsoft Mark, slower and lower than Deacon, a
+**Voice (T-073):** the neural bake now (`docs/gravelight/VOICES.md`: Kokoro, an older British-trained voice
+with real Polish phonemes for his Polish and a light Polish accent on his English). Before that, and still the
+fallback: the offline TTS bake (`gen_vo.py` profile `JAK`): Microsoft Mark, slower and lower than Deacon, a
 smaller "size" shift and a dry, close, slightly rough chain (`jakub`), so he never sounds like Dutch (David) or
 Deacon (Mark, warm room). **Polish** is written as it is said, with the English in parentheses right after it
 (subtitles show both; the bake drops the parentheses). The bake reads a phonetic respelling where a tail gives
@@ -1978,7 +1980,7 @@ learns what a plan or a patent is. The ids carry `SQ6` so the bake can run them 
 
 Played by `InnOpening` (`gravelight/world/inn_opening/inn_opening.gd`, data `data/gravelight/map00_opening.json`, which
 holds each line's time and speaker). Local on every peer, positional at the patron when baked; the subtitle shows the
-patron's name. **Not baked yet** (audio_manifest "missing"): new speakers for the bake, one voice each.
+patron's name. Baked with the neural cast (T-073): one Kokoro voice each, a German accent, in `voice_cast.json`; see `VOICES.md`.
 
 **Who they are.** Nobody signed the guest book (they took no rooms; it stays true that the last guests left on the
 20th): folk off the shut road who came in out of the snow on the 23rd. Anselm, Lene and Käthe Vogt are not among
