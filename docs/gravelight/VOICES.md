@@ -1,6 +1,7 @@
 # The squad's voices (T-073)
 
-How the survivors (Dutch `DUT`, Peg `PEG`, Deacon `DEA`, Wren `WRN`) and Jakub (`JAK`) are voiced, how to bake
+How the survivors (Dutch `DUT`, Peg `PEG`, Deacon `DEA`, Wren `WRN`), Jakub (`JAK`) and the Map 0 patrons of the
+round-1 opening (`ROT`, `KUB`, `POH`, `TRU`, `SOB`, VO_SCRIPT section 21) are voiced, how to bake
 new lines, and what the runtime does with them. Placeholder VO until recorded lines replace it per id; the files
 are generated, never hand-edited. Line text and triggers stay in `VO_SCRIPT.md`; who the people are is in
 `CHARACTERS.md`.
@@ -40,6 +41,18 @@ respellings in lines.json are not used by the neural bake.
 | Deacon, 26, Louisiana | am_michael 70 % + am_puck 30 % | US | 0.93 | warm tenor (~130 Hz), low-mid warmth, soft top; emotion scale 1.0 |
 | Wren, 24, Home Army | bf_isabella 75 % + bf_lily 25 % | GB | 1.0 | English learned from British radio; `polish_light` accent; emotion scale 0.75 |
 | Jakub, 44, salt hewer | bm_george 60 % + bm_lewis 40 % | GB | 0.9 | an older, slower British-trained voice; `polish` accent; emotion scale 0.8 |
+| Ewald Rother, 60s, salt carter | bm_lewis 50 % + im_nicola 30 % + bm_daniel 20 % | GB | 0.88 | the deepest civilian (~109 Hz), worn and slow, dark top; `german` accent |
+| Franz Kubiak, 20s, his mate | am_liam 50 % + em_alex 50 % | GB | 1.08 | lighter and quick (~133 Hz); `german_light` |
+| Frau Agnes Pohl, 50s, widow | af_aoede 50 % + if_sara 30 % + bf_alice 20 % | GB | 0.94 | an older woman's darker voice (centroid ~2 kHz, lowest of the women's), prim; `german` |
+| Trudi Hanke, 20s, at the bar | af_bella 40 % + ff_siwis 30 % + af_kore 30 % | GB | 1.04 | bright, warm and loud; `german_light` |
+| Gefreiter Willi Sobotta, 20 | am_eric 60 % + am_adam 40 % | GB | 1.02 | a young soldier keeping steady (~149 Hz); `german_light` |
+
+The patrons are period German civilians speaking English as a second language (the game's convention for
+German speech), cast for respect, not comedy. The continental Kokoro styles (Italian, Spanish, French) in their
+blends move them away from the squad's American / British timbres. The `german` accent stops th to s / d, uses a
+uvular r, w to v, German vowel qualities (æ→ɛ, əʊ→oː, ɜː→œː) and full final devoicing (Auslautverhärtung);
+`german_light` keeps the w and devoices only before a pause. Their German names (`voice_cast.json` `german`:
+Ewald, Willi, Trudi...) use eSpeak NG's German phonemes in their own mouths; the squad says them in English.
 
 **Accents** are phoneme rules on the English words, modelled on a Polish first language, and kept light on
 purpose (people speaking a second language well, never a comic voice): th-stopping (θ→t, ð→d), a tapped r,
@@ -60,6 +73,9 @@ speaker's `emotion_scale` scales the deviation from neutral.
 | hurt | DOWN, Jakub back wounded | 0.9 | -1.5 LU | darker top, a 5-6 Hz tremor, a longer inhale |
 | quiet | chatter, midnight, blues, lantern, cage talk, Polish lessons, revived | 0.95 | -3 LU | soft top, closer room |
 | mine | Jakub's Kaltenbrunn arrival / zone lines | 0.97 | -1 LU | a 0.9 s cavern |
+
+The round-1 opening: INN_SCREAM / WINDOW / FLEE / CAUGHT / SHUT shout, INN_DOOR raised, INN_BITTEN / FALL hurt,
+INN_ARRIVE calm. Kokoro cannot scream: the `[screaming]` tags are read as shouts.
 
 ## Post-processing (`gen_vo.py` `process_neural`)
 

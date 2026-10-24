@@ -76,3 +76,23 @@ func test_occlusion_muffles_and_restores_a_positional_voice() -> void:
 	assert_almost_eq(p3.attenuation_filter_cutoff_hz, float(au.get("occlusion_open_hz", 5000.0)), 1.0)
 	assert_almost_eq(p3.volume_db, float(au.get("squad_volume_db", 0.0)), 0.01)
 	assert_eq(GLVO.occlusion_of(p3), 0.0)
+
+
+func test_map0_patrons_are_cast_and_baked() -> void:
+	var cast: Dictionary = GLData.load_json(CAST).get("cast", {})
+	var files: Dictionary = GLData.load_json(MANIFEST).get("files", {})
+	var voices: Dictionary = {}
+	for spk: String in SQUAD:
+		voices[str((cast[spk] as Dictionary).get("voice", ""))] = spk
+	for spk: String in ["ROT", "KUB", "POH", "TRU", "SOB"]:
+		assert_true(cast.has(spk), "voice_cast.json casts " + spk)
+		var c: Dictionary = cast.get(spk, {})
+		assert_true(bool(c.get("native_german", false)), spk + " says the German names in German")
+		var v: String = str(c.get("voice", ""))
+		assert_false(voices.has(v), spk + " does not share a voice with " + str(voices.get(v, "")))
+		voices[v] = spk
+	for line_id: String in GLVO.lines.keys():
+		var spk: String = str((GLVO.lines[line_id] as Dictionary).get("speaker", ""))
+		if spk in ["ROT", "KUB", "POH", "TRU", "SOB"]:
+			assert_true(files.has(line_id), line_id + " is baked")
+			assert_eq(str((files.get(line_id, {}) as Dictionary).get("engine", "")), "kokoro", line_id + " is neural")

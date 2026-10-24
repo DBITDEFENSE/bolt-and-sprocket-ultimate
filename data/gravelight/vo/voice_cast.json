@@ -1,5 +1,5 @@
 {
- "_doc": "Neural voice casting for the squad and Jakub (T-073), read by gravelight/tools_src/gen_vo.py. engine: Kokoro-82M (Apache-2.0) run offline from tools/tts/kokoro via tools/venv (tools/setup_tts.sh). cast.<SPK>: voice = Kokoro style blend 'name:weight,...'; lexicon us|gb (misaki); speed = base pace; accent = a rule set from 'accents' applied to the English phonemes; native_polish = Polish words keep Polish sounds (else anglicised); emotion_scale scales every emotion's deviation from neutral (Peg never raises her voice: 0.35; Deacon wears it openly: 1.0); eq = [[lo_hz, hi_hz, gain_db], ...] band moves on top of the high-pass; hp_hz; warmth = tanh drive (1.0 = clean); lufs_offset trims the speaker against the target. emotions: per-category delivery, picked by the longest matching category prefix in 'categories' (else 'calm'); speed multiplies the pace, lufs is added to the loudness target, presence_db lifts 2-4.5 kHz, air_db shelves above 5 kHz, drive saturates, tremor = depth of a 5-6 Hz shake (hurt), breath_db = level of the inhale before a line against the speech (null = none), breath_s = its length range, room = [seconds, mix]. A line that ends in '!' in a calm/brisk category reads one step hotter ('raised'). Changing anything here rebuilds the affected lines (the hash includes it).",
+ "_doc": "Neural voice casting for the squad and Jakub (T-073), read by gravelight/tools_src/gen_vo.py. engine: Kokoro-82M (Apache-2.0) run offline from tools/tts/kokoro via tools/venv (tools/setup_tts.sh). cast.<SPK>: voice = Kokoro style blend 'name:weight,...'; lexicon us|gb (misaki); speed = base pace; accent = a rule set from 'accents' applied to the English phonemes; native_polish = Polish words keep Polish sounds (else anglicised); emotion_scale scales every emotion's deviation from neutral (Peg never raises her voice: 0.35; Deacon wears it openly: 1.0); eq = [[lo_hz, hi_hz, gain_db], ...] band moves on top of the high-pass; hp_hz; warmth = tanh drive (1.0 = clean); lufs_offset trims the speaker against the target. emotions: per-category delivery, picked by the longest matching category prefix in 'categories' (else 'calm'); speed multiplies the pace, lufs is added to the loudness target, presence_db lifts 2-4.5 kHz, air_db shelves above 5 kHz, drive saturates, tremor = depth of a 5-6 Hz shake (hurt), breath_db = level of the inhale before a line against the speech (null = none), breath_s = its length range, room = [seconds, mix]. A line that ends in '!' in a calm/brisk category reads one step hotter ('raised'). native_german = the 'german' words keep German sounds (the Map 0 patrons, T-072). Changing anything here rebuilds the affected lines (the hash includes it).",
  "engine": "kokoro",
  "loudness": {"target_lufs": -17.5, "true_peak_db": -1.5},
  "cast": {
@@ -22,7 +22,27 @@
   "JAK": {"who": "Jakub Ostrowski, 44, Silesian salt hewer: English learned late and well enough, an older Polish voice, calm and wry",
           "voice": "bm_george:0.6,bm_lewis:0.4", "lexicon": "gb", "speed": 0.9, "accent": "polish",
           "native_polish": true, "emotion_scale": 0.8, "hp_hz": 80, "eq": [[300, 800, 2.0], [2600, 4200, -1.5]],
-          "warmth": 1.3, "lufs_offset": 0.0}
+          "warmth": 1.3, "lufs_offset": 0.0},
+  "ROT": {"who": "Ewald Rother, an old Silesian salt carter (60s): gruff and kind, a deep worn voice, slow; English as a careful second language, a German accent",
+          "voice": "bm_lewis:0.5,im_nicola:0.3,bm_daniel:0.2", "lexicon": "gb", "speed": 0.88, "accent": "german",
+          "native_polish": false, "native_german": true, "emotion_scale": 0.85, "hp_hz": 75,
+          "eq": [[110, 260, 2.0], [700, 1300, 1.0], [3500, 6000, -2.0]], "warmth": 1.35, "lufs_offset": 0.0},
+  "KUB": {"who": "Franz Kubiak, Rother's younger mate (20s): quick and frightened, a lighter voice, a light German accent",
+          "voice": "am_liam:0.5,em_alex:0.5", "lexicon": "gb", "speed": 1.08, "accent": "german_light",
+          "native_polish": false, "native_german": true, "emotion_scale": 1.0, "hp_hz": 110,
+          "eq": [[200, 400, -1.0], [2200, 4200, 1.5]], "warmth": 1.05, "lufs_offset": 0.0},
+  "POH": {"who": "Frau Agnes Pohl, a widow (50s) walking to her sister's in Liegnitz: prim and proper, an older woman's voice, a German accent",
+          "voice": "af_aoede:0.5,if_sara:0.3,bf_alice:0.2", "lexicon": "gb", "speed": 0.94, "accent": "german",
+          "native_polish": false, "native_german": true, "emotion_scale": 1.0, "hp_hz": 150,
+          "eq": [[300, 700, 1.5], [4000, 7000, -1.5]], "warmth": 1.0, "lufs_offset": 0.0},
+  "TRU": {"who": "Trudi Hanke, a farmer's daughter (20s) helping at the bar: practical and loud, a bright warm voice, a light German accent",
+          "voice": "af_bella:0.4,ff_siwis:0.3,af_kore:0.3", "lexicon": "gb", "speed": 1.04, "accent": "german_light",
+          "native_polish": false, "native_german": true, "emotion_scale": 1.0, "hp_hz": 140,
+          "eq": [[900, 1800, 1.0], [2600, 4500, 1.0]], "warmth": 1.0, "lufs_offset": 0.0},
+  "SOB": {"who": "Gefreiter Willi Sobotta, a lance-corporal on Christmas leave (20): a young soldier trying to sound steady, a light German accent",
+          "voice": "am_eric:0.6,am_adam:0.4", "lexicon": "gb", "speed": 1.02, "accent": "german_light",
+          "native_polish": false, "native_german": true, "emotion_scale": 0.9, "hp_hz": 95,
+          "eq": [[150, 350, 1.0], [2500, 4500, 1.0]], "warmth": 1.1, "lufs_offset": 0.0}
  },
  "accents": {
   "_doc": "Phoneme rewrites on the misaki GB phonemes of English words (Polish words are not touched). Rules model a Polish first language: th-stopping, a tapped r, Polish vowel qualities, final devoicing. Kept light on purpose: these are people speaking a second language well, not a comic accent.",
@@ -30,7 +50,16 @@
                    "final_devoicing": "phrase", "devoice": "zv"},
   "polish": {"map": [["θ", "t"], ["ð", "d"], ["ɹ", "ɾ"], ["æ", "ɛ"], ["ʌ", "a"], ["Q", "ɔ"], ["ɜː", "ɛɾ"], ["iː", "i"],
                      ["uː", "u"], ["ɔː", "ɔ"], ["ɑː", "a"], ["ɪ", "i"], ["ʊ", "u"], ["A", "ɛj"], ["ɒ", "ɔ"]],
-             "final_devoicing": "all", "devoice": "zdvbɡʤʒ"}
+             "final_devoicing": "all", "devoice": "zdvbɡʤʒ"},
+  "german": {"map": [["θ", "s"], ["ð", "d"], ["ɹ", "ʁ"], ["w", "v"], ["æ", "ɛ"], ["ʌ", "a"], ["Q", "oː"], ["ɜː", "œː"]],
+             "final_devoicing": "all", "devoice": "zdvbɡʤʒ"},
+  "german_light": {"map": [["θ", "s"], ["ð", "d"], ["ɹ", "ʁ"], ["æ", "ɛ"], ["Q", "oː"]],
+                   "final_devoicing": "phrase", "devoice": "zdv"}
+ },
+ "german": {
+  "_doc": "Words a native German speaker (cast native_german) reads with eSpeak NG's German phonemes: the Map 0 patrons' names. Everyone else reads them as English.",
+  "words": ["ewald", "willi", "trudi", "rother", "kubiak", "pohl", "hanke", "sobotta", "liegnitz", "agnes", "franz", "frau", "gefreiter", "vogt", "lene", "käthe", "anselm"],
+  "overrides": {"_doc": "German words eSpeak NG gets wrong: word -> phonemes (Kokoro symbols)."}
  },
  "polish": {
   "_doc": "Words read with Polish phonemes. 'words' are always Polish; 'weak_words' (also English words or too short to be sure) only next to a sure Polish word.",
@@ -51,7 +80,8 @@
   "_doc": "Category prefix -> emotion. The longest matching prefix wins; anything unlisted is 'calm'.",
   "SPRINTER_BEHIND": "shout", "MARK_DANGER": "shout", "SCREAMER": "shout", "BOSS_INCOMING": "shout", "FOREMAN": "shout",
   "GLASSHIDE": "shout", "TEAM_DOWN": "shout", "WINDOW_OPEN": "shout", "ALARM": "shout", "BREAKOUT": "shout",
-  "CALL": "shout", "M1_FOREMAN": "raised", "SKY_PLANE_DOWN": "raised", "JAKUB_FALLEN": "raised", "COVER": "brisk",
+  "CALL": "shout", "INN_SCREAM": "shout", "INN_WINDOW": "shout", "INN_FLEE": "shout", "INN_CAUGHT": "shout",
+  "INN_SHUT": "shout", "INN_DOOR": "raised", "INN_BITTEN": "hurt", "INN_FALL": "hurt", "M1_FOREMAN": "raised", "SKY_PLANE_DOWN": "raised", "JAKUB_FALLEN": "raised", "COVER": "brisk",
   "DOWN": "hurt", "RETURN_WOUNDED": "hurt",
   "CHATTER": "quiet", "MIDNIGHT": "quiet", "BLUES": "quiet", "LANTERN": "quiet", "CAGE_TALK": "quiet",
   "COUSINS": "quiet", "TALK_ASK": "quiet", "MACH": "quiet", "POL": "quiet", "GRUMBLE": "quiet", "REVIVED": "quiet",

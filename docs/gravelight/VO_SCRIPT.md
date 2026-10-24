@@ -1980,7 +1980,7 @@ learns what a plan or a patent is. The ids carry `SQ6` so the bake can run them 
 
 Played by `InnOpening` (`gravelight/world/inn_opening/inn_opening.gd`, data `data/gravelight/map00_opening.json`, which
 holds each line's time and speaker). Local on every peer, positional at the patron when baked; the subtitle shows the
-patron's name. **Not baked yet** (audio_manifest "missing"): new speakers for the bake, one voice each.
+patron's name. Baked with the neural cast (T-073): one Kokoro voice each, a German accent, in `voice_cast.json`; see `VOICES.md`.
 
 **Who they are.** Nobody signed the guest book (they took no rooms; it stays true that the last guests left on the
 20th): folk off the shut road who came in out of the snow on the 23rd. Anselm, Lene and Käthe Vogt are not among

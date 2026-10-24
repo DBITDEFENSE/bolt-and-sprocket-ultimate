@@ -814,10 +814,13 @@ def neural_hash(speaker: str, text: str, emo_name: str, emo: dict, cues: set[str
     words = set(re.findall(r"[^\W\d_]+", text.lower()))
     pl_hit = bool(re.search(r"[ąćęłńóśźż]", text.lower())) or bool(
         words & {w.lower() for w in pol.get("words", []) + pol.get("weak_words", [])})
+    ger = CAST.get("german", {})
+    de_hit = bool(c.get("native_german")) and bool(words & {w.lower() for w in ger.get("words", [])})
     key = "|".join(["neural", NEURAL_TOOL_VERSION, json.dumps(c, sort_keys=True, ensure_ascii=False),
                     json.dumps(acc, sort_keys=True, ensure_ascii=False), emo_name, json.dumps(emo, sort_keys=True),
                     json.dumps(CAST.get("loudness", {}), sort_keys=True), ",".join(sorted(cues)),
-                    json.dumps(pol, sort_keys=True, ensure_ascii=False) if pl_hit else "", text])
+                    json.dumps(pol, sort_keys=True, ensure_ascii=False) if pl_hit else "", text]
+                   + ([json.dumps(ger, sort_keys=True, ensure_ascii=False)] if de_hit else []))
     return hashlib.sha1(key.encode("utf-8")).hexdigest()[:16]
 
 
@@ -883,6 +886,7 @@ def main() -> int:
                                              "lexicon": str(c.get("lexicon", "us")),
                                              "accent": str(c.get("accent", "")),
                                              "native_polish": bool(c.get("native_polish", False)),
+                                             "native_german": bool(c.get("native_german", False)),
                                              "exclaim": bool(emo.get("exclaim", False))})
                 missing.pop(file_id, None)
                 continue

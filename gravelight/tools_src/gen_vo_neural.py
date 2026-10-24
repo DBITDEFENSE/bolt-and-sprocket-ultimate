@@ -12,12 +12,15 @@ Text to phonemes:
   * Polish words (data/gravelight/vo/voice_cast.json "polish"): eSpeak NG's Polish voice, mapped onto Kokoro's
     symbol set. A native speaker (Wren, Jakub) keeps the Polish sounds; anyone else gets them anglicised (Dutch's
     kitchen Polish, "confidently and wrong").
+  * German words (voice_cast.json "german": the Map 0 patrons' names) for a native German speaker (the
+    civilians, "native_german"): eSpeak NG's German voice, with a uvular r. Anyone else reads them as English.
   * A speaker's "accent" rules (voice_cast.json "accents") rewrite the English phonemes: a light first-language
     colour (th-stopping, a tapped r, word-final devoicing, Polish vowel qualities), never a comic respelling.
 
 Usage: python gen_vo_neural.py jobs.json result.json
   jobs.json:   {"model": dir, "cast": {voice_cast.json}, "jobs": [{"id", "wav", "speaker", "text", "voice",
-                "speed", "lexicon": "us"|"gb", "accent": name|"", "native_polish": bool, "exclaim": bool}]}
+                "speed", "lexicon": "us"|"gb", "accent": name|"", "native_polish": bool, "native_german": bool,
+                "exclaim": bool}]}
   result.json: {"ok": [id...], "failed": {id: reason}, "phonemes": {id: str}, "engine": "kokoro"}
 """
 from __future__ import annotations
@@ -91,6 +94,8 @@ PL_NATIVE = [("d^ʑ", "ʥ"), ("t^ɕ", "ʨ"), ("dʑ", "ʥ"), ("tɕ", "ʨ"), ("d^�
 PL_ANGLICISED = PL_NATIVE + [("ʥ", "ʤ"), ("ʨ", "ʧ"), ("ɕ", "ʃ"), ("ʂ", "ʃ"), ("ɨ", "ɪ"), ("r", "ɹ"), ("ɲʲ", "nj"),
                              ("ɲ", "nj"), ("x", "h"), ("v", "w"), ("ʣ", "dz"), ("ʦ", "ts"), ("ɔ̃", "ɔn"), ("ɛ̃", "ɛn"),
                              ("̃", ""), ("ʲ", "")]
+# misaki's eSpeak German output → Kokoro symbols: a uvular r, the vocalised r as a near-open schwa.
+DE_NATIVE = [("^", ""), ("-", ""), ("r", "ʁ"), ("ɾ", "ʁ"), ("ɜ", "ɐ")]
 
 
 class Phonemizer:
@@ -98,6 +103,10 @@ class Phonemizer:
         self.cast = cast
         self.g2p = {"us": LiteG2P(False), "gb": LiteG2P(True)}
         self.pl = mes.EspeakG2P("pl")
+        self.de = None                              # eSpeak German, loaded on the first German word
+        self.de_words = {w.lower() for w in cast.get("german", {}).get("words", [])}
+        self.de_over = {k.lower(): v for k, v in cast.get("german", {}).get("overrides", {}).items()
+                        if not k.startswith("_")}
         pol = cast.get("polish", {})
         self.pl_strong = {w.lower() for w in pol.get("words", [])}
         self.pl_weak = {w.lower() for w in pol.get("weak_words", [])}
@@ -117,11 +126,13 @@ class Phonemizer:
                         return True
         return False
 
-    def segments(self, text: str) -> list[tuple[str, str]]:
-        """[(lang, text)] runs: consecutive Polish words (with their punctuation) become one "pl" run."""
+    def segments(self, text: str, native_german: bool = False) -> list[tuple[str, str]]:
+        """[(lang, text)] runs: consecutive Polish words (with their punctuation) become one "pl" run, a native German
+        speaker's German words one "de" run."""
         toks = [m for m in re.finditer(r"\S+", text)]
         words = [re.sub(r"[^\wÀ-žĄ-ż']", "", m.group(0)) for m in toks]
-        langs = ["pl" if words[i] and self._is_polish(words, i) else "en" for i in range(len(toks))]
+        langs = ["de" if native_german and words[i].lower() in self.de_words
+                 else "pl" if words[i] and self._is_polish(words, i) else "en" for i in range(len(toks))]
         runs: list[tuple[str, str]] = []
         for m, lang in zip(toks, langs):
             if runs and runs[-1][0] == lang:
@@ -153,12 +164,23 @@ class Phonemizer:
             out.append(w)
         return "".join(out)
 
-    def __call__(self, text: str, lexicon: str, accent: str, native_polish: bool) -> str:
+    def __call__(self, text: str, lexicon: str, accent: str, native_polish: bool, native_german: bool = False) -> str:
         text = re.sub(r"(?<=\w)-(?=\w)", " ", text)            # "jen-koo-yeh", "bolt-action": no dash pauses
         text = re.sub(r"\.\s*(\.\.\.|…)", "...", text)         # "Góra. ...I know": one ellipsis
         parts = []
-        for lang, run in self.segments(text):
-            if lang == "pl":
+        for lang, run in self.segments(text, native_german):
+            if lang == "de":
+                if self.de is None:
+                    self.de = mes.EspeakG2P("de")
+                out = []
+                for wm in re.finditer(r"([^\s.,!?;:…]+)([.,!?;:…]*)", run):
+                    word, punct = wm.group(1), wm.group(2)
+                    wp = self.de_over.get(word.lower()) or self.de(word)
+                    for a, b in DE_NATIVE:
+                        wp = wp.replace(a, b)
+                    out.append(wp.strip() + punct)
+                ps = " ".join(out)
+            elif lang == "pl":
                 # Word by word (Polish stress is per word), so a word eSpeak gets wrong can be overridden.
                 out = []
                 for wm in re.finditer(r"([^\s.,!?;:…]+)([.,!?;:…]*)", run):
@@ -204,7 +226,8 @@ def main() -> int:
     phon: dict[str, str] = {}
     for n, job in enumerate(spec["jobs"]):
         try:
-            ps = ph(job["text"], job.get("lexicon", "us"), job.get("accent", ""), bool(job.get("native_polish")))
+            ps = ph(job["text"], job.get("lexicon", "us"), job.get("accent", ""), bool(job.get("native_polish")),
+                    bool(job.get("native_german")))
             if job.get("exclaim"):
                 # A shouted line: its last full stop becomes "!", which gives Kokoro's rising, forceful read.
                 ps = re.sub(r"\.$", "!", ps)
