@@ -281,3 +281,31 @@ resumes after ("Back to it.").
 
 Details, the APIs and the tuning: `docs/gravelight/MARKS.md`; lines: VO_SCRIPT section 19; tests: `test_mark_orders.gd`,
 `smoke_marks`.
+
+
+## Player bot mode (T-071): an agent plays your survivor
+
+Press **F6** (Settings > Controls: "Bot mode (an AI plays you)"), tick **Bot mode** on the pause menu's Settings page,
+or type `botmode on` in the dev console, and a local agent plays your own survivor while you watch in first person.
+The HUD says **BOT MODE — press F6 to take over**, with what it is doing under it ("training: face, 6 following
+(round the taproom tables)", the planner's next purchase). Any real input hands control back at once: a move key or
+the stick, fire, aim, jump, sprint, reload, use, knife, a grenade, a weapon key, or a real mouse / right-stick move
+(keys you were already holding when you switched it on don't count until you let go). F6 again also stops it.
+
+- **What plays you:** the bots' own Update 03 brain (perception without wallhacks, the utility actions, the aim layer,
+  the economy, revives) on your Player through the same movement code (BotLocomotion on your MoveIntent). It aims with
+  the Elite preset and turns your view on a damped curve (never a snap). It shops with your Scrip (no free bot kit):
+  a real gun first (never the Kar98k), the power's door and the switch, Second Wind first (your solo self-revive),
+  then Ironhide, ammo when low; the doors its loops need.
+- **Training:** with four or more zombies after it, it trains them round the map's loop (`routes_<map>.json`; on
+  Map 0 the taproom ring, and the yard's Well Loop once the stable and the yard are open), turning to fire into the
+  train when it is safe and swerving round anything that cuts in. A handful of zombies, and special rounds, it just
+  shoots where it stands. It kills the round's last zombies (it never keeps a crawler).
+- **The bots and Jakub** follow it as their leader, as they would follow you; with nobody human leading, the squad's
+  "bots alone" rules apply (it may throw the power, and they drink).
+- **Local AI:** with the Bot Local AI setting on and Ollama running, the local model picks what to buy or open next
+  (the planner); without it the scripted planner does, and everything else is the same.
+- **Co-op:** only the host can hand over their survivor (a client's world is the host's).
+- **Launcher:** `res://gravelight/tools_src/play_botmode.tscn` (args `-- --map=map00|map01 --bots=N --round=R`), or
+  `--botmode` on any map.
+- Tuning: `data/gravelight/ai/player_bot.json`; the design and the numbers: `docs/BOT_AI.md` section 10.

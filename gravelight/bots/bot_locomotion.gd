@@ -126,6 +126,13 @@ var _ticks: int = 0
 var _time: float = 0.0
 var _turn_rate: float = -1.0
 var _turn_skill: String = ""
+## T-071 (player bot mode): a skills.json preset for the turn rate other than the Bot Skill setting ("" = the
+## setting), and the damped turn the first-person view follows ({} = the bots' plain turn-rate limit):
+## {max_rate_rad_s, accel_rad_s2, gain_per_s, sprint_mult} (player_bot.json "turn").
+var skill_override: String = ""
+var smooth_turn: Dictionary = {}
+var _yaw_v: float = 0.0
+var _pitch_v: float = 0.0
 
 
 # ================================================================== config
@@ -187,6 +194,23 @@ func stop() -> void:
 	_set_mode(Mode.STOP)
 	_goal = Vector3.INF
 	_clear_path()
+
+
+## T-071: walk an explicit polyline this frame (the trainer's lap ahead on its loop: the route's own validated
+## samples, so no navmesh query). urgency as move_to. The stuck ladder, personal space and facing work as usual.
+func steer_path(pts: PackedVector3Array, urgency: float = 0.5) -> void:
+	if pts.is_empty():
+		stop()
+		return
+	_set_mode(Mode.MOVE)
+	_urgency = clampf(urgency, 0.0, 1.0)
+	_stop_dist = 0.3
+	_goal = pts[pts.size() - 1]
+	_path = pts
+	_path_i = 0
+	_path_goal = _goal
+	_need_plan = false
+	_repath_t = 0.5
 
 
 func train(route: TrainingRoute) -> void:
@@ -1046,6 +1070,9 @@ func _face(delta: float, wish: Vector3, sprint: bool) -> void:
 	var rate: float = turn_rate()
 	if sprint or player.sprinting:
 		rate *= float(player._mv.get("sprint_turn_mult", 0.78))
+	if not smooth_turn.is_empty():
+		_face_smooth(delta, want, sprint or player.sprinting)
+		return
 	var step: float = rate * delta
 	var want_yaw: float = atan2(-want.x, -want.z)
 	if Vector2(want.x, want.z).length_squared() > 0.0001:
@@ -1056,10 +1083,36 @@ func _face(delta: float, wish: Vector3, sprint: bool) -> void:
 	player.head.rotation.x = clampf(player.head.rotation.x + clampf(dp, -step, step), deg_to_rad(-80.0), deg_to_rad(80.0))
 
 
+## T-071: the damped turn (smooth_turn): the angular speed follows the error x gain, capped at max_rate and
+## changed at most accel per second, so the first-person view eases into and out of every turn (no snap, no
+## jitter on the aim's small corrections).
+func _face_smooth(delta: float, want: Vector3, running: bool) -> void:
+	var max_r: float = float(smooth_turn.get("max_rate_rad_s", 5.2)) * (float(smooth_turn.get("sprint_mult", 0.8)) if running else 1.0)
+	var acc: float = float(smooth_turn.get("accel_rad_s2", 34.0))
+	var gain: float = float(smooth_turn.get("gain_per_s", 11.0))
+	if Vector2(want.x, want.z).length_squared() > 0.0001:
+		var dy: float = wrapf(atan2(-want.x, -want.z) - player.rotation.y, -PI, PI)
+		_yaw_v = move_toward(_yaw_v, clampf(dy * gain, -max_r, max_r), acc * delta)
+		var stepy: float = _yaw_v * delta
+		if absf(stepy) > absf(dy) and signf(stepy) == signf(dy):
+			stepy = dy
+			_yaw_v = 0.0
+		player.rotation.y = wrapf(player.rotation.y + stepy, -PI, PI)
+	var want_pitch: float = asin(clampf(want.y, -1.0, 1.0)) if _look_set else 0.0
+	var dp: float = want_pitch - player.head.rotation.x
+	_pitch_v = move_toward(_pitch_v, clampf(dp * gain, -max_r, max_r), acc * delta)
+	var stepp: float = _pitch_v * delta
+	if absf(stepp) > absf(dp) and signf(stepp) == signf(dp):
+		stepp = dp
+		_pitch_v = 0.0
+	player.head.rotation.x = clampf(player.head.rotation.x + stepp, deg_to_rad(-80.0), deg_to_rad(80.0))
+
+
 ## The skill's turn rate (bots.json skills.<skill>.turn_rate, rad/s).
 func turn_rate() -> float:
-	if _turn_rate < 0.0 or _turn_skill != GameState.bot_skill:
-		_turn_skill = GameState.bot_skill
+	var sk: String = skill_override if skill_override != "" else GameState.bot_skill
+	if _turn_rate < 0.0 or _turn_skill != sk:
+		_turn_skill = sk
 		_turn_rate = float(BotConfig.skill(BotConfig.cfg(), _turn_skill).get("turn_rate", 6.0))
 	return _turn_rate
 

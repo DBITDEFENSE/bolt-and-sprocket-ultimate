@@ -535,6 +535,21 @@ func _build_settings_page(page: Control) -> void:
 	right.add_child(MenuKit.check("Subtitles", bool(GLSettings.values.get("subtitles", true)), func(on: bool) -> void: GLSettings.set_value("subtitles", on)))
 	right.add_child(MenuKit.check("Hint mode (show the next objective)", bool(GLSettings.values.get("hint_mode", false)), func(on: bool) -> void: GLSettings.set_value("hint_mode", on)))
 	right.add_child(MenuKit.check("Classic Rules (no character traits)", bool(GLSettings.values.get("classic_rules", false)), func(on: bool) -> void: GLSettings.set_value("classic_rules", on)))
+	_add_bot_mode_check.call_deferred(right)   # T-071 (the map attaches its PlayerBot after this menu is built)
+
+
+## T-071: player bot mode (an agent plays your survivor; any move or shot takes over).
+func _add_bot_mode_check(right: VBoxContainer) -> void:
+	var pb: PlayerBot = PlayerBot.of(get_tree()) if is_inside_tree() else null
+	if pb == null or not is_instance_valid(right):
+		return
+	right.add_child(HSeparator.new())
+	var bm: CheckButton = MenuKit.check("Bot mode: the agent plays your survivor (%s; move or shoot to take over)" % pb.key_label(), pb.is_on(),
+		func(on: bool) -> void: pb.set_on(on, "pause menu"))
+	right.add_child(bm)
+	pb.changed.connect(func(on: bool, _why: String) -> void:
+		if is_instance_valid(bm):
+			bm.set_pressed_no_signal(on))
 
 
 # ================================================================== QUIT

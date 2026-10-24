@@ -25,6 +25,11 @@ var requires_doors: PackedStringArray = PackedStringArray()   # every one of the
 var requires_zones: PackedStringArray = PackedStringArray()   # every one of these zones open (GameState)
 ## A squad with no human leading it makes its home on the open route with the highest `home` (0 = never; T-058).
 var home: float = 0.0
+## Added to the player bot's loop score (BotTrainer.loop_score, T-071): + for a loop that trains well alone, - for one
+## that doesn't (a lollipop walked both ways).
+var agent_bonus: float = 0.0
+## Only the player bot trains here (T-071): the squad's route pick and the bots' door rules leave it out.
+var agent_only: bool = false
 var _len: float = 0.0
 
 static var _cache: Dictionary = {}   # map key -> Array[TrainingRoute]
@@ -50,6 +55,8 @@ static func from_dict(d: Dictionary, map_key: String) -> TrainingRoute:
 	r.map = map_key
 	r.label = str(d.get("label", r.id))
 	r.home = float(d.get("home", 0.0))
+	r.agent_bonus = float(d.get("agent_bonus", 0.0))
+	r.agent_only = bool(d.get("agent_only", false))
 	for door: Variant in d.get("requires_doors", []):
 		r.requires_doors.append(str(door))
 	for z: Variant in d.get("requires_zones", []):
@@ -83,8 +90,8 @@ static func all_for_map(map_id: String) -> Array[TrainingRoute]:
 
 
 ## The routes usable right now: every door a route needs is open (BuyDoor.door_id in the "doors" group) and
-## every zone it needs is open (GameState.open_zones).
-static func for_map(map_id: String) -> Array[TrainingRoute]:
+## every zone it needs is open (GameState.open_zones). Agent-only routes (T-071) only with `include_agent`.
+static func for_map(map_id: String, include_agent: bool = false) -> Array[TrainingRoute]:
 	var out: Array[TrainingRoute] = []
 	var tree: SceneTree = Engine.get_main_loop() as SceneTree
 	var open: Dictionary = {}
@@ -93,6 +100,8 @@ static func for_map(map_id: String) -> Array[TrainingRoute]:
 			if n is BuyDoor and (n as BuyDoor).is_open:
 				open[String((n as BuyDoor).door_id)] = true
 	for r: TrainingRoute in all_for_map(map_id):
+		if r.agent_only and not include_agent:
+			continue
 		if r.doors_ok(open) and r.zones_ok(GameState.open_zones):
 			out.append(r)
 	return out

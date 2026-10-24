@@ -202,10 +202,17 @@ Each option shows a suggested priority score; higher is usually better.
 Reply only with JSON: {"choice": "<one option id>", "say": "<a short in-character remark, at most 12 words>"}."""
 
 
+## T-071: the system prompt when the planner plans for the player bot (the human handed their survivor over).
+const PLAYER_BOT_PROMPT: String = """You are %s, the survivor a human handed to you in GRAVELIGHT, a round-based zombie game like Call of Duty Zombies; they watch while you play. You decide what to set out to do next between fights; your body trains the horde round the map's loop, aims, shoots, revives and flees on its own. The AI teammates follow you.
+Your goals, in order: stay alive (you are the one the run depends on); turn the power on; buy perks (Ironhide first), a better gun, Crucible upgrades and ammo with your own Scrip; open only the doors you need. The easter egg is handled by the squad's easter-egg help, not by you.
+Keep your current objective unless it is finished, impossible, or a clearly better one appeared. Never leave a big horde to shop. Each option shows a suggested priority score; higher is usually better.
+Reply only with JSON: {"choice": "<one option id>", "say": "<a short in-character remark, at most 12 words>"}."""
+
+
 func _messages(current: String) -> Array:
 	var who: String = Net.display_name(brain.player.player_id)
 	return [
-		{"role": "system", "content": SYSTEM_PROMPT % who},
+		{"role": "system", "content": (PLAYER_BOT_PROMPT if brain.is_player_bot else SYSTEM_PROMPT) % who},
 		{"role": "user", "content": build_prompt(_state_lines(), options, current)},
 	]
 
@@ -320,6 +327,8 @@ func _use_option(out: Array[Dictionary], id: String, node: Node3D, score: float,
 ## The closed door that most likely stands between the bot and `goal`: affordable, usable now, its near side
 ## reachable, and nearest the goal. Offered just under the objective it unblocks.
 func _blocked(out: Array[Dictionary], goal: Node3D, score: float, why: String) -> void:
+	if brain.is_player_bot:
+		return   # T-071: the player bot's doors are the economy's (the power's door, the doors its loops need)
 	var me: Player = brain.player
 	var scrip: int = Economy.get_scrip(me.player_id)
 	var best: BuyDoor = null
@@ -360,6 +369,8 @@ func _follow_option() -> Dictionary:
 	var h: Player = squad.human()
 	var score: float = float(_cfg.get("follow_score", 12.0))
 	var label: String = "stick with the team and fight"
+	if brain.is_player_bot:
+		return {"id": "follow", "kind": "follow", "node": brain.player, "score": score + 10.0, "label": "keep training the horde round the loop"}
 	if h != null and not h.spectating:
 		var near: int = 0
 		var dir: ZombieDirector = squad.director()

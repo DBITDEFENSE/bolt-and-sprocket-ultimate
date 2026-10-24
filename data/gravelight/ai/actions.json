@@ -46,7 +46,8 @@
     "mark_order": "the value of its map-mark order (BotMarkTask.value, marks.json value: 0 with none, while it waits for Scrip, or for an easter-egg mark: BotEE runs that one; T-069)",
     "escort": "1 when it escorts someone (Jakub)",
     "escort_far": "distance to the escorted player / 15 m",
-    "stand_fast": "1 in a special round (the Bellringers: too fast to run from; T-058): stand together and shoot"
+    "stand_fast": "1 in a special round (the Bellringers: too fast to run from; T-058): stand together and shoot",
+    "trainer": "the player bot's training value (BotTrainer.value, T-071): 0 for every other brain, without a loop or a round; 1 with zombies about; player_bot.json trainer.calm_value when nothing is near"
   },
   "actions": {
     "fight": {"weight": 0.72, "considerations": [
@@ -150,6 +151,10 @@
     "mark_order": {"weight": 0.93, "considerations": [
       {"input": "mark_order", "curve": "order"},
       {"input": "pressure", "curve": {"type": "points", "points": [[0.0, 1.0], [0.6, 0.88], [1.0, 0.55]]}}
+    ]},
+    "lead_train": {"weight": 0.92, "considerations": [
+      {"input": "trainer", "curve": "identity"},
+      {"input": "any_ammo", "curve": "soft_gate"}
     ]},
     "idle": {"weight": 0.08, "considerations": []}
   },

@@ -62,6 +62,9 @@ func enter(id: String) -> void:
 		"ee_task", "mark_order":
 			if not brain.task.is_empty():
 				brain.drop_task()
+		"lead_train":
+			if brain.trainer != null:
+				brain.trainer.enter()
 
 
 ## Leaving an action: let go of what it held.
@@ -80,6 +83,9 @@ func exit(id: String) -> void:
 		"mark_order":
 			if brain.mark != null:
 				brain.mark.on_exit()
+		"lead_train":
+			if brain.trainer != null:
+				brain.trainer.exit()
 
 
 func run(id: String, delta: float) -> void:
@@ -88,6 +94,11 @@ func run(id: String, delta: float) -> void:
 			_fight(delta)
 		"train":
 			_train(delta)
+		"lead_train":
+			if brain.trainer != null:
+				brain.trainer.run(delta)   # T-071: the player bot trains the horde round the map's loop
+			else:
+				_idle(delta)
 		"hold":
 			_hold(delta)
 		"retreat":
@@ -717,7 +728,10 @@ func _task(id: String, delta: float) -> void:
 
 
 func _idle(delta: float) -> void:
-	if not _go_home():
+	var per: BotPerception = brain.perception
+	if brain.is_player_bot and per.nearest != null and per.nearest_d < 2.4 and not per.is_visible(per.nearest):
+		_back_off(per.nearest, 2.6, 0.6)   # T-071: something in reach it can't shoot (through a window's boards): step out of reach
+	elif not _go_home():
 		brain.loco.stop()
 	if not brain.aim.update(delta, true):
 		brain.idle_look(delta)

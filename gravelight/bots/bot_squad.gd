@@ -60,6 +60,9 @@ var debug: BotDebugOverlay = null
 var ee: BotEEHub = null
 ## Map-mark orders (Update 04 section 3, T-069): the MapMarks order handler; each brain's BotMarkTask.
 var mark_orders: BotMarkOrders = null
+## Player bot mode (T-071): the brain playing the local human's own survivor (PlayerBot), or null. It is not in
+## `brains` (no nameplate, orders, roles, bonus perk or kit); it revives teammates, claims errands and leads.
+var player_bot: BotBrain = null
 var _bot_cd: Dictionary = {}      # "pid:FAMILY" -> time a bark may come again
 ## The human's recent walking line (their training loop): ~24 s of breadcrumbs. Bots never park on it.
 var human_line: PackedVector3Array = PackedVector3Array()
@@ -125,6 +128,39 @@ func add_brain(p: Player, options: Dictionary = {}, i: int = -1) -> BotBrain:
 	if is_inside_tree():
 		_ensure_ui()   # a companion joining a squad that had no bots (solo): the plates, the wheel, the pings
 	return b
+
+
+## Player bot mode (T-071): a brain for the local human's own Player (`options` as add_brain). Kept out of
+## `brains`; the squad still sees it as the human (it leads, it is revived first) and lets it revive others.
+func add_player_brain(p: Player, options: Dictionary = {}) -> BotBrain:
+	remove_player_brain()
+	var b: BotBrain = BotBrain.new()
+	b.name = "PlayerBotBrain"
+	b.is_player_bot = true
+	b.options.merge(options, true)
+	p.add_child(b)
+	b.setup(p, self, brains.size())
+	player_bot = b
+	return b
+
+
+## Player bot mode off: the player's brain goes (its claims with it).
+func remove_player_brain() -> void:
+	if player_bot == null:
+		return
+	blackboard.release_all(player_bot.player.player_id)
+	for k: Variant in _claims.keys():
+		if int(_claims[k]) == player_bot.player.player_id:
+			_claims.erase(k)
+	if is_instance_valid(player_bot):
+		player_bot.queue_free()
+	player_bot = null
+
+
+## The local human is being played by the agent (bot mode, T-071).
+func human_is_agent() -> bool:
+	var h: Player = human()
+	return h != null and is_instance_valid(h) and h.bot_driven and player_bot != null
 
 
 ## Takes a brain out of the squad (a companion that bled out): its claims go, the brain is freed.
@@ -393,7 +429,7 @@ func leader_for_player(p: Player) -> Player:
 ## No human leads (benched, bled out): the bots decide doors and range themselves.
 func bot_led() -> bool:
 	var h: Player = human()
-	return h == null or not is_instance_valid(h) or h.spectating
+	return h == null or not is_instance_valid(h) or h.spectating or human_is_agent()
 
 
 ## T-058: no human is in the match at all (none, or one sitting the match out: out of the co-op life-cycle, like
@@ -403,6 +439,8 @@ func bots_alone() -> bool:
 	var h: Player = human()
 	if h == null or not is_instance_valid(h):
 		return true
+	if human_is_agent():
+		return true   # T-071: the agent playing the human leads like a squad alone (the power, the useful doors)
 	return h.spectating and (Net.session == null or not Net.session.coop.players.has(h.player_id))
 
 
@@ -579,7 +617,7 @@ func _assign_revives(now: float) -> void:
 			blackboard.claims.erase(key2)
 		var best: BotBrain = null
 		var best_s: float = INF
-		for b: BotBrain in brains:
+		for b: BotBrain in reviver_brains():
 			if b.player == t or not b.player.is_alive() or b.player.spectating or b.player.downed:
 				continue
 			if not blackboard.held_by(b.player.player_id, "revive:").is_empty():
@@ -766,6 +804,8 @@ func _squad_callouts(now: float) -> void:
 ## per-bot gap per family (per_bot_cooldown_s). force_categories skip the squad gap and the roll. With `ping_at`
 ## a world-space ping marker (BotPings) flashes there, labelled `ping_text`. Returns true when the line started.
 func callout(bot: BotBrain, category: String, force: bool = false, ping_at: Vector3 = Vector3.INF, ping_text: String = "") -> bool:
+	if bot != null and bot.is_player_bot:
+		return false   # T-071: the agent playing you doesn't bark in your survivor's voice
 	var cc: Dictionary = _cfg.get("callouts", {})
 	var fam: String = category.get_slice("_", 0) if (category.begins_with("CMD_") or category.begins_with("BONUS_") or category.begins_with("PING_") or category.begins_with("TALLY_")) else category
 	force = force or (cc.get("force_categories", []) as Array).has(fam)
@@ -1036,7 +1076,18 @@ func _brain_of(pid: int) -> BotBrain:
 	for b: BotBrain in brains:
 		if b.player.player_id == pid:
 			return b
+	if player_bot != null and is_instance_valid(player_bot) and player_bot.player.player_id == pid:
+		return player_bot
 	return null
+
+
+## The brains that may claim a revive: the bots (and companions), plus the player bot (T-071).
+func reviver_brains() -> Array[BotBrain]:
+	if player_bot == null or not is_instance_valid(player_bot):
+		return brains
+	var out: Array[BotBrain] = brains.duplicate()
+	out.append(player_bot)
+	return out
 
 
 func _on_enemy_killed(_enemy_id: StringName, _limb: StringName, _weapon_id: StringName, by_player: int) -> void:
@@ -1061,6 +1112,8 @@ func _on_round_started(_round: int, _special: bool) -> void:
 	blackboard.clear_round_claims()
 	for b: BotBrain in brains:
 		b.on_round_started()
+	if player_bot != null and is_instance_valid(player_bot):
+		player_bot.on_round_started()
 
 
 # ================================================================== dev: report, profiling, the overlay
