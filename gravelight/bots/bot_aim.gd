@@ -39,6 +39,8 @@ var domes: int = 0
 var force_slot: int = -1
 ## Set by the Cover action every frame: zombies near this point (a downed teammate) come first.
 var cover_point: Vector3 = Vector3.INF
+## T-071: a zombie the executor wants shot first (the trainer's cutter on the loop ahead); null = the usual pick.
+var focus_target: Zombie = null
 
 var _a: Dictionary = {}
 var _w: Dictionary = {}
@@ -142,6 +144,10 @@ func _pick_target(now: float) -> void:
 			_lost_t += 1.0 / maxf(1.0, brain.think_hz)
 			if _lost_t > float(_a.get("reacquire_lost_s", 0.8)):
 				target = null
+	if focus_target != null and BotPerception.targetable(focus_target) and (per.is_visible(focus_target) or _los(eye(), aim_point(focus_target), focus_target)):
+		if target != focus_target:
+			_acquire(focus_target, target_value(focus_target))
+		return
 	var best: Zombie = null
 	var best_s: float = 0.0
 	for e: Variant in per.known:
@@ -499,6 +505,8 @@ func fire(w: WeaponInstance) -> void:
 			brain.bonus_event("headshot")
 	_bloom = minf(_bloom + (1.0 if pellets == 1 else 0.35), 6.0)
 	player.remote_fire(0, w.id, origin, last_hit)
+	if player.is_local and player.weapons != null:
+		player.weapons.bot_shot_fx(w, origin, last_hit, not hits.is_empty())   # T-071: the player bot's own viewmodel, sound and the co-op relay
 	GLBus.mark_shot(pid, w.is_suppressed())   # a bot's suppressed M1911 stays off the minimap too
 	GLBus.weapon_fired.emit(pid, w.id, w.upgraded, origin, fwd)
 	if target != null:

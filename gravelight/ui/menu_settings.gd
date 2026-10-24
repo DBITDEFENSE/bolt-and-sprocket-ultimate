@@ -15,6 +15,7 @@ const ACTION_NAMES: Dictionary = {
 	"dev_console": "Dev console",
 	"minimap_zoom": "Minimap zoom",
 	"ping": "Ping / mark (double-tap: danger)",
+	"bot_mode": "Bot mode (an AI plays you)",
 }
 
 var _tab: int = 0

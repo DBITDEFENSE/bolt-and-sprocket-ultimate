@@ -53,6 +53,9 @@ var bleedout_seconds: float = 0.0  # > 0: this player's own co-op bleed-out cloc
 ## no slot, no scaling, no perks). It always goes into last stand when downed (even in solo) and never keeps a
 ## solo match alive on its own (MapRoot._on_player_downed).
 var is_companion: bool = false
+## Player bot mode (T-071, gravelight/bots/player_bot.gd): the local human's survivor driven by a BotBrain while
+## they watch. Movement, aim and firing come from the brain (drive_bot, bot_view_tick); the local input is not read.
+var bot_driven: bool = false
 
 var camera: Camera3D
 var head: Node3D
@@ -236,7 +239,7 @@ func _ready_remote() -> void:
 # ---------------------------------------------------------------- input
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not is_local or (downed and not last_stand) or spectating or GameState.phase != GameState.Phase.PLAYING or GameState.input_blocked:
+	if not is_local or bot_driven or (downed and not last_stand) or spectating or GameState.phase != GameState.Phase.PLAYING or GameState.input_blocked:
 		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		var mm: InputEventMouseMotion = event as InputEventMouseMotion
@@ -328,6 +331,8 @@ func _physics_process(delta: float) -> void:
 		if not is_bot:
 			_remote_tick(delta)   # a bot's BotBrain moves it
 		return
+	if bot_driven:
+		return   # T-071: the brain moves, aims and fires this body, then calls bot_view_tick (camera, viewmodel)
 	if GameState.phase != GameState.Phase.PLAYING or downed or spectating:
 		_set_heartbeat(false)
 		if last_stand and GameState.phase == GameState.Phase.PLAYING:
@@ -364,15 +369,34 @@ func _read_move_intent(mi: MoveIntent) -> void:
 ## Input. The caller turns the body (rotation.y) first; `intent.move` is in the body's frame. Bots have no
 ## camera update, so the head height follows the stance here.
 func drive_bot(delta: float, intent: MoveIntent) -> void:
-	if not is_bot or downed or spectating:
+	if not (is_bot or bot_driven) or downed or spectating:
 		return
 	_mi = intent
 	_update_movement(delta)
-	head.position.y = _eye
+	if not is_local:
+		head.position.y = _eye   # (the local player's camera update places the head: bot_view_tick)
+
+
+## Player bot mode (T-071): the rest of the local player's frame once the brain has moved and turned the body:
+## the aim the brain left on the head becomes the view pitch, the viewmodel follows the brain's gun, the camera
+## (bob, recoil springs, FOV) updates. Called by BotBrain at the end of its physics frame.
+func bot_view_tick(delta: float, reloading: bool, reload_left: float) -> void:
+	if not is_local or not bot_driven:
+		return
+	_pitch = clampf(head.rotation.x - _rk.x + mantle_k() * 0.06, deg_to_rad(-88.0), deg_to_rad(88.0))
+	if GameState.phase != GameState.Phase.PLAYING or spectating:
+		return
+	if downed and not last_stand:
+		return   # solo down: the fall tween owns the head
+	interact_target = null
+	interact_progress = 0.0
+	prompt_text = ""
+	weapons.bot_view_tick(delta, sprinting, reloading, reload_left)
+	_update_camera(delta)
 
 
 func _update_movement(delta: float) -> void:
-	if is_local:
+	if is_local and not bot_driven:
 		_read_move_intent(_mi)
 	var input: Vector2 = _mi.move
 	var wish: Vector3 = (global_basis * Vector3(input.x, 0, input.y))

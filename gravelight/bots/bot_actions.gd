@@ -62,6 +62,9 @@ func enter(id: String) -> void:
 		"ee_task", "mark_order":
 			if not brain.task.is_empty():
 				brain.drop_task()
+		"lead_train":
+			if brain.trainer != null:
+				brain.trainer.enter()
 
 
 ## Leaving an action: let go of what it held.
@@ -80,6 +83,9 @@ func exit(id: String) -> void:
 		"mark_order":
 			if brain.mark != null:
 				brain.mark.on_exit()
+		"lead_train":
+			if brain.trainer != null:
+				brain.trainer.exit()
 
 
 func run(id: String, delta: float) -> void:
@@ -88,6 +94,11 @@ func run(id: String, delta: float) -> void:
 			_fight(delta)
 		"train":
 			_train(delta)
+		"lead_train":
+			if brain.trainer != null:
+				brain.trainer.run(delta)   # T-071: the player bot trains the horde round the map's loop
+			else:
+				_idle(delta)
 		"hold":
 			_hold(delta)
 		"retreat":

@@ -1,5 +1,5 @@
 {
-  "_doc": "Training loops for Map 0 (Update 03 section 3, T-056; gravelight/bots/training_route.gd). points: the loop's control points [x, y, z] in order (closed: the last joins the first), smoothed by `smooth` Chaikin passes and resampled every 0.5 m. ring_width: the open space the loop runs in (m, wall to wall across the line). requires_doors / requires_zones: door ids / zone ids (GameState.open_zones) that must all be open before bots use it. home: a squad with no human leading it makes its home on the open route with the highest home (T-058; 0 / missing = never). Validate: gravelight/tools_src/route_tool.tscn -- --map=map00 --validate (also run by smoke_bot_loco).",
+  "_doc": "Training loops for Map 0 (agent_bonus: added to the player bot's loop score, BotTrainer.loop_score, T-071; a negative one keeps it off a loop that is bad to train on alone) (Update 03 section 3, T-056; gravelight/bots/training_route.gd). points: the loop's control points [x, y, z] in order (closed: the last joins the first), smoothed by `smooth` Chaikin passes and resampled every 0.5 m. ring_width: the open space the loop runs in (m, wall to wall across the line). requires_doors / requires_zones: door ids / zone ids (GameState.open_zones) that must all be open before bots use it. home: a squad with no human leading it makes its home on the open route with the highest home (T-058; 0 / missing = never). Validate: gravelight/tools_src/route_tool.tscn -- --map=map00 --validate (also run by smoke_bot_loco).",
   "routes": [
     {
       "id": "map00_taproom",
@@ -18,6 +18,8 @@
       "points": [[10.5, 0, 3.0], [16.5, 0, 2.4], [22.2, 0, 2.6], [22.2, 0, 9.0], [20.8, 0, 13.6], [20.4, 0, 15.9], [20.2, 0, 19.0], [20.2, 0, 22.6], [21.4, 0, 25.0], [22.5, 0, 28.0], [22.3, 0, 31.4], [20.6, 0, 32.9], [18.7, 0, 31.8], [18.5, 0, 28.0], [19.0, 0, 24.8], [19.7, 0, 22.6], [19.7, 0, 19.0], [19.9, 0, 15.9], [19.4, 0, 14.4], [14.5, 0, 14.2], [10.2, 0, 13.6], [10.4, 0, 6.5]],
       "ring_width": 2.5,
       "smooth": 1,
+      "agent_bonus": -6.0,
+      "_agent_doc": "A lollipop: the yard passage is walked both ways, so the agent (T-071) avoids it.",
       "requires_doors": ["door_stable"]
     },
     {
@@ -27,7 +29,19 @@
       "points": [[18.8, 0, 24.6], [21.4, 0, 24.4], [22.6, 0, 26.5], [22.6, 0, 30.0], [21.4, 0, 32.8], [18.8, 0, 32.6], [18.4, 0, 30.0], [18.4, 0, 27.0]],
       "ring_width": 5.0,
       "smooth": 2,
+      "agent_bonus": -3.0,
       "requires_doors": ["door_stable"]
+    },
+    {
+      "id": "map00_yard_well",
+      "label": "round the yard (the Well Loop)",
+      "notes": "T-071: the Carters' Yard's open middle, round the well and the crate spot (x 5.5-25.5, z 37.5-45): 2-3 m inside the fences and clear of the woodpile and the cart. The longest open loop on Map 0 and the agent's favourite once the stable and the yard are open (agent_bonus): the four fence gaps feed it from the sides, so cut-ins are the thing to watch.",
+      "points": [[6.5, 0, 38.0], [12.0, 0, 37.5], [18.0, 0, 37.5], [23.5, 0, 38.0], [25.5, 0, 41.0], [23.5, 0, 44.5], [18.0, 0, 45.0], [12.0, 0, 45.0], [6.5, 0, 44.5], [5.5, 0, 41.0]],
+      "ring_width": 4.5,
+      "smooth": 2,
+      "agent_bonus": 4.0,
+      "agent_only": true,
+      "requires_doors": ["door_stable", "door_yard"]
     },
     {
       "id": "map00_cellar_barrels",

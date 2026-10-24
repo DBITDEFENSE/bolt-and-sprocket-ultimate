@@ -114,5 +114,8 @@
   "minimap_zoom": {
     "key": "N",
     "pad": "DPAD_LEFT"
+  },
+  "bot_mode": {
+    "key": "F6"
   }
 }

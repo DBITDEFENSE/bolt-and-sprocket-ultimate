@@ -2567,3 +2567,93 @@ func _animate_reload(p: float) -> Variant:
 		"bell":
 			return bell_logic().reload_hand(p, _part("Crank"), lh_home)   # the crank IS the reload
 	return null
+
+
+# ---------------------------------------------------------------- player bot mode (T-071)
+
+var _bot_view_index: int = -1
+
+## Player bot mode (T-071): the local human's own holder while the bots' brain plays them. The brain (BotAim) owns
+## firing, reloads and the ammo; this only keeps the first-person view honest: the gun in hand (rebuilt after the
+## brain swaps), the raise, the sprint pose, the reload animation and its sound cues, the bob and sway. It never
+## moves ammo (the brain's reload does).
+func bot_view_tick(delta: float, sprinting: bool, reloading: bool, reload_left: float) -> void:
+	if mirror:
+		return
+	_swap_t = maxf(0.0, _swap_t - delta)
+	_kick = move_toward(_kick, 0.0, delta * 6.0)
+	_tick_bloom(delta)
+	_sprinting = sprinting
+	var w: WeaponInstance = current()
+	if sprinting:
+		_sprint_out_total = sprint_out_time(w)
+		_sprint_out_t = _sprint_out_total
+	else:
+		_sprint_out_t = maxf(0.0, _sprint_out_t - delta)
+	if _bot_view_index != current_index:
+		var first: bool = _bot_view_index < 0
+		_bot_view_index = current_index
+		if _reloading:
+			_reloading = false
+			_cues = []
+			_cue_i = 0
+		if not first:
+			_swap_t = SWAP_TIME * (w.draw_mult() if w != null else 1.0)
+			AudioDirector.play_2d("weapon_raise", -6.0)
+		_rebuild_gun()
+	ads_t = move_toward(ads_t, 0.0, delta / 0.25)
+	if w != null:
+		if reloading and not _reloading:
+			_reloading = true
+			_reload_per_round = false
+			_reload_t = maxf(0.05, reload_left)
+			_on_reload_started(w)
+			_set_reload_cues()
+		elif reloading:
+			if reload_left > _reload_t + 0.05:
+				_reload_total = maxf(0.05, reload_left)   # a round-by-round reload's next shell
+				_cue_i = 0
+			_reload_t = maxf(0.0, reload_left)
+			_tick_reload_cues()
+		elif _reloading:
+			_reloading = false
+			_flush_reload_cues()
+			_on_reload_finished()
+	_animate(delta, sprinting)
+
+
+## The control came back to the player: the holder picks up where the brain left the guns (the gun in hand is
+## the one shown; no half-finished reload animation).
+func bot_view_release() -> void:
+	if _reloading:
+		_cancel_reload()
+	if _bot_view_index >= 0 and _bot_view_index != current_index:
+		_rebuild_gun()
+	_bot_view_index = -1
+	_reload_queued = false
+
+
+## One shot the player bot's brain fired (BotAim.fire): the viewmodel kick, the muzzle flash, the 2D fire sound,
+## the bolt / brass, a visual-only camera punch (no aim change: the brain aims), the hitmarker, and the co-op relay
+## (Net.session.local_fired) so the other peers see the shot.
+func bot_shot_fx(w: WeaponInstance, origin: Vector3, end: Vector3, hit: bool) -> void:
+	if mirror or w == null:
+		return
+	_fired_this_frame = true
+	_since_shot = 0.0
+	_kick = 1.0
+	var ads_k: float = lerpf(1.0, float(_feel.get("ads_recoil", 0.65)), ads_t)
+	var punch: float = float(recoil_cfg(w).get("punch", 0.45))
+	if player != null:
+		player.kick_camera(float(_feel.get("cam_pitch", 1.0)) * ads_k * punch, float(_feel.get("cam_yaw", 0.3)) * ads_k * punch, 0.0,
+			float(_feel.get("cam_recover", 12.0)), float(_feel.get("shake", 0.05)) * ads_k, float(_feel.get("fov_punch", 0.5)) * ads_k)
+	_vm_kick(1.0)
+	_on_shot_fx(float(_feel.get("flash_time", 0.05)))
+	AudioDirector.play_2d(_fire_key(w), float(_feel.get("fire_db", -2.0)))
+	if w.mag == 0 and w.mag_size() > 1:
+		AudioDirector.play_2d("last_round_click", -3.0, 0.0)
+	if hit:
+		AudioDirector.play_2d("hitmarker", -6.0)
+	_after_shot_anim(w)
+	_last_impact = end
+	_report_fire(0, w.id, origin, end)

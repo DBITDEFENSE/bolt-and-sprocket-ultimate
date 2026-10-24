@@ -20,6 +20,12 @@ extends Node
 ##                work "Glasmacher Calling" (the notes, then the radio up to its last frequency, which is the player's
 ##                commit; the harness then locks it as the player). Ends when the egg is complete, the squad wipes or
 ##                at --max-round (default 12). Logs the egg numbers (steps, inputs, egg-failure events).
+##   botmode      (T-071) player bot mode: the local Player is played by the agent (PlayerBot: the bots' brain +
+##                BotTrainer training the horde round the map's loop) instead of the scripted player; --bots=N (0-3,
+##                default 0: solo) teammates follow it. Map 0 by default (--map=map01: Kaltenbrunn). From round 1 to
+##                the game over (solo) / the wipe, or --max-round. Logs the training numbers (pb_* in the extras:
+##                time training, the train's mean length / spread / bunched share, cut-ins, hits while training,
+##                stuck time) and a table of its own.
 ## --ee=off|ask|full: Bot Easter-Egg Help for any scenario (default: the setting, When Asked; ee_full: full).
 ## --player-kit (T-058): the scripted player's kit. "baseline" (the default, as in the Update 03 baseline): the
 ## bots' free spawn kit, buys nothing, never touches the power. "realistic": the Thompson only, opens the way to the
@@ -70,6 +76,11 @@ var _order_t: float = 0.0
 var _order_i: int = 0
 ## --ee: the Bot Easter-Egg Help mode for the run ("" = the setting); ee_full forces "full".
 var ee_mode: String = ""
+## --bots=N (botmode only): the AI teammates beside the agent-played player (default 0).
+var bots_n: int = 3
+var _bots_set: bool = false
+var _pb: PlayerBot = null
+var _pb_rounds: Dictionary = {}   # round -> [downs, hits] of the agent
 var _ee_committed_t: float = -1.0
 var _ee_events: PackedStringArray = []
 const SOAK_ORDERS: Array[StringName] = [&"hold", &"follow", &"train", &"repair", &"revive", &"buy_perks"]
@@ -124,10 +135,13 @@ func _ready() -> void:
 			homage = a.substr(9) != "0"
 		elif a.begins_with("--ee="):
 			ee_mode = a.substr(5)
+		elif a.begins_with("--bots="):
+			bots_n = clampi(int(a.substr(7)), 0, 3)
+			_bots_set = true
 		elif a.begins_with("--loco="):
 			BotLocomotion.force_mode = a.substr(7)   # U03 section 3: v1 / v2 against bots.json locomotion
-	if not ["player3", "bots3", "cousins", "kaltenbrunn", "ee_full"].has(scenario):
-		print("[soak] unknown --scenario=%s (player3, bots3, cousins, kaltenbrunn, ee_full)" % scenario)
+	if not ["player3", "bots3", "cousins", "kaltenbrunn", "ee_full", "botmode"].has(scenario):
+		print("[soak] unknown --scenario=%s (player3, bots3, cousins, kaltenbrunn, ee_full, botmode)" % scenario)
 		print("[soak] RESULT FAIL")
 		get_tree().quit(2)
 		return
@@ -141,6 +155,8 @@ func _ready() -> void:
 		ee_mode = "full"
 		if max_round <= 0:
 			max_round = 12
+	if scenario == "botmode" and not _bots_set:
+		bots_n = 0
 	GLBus.quest_step_completed.connect(func(q: StringName, st: StringName) -> void:
 		if _live:
 			_ee_events.append("r%d %.0fs %s/%s done" % [RoundManager.current_round, _game_t, q, st]))
@@ -152,11 +168,12 @@ func _ready() -> void:
 	GLSettings.path = "user://_ai_soak_settings.cfg"   # never write the player's own settings file
 	GLSettings.values["homage_bosses"] = homage
 	GLSettings.values["homage_names"] = "real"
+	GLSettings.values["bot_local_ai"] = false   # T-071: the agent's planner is the scripted one in every soak (no Ollama)
 	Engine.time_scale = speed
 	_batch = "%s_%s_x%d" % [Time.get_datetime_string_from_system(false, true).replace(":", "").replace(" ", "_").replace("-", ""), scenario, runs]
 	if BotLocomotion.force_mode != "":
 		_batch += "_loco" + BotLocomotion.force_mode
-	if not ["baseline", "realistic"].has(player_kit):
+	if not ["baseline", "realistic", "bots"].has(player_kit):
 		print("[soak] unknown --player-kit=%s (baseline, realistic)" % player_kit)
 		print("[soak] RESULT FAIL")
 		get_tree().quit(2)
@@ -165,6 +182,14 @@ func _ready() -> void:
 		_batch += "_" + player_kit
 	if not homage:
 		_batch += "_nohomage"
+	if scenario == "botmode":
+		_batch += "_%s_b%d" % [map_key, bots_n]
+		GLBus.player_downed.connect(func(pid: int) -> void:
+			if _live and pid == 1:
+				_pb_round(RoundManager.current_round)[0] += 1)
+		GLBus.player_damaged.connect(func(pid: int, amount: float) -> void:
+			if _live and pid == 1 and amount > 0.0:
+				_pb_round(RoundManager.current_round)[1] += 1)
 	print("[soak] scenario %s, %d run(s), seed %d, max round %s, speed %.2fx, skill %s, map %s, player kit %s, local AI off" % [scenario, runs, seed_base,
 		str(max_round) if max_round > 0 else "to the wipe", speed, skill, map_key, player_kit])
 	GLBus.power_activated.connect(func() -> void:
@@ -181,7 +206,7 @@ func _start_run() -> void:
 		(RoundManager.get("rng") as RandomNumberGenerator).seed = sd
 	Campaign.reset()
 	GameState.character_id = StringName(character)
-	GameState.bot_count = 3
+	GameState.bot_count = bots_n if scenario == "botmode" else 3
 	GameState.bot_skill = skill
 	GameState.bot_ai_mode = "off"
 	GameState.god_mode = god
@@ -224,6 +249,14 @@ func _physics_process(delta: float) -> void:
 			_trace_t = trace_s
 			for b: BotBrain in _map.squad.brains:
 				print("[trace] t=%.0f r%d %s | task %s" % [_game_t, RoundManager.current_round, b.status_line(), str(b.task.get("label", "-"))])
+			if _pb != null and is_instance_valid(_pb) and _pb.brain != null:
+				var tb: BotTrainer = _pb.trainer
+				var pp: Vector3 = _map.player.global_position
+				var cw: WeaponInstance = _pb.brain.aim.cur()
+				print("[trace] t=%.1f r%d AGENT %s (%.1f,%.1f) v%.1f hp%.0f %s %d/%d | %s %s f%d h%.1f a%.1f(%d) n%.1f p%.2f | scrip %d | %s" % [_game_t, RoundManager.current_round,
+					_pb.brain.action, pp.x, pp.z, _map.player.horizontal_speed(), _map.player.hp, str(cw.id) if cw != null else "-", cw.mag if cw != null else 0, cw.reserve if cw != null else 0,
+					tb.route.id.trim_prefix("map00_").trim_prefix("map01_") if tb.route != null else "-", tb.phase_name(), tb.followers, minf(tb.head_d, 99.0), minf(tb.ahead_d, 99.0), tb.ahead_n,
+					minf(_pb.brain.perception.nearest_d, 99.0), _pb.brain.perception.pressure, Economy.get_scrip(1), ", ".join(PackedStringArray(_pb.brain.top3.map(func(t: Variant) -> String: return "%s %.2f" % [str((t as Array)[0]), float((t as Array)[1])]))) + " | buy: " + str((_pb.brain.economy.best(_pb.brain.squad.time()).get("buy", {}) as Dictionary).get("label", "-")) if trace_s >= 2.0 else ""])
 	if scenario == "ee_full":
 		_tick_ee()
 	if _metrics.finished:
@@ -240,9 +273,20 @@ func _physics_process(delta: float) -> void:
 
 func _try_go_live() -> void:
 	_ready_wait += 1
-	if _map.player == null or not _map.player.is_inside_tree() or _map.squad == null:
+	if _map.player == null or not _map.player.is_inside_tree():
 		return
 	if NavigationServer3D.map_get_iteration_id(_map.player.get_world_3d().navigation_map) == 0 or _ready_wait < 30:
+		return
+	if scenario == "botmode" and (_pb == null or not is_instance_valid(_pb) or not _pb.is_on()):
+		_pb = PlayerBot.of(get_tree())
+		if _pb == null or not _pb.set_on(true, "soak"):
+			return
+		_pb_rounds = {}
+		if _pb.trainer != null:
+			_pb.trainer.verbose_hits = trace_s > 0.0
+		if player_kit == "bots" and _map.squad != null:
+			_map.squad.apply_kit(_map.player, true)   # --player-kit=bots (tuning only): the bots' free spawn kit for the agent
+	if _map.squad == null:
 		return
 	_live = true
 	_last_us = 0
@@ -255,6 +299,8 @@ func _try_go_live() -> void:
 	match scenario:
 		"bots3":
 			_bench_the_human()
+		"botmode":
+			pass   # the agent plays the local Player (PlayerBot, switched on above)
 		"cousins":
 			_dummy = Dummy.new()
 			_dummy.call("setup", _map.player, _map, seed_base + _run, player_kit)
@@ -340,6 +386,31 @@ func _end_run(why: String) -> void:
 		_metrics.extra["dummy_unstuck"] = int(_dummy.get("unstuck"))
 	if not _metrics.extra.has("power_round"):
 		_metrics.extra["power_round"] = 0   # the power never came on
+	if scenario == "botmode" and _pb != null and is_instance_valid(_pb):
+		var ts: Dictionary = _pb.trainer.summary() if _pb.trainer != null else _pb.last_summary
+		for k: Variant in ts.keys():
+			_metrics.extra["pb_" + str(k)] = ts[k]
+		_metrics.extra["pb_training_share"] = snappedf(float(ts.get("training_s", 0.0)) / maxf(1.0, _game_t), 0.01)
+		_metrics.extra["pb_hits_per_min_training"] = snappedf(float(ts.get("hits_training", 0)) / maxf(0.01, float(ts.get("training_s", 0.0)) / 60.0), 0.01)
+		_metrics.extra["pb_bots"] = bots_n
+		_metrics.extra["pb_handbacks"] = _pb.handbacks
+		_metrics.extra["pb_scrip_end"] = Economy.get_scrip(1)
+		_metrics.extra["pb_perks"] = ",".join(PackedStringArray(PerkManager.owned(1).map(func(x: Variant) -> String: return str(x))))
+		var guns: PackedStringArray = []
+		if _map.player != null and _map.player.weapons != null:
+			for w: WeaponInstance in _map.player.weapons.slots:
+				guns.append(str(w.id))
+		_metrics.extra["pb_guns"] = ",".join(guns)
+		var per_round: PackedStringArray = []
+		for r: Variant in _pb_rounds.keys():
+			per_round.append("r%d:%d/%d" % [int(r), int((_pb_rounds[r] as Array)[0]), int((_pb_rounds[r] as Array)[1])])
+		_metrics.extra["pb_downs_hits_by_round"] = " ".join(per_round)
+		print("[soak]   agent: %s" % str(ts))
+		if _pb.trainer != null:
+			for hl: String in _pb.trainer.hit_log:
+				print("[soak]   agent HIT ", hl)
+		_pb.set_on(false, "soak end")
+		_pb = null
 	if _map.squad != null and _map.squad.ee != null:
 		var hub: BotEEHub = _map.squad.ee
 		_metrics.extra["ee_mode"] = hub.mode()
@@ -382,7 +453,10 @@ func _end_run(why: String) -> void:
 	if _map.squad != null:
 		for line: String in _map.squad.report():
 			print("[soak]   ", line)
-	_results.append(_metrics.summary())
+	var sm2: Dictionary = _metrics.summary()
+	if scenario == "botmode":
+		sm2["pb_downs_per_round"] = float(sm2.get("human_downs", 0)) / float(maxi(1, int(sm2.get("round_reached", 1))))
+	_results.append(sm2)
 	if _dummy != null:
 		_dummy.call("shutdown")
 	_dummy = null
@@ -401,8 +475,22 @@ func _end_run(why: String) -> void:
 		_write_table(dir)
 
 
+func _pb_round(r: int) -> Array:
+	if not _pb_rounds.has(r):
+		_pb_rounds[r] = [0, 0]
+	return _pb_rounds[r]
+
+
 ## The batch's markdown table: one row per run and the mean.
 func _write_table(dir: String) -> void:
+	if scenario == "botmode":
+		_write_table_cols(dir, [["round", "round_reached", "%d"], ["min", "minutes", "%.1f"], ["downs", "human_downs", "%d"],
+			["downs/round", "pb_downs_per_round", "%.2f"], ["training %", "pb_training_share", "pct"], ["train mean", "pb_train_mean", "%.1f"],
+			["train max", "pb_train_max", "%d"], ["4+ share", "pb_big_train_share", "pct"], ["spread m", "pb_train_spread_m", "%.1f"],
+			["bunched", "pb_train_bunched", "pct"], ["cut-ins", "pb_cut_ins", "%d"], ["hits", "pb_hits", "%d"], ["hits training", "pb_hits_training", "%d"],
+			["hits/min training", "pb_hits_per_min_training", "%.2f"], ["stuck s", "pb_stuck_s", "%.1f"], ["kills", "pb_kills", "%d"],
+			["reversals", "pb_reversals", "%d"], ["passes", "pb_passes", "%d"], ["power r", "power_round", "%d"], ["bot downs", "bot_downs", "%d"]])
+		return
 	var cols: Array = [["round", "round_reached", "%d"], ["min", "minutes", "%.1f"], ["bot kills", "bot_kills", "%d"],
 		["bot downs", "bot_downs", "%d"], ["downs/round", "bot_downs_per_round", "%.2f"], ["human downs", "human_downs", "%d"],
 		["revive %", "revive_rate", "pct"], ["revived", "revived", "%d"], ["bled", "bled", "%d"], ["ttr s", "ttr_mean", "%.1f"],
@@ -410,6 +498,10 @@ func _write_table(dir: String) -> void:
 		["block ev", "block_events", "%d"], ["sustained", "block_sustained", "%d"], ["spent", "scrip_spent", "%d"],
 		["wasted", "scrip_wasted", "%d"], ["kar98k>r10", "kar98k_late", "%d"], ["empty-mag", "empty_mag_events", "%d"], ["empty-mag s", "empty_mag_time", "%.0f"],
 		["pistol s", "pistol_time", "%.0f"]]
+	_write_table_cols(dir, cols)
+
+
+func _write_table_cols(dir: String, cols: Array) -> void:
 	var lines: PackedStringArray = []
 	lines.append("| run | end | " + " | ".join(PackedStringArray(cols.map(func(c: Array) -> String: return str(c[0])))) + " |")
 	lines.append("|---|---|" + "---|".repeat(cols.size()))

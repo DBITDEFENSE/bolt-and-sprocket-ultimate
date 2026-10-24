@@ -170,6 +170,13 @@ static func self_led_door_ok(is_power_door: bool, route_door: bool, scrip: int, 
 	return scrip - cost - saving_for >= reserve
 
 
+## value_of with the personality's economy.priority_mult for that kind (T-071: the player bot wants a real gun
+## before the power's door).
+func _pv(kind: String, dist: float) -> float:
+	var m: Dictionary = brain.personality_economy("priority_mult", {}) as Dictionary
+	return clampf(value_of(eco, kind, dist) * float(m.get(kind, 1.0)), 0.0, 1.0)
+
+
 ## The value (0..1) of a shopping candidate: its priority, a little less the farther it is.
 static func value_of(e: Dictionary, kind: String, dist: float) -> float:
 	var p: float = float((e.get("priorities", {}) as Dictionary).get(kind, 0.5))
@@ -278,6 +285,8 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	var res_perk: String = str((eco.get("reserve", {}) as Dictionary).get("perk", "second_wind"))
 	var reserve: int = reserve_scrip(eco, PerkManager.price(StringName(res_perk)) if not PerkManager.perk_data(StringName(res_perk)).is_empty() else 500,
 		box_price, float(brain.personality_economy("save_bias", 1.0)))
+	if brain.is_player_bot and not GameState.power_on:
+		reserve = int((eco.get("reserve", {}) as Dictionary).get("min_scrip", 300))   # T-071: no perk to rebuy before the power (the gun comes first)
 	# ---- an ammo box (or wall ammo) when the main gun runs low: ammo is never held back by the reserve
 	var box_c: Dictionary = _ammo_candidate(anc, rng, scrip)
 	if not box_c.is_empty():
@@ -296,7 +305,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 		if plan_p.has("switch"):
 			var sw: Node3D = plan_p["switch"]
 			if squad.can_claim(sw, pid) and _near_enough(sw.global_position):
-				out.append({"node": sw, "kind": "power", "stand": plan_p["stand"], "value": value_of(eco, "power", _flat(sw.global_position, me)),
+				out.append({"node": sw, "kind": "power", "stand": plan_p["stand"], "value": _pv("power", _flat(sw.global_position, me)),
 					"cost": 0, "label": "throw the power switch (nobody else will)"})
 		elif plan_p.has("door"):
 			power_door = plan_p["door"]
@@ -319,11 +328,11 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 		if plan.is_empty():
 			plan = eco.get("perk_plan", [])
 		var cap_left: int = PerkManager.cap_for(pid) - PerkManager.capped_count(pid)
-		var coop: bool = not GameState.is_solo()
+		var coop: bool = not GameState.is_solo() or brain.is_player_bot   # T-071: the human's own Second Wind is a solo self-revive
 		var perk: StringName = perk_wanted(eco, plan, PerkManager.owned(pid), avail, main_cls, coop, cap_left, scrip, 0 if perks_only else reserve)
 		if perk != &"":
 			var pm2: PerkMachine = machines[String(perk)]
-			out.append({"node": pm2, "kind": "perk", "value": value_of(eco, "perk", _flat(pm2.global_position, me)) + (0.3 if perks_only else 0.0),
+			out.append({"node": pm2, "kind": "perk", "value": _pv("perk", _flat(pm2.global_position, me)) + (0.3 if perks_only else 0.0),
 				"cost": int(avail[String(perk)]), "label": "drink %s (%d Scrip)" % [PerkManager.display_name(perk), int(avail[String(perk)])]})
 	if perks_only:
 		return out
@@ -349,7 +358,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	var gun: StringName = gun_wanted(eco, held, walls, classes, (brain.personality.get("aim", {}) as Dictionary).get("class_pref", {}), rnd, scrip, reserve, free_slot)
 	if gun != &"" and nodes.has(String(gun)):
 		var wb2: WallBuy = nodes[String(gun)]
-		out.append({"node": wb2, "kind": "gun", "value": value_of(eco, "gun", _flat(wb2.global_position, me)), "cost": wb2.price(),
+		out.append({"node": wb2, "kind": "gun", "value": _pv("gun", _flat(wb2.global_position, me)), "cost": wb2.price(),
 			"label": "buy the %s wall gun (%d Scrip)" % [BotBrain.weapon_name(gun), wb2.price()]})
 	# ---- doors
 	var dcfg: Dictionary = (cfg.get("shopping", {}) as Dictionary).get("doors", {})
@@ -378,7 +387,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 				continue
 			if not squad.can_claim(dn, pid) or not brain.reachable(BotBrain._door_side(dn, me)):
 				continue
-			var dv: float = 0.95 if ordered else value_of(eco, "power_door" if is_pd else "door", _flat(dn.global_position, me))
+			var dv: float = 0.95 if ordered else _pv("power_door" if is_pd else "door", _flat(dn.global_position, me))
 			out.append({"node": dn, "kind": "door", "value": dv, "cost": dn.cost,
 				"label": "open the %s (%d Scrip)%s" % [BotBrain.door_label(dn), dn.cost, " on the way to the power" if is_pd else ""]})
 	# ---- the Requisition Crate (never someone else's open crate)
@@ -396,7 +405,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 			var st: Vector3 = brain.stand_point(cr)
 			if st == Vector3.INF:
 				continue
-			out.append({"node": cr, "kind": "crate", "value": value_of(eco, "crate", _flat(cr.global_position, me)), "cost": CrateManager.cost(), "stand": st,
+			out.append({"node": cr, "kind": "crate", "value": _pv("crate", _flat(cr.global_position, me)), "cost": CrateManager.cost(), "stand": st,
 				"label": "pull the Requisition Crate (%d Scrip)" % CrateManager.cost()})
 	# ---- the Crucible: a gun worth it, in the break, never while the human is down; upgraded ammo
 	var crc: Dictionary = (cfg.get("shopping", {}) as Dictionary).get("crucible", {})
@@ -420,7 +429,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 		var cr2: Crucible = brain.crucible_for_me(float(crc.get("max_from_leader_m", 30.0)) * range_mult * (2.0 if squad.bot_led() else 1.0), anc)
 		if cr2 != null and _near_enough(cr2.global_position):
 			var kind: String = "crucible_ammo" if ammo_slot >= 0 else "crucible"
-			out.append({"node": cr2, "kind": kind, "slot": ammo_slot, "value": value_of(eco, kind, _flat(cr2.global_position, me)),
+			out.append({"node": cr2, "kind": kind, "slot": ammo_slot, "value": _pv(kind, _flat(cr2.global_position, me)),
 				"cost": Crucible.price_for(&"ammo", econ) if ammo_slot >= 0 else up_cost,
 				"label": "buy upgraded ammo at the Crucible" if ammo_slot >= 0 else ("feed the %s to the Crucible (%d Scrip)" % [player.weapons.slots[up_slot].display_name(), up_cost])})
 	return out
@@ -480,6 +489,8 @@ func _route_doors() -> Dictionary:
 	if brain.squad.map == null:
 		return out
 	for r: TrainingRoute in TrainingRoute.all_for_map(String(brain.squad.map.map_id)):
+		if r.agent_only and not brain.is_player_bot:
+			continue   # T-071: the player bot's own loops
 		for d: String in r.requires_doors:
 			out[d] = true
 	return out
@@ -551,7 +562,7 @@ func _ammo_candidate(anc: Vector3, rng: float, scrip: int) -> Dictionary:
 				if best == null or _flat(ab.global_position, me) < _flat(best.global_position, me):
 					best = ab
 			if best != null:
-				out = {"node": best, "kind": "ammo_box", "slot": slot, "value": value_of(eco, "ammo_box", _flat(best.global_position, me)) + (0.25 if worst < 0.1 else 0.0),
+				out = {"node": best, "kind": "ammo_box", "slot": slot, "value": _pv("ammo_box", _flat(best.global_position, me)) + (0.25 if worst < 0.1 else 0.0),
 					"cost": price, "label": "refill the %s at an ammo box (%d Scrip)" % [sw.display_name(), price]}
 				if worst < 0.12:
 					out["value"] = 1.0   # nearly dry: this comes before anything else
@@ -561,7 +572,7 @@ func _ammo_candidate(anc: Vector3, rng: float, scrip: int) -> Dictionary:
 				continue
 			if scrip < wb.ammo_price(player) or not brain.squad.can_claim(wb, player.player_id) or not brain.reachable(BotBrain._front_of(wb)):
 				continue
-			var v: float = value_of(eco, "wall_ammo", _flat(wb.global_position, me))
+			var v: float = _pv("wall_ammo", _flat(wb.global_position, me))
 			if out.is_empty() or v > float(out["value"]):
 				out = {"node": wb, "kind": "ammo", "slot": slot, "value": v, "cost": wb.ammo_price(player),
 					"label": "buy ammo for the %s (%d Scrip)" % [sw.display_name(), wb.ammo_price(player)]}

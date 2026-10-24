@@ -1,0 +1,43 @@
+{
+  "_doc": "The player bot's profile (T-071, player_bot.json personality): the local human's survivor played by the bots' brain. It leads (nobody to follow), so follow / regroup / escort / window holds are off; lead_train (BotTrainer) is its fight while a loop is usable, and plain fight is the fallback (special rounds, no loop). Same keys as the other personality_<char>.json files.",
+  "character": "player_agent",
+  "_summary": "The agent playing your survivor: trains the horde round the map's loop, leads the squad, shops for itself.",
+  "actions": {
+    "lead_train": 1.15,
+    "train": 0.0,
+    "fight": 0.85,
+    "hold": 0.0,
+    "follow": 0.0,
+    "regroup": 0.0,
+    "escort": 0.0,
+    "chatter": 0.0,
+    "retreat": 0.75,
+    "cover": 0.8,
+    "buy": 1.0,
+    "crate": 0.9,
+    "repair": 0.55,
+    "objective": 0.8
+  },
+  "role_bias": {"anchor": 0.0, "runner": 0.0, "medic": 0.0, "builder": 0.0},
+  "aim": {
+    "class_pref": {"assault": 1.2, "smg": 1.15, "lmg": 1.1, "rifle": 0.9, "shotgun": 0.95, "bolt": 0.0},
+    "_class_pref_doc": "bolt 0: no Kar98k (a bolt-action can't stop a train; the wall-gun pick skips a class worth 0)",
+    "head_bias": 0.1,
+    "specials_first": 0.2
+  },
+  "combat": {
+    "retreat_hp": 1.0,
+    "melee_crawlers": false,
+    "grenade_bias": 1.2,
+    "keep_distance_m": 5.0,
+    "ammo_conserve": 0.0,
+    "aggression": 0.0,
+    "flank": false,
+    "high_ground": false
+  },
+  "economy": {"save_bias": 1.0, "perk_order": ["second_wind", "ironhide_stout", "@weapon", "hawkeye_brandy", "marathon_malt", "blastproof_bock", "overclock_cordial", "packmule_porter"], "perk_skill": 1.0,
+    "priority_mult": {"gun": 1.25, "power_door": 0.85, "door": 0.9},
+    "_priority_doc": "x economy.json priorities: a real gun (the Garand, the MP40) before the power's 1500 door.",
+    "_perk_doc": "Second Wind first: for the human's own survivor in solo it is a self-revive (an extra life for 500), then Ironhide."},
+  "callouts": {"boss_first": false, "kill_tally": false, "grumble_on_move": false, "comments_by": ""}
+}

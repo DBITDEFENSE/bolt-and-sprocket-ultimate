@@ -79,6 +79,7 @@ func _ready() -> void:
 	elif not GameState.bot_ids.is_empty():
 		_start_bot_session()
 	JakubCompanion.attach(self)   # the prisoner companion (U02 section 6.2): his cage on Map 0, or he travels with you
+	PlayerBot.attach(self)   # player bot mode (T-071): off until F6 / the pause menu / `botmode on` / --botmode
 	GLBus.match_started.emit(map_id)
 	for q: String in quest_files:
 		QuestManager.load_quest(q)

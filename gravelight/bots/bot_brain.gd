@@ -75,6 +75,10 @@ var ee: BotEE = null
 var mark: BotMarkTask = null
 var bonus_perk: StringName = &""
 var bonus_said: bool = false
+## Player bot mode (T-071, PlayerBot): this brain plays the local human's own survivor (BotSquad.player_bot, not
+## in squad.brains), and its trainer (BotTrainer) runs the lead_train action.
+var is_player_bot: bool = false
+var trainer: BotTrainer = null
 ## The legacy squad order (BotConfig.COMMANDS) this bot follows; `order_id()` is the full one.
 var command: StringName = &"follow"
 
@@ -149,7 +153,8 @@ func setup(bot_player: Player, bot_squad: BotSquad, i: int) -> void:
 	_acfg = BotAIData.table("actions")
 	_curves = BotAIData.table("curves")
 	_pcfg = GLData.table("player")
-	skill = BotConfig.skill(_cfg, GameState.bot_skill)
+	var skill_name_: String = str(options.get("skill", ""))   # T-071: the player bot aims with its own preset
+	skill = BotConfig.skill(_cfg, skill_name_ if skill_name_ != "" else GameState.bot_skill)
 	var pid_name: String = str(options.get("personality", ""))
 	personality = BotAIData.personality(pid_name if pid_name != "" else String(player.character_id))
 	think_hz = float(_acfg.get("think_hz", 5.0)) * float(skill.get("think_hz_mult", 1.0))
@@ -327,6 +332,7 @@ func _physics_process(delta: float) -> void:
 		aim.cancel_reload()
 		squad.blackboard.release_all(player.player_id)
 		_pose(delta)
+		_local_view(delta)
 		_account(t0)
 		return
 	if player.downed:
@@ -339,6 +345,7 @@ func _physics_process(delta: float) -> void:
 		_set_action("downed")
 		_tick_downed(delta)
 		_pose(delta)
+		_local_view(delta)
 		_account(t0)
 		return
 	if _was_down or _was_out:
@@ -363,7 +370,14 @@ func _physics_process(delta: float) -> void:
 	if _sprint_t > 1.0:
 		bonus_event("sprint")
 	_pose(delta)
+	_local_view(delta)
 	_account(t0)
+
+
+## T-071: the player bot's body is the local Player: its camera and viewmodel follow what the brain did this frame.
+func _local_view(delta: float) -> void:
+	if player.is_local and player.bot_driven:
+		player.bot_view_tick(delta, aim.reloading, float(aim.get("_reload_t")))
 
 
 func _account(t0: int) -> void:
@@ -433,6 +447,8 @@ func _think() -> void:
 	recent.append("%s %s %d/%d hp%.0f n%.1f k%d s%d v%.1f st%.1f%s%s" % [action, str(cw2.id) if cw2 != null else "-", cw2.mag if cw2 != null else 0,
 		cw2.reserve if cw2 != null else 0, player.hp, minf(perception.nearest_d, 99.0), perception.n5, aim.shots, player.horizontal_speed(),
 		float(player.get("_stamina")), " R" if aim.reloading else "", " S" if player.sprinting else ""])
+	if trainer != null and action == "lead_train":
+		recent[recent.size() - 1] += " T:%s f%d h%.1f a%.1f" % [trainer.phase_name(), trainer.followers, minf(trainer.head_d, 99.0), minf(trainer.ahead_d, 99.0)]
 	if recent.size() > 12:
 		recent.remove_at(0)
 
@@ -524,6 +540,7 @@ func context(now: float) -> Dictionary:
 	c["order"] = 1.0 if not _order_task().is_empty() else 0.0
 	c["ee_task"] = ee.value() if ee != null else 0.0
 	c["mark_order"] = mark.value() if mark != null else 0.0
+	c["trainer"] = trainer.value() if trainer != null else 0.0
 	var esc: Player = escort_target()
 	c["escort"] = 1.0 if esc != null else 0.0
 	c["escort_far"] = clampf(_flat(esc.global_position, player.global_position) / 15.0, 0.0, 1.0) if esc != null else 0.0
