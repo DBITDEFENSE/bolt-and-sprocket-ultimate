@@ -85,7 +85,10 @@ func test_mode_from_settings() -> void:
 	assert_eq(BotEECatalog.mode_of({"bot_ee_help": "full"}), "full")
 	assert_eq(BotEECatalog.mode_of({"bot_ee_help": "off"}), "off")
 	assert_eq(BotEECatalog.mode_of({"bot_ee_help": "nonsense"}), "ask")
-	assert_eq(GLSettings.values.get("bot_ee_help", ""), "ask", "the setting's default")
+	# the shipped default, not the player's saved settings (a fresh settings node holds only the defaults)
+	var fresh: Node = (load("res://gravelight/autoload/settings.gd") as GDScript).new()
+	assert_eq(fresh.get("values").get("bot_ee_help", ""), "ask", "the setting's default")
+	fresh.free()
 
 
 func test_mode_gating_off_ask_full() -> void:

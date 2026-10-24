@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://gravelight/tools_src/smoke_map00_alive.gd" id="1"]
+
+[node name="SmokeMap00Alive" type="Node"]
+script = ExtResource("1")

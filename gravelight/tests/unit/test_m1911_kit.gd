@@ -257,7 +257,9 @@ func test_bench_buy_spends_and_fits() -> void:
 	assert_true(bool(drum_row["installed"]))
 	var none: Player = _player(4)
 	none.weapons.slots = [WeaponInstance.create(&"kar98k")]
-	assert_eq(ArmorersBench.buy(none, "mag", "drum")["reason"], "no_pistol")
+	assert_eq(ArmorersBench.buy(none, "mag", "drum")["reason"], "unknown", "T-074: the Kar98k has a table, but no drum")
+	none.weapons.slots = []
+	assert_eq(ArmorersBench.buy(none, "mag", "drum")["reason"], "no_gun")
 
 
 func test_loadout_rows_list_the_pistol() -> void:

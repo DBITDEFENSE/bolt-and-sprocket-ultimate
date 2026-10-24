@@ -1,9 +1,10 @@
 class_name ArmorersBenchUI
 extends CanvasLayer
-## The Armorer's Bench screen (UPDATE_04 section 6, DECISIONS T-068). Left: a close-up of your pistol in the vise
-## under the bench lamp, the camera slowly orbiting it, rebuilt with whatever option you are looking at. Right:
-## the five slots, the options of the chosen one (price, fitted, locked), its description, six stat bars
-## (damage, range, recoil, ADS speed, mobility, capacity) showing the change the option would make, and BUY.
+## The Armorer's Bench screen (UPDATE_04 section 6, DECISIONS T-068 / T-074). Left: a close-up of the gun in your
+## hands under the bench lamp (a pistol in the vise, a long gun laid in a padded cradle), the camera slowly orbiting
+## it, rebuilt with whatever option you are looking at. Right: that gun's slots (WeaponKit.slot_order), the options
+## of the chosen one (price, fitted, locked), its description, six stat bars (damage, range, recoil, ADS speed,
+## mobility, capacity) showing the change the option would make, and BUY.
 ## Mouse, keyboard or controller (focus moves through the buttons; Q / E or LB / RB switch slots). Esc, B or
 ## crouch leaves; so does taking a hit. The world keeps running: the bench is diegetic.
 
@@ -34,6 +35,10 @@ var _fitted: Label
 var _buy: Button
 var _bars: Dictionary = {}    # stat -> [StatBar, Label]
 var _built_sig: String = "-"
+var _vise: Node3D            # the pistol vise (hidden for a long gun)
+var _cradle: Node3D          # a long gun's padded rests (rebuilt per gun)
+var _benchtop: Node3D        # the oak top and its tools (lowered under a long gun)
+var _key: SpotLight3D
 var _opt_buttons: Dictionary = {}   # option -> [Button, its text without the marker]
 
 
@@ -44,7 +49,8 @@ func _init() -> void:
 func _ready() -> void:
 	GameState.input_blocked = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	_slot = start_slot if start_slot != "" else str(M1911Kit.slot_order()[0])
+	var order: Array = WeaponKit.slot_order(_pistol())
+	_slot = start_slot if start_slot != "" else (str(order[0]) if not order.is_empty() else "mag")
 	_preview = start_option
 	_build()
 	_refresh()
@@ -59,8 +65,9 @@ func _exit_tree() -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
+## The gun on the bench: the one in the player's hands (WeaponKit.gun_of). Named for the T-068 pistol bench.
 func _pistol() -> WeaponInstance:
-	return M1911Kit.pistol_of(player)
+	return WeaponKit.gun_of(player)
 
 
 # ================================================================== layout
@@ -168,22 +175,29 @@ func _build_scene() -> void:
 	_vp.add_child(root)
 	# the bench top and the vise: a column on the bench, two leather-faced jaws gripping the pistol's dust cover
 	# (model z -0.145..-0.065, y below 0.012); the grip and anything under it hang free behind the column
-	Props.block(root, Vector3(-0.6, -0.36, -0.6), Vector3(0.6, -0.31, 0.6), "furniture")
-	Props.block(root, Vector3(-0.05, -0.31, -0.26), Vector3(0.05, -0.27, -0.03), "machine_green")
-	Props.block(root, Vector3(-0.032, -0.27, -0.2), Vector3(0.032, -0.075, -0.07), "machine_green")
+	_benchtop = Node3D.new()
+	root.add_child(_benchtop)
+	_vise = Node3D.new()
+	root.add_child(_vise)
+	Props.block(_benchtop, Vector3(-1.2, -0.36, -1.0), Vector3(1.2, -0.31, 1.0), "furniture")
+	Props.block(_vise, Vector3(-0.05, -0.31, -0.26), Vector3(0.05, -0.27, -0.03), "machine_green")
+	Props.block(_vise, Vector3(-0.032, -0.27, -0.2), Vector3(0.032, -0.075, -0.07), "machine_green")
 	for s2: float in [-1.0, 1.0]:
 		var x0: float = 0.0125 * s2
 		var x1: float = 0.034 * s2
-		Props.block(root, Vector3(minf(x0, x1), -0.075, -0.15), Vector3(maxf(x0, x1), 0.012, -0.06), "machine_green")
-		Props.block(root, Vector3(minf(x0, x0 + 0.004 * s2), -0.03, -0.148), Vector3(maxf(x0, x0 + 0.004 * s2), 0.013, -0.062), "leather")
-	Props.strut(root, Vector3(0.034, -0.03, -0.105), Vector3(0.16, -0.03, -0.105), 0.01, "steel", true)
-	Props.strut(root, Vector3(0.16, -0.09, -0.105), Vector3(0.16, 0.03, -0.105), 0.008, "steel", true)
+		Props.block(_vise, Vector3(minf(x0, x1), -0.075, -0.15), Vector3(maxf(x0, x1), 0.012, -0.06), "machine_green")
+		Props.block(_vise, Vector3(minf(x0, x0 + 0.004 * s2), -0.03, -0.148), Vector3(maxf(x0, x0 + 0.004 * s2), 0.013, -0.062), "leather")
+	Props.strut(_vise, Vector3(0.034, -0.03, -0.105), Vector3(0.16, -0.03, -0.105), 0.01, "steel", true)
+	Props.strut(_vise, Vector3(0.16, -0.09, -0.105), Vector3(0.16, 0.03, -0.105), 0.008, "steel", true)
 	for k: int in 3:
-		Props.obox(root, Vector3(-0.25 + k * 0.03, -0.305, 0.22), Vector3(0.008, 0.008, 0.14), "steel", Vector3(0, 12 - k * 9, 0))
-	Props.cyl(root, Vector3(0.3, -0.26, 0.28), 0.04, 0.1, "red_paint")
+		Props.obox(_benchtop, Vector3(-0.25 + k * 0.03, -0.305, 0.22), Vector3(0.008, 0.008, 0.14), "steel", Vector3(0, 12 - k * 9, 0))
+	Props.cyl(_benchtop, Vector3(0.3, -0.26, 0.28), 0.04, 0.1, "red_paint")
+	_cradle = Node3D.new()
+	root.add_child(_cradle)
 	_pivot = Node3D.new()
 	root.add_child(_pivot)
 	var key: SpotLight3D = SpotLight3D.new()
+	_key = key
 	key.light_color = Color(1.0, 0.78, 0.5)
 	key.light_energy = 6.0
 	key.spot_range = 3.0
@@ -222,14 +236,24 @@ func _rebuild_gun() -> void:
 	_built_sig = sig
 	if _gun != null:
 		_gun.queue_free()
-	var camo: StringName = &"" if t.upgraded else ProfileSave.camo_for(&"m1911")
-	_gun = WeaponModels.build(t.base_id(), t.upgraded, camo, M1911KitModels.look_of(t))
+	var camo: StringName = &"" if t.upgraded else ProfileSave.camo_for(t.base_id())
+	_gun = WeaponModels.build(t.base_id(), t.upgraded, camo, WeaponKitModels.look_of(t))
 	_pivot.add_child(_gun)
 	for n: Node in _gun.find_children("*", "OmniLight3D", true, false):
 		(n as OmniLight3D).omni_range = 0.5
 	var kf: Node3D = _gun.get_node_or_null("KitFlash") as Node3D
 	if kf != null:
 		kf.hide()
+	if t.weapon_class() != &"pistol":
+		_frame_long_gun()
+		return
+	_vise.show()
+	_benchtop.position = Vector3.ZERO
+	for c: Node in _cradle.get_children():
+		c.queue_free()
+	_key.position = Vector3(0.3, 0.6, 0.25)
+	_key.spot_angle = 38.0
+	_key.look_at(Vector3(0, 0, 0.05), Vector3.UP)
 	# frame the whole gun: from the muzzle to the end of the stock / the bottom of the drum
 	var front: float = absf((_gun.get_node("Muzzle") as Node3D).position.z)
 	var back: float = 0.43 if t.kit.get("grip", "") == "stock" else 0.1
@@ -237,6 +261,36 @@ func _rebuild_gun() -> void:
 	_pivot.position = Vector3(0, 0, (back - front) * 0.5 + 0.0)
 	_gun.position = -_pivot.position
 	_orbit = clampf(0.3 + _gun_len * 0.8, 0.42, 1.0)
+
+
+## A long gun lies level in two padded rests on the bench (no vise): the top is lowered under its lowest part (a
+## drum, a bipod's feet), each rest reaches up to the gun's underside where it stands (one under the fore-end, one
+## under the butt or receiver), and the camera and lamp pull back to take in the whole length.
+func _frame_long_gun() -> void:
+	_vise.hide()
+	for c: Node in _cradle.get_children():
+		c.queue_free()
+	var a: AABB = WeaponKitModels.bounds(_gun)
+	_gun_len = a.size.z
+	var mid: float = a.get_center().z
+	_pivot.position = Vector3(0, 0, mid)
+	_gun.position = -_pivot.position
+	var top_y: float = a.position.y - 0.015
+	_benchtop.position = Vector3(0, top_y + 0.31, 0)   # its top face sits at -0.31 in its own frame
+	for f: float in [0.28, 0.78]:
+		var z: float = lerpf(a.position.z, a.end.z, f)
+		var under: float = WeaponKitModels.underside(_gun, z - 0.025, z + 0.025)
+		if under == INF:
+			continue
+		var y1: float = under - 0.002
+		Props.block(_cradle, Vector3(-0.035, top_y, z - mid - 0.03), Vector3(0.035, y1 - 0.012, z - mid + 0.03), "furniture")
+		for s: float in [-1.0, 1.0]:
+			Props.block(_cradle, Vector3(minf(s * 0.012, s * 0.04), y1 - 0.014, z - mid - 0.03), Vector3(maxf(s * 0.012, s * 0.04), y1 + 0.012, z - mid + 0.03), "leather")
+	_orbit = clampf(0.3 + _gun_len * 0.75, 0.42, 1.9)
+	_key.position = Vector3(0.45, 0.95, 0.35)
+	_key.spot_angle = 55.0
+	_key.spot_range = 4.0
+	_key.look_at(Vector3(0, a.get_center().y, 0), Vector3.UP)
 
 
 func _process(delta: float) -> void:
@@ -265,9 +319,9 @@ func _refresh() -> void:
 	_refresh_scrip()
 	for c: Node in _slots_box.get_children():
 		c.queue_free()
-	for slot: Variant in M1911Kit.slot_order():
+	for slot: Variant in WeaponKit.slot_order(w):
 		var s: String = str(slot)
-		var b: Button = MenuKit.button(("> " if s == _slot else "") + M1911Kit.slot_name(s), _pick_slot.bind(s), 15)
+		var b: Button = MenuKit.button(("> " if s == _slot else "") + WeaponKit.slot_name(w, s), _pick_slot.bind(s), 15)
 		b.custom_minimum_size = Vector2(104, 34)
 		_slots_box.add_child(b)
 	for c2: Node in _opts_box.get_children():
@@ -310,7 +364,7 @@ func _refresh_scrip() -> void:
 
 
 func _first_option() -> String:
-	var opts: Array = M1911Kit.options(_slot)
+	var opts: Array = WeaponKit.options(_pistol(), _slot)
 	return str(opts[0]) if not opts.is_empty() else ""
 
 
@@ -325,12 +379,12 @@ func _refresh_option() -> void:
 	var code: String = str(row.get("reason", ""))
 	if code == "needs_power":
 		_title_opt.text = "UNDER THE COUNTER"
-		_desc.text = str(M1911Kit.option_def(_slot, _preview).get("locked_text", M1911Kit.reason_text(code)))
+		_desc.text = str(WeaponKit.option_def(w, _slot, _preview).get("locked_text", WeaponKit.reason_text(code)))
 	else:
 		_title_opt.text = str(row.get("name", "")).to_upper()
 		_desc.text = str(row.get("desc", ""))
-	var now: Dictionary = M1911Kit.stats(w)
-	var then: Dictionary = M1911Kit.stats(w, _slot, _preview) if code != "needs_power" else now
+	var now: Dictionary = WeaponKit.stats(w)
+	var then: Dictionary = WeaponKit.stats(w, _slot, _preview) if code != "needs_power" else now
 	for k: String in _bars.keys():
 		var sb: StatBar = _bars[k][0]
 		var val: Label = _bars[k][1]
@@ -344,15 +398,15 @@ func _refresh_option() -> void:
 		_buy.text = "FITTED"
 		_buy.disabled = true
 	elif code == "needs_power" or code == "refused":
-		_buy.text = M1911Kit.reason_text(code).to_upper()
+		_buy.text = WeaponKit.reason_text(code).to_upper()
 		_buy.disabled = true
 	else:
 		var replacing: String = str(w.kit.get(_slot, ""))
-		_buy.text = "BUY  %d%s" % [int(row.get("price", 0)), ("   (replaces %s)" % M1911Kit.option_name(_slot, replacing, w.upgraded)) if replacing != "" else ""]
+		_buy.text = "BUY  %d%s" % [int(row.get("price", 0)), ("   (replaces %s)" % WeaponKit.option_name(w, _slot, replacing, w.upgraded)) if replacing != "" else ""]
 		_buy.disabled = false
 	var lines: PackedStringArray = []
-	for d: Dictionary in M1911Kit.describe(w):
-		lines.append("%-12s %s" % [str(d["slot_name"]).to_upper(), str(d["name"])])
+	for d: Dictionary in WeaponKit.describe(w):
+		lines.append("%-16s %s" % [str(d["slot_name"]).to_upper(), str(d["name"])])
 	_fitted.text = "%s    %s\n%s" % [w.display_name(), "FINISH: " + str(M1911Kit.finish_def(w.finish).get("name", "Service")) if w.finish != &"" else "", "\n".join(lines)]
 	_rebuild_gun()
 
@@ -388,10 +442,10 @@ func _on_buy() -> void:
 		return
 	var res: Dictionary = ArmorersBench.buy(player, _slot, _preview)
 	if bool(res["ok"]):
-		_msg.text = "Fitted: %s  (-%d)" % [M1911Kit.option_name(_slot, _preview, _up()), int(res["price"])]
+		_msg.text = "Fitted: %s  (-%d)" % [WeaponKit.option_name(_pistol(), _slot, _preview, _up()), int(res["price"])]
 		_built_sig = "-"
 	else:
-		_msg.text = M1911Kit.reason_text(str(res["reason"]))
+		_msg.text = WeaponKit.reason_text(str(res["reason"]), _pistol())
 	_refresh()
 
 
@@ -405,7 +459,9 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		queue_free()
 		return
-	var order: Array = M1911Kit.slot_order()
+	var order: Array = WeaponKit.slot_order(_pistol())
+	if order.is_empty():
+		return
 	var i: int = order.find(_slot)
 	if event is InputEventKey and event.is_pressed() and not event.is_echo():
 		var kc: Key = (event as InputEventKey).keycode

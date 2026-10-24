@@ -22,7 +22,7 @@ static var _tex_cache: Dictionary = {}
 var root: Node3D
 var upgraded: bool = false
 var camo: StringName = &""
-## M1911 attachments and finish (M1911KitModels.look_of): {kit, finish, sig}; {} for every other gun.
+## Attachments and finish (WeaponKitModels.look_of): {kit, finish, sig, id}; {} for a plain gun.
 var look: Dictionary = {}
 
 
@@ -60,6 +60,8 @@ static func _build_new(weapon_id: StringName, is_upgraded: bool, camo_id: String
 		M1911KitModels.dress(b)   # attachments and finish (UPDATE_04 section 6)
 	if b.root.get_node_or_null("Muzzle") == null:
 		b.marker("Muzzle", Vector3(0, 0.04, -float(b.root.get_meta("length"))))
+	if not b.look.is_empty():
+		WeaponKitModels.dress(b)   # every other gun's attachments (T-074)
 	if b.root.has_meta("bore"):
 		# dark bore at the muzzle so barrels read as barrels, not rods
 		var mz: Vector3 = (b.root.get_node("Muzzle") as Node3D).position
@@ -1392,6 +1394,7 @@ func _w_mg42() -> void:
 	for s: float in [-1.0, 1.0]:
 		var leg: MeshInstance3D = tube(0.006, 0.006, 0.3, Vector3(s * 0.03, 0.0, -0.5), "fieldgray")
 		leg.rotation_degrees = Vector3(90, s * 3, 0)
+		leg.name = "BipodLeg%d" % int(s + 1.0)
 	trigger_group(0.02, -0.01, "fieldgray")
 	var bolt: Node3D = group("Bolt", Vector3(0.03, 0.025, -0.02))
 	box(Vector3(0.02, 0.014, 0.02), Vector3.ZERO, "steel", Vector3.ZERO, bolt)
@@ -1419,7 +1422,7 @@ func _w_m1919() -> void:
 	prof(P([[0.1, 0.03], [0.32, -0.02], [0.33, -0.1], [0.28, -0.11], [0.1, -0.03]]), 0.04, "wood")
 	grip(0.04, -0.015, 0.09, "wood", 20.0, 0.04, 0.03)
 	for s: float in [-1.0, 1.0]:                                                                                   # bipod, folded
-		tube(0.0045, 0.0045, 0.28, Vector3(s * 0.018, 0.004, -0.46), "park", "z")
+		tube(0.0045, 0.0045, 0.28, Vector3(s * 0.018, 0.004, -0.46), "park", "z").name = "BipodLeg%d" % int(s + 1.0)
 	box(Vector3(0.05, 0.014, 0.022), Vector3(0, 0.012, -0.6), "park")
 	trigger_group(0.0, -0.015, "park")
 	var bolt: Node3D = group("Bolt", Vector3(0.035, 0.03, 0.0))

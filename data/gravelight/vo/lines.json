@@ -7197,5 +7197,225 @@
   "speaker": "JAK",
   "category": "MARK_CANT",
   "text": "I can't do that. I'm sorry."
+ },
+ "OPR_SQ6_PERK_TIER2_01": {
+  "speaker": "OPR",
+  "category": "PERK_TIER2",
+  "text": "Oh, a returning customer! Helvetia Automaten is pleased to offer you the {loyalty measure}."
+ },
+ "OPR_SQ6_PERK_TIER2_02": {
+  "speaker": "OPR",
+  "category": "PERK_TIER2",
+  "text": "A second glass! The cabinet remembers you. It remembers {everyone}."
+ },
+ "OPR_SQ6_PERK_TIER3_01": {
+  "speaker": "OPR",
+  "category": "PERK_TIER3",
+  "text": "The regulars' measure! Ladies and gentlemen, we have a {valued} customer."
+ },
+ "OPR_SQ6_PERK_TIER3_02": {
+  "speaker": "OPR",
+  "category": "PERK_TIER3",
+  "text": "Third chamber, opened just for you. Do drink {responsibly}. Or don't. We'll know."
+ },
+ "OPR_SQ6_CRUCIBLE_FIRST_01": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_FIRST",
+  "text": "The furnace is lit! Patent pending, and pending, and {pending}."
+ },
+ "OPR_SQ6_CRUCIBLE_FIRST_02": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_FIRST",
+  "text": "Our cooling plant is open for business! It has never cooled {anything}."
+ },
+ "DUT_SQ6_PERK_TIER_01": {
+  "speaker": "DUT",
+  "category": "PERK_TIER",
+  "text": "Second helping. Tastes worse. Works better. That's the Army in a bottle."
+ },
+ "DUT_SQ6_PERK_TIER_02": {
+  "speaker": "DUT",
+  "category": "PERK_TIER",
+  "text": "The machine gave me the strong stuff. I don't like that it knew I was ready."
+ },
+ "DUT_SQ6_PERK_PROC_01": {
+  "speaker": "DUT",
+  "category": "PERK_PROC",
+  "text": "Whoa. That should've put me down."
+ },
+ "DUT_SQ6_PLAQUE_01": {
+  "speaker": "DUT",
+  "category": "PLAQUE",
+  "text": "Made in Basel. Neutral country. Sure."
+ },
+ "DUT_SQ6_PLAQUE_CRUCIBLE_01": {
+  "speaker": "DUT",
+  "category": "PLAQUE_CRUCIBLE",
+  "text": "Patent pending. Somebody's paying a lawyer for this thing."
+ },
+ "PEG_SQ6_PERK_TIER_01": {
+  "speaker": "PEG",
+  "category": "PERK_TIER",
+  "text": "A stronger measure. London will want a sample of this. London wants a sample of everything."
+ },
+ "PEG_SQ6_PERK_TIER_02": {
+  "speaker": "PEG",
+  "category": "PERK_TIER",
+  "text": "Interlocks on a drinks cabinet. Somebody planned for us coming back."
+ },
+ "PEG_SQ6_PERK_PROC_01": {
+  "speaker": "PEG",
+  "category": "PERK_PROC",
+  "text": "Didn't feel that. I'm choosing not to think about why."
+ },
+ "PEG_SQ6_PLAQUE_01": {
+  "speaker": "PEG",
+  "category": "PLAQUE",
+  "text": "Replacement unit. They had spares. Of course they had spares."
+ },
+ "PEG_SQ6_PLAQUE_CRUCIBLE_01": {
+  "speaker": "PEG",
+  "category": "PLAQUE_CRUCIBLE",
+  "text": "Crate two of three. So where's the third?"
+ },
+ "DEA_SQ6_PERK_TIER_01": {
+  "speaker": "DEA",
+  "category": "PERK_TIER",
+  "text": "Second chamber behind the first. Clever plumbing. Hate it."
+ },
+ "DEA_SQ6_PERK_TIER_02": {
+  "speaker": "DEA",
+  "category": "PERK_TIER",
+  "text": "It read my hand before it poured. Machine shouldn't do that."
+ },
+ "DEA_SQ6_PERK_PROC_01": {
+  "speaker": "DEA",
+  "category": "PERK_PROC",
+  "text": "Lord. Something in me just held."
+ },
+ "DEA_SQ6_PLAQUE_01": {
+  "speaker": "DEA",
+  "category": "PLAQUE",
+  "text": "Swiss rivets. Good work on a bad job."
+ },
+ "DEA_SQ6_PLAQUE_CRUCIBLE_01": {
+  "speaker": "DEA",
+  "category": "PLAQUE_CRUCIBLE",
+  "text": "Mod. R-E. Pat. pend. Somebody's waiting on a patent for this thing. Hope they never get it."
+ },
+ "WRN_SQ6_PERK_TIER_01": {
+  "speaker": "WRN",
+  "category": "PERK_TIER",
+  "text": "More. It always wants you to have more."
+ },
+ "WRN_SQ6_PERK_TIER_02": {
+  "speaker": "WRN",
+  "category": "PERK_TIER",
+  "text": "The owl on the glass. Somebody here was on our side."
+ },
+ "WRN_SQ6_PERK_PROC_01": {
+  "speaker": "WRN",
+  "category": "PERK_PROC",
+  "text": "Not yet. Not today."
+ },
+ "WRN_SQ6_PLAQUE_01": {
+  "speaker": "WRN",
+  "category": "PLAQUE",
+  "text": "They wrote down who made it. They never write down who it was made from."
+ },
+ "WRN_SQ6_PLAQUE_CRUCIBLE_01": {
+  "speaker": "WRN",
+  "category": "PLAQUE_CRUCIBLE",
+  "text": "A furnace that teaches guns. Of course they built that before bread."
+ },
+ "JAK_SQ6_PLAQUE_01": {
+  "speaker": "JAK",
+  "category": "PLAQUE",
+  "text": "We carried these down the ladder. Twelve men to a cabinet. Two did not come back up."
+ },
+ "JAK_SQ6_PLAQUE_CRUCIBLE_01": {
+  "speaker": "JAK",
+  "category": "PLAQUE_CRUCIBLE",
+  "text": "The cooling plant. We were told never to look inside it."
+ },
+ "ROT_INN_ARRIVE_01": {
+  "speaker": "ROT",
+  "category": "INN_ARRIVE",
+  "text": "Mother of God, look at them. Out of that plane? ...Sit, sit, before you fall down. Trudi, coffee for these."
+ },
+ "TRU_INN_ARRIVE_01": {
+  "speaker": "TRU",
+  "category": "INN_ARRIVE",
+  "text": "There's soup on the hearth. Get warm first. Then you can tell us what fell out of the sky."
+ },
+ "POH_INN_SCREAM_01": {
+  "speaker": "POH",
+  "category": "INN_SCREAM",
+  "text": "[a scream] At the window! There are people out in the snow, and they're walking. Look at them walking!"
+ },
+ "KUB_INN_WINDOW_01": {
+  "speaker": "KUB",
+  "category": "INN_WINDOW",
+  "text": "What was that? ...Something's at the boards. Something's tearing at the boards!"
+ },
+ "TRU_INN_FLEE_01": {
+  "speaker": "TRU",
+  "category": "INN_FLEE",
+  "text": "The front door! Out, all of you, out and up the road to the village!"
+ },
+ "SOB_INN_FLEE_01": {
+  "speaker": "SOB",
+  "category": "INN_FLEE",
+  "text": "Stay together! Keep together and run, don't stop for anything!"
+ },
+ "ROT_INN_DOOR_01": {
+  "speaker": "ROT",
+  "category": "INN_DOOR",
+  "text": "The bar's frozen in the brackets... help me, help me with it... there!"
+ },
+ "KUB_INN_CAUGHT_01": {
+  "speaker": "KUB",
+  "category": "INN_CAUGHT",
+  "text": "[screaming] Get off me! Get it off! Ewald! Ewald!"
+ },
+ "ROT_INN_CAUGHT_01": {
+  "speaker": "ROT",
+  "category": "INN_CAUGHT",
+  "text": "[screaming] Willi! The door, Willi, pull me in!"
+ },
+ "SOB_INN_SHUT_01": {
+  "speaker": "SOB",
+  "category": "INN_SHUT",
+  "text": "I can't... God forgive me. ...The bar! The bar, get it down!"
+ },
+ "SOB_INN_BITTEN_01": {
+  "speaker": "SOB",
+  "category": "INN_BITTEN",
+  "text": "It bit me. It's nothing. It's only a scratch, it's... it's nothing."
+ },
+ "SOB_INN_FALL_01": {
+  "speaker": "SOB",
+  "category": "INN_FALL",
+  "text": "[weak] Tell my mother... I was nearly home. Nearly home."
+ },
+ "DUT_INN_RISE_01": {
+  "speaker": "DUT",
+  "category": "INN_RISE",
+  "text": "He's getting up. ...He's getting up! That's not him any more, put him down!"
+ },
+ "PEG_INN_RISE_01": {
+  "speaker": "PEG",
+  "category": "INN_RISE",
+  "text": "Oh, no. No, no, no. Willi. ...I'm sorry, love."
+ },
+ "DEA_INN_RISE_01": {
+  "speaker": "DEA",
+  "category": "INN_RISE",
+  "text": "Lord have mercy, the boy's standing up. That isn't him. That isn't him!"
+ },
+ "WRN_INN_RISE_01": {
+  "speaker": "WRN",
+  "category": "INN_RISE",
+  "text": "The soldier. He is standing. Do not look at his face. Shoot."
  }
 }

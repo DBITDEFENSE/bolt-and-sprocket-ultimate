@@ -22,7 +22,7 @@ var phase: Phase = Phase.IDLE
 var _t: float = 0.0
 var _result: StringName = &""
 var _result_tier: int = 1
-var _result_kit: Array = []        # the M1911's attachments (M1911Kit.encode): Last Rites comes out wearing them
+var _result_kit: Array = []        # the gun's attachments (WeaponKit.encode): the upgraded gun comes out wearing them
 var _result_finish: String = ""
 var _fed_by: int = 0
 var _glow: OmniLight3D
@@ -74,6 +74,17 @@ func _ready() -> void:
 	cs.position = Vector3(0, 1.2, 0)
 	body.add_child(cs)
 	add_child(body)
+	# the brass plate on the feed door (LORE.md 4.2), readable: why this Crucible is on this map (T-075, MachineLore)
+	var plaque: LorePlaque = LorePlaque.new()
+	plaque.name = "CruciblePlate"
+	plaque.lore_key = "crucible"
+	plaque.noun = "the brass plate"
+	plaque.plate_text = "MOD. R-E\nPAT. PEND. BLZ-40417"
+	plaque.plate_size = Vector2(0.42, 0.16)
+	plaque.position = Vector3(0.62, 0.42, -0.815)
+	plaque.interact_size = Vector3(0.6, 0.32, 0.1)
+	plaque.interact_offset = Vector3(0, 0, -0.36)
+	add_child(plaque)
 	GLBus.power_activated.connect(_refresh_power)
 	_refresh_power()
 
@@ -236,7 +247,7 @@ func interact(player: Player) -> void:
 			if try_purchase(player, &"crucible", price_for(&"upgrade", econ, w.tier)):
 				var up: StringName = w.upgrade_id()
 				var next_tier: int = w.tier + 1
-				var kit: Array = M1911Kit.encode(w.kit)
+				var kit: Array = WeaponKit.encode(w.kit)
 				var fin: String = String(w.finish)
 				player.weapons.remove_current()
 				_forge(player.player_id, String(up), next_tier, kit, fin)

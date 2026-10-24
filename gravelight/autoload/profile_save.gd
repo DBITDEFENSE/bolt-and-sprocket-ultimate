@@ -26,6 +26,8 @@ func _ready() -> void:
 	for row: Dictionary in GLData.load_json("res://data/gravelight/intel.json").get("intel", []):
 		_intel[str(row["id"])] = row
 	_add_cabinet_rows()
+	for row: Dictionary in MachineLore.archive_rows():   # maker's plates, the Crucibles, the chalk (T-075)
+		_intel[str(row["id"])] = row
 	load_profile()
 	GLBus.match_started.connect(_on_match_started)
 	GLBus.game_over.connect(_on_game_over)

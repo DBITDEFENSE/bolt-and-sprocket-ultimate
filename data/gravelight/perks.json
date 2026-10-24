@@ -12,7 +12,28 @@
    "color": "#9e2a1e",
    "abbr": "IH",
    "shape": "barrel",
-   "sign": "IRONHIDE"
+   "sign": "IRONHIDE",
+   "tiers": {
+    "2": {
+     "name": "Riveted Hoops",
+     "cost": 3500,
+     "desc": "Six hits instead of five, and your health starts coming back 40% sooner.",
+     "effects": {
+      "max_health": 300,
+      "regen_delay_mult": 0.6
+     }
+    },
+    "3": {
+     "name": "Sunday Best",
+     "cost": 7000,
+     "desc": "A hit that leaves you under 30% health turns your skin to iron for 2 s: nothing gets through. Once every 40 s.",
+     "effects": {
+      "iron_skin_threshold": 0.3,
+      "iron_skin_seconds": 2.0,
+      "iron_skin_cooldown": 40.0
+     }
+    }
+   }
   },
   "second_wind": {
    "name": "Second Wind Schnapps",
@@ -27,7 +48,28 @@
    "color": "#9cc3e0",
    "abbr": "SW",
    "shape": "cabinet",
-   "sign": "SECOND WIND"
+   "sign": "SECOND WIND",
+   "tiers": {
+    "2": {
+     "name": "Breathe Again",
+     "cost": 2500,
+     "desc": "Revives go 25% faster again, and whoever you get up (you too, after a self-revive) runs 30% faster for 5 s.",
+     "effects": {
+      "revive_speed_mult": 2.5,
+      "revive_boost_mult": 1.3,
+      "revive_boost_seconds": 5.0
+     }
+    },
+    "3": {
+     "name": "The Nurse's Count",
+     "cost": 5000,
+     "desc": "The revived get 3 s where nothing can hurt them, and getting up knocks every zombie within 4 m off its feet.",
+     "effects": {
+      "revive_invuln_seconds": 3.0,
+      "revive_stagger_radius": 4.0
+     }
+    }
+   }
   },
   "trigger_tonic": {
    "name": "Trigger Tonic",
@@ -39,7 +81,27 @@
    "color": "#b8c41e",
    "abbr": "TT",
    "shape": "crate",
-   "sign": "TRIGGER TONIC!"
+   "sign": "TRIGGER TONIC!",
+   "tiers": {
+    "2": {
+     "name": "Shift Quota",
+     "cost": 4000,
+     "desc": "Swap weapons 40% faster, and reloads shave off a little more.",
+     "effects": {
+      "reload_time_mult": 0.45,
+      "swap_time_mult": 0.6
+     }
+    },
+    "3": {
+     "name": "Fresh Clip",
+     "cost": 7500,
+     "desc": "For 2 s after a reload finishes, your shots deal 30% more damage.",
+     "effects": {
+      "fresh_clip_seconds": 2.0,
+      "fresh_clip_damage_mult": 1.3
+     }
+    }
+   }
   },
   "twin_barrel": {
    "name": "Twin Barrel Bitters",
@@ -51,7 +113,26 @@
    "color": "#d18a1f",
    "abbr": "TB",
    "shape": "twin",
-   "sign": "TWIN BARREL"
+   "sign": "TWIN BARREL",
+   "tiers": {
+    "2": {
+     "name": "The Major's Moustache",
+     "cost": 3000,
+     "desc": "A touch faster again, and the gun climbs 30% less as you fire.",
+     "effects": {
+      "fire_rate_mult": 1.4,
+      "recoil_mult": 0.7
+     }
+    },
+    "3": {
+     "name": "Both Barrels",
+     "cost": 6500,
+     "desc": "One shot in four doesn't use a round.",
+     "effects": {
+      "ammo_save_chance": 0.25
+     }
+    }
+   }
   },
   "marathon_malt": {
    "name": "Marathon Malt",
@@ -64,7 +145,28 @@
    "color": "#8fc4f0",
    "abbr": "MM",
    "shape": "teardrop",
-   "sign": "MARATHON MALT"
+   "sign": "MARATHON MALT",
+   "tiers": {
+    "2": {
+     "name": "Running Home",
+     "cost": 3000,
+     "desc": "Faster on your feet, and the gun comes up out of a sprint almost at once.",
+     "effects": {
+      "move_speed_mult": 1.1,
+      "sprint_out_mult": 0.35
+     }
+    },
+    "3": {
+     "name": "Vreni's Step",
+     "cost": 6000,
+     "desc": "Sprinting, you sidestep one swipe every 8 s (no damage) and get a 1.5 s burst of speed.",
+     "effects": {
+      "sprint_dodge_cooldown": 8.0,
+      "sprint_dodge_boost_mult": 1.15,
+      "sprint_dodge_boost_seconds": 1.5
+     }
+    }
+   }
   },
   "hawkeye_brandy": {
    "name": "Hawkeye Brandy",
@@ -78,7 +180,26 @@
    "color": "#22553a",
    "abbr": "HB",
    "shape": "periscope",
-   "sign": "HAWKEYE"
+   "sign": "HAWKEYE",
+   "tiers": {
+    "2": {
+     "name": "The Owl",
+     "cost": 3000,
+     "desc": "A headshot kill puts a round back in the magazine.",
+     "effects": {
+      "headshot_kill_refund": 1
+     }
+    },
+    "3": {
+     "name": "Sowa's Patience",
+     "cost": 6500,
+     "desc": "An aimed shot taken 1.2 s or more after your last one hits 75% harder.",
+     "effects": {
+      "patience_seconds": 1.2,
+      "patience_damage_mult": 1.75
+     }
+    }
+   }
   },
   "packmule_porter": {
    "name": "Packmule Porter",
@@ -90,7 +211,27 @@
    "color": "#6b5a2e",
    "abbr": "PP",
    "shape": "wagon",
-   "sign": "PACKMULE"
+   "sign": "PACKMULE",
+   "tiers": {
+    "2": {
+     "name": "Ammer's Ledger",
+     "cost": 4500,
+     "desc": "Ammo at the chalk and at ammo boxes costs half, and you carry one more grenade.",
+     "effects": {
+      "ammo_price_mult": 0.5,
+      "grenade_bonus": 1
+     }
+    },
+    "3": {
+     "name": "Training Load",
+     "cost": 8500,
+     "desc": "At the start of every round each gun you carry gets 20% of its reserve back, and you get a grenade.",
+     "effects": {
+      "round_resupply_frac": 0.2,
+      "round_resupply_grenades": 1
+     }
+    }
+   }
   },
   "blastproof_bock": {
    "name": "Blastproof Bock",
@@ -105,7 +246,28 @@
    "color": "#e0661a",
    "abbr": "BB",
    "shape": "safe",
-   "sign": "BLASTPROOF"
+   "sign": "BLASTPROOF",
+   "tiers": {
+    "2": {
+     "name": "Liability Waiver",
+     "cost": 3000,
+     "desc": "Explosions that reach you heal you 25 instead, and the slide shockwave hits harder.",
+     "effects": {
+      "blast_heal": 25,
+      "slide_shockwave_damage": 600
+     }
+    },
+    "3": {
+     "name": "Demolition School",
+     "cost": 6500,
+     "desc": "The slide shockwave grows with the round (at least 60% of a zombie's health), reaches further and knocks survivors down.",
+     "effects": {
+      "slide_shockwave_round_mult": 0.6,
+      "slide_shockwave_stagger": true,
+      "slide_shockwave_radius": 3.5
+     }
+    }
+   }
   },
   "overclock_cordial": {
    "name": "Overclock Cordial",
@@ -129,9 +291,54 @@
    "shape": "coil",
    "sign": "OVERCLOCK",
    "_doc": "WEAPONS.md section 20.2: reloading releases a static burst scaling with how empty the mag was (e = 1 - mag/mag_size). Wired by PerkManager.overclock_reload (called from WeaponHolder.start_reload and on an overheat vent). Shape 'coil' shares the cabinet footprint 0.8 x 2.3 x 0.6 (Map 0 placement). 'neon' is the sign/spark colour (violet) over the teal enamel 'color'.",
-   "neon": "#c07dff"
+   "neon": "#c07dff",
+   "tiers": {
+    "2": {
+     "name": "Live Wire",
+     "cost": 3500,
+     "desc": "The burst recharges in 2 s, and arcs jump to 3 more zombies up to twice its reach (half damage).",
+     "effects": {
+      "overclock_cooldown": 2.0,
+      "overclock_arcs": 3,
+      "overclock_arc_reach_mult": 2.0,
+      "overclock_arc_damage_mult": 0.5
+     }
+    },
+    "3": {
+     "name": "Aftershock",
+     "cost": 7000,
+     "desc": "A burst from a magazine 75% empty or more rings again 0.8 s later at half strength.",
+     "effects": {
+      "overclock_aftershock_spent": 0.75,
+      "overclock_aftershock_delay": 0.8,
+      "overclock_aftershock_mult": 0.5
+     }
+    }
+   }
   }
  },
  "drink_seconds": 1.2,
- "solo_self_revives": 3
+ "solo_self_revives": 3,
+ "upgrades": {
+  "_doc": "Perk upgrades (DECISIONS T-075, docs/gravelight/PERKS_LORE.md section 1). Each perk has tiers 2 and 3 ('tiers' in its row): bought in the match at the machine you already drank from (hold Use), once the power is on and the round is at least min_round; the profile-wide gate is mastery: points earned with the perk in your system (per_kill for every kill, per_round for every round you finish holding it) unlock each tier for good (unlock). A tier's effects merge over the perk's own (same key = the tier's value). Tiers count no extra cap slot, go with the perk when it is lost, and carry with it (campaign exfil, co-op snapshot). marks = the HUD cap's tier mark.",
+  "needs_power": true,
+  "max_tier": 3,
+  "min_round": {
+   "2": 8,
+   "3": 15
+  },
+  "meta_gate": true,
+  "mastery": {
+   "per_kill": 1,
+   "per_round": 20,
+   "unlock": {
+    "2": 250,
+    "3": 1200
+   }
+  },
+  "marks": {
+   "2": "II",
+   "3": "III"
+  }
+ }
 }

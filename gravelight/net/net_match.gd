@@ -708,6 +708,7 @@ func _send_state(delta_since: float) -> void:
 			RoundManager.alive, RoundManager.round_total, RoundManager.players],
 		"sc": Economy._scrip, "mu": Economy.multiplier,
 		"pk": PerkManager._owned, "bs": PerkManager._bonus_slots,
+		"pt": [PerkManager._tiers, PerkManager.unlocked_tiers()],   # perk tiers + the host's unlocks (T-075)
 		"sw": [PerkManager.solo_self_revives_left, PerkManager.second_wind_gone],
 		"pw": GameState.power_on, "z": GameState.open_zones.keys(), "f": GameState.flags,
 		"cr": CrateManager.location_index, "pu": PowerupManager._timers,
@@ -1011,6 +1012,19 @@ func on_state(d: Dictionary) -> void:
 			GLBus.perks_changed.emit(int(pid3))
 	var bs: Dictionary = d.get("bs", {})
 	PerkManager._bonus_slots = bs.duplicate()
+	var pt: Array = d.get("pt", [{}, {}])
+	if pt.size() >= 2:
+		var tiers_now: Dictionary = (pt[0] as Dictionary).duplicate(true)
+		if tiers_now != PerkManager._tiers:
+			var changed: Array = []
+			for k: Variant in tiers_now.keys() + PerkManager._tiers.keys():
+				if not changed.has(int(k)) and tiers_now.get(k, {}) != PerkManager._tiers.get(k, {}):
+					changed.append(int(k))
+			PerkManager._tiers = tiers_now
+			for cpid: Variant in changed:
+				GLBus.perks_changed.emit(int(cpid))
+		PerkManager.host_unlocks = (pt[1] as Dictionary).duplicate()
+
 	var sw: Array = d.get("sw", [3, false])
 	PerkManager.solo_self_revives_left = int(sw[0])
 	PerkManager.second_wind_gone = bool(sw[1])

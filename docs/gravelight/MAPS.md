@@ -215,6 +215,12 @@ The details are in `EASTER_EGGS.md` §Map 0. The radio is behind the bar. Three 
 
 Training loop (light): around the taproom tables and bar, clockwise. It's tight on purpose. Map 0 is about holding, not running.
 
+**A living taproom (DECISIONS T-072).** Four more tables (`TAP_TABLES_NEW` in gen_map00.gd): the carters' table (19, 9) with a skat game and steins, a table cleared in a hurry (16, 4.8), Frau Pohl's small table by the hearth (12.3, 5.4) with her suitcase, and a long trestle with benches by the stair wall (8, 11.8); candles on each, two of them lit (unshadowed, following TapLamp1/3). The loop keeps its width: route_tool validates `map00_taproom` (min 2.9 m) and smoke_map00_alive casts across all four corridors (>= 2.2 m). The inn's **front door** is in the north wall under the east porch (x 19.2–20.8): drawn and swinging (`InnFrontDoor`), barred from inside, its opening filled with an invisible collider (`FrontDoorBlock`) like the great doors, so it is a wall to players, zombies and the navmesh.
+
+**Round 1 opening, "the bar empties"** (`InnOpening`, data `data/gravelight/map00_opening.json`): five patrons are in the taproom when the squad arrives (two salt carters, Rother and Kubiak; Frau Pohl, a stranded widow; Trudi the barmaid; Gefreiter Sobotta on Christmas leave). When round 1 starts the windows are hit, they run out of the front door; two zombies rise out of the snow by the porch, Kubiak and Rother are caught, Sobotta is bitten shutting the door on Rother and dies by the table; all three rise (outside ones make for W_TAP_N2 / W_TAP_E). Trudi and Frau Pohl get away up the road. ~25 s, player in control. The 3 risers and 2 attackers are taken off round 1's own queue (the total is unchanged: 6 solo). Only on the first round 1 of a match on Map 0. A gramophone on the bar plays until shot or round 3; the horse panics in the stable and the hearth flares when the door opens.
+
+**Door clearance (T-072).** `DoorClearance` (gravelight/world/door_clearance.gd) lists every drawn triangle and solid collider that crosses a doorway (all bought doors, the yard passage arch, the guest-room doorways, the front door). smoke_map00_alive fails on any; it found the taproom post standing in the stable door (Door 2) and the scuff strips across Doors 1 and 2.
+
 ## Map 0 lighting (DECISIONS T-061)
 A warm refuge you're about to lose, in a bitterly cold, huge night. All of it is built by `build_environment` and
 `_dress_lighting` in `gen_map00.gd`; shots from fixed viewpoints: `data/gravelight/lighting/shots_map00.json` (light_shots).

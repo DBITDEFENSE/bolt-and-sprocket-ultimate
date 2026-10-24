@@ -449,10 +449,10 @@ func _refresh_loadout() -> void:
 		_loadout.add_child(MenuKit.label("KIT", 20, MenuKit.VIOLET, true))
 		_loadout.add_child(MenuKit.label("   Melee: %s   ·   Lethal: %s × %d   ·   Tactical: %s" % [melee, lname, h.grenades, tac], 18))
 	_loadout.add_child(MenuKit.label("PERKS  (%d / %d slots)" % [PerkManager.capped_count(me), PerkManager.cap_for(me)], 20, MenuKit.VIOLET, true))
-	var names: PackedStringArray = []
+	if PerkManager.owned(me).is_empty():
+		_loadout.add_child(MenuKit.para("   none yet", 18))
 	for pk: Variant in PerkManager.owned(me):
-		names.append(PerkManager.display_name(StringName(str(pk))) + (" (bonus)" if PerkManager.is_bonus(me, StringName(str(pk))) else ""))
-	_loadout.add_child(MenuKit.para("   " + (", ".join(names) if not names.is_empty() else "none yet"), 18))
+		_loadout.add_child(MenuKit.label("   " + perk_line(me, StringName(str(pk))), 18))
 	if not GameState.bot_ids.is_empty():
 		_loadout.add_child(MenuKit.label("SQUAD", 20, MenuKit.VIOLET, true))
 		for bid: int in GameState.bot_ids:
@@ -463,6 +463,20 @@ func _refresh_loadout() -> void:
 					gun = bp.weapons.current().display_name()
 			_loadout.add_child(MenuKit.label("   %s: %s Scrip%s  ·  %d perks" % [str(GameState.character_of(bid)).capitalize(), _thousands(Economy.get_scrip(bid)),
 				("  ·  " + gun) if gun != "" else "", PerkManager.owned(bid).size()], 17, MenuKit.DIM))
+
+
+## One carried tonic on the LOADOUT tab (T-075): its name at its tier, the bonus mark, and the next tier's state
+## ("II at round 8 · 3500", "III locked · mastery 340 / 1200", "max").
+static func perk_line(pid: int, perk_id: StringName) -> String:
+	var t: int = PerkManager.tier_of(pid, perk_id)
+	var s: String = PerkManager.tier_name(perk_id, t) + ("  (bonus)" if PerkManager.is_bonus(pid, perk_id) else "")
+	var next: int = t + 1
+	if PerkManager.tier_data(perk_id, next).is_empty():
+		return s + ("  ·  max" if t > 1 else "")
+	var mark: String = PerkManager.tier_mark(next)
+	if not PerkManager.tier_unlocked(perk_id, next):
+		return s + "  ·  %s locked, mastery %d / %d" % [mark, PerkManager.mastery(perk_id), PerkManager.mastery_needed(next)]
+	return s + "  ·  %s from round %d, %d Scrip" % [mark, PerkManager.tier_min_round(next), PerkManager.tier_price(perk_id, next)]
 
 
 ## The weapon's attachments in words, when the weapon has any (Update 04 section 6 adds them to the M1911):

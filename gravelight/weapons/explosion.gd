@@ -28,7 +28,10 @@ static func detonate(ctx: Node3D, pos: Vector3, cfg: Dictionary, by_player: int,
 	# the thrower's machine, and there's no friendly fire between machines (D-068).
 	for n: Node in tree.get_nodes_in_group(&"players"):
 		var p: Player = n as Player
-		if p == null or not p.is_local or not p.is_alive() or p.has_explosive_immunity():
+		if p == null or not p.is_local or not p.is_alive():
+			continue
+		if p.has_explosive_immunity():
+			PerkManager.blast_heal(p, pos, radius)   # Blastproof II: the blast heals instead (T-075)
 			continue
 		var pd: float = pos.distance_to(p.global_position + Vector3.UP)
 		if pd <= float(cfg.get("self_near_m", 3.0)):
