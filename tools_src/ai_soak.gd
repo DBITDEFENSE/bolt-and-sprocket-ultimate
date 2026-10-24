@@ -79,6 +79,18 @@ var ee_mode: String = ""
 ## --bots=N (botmode only): the AI teammates beside the agent-played player (default 0).
 var bots_n: int = 3
 var _bots_set: bool = false
+## Tuning only (T-071 pass 2), applied at go-live: --open-doors=door_a,door_b|all (bought for free), --power (the
+## map's power switch thrown), --give=thompson,ironhide_stout (weapons and perks for the agent / scripted player),
+## --loop=<route id> (the agent trains on that loop only: BotTrainer.force_loop).
+var open_doors: String = ""
+var power_on: bool = false
+var give: String = ""
+## --posdump=<abs path stem> (tuning only): every 0.2 game s one JSON line per run (<stem>_r<run>.jsonl) with the
+## agent (position, facing, phase, train) and every active zombie (position, state, known to the agent), plus the
+## walkable navmesh polygons (<stem>_nav.json) once: tools for plotting what happened round a hit.
+var posdump: String = ""
+var _pd_f: FileAccess = null
+var _pd_t: float = 0.0
 var _pb: PlayerBot = null
 var _pb_rounds: Dictionary = {}   # round -> [downs, hits] of the agent
 var _ee_committed_t: float = -1.0
@@ -138,6 +150,16 @@ func _ready() -> void:
 		elif a.begins_with("--bots="):
 			bots_n = clampi(int(a.substr(7)), 0, 3)
 			_bots_set = true
+		elif a.begins_with("--open-doors="):
+			open_doors = a.substr(13)
+		elif a == "--power":
+			power_on = true
+		elif a.begins_with("--give="):
+			give = a.substr(7)
+		elif a.begins_with("--posdump="):
+			posdump = a.substr(10)
+		elif a.begins_with("--loop="):
+			BotTrainer.force_loop = a.substr(7)   # (tuning only, T-071 pass 2) the agent trains on this loop only
 		elif a.begins_with("--loco="):
 			BotLocomotion.force_mode = a.substr(7)   # U03 section 3: v1 / v2 against bots.json locomotion
 	if not ["player3", "bots3", "cousins", "kaltenbrunn", "ee_full", "botmode"].has(scenario):
@@ -253,10 +275,15 @@ func _physics_process(delta: float) -> void:
 				var tb: BotTrainer = _pb.trainer
 				var pp: Vector3 = _map.player.global_position
 				var cw: WeaponInstance = _pb.brain.aim.cur()
-				print("[trace] t=%.1f r%d AGENT %s (%.1f,%.1f) v%.1f hp%.0f %s %d/%d | %s %s f%d h%.1f a%.1f(%d) n%.1f p%.2f | scrip %d | %s" % [_game_t, RoundManager.current_round,
+				print("[trace] t=%.1f r%d AGENT %s (%.1f,%.1f) v%.1f hp%.0f %s %d/%d | %s %s f%d h%.1f a%.1f(%d) n%.1f p%.2f off%.1f y%.1f | scrip %d | %s" % [_game_t, RoundManager.current_round,
 					_pb.brain.action, pp.x, pp.z, _map.player.horizontal_speed(), _map.player.hp, str(cw.id) if cw != null else "-", cw.mag if cw != null else 0, cw.reserve if cw != null else 0,
 					tb.route.id.trim_prefix("map00_").trim_prefix("map01_") if tb.route != null else "-", tb.phase_name(), tb.followers, minf(tb.head_d, 99.0), minf(tb.ahead_d, 99.0), tb.ahead_n,
-					minf(_pb.brain.perception.nearest_d, 99.0), _pb.brain.perception.pressure, Economy.get_scrip(1), ", ".join(PackedStringArray(_pb.brain.top3.map(func(t: Variant) -> String: return "%s %.2f" % [str((t as Array)[0]), float((t as Array)[1])]))) + " | buy: " + str((_pb.brain.economy.best(_pb.brain.squad.time()).get("buy", {}) as Dictionary).get("label", "-")) if trace_s >= 2.0 else ""])
+					minf(_pb.brain.perception.nearest_d, 99.0), _pb.brain.perception.pressure, minf(tb.off_m, 99.0), pp.y, Economy.get_scrip(1), ", ".join(PackedStringArray(_pb.brain.top3.map(func(t: Variant) -> String: return "%s %.2f" % [str((t as Array)[0]), float((t as Array)[1])]))) + " | buy: " + str((_pb.brain.economy.best(_pb.brain.squad.time()).get("buy", {}) as Dictionary).get("label", "-")) if trace_s >= 2.0 else ""])
+	if _pd_f != null:
+		_pd_t -= delta
+		if _pd_t <= 0.0:
+			_pd_t = 0.2
+			_pd_tick()
 	if scenario == "ee_full":
 		_tick_ee()
 	if _metrics.finished:
@@ -314,6 +341,9 @@ func _try_go_live() -> void:
 	_ee_events = PackedStringArray()
 	if ee_mode != "" and _map.squad != null and _map.squad.ee != null:
 		_map.squad.ee.set_mode(ee_mode)
+	_apply_tuning()
+	if posdump != "":
+		_pd_open()
 	if start_round > 1 and scenario != "cousins":
 		for pid: int in GameState.player_ids:
 			Economy.award(pid, 450 * start_round)
@@ -321,6 +351,81 @@ func _try_go_live() -> void:
 		_map.director.kill_all(true)
 	print("[soak] run %d/%d live: map %s, %d bots %s, route %s" % [_run, runs, _map.map_id, GameState.bot_ids.size(),
 		str(GameState.bot_ids.map(func(p: int) -> String: return Net.display_name(p))), str(_dummy.get("route_name")) if _dummy != null else "(no human: spectator)"])
+
+
+func _pd_open() -> void:
+	_pd_f = FileAccess.open("%s_r%d.jsonl" % [posdump, _run], FileAccess.WRITE)
+	if _run == 1:
+		var polys: Array = []
+		for n: Node in _map.find_children("*", "NavigationRegion3D", true, false):
+			var nr: NavigationRegion3D = n as NavigationRegion3D
+			if nr == null or not nr.enabled or nr.navigation_mesh == null:
+				continue
+			var nm: NavigationMesh = nr.navigation_mesh
+			var vs: PackedVector3Array = nm.get_vertices()
+			for i: int in nm.get_polygon_count():
+				var poly: Array = []
+				for vi: int in nm.get_polygon(i):
+					var v: Vector3 = nr.global_transform * vs[vi]
+					poly.append([snappedf(v.x, 0.01), snappedf(v.y, 0.01), snappedf(v.z, 0.01)])
+				polys.append(poly)
+		var f: FileAccess = FileAccess.open(posdump + "_nav.json", FileAccess.WRITE)
+		if f != null:
+			var walls: Array = []
+			for b: Node in get_tree().get_nodes_in_group(&"barricades"):
+				walls.append([str(b.name), snappedf((b as Node3D).global_position.x, 0.1), snappedf((b as Node3D).global_position.y, 0.1), snappedf((b as Node3D).global_position.z, 0.1)])
+			f.store_string(JSON.stringify({"polys": polys, "windows": walls}))
+			f.close()
+
+
+func _pd_tick() -> void:
+	var p: Player = _map.player
+	if p == null:
+		return
+	var pp: Vector3 = p.global_position
+	var fw: Vector3 = -p.global_basis.z
+	var row: Dictionary = {"t": snappedf(_game_t, 0.1), "r": RoundManager.current_round, "x": snappedf(pp.x, 0.01), "y": snappedf(pp.y, 0.01), "z": snappedf(pp.z, 0.01),
+		"fx": snappedf(fw.x, 0.01), "fz": snappedf(fw.z, 0.01), "hp": snappedf(p.hp, 1.0), "down": p.downed}
+	if _pb != null and is_instance_valid(_pb) and _pb.brain != null:
+		row["a"] = _pb.brain.action
+		var tb: BotTrainer = _pb.trainer
+		if tb != null:
+			row["ph"] = tb.phase_name()
+			row["f"] = tb.followers
+			row["hd"] = snappedf(minf(tb.head_d, 99.0), 0.1)
+			row["ad"] = snappedf(minf(tb.ahead_d, 99.0), 0.1)
+			row["rt"] = tb.route.id if tb.route != null else ""
+			row["dir"] = tb.dir
+			row["kd"] = [snappedf(tb._kite_dir.x, 0.01), snappedf(tb._kite_dir.z, 0.01)]
+		var cw: WeaponInstance = _pb.brain.aim.cur()
+		row["mag"] = cw.mag if cw != null else 0
+	var zs: Array = []
+	for z: Zombie in (_map.director.active_zombies() if _map.director != null else []):
+		var zp: Vector3 = z.global_position
+		var known: bool = _pb != null and is_instance_valid(_pb) and _pb.brain != null and _pb.brain.perception.is_known(z)
+		zs.append([snappedf(zp.x, 0.01), snappedf(zp.y, 0.01), snappedf(zp.z, 0.01), Zombie.State.keys()[z.state].left(4), 1 if known else 0, snappedf(z.speed, 0.1), str(z.enemy_id).left(4)])
+	row["zs"] = zs
+	_pd_f.store_line(JSON.stringify(row))
+
+
+## The tuning flags (--open-doors, --power, --give): a test bed for the trainer's mechanics apart from its economy.
+func _apply_tuning() -> void:
+	if open_doors != "":
+		for n: Node in _map.find_children("*", "", true, false):
+			if n is BuyDoor and (open_doors == "all" or open_doors.split(",").has(String((n as BuyDoor).door_id))):
+				(n as BuyDoor).open(1)
+	if power_on:
+		for n2: Node in _map.find_children("*", "", true, false):
+			if n2.has_method("run_sequence") and n2.get_script() != null and str((n2.get_script() as Script).resource_path).ends_with("power_switch.gd"):
+				n2.call("run_sequence", 1)
+	if give != "" and _map.player != null:
+		for g: String in give.split(","):
+			if (GLData.table("weapons")["weapons"] as Dictionary).has(g):
+				_map.player.weapons.give_weapon(StringName(g))
+			elif not PerkManager.perk_data(StringName(g)).is_empty():
+				PerkManager.grant(_map.player.player_id, StringName(g))
+			else:
+				print("[soak] --give: no weapon or perk '%s'" % g)
 
 
 ## ee_full: once the bots have tuned the radio up to its last frequency (they never take the player's commit), the
@@ -447,6 +552,9 @@ func _end_run(why: String) -> void:
 				us.append("%.0f/%.0f" % [b.loco.avg_tick_us(), b.loco.avg_body_us()])
 		if not us.is_empty():
 			_metrics.extra["loco_us_tick_body"] = ",".join(PackedStringArray(us))
+	if _pd_f != null:
+		_pd_f.close()
+		_pd_f = null
 	var sm: Dictionary = _metrics.finish(why)
 	print(_metrics.summary_line())
 	var dir: String = BotMetrics.log_dir()
