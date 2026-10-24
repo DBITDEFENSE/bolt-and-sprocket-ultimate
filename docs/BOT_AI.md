@@ -871,3 +871,50 @@ small groups. The yard's Well Loop (authored for this) is rarely reached solo: i
 power. Open work: a commit to the yard loop earlier, glance-ahead timing while backing round the loop, the
 special-round stand (Bellringers are what down it in rounds 5-6), and the Cousins at full strength with a human
 standing.
+
+### Pass 2 (2026-10-24): training as the round's owner, the lane steering, the game plan
+
+What the first pass's numbers said: the agent was rarely on its loop at all (soak hit logs: almost every hit taken
+in TRAVEL or in the plain Fight action), the free 16-direction kite drifted it off the ring into side rooms and dead
+ends (the bar's pocket, the stairwell, the root cellar through the vault's arch), and its spending left it on the
+Garand without Ironhide. What changed (`bot_trainer.gd`, `agent_plan.gd`, player_bot.json):
+
+- **The game plan** (`AgentPlan`, player_bot.json `plans`): a step list per map (door / power / perk / gun with
+  `or_tier` / crucible). `BotEconomy.candidates` keeps only the current step's errand (plus ammo, an ammo box,
+  upgraded ammo, the boards, the power switch); when the ordinary rules don't offer it (a door's per-round limit, a
+  gun the tier table skips) the plan makes its own errand, in the break or a quiet moment only. Map 0: Garand, the
+  cellar door, power, Second Wind, Ironhide, stable, yard, Thompson, Marathon, Crucible, Trigger Tonic. Map 1:
+  carbine, Rail Yard, MP40, Administration, Second Wind, Barracks, lift, Generator Hall, power, Ironhide, Marathon,
+  StG-44. `train_at`: the loops it prefers (`plan_bonus` on the loop score).
+- **The trainer owns the round** (`owns_round`, a one-line override in `BotBrain._think`) from `own_from_round` once
+  the plan's first loop is open (`ready_to_own`; `own_force_round` forces it); before that, pass 1's gating (a horde
+  of 4+, Fight for the rest and for special rounds). It never walks back to its loop through zombies already within
+  `travel_fight_m` (it fights there first).
+- **Kite-shoot by default:** there is no backpedal penalty, so FACE (turned on the train, firing, walking backwards
+  round the loop) is the default with a train behind; RUN (facing the way, sprinting) only when the head comes within
+  its reach + `sprint_close_m` and stamina allows (Marathon: a wider gap), to reload, or for a glance every
+  `face_max_s`; CUT shoots a cutter when the train is well back. Gathering: the trigger waits until the train has
+  `gather_target()` followers (`gather_by_round`) or the round's spawns are out, except for what comes inside the
+  gap. The round's last few are stood still for and aimed at. An empty gun is reloaded on the walk.
+- **Lane steering** (`_flow`, replacing the free kite): the loop's own line is the path; every 0.1 s it scores five
+  lanes across the ring (clipped by rays to the room each side) in both directions with `kite_score`, which now
+  simulates every known zombie chasing it for `kite_horizon_s` (1.5 s, pursuit, as their navigation does), less a
+  cost for leaving the line, changing lane and turning back.
+- Soak tools (tuning only): `--open-doors=`, `--power`, `--give=`, `--loop=` (force a loop), `--posdump=<stem>` (a
+  JSON line per 0.2 s: the agent, its phase, every zombie; plus the navmesh) for top-down plots; the trace shows the
+  plan's step.
+
+Testbed (round 8, MG42 + Ironhide + Second Wind + Marathon, 3 seeds, only the loop's doors open), hits per training
+minute: taproom 14.6, barrel vault 9.5, yard Well Loop 3.1 (training 91%, mean train 8.2, max 18): the yard is the
+map's open ground, so the plan heads there. A tight loop round the barrel stack (`map00_cellar_tight`, agent-only,
+an experiment) didn't help: the zombies' inner line is shorter than any line the agent can run.
+
+| Batch (seeds) | rounds | mean | notes |
+|---|---|---|---|
+| Map 0 solo, pass 1 (1-8) | 7 6 6 7 6 7 4 7 | 6.25 | |
+| Map 0 solo, pass 2 final (1-12) | 7 4 6 8 7 9 7 6 8 8 7 8 | 7.08 | runs that reach the yard: training 56-90 %, mean train 7-15, 1-5 hits / training min |
+| Map 0 + 3 bots (1-4) | 10 10 10 10 | 10.0 | the Cousins (round 10) as in pass 1 |
+| Kaltenbrunn solo (1-3) | 9 7 7 | 7.67 | the power still never on: the Generator Hall door is a long trip from the surface |
+
+**Still short of the brief:** solo Map 0 dies at rounds 7-8 (runners, the Garand, the yard reached in only a third
+of the runs: the Scrip for Ironhide, two doors and the Thompson comes too late); Kaltenbrunn 7-9 with no power.

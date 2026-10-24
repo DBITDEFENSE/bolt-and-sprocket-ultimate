@@ -182,3 +182,54 @@ func test_agent_only_yard_loop() -> void:
 	for r2: TrainingRoute in all:
 		if r2.id == "map00_taproom_stable":
 			assert_lt(r2.agent_bonus, 0.0, "the lollipop (its stick walked both ways) is kept off")
+
+
+# ---------------------------------------------------------------- pass 2: the game plan
+
+func test_agent_plan_steps() -> void:
+	var steps: Array = [{"gun": "m1_garand", "or_tier": 2.4}, {"door": "door_cellar"}, {"power": true}, {"perk": "second_wind"},
+		{"crucible": "*"}]
+	var st: Dictionary = {"doors": {}, "power": false, "perks": [], "guns": [{"id": "m1911", "upgraded": false, "tier": 0.5}], "round": 2}
+	assert_eq(AgentPlan.current(steps, st), steps[0], "a real gun first")
+	st["guns"].append({"id": "thompson", "upgraded": false, "tier": 3.6})
+	assert_eq(AgentPlan.current(steps, st), steps[1], "any gun of the tier or better does")
+	st["doors"]["door_cellar"] = true
+	st["power"] = true
+	assert_eq(AgentPlan.current(steps, st), steps[3], "door, power: the perk next")
+	st["perks"] = ["second_wind"]
+	assert_eq(AgentPlan.current(steps, st), steps[4])
+	st["guns"][1]["upgraded"] = true
+	assert_true(AgentPlan.current(steps, st).is_empty(), "the plan is through: the ordinary economy runs")
+	st["perks"] = []
+	assert_eq(AgentPlan.current(steps, st), steps[3], "a perk lost on a down is the current step again")
+	assert_true(AgentPlan.current([{"door": "x", "from_round": 5}], st).is_empty(), "not before its round")
+
+
+func test_agent_plan_filter_rule() -> void:
+	var step: Dictionary = {"door": "door_stable"}
+	assert_true(AgentPlan.allows(step, "door", "door_stable"))
+	assert_false(AgentPlan.allows(step, "door", "door_upstairs"), "only the plan's door")
+	assert_false(AgentPlan.allows(step, "perk", "hawkeye_brandy"), "no perk while saving for the door")
+	assert_true(AgentPlan.allows(step, "ammo", ""), "ammo always")
+	assert_true(AgentPlan.allows(step, "ammo_box", ""))
+	assert_true(AgentPlan.allows({}, "crate", ""), "no step: anything")
+	assert_true(AgentPlan.allows({"crucible": "*"}, "crucible", ""))
+
+
+func test_plans_name_real_things() -> void:
+	var plans: Dictionary = cfg.get("plans", {})
+	assert_true(plans.has("map00") and plans.has("map01"))
+	for mk: String in ["map00", "map01"]:
+		var ids: Array = []
+		for r: TrainingRoute in TrainingRoute.all_for_map(mk):
+			ids.append(r.id)
+		for l: Variant in (plans[mk] as Dictionary).get("train_at", []):
+			assert_true(ids.has(str(l)), "%s train_at %s is an authored loop" % [mk, l])
+		for s: Variant in (plans[mk] as Dictionary).get("steps", []):
+			var sd: Dictionary = s as Dictionary
+			if sd.has("perk"):
+				assert_false(PerkManager.perk_data(StringName(str(sd["perk"]))).is_empty(), "perk %s exists" % sd["perk"])
+			if sd.has("gun"):
+				assert_true((GLData.table("weapons")["weapons"] as Dictionary).has(str(sd["gun"])), "gun %s exists" % sd["gun"])
+	assert_gt(AgentPlan.loop_bonus("map00", "map00_yard_well", 8.0), AgentPlan.loop_bonus("map00", "map00_taproom", 8.0))
+	assert_eq(AgentPlan.loop_bonus("map00", "map00_stable", 8.0), 0.0)
