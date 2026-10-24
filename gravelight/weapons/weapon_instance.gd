@@ -16,11 +16,11 @@ var underbarrel_active: bool = false
 var underbarrel_ammo: int = 0
 var heat: float = 0.0              # seconds of continuous fire (overheating weapons)
 var overheat_lockout: float = 0.0  # seconds left before it can fire again
-## M1911 attachments (UPDATE_04 section 6, M1911Kit): slot -> option id, and the cosmetic finish. They belong to
-## this pistol, so they go wherever it goes. Call refresh_kit() after changing `kit` directly.
+## Attachments (UPDATE_04 section 6, WeaponKit; any gun since T-074): slot -> option id, and the cosmetic finish
+## (M1911 only). They belong to this gun, so they go wherever it goes. Call refresh_kit() after changing `kit`.
 var kit: Dictionary = {}
 var finish: StringName = &""
-var _kit_mods: Dictionary = {}     # M1911Kit.compile(kit, upgraded), rebuilt by refresh_kit()
+var _kit_mods: Dictionary = {}     # WeaponKit.compile(self, kit, upgraded), rebuilt by refresh_kit()
 var _kit_stats: Dictionary = {}    # its "stats" block (f() multipliers), kept apart for speed
 
 
@@ -56,19 +56,19 @@ func has_property(key: String) -> bool:
 	return (data.get("properties", {}) as Dictionary).has(key)
 
 
-# ---------------------------------------------------------------- M1911 attachments (M1911Kit)
+# ---------------------------------------------------------------- attachments (WeaponKit)
 
-## Recompiles the attachment modifiers after `kit` changed (M1911Kit.install does this for you).
+## Recompiles the attachment modifiers after `kit` changed (WeaponKit.install does this for you).
 func refresh_kit() -> void:
 	if kit.is_empty():
 		_kit_mods = {}
 		_kit_stats = {}
 		return
-	_kit_mods = M1911Kit.compile(kit, upgraded)
+	_kit_mods = WeaponKit.compile(self, kit, upgraded)
 	_kit_stats = _kit_mods["stats"]
 
 
-## The compiled attachment modifiers ({} without attachments): see M1911Kit.compile.
+## The compiled attachment modifiers ({} without attachments): see WeaponKit.compile.
 func kit_mods() -> Dictionary:
 	return _kit_mods
 
@@ -78,16 +78,16 @@ func is_suppressed() -> bool:
 	return bool(property("suppressed", false))
 
 
-## Raise-time multiplier after a swap (the shoulder stock is slower to draw, checkered grips faster).
+## Raise-time multiplier after a swap (a stock or bipod is slower to draw, checkered grips or a sling faster).
 func draw_mult() -> float:
 	return float(_kit_mods.get("draw", 1.0)) if not _kit_mods.is_empty() else 1.0
 
 
-## The fitted attachments by name (Last Rites names on an upgraded pistol), then the finish: what the pause menu's
+## The fitted attachments by name (the Crucible names on an upgraded gun), then the finish: what the pause menu's
 ## LOADOUT tab lists under the gun (PauseMenu.attachment_text calls this).
 func attachment_labels() -> PackedStringArray:
 	var out: PackedStringArray = []
-	for d: Dictionary in M1911Kit.describe(self):
+	for d: Dictionary in WeaponKit.describe(self):
 		if str(d["option"]) != "":
 			out.append(str(d["name"]))
 	if finish != &"":
@@ -97,7 +97,7 @@ func attachment_labels() -> PackedStringArray:
 
 ## Cache key part for anything the attachments or finish change (models, recoil, ADS zoom).
 func kit_sig() -> String:
-	return M1911Kit.signature(kit, finish) if not kit.is_empty() or finish != &"" else ""
+	return WeaponKit.signature(kit, finish) if not kit.is_empty() or finish != &"" else ""
 
 
 ## The Crucible's tier table (weapons.json "crucible_tiers"): [{tier, suffix, damage_mult, mag_mult, reserve_mult, reload_mult}].
@@ -151,6 +151,7 @@ func mag_size() -> int:
 	var base: int = int(data["mag"])
 	if not _kit_mods.is_empty():
 		base = int((_kit_mods["set"] as Dictionary).get("mag", base))
+		base = maxi(1, roundi(base * float((_kit_mods["scale"] as Dictionary).get("mag", 1.0))))
 	return ceili(base * float(tier_cfg().get("mag_mult", 1.0)))
 
 
@@ -158,6 +159,7 @@ func reserve_max() -> int:
 	var base: int = int(data["reserve"])
 	if not _kit_mods.is_empty():
 		base = int((_kit_mods["set"] as Dictionary).get("reserve", base))
+		base = roundi(base * float((_kit_mods["scale"] as Dictionary).get("reserve", 1.0)))
 	return ceili(base * float(tier_cfg().get("reserve_mult", 1.0)))
 
 

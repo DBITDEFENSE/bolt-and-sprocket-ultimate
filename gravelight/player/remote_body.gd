@@ -499,14 +499,14 @@ func set_weapon(weapon_id: StringName) -> void:
 var _look_sig: String = ""
 
 
-## The M1911 attachments on the gun in the owner's hands (their WeaponHolder, a mirror for bots and remote players),
+## The attachments on the gun in the owner's hands (their WeaponHolder, a mirror for bots and remote players),
 ## when it is this weapon: {} otherwise (UPDATE_04 section 6).
 func _owner_look(weapon_id: StringName) -> Dictionary:
 	var p: Player = get_parent() as Player
 	if p == null or p.weapons == null:
 		return {}
 	var w: WeaponInstance = p.weapons.current()
-	return M1911KitModels.look_of(w) if w != null and w.id == weapon_id else {}
+	return WeaponKitModels.look_of(w) if w != null and w.id == weapon_id else {}
 
 
 ## Rebuilds the held gun after its attachments changed (the Armorer's Bench).
@@ -543,8 +543,8 @@ func fire(kind: int, weapon_id: StringName, origin: Vector3, end: Vector3) -> vo
 	var cw: WeaponInstance = p.weapons.current() if p != null and p.weapons != null else null
 	var key: String = fire_key(weapon_id, kind)
 	if cw != null and cw.id == weapon_id and cw.is_suppressed():
-		var sk: String = str((M1911Kit.cfg().get("sounds", {}) as Dictionary).get("suppressed_fire", ""))
-		if AudioDirector.has_sound(sk):
+		var sk: String = WeaponKit.suppressed_sound(cw)
+		if sk != "":
 			key = sk
 		_flash_light.light_energy = 0.3
 		_flash.scale = Vector3.ONE * 0.6

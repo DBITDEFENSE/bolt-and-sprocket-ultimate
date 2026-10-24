@@ -22,7 +22,7 @@ var phase: Phase = Phase.IDLE
 var _t: float = 0.0
 var _result: StringName = &""
 var _result_tier: int = 1
-var _result_kit: Array = []        # the M1911's attachments (M1911Kit.encode): Last Rites comes out wearing them
+var _result_kit: Array = []        # the gun's attachments (WeaponKit.encode): the upgraded gun comes out wearing them
 var _result_finish: String = ""
 var _fed_by: int = 0
 var _glow: OmniLight3D
@@ -247,7 +247,7 @@ func interact(player: Player) -> void:
 			if try_purchase(player, &"crucible", price_for(&"upgrade", econ, w.tier)):
 				var up: StringName = w.upgrade_id()
 				var next_tier: int = w.tier + 1
-				var kit: Array = M1911Kit.encode(w.kit)
+				var kit: Array = WeaponKit.encode(w.kit)
 				var fin: String = String(w.finish)
 				player.weapons.remove_current()
 				_forge(player.player_id, String(up), next_tier, kit, fin)

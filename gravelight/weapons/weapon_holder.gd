@@ -309,14 +309,14 @@ func give_instance(w: WeaponInstance) -> void:
 	_rebuild_gun()
 
 
-## Fits one M1911 attachment to the held weapon `weapon_id` (the Armorer's Bench; "" clears the slot). Co-op: the
+## Fits one attachment to the held weapon `weapon_id` (the Armorer's Bench, any gun: WeaponKit; "" clears the slot). Co-op: the
 ## host's puppet forwards it to the owner's real holder like the other inventory ops.
 func fit_attachment(weapon_id: StringName, slot: String, option: String) -> void:
 	_forward_op(&"fit_attachment", [weapon_id, slot, option])
 	var w: WeaponInstance = find_weapon(weapon_id)
-	if w == null or not M1911Kit.applies_to(w):
+	if w == null or not WeaponKit.accepts(w):
 		return
-	M1911Kit.install(w, slot, option)
+	WeaponKit.install(w, slot, option)
 	_kit_changed(w)
 
 
@@ -325,9 +325,9 @@ func fit_attachment(weapon_id: StringName, slot: String, option: String) -> void
 func set_kit(weapon_id: StringName, kit_list: Array, finish: String) -> void:
 	_forward_op(&"set_kit", [weapon_id, kit_list, finish])
 	var w: WeaponInstance = find_weapon(weapon_id)
-	if w == null or not M1911Kit.applies_to(w):
+	if w == null or not WeaponKit.accepts(w):
 		return
-	w.kit = M1911Kit.decode(kit_list)
+	w.kit = WeaponKit.decode(kit_list, w)
 	w.finish = StringName(finish)
 	w.refresh_kit()
 	w.refill()
@@ -477,10 +477,10 @@ func to_net() -> Dictionary:
 
 
 ## One weapon in to_net shape: [id, mag, reserve, fire mode, underbarrel on, underbarrel ammo, tier, attachments
-## (M1911Kit.encode), finish].
+## (WeaponKit.encode), finish].
 static func net_entry(w: WeaponInstance) -> Array:
 	return [String(w.id), w.mag, w.reserve, w.fire_mode, w.underbarrel_active, w.underbarrel_ammo, w.tier,
-		M1911Kit.encode(w.kit), String(w.finish)]
+		WeaponKit.encode(w.kit), String(w.finish)]
 
 
 ## Mirror only: becomes the owner's inventory.
@@ -500,8 +500,8 @@ func apply_net(d: Dictionary) -> void:
 		w.underbarrel_ammo = int(a[5])
 		if a.size() > 6:
 			w.tier = maxi(w.tier, int(a[6]))
-		if a.size() > 7 and M1911Kit.applies_to(w):
-			w.kit = M1911Kit.decode(a[7])
+		if a.size() > 7 and WeaponKit.accepts(w):
+			w.kit = WeaponKit.decode(a[7], w)
 			w.finish = StringName(str(a[8])) if a.size() > 8 else &""
 			w.refresh_kit()
 			w.mag = int(a[1])
@@ -767,8 +767,8 @@ var _warned_low: Dictionary = {}
 ## "fire_<base id>" when the bank has it, else the class sound. Cached per weapon so firing builds no strings.
 func _fire_key(w: WeaponInstance) -> String:
 	if w.is_suppressed():
-		var sk: String = str((M1911Kit.cfg().get("sounds", {}) as Dictionary).get("suppressed_fire", ""))
-		if sk != "" and AudioDirector.has_sound(sk):
+		var sk: String = WeaponKit.suppressed_sound(w)
+		if sk != "":
 			return sk
 	var base: StringName = w.base_id()
 	var k: Variant = _fire_keys.get(base)
@@ -780,11 +780,11 @@ func _fire_key(w: WeaponInstance) -> String:
 	return str(k)
 
 
-## The compensator's side blast under the shot (M1911 attachments).
+## The compensator's side blast under the shot (attachments).
 func _kit_fire_layer(w: WeaponInstance) -> void:
 	var fl: String = str(w.kit_mods().get("flash", ""))
 	if fl == "comp" or fl == "censer":
-		AudioDirector.play_2d(str((M1911Kit.cfg().get("sounds", {}) as Dictionary).get("comp_layer", "kit_comp_blast")), -5.0, 0.06)
+		AudioDirector.play_2d(WeaponKit.sound("comp_layer", "kit_comp_blast"), -5.0, 0.06)
 
 
 func _ammo_warnings(w: WeaponInstance) -> void:
@@ -924,7 +924,7 @@ func _fire_underbarrel(w: WeaponInstance) -> void:
 func _on_hit_effects(w: WeaponInstance, z: Zombie, limb: StringName, killed: bool, head_pos: Vector3) -> void:
 	if not w.kit.is_empty():
 		var eye: Vector3 = player.camera.global_position if player.camera != null else player.global_position
-		M1911Kit.on_hit(w, z, killed, eye.distance_to(head_pos), player.player_id)
+		WeaponKit.on_hit(w, z, killed, eye.distance_to(head_pos), player.player_id)
 	if not w.upgraded:
 		return
 	var pid: int = player.player_id
@@ -1149,8 +1149,8 @@ func start_reload() -> void:
 		_reload_t = (w.f("reload_empty", 2.5) if w.mag == 0 else w.f("reload_partial", 2.0)) * mult
 	_on_reload_started(w)
 	_set_reload_cues()
-	if M1911Kit.has_option(w, "mag", "drum"):
-		AudioDirector.play_2d(str((M1911Kit.cfg().get("sounds", {}) as Dictionary).get("drum_reload", "kit_drum_wind")), -4.0, 0.0)
+	if WeaponKit.has_option(w, "mag", "drum"):
+		AudioDirector.play_2d(WeaponKit.sound("drum_reload", "kit_drum_wind"), -4.0, 0.0)
 	if _cues.is_empty():
 		AudioDirector.play_2d("reload_start", -5.0)
 
@@ -1497,7 +1497,7 @@ func _rebuild_gun() -> void:
 		_flame = null
 		return
 	var camo: StringName = &"" if w.upgraded else ProfileSave.camo_for(w.base_id())
-	_model = WeaponModels.build(w.base_id(), w.upgraded, camo, M1911KitModels.look_of(w))
+	_model = WeaponModels.build(w.base_id(), w.upgraded, camo, WeaponKitModels.look_of(w))
 	_gun.add_child(_model)
 	for part: String in ["Mag", "Bolt", "Slide", "Pump", "Cover", "Barrels", "Crank", "Rocket", "Valve"]:
 		var n: Node3D = _model.get_node_or_null(part) as Node3D
@@ -1529,7 +1529,7 @@ func _rebuild_gun() -> void:
 	_flash_mesh.name = "Flash"
 	_flash_mesh.mesh = WeaponModels.muzzle_flash_mesh()
 	_flash_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	_flash_mesh.set_meta("size", float(FLASH_SCALE.get(w.weapon_class(), 1.0)) * M1911KitModels.flash_scale(w))
+	_flash_mesh.set_meta("size", float(FLASH_SCALE.get(w.weapon_class(), 1.0)) * WeaponKitModels.flash_scale(w))
 	_muzzle.add_child(_flash_mesh)
 	_flash_mesh.hide()
 	_flame = CPUParticles3D.new()
@@ -2138,7 +2138,7 @@ static func feel_for(w: WeaponInstance) -> Dictionary:
 	if w.upgraded:
 		out.merge(w.data.get("feel", {}) as Dictionary, true)
 	if not w.kit.is_empty():
-		out.merge(w.kit_mods().get("feel", {}) as Dictionary, true)   # M1911 attachments (zoom, flash, sound)
+		out.merge(w.kit_mods().get("feel", {}) as Dictionary, true)   # attachments (zoom, flash, sound)
 	return out
 
 
@@ -2292,7 +2292,7 @@ static func recoil_for(w: WeaponInstance) -> Dictionary:
 	if w.upgraded:
 		out.merge(w.data.get("recoil", {}) as Dictionary, true)
 	if not w.kit.is_empty():
-		out = M1911Kit.apply_recoil(out, w)   # M1911 attachments (compensator, stock)
+		out = WeaponKit.apply_recoil(out, w)   # attachments (compensator, stock, bipod)
 	return out
 
 

@@ -151,6 +151,8 @@ static func refusal(sub: String, facts: Dictionary) -> String:
 				return "no_pistol"
 			if bool(facts.get("owned", false)):
 				return "owned"
+			if bool(facts.get("no_fit", false)):
+				return "no_fit"
 	return ""
 
 
@@ -177,7 +179,9 @@ static func refusal_text(code: String, who: String) -> String:
 		"full":
 			return "%s's hands are full of upgraded guns." % who
 		"no_pistol":
-			return "%s has no M1911 for the bench." % who
+			return "%s has no gun the bench can work on." % who
+		"no_fit":
+			return "%s's gun takes nothing like that." % who
 		"no_bot":
 			return "No bot can take that right now."
 	return "Can't do that."
@@ -345,7 +349,7 @@ func place_order(spec: Dictionary, mark_id: int) -> Dictionary:
 	_log("%s: %s %s %s%s" % [_name(b), o.get("kind", ""), o.get("sub", ""), o.get("label", ""), (" (%d short)" % short) if short > 0 else ""])
 	var lbl: String = str(o.get("label", ""))
 	if str(o.get("sub", "")) == "bench":
-		lbl = "%s (%s)" % [M1911Kit.option_name(str(o["slot"]), str(o["option"]), false), "Armorer's Bench"]
+		lbl = "%s (%s)" % [WeaponKit.option_name(WeaponKit.gun_of(b.player, str(o["slot"]), str(o["option"])), str(o["slot"]), str(o["option"]), false), "Armorer's Bench"]
 	return {"ok": true, "pid": pid, "reason": ("%s short: %s will save up." % [MarkTargets.money(short), _name(b)]) if short > 0 else "", "label": lbl}
 
 
@@ -394,21 +398,32 @@ func _prepare_buy(b: BotBrain, o: Dictionary, spec: Dictionary) -> String:
 			var mg: WeaponInstance = b.economy._main_gun()
 			o["slot"] = p.weapons.slots.find(mg) if mg != null else -1
 		"bench":
-			var w: WeaponInstance = M1911Kit.pistol_of(p)
+			# T-074: any gun the bench works on (the bot's own: the one in its hands first); an option its gun
+			# doesn't take becomes the bot's own pick in that slot
+			var bslot: String = str(o.get("slot", ""))
+			var bopt: String = str(o.get("option", ""))
+			var w: WeaponInstance = WeaponKit.gun_of(p, bslot, bopt)
+			if w == null and bslot != "":
+				w = WeaponKit.gun_of(p)
+				if w != null:
+					bopt = ""
 			facts["has_pistol"] = w != null
 			if w != null and not p.is_companion:
-				if str(o.get("slot", "")) == "" or str(o.get("option", "")) == "":
-					var pick: Dictionary = pick_bench_option(ArmorersBench.options_for(p), _cfg.get("bench_prefs", []), Economy.get_scrip(p.player_id))
+				if bslot == "" or bopt == "":
+					var rows: Array = ArmorersBench.options_for(p)
+					if bslot != "":
+						rows = rows.filter(func(r: Dictionary) -> bool: return str(r["slot"]) == bslot)
+					var pick: Dictionary = pick_bench_option(rows, _cfg.get("bench_prefs", []), Economy.get_scrip(p.player_id))
 					if pick.is_empty():
-						facts["owned"] = true
+						facts["owned" if bslot == "" or not rows.is_empty() else "no_fit"] = true
 					else:
 						o["slot"] = str(pick["slot"])
 						o["option"] = str(pick["option"])
 				else:
-					facts["owned"] = M1911Kit.has_option(w, str(o["slot"]), str(o["option"]))
-				if str(o.get("slot", "")) != "":
-					o["price"] = M1911Kit.price(str(o["slot"]), str(o["option"]))
-					o["label"] = M1911Kit.option_name(str(o["slot"]), str(o["option"]), w.upgraded)
+					facts["owned"] = WeaponKit.has_option(w, bslot, bopt)
+				if str(o.get("slot", "")) != "" and str(o.get("option", "")) != "":
+					o["price"] = WeaponKit.price(w, str(o["slot"]), str(o["option"]))
+					o["label"] = WeaponKit.option_name(w, str(o["slot"]), str(o["option"]), w.upgraded)
 	return refusal(sub, facts)
 
 

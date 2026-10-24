@@ -9,9 +9,12 @@ extends Node3D
 ##   godot --audio-driver Dummy --position -4000,-4000 --resolution 1280x720 --path . \
 ##       res://gravelight/tools_src/ads_check.tscn -- [--out=<dir>] [--only=thompson,mp40_up] [--tol=1.5]
 ##   godot --headless ... -- --no-shots     (numbers only)
-## M1911 attachments (UPDATE_04 section 6, T-068): every sights x stock combination of the M1911 and Last Rites is
-## checked too (M1911Kit.sight_stock_builds; --no-kits skips them). An id may be a build string,
-## "m1911_up:sights=raised_target,grip=stock"; its image is <out>/m1911_up__sights-raised_target_grip-stock.png.
+## Attachments (UPDATE_04 section 6, T-068 / T-074): every sights x stock combination of the M1911 and Last Rites,
+## and every other gun's sights options (a scope moves SightPoint / FrontSight to its eyepiece / objective) alone
+## and with each grip part that goes on the model, are checked too (WeaponKit.sight_stock_builds; --no-kits skips
+## them; --kits-only checks only them). An id may be a build string, "m1911_up:sights=raised_target,grip=stock";
+## its image is <out>/m1911_up__sights-raised_target_grip-stock.png. Headless (--headless, no shots) the check is
+## the pure ADS math through the real viewmodel rig: it needs no GPU.
 ## The viewmodel is posed with WeaponHolder.steady (no sway / bob / breathing / kick), so the check is exact.
 ## Uses a Player that is never added to the tree, so the mouse is untouched.
 
@@ -35,6 +38,7 @@ var _busy: bool = false
 var _fails: int = 0
 var _rows: Array[String] = []
 var _kits: bool = true
+var _kits_only: bool = false
 
 
 func _ready() -> void:
@@ -50,12 +54,14 @@ func _ready() -> void:
 			_shots = false
 		elif a == "--no-kits":
 			_kits = false
+		elif a == "--kits-only":
+			_kits_only = true
 	if DisplayServer.get_name() == "headless":
 		_shots = false
 	if _ids.is_empty():
-		_ids = all_weapon_ids()
-		if _kits:
-			_ids.append_array(M1911Kit.sight_stock_builds())
+		_ids = all_weapon_ids() if not _kits_only else PackedStringArray()
+		if _kits or _kits_only:
+			_ids.append_array(WeaponKit.sight_stock_builds())
 	if _out.begins_with("res://") or _out.begins_with("user://"):
 		_out = ProjectSettings.globalize_path(_out)
 	if _shots:
@@ -167,7 +173,7 @@ func _next() -> void:
 	var id: StringName = StringName(_ids[_i])
 	_holder.slots.clear()
 	if String(id).contains(":"):
-		_holder.slots = [M1911Kit.from_build(String(id))]   # an M1911 with attachments
+		_holder.slots = [WeaponKit.from_build(String(id))]   # a gun with attachments
 		_holder.current_index = 0
 	else:
 		_holder.give_weapon(id)
@@ -238,7 +244,7 @@ func _measure_and_shoot() -> void:
 		img.convert(Image.FORMAT_RGB8)
 		if img.get_width() != W:
 			img.resize(W, H)
-		img.save_png(_out.path_join(M1911Kit.build_file_name(id) + ".png"))
+		img.save_png(_out.path_join(WeaponKit.build_file_name(id) + ".png"))
 		_busy = false
 	_next()
 

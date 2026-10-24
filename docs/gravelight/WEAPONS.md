@@ -895,7 +895,7 @@ map near spawn: the Crossroads Inn's stable (its tack corner on the west wall, u
 walled tack room), Kaltenbrunn's gatehouse (east face), Totenhafen's harbourmaster's hut (south face, facing the spawn).
 Helvetia Works and Morgenrot will just place the node. The B&S OMNI-BLASTER is untouched.
 
-All numbers are in `data/gravelight/weapons/m1911_attachments.json` (JSON, the project's data convention, instead of
+All numbers are in `data/gravelight/weapons/attachments.json` under `weapons.m1911` (moved there unchanged by T-074; JSON, the project's data convention, instead of
 the order's `.tres`). Five slots, **one option per slot**: buying another option in a slot replaces the fitted one.
 
 | Slot | Option | Scrip | Effect | On Last Rites |
@@ -941,3 +941,40 @@ tab); `WeaponInstance.is_suppressed()` and `GLBus.shot_is_suppressed(pid)` durin
 firing reveal). Dev console: `kit list | <slot> <option> | free <slot> <option> | clear [slot] | finish <id>`.
 Sounds: `python gravelight/tools_src/gen_audio_kit.py`. Captures: `kit_shots.tscn`, `bench_shots.tscn`
 (`-- --play` is the launcher's bench test).
+
+## 26. The Armorer's Bench for any gun (DECISIONS T-074)
+
+The bench now works on **whatever gun is in your hands** (`gravelight/weapons/weapon_kit.gd`, `WeaponKit`). Data:
+`data/gravelight/weapons/attachments.json`. Each gun's table = its weapons.json class's table (`classes`, a class may
+be `like` another) + the per-weapon entry in `weapons` (keyed by base id: null removes an option, a dict's keys
+replace the class option's keys). The M1911 keeps its §25 table verbatim (`own_table`), with its finishes and the
+Loadout Pick. Upgraded (Crucible) guns use their base gun's table and each part's `upgraded` block: its own name and
+text; numbers it leaves out are the base part's, with benefits ×`upgrade_boost` (1.35) and drawbacks ×0.6.
+
+| Class (guns) | Magazine | Barrel | Sights | Grip / stock | Ammo |
+|---|---|---|---|---|---|
+| smg (MP40, Thompson, PPSh-41, Type 100) | Extended 1250, Drum 2250 (Thompson: 50-rd L drum → C drum 100 on Chicago Lament; MP40: MP40/II twin slide; PPSh: 35-rd box instead) | Cutts comp 1000, Suppressor 1500, Long barrel 1000 | Radium 600, Peep insert 750 | Vertical foregrip 900, Sling 600 | Hollow-points 1200, AP 1200, Nachtglas 2500 |
+| assault (STG-44) | as smg, twin-pack mags, no drum | as smg | + ZG 1229 "Vampir" scope 2000 | as smg | as smg |
+| rifle (Garand, G43, Carbine) | Extended 1250 (Garand: T20 20-rd box; Carbine: 30-rd banana) | Flash hider 900, National Match 1000, Suppressor 1500 | Scope 1500 (M84 / ZF4 / Weaver), Radium 600 | Sling 600, Cheek pad 700 | AP 1200, Incendiary 1500, Nachtglas 2500 |
+| bolt (Kar98k) / sniper (Springfield, PTRS-41) | Stripper pouch 750 (Kar98k: 25-rd trench magazine 1500) | Match 1000, Flash hider 900, Suppressor 1500 (PTRS: muzzle brake 1250) | Scope 1500 (Kar: ZF39; PTRS: PE; Springfield: Unertl 8x glass 1250), Radium 600 | Sling, Cheek pad | AP, Incendiary, Nachtglas |
+| shotgun (Trench Gun, Sawed-Off) | Shell bandolier 750, Extended tube 1250 | Full choke 900, Cutts comp 1000 | Ivory bead & rib 500, Radium 600 | Recoil pad 700, Sling 600 | Magnum buck 1250, Dragon's Breath 1750, Nachtglas 2500 |
+| lmg (BAR, MG42, M1919) | Extended 1750 (BAR 40-rd; MG42/M1919 250-rd belt box) | Flash hider 1000, Heavy barrel 1250 (M1919: spare barrel, runs cooler) | Radium 600, Spider-web AA sight 900 | Bipod 1250 (BAR A2; MG42 Heavy Zweibein; M1919 M2), Assault sling 900 | Tracer belt 1000, AP 1250, Incendiary 1750, Nachtglas 3000 |
+| launcher (Panzerschreck) | Ready-rack 1500 (+50% rockets) | Muzzle ring (54/1) 1000 | Ranging sight 750, Radium 600 | Shoulder pad 600 | Hollow-charge 2000, Nachtglas 3000 |
+| special (M2 flamethrower) | Third tank 1750 | Long nozzle 1250 (reach 9 / 11 m) | — | Pack harness 750 | Thickened fuel 2000 |
+| wonder (Ashlight, Totenglocke, Sankt-Elmsfeuer), melee, tacticals | refused in character (`refuse`, `refuse_classes`) | | | | |
+
+**Rules.** The kit lives on the WeaponInstance of any gun: Crucible (and tiers II/III) keep it; Jakub, the campaign
+carry and the co-op inventory carry it (`net_entry` 7, decoded against the gun's own table); a wall-buy or **Mystery
+Crate result that takes the gun's slot loses it** (the new gun comes plain; re-buying the same gun only refills).
+Every suppressor sets `props.suppressed` (`WeaponInstance.is_suppressed`, `GLBus.shot_is_suppressed`). The bench
+targets `WeaponKit.gun_of(player, slot, option)`: the gun in hand, else the first gun in your slots offering that part
+(bots sent by a mark for a part). The bench screen shows that gun's slots; a long gun lies in two padded rests instead
+of the vise. Map marks: slot → "Bot's pick" or the options on the squad's guns; a part the bot's gun doesn't take
+becomes its own pick in that slot (refusal "no_fit" when the gun has nothing there).
+
+**On the gun** (`gravelight/weapons/weapon_kit_models.gd`): parts built from the model's own markers and outline:
+muzzle parts (can, comp, hider, choke, brake, longer barrel, crown, nozzle) move the Muzzle; magazines (extension,
+drum, twin, trench box, belt box, shotgun tube, shell carrier); scopes move SightPoint/FrontSight to the eyepiece /
+objective (level, centred) and set meta `scope` (HUD scope picture); radium dots, ivory bead, AA ring stay off the
+sight line; bipod (MG42/M1919 replace their own `BipodLeg` nodes), foregrip, sling, cheek pad, recoil pad; ammo bands.
+`tools/ads_check.sh` checks `WeaponKit.sight_stock_builds()` (`-- --kits-only`); headless it is the pure ADS math.

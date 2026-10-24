@@ -742,8 +742,8 @@ static func radial_for(c: Dictionary, has_bots: bool, bs: bool = false) -> Array
 	if k == "buy" and not bs:
 		if sub == "bench":
 			out.append({"id": "bench_pick", "label": "BUY THIS: bot's pick", "kind": "buy"})
-			for slot: String in M1911Kit.slot_order():
-				out.append({"id": "bench_slot:" + slot, "label": M1911Kit.slot_name(slot), "kind": "buy"})
+			for slot: Variant in WeaponKit.slot_ids():
+				out.append({"id": "bench_slot:" + str(slot), "label": WeaponKit.slot_name(null, str(slot)), "kind": "buy"})
 		elif sub == "door":
 			out.append({"id": "buy", "label": "OPEN THIS DOOR", "kind": "buy"})
 		else:
@@ -764,6 +764,21 @@ static func radial_for(c: Dictionary, has_bots: bool, bs: bool = false) -> Array
 	return out
 
 
+## The guns the squad's bots would take to the bench (WeaponKit.gun_of each), for the bench's option radial.
+func _bot_guns() -> Array:
+	var out: Array = []
+	if marks == null or not is_inside_tree():
+		return out
+	var pids: Array = marks.bots().map(func(d: Dictionary) -> int: return int(d.get("pid", -1)))
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		var p: Player = n as Player
+		if p != null and pids.has(p.player_id):
+			var w: WeaponInstance = WeaponKit.gun_of(p)
+			if w != null:
+				out.append(w)
+	return out
+
+
 func _on_radial(e: Dictionary) -> void:
 	var id: String = str(e.get("id", ""))
 	if id == "remove":
@@ -773,11 +788,22 @@ func _on_radial(e: Dictionary) -> void:
 		return
 	if id.begins_with("bench_slot:"):
 		var slot: String = id.get_slice(":", 1)
-		var opts: Array = []
-		for o: Variant in M1911Kit.options(slot):
-			opts.append({"id": "bench_opt:%s:%s" % [slot, str(o)], "label": "%s\n%s" % [M1911Kit.option_name(slot, str(o), false), MarkTargets.money(M1911Kit.price(slot, str(o)))], "kind": "buy"})
-		radial.open(pending.get("at", cursor), opts, M1911Kit.slot_name(slot))
+		# T-074: the slot's options on the guns the squad's bots are holding (the bot picks its own when its
+		# gun doesn't take the one chosen), and "bot's pick" in that slot
+		var opts: Array = [{"id": "bench_any:" + slot, "label": "Bot's pick", "kind": "buy"}]
+		var seen: Dictionary = {}
+		for bw: WeaponInstance in _bot_guns():
+			for o: Variant in WeaponKit.options(bw, slot):
+				if seen.has(o):
+					continue
+				seen[o] = true
+				opts.append({"id": "bench_opt:%s:%s" % [slot, str(o)], "label": "%s\n%s" % [WeaponKit.option_name(bw, slot, str(o), false), MarkTargets.money(WeaponKit.price(bw, slot, str(o)))], "kind": "buy"})
+		radial.open(pending.get("at", cursor), opts, WeaponKit.slot_name(null, slot))
 		return
+	if id.begins_with("bench_any:"):
+		pending["slot"] = id.get_slice(":", 1)
+		pending["option"] = ""
+		id = "buy"
 	if id.begins_with("bench_opt:"):
 		pending["slot"] = id.get_slice(":", 1)
 		pending["option"] = id.get_slice(":", 2)
@@ -837,7 +863,8 @@ func _open_picker() -> void:
 	if str(c.get("label", "")) != "":
 		what += ": " + str(c["label"])
 	if str(pending.get("slot", "")) != "":
-		what += " (%s)" % M1911Kit.option_name(str(pending["slot"]), str(pending["option"]), false)
+		var ps: String = str(pending["slot"])
+		what += " (%s)" % (WeaponKit.any_option_name(ps, str(pending["option"])) if str(pending.get("option", "")) != "" else "bot's pick: " + WeaponKit.slot_name(null, ps))
 	v.add_child(_label(what.to_upper(), 16, _red(), true))
 	v.add_child(_label("Who is it for?", 14, _faint()))
 	var row: HBoxContainer = HBoxContainer.new()

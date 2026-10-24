@@ -339,7 +339,9 @@ func price() -> int:
 			var t: Node = (n as TrapLever).trap() if n is TrapLever else null
 			return int(t.call("cost")) if t != null and t.has_method("cost") else int(order.get("price", 0))
 		"bench":
-			return M1911Kit.price(str(order.get("slot", "")), str(order.get("option", "")))
+			var bs: String = str(order.get("slot", ""))
+			var bo: String = str(order.get("option", ""))
+			return WeaponKit.price(WeaponKit.gun_of(player, bs, bo), bs, bo)
 	return int(order.get("price", 0))
 
 
@@ -369,7 +371,9 @@ func _already_done() -> bool:
 		"power":
 			return GameState.power_on
 		"bench":
-			return M1911Kit.has_option(M1911Kit.pistol_of(player), str(order.get("slot", "")), str(order.get("option", "")))
+			var hs: String = str(order.get("slot", ""))
+			var ho: String = str(order.get("option", ""))
+			return WeaponKit.has_option(WeaponKit.gun_of(player, hs, ho), hs, ho)
 	return false
 
 
