@@ -790,3 +790,56 @@ the run ends when the egg is complete):
 Every step a bot can do on Map 0 was done by the bots (opening the upstairs and stable doors with their own Scrip on the
 way); the last frequency is the player's commit, which the harness locks. Zero quest_step_failed events in all runs.
 Brain cost with the egg work: 0.23-0.26 ms per bot per frame (the 0.5 ms budget holds).
+
+
+## 10. Player bot mode (T-071)
+
+The local human's own survivor played by the bots' brain while they watch (`gravelight/bots/player_bot.gd`,
+`PlayerBot`, one per match, a MapRoot child). Player-facing notes: `docs/gravelight/BOTS.md` "Player bot mode".
+
+### How it is wired
+
+| Piece | Job |
+|---|---|
+| `PlayerBot` | The toggle: the `bot_mode` action (F6), the pause menu's Settings page, the console (`botmode on\|off\|toggle\|status`), `--botmode` / `PlayerBot.pending_on` (the launcher scene `gravelight/tools_src/play_botmode.tscn`). The hand-back poll (pure: `PlayerBot.takeover`): any of `player_bot.json takeover.actions`, the move stick, a mouse move over `mouse_px` or the right stick; keys held at the switch-on count only once let go; `grace_s` after a switch-on. `PlayerBot.can_enable`: solo, or the online host (a client's shots, buys and revives would need relaying). The HUD tag (its own CanvasLayer). |
+| `Player.bot_driven` | The local Player reads no input (movement, look, the interaction ray, the WeaponHolder's tick); `drive_bot` accepts it; `bot_view_tick` (called by the brain at the end of its frame) turns the head the brain left into the view pitch, runs the camera update and the WeaponHolder's `bot_view_tick` (the gun in hand, raise, sprint pose, the reload animation and cues; never ammo). `BotAim.fire` calls `WeaponHolder.bot_shot_fx` for the local player: viewmodel kick, flash, 2D sound, hitmarker, a visual-only camera punch, and `Net.session.local_fired` (co-op relay). |
+| `BotSquad.add_player_brain` / `player_bot` | A BotBrain with `is_player_bot`, **not** in `brains` (no plate, wheel orders, roles, kit, bonus perk, callouts). It may claim revives (`reviver_brains()`), it is `_brain_of(1)`, round starts reach it. `human_is_agent()`: `bot_led()` and `bots_alone()` are true while it plays, so the T-058 self-led rules (power, useful doors, home loop) apply to the squad and to it. In solo without bots PlayerBot makes a squad (no co-op session: the solo rules stay). |
+| Brain options (`player_bot.json brain`) | No kit, no bonus perk, shopping and perks on, `skill` its own preset (Elite; the bots keep the Bot Skill setting), personality `player_agent` (lead_train is its fight, no follow / hold / chatter, no bolt-actions, Second Wind first: the human's solo self-revive; `economy.priority_mult` a real gun before the power's door). Before the power is on its Scrip reserve is only `reserve.min_scrip` (no perk to rebuy yet). |
+| `BotLocomotion` | `steer_path(points, urgency)` (an explicit polyline: the trainer's), `skill_override`, `smooth_turn` (player_bot.json `turn`: angular speed = error x gain, capped, accel-limited: the first-person view eases into every turn). |
+| `BotPlanner` | On the agent's brain (`player_bot.json planner`): the local LLM when the Bot Local AI setting is on and Ollama answers, else the scripted pick (`PLAYER_BOT_PROMPT`; it offers no door of its own: the economy's power / loop doors are the agent's). |
+| `BotTrainer` (`lead_train`) | Section below. |
+
+### Training (`gravelight/bots/bot_trainer.gd`, player_bot.json `trainer`)
+
+- **Value** (the utility input `trainer`): 0 outside a round, with no loop, in special rounds (`special_round:
+  "fight"`: the Bellringers are fought where it stands, the T-058 stand-fast rule), or with fewer than `train_min`
+  (4) zombies chasing within `horde_m` (a handful is shot by the plain Fight action: measured better than kiting
+  them); 1 otherwise (it keeps on while `train_keep` still follow); `low_ammo_value` when nearly dry (resupply first).
+- **The loop:** `choose_loop` over `TrainingRoute.for_map(map, true)` (width, length, travel, windows on its line, home,
+  `agent_bonus`, stickiness). New on Map 0: `map00_yard_well` (46.6 m round the yard's well, ring 4.5 m, validated;
+  `agent_only`, so the bots' route pick and door rules are unchanged); the lollipop and the 21 m stable ring carry a
+  negative `agent_bonus`.
+- **The picture** (10 Hz): every known zombie (perception: no wallhacks) on the loop; unseen ones dead-reckoned toward
+  the agent at their speed (`dead_reckon`); at-window ones (outside, tearing) are not on the loop but mark the window
+  ahead. Classes (`classify`): behind (the train), ahead (a cutter; also one close in front off the line), close, off.
+  The train's compactness (`train_stats`): followers, spread round their centroid, bunched share within `bunch_m`.
+- **Phases:** TRAVEL (back to the loop at the clearest entry; away from anything in reach first), RUN (facing the way:
+  walk, sprint inside the gap, reload on the walk, shoot what is in front), FACE (turned on the train: fire, stand for
+  the aim while it is far, back round the loop when it closes; `safe_to_turn`: the head beyond the gap, the stretch
+  ahead and its windows clear), CUT (a cutter with the train well back: shoot it). The gap (`gap_for`): the head's
+  reach (`ai_counters reach_m`: 1.5, a Bellringer 3.4) + a margin + its speed x 0.38 s.
+- **The kite** (`kite_score`, every 0.1 s, 16 directions): along the loop, clear of where every known zombie will be in
+  0.7 s (reach + margin, squared) and of a straight line that brushes one, away from walls (a ray each); a loop whose
+  best way stays against travel for 0.5 s is reversed. Cutters are swerved round on the open side.
+- **Shopping on the way:** the economy's gun / ammo / perk within 4 m of it while the train is well back
+  (BotTasks._shop), then back to the loop.
+- The last zombies of a round are killed (the code has no keep-a-crawler pattern); a stalled round sends it to the
+  squad's hunt point.
+
+### Measuring
+
+`tools/ai_soak.sh --scenario=botmode [--bots=N] [--map=map01]` (the agent replaces the scripted player). Extras
+`pb_*`: training time and share, the train's mean / max length, 4+ share, spread, bunched share, cut-ins, hits (all /
+while training), hits per training minute, stuck time, kills, reversals, phases, shops, its perks and guns, downs and
+hits per round; `--trace=N` adds a line per N s and every hit with the zombies within 9 m. Tuning only:
+`--player-kit=bots` (the bots' free kit for the agent), `--no-trainer` (the plain brain, no BotTrainer).

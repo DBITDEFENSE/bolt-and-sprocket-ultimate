@@ -433,6 +433,9 @@ func _think() -> void:
 	if _sticky:
 		commit += 1.0
 	_was_committed = false
+	if is_player_bot and perception.nearest_d < 2.5 and not actions.reviving():
+		commit = 0.0   # T-071: nothing holds the agent to an errand with a zombie in reach (it fights first)
+		_sticky = false
 	var pick: Array = BotUtility.choose(scores, action, float(_acfg.get("hysteresis", 0.1)), commit, float(skill.get("decision_noise", 0.0)), _rng)
 	var best: String = str(pick[0]) if str(pick[0]) != "" else "idle"
 	if _sticky and best != action and not (["revive", "retreat", "cover"].has(best) and float(scores.get(best, 0.0)) > 0.8):
