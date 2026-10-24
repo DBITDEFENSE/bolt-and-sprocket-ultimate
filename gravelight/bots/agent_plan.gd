@@ -13,6 +13,9 @@ extends RefCounted
 ## the map) the ordinary economy runs. "train_at" lists the map's loops the trainer prefers, best first
 ## (BotTrainer: plan_bonus on the loop score). The pure parts are unit-tested (test_player_bot.gd).
 
+## The last unfiltered candidates' labels (the soak's --trace).
+static var last_raw: PackedStringArray = PackedStringArray()
+
 const ALWAYS: PackedStringArray = ["repair", "ammo", "ammo_box", "crucible_ammo", "power"]
 
 
@@ -104,6 +107,7 @@ static func current_for(brain: BotBrain) -> Dictionary:
 ## BotEconomy.candidates' last word for the player bot: only what the plan's current step needs (and ALWAYS).
 static func filter(cands: Array[Dictionary], brain: BotBrain) -> Array[Dictionary]:
 	var step: Dictionary = current_for(brain)
+	last_raw = PackedStringArray(cands.map(func(x: Dictionary) -> String: return str(x.get("label", ""))))
 	if step.is_empty():
 		return cands
 	var out: Array[Dictionary] = []
@@ -118,7 +122,51 @@ static func filter(cands: Array[Dictionary], brain: BotBrain) -> Array[Dictionar
 			id = String((node as WallBuy).weapon_id)
 		if allows(step, str(cnd.get("kind", "")), id):
 			out.append(cnd)
+	for cnd2: Dictionary in out:
+		if not ALWAYS.has(str(cnd2.get("kind", ""))):
+			return out
+	# the ordinary rules didn't offer the step (a door's per-round limit, a gun its tier table skips, range): the
+	# plan's own errand, when the Scrip is there
+	if not brain.in_break() and brain.perception.nearest_d < 14.0:
+		return out   # (its own errands wait for the break, or for a quiet moment: no walking off through a round)
+	var own: Dictionary = errand_for(step, brain)
+	if not own.is_empty():
+		out.append(own)
 	return out
+
+
+## The economy candidate for a door / perk / gun step, or {} (not affordable, not reachable, not on the map).
+static func errand_for(step: Dictionary, brain: BotBrain) -> Dictionary:
+	var pid: int = brain.player.player_id
+	var scrip: int = Economy.get_scrip(pid)
+	var keep: int = int((BotAIData.table("economy").get("reserve", {}) as Dictionary).get("min_scrip", 300))
+	var me: Vector3 = brain.player.global_position
+	var tree: SceneTree = brain.get_tree()
+	if step.has("door"):
+		for n: Node in tree.get_nodes_in_group(&"doors"):
+			var d: BuyDoor = n as BuyDoor
+			if d == null or d.is_open or String(d.door_id) != str(step["door"]) or not d.can_interact(brain.player):
+				continue
+			if scrip < d.cost + keep or not brain.squad.can_claim(d, pid) or not brain.reachable(BotBrain._door_side(d, me)):
+				continue
+			return {"node": d, "kind": "door", "value": 0.9, "cost": d.cost, "label": "open the %s (%d Scrip) (the plan)" % [BotBrain.door_label(d), d.cost]}
+	elif step.has("perk"):
+		for n2: Node in tree.get_nodes_in_group(&"perk_machines"):
+			var pm: PerkMachine = n2 as PerkMachine
+			if pm == null or String(pm.perk_id) != str(step["perk"]) or not pm.can_interact(brain.player) or not pm.is_powered():
+				continue
+			var price: int = PerkManager.price(pm.perk_id)
+			if scrip < price + keep or not brain.squad.can_claim(pm, pid) or not brain.reachable(BotBrain._front_of(pm)):
+				continue
+			return {"node": pm, "kind": "perk", "value": 0.9, "cost": price, "label": "drink %s (%d Scrip) (the plan)" % [PerkManager.display_name(pm.perk_id), price]}
+	elif step.has("gun"):
+		for wb: WallBuy in brain.squad.wall_buys():
+			if not is_instance_valid(wb) or String(wb.weapon_id) != str(step["gun"]) or not wb.is_visible_in_tree():
+				continue
+			if scrip < wb.price() + keep or not brain.squad.can_claim(wb, pid) or not brain.reachable(BotBrain._front_of(wb)):
+				continue
+			return {"node": wb, "kind": "gun", "value": 0.9, "cost": wb.price(), "label": "buy the %s wall gun (%d Scrip) (the plan)" % [BotBrain.weapon_name(wb.weapon_id), wb.price()]}
+	return {}
 
 
 ## The trainer's bonus for a loop: plan_bonus for the plan's first open choice, less for the later ones.

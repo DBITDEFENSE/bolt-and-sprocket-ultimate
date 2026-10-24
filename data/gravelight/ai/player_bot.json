@@ -38,6 +38,12 @@
       "steps": [{"gun": "m1_garand", "or_tier": 2.4}, {"door": "door_cellar"}, {"power": true}, {"perk": "second_wind"}, {"perk": "ironhide_stout"}, {"door": "door_stable"}, {"door": "door_yard"},
         {"gun": "thompson", "or_tier": 3.6}, {"perk": "marathon_malt"}, {"crucible": "*"}, {"perk": "trigger_tonic"}],
       "train_at": ["map00_yard_well", "map00_taproom"]
+    },
+    "map01": {
+      "_why": "Kaltenbrunn solo: the Rail Yard door and the MP40, the Administration door for Second Wind (it works without the power solo), the Barracks, then down the lift to the Chapel and into the Generator Hall to throw the Hauptschalter (the power never came on solo in pass 1: no step led there); Ironhide back in the Barracks, Marathon in the Chapel, the StG-44 in the Lab corridor.",
+      "steps": [{"gun": "m1_carbine", "or_tier": 2.0}, {"door": "door_a_b"}, {"gun": "mp40", "or_tier": 3.2}, {"door": "door_a_c"}, {"perk": "second_wind"}, {"door": "door_barracks"},
+        {"door": "door_lift"}, {"door": "door_gen"}, {"power": true}, {"perk": "ironhide_stout"}, {"perk": "marathon_malt"}, {"gun": "stg44", "or_tier": 4.2}],
+      "train_at": ["map01_turbines", "map01_pews", "map01_headframe"]
     }
   },
   "trainer": {
@@ -107,6 +113,8 @@
     "travel_clear_m": 1.6,
     "reload_dry_m": 0.9,
     "sprint_close_m": 0.8,
+    "sprint_close_slow_m": 0.8,
+    "face_enter_slow_m": 1.5,
     "sprint_close_marathon_m": 2.2,
     "face_enter_marathon_m": 3.5,
     "face_enter_m": 1.5,

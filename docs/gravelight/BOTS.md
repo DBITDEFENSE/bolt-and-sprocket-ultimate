@@ -294,13 +294,21 @@ the stick, fire, aim, jump, sprint, reload, use, knife, a grenade, a weapon key,
 
 - **What plays you:** the bots' own Update 03 brain (perception without wallhacks, the utility actions, the aim layer,
   the economy, revives) on your Player through the same movement code (BotLocomotion on your MoveIntent). It aims with
-  the Elite preset and turns your view on a damped curve (never a snap). It shops with your Scrip (no free bot kit):
-  a real gun first (never the Kar98k), the power's door and the switch, Second Wind first (your solo self-revive),
-  then Ironhide, ammo when low; the doors its loops need.
-- **Training:** with four or more zombies after it, it trains them round the map's loop (`routes_<map>.json`; on
-  Map 0 the taproom ring, and the yard's Well Loop once the stable and the yard are open), turning to fire into the
-  train when it is safe and swerving round anything that cuts in. A handful of zombies, and special rounds, it just
-  shoots where it stands. It kills the round's last zombies (it never keeps a crawler).
+  the Elite preset and turns your view on a damped curve (never a snap). It shops with your Scrip (no free bot kit)
+  by a **game plan** per map (`player_bot.json` "plans"; pass 2): on the Crossroads Inn the Garand, the cellar door
+  and the power, Second Wind (your solo self-revive), Ironhide, the stable and the yard, the Thompson on the stable
+  wall, Marathon, then the Crucible; on Kaltenbrunn the carbine, the Rail Yard and the MP40, Second Wind in
+  Administration, the Barracks, the lift and the Generator Hall for the Hauptschalter, Ironhide, Marathon, the StG-44.
+  Ammo, an ammo box and the boards are always allowed; nothing else jumps the queue.
+- **Training:** once the plan's training ground is open (Map 0: the yard's Well Loop, the map's open ground; Map 1:
+  the Generator Hall's turbine loop) it **owns every round**: it lets the round come out and group up behind it
+  (a train of 5-11, more in later rounds), walks the loop's own line, picking a lane across the ring that keeps it
+  clear of where every zombie will be in the next second and a half (and turning back round the loop when that is
+  clearer), and turns on the train to fire while it walks backwards round the loop (there is no backpedal penalty:
+  a walk backwards outpaces a jog). It sprints (facing the way) when the head of the train gets within reach, reloads
+  on the walk, shoots what cuts in ahead, glances forward every few seconds, and stands still to aim at the round's
+  last few. Before that (and in a special round before it) it holds the taproom and fights, training only a horde of
+  four or more. It never walks back to its loop through zombies already close: it fights where it is first.
 - **The bots and Jakub** follow it as their leader, as they would follow you; with nobody human leading, the squad's
   "bots alone" rules apply (it may throw the power, and they drink).
 - **Local AI:** with the Bot Local AI setting on and Ollama running, the local model picks what to buy or open next

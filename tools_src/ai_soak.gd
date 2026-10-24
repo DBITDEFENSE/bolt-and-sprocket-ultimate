@@ -278,7 +278,7 @@ func _physics_process(delta: float) -> void:
 				print("[trace] t=%.1f r%d AGENT %s (%.1f,%.1f) v%.1f hp%.0f %s %d/%d | %s %s f%d h%.1f a%.1f(%d) n%.1f p%.2f off%.1f y%.1f | scrip %d | %s" % [_game_t, RoundManager.current_round,
 					_pb.brain.action, pp.x, pp.z, _map.player.horizontal_speed(), _map.player.hp, str(cw.id) if cw != null else "-", cw.mag if cw != null else 0, cw.reserve if cw != null else 0,
 					tb.route.id.trim_prefix("map00_").trim_prefix("map01_") if tb.route != null else "-", tb.phase_name(), tb.followers, minf(tb.head_d, 99.0), minf(tb.ahead_d, 99.0), tb.ahead_n,
-					minf(_pb.brain.perception.nearest_d, 99.0), _pb.brain.perception.pressure, minf(tb.off_m, 99.0), pp.y, Economy.get_scrip(1), ", ".join(PackedStringArray(_pb.brain.top3.map(func(t: Variant) -> String: return "%s %.2f" % [str((t as Array)[0]), float((t as Array)[1])]))) + " | buy: " + str((_pb.brain.economy.best(_pb.brain.squad.time()).get("buy", {}) as Dictionary).get("label", "-")) if trace_s >= 2.0 else ""])
+					minf(_pb.brain.perception.nearest_d, 99.0), _pb.brain.perception.pressure, minf(tb.off_m, 99.0), pp.y, Economy.get_scrip(1), ", ".join(PackedStringArray(_pb.brain.top3.map(func(t: Variant) -> String: return "%s %.2f" % [str((t as Array)[0]), float((t as Array)[1])]))) + " | step " + str(AgentPlan.current_for(_pb.brain)) + " raw " + str(AgentPlan.last_raw) + " | buy: " + str((_pb.brain.economy.best(_pb.brain.squad.time()).get("buy", {}) as Dictionary).get("label", "-")) if trace_s >= 2.0 else ""])
 	if _pd_f != null:
 		_pd_t -= delta
 		if _pd_t <= 0.0:

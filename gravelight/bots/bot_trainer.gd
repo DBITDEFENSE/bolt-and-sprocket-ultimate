@@ -244,6 +244,10 @@ func value() -> float:
 			chasing += 1
 	if chasing < int(_f("train_min", 4.0)) and not (_active and followers >= int(_f("train_keep", 3.0))) 			and not (RoundManager.current_round >= int(_f("own_from_round", 3.0)) and ready_to_own()) and not RoundManager.is_special_round:
 		return 0.0
+	# far from every loop (a perk errand in the cellar) with zombies already close: no long walk back through them
+	# to the loop (the round-4 downs on the cellar stairs); it fights where it is until they thin out
+	if per.nearest_d < _f("travel_fight_m", 7.0) and _nearest_loop_off(player.global_position) > _f("rejoin_nav_m", 7.0):
+		return 0.0
 	var v: float = 1.0
 	if ammo_frac() < _f("low_ammo_frac", 0.2):
 		v = minf(v, _f("low_ammo_value", 0.35))   # nearly dry: the ammo box (resupply) comes first
@@ -277,6 +281,15 @@ func ready_to_own() -> bool:
 		if r.id == str(order[0]):
 			return true
 	return false
+
+
+## How far `p` is from the nearest usable loop's line (m; +50 on another floor).
+func _nearest_loop_off(p: Vector3) -> float:
+	var best: float = INF
+	for r: TrainingRoute in _routes:
+		var q: Vector3 = r.point_at(r.closest_param(p))
+		best = minf(best, _flat(q, p) + (50.0 if absf(q.y - p.y) > 2.0 else 0.0))
+	return best
 
 
 ## The best (mag + reserve) / max over every carried gun.
@@ -381,8 +394,11 @@ func run(delta: float) -> void:
 	var want: Phase = Phase.RUN
 	# the head this close: away at a sprint (with Marathon's endless sprint it keeps a wider gap: a sprint costs
 	# nothing then); turned on the train again once it is face_enter_m beyond its reach
-	var close_m: float = head_reach + (_f("sprint_close_marathon_m", 2.2) if unlimited else _f("sprint_close_m", 0.8))
-	var enter_m: float = head_reach + (_f("face_enter_marathon_m", 3.5) if unlimited else _f("face_enter_m", 1.5))
+	# a head slower than a walk is outwalked backwards as well as forwards (no backpedal penalty): only a faster one
+	# (a runner, a Bellringer) needs the sprint
+	var slow_head: bool = head_speed < float(GLData.table("player").get("walk_speed", 4.5)) * 0.92
+	var close_m: float = head_reach + (_f("sprint_close_marathon_m", 2.2) if unlimited else (_f("sprint_close_slow_m", 0.4) if slow_head else _f("sprint_close_m", 0.8)))
+	var enter_m: float = head_reach + (_f("face_enter_marathon_m", 3.5) if unlimited else (_f("face_enter_slow_m", 0.8) if slow_head else _f("face_enter_m", 1.5)))
 	if cut and (head == null or head_d > _f("cut_kill_gap_m", 5.0)):
 		want = Phase.CUT
 	elif head != null and head_d < close_m and can_sprint:
