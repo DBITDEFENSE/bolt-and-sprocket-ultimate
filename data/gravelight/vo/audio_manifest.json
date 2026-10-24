@@ -1802,6 +1802,16 @@
    "voice": "Mark",
    "chain": "deacon"
   },
+  "DEA_INN_RISE_01": {
+   "line": "DEA_INN_RISE_01",
+   "speaker": "DEA",
+   "hash": "f2053a76ba4b82c4",
+   "path": "res://gravelight/audio/vo/dea/DEA_INN_RISE_01.ogg",
+   "format": "ogg",
+   "duration": 5.738,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
   "DEA_INTEL_01": {
    "line": "DEA_INTEL_01",
    "speaker": "DEA",
@@ -3222,6 +3232,56 @@
    "voice": "Mark",
    "chain": "deacon"
   },
+  "DEA_SQ6_PERK_PROC_01": {
+   "line": "DEA_SQ6_PERK_PROC_01",
+   "speaker": "DEA",
+   "hash": "05fa1eb9d0f4547b",
+   "path": "res://gravelight/audio/vo/dea/DEA_SQ6_PERK_PROC_01.ogg",
+   "format": "ogg",
+   "duration": 2.714,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_SQ6_PERK_TIER_01": {
+   "line": "DEA_SQ6_PERK_TIER_01",
+   "speaker": "DEA",
+   "hash": "d6a05e1282384f97",
+   "path": "res://gravelight/audio/vo/dea/DEA_SQ6_PERK_TIER_01.ogg",
+   "format": "ogg",
+   "duration": 4.716,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_SQ6_PERK_TIER_02": {
+   "line": "DEA_SQ6_PERK_TIER_02",
+   "speaker": "DEA",
+   "hash": "9fde10bbfdd4db6e",
+   "path": "res://gravelight/audio/vo/dea/DEA_SQ6_PERK_TIER_02.ogg",
+   "format": "ogg",
+   "duration": 3.99,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_SQ6_PLAQUE_01": {
+   "line": "DEA_SQ6_PLAQUE_01",
+   "speaker": "DEA",
+   "hash": "f0b1db8d0c3c0f9d",
+   "path": "res://gravelight/audio/vo/dea/DEA_SQ6_PLAQUE_01.ogg",
+   "format": "ogg",
+   "duration": 3.341,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
+  "DEA_SQ6_PLAQUE_CRUCIBLE_01": {
+   "line": "DEA_SQ6_PLAQUE_CRUCIBLE_01",
+   "speaker": "DEA",
+   "hash": "98afb5cff81bfd59",
+   "path": "res://gravelight/audio/vo/dea/DEA_SQ6_PLAQUE_CRUCIBLE_01.ogg",
+   "format": "ogg",
+   "duration": 7.872,
+   "voice": "Mark",
+   "chain": "deacon"
+  },
   "DEA_STREAK_01": {
    "line": "DEA_STREAK_01",
    "speaker": "DEA",
@@ -3839,6 +3899,16 @@
    "path": "res://gravelight/audio/vo/dut/DUT_HEADSHOT_02.ogg",
    "format": "ogg",
    "duration": 1.789,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_INN_RISE_01": {
+   "line": "DUT_INN_RISE_01",
+   "speaker": "DUT",
+   "hash": "07883f06d51b1958",
+   "path": "res://gravelight/audio/vo/dut/DUT_INN_RISE_01.ogg",
+   "format": "ogg",
+   "duration": 6.48,
    "voice": "David",
    "chain": "dutch"
   },
@@ -5289,6 +5359,56 @@
    "path": "res://gravelight/audio/vo/dut/DUT_SQ5_MARK_SHORT_LOTS_01.ogg",
    "format": "ogg",
    "duration": 3.842,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_SQ6_PERK_PROC_01": {
+   "line": "DUT_SQ6_PERK_PROC_01",
+   "speaker": "DUT",
+   "hash": "faa1db686612aa46",
+   "path": "res://gravelight/audio/vo/dut/DUT_SQ6_PERK_PROC_01.ogg",
+   "format": "ogg",
+   "duration": 2.741,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_SQ6_PERK_TIER_01": {
+   "line": "DUT_SQ6_PERK_TIER_01",
+   "speaker": "DUT",
+   "hash": "ed06cfecf84cd0fe",
+   "path": "res://gravelight/audio/vo/dut/DUT_SQ6_PERK_TIER_01.ogg",
+   "format": "ogg",
+   "duration": 7.157,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_SQ6_PERK_TIER_02": {
+   "line": "DUT_SQ6_PERK_TIER_02",
+   "speaker": "DUT",
+   "hash": "55ce6c0414eefa2c",
+   "path": "res://gravelight/audio/vo/dut/DUT_SQ6_PERK_TIER_02.ogg",
+   "format": "ogg",
+   "duration": 5.035,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_SQ6_PLAQUE_01": {
+   "line": "DUT_SQ6_PLAQUE_01",
+   "speaker": "DUT",
+   "hash": "f4123a5cf281d22f",
+   "path": "res://gravelight/audio/vo/dut/DUT_SQ6_PLAQUE_01.ogg",
+   "format": "ogg",
+   "duration": 4.45,
+   "voice": "David",
+   "chain": "dutch"
+  },
+  "DUT_SQ6_PLAQUE_CRUCIBLE_01": {
+   "line": "DUT_SQ6_PLAQUE_CRUCIBLE_01",
+   "speaker": "DUT",
+   "hash": "50f8aba699359d17",
+   "path": "res://gravelight/audio/vo/dut/DUT_SQ6_PLAQUE_CRUCIBLE_01.ogg",
+   "format": "ogg",
+   "duration": 4.278,
    "voice": "David",
    "chain": "dutch"
   },
@@ -7059,6 +7179,26 @@
    "path": "res://gravelight/audio/vo/jak/JAK_SQ5_MARK_RESUME_01.ogg",
    "format": "ogg",
    "duration": 0.573,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_SQ6_PLAQUE_01": {
+   "line": "JAK_SQ6_PLAQUE_01",
+   "speaker": "JAK",
+   "hash": "a4819f10b02eb3e5",
+   "path": "res://gravelight/audio/vo/jak/JAK_SQ6_PLAQUE_01.ogg",
+   "format": "ogg",
+   "duration": 5.816,
+   "voice": "Mark",
+   "chain": "jakub"
+  },
+  "JAK_SQ6_PLAQUE_CRUCIBLE_01": {
+   "line": "JAK_SQ6_PLAQUE_CRUCIBLE_01",
+   "speaker": "JAK",
+   "hash": "bcdd48b7a5ce104c",
+   "path": "res://gravelight/audio/vo/jak/JAK_SQ6_PLAQUE_CRUCIBLE_01.ogg",
+   "format": "ogg",
+   "duration": 3.672,
    "voice": "Mark",
    "chain": "jakub"
   },
@@ -8972,6 +9112,66 @@
    "voice": "Mark",
    "chain": "tannoy"
   },
+  "OPR_SQ6_CRUCIBLE_FIRST_01": {
+   "line": "OPR_SQ6_CRUCIBLE_FIRST_01",
+   "speaker": "OPR",
+   "hash": "41769c40989e79e7",
+   "path": "res://gravelight/audio/vo/opr/OPR_SQ6_CRUCIBLE_FIRST_01.ogg",
+   "format": "ogg",
+   "duration": 4.455,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SQ6_CRUCIBLE_FIRST_02": {
+   "line": "OPR_SQ6_CRUCIBLE_FIRST_02",
+   "speaker": "OPR",
+   "hash": "889c389f49b7fec0",
+   "path": "res://gravelight/audio/vo/opr/OPR_SQ6_CRUCIBLE_FIRST_02.ogg",
+   "format": "ogg",
+   "duration": 4.548,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SQ6_PERK_TIER2_01": {
+   "line": "OPR_SQ6_PERK_TIER2_01",
+   "speaker": "OPR",
+   "hash": "53532417ad7454c2",
+   "path": "res://gravelight/audio/vo/opr/OPR_SQ6_PERK_TIER2_01.ogg",
+   "format": "ogg",
+   "duration": 5.732,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SQ6_PERK_TIER2_02": {
+   "line": "OPR_SQ6_PERK_TIER2_02",
+   "speaker": "OPR",
+   "hash": "a614fdc21039a46e",
+   "path": "res://gravelight/audio/vo/opr/OPR_SQ6_PERK_TIER2_02.ogg",
+   "format": "ogg",
+   "duration": 5.334,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SQ6_PERK_TIER3_01": {
+   "line": "OPR_SQ6_PERK_TIER3_01",
+   "speaker": "OPR",
+   "hash": "9ef0458953eb8e04",
+   "path": "res://gravelight/audio/vo/opr/OPR_SQ6_PERK_TIER3_01.ogg",
+   "format": "ogg",
+   "duration": 5.051,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_SQ6_PERK_TIER3_02": {
+   "line": "OPR_SQ6_PERK_TIER3_02",
+   "speaker": "OPR",
+   "hash": "2320ce473dface48",
+   "path": "res://gravelight/audio/vo/opr/OPR_SQ6_PERK_TIER3_02.ogg",
+   "format": "ogg",
+   "duration": 5.99,
+   "voice": "Mark",
+   "chain": "tannoy"
+  },
   "OPR_TIDE_FALLING_01": {
    "line": "OPR_TIDE_FALLING_01",
    "speaker": "OPR",
@@ -9629,6 +9829,16 @@
    "path": "res://gravelight/audio/vo/peg/PEG_HEADSHOT_02.ogg",
    "format": "ogg",
    "duration": 3.756,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_INN_RISE_01": {
+   "line": "PEG_INN_RISE_01",
+   "speaker": "PEG",
+   "hash": "c9aef625c90d7f53",
+   "path": "res://gravelight/audio/vo/peg/PEG_INN_RISE_01.ogg",
+   "format": "ogg",
+   "duration": 5.628,
    "voice": "Zira",
    "chain": "peg"
   },
@@ -11052,6 +11262,56 @@
    "voice": "Zira",
    "chain": "peg"
   },
+  "PEG_SQ6_PERK_PROC_01": {
+   "line": "PEG_SQ6_PERK_PROC_01",
+   "speaker": "PEG",
+   "hash": "c91a71bb950796fc",
+   "path": "res://gravelight/audio/vo/peg/PEG_SQ6_PERK_PROC_01.ogg",
+   "format": "ogg",
+   "duration": 3.41,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_SQ6_PERK_TIER_01": {
+   "line": "PEG_SQ6_PERK_TIER_01",
+   "speaker": "PEG",
+   "hash": "979bab89b5723113",
+   "path": "res://gravelight/audio/vo/peg/PEG_SQ6_PERK_TIER_01.ogg",
+   "format": "ogg",
+   "duration": 6.013,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_SQ6_PERK_TIER_02": {
+   "line": "PEG_SQ6_PERK_TIER_02",
+   "speaker": "PEG",
+   "hash": "36b1861329d6ea7c",
+   "path": "res://gravelight/audio/vo/peg/PEG_SQ6_PERK_TIER_02.ogg",
+   "format": "ogg",
+   "duration": 4.376,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_SQ6_PLAQUE_01": {
+   "line": "PEG_SQ6_PLAQUE_01",
+   "speaker": "PEG",
+   "hash": "93df8ec05243003d",
+   "path": "res://gravelight/audio/vo/peg/PEG_SQ6_PLAQUE_01.ogg",
+   "format": "ogg",
+   "duration": 4.801,
+   "voice": "Zira",
+   "chain": "peg"
+  },
+  "PEG_SQ6_PLAQUE_CRUCIBLE_01": {
+   "line": "PEG_SQ6_PLAQUE_CRUCIBLE_01",
+   "speaker": "PEG",
+   "hash": "de21904990314b60",
+   "path": "res://gravelight/audio/vo/peg/PEG_SQ6_PLAQUE_CRUCIBLE_01.ogg",
+   "format": "ogg",
+   "duration": 2.816,
+   "voice": "Zira",
+   "chain": "peg"
+  },
   "PEG_STREAK_01": {
    "line": "PEG_STREAK_01",
    "speaker": "PEG",
@@ -12009,6 +12269,16 @@
    "path": "res://gravelight/audio/vo/wrn/WRN_HEADSHOT_03.ogg",
    "format": "ogg",
    "duration": 1.904,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_INN_RISE_01": {
+   "line": "WRN_INN_RISE_01",
+   "speaker": "WRN",
+   "hash": "9639e3338448c0b0",
+   "path": "res://gravelight/audio/vo/wrn/WRN_INN_RISE_01.ogg",
+   "format": "ogg",
+   "duration": 5.174,
    "voice": "Zira",
    "chain": "wren"
   },
@@ -13502,6 +13772,56 @@
    "voice": "Zira",
    "chain": "wren"
   },
+  "WRN_SQ6_PERK_PROC_01": {
+   "line": "WRN_SQ6_PERK_PROC_01",
+   "speaker": "WRN",
+   "hash": "597aa4da4e49bd58",
+   "path": "res://gravelight/audio/vo/wrn/WRN_SQ6_PERK_PROC_01.ogg",
+   "format": "ogg",
+   "duration": 1.954,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_SQ6_PERK_TIER_01": {
+   "line": "WRN_SQ6_PERK_TIER_01",
+   "speaker": "WRN",
+   "hash": "b8f9e997fd52c57f",
+   "path": "res://gravelight/audio/vo/wrn/WRN_SQ6_PERK_TIER_01.ogg",
+   "format": "ogg",
+   "duration": 2.771,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_SQ6_PERK_TIER_02": {
+   "line": "WRN_SQ6_PERK_TIER_02",
+   "speaker": "WRN",
+   "hash": "7b41a09821d818e3",
+   "path": "res://gravelight/audio/vo/wrn/WRN_SQ6_PERK_TIER_02.ogg",
+   "format": "ogg",
+   "duration": 3.519,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_SQ6_PLAQUE_01": {
+   "line": "WRN_SQ6_PLAQUE_01",
+   "speaker": "WRN",
+   "hash": "0bede23d467df36c",
+   "path": "res://gravelight/audio/vo/wrn/WRN_SQ6_PLAQUE_01.ogg",
+   "format": "ogg",
+   "duration": 4.177,
+   "voice": "Zira",
+   "chain": "wren"
+  },
+  "WRN_SQ6_PLAQUE_CRUCIBLE_01": {
+   "line": "WRN_SQ6_PLAQUE_CRUCIBLE_01",
+   "speaker": "WRN",
+   "hash": "c5cca740d22d37be",
+   "path": "res://gravelight/audio/vo/wrn/WRN_SQ6_PLAQUE_CRUCIBLE_01.ogg",
+   "format": "ogg",
+   "duration": 4.187,
+   "voice": "Zira",
+   "chain": "wren"
+  },
   "WRN_STREAK_01": {
    "line": "WRN_STREAK_01",
    "speaker": "WRN",
@@ -13884,51 +14204,19 @@
   }
  },
  "missing": {
-  "OPR_SQ6_PERK_TIER2_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "OPR_SQ6_PERK_TIER2_02": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "OPR_SQ6_PERK_TIER3_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "OPR_SQ6_PERK_TIER3_02": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "OPR_SQ6_CRUCIBLE_FIRST_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "OPR_SQ6_CRUCIBLE_FIRST_02": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "DUT_SQ6_PERK_TIER_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "DUT_SQ6_PERK_TIER_02": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "DUT_SQ6_PERK_PROC_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "DUT_SQ6_PLAQUE_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "DUT_SQ6_PLAQUE_CRUCIBLE_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "PEG_SQ6_PERK_TIER_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "PEG_SQ6_PERK_TIER_02": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "PEG_SQ6_PERK_PROC_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "PEG_SQ6_PLAQUE_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "PEG_SQ6_PLAQUE_CRUCIBLE_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "DEA_SQ6_PERK_TIER_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "DEA_SQ6_PERK_TIER_02": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "DEA_SQ6_PERK_PROC_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "DEA_SQ6_PLAQUE_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "DEA_SQ6_PLAQUE_CRUCIBLE_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "WRN_SQ6_PERK_TIER_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "WRN_SQ6_PERK_TIER_02": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "WRN_SQ6_PERK_PROC_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "WRN_SQ6_PLAQUE_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "WRN_SQ6_PLAQUE_CRUCIBLE_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "JAK_SQ6_PLAQUE_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
-  "JAK_SQ6_PLAQUE_CRUCIBLE_01": "not baked yet: T-075 perk-upgrade / plaque line, waiting for the orchestrator's TTS bake (plays as a subtitle)",
+  "KUB_INN_CAUGHT_01": "no voice profile for speaker KUB",
+  "KUB_INN_WINDOW_01": "no voice profile for speaker KUB",
   "LSL_REC_DRUMMER_01": "no speech: stage direction only ([faint giggle under the drum])",
+  "POH_INN_SCREAM_01": "no voice profile for speaker POH",
   "REI_HEART_END": "no speech: stage direction only ([scream that becomes the bell toll; PA d)",
-  "ROT_INN_ARRIVE_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
-  "TRU_INN_ARRIVE_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
-  "POH_INN_SCREAM_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
-  "KUB_INN_WINDOW_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
-  "TRU_INN_FLEE_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
-  "SOB_INN_FLEE_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
-  "ROT_INN_DOOR_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
-  "KUB_INN_CAUGHT_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
-  "ROT_INN_CAUGHT_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
-  "SOB_INN_SHUT_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
-  "SOB_INN_BITTEN_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
-  "SOB_INN_FALL_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
-  "DUT_INN_RISE_01": "not baked yet: Map 0 round 1 opening squad reaction (T-072)",
-  "PEG_INN_RISE_01": "not baked yet: Map 0 round 1 opening squad reaction (T-072)",
-  "DEA_INN_RISE_01": "not baked yet: Map 0 round 1 opening squad reaction (T-072)",
-  "WRN_INN_RISE_01": "not baked yet: Map 0 round 1 opening squad reaction (T-072)"
+  "ROT_INN_ARRIVE_01": "no voice profile for speaker ROT",
+  "ROT_INN_CAUGHT_01": "no voice profile for speaker ROT",
+  "ROT_INN_DOOR_01": "no voice profile for speaker ROT",
+  "SOB_INN_BITTEN_01": "no voice profile for speaker SOB",
+  "SOB_INN_FALL_01": "no voice profile for speaker SOB",
+  "SOB_INN_FLEE_01": "no voice profile for speaker SOB",
+  "SOB_INN_SHUT_01": "no voice profile for speaker SOB",
+  "TRU_INN_ARRIVE_01": "no voice profile for speaker TRU",
+  "TRU_INN_FLEE_01": "no voice profile for speaker TRU"
  }
 }
