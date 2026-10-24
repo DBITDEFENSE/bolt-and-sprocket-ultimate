@@ -843,3 +843,31 @@ The local human's own survivor played by the bots' brain while they watch (`grav
 while training), hits per training minute, stuck time, kills, reversals, phases, shops, its perks and guns, downs and
 hits per round; `--trace=N` adds a line per N s and every hit with the zombies within 9 m. Tuning only:
 `--player-kit=bots` (the bots' free kit for the agent), `--no-trainer` (the plain brain, no BotTrainer).
+
+### Results (2026-10-24, headless, `--scenario=botmode`, Elite agent, scripted planner, Homage Bosses on)
+
+| Batch | Highest round (runs) | mean | agent downs / round | hits per run | stuck | notes |
+|---|---|---|---|---|---|---|
+| Map 0 solo, seeds 1-8 | 7, 6, 6, 7, 6, 7, 4, 7 | **6.25** | 0.33-0.57 | 4-19 | 0 s | starts with the M1911; power on in round 2-3 (it buys the cellar door), Second Wind self-revives |
+| Map 0 + 3 bots, seeds 11-14 | 10, 10, 10, 10 | **10.0** | 0.1-0.4 | 6-18 | 0 s | every run ends at the Cousins (round 10): the agent counts as a human standing, so the T-060 "bots alone" Cousins scaling doesn't apply |
+| Kaltenbrunn solo, seeds 1-3 | 9, 8, 8 | **8.3** | 0.11-0.13 | 4-10 | 0 s | the power never came on |
+| Kaltenbrunn + 3 bots, seeds 1-3 | 10, 9, 10 | **9.7** | 0.1-0.2 | 6-8 | 0 s | |
+| (tuning) Map 0 solo with the bots' free kit, `--player-kit=bots` | 9, 8, 6, 7 | 7.5 | | 12-38 | | |
+| (tuning) the same, `--no-trainer` (the plain brain) | 8, 11, 10, 8 | 9.25 | | 26-47 | | the plain Fight action kills faster than kiting a small train |
+
+How it got there (each iteration 4-6 seeds, Map 0 solo unless said): v1 (follow the loop, turn at a gap) 4-5; cutters
+(window spill, an open ring the zombies cut across), passes into the NE corner and the Bellringers were the deaths;
+v2 the gap by reach (`reach_m`), window-state zombies off the loop, cut decisions with commitment, an opportunistic
+shop, a gun before the power: 4-6; v3 the kite steering (16 scored directions) 4-7; v4 training only a horde of 4+,
+the plain fight for the rest and in special rounds, no errand commitment with a zombie in reach, the idle back-off
+and travel safety: 6.25 (no round-1 or round-2 deaths left).
+
+**Where it stands against the brief's targets:** not met. Solo Map 0 averages 6.25 rounds (the bots3 reference is
+14.7, but those three bots start with a free Thompson, Ironhide and Second Wind and share the downs); Kaltenbrunn
+reaches 8-10, not 15. Training is measured but is not yet the strength it should be: on Map 0's taproom (an open ring
+round three tables, four windows feeding it) the agent trains only 0-6 % of the time with a mean train of 1.5-3.5 (max
+10, bunched 60-100 %), takes 6-37 hits per training minute, and the plain Fight action measured better than training
+small groups. The yard's Well Loop (authored for this) is rarely reached solo: it needs 2,250 Scrip of doors after the
+power. Open work: a commit to the yard loop earlier, glance-ahead timing while backing round the loop, the
+special-round stand (Bellringers are what down it in rounds 5-6), and the Cousins at full strength with a human
+standing.
