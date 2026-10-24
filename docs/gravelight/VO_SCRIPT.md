@@ -1495,7 +1495,7 @@ LORE §12.1: Jakub saw Tomasz taken to the Laboratory Wing and nothing after; th
 ## 17. The Armorer's Bench: Gunsmith lines (Update 04 §6, DECISIONS T-068)
 
 Each survivor says one of these when they fit an attachment to their M1911 at the Armorer's Bench (the first
-purchase of the match always, then 45% of the time; `m1911_attachments.json` "vo"). Player channel, chatter
+purchase of the match always, then 45% of the time; `attachments.json` "vo"). Player channel, chatter
 priority, positional at the buyer. Jakub has one for the day a bot order sends him to the bench, and he refuses the
 Nachtglas rounds (`GUNSMITH_REFUSE`, when the bench API is asked to load them into his pistol, or when you try to
 hand him a pistol already loaded with them). Unbaked lines play as subtitles until the TTS bake.
