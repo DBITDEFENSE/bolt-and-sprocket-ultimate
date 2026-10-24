@@ -1,5 +1,5 @@
 {
- "_doc": "Built by gravelight/tools_src/gen_vo.py. files: audio file per line (or per exchange part <id>_p<n>) with the text/profile hash that produced it; missing: ids with no audio and why. Windows OneCore TTS (Microsoft David / Mark / Zira), processed; see docs/ASSETS.md.",
+ "_doc": "Built by gravelight/tools_src/gen_vo.py. files: audio file per line (or per exchange part <id>_p<n>) with the text/profile hash that produced it; engine kokoro (the squad and Jakub: Kokoro-82M neural TTS, offline, cast in data/gravelight/vo/voice_cast.json, with the delivery, the measured LUFS and the phonemes it read) or onecore (Windows OneCore TTS, Microsoft David / Mark / Zira, processed); missing: ids with no audio and why. See docs/ASSETS.md.",
  "tool_version": "1",
  "files": {
   "BNT_DEA_JAK_01_p0": {
@@ -575,42 +575,54 @@
   "BNT_DUT_WRN_01_p0": {
    "line": "BNT_DUT_WRN_01",
    "speaker": "DUT",
-   "hash": "0ec0dc2f94948902",
+   "hash": "51acf113e4d66347",
    "path": "res://gravelight/audio/vo/dut/BNT_DUT_WRN_01_p0.ogg",
    "format": "ogg",
-   "duration": 1.135,
-   "voice": "David",
-   "chain": "dutch"
+   "duration": 1.652,
+   "voice": "am_onyx:0.55,am_fenrir:0.45",
+   "engine": "kokoro",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "jˌɛstɛm ɡwˈɔdna."
   },
   "BNT_DUT_WRN_01_p1": {
    "line": "BNT_DUT_WRN_01",
    "speaker": "WRN",
-   "hash": "92d259e609d357c2",
+   "hash": "d646f1f8517cbdad",
    "path": "res://gravelight/audio/vo/wrn/BNT_DUT_WRN_01_p1.ogg",
    "format": "ogg",
-   "duration": 2.054,
-   "voice": "Zira",
-   "chain": "wren"
+   "duration": 1.853,
+   "voice": "bf_isabella:0.75,bf_lily:0.25",
+   "engine": "kokoro",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "ɡwˈɔdnɨ. jˌuː ɑː ɐ mˈan."
   },
   "BNT_DUT_WRN_01_p2": {
    "line": "BNT_DUT_WRN_01",
    "speaker": "DUT",
-   "hash": "8983e1ae1c7c1191",
+   "hash": "8a873b6b47337524",
    "path": "res://gravelight/audio/vo/dut/BNT_DUT_WRN_01_p2.ogg",
    "format": "ogg",
-   "duration": 0.723,
-   "voice": "David",
-   "chain": "dutch"
+   "duration": 0.861,
+   "voice": "am_onyx:0.55,am_fenrir:0.45",
+   "engine": "kokoro",
+   "delivery": "calm",
+   "lufs": -17.51,
+   "phonemes": "sˈɛz ju."
   },
   "BNT_DUT_WRN_01_p3": {
    "line": "BNT_DUT_WRN_01",
    "speaker": "WRN",
-   "hash": "c6f993bd228f3ff0",
+   "hash": "10d9205bfb602e48",
    "path": "res://gravelight/audio/vo/wrn/BNT_DUT_WRN_01_p3.ogg",
    "format": "ogg",
-   "duration": 1.156,
-   "voice": "Zira",
-   "chain": "wren"
+   "duration": 1.645,
+   "voice": "bf_isabella:0.75,bf_lily:0.25",
+   "engine": "kokoro",
+   "delivery": "calm",
+   "lufs": -17.57,
+   "phonemes": "ɡˈɒd hˈɛlp pˈɔlənt."
   },
   "BNT_DUT_WRN_02_p0": {
    "line": "BNT_DUT_WRN_02",
@@ -1245,12 +1257,15 @@
   "DEA_BLUES_01": {
    "line": "DEA_BLUES_01",
    "speaker": "DEA",
-   "hash": "53f9d0f20c3e0c11",
+   "hash": "72e0c8cf4ecad47d",
    "path": "res://gravelight/audio/vo/dea/DEA_BLUES_01.ogg",
    "format": "ogg",
-   "duration": 6.541,
-   "voice": "Mark",
-   "chain": "deacon"
+   "duration": 6.615,
+   "voice": "am_michael:0.7,am_puck:0.3",
+   "engine": "kokoro",
+   "delivery": "quiet",
+   "lufs": -20.5,
+   "phonemes": "bˈɛɹid ɪn ðə sˈɔlt, lˈɔɹd, bˈɛɹid wˈA dˌWn dˈip... bˈɛɹid ɪn ðə sˈɔlt, kˈænt nˈObˌɑdi hˈɪɹ slˈip."
   },
   "DEA_BLUES_02": {
    "line": "DEA_BLUES_02",
@@ -1665,12 +1680,15 @@
   "DEA_DOWN_01": {
    "line": "DEA_DOWN_01",
    "speaker": "DEA",
-   "hash": "f72e310eca624e4e",
+   "hash": "48fab53742a1c3f2",
    "path": "res://gravelight/audio/vo/dea/DEA_DOWN_01.ogg",
    "format": "ogg",
-   "duration": 3.055,
-   "voice": "Mark",
-   "chain": "deacon"
+   "duration": 2.701,
+   "voice": "am_michael:0.7,am_puck:0.3",
+   "engine": "kokoro",
+   "delivery": "hurt",
+   "lufs": -19.0,
+   "phonemes": "ˌIm dˌWn. sˈʌmbədi... kˈʌm ˌɔn nˈW."
   },
   "DEA_DOWN_02": {
    "line": "DEA_DOWN_02",
@@ -2215,12 +2233,15 @@
   "DEA_SPAWN_01": {
    "line": "DEA_SPAWN_01",
    "speaker": "DEA",
-   "hash": "d0b8f627c09a9229",
+   "hash": "19627aeb11c4277a",
    "path": "res://gravelight/audio/vo/dea/DEA_SPAWN_01.ogg",
    "format": "ogg",
-   "duration": 5.914,
-   "voice": "Mark",
-   "chain": "deacon"
+   "duration": 4.266,
+   "voice": "am_michael:0.7,am_puck:0.3",
+   "engine": "kokoro",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "lˈɔɹd, lˈʊk æt ðɪs plˈAs. ˈɔl ɹˈIt. hˈændz tə wˈɜɹk, hˈɑɹts tə jˌu."
   },
   "DEA_SPAWN_02": {
    "line": "DEA_SPAWN_02",
@@ -3705,22 +3726,28 @@
   "DUT_DOWN_01": {
    "line": "DUT_DOWN_01",
    "speaker": "DUT",
-   "hash": "7b8b388f589d8eff",
+   "hash": "b5f16eac166f850a",
    "path": "res://gravelight/audio/vo/dut/DUT_DOWN_01.ogg",
    "format": "ogg",
-   "duration": 4.84,
-   "voice": "David",
-   "chain": "dutch"
+   "duration": 2.589,
+   "voice": "am_onyx:0.55,am_fenrir:0.45",
+   "engine": "kokoro",
+   "delivery": "hurt",
+   "lufs": -18.55,
+   "phonemes": "ˈɑ, hˈɛl. ˌIm dˌWn. sˈʌmbədi ɡɹˈæb mˌi."
   },
   "DUT_DOWN_02": {
    "line": "DUT_DOWN_02",
    "speaker": "DUT",
-   "hash": "cf1f7bee50304df4",
+   "hash": "e0ebab4c242e4b15",
    "path": "res://gravelight/audio/vo/dut/DUT_DOWN_02.ogg",
    "format": "ogg",
-   "duration": 3.59,
-   "voice": "David",
-   "chain": "dutch"
+   "duration": 2.433,
+   "voice": "am_onyx:0.55,am_fenrir:0.45",
+   "engine": "kokoro",
+   "delivery": "hurt",
+   "lufs": -18.55,
+   "phonemes": "bˈapʧa... nˌɑt lˈIk ðˈɪs. nˌɑt hˈɪɹ."
   },
   "DUT_EE_01": {
    "line": "DUT_EE_01",
@@ -3865,12 +3892,15 @@
   "DUT_JAKUB_MEET_01": {
    "line": "DUT_JAKUB_MEET_01",
    "speaker": "DUT",
-   "hash": "f6c8880e4d61c79c",
+   "hash": "c09b7cc65ea00001",
    "path": "res://gravelight/audio/vo/dut/DUT_JAKUB_MEET_01.ogg",
    "format": "ogg",
-   "duration": 9.141,
-   "voice": "David",
-   "chain": "dutch"
+   "duration": 6.55,
+   "voice": "am_onyx:0.55,am_fenrir:0.45",
+   "engine": "kokoro",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "wˈɔltəɹ kɔvˈalʧɪk. kˈɔl mˌi dˈʌʧ. mˈI bˈapʧa kˈAm fɹʌm vˈilʧa ɡˈuɹa....mˈAbi ˌWəɹ fˈæmᵊliz nˈu ˈiʧ ˈʌðəɹ."
   },
   "DUT_MIDNIGHT_01": {
    "line": "DUT_MIDNIGHT_01",
@@ -4005,12 +4035,15 @@
   "DUT_POL_01": {
    "line": "DUT_POL_01",
    "speaker": "DUT",
-   "hash": "0ec0dc2f94948902",
+   "hash": "0cfbeb50e6a1c6e7",
    "path": "res://gravelight/audio/vo/dut/DUT_POL_01.ogg",
    "format": "ogg",
-   "duration": 1.135,
-   "voice": "David",
-   "chain": "dutch"
+   "duration": 1.768,
+   "voice": "am_onyx:0.55,am_fenrir:0.45",
+   "engine": "kokoro",
+   "delivery": "quiet",
+   "lufs": -19.6,
+   "phonemes": "jˌɛstɛm ɡwˈɔdna."
   },
   "DUT_POL_02": {
    "line": "DUT_POL_02",
@@ -4125,12 +4158,15 @@
   "DUT_RELOAD_01": {
    "line": "DUT_RELOAD_01",
    "speaker": "DUT",
-   "hash": "d795295aa9a11947",
+   "hash": "6f9567780a62c658",
    "path": "res://gravelight/audio/vo/dut/DUT_RELOAD_01.ogg",
    "format": "ogg",
-   "duration": 0.642,
-   "voice": "David",
-   "chain": "dutch"
+   "duration": 0.892,
+   "voice": "am_onyx:0.55,am_fenrir:0.45",
+   "engine": "kokoro",
+   "delivery": "raised",
+   "lufs": -16.47,
+   "phonemes": "ɹᵻlˈOdɪŋ!"
   },
   "DUT_RELOAD_02": {
    "line": "DUT_RELOAD_02",
@@ -5895,12 +5931,15 @@
   "JAK_BREAKOUT_01": {
    "line": "JAK_BREAKOUT_01",
    "speaker": "JAK",
-   "hash": "557364b8b7eb0133",
+   "hash": "40b5d7c068e46dcd",
    "path": "res://gravelight/audio/vo/jak/JAK_BREAKOUT_01.ogg",
    "format": "ogg",
-   "duration": 4.581,
-   "voice": "Mark",
-   "chain": "jakub"
+   "duration": 3.311,
+   "voice": "bm_george:0.6,bm_lewis:0.4",
+   "engine": "kokoro",
+   "delivery": "shout",
+   "lufs": -15.5,
+   "phonemes": "prˈɛʧ! prˈɛʧ ˈɔdɛ mɲʲɛ! xˈɔʨ tˈu, tɨ drˈaɲʲu!"
   },
   "JAK_BREAKOUT_02": {
    "line": "JAK_BREAKOUT_02",
@@ -5945,12 +5984,15 @@
   "JAK_CAGE_HELLO_01": {
    "line": "JAK_CAGE_HELLO_01",
    "speaker": "JAK",
-   "hash": "e997a672e7b8fdc7",
+   "hash": "7746a11161504dd8",
    "path": "res://gravelight/audio/vo/jak/JAK_CAGE_HELLO_01.ogg",
    "format": "ogg",
-   "duration": 5.457,
-   "voice": "Mark",
-   "chain": "jakub"
+   "duration": 5.347,
+   "voice": "bm_george:0.6,bm_lewis:0.4",
+   "engine": "kokoro",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "ʂʧˈɛɲɕʨ bˈɔʒɛ. fəɡˈif mˌi if ˌI dˈɔnt ɡɛt ˌap. də dˈɔ is nˌɔt mI Idˈiə."
   },
   "JAK_CAGE_HELLO_02": {
    "line": "JAK_CAGE_HELLO_02",
@@ -6245,12 +6287,15 @@
   "JAK_DOWN_02": {
    "line": "JAK_DOWN_02",
    "speaker": "JAK",
-   "hash": "c1ee17b036b070ae",
+   "hash": "07d6502df8903ede",
    "path": "res://gravelight/audio/vo/jak/JAK_DOWN_02.ogg",
    "format": "ogg",
-   "duration": 1.853,
-   "voice": "Mark",
-   "chain": "jakub"
+   "duration": 2.78,
+   "voice": "bm_george:0.6,bm_lewis:0.4",
+   "engine": "kokoro",
+   "delivery": "hurt",
+   "lufs": -18.7,
+   "phonemes": "jˈɛzus mˈarja... mI lˈɛk."
   },
   "JAK_DOWN_03": {
    "line": "JAK_DOWN_03",
@@ -6475,12 +6520,15 @@
   "JAK_M1_FOREMAN_01": {
    "line": "JAK_M1_FOREMAN_01",
    "speaker": "JAK",
-   "hash": "fd49251c037c5a46",
+   "hash": "b664ba86ca9294c6",
    "path": "res://gravelight/audio/vo/jak/JAK_M1_FOREMAN_01.ogg",
    "format": "ogg",
-   "duration": 7.86,
-   "voice": "Mark",
-   "chain": "jakub"
+   "duration": 7.413,
+   "voice": "bm_george:0.6,bm_lewis:0.4",
+   "engine": "kokoro",
+   "delivery": "raised",
+   "lufs": -16.3,
+   "phonemes": "natʃtˈɨɡar mˈalknɛkt. hˌi lˈɔkt də ɡˈɛjts ˌɔn ɡˈaləɾi sˈɛvᵊn. ˌI wɔs ˌɔn də nˈIt ʃˈift. mˌI ʃˈift lˈIvt."
   },
   "JAK_M1_FOREMAN_02": {
    "line": "JAK_M1_FOREMAN_02",
@@ -9495,22 +9543,28 @@
   "PEG_DOWN_01": {
    "line": "PEG_DOWN_01",
    "speaker": "PEG",
-   "hash": "a39bdd030ac4b357",
+   "hash": "83dec5014dfaf4c3",
    "path": "res://gravelight/audio/vo/peg/PEG_DOWN_01.ogg",
    "format": "ogg",
-   "duration": 3.795,
-   "voice": "Zira",
-   "chain": "peg"
+   "duration": 3.05,
+   "voice": "bf_emma",
+   "engine": "kokoro",
+   "delivery": "hurt",
+   "lufs": -18.03,
+   "phonemes": "ˌIm dˌWn. ɐ lˈɪtᵊl əsˈɪstᵊns, ɪf juːd biː sˌQ kˈInd."
   },
   "PEG_DOWN_02": {
    "line": "PEG_DOWN_02",
    "speaker": "PEG",
-   "hash": "2e32a01c2ff5a241",
+   "hash": "1d61905b43b43ec1",
    "path": "res://gravelight/audio/vo/peg/PEG_DOWN_02.ogg",
    "format": "ogg",
-   "duration": 3.492,
-   "voice": "Zira",
-   "chain": "peg"
+   "duration": 2.654,
+   "voice": "bf_emma",
+   "engine": "kokoro",
+   "delivery": "hurt",
+   "lufs": -18.03,
+   "phonemes": "nˌɒt hˈɪə. ˌI hav ˈɔːdəz tuː... ˈQ, dˈam ɪt."
   },
   "PEG_EE_01": {
    "line": "PEG_EE_01",
@@ -10035,12 +10089,15 @@
   "PEG_SPAWN_01": {
    "line": "PEG_SPAWN_01",
    "speaker": "PEG",
-   "hash": "360deb2f81135f25",
+   "hash": "95ef6b8530b1eb2f",
    "path": "res://gravelight/audio/vo/peg/PEG_SPAWN_01.ogg",
    "format": "ogg",
-   "duration": 4.55,
-   "voice": "Zira",
-   "chain": "peg"
+   "duration": 3.16,
+   "voice": "bf_emma",
+   "engine": "kokoro",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "kˈɒltənbɹˌʌn. ɹˈIt. wˈɛpᵊnz ɹˈɛdi, mˈanəz ˈɒpʃənᵊl."
   },
   "PEG_SPAWN_02": {
    "line": "PEG_SPAWN_02",
@@ -11865,12 +11922,15 @@
   "WRN_DOWN_01": {
    "line": "WRN_DOWN_01",
    "speaker": "WRN",
-   "hash": "06bb3f3407fb4b95",
+   "hash": "fe486bb450c10cad",
    "path": "res://gravelight/audio/vo/wrn/WRN_DOWN_01.ogg",
    "format": "ogg",
-   "duration": 2.951,
-   "voice": "Zira",
-   "chain": "wren"
+   "duration": 2.231,
+   "voice": "bf_isabella:0.75,bf_lily:0.25",
+   "engine": "kokoro",
+   "delivery": "hurt",
+   "lufs": -18.63,
+   "phonemes": "ˌIm dˌWn. kwˈɪkli. kwˈɪkli!"
   },
   "WRN_DOWN_02": {
    "line": "WRN_DOWN_02",
@@ -11985,12 +12045,15 @@
   "WRN_HEADSHOT_01": {
    "line": "WRN_HEADSHOT_01",
    "speaker": "WRN",
-   "hash": "97532b9eb9fa120b",
+   "hash": "389bc20c56b8549a",
    "path": "res://gravelight/audio/vo/wrn/WRN_HEADSHOT_01.ogg",
    "format": "ogg",
-   "duration": 0.568,
-   "voice": "Zira",
-   "chain": "wren"
+   "duration": 0.87,
+   "voice": "bf_isabella:0.75,bf_lily:0.25",
+   "engine": "kokoro",
+   "delivery": "brisk",
+   "lufs": -17.15,
+   "phonemes": "jˈɛdɛn."
   },
   "WRN_HEADSHOT_02": {
    "line": "WRN_HEADSHOT_02",
@@ -12035,12 +12098,15 @@
   "WRN_JAKUB_MEET_01": {
    "line": "WRN_JAKUB_MEET_01",
    "speaker": "WRN",
-   "hash": "18f41fcdec43c85a",
+   "hash": "79fd9f00dd5546b5",
    "path": "res://gravelight/audio/vo/wrn/WRN_JAKUB_MEET_01.ogg",
    "format": "ogg",
-   "duration": 5.583,
-   "voice": "Zira",
-   "chain": "wren"
+   "duration": 4.008,
+   "voice": "bf_isabella:0.75,bf_lily:0.25",
+   "engine": "kokoro",
+   "delivery": "calm",
+   "lufs": -17.54,
+   "phonemes": "ɔstrˈɔfski. fɾˌɒm vˈilʧa ɡˈura....ˌI nˈɔ jɔː fˈAs. ˌI wɒz ɐ ɡˈɜːl."
   },
   "WRN_MIDNIGHT_01": {
    "line": "WRN_MIDNIGHT_01",
@@ -12205,12 +12271,15 @@
   "WRN_POL_02": {
    "line": "WRN_POL_02",
    "speaker": "WRN",
-   "hash": "13a19106bb411da1",
+   "hash": "05c4360bc5c9a655",
    "path": "res://gravelight/audio/vo/wrn/WRN_POL_02.ogg",
    "format": "ogg",
-   "duration": 4.586,
-   "voice": "Zira",
-   "chain": "wren"
+   "duration": 3.87,
+   "voice": "bf_isabella:0.75,bf_lily:0.25",
+   "engine": "kokoro",
+   "delivery": "quiet",
+   "lufs": -19.75,
+   "phonemes": "ʥɛŋkˈujɛ. nˌɒt ʤˈɛn—kˈuː—jˈA. jˌɔː ɡɾˈandmˌadə mˈast hav wˈɛpt."
   },
   "WRN_POL_03": {
    "line": "WRN_POL_03",
@@ -13505,12 +13574,15 @@
   "WRN_STREAK_01": {
    "line": "WRN_STREAK_01",
    "speaker": "WRN",
-   "hash": "c52852d3c2c446e3",
+   "hash": "267585958ae16464",
    "path": "res://gravelight/audio/vo/wrn/WRN_STREAK_01.ogg",
    "format": "ogg",
-   "duration": 3.698,
-   "voice": "Zira",
-   "chain": "wren"
+   "duration": 2.87,
+   "voice": "bf_isabella:0.75,bf_lily:0.25",
+   "engine": "kokoro",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "ʃɛʒʥˈɛɕɔnt... ˌI ɐm lˈuːzɪŋ kˈWnt. ɡˈʊd."
   },
   "WRN_STREAK_02": {
    "line": "WRN_STREAK_02",
@@ -13886,5 +13958,6 @@
  "missing": {
   "LSL_REC_DRUMMER_01": "no speech: stage direction only ([faint giggle under the drum])",
   "REI_HEART_END": "no speech: stage direction only ([scream that becomes the bell toll; PA d)"
- }
+ },
+ "neural_tool_version": "1"
 }

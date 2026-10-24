@@ -10,3 +10,4 @@ morning/screenshots/
 .wt/
 morning/clips/
 logs/
+__pycache__/
