@@ -728,7 +728,10 @@ func _task(id: String, delta: float) -> void:
 
 
 func _idle(delta: float) -> void:
-	if not _go_home():
+	var per: BotPerception = brain.perception
+	if brain.is_player_bot and per.nearest != null and per.nearest_d < 2.4 and not per.is_visible(per.nearest):
+		_back_off(per.nearest, 2.6, 0.6)   # T-071: something in reach it can't shoot (through a window's boards): step out of reach
+	elif not _go_home():
 		brain.loco.stop()
 	if not brain.aim.update(delta, true):
 		brain.idle_look(delta)

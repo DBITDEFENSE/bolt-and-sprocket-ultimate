@@ -228,7 +228,18 @@ func value() -> float:
 	var dirn: ZombieDirector = brain.squad.director()
 	if per.known.is_empty() and RoundManager.to_spawn <= 0 and (dirn == null or dirn.active_zombies().is_empty()):
 		return 0.0
-	var v: float = 1.0 if per.nearest_d < _f("calm_m", 14.0) or (_active and followers > 0) else _f("calm_value", 0.5)
+	# a horde to train: train_min zombies chasing within horde_m (fewer are shot where they stand: the fight action,
+	# measured better than kiting a handful); once training, it keeps on while train_keep still follow
+	var chasing: int = 0
+	for e: Variant in per.known:
+		var z: Zombie = (e as Dictionary).get("node") as Zombie
+		if z == null or not is_instance_valid(z) or z.state == Zombie.State.TO_WINDOW or z.state == Zombie.State.WAIT_WINDOW or z.state == Zombie.State.TEAR:
+			continue
+		if _flat((e as Dictionary)["pos"], player.global_position) < _f("horde_m", 12.0):
+			chasing += 1
+	if chasing < int(_f("train_min", 4.0)) and not (_active and followers >= int(_f("train_keep", 3.0))):
+		return 0.0
+	var v: float = 1.0
 	if ammo_frac() < _f("low_ammo_frac", 0.2):
 		v = minf(v, _f("low_ammo_value", 0.35))   # nearly dry: the ammo box (resupply) comes first
 	return v
@@ -304,6 +315,12 @@ func run(delta: float) -> void:
 		_set_phase(Phase.TRAVEL)
 		stats["travel_s"] = float(stats["travel_s"]) + delta
 		var hunt: Vector3 = brain.squad.hunt_point()
+		if per.nearest != null and per.nearest_d < _f("travel_clear_m", 3.0):
+			# something in reach on the way back: away from it first, shooting (the kite), then on to the loop
+			_kite(delta, 0.5, per.pos_of(per.nearest))
+			if not brain.aim.update(delta, true):
+				brain.idle_look(delta)
+			return
 		brain.loco.move_to(_entry_point(me), 1.0 if head_d < gap else 0.6, 0.6)
 		if head_d >= gap and per.nearest_d > 2.5:
 			if not brain.aim.update(delta, true):
@@ -338,7 +355,7 @@ func run(delta: float) -> void:
 		Phase.FACE:
 			if cut and ahead_d < _f("cut_m", 6.0) * 0.8:
 				_set_phase(Phase.CUT if mag > 0 and head_d >= _f("cut_kill_gap_m", 5.0) else Phase.RUN)
-			elif head_d < gap or mag <= 0 or (phase_t > _f("face_max_s", 2.4) and (followers > 0 or player.horizontal_speed() > 1.0)):
+			elif head_d < gap or (mag <= 0 and not brain.aim.reloading and brain.aim.cur() != null and brain.aim.cur().reserve <= 0) 					or (phase_t > _f("face_max_s", 2.4) and (followers > 0 or player.horizontal_speed() > 1.0)):
 				_set_phase(Phase.RUN)
 		Phase.CUT:
 			if not cut or mag <= 0 or head_d < _f("cut_kill_gap_m", 5.0) - 1.5:
