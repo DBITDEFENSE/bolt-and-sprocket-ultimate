@@ -7197,5 +7197,145 @@
   "speaker": "JAK",
   "category": "MARK_CANT",
   "text": "I can't do that. I'm sorry."
+ },
+ "OPR_SQ6_PERK_TIER2_01": {
+  "speaker": "OPR",
+  "category": "PERK_TIER2",
+  "text": "Oh, a returning customer! Helvetia Automaten is pleased to offer you the {loyalty measure}."
+ },
+ "OPR_SQ6_PERK_TIER2_02": {
+  "speaker": "OPR",
+  "category": "PERK_TIER2",
+  "text": "A second glass! The cabinet remembers you. It remembers {everyone}."
+ },
+ "OPR_SQ6_PERK_TIER3_01": {
+  "speaker": "OPR",
+  "category": "PERK_TIER3",
+  "text": "The regulars' measure! Ladies and gentlemen, we have a {valued} customer."
+ },
+ "OPR_SQ6_PERK_TIER3_02": {
+  "speaker": "OPR",
+  "category": "PERK_TIER3",
+  "text": "Third chamber, opened just for you. Do drink {responsibly}. Or don't. We'll know."
+ },
+ "OPR_SQ6_CRUCIBLE_FIRST_01": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_FIRST",
+  "text": "The furnace is lit! Patent pending, and pending, and {pending}."
+ },
+ "OPR_SQ6_CRUCIBLE_FIRST_02": {
+  "speaker": "OPR",
+  "category": "CRUCIBLE_FIRST",
+  "text": "Our cooling plant is open for business! It has never cooled {anything}."
+ },
+ "DUT_SQ6_PERK_TIER_01": {
+  "speaker": "DUT",
+  "category": "PERK_TIER",
+  "text": "Second helping. Tastes worse. Works better. That's the Army in a bottle."
+ },
+ "DUT_SQ6_PERK_TIER_02": {
+  "speaker": "DUT",
+  "category": "PERK_TIER",
+  "text": "The machine gave me the strong stuff. I don't like that it knew I was ready."
+ },
+ "DUT_SQ6_PERK_PROC_01": {
+  "speaker": "DUT",
+  "category": "PERK_PROC",
+  "text": "Whoa. That should've put me down."
+ },
+ "DUT_SQ6_PLAQUE_01": {
+  "speaker": "DUT",
+  "category": "PLAQUE",
+  "text": "Made in Basel. Neutral country. Sure."
+ },
+ "DUT_SQ6_PLAQUE_CRUCIBLE_01": {
+  "speaker": "DUT",
+  "category": "PLAQUE_CRUCIBLE",
+  "text": "Patent pending. Somebody's paying a lawyer for this thing."
+ },
+ "PEG_SQ6_PERK_TIER_01": {
+  "speaker": "PEG",
+  "category": "PERK_TIER",
+  "text": "A stronger measure. London will want a sample of this. London wants a sample of everything."
+ },
+ "PEG_SQ6_PERK_TIER_02": {
+  "speaker": "PEG",
+  "category": "PERK_TIER",
+  "text": "Interlocks on a drinks cabinet. Somebody planned for us coming back."
+ },
+ "PEG_SQ6_PERK_PROC_01": {
+  "speaker": "PEG",
+  "category": "PERK_PROC",
+  "text": "Didn't feel that. I'm choosing not to think about why."
+ },
+ "PEG_SQ6_PLAQUE_01": {
+  "speaker": "PEG",
+  "category": "PLAQUE",
+  "text": "Replacement unit. They had spares. Of course they had spares."
+ },
+ "PEG_SQ6_PLAQUE_CRUCIBLE_01": {
+  "speaker": "PEG",
+  "category": "PLAQUE_CRUCIBLE",
+  "text": "Crate two of three. So where's the third?"
+ },
+ "DEA_SQ6_PERK_TIER_01": {
+  "speaker": "DEA",
+  "category": "PERK_TIER",
+  "text": "Second chamber behind the first. Clever plumbing. Hate it."
+ },
+ "DEA_SQ6_PERK_TIER_02": {
+  "speaker": "DEA",
+  "category": "PERK_TIER",
+  "text": "It read my hand before it poured. Machine shouldn't do that."
+ },
+ "DEA_SQ6_PERK_PROC_01": {
+  "speaker": "DEA",
+  "category": "PERK_PROC",
+  "text": "Lord. Something in me just held."
+ },
+ "DEA_SQ6_PLAQUE_01": {
+  "speaker": "DEA",
+  "category": "PLAQUE",
+  "text": "Swiss rivets. Good work on a bad job."
+ },
+ "DEA_SQ6_PLAQUE_CRUCIBLE_01": {
+  "speaker": "DEA",
+  "category": "PLAQUE_CRUCIBLE",
+  "text": "Mod. R-E. Pat. pend. Somebody's waiting on a patent for this thing. Hope they never get it."
+ },
+ "WRN_SQ6_PERK_TIER_01": {
+  "speaker": "WRN",
+  "category": "PERK_TIER",
+  "text": "More. It always wants you to have more."
+ },
+ "WRN_SQ6_PERK_TIER_02": {
+  "speaker": "WRN",
+  "category": "PERK_TIER",
+  "text": "The owl on the glass. Somebody here was on our side."
+ },
+ "WRN_SQ6_PERK_PROC_01": {
+  "speaker": "WRN",
+  "category": "PERK_PROC",
+  "text": "Not yet. Not today."
+ },
+ "WRN_SQ6_PLAQUE_01": {
+  "speaker": "WRN",
+  "category": "PLAQUE",
+  "text": "They wrote down who made it. They never write down who it was made from."
+ },
+ "WRN_SQ6_PLAQUE_CRUCIBLE_01": {
+  "speaker": "WRN",
+  "category": "PLAQUE_CRUCIBLE",
+  "text": "A furnace that teaches guns. Of course they built that before bread."
+ },
+ "JAK_SQ6_PLAQUE_01": {
+  "speaker": "JAK",
+  "category": "PLAQUE",
+  "text": "We carried these down the ladder. Twelve men to a cabinet. Two did not come back up."
+ },
+ "JAK_SQ6_PLAQUE_CRUCIBLE_01": {
+  "speaker": "JAK",
+  "category": "PLAQUE_CRUCIBLE",
+  "text": "The cooling plant. We were told never to look inside it."
  }
 }

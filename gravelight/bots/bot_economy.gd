@@ -85,6 +85,35 @@ static func perk_wanted(e: Dictionary, plan: Array, owned: Array, available: Dic
 	return &""
 
 
+## The next perk upgrade to brew (T-075, economy.json "perk_upgrades"): only when `nothing_new` (no base perk left to
+## buy: cap full, or the plan is drunk), from min_round (tier 3 from tier3_min_round), in the upgrade plan's order
+## ("@weapon" as in perk_plan), the first carried tonic whose next tier the machine offers (`available`: perk id ->
+## that tier's price; `tiers`: perk id -> current tier) and that it can pay above reserve + extra_reserve. Like
+## perk_wanted, an unaffordable first choice means saving for it, not skipping to a cheaper one.
+static func upgrade_wanted(e: Dictionary, tiers: Dictionary, available: Dictionary, main_class: String, round_n: int,
+		scrip: int, reserve: int, nothing_new: bool) -> StringName:
+	var u: Dictionary = e.get("perk_upgrades", {})
+	if u.is_empty() or not nothing_new or round_n < int(u.get("min_round", 10)):
+		return &""
+	var plan: Array = u.get("plan", e.get("perk_plan", []))
+	for p: Variant in plan:
+		var pid: String = str(p)
+		if pid == "@weapon":
+			pid = ""
+			var wp: Dictionary = e.get("weapon_perk", {})
+			for k: Variant in wp.keys():
+				if (wp[k] as Array).has(main_class):
+					pid = str(k)
+		if pid == "" or not available.has(pid):
+			continue
+		if int(tiers.get(pid, 1)) + 1 >= 3 and round_n < int(u.get("tier3_min_round", 18)):
+			continue
+		if scrip - int(available[pid]) < reserve + int(u.get("extra_reserve", 500)):
+			return &""
+		return StringName(pid)
+	return &""
+
+
 ## The wall gun to buy: the best tier on offer that is better than the best gun carried (tier + 0.2, and not cheaper
 ## on the wall than it), allowed in this round, affordable above reserve + the buffer. `held` = [{id, tier, q (its
 ## wall price; 1500 crate-only, 5000 upgraded)}], `walls` = id -> price, `classes` = id -> class, `prefer` = class
@@ -325,6 +354,20 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 			var pm2: PerkMachine = machines[String(perk)]
 			out.append({"node": pm2, "kind": "perk", "value": value_of(eco, "perk", _flat(pm2.global_position, me)) + (0.3 if perks_only else 0.0),
 				"cost": int(avail[String(perk)]), "label": "drink %s (%d Scrip)" % [PerkManager.display_name(perk), int(avail[String(perk)])]})
+		else:
+			# ---- a perk upgrade (T-075): nothing new to drink, so the next tier of one it carries
+			var ups: Dictionary = {}
+			for k: Variant in machines.keys():
+				if PerkManager.has_perk(pid, StringName(k)) and PerkManager.can_upgrade(pid, StringName(k)) == &"ok":
+					ups[k] = PerkManager.tier_price(StringName(k), PerkManager.tier_of(pid, StringName(k)) + 1)
+			var nothing_new: bool = cap_left <= 0 or perk_wanted(eco, plan, PerkManager.owned(pid), avail, main_cls, coop, cap_left, 1 << 30, 0) == &""
+			var up: StringName = upgrade_wanted(eco, PerkManager.tiers(pid), ups, main_cls, rnd, scrip, 0 if perks_only else reserve, nothing_new)
+			if up != &"":
+				var pm3: PerkMachine = machines[String(up)]
+				var nt: int = PerkManager.tier_of(pid, up) + 1
+				out.append({"node": pm3, "kind": "perk", "value": value_of(eco, "perk", _flat(pm3.global_position, me)) - 0.1,
+					"cost": int(ups[String(up)]), "label": "brew %s (%d Scrip)" % [PerkManager.tier_name(up, nt), int(ups[String(up)])]})
+
 	if perks_only:
 		return out
 	# ---- a wall gun good for the round

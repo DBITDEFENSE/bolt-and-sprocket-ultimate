@@ -74,6 +74,17 @@ func _ready() -> void:
 	cs.position = Vector3(0, 1.2, 0)
 	body.add_child(cs)
 	add_child(body)
+	# the brass plate on the feed door (LORE.md 4.2), readable: why this Crucible is on this map (T-075, MachineLore)
+	var plaque: LorePlaque = LorePlaque.new()
+	plaque.name = "CruciblePlate"
+	plaque.lore_key = "crucible"
+	plaque.noun = "the brass plate"
+	plaque.plate_text = "MOD. R-E\nPAT. PEND. BLZ-40417"
+	plaque.plate_size = Vector2(0.42, 0.16)
+	plaque.position = Vector3(0.62, 0.42, -0.815)
+	plaque.interact_size = Vector3(0.6, 0.32, 0.1)
+	plaque.interact_offset = Vector3(0, 0, -0.36)
+	add_child(plaque)
 	GLBus.power_activated.connect(_refresh_power)
 	_refresh_power()
 

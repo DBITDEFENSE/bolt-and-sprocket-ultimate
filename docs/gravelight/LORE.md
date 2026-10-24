@@ -288,6 +288,14 @@ Helvetia did what it always did: it **branded** the machines. Each tonic got ena
 
 That's why bright, absurd, neon-lit Swiss vending machines stand in a mine in a war zone, playing swing tunes to the dead.
 
+**(T-075) Where every cabinet, Crucible and wall gun stands, and why:** `docs/gravelight/PERKS_LORE.md` (per map: the
+maker's plates, the three *Kühlanlage* crates 1/3, 2/3, 3/3, and Fw. Ammer's Standing Order 17 behind the chalk and the
+token clamps). In short: Kaltenbrunn's cabinets stand where Abteilung III dosed people; eight **replacement units**
+waited in the Kreuzweg's cellar; the movable ones went north to Totenhafen with the ballast because Helvetia was the
+forwarding agent; the **ninth cabinet** (Overclock Cordial) is on no docket anywhere. Each cabinet's **three chambers**
+(the field dose and two *Stammgast-Ausschank*, "regulars' measure", strengths) are the in-world reason for the perk
+upgrades: the coin plate reads how much of the formula the drinker already carries (PERKS_LORE.md §1.4).
+
 Imhof visited Kaltenbrunn once, in 1941, saw a demonstration, and went home and burned his notes. Helvetia kept delivering machines and spare parts until 1944. **[OPEN]** Helvetia's shipping routes reappear in Map 2: the company is one of the channels moving Nachtglas out of the Reich.
 
 ### 8.1 The tonics (backstory summary; full stories, jingles and panels in `docs/JINGLES.md`)

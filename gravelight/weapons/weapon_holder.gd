@@ -185,6 +185,8 @@ func grenade_max() -> int:
 	var m: int = int(lethal["max"])
 	if GameState.player_has_trait(player.player_id if player != null else 1, &"peg"):
 		m += int(GLData.table("player")["traits"]["peg_extra_grenades"])
+	if player != null:
+		m += PerkManager.grenade_bonus(player.player_id)   # Packmule II (T-075)
 	return m
 
 
@@ -590,7 +592,7 @@ func tick(delta: float, intent: Dictionary) -> void:
 	_sprinting = sprinting
 	var w: WeaponInstance = current()
 	if sprinting:
-		_sprint_out_total = sprint_out_time(w)
+		_sprint_out_total = sprint_out_time(w) * float(PerkManager.stat(player.player_id, "sprint_out_mult", 1.0))   # Marathon II
 		_sprint_out_t = _sprint_out_total     # held full while sprinting; runs down from the moment the sprint ends
 	else:
 		_sprint_out_t = maxf(0.0, _sprint_out_t - delta)
@@ -679,7 +681,7 @@ func _select(index: int) -> void:
 	current_index = index
 	_cancel_reload()
 	_reload_queued = false
-	_swap_t = SWAP_TIME * (current().draw_mult() if current() != null else 1.0)
+	_swap_t = SWAP_TIME * (current().draw_mult() if current() != null else 1.0) * float(PerkManager.stat(player.player_id, "swap_time_mult", 1.0))
 	ads_t = 0.0
 	AudioDirector.play_2d("weapon_raise", -6.0)
 	_rebuild_gun()
@@ -688,7 +690,8 @@ func _select(index: int) -> void:
 # ---------------------------------------------------------------- firing
 
 func _fire(w: WeaponInstance) -> void:
-	w.mag -= 1
+	if not PerkManager.round_saved(player.player_id, w):   # Twin Barrel III: one shot in four is free (T-075)
+		w.mag -= 1
 	_fired_this_frame = true
 	if w.mag == 0 and w.mag_size() > 1 and not w.data.has("stream"):
 		AudioDirector.play_2d("last_round_click", -3.0, 0.0)   # the "last bullet" tell: a light hollow click
@@ -720,6 +723,7 @@ func _fire(w: WeaponInstance) -> void:
 		_trace(cam.global_position, dir, w, hits)
 	var pid: int = player.player_id
 	var piercing: bool = bool(w.property("armor_piercing", false)) or bool(w.property("armor_ignore", false))
+	var tier_mult: float = PerkManager.shot_mult(pid, ads_t >= 0.95)   # Trigger Tonic III / Hawkeye III (T-075)
 	NetMatch.shot_origin = cam.global_position
 	NetMatch.shot_dir = -cam.global_basis.z
 	for z: Variant in hits.keys():
@@ -728,8 +732,10 @@ func _fire(w: WeaponInstance) -> void:
 		var limb: StringName = StringName(h["limb"])
 		var pos: Vector3 = zz.global_position + Vector3.UP * 1.6
 		zz.last_hit_bone = str(h.get("bone", ""))
-		var killed: bool = zz.take_damage(float(h["dmg"]), limb, w.id, pid, &"bullet", piercing)
+		var killed: bool = zz.take_damage(float(h["dmg"]) * tier_mult, limb, w.id, pid, &"bullet", piercing)
 		var head: bool = limb == &"head"
+		if killed:
+			PerkManager.on_bullet_kill(pid, w, head)   # Hawkeye II: a headshot kill refunds a round
 		GLBus.enemy_hit_feedback.emit(pid, killed, head)
 		AudioDirector.play_2d("headshot" if head else "hitmarker", -3.0 if head else -4.0)
 		_on_hit_effects(w, zz, limb, killed, pos)
@@ -1189,6 +1195,7 @@ func _tick_reload(delta: float, fire_pressed: bool) -> void:
 			AudioDirector.play_2d("reload_end", -4.0)
 	_reloading = false
 	_reload_per_round = false
+	PerkManager.reload_finished(player.player_id)   # Trigger Tonic III's fresh clip
 	_on_reload_finished()
 
 
@@ -2312,7 +2319,9 @@ func _apply_recoil_pattern(w: WeaponInstance, ads_k: float) -> void:
 	var phase: float = float(absi(hash(String(w.base_id()))) % 628) * 0.01
 	var h: float = float(rc.get("h_swing", 0.0)) * sin(i * float(rc.get("h_freq", 0.7)) + phase) + randf_range(-1.0, 1.0) * float(rc.get("h", 0.15))
 	var crouch_k: float = float(rc.get("crouch_mult", 0.85)) if (player.crouching or player.prone) else 1.0
+	crouch_k *= float(PerkManager.stat(player.player_id, "recoil_mult", 1.0))   # Twin Barrel II (T-075)
 	player.apply_recoil_pattern(v * ads_k * crouch_k, h * ads_k * crouch_k, float(rc.get("keep", 0.3)), float(rc.get("recover", 7.0)),
+
 		float(rc.get("recover_delay", 0.12)))
 	_shot_i += 1
 	_since_shot = 0.0

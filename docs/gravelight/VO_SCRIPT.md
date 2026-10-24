@@ -1922,3 +1922,54 @@ Crucible); he goes, defends, regroups and calls danger. The ids carry `SQ5` so t
 - `JAK_SQ5_MARK_REFUSE_BUY_02`: "I can't buy anything. They paid us in nothing, down there."
 - `JAK_SQ5_MARK_CANT_REACH_01`: "I can't get there. Show me another way."
 - `JAK_SQ5_MARK_CANT_01`: "I can't do that. I'm sorry."
+
+
+## 20. Perk upgrades, the maker's plates and the Crucible's plate (Update 04, DECISIONS T-075)
+
+`PERK_TIER`: a survivor's first perk upgrade of the match (tier II or III brewed at a machine they already drank from;
+PerkManager.set_tier, say_as, forced). `PERK_PROC`: the first time a tier effect fires for them in a match (iron skin,
+a dodge, a revive window, a blast heal). `PLAQUE`: the first maker's plate they read on a map; `PLAQUE_CRUCIBLE`: the
+Crucible's brass plate (MachineLore). The Operator: `PERK_TIER2` / `PERK_TIER3` on the match's first tier II / III
+("the loyalty measure", PERKS_LORE.md section 1.4); `CRUCIBLE_FIRST` gains two variants. Writer rules hold: nobody
+learns what a plan or a patent is. The ids carry `SQ6` so the bake can run them alone
+(`python gravelight/tools_src/gen_vo.py --only=SQ6`). Unbaked until the orchestrator's TTS bake: they play as subtitles.
+
+**Operator (`OPR`)**
+- `OPR_SQ6_PERK_TIER2_01`: "Oh, a returning customer! Helvetia Automaten is pleased to offer you the {loyalty measure}."
+- `OPR_SQ6_PERK_TIER2_02`: "A second glass! The cabinet remembers you. It remembers {everyone}."
+- `OPR_SQ6_PERK_TIER3_01`: "The regulars' measure! Ladies and gentlemen, we have a {valued} customer."
+- `OPR_SQ6_PERK_TIER3_02`: "Third chamber, opened just for you. Do drink {responsibly}. Or don't. We'll know."
+- `OPR_SQ6_CRUCIBLE_FIRST_01`: "The furnace is lit! Patent pending, and pending, and {pending}."
+- `OPR_SQ6_CRUCIBLE_FIRST_02`: "Our cooling plant is open for business! It has never cooled {anything}."
+
+**Dutch (`DUT`)**
+- `DUT_SQ6_PERK_TIER_01`: "Second helping. Tastes worse. Works better. That's the Army in a bottle."
+- `DUT_SQ6_PERK_TIER_02`: "The machine gave me the strong stuff. I don't like that it knew I was ready."
+- `DUT_SQ6_PERK_PROC_01`: "Whoa. That should've put me down."
+- `DUT_SQ6_PLAQUE_01`: "Made in Basel. Neutral country. Sure."
+- `DUT_SQ6_PLAQUE_CRUCIBLE_01`: "Patent pending. Somebody's paying a lawyer for this thing."
+
+**Peg (`PEG`)**
+- `PEG_SQ6_PERK_TIER_01`: "A stronger measure. London will want a sample of this. London wants a sample of everything."
+- `PEG_SQ6_PERK_TIER_02`: "Interlocks on a drinks cabinet. Somebody planned for us coming back."
+- `PEG_SQ6_PERK_PROC_01`: "Didn't feel that. I'm choosing not to think about why."
+- `PEG_SQ6_PLAQUE_01`: "Replacement unit. They had spares. Of course they had spares."
+- `PEG_SQ6_PLAQUE_CRUCIBLE_01`: "Crate two of three. So where's the third?"
+
+**Deacon (`DEA`)**
+- `DEA_SQ6_PERK_TIER_01`: "Second chamber behind the first. Clever plumbing. Hate it."
+- `DEA_SQ6_PERK_TIER_02`: "It read my hand before it poured. Machine shouldn't do that."
+- `DEA_SQ6_PERK_PROC_01`: "Lord. Something in me just held."
+- `DEA_SQ6_PLAQUE_01`: "Swiss rivets. Good work on a bad job."
+- `DEA_SQ6_PLAQUE_CRUCIBLE_01`: "Mod. R-E. Pat. pend. Somebody's waiting on a patent for this thing. Hope they never get it."
+
+**Wren (`WRN`)**
+- `WRN_SQ6_PERK_TIER_01`: "More. It always wants you to have more."
+- `WRN_SQ6_PERK_TIER_02`: "The owl on the glass. Somebody here was on our side."
+- `WRN_SQ6_PERK_PROC_01`: "Not yet. Not today."
+- `WRN_SQ6_PLAQUE_01`: "They wrote down who made it. They never write down who it was made from."
+- `WRN_SQ6_PLAQUE_CRUCIBLE_01`: "A furnace that teaches guns. Of course they built that before bread."
+
+**Jakub (`JAK`)** (he never drinks; the plates only)
+- `JAK_SQ6_PLAQUE_01`: "We carried these down the ladder. Twelve men to a cabinet. Two did not come back up."
+- `JAK_SQ6_PLAQUE_CRUCIBLE_01`: "The cooling plant. We were told never to look inside it."

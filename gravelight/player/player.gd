@@ -917,14 +917,15 @@ func _start_slide(wish: Vector3) -> void:
 	_footstep(-3.0)                                                 # the scrape as the knees hit the floor
 	weapons.on_landed(2.0)                                          # a small viewmodel dip
 	# Blastproof Bock: sliding releases a small concussive shockwave (no self damage).
-	var shock: float = float(PerkManager.stat(player_id, "slide_shockwave_damage", 0.0))
+	var shock: float = PerkManager.slide_shock_damage(player_id, float(PerkManager.stat(player_id, "slide_shockwave_damage", 0.0)))
 	if shock > 0.0:
 		var r: float = float(PerkManager.stat(player_id, "slide_shockwave_radius", 3.0))
 		var dir: ZombieDirector = get_tree().get_first_node_in_group(&"director") as ZombieDirector
 		if dir != null:
 			for z: Zombie in dir.active_zombies():
 				if z.global_position.distance_to(global_position) <= r:
-					z.take_damage(shock, &"torso", &"blastproof_bock", player_id, &"explosive")
+					PerkManager.slide_hit(self, z, shock)   # Blastproof III also knocks survivors down
+
 		Effects.explosion(global_position + Vector3.UP * 0.3, r * 0.6)
 		AudioDirector.play_3d("grenade_explode", global_position, -8.0, 0.2)
 
@@ -1089,7 +1090,7 @@ func _update_health(delta: float) -> void:
 	for e: Variant in _status.keys():
 		_status[e] = maxf(0.0, float(_status[e]) - delta)
 	_since_hit += delta
-	if _since_hit >= float(_cfg["regen_delay"]) and hp < max_hp:
+	if _since_hit >= float(_cfg["regen_delay"]) * float(PerkManager.stat(player_id, "regen_delay_mult", 1.0)) and hp < max_hp:
 		hp = minf(max_hp, hp + float(_cfg["regen_per_second"]) * delta)
 	_set_heartbeat(hp < max_hp * HEARTBEAT_BELOW)
 
@@ -1351,6 +1352,9 @@ func take_hit(amount: float, _source: Node) -> void:
 		return
 	if is_bot:
 		amount *= bot_damage_mult
+	amount = PerkManager.filter_hit(self, amount)   # perk tiers: iron skin, revive window, sprint dodge (T-075)
+	if amount <= 0.0:
+		return
 	hp -= amount
 	_since_hit = 0.0
 	_shake = maxf(_shake, 0.35)
