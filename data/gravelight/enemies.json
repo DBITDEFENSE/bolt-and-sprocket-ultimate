@@ -27,6 +27,7 @@
       "last_zombie_seconds": 20.0,
       "stuck_respawn_seconds": 15.0,
       "no_progress_respawn_seconds": 40.0,
+      "window_no_progress_seconds": 30.0,
       "no_progress_min_m": 8.0,
       "variants": {
         "soldier": 0.6,

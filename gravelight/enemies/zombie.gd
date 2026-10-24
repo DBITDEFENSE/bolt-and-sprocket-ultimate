@@ -173,6 +173,9 @@ func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 	_progress_target = null
 	_progress_best = INF
 	_progress_t = 0.0
+	_win_progress_window = null
+	_win_progress_best = INF
+	_win_progress_t = 0.0
 	_burn_t = 0.0
 	_frost_t = 0.0
 	_frost_slow = 0.0
@@ -386,6 +389,25 @@ func _update_to_window(delta: float) -> void:
 			_enter(State.WAIT_WINDOW)
 		return
 	_nav_move(goal, speed, delta, 0.5)
+	# No progress on the way to the window: a zombie outside that can't reach its window (blocked path, navmesh
+	# island) never enters CHASE, so the chase-state checks never see it and the round can't end. Recycle it.
+	var wnp: float = float(_cfg.get("window_no_progress_seconds", 0.0))
+	if wnp > 0.0:
+		var gd: float = _flat_dist(goal)
+		if window != _win_progress_window or gd < _win_progress_best - 1.0:
+			_win_progress_window = window
+			_win_progress_best = gd
+			_win_progress_t = 0.0
+		else:
+			_win_progress_t += delta
+			if _win_progress_t > wnp:
+				_win_progress_t = 0.0
+				recycle()
+
+
+var _win_progress_window: Node = null
+var _win_progress_best: float = INF
+var _win_progress_t: float = 0.0
 
 
 func _update_wait_window(delta: float) -> void:
