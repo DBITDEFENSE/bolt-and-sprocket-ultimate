@@ -13885,6 +13885,22 @@
  },
  "missing": {
   "LSL_REC_DRUMMER_01": "no speech: stage direction only ([faint giggle under the drum])",
-  "REI_HEART_END": "no speech: stage direction only ([scream that becomes the bell toll; PA d)"
+  "REI_HEART_END": "no speech: stage direction only ([scream that becomes the bell toll; PA d)",
+  "ROT_INN_ARRIVE_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
+  "TRU_INN_ARRIVE_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
+  "POH_INN_SCREAM_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
+  "KUB_INN_WINDOW_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
+  "TRU_INN_FLEE_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
+  "SOB_INN_FLEE_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
+  "ROT_INN_DOOR_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
+  "KUB_INN_CAUGHT_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
+  "ROT_INN_CAUGHT_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
+  "SOB_INN_SHUT_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
+  "SOB_INN_BITTEN_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
+  "SOB_INN_FALL_01": "not baked yet: Map 0 round 1 opening (T-072); new patron speakers ROT/KUB/POH/TRU/SOB need voices in gen_vo.py",
+  "DUT_INN_RISE_01": "not baked yet: Map 0 round 1 opening squad reaction (T-072)",
+  "PEG_INN_RISE_01": "not baked yet: Map 0 round 1 opening squad reaction (T-072)",
+  "DEA_INN_RISE_01": "not baked yet: Map 0 round 1 opening squad reaction (T-072)",
+  "WRN_INN_RISE_01": "not baked yet: Map 0 round 1 opening squad reaction (T-072)"
  }
 }

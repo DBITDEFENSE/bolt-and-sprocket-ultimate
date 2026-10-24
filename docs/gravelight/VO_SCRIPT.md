@@ -1922,3 +1922,45 @@ Crucible); he goes, defends, regroups and calls danger. The ids carry `SQ5` so t
 - `JAK_SQ5_MARK_REFUSE_BUY_02`: "I can't buy anything. They paid us in nothing, down there."
 - `JAK_SQ5_MARK_CANT_REACH_01`: "I can't get there. Show me another way."
 - `JAK_SQ5_MARK_CANT_01`: "I can't do that. I'm sorry."
+
+
+## 20. Map 0's round 1 opening: the bar empties (DECISIONS T-072)
+
+Played by `InnOpening` (`gravelight/world/inn_opening/inn_opening.gd`, data `data/gravelight/map00_opening.json`, which
+holds each line's time and speaker). Local on every peer, positional at the patron when baked; the subtitle shows the
+patron's name. **Not baked yet** (audio_manifest "missing"): new speakers for the bake, one voice each.
+
+**Who they are.** Nobody signed the guest book (they took no rooms; it stays true that the last guests left on the
+20th): folk off the shut road who came in out of the snow on the 23rd. Anselm, Lene and Käthe Vogt are not among
+them (their fates stay [OPEN]).
+- `ROT` **Ewald Rother**, an old salt carter; his snowed-in cart is in the yard. Gruff, kind.
+- `KUB` **Franz Kubiak**, his younger mate. Quick, frightened, brave too late.
+- `POH` **Frau Agnes Pohl**, a widow walking to her sister's in Liegnitz. Prim; screams once, then runs.
+- `TRU` **Trudi Hanke**, a farmer's daughter from Wilcza Góra who helps Frau Vogt at the bar. Practical, loud.
+- `SOB` **Gefreiter Willi Sobotta**, a lance-corporal on Christmas leave walking home to Wilcza Góra, unarmed; the
+  parcel on the bar is for his mother. He holds the door, shuts it on Rother to save the room, and is bitten.
+
+Escapes: Trudi and Frau Pohl run up the road into the dark (their fate is open). Rother and Kubiak are caught on the
+snow; Sobotta dies inside by the table and rises among the squad.
+
+**Intro** (before round 1, as the squad comes in):
+- `ROT_INN_ARRIVE_01`: "Mother of God, look at them. Out of that plane? ...Sit, sit, before you fall down. Trudi, coffee for these."
+- `TRU_INN_ARRIVE_01`: "There's soup on the hearth. Get warm first. Then you can tell us what fell out of the sky."
+
+**Round 1 starts** (the windows):
+- `POH_INN_SCREAM_01`: "[a scream] At the window! There are people out in the snow, and they're walking. Look at them walking!"
+- `KUB_INN_WINDOW_01`: "What was that? ...Something's at the boards. Something's tearing at the boards!"
+- `TRU_INN_FLEE_01`: "The front door! Out, all of you, out and up the road to the village!"
+- `SOB_INN_FLEE_01`: "Stay together! Keep together and run, don't stop for anything!"
+- `ROT_INN_DOOR_01`: "The bar's frozen in the brackets... help me, help me with it... there!"
+- `KUB_INN_CAUGHT_01`: "[screaming] Get off me! Get it off! Ewald! Ewald!"
+- `ROT_INN_CAUGHT_01`: "[screaming] Willi! The door, Willi, pull me in!"
+- `SOB_INN_SHUT_01`: "I can't... God forgive me. ...The bar! The bar, get it down!"
+- `SOB_INN_BITTEN_01`: "It bit me. It's nothing. It's only a scratch, it's... it's nothing."
+- `SOB_INN_FALL_01`: "[weak] Tell my mother... I was nearly home. Nearly home."
+
+**`INN_RISE`**: the squad, when Sobotta gets up off the floor (one random standing survivor, tier 2).
+- `DUT_INN_RISE_01`: "He's getting up. ...He's getting up! That's not him any more, put him down!"
+- `PEG_INN_RISE_01`: "Oh, no. No, no, no. Willi. ...I'm sorry, love."
+- `DEA_INN_RISE_01`: "Lord have mercy, the boy's standing up. That isn't him. That isn't him!"
+- `WRN_INN_RISE_01`: "The soldier. He is standing. Do not look at his face. Shoot."

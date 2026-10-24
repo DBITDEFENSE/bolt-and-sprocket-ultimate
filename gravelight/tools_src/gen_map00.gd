@@ -2642,6 +2642,15 @@ func build_gameplay() -> void:
 		"door_id": &"door_yard", "opens_zone": &"YARD", "cost": 1250, "size": Vector3(2.0, DOOR_H, 0.25), "label": "The Yard"})
 	d4.position = Vector3(8.0, 0, 34.0)
 	gameplay.add_child(d4)
+	# the front door, the round 1 opening's patrons and the gramophone they leave playing on the bar (T-072)
+	var fd: Node3D = _scripted(Node3D.new(), "res://gravelight/world/inn_opening/inn_front_door.gd", "InnFrontDoor", {"width": 1.6, "height": DOOR_H, "wall": T})
+	fd.position = Vector3(FRONT_DOOR_X, 0, 0)
+	gameplay.add_child(fd)
+	gameplay.add_child(_scripted(Node3D.new(), "res://gravelight/world/inn_opening/inn_opening.gd", "InnOpening", {}))
+	var gram: Node3D = _scripted(Node3D.new(), "res://gravelight/world/inn_opening/inn_gramophone.gd", "InnGramophone", {"stop_round": 3})
+	gram.position = Vector3(5.75, 1.1, 8.4)
+	gram.rotation.y = deg_to_rad(200.0)
+	gameplay.add_child(gram)
 
 	build_cellar_gameplay()
 

@@ -31,8 +31,9 @@ static func buy_door_openings(root: Node) -> Array[Dictionary]:
 
 
 ## An extra opening (a doorway without a bought door): its sill centre, its yaw (local X across the doorway) and
-## its width and height.
-static func opening(name_: String, sill_centre: Vector3, yaw_deg: float, width: float, height: float, skip: Node = null) -> Dictionary:
+## its width and height. `skip`: a node (or an Array of nodes) that belongs in the doorway (its door leaf, the
+## invisible collider that keeps a drawn doorway shut).
+static func opening(name_: String, sill_centre: Vector3, yaw_deg: float, width: float, height: float, skip: Variant = null) -> Dictionary:
 	return {"name": name_, "xf": Transform3D(Basis(Vector3.UP, deg_to_rad(yaw_deg)), sill_centre),
 		"size": Vector3(width, height, 0.3), "skip": skip}
 
@@ -112,8 +113,7 @@ static func intrusions(root: Node, openings: Array[Dictionary]) -> PackedStringA
 			var oi: int = owner_of[i]
 			if hit_by.has(oi):
 				continue
-			var skip: Node = openings[oi].get("skip") as Node
-			if skip != null and (n == skip or skip.is_ancestor_of(n)):
+			if _skipped(n, openings[oi].get("skip")):
 				continue
 			if not bb.intersects(world_boxes[i]):
 				continue
@@ -122,6 +122,16 @@ static func intrusions(root: Node, openings: Array[Dictionary]) -> PackedStringA
 				hit_by[oi] = true
 				out.append("%s: %s (%s)" % [openings[oi]["name"], str(root.get_path_to(n)), kind])
 	return out
+
+
+static func _skipped(n: Node, skip: Variant) -> bool:
+	if skip is Node:
+		return n == skip or (skip as Node).is_ancestor_of(n)
+	if skip is Array:
+		for k: Variant in skip:
+			if k is Node and (n == k or (k as Node).is_ancestor_of(n)):
+				return true
+	return false
 
 
 ## Players, zombies and loose physics props move: they are not part of the doorway's dressing.
