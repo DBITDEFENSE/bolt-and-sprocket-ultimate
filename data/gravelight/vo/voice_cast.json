@@ -1,0 +1,64 @@
+{
+ "_doc": "Neural voice casting for the squad and Jakub (T-073), read by gravelight/tools_src/gen_vo.py. engine: Kokoro-82M (Apache-2.0) run offline from tools/tts/kokoro via tools/venv (tools/setup_tts.sh). cast.<SPK>: voice = Kokoro style blend 'name:weight,...'; lexicon us|gb (misaki); speed = base pace; accent = a rule set from 'accents' applied to the English phonemes; native_polish = Polish words keep Polish sounds (else anglicised); emotion_scale scales every emotion's deviation from neutral (Peg never raises her voice: 0.35; Deacon wears it openly: 1.0); eq = [[lo_hz, hi_hz, gain_db], ...] band moves on top of the high-pass; hp_hz; warmth = tanh drive (1.0 = clean); lufs_offset trims the speaker against the target. emotions: per-category delivery, picked by the longest matching category prefix in 'categories' (else 'calm'); speed multiplies the pace, lufs is added to the loudness target, presence_db lifts 2-4.5 kHz, air_db shelves above 5 kHz, drive saturates, tremor = depth of a 5-6 Hz shake (hurt), breath_db = level of the inhale before a line against the speech (null = none), breath_s = its length range, room = [seconds, mix]. A line that ends in '!' in a calm/brisk category reads one step hotter ('raised'). Changing anything here rebuilds the affected lines (the hash includes it).",
+ "engine": "kokoro",
+ "loudness": {"target_lufs": -17.5, "true_peak_db": -1.5},
+ "cast": {
+  "DUT": {"who": "Sgt. Dutch Kowalczyk, 34, Pittsburgh: low, gravelly baritone, unhurried, complains to keep going",
+          "voice": "am_onyx:0.55,am_fenrir:0.45", "lexicon": "us", "speed": 0.95, "accent": "", "native_polish": false,
+          "emotion_scale": 0.7, "hp_hz": 70, "eq": [[90, 240, 2.5], [1800, 2800, -1.0], [3200, 5200, 1.0]],
+          "warmth": 1.45, "lufs_offset": 0.0},
+  "PEG": {"who": "Lt. Peg Ashworth, 29, SOE: Received Pronunciation, clipped and precise, never raises her voice",
+          "voice": "bf_emma", "lexicon": "gb", "speed": 1.04, "accent": "", "native_polish": false,
+          "emotion_scale": 0.35, "hp_hz": 140, "eq": [[250, 500, -1.0], [2400, 4500, 2.0]],
+          "warmth": 1.0, "lufs_offset": 0.0},
+  "DEA": {"who": "Cpl. Deacon Brooks, 26, Louisiana: warm tenor, soft-spoken, a preacher's rhythm",
+          "voice": "am_michael:0.7,am_puck:0.3", "lexicon": "us", "speed": 0.93, "accent": "", "native_polish": false,
+          "emotion_scale": 1.0, "hp_hz": 85, "eq": [[180, 550, 2.0], [3000, 5500, -1.5]],
+          "warmth": 1.15, "lufs_offset": 0.0},
+  "WRN": {"who": "Wren (Zofia Nowak), 24, Home Army: fluent English learned from British radio, a Polish accent, economical and deadpan",
+          "voice": "bf_isabella:0.75,bf_lily:0.25", "lexicon": "gb", "speed": 1.0, "accent": "polish_light",
+          "native_polish": true, "emotion_scale": 0.75, "hp_hz": 160, "eq": [[700, 1400, -1.5], [3000, 5000, 1.0]],
+          "warmth": 1.0, "lufs_offset": 0.0},
+  "JAK": {"who": "Jakub Ostrowski, 44, Silesian salt hewer: English learned late and well enough, an older Polish voice, calm and wry",
+          "voice": "bm_george:0.6,bm_lewis:0.4", "lexicon": "gb", "speed": 0.9, "accent": "polish",
+          "native_polish": true, "emotion_scale": 0.8, "hp_hz": 80, "eq": [[300, 800, 2.0], [2600, 4200, -1.5]],
+          "warmth": 1.3, "lufs_offset": 0.0}
+ },
+ "accents": {
+  "_doc": "Phoneme rewrites on the misaki GB phonemes of English words (Polish words are not touched). Rules model a Polish first language: th-stopping, a tapped r, Polish vowel qualities, final devoicing. Kept light on purpose: these are people speaking a second language well, not a comic accent.",
+  "polish_light": {"map": [["θ", "t"], ["ð", "d"], ["ɹ", "ɾ"], ["æ", "ɛ"], ["ʌ", "a"], ["Q", "ɔ"]],
+                   "final_devoicing": "phrase", "devoice": "zv"},
+  "polish": {"map": [["θ", "t"], ["ð", "d"], ["ɹ", "ɾ"], ["æ", "ɛ"], ["ʌ", "a"], ["Q", "ɔ"], ["ɜː", "ɛɾ"], ["iː", "i"],
+                     ["uː", "u"], ["ɔː", "ɔ"], ["ɑː", "a"], ["ɪ", "i"], ["ʊ", "u"], ["A", "ɛj"], ["ɒ", "ɔ"]],
+             "final_devoicing": "all", "devoice": "zdvbɡʤʒ"}
+ },
+ "polish": {
+  "_doc": "Words read with Polish phonemes. 'words' are always Polish; 'weak_words' (also English words or too short to be sure) only next to a sure Polish word.",
+  "words": ["zdrowie", "jestem", "głodna", "głodny", "siostra", "agnieszka", "diabła", "sześćdziesiąt", "jeden", "dziękuję", "dzienkuje", "wilcza", "góra", "duszę", "szczęść", "boże", "kto", "jezus", "maria", "precz", "mnie", "chodź", "draniu", "psiakrew", "dole", "tutaj", "dzięki", "bogu", "spokojnie", "jest", "hej", "wigilia", "wesołych", "świąt", "jeszcze", "nadsztygar", "uwaga", "tobą", "dobrze", "kraków", "babcia", "kowalczyk", "ostrowski", "nowak", "zosia", "zofia", "tomasz", "strzyżyk", "sowa", "jakub", "halina", "marta"],
+  "overrides": {"_doc": "Polish words eSpeak NG gets wrong: word -> phonemes (eSpeak-style, before the Kokoro mapping).", "szczęść": "ʂʧˈɛɲɕʨ"},
+  "weak_words": ["na", "tu", "za", "do", "ty", "tam", "nie", "ode", "halo"]
+ },
+ "emotions": {
+  "calm":   {"speed": 1.0,  "lufs": 0.0,  "presence_db": 0.0, "air_db": 0.0,  "drive": 1.0,  "tremor": 0.0,  "breath_db": -32, "breath_s": [0.26, 0.36], "room": [0.30, 0.06]},
+  "brisk":  {"speed": 1.05, "lufs": 0.5,  "presence_db": 1.0, "air_db": 0.0,  "drive": 1.05, "tremor": 0.0,  "breath_db": null, "room": [0.28, 0.06]},
+  "raised": {"speed": 1.06, "lufs": 1.5,  "presence_db": 2.0, "air_db": 0.5,  "drive": 1.15, "tremor": 0.0,  "breath_db": -29, "breath_s": [0.2, 0.28], "room": [0.30, 0.08]},
+  "shout":  {"speed": 1.1,  "lufs": 2.5,  "presence_db": 3.5, "air_db": 1.0,  "drive": 1.3,  "tremor": 0.0,  "breath_db": -27, "breath_s": [0.14, 0.2], "room": [0.35, 0.10], "exclaim": true},
+  "hurt":   {"speed": 0.9,  "lufs": -1.5, "presence_db": -1.0, "air_db": -2.5, "drive": 1.05, "tremor": 0.07, "breath_db": -25, "breath_s": [0.3, 0.42], "room": [0.25, 0.05]},
+  "quiet":  {"speed": 0.95, "lufs": -3.0, "presence_db": -1.0, "air_db": -2.0, "drive": 1.0,  "tremor": 0.0,  "breath_db": -34, "breath_s": [0.28, 0.38], "room": [0.22, 0.04]},
+  "mine":   {"speed": 0.97, "lufs": -1.0, "presence_db": 0.0, "air_db": -1.0, "drive": 1.0,  "tremor": 0.0,  "breath_db": -33, "breath_s": [0.28, 0.36], "room": [0.9, 0.11]}
+ },
+ "categories": {
+  "_doc": "Category prefix -> emotion. The longest matching prefix wins; anything unlisted is 'calm'.",
+  "SPRINTER_BEHIND": "shout", "MARK_DANGER": "shout", "SCREAMER": "shout", "BOSS_INCOMING": "shout", "FOREMAN": "shout",
+  "GLASSHIDE": "shout", "TEAM_DOWN": "shout", "WINDOW_OPEN": "shout", "ALARM": "shout", "BREAKOUT": "shout",
+  "CALL": "shout", "M1_FOREMAN": "raised", "SKY_PLANE_DOWN": "raised", "JAKUB_FALLEN": "raised", "COVER": "brisk",
+  "DOWN": "hurt", "RETURN_WOUNDED": "hurt",
+  "CHATTER": "quiet", "MIDNIGHT": "quiet", "BLUES": "quiet", "LANTERN": "quiet", "CAGE_TALK": "quiet",
+  "COUSINS": "quiet", "TALK_ASK": "quiet", "MACH": "quiet", "POL": "quiet", "GRUMBLE": "quiet", "REVIVED": "quiet",
+  "KB4471": "quiet", "WRN_JAK_SCENE": "quiet", "EXHAUST": "quiet", "WRECK_PILOT": "quiet", "INTEL": "quiet",
+  "M1_ARRIVE": "mine", "M1_SHORTCUT": "mine", "M1_POWER": "mine", "ZONE_": "mine",
+  "MARK_": "brisk", "CMD_": "brisk", "EE_": "brisk", "PING_": "brisk", "RELOAD": "brisk", "AMMO_": "brisk",
+  "BOARD": "brisk", "REVIVE": "brisk", "POWERUP_SEEN": "brisk", "CRATE_MOVED": "brisk", "PWR_": "brisk",
+  "HEADSHOT": "brisk", "TRAP": "brisk", "DOOR": "brisk", "BUY_": "brisk", "DENY_": "brisk", "TALLY_": "brisk"
+ }
+}

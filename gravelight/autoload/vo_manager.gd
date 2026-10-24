@@ -86,6 +86,10 @@ var _slip_round: int = -1
 var _slip_round_count: int = 0
 var _slip_pending_at: float = INF
 var _last_down_at: float = -INF
+var _echo: Dictionary = {}           # squad_echo prefix -> [time, speaker] of the last squad line in it (T-073)
+var _last_drawn: Dictionary = {}     # "SPK:CAT" -> the id drawn last, so a refilled bag never opens with it
+var _occl_t: float = 0.0             # next occlusion check (physics time left)
+var _occl: Dictionary = {}           # AudioStreamPlayer3D -> 0..1 occlusion amount (smoothed)
 
 
 func _ready() -> void:
@@ -181,6 +185,8 @@ func reset_match() -> void:
 	_slip_round_count = 0
 	_slip_pending_at = INF
 	_last_down_at = -INF
+	_echo.clear()
+	_last_drawn.clear()
 
 
 func stop_all() -> void:
@@ -222,6 +228,8 @@ func play_category(speaker: StringName, category: String, chance_override: float
 	if _now < float(_cooldown_until.get(rk, -1.0)):
 		return false
 	var cd: Array = _cooldown_rule(rk, speaker)
+	if echo_blocked(speaker, category):
+		return false
 	var chance: float = chance_override if chance_override >= 0.0 else float(cd[1])
 	if not always_pass_chance and rng.randf() > chance:
 		return false
@@ -232,7 +240,37 @@ func play_category(speaker: StringName, category: String, chance_override: float
 	if not _submit(id, prio, pid):
 		return false
 	_cooldown_until[rk] = _now + float(cd[0])
+	_note_echo(speaker, category)
 	return true
+
+
+## Squad anti-echo (T-073, rules.json "squad_echo"): true when another survivor (or Jakub) said this category
+## within its window, so this speaker keeps quiet instead of repeating the call.
+func echo_blocked(speaker: StringName, category: String) -> bool:
+	var prefix: String = _echo_prefix(speaker, category)
+	if prefix == "" or not _echo.has(prefix):
+		return false
+	var rec: Array = _echo[prefix]
+	var window: float = float((rules.get("squad_echo", {}) as Dictionary).get("categories", {}).get(prefix, 0.0))
+	return StringName(rec[1]) != speaker and _now - float(rec[0]) < window
+
+
+func _note_echo(speaker: StringName, category: String) -> void:
+	var prefix: String = _echo_prefix(speaker, category)
+	if prefix != "":
+		_echo[prefix] = [_now, speaker]
+
+
+## The squad_echo prefix a squad speaker's category falls under ("" = not echo-limited).
+func _echo_prefix(speaker: StringName, category: String) -> String:
+	if not CHARACTER_SPEAKERS.values().has(speaker):
+		return ""
+	var best: String = ""
+	for p: Variant in ((rules.get("squad_echo", {}) as Dictionary).get("categories", {}) as Dictionary).keys():
+		var ps: String = str(p)
+		if category.begins_with(ps) and ps.length() > best.length():
+			best = ps
+	return best
 
 
 ## Keeps a speaker's category quiet for `seconds` (a scripted line is about to say the same thing better: a bot's
@@ -442,8 +480,14 @@ func _draw(key: String) -> StringName:
 			var tmp: Variant = bag[i]
 			bag[i] = bag[j]
 			bag[j] = tmp
+		# A fresh bag never opens with the line that closed the last one (no back-to-back repeat at the seam).
+		if bag.size() > 1 and bag.back() == _last_drawn.get(key, null):
+			var first: Variant = bag[0]
+			bag[0] = bag.back()
+			bag[bag.size() - 1] = first
 	var id_out: Variant = bag.pop_back()
 	_bags[key] = bag
+	_last_drawn[key] = id_out
 	return StringName(str(id_out))
 
 
@@ -698,8 +742,8 @@ func _play_stream(group: StringName, stream: AudioStream, pid: int) -> void:
 		p2d.stop()
 		p3d.stop()
 		p3d.stream = stream
-		p3d.volume_db = float(au.get("squad_volume_db", 0.0))
 		p3d.global_position = _voice_pos(node)
+		set_occlusion(p3d, _occlusion_target(p3d))   # sets volume_db too (squad_volume_db + the occlusion dip)
 		p3d.play()
 		if group == GROUP_SQUAD:
 			_follow_b = node
@@ -826,6 +870,48 @@ func advance(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	advance(delta)
+
+
+## Cheap occlusion (T-073, rules.json audio "occlusion_*"): a few times a second, while a bot's (or another
+## player's, or Jakub's) line plays at their body, one ray from the camera to their head against the world and
+## doors. Blocked: the voice slides to a low-pass and a few dB down, as if heard through the wall; clear: back.
+func _physics_process(delta: float) -> void:
+	_occl_t -= delta
+	if _occl_t > 0.0:
+		return
+	var au: Dictionary = rules.get("audio", {})
+	_occl_t = float(au.get("occlusion_interval_s", 0.12))
+	for p3: AudioStreamPlayer3D in [_player_3d, _squad_3d, _comp_3d]:
+		if p3 == null or not p3.playing:
+			continue
+		set_occlusion(p3, lerpf(float(_occl.get(p3, 0.0)), _occlusion_target(p3), float(au.get("occlusion_smooth", 0.5))))
+
+
+## 1.0 when the world or a door stands between the camera and the voice, else 0.0 (no camera: 0.0).
+func _occlusion_target(p3: AudioStreamPlayer3D) -> float:
+	if not is_inside_tree() or not p3.is_inside_tree():
+		return 0.0
+	var cam: Camera3D = get_viewport().get_camera_3d()
+	if cam == null or not cam.is_inside_tree():
+		return 0.0
+	var q := PhysicsRayQueryParameters3D.create(cam.global_position, p3.global_position,
+		int((rules.get("audio", {}) as Dictionary).get("occlusion_mask", 257)))
+	return 0.0 if cam.get_world_3d().direct_space_state.intersect_ray(q).is_empty() else 1.0
+
+
+## Applies an occlusion amount (0 clear .. 1 behind a wall) to a positional voice player.
+func set_occlusion(p3: AudioStreamPlayer3D, amount: float) -> void:
+	var au: Dictionary = rules.get("audio", {})
+	_occl[p3] = amount
+	var open_hz: float = float(au.get("occlusion_open_hz", 5000.0))
+	var shut_hz: float = float(au.get("occlusion_cutoff_hz", 1100.0))
+	p3.attenuation_filter_cutoff_hz = lerpf(open_hz, shut_hz, amount)
+	p3.volume_db = float(au.get("squad_volume_db", 0.0)) + float(au.get("occlusion_db", -5.0)) * amount
+
+
+## How occluded a positional voice is right now (0..1; tests / dev overlay).
+func occlusion_of(p3: AudioStreamPlayer3D) -> float:
+	return float(_occl.get(p3, 0.0))
 
 
 ## Squad reactions a beat after the event (so they don't collide with the Operator's announcement).

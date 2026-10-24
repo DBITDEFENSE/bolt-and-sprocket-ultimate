@@ -1272,7 +1272,9 @@ A Polish miner from Wilcza Góra, 43, who walked out of Kaltenbrunn on 21 Decemb
 Crossroads Inn's coal cage by a fleeing patrol (CANON §6.4, CHARACTERS.md "Jakub Ostrowski"). Calm, wry, polite.
 He has seen worse than zombies and isn't impressed by them. He is a person and a hero: never a joke, never a zombie.
 
-**Voice:** the offline TTS bake (`gen_vo.py` profile `JAK`): Microsoft Mark, slower and lower than Deacon, a
+**Voice (T-073):** the neural bake now (`docs/gravelight/VOICES.md`: Kokoro, an older British-trained voice
+with real Polish phonemes for his Polish and a light Polish accent on his English). Before that, and still the
+fallback: the offline TTS bake (`gen_vo.py` profile `JAK`): Microsoft Mark, slower and lower than Deacon, a
 smaller "size" shift and a dry, close, slightly rough chain (`jakub`), so he never sounds like Dutch (David) or
 Deacon (Mark, warm room). **Polish** is written as it is said, with the English in parentheses right after it
 (subtitles show both; the bake drops the parentheses). The bake reads a phonetic respelling where a tail gives
