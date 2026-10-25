@@ -335,7 +335,7 @@ Door 3 (**1500**, zone `CELLAR`) is in the taproom's east wall at z 10.7–12.3.
   - **South row**: Packmule, **Overclock Cordial** (the ninth, T-034: between the pair on the vault's axis at x 30.15, under its own bulb), Blastproof.
   - Every machine stands 1.1 m or more off the wall, so its **fine-print panel** can be read from behind.
 - **The cellar lever** (north wall, x 32.5): Map 0's power. Throwing it lights the cellar, then the taproom, upstairs and stable in sequence, plays the Operator's first fumbling power line, and emerges 3 zombies at the coal chute.
-- **The Crucible** (T-032): in a brick alcove on the vault's north wall at x 29.5, between the stair mouth and the lever, facing south. Map 0's weapon upgrades (5000; upgraded ammo 2500, `economy.json`). It is dark and refuses until the lever is thrown ("Power must be activated"), like the machines.
+- **The Crucible** (T-032): in a brick alcove on the vault's north wall at x 29.5, between the stair mouth and the lever, facing south. Map 0's weapon upgrades (5000; it sells no ammo since T-083: a taught gun refills at any ammo box, 2500). It is dark and refuses until the lever is thrown ("Power must be activated"), like the machines.
 - **Coal chute** (SE corner): a ground spawn from round 6.
 - Machine and crate footprints are baked into the navmesh, so zombies path round them.
 
