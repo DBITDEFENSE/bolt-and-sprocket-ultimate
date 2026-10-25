@@ -1,6 +1,17 @@
 # PROGRESS
 
-RESUME HERE: Update 04 is merged to master (T-064..T-070, tag u04); read morning/MORNING_REPORT.md first. Next: player 'bot mode' (a local agent drives the player, training zombies first) on branch bot-mode. Open: on-screen FPS check (needs the user's OK; no rendered runs without it), Map 1 EE soak, controller marking, Paul's unit, likeness placeholders, HUMOR-REVIEW.
+RESUME HERE: UPDATE 05 (art slice) overnight run, 2026-10-25 -> 26. Batch 7 (T-080..T-086: Map 0 grounds + barn, perk cap 6 + glyph caps + pause list, Crucible no ammo + sprint reload, staged zombie rise, egg story + bots on the egg) is merged to master. Now running UPDATE_05A asset intake then UPDATE_05 sections as parallel worktree builders (.wt/u05-*); the orchestrator merges each with --no-ff, adds its DECISIONS paragraph, and finishes with morning/MORNING_REPORT.md. Section status is tracked below under 'Overnight run 2026-10-25'.
+
+## Overnight run, 2026-10-25 -> 26: UPDATE 05 "Look the part" (plan)
+
+Work orders (original folder, read-only): UPDATE_05A_ASSET_INTAKE.md, UPDATE_05_ART_SLICE.md, OVERNIGHT_RUN.md. Rendered off-screen runs are approved for this update.
+
+Phase 1 (parallel): T-087 asset intake (OGA guns + Devin's Sketchfab guns -> assets/third_party, models.json, ASSETS.md + credits generated from SOURCE.txt, license gate) and T-088 pipeline (ART_BIBLE.md, CC0 material library + shared material templates, CC0 props, import presets, asset_report, 20-camera capture + BEFORE shots, NEEDS_DEVIN.md).
+Phase 2 (parallel): T-089 viewmodel guns (normalize, shared weapon shader, markers, ads_check, animation fit, per-character arms), T-090 wonder weapons + gramophone, T-091 zombies, T-092 people, T-093 Map 0 environment, T-094 world objects, T-095 VFX, T-096 UI readability.
+Phase 3: full suite, ads_check, map-data check, asset report, FPS check, clip, Play.bat buttons, morning report, rollout plan.
+
+Status: phase 1 started. (Updated by the orchestrator as sections merge.)
+
 
 ## Overnight run, 2026-10-21 → 22: the plan
 
