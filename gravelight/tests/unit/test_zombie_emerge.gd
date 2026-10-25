@@ -11,6 +11,7 @@ var _round_before: int
 
 
 func before_each() -> void:
+	seed(1)   # the body's height and sex are rolled from the global RNG; the bone-height checks need the same body every run
 	GLSettings.values["gore"] = "full"
 	_round_before = RoundManager.current_round
 	_host = Node3D.new()
