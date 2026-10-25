@@ -98,6 +98,23 @@ func setup(b: BotBrain) -> void:
 	reset_stats()
 	GLBus.player_damaged.connect(_on_damaged)
 	GLBus.enemy_killed.connect(_on_killed)
+	GLBus.self_revive.connect(_on_self_revive)
+
+
+## Pass 3: back up from a Second Wind self-revive in the middle of the crowd that downed it: break away at a
+## sprint first (revive_escape_s), instead of standing up into the same swings (the soaks' second downs came
+## within seconds, on the same spot).
+func _on_self_revive(pid: int, _left: int) -> void:
+	if pid != player.player_id:
+		return
+	_esc_t = _f("revive_escape_s", 2.0)
+	_esc_p = Vector3.INF
+	stats["revive_escapes"] = int(stats.get("revive_escapes", 0)) + 1
+
+
+## Breaking away (after a self-revive, or boxed in on the loop): the brain lets lead_train run it.
+func escaping() -> bool:
+	return _esc_t > 0.0 and (route != null or not _routes.is_empty())
 
 
 func reset_stats() -> void:
@@ -222,6 +239,8 @@ static func dead_reckon(last_pos: Vector3, me: Vector3, speed: float, age_s: flo
 func value() -> float:
 	if not brain.armed() or RoundManager.state != RoundManager.State.ROUND:
 		return 0.0
+	if brain.crawler != null and brain.crawler.holding():
+		return 0.0   # pass 3: the crawler break (errands, not a train)
 	var now: float = brain.squad.time()
 	if now >= _loop_t or (route == null and _routes.is_empty()):
 		_refresh_routes(now)
@@ -357,6 +376,8 @@ func run(delta: float) -> void:
 	if _esc_t > 0.0:
 		_escape(delta)   # breaking off the loop (boxed in): finish that first
 		return
+	if _finish_crawler(delta):
+		return
 	var cut: bool = ahead != null and is_instance_valid(ahead) and ahead_d < _f("cut_m", 6.0)
 	if not _shop.is_empty():
 		if cut or (head != null and head_d < gap + 0.5):
@@ -389,7 +410,7 @@ func run(delta: float) -> void:
 	var stamina: float = float(player.get("_stamina")) if player.get("_stamina") != null else 4.0
 	var can_sprint: bool = unlimited or stamina > _f("stamina_keep_s", 0.8)
 	var reload_due: bool = w != null and w.reserve > 0 and (mag <= 0 or (float(mag) / float(maxi(1, w.mag_size())) < _f("reload_frac", 0.4) \
-			and head_d > gap + _f("reload_gap_extra_m", 1.0)))
+			and head_d > _partial_room(w, gap)))
 	var can_face: bool = followers > 0 and mag > 0 and not brain.aim.reloading and not reload_due
 	var want: Phase = Phase.RUN
 	# the head this close: away at a sprint (with Marathon's endless sprint it keeps a wider gap: a sprint costs
@@ -408,6 +429,13 @@ func run(delta: float) -> void:
 			and not (phase == Phase.RUN and phase_t < _f("run_min_s", 0.45) and _glancing):
 		want = Phase.FACE
 	if want != phase:
+		if phase == Phase.FACE:
+			# (pass 3) why FACE ended, for the soak's numbers
+			var why: String = "cut" if want == Phase.CUT else ("close" if head != null and head_d < close_m and can_sprint else \
+					("max" if phase_t > _f("face_max_s", 4.0) else ("dry" if mag <= 0 else ("reload" if brain.aim.reloading or reload_due else ("nofollow" if followers <= 0 else "other")))))
+			var fe: Dictionary = stats.get("face_exit", {})
+			fe[why] = int(fe.get(why, 0)) + 1
+			stats["face_exit"] = fe
 		_glancing = phase == Phase.FACE and want == Phase.RUN and phase_t > _f("face_max_s", 4.0)
 		if want == Phase.FACE:
 			stats["turns"] = int(stats["turns"]) + 1
@@ -506,14 +534,18 @@ func _run(delta: float, gap: float, w: WeaponInstance) -> void:
 	# an empty gun is reloaded on the walk unless the head is right on us (sprinting and reloading don't mix: the
 	# player's own rule); a part-empty one only with the gap to spare
 	var dry: bool = w != null and w.mag <= 0 and w.reserve > 0
-	var reload_safe_m: float = head_reach + _f("reload_dry_m", 0.9)
+	# pass 3: a dry reload starts only with room for the whole of it at a walk (the head closes at its speed less
+	# the walk's for the reload's length) and, once started, is given up only when the head is about to swing: the
+	# pass-2 rule (start at reach + 0.9, cancel under it) started and cancelled it every frame with a runner on its
+	# heels, and the agent ran a whole train dry (the round-7/8 downs on the Well Loop)
+	var reload_safe_m: float = reload_room_m(w, head_speed, head_reach, c) if w != null else head_reach + _f("reload_dry_m", 0.9)
 	if brain.aim.reloading and urg >= 0.7:
-		if head_d < (reload_safe_m if dry else gap * 0.7):
+		if head_d < (head_reach + _f("reload_cancel_m", 0.25) if dry else gap * 0.7):
 			brain.aim.cancel_reload()
 		else:
 			urg = 0.5
 	if w != null and not brain.aim.reloading and w.reserve > 0 and ((dry and head_d >= reload_safe_m) \
-			or (float(w.mag) / float(maxi(1, w.mag_size())) < _f("reload_frac", 0.4) and head_d > gap + _f("reload_gap_extra_m", 1.0) and urg < 0.7)):
+			or (float(w.mag) / float(maxi(1, w.mag_size())) < _f("reload_frac", 0.4) and head_d > _partial_room(w, gap) and urg < 0.7)):
 		brain.aim.start_reload()
 		urg = 0.5
 	_flow(delta, urg)
@@ -523,6 +555,52 @@ func _run(delta: float, gap: float, w: WeaponInstance) -> void:
 		# gathering: only what is in the way (in front) is shot
 		if to.length() > 0.5 and _kite_dir != Vector3.ZERO and _kite_dir.angle_to(to.normalized()) < deg_to_rad(_f("run_fire_deg", 60.0)):
 			brain.aim.update(delta, true)
+
+
+## Pass 3: the round's last zombie is a crawler (not the crawler break's own): walk up and knife it, the way a
+## player finishes a crawler. A crawler can sink under the ground's collision at the yard's edge (the soak saw the
+## line of sight to it fail at every height for 40 game minutes while the agent circled it); the knife needs no
+## line of sight. True while it does that.
+func _finish_crawler(delta: float) -> bool:
+	if head == null or not is_instance_valid(head) or not head.is_crawler or followers != 1 or RoundManager.to_spawn > 0 or RoundManager.alive > 1:
+		return false
+	if brain.crawler != null and brain.crawler.target == head:
+		return false
+	if BotPerception.is_boss(head):
+		return false
+	var hp: Vector3 = head.global_position
+	var d: float = _flat(hp, player.global_position)
+	var reach: float = float(BotAIData.combat("melee").get("range_m", 1.7))
+	if d > reach - 0.2:
+		brain.loco.move_to(hp, 0.45, reach - 0.4)
+	else:
+		brain.loco.stop()
+		if brain.aim.melee_cd <= 0.0:
+			brain.aim.melee(head)
+			stats["crawler_knifes"] = int(stats.get("crawler_knifes", 0)) + 1
+	if not brain.aim.update(delta, true):
+		brain.loco.look_at_dir(hp - player.global_position)
+	return true
+
+
+## Pure (pass 3): how far the train's head must be for a whole reload of `w` at a walk: its reach, plus what it
+## closes in the reload's time (its speed less the walk), plus reload_dry_m.
+static func reload_room_m(w: WeaponInstance, speed: float, reach: float, cfg: Dictionary) -> float:
+	var t: float = w.f("reload_empty", 2.5) if w.mag <= 0 else w.f("reload_partial", 2.0)
+	return reload_room(t, speed, reach, cfg)
+
+
+## The head's distance a part-empty reload needs (pass 3: the reload's own room, not the gap + 1 m of pass 2, which
+## a runner train never gave it, so the Thompson was sprayed dry first).
+func _partial_room(w: WeaponInstance, gap: float) -> float:
+	if not bool(c.get("reload_by_room", true)):
+		return gap + _f("reload_gap_extra_m", 1.0)
+	return reload_room_m(w, head_speed, head_reach, c) + _f("reload_room_extra_m", 0.4)
+
+
+static func reload_room(reload_s: float, speed: float, reach: float, cfg: Dictionary) -> float:
+	var walk: float = float(GLData.table("player").get("walk_speed", 4.5)) * 0.95
+	return reach + maxf(0.0, speed - walk) * reload_s + float(cfg.get("reload_dry_m", 0.9))
 
 
 ## Turned on the train: fire into it while backing round the loop at a walk; stand still while it is far (it
@@ -1128,7 +1206,7 @@ func summary() -> Dictionary:
 		"reversals": int(stats["reversals"]), "passes": int(stats["passes"]), "cutter_shots": int(stats["cutter_shots"]), "escapes": int(stats["escapes"]),
 		"shops": int(stats.get("shops", 0)), "shops_done": int(stats.get("shops_done", 0)), "cut_modes": "shoot %d pass %d reverse %d escape %d" % [int(stats.get("cut_shoot", 0)), int(stats.get("cut_pass", 0)), int(stats.get("cut_reverse", 0)), int(stats.get("cut_escape", 0))],
 		"turns": int(stats["turns"]), "stuck_s": snappedf(float(stats["stuck_s"]), 0.1), "loop_changes": int(stats["loop_changes"]),
-		"loops": " ".join(stats["loops"] as PackedStringArray)}
+		"loops": " ".join(stats["loops"] as PackedStringArray), "face_exit": str(stats.get("face_exit", {}))}
 
 
 static func _flat(a: Vector3, b: Vector3) -> float:

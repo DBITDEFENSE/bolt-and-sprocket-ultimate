@@ -93,6 +93,12 @@ var _pd_f: FileAccess = null
 var _pd_t: float = 0.0
 var _pb: PlayerBot = null
 var _pb_rounds: Dictionary = {}   # round -> [downs, hits] of the agent
+## (T-071 pass 3) the agent's per-round ledger line: Scrip earned / spent since the last round start, training time.
+var _pb_round_seen: int = 0
+var _pb_earned: int = 0
+var _pb_spent: int = 0
+var _pb_train0: float = 0.0
+var _pb_t0: float = 0.0
 ## T-078: Scrip earned (positive deltas, every source) by player 1 so far, and the running total at each round's end.
 var _earned: int = 0
 var _earned_by_round: Dictionary = {}   # round -> cumulative Scrip earned by P1 when it ended
@@ -271,6 +277,8 @@ func _physics_process(delta: float) -> void:
 	if _dummy != null:
 		_dummy.call("tick", delta)
 	_watch_stall()
+	if scenario == "botmode" and _pb != null and is_instance_valid(_pb) and RoundManager.current_round != _pb_round_seen:
+		_pb_round_line()
 	if orders_s > 0.0 and _map.squad != null and _map.player != null and not _map.player.spectating:
 		_order_t += delta
 		if _order_t >= orders_s:
@@ -322,6 +330,13 @@ func _try_go_live() -> void:
 		if _pb == null or not _pb.set_on(true, "soak"):
 			return
 		_pb_rounds = {}
+		_pb_round_seen = 0
+		_pb_earned = 0
+		_pb_spent = 0
+		_pb_train0 = 0.0
+		_pb_t0 = _game_t
+		if not GLBus.scrip_changed.is_connected(_on_scrip_changed):
+			GLBus.scrip_changed.connect(_on_scrip_changed)
 		if _pb.trainer != null:
 			_pb.trainer.verbose_hits = trace_s > 0.0
 		if OS.get_cmdline_user_args().has("--no-trainer"):
@@ -524,6 +539,8 @@ func _end_run(why: String) -> void:
 		if _pb.brain != null:
 			_metrics.extra["pb_shots"] = _pb.brain.aim.shots
 			_metrics.extra["pb_hit_share"] = snappedf(float(_pb.brain.aim.hits_landed) / float(maxi(1, _pb.brain.aim.shots)), 0.01)
+			_metrics.extra["pb_fire_blocks"] = str(_pb.brain.aim.fire_blocks)
+			_metrics.extra["pb_los"] = "self %d, crawler blockers %s" % [_pb.brain.aim.los_self_hits, str(_pb.brain.aim.los_crawler_blockers)]
 		_metrics.extra["pb_handbacks"] = _pb.handbacks
 		_metrics.extra["pb_scrip_end"] = Economy.get_scrip(1)
 		_metrics.extra["pb_perks"] = ",".join(PackedStringArray(PerkManager.owned(1).map(func(x: Variant) -> String: return str(x))))
@@ -536,6 +553,9 @@ func _end_run(why: String) -> void:
 		for r: Variant in _pb_rounds.keys():
 			per_round.append("r%d:%d/%d" % [int(r), int((_pb_rounds[r] as Array)[0]), int((_pb_rounds[r] as Array)[1])])
 		_metrics.extra["pb_downs_hits_by_round"] = " ".join(per_round)
+		if _pb.brain != null and _pb.brain.crawler != null:
+			var cs: Dictionary = _pb.brain.crawler.stats
+			_metrics.extra["pb_crawlers"] = "%d made, %d failed, %.0f s held" % [int(cs["made"]), int(cs["failed"]), float(cs["held_s"])]
 		print("[soak]   agent: %s" % str(ts))
 		if _pb.trainer != null:
 			for hl: String in _pb.trainer.hit_log:
@@ -607,6 +627,38 @@ func _end_run(why: String) -> void:
 		_start_run()
 	else:
 		_write_table(dir)
+
+
+## (T-071 pass 3) one line per round start in botmode: what the last round earned and spent, the training
+## share, Scrip in hand, guns, perks, open doors, the plan's step.
+func _pb_round_line() -> void:
+	var tr_s: float = float(_pb.trainer.stats.get("training_s", 0.0)) if _pb.trainer != null else 0.0
+	var guns: PackedStringArray = []
+	for w: WeaponInstance in _map.player.weapons.slots:
+		guns.append(str(w.id))
+	var doors: PackedStringArray = []
+	for n: Node in get_tree().get_nodes_in_group(&"doors"):
+		if n is BuyDoor and (n as BuyDoor).is_open:
+			doors.append(String((n as BuyDoor).door_id).trim_prefix("door_"))
+	var dt: float = maxf(1.0, _game_t - _pb_t0)
+	print("[soak] R%d at %.0fs: last round %.0fs earned %d spent %d train %.0f%% | scrip %d | %s | %s | doors %s power %s | step %s" % [
+		RoundManager.current_round, _game_t, dt, _pb_earned, _pb_spent, 100.0 * (tr_s - _pb_train0) / dt, Economy.get_scrip(1), ",".join(guns),
+		",".join(PackedStringArray(PerkManager.owned(1).map(func(x: Variant) -> String: return str(x)))), ",".join(doors), str(GameState.power_on),
+		str(AgentPlan.current_for(_pb.brain)) if _pb.brain != null else "-"])
+	_pb_round_seen = RoundManager.current_round
+	_pb_earned = 0
+	_pb_spent = 0
+	_pb_train0 = tr_s
+	_pb_t0 = _game_t
+
+
+func _on_scrip_changed(pid: int, _total: int, delta: int) -> void:
+	if pid != 1 or not _live:
+		return
+	if delta > 0:
+		_pb_earned += delta
+	else:
+		_pb_spent -= delta
 
 
 func _pb_round(r: int) -> Array:
@@ -696,10 +748,15 @@ func _watch_stall() -> void:
 		var pl: Player = n as Player
 		print("[soak]   player %s at %s alive %s downed %s spectating %s" % [Net.display_name(pl.player_id), pl.global_position.snapped(Vector3.ONE * 0.1),
 			pl.is_alive(), pl.get("downed"), pl.get("spectating")])
+	if _pb != null and is_instance_valid(_pb) and _pb.brain != null:
+		var sb: BotBrain = _pb.brain
+		print("[soak]   agent: %s | %s | known %d | trainer %s f%d h%.1f | scrip %d" % [str(sb.recent[-1]) if not sb.recent.is_empty() else "-",
+			str(sb.top3), sb.perception.known.size(), _pb.trainer.phase_name() if _pb.trainer != null else "-",
+			_pb.trainer.followers if _pb.trainer != null else 0, minf(_pb.trainer.head_d, 99.0) if _pb.trainer != null else 99.0, Economy.get_scrip(1)])
 	for z: Zombie in zs:
 		var c: Vector3 = NavigationServer3D.map_get_closest_point(nav, z.global_position)
 		var tg: Node3D = z.target
 		var path: PackedVector3Array = NavigationServer3D.map_get_path(nav, z.global_position, tg.global_position, true) if tg != null else PackedVector3Array()
-		print("[soak]   %s %s at %s (navmesh %s) -> %s, path ends %s" % [z.enemy_id, Zombie.State.keys()[z.state], z.global_position.snapped(Vector3.ONE * 0.1),
+		print("[soak]   %s%s %s at %s (navmesh %s) -> %s, path ends %s" % [z.enemy_id, " (crawler)" if z.is_crawler else "", Zombie.State.keys()[z.state], z.global_position.snapped(Vector3.ONE * 0.1),
 			c.snapped(Vector3.ONE * 0.1), Net.display_name((tg as Player).player_id) if tg is Player else str(tg),
 			path[path.size() - 1].snapped(Vector3.ONE * 0.1) if not path.is_empty() else "none"])

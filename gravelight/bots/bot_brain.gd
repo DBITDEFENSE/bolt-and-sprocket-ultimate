@@ -79,6 +79,8 @@ var bonus_said: bool = false
 ## in squad.brains), and its trainer (BotTrainer) runs the lead_train action.
 var is_player_bot: bool = false
 var trainer: BotTrainer = null
+## T-071 pass 3: the player bot's crawler break (AgentCrawler; null for the bots).
+var crawler: AgentCrawler = null
 ## The legacy squad order (BotConfig.COMMANDS) this bot follows; `order_id()` is the full one.
 var command: StringName = &"follow"
 
@@ -403,6 +405,8 @@ func _set_action(id: String) -> void:
 
 func _think() -> void:
 	var now: float = squad.time()
+	if crawler != null:
+		crawler.think(now)
 	perception.sense(now)
 	squad.update_shared(now)
 	aim.force_slot = forced_slot()
@@ -440,7 +444,7 @@ func _think() -> void:
 	var best: String = str(pick[0]) if str(pick[0]) != "" else "idle"
 	if _sticky and best != action and not (["revive", "retreat", "cover"].has(best) and float(scores.get(best, 0.0)) > 0.8):
 		best = action   # a gun in the Crucible, a paid crate, a held objective: only an emergency pulls it away
-	if is_player_bot and trainer != null and best != "revive" and trainer.owns_round():
+	if is_player_bot and trainer != null and best != "revive" and (trainer.owns_round() or trainer.escaping()):
 		best = "lead_train"   # T-071 pass 2: from its own_from_round the agent's trainer owns the round
 	top3 = BotUtility.top(scores, 3)
 	if best != action and (now - _action_t >= float(_acfg.get("min_action_s", 0.4)) or action == "idle" or best == "retreat" or best == "revive"):
@@ -592,6 +596,8 @@ func armed() -> bool:
 
 
 func in_break() -> bool:
+	if crawler != null and crawler.holding():
+		return true   # T-071 pass 3: the round's last zombie crawling behind: errands as in a break
 	return RoundManager.state != RoundManager.State.ROUND or (RoundManager.to_spawn <= 0 and perception.known.is_empty() and squad.director() != null and squad.director().active_zombies().is_empty())
 
 

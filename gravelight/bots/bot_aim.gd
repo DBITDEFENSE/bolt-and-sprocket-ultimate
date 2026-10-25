@@ -271,13 +271,44 @@ func _update_weak_point() -> void:
 func aim_point(z: Zombie) -> Vector3:
 	if z == target and aim_node != null and is_instance_valid(aim_node):
 		return aim_node.global_position
-	if aim_head and z == target:
+	if brain.crawler != null and brain.crawler.making(z):
+		var lhb: Variant = z.get("_hitboxes")
+		if lhb is Array:
+			for hb0: Variant in lhb:
+				if hb0 is Hitbox and (hb0 as Hitbox).limb == &"legs":
+					return (hb0 as Hitbox).global_position   # T-071 pass 3: its legs, for a crawler
+		return z.global_position + Vector3.UP * 0.45
+	if aim_head and z == target and not (brain.is_player_bot and RoundManager.current_round <= int((BotAIData.table("player_bot").get("points", {}) as Dictionary).get("knife_until_round", 0))):
 		var hbs: Variant = z.get("_hitboxes")
 		if hbs is Array:
 			for hb: Variant in hbs:
 				if hb is Hitbox and (hb as Hitbox).limb == &"head":
 					return (hb as Hitbox).global_position
-	return z.global_position + Vector3.UP * (0.5 if z.is_crawler else 1.15)
+	if z.is_crawler:
+		return z.global_position + Vector3.UP * _crawler_aim_h(z)
+	return z.global_position + Vector3.UP * 1.15
+
+
+## T-071 pass 3: a crawler's aim height, the first of crawler_aim_heights with a clear line from the eye (cached
+## 0.25 s). The fixed 0.5 m was below a low lip on Map 0's yard (the ground's edging, a kerb): the line of sight
+## failed every frame and the agent circled the round's last crawler for the soak's whole time cap.
+var _crawl_h_for: Zombie = null
+var _crawl_h_t: float = -1.0
+var _crawl_h: float = 0.5
+
+
+func _crawler_aim_h(z: Zombie) -> float:
+	var now: float = brain.squad.time() if brain.squad != null else 0.0
+	if z == _crawl_h_for and now - _crawl_h_t < 0.25:
+		return _crawl_h
+	_crawl_h_for = z
+	_crawl_h_t = now
+	_crawl_h = 0.5
+	for h: Variant in _a.get("crawler_aim_heights", [0.5]):
+		if _los(eye(), z.global_position + Vector3.UP * float(h), z):
+			_crawl_h = float(h)
+			break
+	return _crawl_h
 
 
 func max_range(w: WeaponInstance) -> float:
@@ -302,8 +333,29 @@ func update(delta: float, may_fire: bool) -> bool:
 	if not may_fire:
 		return true
 	_try_melee_target()
+	if knife_for_points() != null:
+		return true   # T-071 pass 3: the early rounds' knife for the Scrip: this one is knifed, not shot
 	_fire_if_on(aim_dir, p, delta)
 	return true
+
+
+## T-071 pass 3 (the player bot only, player_bot.json "points"): in the first rounds a skilled solo player knifes
+## for the Scrip (a knife kill pays 130 against 50-100 for a shot one): a lone zombie the knife kills (its health
+## within the knife's damage) is let come and knifed; one the knife can't kill yet is shot in the body (10 Scrip a
+## hit) until it can. The zombie this applies to now, or null (shoot as usual): only with nothing else within
+## crowd_m, never one still outside a window, never a boss.
+func knife_for_points() -> Zombie:
+	if not brain.is_player_bot or target == null or not is_instance_valid(target):
+		return null
+	var pc: Dictionary = BotAIData.table("player_bot").get("points", {}) as Dictionary
+	if RoundManager.current_round > int(pc.get("knife_until_round", 0)) or RoundManager.is_special_round:
+		return null
+	var z: Zombie = target
+	if BotPerception.is_boss(z) or z.is_crawler or z.state == Zombie.State.TEAR or z.state == Zombie.State.WAIT_WINDOW or z.state == Zombie.State.TO_WINDOW 			or z.state == Zombie.State.CLIMB:
+		return null
+	if brain.perception.count_near(player.global_position, float(pc.get("crowd_m", 5.0))) > 1 or player.hp < player.max_hp * 0.99:
+		return null
+	return z if knife_kills(z) else null
 
 
 ## The direction the bot believes the aim point is in: the true one plus the converging error and the
@@ -340,6 +392,7 @@ func _perceived_dir(p: Vector3, delta: float) -> Vector3:
 func _fire_if_on(aim_dir: Vector3, aim_p: Vector3, delta: float) -> void:
 	var w: WeaponInstance = cur()
 	if w == null or reloading or swap_t > 0.0 or _react_t > 0.0 or w.mag <= 0 or not brain.loco.fire_ready() or brain.loco.sprint_out_left() > 0.0:
+		_blk("dry" if w == null or w.mag <= 0 or reloading else ("react" if _react_t > 0.0 else "not_ready"))
 		return
 	var tol: float = deg_to_rad(float(_sk.get("fire_tolerance_deg", 3.0)))
 	var d: float = eye().distance_to(aim_p)
@@ -348,18 +401,25 @@ func _fire_if_on(aim_dir: Vector3, aim_p: Vector3, delta: float) -> void:
 	# 0.7 m (its aim point swinging across 20+ degrees) from firing at all.
 	tol = maxf(tol, atan2(float(_a.get("body_half_width_m", 0.22)), maxf(0.3, d)))
 	if brain.facing().angle_to(aim_dir) > tol:
+		_blk("turning")
 		return
 	# T-058: and the sights are on the target, the way a person sees their own crosshair: the tracking error still
 	# delays the shot (and it misses inside this window), but it doesn't empty the magazine into the wall beside a
 	# window at 15 m (the soak's shot audit: 60-90% of shots hit masonry, fences and the ground before this)
 	var true_dir: Vector3 = (aim_p - eye()).normalized()
 	if brain.facing().angle_to(true_dir) > maxf(tol, atan2(float(_a.get("body_half_width_m", 0.22)) * float(_a.get("sights_on_mult", 1.6)), maxf(0.3, d))):
+		_blk("sights")
 		return
 	# no spraying what the cone can't hold: hip fire on the run at range scatters wider than the target (Map 1's
 	# yard: 90% of the shots hit the ground and the walls); a person stops to aim or waits until it's closer
-	if not w.data.has("bell") and current_spread_deg(w) > rad_to_deg(atan2(float(_a.get("body_half_width_m", 0.22)) * float(_a.get("spray_width_mult", 3.0)), maxf(0.3, d))):
+	var spray_w: float = float(_a.get("spray_width_mult", 3.0))
+	if brain.trainer != null and brain.trainer.training() and brain.trainer.followers >= 3:
+		spray_w *= float(BotAIData.table("player_bot").get("trainer", {}).get("train_spray_mult", 1.0))   # T-071 pass 3: a bunched train behind the target catches the misses
+	if not w.data.has("bell") and current_spread_deg(w) > rad_to_deg(atan2(float(_a.get("body_half_width_m", 0.22)) * spray_w, maxf(0.3, d))):
+		_blk("spread")
 		return
 	if d > max_range(w):
+		_blk("range")
 		return   # no spraying what it can't hit
 	var c: Dictionary = BotAIData.counter(target.enemy_id)
 	var fire_near: float = float(c.get("no_fire_near_teammates_m", 0.0))
@@ -368,8 +428,10 @@ func _fire_if_on(aim_dir: Vector3, aim_p: Vector3, delta: float) -> void:
 			if p != player and _flat(p.global_position, target.global_position) < fire_near:
 				return
 	if teammate_in_the_way(aim_p):
+		_blk("teammate")
 		return
 	if not _clear_shot(aim_p):
+		_blk("los")
 		return   # T-058: the target went behind a wall / window frame since the think: no shot into the masonry
 	if w.data.has("bell") and _bell_logic(w):
 		return
@@ -387,6 +449,18 @@ func _fire_if_on(aim_dir: Vector3, aim_p: Vector3, delta: float) -> void:
 			_burst_t = 0.0
 	if fire_cd <= 0.0:
 		fire(w)
+		_blk("FIRED")
+	else:
+		_blk("cooldown")
+
+
+## (T-071 pass 3, the soak's numbers) why a shot it was aiming for didn't go: reason -> frames.
+var fire_blocks: Dictionary = {}
+
+
+func _blk(why: String) -> void:
+	if brain.is_player_bot:
+		fire_blocks[why] = int(fire_blocks.get(why, 0)) + 1
 
 
 ## Totenglocke choices: the Great Toll on a bunched crowd. True when it handled this frame.
@@ -630,8 +704,27 @@ func _los(from: Vector3, to: Vector3, z: Object) -> bool:
 	var ex: Array[RID] = [player.get_rid()]
 	if z is CollisionObject3D:
 		ex.append((z as CollisionObject3D).get_rid())
-	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to, MASK_LOS, ex)
-	return space.intersect_ray(q).is_empty()
+	for _i: int in 3:
+		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to, MASK_LOS, ex)
+		var hit: Dictionary = space.intersect_ray(q)
+		if hit.is_empty():
+			return true
+		# T-071 pass 3: a body that belongs to the target itself (a crawler's pieces) doesn't block the shot at it:
+		# the soak's last-crawler stalls (the line of sight failed on every frame at every height)
+		var col: Object = hit.get("collider")
+		if z is Node and col is CollisionObject3D and ((z as Node) == col or (z as Node).is_ancestor_of(col as Node)):
+			ex.append((col as CollisionObject3D).get_rid())
+			los_self_hits += 1
+			continue
+		if brain.is_player_bot and z is Zombie and (z as Zombie).is_crawler and col is Node:
+			los_crawler_blockers[str((col as Node).name)] = int(los_crawler_blockers.get(str((col as Node).name), 0)) + 1
+		return false
+	return false
+
+
+## (the soak's numbers) target-owned bodies skipped by _los, and what blocked the line to a crawler (name -> rays).
+var los_self_hits: int = 0
+var los_crawler_blockers: Dictionary = {}
 
 
 ## Turns onto `p` and fires one aimed shot when on it (single shots, any fire mode). True on a shot. For the
@@ -892,6 +985,8 @@ func _try_melee_target() -> void:
 		return
 	if bool(BotAIData.counter(z.enemy_id).get("never_melee", false)) or BotPerception.is_boss(z):
 		return
+	if brain.crawler != null and brain.crawler.target == z:
+		return   # (the crawler break's zombie: legs, not the knife)
 	var w: WeaponInstance = cur()
 	var dry: bool = w == null or w.mag <= 0 or reloading
 	var lone: bool = RoundManager.current_round <= int(_m.get("early_round_max", 5)) and per.count_near(player.global_position, float(_m.get("lone_radius_m", 6.0))) <= 1
@@ -901,7 +996,7 @@ func _try_melee_target() -> void:
 	# never reloaded at all); otherwise it finishes the reload while the executor backs it off.
 	if dry and not knife_kills(z) and not z.is_crawler:
 		return
-	if z.is_crawler or dry or lone or (bool(pc.get("melee_lone", false)) and per.n5 <= 1):
+	if z.is_crawler or dry or lone or (bool(pc.get("melee_lone", false)) and per.n5 <= 1) or (z == target and knife_for_points() == z):
 		melee(z)
 
 

@@ -35,6 +35,10 @@ var boss_near: Zombie = null
 var attention: Vector3 = Vector3.INF
 var attention_until: float = 0.0
 var rays_used: int = 0
+## T-071 pass 3 (the player bot's crawler break, AgentCrawler): a zombie left out of the known set (threat, pressure,
+## nearest, targets) while it is further than ignore_within_m.
+var ignore: Zombie = null
+var ignore_within_m: float = 3.0
 
 
 func setup(p: Player, s: BotSquad) -> void:
@@ -91,7 +95,15 @@ func sense(now: float) -> void:
 			rays_used += 1
 			var to_p: Vector3 = z2.global_position + Vector3.UP * (0.5 if z2.is_crawler else 1.3)
 			var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(e, to_p, MASK_LOS, [player.get_rid()])
-			if space.intersect_ray(q).is_empty():
+			var hit0: Dictionary = space.intersect_ray(q)
+			var seen: bool = hit0.is_empty()
+			if not seen and hit0.get("collider") is Node and (hit0["collider"] == z2 or z2.is_ancestor_of(hit0["collider"] as Node)):
+				seen = true   # T-071 pass 3: the ray met the zombie itself (a crawler's own pieces): it is in sight
+			if not seen and z2.is_crawler:
+				# T-071 pass 3: a crawler's back above a low lip (Map 0's yard edging) is still in sight
+				var q2: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(e, z2.global_position + Vector3.UP * 0.75, MASK_LOS, [player.get_rid()])
+				seen = space.intersect_ray(q2).is_empty()
+			if seen:
 				visible[z2.get_instance_id()] = true
 				bb.sight(z2, z2.global_position, now, player.player_id, z2.tier, is_boss(z2))
 	_rebuild(now)
@@ -116,6 +128,8 @@ func _rebuild(now: float) -> void:
 		var ed: Dictionary = en
 		var z: Zombie = ed.get("node") as Zombie
 		if not targetable(z):
+			continue
+		if ignore != null and z == ignore and _flat(ed["pos"], player.global_position) > ignore_within_m:
 			continue
 		known.append(ed)
 		var zp: Vector3 = ed["pos"]

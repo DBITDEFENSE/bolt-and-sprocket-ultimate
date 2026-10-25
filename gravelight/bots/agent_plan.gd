@@ -104,12 +104,104 @@ static func current_for(brain: BotBrain) -> Dictionary:
 	return current(steps, state_of(brain))
 
 
+## Pure (pass 3): the steps that may go ahead of the current one while it can't be done: of the next `n` undone
+## steps after it (each due by its from_round): while the current step is unaffordable (its price over
+## `spendable`), those cheaper than it; while it is affordable but has to wait (a perk in the cellar mid-round, a
+## door the agent can't reach from here), any of them. `prices`: step index -> Scrip (a step with no known price
+## never skips). A "firm" current step is never jumped. The current step stays first in line.
+static func later_steps(steps: Array, st: Dictionary, n: int, prices: Dictionary, spendable: int = 0) -> Array:
+	var out: Array = []
+	var cur_i: int = -1
+	var seen: int = 0
+	for i: int in steps.size():
+		var step: Dictionary = steps[i] as Dictionary
+		if int(step.get("from_round", 0)) > int(st.get("round", 0)):
+			break
+		if step_done(step, st):
+			continue
+		if cur_i < 0:
+			cur_i = i
+			if bool(step.get("firm", false)):
+				return out
+			continue
+		if seen >= n:
+			break
+		seen += 1
+		if prices.has(i) and prices.has(cur_i) and (int(prices[i]) < int(prices[cur_i]) or int(prices[cur_i]) <= spendable):
+			out.append(step)
+	return out
+
+
+## The price of a step on this map (-1: unknown / not on the map). Power: 0.
+static func price_of(step: Dictionary, brain: BotBrain) -> int:
+	if step.has("power"):
+		return 0
+	if step.has("perk"):
+		return PerkManager.price(StringName(str(step["perk"]))) if not PerkManager.perk_data(StringName(str(step["perk"]))).is_empty() else -1
+	if step.has("crucible"):
+		return int(GLData.table("economy").get("crucible_upgrade", 5000))
+	if step.has("door"):
+		for n: Node in brain.get_tree().get_nodes_in_group(&"doors"):
+			if n is BuyDoor and String((n as BuyDoor).door_id) == str(step["door"]):
+				return (n as BuyDoor).cost
+		return -1
+	if step.has("gun") and brain.squad != null:
+		for wb: WallBuy in brain.squad.wall_buys():
+			if is_instance_valid(wb) and String(wb.weapon_id) == str(step["gun"]):
+				return wb.price()
+	return -1
+
+
 ## BotEconomy.candidates' last word for the player bot: only what the plan's current step needs (and ALWAYS).
+## Pass 3: when the current step can't be done now (not affordable, or its errand waits for a break), the next
+## few cheaper steps (plans.skip_ahead) may go ahead of it, so the agent never stands in a break holding Scrip it
+## can't spend (the pass-2 traces: 1,500-3,000 Scrip in hand while the yard door it needed was filtered out behind
+## a Second Wind rebuy in the cellar).
 static func filter(cands: Array[Dictionary], brain: BotBrain) -> Array[Dictionary]:
 	var step: Dictionary = current_for(brain)
 	last_raw = PackedStringArray(cands.map(func(x: Dictionary) -> String: return str(x.get("label", ""))))
 	if step.is_empty():
 		return cands
+	var out: Array[Dictionary] = _matching(cands, step)
+	if _has_buy(out):
+		return out
+	# the ordinary rules didn't offer the step (a door's per-round limit, a gun its tier table skips, range): the
+	# plan's own errand, when the Scrip is there
+	var quiet: bool = brain.in_break() or brain.perception.nearest_d >= 14.0
+	if quiet:   # (its own errands wait for the break, or for a quiet moment: no walking off through a round)
+		var own: Dictionary = errand_for(step, brain)
+		if not own.is_empty():
+			out.append(own)
+			return out
+	# pass 3: the current step can't be done now: a cheaper later step may
+	var steps: Array = plan_for(TrainingRoute.map_key_of(String(brain.squad.map.map_id))).get("steps", [])
+	var n: int = int(plan_for(TrainingRoute.map_key_of(String(brain.squad.map.map_id))).get("skip_ahead",
+			(BotAIData.table("player_bot").get("plans", {}) as Dictionary).get("skip_ahead", 0)))
+	if n <= 0:
+		return out
+	var prices: Dictionary = {}
+	for i: int in steps.size():
+		var pr: int = price_of(steps[i] as Dictionary, brain)
+		if pr >= 0:
+			prices[i] = pr
+	var keep: int = int((BotAIData.table("economy").get("reserve", {}) as Dictionary).get("min_scrip", 300))
+	for later: Variant in later_steps(steps, state_of(brain), n, prices, Economy.get_scrip(brain.player.player_id) - keep):
+		var ls: Dictionary = later as Dictionary
+		var more: Array[Dictionary] = _matching(cands, ls)
+		if _has_buy(more):
+			for m: Dictionary in more:
+				if not ALWAYS.has(str(m.get("kind", ""))):
+					out.append(m)
+			return out
+		if quiet:
+			var own2: Dictionary = errand_for(ls, brain)
+			if not own2.is_empty():
+				out.append(own2)
+				return out
+	return out
+
+
+static func _matching(cands: Array[Dictionary], step: Dictionary) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for cnd: Dictionary in cands:
 		var node: Variant = cnd.get("node")
@@ -122,17 +214,14 @@ static func filter(cands: Array[Dictionary], brain: BotBrain) -> Array[Dictionar
 			id = String((node as WallBuy).weapon_id)
 		if allows(step, str(cnd.get("kind", "")), id):
 			out.append(cnd)
-	for cnd2: Dictionary in out:
-		if not ALWAYS.has(str(cnd2.get("kind", ""))):
-			return out
-	# the ordinary rules didn't offer the step (a door's per-round limit, a gun its tier table skips, range): the
-	# plan's own errand, when the Scrip is there
-	if not brain.in_break() and brain.perception.nearest_d < 14.0:
-		return out   # (its own errands wait for the break, or for a quiet moment: no walking off through a round)
-	var own: Dictionary = errand_for(step, brain)
-	if not own.is_empty():
-		out.append(own)
 	return out
+
+
+static func _has_buy(cands: Array[Dictionary]) -> bool:
+	for c: Dictionary in cands:
+		if not ALWAYS.has(str(c.get("kind", ""))):
+			return true
+	return false
 
 
 ## The economy candidate for a door / perk / gun step, or {} (not affordable, not reachable, not on the map).

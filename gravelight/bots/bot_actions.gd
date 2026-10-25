@@ -157,6 +157,14 @@ func _fight(delta: float) -> void:
 		# of with a margin even on foot, not only avoided by paths
 		back_r = maxf(back_r, float(BotAIData.counter(per.nearest.enemy_id).get("keep_distance_m", 0.0)) + float(cfg("fight").get("boss_margin_m", 0.8)))
 	var mate: Player = brain.squad.nearest_standing(player, player.global_position) if stand else null
+	var kp: Zombie = brain.aim.knife_for_points() if brain.is_player_bot else null
+	if kp != null:
+		# T-071 pass 3: knifing for the Scrip: step up to it (the knife reaches 1.7 m, its swing 1.5 m)
+		if per.nearest_d > 1.45:
+			brain.loco.move_to(kp.global_position, 0.45, 1.3)
+		else:
+			brain.loco.stop()
+		return
 	if per.nearest != null and per.nearest_d < back_r and not (per.nearest.is_crawler and brain.personality_combat("melee_crawlers", false)):
 		_back_off(per.nearest, 2.6, 0.6)
 	elif mate != null and _flat(mate.global_position, player.global_position) > float(cfg("fight").get("stack_m", 3.0)) and per.nearest_d > 2.5:
