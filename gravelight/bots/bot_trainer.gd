@@ -376,6 +376,8 @@ func run(delta: float) -> void:
 	if _esc_t > 0.0:
 		_escape(delta)   # breaking off the loop (boxed in): finish that first
 		return
+	if _finish_crawler(delta):
+		return
 	var cut: bool = ahead != null and is_instance_valid(ahead) and ahead_d < _f("cut_m", 6.0)
 	if not _shop.is_empty():
 		if cut or (head != null and head_d < gap + 0.5):
@@ -553,6 +555,32 @@ func _run(delta: float, gap: float, w: WeaponInstance) -> void:
 		# gathering: only what is in the way (in front) is shot
 		if to.length() > 0.5 and _kite_dir != Vector3.ZERO and _kite_dir.angle_to(to.normalized()) < deg_to_rad(_f("run_fire_deg", 60.0)):
 			brain.aim.update(delta, true)
+
+
+## Pass 3: the round's last zombie is a crawler (not the crawler break's own): walk up and knife it, the way a
+## player finishes a crawler. A crawler can sink under the ground's collision at the yard's edge (the soak saw the
+## line of sight to it fail at every height for 40 game minutes while the agent circled it); the knife needs no
+## line of sight. True while it does that.
+func _finish_crawler(delta: float) -> bool:
+	if head == null or not is_instance_valid(head) or not head.is_crawler or followers != 1 or RoundManager.to_spawn > 0 or RoundManager.alive > 1:
+		return false
+	if brain.crawler != null and brain.crawler.target == head:
+		return false
+	if BotPerception.is_boss(head):
+		return false
+	var hp: Vector3 = head.global_position
+	var d: float = _flat(hp, player.global_position)
+	var reach: float = float(BotAIData.combat("melee").get("range_m", 1.7))
+	if d > reach - 0.2:
+		brain.loco.move_to(hp, 0.45, reach - 0.4)
+	else:
+		brain.loco.stop()
+		if brain.aim.melee_cd <= 0.0:
+			brain.aim.melee(head)
+			stats["crawler_knifes"] = int(stats.get("crawler_knifes", 0)) + 1
+	if not brain.aim.update(delta, true):
+		brain.loco.look_at_dir(hp - player.global_position)
+	return true
 
 
 ## Pure (pass 3): how far the train's head must be for a whole reload of `w` at a walk: its reach, plus what it

@@ -704,8 +704,27 @@ func _los(from: Vector3, to: Vector3, z: Object) -> bool:
 	var ex: Array[RID] = [player.get_rid()]
 	if z is CollisionObject3D:
 		ex.append((z as CollisionObject3D).get_rid())
-	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to, MASK_LOS, ex)
-	return space.intersect_ray(q).is_empty()
+	for _i: int in 3:
+		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to, MASK_LOS, ex)
+		var hit: Dictionary = space.intersect_ray(q)
+		if hit.is_empty():
+			return true
+		# T-071 pass 3: a body that belongs to the target itself (a crawler's pieces) doesn't block the shot at it:
+		# the soak's last-crawler stalls (the line of sight failed on every frame at every height)
+		var col: Object = hit.get("collider")
+		if z is Node and col is CollisionObject3D and ((z as Node) == col or (z as Node).is_ancestor_of(col as Node)):
+			ex.append((col as CollisionObject3D).get_rid())
+			los_self_hits += 1
+			continue
+		if brain.is_player_bot and z is Zombie and (z as Zombie).is_crawler and col is Node:
+			los_crawler_blockers[str((col as Node).name)] = int(los_crawler_blockers.get(str((col as Node).name), 0)) + 1
+		return false
+	return false
+
+
+## (the soak's numbers) target-owned bodies skipped by _los, and what blocked the line to a crawler (name -> rays).
+var los_self_hits: int = 0
+var los_crawler_blockers: Dictionary = {}
 
 
 ## Turns onto `p` and fires one aimed shot when on it (single shots, any fire mode). True on a shot. For the

@@ -295,11 +295,16 @@ the stick, fire, aim, jump, sprint, reload, use, knife, a grenade, a weapon key,
 - **What plays you:** the bots' own Update 03 brain (perception without wallhacks, the utility actions, the aim layer,
   the economy, revives) on your Player through the same movement code (BotLocomotion on your MoveIntent). It aims with
   the Elite preset and turns your view on a damped curve (never a snap). It shops with your Scrip (no free bot kit)
-  by a **game plan** per map (`player_bot.json` "plans"; pass 2): on the Crossroads Inn the Garand, the cellar door
-  and the power, Second Wind (your solo self-revive), Ironhide, the stable and the yard, the Thompson on the stable
-  wall, Marathon, then the Crucible; on Kaltenbrunn the carbine, the Rail Yard and the MP40, Second Wind in
-  Administration, the Barracks, the lift and the Generator Hall for the Hauptschalter, Ironhide, Marathon, the StG-44.
-  Ammo, an ammo box and the boards are always allowed; nothing else jumps the queue.
+  by a **game plan** per map (`player_bot.json` "plans"; passes 2-3): on the Crossroads Inn the Garand, the cellar
+  door and the power, Second Wind (your solo self-revive), the upstairs door and the MP40, Ironhide, the stable and the
+  yard, the Thompson on the stable wall, Marathon, then the Crucible; on Kaltenbrunn the carbine, the Rail Yard and
+  the MP40, Second Wind in Administration, the Barracks, the maintenance stairs and the Generator Hall for the
+  Hauptschalter, Ironhide, Marathon, the StG-44. Ammo, an ammo box and the boards are always allowed; while the next
+  step can't be done yet (too dear, or waiting for a break) a cheaper step just after it may go first, so it doesn't
+  stand about holding Scrip (Ironhide is never jumped).
+- **The crawler break** (pass 3): when a round is down to its last one or two zombies and it has errands (the plan's
+  next buy, a Second Wind rebuy, ammo), it shoots one in the legs until it crawls, does the errands while it crawls
+  after it, comes back to its training ground, and only then kills it, the way solo players do.
 - **Training:** once the plan's training ground is open (Map 0: the yard's Well Loop, the map's open ground; Map 1:
   the Generator Hall's turbine loop) it **owns every round**: it lets the round come out and group up behind it
   (a train of 5-11, more in later rounds), walks the loop's own line, picking a lane across the ring that keeps it

@@ -95,7 +95,10 @@ func sense(now: float) -> void:
 			rays_used += 1
 			var to_p: Vector3 = z2.global_position + Vector3.UP * (0.5 if z2.is_crawler else 1.3)
 			var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(e, to_p, MASK_LOS, [player.get_rid()])
-			var seen: bool = space.intersect_ray(q).is_empty()
+			var hit0: Dictionary = space.intersect_ray(q)
+			var seen: bool = hit0.is_empty()
+			if not seen and hit0.get("collider") is Node and (hit0["collider"] == z2 or z2.is_ancestor_of(hit0["collider"] as Node)):
+				seen = true   # T-071 pass 3: the ray met the zombie itself (a crawler's own pieces): it is in sight
 			if not seen and z2.is_crawler:
 				# T-071 pass 3: a crawler's back above a low lip (Map 0's yard edging) is still in sight
 				var q2: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(e, z2.global_position + Vector3.UP * 0.75, MASK_LOS, [player.get_rid()])
