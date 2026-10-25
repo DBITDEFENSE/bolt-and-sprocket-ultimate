@@ -449,7 +449,7 @@ func _snap(p: Vector3) -> Vector3:
 ## formation slot snapped out there is reachable only the long way (or not at all while the door is shut).
 static func walled(who: Node3D, a: Vector3, b: Vector3) -> bool:
 	var space: PhysicsDirectSpaceState3D = who.get_world_3d().direct_space_state
-	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(a + Vector3.UP * 1.0, b + Vector3.UP * 1.0, 1 | (1 << 5) | (1 << 8))
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(a + Vector3.UP * 1.0, b + Vector3.UP * 1.0, 1 | (1 << 5) | (1 << 8) | (1 << 10))   # (+ the map's edge, T-084: a slot in a spawn pocket is behind it)
 	return not space.intersect_ray(q).is_empty()
 
 
