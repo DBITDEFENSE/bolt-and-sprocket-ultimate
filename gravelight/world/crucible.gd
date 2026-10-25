@@ -2,14 +2,16 @@ class_name Crucible
 extends Interactable
 ## THE CRUCIBLE: a Nachtglas furnace in the Core Vault that "re-teaches" a weapon (WEAPONS.md §11).
 ## Feed the current weapon (5000) -> 5 s forge -> the upgraded weapon is offered for 15 s. Anyone may
-## take it (classic co-op steal); if nobody does, it's lost. Holding an upgraded weapon buys its ammo (2500).
+## take it (classic co-op steal); if nobody does, it's lost.
 ## Co-op: one weapon in the forge at a time ("The Crucible is occupied" for everyone else while it forges);
 ## the host runs it and mirrors the forge / offer / reset to every peer. A steal gets an Operator remark.
 ## Local -Z faces the player; origin = floor center.
-## Second and third teaching (T-037, "double and triple pack-a-punch"): a full, Crucible-taught weapon can be fed
-## again (economy "crucible_upgrade_tiers") up to WeaponInstance.max_tier(); it comes back at the next tier
-## (weapons.json "crucible_tiers": damage, mag, reserve, reload, a name suffix). An unfilled taught weapon gets
-## the ammo refill first, so the two offers never compete for the prompt.
+## Second and third teaching (T-037, "double and triple pack-a-punch"): a Crucible-taught weapon can be fed again
+## (economy "crucible_upgrade_tiers") up to WeaponInstance.max_tier(); it comes back at the next tier
+## (weapons.json "crucible_tiers": damage, mag, reserve, reload, a name suffix), full.
+## The Crucible sells no ammo (T-083): it only teaches. Ammo for a taught weapon comes from the ammo boxes
+## (AmmoBox, economy "ammo_box.upgraded") like any other, so a half-empty taught gun is offered its next teaching,
+## never a refill.
 
 enum Phase { IDLE, FORGING, OFFERED }
 
@@ -34,13 +36,12 @@ var _float_label: Label3D
 var _roar_t: float = 0.0
 
 
-## What the Crucible would do for this weapon: &"none", &"nothing", &"upgrade", &"ammo", &"full".
+## What the Crucible would do for this weapon: &"none" (no weapon), &"nothing" (it can't be taught), &"upgrade"
+## (the next teaching, whatever the ammo state), &"full" (at the top tier: nothing more to teach). Never ammo.
 static func action_for(w: WeaponInstance) -> StringName:
 	if w == null:
 		return &"none"
 	if w.upgraded:
-		if not w.is_full():
-			return &"ammo"
 		return &"upgrade" if w.tier < WeaponInstance.max_tier() else &"full"
 	if w.upgrade_id() == &"":
 		return &"nothing"
@@ -48,15 +49,13 @@ static func action_for(w: WeaponInstance) -> StringName:
 
 
 ## `tier` = the tier of the weapon being fed (0 base): the first teaching costs crucible_upgrade, the later ones
-## economy "crucible_upgrade_tiers"[next tier].
+## economy "crucible_upgrade_tiers"[next tier]. Anything but &"upgrade" is free (0): the Crucible sells nothing else.
 static func price_for(action: StringName, econ: Dictionary, tier: int = 0) -> int:
 	match action:
 		&"upgrade":
 			if tier >= 1:
 				return int((econ.get("crucible_upgrade_tiers", {}) as Dictionary).get(str(tier + 1), int(econ["crucible_upgrade"]) * 2))
 			return int(econ["crucible_upgrade"])
-		&"ammo":
-			return int(econ["crucible_upgraded_ammo"])
 	return 0
 
 
@@ -202,10 +201,8 @@ func get_prompt(player: Player) -> String:
 			if w.upgraded:
 				return "Hold [%s] to re-teach %s [%d]" % [key, w.display_name(), price_for(&"upgrade", econ, w.tier)]
 			return "Hold [%s] to feed the Crucible [%d]" % [key, price_for(&"upgrade", econ)]
-		&"ammo":
-			return "Hold [%s] for upgraded ammo [%d]" % [key, price_for(&"ammo", econ)]
 		&"full":
-			return "%s ammo full" % w.display_name()
+			return "%s has learned all the Crucible can teach." % w.display_name()
 		&"nothing":
 			return "The Crucible has nothing to teach this."
 	return ""
@@ -221,8 +218,7 @@ func can_interact(player: Player) -> bool:
 			return false
 		Phase.OFFERED:
 			return true
-	var a: StringName = action_for(player.weapons.current())
-	return a == &"upgrade" or a == &"ammo"
+	return action_for(player.weapons.current()) == &"upgrade"
 
 
 func interact(player: Player) -> void:
@@ -239,10 +235,6 @@ func interact(player: Player) -> void:
 	var w: WeaponInstance = player.weapons.current()
 	var econ: Dictionary = GLData.table("economy")
 	match action_for(w):
-		&"ammo":
-			if try_purchase(player, StringName(String(w.id) + "_ammo"), price_for(&"ammo", econ)):
-				player.weapons.refill_weapon(w.id)
-				feedback_2d(player, "reload_end")
 		&"upgrade":
 			if try_purchase(player, &"crucible", price_for(&"upgrade", econ, w.tier)):
 				var up: StringName = w.upgrade_id()

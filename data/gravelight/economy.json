@@ -21,7 +21,6 @@
   "wallbuy_ammo_fraction": 0.5,
   "wallbuy_upgraded_ammo": 4500,
   "crucible_upgrade": 5000,
-  "crucible_upgraded_ammo": 2500,
   "crate_cost": 950,
   "clearance_crate_cost": 10,
   "trap_cost": 1000,
@@ -32,7 +31,7 @@
     "3": 10000
   },
   "ammo_box": {
-    "_doc": "Ammo boxes (Update 02 section 4, T-049): hold use to refill the weapon in hand (mag + reserve) and lethal grenades (not tacticals). Price by what you hold: normal / Crucible-upgraded, wonder weapons (class wonder) wonder / wonder_upgraded. grenades_only = the price when the gun is full but grenades are short (or nothing is held). cooldown_s = per player, after a purchase.",
+    "_doc": "Ammo boxes (Update 02 section 4, T-049): hold use to refill the weapon in hand (mag + reserve) and lethal grenades (not tacticals). Price by what you hold: normal / Crucible-upgraded (T-083: the boxes are the only counter for a taught gun's ammo besides its wall chalk; the Crucible sells none), wonder weapons (class wonder) wonder / wonder_upgraded. grenades_only = the price when the gun is full but grenades are short (or nothing is held). cooldown_s = per player, after a purchase.",
     "normal": 250,
     "upgraded": 2500,
     "wonder": 1000,

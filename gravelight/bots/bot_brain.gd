@@ -710,7 +710,7 @@ func start_task(kind: String) -> void:
 		if not squad.blackboard.claim(str(c["key"]), pid, str(c.get("kind", "")), now, now + 30.0):
 			_task_unavailable(kind)
 			return
-	elif ["gun", "ammo", "perk", "door", "crucible", "crucible_ammo", "ammo_box", "crate", "trap", "power"].has(str(c.get("kind", ""))):
+	elif ["gun", "ammo", "perk", "door", "crucible", "ammo_box", "crate", "trap", "power"].has(str(c.get("kind", ""))):
 		if not squad.can_claim(node, pid):
 			_task_unavailable(kind)
 			return
@@ -1092,16 +1092,12 @@ func wants_crate_weapon(wid: StringName) -> bool:
 	return BotEconomy.tier_of(String(wid), false, eco) > BotEconomy.tier_of(String(player.weapons.slots[give].base_id()), false, eco) + 0.3
 
 
-## The slot the current errand needs in hand: its `weapon`, any upgraded gun for `need_upgraded`, the Crucible
-## ammo's gun; -1.
+## The slot the current errand needs in hand: its `weapon`, any upgraded gun for `need_upgraded`; -1.
 func forced_slot() -> int:
 	if ee != null and action == "ee_task":
 		var es: int = ee.forced_slot()
 		if es >= 0:
 			return es
-	if str(task.get("kind", "")) == "crucible_ammo":
-		var cs: int = int(task.get("slot", -1))
-		return cs if cs >= 0 and cs < player.weapons.slots.size() else -1
 	var src: Dictionary = task if not task.is_empty() and task.has("id") else {}
 	if src.is_empty():
 		return -1

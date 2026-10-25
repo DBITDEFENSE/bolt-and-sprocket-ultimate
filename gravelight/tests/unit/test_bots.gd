@@ -211,17 +211,21 @@ func test_backpedal_radius_sits_between_knife_and_danger() -> void:
 	assert_lt(float(cb["backpedal_radius_m"]), float(cb["danger_radius_m"]))
 
 
-func test_crucible_ammo_wanted() -> void:
+func test_crucible_sells_no_ammo_to_bots() -> void:
+	# T-083: the Crucible only teaches; a bot's taught gun refills at an ammo box like any other gun.
 	var c: Dictionary = cfg["shopping"]["crucible"]
-	for key: String in ["only_in_break", "priority", "ammo_below_frac", "ammo_reserve_scrip"]:
+	for key: String in ["only_in_break", "priority", "min_round", "reserve_scrip"]:
 		assert_true(c.has(key), key)
-	var cost: int = int(GLData.table("economy")["crucible_upgraded_ammo"])
-	var need: int = cost + int(c["ammo_reserve_scrip"])
-	assert_true(BotConfig.crucible_ammo_wanted(c, true, 10, 100, need, cost), "low reserve, price + reserve in hand")
-	assert_false(BotConfig.crucible_ammo_wanted(c, true, 10, 100, need - 1, cost), "keeps the reserve Scrip")
-	assert_false(BotConfig.crucible_ammo_wanted(c, true, 90, 100, 99999, cost), "reserve still fine")
-	assert_false(BotConfig.crucible_ammo_wanted(c, false, 0, 100, 99999, cost), "only for an upgraded gun")
-	assert_false(BotConfig.crucible_ammo_wanted(c, true, 0, 0, 99999, cost), "no reserve pool at all")
+	for gone: String in ["ammo_below_frac", "ammo_reserve_scrip"]:
+		assert_false(c.has(gone), "%s left with the Crucible's ammo counter" % gone)
+	assert_false(GLData.table("economy").has("crucible_upgraded_ammo"), "no Crucible ammo price in economy.json")
+	assert_false((BotAIData.table("economy")["priorities"] as Dictionary).has("crucible_ammo"), "no crucible_ammo errand priority")
+	assert_false(AgentPlan.ALWAYS.has("crucible_ammo"), "the agent plan's always-list dropped it")
+	var up: WeaponInstance = WeaponInstance.create(&"thompson_up")
+	up.reserve = 0
+	up.mag = 1
+	assert_eq(Crucible.action_for(up), &"upgrade", "a dry taught gun is offered its next teaching, not ammo")
+	assert_eq(AmmoBox.price_for(up.data, up.upgraded, AmmoBox.cfg()), int(AmmoBox.cfg()["upgraded"]), "the box prices its refill")
 	assert_false(bool(c["only_in_break"]), "T-058: upgrades mid-round too when it is calm (break-only, the Crucible never happened)")
 	assert_lte(int(c["min_round"]), 6, "T-058: the Thompson goes in from round 5")
 	assert_gt(float(c["priority"]), 60.0, "the Crucible outranks ammo (60) and boards (30) in the break")

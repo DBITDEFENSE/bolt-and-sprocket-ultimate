@@ -32,13 +32,55 @@ func test_crucible_actions_and_prices() -> void:
 	assert_eq(Crucible.action_for(lr), &"upgrade", "a full taught weapon can be re-taught (tier 2)")
 	assert_eq(Crucible.price_for(&"upgrade", econ, lr.tier), 7500)
 	lr.mag = 0
-	assert_eq(Crucible.action_for(lr), &"ammo", "an unfilled taught weapon gets the refill offer first")
-	assert_eq(Crucible.price_for(&"ammo", econ), 2500)
+	assert_eq(Crucible.action_for(lr), &"upgrade", "an unfilled taught weapon is still offered the next teaching (T-083: the Crucible sells no ammo)")
+	assert_eq(Crucible.price_for(&"ammo", econ), 0, "no ammo price at the Crucible")
 	assert_eq(lr.upgrade_id(), &"m1911_up", "re-teaching keeps the id; the tier climbs")
 	lr.tier = WeaponInstance.max_tier()
 	lr.refill()   # the top tier holds more, so fill it at its own size
 	assert_eq(Crucible.action_for(lr), &"full", "the top tier is the end of it")
 	assert_eq(lr.upgrade_id(), &"", "top-tier weapons can't be taught again")
+
+
+func test_crucible_never_offers_ammo() -> void:
+	# T-083: whatever the gun and however empty, the Crucible's answer is a teaching, "nothing" or "full".
+	var t: Dictionary = GLData.table("weapons")
+	for id: String in (t["weapons"] as Dictionary).keys() + (t["upgraded"] as Dictionary).keys():
+		var w: WeaponInstance = WeaponInstance.create(StringName(id))
+		for tier: int in range(0 if not w.upgraded else 1, WeaponInstance.max_tier() + 1):
+			if w.upgraded:
+				w.tier = tier
+			w.mag = 0
+			w.reserve = 0
+			var a: StringName = Crucible.action_for(w)
+			assert_ne(a, &"ammo", "%s tier %d" % [id, tier])
+			assert_true([&"upgrade", &"nothing", &"full"].has(a), "%s tier %d: %s" % [id, tier, a])
+			if not w.upgraded:
+				break
+	assert_false(GLData.table("economy").has("crucible_upgraded_ammo"), "the price left economy.json")
+
+
+func test_ammo_box_refills_a_taught_weapon() -> void:
+	# T-083: the boxes are where a taught gun's ammo comes from (mag and reserve, at the box's upgraded price).
+	var holder: WeaponHolder = WeaponHolder.new()
+	add_child_autofree(holder)
+	var box: AmmoBox = AmmoBox.new()
+	add_child_autofree(box)
+	var w: WeaponInstance = WeaponInstance.create(&"thompson_up")
+	w.tier = 2
+	w.mag = 0
+	w.reserve = 0
+	holder.slots = [w]
+	holder.current_index = 0
+	holder.grenades = holder.grenade_max()
+	var pid: int = 77
+	Economy.reset([pid])
+	Economy.grant(pid, 5000)
+	var price: int = int(AmmoBox.quote(holder, AmmoBox.cfg())["price"])
+	assert_eq(price, int(AmmoBox.cfg()["upgraded"]), "the Crucible-upgraded box price, whatever the tier")
+	assert_eq(box.use_holder(holder, pid, pid), &"ok")
+	assert_eq(w.mag, w.mag_size(), "magazine full (tier II size)")
+	assert_eq(w.reserve, w.reserve_max(), "reserve full")
+	assert_eq(Economy.get_scrip(pid), 5500 - price)
 
 
 func test_crucible_tiers_scale_the_taught_row() -> void:

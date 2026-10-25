@@ -32,6 +32,13 @@
       "totenglocke": 0.35
     }
   },
+  "sprint_reload": {
+    "_doc": "T-083: may a weapon of this class start and keep a reload while sprinting? SMGs and pistols (machine pistols, revolvers, the Webley's break) do; everything else has its reload interrupted by a sprint and waits for the sprint to end, unless the gun wears a bench attachment whose props set sprint_reload (attachments.json 'quick_sling', the Paratrooper Sling). 'weapons' overrides single weapons (base id). Firing still waits for the class's sprint_out. WeaponHolder.sprint_reload_allowed.",
+    "default": false,
+    "pistol": true,
+    "smg": true,
+    "weapons": {}
+  },
   "ads_move_mult": 0.6,
   "_ads_doc": "ADS-walk speed as a share of the walk speed, unless the weapon row sets ads_move_mult.",
   "walk_spread_deg": 2.2,

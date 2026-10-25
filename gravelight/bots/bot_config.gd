@@ -100,16 +100,6 @@ static func human_share_ok(recent: Array, human_ids: Array, ks: Dictionary) -> b
 	return float(human) / float(sample.size()) >= float(ks.get("human_min_share", 0.45))
 
 
-## Crucible ammo (shopping.crucible): the upgraded gun in hand is under ammo_below_frac of its reserve and the
-## ammo price plus ammo_reserve_scrip is in hand.
-static func crucible_ammo_wanted(c: Dictionary, upgraded: bool, reserve: int, reserve_max: int, scrip: int, cost: int) -> bool:
-	if not bool(c.get("enabled", true)) or not upgraded or reserve_max <= 0:
-		return false
-	if float(reserve) >= float(reserve_max) * float(c.get("ammo_below_frac", 0.35)):
-		return false
-	return scrip >= cost + int(c.get("ammo_reserve_scrip", 0))
-
-
 ## Crucible (shopping.crucible): worth feeding the gun in hand? `can_upgrade` = the gun has an upgrade and isn't
 ## upgraded yet; `cost` = the upgrade price.
 

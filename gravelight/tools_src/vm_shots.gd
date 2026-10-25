@@ -11,8 +11,10 @@ extends Node3D
 ## Each row is one weapon; columns follow POSES.
 
 const POSES: Array = [["hip", 0.0], ["ads", 0.0], ["sprint", 0.0], ["reload", 0.3], ["reload", 0.7], ["fire", 0.0], ["fire_ads", 0.0]]
-## Extra poses, only via --poses=: swap (mid raise), melee (mid swing), nade (cooking), cycle (bolt / pump stroke).
-const EXTRA: Array = [["swap", 0.0], ["melee", 0.0], ["nade", 0.0], ["cycle", 0.0]]
+## Extra poses, only via --poses=: swap (mid raise), melee (mid swing), nade (cooking), cycle (bolt / pump stroke),
+## sprint_reload (T-083: reloading on the run, halfway; a gun that can't shows its plain sprint pose). An id may be
+## a WeaponKit build string ("m1_garand:grip=quick_sling") to shoot a gun with attachments.
+const EXTRA: Array = [["swap", 0.0], ["melee", 0.0], ["nade", 0.0], ["cycle", 0.0], ["sprint_reload", 0.5]]
 var ROWS: int = 3
 var TW: int = 384
 var TH: int = 216
@@ -173,8 +175,13 @@ func _new_sheet() -> void:
 
 
 func _start_weapon() -> void:
-	_holder.give_weapon(StringName(_weapons[_wi]))
-	_holder.current_index = _holder.slots.find(_holder.find_weapon(StringName(_weapons[_wi])))
+	var id: String = _weapons[_wi]
+	if id.contains(":"):
+		_holder.slots.append(WeaponKit.from_build(id))   # a kitted gun (tools only: no slot limit)
+		_holder.current_index = _holder.slots.size() - 1
+	else:
+		_holder.give_weapon(StringName(id))
+		_holder.current_index = _holder.slots.find(_holder.find_weapon(StringName(id)))
 	_holder.call("_rebuild_gun")
 	_pi = 0
 	_wait = 0.9
@@ -185,7 +192,8 @@ func _process(delta: float) -> void:
 		return
 	var pose: Array = _poses[_pi]
 	var kind: String = str(pose[0])
-	var intent: Dictionary = {"ads": kind == "ads" or kind == "fire_ads", "sprinting": kind == "sprint", "lethal_held": kind == "nade"}
+	var intent: Dictionary = {"ads": kind == "ads" or kind == "fire_ads", "sprinting": kind == "sprint" or kind == "sprint_reload", "lethal_held": kind == "nade"}
+	var reload_pose: bool = kind == "reload" or kind == "sprint_reload"
 	if kind.begins_with("fire"):
 		# Sustained fire at ~600 rpm: drive the same viewmodel state a real shot sets (no hitscan / audio).
 		_fire_clock -= delta
@@ -208,11 +216,11 @@ func _process(delta: float) -> void:
 	if kind == "cycle":
 		_holder.set("_cycle_t", 0.8 * 0.6)
 	_holder.tick(delta, intent)
-	if kind == "reload" and not _holder.is_reloading() and _wait > 0.85:
+	if reload_pose and not _holder.is_reloading() and _wait > 0.85:
 		var w: WeaponInstance = _holder.current()
 		w.mag = 0
 		_holder.start_reload()
-	if kind == "reload" and _holder.is_reloading():
+	if reload_pose and _holder.is_reloading():
 		_holder.set("_reload_t", float(_holder.get("_reload_total")) * (1.0 - float(pose[1])))
 	if _cam2 != null:
 		var node: Node3D = _holder.get("_hand_r" if _inspect == "hand_r" else ("_hand_l" if _inspect == "hand_l" else "_muzzle")) as Node3D

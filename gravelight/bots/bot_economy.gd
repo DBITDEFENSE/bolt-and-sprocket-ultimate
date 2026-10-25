@@ -450,7 +450,8 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 				continue
 			out.append({"node": cr, "kind": "crate", "value": _pv("crate", _flat(cr.global_position, me)), "cost": CrateManager.cost(), "stand": st,
 				"label": "pull the Requisition Crate (%d Scrip)" % CrateManager.cost()})
-	# ---- the Crucible: a gun worth it, in the break, never while the human is down; upgraded ammo
+	# ---- the Crucible: a gun worth it, in the break, never while the human is down. It sells no ammo (T-083):
+	# a taught gun running dry is the ammo box errand above, priced by AmmoBox.price_for like any other gun.
 	var crc: Dictionary = (cfg.get("shopping", {}) as Dictionary).get("crucible", {})
 	var human_down: bool = Net.session != null and squad.human() != null and Net.session.coop.is_downed(squad.human().player_id)
 	var in_break: bool = brain.in_break()
@@ -462,19 +463,11 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	var up_tier: int = player.weapons.slots[up_slot].tier if up_slot >= 0 else 0
 	var up_cost: int = Crucible.price_for(&"upgrade", econ, up_tier)
 	var want_up: bool = up_ok and BotConfig.crucible_wanted(crc, true, scrip, up_cost, rnd)   # the Crucible's own reserve_scrip is the reserve here
-	var ammo_slot: int = -1
-	for ai: int in player.weapons.slots.size():
-		var aw: WeaponInstance = player.weapons.slots[ai]
-		if BotConfig.crucible_ammo_wanted(crc, aw.upgraded, aw.reserve, aw.reserve_max(), scrip, Crucible.price_for(&"ammo", econ)):
-			if ammo_slot < 0 or aw == player.weapons.current():
-				ammo_slot = ai
-	if (want_up or ammo_slot >= 0) and not human_down and (in_break or not bool(crc.get("only_in_break", true))):
+	if want_up and not human_down and (in_break or not bool(crc.get("only_in_break", true))):
 		var cr2: Crucible = brain.crucible_for_me(float(crc.get("max_from_leader_m", 30.0)) * range_mult * (2.0 if squad.bot_led() else 1.0), anc)
 		if cr2 != null and _near_enough(cr2.global_position):
-			var kind: String = "crucible_ammo" if ammo_slot >= 0 else "crucible"
-			out.append({"node": cr2, "kind": kind, "slot": ammo_slot, "value": _pv(kind, _flat(cr2.global_position, me)),
-				"cost": Crucible.price_for(&"ammo", econ) if ammo_slot >= 0 else up_cost,
-				"label": "buy upgraded ammo at the Crucible" if ammo_slot >= 0 else ("feed the %s to the Crucible (%d Scrip)" % [player.weapons.slots[up_slot].display_name(), up_cost])})
+			out.append({"node": cr2, "kind": "crucible", "slot": -1, "value": _pv("crucible", _flat(cr2.global_position, me)), "cost": up_cost,
+				"label": "feed the %s to the Crucible (%d Scrip)" % [player.weapons.slots[up_slot].display_name(), up_cost]})
 	if brain.is_player_bot:
 		return AgentPlan.filter(out, brain)   # T-071 pass 2: the agent spends by its map plan (player_bot.json plans)
 	return out

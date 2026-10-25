@@ -4,7 +4,7 @@ extends RefCounted
 ## planner's objectives, moved here from the T-031 brain. A task is a Dictionary {node, kind, label, ...}; run()
 ## walks to it (the locomotion layer), uses it the way a person's hold does (interact, lock_frequency, plug, a real
 ## traced shot) and returns "running", "done" or "failed". The brain owns the claim and tells the planner.
-##   shopping kinds: repair, gun, ammo, perk, ammo_box, door, crucible, crucible_ammo, crate, use_power
+##   shopping kinds: repair, gun, ammo, perk, ammo_box, door, crucible, crate, use_power
 ##   objective kinds (the planner only): use, radio, switchboard, shoot, shoot_seq, shoot_moving, hold, crate,
 ##   fetch (a buildable part, ordered)
 
@@ -89,8 +89,8 @@ func _shop(e: Dictionary, node: Interactable, delta: float) -> String:
 		return "running"
 	e["hold"] = 0.0
 	var done: bool = true
-	if kind == "crucible" or kind == "crucible_ammo":
-		done = _crucible(node as Crucible, kind, e)
+	if kind == "crucible":
+		done = _crucible(node as Crucible, e)
 	else:
 		if kind == "gun" and player.weapons.slots.size() >= player.weapons.max_slots():
 			var give: int = brain._slot_to_give_up()
@@ -119,18 +119,10 @@ func _shop(e: Dictionary, node: Interactable, delta: float) -> String:
 	return "done" if done else "running"
 
 
-## One hold at the Crucible: feed the gun (wait out the forge in front of it, take our own result only), or buy
-## upgraded ammo for the upgraded gun. True when the task is over.
-func _crucible(cr: Crucible, kind: String, e: Dictionary) -> bool:
+## One hold at the Crucible: feed the gun (wait out the forge in front of it, take our own result only). True when
+## the task is over. (The Crucible sells no ammo, T-083: a taught gun refills at an ammo box like any other.)
+func _crucible(cr: Crucible, e: Dictionary) -> bool:
 	if not cr.is_powered():
-		return true
-	if kind == "crucible_ammo":
-		var slot: int = int(e.get("slot", -1))
-		if slot >= 0 and slot < player.weapons.slots.size() and slot != player.weapons.current_index:
-			brain.aim.select(slot)
-			return false
-		if cr.phase == Crucible.Phase.IDLE and cr.can_interact(player):
-			cr.interact(player)
 		return true
 	var fed: bool = bool(e.get("fed", false))
 	match cr.phase:
