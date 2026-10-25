@@ -672,6 +672,23 @@ func _player_zones() -> Dictionary:
 	return out
 
 
+## T-080: where the living players standing on open ground (ZoneVolume.roam) are.
+func _roaming_players() -> Array[Vector3]:
+	var out: Array[Vector3] = []
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		var p: Player = n as Player
+		if p != null and p.is_alive() and ZoneVolume.roam_at(get_tree(), p.global_position):
+			out.append(p.global_position)
+	return out
+
+
+static func _seen_from(at: Vector3, dist: float, roamers: Array[Vector3]) -> bool:
+	for q: Vector3 in roamers:
+		if Vector2(q.x - at.x, q.z - at.z).length() < dist and absf(q.y - at.y) < 4.0:
+			return true
+	return false
+
+
 func _zone_allowed(zone: StringName, player_zones: Dictionary) -> bool:
 	if adjacency.is_empty() or player_zones.has(zone):
 		return true
@@ -694,12 +711,17 @@ func _roll_glasshide() -> bool:
 func _choose_spawn(ground_only: bool = false) -> ZombieSpawn:
 	var round_number: int = maxi(1, RoundManager.current_round)
 	var player_zones: Dictionary = _player_zones()
+	var roamers: Array[Vector3] = _roaming_players()
 	var candidates: Array[ZombieSpawn] = []
 	var weights: Array[float] = []
 	var total: float = 0.0
 	for n: Node in get_tree().get_nodes_in_group(&"zombie_spawns"):
 		var sp: ZombieSpawn = n as ZombieSpawn
 		if sp == null or not sp.is_active(round_number) or not _zone_allowed(sp.zone_id, player_zones):
+			continue
+		if sp.player_zone_only and not player_zones.has(sp.zone_id):
+			continue
+		if sp.hide_from_m > 0.0 and _seen_from(sp.global_position, sp.hide_from_m, roamers):
 			continue
 		if ground_only and sp.kind != &"ground":
 			continue

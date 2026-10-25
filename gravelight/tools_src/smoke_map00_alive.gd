@@ -47,8 +47,14 @@ static func map00_openings(map: Node) -> Array[Dictionary]:
 	for rd: Array in [[5.75, 1], [11.75, 2], [20.25, 3]]:
 		ops.append(DoorClearance.opening("RoomDoorway%d" % int(rd[1]), Vector3(float(rd[0]), 3.8, 6.0), 0.0, 1.5, 2.2,
 			map.find_child("RoomDoor%d" % int(rd[1]), true, false)))
+	# the front door: its swinging leaf belongs in the doorway; since T-080 the doorway is the bought door Door_Front
+	# ("Out Front", a GateDoor that swings the leaf), so the leaf is skipped in that door's own opening too
 	var fd: Node = map.find_child("InnFrontDoor", true, false)
-	ops.append(DoorClearance.opening("FrontDoor", Vector3(20, 0, 0), 0.0, 1.6, 2.4, [fd, map.find_child("FrontDoorBlock", true, false)]))
+	var df: Node = map.find_child("Door_Front", true, false)
+	for o: Dictionary in ops:
+		if str(o["name"]) == "Door_Front":
+			o["skip"] = [df, fd]
+	ops.append(DoorClearance.opening("FrontDoor", Vector3(20, 0, 0), 0.0, 1.6, 2.4, [fd, df]))
 	return ops
 
 

@@ -2,9 +2,10 @@ class_name InnFrontDoor
 extends Node3D
 ## The Kreuzweg's front door (T-072): a plank leaf in the taproom's north wall under the east porch, barred from
 ## inside with a beam in two iron brackets. The doorway is filled with an invisible collider (gen_map00
-## "FrontDoorBlock"), so nobody walks through it and the navmesh stays a wall: the leaf is dressing that swings.
-## Only the round 1 opening uses it (InnOpening): unbarred and thrown open as the patrons run, then shut and barred
-## again. Origin: the sill's centre on the wall's middle plane; local +X along the wall, local +Z into the taproom;
+## "FrontDoorBlock") until T-080; now the doorway is a bought door, the GateDoor "Door_Front" (Out Front, opens the
+## GROUNDS), whose collider fills it until it is bought: the leaf is dressing that swings. The round 1 opening
+## (InnOpening) unbars it and throws it open as the patrons run, then shuts and bars it again; once bought it is
+## thrown open for good (held_open). Origin: the sill's centre on the wall's middle plane; local +X along the wall, local +Z into the taproom;
 ## the hinge is on the west jamb and the leaf swings into the room.
 
 @export var width: float = 1.6
@@ -13,6 +14,8 @@ extends Node3D
 
 var is_open: bool = false
 var barred: bool = true
+## Bought open (T-080: the "Out Front" GateDoor in this doorway): it stays open; close() and bar() do nothing.
+var held_open: bool = false
 var angle: float = 0.0
 var _hinge: Node3D
 var _bar: Node3D
@@ -70,7 +73,7 @@ func unbar() -> void:
 
 ## Drops the bar back into its brackets.
 func bar() -> void:
-	if barred:
+	if barred or held_open:
 		return
 	barred = true
 	var tw: Tween = create_tween()
@@ -84,6 +87,8 @@ func open(deg: float = 105.0, seconds: float = 0.7) -> void:
 
 
 func close(seconds: float = 0.45) -> void:
+	if held_open:
+		return
 	is_open = false
 	_swing(0.0, seconds, Tween.EASE_IN)
 
