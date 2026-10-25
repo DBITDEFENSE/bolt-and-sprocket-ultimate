@@ -85,7 +85,7 @@ The perk-tonic cap went from 4 to **6** (`perks.json` `"cap"`; `"classic_cap": 4
 match by `PerkManager.base_cap()`, the host's value in co-op). The Map 1 egg's slot is still +1 on top (7 there); a
 bot's bonus perk and the tonic tiers use no slot. What it changes:
 
-- **Late Scrip has somewhere to go.** On Map 0 the nine tonics cost 18,000 together (Ironhide 2500, Second Wind 500,
+- **Late Scrip has somewhere to go.** On Map 0 the nine tonics cost 20,000 together (Ironhide 2500, Second Wind 500,
   Trigger 3000, Twin Barrel 2000, Marathon 2000, Hawkeye 1500, Packmule 4000, Blastproof 2000, Overclock 2500); four
   slots took 8-10k of it, six take 12-15k, and a downed survivor rebuys more. Tiers (section 1 of PERKS_LORE.md)
   still come after the cap is full, so they start later: the bots' `perk_upgrades` wait for `nothing_new`.
