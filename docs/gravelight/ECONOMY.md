@@ -36,11 +36,11 @@ first clean round, the first headshot streak and the first dog tags of a match.
 
 | Source | Rule | Numbers (r1 / r5 / r10) |
 |---|---|---|
-| **Round pay** | every survivor standing (not downed, not bled out) when a round ends | 50 + 25 x round, max 400: 75 / 175 / 300 |
-| **Untouched** | that survivor took no hit at all this round | 100 + 10 x round, max 250: 110 / 150 / 200 |
-| **On your feet** | that survivor never went down this round | 50 |
-| **Headshot streak** | every 5 headshot kills in a row (any other kill, or going down, breaks it) | 100, then +50 per further 5, max 300 |
-| **Dog tags (salvage)** | a kill drops a dead soldier's tags with 7% chance (3.5% from round 11); they drift to a standing survivor within 3.5 m and are picked up within 1.2 m; gone after 20 s | 75 + 15 x round, max 300: 90 / 150 / 225; at most 4 a round, 6 on the map |
+| **Round pay** | every survivor standing (not downed, not bled out) when a round ends | 40 + 20 x round, max 300: 60 / 140 / 240 |
+| **Untouched** | that survivor took no hit at all this round | 50 + 10 x round, max 200: 60 / 100 / 150 |
+| **On your feet** | that survivor never went down this round | 25 |
+| **Headshot streak** | every 10 headshot kills in a row (any other kill, or going down, breaks it) | 150, then +50 per further 10, max 250 |
+| **Dog tags (salvage)** | a kill drops a dead soldier's tags with 6% chance (3.5% from round 11); they drift to a standing survivor within 3.5 m and are picked up within 1.2 m; gone after 20 s | 60 + 15 x round, max 300: 75 / 135 / 210; at most 4 a round, 6 on the map |
 
 Why these: they reward the skills the game already asks for (not getting hit, staying up, aiming for the head,
 covering ground for the drops), they are front-loaded (round pay and the clean bonus are a large share of a

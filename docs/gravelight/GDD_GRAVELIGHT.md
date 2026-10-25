@@ -96,9 +96,9 @@ Values are in `data/economy.json`. Scrip is the Ledger's kill-tally token, which
 
 Co-op: Scrip is per player and can't be transferred (classic rules). Double Scrip applies to everyone.
 
-**Bonuses (T-078, `docs/gravelight/ECONOMY.md`):** round pay for standing at a round's end (50 + 25 x round, max 400),
-an untouched round (100 + 10 x round, max 250) and a round without a down (+50), every 5 headshot kills in a row
-(100, +50 per further 5, max 300), and dog tags a kill sometimes drops (7%, 75 + 15 x round). Each shows a named
+**Bonuses (T-078, `docs/gravelight/ECONOMY.md`):** round pay for standing at a round's end (40 + 20 x round, max 300),
+an untouched round (50 + 10 x round, max 200) and a round without a down (+25), every 10 headshot kills in a row
+(150, +50 per further 10, max 250), and dog tags a kill sometimes drops (6%, 60 + 15 x round). Each shows a named
 slip above the Scrip.
 
 ## 6. Interactables
