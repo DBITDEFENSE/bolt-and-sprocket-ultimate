@@ -298,7 +298,7 @@ func _run() -> void:
 			if str((z2 as Dictionary).get("key", "")) == "mark:%d" % int(r7["id"]) and float((z2 as Dictionary)["until"]) > sq.time():
 				zone_after = true
 		_check(not zone_after, "removing the Danger mark lifts the zone")
-		var rp: Vector3 = sq.brains[0].snap(human.global_position + Vector3(2, 0, 2))
+		var rp: Vector3 = sq.brains[0].snap(human.global_position + Vector3(2, 0, -2))
 		var r8: Dictionary = mm.place({"kind": "regroup", "pos": rp})
 		_check(bool(r8["ok"]), "Regroup: %s" % r8["reason"])
 		var came: bool = await _until(func() -> bool:
@@ -308,7 +308,7 @@ func _run() -> void:
 					return false
 			return true, 45.0)
 		_check(came, "every bot came to the regroup mark")
-		var dp: Vector3 = sq.brains[0].snap(human.global_position + Vector3(-3, 0, 3))
+		var dp: Vector3 = sq.brains[0].snap(human.global_position + Vector3(-3, 0, -3))   # (into the room: the spawn is at the taproom's south end, T-076)
 		var r9: Dictionary = mm.place({"kind": "defend", "pos": dp, "target": int(bots[0])})
 		_check(bool(r9["ok"]) and mm.status_of(int(bots[0])).begins_with("Defending"), "Defend here: \"%s\"" % mm.status_of(int(bots[0])))
 		var held: bool = await _until(func() -> bool: return sq.player_by_id(int(bots[0])).global_position.distance_to(dp) < 4.0, 30.0)
