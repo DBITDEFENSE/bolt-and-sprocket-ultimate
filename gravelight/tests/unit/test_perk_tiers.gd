@@ -117,10 +117,11 @@ func test_mastery_gate() -> void:
 
 
 func test_tiers_take_no_cap_slot_and_go_with_the_perk() -> void:
-	for id: StringName in [&"ironhide_stout", &"trigger_tonic", &"twin_barrel", &"marathon_malt"]:
-		PerkManager.buy_for(PID, id)
-		PerkManager.set_tier(PID, id, 3)
-	assert_eq(PerkManager.capped_count(PID), 4, "four tonics, four slots")
+	var ids: Array[StringName] = [&"ironhide_stout", &"trigger_tonic", &"twin_barrel", &"marathon_malt", &"blastproof_bock", &"packmule_porter"]
+	for i: int in PerkManager.base_cap():
+		PerkManager.buy_for(PID, ids[i])
+		PerkManager.set_tier(PID, ids[i], 3)
+	assert_eq(PerkManager.capped_count(PID), PerkManager.base_cap(), "a full cap of tonics, tiers take no extra slot")
 	assert_eq(PerkManager.buy_for(PID, &"hawkeye_brandy"), &"cap", "the cap still holds")
 	PerkManager.on_player_downed(PID)
 	assert_eq(PerkManager.tier_of(PID, &"ironhide_stout"), 0)

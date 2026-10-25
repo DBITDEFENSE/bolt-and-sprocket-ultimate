@@ -24,8 +24,8 @@ documents; the truth reaches the player only sideways (a "V." note, a stencil, a
 - **In the match (the main path).** Walk up to a machine whose tonic you already carry and hold Use: *"Hold [F] to brew
   Ironhide Stout II [3500]"*. Same drink beat, same jingle. Tier II from **round 8**, tier III from **round 15**
   (`upgrades.min_round`), **power on** for every tier (Second Wind's solo standby cell pours the free trial only).
-  Tier III needs tier II. No extra cap slot: the **4-perk cap is unchanged**; upgrading is how late Scrip turns into
-  power once the four slots are full.
+  Tier III needs tier II. No extra cap slot: tiers never use one (the cap is **6** since T-081, 4 under Classic Rules); upgrading is how late
+  Scrip turns into power once the slots are full.
 - **Across matches (the gate).** Each tier is unlocked once, for the whole profile, by **mastery** with that tonic:
   **1 point per kill** made with it in your system, **20 per round** you finish holding it (`upgrades.mastery`).
   **Tier II at 250, tier III at 1,200.** A first careful game with Ironhide from round 4 to 15 earns about 500 (tier II

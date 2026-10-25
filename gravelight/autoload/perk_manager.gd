@@ -7,6 +7,8 @@ extends Node
 ##             fall_damage_immune, slide_shockwave_damage, slide_shockwave_radius
 ##   has_perk(player, perk_id) -> bool
 ##   owned(player) -> Array
+##   base_cap() -> int                        the match's tonic cap: perks.json "cap" (6), "classic_cap" (4) with Classic Rules
+##   cap_for(player) -> int                   base_cap() + that player's bonus slots (the Map 1 egg)
 ##   can_buy(player, perk_id) -> StringName    &"ok", &"owned", &"cap", &"no_power", &"gone"
 ##   try_buy(player: Player, perk_id) -> StringName   check + spend + grant immediately (+ &"no_scrip")
 ##   grant(player, perk_id) -> void            gives the perk (no cost); used after the machine's drink beat
@@ -48,6 +50,9 @@ const OVERCLOCK_BOSSES: PackedStringArray = ["foreman", "underwriter"]
 var _owned: Dictionary = {}        # player -> Array[StringName]
 var _bonus_slots: Dictionary = {}  # player -> int (Map 1 egg reward)
 var _bonus_perk: Dictionary = {}   # player -> StringName: a bot's bonus perk (outside the cap, kept on a down)
+## The match's base cap (T-081), read from the data + Classic Rules on first use after reset_match (-1 = not yet);
+## a co-op client takes the host's from the state snapshot ("cb").
+var _base_cap: int = -1
 var solo_self_revives_left: int = 3
 var second_wind_gone: bool = false
 var _hud: CanvasLayer = null
@@ -77,6 +82,7 @@ func _ready() -> void:
 func reset_match() -> void:
 	_owned.clear()
 	_bonus_slots.clear()   # the Map 1 egg slot is re-applied on match_started
+	_base_cap = -1         # Classic Rules is read again for the new match
 	_bonus_perk.clear()
 	_overclock_ready_at.clear()
 	_tiers.clear()
@@ -121,8 +127,24 @@ func has_perk(player: int, perk_id: StringName) -> bool:
 	return owned(player).has(perk_id)
 
 
+## The tonic cap for this match (T-081): perks.json "cap", or "classic_cap" when Classic Rules is on. Latched for the
+## match (toggling Classic Rules mid-match doesn't move it; reset_match re-reads it).
+func base_cap() -> int:
+	if _base_cap < 0:
+		_base_cap = data_cap(bool(GLSettings.values.get("classic_rules", false)))
+	return _base_cap
+
+
+## Pure: the data's cap with Classic Rules on or off.
+static func data_cap(classic: bool) -> int:
+	var t: Dictionary = GLData.table("perks")
+	if classic and t.has("classic_cap"):
+		return int(t["classic_cap"])
+	return int(t.get("cap", 6))
+
+
 func cap_for(player: int) -> int:
-	return int(GLData.table("perks")["cap"]) + int(_bonus_slots.get(player, 0))
+	return base_cap() + int(_bonus_slots.get(player, 0))
 
 
 func add_bonus_slot(player: int, count: int = 1) -> void:

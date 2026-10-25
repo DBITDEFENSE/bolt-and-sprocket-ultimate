@@ -153,9 +153,21 @@ func _run() -> void:
 		await _frames(2)
 		var uw: WeaponInstance = _p.weapons.current()
 		_check(uw != null and uw.upgraded, "took the upgraded weapon (%s)" % (uw.display_name() if uw != null else "-"))
+	Economy.grant(1, 10000)
 	PerkManager.buy_for(1, &"second_wind")
 	PerkManager.buy_for(1, &"trigger_tonic")
-	_check(PerkManager.buy_for(1, &"hawkeye_brandy") == &"cap", "perk cap of 4 enforced")
+	# T-081: six tonics (four under Classic Rules), the seventh refused; a bonus slot (the Map 1 egg) makes it seven
+	var fill: Array[StringName] = [&"marathon_malt", &"blastproof_bock"]
+	var fi: int = 0
+	while PerkManager.capped_count(1) < PerkManager.base_cap() and fi < fill.size():
+		PerkManager.buy_for(1, fill[fi])
+		fi += 1
+	_check(PerkManager.capped_count(1) == PerkManager.base_cap() and PerkManager.buy_for(1, &"hawkeye_brandy") == &"cap",
+		"perk cap of %d enforced (%d held)" % [PerkManager.base_cap(), PerkManager.capped_count(1)])
+	PerkManager.add_bonus_slot(1)
+	_check(PerkManager.buy_for(1, &"hawkeye_brandy") == &"ok" and PerkManager.buy_for(1, &"twin_barrel") == &"cap",
+		"a bonus slot holds one more (%d)" % PerkManager.cap_for(1))
+	PerkManager._bonus_slots.erase(1)
 	GameState.god_mode = false
 	_p.take_hit(9999.0, null)
 	await _secs(0.5)

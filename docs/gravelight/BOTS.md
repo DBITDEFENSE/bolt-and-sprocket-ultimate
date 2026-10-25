@@ -11,8 +11,8 @@ Every bot spawns with a **Thompson** in hand (the start pistol stays in slot 1),
 Juggernog equivalent: 250 health) and **Second Wind Schnapps** (the Quick Revive equivalent: 2× revive speed).
 The kit is free and ignores the power rule. Co-op rules still take every perk on going down, so the kit perks come
 back when the bot is revived; after a bleed-out respawn the Thompson comes back too (`spawn_kit.restore_after_down`).
-A campaign arrival with a full loadout is never overwritten. Bots can still buy up to two more perks
-(`shopping.max_perks` is 4, the perk cap).
+A campaign arrival with a full loadout is never overwritten. Bots can still buy perks up to the perk cap
+(`PerkManager.cap_for`: 6 since T-081, 4 under Classic Rules; the bonus perk is outside it).
 
 Change the kit in `bots.json → spawn_kit` (`weapons`, `hold`, `perks`).
 

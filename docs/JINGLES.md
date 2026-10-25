@@ -615,7 +615,7 @@ The stencil format is `<PLAN ID> · <PLAN NAME>`, e.g. `DMS-VP-DUR-01 · DURABIL
 | | |
 |---|---|
 | **Plan** | **DISCLOSURE (unreleased prototype)** · `DMS-VP-DIS-X1` |
-| **Availability** | Helvetia Works always. All other Gravelight maps after `fp_ch5_done` (profile unlock `gl_perk_fernet`). Counts toward the 4-perk cap. Effects and numbers are in `docs/gravelight/WEAPONS.md` §20. |
+| **Availability** | Helvetia Works always. All other Gravelight maps after `fp_ch5_done` (profile unlock `gl_perk_fernet`). Counts toward the perk cap (6 since T-081). Effects and numbers are in `docs/gravelight/WEAPONS.md` §20. |
 | **Cost** | 2000 (Vendelin's trait: 1800) |
 | **Color** | bare steel, with a bitter-green `#3f5d3a` glass lens |
 
@@ -705,7 +705,7 @@ The stencil format is `<PLAN ID> · <PLAN NAME>`, e.g. `DMS-VP-DUR-01 · DURABIL
 | | |
 |---|---|
 | **Plan** | **SURGE (unreleased prototype)** · `DMS-VP-SRG-X2` |
-| **Availability** | Helvetia Works always. All other Gravelight maps after `fp_ch5_done` (profile unlock `gl_perk_overclock`). Counts toward the 4-perk cap. Effects and numbers are in `docs/gravelight/WEAPONS.md` §20. |
+| **Availability** | Helvetia Works always. All other Gravelight maps after `fp_ch5_done` (profile unlock `gl_perk_overclock`). Counts toward the perk cap (6 since T-081). Effects and numbers are in `docs/gravelight/WEAPONS.md` §20. |
 | **Cost** | 2500 (Vendelin's trait: 2250) |
 | **Color** | teal `#2fa8a0` and copper, with a violet spark |
 

@@ -78,3 +78,22 @@ All in data: `economy.json bonuses` (the table above), `rounds.json milestones`,
 `tonic_bottle`. Tests: `gravelight/tests/unit/test_scrip_bonuses.gd`, `test_milestones.gd`; smoke:
 `gravelight/tools_src/smoke_milestone_r5.tscn` (round 4 to its end, the drops, the gift, the tags, round 5, the
 agent taking a bottle, the expiry rule). Dev console: `powerup tonic_bottle` drops one in front of you.
+
+## 5. Six tonics (T-081)
+
+The perk-tonic cap went from 4 to **6** (`perks.json` `"cap"`; `"classic_cap": 4` under Classic Rules, read once per
+match by `PerkManager.base_cap()`, the host's value in co-op). The Map 1 egg's slot is still +1 on top (7 there); a
+bot's bonus perk and the tonic tiers use no slot. What it changes:
+
+- **Late Scrip has somewhere to go.** On Map 0 the nine tonics cost 20,000 together (Ironhide 2500, Second Wind 500,
+  Trigger 3000, Twin Barrel 2000, Marathon 2000, Hawkeye 1500, Packmule 4000, Blastproof 2000, Overclock 2500); four
+  slots took 8-10k of it, six take 12-15k, and a downed survivor rebuys more. Tiers (section 1 of PERKS_LORE.md)
+  still come after the cap is full, so they start later: the bots' `perk_upgrades` wait for `nothing_new`.
+- **The round-5 tonic bottle** almost never hits a full cap now (it needs six tonics by round 5): it is a free tonic,
+  and the tier / 1500 Scrip fallbacks are for the Requiem-style "everything" cases.
+- **Bots and the player-bot agent** buy up to `cap_for` with no data change (`ai/economy.json perk_plan` and the
+  agent's `perk_order` already list eight). Measured (2026-10-25, `tools/ai_soak.sh --scenario=botmode --runs=12`,
+  seeds 1-12): rounds 9 8 9 10 9 3 9 9 8 9 8 6, mean 8.08, best 10 (before: mean 7.71, best 10; within the noise).
+  The solo agent never filled the cap: it held 2-5 tonics when it died (the round-5 bottle gave its 5th) and
+  330-6,385 Scrip unspent, saved for the Crucible step of its Map 0 plan. The extra slots matter past round 10 and in
+  squads; the agent's unspent Scrip is a plan question (`ai/player_bot.json` map00 steps), not the cap.

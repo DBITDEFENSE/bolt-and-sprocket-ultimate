@@ -154,6 +154,8 @@ class Plates extends Control:
 				order.append(StringName(pk))
 		var n: int = order.size()
 		var gap: float = cap_r * 2.0 + 3.0
+		if n > 1:
+			gap = minf(gap, (w - 8.0 - cap_r * 2.0) / float(n - 1))   # T-081: six tonics + the bonus overlap a little to stay on the plate
 		var x0: float = at.x - (float(n - 1) * gap) * 0.5
 		for i: int in n:
 			PerkCap.draw_cap(self, Vector2(x0 + float(i) * gap, top + 26.0), cap_r, order[i], order[i] == bonus, cap_font, a)

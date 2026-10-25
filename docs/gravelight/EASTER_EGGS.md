@@ -164,8 +164,8 @@ Steps 2, 3 and 4–7 run in parallel after the vault opens (step 3 can be done a
 
 | Reward | Scope |
 |---|---|
-| All 8 perks for the rest of the match (above the 4-perk cap) | match, each player present |
-| **Permanent 5th perk slot on Map 1** | profile, each player |
+| All perks for the rest of the match (above the perk cap) | match, each player present |
+| **Permanent extra perk slot on Map 1** (cap + 1: 7 since T-081; the profile key is still `map01_perk_slot_5`) | profile, each player |
 | +25,000 XP ("Requiem" bonus) | profile |
 | Character dossier page `egg_map01` (for the played character) | profile |
 | Archive entry **"Requiem"** (cutscene replay + Fasbender transcript) | profile |
@@ -269,7 +269,7 @@ Run in solo and in (later) 2-player co-op. Tick each.
 - [ ] 10: The cutscene plays once; the match continues afterwards. Peg's pocket shot is visible.
 
 **Rewards**
-- [ ] All perks granted above the cap; the HUD shows all 8 caps without overlap.
+- [ ] All perks granted above the cap; the HUD shows all the caps (9 today) without overlap.
 - [ ] The profile gets the 5th slot (Map 1 only), XP, dossier page, archive, Map 2 unlocked. Survives a restart.
 
 **Robustness**

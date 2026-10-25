@@ -735,7 +735,7 @@ a human's choices, and there is no human to take the step from.
 - **Far errands between waves.** Mid-round it only shops within 16 m of home (`self_led_mid_round_m`); the cellar's
   perks, the Crucible and the switch wait for the break (bots used to die alone in the cellar while the coal chute
   spawned on them).
-- Then the usual plan: Ironhide and Second Wind come with the kit; Trigger Tonic, then Hawkeye Brandy (the cap is 4);
+- Then the usual plan: Ironhide and Second Wind come with the kit; Trigger Tonic, then Hawkeye Brandy and on down the plan (the cap is 6 since T-081);
   the crate when rich; the Crucible for the Thompson from round 5.
 - Easter-egg objects, buildable parts and traps stay off limits even then.
 

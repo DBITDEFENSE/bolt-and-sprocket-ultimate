@@ -94,22 +94,27 @@ func test_gift_tonic_grants_a_free_perk_without_power() -> void:
 	assert_eq(Economy.get_scrip(PID), before, "free")
 
 
+## A full cap (T-081: six tonics, four under Classic Rules).
+func _fill_cap() -> void:
+	var ids: Array[StringName] = [&"ironhide_stout", &"trigger_tonic", &"twin_barrel", &"marathon_malt", &"blastproof_bock", &"packmule_porter"]
+	for i: int in PerkManager.base_cap():
+		PerkManager.grant(PID, ids[i])
+
+
 func test_gift_tonic_respects_the_cap() -> void:
-	for id: StringName in [&"ironhide_stout", &"trigger_tonic", &"twin_barrel", &"marathon_malt"]:
-		PerkManager.grant(PID, id)
+	_fill_cap()
 	var g: Dictionary = PowerupManager.gift_tonic(PID)
-	assert_eq(PerkManager.owned(PID).size(), 4, "no fifth tonic")
+	assert_eq(PerkManager.owned(PID).size(), PerkManager.base_cap(), "no tonic past the cap")
 	assert_eq(g.get("kind"), "tier", "a tier on a carried tonic (mastery gate off in this test)")
 	assert_eq(PerkManager.tier_of(PID, StringName(g["perk"])), 2)
 
 
 func test_gift_tonic_full_cap_and_locked_tiers_pay_scrip() -> void:
 	PerkManager.meta_gate_override = 1   # no tier unlocked by this test profile... unless it has mastery
-	for id: StringName in [&"ironhide_stout", &"trigger_tonic", &"twin_barrel", &"marathon_malt"]:
-		PerkManager.grant(PID, id)
+	_fill_cap()
 	var locked: bool = true
-	for id: StringName in [&"ironhide_stout", &"trigger_tonic", &"twin_barrel", &"marathon_malt"]:
-		if PerkManager.tier_unlocked(id, 2):
+	for id: Variant in PerkManager.owned(PID):
+		if PerkManager.tier_unlocked(StringName(id), 2):
 			locked = false
 	var before: int = Economy.get_scrip(PID)
 	var g: Dictionary = PowerupManager.gift_tonic(PID)

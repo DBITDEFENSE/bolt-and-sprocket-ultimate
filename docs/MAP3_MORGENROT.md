@@ -236,7 +236,7 @@ The **Panzerfaust** (single-shot tube; Crucible "Late Postage"), the **Gewehr 1-
 9. **REINHOLT, "WIEDERKEHR":** dosed with her fragment, she floats in the Kessel inside a violet storm; a spectral, broken **Liesl apparition** of Nachtglas light (the tin drummer marching at her feet) shields her. Phase 1: freeze the shield with Die Lange Nacht and shatter it. Phase 2: she summons the dead of Kaltenbrunn (Map 1 enemies, the Foreman included). Phase 3: she clings to the gantry as the Sonnenspeer's engines light. Her lines are grief.
 10. **ABORT:** a two-key turn in the Leitstand (Schlüssel I + II; co-op: two players within 1 s; solo: Fasbender turns the second if he came, else a demolition charge jams it and you have 10 s), and the three gantry **umbilicals** cut (Die Lange Nacht or melee). Success → **ABORT ENDING**. The 5 minutes run out → **LAUNCH ENDING**.
 
-**Rewards:** all perks for the rest of the match (above the cap); a permanent 5th perk slot on Morgenrot; the final Character Dossier pages for all four; the Gravelight saga credits; XP; the "Letztes Licht" calling card; an Archive entry. If the Moon egg (§6) was done, the Moon ending replaces the Abort ending.
+**Rewards:** all perks for the rest of the match (above the cap); a permanent extra perk slot on Morgenrot (cap + 1); the final Character Dossier pages for all four; the Gravelight saga credits; XP; the "Letztes Licht" calling card; an Archive entry. If the Moon egg (§6) was done, the Moon ending replaces the Abort ending.
 
 ---
 

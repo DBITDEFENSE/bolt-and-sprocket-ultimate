@@ -150,7 +150,7 @@ Gravelight is already designed and built in the GRAVELIGHT project (DECISIONS T-
 - Max 24 zombies active.
 - Barricades: 6 boards per window.
 - 2 weapon slots (3 with Packmule Porter).
-- Perk cap: 4.
+- Perk cap: 6 (T-081; 4 under Classic Rules). `data/gravelight/perks.json` "cap" / "classic_cap".
 
 **Maps:**
 - Map 0, Crossroads Inn (a tutorial with the perk cellar for the vertical slice)

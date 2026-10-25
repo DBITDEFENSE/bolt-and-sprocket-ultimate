@@ -95,9 +95,10 @@ func test_bonus_perk_is_outside_the_cap() -> void:
 	assert_true(PerkManager.has_perk(PID, &"overclock_cordial"))
 	assert_eq(PerkManager.bonus_perk(PID), &"overclock_cordial")
 	assert_eq(PerkManager.capped_count(PID), 0)
-	for id: StringName in [&"ironhide_stout", &"trigger_tonic", &"twin_barrel", &"marathon_malt"]:
-		assert_eq(PerkManager.buy_for(PID, id), &"ok", String(id))
-	assert_eq(PerkManager.owned(PID).size(), 5, "four bought + the bonus")
+	var ids: Array[StringName] = [&"ironhide_stout", &"trigger_tonic", &"twin_barrel", &"marathon_malt", &"blastproof_bock", &"packmule_porter"]
+	for i: int in PerkManager.base_cap():
+		assert_eq(PerkManager.buy_for(PID, ids[i]), &"ok", String(ids[i]))
+	assert_eq(PerkManager.owned(PID).size(), PerkManager.base_cap() + 1, "a full cap bought + the bonus")
 	assert_eq(PerkManager.buy_for(PID, &"hawkeye_brandy"), &"cap")
 
 

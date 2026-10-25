@@ -43,7 +43,7 @@ func _on_match_started(_m: StringName) -> void:
 	pending_seed = -1
 	if Net.is_online():
 		return   # co-op: each player's own profile decides their egg slot (MapRoot._apply_coop_egg_slots)
-	# Permanent Map 1 reward: a 5th perk slot once the main egg has been completed on this profile.
+	# Permanent Map 1 reward: an extra perk slot (cap + 1) once the main egg has been completed on this profile.
 	var rewards: Dictionary = ProfileSave.profile.get("egg_rewards", {})
 	for pid: int in GameState.player_ids:
 		if GameState.map_id == &"map01_kaltenbrunn" and bool(rewards.get("map01_perk_slot_5", false)):
