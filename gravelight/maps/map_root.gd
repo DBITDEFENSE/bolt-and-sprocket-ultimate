@@ -22,6 +22,9 @@ extends Node3D
 @export var nav_always_bits: Array = []
 @export var zone_adjacency: Dictionary = {}
 @export var auto_rounds: bool = true
+## The play space's footprint on the ground (x, z; T-084, Map 0's edge wall): drops from a kill beyond it (a
+## zombie shot in its spawn pocket through the invisible edge) are pulled inside it. Zero size = no edge.
+@export var drop_bounds: Rect2 = Rect2()
 
 var player: Player
 var players: Dictionary = {}     # pid -> Player (solo: {1: player})
@@ -31,6 +34,16 @@ var pause_menu: PauseMenu
 var session: NetMatch = null
 var squad: BotSquad = null
 var _online: bool = false
+
+
+## `p` pulled inside drop_bounds by `margin` (unchanged when the map has no bounds or `p` is already inside).
+func clamp_inside(p: Vector3, margin: float = 1.5) -> Vector3:
+	if drop_bounds.size.x <= 0.0 or drop_bounds.size.y <= 0.0:
+		return p
+	var q: Vector3 = p
+	q.x = clampf(q.x, drop_bounds.position.x + margin, drop_bounds.end.x - margin)
+	q.z = clampf(q.z, drop_bounds.position.y + margin, drop_bounds.end.y - margin)
+	return q
 
 
 func _ready() -> void:

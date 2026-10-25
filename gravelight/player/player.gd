@@ -18,7 +18,7 @@ extends CharacterBody3D
 signal prompt_denied
 
 const LAYER_PLAYER: int = 1 << 1
-const MASK_MOVE: int = 1 | (1 << 2) | (1 << 5) | (1 << 8)   # world, zombie bodies, barricades, doors
+const MASK_MOVE: int = 1 | (1 << 2) | (1 << 5) | (1 << 8) | (1 << 10)   # world, zombie bodies, barricades, doors, the map's edge (T-084: shots pass it, bodies don't)
 const MASK_INTERACT: int = 1 | (1 << 4) | (1 << 8)          # world, interactables, doors
 const GRAVITY: float = 14.0
 const STAND_HEIGHT: float = 1.8
