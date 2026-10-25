@@ -105,6 +105,7 @@ Falloff: full damage up to **Start**, linear down to **Min ×** at **End**, then
 ## 4.1 Handling: sprint-out, ADS, recoil and bloom (Update 02 §1, T-046)
 
 - **Sprint-out** (time from leaving a sprint until the gun fires; the sprint-out pose plays meanwhile), `data/gravelight/movement.json` `sprint_out`: pistol 0.15 s, SMG 0.2, rifle / bolt / assault / shotgun 0.3, sniper 0.35, LMG 0.45, flamethrower 0.45, launcher 0.5; wonder weapons: Ashlight 0.2, Elmsfeuer 0.25, Totenglocke 0.35. Fire or ADS input cancels a sprint at once and a fire press is buffered until the sprint-out ends, so it is never lost.
+- **Reload on the run** (T-083, `movement.json` `sprint_reload`): **SMGs and pistols** (machine pistols, revolvers, the Webley's break) start and keep a reload while sprinting; the viewmodel keeps about a third of the sprint pose (`feel` `sprint_reload_pose`, 0.35) under the reload so nothing snaps, and the sprint-out above still gates the first shot. Every other class has its reload interrupted by a sprint (a reload asked for while sprinting waits for the sprint to end) unless the gun wears the **Paratrooper Sling** from the Armorer's Bench (§26: grip slot `quick_sling`, `props.sprint_reload`; 1000 Scrip, LMGs 1250). Per-weapon overrides go in `sprint_reload.weapons`. `WeaponHolder.sprint_reload_allowed(w)`.
 - **ADS time** (`ads_time`, per weapon): SMG 0.18 s, rifles 0.25, LMG 0.4 (pistol 0.15, shotguns 0.2–0.25, snipers 0.4–0.55, launcher 0.5 unchanged). **ADS-walk** is 60% of the walk speed (`movement.json ads_move_mult`; a weapon row may set its own `ads_move_mult`).
 - **Recoil pattern** (`weapons.json` `recoil`: classes, then per weapon, then a row's own `recoil`): each shot moves the aim up `v × min(v_max_mult, 1 + v_growth × shot index)` degrees (the same climb every burst) and sideways along a per-weapon swing `h_swing × sin(i × h_freq + phase)` plus a small random `±h`. After `recover_delay` without a shot, `1 − keep` of the burst drifts back at `recover` (1/s). The camera punch (feel `cam_*` × `punch`) springs fully back and the viewmodel kick (`vm_*`) is separate again. ADS × `ads_recoil`, crouched × `crouch_mult`.
 - **Hip bloom**: + `bloom` degrees a shot (pellet guns 35%), up to `bloom_max`; it holds while you fire, then shrinks at `bloom_still` deg/s standing still, `bloom_move` on the move, ×1.4 crouched. Walking adds up to `walk_spread_deg` (2.2°) at walk speed; crouched hip spread ×0.8. The crosshair ticks sit on the real cone edge.
@@ -309,8 +310,12 @@ Rules:
 1. **Buying a weapon you don't own** takes your current weapon's slot when your slots are full. The weapon comes with full ammo.
 2. **Ammo for a weapon you own** costs half its price and refills mag + reserve.
 3. **Upgraded ammo from the wall** costs 4500 (the wall chalk outline glows violet when you hold that weapon's upgraded variant).
-4. **Crate weapons** can't be refilled at walls. Use the Crucible (2500 when already upgraded), Resupply drops, or buy a new one.
+4. **Crate weapons** can't be refilled at walls. Use an **ammo box** (§9.1), Resupply drops, or buy a new one. The Crucible sells no ammo (T-083).
 5. The prompt always tells you which case you're in: "Hold [F] for Ammo [500]" / "Hold [F] for Upgraded Ammo [4500]".
+
+### 9.1 Ammo boxes (Update 02 §4, T-049; the taught gun's counter since T-083)
+
+`gravelight/world/ammo_box.gd`, prices in `economy.json` `ammo_box`: hold Use to refill the gun in your hands (mag + reserve, a rifle's grenades) and your lethal grenades. **Normal 250, Crucible-taught 2500 (any tier), wonder 1000, taught wonder 4000**, grenades only 250; a 3 s per-player cooldown. Packmule II halves it, the Scrounger Field Habit discounts it. Since T-083 the boxes (and a gun's own wall chalk at 4500) are the only places a taught gun refills: the Crucible teaches and nothing else. Every map places boxes (Map 0: the taproom and the Grounds; Map 1: the Rail Yard; Map 2: the harbour), bots refill there (`BotEconomy._ammo_candidate`, upgraded guns at the upgraded price).
 
 ---
 
@@ -362,11 +367,11 @@ Total base weight: 112 (A 43, B 53, C 16). The Totenglocke is never in the Crate
 | Rule | Value |
 |---|---|
 | Location | Core Vault (`I_CORE`), Map 1 |
-| Cost | 5000 to upgrade. **2500** to refill an already-upgraded weapon (the weapon goes in, then comes back full). |
+| Cost | 5000 to upgrade (7500 / 10000 for the second and third teaching, §11.1). **It sells no ammo** (T-083): a taught weapon refills at an ammo box (§9.1, 2500) or its wall chalk (4500). |
 | Process | Feed the weapon in (you're left holding nothing). The forge roars for **5 s**, then presents the weapon for **15 s**. If no one takes it, it's lost. |
 | Stealing | In co-op, any player can take the presented weapon (classic behavior). The Operator comments. |
-| Ammo | Upgrading refills mag + reserve. |
-| Not allowed | Melee, frags, Siren Gramophone. An upgraded weapon that is not full gets the 2500 refill instead; a **full** upgraded weapon can be re-taught (§11.1). |
+| Ammo | Every teaching hands the weapon back full (mag + reserve). |
+| Not allowed | Melee, frags, Siren Gramophone. A taught weapon, full or not, is offered its next teaching (§11.1); at the top tier the prompt says it has learned all the Crucible can teach. |
 | Lockout | One weapon in the forge at a time. A second player sees "The Crucible is occupied." |
 | Death's Door / Double Scrip | Don't affect the price. |
 | Flavor | *"The Crucible doesn't improve a weapon. It reminds it what it was for."* |
@@ -385,7 +390,7 @@ Any Crucible (Map 0 cellar, Map 1 Core, Map 2 U-1047) teaches a weapon up to **t
 | II | 7500 `crucible_upgrade_tiers.2` | ×1.5 | ×1.25 (rounded up) | ×0.9 | *name* II |
 | III | 10000 `crucible_upgrade_tiers.3` | ×2.0 | ×1.5 (rounded up) | ×0.8 | *name* III |
 
-Rules: only a **full** taught weapon is offered the next teaching (an unfilled one gets the 2500 refill first, so the two offers never share a prompt); the tier rides with the kit through co-op mirroring and the campaign exfil (`WeaponHolder.to_net` entry 7); wall-buy and Crucible ammo prices don't change with the tier; bots re-teach when their Scrip covers the next price (`BotConfig.crucible_wanted`). Flavor: *"The second time it remembers. The third time it won't forget."*
+Rules: a taught weapon is offered the next teaching whatever its ammo (T-083: the Crucible's old 2500 refill is gone; the user kept being asked for ammo when they came to re-teach a gun, and the ammo boxes do that job); the tier rides with the kit through co-op mirroring and the campaign exfil (`WeaponHolder.to_net` entry 7); wall-buy and Crucible ammo prices don't change with the tier; bots re-teach when their Scrip covers the next price (`BotConfig.crucible_wanted`). Flavor: *"The second time it remembers. The third time it won't forget."*
 
 ## 12. Shots-to-kill sanity table (torso hits, no perks, no falloff)
 
@@ -953,15 +958,17 @@ text; numbers it leaves out are the base part's, with benefits ×`upgrade_boost`
 
 | Class (guns) | Magazine | Barrel | Sights | Grip / stock | Ammo |
 |---|---|---|---|---|---|
-| smg (MP40, Thompson, PPSh-41, Type 100) | Extended 1250, Drum 2250 (Thompson: 50-rd L drum → C drum 100 on Chicago Lament; MP40: MP40/II twin slide; PPSh: 35-rd box instead) | Cutts comp 1000, Suppressor 1500, Long barrel 1000 | Radium 600, Peep insert 750 | Vertical foregrip 900, Sling 600 | Hollow-points 1200, AP 1200, Nachtglas 2500 |
-| assault (STG-44) | as smg, twin-pack mags, no drum | as smg | + ZG 1229 "Vampir" scope 2000 | as smg | as smg |
-| rifle (Garand, G43, Carbine) | Extended 1250 (Garand: T20 20-rd box; Carbine: 30-rd banana) | Flash hider 900, National Match 1000, Suppressor 1500 | Scope 1500 (M84 / ZF4 / Weaver), Radium 600 | Sling 600, Cheek pad 700 | AP 1200, Incendiary 1500, Nachtglas 2500 |
-| bolt (Kar98k) / sniper (Springfield, PTRS-41) | Stripper pouch 750 (Kar98k: 25-rd trench magazine 1500) | Match 1000, Flash hider 900, Suppressor 1500 (PTRS: muzzle brake 1250) | Scope 1500 (Kar: ZF39; PTRS: PE; Springfield: Unertl 8x glass 1250), Radium 600 | Sling, Cheek pad | AP, Incendiary, Nachtglas |
-| shotgun (Trench Gun, Sawed-Off) | Shell bandolier 750, Extended tube 1250 | Full choke 900, Cutts comp 1000 | Ivory bead & rib 500, Radium 600 | Recoil pad 700, Sling 600 | Magnum buck 1250, Dragon's Breath 1750, Nachtglas 2500 |
-| lmg (BAR, MG42, M1919) | Extended 1750 (BAR 40-rd; MG42/M1919 250-rd belt box) | Flash hider 1000, Heavy barrel 1250 (M1919: spare barrel, runs cooler) | Radium 600, Spider-web AA sight 900 | Bipod 1250 (BAR A2; MG42 Heavy Zweibein; M1919 M2), Assault sling 900 | Tracer belt 1000, AP 1250, Incendiary 1750, Nachtglas 3000 |
-| launcher (Panzerschreck) | Ready-rack 1500 (+50% rockets) | Muzzle ring (54/1) 1000 | Ranging sight 750, Radium 600 | Shoulder pad 600 | Hollow-charge 2000, Nachtglas 3000 |
-| special (M2 flamethrower) | Third tank 1750 | Long nozzle 1250 (reach 9 / 11 m) | — | Pack harness 750 | Thickened fuel 2000 |
+| smg (MP40, Thompson, PPSh-41, Type 100) | Extended 1250, Drum 2250 (Thompson: 50-rd L drum → C drum 100 on Chicago Lament; MP40: MP40/II twin slide; PPSh: 35-rd box instead) | Cutts comp 1000, Suppressor 1500, Long barrel 1000 | Radium 600, Peep insert 750 | Vertical foregrip 900, Sling 600 (reloads on the run by class) | Hollow-points 1200, AP 1200, Nachtglas 2500 |
+| assault (STG-44) | as smg, twin-pack mags, no drum | as smg | + ZG 1229 "Vampir" scope 2000 | as smg + Paratrooper Sling 1000 | as smg |
+| rifle (Garand, G43, Carbine) | Extended 1250 (Garand: T20 20-rd box; Carbine: 30-rd banana) | Flash hider 900, National Match 1000, Suppressor 1500 | Scope 1500 (M84 / ZF4 / Weaver), Radium 600 | Paratrooper Sling 1000, Sling 600, Cheek pad 700 | AP 1200, Incendiary 1500, Nachtglas 2500 |
+| bolt (Kar98k) / sniper (Springfield, PTRS-41) | Stripper pouch 750 (Kar98k: 25-rd trench magazine 1500) | Match 1000, Flash hider 900, Suppressor 1500 (PTRS: muzzle brake 1250) | Scope 1500 (Kar: ZF39; PTRS: PE; Springfield: Unertl 8x glass 1250), Radium 600 | Paratrooper Sling 1000, Sling, Cheek pad | AP, Incendiary, Nachtglas |
+| shotgun (Trench Gun, Sawed-Off) | Shell bandolier 750, Extended tube 1250 | Full choke 900, Cutts comp 1000 | Ivory bead & rib 500, Radium 600 | Paratrooper Sling 1000, Recoil pad 700, Sling 600 | Magnum buck 1250, Dragon's Breath 1750, Nachtglas 2500 |
+| lmg (BAR, MG42, M1919) | Extended 1750 (BAR 40-rd; MG42/M1919 250-rd belt box) | Flash hider 1000, Heavy barrel 1250 (M1919: spare barrel, runs cooler) | Radium 600, Spider-web AA sight 900 | Paratrooper Sling 1250, Bipod 1250 (BAR A2; MG42 Heavy Zweibein; M1919 M2), Assault sling 900 | Tracer belt 1000, AP 1250, Incendiary 1750, Nachtglas 3000 |
+| launcher (Panzerschreck) | Ready-rack 1500 (+50% rockets) | Muzzle ring (54/1) 1000 | Ranging sight 750, Radium 600 | Paratrooper Sling 1000, Shoulder pad 600 | Hollow-charge 2000, Nachtglas 3000 |
+| special (M2 flamethrower) | Third tank 1750 | Long nozzle 1250 (reach 9 / 11 m) | — | Paratrooper Harness 1000, Pack harness 750 | Thickened fuel 2000 |
 | wonder (Ashlight, Totenglocke, Sankt-Elmsfeuer), melee, tacticals | refused in character (`refuse`, `refuse_classes`) | | | | |
+
+**The Paratrooper Sling** (T-083, grip slot `quick_sling`; the flamethrower's is a Paratrooper Harness; taught: Pilgrim's Sling / Harness): an airborne quick-release sling whose one job is `props.sprint_reload` (§4.1: the gun reloads while you sprint, as SMGs and pistols do by class) plus a slightly quicker raise (`draw` 0.92). It takes the grip slot, so it costs you the foregrip / bipod / cheek pad / recoil pad in that slot: a mobility choice. Pistols and SMGs don't list it (they have it already). It uses the leather sling's model on the long guns; the tube and the flamethrower show no part.
 
 **Rules.** The kit lives on the WeaponInstance of any gun: Crucible (and tiers II/III) keep it; Jakub, the campaign
 carry and the co-op inventory carry it (`net_entry` 7, decoded against the gun's own table); a wall-buy or **Mystery

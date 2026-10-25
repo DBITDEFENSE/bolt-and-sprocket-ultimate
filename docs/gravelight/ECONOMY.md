@@ -97,3 +97,27 @@ bot's bonus perk and the tonic tiers use no slot. What it changes:
   The solo agent never filled the cap: it held 2-5 tonics when it died (the round-5 bottle gave its 5th) and
   330-6,385 Scrip unspent, saved for the Crucible step of its Map 0 plan. The extra slots matter past round 10 and in
   squads; the agent's unspent Scrip is a plan question (`ai/player_bot.json` map00 steps), not the cap.
+
+## 6. The Crucible teaches, the boxes feed (T-083)
+
+The Crucible no longer sells ammo. It used to offer "upgraded ammo [2500]" whenever you held a taught gun that was not
+full, and the next teaching only once the gun was full, so a player bringing a half-empty Last Rites to be taught twice
+was asked for ammo instead (the user's words: "it's asking me to buy ammo from the pack a punch machine. Don't have it
+buy ammo from the pack a punch machine"). Now `Crucible.action_for` answers `upgrade` for any taught gun under the top
+tier, `full` at tier III, and never `ammo`; `economy.json` lost `crucible_upgraded_ammo`.
+
+Where a taught gun's ammo comes from instead, unchanged prices:
+
+| Counter | Price | Notes |
+|---|---|---|
+| **Ammo box** (`economy.json ammo_box.upgraded`) | **2500** (taught wonder weapon 4000) | any tier; Packmule II halves it, Scrounger discounts it; every map has boxes (Map 0 taproom + Grounds, Map 1 Rail Yard, Map 2 harbour) |
+| The gun's own wall chalk (`wallbuy_upgraded_ammo`) | 4500 | wall guns only |
+| Resupply drop | free | everyone |
+| Every teaching (I, II, III) | 5000 / 7500 / 10000 | the gun comes back full |
+
+Bots follow: the `crucible_ammo` errand is gone (`bot_economy.gd`, `bot_tasks.gd`, the mark orders, the agent plan's
+always-list, `bots.json shopping.crucible` lost `ammo_below_frac` / `ammo_reserve_scrip`, `ai/economy.json priorities`
+lost `crucible_ammo`); a bot's taught gun under `ammo_box_below` (25%, 60% between waves with Scrip to spare) is the
+ordinary ammo-box errand at the box's upgraded price (`BotEconomy._ammo_candidate`). `smoke_bots` phase 12 now checks
+that refill. `BotMetrics.category_of` files any `<id>_ammo` purchase as wall ammo (`crucible` is upgrades only).
+

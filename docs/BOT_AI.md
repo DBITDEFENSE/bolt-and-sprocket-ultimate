@@ -242,7 +242,7 @@ column says "human".
 | teleports | Reported by the brain through the hook, with the position. |
 | lost time | Time a standing bot spent more than 14 m (flat) from a standing human, counted after the first 4 s of each spell. |
 | blocking events | A bot inside a standing human's **1.2 m** personal space (flat, same floor) while that human moves faster than **1 m/s**: one event per full 0.5 s of an unbroken episode. A **sustained** event is an episode longer than 2 s, counted once per episode and logged with the position. |
-| Scrip spent | `purchase_made` per category, from the item id: perk, wall gun (by gun id and round), wall-buy ammo, ammo box, door, crate, Crucible (upgrades and upgraded ammo), pylon, trap. |
+| Scrip spent | `purchase_made` per category, from the item id: perk, wall gun (by gun id and round), wall-buy ammo (an upgraded gun's too), ammo box, door, crate, Crucible (upgrades; it sells no ammo since T-083), pylon, trap. |
 | Scrip wasted | Wall-gun purchases only, the first matching rule: a **Kar98k after round 10**; a gun **worse than the best one carried** at the time (gun quality = its wall price; the start pistol 0; a crate-only gun 1500; an upgraded gun 5000); a gun **no longer carried within 2 rounds** of buying it (guns lost to a bleed-out don't count; that isn't a choice). |
 | Kar98k after r10 | Its own count, because the brief's acceptance names it. |
 | empty-mag moments | The gun in a standing bot's hands has an empty magazine while a zombie is within 6 m (flat, same floor). It counts the episodes (rising edges) and the time. |
@@ -881,7 +881,7 @@ Garand without Ironhide. What changed (`bot_trainer.gd`, `agent_plan.gd`, player
 
 - **The game plan** (`AgentPlan`, player_bot.json `plans`): a step list per map (door / power / perk / gun with
   `or_tier` / crucible). `BotEconomy.candidates` keeps only the current step's errand (plus ammo, an ammo box,
-  upgraded ammo, the boards, the power switch); when the ordinary rules don't offer it (a door's per-round limit, a
+  the boards, the power switch); when the ordinary rules don't offer it (a door's per-round limit, a
   gun the tier table skips) the plan makes its own errand, in the break or a quiet moment only. Map 0: Garand, the
   cellar door, power, Second Wind, Ironhide, stable, yard, Thompson, Marathon, Crucible, Trigger Tonic. Map 1:
   carbine, Rail Yard, MP40, Administration, Second Wind, Barracks, lift, Generator Hall, power, Ironhide, Marathon,
