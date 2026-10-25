@@ -137,8 +137,19 @@ static func options(items: PackedStringArray, selected: int, cb: Callable) -> Op
 
 ## Grabs focus on the first focusable control under `root` (for controller users).
 static func focus_first(root: Node) -> void:
-	for n: Node in root.find_children("*", "Control", true, false):
-		var c: Control = n as Control
-		if c.focus_mode == Control.FOCUS_ALL and c.is_visible_in_tree():
-			c.grab_focus()
-			return
+	var c: Control = _first_focusable(root)
+	if c != null:
+		c.grab_focus()
+
+
+## Depth-first in tree (= on-screen) order. find_children would list a direct child (the Muster's bottom spacer)
+## before the buttons nested in an earlier row, and the page opened scrolled to the end.
+static func _first_focusable(n: Node) -> Control:
+	for ch: Node in n.get_children():
+		var c: Control = ch as Control
+		if c != null and c.focus_mode == Control.FOCUS_ALL and c.is_visible_in_tree():
+			return c
+		var deeper: Control = _first_focusable(ch)
+		if deeper != null:
+			return deeper
+	return null

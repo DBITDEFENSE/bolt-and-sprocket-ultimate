@@ -1824,6 +1824,34 @@ func _set_prop(kind: String) -> void:
 			cap.position = Vector3(0, 0, 0.03)
 			cap.material_override = WeaponModels.base_mat("brass")
 			_prop.add_child(cap)
+		"rounds6":
+			_prop = Node3D.new()
+			# six revolver rounds in a ring (hand-loaded together), noses forward (-z)
+			for i: int in 6:
+				var a: float = TAU * float(i) / 6.0
+				var at: Vector3 = Vector3(0.0112 * cos(a), 0.0112 * sin(a), 0.0)
+				var body: MeshInstance3D = MeshInstance3D.new()
+				var bm: CylinderMesh = CylinderMesh.new()
+				bm.top_radius = 0.005
+				bm.bottom_radius = 0.005
+				bm.height = 0.02
+				bm.radial_segments = 10
+				body.mesh = bm
+				body.rotation_degrees = Vector3(90, 0, 0)
+				body.position = at
+				body.material_override = WeaponModels.base_mat("brass")
+				_prop.add_child(body)
+				var nose: MeshInstance3D = MeshInstance3D.new()
+				var nm: CylinderMesh = CylinderMesh.new()
+				nm.top_radius = 0.0045
+				nm.bottom_radius = 0.0022
+				nm.height = 0.01
+				nm.radial_segments = 10
+				nose.mesh = nm
+				nose.rotation_degrees = Vector3(90, 0, 0)
+				nose.position = at + Vector3(0, 0, -0.015)
+				nose.material_override = WeaponModels.base_mat("steel")
+				_prop.add_child(nose)
 		"clip":
 			_prop = Node3D.new()
 			# five rounds stacked in a stripper clip, pointing forward
@@ -2568,6 +2596,13 @@ func _animate_reload(p: float) -> Variant:
 				_prop_kind = "ejected"
 				_eject_casing()
 				_eject_casing()
+			if p > 0.35 and p < 0.75 and _model != null and _model.has_meta("cylinder"):
+				# six rounds pushed into the tipped-up cylinder's rear face (Barrels tip -0.6 rad about the hinge)
+				_set_prop("rounds6")
+				if _prop != null:
+					_prop.position = Vector3(0, -0.05, 0.12).lerp(Vector3(-0.016, 0.066, 0.05), _seg(p, 0.4, 0.7))
+					_prop.rotation_degrees = Vector3(rad_to_deg(-0.6), 0, 0)
+				return pouch.lerp(Vector3(-0.02, 0.02, 0.04), _seg(p, 0.3, 0.55))
 			if p > 0.35 and p < 0.75:
 				_set_prop("shell")
 				if _prop != null:

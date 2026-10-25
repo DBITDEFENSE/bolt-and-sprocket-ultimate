@@ -1131,6 +1131,10 @@ func _w_webley() -> void:
 	for i: int in 6:
 		var an: float = TAU * (float(i) + 0.5) / 6.0
 		box(Vector3(0.003, 0.003, 0.036), Vector3(0.0196 * cos(an), ly + 0.0196 * sin(an), 0.03), "black", Vector3(0, 0, rad_to_deg(an)), br)
+		# chamber mouths on the rear face (seen when the break tips the cylinder up at the eye)
+		var ca: float = TAU * float(i) / 6.0
+		tube(0.0052, 0.0052, 0.002, Vector3(0.0112 * cos(ca), ly + 0.0112 * sin(ca), 0.0574), "black", "z", br, 10)
+	tube(0.0042, 0.0042, 0.0016, Vector3(0, ly, 0.0576), "steel", "z", br, 6)                      # ejector star
 	box(Vector3(0.012, 0.005, 0.064), Vector3(0, ly + 0.0215, 0.027), "blued", Vector3.ZERO, br)  # top strap
 	front_blade(-0.142, ly + 0.0125, 0.0615, "blued", 0.003, 0.006, br)
 	tube(0.0062, 0.0062, 0.004, Vector3(0, ly, -0.1535), "steel", "z", br, 14)                    # crown
@@ -1162,6 +1166,7 @@ func _w_webley() -> void:
 	lhand(Vector3(-0.006, -0.05, 0.058), "y", 0.03)
 	meta("break", 0.27)
 	root.set_meta("bore", 0.0055)
+	root.set_meta("cylinder", true)   # the break reload loads six revolver rounds, not a shotgun shell
 
 
 func _kar_stock(wood: String, front: float) -> void:

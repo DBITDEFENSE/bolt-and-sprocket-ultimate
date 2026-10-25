@@ -6,6 +6,7 @@ signal closed
 
 var content: VBoxContainer
 var _title: String = ""
+var _scroll: ScrollContainer
 
 
 func _init(title: String = "") -> void:
@@ -48,6 +49,21 @@ func _ready() -> void:
 	scroll.add_child(content)
 	build()
 	MenuKit.focus_first.call_deferred(content)
+	_scroll = scroll
+	_settle_scroll()
+
+
+## A long page (the Muster) opened part-way down: follow_focus scrolled before the layout settled. Once it has,
+## start at the top and keep the focused control in view.
+func _settle_scroll() -> void:
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if not is_instance_valid(_scroll):
+		return
+	_scroll.scroll_vertical = 0
+	var f: Control = get_viewport().gui_get_focus_owner()
+	if f != null and _scroll.is_ancestor_of(f):
+		_scroll.ensure_control_visible(f)
 
 
 ## Override: fill `content`.
