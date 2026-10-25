@@ -114,7 +114,7 @@ static func refusal(sub: String, facts: Dictionary) -> String:
 		match sub:
 			"perk":
 				return "refuse_perk"
-			"crucible", "crucible_ammo":
+			"crucible":
 				return "refuse_crucible"
 			"power":
 				return ""
@@ -381,16 +381,7 @@ func _prepare_buy(b: BotBrain, o: Dictionary, spec: Dictionary) -> String:
 		"crucible":
 			var cr: Crucible = n as Crucible
 			facts["powered"] = cr.is_powered()
-			var up: int = b._upgradeable_slot()
-			if up < 0:
-				for i: int in p.weapons.slots.size():
-					if p.weapons.slots[i].upgraded:
-						o["sub"] = "crucible_ammo"
-						o["slot"] = i
-						o["label"] = "upgraded ammo"
-						sub = "crucible_ammo"
-						break
-			facts["upgradeable"] = up >= 0 or sub == "crucible_ammo"
+			facts["upgradeable"] = b._upgradeable_slot() >= 0   # a taught gun under the top tier counts (its next teaching); ammo is the boxes' (T-083)
 		"trap":
 			var t: Node = (n as TrapLever).trap() if n is TrapLever else null
 			facts["ready"] = t != null and (not t.has_method("can_activate") or bool(t.call("can_activate")))

@@ -81,7 +81,7 @@ var _look_in: Vector2 = Vector2.ZERO
 var _feel: Dictionary = {}         # resolved feel/viewmodel tuning for the held weapon (feel_for)
 var _cues: Array = []              # sound cues of the reload in progress (RELOAD_CUES)
 var _cue_i: int = 0
-var _sprinting: bool = false       # from this frame's intent: sprinting interrupts reloads (see _tick_reload)
+var _sprinting: bool = false       # from this frame's intent: sprinting interrupts reloads unless sprint_reload_allowed (see _tick_reload)
 # Update 02 §1 gunplay feel
 const MOVE_FIRE_BUFFER: float = 0.75   # a fire press during sprint-out / an early slide / a mantle waits this long at most
 var _sprint_out_total: float = 0.3     # this weapon's sprint-out time (movement.json sprint_out), for the pose blend
@@ -277,6 +277,21 @@ static func sprint_out_time(w: WeaponInstance) -> float:
 	if per.has(String(w.base_id())):
 		return float(per[String(w.base_id())])
 	return float(so.get(String(w.weapon_class()), dflt))
+
+
+## May `w` start and keep a reload while its holder sprints (T-083)? SMGs and pistols by class
+## (movement.json "sprint_reload": default, per class, "weapons" per base id), and any gun wearing a bench part
+## whose props set sprint_reload (the Paratrooper Sling). Firing still waits for the sprint-out.
+static func sprint_reload_allowed(w: WeaponInstance) -> bool:
+	if w == null:
+		return false
+	if bool(w.property("sprint_reload", false)):
+		return true
+	var sr: Dictionary = GLData.table("movement").get("sprint_reload", {})
+	var per: Dictionary = sr.get("weapons", {})
+	if per.has(String(w.base_id())):
+		return bool(per[String(w.base_id())])
+	return bool(sr.get(String(w.weapon_class()), sr.get("default", false)))
 
 
 ## True while a fire press is waiting for the sprint-out / slide / mantle to finish (the Player keeps the
@@ -1143,8 +1158,9 @@ func start_reload() -> void:
 	var w: WeaponInstance = current()
 	if w == null or _reloading or w.reserve <= 0 or w.mag >= w.mag_size() or _melee_t > 0.0:
 		return
-	if _sprinting:
-		# Sprinting and reloading don't mix: remember the request and start when the sprint ends.
+	if _sprinting and not sprint_reload_allowed(w):
+		# Sprinting and reloading don't mix for this gun: remember the request and start when the sprint ends.
+		# (An SMG, a pistol or a gun on a Paratrooper Sling reloads on the run, T-083.)
 		_reload_queued = true
 		return
 	_reload_queued = false
@@ -1178,10 +1194,10 @@ func _tick_reload(delta: float, fire_pressed: bool) -> void:
 	if _reload_per_round and fire_pressed and w.mag > 0:
 		_cancel_reload()
 		return
-	if _sprinting:
+	if _sprinting and not sprint_reload_allowed(w):
 		# Sprint cancels the reload. Ammo only moves when a step completes, so nothing is lost or duplicated:
 		# a magazine-style reload keeps the old mag's count, a round-by-round reload keeps the shells
-		# already inserted (the one in hand goes back to the reserve).
+		# already inserted (the one in hand goes back to the reserve). SMGs, pistols and slung guns carry on.
 		_cancel_reload()
 		return
 	_reload_t -= delta
@@ -1972,6 +1988,11 @@ func _animate(delta: float, sprinting: bool) -> void:
 	else:
 		_sprint_b = minf(move_toward(_sprint_b, 0.0, delta * 6.5), _sprint_out_t / maxf(0.05, _sprint_out_total))
 	var sprint_e: float = smoothstep(0.0, 1.0, _sprint_b)
+	# Reloading on the run (T-083: SMGs, pistols, the Paratrooper Sling): the sprint pose gives most of itself up
+	# to the reload (feel "sprint_reload_pose" = the share kept, 0.35) and the bob keeps running, eased by the
+	# reload tilt (last frame's _tilt_s) so the gun never snaps between the two poses.
+	if _reloading and sprint_e > 0.0:
+		sprint_e *= lerpf(1.0, clampf(float(_feel.get("sprint_reload_pose", 0.35)), 0.0, 1.0), _tilt_s)
 	_crouch_b = move_toward(_crouch_b, 1.0 if (player.crouching or player.sliding) else 0.0, delta * 4.0)
 	var crouch_e: float = smoothstep(0.0, 1.0, _crouch_b) * hip_k
 	_cook_b = move_toward(_cook_b, 1.0 if (_cooking or _throw_t > 0.0) else 0.0, delta * 7.0)

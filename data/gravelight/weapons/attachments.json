@@ -508,6 +508,22 @@
    "like": "smg",
    "_doc": "The STG-44: the SMG table, with the experimental Vampir night scope instead of a drum.",
    "options": {
+    "grip": {
+     "quick_sling": {
+      "name": "Paratrooper Sling",
+      "price": 1000,
+      "desc": "An airborne quick-release sling: the gun rides at the hip and both hands stay on it. Reload at a run, a touch quicker to raise.",
+      "props": {
+       "sprint_reload": true
+      },
+      "draw": 0.92,
+      "model": "sling",
+      "upgraded": {
+       "name": "Pilgrim's Sling",
+       "desc": "It never asked you to stop walking."
+      }
+     }
+    },
     "mag": {
      "drum": null
     },
@@ -707,6 +723,20 @@
      }
     },
     "grip": {
+     "quick_sling": {
+      "name": "Paratrooper Sling",
+      "price": 1000,
+      "desc": "An airborne quick-release sling: the gun rides at the hip and both hands stay on it. Reload at a run, a touch quicker to raise.",
+      "props": {
+       "sprint_reload": true
+      },
+      "draw": 0.92,
+      "model": "sling",
+      "upgraded": {
+       "name": "Pilgrim's Sling",
+       "desc": "It never asked you to stop walking."
+      }
+     },
      "sling": {
       "name": "Leather Sling",
       "price": 600,
@@ -982,6 +1012,20 @@
      }
     },
     "grip": {
+     "quick_sling": {
+      "name": "Paratrooper Sling",
+      "price": 1000,
+      "desc": "An airborne quick-release sling: the gun rides at the hip and both hands stay on it. Reload at a run, a touch quicker to raise.",
+      "props": {
+       "sprint_reload": true
+      },
+      "draw": 0.92,
+      "model": "sling",
+      "upgraded": {
+       "name": "Pilgrim's Sling",
+       "desc": "It never asked you to stop walking."
+      }
+     },
      "sling": {
       "name": "Leather Sling",
       "price": 600,
@@ -1242,6 +1286,20 @@
      }
     },
     "grip": {
+     "quick_sling": {
+      "name": "Paratrooper Sling",
+      "price": 1000,
+      "desc": "An airborne quick-release sling: the gun rides at the hip and both hands stay on it. Reload at a run, a touch quicker to raise.",
+      "props": {
+       "sprint_reload": true
+      },
+      "draw": 0.92,
+      "model": "sling",
+      "upgraded": {
+       "name": "Pilgrim's Sling",
+       "desc": "It never asked you to stop walking."
+      }
+     },
      "recoil_pad": {
       "name": "Rubber Recoil Pad",
       "price": 700,
@@ -1472,6 +1530,20 @@
      }
     },
     "grip": {
+     "quick_sling": {
+      "name": "Paratrooper Sling",
+      "price": 1250,
+      "desc": "A wide airborne quick-release sling. The gun rides at the hip and the belt goes in at a run; a touch quicker to raise.",
+      "props": {
+       "sprint_reload": true
+      },
+      "draw": 0.92,
+      "model": "sling",
+      "upgraded": {
+       "name": "Pilgrim's Sling",
+       "desc": "It never asked you to stop walking."
+      }
+     },
      "bipod": {
       "name": "Bipod",
       "price": 1250,
@@ -1701,6 +1773,19 @@
      }
     },
     "grip": {
+     "quick_sling": {
+      "name": "Paratrooper Sling",
+      "price": 1000,
+      "desc": "An airborne quick-release sling for the tube. Load a rocket at a run, a touch quicker to shoulder.",
+      "props": {
+       "sprint_reload": true
+      },
+      "draw": 0.92,
+      "upgraded": {
+       "name": "Pilgrim's Sling",
+       "desc": "It never asked you to stop walking."
+      }
+     },
      "shoulder_pad": {
       "name": "Padded Shoulder Rest",
       "price": 600,
@@ -1825,6 +1910,19 @@
      }
     },
     "grip": {
+     "quick_sling": {
+      "name": "Paratrooper Harness",
+      "price": 1000,
+      "desc": "A jump harness with quick-release buckles. Change tanks at a run, a touch quicker to raise.",
+      "props": {
+       "sprint_reload": true
+      },
+      "draw": 0.92,
+      "upgraded": {
+       "name": "Pilgrim's Harness",
+       "desc": "It never asked you to stop walking."
+      }
+     },
      "harness": {
       "name": "Pack Harness",
       "price": 750,

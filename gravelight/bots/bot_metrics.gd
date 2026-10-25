@@ -254,8 +254,9 @@ static func revive_summary(eps: Array, end_t: float) -> Dictionary:
 	return out
 
 
-## What a purchase was, from its item id (Economy.spend's item): "perk", "wall_gun", "ammo" (wall-buy ammo),
-## "ammo_box", "crucible" (an upgrade or upgraded ammo), "crate", "door", "pylon", "trap" or "other".
+## What a purchase was, from its item id (Economy.spend's item): "perk", "wall_gun", "ammo" (wall-buy ammo, an
+## upgraded gun's too: the Crucible sells none, T-083), "ammo_box", "crucible" (an upgrade), "crate", "door",
+## "pylon", "trap" or "other".
 static func category_of(item: String, perks: Dictionary, weapons: Dictionary, upgraded: Dictionary) -> String:
 	if perks.has(item):
 		return "perk"
@@ -264,8 +265,7 @@ static func category_of(item: String, perks: Dictionary, weapons: Dictionary, up
 	if item.ends_with("_box_ammo") or item == "ammo_box_grenades":
 		return "ammo_box"
 	if item.ends_with("_ammo"):
-		var base: String = item.trim_suffix("_ammo")
-		return "crucible" if upgraded.has(base) or base.ends_with("_up") else "ammo"
+		return "ammo"
 	if item == "crate":
 		return "crate"
 	if item == "crucible":

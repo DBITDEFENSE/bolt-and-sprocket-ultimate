@@ -91,7 +91,7 @@ Values are in `data/economy.json`. Scrip is the Ledger's kill-tally token, which
 | Doors by depth | 750 / 1000 / 1250 / 1500 / 2000 |
 | Wall-buy ammo | half the weapon price. Upgraded weapon ammo from a wall: 4500 |
 | Crate | 950 (Clearance: 10) |
-| Crucible | 5000 to upgrade, 2500 for upgraded ammo |
+| Crucible | 5000 to upgrade (7500 / 10000 for teachings II / III); it sells no ammo (T-083): a taught gun refills at an ammo box for 2500 |
 | Trap / Pylon | 1000 / 1500 |
 
 Co-op: Scrip is per player and can't be transferred (classic rules). Double Scrip applies to everyone.
@@ -149,7 +149,7 @@ No extra cap slot; the tier goes with the perk. Table, balance and the in-world 
 
 ## 10. The Crucible
 - In the Core Vault on Map 1. 5000 Scrip. Feeding a weapon in takes 5 s, then it's held for 15 s before it's lost. In co-op anyone can take it.
-- Upgrading refills ammo. Upgraded ammo costs 2500 here, or 4500 from the matching wall-buy.
+- Upgrading refills ammo. The Crucible sells no ammo (T-083): upgraded ammo is 2500 at any ammo box, or 4500 from the matching wall-buy.
 
 ## 11. Power-ups
 In `data/powerups.json`.

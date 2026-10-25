@@ -12,7 +12,8 @@ extends Node
 ##   6. everyone down = game over
 ## Between 2 and 3 (T-033): the Crucible. The round is set to 9, the power goes on, the cellar door opens, every bot
 ## gets 7000 Scrip and a long break: at least one bot must walk to the Crucible, feed its gun, wait the forge and
-## take the upgraded gun; then that bot's upgraded reserve is emptied and it must buy upgraded ammo.
+## take the upgraded gun; then that bot's upgraded reserve is emptied and it must refill it at an ammo box (T-083:
+## the Crucible sells no ammo; the box charges its upgraded price).
 ## Usage: godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/smoke_bots.tscn [-- --rounds=3 --skill=veteran --map=map01 --crucible-only]
 ## --map=map01 runs on Kaltenbrunn with every zone and door debug-opened and the squad moved to the Core Vault;
 ## --crucible-only skips the fight and the revive/bleed-out/game-over checks.
@@ -210,11 +211,13 @@ func _physics_process(delta: float) -> void:
 		12:
 			RoundManager.break_left = maxf(RoundManager.break_left, 30.0)
 			if _ammo_bought:
-				_note("crucible: P%d bought upgraded ammo after %.0fs" % [_ammo_pid, _phase_t])
+				_note("ammo box: P%d refilled its upgraded gun after %.0fs" % [_ammo_pid, _phase_t])
 				_phase = 2 if not _crucible_only else 99
 				_phase_t = 0.0
 			elif _phase_t > 90.0:
-				_fail("P%d never bought upgraded ammo at the Crucible" % _ammo_pid)
+				_fail("P%d never refilled its upgraded gun at an ammo box" % _ammo_pid)
+				for line: String in root.squad.report():
+					print("[bots]   ", line)
 				_phase = 2 if not _crucible_only else 99
 				_phase_t = 0.0
 			if _phase == 2:
@@ -329,7 +332,7 @@ func _crucible_setup(root: MapRoot) -> void:
 	for pid: int in GameState.bot_ids:
 		Economy.grant(pid, 7000)
 	GLBus.purchase_made.connect(func(p: int, item: StringName, _c: int) -> void:
-		if p == _ammo_pid and String(item).ends_with("_ammo") and String(item).contains("_up"):
+		if p == _ammo_pid and String(item).ends_with("_box_ammo") and String(item).contains("_up"):
 			_ammo_bought = true)
 	var crs: Array[Node] = get_tree().get_nodes_in_group(&"crucible")
 	if crs.is_empty():

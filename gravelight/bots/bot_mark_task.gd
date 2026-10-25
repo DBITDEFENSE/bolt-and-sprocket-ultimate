@@ -6,7 +6,7 @@ extends RefCounted
 ##
 ## Kinds (order.kind):
 ##   buy       walk to the machine / wall / door / crate / Crucible / trap / Armorer's Bench and buy it with its own
-##             Scrip (sub: perk, gun, ammo, ammo_box, door, crate, crucible, crucible_ammo, trap, bench, power).
+##             Scrip (sub: perk, gun, ammo, ammo_box, door, crate, crucible, trap, bench, power).
 ##             Short of Scrip it says how much ("Need 600 more for that, boss.") and waits (queue_s, 60 s) while it
 ##             earns, then goes; for_pid > 0 (a wall weapon marked "for me") it buys the gun for that player: pays,
 ##             carries it (a WeaponParcel the player can take off it) and drops it at their feet.
@@ -333,8 +333,6 @@ func price() -> int:
 		"crucible":
 			var up: int = brain._upgradeable_slot()
 			return Crucible.price_for(&"upgrade", GLData.table("economy"), player.weapons.slots[up].tier if up >= 0 else 0)
-		"crucible_ammo":
-			return Crucible.price_for(&"ammo", GLData.table("economy"))
 		"trap":
 			var t: Node = (n as TrapLever).trap() if n is TrapLever else null
 			return int(t.call("cost")) if t != null and t.has_method("cost") else int(order.get("price", 0))
@@ -404,7 +402,7 @@ func _buy(delta: float) -> void:
 		_errand = {"node": node, "kind": sub, "label": str(order.get("label", "")), "until": INF}
 		if sub == "crate":
 			_errand["stand"] = brain.stand_point(node)
-		if sub == "ammo_box" or sub == "ammo" or sub == "crucible_ammo":
+		if sub == "ammo_box" or sub == "ammo":
 			_errand["slot"] = int(order.get("slot", -1))
 		brain.squad.claim(node, player.player_id)
 	var me: Vector3 = player.global_position
@@ -625,7 +623,7 @@ static func bought_categories(sub: String, perk_id: StringName = &"") -> Array:
 			return ["MARK_BOUGHT_" + tok, "MARK_BOUGHT"] if tok != "" else ["MARK_BOUGHT"]
 		"gun":
 			return ["MARK_BOUGHT_GUN", "MARK_BOUGHT"]
-		"ammo", "ammo_box", "crucible_ammo":
+		"ammo", "ammo_box":
 			return ["MARK_BOUGHT_AMMO", "MARK_BOUGHT"]
 		"door":
 			return ["MARK_BOUGHT_DOOR", "MARK_BOUGHT"]

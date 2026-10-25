@@ -290,6 +290,33 @@ func test_bench_buys_for_the_gun_in_hand() -> void:
 	assert_eq(str(pick.get("weapon", "")), "trench_gun", "a bot's own pick is for its own gun")
 
 
+func test_bench_sells_the_paratrooper_sling() -> void:
+	# T-083: the grip slot's Paratrooper Sling lets a long gun reload at a run (pistols / SMGs have it by class).
+	var p: Player = _player(1, &"m1_garand")
+	var ids: Array[int] = [1]
+	Economy.reset(ids)
+	Economy.grant(1, 3000 - Economy.get_scrip(1))
+	var row: Dictionary = {}
+	for r: Dictionary in ArmorersBench.options_for(p):
+		if str(r["slot"]) == "grip" and str(r["option"]) == "quick_sling":
+			row = r
+	assert_false(row.is_empty(), "the Garand's bench lists it")
+	assert_eq(str(row["name"]), "Paratrooper Sling")
+	assert_eq(int(row["price"]), 1000)
+	assert_false(WeaponHolder.sprint_reload_allowed(p.weapons.current()))
+	var r1: Dictionary = ArmorersBench.buy(p, "grip", "quick_sling")
+	assert_true(bool(r1["ok"]), str(r1))
+	assert_eq(Economy.get_scrip(1), 2000)
+	assert_true(WeaponHolder.sprint_reload_allowed(p.weapons.current()), "fitted: it reloads on the run")
+	assert_true(bool(p.weapons.current().property("sprint_reload", false)))
+	assert_eq(str(ArmorersBench.buy(p, "grip", "sling")["reason"]), "", "another grip part replaces it...")
+	assert_false(WeaponHolder.sprint_reload_allowed(p.weapons.current()), "...and the run reload goes with it")
+	for cls_gun: StringName in [&"stg44", &"kar98k", &"springfield", &"trench_gun", &"bar", &"panzerschreck", &"flamethrower"]:
+		assert_eq(WeaponKit.price(cls_gun, "grip", "quick_sling"), 1250 if cls_gun == &"bar" else 1000, String(cls_gun))
+	for by_class: StringName in [&"mp40", &"thompson", &"m1911", &"webley"]:
+		assert_false(WeaponKit.is_known(by_class, "grip", "quick_sling"), "%s reloads on the run by class" % by_class)
+
+
 # ---------------------------------------------------------------- models
 
 func test_models_build_for_every_option_on_every_gun() -> void:

@@ -9,14 +9,14 @@ extends RefCounted
 ##   {"crucible": "<weapon id>"}               held upgraded (Crucible)
 ## A step may carry "from_round" (not before that round). The current step is the first one not done; the
 ## agent's economy (BotEconomy.candidates) then keeps only what that step needs, plus what keeps it alive
-## anyway (ammo, an ammo box, upgraded ammo, the boards, the power switch). With every step done (or no plan for
+## anyway (ammo, an ammo box, the boards, the power switch). With every step done (or no plan for
 ## the map) the ordinary economy runs. "train_at" lists the map's loops the trainer prefers, best first
 ## (BotTrainer: plan_bonus on the loop score). The pure parts are unit-tested (test_player_bot.gd).
 
 ## The last unfiltered candidates' labels (the soak's --trace).
 static var last_raw: PackedStringArray = PackedStringArray()
 
-const ALWAYS: PackedStringArray = ["repair", "ammo", "ammo_box", "crucible_ammo", "power"]
+const ALWAYS: PackedStringArray = ["repair", "ammo", "ammo_box", "power"]
 
 
 static func plan_for(map_key: String) -> Dictionary:
