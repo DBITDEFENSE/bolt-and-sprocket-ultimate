@@ -201,6 +201,8 @@ func spawn_tag(position: Vector3, value: int) -> Node3D:
 	var parent: Node = _map_node()
 	if parent == null or not Net.is_authority():
 		return null
+	if parent is MapRoot:
+		position = (parent as MapRoot).clamp_inside(position)   # a kill beyond Map 0's edge drops inside it (T-084)
 	var tag: Node3D = (load(TAG_SCRIPT) as GDScript).new() as Node3D
 	tag.set("value", value)
 	parent.add_child(tag)

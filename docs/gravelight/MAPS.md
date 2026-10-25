@@ -39,7 +39,7 @@ map's generator (`AMMO_BOXES`), 4 m+ from every perk machine and the Crucible, f
 | Map | Box | Where (floor position, facing) |
 |---|---|---|
 | 0 Crossroads Inn | Taproom | behind the bar, against the back shelf at the alcove's dead end (5.3, 0, 7.3), facing east; clear of Alix's trapdoor (6.6, 5.6) |
-| 0 | Stable | west wall under the hayloft, between the Trench Gun chalk and the yard door (6.5, 0, 32.0), facing east |
+| 0 | Stable | west wall under the hayloft, between the Trench Gun chalk and the yard door (5.0, 0, 32.0; the wall moved to x 4.5 in T-084), facing east |
 | 0 | Cellar | the Old Cellar's barrel vault, south wall west of the wine rack (14.6, -3.2, 15.5), facing north (T-051) |
 | 1 Kaltenbrunn | Rail Yard | west wall between the two doors (40.5, 0, 32.5), facing east |
 | 1 | Barracks | bunk room north wall, beside the Trench Gun chalk (-1.6, 0, 32.5), facing south |
@@ -59,7 +59,7 @@ Morgenrot and Helvetia Works get 4 each when they are built.
 
 A two-story roadside inn (**Gasthaus Zum Kreuzweg**) and a stable at a snowy crossroads, 9 km northwest of Kaltenbrunn. GRAVELIGHT ONE burns in the field to the east and can be seen through the taproom's east windows and the stable doors. Power, the perks and the Crucible are all behind Door 3 in the Helvetia cellar (T-027, T-032). It's a tutorial-scale map.
 
-**Overall footprint:** inn 24 × 16 m; stable 18 × 12 m, joined to the inn's rear by a covered 4 m yard passage; the Carters' Yard (32 × 14 m) behind the stable. Round all of it, **the Grounds** (T-080): 80 × 94 m of snow (x −20..60, z −30..64) you can walk right round the building once you buy your way out (the front door or the yard's gate). Zombies cross it to reach the windows, and chase you across it.
+**Overall footprint:** inn 24 × 16 m; stable 21 × 12 m (T-084; it was 18 × 12), joined to the inn's rear by a covered 4 m yard passage; the Carters' Yard (32 × 14 m) behind the stable. Round all of it, **the Grounds** (T-080): 80 × 94 m of snow (x −20..60, z −30..64) you can walk right round the building once you buy your way out (the front door or the yard's gate). Zombies cross it to reach the windows, and chase you across it.
 
 ## Zone graph
 
@@ -67,7 +67,7 @@ A two-story roadside inn (**Gasthaus Zum Kreuzweg**) and a stable at a snowy cro
 graph LR
   TAPROOM["TAPROOM (spawn)<br/>4 windows · Kar98k · M1 Garand<br/>Radio · Crate*"]
   UPSTAIRS["UPSTAIRS ROOMS<br/>2 windows · MP40 · Crate"]
-  STABLE["STABLE / BARN<br/>3 windows · Trench Gun · Crate*<br/>Hayloft perch"]
+  STABLE["STABLE / BARN<br/>4 windows (one the loft door) · Trench Gun · Crate*<br/>the Hayloft and its gallery, up the east-wall stair"]
   YARD["THE CARTERS' YARD (outdoors)<br/>4 fence gaps + 1 drift · Thompson · Crate<br/>the well, the gate, the road"]
   TAPROOM -- "Door 1: 750<br/>(stair vestibule)" --> UPSTAIRS
   TAPROOM -- "Door 2: 1000<br/>(kitchen back door)" --> STABLE
@@ -102,19 +102,45 @@ graph LR
                               │
               ┌───────────────┴─────┐   covered yard passage 4 x 6 m
               │   yard passage      │
-   ##########W####D(open)#####W#####
-   #  .  .  stalls stalls stalls  .#     STABLE / BARN  18 x 12 m
-   #  .  .  ║    ║    ║    ║    . #     ceiling 7 m (hayloft above W half)
-   W  .  .  ║    ║    ║    ║    . #
-   #  $  .  .  .  .  .  .  .  .  .#     $ Trench Gun 1500 (W wall)
-   #  .  ladder(^ hayloft)  .  C* .#     C* crate spot "Tack Room" (SE)
-   #  .  .  .  .  .  .  .  .  .  .#
-   ######W########great doors######     great doors: barred, zombies can't use
+  ############W#########W######D(open)#####
+  #  B  .  .  stalls  ║ stalls ║ hay pile  #     STABLE / BARN  21 x 12 m (x 4.5..25.5, z 22..34; T-084)
+  #  .  . [hatch] ║   ║  .  ║  ║  S(hay)  ^ #     ceiling 7 m; S ground spawn (round 6+) in the hay pile, NE
+  #  .  .  .  .  .  .  .  .  .  .  .  .  ^ #     ^^ the stair up the EAST wall (2 m wide, foot z 25.5, head z 31.5)
+  #  $  .  .  .  .  .  .  .  .  .  .  .  ^ #     $ Trench Gun 1500 (W wall); B the Armorer's Bench (W wall, z 26.5)
+  # ===============loft edge=====| bay   ^ #     the hayloft: west block x 4.5..15.5 (full depth), gallery along the
+  #  A  .  .  .  .  .  .  beacon .  C*  [L]#     south wall x 15.5..25.5, z 29..34 (over the great doors), stair well
+  #  .  .  .  .  .  .  .  .  .  .  .  .  . #     in its east end. A ammo box (W wall, z 32); C* crate "Tack Room"
+  ####D4####W########great doors###[loft]###     (22.9, 31.5); great doors 4 x 3 m, barred; [loft] the loft door, a
+                                                  window at y 3.5 over the yard (W_STB_LOFT), the hoist ledge outside
 ```
 
-**The great doors and the carters' road (campaign exfil, T-033):** the doors (x 16–20 in the stable's south wall, 4 × 4.2 m) are dressing in a drawn opening that is filled with an invisible collider, so the navmesh and collision stay a solid wall; the exfil beacon stands just inside at (18, 0, 32) and the Map 0 → Map 1 cutscene tweens the `GreatDoors` group so they fall outward. Behind them, a trodden track south through the yard's gate (gateposts, a lantern, a signpost "Kaltenbrunn 9 km / Wilcza Góra 6 km / Gasthaus zum Kreuzweg"), bending south-east past dead trees and drifts toward low snowy rises on the horizon. Since T-080 the track up to the south edge (z 64) is part of the Grounds and the gate is a bought door (Door_Gate, 750); the great doors themselves stay barred for the cutscene.
+**The hayloft (T-084, "the barn ... the staircase is all glitchy ... the second level"):** the loft (floor y 3.5, 3.5 m
+of headroom under the trusses) is the **west block** (x 4.5–15.5, the full 12 m) plus a **gallery** along the south
+wall (x 15.5–25.35, z 29–34) over the great doors, 182 m² in all (it was 9 × 12); the **bay** over the stalls, the hay
+pile and the north door (x 15.5–25.5, z 22–29) is open to the roof, so from the loft's edge and the gallery you look and
+shoot straight down on the spawn and the door. **The stair** is a straight flight up the east wall: 2 m wide, foot at
+z 25.5 beside the hay pile, head at z 31.5 through a 2 × 2.5 m well in the gallery's east end, 16 risers of 0.219 m on
+0.375 m treads (30°). Its collider is a smooth invisible ramp on the nosing line (the treads are drawn under it, so the
+capsule never catches one), with a boarded store under the flight, a closed string, newels and balusters on the open
+side and a wall rail; the navmesh runs up it (agent radius 0.5: a 1 m corridor) and zombies and bots climb it cleanly
+(smoke_map00, test_map00_grounds). **Rails** (1.0 m: a curb, a mid rail and a handrail that are colliders, the balusters
+dressing, hidden panels for the bake only) run along every open edge; you can't jump them (apex 0.63 m) or mantle them
+(nothing to land on). The one way down short of the stair is **the bale drop**, a 1.4 m bay in the gallery's rail
+(x 18.6–20.0 at z 29) under a hook and a rope: walk off it and you land in the bay; zombies never path it. **Dressing:**
+the bale stack in the south-west corner (solid), single bales along the rails (solid cover), the salt-lamp crate
+("SALZ") over the great doors and a crate in the north-west corner (solid), the hay chute's trapdoor over the horse's
+stall with its pulley and rope, a pitchfork in the stack, sacks, a bucket, tack hanging from the tie beam at z 28
+(a collar, harness, a bridle), collars and purlins up in the roof, straw over the boards, a lantern on a hook by the
+stair head (a real light, LoftHookLamp) and the old one over the west block (LoftLamp). **The loft door** in the south
+wall over the yard (x 22, sill 0.9 above the loft floor: its lower half is boarded, the shutters bang outside) is the
+stable's fourth window, W_STB_LOFT: its zombies stand on the hoist ledge outside (x 20–25.2, y 3.5, z 34.15–36.6, a
+navmesh island under the hoist beam and its rope) and vault in, like the porch-roof ledges upstairs. So the loft is a
+strong position with two feeds, the stair and the loft door, not a free camp. The great doors are 3 m high now (they
+were 4.2) so the gallery clears them; the exfil beacon still stands under it at (18, 0, 32).
 
-Window count: Taproom 4 (N×2, W, E), Stable 3 (N×2, S), Yard 4 (fence gaps W, E, S×2), Old Cellar 2 (light wells). There are 15 windows in total, counting the 2 upstairs.
+**The great doors and the carters' road (campaign exfil, T-033):** the doors (x 16–20 in the stable's south wall, 4 × 3 m since T-084) are dressing in a drawn opening that is filled with an invisible collider, so the navmesh and collision stay a solid wall; the exfil beacon stands just inside at (18, 0, 32) and the Map 0 → Map 1 cutscene tweens the `GreatDoors` group so they fall outward. Behind them, a trodden track south through the yard's gate (gateposts, a lantern, a signpost "Kaltenbrunn 9 km / Wilcza Góra 6 km / Gasthaus zum Kreuzweg"), bending south-east past dead trees and drifts toward low snowy rises on the horizon. Since T-080 the track up to the south edge (z 64) is part of the Grounds and the gate is a bought door (Door_Gate, 750); the great doors themselves stay barred for the cutscene.
+
+Window count: Taproom 4 (N×2, W, E), Stable 4 (N×2, S, the loft door over the yard), Yard 4 (fence gaps W, E, S×2), Old Cellar 2 (light wells). There are 16 windows in total, counting the 2 upstairs.
 
 ## The Carters' Yard (YARD): level 0, outdoors (T-036 follow-up, "let them go outside")
 
@@ -153,7 +179,7 @@ The stairwell is the taproom's south-west corner, **6 × 6 m** (x 0–6, z 10–
    Windows: Room 1 north, Room 3 north (2 total)
 ```
 
-Hayloft (Stable upper, 9 × 12 m): there's a ladder up and a single drop-down edge. It's a **perch**, not a fortress. Zombies can climb the ladder one at a time, so it's a strong but leaky choke point (see Choke points).
+Hayloft (Stable upper, 182 m² since T-084: the west block and the gallery over the great doors, see the ground floor): the east-wall stair up, the bale drop down, the loft door's window behind you. It's a **position**, not a fortress: zombies climb the stair two abreast and come in at the loft door (see Choke points).
 
 ## The Grounds (GROUNDS): level 0, outdoors (DECISIONS T-080)
 The user: "the outside area on the first map needs some work, can you make it bigger and make it so you can go around the whole building". All of it is `build_grounds` / `_dress_grounds` / `build_grounds_gameplay` in gen_map00.gd (the `OUT_*` tables).
@@ -181,6 +207,7 @@ The user: "the outside area on the first map needs some work, can you make it bi
 - **The bigger field:** x −20..60, z −30..64. Inside a hard edge: a 6 m invisible wall on the line of the boundary fences (drawn rails, 2.3 m colliders) with two rows of snow-laden spruces beyond it; the four roads run on into the dark between the trees and are closed just inside the edge (a felled spruce across the north road, STRASSE GESPERRT sawhorses east, south and on the carters' road, a barrier boom on the west road). Cover and story out there (all solid, none of it a perch: `no_mantle`): GRAVELIGHT ONE (hull, wings to the snow, engines, tail), its torn-off engine north of the east road and a wing panel by the east fence, the cargo thrown out of the hold (the crates now collide), the parachute's tree, a burnt-out car on the east road's verge, a hay rick and an abandoned MG nest (an L of sandbags, a helmet, ammunition tins) in the north field, the roadside fence north of the road (gaps: the north road, a field gate, a fallen bay), the wayside shrine and the signpost at the crossroads, the telephone poles, the hay wagon on the west road, the woodshed (logs, a lamp), oil drums east of the yard, the dead trees.
 - **The Wreck Loop** (`map00_wreck_loop`, 90 m, ring 5 m): round GRAVELIGHT ONE, 3.5 m+ off the hull, the wings and the tail, west of the cargo, inside the parachute's tree. An ammo box (the supply drop under the parachute's tree, `AmmoBox_Grounds`) faces it. The bot-mode agent trains here when the Grounds are open (player_bot.json `train_at`, after the yard's Well Loop); its plan still buys the stable and the yard, not the front door (a 12-seed soak with the front door first: mean 7.5 rounds, best 10, against 7.71 / 10).
 - **Spawns:** 13 at the edge (kind `edge`: they walk in out of the trees and chase) and 4 in the snow (kind `ground`, round 4+), only while somebody is out on the Grounds (`ZombieSpawn.player_zone_only`). No spawn is used that a player out there can see from close by (`hide_from_m`: a clear line from their eyes within 16 m for the field window spawns, 12 m for the edge, 10 m for the snow).
+- **The edge, shootable (T-084; the user: "it seems like there's a wall or something ... allow us to shoot a zombie that's out there"):** the 6 m edge wall and the boundary fences on its line are on physics layer 11 "edge" (`gen_map00.EDGE_LAYER`): bodies collide with it (`Player.MASK_MOVE`; zombies never did, the navmesh keeps them in), while the shot ray, projectiles, grenades, blasts, flame and the aim/interaction rays mask layer 1 and pass straight through. The 13 edge spawns now stand **4.5 m beyond the wall in the tree line**, each in a **spawn pocket** (`gen_map00.edge_pockets()`: 3 m wide, 7 m deep, no spruce in it): the baked wall and fence have a 3 m gap at the pocket, filled by a collider on the edge layer that hangs off the map root instead of the navigation region (`EdgeGates`, not baked), so the navmesh joins the pocket to the field and zombies walk in through the trees while a player's capsule stops at the line. Everything else beyond the edge is carved out of the bake (bake-only `NavigationObstacle3D`s), so the navmesh outside the wall is the pockets and nothing more. A kill out there counts and drops normally; `MapRoot.drop_bounds` / `clamp_inside` pull a power-up or dog tags from beyond the edge 1.5 m inside it (PowerupManager.spawn, ScripBonuses.spawn_tag). The pockets are GROUNDS zone volumes (roam). smoke_map00_loop checks the pockets reach, the gates stop a capsule and pass a shot, and nothing else beyond the edge is reachable.
 - **Zombies on open ground** (`ZoneVolume.roam`, Zombie `_roam_divert` / `_roam_fallback`, enemies.json `roam`): one on its way to a window (or tearing it) goes for a player standing on the Grounds within 20 m whom it can walk to; one chasing someone it can't reach (back inside behind a shut door, in the yard with the gate shut) makes for the best window it can reach in an open zone. With the front door open they walk in through it. The barricades work as before.
 - **Lights** (oil, flickering, unshadowed): a lantern under the east porch over the front door, lamp posts at the crossroads (by the inn's west corner) and on the east road, a lamp on the woodshed; four cold moon fills over the field like the yard's. *Needs a rendered look.*
 
@@ -214,7 +241,7 @@ Outside the play space (nothing here collides; since T-080 the Grounds' edge wal
 |---|---|---|---|
 | TAPROOM | 4 | 0 | always |
 | UPSTAIRS | 2 | 0 | Door 1 open |
-| STABLE | 3 | 1 (hay pile behind stalls, rounds 6+) | Door 2 open |
+| STABLE | 4 (N×2, S, the loft door: its zombies stand on the hoist ledge over the yard) | 1 (hay pile beside the stair's foot, rounds 6+) | Door 2 open |
 | YARD | 4 (fence gaps) | 1 (SW drift, rounds 4+) | Door 4 open |
 | CELLAR | 0 | 1 (the coal chute, rounds 6+) + the power-on burst | Door 3 open |
 | OLD_CELLAR | 2 (light wells: the coal chute N, the vault E) | 0 | Door 5 open |
@@ -243,7 +270,7 @@ The details are in `EASTER_EGGS.md` §Map 0. The radio is behind the bar. Three 
 ## Map 0 choke points
 
 1. **Upstairs hallway, east end:** the windows are behind you, and only 2 approaches (Room 3 window and the stairs). Easy to hold, easy to get pinched.
-2. **Hayloft:** a single ladder that zombies climb one at a time. It is leaky by design because the stable's S window spills under the loft.
+2. **Hayloft:** the stair head (hold the well from the gallery) and the loft door at your back; the bale drop is the way out when it folds. Leaky by design: the loft door feeds it from the yard side and the stable's S window spills under the loft (T-084).
 3. **Behind the bar:** a shallow choke. Good for rounds 1–5 only.
 4. **The yard door, from inside the stable:** one door to watch, the stable's own windows behind you. Fails once the hay pile wakes (round 6) and the yard gaps start feeding the door from outside.
 

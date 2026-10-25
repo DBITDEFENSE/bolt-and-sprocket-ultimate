@@ -16,6 +16,30 @@ const TAP_H: float = 3.5      # taproom ceiling
 const UP_Y: float = 3.8       # upstairs floor top
 const UP_TOP: float = 6.8     # upstairs ceiling
 const STABLE_H: float = 7.0
+## The stable ("the barn", T-084: "about 10% bigger ... improve the staircase and the second level"): x 4.5..25.5
+## by z 22..34 (21 x 12 m; it was 18 x 12, x 6..24). The hayloft (LOFT_Y..LOFT_TOP) is the west block x 4.5..LOFT_X1
+## over the full depth and a gallery along the south wall from LOFT_X1 to the east wall, z GAL_Z0..34, over the great
+## doors (3 m high now); the bay over the stalls, the hay pile and the north door is open to the roof. A straight
+## flight up the east wall (HSTAIR_*: 2 m wide, foot z 25.5, head z 31.5, 30 deg) lands through a well in the gallery.
+const STB_X0: float = 4.5
+const STB_X1: float = 25.5
+const STB_Z0: float = 22.0
+const STB_Z1: float = 34.0
+const LOFT_Y: float = 3.2
+const LOFT_TOP: float = 3.5
+const LOFT_X1: float = 15.5
+const GAL_Z0: float = 29.0
+const HSTAIR_X0: float = 23.35
+const HSTAIR_X1: float = 25.35
+const HSTAIR_Z0: float = 25.5
+const HSTAIR_Z1: float = 31.5
+const HSTAIR_STEPS: int = 16
+const GREAT_DOOR_H: float = 3.0
+const LOFT_DROP: Vector2 = Vector2(18.6, 20.0)   # the bale drop: the open bay in the gallery's rail (walk off; zombies don't path it)
+## Physics layer 11 "edge" (T-084): the grounds' edge wall and the boundary fences on it. Bodies collide with it
+## (Player.MASK_MOVE), shots, projectiles, blasts and the aim/interaction rays don't (they mask layer 1), so a
+## zombie beyond the edge can be shot. The navmesh bake reads it (bake_navmesh's geometry_collision_mask).
+const EDGE_LAYER: int = 1 << 10
 const WIN_SILL: float = 0.9
 const WIN_TOP: float = 2.2
 const DOOR_H: float = 2.4
@@ -383,21 +407,21 @@ func build_geometry() -> void:
 	wall_z("PassE", 22.0, 16, 22, 0, 3.0, [], "stable")
 	box(geo, "PassRoof", Vector3(18 - T * 0.5, 3.0, 16), Vector3(22 + T * 0.5, 3.2, 22), "roof")
 
-	# ---------------- STABLE (x 6..24, z 22..34, ceiling 7)
-	wall_x("StbN", 22.0, 6 - T * 0.5, 24 + T * 0.5, 0, STABLE_H, [[8.2, 9.8] + win, [13.2, 14.8] + win, [18.5, 21.5, 0.0, 2.6]], "stable")
+	# ---------------- STABLE (x STB_X0..STB_X1, z 22..34, ceiling 7; T-084: 21 x 12 m, the loft and its stair rebuilt)
+	wall_x("StbN", STB_Z0, STB_X0 - T * 0.5, STB_X1 + T * 0.5, 0, STABLE_H, [[8.2, 9.8] + win, [13.2, 14.8] + win, [18.5, 21.5, 0.0, 2.6]], "stable")
 	# the great doors' opening is drawn (the doors themselves are dressing, so the exfil cutscene can drop them)
-	# but filled with an invisible collider: the navmesh and collision stay a solid wall, nobody walks out
-	wall_x("StbS", 34.0, 6 - T * 0.5, 24 + T * 0.5, 0, STABLE_H, [[7.0, 9.0, 0.0, DOOR_H], [11.2, 12.8] + win, [16.0, 20.0, 0.0, 4.2]], "stable")
-	box(geo, "GreatDoorsBlock", Vector3(16.0, 0, 34.0 - T * 0.5), Vector3(20.0, 4.2, 34.0 + T * 0.5), "stable", true, false)
-	wall_z("StbW", 6.0, 22, 34, 0, STABLE_H, [], "stable")
-	wall_z("StbE", 24.0, 22, 34, 0, STABLE_H, [], "stable")
-	box(geo, "StbRoof", Vector3(6 - T * 0.5, STABLE_H, 22 - T * 0.5), Vector3(24 + T * 0.5, STABLE_H + 0.2, 34 + T * 0.5), "planks")
+	# but filled with an invisible collider: the navmesh and collision stay a solid wall, nobody walks out. 3 m high
+	# since T-084 (the hayloft's gallery runs over them); the loft door above them is a barricaded window (W_STB_LOFT)
+	var loft_win: Array = [LOFT_TOP + WIN_SILL, LOFT_TOP + WIN_TOP]
+	wall_x("StbS", STB_Z1, STB_X0 - T * 0.5, STB_X1 + T * 0.5, 0, STABLE_H, [[7.0, 9.0, 0.0, DOOR_H], [11.2, 12.8] + win, [16.0, 20.0, 0.0, GREAT_DOOR_H],
+		[21.2, 22.8] + loft_win], "stable")
+	box(geo, "GreatDoorsBlock", Vector3(16.0, 0, STB_Z1 - T * 0.5), Vector3(20.0, GREAT_DOOR_H, STB_Z1 + T * 0.5), "stable", true, false)
+	wall_z("StbW", STB_X0, STB_Z0, STB_Z1, 0, STABLE_H, [], "stable")
+	wall_z("StbE", STB_X1, STB_Z0, STB_Z1, 0, STABLE_H, [], "stable")
+	box(geo, "StbRoof", Vector3(STB_X0 - T * 0.5, STABLE_H, STB_Z0 - T * 0.5), Vector3(STB_X1 + T * 0.5, STABLE_H + 0.2, STB_Z1 + T * 0.5), "planks")
 	for x: float in [11.0, 16.0, 17.6]:
 		box(geo, "Stall", Vector3(x - 0.08, 0, 22.2), Vector3(x + 0.08, 1.3, 25.2), "planks")
-	box(geo, "Hayloft", Vector3(6, 3.2, 22), Vector3(15, 3.5, 34), "floor_wood")
-	box(geo, "HayLanding", Vector3(15, 3.2, 25.5), Vector3(17.0, 3.5, 27.5), "floor_wood")
-	ramp_z("HayStairs", 15.0, 17.0, 32.5, 27.5, 0.0, 3.5)
-	box(geo, "HayBales", Vector3(6.3, 3.5, 30.5), Vector3(9.5, 4.4, 33.7), "hay", true, false)
+	build_hayloft()
 
 	build_yard()
 	build_cellar()
@@ -418,6 +442,81 @@ func build_geometry() -> void:
 		box(wreck, "Nacelle", Vector3(sx - 0.65, -0.6, -2.35), Vector3(sx + 0.65, 1.55, -1.5), "wreck", true, false).set_meta("no_mantle", true)
 	box(wreck, "TailPlane", Vector3(-2.5, 1.5, 5.3), Vector3(2.5, 1.85, 6.7), "wreck", true, false).set_meta("no_mantle", true)
 	build_grounds()
+
+
+## The hayloft (T-084): the west block, the gallery along the south wall with the stair well in its east end, the
+## straight flight up the east wall (a smooth invisible ramp on the nosing line, so the capsule never catches a
+## tread; the treads are dressing), the boarded store under it, the rails round every open edge (three collider
+## bars, shots pass between them; hidden panels cut the navmesh at the edges for the bake only), the bale drop (a
+## bay in the gallery's rail you can walk off; zombies don't path it), the bales and crates that are cover, and
+## the hoist ledge outside the loft door over the yard that the loft window's zombies stand on.
+func build_hayloft() -> void:
+	box(geo, "Hayloft", Vector3(STB_X0, LOFT_Y, STB_Z0), Vector3(LOFT_X1, LOFT_TOP, STB_Z1), "floor_wood")
+	box(geo, "HayGallery", Vector3(LOFT_X1, LOFT_Y, GAL_Z0), Vector3(HSTAIR_X0, LOFT_TOP, STB_Z1), "floor_wood")
+	box(geo, "HayLanding", Vector3(HSTAIR_X0, LOFT_Y, HSTAIR_Z1), Vector3(STB_X1, LOFT_TOP, STB_Z1), "floor_wood")
+	# the flight: the collider runs on the nosing line from the floor one tread before the first riser to the landing
+	ramp_z("HayStairs", HSTAIR_X0, HSTAIR_X1, HSTAIR_Z0, HSTAIR_Z1, 0.0, LOFT_TOP, -1e9, false)
+	_stair_dressing.pop_back()   # drawn by _dress_hay_stairs, not the generic sawtooth
+	# the boarded store under the flight: solid up to the soffit, so nothing walks or paths under it
+	var run: float = HSTAIR_Z1 - HSTAIR_Z0
+	var zc: float = HSTAIR_Z0 + 0.5
+	while zc < HSTAIR_Z1 - 0.01:
+		var zn: float = minf(zc + 0.5, HSTAIR_Z1)
+		var soffit: float = LOFT_TOP * (zc - HSTAIR_Z0) / run - 0.32
+		if soffit > 0.05:
+			box(geo, "HayStairUnder", Vector3(HSTAIR_X0, 0, zc), Vector3(HSTAIR_X1, soffit, zn), "stable", true, false)
+		zc = zn
+	# rails: [from, to] along the loft's open edges at floor level (the bars sit on top of the slab); the flight's
+	# own rail climbs with it. The bale drop is left open.
+	var rails: Array = [
+		[Vector3(LOFT_X1 - 0.05, LOFT_TOP, STB_Z0 + T * 0.5), Vector3(LOFT_X1 - 0.05, LOFT_TOP, GAL_Z0 - 0.05)],
+		[Vector3(LOFT_X1 - 0.05, LOFT_TOP, GAL_Z0 + 0.05), Vector3(LOFT_DROP.x, LOFT_TOP, GAL_Z0 + 0.05)],
+		[Vector3(LOFT_DROP.y, LOFT_TOP, GAL_Z0 + 0.05), Vector3(HSTAIR_X0 - 0.05, LOFT_TOP, GAL_Z0 + 0.05)],
+		[Vector3(HSTAIR_X0 - 0.05, LOFT_TOP, GAL_Z0 + 0.05), Vector3(HSTAIR_X0 - 0.05, LOFT_TOP, HSTAIR_Z1)],
+		[Vector3(HSTAIR_X0 - 0.05, 0.0, HSTAIR_Z0), Vector3(HSTAIR_X0 - 0.05, LOFT_TOP, HSTAIR_Z1)],
+	]
+	for r: Array in rails:
+		for b: Array in [[0.06, 0.06, 0.12], [0.5, 0.035, 0.04], [1.0, 0.07, 0.07]]:   # [centre height, width, height]
+			var hy: float = float(b[0])
+			bar(geo, "LoftRail", (r[0] as Vector3) + Vector3(0, hy, 0), (r[1] as Vector3) + Vector3(0, hy, 0), float(b[1]), float(b[2]), "furniture")
+	# the bake's view of the rails: hidden panels (freed after the bake) along the edges, the drop included, and
+	# stepped along the flight's open side so the bake never joins the ramp to the floor beside it
+	var panels: Array = [
+		[Vector3(LOFT_X1 - 0.13, LOFT_TOP, STB_Z0), Vector3(LOFT_X1 + 0.03, LOFT_TOP + 1.2, GAL_Z0 + 0.08)],
+		[Vector3(LOFT_X1 - 0.13, LOFT_TOP, GAL_Z0 - 0.08), Vector3(HSTAIR_X0 + 0.03, LOFT_TOP + 1.2, GAL_Z0 + 0.08)],
+		[Vector3(HSTAIR_X0 - 0.13, LOFT_TOP, GAL_Z0 - 0.08), Vector3(HSTAIR_X0 + 0.03, LOFT_TOP + 1.2, HSTAIR_Z1 + 0.08)],
+	]
+	var zp: float = HSTAIR_Z0 - 0.4
+	while zp < HSTAIR_Z1:
+		var zq: float = minf(zp + 0.5, HSTAIR_Z1)
+		var top: float = LOFT_TOP * (zq - HSTAIR_Z0) / run + 1.2
+		panels.append([Vector3(HSTAIR_X0 - 0.13, 0.0, zp), Vector3(HSTAIR_X0 + 0.03, top, zq)])
+		zp = zq
+	for pn: Array in panels:
+		var p: Node3D = box(geo, "LoftRailBake", pn[0], pn[1], "wall", true, false)
+		if p != null:
+			_bake_only.append(p)
+	# cover up there: the bale stack in the south-west corner (PERSIST_HIDDEN: shots pit it), single bales along the
+	# gallery's rail to crouch behind, two crates (one the carter's salt-lamp crate, MAPS.md)
+	box(geo, "HayBales", Vector3(STB_X0 + 0.3, LOFT_TOP, 30.5), Vector3(STB_X0 + 3.5, LOFT_TOP + 0.9, 33.7), "hay", true, false)
+	for hb: Array in LOFT_BALES:
+		var c: Vector3 = hb[0]
+		var yaw: float = float(hb[1])
+		var hw: Vector3 = Vector3(0.5, 0, 0.3) if absf(fmod(yaw, 180.0)) < 45.0 else Vector3(0.3, 0, 0.5)
+		box(geo, "LoftBale", c - hw, c + hw + Vector3(0, 0.47, 0), "hay", true, false).set_meta("decal_persist", true)
+	for cr: Array in LOFT_CRATES:
+		var cc: Vector3 = cr[0]
+		var s: float = float(cr[1]) * 0.5
+		box(geo, "LoftCrate", cc - Vector3(s, 0, s), cc + Vector3(s, 2.0 * s, s), "planks", true, false).set_meta("decal_persist", true)
+	# the hoist ledge outside the loft door (the loft window's zombies stand on it, like the porch-roof ledges)
+	box(geo, "LoftLedge", Vector3(20.0, LOFT_Y, STB_Z1 + T * 0.5), Vector3(25.2, LOFT_TOP, 36.6), "planks")
+
+
+## Single bales on the loft that are cover (and drawn by _dress_stable): [floor position (y LOFT_TOP), yaw].
+const LOFT_BALES: Array = [[Vector3(17.2, LOFT_TOP, 29.95), 0.0], [Vector3(18.1, LOFT_TOP, 29.95), 0.0], [Vector3(21.6, LOFT_TOP, 30.0), 0.0],
+	[Vector3(LOFT_X1 - 0.65, LOFT_TOP, 24.4), 90.0], [Vector3(LOFT_X1 - 0.65, LOFT_TOP, 25.5), 90.0], [Vector3(LOFT_X1 - 1.1, LOFT_TOP, 27.4), 90.0]]
+## Crates on the loft: [floor position, size, yaw, stencil] (the salt-lamp crate over the great doors, MAPS.md).
+const LOFT_CRATES: Array = [[Vector3(16.9, LOFT_TOP, 33.1), 0.9, 12.0, "SALZ"], [Vector3(6.2, LOFT_TOP, 23.0), 0.75, -8.0, ""]]
 
 
 ## THE CARTERS' YARD (zone YARD, "go outside"): the fenced forecourt south of the stable, x 2..34, z 34..48, out of
@@ -441,8 +540,8 @@ func build_yard() -> void:
 		box(geo, "YardTop", Vector3(gx, WIN_TOP, 47.9), Vector3(gx + 1.6, fh, 48.1), "snow", true, false)
 	# (the barred gate at x 16..20 is a bought door since T-080, Door_Gate: not baked, its own collider shuts it)
 	# the plot's north edges beside the stable (keeps the yard off the cellar's roof and the inn's east side)
-	box(geo, "YardFence", Vector3(24.0, 0, 33.9), Vector3(34.1, fh, 34.1), "snow", true, false)
-	box(geo, "YardFence", Vector3(1.9, 0, 33.9), Vector3(6.0, fh, 34.1), "snow", true, false)
+	box(geo, "YardFence", Vector3(STB_X1, 0, 33.9), Vector3(34.1, fh, 34.1), "snow", true, false)
+	box(geo, "YardFence", Vector3(1.9, 0, 33.9), Vector3(STB_X0, fh, 34.1), "snow", true, false)
 	# the well, the woodpile against the stable, the snowed cart
 	box(geo, "Well", Vector3(9.0, 0, 41.0), Vector3(11.0, 1.0, 43.0), "stone", true, false)
 	box(geo, "Woodpile", Vector3(13.3, 0, 34.15), Vector3(15.9, 1.3, 35.4), "furniture", true, false)   # east of the window W_STB_S (x 11.2..12.8), which the zombies need clear (T-040)
@@ -509,35 +608,119 @@ const OUT_POSTS: Array = [
 ]
 ## Where the zombies come out of the dark at the edge (kind "edge": they walk in and chase; only while somebody is
 ## out on the grounds, never in sight of a player out there) and rise from the snow (kind "ground", round 4+).
+## T-084: the edge spawns stand 4.5 m BEYOND the edge wall, in the tree line (a pocket of navmesh POCKET_W wide
+## reaches POCKET_D m out through a gap in the baked wall and fences; the gap is filled by a collider on the edge
+## layer that only bodies see, so the zombies walk in out of the trees and nobody walks out).
 const OUT_EDGE_SPAWNS: Array = [
-	Vector3(-15, 0, -27.5), Vector3(5, 0, -27.5), Vector3(25, 0, -27.5), Vector3(47, 0, -27.5),
-	Vector3(57.5, 0, -1.0), Vector3(57.5, 0, 22.0), Vector3(57.5, 0, 46.0),
-	Vector3(45, 0, 61.5), Vector3(24, 0, 61.5), Vector3(2, 0, 61.5),
-	Vector3(-17.5, 0, 44.0), Vector3(-17.5, 0, 16.0), Vector3(-17.5, 0, -20.0),
+	Vector3(-15, 0, -34.5), Vector3(5, 0, -34.5), Vector3(25, 0, -34.5), Vector3(47, 0, -34.5),
+	Vector3(64.5, 0, -1.0), Vector3(64.5, 0, 22.0), Vector3(64.5, 0, 46.0),
+	Vector3(45, 0, 68.5), Vector3(24, 0, 68.5), Vector3(2, 0, 68.5),
+	Vector3(-24.5, 0, 44.0), Vector3(-24.5, 0, 16.0), Vector3(-24.5, 0, -20.0),
 ]
+const POCKET_W: float = 3.0
+const POCKET_D: float = 7.0
 const OUT_GROUND_SPAWNS: Array = [Vector3(16.5, 0, -19.0), Vector3(-14.0, 0, 36.0), Vector3(45.0, 0, 30.0), Vector3(27.0, 0, 57.0)]
 ## Zone GROUNDS (roam): boxes tiling the snow inside the edge round the inn, the stable, the stair hall and the yard
 ## [min (x, z), max (x, z)], y -0.5..3 (the porch roofs' ledges stay out); and the two light wells' pits, lower.
 const OUT_ZONE_RECTS: Array = [
 	[Vector2(-20, -30), Vector2(60, -0.15)], [Vector2(-20, -0.15), Vector2(-3.15, 64)], [Vector2(-3.15, -0.15), Vector2(-0.15, 7.85)],
-	[Vector2(-3.15, 18.65), Vector2(5.85, 34)], [Vector2(-3.15, 34), Vector2(2, 64)], [Vector2(0, 16.15), Vector2(18, 22)],
+	[Vector2(-3.15, 18.65), Vector2(STB_X0 - 0.15, 34)], [Vector2(-3.15, 34), Vector2(2, 64)], [Vector2(0, 16.15), Vector2(18, 22)],
 	[Vector2(22, 16.15), Vector2(24.15, 22)], [Vector2(24.15, -0.15), Vector2(60, 9.85)], [Vector2(28.15, 9.85), Vector2(60, 34)],
-	[Vector2(24.15, 19), Vector2(28.15, 34)], [Vector2(34, 34), Vector2(60, 64)], [Vector2(2, 48), Vector2(34, 64)],
+	[Vector2(24.15, 19), Vector2(28.15, 22)], [Vector2(STB_X1 + 0.15, 22), Vector2(28.15, 34)], [Vector2(34, 34), Vector2(60, 64)], [Vector2(2, 48), Vector2(34, 64)],
 ]
 const OUT_WELL_RECTS: Array = [[Vector2(1.85, -4.65), Vector2(5.05, -0.15)], [Vector2(24.0, -2.1), Vector2(26.35, 3.35)]]
 
 
+## Which side of the edge an edge spawn is beyond: 0 north (z < OUT_MIN.y), 1 south, 2 west, 3 east.
+static func _pocket_side(p: Vector3) -> int:
+	if p.z < OUT_MIN.y:
+		return 0
+	if p.z > OUT_MAX.y:
+		return 1
+	return 2 if p.x < OUT_MIN.x else 3
+
+
+## The spawn pockets beyond the edge (T-084), as rects on the snow (x, z): from the edge line POCKET_D m out, POCKET_W
+## wide, one per edge spawn.
+static func edge_pockets() -> Array[Rect2]:
+	var out: Array[Rect2] = []
+	for p: Vector3 in OUT_EDGE_SPAWNS:
+		match _pocket_side(p):
+			0: out.append(Rect2(p.x - POCKET_W * 0.5, OUT_MIN.y - POCKET_D, POCKET_W, POCKET_D))
+			1: out.append(Rect2(p.x - POCKET_W * 0.5, OUT_MAX.y, POCKET_W, POCKET_D))
+			2: out.append(Rect2(OUT_MIN.x - POCKET_D, p.z - POCKET_W * 0.5, POCKET_D, POCKET_W))
+			3: out.append(Rect2(OUT_MAX.x, p.z - POCKET_W * 0.5, POCKET_D, POCKET_W))
+	return out
+
+
+## True when the segment a..b lies on the edge line (an edge fence; the roadside fence at z -13 is not one).
+static func _on_edge(a: Vector2, b: Vector2) -> bool:
+	return (a.x == b.x and (a.x == OUT_MIN.x or a.x == OUT_MAX.x)) or (a.y == b.y and (a.y == OUT_MIN.y or a.y == OUT_MAX.y))
+
+
+## `segments` ([a, b] axis-aligned, 2D) with the spans across the spawn pockets cut out of those on the edge line.
+static func _cut_pockets(segments: Array) -> Array:
+	var out: Array = []
+	var pockets: Array[Rect2] = edge_pockets()
+	for s: Array in segments:
+		var a: Vector2 = s[0]
+		var b: Vector2 = s[1]
+		if not _on_edge(a, b):
+			out.append([a, b])
+			continue
+		var along_x: bool = a.y == b.y
+		var cuts: Array = []
+		for r: Rect2 in pockets:
+			if along_x:
+				if a.y <= r.end.y + 0.01 and a.y >= r.position.y - 0.01:
+					cuts.append([r.position.x, r.end.x])
+			elif a.x <= r.end.x + 0.01 and a.x >= r.position.x - 0.01:
+				cuts.append([r.position.y, r.end.y])
+		var lo: float = minf(a.x, b.x) if along_x else minf(a.y, b.y)
+		var hi: float = maxf(a.x, b.x) if along_x else maxf(a.y, b.y)
+		cuts.sort_custom(func(p: Array, q: Array) -> bool: return float(p[0]) < float(q[0]))
+		var cur: float = lo
+		for c: Array in cuts:
+			var c0: float = float(c[0])
+			var c1: float = float(c[1])
+			if c1 <= lo or c0 >= hi:
+				continue
+			if c0 > cur + 0.05:
+				out.append([Vector2(cur, a.y) if along_x else Vector2(a.x, cur), Vector2(c0, a.y) if along_x else Vector2(a.x, c0)])
+			cur = maxf(cur, c1)
+		if hi > cur + 0.05:
+			out.append([Vector2(cur, a.y) if along_x else Vector2(a.x, cur), Vector2(hi, a.y) if along_x else Vector2(a.x, hi)])
+	return out
+
+
 ## The grounds' collision (navmesh source): the edge wall, the fences, tree trunks, posts and the solid props.
+## T-084: the edge wall and the fences on the edge line are on EDGE_LAYER (bodies collide, shots pass) and are
+## cut at the spawn pockets; the cuts are filled by colliders on the same layer kept OUT of the navigation region
+## (EdgeGates under the map root), so the bake joins each pocket to the field while players stay inside. Beyond the
+## edge everything but the pockets is carved out of the bake (NavigationObstacle3Ds that only live for the bake).
 func build_grounds() -> void:
 	var lo: Vector2 = OUT_MIN
 	var hi: Vector2 = OUT_MAX
-	for e: Array in [[Vector3(lo.x - 0.4, -0.5, lo.y - 0.4), Vector3(hi.x + 0.4, 6.0, lo.y)], [Vector3(lo.x - 0.4, -0.5, hi.y), Vector3(hi.x + 0.4, 6.0, hi.y + 0.4)],
-			[Vector3(lo.x - 0.4, -0.5, lo.y), Vector3(lo.x, 6.0, hi.y)], [Vector3(hi.x, -0.5, lo.y), Vector3(hi.x + 0.4, 6.0, hi.y)]]:
-		box(geo, "GroundsEdge", e[0], e[1], "snow", true, false).set_meta("no_mantle", true)
-	for f: Array in OUT_FENCES:
-		var a: Vector2 = f[0]
-		var b: Vector2 = f[1]
-		box(geo, "GroundsFence", Vector3(minf(a.x, b.x) - 0.1, 0, minf(a.y, b.y) - 0.1), Vector3(maxf(a.x, b.x) + 0.1, 2.3, maxf(a.y, b.y) + 0.1), "snow", true, false)
+	var gates: Node3D = Node3D.new()
+	gates.name = "EdgeGates"
+	map_root.add_child(gates)
+	var walls: Array = [[Vector2(lo.x - 0.4, lo.y), Vector2(hi.x + 0.4, lo.y)], [Vector2(lo.x - 0.4, hi.y), Vector2(hi.x + 0.4, hi.y)],
+		[Vector2(lo.x, lo.y), Vector2(lo.x, hi.y)], [Vector2(hi.x, lo.y), Vector2(hi.x, hi.y)]]
+	for w: Array in _cut_pockets(walls):
+		_edge_box(geo, "GroundsEdge", w[0], w[1], 6.0)
+	for r: Rect2 in edge_pockets():   # the gap fillers: the wall's own run across each pocket, not baked
+		var side: int = _pocket_side(Vector3(r.get_center().x, 0, r.get_center().y))
+		var a: Vector2 = Vector2(r.position.x, lo.y if side == 0 else hi.y) if side < 2 else Vector2(lo.x if side == 2 else hi.x, r.position.y)
+		var b: Vector2 = Vector2(r.end.x, a.y) if side < 2 else Vector2(a.x, r.end.y)
+		_edge_box(gates, "EdgeGate", a, b, 6.0)
+	for f: Array in _cut_pockets(OUT_FENCES):
+		var a2: Vector2 = f[0]
+		var b2: Vector2 = f[1]
+		if _on_edge(a2, b2):
+			_edge_box(geo, "GroundsFence", a2, b2, 2.3)
+		else:
+			box(geo, "GroundsFence", Vector3(minf(a2.x, b2.x) - 0.1, 0, minf(a2.y, b2.y) - 0.1), Vector3(maxf(a2.x, b2.x) + 0.1, 2.3, maxf(a2.y, b2.y) + 0.1), "snow", true, false)
+	_carve_beyond_edge()
 	for t: Array in OUT_DEAD_TREES:
 		var tp: Vector3 = t[0]
 		if _in_grounds(tp, -0.5):
@@ -559,6 +742,92 @@ func build_grounds() -> void:
 		var cyaw: float = rng.randf_range(0, 360)
 		rng.randf()
 		_solid("CargoCrate", cp, Vector3(csz, csz, csz), cyaw)
+
+
+## An invisible collider along the edge line a..b (2D), `h` high, on the edge layer (T-084): 0.4 m thick outward of
+## the line for the wall, 0.2 m centred for the fences. Bodies collide with it; shots and rays don't; the bake reads it.
+func _edge_box(parent: Node3D, name_: String, a: Vector2, b: Vector2, h: float) -> void:
+	var fence: bool = h < 3.0
+	var x0: float = minf(a.x, b.x)
+	var x1: float = maxf(a.x, b.x)
+	var z0: float = minf(a.y, b.y)
+	var z1: float = maxf(a.y, b.y)
+	if a.y == b.y:   # along x
+		var out: float = -1.0 if a.y <= OUT_MIN.y + 0.01 else 1.0
+		z0 = a.y + (minf(0.0, out * 0.4) if not fence else -0.1)
+		z1 = a.y + (maxf(0.0, out * 0.4) if not fence else 0.1)
+		x0 -= 0.1
+		x1 += 0.1
+	else:
+		var out2: float = -1.0 if a.x <= OUT_MIN.x + 0.01 else 1.0
+		x0 = a.x + (minf(0.0, out2 * 0.4) if not fence else -0.1)
+		x1 = a.x + (maxf(0.0, out2 * 0.4) if not fence else 0.1)
+	var bd: Node3D = box(parent, name_, Vector3(x0, -0.5 if not fence else 0.0, z0), Vector3(x1, h, z1), "snow", true, false)
+	if bd == null:
+		return
+	bd.set_meta("no_mantle", true)
+	(bd as StaticBody3D).collision_layer = EDGE_LAYER
+
+
+## Bake-only obstructions (T-084) over the snow beyond the edge, leaving only the spawn pockets: the navmesh outside
+## the wall is the pockets and nothing else, so a zombie never walks the far side of the trees.
+func _carve_beyond_edge() -> void:
+	var far: float = 40.0
+	var lo: Vector2 = OUT_MIN - Vector2(0.4, 0.4)
+	var hi: Vector2 = OUT_MAX + Vector2(0.4, 0.4)
+	var rects: Array[Rect2] = []
+	var pockets: Array[Rect2] = edge_pockets()
+	# four strips round the outside, each split at its pockets; past a pocket's far end the strip carries on
+	for side: int in 4:
+		var strip: Rect2
+		match side:
+			0: strip = Rect2(lo.x - far, lo.y - far, hi.x - lo.x + 2.0 * far, far)
+			1: strip = Rect2(lo.x - far, hi.y, hi.x - lo.x + 2.0 * far, far)
+			2: strip = Rect2(lo.x - far, lo.y, far, hi.y - lo.y)
+			_: strip = Rect2(hi.x, lo.y, far, hi.y - lo.y)
+		var along_x: bool = side < 2
+		var cuts: Array = []
+		for r: Rect2 in pockets:
+			if _pocket_side(Vector3(r.get_center().x, 0, r.get_center().y)) != side:
+				continue
+			cuts.append(r)
+		cuts.sort_custom(func(p: Rect2, q: Rect2) -> bool: return (p.position.x < q.position.x) if along_x else (p.position.y < q.position.y))
+		var cur: float = strip.position.x if along_x else strip.position.y
+		var endv: float = strip.end.x if along_x else strip.end.y
+		for r2: Rect2 in cuts:
+			var c0: float = r2.position.x if along_x else r2.position.y
+			var c1: float = r2.end.x if along_x else r2.end.y
+			if along_x:
+				rects.append(Rect2(cur, strip.position.y, c0 - cur, strip.size.y))
+				# the strip beyond the pocket's far end
+				if side == 0:
+					rects.append(Rect2(c0, strip.position.y, c1 - c0, r2.position.y - strip.position.y))
+				else:
+					rects.append(Rect2(c0, r2.end.y, c1 - c0, strip.end.y - r2.end.y))
+			else:
+				rects.append(Rect2(strip.position.x, cur, strip.size.x, c0 - cur))
+				if side == 2:
+					rects.append(Rect2(strip.position.x, c0, r2.position.x - strip.position.x, c1 - c0))
+				else:
+					rects.append(Rect2(r2.end.x, c0, strip.end.x - r2.end.x, c1 - c0))
+			cur = c1
+		if along_x:
+			rects.append(Rect2(cur, strip.position.y, endv - cur, strip.size.y))
+		else:
+			rects.append(Rect2(strip.position.x, cur, strip.size.x, endv - cur))
+	for r3: Rect2 in rects:
+		if r3.size.x < 0.05 or r3.size.y < 0.05:
+			continue
+		var ob: NavigationObstacle3D = NavigationObstacle3D.new()
+		ob.name = "EdgeCarve"
+		ob.affect_navigation_mesh = true
+		ob.carve_navigation_mesh = true
+		ob.avoidance_enabled = false
+		ob.height = 8.0
+		ob.position = Vector3(r3.position.x, -1.0, r3.position.y)
+		ob.vertices = PackedVector3Array([Vector3(0, 0, 0), Vector3(r3.size.x, 0, 0), Vector3(r3.size.x, 0, r3.size.y), Vector3(0, 0, r3.size.y)])
+		geo.add_child(ob)
+		_bake_only.append(ob)
 
 
 ## True when `p` is inside the grounds' edge by at least `margin` metres.
@@ -619,13 +888,13 @@ const CRATES: Array = [["Hearth", Vector3(22.9, 0, 14.0), 90.0, true], ["GuestBe
 ## Ammo boxes (Update 02 section 4, T-049): [name, floor position, yaw so local -Z faces the room]. Behind the bar
 ## against the back shelf at the alcove's dead end (clear of Alix's trapdoor at 6.6, 5.6 and the alcove's mouth at
 ## the north end), and on the stable's west wall under the hayloft between the trench-gun chalk and the yard door.
-const AMMO_BOXES: Array = [["Taproom", Vector3(5.34, 0, 7.3), -90.0], ["Stable", Vector3(6.48, 0, 32.0), -90.0],
+const AMMO_BOXES: Array = [["Taproom", Vector3(5.34, 0, 7.3), -90.0], ["Stable", Vector3(STB_X0 + 0.48, 0, 32.0), -90.0],
 	["Cellar", Vector3(14.6, -3.2, 15.5), 0.0],   # the Old Cellar's barrel vault, south wall (T-051)
 	["Grounds", Vector3(38.4, 0, 26.0), 20.0]]   # T-080: the supply drop under the parachute's tree, facing the Wreck Loop
 ## The Armorer's Bench (UPDATE_04 section 6, T-068): [floor position against the wall, yaw so local -Z faces the room].
 ## The inn has no walled tack room: the bench stands in the stable's tack corner on the west wall, under the tack rail
 ## and saddle blanket (raised above its pegboard), between the hay-stair end and the trench-gun chalk.
-const ARMORERS_BENCH: Array = [Vector3(6 + T * 0.5 + 0.01, 0, 26.5), -90.0]
+const ARMORERS_BENCH: Array = [Vector3(STB_X0 + T * 0.5 + 0.01, 0, 26.5), -90.0]
 ## the cellar's hanging bulbs (bulb glass position; the power lights sit just under them): one pool per machine row
 const CELLAR_BULBS: Array = [Vector3(27.0, CELLAR_Y + 2.55, 22.5), Vector3(33.0, CELLAR_Y + 2.55, 22.5),
 	Vector3(26.5, CELLAR_Y + 2.55, 27.5), Vector3(33.5, CELLAR_Y + 2.55, 27.5), Vector3(30.35, CELLAR_Y + 2.55, 28.7)]
@@ -864,7 +1133,7 @@ func bake_navmesh() -> void:
 	nm.cell_size = 0.25
 	nm.cell_height = 0.25
 	nm.geometry_parsed_geometry_type = NavigationMesh.PARSED_GEOMETRY_STATIC_COLLIDERS
-	nm.geometry_collision_mask = 1
+	nm.geometry_collision_mask = 1 | EDGE_LAYER   # the edge wall shapes the navmesh though shots pass it (T-084)
 	var src: NavigationMeshSourceGeometryData3D = NavigationMeshSourceGeometryData3D.new()
 	NavigationServer3D.parse_source_geometry_data(nm, src, nav)
 	NavigationServer3D.bake_from_source_geometry_data(nm, src)
@@ -896,7 +1165,7 @@ func build_dressing() -> void:
 
 func _dress_floors_and_ceilings() -> void:
 	Props.block(dress, Vector3(0.15, 0.0, 0.15), Vector3(23.85, 0.012, 15.85), "floorboards")
-	Props.block(dress, Vector3(6.15, 0.0, 22.15), Vector3(23.85, 0.012, 33.85), "dirt")
+	Props.block(dress, Vector3(STB_X0 + 0.15, 0.0, STB_Z0 + 0.15), Vector3(STB_X1 - 0.15, 0.012, STB_Z1 - 0.15), "dirt")
 	Props.block(dress, Vector3(18.15, 0.0, 16.0), Vector3(21.85, 0.012, 22.0), "dirt")
 	# taproom ceiling beams (north-south) and a summer beam
 	for x: float in [5.0, 8.0, 11.0, 14.0, 17.0, 20.0, 23.0]:
@@ -914,11 +1183,17 @@ func _dress_floors_and_ceilings() -> void:
 	for x: float in [2.0, 6.0, 10.0, 14.0, 18.0, 22.0]:
 		Props.block(dress, Vector3(x - 0.12, UP_TOP - 0.24, 0.15), Vector3(x + 0.12, UP_TOP, 9.85), "beam")
 	Props.block(dress, Vector3(1.0, UP_Y, 7.4), Vector3(23.0, UP_Y + 0.012, 8.6), "rug")
-	# stable trusses
+	# stable trusses: tie beams, their wall posts (pilasters, flush enough that nobody clips them on the landing), a
+	# purlin each side and collar beams under the ridge (T-084: the loft looks up into a real roof now)
 	for z: float in [24.5, 28.0, 31.5]:
-		Props.block(dress, Vector3(6.15, STABLE_H - 0.6, z - 0.15), Vector3(23.85, STABLE_H - 0.3, z + 0.15), "beam")
-		for x: float in [6.4, 23.6]:
-			Props.block(dress, Vector3(x - 0.15, 0, z - 0.15), Vector3(x + 0.15, STABLE_H - 0.3, z + 0.15), "beam")
+		Props.block(dress, Vector3(STB_X0 + 0.15, STABLE_H - 0.6, z - 0.15), Vector3(STB_X1 - 0.15, STABLE_H - 0.3, z + 0.15), "beam")
+		for x: float in [STB_X0 + 0.15, STB_X1 - 0.31]:
+			Props.block(dress, Vector3(x, 0, z - 0.17), Vector3(x + 0.16, STABLE_H - 0.3, z + 0.17), "beam")
+		Props.block(dress, Vector3(9.0, STABLE_H - 0.3, z - 0.1), Vector3(21.0, STABLE_H - 0.02, z + 0.1), "beam")   # the collar, up in the roof
+		for x2: float in [9.0, 21.0]:
+			Props.block(dress, Vector3(x2 - 0.12, STABLE_H - 0.6, z - 0.1), Vector3(x2 + 0.12, STABLE_H - 0.02, z + 0.1), "beam")
+	for x3: float in [9.0, 21.0]:
+		Props.block(dress, Vector3(x3 - 0.1, STABLE_H - 0.9, STB_Z0 + 0.15), Vector3(x3 + 0.1, STABLE_H - 0.6, STB_Z1 - 0.15), "beam")   # purlins
 
 
 ## Frames, sills (with snow outside), shutters and curtains for a window opening. The curtains are DraftCurtains
@@ -971,6 +1246,7 @@ func _dress_windows_and_doors() -> void:
 	_window(Vector3(9.0, 0, 22.0), 0.0, false)
 	_window(Vector3(14.0, 0, 22.0), 0.0, false)
 	_window(Vector3(12.0, 0, 34.0), 180.0, false)
+	_window(Vector3(22.0, LOFT_TOP, STB_Z1), 180.0, false)   # the loft door over the yard, its lower half boarded (T-084)
 	_door_frame(Vector3(STAIR_X1, 0, 15.1), 90.0, 1.6, DOOR_H)
 	_door_frame(Vector3(FRONT_DOOR_X, 0, 0.0), 0.0, 1.6, DOOR_H)   # the front door (T-072)
 	_door_frame(Vector3(20.0, 0, 16.0), 0.0, 2.0, DOOR_H)
@@ -981,14 +1257,14 @@ func _dress_windows_and_doors() -> void:
 	# the great doors at the stable's south end (barred)
 	# (the campaign exfil cutscene tweens this group's rotation.x so the doors fall outward: its meshes stay
 	# un-batched, hence the "keep" meta)
-	for jx: float in [16.0, 20.0]:   # jambs and a lintel round the opening
-		Props.block(dress, Vector3(jx - 0.16, 0, 33.8), Vector3(jx + 0.16, 4.35, 34.2), "beam")
-	Props.block(dress, Vector3(15.7, 4.2, 33.8), Vector3(20.3, 4.5, 34.2), "beam")
+	for jx: float in [16.0, 20.0]:   # jambs and a lintel round the opening (3 m high since T-084: the gallery runs over them)
+		Props.block(dress, Vector3(jx - 0.16, 0, 33.8), Vector3(jx + 0.16, GREAT_DOOR_H + 0.15, 34.2), "beam")
+	Props.block(dress, Vector3(15.7, GREAT_DOOR_H - 0.05, 33.8), Vector3(20.3, GREAT_DOOR_H + 0.18, 34.2), "beam")
 	var gd: Node3D = Props.group(dress, "GreatDoors", Vector3(18, 0, 33.82))
-	Props.block(gd, Vector3(-2.0, 0, -0.06), Vector3(2.0, 4.2, 0.0), "planks")
-	Props.obox(gd, Vector3(0, 2.1, -0.12), Vector3(0.2, 4.6, 0.1), "beam", Vector3(0, 0, 60))
-	Props.obox(gd, Vector3(0, 2.1, -0.12), Vector3(0.2, 4.6, 0.1), "beam", Vector3(0, 0, -60))
-	Props.block(gd, Vector3(-2.2, 1.6, -0.24), Vector3(2.2, 1.8, -0.12), "iron")
+	Props.block(gd, Vector3(-2.0, 0, -0.06), Vector3(2.0, GREAT_DOOR_H, 0.0), "planks")
+	Props.obox(gd, Vector3(0, GREAT_DOOR_H * 0.5, -0.12), Vector3(0.2, 3.5, 0.1), "beam", Vector3(0, 0, 54))
+	Props.obox(gd, Vector3(0, GREAT_DOOR_H * 0.5, -0.12), Vector3(0.2, 3.5, 0.1), "beam", Vector3(0, 0, -54))
+	Props.block(gd, Vector3(-2.2, 1.5, -0.24), Vector3(2.2, 1.7, -0.12), "iron")
 	for m: Node in gd.get_children():
 		m.set_meta("keep", true)
 
@@ -1808,27 +2084,144 @@ func _dress_stable() -> void:
 				Vector3(srng.randf_range(0.3, 0.8), 0.02, srng.randf_range(0.2, 0.5)), "straw_floor", Vector3(0, srng.randf_range(0, 180), 0))
 	for x: float in [12.0, 16.8]:
 		Props.block(g, Vector3(x - 0.6, 0.5, 22.2), Vector3(x + 0.6, 0.85, 22.6), "planks")
-	Props.block(g, Vector3(21.4, 0, 22.4), Vector3(23.85, 0.7, 25.5), "hay")   # the hay pile (ground spawn)
+	Props.block(g, Vector3(21.5, 0, 22.4), Vector3(23.5, 0.7, 25.0), "hay")   # the hay pile (ground spawn; west of the stair's foot since T-084)
 	for i: int in 4:
-		Props.hay_bale(g, Vector3(23.2, 0.45 * (i / 2), 28.0 + (i % 2) * 0.55), 90.0)
-	Props.hay_bale(g, Vector3(22.8, 0, 26.6), 75.0)
-	# bales stacked on the loft over the collision block
-	for xi: int in 3:
-		for zi: int in 5:
-			Props.hay_bale(g, Vector3(6.9 + xi * 0.95, 3.5, 30.85 + zi * 0.55), 0.0 if (xi + zi) % 2 == 0 else 3.0)
-	Props.hay_bale(g, Vector3(7.8, 3.95, 31.4), 8.0)
-	Props.hay_bale(g, Vector3(8.6, 3.95, 32.4), -6.0)
+		Props.hay_bale(g, Vector3(19.6, 0.45 * (i / 2), 25.6 + (i % 2) * 0.55), 90.0)   # (under the bay, clear of the stair)
+	Props.hay_bale(g, Vector3(20.2, 0, 27.3), 75.0)
 	# tack rail, saddle blanket, bridle: hung above the Armorer's Bench (T-068), which stands under them
-	Props.block(g, Vector3(6.15, 2.0, 25.5), Vector3(6.25, 2.1, 27.5), "beam")   # tack rail
-	Props.block(g, Vector3(6.25, 1.8, 25.9), Vector3(6.6, 2.15, 26.5), "cloth_red")   # saddle blanket
-	Props.block(g, Vector3(6.25, 1.78, 26.8), Vector3(6.45, 2.1, 27.2), "furniture")    # bridle/strap
-	Props.crate(g, Vector3(22.9, 0, 33.2), 0.6, 15.0)
-	# loft edge rail near the stair head
-	Props.block(g, Vector3(14.9, 3.5, 22.15), Vector3(15.0, 4.5, 25.5), "beam")
-	Props.block(g, Vector3(14.85, 4.4, 22.15), Vector3(15.05, 4.5, 25.5), "beam")
-	for lp: Array in [[Vector3(19.0, 4.0, 26.0), STABLE_H - 0.6], [Vector3(19.0, 4.0, 31.5), STABLE_H - 0.6], [Vector3(10.0, 2.3, 28.0), 3.2],
+	var wx: float = STB_X0 + 0.15   # the west wall's inner face
+	Props.block(g, Vector3(wx, 2.0, 25.5), Vector3(wx + 0.1, 2.1, 27.5), "beam")   # tack rail
+	Props.block(g, Vector3(wx + 0.1, 1.8, 25.9), Vector3(wx + 0.45, 2.15, 26.5), "cloth_red")   # saddle blanket
+	Props.block(g, Vector3(wx + 0.1, 1.78, 26.8), Vector3(wx + 0.3, 2.1, 27.2), "furniture")    # bridle/strap
+	Props.crate(g, Vector3(22.7, 0, 33.2), 0.6, 15.0)
+	for lp: Array in [[Vector3(19.0, 4.0, 26.0), STABLE_H - 0.6], [Vector3(19.0, 2.5, 31.5), LOFT_Y], [Vector3(10.0, 2.3, 28.0), LOFT_Y],
 			[Vector3(10.0, 5.6, 28.0), STABLE_H - 0.6], [Vector3(20.0, 2.4, 19.0), 3.0]]:
 		Props.lantern(g, lp[0], float(lp[1]))
+	_dress_hay_stairs(g)
+	_dress_loft(g)
+
+
+## The hayloft stair (T-084): fifteen solid treads with a worn nosing, drawn under the invisible ramp (the ramp runs
+## on the nosing line, so a tread's top is never above it), a footboard where the ramp leaves the floor, a closed
+## string and boarded planks down the open west side with the store's little door, newel posts and balusters
+## between the rail bars, and a wall rail up the east wall.
+func _dress_hay_stairs(g: Node3D) -> void:
+	var run: float = HSTAIR_Z1 - HSTAIR_Z0
+	var tread: float = run / float(HSTAIR_STEPS)
+	var riser: float = LOFT_TOP / float(HSTAIR_STEPS)
+	for k: int in HSTAIR_STEPS - 1:
+		var za: float = HSTAIR_Z0 + tread * float(k + 1)
+		var zb: float = za + tread
+		var top: float = riser * float(k + 1)
+		Props.block(g, Vector3(HSTAIR_X0, 0.0, za), Vector3(HSTAIR_X1, top - 0.045, zb), "beam")
+		Props.block(g, Vector3(HSTAIR_X0, top - 0.045, za - 0.025), Vector3(HSTAIR_X1, top, zb + 0.01), "furniture")   # the tread board and its nosing
+	Props.block(g, Vector3(HSTAIR_X0, 0.0, HSTAIR_Z0 - 0.02), Vector3(HSTAIR_X1, 0.11, HSTAIR_Z0 + tread), "furniture")   # the footboard
+	# the closed string along the open side, the boarding under it, the store's door
+	var ang: float = rad_to_deg(atan2(LOFT_TOP, run))
+	var mid: Vector3 = Vector3(HSTAIR_X0 - 0.02, LOFT_TOP * 0.5 + 0.12, (HSTAIR_Z0 + HSTAIR_Z1) * 0.5)
+	Props.obox(g, mid, Vector3(0.06, 0.34, Vector2(run, LOFT_TOP).length() + 0.3), "beam", Vector3(-ang, 0, 0))
+	var zc: float = HSTAIR_Z0 + 0.4
+	var pk: int = 0
+	while zc < HSTAIR_Z1 - 0.05:
+		var zn: float = minf(zc + 0.22, HSTAIR_Z1)
+		var h: float = LOFT_TOP * (zc - HSTAIR_Z0) / run - 0.2
+		if h > 0.1:
+			Props.block(g, Vector3(HSTAIR_X0 - 0.045, 0.0, zc + 0.01), Vector3(HSTAIR_X0 + 0.0, h, zn - 0.01), "planks" if pk % 2 == 0 else "board_wood_v")
+		zc = zn
+		pk += 1
+	Props.block(g, Vector3(HSTAIR_X0 - 0.07, 0.02, 29.6), Vector3(HSTAIR_X0 - 0.04, 1.75, 30.5), "board_wood_v")   # the store's door
+	Props.block(g, Vector3(HSTAIR_X0 - 0.09, 0.95, 29.68), Vector3(HSTAIR_X0 - 0.06, 1.02, 29.78), "iron")
+	# newels at the foot and the head, balusters between the bars, a wall rail up the east wall
+	Props.newel(g, Vector3(HSTAIR_X0 - 0.05, 0.0, HSTAIR_Z0 - 0.02), 1.1)
+	Props.newel(g, Vector3(HSTAIR_X0 - 0.05, LOFT_TOP, HSTAIR_Z1 - 0.02), 1.1)
+	var n: int = int(run / 0.45)
+	for b: int in range(1, n):
+		var t: float = float(b) / float(n)
+		var bz: float = lerpf(HSTAIR_Z0, HSTAIR_Z1, t)
+		var by: float = LOFT_TOP * t
+		Props.block(g, Vector3(HSTAIR_X0 - 0.07, by + 0.1, bz - 0.02), Vector3(HSTAIR_X0 - 0.03, by + 0.98, bz + 0.02), "furniture")
+	var rail_mid: Vector3 = Vector3(STB_X1 - 0.15 - 0.06, LOFT_TOP * 0.5 + 0.95, (HSTAIR_Z0 + HSTAIR_Z1) * 0.5)
+	Props.obox(g, rail_mid, Vector3(0.05, 0.05, Vector2(run, LOFT_TOP).length()), "furniture", Vector3(-ang, 0, 0))
+	for bk: int in 4:
+		var tz: float = lerpf(HSTAIR_Z0 + 0.6, HSTAIR_Z1 - 0.6, float(bk) / 3.0)
+		Props.block(g, Vector3(STB_X1 - 0.15 - 0.08, LOFT_TOP * (tz - HSTAIR_Z0) / run + 0.88, tz - 0.02), Vector3(STB_X1 - 0.15, LOFT_TOP * (tz - HSTAIR_Z0) / run + 0.95, tz + 0.02), "iron")
+
+
+## The second level (T-084): balusters and newels along the rails (the bars are colliders, these are the turned
+## sticks between them), the bale drop's worn boards and its hook, the bale stack and the single bales over their
+## colliders, the two crates, the hay chute's trapdoor over the horse's stall with its rope and pulley, a pitchfork
+## in the stack, a lantern on a hook by the stair head, tack hanging from the tie beams (a collar, harness, a
+## bridle, a bucket), a coil of rope and a few sacks.
+func _dress_loft(g: Node3D) -> void:
+	var y: float = LOFT_TOP
+	# balusters and newels along the edge rails (0.45 m apart, between the collider bars)
+	var edges: Array = [[Vector3(LOFT_X1 - 0.05, y, STB_Z0 + 0.3), Vector3(LOFT_X1 - 0.05, y, GAL_Z0 - 0.05)],
+		[Vector3(LOFT_X1 - 0.05, y, GAL_Z0 + 0.05), Vector3(LOFT_DROP.x, y, GAL_Z0 + 0.05)], [Vector3(LOFT_DROP.y, y, GAL_Z0 + 0.05), Vector3(HSTAIR_X0 - 0.05, y, GAL_Z0 + 0.05)],
+		[Vector3(HSTAIR_X0 - 0.05, y, GAL_Z0 + 0.05), Vector3(HSTAIR_X0 - 0.05, y, HSTAIR_Z1 - 0.1)]]
+	for e: Array in edges:
+		var a: Vector3 = e[0]
+		var b: Vector3 = e[1]
+		var cnt: int = maxi(1, int(a.distance_to(b) / 0.45))
+		for k: int in range(1, cnt):
+			var p: Vector3 = a.lerp(b, float(k) / float(cnt))
+			Props.block(g, p + Vector3(-0.02, 0.1, -0.02), p + Vector3(0.02, 0.98, 0.02), "furniture")
+	for np: Vector3 in [Vector3(LOFT_X1 - 0.05, y, GAL_Z0), Vector3(LOFT_DROP.x, y, GAL_Z0 + 0.05), Vector3(LOFT_DROP.y, y, GAL_Z0 + 0.05), Vector3(HSTAIR_X0 - 0.05, y, GAL_Z0)]:
+		Props.newel(g, np, 1.1)
+	# the bale drop: boards worn pale at the lip, the hook on the beam above it, a rope down to it
+	Props.block(g, Vector3(LOFT_DROP.x, y + 0.004, GAL_Z0 - 1.4), Vector3(LOFT_DROP.y, y + 0.012, GAL_Z0 + 0.15), "planks", false)
+	Props.block(g, Vector3((LOFT_DROP.x + LOFT_DROP.y) * 0.5 - 0.02, STABLE_H - 1.0, GAL_Z0 - 0.3), Vector3((LOFT_DROP.x + LOFT_DROP.y) * 0.5 + 0.02, STABLE_H - 0.6, GAL_Z0 - 0.26), "iron")
+	Props.cable(g, Vector3((LOFT_DROP.x + LOFT_DROP.y) * 0.5, STABLE_H - 1.0, GAL_Z0 - 0.28), Vector3((LOFT_DROP.x + LOFT_DROP.y) * 0.5, y + 1.3, GAL_Z0 - 0.2), 0.0, 0.015, 2, "rope")
+	# the bale stack in the south-west corner (over the HayBales collider), the single bales (over theirs)
+	for xi: int in 3:
+		for zi: int in 5:
+			Props.hay_bale(g, Vector3(STB_X0 + 0.9 + xi * 0.95, y, 30.85 + zi * 0.55), 0.0 if (xi + zi) % 2 == 0 else 3.0)
+	Props.hay_bale(g, Vector3(STB_X0 + 1.8, y + 0.45, 31.4), 8.0)
+	Props.hay_bale(g, Vector3(STB_X0 + 2.6, y + 0.45, 32.4), -6.0)
+	Props.hay_bale(g, Vector3(STB_X0 + 1.3, y + 0.45, 32.9), 4.0)
+	for hb: Array in LOFT_BALES:
+		Props.hay_bale(g, hb[0], float(hb[1]))
+	for cr: Array in LOFT_CRATES:
+		Props.crate(g, cr[0], float(cr[1]), float(cr[2]), str(cr[3]))
+	# the hay chute: a trapdoor flush in the boards over the horse's stall, its frame, straps and ring, the rope from
+	# the pulley on the tie beam, a coil beside it
+	var hc: Vector3 = Vector3(13.0, y, 23.6)
+	Props.block(g, hc + Vector3(-0.55, 0.0, -0.55), hc + Vector3(0.55, 0.07, 0.55), "beam")
+	Props.block(g, hc + Vector3(-0.45, 0.07, -0.45), hc + Vector3(0.45, 0.1, 0.45), "board_wood_v")
+	for sz: float in [-0.25, 0.25]:
+		Props.block(g, hc + Vector3(-0.47, 0.1, sz - 0.03), hc + Vector3(0.47, 0.115, sz + 0.03), "iron")
+	Props.cyl(g, hc + Vector3(0.3, 0.12, 0.0), 0.07, 0.02, "iron")
+	Props.cyl(g, Vector3(13.0, STABLE_H - 0.72, 24.5), 0.14, 0.08, "iron", Vector3(0, 0, 90))
+	Props.cable(g, Vector3(13.0, STABLE_H - 0.8, 24.5), Vector3(13.0, y + 0.3, 24.3), 0.0, 0.015, 2, "rope")
+	Props.rope_coil(g, Vector3(13.9, y, 24.6), 0.3)
+	# the pitchfork leaning in the stack, a bucket, sacks
+	var pf: Node3D = Props.group(g, "Pitchfork", Vector3(STB_X0 + 3.6, y, 30.4), 20.0)
+	Props.cyl(pf, Vector3(0, 0.8, 0.1), 0.018, 1.6, "beam", Vector3(-14, 0, 0))
+	Props.block(pf, Vector3(-0.12, 1.55, 0.27), Vector3(0.12, 1.59, 0.31), "iron")
+	for tx: float in [-0.1, 0.0, 0.1]:
+		Props.obox(pf, Vector3(tx, 1.72, 0.33), Vector3(0.012, 0.3, 0.012), "iron", Vector3(-14, 0, 0))
+	Props.cyl(g, Vector3(24.6, y + 0.15, 33.3), 0.15, 0.3, "tin")
+	Props.sack(g, Vector3(8.6, y, 33.2), 15.0, 0.9)
+	Props.sack(g, Vector3(9.3, y, 33.4), -30.0, 0.8)
+	Props.sack(g, Vector3(8.9, y + 0.32, 33.3), 60.0, 0.8)
+	# the lantern on its hook by the stair head (LoftHookLamp lights it), on a bracket off the tie beam's post line
+	Props.block(g, Vector3(21.0, y + 1.9, 30.86), Vector3(21.3, y + 1.95, 30.94), "iron")
+	Props.lantern(g, Vector3(21.2, y + 1.55, 30.9), y + 1.95)
+	# tack from the tie beam at z 28 over the west block: a horse collar, harness straps, a bridle, a bucket on a rope
+	var tb: Node3D = Props.group(g, "LoftTack", Vector3(0, STABLE_H - 0.6, 28.0))
+	for cx: float in [7.6, 10.4]:
+		Props.cable(tb, Vector3(cx, 0, 0), Vector3(cx, -0.9, 0), 0.0, 0.012, 2, "rope")
+	var collar: Node3D = Props.group(tb, "Collar", Vector3(7.6, -1.25, 0))
+	for k2: int in 10:
+		var a0: float = TAU * float(k2) / 10.0
+		var a1: float = TAU * float(k2 + 1) / 10.0
+		Props.strut(collar, Vector3(cos(a0) * 0.3, sin(a0) * 0.36, 0), Vector3(cos(a1) * 0.3, sin(a1) * 0.36, 0), 0.09, "leather", true)
+	Props.obox(tb, Vector3(10.4, -1.5, 0), Vector3(0.04, 1.2, 0.012), "leather", Vector3(0, 0, 6))
+	Props.obox(tb, Vector3(10.55, -1.6, 0.02), Vector3(0.04, 1.0, 0.012), "leather", Vector3(0, 0, -9))
+	Props.obox(tb, Vector3(10.47, -2.05, 0.01), Vector3(0.3, 0.03, 0.012), "leather")
+	Props.cable(tb, Vector3(12.6, 0, 0), Vector3(12.6, -1.1, 0), 0.0, 0.012, 2, "rope")
+	Props.cyl(tb, Vector3(12.6, -1.25, 0), 0.15, 0.3, "tin")
+	Props.cable(tb, Vector3(9.0, 0, 0), Vector3(9.0, -0.7, 0), 0.0, 0.012, 2, "rope")
+	Props.obox(tb, Vector3(9.0, -0.95, 0), Vector3(0.2, 0.5, 0.03), "leather", Vector3(0, 0, 12))
 
 
 func _dress_exterior() -> void:
@@ -1856,14 +2249,14 @@ func _dress_exterior() -> void:
 	# pitched roofs with snow (inn, stair tower, stable) and the chimney stack
 	_gable(g, Vector3(-0.6, UP_TOP + 0.2, -0.8), Vector3(24.6, UP_TOP + 0.2, 10.8), 3.4)
 	_gable(g, Vector3(STAIR_X1 + 0.1, TAP_H + 0.3, 9.8), Vector3(24.6, TAP_H + 0.3, 16.6), 1.0)
-	_gable(g, Vector3(5.6, STABLE_H + 0.2, 21.6), Vector3(24.6, STABLE_H + 0.2, 34.4), 3.2)
+	_gable(g, Vector3(STB_X0 - 0.4, STABLE_H + 0.2, STB_Z0 - 0.4), Vector3(STB_X1 + 0.6, STABLE_H + 0.2, STB_Z1 + 0.4), 3.2)
 	Props.block(g, Vector3(11.3, UP_TOP, 0.0), Vector3(12.7, 11.4, 1.0), "stone")
 	Props.block(g, Vector3(11.2, 11.3, -0.1), Vector3(12.8, 11.5, 1.1), "snow")
 	Props.smoke(g, Vector3(12.0, 11.6, 0.5), 0.3, 1.2, 14)
 	# porch posts' snow caps and drifts against the walls
 	for d: Array in [[Vector3(-1.2, 0, 5.4), Vector3(2.4, 0.9, 4.4)], [Vector3(25.4, 0, 5.3), Vector3(2.0, 0.8, 3.0)], [Vector3(12, 0, -1.0), Vector3(6, 0.7, 1.8)],   # (clear of the lean-to and the light wells, T-051)
-			[Vector3(4, 0, 17.5), Vector3(5, 1.0, 2.2)], [Vector3(25.3, 0.25, 27), Vector3(2.2, 0.8, 8)], [Vector3(12.2, 0, 35.4), Vector3(5.6, 1.0, 2.2)],   # kept above the cellar ceiling; clear of the yard door (T-072)
-			[Vector3(4.6, 0, 28), Vector3(2.4, 1.0, 9)], [Vector3(-3, 0, -6), Vector3(5, 0.6, 4)], [Vector3(32, 0, 7), Vector3(6, 0.8, 5)]]:
+			[Vector3(4, 0, 17.5), Vector3(5, 1.0, 2.2)], [Vector3(STB_X1 + 1.3, 0.25, 27), Vector3(2.2, 0.8, 8)], [Vector3(12.2, 0, 35.4), Vector3(5.6, 1.0, 2.2)],   # kept above the cellar ceiling; clear of the yard door (T-072)
+			[Vector3(STB_X0 - 1.4, 0, 28), Vector3(2.4, 1.0, 9)], [Vector3(-3, 0, -6), Vector3(5, 0.6, 4)], [Vector3(32, 0, 7), Vector3(6, 0.8, 5)]]:
 		Props.snow_drift(g, d[0], d[1])
 	Props.block(g, Vector3(1.5, UP_Y, -2.4), Vector3(6.5, UP_Y + 0.08, -0.15), "snow", false)
 	Props.block(g, Vector3(17.5, UP_Y, -2.4), Vector3(22.5, UP_Y + 0.08, -0.15), "snow", false)
@@ -1893,7 +2286,7 @@ func _dress_exterior() -> void:
 	var motes: Node3D = Node3D.new()
 	motes.set_script(load("res://gravelight/world/snowfall.gd"))
 	motes.name = "DustMotes"
-	motes.set("areas", [AABB(Vector3(1, 0.3, 1), Vector3(22, 3.0, 14)), AABB(Vector3(7, 0.3, 23), Vector3(16, 6, 10))] as Array[AABB])
+	motes.set("areas", [AABB(Vector3(1, 0.3, 1), Vector3(22, 3.0, 14)), AABB(Vector3(STB_X0 + 0.5, 0.3, 23), Vector3(STB_X1 - STB_X0 - 1.0, 6, 10))] as Array[AABB])
 	motes.set("motes", true)
 	map_root.add_child(motes)
 
@@ -1902,11 +2295,22 @@ func _dress_exterior() -> void:
 ## (the four roads run on into the dark between the trees), the solid props, the lamp posts and lanterns, drifts.
 func _dress_grounds() -> void:
 	var g: Node3D = Props.group(dress, "Grounds", Vector3.ZERO)
-	for i: int in OUT_FENCES.size():
-		var f: Array = OUT_FENCES[i]
+	var segs: Array = _cut_pockets(OUT_FENCES)   # (the edge fences break at the spawn pockets, T-084)
+	for i: int in segs.size():
+		var f: Array = segs[i]
 		var a: Vector2 = f[0]
 		var b: Vector2 = f[1]
 		Props.fence(g, Vector3(a.x, 0, a.y), Vector3(b.x, 0, b.y), 30 + i)
+	# a rail down in the snow at each broken bay of the edge fence
+	var pr: RandomNumberGenerator = RandomNumberGenerator.new()
+	pr.seed = 84
+	for r: Rect2 in edge_pockets():
+		var c: Vector2 = r.get_center()
+		var side: int = _pocket_side(Vector3(c.x, 0, c.y))
+		var on_line: Vector2 = Vector2(c.x, OUT_MIN.y if side == 0 else OUT_MAX.y) if side < 2 else Vector2(OUT_MIN.x if side == 2 else OUT_MAX.x, c.y)
+		var inward: Vector2 = Vector2(0, 1) if side == 0 else (Vector2(0, -1) if side == 1 else (Vector2(1, 0) if side == 2 else Vector2(-1, 0)))
+		var at: Vector2 = on_line + inward * 0.9
+		Props.obox(g, Vector3(at.x, 0.12, at.y), Vector3(1.6, 0.06, 0.1) if side < 2 else Vector3(0.1, 0.06, 1.6), "beam", Vector3(0, pr.randf_range(-25, 25), pr.randf_range(-6, 6)))
 	_tree_line(g)
 	# the woodshed by the west road: plank walls, a lean-to roof falling to the south, a door, logs stacked on its
 	# east side under the eave, snow on the roof and drifted against the north wall
@@ -2002,6 +2406,8 @@ func _tree_line(g: Node3D) -> void:
 	var xf: Array[Transform3D] = []
 	var gaps: Array = [Rect2(-15.0, -45.0, 8.5, 20.0), Rect2(-15.0, 60.0, 8.5, 20.0), Rect2(31.5, 60.0, 11.0, 20.0),
 		Rect2(-40.0, -11.5, 25.0, 7.5), Rect2(55.0, -11.5, 25.0, 7.5)]
+	for pk: Rect2 in edge_pockets():   # no trunk in a spawn pocket (T-084): the zombies walk in between the trees
+		gaps.append(pk.grow(0.9))
 	var edges: Array = [[Vector2(OUT_MIN.x, OUT_MIN.y), Vector2(OUT_MAX.x, OUT_MIN.y), Vector2(0, -1)], [Vector2(OUT_MIN.x, OUT_MAX.y), Vector2(OUT_MAX.x, OUT_MAX.y), Vector2(0, 1)],
 		[Vector2(OUT_MIN.x, OUT_MIN.y), Vector2(OUT_MIN.x, OUT_MAX.y), Vector2(-1, 0)], [Vector2(OUT_MAX.x, OUT_MIN.y), Vector2(OUT_MAX.x, OUT_MAX.y), Vector2(1, 0)]]
 	for e: Array in edges:
@@ -2115,8 +2521,8 @@ func _dress_yard() -> void:
 	Props.fence(g, Vector3(9.8, 0, 48), Vector3(15.8, 0, 48), 16)
 	Props.fence(g, Vector3(20.2, 0, 48), Vector3(26.2, 0, 48), 17)
 	Props.fence(g, Vector3(27.8, 0, 48), Vector3(34, 0, 48), 18)
-	Props.fence(g, Vector3(24.2, 0, 34), Vector3(34, 0, 34), 19)
-	Props.fence(g, Vector3(2, 0, 34), Vector3(5.8, 0, 34), 20)
+	Props.fence(g, Vector3(STB_X1 + 0.2, 0, 34), Vector3(34, 0, 34), 19)
+	Props.fence(g, Vector3(2, 0, 34), Vector3(STB_X0 - 0.2, 0, 34), 20)
 	# the fence gaps: a post either side and a snow-capped sill rail (the barricades hang in them)
 	for gp: Array in [[Vector3(2, 0, 40.2), Vector3(2, 0, 41.8)], [Vector3(34, 0, 40.2), Vector3(34, 0, 41.8)],
 			[Vector3(8.2, 0, 48), Vector3(9.8, 0, 48)], [Vector3(26.2, 0, 48), Vector3(27.8, 0, 48)]]:
@@ -2164,8 +2570,17 @@ func _dress_yard() -> void:
 	_lamp("GateLantern", Vector3(20.5, 2.1, 47.4), Color(1.0, 0.62, 0.3), 6.0, 15.0, false, true, 0.25)
 	Props.wall_lamp(g, Vector3(8.0, 2.75, 34.2), 180.0)
 	_lamp("YardDoorLamp", Vector3(8.0, 2.6, 34.9), Color(1.0, 0.62, 0.32), 7.5, 16.0, true, true, 0.15)
-	Props.wall_lamp(g, Vector3(22.0, 2.75, 34.2), 180.0)
-	_lamp("YardWallLamp", Vector3(22.0, 2.6, 34.9), Color(1.0, 0.62, 0.32), 6.5, 15.0, false, true, 0.15)
+	Props.wall_lamp(g, Vector3(19.2, 2.75, 34.2), 180.0)   # (west of the hoist ledge over the Thompson since T-084)
+	_lamp("YardWallLamp", Vector3(19.2, 2.6, 34.9), Color(1.0, 0.62, 0.32), 6.5, 15.0, false, true, 0.15)
+	# the hoist over the loft door (T-084): the beam out of the gable, its pulley and rope down to the ledge, the
+	# ledge's brackets, snow on its boards
+	Props.block(g, Vector3(21.85, 5.9, 33.6), Vector3(22.15, 6.15, 36.3), "beam")
+	Props.cyl(g, Vector3(22.0, 5.78, 36.0), 0.14, 0.08, "iron", Vector3(0, 0, 90))
+	Props.cable(g, Vector3(22.0, 5.7, 36.0), Vector3(22.0, LOFT_TOP + 0.05, 36.0), 0.0, 0.015, 2, "rope")
+	Props.cyl(g, Vector3(22.0, LOFT_TOP + 0.1, 36.0), 0.14, 0.1, "iron", Vector3(90, 0, 0))
+	for bx2: float in [20.4, 22.6, 24.8]:
+		Props.obox(g, Vector3(bx2, 2.4, 35.0), Vector3(0.14, 0.14, 2.3), "beam", Vector3(-48, 0, 0))
+	Props.block(g, Vector3(20.0, LOFT_TOP, 34.3), Vector3(25.2, LOFT_TOP + 0.06, 36.6), "snow", false)
 	_lamp("YardMoonFill", Vector3(18.0, 6.0, 41.0), Color(0.5, 0.6, 0.85), 0.25, 22.0, false, false)
 
 
@@ -2389,15 +2804,18 @@ func _polish_stable(g: Node3D) -> void:
 	# the loft: loose straw over the boards
 	var lr: RandomNumberGenerator = RandomNumberGenerator.new()
 	lr.seed = 3401
-	for k: int in 14:
-		Props.obox(g, Vector3(lr.randf_range(6.6, 14.4), 3.512, lr.randf_range(22.6, 30.0)), Vector3(lr.randf_range(0.4, 1.0), 0.02, lr.randf_range(0.3, 0.6)),
+	for k: int in 18:
+		Props.obox(g, Vector3(lr.randf_range(STB_X0 + 0.6, LOFT_X1 - 0.6), LOFT_TOP + 0.012, lr.randf_range(22.6, 30.0)), Vector3(lr.randf_range(0.4, 1.0), 0.02, lr.randf_range(0.3, 0.6)),
+			"straw_floor", Vector3(0, lr.randf_range(0, 180), 0))
+	for k2: int in 8:   # and along the gallery (T-084)
+		Props.obox(g, Vector3(lr.randf_range(LOFT_X1 + 0.5, HSTAIR_X0 - 0.6), LOFT_TOP + 0.012, lr.randf_range(GAL_Z0 + 0.6, 33.4)), Vector3(lr.randf_range(0.4, 1.0), 0.02, lr.randf_range(0.3, 0.6)),
 			"straw_floor", Vector3(0, lr.randf_range(0, 180), 0))
 	# cobwebs in the roof corners and on the trusses
-	Props.cobweb(g, Vector3(6.15, STABLE_H - 0.02, 22.15), 0.0, 1.0)
-	Props.cobweb(g, Vector3(23.85, STABLE_H - 0.02, 22.15), -90.0, 0.9)
-	Props.cobweb(g, Vector3(23.85, STABLE_H - 0.02, 33.85), 180.0, 1.0)
-	Props.cobweb(g, Vector3(6.15, STABLE_H - 0.02, 33.85), 90.0, 0.9)
-	Props.cobweb(g, Vector3(6.55, STABLE_H - 0.62, 24.65), 0.0, 0.6)
+	Props.cobweb(g, Vector3(STB_X0 + 0.15, STABLE_H - 0.02, 22.15), 0.0, 1.0)
+	Props.cobweb(g, Vector3(STB_X1 - 0.15, STABLE_H - 0.02, 22.15), -90.0, 0.9)
+	Props.cobweb(g, Vector3(STB_X1 - 0.15, STABLE_H - 0.02, 33.85), 180.0, 1.0)
+	Props.cobweb(g, Vector3(STB_X0 + 0.15, STABLE_H - 0.02, 33.85), 90.0, 0.9)
+	Props.cobweb(g, Vector3(STB_X0 + 0.55, STABLE_H - 0.62, 24.65), 0.0, 0.6)
 	# snow in at the stable's windows
 	PropsStory.snow_blown_in(g, Vector3(9.0, 0, 22.0), Vector3(0, 0, 1), WIN_SILL)
 	PropsStory.snow_blown_in(g, Vector3(14.0, 0, 22.0), Vector3(0, 0, 1), WIN_SILL)
@@ -2448,8 +2866,8 @@ func build_reactive() -> void:
 	var hi_: int = 0
 	for hz: Array in [[Vector3(12.5, 0, 23.6), Vector3(2.2, 0.8, 1.8)], [Vector3(14.0, 0, 24.0), Vector3(2.2, 0.8, 1.8)],
 			[Vector3(19.5, 0, 24.5), Vector3(2.2, 0.8, 1.8)], [Vector3(9.0, 0, 27.0), Vector3(2.2, 0.8, 1.8)],
-			[Vector3(20.0, 0, 31.0), Vector3(2.2, 0.8, 1.8)], [Vector3(22.6, 0, 23.95), Vector3(2.6, 1.0, 3.2)],
-			[Vector3(10.5, 3.5, 26.3), Vector3(8.0, 0.8, 7.6)]]:
+			[Vector3(20.0, 0, 31.0), Vector3(2.2, 0.8, 1.8)], [Vector3(22.5, 0, 23.7), Vector3(2.4, 1.0, 2.8)],
+			[Vector3(10.0, LOFT_TOP, 28.0), Vector3(10.6, 0.8, 11.6)], [Vector3(19.4, LOFT_TOP, 31.5), Vector3(7.6, 0.8, 4.6)]]:
 		hi_ += 1
 		var hp: Node3D = _scripted(Area3D.new(), "res://gravelight/world/reactive/hay_puff_zone.gd", "HayPuff%d" % hi_, {"size": hz[1]})
 		hp.position = hz[0]
@@ -2471,7 +2889,8 @@ func build_reactive() -> void:
 	r.add_child(hearth)
 	for w: Array in [["W_TAP_N1", Vector3(7.0, 1.5, 0.4)], ["W_TAP_N2", Vector3(17.0, 1.5, 0.4)], ["W_TAP_W", Vector3(0.4, 1.5, 6.0)],
 			["W_TAP_E", Vector3(23.6, 1.5, 8.0)], ["W_UP_R1", Vector3(4.0, UP_Y + 1.5, 0.4)], ["W_UP_R3", Vector3(20.0, UP_Y + 1.5, 0.4)],
-			["W_STB_N1", Vector3(9.0, 1.5, 22.4)], ["W_STB_N2", Vector3(14.0, 1.5, 22.4)], ["W_STB_S", Vector3(12.0, 1.5, 33.6)]]:
+			["W_STB_N1", Vector3(9.0, 1.5, 22.4)], ["W_STB_N2", Vector3(14.0, 1.5, 22.4)], ["W_STB_S", Vector3(12.0, 1.5, 33.6)],
+			["W_STB_LOFT", Vector3(22.0, LOFT_TOP + 1.5, 33.6)]]:
 		var wz: Node3D = _scripted(Node3D.new(), "res://gravelight/world/reactive/audio_zone.gd", "WindHowl_" + str(w[0]), {
 			"sound": "wind_howl", "mode": "loop", "volume_db": -14.0, "wind_db": 7.0, "broken_db": 8.0,
 			"window": NodePath("../../Gameplay/" + str(w[0])), "max_distance": 11.0})
@@ -2561,7 +2980,7 @@ const INN_BULBS: Array = [
 	["Room1Bulb", "UPSTAIRS", Vector3(5.6, UP_Y + 2.35, 1.6), UP_TOP, 0.9, 6.0], ["Room2Bulb", "UPSTAIRS", Vector3(9.8, UP_Y + 2.35, 4.2), UP_TOP, 0.9, 6.0],
 	["Room3Bulb", "UPSTAIRS", Vector3(21.8, UP_Y + 2.35, 2.6), UP_TOP, 0.8, 6.0],
 	["PassBulb", "STABLE", Vector3(20.0, 2.55, 17.1), 3.0, 1.1, 6.5],
-	["StableBulb1", "STABLE", Vector3(21.4, 4.6, 28.8), STABLE_H - 0.6, 1.9, 11.0], ["StableBulb2", "STABLE", Vector3(12.6, 2.75, 31.2), 3.2, 1.3, 8.0],
+	["StableBulb1", "STABLE", Vector3(20.6, 4.6, 26.6), STABLE_H - 0.6, 1.9, 11.0], ["StableBulb2", "STABLE", Vector3(12.6, 2.75, 31.2), LOFT_Y, 1.3, 8.0],   # (bulb 1 mid-bay, clear of the gallery's rail, T-084)
 ]
 const BULB_COLOR: Color = Color(1.0, 0.84, 0.62)
 var _bulb_lit: Dictionary = {}   # light name -> holder of its lit glass (moved under the light in build_environment)
@@ -2586,7 +3005,7 @@ func _dress_lighting() -> void:
 	Props.wall_lamp(g, Vector3(8.6, UP_Y + 1.85, 6.16), 180.0)   # mid-hall, between the room doors (pass 2)
 	Props.wall_lamp(g, Vector3(16.0, UP_Y + 1.85, 6.16), 180.0)
 	Props.wall_lamp(g, Vector3(13.6, CELLAR_Y + 2.0, 15.84), 0.0)
-	Props.wall_lamp(g, Vector3(6.16, 5.3, 32.4), -90.0)   # the hayloft's south end, over the bales
+	Props.wall_lamp(g, Vector3(STB_X0 + 0.16, 5.3, 32.4), -90.0)   # the hayloft's south end, over the bales
 
 
 ## The night (T-061 lighting pass): cold moonlight and snow outside, warm lamp pools inside, fog that catches both.
@@ -2667,9 +3086,10 @@ func build_environment() -> void:
 	_lamp("HallLamp", Vector3(12.0, UP_Y + 2.05, 8.0), warm, 1.87, 11.0, true, true, 0.08)
 	_lamp("PassLamp", Vector3(20.0, 2.25, 19.0), warm, 2.21, 10.0, false, true)
 	_lamp("StableLamp1", Vector3(19.0, 3.85, 26.0), warm, 3.82, 14.0, true, true)
-	_lamp("StableLamp2", Vector3(19.0, 3.85, 31.5), warm, 3.26, 13.0, true, true)
+	_lamp("StableLamp2", Vector3(19.0, 2.35, 31.5), warm, 3.26, 13.0, true, true)   # under the gallery since T-084
 	_lamp("StableLamp3", Vector3(10.0, 2.15, 28.0), warm, 2.99, 12.0, false, true)
 	_lamp("LoftLamp", Vector3(10.0, 5.45, 28.0), warm, 2.29, 11.0, false, true)
+	_lamp("LoftHookLamp", Vector3(21.2, LOFT_TOP + 1.55, 30.9), warm, 2.1, 10.0, false, true, 0.12)   # on its hook by the stair head (T-084)
 	_lamp("WreckFire", Vector3(45, 3.5, 5), Color(1.0, 0.45, 0.15), 8.0, 34.0, true, true)
 	_lamp("WreckFire2", Vector3(42.5, 1.6, 6.8), Color(1.0, 0.4, 0.1), 3.0, 14.0, false, true)
 	_lamp("HallSconce", Vector3(0.55, UP_Y + 1.8, 6.7), warm, 0.9, 6.5, false, true, 0.1)
@@ -2882,6 +3302,7 @@ func build_gameplay() -> void:
 	map_root.set("start_zone", &"TAPROOM")
 	map_root.set("quest_files", PackedStringArray(["res://data/gravelight/quests/map00_radio.json"]))
 	map_root.set("intro_text", "GASTHAUS ZUM KREUZWEG\n23 December 1944 · 9 km northwest of Kaltenbrunn")
+	map_root.set("drop_bounds", Rect2(OUT_MIN, OUT_MAX - OUT_MIN))   # drops from a kill beyond the edge land inside it (T-084)
 	gameplay = Node3D.new()
 	gameplay.name = "Gameplay"
 	map_root.add_child(gameplay)
@@ -2909,6 +3330,7 @@ func build_gameplay() -> void:
 		["W_STB_N1", &"STABLE", Vector3(9.0, 0, 22.0), 0.0],
 		["W_STB_N2", &"STABLE", Vector3(14.0, 0, 22.0), 0.0],
 		["W_STB_S", &"STABLE", Vector3(12.0, 0, 34.0), 180.0],
+		["W_STB_LOFT", &"STABLE", Vector3(22.0, LOFT_TOP, STB_Z1), 180.0],   # the loft door over the yard (T-084): its zombies stand on the hoist ledge
 		["W_YARD_W", &"YARD", Vector3(2.0, 0, 41.0), 90.0],
 		["W_YARD_E", &"YARD", Vector3(34.0, 0, 41.0), -90.0],
 		["W_YARD_S1", &"YARD", Vector3(9.0, 0, 48.0), 180.0],
@@ -2934,7 +3356,7 @@ func build_gameplay() -> void:
 	# ground spawn: the hay pile behind the stalls (round 6+)
 	var hay: Marker3D = _scripted(Marker3D.new(), "res://gravelight/enemies/zombie_spawn.gd", "Spawn_HayPile", {
 		"zone_id": &"STABLE", "kind": &"ground", "min_round": 6}) as Marker3D
-	hay.position = Vector3(22.6, 0, 24.0)
+	hay.position = Vector3(22.5, 0, 23.7)   # (the pile moved 0.4 m west for the stair's foot, T-084)
 	gameplay.add_child(hay)
 	# ground spawn: the drift in the yard's south-west corner (round 4+)
 	var mound: Marker3D = _scripted(Marker3D.new(), "res://gravelight/enemies/zombie_spawn.gd", "Spawn_YardMound", {
@@ -2977,7 +3399,7 @@ func build_gameplay() -> void:
 		[&"kar98k", Vector3(T * 0.5 + 0.04, 1.5, 3.1), -90.0],   # moved from z 8.6 for the Old Cellar door (T-051)
 		[&"m1_garand", Vector3(24 - T * 0.5 - 0.04, 1.5, 4.0), 90.0],   # moved from z 12.5 for the cellar door (T-027)
 		[&"mp40", Vector3(T * 0.5 + 0.04, UP_Y + 1.5, 3.4), -90.0],
-		[&"trench_gun", Vector3(6 + T * 0.5 + 0.01, 1.5, 29.5), -90.0],
+		[&"trench_gun", Vector3(STB_X0 + T * 0.5 + 0.01, 1.5, 29.5), -90.0],
 		[&"thompson", Vector3(22.0, 1.5, 34 + T * 0.5 + 0.04), 180.0],   # the yard: chalked on the stable's outside wall
 	]
 	for b: Array in buys:
@@ -2999,7 +3421,7 @@ func build_gameplay() -> void:
 		[&"TAPROOM", Vector3(12, 0, 8), Vector3(24, 3.5, 16)],
 		[&"UPSTAIRS", Vector3(12, UP_Y - 0.2, 5), Vector3(24, 3.2, 10)],
 		[&"UPSTAIRS", Vector3(STAIR_X1 * 0.5, 0, 13), Vector3(STAIR_X1, 7, 6)],
-		[&"STABLE", Vector3(15, 0, 28), Vector3(18, 7, 12)],
+		[&"STABLE", Vector3((STB_X0 + STB_X1) * 0.5, 0, 28), Vector3(STB_X1 - STB_X0, 7, 12)],
 		[&"STABLE", Vector3(20, 0, 19), Vector3(4, 3, 6)],
 		[&"YARD", Vector3(18, 0, 41), Vector3(32, 4, 14)],
 	]
@@ -3011,6 +3433,9 @@ func build_gameplay() -> void:
 		var a2: Vector2 = r2[0]
 		var b2: Vector2 = r2[1]
 		zones.append([&"GROUNDS", Vector3((a2.x + b2.x) * 0.5, OC_WELL_Y, (a2.y + b2.y) * 0.5), Vector3(b2.x - a2.x, 1.6, b2.y - a2.y), true])
+	for pk: Rect2 in edge_pockets():   # the spawn pockets beyond the edge are open ground too (T-084)
+		var pc: Vector2 = pk.get_center()
+		zones.append([&"GROUNDS", Vector3(pc.x, 0, pc.y), Vector3(pk.size.x, 3.0, pk.size.y), true])
 	var zi: int = 0
 	for z: Array in zones:
 		var zv: Node3D = _scripted(Node3D.new(), "res://gravelight/world/zone_volume.gd", "Zone_%s_%d" % [z[0], zi], {"zone_id": z[0], "size": z[2], "roam": z.size() > 3})

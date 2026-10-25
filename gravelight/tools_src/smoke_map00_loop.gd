@@ -115,13 +115,36 @@ func _check_static() -> void:
 	print("[loop] round the whole building on open ground: %d / %d legs, %.0f m" % [legs_ok, LOOP.size(), total])
 	if total < 180.0:
 		_fail("the loop round the building is only %.0f m" % total)
-	# nothing past the edge
-	for q: Vector3 in [Vector3(-26, 0, 0), Vector3(66, 0, 20), Vector3(20, 0, -36), Vector3(20, 0, 70), Vector3(-10.75, 0, -36), Vector3(66, 0, -7.75), Vector3(-26, 0, -7.75), Vector3(38, 0, 70)]:
+	# nothing past the edge but the spawn pockets (T-084): points between the pockets, on the road exits and beyond
+	# a pocket's far end are shut; each pocket is reached from inside (the spawn check below) and a body can't follow
+	for q: Vector3 in [Vector3(-26, 0, 0), Vector3(66, 0, 30), Vector3(20, 0, -36), Vector3(20, 0, 70), Vector3(-10.75, 0, -36), Vector3(66, 0, -7.75), Vector3(-26, 0, -7.75), Vector3(38, 0, 70),
+			Vector3(70, 0, 22), Vector3(5, 0, -40), Vector3(-30, 0, 16), Vector3(24, 0, 74)]:
 		var path2: PackedVector3Array = NavigationServer3D.map_get_path(map_rid, Vector3(20, 0, -8), q, true)
 		var reached: bool = not path2.is_empty() and path2[path2.size() - 1].distance_to(q) < 2.0
 		print("[loop] past the edge %s: %s" % [str(q), "reachable (WRONG)" if reached else "shut ok"])
 		if reached:
 			_fail("the grounds' edge leaks at %s" % str(q))
+	# the edge wall and its gates stop a player's capsule and let a shot through (T-084)
+	var cap: CapsuleShape3D = CapsuleShape3D.new()
+	cap.radius = 0.35
+	cap.height = 1.7
+	var qs: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+	qs.shape = cap
+	qs.collision_mask = Player.MASK_MOVE
+	for probe: Array in [[Vector3(5, 1.15, -29.0), Vector3(0, 0, -3.0), "the north pocket's gate"], [Vector3(14, 1.15, -29.0), Vector3(0, 0, -3.0), "the north wall"],
+			[Vector3(64.5 - 5.5, 1.15, 22), Vector3(3.0, 0, 0), "the east pocket's gate"]]:
+		qs.transform = Transform3D(Basis.IDENTITY, probe[0])
+		qs.motion = probe[1]
+		var cm: PackedFloat32Array = space.cast_motion(qs)
+		var stopped: bool = cm.size() == 2 and cm[0] < 1.0
+		var ray: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create((probe[0] as Vector3) + Vector3.UP * 0.4, (probe[0] as Vector3) + (probe[1] as Vector3) * 2.0 + Vector3.UP * 0.4, WeaponHolder.MASK_SHOT)
+		var shot_hit: Dictionary = space.intersect_ray(ray)
+		var shot_through: bool = shot_hit.is_empty() or ((shot_hit["collider"] as CollisionObject3D).collision_layer & (1 << 10)) == 0
+		print("[loop] %s: body stopped %s, shot through %s" % [probe[2], str(stopped), str(shot_through)])
+		if not stopped:
+			_fail("%s lets a body through" % probe[2])
+		if not shot_through:
+			_fail("%s stops a shot (%s)" % [probe[2], String((shot_hit["collider"] as Node).name)])
 	# the inn and the yard reach the grounds only through their bought doors
 	for c: Array in [["taproom -> the front", TAPROOM, Vector3(20, 0, -6), "Door_Front"], ["yard -> the carters' road", Vector3(18, 0, 44), Vector3(18, 0, 55), "Door_Gate"],
 			["stable -> the crash field", Vector3(15, 0, 29), Vector3(32, 0, 4), "Door_Front|Door_Gate"]]:
@@ -225,10 +248,27 @@ func _start_field() -> void:
 		_fail("the gate did not open GROUNDS and YARD")
 	var pl: Player = (_map as MapRoot).player
 	pl.global_position = FIELD
-	(_map as MapRoot).director.kill_all(true)
+	var dir: ZombieDirector = (_map as MapRoot).director
+	dir.kill_all(true)
 	RoundManager.debug_set_round(4)
 	_phase = "field"
 	_phase_t = 0.0
+	# one window zombie for certain (T-084): the round's own rolls favour the 17 grounds spawns 4:1, so the only
+	# window whose walk-in passes within aggro range of the field spot (W_TAP_E) may never come up in 75 s. A
+	# spawn bound to that window, 12 m from the player on the open snow east of the inn.
+	var win: Barricade = _map.find_child("W_TAP_E", true, false) as Barricade
+	if win != null and not dir._free.is_empty():
+		var sp: ZombieSpawn = ZombieSpawn.new()
+		sp.kind = &"window"
+		sp.zone_id = &"TAPROOM"
+		dir.add_child(sp)
+		sp.global_position = Vector3(30.0, 0, 0.0)
+		sp.window_path = sp.get_path_to(win)
+		var z: Zombie = dir._free.pop_back()
+		z.activate(RoundManager.take_extra_spawn(), sp, pl)
+		GLBus.enemy_spawned.emit(z.enemy_id, z.get_instance_id())
+		_first[z.get_instance_id()] = [z.global_position, "window"]
+		sp.queue_free()
 	print("[loop] gate bought, round 4, the player out in the field at %s" % str(FIELD))
 
 

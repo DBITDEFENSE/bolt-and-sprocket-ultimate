@@ -326,6 +326,8 @@ func spawn(id: StringName, position: Vector3, lifetime: float = 0.0, blink_from:
 	var parent: Node = _map_node()
 	if parent == null or not Net.is_authority():
 		return null
+	if parent is MapRoot:
+		position = (parent as MapRoot).clamp_inside(position)   # a kill beyond Map 0's edge drops inside it (T-084)
 	var pickup: Node3D = (load(PICKUP_SCRIPT) as GDScript).new() as Node3D
 	pickup.set("powerup_id", id)
 	pickup.set("lifetime_override", lifetime)
