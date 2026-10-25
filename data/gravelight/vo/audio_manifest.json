@@ -2303,6 +2303,45 @@
    "lufs": -19.0,
    "phonemes": "ɹˈuθi, hˈʌni... nˌɑt jˈɛt. nˌɑt jˈɛt."
   },
+  "DEA_ECO_PING_TONIC_01": {
+   "line": "DEA_ECO_PING_TONIC_01",
+   "speaker": "DEA",
+   "hash": "f07489c0dac6ab8d",
+   "path": "res://gravelight/audio/vo/dea/DEA_ECO_PING_TONIC_01.ogg",
+   "format": "ogg",
+   "duration": 2.196,
+   "voice": "am_michael:0.7,am_puck:0.3",
+   "engine": "kokoro",
+   "delivery": "raised",
+   "lufs": -16.02,
+   "phonemes": "bˈɑɾəl hˈɪɹ! wˈʌn fɔɹ ˈiʧ ʌv ˌʌs."
+  },
+  "DEA_ECO_PWR_TONIC_01": {
+   "line": "DEA_ECO_PWR_TONIC_01",
+   "speaker": "DEA",
+   "hash": "218b194e559158ca",
+   "path": "res://gravelight/audio/vo/dea/DEA_ECO_PWR_TONIC_01.ogg",
+   "format": "ogg",
+   "duration": 3.284,
+   "voice": "am_michael:0.7,am_puck:0.3",
+   "engine": "kokoro",
+   "delivery": "brisk",
+   "lufs": -17.0,
+   "phonemes": "bˈɑɾəl fɔɹ ˈɛvɹibədi. dɹˈɪŋk ɪt slˈO, ɪts ˈɔl wi ɡˈɛt."
+  },
+  "DEA_ECO_SALVAGE_01": {
+   "line": "DEA_ECO_SALVAGE_01",
+   "speaker": "DEA",
+   "hash": "93eff861df39007b",
+   "path": "res://gravelight/audio/vo/dea/DEA_ECO_SALVAGE_01.ogg",
+   "format": "ogg",
+   "duration": 2.811,
+   "voice": "am_michael:0.7,am_puck:0.3",
+   "engine": "kokoro",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "tˈæɡz. ɹˈɛst ˈizi, sˈʌn. ˌIv ɡɑt jʊɹ nˈAm."
+  },
   "DEA_EE_01": {
    "line": "DEA_EE_01",
    "speaker": "DEA",
@@ -5045,6 +5084,45 @@
    "delivery": "hurt",
    "lufs": -18.55,
    "phonemes": "bˈapʧa... nˌɑt lˈIk ðˈɪs. nˌɑt hˈɪɹ."
+  },
+  "DUT_ECO_PING_TONIC_01": {
+   "line": "DUT_ECO_PING_TONIC_01",
+   "speaker": "DUT",
+   "hash": "a0fb5fda217718e3",
+   "path": "res://gravelight/audio/vo/dut/DUT_ECO_PING_TONIC_01.ogg",
+   "format": "ogg",
+   "duration": 1.991,
+   "voice": "am_onyx:0.55,am_fenrir:0.45",
+   "engine": "kokoro",
+   "delivery": "raised",
+   "lufs": -16.45,
+   "phonemes": "bˈɑɾəl ˌɔn ðə flˈɔɹ! ɡɹˈæb ɪt!"
+  },
+  "DUT_ECO_PWR_TONIC_01": {
+   "line": "DUT_ECO_PWR_TONIC_01",
+   "speaker": "DUT",
+   "hash": "14814320496f80a4",
+   "path": "res://gravelight/audio/vo/dut/DUT_ECO_PWR_TONIC_01.ogg",
+   "format": "ogg",
+   "duration": 2.992,
+   "voice": "am_onyx:0.55,am_fenrir:0.45",
+   "engine": "kokoro",
+   "delivery": "brisk",
+   "lufs": -17.15,
+   "phonemes": "fɹˈi dɹˈɪŋk. fˈɜɹst θˈɪŋ ɪn ðɪs wˈɔɹ ðæt dˈɪdᵊnt kˈɔst mˌi."
+  },
+  "DUT_ECO_SALVAGE_01": {
+   "line": "DUT_ECO_SALVAGE_01",
+   "speaker": "DUT",
+   "hash": "94210b726e1d5856",
+   "path": "res://gravelight/audio/vo/dut/DUT_ECO_SALVAGE_01.ogg",
+   "format": "ogg",
+   "duration": 2.785,
+   "voice": "am_onyx:0.55,am_fenrir:0.45",
+   "engine": "kokoro",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "dˈɔɡ tˈæɡz. sˈʌmbədiz bˈY. ˌIl kˈɛɹi ˈɛm."
   },
   "DUT_EE_01": {
    "line": "DUT_EE_01",
@@ -8298,6 +8376,19 @@
    "lufs": -18.7,
    "phonemes": "ˌɔn də flˈɔ əɡˈɛn. kˈam wˌɛn it is sˈɛjf."
   },
+  "JAK_ECO_PING_TONIC_01": {
+   "line": "JAK_ECO_PING_TONIC_01",
+   "speaker": "JAK",
+   "hash": "9987f28f4a74b98d",
+   "path": "res://gravelight/audio/vo/jak/JAK_ECO_PING_TONIC_01.ogg",
+   "format": "ogg",
+   "duration": 3.101,
+   "voice": "bm_george:0.6,bm_lewis:0.4",
+   "engine": "kokoro",
+   "delivery": "raised",
+   "lufs": -16.3,
+   "phonemes": "ɐ bˈɔtᵊl, ˈɔvə dˈɛː! fˌɔ ju, nˌɔt fɔ mˌi."
+  },
   "JAK_FIGHT_KILL_01": {
    "line": "JAK_FIGHT_KILL_01",
    "speaker": "JAK",
@@ -10173,6 +10264,138 @@
    "format": "ogg",
    "duration": 2.08,
    "voice": "Mark",
+   "chain": "tannoy"
+  },
+  "OPR_ECO_BONUS_CLEAN_01": {
+   "line": "OPR_ECO_BONUS_CLEAN_01",
+   "speaker": "OPR",
+   "hash": "073106db3a816bc8",
+   "path": "res://gravelight/audio/vo/opr/OPR_ECO_BONUS_CLEAN_01.ogg",
+   "format": "ogg",
+   "duration": 4.299,
+   "voice": "Mark",
+   "engine": "onecore",
+   "chain": "tannoy"
+  },
+  "OPR_ECO_BONUS_CLEAN_02": {
+   "line": "OPR_ECO_BONUS_CLEAN_02",
+   "speaker": "OPR",
+   "hash": "777ff587ad7e5030",
+   "path": "res://gravelight/audio/vo/opr/OPR_ECO_BONUS_CLEAN_02.ogg",
+   "format": "ogg",
+   "duration": 4.047,
+   "voice": "Mark",
+   "engine": "onecore",
+   "chain": "tannoy"
+  },
+  "OPR_ECO_BONUS_SALVAGE_01": {
+   "line": "OPR_ECO_BONUS_SALVAGE_01",
+   "speaker": "OPR",
+   "hash": "c92ff2d3ded6f361",
+   "path": "res://gravelight/audio/vo/opr/OPR_ECO_BONUS_SALVAGE_01.ogg",
+   "format": "ogg",
+   "duration": 4.488,
+   "voice": "Mark",
+   "engine": "onecore",
+   "chain": "tannoy"
+  },
+  "OPR_ECO_BONUS_SALVAGE_02": {
+   "line": "OPR_ECO_BONUS_SALVAGE_02",
+   "speaker": "OPR",
+   "hash": "93edf6152221ff74",
+   "path": "res://gravelight/audio/vo/opr/OPR_ECO_BONUS_SALVAGE_02.ogg",
+   "format": "ogg",
+   "duration": 4.125,
+   "voice": "Mark",
+   "engine": "onecore",
+   "chain": "tannoy"
+  },
+  "OPR_ECO_BONUS_STREAK_01": {
+   "line": "OPR_ECO_BONUS_STREAK_01",
+   "speaker": "OPR",
+   "hash": "64293dd8e54f9ac7",
+   "path": "res://gravelight/audio/vo/opr/OPR_ECO_BONUS_STREAK_01.ogg",
+   "format": "ogg",
+   "duration": 4.347,
+   "voice": "Mark",
+   "engine": "onecore",
+   "chain": "tannoy"
+  },
+  "OPR_ECO_BONUS_STREAK_02": {
+   "line": "OPR_ECO_BONUS_STREAK_02",
+   "speaker": "OPR",
+   "hash": "5c194cd53ee6b3a5",
+   "path": "res://gravelight/audio/vo/opr/OPR_ECO_BONUS_STREAK_02.ogg",
+   "format": "ogg",
+   "duration": 4.167,
+   "voice": "Mark",
+   "engine": "onecore",
+   "chain": "tannoy"
+  },
+  "OPR_ECO_MILESTONE_01": {
+   "line": "OPR_ECO_MILESTONE_01",
+   "speaker": "OPR",
+   "hash": "fe905286b6525984",
+   "path": "res://gravelight/audio/vo/opr/OPR_ECO_MILESTONE_01.ogg",
+   "format": "ogg",
+   "duration": 6.515,
+   "voice": "Mark",
+   "engine": "onecore",
+   "chain": "tannoy"
+  },
+  "OPR_ECO_MILESTONE_02": {
+   "line": "OPR_ECO_MILESTONE_02",
+   "speaker": "OPR",
+   "hash": "c3cab6c25ec762d3",
+   "path": "res://gravelight/audio/vo/opr/OPR_ECO_MILESTONE_02.ogg",
+   "format": "ogg",
+   "duration": 4.866,
+   "voice": "Mark",
+   "engine": "onecore",
+   "chain": "tannoy"
+  },
+  "OPR_ECO_MILESTONE_03": {
+   "line": "OPR_ECO_MILESTONE_03",
+   "speaker": "OPR",
+   "hash": "167bff0aa7452be3",
+   "path": "res://gravelight/audio/vo/opr/OPR_ECO_MILESTONE_03.ogg",
+   "format": "ogg",
+   "duration": 4.047,
+   "voice": "Mark",
+   "engine": "onecore",
+   "chain": "tannoy"
+  },
+  "OPR_ECO_PWR_TONIC_01": {
+   "line": "OPR_ECO_PWR_TONIC_01",
+   "speaker": "OPR",
+   "hash": "88ce497ca7769f65",
+   "path": "res://gravelight/audio/vo/opr/OPR_ECO_PWR_TONIC_01.ogg",
+   "format": "ogg",
+   "duration": 4.755,
+   "voice": "Mark",
+   "engine": "onecore",
+   "chain": "tannoy"
+  },
+  "OPR_ECO_PWR_TONIC_02": {
+   "line": "OPR_ECO_PWR_TONIC_02",
+   "speaker": "OPR",
+   "hash": "c4bbc6288db428f7",
+   "path": "res://gravelight/audio/vo/opr/OPR_ECO_PWR_TONIC_02.ogg",
+   "format": "ogg",
+   "duration": 3.077,
+   "voice": "Mark",
+   "engine": "onecore",
+   "chain": "tannoy"
+  },
+  "OPR_ECO_PWR_TONIC_03": {
+   "line": "OPR_ECO_PWR_TONIC_03",
+   "speaker": "OPR",
+   "hash": "06b592519db6925d",
+   "path": "res://gravelight/audio/vo/opr/OPR_ECO_PWR_TONIC_03.ogg",
+   "format": "ogg",
+   "duration": 3.914,
+   "voice": "Mark",
+   "engine": "onecore",
    "chain": "tannoy"
   },
   "OPR_EXFIL_GO_01": {
@@ -12212,6 +12435,45 @@
    "delivery": "hurt",
    "lufs": -18.03,
    "phonemes": "nˌɒt hˈɪə. ˌI hav ˈɔːdəz tuː... ˈQ, dˈam ɪt."
+  },
+  "PEG_ECO_PING_TONIC_01": {
+   "line": "PEG_ECO_PING_TONIC_01",
+   "speaker": "PEG",
+   "hash": "2877b5812327061a",
+   "path": "res://gravelight/audio/vo/peg/PEG_ECO_PING_TONIC_01.ogg",
+   "format": "ogg",
+   "duration": 1.996,
+   "voice": "bf_emma",
+   "engine": "kokoro",
+   "delivery": "raised",
+   "lufs": -16.99,
+   "phonemes": "ɐ tˈɒnɪk bˈɒtᵊl, ˈQvə hˈɪə!"
+  },
+  "PEG_ECO_PWR_TONIC_01": {
+   "line": "PEG_ECO_PWR_TONIC_01",
+   "speaker": "PEG",
+   "hash": "e63a10edf09964cf",
+   "path": "res://gravelight/audio/vo/peg/PEG_ECO_PWR_TONIC_01.ogg",
+   "format": "ogg",
+   "duration": 2.757,
+   "voice": "bf_emma",
+   "engine": "kokoro",
+   "delivery": "brisk",
+   "lufs": -17.34,
+   "phonemes": "ɐ kˌɒmplɪmˈɛntəɹi tˈɒnɪk. ˌI ʃˌɑːnt ˈɑːsk wˌɒts ɪn ɪt."
+  },
+  "PEG_ECO_SALVAGE_01": {
+   "line": "PEG_ECO_SALVAGE_01",
+   "speaker": "PEG",
+   "hash": "8eb656057c58d72d",
+   "path": "res://gravelight/audio/vo/peg/PEG_ECO_SALVAGE_01.ogg",
+   "format": "ogg",
+   "duration": 2.523,
+   "voice": "bf_emma",
+   "engine": "kokoro",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "tˈaɡz. sˈʌmwʌn ˈɔːt tə nˈQ wˌɛː hiː ˈɛndɪd ˌʌp."
   },
   "PEG_EE_01": {
    "line": "PEG_EE_01",
@@ -15591,6 +15853,45 @@
    "delivery": "hurt",
    "lufs": -18.63,
    "phonemes": "tˈɔmək... ˌIm sˈɒɾi. ˌI kˈAm tˈuː lˈAt."
+  },
+  "WRN_ECO_PING_TONIC_01": {
+   "line": "WRN_ECO_PING_TONIC_01",
+   "speaker": "WRN",
+   "hash": "bbfa42d304c86fb5",
+   "path": "res://gravelight/audio/vo/wrn/WRN_ECO_PING_TONIC_01.ogg",
+   "format": "ogg",
+   "duration": 1.112,
+   "voice": "bf_isabella:0.75,bf_lily:0.25",
+   "engine": "kokoro",
+   "delivery": "brisk",
+   "lufs": -17.21,
+   "phonemes": "bˈɒtᵊl. hˈɪə."
+  },
+  "WRN_ECO_PWR_TONIC_01": {
+   "line": "WRN_ECO_PWR_TONIC_01",
+   "speaker": "WRN",
+   "hash": "f0443429faee625a",
+   "path": "res://gravelight/audio/vo/wrn/WRN_ECO_PWR_TONIC_01.ogg",
+   "format": "ogg",
+   "duration": 2.832,
+   "voice": "bf_isabella:0.75,bf_lily:0.25",
+   "engine": "kokoro",
+   "delivery": "brisk",
+   "lufs": -17.13,
+   "phonemes": "ɐ ɡˈɪft. nˈatɪŋ hˈɪə ɪz ɐ ɡˈɪft. dɾˈɪŋk ˈɛnɪwA."
+  },
+  "WRN_ECO_SALVAGE_01": {
+   "line": "WRN_ECO_SALVAGE_01",
+   "speaker": "WRN",
+   "hash": "70262b6d9e7806ce",
+   "path": "res://gravelight/audio/vo/wrn/WRN_ECO_SALVAGE_01.ogg",
+   "format": "ogg",
+   "duration": 2.185,
+   "voice": "bf_isabella:0.75,bf_lily:0.25",
+   "engine": "kokoro",
+   "delivery": "calm",
+   "lufs": -17.55,
+   "phonemes": "ɐ nˈAm. dˌA had nˈAms, wˈans."
   },
   "WRN_EE_01": {
    "line": "WRN_EE_01",

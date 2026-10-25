@@ -1369,6 +1369,7 @@ func take_hit(amount: float, _source: Node) -> void:
 	if downed or spectating or GameState.phase != GameState.Phase.PLAYING:
 		return
 	if not is_local and not is_bot:
+		Economy.bonuses.note_hit(player_id)   # T-078: the host never sees this hit land; it still spoils a clean round
 		_forward(&"hit", [amount])   # the owner applies it (their health is theirs, D-065)
 		return
 	if GameState.god_mode and is_local:

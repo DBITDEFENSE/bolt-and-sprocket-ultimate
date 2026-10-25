@@ -160,7 +160,7 @@
   },
   "powerups": {
     "_doc": "Power-up etiquette: always_take when it's safe; the rest (Death's Door, Double Scrip, Blackout, Clearance) only with the human within shared_m of it too, or no human in the match. Never one the human is walking toward (within toward_cone_deg of their heading, within toward_m).",
-    "always_take": ["resupply", "fortify"],
+    "always_take": ["resupply", "fortify", "tonic_bottle"],
     "shared_m": 9.0,
     "toward_cone_deg": 30.0,
     "toward_m": 16.0,

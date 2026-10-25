@@ -19,6 +19,7 @@
 | [MAPS.md](MAPS.md) | Map 0 and Map 1 floor plans, connectivity, loops, and the power-on and pylon events. |
 | [EASTER_EGGS.md](EASTER_EGGS.md) | The quest step graph, the main egg, side eggs, and the Map 0 radio quest. |
 | [JINGLES.md](JINGLES.md) | Perk machines, formula backstories, jingle lyrics, and original songs. |
+| [ECONOMY.md](ECONOMY.md) | Scrip bonuses (round pay, clean rounds, headshot streaks, dog tags) and the round-5 milestone (T-078). |
 | [VO_SCRIPT.md](VO_SCRIPT.md) | VOManager rules, the trigger table, and Operator/Fasbender/Reinholt lines. |
 | [ASSETS.md](ASSETS.md) | The asset manifest, sources, licenses, and status. |
 | [ROADMAP.md](ROADMAP.md) | Milestones M0–M7 with acceptance criteria. |
@@ -95,6 +96,11 @@ Values are in `data/economy.json`. Scrip is the Ledger's kill-tally token, which
 
 Co-op: Scrip is per player and can't be transferred (classic rules). Double Scrip applies to everyone.
 
+**Bonuses (T-078, `docs/gravelight/ECONOMY.md`):** round pay for standing at a round's end (40 + 20 x round, max 300),
+an untouched round (50 + 10 x round, max 200) and a round without a down (+25), every 10 headshot kills in a row
+(150, +50 per further 10, max 250), and dog tags a kill sometimes drops (6%, 60 + 15 x round). Each shows a named
+slip above the Scrip.
+
 ## 6. Interactables
 Every buyable extends `Interactable` (in `/world`).
 - **Prompt:** "Hold [F] to buy Trench Gun [1500]", "Hold [F] for Ammo [750]", "Power must be activated", "Requires all Pylons attuned".
@@ -159,6 +165,11 @@ In `data/powerups.json`.
 | Blackout | Kills every active zombie, +400 Scrip |
 | Fortify | Rebuilds all barricades, +200 Scrip |
 | Clearance | All crate spots cost 10 Scrip, 30 s |
+| Tonic bottle | Milestone only (round 5): a free perk tonic for every survivor (a tier, or 1500 Scrip, with a full cap) |
+
+**Milestones (T-078):** `rounds.json milestones`. Reaching round 5 always brings a tonic bottle and a Resupply: they
+drop next to the survivors when round 4's last zombie dies, last 60 s and are applied anyway if nobody takes them.
+Details in `docs/gravelight/ECONOMY.md`.
 
 ## 12. Traps (Map 1)
 1000 each, a lever at each, 25 s duration, 90 s cooldown (Deacon −15%).

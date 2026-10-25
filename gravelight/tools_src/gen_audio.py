@@ -1773,7 +1773,8 @@ def gen_overclock():
 
 POWERUP_CHORDS = {"resupply": ["C5", "E5", "G5", "C6"], "deaths_door": ["D4", "F4", "Ab4", "D5"],
                   "double_scrip": ["G5", "B5", "D6", "G6"], "blackout": ["C4", "Eb4", "Gb4", "A4"],
-                  "fortify": ["F4", "A4", "C5", "F5"], "clearance": ["A4", "C#5", "E5", "A5"]}
+                  "fortify": ["F4", "A4", "C5", "F5"], "clearance": ["A4", "C#5", "E5", "A5"],
+                  "tonic_bottle": ["Bb4", "D5", "F5", "Bb5"]}
 
 
 def gen_powerups():
@@ -1801,6 +1802,9 @@ def gen_powerups():
         if pid == "fortify":
             for k in range(3):
                 place(x, mech_click(r, 1250, 0.06, 0.004), 0.5 + k * 0.12, 0.6)
+        if pid == "tonic_bottle":   # T-078: a cork pop and a glass chink under the chord
+            place(x, kick(r, 1.0, 900, 300, 0.02, 0.05), 0.42, 0.6)
+            place(x, bell(r, 3400, 0.5, 0.25, 0.05, 0.4), 0.5, 0.35)
         emit(f"powerup_grab_{pid}", f"sfx/world/powerups/grab_{pid}", reverb(x, r, 1.2, 0.25), -1.5, volume_db=-2.0, **ps)
     r = rng_for("pu_expire")
     x = zeros(1.4)

@@ -6,10 +6,15 @@ extends Node
 var _scrip: Dictionary = {}          # player_id -> int
 var _repair_earned: Dictionary = {}  # player_id -> int, resets each round
 var multiplier: int = 1              # Double Scrip sets this
+## The in-match bonuses (T-078: round pay, clean rounds, headshot streaks, salvage), a child node.
+var bonuses: ScripBonuses
 
 
 func _ready() -> void:
 	GLBus.round_started.connect(_on_round_started)
+	bonuses = ScripBonuses.new()
+	bonuses.name = "ScripBonuses"
+	add_child(bonuses)
 
 
 func reset(player_ids: Array[int]) -> void:
@@ -21,6 +26,11 @@ func reset(player_ids: Array[int]) -> void:
 		_scrip[id] = start
 		_repair_earned[id] = 0
 		GLBus.scrip_changed.emit(id, start, 0)
+
+
+## Whether `player` has a ledger this match (a player slot or a bot; not Jakub).
+func has_account(player: int) -> bool:
+	return _scrip.has(player)
 
 
 func get_scrip(player: int) -> int:
