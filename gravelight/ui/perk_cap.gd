@@ -3,15 +3,18 @@ extends Control
 ## A perk tonic's bottle cap, drawn at any size: the single source for every cap in the game (T-082). The HUD perk
 ## row, the bot nameplates, the co-op squad ledger and the pause menu's LOADOUT list all call `draw_cap`.
 ##
-## A cap is a crimped cap in the tonic's colour with a bevelled face, and on it the tonic's glyph (one drawn symbol
-## per tonic, embossed: a shadow pass under cream or ink), the tier band (a brass strip with II / III under the glyph;
-## the crimp turns gold at III) and, for a bot's bonus perk, a gold ring and a star at the rim. `dim` draws a tonic
-## the player does not hold: desaturated, faded, grey glyph (the pause list).
+## A cap is a crimped cap in the tonic's enamel colour with a bevelled face, and on it the tonic's glyph (one drawn
+## symbol per tonic, embossed: a shadow pass under cream on dark enamel, ink on pale), the tier band (a brass strip
+## with II / III under the glyph; the crimp turns gold at III) and, for a bot's bonus perk, a gold ring and a star at
+## the rim. `dim` draws a tonic the player does not hold: desaturated, faded, grey glyph (the pause list).
 ##
-## Glyphs (perks.json order): Ironhide a riveted shield with a barrel hoop; Second Wind a heart with a pulse; Trigger
-## Tonic a fan of three cartridges; Twin Barrel two bores end-on; Marathon a boot with speed lines; Hawkeye an eye in
-## a crosshair; Packmule a satchel; Blastproof a cracked bomb in a ring; Overclock a cog with a lightning bolt (the
-## cordial's violet neon). A tonic without a glyph case (a future cabinet) falls back to its "abbr" letters.
+## The glyphs follow the cabinets' art bible (docs/gravelight/JINGLES.md, "Bottle cap" per tonic): Ironhide a flexed
+## arm inside a riveted ring; Second Wind a swallow with a thin red rim; Trigger Tonic a hare's head with motion
+## lines; Twin Barrel two crossed barrels over a moustache; Marathon a winged boot with a chrome rim; Hawkeye a hawk's
+## eye with crosshair ticks; Packmule a mule's head with three rifle lines fanning behind it; Blastproof a ram's head
+## over a black starburst; Overclock a copper lightning bolt with two small round eyes, over a cog. Every piece is a
+## convex polygon, a circle, an arc or a line, so the glyphs draw at 18 px as well as 54 px. A tonic without a glyph
+## case (a future cabinet) falls back to its "abbr" letters.
 
 var perk_id: StringName = &""
 var bonus: bool = false
@@ -22,6 +25,8 @@ var font: Font = null
 const CREAM: Color = Color(0.95, 0.92, 0.85)
 const INK: Color = Color(0.08, 0.06, 0.05)
 const GREY_INK: Color = Color(0.72, 0.72, 0.7)
+const GREY_INK2: Color = Color(0.3, 0.3, 0.3)
+const COPPER: Color = Color(0.82, 0.5, 0.24)
 const GLYPHS: PackedStringArray = ["ironhide_stout", "second_wind", "trigger_tonic", "twin_barrel", "marathon_malt",
 	"hawkeye_brandy", "packmule_porter", "blastproof_bock", "overclock_cordial"]
 
@@ -63,8 +68,11 @@ static func draw_cap(ci: CanvasItem, c: Vector2, r: float, perk: StringName, is_
 		alpha *= 0.8
 	col.a = alpha
 	var light_face: bool = col.get_luminance() > 0.45
+	# ink: the silhouette's tone (cream on dark enamel, ink on pale); ink2: the other tone, for the two-tone glyphs
 	var ink: Color = GREY_INK if dim else (INK if light_face else CREAM)
+	var ink2: Color = GREY_INK2 if dim else (CREAM if light_face else INK)
 	ink.a = alpha
+	ink2.a = alpha
 	if is_bonus:
 		ci.draw_circle(c, r + 2.5, Color(1.0, 0.82, 0.3, 0.95 * alpha))
 	# the crimped edge (gold at tier III)
@@ -85,7 +93,7 @@ static func draw_cap(ci: CanvasItem, c: Vector2, r: float, perk: StringName, is_
 		ci.draw_arc(c, fr - bw * 0.5, PI * 1.02, PI * 1.62, 14, Color(col.lightened(0.45), 0.9 * alpha), bw)
 		ci.draw_arc(c, fr - bw * 0.5, PI * 0.02, PI * 0.62, 14, Color(col.darkened(0.4), 0.8 * alpha), bw)
 	if r >= 9.0:
-		ci.draw_arc(c, r * 0.64, 0.0, TAU, 24, Color(col.lightened(0.3), 0.8 * alpha), 1.0)
+		_rim(ci, c, r, perk, col, alpha, dim)
 	# the glyph, raised a little when the band shows under it
 	var band: bool = tier >= 2 and r >= 11.0
 	var gc: Vector2 = c + Vector2(0.0, -r * 0.09 if band else 0.0)
@@ -95,15 +103,11 @@ static func draw_cap(ci: CanvasItem, c: Vector2, r: float, perk: StringName, is_
 		if dim:
 			emboss = Color(0.0, 0.0, 0.0, 0.35 * alpha)
 		var off: Vector2 = Vector2(-1.0, -1.0) * maxf(0.7, r * 0.05) if light_face and not dim else Vector2(1.0, 1.0) * maxf(0.7, r * 0.05)
-		var accent: Color = col
-		var neon: Color = Color(str(d.get("neon", "#c07dff")))
-		neon.a = alpha
-		if dim:
-			neon = Color(0.6, 0.58, 0.62, alpha)
 		var detail: bool = r >= 12.0
 		if r >= 8.0:
-			_glyph(ci, gc + off, g, perk, emboss, emboss, emboss, detail)
-		_glyph(ci, gc, g, perk, ink, accent, neon, detail)
+			_glyph(ci, gc + off, g, perk, emboss, emboss, emboss, emboss, detail)
+		var copper: Color = Color(0.55, 0.52, 0.48, alpha) if dim else Color(COPPER, alpha)
+		_glyph(ci, gc, g, perk, ink, ink2, col, copper, detail)
 	else:
 		var fnt: Font = _font_or_default(f)
 		var abbr: String = str(d.get("abbr", "?"))
@@ -134,30 +138,54 @@ static func draw_cap(ci: CanvasItem, c: Vector2, r: float, perk: StringName, is_
 		_star(ci, c + Vector2(r * 0.78, -r * 0.78), maxf(3.0, r * 0.42), Color(1.0, 0.9, 0.45, alpha))
 
 
-# ---------------------------------------------------------------- glyphs
-
-## One tonic's symbol, centred at `c`, fitting a disc of radius `g`. `ink` is the symbol, `accent` the cap colour
-## for the cut-outs drawn back over it, `neon` the Overclock bolt. `detail` adds the fine parts (off on tiny caps).
-static func _glyph(ci: CanvasItem, c: Vector2, g: float, perk: StringName, ink: Color, accent: Color, neon: Color, detail: bool) -> void:
+## The per-tonic rim inside the face: Ironhide's riveted ring, Second Wind's thin red rim, Marathon's chrome rim,
+## a plain light ring for the rest.
+static func _rim(ci: CanvasItem, c: Vector2, r: float, perk: StringName, col: Color, alpha: float, dim: bool) -> void:
+	var ring_r: float = r * 0.66
 	match perk:
 		&"ironhide_stout":
-			_shield(ci, c, g, ink, accent, detail)
+			ci.draw_arc(c, ring_r, 0.0, TAU, 24, Color(col.darkened(0.55), 0.9 * alpha), maxf(1.0, r * 0.05))
+			if r >= 12.0:
+				var rivet: Color = Color(0.5, 0.5, 0.5, alpha) if dim else Color(0.2, 0.08, 0.06, alpha)
+				for i: int in 10:
+					var a: float = TAU * float(i) / 10.0 + PI * 0.1
+					ci.draw_circle(c + Vector2(cos(a), sin(a)) * ring_r, maxf(1.0, r * 0.055), rivet)
 		&"second_wind":
-			_heart(ci, c, g, ink, accent, detail)
-		&"trigger_tonic":
-			_bullet_fan(ci, c, g, ink, accent, detail)
-		&"twin_barrel":
-			_two_bores(ci, c, g, ink, accent)
+			var red: Color = Color(0.45, 0.4, 0.4, alpha) if dim else Color(0.78, 0.14, 0.1, alpha)
+			ci.draw_arc(c, r * 0.74, 0.0, TAU, 28, red, maxf(1.0, r * 0.055))
 		&"marathon_malt":
-			_boot(ci, c, g, ink)
+			var chrome: Color = Color(0.6, 0.6, 0.6, alpha) if dim else Color(0.9, 0.92, 0.95, alpha)
+			ci.draw_arc(c, r * 0.74, 0.0, TAU, 28, chrome, maxf(1.0, r * 0.06))
+			ci.draw_arc(c, r * 0.74, PI * 1.1, PI * 1.5, 8, Color(1, 1, 1, alpha), maxf(1.0, r * 0.06))
+		_:
+			ci.draw_arc(c, ring_r, 0.0, TAU, 24, Color(col.lightened(0.3), 0.8 * alpha), 1.0)
+
+
+# ---------------------------------------------------------------- glyphs
+
+## One tonic's symbol, centred at `c`, fitting a disc of radius `g`. `ink` is the silhouette, `ink2` the other
+## tone (the moustache, the starburst, the rifle lines), `face` the cap colour for cut-outs (an eye, a bore), `copper`
+## the Overclock bolt. `detail` adds the fine parts (off on tiny caps).
+static func _glyph(ci: CanvasItem, c: Vector2, g: float, perk: StringName, ink: Color, ink2: Color, face: Color, copper: Color, detail: bool) -> void:
+	match perk:
+		&"ironhide_stout":
+			_flexed_arm(ci, c, g, ink)
+		&"second_wind":
+			_swallow(ci, c, g, ink, face, detail)
+		&"trigger_tonic":
+			_hare(ci, c, g, ink, face, detail)
+		&"twin_barrel":
+			_crossed_barrels(ci, c, g, ink, ink2, face, detail)
+		&"marathon_malt":
+			_winged_boot(ci, c, g, ink)
 		&"hawkeye_brandy":
-			_eye(ci, c, g, ink, accent, detail)
+			_eye(ci, c, g, ink, face, detail)
 		&"packmule_porter":
-			_satchel(ci, c, g, ink, accent, detail)
+			_mule(ci, c, g, ink, face, detail)
 		&"blastproof_bock":
-			_bomb(ci, c, g, ink, accent, detail)
+			_ram_burst(ci, c, g, ink, ink2, detail)
 		&"overclock_cordial":
-			_cog_bolt(ci, c, g, ink, accent, neon)
+			_cog_bolt(ci, c, g, ink, ink2, face, copper, detail)
 
 
 static func _pts(c: Vector2, g: float, unit: Array) -> PackedVector2Array:
@@ -167,72 +195,88 @@ static func _pts(c: Vector2, g: float, unit: Array) -> PackedVector2Array:
 	return out
 
 
-## Ironhide: a shield with a hoop across it and a row of rivets.
-static func _shield(ci: CanvasItem, c: Vector2, g: float, ink: Color, accent: Color, detail: bool) -> void:
-	ci.draw_colored_polygon(_pts(c, g, [Vector2(-0.85, -0.8), Vector2(0.85, -0.8), Vector2(0.85, 0.1), Vector2(0.0, 0.95), Vector2(-0.85, 0.1)]), ink)
-	ci.draw_rect(Rect2(c + Vector2(-0.85, -0.18) * g, Vector2(1.7, 0.28) * g), accent)
+## A thick stroke with round ends (a rect and two circles), in unit coordinates.
+static func _capsule(ci: CanvasItem, c: Vector2, g: float, a: Vector2, b: Vector2, hw: float, col: Color) -> void:
+	var pa: Vector2 = c + a * g
+	var pb: Vector2 = c + b * g
+	var dir: Vector2 = (pb - pa).normalized()
+	var perp: Vector2 = Vector2(-dir.y, dir.x) * hw * g
+	ci.draw_colored_polygon(PackedVector2Array([pa + perp, pb + perp, pb - perp, pa - perp]), col)
+	ci.draw_circle(pa, hw * g, col)
+	ci.draw_circle(pb, hw * g, col)
+
+
+## Ironhide: Fassl's flexed arm (upper arm, bicep, forearm up, fist).
+static func _flexed_arm(ci: CanvasItem, c: Vector2, g: float, ink: Color) -> void:
+	_capsule(ci, c, g, Vector2(-0.8, 0.45), Vector2(0.2, 0.45), 0.24, ink)
+	ci.draw_circle(c + Vector2(-0.3, 0.12) * g, g * 0.4, ink)
+	_capsule(ci, c, g, Vector2(0.2, 0.45), Vector2(0.42, -0.45), 0.22, ink)
+	ci.draw_circle(c + Vector2(0.46, -0.6) * g, g * 0.32, ink)
+
+
+## Second Wind: a swallow in flight (body, head and beak, a swept wing, a forked tail).
+static func _swallow(ci: CanvasItem, c: Vector2, g: float, ink: Color, face: Color, detail: bool) -> void:
+	var body: PackedVector2Array = []
+	for i: int in 12:
+		var a: float = TAU * float(i) / 12.0
+		body.append(c + Vector2(cos(a) * 0.55, 0.08 + sin(a) * 0.26) * g)
+	ci.draw_colored_polygon(body, ink)
+	ci.draw_circle(c + Vector2(0.55, -0.02) * g, g * 0.21, ink)
+	ci.draw_colored_polygon(_pts(c, g, [Vector2(0.68, -0.1), Vector2(0.95, 0.0), Vector2(0.68, 0.08)]), ink)
+	ci.draw_colored_polygon(_pts(c, g, [Vector2(-0.15, -0.05), Vector2(0.3, -0.12), Vector2(-0.4, -0.95)]), ink)
+	ci.draw_colored_polygon(_pts(c, g, [Vector2(-0.45, 0.0), Vector2(-0.95, -0.35), Vector2(-0.5, 0.18)]), ink)
+	ci.draw_colored_polygon(_pts(c, g, [Vector2(-0.45, 0.05), Vector2(-0.95, 0.5), Vector2(-0.5, 0.2)]), ink)
 	if detail:
-		for x: float in [-0.55, -0.18, 0.18, 0.55]:
-			ci.draw_circle(c + Vector2(x, -0.55) * g, g * 0.09, accent)
+		ci.draw_circle(c + Vector2(0.6, -0.07) * g, g * 0.06, face)
 
 
-## Second Wind: a heart with a pulse line across it.
-static func _heart(ci: CanvasItem, c: Vector2, g: float, ink: Color, accent: Color, detail: bool) -> void:
-	ci.draw_circle(c + Vector2(-0.4, -0.32) * g, g * 0.48, ink)
-	ci.draw_circle(c + Vector2(0.4, -0.32) * g, g * 0.48, ink)
-	ci.draw_colored_polygon(_pts(c, g, [Vector2(-0.86, -0.18), Vector2(0.86, -0.18), Vector2(0.0, 0.92)]), ink)
+## Trigger Tonic: Pauli's hare, head in profile with both ears up and motion lines behind it.
+static func _hare(ci: CanvasItem, c: Vector2, g: float, ink: Color, face: Color, detail: bool) -> void:
+	ci.draw_circle(c + Vector2(0.18, 0.3) * g, g * 0.38, ink)
+	ci.draw_circle(c + Vector2(0.55, 0.38) * g, g * 0.22, ink)
+	ci.draw_colored_polygon(_pts(c, g, [Vector2(-0.3, 0.85), Vector2(0.55, 0.85), Vector2(0.2, 0.3)]), ink)
+	_capsule(ci, c, g, Vector2(0.02, -0.02), Vector2(-0.3, -0.9), 0.14, ink)
+	_capsule(ci, c, g, Vector2(0.22, -0.05), Vector2(0.14, -0.95), 0.13, ink)
 	if detail:
-		ci.draw_polyline(_pts(c, g, [Vector2(-0.6, 0.02), Vector2(-0.26, 0.02), Vector2(-0.12, -0.34), Vector2(0.1, 0.4), Vector2(0.26, 0.02), Vector2(0.6, 0.02)]),
-			accent, maxf(1.0, g * 0.14))
+		ci.draw_circle(c + Vector2(0.28, 0.2) * g, g * 0.07, face)
+		var w: float = maxf(1.0, g * 0.1)
+		ci.draw_line(c + Vector2(-0.45, 0.15) * g, c + Vector2(-0.95, 0.15) * g, ink, w)
+		ci.draw_line(c + Vector2(-0.5, 0.42) * g, c + Vector2(-0.9, 0.42) * g, ink, w)
+		ci.draw_line(c + Vector2(-0.45, 0.68) * g, c + Vector2(-0.95, 0.68) * g, ink, w)
 
 
-## Trigger Tonic: three cartridges fanned from a point.
-static func _bullet_fan(ci: CanvasItem, c: Vector2, g: float, ink: Color, accent: Color, detail: bool) -> void:
-	var pivot: Vector2 = c + Vector2(0.0, 0.85) * g
-	var hw: float = g * 0.2
-	for a: float in [-0.5, 0.0, 0.5]:
-		var dir: Vector2 = Vector2(sin(a), -cos(a))
-		var perp: Vector2 = Vector2(dir.y, -dir.x)
-		var base: Vector2 = pivot + dir * g * 0.1
-		var top: Vector2 = pivot + dir * g * 1.45
-		ci.draw_colored_polygon(PackedVector2Array([base + perp * hw, top + perp * hw, top - perp * hw, base - perp * hw]), ink)
-		ci.draw_circle(top, hw, ink)
-		if detail:
-			var band: Vector2 = pivot + dir * g * 0.7
-			ci.draw_line(band + perp * hw, band - perp * hw, accent, maxf(1.0, g * 0.1))
+## Twin Barrel: two crossed barrels, the Major's moustache beneath them.
+static func _crossed_barrels(ci: CanvasItem, c: Vector2, g: float, ink: Color, ink2: Color, face: Color, detail: bool) -> void:
+	_capsule(ci, c, g, Vector2(-0.72, -0.8), Vector2(0.62, 0.3), 0.14, ink)
+	_capsule(ci, c, g, Vector2(0.72, -0.8), Vector2(-0.62, 0.3), 0.14, ink)
+	ci.draw_circle(c + Vector2(-0.72, -0.8) * g, g * 0.22, ink)
+	ci.draw_circle(c + Vector2(0.72, -0.8) * g, g * 0.22, ink)
+	if detail:
+		ci.draw_circle(c + Vector2(-0.72, -0.8) * g, g * 0.09, face)
+		ci.draw_circle(c + Vector2(0.72, -0.8) * g, g * 0.09, face)
+	var w: float = maxf(1.2, g * 0.16)
+	ci.draw_polyline(_pts(c, g, [Vector2(0.0, 0.55), Vector2(-0.28, 0.45), Vector2(-0.55, 0.52), Vector2(-0.72, 0.75)]), ink2, w)
+	ci.draw_polyline(_pts(c, g, [Vector2(0.0, 0.55), Vector2(0.28, 0.45), Vector2(0.55, 0.52), Vector2(0.72, 0.75)]), ink2, w)
 
 
-## Twin Barrel: two bores end-on in one block.
-static func _two_bores(ci: CanvasItem, c: Vector2, g: float, ink: Color, accent: Color) -> void:
-	var l: Vector2 = c + Vector2(-0.44, 0.0) * g
-	var r2: Vector2 = c + Vector2(0.44, 0.0) * g
-	ci.draw_circle(l, g * 0.54, ink)
-	ci.draw_circle(r2, g * 0.54, ink)
-	ci.draw_rect(Rect2(c + Vector2(-0.44, -0.54) * g, Vector2(0.88, 1.08) * g), ink)
-	ci.draw_circle(l, g * 0.3, accent)
-	ci.draw_circle(r2, g * 0.3, accent)
-	ci.draw_circle(l, g * 0.13, ink)
-	ci.draw_circle(r2, g * 0.13, ink)
-
-
-## Marathon: a boot with speed lines trailing behind it.
-static func _boot(ci: CanvasItem, c: Vector2, g: float, ink: Color) -> void:
-	ci.draw_rect(Rect2(c + Vector2(-0.1, -0.9) * g, Vector2(0.5, 1.25) * g), ink)
+## Marathon: a boot with a wing of three feathers at the heel.
+static func _winged_boot(ci: CanvasItem, c: Vector2, g: float, ink: Color) -> void:
+	ci.draw_rect(Rect2(c + Vector2(-0.1, -0.85) * g, Vector2(0.5, 1.2) * g), ink)
 	ci.draw_rect(Rect2(c + Vector2(-0.1, 0.35) * g, Vector2(1.0, 0.5) * g), ink)
 	ci.draw_circle(c + Vector2(0.9, 0.6) * g, g * 0.25, ink)
 	var w: float = maxf(1.0, g * 0.15)
-	ci.draw_line(c + Vector2(-0.35, -0.6) * g, c + Vector2(-0.95, -0.6) * g, ink, w)
-	ci.draw_line(c + Vector2(-0.35, -0.25) * g, c + Vector2(-0.8, -0.25) * g, ink, w)
-	ci.draw_line(c + Vector2(-0.35, 0.1) * g, c + Vector2(-0.95, 0.1) * g, ink, w)
+	ci.draw_line(c + Vector2(-0.15, -0.35) * g, c + Vector2(-0.95, -0.85) * g, ink, w)
+	ci.draw_line(c + Vector2(-0.15, -0.1) * g, c + Vector2(-0.95, -0.4) * g, ink, w)
+	ci.draw_line(c + Vector2(-0.15, 0.15) * g, c + Vector2(-0.85, 0.05) * g, ink, w)
 
 
-## Hawkeye: an eye inside a crosshair ring.
-static func _eye(ci: CanvasItem, c: Vector2, g: float, ink: Color, accent: Color, detail: bool) -> void:
+## Hawkeye: a hawk's eye inside a crosshair, ticks round it.
+static func _eye(ci: CanvasItem, c: Vector2, g: float, ink: Color, face: Color, detail: bool) -> void:
 	var w: float = maxf(1.0, g * 0.12)
 	if detail:
 		ci.draw_arc(c, g * 0.92, 0.0, TAU, 28, ink, w)
 		for d: Vector2 in [Vector2.UP, Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT]:
-			ci.draw_line(c + d * g * 0.78, c + d * g * 1.08, ink, w)
+			ci.draw_line(c + d * g * 0.78, c + d * g * 1.1, ink, w)
 	var lens: PackedVector2Array = []
 	var steps: int = 7
 	for i: int in steps + 1:
@@ -242,36 +286,48 @@ static func _eye(ci: CanvasItem, c: Vector2, g: float, ink: Color, accent: Color
 		var t2: float = 1.0 - float(i2 + 1) / float(steps)
 		lens.append(c + Vector2(lerpf(-0.68, 0.68, t2), 0.42 * sin(PI * t2)) * g)
 	ci.draw_colored_polygon(lens, ink)
-	ci.draw_circle(c, g * 0.22, accent)
+	ci.draw_circle(c, g * 0.22, face)
 	ci.draw_circle(c, g * 0.09, ink)
 
 
-## Packmule: a satchel with a handle, a flap and a buckle.
-static func _satchel(ci: CanvasItem, c: Vector2, g: float, ink: Color, accent: Color, detail: bool) -> void:
-	ci.draw_arc(c + Vector2(0.0, -0.3) * g, g * 0.5, PI, TAU, 10, ink, maxf(1.0, g * 0.16))
-	ci.draw_rect(Rect2(c + Vector2(-0.8, -0.3) * g, Vector2(1.6, 1.15) * g), ink)
+## Packmule: Ammer's mule, head in profile, three rifle lines fanning behind it.
+static func _mule(ci: CanvasItem, c: Vector2, g: float, ink: Color, face: Color, detail: bool) -> void:
+	var w: float = maxf(1.0, g * 0.09)
+	ci.draw_line(c + Vector2(-0.15, 0.35) * g, c + Vector2(-0.95, -0.75) * g, ink, w)
+	ci.draw_line(c + Vector2(-0.15, 0.35) * g, c + Vector2(-1.0, -0.2) * g, ink, w)
+	ci.draw_line(c + Vector2(-0.15, 0.35) * g, c + Vector2(-0.95, 0.35) * g, ink, w)
+	ci.draw_colored_polygon(_pts(c, g, [Vector2(-0.22, 0.1), Vector2(0.25, 0.15), Vector2(0.1, 0.9), Vector2(-0.45, 0.85)]), ink)
+	ci.draw_circle(c + Vector2(0.1, -0.08) * g, g * 0.36, ink)
+	_capsule(ci, c, g, Vector2(0.15, 0.0), Vector2(0.68, 0.32), 0.24, ink)
+	_capsule(ci, c, g, Vector2(0.0, -0.3), Vector2(-0.28, -0.95), 0.12, ink)
+	_capsule(ci, c, g, Vector2(0.2, -0.32), Vector2(0.12, -1.0), 0.12, ink)
 	if detail:
-		ci.draw_colored_polygon(_pts(c, g, [Vector2(-0.7, -0.12), Vector2(0.7, -0.12), Vector2(0.7, 0.22), Vector2(0.0, 0.36), Vector2(-0.7, 0.22)]), accent)
-		ci.draw_circle(c + Vector2(0.0, 0.22) * g, g * 0.1, ink)
+		ci.draw_circle(c + Vector2(0.22, -0.14) * g, g * 0.07, face)
+		ci.draw_circle(c + Vector2(0.72, 0.3) * g, g * 0.05, face)
 
 
-## Blastproof: a cracked bomb, inside a ring when there is room.
-static func _bomb(ci: CanvasItem, c: Vector2, g: float, ink: Color, accent: Color, detail: bool) -> void:
-	var w: float = maxf(1.0, g * 0.12)
-	var body: Vector2 = c + Vector2(0.0, 0.18) * g
-	var br: float = g * (0.5 if detail else 0.6)
+## Blastproof: the Pionierschule's ram's head over a starburst.
+static func _ram_burst(ci: CanvasItem, c: Vector2, g: float, ink: Color, ink2: Color, detail: bool) -> void:
+	# the burst (the other tone): a disc and eight spikes
+	ci.draw_circle(c, g * 0.46, ink2)
+	for i: int in 8:
+		var a: float = TAU * float(i) / 8.0 + PI / 8.0
+		var dir: Vector2 = Vector2(cos(a), sin(a))
+		var perp: Vector2 = Vector2(-dir.y, dir.x) * 0.15
+		ci.draw_colored_polygon(PackedVector2Array([c + (dir * 0.3 + perp) * g, c + dir * g * 1.0, c + (dir * 0.3 - perp) * g]), ink2)
+	# the ram: a face with two curled horns
+	ci.draw_colored_polygon(_pts(c, g, [Vector2(-0.3, -0.3), Vector2(0.3, -0.3), Vector2(0.24, 0.3), Vector2(0.0, 0.55), Vector2(-0.24, 0.3)]), ink)
+	var w: float = maxf(1.2, g * 0.15)
+	ci.draw_arc(c + Vector2(-0.4, -0.22) * g, g * 0.3, PI * 1.55, PI * 2.95, 10, ink, w)
+	ci.draw_arc(c + Vector2(0.4, -0.22) * g, g * 0.3, PI * 0.05, PI * 1.45, 10, ink, w)
 	if detail:
-		ci.draw_arc(c, g * 0.95, 0.0, TAU, 28, ink, w * 0.8)
-	ci.draw_circle(body, br, ink)
-	ci.draw_line(body + Vector2(0.3, -0.42) * br, c + Vector2(0.5, -0.72) * g, ink, w)
-	ci.draw_circle(c + Vector2(0.56, -0.78) * g, w * 0.9, ink)
-	if detail:
-		ci.draw_polyline(_pts(c, g, [Vector2(-0.22, -0.05), Vector2(-0.04, 0.12), Vector2(-0.18, 0.3), Vector2(0.04, 0.5)]), accent, w * 0.7)
+		ci.draw_circle(c + Vector2(-0.12, -0.05) * g, g * 0.06, ink2)
+		ci.draw_circle(c + Vector2(0.12, -0.05) * g, g * 0.06, ink2)
 
 
-## Overclock: a cog with the cordial's lightning bolt over its hub. The cog is a disc plus eight convex tooth quads
-## (one concave outline can fail to triangulate at nameplate size).
-static func _cog_bolt(ci: CanvasItem, c: Vector2, g: float, ink: Color, accent: Color, neon: Color) -> void:
+## Overclock: the friend's robot: a copper lightning bolt and two round eyes, over a cog. The cog is a disc plus
+## eight convex tooth quads (one concave outline can fail to triangulate at nameplate size).
+static func _cog_bolt(ci: CanvasItem, c: Vector2, g: float, ink: Color, ink2: Color, face: Color, copper: Color, detail: bool) -> void:
 	var teeth: int = 8
 	ci.draw_circle(c, g * 0.74, ink)
 	for i: int in teeth:
@@ -283,9 +339,13 @@ static func _cog_bolt(ci: CanvasItem, c: Vector2, g: float, ink: Color, accent: 
 			c + Vector2(cos(a + half), sin(a + half)) * g * 0.98,
 			c + Vector2(cos(a + wide), sin(a + wide)) * g * 0.7,
 			c + Vector2(cos(a - wide), sin(a - wide)) * g * 0.7]), ink)
-	ci.draw_circle(c, g * 0.5, accent)
-	ci.draw_colored_polygon(_pts(c, g, [Vector2(0.14, -0.82), Vector2(0.4, -0.82), Vector2(0.06, -0.02), Vector2(-0.28, -0.02)]), neon)
-	ci.draw_colored_polygon(_pts(c, g, [Vector2(-0.02, -0.12), Vector2(0.3, -0.12), Vector2(-0.12, 0.82), Vector2(-0.38, 0.82)]), neon)
+	ci.draw_circle(c, g * 0.52, face)
+	ci.draw_colored_polygon(_pts(c, g, [Vector2(0.12, -0.82), Vector2(0.4, -0.82), Vector2(0.06, -0.02), Vector2(-0.3, -0.02)]), copper)
+	ci.draw_colored_polygon(_pts(c, g, [Vector2(-0.04, -0.12), Vector2(0.3, -0.12), Vector2(-0.12, 0.82), Vector2(-0.4, 0.82)]), copper)
+	if detail:
+		for x: float in [-0.5, 0.5]:
+			ci.draw_circle(c + Vector2(x, 0.4) * g, g * 0.14, ink2)
+			ci.draw_circle(c + Vector2(x, 0.4) * g, g * 0.07, ink)
 
 
 ## A five-point star from convex pieces (an inner pentagon and five tip triangles: a concave outline can fail to

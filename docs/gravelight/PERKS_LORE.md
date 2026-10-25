@@ -106,14 +106,17 @@ Costs are the same solo and co-op.
 Every place a tonic shows as a bottle cap (the HUD row, a bot's nameplate, the co-op squad ledger, the pause LOADOUT
 list) draws it with `PerkCap.draw_cap` (`gravelight/ui/perk_cap.gd`): a crimped cap in the tonic's enamel colour with
 a bevelled face, and on it the tonic's **glyph**, embossed (a shadow pass under cream on dark enamel, ink on light).
-The glyphs are drawn, not painted, so they read at 18 px on a plate and 54 px on the HUD: **Ironhide** a riveted
-shield with a barrel hoop across it (Kessler's hoops); **Second Wind** a heart with a pulse line (the nurse's count);
-**Trigger Tonic** a fan of three cartridges (the shift quota); **Twin Barrel** two bores end-on; **Marathon** a boot
-with speed lines (running home); **Hawkeye** an eye inside a crosshair (the hawk; the owl is on the cabinet, not the
-cap); **Packmule** a satchel (Ammer's inventory); **Blastproof** a cracked bomb in a ring (the Pionierschule's joke
-about open flame); **Overclock** a cog with the cordial's violet lightning bolt over its hub (the little robot's). The
-tier band (II / III) sits under the glyph; a tonic the player does not hold is drawn greyed. A future cabinet (Fine
-Print Fernet) without a glyph case falls back to its two letters until one is drawn.
+The glyphs are drawn, not painted, from convex pieces, so they read at 18 px on a plate and 54 px on the HUD, and
+they follow the cabinets' art bible (`docs/gravelight/JINGLES.md`, the **Bottle cap** line of each tonic): **Ironhide**
+Fassl's flexed arm inside a riveted ring; **Second Wind** a swallow with a thin red rim; **Trigger Tonic** Pauli's hare,
+head in profile, motion lines behind; **Twin Barrel** two crossed barrels over the Major's moustache; **Marathon** a
+winged boot with a chrome rim; **Hawkeye** a hawk's eye in a crosshair with ticks (the owl stays on the cabinet);
+**Packmule** Ammer's mule with three rifle lines fanning behind it; **Blastproof** a ram's head over a black starburst;
+**Overclock** the friend's robot, a copper lightning bolt and two round eyes, over a cog. One liberty against the
+bible for readability: the silhouette is ink on the pale enamels (Second Wind, Trigger, Twin Barrel, Marathon) and
+cream on the dark ones, whichever the bible said. The tier band (II / III) sits under the glyph; a tonic the player
+does not hold is drawn greyed. A future cabinet (Fine Print Fernet) without a glyph case falls back to its two letters
+until one is drawn.
 
 ### 1.4 Why a cabinet can pour a stronger measure (in-world)
 
