@@ -2016,3 +2016,50 @@ snow; Sobotta dies inside by the table and rises among the squad.
 - `PEG_INN_RISE_01`: "Oh, no. No, no, no. Willi. ...I'm sorry, love."
 - `DEA_INN_RISE_01`: "Lord have mercy, the boy's standing up. That isn't him. That isn't him!"
 - `WRN_INN_RISE_01`: "The soldier. He is standing. Do not look at his face. Shoot."
+
+## 22. The round-5 milestone, the tonic bottle and the Scrip bonuses (DECISIONS T-078)
+
+`MILESTONE`: the Operator, when a milestone's drops land (round 4's last kill; PowerupManager.drop_milestone).
+`PWR_TONIC`: the tonic bottle taken (the Operator, then the survivor who took it, as for every power-up; the token is
+`TONIC` in VOManager.POWERUP_TOKENS). `PING_TONIC`: a bot calling the bottle with a ping. `BONUS_CLEAN` /
+`BONUS_STREAK` / `BONUS_SALVAGE`: the Operator on the match's first untouched round, first headshot streak and first
+dog tags; `BONUS_SALVAGE` is also each survivor's own line on their first tags (ScripBonuses). Writer rules hold:
+the tags are the dead's names, said with respect; Jakub never drinks (he only points the bottle out). The ids carry
+`ECO` (`python gravelight/tools_src/gen_vo.py --only=OPR_ECO,DUT_ECO,PEG_ECO,DEA_ECO,WRN_ECO,JAK_ECO`). Baked.
+
+**Operator (`OPR`)**
+- `OPR_ECO_MILESTONE_01`: "Five rounds with us! For our loyal {customers}: a little something from the cellar, and a fresh ration of lead."
+- `OPR_ECO_MILESTONE_02`: "A milestone! The management sends its compliments. And a {bottle}."
+- `OPR_ECO_MILESTONE_03`: "Still breathing? How {unusual}. Have one on the house."
+- `OPR_ECO_PWR_TONIC_01`: "A tonic, on the house! Drink up, it's already {paid} for."
+- `OPR_ECO_PWR_TONIC_02`: "Complimentary refreshment for every {guest}!"
+- `OPR_ECO_PWR_TONIC_03`: "One bottle each. The ledger is feeling {sentimental}."
+- `OPR_ECO_BONUS_CLEAN_01`: "Not a scratch! The house rewards a {spotless} account."
+- `OPR_ECO_BONUS_CLEAN_02`: "A clean round! Bonus paid, with our {admiration}."
+- `OPR_ECO_BONUS_STREAK_01`: "Five in the head, five in a row! A marksman's {bonus}!"
+- `OPR_ECO_BONUS_STREAK_02`: "Such tidy work. The ledger pays extra for {neatness}."
+- `OPR_ECO_BONUS_SALVAGE_01`: "Ah, a keepsake! Hand those in, we pay for every {name}."
+- `OPR_ECO_BONUS_SALVAGE_02`: "Tags returned to the office! A small {finder's} fee."
+
+**Dutch (`DUT`)**
+- `DUT_ECO_PWR_TONIC_01`: "Free drink. First thing in this war that didn't cost me."
+- `DUT_ECO_PING_TONIC_01`: "Bottle on the floor! Grab it!"
+- `DUT_ECO_SALVAGE_01`: "Dog tags. Somebody's boy. I'll carry 'em."
+
+**Peg (`PEG`)**
+- `PEG_ECO_PWR_TONIC_01`: "A complimentary tonic. I shan't ask what's in it."
+- `PEG_ECO_PING_TONIC_01`: "A tonic bottle, over here!"
+- `PEG_ECO_SALVAGE_01`: "Tags. Someone ought to know where he ended up."
+
+**Deacon (`DEA`)**
+- `DEA_ECO_PWR_TONIC_01`: "Bottle for everybody. Drink it slow, it's all we get."
+- `DEA_ECO_PING_TONIC_01`: "Bottle here! One for each of us."
+- `DEA_ECO_SALVAGE_01`: "Tags. Rest easy, son. I've got your name."
+
+**Wren (`WRN`)**
+- `WRN_ECO_PWR_TONIC_01`: "A gift. Nothing here is a gift. Drink anyway."
+- `WRN_ECO_PING_TONIC_01`: "Bottle. Here."
+- `WRN_ECO_SALVAGE_01`: "A name. They had names, once."
+
+**Jakub (`JAK`)**
+- `JAK_ECO_PING_TONIC_01`: "A bottle, over there! For you, not for me."
