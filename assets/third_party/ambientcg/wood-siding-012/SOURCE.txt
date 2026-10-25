@@ -1,0 +1,12 @@
+Title: Wood Siding 012
+Authors: ambientCG.com (Lennart Demes)
+Source: https://ambientcg.com/a/WoodSiding012
+File: https://ambientcg.com/get?file=WoodSiding012_1K-JPG.zip
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Wood Siding 012" from ambientCG.com, CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 1k (albedo, normal OpenGL +Y, ORM at 1k, height)
+Tile size: 1.40 m
+ambientCG id: WoodSiding012
+Library key: shingles
+Downloaded: 2026-10-25 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: textures/WoodSiding012_albedo.png, textures/WoodSiding012_normal.png, textures/WoodSiding012_orm.png, textures/WoodSiding012_height.png

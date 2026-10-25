@@ -1,0 +1,324 @@
+{
+  "_doc": "The CC0 prop library (UPDATE_05 / 05A section 1.3, T-088). PropLibrary.instance(key) -> Node3D 'Prop_<key>' with the GLB scaled to metres (scale), pivoted (pivot: base = footprint centre on the floor, top = hanging from its top centre, file = the file's origin), collision stripped. size_m = the AABB in metres after scale (x, y, z; test_prop_library checks the loaded model is within 12% of it); tris = LOD0 triangles from tools/asset_report.sh; over_budget marks props above ART_BIBLE's 3k prop budget that want a Blender decimate pass (tools_src/blender/) before they go on a map. place = where Map 0 wants it (environment builder's notes). target_tris = the decimate target when it differs from the 3k default (tools/decimate_props.py).",
+  "props": {
+    "barrel_wine": {
+      "path": "res://assets/third_party/polyhaven/wine-barrel-01/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.742,
+        0.871,
+        0.756
+      ],
+      "tris": 3998,
+      "over_budget": true,
+      "place": "the cellar casks (1937/41/43 are bigger: scale 1.3), the yard, the stable",
+      "target_tris": 4000,
+      "decimated": "Blender collapse to 4000 (tools/decimate_props.py)"
+    },
+    "barrel_steel": {
+      "path": "res://assets/third_party/polyhaven/barrel-03/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.634,
+        0.93,
+        0.639
+      ],
+      "tris": 1473,
+      "place": "the oil drums east of the yard (tint rust via a material override)"
+    },
+    "crate_wood_a": {
+      "path": "res://assets/third_party/polyhaven/wooden-crate-01/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.825,
+        0.35,
+        0.409
+      ],
+      "tris": 2997,
+      "place": "stable crates, the cargo in the field",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
+    },
+    "crate_wood_b": {
+      "path": "res://assets/third_party/polyhaven/wooden-crate-02/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.529,
+        0.464,
+        1.166
+      ],
+      "tris": 2999,
+      "place": "the salt-lamp crate SALZ, the loft crates",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
+    },
+    "crate_military": {
+      "path": "res://assets/third_party/polyhaven/wooden-military-crate/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        1.242,
+        0.465,
+        0.52
+      ],
+      "tris": 3997,
+      "over_budget": true,
+      "place": "the billet crates, GRAVELIGHT ONE's thrown cargo (stencil the P-W-K mark, never a real one)",
+      "target_tris": 4000,
+      "decimated": "Blender collapse to 4000 (tools/decimate_props.py)"
+    },
+    "table_rect": {
+      "path": "res://assets/third_party/polyhaven/wooden-table-02/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        1.134,
+        0.8,
+        0.706
+      ],
+      "tris": 196,
+      "place": "taproom tables (the generator's table colliders stay)"
+    },
+    "table_round": {
+      "path": "res://assets/third_party/polyhaven/round-wooden-table-01/model.glb",
+      "scale": 0.72,
+      "pivot": "base",
+      "size_m": [
+        1.007,
+        0.724,
+        1.007
+      ],
+      "tris": 3498,
+      "over_budget": true,
+      "place": "the table by the hearth (Frau Pohl's coffee)",
+      "target_tris": 3500,
+      "decimated": "Blender collapse to 3500 (tools/decimate_props.py)"
+    },
+    "bench_painted": {
+      "path": "res://assets/third_party/polyhaven/painted-wooden-bench/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        1.165,
+        0.889,
+        0.497
+      ],
+      "tris": 630,
+      "place": "the trestle benches, the vestibule"
+    },
+    "chair_farmhouse": {
+      "path": "res://assets/third_party/polyhaven/painted-wooden-chair-02/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.639,
+        1.264,
+        0.662
+      ],
+      "tris": 1246,
+      "place": "taproom chairs (Props.chair's tipped variant: rot_deg at the call site)"
+    },
+    "stool_workshop": {
+      "path": "res://assets/third_party/polyhaven/wooden-stool-01/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.425,
+        0.437,
+        0.442
+      ],
+      "tris": 2999,
+      "place": "the guard's stool at the cage, the bar",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
+    },
+    "nightstand": {
+      "path": "res://assets/third_party/polyhaven/painted-wooden-nightstand/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.505,
+        0.616,
+        0.509
+      ],
+      "tris": 470,
+      "place": "the guest rooms"
+    },
+    "bed_iron": {
+      "path": "res://assets/third_party/polyhaven/old-bed-frame/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.905,
+        1.201,
+        2.002
+      ],
+      "tris": 6000,
+      "over_budget": true,
+      "place": "the guest rooms' beds (Props.bed's blanket stays on top)",
+      "target_tris": 6000,
+      "decimated": "Blender collapse to 6000 (tools/decimate_props.py)"
+    },
+    "suitcase_set": {
+      "path": "res://assets/third_party/polyhaven/vintage-suitcase/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        1.608,
+        0.568,
+        0.239
+      ],
+      "tris": 4496,
+      "over_budget": true,
+      "place": "Frau Pohl's suitcase, Room 1's open case, the road's cases (a set of three; split in Blender if one is wanted)",
+      "target_tris": 4500,
+      "decimated": "Blender collapse to 4500 (tools/decimate_props.py)"
+    },
+    "bucket_wood": {
+      "path": "res://assets/third_party/polyhaven/wooden-bucket-01/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.367,
+        0.55,
+        0.342
+      ],
+      "tris": 2997,
+      "place": "Fanny's stall, the well, the loft",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
+    },
+    "lantern_oil": {
+      "path": "res://assets/third_party/polyhaven/lantern-01/model.glb",
+      "scale": 1.0,
+      "pivot": "top",
+      "size_m": [
+        0.122,
+        0.294,
+        0.097
+      ],
+      "tris": 2999,
+      "place": "the hanging TapLamps / HallLamp / StableLamps (Props.lantern keeps the light and the LampSway hit volume)",
+      "target_tris": 3000,
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
+    },
+    "lantern_wood": {
+      "path": "res://assets/third_party/polyhaven/wooden-lantern-01/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.221,
+        0.53,
+        0.235
+      ],
+      "tris": 2996,
+      "place": "the yard's and woodshed's lamps, the cellar's installers' lantern",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
+    },
+    "lamp_oil_table": {
+      "path": "res://assets/third_party/polyhaven/vintage-oil-lamp/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.22,
+        0.802,
+        0.22
+      ],
+      "tris": 2999,
+      "place": "the signals table, the guest rooms' nightstands",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
+    },
+    "bottles_wine": {
+      "path": "res://assets/third_party/polyhaven/wine-bottles-01/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.676,
+        0.331,
+        0.081
+      ],
+      "tris": 2997,
+      "place": "the bar's back shelves (a row of three; the ShatterSet glass stays the generator's)",
+      "target_tris": 3000,
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
+    },
+    "jug_ceramic": {
+      "path": "res://assets/third_party/polyhaven/jug-01/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.275,
+        0.211,
+        0.168
+      ],
+      "tris": 3000,
+      "place": "the bar, the kitchen pass",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
+    },
+    "spade_rusted": {
+      "path": "res://assets/third_party/polyhaven/rusted-spade-01/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.168,
+        1.101,
+        0.046
+      ],
+      "tris": 2999,
+      "place": "the coal shovel (CoalShovel keeps its gameplay node), the woodshed",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
+    },
+    "axe_wood": {
+      "path": "res://assets/third_party/polyhaven/wooden-axe-03/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.05,
+        0.632,
+        0.158
+      ],
+      "tris": 3000,
+      "place": "in the chopping block by the woodshed",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
+    },
+    "stump_chopping": {
+      "path": "res://assets/third_party/polyhaven/tree-stump-01/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        1.426,
+        0.573,
+        1.59
+      ],
+      "tris": 4000,
+      "over_budget": true,
+      "place": "the chopping block by the woodshed",
+      "target_tris": 4000,
+      "decimated": "Blender collapse to 4000 (tools/decimate_props.py)"
+    },
+    "firewood_bundle": {
+      "path": "res://assets/third_party/kenney/survival-kit/firewood.glb",
+      "scale": 4.0,
+      "pivot": "base",
+      "size_m": [
+        0.82,
+        0.25,
+        0.348
+      ],
+      "tris": 88,
+      "place": "the woodpile (Kenney's kit is 1/4 scale; low-poly filler until a better bundle exists)"
+    },
+    "log_split": {
+      "path": "res://assets/third_party/kenney/survival-kit/log.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.249,
+        0.277,
+        1.0
+      ],
+      "tris": 88,
+      "place": "the woodshed's logs (low-poly filler)"
+    }
+  }
+}

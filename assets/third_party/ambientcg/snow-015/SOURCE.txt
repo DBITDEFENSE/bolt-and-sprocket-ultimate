@@ -1,0 +1,12 @@
+Title: Snow 015
+Authors: ambientCG.com (Lennart Demes)
+Source: https://ambientcg.com/a/Snow015
+File: https://ambientcg.com/get?file=Snow015_1K-JPG.zip
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Snow 015" from ambientCG.com, CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 1k (albedo, normal OpenGL +Y, ORM at 1k, height)
+Tile size: see the asset page
+ambientCG id: Snow015
+Library key: frozen_mud
+Downloaded: 2026-10-25 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: textures/Snow015_albedo.png, textures/Snow015_normal.png, textures/Snow015_orm.png, textures/Snow015_height.png

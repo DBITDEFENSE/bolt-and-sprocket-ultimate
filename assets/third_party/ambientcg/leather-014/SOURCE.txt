@@ -1,0 +1,12 @@
+Title: Leather 014
+Authors: ambientCG.com (Lennart Demes)
+Source: https://ambientcg.com/a/Leather014
+File: https://ambientcg.com/get?file=Leather014_1K-JPG.zip
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Leather 014" from ambientCG.com, CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 1k (albedo, normal OpenGL +Y, ORM at 1k)
+Tile size: see the asset page
+ambientCG id: Leather014
+Library key: leather
+Downloaded: 2026-10-25 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: textures/Leather014_albedo.png, textures/Leather014_normal.png, textures/Leather014_orm.png

@@ -1,0 +1,10 @@
+Title: Wooden Table 02
+Authors: Serhii Khromov
+Source: https://polyhaven.com/a/wooden_table_02
+File: https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/wooden_table_02/wooden_table_02_1k.gltf; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_table_02/wooden_table_02_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_table_02/wooden_table_02_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/wooden_table_02/wooden_table_02.bin; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_table_02/wooden_table_02_arm_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Wooden Table 02" by Serhii Khromov (Poly Haven), CC0. Modified: glTF packed to GLB, textures converted to PNG and resized.
+Format: GLB (metres, +Y up) with external PNG textures at <= 1024 px
+Poly Haven id: wooden_table_02
+Downloaded: 2026-10-25 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: model.glb, textures/wooden_table_02_nor_gl.png, textures/wooden_table_02_diff.png, textures/wooden_table_02_arm.png

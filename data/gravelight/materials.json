@@ -1,0 +1,317 @@
+{
+  "_doc": "The CC0 material library (UPDATE_05 section 1, T-088; docs/ART_BIBLE.md section 3). MaterialLibrary.get_mat(key) builds one shared ShaderMaterial (assets/materials/shaders/surface_pbr.gdshader) per key from `library` and caches it. set = assets/third_party/<set>/textures/<id>_{albedo,normal,orm[,height]}.png; tile_m = metres one tile covers (uv_scale = 1 / tile_m, per axis when `tile_xyz` is given); tint multiplies the albedo; rough = [min, max] clamp on the ORM's roughness; grime / wetness / frost are the shared wear parameters (0..1); frost_height = world y the frost starts above (-1000 = everywhere); triplanar false = the mesh's own UVs (props). `generator` maps the procedural Mats keys (gravelight/world/materials.gd, what gen_map0N.gd and Props call) to library keys: Mats.get_mat() hands out the library material for a key in `enabled` while use_library is true, so the environment builder switches Map 0 over one key at a time by adding to `enabled` and re-running gen_map00. Note for consumers that cast Mats.get_mat() to StandardMaterial3D (landscape.gd reads the snow's albedo_texture): a library material is a ShaderMaterial; read MaterialLibrary.texture(key, 'albedo') instead.",
+  "shader": "res://assets/materials/shaders/surface_pbr.gdshader",
+  "defaults": {
+    "tint": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "rough": [
+      0.0,
+      1.0
+    ],
+    "grime": 0.35,
+    "wetness": 0.0,
+    "frost": 0.0,
+    "frost_height": -1000.0,
+    "normal_strength": 1.0,
+    "triplanar": true,
+    "grime_floor_y": 0.0,
+    "grime_height": 0.7
+  },
+  "library": {
+    "floorboards": {
+      "set": "polyhaven/wood-floor-worn",
+      "id": "wood_floor_worn",
+      "tile_m": 3.2,
+      "tint": [
+        0.8,
+        0.7,
+        0.6
+      ],
+      "rough": [
+        0.55,
+        0.95
+      ],
+      "grime": 0.35,
+      "wetness": 0.05,
+      "note": "the inn's floors; 3.2 m tile so the 10 cm boards read as 16 cm boards (ART_BIBLE scale), boards run along X"
+    },
+    "planks": {
+      "set": "polyhaven/weathered-brown-planks",
+      "id": "weathered_brown_planks",
+      "tile_m": 1.8,
+      "tint": [
+        0.78,
+        0.7,
+        0.6
+      ],
+      "rough": [
+        0.6,
+        0.95
+      ],
+      "grime": 0.4,
+      "frost": 0.5,
+      "frost_height": 0.0,
+      "note": "the stable's walls, fences, the woodshed"
+    },
+    "plaster": {
+      "set": "polyhaven/beige-wall-001",
+      "id": "beige_wall_001",
+      "tile_m": 2.0,
+      "tint": [
+        0.9,
+        0.84,
+        0.74
+      ],
+      "rough": [
+        0.75,
+        1.0
+      ],
+      "grime": 0.45,
+      "grime_height": 1.1,
+      "note": "the inn's walls inside and out; wear and water stains are the shader's grime"
+    },
+    "plaster_worn": {
+      "set": "polyhaven/plastered-stone-wall",
+      "id": "plastered_stone_wall",
+      "tile_m": 2.5,
+      "tint": [
+        0.9,
+        0.84,
+        0.74
+      ],
+      "rough": [
+        0.75,
+        1.0
+      ],
+      "grime": 0.5,
+      "grime_height": 1.1,
+      "note": "plaster fallen off old stone: the cellar's foundation, outside corners, the stable's footing"
+    },
+    "plaster_upper": {
+      "set": "polyhaven/grey-plaster",
+      "id": "grey_plaster",
+      "tile_m": 1.0,
+      "tint": [
+        0.72,
+        0.72,
+        0.68
+      ],
+      "rough": [
+        0.75,
+        1.0
+      ],
+      "grime": 0.4,
+      "grime_floor_y": 3.8,
+      "note": "the upper storey and the guest rooms"
+    },
+    "fieldstone": {
+      "set": "polyhaven/stone-wall",
+      "id": "stone_wall",
+      "tile_m": 2.0,
+      "tint": [
+        0.85,
+        0.84,
+        0.8
+      ],
+      "rough": [
+        0.75,
+        1.0
+      ],
+      "grime": 0.45,
+      "frost": 0.6,
+      "frost_height": 0.0,
+      "note": "the yard wall, the hearth, the cellar's foundation"
+    },
+    "shingles": {
+      "set": "ambientcg/wood-siding-012",
+      "id": "WoodSiding012",
+      "tile_m": 2.0,
+      "tint": [
+        0.62,
+        0.6,
+        0.56
+      ],
+      "rough": [
+        0.7,
+        1.0
+      ],
+      "grime": 0.3,
+      "frost": 0.8,
+      "frost_height": 2.5,
+      "frost_up": 0.3,
+      "note": "the roofs: weathered wood shakes with the snow load as frost"
+    },
+    "iron": {
+      "set": "polyhaven/rusty-metal-04",
+      "id": "rusty_metal_04",
+      "tile_m": 1.0,
+      "tint": [
+        0.8,
+        0.78,
+        0.76
+      ],
+      "rough": [
+        0.35,
+        0.85
+      ],
+      "grime": 0.3,
+      "note": "brackets, hinges, the cage's bars, the drums"
+    },
+    "canvas": {
+      "set": "ambientcg/fabric-066",
+      "id": "Fabric066",
+      "tile_m": 1.0,
+      "tint": [
+        0.72,
+        0.72,
+        0.64
+      ],
+      "rough": [
+        0.85,
+        1.0
+      ],
+      "grime": 0.35,
+      "note": "tarps, the parachute, awnings"
+    },
+    "burlap": {
+      "set": "polyhaven/hessian-230",
+      "id": "hessian_230",
+      "tile_m": 0.27,
+      "tint": [
+        0.8,
+        0.72,
+        0.58
+      ],
+      "rough": [
+        0.85,
+        1.0
+      ],
+      "grime": 0.4,
+      "note": "sacks"
+    },
+    "wool": {
+      "set": "ambientcg/fabric-031",
+      "id": "Fabric031",
+      "tile_m": 0.6,
+      "tint": [
+        0.55,
+        0.54,
+        0.52
+      ],
+      "rough": [
+        0.85,
+        1.0
+      ],
+      "grime": 0.3,
+      "note": "greatcoats, blankets, curtains"
+    },
+    "leather": {
+      "set": "ambientcg/leather-014",
+      "id": "Leather014",
+      "tile_m": 0.5,
+      "tint": [
+        0.8,
+        0.7,
+        0.6
+      ],
+      "rough": [
+        0.45,
+        0.7
+      ],
+      "grime": 0.3,
+      "note": "tack, straps, gloves"
+    },
+    "snow": {
+      "set": "polyhaven/snow-02",
+      "id": "snow_02",
+      "tile_m": 2.0,
+      "tint": [
+        0.84,
+        0.86,
+        0.9
+      ],
+      "rough": [
+        0.6,
+        0.9
+      ],
+      "grime": 0.08,
+      "note": "the Grounds' snow"
+    },
+    "ice": {
+      "set": "ambientcg/ice-003",
+      "id": "Ice003",
+      "tile_m": 1.0,
+      "tint": [
+        0.8,
+        0.86,
+        0.9
+      ],
+      "rough": [
+        0.05,
+        0.25
+      ],
+      "grime": 0.1,
+      "note": "the stream, the trough, the ice cellar"
+    },
+    "frozen_mud": {
+      "set": "ambientcg/snow-015",
+      "id": "Snow015",
+      "tile_m": 2.0,
+      "tint": [
+        0.84,
+        0.82,
+        0.78
+      ],
+      "rough": [
+        0.6,
+        0.95
+      ],
+      "grime": 0.3,
+      "note": "the roads' ruts, the yard track"
+    },
+    "dirt": {
+      "set": "polyhaven/brown-mud-03",
+      "id": "brown_mud_03",
+      "tile_m": 1.3,
+      "tint": [
+        0.7,
+        0.64,
+        0.56
+      ],
+      "rough": [
+        0.7,
+        1.0
+      ],
+      "grime": 0.35,
+      "wetness": 0.15,
+      "note": "the stable floor, the cellar's earth"
+    }
+  },
+  "generator": {
+    "use_library": true,
+    "enabled": [
+      "floorboards",
+      "plaster"
+    ],
+    "keys": {
+      "floorboards": "floorboards",
+      "plaster": "plaster",
+      "plaster_upper": "plaster_upper",
+      "planks": "planks",
+      "stone": "fieldstone",
+      "roof": "shingles",
+      "iron": "iron",
+      "snow": "snow",
+      "dirt": "dirt",
+      "hay": "burlap",
+      "cloth": "wool",
+      "canvas": "canvas",
+      "leather": "leather",
+      "ice": "ice",
+      "mud": "frozen_mud"
+    }
+  }
+}

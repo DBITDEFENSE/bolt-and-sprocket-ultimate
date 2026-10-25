@@ -17,10 +17,17 @@ const TARGETS: Array = [
 	["verdant", "res://bs/planets/verdant/verdant.tscn", "bs", ""],
 ]
 
+## Same-camera before/after sets (UPDATE_05 section 1, T-088): `--set=u05 [--label=before] [--only=cam,cam]` reads the
+## fixed camera list in data/gravelight/capture_cams.json and saves morning/screenshots/<set>/<label>/NN_<name>.png,
+## one per camera, so two labels pair up by file name (tools/compare_shots.py stitches the pairs side by side).
+const CAMS_JSON: String = "res://data/gravelight/capture_cams.json"
+
 var _out: String = ""
 var _only: PackedStringArray = []
 var _scene: Node = null
 var _saved: PackedStringArray = []
+var _set_name: String = ""
+var _label: String = "before"
 
 
 func _ready() -> void:
@@ -32,8 +39,15 @@ func _ready() -> void:
 			_only = a.substr(7).split(",", false)
 		elif a.begins_with("--out="):
 			_out = a.substr(6)
+		elif a.begins_with("--set="):
+			_set_name = a.substr(6)
+		elif a.begins_with("--label="):
+			_label = a.substr(8)
 	if _out == "":
-		_out = ProjectSettings.globalize_path("res://").path_join("morning/screenshots").path_join(milestone)
+		if _set_name != "":
+			_out = ProjectSettings.globalize_path("res://").path_join("morning/screenshots").path_join(_set_name).path_join(_label)
+		else:
+			_out = ProjectSettings.globalize_path("res://").path_join("morning/screenshots").path_join(milestone)
 	DirAccess.make_dir_recursive_absolute(_out)
 	AudioServer.set_bus_mute(AudioServer.get_bus_index("Master"), true)
 	ProfileSave.path = "user://_qa_capture_profile.json"
@@ -59,6 +73,12 @@ func _shot(name: String) -> void:
 
 
 func _run() -> void:
+	if _set_name != "":
+		await _cam_set()
+		print("[capture] %d screenshots in %s" % [_saved.size(), _out])
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(ProfileSave.path))
+		get_tree().quit()
+		return
 	for t: Array in TARGETS:
 		var key: String = str(t[0])
 		if not _only.is_empty() and not _only.has(key):
@@ -79,6 +99,122 @@ func _run() -> void:
 	print("[capture] %d screenshots in %s" % [_saved.size(), _out])
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(ProfileSave.path))
 	get_tree().quit()
+
+
+## One camera set from capture_cams.json: the map once (bots standing, no round), then the Player moved to each
+## camera (feet position, yaw, pitch) and a frame saved after it settles. `kind` "zombie" spawns one Ganger at the
+## cam's `subject` point and freezes it facing the camera; "squad" turns the camera to the bots' centroid;
+## "viewmodel" is a plain view framed so the gun is the subject.
+func _cam_set() -> void:
+	var cfg: Dictionary = load_cams()
+	var set_d: Dictionary = (cfg.get("sets", {}) as Dictionary).get(_set_name, {})
+	if set_d.is_empty():
+		push_error("[capture] no camera set '%s' in %s" % [_set_name, CAMS_JSON])
+		return
+	GameState.character_id = &"dutch"
+	GameState.bot_count = int(set_d.get("bots", 3))
+	GameState.bot_ai_mode = "off"
+	Campaign.reset()
+	var map: MapRoot = _load(str(set_d["map"])) as MapRoot
+	GameState.god_mode = true
+	await _secs(float(set_d.get("settle_s", 6.0)))
+	RoundManager.stop()
+	var p: Player = map.player
+	var dir: ZombieDirector = map.director
+	if p == null:
+		push_error("[capture] the map has no player")
+		return
+	p.set_process_unhandled_input(false)
+	var cams: Array = set_d.get("cams", [])
+	for i: int in cams.size():
+		var cam: Dictionary = cams[i]
+		var cname: String = str(cam.get("name", "cam%02d" % i))
+		if not _only.is_empty() and not _only.has(cname):
+			continue
+		var kind: String = str(cam.get("kind", "view"))
+		var pos: Vector3 = _v3(cam.get("pos", [0, 0, 0]))
+		var yaw: float = float(cam.get("yaw", 0.0))
+		var pitch: float = float(cam.get("pitch", 0.0))
+		var subject: Node3D = null
+		var posed: Array[Node3D] = []
+		p.global_position = pos
+		p.velocity = Vector3.ZERO
+		p.rotation.y = deg_to_rad(yaw)
+		p.set("_pitch", deg_to_rad(pitch))
+		if kind == "zombie" and dir != null:
+			var at: Vector3 = _v3(cam.get("subject", [pos.x, pos.y, pos.z - 3.0]))
+			if map.squad != null:
+				map.squad.process_mode = Node.PROCESS_MODE_DISABLED   # the bots would shoot the model
+			var before: Array = dir.active_zombies()
+			var made: int = dir.spawn_burst([at], 1)
+			for z: Zombie in dir.active_zombies():
+				if not before.has(z):
+					subject = z
+			print("[capture] spawn_burst made %d (pool %d, active before %d) subject %s" % [made, dir.free_count(), before.size(), subject])
+			# let the rise play, then freeze it the moment it would start chasing (the chase's stuck / off-navmesh
+			# checks would otherwise recycle a posed zombie)
+			var t: float = 0.0
+			while subject != null and is_instance_valid(subject) and t < 4.0 and (subject as Zombie).state == Zombie.State.EMERGE:
+				await _secs(0.1)
+				t += 0.1
+			if subject != null and is_instance_valid(subject) and (subject as Zombie).is_active():
+				await _secs(float(cam.get("walk_s", 1.0)))   # a step or two out of the rise so it stands
+			if subject != null and is_instance_valid(subject):
+				var z: Zombie = subject as Zombie
+				print("[capture] zombie %s after %.1fs: state %d active %s at %s" % [z.name, t, z.state, z.is_active(), z.global_position])
+				if z.is_active():
+					z.set_physics_process(false)
+					z.global_position = at
+					z.look_at(Vector3(pos.x, at.y, pos.z), Vector3.UP, true)
+				else:
+					subject = null
+			if subject == null:
+				print("[capture] no zombie came up for %s" % cname)
+		elif kind == "squad":
+			if map.squad != null:
+				map.squad.process_mode = Node.PROCESS_MODE_DISABLED   # brains off while they pose
+			var spots: Array = cam.get("subjects", [])
+			var k: int = 0
+			for node: Node in get_tree().get_nodes_in_group(&"players"):
+				if node is Player and node != p and k < spots.size():
+					var b: Player = node as Player
+					var at: Vector3 = _v3(spots[k])
+					b.set_physics_process(false)
+					b.global_position = at
+					b.velocity = Vector3.ZERO
+					b.rotation.y = atan2(-(pos.x - at.x), -(pos.z - at.z))   # face the camera (forward is -Z)
+					posed.append(b)
+					k += 1
+			print("[capture] squad posed %d bots" % posed.size())
+		await _secs(float(cam.get("settle_s", 1.0 if i > 0 else 2.0)))
+		await _shot("%02d_%s" % [i, cname])
+		for b: Node3D in posed:
+			if is_instance_valid(b):
+				b.set_physics_process(true)
+		if kind == "squad" and map.squad != null:
+			map.squad.process_mode = Node.PROCESS_MODE_INHERIT
+		if kind == "zombie":
+			if subject != null and is_instance_valid(subject):
+				(subject as Zombie).set_physics_process(true)
+			if dir != null:
+				dir.kill_all(true)
+			if map.squad != null:
+				map.squad.process_mode = Node.PROCESS_MODE_INHERIT
+			await _secs(0.5)
+
+
+static func load_cams() -> Dictionary:
+	var f: FileAccess = FileAccess.open(CAMS_JSON, FileAccess.READ)
+	if f == null:
+		return {}
+	var d: Variant = JSON.parse_string(f.get_as_text())
+	return d if d is Dictionary else {}
+
+
+static func _v3(a: Variant) -> Vector3:
+	if a is Array and (a as Array).size() >= 3:
+		return Vector3(float(a[0]), float(a[1]), float(a[2]))
+	return Vector3.ZERO
 
 
 func _load(path: String) -> Node:

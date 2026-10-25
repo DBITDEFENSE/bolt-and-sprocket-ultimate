@@ -1,0 +1,346 @@
+{
+  "_doc": "Same-camera before/after capture (UPDATE_05 section 1, T-088). tools_src/capture.gd --set=<set> --label=<label> places the Player at pos (feet, metres; Map 0 frame +X east, +Z south, +Y up) with yaw (degrees, 0 = north / -Z, positive turns west) and pitch (degrees, negative looks down), lets the view settle and saves NN_<name>.png. kind: view (default) | zombie (one Ganger spawned at `subject`, frozen facing the camera) | squad (the three bots: the camera turns to their centroid) | viewmodel (plain view, the gun is the subject). Every pos is on the navmesh or a floor the player can stand on (test_capture_cams checks).",
+  "sets": {
+    "u05": {
+      "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+      "bots": 3,
+      "settle_s": 6.0,
+      "cams": [
+        {
+          "name": "taproom_spawn",
+          "pos": [
+            15.0,
+            0.0,
+            9.0
+          ],
+          "yaw": 0.0,
+          "pitch": -2.0,
+          "note": "the spawn view: bar, hearth, north windows"
+        },
+        {
+          "name": "taproom_bar",
+          "pos": [
+            20.0,
+            0.0,
+            13.0
+          ],
+          "yaw": 40.0,
+          "pitch": -6.0,
+          "note": "the bar and the hearth from the SE"
+        },
+        {
+          "name": "taproom_hearth",
+          "pos": [
+            12.0,
+            0.0,
+            5.2
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "the fireplace, antlers, the pot on the hearthstone"
+        },
+        {
+          "name": "taproom_window_n",
+          "pos": [
+            9.0,
+            0.0,
+            4.0
+          ],
+          "yaw": 20.0,
+          "pitch": -6.0,
+          "note": "the NW window barricade and the Kar98k wall"
+        },
+        {
+          "name": "taproom_tables",
+          "pos": [
+            10.0,
+            0.0,
+            13.5
+          ],
+          "yaw": 60.0,
+          "pitch": -4.0,
+          "note": "tables, the trestle, Door 1 into the stairwell"
+        },
+        {
+          "name": "stairs",
+          "pos": [
+            4.6,
+            0.0,
+            15.3
+          ],
+          "yaw": 35.0,
+          "pitch": 12.0,
+          "note": "up the flight from the vestibule"
+        },
+        {
+          "name": "upstairs_hall",
+          "pos": [
+            20.0,
+            3.8,
+            8.0
+          ],
+          "yaw": 90.0,
+          "pitch": -4.0,
+          "note": "west along the hall"
+        },
+        {
+          "name": "room1_cousins",
+          "pos": [
+            4.0,
+            3.8,
+            5.3
+          ],
+          "yaw": 0.0,
+          "pitch": -4.0,
+          "note": "the cousins' room: drawings, the dress, the MP40 wall"
+        },
+        {
+          "name": "room2_gentleman",
+          "pos": [
+            12.0,
+            3.8,
+            5.3
+          ],
+          "yaw": 0.0,
+          "pitch": -4.0,
+          "note": "Room 2: the trunk and the briefcase"
+        },
+        {
+          "name": "room3_josef",
+          "pos": [
+            20.0,
+            3.8,
+            5.3
+          ],
+          "yaw": 0.0,
+          "pitch": -4.0,
+          "note": "Room 3: the crate spot, the north window"
+        },
+        {
+          "name": "stable_floor",
+          "pos": [
+            20.0,
+            0.0,
+            23.5
+          ],
+          "yaw": 150.0,
+          "pitch": -8.0,
+          "note": "the stable from its north door toward the great doors"
+        },
+        {
+          "name": "stable_stair",
+          "pos": [
+            19.0,
+            0.1,
+            29.5
+          ],
+          "yaw": 281.0,
+          "pitch": 10.0,
+          "note": "the east-wall stair and the store under it"
+        },
+        {
+          "name": "hayloft_west",
+          "pos": [
+            7.5,
+            3.6,
+            25.5
+          ],
+          "yaw": 252.0,
+          "pitch": -4.0,
+          "note": "the loft's west block, bales, the tack beam"
+        },
+        {
+          "name": "hayloft_gallery",
+          "pos": [
+            24.3,
+            3.6,
+            32.5
+          ],
+          "yaw": 73.0,
+          "pitch": -5.0,
+          "note": "west along the gallery from the stair head"
+        },
+        {
+          "name": "hayloft_bay_down",
+          "pos": [
+            18.5,
+            3.6,
+            30.5
+          ],
+          "yaw": 339.0,
+          "pitch": -25.0,
+          "note": "down into the bay from the gallery rail"
+        },
+        {
+          "name": "cellar_vault",
+          "pos": [
+            26.0,
+            -3.2,
+            19.8
+          ],
+          "yaw": -150.0,
+          "pitch": -3.0,
+          "note": "the Helvetia vault from the stair mouth: both rows, the pillars, the loop"
+        },
+        {
+          "name": "old_cellar_wine",
+          "pos": [
+            1.5,
+            -3.2,
+            17.0
+          ],
+          "yaw": -60.0,
+          "pitch": 0.0,
+          "note": "the wine cellar: piers, casks, racks"
+        },
+        {
+          "name": "old_cellar_cage",
+          "pos": [
+            4.2,
+            -3.2,
+            6.8
+          ],
+          "yaw": 50.0,
+          "pitch": -5.0,
+          "note": "Jakub's cage in the coal room"
+        },
+        {
+          "name": "yard",
+          "pos": [
+            9.0,
+            0.1,
+            35.5
+          ],
+          "yaw": 150.0,
+          "pitch": 4.0,
+          "note": "the yard from Door 4: well, track, the cart"
+        },
+        {
+          "name": "yard_gate",
+          "pos": [
+            18.0,
+            0.1,
+            40.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "the carters' gate and the Thompson wall"
+        },
+        {
+          "name": "front_of_inn",
+          "pos": [
+            20.0,
+            0.0,
+            -15.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "the inn's front from the crossroads road"
+        },
+        {
+          "name": "wreck",
+          "pos": [
+            40.0,
+            0.0,
+            6.0
+          ],
+          "yaw": 10.0,
+          "pitch": 2.0,
+          "note": "GRAVELIGHT ONE from the crash field"
+        },
+        {
+          "name": "road_crossroads",
+          "pos": [
+            -4.0,
+            0.0,
+            -2.0
+          ],
+          "yaw": -45.0,
+          "pitch": 0.0,
+          "note": "the shrine, signpost and lamp at the crossroads"
+        },
+        {
+          "name": "field_edge",
+          "pos": [
+            10.0,
+            0.0,
+            -26.0
+          ],
+          "yaw": 0.0,
+          "pitch": 6.0,
+          "note": "the north edge: fence, spruces, the tree line"
+        },
+        {
+          "name": "carters_road",
+          "pos": [
+            2.0,
+            0.0,
+            56.0
+          ],
+          "yaw": -90.0,
+          "pitch": 0.0,
+          "note": "the carters' road south of the yard"
+        },
+        {
+          "name": "close_zombie",
+          "kind": "zombie",
+          "pos": [
+            12.0,
+            0.0,
+            24.2
+          ],
+          "yaw": 180.0,
+          "pitch": -4.0,
+          "subject": [
+            12.0,
+            0.0,
+            27.6
+          ],
+          "note": "one Ganger risen from the stable floor at 3.4 m, frozen facing the camera (the taproom's round-1 patrol would shoot it)",
+          "walk_s": 0.8
+        },
+        {
+          "name": "close_squad",
+          "kind": "squad",
+          "pos": [
+            15.0,
+            0.0,
+            3.2
+          ],
+          "yaw": 180.0,
+          "pitch": -3.0,
+          "subjects": [
+            [
+              13.3,
+              0.0,
+              8.4
+            ],
+            [
+              15.0,
+              0.0,
+              8.7
+            ],
+            [
+              16.7,
+              0.0,
+              8.4
+            ]
+          ],
+          "note": "the three bots posed in a row at 5.5 m, facing the camera, brains paused"
+        },
+        {
+          "name": "close_viewmodel",
+          "kind": "viewmodel",
+          "pos": [
+            18.5,
+            0.0,
+            6.0
+          ],
+          "yaw": 180.0,
+          "pitch": -14.0,
+          "note": "the M1911 viewmodel over a table"
+        }
+      ]
+    }
+  }
+}

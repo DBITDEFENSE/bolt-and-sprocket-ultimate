@@ -1,0 +1,10 @@
+Title: Vintage Oil Lamp
+Authors: Monsta3D
+Source: https://polyhaven.com/a/vintage_oil_lamp
+File: https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/vintage_oil_lamp/vintage_oil_lamp_1k.gltf; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_oil_lamp/vintage_oil_lamp_glass_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_oil_lamp/vintage_oil_lamp_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_oil_lamp/vintage_oil_lamp_flame_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_oil_lamp/vintage_oil_lamp_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/vintage_oil_lamp/vintage_oil_lamp.bin; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_oil_lamp/vintage_oil_lamp_glass_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_oil_lamp/vintage_oil_lamp_arm_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_oil_lamp/vintage_oil_lamp_glass_arm_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Vintage Oil Lamp" by Monsta3D (Poly Haven), CC0. Modified: glTF packed to GLB, textures converted to PNG and resized.
+Format: GLB (metres, +Y up) with external PNG textures at <= 512 px
+Poly Haven id: vintage_oil_lamp
+Downloaded: 2026-10-25 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: model.glb, textures/vintage_oil_lamp_glass_nor_gl.png, textures/vintage_oil_lamp_glass_diff.png, textures/vintage_oil_lamp_glass_arm.png, textures/vintage_oil_lamp_nor_gl.png, textures/vintage_oil_lamp_diff.png, textures/vintage_oil_lamp_arm.png, textures/vintage_oil_lamp_flame_diff.png, textures/vintage_oil_lamp_flame_diff.png

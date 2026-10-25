@@ -1,0 +1,12 @@
+Title: Ice 003
+Authors: ambientCG.com (Lennart Demes)
+Source: https://ambientcg.com/a/Ice003
+File: https://ambientcg.com/get?file=Ice003_1K-JPG.zip
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Ice 003" from ambientCG.com, CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 1k (albedo, normal OpenGL +Y, ORM at 1k)
+Tile size: see the asset page
+ambientCG id: Ice003
+Library key: ice
+Downloaded: 2026-10-25 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: textures/Ice003_albedo.png, textures/Ice003_normal.png, textures/Ice003_orm.png

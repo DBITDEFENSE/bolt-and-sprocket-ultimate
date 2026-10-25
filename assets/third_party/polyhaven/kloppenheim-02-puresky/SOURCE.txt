@@ -1,0 +1,10 @@
+Title: Kloppenheim 02 (Pure Sky)
+Authors: Greg Zaal (Original), Jarod Guest (Sky edits)
+Source: https://polyhaven.com/a/kloppenheim_02_puresky
+File: https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/kloppenheim_02_puresky_2k.hdr
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Kloppenheim 02 (Pure Sky)" by Greg Zaal (Original), Jarod Guest (Sky edits) (Poly Haven), CC0.
+Format: Radiance HDR equirectangular panorama at 2k (skybox / lighting reference)
+Poly Haven id: kloppenheim_02_puresky
+Downloaded: 2026-10-25 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: kloppenheim_02_puresky_2k.hdr

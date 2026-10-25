@@ -1,0 +1,10 @@
+Title: Kenney Survival Kit
+Authors: Kenney (kenney.nl)
+Source: https://kenney.nl/assets/survival-kit
+File: https://kenney.nl/media/pages/assets/survival-kit/4065a8185b-1712149243/kenney_survival-kit.zip
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: Assets from "Survival Kit" by Kenney (kenney.nl), CC0.
+Format: GLB (embedded palette texture), low-poly
+Pack members: Models/GLB format/resource-wood.glb, Models/GLB format/tree-log.glb
+Downloaded: 2026-10-25 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: firewood.glb, log.glb, Textures/colormap.png
