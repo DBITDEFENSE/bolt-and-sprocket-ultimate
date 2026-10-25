@@ -482,13 +482,13 @@ const OUT_DEAD_TREES: Array = [
 ## Drawn by _dress_grounds.
 const OUT_SOLIDS: Array = [
 	["Woodshed", Vector3(-4.5, 0, 58.5), Vector3(5.0, 2.6, 3.5), 0.0],
-	["HayRick", Vector3(13.0, 0, -22.0), Vector3(3.4, 2.8, 3.4), 0.0],
+	["HayRick", Vector3(22.0, 0, -23.5), Vector3(3.4, 2.8, 3.4), 0.0],
 	["Shrine", Vector3(-15.4, 0, -11.4), Vector3(0.5, 2.4, 0.5), 0.0],
 	["HayWagon", Vector3(-15.6, 0, 22.0), Vector3(1.9, 1.1, 3.0), 8.0],
 	["RoadCart", Vector3(-17.0, 0, -3.0), Vector3(1.9, 1.1, 3.0), 20.0],
 	["SandbagsW", Vector3(32.25, 0, -22.0), Vector3(4.5, 0.9, 0.7), 0.0],
 	["SandbagsN", Vector3(34.5, 0, -20.25), Vector3(0.7, 0.9, 3.5), 0.0],
-	["Engine", Vector3(28.6, 0, -3.4), Vector3(1.3, 1.2, 2.4), 30.0],
+	["Engine", Vector3(34.5, 0, -13.2), Vector3(1.3, 1.2, 2.4), 30.0],
 	["WingPanel", Vector3(56.0, 0, 25.0), Vector3(5.0, 1.4, 0.45), 70.0],
 	["BurntCar", Vector3(49.0, 0, -14.5), Vector3(1.8, 1.5, 4.2), 100.0],
 	["Drums", Vector3(47.0, 0, 44.0), Vector3(1.4, 0.95, 1.4), 0.0],
@@ -620,7 +620,8 @@ const CRATES: Array = [["Hearth", Vector3(22.9, 0, 14.0), 90.0, true], ["GuestBe
 ## against the back shelf at the alcove's dead end (clear of Alix's trapdoor at 6.6, 5.6 and the alcove's mouth at
 ## the north end), and on the stable's west wall under the hayloft between the trench-gun chalk and the yard door.
 const AMMO_BOXES: Array = [["Taproom", Vector3(5.34, 0, 7.3), -90.0], ["Stable", Vector3(6.48, 0, 32.0), -90.0],
-	["Cellar", Vector3(14.6, -3.2, 15.5), 0.0]]   # the Old Cellar's barrel vault, south wall (T-051)
+	["Cellar", Vector3(14.6, -3.2, 15.5), 0.0],   # the Old Cellar's barrel vault, south wall (T-051)
+	["Grounds", Vector3(38.4, 0, 26.0), 20.0]]   # T-080: the supply drop under the parachute's tree, facing the Wreck Loop
 ## The Armorer's Bench (UPDATE_04 section 6, T-068): [floor position against the wall, yaw so local -Z faces the room].
 ## The inn has no walled tack room: the bench stands in the stable's tack corner on the west wall, under the tack rail
 ## and saddle blanket (raised above its pegboard), between the hay-stair end and the trench-gun chalk.
@@ -1924,10 +1925,10 @@ func _dress_grounds() -> void:
 			Props.cyl(sh, Vector3(2.75, 0.17 + row * 0.3, -1.2 + k * 0.6), 0.15, 0.9, "pine" if (row + k) % 2 == 0 else "beam", Vector3(0, 0, 90))
 	Props.wall_lamp(sh, Vector3(1.5, 2.05, -1.75), 0.0)
 	# the hay rick in the north field: a round stack, its thatched cap, snow on top
-	Props.cyl(g, Vector3(13.0, 1.0, -22.0), 1.7, 2.0, "hay")
-	Props.cone(g, Vector3(13.0, 2.55, -22.0), 1.85, 1.1, "hay")
-	Props._noshadow(Props.ball(g, Vector3(13.0, 2.75, -22.0), Vector3(2.4, 0.7, 2.4), "snow"))
-	Props.cyl(g, Vector3(13.0, 3.3, -22.0), 0.05, 1.0, "beam")
+	Props.cyl(g, Vector3(22.0, 1.0, -23.5), 1.7, 2.0, "hay")
+	Props.cone(g, Vector3(22.0, 2.55, -23.5), 1.85, 1.1, "hay")
+	Props._noshadow(Props.ball(g, Vector3(22.0, 2.75, -23.5), Vector3(2.4, 0.7, 2.4), "snow"))
+	Props.cyl(g, Vector3(22.0, 3.3, -23.5), 0.05, 1.0, "beam")
 	# the wayside shrine at the crossroads: a crucifix under a little roof on a post, a wreath, snow on the roof
 	var wr: Node3D = Props.group(g, "Shrine", Vector3(-15.4, 0, -11.4), 35.0)
 	Props.block(wr, Vector3(-0.1, 0, -0.1), Vector3(0.1, 2.0, 0.1), "beam")
@@ -1949,12 +1950,12 @@ func _dress_grounds() -> void:
 		Props.block(g, ap + Vector3(-0.14, 0, -0.08), ap + Vector3(0.14, 0.18, 0.08), "olive_steel")
 	Props._noshadow(Props.ball(g, Vector3(32.2, 0.85, -22.0), Vector3(4.0, 0.25, 0.8), "snow"))
 	# GRAVELIGHT ONE's torn-off engine and a wing panel thrown clear, a burnt-out car on the east road's verge
-	var en: Node3D = Props.group(g, "Engine", Vector3(28.6, 0, -3.4), 30.0)
+	var en: Node3D = Props.group(g, "Engine", Vector3(34.5, 0, -13.2), 30.0)
 	Props.cyl(en, Vector3(0, 0.6, 0), 0.6, 2.2, "wreck", Vector3(90, 0, 0))
 	Props.cyl(en, Vector3(0, 0.6, -1.15), 0.5, 0.15, "char", Vector3(90, 0, 0))
 	Props.obox(en, Vector3(0.3, 0.9, -1.3), Vector3(0.18, 1.4, 0.06), "iron", Vector3(0, 0, 35))
 	Props.obox(en, Vector3(-0.3, 0.25, -1.3), Vector3(0.18, 1.0, 0.06), "iron", Vector3(0, 0, 70))
-	Props._noshadow(Props.cyl(g, Vector3(28.6, 0.01, -3.4), 2.2, 0.02, "char"))
+	Props._noshadow(Props.cyl(g, Vector3(34.5, 0.01, -13.2), 2.2, 0.02, "char"))
 	Props.smoke(en, Vector3(0, 1.3, 0.2), 0.3, 1.2, 8)
 	var wp: Node3D = Props.group(g, "WingPanel", Vector3(56.0, 0, 25.0), 70.0)
 	Props.obox(wp, Vector3(0, 0.7, 0), Vector3(5.0, 1.4, 0.2), "wreck", Vector3(8, 0, 4))
