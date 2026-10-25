@@ -1,0 +1,10 @@
+Title: Barrel 03
+Authors: Serhii Khromov
+Source: https://polyhaven.com/a/barrel_03
+File: https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/barrel_03/barrel_03_1k.gltf; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/barrel_03/barrel_03_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/barrel_03/barrel_03.bin; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/barrel_03/barrel_03_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/barrel_03/barrel_03_arm_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Barrel 03" by Serhii Khromov (Poly Haven), CC0. Modified: glTF packed to GLB, textures converted to PNG and resized.
+Format: GLB (metres, +Y up) with external PNG textures at <= 1024 px
+Poly Haven id: barrel_03
+Downloaded: 2026-10-25 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: model.glb, textures/barrel_03_nor_gl.png, textures/barrel_03_diff.png, textures/barrel_03_arm.png
