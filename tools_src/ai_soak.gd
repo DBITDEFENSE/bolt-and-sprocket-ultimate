@@ -96,6 +96,7 @@ var _pb_rounds: Dictionary = {}   # round -> [downs, hits] of the agent
 ## T-078: Scrip earned (positive deltas, every source) by player 1 so far, and the running total at each round's end.
 var _earned: int = 0
 var _earned_by_round: Dictionary = {}   # round -> cumulative Scrip earned by P1 when it ended
+var _bonus_by_kind: Dictionary = {}   # T-078: P1's bonus Scrip by kind (round_pay, untouched, salvage...)
 var _ee_committed_t: float = -1.0
 var _ee_events: PackedStringArray = []
 const SOAK_ORDERS: Array[StringName] = [&"hold", &"follow", &"train", &"repair", &"revive", &"buy_perks"]
@@ -223,6 +224,9 @@ func _ready() -> void:
 	GLBus.round_ended.connect(func(r: int) -> void:
 		if _live:
 			_earned_by_round[r] = _earned)
+	GLBus.bonus_awarded.connect(func(pid: int, kind: StringName, amount: int, _l: String) -> void:
+		if _live and pid == 1:
+			_bonus_by_kind[String(kind)] = int(_bonus_by_kind.get(String(kind), 0)) + amount)
 	GLBus.power_activated.connect(func() -> void:
 		if _metrics != null and not _metrics.extra.has("power_round"):
 			_metrics.extra["power_round"] = RoundManager.current_round)
@@ -328,6 +332,7 @@ func _try_go_live() -> void:
 		return
 	_earned = Economy.get_scrip(1)   # the starting Scrip counts as earned
 	_earned_by_round = {}
+	_bonus_by_kind = {}
 	_live = true
 	_last_us = 0
 	_metrics = BotMetrics.new()
@@ -507,6 +512,8 @@ func _end_run(why: String) -> void:
 	for er: int in [3, 5, 8]:   # T-078: Scrip earned by P1 by the end of rounds 3 / 5 / 8 (-1: not reached)
 		_metrics.extra["earned_r%d" % er] = int(_earned_by_round.get(er, -1))
 	print("[soak]   P1 Scrip earned by round end: %s (total %d)" % [str(_earned_by_round), _earned])
+	print("[soak]   P1 bonus Scrip by kind: %s" % str(_bonus_by_kind))
+	_metrics.extra["bonus_by_kind"] = str(_bonus_by_kind).replace(",", ";")
 	if scenario == "botmode" and _pb != null and is_instance_valid(_pb):
 		var ts: Dictionary = _pb.trainer.summary() if _pb.trainer != null else _pb.last_summary
 		for k: Variant in ts.keys():

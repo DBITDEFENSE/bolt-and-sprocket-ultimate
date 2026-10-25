@@ -101,13 +101,14 @@ func test_pay_grants_without_double_scrip_and_toasts() -> void:
 
 
 func test_headshot_streak_through_kill_events() -> void:
+	var every: int = int(cfg["headshot_streak"]["every"])
 	var before: int = Economy.get_scrip(PID)
-	for i: int in 4:
+	for i: int in every - 1:
 		GLBus.enemy_killed.emit(&"ganger", &"head", &"m1_garand", PID)
 	GLBus.enemy_killed.emit(&"ganger", &"torso", &"m1_garand", PID)   # breaks it
-	for i: int in 5:
+	for i: int in every:
 		GLBus.enemy_killed.emit(&"ganger", &"head", &"m1_garand", PID)
-	assert_eq(Economy.get_scrip(PID) - before, int(cfg["headshot_streak"]["base"]), "one streak of five paid, the broken one not")
+	assert_eq(Economy.get_scrip(PID) - before, int(cfg["headshot_streak"]["base"]), "one full streak paid, the broken one not")
 
 
 func test_down_resets_the_streak() -> void:

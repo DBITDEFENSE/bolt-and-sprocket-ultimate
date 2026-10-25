@@ -142,9 +142,16 @@ func _run() -> void:
 		RoundManager.stop()   # a quiet map: only the bottle to go for
 		_dir.kill_all(true)
 		await _secs(1.0)
-		var fwd: Vector3 = -_p.global_basis.z
-		fwd.y = 0.0
-		var at: Vector3 = NavigationServer3D.map_get_closest_point(_p.get_world_3d().navigation_map, _p.global_position + fwd.normalized() * 5.0)
+		var nav: RID = _p.get_world_3d().navigation_map
+		var at: Vector3 = _p.global_position
+		for k: int in 16:   # a reachable spot 4-8 m away, so the agent has to walk to it
+			var dir: Vector3 = Vector3.FORWARD.rotated(Vector3.UP, TAU * float(k) / 16.0)
+			var q: Vector3 = NavigationServer3D.map_get_closest_point(nav, _p.global_position + dir * 6.0)
+			var d: float = Vector2(q.x - _p.global_position.x, q.z - _p.global_position.z).length()
+			if d > 4.0 and d < 8.0 and absf(q.y - _p.global_position.y) < 1.0:
+				at = q
+				break
+		_check(at.distance_to(_p.global_position) > 4.0, "a bottle dropped %.1f m from the agent" % at.distance_to(_p.global_position))
 		var n_before: int = _collected.size()
 		PowerupManager.spawn(&"tonic_bottle", at, 60.0, 50.0)
 		t = 0.0
