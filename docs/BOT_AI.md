@@ -22,7 +22,7 @@ Code: `gravelight/bots/`. Tuning: `data/gravelight/bots.json`. The pure rules ar
 
 1. **REVIVE.** `BotSquad.revive_target_for(self)` names a downed teammate. The bot goes unless it is swarmed (a
    zombie within 3 m **and** either hurt below 40% or 3+ zombies within 6 m), but goes anyway when the target has
-   15 s or less of bleed-out left. On arrival it holds for `revive_seconds` (4 s, or 2 s with Second Wind) by
+   15 s or less of bleed-out left. On arrival it holds for `revive_seconds` (4 s, or about 1.7 s with Second Wind) by
    calling `coop.set_reviver` directly. It stops to shoot while a zombie is within 3 m and more than 15 s of bleed-out remain.
 2. **FLEE.** A zombie within 3 m and (hurt, crowded, or the gun is dry). The bot kites to an open navmesh point 4–6.5 m
    away, picked from 12 directions, away from the zombies' centroid and toward the leader, and shoots on the move. It keeps

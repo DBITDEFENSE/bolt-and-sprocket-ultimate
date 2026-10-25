@@ -108,7 +108,7 @@ func test_bonus_perk_is_kept_on_a_down() -> void:
 	PerkManager.grant(PID, &"second_wind")
 	PerkManager.on_player_downed(PID)
 	assert_eq(PerkManager.owned(PID), [&"marathon_malt"], "the kit perks go, the bonus stays")
-	assert_eq(PerkManager.stat(PID, "move_speed_mult", 1.0), 1.07)
+	assert_eq(PerkManager.stat(PID, "move_speed_mult", 1.0), 1.1)
 
 
 func test_no_bonus_for_humans_and_reset() -> void:

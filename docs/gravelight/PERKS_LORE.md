@@ -42,12 +42,30 @@ documents; the truth reaches the player only sideways (a "V." note, a stencil, a
 - **Carry.** Tiers carry with their perks through the campaign exfil (`Campaign` carry `"perk_tiers"`) and are in the
   co-op state snapshot. **Co-op gate:** the host's profile decides what is unlocked for the whole squad (the snapshot
   sends it to the clients so their prompts agree).
-- **HUD:** the bottle cap gets a tier mark (II / III in Roman numerals on a brass band under the abbreviation, and the
-  crimp turns gold at III), and the cap pops whenever one of its tier effects fires.
+- **HUD:** the bottle cap gets a tier mark (II / III in Roman numerals on a brass band under the tonic's glyph, and
+  the crimp turns gold at III), and the cap pops whenever one of its tier effects fires.
 - **Bots** buy tiers too (`data/gravelight/ai/economy.json` `"perk_upgrades"`): only once their perk plan has nothing
   left to buy (cap full, or everything on the plan drunk), from round 10, in their plan's order, never dipping under
   the usual reserve (one revive-critical rebuy plus an ammo box), and not while a gun upgrade at the Crucible would be
   the better buy. They are gated by the host's profile like everybody else.
+
+### 1.1a The base measures (T-082)
+
+The user's call after Update 03 ("the perks in general need just a slight buff"): every tonic's first pour is about
+**10–15% stronger** than it was, and tiers II / III moved with it so the ladder keeps its proportions. The pause menu's
+LOADOUT tab lists all nine with these one-line descriptions (`perks.json "desc"`), held or not.
+
+| Tonic | Base measure now | Was |
+|---|---|---|
+| **Ironhide Stout** | **275 health**: a zombie's swipe is 50, so you stand **six hits** (the sixth downs you) | 250 (five hits) |
+| **Second Wind Schnapps** | revives **×2.3**; three solo self-revives | ×2.0 |
+| **Trigger Tonic** | reload **×0.45** | ×0.5 |
+| **Twin Barrel Bitters** | fire rate **×1.5** | ×1.33 |
+| **Marathon Malt** | unlimited sprint; move **×1.10** | ×1.07 |
+| **Hawkeye Brandy** | sway ×0.45, sights up in ×0.7 of the time, headshots **×1.4** | 0.5 / 0.75 / 1.25 |
+| **Packmule Porter** | a third gun **and one more grenade** carried (the slot was the perk; the grenade is the buff) | 3 slots only |
+| **Blastproof Bock** | self-explosive and fall immunity; slide shockwave **450** in **3.3 m** | 400 in 3.0 m |
+| **Overclock Cordial** | burst radius **2.5 + 4.0 e** m (6.5 m empty), damage **0.66 × health(r) × e**, bosses **1700 e**, **12** targets | 3.5 e / 0.6 / 1500 / 10 |
 
 ### 1.2 The tier table
 
@@ -56,14 +74,14 @@ Costs are the same solo and co-op.
 
 | Tonic | Tier II (cost) | Tier III (cost) |
 |---|---|---|
-| **Ironhide Stout** | **Riveted Hoops** (3500): 300 health (six hits, not five); health regeneration starts 40% sooner. | **Sunday Best** (7000): a hit that leaves you under 30% health turns your skin to iron for **2 s** (no damage at all); once per 40 s. |
-| **Second Wind Schnapps** | **Breathe Again** (2500): revives ×2.5 (was ×2); whoever you get up, or you after a solo self-revive, runs **30% faster for 5 s**. | **The Nurse's Count** (5000): the revived are untouchable for **3 s**, and getting up knocks every zombie within **4 m** off its feet. |
-| **Trigger Tonic** | **Shift Quota** (4000): weapon swaps **40% faster**; reload ×0.45 (was ×0.5). | **Fresh Clip** (7500): for **2 s** after a reload completes, your shots deal **+30%** damage. |
-| **Twin Barrel Bitters** | **The Major's Moustache** (3000): fire rate ×1.4 (was ×1.33); recoil **−30%**. | **Both Barrels** (6500): **one shot in four costs no round** (not wonder weapons). |
-| **Marathon Malt** | **Running Home** (3000): move ×1.10; the gun comes up out of a sprint in **35%** of the time. | **Vreni's Step** (6000): sprinting, you **sidestep one swipe every 8 s** (no damage) and get a 1.5 s burst of +15% speed. |
+| **Ironhide Stout** | **Riveted Hoops** (3500): 330 health (seven hits, not six); health regeneration starts 40% sooner. | **Sunday Best** (7000): a hit that leaves you under 30% health turns your skin to iron for **2 s** (no damage at all); once per 40 s. |
+| **Second Wind Schnapps** | **Breathe Again** (2500): revives ×2.9 (was ×2.3); whoever you get up, or you after a solo self-revive, runs **30% faster for 5 s**. | **The Nurse's Count** (5000): the revived are untouchable for **3 s**, and getting up knocks every zombie within **4 m** off its feet. |
+| **Trigger Tonic** | **Shift Quota** (4000): weapon swaps **40% faster**; reload ×0.4 (was ×0.45). | **Fresh Clip** (7500): for **2 s** after a reload completes, your shots deal **+30%** damage. |
+| **Twin Barrel Bitters** | **The Major's Moustache** (3000): fire rate ×1.6 (was ×1.5); recoil **−30%**. | **Both Barrels** (6500): **one shot in four costs no round** (not wonder weapons). |
+| **Marathon Malt** | **Running Home** (3000): move ×1.13; the gun comes up out of a sprint in **35%** of the time. | **Vreni's Step** (6000): sprinting, you **sidestep one swipe every 8 s** (no damage) and get a 1.5 s burst of +15% speed. |
 | **Hawkeye Brandy** | **The Owl** (3000): a **headshot kill puts a round back** in the magazine. | **Sowa's Patience** (6500): an **aimed shot taken 1.2 s or more after your last** hits **×1.75**. |
-| **Packmule Porter** | **Ammer's Ledger** (4500): **half price** ammo at the chalk and at ammo boxes; **+1 grenade** carried. | **Training Load** (8500): at the start of every round, every gun you carry gets **20% of its reserve** back, plus a grenade. |
-| **Blastproof Bock** | **Liability Waiver** (3000): **explosions that reach you heal you 25**; the slide shockwave hits for 600 (was 400). | **Demolition School** (6500): the slide shockwave **scales with the round** (at least 60% of a zombie's health that round), reaches 3.5 m and **knocks survivors down**. |
+| **Packmule Porter** | **Ammer's Ledger** (4500): **half price** ammo at the chalk and at ammo boxes; **a second extra grenade** carried. | **Training Load** (8500): at the start of every round, every gun you carry gets **20% of its reserve** back, plus a grenade. |
+| **Blastproof Bock** | **Liability Waiver** (3000): **explosions that reach you heal you 25**; the slide shockwave hits for 675 (was 450). | **Demolition School** (6500): the slide shockwave **scales with the round** (at least 60% of a zombie's health that round), reaches 3.8 m and **knocks survivors down**. |
 | **Overclock Cordial** | **Live Wire** (3500): burst cooldown **2 s** (was 3); **arcs jump to 3 more zombies** out to twice the radius, at half damage. | **Aftershock** (7000): a burst from a magazine **75%+ empty rings again 0.8 s later** at half strength. |
 | **Fine Print Fernet** *(not in the game yet: Helvetia Works)* | **Second Reading** (2500): the despawn rings and the egg glint reach twice as far (80 m / 50 m). | **Read It Through** (5500): the holder's timed power-ups last 60 s, not 45. Added to `perks.json` when the Fernet cabinet ships. |
 
@@ -82,6 +100,23 @@ Costs are the same solo and co-op.
   roughly +33% sustained damage per magazine on top of Twin Barrel's rate, deliberately weaker than a Crucible teaching.
 - **Co-op:** revive tiers (Second Wind) matter most with a squad; Breathe Again is priced to be the first upgrade a
   co-op player buys. Bots buy tiers only after their perk plan is done, so they never starve themselves of a base perk.
+
+### 1.3a The caps (T-082)
+
+Every place a tonic shows as a bottle cap (the HUD row, a bot's nameplate, the co-op squad ledger, the pause LOADOUT
+list) draws it with `PerkCap.draw_cap` (`gravelight/ui/perk_cap.gd`): a crimped cap in the tonic's enamel colour with
+a bevelled face, and on it the tonic's **glyph**, embossed (a shadow pass under cream on dark enamel, ink on light).
+The glyphs are drawn, not painted, from convex pieces, so they read at 18 px on a plate and 54 px on the HUD, and
+they follow the cabinets' art bible (`docs/gravelight/JINGLES.md`, the **Bottle cap** line of each tonic): **Ironhide**
+Fassl's flexed arm inside a riveted ring; **Second Wind** a swallow with a thin red rim; **Trigger Tonic** Pauli's hare,
+head in profile, motion lines behind; **Twin Barrel** two crossed barrels over the Major's moustache; **Marathon** a
+winged boot with a chrome rim; **Hawkeye** a hawk's eye in a crosshair with ticks (the owl stays on the cabinet);
+**Packmule** Ammer's mule with three rifle lines fanning behind it; **Blastproof** a ram's head over a black starburst;
+**Overclock** the friend's robot, a copper lightning bolt and two round eyes, over a cog. One liberty against the
+bible for readability: the silhouette is ink on the pale enamels (Second Wind, Trigger, Twin Barrel, Marathon) and
+cream on the dark ones, whichever the bible said. The tier band (II / III) sits under the glyph; a tonic the player
+does not hold is drawn greyed. A future cabinet (Fine Print Fernet) without a glyph case falls back to its two letters
+until one is drawn.
 
 ### 1.4 Why a cabinet can pour a stronger measure (in-world)
 

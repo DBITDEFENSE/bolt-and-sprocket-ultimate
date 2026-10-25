@@ -1,15 +1,16 @@
 {
- "_doc": "Perk tonics. Effects are applied by autoload/perk_manager.gd via effect keys.",
+ "_doc": "Perk tonics. Effects are applied by autoload/perk_manager.gd via effect keys. T-082: every tonic has a one-line 'desc' (the pause menu's perk list, PauseMenu.perk_desc) and its cap glyph is drawn by ui/perk_cap.gd ('abbr' is only the fallback for a tonic without a glyph case). Base measures raised ~10-15% in T-082 (PERKS_LORE.md section 1.0).",
  "cap": 6,
  "classic_cap": 4,
  "_cap_doc": "T-081: a survivor holds up to `cap` tonics (PerkManager.base_cap / cap_for); Classic Rules (Settings) keeps the genre's old four (`classic_cap`). Read once per match (the host's value in co-op). Extra slots on top: the Map 1 egg's permanent slot (cap_for). A bot's bonus perk and the tonic tiers take no slot.",
  "perks": {
   "ironhide_stout": {
    "name": "Ironhide Stout",
+   "desc": "Thicker skin: you stand a sixth hit that would have dropped anyone else.",
    "cost": 2500,
    "needs_power": true,
    "effects": {
-    "max_health": 250
+    "max_health": 275
    },
    "color": "#9e2a1e",
    "abbr": "IH",
@@ -19,9 +20,9 @@
     "2": {
      "name": "Riveted Hoops",
      "cost": 3500,
-     "desc": "Six hits instead of five, and your health starts coming back 40% sooner.",
+     "desc": "Seven hits instead of six, and your health starts coming back 40% sooner.",
      "effects": {
-      "max_health": 300,
+      "max_health": 330,
       "regen_delay_mult": 0.6
      }
     },
@@ -39,12 +40,13 @@
   },
   "second_wind": {
    "name": "Second Wind Schnapps",
+   "desc": "You get the fallen up in a fraction of the time; alone, it stands you back up itself, three times a match.",
    "cost": 500,
    "cost_coop": 1500,
    "needs_power": true,
    "solo_no_power": true,
    "effects": {
-    "revive_speed_mult": 2.0,
+    "revive_speed_mult": 2.3,
     "solo_self_revives": 3
    },
    "color": "#9cc3e0",
@@ -57,7 +59,7 @@
      "cost": 2500,
      "desc": "Revives go 25% faster again, and whoever you get up (you too, after a self-revive) runs 30% faster for 5 s.",
      "effects": {
-      "revive_speed_mult": 2.5,
+      "revive_speed_mult": 2.9,
       "revive_boost_mult": 1.3,
       "revive_boost_seconds": 5.0
      }
@@ -75,10 +77,11 @@
   },
   "trigger_tonic": {
    "name": "Trigger Tonic",
+   "desc": "Every reload done in well under half the time, on every gun you carry.",
    "cost": 3000,
    "needs_power": true,
    "effects": {
-    "reload_time_mult": 0.5
+    "reload_time_mult": 0.45
    },
    "color": "#b8c41e",
    "abbr": "TT",
@@ -90,7 +93,7 @@
      "cost": 4000,
      "desc": "Swap weapons 40% faster, and reloads shave off a little more.",
      "effects": {
-      "reload_time_mult": 0.45,
+      "reload_time_mult": 0.4,
       "swap_time_mult": 0.6
      }
     },
@@ -107,10 +110,11 @@
   },
   "twin_barrel": {
    "name": "Twin Barrel Bitters",
+   "desc": "Every gun fires half as fast again, from the pistol to the machine gun.",
    "cost": 2000,
    "needs_power": true,
    "effects": {
-    "fire_rate_mult": 1.33
+    "fire_rate_mult": 1.5
    },
    "color": "#d18a1f",
    "abbr": "TB",
@@ -122,7 +126,7 @@
      "cost": 3000,
      "desc": "A touch faster again, and the gun climbs 30% less as you fire.",
      "effects": {
-      "fire_rate_mult": 1.4,
+      "fire_rate_mult": 1.6,
       "recoil_mult": 0.7
      }
     },
@@ -138,11 +142,12 @@
   },
   "marathon_malt": {
    "name": "Marathon Malt",
+   "desc": "Sprint as long as you like, and move a step quicker everywhere.",
    "cost": 2000,
    "needs_power": true,
    "effects": {
     "unlimited_sprint": true,
-    "move_speed_mult": 1.07
+    "move_speed_mult": 1.1
    },
    "color": "#8fc4f0",
    "abbr": "MM",
@@ -154,7 +159,7 @@
      "cost": 3000,
      "desc": "Faster on your feet, and the gun comes up out of a sprint almost at once.",
      "effects": {
-      "move_speed_mult": 1.1,
+      "move_speed_mult": 1.13,
       "sprint_out_mult": 0.35
      }
     },
@@ -172,12 +177,13 @@
   },
   "hawkeye_brandy": {
    "name": "Hawkeye Brandy",
+   "desc": "Steadier sights that come up quicker, and a headshot hits a good deal harder.",
    "cost": 1500,
    "needs_power": true,
    "effects": {
-    "sway_mult": 0.5,
-    "ads_time_mult": 0.75,
-    "head_damage_mult": 1.25
+    "sway_mult": 0.45,
+    "ads_time_mult": 0.7,
+    "head_damage_mult": 1.4
    },
    "color": "#22553a",
    "abbr": "HB",
@@ -205,10 +211,12 @@
   },
   "packmule_porter": {
    "name": "Packmule Porter",
+   "desc": "Room for a third gun on your back, and one more grenade on your belt.",
    "cost": 4000,
    "needs_power": true,
    "effects": {
-    "weapon_slots": 3
+    "weapon_slots": 3,
+    "grenade_bonus": 1
    },
    "color": "#6b5a2e",
    "abbr": "PP",
@@ -218,10 +226,10 @@
     "2": {
      "name": "Ammer's Ledger",
      "cost": 4500,
-     "desc": "Ammo at the chalk and at ammo boxes costs half, and you carry one more grenade.",
+     "desc": "Ammo at the chalk and at ammo boxes costs half, and you carry another grenade.",
      "effects": {
       "ammo_price_mult": 0.5,
-      "grenade_bonus": 1
+      "grenade_bonus": 2
      }
     },
     "3": {
@@ -237,13 +245,14 @@
   },
   "blastproof_bock": {
    "name": "Blastproof Bock",
+   "desc": "Your own explosives and a long fall can't hurt you, and a slide sends a shockwave through the pack.",
    "cost": 2000,
    "needs_power": true,
    "effects": {
     "self_explosive_immune": true,
     "fall_damage_immune": true,
-    "slide_shockwave_damage": 400,
-    "slide_shockwave_radius": 3.0
+    "slide_shockwave_damage": 450,
+    "slide_shockwave_radius": 3.3
    },
    "color": "#e0661a",
    "abbr": "BB",
@@ -256,7 +265,7 @@
      "desc": "Explosions that reach you heal you 25 instead, and the slide shockwave hits harder.",
      "effects": {
       "blast_heal": 25,
-      "slide_shockwave_damage": 600
+      "slide_shockwave_damage": 675
      }
     },
     "3": {
@@ -266,13 +275,14 @@
      "effects": {
       "slide_shockwave_round_mult": 0.6,
       "slide_shockwave_stagger": true,
-      "slide_shockwave_radius": 3.5
+      "slide_shockwave_radius": 3.8
      }
     }
    }
   },
   "overclock_cordial": {
    "name": "Overclock Cordial",
+   "desc": "Reloading an emptier magazine lets off a static burst that shocks everything near you.",
    "cost": 2500,
    "needs_power": true,
    "effects": {
@@ -281,10 +291,10 @@
     "overclock_delay": 0.15,
     "overclock_cooldown": 3.0,
     "overclock_radius_base": 2.5,
-    "overclock_radius_per_spent": 3.5,
-    "overclock_damage_health_mult": 0.6,
-    "overclock_boss_damage": 1500,
-    "overclock_max_targets": 10,
+    "overclock_radius_per_spent": 4.0,
+    "overclock_damage_health_mult": 0.66,
+    "overclock_boss_damage": 1700,
+    "overclock_max_targets": 12,
     "overclock_stagger_spent": 0.75,
     "overclock_repossessor_mult": 2.0
    },
@@ -292,7 +302,7 @@
    "abbr": "OC",
    "shape": "coil",
    "sign": "OVERCLOCK",
-   "_doc": "WEAPONS.md section 20.2: reloading releases a static burst scaling with how empty the mag was (e = 1 - mag/mag_size). Wired by PerkManager.overclock_reload (called from WeaponHolder.start_reload and on an overheat vent). Shape 'coil' shares the cabinet footprint 0.8 x 2.3 x 0.6 (Map 0 placement). 'neon' is the sign/spark colour (violet) over the teal enamel 'color'.",
+   "_doc": "WEAPONS.md section 20.2: reloading releases a static burst scaling with how empty the mag was (e = 1 - mag/mag_size). Wired by PerkManager.overclock_reload (called from WeaponHolder.start_reload and on an overheat vent). Shape 'coil' shares the cabinet footprint 0.8 x 2.3 x 0.6 (Map 0 placement). 'neon' is the sign/spark colour (violet) over the teal enamel 'color' (and the bolt on its cap). T-082: radius 2.5 + 4.0 e (was 3.5 e), damage 0.66 x health(r) x e (was 0.6), bosses 1700 e (was 1500), 12 targets (was 10).",
    "neon": "#c07dff",
    "tiers": {
     "2": {

@@ -449,10 +449,9 @@ func _refresh_loadout() -> void:
 		_loadout.add_child(MenuKit.label("KIT", 20, MenuKit.VIOLET, true))
 		_loadout.add_child(MenuKit.label("   Melee: %s   ·   Lethal: %s × %d   ·   Tactical: %s" % [melee, lname, h.grenades, tac], 18))
 	_loadout.add_child(MenuKit.label("PERKS  (%d / %d slots)" % [PerkManager.capped_count(me), PerkManager.cap_for(me)], 20, MenuKit.VIOLET, true))
-	if PerkManager.owned(me).is_empty():
-		_loadout.add_child(MenuKit.para("   none yet", 18))
-	for pk: Variant in PerkManager.owned(me):
-		_loadout.add_child(MenuKit.label("   " + perk_line(me, StringName(str(pk))), 18))
+	var md: MapData = MapData.for_map(GameState.map_id) if GameState.map_id != &"" and MapData.exists(GameState.map_id) else null
+	for pk: Variant in (GLData.table("perks")["perks"] as Dictionary).keys():
+		_loadout.add_child(perk_row(me, StringName(str(pk)), md))
 	if not GameState.bot_ids.is_empty():
 		_loadout.add_child(MenuKit.label("SQUAD", 20, MenuKit.VIOLET, true))
 		for bid: int in GameState.bot_ids:
@@ -461,8 +460,103 @@ func _refresh_loadout() -> void:
 				var bp: Player = n as Player
 				if bp != null and bp.player_id == bid and bp.weapons != null and bp.weapons.current() != null:
 					gun = bp.weapons.current().display_name()
-			_loadout.add_child(MenuKit.label("   %s: %s Scrip%s  ·  %d perks" % [str(GameState.character_of(bid)).capitalize(), _thousands(Economy.get_scrip(bid)),
-				("  ·  " + gun) if gun != "" else "", PerkManager.owned(bid).size()], 17, MenuKit.DIM))
+			var sq: HBoxContainer = HBoxContainer.new()
+			sq.add_theme_constant_override("separation", 6)
+			sq.add_child(MenuKit.label("   %s: %s Scrip%s   " % [str(GameState.character_of(bid)).capitalize(), _thousands(Economy.get_scrip(bid)),
+				("  ·  " + gun) if gun != "" else ""], 17, MenuKit.DIM))
+			var bonus: StringName = PerkManager.bonus_perk(bid)
+			var order: Array = PerkManager.owned(bid).duplicate()
+			if bonus != &"" and order.has(bonus):
+				order.erase(bonus)
+				order.push_front(bonus)
+			for bpk: Variant in order:
+				var bc: PerkCap = PerkCap.new()
+				bc.custom_minimum_size = Vector2(26, 26)
+				bc.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+				bc.perk_id = StringName(bpk)
+				bc.bonus = StringName(bpk) == bonus
+				bc.tier = PerkManager.tier_of(bid, StringName(bpk))
+				bc.font = MenuKit.stamp_font()
+				bc.tooltip_text = PerkManager.tier_name(StringName(bpk), bc.tier)
+				sq.add_child(bc)
+			_loadout.add_child(sq)
+
+
+## One tonic on the LOADOUT tab's perk list (T-082): the cap (full colour with its tier band when held, greyed when
+## not), the name line (perk_line for a held tonic) and the description; an unheld tonic adds its price and where its
+## machine stands on this map (the MapData perk POI's zone). A flat button, so a controller can walk the list.
+func perk_row(pid: int, perk_id: StringName, md: MapData) -> Control:
+	var owned: bool = PerkManager.has_perk(pid, perk_id)
+	var tier: int = PerkManager.tier_of(pid, perk_id)
+	var b: Button = Button.new()
+	b.flat = true
+	b.focus_mode = Control.FOCUS_ALL
+	b.add_theme_font_override("font", MenuKit.type_font())
+	var h: HBoxContainer = HBoxContainer.new()
+	h.set_anchors_preset(Control.PRESET_FULL_RECT)
+	h.offset_left = 10.0
+	h.offset_right = -10.0
+	h.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	h.add_theme_constant_override("separation", 16)
+	b.add_child(h)
+	var cap: PerkCap = PerkCap.new()
+	cap.custom_minimum_size = Vector2(54, 54)
+	cap.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	cap.perk_id = perk_id
+	cap.tier = tier
+	cap.bonus = PerkManager.is_bonus(pid, perk_id)
+	cap.dim = not owned
+	cap.font = MenuKit.stamp_font()
+	h.add_child(cap)
+	var v: VBoxContainer = VBoxContainer.new()
+	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	v.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	v.add_theme_constant_override("separation", 1)
+	v.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	h.add_child(v)
+	var desc: String = perk_desc(perk_id)
+	if owned:
+		v.add_child(_row_label(perk_line(pid, perk_id), 19, MenuKit.PAPER, true))
+		v.add_child(_row_label(desc, 16, MenuKit.PAPER))
+		if tier >= 2:
+			v.add_child(_row_label("%s: %s" % [PerkManager.tier_mark(tier), str(PerkManager.tier_data(perk_id, tier).get("desc", ""))], 15, MenuKit.GOLD))
+	else:
+		v.add_child(_row_label(PerkManager.display_name(perk_id), 19, MenuKit.DIM, true))
+		v.add_child(_row_label(desc, 16, MenuKit.DIM))
+		v.add_child(_row_label(perk_where(perk_id, md), 15, MenuKit.DIM))
+	b.custom_minimum_size = Vector2(0, maxf(62.0, v.get_combined_minimum_size().y + 12.0))
+	b.tooltip_text = "%s\n%s" % [PerkManager.display_name(perk_id), desc]
+	return b
+
+
+static func _row_label(text: String, size: int, color: Color, stamp: bool = false) -> Label:
+	var l: Label = MenuKit.label(text, size, color, stamp)
+	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	l.clip_text = true
+	l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	return l
+
+
+## The tonic's one-line description (perks.json "desc").
+static func perk_desc(perk_id: StringName) -> String:
+	return str(PerkManager.perk_data(perk_id).get("desc", ""))
+
+
+## "2,500 Scrip  ·  Helvetia Cellar" for a tonic not held: its price here (solo / co-op) and the zone of its machine
+## on this map from the map's data; "gone" once the solo Second Wind cabinet has left; "no cabinet on this map"
+## when the map has none.
+static func perk_where(perk_id: StringName, md: MapData) -> String:
+	if perk_id == &"second_wind" and PerkManager.second_wind_gone:
+		return "gone: the cabinet has poured its last"
+	var s: String = "%s Scrip" % _thousands(PerkManager.price(perk_id))
+	if md == null:
+		return s
+	for poi: Dictionary in md.pois_of_type("perk"):
+		var pd: Dictionary = poi.get("data", {})
+		if str(pd.get("perk_id", "")) == String(perk_id) or str(poi.get("id", "")).ends_with("Perk_" + String(perk_id)):
+			var zone: String = md.zone_label_at(poi["pos"] as Vector3)
+			return s + ("  ·  " + zone if zone != "" else "")
+	return s + "  ·  no cabinet on this map"
 
 
 ## One carried tonic on the LOADOUT tab (T-075): its name at its tier, the bonus mark, and the next tier's state

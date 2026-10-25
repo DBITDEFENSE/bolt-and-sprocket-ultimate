@@ -102,8 +102,8 @@ func test_stat_aggregation() -> void:
 	PerkManager.buy_for(PID, &"ironhide_stout")
 	PerkManager.buy_for(PID, &"trigger_tonic")
 	PerkManager.buy_for(PID, &"packmule_porter")
-	assert_eq(int(PerkManager.stat(PID, "max_health", 100)), 250)
-	assert_almost_eq(float(PerkManager.stat(PID, "reload_time_mult", 1.0)), 0.5, 0.001)
+	assert_eq(int(PerkManager.stat(PID, "max_health", 100)), 275)
+	assert_almost_eq(float(PerkManager.stat(PID, "reload_time_mult", 1.0)), 0.45, 0.001)
 	assert_eq(int(PerkManager.stat(PID, "weapon_slots", 2)), 3)
 	assert_almost_eq(float(PerkManager.stat(PID, "fire_rate_mult", 1.0)), 1.0, 0.001)
 
@@ -147,10 +147,12 @@ func test_perks_json_valid() -> void:
 	var shapes: Dictionary = {}
 	for id: String in perks.keys():
 		var p: Dictionary = perks[id]
-		for field: String in ["name", "cost", "effects", "color", "abbr", "shape", "sign"]:
+		for field: String in ["name", "desc", "cost", "effects", "color", "abbr", "shape", "sign"]:
 			assert_true(p.has(field), "%s has %s" % [id, field])
 		assert_gt(int(p.get("cost", 0)), 0, id + " costs something")
-		assert_eq(str(p.get("abbr", "")).length(), 2, id + " abbr is two letters")
+		assert_eq(str(p.get("abbr", "")).length(), 2, id + " abbr is two letters (the fallback for a cap without a glyph)")
+		assert_true(PerkCap.has_glyph(StringName(id)), id + " has a cap glyph (T-082)")
+		assert_gt(str(p.get("desc", "")).length(), 20, id + " has a one-line description")
 		assert_false(shapes.has(p.get("shape")), "%s: shape %s is unique" % [id, p.get("shape")])
 		shapes[p.get("shape")] = id
 		var fp: Vector3 = PerkMachine._shape_footprint(str(p["shape"]))
@@ -178,16 +180,16 @@ func test_overclock_rules() -> void:
 	assert_almost_eq(PerkManager.overclock_spent(30, 30), 0.0, 0.001, "full mag")
 	assert_almost_eq(PerkManager.overclock_spent(0, 30), 1.0, 0.001, "empty mag")
 	assert_almost_eq(PerkManager.overclock_spent(15, 30), 0.5, 0.001)
-	assert_almost_eq(PerkManager.overclock_radius(1.0), 6.0, 0.001, "6.0 m on an empty mag")
-	assert_almost_eq(PerkManager.overclock_radius(0.25), 2.5 + 3.5 * 0.25, 0.001)
-	# damage: 0.6 x health(r) x e; the doc's examples (150 at r1, 2710 at r20, 7030 at r30)
-	assert_almost_eq(PerkManager.overclock_damage(1.0, 150.0, false), 90.0, 0.01, "90 at r1 empty")
-	assert_almost_eq(PerkManager.overclock_damage(1.0, 2710.0, false), 1626.0, 0.01, "1626 at r20 empty")
-	assert_almost_eq(PerkManager.overclock_damage(1.0, 7030.0, false), 4218.0, 0.01, "4218 at r30 empty")
-	assert_almost_eq(PerkManager.overclock_damage(0.5, 1000.0, false), 300.0, 0.01, "scales with e")
-	assert_almost_eq(PerkManager.overclock_damage(1.0, 1000.0, false, true), 1200.0, 0.01, "Repossessors take x2")
-	assert_almost_eq(PerkManager.overclock_damage(1.0, 99999.0, true), 1500.0, 0.01, "bosses: flat 1500 x e")
-	assert_almost_eq(PerkManager.overclock_damage(0.5, 99999.0, true), 750.0, 0.01)
+	assert_almost_eq(PerkManager.overclock_radius(1.0), 6.5, 0.001, "6.5 m on an empty mag (T-082: was 6.0)")
+	assert_almost_eq(PerkManager.overclock_radius(0.25), 2.5 + 4.0 * 0.25, 0.001)
+	# damage: 0.66 x health(r) x e (T-082: was 0.6); the doc's examples (150 at r1, 2710 at r20, 7030 at r30)
+	assert_almost_eq(PerkManager.overclock_damage(1.0, 150.0, false), 99.0, 0.01, "99 at r1 empty")
+	assert_almost_eq(PerkManager.overclock_damage(1.0, 2710.0, false), 1788.6, 0.01, "1789 at r20 empty")
+	assert_almost_eq(PerkManager.overclock_damage(1.0, 7030.0, false), 4639.8, 0.01, "4640 at r30 empty")
+	assert_almost_eq(PerkManager.overclock_damage(0.5, 1000.0, false), 330.0, 0.01, "scales with e")
+	assert_almost_eq(PerkManager.overclock_damage(1.0, 1000.0, false, true), 1320.0, 0.01, "Repossessors take x2")
+	assert_almost_eq(PerkManager.overclock_damage(1.0, 99999.0, true), 1700.0, 0.01, "bosses: flat 1700 x e")
+	assert_almost_eq(PerkManager.overclock_damage(0.5, 99999.0, true), 850.0, 0.01)
 	assert_false(PerkManager.overclock_staggers(0.5))
 	assert_true(PerkManager.overclock_staggers(0.75))
 	assert_true(PerkManager.overclock_staggers(1.0))

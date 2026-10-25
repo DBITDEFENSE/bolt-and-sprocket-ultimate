@@ -158,7 +158,8 @@ class Plates extends Control:
 			gap = minf(gap, (w - 8.0 - cap_r * 2.0) / float(n - 1))   # T-081: six tonics + the bonus overlap a little to stay on the plate
 		var x0: float = at.x - (float(n - 1) * gap) * 0.5
 		for i: int in n:
-			PerkCap.draw_cap(self, Vector2(x0 + float(i) * gap, top + 26.0), cap_r, order[i], order[i] == bonus, cap_font, a)
+			PerkCap.draw_cap(self, Vector2(x0 + float(i) * gap, top + 26.0), cap_r, order[i], order[i] == bonus, cap_font, a,
+				PerkManager.tier_of(pid, order[i]))
 		# health / bleed-out bar
 		var bar: Rect2 = Rect2(at.x - w * 0.5 + 6.0, top + 37.0, w - 12.0, 3.5)
 		draw_rect(bar, Color(0, 0, 0, 0.7 * a))

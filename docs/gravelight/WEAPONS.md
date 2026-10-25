@@ -420,7 +420,7 @@ Gänger HP: r1 = 150, r10 = 1045, r20 = 2710, r30 = 7030. Headshots (default ×4
 | Totenglocke (≤4 m) | 3000 | 1 | 1 | 1 | 3 | Whole cone |
 | Mitternacht (≤4 m) | 6000 | 1 | 1 | 1 | 2 | |
 
-Perk modifiers to keep in mind: Twin Barrel Bitters +33% fire rate, Hawkeye Brandy +headshot damage (+25% head multiplier) and less sway, Death's Door = every hit kills (bosses take 10× damage instead).
+Perk modifiers to keep in mind: Twin Barrel Bitters +50% fire rate (T-082; was +33%), Hawkeye Brandy +headshot damage (+40% head multiplier; was +25%) and less sway, Death's Door = every hit kills (bosses take 10× damage instead).
 
 ---
 
@@ -778,9 +778,9 @@ Neither new perk raises the cap (6 on every map since T-081, 4 under Classic Rul
 | Rule | Value |
 |---|---|
 | Trigger | The **start** of any reload (manual or automatic), when the spent fraction **e = 1 − rounds_in_mag / mag_size ≥ 0.25**. Burst lands 0.15 s after the reload starts. Bolt and shell-by-shell reloads trigger once, on the first round loaded. Beam/fuel weapons use the tank's empty fraction. The OMNI-BLASTER triggers on an overheat vent (e = 1.0). |
-| Radius | **2.5 + 3.5 × e** m (6.0 m at a fully empty mag) |
-| Damage (non-boss) | **0.6 × health(r) × e** per target, max **10** targets. That's 90 at r1 empty, 1626 at r20 empty, and 4218 at r30 empty. **Repossessors take ×2.** Electrical damage **ignores Glasshide plate**. |
-| Damage (bosses) | Flat **1500 × e** (Foreman, Underwriter) |
+| Radius | **2.5 + 4.0 × e** m (6.5 m at a fully empty mag; T-082, was 3.5 e / 6.0 m) |
+| Damage (non-boss) | **0.66 × health(r) × e** per target, max **12** targets (T-082; was 0.6 and 10). That's 99 at r1 empty, 1789 at r20 empty, and 4640 at r30 empty. **Repossessors take ×2.** Electrical damage **ignores Glasshide plate**. |
+| Damage (bosses) | Flat **1700 × e** (Foreman, Underwriter; was 1500) |
 | Stagger | All non-boss enemies in radius are staggered when **e ≥ 0.75** |
 | Cooldown | **3.0 s** internal. Trigger Tonic speeds the reload, not the cooldown. |
 | Safety | No self, team, or barricade damage |
@@ -857,7 +857,7 @@ A single-shot signal pistol, a new tier-B crate tactical in the Morgenrot pool (
 
 ### 23.3 PAUL'S LAST ROUND (`pauls_last_round`), Paul's drop (HB2, Map 1)
 A battered Ironhide bottle at his body, **one per player**, personal (`HOMAGE_BOSSES.md` §13 D7). Hold Use to drink.
-- **Without Ironhide:** the Ironhide Stout effect (250 max health) **for free, without using a perk slot**, until you are downed.
+- **Without Ironhide:** the Ironhide Stout effect (275 max health since T-082) **for free, without using a perk slot**, until you are downed.
 - **With Ironhide:** a one-time **+100 overshield** that takes damage first and doesn't regenerate.
 - It isn't a perk: it doesn't count toward the cap, Second Wind doesn't restore it, and Vendelin's Service Call can't refill it.
 - In data it is a power-up-like pickup with `kind: "bottle"`.

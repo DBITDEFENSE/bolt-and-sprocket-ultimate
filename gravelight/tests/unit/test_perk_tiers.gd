@@ -143,12 +143,12 @@ func test_solo_second_wind_remembers_its_tier() -> void:
 
 func test_stat_merges_tier_effects() -> void:
 	PerkManager.grant(PID, &"ironhide_stout")
-	assert_eq(float(PerkManager.stat(PID, "max_health", 100.0)), 250.0)
+	assert_eq(float(PerkManager.stat(PID, "max_health", 100.0)), 275.0)
 	PerkManager.set_tier(PID, &"ironhide_stout", 2)
-	assert_eq(float(PerkManager.stat(PID, "max_health", 100.0)), 300.0)
+	assert_eq(float(PerkManager.stat(PID, "max_health", 100.0)), 330.0)
 	assert_eq(float(PerkManager.stat(PID, "regen_delay_mult", 1.0)), 0.6)
 	PerkManager.set_tier(PID, &"ironhide_stout", 3)
-	assert_eq(float(PerkManager.stat(PID, "max_health", 100.0)), 300.0, "tier III keeps tier II's effects")
+	assert_eq(float(PerkManager.stat(PID, "max_health", 100.0)), 330.0, "tier III keeps tier II's effects")
 	assert_gt(float(PerkManager.stat(PID, "iron_skin_seconds", 0.0)), 0.0)
 
 
