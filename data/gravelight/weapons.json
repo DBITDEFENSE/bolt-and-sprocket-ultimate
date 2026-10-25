@@ -464,7 +464,7 @@
    "upgraded": "webley_up"
   },
   "luger_p08": {
-   "_doc": "Muster sidearm (T-079): accurate and quick to aim, its damage carries further; slower to reload and fire.",
+   "_doc": "Muster sidearm (T-079): accurate and quick to aim, its damage carries further; slower to reload.",
    "feel": {
     "eye_relief": 0.34,
     "ads_zoom": 0.92
@@ -473,7 +473,7 @@
    "class": "pistol",
    "damage": 38,
    "pellets": 1,
-   "rpm": 420,
+   "rpm": 460,
    "mode": "semi",
    "mag": 8,
    "reserve": 80,
@@ -1454,7 +1454,7 @@
    "class": "pistol",
    "damage": 112,
    "pellets": 1,
-   "rpm": 420,
+   "rpm": 460,
    "mode": "semi",
    "mag": 12,
    "reserve": 120,

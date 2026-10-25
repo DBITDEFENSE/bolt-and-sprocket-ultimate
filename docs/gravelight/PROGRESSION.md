@@ -53,7 +53,7 @@ and not on walls. They don't count toward the Nachtglas meta camo (`muster_sidea
 | M1911 | always | 40 / 8 / 80 / 450 | 1.4 / 1.8 s | the all-rounder; finishes and Loadout Pick | Last Rites |
 | Walther P38 | rank 4 | 38 / 8 / 88 / 480 | 1.25 / 1.6 s | quicker follow-up and reload, tighter hip fire | Vespers (semi / 3-round burst) |
 | Webley Mk VI | rank 8, or the survivor's dossier level 4 | 70 / 6 / 48 / 260 | 2.3 s (break-open) | nearly twice the hit, through one zombie, no brass | Mourner's Six (stagger) |
-| Luger P08 | rank 14, or 4 challenges done | 38 / 8 / 80 / 420 | 1.55 / 1.95 s | fast to aim (0.12 s), tight ADS, damage carries further | Requiescat (6x headshots) |
+| Luger P08 | rank 14, or 4 challenges done | 38 / 8 / 80 / 460 | 1.55 / 1.95 s | fast to aim (0.12 s), tight ADS, damage carries further | Requiescat (6x headshots) |
 
 Models are procedural (`WeaponModels._w_walther_p38 / _w_luger_p08 / _w_webley`), in the M1911's style, real scale,
 no markings.
