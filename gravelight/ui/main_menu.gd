@@ -1,5 +1,5 @@
 extends Control
-## Main menu over the 3D Minehead Yard backdrop: Play (survivor → map), Co-op (lobby), Archive, Dossiers,
+## Main menu over the 3D Minehead Yard backdrop: Play (survivor → map), Muster (T-079), Co-op (lobby), Archive, Dossiers,
 ## Service Record, Challenges, GLSettings, Credits, Test Range (dev), Quit. Fully navigable with a controller.
 ## While a co-op connection is open (back from a match) the lobby opens straight away.
 
@@ -69,6 +69,7 @@ func _build() -> void:
 	_menu.add_child(Control.new())
 	var play: Button = MenuKit.button("Play", _open.bind(MenuCharacter), 30)
 	_menu.add_child(play)
+	_menu.add_child(MenuKit.button("Muster (rank, sidearm, Field Habits)", _open.bind(MenuMuster), 26))   # T-079
 	_menu.add_child(MenuKit.button("Co-op (1-4 players)", _open.bind(MenuLobby), 26))
 	_menu.add_child(MenuKit.button("Intel Archive", _open.bind(MenuArchive), 26))
 	_menu.add_child(MenuKit.button("Dossiers", _open.bind(MenuDossiers), 26))

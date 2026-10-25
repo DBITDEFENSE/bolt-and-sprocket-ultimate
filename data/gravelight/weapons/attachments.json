@@ -2298,6 +2298,28 @@
     ]
    }
   },
+  "webley": {
+   "_doc": "The Muster's revolver (T-079): no box magazine, so a speedloader in the mag slot.",
+   "options": {
+    "mag": {
+     "extended": null,
+     "speedloader": {
+      "name": "Prideaux Speedloader",
+      "price": 750,
+      "desc": "All six rounds dropped into the cylinder at once. Reloads 35% faster.",
+      "stats": {
+       "reload_partial": 0.65,
+       "reload_empty": 0.65
+      },
+      "model": "",
+      "upgraded": {
+       "name": "Six Pallbearers",
+       "desc": "They all go in together, as they should."
+      }
+     }
+    }
+   }
+  },
   "thompson": {
    "options": {
     "mag": {
