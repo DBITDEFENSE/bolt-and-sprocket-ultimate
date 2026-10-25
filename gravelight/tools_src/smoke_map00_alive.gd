@@ -47,8 +47,14 @@ static func map00_openings(map: Node) -> Array[Dictionary]:
 	for rd: Array in [[5.75, 1], [11.75, 2], [20.25, 3]]:
 		ops.append(DoorClearance.opening("RoomDoorway%d" % int(rd[1]), Vector3(float(rd[0]), 3.8, 6.0), 0.0, 1.5, 2.2,
 			map.find_child("RoomDoor%d" % int(rd[1]), true, false)))
+	# the front door: its swinging leaf belongs in the doorway; since T-080 the doorway is the bought door Door_Front
+	# ("Out Front", a GateDoor that swings the leaf), so the leaf is skipped in that door's own opening too
 	var fd: Node = map.find_child("InnFrontDoor", true, false)
-	ops.append(DoorClearance.opening("FrontDoor", Vector3(20, 0, 0), 0.0, 1.6, 2.4, [fd, map.find_child("FrontDoorBlock", true, false)]))
+	var df: Node = map.find_child("Door_Front", true, false)
+	for o: Dictionary in ops:
+		if str(o["name"]) == "Door_Front":
+			o["skip"] = [df, fd]
+	ops.append(DoorClearance.opening("FrontDoor", Vector3(20, 0, 0), 0.0, 1.6, 2.4, [fd, df]))
 	return ops
 
 
@@ -159,14 +165,16 @@ func _check_opening(op: InnOpening) -> void:
 			_fail("patron %s still visible after the opening" % pb.patron_id)
 	if op.door == null or op.door.is_open or not op.door.barred:
 		_fail("the front door should end shut and barred")
-	# the doorway stays a wall: a ray from the taproom out through the front door hits the block
+	# the doorway stays shut until it is bought (T-080: Door_Front, "Out Front", a BuyDoor; its collider is on the door
+	# layer and, like every bought door, it is not baked, so the navmesh runs through and the way out crosses it)
 	var space: PhysicsDirectSpaceState3D = _map.get_world_3d().direct_space_state
-	var hit: Dictionary = space.intersect_ray(PhysicsRayQueryParameters3D.create(Vector3(20, 1.2, 1.0), Vector3(20, 1.2, -1.0), 1))
+	var hit: Dictionary = space.intersect_ray(PhysicsRayQueryParameters3D.create(Vector3(20, 1.2, 1.0), Vector3(20, 1.2, -1.0), 1 | (1 << 8)))
 	if hit.is_empty():
 		_fail("the front doorway is not solid")
+	var df: BuyDoor = _map.find_child("Door_Front", true, false) as BuyDoor
 	var path: PackedVector3Array = NavigationServer3D.map_get_path(_map.get_world_3d().navigation_map, Vector3(20, 0, 2), Vector3(20, 0, -3), true)
-	if not path.is_empty() and path[path.size() - 1].distance_to(Vector3(20, 0, -3)) < 1.0:
-		_fail("the navmesh runs out of the front door")
+	if df == null or df.is_open or (not path.is_empty() and not ZombieDirector.door_crossed(df, path)):
+		_fail("the way out of the front door does not run through the shut Door_Front")
 
 
 func _fail(s: String) -> void:

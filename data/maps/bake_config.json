@@ -21,7 +21,7 @@
         {"id": "ground", "name": "Ground floor", "y_min": -1.2, "y_max": 2.0, "base_y": 0.0, "cut": 1.6},
         {"id": "upstairs", "name": "Upstairs", "y_min": 2.0, "y_max": 40.0, "base_y": 3.8, "cut": 5.4, "zones": ["UPSTAIRS"]}
       ],
-      "zone_names": {"TAPROOM": "Taproom", "UPSTAIRS": "Guest Rooms", "STABLE": "Stable", "YARD": "The Carters' Yard", "CELLAR": "Helvetia Cellar", "OLD_CELLAR": "The Old Cellar"}
+      "zone_names": {"TAPROOM": "Taproom", "UPSTAIRS": "Guest Rooms", "STABLE": "Stable", "YARD": "The Carters' Yard", "GROUNDS": "The Crossroads", "CELLAR": "Helvetia Cellar", "OLD_CELLAR": "The Old Cellar"}
     },
     "map01_kaltenbrunn": {
       "px_per_m": 8.0,

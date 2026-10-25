@@ -365,6 +365,8 @@ func _process(delta: float) -> void:
 func _update_to_window(delta: float) -> void:
 	if _update_prey(delta):
 		return
+	if _roam_divert(delta):
+		return
 	if window == null:
 		_enter(State.CHASE)
 		return
@@ -411,6 +413,8 @@ var _win_progress_t: float = 0.0
 
 
 func _update_wait_window(delta: float) -> void:
+	if _roam_divert(delta):
+		return
 	var spot: Vector3 = window.queue_point(_queue_index)
 	if _flat_dist(spot) > 0.4:
 		_nav_move(spot, minf(speed, 2.0), delta, 0.6)
@@ -423,6 +427,8 @@ func _update_wait_window(delta: float) -> void:
 
 func _update_tear(delta: float) -> void:
 	_halt(delta)
+	if _roam_divert(delta):
+		return
 	var settle: Vector3 = window.outside_point()
 	settle.y = global_position.y
 	global_position = global_position.move_toward(settle, delta * 1.5)
@@ -621,6 +627,8 @@ func _update_chase(delta: float) -> void:
 	if target == null:
 		_halt(delta)
 		return
+	if _roam_fallback(delta):
+		return
 	var to_t: Vector3 = target.global_position - global_position
 	var dist: float = to_t.length()
 	if dist <= _attack_range() and absf(to_t.y) < 1.3 and _attack_cd <= 0.0 and _clear_to(target):
@@ -672,6 +680,100 @@ func _update_chase(delta: float) -> void:
 var _progress_target: Player = null
 var _progress_best: float = INF
 var _progress_t: float = 0.0
+
+
+# ---------------------------------------------------------------- open ground (T-080, Map 0's GROUNDS)
+
+var _roam_t: float = 0.0
+
+
+## enemies.json "roam": how far a zombie on open ground notices a player on it, how often it looks again.
+static func roam_cfg() -> Dictionary:
+	return GLData.table("enemies").get("roam", {})
+
+
+## On the way to (or at) its window, out on open ground: a player standing on the open ground within roam.aggro_m
+## whom it can walk to (no shut door or window on the way) is a better target than the boards. It lets go of the
+## window and chases. Returns true when it did.
+func _roam_divert(delta: float) -> bool:
+	_roam_t -= delta
+	if _roam_t > 0.0 or forced_target != null:
+		return false
+	var rc: Dictionary = roam_cfg()
+	_roam_t = float(rc.get("recheck_s", 0.8)) * randf_range(0.8, 1.2)
+	if rc.is_empty() or not ZoneVolume.roam_at(get_tree(), global_position):
+		return false
+	var aggro: float = float(rc.get("aggro_m", 20.0))
+	var best: Player = null
+	var best_d: float = INF
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		var p: Player = n as Player
+		if p == null or not p.is_alive() or absf(p.global_position.y - global_position.y) > 2.5:
+			continue
+		var d: float = _flat_dist(p.global_position)
+		if d < aggro and d < best_d and ZoneVolume.roam_at(get_tree(), p.global_position):
+			best = p
+			best_d = d
+	if best == null or not can_walk_to(best.global_position):
+		return false
+	if window != null:
+		window.release(self)
+	window = null
+	target = best
+	collision_mask = LAYER_WORLD | LAYER_PLAYER | LAYER_ZBODY | LAYER_DOOR
+	_agent.avoidance_enabled = true
+	_stuck_origin = global_position
+	_enter(State.CHASE)
+	return true
+
+
+## Chasing on open ground after someone it can't walk to (they went back inside behind a shut door, or into the
+## yard with the gate shut): it makes for the nearest window it can reach instead, in a zone that is open, the
+## one that brings it closest to its target. Returns true when it did.
+func _roam_fallback(delta: float) -> bool:
+	_roam_t -= delta
+	if _roam_t > 0.0 or forced_target != null or is_crawler:
+		return false
+	var rc: Dictionary = roam_cfg()
+	_roam_t = float(rc.get("recheck_s", 0.8)) * randf_range(0.8, 1.2)
+	if rc.is_empty() or not ZoneVolume.roam_at(get_tree(), global_position):
+		return false
+	if can_walk_to(target.global_position):
+		return false
+	var ranked: Array = []   # [score, Barricade], nearest (with the target in mind) first
+	for n: Node in get_tree().get_nodes_in_group(&"barricades"):
+		var b: Barricade = n as Barricade
+		if b == null or not GameState.is_zone_open(b.zone_id):
+			continue
+		var op: Vector3 = b.outside_point()
+		ranked.append([_flat_dist(op) + 0.5 * op.distance_to(target.global_position), b])
+	ranked.sort_custom(func(x: Array, y: Array) -> bool: return float(x[0]) < float(y[0]))
+	for i: int in mini(ranked.size(), int(rc.get("window_tries", 4))):
+		var cand: Barricade = ranked[i][1]
+		if can_walk_to(cand.outside_point()):
+			go_to_window(cand)
+			return true
+	return false
+
+
+## True when the navmesh takes this zombie to within roam.reach_m of `goal` without crossing a shut BuyDoor or a
+## window (doors aren't baked into the navmesh; windows are only crossed by tearing the boards and climbing).
+func can_walk_to(goal: Vector3) -> bool:
+	var path: PackedVector3Array = NavigationServer3D.map_get_path(get_world_3d().navigation_map, global_position, goal, true)
+	if path.is_empty():
+		return false
+	var end: Vector3 = path[path.size() - 1]
+	if Vector2(end.x - goal.x, end.z - goal.z).length() > float(roam_cfg().get("reach_m", 1.5)) or absf(end.y - goal.y) > 1.5:
+		return false
+	for n: Node in get_tree().get_nodes_in_group(&"doors"):
+		var d: BuyDoor = n as BuyDoor
+		if d != null and not d.is_open and ZombieDirector.door_crossed(d, path):
+			return false
+	for n2: Node in get_tree().get_nodes_in_group(&"barricades"):
+		var b: Barricade = n2 as Barricade
+		if b != null and ZombieDirector.window_crossed(b, path):
+			return false
+	return true
 
 
 func _attack_range() -> float:

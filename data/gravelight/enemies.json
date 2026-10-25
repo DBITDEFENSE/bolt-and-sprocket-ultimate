@@ -209,6 +209,13 @@
     "far_s": 2.0,
     "budget_per_frame": 6
   },
+  "roam": {
+    "_doc": "Open ground (T-080, Map 0's GROUNDS round the inn; ZoneVolume.roam). A zombie on open ground on its way to a window (or tearing it) goes for a player standing on the open ground within aggro_m whom it can walk to (no shut door or window on the way); one chasing someone it can't walk to makes for the best reachable window in an open zone instead (of the window_tries nearest). recheck_s: how often each zombie looks again (jittered +-20%). reach_m: how close the navmesh path must end to the goal.",
+    "aggro_m": 20.0,
+    "recheck_s": 0.8,
+    "reach_m": 1.5,
+    "window_tries": 4
+  },
   "status": {
     "scream": {
       "move_mult": 0.65,

@@ -59,7 +59,7 @@ Morgenrot and Helvetia Works get 4 each when they are built.
 
 A two-story roadside inn (**Gasthaus Zum Kreuzweg**) and a stable at a snowy crossroads, 9 km northwest of Kaltenbrunn. GRAVELIGHT ONE burns in the field to the east and can be seen through the taproom's east windows and the stable doors. Power, the perks and the Crucible are all behind Door 3 in the Helvetia cellar (T-027, T-032). It's a tutorial-scale map.
 
-**Overall footprint:** inn 24 × 16 m; stable 18 × 12 m, joined to the inn's rear by a covered 4 m yard passage. The outdoor play space is snow-fenced and not walkable. Zombies cross it to reach the windows.
+**Overall footprint:** inn 24 × 16 m; stable 18 × 12 m, joined to the inn's rear by a covered 4 m yard passage; the Carters' Yard (32 × 14 m) behind the stable. Round all of it, **the Grounds** (T-080): 80 × 94 m of snow (x −20..60, z −30..64) you can walk right round the building once you buy your way out (the front door or the yard's gate). Zombies cross it to reach the windows, and chase you across it.
 
 ## Zone graph
 
@@ -72,6 +72,9 @@ graph LR
   TAPROOM -- "Door 1: 750<br/>(stair vestibule)" --> UPSTAIRS
   TAPROOM -- "Door 2: 1000<br/>(kitchen back door)" --> STABLE
   STABLE -- "Door 4: 1250<br/>(the stable's south door)" --> YARD
+  GROUNDS["THE GROUNDS (outdoors, T-080)<br/>13 edge + 4 snow spawns · the crossroads, the roads<br/>the crash field · the Wreck Loop · the ring round the inn"]
+  TAPROOM -- "Out Front: 1250<br/>(the front door)" --> GROUNDS
+  YARD -- "The Gate: 750<br/>(the carters' gate, either side)" --> GROUNDS
   CELLAR["HELVETIA CELLAR (-3.2)<br/>9 perk machines · Crucible · the lever"]
   OLD_CELLAR["THE OLD CELLAR (-3.2)<br/>2 light-well windows · Gewehr 43 · ammo box<br/>wine cellar · coal room + cage · root cellar · barrel vault"]
   TAPROOM -- "Door 3: 1500<br/>(east wall, ramp down)" --> CELLAR
@@ -109,13 +112,13 @@ graph LR
    ######W########great doors######     great doors: barred, zombies can't use
 ```
 
-**The great doors and the carters' road (campaign exfil, T-033):** the doors (x 16–20 in the stable's south wall, 4 × 4.2 m) are dressing in a drawn opening that is filled with an invisible collider, so the navmesh and collision stay a solid wall; the exfil beacon stands just inside at (18, 0, 32) and the Map 0 → Map 1 cutscene tweens the `GreatDoors` group so they fall outward. Behind them, cutscene-only dressing: a trodden track south through a gap in the yard fence (gateposts, a dead lantern post, a signpost "Kaltenbrunn 9 km / Wilcza Góra 6 km / Gasthaus zum Kreuzweg"), bending south-east past dead trees and drifts toward low snowy rises on the horizon. Nothing out there is walkable.
+**The great doors and the carters' road (campaign exfil, T-033):** the doors (x 16–20 in the stable's south wall, 4 × 4.2 m) are dressing in a drawn opening that is filled with an invisible collider, so the navmesh and collision stay a solid wall; the exfil beacon stands just inside at (18, 0, 32) and the Map 0 → Map 1 cutscene tweens the `GreatDoors` group so they fall outward. Behind them, a trodden track south through the yard's gate (gateposts, a lantern, a signpost "Kaltenbrunn 9 km / Wilcza Góra 6 km / Gasthaus zum Kreuzweg"), bending south-east past dead trees and drifts toward low snowy rises on the horizon. Since T-080 the track up to the south edge (z 64) is part of the Grounds and the gate is a bought door (Door_Gate, 750); the great doors themselves stay barred for the cutscene.
 
 Window count: Taproom 4 (N×2, W, E), Stable 3 (N×2, S), Yard 4 (fence gaps W, E, S×2), Old Cellar 2 (light wells). There are 15 windows in total, counting the 2 upstairs.
 
 ## The Carters' Yard (YARD): level 0, outdoors (T-036 follow-up, "let them go outside")
 
-**Size:** 32 × 14 m of fenced forecourt south of the stable (x 2–34, z 34–48), reached through **Door 4 (1250)** in the stable's south wall at x 8 (the great doors stay barred for the campaign cutscene). The fences are 1.2 m timber but their colliders are 2.3 m (the player can jump); four **fence gaps** carry barricades, and the carters' road leaves through a **barred gate** (x 16–20) at the south line, with the gateposts, the lit lantern and the signpost outside it.
+**Size:** 32 × 14 m of fenced forecourt south of the stable (x 2–34, z 34–48), reached through **Door 4 (1250)** in the stable's south wall at x 8 (the great doors stay barred for the campaign cutscene; bought from the yard side it opens the stable too, T-080). The fences are 1.2 m timber but their colliders are 2.3 m (the player can jump); four **fence gaps** carry barricades, and the carters' road leaves through **the gate** (x 16–20, Door_Gate, 750 since T-080: its two leaves swing out onto the road; it opens the Grounds and, bought from the road, the yard) at the south line, with the gateposts, the lit lantern and the signpost outside it.
 
 ```
    ###STABLE S WALL###D4(1250)##W(stable S)###great doors (barred)#####==fence==#
@@ -152,8 +155,37 @@ The stairwell is the taproom's south-west corner, **6 × 6 m** (x 0–6, z 10–
 
 Hayloft (Stable upper, 9 × 12 m): there's a ladder up and a single drop-down edge. It's a **perch**, not a fortress. Zombies can climb the ladder one at a time, so it's a strong but leaky choke point (see Choke points).
 
+## The Grounds (GROUNDS): level 0, outdoors (DECISIONS T-080)
+The user: "the outside area on the first map needs some work, can you make it bigger and make it so you can go around the whole building". All of it is `build_grounds` / `_dress_grounds` / `build_grounds_gameplay` in gen_map00.gd (the `OUT_*` tables).
+
+```
+ z -30 ###spruces###########|felled spruce|####################################################  N edge
+        .  tree   .   field .  N road  .    hay rick (22,-23.5)  .   MG nest (sandbags, 32,-21)  .
+ z -13 ==fence======|gap|========field gate==fallen bay=====fence==|   telephone poles (z -15.5)
+ z  -8  boom  =========== the crossroads road (E-W) ======================== lamp ==== burnt car ====  sawhorse
+       | shrine  signpost  lamp                                                                   |
+       W  road   ┌lean-to┐ ####### INN (front door: Out Front 1250, porch lantern) ####   engine    |
+       e  (N-S)  └───────┘ #                                               #   GRAVELIGHT ONE  E  |
+       s          court    #####passage#####  stair hall   ▓ crash field: the Wreck Loop ▓       d  |
+       t   hay wagon       #      STABLE      #  cellar roof   cargo   parachute tree        g  |
+          (-15,22)         ####door 4###########  ----fence----                                   e  |
+       r                   W   THE CARTERS' YARD   W                                     drums      |
+       o                   ####W######GATE 750########W####                                         |
+       a        woodshed      carters' road (track SE) . trees . . . . . .                          |
+ z 64 #########sawhorse######################################|sawhorse|###########################  S edge
+      x -20                                                                                   x 60
+```
+
+- **The ways out:** **Out Front** (Door_Front, 1250) is the inn's front door under the east porch, the one the round 1 opening's patrons run out of: once bought it swings open for good (`GateDoor` with `swing_node` on `InnFrontDoor`, `held_open`). **The Gate** (Door_Gate, 750) is the carters' gate in the yard's south fence; its leaves swing out onto the road; bought from the road it opens the yard too. Both open zone GROUNDS. Nothing outdoors in round 1: the start's 500 Scrip doesn't buy either (round 3-4 for the front door; the gate needs the stable and the yard first, 3,000 in all).
+- **The ring round the whole building:** out of either door you can walk right round the inn, the stable and the yard on open snow: the crossroads road in front, the crash field east, the carters' road south of the yard, past the woodshed, up the west road (`map00_grounds_ring`, 205 m; smoke_map00_loop walks it on the navmesh and sweeps a player's capsule along it). The court between the taproom and the stable, the light wells (down to their windows) and the cellar's snowy roof are all reachable.
+- **The bigger field:** x −20..60, z −30..64. Inside a hard edge: a 6 m invisible wall on the line of the boundary fences (drawn rails, 2.3 m colliders) with two rows of snow-laden spruces beyond it; the four roads run on into the dark between the trees and are closed just inside the edge (a felled spruce across the north road, STRASSE GESPERRT sawhorses east, south and on the carters' road, a barrier boom on the west road). Cover and story out there (all solid, none of it a perch: `no_mantle`): GRAVELIGHT ONE (hull, wings to the snow, engines, tail), its torn-off engine north of the east road and a wing panel by the east fence, the cargo thrown out of the hold (the crates now collide), the parachute's tree, a burnt-out car on the east road's verge, a hay rick and an abandoned MG nest (an L of sandbags, a helmet, ammunition tins) in the north field, the roadside fence north of the road (gaps: the north road, a field gate, a fallen bay), the wayside shrine and the signpost at the crossroads, the telephone poles, the hay wagon on the west road, the woodshed (logs, a lamp), oil drums east of the yard, the dead trees.
+- **The Wreck Loop** (`map00_wreck_loop`, 90 m, ring 5 m): round GRAVELIGHT ONE, 3.5 m+ off the hull, the wings and the tail, west of the cargo, inside the parachute's tree. An ammo box (the supply drop under the parachute's tree, `AmmoBox_Grounds`) faces it. The bot-mode agent trains here when the Grounds are open (player_bot.json `train_at`, after the yard's Well Loop); its plan still buys the stable and the yard, not the front door (a 12-seed soak with the front door first: mean 7.5 rounds, best 10, against 7.71 / 10).
+- **Spawns:** 13 at the edge (kind `edge`: they walk in out of the trees and chase) and 4 in the snow (kind `ground`, round 4+), only while somebody is out on the Grounds (`ZombieSpawn.player_zone_only`). No spawn is used that a player out there can see from close by (`hide_from_m`: a clear line from their eyes within 16 m for the field window spawns, 12 m for the edge, 10 m for the snow).
+- **Zombies on open ground** (`ZoneVolume.roam`, Zombie `_roam_divert` / `_roam_fallback`, enemies.json `roam`): one on its way to a window (or tearing it) goes for a player standing on the Grounds within 20 m whom it can walk to; one chasing someone it can't reach (back inside behind a shut door, in the yard with the gate shut) makes for the best window it can reach in an open zone. With the front door open they walk in through it. The barricades work as before.
+- **Lights** (oil, flickering, unshadowed): a lantern under the east porch over the front door, lamp posts at the crossroads (by the inn's west corner) and on the east road, a lamp on the woodshed; four cold moon fills over the field like the yard's. *Needs a rendered look.*
+
 ## Map 0's living world: the land, the sky and the distant war (Update 02 section 7, DECISIONS T-052)
-Outside the play space (nothing here collides; the windows' barricades and the yard's 2.3 m fences keep players in):
+Outside the play space (nothing here collides; since T-080 the Grounds' edge wall keeps players in):
 - **Land, in three layers** (`world/landscape/landscape.gd` + `terrain.gd`, built at load from code): the near swell
   rising off the slab's edge and cresting ~110 m out (the slab's own snow, the map's fog); a valley with mist cards,
   then forested hills (MultiMesh spruces, impostor cards past 225 m) under a capped "far fog"; two ridge bands of
@@ -186,6 +218,7 @@ Outside the play space (nothing here collides; the windows' barricades and the y
 | YARD | 4 (fence gaps) | 1 (SW drift, rounds 4+) | Door 4 open |
 | CELLAR | 0 | 1 (the coal chute, rounds 6+) + the power-on burst | Door 3 open |
 | OLD_CELLAR | 2 (light wells: the coal chute N, the vault E) | 0 | Door 5 open |
+| GROUNDS | 0 (the field window spawns above are on it) | 13 edge (walk in) + 4 snow (rounds 4+) | Out Front or the Gate open, and a player out there |
 
 ## Map 0 room story
 
@@ -203,7 +236,8 @@ The details are in `EASTER_EGGS.md` §Map 0. The radio is behind the bar. Three 
 |---|---|
 | 1–3 | Knife and pistol, repair the 4 taproom windows. Learn barricades. Buy the Kar98k (200). |
 | 3–5 | Buy the M1 Garand (600) or save for Door 1 (750). First power-up drops are taught by the Operator line. |
-| 5–8 | Open Door 1 → MP40, first Crate pulls. Open the Stable (1000) → Trench Gun. Find the radio notes. Door 4 (1250) → the yard, the Thompson and the Well Loop. |
+| 3–5 | Out Front (1250) → the Grounds: the ring round the inn, the Wreck Loop in the crash field (T-080). |
+| 5–8 | Open Door 1 → MP40, first Crate pulls. Open the Stable (1000) → Trench Gun. Find the radio notes. Door 4 (1250) → the yard, the Thompson and the Well Loop (or the Gate, 750, from the road). |
 | 8–12 | Crate cycling and the Hayloft perch. The radio quest finishes around here. Round 10 unlocks Map 1. |
 
 ## Map 0 choke points
@@ -213,7 +247,7 @@ The details are in `EASTER_EGGS.md` §Map 0. The radio is behind the bar. Three 
 3. **Behind the bar:** a shallow choke. Good for rounds 1–5 only.
 4. **The yard door, from inside the stable:** one door to watch, the stable's own windows behind you. Fails once the hay pile wakes (round 6) and the yard gaps start feeding the door from outside.
 
-Training loop (light): around the taproom tables and bar, clockwise. It's tight on purpose. Map 0 is about holding, not running.
+Training loop (light): around the taproom tables and bar, clockwise. It's tight on purpose. Map 0 is about holding, not running, until you buy your way outside: the Grounds (T-080) are the map's running space (the Wreck Loop, the ring round the inn).
 
 **A living taproom (DECISIONS T-072).** Four more tables (`TAP_TABLES_NEW` in gen_map00.gd): the carters' table (19, 9) with a skat game and steins, a table cleared in a hurry (16, 4.8), Frau Pohl's small table by the hearth (12.3, 5.4) with her suitcase, and a long trestle with benches by the stair wall (8, 11.8); candles on each, two of them lit (unshadowed, following TapLamp1/3). The loop keeps its width: route_tool validates `map00_taproom` (min 2.9 m) and smoke_map00_alive casts across all four corridors (>= 2.2 m). The inn's **front door** is in the north wall under the east porch (x 19.2–20.8): drawn and swinging (`InnFrontDoor`), barred from inside, its opening filled with an invisible collider (`FrontDoorBlock`) like the great doors, so it is a wall to players, zombies and the navmesh.
 

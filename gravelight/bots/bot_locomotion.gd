@@ -444,6 +444,15 @@ func _snap(p: Vector3) -> Vector3:
 	return NavigationServer3D.map_get_closest_point(_nav(), p)
 
 
+## A wall, a shut door or a window between two standing spots (a ray at waist height). T-080: since the inn's front
+## door is a bought door (not baked), the navmesh just outside a wall is connected to the room round by it, so a
+## formation slot snapped out there is reachable only the long way (or not at all while the door is shut).
+static func walled(who: Node3D, a: Vector3, b: Vector3) -> bool:
+	var space: PhysicsDirectSpaceState3D = who.get_world_3d().direct_space_state
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(a + Vector3.UP * 1.0, b + Vector3.UP * 1.0, 1 | (1 << 5) | (1 << 8))
+	return not space.intersect_ray(q).is_empty()
+
+
 ## A navmesh path that never crosses a closed BuyDoor (doors are baked open on some maps); empty if it would.
 func _raw_path(from: Vector3, to: Vector3) -> PackedVector3Array:
 	var path: PackedVector3Array = NavigationServer3D.map_get_path(_nav(), from, to, true, squad.nav_mask() if squad != null else 0x7FFFFFFF)
@@ -690,6 +699,8 @@ func _tick_follow_goal(delta: float) -> void:
 		var p: Vector3 = _snap(want)
 		if _flat(p, want) > 1.0 or absf(p.y - _leader.global_position.y) > 1.5:
 			continue
+		if BotLocomotion.walled(player, _leader.global_position, p):
+			continue   # T-080: a slot through a wall (outside the inn's north wall) is a long way round, not beside
 		if _bad_stand(p):
 			if fallback == Vector3.INF:
 				fallback = p
