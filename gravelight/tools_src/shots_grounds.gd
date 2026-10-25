@@ -21,6 +21,14 @@ var _shots: Array = [
 	["west_road", Vector3(-8, 0, 50), 0.0, 0.0, 9],
 	["crossroads_shrine", Vector3(-4, 0, -2), -45.0, 0.0, 9],
 	["edge_trees", Vector3(10, 0, -26), 0.0, 6.0, 9],
+	# T-084: the barn's loft stair and gallery, the loft door from the yard, the edge pockets
+	["barn_stair", Vector3(19.0, 0.1, 29.5), 281.0, 10.0, 6],
+	["barn_stair_head", Vector3(24.3, 3.6, 32.5), 73.0, -5.0, 6],
+	["barn_loft_west", Vector3(7.5, 3.6, 25.5), 252.0, -4.0, 6],
+	["barn_bay_down", Vector3(18.5, 3.6, 30.5), 339.0, -25.0, 6],
+	["barn_loft_door", Vector3(22.0, 0.1, 40.0), 0.0, 22.0, 6],
+	["edge_inside", Vector3(5.0, 0.1, -26.0), 0.0, 0.0, 6],
+	["edge_fence_bay", Vector3(0.0, 0.1, -27.0), 309.0, -3.0, 6],
 ]
 
 var _out: String = "user://shots"
