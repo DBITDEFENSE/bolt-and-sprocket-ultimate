@@ -918,3 +918,90 @@ an experiment) didn't help: the zombies' inner line is shorter than any line the
 
 **Still short of the brief:** solo Map 0 dies at rounds 7-8 (runners, the Garand, the yard reached in only a third
 of the runs: the Scrip for Ironhide, two doors and the Thompson comes too late); Kaltenbrunn 7-9 with no power.
+
+### Pass 3 (2026-10-25): how long it goes on its own, and why it stops
+
+The brief: "see how long the bot mode will go by its self and try to improve it", training first. Method: 12-seed
+solo batches (`--scenario=botmode --max-minutes=40`), a per-round ledger line in the soak (`[soak] R<n>`: Scrip
+earned / spent, training share, kit, the plan's step), the agent's state on every STALL, and two new counters
+(`pb_fire_blocks`: why an aimed shot didn't go; `face_exit`: why FACE ended), plus yard testbeds
+(`--start-round=7 --open-doors=door_stable,door_yard,door_cellar --power --give=thompson,ironhide_stout,second_wind`)
+with `--posdump` plots of every hit.
+
+What the numbers showed, and what changed (`agent_plan.gd`, `agent_crawler.gd`, `bot_trainer.gd`, `bot_aim.gd`,
+`bot_locomotion.gd`, `bot_squad.gd`, `bot_perception.gd`, player_bot.json, combat.json):
+
+- **It hardly fired while training.** `pb_fire_blocks` on the yard testbed: 4,379 frames "turning" against 269
+  shots. The first-person damped turn (gain 11/s) trailed any moving target by more than the 3 degree fire
+  tolerance. Now the turn adds a feed-forward of the look's own turn rate (`turn.ff_max_rad_s` 4, `ff_smooth`
+  0.25; gain 16): shots per minute roughly doubled, kills on the testbed 20 -> 44-60. Training a train of 3+, the
+  fire discipline's spray width is x `trainer.train_spray_mult` (2): hip fire on the walk into a bunched train hits
+  what is behind the target.
+- **Dry reloads thrashed.** With a runner at its heels the pass-2 rule started a reload at reach + 0.9 m and
+  cancelled it under that, every frame, and it ran a whole train with an empty Garand. A dry reload now starts only
+  with room for all of it at a walk (`reload_room`: reach + (head speed - walk) x reload time + 0.9) and is given up
+  only when the head is about to swing; part-empty reloads use the same room (not gap + 1 m, which a runner train
+  never gave it).
+- **Solo it had no home.** `BotSquad._pick_route` looked for a leader in `brains[]`, empty with the agent alone,
+  so the squad's home loop stayed null: after a cellar errand it idled in the cellar (a dead end; most pass-2
+  solo downs were there, mid-round, in Retreat with the Garand dry). The solo agent now gets a home: its plan's
+  first open training ground (the taproom, then the yard).
+- **Scrip sat in its pocket** (pass 2 died with 3,000-5,000 Scrip in about half the runs). `AgentPlan.later_steps`:
+  while the current step can't be done (too dear: the next `skip_ahead` cheaper steps may go first; affordable but
+  waiting, e.g. a Second Wind rebuy in the cellar mid-round: any of them); a `firm` step (Ironhide) is never
+  jumped. Wall ammo for the main gun below 55 % (`wall_ammo_below`; the bots keep 35 %).
+- **The crawler break** (`AgentCrawler`, player_bot.json `crawler`): with the round down to its last one or two and an
+  errand pending (the plan's step affordable and reachable, a Second Wind rebuy, low ammo), it shoots one in the
+  legs until it crawls (the game's own leg rule: one sever roll at 35 % of its health, 60 %), leaves it out of the
+  threat picture beyond 1.8 m, does the errands as in a break, walks back to its home loop and only then lets it be
+  killed. Solo / no bot teammates only. Measured 1-4 crawlers made per run (about a third of the tries fail the
+  sever roll), 10-60 s held.
+- **A self-revive stood up into the same crowd** (the second down came on the same spot within seconds): after a
+  Second Wind self-revive it breaks away at a sprint for `revive_escape_s` (2 s) first.
+- **The plan** (Map 0): Garand, cellar, power, Second Wind, **upstairs + MP40**, Ironhide, stable, yard, Thompson,
+  Marathon, Crucible. Tried and measured: the yard before the cellar (no Second Wind, 100 health: 4.75 rounds), the
+  yard before Ironhide (6.6), pass 2's order with the new code (7.3); an SMG for the rounds before the yard won
+  (8.2). Kaltenbrunn: the **maintenance stairs** instead of the lift (`door_stairs`): the lift is a 25 s cage ride,
+  not a navmesh way down, so the Generator Hall door was never "reachable" and the plan stalled there with up to
+  9,000 Scrip.
+- **Stalls.** A round's last crawler could sink below the ground's collision at the yard's edge: the line of sight
+  failed at every height (`pb_los` names the blockers) and the agent circled it until the 40-minute cap (also seen in
+  the pass-2 baseline). The trainer now walks up and knifes the round's last crawler; crawlers are aimed at the first
+  clear height of `combat.json aim.crawler_aim_heights`, and the crawler break never retries a zombie it gave up on
+  (it did, every think, and held a round open).
+- Tried and dropped: knifing for Scrip in rounds 1-2 (`points.knife_until_round`, now 0): it earned less (the agent
+  waited for the zombies to come) and one run died in round 2.
+
+Measured (headless, solo, `--max-minutes=40`; "training runs" = runs with 20 %+ of their time training, their mean
+train and median hits per training minute). The pass-2 baseline was re-measured on this machine first. After the
+merge of master (T-076 spawn and opening, T-078 Scrip bonuses and the round-5 tonic, T-079 Muster) both sides
+were run again on the merged game, so each pair compares the same economy:
+
+| Batch | runs | mean round | best | stall runs (40 min cap) | training share | training runs: train / hits per min | power on |
+|---|---|---|---|---|---|---|---|
+| Map 0, pass 2 (a2754e7, old economy) | 12 | 7.25 | 9 | 1 | 0.16 | 2 runs: 3.7 / 2.3 | |
+| Map 0, pass 3 before the merge | 12 | 8.17 | 10 | 0 | 0.27 | 6 runs: 8.5 / 5.3 | |
+| Map 0, pass 2 on merged master (aba1189) | 24 | 7.17 | 9 | 4 | 0.33 | 13 runs: 6.1 / 3.0 | |
+| **Map 0, pass 3 on merged master** | 24 | **7.71** | **10** | **0** | 0.28 | 12 runs: 7.7 / 4.5 | |
+| Kaltenbrunn, pass 2 (a2754e7) | 6 | 7.50 | 9 | 0 | 0.01 | none | 0 / 6 |
+| Kaltenbrunn, pass 2 on merged master | 8 | 7.75 | 10 | 0 | 0.00 | none | 0 / 8 |
+| **Kaltenbrunn, pass 3 on merged master** | 8 | **7.00** | 9 | 0 | 0.12 | 2 runs: 4.5 / 5.5 | **5 / 8** |
+
+12-run batches of the same code differ by up to a round (two pass-3 batches of 12 on the merged game: 8.2 and 7.2),
+so the Map 0 gain (+0.5 rounds over 24 seeds, no stalls, best 10) is real but small. Most of pass 2's training
+share in the old baseline came from the stalled runs (a train of one for 40 minutes).
+
+**Still short of the brief (targets: Map 0 12+, Kaltenbrunn 10+ with the power):** not met. Why it stops:
+- On Map 0 the runs that reach the yard with Ironhide and an SMG train well (training 40-90 %, a train of 6-12) and
+  die in rounds 9-10 at 4-6 hits per training minute: runners (4.8 m/s) against a walk backwards of ~5.1 m/s, the
+  yard's three windows and the stable door feeding cutters into the loop's ends, and a Thompson / MP40 that needs
+  15+ hits a zombie from round 8. Most of those runs die with 3,000-7,000 Scrip and Marathon / the Crucible
+  unbought: they sit in the cellar and the breaks are 10-15 s; the crawler break helps (1-4 a run) but the sever
+  roll fails a third of the time.
+- Runs that don't reach the yard by round 7 (about half) die at 6-8 in the taproom / cellar fights with the Garand
+  or the MP40.
+- Kaltenbrunn: the power now comes on (rounds 5-7) in most runs, but the trip down costs: it dies underground at
+  7-8 with Ironhide (in the Barracks, on the surface) unbought and Scrip in hand. Mean rounds went down
+  (7.75 -> 7.0 on 8 seeds).
+- `smoke_botmode` failed once in four runs (round-4 taproom test with a Thompson: 5 hits, downed); it passed the
+  other three.
