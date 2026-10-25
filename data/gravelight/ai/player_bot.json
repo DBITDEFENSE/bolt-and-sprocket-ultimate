@@ -16,8 +16,11 @@
     "_doc": "The first-person view follows the agent's look on a damped turn, never a snap: angular speed = clamp(error x gain_per_s, max_rate_rad_s), changed at most accel_rad_s2 per second. sprint_mult while running.",
     "max_rate_rad_s": 7.5,
     "accel_rad_s2": 50.0,
-    "gain_per_s": 11.0,
-    "sprint_mult": 0.8
+    "gain_per_s": 16.0,
+    "sprint_mult": 0.8,
+    "ff_max_rad_s": 4.0,
+    "ff_smooth": 0.25,
+    "_ff_doc": "T-071 pass 3: feed-forward: the look's own turn rate (low-passed by ff_smooth per frame, capped at ff_max_rad_s) is added to error x gain, so a steady track has no lag (the plain damped turn trailed a moving target past the fire tolerance). 0 turns it off."
   },
   "takeover": {
     "_doc": "Hand-back: any of these actions pressed, the move stick past move_dead, or the mouse moved more than mouse_px in one event (captured). After an enable the inputs held at that moment must be released first, and nothing counts for grace_s.",
@@ -37,8 +40,8 @@
     "_skip_doc": "T-071 pass 3: while the current step can't be done (unaffordable: the next skip_ahead steps that are cheaper may go first; affordable but waiting for its moment, e.g. a perk in the cellar mid-round: any of them). A step with firm: true is never jumped (AgentPlan.later_steps). A map's plan may set its own skip_ahead.",
     "map00": {
       "_why": "Crossroads Inn solo: the Garand off the taproom wall (one-shot heads to round 4), the cellar door for the power, Second Wind (the solo self-revive) and Ironhide (5 hits), then the stable and the yard: the Well Loop is the map's open ground (measured: 2-4 hits a training minute against 10-15 on the taproom's ring round its four windows) with the Thompson chalked on the stable wall beside it (wall ammo on a lap); Marathon (an endless sprint outruns the runners from round 8), then the Thompson into the Crucible.",
-      "steps": [{"gun": "m1_garand", "or_tier": 2.4}, {"door": "door_cellar"}, {"power": true}, {"perk": "second_wind"}, {"perk": "ironhide_stout", "firm": true}, {"door": "door_stable"}, {"door": "door_yard"},
-        {"gun": "thompson", "or_tier": 3.6}, {"perk": "marathon_malt"}, {"crucible": "*"}, {"perk": "trigger_tonic"}],
+      "steps": [{"gun": "m1_garand", "or_tier": 2.4}, {"door": "door_cellar"}, {"power": true}, {"perk": "second_wind"}, {"perk": "ironhide_stout", "firm": true}, {"door": "door_stable"}, {"door": "door_yard"}, {"gun": "thompson", "or_tier": 3.6},
+        {"perk": "marathon_malt"}, {"crucible": "*"}, {"perk": "trigger_tonic"}],
       "train_at": ["map00_yard_well", "map00_taproom"]
     },
     "map01": {
@@ -48,6 +51,13 @@
       "train_at": ["map01_turbines", "map01_pews", "map01_headframe"]
     }
   },
+  "points": {
+    "_doc": "T-071 pass 3: Scrip in the first rounds the way a solo player makes it: up to knife_until_round, a lone zombie (nothing else within crowd_m, the agent unhurt) is shot in the body until the knife kills it, then let come and knifed (130 Scrip a knife kill; BotAim.knife_for_points). 0 turns it off.",
+    "knife_until_round": 2,
+    "crowd_m": 5.0
+  },
+  "wall_ammo_below": 0.55,
+  "_wall_ammo_doc": "T-071 pass 3: the agent buys wall ammo for its main gun below this share of a full load (economy.json wall_ammo_below, 0.35, for the bots).",
   "crawler": {
     "_doc": "T-071 pass 3: the crawler break (AgentCrawler, gravelight/bots/agent_crawler.gd). With the round down to its last zombie (nothing left to spawn, from from_round, never a special round) and an errand pending (the plan's step affordable and reachable, a Second Wind rebuy, the main gun under ammo_frac), the agent shoots its legs until it crawls (giving up after make_max_s or when the sever roll fails), then does its errands as in a break while it crawls (left out of the threat picture beyond ignore_within_m), and kills it once nothing is left to do for done_s (or after hold_max_s). Solo or with no bot teammates only.",
     "enabled": true,
@@ -116,6 +126,10 @@
     "low_ammo_value": 0.35,
     "special_round": "train",
     "_pass2_doc": "T-071 pass 2: own_from_round: from this round (and in every special round) the trainer owns the round (BotBrain runs lead_train whatever else scores, a revive excepted). Gathering: facing the way it lets the round group up behind it until gather_target() followers (gather_n, gather_by_round [[round, n]...], never more than the round has left; gather_left_out: how many may still be elsewhere once the spawns are out), then turns on the train (FACE) while safe_to_turn. rejoin_nav_m: further than this off the loop it takes the navmesh back (TRAVEL), nearer the kite steers it back on. Sprint (RUN): head inside gap + sprint_extra_m (+ sprint_runner_m for a zombie faster than a walk; sprint_marathon_m with Marathon's endless sprint). run_fire_deg: while gathering only a target within this angle of the way ahead is shot. cut_pass_m: a cutter closer than this is passed at a sprint, not shot. boxed_score: a kite score below this with the train on its heels breaks off the loop (escape).",
+    "train_spray_mult": 2.0,
+    "revive_escape_s": 2.0,
+    "_revive_escape_doc": "T-071 pass 3: after a Second Wind self-revive, break away at a sprint for this long (BotTrainer._escape) before anything else.",
+    "_spray_doc": "T-071 pass 3: training a train of 3+, the fire discipline's spray width (combat.json spray_width_mult) x this: hip fire on the walk into a bunched train hits what is behind the target.",
     "own_from_round": 3,
     "gather_n": 6,
     "gather_by_round": [[1, 3], [4, 5], [6, 7], [9, 9], [12, 11]],

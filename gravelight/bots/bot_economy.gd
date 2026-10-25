@@ -611,7 +611,10 @@ func _ammo_candidate(anc: Vector3, rng: float, scrip: int) -> Dictionary:
 					"cost": price, "label": "refill the %s at an ammo box (%d Scrip)" % [sw.display_name(), price]}
 				if worst < 0.12:
 					out["value"] = 1.0   # nearly dry: this comes before anything else
-	if worst < float(eco.get("wall_ammo_below", 0.35)) and bool(brain.options.get("shopping", true)):
+	var wall_below: float = float(eco.get("wall_ammo_below", 0.35))
+	if brain.is_player_bot:
+		wall_below = float(BotAIData.table("player_bot").get("wall_ammo_below", wall_below))   # T-071 pass 3: the agent tops up sooner (a train never waits for a dry gun)
+	if worst < wall_below and bool(brain.options.get("shopping", true)):
 		for wb: WallBuy in brain.squad.wall_buys():
 			if not is_instance_valid(wb) or wb.weapon_id != sw.base_id() or _flat(wb.global_position, anc) > rng:
 				continue

@@ -518,6 +518,7 @@ func _end_run(why: String) -> void:
 		if _pb.brain != null:
 			_metrics.extra["pb_shots"] = _pb.brain.aim.shots
 			_metrics.extra["pb_hit_share"] = snappedf(float(_pb.brain.aim.hits_landed) / float(maxi(1, _pb.brain.aim.shots)), 0.01)
+			_metrics.extra["pb_fire_blocks"] = str(_pb.brain.aim.fire_blocks)
 		_metrics.extra["pb_handbacks"] = _pb.handbacks
 		_metrics.extra["pb_scrip_end"] = Economy.get_scrip(1)
 		_metrics.extra["pb_perks"] = ",".join(PackedStringArray(PerkManager.owned(1).map(func(x: Variant) -> String: return str(x))))

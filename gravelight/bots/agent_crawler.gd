@@ -22,6 +22,9 @@ var target: Zombie = null
 var _t0: float = 0.0
 var _idle_t: float = -1.0
 var _round: int = -1
+## Zombies already tried (instance id -> true): a failed try is never repeated on the same zombie (it was, every
+## think, and an out-of-sight pair of legs held a round open for the soak's whole time cap).
+var _tried: Dictionary = {}
 ## Counters for the soak.
 var stats: Dictionary = {"made": 0, "failed": 0, "held_s": 0.0, "released": 0}
 
@@ -93,12 +96,15 @@ func think(now: float) -> void:
 	var zc: Variant = z.get("_cfg")
 	if zc is Dictionary and not bool((zc as Dictionary).get("can_crawl", true)):
 		return
-	if float(z.get("_leg_damage")) == -INF or z.state != Zombie.State.CHASE:
+	if float(z.get("_leg_damage")) == -INF or z.state != Zombie.State.CHASE or _tried.has(z.get_instance_id()):
 		return
 	if not errands_pending():
 		return
 	state = State.MAKING
 	target = z
+	if _round != RoundManager.current_round:
+		_tried.clear()
+	_tried[z.get_instance_id()] = true
 	_t0 = brain.squad.time()
 	_round = RoundManager.current_round
 

@@ -98,6 +98,23 @@ func setup(b: BotBrain) -> void:
 	reset_stats()
 	GLBus.player_damaged.connect(_on_damaged)
 	GLBus.enemy_killed.connect(_on_killed)
+	GLBus.self_revive.connect(_on_self_revive)
+
+
+## Pass 3: back up from a Second Wind self-revive in the middle of the crowd that downed it: break away at a
+## sprint first (revive_escape_s), instead of standing up into the same swings (the soaks' second downs came
+## within seconds, on the same spot).
+func _on_self_revive(pid: int, _left: int) -> void:
+	if pid != player.player_id:
+		return
+	_esc_t = _f("revive_escape_s", 2.0)
+	_esc_p = Vector3.INF
+	stats["revive_escapes"] = int(stats.get("revive_escapes", 0)) + 1
+
+
+## Breaking away (after a self-revive, or boxed in on the loop): the brain lets lead_train run it.
+func escaping() -> bool:
+	return _esc_t > 0.0 and (route != null or not _routes.is_empty())
 
 
 func reset_stats() -> void:
@@ -410,6 +427,13 @@ func run(delta: float) -> void:
 			and not (phase == Phase.RUN and phase_t < _f("run_min_s", 0.45) and _glancing):
 		want = Phase.FACE
 	if want != phase:
+		if phase == Phase.FACE:
+			# (pass 3) why FACE ended, for the soak's numbers
+			var why: String = "cut" if want == Phase.CUT else ("close" if head != null and head_d < close_m and can_sprint else \
+					("max" if phase_t > _f("face_max_s", 4.0) else ("dry" if mag <= 0 else ("reload" if brain.aim.reloading or reload_due else ("nofollow" if followers <= 0 else "other")))))
+			var fe: Dictionary = stats.get("face_exit", {})
+			fe[why] = int(fe.get(why, 0)) + 1
+			stats["face_exit"] = fe
 		_glancing = phase == Phase.FACE and want == Phase.RUN and phase_t > _f("face_max_s", 4.0)
 		if want == Phase.FACE:
 			stats["turns"] = int(stats["turns"]) + 1
@@ -1154,7 +1178,7 @@ func summary() -> Dictionary:
 		"reversals": int(stats["reversals"]), "passes": int(stats["passes"]), "cutter_shots": int(stats["cutter_shots"]), "escapes": int(stats["escapes"]),
 		"shops": int(stats.get("shops", 0)), "shops_done": int(stats.get("shops_done", 0)), "cut_modes": "shoot %d pass %d reverse %d escape %d" % [int(stats.get("cut_shoot", 0)), int(stats.get("cut_pass", 0)), int(stats.get("cut_reverse", 0)), int(stats.get("cut_escape", 0))],
 		"turns": int(stats["turns"]), "stuck_s": snappedf(float(stats["stuck_s"]), 0.1), "loop_changes": int(stats["loop_changes"]),
-		"loops": " ".join(stats["loops"] as PackedStringArray)}
+		"loops": " ".join(stats["loops"] as PackedStringArray), "face_exit": str(stats.get("face_exit", {}))}
 
 
 static func _flat(a: Vector3, b: Vector3) -> float:

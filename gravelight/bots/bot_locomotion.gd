@@ -131,6 +131,9 @@ var _turn_skill: String = ""
 ## {max_rate_rad_s, accel_rad_s2, gain_per_s, sprint_mult} (player_bot.json "turn").
 var skill_override: String = ""
 var smooth_turn: Dictionary = {}
+var _ff_v: float = 0.0
+var _want_yaw_prev: float = 0.0
+var _want_yaw_ok: bool = false
 var _yaw_v: float = 0.0
 var _pitch_v: float = 0.0
 
@@ -1091,8 +1094,18 @@ func _face_smooth(delta: float, want: Vector3, running: bool) -> void:
 	var acc: float = float(smooth_turn.get("accel_rad_s2", 34.0))
 	var gain: float = float(smooth_turn.get("gain_per_s", 11.0))
 	if Vector2(want.x, want.z).length_squared() > 0.0001:
-		var dy: float = wrapf(atan2(-want.x, -want.z) - player.rotation.y, -PI, PI)
-		_yaw_v = move_toward(_yaw_v, clampf(dy * gain, -max_r, max_r), acc * delta)
+		var wy: float = atan2(-want.x, -want.z)
+		var dy: float = wrapf(wy - player.rotation.y, -PI, PI)
+		# T-071 pass 3: feed-forward of the look's own turn rate (smoothed, capped at ff_max_rad_s), so a steady
+		# track (a zombie crossing, the agent backing round a bend) has no lag: the plain damped turn trailed a
+		# moving target by more than the fire tolerance and the agent held its fire ("turning") most of the time
+		var ffm: float = float(smooth_turn.get("ff_max_rad_s", 0.0))
+		if ffm > 0.0 and delta > 0.0:
+			var raw: float = wrapf(wy - _want_yaw_prev, -PI, PI) / delta if _want_yaw_ok else 0.0
+			_ff_v = lerpf(_ff_v, clampf(raw, -ffm, ffm), clampf(float(smooth_turn.get("ff_smooth", 0.25)), 0.0, 1.0))
+		_want_yaw_prev = wy
+		_want_yaw_ok = true
+		_yaw_v = move_toward(_yaw_v, clampf(dy * gain + _ff_v, -max_r, max_r), acc * delta)
 		var stepy: float = _yaw_v * delta
 		if absf(stepy) > absf(dy) and signf(stepy) == signf(dy):
 			stepy = dy

@@ -444,7 +444,7 @@ func _think() -> void:
 	var best: String = str(pick[0]) if str(pick[0]) != "" else "idle"
 	if _sticky and best != action and not (["revive", "retreat", "cover"].has(best) and float(scores.get(best, 0.0)) > 0.8):
 		best = action   # a gun in the Crucible, a paid crate, a held objective: only an emergency pulls it away
-	if is_player_bot and trainer != null and best != "revive" and trainer.owns_round():
+	if is_player_bot and trainer != null and best != "revive" and (trainer.owns_round() or trainer.escaping()):
 		best = "lead_train"   # T-071 pass 2: from its own_from_round the agent's trainer owns the round
 	top3 = BotUtility.top(scores, 3)
 	if best != action and (now - _action_t >= float(_acfg.get("min_action_s", 0.4)) or action == "idle" or best == "retreat" or best == "revive"):
