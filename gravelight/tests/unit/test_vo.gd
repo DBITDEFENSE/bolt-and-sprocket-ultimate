@@ -179,7 +179,11 @@ func test_down_sequence_uses_the_second_squad_channel() -> void:
 		if String(GLVO.current_line(&"squad")).begins_with("PEG_REVIVE"):
 			break
 	assert_true(String(GLVO.current_line(&"squad")).begins_with("PEG_REVIVE"), "REVIVE played after TEAM_DOWN: " + str(GLVO.current_line(&"squad")))
-	# REVIVED comes on the player channel at once (DOWN is long over).
+	# REVIVED comes on the player channel at once once DOWN is over (the longest DOWN line can outlast TEAM_DOWN).
+	for i: int in 40:
+		if not String(GLVO.current_line(&"player")).begins_with("PEG_DOWN"):
+			break
+		GLVO.advance(0.5)
 	assert_true(GLVO.say_as(1, "REVIVED", 1.0))
 	assert_true(String(GLVO.current_line(&"player")).begins_with("PEG_REVIVED"), str(GLVO.current_line(&"player")))
 	GameState.character_id = &"dutch"
