@@ -2,7 +2,8 @@
   "id": "map00_radio",
   "display_name": "Glasmacher Calling",
   "map": "map00_crossroads",
-  "version": 1,
+  "version": 2,
+  "_story": "T-086: every step tells its story (docs/gravelight/EASTER_EGGS.md section 4): a setup beat when the step opens (who wants this and why, 2-3 lines, different speakers), progress beats at each note / lock, a payoff beat that says what changed and points on, a reset beat when a lock goes wrong. The bots' deeds fire the same beats. Action keys: QuestManager._run_actions.",
   "bot_knowledge": {"frequencies": {"label": "read the three notes' frequencies", "on_collect": {"tag": "radio_note", "count": 3}}},
   "steps": [
     {
@@ -11,6 +12,19 @@
       "bot_task": {"type": "collect", "targets": {"class": "QuestNote", "where": {"tag": "radio_note"}}, "id_prop": "item_id", "what": "the radio notes", "ping": "NOTE"},
       "params": { "tag": "radio_note", "count": 3 },
       "requires": [],
+      "on_start": [
+        { "on_vo": "FAS_M0_R1_01", "after_end": 1.5, "vo_squad": "M0_EGG_HEARD" },
+        { "on_vo": "FAS_M0_R1_01", "after_end": 7.0, "vo_squad": "M0_EGG_LOOK", "exclude_last": true, "while_active": "s1_notes" },
+        { "on_vo": "FAS_M0_R7_01", "after_end": 1.5, "vo_squad": "M0_EGG_LOOK", "while_active": "s1_notes" }
+      ],
+      "on_item": [
+        { "vo_actor": "M0_EGG_NOTE", "hold": ["INTEL", 8.0], "patience": 8.0 },
+        { "at_n": 1, "vo_squad": "M0_EGG_NOTE_FIRST", "exclude_last": true, "delay": 4.0, "while_active": "s1_notes", "patience": 20.0 },
+        { "at_n": 2, "vo_squad": "M0_EGG_NOTE_TWO", "exclude_last": true, "delay": 4.0, "while_active": "s1_notes", "patience": 20.0 }
+      ],
+      "on_complete": [
+        { "vo_retire": ["FAS_M0_R7_01"] }
+      ],
       "debug_skip": "quest skip map00_radio s1_notes"
     },
     {
@@ -19,8 +33,32 @@
       "bot_task": {"type": "interact_sequence", "target": {"class": "FieldRadio", "where": {"quest_target": "radio_m0"}}, "input": {"method": "lock_frequency", "arg": "string"}, "needs": ["frequencies"], "final": true, "commit": "last_input", "what": "the radio", "ping": "RADIO"},
       "params": { "target": "radio_m0", "inputs": ["3.120", "5.785", "7.440"] },
       "requires": ["s1_notes"],
-      "reset": { "on": "wrong_input", "actions": [] },
-      "on_complete": [ { "flag": "map00_complete" }, { "unlock_map": "map01_kaltenbrunn" }, { "xp": 5000 }, { "archive": "glasmacher_calling" } ]
+      "on_start": [
+        { "vo": "FAS_M0_NOTES_01" },
+        { "vo_squad": "M0_EGG_NOTES_DONE", "delay": 1.0 },
+        { "vo_squad": "M0_EGG_NOTES_DONE", "exclude_last": true, "delay": 7.0 }
+      ],
+      "on_input_ok": [
+        { "at_n": 1, "vo_retire": ["FAS_M0_R1_01"] },
+        { "at_n": 1, "on_vo": "FAS_M0_FREQ1_01", "after_end": 1.0, "expire_s": 30.0, "vo_squad": "M0_EGG_LOCK1" },
+        { "at_n": 2, "on_vo": "FAS_M0_FREQ2_01", "after_end": 1.0, "expire_s": 30.0, "vo_squad": "M0_EGG_LOCK2" }
+      ],
+      "reset": { "on": "wrong_input", "actions": [
+        { "vo_category": ["FAS", "M0_WRONG"] },
+        { "vo_squad": "M0_EGG_WRONG", "delay": 0.5 }
+      ] },
+      "on_complete": [
+        { "flag": "map00_complete" }, { "unlock_map": "map01_kaltenbrunn" }, { "xp": 5000 }, { "archive": "glasmacher_calling" },
+        { "vo_retire": ["FAS_M0_R1_01", "FAS_M0_R7_01"] },
+        { "on_vo": "FAS_M0_FREQ3_01", "after_end": 2.0, "expire_s": 45.0, "vo": "OPR_M0_FIRST_01" },
+        { "on_vo": "OPR_M0_FIRST_01", "after_end": 1.0, "expire_s": 90.0, "vo_squad": "M0_EGG_DONE" },
+        { "on_vo": "OPR_M0_FIRST_01", "after_end": 8.0, "expire_s": 90.0, "vo_squad": "M0_EGG_DONE", "exclude_last": true }
+      ]
     }
+  ],
+  "on_complete": [
+    { "on_vo": "OPR_M0_FIRST_01", "after_end": 16.0, "expire_s": 120.0, "vo": "OPR_M0_CREDIT_01" },
+    { "on_vo": "OPR_M0_CREDIT_01", "after": 2.5, "expire_s": 150.0, "grant_all_perks": true, "banner": "THE LEDGER CREDITS YOUR ACCOUNT\nEvery tonic is yours tonight" },
+    { "on_vo": "OPR_M0_CREDIT_01", "after_end": 1.5, "expire_s": 150.0, "vo_squad": "M0_EGG_TONICS" }
   ]
 }

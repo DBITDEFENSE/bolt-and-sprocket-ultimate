@@ -261,3 +261,41 @@ func test_reload_room() -> void:
 	assert_almost_eq(BotTrainer.reload_room(2.2, 2.0, 1.5, cfg), 2.4, 0.001, "a walker never closes on a walk: reach + margin")
 	assert_almost_eq(BotTrainer.reload_room(2.2, 4.8, 1.5, cfg), 2.4 + (4.8 - walk) * 2.2, 0.001, "a runner closes for the reload's length")
 	assert_gt(BotTrainer.reload_room(6.5, 4.8, 1.5, cfg), BotTrainer.reload_room(2.2, 4.8, 1.5, cfg), "a long reload needs more room")
+
+
+# ---------------------------------------------------------------- T-086: the agent's easter-egg block
+
+func test_agent_egg_block_rules() -> void:
+	var egg: Dictionary = {"quest": "map00_radio", "after": [{"perk": "ironhide_stout"}], "from_round": 3, "max_pressure": 0.3, "quiet_m": 14.0, "value": 0.85}
+	var st: Dictionary = {"doors": {}, "power": true, "perks": [], "guns": [], "round": 2, "eggs": {"map00_radio": false}}
+	assert_false(AgentPlan.egg_ready(egg, st), "not before its round")
+	st["round"] = 4
+	assert_false(AgentPlan.egg_ready(egg, st), "not before the after steps (Ironhide here)")
+	st["perks"] = ["ironhide_stout"]
+	assert_true(AgentPlan.egg_ready(egg, st), "Ironhide drunk, round 4: the egg's moment")
+	st["eggs"]["map00_radio"] = true
+	assert_false(AgentPlan.egg_ready(egg, st), "done is done")
+	assert_false(AgentPlan.egg_ready({}, st), "no block: no egg work")
+	var egg2: Dictionary = {"quest": "map00_radio", "after": [{"door": "door_cellar"}], "from_round": 2, "crawler_after": [{"perk": "ironhide_stout"}]}
+	var st2: Dictionary = {"doors": {"door_cellar": true}, "power": true, "perks": [], "guns": [], "round": 2, "eggs": {}}
+	assert_true(AgentPlan.egg_ready(egg2, st2), "round 2, the cellar open: egg work in the breaks")
+	assert_false(AgentPlan.egg_full(egg2, st2), "but not into a round, and no crawler break for it, before Ironhide")
+	st2["perks"] = ["ironhide_stout"]
+	assert_true(AgentPlan.egg_full(egg2, st2))
+	assert_eq(AgentPlan.egg_value(egg, true, 0.1, 3.0), 0.85, "a break: go, whatever is near")
+	assert_eq(AgentPlan.egg_value(egg, false, 0.1, 20.0), 0.85, "mid-round with nothing within quiet_m: go")
+	assert_eq(AgentPlan.egg_value(egg, false, 0.1, 8.0), 0.0, "a zombie near: not now")
+	assert_eq(AgentPlan.egg_value(egg, true, 0.7, 30.0), 0.0, "under pressure: not now")
+
+
+func test_map00_plan_has_an_egg_block_naming_real_things() -> void:
+	var egg: Dictionary = AgentPlan.egg_block("map00")
+	assert_false(egg.is_empty(), "the Map 0 plan has an egg block")
+	assert_true(ResourceLoader.exists("res://data/gravelight/quests/%s.json" % egg.get("quest", "")), "its quest file exists")
+	for s: Variant in egg.get("after", []):
+		var sd: Dictionary = s as Dictionary
+		if sd.has("perk"):
+			assert_false(PerkManager.perk_data(StringName(str(sd["perk"]))).is_empty(), "perk %s exists" % sd["perk"])
+	var steps: Array = AgentPlan.plan_for("map00").get("steps", [])
+	for s2: Variant in steps:
+		assert_false((s2 as Dictionary).has("egg"), "the egg never sits in the spend order")

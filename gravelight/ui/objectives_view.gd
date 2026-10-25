@@ -38,6 +38,8 @@ var _d_title: Label
 var _d_status: Label
 var _d_text: Label
 var _d_where: Label
+var _d_story: Label
+var _d_quote: Label
 var _d_bar: ProgressBar
 var _d_buttons: HBoxContainer
 var _d_feedback: Label
@@ -100,9 +102,16 @@ func _ready() -> void:
 	_d_bar = _bar()
 	_d_bar.visible = false
 	dv.add_child(_d_bar)
+	_d_story = _label("", 16, _ink())
+	_d_story.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_d_story.modulate = Color(1, 1, 1, 0.82)
+	dv.add_child(_d_story)
 	_d_text = _label("", 17, _ink())
 	_d_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	dv.add_child(_d_text)
+	_d_quote = _label("", 15, _faint())
+	_d_quote.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	dv.add_child(_d_quote)
 	_d_where = _label("", 16, _accent())
 	_d_where.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	dv.add_child(_d_where)
@@ -235,6 +244,12 @@ func _select(e: Dictionary, emit: bool) -> void:
 	_d_title.text = str(e.get("title", "")).trim_prefix("▸ ").trim_prefix("✔ ")
 	_d_text.text = str(e.get("text", "")) if str(e.get("text", "")) != str(e.get("title", "")).trim_prefix("▸ ").trim_prefix("✔ ") else ""
 	_d_where.text = ("Where: " + str(e["where"])) if str(e.get("where", "")) != "" else ""
+	# T-086: the step's story above the instruction, the line that set it up quoted under it
+	_d_story.text = str(e.get("story", ""))
+	_d_story.visible = _d_story.text != ""
+	var q: String = str(e.get("quote", ""))
+	_d_quote.text = ("“%s”  — %s" % [q, str(e.get("quote_by", ""))]) if q != "" else ""
+	_d_quote.visible = q != ""
 	_d_bar.visible = float(e.get("progress", -1.0)) >= 0.0
 	if _d_bar.visible:
 		_d_bar.value = float(e["progress"])

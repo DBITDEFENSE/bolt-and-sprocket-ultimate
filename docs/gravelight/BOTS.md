@@ -217,11 +217,14 @@ UPDATE_03 said bots never touch easter-egg objects. Now they can, when you allow
 Easter-Egg Help**:
 
 - **Off:** bots never touch egg objects (the local-AI planner bot doesn't either, any more).
-- **When Asked** (the default): a bot only does a step you give it: the Objectives tab's "Assign to bot", a map mark
+- **When Asked:** a bot only does a step you give it: the Objectives tab's "Assign to bot", a map mark
   or the ping key on an egg object, part or power-up, or the dev console. The best bot takes it (closest, able, not
-  busy reviving) unless you pick one.
-- **Full Partner:** up to two bots at a time pick open steps they can do themselves, one task each, and say so ("I'll
-  go pick those up. Cover the windows." with a ping on the note). The last steps wait for you to be there.
+  busy reviving) unless you pick one. An assigned bot never makes a step's last move (the radio's third lock is yours).
+- **Full Partner** (the default since T-086): up to two bots at a time pick open steps they can do themselves, one
+  task each, and say so ("I'll go pick those up. Cover the windows." with a ping on the note). A last step waits
+  for you to be there for a minute, then they go on; a step's last move is offered to you ("Everything's set. The
+  last move is yours.") for 45 s, then the bot makes it ("You're busy. I'll turn the last one myself."). So on the
+  Crossroads Inn the bots finish Glasmacher Calling on their own, and the story plays as they do it.
 
 How a bot does a step is data: every step in `data/gravelight/quests/*.json` has a `bot_task` (task types Collect,
 Shoot target, Hold zone, Carry, Interact sequence, Kill with weapon X near Y, Escort/defend the player, Turn key; the
@@ -297,7 +300,10 @@ the stick, fire, aim, jump, sprint, reload, use, knife, a grenade, a weapon key,
   the Elite preset and turns your view on a damped curve (never a snap). It shops with your Scrip (no free bot kit)
   by a **game plan** per map (`player_bot.json` "plans"; passes 2-3): on the Crossroads Inn the Garand, the cellar
   door and the power, Second Wind (your solo self-revive), the upstairs door and the MP40, Ironhide, the stable and the
-  yard, the Thompson on the stable wall, Marathon, then the Crucible; on Kaltenbrunn the carbine, the Rail Yard and
+  yard, the Thompson on the stable wall, Marathon, then the Crucible; **and the easter egg (T-086)**: once it has
+  Ironhide (from round 3), in quiet moments (a break, its crawler break, nothing near) it does the next open step of
+  Glasmacher Calling itself, notes and radio, through the same egg code the squad bots use, and the HUD tag shows
+  "egg: Collecting the radio notes"; on Kaltenbrunn the carbine, the Rail Yard and
   the MP40, Second Wind in Administration, the Barracks, the maintenance stairs and the Generator Hall for the
   Hauptschalter, Ironhide, Marathon, the StG-44. Ammo, an ammo box and the boards are always allowed; while the next
   step can't be done yet (too dear, or waiting for a break) a cheaper step just after it may go first, so it doesn't

@@ -1,6 +1,11 @@
 {
   "_doc": "Bots on the easter egg (Update 04 section 5, T-067; gravelight/bots/bot_ee*.gd, docs/gravelight/BOTS.md). The setting 'Bot Easter-Egg Help' (GLSettings bot_ee_help): off / ask (When Asked, the default) / full (Full Partner). Each quest step's bot_task (data/gravelight/quests/*.json) says how a bot does it; these are the shared numbers.",
-  "default_mode": "ask",
+  "default_mode": "full",
+  "_default_mode": "T-086: Full Partner by default (the user: 'the bots should be able to do the Easter egg'); the saved setting still wins (GLSettings bot_ee_help, migrated once by settings.gd).",
+  "full_commit_after_s": 45.0,
+  "_full_commit_after_s": "T-086: Full Partner and a step with commit last_input (the radio's third lock): the bot sets everything up, says the last one is the player's, and waits this long for them; then it makes the commit itself (EE_COMMIT_SELF). When Asked keeps the hand-off: an assigned bot never takes the commit. The player-bot agent (bot mode) is the player and commits at once.",
+  "full_final_wait_s": 60.0,
+  "_full_final_wait_s": "T-086: a final step in Full Partner waits this long (from the first time a bot could have started it) for the player to be within presence_m; after that the bots do it without them.",
   "pick_every_s": 1.0,
   "full_max_bots": 2,
   "_full_max_bots": "Full Partner: at most this many bots on egg work at once (the rest stay with the player).",

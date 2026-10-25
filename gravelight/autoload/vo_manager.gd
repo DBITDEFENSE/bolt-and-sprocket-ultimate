@@ -90,6 +90,7 @@ var _echo: Dictionary = {}           # squad_echo prefix -> [time, speaker] of t
 var _last_drawn: Dictionary = {}     # "SPK:CAT" -> the id drawn last, so a refilled bag never opens with it
 var _occl_t: float = 0.0             # next occlusion check (physics time left)
 var _occl: Dictionary = {}           # AudioStreamPlayer3D -> 0..1 occlusion amount (smoothed)
+var last_said_pid: int = -1          # the survivor who last got a say_as / squad_say line out (T-086 story beats)
 
 
 func _ready() -> void:
@@ -288,11 +289,58 @@ func say_player(category: String, chance_override: float = -1.0) -> bool:
 ## A line from the survivor player `pid` plays (a human, a co-op teammate or a bot), in their own voice,
 ## positioned at their body unless they are the local player.
 func say_as(pid: int, category: String, chance_override: float = -1.0) -> bool:
-	return play_category(speaker_of(pid), category, chance_override, pid)
+	var ok: bool = play_category(speaker_of(pid), category, chance_override, pid)
+	if ok:
+		last_said_pid = pid
+	return ok
+
+
+## A squad line for a story beat (T-086, QuestManager "vo_squad" / "vo_actor"): said by `pid` (0 = one random
+## standing survivor other than `exclude_pid`) `seconds` from now, and never over a story line: it waits for the
+## radio / the Operator to finish (up to `patience` s, then it is dropped). Tier-2 categories (rules.json
+## player_category_priority) still cut a quip and queue behind another squad line instead of being dropped.
+func say_story_beat(pid: int, category: String, seconds: float = 0.0, exclude_pid: int = -1, patience: float = 90.0) -> void:
+	if pid <= 0:
+		# the speaker is chosen now, so a beat's next line can go to someone else (last_said_pid); solo without
+		# bots, the same survivor carries the whole beat
+		pid = pick_squad_pid(category, exclude_pid)
+		if pid < 0 and exclude_pid >= 0:
+			pid = pick_squad_pid(category, -1)
+		if pid < 0:
+			return
+	last_said_pid = pid
+	_delayed.append({"at": _now + seconds, "pid": pid, "cat": category, "chance": 1.0, "after_story": true, "drop_at": _now + seconds + patience})
+
+
+## A scheduled line the story has moved past (Fasbender's "find the notes" once the notes are found): it counts
+## as played, so a round schedule skips it (QuestManager "vo_retire", T-086).
+func retire(line_id: StringName) -> void:
+	_played_once[String(line_id)] = true
+
+
+func is_retired(line_id: StringName) -> bool:
+	return _played_once.has(String(line_id))
+
+
+## The story beats still waiting (tests): [{pid, cat, at}].
+func pending_story_beats() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for d: Dictionary in _delayed:
+		if bool(d.get("after_story", false)):
+			out.append({"pid": int(d["pid"]), "cat": str(d["cat"]), "at": float(d["at"])})
+	return out
 
 
 ## A line from one random standing survivor other than `exclude_pid` (-1 = anyone).
 func squad_say(category: String, chance_override: float = -1.0, exclude_pid: int = -1) -> bool:
+	var pid: int = pick_squad_pid(category, exclude_pid)
+	if pid < 0:
+		return false
+	return say_as(pid, category, chance_override)
+
+
+## One random standing survivor other than `exclude_pid` who has lines for the category (-1 nobody).
+func pick_squad_pid(category: String, exclude_pid: int = -1) -> int:
 	var pool: Array[int] = []
 	for pid: int in standing_pids():
 		if pid != exclude_pid:
@@ -300,8 +348,8 @@ func squad_say(category: String, chance_override: float = -1.0, exclude_pid: int
 				continue   # the companion only takes the turn for a category he has lines for
 			pool.append(pid)
 	if pool.is_empty():
-		return false
-	return say_as(pool[rng.randi_range(0, pool.size() - 1)], category, chance_override)
+		return -1
+	return pool[rng.randi_range(0, pool.size() - 1)]
 
 
 ## Plays an exchange record (lines.json "exchange" parts) now, each part positional at the player its speaker
@@ -339,6 +387,12 @@ func standing_pids() -> Array[int]:
 func current_line(group: StringName) -> StringName:
 	var cur: Dictionary = _current.get(group, {})
 	return StringName(cur.get("id", ""))
+
+
+## The speaker of the line playing in a group (&"" none).
+func current_speaker(group: StringName) -> StringName:
+	var cur: Dictionary = _current.get(group, {})
+	return StringName(cur.get("speaker", ""))
 
 
 func queued_count(group: StringName) -> int:
@@ -928,6 +982,11 @@ func _tick_delayed() -> void:
 			keep.append(d)
 			continue
 		var pid: int = int(d["pid"])
+		# A story beat (say_story_beat) waits for the radio / the Operator however long they talk, then goes.
+		if bool(d.get("after_story", false)) and not _current[GROUP_STORY].is_empty():
+			if _now < float(d.get("drop_at", INF)):
+				keep.append(d)
+			continue
 		# Chatter waits for the announcer (or the radio), up to 10 s; tier-2 squad lines (TEAM_DOWN...) queue at once.
 		var tier2: bool = int((rules.get("player_category_priority", {}) as Dictionary).get(str(d["cat"]), 1)) >= Priority.EVENT
 		if not tier2 and not _current[GROUP_STORY].is_empty() and _now < float(d["at"]) + 10.0:

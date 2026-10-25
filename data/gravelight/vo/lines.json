@@ -7712,5 +7712,440 @@
   "speaker": "WRN",
   "category": "BONUS_SALVAGE",
   "text": "A name. They had names, once."
+ },
+ "DUT_SQ7_M0_EGG_HEARD_01": {
+  "speaker": "DUT",
+  "category": "M0_EGG_HEARD",
+  "text": "That set behind the bar just said Gravelight. That's us, folks."
+ },
+ "DUT_SQ7_M0_EGG_HEARD_02": {
+  "speaker": "DUT",
+  "category": "M0_EGG_HEARD",
+  "text": "Our call sign. On a German radio. Swell."
+ },
+ "PEG_SQ7_M0_EGG_HEARD_01": {
+  "speaker": "PEG",
+  "category": "M0_EGG_HEARD",
+  "text": "Gravelight is our call sign. Nobody this side of London should have it."
+ },
+ "PEG_SQ7_M0_EGG_HEARD_02": {
+  "speaker": "PEG",
+  "category": "M0_EGG_HEARD",
+  "text": "Someone out there knows the name of this mission. Interesting."
+ },
+ "DEA_SQ7_M0_EGG_HEARD_01": {
+  "speaker": "DEA",
+  "category": "M0_EGG_HEARD",
+  "text": "Lord. Somebody out there's calling for us by name."
+ },
+ "DEA_SQ7_M0_EGG_HEARD_02": {
+  "speaker": "DEA",
+  "category": "M0_EGG_HEARD",
+  "text": "That voice knows who we are. Friendly or not, that's something."
+ },
+ "WRN_SQ7_M0_EGG_HEARD_01": {
+  "speaker": "WRN",
+  "category": "M0_EGG_HEARD",
+  "text": "He says Gravelight. He knows the plane. Someone was waiting for us."
+ },
+ "WRN_SQ7_M0_EGG_HEARD_02": {
+  "speaker": "WRN",
+  "category": "M0_EGG_HEARD",
+  "text": "A man alone, calling and calling. He has been doing this a while."
+ },
+ "DUT_SQ7_M0_EGG_LOOK_01": {
+  "speaker": "DUT",
+  "category": "M0_EGG_LOOK",
+  "text": "Innkeeper kept a pencil by that set. People who listen write things down. Look for paper."
+ },
+ "DUT_SQ7_M0_EGG_LOOK_02": {
+  "speaker": "DUT",
+  "category": "M0_EGG_LOOK",
+  "text": "Somebody in this house was tuning that thing before us. Find his notes."
+ },
+ "PEG_SQ7_M0_EGG_LOOK_01": {
+  "speaker": "PEG",
+  "category": "M0_EGG_LOOK",
+  "text": "A set like that is tuned by hand, from notes. Find them. Numbered, if we're lucky."
+ },
+ "PEG_SQ7_M0_EGG_LOOK_02": {
+  "speaker": "PEG",
+  "category": "M0_EGG_LOOK",
+  "text": "Whoever kept that radio kept frequencies. Search the house. Paper, not guns."
+ },
+ "DEA_SQ7_M0_EGG_LOOK_01": {
+  "speaker": "DEA",
+  "category": "M0_EGG_LOOK",
+  "text": "A man who listens that close writes it down. Check the mantel, the trunks, the loft."
+ },
+ "DEA_SQ7_M0_EGG_LOOK_02": {
+  "speaker": "DEA",
+  "category": "M0_EGG_LOOK",
+  "text": "Somebody here wrote those numbers somewhere. Eyes open for paper."
+ },
+ "WRN_SQ7_M0_EGG_LOOK_01": {
+  "speaker": "WRN",
+  "category": "M0_EGG_LOOK",
+  "text": "The innkeeper listened to the works' channels. He wrote them down. Look for the notes."
+ },
+ "WRN_SQ7_M0_EGG_LOOK_02": {
+  "speaker": "WRN",
+  "category": "M0_EGG_LOOK",
+  "text": "Paper. Small, with numbers. The whole house, not just this room."
+ },
+ "DUT_SQ7_M0_EGG_NOTE_01": {
+  "speaker": "DUT",
+  "category": "M0_EGG_NOTE",
+  "text": "Got a note. A frequency, and a Roman numeral. Chapter and verse."
+ },
+ "DUT_SQ7_M0_EGG_NOTE_02": {
+  "speaker": "DUT",
+  "category": "M0_EGG_NOTE",
+  "text": "Paper with a number on it. Hand-written. This goes with the radio."
+ },
+ "PEG_SQ7_M0_EGG_NOTE_01": {
+  "speaker": "PEG",
+  "category": "M0_EGG_NOTE",
+  "text": "A frequency, numbered. Someone meant these to be read in order."
+ },
+ "PEG_SQ7_M0_EGG_NOTE_02": {
+  "speaker": "PEG",
+  "category": "M0_EGG_NOTE",
+  "text": "Note in hand. Megacycles and a numeral. That's for the set behind the bar."
+ },
+ "DEA_SQ7_M0_EGG_NOTE_01": {
+  "speaker": "DEA",
+  "category": "M0_EGG_NOTE",
+  "text": "Here's one. Numbers and a numeral, in a careful hand. Somebody was scared when he wrote this."
+ },
+ "DEA_SQ7_M0_EGG_NOTE_02": {
+  "speaker": "DEA",
+  "category": "M0_EGG_NOTE",
+  "text": "Got a note. He numbered them. Means there's more than one."
+ },
+ "WRN_SQ7_M0_EGG_NOTE_01": {
+  "speaker": "WRN",
+  "category": "M0_EGG_NOTE",
+  "text": "A note. Frequency and a number. I keep it."
+ },
+ "WRN_SQ7_M0_EGG_NOTE_02": {
+  "speaker": "WRN",
+  "category": "M0_EGG_NOTE",
+  "text": "Here. Written fast, but numbered. He knew someone would come."
+ },
+ "JAK_SQ7_M0_EGG_NOTE_01": {
+  "speaker": "JAK",
+  "category": "M0_EGG_NOTE",
+  "text": "A paper with numbers. From the innkeeper's hand, I think. Here."
+ },
+ "JAK_SQ7_M0_EGG_NOTE_02": {
+  "speaker": "JAK",
+  "category": "M0_EGG_NOTE",
+  "text": "I have it. Small writing. A frightened man writes small."
+ },
+ "DUT_SQ7_M0_EGG_NOTE_FIRST_01": {
+  "speaker": "DUT",
+  "category": "M0_EGG_NOTE_FIRST",
+  "text": "One down. The man numbered 'em, so there's more. Keep looking."
+ },
+ "PEG_SQ7_M0_EGG_NOTE_FIRST_01": {
+  "speaker": "PEG",
+  "category": "M0_EGG_NOTE_FIRST",
+  "text": "Numeral one of how many? Three, I'd wager. Keep searching the house."
+ },
+ "DEA_SQ7_M0_EGG_NOTE_FIRST_01": {
+  "speaker": "DEA",
+  "category": "M0_EGG_NOTE_FIRST",
+  "text": "That's the first. Upstairs, the barn, the mantel. He'd have spread them out."
+ },
+ "WRN_SQ7_M0_EGG_NOTE_FIRST_01": {
+  "speaker": "WRN",
+  "category": "M0_EGG_NOTE_FIRST",
+  "text": "First of three. I can feel it. The others are hidden the same way."
+ },
+ "JAK_SQ7_M0_EGG_NOTE_FIRST_01": {
+  "speaker": "JAK",
+  "category": "M0_EGG_NOTE_FIRST",
+  "text": "One. There will be more. Men hide things in threes."
+ },
+ "DUT_SQ7_M0_EGG_NOTE_TWO_01": {
+  "speaker": "DUT",
+  "category": "M0_EGG_NOTE_TWO",
+  "text": "Two. One more somewhere in this inn."
+ },
+ "PEG_SQ7_M0_EGG_NOTE_TWO_01": {
+  "speaker": "PEG",
+  "category": "M0_EGG_NOTE_TWO",
+  "text": "That's two. One more and we have the whole set."
+ },
+ "DEA_SQ7_M0_EGG_NOTE_TWO_01": {
+  "speaker": "DEA",
+  "category": "M0_EGG_NOTE_TWO",
+  "text": "Two of three. One more, Lord willing."
+ },
+ "WRN_SQ7_M0_EGG_NOTE_TWO_01": {
+  "speaker": "WRN",
+  "category": "M0_EGG_NOTE_TWO",
+  "text": "Two. The last one is close. Nothing here is far."
+ },
+ "JAK_SQ7_M0_EGG_NOTE_TWO_01": {
+  "speaker": "JAK",
+  "category": "M0_EGG_NOTE_TWO",
+  "text": "Two now. The third is somewhere nobody looks."
+ },
+ "DUT_SQ7_M0_EGG_NOTES_DONE_01": {
+  "speaker": "DUT",
+  "category": "M0_EGG_NOTES_DONE",
+  "text": "Three notes, three numbers. Let's go make a phone call."
+ },
+ "DUT_SQ7_M0_EGG_NOTES_DONE_02": {
+  "speaker": "DUT",
+  "category": "M0_EGG_NOTES_DONE",
+  "text": "That's the set. Radio's behind the bar. Lowest number first, he said."
+ },
+ "PEG_SQ7_M0_EGG_NOTES_DONE_01": {
+  "speaker": "PEG",
+  "category": "M0_EGG_NOTES_DONE",
+  "text": "All three, in order. To the radio. I'll want that man's name before we trust a word."
+ },
+ "PEG_SQ7_M0_EGG_NOTES_DONE_02": {
+  "speaker": "PEG",
+  "category": "M0_EGG_NOTES_DONE",
+  "text": "We have his frequencies. Lock them in sequence, lowest first. And nobody touch it drunk."
+ },
+ "DEA_SQ7_M0_EGG_NOTES_DONE_01": {
+  "speaker": "DEA",
+  "category": "M0_EGG_NOTES_DONE",
+  "text": "Three numbers. One, two, three. Let's give the man his call."
+ },
+ "DEA_SQ7_M0_EGG_NOTES_DONE_02": {
+  "speaker": "DEA",
+  "category": "M0_EGG_NOTES_DONE",
+  "text": "Got 'em all. The set behind the bar. Start low and climb, like a hymn."
+ },
+ "WRN_SQ7_M0_EGG_NOTES_DONE_01": {
+  "speaker": "WRN",
+  "category": "M0_EGG_NOTES_DONE",
+  "text": "Three. Now the radio. One, two, three, in order. A wrong one makes noise, and noise brings them."
+ },
+ "WRN_SQ7_M0_EGG_NOTES_DONE_02": {
+  "speaker": "WRN",
+  "category": "M0_EGG_NOTES_DONE",
+  "text": "We have all of it. Behind the bar. I will read, someone turns."
+ },
+ "JAK_SQ7_M0_EGG_NOTES_DONE_01": {
+  "speaker": "JAK",
+  "category": "M0_EGG_NOTES_DONE",
+  "text": "Three papers. The radio is yours. I don't know radios. I know what noise brings."
+ },
+ "DUT_SQ7_M0_EGG_LOCK1_01": {
+  "speaker": "DUT",
+  "category": "M0_EGG_LOCK1",
+  "text": "So that's our defector. Sounds like he's about to cry."
+ },
+ "PEG_SQ7_M0_EGG_LOCK1_01": {
+  "speaker": "PEG",
+  "category": "M0_EGG_LOCK1",
+  "text": "Fasbender. Glasmacher. That's our man. London said physicist, not penitent."
+ },
+ "DEA_SQ7_M0_EGG_LOCK1_01": {
+  "speaker": "DEA",
+  "category": "M0_EGG_LOCK1",
+  "text": "'The reason you are here.' Man says that like a confession."
+ },
+ "WRN_SQ7_M0_EGG_LOCK1_01": {
+  "speaker": "WRN",
+  "category": "M0_EGG_LOCK1",
+  "text": "Kaltenbrunn. The salt works. My brother's letters came from there."
+ },
+ "JAK_SQ7_M0_EGG_LOCK1_01": {
+  "speaker": "JAK",
+  "category": "M0_EGG_LOCK1",
+  "text": "Fasbender. I know that name. The men from his department never went down with us."
+ },
+ "DUT_SQ7_M0_EGG_LOCK2_01": {
+  "speaker": "DUT",
+  "category": "M0_EGG_LOCK2",
+  "text": "Black glass in the salt. Babcia's letter said that. I thought it was a story."
+ },
+ "PEG_SQ7_M0_EGG_LOCK2_01": {
+  "speaker": "PEG",
+  "category": "M0_EGG_LOCK2",
+  "text": "A stone that hums. London wants a piece of it. Of course they do."
+ },
+ "DEA_SQ7_M0_EGG_LOCK2_01": {
+  "speaker": "DEA",
+  "category": "M0_EGG_LOCK2",
+  "text": "The dead remember. One thing. Lord, let that be the worst of it."
+ },
+ "WRN_SQ7_M0_EGG_LOCK2_01": {
+  "speaker": "WRN",
+  "category": "M0_EGG_LOCK2",
+  "text": "It hums, he says. Tomasz wrote of a hum. Then he stopped writing."
+ },
+ "JAK_SQ7_M0_EGG_LOCK2_01": {
+  "speaker": "JAK",
+  "category": "M0_EGG_LOCK2",
+  "text": "The black glass. We cut round it in Gallery Nine. We were told not to touch it. We touched it."
+ },
+ "DUT_SQ7_M0_EGG_WRONG_01": {
+  "speaker": "DUT",
+  "category": "M0_EGG_WRONG",
+  "text": "That static's a dinner bell. Start over. Lowest first."
+ },
+ "DUT_SQ7_M0_EGG_WRONG_02": {
+  "speaker": "DUT",
+  "category": "M0_EGG_WRONG",
+  "text": "Wrong one. They heard it. Back to the first number."
+ },
+ "PEG_SQ7_M0_EGG_WRONG_01": {
+  "speaker": "PEG",
+  "category": "M0_EGG_WRONG",
+  "text": "Wrong frequency. The sequence resets. From the lowest, and mind the windows."
+ },
+ "PEG_SQ7_M0_EGG_WRONG_02": {
+  "speaker": "PEG",
+  "category": "M0_EGG_WRONG",
+  "text": "That was loud. Again, from the first. Carefully."
+ },
+ "DEA_SQ7_M0_EGG_WRONG_01": {
+  "speaker": "DEA",
+  "category": "M0_EGG_WRONG",
+  "text": "Wrong note. Every one of them heard it. Back to the start."
+ },
+ "DEA_SQ7_M0_EGG_WRONG_02": {
+  "speaker": "DEA",
+  "category": "M0_EGG_WRONG",
+  "text": "Static like that carries. Start again, low to high."
+ },
+ "WRN_SQ7_M0_EGG_WRONG_01": {
+  "speaker": "WRN",
+  "category": "M0_EGG_WRONG",
+  "text": "Wrong. Again, from the first note. Quickly, they come."
+ },
+ "WRN_SQ7_M0_EGG_WRONG_02": {
+  "speaker": "WRN",
+  "category": "M0_EGG_WRONG",
+  "text": "No. The first number. Then the second. They heard that."
+ },
+ "JAK_SQ7_M0_EGG_WRONG_01": {
+  "speaker": "JAK",
+  "category": "M0_EGG_WRONG",
+  "text": "That noise. In the mine, that noise meant run. Try again, from the first."
+ },
+ "DUT_SQ7_M0_EGG_DONE_01": {
+  "speaker": "DUT",
+  "category": "M0_EGG_DONE",
+  "text": "Nine kilometres. In snow. With them. Swell."
+ },
+ "DUT_SQ7_M0_EGG_DONE_02": {
+  "speaker": "DUT",
+  "category": "M0_EGG_DONE",
+  "text": "The rail line east. When the snow quits. Until then, this inn is ours."
+ },
+ "PEG_SQ7_M0_EGG_DONE_01": {
+  "speaker": "PEG",
+  "category": "M0_EGG_DONE",
+  "text": "Kaltenbrunn, nine kilometres east by rail, when the snow stops. Until then we hold this house. That's the mission."
+ },
+ "PEG_SQ7_M0_EGG_DONE_02": {
+  "speaker": "PEG",
+  "category": "M0_EGG_DONE",
+  "text": "He said bring all of them. Twice. We'll discuss what he meant when I'm looking at him."
+ },
+ "DEA_SQ7_M0_EGG_DONE_01": {
+  "speaker": "DEA",
+  "category": "M0_EGG_DONE",
+  "text": "'Bring all of them.' He said it twice. Why would a man say that twice?"
+ },
+ "DEA_SQ7_M0_EGG_DONE_02": {
+  "speaker": "DEA",
+  "category": "M0_EGG_DONE",
+  "text": "A gatehouse and a headframe. We'll know it when we see it. First we live till morning."
+ },
+ "WRN_SQ7_M0_EGG_DONE_01": {
+  "speaker": "WRN",
+  "category": "M0_EGG_DONE",
+  "text": "East. The rail line. It goes to the salt works. I know that line."
+ },
+ "WRN_SQ7_M0_EGG_DONE_02": {
+  "speaker": "WRN",
+  "category": "M0_EGG_DONE",
+  "text": "That other voice. Cheerful. On his frequency. That was not Fasbender."
+ },
+ "JAK_SQ7_M0_EGG_DONE_01": {
+  "speaker": "JAK",
+  "category": "M0_EGG_DONE",
+  "text": "I walked that line, the other way, with ten men behind me. I will walk it back."
+ },
+ "DUT_SQ7_M0_EGG_TONICS_01": {
+  "speaker": "DUT",
+  "category": "M0_EGG_TONICS",
+  "text": "The machines just lit up. All of 'em. Nobody paid."
+ },
+ "PEG_SQ7_M0_EGG_TONICS_01": {
+  "speaker": "PEG",
+  "category": "M0_EGG_TONICS",
+  "text": "Nothing in this country is free. Drink anyway."
+ },
+ "DEA_SQ7_M0_EGG_TONICS_01": {
+  "speaker": "DEA",
+  "category": "M0_EGG_TONICS",
+  "text": "Every cabinet in the house just woke up. That voice did that. Think on it."
+ },
+ "WRN_SQ7_M0_EGG_TONICS_01": {
+  "speaker": "WRN",
+  "category": "M0_EGG_TONICS",
+  "text": "The cabinets. Open. All of them. A gift from a voice we don't know."
+ },
+ "JAK_SQ7_M0_EGG_TONICS_01": {
+  "speaker": "JAK",
+  "category": "M0_EGG_TONICS",
+  "text": "Those machines. I told you what they put in them. Now they pour it free. Think why."
+ },
+ "FAS_M0_NOTES_01": {
+  "speaker": "FAS",
+  "category": "M0_NOTES",
+  "text": "[static, then steadier] Glasmacher, repeating. If you have found my technician's notes: three numbers. The lowest first. Lock each one, and wait for me. I am listening on all three. [click]"
+ },
+ "FAS_M0_WRONG_01": {
+  "speaker": "FAS",
+  "category": "M0_WRONG",
+  "text": "[through a burst of static] No, no, that was not... they heard that. Everything out there heard that. Start again. The lowest first."
+ },
+ "FAS_M0_WRONG_02": {
+  "speaker": "FAS",
+  "category": "M0_WRONG",
+  "text": "[static] Wrong. Wrong, and loud. I am sorry, I should have... again, from the first number. Quickly, please."
+ },
+ "OPR_M0_FIRST_01": {
+  "speaker": "OPR",
+  "category": "M0_FIRST",
+  "text": "[faint, cheerful, from no particular direction] ...and a pleasant evening to all our listeners on the Kaltenbrunn band! Do stay {tuned}."
+ },
+ "OPR_M0_CREDIT_01": {
+  "speaker": "OPR",
+  "category": "M0_CREDIT",
+  "text": "[faint] A warm welcome to our new listeners. Every account on this frequency has been {credited} in full. The house tonics are on the Ledger tonight. Do enjoy them. [tape click]"
+ },
+ "DUT_SQ4_EE_COMMIT_SELF_01": {
+  "speaker": "DUT",
+  "category": "EE_COMMIT_SELF",
+  "text": "You're busy. I'll turn the last one myself."
+ },
+ "PEG_SQ4_EE_COMMIT_SELF_01": {
+  "speaker": "PEG",
+  "category": "EE_COMMIT_SELF",
+  "text": "You're occupied. I'll make the last move. Do say if you mind."
+ },
+ "DEA_SQ4_EE_COMMIT_SELF_01": {
+  "speaker": "DEA",
+  "category": "EE_COMMIT_SELF",
+  "text": "You've got your hands full. I'll finish it, brother."
+ },
+ "WRN_SQ4_EE_COMMIT_SELF_01": {
+  "speaker": "WRN",
+  "category": "EE_COMMIT_SELF",
+  "text": "You are busy. I do the last one."
  }
 }

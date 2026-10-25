@@ -155,6 +155,8 @@ func errands_pending() -> bool:
 	if w != null and w.reserve_max() > 0 and float(w.mag + w.reserve) / float(maxi(1, w.mag_size() + w.reserve_max())) < _f("ammo_frac", 0.5) \
 			and scrip >= keep + 250:
 		return true
+	if AgentPlan.egg_pending(brain):
+		return true   # T-086: an open easter-egg step the agent can do (its own crawler break is its egg time)
 	return false
 
 

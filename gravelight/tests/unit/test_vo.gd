@@ -244,3 +244,44 @@ func test_team_down_never_picks_the_bot_squads_claimed_reviver() -> void:
 	for n: Node in mates:
 		n.remove_from_group(&"players")
 	sq.remove_from_group(&"bot_squad")
+
+
+# ------------------------------------------------------------------ T-086: the Map 0 egg's story beats
+
+func test_story_beat_lines_exist_and_are_tier_two_map_lines() -> void:
+	var lines: Dictionary = GLData.load_json("res://data/gravelight/vo/lines.json")
+	for id: String in ["FAS_M0_NOTES_01", "FAS_M0_WRONG_01", "OPR_M0_FIRST_01", "OPR_M0_CREDIT_01", "DUT_SQ7_M0_EGG_HEARD_01", "WRN_SQ7_M0_EGG_DONE_02",
+			"JAK_SQ7_M0_EGG_LOCK2_01", "PEG_SQ4_EE_COMMIT_SELF_01"]:
+		assert_true(lines.has(id), id)
+	var pcp: Dictionary = GLVO.rules.get("player_category_priority", {})
+	for cat: String in ["M0_EGG_HEARD", "M0_EGG_LOOK", "M0_EGG_NOTE", "M0_EGG_NOTE_FIRST", "M0_EGG_NOTE_TWO", "M0_EGG_NOTES_DONE", "M0_EGG_LOCK1",
+			"M0_EGG_LOCK2", "M0_EGG_WRONG", "M0_EGG_DONE", "M0_EGG_TONICS", "EE_COMMIT_SELF"]:
+		assert_eq(int(pcp.get(cat, 1)), 2, "%s is tier 2 (queues behind the story, cuts a quip)" % cat)
+		for spk: String in ["DUT", "PEG", "DEA", "WRN"]:
+			var n: int = 0
+			for rec: Variant in lines.values():
+				if (rec as Dictionary)["speaker"] == spk and (rec as Dictionary)["category"] == cat:
+					n += 1
+			assert_gte(n, 1, "%s has a %s line" % [spk, cat])
+	assert_eq(GLVO.line_map_of("DUT_SQ7_M0_EGG_HEARD_01", lines["DUT_SQ7_M0_EGG_HEARD_01"], GLVO.rules), "map00", "a Map 0 line")
+
+
+func test_story_beat_waits_for_the_radio_then_plays() -> void:
+	var map_was: StringName = GameState.map_id
+	GameState.map_id = &"map00_crossroads"   # (Map 0 lines draw on Map 0 only)
+	assert_true(GLVO.play(&"FAS_M0_NOTES_01"))
+	GLVO.say_story_beat(0, "M0_EGG_NOTES_DONE", 0.5)
+	assert_eq(GLVO.pending_story_beats().size(), 1)
+	GLVO.advance(3.0)
+	assert_eq(GLVO.current_line(&"player"), &"", "nobody talks over Fasbender")
+	assert_eq(GLVO.pending_story_beats().size(), 1, "the beat waits")
+	GLVO.advance(30.0)   # past the unbaked line's subtitle duration
+	assert_eq(GLVO.current_line(&"story"), &"")
+	assert_eq(GLVO.pending_story_beats().size(), 0)
+	assert_true(String(GLVO.current_line(&"player")).contains("M0_EGG_NOTES_DONE"), "then the survivor speaks: %s" % GLVO.current_line(&"player"))
+	assert_gt(GLVO.last_said_pid, 0)
+	var first: int = GLVO.last_said_pid
+	GLVO.say_story_beat(0, "M0_EGG_NOTES_DONE", 0.0, first)
+	assert_eq(GLVO.pending_story_beats().size(), 1, "solo without bots: the same survivor carries the second line")
+	assert_eq(GLVO.pending_story_beats()[0]["pid"], first)
+	GameState.map_id = map_was

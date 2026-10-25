@@ -28,6 +28,7 @@ var inputs_by_bots: int = 0
 
 var _pool: Array = []
 var _pool_t: float = -INF
+var _final_first_t: Dictionary = {}   # "qid/sid" -> squad time a bot first could have started a final step (T-086)
 var _sweep_t: float = 0.0
 var _pick_t: float = 0.0
 var _ray_rr: int = 0
@@ -187,10 +188,12 @@ func try_brain(b: BotBrain, qid: StringName, sid: StringName, t: Dictionary, ord
 		return {"ok": false, "code": "down", "reason": "%s is down." % Net.display_name(b.player.player_id), "as": ""}
 	var ctx: Dictionary = {"mode": mode(), "ordered": ordered, "active": QuestManager.is_active(qid, sid), "done": QuestManager.is_step_done(qid, sid),
 		"companion": b.player.is_companion, "known": knowledge.known, "labels": knowledge.labels,
-		"player_near": _human_within(step_anchor(qid, sid, t, focus), float(BotEECatalog.cfg().get("presence_m", 20.0))),
+		"player_near": _human_within(step_anchor(qid, sid, t, focus), float(BotEECatalog.cfg().get("presence_m", 20.0))) or final_wait_over(qid, sid),
 		"jakub": BotEECatalog.cfg().get("jakub", {})}
 	var g: Dictionary = BotEECatalog.gate(t, ctx)
 	if not bool(g["ok"]):
+		if str(g.get("code", "")) == "needs_player" and not _final_first_t.has("%s/%s" % [qid, sid]):
+			_final_first_t["%s/%s" % [qid, sid]] = squad.time()   # T-086: the wait for the player starts now
 		return g
 	if str(g.get("as", "")) == "escort":
 		return g
@@ -248,6 +251,14 @@ func targeted_by_other(n: Node, me: BotBrain) -> bool:
 		if b.ee._plan.get("node") == n or b.ee._claim_key == "ee:%d" % n.get_instance_id():
 			return true
 	return false
+
+
+## T-086: has a final step waited long enough for the player (ee.json full_final_wait_s) that the bots go on alone?
+func final_wait_over(qid: StringName, sid: StringName) -> bool:
+	var key: String = "%s/%s" % [qid, sid]
+	if not _final_first_t.has(key) or squad == null:
+		return false
+	return BotEECatalog.final_wait_over(squad.time() - float(_final_first_t[key]), BotEECatalog.cfg())
 
 
 ## Where a step happens (its first named object; the holdout / kill spot), INF unknown.
@@ -487,8 +498,6 @@ func _full_partner() -> void:
 				taken["%s/%s" % [b.ee.task["qid"], b.ee.task["sid"]]] = true
 	if busy >= cap:
 		return
-	var sc: Dictionary = c.get("scores", {})
-	var qids: Array[StringName] = QuestManager.quest_ids()
 	for b2: BotBrain in squad.brains:
 		if busy >= cap:
 			return
@@ -498,34 +507,44 @@ func _full_partner() -> void:
 			continue   # Jakub stays at the side of the one he covers: egg work only when asked
 		if b2.mark != null and b2.mark.active():
 			continue   # on the player's map-mark order (T-069)
-		var best: Dictionary = {}
-		for qi: int in qids.size():
-			var qid: StringName = qids[qi]
-			if QuestManager.is_complete(qid):
-				continue
-			var base: float = float(sc.get("main_quest", 70.0)) if qi == 0 else float(sc.get("side_quest", 52.0))
-			for step: Variant in QuestManager.steps_of(qid):
-				var sd: Dictionary = step as Dictionary
-				var sid: StringName = StringName(str(sd["id"]))
-				if not QuestManager.is_active(qid, sid) or taken.has("%s/%s" % [qid, sid]):
-					continue
-				var t: Dictionary = BotEECatalog.task_def(sd)
-				if t.is_empty():
-					continue
-				var r: Dictionary = try_brain(b2, qid, sid, t, false, null)
-				if not bool(r["ok"]):
-					continue
-				var a: Vector3 = step_anchor(qid, sid, t)
-				var s: float = base + float(sc.get(str(t.get("type", "")), 0.0)) - float(sc.get("per_m", 0.25)) * minf(_dist(b2, a), 120.0)
-				if str(r.get("as", "")) == "escort":
-					s -= 10.0
-				if best.is_empty() or s > float(best["s"]):
-					best = {"s": s, "qid": qid, "sid": sid, "t": t, "as": str(r.get("as", "task"))}
+		var best: Dictionary = pick_for(b2, taken, false)
 		if not best.is_empty():
 			start_on(b2, best["qid"], best["sid"], best["t"], false, "full", null, best["as"])
 			busy += 1
 			if str(best["as"]) == "escort" or (str((best["t"] as Dictionary).get("type", "")) != "collect" and not (best["t"] as Dictionary).has("pickups")):
 				taken["%s/%s" % [best["qid"], best["sid"]]] = true
+
+
+## The best open step this brain can do now ({} none): {s, qid, sid, t, as}. Full Partner's pick, and the
+## bot-mode agent's (AgentPlan, T-086: `ordered` true, the agent is the player). `taken`: "qid/sid" keys other
+## bots already work.
+func pick_for(b: BotBrain, taken: Dictionary, ordered: bool) -> Dictionary:
+	var sc: Dictionary = BotEECatalog.cfg().get("scores", {})
+	var qids: Array[StringName] = QuestManager.quest_ids()
+	var best: Dictionary = {}
+	for qi: int in qids.size():
+		var qid: StringName = qids[qi]
+		if QuestManager.is_complete(qid):
+			continue
+		var base: float = float(sc.get("main_quest", 70.0)) if qi == 0 else float(sc.get("side_quest", 52.0))
+		for step: Variant in QuestManager.steps_of(qid):
+			var sd: Dictionary = step as Dictionary
+			var sid: StringName = StringName(str(sd["id"]))
+			if not QuestManager.is_active(qid, sid) or taken.has("%s/%s" % [qid, sid]):
+				continue
+			var t: Dictionary = BotEECatalog.task_def(sd)
+			if t.is_empty():
+				continue
+			var r: Dictionary = try_brain(b, qid, sid, t, ordered, null)
+			if not bool(r["ok"]):
+				continue
+			var a: Vector3 = step_anchor(qid, sid, t)
+			var s: float = base + float(sc.get(str(t.get("type", "")), 0.0)) - float(sc.get("per_m", 0.25)) * minf(_dist(b, a), 120.0)
+			if str(r.get("as", "")) == "escort":
+				s -= 10.0
+			if best.is_empty() or s > float(best["s"]):
+				best = {"s": s, "qid": qid, "sid": sid, "t": t, "as": str(r.get("as", "task"))}
+	return best
 
 
 # ================================================================== events and telemetry

@@ -102,8 +102,11 @@
   "quests": {
     "map00_radio": {
       "title": "Glasmacher Calling",
+      "_story_doc": "T-086: story (a short what-is-going-on paragraph shown above the instruction at Hints and Full Guide while the step is current) and said (the VO line id whose words the tab quotes as the step's setup line; the pause menu looks the text up).",
       "steps": {
         "s1_notes": {
+          "story": "Since round two the field set behind the bar has been calling the squad by its own call sign: \"Glasmacher calling Gravelight.\" Nobody outside London should know that name. The voice is a frightened man who says he is the reason the plane came down, and that he left frequencies in this house: the innkeeper listened to the works' channels and wrote them down on three numbered scraps. Find them and the squad can call him back.",
+          "said": "FAS_M0_R7_01",
           "done": "Found the three frequency notes, I, II and III.",
           "hint": "Glasmacher's technician wrote his frequencies down and left them about the inn: three scraps, numbered like chapters. ({n}/3)",
           "guide": "Pick up the three notes: Note I (3.120) under the beer stein on the taproom mantel; Note II (5.785) in the technician's trunk in Upstairs Room 2 (Door 1, 750); Note III (7.440) nailed to the hayloft beam in the stable (Door 2, 1,000). ({n}/3)",
@@ -111,6 +114,8 @@
           "nodes": ["NoteA", "NoteB", "NoteC"]
         },
         "s2_tune": {
+          "story": "Three numbered frequencies, lowest first. Lock them on the bar radio in order and Glasmacher answers for real: who he is, what is in the salt under Kaltenbrunn, and where the squad has to go when the snow stops. A wrong lock is a burst of static that every dead thing outside can hear, and the order starts again. When the third lock lands, someone else cuts in on his frequency, cheerful and faint, and the house's tonic cabinets light up on his account.",
+          "said": "FAS_M0_NOTES_01",
           "done": "Tuned the taproom radio: Glasmacher's message came through.",
           "hint": "The radio behind the bar keeps calling for Gravelight. Read the notes in their order and the dial will answer. ({n}/{target})",
           "guide": "At the field radio behind the taproom bar, hold USE and turn the dial: lock 3.120, then 5.785, then 7.440. A wrong frequency bursts static (and draws zombies) and starts the order again. ({n}/{target} locked)",

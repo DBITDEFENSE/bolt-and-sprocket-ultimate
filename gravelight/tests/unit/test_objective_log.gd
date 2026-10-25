@@ -299,3 +299,35 @@ func test_pause_tabs_and_map_hook() -> void:
 	assert_eq(view.marks.size(), 1)
 	assert_eq(pm.tab_name(), "MAP", "Show on map switches to the MAP tab")
 	assert_false(get_tree().paused, "building the menu never pauses")
+
+
+# ---------------------------------------------------------------- T-086: the tab tells the step's story
+
+func test_map00_steps_have_a_story_and_a_setup_line() -> void:
+	var lines: Dictionary = GLData.load_json("res://data/gravelight/vo/lines.json")
+	for sid: String in ["s1_notes", "s2_tune"]:
+		assert_gt(_step_text("map00_radio", sid, "story").length(), 80, "%s has a story paragraph" % sid)
+		var said: String = _step_text("map00_radio", sid, "said")
+		assert_true(lines.has(said), "%s quotes a real line (%s)" % [sid, said])
+	var snap: Dictionary = {"map_id": "map00_crossroads", "round": 3, "power": false, "flags": {}, "zones": [], "jakub": "", "exfil_active": false,
+		"settings": {}, "intel_match": [], "challenges": [],
+		"quests": {"map00_radio": {"title": "Glasmacher Calling", "complete": false, "random": {}, "steps": [
+			{"id": "s1_notes", "type": "collect", "status": "active", "n": 1, "target": 3},
+			{"id": "s2_tune", "type": "sequence", "status": "locked", "n": 0, "target": 3}]}}}
+	for lv: String in ["hints", "full"]:
+		var log: Dictionary = ObjectiveLog.build(snap, data, lv)
+		var cur: Dictionary = {}
+		var nxt: Dictionary = {}
+		for e: Variant in (log["sections"][0] as Dictionary)["entries"]:
+			if str((e as Dictionary).get("step_id", "")) == "s1_notes":
+				cur = e
+			if str((e as Dictionary).get("step_id", "")) == "s2_tune":
+				nxt = e
+		assert_eq(str(cur.get("story", "")), _step_text("map00_radio", "s1_notes", "story"), "%s: the current step carries its story" % lv)
+		assert_eq(str(cur.get("said", "")), "FAS_M0_R7_01")
+		assert_eq(str(nxt.get("story", "")), "", "%s: a future step tells nothing" % lv)
+		PauseMenu.quote_setup_lines(log)
+		assert_true(str(cur.get("quote", "")).begins_with("I have notes."), "the setup line is quoted from the VO data: %s" % cur.get("quote", ""))
+		assert_eq(str(cur.get("quote_by", "")), "FASBENDER (RADIO)")
+	var hidden: Dictionary = ObjectiveLog.build(snap, data, "hidden")
+	assert_false(ObjectiveLog.all_text(hidden).contains("Glasmacher calling Gravelight"), "Hidden shows no story")

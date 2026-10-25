@@ -1005,3 +1005,28 @@ share in the old baseline came from the stalled runs (a train of one for 40 minu
   (7.75 -> 7.0 on 8 seeds).
 - `smoke_botmode` failed once in four runs (round-4 taproom test with a Thompson: 5 hits, downed); it passed the
   other three.
+
+
+## 11. T-086: the bots finish the egg, and the agent does it too
+
+**Full Partner is the default** (`settings.gd`, `ee.json default_mode`; an older settings file is migrated once by
+`bot_ee_help_rev`). Two rules that kept the egg the player's are now bounded waits, in data (`ee.json`):
+`full_commit_after_s` (45 s): a Full Partner bot at a `commit: last_input` step says the last one is the player's
+(`EE_HANDOFF`), waits that long, then makes it (`EE_COMMIT_SELF`; `BotEECatalog.commit_open`, `BotEE._commit_ok`);
+`full_final_wait_s` (60 s): a `final` step waits that long for the player within `presence_m` from the first time a
+bot could have started it (`BotEEHub.final_wait_over`), then the bots go on alone. When Asked keeps both the old way
+(an assigned bot never takes the commit). A bot at the radio lets the story channel finish (Fasbender's answer to
+each lock) before its next input, so the lines never pile up. A collect step whose data gives the actor a story line
+(`on_item` `vo_actor`) silences the bot's generic "Got one."
+
+**The bot-mode agent (T-071) does the egg** through a separate `egg` block of its map plan (`player_bot.json`
+plans.map00.egg: quest, `after` steps, from_round, max_pressure, quiet_m, value, every_s; `AgentPlan.egg_block /
+egg_ready / egg_value / egg_pending / tick_egg`). It never sits in the spend order: once Ironhide is drunk (from
+round 3) and the agent is quiet (a break, its crawler break, or nothing within quiet_m with low pressure) it takes
+the next open step from `BotEEHub.pick_for` (the Full Partner pick, `ordered` true: the agent is the player, so it
+makes the commit) and the brain's `ee_task` action carries it out; the trainer still owns the rounds, so the work
+happens between them, and `AgentCrawler.errands_pending` holds the round open for it. `PlayerBot` attaches the BotEE
+on enable and ticks the plan; the HUD tag shows the task. Smoke: `smoke_ee_bots -- --full` (Map 0, Full Partner,
+nobody asks: notes, locks, the hand-off wait, the bots' own commit, the story beats, every tonic on the Ledger's
+credit). Soak: `tools/ai_soak.sh --scenario=botmode --map=map00` (the `ee_notes` / `ee_tune_locks` /
+`ee_complete` columns say how far the agent got).

@@ -149,6 +149,8 @@ func _enable(reason: String) -> bool:
 	brain.trainer = trainer
 	brain.crawler = AgentCrawler.new()   # T-071 pass 3: the crawler break
 	brain.crawler.setup(brain)
+	if squad.ee != null:
+		squad.ee.attach(brain)   # T-086: the agent works the easter egg through the squad's hub (AgentPlan.tick_egg)
 	if brain.loco is BotLocomotion:
 		(brain.loco as BotLocomotion).skill_override = str(_cfg.get("skill", ""))
 		var turn: Dictionary = (_cfg.get("turn", {}) as Dictionary).duplicate()
@@ -219,6 +221,7 @@ func _physics_process(delta: float) -> void:
 	if p == null or not is_instance_valid(p) or brain == null or not is_instance_valid(brain):
 		_disable("lost the player")
 		return
+	AgentPlan.tick_egg(brain)   # T-086: the easter egg between the fights
 	_grace = maxf(0.0, _grace - delta)
 	var pressed: Array = []
 	var move_held: bool = false
@@ -321,6 +324,8 @@ func status_text() -> String:
 		s = str(brain.task.get("label", brain.action))
 	if planner != null and not planner.directive.is_empty() and str(planner.directive.get("kind", "")) != "follow":
 		s += " | plan: %s" % str(planner.directive.get("label", ""))
+	if brain.ee != null and brain.ee.active():
+		s += " | egg: %s" % str(brain.ee.describe().get("label", ""))   # T-086
 	return s
 
 
