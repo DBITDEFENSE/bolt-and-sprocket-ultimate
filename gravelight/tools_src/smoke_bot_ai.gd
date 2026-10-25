@@ -32,7 +32,7 @@ var _committed: bool = false
 
 func _ready() -> void:
 	GameState.bot_ai_mode = "scripted"
-	GLSettings.values["bot_ee_help"] = "ask"   # the shipped default, whatever the player saved (not written to disk)
+	GLSettings.values["bot_ee_help"] = "ask"   # When Asked for this scenario, whatever the player saved (not written to disk; Full Partner is the default since T-086)
 	for a: String in OS.get_cmdline_user_args():
 		if a == "--llm":
 			GameState.bot_ai_mode = "local"

@@ -51,6 +51,7 @@ func _ready() -> void:
 	ProfileSave.profile = ProfileSave.new_profile()
 	GameState.character_id = &"peg"
 	GameState.bot_count = 3
+	GLSettings.values["bot_ee_help"] = "ask"   # (T-086: Full Partner is the default now; this smoke's scenario is the squad's ordinary VO, not egg work)
 	GLVO.always_pass_chance = true
 	_map = (load(MAP) as PackedScene).instantiate() as Node3D
 	get_tree().root.add_child.call_deferred(_map)
