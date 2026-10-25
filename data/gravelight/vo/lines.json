@@ -7417,5 +7417,175 @@
   "speaker": "WRN",
   "category": "INN_RISE",
   "text": "The soldier. He is standing. Do not look at his face. Shoot."
+ },
+ "KUB_INN_CHAT_01": {
+  "speaker": "KUB",
+  "category": "INN_CHAT",
+  "text": "Road's shut both ways, they say. Snow to the axles at the bridge. We'll be sleeping on these benches tonight, Ewald."
+ },
+ "POH_INN_CHAT_01": {
+  "speaker": "POH",
+  "category": "INN_CHAT",
+  "text": "My sister will think I'm lying dead in a ditch. ...Must that gramophone play all night, Fräulein?"
+ },
+ "SOB_INN_CHAT_01": {
+  "speaker": "SOB",
+  "category": "INN_CHAT",
+  "text": "Six kilometres to Wilcza Góra. In the morning I walk it, snow or no snow. My mother has kept the goose for me."
+ },
+ "WIE_SURV_REVEAL_01": {
+  "speaker": "WIE",
+  "category": "SURV_REVEAL",
+  "text": "Stop! Stop, don't shoot... we're alive. We're alive in here. You came up the stairs... are they behind you?"
+ },
+ "WIE_SURV_SCARED_01": {
+  "speaker": "WIE",
+  "category": "SURV_SCARED",
+  "text": "I heard them in the hall. Scratching at the wainscot like rats. Thirty years I have not been this afraid."
+ },
+ "WIE_SURV_SCARED_02": {
+  "speaker": "WIE",
+  "category": "SURV_SCARED",
+  "text": "I was at Verdun, you know. Nineteen sixteen. ...The dead stayed down at Verdun."
+ },
+ "WIE_SURV_FLINCH_01": {
+  "speaker": "WIE",
+  "category": "SURV_FLINCH",
+  "text": "[flinching] God in heaven!"
+ },
+ "WIE_SURV_ARMED_01": {
+  "speaker": "WIE",
+  "category": "SURV_ARMED",
+  "text": "A Karabiner. A ninety-eight. ...My hands remember. Go on, go. I'll hold the hall."
+ },
+ "WIE_SURV_FIGHT_01": {
+  "speaker": "WIE",
+  "category": "SURV_FIGHT",
+  "text": "Coming along the hall! I have him!"
+ },
+ "WIE_SURV_HURT_01": {
+  "speaker": "WIE",
+  "category": "SURV_HURT",
+  "text": "[pained] It has my coat... get off me!"
+ },
+ "WIE_SURV_DOWNED_01": {
+  "speaker": "WIE",
+  "category": "SURV_DOWNED",
+  "text": "[hurt] I'm down... the leg's gone. Don't leave an old man on the floor!"
+ },
+ "WIE_SURV_DEATH_01": {
+  "speaker": "WIE",
+  "category": "SURV_DEATH",
+  "text": "[weak] Don't let me get up again. Promise me. Don't let me get up."
+ },
+ "BRA_SURV_REVEAL_01": {
+  "speaker": "BRA",
+  "category": "SURV_REVEAL",
+  "text": "Please, please, we're not like them! We pushed the wardrobe against the stair door, we've been so quiet... is it over? Tell me it's over."
+ },
+ "BRA_SURV_SCARED_01": {
+  "speaker": "BRA",
+  "category": "SURV_SCARED",
+  "text": "I have the children's letters in my bag. Thirty-one letters to the Christ Child. I promised them I would post them."
+ },
+ "BRA_SURV_SCARED_02": {
+  "speaker": "BRA",
+  "category": "SURV_SCARED",
+  "text": "[whispering] Don't make a sound. They hear everything. Breathe slowly, like me."
+ },
+ "BRA_SURV_FLINCH_01": {
+  "speaker": "BRA",
+  "category": "SURV_FLINCH",
+  "text": "[a gasp] Oh! Oh, God."
+ },
+ "BRA_SURV_ARMED_01": {
+  "speaker": "BRA",
+  "category": "SURV_ARMED",
+  "text": "I have never fired a gun in my life. ...Show me once. Once! Good. Go, I'll watch the stairs."
+ },
+ "BRA_SURV_FIGHT_01": {
+  "speaker": "BRA",
+  "category": "SURV_FIGHT",
+  "text": "There, by the door! I see it!"
+ },
+ "BRA_SURV_HURT_01": {
+  "speaker": "BRA",
+  "category": "SURV_HURT",
+  "text": "[screaming] Its hands! Its hands are on me!"
+ },
+ "BRA_SURV_DOWNED_01": {
+  "speaker": "BRA",
+  "category": "SURV_DOWNED",
+  "text": "[hurt] Help me up... please, I can't feel my arm..."
+ },
+ "BRA_SURV_DEATH_01": {
+  "speaker": "BRA",
+  "category": "SURV_DEATH",
+  "text": "[weak] The letters... somebody post the letters."
+ },
+ "KRO_SURV_REVEAL_01": {
+  "speaker": "KRO",
+  "category": "SURV_REVEAL",
+  "text": "Oh thank God, thank God, real people! I'm Ida, I bring the post from Sankt Anna... I hid under the bed. I'm sorry. I didn't help anyone."
+ },
+ "KRO_SURV_SCARED_01": {
+  "speaker": "KRO",
+  "category": "SURV_SCARED",
+  "text": "My bicycle's in a drift on the west road. Two days to Christmas and I still have a sack full of parcels."
+ },
+ "KRO_SURV_SCARED_02": {
+  "speaker": "KRO",
+  "category": "SURV_SCARED",
+  "text": "Something walked up and down the hall all afternoon. Up and down. It never knocked."
+ },
+ "KRO_SURV_FLINCH_01": {
+  "speaker": "KRO",
+  "category": "SURV_FLINCH",
+  "text": "[a yelp] Ah! Warn me before you do that!"
+ },
+ "KRO_SURV_ARMED_01": {
+  "speaker": "KRO",
+  "category": "SURV_ARMED",
+  "text": "Me? With this? ...All right. All right! Point it at them and pull. I can do that."
+ },
+ "KRO_SURV_FIGHT_01": {
+  "speaker": "KRO",
+  "category": "SURV_FIGHT",
+  "text": "One at the window! I got it... I think I got it!"
+ },
+ "KRO_SURV_HURT_01": {
+  "speaker": "KRO",
+  "category": "SURV_HURT",
+  "text": "[screaming] No, no, no, get away from me!"
+ },
+ "KRO_SURV_DOWNED_01": {
+  "speaker": "KRO",
+  "category": "SURV_DOWNED",
+  "text": "[hurt] I'm bleeding... I'm bleeding all over Frau Vogt's floor..."
+ },
+ "KRO_SURV_DEATH_01": {
+  "speaker": "KRO",
+  "category": "SURV_DEATH",
+  "text": "[weak] It's so cold. Is the window open? ...Close the window."
+ },
+ "DUT_INN_SURV_TURN_01": {
+  "speaker": "DUT",
+  "category": "INN_SURV_TURN",
+  "text": "One of the civvies upstairs is moving again. That's not them any more. Put them down!"
+ },
+ "PEG_INN_SURV_TURN_01": {
+  "speaker": "PEG",
+  "category": "INN_SURV_TURN",
+  "text": "Oh, no. Upstairs. One of ours upstairs is getting up. ...I'm sorry. Make it quick."
+ },
+ "DEA_INN_SURV_TURN_01": {
+  "speaker": "DEA",
+  "category": "INN_SURV_TURN",
+  "text": "Lord, one of the folks upstairs is rising. Don't let them suffer it. Put them to rest."
+ },
+ "WRN_INN_SURV_TURN_01": {
+  "speaker": "WRN",
+  "category": "INN_SURV_TURN",
+  "text": "Upstairs. The civilian is turning. Do not wait for them to look at you."
  }
 }

@@ -11,6 +11,8 @@ extends Node3D
 ## push (both hands forward: the door bar, the door), struggle (fending something off), clutch (bitten: a slow walk
 ## holding the arm), fall (backwards to the floor), dead (on the back, as a knocked-down zombie lies, so the risen
 ## zombie's get-up starts where the patron fell).
+## The survivors upstairs (T-077, InnSurvivor) add: cower (on the floor against a wall, knees drawn up, arms round
+## them, trembling; flinch() ducks the head into the arms) and aim (standing with the rifle shouldered; show_rifle).
 
 const UPPER: float = 0.3
 const FORE: float = 0.28
@@ -42,6 +44,8 @@ var _fall_len: float = 0.7
 var _build: float = 1.0
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _blend: Dictionary = {}
+var _rifle: Node3D = null
+var _flinch: float = 0.0
 
 
 ## Builds the body from a patron row (map00_opening.json patrons[]).
@@ -192,10 +196,37 @@ func set_pose(p: StringName) -> void:
 	elif p == &"dead":
 		catchable = false
 		_fall_k = 1.0
+	else:
+		_fall_k = 0.0   # back on their feet (a survivor helped up, T-077)
 
 
 func set_fall_seconds(s: float) -> void:
 	_fall_len = maxf(0.2, s)
+
+
+## A shot close by (T-077): the cowering survivor ducks, arms over the head, for a moment.
+func flinch() -> void:
+	_flinch = 1.0
+	_jolt = maxf(_jolt, 0.5)
+
+
+## The rifle a survivor was handed (T-077): a plain Kar98k shape along the chest's -Z, shouldered in the aim pose.
+func show_rifle(on: bool) -> void:
+	if on and _rifle == null:
+		_rifle = Node3D.new()
+		_rifle.name = "Rifle"
+		_rifle.position = Vector3(0.11, 0.36, -0.08)
+		_chest.add_child(_rifle)
+		var wood: StandardMaterial3D = _mat(Color(0.32, 0.2, 0.11))
+		var steel: StandardMaterial3D = _mat(Color(0.12, 0.12, 0.13))
+		_mats["rifle_wood"] = wood
+		_mats["rifle_steel"] = steel
+		_box(_rifle, Vector3(0.05, 0.1, 0.34), Vector3(0, -0.03, 0.08), "rifle_wood")     # the butt at the shoulder
+		_box(_rifle, Vector3(0.045, 0.06, 0.62), Vector3(0, 0.0, -0.4), "rifle_wood")     # the stock to the band
+		_box(_rifle, Vector3(0.022, 0.022, 0.5), Vector3(0, 0.035, -0.86), "rifle_steel")  # the barrel
+		_box(_rifle, Vector3(0.03, 0.04, 0.12), Vector3(0, 0.05, -0.22), "rifle_steel")   # the receiver and bolt
+	if _rifle != null:
+		_rifle.visible = on
 
 
 # ================================================================== posing
@@ -214,7 +245,8 @@ func _process(delta: float) -> void:
 		_fall_k = minf(1.0, _fall_k + delta / _fall_len)
 		if _fall_k >= 1.0:
 			pose = &"dead"
-	for k: StringName in [&"sit", &"lean", &"work", &"panic", &"run", &"push", &"struggle", &"clutch"]:
+	_flinch = move_toward(_flinch, 0.0, delta * 1.2)
+	for k: StringName in [&"sit", &"lean", &"work", &"panic", &"run", &"push", &"struggle", &"clutch", &"cower", &"aim"]:
 		var want: float = 1.0 if pose == k else 0.0
 		_blend[k] = move_toward(float(_blend.get(k, 1.0 if pose == k else 0.0)), want, delta * 5.0)
 	_pose_body(delta)
@@ -235,6 +267,9 @@ func _pose_body(delta: float) -> void:
 	var b_push: float = float(_blend[&"push"])
 	var b_strug: float = float(_blend[&"struggle"])
 	var b_clutch: float = float(_blend[&"clutch"])
+	var b_cower: float = float(_blend[&"cower"])
+	var b_aim: float = float(_blend[&"aim"])
+	var tremble: float = sin(_t * 31.0) * 0.012 * b_cower
 	var swing: float = (0.5 + 0.35 * b_run) * clampf(_speed / 3.0, 0.0, 1.0) if moving else 0.0
 	# --- the fall: backwards about the feet, onto the back (as a knocked-down zombie lies)
 	var fk: float = _fall_k * _fall_k * (3.0 - 2.0 * _fall_k)
@@ -247,15 +282,18 @@ func _pose_body(delta: float) -> void:
 	var hip_y: float = 0.95 - (absf(sin(ph)) * 0.04 if moving else 0.0)
 	hip_y = lerpf(hip_y, 0.5, b_sit)
 	hip_y = lerpf(hip_y, 0.86, b_strug * 0.6)
-	_hips.position = Vector3(0, hip_y, lerpf(0.0, 0.08, b_sit))
+	hip_y = lerpf(hip_y, 0.17, b_cower)
+	_hips.position = Vector3(0, hip_y, lerpf(0.0, 0.08, b_sit) + 0.12 * b_cower)
 	var chest_x: float = -0.32 * b_run - 0.12 * b_sit - 0.17 * b_lean - 0.2 * b_work + 0.25 * b_strug - 0.3 * b_clutch - 0.15 * b_push
+	chest_x += -0.42 * b_cower - 0.25 * _flinch * b_cower + tremble - 0.04 * b_aim
 	chest_x += 0.35 * _jolt + twitch
 	_chest.rotation.x = chest_x
-	_chest.rotation.y = sin(ph) * 0.1 * swing + 0.25 * b_strug * sin(_t * 9.0)
+	_chest.rotation.y = sin(ph) * 0.1 * swing + 0.25 * b_strug * sin(_t * 9.0) + 0.22 * b_aim
 	_chest.rotation.z = 0.12 * b_lean + 0.08 * b_clutch
 	# head: looking back over the shoulder now and then while running; down while clutching; shaking in a panic
 	var look_back: float = b_run * clampf(sin(_t * 0.9 + 1.0) * 2.0 - 1.2, 0.0, 1.0)
-	_head.rotation = Vector3(-0.1 * b_sit - 0.4 * b_clutch, 1.4 * look_back + 0.25 * b_panic * sin(_t * 7.0), 0.0)
+	_head.rotation = Vector3(-0.1 * b_sit - 0.4 * b_clutch - 0.35 * b_cower * (1.0 + _flinch) + 0.05 * b_aim,
+		1.4 * look_back + 0.25 * b_panic * sin(_t * 7.0) + 0.3 * b_cower * sin(_t * 0.7) * (1.0 - _flinch) - 0.2 * b_aim, 0.0)
 	# --- legs (hip -> knee -> ankle in pivot space)
 	var stance: float = 0.1 * _build
 	for side: int in [0, 1]:
@@ -269,6 +307,9 @@ func _pose_body(delta: float) -> void:
 		knee_a = lerpf(knee_a, -1.55, b_sit)
 		thigh_a = lerpf(thigh_a, 0.35 if side == 0 else -0.1, b_strug * 0.7)
 		knee_a = lerpf(knee_a, -0.5, b_strug * 0.7)
+		thigh_a = lerpf(thigh_a, 2.15 + (0.05 if side == 0 else -0.05), b_cower)   # knees drawn up
+		knee_a = lerpf(knee_a, -2.4, b_cower)
+		thigh_a = lerpf(thigh_a, 0.12 if side == 0 else -0.08, b_aim)          # a braced stance
 		if pose == &"dead" or pose == &"fall":
 			thigh_a = lerpf(thigh_a, (-0.3 if side == 0 else 0.5), fk)
 			knee_a = lerpf(knee_a, (-0.6 if side == 0 else -0.3), fk)
@@ -313,6 +354,14 @@ func _pose_body(delta: float) -> void:
 	tr = tr.lerp(Vector3(0.22, 0.48 - fend, -0.38), b_strug)
 	tl = tl.lerp(Vector3(-0.24, 0.12, -0.1), b_clutch)
 	tr = tr.lerp(Vector3(-0.12, 0.3, -0.16), b_clutch)   # the right hand clamped on the bitten left forearm
+	# cowering: arms round the knees, trembling; a flinch throws them over the head
+	var hug_l: Vector3 = Vector3(-0.13, 0.02 + tremble, -0.36).lerp(Vector3(-0.12, 0.66, -0.12), _flinch)
+	var hug_r: Vector3 = Vector3(0.13, 0.04 - tremble, -0.36).lerp(Vector3(0.12, 0.66, -0.12), _flinch)
+	tl = tl.lerp(hug_l, b_cower)
+	tr = tr.lerp(hug_r, b_cower)
+	# aiming: the right hand at the grip, the left under the fore-end (the rifle hangs off the chest)
+	tl = tl.lerp(Vector3(0.09, 0.3, -0.52), b_aim)
+	tr = tr.lerp(Vector3(0.13, 0.3, -0.2), b_aim)
 	if pose == &"dead" or pose == &"fall":
 		tl = tl.lerp(Vector3(-0.55, 0.35, 0.1), fk)
 		tr = tr.lerp(Vector3(0.5, 0.45, -0.05), fk)
