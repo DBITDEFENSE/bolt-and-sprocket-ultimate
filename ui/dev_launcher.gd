@@ -123,6 +123,8 @@ func _ready() -> void:
 	col.add_child(MenuKit.button("Armorer's Bench test (Map 0, at the bench, 20,000 Scrip, power on)", func() -> void:
 		Engine.set_meta(&"bench_play_map", "map00")
 		_start_tool_scene("res://gravelight/tools_src/bench_shots.tscn"), 22, "ui_confirm"))
+	col.add_child(_header("Muster (your sidearm and Field Habits; saved per survivor, used by every match)"))
+	col.add_child(MenuKit.button("Muster — pick the sidearm and Field Habits for the survivor above", func() -> void: add_child(MenuMuster.new(CHARACTERS[_char.selected])), 22, "ui_confirm"))
 	col.add_child(_header("Bot mode (an AI plays your survivor; F6 or any input takes over)"))
 	col.add_child(MenuKit.button("Bot mode — Map 0 (bots from the field above)", func() -> void:
 		GameState.bot_count = BotConfig.clamp_bots(BotConfig.cfg(), _bots.selected)
