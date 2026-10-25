@@ -155,7 +155,7 @@ func _run() -> void:
 	for n2: Node in r.get_children():
 		if n2 is AudioZone and String(n2.name).begins_with("WindHowl") and (n2 as AudioZone).player != null and (n2 as AudioZone).player.playing:
 			winds += 1
-	_check(winds == 9, "wind howls at the 9 broken windows (%d)" % winds)
+	_check(winds == 10, "wind howls at the 10 broken windows (%d)" % winds)
 	var horse: AudioZone = r.get_node_or_null("HorseInTheStall") as AudioZone
 	_check(horse != null and horse.round_ok(1) and not horse.round_ok(3), "the horse is heard in rounds 1-2 only")
 	_check(r.get_node_or_null("StableCreaks") != null, "the stable creaks")

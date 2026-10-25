@@ -1,0 +1,8 @@
+Title: import_presets (project-authored files)
+Author: the GRAVELIGHT team
+Source: this repository
+License: Ours
+Credit line: none needed (original work)
+Format: Godot import preset .cfg
+Downloaded: n/a (authored 2026-10-25, UPDATE 05 T-088)
+Files used: everything in this folder
