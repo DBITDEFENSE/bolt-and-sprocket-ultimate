@@ -43,7 +43,11 @@ func making(z: Zombie) -> bool:
 
 
 func holding() -> bool:
-	return state == State.HOLDING and target != null and is_instance_valid(target)
+	return state == State.HOLDING and target != null and is_instance_valid(target) and not _others
+
+
+## Another zombie still up besides the crawler (the round's last two): no break until it is dead.
+var _others: bool = false
 
 
 ## Called every think (BotBrain._think, before the perception's sense).
@@ -54,11 +58,12 @@ func think(now: float) -> void:
 	if state != State.NONE:
 		var gone: bool = target == null or not is_instance_valid(target) or not BotPerception.targetable(target) \
 				or RoundManager.state != RoundManager.State.ROUND or RoundManager.current_round != _round
-		if not gone and dirn != null and dirn.active_zombies().size() > 1:
-			gone = true   # (another one turned up: a Jakub burst, a recycled zombie) the plain fight again
+		if not gone and dirn != null and dirn.active_zombies().size() > int(_f("max_left", 2.0)):
+			gone = true   # (more turned up: a Jakub burst, a recycled zombie) the plain fight again
 		if gone:
 			_release(now)
 			return
+		_others = dirn != null and dirn.active_zombies().size() > 1
 		if state == State.MAKING:
 			if target.is_crawler:
 				state = State.HOLDING
@@ -88,9 +93,19 @@ func think(now: float) -> void:
 	if RoundManager.current_round < int(_f("from_round", 2.0)) or not brain.squad.brains.is_empty():
 		return
 	var act: Array = dirn.active_zombies()
-	if act.size() != 1:
+	if act.is_empty() or act.size() > int(_f("max_left", 2.0)):
 		return
-	var z: Zombie = act[0] as Zombie
+	# the round's last one or two: the nearest one not tried yet that can crawl (the other is killed as usual)
+	var z: Zombie = null
+	var best_d: float = INF
+	for a: Variant in act:
+		var za: Zombie = a as Zombie
+		if za == null or _tried.has(za.get_instance_id()) and _round == RoundManager.current_round:
+			continue
+		var dd: float = za.global_position.distance_to(brain.player.global_position)
+		if dd < best_d:
+			best_d = dd
+			z = za
 	if z == null or not BotPerception.targetable(z) or BotPerception.is_boss(z) or z.is_crawler:
 		return
 	var zc: Variant = z.get("_cfg")

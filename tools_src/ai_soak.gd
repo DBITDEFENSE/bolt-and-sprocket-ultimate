@@ -735,6 +735,6 @@ func _watch_stall() -> void:
 		var c: Vector3 = NavigationServer3D.map_get_closest_point(nav, z.global_position)
 		var tg: Node3D = z.target
 		var path: PackedVector3Array = NavigationServer3D.map_get_path(nav, z.global_position, tg.global_position, true) if tg != null else PackedVector3Array()
-		print("[soak]   %s %s at %s (navmesh %s) -> %s, path ends %s" % [z.enemy_id, Zombie.State.keys()[z.state], z.global_position.snapped(Vector3.ONE * 0.1),
+		print("[soak]   %s%s %s at %s (navmesh %s) -> %s, path ends %s" % [z.enemy_id, " (crawler)" if z.is_crawler else "", Zombie.State.keys()[z.state], z.global_position.snapped(Vector3.ONE * 0.1),
 			c.snapped(Vector3.ONE * 0.1), Net.display_name((tg as Player).player_id) if tg is Player else str(tg),
 			path[path.size() - 1].snapped(Vector3.ONE * 0.1) if not path.is_empty() else "none"])

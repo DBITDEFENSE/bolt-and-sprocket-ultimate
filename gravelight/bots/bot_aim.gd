@@ -284,7 +284,31 @@ func aim_point(z: Zombie) -> Vector3:
 			for hb: Variant in hbs:
 				if hb is Hitbox and (hb as Hitbox).limb == &"head":
 					return (hb as Hitbox).global_position
-	return z.global_position + Vector3.UP * (0.5 if z.is_crawler else 1.15)
+	if z.is_crawler:
+		return z.global_position + Vector3.UP * _crawler_aim_h(z)
+	return z.global_position + Vector3.UP * 1.15
+
+
+## T-071 pass 3: a crawler's aim height, the first of crawler_aim_heights with a clear line from the eye (cached
+## 0.25 s). The fixed 0.5 m was below a low lip on Map 0's yard (the ground's edging, a kerb): the line of sight
+## failed every frame and the agent circled the round's last crawler for the soak's whole time cap.
+var _crawl_h_for: Zombie = null
+var _crawl_h_t: float = -1.0
+var _crawl_h: float = 0.5
+
+
+func _crawler_aim_h(z: Zombie) -> float:
+	var now: float = brain.squad.time() if brain.squad != null else 0.0
+	if z == _crawl_h_for and now - _crawl_h_t < 0.25:
+		return _crawl_h
+	_crawl_h_for = z
+	_crawl_h_t = now
+	_crawl_h = 0.5
+	for h: Variant in _a.get("crawler_aim_heights", [0.5]):
+		if _los(eye(), z.global_position + Vector3.UP * float(h), z):
+			_crawl_h = float(h)
+			break
+	return _crawl_h
 
 
 func max_range(w: WeaponInstance) -> float:

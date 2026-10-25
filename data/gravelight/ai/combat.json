@@ -29,6 +29,8 @@
     "_doc": "Target choice: threat x the counters' priority, + specials_first (personality) for specials/bosses, x vulnerable_priority / grab_priority (counters), x escort_bonus for what goes for the escorted player; kill-steal etiquette until kill_steal_until_round: a zombie under kill_steal_hp_frac of its health that the human is shooting is left to them unless it threatens someone. Headshot chance = base_head by weapon class x skill head_aim_mult + personality / counter head_bias, + slow_or_close_head for slow or close targets. Fire discipline: autos burst (burst_s / pause_s) beyond burst_range_m and fire freely inside it; semi rifles single shots at the skill's semi_max_rpm; nothing beyond max_range_m[class] (no spraying what it can't hit); never through a teammate (a 0.6 m line-of-fire check).",
     "reacquire_lost_s": 0.8,
     "body_half_width_m": 0.22,
+    "crawler_aim_heights": [0.5, 0.68, 0.35, 0.85],
+    "_crawler_aim_doc": "T-071 pass 3: a crawler is aimed at the first of these heights (m above its feet) with a clear line from the eye (BotAim._crawler_aim_h): a fixed 0.5 m sat below a low lip on Map 0's yard and a bot never fired at the round's last crawler.",
     "sights_on_mult": 1.6,
     "spray_width_mult": 3.0,
     "_sights_doc": "T-058 fire discipline: it fires only with the sights on the target (within sights_on_mult x body_half_width_m at its range, as a person sees their crosshair) and when the shot's current spread (hip / aimed, bloom, on the move) fits within spray_width_mult x body_half_width_m at that range.",

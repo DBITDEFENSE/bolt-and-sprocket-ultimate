@@ -95,7 +95,12 @@ func sense(now: float) -> void:
 			rays_used += 1
 			var to_p: Vector3 = z2.global_position + Vector3.UP * (0.5 if z2.is_crawler else 1.3)
 			var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(e, to_p, MASK_LOS, [player.get_rid()])
-			if space.intersect_ray(q).is_empty():
+			var seen: bool = space.intersect_ray(q).is_empty()
+			if not seen and z2.is_crawler:
+				# T-071 pass 3: a crawler's back above a low lip (Map 0's yard edging) is still in sight
+				var q2: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(e, z2.global_position + Vector3.UP * 0.75, MASK_LOS, [player.get_rid()])
+				seen = space.intersect_ray(q2).is_empty()
+			if seen:
 				visible[z2.get_instance_id()] = true
 				bb.sight(z2, z2.global_position, now, player.player_id, z2.tier, is_boss(z2))
 	_rebuild(now)
