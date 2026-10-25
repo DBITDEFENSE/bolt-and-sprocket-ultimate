@@ -1,0 +1,35 @@
+{
+ "_doc": "Map 0's survivors upstairs (T-077; gravelight/world/inn_opening/inn_survivors.gd + inn_survivor.gd). Three people off the shut road were resting in the middle guest room (Room 2) when the dead came; they piled the hall furniture against the stair door (Door 1, the Upstairs buy door: its boards and chains are their barricade) and hid. Hidden (not in the world) until a player opens `reveal_door`; then they are in the room, cowering, trembling and pleading, flinching at gunfire. A player holds interact on one to pay `arm.cost` Scrip and hand them `arm.weapon` from the inn's rack: they stand, walk to their post in the hall and hold it, shooting zombies they can see (no Scrip for their kills). Zombies upstairs go for them (Zombie.prey, within `ally.lure_radius` armed / `lure_radius_hidden` hidden, same floor, at most `max_lured` each); each swipe takes `swipe_damage`. Armed ones are downed at 0 hp and can be helped up (hold interact) within `bleed_seconds`; hidden ones and the ones who bleed out die. The dead rise as zombies `rise_after` seconds later, never silently: their last line, a squad line (INN_SURV_TURN) and a groan first; a riser is an extra zombie on top of the round (RoundManager.take_extra_spawn) and only rises while a round is on. Presentation reuses PatronBody (poses cower, aim); no collider, no hitboxes: shots and bots pass through them, nothing walks into them. Co-op: the host decides everything and mirrors it (InnSurvivors._net_*). Positions: Map 0's generator frame (+X east, +Z south), y 3.8 is the upstairs floor. Lines: VO_SCRIPT section 22.",
+ "map": "map00_crossroads",
+ "reveal_door": "door_upstairs",
+ "arm": {"cost": 750, "weapon": "kar98k", "weapon_name": "Kar98k", "hold_seconds": 1.0},
+ "ally": {
+  "hp": 220, "hidden_hp": 135, "swipe_damage": 45,
+  "range": 20.0, "fire_interval": 1.5, "first_shot_delay": 0.6, "hit_chance": 0.8, "head_chance": 0.3, "damage_mult": 1.0, "head_mult": 2.0,
+  "lure_radius": 8.0, "lure_radius_hidden": 4.5, "lure_floor_dy": 1.6, "max_lured": 2, "lure_every": 0.4,
+  "bleed_seconds": 25.0, "revive_hold": 2.5, "revive_hp_frac": 0.6, "rise_after": 5.0, "rise_getup_seconds": 2.4,
+  "walk_speed": 2.2, "turn_speed": 8.0, "flinch_radius": 14.0,
+  "line_near": 7.0, "scared_every": [9.0, 15.0], "fight_line_chance": 0.25, "fight_line_cooldown": 12.0, "flinch_line_cooldown": 6.0
+ },
+ "squad_turn_line": {"category": "INN_SURV_TURN", "delay": 1.2},
+ "survivors": [
+  {"id": "wiesner", "name": "Konrad Wiesner", "display": "WIESNER", "speaker": "WIE",
+   "role": "a railway signalman (50s) from the Kaltenbrunn line, walking home to Hirschfelde since the snow cut the line; he served at Verdun in 1916 and has not held a rifle since",
+   "look": {"jacket": [0.18, 0.2, 0.26], "trousers": [0.17, 0.17, 0.19], "skin": [0.8, 0.64, 0.55], "head": [0.16, 0.17, 0.2], "headgear": "cap", "build": 1.05, "skirt": false, "apron": false, "scarf": [0.3, 0.28, 0.24]},
+   "hide": [8.55, 3.8, 1.8], "hide_yaw": -90.0, "post": [8.4, 3.8, 8.4], "post_yaw": -90.0,
+   "female": false, "rise_variant": "villager",
+   "lines": {"reveal": ["WIE_SURV_REVEAL_01"], "scared": ["WIE_SURV_SCARED_01", "WIE_SURV_SCARED_02"], "flinch": ["WIE_SURV_FLINCH_01"], "armed": ["WIE_SURV_ARMED_01"], "fight": ["WIE_SURV_FIGHT_01"], "hurt": ["WIE_SURV_HURT_01"], "downed": ["WIE_SURV_DOWNED_01"], "death": ["WIE_SURV_DEATH_01"]}},
+  {"id": "brandt", "name": "Hedwig Brandt", "display": "FRÄULEIN BRANDT", "speaker": "BRA",
+   "role": "the schoolteacher (30s) at Hirschfelde, carrying the village children's Christmas letters to the post at Kaltenbrunn when the road shut; brisk, frightened, and braver than she sounds",
+   "look": {"jacket": [0.34, 0.2, 0.22], "trousers": [0.2, 0.2, 0.22], "skin": [0.87, 0.73, 0.65], "head": [0.3, 0.22, 0.14], "headgear": "bun", "build": 0.9, "skirt": true, "apron": false, "scarf": [0.2, 0.28, 0.36]},
+   "hide": [15.35, 3.8, 3.4], "hide_yaw": 90.0, "post": [15.2, 3.8, 8.4], "post_yaw": 90.0,
+   "female": true, "rise_variant": "villager",
+   "lines": {"reveal": ["BRA_SURV_REVEAL_01"], "scared": ["BRA_SURV_SCARED_01", "BRA_SURV_SCARED_02"], "flinch": ["BRA_SURV_FLINCH_01"], "armed": ["BRA_SURV_ARMED_01"], "fight": ["BRA_SURV_FIGHT_01"], "hurt": ["BRA_SURV_HURT_01"], "downed": ["BRA_SURV_DOWNED_01"], "death": ["BRA_SURV_DEATH_01"]}},
+  {"id": "kroll", "name": "Ida Kroll", "display": "IDA KROLL", "speaker": "KRO",
+   "role": "the postwoman (20s) from Sankt Anna on the Christmas round, her bicycle left in a drift on the west road; quick and talkative when she is scared",
+   "look": {"jacket": [0.24, 0.27, 0.34], "trousers": [0.2, 0.21, 0.24], "skin": [0.88, 0.75, 0.66], "head": [0.55, 0.42, 0.25], "headgear": "kerchief", "build": 0.86, "skirt": true, "apron": false},
+   "hide": [12.6, 3.8, 0.75], "hide_yaw": 180.0, "post": [12.0, 3.8, 9.2], "post_yaw": 180.0,
+   "female": true, "rise_variant": "villager",
+   "lines": {"reveal": ["KRO_SURV_REVEAL_01"], "scared": ["KRO_SURV_SCARED_01", "KRO_SURV_SCARED_02"], "flinch": ["KRO_SURV_FLINCH_01"], "armed": ["KRO_SURV_ARMED_01"], "fight": ["KRO_SURV_FIGHT_01"], "hurt": ["KRO_SURV_HURT_01"], "downed": ["KRO_SURV_DOWNED_01"], "death": ["KRO_SURV_DEATH_01"]}}
+ ]
+}
