@@ -16,6 +16,11 @@ extends Node3D
 ## peer runs the same timed script from the data, so patrons, the door and the lines match; the zombies are the
 ## host's and replicate as usual. Lines are lines.json ids (VO_SCRIPT section 21): baked audio plays at the patron
 ## when it exists, the subtitle always shows.
+##
+## Being seen (T-076): the opening owns round 1's intro. The host holds RoundManager's intro timer until the player
+## has had `look.min_seconds` of settled view (look_ready), is facing the front door (or `look.max_seconds` passed)
+## and no patron is mid-line; then the cue (a pounding at the window and the door, Kubiak's "What was that?") plays
+## on every peer and round 1 starts `look.cue_lead` seconds later. The patrons chat at the tables meanwhile.
 
 const DATA_PATH: String = "res://data/gravelight/map00_opening.json"
 
@@ -41,6 +46,13 @@ var _done_sfx: Dictionary = {}
 var _door_beats: Dictionary = {}
 var _arriving: bool = false
 var _flared: bool = false
+## T-076: seconds of settled view before round 1 (each frame counts at most look.frame_cap), when the last intro
+## line ends, whether the gate has opened (no new chatter starts) and whether the cue has played.
+var settle_t: float = 0.0
+var _busy_until: float = 0.0
+var _gate_open: bool = false
+var cued: bool = false
+var _cue_sfx_left: Array = []
 
 
 static func load_cfg() -> Dictionary:
@@ -55,6 +67,32 @@ static func should_play(map_id: StringName, round_number: int, current_round: in
 		return false
 	var r: int = int(c.get("round", 1))
 	return round_number == r and current_round == r
+
+
+## T-076: may the cue play (and round 1 start)? After `min_seconds` of settled view, once the player faces the door
+## (or `max_seconds` passed) and no patron is mid-line (the max never waits more than a line's worth).
+static func look_ready(settle: float, looking: bool, busy_until: float, c: Dictionary) -> bool:
+	var lk: Dictionary = c.get("look", {})
+	if lk.is_empty():
+		return true
+	var mn: float = float(lk.get("min_seconds", 0.0))
+	var mx: float = maxf(mn, float(lk.get("max_seconds", mn)))
+	if settle < mn:
+		return false
+	if settle >= mx + 6.0:
+		return true
+	if not looking and settle < mx:
+		return false
+	return settle >= busy_until
+
+
+## T-076: is a camera at `cam` with forward `fwd` facing `p` within `cone_deg` (flat angle)?
+static func facing(cam: Vector3, fwd: Vector3, p: Vector3, cone_deg: float) -> bool:
+	var to: Vector2 = Vector2(p.x - cam.x, p.z - cam.z)
+	var f: Vector2 = Vector2(fwd.x, fwd.z)
+	if to.length() < 0.01 or f.length() < 0.01:
+		return true
+	return rad_to_deg(absf(f.angle_to(to))) <= cone_deg
 
 
 ## How many of the round's queued slots the opening may take: risers first (they are the point), then attackers,
@@ -232,8 +270,6 @@ func _finish() -> void:
 func _physics_process(delta: float) -> void:
 	since_ready += delta
 	match phase:
-		Phase.IDLE:
-			_intro_lines()
 		Phase.RUNNING:
 			t += delta
 			_beats()
@@ -244,15 +280,69 @@ func _physics_process(delta: float) -> void:
 				phase = Phase.DONE
 
 
-func _intro_lines() -> void:
-	if RoundManager.current_round != 0:
+## Before round 1 (T-076): the settled-view clock, the patrons' chatter, and on the host the hold on the round's intro
+## timer until the cue.
+func _process(delta: float) -> void:
+	if phase != Phase.IDLE or RoundManager.current_round != 0:
 		return
-	var d: float = since_ready - float(cfg.get("intro_delay", 1.2))
+	var lk: Dictionary = cfg.get("look", {})
+	settle_t += minf(delta, float(lk.get("frame_cap", 0.1)))
+	if not cued:
+		_intro_lines()
+	_cue_sfx(delta)
+	if not Net.is_authority() or RoundManager.state != RoundManager.State.BREAK or cued:
+		return
+	if not _gate_open and settle_t >= float(lk.get("min_seconds", 0.0)) and (settle_t >= float(lk.get("max_seconds", 0.0)) or _player_looking(lk)):
+		_gate_open = true
+	if _gate_open and look_ready(settle_t, true, _busy_until, cfg):
+		_cue()
+		Net.mirror(self, &"_net_cue")
+		RoundManager.break_left = float(lk.get("cue_lead", 1.6))
+	else:
+		RoundManager.break_left = maxf(RoundManager.break_left, 0.5)
+
+
+## Is the local camera facing the front door? (No camera, e.g. a dedicated tool: yes.)
+func _player_looking(lk: Dictionary) -> bool:
+	var cam: Camera3D = get_viewport().get_camera_3d() if is_inside_tree() else null
+	if cam == null:
+		return true
+	return facing(cam.global_position, -cam.global_basis.z, _v3(lk.get("look_at", [20.0, 1.2, 0.0])), float(lk.get("cone_deg", 50.0)))
+
+
+## The cue: something pounds at the window and the door, a patron asks what that was (every peer).
+func _cue() -> void:
+	if cued:
+		return
+	cued = true
+	var lk: Dictionary = cfg.get("look", {})
+	_cue_sfx_left = (lk.get("cue_sfx", []) as Array).duplicate(true)
+	_cue_sfx(0.0)
+	var cl: Dictionary = lk.get("cue_line", {})
+	if not cl.is_empty():
+		_say(str(cl.get("id", "")), str(cl.get("who", "")))
+
+
+func _net_cue() -> void:
+	_cue()
+
+
+func _cue_sfx(delta: float) -> void:
+	for e: Dictionary in _cue_sfx_left.duplicate():
+		e["delay"] = float(e.get("delay", 0.0)) - delta
+		if float(e["delay"]) <= 0.0:
+			_cue_sfx_left.erase(e)
+			AudioDirector.play_3d(str(e["key"]), _v3(e["pos"]), float(e.get("db", 0.0)))
+
+
+func _intro_lines() -> void:
 	for i: int in (cfg.get("lines", []) as Array).size():
 		var ln: Dictionary = cfg["lines"][i]
-		if bool(ln.get("intro", false)) and not _done_lines.has(i) and d >= float(ln["at"]):
+		if bool(ln.get("intro", false)) and not _done_lines.has(i) and settle_t >= float(ln["at"]):
 			_done_lines[i] = true
-			_say(str(ln["id"]), str(ln.get("who", "")))
+			if _gate_open:
+				continue   # the cue is waiting: no new chatter
+			_busy_until = maxf(_busy_until, settle_t + _say(str(ln["id"]), str(ln.get("who", ""))))
 
 
 func _beats() -> void:
@@ -429,7 +519,7 @@ func _step_patron(id: String, delta: float) -> void:
 			if done and t >= float(bt4.get("collapse_at", 17.0)):
 				_fall(id, s, pb)
 		"down":
-			if pb.pose == &"dead" and t - float(s["t0"]) >= float(cfg.get("rise_after", 6.0)):
+			if pb.pose == &"dead" and t - float(s["t0"]) >= float(row.get("rise_after", cfg.get("rise_after", 6.0))):
 				_rise(id, s, pb)
 
 
@@ -512,10 +602,10 @@ func _rise(id: String, s: Dictionary, pb: PatronBody) -> void:
 # ================================================================== lines
 
 ## A patron's line: the subtitle under their name, and the baked voice at them when there is one.
-func _say(line_id: String, who: String) -> void:
+func _say(line_id: String, who: String) -> float:
 	var rec: Dictionary = GLVO.lines.get(line_id, {})
 	if rec.is_empty():
-		return
+		return 0.0
 	var pb: PatronBody = patrons.get(who) as PatronBody
 	var display: String = who.to_upper()
 	for row: Dictionary in cfg.get("patrons", []):
@@ -538,3 +628,4 @@ func _say(line_id: String, who: String) -> void:
 			p.finished.connect(p.queue_free)
 			dur = maxf(dur, stream.get_length())
 	GLBus.vo_line_started.emit(StringName(line_id), StringName(display), text, dur)
+	return dur

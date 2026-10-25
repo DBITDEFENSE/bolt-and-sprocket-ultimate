@@ -121,3 +121,45 @@ func test_opening_lines_are_scripted_and_accounted() -> void:
 		assert_true((man["files"] as Dictionary).has(str(ln["id"])) or (man["missing"] as Dictionary).has(str(ln["id"])), str(ln["id"]) + " baked or listed missing")
 	for spk: String in ["DUT", "PEG", "DEA", "WRN"]:
 		assert_true(lines.has(spk + "_INN_RISE_01"), "the squad reacts: " + spk)
+
+
+## T-076: round 1 waits for the player to have looked round the taproom (and at the door), and for a line to end.
+func test_look_around_gate() -> void:
+	var c: Dictionary = InnOpening.load_cfg()
+	var lk: Dictionary = c.get("look", {})
+	assert_false(lk.is_empty(), "map00_opening.json has a look block")
+	var mn: float = float(lk["min_seconds"])
+	var mx: float = float(lk["max_seconds"])
+	assert_gte(mn, 5.0, "a few seconds to look round first")
+	assert_false(InnOpening.look_ready(mn - 0.1, true, 0.0, c), "never before the look-around")
+	assert_true(InnOpening.look_ready(mn, true, 0.0, c), "facing the door after it: go")
+	assert_false(InnOpening.look_ready(mn + 1.0, false, 0.0, c), "looking away: wait")
+	assert_true(InnOpening.look_ready(mx, false, 0.0, c), "but not past the max")
+	assert_false(InnOpening.look_ready(mn + 1.0, true, mn + 2.0, c), "a patron mid-line: wait for the end")
+	assert_true(InnOpening.look_ready(mx + 6.0, false, mx + 30.0, c), "never held forever")
+	assert_true(InnOpening.look_ready(0.0, false, 0.0, {}), "no look block: as before")
+	var lines: Dictionary = GLData.load_json("res://data/gravelight/vo/lines.json")
+	assert_true(lines.has(str((lk["cue_line"] as Dictionary)["id"])), "the cue line exists")
+
+
+func test_facing() -> void:
+	assert_true(InnOpening.facing(Vector3(14.5, 1.6, 13.4), Vector3(0, 0, -1), Vector3(20, 1.2, 0), 50.0), "the front door from the spawn, facing north")
+	assert_false(InnOpening.facing(Vector3(14.5, 1.6, 13.4), Vector3(0, 0, 1), Vector3(20, 1.2, 0), 50.0), "facing south")
+	assert_false(InnOpening.facing(Vector3(0, 0, 0), Vector3(1, 0, 0), Vector3(0, 0, -5), 50.0), "90 degrees off")
+
+
+## T-076: every patron is in the starting view from PlayerSpawn1 (facing north), within 56 deg of forward (an 80 deg
+## FOV at 16:9), and the porch catches are in line with the open doorway as seen from there.
+func test_the_opening_is_in_front_of_the_spawn() -> void:
+	var c: Dictionary = InnOpening.load_cfg()
+	var spawn: Vector3 = Vector3(14.5, 1.6, 13.4)
+	for row: Dictionary in c["patrons"]:
+		var p: Vector3 = InnOpening._v3(row["start"])
+		assert_true(InnOpening.facing(spawn, Vector3(0, 0, -1), p, 56.0), "%s at %s is in the starting view" % [row["id"], str(p)])
+	var door: Vector3 = Vector3(20, 0, 0)
+	for row2: Dictionary in c["patrons"]:
+		if str(row2["id"]) in ["kubiak", "rother"]:
+			var end: Vector3 = InnOpening._v3((row2["outside"] as Array).back())
+			var k: float = (spawn.z - end.z) / (spawn.z - door.z)
+			var x_line: float = spawn.x + (door.x - spawn.x) * k
+			assert_almost_eq(end.x, x_line, 1.1, "%s is caught in line with the open doorway" % row2["id"])

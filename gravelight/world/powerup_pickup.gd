@@ -5,6 +5,8 @@ extends Area3D
 ## Greybox icon per type; a child named "Visual" (swapped-in art) replaces it.
 
 signal collected(by_player: int)
+## Its lifetime ran out uncollected (the PowerupManager applies a milestone drop anyway).
+signal expired
 
 const LAYER_PICKUP: int = 1 << 7
 const MASK_PLAYER: int = 1 << 1
@@ -12,9 +14,13 @@ const COLORS: Dictionary = {
 	&"resupply": Color(0.42, 0.45, 0.25), &"deaths_door": Color(0.92, 0.9, 0.82),
 	&"double_scrip": Color(0.95, 0.75, 0.25), &"blackout": Color(0.55, 0.25, 0.95),
 	&"fortify": Color(0.55, 0.3, 0.16), &"clearance": Color(0.3, 0.8, 0.4),
+	&"tonic_bottle": Color(0.75, 0.2, 0.55),
 }
 
 @export var powerup_id: StringName = &"resupply"
+## > 0: this drop's own lifetime / blink start instead of powerups.json's (milestone drops, T-078).
+@export var lifetime_override: float = 0.0
+@export var blink_override: float = 0.0
 
 var _age: float = 0.0
 var _lifetime: float = 30.0
@@ -28,6 +34,9 @@ func _ready() -> void:
 	var cfg: Dictionary = GLData.table("powerups")
 	_lifetime = float(cfg["lifetime_seconds"])
 	_blink_from = float(cfg["blink_from_seconds"])
+	if lifetime_override > 0.0:
+		_lifetime = lifetime_override
+		_blink_from = blink_override if blink_override > 0.0 else _lifetime * 0.75
 	collision_layer = LAYER_PICKUP
 	collision_mask = MASK_PLAYER
 	monitoring = not Net.is_client()   # co-op: the host decides who touched it
@@ -93,6 +102,30 @@ func _build_icon(col: Color) -> void:
 		&"fortify":   # two crossed boards
 			Interactable.add_box(_icon, Vector3(0.7, 0.13, 0.05), Vector3.ZERO, m).rotation.z = 0.6
 			Interactable.add_box(_icon, Vector3(0.7, 0.13, 0.05), Vector3(0, 0, 0.04), m).rotation.z = -0.6
+		&"tonic_bottle":   # a stoppered tonic bottle: amber-violet glass, a paper label, a wax-sealed cork
+			var glass: StandardMaterial3D = Interactable.greybox_mat(col, 1.4)
+			glass.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			glass.albedo_color.a = 0.8
+			var body: MeshInstance3D = MeshInstance3D.new()
+			var cyl: CylinderMesh = CylinderMesh.new()
+			cyl.top_radius = 0.13
+			cyl.bottom_radius = 0.14
+			cyl.height = 0.36
+			body.mesh = cyl
+			body.material_override = glass
+			body.position = Vector3(0, -0.08, 0)
+			_icon.add_child(body)
+			var neck: MeshInstance3D = MeshInstance3D.new()
+			var nc: CylinderMesh = CylinderMesh.new()
+			nc.top_radius = 0.045
+			nc.bottom_radius = 0.1
+			nc.height = 0.16
+			neck.mesh = nc
+			neck.material_override = glass
+			neck.position = Vector3(0, 0.18, 0)
+			_icon.add_child(neck)
+			Interactable.add_box(_icon, Vector3(0.07, 0.07, 0.07), Vector3(0, 0.29, 0), Interactable.greybox_mat(Color(0.55, 0.08, 0.08), 0.4))
+			Interactable.add_box(_icon, Vector3(0.2, 0.13, 0.02), Vector3(0, -0.06, -0.135), Interactable.greybox_mat(Color(0.9, 0.85, 0.7), 0.3))
 		&"clearance":   # green price tag
 			Interactable.add_box(_icon, Vector3(0.36, 0.5, 0.04), Vector3.ZERO, m)
 			Interactable.add_box(_icon, Vector3(0.08, 0.08, 0.06), Vector3(0, 0.17, 0), Interactable.greybox_mat(Color(0.1, 0.1, 0.1)))
@@ -114,6 +147,8 @@ func _process(delta: float) -> void:
 		_light.visible = on
 	if _age >= _lifetime and not _taken:
 		_taken = true
+		if not Net.is_client():
+			expired.emit()
 		queue_free()
 
 

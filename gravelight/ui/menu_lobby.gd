@@ -80,6 +80,9 @@ func _build_lobby() -> void:
 			"READY" if bool(r.get("ready", false)) else "not ready"]
 		if pid == Net.local_player_id():
 			tag += "   (you)"
+		var pk: Dictionary = ((r.get("kits", {}) as Dictionary).get(String(Net.character_of(pid)), {}) as Dictionary)
+		if not pk.is_empty():
+			tag += "   " + Muster.pistol_name(str(pk.get("pistol", "m1911")))
 		content.add_child(MenuKit.label(tag, 24, Net.player_color(pid)))
 	# survivor choice (each once)
 	content.add_child(MenuKit.label("Your survivor", 22, MenuKit.PAPER))
@@ -97,6 +100,8 @@ func _build_lobby() -> void:
 		b.disabled = taken.has(id)
 		b.custom_minimum_size = Vector2(150, 44)
 		row.add_child(b)
+	var mk: Dictionary = Muster.loadout_for(mine, ProfileSave.profile)
+	content.add_child(MenuKit.button("Muster: " + Muster.summary(mk), _open_muster.bind(mine), 20))   # T-079
 	if not host:
 		var me: Dictionary = Net.roster.get(Net.local_player_id(), {})
 		var ready_now: bool = bool(me.get("ready", false))
@@ -115,6 +120,14 @@ func _build_lobby() -> void:
 			b2.disabled = not open or not all_ready
 			content.add_child(b2)
 	content.add_child(MenuKit.button("Leave the lobby" if not host else "Close the lobby", _leave, 22, "ui_back"))
+
+
+func _open_muster(c: String) -> void:
+	var m: MenuMuster = MenuMuster.new(c)
+	add_child(m)
+	m.closed.connect(func() -> void:
+		Net.send_kits()   # the host (and through it everyone) sees the new kit
+		_refresh())
 
 
 func _port() -> int:

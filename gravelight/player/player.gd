@@ -159,7 +159,7 @@ func _ready() -> void:
 	floor_snap_length = 0.35
 	max_hp = float(_cfg["max_health"])
 	hp = max_hp
-	_stamina = float(_cfg["sprint_duration"])
+	_stamina = float(_cfg["sprint_duration"]) * Muster.mult(player_id, "sprint_duration_mult")   # Long March (T-079)
 	character_id = GameState.character_of(player_id)
 	_collider = CollisionShape3D.new()
 	_capsule = CapsuleShape3D.new()
@@ -603,7 +603,7 @@ func _update_sprint(delta: float, input: Vector2, on_floor: bool) -> void:
 		sprinting = false
 		_stamina_wait = maxf(0.0, _stamina_wait - delta)
 		if _stamina_wait <= 0.0:
-			_stamina = minf(float(_cfg["sprint_duration"]), _stamina + delta * 1.5)
+			_stamina = minf(float(_cfg["sprint_duration"]) * Muster.mult(player_id, "sprint_duration_mult"), _stamina + delta * 1.5)
 
 
 ## Landing: the fall height sets the camera shake and head dip; speed above the target is partly lost (no
@@ -1114,7 +1114,7 @@ func _update_health(delta: float) -> void:
 	for e: Variant in _status.keys():
 		_status[e] = maxf(0.0, float(_status[e]) - delta)
 	_since_hit += delta
-	if _since_hit >= float(_cfg["regen_delay"]) * float(PerkManager.stat(player_id, "regen_delay_mult", 1.0)) and hp < max_hp:
+	if _since_hit >= float(_cfg["regen_delay"]) * float(PerkManager.stat(player_id, "regen_delay_mult", 1.0)) * Muster.mult(player_id, "regen_delay_mult") and hp < max_hp:
 		hp = minf(max_hp, hp + float(_cfg["regen_per_second"]) * delta)
 	_set_heartbeat(hp < max_hp * HEARTBEAT_BELOW)
 
@@ -1369,6 +1369,7 @@ func take_hit(amount: float, _source: Node) -> void:
 	if downed or spectating or GameState.phase != GameState.Phase.PLAYING:
 		return
 	if not is_local and not is_bot:
+		Economy.bonuses.note_hit(player_id)   # T-078: the host never sees this hit land; it still spoils a clean round
 		_forward(&"hit", [amount])   # the owner applies it (their health is theirs, D-065)
 		return
 	if GameState.god_mode and is_local:

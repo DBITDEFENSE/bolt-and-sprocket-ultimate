@@ -42,7 +42,7 @@ func can_interact(player: Player) -> bool:
 
 func hold_time(player: Player) -> float:
 	var base: float = float(GLData.table("player")["revive_seconds"])
-	return CoopState.revive_seconds(base, float(PerkManager.stat(player.player_id, "revive_speed_mult", 1.0)))
+	return CoopState.revive_seconds(base, float(PerkManager.stat(player.player_id, "revive_speed_mult", 1.0))) * Muster.mult(player.player_id, "revive_time_mult")
 
 
 func hold_changed(player: Player, active: bool) -> void:

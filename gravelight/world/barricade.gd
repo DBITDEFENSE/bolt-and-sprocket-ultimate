@@ -118,7 +118,10 @@ func repair_board(player: Player) -> void:
 	boards += 1
 	Net.mirror(self, &"_net_boards", [boards])
 	_repair_visual(boards - 1)
+	var before: int = Economy.get_scrip(player.player_id)
 	Economy.award_repair(player.player_id)
+	if Economy.get_scrip(player.player_id) > before:   # the board paid: Carpenter's Pencil adds its bit (T-079)
+		Economy.award(player.player_id, int(Muster.value(player.player_id, "board_scrip", 0)))
 	GLBus.board_repaired.emit(window_id, player.player_id)
 	if occupant != null and is_instance_valid(occupant) and occupant.has_method("on_board_repaired"):
 		occupant.call("on_board_repaired")

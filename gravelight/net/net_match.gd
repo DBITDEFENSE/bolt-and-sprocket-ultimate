@@ -45,6 +45,7 @@ const RELAY: PackedStringArray = [
 	"weapon_upgraded", "powerup_spawned", "powerup_collected", "powerup_expired", "pylon_state_changed",
 	"trap_activated", "radio_tuned", "quest_step_completed", "quest_completed", "quest_step_failed",
 	"item_picked_up", "buildable_completed", "cylinder_played",
+	"bonus_awarded",   # T-078: the Scrip bonus / tonic gift toasts
 ]
 const QUEST_RELAY: PackedStringArray = ["sequence_progress", "sequence_reset", "holdout_changed"]
 ## Inventory calls the host may make on an owner's real WeaponHolder (WeaponHolder._forward_op).

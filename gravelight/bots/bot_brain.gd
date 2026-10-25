@@ -828,7 +828,8 @@ func _powerup_value(now: float) -> float:
 	_powerup_key = null
 	_powerup_v = 0.0
 	var h: Player = squad.human()
-	var human_in: bool = h != null and is_instance_valid(h) and not h.spectating and not h.downed
+	# (the player-bot agent is the human itself: no etiquette toward its own heading, T-078)
+	var human_in: bool = h != null and is_instance_valid(h) and h != player and not h.spectating and not h.downed
 	for k: Variant in bb.powerups.keys():
 		var e: Dictionary = bb.powerups[k]
 		var p: Vector3 = e["pos"]

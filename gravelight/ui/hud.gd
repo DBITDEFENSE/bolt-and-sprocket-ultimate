@@ -29,6 +29,7 @@ var _denied_t: float = 0.0
 var _stamp_font: SystemFont
 var _type_font: SystemFont
 var _minimap: Minimap   # Update 04 section 2 (T-065): top-left, the zone stamped under it
+var _toasts: int = 0     # T-078: bonus toasts on screen (they stack above the Scrip)
 
 
 func _init() -> void:
@@ -160,6 +161,7 @@ func _ready() -> void:
 	_debug_label.position = Vector2(16, 12)
 	GLBus.round_started.connect(_on_round_started)
 	GLBus.scrip_changed.connect(_on_scrip_changed)
+	GLBus.bonus_awarded.connect(_on_bonus_awarded)
 	GLBus.enemy_hit_feedback.connect(_on_hit_feedback)
 	GLBus.dev_overlay_toggled.connect(_on_overlay)
 
@@ -281,6 +283,29 @@ func _on_scrip_changed(p: int, total: int, delta: int) -> void:
 	tw.tween_property(pop, "position:y", pop.position.y - 70.0, 0.9).set_ease(Tween.EASE_OUT)
 	tw.parallel().tween_property(pop, "modulate:a", 0.0, 0.9).set_delay(0.3)
 	tw.tween_callback(pop.queue_free)
+
+
+## T-078: a named bonus. Scrip bonuses stack as typed slips above the Scrip ("+175  ROUND 5 PAY"); a tonic bottle's
+## gift is the banner.
+func _on_bonus_awarded(p: int, kind: StringName, amount: int, text: String) -> void:
+	if player == null or p != player.player_id:
+		return
+	if kind == &"tonic_bottle":
+		show_banner(text, 3.0)
+		if amount <= 0:
+			return
+	var slot: int = _toasts
+	_toasts += 1
+	var t: Label = _label(_scrip_anchor, ("+%d  %s" % [amount, text]) if amount > 0 else text, 22, SCRIP_COL, _type_font)
+	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	t.size = Vector2(420, 28)
+	t.position = Vector2(-430, -46 - 28 * float(slot % 5))
+	var tw: Tween = t.create_tween()
+	tw.tween_property(t, "position:y", t.position.y - 24.0, 2.2).set_ease(Tween.EASE_OUT)
+	tw.parallel().tween_property(t, "modulate:a", 0.0, 0.8).set_delay(1.6)
+	tw.tween_callback(func() -> void:
+		_toasts = maxi(0, _toasts - 1)
+		t.queue_free())
 
 
 func _on_hit_feedback(p: int, killed: bool, headshot: bool) -> void:
