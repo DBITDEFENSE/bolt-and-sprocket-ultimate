@@ -193,6 +193,8 @@ func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 	collision_mask = LAYER_WORLD | LAYER_PLAYER | LAYER_ZBODY | LAYER_DOOR
 	for hb: Hitbox in _hitboxes:
 		hb.collision_layer = Hitbox.LAYER_HITBOX
+	if bool(spec.get("crawler", false)) and bool(_cfg.get("can_crawl", true)):
+		_spawn_as_crawler()
 	_pivot.rotation = Vector3.ZERO
 	_pivot.position = Vector3.ZERO
 	velocity = Vector3.ZERO
@@ -203,6 +205,7 @@ func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 	_agent.avoidance_enabled = true
 	_repath_t = randf_range(0.0, 0.2)
 	_groan_t = randf_range(0.5, 3.0)
+	_spawn_surface = str(spawn.get_meta("surface", ""))
 	_emerge_kind = _emerge_kind_for(spawn)
 	if spawn.kind == &"ground":
 		_enter(State.EMERGE)
@@ -228,6 +231,9 @@ func deactivate() -> void:
 		window.release(self)
 	window = null
 	_end_ragdoll()
+	_emerge_hitboxes_off = false
+	_death_sink = false
+	_mound_show(false)
 	hide()
 	collision_layer = 0
 	for hb: Hitbox in _hitboxes:
@@ -251,6 +257,13 @@ func hitbox_rids() -> Array[RID]:
 func _enter(s: State) -> void:
 	state = s
 	_state_t = 0.0
+	if s != State.EMERGE:
+		# leaving a rise early (a risen patron's get-up, the opening's attackers, a kill): the hitboxes the rise
+		# held back come on and the mound goes, unless the body is sliding back into the ground
+		if _emerge_hitboxes_off and s != State.DEAD:
+			_set_emerge_hitboxes(true)
+		if not (s == State.DEAD and _death_sink):
+			_mound_show(false)
 	match s:
 		State.TEAR:
 			_tear_t = _tear_interval() * 0.6
@@ -280,7 +293,10 @@ func _enter(s: State) -> void:
 		State.CLIMB_LINK:
 			_tree_play("Climb", str(_anim["clips"]["climb"]["loop"]), 1.0)
 		State.DEAD:
-			_tree_play("Death", _death_clip, 1.0)
+			if _death_sink:
+				_emerge_sink_back()
+			else:
+				_tree_play("Death", _death_clip, 1.0)
 		State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW:
 			_tree_locomotion(true)
 
@@ -295,6 +311,7 @@ func _physics_process(delta: float) -> void:
 	_attack_cd = maxf(0.0, _attack_cd - delta)
 	match state:
 		State.EMERGE:
+			_emerge_tick(delta)
 			if _state_t >= _emerge_seconds():
 				_enter(State.CHASE)
 			else:
@@ -895,6 +912,13 @@ func _update_grab(delta: float) -> void:
 
 
 func _update_dead(delta: float) -> void:
+	if _death_sink:
+		# killed mid-rise: the Emerge clip ran backward and the body is back in the hole; no ragdoll, nothing to dissolve
+		if _state_t > _sink_corpse_s:
+			deactivate()
+			if director != null:
+				director.call("on_zombie_returned", self)
+		return
 	var rd: Dictionary = _anim["ragdoll"]
 	if not _ragdoll_started and _state_t >= float(rd.get("key_pose_seconds", 0.55)):
 		_ragdoll_started = true
@@ -1353,6 +1377,9 @@ func become_crawler() -> void:
 	if ZombieGore.blood_allowed():
 		Effects.blood(global_position + Vector3.UP * 0.9, Vector3.UP)
 	_set_crawl_pose(true)
+	if state == State.EMERGE and _staged_emerge():
+		_emerge_switch_variant("crawler")   # legs blown off while rising: it finishes the rise on its elbows
+		return
 	# the fall-into-crawler transition: a stumble that ends in the crawl pose, then the crawl locomotion
 	if not puppet and state in [State.CHASE, State.ATTACK, State.STAGGER, State.TO_WINDOW, State.WAIT_WINDOW] and moving:
 		_react_clip = str(_anim["clips"]["react"]["fall_crawl"])
@@ -1395,6 +1422,7 @@ func _die(limb: StringName, weapon_id: StringName, by_player: int, kind: StringN
 		pop = true
 	elif kind == &"explosive" and randf() < float(_anim["gore"].get("head_pop_explosive_chance", 0.35)):
 		pop = true
+	_mark_death_sink()
 	_start_death()
 	if pop:
 		_pop_head()
@@ -1523,7 +1551,26 @@ var _climb_clip: String = "vault_a"
 var _react_clip: String = ""
 var _react_len: float = 0.35
 var _emerge_kind: String = "ground"
-var _emerge_clip: String = "emerge_dig"
+var _emerge_clip: String = "emerge_standard"
+## The rise from the ground (T-085, ZombieEmerge): the variant, its length this rise (round-scaled), the next
+## stage whose effects fire, the surface class under the spawn, and whether the hitboxes wait for "head_out".
+var _emerge_variant: String = "standard"
+var _emerge_secs: float = 1.4
+var _emerge_stage_i: int = 0
+var _emerge_surface: String = "earth"
+var _emerge_hitboxes_off: bool = false
+var _emerge_dig_t: float = 0.0
+var _spawn_surface: String = ""
+var _mound: MeshInstance3D = null
+var _hole: MeshInstance3D = null
+## Killed mid-rise: the body slides back into the ground instead of a death clip (no ragdoll, no corpse).
+var _death_sink: bool = false
+var _sink_corpse_s: float = 0.0
+## Shared across the pool: the variant draw, seeded from the match seed so a seeded match replays its rises, and
+## the global rate cap on the claw crunches (24 zombies rising at once would stack a hundred a second).
+static var _emerge_rng: RandomNumberGenerator = RandomNumberGenerator.new()
+static var _emerge_seed: int = -1
+static var _last_dig_msec: int = 0
 var _down_front: bool = false
 var _getup_restarted: bool = false   # this knockdown's get-up was already restarted by a hit (one restart max)
 var _climb_dist: float = 1.0
@@ -1730,6 +1777,9 @@ func _reset_presentation() -> void:
 	_mantling = false
 	_react_clip = ""
 	_head_popped = false
+	_death_sink = false
+	_emerge_hitboxes_off = false
+	_spawn_surface = ""
 	_set_inst("inst_dissolve", 0.0)
 	_set_inst("inst_char", 0.0)
 	_tree_state = ""
@@ -2069,28 +2119,318 @@ func _tree_attack(clip: String) -> void:
 
 func _tree_emerge() -> void:
 	var em: Dictionary = _anim["clips"]["emerge"]
-	match _emerge_kind:
-		"portal":
-			_emerge_clip = str(em["portal"])
-		"ceiling":
-			_emerge_clip = str(em["ceiling"])
-		"water":
-			_emerge_clip = str(em["water"])
-		_:
-			_emerge_clip = str(_pick(em["ground"]))
-	_tree_play("Emerge", _emerge_clip, ZombieClips.length_of(_emerge_clip) / maxf(0.05, _emerge_seconds()))
-
-
-func _emerge_seconds() -> float:
 	var e: Dictionary = _anim["emerge"]
 	match _emerge_kind:
 		"portal":
-			return float(e["portal_seconds"])
+			_emerge_clip = str(em["portal"])
+			_emerge_secs = float(e["portal_seconds"])
 		"ceiling":
-			return float(e["ceiling_seconds"])
+			_emerge_clip = str(em["ceiling"])
+			_emerge_secs = float(e["ceiling_seconds"])
 		"water":
-			return float(e["water_seconds"])
-	return float(e["ground_seconds"])
+			_emerge_clip = str(em["water"])
+			_emerge_secs = float(e["water_seconds"])
+		_:
+			_emerge_begin_variant(ZombieEmerge.pick(emerge_rng(), tier, is_crawler))
+			return
+	_tree_play("Emerge", _emerge_clip, ZombieClips.length_of(_emerge_clip) / maxf(0.05, _emerge_secs))
+
+
+## How long this rise takes: a ground variant's seconds times the round multiplier (ZombieEmerge), the other
+## kinds anim.json emerge.
+func _emerge_seconds() -> float:
+	return _emerge_secs
+
+
+# ---------------------------------------------------------------- the rise from the ground (T-085)
+
+## Starts (or restarts) a staged ground rise with `variant`: the clip, its round-scaled length, the surface class
+## under the spawn, the stage cursor, the hitboxes off until "head_out" and the mound at the spawn.
+func _emerge_begin_variant(variant: String) -> void:
+	_emerge_variant = variant
+	_emerge_clip = ZombieEmerge.clip_for(variant)
+	_emerge_secs = ZombieEmerge.variant_seconds(variant) * ZombieEmerge.round_multiplier(RoundManager.current_round)
+	_emerge_stage_i = 0
+	_emerge_dig_t = 0.0
+	if _staged_emerge():
+		_emerge_surface = _emerge_surface_at()
+		_set_emerge_hitboxes(false)
+		_mound_show(true)
+		_emerge_mound_update(0.0)
+	_tree_play("Emerge", _emerge_clip, ZombieClips.length_of(_emerge_clip) / maxf(0.05, _emerge_secs))
+
+
+## True when the rise is the staged ground dig-out (the shared rig exists; the bosses' own bodies and the portal /
+## chute / wade kinds keep their simple timing).
+func _staged_emerge() -> bool:
+	return has_rig() and _emerge_kind == "ground"
+
+
+## Normalized progress of the rise (0..1).
+func _emerge_k() -> float:
+	return clampf(_state_t / maxf(0.05, _emerge_secs), 0.0, 1.0)
+
+
+## True once a rising zombie's head is out (it looks at its prey from here; its hitboxes are live from here).
+func _emerge_head_out() -> bool:
+	return state == State.EMERGE and _staged_emerge() and _emerge_k() >= ZombieEmerge.stage(_emerge_variant, "head_out", 0.4)
+
+
+func emerge_variant() -> String:
+	return _emerge_variant
+
+
+func emerge_surface() -> String:
+	return _emerge_surface
+
+
+## The pool's variant draw, re-seeded from the match seed (QuestManager) whenever a new match starts.
+static func emerge_rng() -> RandomNumberGenerator:
+	var seed_now: int = QuestManager.match_seed
+	if _emerge_seed != seed_now:
+		_emerge_seed = seed_now
+		_emerge_rng.seed = hash("emerge:%d" % seed_now)
+	return _emerge_rng
+
+
+## Per frame while rising (host and puppet): fires each stage's effects once as its time passes, keeps the mound
+## in step, and scrapes while a hand rakes the rim.
+func _emerge_tick(delta: float) -> void:
+	if not _staged_emerge():
+		return
+	var k: float = _emerge_k()
+	var list: Array = ZombieEmerge.stage_list(_emerge_variant)
+	while _emerge_stage_i < list.size() and k >= float((list[_emerge_stage_i] as Array)[1]):
+		_emerge_stage_fx(str((list[_emerge_stage_i] as Array)[0]), false)
+		_emerge_stage_i += 1
+	_emerge_mound_update(k)
+	var hand: float = ZombieEmerge.stage(_emerge_variant, "hand", 0.1)
+	var head: float = ZombieEmerge.stage(_emerge_variant, "head_out", 0.4)
+	var pause: float = ZombieEmerge.stage(_emerge_variant, "pause", -1.0)
+	var heave2: float = ZombieEmerge.stage(_emerge_variant, "heave2", -1.0)
+	var clawing: bool = (k >= hand and k < head) or (pause > 0.0 and k >= pause and k < heave2)
+	if clawing:
+		_emerge_dig_t -= delta
+		if _emerge_dig_t <= 0.0:
+			var every: Array = (ZombieEmerge.cfg().get("effects", {}) as Dictionary).get("dig_every", [0.18, 0.3])
+			_emerge_dig_t = randf_range(float(every[0]), float(every[1]))
+			_emerge_sound("dig", -2.0, 60)
+
+
+## One stage's spray, sound and gameplay switch. `silent` (a seek) applies the switches and skips the show.
+func _emerge_stage_fx(stage: String, silent: bool) -> void:
+	var fx: Dictionary = ZombieEmerge.cfg().get("effects", {})
+	var n: int = int((fx.get("spray", {}) as Dictionary).get(stage, 0))
+	match stage:
+		"head_out":
+			_set_emerge_hitboxes(true)
+		"done":
+			_mound_show(false)
+	if silent:
+		return
+	match stage:
+		"hand":
+			_emerge_spray(_emerge_point("RightHand", 0.1), n, 1.0, Vector3.UP)
+			_emerge_sound("burst", 0.0)
+		"hand2":
+			_emerge_spray(_emerge_point("LeftHand", 0.1), maxi(4, n / 2), 0.8, Vector3.UP)
+			_emerge_sound("burst", -4.0)
+		"head_out":
+			_emerge_spray(_emerge_point("Head", 0.15), n, 1.3, Vector3.UP)
+			_emerge_sound("burst", -1.0)
+			_emerge_sound("heave", -2.0)
+		"shoulders":
+			# clumps falling off the shoulders: slow, low, outward
+			_emerge_spray(_emerge_point("LeftUpperArm", 0.05), n, 0.4, Vector3(-0.5, 0.5, 0.2))
+			_emerge_spray(_emerge_point("RightUpperArm", 0.05), n, 0.4, Vector3(0.5, 0.5, 0.2))
+		"elbow":
+			_emerge_spray(_emerge_point("LeftLowerArm", 0.05), n, 0.45, Vector3(-0.3, 0.7, 0.0))
+		"knee":
+			_emerge_spray(_emerge_point("RightLowerLeg", 0.05), n, 0.45, Vector3(0.3, 0.7, -0.3))
+		"heave2":
+			_emerge_spray(_emerge_point("Chest", 0.2), n, 1.1, Vector3.UP)
+			_emerge_sound("burst", -3.0)
+			_emerge_sound("heave", -1.0)
+		"flat":
+			_emerge_spray(global_position + Vector3.UP * 0.1, n, 0.5, Vector3(0, 0.5, -0.8))
+		"stand":
+			if _emerge_in_range():
+				Effects.dust_puff(global_position + Vector3.UP * 0.05, _emerge_surface, n)
+			_emerge_sound("settle", 0.0)
+
+
+## A bone's world position lifted to at least the ground (the spray starts at the surface, never from under it).
+func _emerge_point(bone: String, lift: float) -> Vector3:
+	var at: Node3D = bone_attachment(bone)
+	var p: Vector3 = at.global_position if at != null else global_position + Vector3.UP * 0.5
+	p.y = maxf(p.y, global_position.y + 0.02) + lift
+	return p
+
+
+## Effects are for the players nearby (enemies.json emerge.effects.range_m from this zombie's target).
+func _emerge_in_range() -> bool:
+	if target == null:
+		return true
+	var r: float = float((ZombieEmerge.cfg().get("effects", {}) as Dictionary).get("range_m", 24.0))
+	return global_position.distance_squared_to(target.global_position) <= r * r
+
+
+func _emerge_spray(pos: Vector3, n: int, strength: float, dir: Vector3) -> void:
+	if n > 0 and _emerge_in_range():
+		Effects.dirt_burst(pos, _emerge_surface, strength, dir, n)
+
+
+## A rise cue by surface class (enemies.json emerge.sounds -> audio.json keys); `gap_ms` rate-caps it horde-wide.
+func _emerge_sound(cue: String, db: float, gap_ms: int = 0) -> void:
+	var key: String = ZombieEmerge.sound_key(cue, _emerge_surface)
+	if key == "" or not _emerge_in_range():
+		return
+	if gap_ms > 0:
+		var now: int = Time.get_ticks_msec()
+		if now - _last_dig_msec < gap_ms:
+			return
+		_last_dig_msec = now
+	AudioDirector.play_3d(key, global_position + Vector3.UP * 0.3, db, 0.0)
+
+
+## The hitboxes wait for the head to be out: a rising zombie can be shot from the moment its head shows, never
+## through the ground before. Crawlers keep their leg boxes off.
+func _set_emerge_hitboxes(on: bool) -> void:
+	_emerge_hitboxes_off = not on
+	for hb: Hitbox in _hitboxes:
+		if on and is_crawler and hb.limb == &"legs":
+			continue
+		hb.collision_layer = Hitbox.LAYER_HITBOX if on else 0
+
+
+## Spawned as a crawler (spec "crawler": true): the legs are gone from the start (no gib sound, no pieces) and
+## it rises on its elbows (ZombieEmerge "crawler").
+func _spawn_as_crawler() -> void:
+	is_crawler = true
+	for leg: String in ["LeftUpperLeg", "RightUpperLeg"]:
+		ZombieGore.sever(self, leg, Vector3.ZERO, false)
+	_set_crawl_pose(true)
+
+
+## The bulge at the spawn and the broken ring under it (shared meshes and per-surface materials, ZombieEmerge).
+func _mound_show(on: bool) -> void:
+	if not on:
+		if _mound != null:
+			_mound.hide()
+			_hole.hide()
+		return
+	if _mound == null:
+		_mound = MeshInstance3D.new()
+		_mound.name = "Mound"
+		_mound.mesh = ZombieEmerge.mound_mesh()
+		_mound.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(_mound)
+		_hole = MeshInstance3D.new()
+		_hole.name = "Hole"
+		_hole.mesh = ZombieEmerge.hole_mesh()
+		_hole.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		_hole.position = Vector3(0, 0.012, 0)
+		add_child(_hole)
+	_mound.material_override = ZombieEmerge.mound_material(_emerge_surface)
+	_hole.material_override = ZombieEmerge.hole_material(_emerge_surface)
+	_mound.scale = Vector3.ONE * 0.001
+	_mound.show()
+	_hole.hide()
+
+
+## Mound shape by rise progress: it swells (trembling) until the first hand breaks it, collapses to a thrown-up
+## rim, and the dark broken ring shows from then on.
+func _emerge_mound_update(k: float) -> void:
+	if _mound == null or not _mound.visible:
+		return
+	var fx: Dictionary = ZombieEmerge.cfg().get("effects", {})
+	var radius: float = float(fx.get("mound_radius", 0.55))
+	var height: float = float(fx.get("mound_height", 0.14))
+	var hand: float = ZombieEmerge.stage(_emerge_variant, "hand", 0.1)
+	var shoulders: float = ZombieEmerge.stage(_emerge_variant, "shoulders", ZombieEmerge.stage(_emerge_variant, "elbow", hand + 0.3))
+	if k < hand:
+		var s: float = k / maxf(0.01, hand)
+		s = s * s * (3.0 - 2.0 * s)
+		var tremble: float = 1.0 + 0.08 * s * sin(_state_t * 25.0)
+		var r: float = maxf(0.001, radius * (0.4 + 0.6 * s))
+		_mound.scale = Vector3(r, maxf(0.001, height * s * tremble), r)
+		_hole.hide()
+	else:
+		var f: float = clampf((k - hand) / maxf(0.01, shoulders - hand), 0.0, 1.0)
+		_mound.scale = Vector3(radius * 1.1, height * lerpf(0.4, 0.25, f), radius * 1.1)
+		var hr: float = float(fx.get("hole_radius", 0.4))
+		_hole.scale = Vector3(hr, 1.0, hr)
+		_hole.show()
+
+
+## Decides, before the death starts, whether this kill happened mid-rise: then the body slides back into the
+## ground instead of playing a death clip (the mound stays until it is under).
+func _mark_death_sink() -> void:
+	_death_sink = state == State.EMERGE and _staged_emerge() and _emerge_k() < ZombieEmerge.stage(_emerge_variant, "stand", 0.9)
+	if _death_sink:
+		var speed: float = float(ZombieEmerge.cfg().get("death_sink_speed", 1.6))
+		_sink_corpse_s = _emerge_k() * _emerge_secs / maxf(0.2, speed) + 0.4
+
+
+## The Emerge clip runs backward from where it was (no travel: the state machine stays on Emerge).
+func _emerge_sink_back() -> void:
+	if _tree == null:
+		return
+	var speed: float = float(ZombieEmerge.cfg().get("death_sink_speed", 1.6))
+	_tree.set("parameters/SM/Emerge/TimeScale/scale", -(ZombieClips.length_of(_emerge_clip) / maxf(0.05, _emerge_secs)) * speed)
+	_tree_state = "Emerge"
+	if _emerge_in_range():
+		Effects.dust_puff(global_position + Vector3.UP * 0.05, _emerge_surface)
+	_emerge_sound("settle", -2.0)
+
+
+## Swaps the variant mid-rise at the same progress (legs blown off while rising: it finishes on its elbows).
+func _emerge_switch_variant(variant: String) -> void:
+	var k: float = _emerge_k()
+	_emerge_begin_variant(variant)
+	_state_t = k * _emerge_secs
+	_tree_seek(_state_t)
+	_emerge_catch_up(k, false)
+
+
+## Applies the switches of every stage up to `k` without their show; with `fx`, the last one's show too.
+func _emerge_catch_up(k: float, fx: bool) -> void:
+	var list: Array = ZombieEmerge.stage_list(_emerge_variant)
+	var last: String = ""
+	while _emerge_stage_i < list.size() and k >= float((list[_emerge_stage_i] as Array)[1]):
+		last = str((list[_emerge_stage_i] as Array)[0])
+		_emerge_stage_fx(last, true)
+		_emerge_stage_i += 1
+	if fx and last != "":
+		_emerge_stage_fx(last, false)
+	_emerge_mound_update(k)
+
+
+## Advances the tree `seconds` into the state just travelled to, in small steps (one big step can skip the travel).
+func _tree_seek(seconds: float) -> void:
+	if _tree == null:
+		return
+	_tree.advance(0.0)
+	var left: float = seconds
+	while left > 0.0:
+		var d: float = minf(left, 0.05)
+		_tree.advance(d)
+		left -= d
+
+
+## Tools and tests: parks a ground rise of `variant` at normalized time `k` (round multiplier 1) with the stage
+## switches applied (hitboxes, mound) and, with `fx`, the effects of the last stage reached.
+func debug_emerge_seek(variant: String, k: float, fx: bool = false) -> void:
+	if not has_rig():
+		return
+	_emerge_kind = "ground"
+	state = State.EMERGE
+	_emerge_begin_variant(variant)
+	_emerge_secs = ZombieEmerge.variant_seconds(variant)
+	_tree.set("parameters/SM/Emerge/TimeScale/scale", 1.0)
+	_state_t = clampf(k, 0.0, 1.0) * _emerge_secs
+	_tree_seek(_state_t)
+	_emerge_catch_up(clampf(k, 0.0, 1.0), fx)
 
 
 ## Spawn kind -> emerge clip family: Bellringers step out of portals; a spawn's name prefix can pick the chute
@@ -2254,7 +2594,7 @@ func _update_senses(delta: float) -> void:
 		_modifier.ik_weight = move_toward(_modifier.ik_weight, 1.0, delta * 4.0)
 	else:
 		_modifier.ik_weight = move_toward(_modifier.ik_weight, 0.0, delta * 4.0)
-	var look_on: bool = target != null and d <= float(la["range_m"]) and state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW, State.TEAR, State.ATTACK] and not is_severed("Head")
+	var look_on: bool = target != null and d <= float(la["range_m"]) and (state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW, State.TEAR, State.ATTACK] or _emerge_head_out()) and not is_severed("Head")
 	if look_on:
 		_look_target.global_position = target.global_position + Vector3.UP * 1.6
 	_look.active = look_on
@@ -2300,27 +2640,51 @@ func _footstep(_left: bool) -> void:
 	_last_step_msec = now
 	var surface: String = _floor_surface()
 	var key: String = "footstep_" + surface
-	if surface == "water" or not AudioDirector.bank.has(key):
-		key = "zombie_step"
+	if surface == "water" or not (AudioDirector.bank.get("sounds", {}) as Dictionary).has(key):
+		key = "zombie_step"   # (the bank's keys live under "sounds"; the old top-level check never matched, T-085)
 	AudioDirector.play_3d(key, global_position, float(fs.get("volume_db", -3.0)), 0.08)
 
 
 ## What the zombie stands on, from the floor collider's "surface" metadata or name hints (anim.json footsteps).
 func _floor_surface() -> String:
-	var fs: Dictionary = _anim["footsteps"]
 	var col: Object = get_last_slide_collision().get_collider() if get_slide_collision_count() > 0 else null
-	var n: Node = col as Node
-	if n != null:
-		for m: Node in [n, n.get_parent()]:
-			if m != null and m.has_meta("surface"):
-				return str(m.get_meta("surface"))
-		var lname: String = n.name.to_lower()
-		for s: String in (fs["surfaces"] as Dictionary).keys():
-			for hint: String in fs["surfaces"][s]:
-				if lname.contains(hint):
-					return s
-	var defaults: Dictionary = fs["default_by_map"]
+	var found: String = _surface_of_collider(col)
+	if found != "":
+		return found
+	var defaults: Dictionary = _anim["footsteps"]["default_by_map"]
 	return str(defaults.get(String(GameState.map_id), defaults.get("default", "stone")))
+
+
+## Surface name of a floor collider from its "surface" metadata or name hints (anim.json footsteps); "" = unknown.
+func _surface_of_collider(col: Object) -> String:
+	var fs: Dictionary = _anim["footsteps"]
+	var n: Node = col as Node
+	if n == null:
+		return ""
+	for m: Node in [n, n.get_parent()]:
+		if m != null and m.has_meta("surface"):
+			return str(m.get_meta("surface"))
+	var lname: String = n.name.to_lower()
+	for s: String in (fs["surfaces"] as Dictionary).keys():
+		for hint: String in fs["surfaces"][s]:
+			if lname.contains(hint):
+				return s
+	return ""
+
+
+## The surface class under a ground spawn (T-085): the ZombieSpawn's "surface" meta, else the floor collider
+## under the feet (metadata / name hints like the footsteps), else the map's default (enemies.json
+## emerge.surface_by_map: Map 0 snow, Map 1 earth).
+func _emerge_surface_at() -> String:
+	var found: String = _spawn_surface
+	if found == "" and is_inside_tree():
+		var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+		if space != null:
+			var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(global_position + Vector3.UP * 0.5, global_position - Vector3.UP * 1.5, LAYER_WORLD, [get_rid()])
+			var hit: Dictionary = space.intersect_ray(q)
+			if not hit.is_empty():
+				found = _surface_of_collider(hit.get("collider"))
+	return ZombieEmerge.surface_class(found, GameState.map_id)
 
 
 # ---------------------------------------------------------------- co-op puppet (client side, M7)
@@ -2403,6 +2767,8 @@ func _puppet_tick(delta: float) -> void:
 	if state == State.INACTIVE:
 		return
 	_state_t += delta
+	if state == State.EMERGE:
+		_emerge_tick(delta)   # the rise's sprays, crunches and the head-out hitbox switch play on the client too
 	_pred_dmg *= exp(-delta * 4.0)
 	if Net.session != null and interp.sample(Net.session.render_time_ms()):
 		var prev: Vector3 = global_position
@@ -2470,6 +2836,7 @@ func puppet_die(_limb: StringName, kind: StringName, death_kind: int, side: floa
 	_death_side = side
 	_death_explosive = kind == &"explosive"
 	_death_clip = str(_anim["clips"]["death_crawler"]) if (is_crawler or death_kind >= deaths.size()) else str(deaths[clampi(death_kind, 0, deaths.size() - 1)])
+	_mark_death_sink()
 	_start_death()
 	if pop:
 		_pop_head()

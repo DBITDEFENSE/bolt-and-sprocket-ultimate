@@ -23,7 +23,8 @@ func test_anim_json_clip_counts() -> void:
 	assert_eq((anim["clips"]["attack"]["swipe"] as Array).size(), 4)
 	assert_eq((anim["clips"]["tear"] as Array).size(), 3)
 	assert_eq((anim["clips"]["vault"] as Array).size(), 2)
-	assert_eq((anim["clips"]["emerge"]["ground"] as Array).size(), 2)
+	assert_gte((anim["clips"]["emerge"]["ground"] as Array).size(), 4, "the staged ground rises (T-085)")
+	assert_eq(str(anim["clips"]["emerge"]["crawler"]), "emerge_crawler")
 	assert_gte((anim["clips"]["postures"] as Array).size(), 6)
 	for k: String in ["foot_ik", "look_at", "lod", "ragdoll", "gore", "kits", "builds", "footsteps", "knockdown"]:
 		assert_true(anim.has(k), "anim.json has " + k)

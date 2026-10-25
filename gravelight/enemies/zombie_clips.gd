@@ -182,7 +182,7 @@ static func _state_tree(state: String) -> AnimationNodeBlendTree:
 				bsa.add_blend_point(_anim_node(str(names[i])), float(i), -1, StringName(str(names[i])))
 			anim = bsa
 		_:
-			var defaults: Dictionary = {"Spawn": "idle", "Emerge": "emerge_dig", "Climb": "vault_a", "Barricade": "tear_rip", "React": "stagger", "Death": "death_back"}
+			var defaults: Dictionary = {"Spawn": "idle", "Emerge": "emerge_standard", "Climb": "vault_a", "Barricade": "tear_rip", "React": "stagger", "Death": "death_back"}
 			anim = _anim_node(str(defaults[state]))
 	bt.add_node("Anim", anim, Vector2(0, 0))
 	var ts: AnimationNodeTimeScale = AnimationNodeTimeScale.new()
@@ -301,6 +301,8 @@ static func _oneshot_length(clip: String) -> float:
 		return TEAR_CYCLE
 	if clip.begins_with("death"):
 		return DEATH_SECONDS
+	if ZombieEmerge.is_ground_clip(clip):
+		return ZombieEmerge.variant_seconds(ZombieEmerge.variant_of_clip(clip))   # the rise from the ground (T-085)
 	match clip:
 		"idle", "crawl_idle", "window_wait":
 			return 2.4
@@ -310,8 +312,6 @@ static func _oneshot_length(clip: String) -> float:
 			return 1.1
 		"drop_down":
 			return 0.9
-		"emerge_dig", "emerge_roll":
-			return float(c["emerge"]["ground_seconds"])
 		"emerge_portal":
 			return float(c["emerge"]["portal_seconds"])
 		"emerge_ceiling":
@@ -581,12 +581,14 @@ static func _oneshot_pose(clip: String, t: float, length: float) -> Dictionary:
 		return _tear_pose(clip, t, k)
 	if clip.begins_with("death"):
 		return _death_pose(clip, t, k)
+	if ZombieEmerge.is_ground_clip(clip):
+		return ZombieEmerge.pose(ZombieEmerge.variant_of_clip(clip), k)   # staged dig-outs (T-085)
 	match clip:
 		"vault_a", "vault_b":
 			return _vault_pose(clip, k)
 		"drop_down":
 			return _drop_pose(k)
-		"emerge_dig", "emerge_roll", "emerge_portal", "emerge_ceiling", "emerge_wade":
+		"emerge_portal", "emerge_ceiling", "emerge_wade":
 			return _emerge_pose(clip, t, k)
 		"climb_loop":
 			return _climb_pose(t)
@@ -777,32 +779,11 @@ static func _drop_pose(k: float) -> Dictionary:
 	return r
 
 
+## The non-ground emerges (the ground dig-outs are ZombieEmerge, T-085).
 static func _emerge_pose(clip: String, t: float, k: float) -> Dictionary:
 	var r: Dictionary = _idle_pose(0.0)
 	var rise: float = _ease(k)
 	match clip:
-		"emerge_dig":
-			r["hips_pos"] = Vector3(0, -1.7 * (1.0 - rise), 0)
-			r["LeftUpperArm"] = Vector3(2.65 + sin(t * 8.0) * 0.35, 0, -0.2)
-			r["RightUpperArm"] = Vector3(2.45 + cos(t * 8.0) * 0.35, 0, 0.2)
-			r["LeftLowerArm"] = Vector3(0.6, 0, 0)
-			r["RightLowerArm"] = Vector3(0.7, 0, 0)
-			r["Chest"] = Vector3(-0.3, 0, 0)
-			r["Head"] = Vector3(-0.3, 0, 0)
-			r["Jaw"] = Vector3(0.7, 0, 0)
-		"emerge_roll":
-			# lying on the back under the floor, rolling up onto the knees, then standing
-			var roll: float = _ease(clampf(k / 0.6, 0.0, 1.0))
-			var stand: float = _ease(clampf((k - 0.6) / 0.4, 0.0, 1.0))
-			r["hips_pos"] = Vector3(0, -1.7 * (1.0 - rise), 0)
-			_body_tilt(r, 1.4 * (1.0 - roll) - 0.6 * roll * (1.0 - stand), 0.0, 0.0, 0.0)
-			r["LeftUpperLeg"] = Vector3(1.3 * (1.0 - stand), 0, 0.1)
-			r["RightUpperLeg"] = Vector3(1.3 * (1.0 - stand), 0, -0.1)
-			r["LeftLowerLeg"] = Vector3(-2.0 * (1.0 - stand), 0, 0)
-			r["RightLowerLeg"] = Vector3(-2.0 * (1.0 - stand), 0, 0)
-			r["LeftUpperArm"] = Vector3(2.0 * (1.0 - stand) + 1.0 * stand, 0, -0.4)
-			r["RightUpperArm"] = Vector3(2.0 * (1.0 - stand) + 1.0 * stand, 0, 0.4)
-			r["Jaw"] = Vector3(0.6, 0, 0)
 		"emerge_portal":
 			# a step through the violet door: arms spread, head up, a long stride
 			var step: float = sin(k * PI)

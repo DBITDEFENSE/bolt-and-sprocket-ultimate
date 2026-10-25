@@ -8,8 +8,12 @@ extends Node
 ##   za_04_dying        the authored deaths at their key pose
 ##   za_05_ragdoll      the same corpses two seconds later (ragdoll settled, pieces on the floor), za_05b a close-up
 ##   za_06_kits         every outfit kit, a Glasshide and a Bellringer, standing (new only)
+##   za_08_emerge_<v>   T-085: each ground-rise variant (fast / standard / slow / roll / crawler) frozen at eight
+##                      normalized times across a row, on snow, the last stage's spray live (new only)
+##   za_09_emerge_surfaces  the standard rise at head-out on snow / earth / stone
+##   za_10_emerge_live  eight standard rises started 0.25 s apart, caught mid-flight (the real timing)
 ## Usage (silent, off-screen, no mouse capture):
-##   godot --audio-driver Dummy --position -4000,-4000 --resolution 1600x900 --path . res://gravelight/tools_src/shots_zombie_anim.tscn -- --out=<dir>
+##   godot --audio-driver Dummy --position -4000,-4000 --resolution 1600x900 --path . res://gravelight/tools_src/shots_zombie_anim.tscn -- --out=<dir> [--only=emerge]
 
 const LegacyDummy: GDScript = preload("res://gravelight/tools_src/legacy_zombie_dummy.gd")
 const TIERS: Array = [&"shamble", &"walk", &"jog", &"run", &"sprint", &"shamble", &"walk", &"jog", &"run", &"sprint"]
@@ -201,7 +205,7 @@ func _process(delta: float) -> void:
 	if _t < 1.5:
 		return
 	_busy = true
-	var names: Array = ["walking", "tearing", "hits", "dying", "kits", "closeup"]
+	var names: Array = ["walking", "tearing", "hits", "dying", "kits", "closeup", "emerge"]
 	if _only != "" and _step < names.size() and str(names[_step]) != _only:
 		_step += 1
 		_busy = false
@@ -219,6 +223,8 @@ func _process(delta: float) -> void:
 			await _scene_kits()
 		5:
 			await _scene_closeup()
+		6:
+			await _scene_emerge()
 		_:
 			get_tree().quit()
 			return
@@ -372,3 +378,67 @@ func _scene_closeup() -> void:
 	await get_tree().create_timer(1.5).timeout
 	await _shot("07_closeup")
 	_clear()
+
+
+## T-085: the rise from the ground. One row per variant, each zombie parked at one of eight normalized times
+## (the stage times, so every stage of the table is in the frame), low camera so the mound and the hole read;
+## then the three surfaces, then a live row for the real timing.
+func _scene_emerge() -> void:
+	_cam.position = Vector3(0, 1.35, -4.6)
+	_cam.rotation_degrees = Vector3(-11, 180, 0)
+	_cam.fov = 64
+	var l2: Label = _label.get_parent().get_child(1) as Label
+	if l2 != null:
+		l2.text = ""
+	for v: String in ZombieEmerge.variants():
+		var list: Array = ZombieEmerge.stage_list(v)
+		var ks: PackedFloat32Array = []
+		var names: PackedStringArray = []
+		for i: int in 8:
+			var idx: int = int(round(float(i) * float(list.size() - 1) / 7.0))
+			var k: float = float((list[idx] as Array)[1])
+			# just past the stage time so the burst has broken the surface; the last column is the end
+			ks.append(minf(1.0, k + 0.02) if i < 7 else 1.0)
+			names.append(str((list[idx] as Array)[0]))
+		_label.text = "08 rise '%s' (%.1f s) on snow: %s" % [v, ZombieEmerge.variant_seconds(v), " / ".join(names)]
+		_spawn.set_meta("surface", "snow")
+		for i: int in 8:
+			var x: float = 3.85 - 1.1 * float(i)
+			var z: Zombie = _place_new({"enemy_id": "ganger", "tier": "walk", "health": 300, "variant": NEW_KITS[i], "crawler": v == "crawler"}, Vector3(x, 0, 1.4))
+			z.rotation.y = 0.0
+			z.debug_emerge_seek(v, ks[i], true)
+			z.set_physics_process(false)
+			z.set_process(false)
+		print("[shots_za] emerge %s at %s" % [v, str(ks)])
+		await get_tree().create_timer(0.22).timeout
+		await _shot("08_emerge_" + v)
+		_clear()
+	_label.text = "09 the standard rise at head-out: snow / earth / stone"
+	var surfaces: Array = ["snow", "earth", "stone"]
+	for i: int in 3:
+		_spawn.set_meta("surface", surfaces[i])
+		var z: Zombie = _place_new({"enemy_id": "ganger", "tier": "walk", "health": 300, "variant": NEW_KITS[i]}, Vector3(1.6 - 1.6 * float(i), 0, 1.0))
+		z.rotation.y = 0.0
+		z.debug_emerge_seek("standard", ZombieEmerge.stage("standard", "head_out", 0.4) + 0.02, true)
+		z.set_physics_process(false)
+		z.set_process(false)
+	await get_tree().create_timer(0.22).timeout
+	await _shot("09_emerge_surfaces")
+	_clear()
+	_spawn.set_meta("surface", "snow")
+	_label.text = "10 eight standard rises started 0.25 s apart (live)"
+	for i: int in 8:
+		var x: float = 3.85 - 1.1 * float(i)
+		var z: Zombie = _place_new({"enemy_id": "ganger", "tier": "walk", "health": 300, "variant": NEW_KITS[i]}, Vector3(x, 0, 1.4))
+		z.rotation.y = 0.0
+		z.debug_emerge_seek("standard", 0.0)
+		z.set_physics_process(false)
+		z.set_process(false)
+	for i: int in 8:
+		var z: Zombie = _new[7 - i]
+		z.set_physics_process(true)
+		z.set_process(true)
+		await get_tree().create_timer(0.25).timeout
+	await _shot("10_emerge_live")
+	_clear()
+	_spawn.remove_meta("surface")

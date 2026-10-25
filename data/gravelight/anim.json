@@ -57,7 +57,8 @@
     "vault": ["vault_a", "vault_b"],
     "drop": "drop_down",
     "emerge": {
-      "ground": ["emerge_dig", "emerge_roll"],
+      "ground": ["emerge_fast", "emerge_standard", "emerge_slow", "emerge_roll"],
+      "crawler": "emerge_crawler",
       "portal": "emerge_portal",
       "ceiling": "emerge_ceiling",
       "water": "emerge_wade"
@@ -127,7 +128,7 @@
     "hand_reach_m": 0.75
   },
   "climb": {"speed_mps": 1.4, "mantle_seconds": 0.45, "high_window_m": 1.2},
-  "emerge": {"ground_seconds": 1.4, "portal_seconds": 0.7, "ceiling_seconds": 0.9, "water_seconds": 1.6},
+  "emerge": {"_doc": "Non-ground emerges; the ground rises are enemies.json emerge (T-085).", "portal_seconds": 0.7, "ceiling_seconds": 0.9, "water_seconds": 1.6},
   "emerge_by_spawn_prefix": {
     "map02_totenhafen": {"Ground_A_QUAY_": "water"},
     "map01_kaltenbrunn": {"Chute": "ceiling"}
