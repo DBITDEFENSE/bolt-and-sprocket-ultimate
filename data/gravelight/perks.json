@@ -1,6 +1,8 @@
 {
  "_doc": "Perk tonics. Effects are applied by autoload/perk_manager.gd via effect keys.",
- "cap": 4,
+ "cap": 6,
+ "classic_cap": 4,
+ "_cap_doc": "T-081: a survivor holds up to `cap` tonics (PerkManager.base_cap / cap_for); Classic Rules (Settings) keeps the genre's old four (`classic_cap`). Read once per match (the host's value in co-op). Extra slots on top: the Map 1 egg's permanent slot (cap_for). A bot's bonus perk and the tonic tiers take no slot.",
  "perks": {
   "ironhide_stout": {
    "name": "Ironhide Stout",

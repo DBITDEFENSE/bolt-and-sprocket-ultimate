@@ -185,7 +185,7 @@ func test_restore_account_sets_scrip_and_perks() -> void:
 	Campaign.restore_account(2, {"scrip": 4321, "perks": ["ironhide_stout", "not_a_perk"], "bonus_slots": 1})
 	assert_eq(Economy.get_scrip(2), 4321)
 	assert_eq(PerkManager.owned(2), [&"ironhide_stout"], "unknown perk ids are dropped")
-	assert_eq(PerkManager.cap_for(2), int(GLData.table("perks")["cap"]) + 1)
+	assert_eq(PerkManager.cap_for(2), PerkManager.base_cap() + 1)
 	PerkManager.reset_match()
 
 

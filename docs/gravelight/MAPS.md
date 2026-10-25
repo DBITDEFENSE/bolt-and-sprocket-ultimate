@@ -692,7 +692,7 @@ Three levels, three grades. `gravelight/maps/map01_kaltenbrunn/depth_grade.gd` (
 **Rules that differ from Maps 0–1:**
 - **Characters:** pick 4 of 6 in co-op (Dutch, Peg, Deacon, Wren, **Bolt**, **Vendelin**), 1 in solo. See CHARACTERS.md §6–7.
 - **Special round:** Audit Rounds with Repossessors replace Bellringers (ENEMIES.md §5.2). **Boss:** the Underwriter (ENEMIES.md §5.3).
-- **Perks:** all **10** machines, as **unpainted prototypes** with plan IDs always visible (`docs/JINGLES.md` §0.2). The 4-perk cap stays.
+- **Perks:** all **10** machines, as **unpainted prototypes** with plan IDs always visible (`docs/JINGLES.md` §0.2). The usual perk cap (6 since T-081) applies.
 - **Crate pool:** Helvetia's own, with the Return Policy and Anomalous Inventory always on (WEAPONS.md §19.4).
 - **Upgrades:** a Crucible Mod. R-E **and** the Original Omega Forge, both on the Barge (WEAPONS.md §11, §17).
 - **Buildable:** Blartz's Field-Kit OMNI-BLASTER (WEAPONS.md §19.3).

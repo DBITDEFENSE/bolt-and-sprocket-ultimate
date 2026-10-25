@@ -1,6 +1,6 @@
 # GRAVELIGHT — Game Design Document
 
-> **§11 note:** two more perks exist after The Fine Print: Fine Print Fernet and Overclock Cordial (`docs/gravelight/WEAPONS.md` §21, `docs/JINGLES.md`). The 4-perk cap is unchanged. The combined game's GDD is `docs/GDD.md`.
+> **§11 note:** two more perks exist after The Fine Print: Fine Print Fernet and Overclock Cordial (`docs/gravelight/WEAPONS.md` §21, `docs/JINGLES.md`). Neither raises the cap. The cap itself went from 4 to **6** in T-081 (4 under Classic Rules). The combined game's GDD is `docs/GDD.md`.
 
 
 > Winter 1944. A downed Allied extraction team. A salt mine that hums. A machine that pays you for every corpse that stops moving.
@@ -118,7 +118,7 @@ Every buyable extends `Interactable` (in `/world`).
 - **Upgrades:** every gun has a Crucible variant with a name, Nachtglas camo, an extra firing-sound layer, and one bonus property. See CANON.md.
 
 ## 8. Perk tonics (summary; machines and jingles in JINGLES.md)
-Cap 4 (+1 permanent slot on Map 1 after the main egg). All need power, except Second Wind in solo.
+Cap **6** (T-081; it was 4, and Classic Rules keeps 4), +1 permanent slot on Map 1 after the main egg (7 there). The bonus perk a bot gets and the tonic tiers use no slot. All need power, except Second Wind in solo.
 
 | Perk | Cost | Effect |
 |---|---|---|

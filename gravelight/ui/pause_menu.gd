@@ -33,7 +33,7 @@ const TIPS: PackedStringArray = [
 	"Sprint + CROUCH slides. Crouch again to cancel, JUMP out of it to slide-jump.",
 	"Hold USE at a wall gun you already own to buy ammo.",
 	"The Crucible forges a gun three times: V, VV and VVV.",
-	"Perk slots are capped: pick the four that fit the map.",
+	"Perk slots are capped at six (four under Classic Rules): pick the ones that fit the map.",
 	"Rebuilt boards pay Scrip. Early rounds are for building.",
 	"A thrown knife and a grenade both count as 'something between you and the pack'.",
 ]

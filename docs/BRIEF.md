@@ -268,7 +268,7 @@ Each Helvetia machine is a Darkmatter **Vitality Plan** tier, with a plan ID ste
 | *(NEW)* **Fine Print Fernet** | DISCLOSURE (unreleased prototype) | Vendelin himself | A bitter green digestif that lets you *see the truth*: power-up timers, drops lasting 50% longer, and Easter-egg objects glinting. It is the plan Darkmatter refused to sell. Available on Helvetia Works, and later maps after Origins is complete. | "This product tells you what the others won't." |
 | *(NEW)* **Overclock Cordial** | SURGE (unreleased prototype) | Built from a scan of a far-future robot's firmware (**Sprocket's**, after Ch. 5) | Reloading releases a static burst that scales with how empty the mag was. Bolt: "Is that... Sprocket-flavored?" Sprocket: "I'm EXTREMELY flattered and I want royalties." | "Contains trace amounts of personality." |
 
-Gravelight's 4-perk cap stays. The two new perks never break that cap.
+The two new perks never break Gravelight's perk cap (4 when this was written; 6 since T-081, 4 under Classic Rules).
 
 ### 10.3 The true origin of the Crucible (our upgrade forge)
 1. In the B&S campaign, Blartz invents the **Omega Forge**, which is why weapons can evolve.
@@ -489,7 +489,7 @@ Solo- or co-op-doable; no hidden hard-fail steps; data-driven step graph with pe
 8. Place the shard in the Crucible; kill 30 zombies with the Totenglocke near the Core.
 9. Heartstorm: a 2-minute holdout with Bellringers and Gängers, Reinholt hijacking the PA, and the Foreman appearing twice.
 10. Ending: the heart collapses; Reinholt flees by ore train with a fragment; Peg pockets a shard unseen.
-Rewards: all perks for the rest of the match (above the cap), a permanent 5th perk slot on Map 1, big XP, a dossier page, an Archive entry, and Map 2 unlocked (outline screen). Side eggs: 3 phonograph cylinders unlock an original song (write the lyrics); Wren's brother's forced-labor ID tag in the Lab Wing triggers a Wren/Dutch exchange.
+Rewards: all perks for the rest of the match (above the cap), a permanent extra perk slot on Map 1 (cap + 1), big XP, a dossier page, an Archive entry, and Map 2 unlocked (outline screen). Side eggs: 3 phonograph cylinders unlock an original song (write the lyrics); Wren's brother's forced-labor ID tag in the Lab Wing triggers a Wren/Dutch exchange.
 
 ## A12. PROGRESSION (never pay-to-win)
 In-match: rounds → Scrip → doors → power → perks → Crucible → quest, with soft objectives via quotes (optional hint mode). Meta: Player Rank 1–60 from XP (kills, headshots, rounds, revives, doors, EE steps, challenges) unlocking cosmetics; Prestige 1–10 ("Commendations"); Character Dossiers levels 1–10 (backstory pages, audio diaries, outfits, quote packs, final secret page); Weapon Mastery camos (Olive Drab → Winter → Bronze → Silver → Gold → "Nachtglas"); map unlocks (Map 1 after round 10 on Map 0 or its radio quest; Map 2 from the Map 1 EE or round 30); Intel Archive (3–5 random intel per match, feeding the shared Archive); rotating challenges; stats page.

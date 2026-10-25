@@ -107,7 +107,7 @@ Each machine has a hidden **fine-print panel on its back**: Vendelin's real term
 | **Fine Print Fernet** *(new)* | DISCLOSURE (unreleased) | Vendelin himself | A bitter green digestif that lets you *see the truth*: power-up timers, drops lasting 50% longer, Easter-egg objects glinting. It is the plan Darkmatter refused to sell. |
 | **Overclock Cordial** *(new)* | SURGE (unreleased) | A scan of **Sprocket's** firmware, taken after Ch. 5 | Reloading releases a static burst that scales with how empty the magazine was. Bolt: "Is that... Sprocket-flavored?" Sprocket: "I'm EXTREMELY flattered and I want royalties." |
 
-Gravelight's 4-perk cap stays; the two new perks never break it. Each plan ID is visible only after The Fine Print is complete, or when lit by an upgraded weapon's muzzle flash ("a stencil under the enamel").
+The two new perks never break Gravelight's perk cap (6 since T-081; it was 4). Each plan ID is visible only after The Fine Print is complete, or when lit by an upgraded weapon's muzzle flash ("a stencil under the enamel").
 
 ---
 

@@ -18,11 +18,45 @@ func after_all() -> void:
 	PerkManager.reset_match()
 
 
-func test_cap_of_four() -> void:
-	for id: StringName in [&"ironhide_stout", &"trigger_tonic", &"twin_barrel", &"marathon_malt"]:
+const SIX: Array[StringName] = [&"ironhide_stout", &"trigger_tonic", &"twin_barrel", &"marathon_malt", &"blastproof_bock", &"packmule_porter"]
+
+
+## T-081: the cap is six (perks.json "cap"); Classic Rules keeps the old four ("classic_cap").
+func test_cap_data() -> void:
+	assert_eq(PerkManager.data_cap(false), 6)
+	assert_eq(PerkManager.data_cap(true), 4)
+	assert_lt(PerkManager.data_cap(false), (GLData.table("perks")["perks"] as Dictionary).size(), "more tonics than slots: still a choice")
+
+
+func test_cap_of_six() -> void:
+	var was: bool = bool(GLSettings.values.get("classic_rules", false))
+	GLSettings.values["classic_rules"] = false
+	PerkManager.reset_match()
+	assert_eq(PerkManager.base_cap(), 6)
+	for id: StringName in SIX:
 		assert_eq(PerkManager.buy_for(PID, id), &"ok", String(id))
-	assert_eq(PerkManager.buy_for(PID, &"hawkeye_brandy"), &"cap")
-	assert_eq(PerkManager.owned(PID).size(), 4)
+	assert_eq(PerkManager.buy_for(PID, &"hawkeye_brandy"), &"cap", "the seventh is refused")
+	assert_eq(PerkManager.owned(PID).size(), 6)
+	PerkManager.add_bonus_slot(PID)   # the Map 1 egg's slot
+	assert_eq(PerkManager.cap_for(PID), 7)
+	assert_eq(PerkManager.buy_for(PID, &"hawkeye_brandy"), &"ok", "a seventh with the egg slot")
+	assert_eq(PerkManager.buy_for(PID, &"overclock_cordial"), &"cap")
+	GLSettings.values["classic_rules"] = was
+
+
+func test_classic_rules_cap_of_four_latched_per_match() -> void:
+	var was: bool = bool(GLSettings.values.get("classic_rules", false))
+	GLSettings.values["classic_rules"] = true
+	PerkManager.reset_match()
+	for i: int in 4:
+		assert_eq(PerkManager.buy_for(PID, SIX[i]), &"ok", String(SIX[i]))
+	assert_eq(PerkManager.buy_for(PID, SIX[4]), &"cap", "Classic Rules: four")
+	GLSettings.values["classic_rules"] = false
+	assert_eq(PerkManager.base_cap(), 4, "a mid-match toggle waits for the next match")
+	PerkManager.reset_match()
+	assert_eq(PerkManager.base_cap(), 6)
+	GLSettings.values["classic_rules"] = was
+	PerkManager.reset_match()
 
 
 func test_cannot_buy_owned() -> void:

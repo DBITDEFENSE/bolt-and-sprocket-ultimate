@@ -553,7 +553,7 @@ func _on_match_started(map_id: StringName) -> void:
 	_apply_egg_rewards(map_id)
 
 
-## Map 1 main-egg reward: a permanent 5th perk slot on that map.
+## Map 1 main-egg reward: a permanent extra perk slot on that map (the profile key keeps its old "slot_5" name).
 func _apply_egg_rewards(map_id: StringName) -> void:
 	var eggs: Dictionary = profile.get("egg_rewards", {})
 	var has_slot: bool = bool(eggs.get("map01_requiem", false)) or bool(eggs.get("map01_perk_slot_5", false))

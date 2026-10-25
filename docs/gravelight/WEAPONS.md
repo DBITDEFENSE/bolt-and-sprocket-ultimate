@@ -751,7 +751,7 @@ Total weight 120. Each Anomalous item is about 1.7%, all five together 8.3%, and
 
 ## 20. New perk tonics: effects and numbers (§11 amendment)
 
-The **4-perk cap is unchanged** on every map; neither new perk raises it. The Map 1 main egg's permanent 5th slot still applies on Map 1 only. Both perks need power like all others, and both are lost on down under classic rules. Machines, jingles and panels are in `docs/JINGLES.md` §9–§10. Data: `data/gravelight/perks/fine_print_fernet.json`, `overclock_cordial.json`.
+Neither new perk raises the cap (6 on every map since T-081, 4 under Classic Rules). The Map 1 main egg's permanent extra slot still applies on Map 1 only. Both perks need power like all others, and both are lost on down under classic rules. Machines, jingles and panels are in `docs/JINGLES.md` §9–§10. Data: `data/gravelight/perks/fine_print_fernet.json`, `overclock_cordial.json`.
 
 ### 20.1 Fine Print Fernet (`fine_print_fernet`), 2000
 
