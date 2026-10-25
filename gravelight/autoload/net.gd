@@ -156,7 +156,8 @@ func host_game(port: int = -1, bind_ip: String = "*") -> Error:
 	mode = Mode.HOST
 	local_pid = 1
 	_peer_pid = {1: 1}
-	roster = {1: {"peer": 1, "character": String(GameState.character_id), "ready": true, "egg_slot": _egg_slot()}}
+	roster = {1: {"peer": 1, "character": String(GameState.character_id), "ready": true, "egg_slot": _egg_slot(),
+		"kits": Muster.profile_kits()}}   # the Muster (T-079): every survivor's sidearm and Field Habits
 	last_error = ""
 	roster_changed.emit()
 	return OK
@@ -339,6 +340,18 @@ func _on_peer_disconnected(peer: int) -> void:
 
 func _on_connected() -> void:
 	_rpc_hello.rpc_id(1, String(GameState.character_id), _egg_slot())
+	_rpc_kits.rpc_id(1, Muster.profile_kits())   # after the hello (same reliable channel, so in order)
+
+
+## The Muster (T-079): sends this peer's loadouts (one per survivor, from the profile) to the host again after
+## they were edited in the lobby. The host keeps them in the roster and shares them with everyone.
+func send_kits() -> void:
+	if is_host():
+		if roster.has(1):
+			(roster[1] as Dictionary)["kits"] = Muster.profile_kits()
+			_broadcast_roster()
+	elif is_client():
+		_rpc_kits.rpc_id(1, Muster.profile_kits())
 
 
 func _on_connection_failed() -> void:
@@ -408,6 +421,17 @@ func _rpc_roster(r: Dictionary) -> void:
 	if roster.has(local_pid):
 		GameState.character_id = StringName(str((roster[local_pid] as Dictionary)["character"]))
 	roster_changed.emit()
+
+
+## Host: a peer's Muster loadouts (T-079), checked (known sidearms and habits, at most the slot cap) and shared.
+@rpc("any_peer", "call_remote", "reliable")
+func _rpc_kits(kits: Dictionary) -> void:
+	if not is_host() or in_match:
+		return
+	var pid: int = _sender_pid()
+	if roster.has(pid):
+		(roster[pid] as Dictionary)["kits"] = Muster.sanitize_kits(kits)
+		_broadcast_roster()
 
 
 @rpc("any_peer", "call_remote", "reliable")

@@ -112,13 +112,23 @@ func setup(owner_player: Player) -> void:
 
 func _set_start_loadout() -> void:
 	var loadout: Dictionary = GLData.table("player")["start_loadout"]
-	slots = [WeaponInstance.create(StringName(loadout["primary"]))]
+	var pid: int = _muster_pid()
+	slots = [WeaponInstance.create(Muster.start_pistol(pid) if pid > 0 else StringName(loadout["primary"]))]   # the Muster's sidearm (T-079)
 	_apply_profile_kit(slots[0])
 	melee_id = StringName(loadout["melee"])
 	grenades = int(loadout["lethal_count"])
 	tactical_id = &""
 	tactical_count = 0
 	current_index = 0
+	if pid > 0:
+		Muster.apply_start_kit(self, pid)   # Field Habits: reserve, a grenade, a gramophone
+
+
+## The player id whose Muster kit this holder starts with (T-079); 0 for bots, Jakub and holders without a player.
+func _muster_pid() -> int:
+	if player == null or player.is_bot or player.is_companion:
+		return 0
+	return player.player_id
 
 
 ## The local human's starting M1911 gets their Loadout Pick and finish (UPDATE_04 section 6, M1911Kit). Bots, Jakub,
@@ -414,7 +424,8 @@ func enter_last_stand() -> void:
 	keep.assign(slots)
 	_last_stand_stash = {"slots": keep, "current": current_index}
 	if pistol == null:
-		pistol = WeaponInstance.create(StringName(str(dcfg.get("pistol", "m1911"))))
+		var own: int = _muster_pid()
+		pistol = WeaponInstance.create(Muster.start_pistol(own) if own > 0 else StringName(str(dcfg.get("pistol", "m1911"))))
 	pistol.reserve = maxi(pistol.reserve, mini(pistol.reserve_max(), int(dcfg.get("pistol_min_reserve", 32))))
 	slots = [pistol]
 	current_index = 0
@@ -682,6 +693,8 @@ func _select(index: int) -> void:
 	_cancel_reload()
 	_reload_queued = false
 	_swap_t = SWAP_TIME * (current().draw_mult() if current() != null else 1.0) * float(PerkManager.stat(player.player_id, "swap_time_mult", 1.0))
+	if current() != null and current().weapon_class() == &"pistol":
+		_swap_t *= Muster.mult(_muster_pid(), "pistol_draw_mult")   # Quick Holster (T-079)
 	ads_t = 0.0
 	AudioDirector.play_2d("weapon_raise", -6.0)
 	_rebuild_gun()
@@ -1272,6 +1285,7 @@ func _melee_strike(md: Dictionary) -> void:
 	var dmg: float = float(md["damage"])
 	if GameState.player_has_trait(player.player_id, &"dutch"):
 		dmg *= float(GLData.table("player")["traits"]["dutch_melee_mult"])
+	dmg *= Muster.mult(_muster_pid(), "melee_damage_mult")   # Whetstone (T-079)
 	var fwd: Vector3 = -player.global_basis.z
 	var candidates: Array = []
 	for z: Zombie in _director_zombies():

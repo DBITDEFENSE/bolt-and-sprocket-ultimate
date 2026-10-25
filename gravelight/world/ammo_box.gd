@@ -56,6 +56,7 @@ static func quote(holder: WeaponHolder, box_cfg: Dictionary, price_mult: float =
 		p = int(box_cfg.get("grenades_only", 250))
 	if holder != null and holder.player != null:
 		price_mult *= PerkManager.ammo_price_mult(holder.player.player_id)   # Packmule II: half price (T-075)
+		price_mult *= Muster.mult(holder.player.player_id, "ammo_price_mult")   # Scrounger (T-079)
 	return {"refill_weapon": need_w, "refill_grenades": need_g, "weapon": w, "price": int(round(float(p) * price_mult))}
 
 

@@ -994,7 +994,23 @@ func _opr(category: String, chance: float = -1.0) -> bool:
 func _on_match_started(_map_id: StringName) -> void:
 	reset_match()
 	_opr("MATCH_START", 1.0)
-	# The squad settles in: the local survivor first, then the others one at a time.
+	if GLBus.round_started.is_connected(_spawn_lines_after_opening):
+		GLBus.round_started.disconnect(_spawn_lines_after_opening)   # (a match quit before its round 1)
+	# Map 0's round 1 opening (T-076): the patrons talk while the player looks round, so the squad's spawn lines
+	# wait until round 1 starts instead of talking over them.
+	if _map_id == &"map00_crossroads" and not Campaign.arriving(_map_id):
+		if not GLBus.round_started.is_connected(_spawn_lines_after_opening):
+			GLBus.round_started.connect(_spawn_lines_after_opening, CONNECT_ONE_SHOT)
+		return
+	_spawn_lines()
+
+
+func _spawn_lines_after_opening(_r: int, _special: bool) -> void:
+	_spawn_lines()
+
+
+## The squad settles in: the local survivor first, then the others one at a time.
+func _spawn_lines() -> void:
 	_later(3.0, _local_player(), "SPAWN")
 	var i: int = 0
 	for pid: int in standing_pids():

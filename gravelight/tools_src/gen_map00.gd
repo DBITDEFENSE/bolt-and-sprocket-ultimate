@@ -2578,9 +2578,13 @@ func build_gameplay() -> void:
 	gameplay.name = "Gameplay"
 	map_root.add_child(gameplay)
 
-	# player spawns (taproom, facing north toward the hearth)
+	# player spawns: the taproom's south end, facing north up the room (T-076). From PlayerSpawn1 the whole round 1
+	# opening is in front of you: the bar and Trudi behind it (left), Sobotta at the counter's end, Frau Pohl by the
+	# hearth, the carters' table (right) and the front door they run for (22 deg right; the porch where Kubiak and
+	# Rother are caught is in line with the doorway). The old spawns (14..16, 7..9) stood among the patrons with
+	# four of the five beside or behind the camera. The bots' spawns are behind and to the sides of the player's.
 	var i: int = 1
-	for p: Vector3 in [Vector3(14, 0, 7), Vector3(16, 0, 7), Vector3(14, 0, 9), Vector3(16, 0, 9)]:
+	for p: Vector3 in [Vector3(14.5, 0, 13.4), Vector3(16.6, 0, 14.3), Vector3(12.4, 0, 14.3), Vector3(14.5, 0, 15.1)]:
 		var ps: Marker3D = _scripted(Marker3D.new(), "res://gravelight/maps/player_spawn.gd", "PlayerSpawn%d" % i, {}) as Marker3D
 		ps.position = p
 		gameplay.add_child(ps)
@@ -2651,6 +2655,8 @@ func build_gameplay() -> void:
 	gram.position = Vector3(5.75, 1.1, 8.4)
 	gram.rotation.y = deg_to_rad(200.0)
 	gameplay.add_child(gram)
+	# the survivors hiding in the middle guest room until the stair door is opened (T-077, map00_survivors.json)
+	gameplay.add_child(_scripted(Node3D.new(), "res://gravelight/world/inn_opening/inn_survivors.gd", "InnSurvivors", {}))
 
 	build_cellar_gameplay()
 

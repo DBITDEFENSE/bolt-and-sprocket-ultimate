@@ -54,6 +54,7 @@ func _ready() -> void:
 	if not nav_zone_bits.is_empty():
 		director.configure_navigation(nav_zone_bits, nav_always_bits, zone_adjacency)
 	ClimbLink.spawn_all(self, map_id, nav_zone_bits)   # authored climb volumes from the map's json (MZ, T-041)
+	Muster.begin_match(_online)   # each human's sidearm and Field Habits for this match (T-079), before they spawn
 	_spawn_players()
 	MapState.attach(self, map_id)   # what the minimap / pause map know this match (Update 04, T-065)
 	hud = Hud.new()
@@ -64,6 +65,7 @@ func _ready() -> void:
 	pause_menu.quit_requested.connect(_to_menu)
 	pause_menu.restart_requested.connect(_restart)
 	Economy.reset(GameState.player_ids)
+	Muster.apply_match_start(players, not Campaign.arriving(map_id))   # Pay Packet Scrip, Field Dressing (T-079)
 	GLBus.player_downed.connect(_on_player_downed)
 	PerkManager.reset_match()
 	Campaign.on_players_spawned(self)   # arriving by exfil: everyone's weapons, Scrip and perks come back (T-033)

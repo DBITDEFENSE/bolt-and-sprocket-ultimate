@@ -148,7 +148,7 @@ func test_v1_to_v2_migration() -> void:
 		"weapon_kills": {"kar98k": 12}, "maps_unlocked": ["map00_crossroads", "map01_kaltenbrunn"], "best_round": {"map00_crossroads": 11},
 		"intel": ["INT_M0_01"], "stats": {}, "egg_rewards": {}}
 	var m: Dictionary = ProfileSave.migrate(v1)
-	assert_eq(int(m["version"]), 2)
+	assert_eq(int(m["version"]), ProfileSave.CURRENT_VERSION, "v1 runs every step (v3: the Muster, T-079)")
 	assert_eq(int(m["xp_lifetime"]), 5000)
 	assert_eq(int(m["weapon_kills"]["kar98k"]), 12)
 	assert_true((m["maps_unlocked"] as Array).has("map01_kaltenbrunn"))

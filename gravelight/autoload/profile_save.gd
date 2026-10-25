@@ -5,7 +5,7 @@ extends Node
 ## when the match ends (game over, quitting to the menu, or restarting), so the game-over screen can show it.
 
 const PATH: String = "user://gravelight_profile.json"
-const CURRENT_VERSION: int = 2
+const CURRENT_VERSION: int = 3
 const LOCAL_PLAYER: int = 1   # solo player id; in co-op the local id comes from Net (local_id())
 
 var profile: Dictionary = {}
@@ -72,7 +72,16 @@ static func new_profile() -> Dictionary:
 		"challenges": {},
 		"challenge_career": {},
 		"challenges_done": [],
+		"muster": _default_muster(),
 	}
+
+
+## The Muster (T-079, Muster): each survivor's sidearm and Field Habits; everyone starts with the M1911, no habits.
+static func _default_muster() -> Dictionary:
+	var out: Dictionary = {}
+	for c: String in ["dutch", "peg", "deacon", "wren"]:
+		out[c] = {"pistol": "m1911", "habits": []}
+	return out
 
 
 static func _default_stats() -> Dictionary:
@@ -91,6 +100,8 @@ static func migrate(data: Dictionary) -> Dictionary:
 		v = 1
 	if v < 2:
 		data = _migrate_to_2(data)
+	if int(data.get("version", 0)) < 3:
+		data = _migrate_to_3(data)
 	return data
 
 
@@ -112,6 +123,17 @@ static func _migrate_to_2(data: Dictionary) -> Dictionary:
 		dos[c] = int(dos.get(c, 0))
 	data["dossiers"] = dos
 	data["version"] = 2
+	return data
+
+
+## v3 adds the Muster (T-079): every survivor's sidearm and Field Habits, defaulting to the M1911 and none.
+static func _migrate_to_3(data: Dictionary) -> Dictionary:
+	var m: Dictionary = data.get("muster", {}) if data.get("muster", {}) is Dictionary else {}
+	for c: String in ["dutch", "peg", "deacon", "wren"]:
+		if not (m.get(c, null) is Dictionary):
+			m[c] = {"pistol": "m1911", "habits": []}
+	data["muster"] = m
+	data["version"] = 3
 	return data
 
 
@@ -238,6 +260,8 @@ func _apply_xp(amount: int) -> Array:
 		for u: Dictionary in _prog.get("unlocks", []):
 			if int(u["rank"]) == r:
 				_grant_unlock(str(u["id"]))
+		if not cur_match.is_empty() and prestige() == 0:
+			(cur_match["unlocks"] as Array).append_array(Array(Muster.unlocks_at_rank(r)))   # sidearms, Field Habits, slots
 	return ups
 
 
@@ -329,7 +353,10 @@ static func camo_tier(kills: int, thresholds: Array) -> StringName:
 func nachtglas_unlocked() -> bool:
 	var th: Array = _prog["camos"]["thresholds"]
 	var gold: int = int(th[th.size() - 1]["kills"])
-	for w: Variant in GLData.table("weapons")["weapons"].keys():
+	var weps: Dictionary = GLData.table("weapons")["weapons"]
+	for w: Variant in weps.keys():
+		if bool((weps[w] as Dictionary).get("muster_sidearm", false)):
+			continue   # the Muster's optional sidearms (T-079) don't hold the meta camo back
 		if weapon_kills(StringName(str(w))) < gold:
 			return false
 	return true

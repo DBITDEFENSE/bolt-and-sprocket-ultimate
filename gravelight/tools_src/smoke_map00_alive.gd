@@ -144,6 +144,11 @@ func _check_opening(op: InnOpening) -> void:
 	print("[alive] risen: %s" % str(_rise_states))
 	if _rise_states.has("sobotta") and ((_rise_states["sobotta"] as Array)[1] as Vector3).z < 0.5:
 		_fail("Sobotta should rise inside the taproom")
+	# T-076: the turns are where the squad can see them from the spawn (Sobotta mid-room, the porch in the doorway's line)
+	var spawn: Vector3 = (_map.get_node("Gameplay/PlayerSpawn1") as Node3D).global_position
+	for id4: String in ["sobotta", "kubiak", "rother"]:
+		if _rise_states.has(id4) and not InnOpening.facing(spawn, Vector3(0, 0, -1), (_rise_states[id4] as Array)[1] as Vector3, 40.0):
+			_fail("%s rises out of the starting view (%s)" % [id4, str((_rise_states[id4] as Array)[1])])
 	for id3: String in ["kubiak", "rother"]:
 		if _rise_states.has(id3) and ((_rise_states[id3] as Array)[1] as Vector3).z > -0.5:
 			_fail("%s should rise outside" % id3)
