@@ -2016,3 +2016,70 @@ snow; Sobotta dies inside by the table and rises among the squad.
 - `PEG_INN_RISE_01`: "Oh, no. No, no, no. Willi. ...I'm sorry, love."
 - `DEA_INN_RISE_01`: "Lord have mercy, the boy's standing up. That isn't him. That isn't him!"
 - `WRN_INN_RISE_01`: "The soldier. He is standing. Do not look at his face. Shoot."
+
+**Before round 1, T-076** (`INN_CHAT`, during the look-around, times in seconds of settled view; Rother's and Trudi's
+welcome always play, these only while the player looks away from the front door. The cue `KUB_INN_WINDOW_01` now
+plays just before round 1 starts.)
+- `KUB_INN_CHAT_01`: "Road's shut both ways, they say. Snow to the axles at the bridge. We'll be sleeping on these benches tonight, Ewald."
+- `POH_INN_CHAT_01`: "My sister will think I'm lying dead in a ditch. ...Must that gramophone play all night, Fräulein?"
+- `SOB_INN_CHAT_01`: "Six kilometres to Wilcza Góra. In the morning I walk it, snow or no snow. My mother has kept the goose for me."
+
+## 22. The survivors upstairs at the Crossroads Inn (DECISIONS T-077)
+
+Played by `InnSurvivors` (`gravelight/world/inn_opening/inn_survivors.gd`, data `data/gravelight/map00_survivors.json`,
+which lists each survivor's lines per moment). The host picks the line and mirrors it; positional at the survivor when
+baked, the subtitle under their name. Neural cast (T-073): one Kokoro voice each with a German accent (`voice_cast.json`).
+
+**Who they are.** Three travellers off the shut road who came in out of the snow on the afternoon of the 23rd and were
+resting in the middle guest room (Room 2) when the dead came. They pushed the hall furniture against the stair door
+(Door 1's boards) and hid. Like the patrons, nobody signed the guest book; the Vogts are not among them.
+- `WIE` **Konrad Wiesner**, a railway signalman (50s) on the Kaltenbrunn line, walking home to Hirschfelde since the
+  snow cut the line. At Verdun in 1916; has not held a rifle since. Steady, weary.
+- `BRA` **Fräulein Hedwig Brandt**, the schoolteacher (30s) at Hirschfelde, carrying the village children's Christmas
+  letters to the post at Kaltenbrunn. Brisk, frightened, braver than she sounds.
+- `KRO` **Ida Kroll**, the postwoman (20s) from Sankt Anna on the Christmas round; her bicycle is in a drift on the
+  west road. Quick and talkative when scared.
+
+Moments (`lines` keys): `reveal` (the first time a player comes near after the door), `scared` (now and then while a
+player is near), `flinch` (a shot close by, sometimes), `armed` (handed the rifle), `fight` (now and then on a shot),
+`hurt` (a swipe, sometimes), `downed`, `death`.
+
+### 22.1 Konrad Wiesner (`WIE`)
+- `WIE_SURV_REVEAL_01`: "Stop! Stop, don't shoot... we're alive. We're alive in here. You came up the stairs... are they behind you?"
+- `WIE_SURV_SCARED_01`: "I heard them in the hall. Scratching at the wainscot like rats. Thirty years I have not been this afraid."
+- `WIE_SURV_SCARED_02`: "I was at Verdun, you know. Nineteen sixteen. ...The dead stayed down at Verdun."
+- `WIE_SURV_FLINCH_01`: "[flinching] God in heaven!"
+- `WIE_SURV_ARMED_01`: "A Karabiner. A ninety-eight. ...My hands remember. Go on, go. I'll hold the hall."
+- `WIE_SURV_FIGHT_01`: "Coming along the hall! I have him!"
+- `WIE_SURV_HURT_01`: "[pained] It has my coat... get off me!"
+- `WIE_SURV_DOWNED_01`: "[hurt] I'm down... the leg's gone. Don't leave an old man on the floor!"
+- `WIE_SURV_DEATH_01`: "[weak] Don't let me get up again. Promise me. Don't let me get up."
+
+### 22.2 Hedwig Brandt (`BRA`)
+- `BRA_SURV_REVEAL_01`: "Please, please, we're not like them! We pushed the wardrobe against the stair door, we've been so quiet... is it over? Tell me it's over."
+- `BRA_SURV_SCARED_01`: "I have the children's letters in my bag. Thirty-one letters to the Christ Child. I promised them I would post them."
+- `BRA_SURV_SCARED_02`: "[whispering] Don't make a sound. They hear everything. Breathe slowly, like me."
+- `BRA_SURV_FLINCH_01`: "[a gasp] Oh! Oh, God."
+- `BRA_SURV_ARMED_01`: "I have never fired a gun in my life. ...Show me once. Once! Good. Go, I'll watch the stairs."
+- `BRA_SURV_FIGHT_01`: "There, by the door! I see it!"
+- `BRA_SURV_HURT_01`: "[screaming] Its hands! Its hands are on me!"
+- `BRA_SURV_DOWNED_01`: "[hurt] Help me up... please, I can't feel my arm..."
+- `BRA_SURV_DEATH_01`: "[weak] The letters... somebody post the letters."
+
+### 22.3 Ida Kroll (`KRO`)
+- `KRO_SURV_REVEAL_01`: "Oh thank God, thank God, real people! I'm Ida, I bring the post from Sankt Anna... I hid under the bed. I'm sorry. I didn't help anyone."
+- `KRO_SURV_SCARED_01`: "My bicycle's in a drift on the west road. Two days to Christmas and I still have a sack full of parcels."
+- `KRO_SURV_SCARED_02`: "Something walked up and down the hall all afternoon. Up and down. It never knocked."
+- `KRO_SURV_FLINCH_01`: "[a yelp] Ah! Warn me before you do that!"
+- `KRO_SURV_ARMED_01`: "Me? With this? ...All right. All right! Point it at them and pull. I can do that."
+- `KRO_SURV_FIGHT_01`: "One at the window! I got it... I think I got it!"
+- `KRO_SURV_HURT_01`: "[screaming] No, no, no, get away from me!"
+- `KRO_SURV_DOWNED_01`: "[hurt] I'm bleeding... I'm bleeding all over Frau Vogt's floor..."
+- `KRO_SURV_DEATH_01`: "[weak] It's so cold. Is the window open? ...Close the window."
+
+### 22.4 The squad: `INN_SURV_TURN`
+When a dead survivor is about to rise (one random standing squad member, after the "[Name is turning]" subtitle).
+- `DUT_INN_SURV_TURN_01`: "One of the civvies upstairs is moving again. That's not them any more. Put them down!"
+- `PEG_INN_SURV_TURN_01`: "Oh, no. Upstairs. One of ours upstairs is getting up. ...I'm sorry. Make it quick."
+- `DEA_INN_SURV_TURN_01`: "Lord, one of the folks upstairs is rising. Don't let them suffer it. Put them to rest."
+- `WRN_INN_SURV_TURN_01`: "Upstairs. The civilian is turning. Do not wait for them to look at you."

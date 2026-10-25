@@ -53,7 +53,7 @@ static func rises_now(dead_t: float, round_on: bool, a: Dictionary) -> bool:
 func _ready() -> void:
 	cfg = load_cfg()
 	var map: MapRoot = _map()
-	if cfg.is_empty() or (map != null and String(map.map_id) != str(cfg.get("map", ""))):
+	if cfg.is_empty() or map == null or String(map.map_id) != str(cfg.get("map", "")):
 		set_physics_process(false)
 		return
 	_rng.seed = 7700
