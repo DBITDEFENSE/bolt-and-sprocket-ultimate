@@ -39,5 +39,40 @@
     "wonder_upgraded": 4000,
     "grenades_only": 250,
     "cooldown_s": 3.0
+  },
+  "bonuses": {
+    "_doc": "In-match Scrip bonuses (T-078, docs/gravelight/ECONOMY.md). Paid by gravelight/autoload/scrip_bonuses.gd on the host, without the Double Scrip multiplier, each with a HUD toast (GLBus.bonus_awarded). round_pay: every player standing (not downed, not bled out) when a round ends gets base + per_round x round, capped at max. clean_round: extra for a round in which that player took no hit at all (untouched + untouched_per_round x round, capped) and for one in which they never went down (no_down). headshot_streak: every `every` headshot kills in a row (any other kill by that player, or going down, resets it) pays base + step x (streak / every - 1), capped at max. salvage: a kill drops dog tags (a small pickup) with `chance` (chance_late from late_from_round on); they are worth value_base + value_per_round x round (capped), drift to a standing player within magnet_m, are picked up within pickup_radius, blink from blink_from_s and are gone at lifetime_s; at most max_alive on the map and max_per_round per round.",
+    "round_pay": {
+      "base": 50,
+      "per_round": 25,
+      "max": 400
+    },
+    "clean_round": {
+      "untouched": 100,
+      "untouched_per_round": 10,
+      "untouched_max": 250,
+      "no_down": 50
+    },
+    "headshot_streak": {
+      "every": 5,
+      "base": 100,
+      "step": 50,
+      "max": 300
+    },
+    "salvage": {
+      "chance": 0.07,
+      "chance_late": 0.035,
+      "late_from_round": 11,
+      "value_base": 75,
+      "value_per_round": 15,
+      "value_max": 300,
+      "lifetime_s": 20.0,
+      "blink_from_s": 14.0,
+      "pickup_radius": 1.2,
+      "magnet_m": 3.5,
+      "magnet_speed": 6.0,
+      "max_alive": 6,
+      "max_per_round": 4
+    }
   }
 }

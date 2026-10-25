@@ -1559,6 +1559,15 @@
    "pitch": [1.0, 1.0],
    "max_voices": 2
   },
+  "powerup_grab_tonic_bottle": {
+   "files": [
+    "res://gravelight/audio/sfx/world/powerups/grab_tonic_bottle.wav"
+   ],
+   "volume_db": -2.0,
+   "bus": "SFX",
+   "pitch": [1.0, 1.0],
+   "max_voices": 2
+  },
   "powerup_spawn": {
    "files": [
     "res://gravelight/audio/sfx/world/powerups/spawn_01.wav"

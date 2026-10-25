@@ -14,7 +14,15 @@
   "timed": ["deaths_door", "double_scrip", "clearance"],
   "names": {
     "resupply": "RESUPPLY", "deaths_door": "DEATH'S DOOR", "double_scrip": "DOUBLE SCRIP",
-    "blackout": "BLACKOUT", "fortify": "FORTIFY", "clearance": "CLEARANCE"
+    "blackout": "BLACKOUT", "fortify": "FORTIFY", "clearance": "CLEARANCE", "tonic_bottle": "TONIC BOTTLE"
   },
-  "rewards": { "blackout_scrip": 400, "fortify_scrip": 200 }
+  "rewards": { "blackout_scrip": 400, "fortify_scrip": 200 },
+  "milestone": {
+    "_doc": "Milestone drops (rounds.json milestones, T-078): they last lifetime_seconds (blinking from blink_from_seconds) and are applied for the squad if they expire uncollected; they land ahead_m from the nearest standing player toward the last kill, spacing_m apart, and never count toward max_per_round.",
+    "lifetime_seconds": 60.0, "blink_from_seconds": 50.0, "ahead_m": 1.8, "spacing_m": 1.3
+  },
+  "tonic_bottle": {
+    "_doc": "The tonic bottle (milestone only, never in the bag): every player still in the match (not bled out) gets a free perk tonic they don't own, at random among the map's perk machines (every perks.json perk if the map has none), no power needed. Under the perk cap only; a full cap gets the next tier of a carried tonic instead (if the profile has unlocked it; the round gate is waived), else full_cap_scrip. Solo Second Wind is skipped once its machine has left.",
+    "full_cap_scrip": 1500
+  }
 }

@@ -27,7 +27,7 @@ const RULES_PATH: String = "res://data/gravelight/vo/rules.json"
 const AUDIO_DIR: String = "res://gravelight/audio/vo/"
 const CHARACTER_SPEAKERS: Dictionary = {&"dutch": &"DUT", &"peg": &"PEG", &"deacon": &"DEA", &"wren": &"WRN", &"jakub": &"JAK"}
 const POWERUP_TOKENS: Dictionary = {&"resupply": "RESUPPLY", &"deaths_door": "DEATHSDOOR", &"double_scrip": "DOUBLESCRIP",
-	&"blackout": "BLACKOUT", &"fortify": "FORTIFY", &"clearance": "CLEARANCE"}
+	&"blackout": "BLACKOUT", &"fortify": "FORTIFY", &"clearance": "CLEARANCE", &"tonic_bottle": "TONIC"}
 const PERK_TOKENS: Dictionary = {&"ironhide_stout": "IRONHIDE", &"second_wind": "SECONDWIND", &"trigger_tonic": "TRIGGER",
 	&"twin_barrel": "TWINBARREL", &"marathon_malt": "MARATHON", &"hawkeye_brandy": "HAWKEYE",
 	&"packmule_porter": "PACKMULE", &"blastproof_bock": "BLASTPROOF", &"overclock_cordial": "OVERCLOCK"}

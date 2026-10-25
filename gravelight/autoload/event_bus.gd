@@ -27,6 +27,9 @@ signal no_ammo(player: int, weapon_id: StringName)
 
 # Economy & buying
 signal scrip_changed(player: int, total: int, delta: int)
+## A named bonus for the HUD's toast (T-078): Scrip bonuses (round pay, a clean round, a headshot streak, salvage)
+## and gifts (the round-5 tonic bottle). `amount` is the Scrip (0 for a gift); `label` the toast text.
+signal bonus_awarded(player: int, kind: StringName, amount: int, label: String)
 signal purchase_made(player: int, item_id: StringName, cost: int)
 signal purchase_denied(player: int, item_id: StringName, reason: StringName)
 signal door_opened(door_id: StringName, by_player: int)

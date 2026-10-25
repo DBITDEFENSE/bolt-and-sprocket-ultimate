@@ -195,5 +195,12 @@
     "pack_min": 4,
     "pack_max": 5,
     "pack_small_until_round": 10
+  },
+  "milestones": {
+    "_doc": "Guaranteed rewards on reaching a round (T-078): \"R\": [power-up ids]. They drop when round R-1's last zombie dies, a step ahead of the nearest standing player toward that kill (on the navmesh), last milestone.lifetime_seconds (powerups.json) and are applied anyway if nobody picks them up. Once per match each. A campaign arrival past R skips it.",
+    "5": [
+      "tonic_bottle",
+      "resupply"
+    ]
   }
 }
