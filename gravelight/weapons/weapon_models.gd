@@ -139,7 +139,7 @@ static func merge_static(n: Node3D) -> void:
 
 ## Every id this builder knows (for tests and the crate).
 static func known_ids() -> PackedStringArray:
-	return PackedStringArray(["m1911", "kar98k", "m1_garand", "gewehr43", "m1_carbine", "mp40", "thompson", "stg44",
+	return PackedStringArray(["m1911", "walther_p38", "luger_p08", "webley", "kar98k", "m1_garand", "gewehr43", "m1_carbine", "mp40", "thompson", "stg44",
 		"trench_gun", "bar", "ppsh41", "mg42", "m1919", "sawed_off", "type100", "ptrs41", "springfield", "panzerschreck",
 		"flamethrower", "ashlight", "totenglocke", "elmsfeuer", "gramophone", "trench_knife", "etool", "frag"])
 
@@ -1005,6 +1005,163 @@ func _w_m1911() -> void:
 	meta("pistol", 0.216)
 	root.set_meta("port", Vector3(0.0125, 0.0405, -0.02))
 	root.set_meta("bore", 0.0057)
+
+
+## Muster sidearm (T-079): a Walther P38 pattern 9 mm, kitbashed from the same primitives as the M1911 at real
+## scale (no markings). Open-topped slide over the front of the barrel, blued steel, black ribbed grips,
+## an exposed hammer. The whole slide (with the barrel and both sights) is the "Slide" part.
+func _w_walther_p38() -> void:
+	const SW: float = 0.0112
+	const TOP: float = 0.049
+	const SB: float = 0.025
+	const BY: float = 0.0375
+	var sl: Node3D = group("Slide")
+	prof(P([[0.045, SB], [-0.066, SB], [-0.066, TOP], [0.038, TOP], [0.045, TOP - 0.005]]), SW * 2.0, "blued", 0.0, sl)   # rear slide
+	prof(P([[-0.066, SB], [-0.152, SB], [-0.155, SB + 0.004], [-0.155, 0.0425], [-0.066, 0.0425]]), SW * 2.0, "blued", 0.0, sl)  # open top
+	tube(0.0072, 0.0072, 0.112, Vector3(0, BY, -0.12), "steel", "z", sl, 16)       # the barrel showing through the top
+	tube(0.0058, 0.0058, 0.004, Vector3(0, BY, -0.1765), "blued", "z", sl, 14)     # crown
+	for i: int in 8:
+		for s: float in [-1.0, 1.0]:
+			box(Vector3(0.0006, 0.016, 0.0012), Vector3(s * (SW + 0.0001), 0.036, 0.012 + i * 0.0034), "black", Vector3.ZERO, sl)
+	box(Vector3(0.0045, 0.006, 0.01), Vector3(-SW - 0.002, 0.04, 0.005), "blued", Vector3.ZERO, sl)   # safety lever
+	front_blade(-0.149, 0.0425, 0.0545, "blued", 0.0028, 0.005, sl)
+	box(Vector3(0.01, 0.003, 0.012), Vector3(0, 0.0435, -0.149), "blued", Vector3.ZERO, sl)            # sight base
+	rear_notch(0.034, TOP, 0.0068, "blued", 0.015, 0.0036, sl)
+	# ---- frame, trigger guard, grip
+	prof(P([[0.046, SB], [-0.128, SB], [-0.128, 0.013], [-0.04, 0.009], [0.014, 0.0], [0.046, 0.012]]), 0.0212, "blued")
+	prof(P([[0.012, 0.002], [0.016, -0.004], [0.046, -0.097], [0.084, -0.097], [0.057, 0.004], [0.048, 0.013], [0.03, 0.002]]), 0.0212, "blued")
+	var tg: Array = [[-0.034, 0.006]]
+	for i: int in 13:
+		var a: float = deg_to_rad(180.0 + 15.0 * i)
+		tg.append([-0.01 + 0.022 * cos(a), -0.006 + 0.021 * sin(a)])
+	tg.append([0.014, 0.004])
+	tg.append([0.009, 0.004])
+	for i: int in 13:
+		var a2: float = deg_to_rad(360.0 - 15.0 * i)
+		tg.append([-0.01 + 0.017 * cos(a2), -0.006 + 0.016 * sin(a2)])
+	tg.append([-0.029, 0.006])
+	prof(P(tg), 0.0095, "blued")
+	prof(P([[-0.013, 0.004], [-0.007, 0.004], [-0.008, -0.013], [-0.012, -0.015], [-0.014, -0.011]]), 0.0065, "blued")   # trigger
+	prof(P([[0.044, 0.02], [0.054, 0.022], [0.064, 0.043], [0.058, 0.047], [0.05, 0.034]]), 0.009, "blued")              # hammer
+	var gp: Array = [[0.022, -0.006], [0.051, -0.004], [0.08, -0.092], [0.05, -0.092]]
+	for s2: float in [-1.0, 1.0]:
+		prof(P(gp), 0.003, "black", s2 * 0.0122)
+		for i: int in 9:
+			var gy: float = lerpf(-0.014, -0.086, float(i) / 8.0)
+			var gz: float = 0.0365 + (-0.006 - gy) * 0.33
+			box(Vector3(0.0012, 0.0012, 0.026), Vector3(s2 * 0.0139, gy, gz), "black", Vector3(-18, 0, 0))
+	ring(0.0016, 0.003, Vector3(0, -0.1, 0.087), "steel", "x")   # lanyard loop
+	# ---- magazine in the grip, its base plate under it
+	var mag: Node3D = group("Mag")
+	prof(P([[0.022, -0.004], [0.05, -0.094], [0.082, -0.094], [0.053, -0.004]]), 0.017, "blued", 0.0, mag)
+	prof(P([[0.047, -0.097], [0.087, -0.097], [0.088, -0.103], [0.048, -0.103]]), 0.02, "steel", 0.0, mag)
+	tube(0.0045, 0.0048, 0.018, Vector3(0, -0.001, 0.04), "brass", "z", mag, 10)
+	marker("Muzzle", Vector3(0, BY, -0.179))
+	rhand(Vector3(0, -0.05, 0.052), 19.0, 0.017)
+	lhand(Vector3(-0.006, -0.056, 0.049), "y", 0.03)
+	meta("pistol", 0.215)
+	root.set_meta("port", Vector3(0.0122, 0.041, -0.03))
+	root.set_meta("bore", 0.0045)
+
+
+## Muster sidearm (T-079): a Luger P08 pattern 9 mm. A slim exposed barrel on a receiver, the toggle on top (the
+## "Slide" part: it runs back a little on each shot), a steeply raked grip with walnut panels and a wooden-based
+## magazine. Rear sight notch on the toggle, front blade at the muzzle.
+func _w_luger_p08() -> void:
+	const BY: float = 0.034
+	tube(0.0064, 0.0058, 0.102, Vector3(0, BY, -0.131), "blued", "z", null, 16)      # barrel
+	tube(0.0085, 0.0085, 0.022, Vector3(0, BY, -0.072), "blued", "z", null, 16)      # barrel shank
+	prof(P([[-0.082, 0.022], [-0.06, 0.022], [-0.06, 0.044], [-0.082, 0.042]]), 0.021, "blued")   # barrel extension front
+	for s: float in [-1.0, 1.0]:
+		box(Vector3(0.003, 0.02, 0.085), Vector3(s * 0.0105, 0.033, -0.018), "blued")             # receiver side rails
+	prof(P([[0.055, 0.024], [-0.085, 0.024], [-0.085, 0.012], [-0.03, 0.01], [0.012, 0.0], [0.055, 0.012]]), 0.022, "blued")  # frame
+	front_blade(-0.177, BY + 0.0058, 0.0505, "blued", 0.0026, 0.005)
+	box(Vector3(0.008, 0.004, 0.012), Vector3(0, BY + 0.007, -0.176), "blued")              # sight base
+	var tl: Node3D = group("Slide")
+	prof(P([[-0.06, 0.03], [-0.06, 0.044], [0.0, 0.046], [0.006, 0.042], [0.006, 0.03]]), 0.017, "blued", 0.0, tl)   # breech block
+	prof(P([[0.004, 0.034], [0.006, 0.046], [0.05, 0.047], [0.055, 0.04], [0.05, 0.034]]), 0.015, "blued", 0.0, tl)  # rear link
+	for s3: float in [-1.0, 1.0]:
+		tube(0.0072, 0.0072, 0.006, Vector3(s3 * 0.0105, 0.041, 0.048), "blued", "x", tl, 14)   # toggle knobs
+		for i: int in 6:
+			var an: float = TAU * float(i) / 6.0
+			box(Vector3(0.0062, 0.0014, 0.0014), Vector3(s3 * 0.0105, 0.041 + 0.0068 * sin(an), 0.048 + 0.0068 * cos(an)), "black", Vector3.ZERO, tl)
+	rear_notch(0.03, 0.047, 0.0045, "blued", 0.012, 0.0034, tl)
+	# trigger guard, trigger, grip safety lever
+	var tg: Array = [[-0.036, 0.004]]
+	for i2: int in 13:
+		var a: float = deg_to_rad(180.0 + 15.0 * i2)
+		tg.append([-0.013 + 0.021 * cos(a), -0.006 + 0.02 * sin(a)])
+	tg.append([0.01, 0.002])
+	tg.append([0.005, 0.002])
+	for i3: int in 13:
+		var a2: float = deg_to_rad(360.0 - 15.0 * i3)
+		tg.append([-0.013 + 0.016 * cos(a2), -0.006 + 0.015 * sin(a2)])
+	tg.append([-0.031, 0.004])
+	prof(P(tg), 0.009, "blued")
+	prof(P([[-0.016, 0.003], [-0.01, 0.003], [-0.011, -0.013], [-0.015, -0.015], [-0.017, -0.011]]), 0.0065, "blued")
+	box(Vector3(0.004, 0.012, 0.008), Vector3(-0.0125, 0.012, 0.03), "blued")
+	# raked grip frame, checkered walnut panels
+	prof(P([[0.004, 0.002], [0.008, -0.004], [0.058, -0.092], [0.096, -0.092], [0.098, -0.085], [0.06, 0.004], [0.05, 0.012]]), 0.021, "blued")
+	var gp: Array = [[0.016, -0.008], [0.048, -0.006], [0.088, -0.082], [0.061, -0.084]]
+	for s2: float in [-1.0, 1.0]:
+		prof(P(gp), 0.003, "wood_check", s2 * 0.012)
+	var mag: Node3D = group("Mag")
+	prof(P([[0.012, -0.004], [0.058, -0.088], [0.088, -0.088], [0.044, -0.004]]), 0.016, "blued", 0.0, mag)
+	prof(P([[0.056, -0.092], [0.096, -0.092], [0.098, -0.104], [0.058, -0.104]]), 0.021, "wood", 0.0, mag)   # wooden base knob
+	tube(0.0045, 0.0048, 0.018, Vector3(0, -0.001, 0.03), "brass", "z", mag, 10)
+	marker("Muzzle", Vector3(0, BY, -0.183))
+	rhand(Vector3(0, -0.046, 0.05), 30.0, 0.017)
+	lhand(Vector3(-0.006, -0.052, 0.049), "y", 0.03)
+	meta("pistol", 0.222)
+	root.set_meta("port", Vector3(0.0, 0.05, 0.0))
+	root.set_meta("bore", 0.0045)
+
+
+## Muster sidearm (T-079): a Webley Mk VI pattern .455 break-top revolver. The barrel, its rib and the cylinder are
+## the "Barrels" part, hinged at the front of the frame (the "break" reload tips it down). Tall front blade on
+## the barrel, the rear notch on the frame's latch, a bird's-head walnut grip with a lanyard ring.
+func _w_webley() -> void:
+	const BY: float = 0.038
+	var br: Node3D = group("Barrels", Vector3(0, 0.004, -0.06))
+	var ly: float = BY - 0.004   # bore height in the hinge group
+	tube(0.0088, 0.0088, 0.152, Vector3(0, ly, -0.076), "blued", "z", br, 16)
+	box(Vector3(0.006, 0.006, 0.15), Vector3(0, ly + 0.0098, -0.076), "blued", Vector3.ZERO, br)   # top rib
+	box(Vector3(0.011, 0.012, 0.03), Vector3(0, ly - 0.012, -0.02), "blued", Vector3.ZERO, br)    # hinge lug
+	tube(0.0198, 0.0198, 0.054, Vector3(0, ly, 0.03), "blued", "z", br, 18)                       # cylinder
+	for i: int in 6:
+		var an: float = TAU * (float(i) + 0.5) / 6.0
+		box(Vector3(0.003, 0.003, 0.036), Vector3(0.0196 * cos(an), ly + 0.0196 * sin(an), 0.03), "black", Vector3(0, 0, rad_to_deg(an)), br)
+	box(Vector3(0.012, 0.005, 0.064), Vector3(0, ly + 0.0215, 0.027), "blued", Vector3.ZERO, br)  # top strap
+	front_blade(-0.142, ly + 0.0125, 0.0615, "blued", 0.003, 0.006, br)
+	tube(0.0062, 0.0062, 0.004, Vector3(0, ly, -0.1535), "steel", "z", br, 14)                    # crown
+	# ---- frame (stays put), latch, hammer, grip
+	prof(P([[-0.062, 0.019], [-0.062, 0.006], [0.0, 0.002], [0.016, 0.0], [0.044, 0.006], [0.05, 0.028], [0.042, 0.048],
+		[0.03, 0.0575], [0.006, 0.0575], [0.003, 0.052], [-0.002, 0.019]]), 0.024, "blued")
+	box(Vector3(0.014, 0.006, 0.014), Vector3(0, 0.061, 0.021), "blued")                          # barrel latch
+	rear_notch(0.022, 0.064, 0.005, "blued", 0.013, 0.0034)
+	prof(P([[0.04, 0.034], [0.052, 0.036], [0.062, 0.054], [0.057, 0.059], [0.047, 0.047]]), 0.009, "blued")   # hammer spur
+	var tg: Array = [[-0.026, 0.002]]
+	for i2: int in 13:
+		var a: float = deg_to_rad(180.0 + 15.0 * i2)
+		tg.append([-0.004 + 0.02 * cos(a), -0.006 + 0.02 * sin(a)])
+	tg.append([0.018, 0.001])
+	tg.append([0.013, 0.001])
+	for i3: int in 13:
+		var a2: float = deg_to_rad(360.0 - 15.0 * i3)
+		tg.append([-0.004 + 0.015 * cos(a2), -0.006 + 0.015 * sin(a2)])
+	tg.append([-0.021, 0.002])
+	prof(P(tg), 0.0095, "blued")
+	prof(P([[-0.007, 0.002], [-0.001, 0.002], [-0.002, -0.014], [-0.007, -0.016], [-0.009, -0.011]]), 0.0065, "blued")
+	prof(P([[0.024, 0.006], [0.046, 0.008], [0.06, -0.03], [0.086, -0.074], [0.084, -0.088], [0.062, -0.09], [0.05, -0.07], [0.036, -0.022]]), 0.02, "blued")
+	var gp: Array = [[0.032, -0.006], [0.05, -0.004], [0.08, -0.07], [0.064, -0.082], [0.054, -0.064]]
+	for s2: float in [-1.0, 1.0]:
+		prof(P(gp), 0.004, "wood_check", s2 * 0.0115)
+	ring(0.002, 0.0042, Vector3(0, -0.094, 0.075), "steel", "x")   # lanyard ring
+	marker("Muzzle", Vector3(0, BY, -0.216))
+	rhand(Vector3(0, -0.045, 0.06), 26.0, 0.017)
+	lhand(Vector3(-0.006, -0.05, 0.058), "y", 0.03)
+	meta("break", 0.27)
+	root.set_meta("bore", 0.0055)
 
 
 func _kar_stock(wood: String, front: float) -> void:

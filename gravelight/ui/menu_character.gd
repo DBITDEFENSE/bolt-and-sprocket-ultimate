@@ -47,6 +47,7 @@ func _pick(id: String) -> void:
 
 func _build_maps() -> void:
 	content.add_child(MenuKit.para("Survivor: %s" % _picked.capitalize(), 20, MenuKit.GOLD))
+	_build_muster()
 	_build_squad()
 	# The campaign (T-033): the inn, then exfil at round 10 to Kaltenbrunn and at round 30 onward, kit and all.
 	var camp: Button = MenuKit.button("Campaign   ·   Crossroads Inn  >  Kaltenbrunn  >  Totenhafen", _start.bind(Campaign.scene_for(Campaign.first_map()), true), 24, "ui_confirm")
@@ -69,6 +70,25 @@ func _build_maps() -> void:
 		b.disabled = not open or str(m[2]) == ""
 		content.add_child(b)
 	content.add_child(MenuKit.button("Back to survivors", _unpick, 20, ""))
+
+
+## The Muster (T-079): this survivor's sidearm and Field Habits, and the way to change them before the match.
+func _build_muster() -> void:
+	var row: HBoxContainer = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 14)
+	content.add_child(row)
+	var kit: Dictionary = Muster.loadout_for(_picked, ProfileSave.profile)
+	var b: Button = MenuKit.button("Muster: " + Muster.summary(kit), _open_muster, 20)
+	b.custom_minimum_size = Vector2(0, 44)
+	row.add_child(b)
+	if Muster.classic_rules():
+		row.add_child(MenuKit.label("(Classic Rules: off)", 18, MenuKit.DIM))
+
+
+func _open_muster() -> void:
+	var m: MenuMuster = MenuMuster.new(_picked)
+	add_child(m)
+	m.closed.connect(func() -> void: if is_inside_tree(): rebuild())
 
 
 func _unpick() -> void:
@@ -131,7 +151,7 @@ func _start(scene: String, campaign: bool = false) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed(&"ui_cancel") and _picked != "":
+	if event.is_action_pressed(&"ui_cancel") and _picked != "" and get_children().filter(func(n: Node) -> bool: return n is MenuMuster).is_empty():
 		get_viewport().set_input_as_handled()
 		_unpick()
 		return
