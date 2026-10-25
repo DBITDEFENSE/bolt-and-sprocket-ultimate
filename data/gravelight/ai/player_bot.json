@@ -40,7 +40,7 @@
     "_skip_doc": "T-071 pass 3: while the current step can't be done (unaffordable: the next skip_ahead steps that are cheaper may go first; affordable but waiting for its moment, e.g. a perk in the cellar mid-round: any of them). A step with firm: true is never jumped (AgentPlan.later_steps). A map's plan may set its own skip_ahead.",
     "map00": {
       "_why": "Crossroads Inn solo: the Garand off the taproom wall (one-shot heads to round 4), the cellar door for the power, Second Wind (the solo self-revive) and Ironhide (5 hits), then the stable and the yard: the Well Loop is the map's open ground (measured: 2-4 hits a training minute against 10-15 on the taproom's ring round its four windows) with the Thompson chalked on the stable wall beside it (wall ammo on a lap); Marathon (an endless sprint outruns the runners from round 8), then the Thompson into the Crucible.",
-      "steps": [{"gun": "m1_garand", "or_tier": 2.4}, {"door": "door_cellar"}, {"power": true}, {"perk": "second_wind"}, {"perk": "ironhide_stout", "firm": true}, {"door": "door_stable"}, {"door": "door_yard"}, {"gun": "thompson", "or_tier": 3.6},
+      "steps": [{"gun": "m1_garand", "or_tier": 2.4}, {"door": "door_cellar"}, {"power": true}, {"perk": "second_wind"}, {"door": "door_upstairs"}, {"gun": "mp40", "or_tier": 3.2}, {"perk": "ironhide_stout", "firm": true}, {"door": "door_stable"}, {"door": "door_yard"}, {"gun": "thompson", "or_tier": 3.6},
         {"perk": "marathon_malt"}, {"crucible": "*"}, {"perk": "trigger_tonic"}],
       "train_at": ["map00_yard_well", "map00_taproom"]
     },
@@ -53,7 +53,7 @@
   },
   "points": {
     "_doc": "T-071 pass 3: Scrip in the first rounds the way a solo player makes it: up to knife_until_round, a lone zombie (nothing else within crowd_m, the agent unhurt) is shot in the body until the knife kills it, then let come and knifed (130 Scrip a knife kill; BotAim.knife_for_points). 0 turns it off.",
-    "knife_until_round": 2,
+    "knife_until_round": 0,
     "crowd_m": 5.0
   },
   "wall_ammo_below": 0.55,
