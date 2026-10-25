@@ -157,9 +157,11 @@ func _update_list(s: NetMatch) -> void:
 		var cap2: PerkCap = _caps.get(pid2) as PerkCap
 		if cap2 != null:
 			cap2.visible = bp != &""
-			if cap2.perk_id != bp:
+			var bt: int = PerkManager.tier_of(pid2, bp) if bp != &"" else 1
+			if cap2.perk_id != bp or cap2.tier != bt:
 				cap2.perk_id = bp
-				cap2.tooltip_text = "Bonus perk: %s" % PerkManager.display_name(bp)
+				cap2.tier = bt
+				cap2.tooltip_text = "Bonus perk: %s" % PerkManager.tier_name(bp, bt)
 				cap2.queue_redraw()
 		var col: Color = Net.player_color(pid2) if state == "" else INK.lightened(0.35)
 		if not row.has_theme_color_override("font_color") or row.get_theme_color("font_color") != col:

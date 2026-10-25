@@ -89,7 +89,7 @@ func test_revive_seconds_and_second_wind() -> void:
 	var base: float = float(player_cfg["revive_seconds"])
 	assert_almost_eq(CoopState.revive_seconds(base, 1.0), 4.0, 0.001)
 	var sw: float = float(GLData.table("perks")["perks"]["second_wind"]["effects"]["revive_speed_mult"])
-	assert_almost_eq(CoopState.revive_seconds(base, sw), 2.0, 0.001)   # GDD §3: 2 s with Second Wind
+	assert_almost_eq(CoopState.revive_seconds(base, sw), 4.0 / 2.3, 0.001)   # T-082: 1.74 s with Second Wind (x2.3; GDD §3's 2 s was x2.0)
 
 
 func test_bleed_out_after_the_timer() -> void:

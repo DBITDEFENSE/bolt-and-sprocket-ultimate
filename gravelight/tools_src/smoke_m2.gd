@@ -131,7 +131,7 @@ func _run() -> void:
 	GLBus.power_activated.emit()
 	var r: StringName = PerkManager.buy_for(1, &"ironhide_stout")
 	await _frames(2)
-	_check(r == &"ok" and is_equal_approx(_p.max_hp, 250.0), "Ironhide Stout: max hp %.0f" % _p.max_hp)
+	_check(r == &"ok" and is_equal_approx(_p.max_hp, 275.0), "Ironhide Stout: max hp %.0f" % _p.max_hp)
 	PerkManager.buy_for(1, &"packmule_porter")
 	await _frames(2)
 	_check(_p.weapons.max_slots() == 3, "Packmule Porter: 3 slots")
