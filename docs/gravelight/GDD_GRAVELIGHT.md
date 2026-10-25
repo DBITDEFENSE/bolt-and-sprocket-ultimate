@@ -187,7 +187,7 @@ Details in `docs/gravelight/ECONOMY.md`.
 | The Screamer | Map 1, r20+, rare | A scream distorts the screen and audio and slows you. |
 
 ## 14. Maps (summary; layouts in MAPS.md)
-- **Map 0 Crossroads Inn:** tutorial scale. Taproom (spawn), Upstairs (750), Stable (1000). No power or perks. Teaches barricades, wall-buys, doors, the crate, power-ups, and escalation. There's a radio mini-quest.
+- **Map 0 Crossroads Inn:** tutorial scale. Taproom (spawn), Upstairs (750), Stable (1000). No power or perks. Teaches barricades, wall-buys, doors, the crate, power-ups, and escalation. There's a radio mini-quest. Since T-080 the snow round the inn is play space too (the Grounds: out of the front door for 1250 or the yard's gate for 750, a ring right round the building, the crossroads and the crash field; MAPS.md).
 - **Map 1 Kaltenbrunn:** the flagship. Surface → Admin → depths → the heart. 9 zones, a power switch, 3 pylons, the Core Vault and Crucible, 3 traps, the lift, the Totenglocke, and the main egg.
 - **Map 2 Totenhafen / Map 3 Morgenrot:** outlined in LORE.md and MAPS.md.
 

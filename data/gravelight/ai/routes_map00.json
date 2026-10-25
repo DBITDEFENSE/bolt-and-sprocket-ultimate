@@ -44,6 +44,30 @@
       "requires_doors": ["door_stable", "door_yard"]
     },
     {
+      "id": "map00_wreck_loop",
+      "label": "round the crash site (the Wreck Loop)",
+      "notes": "T-080: out of the front door (Door_Front) or the yard's gate (Door_Gate) onto the grounds, round GRAVELIGHT ONE in the east field: 3.5 m+ off the hull, the wings and the tail, west of the thrown cargo, inside the parachute's tree and 3 m off the east fence. Open snow on every side; the edge spawns feed it from the east and the north field, the taproom's east window (W_TAP_E) is behind its west side.",
+      "points": [[31.5, 0, -4.5], [38.0, 0, -5.5], [45.0, 0, -5.0], [51.5, 0, -3.0], [56.5, 0, 2.0], [57.0, 0, 8.5], [55.5, 0, 15.0], [51.0, 0, 20.5], [44.5, 0, 22.0], [37.0, 0, 22.0], [31.5, 0, 19.5], [30.5, 0, 12.0], [30.8, 0, 4.0]],
+      "ring_width": 5.0,
+      "smooth": 2,
+      "agent_bonus": 4.0,
+      "agent_only": true,
+      "requires_doors": [],
+      "requires_zones": ["GROUNDS"]
+    },
+    {
+      "id": "map00_grounds_ring",
+      "label": "right round the inn (the Grounds Ring)",
+      "notes": "T-080: the walk all the way round the inn, the stable and the yard on the grounds (smoke_map00_loop's waypoints): the crossroads road in front, the crash field, the carters' road behind the yard, the woodshed, the west road. 210 m, so the train strings out; every field window spawn is on its inner side (hidden from a player within 16 m who can see it).",
+      "points": [[-6, 0, -7], [12, 0, -7], [31, 0, -7], [31.5, 0, 4], [31, 0, 12], [31.5, 0, 20], [36, 0, 28], [40, 0, 44], [42, 0, 53], [34, 0, 58.5], [18, 0, 56], [1, 0, 55], [-8, 0, 46], [-8, 0, 28], [-8, 0, 10]],
+      "ring_width": 6.0,
+      "smooth": 2,
+      "agent_bonus": 1.0,
+      "agent_only": true,
+      "requires_doors": [],
+      "requires_zones": ["GROUNDS"]
+    },
+    {
       "id": "map00_cellar_tight",
       "label": "hugging the barrel stack",
       "notes": "T-071 pass 2 (an experiment): the barrel vault loop 1 m off the stack, where the train runs (the zombies chase on the inside line).",

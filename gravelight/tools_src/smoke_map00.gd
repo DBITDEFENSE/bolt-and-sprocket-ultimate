@@ -86,13 +86,13 @@ func _check_paths() -> void:
 		["taproom -> upstairs hall", Vector3(14, 0, 8), Vector3(12, 3.8, 8), true],
 		["taproom -> stable", Vector3(14, 0, 8), Vector3(15, 0, 29), true],
 		["taproom -> hayloft", Vector3(14, 0, 8), Vector3(9, 3.5, 27), true],
-		["outside N -> taproom (must NOT connect)", Vector3(7, 0, -6), Vector3(14, 0, 8), false],
+		["outside N -> taproom (Door_Front, T-080)", Vector3(7, 0, -6), Vector3(14, 0, 8), true],
 		["outside W -> outside E (around the inn)", Vector3(-6, 0, 6), Vector3(30, 0, 8), true],
 		["ledge -> upstairs (must NOT connect)", Vector3(2.5, 3.8, -1.5), Vector3(4, 3.8, 3), false],
 		["stable -> the yard (the yard door)", Vector3(15, 0, 29), Vector3(18, 0, 41), true],
 		["yard -> round the well and the cart", Vector3(8, 0, 36), Vector3(31, 0, 46), true],
-		["yard -> the field (must NOT connect)", Vector3(18, 0, 41), Vector3(18, 0, 56), false],
-		["yard -> the cellar's roof (must NOT connect)", Vector3(18, 0, 41), Vector3(30, 0, 22), false],
+		["yard -> the field (Door_Gate, T-080)", Vector3(18, 0, 41), Vector3(18, 0, 56), true],
+		["yard -> the cellar's roof (round by the gate)", Vector3(18, 0, 41), Vector3(30, 0, 22), true],
 		# the Old Cellar (Update 02 section 6.1, T-051)
 		["taproom -> the Old Cellar's barrel vault", Vector3(14, 0, 8), Vector3(17.45, -3.2, 4.5), true],
 		["vault -> the Helvetia cellar (round by the taproom)", Vector3(13, -3.2, 12), Vector3(30, -3.2, 25), true],
@@ -107,9 +107,14 @@ func _check_paths() -> void:
 	]
 	_check_loop(map_rid)
 	_check_breach(map_rid)
+	_check_door_ways(map_rid)
 	for c: Array in checks:
 		var path: PackedVector3Array = NavigationServer3D.map_get_path(map_rid, c[1], c[2], true)
 		var end_ok: bool = not path.is_empty() and path[path.size() - 1].distance_to(c[2]) < 1.0
+		# "must NOT connect": not without a shut bought door on the way (T-080: the light wells reach the cellars the
+		# long way, out of the front door and back in, which Door_Front shuts until it is bought)
+		if end_ok and not bool(c[3]) and _crosses_shut_door(path):
+			end_ok = false
 		var ok: bool = end_ok == bool(c[3])
 		print("[smoke] path %-44s %s (points %d, end %s)" % [c[0], "ok" if ok else "WRONG", path.size(), str(path[path.size() - 1]) if not path.is_empty() else "-"])
 		if not ok:
@@ -160,6 +165,26 @@ func _check_breach(map_rid: RID) -> void:
 	print("[smoke] the breach: shut path %.0f m (round by the taproom), opens with both cellars: %s" % [shut, str(opened)])
 	if shut < 20.0 or not opened:
 		_fails.append("the cellar breach (shut path %.1f m, opened %s)" % [shut, str(opened)])
+
+
+## T-080: the inn and the yard reach the grounds only through their bought doors (doors aren't baked): the paths
+## above that connect the inside to the outside must cross Door_Front / Door_Gate.
+func _check_door_ways(map_rid: RID) -> void:
+	for c: Array in [[Vector3(7, 0, -6), Vector3(14, 0, 8), "Door_Front"], [Vector3(18, 0, 41), Vector3(18, 0, 56), "Door_Gate"]]:
+		var path: PackedVector3Array = NavigationServer3D.map_get_path(map_rid, c[0], c[1], true)
+		var d: BuyDoor = _map.find_child(str(c[2]), true, false) as BuyDoor
+		var ok: bool = d != null and ZombieDirector.door_crossed(d, path)
+		print("[smoke] path %-44s %s" % ["%s -> %s through %s" % [str(c[0]), str(c[1]), c[2]], "ok" if ok else "WRONG"])
+		if not ok:
+			_fails.append("the way out must run through " + str(c[2]))
+
+
+func _crosses_shut_door(path: PackedVector3Array) -> bool:
+	for n: Node in get_tree().get_nodes_in_group(&"doors"):
+		var d: BuyDoor = n as BuyDoor
+		if d != null and not d.is_open and ZombieDirector.door_crossed(d, path):
+			return true
+	return false
 
 
 func _path_len(path: PackedVector3Array) -> float:

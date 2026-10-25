@@ -40,9 +40,9 @@
     "_skip_doc": "T-071 pass 3: while the current step can't be done (unaffordable: the next skip_ahead steps that are cheaper may go first; affordable but waiting for its moment, e.g. a perk in the cellar mid-round: any of them). A step with firm: true is never jumped (AgentPlan.later_steps). A map's plan may set its own skip_ahead.",
     "map00": {
       "_why": "Crossroads Inn solo: the Garand off the taproom wall (one-shot heads to round 4), the cellar door for the power, Second Wind (the solo self-revive) and Ironhide (5 hits), then the stable and the yard: the Well Loop is the map's open ground (measured: 2-4 hits a training minute against 10-15 on the taproom's ring round its four windows) with the Thompson chalked on the stable wall beside it (wall ammo on a lap); Marathon (an endless sprint outruns the runners from round 8), then the Thompson into the Crucible.",
-      "steps": [{"gun": "m1_garand", "or_tier": 2.4}, {"door": "door_cellar"}, {"power": true}, {"perk": "second_wind"}, {"door": "door_upstairs"}, {"gun": "mp40", "or_tier": 3.2}, {"perk": "ironhide_stout", "firm": true}, {"door": "door_stable"}, {"door": "door_yard"}, {"gun": "thompson", "or_tier": 3.6},
+      "steps": [{"gun": "m1_garand", "or_tier": 2.4}, {"door": "door_cellar"}, {"power": true}, {"perk": "second_wind"}, {"door": "door_upstairs"}, {"gun": "mp40", "or_tier": 3.2}, {"perk": "ironhide_stout", "firm": true}, {"door": "door_front"}, {"door": "door_gate"}, {"gun": "thompson", "or_tier": 3.6},
         {"perk": "marathon_malt"}, {"crucible": "*"}, {"perk": "trigger_tonic"}],
-      "train_at": ["map00_yard_well", "map00_taproom"]
+      "train_at": ["map00_wreck_loop", "map00_yard_well", "map00_taproom"]
     },
     "map01": {
       "_why": "Kaltenbrunn solo: the Rail Yard door and the MP40, the Administration door for Second Wind (it works without the power solo), the Barracks, then down the lift to the Chapel and into the Generator Hall to throw the Hauptschalter (the power never came on solo in pass 1: no step led there); Ironhide back in the Barracks, Marathon in the Chapel, the StG-44 in the Lab corridor.",

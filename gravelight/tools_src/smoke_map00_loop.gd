@@ -14,8 +14,9 @@ extends Node
 const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 ## Round the inn clockwise from the crossroads: the front, the crash field, the carters' road, the woodshed, the
 ## west road.
-const LOOP: Array[Vector3] = [Vector3(-6, 0, -7), Vector3(12, 0, -7), Vector3(31, 0, -7), Vector3(40, 0, 6), Vector3(39, 0, 26),
-	Vector3(40, 0, 44), Vector3(36, 0, 56), Vector3(18, 0, 56), Vector3(1, 0, 57), Vector3(-8, 0, 46), Vector3(-8, 0, 28), Vector3(-8, 0, 10)]
+const LOOP: Array[Vector3] = [Vector3(-6, 0, -7), Vector3(12, 0, -7), Vector3(31, 0, -7), Vector3(31.5, 0, 4), Vector3(31, 0, 12),
+	Vector3(31.5, 0, 20), Vector3(36, 0, 28), Vector3(40, 0, 44), Vector3(42, 0, 53), Vector3(34, 0, 58.5), Vector3(18, 0, 56), Vector3(1, 0, 55),
+	Vector3(-8, 0, 46), Vector3(-8, 0, 28), Vector3(-8, 0, 10)]   # (routes_map00.json map00_grounds_ring)
 const FIELD: Vector3 = Vector3(28, 0, -11.5)
 const TAPROOM: Vector3 = Vector3(14, 0, 8)
 

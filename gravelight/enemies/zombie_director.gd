@@ -682,10 +682,16 @@ func _roaming_players() -> Array[Vector3]:
 	return out
 
 
-static func _seen_from(at: Vector3, dist: float, roamers: Array[Vector3]) -> bool:
+## True when one of `roamers` is within `dist` (flat) of `at` and can see it: a clear line from their eyes to a
+## standing zombie's chest there (walls, the stable, the wreck hide a spawn; the night and the fog don't).
+static func _seen_from(at: Vector3, dist: float, roamers: Array[Vector3], space: PhysicsDirectSpaceState3D) -> bool:
 	for q: Vector3 in roamers:
 		if Vector2(q.x - at.x, q.z - at.z).length() < dist and absf(q.y - at.y) < 4.0:
-			return true
+			if space == null:
+				return true
+			var ray: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(q + Vector3.UP * 1.6, at + Vector3.UP * 1.2, 1)
+			if space.intersect_ray(ray).is_empty():
+				return true
 	return false
 
 
@@ -721,7 +727,7 @@ func _choose_spawn(ground_only: bool = false) -> ZombieSpawn:
 			continue
 		if sp.player_zone_only and not player_zones.has(sp.zone_id):
 			continue
-		if sp.hide_from_m > 0.0 and _seen_from(sp.global_position, sp.hide_from_m, roamers):
+		if sp.hide_from_m > 0.0 and _seen_from(sp.global_position, sp.hide_from_m, roamers, get_world_3d().direct_space_state):
 			continue
 		if ground_only and sp.kind != &"ground":
 			continue
