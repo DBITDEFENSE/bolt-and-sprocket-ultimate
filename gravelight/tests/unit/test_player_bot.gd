@@ -276,6 +276,12 @@ func test_agent_egg_block_rules() -> void:
 	st["eggs"]["map00_radio"] = true
 	assert_false(AgentPlan.egg_ready(egg, st), "done is done")
 	assert_false(AgentPlan.egg_ready({}, st), "no block: no egg work")
+	var egg2: Dictionary = {"quest": "map00_radio", "after": [{"door": "door_cellar"}], "from_round": 2, "crawler_after": [{"perk": "ironhide_stout"}]}
+	var st2: Dictionary = {"doors": {"door_cellar": true}, "power": true, "perks": [], "guns": [], "round": 2, "eggs": {}}
+	assert_true(AgentPlan.egg_ready(egg2, st2), "round 2, the cellar open: egg work in the breaks")
+	assert_false(AgentPlan.egg_full(egg2, st2), "but not into a round, and no crawler break for it, before Ironhide")
+	st2["perks"] = ["ironhide_stout"]
+	assert_true(AgentPlan.egg_full(egg2, st2))
 	assert_eq(AgentPlan.egg_value(egg, true, 0.1, 3.0), 0.85, "a break: go, whatever is near")
 	assert_eq(AgentPlan.egg_value(egg, false, 0.1, 20.0), 0.85, "mid-round with nothing within quiet_m: go")
 	assert_eq(AgentPlan.egg_value(egg, false, 0.1, 8.0), 0.0, "a zombie near: not now")

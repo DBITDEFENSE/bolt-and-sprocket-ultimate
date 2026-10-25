@@ -108,6 +108,28 @@ static func egg_ready(egg: Dictionary, st: Dictionary) -> bool:
 	return true
 
 
+## Pure: may the egg take the agent into a round? Before the block's `crawler_after` steps are done (Ironhide on
+## Map 0) egg work is for the round breaks only: no crawler breaks for it, nothing mid-round (the soak: at 100 HP
+## a walk upstairs for a note, or the leg-shooting standoff that makes a crawler, killed it at round 3).
+static func egg_full(egg: Dictionary, st: Dictionary) -> bool:
+	if not egg_ready(egg, st):
+		return false
+	for s: Variant in egg.get("crawler_after", []):
+		if not step_done(s as Dictionary, st):
+			return false
+	return true
+
+
+## May the agent's egg task run right now? (BotEE.value asks: 0 otherwise, so the brain does something else.)
+static func egg_may_work_now(brain: BotBrain) -> bool:
+	if brain == null or brain.squad == null or brain.squad.map == null:
+		return true
+	var egg: Dictionary = egg_block(TrainingRoute.map_key_of(String(brain.squad.map.map_id)))
+	if egg.is_empty() or egg_full(egg, state_with_eggs(brain)):
+		return true
+	return RoundManager.state != RoundManager.State.ROUND
+
+
 ## Pure: the value of starting egg work now (0 = not now): in a quiet moment (a break, the crawler break) or
 ## with nothing within quiet_m, and the threat pressure under max_pressure.
 static func egg_value(egg: Dictionary, quiet: bool, pressure: float, nearest_d: float) -> float:
@@ -134,7 +156,7 @@ static func egg_pending(brain: BotBrain) -> bool:
 	if brain.ee == null or brain.squad == null or brain.squad.ee == null or brain.squad.map == null:
 		return false
 	var egg: Dictionary = egg_block(TrainingRoute.map_key_of(String(brain.squad.map.map_id)))
-	if not egg_ready(egg, state_with_eggs(brain)):
+	if not egg_full(egg, state_with_eggs(brain)):
 		return false
 	return brain.ee.active() or not brain.squad.ee.pick_for(brain, {}, true).is_empty()
 
@@ -147,19 +169,35 @@ static func tick_egg(brain: BotBrain) -> void:
 		return
 	var pid: int = brain.player.player_id
 	var now: float = brain.squad.time()
-	if now < float(_egg_next_t.get(pid, -INF)):
-		return
 	var egg: Dictionary = egg_block(TrainingRoute.map_key_of(String(brain.squad.map.map_id)))
-	_egg_next_t[pid] = now + float(egg.get("every_s", 2.0))
-	if not egg_ready(egg, state_with_eggs(brain)):
+	var every: float = float(egg.get("every_s", 2.0))
+	var nxt: float = float(_egg_next_t.get(pid, -INF))
+	if now < nxt and nxt - now <= every * 2.0:
+		return   # (a static clock: a new match's squad time starts over, so a stale far-off value never blocks it)
+	_egg_next_t[pid] = now + every
+	var st: Dictionary = state_with_eggs(brain)
+	if not egg_ready(egg, st):
 		return
 	var quiet: bool = brain.in_break()
 	if egg_value(egg, quiet, brain.perception.pressure, brain.perception.nearest_d) <= 0.0:
 		return
 	if not quiet and brain.trainer != null and brain.trainer.owns_round():
 		return   # the trainer owns this round: egg work in the break (or the crawler break)
+	if not egg_full(egg, st) and RoundManager.state == RoundManager.State.ROUND:
+		return   # before Ironhide: the round breaks only
+	if OS.has_environment("EGG_DEBUG"):
+		print("[egg debug] t=%.0f r%d trying a pick (quiet %s, pressure %.2f)" % [now, RoundManager.current_round, str(quiet), brain.perception.pressure])
 	var pick: Dictionary = brain.squad.ee.pick_for(brain, {}, true)
 	if pick.is_empty():
+		if OS.has_environment("EGG_DEBUG"):
+			var why: PackedStringArray = []
+			for qid: StringName in QuestManager.quest_ids():
+				for step: Variant in QuestManager.steps_of(qid):
+					var sid: StringName = StringName(str((step as Dictionary)["id"]))
+					if QuestManager.is_active(qid, sid):
+						var r: Dictionary = brain.squad.ee.try_brain(brain, qid, sid, BotEECatalog.task_def(step as Dictionary), true, null)
+						why.append("%s: %s %s" % [sid, str(r.get("code", "")), str(r.get("reason", ""))])
+			print("[egg debug] t=%.0f r%d no pick: %s | quiet %s state %s" % [now, RoundManager.current_round, ", ".join(why), str(quiet), str(RoundManager.state)])
 		return
 	brain.squad.ee.start_on(brain, pick["qid"], pick["sid"], pick["t"], true, "agent", null, str(pick["as"]))
 

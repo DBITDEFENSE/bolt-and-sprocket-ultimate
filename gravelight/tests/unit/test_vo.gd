@@ -267,6 +267,8 @@ func test_story_beat_lines_exist_and_are_tier_two_map_lines() -> void:
 
 
 func test_story_beat_waits_for_the_radio_then_plays() -> void:
+	var map_was: StringName = GameState.map_id
+	GameState.map_id = &"map00_crossroads"   # (Map 0 lines draw on Map 0 only)
 	assert_true(GLVO.play(&"FAS_M0_NOTES_01"))
 	GLVO.say_story_beat(0, "M0_EGG_NOTES_DONE", 0.5)
 	assert_eq(GLVO.pending_story_beats().size(), 1)
@@ -282,3 +284,4 @@ func test_story_beat_waits_for_the_radio_then_plays() -> void:
 	GLVO.say_story_beat(0, "M0_EGG_NOTES_DONE", 0.0, first)
 	assert_eq(GLVO.pending_story_beats().size(), 1, "solo without bots: the same survivor carries the second line")
 	assert_eq(GLVO.pending_story_beats()[0]["pid"], first)
+	GameState.map_id = map_was

@@ -139,6 +139,8 @@ func _log(s: String) -> void:
 
 ## The utility input (actions.json ee_task): 0 = nothing to do now.
 func value() -> float:
+	if brain != null and brain.is_player_bot and active() and not AgentPlan.egg_may_work_now(brain):
+		return 0.0   # T-086: the agent's egg work keeps to the breaks until its plan says it can afford a round
 	if not active() or str(task.get("paused", "")) != "":
 		return 0.0
 	var d: String = str(_plan.get("do", ""))

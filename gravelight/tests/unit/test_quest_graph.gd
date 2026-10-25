@@ -81,6 +81,8 @@ func _beat_cats() -> Array:
 func test_map00_radio_beats_fire_in_order() -> void:
 	QuestManager.clear()
 	GameState.flags.clear()
+	var map_was: StringName = GameState.map_id
+	GameState.map_id = &"map00_crossroads"   # (the Map 0 lines only draw on Map 0; an earlier test may have left Kaltenbrunn set)
 	GLVO.always_pass_chance = true
 	GLVO.reset_match()
 	var qid: StringName = QuestManager.load_quest("res://data/gravelight/quests/map00_radio.json")
@@ -147,6 +149,7 @@ func test_map00_radio_beats_fire_in_order() -> void:
 	assert_true(_beat_cats().has("M0_EGG_TONICS"))
 	GLVO.always_pass_chance = false
 	GLVO.reset_match()
+	GameState.map_id = map_was
 	for p: Variant in PerkManager.owned(1).duplicate():
 		PerkManager.remove(1, StringName(str(p)))
 	QuestManager.clear()
