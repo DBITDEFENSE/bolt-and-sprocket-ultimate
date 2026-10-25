@@ -57,7 +57,7 @@ All values are in `data/player.json`.
 | Slots | 2 weapons (3 with Packmule Porter), melee, lethal (frags, max 4), tactical |
 | Start | 500 Scrip, M1911, trench knife, 2 frags |
 | Down (solo) | Game over unless you have Second Wind (self-revive, 3 per game; other perks are kept) |
-| Down (co-op) | Revive takes 4 s (2 s with Second Wind). Bleed-out at 45 s. All perks are lost on down. |
+| Down (co-op) | Revive takes 4 s (about 1.7 s with Second Wind, ×2.3 since T-082). Bleed-out at 45 s. All perks are lost on down. |
 
 **Character traits** (turned off by the *Classic Rules* toggle):
 
@@ -122,16 +122,17 @@ Cap **6** (T-081; it was 4, and Classic Rules keeps 4), +1 permanent slot on Map
 
 | Perk | Cost | Effect |
 |---|---|---|
-| Ironhide Stout | 2500 | Max health 250 (survive 5 hits) |
-| Second Wind Schnapps | 500 solo / 1500 co-op | Solo: self-revive, 3 uses, then the machine leaves. Co-op: 2× revive speed. |
-| Trigger Tonic | 3000 | Reload 50% faster |
-| Twin Barrel Bitters | 2000 | Fire rate +33% |
-| Marathon Malt | 2000 | Unlimited sprint, +7% move speed |
-| Hawkeye Brandy | 1500 | Half sway, 25% faster ADS, +25% headshot damage |
-| Packmule Porter | 4000 | 3rd weapon slot (you lose the 3rd weapon when downed) |
-| Blastproof Bock | 2000 | Immune to your own explosives and to fall damage. Sliding releases a shockwave (400 dmg, 3 m). |
+| Ironhide Stout | 2500 | Max health 275 (survive 6 hits of 50) |
+| Second Wind Schnapps | 500 solo / 1500 co-op | Solo: self-revive, 3 uses, then the machine leaves. Co-op: ×2.3 revive speed. |
+| Trigger Tonic | 3000 | Reload in 45% of the time |
+| Twin Barrel Bitters | 2000 | Fire rate +50% |
+| Marathon Malt | 2000 | Unlimited sprint, +10% move speed |
+| Hawkeye Brandy | 1500 | Sway ×0.45, 30% faster ADS, +40% headshot damage |
+| Packmule Porter | 4000 | 3rd weapon slot (you lose the 3rd weapon when downed), +1 grenade carried |
+| Blastproof Bock | 2000 | Immune to your own explosives and to fall damage. Sliding releases a shockwave (450 dmg, 3.3 m). |
+| Overclock Cordial | 2500 | Reloading an emptier magazine lets off a static burst (WEAPONS.md §20.2) |
 
-Machines hum, play their jingle now and then when you're near (on a per-machine cooldown), and show their bottle cap in the HUD when owned.
+Base measures as of T-082 (a ~10–15% buff over Update 03; tiers II / III in PERKS_LORE.md §1). Machines hum, play their jingle now and then when you're near (on a per-machine cooldown), and show their bottle cap in the HUD when owned; the pause menu's LOADOUT tab lists all nine with the ones you hold in colour.
 
 **Upgrades (T-075):** every tonic has tiers **II** and **III** with a new effect each (e.g. Ironhide III: 2 s of iron
 skin after a hit that leaves you under 30%; Marathon III: sidestep a swipe while sprinting; Hawkeye II: headshot kills

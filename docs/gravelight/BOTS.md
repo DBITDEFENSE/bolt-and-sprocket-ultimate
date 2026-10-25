@@ -8,7 +8,7 @@ Crucible, revive you and each other. Code: `gravelight/bots/`. Tuning: `data/gra
 ## Spawn kit (2026-10-21)
 
 Every bot spawns with a **Thompson** in hand (the start pistol stays in slot 1), **Ironhide Stout** (the
-Juggernog equivalent: 250 health) and **Second Wind Schnapps** (the Quick Revive equivalent: 2× revive speed).
+Juggernog equivalent: 275 health since T-082) and **Second Wind Schnapps** (the Quick Revive equivalent: ×2.3 revive speed).
 The kit is free and ignores the power rule. Co-op rules still take every perk on going down, so the kit perks come
 back when the bot is revived; after a bleed-out respawn the Thompson comes back too (`spawn_kit.restore_after_down`).
 A campaign arrival with a full loadout is never overwritten. Bots can still buy perks up to the perk cap

@@ -852,7 +852,7 @@ A single-shot signal pistol, a new tier-B crate tactical in the Morgenrot pool (
 
 ### 23.3 PAUL'S LAST ROUND (`pauls_last_round`), Paul's drop (HB2, Map 1)
 A battered Ironhide bottle at his body, **one per player**, personal (`HOMAGE_BOSSES.md` §13 D7). Hold Use to drink.
-- **Without Ironhide:** the Ironhide Stout effect (250 max health) **for free, without using a perk slot**, until you are downed.
+- **Without Ironhide:** the Ironhide Stout effect (275 max health since T-082) **for free, without using a perk slot**, until you are downed.
 - **With Ironhide:** a one-time **+100 overshield** that takes damage first and doesn't regenerate.
 - It isn't a perk: it doesn't count toward the cap, Second Wind doesn't restore it, and Vendelin's Service Call can't refill it.
 - In data it is a power-up-like pickup with `kind: "bottle"`.
