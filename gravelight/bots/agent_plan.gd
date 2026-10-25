@@ -12,6 +12,13 @@ extends RefCounted
 ## anyway (ammo, an ammo box, upgraded ammo, the boards, the power switch). With every step done (or no plan for
 ## the map) the ordinary economy runs. "train_at" lists the map's loops the trainer prefers, best first
 ## (BotTrainer: plan_bonus on the loop score). The pure parts are unit-tested (test_player_bot.gd).
+## The easter egg (T-086): a separate "egg" block per map ({quest, after: [steps that must be done first],
+## from_round, max_pressure, quiet_m, value, every_s}). It never sits in the spend order: whenever its moment is
+## there (egg_ready) and the agent is quiet (egg_value > 0: a break, the crawler break, or nothing near in the
+## first rounds), tick_egg gives the agent the next open step through the squad's BotEEHub (the same planners
+## and executors the squad bots use; the agent is the player, so it may make the commit), and the brain's
+## ee_task action carries it out between the fights. Progress is kept by the QuestManager, so a task paused for
+## a round resumes in the next quiet moment.
 
 ## The last unfiltered candidates' labels (the soak's --trace).
 static var last_raw: PackedStringArray = PackedStringArray()
@@ -75,6 +82,86 @@ static func allows(step: Dictionary, kind: String, id: String) -> bool:
 		"crucible":
 			return step.has("crucible")
 	return false
+
+
+# ---------------------------------------------------------------- the easter egg (T-086)
+
+static var _egg_next_t: Dictionary = {}   # pid -> squad time of the next egg try
+
+
+## The map's "egg" block ({} none).
+static func egg_block(map_key: String) -> Dictionary:
+	return plan_for(map_key).get("egg", {}) as Dictionary
+
+
+## Pure: is the egg block's moment here? `st` is the plan state plus "eggs": {quest id: complete}.
+static func egg_ready(egg: Dictionary, st: Dictionary) -> bool:
+	if egg.is_empty() or str(egg.get("quest", "")) == "":
+		return false
+	if bool((st.get("eggs", {}) as Dictionary).get(str(egg["quest"]), false)):
+		return false
+	if int(egg.get("from_round", 0)) > int(st.get("round", 0)):
+		return false
+	for s: Variant in egg.get("after", []):
+		if not step_done(s as Dictionary, st):
+			return false
+	return true
+
+
+## Pure: the value of starting egg work now (0 = not now): in a quiet moment (a break, the crawler break) or
+## with nothing within quiet_m, and the threat pressure under max_pressure.
+static func egg_value(egg: Dictionary, quiet: bool, pressure: float, nearest_d: float) -> float:
+	if not quiet and nearest_d < float(egg.get("quiet_m", 14.0)):
+		return 0.0
+	if pressure > float(egg.get("max_pressure", 0.3)):
+		return 0.0
+	return float(egg.get("value", 0.85))
+
+
+## The plan state with the loaded quests' completion.
+static func state_with_eggs(brain: BotBrain) -> Dictionary:
+	var st: Dictionary = state_of(brain)
+	var eggs: Dictionary = {}
+	for qid: StringName in QuestManager.quest_ids():
+		eggs[String(qid)] = QuestManager.is_complete(qid)
+	st["eggs"] = eggs
+	return st
+
+
+## Is there egg work to do (the block's moment is here and the hub has an open step for the agent)? The crawler
+## break holds the round open for it (AgentCrawler.errands_pending).
+static func egg_pending(brain: BotBrain) -> bool:
+	if brain.ee == null or brain.squad == null or brain.squad.ee == null or brain.squad.map == null:
+		return false
+	var egg: Dictionary = egg_block(TrainingRoute.map_key_of(String(brain.squad.map.map_id)))
+	if not egg_ready(egg, state_with_eggs(brain)):
+		return false
+	return brain.ee.active() or not brain.squad.ee.pick_for(brain, {}, true).is_empty()
+
+
+## Every every_s: gives the agent the next open egg step when its moment is there (PlayerBot calls this).
+static func tick_egg(brain: BotBrain) -> void:
+	if brain == null or brain.ee == null or brain.squad == null or brain.squad.ee == null or brain.squad.map == null:
+		return
+	if brain.ee.active() or brain.player.downed or brain.player.spectating:
+		return
+	var pid: int = brain.player.player_id
+	var now: float = brain.squad.time()
+	if now < float(_egg_next_t.get(pid, -INF)):
+		return
+	var egg: Dictionary = egg_block(TrainingRoute.map_key_of(String(brain.squad.map.map_id)))
+	_egg_next_t[pid] = now + float(egg.get("every_s", 2.0))
+	if not egg_ready(egg, state_with_eggs(brain)):
+		return
+	var quiet: bool = brain.in_break()
+	if egg_value(egg, quiet, brain.perception.pressure, brain.perception.nearest_d) <= 0.0:
+		return
+	if not quiet and brain.trainer != null and brain.trainer.owns_round():
+		return   # the trainer owns this round: egg work in the break (or the crawler break)
+	var pick: Dictionary = brain.squad.ee.pick_for(brain, {}, true)
+	if pick.is_empty():
+		return
+	brain.squad.ee.start_on(brain, pick["qid"], pick["sid"], pick["t"], true, "agent", null, str(pick["as"]))
 
 
 ## The agent's state for the pure rules.

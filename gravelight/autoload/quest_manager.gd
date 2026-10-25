@@ -27,6 +27,11 @@ var _last_kill_weapon: StringName = &""
 var _last_kill_by: int = 0
 var _holdouts: Dictionary = {}    # "qid/sid" -> runtime dict
 var _vo_originals: Dictionary = {} # line id -> original text (code substitutions are per match)
+# Story beats (T-086): the context the running actions see ({sid, n: items / inputs so far, by: player id}) and
+# the actions waiting for their moment ("after" seconds, or "on_vo" a line's start).
+var _ctx: Dictionary = {}
+var _pending: Array[Dictionary] = []
+var _t: float = 0.0
 
 
 func _ready() -> void:
@@ -35,6 +40,7 @@ func _ready() -> void:
 	GLBus.enemy_killed_at.connect(_on_enemy_killed_at)
 	GLBus.buildable_completed.connect(_on_buildable_completed)
 	GLBus.item_picked_up.connect(_on_item_picked_up)
+	GLBus.vo_line_started.connect(_on_vo_started)
 
 
 func _on_match_started(_m: StringName) -> void:
@@ -60,6 +66,8 @@ func clear() -> void:
 	_random.clear()
 	checkpoints.clear()
 	_holdouts.clear()
+	_pending.clear()
+	_ctx = {}
 	_restore_vo()
 
 
@@ -264,7 +272,8 @@ func take_item(item_id: StringName) -> void:
 # ---------------------------------------------------------------- inputs from the world
 
 ## A tagged item was picked up (notes, radios heard, cylinders...). Returns true if a step used it.
-func collect(tag: StringName, item_id: StringName) -> bool:
+## `by_player`: who took it (0 unknown): the step's on_item beats can give that survivor the line (T-086).
+func collect(tag: StringName, item_id: StringName, by_player: int = 0) -> bool:
 	if not Net.is_authority():
 		return false
 	var used: bool = false
@@ -279,9 +288,11 @@ func collect(tag: StringName, item_id: StringName) -> bool:
 			got.append(item_id)
 			st["progress"] = got
 			used = true
+			_ctx = {"sid": StringName(step["id"]), "n": got.size(), "by": by_player}
 			_run_actions(qid, step.get("on_item", []))
 			if got.size() >= int(step["params"]["count"]):
 				_complete(qid, StringName(step["id"]))
+			_ctx = {}
 	return used
 
 
@@ -305,11 +316,15 @@ func submit(target: StringName, value: String) -> Dictionary:
 				if idx >= expected.size():
 					_complete(qid, sid)
 					return {"result": "done", "index": idx}
+				_ctx = {"sid": sid, "n": idx, "by": 0}
 				_run_actions(qid, step.get("on_input_ok", []))
+				_ctx = {}
 				return {"result": "ok", "index": idx}
 			st["progress"] = 0
 			var reset: Dictionary = step.get("reset", {})
+			_ctx = {"sid": sid, "n": idx, "by": 0}
 			_run_actions(qid, reset.get("actions", []))
+			_ctx = {}
 			sequence_reset.emit(qid, sid)
 			GLBus.quest_step_failed.emit(qid, sid, &"wrong_input")
 			return {"result": "wrong", "index": 0}
@@ -479,6 +494,8 @@ func _end_holdout(key: String) -> void:
 func _process(delta: float) -> void:
 	if not Net.is_authority():
 		return
+	_t += delta
+	_tick_pending()
 	for key: Variant in _holdouts.keys():
 		var h: Dictionary = _holdouts[key]
 		var qid: StringName = h["qid"]
@@ -594,7 +611,9 @@ func _refresh(qid: StringName) -> void:
 			if ready:
 				_state[qid][sid]["status"] = "active"
 				changed = true
+				_ctx = {"sid": sid, "n": 0, "by": 0}
 				_run_actions(qid, step.get("on_start", []))
+				_ctx = {}
 				if str(step["type"]) == "flag" and GameState.has_flag(StringName(step["params"]["flag"])):
 					_complete(qid, sid)
 				elif str(step["type"]) == "cutscene":
@@ -622,7 +641,9 @@ func _complete(qid: StringName, sid: StringName) -> void:
 		return
 	_state[qid][sid]["status"] = "complete"
 	var step: Dictionary = _step(qid, sid)
+	_ctx = {"sid": sid, "n": -1, "by": 0}
 	_run_actions(qid, step.get("on_complete", []))
+	_ctx = {}
 	GLBus.quest_step_completed.emit(qid, sid)
 	_refresh(qid)
 	if is_complete(qid):
@@ -643,66 +664,153 @@ func _step(qid: StringName, sid: StringName) -> Dictionary:
 ## {"save_point": true} {"unlock_map": id} {"xp": n} {"archive": id} {"item": id} {"take_item": id}
 ## {"banner": text} {"grant_all_perks": true} {"egg_reward": key} {"profile_list": [key, value]}
 ## {"summon_boss": [enemy_id, x, y, z]} {"shake": strength}
+## Story beats (T-086, EASTER_EGGS.md 1.2): {"vo_squad": category} one random standing survivor says it, never
+## over the radio / the Operator (with "exclude_last": true someone other than the last squad speaker);
+## {"vo_actor": category} the survivor who did it (collect's by_player), else the squad; {"hold": [category, s]}
+## keeps that survivor's category quiet for s seconds (the generic INTEL line under the note's own words);
+## {"vo_retire": [ids]} scheduled lines the story moved past. Any action also takes the filters / timers
+## "at_n": n (only when the step's count is n: the first note, the second lock), "while_active": step id (dropped
+## once that step is complete), "after": seconds (runs that much later) and "on_vo": line id (runs when that line
+## starts, plus "after"; with "after_end" that much after it ends; "expire_s" runs it anyway when the line never
+## comes, default never).
 func _run_actions(qid: StringName, actions: Array) -> void:
 	for a: Dictionary in actions:
-		if Net.replicating():
-			var pres: Dictionary = client_subset(a)
-			if not pres.is_empty():
-				Net.mirror(Net.session, &"_quest_actions", [pres])
-		if a.has("flag"):
-			GameState.set_flag(StringName(a["flag"]), true)
-		if a.has("vo"):
-			GLVO.play(StringName(a["vo"]))
-		if a.has("vo_list"):
-			for id: Variant in a["vo_list"]:
-				GLVO.play(StringName(str(id)))
-		if a.has("vo_category"):
-			var vc: Array = a["vo_category"]
-			GLVO.play_category(StringName(str(vc[0])), str(vc[1]), 1.0)
-		if a.has("vo_player"):
-			GLVO.say_player(str(a["vo_player"]), 1.0)
-		if a.has("save_point"):
-			if not checkpoints.has(qid):
-				checkpoints[qid] = []
-			(checkpoints[qid] as Array).append(qid)
-		if a.has("unlock_map"):
-			ProfileSave.unlock_map(StringName(a["unlock_map"]))
-		if a.has("xp"):
-			ProfileSave.add_xp(int(a["xp"]))
-		if a.has("archive"):
-			ProfileSave.add_intel(StringName(a["archive"]))
-		if a.has("item"):
-			give_item(StringName(a["item"]))
-		if a.has("take_item"):
-			take_item(StringName(a["take_item"]))
-		if a.has("banner"):
-			var hud: Node = get_tree().get_first_node_in_group(&"hud")
-			if hud != null:
-				hud.call("show_banner", str(a["banner"]), 3.0)
-		if a.has("grant_all_perks"):
+		if a.has("at_n") and int(a["at_n"]) != int(_ctx.get("n", -1)):
+			continue
+		if a.has("while_active") and not is_active(qid, StringName(str(a["while_active"]))):
+			continue
+		if a.has("after") or a.has("on_vo"):
+			var when: Dictionary = {"qid": qid, "a": a, "by": int(_ctx.get("by", 0)), "due": INF, "expire": INF}
+			if a.has("on_vo"):
+				when["on_vo"] = str(a["on_vo"])
+				if a.has("expire_s"):
+					when["expire"] = _t + float(a["expire_s"])
+				# the same reaction scheduled again (a lock made twice after a reset) replaces the one still waiting
+				for i: int in range(_pending.size() - 1, -1, -1):
+					var o: Dictionary = _pending[i]
+					if o["qid"] == qid and str(o.get("on_vo", "")) == str(a["on_vo"]) and (o["a"] as Dictionary).hash() == a.hash():
+						_pending.remove_at(i)
+			else:
+				when["due"] = _t + float(a["after"])
+			_pending.append(when)
+			continue
+		_do_action(qid, a, int(_ctx.get("by", 0)))
+
+
+## The pending beats: an "after" action when its time comes, an "on_vo" action once its line started (or expired).
+func _tick_pending() -> void:
+	if _pending.is_empty():
+		return
+	var keep: Array[Dictionary] = []
+	for w: Dictionary in _pending:
+		var due: float = float(w["due"])
+		if due == INF and _t >= float(w["expire"]):
+			due = _t
+		if _t < due:
+			keep.append(w)
+			continue
+		var a: Dictionary = w["a"]
+		if a.has("while_active") and not is_active(w["qid"], StringName(str(a["while_active"]))):
+			continue
+		_do_action(w["qid"], a, int(w["by"]))
+	_pending = keep
+
+
+func _on_vo_started(line_id: StringName, _speaker: StringName, _text: String, dur: float) -> void:
+	for w: Dictionary in _pending:
+		if str(w.get("on_vo", "")) == String(line_id) and float(w["due"]) == INF:
+			var a: Dictionary = w["a"]
+			w["due"] = _t + float(a.get("after", 0.0)) + (dur + float(a["after_end"]) if a.has("after_end") else 0.0)
+
+
+## Beats waiting for their moment (tests): [{qid, a, by, due, expire, on_vo?}].
+func pending_beats() -> Array[Dictionary]:
+	return _pending
+
+
+## Tests: advance the beat clock (the pending "after" / "on_vo" actions).
+func advance(delta: float) -> void:
+	_t += delta
+	_tick_pending()
+
+
+func _do_action(qid: StringName, a: Dictionary, by: int) -> void:
+	if Net.replicating():
+		var pres: Dictionary = client_subset(a)
+		if not pres.is_empty():
+			if pres.has("vo_actor"):
+				pres["by"] = by
+			Net.mirror(Net.session, &"_quest_actions", [pres])
+	if a.has("flag"):
+		GameState.set_flag(StringName(a["flag"]), true)
+	if a.has("vo"):
+		GLVO.play(StringName(a["vo"]))
+	if a.has("vo_list"):
+		for id: Variant in a["vo_list"]:
+			GLVO.play(StringName(str(id)))
+	if a.has("vo_category"):
+		var vc: Array = a["vo_category"]
+		GLVO.play_category(StringName(str(vc[0])), str(vc[1]), 1.0)
+	if a.has("vo_player"):
+		GLVO.say_player(str(a["vo_player"]), 1.0)
+	if a.has("save_point"):
+		if not checkpoints.has(qid):
+			checkpoints[qid] = []
+		(checkpoints[qid] as Array).append(qid)
+	if a.has("unlock_map"):
+		ProfileSave.unlock_map(StringName(a["unlock_map"]))
+	if a.has("xp"):
+		ProfileSave.add_xp(int(a["xp"]))
+	if a.has("archive"):
+		ProfileSave.add_intel(StringName(a["archive"]))
+	if a.has("item"):
+		give_item(StringName(a["item"]))
+	if a.has("take_item"):
+		take_item(StringName(a["take_item"]))
+	if a.has("banner"):
+		var hud: Node = get_tree().get_first_node_in_group(&"hud")
+		if hud != null:
+			hud.call("show_banner", str(a["banner"]), 3.0)
+	if a.has("grant_all_perks"):
+		for pid: int in GameState.player_ids:
+			PerkManager.grant_all(pid)
+	if a.has("egg_reward"):
+		if not ProfileSave.profile.has("egg_rewards"):
+			ProfileSave.profile["egg_rewards"] = {}
+		ProfileSave.profile["egg_rewards"][str(a["egg_reward"])] = true
+		if str(a["egg_reward"]) == "map01_perk_slot_5":
 			for pid: int in GameState.player_ids:
-				PerkManager.grant_all(pid)
-		if a.has("egg_reward"):
-			if not ProfileSave.profile.has("egg_rewards"):
-				ProfileSave.profile["egg_rewards"] = {}
-			ProfileSave.profile["egg_rewards"][str(a["egg_reward"])] = true
-			if str(a["egg_reward"]) == "map01_perk_slot_5":
-				for pid: int in GameState.player_ids:
-					PerkManager._bonus_slots[pid] = 1
-			ProfileSave.save_profile()
-		if a.has("profile_list"):
-			var pl: Array = a["profile_list"]
-			var list: Array = ProfileSave.profile.get(str(pl[0]), [])
-			if not list.has(pl[1]):
-				list.append(pl[1])
-			ProfileSave.profile[str(pl[0])] = list
-			ProfileSave.save_profile()
-		if a.has("summon_boss"):
-			var sb: Array = a["summon_boss"]
-			summon_boss(StringName(str(sb[0])), Vector3(float(sb[1]), float(sb[2]), float(sb[3])))
-		if a.has("shake"):
-			for n: Node in get_tree().get_nodes_in_group(&"players"):
-				n.set("_shake", float(a["shake"]))
+				PerkManager._bonus_slots[pid] = 1
+		ProfileSave.save_profile()
+	if a.has("profile_list"):
+		var pl: Array = a["profile_list"]
+		var list: Array = ProfileSave.profile.get(str(pl[0]), [])
+		if not list.has(pl[1]):
+			list.append(pl[1])
+		ProfileSave.profile[str(pl[0])] = list
+		ProfileSave.save_profile()
+	if a.has("summon_boss"):
+		var sb: Array = a["summon_boss"]
+		summon_boss(StringName(str(sb[0])), Vector3(float(sb[1]), float(sb[2]), float(sb[3])))
+	if a.has("shake"):
+		for n: Node in get_tree().get_nodes_in_group(&"players"):
+			n.set("_shake", float(a["shake"]))
+	if a.has("vo_squad") or a.has("vo_actor"):
+		_say_beat(a, by)
+	if a.has("vo_retire"):
+		for id2: Variant in a["vo_retire"]:
+			GLVO.retire(StringName(str(id2)))
+
+
+## A squad story beat on this peer: the actor (by) or one random survivor, after the story channel is quiet.
+func _say_beat(a: Dictionary, by: int) -> void:
+	var cat: String = str(a.get("vo_actor", a.get("vo_squad", "")))
+	var pid: int = by if a.has("vo_actor") and by > 0 else 0
+	var exclude: int = GLVO.last_said_pid if bool(a.get("exclude_last", false)) else -1
+	if a.has("hold") and pid > 0:
+		var h: Array = a["hold"]
+		GLVO.hold_category(GLVO.speaker_of(pid), str(h[0]), float(h[1]))
+	GLVO.say_story_beat(pid, cat, float(a.get("delay", 0.0)), exclude)
 
 
 # ---------------------------------------------------------------- debug
@@ -772,7 +880,8 @@ func predict_submit(target: StringName, value: String) -> Dictionary:
 ## The parts of an action every player sees or keeps: lines picked per peer, banners, shakes, profile rewards.
 static func client_subset(a: Dictionary) -> Dictionary:
 	var out: Dictionary = {}
-	for k: String in ["vo_category", "vo_player", "unlock_map", "xp", "archive", "egg_reward", "profile_list", "banner", "shake"]:
+	for k: String in ["vo_category", "vo_player", "unlock_map", "xp", "archive", "egg_reward", "profile_list", "banner", "shake",
+			"vo_squad", "vo_actor", "exclude_last", "hold", "delay", "vo_retire"]:
 		if a.has(k):
 			out[k] = a[k]
 	return out
@@ -810,6 +919,11 @@ func run_client_actions(a: Dictionary) -> void:
 	if a.has("shake"):
 		for n: Node in get_tree().get_nodes_in_group(&"players"):
 			n.set("_shake", float(a["shake"]))
+	if a.has("vo_squad") or a.has("vo_actor"):
+		_say_beat(a, int(a.get("by", 0)))
+	if a.has("vo_retire"):
+		for id2: Variant in a["vo_retire"]:
+			GLVO.retire(StringName(str(id2)))
 
 
 # ---------------------------------------------------------------- validation
@@ -861,9 +975,9 @@ static func referenced_vo(def: Variant) -> PackedStringArray:
 	if def is Dictionary:
 		for k: Variant in (def as Dictionary).keys():
 			var v: Variant = def[k]
-			if str(k) == "vo" and v is String:
+			if (str(k) == "vo" or str(k) == "on_vo") and v is String:
 				out.append(v)
-			elif str(k) == "vo_list" and v is Array:
+			elif (str(k) == "vo_list" or str(k) == "vo_retire") and v is Array:
 				for id: Variant in v:
 					out.append(str(id))
 			else:

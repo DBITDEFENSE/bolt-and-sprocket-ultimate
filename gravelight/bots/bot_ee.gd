@@ -213,7 +213,8 @@ func _pause_state() -> Dictionary:
 			left = -1
 	var away: bool = false
 	var t: Dictionary = task["def"]
-	if bool(t.get("final", false)) and not bool(task.get("ordered", false)) and str(task["type"]) != "escort":
+	var wait_over: bool = hub != null and hub.final_wait_over(task["qid"], task["sid"])   # T-086
+	if bool(t.get("final", false)) and not bool(task.get("ordered", false)) and str(task["type"]) != "escort" and not wait_over:
 		var a: Vector3 = anchor()
 		var h: Player = brain.squad.human()
 		if a != Vector3.INF and h != null and is_instance_valid(h):
@@ -360,6 +361,7 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 			w["has_input"] = not (t.get("input", {}) as Dictionary).is_empty()
 			w["expected"] = QuestManager.sequence_inputs(qid, sid) if w["has_input"] else []
 			w["progress"] = int(prog) if prog != null and not prog is Array else 0
+			w["commit_ok"] = _commit_ok()
 			w["ready"] = str(t.get("ready", "")) == "" or QuestManager.interact_ready(StringName(str(t["ready"])))
 			var nd: Interactable = w["node"] as Interactable
 			w["usable"] = nd != null and nd.can_interact(player)
@@ -513,7 +515,7 @@ static func plan_inputs(t: Dictionary, w: Dictionary) -> Dictionary:
 		return {"do": "fail", "code": "info"}
 	if idx >= expected.size():
 		return {"do": "done"}
-	if BotEECatalog.commit_blocked(t, idx, expected.size()):
+	if BotEECatalog.commit_blocked(t, idx, expected.size()) and not bool(w.get("commit_ok", false)):
 		return {"do": "handoff", "node": n}
 	var value: String = str(expected[idx])
 	if not BotEECatalog.safe_input(expected, idx, value, false):
@@ -689,7 +691,10 @@ func _execute(delta: float) -> void:
 		"escort", "handoff", "wait":
 			if d == "handoff" and not bool((task["said"] as Dictionary).get("handoff", false)):
 				(task["said"] as Dictionary)["handoff"] = true
+				task["handoff_t"] = _now()   # T-086: Full Partner waits full_commit_after_s from here, then commits
 				_say("EE_HANDOFF", true, n.global_position + Vector3.UP if n != null else Vector3.INF)
+			if d == "handoff" and _commit_ok():
+				_replan = true   # the wait is over: the next plan makes the commit
 			_escort(delta)
 		"goto", "guard":
 			if d == "goto":
@@ -790,9 +795,12 @@ func _do_input(n: Node3D, delta: float) -> void:
 	var prog: Variant = QuestManager.progress(task["qid"], task["sid"])
 	var idx: int = int(prog) if prog != null and not prog is Array else 0
 	var value: String = str(_plan.get("value", ""))
-	if idx != int(_plan.get("index", -1)) or not BotEECatalog.safe_input(expected, idx, value, false) or BotEECatalog.commit_blocked(task["def"], idx, expected.size()):
+	if idx != int(_plan.get("index", -1)) or not BotEECatalog.safe_input(expected, idx, value, false) or (BotEECatalog.commit_blocked(task["def"], idx, expected.size()) and not _commit_ok()):
 		_replan = true
 		return
+	if BotEECatalog.commit_blocked(task["def"], idx, expected.size()) and not bool((task["said"] as Dictionary).get("commit_self", false)):
+		(task["said"] as Dictionary)["commit_self"] = true
+		_say("EE_COMMIT_SELF", true)   # T-086: the player didn't come: the bot makes the last input itself
 	var inp: Dictionary = (task["def"] as Dictionary).get("input", {})
 	var method: String = str(inp.get("method", "submit"))
 	var res: String = ""
@@ -1125,7 +1133,19 @@ func _announce_start() -> void:
 
 func _progress_line(n: Node3D) -> void:
 	var t: Dictionary = task["def"]
+	# T-086: a step whose data gives the one who did it a story line (on_item "vo_actor") speaks for itself
+	for a: Variant in QuestManager.step_def(task["qid"], task["sid"]).get("on_item", []):
+		if (a as Dictionary).has("vo_actor"):
+			return
 	_say("EE_PROGRESS", false, n.global_position + Vector3.UP * 1.0 if n != null and is_instance_valid(n) else Vector3.INF, str(t.get("ping", "")))
+
+
+## T-086: may this bot make a commit-rule input now? The agent always; Full Partner after the hand-off wait.
+func _commit_ok() -> bool:
+	if not active():
+		return false
+	var waited: float = (_now() - float(task["handoff_t"])) if task.has("handoff_t") else -1.0
+	return BotEECatalog.commit_open(str(task.get("source", "")), waited, brain != null and brain.is_player_bot, _cfg())
 
 
 static func _flat(a: Vector3, b: Vector3) -> float:

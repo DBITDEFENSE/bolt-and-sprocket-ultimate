@@ -81,13 +81,13 @@ func test_the_risky_and_commit_steps_are_marked() -> void:
 # ------------------------------------------------------------------ modes
 
 func test_mode_from_settings() -> void:
-	assert_eq(BotEECatalog.mode_of({}), "ask", "When Asked by default")
-	assert_eq(BotEECatalog.mode_of({"bot_ee_help": "full"}), "full")
+	assert_eq(BotEECatalog.mode_of({}), "full", "Full Partner by default (T-086)")
+	assert_eq(BotEECatalog.mode_of({"bot_ee_help": "ask"}), "ask")
 	assert_eq(BotEECatalog.mode_of({"bot_ee_help": "off"}), "off")
-	assert_eq(BotEECatalog.mode_of({"bot_ee_help": "nonsense"}), "ask")
+	assert_eq(BotEECatalog.mode_of({"bot_ee_help": "nonsense"}), "full")
 	# the shipped default, not the player's saved settings (a fresh settings node holds only the defaults)
 	var fresh: Node = (load("res://gravelight/autoload/settings.gd") as GDScript).new()
-	assert_eq(fresh.get("values").get("bot_ee_help", ""), "ask", "the setting's default")
+	assert_eq(fresh.get("values").get("bot_ee_help", ""), "full", "the setting's default")
 	fresh.free()
 
 
@@ -446,3 +446,55 @@ func test_the_ee_action_wins_when_calm_and_yields_to_revives() -> void:
 	assert_ne(best.call(_uctx({"ee_task": 0.0})), "ee_task", "paused / no task: it doesn't")
 	assert_eq(best.call(_uctx({"ee_task": 0.8, "revive_mine": 1.0, "revive_bleed": 0.5})), "revive", "a revive comes first")
 	assert_eq(best.call(_uctx({"ee_task": 0.8, "buy_task": 0.6})), "ee_task", "the egg task over casual shopping")
+
+
+# ------------------------------------------------------------------ T-086: the bots finish the egg on their own
+
+func test_commit_open_rules() -> void:
+	var c: Dictionary = {"full_commit_after_s": 45.0}
+	assert_true(BotEECatalog.commit_open("agent", -1.0, true, c), "the bot-mode agent is the player: it commits")
+	assert_false(BotEECatalog.commit_open("ask", 500.0, false, c), "an assigned bot never takes the commit")
+	assert_false(BotEECatalog.commit_open("full", -1.0, false, c), "Full Partner before the hand-off: no")
+	assert_false(BotEECatalog.commit_open("full", 20.0, false, c), "Full Partner, the player still has time")
+	assert_true(BotEECatalog.commit_open("full", 45.0, false, c), "Full Partner after the wait: it turns the last one")
+	assert_false(BotEECatalog.final_wait_over(30.0, {"full_final_wait_s": 60.0}))
+	assert_true(BotEECatalog.final_wait_over(60.0, {"full_final_wait_s": 60.0}))
+	assert_eq(BotEECatalog.cant_category("commit_self"), "EE_COMMIT_SELF")
+
+
+func test_radio_full_partner_commits_once_the_wait_is_over() -> void:
+	var qid: StringName = QuestManager.load_quest("res://data/gravelight/quests/map00_radio.json")
+	for n: String in ["note_a", "note_b", "note_c"]:
+		QuestManager.collect(&"radio_note", StringName(n))
+	var t: Dictionary = BotEECatalog.task_def(QuestManager.step_def(qid, &"s2_tune"))
+	var radio: Node3D = autofree(Node3D.new())
+	var w: Dictionary = {"node": radio, "has_input": true, "expected": QuestManager.sequence_inputs(qid, &"s2_tune"), "progress": 2}
+	assert_eq(str(BotEE.plan_inputs(t, w)["do"]), "handoff", "the third lock is the player's while the wait runs")
+	w["commit_ok"] = true
+	var p: Dictionary = BotEE.plan_inputs(t, w)
+	assert_eq(str(p["do"]), "input", "the wait is over (or the agent): the bot makes the commit")
+	assert_eq(str(p["value"]), "7.440")
+	assert_eq(str(QuestManager.submit(&"radio_m0", "3.120")["result"]), "ok")
+	assert_eq(str(QuestManager.submit(&"radio_m0", "5.785")["result"]), "ok")
+	assert_eq(str(QuestManager.submit(&"radio_m0", str(p["value"]))["result"]), "done")
+	assert_true(QuestManager.is_complete(qid))
+
+
+func test_ee_help_default_is_full_partner_and_old_files_migrate() -> void:
+	assert_eq(str(GLData.load_json("res://data/gravelight/ai/ee.json").get("default_mode", "")), "full")
+	var path: String = "user://_test_settings_t086.cfg"
+	var cfg: ConfigFile = ConfigFile.new()
+	cfg.set_value("settings", "bot_ee_help", "ask")   # a file saved before T-086: "ask" was only the old default
+	cfg.save(path)
+	var fresh: Node = (load("res://gravelight/autoload/settings.gd") as GDScript).new()
+	fresh.set("path", path)
+	fresh.call("load_settings")
+	assert_eq(str((fresh.get("values") as Dictionary).get("bot_ee_help", "")), "full", "an old file gets the new default once")
+	assert_eq(int((fresh.get("values") as Dictionary).get("bot_ee_help_rev", 0)), 2)
+	cfg.set_value("settings", "bot_ee_help", "ask")
+	cfg.set_value("settings", "bot_ee_help_rev", 2)   # the player chose When Asked since: kept
+	cfg.save(path)
+	fresh.call("load_settings")
+	assert_eq(str((fresh.get("values") as Dictionary).get("bot_ee_help", "")), "ask", "a choice made after the migration stays")
+	fresh.free()
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))

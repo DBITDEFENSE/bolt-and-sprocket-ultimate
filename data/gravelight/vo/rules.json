@@ -458,6 +458,7 @@
   "EE_CANT_FIND": 2,
   "EE_CANT_RISKY": 2,
   "EE_WAIT_PLAYER": 2,
+  "EE_COMMIT_SELF": 2,
   "EE_REFUSE_CRUCIBLE": 2,
   "EE_REFUSE_PERK": 2,
   "EE_REFUSE_TYPE": 2,
@@ -554,7 +555,18 @@
   "ZONE_G_GENERATOR": 2,
   "ZONE_H_LAB": 2,
   "ZONE_D_PENHALL": 2,
-  "ZONE_E_UBOAT": 2
+  "ZONE_E_UBOAT": 2,
+  "M0_EGG_HEARD": 2,
+  "M0_EGG_LOOK": 2,
+  "M0_EGG_NOTE": 2,
+  "M0_EGG_NOTE_FIRST": 2,
+  "M0_EGG_NOTE_TWO": 2,
+  "M0_EGG_NOTES_DONE": 2,
+  "M0_EGG_LOCK1": 2,
+  "M0_EGG_LOCK2": 2,
+  "M0_EGG_WRONG": 2,
+  "M0_EGG_DONE": 2,
+  "M0_EGG_TONICS": 2
  },
  "squad_second_channel": [
   "TEAM_DOWN",

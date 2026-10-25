@@ -323,7 +323,24 @@ func match_intel_ids() -> Array:
 ## The log as the tab would draw it now (tools and tests use it too).
 func build_objectives() -> Dictionary:
 	var snap: Dictionary = ObjectiveSnapshot.gravelight(get_tree(), match_intel_ids())
-	return ObjectiveLog.build(snap, _obj_data, str(GLSettings.values.get("objective_spoilers", ObjectiveLog.HINTS)))
+	var log: Dictionary = ObjectiveLog.build(snap, _obj_data, str(GLSettings.values.get("objective_spoilers", ObjectiveLog.HINTS)))
+	quote_setup_lines(log)
+	return log
+
+
+## T-086: a current step's "said" line id becomes the words the tab quotes (lines.json text, tags stripped) and
+## the speaker's subtitle name; a step without one, or an unknown id, quotes nothing.
+static func quote_setup_lines(log: Dictionary) -> void:
+	var names: Dictionary = (load("res://gravelight/ui/subtitles.gd") as GDScript).get_script_constant_map().get("NAMES", {})
+	for sec: Variant in log.get("sections", []):
+		for e: Variant in (sec as Dictionary).get("entries", []):
+			var ed: Dictionary = e as Dictionary
+			var id: String = str(ed.get("said", ""))
+			if id == "" or not GLVO.lines.has(id):
+				continue
+			var rec: Dictionary = GLVO.lines[id]
+			ed["quote"] = GLVO.strip_tags(str(rec.get("text", ""))).strip_edges()
+			ed["quote_by"] = str(names.get(StringName(str(rec.get("speaker", ""))), str(rec.get("speaker", ""))))
 
 
 func _refresh_objectives() -> void:

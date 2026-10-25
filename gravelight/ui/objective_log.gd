@@ -151,6 +151,10 @@ static func quest_entries(qid: String, snap: Dictionary, qtext: Dictionary, lv: 
 		e["where"] = str(v["where"])
 		e["quest_id"] = qid
 		e["step_id"] = sid
+		if status == "current" and lv != HIDDEN:
+			# T-086: the step's story (what is going on, shown above the instruction) and the line that set it up
+			e["story"] = str(t.get("story", ""))
+			e["said"] = str(t.get("said", ""))
 		if status == "current" and int(vars.get("target", -1)) > 0 and lv != HIDDEN:
 			e["progress"] = clampf(float(vars["n"]) / float(vars["target"]), 0.0, 1.0)
 			e["progress_text"] = "%d/%d" % [mini(int(vars["n"]), int(vars["target"])), int(vars["target"])]

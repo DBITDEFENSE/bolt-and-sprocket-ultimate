@@ -121,7 +121,7 @@ func lock_frequency(freq: String) -> String:
 func _payoff() -> void:
 	var hud: Node = get_tree().get_first_node_in_group(&"hud")
 	if hud != null:
-		hud.call("show_banner", "GLASMACHER CALLING\nKaltenbrunn is unlocked", 4.0)
+		hud.call("show_banner", "GLASMACHER CALLING\nKaltenbrunn is unlocked", 4.0)   # (T-086: the Ledger's tonic credit follows on its own banner)
 	var fire: Node = get_tree().current_scene.get_node_or_null("Hearthfire")
 	if fire != null:
 		var tw: Tween = create_tween()

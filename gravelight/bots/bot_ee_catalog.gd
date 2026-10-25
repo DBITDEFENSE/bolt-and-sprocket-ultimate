@@ -7,15 +7,17 @@ extends RefCounted
 ##   player_only "cutscene" / "final" / "choice" / "handoff": the player's alone; a bot asked for it covers them
 ##   needs       discovered-info keys (the quest's "bot_knowledge" block) the squad must know first
 ##   find        "seen" / "heard": each target must have been found by a squad member first
-##   final       a last step: Full Partner needs the player close by
-##   commit      "last_input": the bot never makes the input that finishes the step (the player's commit)
+##   final       a last step: Full Partner waits for the player close by (ee.json full_final_wait_s, then goes on)
+##   commit      "last_input": the input that finishes the step is the player's; in Full Partner the bot waits
+##               ee.json full_commit_after_s for them, then makes it itself (T-086); the bot-mode agent is the
+##               player and commits at once
 ##   risky       true / "shoot" / "trigger": that part can fail or set off the egg (the Chapel bell brings the
 ##               Foreman, a crate pull lets the drummer escape): only when the player ordered it
 ##   touches     ["crucible"] / ["perk"]: Jakub refuses those
 ##   node specs  {"group": g} or {"class": ScriptClass}, with "where": {property: value} ("visible": true = shown)
-## The setting "Bot Easter-Egg Help" (GLSettings bot_ee_help): off (never), ask (When Asked, the default: only steps
-## the player assigns through the Objectives tab, a map mark or the ping key), full (Full Partner: bots pick open
-## steps themselves, one task at a time, and call out what they do).
+## The setting "Bot Easter-Egg Help" (GLSettings bot_ee_help): off (never), ask (When Asked: only steps the player
+## assigns through the Objectives tab, a map mark or the ping key), full (Full Partner, the default since T-086: bots
+## pick open steps themselves, one task at a time, and call out what they do).
 
 const TYPES: PackedStringArray = ["collect", "shoot_target", "hold_zone", "carry", "interact_sequence", "kill_with_weapon", "escort", "turn_key"]
 const MODES: PackedStringArray = ["off", "ask", "full"]
@@ -27,15 +29,16 @@ static func cfg() -> Dictionary:
 	return BotAIData.table("ee")
 
 
-## The mode from the settings values ("ask" for anything unknown).
+## The mode from the settings values (ee.json default_mode, "full", when the key is missing or unknown).
 static func mode_of(values: Dictionary) -> String:
-	var m: String = str(values.get(SETTING, cfg().get("default_mode", "ask")))
+	var dflt: String = str(cfg().get("default_mode", "full"))
+	var m: String = str(values.get(SETTING, dflt))
 	match m:
 		"asked", "when_asked":
 			return "ask"
 		"partner", "full_partner":
 			return "full"
-	return m if MODES.has(m) else "ask"
+	return m if MODES.has(m) else (dflt if MODES.has(dflt) else "full")
 
 
 ## A quest step's bot_task ({} none).
@@ -186,6 +189,21 @@ static func commit_blocked(t: Dictionary, progress: int, total: int) -> bool:
 	return str(t.get("commit", "")) == "last_input" and total > 0 and progress >= total - 1
 
 
+## T-086: may this bot make the commit anyway? The bot-mode agent is the player (always); a Full Partner bot once
+## it has waited `waited_s` (since it said the last one was the player's) past ee.json full_commit_after_s; an
+## assigned (When Asked) bot never.
+static func commit_open(source: String, waited_s: float, is_agent: bool, c: Dictionary) -> bool:
+	if is_agent:
+		return true
+	return source == "full" and waited_s >= 0.0 and waited_s >= float(c.get("full_commit_after_s", 45.0))
+
+
+## T-086: a final step in Full Partner stops waiting for the player once `waited_s` (since a bot first could have
+## started it) passed ee.json full_final_wait_s.
+static func final_wait_over(waited_s: float, c: Dictionary) -> bool:
+	return waited_s >= float(c.get("full_final_wait_s", 60.0))
+
+
 ## The utility value of a running task (ee.json value).
 static func task_value(ty: String, c: Dictionary) -> float:
 	var v: Dictionary = c.get("value", {})
@@ -221,6 +239,8 @@ static func cant_category(code: String) -> String:
 			return "EE_CANT_FIND"
 		"needs_player", "player_away":
 			return "EE_WAIT_PLAYER"
+		"commit_self":
+			return "EE_COMMIT_SELF"
 		"risky":
 			return "EE_CANT_RISKY"
 		"player_only":

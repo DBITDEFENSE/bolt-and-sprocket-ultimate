@@ -42,7 +42,7 @@ func interact(player: Player) -> void:
 	if _taken:
 		return
 	_taken = true
-	QuestManager.collect(tag, item_id)
+	QuestManager.collect(tag, item_id, player.player_id)   # (T-086: the one who took it reads it aloud)
 	var text: String = "Note %s: \"%s Mc/s\"" % [numeral, note_text]
 	if player.is_local:
 		GLBus.intel_found.emit(item_id)
