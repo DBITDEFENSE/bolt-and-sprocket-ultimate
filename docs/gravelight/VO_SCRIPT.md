@@ -2130,3 +2130,146 @@ the tags are the dead's names, said with respect; Jakub never drinks (he only po
 
 **Jakub (`JAK`)**
 - `JAK_ECO_PING_TONIC_01`: "A bottle, over there! For you, not for me."
+
+## 24. The Map 0 radio egg tells its story (DECISIONS T-086)
+
+The guided egg's problem was that nothing set a step up and nothing paid it off: the notes step was open from round 1
+while Fasbender only asked for the notes at round 7, a picked-up note gave a banner and the generic INTEL line, the
+finished notes said nothing, the radio's three locks had Fasbender's lines but no squad, a wrong lock was "Wrong
+number!", and the payoff was a banner. Now every step of `map00_radio` has a **setup beat** (who wants this and
+why: 2-3 lines, different speakers), **progress beats** (each note read aloud by whoever took it, and an answer on
+the first and second), a **payoff beat** (what changed, where next) and a **reset beat**. The beats are quest-data
+actions (`data/gravelight/quests/map00_radio.json`, keys in `QuestManager._run_actions`: `vo_squad`, `vo_actor`,
+`on_vo` / `after_end`, `at_n`, `while_active`, `patience`, `vo_retire`), so a bot's deed fires the same lines as the
+player's. Squad beats go through `GLVO.say_story_beat`: the speaker is chosen when the beat is scheduled (the next
+line goes to someone else), the line waits for the radio / the Operator to finish (never over them), tier 2
+(`rules.json player_category_priority`), and it is dropped after its `patience` when the moment has passed. Solo
+without bots, the one survivor carries the whole beat. The ids carry `SQ7` for the bake
+(`python gravelight/tools_src/gen_vo.py --only=DUT_SQ7`); unbaked, they play as subtitles.
+
+The story, in order:
+
+| Beat | Trigger | Lines |
+|---|---|---|
+| Setup (notes) | round 2, after `FAS_M0_R1_01` ("Glasmacher calling Gravelight... anyone?") | `M0_EGG_HEARD` (that's our call sign), then another survivor `M0_EGG_LOOK` (the innkeeper listened and wrote it down: look for paper); `M0_EGG_LOOK` again after `FAS_M0_R7_01` while the notes are still missing |
+| Progress (notes) | each note, by the one who took it | `M0_EGG_NOTE`; after the first `M0_EGG_NOTE_FIRST` (there'll be three), after the second `M0_EGG_NOTE_TWO` (one more) |
+| Payoff (notes) = setup (radio) | all three notes | `FAS_M0_NOTES_01` (Glasmacher, repeating: lowest first, lock each one), then two survivors `M0_EGG_NOTES_DONE` (to the radio, in order; a wrong one makes noise); `FAS_M0_R7_01` is retired |
+| Progress (radio) | after `FAS_M0_FREQ1_01` / `FAS_M0_FREQ2_01` | `M0_EGG_LOCK1` (so that's our defector; Wren's brother's letters; Jakub knew the name), `M0_EGG_LOCK2` (black glass in the salt: Babcia's letter, Tomasz's hum, Gallery Nine); `FAS_M0_R1_01` is retired at the first lock |
+| Reset | a wrong lock | `OPR_M0_WRONG` (as before), `FAS_M0_WRONG_01/02` (they heard that; start again, the lowest first), `M0_EGG_WRONG` |
+| Payoff (radio) | after `FAS_M0_FREQ3_01` | `OPR_M0_FIRST_01` (the Operator, faint, for the first time), two survivors `M0_EGG_DONE` (nine kilometres east by rail when the snow stops; "bring all of them", twice; that other voice), then `OPR_M0_CREDIT_01` (every account on this frequency credited: the house tonics are on the Ledger) and `M0_EGG_TONICS` as every tonic lands |
+
+Bots in Full Partner add `EE_COMMIT_SELF` (section 18) when the player hasn't come for the last lock within
+`ee.json full_commit_after_s`: "You're busy. I'll turn the last one myself." (`DUT_SQ4_EE_COMMIT_SELF_01`,
+`PEG_SQ4_EE_COMMIT_SELF_01` "You're occupied. I'll make the last move. Do say if you mind.",
+`DEA_SQ4_EE_COMMIT_SELF_01` "You've got your hands full. I'll finish it, brother.", `WRN_SQ4_EE_COMMIT_SELF_01`
+"You are busy. I do the last one.").
+
+### 24.1 Fasbender (`FAS`, radio, tier 4)
+- `FAS_M0_NOTES_01`: "[static, then steadier] Glasmacher, repeating. If you have found my technician's notes: three numbers. The lowest first. Lock each one, and wait for me. I am listening on all three. [click]"
+- `FAS_M0_WRONG_01`: "[through a burst of static] No, no, that was not... they heard that. Everything out there heard that. Start again. The lowest first."
+- `FAS_M0_WRONG_02`: "[static] Wrong. Wrong, and loud. I am sorry, I should have... again, from the first number. Quickly, please."
+
+### 24.2 The Operator (`OPR`, tier 4; the Ledger's first words on Map 0)
+- `OPR_M0_FIRST_01`: "[faint, cheerful, from no particular direction] ...and a pleasant evening to all our listeners on the Kaltenbrunn band! Do stay {tuned}."
+- `OPR_M0_CREDIT_01`: "[faint] A warm welcome to our new listeners. Every account on this frequency has been {credited} in full. The house tonics are on the Ledger tonight. Do enjoy them. [tape click]"
+
+### 24.3 The squad (`SQ7`; Jakub where he has a line)
+**`M0_EGG_HEARD`**
+- `DUT_SQ7_M0_EGG_HEARD_01` (Dutch): "That set behind the bar just said Gravelight. That's us, folks."
+- `DUT_SQ7_M0_EGG_HEARD_02` (Dutch): "Our call sign. On a German radio. Swell."
+- `PEG_SQ7_M0_EGG_HEARD_01` (Peg): "Gravelight is our call sign. Nobody this side of London should have it."
+- `PEG_SQ7_M0_EGG_HEARD_02` (Peg): "Someone out there knows the name of this mission. Interesting."
+- `DEA_SQ7_M0_EGG_HEARD_01` (Deacon): "Lord. Somebody out there's calling for us by name."
+- `DEA_SQ7_M0_EGG_HEARD_02` (Deacon): "That voice knows who we are. Friendly or not, that's something."
+- `WRN_SQ7_M0_EGG_HEARD_01` (Wren): "He says Gravelight. He knows the plane. Someone was waiting for us."
+- `WRN_SQ7_M0_EGG_HEARD_02` (Wren): "A man alone, calling and calling. He has been doing this a while."
+
+**`M0_EGG_LOOK`**
+- `DUT_SQ7_M0_EGG_LOOK_01` (Dutch): "Innkeeper kept a pencil by that set. People who listen write things down. Look for paper."
+- `DUT_SQ7_M0_EGG_LOOK_02` (Dutch): "Somebody in this house was tuning that thing before us. Find his notes."
+- `PEG_SQ7_M0_EGG_LOOK_01` (Peg): "A set like that is tuned by hand, from notes. Find them. Numbered, if we're lucky."
+- `PEG_SQ7_M0_EGG_LOOK_02` (Peg): "Whoever kept that radio kept frequencies. Search the house. Paper, not guns."
+- `DEA_SQ7_M0_EGG_LOOK_01` (Deacon): "A man who listens that close writes it down. Check the mantel, the trunks, the loft."
+- `DEA_SQ7_M0_EGG_LOOK_02` (Deacon): "Somebody here wrote those numbers somewhere. Eyes open for paper."
+- `WRN_SQ7_M0_EGG_LOOK_01` (Wren): "The innkeeper listened to the works' channels. He wrote them down. Look for the notes."
+- `WRN_SQ7_M0_EGG_LOOK_02` (Wren): "Paper. Small, with numbers. The whole house, not just this room."
+
+**`M0_EGG_NOTE`**
+- `DUT_SQ7_M0_EGG_NOTE_01` (Dutch): "Got a note. A frequency, and a Roman numeral. Chapter and verse."
+- `DUT_SQ7_M0_EGG_NOTE_02` (Dutch): "Paper with a number on it. Hand-written. This goes with the radio."
+- `PEG_SQ7_M0_EGG_NOTE_01` (Peg): "A frequency, numbered. Someone meant these to be read in order."
+- `PEG_SQ7_M0_EGG_NOTE_02` (Peg): "Note in hand. Megacycles and a numeral. That's for the set behind the bar."
+- `DEA_SQ7_M0_EGG_NOTE_01` (Deacon): "Here's one. Numbers and a numeral, in a careful hand. Somebody was scared when he wrote this."
+- `DEA_SQ7_M0_EGG_NOTE_02` (Deacon): "Got a note. He numbered them. Means there's more than one."
+- `WRN_SQ7_M0_EGG_NOTE_01` (Wren): "A note. Frequency and a number. I keep it."
+- `WRN_SQ7_M0_EGG_NOTE_02` (Wren): "Here. Written fast, but numbered. He knew someone would come."
+- `JAK_SQ7_M0_EGG_NOTE_01` (Jakub): "A paper with numbers. From the innkeeper's hand, I think. Here."
+- `JAK_SQ7_M0_EGG_NOTE_02` (Jakub): "I have it. Small writing. A frightened man writes small."
+
+**`M0_EGG_NOTE_FIRST`**
+- `DUT_SQ7_M0_EGG_NOTE_FIRST_01` (Dutch): "One down. The man numbered 'em, so there's more. Keep looking."
+- `PEG_SQ7_M0_EGG_NOTE_FIRST_01` (Peg): "Numeral one of how many? Three, I'd wager. Keep searching the house."
+- `DEA_SQ7_M0_EGG_NOTE_FIRST_01` (Deacon): "That's the first. Upstairs, the barn, the mantel. He'd have spread them out."
+- `WRN_SQ7_M0_EGG_NOTE_FIRST_01` (Wren): "First of three. I can feel it. The others are hidden the same way."
+- `JAK_SQ7_M0_EGG_NOTE_FIRST_01` (Jakub): "One. There will be more. Men hide things in threes."
+
+**`M0_EGG_NOTE_TWO`**
+- `DUT_SQ7_M0_EGG_NOTE_TWO_01` (Dutch): "Two. One more somewhere in this inn."
+- `PEG_SQ7_M0_EGG_NOTE_TWO_01` (Peg): "That's two. One more and we have the whole set."
+- `DEA_SQ7_M0_EGG_NOTE_TWO_01` (Deacon): "Two of three. One more, Lord willing."
+- `WRN_SQ7_M0_EGG_NOTE_TWO_01` (Wren): "Two. The last one is close. Nothing here is far."
+- `JAK_SQ7_M0_EGG_NOTE_TWO_01` (Jakub): "Two now. The third is somewhere nobody looks."
+
+**`M0_EGG_NOTES_DONE`**
+- `DUT_SQ7_M0_EGG_NOTES_DONE_01` (Dutch): "Three notes, three numbers. Let's go make a phone call."
+- `DUT_SQ7_M0_EGG_NOTES_DONE_02` (Dutch): "That's the set. Radio's behind the bar. Lowest number first, he said."
+- `PEG_SQ7_M0_EGG_NOTES_DONE_01` (Peg): "All three, in order. To the radio. I'll want that man's name before we trust a word."
+- `PEG_SQ7_M0_EGG_NOTES_DONE_02` (Peg): "We have his frequencies. Lock them in sequence, lowest first. And nobody touch it drunk."
+- `DEA_SQ7_M0_EGG_NOTES_DONE_01` (Deacon): "Three numbers. One, two, three. Let's give the man his call."
+- `DEA_SQ7_M0_EGG_NOTES_DONE_02` (Deacon): "Got 'em all. The set behind the bar. Start low and climb, like a hymn."
+- `WRN_SQ7_M0_EGG_NOTES_DONE_01` (Wren): "Three. Now the radio. One, two, three, in order. A wrong one makes noise, and noise brings them."
+- `WRN_SQ7_M0_EGG_NOTES_DONE_02` (Wren): "We have all of it. Behind the bar. I will read, someone turns."
+- `JAK_SQ7_M0_EGG_NOTES_DONE_01` (Jakub): "Three papers. The radio is yours. I don't know radios. I know what noise brings."
+
+**`M0_EGG_LOCK1`**
+- `DUT_SQ7_M0_EGG_LOCK1_01` (Dutch): "So that's our defector. Sounds like he's about to cry."
+- `PEG_SQ7_M0_EGG_LOCK1_01` (Peg): "Fasbender. Glasmacher. That's our man. London said physicist, not penitent."
+- `DEA_SQ7_M0_EGG_LOCK1_01` (Deacon): "'The reason you are here.' Man says that like a confession."
+- `WRN_SQ7_M0_EGG_LOCK1_01` (Wren): "Kaltenbrunn. The salt works. My brother's letters came from there."
+- `JAK_SQ7_M0_EGG_LOCK1_01` (Jakub): "Fasbender. I know that name. The men from his department never went down with us."
+
+**`M0_EGG_LOCK2`**
+- `DUT_SQ7_M0_EGG_LOCK2_01` (Dutch): "Black glass in the salt. Babcia's letter said that. I thought it was a story."
+- `PEG_SQ7_M0_EGG_LOCK2_01` (Peg): "A stone that hums. London wants a piece of it. Of course they do."
+- `DEA_SQ7_M0_EGG_LOCK2_01` (Deacon): "The dead remember. One thing. Lord, let that be the worst of it."
+- `WRN_SQ7_M0_EGG_LOCK2_01` (Wren): "It hums, he says. Tomasz wrote of a hum. Then he stopped writing."
+- `JAK_SQ7_M0_EGG_LOCK2_01` (Jakub): "The black glass. We cut round it in Gallery Nine. We were told not to touch it. We touched it."
+
+**`M0_EGG_WRONG`**
+- `DUT_SQ7_M0_EGG_WRONG_01` (Dutch): "That static's a dinner bell. Start over. Lowest first."
+- `DUT_SQ7_M0_EGG_WRONG_02` (Dutch): "Wrong one. They heard it. Back to the first number."
+- `PEG_SQ7_M0_EGG_WRONG_01` (Peg): "Wrong frequency. The sequence resets. From the lowest, and mind the windows."
+- `PEG_SQ7_M0_EGG_WRONG_02` (Peg): "That was loud. Again, from the first. Carefully."
+- `DEA_SQ7_M0_EGG_WRONG_01` (Deacon): "Wrong note. Every one of them heard it. Back to the start."
+- `DEA_SQ7_M0_EGG_WRONG_02` (Deacon): "Static like that carries. Start again, low to high."
+- `WRN_SQ7_M0_EGG_WRONG_01` (Wren): "Wrong. Again, from the first note. Quickly, they come."
+- `WRN_SQ7_M0_EGG_WRONG_02` (Wren): "No. The first number. Then the second. They heard that."
+- `JAK_SQ7_M0_EGG_WRONG_01` (Jakub): "That noise. In the mine, that noise meant run. Try again, from the first."
+
+**`M0_EGG_DONE`**
+- `DUT_SQ7_M0_EGG_DONE_01` (Dutch): "Nine kilometres. In snow. With them. Swell."
+- `DUT_SQ7_M0_EGG_DONE_02` (Dutch): "The rail line east. When the snow quits. Until then, this inn is ours."
+- `PEG_SQ7_M0_EGG_DONE_01` (Peg): "Kaltenbrunn, nine kilometres east by rail, when the snow stops. Until then we hold this house. That's the mission."
+- `PEG_SQ7_M0_EGG_DONE_02` (Peg): "He said bring all of them. Twice. We'll discuss what he meant when I'm looking at him."
+- `DEA_SQ7_M0_EGG_DONE_01` (Deacon): "'Bring all of them.' He said it twice. Why would a man say that twice?"
+- `DEA_SQ7_M0_EGG_DONE_02` (Deacon): "A gatehouse and a headframe. We'll know it when we see it. First we live till morning."
+- `WRN_SQ7_M0_EGG_DONE_01` (Wren): "East. The rail line. It goes to the salt works. I know that line."
+- `WRN_SQ7_M0_EGG_DONE_02` (Wren): "That other voice. Cheerful. On his frequency. That was not Fasbender."
+- `JAK_SQ7_M0_EGG_DONE_01` (Jakub): "I walked that line, the other way, with ten men behind me. I will walk it back."
+
+**`M0_EGG_TONICS`**
+- `DUT_SQ7_M0_EGG_TONICS_01` (Dutch): "The machines just lit up. All of 'em. Nobody paid."
+- `PEG_SQ7_M0_EGG_TONICS_01` (Peg): "Nothing in this country is free. Drink anyway."
+- `DEA_SQ7_M0_EGG_TONICS_01` (Deacon): "Every cabinet in the house just woke up. That voice did that. Think on it."
+- `WRN_SQ7_M0_EGG_TONICS_01` (Wren): "The cabinets. Open. All of them. A gift from a voice we don't know."
+- `JAK_SQ7_M0_EGG_TONICS_01` (Jakub): "Those machines. I told you what they put in them. Now they pour it free. Think why."

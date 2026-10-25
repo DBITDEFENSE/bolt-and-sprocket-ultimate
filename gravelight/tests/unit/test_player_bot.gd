@@ -270,7 +270,7 @@ func test_agent_egg_block_rules() -> void:
 	var st: Dictionary = {"doors": {}, "power": true, "perks": [], "guns": [], "round": 2, "eggs": {"map00_radio": false}}
 	assert_false(AgentPlan.egg_ready(egg, st), "not before its round")
 	st["round"] = 4
-	assert_false(AgentPlan.egg_ready(egg, st), "not before Ironhide")
+	assert_false(AgentPlan.egg_ready(egg, st), "not before the after steps (Ironhide here)")
 	st["perks"] = ["ironhide_stout"]
 	assert_true(AgentPlan.egg_ready(egg, st), "Ironhide drunk, round 4: the egg's moment")
 	st["eggs"]["map00_radio"] = true

@@ -62,6 +62,10 @@ No level ever shows a future step's own words (GUT `test_no_level_leaks_a_future
   where, nodes?}]}` (each step is done when its `when` holds; the first not-done one is current).
 - `quests.<quest_id>.steps.<step_id>`: `done`, `hint`, `guide`, `where`, optional `nodes`, `nodes_random {key,
   format}` (`{g}` group, `{v}` the seeded pick: `Radio_{v}`, `Part_{g}_{v}`), `pos`, `progress {flag, max}`.
+  **(T-086)** Optional `story` (a short "what's going on" paragraph, shown above the current step's hint /
+  instruction at Hints and Full Guide, never at Hidden, never for a future step) and `said` (the VO line id whose
+  words the tab quotes under it as the step's setup line, with the speaker's subtitle name; `PauseMenu.
+  quote_setup_lines` looks the text up in `GLVO.lines`, ObjectiveLog stays pure). Map 0's two steps have both.
 - Tokens: `{n}`, `{target}`, `{rand:<key>}` (Full Guide only; digits print in pairs).
 - Conditions: `power`, `flag`, `flag_at_least`, `zone_open`, `round_at_least`, `step`, `quest_done`, `intel_match`,
   `jakub_in`, `exfil_active`, `setting`, `all`, `any`, `not`. Unknown keys are false.

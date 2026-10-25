@@ -668,18 +668,19 @@ func _step(qid: StringName, sid: StringName) -> Dictionary:
 ## over the radio / the Operator (with "exclude_last": true someone other than the last squad speaker);
 ## {"vo_actor": category} the survivor who did it (collect's by_player), else the squad; {"hold": [category, s]}
 ## keeps that survivor's category quiet for s seconds (the generic INTEL line under the note's own words);
-## {"vo_retire": [ids]} scheduled lines the story moved past. Any action also takes the filters / timers
+## "patience": s drops a squad beat still waiting for the story channel after that long (a note's words go
+## stale); {"vo_retire": [ids]} scheduled lines the story moved past. Any action also takes the filters / timers
 ## "at_n": n (only when the step's count is n: the first note, the second lock), "while_active": step id (dropped
-## once that step is complete), "after": seconds (runs that much later) and "on_vo": line id (runs when that line
-## starts, plus "after"; with "after_end" that much after it ends; "expire_s" runs it anyway when the line never
-## comes, default never).
+## once that step is complete, at the time it would run), "after" / "delay": seconds (runs that much later) and
+## "on_vo": line id (runs when that line starts, plus "after"; with "after_end" that much after it ends;
+## "expire_s" runs it anyway when the line never comes, default never).
 func _run_actions(qid: StringName, actions: Array) -> void:
 	for a: Dictionary in actions:
 		if a.has("at_n") and int(a["at_n"]) != int(_ctx.get("n", -1)):
 			continue
 		if a.has("while_active") and not is_active(qid, StringName(str(a["while_active"]))):
 			continue
-		if a.has("after") or a.has("on_vo"):
+		if a.has("after") or a.has("on_vo") or a.has("delay"):
 			var when: Dictionary = {"qid": qid, "a": a, "by": int(_ctx.get("by", 0)), "due": INF, "expire": INF}
 			if a.has("on_vo"):
 				when["on_vo"] = str(a["on_vo"])
@@ -691,7 +692,7 @@ func _run_actions(qid: StringName, actions: Array) -> void:
 					if o["qid"] == qid and str(o.get("on_vo", "")) == str(a["on_vo"]) and (o["a"] as Dictionary).hash() == a.hash():
 						_pending.remove_at(i)
 			else:
-				when["due"] = _t + float(a["after"])
+				when["due"] = _t + float(a.get("after", a.get("delay", 0.0)))
 			_pending.append(when)
 			continue
 		_do_action(qid, a, int(_ctx.get("by", 0)))
@@ -810,7 +811,7 @@ func _say_beat(a: Dictionary, by: int) -> void:
 	if a.has("hold") and pid > 0:
 		var h: Array = a["hold"]
 		GLVO.hold_category(GLVO.speaker_of(pid), str(h[0]), float(h[1]))
-	GLVO.say_story_beat(pid, cat, float(a.get("delay", 0.0)), exclude)
+	GLVO.say_story_beat(pid, cat, 0.0, exclude, float(a.get("patience", 90.0)))   # ("delay" already passed in _pending)
 
 
 # ---------------------------------------------------------------- debug

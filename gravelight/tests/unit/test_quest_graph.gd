@@ -97,10 +97,13 @@ func test_map00_radio_beats_fire_in_order() -> void:
 	GLVO.reset_match()
 	# progress beats: the one who took the note reads it, someone answers on the first and second note only
 	QuestManager.collect(&"radio_note", &"note_a", 1)
-	assert_eq(_beat_cats(), ["M0_EGG_NOTE", "M0_EGG_NOTE_FIRST"])
+	assert_eq(_beat_cats(), ["M0_EGG_NOTE"], "the note's words at once")
+	QuestManager.advance(4.5)
+	assert_eq(_beat_cats(), ["M0_EGG_NOTE", "M0_EGG_NOTE_FIRST"], "someone answers a beat later")
 	assert_eq(GLVO.pending_story_beats()[0]["pid"], 1, "the note's words go to the one who took it")
 	GLVO.reset_match()
 	QuestManager.collect(&"radio_note", &"note_b", 1)
+	QuestManager.advance(4.5)
 	assert_eq(_beat_cats(), ["M0_EGG_NOTE", "M0_EGG_NOTE_TWO"])
 	GLVO.reset_match()
 	assert_false(GLVO.is_retired(&"FAS_M0_R7_01"))
@@ -108,12 +111,14 @@ func test_map00_radio_beats_fire_in_order() -> void:
 	# payoff of the notes = the setup of the radio: Fasbender's standing call, then two survivors
 	assert_true(GLVO.is_retired(&"FAS_M0_R7_01"), "'find the notes' is retired once they are found")
 	assert_eq(GLVO.current_line(&"story"), &"FAS_M0_NOTES_01", "Glasmacher: lowest first")
-	assert_eq(_beat_cats(), ["M0_EGG_NOTE", "M0_EGG_NOTES_DONE", "M0_EGG_NOTES_DONE"])
+	QuestManager.advance(8.0)
+	assert_eq(_beat_cats(), ["M0_EGG_NOTE", "M0_EGG_NOTES_DONE", "M0_EGG_NOTES_DONE"], "no 'two of three' after the third: the step was done")
 	GLVO.reset_match()
 	# the reset beat
 	QuestManager.submit(&"radio_m0", "3.120")
 	QuestManager.submit(&"radio_m0", "9.999")
 	assert_true(String(GLVO.current_line(&"story")).begins_with("FAS_M0_WRONG"), "Fasbender: start again (%s)" % GLVO.current_line(&"story"))
+	QuestManager.advance(1.0)
 	assert_true(_beat_cats().has("M0_EGG_WRONG"))
 	GLVO.reset_match()
 	# the locks: the squad answers Fasbender's own lines (on_vo), not the click of the dial

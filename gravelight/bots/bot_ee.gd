@@ -237,8 +237,9 @@ func run(delta: float) -> void:
 
 func on_exit() -> void:
 	_shoot_target = null
-	if not _errand.is_empty():
-		_errand["hold"] = 0.0
+	# T-086: the errand starts over when the action comes back (a fight, a round the trainer owns): its timeout
+	# counted the whole time away and the agent's note runs ended in "couldn't use"
+	_errand = {}
 
 
 ## The weapon slot the plan needs in hand (-1 none): the task's weapon, or any upgraded gun.
@@ -784,6 +785,9 @@ func _do_input(n: Node3D, delta: float) -> void:
 		return
 	brain.loco.look_at_dir(n.global_position + Vector3.UP * 0.3 - brain.aim.eye())
 	brain.committed = true
+	if GLVO.current_speaker(GLVO.GROUP_STORY) == &"FAS":
+		_hold_t = 0.0   # T-086: the radio is answering the last input: a person listens before the next one
+		return
 	if player.remote_body != null:
 		player.remote_body.hold_action(&"buy")
 	_hold_t += delta

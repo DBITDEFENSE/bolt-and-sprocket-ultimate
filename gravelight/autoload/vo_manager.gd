@@ -389,6 +389,12 @@ func current_line(group: StringName) -> StringName:
 	return StringName(cur.get("id", ""))
 
 
+## The speaker of the line playing in a group (&"" none).
+func current_speaker(group: StringName) -> StringName:
+	var cur: Dictionary = _current.get(group, {})
+	return StringName(cur.get("speaker", ""))
+
+
 func queued_count(group: StringName) -> int:
 	return (_queue.get(group, []) as Array).size()
 

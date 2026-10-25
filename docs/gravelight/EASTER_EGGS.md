@@ -94,6 +94,17 @@ The names and IDs follow `docs/CANON.md`. Zone references are in `docs/MAPS.md`.
 
 The full file defines all 10 steps exactly as in §2. The schema is validated at load (with GUT tests in `tests/unit/test_quest_graph.gd`: no cycles, every `requires` exists, every step type is registered, and every `vo` ID exists in the VO table).
 
+**Story beats (T-086).** Besides `vo` / `vo_list` / `vo_category` / `vo_player`, an action list (`on_start`, `on_item`,
+`on_input_ok`, `reset.actions`, `on_complete`, the quest's `on_complete`) can carry: `{"vo_squad": category}` (one
+random standing survivor, never over the radio / the Operator; `"exclude_last": true` picks someone other than the
+beat's last squad speaker), `{"vo_actor": category}` (the survivor who did it: `QuestManager.collect(tag, item, by)`;
+`"hold": [category, s]` silences that survivor's generic line, e.g. INTEL, under it), `"patience": s` (a squad beat
+still waiting for the story channel after that long is dropped), `{"vo_retire": [ids]}` (scheduled lines the story
+moved past: Fasbender's "find the notes" once they are found). Filters and timers on any action: `"at_n": n` (only
+when the step's count is n: the first note, the second lock), `"while_active": step` (dropped once that step is
+complete), `"after"` / `"delay"`: seconds, `"on_vo": line id` (runs when that line starts; `"after_end": s` that
+much after it ends; `"expire_s"` runs it anyway if the line never comes). The bots' deeds fire the same beats.
+
 ### 1.3 Save points per match
 
 - Steps flagged `"save_point": true` write a **match checkpoint** into `GameState.quest_checkpoints[quest_id]` (in memory, per match only, not to the profile).
@@ -214,14 +225,16 @@ After the ending, the match **continues** (classic). The round number keeps clim
 
 ## 4. MAP 0 — RADIO MINI-QUEST ("Glasmacher Calling")
 
-**Quest ID:** `map00_radio`. **Flag on completion:** `map00_complete` (it unlocks Map 1, the alternative to reaching round 10).
+**Quest ID:** `map00_radio`. **Flag on completion:** `map00_complete` (it unlocks Map 1, the alternative to reaching round 10). **Match reward (T-086):** every tonic, slot-free, for everyone in the match, granted as the Operator credits the account (`OPR_M0_CREDIT_01`, about 40 s after the last lock; lost on a down like any perk).
+
+**The story it tells (T-086; every line in VO_SCRIPT.md §24, the Objectives tab shows a "what's going on" paragraph and the setup line per step):** round 2, the radio calls the squad by its call sign and the squad answers ("that's us"; "the innkeeper listened: look for paper") → each note is read aloud by whoever took it, the others count ("three, I'd wager"; "one more") → all three: Glasmacher's standing call "lowest first, lock each one", the squad heads for the bar radio → each lock is Fasbender's own confession and the squad's reaction (our defector; black glass in the salt: Dutch's Babcia, Wren's brother Tomasz, Jakub's Gallery Nine) → a wrong lock: Fasbender "they heard that, start again", the squad "lowest first" → the third lock: Fasbender's route east, the Operator cuts in for the first time, the squad on what it means, then the Ledger credits every account and the tonic cabinets light up.
 
 | Step | Detail |
 |---|---|
 | 0 | The radio behind the taproom bar plays static and fragmentary Fasbender transmissions **automatically** at rounds 2, 4 and 6 (`FAS_M0_AUTO_01–03`: "...Glasmacher calling Gravelight... you must reach Kaltenbrunn..."). This teaches that the radio matters. |
 | 1 | Find 3 notes (paper pickups, each with a hand-written frequency and a sketch): **Note A "3.120"** in TAPROOM, pinned under a beer stein on the mantel; **Note B "5.785"** in UPSTAIRS Room 2, inside the technician's trunk; **Note C "7.440"** in STABLE, nailed to the hayloft beam. The notes are fixed (not random) and each is numbered I, II, III by its Roman numeral. |
 | 2 | At the radio, use the tuning dial (an interact UI: hold [F] and scroll/stick to turn the dial; it snaps at 0.005 steps). Lock **3.120 → 5.785 → 7.440** in order. Each correct lock plays a message part (`FAS_M0_TUNE_01–03`). |
-| Reset | A wrong frequency locked → loud static burst (it attracts 2 extra zombies) and the sequence resets. No other penalty. |
+| Reset | A wrong frequency locked → loud static burst (it attracts 2 extra zombies) and the sequence resets. No other penalty. Fasbender and the squad say so (`FAS_M0_WRONG`, `M0_EGG_WRONG`). |
 | Payoff | After the 3rd lock: a **cutscene-lite** (camera pushes to the radio; the inn's fire dims) → Fasbender's full message: "*Glasmacher calling Gravelight. You must reach Kaltenbrunn. Follow the rail line east. Do not let the bell ring.*" Then the Operator, for the first time, faintly cuts in (`OPR_M0_FIRST_01`: "A pleasant evening to all our listeners!") — the first hint that the Ledger's reach extends this far. Sets `map00_complete`, +5000 XP, archive "Glasmacher Calling," and a calling card. |
 
 Solo/co-op: identical.
@@ -554,10 +567,15 @@ egg (Helvetia Works, Morgenrot...) only adds this data.
 
 **Common fields:** `what` (the status line's words: "the radio notes"), `ping` (the world ping's label), `needs` (keys
 of the quest's `bot_knowledge`), `find`: "seen" / "heard" (+ `hear_m`): each target must have been found by a squad
-member first, `final` (a last step: Full Partner needs the player within `presence_m`), `commit`: "last_input" (the
-input that would finish the step is the player's), `risky`: true / "shoot" / "trigger" (that part can fail or set off
-the egg: only when the player ordered it), `touches`: ["crucible"] / ["perk"] (Jakub refuses those), `player_only`:
-"cutscene" / "final" / "choice" / "handoff" (no bot does it; asked, a bot covers the player instead).
+member first, `final` (a last step: Full Partner waits for the player within `presence_m`, for `ee.json
+full_final_wait_s` at most since T-086, then the bots go on without them), `commit`: "last_input" (the input that
+would finish the step is the player's: an assigned bot never makes it; a Full Partner bot says so, waits `ee.json
+full_commit_after_s` for the player, then makes it itself with `EE_COMMIT_SELF` (T-086); the bot-mode agent is the
+player and makes it at once), `risky`: true / "shoot" / "trigger" (that part can fail or set off the egg: only when
+the player ordered it), `touches`: ["crucible"] / ["perk"] (Jakub refuses those), `player_only`: "cutscene" /
+"final" / "choice" / "handoff" (no bot does it; asked, a bot covers the player instead). **The setting's default is
+Full Partner since T-086** (the user: "the bots should be able to do the Easter egg"); a settings file saved before
+gets the new default once (`settings.gd bot_ee_help_rev`).
 
 **Node specs:** `{"group": "quest_bells"}` or `{"class": "QuestNote"}` (a script class among the map's
 Interactables), with `"where": {"kind": "small", "visible": true}` (property values; `visible` = shown in the tree).
@@ -572,7 +590,7 @@ completes "Can't do that yet: we haven't ...".
 | quest / step | bot_task | notes |
 |---|---|---|
 | map00_radio s1_notes | collect the three notes | fixed spots (no find) |
-| map00_radio s2_tune | interact_sequence, the radio dial | needs `frequencies`; final; commit last_input: the bot locks two, the player the third |
+| map00_radio s2_tune | interact_sequence, the radio dial | needs `frequencies`; final; commit last_input: the bot locks two, says the third is the player's, and in Full Partner locks it itself after `full_commit_after_s` (45 s); it lets the radio finish each of Fasbender's lines before the next lock |
 | map01_requiem s0_power | interact_sequence, the power switch | |
 | s1_vault | hold_zone, the pylons | starts one only with the player within 22 m (1500 Scrip and a hard holdout) |
 | s2a_radios | collect, the calling radios | find heard (12 m) |

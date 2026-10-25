@@ -8,8 +8,12 @@ extends Node
 ##   5. ee_assign the radio: the bot locks two frequencies and hands the last one (the commit) to the player; the
 ##      harness locks it as the player; the egg completes
 ##   6. ee_cancel, ee_bot_mode off: an assignment is refused; no egg step ever failed
+## With `-- --full` (T-086: the bots do the whole egg by themselves) it is Full Partner from the start and the human
+## never touches anything: the bots take the three notes unasked, lock the radio, say the last one is the player's,
+## wait ee.json full_commit_after_s for them, then make the commit themselves; the egg's story beats play along the
+## way (the note lines, the squad's reactions), and the Ledger's credit gives everyone every tonic.
 ## With a renderer it is the clip: a chase camera on the working bot, the AI debug labels show its egg task.
-##   godot --headless --audio-driver Dummy --fixed-fps 60 --path . res://gravelight/tools_src/smoke_ee_bots.tscn
+##   godot --headless --audio-driver Dummy --fixed-fps 60 --path . res://gravelight/tools_src/smoke_ee_bots.tscn [-- --full]
 ##   godot --audio-driver Dummy --position -4000,-4000 --resolution 1280x720 --write-movie <abs>.avi --fixed-fps 30
 ##         --quit-after 1800 --path . res://gravelight/tools_src/smoke_ee_bots.tscn -- --clip
 ## Prints "[eebots] ..." lines and RESULT PASS/FAIL (exit code 0/1).
@@ -31,15 +35,19 @@ var _lines: PackedStringArray = []
 var _done: bool = false
 var _timeout: float = 300.0
 var _trace_t: float = 0.0
+var _full: bool = false
+var _story_lines: PackedStringArray = []
+var _egg_done_t: float = -1.0
 
 
 func _ready() -> void:
 	_clip = Array(OS.get_cmdline_user_args()).has("--clip")
+	_full = Array(OS.get_cmdline_user_args()).has("--full")
 	AudioServer.set_bus_mute(AudioServer.get_bus_index("Master"), true)
 	ProfileSave.path = "user://_qa_ee_bots_profile.json"
 	ProfileSave.profile = ProfileSave.new_profile()
 	GLSettings.path = "user://_qa_ee_bots_settings.cfg"
-	GLSettings.values["bot_ee_help"] = "ask"
+	GLSettings.values["bot_ee_help"] = "full" if _full else "ask"
 	GLSettings.values["homage_bosses"] = false
 	Campaign.reset()
 	GameState.character_id = &"dutch"
@@ -56,7 +64,11 @@ func _ready() -> void:
 	GLBus.vo_line_started.connect(func(id: StringName, _spk: StringName, text: String, _d: float) -> void:
 		if String(id).contains("_SQ4_EE_"):
 			_lines.append(String(id))
-			print("[eebots] t=%.1f line %s: \"%s\"" % [_t, id, text]))
+			print("[eebots] t=%.1f line %s: \"%s\"" % [_t, id, text])
+		elif String(id).contains("_M0_EGG_") or String(id).begins_with("FAS_M0_") or String(id).begins_with("OPR_M0_"):
+			_story_lines.append(String(id))
+			print("[eebots] t=%.1f story %s: \"%s\"" % [_t, id, text]))
+	GLBus.quest_completed.connect(func(_q: StringName) -> void: _egg_done_t = _t)
 
 
 func _check(cond: bool, what: String) -> void:
@@ -103,6 +115,47 @@ func _physics_process(delta: float) -> void:
 					print("[eebots]    errand %s, loco path %d pts (next %s), speed %.1f, until %.0f" % [str(b.ee._errand.get("kind", "-")), lp.size(), lp[1] if lp.size() > 1 else Vector3.INF,
 						b.player.horizontal_speed(), float(b.ee._errand.get("until", -1.0)) - sq.time()])
 	match _phase:
+		10:   # --full: the bots take the notes unasked
+			if QuestManager.is_step_done(Q, &"s1_notes"):
+				_check(true, "Full Partner: the bots took all three notes unasked (%.0f s)" % _t)
+				_check(sq.ee.knowledge.knows("frequencies"), "the squad knows the frequencies")
+				_next()
+			elif _phase_t > _timeout:
+				_check(false, "the notes were taken within %.0f s" % _timeout)
+				_finish()
+		11:   # --full: two locks, the hand-off, the wait, the bots' own commit
+			if QuestManager.is_complete(Q):
+				var waited: float = float(BotEECatalog.cfg().get("full_commit_after_s", 45.0))
+				_check(true, "the bots completed \"Glasmacher Calling\" with nobody asking (%.0f s)" % _t)
+				_check(sq.ee.inputs_by_bots == 3, "all three locks were the bots' (%d), the last after the %.0f s hand-off wait" % [sq.ee.inputs_by_bots, waited])
+				var self_commit: bool = false
+				var handoff: bool = false
+				for l: String in _lines:
+					self_commit = self_commit or l.contains("EE_COMMIT_SELF")
+					handoff = handoff or l.contains("EE_HANDOFF")
+				_check(handoff and self_commit, "the bot said the last one was the player's, then that it would turn it itself")
+				_next()
+			elif _phase_t > _timeout:
+				_check(false, "the radio was tuned within %.0f s (locks %s, %s)" % [_timeout, str(QuestManager.progress(Q, &"s2_tune")), str(sq.ee.report())])
+				_finish()
+		12:   # --full: the story played, the Ledger's credit lands
+			var n_perks: int = (GLData.table("perks")["perks"] as Dictionary).size()
+			if PerkManager.owned(_map.player.player_id).size() >= n_perks or _phase_t > 150.0:
+				var notes: int = 0
+				var reactions: int = 0
+				for l: String in _story_lines:
+					if l.contains("_M0_EGG_NOTE"):
+						notes += 1
+					elif l.contains("_M0_EGG_"):
+						reactions += 1
+				_check(notes >= 3, "each note was read aloud by the one who took it (%d note lines)" % notes)
+				_check(reactions >= 3, "the squad reacted along the way (%d reaction lines: %s)" % [reactions, ", ".join(_story_lines.slice(0, 8))])
+				_check(_story_lines.has("OPR_M0_CREDIT_01"), "the Operator credited the account")
+				_check(PerkManager.owned(_map.player.player_id).size() >= n_perks, "every tonic, slot-free, for the player (%d of %d, %.0f s after the egg)" % [PerkManager.owned(_map.player.player_id).size(), n_perks, _t - _egg_done_t])
+				for pid: int in GameState.bot_ids:
+					_check(PerkManager.owned(pid).size() >= n_perks, "and for bot P%d (%d)" % [pid, PerkManager.owned(pid).size()])
+				_check(_egg_fails == 0, "no egg step failed (%d)" % _egg_fails)
+				_finish()
 		0:
 			if _phase_t < (4.0 if _clip else 15.0):
 				return
@@ -181,7 +234,11 @@ func _try_live() -> void:
 	_live = true
 	for pid: int in GameState.bot_ids:
 		Economy.grant(pid, 6000)
-	_check(_map.squad.ee.mode() == "ask", "Bot Easter-Egg Help: When Asked by default")
+	if _full:
+		_check(_map.squad.ee.mode() == "full", "Bot Easter-Egg Help: Full Partner (the setting)")
+		_phase = 10
+	else:
+		_check(_map.squad.ee.mode() == "ask", "Bot Easter-Egg Help: When Asked (the setting)")
 	if _clip:
 		_cam = Camera3D.new()
 		_cam.fov = 72.0

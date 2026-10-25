@@ -46,8 +46,9 @@
       "egg": {
         "_doc": "T-086: the agent does the map's easter egg (AgentPlan.tick_egg through BotEEHub.pick_for, the squad bots' planners). Never part of the spend order: once every step in `after` is done and from from_round, in a quiet moment (a break, its crawler break, or nothing within quiet_m with the threat pressure under max_pressure) it takes the next open step of `quest` (the agent is the player: it may make the commit). The brain's ee_task action carries it out; the trainer still owns the rounds, so the work happens between them (the crawler break holds the round open for it).",
         "quest": "map00_radio",
-        "after": [{"perk": "ironhide_stout"}],
-        "from_round": 3,
+        "after": [{"door": "door_cellar"}],
+        "from_round": 2,
+        "_after_why": "T-086 soak: after Ironhide (round 5-6) the agent had one or two breaks left before its round-8 wipe and got 0-2 notes; from round 2 after the first door the quiet moments are the early breaks and its crawler breaks, and the spend order is untouched (egg work costs no Scrip but the doors it would buy anyway).",
         "max_pressure": 0.3,
         "quiet_m": 14.0,
         "value": 0.85,

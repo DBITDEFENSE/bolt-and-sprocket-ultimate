@@ -18,9 +18,9 @@
         { "on_vo": "FAS_M0_R7_01", "after_end": 1.5, "vo_squad": "M0_EGG_LOOK", "while_active": "s1_notes" }
       ],
       "on_item": [
-        { "vo_actor": "M0_EGG_NOTE", "hold": ["INTEL", 8.0] },
-        { "at_n": 1, "vo_squad": "M0_EGG_NOTE_FIRST", "exclude_last": true, "delay": 4.0 },
-        { "at_n": 2, "vo_squad": "M0_EGG_NOTE_TWO", "exclude_last": true, "delay": 4.0 }
+        { "vo_actor": "M0_EGG_NOTE", "hold": ["INTEL", 8.0], "patience": 8.0 },
+        { "at_n": 1, "vo_squad": "M0_EGG_NOTE_FIRST", "exclude_last": true, "delay": 4.0, "while_active": "s1_notes", "patience": 20.0 },
+        { "at_n": 2, "vo_squad": "M0_EGG_NOTE_TWO", "exclude_last": true, "delay": 4.0, "while_active": "s1_notes", "patience": 20.0 }
       ],
       "on_complete": [
         { "vo_retire": ["FAS_M0_R7_01"] }
@@ -39,6 +39,7 @@
         { "vo_squad": "M0_EGG_NOTES_DONE", "exclude_last": true, "delay": 7.0 }
       ],
       "on_input_ok": [
+        { "at_n": 1, "vo_retire": ["FAS_M0_R1_01"] },
         { "at_n": 1, "on_vo": "FAS_M0_FREQ1_01", "after_end": 1.0, "expire_s": 30.0, "vo_squad": "M0_EGG_LOCK1" },
         { "at_n": 2, "on_vo": "FAS_M0_FREQ2_01", "after_end": 1.0, "expire_s": 30.0, "vo_squad": "M0_EGG_LOCK2" }
       ],
