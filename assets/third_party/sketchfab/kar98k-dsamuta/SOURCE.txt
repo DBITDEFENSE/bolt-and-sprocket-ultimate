@@ -1,0 +1,11 @@
+Title: Kar98k Free Model
+Author: Danya (@dsamuta)
+Source: https://sketchfab.com/3d-models/kar98k-free-model-e88c90c8e203401fa28e8f4ef03e657f
+Author URL: https://sketchfab.com/dsamuta
+License: CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+Credit line: "Kar98k Free Model" by Danya (https://sketchfab.com/3d-models/kar98k-free-model-e88c90c8e203401fa28e8f4ef03e657f), licensed under CC-BY 4.0. Modified.
+Format: GLB (Sketchfab auto-conversion, the larger 'model.glb' download) re-exported with Blender 5.1 (tools_src/blender/convert_to_glb.py): transforms applied, parts kept as named nodes, textures re-encoded as PNG and capped at 2K (smaller parts 1K/512 by texel density), black emissive maps dropped
+Downloaded: 2026-10-25 by Devin Blair (Sketchfab); converted 2026-10-25 by Claude (T-087)
+Files used: model.glb, textures/kar98k_dsamuta_material_005_normal.png, textures/kar98k_dsamuta_material_005_orm.png, textures/kar98k_dsamuta_material_005_albedo.png, textures/kar98k_dsamuta_material_003_normal.png, textures/kar98k_dsamuta_material_003_orm.png, textures/kar98k_dsamuta_material_003_albedo.png, textures/kar98k_dsamuta_material_002_normal.png, textures/kar98k_dsamuta_material_002_orm.png, textures/kar98k_dsamuta_material_002_albedo.png, textures/kar98k_dsamuta_material_001_normal.png, textures/kar98k_dsamuta_material_001_orm.png, textures/kar98k_dsamuta_material_001_albedo.png, textures/kar98k_dsamuta_material_normal.png, textures/kar98k_dsamuta_material_orm.png, textures/kar98k_dsamuta_material_albedo.png
+Game use: kar98k
+Notes: Five textured parts; the bolt (with its handle) is its own mesh. A stray untextured cartridge that floated above the action (p_low/f_low) was dropped. 2K textures on the stock, barrel and receiver, 1K bolt, 512 rear sight.

@@ -1,0 +1,11 @@
+Title: M1 Garand ( US Rifle, Caliber .30, M1)
+Author: Sky_Hunter (@Sky_Hunter)
+Source: https://sketchfab.com/3d-models/m1-garand-us-rifle-caliber-30-m1-1be4bb0f8c05423abdccb50b779de6e6
+Author URL: https://sketchfab.com/Sky_Hunter
+License: CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+Credit line: "M1 Garand ( US Rifle, Caliber .30, M1)" by Sky_Hunter (https://sketchfab.com/3d-models/m1-garand-us-rifle-caliber-30-m1-1be4bb0f8c05423abdccb50b779de6e6), licensed under CC-BY 4.0. Modified.
+Format: GLB (Sketchfab auto-conversion, the larger 'model.glb' download) re-exported with Blender 5.1 (tools_src/blender/convert_to_glb.py): transforms applied, parts kept as named nodes, textures re-encoded as PNG and capped at 2K (smaller parts 1K/512 by texel density), black emissive maps dropped
+Downloaded: 2026-10-25 by Devin Blair (Sketchfab); converted 2026-10-25 by Claude (T-087)
+Files used: model.glb, textures/m1_garand_sky_hunter_m1_garand_normal.png, textures/m1_garand_sky_hunter_m1_garand_orm.png, textures/m1_garand_sky_hunter_m1_garand_albedo.png, textures/m1_garand_sky_hunter_bullets_normal.png, textures/m1_garand_sky_hunter_bullets_orm.png, textures/m1_garand_sky_hunter_bullets_albedo.png
+Game use: m1_garand
+Notes: One gun mesh (no separate bolt / op rod) plus a loose en-bloc clip with eight rounds floating above the receiver (the Clip part; phase 2 parents it to the reload hand). 2K textures on the gun, 512 on the clip.

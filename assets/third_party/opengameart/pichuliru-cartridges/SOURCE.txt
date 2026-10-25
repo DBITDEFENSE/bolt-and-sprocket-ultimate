@@ -1,0 +1,12 @@
+Title: Ultimate Low Poly Guns: Cartridges (main set)
+Author: TastyTony (gun models); Pichuliru (pack, palette, rigs)
+Source: https://opengameart.org/content/ultimate-low-poly-guns
+Author URL: https://sketchfab.com/TastyTony ; https://opengameart.org/users/pichuliru
+File: https://opengameart.org/sites/default/files/ultimate_low_poly_guns.zip (Cartridges/Cartridges.blend)
+License: CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+Credit line: Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)
+Format: Blender .blend (one rigged mesh, one palette material, 8x8 PichuliruPalette.png) converted with Blender 5.1 (tools_src/blender/convert_to_glb.py): the armature dropped, the mesh split by vertex group into named parts, the palette exported as a nearest-filtered PNG
+Downloaded: 2026-10-25 by Devin Blair (zip in assets/user_supplied/packs) and by Claude (main set zip); converted 2026-10-25 by Claude (T-087)
+Files used: model.glb, textures/pichuliru_cartridges_ultimatelowpolyguns_albedo.png
+Game use: extras (casings)
+Notes: 15 cartridges as named nodes (12_Gauge, 45_ACP, 9x19mm, 7_62x51mm, 7_62x54mmR, 50_BMG, 44_Magnum, 9x18mm, ...), metres, each standing on +Y at its own offset. Casings for the shell-ejection VFX (section 6).
