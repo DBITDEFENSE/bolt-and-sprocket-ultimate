@@ -1,5 +1,5 @@
 {
-  "_doc": "The CC0 prop library (UPDATE_05 / 05A section 1.3, T-088). PropLibrary.instance(key) -> Node3D 'Prop_<key>' with the GLB scaled to metres (scale), pivoted (pivot: base = footprint centre on the floor, top = hanging from its top centre, file = the file's origin), collision stripped. size_m = the AABB in metres after scale (x, y, z; test_prop_library checks the loaded model is within 12% of it); tris = LOD0 triangles from tools/asset_report.sh; over_budget marks props above ART_BIBLE's 3k prop budget that want a Blender decimate pass (tools_src/blender/) before they go on a map. place = where Map 0 wants it (environment builder's notes).",
+  "_doc": "The CC0 prop library (UPDATE_05 / 05A section 1.3, T-088). PropLibrary.instance(key) -> Node3D 'Prop_<key>' with the GLB scaled to metres (scale), pivoted (pivot: base = footprint centre on the floor, top = hanging from its top centre, file = the file's origin), collision stripped. size_m = the AABB in metres after scale (x, y, z; test_prop_library checks the loaded model is within 12% of it); tris = LOD0 triangles from tools/asset_report.sh; over_budget marks props above ART_BIBLE's 3k prop budget that want a Blender decimate pass (tools_src/blender/) before they go on a map. place = where Map 0 wants it (environment builder's notes). target_tris = the decimate target when it differs from the 3k default (tools/decimate_props.py).",
   "props": {
     "barrel_wine": {
       "path": "res://assets/third_party/polyhaven/wine-barrel-01/model.glb",
@@ -10,9 +10,11 @@
         0.871,
         0.756
       ],
-      "tris": 10820,
+      "tris": 3998,
       "over_budget": true,
-      "place": "the cellar casks (1937/41/43 are bigger: scale 1.3), the yard, the stable"
+      "place": "the cellar casks (1937/41/43 are bigger: scale 1.3), the yard, the stable",
+      "target_tris": 4000,
+      "decimated": "Blender collapse to 4000 (tools/decimate_props.py)"
     },
     "barrel_steel": {
       "path": "res://assets/third_party/polyhaven/barrel-03/model.glb",
@@ -35,9 +37,9 @@
         0.35,
         0.409
       ],
-      "tris": 6576,
-      "over_budget": true,
-      "place": "stable crates, the cargo in the field"
+      "tris": 2997,
+      "place": "stable crates, the cargo in the field",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
     },
     "crate_wood_b": {
       "path": "res://assets/third_party/polyhaven/wooden-crate-02/model.glb",
@@ -48,9 +50,9 @@
         0.464,
         1.166
       ],
-      "tris": 5176,
-      "over_budget": true,
-      "place": "the salt-lamp crate SALZ, the loft crates"
+      "tris": 2999,
+      "place": "the salt-lamp crate SALZ, the loft crates",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
     },
     "crate_military": {
       "path": "res://assets/third_party/polyhaven/wooden-military-crate/model.glb",
@@ -61,9 +63,11 @@
         0.465,
         0.52
       ],
-      "tris": 22986,
+      "tris": 3997,
       "over_budget": true,
-      "place": "the billet crates, GRAVELIGHT ONE's thrown cargo (stencil the P-W-K mark, never a real one)"
+      "place": "the billet crates, GRAVELIGHT ONE's thrown cargo (stencil the P-W-K mark, never a real one)",
+      "target_tris": 4000,
+      "decimated": "Blender collapse to 4000 (tools/decimate_props.py)"
     },
     "table_rect": {
       "path": "res://assets/third_party/polyhaven/wooden-table-02/model.glb",
@@ -86,9 +90,11 @@
         0.724,
         1.007
       ],
-      "tris": 8640,
+      "tris": 3498,
       "over_budget": true,
-      "place": "the table by the hearth (Frau Pohl's coffee)"
+      "place": "the table by the hearth (Frau Pohl's coffee)",
+      "target_tris": 3500,
+      "decimated": "Blender collapse to 3500 (tools/decimate_props.py)"
     },
     "bench_painted": {
       "path": "res://assets/third_party/polyhaven/painted-wooden-bench/model.glb",
@@ -123,9 +129,9 @@
         0.437,
         0.442
       ],
-      "tris": 10946,
-      "over_budget": true,
-      "place": "the guard's stool at the cage, the bar"
+      "tris": 2999,
+      "place": "the guard's stool at the cage, the bar",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
     },
     "nightstand": {
       "path": "res://assets/third_party/polyhaven/painted-wooden-nightstand/model.glb",
@@ -148,9 +154,11 @@
         1.201,
         2.002
       ],
-      "tris": 49990,
+      "tris": 6000,
       "over_budget": true,
-      "place": "the guest rooms' beds (Props.bed's blanket stays on top)"
+      "place": "the guest rooms' beds (Props.bed's blanket stays on top)",
+      "target_tris": 6000,
+      "decimated": "Blender collapse to 6000 (tools/decimate_props.py)"
     },
     "suitcase_set": {
       "path": "res://assets/third_party/polyhaven/vintage-suitcase/model.glb",
@@ -161,9 +169,11 @@
         0.568,
         0.239
       ],
-      "tris": 16474,
+      "tris": 4496,
       "over_budget": true,
-      "place": "Frau Pohl's suitcase, Room 1's open case, the road's cases (a set of three; split in Blender if one is wanted)"
+      "place": "Frau Pohl's suitcase, Room 1's open case, the road's cases (a set of three; split in Blender if one is wanted)",
+      "target_tris": 4500,
+      "decimated": "Blender collapse to 4500 (tools/decimate_props.py)"
     },
     "bucket_wood": {
       "path": "res://assets/third_party/polyhaven/wooden-bucket-01/model.glb",
@@ -174,9 +184,9 @@
         0.55,
         0.342
       ],
-      "tris": 5116,
-      "over_budget": true,
-      "place": "Fanny's stall, the well, the loft"
+      "tris": 2997,
+      "place": "Fanny's stall, the well, the loft",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
     },
     "lantern_oil": {
       "path": "res://assets/third_party/polyhaven/lantern-01/model.glb",
@@ -187,9 +197,10 @@
         0.294,
         0.097
       ],
-      "tris": 33902,
-      "over_budget": true,
-      "place": "the hanging TapLamps / HallLamp / StableLamps (Props.lantern keeps the light and the LampSway hit volume)"
+      "tris": 2999,
+      "place": "the hanging TapLamps / HallLamp / StableLamps (Props.lantern keeps the light and the LampSway hit volume)",
+      "target_tris": 3000,
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
     },
     "lantern_wood": {
       "path": "res://assets/third_party/polyhaven/wooden-lantern-01/model.glb",
@@ -200,9 +211,9 @@
         0.53,
         0.235
       ],
-      "tris": 8321,
-      "over_budget": true,
-      "place": "the yard's and woodshed's lamps, the cellar's installers' lantern"
+      "tris": 2996,
+      "place": "the yard's and woodshed's lamps, the cellar's installers' lantern",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
     },
     "lamp_oil_table": {
       "path": "res://assets/third_party/polyhaven/vintage-oil-lamp/model.glb",
@@ -213,9 +224,9 @@
         0.802,
         0.22
       ],
-      "tris": 7208,
-      "over_budget": true,
-      "place": "the signals table, the guest rooms' nightstands"
+      "tris": 2999,
+      "place": "the signals table, the guest rooms' nightstands",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
     },
     "bottles_wine": {
       "path": "res://assets/third_party/polyhaven/wine-bottles-01/model.glb",
@@ -226,9 +237,10 @@
         0.331,
         0.081
       ],
-      "tris": 28848,
-      "over_budget": true,
-      "place": "the bar's back shelves (a row of three; the ShatterSet glass stays the generator's)"
+      "tris": 2997,
+      "place": "the bar's back shelves (a row of three; the ShatterSet glass stays the generator's)",
+      "target_tris": 3000,
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
     },
     "jug_ceramic": {
       "path": "res://assets/third_party/polyhaven/jug-01/model.glb",
@@ -239,9 +251,9 @@
         0.211,
         0.168
       ],
-      "tris": 5770,
-      "over_budget": true,
-      "place": "the bar, the kitchen pass"
+      "tris": 3000,
+      "place": "the bar, the kitchen pass",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
     },
     "spade_rusted": {
       "path": "res://assets/third_party/polyhaven/rusted-spade-01/model.glb",
@@ -252,9 +264,9 @@
         1.101,
         0.046
       ],
-      "tris": 11436,
-      "over_budget": true,
-      "place": "the coal shovel (CoalShovel keeps its gameplay node), the woodshed"
+      "tris": 2999,
+      "place": "the coal shovel (CoalShovel keeps its gameplay node), the woodshed",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
     },
     "axe_wood": {
       "path": "res://assets/third_party/polyhaven/wooden-axe-03/model.glb",
@@ -265,9 +277,9 @@
         0.632,
         0.158
       ],
-      "tris": 3886,
-      "over_budget": true,
-      "place": "in the chopping block by the woodshed"
+      "tris": 3000,
+      "place": "in the chopping block by the woodshed",
+      "decimated": "Blender collapse to 3000 (tools/decimate_props.py)"
     },
     "stump_chopping": {
       "path": "res://assets/third_party/polyhaven/tree-stump-01/model.glb",
@@ -278,9 +290,11 @@
         0.573,
         1.59
       ],
-      "tris": 41046,
+      "tris": 4000,
       "over_budget": true,
-      "place": "the chopping block by the woodshed"
+      "place": "the chopping block by the woodshed",
+      "target_tris": 4000,
+      "decimated": "Blender collapse to 4000 (tools/decimate_props.py)"
     },
     "firewood_bundle": {
       "path": "res://assets/third_party/kenney/survival-kit/firewood.glb",

@@ -134,12 +134,15 @@ static func _surface_tris(m: Mesh, s: int) -> int:
 		count = (idx as PackedInt32Array).size()
 	elif arrays[Mesh.ARRAY_VERTEX] != null:
 		count = (arrays[Mesh.ARRAY_VERTEX] as PackedVector3Array).size()
-	match m.surface_get_primitive_type(s):
-		Mesh.PRIMITIVE_TRIANGLES:
-			return count / 3
-		Mesh.PRIMITIVE_TRIANGLE_STRIP:
-			return maxi(0, count - 2)
-	return 0
+	if m is ArrayMesh:   # primitive meshes (Box, Cylinder, ...) are always triangle lists
+		match (m as ArrayMesh).surface_get_primitive_type(s):
+			Mesh.PRIMITIVE_TRIANGLES:
+				return count / 3
+			Mesh.PRIMITIVE_TRIANGLE_STRIP:
+				return maxi(0, count - 2)
+			_:
+				return 0
+	return count / 3
 
 
 ## 4.7 exposes no getter for an imported ArrayMesh's LOD chain, so the column reports the import preset's choice:
