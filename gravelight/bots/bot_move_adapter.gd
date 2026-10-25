@@ -438,7 +438,7 @@ func slot_point(leader: Player) -> Vector3:
 	var fallback: Vector3 = Vector3.INF
 	for want: Vector3 in cands:
 		var p: Vector3 = NavigationServer3D.map_get_closest_point(nav, want)
-		if p.distance_to(want) < 1.0 and absf(p.y - leader.global_position.y) < 1.5:
+		if p.distance_to(want) < 1.0 and absf(p.y - leader.global_position.y) < 1.5 and not BotLocomotion.walled(player, leader.global_position, p):
 			if squad.choke_at(p).is_empty() and not in_danger(p) and not squad.on_human_line(p, 1.1):
 				return p
 			if fallback == Vector3.INF:
