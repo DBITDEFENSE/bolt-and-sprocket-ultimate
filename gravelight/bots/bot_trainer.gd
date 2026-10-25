@@ -222,6 +222,8 @@ static func dead_reckon(last_pos: Vector3, me: Vector3, speed: float, age_s: flo
 func value() -> float:
 	if not brain.armed() or RoundManager.state != RoundManager.State.ROUND:
 		return 0.0
+	if brain.crawler != null and brain.crawler.holding():
+		return 0.0   # pass 3: the crawler break (errands, not a train)
 	var now: float = brain.squad.time()
 	if now >= _loop_t or (route == null and _routes.is_empty()):
 		_refresh_routes(now)
@@ -389,7 +391,7 @@ func run(delta: float) -> void:
 	var stamina: float = float(player.get("_stamina")) if player.get("_stamina") != null else 4.0
 	var can_sprint: bool = unlimited or stamina > _f("stamina_keep_s", 0.8)
 	var reload_due: bool = w != null and w.reserve > 0 and (mag <= 0 or (float(mag) / float(maxi(1, w.mag_size())) < _f("reload_frac", 0.4) \
-			and head_d > gap + _f("reload_gap_extra_m", 1.0)))
+			and head_d > _partial_room(w, gap)))
 	var can_face: bool = followers > 0 and mag > 0 and not brain.aim.reloading and not reload_due
 	var want: Phase = Phase.RUN
 	# the head this close: away at a sprint (with Marathon's endless sprint it keeps a wider gap: a sprint costs
@@ -506,14 +508,18 @@ func _run(delta: float, gap: float, w: WeaponInstance) -> void:
 	# an empty gun is reloaded on the walk unless the head is right on us (sprinting and reloading don't mix: the
 	# player's own rule); a part-empty one only with the gap to spare
 	var dry: bool = w != null and w.mag <= 0 and w.reserve > 0
-	var reload_safe_m: float = head_reach + _f("reload_dry_m", 0.9)
+	# pass 3: a dry reload starts only with room for the whole of it at a walk (the head closes at its speed less
+	# the walk's for the reload's length) and, once started, is given up only when the head is about to swing: the
+	# pass-2 rule (start at reach + 0.9, cancel under it) started and cancelled it every frame with a runner on its
+	# heels, and the agent ran a whole train dry (the round-7/8 downs on the Well Loop)
+	var reload_safe_m: float = reload_room_m(w, head_speed, head_reach, c) if w != null else head_reach + _f("reload_dry_m", 0.9)
 	if brain.aim.reloading and urg >= 0.7:
-		if head_d < (reload_safe_m if dry else gap * 0.7):
+		if head_d < (head_reach + _f("reload_cancel_m", 0.25) if dry else gap * 0.7):
 			brain.aim.cancel_reload()
 		else:
 			urg = 0.5
 	if w != null and not brain.aim.reloading and w.reserve > 0 and ((dry and head_d >= reload_safe_m) \
-			or (float(w.mag) / float(maxi(1, w.mag_size())) < _f("reload_frac", 0.4) and head_d > gap + _f("reload_gap_extra_m", 1.0) and urg < 0.7)):
+			or (float(w.mag) / float(maxi(1, w.mag_size())) < _f("reload_frac", 0.4) and head_d > _partial_room(w, gap) and urg < 0.7)):
 		brain.aim.start_reload()
 		urg = 0.5
 	_flow(delta, urg)
@@ -523,6 +529,26 @@ func _run(delta: float, gap: float, w: WeaponInstance) -> void:
 		# gathering: only what is in the way (in front) is shot
 		if to.length() > 0.5 and _kite_dir != Vector3.ZERO and _kite_dir.angle_to(to.normalized()) < deg_to_rad(_f("run_fire_deg", 60.0)):
 			brain.aim.update(delta, true)
+
+
+## Pure (pass 3): how far the train's head must be for a whole reload of `w` at a walk: its reach, plus what it
+## closes in the reload's time (its speed less the walk), plus reload_dry_m.
+static func reload_room_m(w: WeaponInstance, speed: float, reach: float, cfg: Dictionary) -> float:
+	var t: float = w.f("reload_empty", 2.5) if w.mag <= 0 else w.f("reload_partial", 2.0)
+	return reload_room(t, speed, reach, cfg)
+
+
+## The head's distance a part-empty reload needs (pass 3: the reload's own room, not the gap + 1 m of pass 2, which
+## a runner train never gave it, so the Thompson was sprayed dry first).
+func _partial_room(w: WeaponInstance, gap: float) -> float:
+	if not bool(c.get("reload_by_room", true)):
+		return gap + _f("reload_gap_extra_m", 1.0)
+	return reload_room_m(w, head_speed, head_reach, c) + _f("reload_room_extra_m", 0.4)
+
+
+static func reload_room(reload_s: float, speed: float, reach: float, cfg: Dictionary) -> float:
+	var walk: float = float(GLData.table("player").get("walk_speed", 4.5)) * 0.95
+	return reach + maxf(0.0, speed - walk) * reload_s + float(cfg.get("reload_dry_m", 0.9))
 
 
 ## Turned on the train: fire into it while backing round the loop at a walk; stand still while it is far (it

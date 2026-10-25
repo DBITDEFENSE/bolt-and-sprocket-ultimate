@@ -35,6 +35,10 @@ var boss_near: Zombie = null
 var attention: Vector3 = Vector3.INF
 var attention_until: float = 0.0
 var rays_used: int = 0
+## T-071 pass 3 (the player bot's crawler break, AgentCrawler): a zombie left out of the known set (threat, pressure,
+## nearest, targets) while it is further than ignore_within_m.
+var ignore: Zombie = null
+var ignore_within_m: float = 3.0
 
 
 func setup(p: Player, s: BotSquad) -> void:
@@ -116,6 +120,8 @@ func _rebuild(now: float) -> void:
 		var ed: Dictionary = en
 		var z: Zombie = ed.get("node") as Zombie
 		if not targetable(z):
+			continue
+		if ignore != null and z == ignore and _flat(ed["pos"], player.global_position) > ignore_within_m:
 			continue
 		known.append(ed)
 		var zp: Vector3 = ed["pos"]

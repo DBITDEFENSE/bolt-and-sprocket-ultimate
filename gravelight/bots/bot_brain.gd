@@ -79,6 +79,8 @@ var bonus_said: bool = false
 ## in squad.brains), and its trainer (BotTrainer) runs the lead_train action.
 var is_player_bot: bool = false
 var trainer: BotTrainer = null
+## T-071 pass 3: the player bot's crawler break (AgentCrawler; null for the bots).
+var crawler: AgentCrawler = null
 ## The legacy squad order (BotConfig.COMMANDS) this bot follows; `order_id()` is the full one.
 var command: StringName = &"follow"
 
@@ -403,6 +405,8 @@ func _set_action(id: String) -> void:
 
 func _think() -> void:
 	var now: float = squad.time()
+	if crawler != null:
+		crawler.think(now)
 	perception.sense(now)
 	squad.update_shared(now)
 	aim.force_slot = forced_slot()
@@ -592,6 +596,8 @@ func armed() -> bool:
 
 
 func in_break() -> bool:
+	if crawler != null and crawler.holding():
+		return true   # T-071 pass 3: the round's last zombie crawling behind: errands as in a break
 	return RoundManager.state != RoundManager.State.ROUND or (RoundManager.to_spawn <= 0 and perception.known.is_empty() and squad.director() != null and squad.director().active_zombies().is_empty())
 
 

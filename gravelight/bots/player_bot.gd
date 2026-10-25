@@ -147,6 +147,8 @@ func _enable(reason: String) -> bool:
 	trainer = BotTrainer.new()
 	trainer.setup(brain)
 	brain.trainer = trainer
+	brain.crawler = AgentCrawler.new()   # T-071 pass 3: the crawler break
+	brain.crawler.setup(brain)
 	if brain.loco is BotLocomotion:
 		(brain.loco as BotLocomotion).skill_override = str(_cfg.get("skill", ""))
 		var turn: Dictionary = (_cfg.get("turn", {}) as Dictionary).duplicate()

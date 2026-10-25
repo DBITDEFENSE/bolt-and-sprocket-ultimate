@@ -33,9 +33,11 @@
   },
   "plans": {
     "_doc": "T-071 pass 2: the agent's game plan per map (AgentPlan, gravelight/bots/agent_plan.gd): steps in the order a skilled solo player spends ({door}, {power}, {perk}, {gun, or_tier}, {crucible}; optional from_round); the agent's economy only buys what the current step needs (plus ammo, boards, the power switch). train_at: the loops it prefers, best first (BotTrainer adds trainer.plan_bonus / place). With every step done the ordinary economy takes over.",
+    "skip_ahead": 2,
+    "_skip_doc": "T-071 pass 3: while the current step can't be done (unaffordable: the next skip_ahead steps that are cheaper may go first; affordable but waiting for its moment, e.g. a perk in the cellar mid-round: any of them). A step with firm: true is never jumped (AgentPlan.later_steps). A map's plan may set its own skip_ahead.",
     "map00": {
       "_why": "Crossroads Inn solo: the Garand off the taproom wall (one-shot heads to round 4), the cellar door for the power, Second Wind (the solo self-revive) and Ironhide (5 hits), then the stable and the yard: the Well Loop is the map's open ground (measured: 2-4 hits a training minute against 10-15 on the taproom's ring round its four windows) with the Thompson chalked on the stable wall beside it (wall ammo on a lap); Marathon (an endless sprint outruns the runners from round 8), then the Thompson into the Crucible.",
-      "steps": [{"gun": "m1_garand", "or_tier": 2.4}, {"door": "door_cellar"}, {"power": true}, {"perk": "second_wind"}, {"perk": "ironhide_stout"}, {"door": "door_stable"}, {"door": "door_yard"},
+      "steps": [{"gun": "m1_garand", "or_tier": 2.4}, {"door": "door_cellar"}, {"power": true}, {"perk": "second_wind"}, {"perk": "ironhide_stout", "firm": true}, {"door": "door_stable"}, {"door": "door_yard"},
         {"gun": "thompson", "or_tier": 3.6}, {"perk": "marathon_malt"}, {"crucible": "*"}, {"perk": "trigger_tonic"}],
       "train_at": ["map00_yard_well", "map00_taproom"]
     },
@@ -45,6 +47,16 @@
         {"door": "door_lift"}, {"door": "door_gen"}, {"power": true}, {"perk": "ironhide_stout"}, {"perk": "marathon_malt"}, {"gun": "stg44", "or_tier": 4.2}],
       "train_at": ["map01_turbines", "map01_pews", "map01_headframe"]
     }
+  },
+  "crawler": {
+    "_doc": "T-071 pass 3: the crawler break (AgentCrawler, gravelight/bots/agent_crawler.gd). With the round down to its last zombie (nothing left to spawn, from from_round, never a special round) and an errand pending (the plan's step affordable and reachable, a Second Wind rebuy, the main gun under ammo_frac), the agent shoots its legs until it crawls (giving up after make_max_s or when the sever roll fails), then does its errands as in a break while it crawls (left out of the threat picture beyond ignore_within_m), and kills it once nothing is left to do for done_s (or after hold_max_s). Solo or with no bot teammates only.",
+    "enabled": true,
+    "from_round": 2,
+    "make_max_s": 12.0,
+    "hold_max_s": 45.0,
+    "done_s": 2.5,
+    "ignore_within_m": 3.0,
+    "ammo_frac": 0.5
   },
   "trainer": {
     "_doc": "BotTrainer: training the horde round a TrainingRoute (routes_<map>.json). The train: zombies following within follow_m behind on the loop (or within close_m anywhere). Gaps (flat metres to the train's head, the nearest follower): gap = its reach (ai_counters reach_m, 1.5 by default) + gap_margin_m + head speed x gap_per_speed_s (a runner gets more room); the agent runs (faces the way) when the head is inside gap, sprints inside gap - sprint_inside_m, turns to fire once it is beyond gap + turn_extra_m with the next ahead_need_m of the loop clear, and holds still to let a far train bunch up beyond hold_extra_m. A turn lasts at most face_max_s, then a glance forward of run_min_s (it can't see ahead while it looks back: no wallhacks). A zombie on the loop ahead within cut_m is a cutter: shot when the train is at least cut_kill_gap_m behind, passed on the ring's far side when there is room (pass_min_ring_m), else the loop is reversed when the other way is clear for reverse_clear_m. Unseen zombies' remembered positions are advanced toward the agent at their speed for up to dead_reckon_s (the train follows; a person knows that).",

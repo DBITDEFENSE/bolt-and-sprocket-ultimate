@@ -271,6 +271,13 @@ func _update_weak_point() -> void:
 func aim_point(z: Zombie) -> Vector3:
 	if z == target and aim_node != null and is_instance_valid(aim_node):
 		return aim_node.global_position
+	if brain.crawler != null and brain.crawler.making(z):
+		var lhb: Variant = z.get("_hitboxes")
+		if lhb is Array:
+			for hb0: Variant in lhb:
+				if hb0 is Hitbox and (hb0 as Hitbox).limb == &"legs":
+					return (hb0 as Hitbox).global_position   # T-071 pass 3: its legs, for a crawler
+		return z.global_position + Vector3.UP * 0.45
 	if aim_head and z == target:
 		var hbs: Variant = z.get("_hitboxes")
 		if hbs is Array:
@@ -892,6 +899,8 @@ func _try_melee_target() -> void:
 		return
 	if bool(BotAIData.counter(z.enemy_id).get("never_melee", false)) or BotPerception.is_boss(z):
 		return
+	if brain.crawler != null and brain.crawler.target == z:
+		return   # (the crawler break's zombie: legs, not the knife)
 	var w: WeaponInstance = cur()
 	var dry: bool = w == null or w.mag <= 0 or reloading
 	var lone: bool = RoundManager.current_round <= int(_m.get("early_round_max", 5)) and per.count_near(player.global_position, float(_m.get("lone_radius_m", 6.0))) <= 1

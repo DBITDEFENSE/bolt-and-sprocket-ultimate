@@ -511,6 +511,9 @@ func _update_hunt(now: float) -> void:
 	if act.is_empty() or act.size() > int(hc.get("max_left", 2)):
 		_stall_since = -1.0
 		return
+	if player_bot != null and player_bot.crawler != null and player_bot.crawler.state != AgentCrawler.State.NONE:
+		_stall_since = -1.0
+		return   # T-071 pass 3: the agent's crawler break (it knows where its crawler is)
 	if _stall_since < 0.0:
 		_stall_since = now
 	if now - _stall_since < float(hc.get("after_s", 12.0)):
@@ -535,8 +538,8 @@ func hunt_point() -> Vector3:
 ## open): the one whose line passes nearest the leader, on their floor, within route_max_m; none (null: the
 ## locomotion layer's free loop round the human) otherwise. Refreshed with the roles.
 func _pick_route() -> void:
-	var leader: Player = leader_for_player(brains[0].player) if not brains.is_empty() else null
-	if leader == null or map == null:
+	var leader: Player = leader_for_player(brains[0].player) if not brains.is_empty() else (player_bot.player if player_bot != null else null)
+	if leader == null or map == null:   # (T-071 pass 3: solo, the agent's own brain: it gets its home loop too)
 		blackboard.route = null
 		return
 	var best: TrainingRoute = null
@@ -556,6 +559,17 @@ func _pick_route() -> void:
 		for r2: TrainingRoute in TrainingRoute.for_map(String(map.map_id)):
 			if r2.home > 0.0 and (home == null or r2.home > home.home):
 				home = r2
+		if player_bot != null:
+			# T-071 pass 3: the agent's home is its plan's first open training ground (the yard once it is open)
+			var order: Array = AgentPlan.plan_for(TrainingRoute.map_key_of(String(map.map_id))).get("train_at", [])
+			var open_r: Array[TrainingRoute] = TrainingRoute.for_map(String(map.map_id), true)
+			for rid: Variant in order:
+				for r3: TrainingRoute in open_r:
+					if r3.id == str(rid):
+						home = r3
+						break
+				if home != null and home.id == str(rid):
+					break
 		if best == null:
 			best = home
 	blackboard.route = best

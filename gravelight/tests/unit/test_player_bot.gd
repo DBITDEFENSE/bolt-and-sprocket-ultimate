@@ -233,3 +233,31 @@ func test_plans_name_real_things() -> void:
 				assert_true((GLData.table("weapons")["weapons"] as Dictionary).has(str(sd["gun"])), "gun %s exists" % sd["gun"])
 	assert_gt(AgentPlan.loop_bonus("map00", "map00_yard_well", 8.0), AgentPlan.loop_bonus("map00", "map00_taproom", 8.0))
 	assert_eq(AgentPlan.loop_bonus("map00", "map00_stable", 8.0), 0.0)
+
+
+# ---------------------------------------------------------------- pass 3: skip-ahead, the dry reload's room
+
+func test_agent_plan_later_steps() -> void:
+	var steps: Array = [{"gun": "m1_garand"}, {"door": "door_cellar"}, {"perk": "second_wind"}, {"door": "door_stable"},
+		{"perk": "ironhide_stout", "firm": true}, {"perk": "marathon_malt"}]
+	var prices: Dictionary = {0: 600, 1: 1500, 2: 500, 3: 1000, 4: 2500, 5: 2000}
+	var st: Dictionary = {"doors": {}, "power": false, "perks": [], "guns": [{"id": "m1_garand", "upgraded": false, "tier": 2.4}], "round": 3}
+	# the cellar (1500) unaffordable: of the next two, the cheaper ones may go first
+	assert_eq(AgentPlan.later_steps(steps, st, 2, prices, 900), [steps[2], steps[3]])
+	assert_eq(AgentPlan.later_steps(steps, st, 1, prices, 900), [steps[2]], "only the next n")
+	st["doors"]["door_cellar"] = true
+	# Second Wind (500) affordable but waiting (mid-round in the cellar): any of the next n
+	assert_eq(AgentPlan.later_steps(steps, st, 2, prices, 1200), [steps[3], steps[4]])
+	assert_eq(AgentPlan.later_steps(steps, st, 2, prices, 300), [], "unaffordable: nothing dearer jumps it")
+	st["perks"] = ["second_wind"]
+	st["doors"]["door_stable"] = true
+	assert_eq(AgentPlan.later_steps(steps, st, 2, prices, 2000), [], "a firm step is never jumped")
+	assert_eq(AgentPlan.later_steps(steps, st, 0, prices, 2000), [])
+
+
+func test_reload_room() -> void:
+	var cfg: Dictionary = {"reload_dry_m": 0.9}
+	var walk: float = float(GLData.table("player").get("walk_speed", 4.5)) * 0.95
+	assert_almost_eq(BotTrainer.reload_room(2.2, 2.0, 1.5, cfg), 2.4, 0.001, "a walker never closes on a walk: reach + margin")
+	assert_almost_eq(BotTrainer.reload_room(2.2, 4.8, 1.5, cfg), 2.4 + (4.8 - walk) * 2.2, 0.001, "a runner closes for the reload's length")
+	assert_gt(BotTrainer.reload_room(6.5, 4.8, 1.5, cfg), BotTrainer.reload_room(2.2, 4.8, 1.5, cfg), "a long reload needs more room")
