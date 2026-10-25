@@ -1,0 +1,11 @@
+Title: Ultimate Low Poly Guns: M1 Garand (World War 2 set)
+Author: TastyTony (gun models); Pichuliru (pack, palette, rigs)
+Source: https://opengameart.org/content/ultimate-low-poly-guns
+Author URL: https://sketchfab.com/TastyTony ; https://opengameart.org/users/pichuliru
+File: https://opengameart.org/sites/default/files/ultimate_low_poly_guns_world_war_2.zip (Rifles/M1 Garand.blend)
+License: CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+Credit line: Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)
+Format: Blender .blend (one rigged mesh, one palette material, 8x8 PichuliruPalette.png) converted with Blender 5.1 (tools_src/blender/convert_to_glb.py): the armature dropped, the mesh split by vertex group into named parts, the palette exported as a nearest-filtered PNG
+Downloaded: 2026-10-25 by Devin Blair (zip in assets/user_supplied/packs) and by Claude (main set zip); converted 2026-10-25 by Claude (T-087)
+Files used: model.glb, textures/tt_m1_garand_ultimatelowpolyguns_albedo.png
+Game use: m1_garand (fallback / third-person LOD; the viewmodel uses the Sketchfab model)

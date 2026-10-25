@@ -1,0 +1,12 @@
+Title: Ultimate Low Poly Guns: Double Barrel (main set)
+Author: TastyTony (gun models); Pichuliru (pack, palette, rigs)
+Source: https://opengameart.org/content/ultimate-low-poly-guns
+Author URL: https://sketchfab.com/TastyTony ; https://opengameart.org/users/pichuliru
+File: https://opengameart.org/sites/default/files/ultimate_low_poly_guns.zip (Shotguns/Double Barrel.blend)
+License: CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+Credit line: Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)
+Format: Blender .blend (one rigged mesh, one palette material, 8x8 PichuliruPalette.png) converted with Blender 5.1 (tools_src/blender/convert_to_glb.py): the armature dropped, the mesh split by vertex group into named parts, the palette exported as a nearest-filtered PNG
+Downloaded: 2026-10-25 by Devin Blair (zip in assets/user_supplied/packs) and by Claude (main set zip); converted 2026-10-25 by Claude (T-087)
+Files used: model.glb, textures/tt_double_barrel_ultimatelowpolyguns_albedo.png
+Game use: sawed_off
+Notes: A full-length side-by-side (1.13 m). The game's Sawed-Off is this gun with the barrels cut and the stock shortened: Barrels is a separate part, so phase 2 can clip it (the mesh's barrel geometry is a straight extrusion) or scale the long axis.

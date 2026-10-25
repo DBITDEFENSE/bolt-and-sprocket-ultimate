@@ -11,3 +11,9 @@ morning/screenshots/
 morning/clips/
 logs/
 __pycache__/
+
+# UPDATE 05 asset intake (T-087): Devin's drop folder and raw downloads never enter git; the imports of third-party
+# assets do (their .import files carry the import presets, so a fresh clone imports them the same way).
+assets/user_supplied/
+tools_src/_downloads/
+!assets/third_party/**/*.import

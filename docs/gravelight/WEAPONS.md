@@ -985,3 +985,6 @@ drum, twin, trench box, belt box, shotgun tube, shell carrier); scopes move Sigh
 objective (level, centred) and set meta `scope` (HUD scope picture); radium dots, ivory bead, AA ring stay off the
 sight line; bipod (MG42/M1919 replace their own `BipodLeg` nodes), foregrip, sling, cheek pad, recoil pad; ammo bands.
 `tools/ads_check.sh` checks `WeaponKit.sight_stock_builds()` (`-- --kits-only`); headless it is the pure ADS math.
+
+## 27. Weapon models: the downloaded guns (UPDATE 05A, T-087)
+The conventional guns are downloaded, never modelled: every weapon id's model, source pack, licence, named parts (Mag / Bolt / Slide / Pump / Cover / Barrels...) and native scale / forward axis are in `data/gravelight/weapons/models.json` and the generated `docs/WEAPON_MODELS.md` (`python -I tools/intake_guns.py`); credits and paperwork in `docs/ASSETS.md`. The wonder weapons are ours. Phase 2 (UPDATE 05 §2) plugs the GLBs into the viewmodel.

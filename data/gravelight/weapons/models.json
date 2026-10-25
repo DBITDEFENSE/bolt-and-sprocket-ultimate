@@ -1,0 +1,3183 @@
+{
+ "_doc": "Weapon model intake (T-087). weapons: every id in weapons.json -> the GLB that replaces its procedural WeaponModels build (source sketchfab > opengameart; null = keeps the greybox; 'ours' = wonder weapon). parts: our animation part name -> node name inside the GLB (Mag/Bolt/Slide/Pump/Cover/Barrels/...). native: the GLB as exported (glTF axes, +Y up): forward = the axis the muzzle points along, origin = the pack's own (bbox centre), length_m along forward, scale = real_length_m / length_m to bring it to metres, trigger_center when a Trigger part exists (grip reference). Our rig wants barrel along -Z, +Y up, origin at the right-hand grip: for forward '+X' rotate +90 deg about Y, for '-X' -90, for '-Z' nothing, for '+Z' 180, then scale, then translate the grip to the origin. assets: every converted folder with its parts, node list, per-node bounds (glTF axes, native scale) and tri counts. extras: casings and grenades. Regenerate with: python -I tools/intake_guns.py --no-convert",
+ "frame": {
+  "rig_forward": "-Z",
+  "rig_up": "+Y",
+  "rig_origin": "right-hand grip point",
+  "units": "m"
+ },
+ "weapons": {
+  "m1911": {
+   "source": "opengameart",
+   "asset": "opengameart/tt-m1911",
+   "glb": "res://assets/third_party/opengameart/tt-m1911/model.glb",
+   "parts": {
+    "mag": "Mag",
+    "slide": "Slide",
+    "hammer": "Hammer",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.2191,
+    "real_length_m": 0.216,
+    "scale": 0.9859,
+    "size": [
+     0.2191,
+     0.1382,
+     0.0278
+    ],
+    "bbox_min": [
+     -0.1079,
+     -0.0659,
+     -0.014
+    ],
+    "bbox_max": [
+     0.1112,
+     0.0723,
+     0.0138
+    ],
+    "tris": 2433,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.0181,
+     0.0151,
+     0.0
+    ]
+   },
+   "alt": [],
+   "notes": ""
+  },
+  "walther_p38": {
+   "source": "opengameart",
+   "asset": "opengameart/tt-walther-p38",
+   "glb": "res://assets/third_party/opengameart/tt-walther-p38/model.glb",
+   "parts": {
+    "mag": "Mag",
+    "slide": "Slide",
+    "hammer": "Hammer",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.2165,
+    "real_length_m": 0.216,
+    "scale": 0.9977,
+    "size": [
+     0.2165,
+     0.1365,
+     0.0338
+    ],
+    "bbox_min": [
+     -0.1086,
+     -0.0701,
+     -0.0188
+    ],
+    "bbox_max": [
+     0.1079,
+     0.0664,
+     0.015
+    ],
+    "tris": 2274,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.0487,
+     0.027,
+     0.0
+    ]
+   },
+   "alt": [],
+   "notes": ""
+  },
+  "webley": {
+   "source": "opengameart",
+   "asset": "opengameart/tt-webley-mkiv",
+   "glb": "res://assets/third_party/opengameart/tt-webley-mkiv/model.glb",
+   "parts": {
+    "barrels": "Barrels",
+    "cylinder": "Cylinder",
+    "hammer": "Hammer",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.2873,
+    "real_length_m": 0.286,
+    "scale": 0.9955,
+    "size": [
+     0.2873,
+     0.1482,
+     0.0418
+    ],
+    "bbox_min": [
+     -0.1402,
+     -0.074,
+     -0.0209
+    ],
+    "bbox_max": [
+     0.1471,
+     0.0742,
+     0.0209
+    ],
+    "tris": 2741,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.0403,
+     -0.009,
+     0.0
+    ]
+   },
+   "alt": [],
+   "notes": "The pack's Webley is the .38 Mk IV; the game's is the .455 Mk VI (same top-break family, the Mk VI has a longer barrel and squared grip). Barrels = the tilting barrel assembly, Cylinder = cylinder + rounds + ejector star (parent it under Barrels for the break)."
+  },
+  "luger_p08": {
+   "source": null,
+   "asset": null,
+   "glb": null,
+   "parts": {},
+   "alt": [],
+   "notes": "greybox (procedural WeaponModels): no Luger in either OGA set; FREE_ASSET_LIST pick: 'P08 Luger Standard' by I_Live (Sketchfab, CC-BY)"
+  },
+  "kar98k": {
+   "source": "sketchfab",
+   "asset": "sketchfab/kar98k-dsamuta",
+   "glb": "res://assets/third_party/sketchfab/kar98k-dsamuta/model.glb",
+   "parts": {
+    "bolt": "Bolt",
+    "body": "Receiver",
+    "stock": "Stock",
+    "barrel": "Barrel"
+   },
+   "native": {
+    "forward": "-X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 2.0,
+    "real_length_m": 1.11,
+    "scale": 0.555,
+    "size": [
+     2.0,
+     0.3411,
+     0.1092
+    ],
+    "bbox_min": [
+     -1.0,
+     -0.2721,
+     -0.0546
+    ],
+    "bbox_max": [
+     1.0,
+     0.069,
+     0.0546
+    ],
+    "tris": 9987,
+    "materials": [
+     "Material",
+     "Material_001",
+     "Material_002",
+     "Material_003",
+     "Material_005"
+    ],
+    "textures": 15
+   },
+   "alt": [
+    "opengameart/tt-kar98k"
+   ],
+   "notes": "Five textured parts; the bolt (with its handle) is its own mesh. A stray untextured cartridge that floated above the action (p_low/f_low) was dropped. 2K textures on the stock, barrel and receiver, 1K bolt, 512 rear sight."
+  },
+  "m1_garand": {
+   "source": "sketchfab",
+   "asset": "sketchfab/m1-garand-sky-hunter",
+   "glb": "res://assets/third_party/sketchfab/m1-garand-sky-hunter/model.glb",
+   "parts": {
+    "body": "Body",
+    "clip": "Clip"
+   },
+   "native": {
+    "forward": "-Z",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 2.0,
+    "real_length_m": 1.1,
+    "scale": 0.55,
+    "size": [
+     0.1262,
+     0.5046,
+     2.0
+    ],
+    "bbox_min": [
+     -0.0631,
+     -0.2523,
+     -1.0
+    ],
+    "bbox_max": [
+     0.0631,
+     0.2523,
+     1.0
+    ],
+    "tris": 20702,
+    "materials": [
+     "Bullets",
+     "M1_Garand"
+    ],
+    "textures": 6
+   },
+   "alt": [
+    "opengameart/tt-m1-garand"
+   ],
+   "notes": "One gun mesh (no separate bolt / op rod) plus a loose en-bloc clip with eight rounds floating above the receiver (the Clip part; phase 2 parents it to the reload hand). 2K textures on the gun, 512 on the clip."
+  },
+  "gewehr43": {
+   "source": "opengameart",
+   "asset": "opengameart/tt-gewehr-43",
+   "glb": "res://assets/third_party/opengameart/tt-gewehr-43/model.glb",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.1109,
+    "real_length_m": 1.13,
+    "scale": 1.0172,
+    "size": [
+     1.1109,
+     0.1941,
+     0.053
+    ],
+    "bbox_min": [
+     -0.5591,
+     -0.1083,
+     -0.0304
+    ],
+    "bbox_max": [
+     0.5518,
+     0.0858,
+     0.0226
+    ],
+    "tris": 2207,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.1189,
+     -0.0011,
+     0.0
+    ]
+   },
+   "alt": [],
+   "notes": ""
+  },
+  "m1_carbine": {
+   "source": "opengameart",
+   "asset": "opengameart/tt-m1-carbine",
+   "glb": "res://assets/third_party/opengameart/tt-m1-carbine/model.glb",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Body"
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.9159,
+    "real_length_m": 0.9,
+    "scale": 0.9826,
+    "size": [
+     0.9159,
+     0.1763,
+     0.047
+    ],
+    "bbox_min": [
+     -0.4852,
+     -0.0998,
+     -0.0158
+    ],
+    "bbox_max": [
+     0.4307,
+     0.0765,
+     0.0312
+    ],
+    "tris": 2632,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1
+   },
+   "alt": [],
+   "notes": ""
+  },
+  "mp40": {
+   "source": "opengameart",
+   "asset": "opengameart/tt-mp40",
+   "glb": "res://assets/third_party/opengameart/tt-mp40/model.glb",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Body",
+    "stock": "Stock"
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.832,
+    "real_length_m": 0.83,
+    "scale": 0.9976,
+    "size": [
+     0.832,
+     0.2799,
+     0.0717
+    ],
+    "bbox_min": [
+     -0.523,
+     -0.163,
+     -0.0479
+    ],
+    "bbox_max": [
+     0.309,
+     0.1169,
+     0.0238
+    ],
+    "tris": 5059,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1
+   },
+   "alt": [],
+   "notes": "Folding stock is its own part (Stock), modelled extended."
+  },
+  "thompson": {
+   "source": "sketchfab",
+   "asset": "sketchfab/thompson-artem-goyko",
+   "glb": "res://assets/third_party/sketchfab/thompson-artem-goyko/model.glb",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Receiver",
+    "stock": "Stock",
+    "grip": "Grip",
+    "foregrip": "Foregrip",
+    "barrel": "Barrel"
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 2.0,
+    "real_length_m": 0.86,
+    "scale": 0.43,
+    "size": [
+     2.0,
+     0.4842,
+     0.3632
+    ],
+    "bbox_min": [
+     -1.0,
+     -0.2421,
+     -0.1816
+    ],
+    "bbox_max": [
+     1.0,
+     0.2421,
+     0.1816
+    ],
+    "tris": 20802,
+    "materials": [
+     "Material_001",
+     "Material_002",
+     "Material_003",
+     "Material_004",
+     "Material_005",
+     "Material_006",
+     "Material_007",
+     "Material_008",
+     "Material_010",
+     "Material_013",
+     "Material_014",
+     "Material_015"
+    ],
+    "textures": 36
+   },
+   "alt": [
+    "opengameart/tt-thompson-m1a1"
+   ],
+   "notes": "A 1928-pattern Thompson: finned barrel, Cutts compensator, vertical foregrip and a 50-round L drum (the drum is the Mag part; the game's M1A1 stick mag is a phase-2 choice: hide the drum and build a stick, or keep the drum look). Top-mounted bolt knob is the Bolt part. 12 materials, 1K textures."
+  },
+  "stg44": {
+   "source": "opengameart",
+   "asset": "opengameart/tt-stg44",
+   "glb": "res://assets/third_party/opengameart/tt-stg44/model.glb",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "cover": "Cover",
+    "body": "Body"
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.9738,
+    "real_length_m": 0.94,
+    "scale": 0.9653,
+    "size": [
+     0.9738,
+     0.3415,
+     0.0669
+    ],
+    "bbox_min": [
+     -0.4846,
+     -0.1752,
+     -0.0443
+    ],
+    "bbox_max": [
+     0.4892,
+     0.1663,
+     0.0226
+    ],
+    "tris": 6235,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1
+   },
+   "alt": [],
+   "notes": ""
+  },
+  "trench_gun": {
+   "source": "opengameart",
+   "asset": "opengameart/tt-m1897-trench-gun",
+   "glb": "res://assets/third_party/opengameart/tt-m1897-trench-gun/model.glb",
+   "parts": {
+    "pump": "Pump",
+    "hammer": "Hammer",
+    "body": "Body"
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.0278,
+    "real_length_m": 1.0,
+    "scale": 0.973,
+    "size": [
+     1.0278,
+     0.1947,
+     0.0346
+    ],
+    "bbox_min": [
+     -0.5136,
+     -0.1032,
+     -0.0173
+    ],
+    "bbox_max": [
+     0.5142,
+     0.0915,
+     0.0173
+    ],
+    "tris": 5015,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1
+   },
+   "alt": [],
+   "notes": "The pack's 'bolt' group is the whole action slide (forend + bolt), exported as Pump."
+  },
+  "bar": {
+   "source": "opengameart",
+   "asset": "opengameart/tt-bar-m1918",
+   "glb": "res://assets/third_party/opengameart/tt-bar-m1918/model.glb",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Body"
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.2384,
+    "real_length_m": 1.21,
+    "scale": 0.9771,
+    "size": [
+     1.2384,
+     0.2005,
+     0.1341
+    ],
+    "bbox_min": [
+     -0.6051,
+     -0.1048,
+     -0.0441
+    ],
+    "bbox_max": [
+     0.6333,
+     0.0957,
+     0.09
+    ],
+    "tris": 3865,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1
+   },
+   "alt": [],
+   "notes": ""
+  },
+  "ppsh41": {
+   "source": "opengameart",
+   "asset": "opengameart/tt-ppsh41",
+   "glb": "res://assets/third_party/opengameart/tt-ppsh41/model.glb",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.8446,
+    "real_length_m": 0.84,
+    "scale": 0.9946,
+    "size": [
+     0.8446,
+     0.2019,
+     0.1512
+    ],
+    "bbox_min": [
+     -0.414,
+     -0.0935,
+     -0.0756
+    ],
+    "bbox_max": [
+     0.4306,
+     0.1084,
+     0.0756
+    ],
+    "tris": 4891,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.0731,
+     0.0072,
+     0.0
+    ]
+   },
+   "alt": [],
+   "notes": "71-round drum as the Mag part."
+  },
+  "mg42": {
+   "source": "opengameart",
+   "asset": "opengameart/tt-mg42",
+   "glb": "res://assets/third_party/opengameart/tt-mg42/model.glb",
+   "parts": {
+    "mag": "Mag",
+    "cover": "Cover",
+    "bolt": "Bolt",
+    "body": "Body"
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.2283,
+    "real_length_m": 1.22,
+    "scale": 0.9932,
+    "size": [
+     1.2283,
+     0.2279,
+     0.2152
+    ],
+    "bbox_min": [
+     -0.614,
+     -0.1087,
+     -0.1401
+    ],
+    "bbox_max": [
+     0.6143,
+     0.1192,
+     0.0751
+    ],
+    "tris": 9838,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1
+   },
+   "alt": [],
+   "notes": "Belt drum + the visible belt = Mag; the feed cover (with its catch) = Cover; charging handle = Bolt. No bipod in the model."
+  },
+  "m1919": {
+   "source": null,
+   "asset": null,
+   "glb": null,
+   "parts": {},
+   "alt": [],
+   "notes": "greybox (procedural WeaponModels): not in the packs; FREE_ASSET_LIST pick: 'Browning M1919' by MelvinEbbuts (Sketchfab, CC-BY; skip any '(Enlisted)' rip)"
+  },
+  "sawed_off": {
+   "source": "opengameart",
+   "asset": "opengameart/tt-double-barrel",
+   "glb": "res://assets/third_party/opengameart/tt-double-barrel/model.glb",
+   "parts": {
+    "barrels": "Barrels",
+    "shells": "Shells",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.1288,
+    "real_length_m": 1.13,
+    "scale": 1.0011,
+    "size": [
+     1.1288,
+     0.1993,
+     0.054
+    ],
+    "bbox_min": [
+     -0.5695,
+     -0.1445,
+     -0.027
+    ],
+    "bbox_max": [
+     0.5593,
+     0.0548,
+     0.027
+    ],
+    "tris": 2354,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.2126,
+     -0.0153,
+     0.0004
+    ]
+   },
+   "alt": [],
+   "notes": "A full-length side-by-side (1.13 m). The game's Sawed-Off is this gun with the barrels cut and the stock shortened: Barrels is a separate part, so phase 2 can clip it (the mesh's barrel geometry is a straight extrusion) or scale the long axis."
+  },
+  "type100": {
+   "source": null,
+   "asset": null,
+   "glb": null,
+   "parts": {},
+   "alt": [],
+   "notes": "greybox (procedural WeaponModels): no free match found (FREE_ASSET_LIST); keeps the procedural model"
+  },
+  "ptrs41": {
+   "source": null,
+   "asset": null,
+   "glb": null,
+   "parts": {},
+   "alt": [],
+   "notes": "greybox (procedural WeaponModels): not in the packs; FREE_ASSET_LIST pick: 'PTRS-41 Modified' by Naudaff3D (162k faces, needs decimation)"
+  },
+  "springfield": {
+   "source": "opengameart",
+   "asset": "opengameart/tt-springfield-m1903",
+   "glb": "res://assets/third_party/opengameart/tt-springfield-m1903/model.glb",
+   "parts": {
+    "bolt": "Bolt",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.1147,
+    "real_length_m": 1.1,
+    "scale": 0.9868,
+    "size": [
+     1.1147,
+     0.1871,
+     0.0588
+    ],
+    "bbox_min": [
+     -0.5517,
+     -0.1207,
+     -0.0204
+    ],
+    "bbox_max": [
+     0.563,
+     0.0664,
+     0.0384
+    ],
+    "tris": 1673,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.2123,
+     -0.008,
+     0.0
+    ]
+   },
+   "alt": [],
+   "notes": ""
+  },
+  "panzerschreck": {
+   "source": null,
+   "asset": null,
+   "glb": null,
+   "parts": {},
+   "alt": [],
+   "notes": "greybox (procedural WeaponModels): not in the packs; FREE_ASSET_LIST pick: 'Panzerschreck' by Tactical_Beard (Sketchfab, CC-BY)"
+  },
+  "flamethrower": {
+   "source": null,
+   "asset": null,
+   "glb": null,
+   "parts": {},
+   "alt": [],
+   "notes": "greybox (procedural WeaponModels): no free match found (FREE_ASSET_LIST); keeps the procedural model"
+  },
+  "ashlight": {
+   "source": "ours",
+   "asset": null,
+   "glb": null,
+   "parts": {},
+   "notes": "wonder weapon: modelled by us (UPDATE_05 section 2, tools_src/blender/wonder/)"
+  },
+  "totenglocke": {
+   "source": "ours",
+   "asset": null,
+   "glb": null,
+   "parts": {},
+   "notes": "wonder weapon: modelled by us (UPDATE_05 section 2, tools_src/blender/wonder/)"
+  },
+  "elmsfeuer": {
+   "source": "ours",
+   "asset": null,
+   "glb": null,
+   "parts": {},
+   "notes": "wonder weapon: modelled by us (UPDATE_05 section 2, tools_src/blender/wonder/)"
+  }
+ },
+ "greybox": [
+  "luger_p08",
+  "m1919",
+  "type100",
+  "ptrs41",
+  "panzerschreck",
+  "flamethrower"
+ ],
+ "assets": {
+  "sketchfab/thompson-artem-goyko": {
+   "glb": "res://assets/third_party/sketchfab/thompson-artem-goyko/model.glb",
+   "title": "Thompson submachine gun",
+   "author": "Artem Goyko (@Artem.Goyko)",
+   "license": "CC-BY 4.0",
+   "credit": "\"Thompson submachine gun\" by Artem Goyko (https://sketchfab.com/3d-models/thompson-submachine-gun-5fe11dfebf734b4aa49c43545397abd1), licensed under CC-BY 4.0. Modified.",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Receiver",
+    "stock": "Stock",
+    "grip": "Grip",
+    "foregrip": "Foregrip",
+    "barrel": "Barrel"
+   },
+   "nodes": [
+    "Barrel",
+    "Bolt",
+    "Foregrip",
+    "Frame",
+    "Grip",
+    "Mag",
+    "RearSight",
+    "Receiver",
+    "ReceiverTop",
+    "Rib",
+    "Stock",
+    "TriggerGroup"
+   ],
+   "part_bounds": {
+    "Barrel": [
+     [
+      0.2599,
+      0.1299,
+      -0.0407
+     ],
+     [
+      1.0,
+      0.2318,
+      0.0276
+     ]
+    ],
+    "Bolt": [
+     [
+      -0.1975,
+      0.1984,
+      -0.0262
+     ],
+     [
+      -0.1598,
+      0.2407,
+      0.0132
+     ]
+    ],
+    "Foregrip": [
+     [
+      0.3277,
+      -0.1598,
+      -0.0497
+     ],
+     [
+      0.6851,
+      0.1278,
+      0.0366
+     ]
+    ],
+    "Frame": [
+     [
+      -0.203,
+      -0.1149,
+      -0.0359
+     ],
+     [
+      0.2217,
+      0.1916,
+      0.0337
+     ]
+    ],
+    "Grip": [
+     [
+      -0.2777,
+      -0.1742,
+      -0.0445
+     ],
+     [
+      -0.0761,
+      0.0625,
+      0.0316
+     ]
+    ],
+    "Mag": [
+     [
+      0.0626,
+      -0.2069,
+      -0.1816
+     ],
+     [
+      0.1498,
+      0.1563,
+      0.1816
+     ]
+    ],
+    "RearSight": [
+     [
+      -0.4905,
+      0.1986,
+      -0.0313
+     ],
+     [
+      -0.3264,
+      0.2421,
+      0.0193
+     ]
+    ],
+    "Receiver": [
+     [
+      -0.5261,
+      -0.0297,
+      -0.0484
+     ],
+     [
+      0.5914,
+      0.2145,
+      0.0378
+     ]
+    ],
+    "ReceiverTop": [
+     [
+      -0.5141,
+      0.1076,
+      -0.0554
+     ],
+     [
+      0.263,
+      0.1992,
+      0.043
+     ]
+    ],
+    "Rib": [
+     [
+      0.2297,
+      0.1157,
+      -0.0243
+     ],
+     [
+      0.6186,
+      0.1283,
+      0.0139
+     ]
+    ],
+    "Stock": [
+     [
+      -1.0,
+      -0.2421,
+      -0.0483
+     ],
+     [
+      -0.3023,
+      0.1099,
+      0.0355
+     ]
+    ],
+    "TriggerGroup": [
+     [
+      -0.3901,
+      -0.0158,
+      -0.0401
+     ],
+     [
+      0.0578,
+      0.1075,
+      0.032
+     ]
+    ]
+   },
+   "part_tris": {
+    "Barrel": 7446,
+    "Bolt": 832,
+    "Foregrip": 1952,
+    "Frame": 430,
+    "Grip": 1664,
+    "Mag": 384,
+    "RearSight": 1067,
+    "Receiver": 1682,
+    "ReceiverTop": 4012,
+    "Rib": 122,
+    "Stock": 1024,
+    "TriggerGroup": 187
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 2.0,
+    "real_length_m": 0.86,
+    "scale": 0.43,
+    "size": [
+     2.0,
+     0.4842,
+     0.3632
+    ],
+    "bbox_min": [
+     -1.0,
+     -0.2421,
+     -0.1816
+    ],
+    "bbox_max": [
+     1.0,
+     0.2421,
+     0.1816
+    ],
+    "tris": 20802,
+    "materials": [
+     "Material_001",
+     "Material_002",
+     "Material_003",
+     "Material_004",
+     "Material_005",
+     "Material_006",
+     "Material_007",
+     "Material_008",
+     "Material_010",
+     "Material_013",
+     "Material_014",
+     "Material_015"
+    ],
+    "textures": 36
+   },
+   "notes": "A 1928-pattern Thompson: finned barrel, Cutts compensator, vertical foregrip and a 50-round L drum (the drum is the Mag part; the game's M1A1 stick mag is a phase-2 choice: hide the drum and build a stick, or keep the drum look). Top-mounted bolt knob is the Bolt part. 12 materials, 1K textures."
+  },
+  "sketchfab/m1-garand-sky-hunter": {
+   "glb": "res://assets/third_party/sketchfab/m1-garand-sky-hunter/model.glb",
+   "title": "M1 Garand ( US Rifle, Caliber .30, M1)",
+   "author": "Sky_Hunter (@Sky_Hunter)",
+   "license": "CC-BY 4.0",
+   "credit": "\"M1 Garand ( US Rifle, Caliber .30, M1)\" by Sky_Hunter (https://sketchfab.com/3d-models/m1-garand-us-rifle-caliber-30-m1-1be4bb0f8c05423abdccb50b779de6e6), licensed under CC-BY 4.0. Modified.",
+   "parts": {
+    "body": "Body",
+    "clip": "Clip"
+   },
+   "nodes": [
+    "Body",
+    "Clip"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.0631,
+      -0.2523,
+      -1.0
+     ],
+     [
+      0.0631,
+      0.0909,
+      1.0
+     ]
+    ],
+    "Clip": [
+     [
+      -0.0385,
+      0.1529,
+      0.1254
+     ],
+     [
+      0.0086,
+      0.2523,
+      0.2732
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 17518,
+    "Clip": 3184
+   },
+   "native": {
+    "forward": "-Z",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 2.0,
+    "real_length_m": 1.1,
+    "scale": 0.55,
+    "size": [
+     0.1262,
+     0.5046,
+     2.0
+    ],
+    "bbox_min": [
+     -0.0631,
+     -0.2523,
+     -1.0
+    ],
+    "bbox_max": [
+     0.0631,
+     0.2523,
+     1.0
+    ],
+    "tris": 20702,
+    "materials": [
+     "Bullets",
+     "M1_Garand"
+    ],
+    "textures": 6
+   },
+   "notes": "One gun mesh (no separate bolt / op rod) plus a loose en-bloc clip with eight rounds floating above the receiver (the Clip part; phase 2 parents it to the reload hand). 2K textures on the gun, 512 on the clip."
+  },
+  "sketchfab/kar98k-dsamuta": {
+   "glb": "res://assets/third_party/sketchfab/kar98k-dsamuta/model.glb",
+   "title": "Kar98k Free Model",
+   "author": "Danya (@dsamuta)",
+   "license": "CC-BY 4.0",
+   "credit": "\"Kar98k Free Model\" by Danya (https://sketchfab.com/3d-models/kar98k-free-model-e88c90c8e203401fa28e8f4ef03e657f), licensed under CC-BY 4.0. Modified.",
+   "parts": {
+    "bolt": "Bolt",
+    "body": "Receiver",
+    "stock": "Stock",
+    "barrel": "Barrel"
+   },
+   "nodes": [
+    "Barrel",
+    "Bolt",
+    "RearSight",
+    "Receiver",
+    "Stock"
+   ],
+   "part_bounds": {
+    "Barrel": [
+     [
+      -1.0,
+      -0.1373,
+      -0.0137
+     ],
+     [
+      0.4389,
+      0.069,
+      0.0546
+     ]
+    ],
+    "Bolt": [
+     [
+      0.0953,
+      -0.0491,
+      -0.0546
+     ],
+     [
+      0.4072,
+      0.0504,
+      0.0356
+     ]
+    ],
+    "RearSight": [
+     [
+      -0.2339,
+      0.0386,
+      -0.0144
+     ],
+     [
+      -0.0656,
+      0.0657,
+      0.0376
+     ]
+    ],
+    "Receiver": [
+     [
+      -0.2413,
+      -0.001,
+      -0.0163
+     ],
+     [
+      0.4055,
+      0.0546,
+      0.0449
+     ]
+    ],
+    "Stock": [
+     [
+      -0.7857,
+      -0.2721,
+      -0.0292
+     ],
+     [
+      1.0,
+      0.0581,
+      0.0521
+     ]
+    ]
+   },
+   "part_tris": {
+    "Barrel": 2312,
+    "Bolt": 3272,
+    "RearSight": 668,
+    "Receiver": 1658,
+    "Stock": 2077
+   },
+   "native": {
+    "forward": "-X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 2.0,
+    "real_length_m": 1.11,
+    "scale": 0.555,
+    "size": [
+     2.0,
+     0.3411,
+     0.1092
+    ],
+    "bbox_min": [
+     -1.0,
+     -0.2721,
+     -0.0546
+    ],
+    "bbox_max": [
+     1.0,
+     0.069,
+     0.0546
+    ],
+    "tris": 9987,
+    "materials": [
+     "Material",
+     "Material_001",
+     "Material_002",
+     "Material_003",
+     "Material_005"
+    ],
+    "textures": 15
+   },
+   "notes": "Five textured parts; the bolt (with its handle) is its own mesh. A stray untextured cartridge that floated above the action (p_low/f_low) was dropped. 2K textures on the stock, barrel and receiver, 1K bolt, 512 rear sight."
+  },
+  "opengameart/tt-m1911": {
+   "glb": "res://assets/third_party/opengameart/tt-m1911/model.glb",
+   "title": "Ultimate Low Poly Guns: M1911 (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "mag": "Mag",
+    "slide": "Slide",
+    "hammer": "Hammer",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "nodes": [
+    "Body",
+    "Hammer",
+    "Mag",
+    "Slide",
+    "Trigger"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.1079,
+      -0.0643,
+      -0.014
+     ],
+     [
+      0.1112,
+      0.0655,
+      0.0138
+     ]
+    ],
+    "Hammer": [
+     [
+      -0.0965,
+      0.0347,
+      -0.0036
+     ],
+     [
+      -0.075,
+      0.0625,
+      0.0036
+     ]
+    ],
+    "Mag": [
+     [
+      -0.0934,
+      -0.0659,
+      -0.0074
+     ],
+     [
+      -0.0232,
+      0.0478,
+      0.0074
+     ]
+    ],
+    "Slide": [
+     [
+      -0.0822,
+      0.0314,
+      -0.0105
+     ],
+     [
+      0.1103,
+      0.0723,
+      0.0105
+     ]
+    ],
+    "Trigger": [
+     [
+      -0.028,
+      0.0037,
+      -0.0029
+     ],
+     [
+      -0.0082,
+      0.0265,
+      0.0029
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 1100,
+    "Hammer": 72,
+    "Mag": 374,
+    "Slide": 819,
+    "Trigger": 68
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.2191,
+    "real_length_m": 0.216,
+    "scale": 0.9859,
+    "size": [
+     0.2191,
+     0.1382,
+     0.0278
+    ],
+    "bbox_min": [
+     -0.1079,
+     -0.0659,
+     -0.014
+    ],
+    "bbox_max": [
+     0.1112,
+     0.0723,
+     0.0138
+    ],
+    "tris": 2433,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.0181,
+     0.0151,
+     0.0
+    ]
+   },
+   "notes": ""
+  },
+  "opengameart/tt-walther-p38": {
+   "glb": "res://assets/third_party/opengameart/tt-walther-p38/model.glb",
+   "title": "Ultimate Low Poly Guns: Walther P38 (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "mag": "Mag",
+    "slide": "Slide",
+    "hammer": "Hammer",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "nodes": [
+    "Body",
+    "Hammer",
+    "Mag",
+    "Slide",
+    "Trigger"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.1086,
+      -0.0701,
+      -0.0173
+     ],
+     [
+      0.1079,
+      0.0663,
+      0.0146
+     ]
+    ],
+    "Hammer": [
+     [
+      -0.1053,
+      0.0268,
+      -0.009
+     ],
+     [
+      -0.0761,
+      0.0604,
+      0.009
+     ]
+    ],
+    "Mag": [
+     [
+      -0.0956,
+      -0.0673,
+      -0.0106
+     ],
+     [
+      -0.0389,
+      0.0563,
+      0.0106
+     ]
+    ],
+    "Slide": [
+     [
+      -0.0992,
+      0.034,
+      -0.0188
+     ],
+     [
+      0.0419,
+      0.0664,
+      0.015
+     ]
+    ],
+    "Trigger": [
+     [
+      -0.0953,
+      -0.0024,
+      -0.009
+     ],
+     [
+      -0.0022,
+      0.0563,
+      0.009
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 922,
+    "Hammer": 68,
+    "Mag": 462,
+    "Slide": 770,
+    "Trigger": 52
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.2165,
+    "real_length_m": 0.216,
+    "scale": 0.9977,
+    "size": [
+     0.2165,
+     0.1365,
+     0.0338
+    ],
+    "bbox_min": [
+     -0.1086,
+     -0.0701,
+     -0.0188
+    ],
+    "bbox_max": [
+     0.1079,
+     0.0664,
+     0.015
+    ],
+    "tris": 2274,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.0487,
+     0.027,
+     0.0
+    ]
+   },
+   "notes": ""
+  },
+  "opengameart/tt-webley-mkiv": {
+   "glb": "res://assets/third_party/opengameart/tt-webley-mkiv/model.glb",
+   "title": "Ultimate Low Poly Guns: Webley MkIV (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "barrels": "Barrels",
+    "cylinder": "Cylinder",
+    "hammer": "Hammer",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "nodes": [
+    "Barrels",
+    "Body",
+    "Cylinder",
+    "Hammer",
+    "Trigger"
+   ],
+   "part_bounds": {
+    "Barrels": [
+     [
+      -0.059,
+      0.0184,
+      -0.0173
+     ],
+     [
+      0.1471,
+      0.0742,
+      0.0173
+     ]
+    ],
+    "Body": [
+     [
+      -0.1402,
+      -0.074,
+      -0.0188
+     ],
+     [
+      0.0139,
+      0.0704,
+      0.0165
+     ]
+    ],
+    "Cylinder": [
+     [
+      -0.0485,
+      0.0167,
+      -0.0209
+     ],
+     [
+      -0.0051,
+      0.0585,
+      0.0209
+     ]
+    ],
+    "Hammer": [
+     [
+      -0.091,
+      0.0091,
+      -0.0042
+     ],
+     [
+      -0.0512,
+      0.0646,
+      0.0042
+     ]
+    ],
+    "Trigger": [
+     [
+      -0.0516,
+      -0.0295,
+      -0.0046
+     ],
+     [
+      -0.029,
+      0.0114,
+      0.0046
+     ]
+    ]
+   },
+   "part_tris": {
+    "Barrels": 401,
+    "Body": 808,
+    "Cylinder": 1340,
+    "Hammer": 116,
+    "Trigger": 76
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.2873,
+    "real_length_m": 0.286,
+    "scale": 0.9955,
+    "size": [
+     0.2873,
+     0.1482,
+     0.0418
+    ],
+    "bbox_min": [
+     -0.1402,
+     -0.074,
+     -0.0209
+    ],
+    "bbox_max": [
+     0.1471,
+     0.0742,
+     0.0209
+    ],
+    "tris": 2741,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.0403,
+     -0.009,
+     0.0
+    ]
+   },
+   "notes": "The pack's Webley is the .38 Mk IV; the game's is the .455 Mk VI (same top-break family, the Mk VI has a longer barrel and squared grip). Barrels = the tilting barrel assembly, Cylinder = cylinder + rounds + ejector star (parent it under Barrels for the break)."
+  },
+  "opengameart/tt-kar98k": {
+   "glb": "res://assets/third_party/opengameart/tt-kar98k/model.glb",
+   "title": "Ultimate Low Poly Guns: Kar 98K (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "bolt": "Bolt",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "nodes": [
+    "Body",
+    "Bolt",
+    "Trigger"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.5789,
+      -0.1094,
+      -0.0207
+     ],
+     [
+      0.5482,
+      0.0779,
+      0.0207
+     ]
+    ],
+    "Bolt": [
+     [
+      -0.2309,
+      0.0092,
+      -0.0173
+     ],
+     [
+      -0.0555,
+      0.0707,
+      0.0475
+     ]
+    ],
+    "Trigger": [
+     [
+      -0.2191,
+      -0.0279,
+      -0.0127
+     ],
+     [
+      -0.1447,
+      0.0492,
+      0.003
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 1941,
+    "Bolt": 548,
+    "Trigger": 44
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.1271,
+    "real_length_m": 1.11,
+    "scale": 0.9848,
+    "size": [
+     1.1271,
+     0.1873,
+     0.0682
+    ],
+    "bbox_min": [
+     -0.5789,
+     -0.1094,
+     -0.0207
+    ],
+    "bbox_max": [
+     0.5482,
+     0.0779,
+     0.0475
+    ],
+    "tris": 2533,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.1819,
+     0.0106,
+     -0.0049
+    ]
+   },
+   "notes": ""
+  },
+  "opengameart/tt-m1-garand": {
+   "glb": "res://assets/third_party/opengameart/tt-m1-garand/model.glb",
+   "title": "Ultimate Low Poly Guns: M1 Garand (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "bolt": "Bolt",
+    "clip": "Clip",
+    "body": "Body"
+   },
+   "nodes": [
+    "Body",
+    "Bolt",
+    "Clip"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.5382,
+      -0.0968,
+      -0.0237
+     ],
+     [
+      0.5414,
+      0.0951,
+      0.0237
+     ]
+    ],
+    "Bolt": [
+     [
+      -0.1475,
+      0.0509,
+      -0.0187
+     ],
+     [
+      0.0984,
+      0.0792,
+      0.0491
+     ]
+    ],
+    "Clip": [
+     [
+      -0.1406,
+      0.0105,
+      -0.0135
+     ],
+     [
+      -0.052,
+      0.0703,
+      0.0135
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 2471,
+    "Bolt": 334,
+    "Clip": 1652
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.0796,
+    "real_length_m": 1.1,
+    "scale": 1.0189,
+    "size": [
+     1.0796,
+     0.1919,
+     0.0728
+    ],
+    "bbox_min": [
+     -0.5382,
+     -0.0968,
+     -0.0237
+    ],
+    "bbox_max": [
+     0.5414,
+     0.0951,
+     0.0491
+    ],
+    "tris": 4457,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1
+   },
+   "notes": ""
+  },
+  "opengameart/tt-gewehr-43": {
+   "glb": "res://assets/third_party/opengameart/tt-gewehr-43/model.glb",
+   "title": "Ultimate Low Poly Guns: Gewehr 43 (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "nodes": [
+    "Body",
+    "Bolt",
+    "Mag",
+    "Trigger"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.5591,
+      -0.1083,
+      -0.0304
+     ],
+     [
+      0.5518,
+      0.0858,
+      0.0226
+     ]
+    ],
+    "Bolt": [
+     [
+      -0.1095,
+      0.0361,
+      -0.0261
+     ],
+     [
+      -0.0135,
+      0.0805,
+      0.0173
+     ]
+    ],
+    "Mag": [
+     [
+      -0.1131,
+      -0.057,
+      -0.0127
+     ],
+     [
+      -0.0116,
+      0.0432,
+      0.0127
+     ]
+    ],
+    "Trigger": [
+     [
+      -0.2242,
+      -0.0454,
+      -0.012
+     ],
+     [
+      -0.0135,
+      0.0432,
+      0.012
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 1603,
+    "Bolt": 246,
+    "Mag": 322,
+    "Trigger": 36
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.1109,
+    "real_length_m": 1.13,
+    "scale": 1.0172,
+    "size": [
+     1.1109,
+     0.1941,
+     0.053
+    ],
+    "bbox_min": [
+     -0.5591,
+     -0.1083,
+     -0.0304
+    ],
+    "bbox_max": [
+     0.5518,
+     0.0858,
+     0.0226
+    ],
+    "tris": 2207,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.1189,
+     -0.0011,
+     0.0
+    ]
+   },
+   "notes": ""
+  },
+  "opengameart/tt-m1-carbine": {
+   "glb": "res://assets/third_party/opengameart/tt-m1-carbine/model.glb",
+   "title": "Ultimate Low Poly Guns: M1 Carbine (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Body"
+   },
+   "nodes": [
+    "Body",
+    "Bolt",
+    "Mag"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.4852,
+      -0.0998,
+      -0.0158
+     ],
+     [
+      0.4307,
+      0.0765,
+      0.0157
+     ]
+    ],
+    "Bolt": [
+     [
+      -0.1172,
+      0.0345,
+      -0.0084
+     ],
+     [
+      0.0695,
+      0.0646,
+      0.0312
+     ]
+    ],
+    "Mag": [
+     [
+      -0.0839,
+      -0.0569,
+      -0.008
+     ],
+     [
+      -0.0375,
+      0.0403,
+      0.008
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 1767,
+    "Bolt": 143,
+    "Mag": 722
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.9159,
+    "real_length_m": 0.9,
+    "scale": 0.9826,
+    "size": [
+     0.9159,
+     0.1763,
+     0.047
+    ],
+    "bbox_min": [
+     -0.4852,
+     -0.0998,
+     -0.0158
+    ],
+    "bbox_max": [
+     0.4307,
+     0.0765,
+     0.0312
+    ],
+    "tris": 2632,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1
+   },
+   "notes": ""
+  },
+  "opengameart/tt-mp40": {
+   "glb": "res://assets/third_party/opengameart/tt-mp40/model.glb",
+   "title": "Ultimate Low Poly Guns: MP 40 (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Body",
+    "stock": "Stock"
+   },
+   "nodes": [
+    "Body",
+    "Bolt",
+    "Mag",
+    "Stock"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.2997,
+      -0.0757,
+      -0.0228
+     ],
+     [
+      0.309,
+      0.1169,
+      0.0228
+     ]
+    ],
+    "Bolt": [
+     [
+      -0.1422,
+      0.0672,
+      -0.0479
+     ],
+     [
+      0.0708,
+      0.0978,
+      0.0153
+     ]
+    ],
+    "Mag": [
+     [
+      0.028,
+      -0.163,
+      -0.0125
+     ],
+     [
+      0.0641,
+      0.0788,
+      0.0136
+     ]
+    ],
+    "Stock": [
+     [
+      -0.523,
+      -0.0655,
+      -0.0238
+     ],
+     [
+      -0.256,
+      0.0609,
+      0.0238
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 3123,
+    "Bolt": 316,
+    "Mag": 1132,
+    "Stock": 488
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.832,
+    "real_length_m": 0.83,
+    "scale": 0.9976,
+    "size": [
+     0.832,
+     0.2799,
+     0.0717
+    ],
+    "bbox_min": [
+     -0.523,
+     -0.163,
+     -0.0479
+    ],
+    "bbox_max": [
+     0.309,
+     0.1169,
+     0.0238
+    ],
+    "tris": 5059,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1
+   },
+   "notes": "Folding stock is its own part (Stock), modelled extended."
+  },
+  "opengameart/tt-thompson-m1a1": {
+   "glb": "res://assets/third_party/opengameart/tt-thompson-m1a1/model.glb",
+   "title": "Ultimate Low Poly Guns: M1A1 Thompson (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Body"
+   },
+   "nodes": [
+    "Body",
+    "Bolt",
+    "Mag"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.5028,
+      -0.1446,
+      -0.0204
+     ],
+     [
+      0.3072,
+      0.0927,
+      0.0204
+     ]
+    ],
+    "Bolt": [
+     [
+      -0.1603,
+      0.0311,
+      -0.0113
+     ],
+     [
+      0.0409,
+      0.0623,
+      0.0305
+     ]
+    ],
+    "Mag": [
+     [
+      -0.0357,
+      -0.147,
+      -0.012
+     ],
+     [
+      0.0051,
+      0.0444,
+      0.012
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 2774,
+    "Bolt": 292,
+    "Mag": 824
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.81,
+    "real_length_m": 0.81,
+    "scale": 1.0,
+    "size": [
+     0.81,
+     0.2397,
+     0.0509
+    ],
+    "bbox_min": [
+     -0.5028,
+     -0.147,
+     -0.0204
+    ],
+    "bbox_max": [
+     0.3072,
+     0.0927,
+     0.0305
+    ],
+    "tris": 3890,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1
+   },
+   "notes": ""
+  },
+  "opengameart/tt-stg44": {
+   "glb": "res://assets/third_party/opengameart/tt-stg44/model.glb",
+   "title": "Ultimate Low Poly Guns: STG 44 (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "cover": "Cover",
+    "body": "Body"
+   },
+   "nodes": [
+    "Body",
+    "Bolt",
+    "Cover",
+    "Mag"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.4846,
+      -0.0558,
+      -0.0225
+     ],
+     [
+      0.4892,
+      0.1663,
+      0.0225
+     ]
+    ],
+    "Bolt": [
+     [
+      -0.0461,
+      0.0808,
+      -0.0443
+     ],
+     [
+      0.0609,
+      0.1295,
+      0.0093
+     ]
+    ],
+    "Cover": [
+     [
+      -0.0178,
+      0.1136,
+      0.0117
+     ],
+     [
+      0.0515,
+      0.1412,
+      0.0226
+     ]
+    ],
+    "Mag": [
+     [
+      -0.0107,
+      -0.1752,
+      -0.0109
+     ],
+     [
+      0.0971,
+      0.0845,
+      0.0146
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 4393,
+    "Bolt": 422,
+    "Cover": 132,
+    "Mag": 1288
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.9738,
+    "real_length_m": 0.94,
+    "scale": 0.9653,
+    "size": [
+     0.9738,
+     0.3415,
+     0.0669
+    ],
+    "bbox_min": [
+     -0.4846,
+     -0.1752,
+     -0.0443
+    ],
+    "bbox_max": [
+     0.4892,
+     0.1663,
+     0.0226
+    ],
+    "tris": 6235,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1
+   },
+   "notes": ""
+  },
+  "opengameart/tt-m1897-trench-gun": {
+   "glb": "res://assets/third_party/opengameart/tt-m1897-trench-gun/model.glb",
+   "title": "Ultimate Low Poly Guns: M1897 (trench gun) (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "pump": "Pump",
+    "hammer": "Hammer",
+    "body": "Body"
+   },
+   "nodes": [
+    "Body",
+    "Hammer",
+    "Pump"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.5136,
+      -0.1032,
+      -0.0159
+     ],
+     [
+      0.5142,
+      0.0841,
+      0.0159
+     ]
+    ],
+    "Hammer": [
+     [
+      -0.136,
+      0.0446,
+      -0.0045
+     ],
+     [
+      -0.1148,
+      0.0915,
+      0.0045
+     ]
+    ],
+    "Pump": [
+     [
+      -0.1213,
+      0.0182,
+      -0.0173
+     ],
+     [
+      0.2995,
+      0.0823,
+      0.0173
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 3696,
+    "Hammer": 64,
+    "Pump": 1255
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.0278,
+    "real_length_m": 1.0,
+    "scale": 0.973,
+    "size": [
+     1.0278,
+     0.1947,
+     0.0346
+    ],
+    "bbox_min": [
+     -0.5136,
+     -0.1032,
+     -0.0173
+    ],
+    "bbox_max": [
+     0.5142,
+     0.0915,
+     0.0173
+    ],
+    "tris": 5015,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1
+   },
+   "notes": "The pack's 'bolt' group is the whole action slide (forend + bolt), exported as Pump."
+  },
+  "opengameart/tt-bar-m1918": {
+   "glb": "res://assets/third_party/opengameart/tt-bar-m1918/model.glb",
+   "title": "Ultimate Low Poly Guns: BAR (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Body"
+   },
+   "nodes": [
+    "Body",
+    "Bolt",
+    "Mag"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.6051,
+      -0.1003,
+      -0.0289
+     ],
+     [
+      0.6333,
+      0.0957,
+      0.09
+     ]
+    ],
+    "Bolt": [
+     [
+      -0.3068,
+      0.0117,
+      -0.0441
+     ],
+     [
+      0.2225,
+      0.0711,
+      0.0126
+     ]
+    ],
+    "Mag": [
+     [
+      -0.1565,
+      -0.1048,
+      -0.0126
+     ],
+     [
+      0.2225,
+      0.0441,
+      0.0126
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 2713,
+    "Bolt": 422,
+    "Mag": 730
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.2384,
+    "real_length_m": 1.21,
+    "scale": 0.9771,
+    "size": [
+     1.2384,
+     0.2005,
+     0.1341
+    ],
+    "bbox_min": [
+     -0.6051,
+     -0.1048,
+     -0.0441
+    ],
+    "bbox_max": [
+     0.6333,
+     0.0957,
+     0.09
+    ],
+    "tris": 3865,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1
+   },
+   "notes": ""
+  },
+  "opengameart/tt-ppsh41": {
+   "glb": "res://assets/third_party/opengameart/tt-ppsh41/model.glb",
+   "title": "Ultimate Low Poly Guns: PPSH 41 (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "nodes": [
+    "Body",
+    "Bolt",
+    "Mag",
+    "Trigger"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.414,
+      -0.0889,
+      -0.0173
+     ],
+     [
+      0.4306,
+      0.1084,
+      0.0173
+     ]
+    ],
+    "Bolt": [
+     [
+      0.0243,
+      0.0594,
+      -0.0104
+     ],
+     [
+      0.1125,
+      0.0803,
+      0.0318
+     ]
+    ],
+    "Mag": [
+     [
+      0.0674,
+      -0.0935,
+      -0.0756
+     ],
+     [
+      0.1234,
+      0.065,
+      0.0756
+     ]
+    ],
+    "Trigger": [
+     [
+      -0.0808,
+      -0.0064,
+      -0.0027
+     ],
+     [
+      -0.0655,
+      0.0208,
+      0.0027
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 3330,
+    "Bolt": 342,
+    "Mag": 1175,
+    "Trigger": 44
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.8446,
+    "real_length_m": 0.84,
+    "scale": 0.9946,
+    "size": [
+     0.8446,
+     0.2019,
+     0.1512
+    ],
+    "bbox_min": [
+     -0.414,
+     -0.0935,
+     -0.0756
+    ],
+    "bbox_max": [
+     0.4306,
+     0.1084,
+     0.0756
+    ],
+    "tris": 4891,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.0731,
+     0.0072,
+     0.0
+    ]
+   },
+   "notes": "71-round drum as the Mag part."
+  },
+  "opengameart/tt-mg42": {
+   "glb": "res://assets/third_party/opengameart/tt-mg42/model.glb",
+   "title": "Ultimate Low Poly Guns: MG 42 (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "mag": "Mag",
+    "cover": "Cover",
+    "bolt": "Bolt",
+    "body": "Body"
+   },
+   "nodes": [
+    "Body",
+    "Bolt",
+    "Cover",
+    "Mag"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.614,
+      -0.1087,
+      -0.1099
+     ],
+     [
+      0.6143,
+      0.1192,
+      0.0665
+     ]
+    ],
+    "Bolt": [
+     [
+      -0.2674,
+      -0.0145,
+      -0.0959
+     ],
+     [
+      -0.0636,
+      0.0753,
+      0.0751
+     ]
+    ],
+    "Cover": [
+     [
+      -0.3879,
+      0.0161,
+      -0.0959
+     ],
+     [
+      -0.0489,
+      0.095,
+      0.0299
+     ]
+    ],
+    "Mag": [
+     [
+      -0.1613,
+      -0.0007,
+      -0.1401
+     ],
+     [
+      -0.0631,
+      0.1084,
+      0.005
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 5693,
+    "Bolt": 294,
+    "Cover": 1416,
+    "Mag": 2435
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.2283,
+    "real_length_m": 1.22,
+    "scale": 0.9932,
+    "size": [
+     1.2283,
+     0.2279,
+     0.2152
+    ],
+    "bbox_min": [
+     -0.614,
+     -0.1087,
+     -0.1401
+    ],
+    "bbox_max": [
+     0.6143,
+     0.1192,
+     0.0751
+    ],
+    "tris": 9838,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1
+   },
+   "notes": "Belt drum + the visible belt = Mag; the feed cover (with its catch) = Cover; charging handle = Bolt. No bipod in the model."
+  },
+  "opengameart/tt-springfield-m1903": {
+   "glb": "res://assets/third_party/opengameart/tt-springfield-m1903/model.glb",
+   "title": "Ultimate Low Poly Guns: Springfield M1903 (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "bolt": "Bolt",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "nodes": [
+    "Body",
+    "Bolt",
+    "Trigger"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.5517,
+      -0.1207,
+      -0.0204
+     ],
+     [
+      0.563,
+      0.0664,
+      0.0186
+     ]
+    ],
+    "Bolt": [
+     [
+      -0.2528,
+      -0.0075,
+      -0.0101
+     ],
+     [
+      -0.0883,
+      0.0515,
+      0.0384
+     ]
+    ],
+    "Trigger": [
+     [
+      -0.2286,
+      -0.0431,
+      -0.0034
+     ],
+     [
+      -0.196,
+      0.0272,
+      0.0034
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 1275,
+    "Bolt": 354,
+    "Trigger": 44
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.1147,
+    "real_length_m": 1.1,
+    "scale": 0.9868,
+    "size": [
+     1.1147,
+     0.1871,
+     0.0588
+    ],
+    "bbox_min": [
+     -0.5517,
+     -0.1207,
+     -0.0204
+    ],
+    "bbox_max": [
+     0.563,
+     0.0664,
+     0.0384
+    ],
+    "tris": 1673,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.2123,
+     -0.008,
+     0.0
+    ]
+   },
+   "notes": ""
+  },
+  "opengameart/tt-double-barrel": {
+   "glb": "res://assets/third_party/opengameart/tt-double-barrel/model.glb",
+   "title": "Ultimate Low Poly Guns: Double Barrel (main set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "barrels": "Barrels",
+    "shells": "Shells",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "nodes": [
+    "Barrels",
+    "Body",
+    "Shells",
+    "Trigger"
+   ],
+   "part_bounds": {
+    "Barrels": [
+     [
+      -0.1631,
+      0.0011,
+      -0.027
+     ],
+     [
+      0.5593,
+      0.0548,
+      0.027
+     ]
+    ],
+    "Body": [
+     [
+      -0.5695,
+      -0.1445,
+      -0.027
+     ],
+     [
+      -0.0928,
+      0.0548,
+      0.027
+     ]
+    ],
+    "Shells": [
+     [
+      -0.1596,
+      0.0309,
+      -0.0257
+     ],
+     [
+      -0.0899,
+      0.0534,
+      0.0259
+     ]
+    ],
+    "Trigger": [
+     [
+      -0.2314,
+      -0.0347,
+      -0.0039
+     ],
+     [
+      -0.1937,
+      0.0041,
+      0.0048
+     ]
+    ]
+   },
+   "part_tris": {
+    "Barrels": 554,
+    "Body": 1352,
+    "Shells": 344,
+    "Trigger": 104
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.1288,
+    "real_length_m": 1.13,
+    "scale": 1.0011,
+    "size": [
+     1.1288,
+     0.1993,
+     0.054
+    ],
+    "bbox_min": [
+     -0.5695,
+     -0.1445,
+     -0.027
+    ],
+    "bbox_max": [
+     0.5593,
+     0.0548,
+     0.027
+    ],
+    "tris": 2354,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.2126,
+     -0.0153,
+     0.0004
+    ]
+   },
+   "notes": "A full-length side-by-side (1.13 m). The game's Sawed-Off is this gun with the barrels cut and the stock shortened: Barrels is a separate part, so phase 2 can clip it (the mesh's barrel geometry is a straight extrusion) or scale the long axis."
+  },
+  "opengameart/pichuliru-cartridges": {
+   "glb": "res://assets/third_party/opengameart/pichuliru-cartridges/model.glb",
+   "title": "Ultimate Low Poly Guns: Cartridges (main set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {},
+   "nodes": [
+    "12_Gauge",
+    "22LR",
+    "338_Lapua",
+    "44_Magnum",
+    "45_ACP",
+    "4_6x30mm",
+    "50_BMG",
+    "5_45x39mm",
+    "5_56x45mm",
+    "5_7x28mm",
+    "7_62x39mm",
+    "7_62x51mm",
+    "7_62x54mmR",
+    "9x18mm",
+    "9x19mm"
+   ],
+   "part_bounds": {
+    "12_Gauge": [
+     [
+      -0.0112,
+      0.0,
+      -0.0512
+     ],
+     [
+      0.0112,
+      0.0698,
+      -0.0288
+     ]
+    ],
+    "22LR": [
+     [
+      -0.0035,
+      0.0,
+      -0.0235
+     ],
+     [
+      0.0035,
+      0.0256,
+      -0.0165
+     ]
+    ],
+    "338_Lapua": [
+     [
+      0.0395,
+      -0.0,
+      -0.0075
+     ],
+     [
+      0.0545,
+      0.0942,
+      0.0075
+     ]
+    ],
+    "44_Magnum": [
+     [
+      0.0301,
+      0.0,
+      -0.0265
+     ],
+     [
+      0.0431,
+      0.0409,
+      -0.0135
+     ]
+    ],
+    "45_ACP": [
+     [
+      0.0159,
+      0.0,
+      -0.0261
+     ],
+     [
+      0.0281,
+      0.0324,
+      -0.0139
+     ]
+    ],
+    "4_6x30mm": [
+     [
+      -0.004,
+      -0.0,
+      -0.004
+     ],
+     [
+      0.004,
+      0.0383,
+      0.004
+     ]
+    ],
+    "50_BMG": [
+     [
+      0.0558,
+      -0.0,
+      -0.0102
+     ],
+     [
+      0.0762,
+      0.1392,
+      0.0102
+     ]
+    ],
+    "5_45x39mm": [
+     [
+      0.0775,
+      -0.0,
+      -0.005
+     ],
+     [
+      0.0875,
+      0.0577,
+      0.005
+     ]
+    ],
+    "5_56x45mm": [
+     [
+      0.0152,
+      -0.0,
+      -0.0048
+     ],
+     [
+      0.0248,
+      0.0581,
+      0.0048
+     ]
+    ],
+    "5_7x28mm": [
+     [
+      0.0061,
+      -0.0,
+      -0.0039
+     ],
+     [
+      0.0139,
+      0.0407,
+      0.0039
+     ]
+    ],
+    "7_62x39mm": [
+     [
+      0.0886,
+      -0.0,
+      -0.0057
+     ],
+     [
+      0.1,
+      0.0567,
+      0.0057
+     ]
+    ],
+    "7_62x51mm": [
+     [
+      0.026,
+      -0.0,
+      -0.006
+     ],
+     [
+      0.038,
+      0.0719,
+      0.006
+     ]
+    ],
+    "7_62x54mmR": [
+     [
+      0.101,
+      -0.0,
+      -0.0072
+     ],
+     [
+      0.1155,
+      0.0779,
+      0.0072
+     ]
+    ],
+    "9x18mm": [
+     [
+      0.0444,
+      0.0,
+      -0.025
+     ],
+     [
+      0.0544,
+      0.025,
+      -0.015
+     ]
+    ],
+    "9x19mm": [
+     [
+      0.005,
+      0.0,
+      -0.025
+     ],
+     [
+      0.015,
+      0.0297,
+      -0.015
+     ]
+    ]
+   },
+   "part_tris": {
+    "12_Gauge": 172,
+    "22LR": 248,
+    "338_Lapua": 312,
+    "44_Magnum": 248,
+    "45_ACP": 280,
+    "4_6x30mm": 312,
+    "50_BMG": 312,
+    "5_45x39mm": 312,
+    "5_56x45mm": 312,
+    "5_7x28mm": 312,
+    "7_62x39mm": 312,
+    "7_62x51mm": 312,
+    "7_62x54mmR": 258,
+    "9x18mm": 280,
+    "9x19mm": 280
+   },
+   "native": {
+    "forward": "+Y",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.1392,
+    "real_length_m": null,
+    "scale": 1.0,
+    "size": [
+     0.1267,
+     0.1392,
+     0.0614
+    ],
+    "bbox_min": [
+     -0.0112,
+     -0.0,
+     -0.0512
+    ],
+    "bbox_max": [
+     0.1155,
+     0.1392,
+     0.0102
+    ],
+    "tris": 4262,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1
+   },
+   "notes": "15 cartridges as named nodes (12_Gauge, 45_ACP, 9x19mm, 7_62x51mm, 7_62x54mmR, 50_BMG, 44_Magnum, 9x18mm, ...), metres, each standing on +Y at its own offset. Casings for the shell-ejection VFX (section 6)."
+  }
+ },
+ "extras": {
+  "cartridges": {
+   "asset": "opengameart/pichuliru-cartridges",
+   "glb": "res://assets/third_party/opengameart/pichuliru-cartridges/model.glb",
+   "nodes": [
+    "12_Gauge",
+    "22LR",
+    "338_Lapua",
+    "44_Magnum",
+    "45_ACP",
+    "4_6x30mm",
+    "50_BMG",
+    "5_45x39mm",
+    "5_56x45mm",
+    "5_7x28mm",
+    "7_62x39mm",
+    "7_62x51mm",
+    "7_62x54mmR",
+    "9x18mm",
+    "9x19mm"
+   ],
+   "casing_for": {
+    "m1911": "45_ACP",
+    "thompson": "45_ACP",
+    "walther_p38": "9x19mm",
+    "luger_p08": "9x19mm",
+    "mp40": "9x19mm",
+    "type100": "9x19mm",
+    "ppsh41": "9x19mm",
+    "webley": "44_Magnum",
+    "kar98k": "7_62x54mmR",
+    "gewehr43": "7_62x54mmR",
+    "mg42": "7_62x54mmR",
+    "stg44": "7_62x39mm",
+    "m1_garand": "7_62x51mm",
+    "bar": "7_62x51mm",
+    "m1919": "7_62x51mm",
+    "springfield": "7_62x51mm",
+    "m1_carbine": "7_62x39mm",
+    "trench_gun": "12_Gauge",
+    "sawed_off": "12_Gauge",
+    "ptrs41": "50_BMG"
+   },
+   "notes": "nearest-shape stand-ins from a modern cartridge set; the ejected casing is the case only (phase 2 cuts the bullet, or scales)"
+  },
+  "stick_grenade": {
+   "source": null,
+   "asset": null,
+   "notes": "no model in the packs; FREE_ASSET_LIST pick: 'Stielhandgranate 24' by dsamuta (Sketchfab, CC-BY)"
+  },
+  "frag_grenade": {
+   "source": null,
+   "asset": null,
+   "notes": "no model in the packs; FREE_ASSET_LIST pick: 'FREE Hand-Painted WW2 Grenade MK 2' (Unity Asset Store)"
+  }
+ }
+}
