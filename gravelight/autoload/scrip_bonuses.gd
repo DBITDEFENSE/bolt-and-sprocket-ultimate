@@ -98,9 +98,9 @@ func reset() -> void:
 	_streak.clear()
 	_tags_round = 0
 	_said.clear()
-	for t: Node in _tags:
+	for t: Variant in _tags:
 		if is_instance_valid(t):
-			t.queue_free()
+			(t as Node).queue_free()
 	_tags.clear()
 
 
@@ -182,7 +182,11 @@ func _on_enemy_killed(_enemy_id: StringName, limb: StringName, _weapon_id: Strin
 func _on_enemy_killed_at(_enemy_id: StringName, position: Vector3, by_player: int) -> void:
 	if by_player <= 0 or not Net.is_authority() or GameState.phase != GameState.Phase.PLAYING:
 		return
-	_tags = _tags.filter(func(t: Node) -> bool: return is_instance_valid(t) and t.is_inside_tree())
+	var live: Array[Node] = []
+	for t: Variant in _tags:
+		if is_instance_valid(t) and (t as Node).is_inside_tree():
+			live.append(t as Node)
+	_tags = live
 	var c: Dictionary = cfg()
 	var r: int = maxi(1, RoundManager.current_round)
 	if not should_drop_tag(r, _tags_round, _tags.size(), rng.randf(), c):
@@ -213,7 +217,7 @@ func _on_tag_collected(by_player: int, value: int) -> void:
 
 
 func tags_alive() -> int:
-	return _tags.filter(func(t: Node) -> bool: return is_instance_valid(t)).size()
+	return _tags.filter(func(t: Variant) -> bool: return is_instance_valid(t)).size()
 
 
 func _map_node() -> Node:
