@@ -34,6 +34,9 @@ var _impacts: Array[MeshInstance3D] = []
 var _decal_mats: Dictionary = {}       # surface -> material (DECALS); "" = the plain dark mark
 var _impact_life: Array[float] = []
 var _blood: Array[CPUParticles3D] = []
+var _dirt: Array[CPUParticles3D] = []    # the rise from the ground (T-085): snow / earth / stone sprays and puffs
+var _dirt_meshes: Dictionary = {}        # surface class -> Mesh
+var _ndirt: int = 0
 var _tracers: Array[MeshInstance3D] = []
 var _tracer_life: Array[float] = []
 var _blasts: Array[Node3D] = []
@@ -98,6 +101,7 @@ func _ready() -> void:
 		p.scale_amount_max = 1.4
 		add_child(p)
 		_blood.append(p)
+	_build_dirt()
 	var tracer_mat: StandardMaterial3D = StandardMaterial3D.new()
 	tracer_mat.albedo_color = Color(1.0, 0.85, 0.55, 0.5)
 	tracer_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -309,6 +313,95 @@ func blood(pos: Vector3, toward: Vector3) -> void:
 		var fwd: Vector3 = toward.normalized()
 		var up: Vector3 = Vector3.UP if absf(fwd.dot(Vector3.UP)) < 0.98 else Vector3.RIGHT
 		p.global_basis = Basis.looking_at(-fwd, up)
+	p.restart()
+	p.emitting = true
+
+
+# ================================================================== the rise from the ground (T-085)
+
+const DIRT: int = 24
+
+## One pooled CPUParticles3D per burst (a 24-zombie horde rising at once reuses the oldest), with a clump mesh
+## per surface class: snow flakes, earth clods, stone grit. Nothing is allocated per burst beyond the mesh swap.
+func _build_dirt() -> void:
+	var looks: Dictionary = {
+		"snow": [Color(0.9, 0.93, 0.98), 0.05],
+		"earth": [Color(0.2, 0.14, 0.09), 0.045],
+		"stone": [Color(0.42, 0.4, 0.37), 0.04],
+	}
+	for kind: String in looks.keys():
+		var m: StandardMaterial3D = StandardMaterial3D.new()
+		m.albedo_color = (looks[kind] as Array)[0]
+		m.roughness = 1.0
+		var box: BoxMesh = BoxMesh.new()
+		var s: float = float((looks[kind] as Array)[1])
+		box.size = Vector3(s, s * 0.8, s)
+		box.material = m
+		_dirt_meshes[kind] = box
+	for i: int in DIRT:
+		var p: CPUParticles3D = CPUParticles3D.new()
+		p.emitting = false
+		p.one_shot = true
+		p.amount = 14
+		p.lifetime = 0.7
+		p.explosiveness = 1.0
+		p.mesh = _dirt_meshes["earth"]
+		p.direction = Vector3.UP
+		p.spread = 40.0
+		p.initial_velocity_min = 1.8
+		p.initial_velocity_max = 4.0
+		p.gravity = Vector3(0, -9.0, 0)
+		p.scale_amount_min = 0.6
+		p.scale_amount_max = 1.6
+		p.angular_velocity_min = -180.0
+		p.angular_velocity_max = 180.0
+		add_child(p)
+		_dirt.append(p)
+
+
+func _dirt_next(kind: String, amount: int) -> CPUParticles3D:
+	var p: CPUParticles3D = _dirt[_ndirt]
+	_ndirt = (_ndirt + 1) % DIRT
+	var mesh: Mesh = _dirt_meshes.get(kind, _dirt_meshes["earth"])
+	if p.mesh != mesh:
+		p.mesh = mesh
+	if p.amount != amount:
+		p.amount = amount   # a resize; only when the count differs
+	return p
+
+
+## Ground thrown up at `pos` (a hand bursting through, the head tearing free, clumps off a shoulder): `kind` is
+## the surface class (snow / earth / stone), `strength` scales the throw, `dir` the cone's axis.
+func dirt_burst(pos: Vector3, kind: String, strength: float = 1.0, dir: Vector3 = Vector3.UP, amount: int = 14) -> void:
+	var p: CPUParticles3D = _dirt_next(kind, maxi(1, amount))
+	p.lifetime = 0.7
+	p.spread = 40.0
+	p.initial_velocity_min = 1.8 * strength
+	p.initial_velocity_max = 4.0 * strength
+	p.gravity = Vector3(0, -9.0, 0)
+	p.scale_amount_min = 0.6
+	p.scale_amount_max = 1.6
+	p.direction = dir.normalized() if dir.length_squared() > 0.001 else Vector3.UP
+	p.global_position = pos
+	p.global_basis = Basis.IDENTITY
+	p.restart()
+	p.emitting = true
+
+
+## A low, slow puff at `pos` (the stagger step as it stands, a body sliding back into the hole): bigger, lighter
+## grains that drift rather than fly.
+func dust_puff(pos: Vector3, kind: String, amount: int = 10) -> void:
+	var p: CPUParticles3D = _dirt_next(kind, maxi(1, amount))
+	p.lifetime = 0.9
+	p.spread = 80.0
+	p.initial_velocity_min = 0.4
+	p.initial_velocity_max = 1.2
+	p.gravity = Vector3(0, -0.8, 0)
+	p.scale_amount_min = 1.2
+	p.scale_amount_max = 2.6
+	p.direction = Vector3.UP
+	p.global_position = pos
+	p.global_basis = Basis.IDENTITY
 	p.restart()
 	p.emitting = true
 
