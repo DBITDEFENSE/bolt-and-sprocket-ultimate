@@ -20,6 +20,7 @@ func _ready() -> void:
 	ProfileSave.profile = ProfileSave.new_profile()
 	GLSettings.path = "user://_qa_settings.cfg"
 	GLSettings.values["homage_bosses"] = false
+	GLSettings.values["bot_local_ai"] = false   # the scripted planner (no Ollama), as in the soaks
 	GameState.bot_count = 0
 	_map = (load("res://gravelight/maps/map00_crossroads/map00.tscn") as PackedScene).instantiate() as MapRoot
 	get_tree().root.add_child.call_deferred(_map)
@@ -158,6 +159,8 @@ func _run() -> void:
 		while _collected.size() == n_before and t < 30.0:
 			await _secs(0.25)
 			t += 0.25
+			if fmod(t, 5.0) < 0.01 and pb.brain != null:
+				print("[milestone]   t=%.0f agent at %s (bottle %.1f m), top %s" % [t, str(_p.global_position.snapped(Vector3.ONE * 0.1)), _p.global_position.distance_to(at), str(pb.brain.top3)])
 		_check(_collected.size() > n_before and _collected.back()[0] == &"tonic_bottle" and _collected.back()[1] == 1, "the agent walked over and took it (%.1f s)" % t)
 		pb.set_on(false, "smoke end")
 

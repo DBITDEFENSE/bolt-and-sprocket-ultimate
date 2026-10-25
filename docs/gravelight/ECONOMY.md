@@ -52,11 +52,25 @@ Ideas looked at and left out: a bank / loan (a menu and a debt rule for a small 
 (the mark would need replicating to co-op clients' puppets), a once-a-round supply drop (it would compete with the
 milestone and the power-ups).
 
-## 3. What it adds (measured)
+## 3. What it adds (measured, 2026-10-25)
 
-Soak numbers (headless, `tools/ai_soak.sh`, Map 0, Scrip earned by player 1 including the 500 start) are in
-DECISIONS T-078 and the builder's report. In short: solo, rounds 1-5 earn roughly 1,300-1,600 more (round pay and
-clean rounds are most of it), plus the free tonic at round 5 (500-4000 of value).
+Headless soaks on Map 0 (`tools/ai_soak.sh`; the soak now logs player 1's Scrip earned, every source and the 500
+start, at each round's end: `earned_r3/5/8` and `bonus_by_kind`). "Round" = the round the run ended on (botmode:
+the solo player-bot agent, seeds 1-8; player3: the scripted player with the realistic kit + 3 bots, seeds 1-3,
+which always ends at the Cousins, round 10). Before = master a2754e7.
+
+| Batch | rounds (mean) | earned by r3 | by r5 | by r7 | by r8 |
+|---|---|---|---|---|---|
+| botmode solo, before | 8 8 6 8 8 8 7 8 (7.62) | 3,374 | 6,461 | 10,825 | never cleared |
+| botmode solo, after | 6 7 7 9 8 9 9 9 (8.00) | 4,378 | 8,171 | 12,501 | 16,024 (4 of 8 cleared it) |
+| player3 realistic, before | 10 10 10 | 2,027 | 3,943 | 5,717 | 7,187 |
+| player3 realistic, after | 10 10 10 | 2,608 | 4,683 | 8,007 | 9,368 |
+
+Plus the round-5 tonic (500-4000 of value) for everyone. A first tuning (round pay 50 + 25 x round, a 100 + 10 x round
+untouched bonus, a streak every 5 headshots) gave the Elite agent +1,900 by round 3 (+57%) and no more rounds
+(7.38): its headshot streaks paid almost every kill. The shipped numbers are the second pass. Per run the agent's
+bonuses by its death are about 500-1,000 round pay, 300-400 untouched, 125-200 on your feet, 150-500 streaks and
+225-1,560 dog tags. Rounds survived are noisy at 8 seeds; the agent's deaths are still its training (BOT_AI.md 10).
 
 ## 4. Tuning
 
