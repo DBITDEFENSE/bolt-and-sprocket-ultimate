@@ -264,24 +264,25 @@ static func _bomb(ci: CanvasItem, c: Vector2, g: float, ink: Color, accent: Colo
 		ci.draw_arc(c, g * 0.95, 0.0, TAU, 28, ink, w * 0.8)
 	ci.draw_circle(body, br, ink)
 	ci.draw_line(body + Vector2(0.3, -0.42) * br, c + Vector2(0.5, -0.72) * g, ink, w)
-	ci.draw_circle(c + Vector2(0.56, -0.78) * g, w * 0.8, accent)
+	ci.draw_circle(c + Vector2(0.56, -0.78) * g, w * 0.9, ink)
 	if detail:
 		ci.draw_polyline(_pts(c, g, [Vector2(-0.22, -0.05), Vector2(-0.04, 0.12), Vector2(-0.18, 0.3), Vector2(0.04, 0.5)]), accent, w * 0.7)
 
 
-## Overclock: a cog with the cordial's lightning bolt over its hub.
+## Overclock: a cog with the cordial's lightning bolt over its hub. The cog is a disc plus eight convex tooth quads
+## (one concave outline can fail to triangulate at nameplate size).
 static func _cog_bolt(ci: CanvasItem, c: Vector2, g: float, ink: Color, accent: Color, neon: Color) -> void:
-	var cog: PackedVector2Array = []
 	var teeth: int = 8
+	ci.draw_circle(c, g * 0.74, ink)
 	for i: int in teeth:
 		var a: float = TAU * float(i) / float(teeth)
-		var half: float = TAU / float(teeth) * 0.22
-		cog.append(c + Vector2(cos(a - half), sin(a - half)) * g * 0.96)
-		cog.append(c + Vector2(cos(a + half), sin(a + half)) * g * 0.96)
-		var a2: float = a + TAU / float(teeth) * 0.5
-		cog.append(c + Vector2(cos(a2 - half * 1.1), sin(a2 - half * 1.1)) * g * 0.72)
-		cog.append(c + Vector2(cos(a2 + half * 1.1), sin(a2 + half * 1.1)) * g * 0.72)
-	ci.draw_colored_polygon(cog, ink)
+		var half: float = TAU / float(teeth) * 0.2
+		var wide: float = half * 1.35
+		ci.draw_colored_polygon(PackedVector2Array([
+			c + Vector2(cos(a - half), sin(a - half)) * g * 0.98,
+			c + Vector2(cos(a + half), sin(a + half)) * g * 0.98,
+			c + Vector2(cos(a + wide), sin(a + wide)) * g * 0.7,
+			c + Vector2(cos(a - wide), sin(a - wide)) * g * 0.7]), ink)
 	ci.draw_circle(c, g * 0.5, accent)
 	ci.draw_colored_polygon(_pts(c, g, [Vector2(0.14, -0.82), Vector2(0.4, -0.82), Vector2(0.06, -0.02), Vector2(-0.28, -0.02)]), neon)
 	ci.draw_colored_polygon(_pts(c, g, [Vector2(-0.02, -0.12), Vector2(0.3, -0.12), Vector2(-0.12, 0.82), Vector2(-0.38, 0.82)]), neon)
