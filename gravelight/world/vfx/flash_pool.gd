@@ -45,7 +45,7 @@ func setup(flash_cfg: Dictionary, smoke_slots: int) -> void:
 			continue
 		_meshes[cls] = _build_mesh(c)
 	var core_quad: QuadMesh = QuadMesh.new()
-	core_quad.size = Vector2(0.11, 0.11)
+	core_quad.size = Vector2(0.14, 0.14)
 	for i: int in n:
 		var root: Node3D = Node3D.new()
 		root.name = "Flash%d" % i
@@ -304,8 +304,8 @@ static func _build_mesh(c: Dictionary) -> ArrayMesh:
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var front: float = 0.05 * float(c.get("core", 0.8)) * 1.3
-	var l: float = 0.17 * float(c.get("length", 1.0))
-	var w: float = 0.034 * (0.8 + 0.2 * float(c.get("length", 1.0)))
+	var l: float = 0.24 * float(c.get("length", 1.0))
+	var w: float = 0.05 * (0.8 + 0.2 * float(c.get("length", 1.0)))
 	var petals: int = maxi(2, int(c.get("petals", 4)))
 	var uvs: Array = [Vector2(0, 1), Vector2(1, 1), Vector2(1, 0), Vector2(0, 0)]
 	var quads: Array = []
@@ -349,7 +349,7 @@ static func _star_texture(frame: int) -> ImageTexture:
 			var spike: float = pow(maxf(0.0, cos(a * float(lobes) * 0.5)), 10.0) * jit[li]
 			var core: float = exp(-r * r * 9.0)
 			var reach: float = clampf(1.0 - r / (0.35 + 0.65 * spike), 0.0, 1.0)
-			var k: float = clampf(core * 1.3 + reach * reach * 0.9, 0.0, 1.0)
+			var k: float = clampf(core * 1.3 + reach * 1.1, 0.0, 1.0)
 			var warm: Color = Color(1.0, 0.95, 0.85).lerp(Color(1.0, 0.55, 0.2), clampf(r * 1.6, 0.0, 1.0))
 			img.set_pixel(x, y, Color(warm.r, warm.g, warm.b, k))
 	return ImageTexture.create_from_image(img)

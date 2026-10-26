@@ -47,7 +47,7 @@ func setup(impact_cfg: Dictionary, hits_cfg: Dictionary) -> void:
 		if ch is Dictionary:
 			_chunk_mesh[surf] = _chunk_mesh_for(ch as Dictionary)
 	for i: int in PUFFS:
-		_puff.append(_make(_puff_mat(soft, false), 0.09, 9, 0.55, 0.6, 2.6, 28.0, Vector3(0, -3.0, 0), _default_ramp, 0.6, 2.0))
+		_puff.append(_make(_puff_mat(soft, false), 0.065, 9, 0.5, 0.6, 2.4, 28.0, Vector3(0, -3.0, 0), _default_ramp, 0.5, 1.8))
 	var first_chunk: Mesh = _chunk_mesh.values()[0] if not _chunk_mesh.is_empty() else BoxMesh.new()
 	for i: int in CHUNKS:
 		var p: CPUParticles3D = CPUParticles3D.new()

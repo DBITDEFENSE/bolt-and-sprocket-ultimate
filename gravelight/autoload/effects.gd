@@ -56,20 +56,20 @@ render_mode unshaded, cull_disabled, depth_draw_never, blend_mix;
 uniform sampler2D screen_tex : hint_screen_texture, filter_linear_mipmap;
 uniform vec2 center_uv = vec2(0.5, 0.5);
 uniform float k = 0.0;          // 0 at birth -> 1 gone
-uniform float strength = 0.035;
+uniform float strength = 0.06;
 uniform vec4 tint : source_color = vec4(0.72, 0.42, 1.0, 1.0);
 void fragment() {
 	float r = length(UV - 0.5) * 2.0;        // 0 at the ring's centre, 1 at the mesh edge (the front of the ring)
-	float band = smoothstep(0.55, 1.0, r) * smoothstep(1.0, 0.92, r);
+	float band = smoothstep(0.62, 0.96, r) * smoothstep(1.0, 0.9, r);
 	float fade = 1.0 - k;
 	vec2 dir = SCREEN_UV - center_uv;
 	float dl = length(dir);
 	dir = dl > 0.0001 ? dir / dl : vec2(0.0);
 	vec2 off = dir * band * strength * fade;
 	vec3 c = texture(screen_tex, SCREEN_UV - off).rgb;
-	c += tint.rgb * band * 0.12 * fade;
+	c += tint.rgb * band * 0.45 * fade;
 	ALBEDO = c;
-	ALPHA = clamp(band * (0.55 + 0.45 * fade), 0.0, 1.0) * fade;
+	ALPHA = clamp(band * (0.7 + 0.3 * fade), 0.0, 1.0) * fade;
 }
 """
 

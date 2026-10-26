@@ -70,6 +70,10 @@ func _shot(name: String) -> void:
 
 func _look(from: Vector3, at: Vector3, fov: float = 60.0) -> void:
 	_cam.fov = fov
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(at, from, 1)
+	var r: Dictionary = _map.get_world_3d().direct_space_state.intersect_ray(q)
+	if not r.is_empty():
+		from = at.lerp(r["position"], 0.85)   # pulled in off a wall
 	_cam.global_position = from
 	_cam.look_at(at, Vector3.UP)
 	_cam.make_current()
