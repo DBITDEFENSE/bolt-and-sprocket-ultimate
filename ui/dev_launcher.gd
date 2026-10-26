@@ -129,6 +129,11 @@ func _ready() -> void:
 	col.add_child(MenuKit.button("Weapon viewer — every gun in hand  ( [ / ] cycle guns )", func() -> void: AdsRange.launch(get_tree()), 22, "ui_confirm"))
 	col.add_child(MenuKit.button("Character lineup — renders the squad, Jakub, the Cousins, patrons and faces to morning/screenshots/u05/people/", func() -> void:
 		_spawn_tool("res://gravelight/tools_src/shots_lineup.tscn", ["--out=" + ProjectSettings.globalize_path("res://morning/screenshots/u05/people")], false), 22, "ui_confirm"))
+	col.add_child(_header("Update 06 — voice acting (your recordings replace the computer voices line by line)"))
+	col.add_child(MenuKit.button("Voice review page (opens in your browser; close its console window to stop)", func() -> void: _open_voice_review(), 22, "ui_confirm"))
+	col.add_child(MenuKit.button("Map 0 — voice test (round 1–3; logs each line's source to logs/voice_test.txt)", func() -> void:
+		GLVO.voice_test = true
+		_start_gl("res://gravelight/maps/map00_crossroads/map00.tscn", 1), 22, "ui_confirm"))
 	col.add_child(_header("Muster (your sidearm and Field Habits; saved per survivor, used by every match)"))
 	col.add_child(MenuKit.button("Muster — pick the sidearm and Field Habits for the survivor above", func() -> void: add_child(MenuMuster.new(CHARACTERS[_char.selected])), 22, "ui_confirm"))
 	col.add_child(_header("Bot mode (an AI plays your survivor; F6 or any input takes over)"))
@@ -197,6 +202,17 @@ func _start_jakub() -> void:
 
 ## Opens an Update 04 test scene in this process with the survivor and god mode from the fields above (each scene
 ## sets its own bots, Scrip and setup).
+## Serves voice_review/ on http://127.0.0.1:8765 (a console window; close it to stop) and opens the browser (T-101).
+func _open_voice_review() -> void:
+	var root: String = ProjectSettings.globalize_path("res://")
+	var py: String = root.path_join("tools/venv/Scripts/python.exe")
+	if not FileAccess.file_exists(py):
+		py = root.path_join("tools/venv/bin/python")
+	if not FileAccess.file_exists(py):
+		py = "python"
+	OS.create_process(py, [root.path_join("tools/voice/review.py")], true)
+
+
 func _start_tool_scene(scene: String) -> void:
 	GameState.character_id = StringName(CHARACTERS[_char.selected])
 	GameState.god_mode = _god.button_pressed
