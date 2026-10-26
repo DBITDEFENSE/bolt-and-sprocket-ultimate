@@ -21,7 +21,7 @@ Art
 Greybox geometry and placeholder visuals are generated in-house. Third-party models and textures are listed in docs/ASSETS.md with their licenses and credited below.
 
 Fonts
-System fonts (Stencil / Impact, Courier New) during development. Bundled OFL fonts arrive with the art pass.
+Stardos Stencil (stamps), Special Elite (typewriter), IBM Plex Sans and IBM Plex Mono (body and ledger figures): open-licensed families bundled under assets/third_party/google_fonts, credited below with their licences.
 
 All characters, places, products and events are fictional.
 No assets, names, audio or lore from any other commercial game are used."""

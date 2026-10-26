@@ -15,6 +15,7 @@ func _ready() -> void:
 	get_tree().paused = false
 	GameState.phase = GameState.Phase.MENU
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	MenuKit.apply_theme(self)
 	AudioDirector.stop_all_music()
 	AudioDirector.play_music("music_menu")
 	add_child(MenuBackdrop.new())
@@ -53,8 +54,8 @@ func _build() -> void:
 		_menu.remove_child(c)
 		c.queue_free()
 
-	_menu.add_child(MenuKit.label("GRAVELIGHT", 104, Color(0.85, 0.82, 0.74), true))
-	_menu.add_child(MenuKit.label("Silesia, winter 1944. The dead are keeping count.", 22, MenuKit.VIOLET))
+	_menu.add_child(MenuKit.text("wordmark", "GRAVELIGHT", Color(0.85, 0.82, 0.74)))
+	_menu.add_child(MenuKit.text("subheading", "Silesia, winter 1944. The dead are keeping count.", MenuKit.VIOLET))
 	# profile header: rank stamp + XP bar
 	var head: HBoxContainer = HBoxContainer.new()
 	head.add_theme_constant_override("separation", 18)

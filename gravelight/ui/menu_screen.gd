@@ -16,6 +16,7 @@ func _init(title: String = "") -> void:
 
 
 func _ready() -> void:
+	MenuKit.apply_theme(self)
 	var shade: ColorRect = ColorRect.new()
 	shade.color = Color(0, 0, 0, 0.55)
 	shade.set_anchors_preset(Control.PRESET_FULL_RECT)

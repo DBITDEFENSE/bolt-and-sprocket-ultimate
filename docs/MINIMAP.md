@@ -39,3 +39,14 @@ The minimap (`ui/map/minimap.gd`) is a `MapCanvas` in a circular / rounded-squar
 busy perf_marks scene (24 zombie dots, 4 squad icons) it measured 300-360 us before the T-070 pass and ~190-280 us after
 (the bezel is retained: its ticks / letters move instead of redrawing; zombie dots take a lean path; only rim-pinned marks
 are placed per frame). See docs/gravelight/PERFORMANCE.md.
+
+## T-096 (Update 05 section 7): the bezel art, open ground, the pause map's first fit
+
+The GRAVELIGHT bezel is drawn (no texture): a bevelled brass band with screws, N/E/S/W discs, intercardinal
+rose points on the tick ring, a faint etched rose and a glass glint over the map (`ui.json "minimap"`
+`compass_rose_alpha`, `glint_alpha`, `ring_px`), the zone stamp and floor name typed under it in the kit's fonts.
+On open ground (a zone whose bounding box covers more than `outdoor_zone_frac` of the map's rect: Map 0's Grounds,
+104 x 118 m) the view steps out by `outdoor_zoom_step` zoom levels (`Minimap.zoom_level_effective`), so the field
+reads at a useful scale while rooms keep the chosen level. The pause MAP tab's first view fits the built zones
+(`PauseMapView.built_rect`, `ui.json "pause_map"`), with the whole rect as the zoom-out floor and the last zoom
+kept for the match; `MapCanvas.fit_rect(rect, margin)` is the primitive. See docs/gravelight/UI_KIT.md.

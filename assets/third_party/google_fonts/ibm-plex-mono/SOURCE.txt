@@ -1,0 +1,10 @@
+Title: IBM Plex Mono
+Author: Mike Abbink, Bold Monday (IBM)
+Source: https://fonts.google.com/specimen/IBM+Plex+Mono
+Author URL: https://github.com/IBM/plex
+License: SIL Open Font License 1.1 (OFL 1.1, https://openfontlicense.org)
+Credit line: "IBM Plex Mono" by Mike Abbink and Bold Monday for IBM, licensed under the SIL Open Font License 1.1.
+Format: TrueType (TTF), Regular / SemiBold / Bold, unmodified
+Downloaded: 2026-10-25 by Claude (T-096) from the google/fonts repository (ofl/ibmplexmono, main)
+Files used: IBMPlexMono-Bold.ttf, IBMPlexMono-Regular.ttf, IBMPlexMono-SemiBold.ttf
+Game use: the GRAVELIGHT ledger face (Scrip and ammo counters, stat grids, the co-op ledger, the dev console) via MenuKit.mono_font()

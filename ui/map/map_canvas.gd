@@ -148,7 +148,14 @@ func canvas_to_world(c: Vector2) -> Vector3:
 func fit_floor(margin_px: float = 20.0) -> void:
 	if state == null:
 		return
-	var r: Rect2 = state.data.world_rect
+	fit_rect(state.data.world_rect, margin_px)
+
+
+## Centre and zoom so a world rect (XZ, metres) fits the control, north up (T-096: the pause map opens on the
+## built zones, not the whole 104 x 118 m rect).
+func fit_rect(r: Rect2, margin_px: float = 20.0) -> void:
+	if r.size.x <= 0.0 or r.size.y <= 0.0:
+		return
 	center = r.get_center()
 	heading = 0.0
 	zoom = minf((size.x - margin_px * 2.0) / r.size.x, (size.y - margin_px * 2.0) / r.size.y)
@@ -434,6 +441,15 @@ class MapLayer extends Node2D:
 		var src: Rect2 = Rect2((dst.position - r.position) / r.size * ts, dst.size / r.size * ts)
 		draw_texture_rect_region(tex, dst, src, mod)
 
+	## A zone label belongs to the floor its polygon's middle height is on (poly_on_floor counts any overlap, which
+	## put the Old Cellar's name over the Taproom's on the ground floor).
+	static func _label_on_floor(z: Dictionary, i: int, f: Dictionary) -> bool:
+		var ys: Array = z.get("ys", [])
+		var lo: float = float(ys[i][0]) if i < ys.size() else float(z["y_min"])
+		var hi: float = float(ys[i][1]) if i < ys.size() else float(z["y_max"])
+		var mid: float = (lo + hi) * 0.5
+		return mid >= float(f["y_min"]) and mid < float(f["y_max"])
+
 	func _zone_labels(md: MapData, a: float) -> void:
 		var f: Font = MapIcons.font()
 		var fl: Dictionary = md.floors[_floor] if _floor < md.floors.size() else {}
@@ -443,7 +459,7 @@ class MapLayer extends Node2D:
 			var polys: Array = z["polys"]
 			for pi: int in polys.size():
 				var poly: PackedVector2Array = polys[pi]
-				if not fl.is_empty() and not MapData.poly_on_floor(z, pi, fl):
+				if not fl.is_empty() and not _label_on_floor(z, pi, fl):
 					continue
 				var rr: Rect2 = Rect2(poly[0], Vector2.ZERO)
 				for q: Vector2 in poly:

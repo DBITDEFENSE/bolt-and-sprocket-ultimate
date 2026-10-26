@@ -1,0 +1,10 @@
+Title: Stardos Stencil
+Author: Vernon Adams
+Source: https://fonts.google.com/specimen/Stardos+Stencil
+Author URL: https://github.com/google/fonts/tree/main/ofl/stardosstencil
+License: SIL Open Font License 1.1 (OFL 1.1, https://openfontlicense.org)
+Credit line: "Stardos Stencil" by Vernon Adams, licensed under the SIL Open Font License 1.1.
+Format: TrueType (TTF), Regular and Bold, unmodified
+Downloaded: 2026-10-25 by Claude (T-096) from the google/fonts repository (ofl/stardosstencil, main)
+Files used: StardosStencil-Bold.ttf, StardosStencil-Regular.ttf
+Game use: the GRAVELIGHT stamp face (the round stamp, zone stamp, boss name, menu titles) via MenuKit.stamp_font()
