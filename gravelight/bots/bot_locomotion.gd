@@ -58,6 +58,7 @@ var reversals: int = 0
 var yields: int = 0
 var slides_started: int = 0
 var mantles_started: int = 0
+var drops: int = 0                    # steps down off furniture the navmesh never knew about (Q-14)
 
 var _c: Dictionary = {}
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -91,6 +92,7 @@ var _nudge_to: Vector3 = Vector3.INF
 var _last_pos: Vector3 = Vector3.ZERO
 var _block_t: float = 0.0
 var _tp_try_t: float = 0.0
+var _marooned_t: float = 0.0          # seconds standing above the navmesh (on a table, a chair, a crate)
 var _rebase: bool = false
 var _win_t: float = 0.0
 var _win_pos: Vector3 = Vector3.ZERO
@@ -1165,7 +1167,13 @@ func _fill_intent(wish: Vector3, sprint: bool, remaining: float, _delta: float) 
 	# mantle: blocked while walking into something waist-high (Player.probe_mantle finds a ledge in front)
 	if _block_t >= float(_c.get("mantle_after_s", 0.35)) and wish.length_squared() > 0.25 and player.is_on_floor():
 		var fwd: Vector3 = -player.global_basis.z
-		if Vector3(fwd.x, 0, fwd.z).normalized().dot(wish.normalized()) > 0.8 and not player.probe_mantle().is_empty():
+		var plan: Dictionary = {}
+		if Vector3(fwd.x, 0, fwd.z).normalized().dot(wish.normalized()) > 0.8:
+			plan = player.probe_mantle()
+		# a bot only takes a mantle whose landing has navmesh under it: a vault lands on the floor; a climb onto a
+		# table top (the navmesh is beside and below it) would maroon the body on the furniture (UPDATE 07 Q-14)
+		if not plan.is_empty() and mantle_land_ok((plan["points"] as PackedVector3Array)[2], _snap((plan["points"] as PackedVector3Array)[2]),
+				float(_g("stuck", "mantle_land_m", 0.35)), float(_g("stuck", "mantle_land_y", 0.3))):
 			_mi.jump_pressed = true
 			_mi.jump_held = true
 			_mi.move = Vector2(0.0, -1.0)
@@ -1206,6 +1214,19 @@ func _chaser_behind() -> bool:
 
 # ================================================================== stuck recovery
 
+## A mantle a bot may take: its landing spot has navmesh under it (within flat_m sideways and y_m up or down).
+## Vaults over thin obstacles land on the floor and pass; a climb onto a table or a crate top is refused (the
+## navmesh lies beside and 0.75 m below it): the body would be marooned on the furniture. Pure, unit-tested.
+static func mantle_land_ok(land: Vector3, nav_point: Vector3, flat_m: float = 0.35, y_m: float = 0.3) -> bool:
+	return Vector2(land.x - nav_point.x, land.z - nav_point.z).length() <= flat_m and absf(land.y - nav_point.y) <= y_m
+
+
+## Marooned: the feet stand above the navmesh (on a table, a chair, a crate the bake never knew about) with the
+## navmesh within reach_m sideways and more than up_m below. Pure, unit-tested.
+static func marooned(feet: Vector3, nav_point: Vector3, up_m: float = 0.4, reach_m: float = 1.5) -> bool:
+	return feet.y - nav_point.y > up_m and Vector2(feet.x - nav_point.x, feet.z - nav_point.z).length() <= reach_m
+
+
 ## The ladder: no progress for stuck.repath_s -> re-plan, nudge_s -> a local random walk, teleport_s -> a
 ## teleport to a safe navmesh point (only unseen). Pure, unit-tested: 0 none, 1 repath, 2 nudge, 3 teleport.
 static func stuck_stage(no_progress_s: float, repath_s: float = 2.0, nudge_s: float = 4.0, teleport_s: float = 8.0) -> int:
@@ -1225,6 +1246,26 @@ func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bo
 	if wants_move and moved < 0.015:
 		BotMetrics.note(player.player_id, &"stuck_time", delta)
 	_block_t = _block_t + delta if wants_move and moved < 0.02 * (delta * 60.0) else 0.0
+	# marooned on furniture (Q-14): a bot that ended up on a table top (pushed, or an old mantle) walks toward the
+	# navmesh first; if it is still up there after drop_after_s (chairs round the table pen it in), it steps down
+	# onto the nearest navmesh point: a hop of under reach_m, never a teleport, and it is logged as a drop
+	if wants_move and player.is_on_floor():
+		var nav_here: Vector3 = _snap(now)
+		if marooned(now, nav_here, float(_g("stuck", "marooned_up_m", 0.4)), float(_g("stuck", "marooned_reach_m", 1.5))):
+			_marooned_t += delta
+			if _marooned_t >= float(_g("stuck", "drop_after_s", 2.0)):
+				player.global_position = nav_here + Vector3.UP * 0.05
+				player.velocity = Vector3.ZERO
+				_marooned_t = 0.0
+				_need_plan = true
+				_path_goal = Vector3.INF
+				drops += 1
+				BotMetrics.note(player.player_id, &"stuck", 1.0, "drop")
+				return
+		else:
+			_marooned_t = 0.0
+	else:
+		_marooned_t = 0.0
 	if detour == 1:
 		return   # stepping aside for a human on purpose
 	if detour == 0 and (goal == Vector3.INF or _arrived):

@@ -152,6 +152,35 @@ func test_stuck_ladder_timing() -> void:
 	assert_eq(BotLocomotion.stuck_stage(8.0, r, n, t), 3, "8 s: teleport (when unseen)")
 
 
+func test_mantle_landing_needs_navmesh_under_it() -> void:
+	# UPDATE 07 Q-14: a vault over the bar lands on the floor (navmesh right there): allowed
+	var st: Dictionary = loco_cfg["stuck"]
+	var fm: float = float(st["mantle_land_m"])
+	var ym: float = float(st["mantle_land_y"])
+	assert_eq([fm, ym], [0.35, 0.3])
+	assert_true(BotLocomotion.mantle_land_ok(Vector3(10, 0.02, 5), Vector3(10.1, 0.0, 5.05), fm, ym), "a vault's landing on the floor")
+	assert_true(BotLocomotion.mantle_land_ok(Vector3(10, 0.27, 5), Vector3(10, 0.0, 5), fm, ym), "a kerb-high step the navmesh knows")
+	# a climb onto the taproom table: the nearest navmesh is 0.75 m below, beside the table
+	assert_false(BotLocomotion.mantle_land_ok(Vector3(16.1, 0.77, 11.5), Vector3(15.9, 0.0, 11.5), fm, ym), "the table top: no navmesh under it")
+	# a ledge whose top is navmesh (a platform) is a legitimate climb
+	assert_true(BotLocomotion.mantle_land_ok(Vector3(16.1, 1.2, 11.5), Vector3(16.1, 1.2, 11.5), fm, ym), "a climb onto a navmesh platform")
+	# a landing beside the navmesh edge but too far sideways (the far side of a rail) is refused
+	assert_false(BotLocomotion.mantle_land_ok(Vector3(16.1, 0.0, 11.5), Vector3(16.6, 0.0, 11.5), fm, ym), "0.5 m off the navmesh edge")
+
+
+func test_marooned_on_furniture() -> void:
+	var st: Dictionary = loco_cfg["stuck"]
+	var up: float = float(st["marooned_up_m"])
+	var reach: float = float(st["marooned_reach_m"])
+	var drop_s: float = float(st["drop_after_s"])
+	assert_eq([up, reach, drop_s], [0.4, 1.5, 2.0])
+	assert_true(BotLocomotion.marooned(Vector3(16.5, 0.8, 11.5), Vector3(15.9, 0.0, 11.5), up, reach), "feet on the table, navmesh 0.6 m beside and 0.8 m down")
+	assert_false(BotLocomotion.marooned(Vector3(16.5, 0.05, 11.5), Vector3(16.5, 0.0, 11.5), up, reach), "standing on the navmesh")
+	assert_false(BotLocomotion.marooned(Vector3(16.5, 0.3, 11.5), Vector3(16.5, 0.0, 11.5), up, reach), "a kerb or a step: not marooned")
+	assert_false(BotLocomotion.marooned(Vector3(23.6, 3.5, 31.7), Vector3(23.6, 0.0, 29.0), up, reach), "the loft edge over the stable floor: too far to step down (a ladder, not a drop)")
+	assert_true(BotLocomotion.marooned(Vector3(5.0, 1.2, 5.0), Vector3(5.0, 0.0, 6.2), up, reach), "on a crate stack, navmesh 1.2 m beside")
+
+
 # ---------------------------------------------------------------- doors / lift
 
 func test_door_rule() -> void:

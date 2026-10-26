@@ -1132,6 +1132,11 @@ func bake_navmesh() -> void:
 	nm.agent_max_slope = 42.0
 	nm.cell_size = 0.25
 	nm.cell_height = 0.25
+	# UPDATE 07 Q-14: no walkable islands on furniture tops. The bake used to leave a 0.2 m patch of navmesh on every
+	# table top (1.2 m wide, eroded by the agent radius), so a bot that climbed one was "on the navmesh" and its path
+	# never left the table (the player's mantle also accepted the top as a navmesh spot). Regions under 8 cells
+	# (0.5 m^2) are dropped; every real floor, closet and landing is far larger.
+	nm.region_min_size = 8.0
 	nm.geometry_parsed_geometry_type = NavigationMesh.PARSED_GEOMETRY_STATIC_COLLIDERS
 	nm.geometry_collision_mask = 1 | EDGE_LAYER   # the edge wall shapes the navmesh though shots pass it (T-084)
 	var src: NavigationMeshSourceGeometryData3D = NavigationMeshSourceGeometryData3D.new()
