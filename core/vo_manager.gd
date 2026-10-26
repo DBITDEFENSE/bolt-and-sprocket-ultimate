@@ -59,7 +59,7 @@ func play(line_id: String) -> bool:
 	var spk: Dictionary = _speakers.get(who, {})
 	var col: Color = Color.from_string(str(spk.get("color", "#ffffff")), Color.WHITE)
 	EventBus.vo_line_started.emit(line_id, who, text)
-	EventBus.subtitle.emit(str(spk.get("name", who.to_upper())), text, col, 1.2 + text.length() * 0.055)
+	EventBus.subtitle.emit(str(spk.get("name", who.to_upper())), text, col, maxf(1.2 + text.length() * 0.055, recorded_length(line_id) + 0.3))
 	if not _voice_allowed():
 		return true
 	var rec: String = VO_DIR + line_id + ".ogg"
@@ -69,6 +69,16 @@ func play(line_id: String) -> bool:
 	elif bool(Settings.get_value("tts_voices", true)):
 		_speak_tts(who, text)
 	return true
+
+
+## Length in seconds of a line's recorded file (res://audio/vo/<id>.ogg: a cast member's take imported by
+## tools/voice/import.py, T-101), 0 when the line has none. Subtitles and cutscene beats stay up at least this long.
+func recorded_length(line_id: String) -> float:
+	var rec: String = VO_DIR + line_id + ".ogg"
+	if not ResourceLoader.exists(rec):
+		return 0.0
+	var st: AudioStream = load(rec) as AudioStream
+	return st.get_length() if st != null else 0.0
 
 
 ## Never makes a sound in headless runs (tests, CI) or when the voice setting is off.

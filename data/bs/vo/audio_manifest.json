@@ -1,0 +1,4373 @@
+{
+ "files": {
+  "bark.bolts.01": {
+   "line": "bark.bolts.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bark.bolts.02": {
+   "line": "bark.bolts.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bark.bolts.03": {
+   "line": "bark.bolts.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bark.combat.01": {
+   "line": "bark.combat.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bark.combat.02": {
+   "line": "bark.combat.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bark.combat.03": {
+   "line": "bark.combat.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bark.combat.04": {
+   "line": "bark.combat.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bark.combat.05": {
+   "line": "bark.combat.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bark.combat.06": {
+   "line": "bark.combat.06",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bark.combat.07": {
+   "line": "bark.combat.07",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bark.idle.01": {
+   "line": "bark.idle.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bark.idle.02": {
+   "line": "bark.idle.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bark.idle.03": {
+   "line": "bark.idle.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bark.idle.04": {
+   "line": "bark.idle.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bark.idle.05": {
+   "line": "bark.idle.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bark.lowhp.01": {
+   "line": "bark.lowhp.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bark.lowhp.02": {
+   "line": "bark.lowhp.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bark.lowhp.03": {
+   "line": "bark.lowhp.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.buy.01": {
+   "line": "blartz.buy.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.buy.02": {
+   "line": "blartz.buy.02",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.buy.03": {
+   "line": "blartz.buy.03",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.deny.01": {
+   "line": "blartz.deny.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.deny.02": {
+   "line": "blartz.deny.02",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.deny.03": {
+   "line": "blartz.deny.03",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.gratefulPitches.01": {
+   "line": "blartz.gratefulPitches.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.gratefulPitches.02": {
+   "line": "blartz.gratefulPitches.02",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.gratefulPitches.03": {
+   "line": "blartz.gratefulPitches.03",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.item.ammo": {
+   "line": "blartz.item.ammo",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.item.mallet": {
+   "line": "blartz.item.mallet",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.item.nano": {
+   "line": "blartz.item.nano",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.item.super": {
+   "line": "blartz.item.super",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.item.upg": {
+   "line": "blartz.item.upg",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.item.weapon": {
+   "line": "blartz.item.weapon",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.pitches.01": {
+   "line": "blartz.pitches.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.pitches.02": {
+   "line": "blartz.pitches.02",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.pitches.03": {
+   "line": "blartz.pitches.03",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.pitches.04": {
+   "line": "blartz.pitches.04",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.pitches.05": {
+   "line": "blartz.pitches.05",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.pitches.06": {
+   "line": "blartz.pitches.06",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.tips.01": {
+   "line": "blartz.tips.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.tips.02": {
+   "line": "blartz.tips.02",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.tips.03": {
+   "line": "blartz.tips.03",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "blartz.tips.04": {
+   "line": "blartz.tips.04",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.clearance.01": {
+   "line": "bs.ad.clearance.01",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.clearance.02": {
+   "line": "bs.ad.clearance.02",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.clearance.03": {
+   "line": "bs.ad.clearance.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.clearance.04": {
+   "line": "bs.ad.clearance.04",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.clearance.05": {
+   "line": "bs.ad.clearance.05",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.clearance.06": {
+   "line": "bs.ad.clearance.06",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.fineprint.01": {
+   "line": "bs.ad.fineprint.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.fineprint.02": {
+   "line": "bs.ad.fineprint.02",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.fineprint.03": {
+   "line": "bs.ad.fineprint.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.fineprint.04": {
+   "line": "bs.ad.fineprint.04",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.fineprint.05": {
+   "line": "bs.ad.fineprint.05",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.fineprint.06": {
+   "line": "bs.ad.fineprint.06",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.fineprint.07": {
+   "line": "bs.ad.fineprint.07",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.hostile.01": {
+   "line": "bs.ad.hostile.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.hostile.02": {
+   "line": "bs.ad.hostile.02",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.hostile.03": {
+   "line": "bs.ad.hostile.03",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.hostile.04": {
+   "line": "bs.ad.hostile.04",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.hostile.05": {
+   "line": "bs.ad.hostile.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.hostile.06": {
+   "line": "bs.ad.hostile.06",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.hostile.07": {
+   "line": "bs.ad.hostile.07",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.latefee.01": {
+   "line": "bs.ad.latefee.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.latefee.02": {
+   "line": "bs.ad.latefee.02",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.latefee.03": {
+   "line": "bs.ad.latefee.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.latefee.04": {
+   "line": "bs.ad.latefee.04",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.latefee.05": {
+   "line": "bs.ad.latefee.05",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.ad.latefee.06": {
+   "line": "bs.ad.latefee.06",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.algorithm.feed.01": {
+   "line": "bs.boss.algorithm.feed.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.algorithm.feed.02": {
+   "line": "bs.boss.algorithm.feed.02",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.algorithm.feed.03": {
+   "line": "bs.boss.algorithm.feed.03",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.algorithm.overload.01": {
+   "line": "bs.boss.algorithm.overload.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.algorithm.overload.02": {
+   "line": "bs.boss.algorithm.overload.02",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.algorithm.viral.01": {
+   "line": "bs.boss.algorithm.viral.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.algorithm.viral.02": {
+   "line": "bs.boss.algorithm.viral.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.cc.collab.01": {
+   "line": "bs.boss.cc.collab.01",
+   "speaker": "cc",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.cc.collab.02": {
+   "line": "bs.boss.cc.collab.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.cc.drones.01": {
+   "line": "bs.boss.cc.drones.01",
+   "speaker": "cc",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.cc.drones.02": {
+   "line": "bs.boss.cc.drones.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.cc.live.01": {
+   "line": "bs.boss.cc.live.01",
+   "speaker": "cc",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.cc.live.02": {
+   "line": "bs.boss.cc.live.02",
+   "speaker": "cc",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.cc.unbox.01": {
+   "line": "bs.boss.cc.unbox.01",
+   "speaker": "cc",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.cc.unbox.02": {
+   "line": "bs.boss.cc.unbox.02",
+   "speaker": "cc",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.compost.defeat.01": {
+   "line": "bs.boss.compost.defeat.01",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.compost.enrage.01": {
+   "line": "bs.boss.compost.enrage.01",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.compost.leak.01": {
+   "line": "bs.boss.compost.leak.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.compost.leak.02": {
+   "line": "bs.boss.compost.leak.02",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.compost.leak.03": {
+   "line": "bs.boss.compost.leak.03",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.compost.mercy.01": {
+   "line": "bs.boss.compost.mercy.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.compost.mercy.02": {
+   "line": "bs.boss.compost.mercy.02",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.compost.mercy.03": {
+   "line": "bs.boss.compost.mercy.03",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.compost.mercy.04": {
+   "line": "bs.boss.compost.mercy.04",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.repotron.compact.01": {
+   "line": "bs.boss.repotron.compact.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.repotron.compact.02": {
+   "line": "bs.boss.repotron.compact.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.repotron.compact.03": {
+   "line": "bs.boss.repotron.compact.03",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.repotron.intro.01": {
+   "line": "bs.boss.repotron.intro.01",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.repotron.intro.02": {
+   "line": "bs.boss.repotron.intro.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.repotron.steal.01": {
+   "line": "bs.boss.repotron.steal.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.repotron.steal.02": {
+   "line": "bs.boss.repotron.steal.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.repotron.steal.03": {
+   "line": "bs.boss.repotron.steal.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.retention.dm.01": {
+   "line": "bs.boss.retention.dm.01",
+   "speaker": "retention",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.sentinel.bark.01": {
+   "line": "bs.boss.sentinel.bark.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.sentinel.bark.02": {
+   "line": "bs.boss.sentinel.bark.02",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.sentinel.bark.03": {
+   "line": "bs.boss.sentinel.bark.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.sentinel.bark.04": {
+   "line": "bs.boss.sentinel.bark.04",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.sentinel.bark.05": {
+   "line": "bs.boss.sentinel.bark.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.sentinel.intro.01": {
+   "line": "bs.boss.sentinel.intro.01",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.sentinel.intro.02": {
+   "line": "bs.boss.sentinel.intro.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.boss.sentinel.intro.03": {
+   "line": "bs.boss.sentinel.intro.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.enemy.debuff.blinded.01": {
+   "line": "bs.enemy.debuff.blinded.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.enemy.debuff.clamped.01": {
+   "line": "bs.enemy.debuff.clamped.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.enemy.debuff.slowed.01": {
+   "line": "bs.enemy.debuff.slowed.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.blartz.01": {
+   "line": "bs.forge.blartz.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.blartz.02": {
+   "line": "bs.forge.blartz.02",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.blartz.03": {
+   "line": "bs.forge.blartz.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.blartz.04": {
+   "line": "bs.forge.blartz.04",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.blartz.05": {
+   "line": "bs.forge.blartz.05",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.blartz.06": {
+   "line": "bs.forge.blartz.06",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.blartz.07": {
+   "line": "bs.forge.blartz.07",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.blartz.08": {
+   "line": "bs.forge.blartz.08",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.blartz.09": {
+   "line": "bs.forge.blartz.09",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.blartz.10": {
+   "line": "bs.forge.blartz.10",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.blartz.11": {
+   "line": "bs.forge.blartz.11",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.deny.01": {
+   "line": "bs.forge.deny.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.deny.02": {
+   "line": "bs.forge.deny.02",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.deny.03": {
+   "line": "bs.forge.deny.03",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.deny.04": {
+   "line": "bs.forge.deny.04",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.evolve.blaster": {
+   "line": "bs.forge.evolve.blaster",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.evolve.boom": {
+   "line": "bs.forge.evolve.boom",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.evolve.buzz": {
+   "line": "bs.forge.evolve.buzz",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.evolve.cease": {
+   "line": "bs.forge.evolve.cease",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.evolve.clearance": {
+   "line": "bs.forge.evolve.clearance",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.evolve.dart": {
+   "line": "bs.forge.evolve.dart",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.evolve.fineprint": {
+   "line": "bs.forge.evolve.fineprint",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.evolve.frost": {
+   "line": "bs.forge.evolve.frost",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.evolve.grav": {
+   "line": "bs.forge.evolve.grav",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.evolve.hostile": {
+   "line": "bs.forge.evolve.hostile",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.evolve.latefee": {
+   "line": "bs.forge.evolve.latefee",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.evolve.mid": {
+   "line": "bs.forge.evolve.mid",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.evolve.patent": {
+   "line": "bs.forge.evolve.patent",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.evolve.root": {
+   "line": "bs.forge.evolve.root",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.evolve.void": {
+   "line": "bs.forge.evolve.void",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.forge.evolve.zap": {
+   "line": "bs.forge.evolve.zap",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.foundry.forge.01": {
+   "line": "bs.foundry.forge.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.foundry.forge.02": {
+   "line": "bs.foundry.forge.02",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.foundry.forge.03": {
+   "line": "bs.foundry.forge.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.foundry.forge.04": {
+   "line": "bs.foundry.forge.04",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.foundry.holding.01": {
+   "line": "bs.foundry.holding.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.foundry.holding.02": {
+   "line": "bs.foundry.holding.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.foundry.holding.03": {
+   "line": "bs.foundry.holding.03",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.gadget.glide.first.01": {
+   "line": "bs.gadget.glide.first.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.gadget.glide.updraft.01": {
+   "line": "bs.gadget.glide.updraft.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.gadget.tether.pull.01": {
+   "line": "bs.gadget.tether.pull.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.gadget.tether.weight.01": {
+   "line": "bs.gadget.tether.weight.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.gadget.tether.weight.02": {
+   "line": "bs.gadget.tether.weight.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.gadget.tether.weight.03": {
+   "line": "bs.gadget.tether.weight.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.gadget.tether.weight.04": {
+   "line": "bs.gadget.tether.weight.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.galleria.toniq.01": {
+   "line": "bs.galleria.toniq.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.galleria.toniq.02": {
+   "line": "bs.galleria.toniq.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.galleria.toniq.03": {
+   "line": "bs.galleria.toniq.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.contravention_line": {
+   "line": "bs.nova.contravention_line",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.counter_done": {
+   "line": "bs.nova.counter_done",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.counter_permit": {
+   "line": "bs.nova.counter_permit",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.counter_take_number": {
+   "line": "bs.nova.counter_take_number",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.pa_rule_horseplay": {
+   "line": "bs.nova.pa_rule_horseplay",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.pa_rule_lawn": {
+   "line": "bs.nova.pa_rule_lawn",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.pa_rule_run": {
+   "line": "bs.nova.pa_rule_run",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.pa_violation_fight": {
+   "line": "bs.nova.pa_violation_fight",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.pa_violation_jump": {
+   "line": "bs.nova.pa_violation_jump",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.pa_violation_sprint": {
+   "line": "bs.nova.pa_violation_sprint",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.pa_violation_walkway_jump": {
+   "line": "bs.nova.pa_violation_walkway_jump",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.qhint_q4a": {
+   "line": "bs.nova.qhint_q4a",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.qhint_q4b": {
+   "line": "bs.nova.qhint_q4b",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.stamps_line": {
+   "line": "bs.nova.stamps_line",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.ticket_again": {
+   "line": "bs.nova.ticket_again",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.ticket_taken": {
+   "line": "bs.nova.ticket_taken",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.train_locked": {
+   "line": "bs.nova.train_locked",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.underpass_01": {
+   "line": "bs.nova.underpass_01",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.underpass_02": {
+   "line": "bs.nova.underpass_02",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.underpass_03": {
+   "line": "bs.nova.underpass_03",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.underpass_04": {
+   "line": "bs.nova.underpass_04",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.nova.variance_line": {
+   "line": "bs.nova.variance_line",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.rustvane.bellhop_idle": {
+   "line": "bs.rustvane.bellhop_idle",
+   "speaker": "bellhop",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.rustvane.concierge_idle": {
+   "line": "bs.rustvane.concierge_idle",
+   "speaker": "concierge",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.rustvane.hook.01": {
+   "line": "bs.rustvane.hook.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.rustvane.hook.02": {
+   "line": "bs.rustvane.hook.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.rustvane.hook.03": {
+   "line": "bs.rustvane.hook.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.rustvane.hook.04": {
+   "line": "bs.rustvane.hook.04",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.rustvane.hook.05": {
+   "line": "bs.rustvane.hook.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.rustvane.popup_glambot": {
+   "line": "bs.rustvane.popup_glambot",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.rustvane.qhint_q2a": {
+   "line": "bs.rustvane.qhint_q2a",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.rustvane.qhint_q2b": {
+   "line": "bs.rustvane.qhint_q2b",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.rustvane.qhint_q2c": {
+   "line": "bs.rustvane.qhint_q2c",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.rustvane.qhint_q2d": {
+   "line": "bs.rustvane.qhint_q2d",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.rustvane.ship_ready": {
+   "line": "bs.rustvane.ship_ready",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.scrapheap.gasket_idle": {
+   "line": "bs.scrapheap.gasket_idle",
+   "speaker": "gasket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.scrapheap.mailbox_bark": {
+   "line": "bs.scrapheap.mailbox_bark",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.scrapheap.qhint_q1a": {
+   "line": "bs.scrapheap.qhint_q1a",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.scrapheap.qhint_q1b": {
+   "line": "bs.scrapheap.qhint_q1b",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.scrapheap.qhint_q1c": {
+   "line": "bs.scrapheap.qhint_q1c",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.scrapheap.qhint_q1d": {
+   "line": "bs.scrapheap.qhint_q1d",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.scrapheap.rusty_idle": {
+   "line": "bs.scrapheap.rusty_idle",
+   "speaker": "rusty",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.scrapheap.ship_booted": {
+   "line": "bs.scrapheap.ship_booted",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.annex_line": {
+   "line": "bs.verdant.annex_line",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.chant_01": {
+   "line": "bs.verdant.chant_01",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.chant_02": {
+   "line": "bs.verdant.chant_02",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.chant_03": {
+   "line": "bs.verdant.chant_03",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.chant_deal": {
+   "line": "bs.verdant.chant_deal",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.corn_angry": {
+   "line": "bs.verdant.corn_angry",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.corn_cheer": {
+   "line": "bs.verdant.corn_cheer",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.corn_hit": {
+   "line": "bs.verdant.corn_hit",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.glide.01": {
+   "line": "bs.verdant.glide.01",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.glide.02": {
+   "line": "bs.verdant.glide.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.glide.03": {
+   "line": "bs.verdant.glide.03",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.glide.04": {
+   "line": "bs.verdant.glide.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.glide.05": {
+   "line": "bs.verdant.glide.05",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.groves_clear": {
+   "line": "bs.verdant.groves_clear",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.king_npc_01": {
+   "line": "bs.verdant.king_npc_01",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.king_npc_02": {
+   "line": "bs.verdant.king_npc_02",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.picket_fail": {
+   "line": "bs.verdant.picket_fail",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.picket_line_01": {
+   "line": "bs.verdant.picket_line_01",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.picket_line_02": {
+   "line": "bs.verdant.picket_line_02",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.popup_done": {
+   "line": "bs.verdant.popup_done",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.popup_locked": {
+   "line": "bs.verdant.popup_locked",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.popup_start": {
+   "line": "bs.verdant.popup_start",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.qhint_q7a": {
+   "line": "bs.verdant.qhint_q7a",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.verdant.qhint_q7b": {
+   "line": "bs.verdant.qhint_q7b",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.hostile.refuse.01": {
+   "line": "bs.weapon.hostile.refuse.01",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.hostile.refuse.02": {
+   "line": "bs.weapon.hostile.refuse.02",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.hostile.refuse.03": {
+   "line": "bs.weapon.hostile.refuse.03",
+   "speaker": "statue",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.levelup.01": {
+   "line": "bs.weapon.levelup.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.levelup.02": {
+   "line": "bs.weapon.levelup.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.levelup.03": {
+   "line": "bs.weapon.levelup.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.levelup.04": {
+   "line": "bs.weapon.levelup.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.middleman.argue.01": {
+   "line": "bs.weapon.middleman.argue.01",
+   "speaker": "middleman_a",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.middleman.argue.01b": {
+   "line": "bs.weapon.middleman.argue.01b",
+   "speaker": "middleman_b",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.middleman.argue.02": {
+   "line": "bs.weapon.middleman.argue.02",
+   "speaker": "middleman_b",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.middleman.argue.03": {
+   "line": "bs.weapon.middleman.argue.03",
+   "speaker": "middleman_a",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.middleman.argue.04": {
+   "line": "bs.weapon.middleman.argue.04",
+   "speaker": "middleman_b",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.middleman.argue.05": {
+   "line": "bs.weapon.middleman.argue.05",
+   "speaker": "middleman_a",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.middleman.argue.06": {
+   "line": "bs.weapon.middleman.argue.06",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.zap.amp.01": {
+   "line": "bs.weapon.zap.amp.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.zap.amp.02": {
+   "line": "bs.weapon.zap.amp.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.zap.amp.03": {
+   "line": "bs.weapon.zap.amp.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.zap.amp.04": {
+   "line": "bs.weapon.zap.amp.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "bs.weapon.zap.amp.05": {
+   "line": "bs.weapon.zap.amp.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.arenaWave.07": {
+   "line": "code.arenaWave.07",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.bossBreak.03": {
+   "line": "code.bossBreak.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.bossBreak.04": {
+   "line": "code.bossBreak.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.bossBreak.05": {
+   "line": "code.bossBreak.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.buyItem.01": {
+   "line": "code.buyItem.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.buyItem.02": {
+   "line": "code.buyItem.02",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.buyItem.05": {
+   "line": "code.buyItem.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.buyItem.06": {
+   "line": "code.buyItem.06",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.collectPickup.07": {
+   "line": "code.collectPickup.07",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.doInteract.03": {
+   "line": "code.doInteract.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.junkProcessor.01": {
+   "line": "code.junkProcessor.01",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.junkProcessor.02": {
+   "line": "code.junkProcessor.02",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.meleeHit.01": {
+   "line": "code.meleeHit.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.meleeHit.02": {
+   "line": "code.meleeHit.02",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.onDeath.03": {
+   "line": "code.onDeath.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.poolScene.01": {
+   "line": "code.poolScene.01",
+   "speaker": "tourist",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.poolScene.02": {
+   "line": "code.poolScene.02",
+   "speaker": "tourist",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.01": {
+   "line": "code.populateLife.01",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.02": {
+   "line": "code.populateLife.02",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.03": {
+   "line": "code.populateLife.03",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.04": {
+   "line": "code.populateLife.04",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.05": {
+   "line": "code.populateLife.05",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.06": {
+   "line": "code.populateLife.06",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.07": {
+   "line": "code.populateLife.07",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.08": {
+   "line": "code.populateLife.08",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.09": {
+   "line": "code.populateLife.09",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.10": {
+   "line": "code.populateLife.10",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.11": {
+   "line": "code.populateLife.11",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.12": {
+   "line": "code.populateLife.12",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.13": {
+   "line": "code.populateLife.13",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.14": {
+   "line": "code.populateLife.14",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.15": {
+   "line": "code.populateLife.15",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.16": {
+   "line": "code.populateLife.16",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.17": {
+   "line": "code.populateLife.17",
+   "speaker": "tourist",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.18": {
+   "line": "code.populateLife.18",
+   "speaker": "tourist",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.19": {
+   "line": "code.populateLife.19",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.20": {
+   "line": "code.populateLife.20",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.21": {
+   "line": "code.populateLife.21",
+   "speaker": "tourist",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.populateLife.22": {
+   "line": "code.populateLife.22",
+   "speaker": "tourist",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.rangeEnd.01": {
+   "line": "code.rangeEnd.01",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.rangeEnd.02": {
+   "line": "code.rangeEnd.02",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.sellWeapon.01": {
+   "line": "code.sellWeapon.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.shiftChange.01": {
+   "line": "code.shiftChange.01",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.shiftChange.02": {
+   "line": "code.shiftChange.02",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.startChallenge.05": {
+   "line": "code.startChallenge.05",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.startChallenge.06": {
+   "line": "code.startChallenge.06",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.startChallenge.07": {
+   "line": "code.startChallenge.07",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.startRange.03": {
+   "line": "code.startRange.03",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.startZongaMatch.01": {
+   "line": "code.startZongaMatch.01",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.startZongaMatch.02": {
+   "line": "code.startZongaMatch.02",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.startZongaMatch.03": {
+   "line": "code.startZongaMatch.03",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.superEnd.01": {
+   "line": "code.superEnd.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateAlgorithm.04": {
+   "line": "code.updateAlgorithm.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateAlgorithm.05": {
+   "line": "code.updateAlgorithm.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateBlizzard.03": {
+   "line": "code.updateBlizzard.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateCompostKing.04": {
+   "line": "code.updateCompostKing.04",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateCompostKing.07": {
+   "line": "code.updateCompostKing.07",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateGreeter.01": {
+   "line": "code.updateGreeter.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateGreeter.02": {
+   "line": "code.updateGreeter.02",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateGreeter.03": {
+   "line": "code.updateGreeter.03",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateMiniBoss.04": {
+   "line": "code.updateMiniBoss.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateMurk.01": {
+   "line": "code.updateMurk.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateRepoTron.02": {
+   "line": "code.updateRepoTron.02",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateRepoTron.05": {
+   "line": "code.updateRepoTron.05",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateRepoTron.06": {
+   "line": "code.updateRepoTron.06",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateRepoTron.07": {
+   "line": "code.updateRepoTron.07",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateRepoTron.08": {
+   "line": "code.updateRepoTron.08",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateRepoTron.13": {
+   "line": "code.updateRepoTron.13",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateRetention.02": {
+   "line": "code.updateRetention.02",
+   "speaker": "retention",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateRetention.05": {
+   "line": "code.updateRetention.05",
+   "speaker": "retention",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateRetention.06": {
+   "line": "code.updateRetention.06",
+   "speaker": "retention",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateRetention.07": {
+   "line": "code.updateRetention.07",
+   "speaker": "retention",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateRetention.08": {
+   "line": "code.updateRetention.08",
+   "speaker": "retention",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateRetention.11": {
+   "line": "code.updateRetention.11",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.updateZonga.01": {
+   "line": "code.updateZonga.01",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.zBotDied.02": {
+   "line": "code.zBotDied.02",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.zBotDied.03": {
+   "line": "code.zBotDied.03",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.zBotDied.04": {
+   "line": "code.zBotDied.04",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.zBotDied.05": {
+   "line": "code.zBotDied.05",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.zBotDied.06": {
+   "line": "code.zBotDied.06",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "code.zBotDied.07": {
+   "line": "code.zBotDied.07",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_blaster.01": {
+   "line": "cs.ad_blaster.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_blaster.02": {
+   "line": "cs.ad_blaster.02",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_boom.01": {
+   "line": "cs.ad_boom.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_boom.02": {
+   "line": "cs.ad_boom.02",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_buzz.01": {
+   "line": "cs.ad_buzz.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_cease.01": {
+   "line": "cs.ad_cease.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_dart.01": {
+   "line": "cs.ad_dart.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_frost.01": {
+   "line": "cs.ad_frost.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_grav.01": {
+   "line": "cs.ad_grav.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_karen.01": {
+   "line": "cs.ad_karen.01",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_karen.02": {
+   "line": "cs.ad_karen.02",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_karen.03": {
+   "line": "cs.ad_karen.03",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_karen.04": {
+   "line": "cs.ad_karen.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_mid.01": {
+   "line": "cs.ad_mid.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_mid.02": {
+   "line": "cs.ad_mid.02",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_patent.01": {
+   "line": "cs.ad_patent.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_patent.02": {
+   "line": "cs.ad_patent.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_patent.03": {
+   "line": "cs.ad_patent.03",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_root.01": {
+   "line": "cs.ad_root.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_void.01": {
+   "line": "cs.ad_void.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_void.02": {
+   "line": "cs.ad_void.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_void.03": {
+   "line": "cs.ad_void.03",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ad_zap.01": {
+   "line": "cs.ad_zap.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.arrive0.01": {
+   "line": "cs.arrive0.01",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.arrive0.02": {
+   "line": "cs.arrive0.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.arrive1.01": {
+   "line": "cs.arrive1.01",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.arrive1.02": {
+   "line": "cs.arrive1.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.arrive2.01": {
+   "line": "cs.arrive2.01",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.arrive2.02": {
+   "line": "cs.arrive2.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.arrive9.01": {
+   "line": "cs.arrive9.01",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.arrive9.02": {
+   "line": "cs.arrive9.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.arrive9.03": {
+   "line": "cs.arrive9.03",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.arrive9.04": {
+   "line": "cs.arrive9.04",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.blartzArrest.01": {
+   "line": "cs.blartzArrest.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.blartzArrest.02": {
+   "line": "cs.blartzArrest.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.blartzArrest.03": {
+   "line": "cs.blartzArrest.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.blartzFound.01": {
+   "line": "cs.blartzFound.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.blartzFound.02": {
+   "line": "cs.blartzFound.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.blartzFound.03": {
+   "line": "cs.blartzFound.03",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.blartzRescue.01": {
+   "line": "cs.blartzRescue.01",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.blartzRescue.02": {
+   "line": "cs.blartzRescue.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.blartzRescue.03": {
+   "line": "cs.blartzRescue.03",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.blartzRescue.04": {
+   "line": "cs.blartzRescue.04",
+   "speaker": "blartz",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.blartzRescue.05": {
+   "line": "cs.blartzRescue.05",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ccIntro.01": {
+   "line": "cs.ccIntro.01",
+   "speaker": "cc",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ccIntro.02": {
+   "line": "cs.ccIntro.02",
+   "speaker": "cc",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ccIntro.03": {
+   "line": "cs.ccIntro.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ccIntro.04": {
+   "line": "cs.ccIntro.04",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ccIntro.05": {
+   "line": "cs.ccIntro.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.coreGlacius.01": {
+   "line": "cs.coreGlacius.01",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.coreGlacius.02": {
+   "line": "cs.coreGlacius.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.coreGlacius.03": {
+   "line": "cs.coreGlacius.03",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.coreGlacius.04": {
+   "line": "cs.coreGlacius.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.coreNova.01": {
+   "line": "cs.coreNova.01",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.coreNova.02": {
+   "line": "cs.coreNova.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.coreVerdant.01": {
+   "line": "cs.coreVerdant.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.coreVerdant.02": {
+   "line": "cs.coreVerdant.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ending.01": {
+   "line": "cs.ending.01",
+   "speaker": "grindstone",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ending.02": {
+   "line": "cs.ending.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ending.03": {
+   "line": "cs.ending.03",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ending.04": {
+   "line": "cs.ending.04",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ending.05": {
+   "line": "cs.ending.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ending.06": {
+   "line": "cs.ending.06",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ending.07": {
+   "line": "cs.ending.07",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.ending.08": {
+   "line": "cs.ending.08",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.epilogue.01": {
+   "line": "cs.epilogue.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.epilogue.02": {
+   "line": "cs.epilogue.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.epilogue.03": {
+   "line": "cs.epilogue.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.epilogue.04": {
+   "line": "cs.epilogue.04",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.epilogue.05": {
+   "line": "cs.epilogue.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.epilogue.06": {
+   "line": "cs.epilogue.06",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.epilogue.07": {
+   "line": "cs.epilogue.07",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.firmwareScene.01": {
+   "line": "cs.firmwareScene.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.firmwareScene.02": {
+   "line": "cs.firmwareScene.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.firmwareScene.03": {
+   "line": "cs.firmwareScene.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.firmwareScene.04": {
+   "line": "cs.firmwareScene.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.firmwareScene.05": {
+   "line": "cs.firmwareScene.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.firmwareScene.06": {
+   "line": "cs.firmwareScene.06",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.firmwareScene.07": {
+   "line": "cs.firmwareScene.07",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.firmwareScene.08": {
+   "line": "cs.firmwareScene.08",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.firmwareScene.09": {
+   "line": "cs.firmwareScene.09",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.flyover0.01": {
+   "line": "cs.flyover0.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.flyover0.02": {
+   "line": "cs.flyover0.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.flyover1.01": {
+   "line": "cs.flyover1.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.flyover1.02": {
+   "line": "cs.flyover1.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.flyover5.01": {
+   "line": "cs.flyover5.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.flyover5.02": {
+   "line": "cs.flyover5.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.flyover6.01": {
+   "line": "cs.flyover6.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.flyover6.02": {
+   "line": "cs.flyover6.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.flyover7.01": {
+   "line": "cs.flyover7.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.flyover7.02": {
+   "line": "cs.flyover7.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.galleriaGreeter.01": {
+   "line": "cs.galleriaGreeter.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.galleriaGreeter.02": {
+   "line": "cs.galleriaGreeter.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.galleriaGreeter.03": {
+   "line": "cs.galleriaGreeter.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.galleriaGreeter.04": {
+   "line": "cs.galleriaGreeter.04",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.galleriaLedger.01": {
+   "line": "cs.galleriaLedger.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.galleriaLedger.02": {
+   "line": "cs.galleriaLedger.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.galleriaLedger.03": {
+   "line": "cs.galleriaLedger.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.galleriaLedger.04": {
+   "line": "cs.galleriaLedger.04",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.galleriaLedger.05": {
+   "line": "cs.galleriaLedger.05",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.glaciusIntro.01": {
+   "line": "cs.glaciusIntro.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.glaciusIntro.02": {
+   "line": "cs.glaciusIntro.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.glaciusIntro.03": {
+   "line": "cs.glaciusIntro.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.gsIntro.01": {
+   "line": "cs.gsIntro.01",
+   "speaker": "grindstone",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.gsIntro.02": {
+   "line": "cs.gsIntro.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.gsIntro.03": {
+   "line": "cs.gsIntro.03",
+   "speaker": "grindstone",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.gsIntro.04": {
+   "line": "cs.gsIntro.04",
+   "speaker": "grindstone",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.gsIntro.05": {
+   "line": "cs.gsIntro.05",
+   "speaker": "grindstone",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.gsIntro.06": {
+   "line": "cs.gsIntro.06",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.gsIntro.07": {
+   "line": "cs.gsIntro.07",
+   "speaker": "grindstone",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.intro.01": {
+   "line": "cs.intro.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.intro.02": {
+   "line": "cs.intro.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.intro.03": {
+   "line": "cs.intro.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.intro.04": {
+   "line": "cs.intro.04",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.intro.05": {
+   "line": "cs.intro.05",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.intro.06": {
+   "line": "cs.intro.06",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.intro.07": {
+   "line": "cs.intro.07",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.intro.08": {
+   "line": "cs.intro.08",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.introAlgorithm.01": {
+   "line": "cs.introAlgorithm.01",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.introAlgorithm.02": {
+   "line": "cs.introAlgorithm.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.introCC.01": {
+   "line": "cs.introCC.01",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.introCompost.01": {
+   "line": "cs.introCompost.01",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.introCompost.02": {
+   "line": "cs.introCompost.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.introGrindstone.01": {
+   "line": "cs.introGrindstone.01",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.l3_brick.01": {
+   "line": "cs.l3_brick.01",
+   "speaker": "grindstone",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.l3_brick.02": {
+   "line": "cs.l3_brick.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.l3_brick.03": {
+   "line": "cs.l3_brick.03",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.l3_brick.04": {
+   "line": "cs.l3_brick.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.l3_brick.05": {
+   "line": "cs.l3_brick.05",
+   "speaker": "grindstone",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.l3_brick.06": {
+   "line": "cs.l3_brick.06",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrChampion.01": {
+   "line": "cs.lrChampion.01",
+   "speaker": "dent",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrChampion.02": {
+   "line": "cs.lrChampion.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrChampion.03": {
+   "line": "cs.lrChampion.03",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrChampion.04": {
+   "line": "cs.lrChampion.04",
+   "speaker": "dent",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrChampion.05": {
+   "line": "cs.lrChampion.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrChampion.06": {
+   "line": "cs.lrChampion.06",
+   "speaker": "dent",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrChampion.07": {
+   "line": "cs.lrChampion.07",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrChampion.08": {
+   "line": "cs.lrChampion.08",
+   "speaker": "dent",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrIntro.01": {
+   "line": "cs.lrIntro.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrIntro.02": {
+   "line": "cs.lrIntro.02",
+   "speaker": "dent",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrIntro.03": {
+   "line": "cs.lrIntro.03",
+   "speaker": "dent",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrIntro.04": {
+   "line": "cs.lrIntro.04",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrIntro.05": {
+   "line": "cs.lrIntro.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrIntro.06": {
+   "line": "cs.lrIntro.06",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrSignal.01": {
+   "line": "cs.lrSignal.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrSignal.02": {
+   "line": "cs.lrSignal.02",
+   "speaker": "dent",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrSignal.03": {
+   "line": "cs.lrSignal.03",
+   "speaker": "dent",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrSignal.04": {
+   "line": "cs.lrSignal.04",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrSignal.05": {
+   "line": "cs.lrSignal.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.lrSignal.06": {
+   "line": "cs.lrSignal.06",
+   "speaker": "dent",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.novaIntro.01": {
+   "line": "cs.novaIntro.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.novaIntro.02": {
+   "line": "cs.novaIntro.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.novaIntro.03": {
+   "line": "cs.novaIntro.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.postCredits.01": {
+   "line": "cs.postCredits.01",
+   "speaker": "darkmatter",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.postCredits.02": {
+   "line": "cs.postCredits.02",
+   "speaker": "darkmatter",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.postCredits.03": {
+   "line": "cs.postCredits.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.shieldFall.01": {
+   "line": "cs.shieldFall.01",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.shieldFall.02": {
+   "line": "cs.shieldFall.02",
+   "speaker": "grindstone",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.shieldFall.03": {
+   "line": "cs.shieldFall.03",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.shieldFall.04": {
+   "line": "cs.shieldFall.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.shieldReveal.01": {
+   "line": "cs.shieldReveal.01",
+   "speaker": "grindstone",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.shieldReveal.02": {
+   "line": "cs.shieldReveal.02",
+   "speaker": "grindstone",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.shieldReveal.03": {
+   "line": "cs.shieldReveal.03",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.shieldReveal.04": {
+   "line": "cs.shieldReveal.04",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.shieldReveal.05": {
+   "line": "cs.shieldReveal.05",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.shieldReveal.06": {
+   "line": "cs.shieldReveal.06",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.verdantIntro.01": {
+   "line": "cs.verdantIntro.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.verdantIntro.02": {
+   "line": "cs.verdantIntro.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.verdantIntro.03": {
+   "line": "cs.verdantIntro.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.zongaReveal.01": {
+   "line": "cs.zongaReveal.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.zongaReveal.02": {
+   "line": "cs.zongaReveal.02",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.zongaReveal.03": {
+   "line": "cs.zongaReveal.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.zongaReveal.04": {
+   "line": "cs.zongaReveal.04",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.zongaReveal.05": {
+   "line": "cs.zongaReveal.05",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.zongaReveal.06": {
+   "line": "cs.zongaReveal.06",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.zongaStart.01": {
+   "line": "cs.zongaStart.01",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.zongaStart.02": {
+   "line": "cs.zongaStart.02",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.zongaStart.03": {
+   "line": "cs.zongaStart.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.zongaTruth.01": {
+   "line": "cs.zongaTruth.01",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.zongaTruth.02": {
+   "line": "cs.zongaTruth.02",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.zongaTruth.03": {
+   "line": "cs.zongaTruth.03",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.zongaTruth.04": {
+   "line": "cs.zongaTruth.04",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "cs.zongaTruth.05": {
+   "line": "cs.zongaTruth.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "lr.quip.bail.01": {
+   "line": "lr.quip.bail.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "lr.quip.bail.02": {
+   "line": "lr.quip.bail.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "lr.quip.bail.03": {
+   "line": "lr.quip.bail.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "lr.quip.bank.01": {
+   "line": "lr.quip.bank.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "lr.quip.bank.02": {
+   "line": "lr.quip.bank.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "lr.quip.bank.03": {
+   "line": "lr.quip.bank.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "lr.quip.fall.01": {
+   "line": "lr.quip.fall.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "lr.quip.fall.02": {
+   "line": "lr.quip.fall.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "lr.quip.fall.03": {
+   "line": "lr.quip.fall.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "lr.quip.final.01": {
+   "line": "lr.quip.final.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "lr.quip.lead.01": {
+   "line": "lr.quip.lead.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "lr.quip.loop.01": {
+   "line": "lr.quip.loop.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "lr.quip.start.01": {
+   "line": "lr.quip.start.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "pa.galleria.01": {
+   "line": "pa.galleria.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "pa.galleria.02": {
+   "line": "pa.galleria.02",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "pa.galleria.03": {
+   "line": "pa.galleria.03",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1a.done.01": {
+   "line": "q.q1a.done.01",
+   "speaker": "rusty",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1a.done.02": {
+   "line": "q.q1a.done.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1a.intro.01": {
+   "line": "q.q1a.intro.01",
+   "speaker": "rusty",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1a.intro.02": {
+   "line": "q.q1a.intro.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1a.intro.03": {
+   "line": "q.q1a.intro.03",
+   "speaker": "rusty",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1a.prog.01": {
+   "line": "q.q1a.prog.01",
+   "speaker": "rusty",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1b.done.01": {
+   "line": "q.q1b.done.01",
+   "speaker": "rusty",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1b.done.02": {
+   "line": "q.q1b.done.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1b.done.03": {
+   "line": "q.q1b.done.03",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1b.intro.01": {
+   "line": "q.q1b.intro.01",
+   "speaker": "rusty",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1b.intro.02": {
+   "line": "q.q1b.intro.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1b.intro.03": {
+   "line": "q.q1b.intro.03",
+   "speaker": "rusty",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1b.prog.01": {
+   "line": "q.q1b.prog.01",
+   "speaker": "rusty",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1c.done.01": {
+   "line": "q.q1c.done.01",
+   "speaker": "gasket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1c.done.02": {
+   "line": "q.q1c.done.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1c.done.03": {
+   "line": "q.q1c.done.03",
+   "speaker": "gasket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1c.intro.01": {
+   "line": "q.q1c.intro.01",
+   "speaker": "gasket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1c.intro.02": {
+   "line": "q.q1c.intro.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1c.intro.03": {
+   "line": "q.q1c.intro.03",
+   "speaker": "gasket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1c.prog.01": {
+   "line": "q.q1c.prog.01",
+   "speaker": "gasket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1d.done.01": {
+   "line": "q.q1d.done.01",
+   "speaker": "gasket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1d.done.02": {
+   "line": "q.q1d.done.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1d.done.03": {
+   "line": "q.q1d.done.03",
+   "speaker": "gasket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1d.intro.01": {
+   "line": "q.q1d.intro.01",
+   "speaker": "gasket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1d.intro.02": {
+   "line": "q.q1d.intro.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1d.intro.03": {
+   "line": "q.q1d.intro.03",
+   "speaker": "gasket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q1d.prog.01": {
+   "line": "q.q1d.prog.01",
+   "speaker": "gasket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2a.done.01": {
+   "line": "q.q2a.done.01",
+   "speaker": "concierge",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2a.done.02": {
+   "line": "q.q2a.done.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2a.intro.01": {
+   "line": "q.q2a.intro.01",
+   "speaker": "concierge",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2a.intro.02": {
+   "line": "q.q2a.intro.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2a.intro.03": {
+   "line": "q.q2a.intro.03",
+   "speaker": "concierge",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2a.prog.01": {
+   "line": "q.q2a.prog.01",
+   "speaker": "concierge",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2b.done.01": {
+   "line": "q.q2b.done.01",
+   "speaker": "concierge",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2b.done.02": {
+   "line": "q.q2b.done.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2b.intro.01": {
+   "line": "q.q2b.intro.01",
+   "speaker": "concierge",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2b.intro.02": {
+   "line": "q.q2b.intro.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2b.intro.03": {
+   "line": "q.q2b.intro.03",
+   "speaker": "concierge",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2b.prog.01": {
+   "line": "q.q2b.prog.01",
+   "speaker": "concierge",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2c.done.01": {
+   "line": "q.q2c.done.01",
+   "speaker": "bellhop",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2c.done.02": {
+   "line": "q.q2c.done.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2c.done.03": {
+   "line": "q.q2c.done.03",
+   "speaker": "bellhop",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2c.intro.01": {
+   "line": "q.q2c.intro.01",
+   "speaker": "bellhop",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2c.intro.02": {
+   "line": "q.q2c.intro.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2c.intro.03": {
+   "line": "q.q2c.intro.03",
+   "speaker": "bellhop",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2c.prog.01": {
+   "line": "q.q2c.prog.01",
+   "speaker": "bellhop",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2d.done.01": {
+   "line": "q.q2d.done.01",
+   "speaker": "bellhop",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2d.done.02": {
+   "line": "q.q2d.done.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2d.intro.01": {
+   "line": "q.q2d.intro.01",
+   "speaker": "bellhop",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2d.intro.02": {
+   "line": "q.q2d.intro.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2d.intro.03": {
+   "line": "q.q2d.intro.03",
+   "speaker": "bellhop",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q2d.prog.01": {
+   "line": "q.q2d.prog.01",
+   "speaker": "bellhop",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3a.done.01": {
+   "line": "q.q3a.done.01",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3a.done.02": {
+   "line": "q.q3a.done.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3a.intro.01": {
+   "line": "q.q3a.intro.01",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3a.intro.02": {
+   "line": "q.q3a.intro.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3a.intro.03": {
+   "line": "q.q3a.intro.03",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3a.prog.01": {
+   "line": "q.q3a.prog.01",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3b.done.01": {
+   "line": "q.q3b.done.01",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3b.done.02": {
+   "line": "q.q3b.done.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3b.intro.01": {
+   "line": "q.q3b.intro.01",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3b.intro.02": {
+   "line": "q.q3b.intro.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3b.intro.03": {
+   "line": "q.q3b.intro.03",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3b.prog.01": {
+   "line": "q.q3b.prog.01",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3c.done.01": {
+   "line": "q.q3c.done.01",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3c.done.02": {
+   "line": "q.q3c.done.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3c.intro.01": {
+   "line": "q.q3c.intro.01",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3c.intro.02": {
+   "line": "q.q3c.intro.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3c.intro.03": {
+   "line": "q.q3c.intro.03",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q3c.prog.01": {
+   "line": "q.q3c.prog.01",
+   "speaker": "intern",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q4a.done.01": {
+   "line": "q.q4a.done.01",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q4a.intro.01": {
+   "line": "q.q4a.intro.01",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q4a.intro.02": {
+   "line": "q.q4a.intro.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q4a.intro.03": {
+   "line": "q.q4a.intro.03",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q4a.prog.01": {
+   "line": "q.q4a.prog.01",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q4b.done.01": {
+   "line": "q.q4b.done.01",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q4b.intro.01": {
+   "line": "q.q4b.intro.01",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q4b.intro.02": {
+   "line": "q.q4b.intro.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q4b.intro.03": {
+   "line": "q.q4b.intro.03",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q4b.prog.01": {
+   "line": "q.q4b.prog.01",
+   "speaker": "squat",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q5a.done.01": {
+   "line": "q.q5a.done.01",
+   "speaker": "bathrobe",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q5a.intro.01": {
+   "line": "q.q5a.intro.01",
+   "speaker": "bathrobe",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q5a.intro.02": {
+   "line": "q.q5a.intro.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q5a.intro.03": {
+   "line": "q.q5a.intro.03",
+   "speaker": "bathrobe",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q5a.prog.01": {
+   "line": "q.q5a.prog.01",
+   "speaker": "bathrobe",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q5b.done.01": {
+   "line": "q.q5b.done.01",
+   "speaker": "bathrobe",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q5b.intro.01": {
+   "line": "q.q5b.intro.01",
+   "speaker": "bathrobe",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q5b.intro.02": {
+   "line": "q.q5b.intro.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q5b.intro.03": {
+   "line": "q.q5b.intro.03",
+   "speaker": "bathrobe",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q5b.prog.01": {
+   "line": "q.q5b.prog.01",
+   "speaker": "bathrobe",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q7a.done.01": {
+   "line": "q.q7a.done.01",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q7a.intro.01": {
+   "line": "q.q7a.intro.01",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q7a.intro.02": {
+   "line": "q.q7a.intro.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q7a.intro.03": {
+   "line": "q.q7a.intro.03",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q7a.prog.01": {
+   "line": "q.q7a.prog.01",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q7b.done.01": {
+   "line": "q.q7b.done.01",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q7b.intro.01": {
+   "line": "q.q7b.intro.01",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q7b.intro.02": {
+   "line": "q.q7b.intro.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q7b.intro.03": {
+   "line": "q.q7b.intro.03",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q7b.prog.01": {
+   "line": "q.q7b.prog.01",
+   "speaker": "corn",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q9a.done.01": {
+   "line": "q.q9a.done.01",
+   "speaker": "clerk",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q9a.done.02": {
+   "line": "q.q9a.done.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q9a.done.03": {
+   "line": "q.q9a.done.03",
+   "speaker": "clerk",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q9a.intro.01": {
+   "line": "q.q9a.intro.01",
+   "speaker": "clerk",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q9a.intro.02": {
+   "line": "q.q9a.intro.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q9a.intro.03": {
+   "line": "q.q9a.intro.03",
+   "speaker": "clerk",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q9a.prog.01": {
+   "line": "q.q9a.prog.01",
+   "speaker": "clerk",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q9b.done.01": {
+   "line": "q.q9b.done.01",
+   "speaker": "clerk",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q9b.done.02": {
+   "line": "q.q9b.done.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q9b.intro.01": {
+   "line": "q.q9b.intro.01",
+   "speaker": "clerk",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q9b.intro.02": {
+   "line": "q.q9b.intro.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q9b.intro.03": {
+   "line": "q.q9b.intro.03",
+   "speaker": "clerk",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "q.q9b.prog.01": {
+   "line": "q.q9b.prog.01",
+   "speaker": "clerk",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "splash.01": {
+   "line": "splash.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "splash.02": {
+   "line": "splash.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "splash.03": {
+   "line": "splash.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "splash.04": {
+   "line": "splash.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "splash.05": {
+   "line": "splash.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "splash.06": {
+   "line": "splash.06",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.glaciusHolo.01": {
+   "line": "st.glaciusHolo.01",
+   "speaker": "grindstone",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.glaciusHolo.02": {
+   "line": "st.glaciusHolo.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.glaciusLate.01": {
+   "line": "st.glaciusLate.01",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.glaciusLate.02": {
+   "line": "st.glaciusLate.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.glaciusLate.03": {
+   "line": "st.glaciusLate.03",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.glaciusMid.01": {
+   "line": "st.glaciusMid.01",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.glaciusMid.02": {
+   "line": "st.glaciusMid.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.glaciusMid.03": {
+   "line": "st.glaciusMid.03",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_glitch.01": {
+   "line": "st.l1_glitch.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_glitch.02": {
+   "line": "st.l1_glitch.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_glitch.03": {
+   "line": "st.l1_glitch.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_mast.01": {
+   "line": "st.l1_mast.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_mast.02": {
+   "line": "st.l1_mast.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_mast.03": {
+   "line": "st.l1_mast.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_mid.01": {
+   "line": "st.l1_mid.01",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_mid.02": {
+   "line": "st.l1_mid.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_repo.01": {
+   "line": "st.l1_repo.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_repo.02": {
+   "line": "st.l1_repo.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_repo.03": {
+   "line": "st.l1_repo.03",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_row.01": {
+   "line": "st.l1_row.01",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_row.02": {
+   "line": "st.l1_row.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_row.03": {
+   "line": "st.l1_row.03",
+   "speaker": "gasket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_row.04": {
+   "line": "st.l1_row.04",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_row.05": {
+   "line": "st.l1_row.05",
+   "speaker": "gasket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_vista.01": {
+   "line": "st.l1_vista.01",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_vista.02": {
+   "line": "st.l1_vista.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_vista.03": {
+   "line": "st.l1_vista.03",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l1_vista.04": {
+   "line": "st.l1_vista.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_camp.01": {
+   "line": "st.l2_camp.01",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_camp.02": {
+   "line": "st.l2_camp.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_camp.03": {
+   "line": "st.l2_camp.03",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_camp.04": {
+   "line": "st.l2_camp.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_glambot.01": {
+   "line": "st.l2_glambot.01",
+   "speaker": "cc",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_glambot.02": {
+   "line": "st.l2_glambot.02",
+   "speaker": "cc",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_glambot.03": {
+   "line": "st.l2_glambot.03",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_glambot.04": {
+   "line": "st.l2_glambot.04",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_glambot.05": {
+   "line": "st.l2_glambot.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_holo1.01": {
+   "line": "st.l2_holo1.01",
+   "speaker": "grindstone",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_holo1.02": {
+   "line": "st.l2_holo1.02",
+   "speaker": "grindstone",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_holo1.03": {
+   "line": "st.l2_holo1.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_holo1.04": {
+   "line": "st.l2_holo1.04",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_holo1.05": {
+   "line": "st.l2_holo1.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_mid.01": {
+   "line": "st.l2_mid.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_mid.02": {
+   "line": "st.l2_mid.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_mid.03": {
+   "line": "st.l2_mid.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_staff.01": {
+   "line": "st.l2_staff.01",
+   "speaker": "pa",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_staff.02": {
+   "line": "st.l2_staff.02",
+   "speaker": "bellhop",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_staff.03": {
+   "line": "st.l2_staff.03",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_staff.04": {
+   "line": "st.l2_staff.04",
+   "speaker": "bellhop",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l2_staff.05": {
+   "line": "st.l2_staff.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l3_holo2.01": {
+   "line": "st.l3_holo2.01",
+   "speaker": "grindstone",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l3_holo2.02": {
+   "line": "st.l3_holo2.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l3_holo2.03": {
+   "line": "st.l3_holo2.03",
+   "speaker": "grindstone",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l3_vent.01": {
+   "line": "st.l3_vent.01",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l3_vent.02": {
+   "line": "st.l3_vent.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l3_vent.03": {
+   "line": "st.l3_vent.03",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l3_waves.01": {
+   "line": "st.l3_waves.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.l3_waves.02": {
+   "line": "st.l3_waves.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.novaHolo.01": {
+   "line": "st.novaHolo.01",
+   "speaker": "grindstone",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.novaHolo.02": {
+   "line": "st.novaHolo.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.novaLate.01": {
+   "line": "st.novaLate.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.novaLate.02": {
+   "line": "st.novaLate.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.novaLate.03": {
+   "line": "st.novaLate.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.novaMid.01": {
+   "line": "st.novaMid.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.novaMid.02": {
+   "line": "st.novaMid.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.novaMid.03": {
+   "line": "st.novaMid.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.verdantLate.01": {
+   "line": "st.verdantLate.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.verdantLate.02": {
+   "line": "st.verdantLate.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.verdantLate.03": {
+   "line": "st.verdantLate.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.verdantMid.01": {
+   "line": "st.verdantMid.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.verdantMid.02": {
+   "line": "st.verdantMid.02",
+   "speaker": "bolt",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "st.verdantMid.03": {
+   "line": "st.verdantMid.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "super.01": {
+   "line": "super.01",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "super.02": {
+   "line": "super.02",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "super.03": {
+   "line": "super.03",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "super.04": {
+   "line": "super.04",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "super.05": {
+   "line": "super.05",
+   "speaker": "sprocket",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "zonga.sponsor.01": {
+   "line": "zonga.sponsor.01",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "zonga.sponsor.02": {
+   "line": "zonga.sponsor.02",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "zonga.sponsor.03": {
+   "line": "zonga.sponsor.03",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "zonga.sponsor.04": {
+   "line": "zonga.sponsor.04",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  },
+  "zonga.sponsor.05": {
+   "line": "zonga.sponsor.05",
+   "speaker": "glambot",
+   "source": "tts",
+   "engine": "runtime_tts"
+  }
+ },
+ "_doc": "Bolt & Sprocket voice manifest (T-101, tools/voice/import.py): every voiced line id. source tts = the game's runtime text-to-speech (core/vo_manager.gd, no file); human = a recorded take at path (res://audio/vo/<id>.ogg) with the actor, the take id and the file hash; ai_* = ElevenLabs (tools/voice/elevenlabs.py, always marked)."
+}

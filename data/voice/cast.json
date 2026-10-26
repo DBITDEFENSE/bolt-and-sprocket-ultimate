@@ -1,0 +1,324 @@
+{
+ "_doc": "The voice cast sheet (UPDATE 06 B1, T-101). characters.<game>.<code>.actor = the actor id voicing that character (a list for a group, e.g. the Cousins together); \"[ACTOR]\" / \"[COUSIN_1]\" are unfilled placeholders (each still gets its own script as slot_<code>). One actor can voice several characters: give them the same id. actors.<id>: name (shown on the script), contact (optional, never shown), notes. Actor ids are lowercase (voice_inbox/<id>/, voice_scripts/<id>/). Read by tools/voice/make_scripts.py and tools/voice/import.py. Edit this file, then run tools/voice.sh scripts.",
+ "actors": {
+  "devin": {
+   "name": "Devin",
+   "contact": "",
+   "notes": "the owner"
+  },
+  "paul": {
+   "name": "Paul",
+   "contact": "",
+   "notes": "the owner's friend"
+  },
+  "cousin_1": {
+   "name": "[COUSIN_1_NAME]",
+   "contact": "",
+   "notes": "one of the owner's cousins"
+  },
+  "cousin_2": {
+   "name": "[COUSIN_2_NAME]",
+   "contact": "",
+   "notes": "one of the owner's cousins"
+  },
+  "cousin_3": {
+   "name": "[COUSIN_3_NAME]",
+   "contact": "",
+   "notes": "one of the owner's cousins"
+  }
+ },
+ "characters": {
+  "gl": {
+   "DUT": {
+    "name": "Sgt. Walter \"Dutch\" Kowalczyk",
+    "who": "Sgt. Dutch Kowalczyk, 34, Pittsburgh: low, gravelly baritone, unhurried, complains to keep going",
+    "voice_notes": "Low, gravelly baritone. Pittsburgh vowels (\"dahntahn,\" \"yinz\" exactly once per map, never more). Unhurried, even in a crisis. / His default register is complaint. He complains the way other men pray: steadily, to keep going. He is never actually panicking. When he goes quiet, the squad worries. / His Polish is kitchen Polish learned from an old woman: wrong genders, wrong cases, a grandmother's accent. Read it confidently and wrong. Wren corrects him; he never learns. / Softens noticeably around Wren. Talks to the dead Gängers like disappointed relatives.",
+    "actor": "[ACTOR]"
+   },
+   "PEG": {
+    "name": "Lt. Margaret \"Peg\" Ashworth",
+    "who": "Lt. Peg Ashworth, 29, SOE: Received Pronunciation, clipped and precise, never raises her voice",
+    "voice_notes": "Received Pronunciation, clipped, precise. Never raises her voice. The worse things get, the more politely she speaks. In a crisis she sounds bored. / Sardonic understatement is her armor: a horde is \"a spot of bother.\" She swears rarely, and when she does it's devastating. / When she's lying, she gets *more* precise, not less. The actor should play the LANTERN hints as tiny, nearly invisible pauses. / Professional fascination with explosives, said with unsettling warmth.",
+    "actor": "[ACTOR]"
+   },
+   "DEA": {
+    "name": "Cpl. Elijah \"Deacon\" Brooks",
+    "who": "Cpl. Deacon Brooks, 26, Louisiana: warm tenor, soft-spoken, a preacher's rhythm",
+    "voice_notes": "Warm Louisiana tenor, soft-spoken, with a preacher's sense of rhythm he inherited and resists. When he gets going, he can't help preaching a little and then catches himself. / Talks to machines like livestock: \"Easy now, girl,\" \"Come on, mule.\" Never condescending to people. / His blues lines are his own, half-sung, made up on the spot. They should sound like real field blues: AAB form, plain words, bent notes. / Quietly funny. His jokes land half a beat late and he enjoys them more than anyone.",
+    "actor": "[ACTOR]"
+   },
+   "WRN": {
+    "name": "Zofia \"Wren\" Nowak",
+    "who": "Wren (Zofia Nowak), 24, Home Army: fluent English learned from British radio, a Polish accent, economical and deadpan",
+    "voice_notes": "A Polish speaker with fluent but accented English (learned from British radio and an SOE liaison). Clipped, economical, never wasted words. / Dark humor delivered completely deadpan. She doesn't laugh at her own jokes. / Precise about numbers. She counts out loud under her breath: \"sześćdziesiąt dwa... sześćdziesiąt trzy.\" / Fury runs under everything. It surfaces rarely and frighteningly, mostly about the lab, the tanks, and the forced laborers. / Softens only with Dutch, whom she treats like an embarrassing uncle.",
+    "actor": "[ACTOR]"
+   },
+   "OPR": {
+    "name": "The Operator",
+    "who": "A sampled 1930s radio announcer on the mine's tannoy: bright, brassy, a little too quick and too cheerful; sometimes the cold corporate voice of the Ledger leaks through.",
+    "voice_notes": "Play it like a vintage radio host who is slightly wrong. The radio effect is added afterwards: record it clean.",
+    "actor": "[ACTOR]"
+   },
+   "JAK": {
+    "name": "Jakub Ostrowski",
+    "who": "Jakub Ostrowski, 44, Silesian salt hewer: English learned late and well enough, an older Polish voice, calm and wry",
+    "voice_notes": "Calm, wry, polite. Slow, careful English learned from a German foreman and Polish newspapers; Polish when it matters (shouting, praying, his wife's name), always with the English beside it in the subtitle. / He has seen worse than zombies and isn't impressed by them. Dry humour about himself, never about the dead. / Never raises his voice except at the breakout. Under fire he stays steady.",
+    "actor": "[ACTOR]"
+   },
+   "FAS": {
+    "name": "Dr. Emil Fasbender",
+    "who": "A scientist in his mid-40s, nervous and rapid, always speaking with his hand over the radio mic.",
+    "voice_notes": "Fast, whispered urgency. The field-radio effect is added afterwards: record it clean.",
+    "actor": "[ACTOR]"
+   },
+   "REI": {
+    "name": "Dr. Augusta Reinholt",
+    "who": "Early 50s, cultured, controlled and slow; heard on old wax-cylinder recordings and hijacking the PA.",
+    "voice_notes": "Cold precision; warmer on the cylinders (her diary). The phonograph / PA effects are added afterwards.",
+    "actor": "[ACTOR]"
+   },
+   "LSL": {
+    "name": "Liesl",
+    "who": "Reinholt's daughter, seven, heard on her mother's wax cylinders.",
+    "voice_notes": "A child playing; innocent. If no child voices her, an adult can play it lightly. Phonograph effect added afterwards.",
+    "actor": "[ACTOR]"
+   },
+   "WIE": {
+    "name": "Konrad Wiesner",
+    "who": "Konrad Wiesner, a railway signalman (50s) walking home to Hirschfelde, at Verdun in 1916: steady and weary, a deep roughened voice; English as a careful second language, a German accent (T-077)",
+    "voice_notes": "A real person speaking English as a careful second language: a light German accent, played straight, never comic.",
+    "actor": "[ACTOR]"
+   },
+   "BRA": {
+    "name": "Fraeulein Hedwig Brandt",
+    "who": "Fraeulein Hedwig Brandt, the schoolteacher at Hirschfelde (30s): brisk and frightened, a clear precise voice, a German accent (T-077)",
+    "voice_notes": "A real person speaking English as a careful second language: a light German accent, played straight, never comic.",
+    "actor": "[ACTOR]"
+   },
+   "KRO": {
+    "name": "Ida Kroll",
+    "who": "Ida Kroll, the postwoman from Sankt Anna (20s): quick and talkative when scared, a young bright voice, a light German accent (T-077)",
+    "voice_notes": "A real person speaking English as a careful second language: a light German accent, played straight, never comic.",
+    "actor": "[ACTOR]"
+   },
+   "SOB": {
+    "name": "Gefreiter Willi Sobotta",
+    "who": "Gefreiter Willi Sobotta, a lance-corporal on Christmas leave (20): a young soldier trying to sound steady, a light German accent",
+    "voice_notes": "A real person speaking English as a careful second language: a light German accent, played straight, never comic.",
+    "actor": "[ACTOR]"
+   },
+   "ROT": {
+    "name": "Ewald Rother",
+    "who": "Ewald Rother, an old Silesian salt carter (60s): gruff and kind, a deep worn voice, slow; English as a careful second language, a German accent",
+    "voice_notes": "A real person speaking English as a careful second language: a light German accent, played straight, never comic.",
+    "actor": "[ACTOR]"
+   },
+   "KUB": {
+    "name": "Franz Kubiak",
+    "who": "Franz Kubiak, Rother's younger mate (20s): quick and frightened, a lighter voice, a light German accent",
+    "voice_notes": "A real person speaking English as a careful second language: a light German accent, played straight, never comic.",
+    "actor": "[ACTOR]"
+   },
+   "TRU": {
+    "name": "Trudi Hanke",
+    "who": "Trudi Hanke, a farmer's daughter (20s) helping at the bar: practical and loud, a bright warm voice, a light German accent",
+    "voice_notes": "A real person speaking English as a careful second language: a light German accent, played straight, never comic.",
+    "actor": "[ACTOR]"
+   },
+   "POH": {
+    "name": "Frau Agnes Pohl",
+    "who": "Frau Agnes Pohl, a widow (50s) walking to her sister's in Liegnitz: prim and proper, an older woman's voice, a German accent",
+    "voice_notes": "A real person speaking English as a careful second language: a light German accent, played straight, never comic.",
+    "actor": "[ACTOR]"
+   },
+   "HAM": {
+    "name": "The Hammer (Mara)",
+    "who": "young woman, about 22 (the eldest); Blonde hair; carries a mallet she throws. Throws the mallet like a boomerang and catches it",
+    "voice_notes": "Creepy-doll horror, playful and sad, never sexualized. Lines are German with the English in brackets: say the German. A subtle eerie room reverb is added afterwards.",
+    "actor": "cousin_1",
+    "voiced_by": "one of the owner's cousins"
+   },
+   "RCH": {
+    "name": "The Reach (Jo)",
+    "who": "young woman, about 18 (the youngest); Brown hair; extremely long arms. Reaching: grabs things far away, through windows and floors",
+    "voice_notes": "Creepy-doll horror, playful and sad, never sexualized. Lines are German with the English in brackets: say the German. A subtle eerie room reverb is added afterwards.",
+    "actor": "cousin_2",
+    "voiced_by": "one of the owner's cousins"
+   },
+   "ALX": {
+    "name": "The Third Hand (Alix)",
+    "who": "young woman, about 20; An arm that extends out of her torso; double damage. The arm is 'the hand she was always holding'",
+    "voice_notes": "Creepy-doll horror, playful and sad, never sexualized. Lines are German with the English in brackets: say the German. A subtle eerie room reverb is added afterwards.",
+    "actor": "cousin_3",
+    "voiced_by": "one of the owner's cousins"
+   },
+   "CSN": {
+    "name": "The Cousins (together)",
+    "who": "All three cousins at once: the rhyme hummed and whispered, the trio lines.",
+    "voice_notes": "Each cousin records these; the importer layers the takes into a trio (one take alone is doubled).",
+    "actor": [
+     "cousin_1",
+     "cousin_2",
+     "cousin_3"
+    ],
+    "voiced_by": "all three cousins"
+   },
+   "PAUL": {
+    "name": "PAUL (homage boss)",
+    "who": "A homage boss based on the owner's friend Paul. Not in the game yet: no lines.",
+    "voice_notes": "",
+    "actor": "paul",
+    "status": "not in the game yet",
+    "voiced_by": "Paul (the owner's friend)"
+   },
+   "SLENDER": {
+    "name": "THE SLENDER (homage boss)",
+    "who": "A homage boss voiced by the owner. Not in the game yet: no lines.",
+    "voice_notes": "",
+    "actor": "devin",
+    "status": "not in the game yet",
+    "voiced_by": "Devin (the owner)"
+   }
+  },
+  "bs": {
+   "bolt": {
+    "name": "Bolt",
+    "who": "The mechanic, the hero. Down-to-earth.",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "sprocket": {
+    "name": "Sprocket",
+    "who": "Bolt's robot sidekick: dry, smug, very fast. A light robot treatment is added afterwards: record it clean, in your own voice.",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "grindstone": {
+    "name": "Chairman Grindstone",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "blartz": {
+    "name": "Blartz",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "cc": {
+    "name": "The Content Creator",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "pa": {
+    "name": "Omniscrap Pa",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "glambot": {
+    "name": "Glambot Prime",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "rusty": {
+    "name": "Rusty",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "concierge": {
+    "name": "Concierge-Tron",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "intern": {
+    "name": "Intern #4401",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "darkmatter": {
+    "name": "Darkmatter Subscriptions Llc",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "retention": {
+    "name": "The Retention Specialist",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "squat": {
+    "name": "The Squatter",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "bathrobe": {
+    "name": "Confused Customer",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "corn": {
+    "name": "Steward Cornelius",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "clerk": {
+    "name": "Gilda — Kiosk #7",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "dent": {
+    "name": "Dent — Test Unit #001",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "gasket": {
+    "name": "Mama Gasket",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "bellhop": {
+    "name": "Bellhop-9",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "tourist": {
+    "name": "Tourist",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "middleman_a": {
+    "name": "Middleman A",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "middleman_b": {
+    "name": "Middleman B",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   },
+   "statue": {
+    "name": "Statue",
+    "who": "",
+    "voice_notes": "",
+    "actor": "[ACTOR]"
+   }
+  }
+ }
+}

@@ -878,7 +878,7 @@ def main() -> int:
                     continue
                 emo_name, emo = emotion_for(category, say, spk)
                 c = CAST["cast"][spk]
-                wanted[file_id] = dict(line=line_id, speaker=spk, text=say, engine="kokoro",
+                wanted[file_id] = dict(line=line_id, speaker=spk, text=say, engine="kokoro", raw=raw_text,
                                        hash=neural_hash(spk, say, emo_name, emo, cues), voice=str(c["voice"]),
                                        emo_name=emo_name, emo=emo, cues=cues, category=category,
                                        njob={"speaker": spk, "text": say, "voice": str(c["voice"]),
@@ -900,7 +900,7 @@ def main() -> int:
                 missing[file_id] = "no speech: stage direction only (%s)" % text[:40]
                 continue
             splice = spk == "OPR"
-            wanted[file_id] = dict(line=line_id, speaker=spk, text=say, hash=part_hash(say, prof, cues, splice),
+            wanted[file_id] = dict(line=line_id, speaker=spk, text=say, raw=raw_text, hash=part_hash(say, prof, cues, splice),
                                    ssml=build_ssml(parts, prof, cues, splice), voice=prof["voice"], prof=prof,
                                    cues=cues, engine="onecore")
             missing.pop(file_id, None)
@@ -928,15 +928,30 @@ def main() -> int:
                 files.pop(fid)
 
     todo = []
+    kept_human = 0
     for fid, job in wanted.items():
         cur = files.get(fid)
+        # T-101: a recorded take (tools/voice/import.py, source human / ai_*) stays while its line still reads as
+        # recorded; when the text changes the TTS is rebaked over it (the take no longer matches the subtitle).
+        if cur is not None and cur.get("source", "tts") != "tts":
+            if cur.get("script_sha") == hashlib.sha1(job["raw"].encode("utf-8")).hexdigest()[:16]:
+                kept_human += 1
+                continue
+            bak = os.path.join(ROOT, "gravelight", "audio", "vo_tts", job["speaker"].lower(), fid + ".ogg")
+            if os.path.exists(bak):
+                os.remove(bak)
+            print("  %s: reworded since %s recorded it: back to TTS (pickup script: tools/voice.sh scripts --since=recorded)"
+                  % (fid, cur.get("actor", "?")))
+            todo.append(fid)
+            continue
         on_disk = cur is not None and os.path.exists(os.path.join(ROOT, cur["path"][len("res://"):].replace("/", os.sep)))
         if not FORCE and cur is not None and cur.get("hash") == job["hash"] and on_disk:
             continue
         todo.append(fid)
     n_neural = sum(1 for fid in todo if wanted[fid]["engine"] == "kokoro")
-    print("lines %d, files wanted %d, to build %d (neural %d, onecore %d), skipped (up to date) %d, no speech %d" % (
-        len(lines), len(wanted), len(todo), n_neural, len(todo) - n_neural, len(wanted) - len(todo), len(missing)))
+    print("lines %d, files wanted %d, to build %d (neural %d, onecore %d), skipped (up to date) %d, recorded takes kept %d, no speech %d" % (
+        len(lines), len(wanted), len(todo), n_neural, len(todo) - n_neural, len(wanted) - len(todo) - kept_human,
+        kept_human, len(missing)))
     if DRY:
         for fid in todo:
             w = wanted[fid]
@@ -1021,7 +1036,8 @@ def main() -> int:
             write_wav(proc, y)
             path, fmt = encode(proc, job["speaker"], fid)
             row = {"line": job["line"], "speaker": job["speaker"], "hash": job["hash"], "path": path,
-                   "format": fmt, "duration": round(len(y) / SR, 3), "voice": job["voice"], "engine": job["engine"]}
+                   "format": fmt, "duration": round(len(y) / SR, 3), "voice": job["voice"], "engine": job["engine"],
+                   "source": "tts"}
             if job["engine"] == "kokoro":
                 import vo_loudness
                 row["delivery"] = job["emo_name"]
@@ -1058,7 +1074,10 @@ def _write_manifest(manifest: dict) -> None:
                         "<id>_p<n>) with the text/profile hash that produced it; engine kokoro (the squad and Jakub: "
                         "Kokoro-82M neural TTS, offline, cast in data/gravelight/vo/voice_cast.json, with the "
                         "delivery, the measured LUFS and the phonemes it read) or onecore (Windows OneCore TTS, "
-                        "Microsoft David / Mark / Zira, processed); missing: ids with no audio and why. "
+                        "Microsoft David / Mark / Zira, processed); source: tts (this bake) or human / ai_* (a recorded take "
+                        "imported by tools/voice/import.py, T-101: actor, take, hash, script_sha; its TTS row under "
+                        "'tts', the TTS file in gravelight/audio/vo_tts/; kept by this bake while the text is "
+                        "unchanged); missing: ids with no audio and why. "
                         "See docs/ASSETS.md.")
     manifest["tool_version"] = TOOL_VERSION
     manifest["neural_tool_version"] = NEURAL_TOOL_VERSION

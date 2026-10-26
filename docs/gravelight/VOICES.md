@@ -6,6 +6,9 @@ new lines, and what the runtime does with them. Placeholder VO until recorded li
 are generated, never hand-edited. Line text and triggers stay in `VO_SCRIPT.md`; who the people are is in
 `CHARACTERS.md`.
 
+**Recorded voices (T-101):** the cast's own takes replace these line by line; see `docs/VOICE_ACTING.md`
+(the TTS stays as the fallback, and `gen_vo.py` never bakes over a recorded take while its text is unchanged).
+
 ## Engine
 
 **Kokoro-82M** (v1.0, ONNX, CPU), an offline neural text-to-speech model, run through `kokoro-onnx`. It replaced

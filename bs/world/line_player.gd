@@ -50,7 +50,7 @@ static func speak_now(id: String) -> float:
 		VOManager.play(id)
 	else:
 		EventBus.subtitle.emit("", t, Color.WHITE, 1.2 + t.length() * 0.055)
-	return 1.2 + t.length() * 0.055
+	return maxf(1.2 + t.length() * 0.055, VOManager.recorded_length(id) + 0.25)
 
 
 func _speak(id: String) -> float:

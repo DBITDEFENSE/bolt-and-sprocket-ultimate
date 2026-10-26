@@ -1,0 +1,28 @@
+{
+ "session": [
+  {
+   "file_id": "DUT_RELOAD_01",
+   "id_at": 0.8
+  },
+  {
+   "file_id": "DUT_AMMO_LOW_01",
+   "id_at": 8.8
+  },
+  {
+   "file_id": "BNT_DUT_PEG_01_p0",
+   "id_at": 17.56
+  },
+  {
+   "file_id": "DUT_BOARD_02",
+   "id_at": 33.24
+  },
+  {
+   "file_id": "DUT_SPAWN_01",
+   "id_at": 42.17
+  }
+ ],
+ "no_ids": [
+  "DUT_ROUND_END_01",
+  "DUT_BUY_SHOTGUN_01"
+ ]
+}
