@@ -20,9 +20,7 @@ func _init() -> void:
 
 func _ready() -> void:
 	GameState.input_blocked = true
-	var font: SystemFont = SystemFont.new()
-	font.font_names = PackedStringArray(["Courier New", "Consolas"])
-	font.font_weight = 700
+	var font: Font = MenuKit.type_font()
 	var panel: PanelContainer = PanelContainer.new()
 	panel.set_anchors_preset(Control.PRESET_CENTER)
 	panel.position = Vector2(-380, -250)   # above the prompt and the subtitles
@@ -33,6 +31,7 @@ func _ready() -> void:
 	sb.set_border_width_all(3)
 	sb.set_content_margin_all(16)
 	panel.add_theme_stylebox_override("panel", sb)
+	MenuKit.apply_theme(panel)
 	add_child(panel)
 	var v: VBoxContainer = VBoxContainer.new()
 	v.add_theme_constant_override("separation", 8)
@@ -53,8 +52,8 @@ func _ready() -> void:
 func _label(text: String, font: Font, size: int, col: Color) -> Label:
 	var l: Label = Label.new()
 	l.text = text
-	l.add_theme_font_override("font", font)
-	l.add_theme_font_size_override("font_size", size)
+	l.add_theme_font_override("font", font if size >= 20 else MenuKit.body_font())
+	l.add_theme_font_size_override("font_size", MenuKit.px(size))
 	l.add_theme_color_override("font_color", col)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART

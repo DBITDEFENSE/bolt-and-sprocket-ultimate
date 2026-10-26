@@ -1,0 +1,10 @@
+Title: Moonlit Golf
+Authors: Greg Zaal
+Source: https://polyhaven.com/a/moonlit_golf
+File: https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/moonlit_golf_1k.hdr
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Moonlit Golf" by Greg Zaal (Poly Haven), CC0.
+Format: Radiance HDR equirectangular panorama at 1k (skybox / lighting reference)
+Poly Haven id: moonlit_golf
+Downloaded: 2026-10-25 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: moonlit_golf_1k.hdr

@@ -12,14 +12,13 @@ func _init() -> void:
 
 
 func show_stats(stats: Dictionary, map_name: String, seconds: float) -> void:
-	var font: SystemFont = SystemFont.new()
-	font.font_names = PackedStringArray(["Courier New", "Consolas"])
-	font.font_weight = 700
-	var stamp: SystemFont = SystemFont.new()
-	stamp.font_names = PackedStringArray(["Stencil", "Impact", "Arial Black"])
+	var font: Font = MenuKit.type_font()
+	var mono: Font = MenuKit.mono_font()
+	var stamp: Font = MenuKit.stamp_font()
 	var bg: ColorRect = ColorRect.new()
 	bg.color = Color(0.03, 0.03, 0.05, 0.0)
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	MenuKit.apply_theme(bg)
 	add_child(bg)
 	var box: VBoxContainer = VBoxContainer.new()
 	box.set_anchors_preset(Control.PRESET_CENTER)
@@ -27,19 +26,22 @@ func show_stats(stats: Dictionary, map_name: String, seconds: float) -> void:
 	box.position = Vector2(-380, -300)
 	box.add_theme_constant_override("separation", 10)
 	box.modulate.a = 0.0
+	MenuKit.apply_theme(box)
 	add_child(box)
 	var title: Label = Label.new()
 	title.text = "THE LEDGER IS CLOSED"
 	title.add_theme_font_override("font", stamp)
-	title.add_theme_font_size_override("font_size", 64)
+	title.add_theme_font_size_override("font_size", MenuKit.size("display"))
 	title.add_theme_color_override("font_color", Color(0.65, 0.1, 0.09))
+	MenuKit.outline(title, "stamp")
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
 	var r: int = int(stats.get(&"round", 0))
 	var sub: Label = Label.new()
 	sub.text = "%s  ·  You survived %d round%s" % [map_name, r, "" if r == 1 else "s"]
 	sub.add_theme_font_override("font", font)
-	sub.add_theme_font_size_override("font_size", 28)
+	sub.add_theme_font_size_override("font_size", MenuKit.px(28))
+	MenuKit.outline(sub, "menu")
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(sub)
 	var grid: GridContainer = GridContainer.new()
@@ -59,9 +61,10 @@ func show_stats(stats: Dictionary, map_name: String, seconds: float) -> void:
 		for i: int in 2:
 			var l: Label = Label.new()
 			l.text = str(row[i])
-			l.add_theme_font_override("font", font)
-			l.add_theme_font_size_override("font_size", 24)
+			l.add_theme_font_override("font", mono if i == 1 else font)   # the numbers in the ledger's mono
+			l.add_theme_font_size_override("font_size", MenuKit.size("button"))
 			l.add_theme_color_override("font_color", Color(0.93, 0.89, 0.8))
+			MenuKit.outline(l, "menu")
 			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if i == 1 else HORIZONTAL_ALIGNMENT_LEFT
 			l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			grid.add_child(l)
@@ -91,7 +94,8 @@ func _button(text: String, font: Font) -> Button:
 	var b: Button = Button.new()
 	b.text = text
 	b.add_theme_font_override("font", font)
-	b.add_theme_font_size_override("font_size", 26)
+	b.add_theme_font_size_override("font_size", MenuKit.size("subheading"))
+	b.focus_mode = Control.FOCUS_ALL
 	b.custom_minimum_size = Vector2(240, 54)
 	return b
 

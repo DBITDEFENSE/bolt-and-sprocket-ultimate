@@ -1,0 +1,12 @@
+Title: Wood Floor Worn
+Authors: Dimitrios Savva
+Source: https://polyhaven.com/a/wood_floor_worn
+File: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/wood_floor_worn/wood_floor_worn_diff_2k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/wood_floor_worn/wood_floor_worn_nor_gl_2k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_floor_worn/wood_floor_worn_arm_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_floor_worn/wood_floor_worn_disp_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Wood Floor Worn" by Dimitrios Savva (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 2k (albedo, normal OpenGL +Y, ORM at 1k, height)
+Tile size: 2.00 x 2.00 m
+Poly Haven id: wood_floor_worn
+Library key: floorboards
+Downloaded: 2026-10-25 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: textures/wood_floor_worn_albedo.png, textures/wood_floor_worn_normal.png, textures/wood_floor_worn_orm.png, textures/wood_floor_worn_height.png

@@ -1,0 +1,382 @@
+{
+  "_doc": "The CC0 library tools/fetch_cc0_materials.py pulls (UPDATE_05 section 1 / 05A section 1.2-1.3, T-088). One entry per asset: source polyhaven | ambientcg | kenney; kind texture | hdri | model | kenney_pack; res is the download resolution ('1k'/'2k'); orm_res the channel-packed AO/roughness/metal map's size; height true keeps a 16-bit-source height map (as 8-bit PNG); tex_px caps a model's texture side; key is the MaterialLibrary name the set is meant for (materials.json binds it). tile_m is filled in by the script from the source's physical size (metres covered by one tile). Everything lands in assets/third_party/<source>/<kebab-id>/ with LICENSE.txt (CC0 legal code) and SOURCE.txt (Devin's format).",
+  "assets": [
+    {
+      "source": "polyhaven",
+      "id": "wood_floor_worn",
+      "kind": "texture",
+      "res": "2k",
+      "orm_res": "1k",
+      "height": true,
+      "key": "floorboards",
+      "note": "the inn's worn floorboards",
+      "tile_m": 2.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "weathered_brown_planks",
+      "kind": "texture",
+      "res": "2k",
+      "orm_res": "1k",
+      "height": true,
+      "key": "planks",
+      "note": "rough barn planks, fences, the woodshed",
+      "tile_m": 1.8
+    },
+    {
+      "source": "polyhaven",
+      "id": "plastered_stone_wall",
+      "kind": "texture",
+      "res": "2k",
+      "orm_res": "1k",
+      "height": true,
+      "key": "plaster_worn",
+      "note": "old plaster over stone: the cellar's foundation, the inn's weathered outside corners",
+      "tile_m": 2.5
+    },
+    {
+      "source": "polyhaven",
+      "id": "beige_wall_001",
+      "kind": "texture",
+      "res": "2k",
+      "orm_res": "1k",
+      "height": true,
+      "key": "plaster",
+      "note": "plain rough plaster: the inn's walls inside and out (wear and stains come from the shader's grime)",
+      "tile_m": 3.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "grey_plaster",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "plaster_upper",
+      "note": "the greyer upper storey and the guest rooms",
+      "tile_m": 1.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "stone_wall",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": true,
+      "key": "fieldstone",
+      "note": "the yard wall, the hearth, the cellar's foundation (1K: 512 px/m on its 2 m tile already meets the bible)",
+      "tile_m": 2.0
+    },
+    {
+      "source": "ambientcg",
+      "id": "WoodSiding012",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": true,
+      "key": "shingles",
+      "note": "weathered wood shakes: the inn and stable roofs",
+      "tile_m": 1.4
+    },
+    {
+      "source": "polyhaven",
+      "id": "rusty_metal_04",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "iron",
+      "note": "painted, chipped, rusted iron: brackets, hinges, the cage, drums",
+      "tile_m": 2.0
+    },
+    {
+      "source": "ambientcg",
+      "id": "Fabric066",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "canvas",
+      "note": "grey-green linen canvas: tarps, the parachute, awnings",
+      "tile_m": 0.4
+    },
+    {
+      "source": "polyhaven",
+      "id": "hessian_230",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "burlap",
+      "note": "hessian sacking: the sacks, the hay bales' wrap",
+      "tile_m": 0.269
+    },
+    {
+      "source": "ambientcg",
+      "id": "Fabric031",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "wool",
+      "note": "grey wool weave: greatcoats, blankets, the curtains"
+    },
+    {
+      "source": "ambientcg",
+      "id": "Leather014",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "leather",
+      "note": "old scratched brown leather: tack, straps, gloves"
+    },
+    {
+      "source": "polyhaven",
+      "id": "snow_02",
+      "kind": "texture",
+      "res": "2k",
+      "orm_res": "1k",
+      "height": true,
+      "key": "snow",
+      "note": "the Grounds' snow",
+      "tile_m": 2.0
+    },
+    {
+      "source": "ambientcg",
+      "id": "Ice003",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "ice",
+      "note": "frozen lake ice: the stream, the trough, the ice cellar"
+    },
+    {
+      "source": "ambientcg",
+      "id": "Snow015",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": true,
+      "key": "frozen_mud",
+      "note": "frozen dirt with snow: the roads' ruts, the yard track"
+    },
+    {
+      "source": "polyhaven",
+      "id": "brown_mud_03",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "dirt",
+      "note": "the stable floor and the cellar's earth",
+      "tile_m": 1.3
+    },
+    {
+      "source": "polyhaven",
+      "id": "kloppenheim_02_puresky",
+      "kind": "hdri",
+      "res": "2k",
+      "note": "clear moonlit night sky: skybox and GI reference"
+    },
+    {
+      "source": "polyhaven",
+      "id": "moonlit_golf",
+      "kind": "hdri",
+      "res": "1k",
+      "note": "moonlit field with a tree line: lighting reference"
+    },
+    {
+      "source": "polyhaven",
+      "id": "wine_barrel_01",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 1024,
+      "note": "the cellar casks, the yard"
+    },
+    {
+      "source": "polyhaven",
+      "id": "wooden_crate_01",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 1024,
+      "note": "crates"
+    },
+    {
+      "source": "polyhaven",
+      "id": "wooden_crate_02",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 1024,
+      "note": "crates (stencilled lid)"
+    },
+    {
+      "source": "polyhaven",
+      "id": "wooden_military_crate",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 1024,
+      "note": "the billet crates, the cargo in the field"
+    },
+    {
+      "source": "polyhaven",
+      "id": "barrel_03",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 1024,
+      "note": "steel drums east of the yard"
+    },
+    {
+      "source": "polyhaven",
+      "id": "wooden_table_02",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 1024,
+      "note": "taproom tables"
+    },
+    {
+      "source": "polyhaven",
+      "id": "round_wooden_table_01",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 1024,
+      "note": "the table by the hearth"
+    },
+    {
+      "source": "polyhaven",
+      "id": "painted_wooden_bench",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 1024,
+      "note": "the trestle benches"
+    },
+    {
+      "source": "polyhaven",
+      "id": "old_bed_frame",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 1024,
+      "note": "the guest rooms' iron beds"
+    },
+    {
+      "source": "polyhaven",
+      "id": "painted_wooden_chair_02",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "taproom chairs"
+    },
+    {
+      "source": "polyhaven",
+      "id": "wooden_stool_01",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "stools (the guard's stool, the bar)"
+    },
+    {
+      "source": "polyhaven",
+      "id": "painted_wooden_nightstand",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "guest-room nightstands"
+    },
+    {
+      "source": "polyhaven",
+      "id": "vintage_suitcase",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "Frau Pohl's suitcase, Room 1, the road cases"
+    },
+    {
+      "source": "polyhaven",
+      "id": "wooden_bucket_01",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "the stable bucket, the well"
+    },
+    {
+      "source": "polyhaven",
+      "id": "Lantern_01",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "the hanging oil lanterns"
+    },
+    {
+      "source": "polyhaven",
+      "id": "wooden_lantern_01",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "the yard and woodshed lamps"
+    },
+    {
+      "source": "polyhaven",
+      "id": "vintage_oil_lamp",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "table oil lamps"
+    },
+    {
+      "source": "polyhaven",
+      "id": "wine_bottles_01",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "the bar's shelves"
+    },
+    {
+      "source": "polyhaven",
+      "id": "jug_01",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "a jug on the bar"
+    },
+    {
+      "source": "polyhaven",
+      "id": "rusted_spade_01",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "the coal shovel, the woodshed"
+    },
+    {
+      "source": "polyhaven",
+      "id": "wooden_axe_03",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "the woodshed's axe"
+    },
+    {
+      "source": "polyhaven",
+      "id": "tree_stump_01",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 1024,
+      "note": "the chopping block"
+    },
+    {
+      "source": "kenney",
+      "id": "survival-kit",
+      "kind": "kenney_pack",
+      "url": "https://kenney.nl/media/pages/assets/survival-kit/4065a8185b-1712149243/kenney_survival-kit.zip",
+      "page": "https://kenney.nl/assets/survival-kit",
+      "members": {
+        "Models/GLB format/resource-wood.glb": "firewood.glb",
+        "Models/GLB format/tree-log.glb": "log.glb"
+      },
+      "note": "firewood and a log (Poly Haven has none); low-poly, filler only",
+      "extra": {
+        "Models/GLB format/Textures/colormap.png": "Textures/colormap.png"
+      }
+    }
+  ]
+}

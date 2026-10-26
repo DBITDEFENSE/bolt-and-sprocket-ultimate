@@ -1,0 +1,10 @@
+Title: Jug 01
+Authors: Kuutti Siitonen
+Source: https://polyhaven.com/a/jug_01
+File: https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/jug_01/jug_01_1k.gltf; https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/jug_01/jug_01.bin; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/jug_01/jug_01_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/jug_01/jug_01_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/jug_01/jug_01_arm_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Jug 01" by Kuutti Siitonen (Poly Haven), CC0. Modified: glTF packed to GLB, textures converted to PNG and resized.
+Format: GLB (metres, +Y up) with external PNG textures at <= 512 px
+Poly Haven id: jug_01
+Downloaded: 2026-10-25 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: model.glb, textures/jug_01_nor_gl.png, textures/jug_01_diff.png, textures/jug_01_arm.png

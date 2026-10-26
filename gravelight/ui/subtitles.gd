@@ -1,5 +1,6 @@
 extends CanvasLayer
-## Subtitles (VO_SCRIPT §1.5). Created by VOManager as its own child. Shows "SPEAKER: text" bottom-center,
+## Subtitles (VO_SCRIPT §1.5). Created by VOManager as its own child. Shows "SPEAKER: text" bottom-center (T-096: the
+## speaker in the typewriter, the words in the bold body face, the kit's subtitle outline + shadow),
 ## story lines above player chatter, max 2 lines of ~42 chars per chunk; long lines are split into timed chunks.
 
 const NAMES: Dictionary = {
@@ -26,35 +27,39 @@ func _init() -> void:
 
 func _ready() -> void:
 	_box = VBoxContainer.new()
-	# Centered strip above the prompt area, 980 px wide at any resolution.
+	# Centered strip above the prompt area (ui.json hud: subtitle_width wide, subtitle_bottom up from the bottom).
+	var sw: float = float(MenuKit.hud("subtitle_width", 980.0))
+	var sb: float = float(MenuKit.hud("subtitle_bottom", 200.0))
+	var sh: float = float(MenuKit.hud("subtitle_height", 130.0))
 	_box.anchor_left = 0.5
 	_box.anchor_right = 0.5
 	_box.anchor_top = 1.0
 	_box.anchor_bottom = 1.0
-	_box.offset_left = -490.0
-	_box.offset_right = 490.0
-	_box.offset_top = -330.0
-	_box.offset_bottom = -200.0
+	_box.offset_left = -sw * 0.5
+	_box.offset_right = sw * 0.5
+	_box.offset_top = -(sb + sh)
+	_box.offset_bottom = -sb
 	_box.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	_box.alignment = BoxContainer.ALIGNMENT_END
 	_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	MenuKit.apply_theme(_box)
 	add_child(_box)
-	var font: SystemFont = SystemFont.new()
-	font.font_names = PackedStringArray(["Courier New", "Consolas"])
-	font.font_weight = 700
+	var font: Font = MenuKit.font("body_bold")   # the readable body face, bold, for the words
+	var name_font: Font = MenuKit.type_font()
 	for key: String in ["story", "player"]:
 		var l: RichTextLabel = RichTextLabel.new()
 		l.bbcode_enabled = true
 		l.fit_content = true
 		l.scroll_active = false
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		l.custom_minimum_size = Vector2(980, 0)
+		l.custom_minimum_size = Vector2(sw, 0)
 		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		l.add_theme_font_override("normal_font", font)
-		l.add_theme_font_size_override("normal_font_size", 24)
-		l.add_theme_constant_override("outline_size", 6)
-		l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+		l.add_theme_font_override("bold_font", name_font)   # the speaker's name in the typewriter
+		l.add_theme_font_size_override("normal_font_size", MenuKit.size("hud_subtitle"))
+		l.add_theme_font_size_override("bold_font_size", MenuKit.size("hud_subtitle"))
+		MenuKit.outline(l, "subtitle")
 		l.visible = false
 		_box.add_child(l)
 		_rows[key] = {"label": l, "chunks": PackedStringArray(), "times": PackedFloat32Array(), "i": 0, "t": 0.0, "speaker": &""}
@@ -106,7 +111,7 @@ func _show(row: Dictionary) -> void:
 	var col: Color = COLORS.get(spk, Color(0.9, 0.9, 0.9))
 	var name_str: String = str(NAMES.get(spk, String(spk)))
 	var body_col: String = "c07dff" if bool(row.get("slip", false)) else "ece6d6"   # a slip: Darkmatter violet
-	l.text = "[center][color=#%s]%s:[/color] [color=#%s]%s[/color][/center]" % [col.to_html(false), name_str, body_col, chunks[i].replace("[", "[lb]")]
+	l.text = "[center][b][color=#%s]%s:[/color][/b] [color=#%s]%s[/color][/center]" % [col.to_html(false), name_str, body_col, chunks[i].replace("[", "[lb]")]
 	l.visible = true
 
 

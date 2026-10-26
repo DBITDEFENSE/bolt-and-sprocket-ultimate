@@ -1,7 +1,10 @@
 class_name Hud
 extends CanvasLayer
-## Minimal classic HUD. Bottom-left: the round as a red ink stamp. Bottom-right: Scrip (with floating
-## +numbers) and ammo. Center: crosshair, hit marker, context prompt with a hold bar. Red vignette when hurt.
+## Minimal classic HUD. Bottom-left: the round as a red ink stamp over the perk caps. Bottom-right: Scrip (with
+## floating +numbers), the gun and its ammo. Center: crosshair, hit marker, context prompt with a hold bar. Red
+## vignette when hurt. T-096: everything hangs on the grid in data/gravelight/ui.json ("hud": margins with a safe
+## area, offsets), uses the kit's bundled fonts and scale (MenuKit) and a dark outline + drop shadow so it reads on
+## snow and in the dark; the theme is applied at the root.
 
 const INK: Color = Color(0.62, 0.09, 0.08)
 const PAPER: Color = Color(0.93, 0.89, 0.8)
@@ -23,13 +26,13 @@ var _scope: ScopeOverlay
 var _vignette: TextureRect
 var _banner: Label
 var _debug_label: Label
+var _br: VBoxContainer
 var _show_fps: bool = false
 var _show_zombies: bool = false
 var _denied_t: float = 0.0
-var _stamp_font: SystemFont
-var _type_font: SystemFont
 var _minimap: Minimap   # Update 04 section 2 (T-065): top-left, the zone stamped under it
 var _toasts: int = 0     # T-078: bonus toasts on screen (they stack above the Scrip)
+var _layout_vp: Vector2 = Vector2(-1, -1)
 
 
 func _init() -> void:
@@ -42,15 +45,16 @@ func setup(p: Player) -> void:
 	player.prompt_denied.connect(func() -> void: _denied_t = 0.5)
 
 
+## The round stamp's screen rect (tests, the perk row sits over it).
+func stamp_rect() -> Rect2:
+	return _stamp_panel.get_rect() if _stamp_panel != null else Rect2()
+
+
 func _ready() -> void:
-	_stamp_font = SystemFont.new()
-	_stamp_font.font_names = PackedStringArray(["Stencil", "Impact", "Arial Black"])
-	_type_font = SystemFont.new()
-	_type_font.font_names = PackedStringArray(["Courier New", "Consolas", "Monospace"])
-	_type_font.font_weight = 700
 	var root: Control = Control.new()
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	MenuKit.apply_theme(root)
 	add_child(root)
 	# vignette
 	_vignette = TextureRect.new()
@@ -74,44 +78,60 @@ func _ready() -> void:
 	_minimap = Minimap.new()
 	_minimap.game = "gravelight"
 	root.add_child(_minimap)
-	# round stamp (bottom-left)
+	# round stamp (bottom-left): the red rubber stamp, a hair off square
 	_stamp_panel = PanelContainer.new()
 	var sb: StyleBoxFlat = StyleBoxFlat.new()
 	sb.bg_color = Color(0, 0, 0, 0)
 	sb.border_color = INK
-	sb.set_border_width_all(5)
+	sb.set_border_width_all(int(MenuKit.hud("stamp_border", 5)))
 	sb.set_corner_radius_all(6)
 	sb.content_margin_left = 18
 	sb.content_margin_right = 18
-	sb.content_margin_top = 2
+	sb.content_margin_top = 0
 	sb.content_margin_bottom = 2
+	sb.shadow_color = Color(0, 0, 0, 0.35)
+	sb.shadow_size = 3
+	sb.shadow_offset = Vector2(1, 2)
 	_stamp_panel.add_theme_stylebox_override("panel", sb)
-	_stamp_panel.position = Vector2(48, 0)
 	_stamp_panel.rotation = deg_to_rad(-5.0)
+	_stamp_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_stamp_label = Label.new()
-	_stamp_label.add_theme_font_override("font", _stamp_font)
-	_stamp_label.add_theme_font_size_override("font_size", 96)
+	_stamp_label.add_theme_font_override("font", MenuKit.stamp_font())
+	_stamp_label.add_theme_font_size_override("font_size", MenuKit.size("hud_stamp"))
 	_stamp_label.add_theme_color_override("font_color", INK)
+	MenuKit.outline(_stamp_label, "stamp")
 	_stamp_label.text = ""
-	_stamp_panel.add_child(_stamp_label)
+	_stamp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	# the digits fill the box: a clipped holder the height of the numerals, the label's line gap hidden above
+	var fs: float = float(MenuKit.size("hud_stamp"))
+	var holder: Control = Control.new()
+	holder.custom_minimum_size = Vector2(fs * 0.72, fs * 0.8)
+	holder.clip_contents = true
+	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_stamp_label.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_stamp_label.offset_top = -fs * 0.27
+	_stamp_label.offset_bottom = fs * 0.1
+	holder.add_child(_stamp_label)
+	_stamp_panel.add_child(holder)
 	_stamp_panel.visible = false
 	root.add_child(_stamp_panel)
-	# bottom-right column
-	var br: VBoxContainer = VBoxContainer.new()
-	br.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	br.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	br.grow_vertical = Control.GROW_DIRECTION_BEGIN
-	br.position = Vector2(-40, -40)
-	br.alignment = BoxContainer.ALIGNMENT_END
-	br.add_theme_constant_override("separation", 0)
-	root.add_child(br)
+	# bottom-right column: Scrip, the gun, ammo, grenades (counters in the mono face so digits line up)
+	_br = VBoxContainer.new()
+	_br.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	_br.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	_br.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_br.alignment = BoxContainer.ALIGNMENT_END
+	_br.add_theme_constant_override("separation", 0)
+	_br.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(_br)
 	_scrip_anchor = Control.new()
 	_scrip_anchor.custom_minimum_size = Vector2(0, 0)
-	br.add_child(_scrip_anchor)
-	_scrip_label = _label(br, "ǂ 500", 40, SCRIP_COL, _type_font)
-	_weapon_label = _label(br, "", 20, PAPER, _type_font)
-	_ammo_label = _label(br, "", 46, PAPER, _type_font)
-	_nade_label = _label(br, "", 22, PAPER, _type_font)
+	_scrip_anchor.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_br.add_child(_scrip_anchor)
+	_scrip_label = _label(_br, "ǂ 500", MenuKit.size("hud_scrip"), SCRIP_COL, MenuKit.font("mono_bold"))
+	_weapon_label = _label(_br, "", MenuKit.size("hud_weapon"), PAPER, MenuKit.type_font())
+	_ammo_label = _label(_br, "", MenuKit.size("hud_ammo"), PAPER, MenuKit.font("mono_bold"))
+	_nade_label = _label(_br, "", MenuKit.size("hud_nade"), PAPER, MenuKit.mono_font())
 	for l: Label in [_scrip_label, _weapon_label, _ammo_label, _nade_label]:
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	# center
@@ -125,22 +145,24 @@ func _ready() -> void:
 	_hitmarker = HitMarker.new()
 	_hitmarker.set_anchors_preset(Control.PRESET_CENTER)
 	root.add_child(_hitmarker)
-	_prompt = _label(root, "", 26, PAPER, _type_font)
-	_anchor_wide(_prompt, 0.5, 110.0, 40.0)
+	_prompt = _label(root, "", MenuKit.size("hud_prompt"), PAPER, MenuKit.type_font())
+	_anchor_wide(_prompt, 0.5, float(MenuKit.hud("prompt_y", 110.0)), 40.0)
 	_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_prompt.add_theme_constant_override("outline_size", 6)
-	_prompt.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.8))
+	MenuKit.outline(_prompt, "prompt")
 	_hold_bar = ProgressBar.new()
 	_hold_bar.show_percentage = false
 	_hold_bar.anchor_left = 0.5
 	_hold_bar.anchor_right = 0.5
 	_hold_bar.anchor_top = 0.5
 	_hold_bar.anchor_bottom = 0.5
-	_hold_bar.offset_left = -110.0
-	_hold_bar.offset_right = 110.0
-	_hold_bar.offset_top = 150.0
-	_hold_bar.offset_bottom = 156.0
+	var hbw: float = float(MenuKit.hud("hold_bar_w", 220.0)) * 0.5
+	var hby: float = float(MenuKit.hud("hold_bar_y", 150.0))
+	_hold_bar.offset_left = -hbw
+	_hold_bar.offset_right = hbw
+	_hold_bar.offset_top = hby
+	_hold_bar.offset_bottom = hby + 6.0
 	_hold_bar.max_value = 1.0
+	_hold_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var fill: StyleBoxFlat = StyleBoxFlat.new()
 	fill.bg_color = PAPER
 	_hold_bar.add_theme_stylebox_override("fill", fill)
@@ -149,21 +171,21 @@ func _ready() -> void:
 	_hold_bar.add_theme_stylebox_override("background", bg)
 	root.add_child(_hold_bar)
 	# banner (map intro / round messages)
-	_banner = _label(root, "", 34, PAPER, _type_font)
-	_anchor_wide(_banner, 0.0, 140.0, 120.0)
+	_banner = _label(root, "", MenuKit.size("hud_banner"), PAPER, MenuKit.type_font())
+	_anchor_wide(_banner, 0.0, float(MenuKit.hud("banner_y", 140.0)), 120.0)
 	_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_banner.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_banner.add_theme_constant_override("outline_size", 8)
-	_banner.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+	MenuKit.outline(_banner, "banner")
 	_banner.modulate.a = 0.0
 	# debug overlay
-	_debug_label = _label(root, "", 18, Color(0.7, 1.0, 0.7), _type_font)
+	_debug_label = _label(root, "", MenuKit.size("hud_debug"), Color(0.7, 1.0, 0.7), MenuKit.mono_font())
 	_debug_label.position = Vector2(16, 12)
 	GLBus.round_started.connect(_on_round_started)
 	GLBus.scrip_changed.connect(_on_scrip_changed)
 	GLBus.bonus_awarded.connect(_on_bonus_awarded)
 	GLBus.enemy_hit_feedback.connect(_on_hit_feedback)
 	GLBus.dev_overlay_toggled.connect(_on_overlay)
+	_layout()
 
 
 ## Full-width strip at a vertical anchor (0 = top, 0.5 = middle) with a pixel offset and height.
@@ -184,8 +206,7 @@ func _label(parent: Control, text: String, size: int, color: Color, font: Font) 
 	l.add_theme_font_override("font", font)
 	l.add_theme_font_size_override("font_size", size)
 	l.add_theme_color_override("font_color", color)
-	l.add_theme_constant_override("outline_size", 4)
-	l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.7))
+	MenuKit.outline(l, "hud")
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	parent.add_child(l)
 	return l
@@ -198,11 +219,32 @@ static func _font_color(l: Label, c: Color) -> void:
 		l.add_theme_color_override("font_color", c)
 
 
+## The grid: margins (with the safe area) from ui.json; the stamp sits in the bottom-left corner, the counters in
+## the bottom-right one, the prompt strip inside the side margins.
+func _layout() -> void:
+	var vp: Vector2 = get_viewport().get_visible_rect().size
+	var m: Vector2 = MenuKit.hud_margin(vp)
+	_layout_vp = vp
+	# the counters' column: pinned by its bottom-right corner (offsets, not position: the box has a size by now)
+	_br.offset_right = -m.x
+	_br.offset_bottom = -m.y
+	_br.offset_left = -m.x - maxf(_br.size.x, _br.get_combined_minimum_size().x)
+	_br.offset_top = -m.y - maxf(_br.size.y, _br.get_combined_minimum_size().y)
+	_prompt.offset_left = m.x
+	_prompt.offset_right = -m.x
+	_banner.offset_left = m.x
+	_banner.offset_right = -m.x
+	_stamp_panel.position = Vector2(m.x, vp.y - _stamp_panel.size.y - m.y - 8.0)
+
+
 func _process(delta: float) -> void:
 	if player == null:
 		return
 	var vp: Vector2 = get_viewport().get_visible_rect().size
-	_stamp_panel.position = Vector2(56, vp.y - _stamp_panel.size.y - 52)
+	if vp != _layout_vp:
+		_layout()
+	var m: Vector2 = MenuKit.hud_margin(vp)
+	_stamp_panel.position = Vector2(m.x, vp.y - _stamp_panel.size.y - m.y - 8.0)
 	var w: WeaponInstance = player.weapons.current()
 	if w != null:
 		_weapon_label.text = w.display_name()
@@ -225,6 +267,7 @@ func _process(delta: float) -> void:
 	# crosshair
 	_crosshair.spread = player.weapons.spread_deg()
 	_crosshair.fov = player.camera.fov if player.camera != null else 80.0
+	_crosshair.speed = Vector2(player.velocity.x, player.velocity.z).length()
 	_crosshair.target_alpha = 0.0 if (player.weapons.ads_t >= 0.5 or player.sprinting or player.mantling) else 1.0
 	_crosshair.visible = not player.downed
 	_scope.visible = player.weapons.scoped() and not player.downed
@@ -243,7 +286,7 @@ func _process(delta: float) -> void:
 	if GameState.god_mode:
 		lines.append("GOD MODE")
 	_debug_label.text = "\n".join(lines)
-	_debug_label.position = Vector2(16, 12) if Minimap.layout_bottom <= 0.0 else Vector2(16, Minimap.layout_bottom + 10.0)   # under the minimap
+	_debug_label.position = Vector2(m.x, 12) if Minimap.layout_bottom <= 0.0 else Vector2(m.x, Minimap.layout_bottom + 10.0)   # under the minimap
 
 
 func show_banner(text: String, hold: float = 3.0) -> void:
@@ -267,7 +310,9 @@ func _on_round_started(round_number: int, special: bool) -> void:
 		tw.tween_interval(beat - 0.22)
 	tw.tween_property(_stamp_panel, "modulate:a", 1.0, 0.08)
 	tw.parallel().tween_property(_stamp_panel, "scale", Vector2.ONE, 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
-	tw.tween_callback(func() -> void: player.camera.v_offset = 0.0)
+	tw.tween_callback(func() -> void:
+		if player != null and player.camera != null:
+			player.camera.v_offset = 0.0)
 
 
 func _on_scrip_changed(p: int, total: int, delta: int) -> void:
@@ -276,8 +321,8 @@ func _on_scrip_changed(p: int, total: int, delta: int) -> void:
 	_scrip_label.text = "ǂ %d" % total
 	if delta == 0:
 		return
-	var pop: Label = _label(_scrip_anchor, ("+%d" % delta) if delta > 0 else str(delta), 28,
-		SCRIP_COL if delta > 0 else INK.lightened(0.3), _type_font)
+	var pop: Label = _label(_scrip_anchor, ("+%d" % delta) if delta > 0 else str(delta), MenuKit.size("hud_pop"),
+		SCRIP_COL if delta > 0 else INK.lightened(0.3), MenuKit.font("mono_bold"))
 	pop.position = Vector2(-160 - randf_range(0, 60), -10)
 	var tw: Tween = pop.create_tween()
 	tw.tween_property(pop, "position:y", pop.position.y - 70.0, 0.9).set_ease(Tween.EASE_OUT)
@@ -296,10 +341,12 @@ func _on_bonus_awarded(p: int, kind: StringName, amount: int, text: String) -> v
 			return
 	var slot: int = _toasts
 	_toasts += 1
-	var t: Label = _label(_scrip_anchor, ("+%d  %s" % [amount, text]) if amount > 0 else text, 22, SCRIP_COL, _type_font)
+	var tw_w: float = float(MenuKit.hud("toast_width", 420.0))
+	var row_h: float = float(MenuKit.hud("toast_row", 28.0))
+	var t: Label = _label(_scrip_anchor, ("+%d  %s" % [amount, text]) if amount > 0 else text, MenuKit.size("hud_toast"), SCRIP_COL, MenuKit.type_font())
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	t.size = Vector2(420, 28)
-	t.position = Vector2(-430, -46 - 28 * float(slot % 5))
+	t.size = Vector2(tw_w, row_h)
+	t.position = Vector2(-tw_w - 10.0, -46 - row_h * float(slot % 5))
 	var tw: Tween = t.create_tween()
 	tw.tween_property(t, "position:y", t.position.y - 24.0, 2.2).set_ease(Tween.EASE_OUT)
 	tw.parallel().tween_property(t, "modulate:a", 0.0, 0.8).set_delay(1.6)
@@ -321,22 +368,50 @@ func _on_overlay(overlay: StringName, enabled: bool) -> void:
 			_show_zombies = enabled
 
 
-## Hip crosshair: the four ticks sit on the edge of the real shot cone (spread_deg projected through the camera
-## FOV), so bloom, walking and jumping visibly open it; it eases between sizes and fades out while sprinting / aiming.
+## The scale of canvas px to physical px under a CanvasItem (window/stretch canvas_items), for pixel-crisp lines.
+static func canvas_scale(ci: CanvasItem) -> float:
+	var s: Vector2 = ci.get_global_transform_with_canvas().get_scale()
+	var vs: Vector2 = ci.get_viewport().get_final_transform().get_scale()
+	return maxf(0.25, s.x * vs.x)
+
+
+## Snaps a canvas point to the physical pixel grid and draws a line `w` physical pixels thick along an axis, so
+## 1-2 px ticks never land between pixels (no blur under the stretch).
+static func crisp_line(ci: CanvasItem, a: Vector2, b: Vector2, w: float, col: Color, s: float) -> void:
+	var pw: float = maxf(1.0, roundf(w * s))   # thickness in physical px
+	var pa: Vector2 = (a * s).round()
+	var pb: Vector2 = (b * s).round()
+	var vertical: bool = absf(pb.x - pa.x) < absf(pb.y - pa.y)
+	var r: Rect2
+	if vertical:
+		r = Rect2(Vector2(pa.x - floorf(pw * 0.5), minf(pa.y, pb.y)), Vector2(pw, absf(pb.y - pa.y)))
+	else:
+		r = Rect2(Vector2(minf(pa.x, pb.x), pa.y - floorf(pw * 0.5)), Vector2(absf(pb.x - pa.x), pw))
+	ci.draw_rect(Rect2(r.position / s, r.size / s), col)
+
+
+## Hip crosshair: four 2 px ticks on the edge of the real shot cone (spread_deg projected through the camera FOV),
+## so bloom, walking and jumping visibly open it, plus a small spread with movement speed (ui.json "crosshair");
+## it eases between sizes and fades out while sprinting / aiming. Lines are snapped to physical pixels (crisp under
+## the canvas stretch) with a 1 px dark edge for snow.
 class Crosshair extends Control:
 	var spread: float = 2.0
 	var fov: float = 80.0
+	var speed: float = 0.0
 	var target_alpha: float = 1.0
 	var _gap: float = 12.0
 	var _alpha: float = 1.0
+	var _cfg: Dictionary = {}
 
 	func _init() -> void:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_cfg = MenuKit.cfg().get("crosshair", {})
 
 	func _process(d: float) -> void:
 		var half_h: float = get_viewport_rect().size.y * 0.5
 		var px: float = half_h * tan(deg_to_rad(clampf(spread, 0.0, 40.0))) / tan(deg_to_rad(clampf(fov, 20.0, 150.0)) * 0.5)
-		var want: float = clampf(px, 5.0, half_h * 0.6)
+		var move: float = float(_cfg.get("move_spread_px", 5.0)) * clampf(speed / maxf(0.1, float(_cfg.get("move_speed_ref", 5.2))), 0.0, 1.0)
+		var want: float = clampf(px + move, float(_cfg.get("gap_min_px", 5.0)), half_h * 0.6)
 		_gap = lerpf(_gap, want, 1.0 - exp(-(22.0 if want > _gap else 10.0) * d))
 		_alpha = move_toward(_alpha, target_alpha, d * 8.0)
 		queue_redraw()
@@ -344,14 +419,26 @@ class Crosshair extends Control:
 	func _draw() -> void:
 		if _alpha <= 0.01:
 			return
-		var c: Color = Color(0.95, 0.92, 0.85, 0.85 * _alpha)
+		var s: float = Hud.canvas_scale(self)
+		var c: Color = Color(0.95, 0.92, 0.85, float(_cfg.get("alpha", 0.9)) * _alpha)
+		var edge: Color = Color(0, 0, 0, 0.5 * _alpha)
+		var len_px: float = float(_cfg.get("len_px", 9.0))
+		var w: float = float(_cfg.get("thickness_px", 2.0))
+		var gap: float = roundf(_gap)
 		for d: Vector2 in [Vector2.UP, Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT]:
-			draw_line(d * (_gap + 1.0) + Vector2(1, 1), d * (_gap + 10.0) + Vector2(1, 1), Color(0, 0, 0, 0.35 * _alpha), 2.0)
-			draw_line(d * _gap, d * (_gap + 9.0), c, 2.0)
+			var a: Vector2 = d * gap
+			var b: Vector2 = d * (gap + len_px)
+			var side: Vector2 = Vector2(d.y, d.x).abs()   # the across direction
+			# the dark edge: the same tick one physical px wider each side, under the light one
+			Hud.crisp_line(self, a - d * (1.0 / s) - side * (1.0 / s), b + d * (1.0 / s) - side * (1.0 / s), w + 2.0 / s, edge, s)
+			Hud.crisp_line(self, a, b, w, c, s)
 
 
-## Hit confirmation: a white tick for a hit, larger amber ticks for a headshot, and a thick red X that pops
-## out for a kill (amber-edged when the kill was a headshot). Multiple hits in quick succession re-pop it.
+## Hit confirmation, three states that read apart at a glance (sizes in ui.json "hitmarker"):
+##   hit      four short white ticks;
+##   headshot longer amber ticks with a dot at the centre;
+##   kill     a thick red X that pops out (amber-edged when the kill was a headshot).
+## Multiple hits in quick succession re-pop it; a kill or headshot is never downgraded by a plain hit in the burst.
 class HitMarker extends Control:
 	const HIT: Color = Color(1.0, 1.0, 1.0, 0.92)
 	const HEAD: Color = Color(1.0, 0.72, 0.2, 0.97)
@@ -360,16 +447,22 @@ class HitMarker extends Control:
 	var _dur: float = 0.2
 	var _kill: bool = false
 	var _head: bool = false
+	var _cfg: Dictionary = {}
 
 	func _init() -> void:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_cfg = MenuKit.cfg().get("hitmarker", {})
+
+	func _state(key: String) -> Dictionary:
+		return _cfg.get(key, {"gap": 8.0, "len": 8.0, "width": 2.0, "seconds": 0.2})
 
 	func flash(killed: bool, headshot: bool) -> void:
 		# a kill or headshot is never downgraded by a plain hit arriving in the same burst
 		if _t > 0.0 and (_kill and not killed or _head and not headshot and not killed):
 			_t = maxf(_t, 0.12)
 			return
-		_dur = 0.34 if killed else (0.26 if headshot else 0.18)
+		var st: Dictionary = _state("kill" if killed else ("head" if headshot else "hit"))
+		_dur = float(st.get("seconds", 0.2))
 		_t = _dur
 		_kill = killed
 		_head = headshot
@@ -382,21 +475,25 @@ class HitMarker extends Control:
 	func _draw() -> void:
 		if _t <= 0.0:
 			return
+		var s: float = Hud.canvas_scale(self)
+		var st: Dictionary = _state("kill" if _kill else ("head" if _head else "hit"))
 		var age: float = 1.0 - _t / _dur                     # 0 -> 1
 		var fade: float = clampf(_t / (_dur * 0.45), 0.0, 1.0)
 		var pop: float = 1.0 + 0.45 * (1.0 - clampf(age / 0.18, 0.0, 1.0))   # starts big, settles fast
-		var gap: float = (8.0 if not _head else 10.0) * pop
-		var length: float = (8.0 if not _kill else 12.0) * pop
-		var width: float = 2.0 if not _kill else 3.5
+		var gap: float = float(st.get("gap", 8.0)) * pop
+		var length: float = float(st.get("len", 8.0)) * pop
+		var width: float = float(st.get("width", 2.0))
 		var c: Color = KILL if _kill else (HEAD if _head else HIT)
 		c.a *= fade
 		for d: Vector2 in [Vector2(0.7071, 0.7071), Vector2(-0.7071, 0.7071), Vector2(0.7071, -0.7071), Vector2(-0.7071, -0.7071)]:
 			var a: Vector2 = d * gap
 			var b: Vector2 = d * (gap + length)
-			draw_line(a + Vector2(1, 1), b + Vector2(1, 1), Color(0, 0, 0, 0.45 * fade), width + 1.0)
+			draw_line(a + Vector2(1, 1), b + Vector2(1, 1), Color(0, 0, 0, 0.5 * fade), width + 1.5 / s, true)
 			if _kill and _head:
-				draw_line(a, b, Color(HEAD.r, HEAD.g, HEAD.b, fade), width + 2.0)
-			draw_line(a, b, c, width)
+				draw_line(a, b, Color(HEAD.r, HEAD.g, HEAD.b, fade), width + 2.0, true)
+			draw_line(a, b, c, width, true)
+		if _head and not _kill:
+			draw_circle(Vector2.ZERO, maxf(1.5, 2.0 * pop), c)
 
 
 ## Scoped ADS (rifles with a "scope" model meta): a round field of view with an original post-and-wire

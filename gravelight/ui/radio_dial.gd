@@ -23,9 +23,7 @@ func _init() -> void:
 
 func _ready() -> void:
 	GameState.input_blocked = true
-	var font: SystemFont = SystemFont.new()
-	font.font_names = PackedStringArray(["Courier New", "Consolas"])
-	font.font_weight = 700
+	var font: Font = MenuKit.mono_font()   # the dial reads like an instrument
 	var panel: PanelContainer = PanelContainer.new()
 	panel.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	panel.position = Vector2(-330, -330)
@@ -36,12 +34,13 @@ func _ready() -> void:
 	sb.set_border_width_all(3)
 	sb.set_content_margin_all(16)
 	panel.add_theme_stylebox_override("panel", sb)
+	MenuKit.apply_theme(panel)
 	add_child(panel)
 	var v: VBoxContainer = VBoxContainer.new()
 	panel.add_child(v)
 	_label = Label.new()
 	_label.add_theme_font_override("font", font)
-	_label.add_theme_font_size_override("font_size", 44)
+	_label.add_theme_font_size_override("font_size", MenuKit.px(44))
 	_label.add_theme_color_override("font_color", Color(1.0, 0.78, 0.4))
 	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(_label)
@@ -58,13 +57,13 @@ func _ready() -> void:
 	_needle.size = Vector2(3, 18)
 	track.add_child(_needle)
 	_status = Label.new()
-	_status.add_theme_font_override("font", font)
-	_status.add_theme_font_size_override("font_size", 18)
+	_status.add_theme_font_override("font", MenuKit.type_font())
+	_status.add_theme_font_size_override("font_size", MenuKit.size("body"))
 	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(_status)
 	var hint: Label = Label.new()
-	hint.add_theme_font_override("font", font)
-	hint.add_theme_font_size_override("font_size", 16)
+	hint.add_theme_font_override("font", MenuKit.body_font())
+	hint.add_theme_font_size_override("font_size", MenuKit.size("caption"))
 	hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.65))
 	hint.text = "[A/D, wheel, stick] tune   [%s] lock   [Esc/C] leave" % GLSettings.action_label(&"interact")
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

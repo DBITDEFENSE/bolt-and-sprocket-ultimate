@@ -13,6 +13,11 @@ static var _cache: Dictionary = {}
 static func get_mat(key: String) -> Material:
 	if _cache.has(key):
 		return _cache[key]
+	# UPDATE_05 (T-088): the CC0 library stands in for the keys data/gravelight/materials.json enables.
+	var lib: Material = MaterialLibrary.for_generator(key)
+	if lib != null:
+		_cache[key] = lib
+		return lib
 	var m: Material = _build(key)
 	_cache[key] = m
 	return m

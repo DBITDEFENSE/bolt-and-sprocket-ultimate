@@ -15,14 +15,12 @@ func _init() -> void:
 
 func show_run(payload: Dictionary, next_map_name: String, map: MapRoot) -> void:
 	_map = map
-	var font: SystemFont = SystemFont.new()
-	font.font_names = PackedStringArray(["Courier New", "Consolas"])
-	font.font_weight = 700
-	var stamp: SystemFont = SystemFont.new()
-	stamp.font_names = PackedStringArray(["Stencil", "Impact", "Arial Black"])
+	var font: Font = MenuKit.type_font()
+	var stamp: Font = MenuKit.stamp_font()
 	var bg: ColorRect = ColorRect.new()
 	bg.color = Color(0.03, 0.03, 0.05, 1.0)
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	MenuKit.apply_theme(bg)
 	add_child(bg)
 	var box: VBoxContainer = VBoxContainer.new()
 	box.set_anchors_preset(Control.PRESET_CENTER)
@@ -30,11 +28,13 @@ func show_run(payload: Dictionary, next_map_name: String, map: MapRoot) -> void:
 	box.position = Vector2(-410, -280)
 	box.add_theme_constant_override("separation", 12)
 	box.modulate.a = 0.0
+	MenuKit.apply_theme(box)
 	add_child(box)
 	var title: Label = Label.new()
 	title.text = "THE CAMPAIGN CONTINUES"
 	title.add_theme_font_override("font", stamp)
-	title.add_theme_font_size_override("font_size", 60)
+	title.add_theme_font_size_override("font_size", MenuKit.size("display"))
+	MenuKit.outline(title, "menu")
 	title.add_theme_color_override("font_color", Color(0.93, 0.89, 0.8))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
@@ -44,7 +44,8 @@ func show_run(payload: Dictionary, next_map_name: String, map: MapRoot) -> void:
 	sub.text = "The squad left %s on round %d.\n%s is unlocked on your record. Its shore is not on the maps yet;\nthe Ledger will keep your places warm." % [
 		str(Campaign.display_name(StringName(str(payload.get("from", ""))))), r, next_map_name]
 	sub.add_theme_font_override("font", font)
-	sub.add_theme_font_size_override("font_size", 22)
+	sub.add_theme_font_override("font", MenuKit.body_font())
+	sub.add_theme_font_size_override("font_size", MenuKit.size("body_large"))
 	sub.add_theme_color_override("font_color", Color(0.62, 0.45, 0.85))
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(sub)
@@ -66,8 +67,8 @@ func show_run(payload: Dictionary, next_map_name: String, map: MapRoot) -> void:
 		for i: int in 2:
 			var l: Label = Label.new()
 			l.text = str(row[i])
-			l.add_theme_font_override("font", font)
-			l.add_theme_font_size_override("font_size", 24)
+			l.add_theme_font_override("font", MenuKit.mono_font() if i == 1 else font)
+			l.add_theme_font_size_override("font_size", MenuKit.size("button"))
 			l.add_theme_color_override("font_color", Color(0.93, 0.89, 0.8))
 			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if i == 1 else HORIZONTAL_ALIGNMENT_LEFT
 			l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -75,7 +76,8 @@ func show_run(payload: Dictionary, next_map_name: String, map: MapRoot) -> void:
 	var kit: Label = Label.new()
 	kit.text = _kit_summary(players)
 	kit.add_theme_font_override("font", font)
-	kit.add_theme_font_size_override("font_size", 18)
+	kit.add_theme_font_override("font", MenuKit.body_font())
+	kit.add_theme_font_size_override("font_size", MenuKit.size("body"))
 	kit.add_theme_color_override("font_color", Color(0.75, 0.72, 0.64))
 	kit.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(kit)
@@ -86,7 +88,7 @@ func show_run(payload: Dictionary, next_map_name: String, map: MapRoot) -> void:
 	var menu: Button = Button.new()
 	menu.text = "Main menu" if not Net.is_online() else ("Back to lobby" if Net.is_host() else "Leave")
 	menu.add_theme_font_override("font", font)
-	menu.add_theme_font_size_override("font_size", 26)
+	menu.add_theme_font_size_override("font_size", MenuKit.size("subheading"))
 	menu.custom_minimum_size = Vector2(260, 54)
 	menu.pressed.connect(_to_menu)
 	buttons.add_child(menu)

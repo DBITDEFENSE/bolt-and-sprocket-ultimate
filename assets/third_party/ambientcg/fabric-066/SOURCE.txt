@@ -1,0 +1,12 @@
+Title: Fabric 066
+Authors: ambientCG.com (Lennart Demes)
+Source: https://ambientcg.com/a/Fabric066
+File: https://ambientcg.com/get?file=Fabric066_1K-JPG.zip
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Fabric 066" from ambientCG.com, CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 1k (albedo, normal OpenGL +Y, ORM at 1k)
+Tile size: 0.40 m
+ambientCG id: Fabric066
+Library key: canvas
+Downloaded: 2026-10-25 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: textures/Fabric066_albedo.png, textures/Fabric066_normal.png, textures/Fabric066_orm.png

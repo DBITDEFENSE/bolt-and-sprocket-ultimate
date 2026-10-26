@@ -1,0 +1,79 @@
+{
+  "_doc": "UPDATE 05 section 6 VFX (T-095). Read by Effects (gravelight/autoload/effects.gd) and the helpers under gravelight/world/vfx/. quality: GLSettings vfx_quality low/medium/high scales particle counts, the pooled flash-light budget, casings per shot, the near snow and the dust motes. flash.classes: one muzzle flash look per weapon class (weapons.json 'class'); size scales the whole flash, length the petals along the barrel, petals the number of radial planes, core the front bloom, light/light_range the pooled OmniLight pulse, life seconds, smoke the wisp strength (0 = none), color the additive HDR tint; skip = no flash (the flamethrower has its own flame). upgraded_fringe tints a Crucible-taught weapon's petals; wonder weapons are violet Nachtglas. first_person: 'effects' = the world-space flash is drawn for the local player too and the viewmodel's own star is suppressed; 'holder' = leave the viewmodel flash to WeaponHolder. casings: the OGA cartridge set (models.json extras.cartridges.casing_for picks the node per weapon); kind_default maps the holder's casing kind (weapons.json feel.casing) to a node when the weapon is unknown. surfaces.name_hints: ordered [substring-of-collider-name, surface] pairs tried after the collider's 'surface' meta; the first match wins (gen_map00 merges the static meshes, so the colliders carry no material: names and metas are all there is). impacts: per surface the decal (an Effects.DECALS key, '' = the plain dark mark), the puff colours [start, end], the chunk mesh (size m, colour, emissive), how many chunks, sparks (bool) and whether the rise's dirt pool is used (snow/earth kind).",
+  "quality": {
+    "low": {"particles": 0.5, "flash_lights": 2, "casings": 0.5, "near_snow": 0.35, "motes": 0.35, "smoke": false, "flash_core": false},
+    "medium": {"particles": 0.75, "flash_lights": 3, "casings": 1.0, "near_snow": 0.65, "motes": 0.65, "smoke": true, "flash_core": true},
+    "high": {"particles": 1.0, "flash_lights": 4, "casings": 1.0, "near_snow": 1.0, "motes": 1.0, "smoke": true, "flash_core": true}
+  },
+  "flash": {
+    "first_person": "effects",
+    "slots": 8,
+    "frames": 3,
+    "upgraded_fringe": [1.3, 0.8, 2.2],
+    "classes": {
+      "pistol":   {"size": 0.55, "length": 0.9,  "petals": 4, "core": 0.7,  "light": 1.6, "light_range": 6.0,  "life": 0.045, "smoke": 0.5, "color": [2.0, 1.4, 0.75]},
+      "smg":      {"size": 0.6,  "length": 1.0,  "petals": 4, "core": 0.7,  "light": 1.8, "light_range": 6.5,  "life": 0.035, "smoke": 0.45, "color": [2.0, 1.35, 0.7]},
+      "assault":  {"size": 0.7,  "length": 1.25, "petals": 5, "core": 0.75, "light": 2.0, "light_range": 7.0,  "life": 0.04,  "smoke": 0.55, "color": [2.0, 1.35, 0.7]},
+      "rifle":    {"size": 0.8,  "length": 1.5,  "petals": 5, "core": 0.8,  "light": 2.6, "light_range": 8.0,  "life": 0.05,  "smoke": 0.8, "color": [2.1, 1.4, 0.7]},
+      "bolt":     {"size": 0.9,  "length": 1.9,  "petals": 6, "core": 0.85, "light": 3.0, "light_range": 9.0,  "life": 0.06,  "smoke": 1.2, "color": [2.2, 1.45, 0.7]},
+      "sniper":   {"size": 1.0,  "length": 2.1,  "petals": 6, "core": 0.9,  "light": 3.2, "light_range": 9.5,  "life": 0.065, "smoke": 1.3, "color": [2.2, 1.45, 0.7]},
+      "shotgun":  {"size": 1.3,  "length": 1.1,  "petals": 8, "core": 1.3,  "light": 3.5, "light_range": 9.0,  "life": 0.06,  "smoke": 1.6, "color": [2.2, 1.3, 0.6]},
+      "lmg":      {"size": 0.95, "length": 1.6,  "petals": 6, "core": 0.9,  "light": 2.8, "light_range": 8.5,  "life": 0.04,  "smoke": 0.7, "color": [2.1, 1.4, 0.7]},
+      "launcher": {"size": 1.6,  "length": 1.4,  "petals": 8, "core": 1.6,  "light": 4.5, "light_range": 11.0, "life": 0.09,  "smoke": 2.5, "color": [2.2, 1.2, 0.55]},
+      "wonder":   {"size": 0.9,  "length": 1.2,  "petals": 6, "core": 1.0,  "light": 3.0, "light_range": 8.0,  "life": 0.08,  "smoke": 0.3, "color": [1.3, 0.75, 2.4], "light_color": [0.72, 0.42, 1.0]},
+      "special":  {"skip": true}
+    }
+  },
+  "smoke": {"slots": 6},
+  "casings": {
+    "glb": "res://assets/third_party/opengameart/pichuliru-cartridges/model.glb",
+    "per_kind": 16,
+    "life": 2.4,
+    "bounce": 0.3,
+    "tink": "casing_tink",
+    "tink_min_gap": 0.05,
+    "kind_default": {"pistol": "9x19mm", "rifle": "7_62x54mmR", "shell": "12_Gauge"}
+  },
+  "surfaces": {
+    "name_hints": [
+      ["navblock", "metal"], ["cagepanel", "metal"], ["cage", "metal"], ["grate", "metal"], ["pipe", "metal"], ["iron", "metal"], ["wreck", "metal"], ["wing", "metal"], ["fuselage", "metal"], ["engine", "metal"], ["drum", "metal"], ["boom", "metal"], ["lift", "metal"], ["catwalk", "metal"], ["deck", "metal"], ["boxcar", "metal"], ["locomotive", "metal"], ["rail", "metal"], ["crucible", "metal"], ["machine", "metal"],
+      ["bale", "hay"], ["straw", "hay"], ["hayloft", "hay"], ["haypile", "hay"], ["hayrick", "hay"],
+      ["window", "glass"], ["glass", "glass"], ["bottle", "glass"],
+      ["curtain", "cloth"], ["bed", "cloth"], ["apron", "cloth"], ["sack", "cloth"],
+      ["roofsnow", "snow"], ["drift", "snow"], ["snow", "snow"],
+      ["hearth", "stone"], ["chimney", "stone"], ["well", "stone"], ["stone", "stone"], ["altar", "stone"], ["font", "stone"], ["salt", "stone"], ["core", "stone"], ["chapel", "stone"], ["ocpillar", "stone"], ["ocpier", "stone"], ["ocfloor", "stone"], ["ocann", "stone"], ["ocroofout", "stone"], ["occhimney", "stone"], ["cellarroof", "stone"], ["cellar", "stone"], ["slab", "stone"], ["pit", "stone"], ["foundation", "stone"], ["ramp", "stone"], ["corr", "stone"],
+      ["taproom", "plaster"], ["tapn", "plaster"], ["taps", "plaster"], ["tape", "plaster"], ["tapw", "plaster"], ["hall", "plaster"], ["upwall", "plaster"], ["guest", "plaster"], ["plaster", "plaster"], ["ceiling", "plaster"], ["landing", "plaster"],
+      ["stb", "wood"], ["stable", "wood"], ["stall", "wood"], ["loft", "wood"], ["ledge", "wood"], ["gallery", "wood"], ["plank", "wood"], ["board", "wood"], ["bar", "wood"], ["table", "wood"], ["chair", "wood"], ["bench", "wood"], ["bunk", "wood"], ["pew", "wood"], ["trunk", "wood"], ["cart", "wood"], ["crate", "wood"], ["barrel", "wood"], ["keg", "wood"], ["rack", "wood"], ["fence", "wood"], ["post", "wood"], ["woodpile", "wood"], ["woodshed", "wood"], ["door", "wood"], ["frame", "wood"], ["stair", "wood"], ["roof", "wood"], ["beam", "wood"], ["trough", "wood"], ["yard", "wood"], ["shrine", "wood"], ["pole", "wood"], ["signpost", "wood"], ["tree", "wood"]
+    ],
+    "wall_default": {"map00_crossroads": "plaster", "map01_kaltenbrunn": "stone", "map02_totenhafen": "stone"},
+    "floor_default": {"map00_crossroads": "wood", "map01_kaltenbrunn": "stone", "map02_totenhafen": "wood"},
+    "open_ground": {"map00_crossroads": "snow", "map01_kaltenbrunn": "stone", "map02_totenhafen": "snow"}
+  },
+  "impacts": {
+    "wood":    {"decal": "wood",    "puff": [[0.5, 0.36, 0.22, 0.49], [0.42, 0.32, 0.22, 0.0]], "puff_amount": 7, "chunk": {"size": [0.045, 0.006, 0.006], "color": [0.62, 0.46, 0.3], "emissive": 0.0}, "chunks": 9, "chunk_speed": [2.0, 4.5], "sparks": false, "dirt": ""},
+    "plaster": {"decal": "plaster", "puff": [[0.86, 0.84, 0.8, 0.55], [0.78, 0.76, 0.72, 0.0]], "puff_amount": 10, "chunk": {"size": [0.02, 0.02, 0.006], "color": [0.9, 0.88, 0.84], "emissive": 0.0}, "chunks": 6, "chunk_speed": [1.2, 3.0], "sparks": false, "dirt": ""},
+    "stone":   {"decal": "stone",   "puff": [[0.62, 0.6, 0.56, 0.52], [0.5, 0.49, 0.47, 0.0]], "puff_amount": 7, "chunk": {"size": [0.016, 0.012, 0.012], "color": [0.55, 0.53, 0.5], "emissive": 0.0}, "chunks": 8, "chunk_speed": [2.0, 5.0], "sparks": true, "dirt": ""},
+    "snow":    {"decal": "snow",    "puff": [[0.92, 0.94, 0.98, 0.55], [0.85, 0.88, 0.94, 0.0]], "puff_amount": 10, "chunk": null, "chunks": 0, "chunk_speed": [1.5, 3.5], "sparks": false, "dirt": "snow"},
+    "earth":   {"decal": "",        "puff": [[0.3, 0.22, 0.15, 0.52], [0.25, 0.19, 0.13, 0.0]], "puff_amount": 8, "chunk": null, "chunks": 0, "chunk_speed": [1.5, 3.5], "sparks": false, "dirt": "earth"},
+    "metal":   {"decal": "metal",   "puff": [[0.4, 0.38, 0.36, 0.29], [0.35, 0.34, 0.33, 0.0]], "puff_amount": 4, "chunk": null, "chunks": 0, "chunk_speed": [3.0, 7.0], "sparks": true, "dirt": ""},
+    "glass":   {"decal": "glass",   "puff": [[0.8, 0.9, 0.95, 0.2], [0.8, 0.9, 0.95, 0.0]], "puff_amount": 3, "chunk": {"size": [0.02, 0.003, 0.014], "color": [0.78, 0.88, 0.85], "emissive": 0.0, "alpha": 0.6}, "chunks": 10, "chunk_speed": [1.5, 3.5], "sparks": false, "dirt": ""},
+    "hay":     {"decal": "hay",     "puff": [[0.78, 0.66, 0.34, 0.52], [0.7, 0.6, 0.35, 0.0]], "puff_amount": 8, "chunk": {"size": [0.05, 0.004, 0.012], "color": [0.78, 0.66, 0.36], "emissive": 0.0}, "chunks": 8, "chunk_speed": [0.8, 2.0], "sparks": false, "dirt": ""},
+    "cloth":   {"decal": "",        "puff": [[0.45, 0.4, 0.36, 0.39], [0.4, 0.36, 0.33, 0.0]], "puff_amount": 5, "chunk": {"size": [0.02, 0.002, 0.02], "color": [0.5, 0.45, 0.4], "emissive": 0.0}, "chunks": 4, "chunk_speed": [0.6, 1.6], "sparks": false, "dirt": ""}
+  },
+  "hits": {
+    "blood_droplets": 12,
+    "mist_amount": 7,
+    "nachtglas_sparks": 14,
+    "nachtglas_color": [0.72, 0.42, 1.0],
+    "shatter_slots": 4
+  },
+  "toll_ring": {"slots": 2, "seconds": 0.55, "strength": 0.06, "color": [0.72, 0.42, 1.0]},
+  "atmosphere": {
+    "near_snow": {"amount": 140, "box": [12.0, 7.0, 12.0], "flake": 0.085, "fall": [0.9, 1.6], "drift": 0.9, "ahead": 2.5},
+    "far_snow": {"amount_mult": 0.6, "flake": 0.028, "alpha": 0.55},
+    "motes": {"per_beam": 18, "flake": 0.012, "color": [0.75, 0.8, 1.0, 0.55]},
+    "west_fog": {"position": [-10.0, 1.0, 20.0], "size": [22.0, 2.4, 90.0], "density": 0.045},
+    "breath": {"sprint_interval_mult": 0.5, "sprint_speed_scale": 1.35},
+    "flicker": {"fire_names": ["hearth", "wreck", "candle", "fire", "brazier", "lantern_burnt"], "fire_speed_mult": 1.7, "fire_amount_mult": 1.25, "gutter_threshold": 0.74, "gutter_depth": 0.55}
+  }
+}

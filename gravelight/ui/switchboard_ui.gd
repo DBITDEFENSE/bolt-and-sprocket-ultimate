@@ -16,9 +16,7 @@ func _init() -> void:
 
 func _ready() -> void:
 	GameState.input_blocked = true
-	var font: SystemFont = SystemFont.new()
-	font.font_names = PackedStringArray(["Courier New", "Consolas"])
-	font.font_weight = 700
+	var font: Font = MenuKit.mono_font()
 	var panel: PanelContainer = PanelContainer.new()
 	panel.anchor_left = 0.5
 	panel.anchor_right = 0.5
@@ -34,12 +32,13 @@ func _ready() -> void:
 	sb.set_border_width_all(3)
 	sb.set_content_margin_all(14)
 	panel.add_theme_stylebox_override("panel", sb)
+	MenuKit.apply_theme(panel)
 	add_child(panel)
 	var v: VBoxContainer = VBoxContainer.new()
 	panel.add_child(v)
-	_label = _mk(v, font, 40, Color(1.0, 0.78, 0.4))
-	_status = _mk(v, font, 18, Color(0.9, 0.9, 0.85))
-	var hint: Label = _mk(v, font, 15, Color(0.7, 0.7, 0.65))
+	_label = _mk(v, font, MenuKit.px(40), Color(1.0, 0.78, 0.4))
+	_status = _mk(v, MenuKit.type_font(), MenuKit.size("body"), Color(0.9, 0.9, 0.85))
+	var hint: Label = _mk(v, MenuKit.body_font(), MenuKit.size("caption"), Color(0.7, 0.7, 0.65))
 	hint.text = "[A/D, wheel, stick] pick a jack   [%s] plug it   [Esc/C] leave" % GLSettings.action_label(&"interact")
 	_refresh()
 

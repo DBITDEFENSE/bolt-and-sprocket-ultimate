@@ -1,0 +1,12 @@
+Title: Plastered Stone Wall
+Authors: Rob Tuytel
+Source: https://polyhaven.com/a/plastered_stone_wall
+File: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/plastered_stone_wall/plastered_stone_wall_diff_2k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/plastered_stone_wall/plastered_stone_wall_nor_gl_2k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/plastered_stone_wall/plastered_stone_wall_arm_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/plastered_stone_wall/plastered_stone_wall_disp_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Plastered Stone Wall" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 2k (albedo, normal OpenGL +Y, ORM at 1k, height)
+Tile size: 2.50 x 2.50 m
+Poly Haven id: plastered_stone_wall
+Library key: plaster
+Downloaded: 2026-10-25 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: textures/plastered_stone_wall_albedo.png, textures/plastered_stone_wall_normal.png, textures/plastered_stone_wall_orm.png, textures/plastered_stone_wall_height.png

@@ -1,0 +1,11 @@
+Title: Special Elite
+Author: Brian J. Bonislawsky (Astigmatic)
+Source: https://fonts.google.com/specimen/Special+Elite
+Author URL: https://github.com/google/fonts/tree/main/apache/specialelite
+License: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+Credit line: "Special Elite" by Astigmatic (Brian J. Bonislawsky), licensed under the Apache License 2.0.
+Format: TrueType (TTF), Regular, unmodified
+Downloaded: 2026-10-25 by Claude (T-096) from the google/fonts repository (apache/specialelite, main)
+Files used: SpecialElite-Regular.ttf
+Game use: the GRAVELIGHT typewriter face (headers, buttons, HUD prompts and labels, the Ledger's typed lines) via MenuKit.type_font()
+Notes: Google Fonts ships this family under Apache 2.0 rather than the OFL; both are allowed by the licence gate.
