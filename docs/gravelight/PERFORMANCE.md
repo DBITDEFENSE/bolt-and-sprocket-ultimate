@@ -38,3 +38,15 @@ frame of ~50 ms.
 ## Follow-ups
 - Landscape/Batches (82 casters) could get proxies too. They weren't measured because rendered runs were stopped.
 - More first-use visuals could warm up through providers: powerups, crate weapons and weapon models.
+
+## UPDATE 05 section 6, the VFX pass (T-095)
+Same scene (perf_marks, High, round 15, 3 bots + Jakub, 24 zombies, marks), RTX 5090, with three other builders'
+Godot processes sharing the machine, so single runs swing by ~10 FPS:
+- before (master 3029025): avg 51.4 FPS, 1% low 23.8, worst 46.2 ms, 4 frames over 40 ms.
+- after (T-095 pools: flashes, casings, impact debris, near snow, far snow, beam motes, west fog, noise flicker),
+  three runs: avg 55.3 / 40.7 / 52.1 FPS, 1% low 34.2 / 19.5 / 27.2, frames over 40 ms 0 / 21 / 1.
+  Median 52.1 vs 51.4 before: no drop beyond the machine's noise. Every T-095 pool is preallocated (GUT test_vfx
+  counts Effects' nodes before and after 500 shots' worth of everything) and the flash lights are capped at 4
+  (2 on Low). Particles stay CPUParticles3D for the one-shot bursts (dozens of tiny emitters with a mesh swap per
+  burst, which GPUParticles3D cannot do without a buffer rebuild); the continuous layers (near / far snow, beam
+  motes) are GPUParticles3D. `vfx_quality` low halves counts and drops the smoke wisps.
