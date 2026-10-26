@@ -1,10 +1,10 @@
 # PROGRESS
 
-RESUME HERE: UPDATE 07 (MAP 4 FERNFLUG + QA pass), 2026-10-26, branch map4-fernflug (also pushed to claude/new-session-wugi0p). Phase 0 QA DONE (docs/QA_REPORT_U07.md; T-103/T-106/T-107 merged; full GUT green). Phase 1 design DONE. Phase 2: Act I MERGED (T-104), perks+Lodestone MERGED (T-105, squash), boarding + Act II MERGED (T-108/T-109, squash). MERGE RULE: squash-merge worker branches (LFS pointers in their history cannot be pushed: lfs.github.com is blocked), resolve VO json as a key union, keep ours for the lodestone/skyhook/magpie binaries. NEXT: Act III builder (worktree .wt/u07-act3, branch u07-act3) = crash target map04c_groomlake + the rocket exfil; then Act IV; then the egg/endings/Play.bat; full soak; merge to master; morning report.
+RESUME HERE: UPDATE 07 (MAP 4 FERNFLUG + QA pass), 2026-10-26, branch map4-fernflug (also pushed to claude/new-session-wugi0p). Phase 0 DONE. Phase 1 DONE. Phase 2: Acts I–IV MERGED (T-104..T-113), perks+Lodestone (T-105), the main egg Acts I–II (T-114); the chain is map00→01→02→04a→04b→04c→04d. Running now in worktrees: u07-egg2 (egg steps Acts III–IV + routes/plans for the four acts, T-115) and u07-soak (ai_soak scenario `fernflug`, smoke_map04_full, launcher smoke, T-116). NEXT after they merge: run the fernflug soak with bots (both kinds), fix what it finds, full GUT + full smokes on a quiet tree, merge map4-fernflug into master, morning/MORNING_REPORT.md + NEEDS_DEVIN.md, push master. MERGE RULE: worker branches from the current tip merge --no-ff; VO json/intel/story_props resolve as key unions; the lodestone/skyhook/magpie binaries stay plain git files (lfs.github.com blocked).
 
 ## UPDATE 07, 2026-10-26: Map 4 Fernflug + QA pass
 
-Phase 0 QA: running (T-103 merged; Map 0/Map 1 workers out). Phase 1 design: DONE. Phase 2: Act 1 MERGED (T-104), perks+Lodestone MERGED (T-105), boarding + Act 2 MERGED (T-108/T-109), boarding, Act 2, crash, Act 3, rocket, Act 4, perks/wonder/egg/endings (pending). Finish: pending.
+Phase 0 QA: running (T-103 merged; Map 0/Map 1 workers out). Phase 1 design: DONE. Phase 2: Acts I–IV MERGED (T-104, T-108/T-109, T-110/T-111, T-112/T-113), perks+Lodestone MERGED (T-105), egg Acts I–II MERGED (T-114), boarding, Act 2, crash, Act 3, rocket, Act 4, perks/wonder/egg/endings (pending). Finish: pending.
 
 ## Overnight run, 2026-10-25 -> 26: UPDATE 05 "Look the part" (plan)
 
