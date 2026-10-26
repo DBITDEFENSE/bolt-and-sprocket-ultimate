@@ -96,7 +96,18 @@ if [ "$BLENDER_ON" = 1 ]; then
 		if [ "$ok" = 1 ]; then
 			tar -xJf "tools/dl_blender/${BLENDER_TAR}" -C tools/dl_blender --strip-components=1 && rm -f "tools/dl_blender/${BLENDER_TAR}"
 		else
-			say "WARNING: Blender download/checksum failed; asset conversion tools will not run"
+			# UPDATE 07 (T-102 (14)): the cloud network policy may block every Blender mirror. Fall back to the
+			# official `bpy` wheel from PyPI (Blender as a Python module) behind tools/blender_shim.sh, which
+			# understands `blender -b --factory-startup -P script.py -- args` (every script in tools_src/blender).
+			say "WARNING: Blender download/checksum failed; trying the bpy wheel from PyPI instead"
+			[ -x tools/venv/bin/python ] || python3 -m venv tools/venv
+			if tools/venv/bin/python -m pip install -q --disable-pip-version-check bpy \
+					&& tools/venv/bin/python -c "import bpy" 2>/dev/null; then
+				cp tools/blender_shim.sh tools/dl_blender/blender && chmod +x tools/dl_blender/blender
+				say "Blender: using the bpy wheel through tools/blender_shim.sh"
+			else
+				say "WARNING: no Blender and no bpy wheel; asset conversion tools will not run"
+			fi
 		fi
 	fi
 	[ -x tools/dl_blender/blender ] && tools/dl_blender/blender -b --factory-startup --version 2>/dev/null | head -1
