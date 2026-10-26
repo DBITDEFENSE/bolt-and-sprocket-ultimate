@@ -117,3 +117,19 @@ func test_hud_margin_respects_safe_area() -> void:
 	assert_almost_eq(m.x, maxf(float(cfgm[0]), 1920.0 * float(MenuKit.hud("safe_frac", 0.03))), 0.01)
 	var wide: Vector2 = MenuKit.hud_margin(Vector2(3440, 1440))
 	assert_gte(wide.x + 0.01, 3440.0 * float(MenuKit.hud("safe_frac", 0.03)), "ultrawide keeps the safe area")
+
+
+func test_map0_built_rect_and_open_ground() -> void:
+	if not MapData.exists(&"map00_crossroads"):
+		pass_test("no Map 0 data here")
+		return
+	var md: MapData = MapData.for_map(&"map00_crossroads")
+	var frac: float = float(MenuKit.cfg()["pause_map"].get("fit_zone_max_frac", 0.4))
+	var built: Rect2 = PauseMapView.built_rect(md, frac)
+	assert_lt(built.size.x, md.world_rect.size.x * 0.6, "the first pause-map fit leaves the Grounds out (x)")
+	assert_lt(built.size.y, md.world_rect.size.y * 0.6, "the first pause-map fit leaves the Grounds out (z)")
+	assert_true(built.has_point(Vector2(12.0, 8.0)), "the taproom is in the built rect")
+	assert_true(built.has_point(Vector2(18.0, 40.0)), "the yard is in the built rect")
+	var big: Dictionary = Minimap.big_zones(md, float(MenuKit.cfg()["minimap"].get("outdoor_zone_frac", 0.5)))
+	assert_true(big.has("GROUNDS"), "the Grounds count as open ground for the minimap zoom step")
+	assert_false(big.has("TAPROOM"), "the taproom does not")
