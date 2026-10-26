@@ -51,6 +51,7 @@ var _refill_pid: int = 0   # --refill-bot=N: the bot that runs dry in the refill
 var _upgrades: Array = []        # [pid, weapon id]
 var _ammo_pid: int = 0
 var _ammo_bought: bool = false
+var _ammo_diag: bool = false
 
 
 
@@ -237,6 +238,20 @@ func _physics_process(delta: float) -> void:
 				_note("ammo box: P%d refilled its upgraded gun after %.0fs" % [_ammo_pid, _phase_t])
 				_phase = 2 if not _crucible_only else 99
 				_phase_t = 0.0
+			elif _phase_t > 15.0 and not _ammo_diag:
+				_ammo_diag = true
+				for b: BotBrain in root.squad.brains:
+					if b.player.player_id != _ammo_pid:
+						continue
+					var w: WeaponInstance = b.player.weapons.current()
+					_note("  refill diag: P%d action %s, gun %s %d/%d, scrip %d, boxes %d, at %s" % [_ammo_pid, b.action, str(w.id), w.mag, w.reserve,
+						Economy.get_scrip(_ammo_pid), get_tree().get_nodes_in_group(&"ammo_boxes").size(), str(b.player.global_position.snapped(Vector3.ONE))])
+					var top: Array = b.scores.keys()
+					top.sort_custom(func(x: Variant, y: Variant) -> bool: return float(b.scores[x]) > float(b.scores[y]))
+					_note("    scores: %s" % ", ".join(top.slice(0, 6).map(func(k: Variant) -> String: return "%s %.2f" % [str(k), float(b.scores[k])])))
+					_note("    status: %s" % b.status_line())
+					for c: Dictionary in b.errand_candidates(b.economy.anchor(), 1.0):
+						_note("    candidate %s %.2f %s" % [str(c.get("kind", "?")), float(c.get("value", 0.0)), str(c.get("label", ""))])
 			elif _phase_t > 90.0:
 				_fail("P%d never refilled its upgraded gun at an ammo box" % _ammo_pid)
 				_explain_refill(root)   # QA Q-05: why the dry bot found no box

@@ -24,7 +24,7 @@ func _ctx(over: Dictionary = {}) -> Dictionary:
 		"pressure": 0.0, "near": 1.0, "n5": 0.0, "n10": 0.0, "known": 0.0, "sprinter_close": 0.0, "has_target": 0.0,
 		"revive_mine": 0.0, "revive_bleed": 1.0, "revive_blocked": 0.0, "revive_path": 0.2, "revive_speed": 1.0, "reviving": 0.0,
 		"cover_need": 0.0, "leader_far": 0.1, "is_leader": 0.0, "squad_far": 0.1, "break": 0.0, "round": 0.3, "loop": 1.0,
-		"hold_spot": 0.0, "repair_task": 0.0, "buy_task": 0.0, "crate_task": 0.0, "resupply_task": 0.0, "resupply_ammo": 0.9, "powerup_task": 0.0, "trap_task": 0.0,
+		"hold_spot": 0.0, "repair_task": 0.0, "buy_task": 0.0, "crate_task": 0.0, "resupply_task": 0.0, "resupply_ammo": 1.0, "powerup_task": 0.0, "trap_task": 0.0,
 		"chatter_ok": 0.0, "objective": 0.0, "order": 0.0, "escort": 0.0, "escort_far": 0.0, "stand_fast": 0.0, "ee_task": 0.0, "mark_order": 0.0, "trainer": 0.0}
 	c.merge(over, true)
 	return c
@@ -378,11 +378,16 @@ func test_the_spending_plan_names_real_perks_and_weapons() -> void:
 
 
 func test_running_dry_mid_round_goes_for_ammo() -> void:
-	var c: Dictionary = _ctx({"ammo": 0.08, "resupply_ammo": 0.08, "resupply_task": 1.0, "pressure": 0.35, "has_target": 1.0, "known": 0.3, "mag": 0.3})
+	var c: Dictionary = _ctx({"ammo": 0.08, "resupply_task": 1.0, "resupply_ammo": 0.08, "pressure": 0.35, "has_target": 1.0, "known": 0.3, "mag": 0.3})
 	assert_eq(_best(c, "fight"), "resupply", "nearly dry with zombies about but not swarmed: to the ammo box")
 	c["pressure"] = 1.0
 	assert_ne(_best(c, "fight"), "resupply", "not through a swarm")
 
+
+func test_an_empty_taught_gun_is_refilled_though_a_second_rifle_is_full() -> void:
+	# the best-long-gun ammo reads full (a second rifle), but the errand's own gun is dry: resupply still wins
+	var c: Dictionary = _ctx({"ammo": 1.0, "resupply_task": 1.0, "resupply_ammo": 0.0, "break": 1.0})
+	assert_eq(_best(c, "follow"), "resupply", "an empty taught Thompson goes to the box even with a full rifle on the back")
 
 func test_bunched_in_with_everything_dry_it_still_reloads_the_best_gun() -> void:
 	# the swap-instead-of-reload rule needs a loaded gun to swap to; the brain's _weapon_logic reloads the best

@@ -254,6 +254,11 @@ func _report_order() -> void:
 		BotMetrics.command_done(player.player_id, _order_id)
 
 
+## Ammo fraction (magazine + reserve) of the gun in `slot`; 1.0 when there is no such gun.
+func _slot_ammo(slot: int) -> float:
+	return resupply_ammo_of(player.weapons.slots, slot, 1.0)
+
+
 ## Which actions answer an order (the response time ends when one of them runs).
 static func order_response(order_id: StringName) -> PackedStringArray:
 	match order_id:
@@ -542,8 +547,9 @@ func context(now: float) -> Dictionary:
 	c["crate_task"] = float((b.get("crate", {}) as Dictionary).get("value", 0.0))
 	var rb: Dictionary = economy.best(now) if per.pressure < 0.85 and now >= _task_block_t else {}
 	c["resupply_task"] = float((rb.get("resupply", {}) as Dictionary).get("value", 0.0))
-	# QA Q-05 (UPDATE 07): the errand's own gun, not the fullest one (a full crate gun hid a dry taught gun)
-	c["resupply_ammo"] = resupply_ammo_of(player.weapons.slots, int((rb.get("resupply", {}) as Dictionary).get("slot", -1)), float(c.get("ammo", 1.0)))
+	# the ammo of the gun this errand refills (the "ammo" input is the best long gun: an empty taught Thompson
+	# next to a full second rifle read as plenty of ammo and the refill never won)
+	c["resupply_ammo"] = _slot_ammo(int((rb.get("resupply", {}) as Dictionary).get("slot", -1)))
 	c["powerup_task"] = _powerup_value(now)
 	c["trap_task"] = _trap_value()
 	c["chatter_ok"] = 1.0 if now >= _chatter_next else 0.0

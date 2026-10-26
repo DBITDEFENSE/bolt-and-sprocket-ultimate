@@ -51,7 +51,7 @@ static func check_level(row: Dictionary, scan: bool = true) -> PackedStringArray
 			out.append("%s: %s" % [id, s["error"]])
 			return out
 		var now: MapData = MapBake.build(row, s)
-		if now.poi_signature != md.poi_signature:
+		if now.poi_signature != md.poi_signature and poi_diff(md.pois, now.pois) != "":   # a real change, not a rounding edge
 			out.append("%s: POIs out of date with the scene: %s%s" % [id, poi_diff(md.pois, now.pois), fix])
 	return out
 
@@ -69,7 +69,7 @@ static func poi_diff(old: Array, new: Array) -> String:
 		if not a.has(k):
 			parts.append("+" + k)
 		elif (a[k]["pos"] as Vector3).distance_to(b[k]["pos"] as Vector3) > 0.1 or int(a[k].get("price", 0)) != int(b[k].get("price", 0)) \
-				or str(a[k].get("label", "")) != str(b[k].get("label", "")):
+				or str(a[k].get("label", "")) != str(b[k].get("label", "")) or str(a[k].get("type", "")) != str(b[k].get("type", "")):
 			parts.append("~" + k)
 	for k2: String in a.keys():
 		if not b.has(k2):

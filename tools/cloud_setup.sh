@@ -122,10 +122,12 @@ if have python3; then
 	if [ "$TTS" = 1 ]; then PY=python3 sh tools/setup_tts.sh; fi
 fi
 
-# ---------------------------------------------------------------- 5b. keep Godot out of the tool folders (UPDATE 07)
-# The bpy wheel alone is 400 MB of files Godot would otherwise scan and try to import on every run.
-for d in tools/venv tools/dl_godot tools/dl_blender tools/node_modules tools/tts; do
-	[ -d "$d" ] && touch "$d/.gdignore"
+# ---------------------------------------------------------------- 5b. keep Godot out of the tool folders
+# Godot scans the whole project folder on import: Blender's own .blend/.tex files under tools/dl_blender make the
+# headless --import give up silently (no texture imported, Map 0 never loads), and the bpy wheel (UPDATE 07) is 400 MB
+# of files it would try to import. A .gdignore makes Godot skip a folder.
+for d in tools/dl_blender tools/dl_godot tools/venv tools/tts tools/node_modules tools_src/_downloads; do
+	[ -d "$d" ] && [ ! -f "$d/.gdignore" ] && : > "$d/.gdignore"
 done
 
 # ---------------------------------------------------------------- 6. tools/local_paths.env for this machine

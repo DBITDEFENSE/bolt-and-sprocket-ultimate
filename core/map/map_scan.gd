@@ -351,7 +351,10 @@ static func poi_signature(pois: Array) -> String:
 	var rows: PackedStringArray = []
 	for p: Dictionary in pois:
 		var v: Vector3 = p["pos"]
-		rows.append("%s|%s|%.1f|%.1f|%.1f|%d|%s" % [p["id"], p["type"], v.x, v.y, v.z, int(p.get("price", 0)), p.get("label", "")])
+		# positions in whole decimetres via roundi (half away from zero on every OS): "%.1f" went through the C library,
+		# which rounds an exact half differently on Windows and Linux, so the same POIs hashed differently
+		rows.append("%s|%s|%d|%d|%d|%d|%s" % [p["id"], p["type"], roundi(v.x * 10.0), roundi(v.y * 10.0), roundi(v.z * 10.0),
+			int(p.get("price", 0)), p.get("label", "")])
 	rows.sort()
 	return "\n".join(rows).md5_text()
 

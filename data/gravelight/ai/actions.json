@@ -37,7 +37,7 @@
     "buy_task": "value of the best purchase (bot_economy.gd, 0 none)",
     "crate_task": "value of a Requisition Crate pull (0 none)",
     "resupply_task": "value of an ammo box / wall ammo for the main gun (0 none; 1 when nearly dry)",
-    "resupply_ammo": "the ammo fraction of the gun the resupply candidate refills (the fullest long gun when there is none; QA Q-05)",
+    "resupply_ammo": "ammo fraction of the gun the best resupply errand refills (1 when there is none)",
     "powerup_task": "value of a power-up it may take (etiquette, 0 none)",
     "trap_task": "value of a trap it may pull (only when ordered or the player used it, 0 none)",
     "chatter_ok": "1 when a chatter line is off cooldown",
