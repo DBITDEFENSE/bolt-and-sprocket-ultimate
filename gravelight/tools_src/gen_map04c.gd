@@ -447,7 +447,7 @@ func build_gameplay_extra() -> void:
 	_node("res://gravelight/world/workbench.gd", "Workbench", {"buildable_id": &"lodestone"}, Vector3(-60.0, LAB_Y, 114.2), 0.0)
 	# the story objects: Dee's radio on the cage's counter, the radar shack's radio, the impeller core on the salt,
 	# the hangar cradle (Hale's hatch: Peg's choice) and the rocket's cradle, the silo console, Dee's cage items
-	map_root.set("quest_files", PackedStringArray(["res://data/gravelight/quests/map04_kuendigung.json"]))   # T-115: the egg's Act III steps
+	map_root.set("quest_files", PackedStringArray(["res://data/gravelight/quests/map04_kuendigung.json", "res://data/gravelight/quests/map04c_cage.json"]))   # T-115: the egg's Act III steps, Dee's yard rule
 	_node("res://gravelight/world/map04/story_radio.gd", "DeeRadio", {"radio_id": &"dee_radio", "label": "Dee's radio",
 		"lines": PackedStringArray(["DEE_M4C_RADIO_02", "DEE_M4C_RADIO_03", "DEE_M4C_RADIO_04", "DEE_M4C_RADIO_05"]), "flag": &"dee_radio_done"}, Vector3(61.6, 0, 96.0), -90.0)
 	_node("res://gravelight/world/map04/story_radio.gd", "RadarRadio", {"radio_id": &"radar_radio", "label": "the shack's radio",

@@ -711,10 +711,15 @@
         "flag": "account_open"
       },
       "bot_task": {
-        "type": "hold_zone",
-        "zone": "E_HALL",
-        "what": "the Retention Hall while the Account opens",
-        "ping": "HOLD"
+        "type": "interact_sequence",
+        "target": {
+          "class": "BuyDoor",
+          "where": {
+            "door_id": "door_account"
+          }
+        },
+        "what": "the Account's door, once the sign goes dark",
+        "ping": "DOOR"
       },
       "debug_skip": "flag account_open"
     },

@@ -147,6 +147,8 @@ func _exfil() -> ExfilPoint:
 
 
 func _end_screen() -> Node:
+	if not is_instance_valid(_map):
+		return null
 	for c: Node in _map.get_children():
 		if c is CampaignEndScreen:
 			return c
@@ -473,8 +475,12 @@ func _run() -> void:
 	var rk: Node3D = _map.find_child("Rocket", true, false) as Node3D
 	var y0: float = rk.position.y if rk != null else 0.0
 	print("[m4c] Act IV scene present: %s" % str(Campaign.scene_exists(&"map04d_mondlicht")))
-	var ended: bool = await _until(func() -> bool: return _end_screen() != null or _map.get_parent() == null, 90.0)
-	if rk != null and is_instance_valid(rk):
+	var ended: bool = await _until(func() -> bool:
+		if not is_instance_valid(_map) or _map.get_parent() == null:   # the map was swapped out for Act IV
+			var cur: Node = get_tree().current_scene
+			return cur is MapRoot and (cur as MapRoot).map_id == &"map04d_mondlicht"
+		return _end_screen() != null, 90.0)
+	if rk != null and is_instance_valid(rk) and is_instance_valid(_map):
 		_check(rk.position.y > y0 + 1.0, "the launch fx lifted the rocket (%.0f -> %.0f)" % [y0, rk.position.y])
 	if Campaign.scene_exists(&"map04d_mondlicht"):
 		_check(ended, "Act IV loaded after the cutscene")
