@@ -73,3 +73,14 @@ edge, the front door, the pause tabs, game over, the main menu, Credits, Muster,
 and `1920x1080` into `morning/screenshots/u05/ui/{before,after}/`. `gravelight/tests/unit/test_ui_theme.gd`
 checks the fonts load (no system fallback), every scale key exists, the theme is applied at the HUD / menu /
 pause roots and no stray `SystemFont` is built in `gravelight/ui` or `ui/map`.
+
+## Ultrawide (T-100)
+- Settings > Video > **Aspect**: *Fill screen* (default, `GLSettings.values.aspect = "fill"`) sets the root window's
+  `content_scale_aspect` to `expand`, so a 21:9 (3440x1440) or 32:9 screen shows more world instead of black bars;
+  *Keep 16:9* restores the letterbox. Applied by `GLSettings.apply_aspect()` while Gravelight is active.
+- The canvas stays 1080 tall and grows wide (2580x1080 at 21:9, 3840x1080 at 32:9). Every HUD piece reads its edge
+  from `MenuKit.hud_margin(viewport)`; past `ui.json hud.max_aspect` (2.4, 21:9) the side margins grow so the HUD
+  keeps to a centred 21:9 frame on 32:9.
+- Full-screen menu pages and the pause page keep their panel in a centred 16:9 frame (`MenuKit.keep_centred`,
+  `MenuKit.frame_inset`); the main menu's column sits inside the same frame.
+- Shots: `shots_hud.tscn -- --size=3440x1440 --aspect=fill|keep` (2560x720 is a 32:9 window that fits any monitor).

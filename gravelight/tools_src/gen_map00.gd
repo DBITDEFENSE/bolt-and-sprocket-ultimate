@@ -3043,7 +3043,7 @@ func _barn_dressing(parent: Node3D) -> void:
 	tl.set_meta("keep", true)
 	g.add_child(tl)
 	# ---- the spare ladder hung flat on the north wall over the hay pile, on two iron hooks
-	var ld: Node3D = Props.group(g, "SpareLadder", Vector3(22.9, 2.6, wn + 0.08))
+	var ld: Node3D = Props.group(g, "SpareLadder", Vector3(23.45, 2.6, wn + 0.08))
 	Props.block(ld, Vector3(-1.6, 0.18, -0.03), Vector3(1.6, 0.24, 0.03), "beam")
 	Props.block(ld, Vector3(-1.6, -0.24, -0.03), Vector3(1.6, -0.18, 0.03), "beam")
 	var lr: float = -1.45
@@ -3069,10 +3069,10 @@ func _barn_dressing(parent: Node3D) -> void:
 			Props.obox(g, ls + Vector3(rng.randf_range(-0.5, 0.5), 0.014, rng.randf_range(-0.3, 0.3)),
 				Vector3(rng.randf_range(0.3, 0.8), 0.022, rng.randf_range(0.2, 0.4)), "straw_floor", Vector3(0, rng.randf_range(0, 180), 0))
 		Props.obox(g, ls + Vector3(rng.randf_range(-0.3, 0.3), 0.06, 0.0), Vector3(0.5, 0.12, 0.3), "hay", Vector3(0, rng.randf_range(0, 180), 0))
-	# ---- grain sacks along the loft's north wall and by the salt crate, two feed sacks below by the north door
+	# ---- grain sacks along the loft's north wall and by the salt crate, two feed sacks below against the stall by the north door
 	for sk: Array in [[Vector3(9.6, LOFT_TOP, 22.5), 10.0, 0.95], [Vector3(10.25, LOFT_TOP, 22.5), -20.0, 0.9], [Vector3(10.9, LOFT_TOP, 22.55), 35.0, 0.95],
 			[Vector3(9.95, LOFT_TOP + 0.36, 22.5), 80.0, 0.85], [Vector3(15.95, LOFT_TOP, 33.5), 15.0, 0.85], [Vector3(16.0, LOFT_TOP, 32.85), -40.0, 0.8],
-			[Vector3(18.1, 0.0, 22.55), 20.0, 0.9], [Vector3(18.6, 0.0, 22.6), -15.0, 0.85]]:
+			[Vector3(17.95, 0.0, 23.3), 20.0, 0.9], [Vector3(17.95, 0.0, 23.9), -15.0, 0.85]]:
 		Props.sack(g, sk[0], float(sk[1]), float(sk[2]))
 	# library props (PropScatter, no collision): crates by the loft's old crate, buckets, a spade against the wall
 	_lib("crate_wood_a", Vector3(7.75, LOFT_TOP, wn + 0.25), 0.0, Vector3.ONE, false)
