@@ -417,29 +417,31 @@ func _hold_after() -> float:
 
 
 func _build_costume() -> void:
-	# dark hair in two buns (never over the face)
-	costume("Head", [
-		sph(0.136, Vector3(0, 0.105, 0.012), HAIR, Vector3(1.0, 0.97, 1.04), true),
-		boxp(Vector3(0.25, 0.12, 0.05), Vector3(0, 0.08, 0.1), HAIR),
-		sph(0.058, Vector3(-0.095, 0.21, 0.03), HAIR),
-		sph(0.058, Vector3(0.095, 0.21, 0.03), HAIR)])
-	# the too-big navy Sunday dress, white collar, the red ribbon bow at the breastbone
-	costume("Chest", [
-		cyl(0.2, 0.218, 0.37, Vector3(0, 0.15, 0.004), NAVY, Vector3.ZERO, Vector3(1.0, 1.0, 0.72)),
-		cyl(0.08, 0.1, 0.045, Vector3(0, 0.3, 0), WHITE),
-		boxp(Vector3(0.16, 0.012, 0.06), Vector3(0, 0.29, -0.09), WHITE, Vector3(0.5, 0, 0)),
-		boxp(Vector3(0.09, 0.07, 0.02), Vector3(-0.05, 0.1, -0.165), RIBBON, Vector3(0, 0, 0.5)),
-		boxp(Vector3(0.09, 0.07, 0.02), Vector3(0.05, 0.1, -0.165), RIBBON, Vector3(0, 0, -0.5)),
-		sph(0.025, Vector3(0, 0.1, -0.17), RIBBON),
-		boxp(Vector3(0.025, 0.08, 0.012), Vector3(-0.02, 0.04, -0.165), RIBBON, Vector3(0, 0, 0.25)),
-		boxp(Vector3(0.025, 0.08, 0.012), Vector3(0.02, 0.04, -0.165), RIBBON, Vector3(0, 0, -0.25))])
-	costume("Spine", [cyl(0.2, 0.21, 0.26, Vector3(0, 0.1, 0.004), NAVY, Vector3.ZERO, Vector3(1.05, 1.0, 0.78))])
-	costume("Hips", [cyl(0.21, 0.355, 0.8, Vector3(0, -0.39, 0.0), NAVY, Vector3.ZERO, Vector3(1.06, 1.0, 0.94))])   # well below the knee
-	for side: String in ["Left", "Right"]:
-		costume(side + "UpperArm", [cyl(0.064, 0.058, 0.31, Vector3(0, -0.14, 0), NAVY)])
-		costume(side + "LowerArm", [cyl(0.056, 0.05, 0.27, Vector3(0, -0.12, 0), NAVY), cyl(0.06, 0.06, 0.03, Vector3(0, -0.25, 0), WHITE)])
-		costume(side + "LowerLeg", [cyl(0.058, 0.048, 0.36, Vector3(0, -0.19, 0), STOCKING)])
-		costume(side + "Foot", [boxp(Vector3(0.09, 0.07, 0.19), Vector3(0, -0.03, -0.035), STOCKING), boxp(Vector3(0.03, 0.02, 0.03), Vector3(0.0, 0.0, -0.06), Color(0.6, 0.55, 0.4))])
+	# T-092: the modelled doll carries her hair and clothes; the primitives stay for the legacy bodies
+	if not modelled():
+		# dark hair in two buns (never over the face)
+		costume("Head", [
+			sph(0.136, Vector3(0, 0.105, 0.012), HAIR, Vector3(1.0, 0.97, 1.04), true),
+			boxp(Vector3(0.25, 0.12, 0.05), Vector3(0, 0.08, 0.1), HAIR),
+			sph(0.058, Vector3(-0.095, 0.21, 0.03), HAIR),
+			sph(0.058, Vector3(0.095, 0.21, 0.03), HAIR)])
+		# the too-big navy Sunday dress, white collar, the red ribbon bow at the breastbone
+		costume("Chest", [
+			cyl(0.2, 0.218, 0.37, Vector3(0, 0.15, 0.004), NAVY, Vector3.ZERO, Vector3(1.0, 1.0, 0.72)),
+			cyl(0.08, 0.1, 0.045, Vector3(0, 0.3, 0), WHITE),
+			boxp(Vector3(0.16, 0.012, 0.06), Vector3(0, 0.29, -0.09), WHITE, Vector3(0.5, 0, 0)),
+			boxp(Vector3(0.09, 0.07, 0.02), Vector3(-0.05, 0.1, -0.165), RIBBON, Vector3(0, 0, 0.5)),
+			boxp(Vector3(0.09, 0.07, 0.02), Vector3(0.05, 0.1, -0.165), RIBBON, Vector3(0, 0, -0.5)),
+			sph(0.025, Vector3(0, 0.1, -0.17), RIBBON),
+			boxp(Vector3(0.025, 0.08, 0.012), Vector3(-0.02, 0.04, -0.165), RIBBON, Vector3(0, 0, 0.25)),
+			boxp(Vector3(0.025, 0.08, 0.012), Vector3(0.02, 0.04, -0.165), RIBBON, Vector3(0, 0, -0.25))])
+		costume("Spine", [cyl(0.2, 0.21, 0.26, Vector3(0, 0.1, 0.004), NAVY, Vector3.ZERO, Vector3(1.05, 1.0, 0.78))])
+		costume("Hips", [cyl(0.21, 0.355, 0.8, Vector3(0, -0.39, 0.0), NAVY, Vector3.ZERO, Vector3(1.06, 1.0, 0.94))])   # well below the knee
+		for side: String in ["Left", "Right"]:
+			costume(side + "UpperArm", [cyl(0.064, 0.058, 0.31, Vector3(0, -0.14, 0), NAVY)])
+			costume(side + "LowerArm", [cyl(0.056, 0.05, 0.27, Vector3(0, -0.12, 0), NAVY), cyl(0.06, 0.06, 0.03, Vector3(0, -0.25, 0), WHITE)])
+			costume(side + "LowerLeg", [cyl(0.058, 0.048, 0.36, Vector3(0, -0.19, 0), STOCKING)])
+			costume(side + "Foot", [boxp(Vector3(0.09, 0.07, 0.19), Vector3(0, -0.03, -0.035), STOCKING), boxp(Vector3(0.03, 0.02, 0.03), Vector3(0.0, 0.0, -0.06), Color(0.6, 0.55, 0.4))])
 	# the third arm: from under the bow, a child's small hand, palm up
 	_anchor = Node3D.new()
 	_anchor.name = "ThirdRoot"

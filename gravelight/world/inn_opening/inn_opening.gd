@@ -586,6 +586,7 @@ func _rise(id: String, s: Dictionary, pb: PatronBody) -> void:
 			return
 		z.global_position = pb.global_position
 		z.rotation.y = pb.rotation.y
+		PeopleBodies.dress_risen(z, id)   # T-092: the same person gets up
 		z.rise_from_floor(float(cfg.get("rise_getup_seconds", 2.4)), _barricade(str(row.get("rise_window", ""))))
 		risen[id] = z
 	pb.catchable = false

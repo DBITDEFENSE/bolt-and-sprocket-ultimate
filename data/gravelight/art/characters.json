@@ -29,7 +29,13 @@
     "eye_white",
     "iris",
     "lip",
-    "nail"
+    "nail",
+    "canvas",
+    "cloth3",
+    "accent",
+    "lid",
+    "brow",
+    "stitch"
   ],
   "kit_order": [
     "soldier",

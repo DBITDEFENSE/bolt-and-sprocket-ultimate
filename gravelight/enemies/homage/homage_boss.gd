@@ -17,6 +17,11 @@ extends Zombie
 ##     (Homage Names Real / In-World, the Likeness Sheet's defaults for unfilled placeholders).
 ## Bosses ignore barricades, never become crawlers, and are never culled or recycled.
 ## Co-op: the host simulates them; a client sees the generic puppet body (no boss presentation yet, HB1 notes).
+## T-092 (UPDATE_05 section 4): the body is the cousin's modelled doll (PeopleBodies "cousin_<key>": porcelain skin,
+## painted cheeks and mouth, glassy eyes, stitched seams, her period clothes as the kit) on the same skeleton, so every
+## shared clip, the HomagePoseMod layer, the look-at and the hitboxes work unchanged; `modelled()` tells the
+## costume code to skip the primitive clothes and hair the model now carries (props, arms and the Reach's stretch
+## fillers stay). A FaceDriver blinks (Alix never does) and moves the mouth on her lines.
 
 signal died_boss(boss: HomageBoss)
 
@@ -53,6 +58,7 @@ var squad_hp_mult: float = 1.0
 var squad_damage_mult: float = 1.0
 var squad_cd_mult: float = 1.0
 var squad_speed_mult: float = 1.0
+var face: FaceDriver = null
 
 
 # ================================================================== statics: data, HP, names
@@ -165,12 +171,20 @@ func spawn_homage(at: Vector3, health: float) -> void:
 	_apply_variant("villager")
 	_female = true
 	_build = "thin"
-	_body.mesh = ZombieBody.build_skinned("villager", "thin", true)
+	if modelled():
+		_body.mesh = PeopleBodies.mesh(person_id())
+		if face == null:
+			face = FaceDriver.attach(_body, person_id())
+			var slot: String = {"hammer": "cousin_1", "reach": "cousin_2", "alix": "cousin_3"}.get(boss_key, "")
+			if slot != "":
+				face.speakers = PackedStringArray([speaker_name(slot, true), speaker_name(slot, false)])
+	else:
+		_body.mesh = ZombieBody.build_skinned("villager", "thin", true)
 	for g: MeshInstance3D in _gear:
 		g.hide()
 	set_posture("none", 0.0)
 	_pivot.scale = Vector3.ONE * float(bcfg.get("height", 1.0))
-	_set_inst("inst_tint", Color(1.12, 1.1, 1.12, 1.0))   # porcelain pallor
+	_set_inst("inst_tint", Color(1.0, 1.0, 1.0, 1.0) if modelled() else Color(1.12, 1.1, 1.12, 1.0))   # porcelain pallor
 	_set_inst("inst_dirt", 0.1)
 	for k: String in ["glass", "glass_arm", "lantern"]:
 		(_kind_nodes[k] as Node3D).hide()
@@ -204,6 +218,16 @@ func spawn_homage(at: Vector3, health: float) -> void:
 	_pose.snap()
 	_tree_locomotion(true)
 	_on_spawned()
+
+
+## The people id of this cousin's modelled body (T-092).
+func person_id() -> String:
+	return "cousin_" + boss_key
+
+
+## True when the cousin wears her modelled body (a built GLB, not `-- --legacy-people`).
+func modelled() -> bool:
+	return PeopleBodies.available(person_id())
 
 
 ## Subclass hooks.

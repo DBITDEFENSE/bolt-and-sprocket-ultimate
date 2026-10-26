@@ -1,0 +1,157 @@
+{
+  "_doc": "The named people (T-092, UPDATE_05 section 4; docs/CHARACTER_PIPELINE.md section 9). Read by tools_src/blender/characters/build_people.py (which builds assets/ours/characters/people/char_person_<id>.glb from make_body + make_face + the person's kit_<kit> in make_kits.py) and by PeopleBodies (which merges a GLB into the two-surface skinned mesh with the face blend shapes). build / female / overrides pick the body (overrides: w, sh, limb, belly multiply Params; sink sets the hollow-cheek depth); face: head_shape knobs (defaults in make_body.head_shape); hair: crop / bun / braid / bob / buns2 / none; headgear is part of the kit. tone: linear skin multiplier (the living skin texture x 1.5 x tone). palette: colour per part key (linear), overriding ZombieBody.KEY_LOOK / PeopleBodies.LOOK. paint: vertex paint on the skin (stubble, lips, cheeks; the Cousins' painted doll features). height: the skeleton's uniform scale (visual only; capsules and hitboxes never move). speaker: the VO speaker code whose lines move the mouth. face_driver: blink seconds [min, max] (0 = never blinks), rest expression. look: porcelain (the Cousins' skin) or living.",
+  "version": 1,
+  "shapes": ["blink", "jaw_open", "fear", "determined", "pain", "smile"],
+  "budget": {"body_tris": 6000, "kit_tris": 4500, "parts_tris": 3000},
+  "dir": "res://assets/ours/characters/people",
+  "file": "char_person_%s.glb",
+  "people": {
+    "dutch": {
+      "group": "squad", "name": "Sgt. Walter \"Dutch\" Kowalczyk", "build": "heavy", "female": false, "kit": "dutch", "hair": "crop",
+      "overrides": {"belly": 0.25, "limb": 1.04},
+      "face": {"jaw": 0.1, "chin": 0.014, "brow": 0.012, "nose": 0.028, "nose_w": 1.15, "ears": 0.017, "head": [1.04, 1.0, 1.02]},
+      "tone": [0.6, 0.47, 0.4], "height": 1.03, "speaker": "DUT",
+      "palette": {"cloth": [0.3, 0.29, 0.19], "cloth2": [0.33, 0.3, 0.22], "canvas": [0.36, 0.33, 0.22], "helmet": [0.24, 0.26, 0.17], "glove": [0.2, 0.13, 0.08], "leather": [0.18, 0.12, 0.08], "hair": [0.16, 0.11, 0.07], "brow": [0.13, 0.09, 0.06], "iris": [0.2, 0.26, 0.32], "accent": [0.22, 0.24, 0.15]},
+      "paint": {"stubble": 0.45, "stubble_col": [0.55, 0.5, 0.5], "lips": 0.2},
+      "face_driver": {"blink": [2.5, 6.0], "rest": "neutral"}
+    },
+    "peg": {
+      "group": "squad", "name": "Lt. Margaret \"Peg\" Ashworth", "build": "medium", "female": true, "kit": "peg", "hair": "bun",
+      "overrides": {"w": 0.97},
+      "face": {"jaw": 0.24, "chin": 0.008, "brow": 0.007, "nose": 0.022, "nose_w": 0.85, "lips": 0.0065, "head": [0.98, 0.99, 0.98]},
+      "tone": [0.68, 0.53, 0.46], "height": 0.99, "speaker": "PEG",
+      "palette": {"cloth": [0.36, 0.3, 0.18], "cloth2": [0.3, 0.27, 0.18], "cloth3": [0.24, 0.21, 0.13], "hat": [0.36, 0.07, 0.08], "glove": [0.27, 0.16, 0.09], "leather": [0.22, 0.14, 0.08], "canvas": [0.34, 0.31, 0.2], "hair": [0.3, 0.17, 0.08], "brow": [0.22, 0.12, 0.06], "iris": [0.18, 0.3, 0.26], "metal": [0.34, 0.33, 0.3]},
+      "paint": {"lips": 0.45, "cheeks": 0.15},
+      "face_driver": {"blink": [2.5, 5.5], "rest": "neutral"}
+    },
+    "deacon": {
+      "group": "squad", "name": "Cpl. Elijah \"Deacon\" Brooks", "build": "medium", "female": false, "kit": "deacon", "hair": "crop",
+      "overrides": {"w": 1.03, "limb": 1.02},
+      "face": {"jaw": 0.15, "chin": 0.011, "brow": 0.01, "nose": 0.022, "nose_w": 1.35, "lips": 0.0085, "head": [1.0, 1.0, 1.0]},
+      "tone": [0.2, 0.12, 0.08], "height": 1.0, "speaker": "DEA",
+      "palette": {"cloth": [0.27, 0.28, 0.19], "cloth2": [0.22, 0.23, 0.16], "knit": [0.09, 0.09, 0.1], "leather": [0.15, 0.1, 0.07], "hair": [0.03, 0.025, 0.02], "brow": [0.03, 0.025, 0.02], "iris": [0.1, 0.06, 0.04], "white": [0.62, 0.6, 0.55], "lip": [0.16, 0.08, 0.07]},
+      "paint": {"lips": 0.25, "grease": 0.6},
+      "face_driver": {"blink": [3.0, 6.5], "rest": "neutral"}
+    },
+    "wren": {
+      "group": "squad", "name": "Zofia \"Wren\" Nowak", "build": "thin", "female": true, "kit": "wren", "hair": "bun",
+      "overrides": {"w": 0.96},
+      "face": {"jaw": 0.25, "chin": 0.009, "brow": 0.007, "nose": 0.021, "nose_w": 0.82, "lips": 0.0055, "head": [0.97, 0.98, 0.97]},
+      "tone": [0.7, 0.56, 0.49], "height": 0.96, "speaker": "WRN",
+      "palette": {"cloth": [0.72, 0.72, 0.68], "cloth2": [0.18, 0.17, 0.16], "cloth3": [0.25, 0.24, 0.23], "knit": [0.28, 0.27, 0.26], "accent": [0.4, 0.13, 0.1], "white": [0.82, 0.8, 0.76], "armband": [0.58, 0.07, 0.08], "glove": [0.2, 0.18, 0.16], "leather": [0.16, 0.11, 0.07], "hair": [0.22, 0.14, 0.07], "brow": [0.17, 0.1, 0.05], "iris": [0.28, 0.24, 0.12], "patch": [0.12, 0.1, 0.08]},
+      "paint": {"lips": 0.3, "cheeks": 0.25},
+      "face_driver": {"blink": [2.0, 5.0], "rest": "neutral"}
+    },
+    "jakub": {
+      "group": "jakub", "name": "Jakub Ostrowski", "build": "thin", "female": false, "kit": "jakub", "hair": "crop",
+      "overrides": {"sink": 0.85, "w": 0.95},
+      "face": {"jaw": 0.17, "chin": 0.012, "brow": 0.012, "nose": 0.031, "nose_w": 1.05, "lips": 0.005, "ears": 0.018, "head": [0.98, 1.02, 1.0]},
+      "tone": [0.58, 0.47, 0.42], "height": 1.0, "speaker": "JAK",
+      "palette": {"cloth": [0.3, 0.32, 0.27], "cloth2": [0.3, 0.22, 0.15], "cloth3": [0.4, 0.36, 0.3], "hat": [0.23, 0.21, 0.18], "leather": [0.16, 0.11, 0.07], "metal": [0.3, 0.3, 0.3], "hair": [0.38, 0.37, 0.36], "brow": [0.3, 0.29, 0.28], "iris": [0.26, 0.22, 0.14]},
+      "paint": {"stubble": 0.8, "stubble_col": [0.72, 0.7, 0.7], "lips": 0.12, "hollow": 0.3},
+      "face_driver": {"blink": [3.0, 7.0], "rest": "neutral"}
+    },
+    "rother": {
+      "group": "patron", "name": "Ewald Rother", "build": "heavy", "female": false, "kit": "rother", "hair": "crop",
+      "overrides": {"belly": 0.8},
+      "face": {"jaw": 0.12, "chin": 0.01, "brow": 0.011, "nose": 0.03, "nose_w": 1.25, "lips": 0.005, "ears": 0.019, "head": [1.04, 0.99, 1.02]},
+      "tone": [0.66, 0.48, 0.41], "height": 0.99, "speaker": "ROT", "moustache": "walrus",
+      "palette": {"cloth": [0.27, 0.22, 0.16], "cloth2": [0.22, 0.2, 0.18], "knit": [0.34, 0.28, 0.2], "hat": [0.2, 0.18, 0.15], "leather": [0.14, 0.1, 0.07], "hair": [0.55, 0.54, 0.52], "brow": [0.45, 0.44, 0.42], "iris": [0.22, 0.26, 0.3]},
+      "paint": {"cheeks": 0.35, "lips": 0.15, "nose_red": 0.4},
+      "face_driver": {"blink": [2.5, 6.0], "rest": "neutral"}
+    },
+    "kubiak": {
+      "group": "patron", "name": "Franz Kubiak", "build": "medium", "female": false, "kit": "kubiak", "hair": "crop",
+      "face": {"jaw": 0.16, "chin": 0.011, "brow": 0.01, "nose": 0.027, "head": [1.0, 1.01, 1.0]},
+      "tone": [0.64, 0.5, 0.42], "height": 1.0, "speaker": "KUB",
+      "palette": {"cloth": [0.32, 0.26, 0.19], "cloth2": [0.24, 0.22, 0.2], "cloth3": [0.2, 0.18, 0.17], "leather": [0.14, 0.1, 0.07], "hair": [0.1, 0.08, 0.06], "brow": [0.08, 0.06, 0.05], "iris": [0.18, 0.12, 0.07]},
+      "paint": {"stubble": 0.35, "stubble_col": [0.5, 0.45, 0.42], "lips": 0.15},
+      "face_driver": {"blink": [2.5, 6.0], "rest": "neutral"}
+    },
+    "pohl": {
+      "group": "patron", "name": "Agnes Pohl", "build": "thin", "female": true, "kit": "pohl", "hair": "bun",
+      "overrides": {"sink": 0.6},
+      "face": {"jaw": 0.2, "chin": 0.009, "brow": 0.008, "nose": 0.026, "nose_w": 0.9, "lips": 0.004, "head": [0.97, 0.98, 0.98]},
+      "tone": [0.68, 0.55, 0.5], "height": 0.96, "speaker": "POH",
+      "palette": {"cloth": [0.12, 0.13, 0.17], "cloth2": [0.1, 0.1, 0.11], "hat": [0.32, 0.3, 0.28], "knit": [0.34, 0.14, 0.12], "leather": [0.08, 0.07, 0.07], "hair": [0.5, 0.48, 0.46], "brow": [0.42, 0.4, 0.38], "iris": [0.2, 0.24, 0.26]},
+      "paint": {"lips": 0.1, "cheeks": 0.1},
+      "face_driver": {"blink": [2.0, 5.0], "rest": "neutral"}
+    },
+    "trudi": {
+      "group": "patron", "name": "Trudi Hanke", "build": "medium", "female": true, "kit": "trudi", "hair": "bun",
+      "face": {"jaw": 0.25, "chin": 0.008, "brow": 0.006, "nose": 0.021, "nose_w": 0.85, "lips": 0.0065, "head": [0.97, 0.98, 0.97]},
+      "tone": [0.7, 0.55, 0.47], "height": 0.97, "speaker": "TRU",
+      "palette": {"cloth": [0.6, 0.55, 0.47], "cloth2": [0.3, 0.12, 0.1], "cloth3": [0.16, 0.14, 0.15], "white": [0.8, 0.78, 0.72], "leather": [0.12, 0.09, 0.07], "hair": [0.45, 0.3, 0.14], "brow": [0.35, 0.22, 0.1], "iris": [0.2, 0.3, 0.38]},
+      "paint": {"lips": 0.4, "cheeks": 0.35},
+      "face_driver": {"blink": [2.0, 5.0], "rest": "neutral"}
+    },
+    "sobotta": {
+      "group": "patron", "name": "Willi Sobotta", "build": "medium", "female": false, "kit": "sobotta", "hair": "crop",
+      "face": {"jaw": 0.18, "chin": 0.01, "brow": 0.009, "nose": 0.025, "head": [0.99, 1.0, 1.0]},
+      "tone": [0.64, 0.5, 0.43], "height": 1.01, "speaker": "SOB",
+      "palette": {"cloth": [0.3, 0.32, 0.27], "cloth2": [0.26, 0.27, 0.23], "hat": [0.3, 0.32, 0.27], "leather": [0.08, 0.07, 0.06], "hair": [0.32, 0.22, 0.12], "brow": [0.25, 0.17, 0.09], "iris": [0.3, 0.34, 0.38]},
+      "paint": {"lips": 0.15, "cheeks": 0.2},
+      "face_driver": {"blink": [2.0, 5.0], "rest": "neutral"}
+    },
+    "wiesner": {
+      "group": "survivor", "name": "Konrad Wiesner", "build": "medium", "female": false, "kit": "wiesner", "hair": "crop",
+      "overrides": {"belly": 0.7, "w": 1.04},
+      "face": {"jaw": 0.14, "chin": 0.01, "brow": 0.011, "nose": 0.028, "nose_w": 1.1, "lips": 0.005, "ears": 0.018, "head": [1.02, 1.0, 1.01]},
+      "tone": [0.63, 0.49, 0.42], "height": 1.0, "speaker": "WIE", "moustache": "brush",
+      "palette": {"cloth": [0.12, 0.14, 0.2], "cloth2": [0.12, 0.12, 0.14], "hat": [0.11, 0.12, 0.17], "knit": [0.24, 0.22, 0.19], "brass": [0.55, 0.45, 0.22], "leather": [0.08, 0.07, 0.06], "hair": [0.42, 0.4, 0.38], "brow": [0.36, 0.34, 0.32], "iris": [0.22, 0.2, 0.14]},
+      "paint": {"cheeks": 0.25, "lips": 0.12, "stubble": 0.2, "stubble_col": [0.6, 0.57, 0.55]},
+      "face_driver": {"blink": [2.5, 6.0], "rest": "neutral"}
+    },
+    "brandt": {
+      "group": "survivor", "name": "Hedwig Brandt", "build": "thin", "female": true, "kit": "brandt", "hair": "bun",
+      "face": {"jaw": 0.22, "chin": 0.009, "brow": 0.008, "nose": 0.024, "nose_w": 0.88, "lips": 0.0055, "head": [0.98, 1.0, 0.98]},
+      "tone": [0.69, 0.55, 0.48], "height": 0.98, "speaker": "BRA",
+      "palette": {"cloth": [0.3, 0.14, 0.15], "cloth2": [0.17, 0.17, 0.19], "knit": [0.17, 0.24, 0.32], "white": [0.78, 0.76, 0.7], "leather": [0.1, 0.08, 0.07], "hair": [0.28, 0.19, 0.1], "brow": [0.22, 0.14, 0.07], "iris": [0.18, 0.22, 0.14]},
+      "paint": {"lips": 0.3, "cheeks": 0.2},
+      "face_driver": {"blink": [2.0, 5.0], "rest": "neutral"}
+    },
+    "kroll": {
+      "group": "survivor", "name": "Ida Kroll", "build": "thin", "female": true, "kit": "kroll", "hair": "bun",
+      "face": {"jaw": 0.26, "chin": 0.007, "brow": 0.006, "nose": 0.02, "nose_w": 0.8, "lips": 0.006, "head": [0.96, 0.98, 0.96]},
+      "tone": [0.72, 0.57, 0.49], "height": 0.95, "speaker": "KRO",
+      "palette": {"cloth": [0.2, 0.23, 0.3], "cloth2": [0.15, 0.16, 0.2], "hat": [0.5, 0.36, 0.2], "leather": [0.2, 0.13, 0.08], "brass": [0.55, 0.45, 0.22], "hair": [0.55, 0.4, 0.2], "brow": [0.45, 0.3, 0.14], "iris": [0.2, 0.3, 0.36]},
+      "paint": {"lips": 0.35, "cheeks": 0.4, "freckles": 0.5},
+      "face_driver": {"blink": [1.8, 4.5], "rest": "neutral"}
+    },
+    "cousin_hammer": {
+      "group": "cousin", "name": "The Hammer (Cousin 1)", "build": "medium", "female": true, "kit": "cousin_hammer", "hair": "braid",
+      "overrides": {"w": 0.98},
+      "face": {"jaw": 0.25, "chin": 0.008, "brow": 0.006, "nose": 0.018, "nose_w": 0.78, "lips": 0.005, "head": [1.0, 1.0, 0.98]},
+      "tone": [0.98, 0.9, 0.86], "height": 1.0, "look": "porcelain", "speaker": "hammer",
+      "palette": {"cloth": [0.22, 0.2, 0.18], "cloth2": [0.17, 0.16, 0.17], "cloth3": [0.28, 0.26, 0.23], "knit": [0.55, 0.08, 0.08], "white": [0.5, 0.5, 0.51], "leather": [0.07, 0.06, 0.06], "metal": [0.2, 0.2, 0.22], "hair": [0.72, 0.56, 0.28], "brow": [0.5, 0.36, 0.18], "iris": [0.32, 0.36, 0.46], "stitch": [0.18, 0.1, 0.12]},
+      "paint": {"doll": 1.0},
+      "face_driver": {"blink": [7.0, 14.0], "rest": "neutral"}
+    },
+    "cousin_reach": {
+      "group": "cousin", "name": "The Reach (Cousin 2)", "build": "thin", "female": true, "kit": "cousin_reach", "hair": "bob",
+      "overrides": {"w": 0.93},
+      "face": {"jaw": 0.27, "chin": 0.007, "brow": 0.006, "nose": 0.017, "nose_w": 0.76, "lips": 0.005, "head": [0.98, 0.99, 0.97]},
+      "tone": [0.96, 0.9, 0.88], "height": 1.0, "look": "porcelain", "speaker": "reach",
+      "palette": {"cloth": [0.72, 0.68, 0.6], "cloth2": [0.62, 0.58, 0.52], "knit": [0.4, 0.32, 0.24], "hair": [0.24, 0.14, 0.07], "brow": [0.18, 0.1, 0.05], "iris": [0.3, 0.22, 0.14], "metal": [0.4, 0.35, 0.28], "stitch": [0.18, 0.1, 0.12]},
+      "paint": {"doll": 1.0},
+      "face_driver": {"blink": [8.0, 16.0], "rest": "neutral"}
+    },
+    "cousin_alix": {
+      "group": "cousin", "name": "Alix, the Third Hand (Cousin 3)", "build": "thin", "female": true, "kit": "cousin_alix", "hair": "buns2",
+      "overrides": {"w": 0.94},
+      "face": {"jaw": 0.26, "chin": 0.007, "brow": 0.006, "nose": 0.017, "nose_w": 0.76, "lips": 0.005, "head": [0.98, 1.0, 0.97]},
+      "tone": [0.95, 0.9, 0.9], "height": 1.0, "look": "porcelain", "speaker": "alix",
+      "palette": {"cloth": [0.1, 0.12, 0.22], "cloth2": [0.08, 0.09, 0.16], "white": [0.82, 0.8, 0.76], "accent": [0.6, 0.04, 0.07], "cloth3": [0.05, 0.05, 0.06], "leather": [0.06, 0.05, 0.05], "hair": [0.05, 0.04, 0.04], "brow": [0.05, 0.04, 0.04], "iris": [0.16, 0.12, 0.2], "stitch": [0.18, 0.1, 0.12]},
+      "paint": {"doll": 1.0},
+      "face_driver": {"blink": [0.0, 0.0], "rest": "neutral"}
+    }
+  },
+  "expressions": {
+    "_doc": "FaceDriver: the shape weights an expression holds (state -> expression: downed = pain, low health = fear, firing = determined, calm idle = rest). Lip flap drives jaw_open on top.",
+    "neutral": {},
+    "fear": {"fear": 1.0, "jaw_open": 0.15},
+    "determined": {"determined": 1.0},
+    "pain": {"pain": 1.0, "jaw_open": 0.1},
+    "smile": {"smile": 0.7}
+  }
+}

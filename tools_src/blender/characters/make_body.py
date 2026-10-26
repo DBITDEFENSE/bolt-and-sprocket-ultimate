@@ -327,14 +327,18 @@ HEAD_C = np.array([0.0, 1.705, -0.004])
 def head_shape(P, u):
     """Sculpts unit directions u into the head (local to HEAD_C). Front is -Z."""
     sink = P.sink
-    ax, ay, az = 0.081, 0.114, 0.099
+    # T-092: a named person's face knobs (data/gravelight/art/people.json "face"); the defaults are the zombie
+    # bodies' constants, so a Params without `face` builds exactly what it did before
+    F = getattr(P, "face", None) or {}
+    hs = F.get("head", (1.0, 1.0, 1.0))
+    ax, ay, az = 0.081 * hs[0], 0.114 * hs[1], 0.099 * hs[2]
     p = u * np.array([ax, ay, az])
     x, y, z = p[:, 0], p[:, 1], p[:, 2]
     front = C.smoothstep(0.0, -0.05, z)
     # cranium a touch wider at the back-top, the face narrower toward the jaw
     p[:, 0] *= 1.0 + 0.06 * C.smoothstep(-0.02, 0.06, y) * C.smoothstep(-0.04, 0.05, z)
     jaw = C.smoothstep(-0.015, -0.105, y)
-    p[:, 0] *= 1.0 - 0.20 * jaw * (0.6 + 0.4 * front)
+    p[:, 0] *= 1.0 - F.get("jaw", 0.20) * jaw * (0.6 + 0.4 * front)
     # back of the skull tucks in toward the neck
     p[:, 2] = np.where(z > 0, z * (1.0 - 0.42 * C.smoothstep(-0.03, -0.115, y)), p[:, 2])
     # the face plane: flatter front, forward jaw / chin
@@ -342,9 +346,9 @@ def head_shape(P, u):
     x, y, z = p[:, 0], p[:, 1], p[:, 2]
     fr = C.smoothstep(-0.02, -0.07, z)
     # chin
-    p[:, 2] -= fr * 0.010 * C.gauss(x ** 2 + (y + 0.10) ** 2, 0.025)
+    p[:, 2] -= fr * F.get("chin", 0.010) * C.gauss(x ** 2 + (y + 0.10) ** 2, 0.025)
     # brow ridge
-    p[:, 2] -= fr * 0.009 * C.gauss((y - 0.032) ** 2, 0.011) * C.gauss(x ** 2, 0.05)
+    p[:, 2] -= fr * F.get("brow", 0.009) * C.gauss((y - 0.032) ** 2, 0.011) * C.gauss(x ** 2, 0.05)
     for sx in (-1.0, 1.0):
         # eye sockets: deep for the dead, shallow for the living
         d2 = ((x - sx * 0.031) / 1.25) ** 2 + (y - 0.010) ** 2
@@ -356,16 +360,16 @@ def head_shape(P, u):
         p[:, 0] -= sx * 0.004 * sink * C.gauss((y - 0.03) ** 2 + (z + 0.04) ** 2, 0.025) * (np.sign(x) == sx)
         # ears
         e2 = (y + 0.004) ** 2 / 1.6 + (z - 0.008) ** 2
-        p[:, 0] += sx * (np.sign(x) == sx) * 0.016 * C.gauss(e2, 0.017)
+        p[:, 0] += sx * (np.sign(x) == sx) * F.get("ears", 0.016) * C.gauss(e2, 0.017)
     x, y, z = p[:, 0], p[:, 1], p[:, 2]
     # nose: bridge to tip
     prof = C.smoothstep(0.022, -0.002, y) * C.smoothstep(-0.05, -0.028, y)
-    width = 0.009 + 0.011 * C.smoothstep(0.0, -0.035, y)
-    p[:, 2] -= fr * 0.026 * prof * np.exp(-(x ** 2) / (width ** 2))
+    width = (0.009 + 0.011 * C.smoothstep(0.0, -0.035, y)) * F.get("nose_w", 1.0)
+    p[:, 2] -= fr * F.get("nose", 0.026) * prof * np.exp(-(x ** 2) / (width ** 2))
     # nostrils / philtrum groove
     p[:, 2] += fr * 0.003 * C.gauss(x ** 2 + (y + 0.046) ** 2, 0.006)
     # mouth: lips forward, the slit in between (slack for the dead: the jaw bone opens it further)
-    p[:, 2] -= fr * 0.006 * C.gauss((y + 0.060) ** 2, 0.010) * C.gauss(x ** 2, 0.024)
+    p[:, 2] -= fr * F.get("lips", 0.006) * C.gauss((y + 0.060) ** 2, 0.010) * C.gauss(x ** 2, 0.024)
     p[:, 2] += fr * (0.006 + 0.004 * sink) * C.gauss((y + 0.061) ** 2, 0.0035) * C.gauss(x ** 2, 0.022)
     return p
 
@@ -381,6 +385,14 @@ def head_mesh(P):
         if not slit:
             keep.append(f)
     faces = keep
+    # T-092: a person's mouth closes (people.json face "mouth_close" 0..1): the lips are drawn together around the
+    # slit without changing the topology (the shared UV layout depends on it); the dead keep their slack one
+    mc = float((getattr(P, "face", None) or {}).get("mouth_close", 0.0))
+    if mc > 0.0:
+        loc = loc.copy()
+        dy = loc[:, 1] + 0.061
+        band = C.smoothstep(0.016, 0.004, np.abs(dy)) * C.smoothstep(0.03, 0.018, np.abs(loc[:, 0])) * C.smoothstep(-0.03, -0.05, loc[:, 2])
+        loc[:, 1] -= dy * mc * 0.8 * band
     v = loc + HEAD_C
     # weights: Head; the jaw (below the mouth line, in front of the ears) on Jaw; the neck stub on Neck
     y = loc[:, 1]

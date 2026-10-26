@@ -62,6 +62,13 @@ const KEY_LOOK: Dictionary = {
 	"iris": [Color(0.16, 0.12, 0.09), 0.2, 0.0, 0.0],
 	"lip": [Color(0.4, 0.28, 0.3), 0.5, 0.0, 0.0],
 	"nail": [Color(0.46, 0.42, 0.4), 0.4, 0.0, 0.0],
+	# T-092: the named people's keys (PeopleBodies colours them per person; these are the defaults)
+	"canvas": [Color(0.36, 0.33, 0.22), 0.95, 0.0, 0.0],
+	"cloth3": [Color(0.22, 0.21, 0.2), 0.95, 0.0, 0.0],
+	"accent": [Color(0.4, 0.15, 0.12), 0.9, 0.0, 0.0],
+	"lid": [Color(0.55, 0.45, 0.4), 0.6, 0.0, 0.0],
+	"brow": [Color(0.1, 0.08, 0.07), 0.9, 0.0, 0.0],
+	"stitch": [Color(0.18, 0.1, 0.12), 0.9, 0.0, 0.0],
 }
 ## Kit cloth colours [cloth, cloth2].
 const KIT_CLOTH: Dictionary = {
