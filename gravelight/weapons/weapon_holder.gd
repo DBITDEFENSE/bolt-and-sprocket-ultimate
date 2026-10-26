@@ -1528,6 +1528,7 @@ func _rebuild_gun() -> void:
 		_flame = null
 		return
 	var camo: StringName = &"" if w.upgraded else ProfileSave.camo_for(w.base_id())
+	WeaponShader._tick_frost()   # T-089: the map's rime on every gun (model_fit frost_by_map)
 	_model = WeaponModels.build(w.base_id(), w.upgraded, camo, WeaponKitModels.look_of(w))
 	_gun.add_child(_model)
 	for part: String in ["Mag", "Bolt", "Slide", "Pump", "Cover", "Barrels", "Crank", "Rocket", "Valve"]:
