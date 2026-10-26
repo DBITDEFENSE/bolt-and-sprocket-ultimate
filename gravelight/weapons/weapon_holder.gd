@@ -1099,7 +1099,7 @@ func _trace(origin: Vector3, dir: Vector3, w: WeaponInstance, hits: Dictionary) 
 				if fx != null:
 					fx.nachtglas_spark(pos, -dir)       # the crystal plates throw glints, not blood
 			else:
-				Effects.blood(pos, -dir)
+				Effects.zombie_hit(pos, -dir, w.id, w.upgraded)   # T-095: blood + the Nachtglas spark on a taught gun
 				if fx != null:
 					fx.blood_mist(pos, -dir)
 			for rid: RID in z.hitbox_rids():
@@ -1761,7 +1761,7 @@ func _eject_casing() -> void:
 	var up: Vector3 = gb.y.normalized()
 	var back: Vector3 = gb.z.normalized()
 	var vel: Vector3 = right * randf_range(1.6, 2.6) + up * randf_range(1.3, 2.2) + back * randf_range(-0.2, 0.5) + player.velocity
-	fx.eject(kind, from, vel, Basis(right, up, back).orthonormalized() * Basis(Vector3.UP, PI * 0.5))
+	fx.eject(kind, from, vel, Basis(right, up, back).orthonormalized() * Basis(Vector3.UP, PI * 0.5), current().id)
 
 
 ## Drops a copy of a part (empty mag, en-bloc clip, shells) that falls to the floor and disappears.
@@ -1922,7 +1922,9 @@ func _on_shot_fx(seconds: float) -> void:
 		return
 	var k: float = float(_flash_mesh.get_meta("size", 1.0)) * randf_range(0.8, 1.15)
 	_flash_mesh.transform = Transform3D(Basis(Vector3.BACK, randf() * TAU).scaled(Vector3(k, k, k * randf_range(0.75, 1.3))), Vector3(0, 0, -0.015))
-	_flash_mesh.show()
+	# T-095: Effects draws the first-person flash when vfx.json flash.first_person is "effects"; the holder's own star only otherwise
+	if str((Effects.vfx.get("flash", {}) as Dictionary).get("first_person", "effects")) != "effects":
+		_flash_mesh.show()
 	if _model != null and _model.has_node("KitFlash"):
 		M1911KitModels.pulse_flash(_model.get_node("KitFlash") as Node3D, seconds)
 
