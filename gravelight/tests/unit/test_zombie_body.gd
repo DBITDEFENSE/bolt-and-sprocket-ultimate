@@ -178,3 +178,11 @@ func test_living_set_for_the_people_builder() -> void:
 	assert_eq(glow, 0, "no glowing eyes")
 	assert_same(ZombieBody.build_living("villager", "medium", true), m, "cached")
 	assert_eq(ZombieBody.build_living("", "thin", false).get_surface_count(), 2, "an undressed body still has the face parts surface")
+
+
+func test_crawl_pose_lies_on_the_floor() -> void:
+	# T-091: the crawl pose pivoted at the feet and sank its hips 0.38 m under the floor (invisible crawlers)
+	var p: Dictionary = ZombieClips._crawl_pose("drag", 0.0, false)
+	var hips_y: float = ZombieRig.rest_offset("Hips").y + (p["hips_pos"] as Vector3).y
+	assert_between(hips_y, 0.08, 0.3, "crawler hips just above the floor (%.2f m)" % hips_y)
+	assert_lt(absf((p["hips_pos"] as Vector3).z), 0.5, "and over the body's own position")

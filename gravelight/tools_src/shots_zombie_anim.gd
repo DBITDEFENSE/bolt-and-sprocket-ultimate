@@ -489,7 +489,7 @@ func _scene_lineup() -> void:
 		_cam.fov = 58
 		for i: int in row.size():
 			var c: Array = row[i]
-			var x: float = (float(row.size() - 1) * 0.5 - float(i)) * 0.78
+			var x: float = (float(row.size() - 1) * 0.5 - float(i)) * 0.78 + 0.33
 			var z: Zombie = _stand({"enemy_id": "ganger", "tier": "walk", "health": 300, "variant": c[0], "female": c[2]}, Vector3(x, 0, 0.0))
 			z.debug_set_body(c[0], c[1], c[2])
 		await get_tree().create_timer(1.2).timeout

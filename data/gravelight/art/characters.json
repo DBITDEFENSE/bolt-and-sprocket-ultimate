@@ -69,7 +69,7 @@
     "body_tris": 7200
   },
   "lod": {
-    "_doc": "mode auto: Godot's mesh LODs (ImporterMesh.generate_lods on the merged two-surface mesh, picked per screen size, no extra nodes or draw calls); scripted: the GLB's Body_LOD1 / Body_LOD2 swapped by visibility ranges. The bench picked auto (docs/gravelight/PERFORMANCE.md, T-091).",
+    "_doc": "mode auto (default): Godot's mesh LODs (ImporterMesh.generate_lods on the merged two-surface mesh, picked per screen size, no extra nodes or draw calls); none: no LODs (the bench A/B, `-- --body-lod=none`). The GLBs also carry scripted Body_LOD1 / Body_LOD2 (lod1_ratio / lod2_ratio) for tools; they are not swapped at runtime (docs/gravelight/PERFORMANCE.md, T-091).",
     "mode": "auto",
     "lod1_ratio": 0.5,
     "lod2_ratio": 0.25,
