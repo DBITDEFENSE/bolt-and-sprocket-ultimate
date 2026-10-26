@@ -43,6 +43,7 @@ Every issue below has a number (Q-NN), a rank, the evidence, and its fix (with t
 | Q-10 | Totenhafen | **The player-bot's wall-buy errands time out** at the frag (−0.2, 1.5, 26) and the Trench Gun (−0.2, 1.5, 22), both on the quay/cannery wall: the agent walks to them and never gets the prompt. | playtest r15 bots3 seed 7: `ISSUE: errand timed out: gun frag …`, `… gun trench_gun …`. | **In progress** (worker u07-qa-map02): reach check vs the wall thickness / closet islands; test that every map02 wall-buy is within interact reach of the open side's navmesh. |
 | Q-11 | Totenhafen | **The AI soak and bot mode cannot run on Totenhafen**: `ai_soak.gd` knows only map00/map01, there is no `routes_map02.json` (so bots have no training routes there) and no map02 plan in `player_bot.json`. The bots on Totenhafen train "a ring of reachable points around the spawn" and nothing else. | `tools_src/ai_soak.gd` `const MAPS`; `data/gravelight/ai/` listing; the playtest's bot block: Peg/Deacon/Wren ended at round 14 with 25–41k Scrip unspent, doors 0, upgrades 0, all three down within 2 m of (1, 0, 29). | **In progress** (worker u07-qa-map02): `--scenario=totenhafen`, `routes_map02.json`, a map02 plan, a test that every route point of every map is on its navmesh. |
 | Q-13 | Kaltenbrunn | **The `kaltenbrunn` soak scenario cannot measure the bots on Map 1**: its scripted human stands in the Minehead Yard on the baseline kit and never opens a door, and the bots never lead while a human is up, so the squad plays round 9 in the spawn yard with 0 Scrip spent and wipes there. The wipe itself is also evidence: all four down inside 10 s (Dutch t=674.5, Wren 679.3, Deacon 680.1, Peg 684.3 at x 3–14, z 13–24) with 4 revives pending and 0 attempted. | `logs/ai_runs/20261026_101033_kaltenbrunn_r1_s21.csv`: end=wipe round=9 in 11.4 min, bot kills 229, downs 3 (0.33/round) + 1 human, revives 0/0 judged (pending 4), scrip spent 0, empty-mag 44 (63.9 s), stuck 0. | Re-measured with `--open-doors=all --power` and with `--scenario=bots3 --map=map01` (bots lead themselves) in §6; the revive finding is judged on those runs. The scenario's doc gets the caveat. |
+| Q-14 | Crossroads Inn | **Bots get stuck on top of the taproom's centre table** at (16.5, 0.8, 11.5): a bot vaults onto the table (U02 §1 mantle) and the stuck detector then fires there over and over (37 of the run's 42 stuck events, 19.8 s), because the table top is not navmesh and the brain's unstick walks it round the table's edge. | `logs/ai_runs/20261026_101033_bots3_r1_s11.csv` stuck events grouped by place: 37 × (16.5, 0.8, 11.5) (the "map" story prop sits on that table at y 0.752, `gen_map00.gd:3109`); 6 + 3 × (23.6, 3.5, 31.7) (the stable loft). | **To fix** (worker u07-qa-map00): no bot vault onto furniture tops (the mantle target must be navmesh), or a nav-blocked table footprint plus a "step down" unstick; test: a bot placed on the table reaches the floor navmesh within 2 s. |
 | Q-12 | Totenhafen | **The squad wipes together at the quay around round 14 with three bots and a weak human**: all three bots went down within 2 m of each other at (1, 0, 29) in the same round with 0 bot-to-bot revives (1 revive of the human all match). | playtest DOWN block r14; `bots revived each other 0 times`. | Evidence for the AI pass (§6): re-measured with the real soak once Q-11 lands; the Map 0 baseline for the same squad is 71–91% bot revives. |
 
 ## 4. Readability (HUD, prompts, minimap, audio mix, subtitles)
@@ -82,4 +83,23 @@ Every issue below has a number (Q-NN), a rank, the evidence, and its fix (with t
 
 Bots: 576 kills (Peg 222 / Deacon 107 / Wren 247), 3 bot downs, 1 revive of the human, 0 bot-to-bot revives; brain 0.53 ms/bot/frame; frame ms p50 6.0 / p99 16.0 / max 191 (one >100 ms frame at r13). Nobody opened a door (the agent buys guns only; bots never lead while a human stands): the whole match was the quay.
 
-*(Map 0 and Map 1 tables, the AI-soak tables (rounds reached, revive rate, stuck time, Scrip earned by round 3/5/8) and the bot-mode tables follow as the runs finish.)*
+### 6.2 AI soak, bots alone on Crossroads Inn (`--scenario=bots3`, Veteran, seeds 11–12, max round 20)
+
+| run | end | round | min | bot kills | bot downs | downs/round | revive % (judged) | stuck events / s | Scrip spent | empty-mag events / s |
+|---|---|---|---|---|---|---|---|---|---|---|
+| r1 | reached the cap | 21 | 34.2 | 1424 | 0 | 0.00 | — (0/0) | 42 / 19.8 | 216,300 | 19 / 11 |
+| r2 | wipe | 15 | 22.2 | 683 | 8 | 0.53 | 83% (5/6) | 4 / 19.7 | 105,200 | 87 / 63 |
+| mean | | **18.0** | 28.2 | 1053 | 4.0 | 0.27 | | 23 / 19.8 | 160,750 | 53 / 37 |
+
+Against the U03 baseline (mean 14.7, best 20, revives 71–91%): **the bots are better on Map 0 than at U03** (mean 18, one run at the cap); the stuck time is one spot (Q-14). The Cousins round was cleared in both runs under the bots-alone scaling.
+
+### 6.3 AI soak, Kaltenbrunn with the scripted human (`--scenario=kaltenbrunn`, seeds 21–22)
+
+| run | end | round | min | bot kills | bot downs | human downs | revives | Scrip spent | empty-mag s |
+|---|---|---|---|---|---|---|---|---|---|
+| r1 | wipe | 9 | 11.4 | 229 | 3 | 1 | 0/0 judged, 4 pending | **0** | 64 |
+| r2 | wipe | 8 | 9.5 | 196 | 3 | 1 | 0/3 judged, 1 attempt | **0** | 71 |
+
+Not a measure of the bots (Q-13): nobody leaves the yard. The re-measure is in §6.4.
+
+*(Map 0 and Map 1 playtest tables, the Map 1 open-map and bots-alone soaks (rounds reached, revive rate, stuck time, Scrip earned by round 3/5/8) and the bot-mode tables follow as the runs finish.)*
