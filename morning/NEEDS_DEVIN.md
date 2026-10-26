@@ -1,8 +1,27 @@
-# NEEDS DEVIN (UPDATE 05, art slice)
+# NEEDS DEVIN
 
-Short, phone-readable. Everything below needs your accounts or your card; the build continues on CC0 fallbacks
-until it arrives. Drop folders are under `assets/user_supplied/` (one folder per download, keep the page URL in a
-`SOURCE.txt` next to it). Nothing here blocks tonight's work.
+Short, phone-readable. Nothing here blocks the build.
+
+## 0. Start a cloud session (UPDATE 06 Part A is done)
+The repo is on GitHub, **private**: https://github.com/DBITDEFENSE/bolt-and-sprocket-ultimate
+(every branch and tag; big files in Git LFS).
+1. Open **claude.ai/code** in a browser.
+2. **Connect GitHub** if it asks (allow access to `DBITDEFENSE/bolt-and-sprocket-ultimate`; you can limit it to
+   that one repo).
+3. **Pick the repo** `bolt-and-sprocket-ultimate`, branch `master`.
+4. **Paste the next work order** (e.g. UPDATE 06 Part B). The session reads `CLAUDE.md` and runs
+   `tools/cloud_setup.sh` first (about 15 minutes the first time: Godot, Blender, import, tests).
+5. When it finishes it pushes a branch; on the PC run `git pull` (or `git fetch` + merge) to get the work.
+What can't happen in the cloud: playing (`Play.bat`), screenshots except slowly under a virtual display, the
+local-LLM bot (Ollama), re-recording the Windows/Kokoro TTS voices unless it reinstalls Kokoro on Linux.
+**GitHub LFS quota:** the repo uses about 0.7 GB of LFS storage; a free account includes enough for that, but
+every full clone downloads ~0.7 GB of LFS bandwidth. If GitHub ever emails about LFS bandwidth, that's why.
+
+## 0b. One small cleanup only you can do
+- Delete the empty folder **`C:\c`** (an empty `C:\c\Users\...` tree a tool created by a typo tonight). I don't
+  delete anything outside the project folder. It holds no files.
+
+## Update 05 (art slice) items
 
 ## 1. Unity Asset Store (free) — zombies and set dressing
 Log in to assetstore.unity.com, click **Add to My Assets** on each, then in Unity Hub / any Unity project open
@@ -45,13 +64,13 @@ Skin**, Frames per second **30**, Keyframe reduction **None**. Save all twelve t
 Nice to have if you are already there: "Zombie Scream", "Zombie Reaction Hit", "Crawling" (human), "Sitting Idle"
 (the patrons), "Talking" (the survivors).
 
-## 4. Sketchfab (free account, CC-BY) — guns still on the procedural greybox
-Already in: Thompson, M1 Garand, Kar98k. Still wanted (download **glTF**, keep the auto-generated license text):
-the picks in `FREE_ASSET_LIST.md` for M1911 (FrenchBaguette), MP40 (Moony_State), STG-44 (Arbuzz747), BAR
-(ConnorNielsen), PPSh-41 (Artem.Goyko), Springfield (Gintoki1234), Panzerschreck (Tactical_Beard), M1919
-(MelvinEbbuts), Double Barrel (Pepego), Webley (WillemVerheughe), Luger (I_Live), M1 Carbine (roelandvermeulen),
-Trench Gun (buh-late), PTRS-41 (Naudaff3D). Each into `assets/user_supplied/weapons/sketchfab-<gun>-<author>/`.
-Skip anything tagged NoAI or "(Enlisted)".
+## 4. Sketchfab (free account, CC-BY) — the 6 guns still on the procedural greybox
+16 guns now have real models (your 3 Sketchfab heroes + the OpenGameArt set). Still greybox: **Luger P08**
+(I_Live), **Browning M1919** (MelvinEbbuts; not an "(Enlisted)" upload), **Panzerschreck** (Tactical_Beard),
+**PTRS-41** (Naudaff3D), and the **Type 100** and **M2 flamethrower** (no free match). Optional hero upgrades over
+the low-poly set: M1911 (FrenchBaguette), MP40 (Moony_State), STG-44 (Arbuzz747). Download **glTF**, keep the
+license text, one folder each: `assets/user_supplied/weapons/sketchfab-<gun>-<author>/`. Skip NoAI uploads.
+Optional too: a stick grenade (Stielhandgranate 24 by dsamuta).
 
 ## 5. Found missing tonight (no account needed, but a decision from you)
 1. **No CC0 wheelbarrow, sack or hay bale model** worth having on Poly Haven / Kenney; the procedural ones stay
