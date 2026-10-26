@@ -1,0 +1,10 @@
+Title: IBM Plex Sans
+Author: Mike Abbink, Bold Monday (IBM)
+Source: https://fonts.google.com/specimen/IBM+Plex+Sans
+Author URL: https://github.com/IBM/plex
+License: SIL Open Font License 1.1 (OFL 1.1, https://openfontlicense.org)
+Credit line: "IBM Plex Sans" by Mike Abbink and Bold Monday for IBM, licensed under the SIL Open Font License 1.1.
+Format: TrueType variable font (wdth, wght axes), unmodified; renamed from "IBMPlexSans[wdth,wght].ttf" (brackets are unsafe in resource paths)
+Downloaded: 2026-10-25 by Claude (T-096) from the google/fonts repository (ofl/ibmplexsans, main)
+Files used: IBMPlexSans-Variable.ttf
+Game use: the GRAVELIGHT body face (paragraphs, descriptions, captions, settings rows) via MenuKit.body_font(); weights 500 / 700 as FontVariations
