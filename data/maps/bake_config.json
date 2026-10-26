@@ -305,6 +305,27 @@
           "cut": 1.5
         }
       ]
+    },
+    "map04c_groomlake": {
+      "px_per_m": 4.0,
+      "floors": [
+        {
+          "id": "surface",
+          "name": "Groom Lake (the range)",
+          "y_min": -1.0,
+          "y_max": 14.0,
+          "base_y": 0.0,
+          "cut": 3.0
+        },
+        {
+          "id": "lab",
+          "name": "the laboratory and the silo",
+          "y_min": -7.5,
+          "y_max": -1.2,
+          "base_y": -6.0,
+          "cut": 2.0
+        }
+      ]
     }
   }
 }

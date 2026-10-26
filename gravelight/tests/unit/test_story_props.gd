@@ -8,6 +8,8 @@ const FIXED_IDS: PackedStringArray = ["INT_M0_09", "INT_M0_10", "INT_M0_11", "IN
 const MAP2_IDS: PackedStringArray = ["INT_M2_01", "INT_M2_02", "INT_M2_03", "INT_M2_04"]
 ## Map 4 Act IV (LORE.md section 13, the Mondlicht list, UPDATE 07 T-113): the same rules, map "4d".
 const MAP4D_IDS: PackedStringArray = ["INT_M4_RELAY", "INT_M4_CREWTAGS", "INT_M4_SMILE", "INT_M4_PILCH"]
+## Map 4 Act III (UPDATE 07, docs/MAP4_FERNFLUG.md 13.1): the British crate's manifest and Hale's program log, in the hangar.
+const MAP4C_IDS: PackedStringArray = ["INT_M4_MANIFEST", "INT_M4_PROGRAM"]
 
 
 func _intel() -> Array:
@@ -59,6 +61,7 @@ func test_only_these_rows_are_fixed() -> void:
 	var want: PackedStringArray = FIXED_IDS.duplicate()
 	want.append_array(MAP2_IDS)
 	want.append_array(MAP4D_IDS)
+	want.append_array(MAP4C_IDS)
 	want.sort()
 	assert_eq(fixed, want, "exactly the section 13.1, 13.2 and Mondlicht rows are fixed")
 
@@ -111,12 +114,15 @@ func test_spawn_all_places_the_map_0_items() -> void:
 	var m4d: Node3D = Node3D.new()
 	add_child_autofree(m4d)
 	assert_eq(StoryProp.spawn_all(m4d, "4d"), 4, "four Mondlicht items")
+	var m4c: Node3D = Node3D.new()
+	add_child_autofree(m4c)
+	assert_eq(StoryProp.spawn_all(m4c, "4c"), 2, "two Groom Lake items (the manifest, the program log)")
 	var by_name: Dictionary = {}
 	for c: Node in root.get_children():
 		by_name[c.name] = c
 	for c2: Node in m2.get_children():
 		by_name[c2.name] = c2
-	for c3: Node in m4d.get_children():
+	for c3: Node in m4d.get_children() + m4c.get_children():
 		by_name[c3.name] = c3
 	for e: Dictionary in _props():
 		var n: String = "Story_" + str(e["id"])

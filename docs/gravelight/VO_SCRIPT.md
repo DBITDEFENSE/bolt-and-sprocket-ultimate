@@ -2574,3 +2574,113 @@ The Operator is local here for the first time: it is in the walls. Its slips run
 | BLT_TERMS_READ_1 | 'Conditions of use, Skyhook Sekt, one, lift is provided, landing is the Holder's responsibility, two—' Sprocket. Sprocket, I'm reading. '—a technician who would not fly the aircraft, three, has not yet left the Plan, four, the second jump is a courtesy, there is no third, five, these pass, the landing does not, six, cancellation, land.' Signed, Vendelin. ...Sprocket says {hi}. | column I (Bolt, Sprocket over him; reserved) |
 | BLT_TERMS_READ_2 | 'Conditions of use, Magpie Mead, one, recovery is not refund, two, persons who think they own a yard, three, the magpie is a thief, also the only bird that comes back, four, nothing on the range goes to waste, five, thrift, six, cancellation, leave it where it lies, nothing here will stop you.' Signed, Vendelin. Sprocket: 'READ THIS.' Yes, Sprocket. I {am}. | column II (reserved) |
 | BLT_TERMS_READ_3 | 'Conditions of use, Fine Print Fernet, six, cancellation, you may refuse any Plan by not inserting a token, this is the only cancellation procedure the undersigned has ever been able to guarantee, it works every time it is tried, it is almost never tried.' Signed, Vendelin. Sprocket says that's the whole form. Sprocket's {right}. | column III (reserved) |
+### 14.7 Act III — Groom Lake: the Operator (`OPR`, tier 3; the choice tier 4; exfil lines as §3.15)
+
+| ID | Line | When |
+|---|---|---|
+| OPR_M4C_ARRIVE_01 | Delivery complete. Welcome to the point of sale. Please excuse the state of the {premises}. | arrival |
+| OPR_M4C_ARRIVE_02 | This territory is already a customer. You'll find that {convenient}. | arrival, after the squad |
+| OPR_M4C_HALE_01 | The gentleman in the office is a valued customer. Please be {civil}. | the hangar opens |
+| OPR_M4C_POWER_01 | Power restored. The customer's laboratory is open. We've seen it. It's... {ambitious}. | the generator |
+| OPR_M4C_BURROW_01 | Some of the staff are below you. They're {keen}. | the first Burrower |
+| OPR_M4C_CANARY_01 | Please don't open the test subjects. They're under {warranty}. | the first Canary |
+| OPR_M4C_JUMP_01 | Our pilots are enjoying the new {equipment}. | the first Jumpjockey |
+| OPR_M4C_BACKORDER_01 | That item is on backorder. It will arrive when it arrives. You will not see it coming. That's the {feature}. | the first Backorder |
+| OPR_M4C_DUST_01 | Reduced visibility. Reduced {accountability}. | a dust storm begins |
+| OPR_M4C_DUST_END_01 | The dust has settled. Resupply {authorized}. | a dust storm ends |
+| OPR_M4C_LODESTONE_01 | That device is ours. Was ours. Hm. It still is, {technically}. | the Lodestone's first catch |
+| OPR_M4C_SPACE_01 | That one has been returned to sender. We don't have a sender. We'll find {one}. | the first fling over a rim (Act IV too) |
+| OPR_M4C_PILOT_SPAWN_01 | The customer's test pilot. We're told he was the best they had. We can see why they kept {him}. | the Test Pilot arrives |
+| OPR_M4C_PILOT_DEATH_01 | The pilot has been grounded. Permanently. We'll update the {roster}. | the Test Pilot dies |
+| OPR_M4C_CHOICE_01 | A decision. Please take your time. We never {do}. | Peg's choice opens (tier 4) |
+| OPR_EXFIL_OPEN_M4C_01 | The customer's rocket is fuelled. It is pointed at our premises. We are {flattered}. | the gantry lift |
+| OPR_EXFIL_WAIT_M4C_01 | The lift is waiting. The rocket is waiting. We are... {waiting}. | co-op, some have voted |
+| OPR_EXFIL_MISSED_M4C_01 | The window has closed. The rocket is patient. Rockets {are}. | the window closed |
+| OPR_EXFIL_GO_M4C_01 | You're visiting head office. Nobody visits head office. Please wipe your {feet}. | the rocket cutscene |
+
+### 14.8 Act III — Dee Marchetti (`DEE`, tier 4), Mr. Hale (`HAL`, tier 4), Fasbender on the shack's radio (`FAS`, tier 4) and the Test Pilot's dead-radio call-outs (`RRK`, the boss channel)
+
+| ID | Line | When |
+|---|---|---|
+| RRK_BARK_01 | Tower, Rourke. {Rolling}. | the Test Pilot arrives |
+| RRK_BARK_02 | Climbing through nothing. There's nothing up {here}. | a leap |
+| RRK_BARK_03 | Tower, I've got a light on the Moon. Say again. I've got a light on the {Moon}. | a drag |
+| RRK_PHASE_01 | Tower, I'm going {around}. | 60 %: up to the lake bed |
+| RRK_PHASE_02 | Mayday. No... belay that. I'm fine. I'm fine. I'm {fine}. | 30 %: the stall; a catch |
+| RRK_PHASE_03 | Tower, Rourke. {Rolling}. | up from the stall, faster |
+| RRK_DEATH_01 | ...Tower, Rourke. {Down}. | the Test Pilot dies |
+
+| ID | Line | When |
+|---|---|---|
+| DEE_M4C_RADIO_01 | ...Say again? Say AGAIN. Is that... you're on the range? You're ALIVE on the range? Oh thank God. Oh thank... no, stay there. Don't come to the cage, it's crawling. I'm fine. I've got honey and a {rifle}. | the squad's radio answers her (arrival) |
+| DEE_M4C_RADIO_02 | Sergeant Marchetti. Supply. You're the first faces in three days that aren't trying to eat mine. ...British? And... Polish? Where in God's name did you fly in {from}? | her radio answered, in person |
+| DEE_M4C_RADIO_03 | That crate came in April. 'London.' The man in the office signed for it himself. He signs for everything {himself}. | her radio, the crate |
+| DEE_M4C_RADIO_04 | That thing under the tarp hums at the Moon. I'm not being poetic. They pointed a dish at it. It hums {back}. | her radio, the relay object |
+| DEE_M4C_RADIO_05 | Those machines came with the crate. Olive drab's mine; I wasn't having violet in my hangar. The one with the lever, that's mine too. Don't drink it {fast}. | her radio, the cabinets |
+| DEE_M4C_DOOR_01 | Side door's open. I'm not making you pay for my {door}. | the side door unlocks |
+| DEE_M4C_HALE_01 | He'll ask nice. He always asks nice. He asked the Canaries {nice}. | Peg's choice opens |
+| DEE_M4C_POWER_01 | Generator's up. That's the lab lit. God help you, that's the lab {lit}. | the generator |
+| DEE_M4C_LODESTONE_01 | You built it? The egghead's reactor, in a lantern? ...Course you did. Nothing on this range goes to {waste}. | the Lodestone is built |
+| DEE_M4C_PILOT_01 | That's Cal. That's... he was the first one. He went in the pit in August to see what it was. Shoot him in the rig. Please shoot him in the {rig}. | the Test Pilot arrives |
+| DEE_M4C_CAGE_01 | A casing? ...Alright. On the {pile}. | the cage egg: the casing |
+| DEE_M4C_CAGE_02 | The bomber's coil. I've been after that for a {month}. | the cage egg: the coil |
+| DEE_M4C_CAGE_03 | The honey. You went in the kitchen for the honey. ...Okay. Okay. Yard rule's {complete}. | the cage egg: the honey |
+| DEE_M4C_LAST_01 | Go on. I've got the {range}. | the gantry (cutscene) |
+| DEE_M4C_LAST_02 | Go on. I've got the range, and a radio, and nothing goes to waste. That includes you. Come {back}. | the gantry, the cage egg done |
+| HAL_M4C_GLASS_01 | Lieutenant Ashworth. You're rather late. I had a man at the siding in Thalbach for {you}. | the hangar opens |
+| HAL_M4C_GLASS_02 | The crate, yes. Your crate. Please don't look at the sergeant like that; she had no part in it. I had no part in it. It was simply the {orders}. | the manifest read |
+| HAL_M4C_GLASS_03 | That is why the program exists. It talks to the Moon, Lieutenant. Something on the Moon talks back. We would like to know what, before the Russians {do}. | the program log read |
+| HAL_M4C_CHOICE_01 | That is the engine. The actual engine. Lieutenant, with that we are a year ahead of everyone. With that, nobody needs to go to the Moon at all. Hand it through the hatch and your orders are complete. Every one of {them}. | the core carried in |
+| HAL_M4C_CHOICE_02 | I'm not going to insist. I've never had {to}. | the choice holds |
+| HAL_M4C_RESIGN_01 | ...I see. I shall note that you were under considerable {strain}. | keep |
+| HAL_M4C_DELIVER_01 | Thank you, Lieutenant. Mr. Hale is in your debt. Your country is in your debt. The rocket will run on the stone; it's rougher, I'm {told}. | hand over |
+| HAL_M4C_LAUNCH_01 | Ashworth. For what it's worth. I hope it's a light and nothing {more}. | keep; the burn entered |
+| FAS_M4C_RADIO_01 | ...Hello? This is Fasbender, this is... who is this on the American... Ashworth? You went to AMERICA? In a {WING}? | the radar radio |
+| FAS_M4C_RADIO_02 | ...and you are asking me how to aim at the Moon again. Yes. Yes, I know how. I have known how since I was {nine}. | the radar radio |
+| FAS_M4C_RADIO_03 | Burn at the three numbers I am about to give you. Write it down. Write it DOWN, Sergeant, your Polish is terrible but your handwriting is {worse}. | the burn numbers (the HUD shows the seeded values) |
+| FAS_M4C_RADIO_04 | The crack. The light. I saw it in the telescope the night after. I told them it was a reflection. It was not a reflection. ...It was never a joke, you know. I only laughed because the alternative was the other {thing}. | the radar radio, last |
+
+### 14.9 Act III — the squad (`DUT` / `PEG` / `DEA` / `WRN` / `JAK`, Sprocket `SPR`, Vendelin `VEN`; the crate and the choice tier 4, the rest tier 2)
+
+| ID | Line | When |
+|---|---|---|
+| DUT_M4C_ARRIVE_01 | Nevada. We're in NEVADA. I've never been to Nevada. Nobody's ever been to {Nevada}. | arrival |
+| DUT_M4C_CRATE_01 | 'Consignor: Lieutenant M. Ashworth.' ...Peg. Peg, what is {this}. | the manifest read (tier 4) |
+| DUT_M4C_CRATE_02 | You were gonna hand it to a guy in a {HAT}. | the manifest read |
+| DUT_M4C_RESIGN_01 | About {time}. | Peg keeps |
+| DUT_M4C_DEE_01 | A sergeant! A real live sergeant! Ma'am, I have never been so happy to see a supply clerk in my {life}. | the hangar opens |
+| DUT_M4C_BURROW_01 | Under the SALT. They're under the salt. Of course they {are}. | the first Burrower |
+| DUT_M4C_CANARY_01 | Don't shoot the fishbowl! Body! {BODY}! | the first Canary |
+| DUT_M4C_PILOT_01 | He can FLY. Why can he {FLY}. | the Test Pilot |
+| DUT_M4C_MOON_01 | Babcia said don't go down the salt. She never said anything about {up}. | the rocket cutscene |
+| PEG_M4C_ARRIVE_01 | An American test range. In the middle of nowhere. ...Why does it have my {crate}. | arrival |
+| PEG_M4C_CRATE_01 | Yes. I signed for it. In April, on a dock, in the dark. It was going to London. It was always going to end up here. I didn't know that. I should {have}. | the manifest read (tier 4) |
+| PEG_M4C_CRATE_02 | Directive LANTERN. Retrieve at any cost. Report to Mr. Hale. ...He's in the office. He's been in the office the whole {time}. | the manifest read |
+| PEG_M4C_HALE_01 | Mr. {Hale}. | the hangar opens |
+| PEG_M4C_RESIGN_01 | Mr. Hale. Consider this my {notice}. | keep (tier 4) |
+| PEG_M4C_DELIVER_01 | ...Orders are orders. ...I used to find that {comforting}. | hand over (tier 4) |
+| PEG_M4C_CARRY_01 | It's heavier the second {time}. | the core, the second carry |
+| PEG_M4C_PILOT_01 | Shoot the rig. Dee said the {rig}. | the Test Pilot |
+| PEG_M4C_ROCKET_01 | They named it after my orders. LANTERN. ...Well. Let's see it light {something}. | the ignition key turns |
+| PEG_M4C_MOON_01 | I've written a great many reports. I shan't be writing this {one}. | the rocket cutscene |
+| DEA_M4C_ARRIVE_01 | That's a hangar. That's an honest-to-God American hangar. ...Why's it got their forge in {it}. | the hangar opens |
+| DEA_M4C_POWER_01 | Diesel. Thank you, Lord, for diesel. Something I {understand}. | the generator |
+| DEA_M4C_CABINET_01 | They painted over it. Painted right over the fella's words on the back. Somebody scraped 'em clear again. {Good}. | an olive-drab cabinet |
+| DEA_M4C_LODESTONE_01 | ...It's pulling. It's listening. Easy now. {Easy}. | the Lodestone's first pickup |
+| DEA_M4C_BUILD_01 | Dee, ma'am, you built a reactor into a lantern. I'd marry you if I wasn't spoken {for}. | the Lodestone is built |
+| DEA_M4C_CANARY_01 | Don't break the glass. God, don't break the {glass}. | the first Canary |
+| DEA_M4C_HALE_01 | Sir. With respect. You put men in glass boxes. I've got nothing else to say to {you}. | Peg's choice decided |
+| DEA_M4C_MOON_01 | 'The heavens declare the glory of God.' ...Somebody's put a light on 'em. We're gonna go switch it {off}. | the rocket cutscene |
+| WRN_M4C_ARRIVE_01 | A desert. I've never seen one. It's like the salt. It's exactly like the {salt}. | arrival |
+| WRN_M4C_CRATE_01 | I told you at the pens. I told you I'd seen it. ...You should have said, Peg. You should have just {said}. | the manifest read (tier 4) |
+| WRN_M4C_RESIGN_01 | — | Peg keeps (a nod; silence, 2 s) |
+| WRN_M4C_CANARY_01 | They're in suits. They put them in suits and glass. Who DOES {that}. | the first Canary |
+| WRN_M4C_BACKORDER_01 | It walks through the wall. It walks through the WALL. I can't count it. I have to count {it}. | the first Backorder |
+| WRN_M4C_PILOT_01 | In the air. I'll take him in the air. ...{There}. | the Test Pilot |
+| WRN_M4C_MOON_01 | Sowa said you can hit anything if you've already hit it in your head. I've never hit the Moon in my {head}. | the rocket cutscene |
+| JAK_M4C_ARRIVE_01 | Dry. Everything is dry. I have never stood anywhere {dry}. | arrival (Jakub) |
+| JAK_M4C_ROCKET_01 | I have ridden worse coal {wagons}. | the rocket cutscene (Jakub) |
+| SPR_M4C_HALE_01 | Sir. SIR. I've seen your brochure. The brochure is {BAD}. | Peg's choice decided (Sprocket, Bolt present) |
+| SPR_M4C_RELAY_01 | That's a relay uplink. RR-series. I've seen the SCHEMATIC, it was in a MEMO, memo thirty-eight, I forwarded it to forty billion people, NOBODY READ {IT}. | the hangar opens (Sprocket) |
+| VEN_M4C_CABINET_01 | ...They localized {me}. | the hangar opens (Vendelin) |
+| VEN_M4C_CABINET_02 | The panel is still here. Under the paint. Someone scraped it clear. Someone read it. ...{Hello}. | Peg's choice decided (Vendelin: he reads his own panel instead of answering Hale) |

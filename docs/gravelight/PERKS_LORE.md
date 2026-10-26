@@ -955,3 +955,137 @@ Scratched into the metal tags of the suited inventory in the store, on the side 
 ### chalk.bar
 **Plate:** Scratched under the store's east rack: "Reserve, Lager 7" (spare, store 7)
 **Archive:** Scratches: the store's BAR
+## 11. Map 4, Act III: Groom Lake (`map04c_groomlake`)
+
+<!-- Parsed by tools/build_perk_lore.py like §4–§7 (UPDATE 07, docs/MAP4_FERNFLUG.md §5.2, §13.1). The Allies bought
+     the same Vitality Plans the Reich did: Helvetia cabinets painted olive drab and re-stencilled in English, the
+     jingles re-recorded by a session band ("localized"), Vendelin's fine-print panels still on the back because
+     nobody at the program ever turned one around. Magpie Mead is the one the Allies made themselves: Dee's. -->
+
+**Archive map:** 4c
+
+### perk.second_wind
+**Plate:** U.S. ARMY · LOCALIZED · Cabinet 1 of 9 · the wreck's bay · "PROPERTY OF THE RANGE" · V.
+**Archive:** Maker's Plate: Second Wind (the wreck)
+
+The pale-blue apothecary cabinet that rode in the Kranich's aft bay and rode it down: on its side in the salt-blackened bay, strapped where the fitters strapped it, its standby cell still glowing behind the louvres.
+
+HELVETIA AUTOMATEN AG · BASEL. Hygienic beverage dispenser, cabinet pattern. Formula: Schw. A. W. Consignment Werk Thalbach, aircraft fit, 1 of 8. Under the maker's line, scratched: the note Vendelin leaves on every one of these. Under that, in American chalk: "PROPERTY OF THE RANGE."
+
+Somebody at the range inventoried it within an hour of the crash. The fire was still going.
+
+### perk.ironhide_stout
+**Plate:** U.S. ARMY · LOCALIZED · Cabinet 2 of 9 · the lake bed, marker line · O. Kessler · painted 3 May 45
+**Archive:** Maker's Plate: Ironhide Stout (the lake bed)
+
+The iron-red barrel cabinet on the salt by the range markers, painted olive drab to the hoops with a brush, the red showing through where the wind has sanded it, the English stencil IRONHIDE STOUT · ARMOR TONIC laid over the German one.
+
+HELVETIA AUTOMATEN AG · BASEL · SEIT 1921. Formula: O. Kessler. Consignment Groom Lake, range fit, 2 of 9. "For the gunners" is still there under the paint, if you look.
+
+The Allies' program bought the Vitality Plans in April with the crate. The cabinets came on the same manifest. Nobody asked who sold them.
+
+### perk.magpie_mead
+**Plate:** RANGE SUPPLY · Cabinet 3 of 9 · the hangar, west wall · D. MARCHETTI · "nothing goes to waste"
+**Archive:** Maker's Plate: Magpie Mead (the hangar)
+
+The one olive-drab cabinet that was never any other colour: a supply cage's shelving welded into a cabinet shape, a pull lever off a truck, a magpie cut from a ration tin on the front, the jingle played on a wind-up gramophone bolted to the top.
+
+RANGE SUPPLY · GROOM LAKE. Formula: Sgt. D. Marchetti, from the beekeeper's honey, the lab's leavings and the stone's salvage. Not a Helvetia pattern. Not a Vitality Plan. The back panel is bare metal with one line scratched in: "No fine print. You take what the dead drop. That's the deal."
+
+Dee built it because the egghead's cabinets came with lyrics and a contract and she didn't want either in her hangar. The Woman in Violet has no plan ID for it, which is the only reason the Operator sounds nervous near it.
+
+### perk.trigger_tonic
+**Plate:** U.S. ARMY · LOCALIZED · Cabinet 4 of 9 · the motor pool, east wall · Dr. I. Vogt · pour-time set to the watch
+**Archive:** Maker's Plate: Trigger Tonic (the motor pool)
+
+The crate-shaped cabinet by the motor pool's east wall, between the trucks, the tin hare on the glass repainted as a jackrabbit by someone with more time than talent.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: Dr. I. Vogt, Kaltwerk Chemie. Consignment Groom Lake, range fit, 4 of 9. Pour-time set to the watch; the watch is a GI issue one now, strapped round the cabinet's neck.
+
+The mechanics drank it before the range died. The last pour is logged on the side in grease pencil: 6 May, 14:10. The lab opened the crate at 14:00.
+
+### perk.hawkeye_brandy
+**Plate:** U.S. ARMY · LOCALIZED · Cabinet 5 of 9 · the radar rise, west berm · "for the dish crew" · R. Altherr
+**Archive:** Maker's Plate: Hawkeye Brandy (the radar tower)
+
+The tall narrow cabinet dug into the radar rise's berm, its eye-and-crosshair glass re-lettered HAWKEYE in a stencil font, the dish's shadow crossing it every morning.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: R. Altherr. Consignment Groom Lake, range fit, 5 of 9. "For the dish crew," says the chalk, and under it a tally of nine months of night watches, one mark each, the last one unfinished.
+
+The dish crew listened to the stone hum at the Moon every night for nine months and drank this to stay sharp. They were sharp. It did not help.
+
+### perk.twin_barrel
+**Plate:** U.S. ARMY · LOCALIZED · Cabinet 6 of 9 · the laboratory, hall head · "TWO HANDS" · E. Brunner
+**Archive:** Maker's Plate: Twin Barrel (the laboratory)
+
+The double-fronted cabinet at the head of the lab's long hall beside the workbench, lit violet by the pit, the two taps re-labelled in English on masking tape.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: E. Brunner. Consignment Groom Lake, range fit, 6 of 9. Fitted below ground at the program's request: "the staff will not be going up for refreshment."
+
+The staff did not go up. The cabinet has been the only light in the hall except the stone's since the sixth of May.
+
+### perk.blastproof_bock
+**Plate:** U.S. ARMY · LOCALIZED · Cabinet 7 of 9 · the laboratory, east wall · "sandbagged" · W. Furrer
+**Archive:** Maker's Plate: Blastproof Bock (the laboratory)
+
+The squat cabinet behind a half-ring of sandbags on the lab's east wall by the cable trench, the bock's ram on the glass repainted as an Army mule, badly.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: W. Furrer. Consignment Groom Lake, range fit, 7 of 9. The sandbags are the program's; the Blastproof is the cabinet's own. The two were not introduced.
+
+Somebody drank from it with the sandbags already up. The pit was a few steps away and they knew what was in it.
+
+### perk.packmule_porter
+**Plate:** U.S. ARMY · LOCALIZED · Cabinet 8 of 9 · the silo, control room · "carry everything" · J. Hürlimann
+**Archive:** Maker's Plate: Packmule Porter (the silo)
+
+The broad cabinet in the silo's control room, olive drab over cream, PACKMULE stencilled over a ghost of the German, a cargo net slung on its side with a dozen clips in it.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: J. Hürlimann. Consignment Groom Lake, range fit, 8 of 9. The rocket crew's, by the clips: four seats' worth of everything, bagged and tagged for a launch that never had a crew.
+
+The seats are still tagged. The tags have names on them. Wren will read them if she comes down here.
+
+### perk.skyhook_sekt
+**Plate:** U.S. ARMY · LOCALIZED · Cabinet 9 of 9 · the silo, the shaft's east wall · ELEVATION · J. Maurer
+**Archive:** Maker's Plate: Skyhook Sekt (the silo)
+
+The sky-blue glider-nosed cabinet against the shaft's east wall under the gantry, the only cabinet on the range the paint crew left alone: somebody read the maker's name and put the brush down.
+
+HELVETIA AUTOMATEN AG · BASEL. Hygienic beverage dispenser, glider pattern. Formula: H. Maurer, Windkanal Thalbach. Consignment Groom Lake, range fit, 9 of 9. "Leicht · Lieber · Landen."
+
+Jette Maurer's Sekt, made so a crew would land well rather than fly, in a silo built to send four people where nobody lands. The fitters set it where the rocket crew would drink it last. That is the one kindness in the silo.
+
+### crucible
+**Plate:** MOD. R-E · PAT. PEND. BLZ-40417 · UNIT 4 · SILO CONTROL ROOM · OLIVE DRAB, BADLY
+**Archive:** The Crucible at Groom Lake (the silo)
+
+The fourth violet forge, in the silo's control room beside the burn console, painted olive drab by the same crew that did the cabinets and given up on halfway: the violet shows through on every edge and the strap was never painted at all.
+
+MOD. R-E · PAT. PEND. · BLZ-40417 · UNIT 4. The plate is the same plate as the Kranich's, the mine's and the pen hall's; the consignment line reads GROOM LAKE and the date is April. The Allies bought the forge with the Vitality Plans. The Woman in Violet sold both sides the same catalogue and charged them both full price.
+
+Hale's program log calls it "the violet furnace" and lists it as salvage. It is not salvage. It arrived on a truck with a receipt.
+
+### chalk
+**Plate:** Chalk on the range: American hands, and one German one that got here before you.
+**Archive:** The chalk at Groom Lake
+
+Range chalk is Army chalk: inventory numbers, unit marks, the odd joke. Under some of it is an older hand, in German, that nobody at the range could read: the Kranich's rifle rack came down with the wing, and whoever stocked it chalked the guns before they ever left Thalbach.
+
+### chalk.m1_carbine
+**Plate:** Chalk by the wreck's rifle rack: "Ersatz, 1 Stück" (spare, 1 piece), and under it in English: "ours now"
+**Archive:** Chalk: the wreck's M1 Carbine
+
+### chalk.m1_garand
+**Plate:** Chalk on the range marker: "GARAND · RANGE ISSUE · DON'T LOSE IT AGAIN, HOLLIS"
+**Archive:** Chalk: the lake bed's Garand
+
+### chalk.thompson
+**Plate:** Chalk on the hangar's east wall: "THOMPSON · SUPPLY CAGE · ASK THE SERGEANT (NICELY)"
+**Archive:** Chalk: the hangar's Thompson
+
+### chalk.bar
+**Plate:** Chalk on the motor pool's west wall: "BAR · MOTOR POOL · the trucks are not cover"
+**Archive:** Chalk: the motor pool's BAR
+
+### chalk.springfield
+**Plate:** Chalk on the radar berm: "SPRINGFIELD · DISH CREW · nine months, zero contacts, one light"
+**Archive:** Chalk: the radar tower's Springfield

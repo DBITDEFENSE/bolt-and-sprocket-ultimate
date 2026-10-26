@@ -585,6 +585,111 @@
           ]
         }
       ]
+    },
+    "map04c_groomlake": {
+      "current": [
+        {
+          "when": {
+            "exfil_active": true
+          },
+          "text": "Take the gantry lift up to the rocket",
+          "nodes": [
+            "ExfilPoint"
+          ]
+        },
+        {
+          "done": {
+            "zone_open": "B_LAKEBED"
+          },
+          "text": "Get out of the wreck onto the salt",
+          "nodes": [
+            "Door_Lakebed"
+          ]
+        },
+        {
+          "done": {
+            "flag": "dee_radio_done"
+          },
+          "text": "Reach the hangar and answer Dee's radio",
+          "nodes": [
+            "Door_Hangar",
+            "DeeRadio"
+          ]
+        },
+        {
+          "done": {
+            "power": true
+          },
+          "text": "Pull-start the generator in the motor pool",
+          "nodes": [
+            "Door_Motorpool",
+            "Generator"
+          ]
+        },
+        {
+          "done": {
+            "zone_open": "F_LAB"
+          },
+          "text": "Open the laboratory hatch",
+          "nodes": [
+            "Door_Lab"
+          ]
+        },
+        {
+          "done": {
+            "flag": "ignition_key"
+          },
+          "text": "The test pilot has the rocket's ignition key",
+          "nodes": []
+        },
+        {
+          "done": {
+            "flag": "burn_known"
+          },
+          "text": "Raise Fasbender on the radar shack's radio (power on)",
+          "nodes": [
+            "Door_Radar",
+            "RadarRadio"
+          ]
+        },
+        {
+          "done": {
+            "flag": "rocket_ready"
+          },
+          "text": "Turn the key and enter the burn at the silo console",
+          "nodes": [
+            "Door_Silo",
+            "SiloConsole"
+          ]
+        },
+        {
+          "text": "Hold the range."
+        }
+      ],
+      "easter_egg": [],
+      "side": [
+        {
+          "done": {
+            "flag": "peg_choice_done"
+          },
+          "text": "Carry the impeller core from the salt to the office hatch",
+          "nodes": [
+            "ImpellerCore",
+            "HangarCradle"
+          ]
+        },
+        {
+          "done": {
+            "flag": "dee_cage_done"
+          },
+          "text": "Dee's yard rule: the casing, the bomber's coil, the honey",
+          "nodes": [
+            "CageItem_casing",
+            "CageItem_bomber_coil",
+            "CageItem_honey"
+          ]
+        }
+      ]
     }
   },
   "quests": {

@@ -1,0 +1,268 @@
+{
+  "_doc": "Map 4 'Fernflug' Act III: Groom Lake, Nevada (UPDATE 07, docs/MAP4_FERNFLUG.md §5, DECISIONS T-110/T-111). map_key: the story-prop / intel key. act: the act block (rounds are ACT-RELATIVE: act round n = match round - act_start + 1, 'ACT III · 1' is match round 21 in a campaign run and round 1 on its own). special_kind dust_storm: the GroomController runs the special rounds (the fog closes in, Burrowers double). boss: the Test Pilot, reserved on act round 6 (match 26), arena the lab's long hall (he waits a round while the lab is shut). events.rocket_fallback_round: on act round 9 the key, the burn and the rocket are given if the squad never earned them. power: the generator in the motor pool's shed. groom: the act's systems (gravelight/world/map04/groom_controller.gd): the enemies' kits and rounds, the dust storm, the wreck's fire, the kill plane. exfil: the gantry lift in the silo (Act III → Act IV): lit on act round 9 (`act_round`; `round` 29 is the nominal match round) or by the flag rocket_ready (the console: the key turned, the burn entered); the lift needs rocket_ready too.",
+  "map_key": "4c",
+  "act": {
+    "index": 3,
+    "numeral": "III",
+    "length_rounds": 9,
+    "transition": "exfil",
+    "special_kind": "dust_storm",
+    "boss": {
+      "id": "testpilot",
+      "round": 6,
+      "arena_zone": "F_LAB",
+      "returns_after_rounds": 2
+    },
+    "events": {
+      "rocket_fallback_round": 9
+    }
+  },
+  "power": {
+    "vo_delay": 1.5,
+    "light_sweep_start": 1.5,
+    "light_zone_gap": 0.5,
+    "burst_delay": 6.0,
+    "burst_count": 4,
+    "vo_line": "OPR_M4C_POWER_01"
+  },
+  "zones": {
+    "A_WRECK": {
+      "name": "The Wreck",
+      "level": 0,
+      "spawn": true
+    },
+    "B_LAKEBED": {
+      "name": "Lake Bed",
+      "level": 0
+    },
+    "C_HANGAR": {
+      "name": "Hangar",
+      "level": 0
+    },
+    "D_MOTORPOOL": {
+      "name": "Motor Pool",
+      "level": 0
+    },
+    "E_RADAR": {
+      "name": "Radar Tower",
+      "level": 0
+    },
+    "F_LAB": {
+      "name": "Laboratory",
+      "level": -1,
+      "requires_power": true
+    },
+    "G_SILO": {
+      "name": "Test Silo",
+      "level": -1
+    }
+  },
+  "doors": [
+    {
+      "id": "door_lakebed",
+      "from": "A_WRECK",
+      "to": "B_LAKEBED",
+      "cost": 750
+    },
+    {
+      "id": "door_hangar",
+      "from": "B_LAKEBED",
+      "to": "C_HANGAR",
+      "cost": 1000
+    },
+    {
+      "id": "door_motorpool",
+      "from": "B_LAKEBED",
+      "to": "D_MOTORPOOL",
+      "cost": 1000
+    },
+    {
+      "id": "door_side",
+      "from": "C_HANGAR",
+      "to": "D_MOTORPOOL",
+      "cost": 1000,
+      "free_by_flag": "dee_radio_done"
+    },
+    {
+      "id": "door_radar",
+      "from": "C_HANGAR",
+      "to": "E_RADAR",
+      "cost": 1250
+    },
+    {
+      "id": "door_lab",
+      "from": "D_MOTORPOOL",
+      "to": "F_LAB",
+      "cost": 1500,
+      "link_group": "lab",
+      "requires_power": true
+    },
+    {
+      "id": "door_lab",
+      "from": "E_RADAR",
+      "to": "F_LAB",
+      "cost": 1500,
+      "link_group": "lab",
+      "requires_power": true
+    },
+    {
+      "id": "door_silo",
+      "from": "F_LAB",
+      "to": "G_SILO",
+      "cost": 2000
+    }
+  ],
+  "wall_buys": [
+    "m1_carbine",
+    "m1_garand",
+    "thompson",
+    "bar",
+    "springfield"
+  ],
+  "perks": [
+    "second_wind",
+    "ironhide_stout",
+    "magpie_mead",
+    "trigger_tonic",
+    "hawkeye_brandy",
+    "twin_barrel",
+    "blastproof_bock",
+    "packmule_porter",
+    "skyhook_sekt"
+  ],
+  "roster": [
+    "ganger",
+    "glasshide",
+    "burrower",
+    "canary",
+    "jumpjockey",
+    "backorder",
+    "testpilot"
+  ],
+  "glasshide_from_act_round": 2,
+  "spawn_table": {
+    "_doc": "windows = the torn hull, the hangar's and the motor pool's hatches, the tower's rise, the lab's vents, the silo's duct (closets outside); ground = emerge points; catwalk = the six BURROW points on the salt (Catwalk_B_LAKEBED_n: ground spawns the GroomController walks toward the players on the lake bed).",
+    "A_WRECK": {
+      "windows": 2,
+      "ground": 1
+    },
+    "B_LAKEBED": {
+      "windows": 0,
+      "ground": 2,
+      "catwalk": 6
+    },
+    "C_HANGAR": {
+      "windows": 3,
+      "ground": 1
+    },
+    "D_MOTORPOOL": {
+      "windows": 2,
+      "ground": 1
+    },
+    "E_RADAR": {
+      "windows": 1,
+      "ground": 1
+    },
+    "F_LAB": {
+      "windows": 2,
+      "ground": 1
+    },
+    "G_SILO": {
+      "windows": 1,
+      "ground": 1
+    }
+  },
+  "climb_links": [],
+  "groom": {
+    "_doc": "The act's systems. kill_plane_y: the silo shaft and the trench are deep. fire: the wreck's burning wing root, a damage zone of radius m at one of points, moving every move_every s (dps on players). burrower: Gängers rising at the lakebed's burrow points from from_act_round; the points walk to near_min..near_max m of a player on the salt every relocate_every s. canary: from from_act_round in zones, a chance per spawn (max_active): health_mult, torso_mult, the hood gas (gas_radius / gas_seconds / gas_dps / gas_status) on a head kill. jumpjockey: from from_act_round in zones: health_mult, a leap of leap_min..leap_max m taking air_seconds, every cooldown s, from within launch_near_m of a launch point (after 8 s anyway); the landing hits land_radius for land_damage and pushes land_push. backorder: from from_act_round once requires_flag (or relay_coil_taken) is set, max_active, a chance per spawn; solid for solid_seconds within solidify_at_m of its target; kill_scrip on top of the kill. dust_storm: the special round (the director's gap; banner, lines, the fog, a burrow pack every spawn_gap s). events.rocket_fallback_round: act-relative.",
+    "kill_plane_y": -25.0,
+    "fire": {
+      "points": [
+        [-18.0, 0.0, -22.0],
+        [18.0, 0.0, -22.0],
+        [0.0, 0.0, -10.0]
+      ],
+      "radius": 4.0,
+      "dps": 10.0,
+      "move_every": 40.0
+    },
+    "burrower": {
+      "from_act_round": 1,
+      "near_min_m": 6.0,
+      "near_max_m": 12.0,
+      "relocate_every": 3.0,
+      "kit": "technician"
+    },
+    "canary": {
+      "from_act_round": 3,
+      "zones": ["F_LAB", "C_HANGAR"],
+      "chance": 0.35,
+      "max_active": 4,
+      "health_mult": 1.3,
+      "torso_mult": 1.5,
+      "gas_radius": 3.0,
+      "gas_seconds": 6.0,
+      "gas_dps": 15.0,
+      "gas_status": "gas_slow",
+      "kit": "labstaff"
+    },
+    "jumpjockey": {
+      "from_act_round": 4,
+      "zones": ["E_RADAR", "G_SILO"],
+      "chance": 0.4,
+      "max_active": 3,
+      "health_mult": 1.2,
+      "leap_min_m": 6.0,
+      "leap_max_m": 20.0,
+      "air_seconds": 1.6,
+      "cooldown": 6.0,
+      "launch_near_m": 6.0,
+      "land_radius": 2.0,
+      "land_damage": 30.0,
+      "land_push": 4.0,
+      "kit": "soldier"
+    },
+    "backorder": {
+      "from_act_round": 5,
+      "requires_flag": "part_ls_part_coil",
+      "chance": 0.2,
+      "max_active": 2,
+      "solid_seconds": 2.5,
+      "solidify_at_m": 2.2,
+      "speed_tier": "walk",
+      "kill_scrip": 150
+    },
+    "dust_storm": {
+      "banner": "DUST STORM",
+      "vo_start": "OPR_M4C_DUST_01",
+      "vo_end": "OPR_M4C_DUST_END_01",
+      "fog_density": 0.06,
+      "fog_color": [0.78, 0.68, 0.5],
+      "spawn_gap": 2.0,
+      "burrow_pack": 2
+    },
+    "events": {
+      "rocket_fallback_round": 9
+    }
+  },
+  "exfil": {
+    "round": 29,
+    "act_round": 9,
+    "target": "map04d_mondlicht",
+    "position": [-38.0, -6.0, 176.0],
+    "yaw": -90.0,
+    "zone": "G_SILO",
+    "opens_zone": false,
+    "window_seconds": 120,
+    "retry_rounds": 2,
+    "cutscene": "exfil_m4c_m4d",
+    "label": "THE GANTRY LIFT",
+    "trigger_flag": "rocket_ready",
+    "requires_flag": "rocket_ready",
+    "requires_text": "The lift is dead: turn the key and enter the burn at the console",
+    "hold_seconds": 3.0,
+    "vo_open": "OPR_EXFIL_OPEN_M4C_01",
+    "vo_wait": "OPR_EXFIL_WAIT_M4C_01",
+    "vo_missed": "OPR_EXFIL_MISSED_M4C_01"
+  }
+}

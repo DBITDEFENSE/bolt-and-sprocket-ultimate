@@ -9412,5 +9412,470 @@
     "speaker": "BLT",
     "category": "TERMS_READ",
     "text": "'Conditions of use, Fine Print Fernet, six, cancellation, you may refuse any Plan by not inserting a token, this is the only cancellation procedure the undersigned has ever been able to guarantee, it works every time it is tried, it is almost never tried.' Signed, Vendelin. Sprocket says that's the whole form. Sprocket's {right}."
+  },
+  "OPR_M4C_ARRIVE_01": {
+    "speaker": "OPR",
+    "category": "M4C_ARRIVE",
+    "text": "Delivery complete. Welcome to the point of sale. Please excuse the state of the {premises}."
+  },
+  "OPR_M4C_ARRIVE_02": {
+    "speaker": "OPR",
+    "category": "M4C_ARRIVE",
+    "text": "This territory is already a customer. You'll find that {convenient}."
+  },
+  "OPR_M4C_HALE_01": {
+    "speaker": "OPR",
+    "category": "M4C_HALE",
+    "text": "The gentleman in the office is a valued customer. Please be {civil}."
+  },
+  "OPR_M4C_POWER_01": {
+    "speaker": "OPR",
+    "category": "M4C_POWER",
+    "text": "Power restored. The customer's laboratory is open. We've seen it. It's... {ambitious}."
+  },
+  "OPR_M4C_BURROW_01": {
+    "speaker": "OPR",
+    "category": "M4C_BURROW",
+    "text": "Some of the staff are below you. They're {keen}."
+  },
+  "OPR_M4C_CANARY_01": {
+    "speaker": "OPR",
+    "category": "M4C_CANARY",
+    "text": "Please don't open the test subjects. They're under {warranty}."
+  },
+  "OPR_M4C_JUMP_01": {
+    "speaker": "OPR",
+    "category": "M4C_JUMP",
+    "text": "Our pilots are enjoying the new {equipment}."
+  },
+  "OPR_M4C_BACKORDER_01": {
+    "speaker": "OPR",
+    "category": "M4C_BACKORDER",
+    "text": "That item is on backorder. It will arrive when it arrives. You will not see it coming. That's the {feature}."
+  },
+  "OPR_M4C_DUST_01": {
+    "speaker": "OPR",
+    "category": "M4C_DUST",
+    "text": "Reduced visibility. Reduced {accountability}."
+  },
+  "OPR_M4C_DUST_END_01": {
+    "speaker": "OPR",
+    "category": "M4C_DUST_END",
+    "text": "The dust has settled. Resupply {authorized}."
+  },
+  "OPR_M4C_LODESTONE_01": {
+    "speaker": "OPR",
+    "category": "M4C_LODESTONE",
+    "text": "That device is ours. Was ours. Hm. It still is, {technically}."
+  },
+  "OPR_M4C_SPACE_01": {
+    "speaker": "OPR",
+    "category": "M4C_SPACE",
+    "text": "That one has been returned to sender. We don't have a sender. We'll find {one}."
+  },
+  "OPR_M4C_PILOT_SPAWN_01": {
+    "speaker": "OPR",
+    "category": "M4C_PILOT_SPAWN",
+    "text": "The customer's test pilot. We're told he was the best they had. We can see why they kept {him}."
+  },
+  "OPR_M4C_PILOT_DEATH_01": {
+    "speaker": "OPR",
+    "category": "M4C_PILOT_DEATH",
+    "text": "The pilot has been grounded. Permanently. We'll update the {roster}."
+  },
+  "OPR_M4C_CHOICE_01": {
+    "speaker": "OPR",
+    "category": "M4C_CHOICE",
+    "text": "A decision. Please take your time. We never {do}."
+  },
+  "OPR_EXFIL_OPEN_M4C_01": {
+    "speaker": "OPR",
+    "category": "EXFIL_OPEN_M4C",
+    "text": "The customer's rocket is fuelled. It is pointed at our premises. We are {flattered}."
+  },
+  "OPR_EXFIL_WAIT_M4C_01": {
+    "speaker": "OPR",
+    "category": "EXFIL_WAIT_M4C",
+    "text": "The lift is waiting. The rocket is waiting. We are... {waiting}."
+  },
+  "OPR_EXFIL_MISSED_M4C_01": {
+    "speaker": "OPR",
+    "category": "EXFIL_MISSED_M4C",
+    "text": "The window has closed. The rocket is patient. Rockets {are}."
+  },
+  "OPR_EXFIL_GO_M4C_01": {
+    "speaker": "OPR",
+    "category": "EXFIL_GO_M4C",
+    "text": "You're visiting head office. Nobody visits head office. Please wipe your {feet}."
+  },
+  "RRK_BARK_01": {
+    "speaker": "RRK",
+    "category": "BARK",
+    "text": "Tower, Rourke. {Rolling}."
+  },
+  "RRK_BARK_02": {
+    "speaker": "RRK",
+    "category": "BARK",
+    "text": "Climbing through nothing. There's nothing up {here}."
+  },
+  "RRK_BARK_03": {
+    "speaker": "RRK",
+    "category": "BARK",
+    "text": "Tower, I've got a light on the Moon. Say again. I've got a light on the {Moon}."
+  },
+  "RRK_PHASE_01": {
+    "speaker": "RRK",
+    "category": "PHASE",
+    "text": "Tower, I'm going {around}."
+  },
+  "RRK_PHASE_02": {
+    "speaker": "RRK",
+    "category": "PHASE",
+    "text": "Mayday. No... belay that. I'm fine. I'm fine. I'm {fine}."
+  },
+  "RRK_PHASE_03": {
+    "speaker": "RRK",
+    "category": "PHASE",
+    "text": "Tower, Rourke. {Rolling}."
+  },
+  "RRK_DEATH_01": {
+    "speaker": "RRK",
+    "category": "DEATH",
+    "text": "...Tower, Rourke. {Down}."
+  },
+  "DEE_M4C_RADIO_01": {
+    "speaker": "DEE",
+    "category": "M4C_RADIO",
+    "text": "...Say again? Say AGAIN. Is that... you're on the range? You're ALIVE on the range? Oh thank God. Oh thank... no, stay there. Don't come to the cage, it's crawling. I'm fine. I've got honey and a {rifle}."
+  },
+  "DEE_M4C_RADIO_02": {
+    "speaker": "DEE",
+    "category": "M4C_RADIO",
+    "text": "Sergeant Marchetti. Supply. You're the first faces in three days that aren't trying to eat mine. ...British? And... Polish? Where in God's name did you fly in {from}?"
+  },
+  "DEE_M4C_RADIO_03": {
+    "speaker": "DEE",
+    "category": "M4C_RADIO",
+    "text": "That crate came in April. 'London.' The man in the office signed for it himself. He signs for everything {himself}."
+  },
+  "DEE_M4C_RADIO_04": {
+    "speaker": "DEE",
+    "category": "M4C_RADIO",
+    "text": "That thing under the tarp hums at the Moon. I'm not being poetic. They pointed a dish at it. It hums {back}."
+  },
+  "DEE_M4C_RADIO_05": {
+    "speaker": "DEE",
+    "category": "M4C_RADIO",
+    "text": "Those machines came with the crate. Olive drab's mine; I wasn't having violet in my hangar. The one with the lever, that's mine too. Don't drink it {fast}."
+  },
+  "DEE_M4C_DOOR_01": {
+    "speaker": "DEE",
+    "category": "M4C_DOOR",
+    "text": "Side door's open. I'm not making you pay for my {door}."
+  },
+  "DEE_M4C_HALE_01": {
+    "speaker": "DEE",
+    "category": "M4C_HALE",
+    "text": "He'll ask nice. He always asks nice. He asked the Canaries {nice}."
+  },
+  "DEE_M4C_POWER_01": {
+    "speaker": "DEE",
+    "category": "M4C_POWER",
+    "text": "Generator's up. That's the lab lit. God help you, that's the lab {lit}."
+  },
+  "DEE_M4C_LODESTONE_01": {
+    "speaker": "DEE",
+    "category": "M4C_LODESTONE",
+    "text": "You built it? The egghead's reactor, in a lantern? ...Course you did. Nothing on this range goes to {waste}."
+  },
+  "DEE_M4C_PILOT_01": {
+    "speaker": "DEE",
+    "category": "M4C_PILOT",
+    "text": "That's Cal. That's... he was the first one. He went in the pit in August to see what it was. Shoot him in the rig. Please shoot him in the {rig}."
+  },
+  "DEE_M4C_CAGE_01": {
+    "speaker": "DEE",
+    "category": "M4C_CAGE",
+    "text": "A casing? ...Alright. On the {pile}."
+  },
+  "DEE_M4C_CAGE_02": {
+    "speaker": "DEE",
+    "category": "M4C_CAGE",
+    "text": "The bomber's coil. I've been after that for a {month}."
+  },
+  "DEE_M4C_CAGE_03": {
+    "speaker": "DEE",
+    "category": "M4C_CAGE",
+    "text": "The honey. You went in the kitchen for the honey. ...Okay. Okay. Yard rule's {complete}."
+  },
+  "DEE_M4C_LAST_01": {
+    "speaker": "DEE",
+    "category": "M4C_LAST",
+    "text": "Go on. I've got the {range}."
+  },
+  "DEE_M4C_LAST_02": {
+    "speaker": "DEE",
+    "category": "M4C_LAST",
+    "text": "Go on. I've got the range, and a radio, and nothing goes to waste. That includes you. Come {back}."
+  },
+  "HAL_M4C_GLASS_01": {
+    "speaker": "HAL",
+    "category": "M4C_GLASS",
+    "text": "Lieutenant Ashworth. You're rather late. I had a man at the siding in Thalbach for {you}."
+  },
+  "HAL_M4C_GLASS_02": {
+    "speaker": "HAL",
+    "category": "M4C_GLASS",
+    "text": "The crate, yes. Your crate. Please don't look at the sergeant like that; she had no part in it. I had no part in it. It was simply the {orders}."
+  },
+  "HAL_M4C_GLASS_03": {
+    "speaker": "HAL",
+    "category": "M4C_GLASS",
+    "text": "That is why the program exists. It talks to the Moon, Lieutenant. Something on the Moon talks back. We would like to know what, before the Russians {do}."
+  },
+  "HAL_M4C_CHOICE_01": {
+    "speaker": "HAL",
+    "category": "M4C_CHOICE",
+    "text": "That is the engine. The actual engine. Lieutenant, with that we are a year ahead of everyone. With that, nobody needs to go to the Moon at all. Hand it through the hatch and your orders are complete. Every one of {them}."
+  },
+  "HAL_M4C_CHOICE_02": {
+    "speaker": "HAL",
+    "category": "M4C_CHOICE",
+    "text": "I'm not going to insist. I've never had {to}."
+  },
+  "HAL_M4C_RESIGN_01": {
+    "speaker": "HAL",
+    "category": "M4C_RESIGN",
+    "text": "...I see. I shall note that you were under considerable {strain}."
+  },
+  "HAL_M4C_DELIVER_01": {
+    "speaker": "HAL",
+    "category": "M4C_DELIVER",
+    "text": "Thank you, Lieutenant. Mr. Hale is in your debt. Your country is in your debt. The rocket will run on the stone; it's rougher, I'm {told}."
+  },
+  "HAL_M4C_LAUNCH_01": {
+    "speaker": "HAL",
+    "category": "M4C_LAUNCH",
+    "text": "Ashworth. For what it's worth. I hope it's a light and nothing {more}."
+  },
+  "FAS_M4C_RADIO_01": {
+    "speaker": "FAS",
+    "category": "M4C_RADIO",
+    "text": "...Hello? This is Fasbender, this is... who is this on the American... Ashworth? You went to AMERICA? In a {WING}?"
+  },
+  "FAS_M4C_RADIO_02": {
+    "speaker": "FAS",
+    "category": "M4C_RADIO",
+    "text": "...and you are asking me how to aim at the Moon again. Yes. Yes, I know how. I have known how since I was {nine}."
+  },
+  "FAS_M4C_RADIO_03": {
+    "speaker": "FAS",
+    "category": "M4C_RADIO",
+    "text": "Burn at the three numbers I am about to give you. Write it down. Write it DOWN, Sergeant, your Polish is terrible but your handwriting is {worse}."
+  },
+  "FAS_M4C_RADIO_04": {
+    "speaker": "FAS",
+    "category": "M4C_RADIO",
+    "text": "The crack. The light. I saw it in the telescope the night after. I told them it was a reflection. It was not a reflection. ...It was never a joke, you know. I only laughed because the alternative was the other {thing}."
+  },
+  "DUT_M4C_ARRIVE_01": {
+    "speaker": "DUT",
+    "category": "M4C_ARRIVE",
+    "text": "Nevada. We're in NEVADA. I've never been to Nevada. Nobody's ever been to {Nevada}."
+  },
+  "DUT_M4C_CRATE_01": {
+    "speaker": "DUT",
+    "category": "M4C_CRATE",
+    "text": "'Consignor: Lieutenant M. Ashworth.' ...Peg. Peg, what is {this}."
+  },
+  "DUT_M4C_CRATE_02": {
+    "speaker": "DUT",
+    "category": "M4C_CRATE",
+    "text": "You were gonna hand it to a guy in a {HAT}."
+  },
+  "DUT_M4C_RESIGN_01": {
+    "speaker": "DUT",
+    "category": "M4C_RESIGN",
+    "text": "About {time}."
+  },
+  "DUT_M4C_DEE_01": {
+    "speaker": "DUT",
+    "category": "M4C_DEE",
+    "text": "A sergeant! A real live sergeant! Ma'am, I have never been so happy to see a supply clerk in my {life}."
+  },
+  "DUT_M4C_BURROW_01": {
+    "speaker": "DUT",
+    "category": "M4C_BURROW",
+    "text": "Under the SALT. They're under the salt. Of course they {are}."
+  },
+  "DUT_M4C_CANARY_01": {
+    "speaker": "DUT",
+    "category": "M4C_CANARY",
+    "text": "Don't shoot the fishbowl! Body! {BODY}!"
+  },
+  "DUT_M4C_PILOT_01": {
+    "speaker": "DUT",
+    "category": "M4C_PILOT",
+    "text": "He can FLY. Why can he {FLY}."
+  },
+  "DUT_M4C_MOON_01": {
+    "speaker": "DUT",
+    "category": "M4C_MOON",
+    "text": "Babcia said don't go down the salt. She never said anything about {up}."
+  },
+  "PEG_M4C_ARRIVE_01": {
+    "speaker": "PEG",
+    "category": "M4C_ARRIVE",
+    "text": "An American test range. In the middle of nowhere. ...Why does it have my {crate}."
+  },
+  "PEG_M4C_CRATE_01": {
+    "speaker": "PEG",
+    "category": "M4C_CRATE",
+    "text": "Yes. I signed for it. In April, on a dock, in the dark. It was going to London. It was always going to end up here. I didn't know that. I should {have}."
+  },
+  "PEG_M4C_CRATE_02": {
+    "speaker": "PEG",
+    "category": "M4C_CRATE",
+    "text": "Directive LANTERN. Retrieve at any cost. Report to Mr. Hale. ...He's in the office. He's been in the office the whole {time}."
+  },
+  "PEG_M4C_HALE_01": {
+    "speaker": "PEG",
+    "category": "M4C_HALE",
+    "text": "Mr. {Hale}."
+  },
+  "PEG_M4C_RESIGN_01": {
+    "speaker": "PEG",
+    "category": "M4C_RESIGN",
+    "text": "Mr. Hale. Consider this my {notice}."
+  },
+  "PEG_M4C_DELIVER_01": {
+    "speaker": "PEG",
+    "category": "M4C_DELIVER",
+    "text": "...Orders are orders. ...I used to find that {comforting}."
+  },
+  "PEG_M4C_CARRY_01": {
+    "speaker": "PEG",
+    "category": "M4C_CARRY",
+    "text": "It's heavier the second {time}."
+  },
+  "PEG_M4C_PILOT_01": {
+    "speaker": "PEG",
+    "category": "M4C_PILOT",
+    "text": "Shoot the rig. Dee said the {rig}."
+  },
+  "PEG_M4C_ROCKET_01": {
+    "speaker": "PEG",
+    "category": "M4C_ROCKET",
+    "text": "They named it after my orders. LANTERN. ...Well. Let's see it light {something}."
+  },
+  "PEG_M4C_MOON_01": {
+    "speaker": "PEG",
+    "category": "M4C_MOON",
+    "text": "I've written a great many reports. I shan't be writing this {one}."
+  },
+  "DEA_M4C_ARRIVE_01": {
+    "speaker": "DEA",
+    "category": "M4C_ARRIVE",
+    "text": "That's a hangar. That's an honest-to-God American hangar. ...Why's it got their forge in {it}."
+  },
+  "DEA_M4C_POWER_01": {
+    "speaker": "DEA",
+    "category": "M4C_POWER",
+    "text": "Diesel. Thank you, Lord, for diesel. Something I {understand}."
+  },
+  "DEA_M4C_CABINET_01": {
+    "speaker": "DEA",
+    "category": "M4C_CABINET",
+    "text": "They painted over it. Painted right over the fella's words on the back. Somebody scraped 'em clear again. {Good}."
+  },
+  "DEA_M4C_LODESTONE_01": {
+    "speaker": "DEA",
+    "category": "M4C_LODESTONE",
+    "text": "...It's pulling. It's listening. Easy now. {Easy}."
+  },
+  "DEA_M4C_BUILD_01": {
+    "speaker": "DEA",
+    "category": "M4C_BUILD",
+    "text": "Dee, ma'am, you built a reactor into a lantern. I'd marry you if I wasn't spoken {for}."
+  },
+  "DEA_M4C_CANARY_01": {
+    "speaker": "DEA",
+    "category": "M4C_CANARY",
+    "text": "Don't break the glass. God, don't break the {glass}."
+  },
+  "DEA_M4C_HALE_01": {
+    "speaker": "DEA",
+    "category": "M4C_HALE",
+    "text": "Sir. With respect. You put men in glass boxes. I've got nothing else to say to {you}."
+  },
+  "DEA_M4C_MOON_01": {
+    "speaker": "DEA",
+    "category": "M4C_MOON",
+    "text": "'The heavens declare the glory of God.' ...Somebody's put a light on 'em. We're gonna go switch it {off}."
+  },
+  "WRN_M4C_ARRIVE_01": {
+    "speaker": "WRN",
+    "category": "M4C_ARRIVE",
+    "text": "A desert. I've never seen one. It's like the salt. It's exactly like the {salt}."
+  },
+  "WRN_M4C_CRATE_01": {
+    "speaker": "WRN",
+    "category": "M4C_CRATE",
+    "text": "I told you at the pens. I told you I'd seen it. ...You should have said, Peg. You should have just {said}."
+  },
+  "WRN_M4C_RESIGN_01": {
+    "speaker": "WRN",
+    "category": "M4C_RESIGN",
+    "text": "—"
+  },
+  "WRN_M4C_CANARY_01": {
+    "speaker": "WRN",
+    "category": "M4C_CANARY",
+    "text": "They're in suits. They put them in suits and glass. Who DOES {that}."
+  },
+  "WRN_M4C_BACKORDER_01": {
+    "speaker": "WRN",
+    "category": "M4C_BACKORDER",
+    "text": "It walks through the wall. It walks through the WALL. I can't count it. I have to count {it}."
+  },
+  "WRN_M4C_PILOT_01": {
+    "speaker": "WRN",
+    "category": "M4C_PILOT",
+    "text": "In the air. I'll take him in the air. ...{There}."
+  },
+  "WRN_M4C_MOON_01": {
+    "speaker": "WRN",
+    "category": "M4C_MOON",
+    "text": "Sowa said you can hit anything if you've already hit it in your head. I've never hit the Moon in my {head}."
+  },
+  "JAK_M4C_ARRIVE_01": {
+    "speaker": "JAK",
+    "category": "M4C_ARRIVE",
+    "text": "Dry. Everything is dry. I have never stood anywhere {dry}."
+  },
+  "JAK_M4C_ROCKET_01": {
+    "speaker": "JAK",
+    "category": "M4C_ROCKET",
+    "text": "I have ridden worse coal {wagons}."
+  },
+  "SPR_M4C_HALE_01": {
+    "speaker": "SPR",
+    "category": "M4C_HALE",
+    "text": "Sir. SIR. I've seen your brochure. The brochure is {BAD}."
+  },
+  "SPR_M4C_RELAY_01": {
+    "speaker": "SPR",
+    "category": "M4C_RELAY",
+    "text": "That's a relay uplink. RR-series. I've seen the SCHEMATIC, it was in a MEMO, memo thirty-eight, I forwarded it to forty billion people, NOBODY READ {IT}."
+  },
+  "VEN_M4C_CABINET_01": {
+    "speaker": "VEN",
+    "category": "M4C_CABINET",
+    "text": "...They localized {me}."
+  },
+  "VEN_M4C_CABINET_02": {
+    "speaker": "VEN",
+    "category": "M4C_CABINET",
+    "text": "The panel is still here. Under the paint. Someone scraped it clear. Someone read it. ...{Hello}."
   }
 }

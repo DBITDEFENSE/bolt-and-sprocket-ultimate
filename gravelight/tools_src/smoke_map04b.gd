@@ -14,7 +14,7 @@ extends Node
 ##      reaches his cable phase at 60 %, dies by console and drops the autopilot key; the bomb run starts on
 ##      round 19 (act 5): rack 1 is away, two racks are jammed by console, the run finishes with flags per city
 ##   7. the autopilot: the egg's flag lights the cradle early, the key gate, the unlock stage, the 6 s rip-out
-##      vote, the crash cutscene at speed, and (no Act III scene in this build) the "campaign continues" screen
+##      vote, the crash cutscene at speed, and Act III loading with the carry-over (round 21 = "ACT III · 1")
 ## Usage: godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/smoke_map04b.tscn
 
 const MAP: String = "res://gravelight/maps/map04_fernflug/map04b.tscn"
@@ -140,6 +140,8 @@ func _exfil() -> ExfilPoint:
 
 
 func _end_screen() -> Node:
+	if _map == null or not is_instance_valid(_map):
+		return null
 	for c: Node in _map.get_children():
 		if c is CampaignEndScreen:
 			return c
@@ -425,11 +427,40 @@ func _run() -> void:
 	await _frames(2)
 	_check(x.state == ExfilPoint.State.DEPARTING and x.cutscene != null and is_instance_valid(x.cutscene), "the vote passed: the crash cutscene plays")
 	print("[m4b] Act III scene present: %s" % str(Campaign.scene_exists(&"map04c_groomlake")))
-	var ended: bool = await _until(func() -> bool: return _end_screen() != null, 90.0)
-	_check(ended, "no Act III in this build: the 'campaign continues' screen showed after the crash")
-	_check(GameState.phase == GameState.Phase.GAME_OVER, "the run ended cleanly (phase GAME_OVER)")
+	if Campaign.scene_exists(&"map04c_groomlake"):
+		# the crash lands the squad on the salt: Act III loads with the carry-over and its own numbering
+		var swapped: bool = await _until(func() -> bool:
+			var m: MapRoot = _map_root()
+			return m != null and m.map_id == &"map04c_groomlake" and m.is_node_ready(), 120.0)
+		_check(swapped, "Groom Lake loaded after the crash cutscene")
+		if swapped:
+			await _secs(2.0)
+			var m3: MapRoot = _map_root()
+			# the smoke left the Kranich during round 19 (by console), so the act continues from there: the arrival
+			# round is the act's first round, whatever it is (the campaign's own run leaves on 20 and arrives on 21)
+			var arrive: int = RoundManager.current_round + 1
+			_check(RoundManager.state == RoundManager.State.BREAK and arrive >= 20, "Act III starts in the arrival grace, round %d next (state %d)" % [arrive, RoundManager.state])
+			_check(RoundManager.act_start == arrive and RoundManager.act_label(arrive) == "ACT III · 1", "the arrival round reads 'ACT III · 1' (" + RoundManager.act_label(arrive) + ")")
+			_check(m3.players.size() == 4, "the same squad came down (1 human + 3 bots)")
+			var hp: Player = m3.player
+			_check(hp != null and hp.weapons.find_weapon(&"thompson_up") != null and hp.weapons.find_weapon(&"mp40_up") != null, "the human's guns carried (Thompson II, the forged MP40)")
+			_check(PerkManager.owned(1).has(&"ironhide_stout"), "the perks carried")
+			var x3: ExfilPoint = _exfil()
+			_check(x3 != null and x3.state == ExfilPoint.State.DORMANT and x3.next_round() == RoundManager.act_start + 8, "the gantry lift is dormant, due on act round 9 (match %s)" % (str(x3.next_round()) if x3 != null else "none"))
+			_check(m3.get_node_or_null("Gameplay/GroomController") != null, "the GroomController is on the salt")
+	else:
+		var ended: bool = await _until(func() -> bool: return _end_screen() != null, 90.0)
+		_check(ended, "no Act III in this build: the 'campaign continues' screen showed after the crash")
+		_check(GameState.phase == GameState.Phase.GAME_OVER, "the run ended cleanly (phase GAME_OVER)")
 	_check(ProfileSave.is_map_unlocked(&"map04c_groomlake"), "profile: Groom Lake unlocked by the exfil")
 	_finish()
+
+
+func _map_root() -> MapRoot:
+	for c: Node in get_tree().root.get_children():
+		if c is MapRoot:
+			return c as MapRoot
+	return null
 
 
 func _finish() -> void:
