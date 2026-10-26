@@ -295,8 +295,90 @@ def main_from(living, size=1024):
     orm[..., 3] = 1.0
     save_png(orm, os.path.join(d, names["orm"]), False)
     print("[make_textures] %s set -> %s" % ("living" if living else "zombie", d))
+    if not living:
+        save_emblem()
+
+
+
+
+# ---------------------------------------------------------------- the armband emblem (docs/ART_FACTIONS.md)
+
+def emblem(size_w=256, size_h=160):
+    """Projekt Wiederkehr's Sunburst-and-Split-Bell, black on field-grey armband wool, P.W.K below.
+    Fictional: 11 blunt rays of alternating length over a horizon (a half-disc, no face, no eagle), a bell split
+    down the middle whose halves lean apart, the gap a tenth of the bell's width at the mouth. Never violet."""
+    h, w = size_h, size_w
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float64)
+    img = np.zeros((h, w, 4))
+    rng = np.random.default_rng(7)
+    wool = 0.30 + 0.04 * rng.standard_normal((h, w))
+    img[..., 0] = wool * 0.98
+    img[..., 1] = wool
+    img[..., 2] = wool * 0.9
+    img[..., 3] = 1.0
+    ink = np.zeros((h, w), dtype=bool)
+    cx, hy = w * 0.5, h * 0.56          # horizon
+    r_long, r_short, r_in = h * 0.44, h * 0.33, h * 0.2
+    dx, dy = xx - cx, hy - yy
+    ang = np.arctan2(dy, dx)
+    rad = np.hypot(dx, dy)
+    above = (dy > 0) & (dy < h)
+    for i in range(11):
+        a = math.pi * (i + 0.5) / 11.0
+        length = r_long if i % 2 == 0 else r_short
+        half = math.radians(3.6)
+        ink |= above & (np.abs(ang - a) < half) & (rad > r_in) & (rad < length)
+    ink |= (np.abs(yy - hy) < h * 0.018) & (np.abs(dx) < r_long)          # horizon line
+    # the split bell: two halves leaning apart 4 degrees, over the horizon
+    bw, bh = h * 0.15, h * 0.2
+    for side in (-1.0, 1.0):
+        lean = math.radians(4.0) * side
+        # local frame of the half, pivot at the bell's crown
+        px = (xx - cx) * math.cos(lean) + (yy - (hy - bh)) * math.sin(lean)
+        py = -(xx - cx) * math.sin(lean) + (yy - (hy - bh)) * math.cos(lean)
+        t = np.clip(py / bh, 0.0, 1.0)
+        halfw = bw * (0.42 + 0.58 * t ** 1.6)
+        gap = bw * 0.05 * t + 1.0
+        inside = (py >= 0) & (py <= bh) & (side * px > gap) & (side * px < halfw)
+        ink |= inside
+    # P.W.K in blocky strokes under the horizon
+    def stroke(x0, y0, x1, y1, t=2.6):
+        d = np.array([x1 - x0, y1 - y0])
+        ln = max(np.hypot(*d), 1e-6)
+        u = ((xx - x0) * d[0] + (yy - y0) * d[1]) / (ln * ln)
+        u = np.clip(u, 0, 1)
+        px = x0 + u * d[0]
+        py = y0 + u * d[1]
+        return np.hypot(xx - px, yy - py) < t
+    top, bot = h * 0.68, h * 0.9
+    mid = (top + bot) * 0.5
+    lx = w * 0.33
+    letters = [
+        [(0, top, 0, bot), (0, top, 9, top), (9, top, 11, top + 3), (11, top + 3, 11, mid - 3), (11, mid - 3, 9, mid), (9, mid, 0, mid)],   # P
+        [(0, top, 3, bot), (3, bot, 7, mid), (7, mid, 11, bot), (11, bot, 14, top)],                                                           # W
+        [(0, top, 0, bot), (12, top, 0, mid), (3, mid - 1, 12, bot)],                                                                           # K
+    ]
+    x = lx
+    for li, strokes in enumerate(letters):
+        for (a, b, c, d) in strokes:
+            ink |= stroke(x + a, b, x + c, d)
+        x += 16 + (3 if li == 1 else 0)
+        if li < 2:
+            ink |= np.hypot(xx - (x + 2), yy - mid) < 2.4      # the interpuncts
+            x += 8
+    img[ink, 0:3] = 0.04
+    return img[::-1]   # Blender images start at the bottom row
+
+
+def save_emblem():
+    d = os.path.join(MB.REPO, "assets", "ours", "characters", "zombie_base")
+    save_png(emblem(), os.path.join(d, "tex_armband_wiederkehr.png"), True)
+    print("[make_textures] armband emblem")
 
 
 if __name__ == "__main__":
     av = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
-    main_from("--living" in av, int(next((s.split("=")[1] for s in av if s.startswith("--size=")), 1024)))
+    if "--emblem" in av:
+        save_emblem()
+    else:
+        main_from("--living" in av, int(next((s.split("=")[1] for s in av if s.startswith("--size=")), 1024)))

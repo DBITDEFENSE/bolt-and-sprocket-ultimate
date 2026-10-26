@@ -15,7 +15,8 @@ extends Node
 ##   za_11_lineup_a/b   T-091: every kit on every build and sex it spawns with (anim.json kits), standing (new only)
 ##   za_12..16          T-091 close-ups, BEFORE (the procedural MZ bodies, ZombieBody.legacy_bodies) on the left and
 ##                      AFTER (the modelled bodies) on the right: 12 front, 13 side, 14 damaged (a forearm, an arm
-##                      and the jaw off, wounds), 15 crawler, 16 ragdoll (two seconds after a kill); 17 a face close-up
+##                      and the jaw off, wounds), 15 crawler, 16 ragdoll (two seconds after a kill); 17 a face close-up;
+##                      18 the living set (ZombieBody.build_living) the people builder starts from
 ## Usage (silent, off-screen, no mouse capture):
 ##   godot --audio-driver Dummy --position -4000,-4000 --resolution 1600x900 --path . res://gravelight/tools_src/shots_zombie_anim.tscn -- --out=<dir> [--only=emerge]
 
@@ -571,4 +572,21 @@ func _scene_lineup() -> void:
 	_cam.fov = 40
 	await get_tree().create_timer(0.6).timeout
 	await _shot("17_faces")
+	_clear()
+	# the living set for the people builder (ZombieBody.build_living): plain eyes, warm skin, no Nachtglas
+	_label.text = "18 living humans (ZombieBody.build_living, the people builder's base): villager m / f, labstaff f, soldier"
+	var liv: Array = [["villager", "medium", false], ["villager", "thin", true], ["labstaff", "medium", true], ["soldier", "heavy", false]]
+	for i: int in liv.size():
+		var lv: Array = liv[i]
+		var z5: Zombie = _stand({"enemy_id": "ganger", "tier": "walk", "health": 300, "variant": lv[0]}, Vector3(1.2 - 0.8 * float(i), 0, 0.0))
+		z5.body_mesh().mesh = ZombieBody.build_living(lv[0], lv[1], lv[2])
+		for g: Node in z5.find_children("*", "MeshInstance3D", true, false):
+			if g != z5.body_mesh() and g.get_parent() is BoneAttachment3D:
+				(g as MeshInstance3D).hide()   # no zombie gear
+		z5.set_posture("none", 0.0)
+	_cam.position = Vector3(0, 1.45, -3.2)
+	_cam.rotation_degrees = Vector3(-6, 180, 0)
+	_cam.fov = 50
+	await get_tree().create_timer(1.0).timeout
+	await _shot("18_living")
 	_clear()

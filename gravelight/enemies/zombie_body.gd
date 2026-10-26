@@ -589,6 +589,13 @@ const DETAIL: Dictionary = {"cloth": 1, "cloth2": 1, "navy": 1, "hat": 1, "armba
 static func char_cfg() -> Dictionary:
 	if _char_cfg.is_empty():
 		_char_cfg = GLData.load_json(CHARACTERS_JSON)
+		# bench A/B switches (docs/gravelight/PERFORMANCE.md, T-091): `-- --legacy-bodies` runs the pre-T-091
+		# procedural bodies, `-- --body-lod=auto|none` overrides characters.json lod.mode
+		for a: String in OS.get_cmdline_user_args():
+			if a == "--legacy-bodies":
+				legacy_bodies = true
+			elif a.begins_with("--body-lod="):
+				(_char_cfg["lod"] as Dictionary)["mode"] = a.substr(11)
 	return _char_cfg
 
 
@@ -599,6 +606,22 @@ static func body_path(build: String, female: bool, living: bool = false) -> Stri
 	if living:
 		dir = dir.get_base_dir().path_join("human_base")
 	return dir.path_join(str(c.get("living_file" if living else "zombie_file", "")) % ["f" if female else "m", build])
+
+
+## A living human (the people builder's entry point, docs/CHARACTER_PIPELINE.md): the human_base GLB for the
+## build / sex, dressed in `kit` ("" = none; any ZombieBody.KITS kit fits every body), skin `tone` (linear), the
+## living skin set (no Nachtglas, plain eyes). Same two-surface layout, rig and LODs as a zombie, so ZombieRig,
+## ZombieClips and BoneAttachment3D gear work unchanged. Cached per kit / build / sex / tone.
+static func build_living(kit: String, build: String = "medium", female: bool = false, tone: Color = Color(0.62, 0.5, 0.44)) -> ArrayMesh:
+	var key: String = "living:%s:%s" % [_cache_key(kit, build, female), tone.to_html()]
+	if _meshes.has(key):
+		return _meshes[key]
+	var base: Dictionary = base_parts(build, female, true)
+	if not base.has("Body"):
+		return build_skinned(kit if kit != "" else "villager", build, female)
+	var mesh: ArrayMesh = _merge_glb(base, kit, female, true, Color(tone.r, tone.g, tone.b, 1.0))
+	_meshes[key] = mesh
+	return mesh
 
 
 ## Every mesh object of a body GLB as surface arrays, the skin's bind indices remapped to ZombieRig bone indices
@@ -663,10 +686,10 @@ static func hair_for(kit: String, female: bool) -> String:
 ## carry the kit's bit), surface 1 = the face parts, the hair and the kit's clothes (vertex colour = the part key's
 ## look x baked AO, CUSTOM0 = roughness / metallic / emission / detail class, CUSTOM1 = rest position). With
 ## characters.json lod.mode "auto" Godot's mesh LODs are generated on the result (no extra nodes or draw calls).
-static func _merge_glb(base: Dictionary, kit: String, female: bool, living: bool = false) -> ArrayMesh:
+static func _merge_glb(base: Dictionary, kit: String, female: bool, living: bool = false, tone_override: Color = Color(0, 0, 0, 0)) -> ArrayMesh:
 	var keys: Array = part_keys()
 	var bit: int = kit_bit(kit)
-	var tone: Color = _look(kit, "skin")[0]
+	var tone: Color = _look(kit, "skin")[0] if tone_override.a <= 0.0 else tone_override
 	var flags: int = (Mesh.ARRAY_CUSTOM_RGBA_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM0_SHIFT) | (Mesh.ARRAY_CUSTOM_RGBA_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM1_SHIFT)
 	# ---- surface 0: skin
 	var b: Array = base["Body"]
@@ -903,6 +926,7 @@ static func _cache_key(kit: String, build: String, female: bool) -> String:
 ## the body and its clothes come from the Blender-built GLBs (`base_parts`, `_merge_glb`); the procedural primitives
 ## below stay as the fallback when a GLB is missing (a checkout that has not imported yet).
 static func build_skinned(kit: String, build: String = "medium", female: bool = false) -> ArrayMesh:
+	char_cfg()
 	var key: String = ("legacy:" if legacy_bodies else "") + "skinned:" + _cache_key(kit, build, female)
 	if _meshes.has(key):
 		return _meshes[key]
@@ -1025,6 +1049,10 @@ static func stump_mesh() -> ArrayMesh:
 	return _stump
 
 
+## The Projekt Wiederkehr armband mark (tools_src/blender/characters/make_textures.py emblem(), ART_FACTIONS.md).
+const EMBLEM_TEX: String = "res://assets/ours/characters/zombie_base/tex_armband_wiederkehr.png"
+
+
 ## Gear pieces hung on a bone attachment: name -> [bone, ArrayMesh]. Rolled per instance from the kit's gear table.
 static func gear_mesh(piece: String, female: bool = false) -> Array:
 	var key: String = "gear:%s:%s" % [piece, "f" if female else "m"]
@@ -1069,8 +1097,8 @@ static func gear_mesh(piece: String, female: bool = false) -> Array:
 				_box(Vector3(0.07, 0.22, 0.012), Vector3(0.05, 0.17, -0.13), "knit", Vector3(0.1, 0, 0.15))]
 		"armband":
 			bone = "LeftUpperArm"
-			parts = [_cyl(0.062, 0.058, 0.045, Vector3(0, -0.11, 0), "armband", Vector3.ZERO, Vector3.ONE, 9, false),
-				_box(Vector3(0.028, 0.03, 0.006), Vector3(-0.058, -0.11, 0), "patch")]
+			# T-091: sized for the modelled sleeves; the Wiederkehr mark (docs/ART_FACTIONS.md) is a textured patch
+			parts = [_cyl(0.081, 0.078, 0.05, Vector3(0, -0.11, 0), "armband", Vector3.ZERO, Vector3.ONE, 12, false)]
 		"sling":
 			bone = "Chest"
 			parts = [_box(Vector3(0.035, 0.6, 0.014), Vector3(0.0, 0.13, -0.122), "leather", Vector3(0, 0, 0.72))]
@@ -1091,6 +1119,17 @@ static func gear_mesh(piece: String, female: bool = false) -> Array:
 			bone = "Spine"
 			parts = [_cyl(0.19, 0.3, 0.7, Vector3(0, -0.3, 0.01), "oilskin", Vector3.ZERO, Vector3(1.05, 1, 0.85), 11, false)]
 	var m: ArrayMesh = build_mesh("_", parts)
+	if piece == "armband" and ResourceLoader.exists(EMBLEM_TEX):
+		var q: QuadMesh = QuadMesh.new()
+		q.size = Vector2(0.075, 0.047)
+		var st: SurfaceTool = SurfaceTool.new()
+		st.append_from(q, 0, Transform3D(Basis(Vector3.UP, -PI * 0.5), Vector3(-0.0835, -0.11, 0)))
+		st.commit(m)
+		var em: StandardMaterial3D = StandardMaterial3D.new()
+		em.albedo_texture = load(EMBLEM_TEX)
+		em.roughness = 0.95
+		m.surface_set_material(m.get_surface_count() - 1, em)
+		m.surface_set_name(m.get_surface_count() - 1, "emblem")
 	var out: Array = [bone, m]
 	_meshes[key] = out
 	return out

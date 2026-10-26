@@ -156,3 +156,25 @@ func test_skin_material_has_painted_maps() -> void:
 
 func _tris(a: Array) -> int:
 	return (a[Mesh.ARRAY_INDEX] as PackedInt32Array).size() / 3
+
+
+func test_living_set_for_the_people_builder() -> void:
+	var base: Dictionary = ZombieBody.base_parts("medium", true, true)
+	if not base.has("Body"):
+		pending("human_base GLBs not built (tools/build_characters.sh --living)")
+		return
+	var m: ArrayMesh = ZombieBody.build_living("villager", "medium", true)
+	assert_eq(m.get_surface_count(), 2)
+	var mat: ShaderMaterial = m.surface_get_material(0) as ShaderMaterial
+	assert_eq(float(mat.get_shader_parameter("crack_energy")), 0.0, "no Nachtglas on the living")
+	assert_eq(float(mat.get_shader_parameter("vein_energy")), 0.0)
+	# plain eyes: no emissive part key on the living face
+	var kit: Array = m.surface_get_arrays(1)
+	var cus: PackedFloat32Array = kit[Mesh.ARRAY_CUSTOM0]
+	var glow: int = 0
+	for i: int in range(0, cus.size(), 4):
+		if cus[i + 2] > 1.0:
+			glow += 1
+	assert_eq(glow, 0, "no glowing eyes")
+	assert_same(ZombieBody.build_living("villager", "medium", true), m, "cached")
+	assert_eq(ZombieBody.build_living("", "thin", false).get_surface_count(), 2, "an undressed body still has the face parts surface")
