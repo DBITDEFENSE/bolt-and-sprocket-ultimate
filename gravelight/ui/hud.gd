@@ -13,6 +13,7 @@ const SCRIP_COL: Color = Color(0.95, 0.86, 0.55)
 var player: Player
 var _stamp_panel: PanelContainer
 var _stamp_label: Label
+var _act_label: Label = null
 var _scrip_label: Label
 var _scrip_anchor: Control
 var _ammo_label: Label
@@ -115,6 +116,16 @@ func _ready() -> void:
 	_stamp_panel.add_child(holder)
 	_stamp_panel.visible = false
 	root.add_child(_stamp_panel)
+	# the act line under the stamp on Map 4's acts ("ACT I · 7"; UPDATE 07), placed under the panel each round
+	_act_label = Label.new()
+	_act_label.add_theme_font_override("font", MenuKit.stamp_font())
+	_act_label.add_theme_font_size_override("font_size", maxi(12, int(fs * 0.3)))
+	_act_label.add_theme_color_override("font_color", INK)
+	MenuKit.outline(_act_label, "stamp")
+	_act_label.visible = false
+	_act_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_act_label.rotation = deg_to_rad(-5.0)
+	root.add_child(_act_label)
 	# bottom-right column: Scrip, the gun, ammo, grenades (counters in the mono face so digits line up)
 	_br = VBoxContainer.new()
 	_br.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
@@ -300,6 +311,12 @@ func show_banner(text: String, hold: float = 3.0) -> void:
 func _on_round_started(round_number: int, special: bool) -> void:
 	_stamp_panel.visible = true
 	_stamp_label.text = str(round_number)
+	if _act_label != null:
+		_act_label.text = RoundManager.act_label(round_number)
+		_act_label.visible = _act_label.text != ""
+		(func() -> void:
+			if is_instance_valid(_act_label) and is_instance_valid(_stamp_panel):
+				_act_label.position = _stamp_panel.position + Vector2(2.0, _stamp_panel.size.y + 4.0)).call_deferred()
 	_stamp_panel.pivot_offset = _stamp_panel.size * 0.5
 	_stamp_panel.scale = Vector2(1.9, 1.9)
 	_stamp_panel.modulate.a = 0.0

@@ -7590,127 +7590,127 @@
  },
  "OPR_ECO_MILESTONE_01": {
   "speaker": "OPR",
-  "category": "MILESTONE",
+  "category": "ECO_MILESTONE",
   "text": "Five rounds with us! For our loyal {customers}: a little something from the cellar, and a fresh ration of lead."
  },
  "OPR_ECO_MILESTONE_02": {
   "speaker": "OPR",
-  "category": "MILESTONE",
+  "category": "ECO_MILESTONE",
   "text": "A milestone! The management sends its compliments. And a {bottle}."
  },
  "OPR_ECO_MILESTONE_03": {
   "speaker": "OPR",
-  "category": "MILESTONE",
+  "category": "ECO_MILESTONE",
   "text": "Still breathing? How {unusual}. Have one on the house."
  },
  "OPR_ECO_PWR_TONIC_01": {
   "speaker": "OPR",
-  "category": "PWR_TONIC",
+  "category": "ECO_PWR_TONIC",
   "text": "A tonic, on the house! Drink up, it's already {paid} for."
  },
  "OPR_ECO_PWR_TONIC_02": {
   "speaker": "OPR",
-  "category": "PWR_TONIC",
+  "category": "ECO_PWR_TONIC",
   "text": "Complimentary refreshment for every {guest}!"
  },
  "OPR_ECO_PWR_TONIC_03": {
   "speaker": "OPR",
-  "category": "PWR_TONIC",
+  "category": "ECO_PWR_TONIC",
   "text": "One bottle each. The ledger is feeling {sentimental}."
  },
  "OPR_ECO_BONUS_CLEAN_01": {
   "speaker": "OPR",
-  "category": "BONUS_CLEAN",
+  "category": "ECO_BONUS_CLEAN",
   "text": "Not a scratch! The house rewards a {spotless} account."
  },
  "OPR_ECO_BONUS_CLEAN_02": {
   "speaker": "OPR",
-  "category": "BONUS_CLEAN",
+  "category": "ECO_BONUS_CLEAN",
   "text": "A clean round! Bonus paid, with our {admiration}."
  },
  "OPR_ECO_BONUS_STREAK_01": {
   "speaker": "OPR",
-  "category": "BONUS_STREAK",
+  "category": "ECO_BONUS_STREAK",
   "text": "Five in the head, five in a row! A marksman's {bonus}!"
  },
  "OPR_ECO_BONUS_STREAK_02": {
   "speaker": "OPR",
-  "category": "BONUS_STREAK",
+  "category": "ECO_BONUS_STREAK",
   "text": "Such tidy work. The ledger pays extra for {neatness}."
  },
  "OPR_ECO_BONUS_SALVAGE_01": {
   "speaker": "OPR",
-  "category": "BONUS_SALVAGE",
+  "category": "ECO_BONUS_SALVAGE",
   "text": "Ah, a keepsake! Hand those in, we pay for every {name}."
  },
  "OPR_ECO_BONUS_SALVAGE_02": {
   "speaker": "OPR",
-  "category": "BONUS_SALVAGE",
+  "category": "ECO_BONUS_SALVAGE",
   "text": "Tags returned to the office! A small {finder's} fee."
  },
  "DUT_ECO_PWR_TONIC_01": {
   "speaker": "DUT",
-  "category": "PWR_TONIC",
+  "category": "ECO_PWR_TONIC",
   "text": "Free drink. First thing in this war that didn't cost me."
  },
  "PEG_ECO_PWR_TONIC_01": {
   "speaker": "PEG",
-  "category": "PWR_TONIC",
+  "category": "ECO_PWR_TONIC",
   "text": "A complimentary tonic. I shan't ask what's in it."
  },
  "DEA_ECO_PWR_TONIC_01": {
   "speaker": "DEA",
-  "category": "PWR_TONIC",
+  "category": "ECO_PWR_TONIC",
   "text": "Bottle for everybody. Drink it slow, it's all we get."
  },
  "WRN_ECO_PWR_TONIC_01": {
   "speaker": "WRN",
-  "category": "PWR_TONIC",
+  "category": "ECO_PWR_TONIC",
   "text": "A gift. Nothing here is a gift. Drink anyway."
  },
  "DUT_ECO_PING_TONIC_01": {
   "speaker": "DUT",
-  "category": "PING_TONIC",
+  "category": "ECO_PING_TONIC",
   "text": "Bottle on the floor! Grab it!"
  },
  "PEG_ECO_PING_TONIC_01": {
   "speaker": "PEG",
-  "category": "PING_TONIC",
+  "category": "ECO_PING_TONIC",
   "text": "A tonic bottle, over here!"
  },
  "DEA_ECO_PING_TONIC_01": {
   "speaker": "DEA",
-  "category": "PING_TONIC",
+  "category": "ECO_PING_TONIC",
   "text": "Bottle here! One for each of us."
  },
  "WRN_ECO_PING_TONIC_01": {
   "speaker": "WRN",
-  "category": "PING_TONIC",
+  "category": "ECO_PING_TONIC",
   "text": "Bottle. Here."
  },
  "JAK_ECO_PING_TONIC_01": {
   "speaker": "JAK",
-  "category": "PING_TONIC",
+  "category": "ECO_PING_TONIC",
   "text": "A bottle, over there! For you, not for me."
  },
  "DUT_ECO_SALVAGE_01": {
   "speaker": "DUT",
-  "category": "BONUS_SALVAGE",
+  "category": "ECO_SALVAGE",
   "text": "Dog tags. Somebody's boy. I'll carry 'em."
  },
  "PEG_ECO_SALVAGE_01": {
   "speaker": "PEG",
-  "category": "BONUS_SALVAGE",
+  "category": "ECO_SALVAGE",
   "text": "Tags. Someone ought to know where he ended up."
  },
  "DEA_ECO_SALVAGE_01": {
   "speaker": "DEA",
-  "category": "BONUS_SALVAGE",
+  "category": "ECO_SALVAGE",
   "text": "Tags. Rest easy, son. I've got your name."
  },
  "WRN_ECO_SALVAGE_01": {
   "speaker": "WRN",
-  "category": "BONUS_SALVAGE",
+  "category": "ECO_SALVAGE",
   "text": "A name. They had names, once."
  },
  "DUT_SQ7_M0_EGG_HEARD_01": {
@@ -8147,5 +8147,65 @@
   "speaker": "WRN",
   "category": "EE_COMMIT_SELF",
   "text": "You are busy. I do the last one."
+ },
+ "OPR_M4A_ARRIVE_01": {
+  "speaker": "OPR",
+  "category": "M4A_ARRIVE",
+  "text": "Market localization complete. Welcome back, valued {customers}. You're in a new territory."
+ },
+ "OPR_M4A_ARRIVE_02": {
+  "speaker": "OPR",
+  "category": "M4A_ARRIVE",
+  "text": "Thalbach. A company town. We have always {liked} a company town."
+ },
+ "OPR_M4A_POWER_01": {
+  "speaker": "OPR",
+  "category": "M4A_POWER",
+  "text": "Power restored. Thank you for your patience. The works would like to {show} you something."
+ },
+ "OPR_M4A_HALLE_01": {
+  "speaker": "OPR",
+  "category": "M4A_HALLE",
+  "text": "The Great Hangar is now open. Please mind the {weather}."
+ },
+ "OPR_M4A_KRAN_SPAWN_01": {
+  "speaker": "OPR",
+  "category": "M4A_KRAN_SPAWN",
+  "text": "A valued colleague is joining us from above. He's been with the works a {long} time."
+ },
+ "OPR_M4A_KRAN_DEATH_01": {
+  "speaker": "OPR",
+  "category": "M4A_KRAN_DEATH",
+  "text": "The crane is... no longer in service. We'll let the {works} know."
+ },
+ "OPR_M4A_FLIEGER_01": {
+  "speaker": "OPR",
+  "category": "M4A_FLIEGER",
+  "text": "Visitors from the west. They've been told this is a fighter works. Nobody has {corrected} them."
+ },
+ "OPR_M4A_FLIEGER_END_01": {
+  "speaker": "OPR",
+  "category": "M4A_FLIEGER_END",
+  "text": "The visitors have moved on. Resupply has been {authorized}."
+ },
+ "OPR_EXFIL_OPEN_M4A_01": {
+  "speaker": "OPR",
+  "category": "EXFIL_OPEN_M4A",
+  "text": "Boarding has begun. The aircraft is prepared. The aircraft is very {prepared}."
+ },
+ "OPR_EXFIL_WAIT_M4A_01": {
+  "speaker": "OPR",
+  "category": "EXFIL_WAIT_M4A",
+  "text": "The aircraft will not wait indefinitely. The aircraft has somewhere to {be}."
+ },
+ "OPR_EXFIL_MISSED_M4A_01": {
+  "speaker": "OPR",
+  "category": "EXFIL_MISSED_M4A",
+  "text": "Boarding has closed. It will reopen. It {always} reopens."
+ },
+ "OPR_EXFIL_GO_M4A_01": {
+  "speaker": "OPR",
+  "category": "EXFIL_GO_M4A",
+  "text": "Boarding is now complete. Please take any {seat}."
  }
 }

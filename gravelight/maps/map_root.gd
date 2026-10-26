@@ -237,13 +237,21 @@ func _apply_coop_egg_slots() -> void:
 			PerkManager.add_bonus_slot(pid)
 
 
+## The story-prop / intel key of a map that keeps it in its json ("map_key", Map 4's acts: "4a".."4d"); "?" when none.
+static func json_map_key(id: StringName) -> String:
+	var path: String = "res://data/gravelight/%s.json" % String(id).get_slice("_", 0)
+	if not FileAccess.file_exists(path):
+		return "?"
+	return str(GLData.load_json(path).get("map_key", "?"))
+
+
 ## 3-5 Intel Archive pickups per match at random reachable spots inside the map's zones (not already found).
 ## Intel is personal: in co-op every peer places and finds its own (IntelPickup.net_local).
 ## Rows marked "placement": "fixed" (LORE.md section 13.1) are hand-placed StoryProps instead, always present.
 func _spawn_intel() -> void:
 	if map_id == &"test_range":
 		return
-	var map_key: String = "0" if map_id == &"map00_crossroads" else ("1" if map_id == &"map01_kaltenbrunn" else ("2" if map_id == &"map02_totenhafen" else "?"))
+	var map_key: String = "0" if map_id == &"map00_crossroads" else ("1" if map_id == &"map01_kaltenbrunn" else ("2" if map_id == &"map02_totenhafen" else json_map_key(map_id)))
 	StoryProp.spawn_all(self, map_key)
 	var pool: Array = []
 	for row: Dictionary in GLData.load_json("res://data/gravelight/intel.json").get("intel", []):

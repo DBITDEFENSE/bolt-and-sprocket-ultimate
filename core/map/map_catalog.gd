@@ -24,6 +24,13 @@ static func playable_levels() -> Array[Dictionary]:
 		if scene == "":
 			continue
 		out.append({"map_id": StringName(sid), "game": "gravelight", "scene": scene, "display_name": str(names.get(sid, sid))})
+	# levels built and playable from the launcher before they join the chain (UPDATE 07: Map 4's acts as they land)
+	for id2: Variant in camp.get("standalone", []):
+		var sid2: String = str(id2)
+		var scene3: String = str(scenes.get(sid2, ""))
+		if scene3 == "" or (camp.get("chain", []) as Array).has(sid2):
+			continue
+		out.append({"map_id": StringName(sid2), "game": "gravelight", "scene": scene3, "display_name": str(names.get(sid2, sid2))})
 	var planets: Dictionary = _json(PLANETS)
 	for row: Variant in planets.get("campaign", []):
 		var r: Dictionary = row as Dictionary

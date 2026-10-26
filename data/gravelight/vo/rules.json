@@ -365,7 +365,8 @@
    "OPR_EXFIL_ROAD_01",
    "OPR_TIDE_WARN_01",
    "OPR_TIDE_RISING_01"
-  ]
+  ],
+  "map04a": []
  },
  "slip_cooldown_s": 300.0,
  "slip_cooldown_hw_map03_s": 240.0,
@@ -581,10 +582,26 @@
  "squad_echo": {
   "_doc": "Squad anti-echo (T-073): once one survivor (or Jakub) has said a category, nobody else in the squad says it again for this many seconds (two bots both calling 'Reloading!', three 'Behind you!' for one runner). Category prefix -> seconds; the longest prefix wins. The speaker's own repeats are the cooldown's job. Downs, revives, map-mark and order acknowledgements are not listed: every bot answers for itself.",
   "categories": {
-   "RELOAD": 5.0, "AMMO_LOW": 10.0, "AMMO_NONE": 8.0, "SPRINTER_BEHIND": 4.0, "SCREAMER": 10.0, "CRAWLER": 12.0,
-   "GLASSHIDE": 12.0, "BOSS_INCOMING": 12.0, "FOREMAN": 12.0, "POWERUP_SEEN": 8.0, "CRATE_MOVED": 12.0,
-   "WINDOW_OPEN": 6.0, "HEADSHOT": 4.0, "STREAK": 12.0, "BOARD": 4.0, "COVER": 4.0, "BELL": 12.0, "CHATTER": 20.0,
-   "GRUMBLE": 10.0, "BUY_AMMO": 6.0
+   "RELOAD": 5.0,
+   "AMMO_LOW": 10.0,
+   "AMMO_NONE": 8.0,
+   "SPRINTER_BEHIND": 4.0,
+   "SCREAMER": 10.0,
+   "CRAWLER": 12.0,
+   "GLASSHIDE": 12.0,
+   "BOSS_INCOMING": 12.0,
+   "FOREMAN": 12.0,
+   "POWERUP_SEEN": 8.0,
+   "CRATE_MOVED": 12.0,
+   "WINDOW_OPEN": 6.0,
+   "HEADSHOT": 4.0,
+   "STREAK": 12.0,
+   "BOARD": 4.0,
+   "COVER": 4.0,
+   "BELL": 12.0,
+   "CHATTER": 20.0,
+   "GRUMBLE": 10.0,
+   "BUY_AMMO": 6.0
   }
  },
  "companion_speakers": [

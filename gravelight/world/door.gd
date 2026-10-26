@@ -16,6 +16,10 @@ const LAYER_DOOR: int = 1 << 8
 @export var link_group: StringName = &""
 ## The Lab Wing door can't be bought until the power is on.
 @export var requires_power: bool = false
+## A GameState flag the door also waits for (UPDATE 07: the Great Hangar opens at an act round or on the egg's files);
+## `requires_text` is the prompt until then.
+@export var requires_flag: StringName = &""
+@export var requires_text: String = "Not yet"
 
 var is_open: bool = false
 var _body: StaticBody3D
@@ -101,11 +105,13 @@ func get_prompt(_player: Player) -> String:
 		return ""
 	if requires_power and not GameState.power_on:
 		return "Power must be activated"
+	if requires_flag != &"" and not GameState.has_flag(requires_flag):
+		return requires_text
 	return "Hold [%s] to open %s [%d]" % [prompt_key(&"interact"), label, cost]
 
 
 func can_interact(_player: Player) -> bool:
-	return not is_open and (GameState.power_on or not requires_power)
+	return not is_open and (GameState.power_on or not requires_power) and (requires_flag == &"" or GameState.has_flag(requires_flag))
 
 
 func interact(player: Player) -> void:

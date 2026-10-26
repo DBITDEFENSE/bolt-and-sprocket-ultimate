@@ -8,6 +8,7 @@ const GL_MAPS: Array = [
 	["GRAVELIGHT — Crossroads Inn (Map 0)", "res://gravelight/maps/map00_crossroads/map00.tscn"],
 	["GRAVELIGHT — Kaltenbrunn (Map 1)", "res://gravelight/maps/map01_kaltenbrunn/map01.tscn"],
 	["GRAVELIGHT — Totenhafen (Map 2)", "res://gravelight/maps/map02_totenhafen/map02.tscn"],
+	["GRAVELIGHT — Map 4 Fernflug, Act I: Werk Thalbach", "res://gravelight/maps/map04_fernflug/map04a.tscn"],
 	["GRAVELIGHT — Test Range (dev)", "res://gravelight/maps/test_range/test_range.tscn"],
 ]
 ## [label, scene, round, boss id] boss tests: a GRAVELIGHT map started at a late round, the boss summoned in

@@ -17,6 +17,7 @@ const MAPS: Dictionary = {
 	"map00": "res://gravelight/maps/map00_crossroads/map00.tscn",
 	"map01": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
 	"map02": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+	"map04a": "res://gravelight/maps/map04_fernflug/map04a.tscn",
 }
 const PROFILE: String = "user://_bot_profile.json"
 const TURN_RATE: float = 7.0          # rad/s, a quick but human flick

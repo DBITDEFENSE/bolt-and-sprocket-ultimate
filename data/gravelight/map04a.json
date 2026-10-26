@@ -1,0 +1,292 @@
+{
+  "_doc": "Map 4 'Fernflug' Act I: Werk Thalbach (UPDATE 07, docs/MAP4_FERNFLUG.md §3, DECISIONS T-102/T-104). map_key: the story-prop / intel key (MapRoot._spawn_intel). act: the act block (RoundManager.act_round(): rounds relative to the act's start; the HUD shows 'ACT I · n'; halle_open_round: the Great Hangar door is buyable from this act round even if the three Fernflug files were never read (flag halle_unlocked); special_kind: the special round this act runs on the Bellringer scheduler; boss: the act's boss, reserved on its act round like the Cousins Round). power: the Hauptschalter in the Kraftzentrale (PowerSwitch config_table map04a). zones/doors/wall_buys/perks/roster/spawn_table: the graph the generator builds (gravelight/tests/unit/test_map04a_data.gd checks it against map04a.tscn). fliegeralarm: the special round's impact circles per zone (world positions), telegraph and shockwave numbers. exfil: the ramp beacon (Act I → Act II), lit at act round 15 or by the main egg's boarding step.",
+  "map_key": "4a",
+  "act": {
+    "index": 1,
+    "numeral": "I",
+    "length_rounds": 14,
+    "transition": "exfil",
+    "halle_open_round": 12,
+    "special_kind": "fliegeralarm",
+    "boss": {
+      "id": "kranfuehrer",
+      "round": 13,
+      "arena_zone": "H_HALLE",
+      "returns_after_rounds": 2
+    }
+  },
+  "power": {
+    "vo_delay": 1.5,
+    "light_sweep_start": 2.0,
+    "light_zone_gap": 0.6,
+    "burst_delay": 8.0,
+    "burst_count": 6,
+    "vo_line": "OPR_M4A_POWER_01"
+  },
+  "zones": {
+    "A_SIEDLUNG": {
+      "name": "Siedlung",
+      "level": 0,
+      "spawn": true
+    },
+    "B_BAHNHOF": {
+      "name": "Rail Yard",
+      "level": 0
+    },
+    "C_KANTINE": {
+      "name": "Canteen",
+      "level": 0
+    },
+    "D_KIRCHPLATZ": {
+      "name": "Church Square",
+      "level": 0
+    },
+    "E_MONTAGE": {
+      "name": "Assembly Halls",
+      "level": 0
+    },
+    "F_WINDKANAL": {
+      "name": "Wind Tunnel",
+      "level": 0
+    },
+    "G_PRUEFSTAND": {
+      "name": "Engine Test Stands",
+      "level": 0
+    },
+    "H_HALLE": {
+      "name": "The Great Hangar",
+      "level": 0,
+      "requires_power": true
+    }
+  },
+  "doors": [
+    {
+      "id": "door_bahnhof",
+      "from": "A_SIEDLUNG",
+      "to": "B_BAHNHOF",
+      "cost": 750
+    },
+    {
+      "id": "door_kantine",
+      "from": "B_BAHNHOF",
+      "to": "C_KANTINE",
+      "cost": 1000
+    },
+    {
+      "id": "door_kirchplatz",
+      "from": "B_BAHNHOF",
+      "to": "D_KIRCHPLATZ",
+      "cost": 1000
+    },
+    {
+      "id": "door_montage",
+      "from": "C_KANTINE",
+      "to": "E_MONTAGE",
+      "cost": 1250
+    },
+    {
+      "id": "door_windkanal",
+      "from": "D_KIRCHPLATZ",
+      "to": "F_WINDKANAL",
+      "cost": 1250
+    },
+    {
+      "id": "door_pruefstand",
+      "from": "E_MONTAGE",
+      "to": "G_PRUEFSTAND",
+      "cost": 1500,
+      "link_group": "pruefstand"
+    },
+    {
+      "id": "door_pruefstand",
+      "from": "F_WINDKANAL",
+      "to": "G_PRUEFSTAND",
+      "cost": 1500,
+      "link_group": "pruefstand"
+    },
+    {
+      "id": "door_halle",
+      "from": "G_PRUEFSTAND",
+      "to": "H_HALLE",
+      "cost": 2000,
+      "requires_power": true
+    }
+  ],
+  "wall_buys": [
+    "kar98k",
+    "m1_carbine",
+    "mp40",
+    "thompson",
+    "m1_garand",
+    "stg44",
+    "bar"
+  ],
+  "perks": [
+    "second_wind",
+    "ironhide_stout",
+    "trigger_tonic",
+    "twin_barrel",
+    "marathon_malt",
+    "hawkeye_brandy",
+    "packmule_porter",
+    "blastproof_bock"
+  ],
+  "roster": [
+    "ganger",
+    "glasshide",
+    "bellringer",
+    "kranfuehrer"
+  ],
+  "glasshide_from_act_round": 8,
+  "spawn_table": {
+    "_doc": "Which spawn points exist per zone (the generator places them; the smoke test counts them). windows = barricades (the assembly halls' and test stands' chutes count as windows), ground = emerge points, catwalk = the hangar's crane-rail catwalk points.",
+    "A_SIEDLUNG": {
+      "windows": 4,
+      "ground": 1
+    },
+    "B_BAHNHOF": {
+      "windows": 3,
+      "ground": 1
+    },
+    "C_KANTINE": {
+      "windows": 2,
+      "ground": 1
+    },
+    "D_KIRCHPLATZ": {
+      "windows": 2,
+      "ground": 2
+    },
+    "E_MONTAGE": {
+      "windows": 2,
+      "ground": 2
+    },
+    "F_WINDKANAL": {
+      "windows": 2,
+      "ground": 1
+    },
+    "G_PRUEFSTAND": {
+      "windows": 2,
+      "ground": 2
+    },
+    "H_HALLE": {
+      "windows": 0,
+      "ground": 2,
+      "catwalk": 2
+    }
+  },
+  "climb_links": [
+    {
+      "name": "Climb_CraneLadderW",
+      "zone": "H_HALLE",
+      "from": [
+        -66.0,
+        0.0,
+        190.0
+      ],
+      "to": [
+        -68.2,
+        12.0,
+        190.0
+      ],
+      "_doc": "floor -> west crane-rail catwalk ladder"
+    },
+    {
+      "name": "Climb_CraneLadderE",
+      "zone": "H_HALLE",
+      "from": [
+        26.0,
+        0.0,
+        190.0
+      ],
+      "to": [
+        28.2,
+        12.0,
+        190.0
+      ],
+      "_doc": "floor -> east crane-rail catwalk ladder"
+    }
+  ],
+  "fliegeralarm": {
+    "_doc": "The Allied night raid (replaces Bellringer rounds on this act): sirens wind up, the searchlights sweep, and bombs fall on searchlight-marked impact circles (telegraph_seconds of a lit ring, then a shockwave of `radius` m dealing `damage` to everyone inside, zombies included), one circle every `interval_seconds` while the round's queue lasts; Fallschirm-Gänger (kit aircrew, jog) land on every circle's edge instead of coming through the windows. Clearing the round drops a Resupply on the last circle. lander_kit is the soldier kit (plain coveralls, no insignia) until the art pass gives the burnt aircrew their own kit.",
+    "circles": {
+      "A_SIEDLUNG": [
+        [
+          28.0,
+          0.0,
+          20.0
+        ]
+      ],
+      "B_BAHNHOF": [
+        [
+          10.0,
+          0.0,
+          38.0
+        ],
+        [
+          30.0,
+          0.0,
+          56.0
+        ]
+      ],
+      "D_KIRCHPLATZ": [
+        [
+          10.0,
+          0.0,
+          70.0
+        ],
+        [
+          30.0,
+          0.0,
+          80.0
+        ],
+        [
+          12.0,
+          0.0,
+          92.0
+        ]
+      ],
+      "G_PRUEFSTAND": [
+        [
+          -30.0,
+          0.0,
+          120.0
+        ],
+        [
+          -30.0,
+          0.0,
+          140.0
+        ]
+      ]
+    },
+    "telegraph_seconds": 4.0,
+    "interval_seconds": 7.0,
+    "radius": 3.0,
+    "damage": 60,
+    "zombie_damage": 2000,
+    "landers_per_circle": 3,
+    "lander_kit": "soldier",
+    "lander_tier": "jog",
+    "vo_start": "OPR_M4A_FLIEGER_01",
+    "vo_end": "OPR_M4A_FLIEGER_END_01",
+    "banner": "FLIEGERALARM"
+  },
+  "exfil": {
+    "round": 15,
+    "target": "map04b_kranich",
+    "position": [
+      -20.0,
+      0.0,
+      157.0
+    ],
+    "yaw": 0.0,
+    "zone": "H_HALLE",
+    "opens_zone": false,
+    "window_seconds": 90,
+    "retry_rounds": 3,
+    "cutscene": "exfil_m4a_m4b",
+    "label": "THE RAMP",
+    "vo_open": "OPR_EXFIL_OPEN_M4A_01",
+    "vo_wait": "OPR_EXFIL_WAIT_M4A_01",
+    "vo_missed": "OPR_EXFIL_MISSED_M4A_01"
+  }
+}

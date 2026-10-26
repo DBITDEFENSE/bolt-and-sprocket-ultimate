@@ -12,7 +12,7 @@ const META: StringName = &"climb"
 static func json_path_for(map_id: StringName) -> String:
 	var s: String = String(map_id)
 	if s.begins_with("map") and s.length() >= 5:
-		return "res://data/gravelight/%s.json" % s.substr(0, 5)
+		return "res://data/gravelight/%s.json" % s.get_slice("_", 0)   # map04a_thalbach -> map04a (UPDATE 07)
 	return ""
 
 

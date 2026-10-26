@@ -6,6 +6,7 @@ const MAPS: Dictionary = {
 	"map00_crossroads": "res://gravelight/maps/map00_crossroads/map00.tscn",
 	"map01_kaltenbrunn": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
 	"map02_totenhafen": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+	"map04a_thalbach": "res://gravelight/maps/map04_fernflug/map04a.tscn",
 }
 
 
@@ -42,7 +43,7 @@ func test_archive_rows_are_in_the_profile_archive() -> void:
 	assert_gt(rows.size(), 25)
 	for r: Dictionary in rows:
 		assert_true(ids.has(str(r["id"])), str(r["id"]) + " is in the Archive")
-		assert_true(["0", "1", "2"].has(str(r["map"])), "%s files under a map (%s)" % [r["id"], r["map"]])
+		assert_true(["0", "1", "2", "4a", "4b", "4c", "4d"].has(str(r["map"])), "%s files under a map (%s)" % [r["id"], r["map"]])
 
 
 func test_chalk_entry_lists_the_guns() -> void:

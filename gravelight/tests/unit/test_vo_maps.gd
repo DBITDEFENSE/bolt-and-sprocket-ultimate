@@ -2,7 +2,7 @@ extends GutTest
 ## Map lines only play on their own map (T-057): on Map 0 a bot said "Kaltenbrunn. Right. Weapons ready..." (a
 ## Map 1 spawn line). Every category's draw is checked on every map, so no line tagged for another map is picked.
 
-const MAPS: Array[StringName] = [&"map00_crossroads", &"map01_kaltenbrunn", &"map02_totenhafen"]
+const MAPS: Array[StringName] = [&"map00_crossroads", &"map01_kaltenbrunn", &"map02_totenhafen", &"map04a_thalbach"]
 
 var _map_before: StringName
 

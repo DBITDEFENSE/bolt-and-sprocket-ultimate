@@ -8,6 +8,7 @@ const TABLES: PackedStringArray = [
 	"economy", "rounds", "player", "perks", "powerups", "crate", "traps",
 	"weapons", "enemies", "input_defaults", "world", "map01", "net", "bots", "campaign", "anim",
 	"bosses/cousins", "bosses/likeness",   # the homage bosses (HB1): table("bosses/cousins") reads data/gravelight/bosses/cousins.json
+	"bosses/map04",   # Map 4 "Fernflug" bosses (UPDATE 07): the Kranführer, the Bordwart, the Test Pilot, the Account Manager
 	"vfx",   # UPDATE 05 section 6 (T-095): muzzle flashes, casings, impact debris, atmosphere (Effects)
 
 ]

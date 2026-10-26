@@ -12,6 +12,7 @@ const MAPS: Array = [
 	["map00_crossroads", "Crossroads Inn", "res://gravelight/maps/map00_crossroads/map00.tscn", "Always open."],
 	["map01_kaltenbrunn", "Kaltenbrunn", "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", "Reach round 10 at the inn, or answer the radio."],
 	["map02_totenhafen", "Totenhafen", "res://gravelight/maps/map02_totenhafen/map02.tscn", "Complete \"Requiem for Kaltenbrunn\", or reach round 30 at Kaltenbrunn."],
+	["map04a_thalbach", "Fernflug — Act I: Werk Thalbach", "res://gravelight/maps/map04_fernflug/map04a.tscn", "Reach round 40 at Totenhafen."],
 ]
 
 var _picked: String = ""
