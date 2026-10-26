@@ -148,6 +148,20 @@ static func bed(parent: Node3D, a: Vector3, b: Vector3, blanket: String = "cloth
 		block(parent, Vector3(lo.x - 0.06, lo.y, lo.z), Vector3(lo.x, lo.y + 1.0, hi.z), "furniture")
 
 
+## The bed's soft parts only (mattress, blanket, pillow) at the same heights as bed(), for a frame drawn by
+## something else (Map 0's iron bed frames from the prop library, T-093).
+static func bed_soft(parent: Node3D, a: Vector3, b: Vector3, blanket: String = "cloth_red") -> void:
+	var lo: Vector3 = Vector3(minf(a.x, b.x), a.y, minf(a.z, b.z))
+	var hi: Vector3 = Vector3(maxf(a.x, b.x), b.y, maxf(a.z, b.z))
+	var h: float = hi.y - lo.y
+	block(parent, Vector3(lo.x + 0.05, lo.y + h * 0.45, lo.z + 0.05), Vector3(hi.x - 0.05, lo.y + h * 0.85, hi.z - 0.05), "linen")
+	block(parent, Vector3(lo.x + 0.04, lo.y + h * 0.85, lo.z + (hi.z - lo.z) * 0.3), Vector3(hi.x - 0.04, lo.y + h * 0.95, hi.z - 0.04), blanket)
+	if hi.z - lo.z > hi.x - lo.x:
+		block(parent, Vector3(lo.x + 0.1, lo.y + h * 0.85, lo.z + 0.08), Vector3(hi.x - 0.1, lo.y + h * 1.05, lo.z + 0.4), "linen")
+	else:
+		block(parent, Vector3(lo.x + 0.08, lo.y + h * 0.85, lo.z + 0.1), Vector3(lo.x + 0.4, lo.y + h * 1.05, hi.z - 0.1), "linen")
+
+
 static func trunk(parent: Node3D, a: Vector3, b: Vector3) -> void:
 	block(parent, a, b, "furniture")
 	block(parent, Vector3(a.x - 0.01, b.y - 0.06, a.z - 0.01), Vector3(b.x + 0.01, b.y, b.z + 0.01), "iron")

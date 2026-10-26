@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://btx5wqfpt816t"
-path.s3tc="res://.godot/imported/snow_02_orm.png-6d184e9152ac9df5834977f7445c0cb6.s3tc.ctex"
+uid="uid://dkgbxs6lrb4do"
+path.s3tc="res://.godot/imported/snow_01_orm.png-95b1b3d8b26173244cfaef250d5d8cdc.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/third_party/polyhaven/snow-02/textures/snow_02_orm.png"
-dest_files=["res://.godot/imported/snow_02_orm.png-6d184e9152ac9df5834977f7445c0cb6.s3tc.ctex"]
+source_file="res://assets/third_party/polyhaven/snow-01/textures/snow_01_orm.png"
+dest_files=["res://.godot/imported/snow_01_orm.png-95b1b3d8b26173244cfaef250d5d8cdc.s3tc.ctex"]
 
 [params]
 

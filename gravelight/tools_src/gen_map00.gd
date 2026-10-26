@@ -1161,6 +1161,7 @@ func build_dressing() -> void:
 	_dress_wreck()
 	_dress_polish()
 	_dress_lighting()
+	_emit_library_props()
 
 
 func _dress_floors_and_ceilings() -> void:
@@ -1460,9 +1461,9 @@ func _dress_cellar() -> void:
 		lit.set_meta("keep", true)
 	# ---- NE corner: the installers' workbench, a barrel and a sack; a tally chalked on the wall above
 	Props.workbench(g, Vector3(35.15, cy, 19.5), 180.0, 1.5, 0.7)
-	Props.barrel(g, Vector3(35.5, cy, 20.4), -40.0, 0.3, 0.85)
+	_lib_barrel(Vector3(35.5, cy, 20.4), -40.0, 0.3, 0.85)
 	Props.sack(g, Vector3(34.65, cy, 20.45), -30.0, 0.8)
-	Props.barrel(g, Vector3(33.75, cy, 20.3), 15.0, 0.32, 0.9)   # over the corner's collider (T-051)
+	_lib_barrel(Vector3(33.75, cy, 20.3), 15.0, 0.32, 0.9)   # over the corner's collider (T-051)
 	Props.crate(g, Vector3(33.8, cy, 19.62), 0.6, 4.0, "HELVETIA")
 	Props.stencil(g, Vector3(35.2, cy + 1.9, 19.15), 180.0, "|||| |||| ||| ", 30, Color(0.85, 0.85, 0.8, 0.55), 0.004)
 	# ---- shelves of preserves and bottles between the machines (0.28 m deep, so the panel walk stays clear)
@@ -1511,8 +1512,8 @@ func _dress_cellar() -> void:
 	Props.cobweb(g, Vector3(35.85, top - 0.02, 19.15), -90.0, 0.8)
 	Props.cobweb(g, Vector3(24.15, 2.98, 10.15), 0.0, 0.7)
 	# ---- the stair hall: kegs on the landing corner, a wall rail, "KELLER" over the steps
-	Props.barrel(g, Vector3(27.55, 0.0, 10.55), 30.0, 0.25, 0.62)
-	Props.barrel(g, Vector3(27.35, 0.0, 10.4), 90.0, 0.17, 0.5, true)
+	_lib_barrel(Vector3(27.55, 0.0, 10.55), 30.0, 0.25, 0.62)
+	_lib_barrel(Vector3(27.35, 0.0, 10.4), 90.0, 0.17, 0.5, true)
 	Props.sack(g, Vector3(27.3, 0.0, 10.85), 10.0, 0.7)
 	Props.strut(g, Vector3(24.24, 0.95, 13.0), Vector3(24.24, cy + 0.95, 19.0), 0.04, "iron", true)
 	for t3: float in [0.05, 0.5, 0.95]:
@@ -1613,11 +1614,11 @@ func _dress_old_cellar() -> void:
 		var cz: float = 14.6 + i * 1.3
 		for sz: float in [-0.35, 0.35]:
 			Props.block(g, Vector3(9.9, cy, cz + sz - 0.06), Vector3(10.72, cy + 0.32, cz + sz + 0.06), "beam")
-		Props.barrel(g, Vector3(10.3, cy + 0.12, cz), 90.0, 0.55, 0.82, true)
+		_lib_barrel(Vector3(10.3, cy + 0.12, cz), 90.0, 0.55, 0.82, true)
 		Props.stencil(g, Vector3(9.87, cy + 0.67, cz), 90.0, ["1937", "1941", "1943"][i], 40, Color(0.92, 0.9, 0.85, 0.75), 0.004)
 		Props.cyl(g, Vector3(9.84, cy + 0.32, cz), 0.03, 0.08, "brass", Vector3(0, 0, 90))   # the tap
-	Props.barrel(g, Vector3(9.6, cy, 17.85), 20.0, 0.25, 0.6)
-	Props.barrel(g, Vector3(0.55, cy, 17.9), -10.0, 0.25, 0.6)
+	_lib_barrel(Vector3(9.6, cy, 17.85), 20.0, 0.25, 0.6)
+	_lib_barrel(Vector3(0.55, cy, 17.9), -10.0, 0.25, 0.6)
 	Props.crate(g, Vector3(1.0, cy, 9.05), 0.5, 8.0)
 	Props.stencil(g, Vector3(10.73, cy + 1.9, 15.9), 90.0, "RIESLING 38  ·  40 FL.\nROTWEIN 41  ·  22 FL.\nSCHNAPS  ·  —", 28, Color(0.9, 0.9, 0.85, 0.55), 0.0035)
 	Props.puddle(g, Vector3(6.9, cy, 15.3), 1.2, 0.8, 15.0)
@@ -1656,7 +1657,7 @@ func _dress_old_cellar() -> void:
 	Props.stencil(g, Vector3(0.16, cy + 1.45, 4.6), -90.0, "SZCZESC BOZE", 30, Color(0.92, 0.92, 0.88, 0.6), 0.0035)
 	Props.stencil(g, Vector3(0.16, cy + 1.1, 5.9), -90.0, "| |", 34, Color(0.92, 0.92, 0.88, 0.55), 0.0035)
 	# outside: the guard's stool and crate with a mess tin and his cigarettes, the tag on the padlock, the lantern
-	Props.stool(g, Vector3(4.2, cy, 5.1))
+	_lib("stool_workshop", Vector3(4.2, cy, 5.1), 15.0, Vector3.ONE, false)
 	Props.crate(g, Vector3(4.3, cy, 7.25), 0.55, -8.0, "WH")
 	Props.cyl(g, Vector3(4.25, cy + 0.6, 7.2), 0.09, 0.05, "steel")
 	Props.block(g, Vector3(4.4, cy + 0.55, 7.05), Vector3(4.5, cy + 0.57, 7.12), "paper")
@@ -1732,13 +1733,13 @@ func _dress_old_cellar() -> void:
 	for row: Array in [[0.0, [6.95, 8.0, 9.05], 0.52], [0.93, [7.47, 8.52], 0.52], [1.72, [8.0], 0.48]]:   # [lift, z centres, r]
 		for zc: float in row[1]:
 			for side: float in [-0.78, 0.78]:
-				Props.barrel(g, Vector3(sx + side, cy + float(row[0]), zc), 90.0, float(row[2]), 1.45, true)
+				_lib_barrel(Vector3(sx + side, cy + float(row[0]), zc), 90.0, float(row[2]), 1.45, true)
 	for cz2: float in [6.5, 9.5]:   # the cradles
 		Props.block(g, Vector3(st.position.x + 0.1, cy, cz2 - 0.08), Vector3(st.end.x - 0.1, cy + 0.2, cz2 + 0.08), "beam")
 	Props.stencil(g, Vector3(sx - 1.56, cy + 0.6, 8.0), 90.0, "KREUZWEG\nHAUSWEIN", 32, Color(0.92, 0.9, 0.85, 0.65), 0.004)
 	Props.stencil(g, Vector3(sx + 1.56, cy + 0.6, 8.0), -90.0, "1942", 40, Color(0.92, 0.9, 0.85, 0.65), 0.004)
 	for kb: Vector3 in [Vector3(15.55, cy, 6.1), Vector3(19.35, cy, 9.9), Vector3(19.4, cy, 6.15)]:
-		Props.barrel(g, kb, rng.randf_range(0, 90), 0.24, 0.55)
+		_lib_barrel(kb, rng.randf_range(0, 90), 0.24, 0.55)
 	Props.lantern(g, Vector3(13.4, cy + 2.35, 8.0), top - 0.17)
 	Props.lantern(g, Vector3(21.6, cy + 2.35, 8.0), top - 0.17)
 	for bp: Vector3 in OC_BULBS:
@@ -1838,6 +1839,66 @@ func _arch(parent: Node3D, a: Vector3, b: Vector3, rise: float, segs: int = 8, w
 			Props.block(parent, e + Vector3(-w * 0.5 - 0.03, -0.42, -0.05 * out2), e + Vector3(w * 0.5 + 0.03, 0.0, 0.3 * out2), "cellar_stone")
 
 
+# ================================================================== the CC0 prop library (UPDATE_05 section 5, T-093)
+
+## Library props (PropLibrary keys) placed by the dressing passes: [key, Transform3D, casts_shadow]. They are built at
+## load time by a PropScatter node ("LibraryProps", one MultiMesh per prop mesh), never collide, and sit over the
+## invisible colliders the geometry pass already made (tables, beds, the barrel stack...), so the navmesh never moves.
+var _lib_props: Array = []
+
+
+func _lib(key: String, pos: Vector3, yaw: float, sc: Vector3 = Vector3.ONE, shadow: bool = true, extra_deg: Vector3 = Vector3.ZERO) -> void:
+	_lib_props.append([key, PropScatter.place(pos, yaw, sc, extra_deg), shadow])
+
+
+## A table over its collider: square ones are the round library table, long ones the plank table along their long
+## side; the top lands at exactly 0.75 m, where the story props are placed.
+func _lib_table(c: Vector3, w: float, d: float) -> void:
+	if absf(w - d) < 0.05:
+		var s: float = w / 1.007
+		_lib("table_round", c, 0.0, Vector3(s, 0.75 / 0.723, s))
+		return
+	var length: float = maxf(w, d)
+	var depth: float = minf(w, d)
+	_lib("table_rect", c, 90.0 if d > w else 0.0, Vector3(length / 1.134, 0.75 / 0.8, depth / 0.706))
+
+
+## A chair where Props.chair stood (its back at local +Z; the library chair's is at -Z, hence the half turn).
+## Chairs cast no shadows (ART_BIBLE section 5: nothing new below chair size casts from the omni lamps).
+func _lib_chair(pos: Vector3, yaw: float, tipped: bool = false) -> void:
+	if tipped:
+		_lib("chair_farmhouse", pos + Vector3(0, 0.27, 0), yaw + 180.0, Vector3(0.85, 0.85, 0.85), false, Vector3(-80, 0, 0))
+	else:
+		_lib("chair_farmhouse", pos, yaw + 180.0, Vector3(0.85, 0.85, 0.85), false)
+
+
+## A cask where Props.barrel stood (same radius, height, and the same centre when tipped onto its side).
+func _lib_barrel(pos: Vector3, yaw: float, r: float, h: float, tipped: bool = false) -> void:
+	var sc: Vector3 = Vector3(2.0 * r / 0.742, h / 0.871, 2.0 * r / 0.756)
+	if not tipped:
+		_lib("barrel_wine", pos, yaw, sc)
+		return
+	var b: Basis = Basis.from_euler(Vector3(PI * 0.5, deg_to_rad(yaw), 0.0))
+	var xf: Transform3D = Transform3D(b, pos + Vector3(0, r, 0)) * Transform3D(Basis.from_scale(sc), Vector3(0, -h * 0.5, 0))
+	_lib_props.append(["barrel_wine", xf, true])
+
+
+## A guest-room bed: the iron frame from the library round Props.bed_soft's mattress and blanket (head at the
+## collider's -Z end, like Props.bed).
+func _lib_bed(a: Vector3, b: Vector3, blanket: String, parent: Node3D) -> void:
+	Props.bed_soft(parent, a, b, blanket)
+	var c: Vector3 = Vector3((a.x + b.x) * 0.5, a.y, (a.z + b.z) * 0.5)
+	_lib("bed_iron", c, 0.0, Vector3(absf(b.x - a.x) / 0.905, 1.0, absf(b.z - a.z) / 2.0))
+
+
+func _emit_library_props() -> void:
+	var ps: PropScatter = PropScatter.new()
+	ps.name = "LibraryProps"
+	ps.items = _lib_props
+	map_root.add_child(ps)
+	print("library props: %d placed" % _lib_props.size())
+
+
 func _dress_hearth() -> void:
 	var g: Node3D = Props.group(dress, "Hearth", Vector3.ZERO)
 	Props.block(g, Vector3(10.9, 0, 0.15), Vector3(11.4, 1.42, 0.95), "stone")      # left jamb
@@ -1925,11 +1986,11 @@ func _dress_taproom() -> void:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = 1944
 	for p: Vector2 in [Vector2(12.5, 11.5), Vector2(16.5, 11.5), Vector2(20.0, 4.5)]:
-		Props.table_visual(g, Vector3(p.x, 0, p.y), 1.2, 1.2)
+		_lib_table(Vector3(p.x, 0, p.y), 1.2, 1.2)
 		for k: int in 4:
 			var a: float = TAU * float(k) / 4.0 + 0.4
 			var cp: Vector3 = Vector3(p.x + cos(a) * 0.95, 0, p.y + sin(a) * 0.95)
-			Props.chair(g, cp, rad_to_deg(atan2(-(cp.x - p.x), -(cp.z - p.y))) + 180.0 + rng.randf_range(-20, 20), rng.randf() < 0.12)
+			_lib_chair(cp, rad_to_deg(atan2(-(cp.x - p.x), -(cp.z - p.y))) + 180.0 + rng.randf_range(-20, 20), rng.randf() < 0.12)
 		_glassware("Taproom", Vector3(p.x - 0.2, 0.75, p.y + 0.1), "stein", 0.94)
 		Props.cyl(g, Vector3(p.x + 0.25, 0.8, p.y - 0.2), 0.03, 0.1, "candle")
 		Props.block(g, Vector3(p.x + 0.05, 0.751, p.y - 0.05), Vector3(p.x + 0.25, 0.755, p.y + 0.2), "paper", false)
@@ -1982,15 +2043,15 @@ func _dress_new_tables(g: Node3D) -> void:
 		var c: Vector2 = t[0]
 		var w: float = float(t[1])
 		var d: float = float(t[2])
-		Props.table_visual(g, Vector3(c.x, 0, c.y), w, d)
+		_lib_table(Vector3(c.x, 0, c.y), w, d)
 		match str(t[3]):
 			"chairs":
 				for off: Vector2 in [Vector2(-0.85, 0), Vector2(0.85, 0), Vector2(0, -0.85), Vector2(0, 0.85)]:
 					var cp: Vector3 = Vector3(c.x + off.x, 0, c.y + off.y)
-					Props.chair(g, cp, rad_to_deg(atan2(-off.x, -off.y)) + 180.0)
+					_lib_chair(cp, rad_to_deg(atan2(-off.x, -off.y)) + 180.0)
 			"pair":
 				for off2: Vector2 in [Vector2(-0.75, 0), Vector2(0.75, 0)]:
-					Props.chair(g, Vector3(c.x + off2.x, 0, c.y + off2.y), rad_to_deg(atan2(-off2.x, -off2.y)) + 180.0)
+					_lib_chair(Vector3(c.x + off2.x, 0, c.y + off2.y), rad_to_deg(atan2(-off2.x, -off2.y)) + 180.0)
 			"benches":
 				for sx: float in [-1.0, 1.0]:
 					Props.bench(g, Vector3(c.x + sx * 0.75, 0, c.y), 90.0, d - 0.1)
@@ -2035,16 +2096,16 @@ func _dress_new_tables(g: Node3D) -> void:
 
 func _dress_upstairs() -> void:
 	var g: Node3D = Props.group(dress, "Upstairs", Vector3.ZERO)
-	Props.bed(g, Vector3(0.3, UP_Y, 0.4), Vector3(2.2, UP_Y + 0.5, 2.6), "cloth_red")
-	Props.bed(g, Vector3(13.6, UP_Y, 0.4), Vector3(15.6, UP_Y + 0.5, 2.6), "cloth_green")
-	Props.bed(g, Vector3(21.6, UP_Y, 3.2), Vector3(23.7, UP_Y + 0.5, 5.6), "cloth_red")
+	_lib_bed(Vector3(0.3, UP_Y, 0.4), Vector3(2.2, UP_Y + 0.5, 2.6), "cloth_red", g)
+	_lib_bed(Vector3(13.6, UP_Y, 0.4), Vector3(15.6, UP_Y + 0.5, 2.6), "cloth_green", g)
+	_lib_bed(Vector3(21.6, UP_Y, 3.2), Vector3(23.7, UP_Y + 0.5, 5.6), "cloth_red", g)
 	Props.trunk(g, Vector3(10.4, UP_Y, 0.5), Vector3(11.6, UP_Y + 0.5, 1.2))
 	Props.washstand(g, Vector3(6.9, UP_Y, 0.45), 180.0)
 	Props.washstand(g, Vector3(8.6, UP_Y, 4.5), -90.0)
 	Props.wardrobe(g, Vector3(15.5, UP_Y, 4.9), 90.0)
 	Props.wardrobe(g, Vector3(1.0, UP_Y, 5.4), 0.0)
-	Props.chair(g, Vector3(2.8, UP_Y, 1.2), 140.0, true)
-	Props.chair(g, Vector3(18.0, UP_Y, 1.3), 200.0)
+	_lib_chair(Vector3(2.8, UP_Y, 1.2), 140.0, true)
+	_lib_chair(Vector3(18.0, UP_Y, 1.3), 200.0)
 	# pictures: one per room, two in the hall, and a mirror by the stair head (the hall's north wall straight ahead
 	# at the top of the stairs, x < 4, stays free for a story item)
 	Props.painting(g, Vector3(12.0, UP_Y + 1.7, 0.16), 180.0, 0.5, 0.65, "portrait", 1, "frame_gold")
@@ -2059,8 +2120,7 @@ func _dress_upstairs() -> void:
 	Props.block(g, Vector3(11.4, UP_Y + 0.012, 1.4), Vector3(13.3, UP_Y + 0.024, 3.4), "rug", false)
 	Props.block(g, Vector3(18.6, UP_Y + 0.012, 2.6), Vector3(21.2, UP_Y + 0.024, 5.0), "rug", false)
 	for ns: Vector3 in [Vector3(2.55, UP_Y, 0.55), Vector3(13.1, UP_Y, 0.55), Vector3(21.1, UP_Y, 5.3)]:
-		Props.block(g, ns + Vector3(-0.2, 0, -0.2), ns + Vector3(0.2, 0.62, 0.2), "furniture")
-		Props.block(g, ns + Vector3(-0.17, 0.3, -0.17), ns + Vector3(0.17, 0.33, 0.17), "furniture")
+		_lib("nightstand", ns, 0.0, Vector3(0.8, 1.0, 0.8), false)
 		Props.cyl(g, ns + Vector3(0.05, 0.64, 0.02), 0.04, 0.02, "brass")
 		Props.cyl(g, ns + Vector3(0.05, 0.7, 0.02), 0.012, 0.1, "candle")
 	for p: Vector3 in [Vector3(4.0, UP_Y + 2.2, 3.0), Vector3(12.0, UP_Y + 2.2, 3.0), Vector3(20.0, UP_Y + 2.2, 3.0), Vector3(12.0, UP_Y + 2.2, 8.0)]:
@@ -2548,9 +2608,8 @@ func _dress_yard() -> void:
 	for row: int in 4:
 		for k: int in 6:
 			Props.cyl(g, Vector3(13.55 + k * 0.42, 0.18 + row * 0.3, 34.75), 0.15, 1.1, "pine" if (row + k) % 2 == 0 else "beam", Vector3(90, 0, wr.randf_range(-6, 6)))
-	Props.cyl(g, Vector3(9.4, 0.3, 36.2), 0.3, 0.6, "pine")
-	Props.obox(g, Vector3(9.4, 0.78, 36.2), Vector3(0.06, 0.4, 0.22), "iron", Vector3(0, 20, 0))
-	Props.obox(g, Vector3(9.55, 0.9, 36.1), Vector3(0.05, 0.9, 0.05), "beam", Vector3(60, 20, 0))
+	_lib("stump_chopping", Vector3(9.4, 0.0, 36.2), 30.0, Vector3(0.45, 1.0, 0.42))
+	_lib("axe_wood", Vector3(9.42, 0.5, 36.2), 20.0, Vector3.ONE, false, Vector3(0, 0, -28))
 	# the snowed cart and the trough
 	Props.cart(g, Vector3(28.3, 0, 38.1), 100.0)
 	Props._noshadow(Props.ball(g, Vector3(28.3, 1.2, 38.1), Vector3(2.4, 0.5, 1.6), "snow"))
@@ -2669,7 +2728,7 @@ func _polish_taproom(g: Node3D) -> void:
 	PropsStory.mess_tin(g, Vector3(15.95, 0.75, 11.95), -30.0)
 	PropsStory.helmet(g, Vector3(17.05, 0.75, 11.05), 35.0)
 	PropsStory.loaf(g, Vector3(16.95, 0.75, 11.95), 70.0)
-	Props.chair(g, Vector3(18.0, 0, 12.75), 110.0, true)
+	_lib_chair(Vector3(18.0, 0, 12.75), 110.0, true)
 	PropsStory.coat_drape(g, Vector3(15.6, 0.5, 15.45), 0.0)
 	PropsStory.gasmask_can(g, Vector3(17.35, 0, 12.25), 40.0)
 	PropsStory.map_case(g, Vector3(15.75, 0, 12.55), -20.0)
@@ -2795,8 +2854,8 @@ func _polish_stable(g: Node3D) -> void:
 	Props.obox(halter, Vector3(0.06, -0.18, 0.04), Vector3(0.03, 0.36, 0.01), "leather", Vector3(0, 0, 12))
 	Props.obox(halter, Vector3(0, -0.36, 0.04), Vector3(0.2, 0.03, 0.01), "leather")
 	Props.cyl(halter, Vector3(0, -0.5, 0.04), 0.025, 0.25, "rope")
-	Props.cyl(g, Vector3(11.6, 0.15, 22.75), 0.15, 0.3, "tin")
-	Props.cyl(g, Vector3(11.6, 0.29, 22.75), 0.135, 0.01, "puddle")
+	_lib("bucket_wood", Vector3(11.6, 0.0, 22.75), 20.0, Vector3(0.8, 0.8, 0.8), false)
+	Props.cyl(g, Vector3(11.6, 0.36, 22.75), 0.12, 0.01, "puddle")
 	Props.block(g, Vector3(11.85, 0.85, 22.18), Vector3(12.95, 1.1, 22.24), "cloth_green")   # a horse blanket over the manger
 	# hay pulled from the manger and trodden into the floor of the stall
 	for hp: Vector3 in [Vector3(12.4, 0, 23.2), Vector3(11.8, 0, 24.3)]:

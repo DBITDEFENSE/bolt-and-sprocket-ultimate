@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://boeqorx0y6is"
-path.s3tc="res://.godot/imported/snow_02_albedo.png-2b310a128fefa260fe6a74c43f3e2fb6.s3tc.ctex"
+uid="uid://sxtfo5uvd8d"
+path.s3tc="res://.godot/imported/snow_01_normal.png-03b37cf6849175c935c9b5b640437113.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/third_party/polyhaven/snow-02/textures/snow_02_albedo.png"
-dest_files=["res://.godot/imported/snow_02_albedo.png-2b310a128fefa260fe6a74c43f3e2fb6.s3tc.ctex"]
+source_file="res://assets/third_party/polyhaven/snow-01/textures/snow_01_normal.png"
+dest_files=["res://.godot/imported/snow_01_normal.png-03b37cf6849175c935c9b5b640437113.s3tc.ctex"]
 
 [params]
 
@@ -22,7 +22,7 @@ compress/lossy_quality=0.7
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
-compress/normal_map=0
+compress/normal_map=1
 compress/channel_pack=0
 mipmaps/generate=true
 mipmaps/limit=-1

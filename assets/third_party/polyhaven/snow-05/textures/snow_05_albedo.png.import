@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b7801dw3ksmms"
-path.s3tc="res://.godot/imported/snow_02_height.png-c16cdd4bf39bfacf095938279f5bd0ea.s3tc.ctex"
+uid="uid://bbr0m1vdp65of"
+path.s3tc="res://.godot/imported/snow_05_albedo.png-f163ba6f57f49fa907abe940d38389a1.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/third_party/polyhaven/snow-02/textures/snow_02_height.png"
-dest_files=["res://.godot/imported/snow_02_height.png-c16cdd4bf39bfacf095938279f5bd0ea.s3tc.ctex"]
+source_file="res://assets/third_party/polyhaven/snow-05/textures/snow_05_albedo.png"
+dest_files=["res://.godot/imported/snow_05_albedo.png-f163ba6f57f49fa907abe940d38389a1.s3tc.ctex"]
 
 [params]
 
@@ -23,7 +23,7 @@ compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
-compress/channel_pack=1
+compress/channel_pack=0
 mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
@@ -32,7 +32,7 @@ process/channel_remap/red=0
 process/channel_remap/green=1
 process/channel_remap/blue=2
 process/channel_remap/alpha=3
-process/fix_alpha_border=false
+process/fix_alpha_border=true
 process/premult_alpha=false
 process/normal_map_invert_y=false
 process/hdr_as_srgb=false
