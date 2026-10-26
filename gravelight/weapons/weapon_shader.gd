@@ -173,6 +173,7 @@ static func _palette_tex(src: Texture2D, remap: Dictionary = {}) -> Texture2D:
 	var img: Image = src.get_image()
 	if img == null:
 		return src
+	img = img.duplicate() as Image   # never repaint the source texture's own image (remap is per gun)
 	if img.is_compressed():
 		img.decompress()
 	img.convert(Image.FORMAT_RGBA8)

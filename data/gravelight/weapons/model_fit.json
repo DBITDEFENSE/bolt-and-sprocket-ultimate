@@ -125,8 +125,8 @@
    ],
    "grip_r": [
     0,
-    -0.03,
-    0.062
+    -0.04,
+    0.06
    ],
    "grip_lean": 40,
    "left_hand": [
@@ -151,7 +151,8 @@
     "grime": 0.45,
     "scratches": 0.3
    },
-   "eye_relief": 0.42
+   "eye_relief": 0.42,
+   "grip_r_radius": 0.015
   },
   "m1_garand": {
    "extra_offset": [
@@ -344,7 +345,7 @@
     "Body": {
      "z0": 0.1,
      "z1": 0.15,
-     "dy": -0.02
+     "dy": -0.028
     }
    }
   },

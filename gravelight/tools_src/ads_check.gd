@@ -235,7 +235,7 @@ func _measure_and_shoot() -> void:
 	if _shots:
 		var w: WeaponInstance = _holder.current()
 		_label.text = "%s  (%s)   ADS zoom %.2f  eye relief %.2f m   rear %+.1f,%+.1f px  front %+.1f,%+.1f px   %s" % [
-			id, String(w.data.get("name", id)), _holder.ads_zoom(w), float(_holder.feel_for(w).get("eye_relief", 0.0)),
+			id, String(w.data.get("name", id)), _holder.ads_zoom(w), float((_holder.get("_model") as Node3D).get_meta("eye_relief", _holder.feel_for(w).get("eye_relief", 0.0)) if _holder.get("_model") != null else _holder.feel_for(w).get("eye_relief", 0.0)),   # T-098: a model_fit eye_relief wins, as in the holder
 			rear.x, rear.y, front.x, front.y, "PASS" if ok else "FAIL"]
 		_busy = true
 		await RenderingServer.frame_post_draw
