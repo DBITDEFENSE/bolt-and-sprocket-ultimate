@@ -159,7 +159,7 @@ def build_material(living):
         fbn.inputs["To Max"].default_value = 1.0
         nt.links.new(fbn.outputs[0], fb.inputs[1])
         cur = mix((0.14, 0.1, 0.17), fb.outputs[0], (-100, 300))
-        cur = mix((0.2, 0.12, 0.24), socket, (0, 200))
+        cur = mix((0.07, 0.04, 0.09), socket, (0, 200))
         lv = node(nt, "ShaderNodeMath", (-300, 0), operation="MULTIPLY")
         lv.inputs[1].default_value = 0.6
         nt.links.new(livid, lv.inputs[0])

@@ -460,6 +460,7 @@ def kit_villager(body, P):
     k = Kit("villager")
     if P.female:
         blouse = add_shell(k, body, P_or(P_torso(0.92), P_arms(0.92)), thick_by_y(0.008, 0.007), "cloth")
+        k.add(band(body, neck_pts(body), 1.49, 0.045, "cloth", pad=0.012, thick=0.008))   # collar hides the neckline
         k.add(skirt(body, trunk(blouse), 0.98, 0.12, "cloth2", flare=0.32, ease=0.008))
         add_shell(k, body, P_boots(0.14), 0.007, "dark", push=boot_push(0.008))
         shawl = add_shell(k, body, lambda b: P_torso(1.22, 1.51)(b) | (P_arms(1.2)(b) & (b.v[:, 1] > 1.28)), 0.02, "knit", cover=False)
@@ -468,6 +469,7 @@ def kit_villager(body, P):
             k.add(stud(blouse, "dark", 0.0, 1.2 - i * 0.06, (0.012, 0.012, 0.006)))
     else:
         jacket = add_shell(k, body, P_or(P_torso(0.9), P_arms(0.9)), thick_by_y(0.015, 0.011), "cloth")
+        k.add(band(body, neck_pts(body), 1.49, 0.045, "cloth2", pad=0.012, thick=0.008))   # collar hides the neckline
         add_shell(k, body, P_legs(0.13, 0.98), 0.008, "cloth2")
         add_shell(k, body, P_boots(0.2), 0.011, "leather", push=boot_push())
         k.add(band(body, trunk(jacket), 0.96, 0.03, "leather", pad=0.001, thick=0.005))
@@ -483,6 +485,7 @@ def kit_villager(body, P):
 def kit_miner(body, P):
     k = Kit("miner")
     jacket = add_shell(k, body, P_or(P_torso(0.88), P_arms(0.92)), thick_by_y(0.016, 0.012), "cloth")
+    k.add(band(body, neck_pts(body), 1.49, 0.045, "cloth", pad=0.012, thick=0.008))   # collar hides the neckline
     add_shell(k, body, P_legs(0.30, 0.98), 0.009, "cloth2")
     add_shell(k, body, P_boots(0.34), 0.013, "leather", push=boot_push())
     k.add(band(body, trunk(jacket), 0.98, 0.045, "leather", pad=0.001, thick=0.007))
@@ -513,6 +516,7 @@ def kit_labstaff(body, P):
 def kit_technician(body, P):
     k = Kit("technician")
     cov = add_shell(k, body, P_or(P_torso(0.85), P_arms(0.9), P_legs(0.28, 1.0)), lambda p: np.where(np.abs(p[:, 0]) > 0.2, 0.011, 0.012), "cloth")
+    k.add(band(body, neck_pts(body), 1.49, 0.045, "cloth", pad=0.012, thick=0.008))   # collar hides the neckline
     add_shell(k, body, P_boots(0.38), 0.014, "rubber", rim=0.008, push=boot_push())
     add_shell(k, body, P_hands(), 0.004, "rubber", rim=0.0)
     k.add(band(body, trunk(cov), 0.99, 0.055, "leather", pad=0.002, thick=0.008))
@@ -552,6 +556,7 @@ def kit_dockworker(body, P):
 def kit_bellringer(body, P):
     k = Kit("bellringer")
     tunic = add_shell(k, body, P_torso(0.86, 1.47), 0.012, "cloth")
+    k.add(band(body, neck_pts(body), 1.49, 0.045, "cloth", pad=0.012, thick=0.008))   # collar hides the neckline
     k.add(skirt(body, trunk(tunic), 0.9, 0.62, "cloth", flare=0.15, ease=0.003, rings=5, ragged=0.04))
     for i in range(3):
         k.add(band(body, trunk(tunic), 1.1 + 0.12 * i, 0.018, "dark", pad=0.002, thick=0.005))   # the binding straps

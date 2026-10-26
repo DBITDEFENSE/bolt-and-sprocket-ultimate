@@ -461,6 +461,10 @@ static func _crawl_pose(mode: String, p: float, moving: bool) -> Dictionary:
 	var c: float = sin(p) if moving else 0.0
 	var scuttle: bool = mode == "scuttle"
 	_body_tilt(r, -1.35, 0.0, 0.0, -0.58)
+	# T-091: _body_tilt pivots at the feet (the deaths fall over them), which left the crawl pose's hips 0.38 m
+	# under the floor and a metre ahead of the body (the rendered crawlers were invisible). A crawler lies on its
+	# belly: hips 0.17 m up, a little behind the capsule centre so the chest and head sit over it.
+	r["hips_pos"] = Vector3(0, 0.17 - ZombieRig.rest_offset("Hips").y, 0.3)
 	r["Hips"] = (r["Hips"] as Vector3) + Vector3(0, 0, c * 0.1)
 	r["Spine"] = Vector3(0.1, 0, 0)
 	r["Chest"] = Vector3(0.15 + (c * 0.12 if scuttle else 0.0), 0, 0)

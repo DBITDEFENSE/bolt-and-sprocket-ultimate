@@ -543,8 +543,8 @@ def face_parts(P, head_loc_fn=None):
             v, f = uv_sphere(c + np.array([0, 0, -0.0105]), 0.0055, 6, 3)
             acc.add(v, f, "iris", "Head")
         else:
-            v, f = uv_sphere(c, 0.0118)
-            v = c + (v - c) * np.array([1.0, 0.85, 0.55])   # a flattened glowing lens deep in the socket
+            v, f = uv_sphere(c + np.array([0, 0, -0.002]), 0.0135)
+            v = c + (v - c) * np.array([1.0, 0.8, 0.55])   # a flattened glowing lens deep in the socket
             acc.add(v, f, "eye", "Head")
     # mouth cavity (dark), upper teeth on the head, lower teeth on the jaw
     v, f = box(HEAD_C + np.array([0, -0.064, -0.054]), np.array([0.02, 0.012, 0.012]))

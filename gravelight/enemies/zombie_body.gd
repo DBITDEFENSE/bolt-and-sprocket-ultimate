@@ -357,7 +357,7 @@ void fragment() {
 	float n = nz.r;
 	vec4 alb = texture(albedo_tex, UV);
 	vec3 orm = texture(orm_tex, UV).rgb;
-	vec3 painted = alb.rgb * 1.75 * mix(0.9, 1.06, n);
+	vec3 painted = alb.rgb * 1.5 * mix(0.9, 1.06, n);
 	vec3 base = v_col.rgb * skin_mul * inst_tint.rgb * mix(vec3(mix(0.62, 1.1, n)), painted, use_maps);
 	float dirt = inst_dirt * (1.0 - smoothstep(0.0, 1.3, v_h)) * (0.4 + 0.6 * n);
 	base = mix(base, base * vec3(0.5, 0.42, 0.38), dirt);
@@ -474,7 +474,7 @@ void fragment() {
 
 ## The shared skin material (one per look: base, bellringer amber, nurse pale, glasshide glassy).
 static func skin_material(look: String = "base") -> ShaderMaterial:
-	var key: String = "shader:skin:" + look
+	var key: String = ("legacy:" if legacy_bodies else "") + "shader:skin:" + look
 	if _mats.has(key):
 		return _mats[key]
 	var inf: Dictionary = GLData.table("anim")["infection"]
@@ -508,7 +508,7 @@ static func skin_material(look: String = "base") -> ShaderMaterial:
 	if set_name == "living":
 		dir = dir.get_base_dir().path_join("human_base")
 	var alb: String = dir.path_join(str(tex.get("albedo", "")))
-	if not tex.is_empty() and ResourceLoader.exists(alb):
+	if not legacy_bodies and not tex.is_empty() and ResourceLoader.exists(alb):
 		m.set_shader_parameter("albedo_tex", load(alb))
 		m.set_shader_parameter("normal_tex", load(dir.path_join(str(tex.get("normal", "")))))
 		m.set_shader_parameter("orm_tex", load(dir.path_join(str(tex.get("orm", "")))))
@@ -523,18 +523,19 @@ const LEATHER_TEX: String = "res://assets/third_party/ambientcg/leather-014/text
 
 
 static func kit_material() -> ShaderMaterial:
-	if _mats.has("shader:kit"):
-		return _mats["shader:kit"]
+	var mkey: String = ("legacy:" if legacy_bodies else "") + "shader:kit"
+	if _mats.has(mkey):
+		return _mats[mkey]
 	var m: ShaderMaterial = ShaderMaterial.new()
 	m.shader = kit_shader()
 	m.set_shader_parameter("noise_tex", _noise_tex(31, 0.06, Color(0.65, 0.65, 0.65), Color(1.08, 1.08, 1.08)))
 	for pair: Array in [["fabric", FABRIC_TEX], ["leather", LEATHER_TEX]]:
-		if ResourceLoader.exists(str(pair[1])):
+		if not legacy_bodies and ResourceLoader.exists(str(pair[1])):
 			var t: Texture2D = load(str(pair[1])) as Texture2D
 			m.set_shader_parameter(str(pair[0]) + "_tex", t)
 			m.set_shader_parameter(str(pair[0]) + "_mean", _linear_mean(t))
 			m.set_shader_parameter("detail_amount", 0.55)
-	_mats["shader:kit"] = m
+	_mats[mkey] = m
 	return m
 
 
@@ -575,6 +576,8 @@ static func warm_up(kits: PackedStringArray = KITS) -> void:
 
 const CHARACTERS_JSON: String = "res://data/gravelight/art/characters.json"
 static var _char_cfg: Dictionary = {}
+## Tools only (shots_zombie_anim's before / after lineup): build the pre-T-091 procedural bodies and plain skin.
+static var legacy_bodies: bool = false
 static var _base: Dictionary = {}      # "m_medium" / "living:f_thin" -> {object name: arrays (bones remapped to the rig)}
 
 ## Detail class per part key for the kit shader's tiling fabric (CUSTOM0.a): 0 none, 1 wool, 2 knit, 3 leather,
@@ -900,11 +903,11 @@ static func _cache_key(kit: String, build: String, female: bool) -> String:
 ## the body and its clothes come from the Blender-built GLBs (`base_parts`, `_merge_glb`); the procedural primitives
 ## below stay as the fallback when a GLB is missing (a checkout that has not imported yet).
 static func build_skinned(kit: String, build: String = "medium", female: bool = false) -> ArrayMesh:
-	var key: String = "skinned:" + _cache_key(kit, build, female)
+	var key: String = ("legacy:" if legacy_bodies else "") + "skinned:" + _cache_key(kit, build, female)
 	if _meshes.has(key):
 		return _meshes[key]
 	var mesh: ArrayMesh
-	var base: Dictionary = base_parts(build, female)
+	var base: Dictionary = {} if legacy_bodies else base_parts(build, female)
 	if base.has("Body"):
 		mesh = _merge_glb(base, kit, female)
 	else:
@@ -992,11 +995,11 @@ class _SurfaceAcc:
 ## (by dominant bone weight) to the chain under `root_bone`, unskinned, in that bone's rest frame, both surfaces
 ## with the body's own materials (a sleeve comes off with the arm). Procedural fallback: the legacy primitives.
 static func piece_mesh(kit: String, build: String, female: bool, root_bone: String) -> ArrayMesh:
-	var key: String = "piece:%s:%s" % [_cache_key(kit, build, female), root_bone]
+	var key: String = ("legacy:" if legacy_bodies else "") + "piece:%s:%s" % [_cache_key(kit, build, female), root_bone]
 	if _meshes.has(key):
 		return _meshes[key]
 	var mesh: ArrayMesh
-	if base_parts(build, female).has("Body"):
+	if not legacy_bodies and base_parts(build, female).has("Body"):
 		mesh = _cut_piece(build_skinned(kit, build, female), root_bone)
 	else:
 		var all: Dictionary = body_parts(kit, build, female)
