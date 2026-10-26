@@ -33,6 +33,7 @@ static var legacy: bool = false
 static var _cfg: Dictionary = {}
 static var _meshes: Dictionary = {}
 static var _porcelain: ShaderMaterial = null
+static var _risen: ShaderMaterial = null
 
 
 static func cfg() -> Dictionary:
@@ -119,7 +120,7 @@ static func look_of(id: String, key: String, risen: bool = false) -> Array:
 	if risen:
 		match key:
 			"eye_white", "iris":
-				return ZombieBody.KEY_LOOK["eye"]
+				return [Color(0.62, 0.28, 0.95), 0.3, 0.0, 1.4]   # the violet glow (dimmer than a horde eye: a whole eyeball)
 			"lid":
 				return [Color(0.48, 0.5, 0.52) * 0.9, 0.7, 0.0, 0.0]
 	if key == "lid":
@@ -138,7 +139,16 @@ static func look_of(id: String, key: String, risen: bool = false) -> Array:
 ## The person's skin material: the shared living one, the Cousins' porcelain, or the infection shader (risen).
 static func skin_material(id: String, risen: bool = false) -> ShaderMaterial:
 	if risen:
-		return ZombieBody.skin_material("base")
+		# the infection shader with the living texture set (the people's UVs are the living canonical layout; the
+		# zombie set was baked on the zombie one): cracks and veins at the zombie strength, a dead roughness
+		if _risen == null:
+			var inf: Dictionary = GLData.table("anim")["infection"]
+			_risen = ZombieBody.skin_material("living").duplicate() as ShaderMaterial
+			_risen.set_shader_parameter("crack_energy", float(inf.get("crack_energy", 2.6)))
+			_risen.set_shader_parameter("vein_energy", float(inf.get("vein_energy", 1.4)))
+			_risen.set_shader_parameter("roughness", 0.68)
+			_risen.set_shader_parameter("skin_mul", Vector3(0.82, 0.86, 0.92))
+		return _risen
 	if str(row(id).get("look", "")) == "porcelain":
 		if _porcelain == null:
 			_porcelain = ZombieBody.skin_material("living").duplicate() as ShaderMaterial

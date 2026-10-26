@@ -107,7 +107,10 @@ func test_bone_weights_only_name_rig_bones() -> void:
 
 func test_risen_person_wears_the_infection_and_the_glow() -> void:
 	var m: ArrayMesh = PeopleBodies.mesh("kubiak", true)
-	assert_same(m.surface_get_material(0), ZombieBody.skin_material("base"), "the infection shader on the skin")
+	var sm: ShaderMaterial = m.surface_get_material(0) as ShaderMaterial
+	assert_same(sm.shader, ZombieBody.skin_shader(), "the infection shader on the skin")
+	assert_gt(float(sm.get_shader_parameter("crack_energy")), 0.0, "with its cracks")
+	assert_gt(float(sm.get_shader_parameter("vein_energy")), 0.0, "and veins")
 	var c0: PackedFloat32Array = m.surface_get_arrays(1)[Mesh.ARRAY_CUSTOM0]
 	var glow: int = 0
 	for i: int in range(2, c0.size(), 4):

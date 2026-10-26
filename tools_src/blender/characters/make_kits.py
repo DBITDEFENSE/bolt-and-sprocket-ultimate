@@ -1021,7 +1021,7 @@ def kit_jakub(body, P):
     k.add(cut_front(sk, 0.075))
     k.add(band(body, neck_pts(body), 1.532, 0.107, "cloth", pad=0.03, thick=0.016))      # the collar turned up
     for sx in (-1.0, 1.0):
-        buttons(k, coat, sx * 0.085, 1.36, 3, 0.11, "metal", 0.017)
+        buttons(k, coat, sx * 0.105, 1.36, 3, 0.11, "metal", 0.017)
     k.add(band(body, trunk(shirt), 0.985, 0.04, "leather", pad=0.002, thick=0.006))
     k.add(pstud(shirt, "metal", 0.03, 0.94, (0.012, 0.09, 0.012)))                           # the empty lamp hook
     add_shell(k, body, P_legs(0.16, 0.98), 0.01, "cloth2")
