@@ -52,6 +52,7 @@ func _ready() -> void:
 	get_tree().paused = false
 	_online = Net.is_online() and Net.in_match
 	GameState.reset_match(map_id, display_name, start_zone)
+	GameState.apply_act_physics(RoundManager.act_block_of(map_id))   # Map 4 Act IV: gravity scale, slides, vacuum (T-112)
 	GameState.bot_ids = []
 	if _online:
 		GameState.player_ids = Net.player_ids()

@@ -15,7 +15,7 @@ extends RefCounted
 enum M { NONE, MOVE, FOLLOW, HOLD, TRAIN }
 
 const MASK_LOS: int = 1 | (1 << 8)
-const GRAVITY: float = 14.0
+const GRAVITY: float = 14.0   # the 1 g fallback; live: GameState.g_player() (T-112)
 
 var player: Player
 var squad: BotSquad
@@ -719,7 +719,7 @@ func _move(delta: float) -> void:
 	horizontal = horizontal.move_toward(wish * speed, (45.0 if on_floor else 8.0) * delta)
 	player.velocity.x = horizontal.x
 	player.velocity.z = horizontal.z
-	player.velocity.y = -0.5 if on_floor and player.velocity.y < 0.0 else player.velocity.y - GRAVITY * delta
+	player.velocity.y = -0.5 if on_floor and player.velocity.y < 0.0 else player.velocity.y - GameState.g_player() * delta
 	player.velocity += player.push_velocity()   # turbulence, suction, pulls (T-105)
 	player.sprinting = sprinting
 	_sprint_t = _sprint_t + delta if sprinting else 0.0

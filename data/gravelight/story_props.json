@@ -10,6 +10,10 @@
   {"id": "INT_M2_01", "map": "2", "style": "letter", "position": [-28.6, 0.55, 7.8], "yaw": -90, "where": "Cannery infirmary, the south cot's blanket (top 0.55), facing the room"},
   {"id": "INT_M2_02", "map": "2", "style": "logbook", "position": [50.8, -2.2, 63.0], "yaw": 90, "where": "Lower pens, the keeper's desk (top -2.2) by the Pumpenschalter, facing west"},
   {"id": "INT_M2_03", "map": "2", "style": "docket", "position": [43.97, 1.5, 54.0], "yaw": 90, "where": "Pen Hall, the crane office's west wall face (x 44), facing the apron"},
-  {"id": "INT_M2_04", "map": "2", "style": "clipping", "position": [47.0, 8.6, 33.2], "yaw": 180, "where": "Signal Tower, north wall face (z 33.2) between the two windows"}
+  {"id": "INT_M2_04", "map": "2", "style": "clipping", "position": [47.0, 8.6, 33.2], "yaw": 180, "where": "Signal Tower, north wall face (z 33.2) between the two windows"},
+  {"id": "INT_M4_RELAY", "map": "4d", "style": "docket", "position": [0.0, 1.12, 36.7], "yaw": 180, "where": "Concourse, the plate on the relay's model case, facing the door from Reception"},
+  {"id": "INT_M4_CREWTAGS", "map": "4d", "style": "docket", "position": [17.0, 0.95, 41.3], "yaw": 90, "where": "Fulfillment, the end of the middle rack, west aisle"},
+  {"id": "INT_M4_SMILE", "map": "4d", "style": "clipping", "position": [-4.0, 2.05, 102.6], "yaw": 180, "where": "The yard's north rim, pinned to the boulder under the smile (vacuum: 25 s of air)"},
+  {"id": "INT_M4_PILCH", "map": "4d", "style": "logbook", "position": [26.4, 0.55, -39.8], "yaw": 90, "where": "The Account, on the rim of the floor glass over the first retained"}
  ]
 }

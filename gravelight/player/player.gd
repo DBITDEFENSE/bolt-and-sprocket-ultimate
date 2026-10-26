@@ -20,7 +20,7 @@ signal prompt_denied
 const LAYER_PLAYER: int = 1 << 1
 const MASK_MOVE: int = 1 | (1 << 2) | (1 << 5) | (1 << 8) | (1 << 10)   # world, zombie bodies, barricades, doors, the map's edge (T-084: shots pass it, bodies don't)
 const MASK_INTERACT: int = 1 | (1 << 4) | (1 << 8)          # world, interactables, doors
-const GRAVITY: float = 14.0
+const GRAVITY: float = 14.0        # the 1 g fallback; the live value is GameState.g_player() (world.json x gravity_scale, T-112)
 const STAND_HEIGHT: float = 1.8
 const CROUCH_HEIGHT: float = 1.1
 const EYE_STAND: float = 1.62
@@ -102,6 +102,16 @@ var slide_jumps: int = 0
 var _lunge_t: float = 0.0
 var _lunge_vel: Vector3 = Vector3.ZERO
 var _status: Dictionary = {}      # effect -> seconds left (scream, shard_slow, whip_slow, knockdown)
+## The AIR gauge (UPDATE 07 Map 4 Act IV, T-112): seconds of air left in a vacuum zone (GameState.vacuum_cfg), refilled
+## in pressure or at an AirPost; at zero the suit's wearer takes damage_per_second. in_vacuum: breathing from it now.
+var air: float = 25.0
+var air_max: float = 25.0
+var in_vacuum: bool = false
+var _air_tick: float = 0.0
+var _vac_fx: bool = false
+var _vac_lp: Dictionary = {}      # bus name -> effect index (the suit's muffled mix)
+var _vac_said: bool = false
+var _vac_bot_t: float = 0.0
 var _status_fx: CanvasLayer = null
 var _hold_t: float = 0.0
 var _hold_locked: bool = false
@@ -351,7 +361,7 @@ func _physics_process(delta: float) -> void:
 			_last_stand_tick(delta)
 		return
 	if GameState.input_blocked:
-		velocity = Vector3(0, velocity.y - GRAVITY * delta, 0) if not is_on_floor() else Vector3.ZERO
+		velocity = Vector3(0, velocity.y - GameState.g_player() * delta, 0) if not is_on_floor() else Vector3.ZERO
 		move_and_slide()
 		_update_health(delta)   # keep regen + heartbeat in step while a radio/switchboard UI is open
 		return
@@ -496,7 +506,7 @@ func _update_movement(delta: float) -> void:
 	velocity.z = horizontal.z
 	if on_floor:
 		if jump_pressed and not crouching and not prone and velocity.y <= 0.0:
-			velocity.y = float(_cfg["jump_velocity"])
+			velocity.y = float(_cfg["jump_velocity"]) * GameState.jump_mult()
 			_air_cap = horizontal_speed()
 			weapons.on_jump()
 			GLBus.player_jumped.emit(player_id, global_position)
@@ -507,13 +517,13 @@ func _update_movement(delta: float) -> void:
 		if jump_pressed and _hops_left > 0 and not sliding and not prone and not _mantle_air_catching():
 			_hops_left -= 1
 			_did_hop = true
-			velocity.y = float(_cfg["jump_velocity"]) * float(PerkManager.stat(player_id, "air_hop_mult", 0.6))
+			velocity.y = float(_cfg["jump_velocity"]) * GameState.jump_mult() * float(PerkManager.stat(player_id, "air_hop_mult", 0.6))
 			_air_cap = maxf(_air_cap, horizontal_speed())
 			weapons.on_jump()
 			AudioDirector.play_2d("perk_skyhook_hop", -6.0, 0.1)
 			GLBus.player_jumped.emit(player_id, global_position)
 			PerkManager.note_proc(player_id, &"skyhook_sekt", &"hop")
-		velocity.y -= GRAVITY * delta
+		velocity.y -= GameState.g_player() * delta
 	_update_stance_shape(delta)
 	_slide_k = move_toward(_slide_k, 1.0 if sliding else 0.0, delta * (9.0 if sliding else 5.0))
 	var fall_speed: float = -velocity.y
@@ -635,7 +645,7 @@ func _update_sprint(delta: float, input: Vector2, on_floor: bool) -> void:
 ## bunny-hop gain from chained jumps).
 func _on_landed(fall_speed: float) -> void:
 	var J: Dictionary = _mv.get("jump", {})
-	var h: float = fall_speed * fall_speed / (2.0 * GRAVITY)
+	var h: float = fall_speed * fall_speed / (2.0 * maxf(0.5, GameState.g_player()))   # the real fall: soft landings in low g (T-112)
 	var safe: bool = bool(PerkManager.stat(player_id, "safe_landing", false))   # Skyhook Sekt (T-105)
 	var shake_mult: float = float(PerkManager.stat(player_id, "landing_shake_mult", 1.0)) if safe else 1.0
 	_shake = maxf(_shake, clampf((h - float(J.get("shake_from_m", 0.25))) * float(J.get("shake_per_m", 0.22)), 0.0, float(J.get("shake_max", 0.7))) * shake_mult)
@@ -965,7 +975,7 @@ func _start_slide(wish: Vector3) -> void:
 	sprinting = false
 	crouching = true
 	slides += 1
-	_slide_t = float(S.get("duration", _cfg.get("slide_duration", 0.7))) * float(PerkManager.stat(player_id, "slide_duration_mult", 1.0))
+	_slide_t = float(S.get("duration", _cfg.get("slide_duration", 0.7))) * float(PerkManager.stat(player_id, "slide_duration_mult", 1.0)) * GameState.slide_distance_mult   # the Moon: 1.4x farther (T-112)
 	if bool(PerkManager.stat(player_id, "hop_reset_on_slide", false)):
 		_hops_left = int(PerkManager.stat(player_id, "air_hops", 0))   # Skyhook II: a slide re-arms the hop
 	_slide_dir = wish.normalized() if wish.length_squared() > 0.01 else -global_basis.z
@@ -1016,7 +1026,7 @@ func _slide_jump() -> void:
 	slide_jumps += 1
 	velocity.x = _slide_dir.x * spd
 	velocity.z = _slide_dir.z * spd
-	velocity.y = float(_cfg["jump_velocity"]) + float(S.get("jump_boost", 0.6)) * float(PerkManager.stat(player_id, "slide_jump_boost_mult", 1.0))
+	velocity.y = float(_cfg["jump_velocity"]) * GameState.jump_mult() + float(S.get("jump_boost", 0.6)) * float(PerkManager.stat(player_id, "slide_jump_boost_mult", 1.0))
 	_slide_cd = maxf(_slide_cd, float(S.get("cooldown", 0.45)))
 
 
@@ -1151,10 +1161,99 @@ func _on_player_status(pid: int, effect: StringName, seconds: float) -> void:
 func _update_health(delta: float) -> void:
 	for e: Variant in _status.keys():
 		_status[e] = maxf(0.0, float(_status[e]) - delta)
+	_update_air(delta)
 	_since_hit += delta
 	if _since_hit >= float(_cfg["regen_delay"]) * float(PerkManager.stat(player_id, "regen_delay_mult", 1.0)) * Muster.mult(player_id, "regen_delay_mult") and hp < max_hp:
 		hp = minf(max_hp, hp + float(_cfg["regen_per_second"]) * delta)
 	_set_heartbeat(hp < max_hp * HEARTBEAT_BELOW)
+
+
+## The AIR gauge (T-112): in a vacuum zone (ZoneVolume.vacuum) away from an AirPost the air runs down (`air_seconds`
+## from full), refills over `refill_seconds` in pressure or at a post, and hurts `damage_per_second` at zero. The
+## `vacuum` status is refreshed while it runs (the HUD's visor rim, the bots' danger), the suit's muffled mix goes
+## on the local player's buses. A bot with under `bot_leave_air` s left marks the vacuum zones as danger so it leaves.
+func _update_air(delta: float) -> void:
+	var vc: Dictionary = GameState.vacuum_cfg
+	if vc.is_empty():
+		if in_vacuum:
+			in_vacuum = false
+			_set_vacuum_mix(false)
+		return
+	air_max = float(vc.get("air_seconds", 25.0))
+	var vac: bool = ZoneVolume.vacuum_at(get_tree(), global_position) and not AirPost.near(get_tree(), global_position, float(vc.get("air_post_radius", 2.0)))
+	if vac != in_vacuum:
+		in_vacuum = vac
+		if is_local:
+			_set_vacuum_mix(vac)
+		if vac and not _vac_said and not is_bot:
+			_vac_said = true
+			GLVO.say_as(player_id, "M4D_VACUUM")
+	if in_vacuum:
+		air = maxf(0.0, air - delta)
+		_status[&"vacuum"] = 0.5
+		if air <= 0.0:
+			_air_tick += delta
+			if _air_tick >= 0.5:
+				_air_tick = 0.0
+				take_hit(float(vc.get("damage_per_second", 20.0)) * 0.5, self)
+	else:
+		_air_tick = 0.0
+		air = minf(air_max, air + delta * air_max / maxf(0.1, float(vc.get("refill_seconds", 3.0))))
+	if is_bot:
+		_vac_bot_t -= delta
+		if _vac_bot_t <= 0.0:
+			_vac_bot_t = 0.5
+			if air < float(vc.get("bot_leave_air", 8.0)):
+				_mark_vacuum_danger()
+
+
+## Pure: seconds of air after `dt` in vacuum (0 at the bottom), or after `dt` of refilling.
+static func air_after(air_now: float, dt: float, in_vac: bool, air_seconds: float, refill_seconds: float) -> float:
+	if in_vac:
+		return maxf(0.0, air_now - dt)
+	return minf(air_seconds, air_now + dt * air_seconds / maxf(0.1, refill_seconds))
+
+
+func air_fraction() -> float:
+	return clampf(air / maxf(0.1, air_max), 0.0, 1.0)
+
+
+## A bot short of air: every vacuum zone becomes a danger zone on the squad's blackboard for a second (BotLocomotion
+## weighs it; the brain's escape picks a spot outside it).
+func _mark_vacuum_danger() -> void:
+	var map: Node = get_tree().current_scene
+	var squad: Object = map.get("squad") if map != null else null
+	if squad == null:
+		return
+	var bb: Object = squad.get("blackboard")
+	if bb == null or not bb.has_method("add_danger"):
+		return
+	var now: float = float(squad.call("time")) if squad.has_method("time") else 0.0
+	for n: Node in get_tree().get_nodes_in_group(&"zone_volumes"):
+		var zv: ZoneVolume = n as ZoneVolume
+		if zv != null and zv.vacuum:
+			bb.call("add_danger", zv.global_position, maxf(zv.size.x, zv.size.z) * 0.5 + 1.0, 3.0, now + 1.2, "vacuum:%s" % zv.zone_id)
+
+
+## The suit's mix: a low-pass on the SFX and Ambience buses while the local player breathes from the gauge.
+func _set_vacuum_mix(on: bool) -> void:
+	if _vac_fx == on:
+		return
+	_vac_fx = on
+	for bus_name: String in ["SFX", "Ambience"]:
+		var bus: int = AudioServer.get_bus_index(bus_name)
+		if bus < 0:
+			continue
+		if on:
+			if not _vac_lp.has(bus_name):
+				var lp: AudioEffectLowPassFilter = AudioEffectLowPassFilter.new()
+				lp.cutoff_hz = 900.0
+				lp.resonance = 0.4
+				AudioServer.add_bus_effect(bus, lp)
+				_vac_lp[bus_name] = AudioServer.get_bus_effect_count(bus) - 1
+			AudioServer.set_bus_effect_enabled(bus, int(_vac_lp[bus_name]), true)
+		elif _vac_lp.has(bus_name) and int(_vac_lp[bus_name]) < AudioServer.get_bus_effect_count(bus):
+			AudioServer.set_bus_effect_enabled(bus, int(_vac_lp[bus_name]), false)
 
 
 ## Low-health heartbeat: one looping child player, toggled only when the state changes.
@@ -1526,7 +1625,7 @@ func _last_stand_tick(delta: float) -> void:
 	var spd: float = float(dcfg.get("crawl_speed", 0.9))
 	velocity.x = wish.x * spd
 	velocity.z = wish.z * spd
-	velocity.y = -0.5 if is_on_floor() else velocity.y - GRAVITY * delta
+	velocity.y = -0.5 if is_on_floor() else velocity.y - GameState.g_player() * delta
 	move_and_slide()
 	for e: Variant in _status.keys():
 		_status[e] = maxf(0.0, float(_status[e]) - delta)
@@ -1662,3 +1761,8 @@ func _on_explosion(pos: Vector3, radius: float) -> void:
 	var d: float = global_position.distance_to(pos)
 	if d < radius * 3.0:
 		_shake = maxf(_shake, lerpf(0.9, 0.1, d / (radius * 3.0)))
+
+
+func _exit_tree() -> void:
+	if _vac_fx:
+		_set_vacuum_mix(false)

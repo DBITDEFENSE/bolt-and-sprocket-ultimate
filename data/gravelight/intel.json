@@ -382,6 +382,30 @@
       "type": "DOC",
       "map": "4b",
       "text": "\"RIEDL, A. — HAAS, W. — POHL, K. Stamped tin, the works' crane-in-a-cog, a serial each. Found in a buckled harness, on the tape deck, under a gunner's seat. The men were not aboard. The tags were.\""
+    },
+    {
+      "id": "INT_M4_RELAY",
+      "title": "The relay's model plate: RR-7 · MONDLICHT",
+      "type": "DOC",
+      "map": "4d",
+      "text": "REGIONAL RETENTION RELAY RR-7 · \"MONDLICHT\"\nField units 3 and 4, 1938–39. Crater floor, near side, one kilometre from the anomaly.\n\nPURPOSE. To hold the regional Plan in force where the customer is unable to attend: the relay repeats the retention signal at the Earth without interruption. EXCEPTIONAL RETENTION.\n\nINVENTORY. Reception dome (landing pad, airlock). Concourse (model, forge unit 001, cabinets 2–3). Fulfillment store (racks, fold pad, conveyor). Retention hall (columns I–III, the sign). The Account (console, the first retained, one executive unit, attending remotely).\n\nNOTE, in a later hand: the forge has never been lit. The cabinets have never been filled. The model's little Earth is painted the wrong colour. Nobody has been here since the field units left, and the relay has not noticed.",
+      "placement": "fixed"
+    },
+    {
+      "id": "INT_M4_PILCH",
+      "title": "The first retained: a tag, and a theft report from 1938",
+      "type": "DOC",
+      "map": "4d",
+      "text": "TAG, stamped: PILCH, J. · KB · 11.XI.38.\n\nAttached, a carbon of a report from the Kaltenbrunn mortuary shed, 12 November 1938: \"One body removed overnight from shed 2. Pilch, Jan, 41, of the valley, killed in the salt on the 11th by a fall of roof. The shed was locked. The lock is undamaged. The night watchman reports a violet light at the shed window at about 03:00 and a sound he describes as 'a shop bell'. The family have been told he ran off. Recommend no further action.\"\n\nUnder the carbon, in the field units' hand: \"Retained. Impulse: clean. Repeating at the Earth from 14.XI.38. Signal reach at first light: the valley. By spring: the district.\"\n\nHe has been under this glass for seven years. His hand still moves.",
+      "placement": "fixed"
+    },
+    {
+      "id": "INT_M4_SMILE",
+      "title": "A photograph of the crack, annotated \"customer-generated\"",
+      "type": "PHOTO",
+      "map": "4d",
+      "text": "A print, 9 by 12, taken from the crater rim toward the anomaly, dated April 1945 in the field units' hand. A smile-shaped crack in the regolith, a kilometre long, the violet light inside it over-exposed to white.\n\nOn the back: \"The anomaly predates the relay. The relay was sited for it. It answers the signal; it did not originate it. Classification: customer-generated. No action.\"\n\nA second note, pencil, a different hand, recent: \"It blinked back at the men on the range in Nevada. It blinks at the Account Manager too. She does not like it. Nobody here is the customer. — D.M.\"",
+      "placement": "fixed"
     }
   ]
 }

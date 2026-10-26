@@ -143,6 +143,20 @@ func load_profile() -> void:
 	profile = migrate(parsed) if parsed is Dictionary else new_profile()
 
 
+## An ending the player has seen (UPDATE 07 Map 4 Act IV, T-113: "kuendigung" / "renewed"); the list lives in the profile.
+func note_ending(ending_id: String) -> void:
+	var seen: Array = profile.get("endings_seen", []) if profile.get("endings_seen", []) is Array else []
+	if not seen.has(ending_id):
+		seen.append(ending_id)
+	profile["endings_seen"] = seen
+	save_profile()
+
+
+func endings_seen() -> Array:
+	var seen: Variant = profile.get("endings_seen", [])
+	return seen if seen is Array else []
+
+
 ## Writes to a temp file then renames, so a crash mid-write can't corrupt the profile.
 func save_profile() -> void:
 	var tmp: String = path + ".tmp"

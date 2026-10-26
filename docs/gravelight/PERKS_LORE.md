@@ -834,3 +834,124 @@ Chalked on the bomb casings in the aft bay, low on the shackle side where a fitt
 ### chalk.bar
 **Plate:** Chalk under the blister gallery's rack: "Reserve, Dom 4" (spare, dome 4)
 **Archive:** Chalk: the blister gallery's BAR
+
+## 10. Map 4, Act IV: Mondlicht (`map04d_mondlicht`)
+
+<!-- Parsed by tools/build_perk_lore.py like §4–§9 (UPDATE 07, docs/MAP4_FERNFLUG.md §6, §13.1). The relay's
+     cabinets are field-unit issue: bare steel, the plates stamped not engraved, every one a "prototype" because
+     the Provider never paid for a finished pattern on the Moon. The writer rule holds: no company name, no
+     "subscription"; the Provider is "the Provider", the Plan is "the Plan". -->
+
+**Archive map:** 4d
+
+### perk.second_wind
+**Plate:** Relay RR-7 · Cabinet 1 · landing dome · field pattern · "RETURNS ACCEPTED"
+**Archive:** Maker's Plate: Second Wind (the landing dome)
+
+The pale-blue apothecary cabinet by the reception desk, its enamel sand-blasted grey by seven years of regolith, a field unit's stamp where Basel's plate should be.
+
+HELVETIA AUTOMATEN AG · BASEL. Hygienic beverage dispenser, cabinet pattern, field issue. Formula: Schw. A. W. Shipped 1939 with the relay's first consignment; the only cabinet in the building the field units were told to fill.
+
+The Provider calls a second wind a "return": the customer comes back. On the Moon it is the one tonic the relay was built to have in stock, because a customer who stays down is a customer who stops engaging, and nothing here is allowed to stop.
+
+### perk.skyhook_sekt
+**Plate:** Relay RR-7 · Cabinet 2 · concourse, port · PROTOTYPE · ELEVATION · J. Maurer (by consignment)
+**Archive:** Maker's Plate: Skyhook Sekt (the concourse)
+
+A glider-nosed cabinet in bare steel beside the relay's model, no enamel, the little propeller frozen, the terms plate on its back readable from the front because someone turned it round.
+
+HELVETIA AUTOMATEN AG · BASEL. Glider pattern, prototype. Formula: H. Maurer, Windkanal Thalbach. The Provider's shipping note calls it "lift (customer-generated)": the formula came up from Thalbach in the consignment, not down from Legal.
+
+Jette Maurer never knew her Sekt went to the Moon. In a sixth of a gravity it does what she made it for on Earth and more: the floor is a suggestion here anyway; the Sekt makes the landing a decision. The cabinet's back was turned to the room by a hand that wanted the terms read.
+
+### perk.magpie_mead
+**Plate:** Relay RR-7 · Cabinet 3 · concourse, starboard · PROTOTYPE · RECOVERY · "repainted by the customer"
+**Archive:** Maker's Plate: Magpie Mead (the concourse)
+
+The bandit-striped cabinet across the concourse from the Sekt, its export-pattern paint scraped back to the plate by someone with a knife and time, the bird on the glass looking down as always.
+
+HELVETIA AUTOMATEN AG · BASEL. Export pattern, prototype, field issue. The formula came back up the chain from a range in Nevada with a note the Provider filed as feedback: "nothing on the range goes to waste." The Provider agreed, and meant something else.
+
+Dee's mead, by way of Groom Lake's recovered crates, by way of a fold pad: the Provider ships what the customers bring. On the Moon the Magpie finds what seven years of inventory dropped on the regolith, and the pencil note under the panel, READ THIS, is the first thing in the building written to be read.
+
+### perk.ironhide_stout
+**Plate:** Relay RR-7 · Cabinet 4 · fulfillment, west aisle · field pattern · O. Kessler (by consignment)
+**Archive:** Maker's Plate: Ironhide Stout (the store)
+
+The armour-plated cabinet at the head of the store's first aisle, bolted to the rack's upright as if it were inventory, its plate stamped on the same tag the suits wear.
+
+HELVETIA AUTOMATEN AG · BASEL. Hygienic beverage dispenser, armour pattern, field issue. Formula: O. Kessler, Prüfstand Thalbach. Consigned with the store's fittings: "for the retention of the retained."
+
+The Provider stocked the stout in the store because the inventory on the racks takes damage in transit, and a Plan that holds the dead upright a little longer is a Plan that renews. The Kessler formula, meant for test-stand crews, does the same for the living, which the Provider calls a feature.
+
+### perk.trigger_tonic
+**Plate:** Relay RR-7 · Cabinet 5 · fulfillment, east wall · field pattern · Dr. I. Vogt (by consignment)
+**Archive:** Maker's Plate: Trigger Tonic (the store)
+
+The crate-shaped cabinet under the store's east hatches, the tin hare on its glass running toward the conveyor, its pour-time dial set to a watch no one on the Moon keeps.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: Dr. I. Vogt, Kaltwerk Chemie. Field issue, 5 of 8. The dial reads "fulfillment shift": the Provider timed it to the conveyor, not to a day.
+
+Vogt's reload tonic, set to a conveyor that moves the dead from the pad to the racks and back out to the Earth. The hare has a scratch across its eye here too; someone carried the same cabinet pattern up the chain, scratch and all, which is how patterns travel.
+
+### perk.hawkeye_brandy
+**Plate:** Relay RR-7 · Cabinet 6 · retention hall, west · field pattern · "LINE OF SIGHT"
+**Archive:** Maker's Plate: Hawkeye Brandy (the retention hall)
+
+The tall narrow cabinet against the nave's west rib, its glass etched with the relay's own symbol, a dish, where the hawk should be.
+
+HELVETIA AUTOMATEN AG · BASEL. Hygienic beverage dispenser, long-sight pattern, field issue. Consigned "for the hall's line of sight to the dish": the Provider wanted its customers to see the columns from the door.
+
+A brandy for seeing far, in a hall built to be looked down. The columns hum at the far end; the sign hangs over the door to the Account. Whoever drinks here sees the terms plates from the threshold, which is the opposite of what the Provider sells and exactly what the plates are for.
+
+### perk.blastproof_bock
+**Plate:** Relay RR-7 · Cabinet 7 · retention hall, east · field pattern · "SHOCK TESTED"
+**Archive:** Maker's Plate: Blastproof Bock (the retention hall)
+
+The bunker-grey cabinet under the hall's east chutes, its casing dented where something came through the chute and did not stop.
+
+HELVETIA AUTOMATEN AG · BASEL. Shock pattern, field issue. Consigned with the hall: the Provider's note reads "customers may experience turbulence on cancellation."
+
+The Bock for standing in a blast, placed by the Provider where the Backorders come in thickest, because a customer who is knocked down in the hall tends to read the floor and not the plates. The dent is from the first delivery. It still pours.
+
+### perk.packmule_porter
+**Plate:** Relay RR-7 · Cabinet 8 · the Account · field pattern · "CARRY-OVER"
+**Archive:** Maker's Plate: Packmule Porter (the Account)
+
+The heavy two-door cabinet inside the Account's door, the only cabinet in the room, its plate stamped with the Provider's own motto on the back where a customer would not look.
+
+HELVETIA AUTOMATEN AG · BASEL. Carrier pattern, field issue, 8 of 8. The stamp on the back reads NOBODY CANCELS, and under it, in Vendelin's hand, a smaller stamp: "...except you."
+
+A porter for carrying more, in the one room where what you carry is the point. The Provider installed it for the Account Manager's guests, who were expected to arrive with a great deal and leave with nothing. The small stamp was not on the consignment.
+
+### crucible
+**Plate:** MOD. R-E · PAT. PEND. BLZ-40417 · UNIT 001 · CONCOURSE · NEVER LIT
+**Archive:** The first Crucible (the concourse)
+
+The original violet forge, the first of the pattern, shipped to the relay in 1939 before Kaltenbrunn, the U-boat, the bunker or the Kranich got theirs, bolted under the concourse's violet strips and never once lit.
+
+MOD. R-E · PAT. PEND. BLZ-40417 · UNIT 001. The same brass plaque as every forge after it, but stamped, not engraved, and with a field unit's tally beside it: one stroke, for the one time someone tried the door and found it locked.
+
+The relay was built to receive, not to make; the forge was shipped so the building would be complete on paper. Seven years of standby cell behind the louvres and nothing ever forged. The Operator asks, for once without a slip, that it be used.
+
+### chalk
+**Plate:** Three strokes and a hook, scratched, not chalked, on the rack tags in the store
+**Archive:** Scratches on the Moon: the labourers' mark in the store
+
+Scratched into the metal tags of the suited inventory in the store, on the side a fitter would not look, three strokes and a hook: the Kaltenbrunn gangs' mark for "weak, ours, don't trust it." There is no chalk on the Moon. Someone did it with a nail, in a pressure suit, in the dark, on every tag that belonged to a man they knew. Standing Order 17 forbade marking inventory; the order is not in force here, and was not obeyed there either.
+
+### chalk.kar98k
+**Plate:** Scratched by the landing dome's rack: "ANOMALOUS INVENTORY · 1 Stück"
+**Archive:** Scratches: the dome's Kar98k
+
+### chalk.thompson
+**Plate:** Scratched on the concourse rib: "Beute · funktioniert noch" (captured, still works)
+**Archive:** Scratches: the concourse's Thompson
+
+### chalk.springfield
+**Plate:** Scratched into the rim rock by the yard's rack: "25 s" and a hook
+**Archive:** Scratches: the yard's Springfield
+
+### chalk.bar
+**Plate:** Scratched under the store's east rack: "Reserve, Lager 7" (spare, store 7)
+**Archive:** Scratches: the store's BAR

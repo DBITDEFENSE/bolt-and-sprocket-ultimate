@@ -7,6 +7,9 @@ extends Node3D
 ## Open ground (T-080, Map 0's GROUNDS round the inn): zombies out here go for a player standing in it instead of
 ## their window, and leave a chase they can't finish for the nearest window (Zombie._roam_*).
 @export var roam: bool = false
+## No air (UPDATE 07 Map 4 Act IV, T-112): players in here breathe from their AIR gauge (Player.air) unless they
+## stand at an AirPost; only vacuum-rated dead (enemies.json `vacuum_only`) spawn in here.
+@export var vacuum: bool = false
 
 
 func _ready() -> void:
@@ -32,4 +35,13 @@ static func roam_at(tree: SceneTree, p: Vector3) -> bool:
 		var zv: ZoneVolume = n as ZoneVolume
 		if zv != null and zv.contains(p):
 			return zv.roam
+	return false
+
+
+## True when the first zone volume containing `p` has no air.
+static func vacuum_at(tree: SceneTree, p: Vector3) -> bool:
+	for n: Node in tree.get_nodes_in_group(&"zone_volumes"):
+		var zv: ZoneVolume = n as ZoneVolume
+		if zv != null and zv.contains(p):
+			return zv.vacuum
 	return false

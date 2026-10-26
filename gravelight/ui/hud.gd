@@ -33,6 +33,11 @@ var _show_zombies: bool = false
 var _denied_t: float = 0.0
 var _minimap: Minimap   # Update 04 section 2 (T-065): top-left, the zone stamped under it
 var _toasts: int = 0     # T-078: bonus toasts on screen (they stack above the Scrip)
+var _air_box: VBoxContainer = null   # UPDATE 07 Map 4 Act IV (T-112): the AIR gauge, top centre, while the suit breathes from it
+var _air_bar: ProgressBar = null
+var _air_label: Label = null
+var _visor: TextureRect = null       # the suit's visor rim in vacuum
+var _tint: ColorRect = null          # the Retained state's violet (T-113)
 var _layout_vp: Vector2 = Vector2(-1, -1)
 
 
@@ -76,6 +81,67 @@ func _ready() -> void:
 	_vignette.texture = gt
 	_vignette.modulate.a = 0.0
 	root.add_child(_vignette)
+	# the visor rim (vacuum): a cold ring at the edge of the view, over the vignette
+	_visor = TextureRect.new()
+	_visor.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_visor.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_visor.stretch_mode = TextureRect.STRETCH_SCALE
+	var vg: Gradient = Gradient.new()
+	vg.set_color(0, Color(0.55, 0.7, 0.9, 0.0))
+	vg.set_color(1, Color(0.35, 0.5, 0.7, 0.85))
+	vg.add_point(0.62, Color(0.55, 0.7, 0.9, 0.0))
+	var vt: GradientTexture2D = GradientTexture2D.new()
+	vt.gradient = vg
+	vt.fill = GradientTexture2D.FILL_RADIAL
+	vt.fill_from = Vector2(0.5, 0.5)
+	vt.fill_to = Vector2(0.98, 0.98)
+	vt.width = 256
+	vt.height = 256
+	_visor.texture = vt
+	_visor.modulate.a = 0.0
+	root.add_child(_visor)
+	_tint = ColorRect.new()
+	_tint.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_tint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tint.color = Color(0.45, 0.2, 0.7, 0.0)
+	root.add_child(_tint)
+	# the AIR gauge: top centre, only while the suit is breathing from it or refilling
+	_air_box = VBoxContainer.new()
+	_air_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_air_box.anchor_left = 0.5
+	_air_box.anchor_right = 0.5
+	_air_box.anchor_top = 0.0
+	_air_box.anchor_bottom = 0.0
+	_air_box.offset_left = -110
+	_air_box.offset_right = 110
+	_air_box.offset_top = 28
+	_air_box.visible = false
+	root.add_child(_air_box)
+	_air_label = Label.new()
+	_air_label.text = "AIR"
+	_air_label.add_theme_font_override("font", MenuKit.stamp_font())
+	_air_label.add_theme_font_size_override("font_size", MenuKit.size("hud_nade"))
+	_air_label.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0))
+	MenuKit.outline(_air_label, "stamp")
+	_air_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_air_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_air_box.add_child(_air_label)
+	_air_bar = ProgressBar.new()
+	_air_bar.min_value = 0.0
+	_air_bar.max_value = 1.0
+	_air_bar.value = 1.0
+	_air_bar.show_percentage = false
+	_air_bar.custom_minimum_size = Vector2(220, 10)
+	_air_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var abg: StyleBoxFlat = StyleBoxFlat.new()
+	abg.bg_color = Color(0.05, 0.08, 0.12, 0.7)
+	abg.border_color = Color(0.6, 0.75, 0.9, 0.8)
+	abg.set_border_width_all(1)
+	_air_bar.add_theme_stylebox_override("background", abg)
+	var afg: StyleBoxFlat = StyleBoxFlat.new()
+	afg.bg_color = Color(0.55, 0.8, 1.0, 0.95)
+	_air_bar.add_theme_stylebox_override("fill", afg)
+	_air_box.add_child(_air_bar)
 	_minimap = Minimap.new()
 	_minimap.game = "gravelight"
 	root.add_child(_minimap)
@@ -288,6 +354,9 @@ func _process(delta: float) -> void:
 	if player.health_fraction() < 0.55:
 		pulse = (sin(Time.get_ticks_msec() * 0.008) * 0.5 + 0.5) * 0.25
 	_vignette.modulate.a = lerpf(_vignette.modulate.a, clampf(hurt * 1.1 + pulse, 0.0, 1.0), clampf(delta * 8.0, 0.0, 1.0))
+	_update_air(delta)
+	if _tint != null:
+		_tint.color.a = lerpf(_tint.color.a, 0.16 if GameState.retained else 0.0, clampf(delta * 2.0, 0.0, 1.0))
 	# debug
 	var lines: PackedStringArray = []
 	if _show_fps:
@@ -298,6 +367,27 @@ func _process(delta: float) -> void:
 		lines.append("GOD MODE")
 	_debug_label.text = "\n".join(lines)
 	_debug_label.position = Vector2(m.x, 12) if Minimap.layout_bottom <= 0.0 else Vector2(m.x, Minimap.layout_bottom + 10.0)   # under the minimap
+
+
+## The AIR gauge and the visor rim (T-112): shown while the player breathes from the suit or the gauge refills.
+func _update_air(delta: float) -> void:
+	if _air_box == null or _visor == null:
+		return
+	var vac: bool = bool(player.get("in_vacuum"))
+	var frac: float = float(player.call("air_fraction")) if player.has_method("air_fraction") else 1.0
+	_visor.modulate.a = lerpf(_visor.modulate.a, 1.0 if vac else 0.0, clampf(delta * 4.0, 0.0, 1.0))
+	var show: bool = vac or frac < 0.999
+	if show != _air_box.visible:
+		_air_box.visible = show
+	if not show:
+		return
+	_air_bar.value = frac
+	var fill: StyleBoxFlat = _air_bar.get_theme_stylebox("fill") as StyleBoxFlat
+	if fill != null:
+		var low: bool = frac < 0.3
+		var blink: float = (sin(Time.get_ticks_msec() * 0.012) * 0.5 + 0.5) if low else 1.0
+		fill.bg_color = Color(1.0, 0.35, 0.25, 0.6 + 0.4 * blink) if low else Color(0.55, 0.8, 1.0, 0.95)
+	_air_label.text = "AIR  %d" % int(ceil(frac * float(player.get("air_max")))) if vac else "AIR"
 
 
 func show_banner(text: String, hold: float = 3.0) -> void:

@@ -697,6 +697,15 @@ func summon_boss(enemy_id: StringName, at: Vector3) -> Node3D:
 			GLBus.boss_spawned.emit(&"kranfuehrer")
 			GLBus.enemy_spawned.emit(kf.enemy_id, kf.get_instance_id())
 			return kf
+		&"account_manager":
+			var am: AccountManager = AccountManager.new()
+			am.director = self
+			add_extra(am)
+			RoundManager.take_extra_spawn()
+			am.spawn_manager(at, HomageBoss.scaled_hp(float(am.boss_cfg().get("hp_base", 45000)), RoundManager.players, float(am.boss_cfg().get("hp_player_step", 0.75))))
+			GLBus.boss_spawned.emit(&"account_manager")
+			GLBus.enemy_spawned.emit(am.enemy_id, am.get_instance_id())
+			return am
 		&"bordwart":
 			var bw: Bordwart = Bordwart.new()
 			bw.director = self
@@ -766,7 +775,10 @@ func _spawn_one() -> bool:
 		return false
 	var spec: Dictionary = RoundManager.take_spawn()
 	spec["variant"] = _pick_variant()
-	if want_glass:
+	if ZoneVolume.vacuum_at(get_tree(), sp.global_position) and _map_allows(&"suited") and (GLData.table("enemies")["enemies"] as Dictionary).has("suited"):
+		spec = _spec_for(&"suited", spec)   # no air: only the Suited rise here (T-112)
+		want_glass = false
+	elif want_glass:
 		spec = _spec_for(&"glasshide", spec)
 	var z: Zombie = _free.pop_back()
 	z.activate(spec, sp, _any_player())

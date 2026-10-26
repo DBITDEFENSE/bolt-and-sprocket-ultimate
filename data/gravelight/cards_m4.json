@@ -1,0 +1,143 @@
+{
+ "_doc": "Map 4 Act IV's endings (UPDATE 07, docs/MAP4_FERNFLUG.md §11.5–§11.6, §12.11, T-113): the epilogue cards (period style, one per character present plus the fixed ones; the cities per the bomb run's flags bomb_<city>_hit / _saved / _dud; Peg's by peg_delivered), the stock-shot dioramas the cancel ending films (gravelight/world/endings/ending_diorama.gd builds each from its id), the titles and the saga credits. Writer rule LORE.md 2.4: no 'subscription', no company name; the Woman in Violet is never named.",
+ "titles": {
+  "cancel": "KÜNDIGUNG",
+  "cancel_sub": "Notice of Cancellation",
+  "renewal": "AUTO-RENEWAL",
+  "renewal_sub": "the match continues."
+ },
+ "cities": {
+  "boston": "Boston",
+  "providence": "Providence",
+  "new_haven": "New Haven",
+  "new_york": "New York",
+  "philadelphia": "Philadelphia",
+  "washington": "Washington"
+ },
+ "dioramas": [
+  {
+   "id": "inn",
+   "caption": "The Crossroads Inn. A Gänger at the bar sits down on the bench, and is still. The fire pops.",
+   "seconds": 6.0
+  },
+  {
+   "id": "chapel",
+   "caption": "Kaltenbrunn, the Salt Chapel. The bell stops. Snow through the roof.",
+   "seconds": 6.0
+  },
+  {
+   "id": "pens",
+   "caption": "Totenhafen. The tide comes in over nothing that moves.",
+   "seconds": 6.0
+  },
+  {
+   "id": "canteen",
+   "caption": "Werk Thalbach. The works' PA clicks off. Wittkamp's office light is on.",
+   "seconds": 6.0
+  },
+  {
+   "id": "london",
+   "caption": "London. The violet snow stops falling. Dawn. A siren winding down.",
+   "seconds": 8.0
+  },
+  {
+   "id": "city",
+   "caption": "%s. The same.",
+   "seconds": 6.0,
+   "per_burned_city": true
+  }
+ ],
+ "card_order": [
+  "london",
+  "boston",
+  "city_each",
+  "dutch",
+  "peg",
+  "deacon",
+  "wren",
+  "jakub",
+  "dee",
+  "hale",
+  "fasbender",
+  "wittkamp",
+  "moon",
+  "bolt",
+  "vendelin"
+ ],
+ "cards": {
+  "london": "The violet snow stopped at 05:12 on 12 May. The city counted its dead and did not count them twice.",
+  "boston": "The harbour burned for a night. In the morning the fire went out and stayed out.",
+  "city_burned": "The same, in %s.",
+  "city_saved": "%s slept through it.",
+  "city_dud": "A casing came down in %s and did not open. On its side, in chalk, three strokes and a hook. Nobody has washed it off.",
+  "dutch": "He went to Wilcza Góra in 1947 with a letter and a bad knee. There was a Pilch at the inn. They talked until the bar closed.",
+  "peg_resigned": "Her resignation was never accepted. Her report was never filed. She bought a bookshop in Bath and sold a great many maps.",
+  "peg_delivered": "She delivered. The program was closed in June by men who had read the manifest. She was not asked to the hearing.",
+  "deacon": "He went home to Ruthie and did not send the letter. He read it to her instead, once, and then they burned it together.",
+  "wren": "She found one hundred and forty of the two hundred names, alive, in a camp near Erfurt. The notebook has sixty-three marks and one more. She never explains the last one.",
+  "jakub": "He walked home. Marta's reply, dated June 1945, says only: \"You are late for supper. Come in.\"",
+  "dee": "She held the range for eleven more days. The relief column found her in the cage with the radio on. She said: \"About time. Nothing goes to waste; that includes you.\"",
+  "hale": "Mr. Hale retired to a house with a good view and no telephone. He has never explained what he was listening for.",
+  "fasbender": "He was allowed to keep the telescope. He points it at the Moon on clear nights, and says it is only to check.",
+  "wittkamp": "He unlocked his office on the fourteenth. The model aeroplane is in a museum. The caption does not say what it was for.",
+  "moon": "The smile is still there. The light is not.",
+  "bolt": "They went home by the usual route. Sprocket wrote a memo. Forty billion people read it this time.",
+  "vendelin": "Field Merchandiser Unit V-1 is listed as \"extended leave.\" He runs a small repair shop in Basel. The sign says: TERMS ON THE BACK. PLEASE READ THEM."
+ },
+ "always_cards": [
+  "london",
+  "boston",
+  "city_each",
+  "dee",
+  "hale",
+  "fasbender",
+  "wittkamp",
+  "moon"
+ ],
+ "character_cards": {
+  "dutch": "dutch",
+  "peg": "peg",
+  "deacon": "deacon",
+  "wren": "wren",
+  "bolt": "bolt",
+  "vendelin": "vendelin"
+ },
+ "credits": [
+  "GRAVELIGHT",
+  "Operation Fernflug",
+  "",
+  "THE SQUAD",
+  "Dutch Kowalczyk",
+  "Margaret \"Peg\" Ashworth",
+  "Deacon Lyle",
+  "Wren Zielinska",
+  "Jakub",
+  "",
+  "THE PEOPLE OF THE RANGE",
+  "Dee",
+  "Mr. Hale",
+  "Fasbender",
+  "Wittkamp",
+  "the works' Jette Maurer",
+  "",
+  "THE DEAD",
+  "every one of them had a name",
+  "",
+  "THE VOICE IN THE WALLS",
+  "The Operator",
+  "",
+  "AND, ATTENDING REMOTELY",
+  "a woman in violet, who is not named here",
+  "",
+  "Written, built and played in the Bolt & Sprocket workshop",
+  "Nachtglas is a lie. The light is not.",
+  "",
+  "Sixty-three. ...and one.",
+  "",
+  "THE END",
+  "",
+  "NOBODY CANCELS",
+  "",
+  "...except you."
+ ]
+}

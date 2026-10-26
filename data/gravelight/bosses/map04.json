@@ -139,6 +139,115 @@
     "off_gauge_mult": 0.15
    },
    "stagger_seconds": 0.6
+  },
+  "account_manager": {
+   "boss_id": "account_manager",
+   "title": "THE ACCOUNT MANAGER",
+   "subtitle": "attending remotely",
+   "date_line": "MONDLICHT  ·  RR-7",
+   "hp_base": 45000,
+   "kill_scrip_per_player": 0,
+   "escalate_scrip_per_player": 2500,
+   "drops": [
+    "resupply"
+   ],
+   "flag": "manager_escalated",
+   "spawn_vo": "WIV_M4D_INTRO_01",
+   "escalate_vo": "WIV_M4D_ESCALATE_01",
+   "escalated_opr_vo": "OPR_M4D_ESCALATED_01",
+   "height": 1.3,
+   "speed": 0.0,
+   "tier": "walk",
+   "station": [
+    28.0,
+    0.0,
+    -34.0
+   ],
+   "console": [
+    28.0,
+    0.0,
+    -30.0
+   ],
+   "shaft": [
+    28.0,
+    7.0,
+    -30.0
+   ],
+   "shaft_radius": 2.5,
+   "crew_pad": [
+    37.0,
+    0.3,
+    -37.5
+   ],
+   "trial_offset": [
+    -3.5,
+    0.0,
+    1.5
+   ],
+   "limb_mult": {
+    "head": 1.2,
+    "neck": 1.0,
+    "torso": 1.0,
+    "arms": 0.6,
+    "legs": 0.5
+   },
+   "phases": {
+    "renewal_at": 0.7,
+    "collections_at": 0.35
+   },
+   "present": {
+    "seconds": 3.0,
+    "every": 20.0,
+    "weak_mult": 2.5,
+    "vo": [
+     "WIV_M4D_PHASE_01",
+     "WIV_M4D_PHASE_02",
+     "WIV_M4D_PHASE_03"
+    ]
+   },
+   "arms": {
+    "telegraph": 1.2,
+    "reach": 7.0,
+    "damage": 80,
+    "cooldown": 5.0,
+    "push": 7.0
+   },
+   "trial": {
+    "offer_seconds": 60.0,
+    "cycle": 90.0,
+    "vo_end": "WIV_M4D_TRIAL_END_01",
+    "reinholt_vo": "WIV_M4D_REINHOLT_01",
+    "reinholt_after": 10.0
+   },
+   "price": {
+    "telegraph": 0.9,
+    "range": 14.0,
+    "damage": 90,
+    "scrip_fraction": 0.1,
+    "cooldown": 8.0,
+    "vo": [
+     "WIV_M4D_PRICE_01",
+     "WIV_M4D_PRICE_02"
+    ]
+   },
+   "crew": {
+    "every": 25.0,
+    "count": 3,
+    "kit": "soldier",
+    "tier": "jog",
+    "vo": "WIV_M4D_CREW_01"
+   },
+   "shields": {
+    "count": 3,
+    "hp": 2000,
+    "regen_seconds": 40.0,
+    "orbit_radius": 2.6,
+    "orbit_height": 1.7,
+    "orbit_rpm": 6.0,
+    "shielded_mult": 0.2,
+    "vo_lost": "WIV_M4D_SHIELD_01"
+   },
+   "stagger_seconds": 0.6
   }
  }
 }

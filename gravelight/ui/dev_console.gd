@@ -174,6 +174,8 @@ func _register_builtins() -> void:
 	register("quest", _cmd_quest, "quest list|skip <q> <step>|skipto <q> <step>|reset <q> [step]|reveal|seed <n>")
 	register("exfil", _cmd_exfil, "exfil now|status: light the map's campaign beacon now (UPDATE 07)")
 	register("act", _cmd_act, "act <1-4>: start Map 4 at that act (campaign mode, the act's arrival kit)")
+	register("renewal", _cmd_renewal, "renewal now|clock: Map 4 Act IV: the bad ending now, or start its clock (UPDATE 07)")
+	register("cancel", _cmd_cancel, "cancel now: Map 4 Act IV: the key turns, the canon ending runs (UPDATE 07)")
 	register("campaign", _cmd_campaign, "campaign begin <map_id> [round]: start a campaign run there")
 	register("boss", _cmd_boss, "boss <foreman|screamer>: summon a boss in front of you")
 	register("spawn_boss", _cmd_spawn_boss, "spawn_boss cousins|hammer|reach|alix: start the Cousins Round now (Map 0), or one cousin alone")
@@ -241,6 +243,38 @@ func _cmd_act(a: PackedStringArray) -> String:
 	Campaign.begin_at(map_id, int(ACT_ROUNDS[i]), Campaign.arrival_kit(map_id))
 	get_tree().change_scene_to_file.call_deferred(Campaign.scene_for(map_id))
 	return "Starting %s at round %d." % [map_id, int(ACT_ROUNDS[i])]
+
+
+func _mondlicht() -> Node:
+	return get_tree().get_first_node_in_group(&"mondlicht_controller")
+
+
+func _cmd_renewal(a: PackedStringArray) -> String:
+	var ctl: Node = _mondlicht()
+	if ctl == null:
+		return "Not on Mondlicht (Map 4 Act IV)."
+	var sub: String = a[0] if a.size() > 0 else "now"
+	if sub == "clock":
+		ctl.call("begin_renewal_clock")
+		return "The renewal clock runs: %.0f s." % float(ctl.get("renewal_left"))
+	ctl.call("start_renewal")
+	return "Your plan has been renewed."
+
+
+func _cmd_cancel(a: PackedStringArray) -> String:
+	var ctl: Node = _mondlicht()
+	if ctl == null:
+		return "Not on Mondlicht (Map 4 Act IV)."
+	if a.size() > 0 and a[0] != "now":
+		return "usage: cancel now"
+	var p: Player = _player()
+	GameState.set_flag(&"manager_escalated")
+	var console: Node = get_tree().get_first_node_in_group(&"account_console")
+	if console != null and console.has_method("turn_key"):
+		console.call("turn_key", p.player_id if p != null else 1)
+	else:
+		ctl.call("start_cancel", p.player_id if p != null else 1)
+	return "The key turns. Nobody cancels... except you."
 
 
 func _cmd_campaign(a: PackedStringArray) -> String:

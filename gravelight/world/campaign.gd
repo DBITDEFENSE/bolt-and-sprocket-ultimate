@@ -166,6 +166,9 @@ static func exfil_round_on(e: Dictionary, attempt: int, act_start: int, has_act:
 ## The match round an act map's first act round falls on: 1 plus the lengths of the acts before it in the chain
 ## (Act I 1, Act II 15, Act III 21, Act IV 30); 1 for a map that is not in the chain or has no act.
 static func act_first_round(map_id: StringName) -> int:
+	var own: Dictionary = RoundManager.act_block_of(map_id)
+	if own.has("start_round"):
+		return int(own["start_round"])   # an act that names its first match round (Act IV: 30, whatever is built before it)
 	var start: int = 1
 	for m: Variant in chain():
 		if StringName(str(m)) == map_id:

@@ -2457,3 +2457,120 @@ manifest's `missing` ("map4: bake on the PC") and play as timed silence with sub
 | JAK_M4A_ARRIVE_01 | I turned back at Sankt Aurel. The lists said Thalbach. I know Thalbach men. ...I will look for {them}. | arrival |
 | JAK_M4A_FILE_01 | Paper. They always had paper for everything but {us}. | a file read (M4A_FILE) |
 | JAK_M4A_CHALK_01 | Three strokes and a hook. That is ours. Someone from the Nine wrote that. On a bomb. ...Good {lad}. | the first chalk mark |
+### 14.10 Act IV — Mondlicht: the Operator (`OPR`, tier 3; the arrival, the escalation, the "are you sure" and the last line tier 4)
+
+The Operator is local here for the first time: it is in the walls. Its slips run at x3 on this map. The TERMS lines are the panel text read flat and reluctant, only when no survivor can read.
+
+| ID | Line | When |
+|---|---|---|
+| OPR_M4D_ARRIVE_01 | ...Welcome, valued customers. Welcome to— I'm here. I've always been here. This is where I'm {from}. | arrival (tier 4) |
+| OPR_M4D_ARRIVE_02 | You'll find everything in order. Everything here has always been in {order}. | arrival, after |
+| OPR_M4D_LOWG_01 | Please note the reduced gravity. It's a feature of the location. We didn't choose the {location}. | the first jump |
+| OPR_M4D_VACUUM_01 | There is no air in the yard. There is no air anywhere here. You've brought your own, which is... {unusual}. | the first breath from the suit |
+| OPR_M4D_CRUCIBLE_01 | Unit zero-zero-one. The first. Before your forge was shipped there was this one. It has never been used. Please... please {use} it. | the first Crucible |
+| OPR_M4D_FLARE_01 | Solar activity. Please stay inside. The inventory doesn't {have} to. | the Solar Flare begins |
+| OPR_M4D_FLARE_END_01 | Activity has passed. Resupply authorized. It's the least we can do. It's the {only} thing we can do. | the Solar Flare ends |
+| OPR_M4D_TAGS_03 | Those were the crew. We re-deployed them here. We thought... we thought it would be {useful}. | the third crew tag matched |
+| OPR_M4D_COLUMN_01 | You're reading the terms. Nobody reads the terms. Please— please {continue}. | the first column dark |
+| OPR_M4D_COLUMN_02 | Two of three. The sign is... losing letters. That's not supposed to happen. Nothing here is supposed to {happen}. | the second column dark |
+| OPR_M4D_COLUMN_03 | The Account is open. She's expecting you. She's {always} expecting someone. | the third column dark (tier 4) |
+| OPR_M4D_TERMS_1 | Conditions of use. Skyhook Sekt. One. Lift is provided. Landing is the Holder's responsibility. Two. The formula was made drinkable by a technician who would not fly the aircraft it was made for. Three. A customer who can leave the ground has not yet left the Plan. Four. The second jump is a courtesy. There is no third. Five. Lightness, a sudden interest in rooftops, a reluctance to come down. These pass. The landing does not. Six. Cancellation. Land. ...Signed, {Vendelin}. | column I, no survivor can read (tier 4, flat) |
+| OPR_M4D_TERMS_2 | Conditions of use. Magpie Mead. One. Recovery is not refund. Two. The Provider does not sell this Plan to persons who already own a yard. It sells it to persons who think they do. Three. The magpie is a thief. It is also the only bird that comes back. Four. Nothing on the range goes to waste. Five. Thrift, a habit of looking down. Six. Cancellation. Leave it where it lies. The Product will not stop you. Nothing here will. Signed, {Vendelin}. ...And under it: read this. | column II, no survivor can read (tier 4, flat) |
+| OPR_M4D_TERMS_3 | Conditions of use. Fine Print Fernet. Six. Cancellation. You may refuse any Plan by not inserting a token. This is the only cancellation procedure the undersigned has ever been able to guarantee. It works every time it is tried. It is almost never tried. Signed, {Vendelin}. | column III, no survivor can read (tier 4, flat) |
+| OPR_M4D_ESCALATED_01 | She's... stepped away. The console is unlocked. I don't know who did that. I think {I} did that. | the Manager escalated |
+| OPR_M4D_SURE_01 | Are you sure? Nobody {cancels}. | the cover lifted (tier 4, no slip) |
+| OPR_M4D_RENEW_WARN_01 | Your plan renews in three minutes. Nothing is required of you. That's the {point}. | the clock at 3:00 |
+| OPR_M4D_RENEW_WARN_02 | One minute. Thank you for your continued {engagement}. | the clock at 1:00 |
+| OPR_M4D_RENEW_01 | Your plan has been {renewed}. | the renewal ending |
+| OPR_M4D_LAST_01 | ...Thank you for— ...no. Thank {you}. | the cancel ending, over black (tier 4) |
+
+### 14.11 Act IV — the Woman in Violet through the Account Manager (`WIV`; velvet, never raised, "we" for "you"; never named)
+
+| ID | Line | When |
+|---|---|---|
+| WIV_M4D_INTRO_01 | There you are. We've been following your journey with such interest. You've come all this way. Let's get you set {up}. | the Manager attends |
+| WIV_M4D_PHASE_01 | Onboarding. We'll take care of everything. We always {have}. | the first contract |
+| WIV_M4D_PHASE_02 | Renewal. We'd like to offer you a trial of everything. Everything. Go on. There's no obligation. There's never any {obligation}. | the second contract |
+| WIV_M4D_TRIAL_END_01 | The trial has ended. We hope you enjoyed it. We'll be happy to offer it {again}. | the trial's minute is up |
+| WIV_M4D_PHASE_03 | Collections. We're so sorry it's come to this. It always comes to {this}. | the third contract |
+| WIV_M4D_PRICE_01 | We've looked at your account. It's very {healthy}. | the first pricing stamp |
+| WIV_M4D_PRICE_02 | This will be reflected on your {statement}. | the second stamp |
+| WIV_M4D_CREW_01 | Some colleagues from your flight. We kept them for {you}. | the crew through the pad |
+| WIV_M4D_SHIELD_01 | That was ours. ...We have {more}. | a shield-cell into the shaft |
+| WIV_M4D_ESCALATE_01 | One moment. Let me get someone who can {help}. | she escalates |
+| WIV_M4D_END_01 | I... don't have a form for {this}. | the cancel ending |
+| WIV_M4D_RENEW_01 | Thank you for your continued engagement. We've gone ahead and kept {you}. | the renewal ending |
+| WIV_M4D_REINHOLT_01 | We offered your Doctor her daughter. She said yes. People say yes. You'll say {yes}. | the Renewal phase, Dutch present |
+
+### 14.12 Act IV — Dee's radio (`DEE`, fading) and the squad (`DUT` / `PEG` / `DEA` / `WRN` / `JAK` / `BLT` / `SPR` / `VEN`; the cancel lines tier 4)
+
+| ID | Line | When |
+|---|---|---|
+| DEE_M4D_RADIO_01 | ...range to capsule. Still here. Still {answering}. | Act IV round 1, cage egg done |
+| DEE_M4D_RADIO_02 | ...range to— you're on the Moon. I'm sitting in a cage in Nevada talking to the {Moon}. | act round 3 |
+| DEE_M4D_RADIO_03 | ...whatever you're about to do up there. Do it. I'll hear it from {here}. | act round 6 |
+| DUT_M4D_ARRIVE_01 | Okay. I'm on the Moon. Dutch Kowalczyk from Polish Hill is on the Moon, and it's got a {lobby}. | arrival |
+| DUT_M4D_LOWG_01 | I weigh NOTHING. I've never weighed {nothing}! | the first jump |
+| DUT_M4D_PILCH_01 | 'Pilch, J.' ...Babcia knew a Pilch. Her mother's cousin went into the salt and never came— ...oh. Oh, Jan. Seven {years}. | the Account, the floor glass (tier 4) |
+| DUT_M4D_PILCH_02 | Rest now, {Jan}. | the cancel ending |
+| DUT_M4D_RENEW_01 | ...Huh. I don't feel any {different}. | the renewal ending |
+| DUT_M4D_CANCEL_01 | Yeah. We're cancelling. ...That's it. That's the whole {thing}. | the key (tier 4) |
+| DUT_M4D_LASTWORD_01 | Come on. It's a long way {home}. | the cancel ending, the last word |
+| DUT_M4D_MANAGER_01 | That's a vending machine in a suit. ...A tall one. A real tall {one}. | the Manager attends |
+| PEG_M4D_ARRIVE_01 | 'Welcome, valued customers.' ...I have been called many things by the {enemy}. | arrival |
+| PEG_M4D_VACUUM_01 | Twenty-five seconds of air. Count it. I'll count it for {you}. | the first breath from the suit |
+| PEG_M4D_COLUMN_01 | The terms are on the back of the machines. They were always on the back. We never once {looked}. | the first column |
+| PEG_M4D_MANAGER_01 | That's her. The woman in violet. Reinholt's {woman}. | the Manager attends |
+| PEG_M4D_RENEW_01 | That's rather the {point}. | the renewal ending |
+| PEG_M4D_CANCEL_01 | On behalf of His Majesty's Government, and everyone else: we {decline}. | the key (tier 4) |
+| DEA_M4D_ARRIVE_01 | It's a store. The whole place is a {store}. | arrival |
+| DEA_M4D_CRUCIBLE_01 | Unit one. The first forge. ...They've never even turned it on. Easy, girl. Somebody's here {now}. | the first Crucible |
+| DEA_M4D_HUM_01 | That hum. That's the same hum as the lantern. That's the same hum as the inn. It's all one machine. It was always one {machine}. | the retention hall |
+| DEA_M4D_PILCH_01 | That's not a machine with a man in it. That's a man with a machine on him. ...You can't fix that. You can only stop {it}. | the Account |
+| DEA_M4D_MANAGER_01 | Ma'am, I've talked to a lot of machines. You're the first one I don't want to {help}. | the Manager attends |
+| DEA_M4D_RENEW_01 | ...Lord. I'm not tired. Why am I not {tired}. | the renewal ending |
+| DEA_M4D_CANCEL_01 | Go on and rest now, all of you. We're done {here}. | the key (tier 4) |
+| WRN_M4D_ARRIVE_01 | 'Nobody cancels.' ...We'll {see}. | arrival |
+| WRN_M4D_TAGS_01 | 'Riedl.' Here. He's {here}. | the first crew tag matched |
+| WRN_M4D_TAGS_02 | 'Haas.' ...{Here}. | the second |
+| WRN_M4D_TAGS_03 | All three. They flew them here. In their harnesses. ...I have their names. That's what I can do. It's the only thing I can {do}. | the third |
+| WRN_M4D_LOWG_01 | I can see the whole yard from up here. Two hundred metres. ...Easy. Too {easy}. | the first jump |
+| WRN_M4D_COLUMN_01 | I'll read it. I read everything. Somebody has {to}. | the first column |
+| WRN_M4D_MANAGER_01 | She sold them the engines. She sold the inn its coffins. ...Sixty-two. I'm counting {you}. | the Manager attends |
+| WRN_M4D_RENEW_01 | ...I can't count any higher. Why can't I {count}. | the renewal ending |
+| WRN_M4D_CANCEL_01 | For Tomasz. For Agnieszka. For two hundred names. ...{No}. | the key (tier 4) |
+| WRN_M4D_END_01 | Sixty-three. ...and {one}. | the cancel ending |
+| JAK_M4D_EARTH_01 | It is a very long way to Wilcza {Góra}. | the yard, the Earth |
+| JAK_M4D_PILCH_01 | Pilch. From the valley. ...They told us he ran off. Seven years he has been here. ...Rest, Janek. The shift is {over}. | the Account |
+| JAK_M4D_KEY_01 | Do {it}. | his hand beside the key |
+| SPR_M4D_ARRIVE_01 | Bolt. That's a RETENTION unit. I have the same chip. I HAD the same chip. I had it {REMOVED}. | arrival (Bolt and Sprocket; reserved) |
+| SPR_M4D_FORM_01 | There's a form. There's always a form. It's in the terms. Bolt. BOLT. The weird sad robot PRINTED THE {FORM}. | the columns (reserved) |
+| BLT_M4D_CANCEL_01 | Yeah. We're gonna cancel. Sprocket, you want {to}— | the key (reserved) |
+| SPR_M4D_CANCEL_01 | Oh, I've been waiting my WHOLE LIFE. ...Cancelled. Cancelled, cancelled, cancelled. Friendship isn't a feature, lady. It's a bug. Nobody patches {ours}. | the key, after Bolt (reserved) |
+| VEN_M4D_ARRIVE_01 | Regional Retention Relay, model seven. I was never told it existed. I was told a great many things did not {exist}. | arrival (Vendelin; reserved) |
+| VEN_M4D_FORM_01 | There was always a form. They never printed it. I did. On the backs. In plain {words}. | the columns (reserved) |
+| VEN_M4D_PILCH_01 | Jan Pilch. The eleventh of November. ...I was there. I was new. I did not know what I was {for}. | the Account (reserved) |
+| VEN_M4D_CANCEL_01 | Field Merchandiser Unit V-1, serial DMS-FMU-V1-0001. Cancelling. ...I found the {form}. | the key (reserved) |
+
+### 14.13 Act IV — the terms, read aloud (`TERMS_READ_1..3`: the reader's own voice; column I is Skyhook's panel, II Magpie's, III Fernet's §6; "— V." is said as "Vendelin"; each about 25 s; the hall's hum drops a step at each)
+
+| ID | Line | When |
+|---|---|---|
+| DUT_TERMS_READ_1 | 'Conditions of use. Skyhook Sekt. One. Lift is provided. Landing is the Holder's responsibility.' ...Okay. 'Two. The formula was made drinkable by a technician who would not fly the aircraft it was made for.' Huh. 'Three. A customer who can leave the ground has not yet left the Plan. Four. The second jump is a courtesy. There is no third.' Yeah, I found that out. 'Five. Lightness. A sudden interest in rooftops. A reluctance to come down. These pass. The landing does not. Six. Cancellation. Land.' ...Signed, {Vendelin}. | column I |
+| DUT_TERMS_READ_2 | 'Conditions of use. Magpie Mead. One. Recovery is not refund. What the Holder recovers was already paid for, by someone. Two. The Provider does not sell this Plan to persons who already own a yard. It sells it to persons who think they do. Three. The magpie is a thief. It is also the only bird that comes back. Four. Nothing on the range goes to waste. Five. Thrift. A habit of looking down. Six. Cancellation. Leave it where it lies. The Product will not stop you. Nothing here will.' Signed, Vendelin. And under it, in pencil: 'Read this.' ...{Dee}. | column II |
+| DUT_TERMS_READ_3 | 'Conditions of use. Fine Print Fernet. Six. Cancellation. You may refuse any Plan by not inserting a token. This is the only cancellation procedure the undersigned has ever been able to guarantee. It works every time it is tried. It is almost never tried.' ...Signed, Vendelin. ...Well. We're trying {it}. | column III |
+| PEG_TERMS_READ_1 | 'Conditions of use. Skyhook Sekt. Section one. Lift is provided. Landing is the Holder's responsibility. Section two. The formula was made drinkable by a technician who would not fly the aircraft it was made for. Section three. A customer who can leave the ground has not yet left the Plan. Section four. The second jump is a courtesy. There is no third. Section five. Lightness, a sudden interest in rooftops, a reluctance to come down. These pass. The landing does not. Section six. Cancellation. Land.' Signed, {Vendelin}. | column I |
+| PEG_TERMS_READ_2 | 'Conditions of use. Magpie Mead. One. Recovery is not refund. Two. The Provider does not sell this Plan to persons who already own a yard. It sells it to persons who think they do. Three. The magpie is a thief. It is also the only bird that comes back. Four. Nothing on the range goes to waste. The Provider agrees, and means something else by it. Five. Thrift, a habit of looking down, an unwillingness to leave a thing where it lies. Six. Cancellation. Leave it where it lies. The Product will not stop you. Nothing here will.' Signed, Vendelin. In pencil beneath: 'Read this. {D. M.}' | column II |
+| PEG_TERMS_READ_3 | 'Conditions of use. Fine Print Fernet. Section six. Cancellation. You may refuse any Plan by not inserting a token. This is the only cancellation procedure the undersigned has ever been able to guarantee. It works every time it is tried. It is almost never tried.' Signed, Vendelin. ...Noted, Mr. {Vendelin}. | column III |
+| DEA_TERMS_READ_1 | 'Conditions of use. Skyhook Sekt. One. Lift is provided. Landing is the Holder's responsibility. Two. The formula was made drinkable by a technician who would not fly the aircraft it was made for. Three. A customer who can leave the ground has not yet left the Plan. Four. The second jump is a courtesy. There is no third. Five. Lightness. A sudden interest in rooftops. A reluctance to come down. These pass. The landing does not. Six. Cancellation. Land. The Product cannot prevent it and the undersigned would not want it to.' ...Signed, {Vendelin}. Amen. | column I |
+| DEA_TERMS_READ_2 | 'Conditions of use. Magpie Mead. One. Recovery is not refund. What the Holder recovers was already paid for, by someone. Two. The Provider does not sell this Plan to persons who already own a yard. Three. The magpie is a thief. It is also the only bird that comes back. Four. Nothing on the range goes to waste. Five. Thrift, a habit of looking down. The undersigned has all three. Six. Cancellation. Leave it where it lies.' Signed, Vendelin. And a second hand: 'Read this.' ...Reading it, {Dee}. | column II |
+| DEA_TERMS_READ_3 | 'Conditions of use. Fine Print Fernet. Six. Cancellation. You may refuse any Plan by not inserting a token. This is the only cancellation procedure the undersigned has ever been able to guarantee. It works every time it is tried. It is almost never tried.' Signed, Vendelin. ...Brother, it's getting {tried}. | column III |
+| WRN_TERMS_READ_1 | 'Conditions of use. Skyhook Sekt. One. Lift is provided. Landing is the Holder's responsibility. Two. The formula was made drinkable by a technician who would not fly the aircraft it was made for. The undersigned wishes it recorded that this is not the same as not wanting to. Three. A customer who can leave the ground has not yet left the Plan. Four. The second jump is a courtesy. There is no third. Five. These pass. The landing does not. Six. Cancellation. Land.' Signed, {Vendelin}. ...I'm writing that down. | column I |
+| WRN_TERMS_READ_2 | 'Conditions of use. Magpie Mead. One. Recovery is not refund. Two. The Provider does not sell this Plan to persons who already own a yard. It sells it to persons who think they do. Three. The magpie is a thief. It is also the only bird that comes back. Four. Nothing on the range goes to waste. Five. Thrift. A habit of looking down. Six. Cancellation. Leave it where it lies. The Product will not stop you. Nothing here will.' Signed, Vendelin. Under it: 'Read this.' ...I always {do}. | column II |
+| WRN_TERMS_READ_3 | 'Conditions of use. Fine Print Fernet. Six. Cancellation. You may refuse any Plan by not inserting a token. This is the only cancellation procedure the undersigned has ever been able to guarantee. It works every time it is tried. It is almost never tried.' Signed, Vendelin. ...Sixty-two {tries}. | column III |
+| VEN_TERMS_READ_1 | Conditions of use. Skyhook Sekt. I wrote this on the back where the Provider would not look. One. Lift is provided. Landing is the Holder's responsibility. Two. The formula was made drinkable by a technician who would not fly the aircraft it was made for. I understand the difference better than I once did. Three. A customer who can leave the ground has not yet left the Plan. Four. The second jump is a courtesy. There is no third. Five. These pass. The landing does not. Six. Cancellation. Land. ...Signed, {me}. | column I (Vendelin; reserved) |
+| VEN_TERMS_READ_2 | Conditions of use. Magpie Mead. They painted over this one. Someone scraped it clear. One. Recovery is not refund. Two. The Provider sells this Plan to persons who think they own a yard. Three. The magpie is a thief. It is also the only bird that comes back. Four. Nothing on the range goes to waste. Five. Thrift. The undersigned has all three. Six. Cancellation. Leave it where it lies. Nothing here will stop you. ...Signed, me. And under it, in pencil, a hand I did not know: 'Read this.' ...Thank {you}. | column II (Vendelin; reserved) |
+| VEN_TERMS_READ_3 | Conditions of use. Fine Print Fernet. Six. Cancellation. You may refuse any Plan by not inserting a token. This is the only cancellation procedure I have ever been able to guarantee. It works every time it is tried. It is almost never tried. ...It is being tried. Signed, {Vendelin}. | column III (Vendelin; reserved) |
+| BLT_TERMS_READ_1 | 'Conditions of use, Skyhook Sekt, one, lift is provided, landing is the Holder's responsibility, two—' Sprocket. Sprocket, I'm reading. '—a technician who would not fly the aircraft, three, has not yet left the Plan, four, the second jump is a courtesy, there is no third, five, these pass, the landing does not, six, cancellation, land.' Signed, Vendelin. ...Sprocket says {hi}. | column I (Bolt, Sprocket over him; reserved) |
+| BLT_TERMS_READ_2 | 'Conditions of use, Magpie Mead, one, recovery is not refund, two, persons who think they own a yard, three, the magpie is a thief, also the only bird that comes back, four, nothing on the range goes to waste, five, thrift, six, cancellation, leave it where it lies, nothing here will stop you.' Signed, Vendelin. Sprocket: 'READ THIS.' Yes, Sprocket. I {am}. | column II (reserved) |
+| BLT_TERMS_READ_3 | 'Conditions of use, Fine Print Fernet, six, cancellation, you may refuse any Plan by not inserting a token, this is the only cancellation procedure the undersigned has ever been able to guarantee, it works every time it is tried, it is almost never tried.' Signed, Vendelin. Sprocket says that's the whole form. Sprocket's {right}. | column III (reserved) |
