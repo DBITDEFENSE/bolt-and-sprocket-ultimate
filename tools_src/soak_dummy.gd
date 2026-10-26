@@ -17,6 +17,11 @@ extends RefCounted
 ##     10 m and a few zombies left) and it has the Scrip, it opens the way to the power (Map 0: the cellar door),
 ##     throws the power switch (by round 3-4), then drinks Ironhide Stout and Second Wind, and buys them again after
 ##     losing them to a down. The round-start reserve top-up stays (it doesn't buy ammo). It still revives nobody.
+##     On the zone maps (Kaltenbrunn, Totenhafen, Map 4) its paths use the director's nav mask (the open zones),
+##     and the doors on the way to a goal come from a path over every zone (T-116).
+##   - UPDATE 07 (T-116): a lit campaign beacon (ExfilPoint) is its first errand on every kit: it walks to the
+##     front of the beacon, opening the doors on the way, holds its stage (the autopilot) and votes; the act's own
+##     fallbacks set the key flags on their rounds. Counted in exfil_votes.
 ##   - can be downed (it then shoots from the ground with whatever it holds), revived and bleed out like anyone.
 
 const TURN_RATE: float = 6.0       # rad/s
@@ -43,6 +48,10 @@ const POWER_FROM_ROUND: int = 2
 var power_round: int = 0
 var perks_bought: int = 0
 var doors_bought: int = 0
+var exfil_votes: int = 0
+## Every navigation layer: the planning path to a goal behind closed doors (the doors it crosses are the errands).
+const ALL_LAYERS: int = 0x7FFFFFFF
+const EXFIL_ERRAND_S: float = 90.0   # a beacon can be a map away (Act I's hangar): longer than the 40 s shopping limit
 
 var player: Player
 var map: MapRoot
@@ -130,6 +139,12 @@ func _nav() -> RID:
 	return player.get_world_3d().navigation_map
 
 
+## The walkable layers now: the director's mask (the always-on areas + the open zones); everything on a map
+## without zones.
+func _mask() -> int:
+	return map.director.nav_mask if map != null and map.director != null else ALL_LAYERS
+
+
 func _build_route() -> void:
 	var pts: Array[Vector3] = []
 	_stable_open = false
@@ -205,7 +220,7 @@ func tick(delta: float) -> void:
 	_repath_t -= delta
 	var zs: Array[Zombie] = _zombies()
 	var aiming: bool = _shoot(delta, zs, false)
-	if kit == "realistic":
+	if kit == "realistic" or _lit_beacon() != null:
 		_errands(delta, zs)
 	_walk(delta, zs, aiming)
 
@@ -220,13 +235,18 @@ func _errands(delta: float, zs: Array[Zombie]) -> void:
 	for z: Zombie in zs:
 		near_d = minf(near_d, z.global_position.distance_to(player.global_position))
 	var calm: bool = near_d > 10.0 and (RoundManager.state != RoundManager.State.ROUND or zs.size() <= 3)
+	var beacon: ExfilPoint = _lit_beacon()
+	if beacon != null:
+		calm = calm or near_d > 4.0   # a lit beacon is worth a walk under fire
 	if not _errand.is_empty():
 		_errand_t += delta
 		var n: Node = _errand.get("node")
-		if n == null or not is_instance_valid(n) or _errand_t > 40.0 or near_d < 3.0:
-			if _errand_t > 40.0:
+		var to_beacon: bool = str(_errand.get("kind", "")) == "exfil" or (beacon != null and str(_errand.get("kind", "")) == "door")
+		var limit: float = EXFIL_ERRAND_S if to_beacon else 40.0
+		if n == null or not is_instance_valid(n) or _errand_t > limit or near_d < (2.0 if to_beacon else 3.0):
+			if _errand_t > limit:
 				print("[dummy] r%d gave up on %s at %s (stand %s)" % [RoundManager.current_round, str(_errand.get("kind", "")), str(player.global_position), str(_errand.get("stand", ""))])
-			_errand_cd = 10.0 if _errand_t > 40.0 else 2.0
+			_errand_cd = 10.0 if _errand_t > limit else 2.0
 			_errand = {}
 			return
 		var st: Vector3 = _errand["stand"]
@@ -235,7 +255,13 @@ func _errands(delta: float, zs: Array[Zombie]) -> void:
 			if it != null and it.can_interact(player):
 				var before: int = Economy.get_scrip(player.player_id)
 				it.interact(player)
-				if Economy.get_scrip(player.player_id) < before or GameState.power_on:
+				if str(_errand["kind"]) == "exfil":
+					var x: ExfilPoint = it as ExfilPoint
+					if x != null and x.votes.has(player.player_id):
+						exfil_votes += 1
+					print("[dummy] r%d held the beacon %s: %s" % [RoundManager.current_round, str(x.cfg.get("label", "")) if x != null else n.name,
+						"voted" if x != null and x.votes.has(player.player_id) else "stage"])
+				elif Economy.get_scrip(player.player_id) < before or GameState.power_on:
 					print("[dummy] r%d %s %s (%d Scrip left)" % [RoundManager.current_round, str(_errand["kind"]), n.name, Economy.get_scrip(player.player_id)])
 				if Economy.get_scrip(player.player_id) < before:
 					if str(_errand["kind"]) == "perk":
@@ -254,7 +280,15 @@ func _errands(delta: float, zs: Array[Zombie]) -> void:
 
 func _next_errand() -> Dictionary:
 	var scrip: int = Economy.get_scrip(player.player_id)
-	var me: Vector3 = player.global_position
+	# a lit campaign beacon first (its stage, then the vote), whatever the kit
+	var x: ExfilPoint = _lit_beacon()
+	if x != null:
+		var xs: Vector3 = _stand(x.global_position + x.global_basis * Vector3(0, 0, -1.6))
+		if _reachable(xs):
+			return {"node": x, "stand": xs, "kind": "exfil"}
+		return _door_toward(xs, scrip)
+	if kit != "realistic":
+		return {}
 	if not GameState.power_on:
 		if RoundManager.current_round < POWER_FROM_ROUND:
 			return {}
@@ -265,15 +299,7 @@ func _next_errand() -> Dictionary:
 			var st: Vector3 = _stand(BotBrain._front_of(sw))
 			if _reachable(st):
 				return {"node": sw, "stand": st, "kind": "power"}
-			# the way to it: the closed door its path crosses that we can reach and afford
-			var path: PackedVector3Array = NavigationServer3D.map_get_path(_nav(), me, _stand(sw.global_position), true)
-			for d: Node in player.get_tree().get_nodes_in_group(&"doors"):
-				var bd: BuyDoor = d as BuyDoor
-				if bd == null or bd.is_open or not ZombieDirector.door_crossed(bd, path) or scrip < bd.cost:
-					continue
-				var ds: Vector3 = _stand(BotBrain._door_side(bd, me))
-				if _reachable(ds):
-					return {"node": bd, "stand": ds, "kind": "door"}
+			return _door_toward(st, scrip)   # the way to it: the closed door its path crosses that we can reach and afford
 		return {}
 	for perk: StringName in REALISTIC_PERKS:
 		if PerkManager.has_perk(player.player_id, perk):
@@ -285,17 +311,49 @@ func _next_errand() -> Dictionary:
 			var st2: Vector3 = _stand(BotBrain._front_of(pm))
 			if _reachable(st2):
 				return {"node": pm, "stand": st2, "kind": "perk"}
+			return _door_toward(st2, scrip - PerkManager.price(perk))   # a door on the way, if the perk is still affordable after it
 		return {}   # saving for this one first
 	return {}
+
+
+## A lit beacon this player can still hold (not voted yet, the key flag set), null otherwise.
+func _lit_beacon() -> ExfilPoint:
+	if player == null or not is_instance_valid(player) or not Campaign.active:
+		return null
+	for n: Node in player.get_tree().get_nodes_in_group(&"exfil_points"):
+		var x: ExfilPoint = n as ExfilPoint
+		if x != null and x.is_active() and x.can_interact(player):
+			return x
+	return null
+
+
+## The errand for a goal behind closed doors: the first closed door a path over every zone crosses that we can
+## reach now and afford ({} when none: the way is bought by the bots, or saving).
+func _door_toward(goal: Vector3, scrip: int) -> Dictionary:
+	var me: Vector3 = player.global_position
+	var path: PackedVector3Array = NavigationServer3D.map_get_path(_nav(), me, goal, true, ALL_LAYERS)
+	if path.is_empty():
+		return {}
+	var best: Dictionary = {}
+	var best_d: float = INF
+	for d: Node in player.get_tree().get_nodes_in_group(&"doors"):
+		var bd: BuyDoor = d as BuyDoor
+		if bd == null or bd.is_open or not bd.can_interact(player) or scrip < bd.cost or not ZombieDirector.door_crossed(bd, path):
+			continue
+		var ds: Vector3 = _stand(BotBrain._door_side(bd, me))
+		if _reachable(ds) and _flat(ds, me) < best_d:
+			best_d = _flat(ds, me)
+			best = {"node": bd, "stand": ds, "kind": "door"}
+	return best
 
 
 func _stand(p: Vector3) -> Vector3:
 	return NavigationServer3D.map_get_closest_point(_nav(), p)
 
 
-## A path that ends at `p` and crosses no closed door.
+## A path over the open zones that ends at `p` and crosses no closed door.
 func _reachable(p: Vector3) -> bool:
-	var path: PackedVector3Array = NavigationServer3D.map_get_path(_nav(), player.global_position, p, true)
+	var path: PackedVector3Array = NavigationServer3D.map_get_path(_nav(), player.global_position, p, true, _mask())
 	if path.is_empty() or path[path.size() - 1].distance_to(p) > 1.2:
 		return false
 	for d: Node in player.get_tree().get_nodes_in_group(&"doors"):
@@ -424,7 +482,7 @@ func _walk(delta: float, zs: Array[Zombie], aiming: bool) -> void:
 		_advance()
 		wp = _route[_i]
 	if _repath_t <= 0.0 or _path.is_empty() or _path_i >= _path.size():
-		_path = NavigationServer3D.map_get_path(_nav(), me, wp, true)
+		_path = NavigationServer3D.map_get_path(_nav(), me, wp, true, _mask())
 		_path_i = 1 if _path.size() > 1 else 0
 		_repath_t = 0.5
 	if _path.is_empty() or _path_i >= _path.size():

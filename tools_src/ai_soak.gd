@@ -27,6 +27,19 @@ extends Node
 ##                the game over (solo) / the wipe, or --max-round. Logs the training numbers (pb_* in the extras:
 ##                time training, the train's mean length / spread / bunched share, cut-ins, hits while training,
 ##                stuck time) and a table of its own.
+##   fernflug     (UPDATE 07, T-116) Map 4 "Fernflug" as one campaign run: Act I (Werk Thalbach) from round 1,
+##                the ramp beacon, the Kranich in flight, the autopilot cradle, Groom Lake, the gantry lift, the
+##                Moon, to an ending (KÜNDIGUNG / AUTO-RENEWAL), the wipe or --max-minutes (default 240). The
+##                soak node lives under the root, so it survives the act scene swaps (Campaign.travel) and binds
+##                a fresh BotMetrics (<run>_act<n>.csv) and a fresh scripted player on every act. The scripted
+##                player (kit realistic by default) walks to a lit beacon, opens the doors on the way, holds its
+##                stages and votes; the act's own fallbacks (the autopilot key, the rocket) set the flags on their
+##                rounds. --bots-alone: the human is benched on every act and the harness votes for it once the
+##                beacon is lit (ExfilPoint.force_depart). --skip-to-act=N (2-4): start on that act with the
+##                launcher's arrival kit (Campaign.begin_at). --egg=off|ask|full: Bot Easter-Egg Help (= --ee).
+##                Per act: a row (rounds, minutes, downs, revives, stuck, teleports, Scrip spent, doors open,
+##                bosses killed, the transition kind: egg / clock / forced) in the batch's .md; the summary row
+##                sums the acts and names the ending. Campaign.cutscene_speed = 12 (as the smokes).
 ## --ee=off|ask|full: Bot Easter-Egg Help for any scenario (default: the setting, When Asked; ee_full: full).
 ## --player-kit (T-058): the scripted player's kit. "baseline" (the default, as in the Update 03 baseline): the
 ## bots' free spawn kit, buys nothing, never touches the power. "realistic": the Thompson only, opens the way to the
@@ -44,7 +57,14 @@ const MAPS: Dictionary = {
 	"map00": "res://gravelight/maps/map00_crossroads/map00.tscn",
 	"map01": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
 	"map02": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+	"map04a": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+	"map04b": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+	"map04c": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+	"map04d": "res://gravelight/maps/map04_fernflug/map04d.tscn",
 }
+## fernflug: [map key, map id, first match round] per act (the launcher's / console's act skips).
+const ACT_STARTS: Array = [["map04a", "map04a_thalbach", 1], ["map04b", "map04b_kranich", 15], ["map04c", "map04c_groomlake", 21], ["map04d", "map04d_mondlicht", 30]]
+const BOSS_IDS: Array[StringName] = [&"kranfuehrer", &"bordwart", &"testpilot", &"account_manager"]
 const Dummy: GDScript = preload("res://tools_src/soak_dummy.gd")
 
 var scenario: String = "player3"
@@ -52,11 +72,24 @@ var runs: int = 1
 var seed_base: int = 1
 var max_round: int = 0
 var speed: float = 1.0
-var max_minutes: float = 150.0
+var max_minutes: float = -1.0   # < 0: the scenario's default (150; fernflug 240)
 var skill: String = "veteran"
 var map_key: String = ""
 ## --player-kit: the scripted player's kit ("baseline" or "realistic", see the doc above).
 var player_kit: String = "baseline"
+var _kit_set: bool = false
+## fernflug: --bots-alone (the human benched on every act, the harness votes at the beacons), --skip-to-act=N.
+var bots_alone: bool = false
+var skip_to_act: int = 1
+var _travelling: bool = false
+var _travel_t: float = 0.0
+var _prev_map: MapRoot = null
+var _acts: Array[Dictionary] = []        # this run's closed acts (rows)
+var _act_md: PackedStringArray = []       # every run's per-act table (the batch .md)
+var _act_boss_kills: int = 0
+var _act_forced: int = 0
+var _ff_active_t: float = 0.0
+var _ff_arrivals: int = 0
 ## --start-round=N (tuning only, T-058): jump to round N at go-live (RoundManager.debug_set_round) with 450 x N
 ## Scrip each; not for the acceptance numbers.
 var start_round: int = 0
@@ -151,6 +184,13 @@ func _ready() -> void:
 			orders_s = float(a.substr(9))
 		elif a.begins_with("--player-kit="):
 			player_kit = a.substr(13)
+			_kit_set = true
+		elif a == "--bots-alone":
+			bots_alone = true
+		elif a.begins_with("--skip-to-act="):
+			skip_to_act = clampi(int(a.substr(14)), 1, 4)
+		elif a.begins_with("--egg="):
+			ee_mode = a.substr(6)
 		elif a.begins_with("--start-round="):
 			start_round = int(a.substr(14))
 		elif a.begins_with("--character="):
@@ -174,11 +214,19 @@ func _ready() -> void:
 			BotTrainer.force_loop = a.substr(7)   # (tuning only, T-071 pass 2) the agent trains on this loop only
 		elif a.begins_with("--loco="):
 			BotLocomotion.force_mode = a.substr(7)   # U03 section 3: v1 / v2 against bots.json locomotion
-	if not ["player3", "bots3", "cousins", "kaltenbrunn", "totenhafen", "ee_full", "botmode"].has(scenario):
-		print("[soak] unknown --scenario=%s (player3, bots3, cousins, kaltenbrunn, totenhafen, ee_full, botmode)" % scenario)
+	if not ["player3", "bots3", "cousins", "kaltenbrunn", "totenhafen", "ee_full", "botmode", "fernflug"].has(scenario):
+		print("[soak] unknown --scenario=%s (player3, bots3, cousins, kaltenbrunn, totenhafen, ee_full, botmode, fernflug)" % scenario)
 		print("[soak] RESULT FAIL")
 		get_tree().quit(2)
 		return
+	if scenario == "fernflug":
+		map_key = str(fernflug_start_for(skip_to_act)[0])
+		if not _kit_set:
+			player_kit = "baseline" if bots_alone else "realistic"
+		if bots_alone:
+			player_kit = "baseline"
+	if max_minutes < 0.0:
+		max_minutes = 240.0 if scenario == "fernflug" else 150.0
 	if map_key == "":
 		map_key = "map01" if scenario == "kaltenbrunn" else ("map02" if scenario == "totenhafen" else "map00")
 	if (scenario == "kaltenbrunn" or scenario == "totenhafen") and max_round <= 0:
@@ -214,6 +262,11 @@ func _ready() -> void:
 		return
 	if player_kit != "baseline" and scenario != "bots3":
 		_batch += "_" + player_kit
+	if scenario == "fernflug":
+		_batch += ("_alone" if bots_alone else "") + ("_act%d" % skip_to_act if skip_to_act > 1 else "")
+		GLBus.enemy_killed.connect(func(eid: StringName, _l: StringName, _w: StringName, _by: int) -> void:
+			if _live and BOSS_IDS.has(eid):
+				_act_boss_kills += 1)
 	if not homage:
 		_batch += "_nohomage"
 	if scenario == "botmode":
@@ -253,6 +306,22 @@ func _start_run() -> void:
 	GameState.bot_skill = skill
 	GameState.bot_ai_mode = "off"
 	GameState.god_mode = god
+	GameState.retained = false
+	_acts = []
+	_travelling = false
+	_prev_map = null
+	_ff_arrivals = 0
+	_act_boss_kills = 0
+	_act_forced = 0
+	if scenario == "fernflug":
+		var st: Array = fernflug_start_for(skip_to_act)
+		var kit: Dictionary = {}
+		if int(st[2]) > 1:
+			kit = Campaign.arrival_kit(StringName(str(st[1])))
+			if not kit.is_empty() and not kit.has("scrip"):
+				kit["scrip"] = DevLauncher.scrip_for_round(int(st[2]))
+		Campaign.begin_at(StringName(str(st[1])), int(st[2]), kit)   # a campaign run: the act beacons spawn, the carry works
+		Campaign.cutscene_speed = 12.0
 	_map = (load(str(MAPS[map_key])) as PackedScene).instantiate() as MapRoot
 	get_tree().root.add_child(_map)
 	get_tree().current_scene = _map
@@ -265,6 +334,10 @@ func _start_run() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if _travelling:
+		_game_t += delta
+		_tick_travel(delta)
+		return
 	if _map == null or not is_instance_valid(_map):
 		return
 	if not _live:
@@ -309,8 +382,16 @@ func _physics_process(delta: float) -> void:
 			_pd_tick()
 	if scenario == "ee_full":
 		_tick_ee()
+	if scenario == "fernflug":
+		_tick_fernflug(delta)
+		if _travelling:
+			return
 	if _metrics.finished:
 		_end_run(_metrics.end_reason)
+	elif scenario == "fernflug" and GameState.has_flag(&"kuendigung_done"):
+		_end_run("ending: cancelled (KUENDIGUNG)")
+	elif scenario == "fernflug" and GameState.retained:
+		_end_run("ending: renewed (RETAINED)")
 	elif scenario == "ee_full" and QuestManager.is_complete(&"map00_radio"):
 		_end_run("egg complete")
 	elif max_round > 0 and RoundManager.current_round > max_round:
@@ -356,11 +437,22 @@ func _try_go_live() -> void:
 	_metrics.name = "BotMetrics"
 	add_child(_metrics)
 	var rid: String = "%s_%s_r%d_s%d" % [_batch.substr(0, 15), scenario, _run, seed_base + _run - 1]
+	if scenario == "fernflug":
+		rid += "_act%d" % _act_index()
 	_metrics.setup(_map, scenario, rid, seed_base + _run - 1)
 	_dummy = null
 	match scenario:
 		"bots3":
 			_bench_the_human()
+		"fernflug":
+			_ff_arrivals += 1
+			_ff_active_t = 0.0
+			if bots_alone:
+				_bench_the_human()
+			else:
+				_dummy = Dummy.new()
+				_dummy.call("setup", _map.player, _map, seed_base + _run + _ff_arrivals, player_kit)
+			print("[soak] ACT %d (%s) live at round %d, %s" % [_act_index(), _map.map_id, RoundManager.current_round, "bots alone" if bots_alone else "the scripted player (%s)" % player_kit])
 		"botmode":
 			pass   # the agent plays the local Player (PlayerBot, switched on above)
 		"cousins":
@@ -377,7 +469,7 @@ func _try_go_live() -> void:
 	_apply_tuning()
 	if posdump != "":
 		_pd_open()
-	if start_round > 1 and scenario != "cousins":
+	if start_round > 1 and scenario != "cousins" and scenario != "fernflug":
 		for pid: int in GameState.player_ids:
 			Economy.award(pid, 450 * start_round)
 		RoundManager.debug_set_round(start_round)
@@ -510,6 +602,9 @@ func _cousins_over() -> bool:
 
 
 func _end_run(why: String) -> void:
+	if scenario == "fernflug":
+		_end_run_fernflug(why)
+		return
 	if scenario == "cousins":
 		if not _metrics.extra.has("cousins"):
 			_metrics.extra["cousins"] = "wipe" if why == "wipe" else why
@@ -679,6 +774,12 @@ func _write_table(dir: String) -> void:
 			["hits/min training", "pb_hits_per_min_training", "%.2f"], ["stuck s", "pb_stuck_s", "%.1f"], ["kills", "pb_kills", "%d"],
 			["reversals", "pb_reversals", "%d"], ["passes", "pb_passes", "%d"], ["power r", "power_round", "%d"], ["bot downs", "bot_downs", "%d"]])
 		return
+	if scenario == "fernflug":
+		_write_table_cols(dir, [["acts", "acts", "%d"], ["round", "round_reached", "%d"], ["min", "minutes", "%.1f"], ["bot kills", "bot_kills", "%d"],
+			["bot downs", "bot_downs", "%d"], ["human downs", "human_downs", "%d"], ["revived", "revived", "%d"], ["bled", "bled", "%d"],
+			["stuck", "stuck_events", "%d"], ["stuck s", "stuck_time", "%.1f"], ["teleports", "teleports", "%d"], ["stranded", "stranded", "%d"],
+			["spent", "scrip_spent", "%d"], ["doors", "doors_open", "%d"], ["bosses", "bosses", "%d"], ["forced", "forced", "%d"]])
+		return
 	var cols: Array = [["round", "round_reached", "%d"], ["min", "minutes", "%.1f"], ["bot kills", "bot_kills", "%d"],
 		["bot downs", "bot_downs", "%d"], ["downs/round", "bot_downs_per_round", "%.2f"], ["human downs", "human_downs", "%d"],
 		["revive %", "revive_rate", "pct"], ["revived", "revived", "%d"], ["bled", "bled", "%d"], ["ttr s", "ttr_mean", "%.1f"],
@@ -706,6 +807,8 @@ func _write_table_cols(dir: String, cols: Array) -> void:
 		mean.append(_fmt(float(sums.get(c2[1], 0.0)) / float(maxi(1, _results.size())), "%.1f" if str(c2[2]) == "%d" else str(c2[2])))
 	lines.append("| **mean** | | %s |" % " | ".join(mean))
 	var md: String = "# AI soak: %s, %d run(s)\n\n%s\n\nCSVs: %s\n" % [scenario, _results.size(), "\n".join(lines), ", ".join(PackedStringArray(Array(_paths).map(func(p: String) -> String: return p.get_file())))]
+	if not _act_md.is_empty():
+		md += "\n" + "\n".join(_act_md) + "\n"
 	var path: String = dir.path_join("%s.md" % _batch)
 	var f: FileAccess = FileAccess.open(path, FileAccess.WRITE)
 	if f != null:
@@ -725,6 +828,183 @@ static func _fmt(v: float, f: String) -> String:
 	if f == "%d":
 		return "%d" % roundi(v)
 	return f % v
+
+
+# ---------------------------------------------------------------- fernflug (UPDATE 07, T-116)
+
+## The act a --skip-to-act=N run starts on: [map key, map id, first match round] (Act I from round 1).
+static func fernflug_start_for(act: int) -> Array:
+	return ACT_STARTS[clampi(act, 1, 4) - 1]
+
+
+## How an act ended at its beacon: "egg" when the squad left before the beacon's own round (the egg lit it),
+## "forced" when the harness voted for a benched / late squad, "clock" otherwise.
+static func transition_kind(depart_round: int, beacon_round: int, forced: bool) -> String:
+	if forced:
+		return "forced"
+	return "egg" if depart_round < beacon_round else "clock"
+
+
+## The run's summary row from its act rows: sums (minutes, downs, revives, stuck, Scrip...), the last round.
+static func act_totals(acts: Array) -> Dictionary:
+	var out: Dictionary = {"acts": acts.size(), "round_reached": 0, "minutes": 0.0, "bot_kills": 0, "bot_downs": 0, "human_downs": 0,
+		"revived": 0, "bled": 0, "stuck_events": 0, "stuck_time": 0.0, "teleports": 0, "stranded": 0, "scrip_spent": 0, "doors_open": 0, "bosses": 0, "forced": 0}
+	for a: Dictionary in acts:
+		out["round_reached"] = maxi(int(out["round_reached"]), int(a.get("round_reached", 0)))
+		for k: String in ["minutes", "stuck_time"]:
+			out[k] = float(out[k]) + float(a.get(k, 0.0))
+		for k2: String in ["bot_kills", "bot_downs", "human_downs", "revived", "bled", "stuck_events", "teleports", "stranded", "scrip_spent", "doors_open", "bosses", "forced"]:
+			out[k2] = int(out[k2]) + int(a.get(k2, 0))
+	return out
+
+
+func _act_index() -> int:
+	return RoundManager.act_index() if RoundManager.has_act() else 0
+
+
+func _doors_open() -> int:
+	var n: int = 0
+	for d: Node in get_tree().get_nodes_in_group(&"doors"):
+		if d is BuyDoor and (d as BuyDoor).is_open:
+			n += 1
+	return n
+
+
+## Each physics frame on an act: the beacon's state (a departure closes the act's row and waits for the next
+## map); bots alone: the harness holds the beacon's stage and votes once it is lit and unlocked (8 s after,
+## so the act's own fallback / egg can set the key); the scripted player: a missed window (the beacon lit
+## again) is voted for it after 10 s and counted as "forced".
+func _tick_fernflug(delta: float) -> void:
+	var x: ExfilPoint = get_tree().get_first_node_in_group(&"exfil_points") as ExfilPoint
+	if x == null:
+		return
+	if x.state == ExfilPoint.State.DEPARTING or x.state == ExfilPoint.State.DONE:
+		_close_act("exfil", x)
+		_prev_map = _map
+		_travelling = true
+		_travel_t = 0.0
+		_live = false
+		return
+	if not x.is_active():
+		_ff_active_t = 0.0
+		return
+	_ff_active_t += delta
+	var force_after: float = 8.0 if bots_alone else (10.0 if x.attempt >= 1 else INF)
+	if _ff_active_t < force_after:
+		return
+	var rf: String = str(x.cfg.get("requires_flag", ""))
+	if rf != "" and not GameState.has_flag(StringName(rf)):
+		return   # the act's fallback sets it on its round
+	if x.force_depart():
+		_act_forced += 1
+		print("[soak] r%d the harness voted at %s (%s)" % [RoundManager.current_round, str(x.cfg.get("label", "the beacon")), "bots alone" if bots_alone else "window %d missed" % x.attempt])
+
+
+## Between acts: the cutscene runs (12x), Campaign.travel swaps the scene; the new MapRoot is bound and the
+## next _try_go_live makes a fresh logger and scripted player for it.
+func _tick_travel(delta: float) -> void:
+	_travel_t += delta
+	var m: MapRoot = get_tree().current_scene as MapRoot
+	if m != null and is_instance_valid(m) and (_prev_map == null or not is_instance_valid(_prev_map) or m != _prev_map):
+		_map = m
+		_prev_map = null
+		_travelling = false
+		_ready_wait = 0
+		_live = false
+		print("[soak] arrived on %s after %.1f s of cutscene (round %d next)" % [m.map_id, _travel_t, RoundManager.current_round + 1])
+		return
+	if GameState.phase == GameState.Phase.GAME_OVER or _travel_t > 120.0:
+		_travelling = false
+		_end_run_fernflug("travel failed (%s)" % ("game over" if GameState.phase == GameState.Phase.GAME_OVER else "timeout"))
+
+
+## Closes the current act's logger: its CSV, its row (printed, kept for the batch table).
+func _close_act(why: String, x: ExfilPoint) -> void:
+	if _metrics == null or not is_instance_valid(_metrics):
+		return
+	var depart_round: int = RoundManager.current_round
+	var sm: Dictionary = _metrics.finish(why)
+	print(_metrics.summary_line())
+	var dir: String = BotMetrics.log_dir()
+	var path: String = _metrics.write_csv(dir)
+	_paths.append(path)
+	var first: int = RoundManager.act_start if RoundManager.has_act() else 1
+	var kind: String = transition_kind(depart_round, x.next_round(), _act_forced > 0) if x != null else ("ending" if why.begins_with("ending") else why.get_slice(" ", 0))
+	var row: Dictionary = {"act": _act_index(), "map": String(_map.map_id) if _map != null and is_instance_valid(_map) else "", "first_round": first,
+		"round_reached": int(sm["round_reached"]), "rounds": maxi(0, int(sm["round_reached"]) - first + 1), "minutes": snappedf(float(sm["minutes"]), 0.1),
+		"bot_kills": int(sm["bot_kills"]), "bot_downs": int(sm["bot_downs"]), "human_downs": int(sm["human_downs"]), "revived": int(sm["revived"]), "bled": int(sm["bled"]),
+		"stuck_events": int(sm["stuck_events"]), "stuck_time": snappedf(float(sm["stuck_time"]), 0.1), "teleports": int(sm["teleports"]),
+		"stranded": _map.director.stranded_relocations if _map != null and is_instance_valid(_map) and _map.director != null else 0,
+		"scrip_spent": int(sm["scrip_spent"]), "doors_open": _doors_open(), "bosses": _act_boss_kills, "transition": kind, "forced": _act_forced,
+		"power_round": int(_metrics.extra.get("power_round", 0)), "end": why}
+	if _dummy != null:
+		row["dummy_power_round"] = int(_dummy.get("power_round"))
+		row["dummy_perks"] = int(_dummy.get("perks_bought"))
+		row["dummy_doors"] = int(_dummy.get("doors_bought"))
+		row["dummy_votes"] = int(_dummy.get("exfil_votes"))
+		row["dummy_unstuck"] = int(_dummy.get("unstuck"))
+		row["dummy_scrip_end"] = Economy.get_scrip(1)
+	_acts.append(row)
+	print("[soak]   ACT %d (%s) closed: %s | rounds %d-%d (%d) in %.1f min | bot downs %d revived %d bled %d | stuck %d (%.1f s) teleports %d stranded %d | spent %d doors %d bosses %d | %s%s -> %s" % [
+		int(row["act"]), str(row["map"]), why, first, int(row["round_reached"]), int(row["rounds"]), float(row["minutes"]), int(row["bot_downs"]), int(row["revived"]), int(row["bled"]),
+		int(row["stuck_events"]), float(row["stuck_time"]), int(row["teleports"]), int(row["stranded"]), int(row["scrip_spent"]), int(row["doors_open"]), int(row["bosses"]), kind,
+		(" (dummy: power r%d, %d perks, %d doors, %d votes, %d unstuck, %d Scrip left)" % [int(row["dummy_power_round"]), int(row["dummy_perks"]), int(row["dummy_doors"]), int(row["dummy_votes"]), int(row["dummy_unstuck"]), int(row["dummy_scrip_end"])]) if _dummy != null else "", path.get_file()])
+	if _map != null and is_instance_valid(_map) and _map.squad != null:
+		for line: String in _map.squad.report():
+			print("[soak]   ", line)
+	if _dummy != null:
+		_dummy.call("shutdown")
+	_dummy = null
+	_metrics.queue_free()
+	_metrics = null
+	_act_boss_kills = 0
+	_act_forced = 0
+	_ff_active_t = 0.0
+
+
+func _end_run_fernflug(why: String) -> void:
+	if _metrics != null and is_instance_valid(_metrics):
+		_close_act(why, null)
+	var sd: int = seed_base + _run - 1
+	var sm: Dictionary = act_totals(_acts)
+	sm["run"] = "%s_%s_r%d_s%d" % [_batch.substr(0, 15), scenario, _run, sd]
+	sm["scenario"] = scenario
+	sm["seed"] = sd
+	sm["end"] = why
+	sm["ending"] = "cancelled" if GameState.has_flag(&"kuendigung_done") else ("renewed" if GameState.retained or GameState.has_flag(&"renewed") else "none")
+	sm["wall_s"] = snappedf(float(Time.get_ticks_msec() - _wall0) / 1000.0, 0.1)
+	_results.append(sm)
+	var lines: PackedStringArray = []
+	lines.append("## run %d (seed %d): %s, ending %s, %.1f game min, %.0f s real" % [_run, sd, why, str(sm["ending"]), float(sm["minutes"]), float(sm["wall_s"])])
+	lines.append("")
+	lines.append("| act | map | rounds | min | bot downs | revived | bled | stuck | stuck s | teleports | stranded | spent | doors | bosses | power r | transition | end |")
+	lines.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+	for a: Dictionary in _acts:
+		lines.append("| %d | %s | %d-%d (%d) | %.1f | %d | %d | %d | %d | %.1f | %d | %d | %d | %d | %d | %s | %s |" % [int(a["act"]), str(a["map"]).trim_prefix("map04"), int(a["first_round"]), int(a["round_reached"]),
+			int(a["rounds"]), float(a["minutes"]), int(a["bot_downs"]), int(a["revived"]), int(a["bled"]), int(a["stuck_events"]), float(a["stuck_time"]), int(a["teleports"]), int(a["stranded"]),
+			int(a["scrip_spent"]), int(a["doors_open"]), int(a["bosses"]), int(a["power_round"]), str(a["transition"]) + (" x%d" % int(a["forced"]) if int(a["forced"]) > 0 else ""), str(a["end"])])
+	for l: String in lines:
+		print("[soak] ", l)
+	_act_md.append_array(lines)
+	_act_md.append("")
+	print("[soak] run %d: %s after %d act(s), %.1f game min (%.0f s real), ending %s" % [_run, why, _acts.size(), float(sm["minutes"]), float(sm["wall_s"]), str(sm["ending"])])
+	_live = false
+	_travelling = false
+	GameState.phase = GameState.Phase.MENU
+	RoundManager.stop()
+	var m: MapRoot = get_tree().current_scene as MapRoot
+	if m != null and is_instance_valid(m):
+		m.queue_free()
+	elif _map != null and is_instance_valid(_map):
+		_map.queue_free()
+	_map = null
+	_prev_map = null
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if _run < runs:
+		_start_run()
+	else:
+		_write_table(BotMetrics.log_dir())
 
 
 var _stall_round: int = -1
