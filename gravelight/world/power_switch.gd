@@ -42,12 +42,21 @@ func _ready() -> void:
 
 func build_greybox() -> void:
 	# a main breaker cabinet (cached): gauges, fuses, a name board, and the big lever on its quadrant (right flank)
-	InteractableArt.place(self, "power_switch_body", func(r: Node3D) -> void: InteractableArt.power_switch_body(r))
+	# our cabinet and lever (UPDATE_05 section 5, T-094); the procedural ones when the model is absent
+	var art: Node3D = WorldArt.instance("power_lever", "Model")
+	if art != null:
+		add_child(art)
+	else:
+		InteractableArt.place(self, "power_switch_body", func(r: Node3D) -> void: InteractableArt.power_switch_body(r))
 	add_label(self, "HAUPTSCHALTER", Vector3(0, 1.76, -0.226), 26, Color(1, 0.85, 0.5))
 	_lever = Node3D.new()
 	_lever.position = Vector3(0.69, 1.0, -0.02)
 	add_child(_lever)
-	InteractableArt.place(_lever, "power_switch_lever", func(r: Node3D) -> void: InteractableArt.power_lever(r))
+	var lever_art: Node3D = WorldArt.detach(art, "Lever", _lever) if art != null else null
+	if lever_art != null:
+		lever_art.transform = Transform3D.IDENTITY   # its pivot is the quadrant hub, where _lever stands
+	else:
+		InteractableArt.place(_lever, "power_switch_lever", func(r: Node3D) -> void: InteractableArt.power_lever(r))
 	# AUS / EIN lamps: the red one burns on the battery until the switch is thrown
 	for i: int in 2:
 		var lamp: MeshInstance3D = MeshInstance3D.new()

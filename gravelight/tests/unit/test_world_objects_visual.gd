@@ -133,3 +133,151 @@ func test_dispensed_bottle_is_hidden_until_a_drink() -> void:
 	assert_false(bottle.visible, "no bottle in the hatch at rest")
 	m.call("_cab_dispense")
 	assert_true(bottle.visible, "a purchase drops the tonic's bottle into the hatch")
+
+
+# ================================================================== everything else: art on, art off, same colliders
+
+## How far the new art may outgrow the procedural art it replaces (the ammo crate's lid now stands open against the
+## wall; the Crucible's flue is shorter, the bench's lamp the same).
+const GROW_SLACK: float = 0.6
+
+
+## Every collision shape under `o` (type, size, place relative to o), sorted: the gameplay footprint of an object.
+func _shapes(o: Node3D) -> Array:
+	var out: Array = []
+	_collect_shapes(o, o, out)
+	out.sort()
+	return out
+
+
+func _collect_shapes(n: Node, o: Node3D, out: Array) -> void:
+	if n is CollisionShape3D:
+		var cs: CollisionShape3D = n as CollisionShape3D
+		var desc: String = cs.shape.get_class()
+		if cs.shape is BoxShape3D:
+			desc += " %s" % str((cs.shape as BoxShape3D).size.snapped(Vector3.ONE * 0.001))
+		var xf: Transform3D = o.global_transform.affine_inverse() * cs.global_transform
+		out.append("%s %s @%s" % [n.get_parent().get_class(), desc, str(xf.origin.snapped(Vector3.ONE * 0.001))])
+	for c: Node in n.get_children():
+		_collect_shapes(c, o, out)
+
+
+## Builds the object twice, first with the procedural art (WorldArt off, as before UPDATE_05) and then with ours, and
+## checks the colliders and areas are identical, that ours is really there (`art_node`), carries no collision and
+## stays within the old art's bounds.
+func _compare_art(what: String, make: Callable, art_node: String) -> void:
+	WorldArt._off = 1
+	var old: Node3D = make.call()
+	add_child(old)
+	var want: Array = _shapes(old)
+	var old_box: AABB = WorldArt.local_aabb(old)
+	var had_art: bool = art_node != "" and old.find_child(art_node, true, false) != null
+	old.free()
+	WorldArt._off = 0
+	var o: Node3D = make.call()
+	add_child_autofree(o)
+	assert_false(had_art, "%s: the procedural build has no %s (the comparison is fair)" % [what, art_node])
+	var art: Node = o.find_child(art_node, true, false) if art_node != "" else o
+	assert_not_null(art, "%s: our model is used (%s)" % [what, art_node])
+	assert_eq(_shapes(o), want, "%s: the same colliders and interaction areas as before" % what)
+	if art != null and art != o:
+		_assert_no_collision(art, what)
+	var box: AABB = WorldArt.local_aabb(o)
+	var grown: AABB = old_box.grow(GROW_SLACK)
+	assert_true(grown.encloses(box), "%s: the art stays within the old bounds (old %s, new %s)" % [what, old_box, box])
+
+
+func after_each() -> void:
+	WorldArt._off = -1
+
+
+func test_crate() -> void:
+	var make: Callable = func() -> Node3D:
+		var c: MysteryCrate = MysteryCrate.new()
+		c.spot_index = 0
+		return c
+	_compare_art("Requisition Crate", make, "Lid")
+
+
+func test_ammo_box() -> void:
+	var make: Callable = func() -> Node3D: return AmmoBox.new()
+	_compare_art("ammo box", make, "Model")
+
+
+func test_barricade() -> void:
+	var make: Callable = func() -> Node3D:
+		var b: Barricade = Barricade.new()
+		b.window_id = &"W_TEST"
+		return b
+	_compare_art("barricade", make, "")
+	# the planks are our models (shared meshes), one variant per slot
+	var b2: Barricade = Barricade.new()
+	add_child_autofree(b2)
+	var ours: Dictionary = {}
+	for i: int in 6:
+		ours[WorldArt.part_mesh("barricade_planks", "Plank%d" % i)] = true
+	var seen: Dictionary = {}
+	for c: Node in b2.get_children():
+		if c is MeshInstance3D:
+			assert_true(ours.has((c as MeshInstance3D).mesh), "a barricade board is one of our planks")
+			seen[(c as MeshInstance3D).mesh] = true
+	assert_eq(seen.size(), 6, "six different planks in a window")
+
+
+func test_buy_door() -> void:
+	var make: Callable = func() -> Node3D:
+		var d: BuyDoor = BuyDoor.new()
+		d.size = Vector3(1.6, 2.4, 0.25)
+		d.label = "Upstairs"
+		d.cost = 750
+		return d
+	_compare_art("bought door", make, "Plaque")
+
+
+func test_gate() -> void:
+	var make: Callable = func() -> Node3D:
+		var g: GateDoor = GateDoor.new()
+		g.size = Vector3(4.0, 2.3, 0.25)
+		g.label = "The Gate"
+		g.cost = 750
+		return g
+	_compare_art("the carters' gate", make, "Hinge")
+
+
+func test_wall_buy() -> void:
+	var make: Callable = func() -> Node3D:
+		var w: WallBuy = WallBuy.new()
+		w.weapon_id = &"kar98k"
+		return w
+	_compare_art("wall-buy", make, "MountedGun")
+
+
+func test_bench() -> void:
+	var make: Callable = func() -> Node3D: return ArmorersBench.new()
+	_compare_art("Armorer's Bench", make, "Model")
+
+
+func test_crucible() -> void:
+	var make: Callable = func() -> Node3D:
+		var c: Crucible = Crucible.new()
+		c.needs_power = true
+		return c
+	_compare_art("Crucible", make, "Model")
+
+
+func test_radio() -> void:
+	var make: Callable = func() -> Node3D: return FieldRadio.new()
+	_compare_art("field radio", make, "Model")
+
+
+func test_power_lever() -> void:
+	var make: Callable = func() -> Node3D:
+		var s: PowerSwitch = PowerSwitch.new()
+		s.config_table = "map00"
+		return s
+	_compare_art("power lever", make, "Lever")
+
+
+func test_exfil_beacon() -> void:
+	var make: Callable = func() -> Node3D: return ExfilPoint.new()
+	_compare_art("exfil beacon", make, "Model")

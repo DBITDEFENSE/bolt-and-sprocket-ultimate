@@ -87,11 +87,17 @@ func is_active() -> bool:
 # ---------------------------------------------------------------- look
 
 func build_greybox() -> void:
+	# our post, arm, signal lantern and board (UPDATE_05 section 5, T-094); greybox boxes when the model is absent
+	var art: Node3D = WorldArt.instance("exfil_beacon", "Model")
+	if art != null:
+		add_child(art)
 	var post_mat: StandardMaterial3D = greybox_mat(Color(0.3, 0.24, 0.18))
-	add_box(self, Vector3(0.16, 2.6, 0.16), Vector3(0, 1.3, 0), post_mat)
-	add_box(self, Vector3(0.9, 0.08, 0.08), Vector3(0.3, 2.45, 0), post_mat)   # the arm
+	if art == null:
+		add_box(self, Vector3(0.16, 2.6, 0.16), Vector3(0, 1.3, 0), post_mat)
+		add_box(self, Vector3(0.9, 0.08, 0.08), Vector3(0.3, 2.45, 0), post_mat)   # the arm
 	var hood: StandardMaterial3D = greybox_mat(Color(0.12, 0.12, 0.13))
-	add_box(self, Vector3(0.36, 0.06, 0.36), Vector3(0.7, 2.42, 0), hood)
+	if art == null:
+		add_box(self, Vector3(0.36, 0.06, 0.36), Vector3(0.7, 2.42, 0), hood)
 	_lamp_mat = greybox_mat(Color(1.0, 0.55, 0.2), 0.15)
 	var glass: MeshInstance3D = MeshInstance3D.new()
 	var sm: SphereMesh = SphereMesh.new()
@@ -125,7 +131,8 @@ func build_greybox() -> void:
 	add_child(ring)
 	# the painted board on the post
 	var board_mat: StandardMaterial3D = greybox_mat(Color(0.82, 0.78, 0.66))
-	add_box(self, Vector3(1.3, 0.42, 0.05), Vector3(0, 1.75, -0.1), board_mat)
+	if art == null:
+		add_box(self, Vector3(1.3, 0.42, 0.05), Vector3(0, 1.75, -0.1), board_mat)
 	_board = add_label(self, str(cfg.get("label", "EXFIL")), Vector3(0, 1.84, -0.14), 24, Color(0.2, 0.15, 0.1))
 	_sub = add_label(self, "", Vector3(0, 1.66, -0.14), 16, Color(0.3, 0.2, 0.12))
 	_flare = CPUParticles3D.new()

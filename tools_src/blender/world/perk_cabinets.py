@@ -76,7 +76,7 @@ def layout(shape, fp):
 def cap_center(lay):
     sc, ss = lay["sign"], lay["sign_size"]
     r = cap_radius(lay)
-    return (sc[0] - ss[0] * 0.5 + r + 0.05, sc[1], sc[2] - 0.006)
+    return (sc[0] + ss[0] * 0.5 - r - 0.05, sc[1], sc[2] - 0.006)   # +X: the viewer's left (the front is -Z)
 
 
 def cap_radius(lay):
@@ -699,8 +699,8 @@ def blastproof(p, fp, lay, en):
         a = math.tau * k / 6.0
         W.dot(wh, add(wp, (math.cos(a) * 0.17, math.sin(a) * 0.17, -0.01)), 0.024, "mats_red_paint", 8)
     wh.build()
-    # the starburst behind "Bock" (right end of the sign; the script flashes it)
-    sb = (0.47, lay["sign"][1] - 0.01, lay["sign"][2] + 0.008)
+    # the starburst behind "Bock" (the sign's right end as you face it; the script flashes it)
+    sb = (-0.47, lay["sign"][1] - 0.01, lay["sign"][2] + 0.008)   # the viewer's right end of the sign
     pts = []
     for k in range(16):
         a = math.tau * k / 16.0

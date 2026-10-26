@@ -46,7 +46,12 @@ func _ready() -> void:
 
 
 func build_greybox() -> void:
-	InteractableArt.place(self, "armorers_bench", func(r: Node3D) -> void: bench_art(r))
+	# our bench (UPDATE_05 section 5, T-094); bench_art when the model is absent
+	var art: Node3D = WorldArt.instance("armorers_bench", "Model")
+	if art != null:
+		add_child(art)
+	else:
+		InteractableArt.place(self, "armorers_bench", func(r: Node3D) -> void: bench_art(r))
 	# the display pistol clamped in the vise, slide in the jaws
 	var gun: Node3D = WeaponModels.build(&"m1911")
 	gun.name = "VisePistol"

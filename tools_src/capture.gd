@@ -137,6 +137,7 @@ func _cam_set() -> void:
 		var pitch: float = float(cam.get("pitch", 0.0))
 		var subject: Node3D = null
 		var posed: Array[Node3D] = []
+		await _cam_do(map, cam.get("do", []))
 		p.global_position = pos
 		p.velocity = Vector3.ZERO
 		p.rotation.y = deg_to_rad(yaw)
@@ -201,6 +202,40 @@ func _cam_set() -> void:
 			if map.squad != null:
 				map.squad.process_mode = Node.PROCESS_MODE_INHERIT
 			await _secs(0.5)
+
+
+## A camera's `do` list (T-094, the u05_objects set): world states to show before the shot, in order. "power"
+## throws the lights on without the lever's zombie burst (the lever's own sweep, GameState.power_on,
+## GLBus.power_activated); "open:<door node>" buys a door for free; "tear:<window node>:<n>" pulls n boards;
+## "exfil" puts up the campaign beacon (it only exists on a campaign run).
+func _cam_do(map: Node, ops: Array) -> void:
+	for op_v: Variant in ops:
+		var op: PackedStringArray = str(op_v).split(":")
+		match op[0]:
+			"power":
+				if not GameState.power_on:
+					var sw: Node = get_tree().get_first_node_in_group(&"power_switch")
+					GameState.power_on = true
+					GameState.set_flag(&"power_on", true)
+					if sw != null and sw.has_method("_sequence_visual"):
+						sw.call("_sequence_visual")
+					GLBus.power_activated.emit()
+					await _secs(2.5)
+			"open":
+				var d: Node = map.find_child(op[1], true, false)
+				if d != null and d.has_method("open"):
+					d.call("open", 0)
+					await _secs(float(GLData.table("world")["door"]["open_seconds"]) + 1.0)
+			"tear":
+				var w: Node = map.find_child(op[1], true, false)
+				if w != null and w.has_method("tear_board"):
+					for k: int in (int(op[2]) if op.size() > 2 else 3):
+						w.call("tear_board")
+					await _secs(0.6)
+			"exfil":
+				if map.find_child("ExfilPoint", true, false) == null and map is MapRoot:
+					ExfilPoint.spawn(map as MapRoot)
+					await _secs(0.5)
 
 
 static func load_cams() -> Dictionary:

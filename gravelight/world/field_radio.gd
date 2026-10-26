@@ -43,7 +43,12 @@ func static_burst(seconds: float, volume_db: float = 0.0) -> void:
 
 func build_greybox() -> void:
 	# the field set: steel case, open lid, dials, headset, whip antenna (cached); its dial window glows amber
-	InteractableArt.place(self, "field_radio", func(r: Node3D) -> void: InteractableArt.field_radio(r))
+	# our set (UPDATE_05 section 5, T-094); the procedural one when the model is absent
+	var art: Node3D = WorldArt.instance("field_radio", "Model")
+	if art != null:
+		add_child(art)
+	else:
+		InteractableArt.place(self, "field_radio", func(r: Node3D) -> void: InteractableArt.field_radio(r))
 	var dial: MeshInstance3D = add_box(self, Vector3(0.12, 0.07, 0.01), Vector3(-0.1, 0.2, -0.162), Mats.get_mat("lamp_amber"))
 	dial.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var glow: OmniLight3D = OmniLight3D.new()

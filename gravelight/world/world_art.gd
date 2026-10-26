@@ -28,6 +28,8 @@ const LIB_FALLBACK: Dictionary = {"planks": "planks", "floorboards": "floorboard
 
 static var _scenes: Dictionary = {}     # folder -> PackedScene (null when absent)
 static var _mats: Dictionary = {}       # slot name -> Material
+static var _off: int = -1               # --no-world-art (unknown until asked)
+static var _part_meshes: Dictionary = {}   # "folder/part" -> Mesh
 
 
 static func glb_path(folder: String) -> String:
@@ -39,7 +41,16 @@ static func has(folder: String) -> bool:
 	return scene(folder) != null
 
 
+## True when the run asked for the old procedural look (`-- --no-world-art`: the "before" half of a capture pair).
+static func disabled() -> bool:
+	if _off < 0:
+		_off = 1 if OS.get_cmdline_user_args().has("--no-world-art") else 0
+	return _off == 1
+
+
 static func scene(folder: String) -> PackedScene:
+	if disabled():
+		return null
 	if _scenes.has(folder):
 		return _scenes[folder]
 	var p: String = glb_path(folder)
@@ -51,7 +62,7 @@ static func scene(folder: String) -> PackedScene:
 
 
 ## A fresh instance of the folder's model (named `node_name`), its materials mapped, no collision; null if absent.
-static func instance(folder: String, node_name: String = "Art") -> Node3D:
+static func instance(folder: String, node_name: String = "Model") -> Node3D:
 	var ps: PackedScene = scene(folder)
 	if ps == null:
 		return null
@@ -66,6 +77,25 @@ static func instance(folder: String, node_name: String = "Art") -> Node3D:
 		if maxf(aabb.size.x, maxf(aabb.size.y, aabb.size.z)) < SHADOW_MIN_M:
 			mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	return n
+
+
+## The (shared, material-mapped) mesh of one part of a folder's model, for scripts that draw many copies of it
+## (Barricade's planks); null when absent.
+static func part_mesh(folder: String, part_name: String) -> Mesh:
+	if disabled():
+		return null
+	var key: String = folder + "/" + part_name
+	if _part_meshes.has(key):
+		return _part_meshes[key]
+	var m: Mesh = null
+	var inst: Node3D = instance(folder)
+	if inst != null:
+		var mi: MeshInstance3D = mesh_of(part(inst, part_name))
+		if mi != null:
+			m = mi.mesh
+		inst.free()
+	_part_meshes[key] = m
+	return m
 
 
 ## A named part (node) of an instance, or null.
@@ -95,6 +125,7 @@ static func detach(root: Node3D, part_name: String, new_parent: Node3D) -> Node3
 	if p == null:
 		return null
 	var xf: Transform3D = _rel_xform(p, new_parent)
+	p.owner = null
 	p.get_parent().remove_child(p)
 	new_parent.add_child(p)
 	p.transform = xf
@@ -218,3 +249,4 @@ static func _strip_collision(n: Node) -> void:
 static func reset() -> void:
 	_scenes = {}
 	_mats = {}
+	_part_meshes = {}

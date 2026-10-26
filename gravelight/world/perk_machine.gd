@@ -579,12 +579,14 @@ func _build_cabinet() -> bool:
 	var ss: Vector2 = lay["sign_size"]
 	var cap_r: float = minf(0.115, ss.y * 0.5 - 0.03)
 	var cap_anchor: Node3D = WorldArt.part(art, "CapAnchor")
-	var cap_at: Vector3 = cap_anchor.position if cap_anchor != null else Vector3(sc.x - ss.x * 0.5 + cap_r + 0.05, sc.y, sc.z - 0.01)
+	var cap_at: Vector3 = cap_anchor.position if cap_anchor != null else Vector3(sc.x + ss.x * 0.5 - cap_r - 0.05, sc.y, sc.z - 0.01)
 	_cab_cap = _make_cap(cap_at, cap_r)
 	var text: String = str(d.get("sign", d.get("name", perk_id)))
-	var left: float = sc.x - ss.x * 0.5 + cap_r * 2.0 + 0.1
-	var text_w: float = sc.x + ss.x * 0.5 - 0.06 - left
-	var font: int = clampi(int(text_w / (maxf(1.0, float(text.length())) * 0.0026)), 20, 44)
+	# the cap is at the board's +X end (the viewer's left); the name fills the rest (Blastproof's starburst takes the
+	# far end for "Bock")
+	var left: float = sc.x - ss.x * 0.5 + 0.06 + (0.34 if shape == "safe" else 0.0)
+	var text_w: float = sc.x + ss.x * 0.5 - cap_r * 2.0 - 0.12 - left
+	var font: int = clampi(int(text_w / (maxf(1.0, float(text.length())) * 0.0033)), 18, 44)
 	var sub: Array = CAB_SUBLINES.get(String(perk_id), [])
 	var text_y: float = sc.y + (0.03 if not sub.is_empty() else 0.0)
 	_sign = add_label(art, text, Vector3(left + text_w * 0.5, text_y, sc.z - 0.004), font)

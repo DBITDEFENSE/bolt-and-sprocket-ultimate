@@ -166,7 +166,12 @@ static func _weapon_label(w: WeaponInstance) -> String:
 # ---------------------------------------------------------------- art
 
 func build_greybox() -> void:
-	InteractableArt.place(self, "ammo_box", func(r: Node3D) -> void: AmmoBoxArt.body(r))
+	# our model (UPDATE_05 section 5, T-094: the olive crate, lid open on its cartons); AmmoBoxArt when absent
+	var art: Node3D = WorldArt.instance("ammo_crate", "Model")
+	if art != null:
+		add_child(art)
+	else:
+		InteractableArt.place(self, "ammo_box", func(r: Node3D) -> void: AmmoBoxArt.body(r))
 	# stencils (painted through a card: no outline), front and ends
 	var s1: Label3D = add_label(self, "AMMUNITION", Vector3(0, 0.39, -0.286), 30, Color(0.86, 0.84, 0.7, 0.88))
 	s1.outline_size = 0
