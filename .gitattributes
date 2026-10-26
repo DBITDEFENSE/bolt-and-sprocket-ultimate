@@ -42,3 +42,14 @@ gravelight/**/audio/**/*.mp3 filter=lfs diff=lfs merge=lfs -text
 gravelight/**/audio/**/*.zip filter=lfs diff=lfs merge=lfs -text
 gravelight/**/audio/**/*.unitypackage filter=lfs diff=lfs merge=lfs -text
 gravelight/**/audio/**/*.psd filter=lfs diff=lfs merge=lfs -text
+
+# UPDATE 07 (T-105 note): the cloud session's network policy blocks lfs.github.com (uploads), so the binaries this
+# update adds are plain git files (about 14 MB). On the PC they can be moved into LFS with
+#   git lfs migrate import --no-rewrite --include="assets/ours/wonder/lodestone/**,gravelight/audio/**/*skyhook*,gravelight/audio/**/*magpie*,gravelight/audio/sfx/weapons/lodestone_*"
+# and these lines dropped (NEEDS_DEVIN.md).
+assets/ours/wonder/lodestone/** -filter binary
+gravelight/audio/jingles/skyhook_sekt_*.wav -filter binary
+gravelight/audio/jingles/magpie_mead_*.wav -filter binary
+gravelight/audio/sfx/world/perks/*skyhook* -filter binary
+gravelight/audio/sfx/world/perks/*magpie* -filter binary
+gravelight/audio/sfx/weapons/lodestone_* -filter binary
