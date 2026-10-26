@@ -30,7 +30,22 @@ static var _templates: Dictionary = {}     # "id|up|camo" -> built model; build(
 
 
 static func build(weapon_id: StringName, is_upgraded: bool = false, camo_id: StringName = &"", look_d: Dictionary = {}) -> Node3D:
-	var key: String = "%s|%s|%s|%s" % [weapon_id, is_upgraded, camo_id, str(look_d.get("sig", ""))]
+	# T-089: a downloaded model when the intake mapped one (and the greybox escape hatch is off), else procedural
+	var glb: bool = WeaponGLB.wants(weapon_id)
+	var key: String = "%s|%s|%s|%s|%s" % ["glb" if glb else "gb", weapon_id, is_upgraded, camo_id, str(look_d.get("sig", ""))]
+	if not _templates.has(key):
+		_templates[key] = WeaponGLB.build(weapon_id, is_upgraded, camo_id, look_d) if glb else _build_new(weapon_id, is_upgraded, camo_id, look_d)
+	var t: Node3D = _templates[key]
+	var copy: Node3D = t.duplicate() as Node3D
+	for k: StringName in t.get_meta_list():
+		copy.set_meta(k, t.get_meta(k))
+	return copy
+
+
+## The procedural (greybox) model whatever models.json says: the GLB builder reads its metas and hands as the
+## defaults, and tools A/B against it. Same contract as build().
+static func build_greybox(weapon_id: StringName, is_upgraded: bool = false, camo_id: StringName = &"", look_d: Dictionary = {}) -> Node3D:
+	var key: String = "gb|%s|%s|%s|%s" % [weapon_id, is_upgraded, camo_id, str(look_d.get("sig", ""))]
 	if not _templates.has(key):
 		_templates[key] = _build_new(weapon_id, is_upgraded, camo_id, look_d)
 	var t: Node3D = _templates[key]
@@ -86,7 +101,8 @@ static func merge_static(n: Node3D) -> void:
 	var mats: Array[Material] = []
 	var victims: Array[Node] = []
 	for c: Node in n.get_children():
-		if c is MeshInstance3D and (c as MeshInstance3D).get_child_count() == 0 and (c as MeshInstance3D).visible:
+		if c is MeshInstance3D and (c as MeshInstance3D).get_child_count() == 0 and (c as MeshInstance3D).visible and not c.has_meta("glb"):
+			# (meta "glb": a downloaded mesh, T-089; it keeps its UVs and textures, so it is never baked)
 			var mi: MeshInstance3D = c as MeshInstance3D
 			if mi.mesh == null:
 				continue

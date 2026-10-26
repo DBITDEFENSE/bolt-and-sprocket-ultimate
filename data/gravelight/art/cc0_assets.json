@@ -132,17 +132,6 @@
       "note": "old scratched brown leather: tack, straps, gloves"
     },
     {
-      "source": "polyhaven",
-      "id": "snow_02",
-      "kind": "texture",
-      "res": "2k",
-      "orm_res": "1k",
-      "height": true,
-      "key": "snow",
-      "note": "the Grounds' snow",
-      "tile_m": 2.0
-    },
-    {
       "source": "ambientcg",
       "id": "Ice003",
       "kind": "texture",
@@ -377,6 +366,127 @@
       "extra": {
         "Models/GLB format/Textures/colormap.png": "Textures/colormap.png"
       }
+    },
+    {
+      "source": "polyhaven",
+      "id": "dark_wood",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "beam",
+      "note": "dark old timber: the half-timbering, beams, posts, frames (T-093)",
+      "tile_m": 2.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "wood_table_001",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "furniture",
+      "note": "stained worn oak: tables, counters, rails, treads (T-093)",
+      "tile_m": 1.5
+    },
+    {
+      "source": "polyhaven",
+      "id": "dark_paneled_wood",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "wainscot",
+      "note": "dark panelled wainscot in the taproom and the bar front (T-093)",
+      "tile_m": 1.4
+    },
+    {
+      "source": "polyhaven",
+      "id": "red_brick_03",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "brick_cellar",
+      "note": "old handmade brick: the cellar soffits, arches, the ice cellar (T-093)",
+      "tile_m": 1.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "rustic_stone_wall",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "cellar_stone",
+      "note": "coursed rubble: the cellar vaults' walls and pillars (T-093)",
+      "tile_m": 1.52
+    },
+    {
+      "source": "polyhaven",
+      "id": "stone_floor",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "cellar_floor",
+      "note": "worn flagstones: the cellars' floors (T-093)",
+      "tile_m": 1.85
+    },
+    {
+      "source": "polyhaven",
+      "id": "pine_bark",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "bark",
+      "note": "spruce bark for the scripted pines and the dead trees (T-093)",
+      "tile_m": 2.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "rock_boulder_dry",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "rock",
+      "note": "boulders on the grounds and the mountains' rock (T-093)",
+      "tile_m": 1.8
+    },
+    {
+      "source": "polyhaven",
+      "id": "reed_roof_04",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "hay",
+      "note": "dry reed/straw: hay bales, the rick, straw on the floors (T-093)",
+      "tile_m": 2.5
+    },
+    {
+      "source": "polyhaven",
+      "id": "green_metal_rust",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "wreck",
+      "note": "olive paint over rust: GRAVELIGHT ONE and its wreckage (T-093)",
+      "tile_m": 1.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "snow_01",
+      "kind": "texture",
+      "res": "2k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "snow",
+      "note": "clean wind-packed snow: the Grounds, the near terrain (replaces snow_02, whose twig marks read as cracks, T-093)",
+      "tile_m": 2.0
     }
   ]
 }

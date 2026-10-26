@@ -11,6 +11,15 @@ extends Node3D
 ## that moves or changes over the match (it finds this node with Landscape.find()).
 
 const PINE_SHADER: String = "res://gravelight/world/landscape/shaders/pine.gdshader"
+## UPDATE_05 section 5 (T-093): the scripted spruces, birches, bushes and boulders (tools_src/blender/nature/) and the
+## shader their cards and bark use. Unit-sized meshes: a tree is 1.0 tall and instances scale it to its height.
+const NATURE_GLB: String = "res://assets/ours/env/nature/nature.glb"
+const TREE_SHADER: String = "res://gravelight/world/landscape/shaders/tree.gdshader"
+const NATURE_TEX: String = "res://assets/ours/env/nature/textures/"
+## Share of the forest that is birch, near and mid (the rest spruce).
+const BIRCH_SHARE: float = 0.16
+## Trees nearer CENTER than this use the full LOD0 model; the rest of the near ring LOD1 (they sit in the map's fog).
+const DETAIL_R: float = 95.0
 const SH_DIR: String = "res://gravelight/world/landscape/shaders/"
 ## How much brighter the custom far haze is than the environment's fog colour: the near world's distant haze is
 ## the fog colour plus the volumetric fog's in-scatter, which the far layers (fog_disabled) don't get.
@@ -68,6 +77,7 @@ func build() -> void:
 	_build_terrain()
 	_build_forests()
 	_build_mist()
+	_build_undergrowth()
 	_build_road_story()
 	_build_telephone_line()
 	_build_stream_bridge()
@@ -107,6 +117,8 @@ func _far_mat(file: String, params: Dictionary = {}) -> ShaderMaterial:
 	m.shader = _shader(file)
 	for k: String in params.keys():
 		m.set_shader_parameter(k, params[k])
+	if file == "far_land.gdshader" and MaterialLibrary.texture("rock", "albedo") != null:
+		m.set_shader_parameter("rock_tex", MaterialLibrary.texture("rock", "albedo"))   # T-093
 	far_mats.append(m)
 	return m
 
@@ -177,11 +189,7 @@ func _build_terrain() -> void:
 	var mesh: ArrayMesh = LandscapeTerrain.build_grid()
 	var near: ShaderMaterial = ShaderMaterial.new()
 	near.shader = _shader("near_land.gdshader")
-	var snow: StandardMaterial3D = Mats.get_mat("snow") as StandardMaterial3D
-	if snow != null:
-		near.set_shader_parameter("albedo_tex", snow.albedo_texture)
-		near.set_shader_parameter("normal_tex", snow.normal_texture)
-		near.set_shader_parameter("uv_scale", snow.uv1_scale.x)
+	_near_land_textures(near)
 	mesh.surface_set_material(0, near)
 	if mesh.get_surface_count() > 1:
 		mesh.surface_set_material(1, _far_mat("far_land.gdshader", {"fog_max": 0.84, "fog_k": 0.022}))
@@ -199,6 +207,32 @@ func _build_terrain() -> void:
 		r.material_override = _far_mat("far_land.gdshader", {"ridge": 1.0, "fog_max": 0.84, "fog_k": 0.022, "fog_bias": 0.035 if band == 1 else 0.0,
 			"noise_scale": 0.03})
 		add_child(r)
+
+
+## The near terrain's textures (T-093): the slab's own snow set and the frozen-mud set the roads blend into. The
+## library materials are ShaderMaterials, so the maps come from MaterialLibrary (by the generator's key, so the
+## terrain follows whatever "snow" the slab uses); the procedural StandardMaterial3D snow is the fallback.
+static func _near_land_textures(near: ShaderMaterial) -> void:
+	var snow_key: String = MaterialLibrary.generator_key("snow")
+	if MaterialLibrary.for_generator("snow") != null and MaterialLibrary.texture(snow_key, "albedo") != null:
+		var e: Dictionary = MaterialLibrary.entry(snow_key)
+		near.set_shader_parameter("albedo_tex", MaterialLibrary.texture(snow_key, "albedo"))
+		near.set_shader_parameter("normal_tex", MaterialLibrary.texture(snow_key, "normal"))
+		near.set_shader_parameter("uv_scale", 1.0 / maxf(0.05, float(e.get("tile_m", 2.0))))
+		var t: Array = e.get("tint", [1, 1, 1])
+		near.set_shader_parameter("snow_tint", Vector3(float(t[0]), float(t[1]), float(t[2])))
+	else:
+		var snow: StandardMaterial3D = Mats.get_mat("snow") as StandardMaterial3D
+		if snow != null:
+			near.set_shader_parameter("albedo_tex", snow.albedo_texture)
+			near.set_shader_parameter("normal_tex", snow.normal_texture)
+			near.set_shader_parameter("uv_scale", snow.uv1_scale.x)
+	if MaterialLibrary.has_key("frozen_mud") and MaterialLibrary.texture("frozen_mud", "albedo") != null:
+		var m: Dictionary = MaterialLibrary.entry("frozen_mud")
+		near.set_shader_parameter("mud_tex", MaterialLibrary.texture("frozen_mud", "albedo"))
+		near.set_shader_parameter("mud_normal_tex", MaterialLibrary.texture("frozen_mud", "normal"))
+		near.set_shader_parameter("mud_uv_scale", 1.0 / maxf(0.05, float(m.get("tile_m", 2.0))))
+		near.set_shader_parameter("use_mud", true)
 
 
 # ================================================================== forests
@@ -236,6 +270,110 @@ static func _frustum(st: SurfaceTool, y0: float, y1: float, r0: float, r1: float
 			st.add_vertex(v[0])
 
 
+# ================================================================== the scripted trees (T-093)
+
+static var _nature_meshes: Dictionary = {}
+static var _tree_mats: Dictionary = {}
+static var _tree_meshes: Dictionary = {}
+
+
+## A raw mesh from nature.glb by its node name (Spruce_LOD0, Birch_LOD1, Bush_A, Rock_B...), null if missing.
+static func nature_mesh(node_name: String) -> Mesh:
+	if _nature_meshes.has(node_name):
+		return _nature_meshes[node_name]
+	if not ResourceLoader.exists(NATURE_GLB):
+		return null
+	var root: Node = (load(NATURE_GLB) as PackedScene).instantiate()
+	var found: Mesh = null
+	for n: Node in root.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		_nature_meshes[String(mi.name)] = mi.mesh
+		if String(mi.name) == node_name:
+			found = mi.mesh
+	root.free()
+	return found
+
+
+## A tree material by its kind ("needles", "bark", "twigs", "birch_bark"): near ones use the map's fog, far ones
+## the capped far fog (fog_disabled; the Landscape keeps their fog colour in step).
+static func tree_material(kind: String, near: bool) -> ShaderMaterial:
+	var key: String = kind + ("|near" if near else "|far")
+	if _tree_mats.has(key):
+		return _tree_mats[key]
+	var sh: Shader = load(TREE_SHADER) as Shader
+	if near:
+		var ns: Shader = Shader.new()
+		ns.code = sh.code.replace(", fog_disabled", "")
+		sh = ns
+	var m: ShaderMaterial = ShaderMaterial.new()
+	m.shader = sh
+	m.resource_name = "tree_" + key
+	if near:
+		m.set_shader_parameter("fog_max", 0.0)
+	match kind:
+		"needles":
+			m.set_shader_parameter("tex", load(NATURE_TEX + "tex_spruce_frond.png"))
+			m.set_shader_parameter("tint", Color(0.95, 1.0, 0.95))
+			m.set_shader_parameter("snow_amount", 0.35)
+			m.set_shader_parameter("wind", 0.012)
+		"twigs":
+			m.set_shader_parameter("tex", load(NATURE_TEX + "tex_birch_twigs.png"))
+			m.set_shader_parameter("snow_amount", 0.15)
+			m.set_shader_parameter("wind", 0.02)
+		"birch_bark":
+			m.set_shader_parameter("tex", load(NATURE_TEX + "tex_birch_bark.png"))
+			m.set_shader_parameter("tint", Color(0.92, 0.92, 0.9))
+			m.set_shader_parameter("snow_amount", 0.3)
+			m.set_shader_parameter("roughness", 0.8)
+		_:   # "bark": the library's spruce bark when there, else a dark flat colour
+			var bt: Texture2D = MaterialLibrary.texture("bark", "albedo")
+			if bt != null:
+				m.set_shader_parameter("tex", bt)
+			m.set_shader_parameter("tint", Color(0.55, 0.5, 0.46))
+			m.set_shader_parameter("uv_mul", Vector2(1.0, 0.6))
+			m.set_shader_parameter("snow_amount", 0.4)
+	_tree_mats[key] = m
+	return m
+
+
+## A nature mesh with its surfaces set to the tree materials (cached per node and fog kind). Rocks get the
+## library's "rock" material (triplanar, so their unit size scales without stretching).
+static func tree_mesh(node_name: String, near: bool) -> Mesh:
+	var key: String = node_name + ("|near" if near else "|far")
+	if _tree_meshes.has(key):
+		return _tree_meshes[key]
+	var src: Mesh = nature_mesh(node_name)
+	if src == null:
+		return null
+	var m: Mesh = src.duplicate() as Mesh
+	for i: int in m.get_surface_count():
+		var mat: Material = m.surface_get_material(i)
+		var kind: String = mat.resource_name if mat != null else ""
+		if kind == "rock":
+			var rm: Material = MaterialLibrary.get_mat("rock")
+			m.surface_set_material(i, rm if rm != null else Mats.get_mat("stone"))
+		else:
+			m.surface_set_material(i, tree_material(kind if kind != "" else "bark", near))
+	_tree_meshes[key] = m
+	return m
+
+
+## The old cone pines' transforms scale x/z to about 0.41 of the height (the cone mesh was slim); the scripted
+## trees are built to their real proportions, so they want a uniform scale. Keeps the yaw and the height, and the
+## old width spread as +-12%.
+static func uniform_tree_xform(xf: Transform3D) -> Transform3D:
+	var h: float = xf.basis.y.length()
+	var xc: Vector3 = xf.basis.x
+	var yaw: float = atan2(-xc.z, xc.x)
+	var k: float = clampf(xc.length() / maxf(0.01, h) / 0.41, 0.85, 1.15)
+	return Transform3D(Basis(Vector3.UP, yaw).scaled(Vector3(h * k, h, h * k)), xf.origin)
+
+
+## True for about BIRCH_SHARE of positions (a stable hash of the spot, so the same tree is always a birch).
+static func is_birch(p: Vector3) -> bool:
+	return fposmod(sin(p.x * 12.9898 + p.z * 78.233) * 43758.5453, 1.0) < BIRCH_SHARE
+
+
 func _multimesh(name_: String, mesh: Mesh, xf: Array[Transform3D], mat: Material, aabb_grow: float = 20.0) -> MultiMeshInstance3D:
 	var mm: MultiMesh = MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D
@@ -246,7 +384,8 @@ func _multimesh(name_: String, mesh: Mesh, xf: Array[Transform3D], mat: Material
 	var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
 	mmi.name = name_
 	mmi.multimesh = mm
-	mmi.material_override = mat
+	if mat != null:
+		mmi.material_override = mat
 	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	if xf.size() > 0:
 		mmi.custom_aabb = mm.get_aabb().grow(aabb_grow)
@@ -292,11 +431,32 @@ func _build_forests() -> void:
 	var card_mat: ShaderMaterial = _far_mat("impostor_pine.gdshader")
 	var n_mesh: int = 0
 	var n_card: int = 0
+	var spruce_near: Mesh = tree_mesh("Spruce_LOD0", true)
+	var scripted: bool = spruce_near != null
+	if scripted:
+		for m: String in ["needles", "bark", "twigs", "birch_bark"]:
+			far_mats.append(tree_material(m, false))
 	for s2: int in sectors:
-		if (near_by[s2] as Array).size() > 0:
-			_multimesh("PinesNear%d" % s2, pm, near_by[s2], near_pine)
-		if (mid_by[s2] as Array).size() > 0:
-			_multimesh("PinesMid%d" % s2, pm, mid_by[s2], far_pine)
+		if scripted:   # T-093: the scripted spruces and birches (LOD0 near, LOD1 in the mid ring)
+			for ring: int in 2:
+				var src: Array = near_by[s2] if ring == 0 else mid_by[s2]
+				# [spruce, birch] x [LOD0 (inside DETAIL_R), LOD1 (the rest of the near ring, and the mid ring)]
+				var lists: Array = [[] as Array[Transform3D], [] as Array[Transform3D], [] as Array[Transform3D], [] as Array[Transform3D]]
+				for xf4: Transform3D in src:
+					var far_lod: bool = ring == 1 or LandscapeTerrain.radius(xf4.origin.x, xf4.origin.z) > DETAIL_R
+					(lists[(1 if is_birch(xf4.origin) else 0) * 2 + (1 if far_lod else 0)] as Array[Transform3D]).append(uniform_tree_xform(xf4))
+				var tag: String = "Near" if ring == 0 else "Mid"
+				for li: int in 4:
+					if (lists[li] as Array).is_empty():
+						continue
+					var kind: String = "Birch" if li >= 2 else "Spruce"
+					var lod: String = "LOD1" if li % 2 == 1 else "LOD0"
+					_multimesh("%s%s%s_%d" % [kind, tag, lod, s2], tree_mesh(kind + "_" + lod, ring == 0), lists[li], null)
+		else:
+			if (near_by[s2] as Array).size() > 0:
+				_multimesh("PinesNear%d" % s2, pm, near_by[s2], near_pine)
+			if (mid_by[s2] as Array).size() > 0:
+				_multimesh("PinesMid%d" % s2, pm, mid_by[s2], far_pine)
 		if (card_by[s2] as Array).size() > 0:
 			_multimesh("PineCards%d" % s2, quad, card_by[s2], card_mat, 30.0)
 		n_mesh += (near_by[s2] as Array).size() + (mid_by[s2] as Array).size()
@@ -337,6 +497,45 @@ func _build_mist() -> void:
 			mi.rotation.y = -deg_to_rad(b) + PI
 			mi.rotation.x = deg_to_rad(rng.randf_range(-4.0, 4.0))
 			add_child(mi)
+
+
+# ================================================================== undergrowth (T-093)
+
+## Bare winter bushes and snowed boulders on the near swell: clumps where the forest noise is high, along the forest
+## edges, never on a road, the stream or the slab (nothing out here collides: it is all beyond the play edge).
+func _build_undergrowth() -> void:
+	if tree_mesh("Bush_A", true) == null:
+		return
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 931
+	var bushes: Array = [[] as Array[Transform3D], [] as Array[Transform3D]]
+	var rocks: Array = [[] as Array[Transform3D], [] as Array[Transform3D], [] as Array[Transform3D]]
+	var tries: int = 0
+	while tries < 5200:
+		tries += 1
+		var b: float = rng.randf() * 360.0
+		var r: float = rng.randf_range(62.0, 150.0)
+		var p: Vector3 = LandscapeTerrain.at_bearing(b, r)
+		if LandscapeTerrain.slab_distance(p.x, p.z) < 6.0 or LandscapeTerrain.road_distance(p.x, p.z) < 5.0 or LandscapeTerrain.stream_distance(p.x, p.z) < 4.5:
+			continue
+		var dens: float = LandscapeTerrain.forest_density(p.x, p.z) + 0.25 * LandscapeTerrain._u(LandscapeTerrain._n_forest, p.x * 3.0, p.z * 3.0)
+		if rng.randf() > dens * 0.9:
+			continue
+		p.y = LandscapeTerrain.height(p.x, p.z)
+		if rng.randf() < 0.72:
+			var s: float = rng.randf_range(0.9, 1.7)
+			(bushes[rng.randi() % 2] as Array[Transform3D]).append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(s, s * rng.randf_range(0.8, 1.2), s)), p - Vector3(0, 0.08, 0)))
+		else:
+			var s2: float = rng.randf_range(0.7, 2.2)
+			(rocks[rng.randi() % 3] as Array[Transform3D]).append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(s2, s2 * rng.randf_range(0.6, 1.0), s2)), p - Vector3(0, 0.2 * s2, 0)))
+	for i: int in 2:
+		if not (bushes[i] as Array).is_empty():
+			_multimesh("Bushes%d" % i, tree_mesh("Bush_" + "AB"[i], true), bushes[i], null)
+	for j: int in 3:
+		if not (rocks[j] as Array).is_empty():
+			_multimesh("Rocks%d" % j, tree_mesh("Rock_" + "ABC"[j], true), rocks[j], null)
+	print("[landscape] undergrowth: %d bushes, %d rocks" % [(bushes[0] as Array).size() + (bushes[1] as Array).size(),
+		(rocks[0] as Array).size() + (rocks[1] as Array).size() + (rocks[2] as Array).size()])
 
 
 # ================================================================== the road and what was left on it
@@ -428,6 +627,9 @@ func _road_z(x: float) -> float:
 	return -7.75
 
 
+var _bank_rocks: Array[Transform3D] = []
+
+
 func _build_stream_bridge() -> void:
 	var b: Vector2 = LandscapeTerrain.BRIDGE
 	var deck: float = maxf(LandscapeTerrain.height(b.x, b.y - 6.0), LandscapeTerrain.height(b.x, b.y + 6.0)) - 0.25
@@ -442,7 +644,13 @@ func _build_stream_bridge() -> void:
 		var q: Vector3 = _ground(p.x, p.y + side * rng.randf_range(3.2, 5.0))
 		if absf(t) < 5.0:
 			continue
-		Props.ball(_static, q, Vector3(rng.randf_range(0.6, 1.6), rng.randf_range(0.35, 0.8), rng.randf_range(0.6, 1.4)), "snow" if rng.randf() < 0.6 else "stone")
+		var sz: Vector3 = Vector3(rng.randf_range(0.6, 1.6), rng.randf_range(0.35, 0.8), rng.randf_range(0.6, 1.4))
+		if rng.randf() < 0.6:
+			Props.ball(_static, q, sz, "snow")
+		else:   # T-093: real boulders on the banks
+			_bank_rocks.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(sz * 1.2), q - Vector3(0, 0.15, 0)))
+	if not _bank_rocks.is_empty() and tree_mesh("Rock_A", true) != null:
+		_multimesh("BankRocks", tree_mesh("Rock_A", true), _bank_rocks, null)
 
 
 # ================================================================== the farmhouse, the church, the burning town

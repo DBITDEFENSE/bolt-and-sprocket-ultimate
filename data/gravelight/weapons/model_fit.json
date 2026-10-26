@@ -1,0 +1,544 @@
+{
+ "_doc": "Hand fit of the downloaded gun models (T-089, UPDATE_05 section 2), read by WeaponGLB on top of models.json. Rig space everywhere: metres, barrel along -Z, +Y up, origin at the right-hand grip. Per weapon: extra_rot [deg xyz] and extra_offset [m] after the models.json normalisation (the converter's trigger_center lands 8 mm ahead / 6 mm below the origin by default), scale (overrides native.scale), grip_native (the pack-space point that becomes the origin instead of the trigger), pivots {Part: [x,y,z]} (hinges for Cover / Barrels, the bolt axis for Bolt; default = the part's centre), parent {Part: Parent} (the Webley cylinder under its barrels), rename {node: Part}, hide [node], borrow {Part: {asset, node, offset}} (a part from another converted asset), part_offset / part_scale / part_scale_about {Part: [x,y,z]} (a part moved or cut down: the Garand clip into the receiver, the Sawed-Off barrels), muzzle / sight_rear / sight_front / left_hand [x,y,z] (defaults from a vertex scan: bbox front on the bore, the highest point in the front quarter, the highest point on the receiver), sight_rear_on / sight_front_on (the group a sight rides on: the Slide when there is one, else root), lh_axis z|y, lh_radius, grip_r [x,y,z], grip_lean deg, grip_r_radius, port [x,y,z], bore, no_bore, eye_relief (overrides weapons.json feel.eye_relief for this model: the cheek weld differs per model), empty {Part: [x,y,z]} (an empty node for a part the reload expects but the pack lacks), scope {y, z0, z1, r, base_y, mag} (a procedural scope on an iron-sighted model), kit_offset {slot: [x,y,z]} and kit_offset_front {slot: [x,y,z]} (the M1911 hand-fitted attachments, built for the procedural pistol, shifted onto the OGA one per slot; _front applies to parts ahead of z -0.08), stock_share (the rear share of the length the sight scan skips), shader {wear, grime, scratches, grain_scale, seed, bluing [r,g,b], wood {material: 0..1}, metal_parts [Part], wood_parts [Part]}. frost_by_map: the rime uniform per map id (WeaponShader). Fit sheets: tools/glb_fit_shots.sh.",
+ "frost_by_map": {
+  "default": 0.0,
+  "map00_crossroads": 0.55,
+  "map01_kaltenbrunn": 0.35,
+  "map02_totenhafen": 0.25
+ },
+ "weapons": {
+  "m1911": {
+   "grip_r": [
+    0,
+    -0.05,
+    0.05
+   ],
+   "grip_lean": 20,
+   "kit_offset": {
+    "sights": [
+     0,
+     -0.001,
+     0
+    ],
+    "barrel": [
+     0,
+     -0.0075,
+     0.0365
+    ],
+    "mag": [
+     0,
+     0.022,
+     -0.017
+    ],
+    "ammo": [
+     0,
+     0.022,
+     -0.017
+    ],
+    "grip": [
+     0,
+     0.02,
+     -0.015
+    ],
+    "finish": [
+     0,
+     -0.004,
+     0.02
+    ]
+   },
+   "shader": {
+    "wear": 0.45,
+    "grime": 0.45,
+    "scratches": 0.4
+   },
+   "kit_offset_front": {
+    "sights": [
+     0,
+     0,
+     0.028
+    ]
+   }
+  },
+  "walther_p38": {
+   "extra_offset": [
+    0,
+    0.014,
+    0.035
+   ],
+   "grip_r": [
+    0,
+    -0.045,
+    0.05
+   ],
+   "grip_lean": 18,
+   "sight_front_on": "root",
+   "shader": {
+    "wear": 0.4,
+    "grime": 0.4
+   }
+  },
+  "webley": {
+   "pivots": {
+    "Barrels": [
+     0,
+     0.015,
+     -0.047
+    ]
+   },
+   "parent": {
+    "Cylinder": "Barrels"
+   },
+   "sight_rear": [
+    0,
+    0.07,
+    0.009
+   ],
+   "sight_front_on": "Barrels",
+   "grip_r": [
+    0,
+    -0.045,
+    0.058
+   ],
+   "grip_lean": 26,
+   "shader": {
+    "wear": 0.5,
+    "grime": 0.5
+   }
+  },
+  "kar98k": {
+   "extra_offset": [
+    0,
+    0.013,
+    -0.099
+   ],
+   "pivots": {
+    "Bolt": [
+     -0.004,
+     0.028,
+     -0.02
+    ]
+   },
+   "sight_rear": [
+    0,
+    0.047,
+    -0.15
+   ],
+   "grip_r": [
+    0,
+    -0.025,
+    0.06
+   ],
+   "grip_lean": 40,
+   "left_hand": [
+    0,
+    0.005,
+    -0.32
+   ],
+   "empty": {
+    "Mag": [
+     0,
+     0.05,
+     -0.04
+    ]
+   },
+   "port": [
+    0.012,
+    0.045,
+    -0.03
+   ],
+   "shader": {
+    "wear": 0.35,
+    "grime": 0.45,
+    "scratches": 0.3
+   }
+  },
+  "m1_garand": {
+   "extra_offset": [
+    0,
+    0.007,
+    -0.058
+   ],
+   "part_offset": {
+    "Mag": [
+     0.008,
+     -0.088,
+     -0.052
+    ]
+   },
+   "sight_rear": [
+    0,
+    0.05,
+    0.136
+   ],
+   "grip_r": [
+    0,
+    -0.026,
+    0.07
+   ],
+   "grip_lean": 38,
+   "left_hand": [
+    0,
+    0.002,
+    -0.26
+   ],
+   "port": [
+    0.012,
+    0.05,
+    -0.02
+   ],
+   "shader": {
+    "wear": 0.35,
+    "grime": 0.45,
+    "scratches": 0.3
+   }
+  },
+  "gewehr43": {
+   "extra_offset": [
+    0,
+    0,
+    -0.025
+   ],
+   "sight_rear": [
+    0,
+    0.075,
+    -0.15
+   ],
+   "grip_r": [
+    0,
+    -0.03,
+    0.05
+   ],
+   "grip_lean": 38,
+   "shader": {
+    "wear": 0.45,
+    "grime": 0.5
+   }
+  },
+  "m1_carbine": {
+   "extra_offset": [
+    0,
+    -0.012,
+    -0.023
+   ],
+   "sight_rear": [
+    0,
+    0.058,
+    0.114
+   ],
+   "grip_r": [
+    0,
+    -0.012,
+    0.085
+   ],
+   "grip_lean": 38,
+   "left_hand": [
+    0,
+    0.0,
+    -0.2
+   ],
+   "shader": {
+    "wear": 0.45,
+    "grime": 0.45
+   }
+  },
+  "mp40": {
+   "extra_offset": [
+    0,
+    -0.039,
+    -0.176
+   ],
+   "sight_rear": [
+    0,
+    0.07,
+    -0.075
+   ],
+   "grip_r": [
+    0,
+    -0.055,
+    0.075
+   ],
+   "grip_lean": 20,
+   "left_hand": [
+    0,
+    -0.02,
+    -0.225
+   ],
+   "lh_axis": "y",
+   "lh_radius": 0.022,
+   "shader": {
+    "wear": 0.55,
+    "grime": 0.5
+   }
+  },
+  "thompson": {
+   "extra_offset": [
+    0,
+    -0.041,
+    -0.045
+   ],
+   "sight_rear": [
+    0,
+    0.0635,
+    0.13
+   ],
+   "grip_r": [
+    0,
+    -0.06,
+    0.055
+   ],
+   "grip_lean": 18,
+   "left_hand": [
+    0,
+    -0.05,
+    -0.2
+   ],
+   "lh_axis": "y",
+   "lh_radius": 0.02,
+   "port": [
+    0.021,
+    0.03,
+    -0.02
+   ],
+   "shader": {
+    "wear": 0.3,
+    "grime": 0.4,
+    "scratches": 0.25
+   }
+  },
+  "stg44": {
+   "extra_offset": [
+    0,
+    -0.032,
+    -0.042
+   ],
+   "sight_rear": [
+    0,
+    0.118,
+    -0.053
+   ],
+   "grip_r": [
+    0,
+    -0.04,
+    0.045
+   ],
+   "grip_lean": 20,
+   "left_hand": [
+    0,
+    -0.01,
+    -0.15
+   ],
+   "lh_radius": 0.03,
+   "shader": {
+    "wear": 0.5,
+    "grime": 0.5
+   }
+  },
+  "trench_gun": {
+   "extra_offset": [
+    0,
+    -0.02,
+    -0.04
+   ],
+   "grip_r": [
+    0,
+    -0.01,
+    0.07
+   ],
+   "grip_lean": 35,
+   "left_hand": [
+    0,
+    -0.01,
+    -0.14
+   ],
+   "empty": {
+    "Mag": [
+     0,
+     -0.015,
+     -0.03
+    ]
+   },
+   "shader": {
+    "wear": 0.55,
+    "grime": 0.55
+   }
+  },
+  "bar": {
+   "extra_offset": [
+    0,
+    -0.01,
+    -0.049
+   ],
+   "sight_rear": [
+    0,
+    0.069,
+    0.165
+   ],
+   "grip_r": [
+    0,
+    -0.02,
+    0.1
+   ],
+   "grip_lean": 40,
+   "left_hand": [
+    0,
+    0.0,
+    -0.09
+   ],
+   "lh_radius": 0.03,
+   "shader": {
+    "wear": 0.5,
+    "grime": 0.5
+   }
+  },
+  "ppsh41": {
+   "left_hand": [
+    0,
+    0.03,
+    -0.2
+   ],
+   "grip_r": [
+    0,
+    -0.03,
+    0.08
+   ],
+   "grip_lean": 36,
+   "shader": {
+    "wear": 0.55,
+    "grime": 0.55
+   }
+  },
+  "mg42": {
+   "extra_offset": [
+    0,
+    -0.012,
+    -0.08
+   ],
+   "pivots": {
+    "Cover": [
+     0,
+     0.043,
+     -0.056
+    ]
+   },
+   "sight_rear": [
+    0,
+    0.104,
+    -0.083
+   ],
+   "grip_r": [
+    0,
+    -0.045,
+    0.055
+   ],
+   "grip_lean": 22,
+   "left_hand": [
+    0,
+    0.02,
+    -0.36
+   ],
+   "lh_radius": 0.03,
+   "shader": {
+    "wear": 0.55,
+    "grime": 0.55,
+    "metal_parts": [
+     "Mag",
+     "Cover",
+     "Bolt"
+    ]
+   }
+  },
+  "sawed_off": {
+   "part_scale": {
+    "Barrels": [
+     1,
+     1,
+     0.42
+    ],
+    "Body": [
+     1,
+     1,
+     0.72
+    ],
+    "Shells": [
+     1,
+     1,
+     0.72
+    ]
+   },
+   "part_scale_about": {
+    "Barrels": [
+     0,
+     0.04,
+     -0.058
+    ],
+    "Body": [
+     0,
+     0.02,
+     -0.06
+    ],
+    "Shells": [
+     0,
+     0.02,
+     -0.06
+    ]
+   },
+   "pivots": {
+    "Barrels": [
+     0,
+     0.035,
+     -0.06
+    ]
+   },
+   "length": 0.6,
+   "grip_r": [
+    0,
+    -0.01,
+    0.035
+   ],
+   "grip_lean": 35,
+   "left_hand": [
+    0,
+    0.016,
+    -0.12
+   ],
+   "shader": {
+    "wear": 0.6,
+    "grime": 0.6
+   }
+  },
+  "springfield": {
+   "pivots": {
+    "Bolt": [
+     0.005,
+     0.03,
+     -0.02
+    ]
+   },
+   "scope": {
+    "y": 0.072,
+    "z0": 0.12,
+    "z1": -0.2,
+    "r": 0.012,
+    "base_y": 0.034,
+    "mag": 4.0
+   },
+   "grip_r": [
+    0,
+    -0.022,
+    0.062
+   ],
+   "grip_lean": 38,
+   "empty": {
+    "Mag": [
+     0,
+     0.05,
+     -0.03
+    ]
+   },
+   "shader": {
+    "wear": 0.4,
+    "grime": 0.45
+   }
+  }
+ }
+}
