@@ -72,16 +72,10 @@ func _build_near_snow(k: float) -> void:
 	var q: QuadMesh = QuadMesh.new()
 	var flake: float = float(c.get("flake", 0.085))
 	q.size = Vector2(flake, flake)
-	var m: StandardMaterial3D = StandardMaterial3D.new()
-	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	m.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
-	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	m.albedo_color = Color(0.88, 0.9, 0.96, 0.8)
-	m.albedo_texture = Snowfall.flake_texture()
-	m.distance_fade_mode = BaseMaterial3D.DISTANCE_FADE_PIXEL_ALPHA
-	m.distance_fade_min_distance = 0.2
-	m.distance_fade_max_distance = 0.6
-	q.material = m
+	# T-100: the near layer spawns all round the camera, so a flake could drift through the lens and fill the frame as
+	# a soft white blob: fade it out inside `fade` metres and cap its on-screen width at `max_angle` radians.
+	var g: Array = Snowfall.guard_cfg(c, Vector2(1.0, 2.4), 0.010)
+	q.material = Snowfall.flake_material(Color(0.88, 0.9, 0.96, 0.8), flake, g[0], g[1])
 	p.draw_pass_1 = q
 	p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	p.emitting = false

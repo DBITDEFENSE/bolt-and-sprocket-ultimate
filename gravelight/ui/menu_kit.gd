@@ -82,11 +82,33 @@ static func hud(key: String, default: Variant = 0.0) -> Variant:
 	return cfg().get("hud", {}).get(key, default)
 
 
+## T-100 (ultrawide): how far a 16:9 frame centred in the viewport sits from its left edge (0 at 16:9 or narrower).
+static func frame_inset(vp: Vector2) -> float:
+	return maxf(0.0, (vp.x - vp.y * 16.0 / 9.0) * 0.5)
+
+
+## T-100: keeps a full-rect MarginContainer's page inside a centred 16:9 frame on a wider screen (side margins =
+## `base` + the inset), following the viewport as it resizes. Menus centre on 21:9 / 32:9 instead of stretching.
+static func keep_centred(margin: MarginContainer, base: float) -> void:
+	var fit: Callable = func() -> void:
+		var inset: float = frame_inset(margin.size)
+		margin.add_theme_constant_override("margin_left", int(base + inset))
+		margin.add_theme_constant_override("margin_right", int(base + inset))
+	margin.resized.connect(fit)
+	fit.call()
+
+
 ## The HUD margin for a viewport: ui.json hud.margin, never under safe_frac of the viewport (the TV safe area).
+## T-100: on a screen wider than hud.max_aspect (21:9 = 2.4; a 32:9 monitor) the side margins grow so the HUD keeps
+## to a centred 21:9 frame instead of the far corners of the player's peripheral vision.
 static func hud_margin(vp: Vector2) -> Vector2:
 	var m: Array = hud("margin", [56.0, 44.0])
 	var f: float = float(hud("safe_frac", 0.03))
-	return Vector2(maxf(float(m[0]), vp.x * f), maxf(float(m[1]), vp.y * f))
+	var mx: float = maxf(float(m[0]), vp.x * f)
+	var ma: float = float(hud("max_aspect", 0.0))
+	if ma > 0.0 and vp.y > 0.0 and vp.x > vp.y * ma:
+		mx = (vp.x - vp.y * ma) * 0.5 + maxf(float(m[0]), vp.y * ma * f)
+	return Vector2(mx, maxf(float(m[1]), vp.y * f))
 
 
 # ================================================================== fonts

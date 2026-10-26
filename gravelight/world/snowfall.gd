@@ -11,7 +11,29 @@ extends Node3D
 @export var motes: bool = false              # true = indoor dust motes instead of snow
 
 static var _flake_tex: GradientTexture2D = null
+const FLAKE_SHADER: String = "res://gravelight/world/vfx/snow_flake.gdshader"
 var layers: int = 0
+var _mid_cfg: Dictionary = {}
+
+
+## T-100: a snow flake material that never fills the screen near the camera: invisible inside `fade.x` metres,
+## fully drawn past `fade.y`, and never wider on screen than `max_angle` radians (gravelight/world/vfx/snow_flake.gdshader).
+static func flake_material(tint: Color, quad: float, fade: Vector2, max_angle: float) -> ShaderMaterial:
+	var m: ShaderMaterial = ShaderMaterial.new()
+	m.shader = load(FLAKE_SHADER) as Shader
+	m.set_shader_parameter("flake_tex", flake_texture())
+	m.set_shader_parameter("tint", tint)
+	m.set_shader_parameter("quad_size", quad)
+	m.set_shader_parameter("fade_near", fade.x)
+	m.set_shader_parameter("fade_far", maxf(fade.y, fade.x + 0.05))
+	m.set_shader_parameter("max_angle", max_angle)
+	return m
+
+
+## vfx.json "atmosphere.<key>.fade" / ".max_angle" with defaults (T-100).
+static func guard_cfg(c: Dictionary, fade_def: Vector2, angle_def: float) -> Array:
+	var f: Array = c.get("fade", [fade_def.x, fade_def.y])
+	return [Vector2(float(f[0]), float(f[1])), float(c.get("max_angle", angle_def))]
 
 
 ## A soft round flake / mote sprite, shared.
@@ -37,6 +59,7 @@ func _ready() -> void:
 	var k: float = 1.0
 	if Engine.get_main_loop() != null and (Engine.get_main_loop() as SceneTree).root.has_node("Effects"):
 		far_cfg = (Effects.vfx.get("atmosphere", {}) as Dictionary).get("far_snow", {})
+		_mid_cfg = (Effects.vfx.get("atmosphere", {}) as Dictionary).get("mid_snow", {})
 		k = float(Effects.quality().get("near_snow", 1.0))
 	for box: AABB in areas:
 		_layer(box, k, false, far_cfg)
@@ -89,15 +112,21 @@ func _layer(box: AABB, k: float, far: bool, far_cfg: Dictionary) -> void:
 	if far:
 		flake = float(far_cfg.get("flake", 0.028))
 	q.size = Vector2(flake, flake)
-	var m: StandardMaterial3D = StandardMaterial3D.new()
-	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	m.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
-	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	m.albedo_color = Color(0.85, 0.88, 0.95, 0.85) if not motes else Color(1.0, 0.8, 0.55, 0.35)
-	if far:
-		m.albedo_color.a = float(far_cfg.get("alpha", 0.55))
-	m.albedo_texture = flake_texture()
-	q.material = m
+	if motes:
+		var m: StandardMaterial3D = StandardMaterial3D.new()
+		m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		m.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		m.albedo_color = Color(1.0, 0.8, 0.55, 0.35)
+		m.albedo_texture = flake_texture()
+		q.material = m
+	else:
+		# T-100: world-fixed flakes used to have no near guard at all, so one drifting past the lens filled the frame
+		var tint: Color = Color(0.85, 0.88, 0.95, 0.85)
+		if far:
+			tint.a = float(far_cfg.get("alpha", 0.55))
+		var g: Array = guard_cfg(far_cfg, Vector2(4.0, 8.0), 0.004) if far else guard_cfg(_mid_cfg, Vector2(1.5, 3.5), 0.007)
+		q.material = flake_material(tint, flake, g[0], g[1])
 	p.draw_pass_1 = q
 	p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	p.name = "Far" if far else ("Motes" if motes else "Mid")

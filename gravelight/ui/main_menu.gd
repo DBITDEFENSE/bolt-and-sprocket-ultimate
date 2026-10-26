@@ -36,6 +36,10 @@ func _ready() -> void:
 	add_child(tr)
 	_menu = VBoxContainer.new()
 	_menu.position = Vector2(110, 70)
+	var place: Callable = func() -> void:   # T-100: inside the centred 16:9 frame on ultrawide
+		_menu.position.x = 110.0 + MenuKit.frame_inset(get_viewport_rect().size)
+	resized.connect(place)
+	place.call_deferred()
 	_menu.custom_minimum_size = Vector2(640, 0)
 	_menu.add_theme_constant_override("separation", 8)
 	add_child(_menu)

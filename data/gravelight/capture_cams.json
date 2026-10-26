@@ -614,6 +614,19 @@
           "note": "the exfil beacon under the gallery (campaign only: spawned for the shot)"
         }
       ]
+    },
+    "t100_barn": {
+      "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-100: the barn dressing (stable and hayloft), before and after.",
+      "cams": [
+        {"name": "barn_stalls", "pos": [14.0, 0.0, 27.6], "yaw": 0.0, "pitch": 2.0, "note": "T-100: the stalls along the north wall: posts, rails, bars, hay racks, mangers on legs"},
+        {"name": "barn_tack_wall", "pos": [8.6, 0.0, 24.0], "yaw": 90.0, "pitch": -6.0, "note": "T-100: the tack wall: peg board, collar, bridles, harness, lead rope, the saddle rack, the water trough"},
+        {"name": "barn_feed", "pos": [9.0, 0.0, 26.8], "yaw": 35.0, "pitch": -10.0, "note": "T-100: the feed trough and the west stall"},
+        {"name": "barn_hay_pile", "pos": [20.0, 0.0, 27.4], "yaw": -35.0, "pitch": 8.0, "note": "T-100: the hay pile, the spare ladder on the north wall, feed sacks, the hook lantern"},
+        {"name": "loft_north", "pos": [12.5, 3.5, 26.6], "yaw": 25.0, "pitch": -12.0, "note": "T-100: the loft's north wall: sacks, crates, the bucket, hay scatter, the chute"}
+      ]
     }
   }
 }

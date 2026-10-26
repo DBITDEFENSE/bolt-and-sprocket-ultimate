@@ -119,6 +119,24 @@ func test_hud_margin_respects_safe_area() -> void:
 	assert_gte(wide.x + 0.01, 3440.0 * float(MenuKit.hud("safe_frac", 0.03)), "ultrawide keeps the safe area")
 
 
+## T-100 (ultrawide): Fill expands the canvas; the HUD keeps to a centred 21:9 frame on 32:9; menus centre in 16:9.
+func test_ultrawide_fill() -> void:
+	assert_eq(GLSettings.aspect_mode("fill"), Window.CONTENT_SCALE_ASPECT_EXPAND, "Fill screen expands")
+	assert_eq(GLSettings.aspect_mode("keep"), Window.CONTENT_SCALE_ASPECT_KEEP, "Keep 16:9 letterboxes")
+	assert_eq(str(GLSettings.values.get("aspect", "")) in ["fill", "keep"], true, "the setting exists")
+	var ma: float = float(MenuKit.hud("max_aspect", 0.0))
+	assert_gt(ma, 2.3, "a max HUD aspect near 21:9")
+	# the canvas at 21:9 (3440x1440 under canvas_items/expand from 1920x1080) is 2580x1080: plain margins
+	var m21: Vector2 = MenuKit.hud_margin(Vector2(2580, 1080))
+	assert_almost_eq(m21.x, MenuKit.hud_margin(Vector2(1920, 1080)).x * 2580.0 / 1920.0, 30.0, "21:9 uses the ordinary grid")
+	# 32:9 (5120x1440 -> 3840x1080): the HUD sits inside the centred 21:9 frame
+	var m32: Vector2 = MenuKit.hud_margin(Vector2(3840, 1080))
+	assert_gte(m32.x, (3840.0 - 1080.0 * ma) * 0.5, "32:9 keeps the HUD in the centre frame")
+	assert_lt(m32.x, 3840.0 * 0.25, "but not squeezed")
+	assert_eq(MenuKit.frame_inset(Vector2(1920, 1080)), 0.0, "no inset at 16:9")
+	assert_almost_eq(MenuKit.frame_inset(Vector2(2580, 1080)), (2580.0 - 1920.0) * 0.5, 0.5, "menus centre in 16:9 at 21:9")
+
+
 func test_map0_built_rect_and_open_ground() -> void:
 	if not MapData.exists(&"map00_crossroads"):
 		pass_test("no Map 0 data here")

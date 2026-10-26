@@ -86,11 +86,9 @@ func _ready() -> void:
 	snow.initial_velocity_max = 1.2
 	var flake: QuadMesh = QuadMesh.new()
 	flake.size = Vector2(0.05, 0.05)
-	var fm: StandardMaterial3D = StandardMaterial3D.new()
-	fm.albedo_color = Color(0.95, 0.96, 1.0)
-	fm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	fm.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
-	flake.material = fm
+	# T-100: round soft flakes that fade near the camera and never grow past a few pixels (square ones drifting by
+	# the lens showed as big grey blocks on an ultrawide screen)
+	flake.material = Snowfall.flake_material(Color(0.95, 0.96, 1.0, 0.95), 0.05, Vector2(1.0, 2.5), 0.008)
 	snow.mesh = flake
 	add_child(snow)
 	_build_walker()

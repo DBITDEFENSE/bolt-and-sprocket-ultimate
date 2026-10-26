@@ -138,6 +138,12 @@ func test_look_around_gate() -> void:
 	assert_false(InnOpening.look_ready(mn + 1.0, true, mn + 2.0, c), "a patron mid-line: wait for the end")
 	assert_true(InnOpening.look_ready(mx + 6.0, false, mx + 30.0, c), "never held forever")
 	assert_true(InnOpening.look_ready(0.0, false, 0.0, {}), "no look block: as before")
+	# T-100: the cue may cut off a line that has run look.interrupt_after seconds, never one that just began
+	var cut: float = float(lk.get("interrupt_after", 0.0))
+	assert_gt(cut, 0.0, "the cue may interrupt (round 1 no longer waits out a long welcome)")
+	assert_true(InnOpening.look_ready(mn + 1.0, true, mn + 5.0, c, mn + 1.0 - cut), "a line that has run long enough is cut")
+	assert_false(InnOpening.look_ready(mn + 1.0, true, mn + 5.0, c, mn + 0.5), "never in a line's first seconds")
+	assert_lte(mx, 12.0, "T-100: round 1 is held no more than about 12 s")
 	var lines: Dictionary = GLData.load_json("res://data/gravelight/vo/lines.json")
 	assert_true(lines.has(str((lk["cue_line"] as Dictionary)["id"])), "the cue line exists")
 

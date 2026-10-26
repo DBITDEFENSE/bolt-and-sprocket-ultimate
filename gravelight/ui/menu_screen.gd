@@ -26,6 +26,7 @@ func _ready() -> void:
 	for side: String in ["left", "right", "top", "bottom"]:
 		margin.add_theme_constant_override("margin_" + side, 60)
 	add_child(margin)
+	MenuKit.keep_centred(margin, 60.0)   # T-100: centred on ultrawide
 	var p: PanelContainer = MenuKit.panel()
 	margin.add_child(p)
 	var outer: VBoxContainer = VBoxContainer.new()
