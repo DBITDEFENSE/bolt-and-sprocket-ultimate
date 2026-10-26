@@ -202,6 +202,11 @@ func _video() -> void:
 	content.add_child(MenuKit.row("VFX quality", MenuKit.options(PackedStringArray(["Low", "Medium", "High"]), vcur,
 		func(i: int) -> void: GLSettings.set_value("vfx_quality", vfx_levels[i]))))
 	content.add_child(MenuKit.para("Muzzle flashes, casings, impact debris, snow and dust: how many at once. Low keeps the flashes and the Nachtglas sparks.", 16, MenuKit.DIM))
+	var aspects: PackedStringArray = ["keep", "fill"]   # T-100: ultrawide
+	var acur: int = maxi(0, aspects.find(str(GLSettings.values.get("aspect", "fill"))))
+	content.add_child(MenuKit.row("Aspect", MenuKit.options(PackedStringArray(["Keep 16:9", "Fill screen"]), acur,
+		func(i: int) -> void: GLSettings.set_value("aspect", aspects[i]))))
+	content.add_child(MenuKit.para("Fill screen uses the whole of a 21:9 or 32:9 monitor (the HUD keeps to its edges); Keep 16:9 shows black bars at the sides.", 16, MenuKit.DIM))
 	var fs: bool = DisplayServer.get_name() != "headless" and DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
 	content.add_child(MenuKit.check("Fullscreen", fs, func(on: bool) -> void:
 		if DisplayServer.get_name() != "headless":

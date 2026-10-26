@@ -99,6 +99,7 @@ func _ready() -> void:
 	for side2: String in ["top", "bottom"]:
 		margin.add_theme_constant_override("margin_" + side2, 26)
 	_root.add_child(margin)
+	MenuKit.keep_centred(margin, 40.0)   # T-100: centred on ultrawide
 	var box: VBoxContainer = VBoxContainer.new()
 	box.add_theme_constant_override("separation", 8)
 	margin.add_child(box)

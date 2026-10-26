@@ -5,6 +5,7 @@ extends Node
 ## the front-door prompt; then the pause page's MAP / OBJECTIVES / LOADOUT tabs, the game-over page, and the main
 ## menu with its Credits, Muster and Settings pages. Run it at 1280x720 and 1920x1080 (--resolution) with a --tag:
 ##   godot --audio-driver Dummy --position -4000,-4000 --resolution 1280x720 --path . res://gravelight/tools_src/shots_hud.tscn -- --out=<dir> [--tag=720]
+##   [--size=3440x1440] [--aspect=keep|fill] (T-100: ultrawide; 2560x720 is a 32:9 window that fits any monitor)
 ## -> <dir>/hud_NN_<name>_<tag>.png. The profile and settings are never written (temp paths). Prints "[hud] done".
 
 const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
@@ -25,6 +26,7 @@ var _tag: String = ""
 ## whatever --resolution says, so a capture that is not this size is resampled (Lanczos) to it: what a 720p or
 ## 1080p player sees, give or take the rasterizer.
 var _size: Vector2i = Vector2i.ZERO
+var _aspect: String = "fill"
 var _n: int = 0
 var _map: Node3D
 var _boss_hud: BossHud
@@ -46,6 +48,8 @@ func _ready() -> void:
 			_out = a.substr(6)
 		elif a.begins_with("--tag="):
 			_tag = a.substr(6)
+		elif a.begins_with("--aspect="):   # T-100: keep / fill (the Video tab's Aspect; default fill)
+			_aspect = a.substr(9)
 		elif a.begins_with("--size="):   # the window in pixels (the stretch keeps the 1920x1080 canvas)
 			var parts: PackedStringArray = a.substr(7).split("x")
 			if parts.size() == 2:
@@ -60,6 +64,7 @@ func _ready() -> void:
 	ProfileSave.path = "user://_shots_hud_profile.json"
 	ProfileSave.profile = ProfileSave.new_profile()
 	GLSettings.path = "user://_shots_hud_settings.cfg"
+	GLSettings.values["aspect"] = _aspect
 	for i: int in AudioServer.bus_count:
 		AudioServer.set_bus_mute(i, true)
 	GameState.god_mode = true

@@ -62,6 +62,7 @@ var values: Dictionary = {
 	"minimap_cb_shapes": false,    # colourblind-safe: letters on the buyable shapes too
 	"minimap_zombies": "firing",   # off / firing (shots reveal nearby zombies for 1 s) / always (nearby zombies)
 	"minimap_fog": "visit",        # visit (areas reveal as you go) / always (the whole map)
+	"aspect": "fill",              # T-100: fill (the window's content stretches to any aspect: 21:9, 32:9) / keep (16:9, letterboxed)
 
 }
 ## User binding overrides: action -> {"kb": spec, "pad": spec}. A spec is a plain Dictionary (see event_to_spec).
@@ -358,6 +359,24 @@ func apply_visuals() -> void:
 	RenderingServer.directional_shadow_atlas_set_size(int(p["dir_shadow"]), true)
 	for n: Node in get_tree().root.find_children("*", "WorldEnvironment", true, false):
 		_apply_env(n as WorldEnvironment)
+	if active:
+		apply_aspect()
+
+
+## T-100 (ultrawide): the root window's content-scale aspect. The project stretches canvas_items from a 1920x1080
+## base; "keep" letterboxes anything wider (a 3440x1440 monitor showed bars), "fill" uses `expand`, so the 3D view
+## and the canvas grow to the screen's real width and the HUD grid (MenuKit.hud_margin) pins to its true edges.
+static func aspect_mode(v: String) -> Window.ContentScaleAspect:
+	return Window.CONTENT_SCALE_ASPECT_KEEP if v == "keep" else Window.CONTENT_SCALE_ASPECT_EXPAND
+
+
+func apply_aspect() -> void:
+	var w: Window = get_tree().root if get_tree() != null else null
+	if w == null:
+		return
+	var want: Window.ContentScaleAspect = aspect_mode(str(values.get("aspect", "fill")))
+	if w.content_scale_aspect != want:
+		w.content_scale_aspect = want
 
 
 ## The preset gates the costly lighting a map asks for: a map's generator turns an effect on in its Environment
@@ -390,6 +409,8 @@ func activate() -> void:
 
 func deactivate() -> void:
 	active = false
+	if get_tree() != null:   # T-100: the other modes keep the project's own aspect
+		get_tree().root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP
 	if _overlay != null:
 		_overlay.visible = false
 

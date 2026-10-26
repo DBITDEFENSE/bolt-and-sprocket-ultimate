@@ -63,6 +63,7 @@
   "hud": {
     "margin": [56, 44],
     "safe_frac": 0.03,
+    "max_aspect": 2.4,
     "stamp_border": 5,
     "perk_cap": 54,
     "perk_gap": 10,
