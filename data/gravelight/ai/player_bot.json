@@ -61,6 +61,25 @@
       "steps": [{"gun": "m1_carbine", "or_tier": 2.0}, {"door": "door_a_b"}, {"gun": "mp40", "or_tier": 3.2}, {"door": "door_a_c"}, {"perk": "second_wind"}, {"door": "door_barracks"},
         {"door": "door_stairs"}, {"door": "door_gen"}, {"power": true}, {"perk": "ironhide_stout"}, {"perk": "marathon_malt"}, {"gun": "stg44", "or_tier": 4.2}],
       "train_at": ["map01_turbines", "map01_pews", "map01_headframe"]
+    },
+    "map02": {
+      "_why": "Totenhafen solo (UPDATE 07 QA, T-103): the M1 Carbine off the quay wall, the Cannery for Second Wind (solo, no power needed) and the Workshop for Ironhide and the MP40 (the two 1000 doors off the quay), then the Pen Hall and the Lower Pens to throw the pumps (the power), Marathon back in the Cannery, the StG-44 in the Workshop into the Crucible.",
+      "steps": [
+        {"gun": "m1_carbine", "or_tier": 2.0},
+        {"door": "door_cannery"},
+        {"perk": "second_wind"},
+        {"door": "door_workshop"},
+        {"perk": "ironhide_stout", "firm": true},
+        {"gun": "mp40", "or_tier": 3.2},
+        {"door": "door_penhall"},
+        {"door": "door_pumps"},
+        {"power": true},
+        {"perk": "marathon_malt"},
+        {"gun": "stg44", "or_tier": 4.2},
+        {"crucible": "*"},
+        {"perk": "trigger_tonic"}
+      ],
+      "train_at": ["map02_hut", "map02_apron", "map02_cannery"]
     }
   },
   "points": {

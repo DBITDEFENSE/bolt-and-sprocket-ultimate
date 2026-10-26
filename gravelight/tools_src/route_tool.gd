@@ -7,7 +7,7 @@ extends Node
 ## Usage: godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/route_tool.tscn -- --map=map00 --validate
 ## Exit code: the number of routes that failed validation.
 
-const MAPS: Dictionary = {"map00": "res://gravelight/maps/map00_crossroads/map00.tscn", "map01": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn"}
+const MAPS: Dictionary = {"map00": "res://gravelight/maps/map00_crossroads/map00.tscn", "map01": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", "map02": "res://gravelight/maps/map02_totenhafen/map02.tscn"}
 
 var _map_key: String = "map00"
 var _validate: bool = false

@@ -107,7 +107,9 @@ const BUYS: Array = [
 	["trench_gun", Vector3(-0.17, 1.5, 22.0), 90.0], ["frag", Vector3(-0.17, 1.5, 26.0), 90.0],
 	["mp40", Vector3(32.17, 1.5, 20.0), -90.0], ["stg44", Vector3(32.17, 1.5, 24.0), -90.0],
 	["etool", Vector3(61.83, 1.5, 20.0), 90.0],
-	["bar", Vector3(-5.83, 1.5, 70.0), 90.0], ["thompson", Vector3(19.83, 1.5, 50.0), 90.0],
+	# the two pier boards hang on the lockers' free faces (UPDATE 07 QA, test_map02_edges: the BAR's board sat on
+	# Locker1's seaward face over the basin and the Thompson's inside Locker2, both unreachable behind a collider)
+	["bar", Vector3(-4.73, 1.5, 70.0), -90.0], ["thompson", Vector3(18.83, 1.5, 50.0), 90.0],
 ]
 ## Doors: [name, door_id, zone, also, link, cost, label, pos, yaw, width, needs_power]
 const DOORS: Array = [
@@ -544,7 +546,13 @@ func build_quay() -> void:
 	rail("Rail_SurfW", Vector3(0, 0, 0), Vector3(2.4, 0, 0), 1.0)
 	rail("Rail_SurfE", Vector3(29.6, 0, 0), Vector3(32, 0, 0), 1.0)
 	for sx: float in [10.0, 24.0]:
-		box(geo, "Stage", Vector3(sx - 1.6, -0.5, -3.2), Vector3(sx + 1.6, -0.05, 0), "planks")
+		box(geo, "Stage_%d" % int(sx), Vector3(sx - 1.6, -0.5, -3.2), Vector3(sx + 1.6, -0.05, 0), "planks")
+		# kerb rails on the stage's three open sides (hidden colliders, dressed as posts and rope in
+		# _dress_windows): the shingle and the sea bed have no colliders, so a zombie shoved off a stage by the
+		# pack fell through them and out of the world (UPDATE 07 QA, test_map02_edges)
+		rail("Rail_StageW_%d" % int(sx), Vector3(sx - 1.6, -0.05, -3.2), Vector3(sx - 1.6, -0.05, 0), 1.0)
+		rail("Rail_StageE_%d" % int(sx), Vector3(sx + 1.6, -0.05, -3.2), Vector3(sx + 1.6, -0.05, 0), 1.0)
+		rail("Rail_StageN_%d" % int(sx), Vector3(sx - 1.6, -0.05, -3.2), Vector3(sx + 1.6, -0.05, -3.2), 1.0)
 	# the harbourmaster's hut (timber, flat roof), door on the east side
 	wall_x("HutN", 10.0, 10 - T * 0.5, 18 + T * 0.5, 0, 3.2, [], "planks")
 	wall_x("HutS", 17.0, 10 - T * 0.5, 18 + T * 0.5, 0, 3.2, [], "planks")
@@ -1053,6 +1061,10 @@ func _dress_windows() -> void:
 			for sx: float in [-1.4, 1.4]:
 				Props.block(g, Vector3(sx - 0.08, -2.6, -3.1), Vector3(sx + 0.08, 0.2, -2.94), "planks")
 				Props.block(g, Vector3(sx - 0.08, -2.6, -0.4), Vector3(sx + 0.08, 0.2, -0.24), "planks")
+			# a rope rail on the posts round the stage's three open sides (the kerb colliders are in build_quay)
+			for sx2: float in [-1.4, 1.4]:
+				Props.block(g, Vector3(sx2 - 0.03, 0.1, -3.0), Vector3(sx2 + 0.03, 0.16, -0.34), "rope")
+			Props.block(g, Vector3(-1.4, 0.1, -3.05), Vector3(1.4, 0.16, -2.99), "rope")
 			Props.rope_coil(g, Vector3(-1.0, -0.05, -1.8), 0.3)
 			continue
 		var t: float = T
