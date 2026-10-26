@@ -1,10 +1,10 @@
 # PROGRESS
 
-RESUME HERE: UPDATE 07 (MAP 4 FERNFLUG + QA pass), 2026-10-26, branch map4-fernflug (also pushed to claude/new-session-wugi0p). Phase 1 design DONE (docs/MAP4_FERNFLUG.md). Phase 0 QA: report docs/QA_REPORT_U07.md in progress; merged fixes T-103 (Totenhafen); workers running for Map 0 (Q-14, branch u07-qa-map00) and Map 1 (Q-15/Q-16, u07-qa-map01); soak/playtest queue in logs/qa/ (queue.log, queue2.log = the two suspect smokes re-run alone). Phase 2: step 1 Act I MERGED (T-104, map04a standalone, launcher button 'Map 4 — Act I'); perks + Lodestone MERGED as a squash (T-105; its binaries are plain git files: lfs.github.com is blocked, see NEEDS_DEVIN 0c; MERGE RULE for the rest of the run: squash-merge worker branches that carry LFS-pattern binaries, convert pointers to blobs). Step 2 boarding + step 3 Act II builder running on branch u07-act2 (worktree .wt/u07-act2; it branched from the pre-rewrite merge commit 17928f1: squash-merge it, keep ours for the lodestone/skyhook/magpie binaries). Build order after that: crash, Act III, rocket, Act IV, egg/endings/Play.bat, full soak, merge to master, morning report.
+RESUME HERE: UPDATE 07 (MAP 4 FERNFLUG + QA pass), 2026-10-26, branch map4-fernflug (also pushed to claude/new-session-wugi0p). Phase 0 QA DONE (docs/QA_REPORT_U07.md; T-103/T-106/T-107 merged; full GUT green). Phase 1 design DONE. Phase 2: Act I MERGED (T-104), perks+Lodestone MERGED (T-105, squash), boarding + Act II MERGED (T-108/T-109, squash). MERGE RULE: squash-merge worker branches (LFS pointers in their history cannot be pushed: lfs.github.com is blocked), resolve VO json as a key union, keep ours for the lodestone/skyhook/magpie binaries. NEXT: Act III builder (worktree .wt/u07-act3, branch u07-act3) = crash target map04c_groomlake + the rocket exfil; then Act IV; then the egg/endings/Play.bat; full soak; merge to master; morning report.
 
 ## UPDATE 07, 2026-10-26: Map 4 Fernflug + QA pass
 
-Phase 0 QA: running (T-103 merged; Map 0/Map 1 workers out). Phase 1 design: DONE. Phase 2: Act 1 MERGED (T-104), boarding, Act 2, crash, Act 3, rocket, Act 4, perks/wonder/egg/endings (pending). Finish: pending.
+Phase 0 QA: running (T-103 merged; Map 0/Map 1 workers out). Phase 1 design: DONE. Phase 2: Act 1 MERGED (T-104), perks+Lodestone MERGED (T-105), boarding + Act 2 MERGED (T-108/T-109), boarding, Act 2, crash, Act 3, rocket, Act 4, perks/wonder/egg/endings (pending). Finish: pending.
 
 ## Overnight run, 2026-10-25 -> 26: UPDATE 05 "Look the part" (plan)
 
