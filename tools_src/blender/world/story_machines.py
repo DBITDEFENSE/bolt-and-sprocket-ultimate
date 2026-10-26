@@ -69,11 +69,11 @@ def crucible():
         W.torus(p, (0, fy, 0.1), 0.28 if fy < 2.6 else 0.25, 0.018, "lib_iron", segs=18, rsegs=4)
     # the mouth: a cast surround, a voussoir arch of iron, the grate in front of the fire, the feed door's frame
     for sx in (-1.0, 1.0):
-        W.box(p, (sx * 0.52, 0.6, -0.86), (sx * 0.68, 1.52, -0.72), "lib_iron", 0.01)
-    W.box(p, (-0.68, 0.58, -0.88), (0.68, 0.74, -0.72), "lib_iron", 0.01)
+        W.box(p, (sx * 0.52, 0.6, -0.86), (sx * 0.68, 1.52, -0.72), "mats_loco_black", 0.01)
+    W.box(p, (-0.68, 0.58, -0.88), (0.68, 0.74, -0.72), "mats_loco_black", 0.01)
     for k in range(9):
         a = math.pi * k / 8.0
-        W.obox(p, (math.cos(a) * 0.6, 1.47 + math.sin(a) * 0.32, -0.8), (0.17, 0.14, 0.14), "lib_iron", (0, 0, math.degrees(a) - 90.0), 0.012)
+        W.obox(p, (math.cos(a) * 0.6, 1.47 + math.sin(a) * 0.32, -0.8), (0.17, 0.14, 0.14), "mats_loco_black", (0, 0, math.degrees(a) - 90.0), 0.012)
     W.obox(p, (0, 1.82, -0.84), (0.16, 0.2, 0.12), "mats_brass", None, 0.015)
     for gx in range(6):
         W.strut(p, (-0.42 + gx * 0.168, 0.76, -0.88), (-0.42 + gx * 0.168, 1.42, -0.88), 0.028, "lib_iron", True, 6)
@@ -196,7 +196,7 @@ def bench():
     W.cyl(p, (0.58, TOP + 0.015, -0.08), 0.07, 0.03, "lib_iron", segs=14, bevel=0.006)
     W.tube(p, [(0.58, TOP + 0.03, -0.08), (0.56, TOP + 0.25, -0.14), (0.5, TOP + 0.45, -0.28), (0.42, TOP + 0.47, -0.38)], 0.012, "lib_iron", 6)
     W.lathe(p, [(0.02, 0.0), (0.04, -0.02), (0.085, -0.09), (0.088, -0.1)], "mats_enamel_green", c=(0.38, TOP + 0.48, -0.42), segs=16, cap_lo=False, cap_hi=False)
-    W.dot(p, (0.38, TOP + 0.41, -0.42), 0.03, "mats_bulb_warm", 8)
+    W.dot(p, (0.38, TOP + 0.445, -0.42), 0.022, "mats_bulb_warm", 8)   # up inside the shade
     p.build()
     return W.export("armorers_bench", "The Armorer's Bench", "gunsmith's bench: vise, parts board, gooseneck lamp", "story_machines.py")
 

@@ -34,7 +34,7 @@ func build_greybox() -> void:
 			var host: Node3D = _visual if _hinges.is_empty() else _hinges[0]
 			DoorArt.plaque(host, host.transform.affine_inverse() * plane, 0.0 if side < 0.0 else PI)
 			lpos = plane + Vector3(0, 0, side * 0.024)
-		var l: Label3D = add_label(_visual, "%s\n%d" % [label, cost], lpos, 24 if DoorArt.available() else 28, Color(1.0, 0.92, 0.75, 0.95))
+		var l: Label3D = add_label(_visual, "%s\n%d" % [label, cost], lpos, 34 if DoorArt.available() else 28, Color(1.0, 0.92, 0.75, 0.95))
 		if DoorArt.available():
 			l.font = MenuKit.font("stamp")
 		l.rotation.y = 0.0 if side > 0 else PI

@@ -586,11 +586,18 @@ func _build_cabinet() -> bool:
 	# far end for "Bock")
 	var left: float = sc.x - ss.x * 0.5 + 0.06 + (0.34 if shape == "safe" else 0.0)
 	var text_w: float = sc.x + ss.x * 0.5 - cap_r * 2.0 - 0.12 - left
-	var font: int = clampi(int(text_w / (maxf(1.0, float(text.length())) * 0.0033)), 18, 44)
 	var sub: Array = CAB_SUBLINES.get(String(perk_id), [])
+	# as big as the board allows (readability first): the stamp face measured, capped by the board's height
+	var stamp: Font = MenuKit.font("stamp")
+	var w100: float = maxf(1.0, stamp.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 100).x) * 0.004 / 100.0
+	# the stamp face is wide: condense it (down to 72%) before shrinking it, so the name fills the board's height
+	var fs_h: int = int(ss.y * (0.48 if not sub.is_empty() else 0.62) / 0.004)
+	var cond: float = clampf(text_w * 0.96 / (w100 * float(fs_h)), 0.72, 1.0)
+	var font: int = clampi(int(text_w * 0.96 / (w100 * cond)), 18, fs_h)
 	var text_y: float = sc.y + (0.03 if not sub.is_empty() else 0.0)
 	_sign = add_label(art, text, Vector3(left + text_w * 0.5, text_y, sc.z - 0.004), font)
-	_sign.font = MenuKit.font("stamp")
+	_sign.font = stamp
+	_sign.scale.x = cond
 	_sign.outline_modulate = Color(0, 0, 0, 0.9)
 	if not sub.is_empty():
 		var sl: Label3D = add_label(art, str(sub[0]), Vector3(left + text_w * 0.5 + float(sub[1]), sc.y + float(sub[2]) + 0.03, sc.z - 0.006), 14,

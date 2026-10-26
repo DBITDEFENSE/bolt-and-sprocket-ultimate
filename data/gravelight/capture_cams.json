@@ -409,11 +409,11 @@
         {
           "name": "perk_south_row",
           "pos": [
-            30.8,
+            31.6,
             -3.2,
-            26.2
+            26.4
           ],
-          "yaw": 170.0,
+          "yaw": 160.0,
           "pitch": 5.0,
           "note": "Packmule Porter, Overclock Cordial, Blastproof Bock, powered"
         },
@@ -484,6 +484,17 @@
           "note": "the Kar98k's chalk in the taproom"
         },
         {
+          "name": "wall_buy_close",
+          "pos": [
+            1.35,
+            0.0,
+            3.2
+          ],
+          "yaw": 90.0,
+          "pitch": -4.0,
+          "note": "the Kar98k on its nails, close"
+        },
+        {
           "name": "bench",
           "pos": [
             6.9,
@@ -497,12 +508,12 @@
         {
           "name": "radio",
           "pos": [
-            10.4,
+            7.3,
             0.0,
-            5.3
+            5.4
           ],
-          "yaw": 92.0,
-          "pitch": 10.0,
+          "yaw": 95.0,
+          "pitch": 16.0,
           "note": "the field radio behind the bar"
         },
         {

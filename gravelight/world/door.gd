@@ -52,7 +52,7 @@ func build_greybox() -> void:
 		var planes: Array = DoorArt.buy_door(_visual, sz)
 		if not planes.is_empty():
 			for side: float in [-1.0, 1.0]:
-				var pl: Label3D = add_label(_visual, "%s\n%d" % [label, cost], Vector3(0, size.y * 0.6, float(planes[0]) if side < 0.0 else float(planes[1])), 24,
+				var pl: Label3D = add_label(_visual, "%s\n%d" % [label, cost], Vector3(0, size.y * 0.6, float(planes[0]) if side < 0.0 else float(planes[1])), 34,
 					Color(1.0, 0.92, 0.75, 0.95))
 				pl.font = MenuKit.font("stamp")
 				pl.rotation.y = 0.0 if side > 0 else PI

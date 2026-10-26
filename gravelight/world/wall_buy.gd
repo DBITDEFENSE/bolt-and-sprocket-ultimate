@@ -153,6 +153,7 @@ func build_greybox() -> void:
 const MOUNT_FILL: float = 0.92
 static var _models: Dictionary = {}
 static var _dust: StandardMaterial3D = null
+static var _clean: Dictionary = {}   # a downloaded material -> its opaque, non-glowing copy
 
 
 ## The real gun on two nails over its chalk: the downloaded model when data/gravelight/weapons/models.json has one
@@ -176,6 +177,7 @@ func _mount_gun(chalk: Node3D) -> void:
 	var want: Vector3 = Vector3(cb.get_center().x, cb.get_center().y, -0.022 - depth * 0.5)
 	gun.position += want - gb.get_center()
 	for mi: MeshInstance3D in WorldArt.meshes(gun):
+		_sanitize(mi)
 		mi.material_overlay = _dust_mat()
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	# two forged nails under it, a quarter in from each end
@@ -237,3 +239,21 @@ static func _dust_mat() -> StandardMaterial3D:
 		_dust.albedo_color = Color(0.62, 0.6, 0.55, 0.16)
 		_dust.roughness = 1.0
 	return _dust
+
+
+## Some intake GLBs carry glTF defaults that look wrong on a wall: Kar98k's materials are emissive (1, 1, 1) with no
+## emissive map, so the gun glows white, and alpha-blended. The mounted copy gets an opaque, non-glowing duplicate
+## (the asset itself is the gun builders', T-087).
+static func _sanitize(mi: MeshInstance3D) -> void:
+	if mi.mesh == null:
+		return
+	for si: int in mi.mesh.get_surface_count():
+		var m: StandardMaterial3D = mi.mesh.surface_get_material(si) as StandardMaterial3D
+		if m == null or (not m.emission_enabled and m.transparency == BaseMaterial3D.TRANSPARENCY_DISABLED):
+			continue
+		if not _clean.has(m):
+			var c: StandardMaterial3D = m.duplicate() as StandardMaterial3D
+			c.emission_enabled = false
+			c.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
+			_clean[m] = c
+		mi.set_surface_override_material(si, _clean[m])

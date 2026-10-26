@@ -61,8 +61,8 @@ static func buy_door(g: Node3D, size: Vector3) -> Array:
 	# the plaques, proud of the planks on the front and of the ledges on the back
 	var pf: float = zx - 0.05
 	var pb: float = zb + 0.035
-	_part(g, "Plaque", Vector3(0, h * 0.6, pf), 0.0, Vector3(1.15, 1.0, 1.0))
-	_part(g, "Plaque", Vector3(0, h * 0.6, pb), PI, Vector3(1.15, 1.0, 1.0))
+	_part(g, "Plaque", Vector3(0, h * 0.6, pf), 0.0, Vector3(1.75, 1.2, 1.0))
+	_part(g, "Plaque", Vector3(0, h * 0.6, pb), PI, Vector3(1.75, 1.2, 1.0))
 	return [pf - 0.022, pb + 0.022]
 
 
@@ -71,7 +71,7 @@ static func buy_door(g: Node3D, size: Vector3) -> Array:
 static func plaque(g: Node3D, at: Vector3, yaw: float) -> float:
 	if not available():
 		return 0.0
-	_part(g, "Plaque", at, yaw, Vector3(1.15, 1.0, 1.0))
+	_part(g, "Plaque", at, yaw, Vector3(1.75, 1.2, 1.0))
 	return 0.022
 
 
@@ -126,7 +126,7 @@ static func leaf_mesh(w: float, h: float) -> ArrayMesh:
 	var am: ArrayMesh = ArrayMesh.new()
 	wood.generate_tangents()
 	wood.commit(am)
-	am.surface_set_material(0, WorldArt.mat("lib_planks"))
+	am.surface_set_material(0, WorldArt.mat("lib_planks__ffd8a0"))   # lighter than the walls: a door reads
 	core.generate_tangents()
 	core.commit(am)
 	am.surface_set_material(1, Mats.get_mat("char"))
