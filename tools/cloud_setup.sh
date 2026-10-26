@@ -111,6 +111,13 @@ if have python3; then
 	if [ "$TTS" = 1 ]; then PY=python3 sh tools/setup_tts.sh; fi
 fi
 
+# ---------------------------------------------------------------- 5b. keep Godot out of the tool folders
+# Godot scans the whole project folder on import: Blender's own .blend/.tex files under tools/dl_blender make the
+# headless --import give up silently (no texture imported, Map 0 never loads). A .gdignore makes Godot skip a folder.
+for d in tools/dl_blender tools/dl_godot tools/venv tools/tts tools_src/_downloads; do
+	[ -d "$d" ] && [ ! -f "$d/.gdignore" ] && : > "$d/.gdignore"
+done
+
 # ---------------------------------------------------------------- 6. tools/local_paths.env for this machine
 cat > tools/local_paths.env <<EOF
 # written by tools/cloud_setup.sh (git-ignored); read by tools/env.sh
