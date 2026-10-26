@@ -29,6 +29,7 @@ var _saved_act: Dictionary = {}
 func before_all() -> void:
 	_saved_path = ProfileSave.path
 	ProfileSave.path = "user://_test_profile_kuendigung.json"
+	ProfileSave.profile = ProfileSave.new_profile()   # never the player's own profile (it is loaded at startup)
 	_saved_map = GameState.map_id
 	_saved_act = RoundManager.act
 
@@ -405,7 +406,7 @@ func test_the_cancel_rewards_the_profile() -> void:
 	assert_true((prof.get("mutators", []) as Array).has("low_gravity_all"), "the mutator")
 	assert_true((prof.get("titles", []) as Array).has("Cancelled"), "the title")
 	assert_true((prof.get("intel", []) as Array).has("INT_M4_KUENDIGUNG"), "the Archive entry")
-	assert_eq(int((prof.get("dossiers", {}) as Dictionary).get("deacon", 0)), 10, "dossier page 10 for the character present")
+	assert_gte(ProfileSave.dossier_level(&"deacon"), 10, "dossier page 10 for the character present")
 	assert_true(int(prof.get("xp", 0)) >= xp0, "xp did not go down")
 	GameState.character_id = &"wren"
 

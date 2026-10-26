@@ -931,7 +931,11 @@ func _do_action(qid: StringName, a: Dictionary, by: int) -> void:
 		for cid: Variant in present:
 			if str(cid) == "":
 				continue
-			dos[str(cid)] = maxi(int(dos.get(str(cid), 0)), page)
+			# "dossiers" holds dossier XP, not a page: reaching page N means the XP threshold of level N
+			# (it wrote the bare page number, a no-op for anyone with a dossier already past 10 XP)
+			var th: Array = ProfileSave.dossier_thresholds()
+			var need: int = int(th[clampi(page, 1, th.size()) - 1]) if not th.is_empty() else page
+			dos[str(cid)] = maxi(int(dos.get(str(cid), 0)), need)
 		ProfileSave.profile["dossiers"] = dos
 		ProfileSave.save_profile()
 	if a.has("summon_boss"):
