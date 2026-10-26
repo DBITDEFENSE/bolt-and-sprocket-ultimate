@@ -84,6 +84,7 @@ var _act_len: float = 1.0
 var _hold: Dictionary = {}        # held action -> seconds left before it lets go
 var _blend: Dictionary = {}       # pose name -> 0..1
 var _reload_b: float = 0.0
+var _ads_b: float = 0.0     # aimed down the sights (PF_ADS): stock in the shoulder, cheek on the stock
 var _reload_ph: float = 0.0
 var _still_t: float = 0.0         # seconds standing still and calm
 var _fidget_t: float = 0.0        # seconds into the current fidget (< 0: waiting)
@@ -661,6 +662,7 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 	var crouch: bool = (flags & NetMatch.PF_CROUCH) != 0 and not downed
 	var sprint: bool = (flags & NetMatch.PF_SPRINT) != 0 and not downed
 	var reloading: bool = (flags & NetMatch.PF_RELOAD) != 0 and not downed
+	var ads_on: bool = (flags & NetMatch.PF_ADS) != 0 and not downed and not sprint and not reloading
 	var moving: bool = speed > 0.3
 	_since_shot += delta
 	_act_t = maxf(0.0, _act_t - delta)
@@ -686,6 +688,7 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 	_crouch_b = move_toward(_crouch_b, 1.0 if crouch else 0.0, delta * 6.0)
 	_sprint_b = move_toward(_sprint_b, 1.0 if sprint else 0.0, delta * 5.0)
 	_reload_b = move_toward(_reload_b, 1.0 if reloading and pose == &"" else 0.0, delta * 6.0)
+	_ads_b = move_toward(_ads_b, 1.0 if ads_on and pose == &"" else 0.0, delta * 5.0)
 	if reloading:
 		_reload_ph += delta
 	else:
@@ -731,11 +734,12 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 	var aim: float = clampf(pitch, -1.2, 1.2)
 	var head_x: float = lerpf(aim * 0.6, 0.6, _down_b) - _chest.rotation.x * 0.4
 	head_x += 0.35 * b_drink * clampf((1.7 - _act_t) * 2.0, 0.0, 1.0) - 0.55 * b_watch - 0.5 * b_write - 0.25 * kneel + 0.3 * b_stretch - 0.12 * b_warm
+	head_x += 0.12 * _ads_b   # cheek down onto the stock
 	_head.rotation.x = head_x
 	_head.rotation.y = 0.35 * b_tap * sin(t_now * 0.7)
 	# gun: aimed in both hands -> held low -> slung on the back
 	var aim_xf: Transform3D = Transform3D(Basis.from_euler(Vector3(lerpf(aim, -0.75, _sprint_b) - _chest.rotation.x + _recoil * 0.12, 0.0, 0.0)),
-		Vector3(0.0, 0.43 - float(_build.get("gun_drop", 0.0)), -0.05))
+		Vector3(0.0, 0.43 - float(_build.get("gun_drop", 0.0)), -0.05).lerp(Vector3(0.05, 0.53 - float(_build.get("gun_drop", 0.0)), 0.02), _ads_b))
 	if _down_b > 0.5:
 		aim_xf.basis = Basis.from_euler(Vector3(aim + 1.15 - _chest.rotation.x, 0.0, 0.0))
 	if _reload_b > 0.0:

@@ -2697,7 +2697,7 @@ var _bot_view_index: int = -1
 ## firing, reloads and the ammo; this only keeps the first-person view honest: the gun in hand (rebuilt after the
 ## brain swaps), the raise, the sprint pose, the reload animation and its sound cues, the bob and sway. It never
 ## moves ammo (the brain's reload does).
-func bot_view_tick(delta: float, sprinting: bool, reloading: bool, reload_left: float) -> void:
+func bot_view_tick(delta: float, sprinting: bool, reloading: bool, reload_left: float, ads: bool = false) -> void:
 	if mirror:
 		return
 	_swap_t = maxf(0.0, _swap_t - delta)
@@ -2721,7 +2721,10 @@ func bot_view_tick(delta: float, sprinting: bool, reloading: bool, reload_left: 
 			_swap_t = SWAP_TIME * (w.draw_mult() if w != null else 1.0)
 			AudioDirector.play_2d("weapon_raise", -6.0)
 		_rebuild_gun()
-	ads_t = move_toward(ads_t, 0.0, delta / 0.25)
+	# the brain's aim already counts as down the sights when it engages at range: the view shows it (was always hip)
+	var want_ads: bool = ads and not sprinting and not reloading and _swap_t <= 0.0
+	var ads_time: float = 0.25 if w == null else maxf(0.05, w.f("ads_time", 0.25) * float(PerkManager.stat(player.player_id, "ads_time_mult", 1.0)))
+	ads_t = move_toward(ads_t, 1.0 if want_ads else 0.0, delta / ads_time)
 	if w != null:
 		if reloading and not _reloading:
 			_reloading = true

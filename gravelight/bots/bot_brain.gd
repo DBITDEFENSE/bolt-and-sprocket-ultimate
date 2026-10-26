@@ -379,7 +379,7 @@ func _physics_process(delta: float) -> void:
 ## T-071: the player bot's body is the local Player: its camera and viewmodel follow what the brain did this frame.
 func _local_view(delta: float) -> void:
 	if player.is_local and player.bot_driven:
-		player.bot_view_tick(delta, aim.reloading, float(aim.get("_reload_t")))
+		player.bot_view_tick(delta, aim.reloading, float(aim.get("_reload_t")), aim.ads_visual())
 
 
 func _account(t0: int) -> void:
@@ -1018,6 +1018,8 @@ func _pose(delta: float) -> void:
 		flags |= NetMatch.PF_FLOOR
 	if aim.reloading:
 		flags |= NetMatch.PF_RELOAD
+	elif aim.ads_visual():
+		flags |= NetMatch.PF_ADS
 	player.net_flags = flags
 	if player.remote_body != null:
 		player.remote_body.calm = (action == "follow" or action == "idle" or action == "chatter") and aim.target == null and perception.nearest_d > 9.0 and player.horizontal_speed() < 0.3

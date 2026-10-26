@@ -380,7 +380,7 @@ func drive_bot(delta: float, intent: MoveIntent) -> void:
 ## Player bot mode (T-071): the rest of the local player's frame once the brain has moved and turned the body:
 ## the aim the brain left on the head becomes the view pitch, the viewmodel follows the brain's gun, the camera
 ## (bob, recoil springs, FOV) updates. Called by BotBrain at the end of its physics frame.
-func bot_view_tick(delta: float, reloading: bool, reload_left: float) -> void:
+func bot_view_tick(delta: float, reloading: bool, reload_left: float, ads: bool = false) -> void:
 	if not is_local or not bot_driven:
 		return
 	_pitch = clampf(head.rotation.x - _rk.x + mantle_k() * 0.06, deg_to_rad(-88.0), deg_to_rad(88.0))
@@ -391,7 +391,7 @@ func bot_view_tick(delta: float, reloading: bool, reload_left: float) -> void:
 	interact_target = null
 	interact_progress = 0.0
 	prompt_text = ""
-	weapons.bot_view_tick(delta, sprinting, reloading, reload_left)
+	weapons.bot_view_tick(delta, sprinting, reloading, reload_left, ads)
 	_update_camera(delta)
 
 

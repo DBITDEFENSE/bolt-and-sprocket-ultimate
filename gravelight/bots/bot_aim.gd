@@ -603,6 +603,12 @@ func current_spread_deg(w: WeaponInstance) -> float:
 	return spread
 
 
+## Seen down the sights (the viewmodel / third-person pose): engaging a target at range, standing or walking
+## slowly, not reloading or sprinting. The accuracy above already counts this as aimed (ads_amount 1.0).
+func ads_visual() -> bool:
+	return target != null and is_instance_valid(target) and not reloading and not player.sprinting and ads_amount() >= 0.95
+
+
 ## How far down the sights it is (0 hip .. 1 aimed): aimed standing or walking slowly at a target beyond ads_min_m.
 func ads_amount() -> float:
 	if player.downed or player.horizontal_speed() > float(_a.get("ads_max_speed", 2.6)):
