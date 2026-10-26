@@ -122,6 +122,12 @@ if have python3; then
 	if [ "$TTS" = 1 ]; then PY=python3 sh tools/setup_tts.sh; fi
 fi
 
+# ---------------------------------------------------------------- 5b. keep Godot out of the tool folders (UPDATE 07)
+# The bpy wheel alone is 400 MB of files Godot would otherwise scan and try to import on every run.
+for d in tools/venv tools/dl_godot tools/dl_blender tools/node_modules tools/tts; do
+	[ -d "$d" ] && touch "$d/.gdignore"
+done
+
 # ---------------------------------------------------------------- 6. tools/local_paths.env for this machine
 cat > tools/local_paths.env <<EOF
 # written by tools/cloud_setup.sh (git-ignored); read by tools/env.sh
