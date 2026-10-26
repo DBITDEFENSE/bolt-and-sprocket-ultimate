@@ -17,6 +17,10 @@ local-LLM bot (Ollama), re-recording the Windows/Kokoro TTS voices unless it rei
 **GitHub LFS quota:** the repo uses about 0.7 GB of LFS storage; a free account includes enough for that, but
 every full clone downloads ~0.7 GB of LFS bandwidth. If GitHub ever emails about LFS bandwidth, that's why.
 
+## 0c. UPDATE 07 (Map 4): two things from the cloud session
+1. **Allow `lfs.github.com` for the cloud environment.** The session's network policy let it clone and pull LFS, but every LFS *upload* was refused ("connect_rejected lfs.github.com"), so the new binaries of this update (the Lodestone model and textures, the two jingle sketches and the perk/weapon sound sketches, about 14 MB) are committed as plain git files, with the override lines at the end of `.gitattributes`. Fix: in the cloud environment's settings (the environment menu in the session's title bar → Edit → Network access) add `lfs.github.com` under Allowed domains (keep "Allow package managers" ticked), or pick a broader access level. Then, on the PC, move those files into LFS with the one-liner in `.gitattributes` and delete the override lines.
+2. **Blender's download mirrors are blocked too** (mirrors.ocf.berkeley.edu, ftp.nluug.nl, download.blender.org all 403). `cloud_setup.sh` now falls back to the `bpy` wheel from PyPI (Blender 5.2.3 as a Python module behind `tools/blender_shim.sh`), which built the Lodestone fine. If you would rather have the real 5.1.2, allow one of those hosts the same way.
+
 ## 0b. One small cleanup only you can do
 - Delete the empty folder **`C:\c`** (an empty `C:\c\Users\...` tree a tool created by a typo tonight). I don't
   delete anything outside the project folder. It holds no files.
