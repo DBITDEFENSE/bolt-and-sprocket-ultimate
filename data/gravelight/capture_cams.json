@@ -341,6 +341,279 @@
           "note": "the M1911 viewmodel over a table"
         }
       ]
+    },
+    "u05_objects": {
+      "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "UPDATE_05 section 5 (T-094): one camera per world-object type, before (--no-world-art) and after. Order matters: the cellar is shot dark first, then 'power'; Door 1 unbought, then bought.",
+      "cams": [
+        {
+          "name": "perk_dark",
+          "pos": [
+            30.0,
+            -3.2,
+            25.6
+          ],
+          "yaw": 78.0,
+          "pitch": 6.0,
+          "note": "the west row before the lever: Ironhide, Second Wind, Trigger Tonic dark (only the violet behind the glass)"
+        },
+        {
+          "name": "crucible_dark",
+          "pos": [
+            28.6,
+            -3.2,
+            23.4
+          ],
+          "yaw": -20.0,
+          "pitch": 8.0,
+          "note": "the Crucible in its brick alcove, unpowered"
+        },
+        {
+          "name": "lever",
+          "pos": [
+            31.7,
+            -3.2,
+            21.8
+          ],
+          "yaw": -18.0,
+          "pitch": 2.0,
+          "note": "the cellar lever (Kellerschalter), AUS lamp lit"
+        },
+        {
+          "name": "perk_powered",
+          "pos": [
+            30.0,
+            -3.2,
+            25.6
+          ],
+          "yaw": 78.0,
+          "pitch": 6.0,
+          "do": [
+            "power"
+          ],
+          "note": "the same view, powered: neon, caps, lamps, idle motion"
+        },
+        {
+          "name": "perk_east_row",
+          "pos": [
+            30.6,
+            -3.2,
+            24.6
+          ],
+          "yaw": -90.0,
+          "pitch": 4.0,
+          "note": "Twin Barrel, Marathon Malt, Hawkeye Brandy, powered"
+        },
+        {
+          "name": "perk_south_row",
+          "pos": [
+            31.6,
+            -3.2,
+            26.4
+          ],
+          "yaw": 160.0,
+          "pitch": 5.0,
+          "note": "Packmule Porter, Overclock Cordial, Blastproof Bock, powered"
+        },
+        {
+          "name": "perk_close",
+          "pos": [
+            27.6,
+            -3.2,
+            23.0
+          ],
+          "yaw": 90.0,
+          "pitch": 12.0,
+          "note": "Ironhide close: the sign's cap medallion, the stamp lettering, Fassl"
+        },
+        {
+          "name": "crucible",
+          "pos": [
+            28.6,
+            -3.2,
+            23.4
+          ],
+          "yaw": -20.0,
+          "pitch": 8.0,
+          "note": "the Crucible powered"
+        },
+        {
+          "name": "crate",
+          "pos": [
+            20.4,
+            0.0,
+            14.2
+          ],
+          "yaw": -90.0,
+          "pitch": -14.0,
+          "note": "the Requisition Crate at the Hearth spot"
+        },
+        {
+          "name": "ammo_box",
+          "pos": [
+            7.2,
+            0.0,
+            31.7
+          ],
+          "yaw": 90.0,
+          "pitch": -16.0,
+          "note": "the stable's ammunition crate"
+        },
+        {
+          "name": "wall_buy_trench",
+          "pos": [
+            6.7,
+            0.0,
+            29.6
+          ],
+          "yaw": 90.0,
+          "pitch": 0.0,
+          "note": "the Trench Gun's chalk with the gun on its nails"
+        },
+        {
+          "name": "wall_buy_kar98k",
+          "pos": [
+            2.5,
+            0.0,
+            3.3
+          ],
+          "yaw": 90.0,
+          "pitch": 0.0,
+          "note": "the Kar98k's chalk in the taproom"
+        },
+        {
+          "name": "wall_buy_close",
+          "pos": [
+            1.35,
+            0.0,
+            3.2
+          ],
+          "yaw": 90.0,
+          "pitch": -4.0,
+          "note": "the Kar98k on its nails, close"
+        },
+        {
+          "name": "bench",
+          "pos": [
+            6.9,
+            0.0,
+            26.8
+          ],
+          "yaw": 85.0,
+          "pitch": -12.0,
+          "note": "the Armorer's Bench in the tack corner"
+        },
+        {
+          "name": "radio",
+          "pos": [
+            7.3,
+            0.0,
+            5.4
+          ],
+          "yaw": 95.0,
+          "pitch": 16.0,
+          "note": "the field radio behind the bar"
+        },
+        {
+          "name": "barricade_full",
+          "pos": [
+            21.2,
+            0.0,
+            8.0
+          ],
+          "yaw": -90.0,
+          "pitch": 2.0,
+          "note": "W_TAP_E with all its boards"
+        },
+        {
+          "name": "barricade_torn",
+          "pos": [
+            3.0,
+            0.0,
+            6.0
+          ],
+          "yaw": 90.0,
+          "pitch": 2.0,
+          "do": [
+            "tear:W_TAP_W:3"
+          ],
+          "note": "W_TAP_W with three boards torn"
+        },
+        {
+          "name": "door_unbought",
+          "pos": [
+            9.0,
+            0.0,
+            14.9
+          ],
+          "yaw": 90.0,
+          "pitch": 0.0,
+          "note": "Door 1 (Upstairs 750) from the taproom"
+        },
+        {
+          "name": "door_stable",
+          "pos": [
+            20.0,
+            0.0,
+            13.0
+          ],
+          "yaw": 180.0,
+          "pitch": 0.0,
+          "note": "Door 2 (Stable 1000), the kitchen back door"
+        },
+        {
+          "name": "door_bought",
+          "pos": [
+            9.0,
+            0.0,
+            14.9
+          ],
+          "yaw": 90.0,
+          "pitch": 0.0,
+          "do": [
+            "open:Door_Upstairs"
+          ],
+          "note": "Door 1 bought: the doorway open"
+        },
+        {
+          "name": "out_front",
+          "pos": [
+            20.0,
+            0.0,
+            2.6
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "Out Front (1250): the inn's front door and its plaque"
+        },
+        {
+          "name": "gate",
+          "pos": [
+            18.0,
+            0.1,
+            43.8
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "the carters' gate (750) from the yard"
+        },
+        {
+          "name": "exfil_beacon",
+          "pos": [
+            18.0,
+            0.0,
+            28.4
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "do": [
+            "exfil"
+          ],
+          "note": "the exfil beacon under the gallery (campaign only: spawned for the shot)"
+        }
+      ]
     }
   }
 }

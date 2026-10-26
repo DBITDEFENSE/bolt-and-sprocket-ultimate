@@ -103,7 +103,12 @@ func _refresh_power() -> void:
 
 func build_greybox() -> void:
 	# the furnace: plinth, riveted drum and dome, Nachtglas buttresses, flue, bellows, the nameplate arch (cached)
-	InteractableArt.place(self, "crucible_body", func(r: Node3D) -> void: InteractableArt.crucible_body(r))
+	# our forge (UPDATE_05 section 5, T-094: brick hearth, iron firebox, Nachtglas buttresses); procedural when absent
+	var art: Node3D = WorldArt.instance("crucible", "Model")
+	if art != null:
+		add_child(art)
+	else:
+		InteractableArt.place(self, "crucible_body", func(r: Node3D) -> void: InteractableArt.crucible_body(r))
 	# the mouth (its glow is driven by the forge)
 	_mouth_mat = greybox_mat(Color(0.9, 0.45, 0.15), 1.0)
 	_mouth = add_box(self, Vector3(1.0, 0.8, 0.05), Vector3(0, 1.15, -0.81), _mouth_mat)

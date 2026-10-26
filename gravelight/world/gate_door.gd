@@ -27,7 +27,16 @@ func build_greybox() -> void:
 		_build_leaves()
 	var off: Vector3 = label_offset if label_offset != Vector3.ZERO else Vector3(0, size.y * 0.6, 0)
 	for side: float in [-1.0, 1.0]:
-		var l: Label3D = add_label(_visual, "%s\n%d" % [label, cost], off + Vector3(0, 0, side * (size.z * 0.5 + 0.06)), 28, Color(1.0, 0.92, 0.75, 0.95))
+		var lpos: Vector3 = off + Vector3(0, 0, side * (size.z * 0.5 + 0.06))
+		if DoorArt.available():
+			# a brass plaque under the price (T-094): on the wall beside a drawn door, on the left leaf of a gate
+			var plane: Vector3 = off + Vector3(0, 0, side * (size.z * 0.5 if not swing_node.is_empty() else 0.075))
+			var host: Node3D = _visual if _hinges.is_empty() else _hinges[0]
+			DoorArt.plaque(host, host.transform.affine_inverse() * plane, 0.0 if side < 0.0 else PI)
+			lpos = plane + Vector3(0, 0, side * 0.024)
+		var l: Label3D = add_label(_visual, "%s\n%d" % [label, cost], lpos, 34 if DoorArt.available() else 28, Color(1.0, 0.92, 0.75, 0.95))
+		if DoorArt.available():
+			l.font = MenuKit.font("stamp")
 		l.rotation.y = 0.0 if side > 0 else PI
 		_cost_labels.append(l)
 
@@ -54,11 +63,21 @@ func _build_leaves() -> void:
 		brace.position = Vector3(lw * 0.5 * dir, h * 0.5, 0.0)
 		brace.rotation.z = atan2(h - 0.5, lw) * dir
 		for hy: float in [0.4, h - 0.3]:
-			_block(hinge, Vector3(0.0, hy - 0.03, -0.08), Vector3(0.45 * dir, hy + 0.03, -0.07), "iron")
+			# our strap hinges (T-094), mirrored on the right leaf; the procedural strap when the kit is absent
+			var sh: MeshInstance3D = DoorArt._part(hinge, "Hinge", Vector3(0.0, hy, -0.07), 0.0, Vector3(dir, 1.0, 1.0) * clampf(lw / 2.0, 0.8, 1.2))
+			if sh != null:
+				sh.set_meta("keep", true)
+			else:
+				_block(hinge, Vector3(0.0, hy - 0.03, -0.08), Vector3(0.45 * dir, hy + 0.03, -0.07), "iron")
 	if n == 2:
 		var chain: MeshInstance3D = _block(_hinges[0], Vector3(lw - 0.35, h * 0.5 - 0.02, -0.1), Vector3(lw + 0.35, h * 0.5 + 0.03, -0.08), "iron")
 		chain.name = "Chain"
-		_block(_hinges[0], Vector3(lw - 0.06, h * 0.5 - 0.2, -0.13), Vector3(lw + 0.06, h * 0.5 - 0.05, -0.09), "brass")
+		# the padlock hangs from the chain (it goes with the chain when the gate is bought); unscaled
+		var lock: MeshInstance3D = DoorArt._part(chain, "Padlock", Vector3(0.0, -0.3, -0.5), 0.0, Vector3(1.0 / chain.scale.x, 1.0 / chain.scale.y, 1.0 / chain.scale.z))
+		if lock != null:
+			lock.set_meta("keep", true)
+		else:
+			_block(_hinges[0], Vector3(lw - 0.06, h * 0.5 - 0.2, -0.13), Vector3(lw + 0.06, h * 0.5 - 0.05, -0.09), "brass")
 
 
 func _block(parent: Node3D, a: Vector3, b: Vector3, key: String) -> MeshInstance3D:
@@ -66,10 +85,17 @@ func _block(parent: Node3D, a: Vector3, b: Vector3, key: String) -> MeshInstance
 	mi.mesh = Props.unit_box()
 	mi.scale = (b - a).abs().max(Vector3(0.001, 0.001, 0.001))
 	mi.position = (a + b) * 0.5
-	mi.material_override = Mats.get_mat(key)
+	mi.material_override = _mat(key)
 	mi.set_meta("keep", true)
 	parent.add_child(mi)
 	return mi
+
+
+## The library's planks and iron (T-094) where it has them, else the procedural key.
+static func _mat(key: String) -> Material:
+	var lib: String = str({"planks": "planks", "iron": "iron"}.get(key, ""))
+	var m: Material = MaterialLibrary.get_mat(lib) if lib != "" and not WorldArt.disabled() and MaterialLibrary.has_key(lib) else null
+	return m if m != null else Mats.get_mat(key)
 
 
 func _open_visual() -> void:

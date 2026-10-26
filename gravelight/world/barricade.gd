@@ -48,15 +48,27 @@ func _ready() -> void:
 	add_to_group(&"barricades")
 
 
+## Our planks' length (tools_src/blender/world/barricade_planks.py): a 1.6 m window plus the overlap.
+const PLANK_MODEL_LEN: float = 1.85
+
+
 func build_greybox() -> void:
-	# nailed planks (InteractableArt.board_mesh: three cached variants, one surface each)
+	# nailed planks: our six board models, one per slot with its own splinters (UPDATE_05 section 5, T-094), offset
+	# per window so neighbours differ; InteractableArt.board_mesh's three procedural variants when absent
 	var span: float = top_height - sill_height
+	var shift: int = int(absf(position.x) + absf(position.z))
 	for i: int in max_boards:
 		var mi: MeshInstance3D = MeshInstance3D.new()
-		mi.mesh = InteractableArt.board_mesh(width + 0.25, (i * 2 + int(absf(position.x))) % 3)
+		var plank: Mesh = WorldArt.part_mesh("barricade_planks", "Plank%d" % ((i + shift) % 6))
+		var stretch: float = 1.0
+		if plank != null:
+			mi.mesh = plank
+			stretch = (width + 0.25) / PLANK_MODEL_LEN
+		else:
+			mi.mesh = InteractableArt.board_mesh(width + 0.25, (i * 2 + int(absf(position.x))) % 3)
 		var y: float = sill_height + span * (float(i) + 0.5) / float(max_boards)
 		var tilt: float = deg_to_rad([-9.0, 7.0, -4.0, 11.0, -7.0, 5.0][i % 6])
-		var t: Transform3D = Transform3D(Basis(Vector3.FORWARD, tilt), Vector3(0, y, 0.12))
+		var t: Transform3D = Transform3D(Basis(Vector3.FORWARD, tilt) * Basis.from_scale(Vector3(stretch, 1.0, 1.0)), Vector3(0, y, 0.12))
 		mi.transform = t
 		add_child(mi)
 		_board_nodes.append(mi)

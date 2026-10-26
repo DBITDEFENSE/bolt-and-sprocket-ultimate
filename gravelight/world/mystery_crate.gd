@@ -40,6 +40,7 @@ var _lamp: OmniLight3D
 var _lamp_glass: MeshInstance3D
 var _motes: CPUParticles3D
 var _lamp_t: float = 0.0
+var _art: Node3D = null   # the crate model while its parts are handed out (WorldArt "requisition_crate")
 static var _ghost_mat: StandardMaterial3D
 
 
@@ -76,7 +77,8 @@ func _on_crate_moved(index: int) -> void:
 ## and, at every spot, the lantern stake and chalk footprint. The lantern burns only where the crate is.
 func build_greybox() -> void:
 	# always there: the chalk footprint and the lantern on its stake (the glass and light switch with the crate)
-	InteractableArt.place(self, "crate_spot", func(r: Node3D) -> void: CrateArt.spot(r))
+	_art = WorldArt.instance("requisition_crate")   # our model (UPDATE_05 section 5, T-094); CrateArt when absent
+	_crate_part(self, "Spot", "crate_spot", func(r: Node3D) -> void: CrateArt.spot(r))
 	var lp: Vector3 = CrateArt.lantern_pos()
 	_lamp_glass = MeshInstance3D.new()
 	var gm: CylinderMesh = CylinderMesh.new()
@@ -98,7 +100,7 @@ func build_greybox() -> void:
 	add_child(_lamp)
 	_body = Node3D.new()
 	add_child(_body)
-	InteractableArt.place(_body, "crate_body", func(r: Node3D) -> void: CrateArt.body(r))
+	_crate_part(_body, "Body", "crate_body", func(r: Node3D) -> void: CrateArt.body(r))
 	# stencilled requisition markings (invented): the lot number on the front, the works on the plate
 	var st: Label3D = add_label(_body, "LOS 44-117", Vector3(0, 0.2, -0.395), 24, Color(0.86, 0.84, 0.72, 0.85))
 	st.outline_size = 0
@@ -111,7 +113,7 @@ func build_greybox() -> void:
 	_lid = Node3D.new()
 	_lid.position = Vector3(0, CrateArt.TOP + 0.1, CrateArt.HD)   # the hinge pins: the lid's top rear edge
 	_body.add_child(_lid)
-	InteractableArt.place(_lid, "crate_lid", func(r: Node3D) -> void: CrateArt.lid(r))
+	_crate_part(_lid, "Lid", "crate_lid", func(r: Node3D) -> void: CrateArt.lid(r))
 	var lt: Label3D = add_label(_lid, "AUSGABE  ·  H.A. AG", Vector3(0, 0.009, -0.38), 12, Color(0.12, 0.09, 0.03, 0.95))
 	lt.outline_size = 0
 	lt.pixel_size = 0.0025
@@ -190,6 +192,25 @@ func build_greybox() -> void:
 	_beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(_beam)
 	_beam.hide()
+
+
+## One part of the crate model in its place under `parent` (the parts' pivots are the frames MysteryCrate already
+## uses: the origin for the spot and the body, the hinge pins for the lid), or CrateArt's procedural mesh.
+func _crate_part(parent: Node3D, part_name: String, key: String, builder: Callable) -> void:
+	var p: Node3D = WorldArt.detach(_art, part_name, parent) if _art != null else null
+	if p == null:
+		InteractableArt.place(parent, key, builder)
+		return
+	p.transform = Transform3D.IDENTITY
+	var mi: MeshInstance3D = WorldArt.mesh_of(p)
+	if mi != null and mi.mesh != null:
+		for si: int in mi.mesh.get_surface_count():
+			var m: Material = mi.mesh.surface_get_material(si)
+			if m != null and m.resource_name == "chalk":
+				mi.set_surface_override_material(si, CrateArt.chalk_mat())
+	if part_name == "Lid":
+		_art.free()   # the last part handed out
+		_art = null
 
 
 ## Shows/hides this spot based on where the crate is (and Clearance).

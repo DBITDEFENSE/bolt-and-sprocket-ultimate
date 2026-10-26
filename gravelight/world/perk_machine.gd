@@ -134,6 +134,7 @@ func interact(player: Player) -> void:
 	var pid: int = player.player_id
 	# The dispense sound is AudioDirector's (GLBus.purchase_made -> perk_dispense at this machine).
 	_play_jingle()
+	_cab_dispense()
 	if perk_id == PerkManager.OVERCLOCK and AudioDirector.has_sound("perk_overclock_capoff"):
 		# the signature cap-off: a capacitor whine, a fat ZAP and the two-tone bee-boop (JINGLES.md section 10)
 		get_tree().create_timer(1.1).timeout.connect(func() -> void:
@@ -152,6 +153,7 @@ func _brew_tier(player: Player) -> void:
 		return
 	_drinking = true
 	_play_jingle()
+	_cab_dispense()
 	get_tree().create_timer(float(GLData.table("perks").get("drink_seconds", 1.2))).timeout.connect(func() -> void:
 		_drinking = false
 		PerkManager.set_tier(pid, perk_id, next))
@@ -168,6 +170,9 @@ func _refresh_power() -> void:
 	_panel_mat.emission_energy_multiplier = 2.5 if on else 0.22
 	if _sign != null:
 		_sign.modulate = Color(c.lightened(0.55), 1.0) * 1.6 if on else Color(0.3, 0.25, 0.35, 0.8)
+	if _cab_neon != null:
+		_cab_refresh(on, c)
+		return
 	if _lit != null:
 		_lit.visible = on
 		_unlit.visible = not on
@@ -204,7 +209,15 @@ static func _shape_footprint(shape: String) -> Vector3:
 	return Vector3(1.0, 2.0, 0.7)
 
 
+## The cabinet (UPDATE_05 section 5, T-094): the tonic's own model (WorldArt "perk_<id>", built by
+## tools_src/blender/world/perk_cabinets.py) with its PerkCap medallion and stamp-lettered name on the sign, its
+## bottle, its idle motion; the procedural one when the model isn't there.
 func build_greybox() -> void:
+	if not _build_cabinet():
+		_build_procedural()
+
+
+func _build_procedural() -> void:
 	_greybox = Node3D.new()
 	_greybox.name = "Greybox"
 	add_child(_greybox)
@@ -301,6 +314,10 @@ func build_greybox() -> void:
 ## Packmule's tin sign swings, Blastproof's wheel gives a quarter turn now and then. Powered machines only
 ## (the sign swings regardless).
 func _process(delta: float) -> void:
+	if _cab_neon != null:
+		if not _gone:
+			_cab_idle(delta)
+		return
 	if _anim == null or _gone:
 		return
 	_anim_t += delta
@@ -502,3 +519,353 @@ func _physics_process(delta: float) -> void:
 	_stencil_t -= delta
 	_stencil.modulate.a = clampf(_stencil_t / STENCIL_FADE, 0.0, 1.0) * 0.9
 
+
+
+# ------------------------------------------------------------------ the cabinet model (UPDATE_05 section 5, T-094)
+
+## Small lines under the stamp-lettered name (JINGLES.md): [text, x offset from the text centre, y offset].
+const CAB_SUBLINES: Dictionary = {
+	"ironhide_stout": ["Stout · Stark · Standhaft", 0.0, -0.105],
+	"twin_barrel": ["Bitters", 0.0, -0.1],
+	"overclock_cordial": ["Cordial", 0.0, -0.085],
+}
+const CAP_PX: int = 256
+
+var _cab: Node3D = null                 # the model (also _greybox, so a retiring Second Wind sinks it)
+var _cab_neon: MeshInstance3D = null    # the tubes and the lamp globe: lit / dark
+var _cab_parts: Dictionary = {}         # idle part name -> Node3D
+var _cab_rest: Dictionary = {}          # idle part name -> its rest Transform3D
+var _cab_dispense_node: Node3D = null
+var _cab_cap: Sprite3D = null
+var _cab_glow_mat: StandardMaterial3D = null   # Blastproof's starburst, Overclock's coil
+var _cab_t: float = 0.0
+var _cab_next: float = 2.0              # the next steam puff / pistol shot / rattle
+var _cab_on: float = 0.0                # how long the current flash has left
+var _cab_side: int = 0
+var _cab_steam: CPUParticles3D = null
+
+
+func _build_cabinet() -> bool:
+	var art: Node3D = WorldArt.instance("perk_" + String(perk_id), "Greybox")
+	if art == null:
+		return false
+	_cab = art
+	_greybox = art
+	add_child(art)
+	var d: Dictionary = _data()
+	var shape: String = str(d.get("shape", "cabinet"))
+	var fp: Vector3 = _shape_footprint(shape)
+	var brand: Color = _brand()
+	var neon: Color = _neon()
+	var lay: Dictionary = InteractableArt.perk_layout(shape, fp)
+	_cab_neon = WorldArt.mesh_of(WorldArt.part(art, "Neon"))
+	if _cab_neon != null:
+		_cab_neon.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_panel_mat = greybox_mat(brand.darkened(0.3), 0.35)
+	var back: MeshInstance3D = WorldArt.mesh_of(WorldArt.part(art, "Backlight"))
+	if back != null:
+		back.material_override = _panel_mat
+		back.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_light = OmniLight3D.new()
+	_light.name = "PerkGlow"
+	_light.light_color = neon.lightened(0.25)
+	_light.light_energy = 0.9
+	_light.omni_range = 3.2
+	_light.position = Vector3(0, minf(fp.y * 0.75, 1.6), -fp.z * 0.5 - 0.45)
+	_light.visible = false
+	art.add_child(_light)
+	# the sign: the PerkCap medallion at the board's left end, the name in the stamp face beside it
+	var sc: Vector3 = lay["sign"]
+	var ss: Vector2 = lay["sign_size"]
+	var cap_r: float = minf(0.115, ss.y * 0.5 - 0.03)
+	var cap_anchor: Node3D = WorldArt.part(art, "CapAnchor")
+	var cap_at: Vector3 = cap_anchor.position if cap_anchor != null else Vector3(sc.x + ss.x * 0.5 - cap_r - 0.05, sc.y, sc.z - 0.01)
+	_cab_cap = _make_cap(cap_at, cap_r)
+	var text: String = str(d.get("sign", d.get("name", perk_id)))
+	# the cap is at the board's +X end (the viewer's left); the name fills the rest (Blastproof's starburst takes the
+	# far end for "Bock")
+	var left: float = sc.x - ss.x * 0.5 + 0.06 + (0.34 if shape == "safe" else 0.0)
+	var text_w: float = sc.x + ss.x * 0.5 - cap_r * 2.0 - 0.12 - left
+	var sub: Array = CAB_SUBLINES.get(String(perk_id), [])
+	# as big as the board allows (readability first): the stamp face measured, capped by the board's height
+	var stamp: Font = MenuKit.font("stamp")
+	var w100: float = maxf(1.0, stamp.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 100).x) * 0.004 / 100.0
+	# the stamp face is wide: condense it (down to 72%) before shrinking it, so the name fills the board's height
+	var fs_h: int = int(ss.y * (0.48 if not sub.is_empty() else 0.62) / 0.004)
+	var cond: float = clampf(text_w * 0.96 / (w100 * float(fs_h)), 0.72, 1.0)
+	var font: int = clampi(int(text_w * 0.96 / (w100 * cond)), 18, fs_h)
+	var text_y: float = sc.y + (0.03 if not sub.is_empty() else 0.0)
+	_sign = add_label(art, text, Vector3(left + text_w * 0.5, text_y, sc.z - 0.004), font)
+	_sign.font = stamp
+	_sign.scale.x = cond
+	_sign.outline_modulate = Color(0, 0, 0, 0.9)
+	if not sub.is_empty():
+		var sl: Label3D = add_label(art, str(sub[0]), Vector3(left + text_w * 0.5 + float(sub[1]), sc.y + float(sub[2]) + 0.03, sc.z - 0.006), 14,
+			Color(neon.lightened(0.6), 1.0) * 1.3)
+		sl.font = MenuKit.font("type")
+		sl.outline_modulate = Color(0, 0, 0, 0.9)
+	var price: Label3D = add_label(art, "%s  %d" % [d.get("name", perk_id), PerkManager.price(perk_id)], (lay["price"] as Vector3) + Vector3(0, 0, -0.035), 17, Color(1, 0.93, 0.75, 0.95))
+	price.font = MenuKit.font("type")
+	# the moving parts
+	for pn: String in ["Arm", "Bellows", "Dome", "Paws", "PompL", "PompR", "FlashL", "FlashR", "Belt", "RollerL", "RollerR", "Head",
+			"EyePlate", "Sign", "Gear", "Wheel", "Burst", "Arc", "Needle", "Coil"]:
+		var p: Node3D = WorldArt.part(art, pn)
+		if p != null:
+			_cab_parts[pn] = p
+			_cab_rest[pn] = p.transform
+	for fl: String in ["FlashL", "FlashR", "Arc"]:
+		if _cab_parts.has(fl):
+			(_cab_parts[fl] as Node3D).visible = false
+	_cab_dispense_node = WorldArt.part(art, "Dispense")
+	if _cab_dispense_node != null:
+		_cab_dispense_node.visible = false
+	for gn: String in ["Burst", "Coil"]:
+		if _cab_parts.has(gn):
+			_cab_glow_mat = StandardMaterial3D.new()
+			_cab_glow_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED if gn == "Burst" else BaseMaterial3D.SHADING_MODE_PER_PIXEL
+			_cab_glow_mat.albedo_color = Color(1.0, 0.78, 0.2) if gn == "Burst" else Color(0.35, 0.15, 0.5, 0.5)
+			_cab_glow_mat.emission_enabled = true
+			_cab_glow_mat.emission = Color(1.0, 0.7, 0.15) if gn == "Burst" else Color("#c07dff")
+			if gn == "Coil":
+				_cab_glow_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+				_cab_glow_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+			var gm: MeshInstance3D = WorldArt.mesh_of(_cab_parts[gn])
+			if gm != null:
+				gm.material_override = _cab_glow_mat
+				gm.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	match shape:
+		"wagon":
+			if _cab_parts.has("Sign"):
+				var porter: Label3D = add_label(_cab_parts["Sign"], "Porter", Vector3(0, -0.18, -0.012), 16, Color(0.12, 0.1, 0.06, 1.0))
+				porter.font = MenuKit.font("stamp")
+				porter.outline_size = 0
+		"safe":
+			if _cab_parts.has("Burst"):
+				var bock: Label3D = add_label(_cab_parts["Burst"], "Bock", Vector3(0, -0.01, -0.012), 22, Color(0.14, 0.06, 0.02, 1.0))
+				bock.font = MenuKit.font("stamp")
+				bock.outline_size = 0
+		"coil":
+			_anim = _cab_parts.get("Arc")
+			_needle = _cab_parts.get("Needle")
+			if _needle != null:
+				_needle.rotation.z = NEEDLE_LEER
+			var gz: float = -fp.z * 0.5 - 0.05
+			for mark: Array in [["LEER", 0.21, 1.74], ["HALB", 0.0, 1.86], ["VOLL", -0.21, 1.74]]:   # viewer's left to right
+				var ml: Label3D = add_label(art, str(mark[0]), Vector3(float(mark[1]), float(mark[2]), gz), 10, Color(0.12, 0.08, 0.05, 1.0))
+				ml.outline_size = 0
+			_arc_next = randf_range(1.5, 4.0)
+			GLBus.overclock_burst.connect(_on_overclock_burst)
+		"barrel":
+			var sa: Node3D = WorldArt.part(art, "SteamAnchor")
+			if sa != null:
+				_cab_steam = _make_steam(sa.position)
+				art.add_child(_cab_steam)
+	_anim_shape = shape
+	_cab_next = randf_range(1.0, 4.0)
+	set_process(true)
+	return true
+
+
+## The tonic's bottle cap as the sign's medallion: PerkCap (the HUD's renderer, T-082) drawn once into a texture.
+func _make_cap(at: Vector3, radius: float) -> Sprite3D:
+	var vp: SubViewport = SubViewport.new()
+	vp.name = "CapViewport"
+	vp.size = Vector2i(CAP_PX, CAP_PX)
+	vp.transparent_bg = true
+	vp.disable_3d = true
+	vp.render_target_update_mode = SubViewport.UPDATE_ONCE
+	var cap: PerkCap = PerkCap.new()
+	cap.perk_id = perk_id
+	cap.font = MenuKit.font("stamp")
+	cap.position = Vector2.ZERO
+	cap.size = Vector2(CAP_PX, CAP_PX)
+	vp.add_child(cap)
+	add_child(vp)
+	var s: Sprite3D = Sprite3D.new()
+	s.name = "PerkCapSign"
+	s.texture = vp.get_texture()
+	s.pixel_size = radius * 2.0 / float(CAP_PX) * 1.08
+	s.shaded = false
+	s.double_sided = false
+	s.position = at
+	s.rotation.y = PI   # Sprite3D faces +Z; the front is -Z
+	s.set_meta("perk", perk_id)
+	s.set_meta("glyph", PerkCap.has_glyph(perk_id))
+	_cab.add_child(s)
+	return s
+
+
+func _make_steam(at: Vector3) -> CPUParticles3D:
+	var p: CPUParticles3D = CPUParticles3D.new()
+	p.name = "Steam"
+	p.position = at
+	p.emitting = false
+	p.one_shot = true
+	p.amount = 14
+	p.lifetime = 1.4
+	p.explosiveness = 0.7
+	p.direction = Vector3(1, 0.6, 0)
+	p.spread = 18.0
+	p.initial_velocity_min = 0.5
+	p.initial_velocity_max = 0.9
+	p.gravity = Vector3(0, 0.35, 0)
+	p.scale_amount_min = 0.6
+	p.scale_amount_max = 1.4
+	var q: QuadMesh = QuadMesh.new()
+	q.size = Vector2(0.12, 0.12)
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	m.albedo_color = Color(0.85, 0.85, 0.88, 0.28)
+	m.vertex_color_use_as_albedo = true
+	q.material = m
+	p.mesh = q
+	var ramp: Gradient = Gradient.new()
+	ramp.set_color(0, Color(1, 1, 1, 0.9))
+	ramp.set_color(1, Color(1, 1, 1, 0.0))
+	p.color_ramp = ramp
+	p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return p
+
+
+func _cab_refresh(on: bool, c: Color) -> void:
+	_cab_neon.material_override = Mats.get_mat("neon:" + InteractableArt.hex(c)) if on else Mats.get_mat("neon_off")
+	_light.visible = on
+	if _cab_cap != null:
+		_cab_cap.modulate = Color(1.25, 1.25, 1.25) if on else Color(0.32, 0.3, 0.36)
+	if _cab_glow_mat != null:
+		_cab_glow_mat.emission_energy_multiplier = 0.0 if not on else (0.3 if _anim_shape == "safe" else 1.2)
+	if not on:
+		for pn: String in ["FlashL", "FlashR", "Arc"]:
+			if _cab_parts.has(pn):
+				(_cab_parts[pn] as Node3D).visible = false
+
+
+## A purchase: the tonic's bottle drops into the hatch and is gone when the drink beat ends (drink_seconds).
+func _cab_dispense() -> void:
+	if _cab_dispense_node == null or not is_inside_tree():
+		return
+	var n: Node3D = _cab_dispense_node
+	var home: Vector3 = n.position
+	n.position = home + Vector3(0, 0.14, 0.06)
+	n.visible = true
+	var secs: float = float(GLData.table("perks").get("drink_seconds", 1.2))
+	var tw: Tween = create_tween()
+	tw.tween_property(n, "position", home, 0.28).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+	tw.tween_interval(maxf(0.1, secs - 0.5))
+	tw.tween_property(n, "position", home + Vector3(0, 0.05, -0.18), 0.2).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tw.tween_callback(func() -> void:
+		n.visible = false
+		n.position = home)
+
+
+func _cab_part(pn: String) -> Node3D:
+	return _cab_parts.get(pn) as Node3D
+
+
+## Idle motion per cabinet (JINGLES.md): powered machines only, except Packmule's swinging tin sign.
+func _cab_idle(delta: float) -> void:
+	_cab_t += delta
+	var on: bool = is_powered()
+	var t: float = _cab_t
+	if _anim_shape == "wagon" and _cab_parts.has("Sign"):
+		_cab_part("Sign").rotation.z = sin(t * 1.3) * 0.08
+	if not on:
+		if _anim_shape == "coil":
+			_tick_coil(delta, false)
+		return
+	if _anim_shape != "coil" and _light != null:
+		_light.light_energy = 0.9 * (0.9 + 0.1 * sin(t * 1.7))   # the lamp breathes
+	_cab_next -= delta
+	match _anim_shape:
+		"barrel":
+			# Fassl flexes, slow and proud; the side valve puffs every ~8 s
+			var arm: Node3D = _cab_part("Arm")
+			if arm != null:
+				arm.transform = (_cab_rest["Arm"] as Transform3D) * Transform3D(Basis(Vector3.BACK, -0.45 * (0.5 - 0.5 * cos(t * 1.2))), Vector3.ZERO)
+			if _cab_next <= 0.0:
+				_cab_next = randf_range(7.0, 9.0)
+				if _cab_steam != null:
+					_cab_steam.restart()
+		"cabinet":
+			var dome: Node3D = _cab_part("Dome")
+			if dome != null:
+				dome.rotation.y += delta * 0.6
+			# the bellows wheezes like slow breathing every 5 s
+			var bel: Node3D = _cab_part("Bellows")
+			if bel != null:
+				var k: float = fmod(t, 5.0)
+				var br: float = sin(clampf(k / 1.6, 0.0, 1.0) * PI)
+				bel.transform = (_cab_rest["Bellows"] as Transform3D) * Transform3D(Basis.from_scale(Vector3(1.0, 1.0 - 0.3 * br, 1.0)), Vector3.ZERO)
+		"crate":
+			# Flitzi's paws blur on their cam; the sign letters flicker now and then
+			var paws: Node3D = _cab_part("Paws")
+			if paws != null:
+				paws.transform = (_cab_rest["Paws"] as Transform3D) * Transform3D(Basis(Vector3.BACK, sin(t * 38.0) * 0.22), Vector3.ZERO)
+			if _cab_next <= 0.0:
+				_cab_next = randf_range(0.6, 1.6)
+				_cab_on = 0.06
+			if _sign != null and _cab_on > 0.0:
+				_cab_on -= delta
+				_sign.modulate.a = 0.35 if _cab_on > 0.0 else 1.0
+		"twin":
+			# Pomp fires his pistols in turns: a kick and a cap-gun flash
+			if _cab_next <= 0.0:
+				_cab_next = randf_range(1.1, 1.8)
+				_cab_side = 1 - _cab_side
+				_cab_on = 0.18
+			_cab_on = maxf(0.0, _cab_on - delta)
+			for i: int in 2:
+				var nm: String = "L" if i == 0 else "R"
+				var arm2: Node3D = _cab_part("Pomp" + nm)
+				var fl: Node3D = _cab_part("Flash" + nm)
+				var firing: bool = i == _cab_side and _cab_on > 0.0
+				if arm2 != null:
+					arm2.transform = (_cab_rest["Pomp" + nm] as Transform3D) * Transform3D(Basis(Vector3.RIGHT, 0.35 * (_cab_on / 0.18) if firing else 0.0), Vector3.ZERO)
+				if fl != null:
+					fl.visible = firing and _cab_on > 0.11
+		"teardrop":
+			# the treadmill under the winged boot rolls on
+			var belt: Node3D = _cab_part("Belt")
+			if belt != null:
+				belt.position = (_cab_rest["Belt"] as Transform3D).origin + Vector3(-fmod(t * 0.1, 0.025), 0, 0)
+			for rn: String in ["RollerL", "RollerR"]:
+				var r: Node3D = _cab_part(rn)
+				if r != null:
+					r.rotation.z += delta * 4.5
+		"periscope":
+			var head: Node3D = _cab_part("Head")
+			if head != null:
+				var pl: Node3D = get_tree().get_first_node_in_group(&"players") as Node3D
+				if pl != null:
+					var to: Vector3 = head.global_position - pl.global_position
+					var want: float = atan2(to.x, to.z) - global_rotation.y
+					head.rotation.y = lerp_angle(head.rotation.y, want, clampf(delta * 1.5, 0.0, 1.0))
+			var eye: Node3D = _cab_part("EyePlate")
+			if eye != null:
+				eye.position = (_cab_rest["EyePlate"] as Transform3D).origin + Vector3(clampf(sin(t * 0.7) * 1.6, -1.0, 1.0) * 0.007, 0, 0)
+		"wagon":
+			# the gear on the rack rattles in short bursts
+			var gear: Node3D = _cab_part("Gear")
+			if gear != null:
+				if _cab_next <= 0.0:
+					_cab_next = randf_range(3.0, 6.0)
+					_cab_on = 0.45
+				_cab_on = maxf(0.0, _cab_on - delta)
+				var j: Vector3 = Vector3(randf_range(-1, 1), absf(randf_range(-1, 1)), randf_range(-1, 1)) * 0.004 if _cab_on > 0.0 else Vector3.ZERO
+				gear.position = (_cab_rest["Gear"] as Transform3D).origin + j
+		"safe":
+			var wheel: Node3D = _cab_part("Wheel")
+			if wheel != null:
+				var k2: float = fmod(t, 9.0)
+				wheel.rotation.z = -floorf(t / 9.0) * PI * 0.5 - (smoothstep(8.4, 9.0, k2) * PI * 0.5)
+			# the cartoon explosion sign flashes: a double blink every couple of seconds
+			if _cab_glow_mat != null:
+				var k3: float = fmod(t, 2.2)
+				var lit: bool = k3 < 0.12 or (k3 > 0.24 and k3 < 0.36)
+				_cab_glow_mat.emission_energy_multiplier = 3.0 if lit else 0.3
+		"coil":
+			_tick_coil(delta, true)
+			if _cab_glow_mat != null:
+				_cab_glow_mat.emission_energy_multiplier = (0.8 + 0.4 * sin(t * 2.3)) * (3.0 if _arc_on > 0.0 else 1.0)

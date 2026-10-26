@@ -17,4 +17,5 @@ __pycache__/
 assets/user_supplied/
 tools_src/_downloads/
 !assets/third_party/**/*.import
+# our own models (T-089 arms, T-094 world objects): same reason
 !assets/ours/**/*.import
