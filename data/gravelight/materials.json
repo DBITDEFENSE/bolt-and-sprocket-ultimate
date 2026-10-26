@@ -52,9 +52,9 @@
         0.95
       ],
       "grime": 0.4,
-      "frost": 0.5,
+      "frost": 0.35,
       "frost_height": 0.0,
-      "note": "the stable's walls, fences, the woodshed"
+      "note": "the stable's walls, fences, the woodshed, shutters (frost on their up faces)"
     },
     "plaster": {
       "set": "polyhaven/beige-wall-001",
@@ -123,7 +123,8 @@
       "grime": 0.45,
       "frost": 0.6,
       "frost_height": 0.0,
-      "note": "the yard wall, the hearth, the cellar's foundation"
+      "note": "the yard wall, the hearth, the cellar's foundation",
+      "wetness": 0.08
     },
     "shingles": {
       "set": "ambientcg/wood-siding-012",
@@ -288,13 +289,280 @@
       "grime": 0.35,
       "wetness": 0.15,
       "note": "the stable floor, the cellar's earth"
+    },
+    "beam": {
+      "set": "polyhaven/dark-wood",
+      "id": "dark_wood",
+      "tile_m": 1.6,
+      "tint": [
+        0.62,
+        0.52,
+        0.44
+      ],
+      "rough": [
+        0.55,
+        0.95
+      ],
+      "grime": 0.3,
+      "note": "dark old oak: the half-timbering, beams, posts, door and window frames, fence posts (T-093)"
+    },
+    "furniture": {
+      "set": "polyhaven/wood-table-001",
+      "id": "wood_table_001",
+      "tile_m": 1.2,
+      "tint": [
+        0.72,
+        0.6,
+        0.5
+      ],
+      "rough": [
+        0.45,
+        0.85
+      ],
+      "grime": 0.25,
+      "grime_height": 0.4,
+      "note": "stained, worn oak: tables, the counter top, rails, treads, shelves (T-093)"
+    },
+    "wainscot": {
+      "set": "polyhaven/dark-paneled-wood",
+      "id": "dark_paneled_wood",
+      "tile_m": 1.1,
+      "tint": [
+        0.8,
+        0.66,
+        0.54
+      ],
+      "rough": [
+        0.45,
+        0.85
+      ],
+      "grime": 0.4,
+      "grime_height": 0.5,
+      "note": "dark panelled wainscot round the taproom and the bar's front (T-093); skirting grime from the shader"
+    },
+    "wainscot_matte": {
+      "set": "polyhaven/dark-paneled-wood",
+      "id": "dark_paneled_wood",
+      "tile_m": 1.1,
+      "tint": [
+        0.78,
+        0.64,
+        0.52
+      ],
+      "rough": [
+        0.7,
+        0.95
+      ],
+      "grime": 0.4,
+      "note": "the stairwell's sloped panels: the wainscot without the varnish highlight (T-093)"
+    },
+    "brick_cellar": {
+      "set": "polyhaven/red-brick-03",
+      "id": "red_brick_03",
+      "tile_m": 1.0,
+      "tint": [
+        0.72,
+        0.6,
+        0.54
+      ],
+      "rough": [
+        0.75,
+        1.0
+      ],
+      "grime": 0.5,
+      "wetness": 0.12,
+      "grime_floor_y": -3.2,
+      "grime_height": 1.2,
+      "note": "old handmade brick: the cellars' soffits, arches, the ice cellar, the chimney's footing (T-093)"
+    },
+    "cellar_stone": {
+      "set": "polyhaven/rustic-stone-wall",
+      "id": "rustic_stone_wall",
+      "tile_m": 1.52,
+      "tint": [
+        0.78,
+        0.75,
+        0.7
+      ],
+      "rough": [
+        0.75,
+        1.0
+      ],
+      "grime": 0.5,
+      "wetness": 0.2,
+      "grime_floor_y": -3.2,
+      "grime_height": 1.0,
+      "note": "coursed rubble: the vaults' walls, ribs and pillars, damp at the floor (T-093)"
+    },
+    "cellar_floor": {
+      "set": "polyhaven/stone-floor",
+      "id": "stone_floor",
+      "tile_m": 1.85,
+      "tint": [
+        0.72,
+        0.7,
+        0.66
+      ],
+      "rough": [
+        0.6,
+        1.0
+      ],
+      "grime": 0.45,
+      "wetness": 0.35,
+      "grime_floor_y": -3.2,
+      "grime_height": 0.3,
+      "note": "worn flagstones, wet in patches: the cellars' floors (T-093)"
+    },
+    "limewash": {
+      "set": "polyhaven/plastered-stone-wall",
+      "id": "plastered_stone_wall",
+      "tile_m": 2.5,
+      "tint": [
+        0.98,
+        0.96,
+        0.9
+      ],
+      "rough": [
+        0.75,
+        1.0
+      ],
+      "grime": 0.55,
+      "grime_floor_y": -3.2,
+      "grime_height": 1.4,
+      "note": "limewashed rubble in the Helvetia stair hall (T-093)"
+    },
+    "bark": {
+      "set": "polyhaven/pine-bark",
+      "id": "pine_bark",
+      "tile_m": 1.0,
+      "tint": [
+        0.6,
+        0.55,
+        0.5
+      ],
+      "rough": [
+        0.7,
+        1.0
+      ],
+      "grime": 0.1,
+      "note": "spruce bark (the scripted pines' trunks, the dead trees) (T-093)"
+    },
+    "rock": {
+      "set": "polyhaven/rock-boulder-dry",
+      "id": "rock_boulder_dry",
+      "tile_m": 1.8,
+      "tint": [
+        0.62,
+        0.62,
+        0.64
+      ],
+      "rough": [
+        0.7,
+        1.0
+      ],
+      "grime": 0.2,
+      "frost": 0.7,
+      "frost_height": -10.0,
+      "frost_up": 0.35,
+      "note": "boulders on the grounds and by the stream (T-093)"
+    },
+    "hay": {
+      "set": "polyhaven/reed-roof-04",
+      "id": "reed_roof_04",
+      "tile_m": 1.2,
+      "tint": [
+        0.92,
+        0.8,
+        0.56
+      ],
+      "rough": [
+        0.85,
+        1.0
+      ],
+      "grime": 0.25,
+      "note": "dry reed / straw: the hay bales, the pile, the rick (T-093)"
+    },
+    "straw_floor": {
+      "set": "polyhaven/reed-roof-04",
+      "id": "reed_roof_04",
+      "tile_m": 0.8,
+      "tint": [
+        0.55,
+        0.46,
+        0.32
+      ],
+      "rough": [
+        0.85,
+        1.0
+      ],
+      "grime": 0.4,
+      "note": "straw trodden into the stable floor and over the loft boards (T-093)"
+    },
+    "wreck": {
+      "set": "polyhaven/green-metal-rust",
+      "id": "green_metal_rust",
+      "tile_m": 1.4,
+      "tint": [
+        0.62,
+        0.66,
+        0.55
+      ],
+      "rough": [
+        0.4,
+        0.9
+      ],
+      "grime": 0.45,
+      "frost": 0.6,
+      "frost_height": -10.0,
+      "note": "olive paint over rust, scorched: GRAVELIGHT ONE and its wreckage (T-093)"
+    },
+    "snow_trodden": {
+      "set": "ambientcg/snow-015",
+      "id": "Snow015",
+      "tile_m": 1.6,
+      "tint": [
+        0.74,
+        0.76,
+        0.8
+      ],
+      "rough": [
+        0.6,
+        0.95
+      ],
+      "grime": 0.15,
+      "note": "trodden snow and frozen ruts: the tracks round the ring, the yard paths, the well steps (T-093)"
     }
   },
   "generator": {
     "use_library": true,
     "enabled": [
       "floorboards",
-      "plaster"
+      "plaster",
+      "plaster_upper",
+      "planks",
+      "stone",
+      "roof",
+      "iron",
+      "snow",
+      "dirt",
+      "hay",
+      "beam",
+      "furniture",
+      "wainscot",
+      "wainscot_matte",
+      "brick_cellar",
+      "cellar_stone",
+      "cellar_floor",
+      "limewash",
+      "bark",
+      "rock",
+      "straw_floor",
+      "wreck",
+      "snow_trodden",
+      "leather",
+      "canvas",
+      "ice",
+      "mud"
     ],
     "keys": {
       "floorboards": "floorboards",
@@ -306,12 +574,25 @@
       "iron": "iron",
       "snow": "snow",
       "dirt": "dirt",
-      "hay": "burlap",
+      "hay": "hay",
       "cloth": "wool",
       "canvas": "canvas",
       "leather": "leather",
       "ice": "ice",
-      "mud": "frozen_mud"
+      "mud": "frozen_mud",
+      "beam": "beam",
+      "furniture": "furniture",
+      "wainscot": "wainscot",
+      "wainscot_matte": "wainscot_matte",
+      "brick_cellar": "brick_cellar",
+      "cellar_stone": "cellar_stone",
+      "cellar_floor": "cellar_floor",
+      "limewash": "limewash",
+      "bark": "bark",
+      "rock": "rock",
+      "straw_floor": "straw_floor",
+      "wreck": "wreck",
+      "snow_trodden": "snow_trodden"
     }
   }
 }

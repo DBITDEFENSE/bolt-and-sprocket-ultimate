@@ -177,11 +177,7 @@ func _build_terrain() -> void:
 	var mesh: ArrayMesh = LandscapeTerrain.build_grid()
 	var near: ShaderMaterial = ShaderMaterial.new()
 	near.shader = _shader("near_land.gdshader")
-	var snow: StandardMaterial3D = Mats.get_mat("snow") as StandardMaterial3D
-	if snow != null:
-		near.set_shader_parameter("albedo_tex", snow.albedo_texture)
-		near.set_shader_parameter("normal_tex", snow.normal_texture)
-		near.set_shader_parameter("uv_scale", snow.uv1_scale.x)
+	_near_land_textures(near)
 	mesh.surface_set_material(0, near)
 	if mesh.get_surface_count() > 1:
 		mesh.surface_set_material(1, _far_mat("far_land.gdshader", {"fog_max": 0.84, "fog_k": 0.022}))
@@ -199,6 +195,32 @@ func _build_terrain() -> void:
 		r.material_override = _far_mat("far_land.gdshader", {"ridge": 1.0, "fog_max": 0.84, "fog_k": 0.022, "fog_bias": 0.035 if band == 1 else 0.0,
 			"noise_scale": 0.03})
 		add_child(r)
+
+
+## The near terrain's textures (T-093): the slab's own snow set and the frozen-mud set the roads blend into. The
+## library materials are ShaderMaterials, so the maps come from MaterialLibrary (by the generator's key, so the
+## terrain follows whatever "snow" the slab uses); the procedural StandardMaterial3D snow is the fallback.
+static func _near_land_textures(near: ShaderMaterial) -> void:
+	var snow_key: String = MaterialLibrary.generator_key("snow")
+	if MaterialLibrary.for_generator("snow") != null and MaterialLibrary.texture(snow_key, "albedo") != null:
+		var e: Dictionary = MaterialLibrary.entry(snow_key)
+		near.set_shader_parameter("albedo_tex", MaterialLibrary.texture(snow_key, "albedo"))
+		near.set_shader_parameter("normal_tex", MaterialLibrary.texture(snow_key, "normal"))
+		near.set_shader_parameter("uv_scale", 1.0 / maxf(0.05, float(e.get("tile_m", 2.0))))
+		var t: Array = e.get("tint", [1, 1, 1])
+		near.set_shader_parameter("snow_tint", Vector3(float(t[0]), float(t[1]), float(t[2])))
+	else:
+		var snow: StandardMaterial3D = Mats.get_mat("snow") as StandardMaterial3D
+		if snow != null:
+			near.set_shader_parameter("albedo_tex", snow.albedo_texture)
+			near.set_shader_parameter("normal_tex", snow.normal_texture)
+			near.set_shader_parameter("uv_scale", snow.uv1_scale.x)
+	if MaterialLibrary.has_key("frozen_mud") and MaterialLibrary.texture("frozen_mud", "albedo") != null:
+		var m: Dictionary = MaterialLibrary.entry("frozen_mud")
+		near.set_shader_parameter("mud_tex", MaterialLibrary.texture("frozen_mud", "albedo"))
+		near.set_shader_parameter("mud_normal_tex", MaterialLibrary.texture("frozen_mud", "normal"))
+		near.set_shader_parameter("mud_uv_scale", 1.0 / maxf(0.05, float(m.get("tile_m", 2.0))))
+		near.set_shader_parameter("use_mud", true)
 
 
 # ================================================================== forests

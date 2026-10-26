@@ -1,0 +1,12 @@
+Title: Green Metal Rust
+Authors: Rob Tuytel
+Source: https://polyhaven.com/a/green_metal_rust
+File: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/green_metal_rust/green_metal_rust_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/green_metal_rust/green_metal_rust_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/green_metal_rust/green_metal_rust_arm_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Green Metal Rust" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 1k (albedo, normal OpenGL +Y, ORM at 1k)
+Tile size: 1.00 x 1.00 m
+Poly Haven id: green_metal_rust
+Library key: wreck
+Downloaded: 2026-10-25 by Claude Code (u05-env builder, T-093) (tools/fetch_cc0_materials.py)
+Files used: textures/green_metal_rust_albedo.png, textures/green_metal_rust_normal.png, textures/green_metal_rust_orm.png
