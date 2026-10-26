@@ -14,7 +14,7 @@ The original folder is only read, never modified.
 Usage: python tools/migrate_gravelight.py"""
 import os, re, shutil, sys
 
-SRC = r"C:\Users\Devin\PROJECTS\New folder"
+SRC = os.environ.get("GRAVELIGHT_MIGRATE_SRC", r"C:\Users\Devin\PROJECTS\New folder")   # one-off M0 tool; override per machine
 DST = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DIRS = ["autoload", "enemies", "maps", "player", "ui", "weapons", "world", "net", "tools_src", "tests", "audio", "assets"]
 TEXT_EXT = {".gd", ".tscn", ".tres", ".json", ".cfg", ".import", ".gdshader", ".txt", ".md"}

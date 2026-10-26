@@ -3,7 +3,7 @@
 # Usage: tools/run_smokes.sh [log_dir] [scene_name_filter]
 # Exit code: the number of smokes that did not pass (0 = all passed).
 cd "$(dirname "$0")/.."
-GODOT="${GODOT:-tools/dl_godot/Godot_v4.7.2-stable_win64_console.exe}"
+. tools/env.sh   # GODOT / GODOT_W / BLENDER / PYTHON per OS (tools/local_paths.env overrides)
 LOGS="${1:-.smoke_logs}"
 FILTER="${2:-}"
 mkdir -p "$LOGS"

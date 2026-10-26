@@ -19,7 +19,8 @@ import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BLENDER = os.environ.get("BLENDER", r"C:\Program Files\Blender Foundation\Blender 5.1\blender.exe")
+BLENDER = os.environ.get("BLENDER") or (r"C:\Program Files\Blender Foundation\Blender 5.1\blender.exe" if os.name == "nt"
+    else os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "tools", "dl_blender", "blender"))   # see tools/env.sh
 CONVERTER = os.path.join(ROOT, "tools_src", "blender", "convert_to_glb.py")
 DOWNLOADS = os.path.join(ROOT, "tools_src", "_downloads")
 REPORTS = os.path.join(DOWNLOADS, "reports")

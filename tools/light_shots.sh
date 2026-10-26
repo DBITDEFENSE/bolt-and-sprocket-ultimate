@@ -2,7 +2,7 @@
 # Lighting shots from fixed viewpoints (tools_src/light_shots.gd) in an off-screen, silent window.
 # Usage: tools/light_shots.sh <tag> [map00,map01,map02] [preset]  -> morning/screenshots/lighting/<tag>/*.png
 cd "$(dirname "$0")/.."
-GODOT="${GODOT:-tools/dl_godot/Godot_v4.7.2-stable_win64_console.exe}"
+. tools/env.sh   # GODOT / GODOT_W / BLENDER / PYTHON per OS (tools/local_paths.env overrides)
 T="${1:-now}"
 M="${2:-map00,map01,map02}"
 P=""

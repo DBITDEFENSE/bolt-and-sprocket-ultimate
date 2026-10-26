@@ -3,9 +3,7 @@
 # imports them (T-092, docs/CHARACTER_PIPELINE.md section 9).
 # Usage: tools/build_people.sh [--only=dutch,peg] [--preview=<dir>] [--faces=<dir>] [--stats=<json>]
 cd "$(dirname "$0")/.."
-BLENDER="${BLENDER:-/c/Program Files/Blender Foundation/Blender 5.1/blender.exe}"
-GODOT="${GODOT:-tools/dl_godot/Godot_v4.7.2-stable_win64_console.exe}"
-[ -x "$GODOT" ] || GODOT="$(git rev-parse --path-format=absolute --git-common-dir)/../tools/dl_godot/Godot_v4.7.2-stable_win64_console.exe"
+. tools/env.sh   # GODOT / GODOT_W / BLENDER / PYTHON per OS (tools/local_paths.env overrides)
 [ -x "$GODOT" ] || { echo "[people] Godot not found; set GODOT"; exit 1; }
 "$BLENDER" -b --factory-startup -P tools_src/blender/characters/build_people.py -- "$@" 2>&1 | grep -E "\[build_people\]|Error|Traceback" || exit 1
 rm -f .godot/imported/char_person_*

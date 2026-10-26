@@ -3,10 +3,8 @@
 # presets and imports them (T-091, docs/CHARACTER_PIPELINE.md).
 # Usage: tools/build_characters.sh [--living] [--only=m_medium,f_thin] [--no-textures]
 cd "$(dirname "$0")/.."
-BLENDER="${BLENDER:-/c/Program Files/Blender Foundation/Blender 5.1/blender.exe}"
-GODOT="${GODOT:-tools/dl_godot/Godot_v4.7.2-stable_win64_console.exe}"
+. tools/env.sh   # GODOT / GODOT_W / BLENDER / PYTHON per OS (tools/local_paths.env overrides)
 # a worktree has no tools/dl_godot (git-ignored): fall back to the main checkout's copy
-[ -x "$GODOT" ] || GODOT="$(git rev-parse --path-format=absolute --git-common-dir)/../tools/dl_godot/Godot_v4.7.2-stable_win64_console.exe"
 [ -x "$GODOT" ] || { echo "[characters] Godot not found; set GODOT"; exit 1; }
 "$BLENDER" -b --factory-startup -P tools_src/blender/characters/build_all.py -- "$@" 2>&1 | grep -E "\[build_all\]|\[make_textures\]|Error|Traceback" || exit 1
 # the editor's md5 check missed rebuilt GLBs after the preset pass: drop their cached imports so they re-import

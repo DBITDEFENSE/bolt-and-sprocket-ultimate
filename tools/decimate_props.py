@@ -20,7 +20,8 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 from fetch_cc0_materials import to_png, write_glb  # noqa: E402
 
-BLENDER = os.environ.get("BLENDER", r"C:\Program Files\Blender Foundation\Blender 5.1\blender.exe")
+BLENDER = os.environ.get("BLENDER") or (r"C:\Program Files\Blender Foundation\Blender 5.1\blender.exe" if os.name == "nt"
+    else os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "tools", "dl_blender", "blender"))   # see tools/env.sh
 SCRIPT = os.path.join(ROOT, "tools_src", "blender", "decimate_gltf.py")
 PROPS = os.path.join(ROOT, "data", "gravelight", "props_library.json")
 

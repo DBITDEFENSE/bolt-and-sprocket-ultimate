@@ -4,7 +4,7 @@
 # Usage: tools/clip_map00.sh [out_dir] [extra args after --, e.g. --secs=60 --round=8]
 # Output: <out_dir>/map00_vfx_r8.mp4, <out_dir>/frames/f_NN.png (one every 5 s), <out_dir>/map00_vfx_contact.png
 cd "$(dirname "$0")/.."
-GODOT="${GODOT:-tools/dl_godot/Godot_v4.7.2-stable_win64_console.exe}"
+. tools/env.sh   # GODOT / GODOT_W / BLENDER / PYTHON per OS (tools/local_paths.env overrides)
 OUT="${1:-morning/clips/u05}"
 shift 2>/dev/null
 mkdir -p "$OUT/frames"

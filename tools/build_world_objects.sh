@@ -4,8 +4,7 @@
 # writes their import presets and runs the editor import. Headless; nothing is downloaded.
 # Usage: tools/build_world_objects.sh [--no-import]
 cd "$(dirname "$0")/.."
-BLENDER="${BLENDER:-/c/Program Files/Blender Foundation/Blender 5.1/blender.exe}"
-GODOT="${GODOT:-tools/dl_godot/Godot_v4.7.2-stable_win64_console.exe}"
+. tools/env.sh   # GODOT / GODOT_W / BLENDER / PYTHON per OS (tools/local_paths.env overrides)
 for s in perk_cabinets requisition_crate ammo_crate barricade_planks door_kit wall_mount story_machines; do
 	"$BLENDER" -b -P "tools_src/blender/world/$s.py" 2>&1 | grep -E "^\[world\]|Error|Traceback"
 done

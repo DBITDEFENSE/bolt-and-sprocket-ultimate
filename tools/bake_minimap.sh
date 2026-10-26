@@ -5,7 +5,7 @@
 # now and then exits early without a word; the retry is cheap, a map bakes in ~3 s).
 # Usage: tools/bake_minimap.sh [all | map00_crossroads[,scrapheap,...]]
 cd "$(dirname "$0")/.."
-GODOT="${GODOT:-tools/dl_godot/Godot_v4.7.2-stable_win64_console.exe}"
+. tools/env.sh   # GODOT / GODOT_W / BLENDER / PYTHON per OS (tools/local_paths.env overrides)
 M="${1:-all}"
 if [ "$M" = "all" ]; then
 	M=$(timeout 120 "$GODOT" --headless --audio-driver Dummy --path . res://tools_src/bake_minimap.tscn -- --list 2>&1 | grep "bake_minimap. ids" | sed 's/.*ids //' | tr -d '\r')

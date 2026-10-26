@@ -7,5 +7,5 @@
 #                        [--ee=off|ask|full (Bot Easter-Egg Help; ee_full: the bots on Map 0's radio egg, T-067)]
 # The Godot tool itself is res://tools_src/ai_soak.tscn (docs/BOT_AI.md explains the scenarios and the metrics).
 cd "$(dirname "$0")/.."
-GODOT="${GODOT:-tools/dl_godot/Godot_v4.7.2-stable_win64_console.exe}"
+. tools/env.sh   # GODOT / GODOT_W / BLENDER / PYTHON per OS (tools/local_paths.env overrides)
 exec "$GODOT" --headless --audio-driver Dummy --fixed-fps 60 --path . res://tools_src/ai_soak.tscn -- "$@"

@@ -2,7 +2,7 @@
 # Morning screenshots: tools_src/capture.gd in an off-screen, silent window.
 # Usage: tools/capture.sh [milestone] [only=map00,scrapheap]  -> morning/screenshots/<milestone>/*.png
 cd "$(dirname "$0")/.."
-GODOT="${GODOT:-tools/dl_godot/Godot_v4.7.2-stable_win64_console.exe}"
+. tools/env.sh   # GODOT / GODOT_W / BLENDER / PYTHON per OS (tools/local_paths.env overrides)
 M="${1:-overnight}"
 ONLY=""
 [ -n "$2" ] && ONLY="--only=$2"

@@ -4,7 +4,7 @@
 # git-ignored here: run this once in every fresh checkout / worktree and after adding assets.
 # Usage: tools/apply_import_presets.sh [--force] [--dry-run] [--root=res://assets/third_party] [--no-import]
 cd "$(dirname "$0")/.."
-GODOT="${GODOT:-tools/dl_godot/Godot_v4.7.2-stable_win64_console.exe}"
+. tools/env.sh   # GODOT / GODOT_W / BLENDER / PYTHON per OS (tools/local_paths.env overrides)
 ARGS=""
 IMPORT=1
 for a in "$@"; do

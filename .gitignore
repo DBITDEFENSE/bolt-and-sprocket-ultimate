@@ -19,3 +19,7 @@ tools_src/_downloads/
 !assets/third_party/**/*.import
 # our own models (T-089 arms, T-094 world objects): same reason
 !assets/ours/**/*.import
+
+# per-machine tool paths (tools/env.sh); written by tools/cloud_setup.sh on Linux
+tools/local_paths.env
+/tools/dl_blender/
