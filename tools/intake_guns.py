@@ -70,7 +70,7 @@ def sketchfab(asset_id, folder, title, author, url, game, real_len, args, notes=
         "credit": '"%s" by %s (%s), licensed under CC-BY 4.0. Modified.' % (title, author.split(" (")[0], url),
         "format": SKETCHFAB_FORMAT,
         "downloaded": TODAY + " by Devin Blair (Sketchfab); converted " + TODAY + " by Claude (T-087)",
-        "args": ["--drop-black-emissive", "--auto-tex"] + args,
+        "args": ["--drop-black-emissive", "--opaque", "--auto-tex"] + args,
         "game": game, "real_len": real_len, "notes": notes, "parts": parts or {}, **kw}
 
 
@@ -369,13 +369,13 @@ FIT_NOTES = {
     "m1911": "Grip at the converter's trigger; sights ride the Slide; the M1911 kit (T-068) is placed per slot by kit_offset / kit_offset_front (the OGA slide is 2.8 cm shorter than the procedural one).",
     "walther_p38": "Slide carries the rear notch; the front blade is fixed to the frame (the P38's open-top slide).",
     "webley": "Barrels hinge at the frame front; Cylinder is parented under Barrels so the break tips both; Mk IV model for the game's Mk VI.",
-    "kar98k": "Sketchfab hero. Bolt pivots on its axis, the holder's Handle wraps the whole bolt (lifts and draws back on every shot); an empty Mag node marks the stripper-clip guide.",
+    "kar98k": "Sketchfab hero. Bolt pivots on its axis, the holder's Handle wraps the whole bolt (lifts and draws back on every shot); an empty Mag node marks the stripper-clip guide. The GLB's materials are opaque and not emissive (tools/glb_sanitize.py, T-098); eye relief 0.42 and a lower, smaller firing hand keep the ADS picture clear.",
     "m1_garand": "Sketchfab hero. The floating en-bloc clip is moved into the receiver and is the holder's Mag (the ping on the last round, the clip into the top on reload). No separate op rod: the Bolt is an empty node.",
     "gewehr43": "Rear notch raised to the leaf top so the line clears the bolt carrier.",
     "m1_carbine": "Aperture on the receiver rear.",
     "mp40": "Support hand on the magazine housing (lh_axis y), as the procedural MP40.",
-    "thompson": "Sketchfab hero: a 1928 with the 50-round drum (Mag) and vertical foregrip; support hand on the foregrip.",
-    "stg44": "Rear leaf on the receiver; the stock comb shows at the bottom of the sight picture.",
+    "thompson": "Sketchfab hero: a 1928 with the 50-round drum (Mag) and vertical foregrip; support hand on the foregrip. Its own hip pose sits further out (weapons.json feel, T-098).",
+    "stg44": "Rear leaf on the receiver; the stock's crimson palette cell is repainted walnut (shader palette_remap) and the stock is warped 2.8 cm down behind the receiver (warp) so its comb stays out of the sight picture (T-098).",
     "trench_gun": "Pump is the whole action slide (forend + bolt); an empty Mag node is the loading port.",
     "bar": "Support hand on the handguard just ahead of the magazine (no bipod in the model).",
     "ppsh41": "71-round drum as Mag.",

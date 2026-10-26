@@ -40,6 +40,8 @@ uniform float frost = 0.0;
 uniform float nachtglas = 0.0;
 uniform vec3 bluing = vec3(0.86, 0.9, 1.0);
 uniform vec4 camo_tint : source_color = vec4(1.0, 1.0, 1.0, 0.0);
+// 1 = the camo is a whitewash (winter; WeaponShader sets it for a tint brighter than white), T-098
+uniform float whitewash = 0.0;
 uniform float camo_metal = 0.0;
 uniform vec4 metal_tint : source_color = vec4(1.0, 1.0, 1.0, 0.0);
 uniform float metal_metallic = -1.0;
@@ -129,8 +131,17 @@ void fragment() {
 	vec3 wood_col = col * mix(0.72, 1.14, band) * mix(0.9, 1.08, n_fine);
 	wood_col *= mix(1.0, 1.18, smoothstep(0.55, 0.85, n_mid) * 0.5);
 	float wood_rough = mix(0.68, 0.5, band) + (n_fine - 0.5) * 0.1;
-	if (camo_tint.a > 0.0) {
-		// the camo colour carries the grain's light and dark (a whitewash still shows the wood under it)
+	if (camo_tint.a > 0.0 && whitewash > 0.5) {
+		// winter (a tint above 1): a field whitewash, not paint from a tin. Dirty off-white capped well below snow
+		// (T-098: it read as a glowing white stock), streaked along the grain, thin and chipped so the wood shows
+		// through on the worn patches; the grime pass below dirties it further.
+		float thin = smoothstep(0.5, 0.78, n_mid * 0.6 + n_big * 0.4 + (1.0 - band) * 0.12);
+		vec3 ws = vec3(0.3, 0.3, 0.28) * mix(0.8, 1.0, band) * mix(0.9, 1.04, n_fine);
+		ws = mix(ws, wood_col * 1.15 + vec3(0.04, 0.035, 0.03), thin * 0.75);
+		wood_col = mix(wood_col, min(ws, vec3(0.36)), camo_tint.a);
+		wood_rough = mix(wood_rough, 0.86, camo_tint.a * (1.0 - thin * 0.6));
+	} else if (camo_tint.a > 0.0) {
+		// the camo colour carries the grain's light and dark
 		float lum = dot(wood_col, vec3(0.3, 0.59, 0.11));
 		vec3 tinted = min(camo_tint.rgb * (0.3 + 0.7 * clamp(lum / 0.22, 0.0, 1.4)), vec3(0.92));
 		wood_col = mix(wood_col, tinted, camo_tint.a);

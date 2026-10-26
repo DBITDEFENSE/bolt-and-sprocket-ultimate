@@ -1,5 +1,5 @@
 {
- "_doc": "Hand fit of the downloaded gun models (T-089, UPDATE_05 section 2), read by WeaponGLB on top of models.json. Rig space everywhere: metres, barrel along -Z, +Y up, origin at the right-hand grip. Per weapon: extra_rot [deg xyz] and extra_offset [m] after the models.json normalisation (the converter's trigger_center lands 8 mm ahead / 6 mm below the origin by default), scale (overrides native.scale), grip_native (the pack-space point that becomes the origin instead of the trigger), pivots {Part: [x,y,z]} (hinges for Cover / Barrels, the bolt axis for Bolt; default = the part's centre), parent {Part: Parent} (the Webley cylinder under its barrels), rename {node: Part}, hide [node], borrow {Part: {asset, node, offset}} (a part from another converted asset), part_offset / part_scale / part_scale_about {Part: [x,y,z]} (a part moved or cut down: the Garand clip into the receiver, the Sawed-Off barrels), muzzle / sight_rear / sight_front / left_hand [x,y,z] (defaults from a vertex scan: bbox front on the bore, the highest point in the front quarter, the highest point on the receiver), sight_rear_on / sight_front_on (the group a sight rides on: the Slide when there is one, else root), lh_axis z|y, lh_radius, grip_r [x,y,z], grip_lean deg, grip_r_radius, port [x,y,z], bore, no_bore, eye_relief (overrides weapons.json feel.eye_relief for this model: the cheek weld differs per model), empty {Part: [x,y,z]} (an empty node for a part the reload expects but the pack lacks), scope {y, z0, z1, r, base_y, mag} (a procedural scope on an iron-sighted model), kit_offset {slot: [x,y,z]} and kit_offset_front {slot: [x,y,z]} (the M1911 hand-fitted attachments, built for the procedural pistol, shifted onto the OGA one per slot; _front applies to parts ahead of z -0.08), stock_share (the rear share of the length the sight scan skips), shader {wear, grime, scratches, grain_scale, seed, bluing [r,g,b], wood {material: 0..1}, metal_parts [Part], wood_parts [Part]}. frost_by_map: the rime uniform per map id (WeaponShader). Fit sheets: tools/glb_fit_shots.sh. wonder {crucible_parts [Part], materials {glass|fluid|glow|coil_glow|emitter|arc|runes|halo|orb: {color, hot, strength, tint, refraction}}, upgraded {energy, shader {weapon-shader uniform: value}, colors {material: [r,g,b]}, strength {material: k}}, part_metas {Part: {meta: [x,y,z]}}} (T-090: the wonder weapons modelled by us; WonderLook).",
+ "_doc": "Hand fit of the downloaded gun models (T-089, UPDATE_05 section 2), read by WeaponGLB on top of models.json. Rig space everywhere: metres, barrel along -Z, +Y up, origin at the right-hand grip. Per weapon: extra_rot [deg xyz] and extra_offset [m] after the models.json normalisation (the converter's trigger_center lands 8 mm ahead / 6 mm below the origin by default), scale (overrides native.scale), grip_native (the pack-space point that becomes the origin instead of the trigger), pivots {Part: [x,y,z]} (hinges for Cover / Barrels, the bolt axis for Bolt; default = the part's centre), parent {Part: Parent} (the Webley cylinder under its barrels), rename {node: Part}, hide [node], borrow {Part: {asset, node, offset}} (a part from another converted asset), part_offset / part_scale / part_scale_about {Part: [x,y,z]} (a part moved or cut down: the Garand clip into the receiver, the Sawed-Off barrels; scaled up: the Totenglocke's striker Hammer and Pawl, T-098), warp {Part: {z0, z1, dy}} (T-098: every vertex of the part behind z1 moves dy up, easing in from z0, rig space: the STG44 stock dropped below the sight line), muzzle / sight_rear / sight_front / left_hand [x,y,z] (defaults from a vertex scan: bbox front on the bore, the highest point in the front quarter, the highest point on the receiver), sight_rear_on / sight_front_on (the group a sight rides on: the Slide when there is one, else root), lh_axis z|y, lh_radius, grip_r [x,y,z], grip_lean deg, grip_r_radius, port [x,y,z], bore, no_bore, eye_relief (overrides weapons.json feel.eye_relief for this model: the cheek weld differs per model), empty {Part: [x,y,z]} (an empty node for a part the reload expects but the pack lacks), scope {y, z0, z1, r, base_y, mag} (a procedural scope on an iron-sighted model), kit_offset {slot: [x,y,z]} and kit_offset_front {slot: [x,y,z]} (the M1911 hand-fitted attachments, built for the procedural pistol, shifted onto the OGA one per slot; _front applies to parts ahead of z -0.08), stock_share (the rear share of the length the sight scan skips), shader {wear, grime, scratches, grain_scale, seed, bluing [r,g,b], wood {material: 0..1}, metal_parts [Part], wood_parts [Part], palette_remap {cell index: [r,g,b]} (an OGA palette cell repainted for this gun, cell = row * 8 + column, sRGB: the STG44 stock's crimson to walnut, T-098)}. frost_by_map: the rime uniform per map id (WeaponShader). Fit sheets: tools/glb_fit_shots.sh. wonder {crucible_parts [Part], materials {glass|fluid|glow|coil_glow|emitter|arc|runes|halo|orb: {color, hot, strength, tint, refraction}}, upgraded {energy, shader {weapon-shader uniform: value}, colors {material: [r,g,b]}, strength {material: k}}, part_metas {Part: {meta: [x,y,z]}}} (T-090: the wonder weapons modelled by us; WonderLook).",
  "frost_by_map": {
   "default": 0.0,
   "map00_crossroads": 0.55,
@@ -125,7 +125,7 @@
    ],
    "grip_r": [
     0,
-    -0.025,
+    -0.04,
     0.06
    ],
    "grip_lean": 40,
@@ -150,7 +150,9 @@
     "wear": 0.35,
     "grime": 0.45,
     "scratches": 0.3
-   }
+   },
+   "eye_relief": 0.42,
+   "grip_r_radius": 0.015
   },
   "m1_garand": {
    "extra_offset": [
@@ -330,7 +332,21 @@
    "lh_radius": 0.03,
    "shader": {
     "wear": 0.5,
-    "grime": 0.5
+    "grime": 0.5,
+    "palette_remap": {
+     "10": [
+      0.38,
+      0.19,
+      0.13
+     ]
+    }
+   },
+   "warp": {
+    "Body": {
+     "z0": 0.1,
+     "z1": 0.15,
+     "dy": -0.028
+    }
    }
   },
   "trench_gun": {
@@ -719,6 +735,30 @@
       "veins": 0.0
      }
     }
+   },
+   "part_scale": {
+    "Hammer": [
+     1.4,
+     1.4,
+     1.4
+    ],
+    "Pawl": [
+     1.6,
+     1.6,
+     1.6
+    ]
+   },
+   "part_scale_about": {
+    "Hammer": [
+     -0.106,
+     0.075,
+     -0.212
+    ],
+    "Pawl": [
+     0.05,
+     0.062,
+     -0.022
+    ]
    }
   },
   "elmsfeuer": {
@@ -801,10 +841,10 @@
     },
     "materials": {
      "coil_glow": {
-      "strength": 1.6
+      "strength": 2.4
      },
      "arc": {
-      "strength": 4.0,
+      "strength": 5.5,
       "color": [
        0.62,
        0.42,
@@ -817,13 +857,19 @@
       ]
      },
      "orb": {
-      "strength": 3.5
+      "strength": 5.5
      }
     },
     "upgraded": {
-     "energy": 1.5,
+     "energy": 1.9,
      "shader": {
-      "veins": 0.0
+      "veins": 0.3,
+      "vein_color": [
+       0.5,
+       0.6,
+       1.0,
+       1.0
+      ]
      },
      "strength": {
       "coil_glow": 1.6

@@ -7,6 +7,7 @@ extends Node3D
 ## front of it off to the right, to check the viewmodel never clips into geometry (D-062).
 ## --compress=<k> overrides feel.viewmodel_compress for the run (1.0 = the old, uncompressed viewmodel).
 ## --greybox draws the procedural guns instead of the downloaded models (T-089 A/B); --char=<id> picks whose arms.
+## --camo=<id> builds every gun with that camo (winter, olive_drab, gold...: WeaponModels.CAMO_TINT).
 ## --lit renders in a dim interior lit by a warm lantern (materials read like in the maps). Upgraded ids
 ## (mp40_up) work too. The camera uses the game's default FOV (80).
 ## Each row is one weapon; columns follow POSES.
@@ -64,6 +65,8 @@ func _ready() -> void:
 		elif a.begins_with("--frost="):
 			WeaponShader.set_frost(float(a.substr(8)))      # T-089: rime as on a cold map (model_fit frost_by_map)
 			WeaponShader._frost_map = GameState.map_id
+		elif a.begins_with("--camo="):
+			WeaponHolder.camo_override = StringName(a.substr(7))   # T-098: e.g. winter (the whitewash)
 		elif a == "--noshader":
 			WeaponShader.enabled = false
 		elif a.begins_with("--shader_debug="):

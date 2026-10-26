@@ -12,7 +12,7 @@ const SHADER_PATH: String = "res://assets/materials/shaders/weapon.gdshader"
 
 static var _shader: Shader = null
 static var _cache: Dictionary = {}       # key -> ShaderMaterial
-static var _palettes: Dictionary = {}    # source texture rid -> upscaled ImageTexture
+static var _palettes: Dictionary = {}    # source texture rid | remap -> upscaled ImageTexture
 static var frost: float = -1.0           # -1 = not resolved yet (frost_for_map on first use)
 static var _frost_map: StringName = &"?"
 ## Tools: false leaves the imported StandardMaterial3Ds on (vm_shots --noshader); debug 1 = raw albedo, 2 = the wood mask.
@@ -103,7 +103,7 @@ static func material_for(src: BaseMaterial3D, opts: Dictionary, fwd: Vector3, up
 	if sm != null:
 		var alb: Texture2D = sm.albedo_texture
 		if palette and alb != null:
-			alb = _palette_tex(alb)
+			alb = _palette_tex(alb, fit.get("palette_remap", {}))
 		if alb != null:
 			m.set_shader_parameter("albedo_tex", alb)
 		m.set_shader_parameter("base_color", sm.albedo_color)
@@ -145,6 +145,8 @@ static func material_for(src: BaseMaterial3D, opts: Dictionary, fwd: Vector3, up
 			m.set_shader_parameter("nachtglas", 0.7)
 		else:
 			m.set_shader_parameter("camo_tint", Color(c.r, c.g, c.b, 1.0))
+			# a tint brighter than white (winter) is a field whitewash: the shader's own capped, chipped path (T-098)
+			m.set_shader_parameter("whitewash", 1.0 if maxf(c.r, maxf(c.g, c.b)) > 1.0 else 0.0)
 			if camo in [&"gold", &"silver", &"bronze"]:
 				m.set_shader_parameter("camo_metal", 0.9)
 	var finish: String = str(opts.get("finish", ""))
@@ -162,16 +164,24 @@ static func material_for(src: BaseMaterial3D, opts: Dictionary, fwd: Vector3, up
 
 
 ## The OGA 8x8 palette, upscaled 16x nearest (no mipmaps), so linear filtering never bleeds between cells.
-static func _palette_tex(src: Texture2D) -> Texture2D:
-	var k: int = src.get_rid().get_id()
+## `remap` (model_fit shader "palette_remap" {cell index: [r,g,b]}, cell = row * width + column) repaints a cell
+## for this gun only (T-098: the STG44 stock's crimson cell, which the shader read as blued metal, to walnut).
+static func _palette_tex(src: Texture2D, remap: Dictionary = {}) -> Texture2D:
+	var k: String = "%d|%s" % [src.get_rid().get_id(), JSON.stringify(remap)]
 	if _palettes.has(k):
 		return _palettes[k]
 	var img: Image = src.get_image()
 	if img == null:
 		return src
+	img = img.duplicate() as Image   # never repaint the source texture's own image (remap is per gun)
 	if img.is_compressed():
 		img.decompress()
 	img.convert(Image.FORMAT_RGBA8)
+	for ck: Variant in remap.keys():
+		var ci: int = int(str(ck))
+		var cc: Array = remap[ck]
+		if ci >= 0 and ci < img.get_width() * img.get_height() and cc.size() >= 3:
+			img.set_pixel(ci % img.get_width(), ci / img.get_width(), Color(float(cc[0]), float(cc[1]), float(cc[2]), 1.0))
 	if img.get_width() <= 16:
 		img.resize(img.get_width() * 16, img.get_height() * 16, Image.INTERPOLATE_NEAREST)
 	var t: ImageTexture = ImageTexture.create_from_image(img)

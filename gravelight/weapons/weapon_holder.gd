@@ -39,6 +39,8 @@ const FIRE_BUFFER: float = 0.12    # seconds a too-early semi-auto click is reme
 const SWAP_TIME: float = 0.42      # raise time after a weapon swap (firing is blocked meanwhile)
 
 var player: Player
+## Tools (vm_shots --camo=): the camo every viewmodel is built with instead of the profile's (T-098). "" = off.
+static var camo_override: StringName = &""
 var slots: Array[WeaponInstance] = []
 var current_index: int = 0
 var melee_id: StringName = &"trench_knife"
@@ -1531,6 +1533,8 @@ func _rebuild_gun() -> void:
 		_flame = null
 		return
 	var camo: StringName = &"" if w.upgraded else ProfileSave.camo_for(w.base_id())
+	if camo_override != &"" and not w.upgraded:
+		camo = camo_override
 	WeaponShader._tick_frost()   # T-089: the map's rime on every gun (model_fit frost_by_map)
 	_model = WeaponModels.build(w.base_id(), w.upgraded, camo, WeaponKitModels.look_of(w))
 	_gun.add_child(_model)
@@ -2545,9 +2549,14 @@ func _animate_reload(p: float) -> Variant:
 			if _reload_kind == "drum":
 				out_dir = Vector3(0, -0.6, 0.3)
 			var well: Vector3 = mrest + out_dir * 0.02 + Vector3(0, -0.04, 0)
-			# old mag out
+			# old mag out (T-098: the Ashlight's capsule slides out of the back of the chamber only a little, then the hand
+			# carries it down: a capsule pulled 12 cm back toward the eye, and a fresh one fed in from 25 cm behind, swung
+			# past the camera's near plane in the tilted reload pose)
+			var capsule: bool = _reload_kind == "capsule"
 			var o: float = _seg(p, 0.06, 0.22)
-			mag.position = mrest + out_dir * 0.12 * o
+			mag.position = mrest + out_dir * (0.12 if not capsule else 0.06) * o
+			if capsule:
+				mag.position += Vector3(-0.01, -0.07, 0.0) * _seg(p, 0.14, 0.24)
 			if p >= 0.24:
 				if mag.visible:
 					_spawn_debris(mag, Vector3(0, -1.0, 0.1), true)
@@ -2562,7 +2571,13 @@ func _animate_reload(p: float) -> Variant:
 			_set_prop("mag" if _reload_kind != "capsule" else "capsule")
 			var ins: float = _seg(p, 0.5, 0.72)
 			var seat: float = _seg(p, 0.72, 0.8)
-			var mag_pos: Vector3 = (mrest + out_dir * 0.25).lerp(mrest + out_dir * 0.04, ins).lerp(mrest, seat)
+			var mag_from: Vector3 = mrest + out_dir * 0.25
+			var mag_near: Vector3 = mrest + out_dir * 0.04
+			if capsule:
+				# the fresh capsule comes up from below the grip to the chamber's open back, then slides in
+				mag_from = mrest + Vector3(-0.015, -0.13, 0.03)
+				mag_near = mrest + out_dir * 0.055
+			var mag_pos: Vector3 = mag_from.lerp(mag_near, ins).lerp(mrest, seat)
 			if _prop != null:
 				_prop.position = mag_pos
 			if p >= 0.8:

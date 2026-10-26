@@ -249,6 +249,10 @@ static func build(weapon_id: StringName, is_upgraded: bool = false, camo_id: Str
 			var shift: Transform3D = Transform3D(Basis(), _v3(po[contract]))
 			for item: Array in by_group[contract]:
 				item[1] = shift * (item[1] as Transform3D)
+		var wp: Dictionary = f.get("warp", {})
+		if wp.has(contract):
+			for item: Array in by_group[contract]:
+				_warp_mesh(item[0] as MeshInstance3D, item[1] as Transform3D, wp[contract])
 		if pivots.has(contract):
 			pivot = _v3(pivots[contract])
 		else:
@@ -338,6 +342,33 @@ static func build(weapon_id: StringName, is_upgraded: bool = false, camo_id: Str
 	if f.has("wonder"):
 		WonderLook.finish(root, base, b.upgraded, f["wonder"])   # T-090: glass / fluid / glow surfaces, the Crucible parts and look
 	return root
+
+
+## model_fit "warp" {Part: {z0, z1, dy}} (T-098): bends a part of a one-piece mesh in rig space: every vertex behind
+## z1 moves dy metres up (negative = down), easing in from nothing at z0, so a stock can take more drop below the
+## sight line (the OGA STG44's comb filled the bottom of the sight picture). The mesh is copied (the imported one is
+## shared by every instance of the scene); it is a visual change only, like every model_fit key.
+static func _warp_mesh(mi: MeshInstance3D, xf: Transform3D, d: Dictionary) -> void:
+	if mi.mesh == null:
+		return
+	var z0: float = float(d.get("z0", 0.0))
+	var z1: float = float(d.get("z1", z0 + 0.01))
+	var dy: float = float(d.get("dy", 0.0))
+	var inv: Transform3D = xf.affine_inverse()
+	var out: ArrayMesh = ArrayMesh.new()
+	for si: int in mi.mesh.get_surface_count():
+		var arr: Array = mi.mesh.surface_get_arrays(si)
+		var vs: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+		for i: int in vs.size():
+			var g: Vector3 = xf * vs[i]
+			var k: float = smoothstep(z0, z1, g.z) if z1 > z0 else (1.0 if g.z >= z0 else 0.0)
+			if k > 0.0:
+				vs[i] = inv * (g + Vector3(0.0, dy * k, 0.0))
+		arr[Mesh.ARRAY_VERTEX] = vs
+		out.add_surface_from_arrays(mi.mesh.surface_get_primitive_type(si), arr)
+		out.surface_set_material(si, mi.mesh.surface_get_material(si))
+		out.surface_set_name(si, mi.mesh.surface_get_name(si))
+	mi.mesh = out
 
 
 static func _host(root: Node3D, groups: Dictionary, name: String) -> Node3D:

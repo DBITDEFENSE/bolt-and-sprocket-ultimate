@@ -167,3 +167,63 @@ func test_every_survivor_has_arms() -> void:
 	assert_eq(Arms.character_for(fake), &"dutch", "a survivor without a set wears Dutch's")
 	GameState.characters.erase(77)
 	fake.free()
+
+
+## T-098 fixes. The STG44: its stock's crimson palette cell is repainted walnut for that gun only (the shader read it
+## as blued steel), and the stock is warped down below the sight line (its comb filled the ADS picture).
+func test_stg44_stock_walnut_and_dropped() -> void:
+	var fit: Dictionary = WeaponGLB.fit_for(&"stg44")
+	var remap: Dictionary = (fit.get("shader", {}) as Dictionary).get("palette_remap", {})
+	assert_true(remap.has("10"), "the stock's palette cell is remapped")
+	var src: Texture2D = load("res://assets/third_party/opengameart/tt-stg44/textures/tt_stg44_ultimatelowpolyguns_albedo.png")
+	var t: Texture2D = WeaponShader._palette_tex(src, remap)
+	var c: Color = t.get_image().get_pixel(2 * 16 + 8, 1 * 16 + 8)
+	assert_gt(c.r, c.g * 1.25, "walnut: red well above green")
+	assert_gt(c.g, c.b * 0.85, "walnut: green at or above blue (the shader's wood test)")
+	var other: Color = WeaponShader._palette_tex(src).get_image().get_pixel(2 * 16 + 8, 1 * 16 + 8)
+	assert_gt(other.b, other.g, "other guns keep the pack's colour in that cell")
+	# the stock's top behind the receiver sits at least 4 cm under the sight point
+	var m: Node3D = WeaponModels.build(&"stg44")
+	var sp: Vector3 = _root_pos(m, m.find_child("SightPoint", true, false) as Node3D)
+	var top: float = -INF
+	for row: Array in WeaponGLB.top_profile(m):
+		if float(row[0]) >= 0.16:
+			top = maxf(top, float(row[1]))
+	assert_lt(top, sp.y - 0.04, "the comb is under the sight line (top %.3f, sight %.3f)" % [top, sp.y])
+	m.free()
+
+
+## The winter camo goes through the shader's whitewash path (a capped, chipped off-white), the other camos don't.
+func test_winter_camo_is_a_whitewash() -> void:
+	WeaponShader.reset()
+	var m: Node3D = WeaponModels.build(&"thompson", false, &"winter")
+	var ww: float = -1.0
+	for c: Node in m.find_children("*", "MeshInstance3D", true, false):
+		var mat: Material = (c as MeshInstance3D).get_surface_override_material(0)
+		if mat is ShaderMaterial and (mat as ShaderMaterial).shader == WeaponShader.shader():
+			ww = maxf(ww, float((mat as ShaderMaterial).get_shader_parameter("whitewash")))
+	assert_eq(ww, 1.0, "winter sets the whitewash flag")
+	m.free()
+	var o: Node3D = WeaponModels.build(&"thompson", false, &"olive_drab")
+	for c: Node in o.find_children("*", "MeshInstance3D", true, false):
+		var mat2: Material = (c as MeshInstance3D).get_surface_override_material(0)
+		if mat2 is ShaderMaterial and (mat2 as ShaderMaterial).shader == WeaponShader.shader():
+			assert_ne(float((mat2 as ShaderMaterial).get_shader_parameter("whitewash")), 1.0, "olive drab is a tint, not a whitewash")
+	o.free()
+
+
+## The raw Sketchfab GLBs load as opaque, non-emissive materials (the Kar98k's had emissiveFactor [1,1,1] and
+## alphaMode BLEND: anything loading the raw GLB, a wall-buy mount for one, drew it glowing and see-through).
+func test_raw_sketchfab_glbs_are_opaque_and_dark() -> void:
+	for path: String in ["res://assets/third_party/sketchfab/kar98k-dsamuta/model.glb", "res://assets/third_party/sketchfab/m1-garand-sky-hunter/model.glb",
+			"res://assets/third_party/sketchfab/thompson-artem-goyko/model.glb"]:
+		var inst: Node3D = (load(path) as PackedScene).instantiate() as Node3D
+		for c: Node in inst.find_children("*", "MeshInstance3D", true, false):
+			var mi: MeshInstance3D = c as MeshInstance3D
+			for si: int in mi.mesh.get_surface_count():
+				var sm: StandardMaterial3D = mi.mesh.surface_get_material(si) as StandardMaterial3D
+				if sm == null:
+					continue
+				assert_eq(sm.transparency, BaseMaterial3D.TRANSPARENCY_DISABLED, "%s %s is opaque" % [path.get_file(), sm.resource_name])
+				assert_false(sm.emission_enabled and sm.emission_texture == null and sm.emission.get_luminance() > 0.01, "%s %s does not glow" % [path.get_base_dir().get_file(), sm.resource_name])
+		inst.free()
