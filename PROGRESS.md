@@ -1,6 +1,6 @@
 # PROGRESS
 
-RESUME HERE: UPDATE 05 (art slice) overnight run, 2026-10-25 -> 26. Batch 7 (T-080..T-086: Map 0 grounds + barn, perk cap 6 + glyph caps + pause list, Crucible no ammo + sprint reload, staged zombie rise, egg story + bots on the egg) is merged to master. Now running UPDATE_05A asset intake then UPDATE_05 sections as parallel worktree builders (.wt/u05-*); the orchestrator merges each with --no-ff, adds its DECISIONS paragraph, and finishes with morning/MORNING_REPORT.md. Section status is tracked below under 'Overnight run 2026-10-25'.
+RESUME HERE: Update 05 (art slice, T-087..T-096), Update 06 Part A (cloud: T-097) and Part B (voice: T-101), and the batch-8 fixes (T-098..T-100, T-102) are merged to master and pushed to the private GitHub repo (origin). Read morning/MORNING_REPORT.md first. Full suite passes on Windows and Linux. Waiting on the owner: the voice cast in data/voice/cast.json and the first recordings. Next: roll the art pipeline out to Kaltenbrunn and Totenhafen; the 6 greybox guns when downloads arrive. In a cloud session run tools/cloud_setup.sh first (CLAUDE.md).
 
 ## Overnight run, 2026-10-25 -> 26: UPDATE 05 "Look the part" (plan)
 
