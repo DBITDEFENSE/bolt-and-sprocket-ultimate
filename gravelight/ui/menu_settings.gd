@@ -197,6 +197,11 @@ func _video() -> void:
 	content.add_child(MenuKit.row("Gore", MenuKit.options(PackedStringArray(["Off", "Low", "Full"]), gcur,
 		func(i: int) -> void: GLSettings.set_value("gore", gore_levels[i]))))
 	content.add_child(MenuKit.para("Off: no dismemberment or blood (the Nachtglas shatter stays). Low: limbs come off, no spray. Full: everything.", 16, MenuKit.DIM))
+	var vfx_levels: PackedStringArray = ["low", "medium", "high"]
+	var vcur: int = maxi(0, vfx_levels.find(str(GLSettings.values.get("vfx_quality", "high"))))
+	content.add_child(MenuKit.row("VFX quality", MenuKit.options(PackedStringArray(["Low", "Medium", "High"]), vcur,
+		func(i: int) -> void: GLSettings.set_value("vfx_quality", vfx_levels[i]))))
+	content.add_child(MenuKit.para("Muzzle flashes, casings, impact debris, snow and dust: how many at once. Low keeps the flashes and the Nachtglas sparks.", 16, MenuKit.DIM))
 	var fs: bool = DisplayServer.get_name() != "headless" and DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
 	content.add_child(MenuKit.check("Fullscreen", fs, func(on: bool) -> void:
 		if DisplayServer.get_name() != "headless":

@@ -1960,28 +1960,11 @@ func _build_kind_parts() -> void:
 
 
 ## A burst of glass shards (Glasshide shatter, Bellringer death, portal). Presentation only.
+## Nachtglas shatter burst (T-095: the pooled one in Effects, no per-death particle node).
 func _shards(color: Color, amount: int, speed_max: float) -> void:
-	var host: Node = get_parent()
-	if host == null:
+	if get_parent() == null:
 		return
-	var p: CPUParticles3D = CPUParticles3D.new()
-	p.one_shot = true
-	p.amount = amount
-	p.lifetime = 0.9
-	p.explosiveness = 1.0
-	p.direction = Vector3.UP
-	p.spread = 80.0
-	p.initial_velocity_min = speed_max * 0.4
-	p.initial_velocity_max = speed_max
-	p.gravity = Vector3(0, -9.0, 0)
-	var m: BoxMesh = BoxMesh.new()
-	m.size = Vector3(0.05, 0.08, 0.02)
-	m.material = Interactable.greybox_mat(color, 3.0)
-	p.mesh = m
-	host.add_child(p)
-	p.global_position = global_position + Vector3.UP * 1.1
-	p.emitting = true
-	get_tree().create_timer(1.5).timeout.connect(p.queue_free)
+	Effects.shatter(global_position + Vector3.UP * 1.1, color, amount, speed_max)
 
 
 func _death_burst() -> void:
