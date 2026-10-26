@@ -225,7 +225,10 @@ func force_special_next() -> void:
 
 
 func current_health() -> int:
-	return zombie_health(maxi(1, current_round), _cfg)
+	var h: int = zombie_health(maxi(1, current_round), _cfg)
+	if GameState.retained:
+		h = int(round(float(h) * float(_cfg.get("retained_health_mult", 1.25))))   # the Retained state (T-113): one step tougher
+	return h
 
 
 func current_interval() -> float:

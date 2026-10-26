@@ -381,7 +381,8 @@
    "OPR_TIDE_RISING_01"
   ],
   "map04a": [],
-  "map04b": []
+  "map04b": [],
+  "map04d": []
  },
  "slip_cooldown_s": 300.0,
  "slip_cooldown_hw_map03_s": 240.0,

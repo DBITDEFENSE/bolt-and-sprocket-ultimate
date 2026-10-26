@@ -301,6 +301,8 @@ func capped_count(player: int) -> int:
 func on_player_downed(player: int) -> void:
 	if not Net.is_authority() or owned(player).is_empty():
 		return
+	if GameState.retained:
+		return   # the Retained state (Map 4 Act IV's renewal, T-113): the Plan keeps your tonics; nobody is let go
 	var keep: StringName = bonus_perk(player)
 	var kt: int = int(_tier_dict(player).get(String(keep), 1))
 	_owned[player] = [keep] if keep != &"" and has_perk(player, keep) else []

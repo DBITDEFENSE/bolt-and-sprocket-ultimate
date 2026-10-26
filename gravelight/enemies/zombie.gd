@@ -123,6 +123,16 @@ var _lift_slam_wave: float = 0.0       # the slam's shockwave radius (0 = none)
 var _lift_slam_wave_dmg: float = 0.0
 ## Below this height a flung zombie is "gone" (off a drop, into a shaft); MapRoot sets it from the act json.
 static var kill_plane_y: float = -15.0
+# UPDATE 07 Map 4 Act IV (T-112): the Suited's visor and the low-g hop.
+var visor_cracked: bool = false
+var _visor_t: float = -1.0            # > 0: seconds until a cracked visor kills in vacuum
+var _visor_by: int = 0
+var _visor_weapon: StringName = &""
+var hopping: bool = false
+var hops_done: int = 0
+var _hop_cd: float = 0.0
+var _hop_tele: float = -1.0           # > 0: crouched, about to leap
+var _hop_v: Vector3 = Vector3.ZERO
 
 
 func _init() -> void:
@@ -199,6 +209,12 @@ func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 	_burn_t = 0.0
 	_frost_t = 0.0
 	_frost_slow = 0.0
+	visor_cracked = false
+	_visor_t = -1.0
+	hopping = false
+	hops_done = 0
+	_hop_cd = randf_range(0.0, 0.6)
+	_hop_tele = -1.0
 	armor_torso_mult = float(_cfg.get("armor_mult", 1.0))
 	target = at_target
 	_reset_presentation()
@@ -331,6 +347,13 @@ func _physics_process(delta: float) -> void:
 		return
 	_state_t += delta
 	_attack_cd = maxf(0.0, _attack_cd - delta)
+	_hop_cd = maxf(0.0, _hop_cd - delta)
+	if _visor_t > 0.0 and state != State.DEAD and state != State.INACTIVE:
+		_visor_t -= delta
+		if _visor_t <= 0.0:
+			_visor_t = -1.0
+			take_damage(hp + 1.0, &"head", _visor_weapon, _visor_by, &"bullet")   # the suit lets go (credited to the cracker)
+			return
 	if _push_t > 0.0 and state != State.DEAD and state != State.INACTIVE and state != State.LIFTED:
 		_update_push(delta)
 		return
@@ -675,6 +698,8 @@ func _update_chase(delta: float) -> void:
 		return
 	var to_t: Vector3 = target.global_position - global_position
 	var dist: float = to_t.length()
+	if _update_hop(delta, dist):
+		return
 	if dist <= _attack_range() and absf(to_t.y) < 1.3 and _attack_cd <= 0.0 and _clear_to(target):
 		_enter(State.ATTACK)
 		return
@@ -724,6 +749,92 @@ func _update_chase(delta: float) -> void:
 var _progress_target: Player = null
 var _progress_best: float = INF
 var _progress_t: float = 0.0
+
+
+# ---------------------------------------------------------------- the low-g hop (T-112)
+
+## enemies.json "leap_hop": the rules every pressurized Gänger hops by below max_gravity_scale.
+static func hop_cfg() -> Dictionary:
+	return GLData.table("enemies").get("leap_hop", {})
+
+
+## True when a hop is due: low gravity, a kind that hops, on the floor, the target in range with a clear line,
+## not in vacuum, the cooldown spent.
+static func hop_due(gravity_scale: float, kind_hops: bool, on_floor: bool, dist: float, clear: bool, in_vacuum: bool, crawler: bool, cd: float, hc: Dictionary) -> bool:
+	if hc.is_empty() or gravity_scale > float(hc.get("max_gravity_scale", 0.7)) or not kind_hops or not on_floor or crawler or in_vacuum or cd > 0.0 or not clear:
+		return false
+	return dist >= float(hc.get("range_min", 5.0)) and dist <= float(hc.get("range_max", 8.0))
+
+
+## The take-off velocity for a ballistic arc of `apex` m landing `to` (flat) away at gravity `g`.
+static func hop_velocity(to: Vector3, apex: float, g: float) -> Vector3:
+	var vy: float = sqrt(2.0 * maxf(0.1, g) * maxf(0.2, apex))
+	var t: float = 2.0 * vy / maxf(0.1, g)
+	var flat: Vector3 = Vector3(to.x, 0.0, to.z)
+	var d: float = flat.length()
+	var hv: Vector3 = flat.normalized() * (d / maxf(0.05, t)) if d > 0.01 else Vector3.ZERO
+	return Vector3(hv.x, vy, hv.z)
+
+
+## The hop's tick inside the chase: the crouch, the leap, the landing. True while it owns the body.
+func _update_hop(delta: float, dist: float) -> bool:
+	if hopping:
+		velocity.y -= GameState.g_zombie() * delta
+		move_and_slide()
+		if is_on_floor() and velocity.y <= 0.0 and _state_t > 0.15:
+			hopping = false
+			hops_done += 1
+			_hop_cd = float(hop_cfg().get("cooldown_seconds", 6.0))
+			velocity = Vector3.ZERO
+			AudioDirector.play_3d("zombie_attack", global_position + Vector3.UP, -6.0, 0.2)
+			_react_clip = ""
+			_enter(State.STAGGER)
+			_react_len = float(hop_cfg().get("land_stagger_seconds", 0.35))
+		elif global_position.y < kill_plane_y:
+			hopping = false
+			recycle()
+		return true
+	if _hop_tele > 0.0:
+		_hop_tele -= delta
+		_halt(delta)
+		if target != null:
+			_face(target.global_position)
+		if _hop_tele <= 0.0:
+			_hop_tele = -1.0
+			if target == null or not is_on_floor():
+				return false
+			hopping = true
+			_state_t = 0.0
+			_agent.avoidance_enabled = false
+			velocity = hop_velocity(target.global_position - global_position, float(hop_cfg().get("apex_height", 2.2)), GameState.g_zombie())
+			_agent.avoidance_enabled = true
+			_tree_play("React", str(_anim["clips"]["react"]["stagger"]), 0.5)
+		return true
+	var hc: Dictionary = hop_cfg()
+	var kind_hops: bool = bool(_cfg.get("leap_hop", true))
+	if target != null and hop_due(GameState.gravity_scale, kind_hops, is_on_floor(), dist, _clear_to(target), ZoneVolume.vacuum_at(get_tree(), global_position), is_crawler, _hop_cd, hc):
+		_hop_tele = float(hc.get("telegraph_seconds", 0.5))
+		_halt(delta)
+		return true
+	return false
+
+
+# ---------------------------------------------------------------- the Suited's visor (T-112)
+
+## A head hit on a Suited: the visor cracks (once); in vacuum the suit lets go `visor_death_seconds` later.
+func _crack_visor(by_player: int, weapon_id: StringName) -> void:
+	if visor_cracked:
+		return
+	visor_cracked = true
+	_visor_by = by_player
+	_visor_weapon = weapon_id
+	AudioDirector.play_3d("impact_flesh", global_position + Vector3.UP * 1.6, 3.0, 0.5)
+	Effects.dust_puff(global_position + Vector3.UP * 1.65, "snow", 12)
+	var crack: Node3D = _kind_nodes.get("visor_crack") as Node3D
+	if crack != null:
+		crack.visible = true
+	if ZoneVolume.vacuum_at(get_tree(), global_position):
+		_visor_t = float(_cfg.get("visor_death_seconds", 2.0))
 
 
 # ---------------------------------------------------------------- open ground (T-080, Map 0's GROUNDS)
@@ -1449,6 +1560,10 @@ func take_damage(amount: float, limb: StringName, weapon_id: StringName, by_play
 		return false
 	if (limb == &"torso" or limb == &"arms") and kind == &"bullet" and not armor_piercing:
 		amount *= armor_torso_mult
+	if limb == &"head" and _cfg.has("head_mult"):
+		amount *= float(_cfg["head_mult"])   # the Suited's visor (T-112)
+	if limb == &"head" and bool(_cfg.get("visor", false)) and kind != &"world" and kind != &"fire":
+		_crack_visor(by_player, weapon_id)
 	amount *= vulnerability()
 	if GameState.has_flag(&"deaths_door") and kind != &"world":
 		amount = hp + 1.0
@@ -2106,8 +2221,13 @@ func _apply_kind() -> void:
 	(_kind_nodes["glass"] as Node3D).visible = enemy_id == &"glasshide"
 	(_kind_nodes["glass_arm"] as Node3D).visible = enemy_id == &"glasshide"
 	(_kind_nodes["lantern"] as Node3D).visible = enemy_id == &"bellringer"
+	(_kind_nodes["suit"] as Node3D).visible = enemy_id == &"suited"
+	(_kind_nodes["visor_crack"] as Node3D).visible = false
 	_lantern_light.light_energy = 1.6 if enemy_id == &"bellringer" else 0.0
 	match enemy_id:
+		&"suited":
+			_pivot.scale = Vector3.ONE * 1.05
+			set_posture("none", 0.0)
 		&"bellringer":
 			_body.mesh = ZombieBody.build_skinned("bellringer", "thin", false)
 			_variant = "bellringer"
@@ -2171,6 +2291,33 @@ func _build_kind_parts() -> void:
 	_lantern_light.position = Vector3(0, -0.19, 0)
 	lantern.add_child(_lantern_light)
 	_kind_nodes["lantern"] = lantern
+	# the Suited's suit (T-112): a helmet over the head, the pack on the back, the visor's crack shown once hit
+	var suit: Node3D = Node3D.new()
+	suit.name = "Suit"
+	bone_attachment("Head").add_child(suit)
+	var sm: MeshInstance3D = MeshInstance3D.new()
+	sm.mesh = ZombieBody.build_mesh("_", [
+		ZombieBody._cyl(0.17, 0.19, 0.3, Vector3(0, 0.06, 0), "lens", Vector3.ZERO, Vector3.ONE, 12),
+		ZombieBody._cyl(0.2, 0.2, 0.04, Vector3(0, -0.1, 0), "metal", Vector3.ZERO, Vector3.ONE, 12)])
+	suit.add_child(sm)
+	_kind_nodes["suit"] = suit
+	var pack: Node3D = Node3D.new()
+	bone_attachment("Chest").add_child(pack)
+	var pm: MeshInstance3D = MeshInstance3D.new()
+	pm.mesh = ZombieBody.build_mesh("_", [ZombieBody._box(Vector3(0.3, 0.4, 0.14), Vector3(0, 0.12, 0.17), "metal")])
+	pack.add_child(pm)
+	pack.visible = false
+	suit.visibility_changed.connect(func() -> void: pack.visible = suit.visible)
+	var crack: Node3D = Node3D.new()
+	crack.name = "VisorCrack"
+	crack.visible = false
+	suit.add_child(crack)
+	var cm: MeshInstance3D = MeshInstance3D.new()
+	cm.mesh = ZombieBody.build_mesh("_", [
+		ZombieBody._box(Vector3(0.012, 0.16, 0.012), Vector3(0.03, 0.08, -0.19), "crystal", Vector3(0, 0, 0.4)),
+		ZombieBody._box(Vector3(0.012, 0.1, 0.012), Vector3(-0.04, 0.05, -0.19), "crystal", Vector3(0, 0, -0.7))])
+	crack.add_child(cm)
+	_kind_nodes["visor_crack"] = crack
 
 
 ## A burst of glass shards (Glasshide shatter, Bellringer death, portal). Presentation only.

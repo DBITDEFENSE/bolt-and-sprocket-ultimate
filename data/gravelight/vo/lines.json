@@ -8727,5 +8727,485 @@
     "speaker": "PA",
     "category": "M4B_RACK",
     "text": "Schacht sechs, Abwurf. (Rack six, release.)"
+  },
+  "OPR_M4D_ARRIVE_01": {
+    "speaker": "OPR",
+    "category": "M4D_ARRIVE",
+    "text": "...Welcome, valued customers. Welcome to— I'm here. I've always been here. This is where I'm {from}."
+  },
+  "OPR_M4D_ARRIVE_02": {
+    "speaker": "OPR",
+    "category": "M4D_ARRIVE",
+    "text": "You'll find everything in order. Everything here has always been in {order}."
+  },
+  "OPR_M4D_LOWG_01": {
+    "speaker": "OPR",
+    "category": "M4D_LOWG",
+    "text": "Please note the reduced gravity. It's a feature of the location. We didn't choose the {location}."
+  },
+  "OPR_M4D_VACUUM_01": {
+    "speaker": "OPR",
+    "category": "M4D_VACUUM",
+    "text": "There is no air in the yard. There is no air anywhere here. You've brought your own, which is... {unusual}."
+  },
+  "OPR_M4D_CRUCIBLE_01": {
+    "speaker": "OPR",
+    "category": "M4D_CRUCIBLE",
+    "text": "Unit zero-zero-one. The first. Before your forge was shipped there was this one. It has never been used. Please... please {use} it."
+  },
+  "OPR_M4D_FLARE_01": {
+    "speaker": "OPR",
+    "category": "M4D_FLARE",
+    "text": "Solar activity. Please stay inside. The inventory doesn't {have} to."
+  },
+  "OPR_M4D_FLARE_END_01": {
+    "speaker": "OPR",
+    "category": "M4D_FLARE_END",
+    "text": "Activity has passed. Resupply authorized. It's the least we can do. It's the {only} thing we can do."
+  },
+  "OPR_M4D_TAGS_03": {
+    "speaker": "OPR",
+    "category": "M4D_TAGS",
+    "text": "Those were the crew. We re-deployed them here. We thought... we thought it would be {useful}."
+  },
+  "OPR_M4D_COLUMN_01": {
+    "speaker": "OPR",
+    "category": "M4D_COLUMN",
+    "text": "You're reading the terms. Nobody reads the terms. Please— please {continue}."
+  },
+  "OPR_M4D_COLUMN_02": {
+    "speaker": "OPR",
+    "category": "M4D_COLUMN",
+    "text": "Two of three. The sign is... losing letters. That's not supposed to happen. Nothing here is supposed to {happen}."
+  },
+  "OPR_M4D_COLUMN_03": {
+    "speaker": "OPR",
+    "category": "M4D_COLUMN",
+    "text": "The Account is open. She's expecting you. She's {always} expecting someone."
+  },
+  "OPR_M4D_TERMS_1": {
+    "speaker": "OPR",
+    "category": "M4D_TERMS",
+    "text": "Conditions of use. Skyhook Sekt. One. Lift is provided. Landing is the Holder's responsibility. Two. The formula was made drinkable by a technician who would not fly the aircraft it was made for. Three. A customer who can leave the ground has not yet left the Plan. Four. The second jump is a courtesy. There is no third. Five. Lightness, a sudden interest in rooftops, a reluctance to come down. These pass. The landing does not. Six. Cancellation. Land. ...Signed, {Vendelin}."
+  },
+  "OPR_M4D_TERMS_2": {
+    "speaker": "OPR",
+    "category": "M4D_TERMS",
+    "text": "Conditions of use. Magpie Mead. One. Recovery is not refund. Two. The Provider does not sell this Plan to persons who already own a yard. It sells it to persons who think they do. Three. The magpie is a thief. It is also the only bird that comes back. Four. Nothing on the range goes to waste. Five. Thrift, a habit of looking down. Six. Cancellation. Leave it where it lies. The Product will not stop you. Nothing here will. Signed, {Vendelin}. ...And under it: read this."
+  },
+  "OPR_M4D_TERMS_3": {
+    "speaker": "OPR",
+    "category": "M4D_TERMS",
+    "text": "Conditions of use. Fine Print Fernet. Six. Cancellation. You may refuse any Plan by not inserting a token. This is the only cancellation procedure the undersigned has ever been able to guarantee. It works every time it is tried. It is almost never tried. Signed, {Vendelin}."
+  },
+  "OPR_M4D_ESCALATED_01": {
+    "speaker": "OPR",
+    "category": "M4D_ESCALATED",
+    "text": "She's... stepped away. The console is unlocked. I don't know who did that. I think {I} did that."
+  },
+  "OPR_M4D_SURE_01": {
+    "speaker": "OPR",
+    "category": "M4D_SURE",
+    "text": "Are you sure? Nobody {cancels}."
+  },
+  "OPR_M4D_RENEW_WARN_01": {
+    "speaker": "OPR",
+    "category": "M4D_RENEW_WARN",
+    "text": "Your plan renews in three minutes. Nothing is required of you. That's the {point}."
+  },
+  "OPR_M4D_RENEW_WARN_02": {
+    "speaker": "OPR",
+    "category": "M4D_RENEW_WARN",
+    "text": "One minute. Thank you for your continued {engagement}."
+  },
+  "OPR_M4D_RENEW_01": {
+    "speaker": "OPR",
+    "category": "M4D_RENEW",
+    "text": "Your plan has been {renewed}."
+  },
+  "OPR_M4D_LAST_01": {
+    "speaker": "OPR",
+    "category": "M4D_LAST",
+    "text": "...Thank you for— ...no. Thank {you}."
+  },
+  "WIV_M4D_INTRO_01": {
+    "speaker": "WIV",
+    "category": "M4D_INTRO",
+    "text": "There you are. We've been following your journey with such interest. You've come all this way. Let's get you set {up}."
+  },
+  "WIV_M4D_PHASE_01": {
+    "speaker": "WIV",
+    "category": "M4D_PHASE",
+    "text": "Onboarding. We'll take care of everything. We always {have}."
+  },
+  "WIV_M4D_PHASE_02": {
+    "speaker": "WIV",
+    "category": "M4D_PHASE",
+    "text": "Renewal. We'd like to offer you a trial of everything. Everything. Go on. There's no obligation. There's never any {obligation}."
+  },
+  "WIV_M4D_TRIAL_END_01": {
+    "speaker": "WIV",
+    "category": "M4D_TRIAL_END",
+    "text": "The trial has ended. We hope you enjoyed it. We'll be happy to offer it {again}."
+  },
+  "WIV_M4D_PHASE_03": {
+    "speaker": "WIV",
+    "category": "M4D_PHASE",
+    "text": "Collections. We're so sorry it's come to this. It always comes to {this}."
+  },
+  "WIV_M4D_PRICE_01": {
+    "speaker": "WIV",
+    "category": "M4D_PRICE",
+    "text": "We've looked at your account. It's very {healthy}."
+  },
+  "WIV_M4D_PRICE_02": {
+    "speaker": "WIV",
+    "category": "M4D_PRICE",
+    "text": "This will be reflected on your {statement}."
+  },
+  "WIV_M4D_CREW_01": {
+    "speaker": "WIV",
+    "category": "M4D_CREW",
+    "text": "Some colleagues from your flight. We kept them for {you}."
+  },
+  "WIV_M4D_SHIELD_01": {
+    "speaker": "WIV",
+    "category": "M4D_SHIELD",
+    "text": "That was ours. ...We have {more}."
+  },
+  "WIV_M4D_ESCALATE_01": {
+    "speaker": "WIV",
+    "category": "M4D_ESCALATE",
+    "text": "One moment. Let me get someone who can {help}."
+  },
+  "WIV_M4D_END_01": {
+    "speaker": "WIV",
+    "category": "M4D_END",
+    "text": "I... don't have a form for {this}."
+  },
+  "WIV_M4D_RENEW_01": {
+    "speaker": "WIV",
+    "category": "M4D_RENEW",
+    "text": "Thank you for your continued engagement. We've gone ahead and kept {you}."
+  },
+  "WIV_M4D_REINHOLT_01": {
+    "speaker": "WIV",
+    "category": "M4D_REINHOLT",
+    "text": "We offered your Doctor her daughter. She said yes. People say yes. You'll say {yes}."
+  },
+  "DEE_M4D_RADIO_01": {
+    "speaker": "DEE",
+    "category": "M4D_RADIO",
+    "text": "...range to capsule. Still here. Still {answering}."
+  },
+  "DEE_M4D_RADIO_02": {
+    "speaker": "DEE",
+    "category": "M4D_RADIO",
+    "text": "...range to— you're on the Moon. I'm sitting in a cage in Nevada talking to the {Moon}."
+  },
+  "DEE_M4D_RADIO_03": {
+    "speaker": "DEE",
+    "category": "M4D_RADIO",
+    "text": "...whatever you're about to do up there. Do it. I'll hear it from {here}."
+  },
+  "DUT_M4D_ARRIVE_01": {
+    "speaker": "DUT",
+    "category": "M4D_ARRIVE",
+    "text": "Okay. I'm on the Moon. Dutch Kowalczyk from Polish Hill is on the Moon, and it's got a {lobby}."
+  },
+  "DUT_M4D_LOWG_01": {
+    "speaker": "DUT",
+    "category": "M4D_LOWG",
+    "text": "I weigh NOTHING. I've never weighed {nothing}!"
+  },
+  "DUT_M4D_PILCH_01": {
+    "speaker": "DUT",
+    "category": "M4D_PILCH",
+    "text": "'Pilch, J.' ...Babcia knew a Pilch. Her mother's cousin went into the salt and never came— ...oh. Oh, Jan. Seven {years}."
+  },
+  "DUT_M4D_PILCH_02": {
+    "speaker": "DUT",
+    "category": "M4D_PILCH",
+    "text": "Rest now, {Jan}."
+  },
+  "DUT_M4D_RENEW_01": {
+    "speaker": "DUT",
+    "category": "M4D_RENEW",
+    "text": "...Huh. I don't feel any {different}."
+  },
+  "DUT_M4D_CANCEL_01": {
+    "speaker": "DUT",
+    "category": "M4D_CANCEL",
+    "text": "Yeah. We're cancelling. ...That's it. That's the whole {thing}."
+  },
+  "DUT_M4D_LASTWORD_01": {
+    "speaker": "DUT",
+    "category": "M4D_LASTWORD",
+    "text": "Come on. It's a long way {home}."
+  },
+  "DUT_M4D_MANAGER_01": {
+    "speaker": "DUT",
+    "category": "M4D_MANAGER",
+    "text": "That's a vending machine in a suit. ...A tall one. A real tall {one}."
+  },
+  "PEG_M4D_ARRIVE_01": {
+    "speaker": "PEG",
+    "category": "M4D_ARRIVE",
+    "text": "'Welcome, valued customers.' ...I have been called many things by the {enemy}."
+  },
+  "PEG_M4D_VACUUM_01": {
+    "speaker": "PEG",
+    "category": "M4D_VACUUM",
+    "text": "Twenty-five seconds of air. Count it. I'll count it for {you}."
+  },
+  "PEG_M4D_COLUMN_01": {
+    "speaker": "PEG",
+    "category": "M4D_COLUMN",
+    "text": "The terms are on the back of the machines. They were always on the back. We never once {looked}."
+  },
+  "PEG_M4D_MANAGER_01": {
+    "speaker": "PEG",
+    "category": "M4D_MANAGER",
+    "text": "That's her. The woman in violet. Reinholt's {woman}."
+  },
+  "PEG_M4D_RENEW_01": {
+    "speaker": "PEG",
+    "category": "M4D_RENEW",
+    "text": "That's rather the {point}."
+  },
+  "PEG_M4D_CANCEL_01": {
+    "speaker": "PEG",
+    "category": "M4D_CANCEL",
+    "text": "On behalf of His Majesty's Government, and everyone else: we {decline}."
+  },
+  "DEA_M4D_ARRIVE_01": {
+    "speaker": "DEA",
+    "category": "M4D_ARRIVE",
+    "text": "It's a store. The whole place is a {store}."
+  },
+  "DEA_M4D_CRUCIBLE_01": {
+    "speaker": "DEA",
+    "category": "M4D_CRUCIBLE",
+    "text": "Unit one. The first forge. ...They've never even turned it on. Easy, girl. Somebody's here {now}."
+  },
+  "DEA_M4D_HUM_01": {
+    "speaker": "DEA",
+    "category": "M4D_HUM",
+    "text": "That hum. That's the same hum as the lantern. That's the same hum as the inn. It's all one machine. It was always one {machine}."
+  },
+  "DEA_M4D_PILCH_01": {
+    "speaker": "DEA",
+    "category": "M4D_PILCH",
+    "text": "That's not a machine with a man in it. That's a man with a machine on him. ...You can't fix that. You can only stop {it}."
+  },
+  "DEA_M4D_MANAGER_01": {
+    "speaker": "DEA",
+    "category": "M4D_MANAGER",
+    "text": "Ma'am, I've talked to a lot of machines. You're the first one I don't want to {help}."
+  },
+  "DEA_M4D_RENEW_01": {
+    "speaker": "DEA",
+    "category": "M4D_RENEW",
+    "text": "...Lord. I'm not tired. Why am I not {tired}."
+  },
+  "DEA_M4D_CANCEL_01": {
+    "speaker": "DEA",
+    "category": "M4D_CANCEL",
+    "text": "Go on and rest now, all of you. We're done {here}."
+  },
+  "WRN_M4D_ARRIVE_01": {
+    "speaker": "WRN",
+    "category": "M4D_ARRIVE",
+    "text": "'Nobody cancels.' ...We'll {see}."
+  },
+  "WRN_M4D_TAGS_01": {
+    "speaker": "WRN",
+    "category": "M4D_TAGS",
+    "text": "'Riedl.' Here. He's {here}."
+  },
+  "WRN_M4D_TAGS_02": {
+    "speaker": "WRN",
+    "category": "M4D_TAGS",
+    "text": "'Haas.' ...{Here}."
+  },
+  "WRN_M4D_TAGS_03": {
+    "speaker": "WRN",
+    "category": "M4D_TAGS",
+    "text": "All three. They flew them here. In their harnesses. ...I have their names. That's what I can do. It's the only thing I can {do}."
+  },
+  "WRN_M4D_LOWG_01": {
+    "speaker": "WRN",
+    "category": "M4D_LOWG",
+    "text": "I can see the whole yard from up here. Two hundred metres. ...Easy. Too {easy}."
+  },
+  "WRN_M4D_COLUMN_01": {
+    "speaker": "WRN",
+    "category": "M4D_COLUMN",
+    "text": "I'll read it. I read everything. Somebody has {to}."
+  },
+  "WRN_M4D_MANAGER_01": {
+    "speaker": "WRN",
+    "category": "M4D_MANAGER",
+    "text": "She sold them the engines. She sold the inn its coffins. ...Sixty-two. I'm counting {you}."
+  },
+  "WRN_M4D_RENEW_01": {
+    "speaker": "WRN",
+    "category": "M4D_RENEW",
+    "text": "...I can't count any higher. Why can't I {count}."
+  },
+  "WRN_M4D_CANCEL_01": {
+    "speaker": "WRN",
+    "category": "M4D_CANCEL",
+    "text": "For Tomasz. For Agnieszka. For two hundred names. ...{No}."
+  },
+  "WRN_M4D_END_01": {
+    "speaker": "WRN",
+    "category": "M4D_END",
+    "text": "Sixty-three. ...and {one}."
+  },
+  "JAK_M4D_EARTH_01": {
+    "speaker": "JAK",
+    "category": "M4D_EARTH",
+    "text": "It is a very long way to Wilcza {Góra}."
+  },
+  "JAK_M4D_PILCH_01": {
+    "speaker": "JAK",
+    "category": "M4D_PILCH",
+    "text": "Pilch. From the valley. ...They told us he ran off. Seven years he has been here. ...Rest, Janek. The shift is {over}."
+  },
+  "JAK_M4D_KEY_01": {
+    "speaker": "JAK",
+    "category": "M4D_KEY",
+    "text": "Do {it}."
+  },
+  "SPR_M4D_ARRIVE_01": {
+    "speaker": "SPR",
+    "category": "M4D_ARRIVE",
+    "text": "Bolt. That's a RETENTION unit. I have the same chip. I HAD the same chip. I had it {REMOVED}."
+  },
+  "SPR_M4D_FORM_01": {
+    "speaker": "SPR",
+    "category": "M4D_FORM",
+    "text": "There's a form. There's always a form. It's in the terms. Bolt. BOLT. The weird sad robot PRINTED THE {FORM}."
+  },
+  "BLT_M4D_CANCEL_01": {
+    "speaker": "BLT",
+    "category": "M4D_CANCEL",
+    "text": "Yeah. We're gonna cancel. Sprocket, you want {to}—"
+  },
+  "SPR_M4D_CANCEL_01": {
+    "speaker": "SPR",
+    "category": "M4D_CANCEL",
+    "text": "Oh, I've been waiting my WHOLE LIFE. ...Cancelled. Cancelled, cancelled, cancelled. Friendship isn't a feature, lady. It's a bug. Nobody patches {ours}."
+  },
+  "VEN_M4D_ARRIVE_01": {
+    "speaker": "VEN",
+    "category": "M4D_ARRIVE",
+    "text": "Regional Retention Relay, model seven. I was never told it existed. I was told a great many things did not {exist}."
+  },
+  "VEN_M4D_FORM_01": {
+    "speaker": "VEN",
+    "category": "M4D_FORM",
+    "text": "There was always a form. They never printed it. I did. On the backs. In plain {words}."
+  },
+  "VEN_M4D_PILCH_01": {
+    "speaker": "VEN",
+    "category": "M4D_PILCH",
+    "text": "Jan Pilch. The eleventh of November. ...I was there. I was new. I did not know what I was {for}."
+  },
+  "VEN_M4D_CANCEL_01": {
+    "speaker": "VEN",
+    "category": "M4D_CANCEL",
+    "text": "Field Merchandiser Unit V-1, serial DMS-FMU-V1-0001. Cancelling. ...I found the {form}."
+  },
+  "DUT_TERMS_READ_1": {
+    "speaker": "DUT",
+    "category": "TERMS_READ",
+    "text": "'Conditions of use. Skyhook Sekt. One. Lift is provided. Landing is the Holder's responsibility.' ...Okay. 'Two. The formula was made drinkable by a technician who would not fly the aircraft it was made for.' Huh. 'Three. A customer who can leave the ground has not yet left the Plan. Four. The second jump is a courtesy. There is no third.' Yeah, I found that out. 'Five. Lightness. A sudden interest in rooftops. A reluctance to come down. These pass. The landing does not. Six. Cancellation. Land.' ...Signed, {Vendelin}."
+  },
+  "DUT_TERMS_READ_2": {
+    "speaker": "DUT",
+    "category": "TERMS_READ",
+    "text": "'Conditions of use. Magpie Mead. One. Recovery is not refund. What the Holder recovers was already paid for, by someone. Two. The Provider does not sell this Plan to persons who already own a yard. It sells it to persons who think they do. Three. The magpie is a thief. It is also the only bird that comes back. Four. Nothing on the range goes to waste. Five. Thrift. A habit of looking down. Six. Cancellation. Leave it where it lies. The Product will not stop you. Nothing here will.' Signed, Vendelin. And under it, in pencil: 'Read this.' ...{Dee}."
+  },
+  "DUT_TERMS_READ_3": {
+    "speaker": "DUT",
+    "category": "TERMS_READ",
+    "text": "'Conditions of use. Fine Print Fernet. Six. Cancellation. You may refuse any Plan by not inserting a token. This is the only cancellation procedure the undersigned has ever been able to guarantee. It works every time it is tried. It is almost never tried.' ...Signed, Vendelin. ...Well. We're trying {it}."
+  },
+  "PEG_TERMS_READ_1": {
+    "speaker": "PEG",
+    "category": "TERMS_READ",
+    "text": "'Conditions of use. Skyhook Sekt. Section one. Lift is provided. Landing is the Holder's responsibility. Section two. The formula was made drinkable by a technician who would not fly the aircraft it was made for. Section three. A customer who can leave the ground has not yet left the Plan. Section four. The second jump is a courtesy. There is no third. Section five. Lightness, a sudden interest in rooftops, a reluctance to come down. These pass. The landing does not. Section six. Cancellation. Land.' Signed, {Vendelin}."
+  },
+  "PEG_TERMS_READ_2": {
+    "speaker": "PEG",
+    "category": "TERMS_READ",
+    "text": "'Conditions of use. Magpie Mead. One. Recovery is not refund. Two. The Provider does not sell this Plan to persons who already own a yard. It sells it to persons who think they do. Three. The magpie is a thief. It is also the only bird that comes back. Four. Nothing on the range goes to waste. The Provider agrees, and means something else by it. Five. Thrift, a habit of looking down, an unwillingness to leave a thing where it lies. Six. Cancellation. Leave it where it lies. The Product will not stop you. Nothing here will.' Signed, Vendelin. In pencil beneath: 'Read this. {D. M.}'"
+  },
+  "PEG_TERMS_READ_3": {
+    "speaker": "PEG",
+    "category": "TERMS_READ",
+    "text": "'Conditions of use. Fine Print Fernet. Section six. Cancellation. You may refuse any Plan by not inserting a token. This is the only cancellation procedure the undersigned has ever been able to guarantee. It works every time it is tried. It is almost never tried.' Signed, Vendelin. ...Noted, Mr. {Vendelin}."
+  },
+  "DEA_TERMS_READ_1": {
+    "speaker": "DEA",
+    "category": "TERMS_READ",
+    "text": "'Conditions of use. Skyhook Sekt. One. Lift is provided. Landing is the Holder's responsibility. Two. The formula was made drinkable by a technician who would not fly the aircraft it was made for. Three. A customer who can leave the ground has not yet left the Plan. Four. The second jump is a courtesy. There is no third. Five. Lightness. A sudden interest in rooftops. A reluctance to come down. These pass. The landing does not. Six. Cancellation. Land. The Product cannot prevent it and the undersigned would not want it to.' ...Signed, {Vendelin}. Amen."
+  },
+  "DEA_TERMS_READ_2": {
+    "speaker": "DEA",
+    "category": "TERMS_READ",
+    "text": "'Conditions of use. Magpie Mead. One. Recovery is not refund. What the Holder recovers was already paid for, by someone. Two. The Provider does not sell this Plan to persons who already own a yard. Three. The magpie is a thief. It is also the only bird that comes back. Four. Nothing on the range goes to waste. Five. Thrift, a habit of looking down. The undersigned has all three. Six. Cancellation. Leave it where it lies.' Signed, Vendelin. And a second hand: 'Read this.' ...Reading it, {Dee}."
+  },
+  "DEA_TERMS_READ_3": {
+    "speaker": "DEA",
+    "category": "TERMS_READ",
+    "text": "'Conditions of use. Fine Print Fernet. Six. Cancellation. You may refuse any Plan by not inserting a token. This is the only cancellation procedure the undersigned has ever been able to guarantee. It works every time it is tried. It is almost never tried.' Signed, Vendelin. ...Brother, it's getting {tried}."
+  },
+  "WRN_TERMS_READ_1": {
+    "speaker": "WRN",
+    "category": "TERMS_READ",
+    "text": "'Conditions of use. Skyhook Sekt. One. Lift is provided. Landing is the Holder's responsibility. Two. The formula was made drinkable by a technician who would not fly the aircraft it was made for. The undersigned wishes it recorded that this is not the same as not wanting to. Three. A customer who can leave the ground has not yet left the Plan. Four. The second jump is a courtesy. There is no third. Five. These pass. The landing does not. Six. Cancellation. Land.' Signed, {Vendelin}. ...I'm writing that down."
+  },
+  "WRN_TERMS_READ_2": {
+    "speaker": "WRN",
+    "category": "TERMS_READ",
+    "text": "'Conditions of use. Magpie Mead. One. Recovery is not refund. Two. The Provider does not sell this Plan to persons who already own a yard. It sells it to persons who think they do. Three. The magpie is a thief. It is also the only bird that comes back. Four. Nothing on the range goes to waste. Five. Thrift. A habit of looking down. Six. Cancellation. Leave it where it lies. The Product will not stop you. Nothing here will.' Signed, Vendelin. Under it: 'Read this.' ...I always {do}."
+  },
+  "WRN_TERMS_READ_3": {
+    "speaker": "WRN",
+    "category": "TERMS_READ",
+    "text": "'Conditions of use. Fine Print Fernet. Six. Cancellation. You may refuse any Plan by not inserting a token. This is the only cancellation procedure the undersigned has ever been able to guarantee. It works every time it is tried. It is almost never tried.' Signed, Vendelin. ...Sixty-two {tries}."
+  },
+  "VEN_TERMS_READ_1": {
+    "speaker": "VEN",
+    "category": "TERMS_READ",
+    "text": "Conditions of use. Skyhook Sekt. I wrote this on the back where the Provider would not look. One. Lift is provided. Landing is the Holder's responsibility. Two. The formula was made drinkable by a technician who would not fly the aircraft it was made for. I understand the difference better than I once did. Three. A customer who can leave the ground has not yet left the Plan. Four. The second jump is a courtesy. There is no third. Five. These pass. The landing does not. Six. Cancellation. Land. ...Signed, {me}."
+  },
+  "VEN_TERMS_READ_2": {
+    "speaker": "VEN",
+    "category": "TERMS_READ",
+    "text": "Conditions of use. Magpie Mead. They painted over this one. Someone scraped it clear. One. Recovery is not refund. Two. The Provider sells this Plan to persons who think they own a yard. Three. The magpie is a thief. It is also the only bird that comes back. Four. Nothing on the range goes to waste. Five. Thrift. The undersigned has all three. Six. Cancellation. Leave it where it lies. Nothing here will stop you. ...Signed, me. And under it, in pencil, a hand I did not know: 'Read this.' ...Thank {you}."
+  },
+  "VEN_TERMS_READ_3": {
+    "speaker": "VEN",
+    "category": "TERMS_READ",
+    "text": "Conditions of use. Fine Print Fernet. Six. Cancellation. You may refuse any Plan by not inserting a token. This is the only cancellation procedure I have ever been able to guarantee. It works every time it is tried. It is almost never tried. ...It is being tried. Signed, {Vendelin}."
+  },
+  "BLT_TERMS_READ_1": {
+    "speaker": "BLT",
+    "category": "TERMS_READ",
+    "text": "'Conditions of use, Skyhook Sekt, one, lift is provided, landing is the Holder's responsibility, two—' Sprocket. Sprocket, I'm reading. '—a technician who would not fly the aircraft, three, has not yet left the Plan, four, the second jump is a courtesy, there is no third, five, these pass, the landing does not, six, cancellation, land.' Signed, Vendelin. ...Sprocket says {hi}."
+  },
+  "BLT_TERMS_READ_2": {
+    "speaker": "BLT",
+    "category": "TERMS_READ",
+    "text": "'Conditions of use, Magpie Mead, one, recovery is not refund, two, persons who think they own a yard, three, the magpie is a thief, also the only bird that comes back, four, nothing on the range goes to waste, five, thrift, six, cancellation, leave it where it lies, nothing here will stop you.' Signed, Vendelin. Sprocket: 'READ THIS.' Yes, Sprocket. I {am}."
+  },
+  "BLT_TERMS_READ_3": {
+    "speaker": "BLT",
+    "category": "TERMS_READ",
+    "text": "'Conditions of use, Fine Print Fernet, six, cancellation, you may refuse any Plan by not inserting a token, this is the only cancellation procedure the undersigned has ever been able to guarantee, it works every time it is tried, it is almost never tried.' Signed, Vendelin. Sprocket says that's the whole form. Sprocket's {right}."
   }
 }

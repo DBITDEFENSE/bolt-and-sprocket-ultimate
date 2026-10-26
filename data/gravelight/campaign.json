@@ -5,7 +5,8 @@
     "map01_kaltenbrunn",
     "map02_totenhafen",
     "map04a_thalbach",
-    "map04b_kranich"
+    "map04b_kranich",
+    "map04d_mondlicht"
   ],
   "standalone": [],
   "scenes": {
@@ -13,14 +14,16 @@
     "map01_kaltenbrunn": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
     "map02_totenhafen": "res://gravelight/maps/map02_totenhafen/map02.tscn",
     "map04a_thalbach": "res://gravelight/maps/map04_fernflug/map04a.tscn",
-    "map04b_kranich": "res://gravelight/maps/map04_fernflug/map04b.tscn"
+    "map04b_kranich": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+    "map04d_mondlicht": "res://gravelight/maps/map04_fernflug/map04d.tscn"
   },
   "display_names": {
     "map00_crossroads": "Crossroads Inn",
     "map01_kaltenbrunn": "Kaltenbrunn",
     "map02_totenhafen": "Totenhafen",
     "map04a_thalbach": "Fernflug — Act I: Werk Thalbach",
-    "map04b_kranich": "Fernflug — Act II: der Kranich"
+    "map04b_kranich": "Fernflug — Act II: der Kranich",
+    "map04d_mondlicht": "Fernflug — Act IV: Mondlicht"
   },
   "arrival_grace_seconds": 14.0,
   "arrival_banner": "%s\nThe squad arrives. Round %d begins shortly.",

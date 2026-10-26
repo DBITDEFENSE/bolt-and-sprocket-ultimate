@@ -20,7 +20,12 @@ func after_each() -> void:
 # ---------------------------------------------------------------- exfil data
 
 func test_chain_is_map0_map1_map2_then_map4_acts() -> void:
-	assert_eq(Campaign.chain(), ["map00_crossroads", "map01_kaltenbrunn", "map02_totenhafen", "map04a_thalbach", "map04b_kranich"])
+	var c: Array = Campaign.chain()
+	assert_eq(c.slice(0, 5), ["map00_crossroads", "map01_kaltenbrunn", "map02_totenhafen", "map04a_thalbach", "map04b_kranich"], "the first five never move")
+	assert_eq(str(c.back()), "map04d_mondlicht", "Mondlicht is the last act (UPDATE 07 Act IV)")
+	assert_true(str(c[c.size() - 2]).begins_with("map04"), "and follows a Map 4 act (%s)" % str(c[c.size() - 2]))
+	for m: Variant in c:
+		assert_true(c.count(m) == 1, "%s appears once" % str(m))
 	assert_eq(Campaign.first_map(), &"map00_crossroads")
 	assert_eq(Campaign.scene_for(&"map00_crossroads"), "res://gravelight/maps/map00_crossroads/map00.tscn")
 	assert_eq(Campaign.scene_for(&"map02_totenhafen"), "res://gravelight/maps/map02_totenhafen/map02.tscn")

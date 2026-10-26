@@ -1,10 +1,11 @@
 {
-  "_doc": "Map 4 'Fernflug' Act IV: Mondlicht, the relay station (UPDATE 07, docs/MAP4_FERNFLUG.md §6, DECISIONS T-112/T-113). map_key: the story-prop / intel key. act: the act block (RoundManager: rounds are ACT IV · n from match round 30; gravity_scale / slide_distance_mult / vacuum are the map-wide physics GameState.apply_act_physics reads; the boss is summoned when its zone opens, not on a round; the renewal fallback renews the plan at act round renewal_fallback_act_round if the Account was never opened). zones: vacuum = no air (the AIR gauge); roam = open ground. earth: the sky object. solar_flare: the special round. columns: the three retention columns and the sign. renewal: the bad ending's clock. endings: the runners' timings. No exfil: this act ends the campaign (cancel_ending / renewal_ending).",
+  "_doc": "Map 4 'Fernflug' Act IV: Mondlicht, the relay station (UPDATE 07, docs/MAP4_FERNFLUG.md §6, DECISIONS T-112/T-113). map_key: the story-prop / intel key. act: the act block (RoundManager: rounds are ACT IV · n from match round start_round = 30, named here so the act numbers right whatever is built before it; gravity_scale / slide_distance_mult / vacuum are the map-wide physics GameState.apply_act_physics reads; the boss is summoned when its zone opens, not on a round; the renewal fallback renews the plan at act round renewal_fallback_act_round if the Account was never opened). zones: vacuum = no air (the AIR gauge); roam = open ground. earth: the sky object. solar_flare: the special round. columns: the three retention columns and the sign. renewal: the bad ending's clock. endings: the runners' timings. No exfil: this act ends the campaign (cancel_ending / renewal_ending).",
   "map_key": "4d",
   "act": {
     "index": 4,
     "numeral": "IV",
     "length_rounds": 16,
+    "start_round": 30,
     "transition": "ending",
     "special_kind": "solar_flare",
     "gravity_scale": 0.38,
@@ -285,7 +286,7 @@
         "NOBODY CANCELS",
         "NOBODY C NCELS",
         "NOBOD  C NC LS",
-        "N B DY  C N  LS"
+        "N B D  C N  LS"
       ]
     },
     "vo_opr": [

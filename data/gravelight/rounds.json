@@ -208,5 +208,7 @@
       "tonic_bottle",
       "resupply"
     ]
-  }
+  },
+  "retained_health_mult": 1.25,
+  "_doc_retained": "retained_health_mult: Map 4 Act IV's Retained state (the renewal ending, T-113): zombie health x this for the rest of the match."
 }

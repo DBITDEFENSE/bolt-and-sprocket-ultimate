@@ -485,6 +485,98 @@
       ],
       "easter_egg": [],
       "side": []
+    },
+    "map04d_mondlicht": {
+      "current": [
+        {
+          "when": {
+            "flag": "manager_escalated"
+          },
+          "text": "The console is unlocked: lift the cover and CANCEL",
+          "nodes": [
+            "AccountConsole"
+          ]
+        },
+        {
+          "when": {
+            "flag": "manager_present"
+          },
+          "text": "The Account Manager attends. Make her escalate.",
+          "nodes": [
+            "AccountConsole"
+          ]
+        },
+        {
+          "done": {
+            "zone_open": "B_CONCOURSE"
+          },
+          "text": "Leave the landing dome: the concourse",
+          "nodes": [
+            "Door_Concourse"
+          ]
+        },
+        {
+          "done": {
+            "any": [
+              {
+                "zone_open": "C_YARD"
+              },
+              {
+                "zone_open": "D_FULFILLMENT"
+              }
+            ]
+          },
+          "text": "Open the yard airlock or the store (the yard has no air: watch the gauge)",
+          "nodes": [
+            "Door_Yard",
+            "Door_FulfillmentB"
+          ]
+        },
+        {
+          "done": {
+            "zone_open": "E_HALL"
+          },
+          "text": "Reach the retention hall",
+          "nodes": [
+            "Door_Hall"
+          ]
+        },
+        {
+          "done": {
+            "flag": "account_open"
+          },
+          "text": "Read the terms on the three columns",
+          "nodes": [
+            "Column_1",
+            "Column_2",
+            "Column_3"
+          ]
+        },
+        {
+          "done": {
+            "zone_open": "F_CORE"
+          },
+          "text": "Open the Account",
+          "nodes": [
+            "Door_Account"
+          ]
+        },
+        {
+          "text": "Cancel."
+        }
+      ],
+      "easter_egg": [],
+      "side": [
+        {
+          "done": {
+            "flag": "cap_lifted_1"
+          },
+          "text": "The Lodestone lifts a column's cap: a shorter read",
+          "nodes": [
+            "Column_1"
+          ]
+        }
+      ]
     }
   },
   "quests": {

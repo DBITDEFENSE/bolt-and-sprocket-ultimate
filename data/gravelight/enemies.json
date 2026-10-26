@@ -221,6 +221,49 @@
         "map04b_kranich"
       ],
       "scrip": 60
+    },
+    "suited": {
+      "_doc": "Map 4 Act IV (UPDATE 07, docs/MAP4_FERNFLUG.md 6.9, T-112): Gängers in Darkmatter pressure suits (PERPETUAL). x1.4 health, the visor is the weak point (head_mult; a visor hit cracks it: in vacuum they die visor_death_seconds later even if the shot didn't kill, in pressure it is just the headshot). They walk and jog, never leap, never crawl. vacuum_only: the director and the Solar Flare spawn them where there is no air, nowhere else.",
+      "kind": "ganger_variant",
+      "kit": "soldier",
+      "health_mult": 1.4,
+      "head_mult": 3.0,
+      "visor": true,
+      "visor_death_seconds": 2.0,
+      "can_crawl": false,
+      "leap_hop": false,
+      "vacuum_only": true,
+      "tiers": {
+        "walk": 0.5,
+        "jog": 0.5
+      },
+      "scrip": {
+        "body": 100,
+        "neck": 110,
+        "head": 160,
+        "melee": 180
+      },
+      "maps": [
+        "map04d_mondlicht"
+      ]
+    },
+    "shield_cell": {
+      "_doc": "Map 4 Act IV (T-113): the Account Manager's three shield-cells, violet spheres that orbit her in COLLECTIONS (gravelight/enemies/map04/shield_cell.gd, a Zombie so every weapon and the Lodestone's lift / fling work on them). health is their own (not the round's); they regenerate every regen_seconds; one flung or carried into the vacuum shaft is gone for good. No Scrip, no crawl, no stagger.",
+      "kind": "boss_part",
+      "health": 2000,
+      "regen_seconds": 40.0,
+      "can_crawl": false,
+      "bullet_stagger": false,
+      "leap_hop": false,
+      "scrip": {
+        "body": 0,
+        "neck": 0,
+        "head": 0,
+        "melee": 0
+      },
+      "maps": [
+        "map04d_mondlicht"
+      ]
     }
   },
   "repath": {
@@ -452,5 +495,15 @@
   "visual": {
     "_doc": "Procedural body look (enemies/zombie_body.gd).",
     "crack_energy": 2.6
+  },
+  "leap_hop": {
+    "_doc": "The low-g hop (Map 4 Act IV, T-112): below max_gravity_scale every pressurized Gänger (kinds with leap_hop true or unset) that has a clear line to its target between range_min and range_max m crouches telegraph_seconds and leaps a ballistic arc of apex_height m at the target, lands with a short stagger, and waits cooldown_seconds before the next. Never in vacuum (the Suited never leap), never crawlers.",
+    "max_gravity_scale": 0.7,
+    "range_min": 5.0,
+    "range_max": 8.0,
+    "apex_height": 2.2,
+    "telegraph_seconds": 0.5,
+    "cooldown_seconds": 6.0,
+    "land_stagger_seconds": 0.35
   }
 }
