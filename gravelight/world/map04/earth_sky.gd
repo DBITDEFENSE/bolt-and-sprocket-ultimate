@@ -1,0 +1,199 @@
+class_name EarthSky
+extends Node3D
+## The Earth over the yard (UPDATE 07 Map 4 Act IV, docs/MAP4_FERNFLUG.md §6.2, T-112): a sky object far above the
+## relay. Its night side carries violet points for the burned cities (GameState.flags: bomb_<city>_hit from the
+## bomb run, London from the window), the retention signal's reach `spread` grows a little each act round from
+## `spread_from_round` (data: map04d.json "earth"), `cut()` freezes the spread and fades every point out over
+## `fade_seconds` (the relay is cut: the canon ending), `renew()` floods the night side violet over 10 s (the bad
+## ending), `flicker()` blinks it for the Solar Flare. Pure rules are static for the tests.
+
+const CITIES: Dictionary = {   # city key -> [lat, long] on the night side (degrees; presentation only)
+	"london": [51.5, -0.1], "boston": [42.4, -71.1], "providence": [41.8, -71.4], "new_haven": [41.3, -72.9],
+	"new_york": [40.7, -74.0], "philadelphia": [39.9, -75.2], "washington": [38.9, -77.0]}
+
+@export var radius: float = 48.0
+@export var cfg: Dictionary = {}
+
+var spread: float = 0.0            # 0..1 of the night side under the signal (presentation + the tests)
+var frozen: bool = false
+var faded: bool = false
+var renewed: bool = false
+var points: Dictionary = {}        # city -> MeshInstance3D
+var _spread_nodes: Array[MeshInstance3D] = []
+var _night: MeshInstance3D
+var _day: MeshInstance3D
+var _light: DirectionalLight3D
+var _flicker_t: float = 0.0
+var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
+
+
+## The cities lit violet by the flags: London once the window has played, every bombed city (bomb_<city>_hit).
+static func violet_cities(flags: Dictionary) -> Array[String]:
+	var out: Array[String] = []
+	if bool(flags.get(&"london_seen", false)) or bool(flags.get(&"london_hit", false)):
+		out.append("london")
+	for c: String in CITIES.keys():
+		if c == "london":
+			continue
+		if bool(flags.get(StringName("bomb_%s_hit" % c), false)):
+			out.append(c)
+	return out
+
+
+## The signal's reach on an act round: 0 before `from_round`, `per_round` more each round after, never past `cap`.
+static func spread_for(act_round: int, from_round: int, per_round: float, cap: float) -> float:
+	if act_round < from_round:
+		return 0.0
+	return clampf(float(act_round - from_round + 1) * per_round, 0.0, cap)
+
+
+func _ready() -> void:
+	add_to_group(&"earth_sky")
+	_rng.seed = 4041
+	_build()
+	refresh_from_flags()
+	GLBus.flag_changed.connect(func(_f: StringName, _v: Variant) -> void: refresh_from_flags())
+	GLBus.round_started.connect(_on_round_started)
+
+
+func _build() -> void:
+	_day = MeshInstance3D.new()
+	var sm: SphereMesh = SphereMesh.new()
+	sm.radius = radius
+	sm.height = radius * 2.0
+	sm.radial_segments = 48
+	sm.rings = 24
+	_day.mesh = sm
+	var dm: StandardMaterial3D = StandardMaterial3D.new()
+	dm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	dm.albedo_color = Color(0.32, 0.5, 0.92)
+	dm.emission_enabled = true
+	dm.emission = Color(0.2, 0.34, 0.7)
+	dm.emission_energy_multiplier = 1.4
+	_day.material_override = dm
+	_day.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(_day)
+	# the night side: a hemisphere a hair outside the globe, dark, turned toward the yard
+	_night = MeshInstance3D.new()
+	var nm: SphereMesh = SphereMesh.new()
+	nm.radius = radius * 1.01
+	nm.height = radius * 1.01
+	nm.is_hemisphere = true
+	nm.radial_segments = 48
+	nm.rings = 12
+	_night.mesh = nm
+	var nmat: StandardMaterial3D = StandardMaterial3D.new()
+	nmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	nmat.albedo_color = Color(0.02, 0.025, 0.05)
+	_night.material_override = nmat
+	_night.rotation_degrees = Vector3(-90, 0, 0)   # the hemisphere's dome faces -Z (toward the base, "down" the sky)
+	_night.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(_night)
+	# the terminator's glow: a thin ring of cloud light
+	_light = DirectionalLight3D.new()
+	_light.name = "Earthlight"
+	_light.light_color = Color(0.5, 0.65, 1.0)
+	_light.light_energy = 0.35
+	_light.shadow_enabled = false
+	_light.rotation_degrees = Vector3(-80, 0, 0)
+	add_child(_light)
+	for c: String in CITIES.keys():
+		var m: MeshInstance3D = _point(_city_pos(c), 1.1)
+		m.visible = false
+		points[c] = m
+
+
+func _point(pos: Vector3, size: float) -> MeshInstance3D:
+	var m: MeshInstance3D = MeshInstance3D.new()
+	var pm: SphereMesh = SphereMesh.new()
+	pm.radius = size
+	pm.height = size * 2.0
+	pm.radial_segments = 8
+	pm.rings = 4
+	m.mesh = pm
+	m.material_override = Mats.get_mat("nachtglas")
+	m.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	m.position = pos
+	add_child(m)
+	return m
+
+
+## A city's place on the night hemisphere (lat/long folded onto the face the base sees).
+func _city_pos(c: String) -> Vector3:
+	var ll: Array = CITIES[c]
+	var lat: float = deg_to_rad(float(ll[0]))
+	var lon: float = deg_to_rad(float(ll[1]) + 40.0)   # the night side's centre at 40 W
+	var r: float = radius * 1.02
+	return Vector3(r * cos(lat) * sin(lon), r * sin(lat) * 0.9, -r * cos(lat) * cos(lon))
+
+
+func refresh_from_flags() -> void:
+	if faded:
+		return
+	for c: String in violet_cities(GameState.flags):
+		var m: MeshInstance3D = points.get(c) as MeshInstance3D
+		if m != null:
+			m.visible = true
+
+
+func _on_round_started(r: int, _special: bool) -> void:
+	if frozen or faded or renewed or cfg.is_empty():
+		return
+	var ar: int = RoundManager.act_round(r) if RoundManager.has_act() else r
+	set_spread(spread_for(ar, int(cfg.get("spread_from_round", 3)), float(cfg.get("spread_per_round", 0.04)), float(cfg.get("spread_cap", 0.6))))
+
+
+## The signal's reach: `f` of the night side's points lit (seeded, so a value always draws the same picture).
+func set_spread(f: float) -> void:
+	spread = clampf(f, 0.0, 1.0)
+	var want: int = int(round(spread * float(cfg.get("spread_points", 40))))
+	while _spread_nodes.size() < want:
+		var lat: float = deg_to_rad(_rng.randf_range(-55.0, 65.0))
+		var lon: float = deg_to_rad(_rng.randf_range(-70.0, 70.0))
+		var r: float = radius * 1.02
+		_spread_nodes.append(_point(Vector3(r * cos(lat) * sin(lon), r * sin(lat) * 0.9, -r * cos(lat) * cos(lon)), 0.55))
+	for i: int in _spread_nodes.size():
+		_spread_nodes[i].visible = i < want
+
+
+## The relay is cut: the spread stops where it is and every point fades out over `fade_seconds`.
+func cut() -> void:
+	frozen = true
+	var secs: float = float(cfg.get("fade_seconds", 60.0)) / maxf(0.01, Campaign.cutscene_speed)
+	var all: Array = points.values() + Array(_spread_nodes)
+	for m: Variant in all:
+		var mi: MeshInstance3D = m as MeshInstance3D
+		if mi == null or not mi.visible:
+			continue
+		var tw: Tween = create_tween()
+		tw.tween_property(mi, "scale", Vector3.ONE * 0.01, secs).set_trans(Tween.TRANS_SINE)
+		tw.tween_callback(func() -> void: mi.visible = false)
+	get_tree().create_timer(secs + 0.1).timeout.connect(func() -> void: faded = true)
+
+
+## The plan renews: the whole night side goes violet over 10 s and stays.
+func renew() -> void:
+	renewed = true
+	frozen = true
+	var mat: StandardMaterial3D = _night.material_override as StandardMaterial3D
+	if mat != null:
+		var tw: Tween = create_tween()
+		tw.tween_property(mat, "albedo_color", Color(0.42, 0.16, 0.7), 10.0 / maxf(0.01, Campaign.cutscene_speed))
+		mat.emission_enabled = true
+		mat.emission = Color(0.3, 0.1, 0.5)
+		tw.parallel().tween_property(mat, "emission_energy_multiplier", 1.6, 10.0 / maxf(0.01, Campaign.cutscene_speed))
+	set_spread(1.0)
+
+
+## The Solar Flare: the Earth blinks for `seconds`.
+func flicker(seconds: float = 3.0) -> void:
+	_flicker_t = seconds
+
+
+func _process(delta: float) -> void:
+	if _flicker_t > 0.0:
+		_flicker_t -= delta
+		var on: bool = fmod(_flicker_t, 0.3) < 0.15
+		_day.visible = on or _flicker_t <= 0.0
+		if _flicker_t <= 0.0:
+			_day.visible = true

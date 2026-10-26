@@ -24,6 +24,15 @@ var stats: Dictionary = {}
 var god_mode: bool = false
 var input_blocked: bool = false   # dev console / text entry open
 var _start_msec: int = 0
+## UPDATE 07 Map 4 Act IV (T-112): the map's gravity as a fraction of 1 g (the act json's `gravity_scale`; MapRoot
+## sets it, 1.0 elsewhere), what a slide's distance is multiplied by, the act's vacuum rules (`vacuum` block: air
+## seconds, refill seconds, damage per second, the air posts' radius; {} = no vacuum anywhere) and the Retained
+## state of the renewal ending (T-113: the match goes on under the Plan).
+var gravity_scale: float = 1.0
+var slide_distance_mult: float = 1.0
+var vacuum_cfg: Dictionary = {}
+var retained: bool = false
+var _g_base: Dictionary = {}
 
 
 func _ready() -> void:
@@ -41,6 +50,10 @@ func reset_match(new_map_id: StringName, display_name: String, start_zone: Strin
 	power_on = false
 	flags.clear()
 	open_zones = {start_zone: true}
+	gravity_scale = 1.0
+	slide_distance_mult = 1.0
+	vacuum_cfg = {}
+	retained = false
 	stats = {&"kills": 0, &"headshots": 0, &"melee_kills": 0, &"scrip_earned": 0, &"doors": 0,
 		&"downs": 0, &"boards": 0, &"round": 0}
 	_start_msec = Time.get_ticks_msec()
@@ -48,6 +61,47 @@ func reset_match(new_map_id: StringName, display_name: String, start_zone: Strin
 
 func is_solo() -> bool:
 	return player_ids.size() == 1
+
+
+## The act's map-wide rules from its json block (MapRoot, after reset_match): gravity_scale, slide_distance_mult, vacuum.
+func apply_act_physics(act: Dictionary) -> void:
+	gravity_scale = clampf(float(act.get("gravity_scale", 1.0)), 0.05, 4.0)
+	slide_distance_mult = maxf(0.1, float(act.get("slide_distance_mult", 1.0)))
+	var v: Variant = act.get("vacuum", {})
+	vacuum_cfg = (v as Dictionary).duplicate(true) if v is Dictionary else {}
+
+
+func _gravity_table() -> Dictionary:
+	if _g_base.is_empty():
+		var w: Variant = GLData.table("world").get("gravity", {})
+		_g_base = (w as Dictionary).duplicate() if w is Dictionary else {}
+		if not _g_base.has("player"):
+			_g_base["player"] = 14.0
+		if not _g_base.has("zombie"):
+			_g_base["zombie"] = 18.0
+	return _g_base
+
+
+## The survivors' (and bots') fall rate now, m/s^2: world.json gravity.player x gravity_scale.
+func g_player() -> float:
+	return float(_gravity_table().get("player", 14.0)) * gravity_scale
+
+
+## The dead's fall rate now: world.json gravity.zombie x gravity_scale.
+func g_zombie() -> float:
+	return float(_gravity_table().get("zombie", 18.0)) * gravity_scale
+
+
+## What a jump's take-off velocity is multiplied by here: gravity_scale ^ jump_velocity_exponent (world.json).
+func jump_mult() -> float:
+	var e: float = float(_gravity_table().get("jump_velocity_exponent", 0.0))
+	return 1.0 if is_equal_approx(e, 0.0) or gravity_scale <= 0.0 else pow(gravity_scale, e)
+
+
+## Pure: the jump height at `scale` g relative to 1 g (a test helper for the Moon's 2.6x).
+static func jump_height_ratio(scale: float, exponent: float) -> float:
+	var v: float = pow(scale, exponent)
+	return v * v / maxf(0.001, scale)
 
 
 func is_bot(pid: int) -> bool:

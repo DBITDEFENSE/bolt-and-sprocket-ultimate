@@ -25,7 +25,7 @@ const LAYER_WORLD: int = 1
 const LAYER_PLAYER: int = 1 << 1
 const LAYER_ZBODY: int = 1 << 2
 const LAYER_DOOR: int = 1 << 8
-const GRAVITY: float = 18.0
+const GRAVITY: float = 18.0   # the 1 g fallback; live: GameState.g_zombie() (world.json x gravity_scale, T-112)
 
 ## Shared per-physics-frame repath budget, reset by the director.
 static var repath_budget: int = 6
@@ -1170,7 +1170,7 @@ func _update_push(delta: float) -> void:
 	if _push_v.y != 0.0 and _state_t < 0.05:
 		velocity.y = _push_v.y
 	else:
-		velocity.y -= GRAVITY * delta
+		velocity.y -= GameState.g_zombie() * delta
 	_push_v.y = 0.0
 	move_and_slide()
 	if _push_land_dmg > 0.0 and not _push_wall_hit:
@@ -1308,7 +1308,7 @@ func _apply_gravity(delta: float) -> void:
 		velocity.y = -0.5
 		_slide_off_zombie()
 	else:
-		velocity.y -= GRAVITY * delta
+		velocity.y -= GameState.g_zombie() * delta
 
 
 ## A zombie must never stand on another zombie's head (two emerging on one spot, or a crush at a window):

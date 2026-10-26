@@ -1,5 +1,17 @@
 {
   "_doc": "World interactables (barricades, doors).",
-  "barricade": { "boards": 6, "repair_seconds": 0.55, "window_attack_reach": 1.5 },
-  "door": { "open_seconds": 0.8 }
+  "barricade": {
+    "boards": 6,
+    "repair_seconds": 0.55,
+    "window_attack_reach": 1.5
+  },
+  "door": {
+    "open_seconds": 0.8
+  },
+  "gravity": {
+    "_doc": "One data source for every body's gravity (UPDATE 07 Map 4 Act IV, T-112): player (and bots) and zombie fall rates in m/s^2 at 1 g, scaled by GameState.gravity_scale (the act json's gravity_scale, 0.38 on the Moon). jump_velocity_exponent: jump velocity x gravity_scale^exponent (0 keeps the velocity, so a 0.38 g jump goes 2.6x higher and hangs 2.6x longer, docs/MAP4_FERNFLUG.md 6.2; -0.5 would make it 6.9x and hit every dome ceiling).",
+    "player": 14.0,
+    "zombie": 18.0,
+    "jump_velocity_exponent": 0.0
+  }
 }

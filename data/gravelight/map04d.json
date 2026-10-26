@@ -1,0 +1,341 @@
+{
+  "_doc": "Map 4 'Fernflug' Act IV: Mondlicht, the relay station (UPDATE 07, docs/MAP4_FERNFLUG.md §6, DECISIONS T-112/T-113). map_key: the story-prop / intel key. act: the act block (RoundManager: rounds are ACT IV · n from match round 30; gravity_scale / slide_distance_mult / vacuum are the map-wide physics GameState.apply_act_physics reads; the boss is summoned when its zone opens, not on a round; the renewal fallback renews the plan at act round renewal_fallback_act_round if the Account was never opened). zones: vacuum = no air (the AIR gauge); roam = open ground. earth: the sky object. solar_flare: the special round. columns: the three retention columns and the sign. renewal: the bad ending's clock. endings: the runners' timings. No exfil: this act ends the campaign (cancel_ending / renewal_ending).",
+  "map_key": "4d",
+  "act": {
+    "index": 4,
+    "numeral": "IV",
+    "length_rounds": 16,
+    "transition": "ending",
+    "special_kind": "solar_flare",
+    "gravity_scale": 0.38,
+    "slide_distance_mult": 1.4,
+    "vacuum": {
+      "air_seconds": 25.0,
+      "refill_seconds": 3.0,
+      "damage_per_second": 20.0,
+      "air_post_radius": 2.0,
+      "bot_leave_air": 8.0
+    },
+    "boss": {
+      "id": "account_manager",
+      "on_zone": "F_CORE",
+      "arena_zone": "F_CORE",
+      "returns_after_rounds": 0
+    },
+    "events": {
+      "lowg_vo_round": 1,
+      "spread_from_round": 3,
+      "renewal_fallback_act_round": 16
+    }
+  },
+  "zones": {
+    "A_RECEPTION": {
+      "name": "Reception",
+      "level": 0,
+      "spawn": true
+    },
+    "B_CONCOURSE": {
+      "name": "Concourse",
+      "level": 0
+    },
+    "C_YARD": {
+      "name": "The Yard",
+      "level": 0,
+      "vacuum": true,
+      "roam": true
+    },
+    "D_FULFILLMENT": {
+      "name": "Fulfillment",
+      "level": 0
+    },
+    "E_HALL": {
+      "name": "Retention Hall",
+      "level": 0
+    },
+    "F_CORE": {
+      "name": "The Account",
+      "level": 0,
+      "requires_flag": "account_open"
+    }
+  },
+  "doors": [
+    {
+      "id": "door_concourse",
+      "from": "A_RECEPTION",
+      "to": "B_CONCOURSE",
+      "cost": 750
+    },
+    {
+      "id": "door_yard",
+      "from": "B_CONCOURSE",
+      "to": "C_YARD",
+      "cost": 1000,
+      "airlock": true
+    },
+    {
+      "id": "door_fulfillment",
+      "from": "B_CONCOURSE",
+      "to": "D_FULFILLMENT",
+      "cost": 1250,
+      "link_group": "fulfillment"
+    },
+    {
+      "id": "door_fulfillment",
+      "from": "C_YARD",
+      "to": "D_FULFILLMENT",
+      "cost": 1250,
+      "link_group": "fulfillment",
+      "airlock": true
+    },
+    {
+      "id": "door_hall",
+      "from": "D_FULFILLMENT",
+      "to": "E_HALL",
+      "cost": 1500
+    },
+    {
+      "id": "door_account",
+      "from": "E_HALL",
+      "to": "F_CORE",
+      "cost": 2000,
+      "requires_flag": "account_open"
+    }
+  ],
+  "wall_buys": [
+    "kar98k",
+    "thompson",
+    "springfield",
+    "bar"
+  ],
+  "perks": [
+    "second_wind",
+    "skyhook_sekt",
+    "magpie_mead",
+    "ironhide_stout",
+    "trigger_tonic",
+    "hawkeye_brandy",
+    "blastproof_bock",
+    "packmule_porter"
+  ],
+  "roster": [
+    "ganger",
+    "suited",
+    "jumpjockey",
+    "backorder",
+    "account_manager",
+    "shield_cell"
+  ],
+  "roster_doc": "jumpjockey and backorder are Act III's types (the Groom Lake build defines them in enemies.json; this act lists them by id: enemies.json `maps` admits them here, max_active 4 / 3). suited and shield_cell are this act's.",
+  "glasshide_from_act_round": 99,
+  "spawn_table": {
+    "_doc": "windows = the domes' service hatches (closets outside the hull); ground = emerge points (the regolith, the conveyor, the nave's floor); catwalk = the yard's two leap points (Catwalk_C_YARD_n) for the Jumpjockeys. The Account has no spawns: the horde comes through its one door and the Manager brings the crew through the pad.",
+    "A_RECEPTION": {
+      "windows": 2,
+      "ground": 1
+    },
+    "B_CONCOURSE": {
+      "windows": 2,
+      "ground": 1
+    },
+    "C_YARD": {
+      "windows": 0,
+      "ground": 3,
+      "catwalk": 2
+    },
+    "D_FULFILLMENT": {
+      "windows": 2,
+      "ground": 2
+    },
+    "E_HALL": {
+      "windows": 2,
+      "ground": 2
+    },
+    "F_CORE": {
+      "windows": 0,
+      "ground": 0
+    }
+  },
+  "climb_links": [],
+  "earth": {
+    "position": [
+      0.0,
+      230.0,
+      95.0
+    ],
+    "radius": 48.0,
+    "spread_from_round": 3,
+    "spread_per_round": 0.04,
+    "spread_cap": 0.6,
+    "spread_points": 40,
+    "fade_seconds": 60.0
+  },
+  "solar_flare": {
+    "_doc": "The special round: the air posts fail, the Earth flickers, the Suited come over the rim every interval_seconds in waves of per_wave while the queue lasts; the yard shut: Gängers through the fallback points of the open domes. The last wave's point takes the Resupply.",
+    "yard_zone": "C_YARD",
+    "interval_seconds": 6.0,
+    "per_wave": 3,
+    "kit": "soldier",
+    "tier": "jog",
+    "rim_points": [
+      [
+        -30.0,
+        0.0,
+        104.0
+      ],
+      [
+        -15.0,
+        0.0,
+        105.0
+      ],
+      [
+        0.0,
+        0.0,
+        106.0
+      ],
+      [
+        15.0,
+        0.0,
+        105.0
+      ],
+      [
+        30.0,
+        0.0,
+        104.0
+      ]
+    ],
+    "fallback_points": {
+      "A_RECEPTION": [
+        [
+          0.0,
+          0.0,
+          12.0
+        ]
+      ],
+      "B_CONCOURSE": [
+        [
+          0.0,
+          0.0,
+          36.0
+        ]
+      ],
+      "D_FULFILLMENT": [
+        [
+          28.0,
+          0.0,
+          36.0
+        ]
+      ],
+      "E_HALL": [
+        [
+          28.0,
+          0.0,
+          12.0
+        ]
+      ]
+    },
+    "banner": "SOLAR FLARE",
+    "retained_banner": "DUST STORM",
+    "vo_start": "OPR_M4D_FLARE_01",
+    "vo_end": "OPR_M4D_FLARE_END_01"
+  },
+  "columns": {
+    "_doc": "The three retention columns in the hall (RetentionColumn): read the terms plate (hold read_seconds; a Lodestone lift on the cap sets cap_lifted_N and the hold is lifted_read_seconds), the cap lifts, the lattice goes dark, a letter falls off NOBODY CANCELS, the Backorders wake. All three dark: flag account_open (the Account door). panels: which fine-print panel each plate quotes (the TERMS_READ_N category reads it aloud).",
+    "ids": [
+      "column_1",
+      "column_2",
+      "column_3"
+    ],
+    "positions": [
+      [
+        18.0,
+        0.0,
+        4.0
+      ],
+      [
+        28.0,
+        0.0,
+        4.0
+      ],
+      [
+        38.0,
+        0.0,
+        4.0
+      ]
+    ],
+    "panels": [
+      "panel.skyhook_sekt",
+      "panel.magpie_mead",
+      "panel.fine_print_fernet"
+    ],
+    "read_seconds": 4.0,
+    "lifted_read_seconds": 1.0,
+    "sign": {
+      "text": "NOBODY CANCELS",
+      "position": [
+        28.0,
+        6.4,
+        -15.6
+      ],
+      "letters_per_column": [
+        1,
+        2,
+        3
+      ],
+      "stages": [
+        "NOBODY CANCELS",
+        "NOBODY C NCELS",
+        "NOBOD  C NC LS",
+        "N B DY  C N  LS"
+      ]
+    },
+    "vo_opr": [
+      "OPR_M4D_COLUMN_01",
+      "OPR_M4D_COLUMN_02",
+      "OPR_M4D_COLUMN_03"
+    ]
+  },
+  "renewal": {
+    "_doc": "The bad ending's clock (renewal_ending.gd): starts at the Manager's RENEWAL phase, real seconds; warn_at are the Operator's warnings (seconds left); the plan also renews on its own at the act's renewal_fallback_act_round if the Account was never opened. The key turning (the cancel ending) stops it.",
+    "seconds": 360.0,
+    "warn_at": [
+      180.0,
+      60.0
+    ],
+    "vo_warn": [
+      "OPR_M4D_RENEW_WARN_01",
+      "OPR_M4D_RENEW_WARN_02"
+    ]
+  },
+  "arrival": {
+    "_doc": "What the Act III flags change on arrival: peg_delivered = no arrival grace and -20% Scrip (the program's men have the manifest); dee_cage_done = Dee's three fading radio lines over the first rounds.",
+    "peg_delivered_scrip_mult": 0.8,
+    "dee_lines": [
+      "DEE_M4D_RADIO_01",
+      "DEE_M4D_RADIO_02",
+      "DEE_M4D_RADIO_03"
+    ],
+    "dee_rounds": [
+      1,
+      3,
+      6
+    ],
+    "vo_arrive": [
+      "OPR_M4D_ARRIVE_01",
+      "OPR_M4D_ARRIVE_02"
+    ],
+    "vo_lowg": "OPR_M4D_LOWG_01",
+    "vo_vacuum": "OPR_M4D_VACUUM_01",
+    "vo_crucible": "OPR_M4D_CRUCIBLE_01"
+  },
+  "endings": {
+    "cancel": {
+      "seconds": 150.0,
+      "cards_file": "res://data/gravelight/cards_m4.json",
+      "profile_id": "kuendigung"
+    },
+    "renewal": {
+      "seconds": 40.0,
+      "profile_id": "renewed"
+    }
+  }
+}

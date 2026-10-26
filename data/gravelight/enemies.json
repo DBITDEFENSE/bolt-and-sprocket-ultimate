@@ -277,6 +277,10 @@
     "ballast": {
       "_doc": "Map 2: carrying a lead coffin (the Ballast mechanic, deferred; data only).",
       "move_mult": 0.5
+    },
+    "vacuum": {
+      "_doc": "Map 4 Act IV (T-112): standing in a zone with no air (ZoneVolume.vacuum) away from an AirPost; Player._update_air refreshes it every tick while the AIR gauge runs down. No slow: the suit mix and the visor rim are the HUD's.",
+      "move_mult": 1.0
     }
   },
   "emerge": {
