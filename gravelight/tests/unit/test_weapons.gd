@@ -46,5 +46,6 @@ func test_round_one_balance() -> void:
 
 
 func test_input_actions_exist() -> void:
+	GLSettings.apply_bindings()   # Gravelight's bindings exist only once applied (T-024); alone, no earlier test did it (QA Q-08)
 	for action: String in ["move_forward", "fire", "ads", "reload", "interact", "melee", "lethal", "sprint", "crouch", "pause", "dev_console"]:
 		assert_true(InputMap.has_action(StringName(action)), action)
