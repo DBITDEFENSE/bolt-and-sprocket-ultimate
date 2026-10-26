@@ -198,6 +198,13 @@ func _run() -> void:
 			c.visible = true
 		await _frames(10)
 		await _shot("lineup_back.png")
+		# the squad in profile (how they hold their guns)
+		for b: RemoteBody in _squad:
+			b.rotation.y = -PI * 0.5
+		_cam.position = Vector3(-3.0, 1.3, 6.4)
+		_cam.look_at(Vector3(-3.0, 0.95, 0.0), Vector3.UP)
+		await _frames(10)
+		await _shot("lineup_side.png")
 		for b: RemoteBody in _squad:
 			b.rotation.y = PI
 		for c: Node3D in _cousins:
