@@ -151,14 +151,12 @@ func build_greybox() -> void:
 
 ## How much of the chalk outline the gun covers: a little smaller, so the chalk still frames it.
 const MOUNT_FILL: float = 0.92
-static var _models: Dictionary = {}
 static var _dust: StandardMaterial3D = null
 static var _clean: Dictionary = {}   # a downloaded material -> its opaque, non-glowing copy
 
 
-## The real gun on two nails over its chalk: the downloaded model when data/gravelight/weapons/models.json has one
-## (its native axes and scale from the intake, T-087), else the game's own build; centred on the outline, a touch
-## smaller, resting on its nails a few centimetres off the board, dusty.
+## The real gun on two nails over its chalk (the same model the chalk is traced from), centred on the outline, a
+## touch smaller, resting on its nails a few centimetres off the board, dusty.
 func _mount_gun(chalk: Node3D) -> void:
 	var gun: Node3D = _gun_model()
 	if gun == null:
@@ -192,22 +190,19 @@ func _mount_gun(chalk: Node3D) -> void:
 			add_child(n)
 
 
-## The weapon as a display model (lying with its muzzle toward -X, the chalk's way, its bounds' centre at the origin).
+## The weapon as a display model: WeaponModels.build, which since T-089 is the downloaded gun normalised to the
+## viewmodel frame with the shared weapon shader (procedural for the six greybox ids), laid along the wall exactly as
+## build_chalk lays the outline it traces (barrel toward -X).
 func _gun_model() -> Node3D:
 	var holder: Node3D = Node3D.new()
-	var row: Dictionary = (_models_json().get("weapons", {}) as Dictionary).get(String(weapon_id), {}) as Dictionary
-	var glb: String = str(row.get("glb", "")) if row.get("glb") != null else ""
-	if glb != "" and ResourceLoader.exists(glb):
-		var inst: Node3D = (load(glb) as PackedScene).instantiate() as Node3D
-		var nat: Dictionary = row.get("native", {})
-		var yaw: float = {"-X": 0.0, "+X": PI, "-Z": PI * 0.5, "+Z": -PI * 0.5}.get(str(nat.get("forward", "-X")), 0.0)
-		inst.transform = Transform3D(Basis(Vector3.UP, yaw) * Basis.from_scale(Vector3.ONE * float(nat.get("scale", 1.0))), Vector3.ZERO)
-		holder.add_child(inst)
-	else:
-		var m: Node3D = WeaponModels.build(weapon_id, false, &"")
-		m.rotation_degrees = Vector3(0, 90, 0)   # barrel (-Z) along the wall, as build_chalk lays it
-		holder.add_child(m)
+	var m: Node3D = WeaponModels.build(weapon_id, false, &"")
+	m.rotation_degrees = Vector3(0, 90, 0)
+	holder.add_child(m)
 	_strip_lights(holder)
+	for n: String in ["KitFlash", "MuzzleFlash", "Flash"]:
+		var f: Node = holder.find_child(n, true, false)
+		if f is Node3D:
+			(f as Node3D).hide()
 	return holder
 
 
@@ -218,17 +213,6 @@ static func _strip_lights(n: Node) -> void:
 			c.free()
 		else:
 			_strip_lights(c)
-
-
-static func _models_json() -> Dictionary:
-	if _models.is_empty():
-		var f: FileAccess = FileAccess.open("res://data/gravelight/weapons/models.json", FileAccess.READ)
-		if f != null:
-			var v: Variant = JSON.parse_string(f.get_as_text())
-			_models = v if v is Dictionary else {"_none": true}
-		else:
-			_models = {"_none": true}
-	return _models
 
 
 ## A thin film of dust over the mounted guns (a material overlay: their own textures stay).
