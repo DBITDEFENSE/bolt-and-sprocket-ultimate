@@ -10,15 +10,17 @@
 - the map-data check (`tools/check_mapdata.sh`), `check_scripts`, `ads_check.sh --headless --no-shots`.
 Every issue below has a number (Q-NN), a rank, the evidence, and its fix (with the test that guards it) or the reason it is left.
 
-## 0. Summary (filled at the end of the pass)
+## 0. Summary
 
 | Rank | Found | Fixed | Left |
 |---|---|---|---|
-| Crash / softlock | | | |
-| Core feel | | | |
-| AI | | | |
-| Readability | | | |
-| Polish | | | |
+| Crash / softlock | 9 (Q-01..Q-09: 2 stale bakes, exec bits, a non-headless tool, 3 tooling flakes/artefacts, 2 order-dependent tests, zombies falling off the quay) | 7 fixed with tests, 2 verified as load flakes (Q-05, Q-06) | 0 |
+| Core feel | 0 code changes: the global tables (health ×1.1 from round 10, Scrip 50/100, round pay 40+20r, door ladder 750–2000, perk tiers, Crucible ×1.5/×2, crate pity) were reviewed and the three maps' curves measured (§6.1 economy); nothing is out of line, and the next step up is Map 4's own data (MAP4_FERNFLUG §13.2) | — | — |
+| AI | 9 (Q-10..Q-18: unreachable wall-buys, no soak on Totenhafen, bots stuck on furniture, bots passive on Kaltenbrunn, a 16-minute "lost" bot, a round that never ends, one-off idlers) | 7 fixed with tests (T-103, T-106, T-107); Q-12 re-measured (the wipe was the quay stall); Q-18 covered by the stranded fail-safe | 0 (one tuning item: bots alone reach the Kaltenbrunn power late) |
+| Readability | 0: VO coverage is complete (1578 audio files, 2 stage directions listed), every HUD/minimap/subtitle rule has a data table; nothing measurable in a headless pass | — | the on-screen pass stays the owner's (Play.bat) |
+| Polish | 0 new beyond the morning report's known list (window grime, footprints, plane smoke) | — | unchanged |
+
+**End of the pass (tree with T-103, T-106, T-107 merged):** the full unit suite passes (`logs/qa/gut_phase0_close.log`: 30,939 asserts, 0 failing); `check_scripts` 0 failed; `check_mapdata` PASS; `ads_check --headless` 322/322; every GRAVELIGHT smoke passed in the baseline run or alone afterwards (§1); the full smoke suite runs once more on the final tree at the end of Phase 2. Before → after on the same seeds: Map 0 bots alone stuck 42 events → 3; Kaltenbrunn bots alone round 9 / 0 Scrip → round 12 / 28,800 spent; Totenhafen: no zombie leaves the world, the agent buys and refills.
 
 ## 1. Crash / softlock
 
