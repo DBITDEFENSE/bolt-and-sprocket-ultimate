@@ -377,11 +377,19 @@
       "text": "\"Rhön, 1934: a thermal off the Wasserkuppe held me for an hour and I came down where I meant to. That is the whole art: coming down where you meant to. ... Tunnel run 212, the Kranich at 1:20. She flies. She flies beautifully. ... Weight for the long flight, with the load: 61 400 kg. Asked to confirm the crew's dose of the ELEVATION substrate. Nein.\""
     },
     {
-      "id": "INT_M4_CREWTAGS",
+      "id": "INT_M4_CREWTAGS_KRANICH",
       "title": "Three Crew Tags (der Kranich)",
       "type": "DOC",
       "map": "4b",
       "text": "\"RIEDL, A. — HAAS, W. — POHL, K. Stamped tin, the works' crane-in-a-cog, a serial each. Found in a buckled harness, on the tape deck, under a gunner's seat. The men were not aboard. The tags were.\""
+    },
+    {
+      "id": "INT_M4_CREWTAGS",
+      "title": "The Kranich's crew, on the racks",
+      "type": "DOC",
+      "map": "4d",
+      "text": "Three rack tags from the fulfillment store, matched to the three harness tags from the Kranich's blisters.\n\nRIEDL, A. · Bordmechaniker · provided 2.V.45 · re-deployed RR-7 by fold, 9.V.45 · rack 2, bay 4.\nHAAS, W. · Bordschütze · provided 2.V.45 · re-deployed RR-7, 9.V.45 · rack 2, bay 5.\nPOHL, K. · Bordschütze · provided 2.V.45 · re-deployed RR-7, 9.V.45 · rack 2, bay 6.\n\n\"Provided\" is the crew list's word. The works' fitters wrote \"CREW: PROVIDED\" and did not ask by whom. The answer is on the tags, in the Provider's stamp: they were inventory before they were crew. Someone has scratched three strokes and a hook into every one of the three.",
+      "placement": "fixed"
     },
     {
       "id": "INT_M4_RELAY",
