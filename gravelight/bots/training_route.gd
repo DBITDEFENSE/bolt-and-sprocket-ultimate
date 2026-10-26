@@ -68,6 +68,9 @@ static func from_dict(d: Dictionary, map_key: String) -> TrainingRoute:
 static func map_key_of(map_id: String) -> String:
 	var s: String = map_id.to_lower()
 	if s.begins_with("map") and s.length() >= 5:
+		# Map 4's acts are separate arenas with their own routes and plans: "map04a_thalbach" -> "map04a" (T-115).
+		if s.length() >= 6 and s.unicode_at(5) >= 97 and s.unicode_at(5) <= 122:
+			return s.substr(0, 6)
 		return s.substr(0, 5)
 	return s
 
@@ -276,7 +279,9 @@ func validate_on(world: World3D) -> Dictionary:
 		if w < ring_width * 0.85:
 			narrow += 1
 		var j: int = (i + 4) % n
-		var path: PackedVector3Array = NavigationServer3D.map_get_path(nav, c, samples[j], true)
+		# all navigation layers: Map 4's acts bake one region per zone on its own layer (gen_map04_lib), and the
+		# default layer mask would clamp both ends to the nearest zone-1 polygon (T-115)
+		var path: PackedVector3Array = NavigationServer3D.map_get_path(nav, c, samples[j], true, 0xFFFFFFFF)
 		var plen: float = 0.0
 		for k: int in range(1, path.size()):
 			plen += path[k - 1].distance_to(path[k])

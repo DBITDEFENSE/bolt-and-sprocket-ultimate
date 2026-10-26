@@ -2684,3 +2684,12 @@ The Operator is local here for the first time: it is in the walls. Its slips run
 | SPR_M4C_RELAY_01 | That's a relay uplink. RR-series. I've seen the SCHEMATIC, it was in a MEMO, memo thirty-eight, I forwarded it to forty billion people, NOBODY READ {IT}. | the hangar opens (Sprocket) |
 | VEN_M4C_CABINET_01 | ...They localized {me}. | the hangar opens (Vendelin) |
 | VEN_M4C_CABINET_02 | The panel is still here. Under the paint. Someone scraped it clear. Someone read it. ...{Hello}. | Peg's choice decided (Vendelin: he reads his own panel instead of answering Hale) |
+
+### 14.14 Act IV — the smile side egg (`M4D_SMILE`, tier 2; one line per character at the crater rim, in the vacuum; UPDATE 07 T-115)
+
+| ID | Speaker | Line |
+|---|---|---|
+| `DUT_M4D_SMILE_01` | DUT | "...Huh. It's smiling. We put a smile on the Moon and it's looking at us. Babcia would've said that means something. I'm not asking what." |
+| `PEG_M4D_SMILE_01` | PEG | "That is our rocket's work. Fasbender aimed it. I signed for the fuel. I find I'm not sorry. Note that down against me." |
+| `DEA_M4D_SMILE_01` | DEA | "Lord, that's a long way to come to look at a scar. ...It's smiling. All right. Somebody up here was glad to see us." |
+| `WRN_M4D_SMILE_01` | WRN | "A crack. Twelve kilometres, maybe more. I can't count that. ...I'll write 'one'." |

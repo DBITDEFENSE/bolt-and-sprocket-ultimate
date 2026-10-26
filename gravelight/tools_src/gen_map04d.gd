@@ -296,6 +296,10 @@ func build_dressing() -> void:
 
 func build_gameplay_extra() -> void:
 	map_root.set("power_on_at_start", true)
+	map_root.set("quest_files", PackedStringArray(["res://data/gravelight/quests/map04_kuendigung.json", "res://data/gravelight/quests/map04d_smile.json"]))   # T-115
+	# the smile side egg (docs/MAP4_FERNFLUG.md §9.2): a marker at the crater rim, in the vacuum, under the Earth
+	_node("res://gravelight/world/quest_interact.gd", "SmileMarker", {"target": &"smile_marker", "label_text": "THE RIM", "prompt_text": "look at the crack",
+		"missing_text": "Locked: %s"}, Vector3(0.0, 0.0, 104.0), 180.0)
 	_node("res://gravelight/maps/map04_fernflug/mondlicht_controller.gd", "MondlichtController", {}, Vector3.ZERO)
 	_node("res://gravelight/enemies/map04/solar_flare.gd", "SolarFlare", {}, Vector3.ZERO)
 	var table: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/%s.json" % json_table))

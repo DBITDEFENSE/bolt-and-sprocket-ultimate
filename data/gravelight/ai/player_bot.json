@@ -5,7 +5,12 @@
   "personality": "player_agent",
   "brain": {
     "_doc": "BotSquad.add_player_brain options (BotBrain.options): no free kit or bonus perk (the player's own loadout), it drinks perks and shops with its own Scrip, it is revived first (0).",
-    "perks": true, "bonus_perk": false, "kit": false, "shopping": true, "accuracy_mult": 1.0, "revive_priority": 0
+    "perks": true,
+    "bonus_perk": false,
+    "kit": false,
+    "shopping": true,
+    "accuracy_mult": 1.0,
+    "revive_priority": 0
   },
   "planner": {
     "_doc": "The optional strategy layer: a BotPlanner on the agent (what to buy / open next). local_ai: use the local LLM (bots.json local_ai, Ollama) when the Bot Local AI setting is on; the scripted planner is the fallback whenever Ollama isn't running, and the only planner when this is false.",
@@ -24,7 +29,27 @@
   },
   "takeover": {
     "_doc": "Hand-back: any of these actions pressed, the move stick past move_dead, or the mouse moved more than mouse_px in one event (captured). After an enable the inputs held at that moment must be released first, and nothing counts for grace_s.",
-    "actions": ["move_forward", "move_back", "move_left", "move_right", "jump", "crouch", "sprint", "fire", "ads", "reload", "interact", "melee", "lethal", "tactical", "swap_weapon", "weapon_1", "weapon_2", "weapon_3", "alt_fire"],
+    "actions": [
+      "move_forward",
+      "move_back",
+      "move_left",
+      "move_right",
+      "jump",
+      "crouch",
+      "sprint",
+      "fire",
+      "ads",
+      "reload",
+      "interact",
+      "melee",
+      "lethal",
+      "tactical",
+      "swap_weapon",
+      "weapon_1",
+      "weapon_2",
+      "weapon_3",
+      "alt_fire"
+    ],
     "move_dead": 0.3,
     "mouse_px": 4.0,
     "pad_look_dead": 0.35,
@@ -40,15 +65,70 @@
     "_skip_doc": "T-071 pass 3: while the current step can't be done (unaffordable: the next skip_ahead steps that are cheaper may go first; affordable but waiting for its moment, e.g. a perk in the cellar mid-round: any of them). A step with firm: true is never jumped (AgentPlan.later_steps). A map's plan may set its own skip_ahead.",
     "map00": {
       "_why": "Crossroads Inn solo: the Garand off the taproom wall (one-shot heads to round 4), the cellar door for the power, Second Wind (the solo self-revive) and Ironhide (5 hits), then the stable and the yard: the Well Loop is the map's open ground (measured: 2-4 hits a training minute against 10-15 on the taproom's ring round its four windows) with the Thompson chalked on the stable wall beside it (wall ammo on a lap); Marathon (an endless sprint outruns the runners from round 8), then the Thompson into the Crucible.",
-      "steps": [{"gun": "m1_garand", "or_tier": 2.4}, {"door": "door_cellar"}, {"power": true}, {"perk": "second_wind"}, {"door": "door_upstairs"}, {"gun": "mp40", "or_tier": 3.2}, {"perk": "ironhide_stout", "firm": true}, {"door": "door_stable"}, {"door": "door_yard"}, {"gun": "thompson", "or_tier": 3.6},
-        {"perk": "marathon_malt"}, {"crucible": "*"}, {"perk": "trigger_tonic"}],
-      "train_at": ["map00_yard_well", "map00_wreck_loop", "map00_taproom"],
+      "steps": [
+        {
+          "gun": "m1_garand",
+          "or_tier": 2.4
+        },
+        {
+          "door": "door_cellar"
+        },
+        {
+          "power": true
+        },
+        {
+          "perk": "second_wind"
+        },
+        {
+          "door": "door_upstairs"
+        },
+        {
+          "gun": "mp40",
+          "or_tier": 3.2
+        },
+        {
+          "perk": "ironhide_stout",
+          "firm": true
+        },
+        {
+          "door": "door_stable"
+        },
+        {
+          "door": "door_yard"
+        },
+        {
+          "gun": "thompson",
+          "or_tier": 3.6
+        },
+        {
+          "perk": "marathon_malt"
+        },
+        {
+          "crucible": "*"
+        },
+        {
+          "perk": "trigger_tonic"
+        }
+      ],
+      "train_at": [
+        "map00_yard_well",
+        "map00_wreck_loop",
+        "map00_taproom"
+      ],
       "egg": {
         "_doc": "T-086: the agent does the map's easter egg (AgentPlan.tick_egg through BotEEHub.pick_for, the squad bots' planners). Never part of the spend order: once every step in `after` is done and from from_round, in a quiet moment (a break, its crawler break, or nothing within quiet_m with the threat pressure under max_pressure) it takes the next open step of `quest` (the agent is the player: it may make the commit). The brain's ee_task action carries it out; the trainer still owns the rounds, so the work happens between them (the crawler break holds the round open for it).",
         "quest": "map00_radio",
-        "after": [{"door": "door_cellar"}],
+        "after": [
+          {
+            "door": "door_cellar"
+          }
+        ],
         "from_round": 2,
-        "crawler_after": [{"perk": "ironhide_stout"}],
+        "crawler_after": [
+          {
+            "perk": "ironhide_stout"
+          }
+        ],
         "_after_why": "T-086 soaks: started after Ironhide (round 5-6) the agent had one or two breaks left before its round-8 wipe and got 0-2 notes; started from round 2 with crawler breaks it died at round 3 (a walk upstairs at 100 HP, the leg-shooting standoff). So: from round 2 after the first door, in the round breaks only; once Ironhide is drunk (crawler_after) also mid-round when nothing is near, and its crawler break holds the round open for it. The spend order is untouched.",
         "max_pressure": 0.3,
         "quiet_m": 14.0,
@@ -58,28 +138,419 @@
     },
     "map01": {
       "_why": "Kaltenbrunn solo: the Rail Yard door and the MP40, the Administration door for Second Wind (it works without the power solo), the Barracks, then down the lift to the Chapel and into the Generator Hall to throw the Hauptschalter (the power never came on solo in pass 1: no step led there); Ironhide back in the Barracks, Marathon in the Chapel, the StG-44 in the Lab corridor.",
-      "steps": [{"gun": "m1_carbine", "or_tier": 2.0}, {"door": "door_a_b"}, {"gun": "mp40", "or_tier": 3.2}, {"door": "door_a_c"}, {"perk": "second_wind"}, {"door": "door_barracks"},
-        {"door": "door_stairs"}, {"door": "door_gen"}, {"power": true}, {"perk": "ironhide_stout"}, {"perk": "marathon_malt"}, {"gun": "stg44", "or_tier": 4.2}],
-      "train_at": ["map01_turbines", "map01_pews", "map01_headframe"]
+      "steps": [
+        {
+          "gun": "m1_carbine",
+          "or_tier": 2.0
+        },
+        {
+          "door": "door_a_b"
+        },
+        {
+          "gun": "mp40",
+          "or_tier": 3.2
+        },
+        {
+          "door": "door_a_c"
+        },
+        {
+          "perk": "second_wind"
+        },
+        {
+          "door": "door_barracks"
+        },
+        {
+          "door": "door_stairs"
+        },
+        {
+          "door": "door_gen"
+        },
+        {
+          "power": true
+        },
+        {
+          "perk": "ironhide_stout"
+        },
+        {
+          "perk": "marathon_malt"
+        },
+        {
+          "gun": "stg44",
+          "or_tier": 4.2
+        }
+      ],
+      "train_at": [
+        "map01_turbines",
+        "map01_pews",
+        "map01_headframe"
+      ]
     },
     "map02": {
       "_why": "Totenhafen solo (UPDATE 07 QA, T-103): the M1 Carbine off the quay wall, the Cannery for Second Wind (solo, no power needed) and the Workshop for Ironhide and the MP40 (the two 1000 doors off the quay), then the Pen Hall and the Lower Pens to throw the pumps (the power), Marathon back in the Cannery, the StG-44 in the Workshop into the Crucible.",
       "steps": [
-        {"gun": "m1_carbine", "or_tier": 2.0},
-        {"door": "door_cannery"},
-        {"perk": "second_wind"},
-        {"door": "door_workshop"},
-        {"perk": "ironhide_stout", "firm": true},
-        {"gun": "mp40", "or_tier": 3.2},
-        {"door": "door_penhall"},
-        {"door": "door_pumps"},
-        {"power": true},
-        {"perk": "marathon_malt"},
-        {"gun": "stg44", "or_tier": 4.2},
-        {"crucible": "*"},
-        {"perk": "trigger_tonic"}
+        {
+          "gun": "m1_carbine",
+          "or_tier": 2.0
+        },
+        {
+          "door": "door_cannery"
+        },
+        {
+          "perk": "second_wind"
+        },
+        {
+          "door": "door_workshop"
+        },
+        {
+          "perk": "ironhide_stout",
+          "firm": true
+        },
+        {
+          "gun": "mp40",
+          "or_tier": 3.2
+        },
+        {
+          "door": "door_penhall"
+        },
+        {
+          "door": "door_pumps"
+        },
+        {
+          "power": true
+        },
+        {
+          "perk": "marathon_malt"
+        },
+        {
+          "gun": "stg44",
+          "or_tier": 4.2
+        },
+        {
+          "crucible": "*"
+        },
+        {
+          "perk": "trigger_tonic"
+        }
       ],
-      "train_at": ["map02_hut", "map02_apron", "map02_cannery"]
+      "train_at": [
+        "map02_hut",
+        "map02_apron",
+        "map02_cannery"
+      ]
+    },
+    "map04a": {
+      "_why": "Werk Thalbach (UPDATE 07, T-115): the Carbine off the Siedlung wall, the Bahnhof for Ironhide and the MP40, the canteen for Trigger Tonic and the Thompson, the assembly halls for the power, Marathon, then the test stands for the Crucible; the hangar last (2000, power).",
+      "steps": [
+        {
+          "gun": "m1_carbine",
+          "or_tier": 2.0
+        },
+        {
+          "door": "door_bahnhof"
+        },
+        {
+          "perk": "second_wind"
+        },
+        {
+          "gun": "mp40",
+          "or_tier": 3.2
+        },
+        {
+          "door": "door_kantine"
+        },
+        {
+          "perk": "ironhide_stout",
+          "firm": true
+        },
+        {
+          "gun": "thompson",
+          "or_tier": 3.6
+        },
+        {
+          "door": "door_montage"
+        },
+        {
+          "power": true
+        },
+        {
+          "perk": "marathon_malt"
+        },
+        {
+          "perk": "trigger_tonic"
+        },
+        {
+          "door": "door_pruefstand"
+        },
+        {
+          "crucible": "*"
+        },
+        {
+          "door": "door_kirchplatz"
+        },
+        {
+          "door": "door_windkanal"
+        },
+        {
+          "perk": "hawkeye_brandy"
+        },
+        {
+          "door": "door_halle"
+        }
+      ],
+      "train_at": [
+        "map04a_canteen",
+        "map04a_jig",
+        "map04a_ring_road",
+        "map04a_hangar"
+      ],
+      "egg": {
+        "quest": "map04_kuendigung",
+        "after": [
+          {
+            "door": "door_bahnhof"
+          }
+        ],
+        "from_round": 2,
+        "crawler_after": [
+          {
+            "perk": "ironhide_stout"
+          }
+        ],
+        "max_pressure": 0.3,
+        "quiet_m": 14.0,
+        "value": 0.85,
+        "every_s": 2.0
+      }
+    },
+    "map04b": {
+      "_why": "der Kranich (T-115): the MP40 in the centre body, the aux bus (the power), Second Wind and Skyhook in the galley, the port wing for the Thompson and Ironhide, the engine room, then the starboard side and the BAR; the Crucible is bolted to the galley floor.",
+      "steps": [
+        {
+          "door": "door_mittelrumpf"
+        },
+        {
+          "power": true
+        },
+        {
+          "gun": "mp40",
+          "or_tier": 3.2
+        },
+        {
+          "perk": "second_wind"
+        },
+        {
+          "perk": "skyhook_sekt"
+        },
+        {
+          "door": "door_fluegel_l"
+        },
+        {
+          "gun": "thompson",
+          "or_tier": 3.6
+        },
+        {
+          "perk": "ironhide_stout",
+          "firm": true
+        },
+        {
+          "door": "door_triebwerk"
+        },
+        {
+          "crucible": "*"
+        },
+        {
+          "door": "door_fluegel_r"
+        },
+        {
+          "perk": "marathon_malt"
+        },
+        {
+          "door": "door_kanzel"
+        },
+        {
+          "gun": "bar",
+          "or_tier": 4.0
+        },
+        {
+          "perk": "hawkeye_brandy"
+        },
+        {
+          "door": "door_cockpit"
+        }
+      ],
+      "train_at": [
+        "map04b_galley",
+        "map04b_blisters",
+        "map04b_bay"
+      ],
+      "egg": {
+        "quest": "map04_kuendigung",
+        "after": [
+          {
+            "door": "door_mittelrumpf"
+          }
+        ],
+        "from_round": 2,
+        "crawler_after": [
+          {
+            "perk": "ironhide_stout"
+          }
+        ],
+        "max_pressure": 0.3,
+        "quiet_m": 14.0,
+        "value": 0.85,
+        "every_s": 2.0
+      }
+    },
+    "map04c": {
+      "_why": "Groom Lake (T-115): the Carbine in the wreck, the salt, the hangar for Magpie Mead and the Thompson, the motor pool for the generator (the power) and Trigger Tonic, Ironhide on the salt, the radar tower, the lab (power) for Twin Barrel and the workbench, the silo for the Crucible and Skyhook.",
+      "steps": [
+        {
+          "gun": "m1_carbine",
+          "or_tier": 2.0
+        },
+        {
+          "door": "door_lakebed"
+        },
+        {
+          "perk": "second_wind"
+        },
+        {
+          "door": "door_hangar"
+        },
+        {
+          "gun": "thompson",
+          "or_tier": 3.6
+        },
+        {
+          "perk": "magpie_mead"
+        },
+        {
+          "door": "door_motorpool"
+        },
+        {
+          "power": true
+        },
+        {
+          "perk": "ironhide_stout",
+          "firm": true
+        },
+        {
+          "perk": "trigger_tonic"
+        },
+        {
+          "door": "door_radar"
+        },
+        {
+          "door": "door_lab"
+        },
+        {
+          "perk": "twin_barrel"
+        },
+        {
+          "door": "door_silo"
+        },
+        {
+          "crucible": "*"
+        },
+        {
+          "perk": "skyhook_sekt"
+        }
+      ],
+      "train_at": [
+        "map04c_bomber",
+        "map04c_salt",
+        "map04c_lab_hall"
+      ],
+      "egg": {
+        "quest": "map04_kuendigung",
+        "after": [
+          {
+            "door": "door_lakebed"
+          }
+        ],
+        "from_round": 2,
+        "crawler_after": [
+          {
+            "perk": "ironhide_stout"
+          }
+        ],
+        "max_pressure": 0.3,
+        "quiet_m": 14.0,
+        "value": 0.85,
+        "every_s": 2.0
+      }
+    },
+    "map04d": {
+      "_why": "Mondlicht (T-115): the Thompson in the concourse with Skyhook and Magpie, the fulfillment store for Ironhide and the BAR, the nave for Hawkeye; the Crucible 001 is in the lobby; the yard only for air and the smile.",
+      "steps": [
+        {
+          "door": "door_concourse"
+        },
+        {
+          "gun": "thompson",
+          "or_tier": 3.6
+        },
+        {
+          "perk": "second_wind"
+        },
+        {
+          "perk": "skyhook_sekt"
+        },
+        {
+          "perk": "magpie_mead"
+        },
+        {
+          "door": "door_fulfillment"
+        },
+        {
+          "perk": "ironhide_stout",
+          "firm": true
+        },
+        {
+          "gun": "bar",
+          "or_tier": 4.0
+        },
+        {
+          "crucible": "*"
+        },
+        {
+          "door": "door_hall"
+        },
+        {
+          "perk": "hawkeye_brandy"
+        },
+        {
+          "perk": "trigger_tonic"
+        },
+        {
+          "door": "door_yard"
+        }
+      ],
+      "train_at": [
+        "map04d_lobby",
+        "map04d_racks",
+        "map04d_nave",
+        "map04d_yard"
+      ],
+      "egg": {
+        "quest": "map04_kuendigung",
+        "after": [
+          {
+            "door": "door_concourse"
+          }
+        ],
+        "from_round": 2,
+        "crawler_after": [
+          {
+            "perk": "ironhide_stout"
+          }
+        ],
+        "max_pressure": 0.3,
+        "quiet_m": 14.0,
+        "value": 0.85,
+        "every_s": 2.0
+      }
     }
   },
   "points": {
@@ -164,7 +635,28 @@
     "_spray_doc": "T-071 pass 3: training a train of 3+, the fire discipline's spray width (combat.json spray_width_mult) x this: hip fire on the walk into a bunched train hits what is behind the target.",
     "own_from_round": 3,
     "gather_n": 6,
-    "gather_by_round": [[1, 3], [4, 5], [6, 7], [9, 9], [12, 11]],
+    "gather_by_round": [
+      [
+        1,
+        3
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        9,
+        9
+      ],
+      [
+        12,
+        11
+      ]
+    ],
     "gather_left_out": 1,
     "rejoin_nav_m": 7.0,
     "travel_sprint_m": 6.0,
@@ -178,7 +670,13 @@
     "face_enter_m": 1.5,
     "fire_extra_m": 1.5,
     "kite_w_line": 8.0,
-    "flow_lanes": [-1.6, -0.8, 0.0, 0.8, 1.6],
+    "flow_lanes": [
+      -1.6,
+      -0.8,
+      0.0,
+      0.8,
+      1.6
+    ],
     "flow_look_m": 2.5,
     "flow_wall_m": 0.6,
     "flow_w_lane": 0.4,
@@ -197,7 +695,16 @@
     "stand_few_extra_m": 1.0,
     "hold_back_m": 1.5,
     "loop_every_s": 3.0,
-    "loop_weights": {"width": 1.2, "length": 0.6, "travel": 1.5, "windows": 0.9, "home": 0.8, "stick": 2.5, "min_len_m": 20.0, "max_len_m": 90.0},
+    "loop_weights": {
+      "width": 1.2,
+      "length": 0.6,
+      "travel": 1.5,
+      "windows": 0.9,
+      "home": 0.8,
+      "stick": 2.5,
+      "min_len_m": 20.0,
+      "max_len_m": 90.0
+    },
     "window_near_m": 3.5
   }
 }

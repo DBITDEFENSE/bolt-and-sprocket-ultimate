@@ -1,0 +1,104 @@
+{
+  "_doc": "Training loops for Map 4 Act III Groom Lake (UPDATE 07, T-115).",
+  "routes": [
+    {
+      "id": "map04c_bomber",
+      "label": "round the relay's tarp",
+      "notes": "D_HANGAR: the aisle between the hangar door wall (z 60) and the bomber's nose (z 72), round the relay object under its tarp (x 58.5..61.5, z 64.5..67.5); the bomber's body (x 38..52, z 72..92) and the office/cage corridor are too tight for a ring.",
+      "points": [
+        [
+          30,
+          0,
+          62.5
+        ],
+        [
+          64,
+          0,
+          62.5
+        ],
+        [
+          64,
+          0,
+          69.5
+        ],
+        [
+          30,
+          0,
+          69.5
+        ]
+      ],
+      "ring_width": 3.0,
+      "smooth": 2,
+      "requires_doors": [
+        "door_lakebed",
+        "door_hangar"
+      ]
+    },
+    {
+      "id": "map04c_salt",
+      "label": "the salt oval",
+      "notes": "B_LAKEBED: the short salt oval, inside the burrow points at x +-20.",
+      "points": [
+        [
+          -18,
+          0,
+          16
+        ],
+        [
+          18,
+          0,
+          16
+        ],
+        [
+          18,
+          0,
+          42
+        ],
+        [
+          -18,
+          0,
+          42
+        ]
+      ],
+      "ring_width": 4.0,
+      "smooth": 2,
+      "requires_doors": [
+        "door_lakebed"
+      ]
+    },
+    {
+      "id": "map04c_lab_hall",
+      "label": "the lab's long hall",
+      "notes": "F_LAB (y -6): the hall loop south of the pillar rows at z 105 and z 112, east of the hatch ramp (x < -61).",
+      "points": [
+        [
+          -55,
+          -6,
+          116
+        ],
+        [
+          -30,
+          -6,
+          116
+        ],
+        [
+          -30,
+          -6,
+          140
+        ],
+        [
+          -55,
+          -6,
+          140
+        ]
+      ],
+      "ring_width": 3.0,
+      "smooth": 2,
+      "requires_doors": [
+        "door_lakebed",
+        "door_motorpool",
+        "door_lab"
+      ]
+    }
+  ]
+}

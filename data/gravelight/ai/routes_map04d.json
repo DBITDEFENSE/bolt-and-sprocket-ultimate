@@ -1,0 +1,137 @@
+{
+  "_doc": "Training loops for Map 4 Act IV Mondlicht (UPDATE 07, T-115): low gravity, the yard has no air (bots only train there between the posts, briefly).",
+  "routes": [
+    {
+      "id": "map04d_lobby",
+      "label": "the lobby ring",
+      "notes": "B_CONCOURSE: the ring round the relay model under glass; Crucible 001 on the east wall.",
+      "points": [
+        [
+          -8,
+          0,
+          28
+        ],
+        [
+          8,
+          0,
+          28
+        ],
+        [
+          8,
+          0,
+          56
+        ],
+        [
+          -8,
+          0,
+          56
+        ]
+      ],
+      "ring_width": 3.0,
+      "smooth": 2,
+      "requires_doors": [
+        "door_concourse"
+      ]
+    },
+    {
+      "id": "map04d_racks",
+      "label": "the rack aisles",
+      "notes": "D_FULFILLMENT: the aisle round the four rack rows (x 16..39 at z 33, 41, 49, 54); the pick-face aisles between them are the escape routes.",
+      "points": [
+        [
+          15,
+          0,
+          29
+        ],
+        [
+          41,
+          0,
+          29
+        ],
+        [
+          41,
+          0,
+          57.5
+        ],
+        [
+          15,
+          0,
+          57.5
+        ]
+      ],
+      "ring_width": 3.0,
+      "smooth": 2,
+      "requires_doors": [
+        "door_concourse",
+        "door_fulfillment"
+      ]
+    },
+    {
+      "id": "map04d_nave",
+      "label": "the nave",
+      "notes": "E_HALL: round the three retention columns under the sign.",
+      "points": [
+        [
+          16,
+          0,
+          -12
+        ],
+        [
+          40,
+          0,
+          -12
+        ],
+        [
+          40,
+          0,
+          20
+        ],
+        [
+          16,
+          0,
+          20
+        ]
+      ],
+      "ring_width": 3.0,
+      "smooth": 2,
+      "requires_doors": [
+        "door_concourse",
+        "door_fulfillment",
+        "door_hall"
+      ]
+    },
+    {
+      "id": "map04d_yard",
+      "label": "between the air posts",
+      "notes": "C_YARD (vacuum): a short loop just outside the airlock, between the two air posts; the AIR gauge rules it.",
+      "points": [
+        [
+          -10,
+          0,
+          66
+        ],
+        [
+          10,
+          0,
+          66
+        ],
+        [
+          10,
+          0,
+          80
+        ],
+        [
+          -10,
+          0,
+          80
+        ]
+      ],
+      "ring_width": 3.5,
+      "smooth": 2,
+      "requires_doors": [
+        "door_concourse",
+        "door_yard"
+      ]
+    }
+  ]
+}

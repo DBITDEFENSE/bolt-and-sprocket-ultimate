@@ -430,6 +430,13 @@
       "map": "4c",
       "placement": "fixed",
       "text": "A bound program log on the office sill, open where it can be read through the glass. A civilian hand, exact and unhurried.\n\n11 Aug 1944. Bolide over the range, 02:10. Impact on the dry lake, a crater the size of a motor car. Logged with the Weather Bureau as a meteor. It is not a meteor. It hums. The stone is in the lab pit by 15 Aug.\n\n3 Sep. The dish pointed at the stone at the sergeant's suggestion (she wanted the tower's generator for her lights). The stone answers the dish. Direction of the reply: 0.5 degrees off the Moon's limb, the dark side of the crack. Nine months of listening since. It answers.\n\n14 Apr 1945. The British crate. The second specimen is the same material. The two speak to each other through the floor.\n\n6 May. The crate opened in the pit. Major Rourke insisted on standing closest. I have written to his wife. The program is not stopped; the program is why the rocket exists. Something on the Moon talks back, and I would like to know what, before anyone else does.\n\nThe last line, in a different pen: \"The sergeant says I asked the Canaries nice. I did. I always do.\""
+    },
+    {
+      "id": "INT_M4_KUENDIGUNG",
+      "title": "Notice of Cancellation",
+      "type": "DOC",
+      "map": "4d",
+      "text": "A single sheet from the relay's console, printed on the Provider's own form, the one nobody printed. Across the top, in a hand that is not a machine's: KÜNDIGUNG. Below it, four signatures, and a fifth line left blank for whoever reads this next.\n\nThe Provider's note, stamped under the signatures: \"Not a cancellation. The account is on extended leave.\" Someone has crossed out \"extended leave\" and written: cancelled."
     }
   ]
 }

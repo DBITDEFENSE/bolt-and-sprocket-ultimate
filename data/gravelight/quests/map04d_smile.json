@@ -1,0 +1,58 @@
+{
+  "id": "map04d_smile",
+  "display_name": "The Smile",
+  "map": "map04d_mondlicht",
+  "maps": [
+    "map04d_mondlicht"
+  ],
+  "version": 1,
+  "_doc": "Map 4 Act IV side egg (UPDATE 07, docs/MAP4_FERNFLUG.md §9.2 'the smile', T-115): walk to the crater rim's marker in the vacuum (it takes most of a suit's air and a hop) and look at the crack. One interact; the squad's line, the Archive photograph, the Mondstein charm.",
+  "steps": [
+    {
+      "id": "s1_rim",
+      "type": "interact",
+      "act": 4,
+      "params": {
+        "target": "smile_marker"
+      },
+      "requires": [],
+      "bot_task": {
+        "type": "escort",
+        "target": {
+          "class": "QuestInteract",
+          "where": {
+            "target": "smile_marker"
+          }
+        },
+        "player_only": "final",
+        "what": "the crater rim, in the vacuum",
+        "ping": "STORY"
+      },
+      "on_complete": [
+        {
+          "vo_actor": "M4D_SMILE"
+        },
+        {
+          "archive": "INT_M4_SMILE"
+        },
+        {
+          "profile_list": [
+            "charms",
+            "mondstein"
+          ]
+        },
+        {
+          "banner": "MONDSTEIN · the smile, from the rim"
+        }
+      ],
+      "debug_skip": "quest skip map04d_smile s1_rim"
+    }
+  ],
+  "rewards": {
+    "match": [],
+    "profile": [
+      "archive:INT_M4_SMILE",
+      "charm:mondstein"
+    ]
+  }
+}
