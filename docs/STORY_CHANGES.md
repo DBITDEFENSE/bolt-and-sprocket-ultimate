@@ -66,3 +66,9 @@ Every change to an **existing** line from the original web build is logged here 
 - `code.populateLife.16` (Nova Plaza squatter): now said when you interact with the vending machine by his bench, instead of being dropped. `.15` stays his idle line.
 - The Content Creator's DEMONETIZED banner subtitle now reads "The Content Creator sheds its armor!" (`bs.boss.cc.banner.demonetized.02`).
 - New content, not changes: the "NO JUMPING ON THE LAWN" HOA rule (Nova Plaza clubhouse puzzle); `bs.forge.*`, `bs.rustvane.*`, `bs.gadget.tether.*`, `bs.nova.*` (120 lines), `bs.boss.*` and `bs.enemy.*` lines.
+
+## UPDATE 07 (2026-10-26): Map 4 "Fernflug" (`docs/MAP4_FERNFLUG.md`)
+- Morgenrot canon gains one line: after the ABORT, the squad sent the reserve rocket to the Moon (Mondfahrt step 6b run after an Abort). That is the smile and the light. The light was already Darkmatter's relay (RR-7 "Mondlicht", the 1938 probe's uplink).
+- The saga's ending: the squad cancels. On Earth the dead stop walking. The Operator's last line is unscripted. Darkmatter records the event as "not a cancellation" (FINEPRINT_LORE's classification stands; the squad never learns that).
+- New fictional people: Wittkamp, Riedl, Beck, Jette Maurer, Lionel Hale (the "Hale, L." consignee of Totenhafen), Dolores Marchetti, Calvin Rourke. Sable Vantage attends through a machine and stays unnamed.
+- The Allies had their own Nachtglas program (Groom Lake), fed by Peg's samples, Res's 1943 vial, the Morgenrot crate and a second probe (TM-SOL3-002, 11 Aug 1944). Peg's canon choice is to refuse Hale and resign.

@@ -1,6 +1,10 @@
 # PROGRESS
 
-RESUME HERE: UPDATE 05 (art slice) overnight run, 2026-10-25 -> 26. Batch 7 (T-080..T-086: Map 0 grounds + barn, perk cap 6 + glyph caps + pause list, Crucible no ammo + sprint reload, staged zombie rise, egg story + bots on the egg) is merged to master. Now running UPDATE_05A asset intake then UPDATE_05 sections as parallel worktree builders (.wt/u05-*); the orchestrator merges each with --no-ff, adds its DECISIONS paragraph, and finishes with morning/MORNING_REPORT.md. Section status is tracked below under 'Overnight run 2026-10-25'.
+RESUME HERE: UPDATE 07 (MAP 4 FERNFLUG + QA pass), 2026-10-26, branch map4-fernflug (also pushed to claude/new-session-wugi0p). Phase 0 QA in progress: GUT baseline 2 fails (stale minimap POIs map01/rustvane: re-baked under xvfb, fixed), tools/*.sh exec bits fixed, Totenhafen playtest to r14 found: zombies falling out of the world at the quay edge (22,0,0)/(26,0,0), bot errands to the frag/trench wall-buys timing out; soaks (map00 bots3, map01 kaltenbrunn) and the full smoke suite running into logs/qa/ and .smoke_logs/u07/. Phase 1 design is DONE (docs/MAP4_FERNFLUG.md). Next: finish docs/QA_REPORT_U07.md from the logs, fix every issue with tests, then Phase 2 build order 1..8 (Act 1 greybox first, gen_map04a.gd). Section status under 'UPDATE 07' below.
+
+## UPDATE 07, 2026-10-26: Map 4 Fernflug + QA pass
+
+Phase 0 QA: running. Phase 1 design: DONE. Phase 2: Act 1 (pending), boarding, Act 2, crash, Act 3, rocket, Act 4, perks/wonder/egg/endings (pending). Finish: pending.
 
 ## Overnight run, 2026-10-25 -> 26: UPDATE 05 "Look the part" (plan)
 
