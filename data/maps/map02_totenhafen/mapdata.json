@@ -15,8 +15,8 @@
     928,
     880
   ],
-  "baked_at": "2026-10-23T13:31:42",
-  "poi_signature": "37e5211c1065290861ba2e4f312dbd93",
+  "baked_at": "2026-10-26T11:21:07",
+  "poi_signature": "e70f787b560c6957b3c464b63beceb64",
   "floors": [
     {
       "id": "lower",
@@ -1170,7 +1170,7 @@
       "id": "wall_buy:Gameplay/WallBuy_bar",
       "type": "wall_buy",
       "pos": [
-        -5.83,
+        -4.73,
         1.5,
         70.0
       ],
@@ -1289,7 +1289,7 @@
       "id": "wall_buy:Gameplay/WallBuy_thompson",
       "type": "wall_buy",
       "pos": [
-        19.83,
+        18.83,
         1.5,
         50.0
       ],
