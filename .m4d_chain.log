@@ -1,2 +1,14 @@
 START
+Saved res://gravelight/maps/map04_fernflug/map04d.tscn (109 boxes) err=0
+BAKE_EXIT 0
+IMPORT_EXIT 0
+== test_story_props
+[1m6/6 passed.
+[32m---- All tests passed! ----
 == test_map04d_data
+[1m8/8 passed.
+[32m---- All tests passed! ----
+MAPDATA_EXIT 0
+[check_mapdata] RESULT PASS
+smoke_map04d: exit 0, 47s, script errors 0 | [m4d] RESULT: PASS
+CHAIN_DONE

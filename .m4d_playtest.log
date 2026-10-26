@@ -1,0 +1,477 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[bot] map map04d, 508 waypoints, god=false, target round 6
+[bot]   buyable door the concourse 750       at (0.0, 0.0, 24.0)
+[bot]   buyable door the yard airlock 1000   at (0.0, 0.0, 60.0)
+[bot]   buyable door the store 1250          at (12.0, 0.0, 42.0)
+[bot]   buyable door the store's airlock 1250 at (28.0, 0.0, 60.0)
+[bot]   buyable door the retention hall 1500 at (28.0, 0.0, 24.0)
+[bot]   buyable door the Account 2000        at (28.0, 0.0, -16.0)
+[bot]   buyable kar98k 200                   at (-11.8, 1.5, 16.0)
+[bot]   buyable thompson 1200                at (11.8, 1.5, 32.0)
+[bot]   buyable springfield 0                at (-39.6, 1.5, 80.0)
+[bot]   buyable bar 1800                     at (43.8, 1.5, 42.0)
+[bot]   buyable perk second_wind             at (8.0, 0.0, 22.6)
+[bot]   buyable FinePrintPanel               at (8.0, 0.0, 22.3)
+[bot]   buyable LorePlaque                   at (8.0, 0.0, 22.6)
+[bot]   buyable perk skyhook_sekt            at (-11.3, 0.0, 30.0)
+[bot]   buyable FinePrintPanel               at (-10.9, 0.0, 30.0)
+[bot]   buyable LorePlaque                   at (-11.3, 0.0, 30.0)
+[bot]   buyable perk magpie_mead             at (11.3, 0.0, 30.0)
+[bot]   buyable FinePrintPanel               at (10.9, 0.0, 30.0)
+[bot]   buyable LorePlaque                   at (11.3, 0.0, 30.0)
+[bot]   buyable perk ironhide_stout          at (12.7, 0.0, 50.0)
+[bot]   buyable FinePrintPanel               at (13.3, 0.0, 50.0)
+[bot]   buyable LorePlaque                   at (12.7, 0.0, 50.0)
+[bot]   buyable perk trigger_tonic           at (43.3, 0.0, 28.0)
+[bot]   buyable FinePrintPanel               at (42.9, 0.0, 28.0)
+[bot]   buyable LorePlaque                   at (43.3, 0.0, 28.0)
+[bot]   buyable perk hawkeye_brandy          at (12.7, 0.0, 16.0)
+[bot]   buyable FinePrintPanel               at (13.1, 0.0, 16.0)
+[bot]   buyable LorePlaque                   at (12.7, 0.0, 16.0)
+[bot]   buyable perk blastproof_bock         at (43.3, 0.0, -8.0)
+[bot]   buyable FinePrintPanel               at (42.8, 0.0, -8.0)
+[bot]   buyable LorePlaque                   at (43.3, 0.0, -8.0)
+[bot]   buyable perk packmule_porter         at (14.7, 0.0, -24.0)
+[bot]   buyable FinePrintPanel               at (15.2, 0.0, -24.0)
+[bot]   buyable LorePlaque                   at (14.7, 0.0, -24.0)
+[bot]   buyable MysteryCrate                 at (-7.0, 0.0, 18.0)
+[bot]   buyable MysteryCrate                 at (7.0, 0.0, 56.0)
+[bot]   buyable Crucible                     at (-8.0, 0.0, 46.0)
+[bot]   buyable LorePlaque                   at (-8.8, 0.4, 45.4)
+[bot]   buyable AmmoBox                      at (11.5, 0.0, 4.0)
+[bot]   buyable AmmoBox                      at (-11.5, 0.0, 56.0)
+[bot]   buyable AmmoBox                      at (43.5, 0.0, 56.0)
+[bot]   buyable AmmoBox                      at (12.5, 0.0, -12.0)
+[bot]   buyable RetentionColumn              at (18.0, 0.3, 4.0)
+[bot]   buyable RetentionColumn              at (28.0, 0.3, 4.0)
+[bot]   buyable RetentionColumn              at (38.0, 0.3, 4.0)
+[bot]   buyable AccountConsole               at (28.0, 0.0, -30.0)
+[bot]   buyable RevivePoint                  at (-2.0, 0.0, 6.0)
+[bot]   buyable RevivePoint                  at (2.0, 0.0, 6.0)
+[bot]   buyable RevivePoint                  at (-2.0, 0.0, 9.0)
+[bot]   buyable RevivePoint                  at (2.0, 0.0, 9.0)
+[bot]   buyable StoryProp                    at (0.0, 1.1, 36.7)
+[bot]   buyable StoryProp                    at (17.0, 0.9, 41.3)
+[bot]   buyable StoryProp                    at (-4.0, 2.0, 102.6)
+[bot]   buyable StoryProp                    at (26.4, 0.6, -39.8)
+[bot]   buyable IntelPickup                  at (0.0, 0.0, 0.0)
+[bot]   buyable IntelPickup                  at (0.0, 0.0, 0.0)
+[bot]   buyable IntelPickup                  at (0.0, 0.0, 0.0)
+[bot]   errand: perk second_wind (scrip 500)
+[bot] ROUND 1 start  t=6s
+[bot]   errand: perk second_wind (scrip 600)
+[bot]   errand: perk second_wind (scrip 710)
+[bot]   errand: perk second_wind (scrip 720)
+[bot]   errand: perk second_wind (scrip 820)
+[bot]   errand: perk second_wind (scrip 830)
+[bot]   errand: perk second_wind (scrip 940)
+[bot]   errand: perk second_wind (scrip 1095)
+[bot] round 1 done in 41s: kills 4, dmg taken 0, scrip 1095, weapon m1911, max alive 3
+[bot] ROUND 2 start  t=47s
+[bot]   errand: perk second_wind (scrip 1115)
+[bot]   errand: perk second_wind (scrip 1135)
+[bot]   errand: perk second_wind (scrip 1275)
+[bot]   errand: perk second_wind (scrip 1450)
+[bot] round 2 done in 48s: kills 1, dmg taken 0, scrip 1450, weapon m1911, max alive 2
+[bot] ROUND 3 start  t=95s
+[bot] ISSUE: errand timed out: perk second_wind at (8.0, 0.0, 22.6)
+[bot]     (me (7.2, 0.0, 21.3), target <null>, prompt '', scrip 1450)
+[bot]   errand: perk second_wind (scrip 1450)
+[bot]   errand: perk second_wind (scrip 1650)
+[bot]   errand: perk second_wind (scrip 1755)
+[bot]   errand: perk second_wind (scrip 1960)
+[bot]   bought hawkeye_brandy for 1500
+[bot] round 3 done in 63s: kills 0, dmg taken 0, scrip 1960, weapon m1911, max alive 4
+[bot] ROUND 4 start  t=158s
+[bot]   errand: perk second_wind (scrip 2360)
+[bot]   errand: perk second_wind (scrip 2620)
+[bot]   errand: perk second_wind (scrip 2720)
+[bot]   errand: perk second_wind (scrip 2760)
+[bot]   errand: perk second_wind (scrip 2790)
+[bot]   errand: perk second_wind (scrip 2900)
+[powerups] round 5 milestone: tonic_bottle, resupply
+[bot]   errand: perk second_wind (scrip 3145)
+[powerups] tonic bottle -> P1: { "kind": "perk", "perk": &"trigger_tonic" }
+[powerups] tonic bottle -> P2: { "kind": "perk", "perk": &"blastproof_bock" }
+[powerups] tonic bottle -> P3: { "kind": "perk", "perk": &"magpie_mead" }
+[powerups] tonic bottle -> P4: { "kind": "perk", "perk": &"magpie_mead" }
+[bot] round 4 done in 64s: kills 4, dmg taken 0, scrip 3145, weapon m1911, max alive 5
+[bot] ROUND 5 start (special)  t=222s
+[bot]   bought crate for 950
+[bot]   errand: perk second_wind (scrip 3205)
+[bot]   errand: perk second_wind (scrip 3225)
+[bot]   errand: perk second_wind (scrip 3255)
+[bot]   errand: perk second_wind (scrip 3275)
+[bot]   errand: perk second_wind (scrip 3375)
+[bot]   errand: perk second_wind (scrip 3465)
+[bot]   bought hawkeye_brandy for 1500
+[bot]   errand: perk second_wind (scrip 3750)
+[bot] round 5 done in 57s: kills 2, dmg taken 0, scrip 3750, weapon m1911, max alive 3
+[bot] ROUND 6 start  t=279s
+[bot]   errand: perk second_wind (scrip 3770)
+[bot]   errand: perk second_wind (scrip 3900)
+[bot]   errand: perk second_wind (scrip 3970)
+[bot]   errand: perk second_wind (scrip 3990)
+[bot]   errand: perk second_wind (scrip 3990)
+[bot]   bought crate for 950
+[bot]   errand: perk second_wind (scrip 4285)
+[bot] round 6 done in 83s: kills 1, dmg taken 0, scrip 4285, weapon m1911, max alive 5
+[bot] ROUND 7 start  t=362s
+[bot] REPORT ----------------------------------------------------
+[bot] end: reached round 7 | round 7 | game time 6.0 min | god=false | bots=3
+[bot] squad: bot kills 137 (vs mine 12), bot downs 0, bots revived me 0 times, bots revived each other 0 times
+[bot]   Peg (P2, veteran): kills 26 shots 462 hp 275 scrip 4560 thompson powerup role runner teleports 0 doors 0 upgrades 0 revives 0 grenades 4 tolls 0 flanks 0 high ground 0 perks ironhide_stout,second_wind,skyhook_sekt,blastproof_bock,hawkeye_brandy
+[bot]     hits 170 of 462 shots; misses hit first: { "A_W_0t": 39, "A_W_end": 38, "A_S_end": 44, "E_W_end": 23, "A_W_0": 50, "A_W_0b": 3, "NavBlock_Perk_second_wind": 10, "NavBlock_Ammo_Reception": 2, "NavBlock_Capsule": 8 }
+[bot]     bonus perk skyhook_sekt (announced false)
+[bot]   Deacon (P3, veteran): kills 48 shots 436 hp 275 scrip 5640 thompson crate role medic teleports 0 doors 0 upgrades 0 revives 0 grenades 0 tolls 0 flanks 0 high ground 0 perks ironhide_stout,second_wind,trigger_tonic,hawkeye_brandy,magpie_mead
+[bot]     hits 198 of 436 shots; misses hit first: { "A_W_end": 80, "A_W_0": 46, "A_W_0t": 13, "E_W_end": 34, "Floor_Domes": 3, "AB_0": 2, "Body": 1, "NavBlock_Ammo_Reception": 1, "A_S_end": 15, "A_E_end": 1, "NavBlock_Capsule": 4, "AB_end": 1 }
+[bot]     bonus perk trigger_tonic (announced true)
+[bot]   Wren (P4, veteran): kills 63 shots 407 hp 275 scrip 9125 bar follow role anchor teleports 0 doors 0 upgrades 0 revives 0 grenades 0 tolls 0 flanks 0 high ground 0 perks ironhide_stout,second_wind,hawkeye_brandy,magpie_mead
+[bot]     hits 172 of 407 shots; misses hit first: { "A_W_0t": 16, "A_W_end": 84, "E_W_end": 45, "A_W_0": 26, "A_W_0b": 2, "Floor_Domes": 1, "A_S_end": 15, "A_E_0": 1, "A_E_end": 1, "AB_0": 2, "NavBlock_Capsule": 1, "AB_end": 2, "@StaticBody3D@368": 1 }
+[bot]     bonus perk hawkeye_brandy (announced true)
+[bot]   squad: order follow, revives by bots 0, choke reports 0, brain 0.552 ms/bot/frame (think 0.964 ms)
+[bot]   ee: mode full, tasks started 0, failed 0, steps finished by bots 0, inputs 0, egg failures 0 (0 on a bot's step)
+[bot]     EE known: nothing yet; 0 object(s) found
+[bot]     Peg: no egg task (done 0, stopped 0)
+[bot]     Deacon: no egg task (done 0, stopped 0)
+[bot]     Wren: no egg task (done 0, stopped 0)
+[bot]   marks: orders 0 (done 0, ended 0)
+[bot] kills 12 (headshots 9, 75%) | trigger pulls 1185 | downs 0 | damage taken 0
+[bot] movement: slides 1, slide-jumps 0, slide issues 0 | kit: perks=false crucible=0 thompson
+[bot] rounds fired 347, hit events 83 (24% hit rate), 28.9 rounds per kill
+[bot] frame ms (real, incl. bot) p50 4.56 p99 13.89 max 55
+[bot]   r1    41s kills   4 dmg    0 scrip  1095 m1911 maxalive 3
+[bot]   r2    48s kills   1 dmg    0 scrip  1450 m1911 maxalive 2
+[bot]   r3    63s kills   0 dmg    0 scrip  1960 m1911 maxalive 4
+[bot]   r4    64s kills   4 dmg    0 scrip  3145 m1911 maxalive 5
+[bot]   r5    57s kills   2 dmg    0 scrip  3750 m1911 maxalive 3
+[bot]   r6    83s kills   1 dmg    0 scrip  4285 m1911 maxalive 5
+[bot] purchases: r3 hawkeye_brandy (1500), r5 crate (950), r5 hawkeye_brandy (1500), r6 crate (950)
+[bot] denied: 
+[bot] powerups: r3 spawned double_scrip, r3 spawned fortify, r3 took fortify, r4 spawned resupply, r4 took resupply, r4 spawned blackout, r4 took blackout, r4 spawned tonic_bottle, r4 spawned resupply, r4 took resupply, r4 took tonic_bottle, r5 spawned deaths_door, r5 spawned resupply, r5 took resupply, r6 spawned double_scrip, r6 spawned resupply
+[bot] perks: { 2: [&"ironhide_stout", &"second_wind", &"skyhook_sekt", &"blastproof_bock", &"hawkeye_brandy"], 3: [&"ironhide_stout", &"second_wind", &"trigger_tonic", &"hawkeye_brandy", &"magpie_mead"], 4: [&"ironhide_stout", &"second_wind", &"hawkeye_brandy", &"magpie_mead"], 1: [&"trigger_tonic"] }
+[bot] issues (1 kinds):
+[bot]   x1  errand timed out: perk second_wind at (8.0, 0.0, 22.6)
+[bot] RESULT REACHED round 6
+ERROR: Pages in use exist at exit in PagedAllocator: N20RasterizerSceneDummy21GeometryInstanceDummyE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: 1029 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 280 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+ERROR: Pages in use exist at exit in PagedAllocator: N12VariantPools12BucketMediumE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)
+ERROR: 129 RID allocations of type 'N13RendererDummy15MaterialStorage13DummyMaterialE' were leaked at exit.
+ERROR: 17 RID allocations of type 'N13RendererDummy15MaterialStorage11DummyShaderE' were leaked at exit.
+ERROR: 227 RID allocations of type 'N13RendererDummy9DummyMeshE' were leaked at exit.
+ERROR: 97 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.
+ERROR: 154 RID allocations of type 'N17RendererSceneCull8InstanceE' were leaked at exit.

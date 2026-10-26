@@ -34,6 +34,14 @@ func test_visor_crack_kills_in_vacuum_only() -> void:
 	zone.vacuum = true
 	add_child_autofree(zone)
 	zone.global_position = Vector3(300, 0, 300)
+	var floor_body: StaticBody3D = StaticBody3D.new()   # the yard's regolith: a zombie with nothing under it falls off the world
+	var fs: CollisionShape3D = CollisionShape3D.new()
+	var fb: BoxShape3D = BoxShape3D.new()
+	fb.size = Vector3(200, 1, 200)
+	fs.shape = fb
+	floor_body.add_child(fs)
+	add_child_autofree(floor_body)
+	floor_body.global_position = Vector3(300, -0.5, 320)
 	var dir: ZombieDirector = ZombieDirector.new()
 	add_child_autofree(dir)
 	await wait_physics_frames(2)

@@ -223,7 +223,7 @@
       "scrip": 60
     },
     "suited": {
-      "_doc": "Map 4 Act IV (UPDATE 07, docs/MAP4_FERNFLUG.md 6.9, T-112): Gängers in Darkmatter pressure suits (PERPETUAL). x1.4 health, the visor is the weak point (head_mult; a visor hit cracks it: in vacuum they die visor_death_seconds later even if the shot didn't kill, in pressure it is just the headshot). They walk and jog, never leap, never crawl. vacuum_only: the director and the Solar Flare spawn them where there is no air, nowhere else.",
+      "_doc": "Map 4 Act IV (UPDATE 07, docs/MAP4_FERNFLUG.md 6.9, T-112): Gängers in the Provider's pressure suits (stencilled PERPETUAL). x1.4 health, the visor is the weak point (head_mult; a visor hit cracks it: in vacuum they die visor_death_seconds later even if the shot didn't kill, in pressure it is just the headshot). They walk and jog, never leap, never crawl. vacuum_only: the director and the Solar Flare spawn them where there is no air, nowhere else.",
       "kind": "ganger_variant",
       "kit": "soldier",
       "health_mult": 1.4,

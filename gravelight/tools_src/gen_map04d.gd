@@ -1,5 +1,5 @@
 extends "res://gravelight/tools_src/gen_map04_lib.gd"
-## Generates Map 4 Act IV "Mondlicht, the relay station" (UPDATE 07, docs/MAP4_FERNFLUG.md §6): Darkmatter's Regional
+## Generates Map 4 Act IV "Mondlicht, the relay station" (UPDATE 07, docs/MAP4_FERNFLUG.md §6): the Provider's Regional
 ## Retention Relay RR-7 on the floor of a small crater, half pressurized domes, half vacuum. Six zones on the ladder
 ## 750 → 1000 (the yard airlock) → 1250 (the store, two ways in: one link group) → 1500 → 2000 (the Account, opened
 ## by the three columns): the landing dome, the concourse with the first Crucible, the regolith yard under the Earth
@@ -135,7 +135,7 @@ func _reception() -> void:
 	box(geo, "DomeRoof_A", Vector3(-12.3, CEIL_A, -0.3), Vector3(12.3, CEIL_A + 0.3, 24.3), "roof", false)
 	# the capsule, nose up in its cradle, and the reception desk with the bell
 	box(geo, "NavBlock_Capsule", Vector3(-9.5, 0, 1.5), Vector3(-5.5, 3.5, 5.5), "metal")
-	box(geo, "NavBlock_Desk", Vector3(4.0, 0, 19.0), Vector3(9.0, 1.0, 20.2), "furniture")
+	box(geo, "NavBlock_Desk", Vector3(6.0, 0, 14.0), Vector3(11.3, 1.0, 15.2), "furniture")   # clear of the Second Wind cabinet's approach (the playtest bot's errand)
 
 
 func _concourse() -> void:
@@ -232,8 +232,8 @@ func build_dressing() -> void:
 	Props.cone(cap, Vector3(0, 3.9, 0), 1.4, 1.4, "steel")
 	for i: int in 3:
 		Props.strut(cap, Vector3(cos(TAU * float(i) / 3.0) * 1.8, 0, sin(TAU * float(i) / 3.0) * 1.8), Vector3(cos(TAU * float(i) / 3.0) * 1.0, 1.2, sin(TAU * float(i) / 3.0) * 1.0), 0.1, "iron")
-	var desk: Node3D = Props.group(dress, "Desk", Vector3(6.5, 0, 19.6))
-	Props.block(desk, Vector3(-2.5, 0, -0.6), Vector3(2.5, 1.0, 0.6), "enamel_white")
+	var desk: Node3D = Props.group(dress, "Desk", Vector3(8.65, 0, 14.6))
+	Props.block(desk, Vector3(-2.65, 0, -0.6), Vector3(2.65, 1.0, 0.6), "enamel_white")
 	Props.bell(desk, Vector3(1.8, 1.0, 0), 0.18, "brass")
 	label("WELCOME, VALUED CUSTOMERS", Vector3(0, CEIL_A - 1.2, 23.7), 180.0, 48, Color(0.85, 0.6, 1.0, 0.95))
 	label("ANOMALOUS INVENTORY", Vector3(-11.7, 2.4, 16.0), 90.0, 18, Color(0.9, 0.85, 0.7, 0.8))
@@ -250,7 +250,7 @@ func build_dressing() -> void:
 	Props.cone(model, Vector3(0.9, 0.3, 0.9), 0.25, 0.3, "steel")
 	Props.ball(model, Vector3(0, 0.9, 0.9), Vector3.ONE * 0.3, "nachtglas")
 	Props.block(model, Vector3(-1.5, 0.0, -2.0), Vector3(1.5, 1.4, 1.5), "glass")
-	# the store: the suited inventory on the racks (boxes in Darkmatter violet, a PERPETUAL stencil), the conveyor's rollers
+	# the store: the suited inventory on the racks (boxes in the Provider's violet, a PERPETUAL stencil), the conveyor's rollers
 	for rz: float in [34.0, 42.0, 50.0]:
 		var rack: Node3D = Props.group(dress, "Rack", Vector3(28, 0, rz))
 		for i: int in 9:
