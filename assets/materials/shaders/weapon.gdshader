@@ -101,8 +101,11 @@ void fragment() {
 	float mx = max(col.r, max(col.g, col.b));
 	float mn = min(col.r, min(col.g, col.b));
 	float sat = (mx - mn) / max(mx, 0.001);
-	float warm = step(col.b, col.g) * step(col.g, col.r + 0.02);
-	float wood = wood_force >= 0.0 ? wood_force : smoothstep(0.16, 0.32, sat) * warm;
+	// wood is a warm red-brown (red well above green, green at or above blue); on a PBR surface it is also
+	// non-metal by the ORM map, so rust and brass on the steel never take the wood look or the camo
+	float warm = smoothstep(1.08, 1.25, col.r / max(col.g, 0.004)) * step(col.b * 0.85, col.g);
+	float wood = wood_force >= 0.0 ? wood_force : smoothstep(0.2, 0.36, sat) * warm;
+	if (has_orm > 0.5 && wood_force < 0.0) wood *= 1.0 - smoothstep(0.2, 0.5, orm.b);
 	if (palette > 0.5) {
 		metal = mix(0.82, 0.0, wood);
 		rough = mix(0.46, 0.62, wood);
@@ -138,7 +141,7 @@ void fragment() {
 	float scr = smoothstep(0.66, 0.72, fbm(vec3(q.x * 160.0, q.y * 160.0, q.z * 9.0) + 17.0));
 	float scr2 = smoothstep(0.7, 0.75, fbm(vec3(q.x * 14.0, q.y * 220.0, q.z * 220.0) + 29.0));
 	float patch = smoothstep(0.42, 0.72, n_mid * 0.7 + n_big * 0.3);
-	float worn = clamp(edge * wear * 1.6 * (0.4 + patch) + (scr + scr2 * 0.5) * scratches * 0.9 + patch * wear * 0.18, 0.0, 1.0);
+	float worn = clamp(edge * wear * 1.2 * (0.4 + patch) + (scr + scr2 * 0.5) * scratches * 0.6 + patch * wear * 0.05, 0.0, 1.0);
 	vec3 metal_col = col * bluing;
 	if (metal_tint.a > 0.0) {
 		float lum_m = dot(metal_col, vec3(0.3, 0.59, 0.11));
@@ -179,10 +182,10 @@ void fragment() {
 	// ---- Nachtglas (the Crucible version): dark violet glass, veins of violet and amber light
 	vec3 emis = vec3(0.0);
 	if (nachtglas > 0.0) {
-		float v1 = 1.0 - abs(2.0 * fbm(q * 9.0 + 41.0) - 1.0);
-		float v2 = 1.0 - abs(2.0 * fbm(q * 13.0 + 97.0) - 1.0);
-		float vein = smoothstep(0.84, 0.95, v1);
-		float amber = smoothstep(0.9, 0.98, v2);
+		float v1 = 1.0 - abs(2.0 * fbm(q * 38.0 + 41.0) - 1.0);
+		float v2 = 1.0 - abs(2.0 * fbm(q * 52.0 + 97.0) - 1.0);
+		float vein = smoothstep(0.9, 0.97, v1);
+		float amber = smoothstep(0.94, 0.99, v2);
 		vec3 glass = base * vec3(0.3, 0.16, 0.45) + vec3(0.035, 0.012, 0.07);
 		base = mix(base, glass, nachtglas * 0.85);
 		r_out = mix(r_out, 0.16, nachtglas);

@@ -311,7 +311,7 @@ static func build(weapon_id: StringName, is_upgraded: bool = false, camo_id: Str
 	var grip_xf: Transform3D = root.get_meta("grip_r", Transform3D(Basis(Vector3.RIGHT, deg_to_rad(-20.0)), Vector3(0, -0.045, 0.05)))
 	var lean: float = rad_to_deg(-grip_xf.basis.get_euler().x)
 	b.rhand(_v3(f.get("grip_r"), grip_xf.origin), float(f.get("grip_lean", lean)), float(f.get("grip_r_radius", root.get_meta("grip_r_radius", WeaponModels.HAND_R0))))
-	for key: String in ["port", "bore", "cylinder", "scope_mag"]:
+	for key: String in ["port", "bore", "cylinder", "scope_mag", "eye_relief"]:
 		if f.has(key):
 			root.set_meta(key if key != "scope_mag" else "scope", _v3(f[key]) if key == "port" else f[key])
 	# empty nodes for the parts a reload kind expects but the pack has no mesh for
@@ -424,35 +424,61 @@ static func _add_scope(b: WeaponModels, d: Dictionary) -> void:
 	b.root.set_meta("scope", float(d.get("mag", 4.0)))
 
 
-## The M1911's hand-fitted attachments (M1911KitModels, built for the procedural pistol): the sights on the Slide
-## group, then the rest; every new node is shifted by model_fit "kit_offset" so it sits on the OGA pistol.
+## The M1911's hand-fitted attachments (M1911KitModels, built for the procedural pistol): one slot at a time, every
+## node a slot adds shifted by model_fit "kit_offset" {slot: [x,y,z]} (or one [x,y,z] for all) so it sits on the
+## OGA pistol: the barrel parts by the muzzle's difference, the magazine and grip parts by the grip's.
 static func _m1911_kit(b: WeaponModels, f: Dictionary, groups: Dictionary) -> void:
 	if b.look.is_empty():
 		return
-	var off: Vector3 = _v3(f.get("kit_offset", [0, 0, 0]))
+	var full: Dictionary = b.look
+	var kit: Dictionary = full.get("kit", {})
+	var ko: Variant = f.get("kit_offset", {})
 	var sl: Node3D = groups.get("Slide") as Node3D
-	var before: Dictionary = {}
-	for host: Node3D in [b.root, sl, b.root.get_node_or_null("Mag")]:
-		if host != null:
-			before[host] = host.get_children().duplicate()
-	if sl != null and str((b.look.get("kit", {}) as Dictionary).get("sights", "")) != "":
-		# the kit's sights are built in the procedural slide's space (top 0.051): offset into this slide's
-		var top: float = 0.051
-		var slide_off: Vector3 = off - sl.position
-		M1911KitModels.build_sights(b, sl, top)
-		for c: Node in sl.get_children():
-			if not (before[sl] as Array).has(c) and c is Node3D:
-				(c as Node3D).position += slide_off
-		before[sl] = sl.get_children().duplicate()
-	M1911KitModels.dress(b)
-	for host: Node3D in before.keys():
-		var shift: Vector3 = off - (host.position if host != b.root else Vector3.ZERO)
-		for c: Node in host.get_children():
-			if not (before[host] as Array).has(c) and c is Node3D:
-				(c as Node3D).position += shift
-	var mz: Node3D = b.root.get_node_or_null("Muzzle") as Node3D
-	if mz != null and str((b.look.get("kit", {}) as Dictionary).get("barrel", "")) != "":
-		mz.position += off
+	var hosts: Array = [b.root]
+	if sl != null:
+		hosts.append(sl)
+	if b.root.get_node_or_null("Mag") != null:
+		hosts.append(b.root.get_node("Mag"))
+	for slot: String in ["sights", "mag", "barrel", "grip", "ammo", "finish"]:
+		var opt: String = str(full.get("finish", "")) if slot == "finish" else str(kit.get(slot, ""))
+		if opt == "":
+			continue
+		var off: Vector3 = _v3(ko.get(slot, [0, 0, 0])) if ko is Dictionary else _v3(ko)
+		var before: Dictionary = {}
+		for h: Node3D in hosts:
+			before[h] = h.get_children().duplicate()
+		var mz: Node3D = b.root.get_node_or_null("Muzzle") as Node3D
+		var mz_before: Vector3 = mz.position if mz != null else Vector3.ZERO
+		var front_off: Vector3 = _v3((f.get("kit_offset_front", {}) as Dictionary).get(slot, [0, 0, 0]))
+		var marks: Dictionary = {}
+		for mn: String in ["SightPoint", "FrontSight"]:
+			var mk: Node3D = b.root.find_child(mn, true, false) as Node3D
+			if mk != null:
+				marks[mn] = [mk, mk.position]
+		# a look with only this slot (the finish keeps the kit so the inlay rule sees it)
+		b.look = {"kit": {slot: opt} if slot != "finish" else {}, "finish": full.get("finish", "") if slot == "finish" else "", "sig": full.get("sig", ""), "id": full.get("id", "")}
+		if slot == "sights":
+			if sl != null:
+				M1911KitModels.build_sights(b, sl, 0.051)
+		else:
+			M1911KitModels.dress(b)
+		for h: Node3D in hosts:
+			# the kit code builds in the procedural pistol's frame, where the Slide and Mag groups sit at the origin:
+			# a part under a group here also undoes that group's offset. Parts ahead of the dust cover (z < -0.08,
+			# the front sight) take kit_offset_front on top: the OGA slide is shorter than ours.
+			var shift: Vector3 = off - (h.position if h != b.root else Vector3.ZERO)
+			for c: Node in h.get_children():
+				if not (before[h] as Array).has(c) and c is Node3D:
+					var cn: Node3D = c as Node3D
+					cn.position += shift + (front_off if cn.position.z < -0.08 else Vector3.ZERO)
+		for mn: String in marks.keys():
+			var mk2: Node3D = marks[mn][0]
+			if is_instance_valid(mk2) and mk2.position != marks[mn][1]:
+				var hs: Vector3 = off - ((mk2.get_parent() as Node3D).position if mk2.get_parent() != b.root else Vector3.ZERO)
+				mk2.position += hs + (front_off if mk2.position.z < -0.08 else Vector3.ZERO)
+		if mz != null and mz.position != mz_before:
+			mz.position += off
+	b.look = full
 
 
 # ================================================================== geometry scans

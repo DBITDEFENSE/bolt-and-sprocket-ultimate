@@ -64,6 +64,18 @@ static func apply(root: Node3D, opts: Dictionary) -> void:
 		while p != null and p != root:
 			basis = (p as Node3D).transform.basis * basis
 			p = p.get_parent()
+		# model_fit shader metal_parts / wood_parts: a whole part group forced to metal (the MG42's tan belt drum) or wood
+		var part: String = ""
+		var pn: Node = mi.get_parent()
+		while pn != null and pn != root:
+			part = String(pn.name)
+			pn = pn.get_parent()
+		var fit: Dictionary = opts.get("fit", {})
+		var force: float = -1.0
+		if (fit.get("metal_parts", []) as Array).has(part):
+			force = 0.0
+		elif (fit.get("wood_parts", []) as Array).has(part):
+			force = 1.0
 		var inv: Basis = basis.inverse()
 		var fwd: Vector3 = (inv * Vector3.FORWARD).normalized()
 		var up: Vector3 = (inv * Vector3.UP).normalized()
@@ -74,14 +86,14 @@ static func apply(root: Node3D, opts: Dictionary) -> void:
 				src = mi.mesh.surface_get_material(si)
 			if src is ShaderMaterial and (src as ShaderMaterial).shader == shader():
 				continue
-			mi.set_surface_override_material(si, material_for(src as BaseMaterial3D, opts, fwd, up, scale))
+			mi.set_surface_override_material(si, material_for(src as BaseMaterial3D, opts, fwd, up, scale, force))
 
 
 ## One ShaderMaterial for a source material and a look (cached).
-static func material_for(src: BaseMaterial3D, opts: Dictionary, fwd: Vector3, up: Vector3, scale: float) -> ShaderMaterial:
+static func material_for(src: BaseMaterial3D, opts: Dictionary, fwd: Vector3, up: Vector3, scale: float, force: float = -1.0) -> ShaderMaterial:
 	var fit: Dictionary = opts.get("fit", {})
-	var key: String = "%d|%s|%s|%s|%s|%.3f|%s" % [src.get_instance_id() if src != null else 0, opts.get("upgraded", false), opts.get("camo", ""),
-		opts.get("finish", ""), opts.get("palette", false), scale, JSON.stringify(fit)]
+	var key: String = "%d|%s|%s|%s|%s|%.3f|%s|%.1f" % [src.get_instance_id() if src != null else 0, opts.get("upgraded", false), opts.get("camo", ""),
+		opts.get("finish", ""), opts.get("palette", false), scale, JSON.stringify(fit), force]
 	if _cache.has(key):
 		return _cache[key]
 	var m: ShaderMaterial = ShaderMaterial.new()
@@ -121,6 +133,8 @@ static func material_for(src: BaseMaterial3D, opts: Dictionary, fwd: Vector3, up
 	var wf: Dictionary = fit.get("wood", {})
 	if sm != null and wf.has(str(sm.resource_name)):
 		wood_force = float(wf[str(sm.resource_name)])
+	if force >= 0.0:
+		wood_force = force
 	m.set_shader_parameter("wood_force", wood_force)
 	m.set_shader_parameter("frost", maxf(0.0, frost))
 	m.set_shader_parameter("nachtglas", 1.0 if bool(opts.get("upgraded", false)) else 0.0)

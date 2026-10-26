@@ -1631,7 +1631,7 @@ func _compute_ads_pose() -> void:
 	var marks: Array = sight_marks_model()
 	var sight: Vector3 = marks[0]
 	var d: Vector3 = (marks[1] as Vector3) - sight
-	var relief: float = maxf(0.05, float(_feel.get("eye_relief", 0.25)))
+	var relief: float = maxf(0.05, float(_model.get_meta("eye_relief", _feel.get("eye_relief", 0.25))) if _model != null else float(_feel.get("eye_relief", 0.25)))   # T-089: a downloaded model may set its own
 	var b: Basis = Basis.IDENTITY
 	if d.length() > 0.01:
 		b = Basis.looking_at(d.normalized(), Vector3.UP).inverse()   # sight line (rear -> front) onto -Z, no roll
