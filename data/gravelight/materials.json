@@ -240,7 +240,7 @@
       ],
       "grime": 0.08,
       "note": "the Grounds' snow: wind-packed, clean (snow_01 since T-093; snow_02's twig marks read as cracks)",
-      "normal_strength": 0.8,
+      "normal_strength": 0.5,
       "ao_strength": 0.6
     },
     "ice": {

@@ -2491,23 +2491,30 @@ func _tree_line(g: Node3D) -> void:
 						var sc: Vector3 = Vector3(hgt * rng.randf_range(0.36, 0.46), hgt, hgt * rng.randf_range(0.36, 0.46))
 						xf.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(sc), Vector3(p.x, -0.3, p.y)))
 				t += rng.randf_range(2.6, 4.2)
-	var mm: MultiMesh = MultiMesh.new()
-	mm.transform_format = MultiMesh.TRANSFORM_3D
-	mm.mesh = Landscape.pine_mesh()
-	mm.instance_count = xf.size()
-	for i: int in xf.size():
-		mm.set_instance_transform(i, xf[i])
-	var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
-	mmi.name = "EdgeSpruces"
-	mmi.multimesh = mm
-	var sh: Shader = Shader.new()
-	sh.code = (load(Landscape.PINE_SHADER) as Shader).code.replace(", fog_disabled", "")
-	var m: ShaderMaterial = ShaderMaterial.new()
-	m.shader = sh
-	m.set_shader_parameter("fog_max", 0.0)
-	mmi.material_override = m
-	mmi.set_meta("keep", true)
-	g.add_child(mmi)
+	# T-093: the scripted spruces (and a birch here and there) instead of the cone pines, built at load time by a
+	# NatureRows node from these transforms; bare bushes and boulders between the rows (the same RNG draws as
+	# before for the trees, so the line is where it was)
+	var rows: NatureRows = NatureRows.new()
+	rows.name = "EdgeTrees"
+	var urng: RandomNumberGenerator = RandomNumberGenerator.new()
+	urng.seed = 2084
+	for x0: Transform3D in xf:
+		var ux: Transform3D = Landscape.uniform_tree_xform(x0)
+		if Landscape.is_birch(x0.origin):
+			rows.birches.append(ux)
+		else:
+			rows.spruces.append(ux)
+		if urng.randf() < 0.45:   # a bush or a rock beside it, on the field side
+			var off: Vector3 = Vector3(urng.randf_range(-1.6, 1.6), 0.0, urng.randf_range(-1.6, 1.6))
+			var bp: Vector3 = Vector3(x0.origin.x, 0.0, x0.origin.z) + off
+			if _in_grounds(bp, -0.9):
+				continue   # never inside the edge
+			var s: float = urng.randf_range(0.8, 1.5)
+			if urng.randf() < 0.7:
+				rows.bushes.append(Transform3D(Basis(Vector3.UP, urng.randf() * TAU).scaled(Vector3(s, s, s)), bp - Vector3(0, 0.05, 0)))
+			else:
+				rows.rocks.append(Transform3D(Basis(Vector3.UP, urng.randf() * TAU).scaled(Vector3(s, s * 0.7, s)), bp - Vector3(0, 0.2, 0)))
+	g.add_child(rows)
 	print("grounds: %d edge spruces" % xf.size())
 
 

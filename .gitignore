@@ -17,3 +17,6 @@ __pycache__/
 assets/user_supplied/
 tools_src/_downloads/
 !assets/third_party/**/*.import
+
+# T-093: our own scripted env models import with the foliage/prop presets; their .import files are committed like third_party's
+!assets/ours/**/*.import

@@ -368,13 +368,14 @@ static func dead_tree(parent: Node3D, pos: Vector3, seed_v: int, height: float =
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = seed_v
 	var g: Node3D = group(parent, "DeadTree", pos, rng.randf() * 360.0)
-	cyl(g, Vector3(0, height * 0.5, 0), 0.22, height, "beam", Vector3(rng.randf_range(-4, 4), 0, rng.randf_range(-4, 4)))
+	var wood: String = "bark" if MaterialLibrary.for_generator("bark") != null else "beam"   # T-093: the library's bark when it's on
+	cyl(g, Vector3(0, height * 0.5, 0), 0.22, height, wood, Vector3(rng.randf_range(-4, 4), 0, rng.randf_range(-4, 4)))
 	for i: int in 7:
 		var y: float = height * rng.randf_range(0.35, 0.95)
 		var a: float = rng.randf() * 360.0
 		var blen: float = rng.randf_range(1.2, 2.8) * (1.0 - y / height * 0.5)
 		var br: Node3D = group(g, "Branch", Vector3(0, y, 0), a)
-		obox(br, Vector3(0, blen * 0.35, -blen * 0.3), Vector3(0.09, blen, 0.09), "beam", Vector3(-rng.randf_range(35, 65), 0, 0))
+		obox(br, Vector3(0, blen * 0.35, -blen * 0.3), Vector3(0.09, blen, 0.09), wood, Vector3(-rng.randf_range(35, 65), 0, 0))
 	# snow on the ground around the roots
 	ball(g, Vector3(0, 0.0, 0), Vector3(1.6, 0.35, 1.6), "snow")
 
