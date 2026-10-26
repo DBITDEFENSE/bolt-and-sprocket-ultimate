@@ -10,7 +10,7 @@ Phase 1 (parallel): T-087 asset intake (OGA guns + Devin's Sketchfab guns -> ass
 Phase 2 (parallel): T-089 viewmodel guns (normalize, shared weapon shader, markers, ads_check, animation fit, per-character arms), T-090 wonder weapons + gramophone, T-091 zombies, T-092 people, T-093 Map 0 environment, T-094 world objects, T-095 VFX, T-096 UI readability.
 Phase 3: full suite, ads_check, map-data check, asset report, FPS check, clip, Play.bat buttons, morning report, rollout plan.
 
-Status: T-087 intake MERGED (3029025; 16 guns in assets/third_party, models.json, license gate). T-088 pipeline MERGED (ART_BIBLE, MaterialLibrary/PropLibrary, 28-cam capture, BEFORE shots in morning/screenshots/u05/before). Phase 2a started: T-089 guns (.wt/u05-guns), T-095 VFX (.wt/u05-vfx), T-096 UI (.wt/u05-ui). Phase 2b running: T-093 environment (.wt/u05-env), T-094 world objects (.wt/u05-worldobjects), T-091 zombies (.wt/u05-zombies). Still to start: T-090 wonder weapons (after T-089 guns), T-092 people (after T-091 zombies).
+Status: T-087 intake MERGED (3029025; 16 guns in assets/third_party, models.json, license gate). T-088 pipeline MERGED (ART_BIBLE, MaterialLibrary/PropLibrary, 28-cam capture, BEFORE shots in morning/screenshots/u05/before). Phase 2a started: T-089 guns (.wt/u05-guns), T-095 VFX (.wt/u05-vfx), T-096 UI (.wt/u05-ui). Phase 2b: T-093 environment MERGED; running: T-094 world objects (.wt/u05-worldobjects), T-091 zombies (.wt/u05-zombies). T-090 wonder weapons running (.wt/u05-wonder). Still to start: T-092 people (after T-091 zombies).
 
 
 ## Overnight run, 2026-10-21 → 22: the plan
