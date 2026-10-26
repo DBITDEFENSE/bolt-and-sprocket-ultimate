@@ -8,5 +8,16 @@ cd "$(dirname "$0")/.."
 . tools/env.sh   # GODOT / GODOT_W / BLENDER / PYTHON per OS (tools/local_paths.env overrides)
 OUT="$(pwd)/morning/screenshots/ads"
 case "${1:-}" in --*|"") ;; *) OUT="$1"; shift ;; esac
+# --headless (UPDATE 07, QA Q-04): numbers only, no window at all (the scene already handles the headless display
+# server; the wrapper used to open a window regardless, which fails in a cloud session). Implies --no-shots.
+HEADLESS=""; ARGS=""
+for a in "$@"; do
+	case "$a" in --headless) HEADLESS="--headless"; ARGS="$ARGS --no-shots" ;; *) ARGS="$ARGS $a" ;; esac
+done
+if [ -n "$HEADLESS" ]; then
+	# shellcheck disable=SC2086
+	exec "$GODOT" --headless --audio-driver Dummy --path . res://gravelight/tools_src/ads_check.tscn -- --out="$OUT" $ARGS
+fi
+# shellcheck disable=SC2086
 exec "$GODOT" --audio-driver Dummy --position -4000,-4000 --resolution 1280x720 --path . \
-	res://gravelight/tools_src/ads_check.tscn -- --out="$OUT" "$@"
+	res://gravelight/tools_src/ads_check.tscn -- --out="$OUT" $ARGS
