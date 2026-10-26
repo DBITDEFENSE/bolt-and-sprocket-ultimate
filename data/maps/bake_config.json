@@ -4,281 +4,62 @@
     "px_per_m": 6.0,
     "max_px": 1600,
     "margin_m": 12.0,
-    "exclude": [
-      "Sky",
-      "Mist",
-      "Fog",
-      "Haze",
-      "Water",
-      "Sea",
-      "Tide",
-      "Beam",
-      "Shaft",
-      "Halo",
-      "Flare",
-      "Godray",
-      "Glow",
-      "Snowfall",
-      "Rain",
-      "Landscape",
-      "Backdrop",
-      "Mountains",
-      "Cloud",
-      "Moon",
-      "Stars"
-    ],
-    "style_for_game": {
-      "gravelight": "ink",
-      "bs": "holo"
-    },
-    "floors": [
-      {
-        "id": "surface",
-        "name": "Surface",
-        "y_min": -1000.0,
-        "y_max": 1000.0,
-        "base_y": 0.0,
-        "cut": 60.0,
-        "depth": 200.0
-      }
-    ]
+    "exclude": ["Sky", "Mist", "Fog", "Haze", "Water", "Sea", "Tide", "Beam", "Shaft", "Halo", "Flare", "Godray", "Glow", "Snowfall", "Rain", "Landscape", "Backdrop", "Mountains", "Cloud", "Moon", "Stars"],
+    "style_for_game": {"gravelight": "ink", "bs": "holo"},
+    "floors": [{"id": "surface", "name": "Surface", "y_min": -1000.0, "y_max": 1000.0, "base_y": 0.0, "cut": 60.0, "depth": 200.0}]
   },
   "styles": {
-    "ink": {
-      "_doc": "GRAVELIGHT field sketch: ink on paper with paper grain and pencil hatching in the walls (the ledger-stamp HUD).",
-      "paper": "#e9dfc6",
-      "paper_dark": "#cbbb98",
-      "ink": "#2a2118",
-      "wall": "#3a2e22",
-      "accent": "#9e1b17",
-      "ghost_alpha": 0.22
-    },
-    "holo": {
-      "_doc": "Bolt & Sprocket holo map: clean cyan lines and orange walls on a dark glass panel (the B&S UI).",
-      "paper": "#0b1a2a",
-      "paper_dark": "#071220",
-      "ink": "#4fe6ff",
-      "wall": "#ff9a3c",
-      "accent": "#ffd23f",
-      "ghost_alpha": 0.25
-    },
-    "blueprint": {
-      "_doc": "Swiss blueprint (Fine Print / Helvetia Works): white technical lines on Prussian blue with a fine grid.",
-      "paper": "#123a72",
-      "paper_dark": "#0c2a57",
-      "ink": "#eaf2ff",
-      "wall": "#f4f8ff",
-      "accent": "#e2231a",
-      "ghost_alpha": 0.25
-    }
+    "ink": {"_doc": "GRAVELIGHT field sketch: ink on paper with paper grain and pencil hatching in the walls (the ledger-stamp HUD).", "paper": "#e9dfc6", "paper_dark": "#cbbb98", "ink": "#2a2118", "wall": "#3a2e22", "accent": "#9e1b17", "ghost_alpha": 0.22},
+    "holo": {"_doc": "Bolt & Sprocket holo map: clean cyan lines and orange walls on a dark glass panel (the B&S UI).", "paper": "#0b1a2a", "paper_dark": "#071220", "ink": "#4fe6ff", "wall": "#ff9a3c", "accent": "#ffd23f", "ghost_alpha": 0.25},
+    "blueprint": {"_doc": "Swiss blueprint (Fine Print / Helvetia Works): white technical lines on Prussian blue with a fine grid.", "paper": "#123a72", "paper_dark": "#0c2a57", "ink": "#eaf2ff", "wall": "#f4f8ff", "accent": "#e2231a", "ghost_alpha": 0.25}
   },
   "maps": {
     "map00_crossroads": {
       "px_per_m": 8.0,
       "floors": [
-        {
-          "id": "cellar",
-          "name": "Cellar",
-          "y_min": -12.0,
-          "y_max": -1.2,
-          "base_y": -3.2,
-          "cut": -1.75
-        },
-        {
-          "id": "ground",
-          "name": "Ground floor",
-          "y_min": -1.2,
-          "y_max": 2.0,
-          "base_y": 0.0,
-          "cut": 1.6
-        },
-        {
-          "id": "upstairs",
-          "name": "Upstairs",
-          "y_min": 2.0,
-          "y_max": 40.0,
-          "base_y": 3.8,
-          "cut": 5.4,
-          "zones": [
-            "UPSTAIRS"
-          ]
-        }
+        {"id": "cellar", "name": "Cellar", "y_min": -12.0, "y_max": -1.2, "base_y": -3.2, "cut": -1.75},
+        {"id": "ground", "name": "Ground floor", "y_min": -1.2, "y_max": 2.0, "base_y": 0.0, "cut": 1.6},
+        {"id": "upstairs", "name": "Upstairs", "y_min": 2.0, "y_max": 40.0, "base_y": 3.8, "cut": 5.4, "zones": ["UPSTAIRS"]}
       ],
-      "zone_names": {
-        "TAPROOM": "Taproom",
-        "UPSTAIRS": "Guest Rooms",
-        "STABLE": "Stable",
-        "YARD": "The Carters' Yard",
-        "GROUNDS": "The Crossroads",
-        "CELLAR": "Helvetia Cellar",
-        "OLD_CELLAR": "The Old Cellar"
-      }
+      "zone_names": {"TAPROOM": "Taproom", "UPSTAIRS": "Guest Rooms", "STABLE": "Stable", "YARD": "The Carters' Yard", "GROUNDS": "The Crossroads", "CELLAR": "Helvetia Cellar", "OLD_CELLAR": "The Old Cellar"}
     },
     "map01_kaltenbrunn": {
       "px_per_m": 8.0,
       "floors": [
-        {
-          "id": "vault",
-          "name": "Core Vault (-3)",
-          "y_min": -40.0,
-          "y_max": -12.35,
-          "base_y": -18.0,
-          "cut": -12.6,
-          "zones": [
-            "I_CORE"
-          ]
-        },
-        {
-          "id": "level_2",
-          "name": "Level -2",
-          "y_min": -12.35,
-          "y_max": -5.0,
-          "base_y": -12.0,
-          "cut": -10.4
-        },
-        {
-          "id": "surface",
-          "name": "Surface",
-          "y_min": -5.0,
-          "y_max": 3.0,
-          "base_y": 0.0,
-          "cut": 1.6,
-          "mask_zones": [
-            "A_MINEHEAD",
-            "B_RAILYARD",
-            "C_ADMIN",
-            "D_BARRACKS",
-            "E_LIFT",
-            "M_STAIRS"
-          ],
-          "mask_grow": 4.0
-        },
-        {
-          "id": "admin",
-          "name": "Admin upper floor",
-          "y_min": 3.0,
-          "y_max": 40.0,
-          "base_y": 3.8,
-          "cut": 5.4,
-          "zones": [
-            "C_ADMIN"
-          ]
-        }
+        {"id": "vault", "name": "Core Vault (-3)", "y_min": -40.0, "y_max": -12.35, "base_y": -18.0, "cut": -12.6, "zones": ["I_CORE"]},
+        {"id": "level_2", "name": "Level -2", "y_min": -12.35, "y_max": -5.0, "base_y": -12.0, "cut": -10.4},
+        {"id": "surface", "name": "Surface", "y_min": -5.0, "y_max": 3.0, "base_y": 0.0, "cut": 1.6, "mask_zones": ["A_MINEHEAD", "B_RAILYARD", "C_ADMIN", "D_BARRACKS", "E_LIFT", "M_STAIRS"], "mask_grow": 4.0},
+        {"id": "admin", "name": "Admin upper floor", "y_min": 3.0, "y_max": 40.0, "base_y": 3.8, "cut": 5.4, "zones": ["C_ADMIN"]}
       ],
-      "zone_names": {
-        "A_MINEHEAD": "Minehead Yard",
-        "B_RAILYARD": "Rail Yard",
-        "C_ADMIN": "Administration Block",
-        "D_BARRACKS": "Barracks & Mess Hall",
-        "E_LIFT": "Lift Shaft",
-        "M_STAIRS": "Maintenance Stairs",
-        "F_CHAPEL": "Salt Chapel",
-        "G_GENERATOR": "Generator Hall",
-        "H_LAB": "Laboratory Wing",
-        "I_CORE": "Core Vault"
-      }
+      "zone_names": {"A_MINEHEAD": "Minehead Yard", "B_RAILYARD": "Rail Yard", "C_ADMIN": "Administration Block", "D_BARRACKS": "Barracks & Mess Hall", "E_LIFT": "Lift Shaft", "M_STAIRS": "Maintenance Stairs", "F_CHAPEL": "Salt Chapel", "G_GENERATOR": "Generator Hall", "H_LAB": "Laboratory Wing", "I_CORE": "Core Vault"}
+    },
+    "map04a_thalbach": {
+      "px_per_m": 6.0,
+      "floors": [
+        {"id": "works", "name": "Werk Thalbach", "y_min": -1.0, "y_max": 10.0, "base_y": 0.0, "cut": 1.7},
+        {"id": "catwalks", "name": "Hangar catwalks (+12)", "y_min": 10.0, "y_max": 24.0, "base_y": 12.0, "cut": 13.4, "zones": ["H_HALLE"]}
+      ]
     },
     "map02_totenhafen": {
       "px_per_m": 8.0,
       "floors": [
-        {
-          "id": "lower",
-          "name": "Lower Pens & U-1047",
-          "y_min": -12.0,
-          "y_max": -1.0,
-          "base_y": -3.0,
-          "cut": -1.3
-        },
-        {
-          "id": "quay",
-          "name": "Quay & Piers",
-          "y_min": -1.0,
-          "y_max": 3.0,
-          "base_y": 0.0,
-          "cut": 1.7
-        },
-        {
-          "id": "catwalks",
-          "name": "Catwalks (+4)",
-          "y_min": 3.0,
-          "y_max": 6.2,
-          "base_y": 4.0,
-          "cut": 5.6,
-          "zones": [
-            "D_PENHALL",
-            "F_LOWERPENS"
-          ]
-        },
-        {
-          "id": "tower",
-          "name": "Signal Tower (+7)",
-          "y_min": 6.2,
-          "y_max": 40.0,
-          "base_y": 7.0,
-          "cut": 8.6,
-          "zones": [
-            "G_SIGNAL"
-          ]
-        }
+        {"id": "lower", "name": "Lower Pens & U-1047", "y_min": -12.0, "y_max": -1.0, "base_y": -3.0, "cut": -1.3},
+        {"id": "quay", "name": "Quay & Piers", "y_min": -1.0, "y_max": 3.0, "base_y": 0.0, "cut": 1.7},
+        {"id": "catwalks", "name": "Catwalks (+4)", "y_min": 3.0, "y_max": 6.2, "base_y": 4.0, "cut": 5.6, "zones": ["D_PENHALL", "F_LOWERPENS"]},
+        {"id": "tower", "name": "Signal Tower (+7)", "y_min": 6.2, "y_max": 40.0, "base_y": 7.0, "cut": 8.6, "zones": ["G_SIGNAL"]}
       ]
     },
     "helvetia_works": {
       "_doc": "Not built yet (docs/gravelight/MAPS.md HW_*): the Swiss-blueprint style and its two levels are ready for when the scene exists and joins the campaign chain.",
       "style": "blueprint",
       "floors": [
-        {
-          "id": "ground",
-          "name": "Works floor",
-          "y_min": -20.0,
-          "y_max": 4.0,
-          "base_y": 0.0,
-          "cut": 1.6
-        },
-        {
-          "id": "upper",
-          "name": "Upper offices (+6)",
-          "y_min": 4.0,
-          "y_max": 40.0,
-          "base_y": 6.0,
-          "cut": 7.6
-        }
+        {"id": "ground", "name": "Works floor", "y_min": -20.0, "y_max": 4.0, "base_y": 0.0, "cut": 1.6},
+        {"id": "upper", "name": "Upper offices (+6)", "y_min": 4.0, "y_max": 40.0, "base_y": 6.0, "cut": 7.6}
       ]
     },
-    "scrapheap": {
-      "px_per_m": 4.0
-    },
-    "rustvane": {
-      "px_per_m": 4.0
-    },
-    "nova_plaza": {
-      "px_per_m": 4.0
-    },
-    "verdant": {
-      "px_per_m": 4.0
-    },
-    "map04a_thalbach": {
-      "px_per_m": 6.0,
-      "floors": [
-        {
-          "id": "works",
-          "name": "Werk Thalbach",
-          "y_min": -1.0,
-          "y_max": 10.0,
-          "base_y": 0.0,
-          "cut": 1.7
-        },
-        {
-          "id": "catwalks",
-          "name": "Hangar catwalks (+12)",
-          "y_min": 10.0,
-          "y_max": 24.0,
-          "base_y": 12.0,
-          "cut": 13.4,
-          "zones": [
-            "H_HALLE"
-          ]
-        }
-      ]
-    }
+    "scrapheap": {"px_per_m": 4.0},
+    "rustvane": {"px_per_m": 4.0},
+    "nova_plaza": {"px_per_m": 4.0},
+    "verdant": {"px_per_m": 4.0}
   }
 }

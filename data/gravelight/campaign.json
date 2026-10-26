@@ -5,6 +5,9 @@
     "map01_kaltenbrunn",
     "map02_totenhafen"
   ],
+  "standalone": [
+    "map04a_thalbach"
+  ],
   "scenes": {
     "map00_crossroads": "res://gravelight/maps/map00_crossroads/map00.tscn",
     "map01_kaltenbrunn": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
@@ -34,6 +37,18 @@
     "dormant_energy": 0.0
   },
   "cutscenes": {
+    "exfil_m4a_m4b": {
+      "title": "DER KRANICH",
+      "subtitle": "somewhere over the North Sea  ·  03:40",
+      "seconds": 30.0,
+      "title_at": 22.0,
+      "fade_at": 27.5,
+      "shots": [
+        {"t": 0.0, "from": [-20.0, 1.6, 152.0], "to": [-20.0, 2.2, 157.0], "look": [-20.0, 3.0, 168.0], "fov": 62, "fx": "", "vo": "OPR_EXFIL_GO_M4A_01", "vo_at": 1.0},
+        {"t": 9.0, "from": [-50.0, 6.0, 212.0], "to": [-30.0, 8.0, 210.0], "look": [-20.0, 6.0, 185.0], "fov": 58, "fx": "doors"},
+        {"t": 19.0, "from": [20.0, 24.0, 120.0], "to": [-10.0, 30.0, 100.0], "look": [-20.0, 8.0, 185.0], "fov": 50}
+      ]
+    },
     "exfil_m0_m1": {
       "title": "KALTENBRUNN",
       "subtitle": "Kaltenbrunn salt mine  ·  9 km east  ·  dawn, 24 December 1944",
@@ -179,79 +194,6 @@
           "vo_at": 0.8
         }
       ]
-    },
-    "exfil_m4a_m4b": {
-      "title": "DER KRANICH",
-      "subtitle": "somewhere over the North Sea  ·  03:40",
-      "seconds": 30.0,
-      "title_at": 22.0,
-      "fade_at": 27.5,
-      "shots": [
-        {
-          "t": 0.0,
-          "from": [
-            -20.0,
-            1.6,
-            152.0
-          ],
-          "to": [
-            -20.0,
-            2.2,
-            157.0
-          ],
-          "look": [
-            -20.0,
-            3.0,
-            168.0
-          ],
-          "fov": 62,
-          "fx": "",
-          "vo": "OPR_EXFIL_GO_M4A_01",
-          "vo_at": 1.0
-        },
-        {
-          "t": 9.0,
-          "from": [
-            -50.0,
-            6.0,
-            212.0
-          ],
-          "to": [
-            -30.0,
-            8.0,
-            210.0
-          ],
-          "look": [
-            -20.0,
-            6.0,
-            185.0
-          ],
-          "fov": 58,
-          "fx": "doors"
-        },
-        {
-          "t": 19.0,
-          "from": [
-            20.0,
-            24.0,
-            120.0
-          ],
-          "to": [
-            -10.0,
-            30.0,
-            100.0
-          ],
-          "look": [
-            -20.0,
-            8.0,
-            185.0
-          ],
-          "fov": 50
-        }
-      ]
     }
-  },
-  "standalone": [
-    "map04a_thalbach"
-  ]
+  }
 }
