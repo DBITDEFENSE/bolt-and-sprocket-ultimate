@@ -241,16 +241,24 @@ func _prune() -> void:
 			_untag(zz)
 
 
+## The hood / rig / stamp nodes go with the tag.
+func _free_costume(z: Zombie) -> void:
+	for key: String in ["groom_hood", "groom_rig", "groom_stamp"]:
+		if not z.has_meta(key):
+			continue
+		var n: Node = z.get_meta(key) as Node
+		if n != null and is_instance_valid(n):
+			n.queue_free()
+		z.remove_meta(key)
+
+
 func _untag(z: Zombie) -> void:
 	if z != null and is_instance_valid(z):
-		for key: String in ["groom_hood", "groom_rig", "groom_stamp"]:
-			var n: Node = z.get_meta(key, null) as Node
-			if n != null and is_instance_valid(n):
-				n.queue_free()
-			z.remove_meta(key)
+		_free_costume(z)
 		if bo.has(z) and bool((bo[z] as Dictionary).get("phased", false)):
 			_set_phased(z, false)
-		z.remove_meta("groom")
+		if z.has_meta("groom"):
+			z.remove_meta("groom")
 	tagged.erase(z)
 	jj.erase(z)
 	bo.erase(z)
@@ -425,11 +433,7 @@ func _on_enemy_killed_at(_enemy_id: StringName, pos: Vector3, by_player: int) ->
 			GasCloud.spawn(_map(), pos, cfg.get("canary", {}))
 		elif kind == "backorder" and by_player > 0:
 			Economy.award(by_player, int((cfg.get("backorder", {}) as Dictionary).get("kill_scrip", 150)))
-		for key: String in ["groom_hood", "groom_rig", "groom_stamp"]:
-			var n: Node = zz.get_meta(key, null) as Node
-			if n != null and is_instance_valid(n):
-				n.queue_free()
-			zz.remove_meta(key)
+		_free_costume(zz)
 		if bo.has(zz) and bool((bo[zz] as Dictionary).get("phased", false)):
 			_set_phased(zz, false)
 		return
@@ -575,7 +579,7 @@ func _set_phased(z: Zombie, on: bool) -> void:
 	for hb: Hitbox in z._hitboxes:
 		hb.collision_layer = 0 if on else Hitbox.LAYER_HITBOX
 	z._set_inst("inst_tint", Color(0.55, 0.35, 1.0, 0.35) if on else Color(1.0, 0.85, 1.25, 1.0))
-	var stamp: Label3D = z.get_meta("groom_stamp", null) as Label3D
+	var stamp: Label3D = (z.get_meta("groom_stamp") as Label3D) if z.has_meta("groom_stamp") else null
 	if stamp != null and is_instance_valid(stamp):
 		stamp.visible = not on
 	if not on:
@@ -611,7 +615,7 @@ func _tick_backorders(delta: float) -> void:
 				_set_phased(zz, false)
 				d["solid_t"] = float(oc.get("solid_seconds", 2.5))
 				zz._enter(Zombie.State.CHASE)
-				var stamp: Label3D = zz.get_meta("groom_stamp", null) as Label3D
+				var stamp: Label3D = (zz.get_meta("groom_stamp") as Label3D) if zz.has_meta("groom_stamp") else null
 				if stamp != null and is_instance_valid(stamp):
 					stamp.text = str(Economy.get_scrip(t.player_id))
 		else:
