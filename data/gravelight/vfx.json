@@ -74,7 +74,7 @@
     "far_snow": {"amount_mult": 0.6, "flake": 0.028, "alpha": 0.55, "fade": [4.0, 8.0], "max_angle": 0.004},
     "motes": {"per_beam": 18, "flake": 0.012, "color": [0.75, 0.8, 1.0, 0.55]},
     "west_fog": {"position": [-10.0, 1.0, 20.0], "size": [22.0, 2.4, 90.0], "density": 0.045},
-    "breath": {"sprint_interval_mult": 0.5, "sprint_speed_scale": 1.35, "local": {"_doc": "T-100: the first-person puff (camera space, metres): small, faint and low so it never reads as a white blur over the sights", "offset": [0.0, -0.3, -0.45], "size": 0.1, "alpha": 0.07, "amount": 5}},
+    "breath": {"sprint_interval_mult": 0.5, "sprint_speed_scale": 1.35, "local": {"_doc": "T-100: the first-person puff (camera space, metres): small, faint and low so it never reads as a white blur over the sights", "offset": [0.0, -0.42, -0.5], "size": 0.08, "alpha": 0.05, "amount": 4}},
     "flicker": {"fire_names": ["hearth", "wreck", "candle", "fire", "brazier", "lantern_burnt"], "fire_speed_mult": 1.7, "fire_amount_mult": 1.25, "gutter_threshold": 0.74, "gutter_depth": 0.55}
   }
 }

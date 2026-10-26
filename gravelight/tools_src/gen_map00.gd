@@ -3032,6 +3032,16 @@ func _barn_dressing(parent: Node3D) -> void:
 		lb.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		lb.set_meta("keep", true)
 		g.add_child(lb)
+	# and one on a wall hook at the tack wall's south end (TackLamp, a small shadowless lamp, lights the tack)
+	Props.block(g, Vector3(ww, 2.0, 25.28), Vector3(ww + 0.2, 2.04, 25.32), "iron")
+	Props.block(g, Vector3(ww + 0.17, 1.88, 25.29), Vector3(ww + 0.19, 2.0, 25.31), "iron")
+	var tl: MeshInstance3D = MeshInstance3D.new()
+	tl.name = "HookLantern"
+	tl.mesh = Props.lantern_body()
+	tl.position = Vector3(ww + 0.18, 1.6, 25.3)
+	tl.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	tl.set_meta("keep", true)
+	g.add_child(tl)
 	# ---- the spare ladder hung flat on the north wall over the hay pile, on two iron hooks
 	var ld: Node3D = Props.group(g, "SpareLadder", Vector3(22.9, 2.6, wn + 0.08))
 	Props.block(ld, Vector3(-1.6, 0.18, -0.03), Vector3(1.6, 0.24, 0.03), "beam")
@@ -3339,6 +3349,7 @@ func build_environment() -> void:
 	_lamp("StableLamp1", Vector3(19.0, 3.85, 26.0), warm, 3.82, 14.0, true, true)
 	_lamp("StableLamp2", Vector3(19.0, 2.35, 31.5), warm, 3.26, 13.0, true, true)   # under the gallery since T-084
 	_lamp("StableLamp3", Vector3(10.0, 2.15, 28.0), warm, 2.99, 12.0, false, true)
+	_lamp("TackLamp", Vector3(STB_X0 + 0.33, 1.75, 25.3), warm, 0.9, 4.5, false, true, 0.12)   # T-100: the tack wall's hook lantern (no shadows)
 	_lamp("LoftLamp", Vector3(10.0, 5.45, 28.0), warm, 2.29, 11.0, false, true)
 	_lamp("LoftHookLamp", Vector3(21.2, LOFT_TOP + 1.55, 30.9), warm, 2.1, 10.0, false, true, 0.12)   # on its hook by the stair head (T-084)
 	_lamp("WreckFire", Vector3(45, 3.5, 5), Color(1.0, 0.45, 0.15), 8.0, 34.0, true, true)

@@ -53,6 +53,10 @@ var _busy_until: float = 0.0
 var _gate_open: bool = false
 var cued: bool = false
 var _cue_sfx_left: Array = []
+## T-100: when the current intro line started (settle seconds) and its voice, so the cue can cut it short.
+var _line_start: float = -1.0
+var _line_voice: AudioStreamPlayer3D = null
+var _last_voice: AudioStreamPlayer3D = null
 
 
 static func load_cfg() -> Dictionary:
@@ -71,7 +75,9 @@ static func should_play(map_id: StringName, round_number: int, current_round: in
 
 ## T-076: may the cue play (and round 1 start)? After `min_seconds` of settled view, once the player faces the door
 ## (or `max_seconds` passed) and no patron is mid-line (the max never waits more than a line's worth).
-static func look_ready(settle: float, looking: bool, busy_until: float, c: Dictionary) -> bool:
+## T-100: with `look.interrupt_after` set, a line that has played that long may be cut by the cue (the pounding
+## interrupts whoever is talking), so a long welcome no longer holds round 1; `line_start` is when it began.
+static func look_ready(settle: float, looking: bool, busy_until: float, c: Dictionary, line_start: float = -1.0) -> bool:
 	var lk: Dictionary = c.get("look", {})
 	if lk.is_empty():
 		return true
@@ -83,6 +89,9 @@ static func look_ready(settle: float, looking: bool, busy_until: float, c: Dicti
 		return true
 	if not looking and settle < mx:
 		return false
+	var cut: float = float(lk.get("interrupt_after", 0.0))
+	if cut > 0.0 and line_start >= 0.0 and settle >= line_start + cut:
+		return true
 	return settle >= busy_until
 
 
@@ -294,7 +303,7 @@ func _process(delta: float) -> void:
 		return
 	if not _gate_open and settle_t >= float(lk.get("min_seconds", 0.0)) and (settle_t >= float(lk.get("max_seconds", 0.0)) or _player_looking(lk)):
 		_gate_open = true
-	if _gate_open and look_ready(settle_t, true, _busy_until, cfg):
+	if _gate_open and look_ready(settle_t, true, _busy_until, cfg, _line_start):
 		_cue()
 		Net.mirror(self, &"_net_cue")
 		RoundManager.break_left = float(lk.get("cue_lead", 1.6))
@@ -316,6 +325,12 @@ func _cue() -> void:
 		return
 	cued = true
 	var lk: Dictionary = cfg.get("look", {})
+	if settle_t < _busy_until and is_instance_valid(_line_voice):   # T-100: the pounding cuts the speaker off
+		var v: AudioStreamPlayer3D = _line_voice
+		var tw: Tween = v.create_tween()
+		tw.tween_property(v, "volume_db", -40.0, 0.25)
+		tw.tween_callback(v.queue_free)
+	_line_voice = null
 	_cue_sfx_left = (lk.get("cue_sfx", []) as Array).duplicate(true)
 	_cue_sfx(0.0)
 	var cl: Dictionary = lk.get("cue_line", {})
@@ -343,6 +358,8 @@ func _intro_lines() -> void:
 			if _gate_open:
 				continue   # the cue is waiting: no new chatter
 			_busy_until = maxf(_busy_until, settle_t + _say(str(ln["id"]), str(ln.get("who", ""))))
+			_line_start = settle_t
+			_line_voice = _last_voice
 
 
 func _beats() -> void:
@@ -615,6 +632,7 @@ func _say(line_id: String, who: String) -> float:
 	var text: String = GLVO.strip_tags(str(rec.get("text", "")))
 	var dur: float = GLVO.duration_for(text, GLVO.rules)
 	var path: String = GLVO.audio_path(StringName(line_id))
+	_last_voice = null
 	if path != "" and pb != null:
 		var stream: AudioStream = GLVO.load_stream(path)
 		if stream != null:
@@ -627,6 +645,7 @@ func _say(line_id: String, who: String) -> float:
 			pb.add_child(p)
 			p.play()
 			p.finished.connect(p.queue_free)
+			_last_voice = p
 			dur = maxf(dur, stream.get_length())
 	GLBus.vo_line_started.emit(StringName(line_id), StringName(display), text, dur)
 	return dur

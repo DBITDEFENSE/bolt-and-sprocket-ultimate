@@ -1,5 +1,5 @@
 {
- "_doc": "Map 0's round 1 opening, 'the bar empties' (T-072; gravelight/world/inn_opening/inn_opening.gd). The inn's patrons sit in the taproom from the start; when round 1 begins (the first match start on Map 0, never a later round or a campaign arrival) the first zombies hit the windows and they run for the front door and out into the snow. Two of them are caught outside and one is bitten at the door; those three rise as zombies that are part of round 1's count (their slots and the two attackers' are taken off the round's queue when it starts, so the round's total is unchanged). Times are seconds after round 1 starts (intro lines: after the patrons appear). Positions: Map 0's generator frame (+X east, +Z south). Patrons are immune to fire (no hitboxes), bots ignore them, nothing collides with them. Co-op: the host decides and mirrors the start; every peer runs the same script; the zombies are the host's, replicated as usual. T-076 (the opening must be seen): the opening owns round 1's intro. The round does not start until the player has had `look.min_seconds` of settled view (frames longer than `look.frame_cap` count only that much, so a load hitch never eats it) and is facing the front door within `look.cone_deg` (or `look.max_seconds` have passed), and no patron is mid-line; then the cue (a pounding at the window and the door, Kubiak's 'What was that?') plays and round 1 starts `look.cue_lead` seconds later. Intro lines' times are seconds of that settled view. Kubiak and Rother are caught on the porch in line with the open doorway as seen from the spawn; Sobotta staggers back into the room and dies in the middle of it, in front of the squad. A patron's own `rise_after` overrides the global one.",
+ "_doc": "Map 0's round 1 opening, 'the bar empties' (T-072; gravelight/world/inn_opening/inn_opening.gd). The inn's patrons sit in the taproom from the start; when round 1 begins (the first match start on Map 0, never a later round or a campaign arrival) the first zombies hit the windows and they run for the front door and out into the snow. Two of them are caught outside and one is bitten at the door; those three rise as zombies that are part of round 1's count (their slots and the two attackers' are taken off the round's queue when it starts, so the round's total is unchanged). Times are seconds after round 1 starts (intro lines: after the patrons appear). Positions: Map 0's generator frame (+X east, +Z south). Patrons are immune to fire (no hitboxes), bots ignore them, nothing collides with them. Co-op: the host decides and mirrors the start; every peer runs the same script; the zombies are the host's, replicated as usual. T-076 (the opening must be seen): the opening owns round 1's intro. The round does not start until the player has had `look.min_seconds` of settled view (frames longer than `look.frame_cap` count only that much, so a load hitch never eats it) and is facing the front door within `look.cone_deg` (or `look.max_seconds` have passed), and no patron is mid-line; then the cue (a pounding at the window and the door, Kubiak's 'What was that?') plays and round 1 starts `look.cue_lead` seconds later. Intro lines' times are seconds of that settled view. Kubiak and Rother are caught on the porch in line with the open doorway as seen from the spawn; Sobotta staggers back into the room and dies in the middle of it, in front of the squad. A patron's own `rise_after` overrides the global one. T-100 (round 1 sooner, the deaths closer): round 1 is held only `look.min_seconds` 9 (10.5 at most) of settled view, and the cue may cut off a patron who has talked for `look.interrupt_after` seconds (the pounding interrupts Trudi's welcome), so round 1 starts about 11-12 s in, not 25-33; the chatter lines after Trudi's are only heard if round 1 is held. Kubiak and Rother are caught on the porch just past the threshold (in the open doorway's frame from the spawn), and Sobotta staggers down the middle of the room toward the squad and dies about 4 m in front of the spawn.",
  "map": "map00_crossroads",
  "round": 1,
  "front_door": {
@@ -110,14 +110,9 @@
      -0.8
     ],
     [
-     21.0,
+     20.8,
      0.0,
-     -2.3
-    ],
-    [
-     21.9,
-     0.0,
-     -3.6
+     -2.2
     ]
    ],
    "fate": "caught",
@@ -198,17 +193,12 @@
     [
      20.0,
      0.0,
-     -0.8
+     -0.5
     ],
     [
-     20.6,
+     20.3,
      0.0,
-     -1.7
-    ],
-    [
-     20.9,
-     0.0,
-     -2.2
+     -1.3
     ]
    ],
    "fate": "caught",
@@ -525,15 +515,20 @@
      [
       17.2,
       0.0,
-      4.5
+      4.6
      ],
      [
-      16.7,
+      15.6,
       0.0,
-      6.3
+      7.4
+     ],
+     [
+      14.7,
+      0.0,
+      9.4
      ]
     ],
-    "walk_speed": 1.0,
+    "walk_speed": 1.5,
     "collapse_at": 16.0
    },
    "fate": "bitten",
@@ -548,9 +543,9 @@
    "prey": "kubiak",
    "at": 5.2,
    "pos": [
-    22.6,
+    22.2,
     0.0,
-    -4.6
+    -3.7
    ],
    "then_window": "W_TAP_N2"
   },
@@ -558,9 +553,9 @@
    "prey": "rother",
    "at": 8.0,
    "pos": [
-    24.0,
+    22.9,
     0.0,
-    -5.6
+    -4.6
    ],
    "then_window": "W_TAP_E"
   }
@@ -568,31 +563,31 @@
  "lines": [
   {
    "intro": true,
-   "at": 0.6,
+   "at": 0.3,
    "id": "ROT_INN_ARRIVE_01",
    "who": "rother"
   },
   {
    "intro": true,
-   "at": 7.9,
+   "at": 7.5,
    "id": "TRU_INN_ARRIVE_01",
    "who": "trudi"
   },
   {
    "intro": true,
-   "at": 13.6,
+   "at": 11.0,
    "id": "KUB_INN_CHAT_01",
    "who": "kubiak"
   },
   {
    "intro": true,
-   "at": 20.0,
+   "at": 17.2,
    "id": "POH_INN_CHAT_01",
    "who": "pohl"
   },
   {
    "intro": true,
-   "at": 25.8,
+   "at": 23.0,
    "id": "SOB_INN_CHAT_01",
    "who": "sobotta"
   },
@@ -637,7 +632,7 @@
    "who": "sobotta"
   },
   {
-   "at": 17.6,
+   "at": 19.4,
    "id": "SOB_INN_FALL_01",
    "who": "sobotta"
   }
@@ -776,8 +771,8 @@
   "seconds": 2.2
  },
  "look": {
-  "min_seconds": 11.0,
-  "max_seconds": 22.0,
+  "min_seconds": 9.0,
+  "max_seconds": 10.5,
   "cone_deg": 50.0,
   "look_at": [
    20.0,
@@ -786,6 +781,7 @@
   ],
   "frame_cap": 0.1,
   "cue_lead": 1.6,
+  "interrupt_after": 2.5,
   "cue_sfx": [
    {
     "key": "board_slam",
