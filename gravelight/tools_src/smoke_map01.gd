@@ -55,6 +55,9 @@ func _physics_process(delta: float) -> void:
 		_path_check("yard -> barracks via rail (C closed)", Vector3(10, 0, 26), Vector3(20, 0, 41), "A,B,D", true)
 		_path_check("yard -> barracks with both doors closed", Vector3(10, 0, 26), Vector3(20, 0, 41), "A,D", false)
 		_path_check("yard -> rail yard with B closed", Vector3(10, 0, 26), Vector3(50, 0, 44), "A,C,D", false)
+		# T-107: the bot-mode soak's round-12 hang: crawlers at the Admin door with the way to the Generator Hall open
+		_path_check("admin door -> generator hall (a_c, barracks, stairs, gen open)", Vector3(2.0, 0, 24.9), Vector3(39.0, DY(), 72.1), "A,C,D,M,F,G", true)
+		_path_check("admin stair foot -> upstairs enters at the foot", Vector3(-11.8, 0, 27.4), Vector3(-8, 3.8, 12), "A,C", true)
 		_path_check("barracks -> chapel via maintenance stairs", Vector3(-6, 0, 38), Vector3(12, DY(), 70), "D,M,F", true)
 		_path_check("stairs top -> stairs bottom", Vector3(-10, 0, 47), Vector3(-10, DY(), 57), "D,M", true)
 		_path_check("chapel -> generator", Vector3(12, DY(), 70), Vector3(62, DY(), 77), "F,G", true)

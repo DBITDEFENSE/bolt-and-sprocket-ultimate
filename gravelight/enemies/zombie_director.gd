@@ -110,6 +110,95 @@ func _physics_process(delta: float) -> void:
 				_spawn_t = 0.5
 		_update_screamer()
 	_update_last_zombie(delta)
+	_update_stranded(delta)
+
+
+# ---------------------------------------------------------------- stranded zombies (UPDATE 07 QA, T-107)
+
+var _stranded_t: Dictionary = {}     # zombie instance id -> seconds its path end has been far from every player
+var _stranded_check_t: float = 0.0
+var stranded_relocations: int = 0    # this match (the soak's STALL report and the tests read it)
+
+
+## Pure rule: a zombie is stranded when nothing is left to spawn and its path end has been far for `seconds`.
+static func stranded_due(far_seconds: float, to_spawn: int, cfg: Dictionary) -> bool:
+	return to_spawn <= 0 and far_seconds >= float(cfg.get("seconds", 45.0))
+
+
+## Pure rule: the path end `end` is far from every living player position in `players` (flat distance, or more
+## than 3 m of height) beyond `far_m`.
+static func far_from_all(end: Vector3, players: Array, far_m: float) -> bool:
+	for q: Variant in players:
+		var p: Vector3 = q
+		if Vector2(end.x - p.x, end.z - p.z).length() <= far_m and absf(end.y - p.y) <= 3.0:
+			return false
+	return true
+
+
+## A chasing zombie whose path never gets near a living player (the players went somewhere its path can't reach:
+## a crawler jammed in a doorway, a stale route) is moved to an active ground spawn near the players once nothing
+## is left to spawn, so the round can end. Data: rounds.json "stranded".
+func _update_stranded(delta: float) -> void:
+	_stranded_check_t -= delta
+	if _stranded_check_t > 0.0:
+		return
+	var cfg: Dictionary = GLData.table("rounds").get("stranded", {})
+	var every: float = float(cfg.get("check_every_s", 1.0))
+	_stranded_check_t = every
+	if cfg.is_empty():
+		return
+	var players: Array = []
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		var p: Player = n as Player
+		if p != null and p.is_alive():
+			players.append(p.global_position)
+	if players.is_empty():
+		return
+	var far_m: float = float(cfg.get("far_m", 6.0))
+	var seen: Dictionary = {}
+	for z: Zombie in active_zombies():
+		var id: int = z.get_instance_id()
+		seen[id] = true
+		if z.state != Zombie.State.CHASE or z.target == null or z is Foreman or z is HomageBoss:
+			_stranded_t[id] = 0.0
+			continue
+		var end: Vector3 = z.path_end()
+		if end == Vector3.INF or not far_from_all(end, players, far_m):
+			_stranded_t[id] = 0.0
+			continue
+		var t: float = float(_stranded_t.get(id, 0.0)) + every
+		_stranded_t[id] = t
+		if stranded_due(t, RoundManager.to_spawn, cfg):
+			_relocate_stranded(z)
+			_stranded_t[id] = 0.0
+	for k: Variant in _stranded_t.keys():
+		if not seen.has(k):
+			_stranded_t.erase(k)
+
+
+func _relocate_stranded(z: Zombie) -> void:
+	var sp: ZombieSpawn = _choose_spawn(true)
+	var at: Vector3 = Vector3.INF
+	if sp != null:
+		at = _scatter_excluding(z, sp.global_position)
+	else:
+		# no ground spawn near the players: the navmesh 6 m behind the nearest living player
+		var best: float = INF
+		for n: Node in get_tree().get_nodes_in_group(&"players"):
+			var p: Player = n as Player
+			if p == null or not p.is_alive():
+				continue
+			var d: float = p.global_position.distance_to(z.global_position)
+			if d < best:
+				best = d
+				at = NavigationServer3D.map_get_closest_point(get_world_3d().navigation_map, p.global_position - p.global_basis.z * -6.0)
+	if at == Vector3.INF:
+		return
+	z.global_position = at + Vector3.UP * 0.05
+	z.velocity = Vector3.ZERO
+	z.force_repath()
+	stranded_relocations += 1
+	print("[director] stranded %s%s relocated to %s (round %d, nothing left to spawn)" % [z.enemy_id, " (crawler)" if z.is_crawler else "", str(at.snapped(Vector3.ONE * 0.1)), RoundManager.current_round])
 
 
 func _on_round_started(round_number: int, special: bool) -> void:
