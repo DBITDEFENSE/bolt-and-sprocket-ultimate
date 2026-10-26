@@ -618,7 +618,14 @@ func say(line_id: String, _from: Node = null) -> void:
 			speaker = HomageBoss.speaker_name("cousin_3", HomageBoss.names_real())
 		"cousins":
 			speaker = "THE COUSINS"
-	GLBus.vo_line_started.emit(StringName(line_id), StringName(speaker), text, maxf(1.6, float(text.length()) * 0.065))
+	# T-101: a recorded take (tools/voice/import.py) plays when there is one; a named line has one take per fallen
+	# cousin (<id>_<HAM|RCH|ALX>.ogg)
+	var code: String = {"hammer": "HAM", "reach": "RCH", "alix": "ALX", "cousins": "CSN"}.get(spk, spk.to_upper())
+	var file_id: String = line_id
+	if str(rec.get("text", "")).contains("%DEAD_COUSIN_NAME%") and last_dead_slot != "":
+		file_id = "%s_%s" % [line_id, {"cousin_1": "HAM", "cousin_2": "RCH", "cousin_3": "ALX"}.get(last_dead_slot, "")]
+	var dur: float = GLVO.play_external(file_id, code)
+	GLBus.vo_line_started.emit(StringName(line_id), StringName(speaker), text, dur if dur > 0.0 else maxf(1.6, float(text.length()) * 0.065))
 
 
 # ================================================================== the setup beat and the set dressing

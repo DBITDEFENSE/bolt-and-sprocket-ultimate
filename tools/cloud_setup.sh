@@ -107,7 +107,7 @@ if have python3; then
 	[ -x tools/venv/bin/python ] || python3 -m venv tools/venv
 	tools/venv/bin/python -m pip install -q --disable-pip-version-check pillow numpy
 	# UPDATE 06 Part B (voice pipeline): PDFs, loudness, audio IO, local Whisper
-	tools/venv/bin/python -m pip install -q --disable-pip-version-check reportlab soundfile pyloudnorm faster-whisper || say "WARNING: voice-pipeline packages failed to install"
+	tools/venv/bin/python -m pip install -q --disable-pip-version-check reportlab soundfile scipy pyloudnorm pytest faster-whisper || say "WARNING: voice-pipeline packages failed to install"
 	if [ "$TTS" = 1 ]; then PY=python3 sh tools/setup_tts.sh; fi
 fi
 
@@ -142,5 +142,9 @@ if [ "$QUICK" = 1 ]; then
 else
 	sh tools/run_smokes.sh "$LOGS"; smk=$?
 fi
-say "GUT exit $gut, smoke failures $smk (logs in $LOGS)"
-[ "$gut" = 0 ] && [ "$smk" = 0 ]
+say "voice pipeline tests (pytest; Whisper itself skipped unless GRAVELIGHT_WHISPER_MODEL is set)"
+if [ -n "${GRAVELIGHT_WHISPER_MODEL:-}" ]; then sh tools/voice.sh test > "$LOGS/voice_pytest.log" 2>&1; vt=$?
+else GRAVELIGHT_SKIP_WHISPER=1 sh tools/voice.sh test > "$LOGS/voice_pytest.log" 2>&1; vt=$?; fi
+tail -1 "$LOGS/voice_pytest.log"
+say "GUT exit $gut, smoke failures $smk, voice tests exit $vt (logs in $LOGS)"
+[ "$gut" = 0 ] && [ "$smk" = 0 ] && [ "$vt" = 0 ]

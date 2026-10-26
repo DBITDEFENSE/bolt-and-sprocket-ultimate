@@ -1,0 +1,47 @@
+Line counts per actor (voice_scripts/ (script version edca95e0); 2342 spoken lines in all)
+
+cousin_1                  12   The Cousins (together) 4, The Hammer (Mara) 8
+cousin_2                  10   The Cousins (together) 4, The Reach (Jo) 6
+cousin_3                  12   The Cousins (together) 4, The Third Hand (Alix) 8
+devin                      0   no lines yet
+paul                       0   no lines yet
+slot_bra                   9   Fraeulein Hedwig Brandt 9
+slot_bs_bathrobe           8   Confused Customer 8
+slot_bs_bellhop           12   Bellhop-9 12
+slot_bs_blartz            96   Blartz 96
+slot_bs_bolt              92   Bolt 92
+slot_bs_cc                10   The Content Creator 10
+slot_bs_clerk              9   Gilda — Kiosk #7 9
+slot_bs_concierge          9   Concierge-Tron 9
+slot_bs_corn              31   Steward Cornelius 31
+slot_bs_darkmatter         2   Darkmatter Subscriptions Llc 2
+slot_bs_dent               9   Dent — Test Unit #001 9
+slot_bs_gasket            13   Mama Gasket 13
+slot_bs_glambot           46   Glambot Prime 46
+slot_bs_grindstone        17   Chairman Grindstone 17
+slot_bs_intern            25   Intern #4401 25
+slot_bs_middleman_a        3   Middleman A 3
+slot_bs_middleman_b        3   Middleman B 3
+slot_bs_pa                63   Omniscrap Pa 63
+slot_bs_retention          6   The Retention Specialist 6
+slot_bs_rusty              9   Rusty 9
+slot_bs_sprocket         235   Sprocket 235
+slot_bs_squat             23   The Squatter 23
+slot_bs_statue             1   Statue 1
+slot_bs_tourist            6   Tourist 6
+slot_dea                 262   Cpl. Elijah "Deacon" Brooks 262
+slot_dut                 268   Sgt. Walter "Dutch" Kowalczyk 268
+slot_fas                  50   Dr. Emil Fasbender 50
+slot_jak                 161   Jakub Ostrowski 161
+slot_kro                   9   Ida Kroll 9
+slot_kub                   3   Franz Kubiak 3
+slot_lsl                  10   Liesl 10
+slot_opr                 237   The Operator 237
+slot_peg                 257   Lt. Margaret "Peg" Ashworth 257
+slot_poh                   2   Frau Agnes Pohl 2
+slot_rei                  23   Dr. Augusta Reinholt 23
+slot_rot                   3   Ewald Rother 3
+slot_sob                   5   Gefreiter Willi Sobotta 5
+slot_tru                   2   Trudi Hanke 2
+slot_wie                   9   Konrad Wiesner 9
+slot_wrn                 278   Zofia "Wren" Nowak 278

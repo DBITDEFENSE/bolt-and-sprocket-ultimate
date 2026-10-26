@@ -1,0 +1,40 @@
+VOICE RECORDING GUIDE (Terms & Conditions / Gravelight / Bolt & Sprocket)
+
+Thank you! Here is everything on one page.
+
+FORMAT
+- WAV, mono, 48 kHz (44.1 kHz is fine), 24-bit or 16-bit.
+- If your phone can only do M4A, that's okay. Please avoid MP3.
+
+HOW
+- PC: Audacity (free). Set the Project Rate (bottom left) to 48000, press Record, then File > Export > Export as WAV.
+- iPhone: an app that exports WAV (Voice Memos M4A is acceptable).
+- Android: a recorder app set to WAV.
+
+WHERE
+- A quiet room with soft stuff around you. A closet full of clothes is perfect.
+- Phone or mic a hand's width from your mouth, slightly off to the side.
+- No fans or AC running. Phone on Do Not Disturb.
+
+THE METHOD
+1. Do a 10-second test first and listen back.
+2. Say the LINE ID out loud (it's on your script, e.g. "D-U-T reload zero one").
+3. Pause. Read the line.
+4. Pause. Read it again a different way.
+5. Pause for 2 seconds. Next line.
+- One long file per session is fine. Name it <yourname>_session<N>.wav (paul_session1.wav).
+- Fluffed a line? Just say the ID again and redo it. The best take is picked automatically; nothing needs editing.
+
+ACTING TIPS
+- Read the [bracket] notes and the acting note under each line. Don't say the brackets out loud.
+- Bold words are the ones to stress.
+- Don't be afraid to go big. It's a game: bigger is better than flat.
+- Take water breaks. Shouting lines are at the end of your script: record them last.
+
+SENDING
+- Send the files to Devin (a shared Google Drive folder, a USB stick, or any file-transfer link is fine).
+
+CONSENT
+- By sending recordings you agree your voice can be used in this game.
+- Please also read VOICE_RELEASE.txt and reply "I agree" with the date.
+- No AI voice cloning of you, ever, unless you separately opt in.

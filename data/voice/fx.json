@@ -1,0 +1,43 @@
+{
+ "_doc": "Per-character effects on recorded (human) takes, applied by tools/voice/pipeline.py after the cleanup chain (UPDATE 06 B5.6, T-101). chains: a named effect chain (see chains._doc). characters.<game>.<code> = chain name, or {\"chain\": name, \"by_category\": {category prefix: chain}} (longest prefix wins). Anything unlisted is 'clean'. Robots keep the actor's performance: no pitch shift unless a chain sets pitch_semitones (the cast sheet may ask for it). Changing a chain re-processes the affected lines on the next import run.",
+ "chains": {
+  "_doc": "kind: clean | radio_1930s | field_radio | phonograph | pa | room | trio | robot | robot_pa. Parameters are optional and override the kind's defaults (pipeline.py FX_DEFAULTS).",
+  "clean": {"kind": "clean"},
+  "operator_tannoy": {"kind": "radio_1930s", "band": [320, 3600], "drive": 2.2, "crackle_per_s": 5.0, "crackle_db": -27, "hiss_db": -38, "wow_depth": 0.0012, "flutter_depth": 0.04, "room_s": 0.6, "room_mix": 0.22},
+  "fasbender_radio": {"kind": "field_radio", "band": [420, 3000], "drive": 1.7, "hiss_db": -32, "crackle_per_s": 3.0, "static_bursts": true},
+  "phonograph_cylinder": {"kind": "phonograph", "band": [300, 4300], "wow_depth": 0.0045, "crackle_per_s": 11.0, "hiss_db": -29},
+  "reinholt_pa": {"kind": "pa", "band": [240, 5000], "room_s": 1.4, "room_mix": 0.38},
+  "cousins_room": {"kind": "room", "room_s": 1.1, "room_mix": 0.16, "predelay_ms": 22, "damp_hz": 3200},
+  "cousins_trio": {"kind": "trio", "room_s": 1.2, "room_mix": 0.2, "double_ms": [17, 31], "detune_cents": [-9, 7]},
+  "robot_light": {"kind": "robot", "ring_hz": 55, "ring_mix": 0.16, "comb_ms": 4.5, "comb_mix": 0.22, "band": [90, 9000], "pitch_semitones": 0},
+  "robot_pa": {"kind": "robot_pa", "band": [260, 4800], "ring_hz": 40, "ring_mix": 0.08, "room_s": 0.9, "room_mix": 0.25}
+ },
+ "characters": {
+  "gl": {
+   "OPR": "operator_tannoy",
+   "FAS": "fasbender_radio",
+   "REI": {"chain": "reinholt_pa", "by_category": {"CYL": "phonograph_cylinder", "SAMPLE": "phonograph_cylinder", "HEART_END": "phonograph_cylinder", "END": "phonograph_cylinder", "REC": "phonograph_cylinder"}},
+   "LSL": "phonograph_cylinder",
+   "HAM": "cousins_room",
+   "RCH": "cousins_room",
+   "ALX": "cousins_room",
+   "CSN": "cousins_trio",
+   "DUT": "clean", "PEG": "clean", "DEA": "clean", "WRN": "clean", "JAK": "clean"
+  },
+  "bs": {
+   "bolt": "clean",
+   "sprocket": "robot_light",
+   "blartz": "robot_light",
+   "glambot": "robot_light",
+   "concierge": "robot_light",
+   "bellhop": "robot_light",
+   "clerk": "robot_light",
+   "dent": "robot_light",
+   "intern": "robot_light",
+   "retention": "robot_light",
+   "statue": "robot_light",
+   "pa": "robot_pa",
+   "darkmatter": "robot_pa"
+  }
+ }
+}

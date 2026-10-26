@@ -202,6 +202,8 @@ func _next() -> void:
 			var id: String = str(s.get("id", ""))
 			var text: String = BSText.text(id, str(s.get("text", "")))
 			dur = float(s.get("dur", maxf(1.8, text.length() * 0.05 + 1.1)))
+			if id != "":
+				dur = maxf(dur, VOManager.recorded_length(id) + 0.25)   # a recorded take is never cut off (T-101)
 			if id != "" and BSText.has(id):
 				BSText.say(id)
 			else:

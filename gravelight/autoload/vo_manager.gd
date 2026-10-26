@@ -91,6 +91,16 @@ var _last_drawn: Dictionary = {}     # "SPK:CAT" -> the id drawn last, so a refi
 var _occl_t: float = 0.0             # next occlusion check (physics time left)
 var _occl: Dictionary = {}           # AudioStreamPlayer3D -> 0..1 occlusion amount (smoothed)
 var last_said_pid: int = -1          # the survivor who last got a say_as / squad_say line out (T-086 story beats)
+## Voice test (T-101, the dev launcher's "Map 0 — voice test"): every line that starts is logged with where its audio
+## comes from (human take / TTS / none) to the console and voice_log; a summary goes to logs/voice_test.txt.
+var voice_test: bool = false:
+	set(v):
+		voice_test = v
+		if v and not GLBus.round_ended.is_connected(_voice_test_round_end):
+			GLBus.round_ended.connect(_voice_test_round_end)
+var voice_log: Array[Dictionary] = []
+var _ext_2d: AudioStreamPlayer = null
+var _vt_manifest: Dictionary = {}
 
 
 func _ready() -> void:
@@ -431,6 +441,74 @@ func audio_path(line_id: StringName, part: int = -1) -> String:
 		if ResourceLoader.exists(path) or FileAccess.file_exists(path):
 			return path
 	return ""
+
+
+## T-101: plays a recorded file for a line that lives outside lines.json (the Cousins' boss lines, data/gravelight/
+## bosses/cousins.json), at gravelight/audio/vo/<speaker code>/<file_id>.ogg. Returns its length in seconds, or 0.0
+## when there is no file (the caller then shows the subtitle silently, as before).
+func play_external(file_id: String, speaker_code: String) -> float:
+	var path: String = "%s%s/%s.ogg" % [AUDIO_DIR, speaker_code.to_lower(), file_id]
+	if not (ResourceLoader.exists(path) or FileAccess.file_exists(path)):
+		_voice_test_log(file_id, speaker_code, "")
+		return 0.0
+	var stream: AudioStream = load_stream(path)
+	if stream == null:
+		return 0.0
+	if _ext_2d == null:
+		_ext_2d = AudioStreamPlayer.new()
+		_ext_2d.name = "ExternalVoice"
+		_ext_2d.bus = &"VO"
+		add_child(_ext_2d)
+	_ext_2d.stream = stream
+	_ext_2d.volume_db = float((rules.get("audio", {}) as Dictionary).get("story_volume_db", 0.0))
+	if is_inside_tree():
+		_ext_2d.play()
+	audio_plays += 1
+	_voice_test_log(file_id, speaker_code, path)
+	return stream.get_length()
+
+
+## Voice test: where a line's audio comes from, from the manifest ("human <actor>", "tts", "none").
+func source_of(file_id: String) -> String:
+	if _vt_manifest.is_empty():
+		_vt_manifest = (GLData.load_json("res://data/gravelight/vo/audio_manifest.json") as Dictionary).get("files", {})
+	var row: Dictionary = _vt_manifest.get(file_id, {})
+	if row.is_empty():
+		return "none"
+	var src: String = str(row.get("source", "tts"))
+	return src + (" " + str(row["actor"]) if row.has("actor") else "")
+
+
+func _voice_test_log(file_id: String, speaker: String, path: String) -> void:
+	if not voice_test:
+		return
+	var src: String = source_of(file_id) if path != "" else "none"
+	voice_log.append({"id": file_id, "speaker": speaker, "source": src, "path": path})
+	print("[voice test] %-28s %-4s %s" % [file_id, speaker, src])
+
+
+func _voice_test_round_end(round_number: int) -> void:
+	if voice_test and round_number >= 3:
+		print(voice_test_report())
+
+
+## Writes the voice test summary (lines heard per source) to logs/voice_test.txt; returns the text.
+func voice_test_report() -> String:
+	var counts: Dictionary = {}
+	for e: Dictionary in voice_log:
+		var k: String = str(e["source"]).split(" ")[0]
+		counts[k] = int(counts.get(k, 0)) + 1
+	var out: String = "Voice test: %d lines started. By source: %s
+" % [voice_log.size(), str(counts)]
+	for e: Dictionary in voice_log:
+		out += "%s	%s	%s
+" % [e["id"], e["speaker"], e["source"]]
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://logs"))
+	var f: FileAccess = FileAccess.open("res://logs/voice_test.txt", FileAccess.WRITE)
+	if f != null:
+		f.store_string(out)
+		f.close()
+	return out
 
 
 ## Loads (and caches) a baked voice file; works with or without the editor import step.
@@ -776,6 +854,8 @@ func _next_part(group: StringName) -> void:
 	var pid: int = (item["part_pids"] as Array)[int(item["part"])]
 	var path: String = audio_path(item["id"], int(item["part"]) if parts.size() > 1 else -1)
 	var stream: AudioStream = load_stream(path)
+	if voice_test:
+		_voice_test_log(String(item["id"]) + ("_p%d" % int(item["part"]) if parts.size() > 1 else ""), String(speaker), path if stream != null else "")
 	if stream != null:
 		var len_s: float = stream.get_length()
 		if len_s > 0.05:
