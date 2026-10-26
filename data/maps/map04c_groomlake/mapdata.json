@@ -1,0 +1,1156 @@
+{
+  "_doc": "Baked map data (Update 04 section 1, DECISIONS T-065). Written by tools/bake_minimap.sh; do not edit by hand (edit data/maps/bake_config.json and re-bake). world_rect = [min x, min z, width, depth] in metres, every floor image covers it, north (-Z) up.",
+  "map_id": "map04c_groomlake",
+  "game": "gravelight",
+  "style": "ink",
+  "display_name": "Fernflug — Act III: Groom Lake",
+  "world_rect": [
+    -84.875,
+    -48.1,
+    169.75,
+    259.0
+  ],
+  "px_per_m": 4.0,
+  "image_size": [
+    679,
+    1036
+  ],
+  "baked_at": "2026-10-26T15:18:51",
+  "poi_signature": "b5a5b6f246550b16e130846f358ed5c5",
+  "floors": [
+    {
+      "id": "surface",
+      "name": "Groom Lake (the range)",
+      "y_min": -1.0,
+      "y_max": 14.0,
+      "base_y": 0.0,
+      "cut": 3.0,
+      "rects": [],
+      "depth": 0.6,
+      "image": "floor_0_surface.png"
+    },
+    {
+      "id": "lab",
+      "name": "the laboratory and the silo",
+      "y_min": -7.5,
+      "y_max": -1.2,
+      "base_y": -6.0,
+      "cut": 2.0,
+      "rects": [],
+      "depth": 0.6,
+      "image": "floor_1_lab.png"
+    }
+  ],
+  "zones": [
+    {
+      "id": "A_WRECK",
+      "name": "The Wreck",
+      "y_min": -1.5,
+      "y_max": 6.0,
+      "polys": [
+        [
+          [
+            -14.0,
+            -36.0
+          ],
+          [
+            14.0,
+            -36.0
+          ],
+          [
+            14.0,
+            -4.0
+          ],
+          [
+            -14.0,
+            -4.0
+          ]
+        ],
+        [
+          [
+            -16.8,
+            -21.3
+          ],
+          [
+            -14.05,
+            -21.3
+          ],
+          [
+            -14.05,
+            -18.7
+          ],
+          [
+            -16.8,
+            -18.7
+          ]
+        ],
+        [
+          [
+            14.05,
+            -21.3
+          ],
+          [
+            16.8,
+            -21.3
+          ],
+          [
+            16.8,
+            -18.7
+          ],
+          [
+            14.05,
+            -18.7
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          6.0
+        ],
+        [
+          -1.0,
+          3.3
+        ],
+        [
+          -1.0,
+          3.3
+        ]
+      ]
+    },
+    {
+      "id": "B_LAKEBED",
+      "name": "Lake Bed",
+      "y_min": -1.5,
+      "y_max": 6.0,
+      "polys": [
+        [
+          [
+            -60.0,
+            -4.0
+          ],
+          [
+            60.0,
+            -4.0
+          ],
+          [
+            60.0,
+            60.0
+          ],
+          [
+            -60.0,
+            60.0
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          6.0
+        ]
+      ]
+    },
+    {
+      "id": "C_HANGAR",
+      "name": "Hangar",
+      "y_min": -1.5,
+      "y_max": 12.0,
+      "polys": [
+        [
+          [
+            20.0,
+            60.0
+          ],
+          [
+            70.0,
+            60.0
+          ],
+          [
+            70.0,
+            100.0
+          ],
+          [
+            20.0,
+            100.0
+          ]
+        ],
+        [
+          [
+            17.2,
+            68.7
+          ],
+          [
+            19.95,
+            68.7
+          ],
+          [
+            19.95,
+            71.3
+          ],
+          [
+            17.2,
+            71.3
+          ]
+        ],
+        [
+          [
+            70.05,
+            78.7
+          ],
+          [
+            72.8,
+            78.7
+          ],
+          [
+            72.8,
+            81.3
+          ],
+          [
+            70.05,
+            81.3
+          ]
+        ],
+        [
+          [
+            28.7,
+            100.05
+          ],
+          [
+            31.3,
+            100.05
+          ],
+          [
+            31.3,
+            102.8
+          ],
+          [
+            28.7,
+            102.8
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          12.0
+        ],
+        [
+          -1.0,
+          3.3
+        ],
+        [
+          -1.0,
+          3.3
+        ],
+        [
+          -1.0,
+          3.3
+        ]
+      ]
+    },
+    {
+      "id": "D_MOTORPOOL",
+      "name": "Motor Pool",
+      "y_min": -1.5,
+      "y_max": 6.0,
+      "polys": [
+        [
+          [
+            -70.0,
+            60.0
+          ],
+          [
+            -20.0,
+            60.0
+          ],
+          [
+            -20.0,
+            100.0
+          ],
+          [
+            -70.0,
+            100.0
+          ]
+        ],
+        [
+          [
+            -20.0,
+            86.0
+          ],
+          [
+            20.0,
+            86.0
+          ],
+          [
+            20.0,
+            100.0
+          ],
+          [
+            -20.0,
+            100.0
+          ]
+        ],
+        [
+          [
+            -72.8,
+            78.7
+          ],
+          [
+            -70.05,
+            78.7
+          ],
+          [
+            -70.05,
+            81.3
+          ],
+          [
+            -72.8,
+            81.3
+          ]
+        ],
+        [
+          [
+            -61.3,
+            100.05
+          ],
+          [
+            -58.7,
+            100.05
+          ],
+          [
+            -58.7,
+            102.8
+          ],
+          [
+            -61.3,
+            102.8
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          6.0
+        ],
+        [
+          -1.5,
+          6.0
+        ],
+        [
+          -1.0,
+          3.3
+        ],
+        [
+          -1.0,
+          3.3
+        ]
+      ]
+    },
+    {
+      "id": "E_RADAR",
+      "name": "Radar Tower",
+      "y_min": -1.5,
+      "y_max": 8.0,
+      "polys": [
+        [
+          [
+            20.0,
+            100.0
+          ],
+          [
+            70.0,
+            100.0
+          ],
+          [
+            70.0,
+            140.0
+          ],
+          [
+            20.0,
+            140.0
+          ]
+        ],
+        [
+          [
+            70.05,
+            118.7
+          ],
+          [
+            72.8,
+            118.7
+          ],
+          [
+            72.8,
+            121.3
+          ],
+          [
+            70.05,
+            121.3
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          8.0
+        ],
+        [
+          -1.0,
+          3.3
+        ]
+      ]
+    },
+    {
+      "id": "F_LAB",
+      "name": "Laboratory",
+      "y_min": -7.5,
+      "y_max": 6.0,
+      "polys": [
+        [
+          [
+            -70.0,
+            100.0
+          ],
+          [
+            -20.0,
+            100.0
+          ],
+          [
+            -20.0,
+            150.0
+          ],
+          [
+            -70.0,
+            150.0
+          ]
+        ],
+        [
+          [
+            -20.0,
+            134.0
+          ],
+          [
+            20.0,
+            134.0
+          ],
+          [
+            20.0,
+            140.0
+          ],
+          [
+            -20.0,
+            140.0
+          ]
+        ],
+        [
+          [
+            -72.8,
+            118.7
+          ],
+          [
+            -70.05,
+            118.7
+          ],
+          [
+            -70.05,
+            121.3
+          ],
+          [
+            -72.8,
+            121.3
+          ]
+        ],
+        [
+          [
+            -72.8,
+            142.7
+          ],
+          [
+            -70.05,
+            142.7
+          ],
+          [
+            -70.05,
+            145.3
+          ],
+          [
+            -72.8,
+            145.3
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -7.5,
+          6.0
+        ],
+        [
+          -7.5,
+          2.0
+        ],
+        [
+          -7.0,
+          -2.7
+        ],
+        [
+          -7.0,
+          -2.7
+        ]
+      ]
+    },
+    {
+      "id": "G_SILO",
+      "name": "Test Silo",
+      "y_min": -7.5,
+      "y_max": 40.0,
+      "polys": [
+        [
+          [
+            -70.0,
+            150.0
+          ],
+          [
+            -20.0,
+            150.0
+          ],
+          [
+            -20.0,
+            196.0
+          ],
+          [
+            -70.0,
+            196.0
+          ]
+        ],
+        [
+          [
+            -31.3,
+            196.05
+          ],
+          [
+            -28.7,
+            196.05
+          ],
+          [
+            -28.7,
+            198.8
+          ],
+          [
+            -31.3,
+            198.8
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -7.5,
+          40.0
+        ],
+        [
+          -7.0,
+          -2.7
+        ]
+      ]
+    }
+  ],
+  "pois": [
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Hangar",
+      "type": "ammo_box",
+      "pos": [
+        69.48,
+        0.0,
+        88.0
+      ],
+      "floor": 0,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Hangar",
+      "key": "Gameplay/AmmoBox_Hangar"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Motorpool",
+      "type": "ammo_box",
+      "pos": [
+        -45.0,
+        0.0,
+        99.48
+      ],
+      "floor": 0,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Motorpool",
+      "key": "Gameplay/AmmoBox_Motorpool"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Silo",
+      "type": "ammo_box",
+      "pos": [
+        -69.48,
+        -6.0,
+        185.0
+      ],
+      "floor": 1,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Silo",
+      "key": "Gameplay/AmmoBox_Silo"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Wreck",
+      "type": "ammo_box",
+      "pos": [
+        13.48,
+        0.0,
+        -30.0
+      ],
+      "floor": 0,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Wreck",
+      "key": "Gameplay/AmmoBox_Wreck"
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_Hangar",
+      "type": "crate_spot",
+      "pos": [
+        26.0,
+        0.0,
+        76.0
+      ],
+      "floor": 0,
+      "label": "Requisition Crate (Hangar)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_Hangar",
+      "key": "Gameplay/Crate_Hangar",
+      "data": {
+        "spot_index": 1,
+        "can_start": true
+      }
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_Lab",
+      "type": "crate_spot",
+      "pos": [
+        -26.0,
+        -6.0,
+        114.0
+      ],
+      "floor": 1,
+      "label": "Requisition Crate (Lab)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_Lab",
+      "key": "Gameplay/Crate_Lab",
+      "data": {
+        "spot_index": 2,
+        "can_start": false
+      }
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_Wreck",
+      "type": "crate_spot",
+      "pos": [
+        6.0,
+        0.0,
+        -12.0
+      ],
+      "floor": 0,
+      "label": "Requisition Crate (Wreck)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_Wreck",
+      "key": "Gameplay/Crate_Wreck",
+      "data": {
+        "spot_index": 0,
+        "can_start": true
+      }
+    },
+    {
+      "id": "crucible:Gameplay/Crucible",
+      "type": "crucible",
+      "pos": [
+        -66.0,
+        -6.0,
+        160.0
+      ],
+      "floor": 1,
+      "label": "The Crucible",
+      "price": 5000,
+      "node_path": "Gameplay/Crucible",
+      "key": "Gameplay/Crucible",
+      "data": {
+        "needs_power": true
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Hangar",
+      "type": "door",
+      "pos": [
+        45.0,
+        0.0,
+        60.0
+      ],
+      "floor": 0,
+      "label": "the hangar",
+      "price": 1000,
+      "node_path": "Gameplay/Door_Hangar",
+      "key": "Gameplay/Door_Hangar",
+      "data": {
+        "door_id": "door_hangar",
+        "opens_zone": "C_HANGAR",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Lab",
+      "type": "door",
+      "pos": [
+        -45.0,
+        0.0,
+        100.0
+      ],
+      "floor": 0,
+      "label": "the laboratory hatch",
+      "price": 1500,
+      "node_path": "Gameplay/Door_Lab",
+      "key": "Gameplay/Door_Lab",
+      "data": {
+        "door_id": "door_lab",
+        "opens_zone": "F_LAB",
+        "requires_power": true
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Lakebed",
+      "type": "door",
+      "pos": [
+        0.0,
+        0.0,
+        -4.0
+      ],
+      "floor": 0,
+      "label": "the lake bed",
+      "price": 750,
+      "node_path": "Gameplay/Door_Lakebed",
+      "key": "Gameplay/Door_Lakebed",
+      "data": {
+        "door_id": "door_lakebed",
+        "opens_zone": "B_LAKEBED",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Motorpool",
+      "type": "door",
+      "pos": [
+        -45.0,
+        0.0,
+        60.0
+      ],
+      "floor": 0,
+      "label": "the motor pool",
+      "price": 1000,
+      "node_path": "Gameplay/Door_Motorpool",
+      "key": "Gameplay/Door_Motorpool",
+      "data": {
+        "door_id": "door_motorpool",
+        "opens_zone": "D_MOTORPOOL",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Radar",
+      "type": "door",
+      "pos": [
+        45.0,
+        0.0,
+        100.0
+      ],
+      "floor": 0,
+      "label": "the radar tower",
+      "price": 1250,
+      "node_path": "Gameplay/Door_Radar",
+      "key": "Gameplay/Door_Radar",
+      "data": {
+        "door_id": "door_radar",
+        "opens_zone": "E_RADAR",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Side",
+      "type": "door",
+      "pos": [
+        20.0,
+        0.0,
+        93.0
+      ],
+      "floor": 0,
+      "label": "the hangar's side door (Dee's)",
+      "price": 1000,
+      "node_path": "Gameplay/Door_Side",
+      "key": "Gameplay/Door_Side",
+      "data": {
+        "door_id": "door_side",
+        "opens_zone": "D_MOTORPOOL",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Silo",
+      "type": "door",
+      "pos": [
+        -40.0,
+        -6.0,
+        150.0
+      ],
+      "floor": 1,
+      "label": "the test silo",
+      "price": 2000,
+      "node_path": "Gameplay/Door_Silo",
+      "key": "Gameplay/Door_Silo",
+      "data": {
+        "door_id": "door_silo",
+        "opens_zone": "G_SILO",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Trench",
+      "type": "door",
+      "pos": [
+        20.0,
+        0.0,
+        137.0
+      ],
+      "floor": 0,
+      "label": "the cable trench",
+      "price": 1500,
+      "node_path": "Gameplay/Door_Trench",
+      "key": "Gameplay/Door_Trench",
+      "data": {
+        "door_id": "door_lab",
+        "opens_zone": "F_LAB",
+        "requires_power": true
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_blastproof_bock",
+      "type": "perk",
+      "pos": [
+        -20.8,
+        -6.0,
+        125.0
+      ],
+      "floor": 1,
+      "label": "Blastproof Bock",
+      "price": 2000,
+      "node_path": "Gameplay/Perk_blastproof_bock",
+      "key": "Gameplay/Perk_blastproof_bock",
+      "data": {
+        "perk_id": "blastproof_bock"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_hawkeye_brandy",
+      "type": "perk",
+      "pos": [
+        20.8,
+        0.0,
+        120.0
+      ],
+      "floor": 0,
+      "label": "Hawkeye Brandy",
+      "price": 1500,
+      "node_path": "Gameplay/Perk_hawkeye_brandy",
+      "key": "Gameplay/Perk_hawkeye_brandy",
+      "data": {
+        "perk_id": "hawkeye_brandy"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_ironhide_stout",
+      "type": "perk",
+      "pos": [
+        -59.2,
+        0.0,
+        44.0
+      ],
+      "floor": 0,
+      "label": "Ironhide Stout",
+      "price": 2500,
+      "node_path": "Gameplay/Perk_ironhide_stout",
+      "key": "Gameplay/Perk_ironhide_stout",
+      "data": {
+        "perk_id": "ironhide_stout"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_magpie_mead",
+      "type": "perk",
+      "pos": [
+        20.8,
+        0.0,
+        86.0
+      ],
+      "floor": 0,
+      "label": "Magpie Mead",
+      "price": 3000,
+      "node_path": "Gameplay/Perk_magpie_mead",
+      "key": "Gameplay/Perk_magpie_mead",
+      "data": {
+        "perk_id": "magpie_mead"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_packmule_porter",
+      "type": "perk",
+      "pos": [
+        -69.2,
+        -6.0,
+        170.0
+      ],
+      "floor": 1,
+      "label": "Packmule Porter",
+      "price": 4000,
+      "node_path": "Gameplay/Perk_packmule_porter",
+      "key": "Gameplay/Perk_packmule_porter",
+      "data": {
+        "perk_id": "packmule_porter"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_second_wind",
+      "type": "perk",
+      "pos": [
+        -8.0,
+        0.0,
+        -35.2
+      ],
+      "floor": 0,
+      "label": "Second Wind Schnapps",
+      "price": 500,
+      "node_path": "Gameplay/Perk_second_wind",
+      "key": "Gameplay/Perk_second_wind",
+      "data": {
+        "perk_id": "second_wind"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_skyhook_sekt",
+      "type": "perk",
+      "pos": [
+        -20.8,
+        -6.0,
+        165.0
+      ],
+      "floor": 1,
+      "label": "Skyhook Sekt",
+      "price": 2500,
+      "node_path": "Gameplay/Perk_skyhook_sekt",
+      "key": "Gameplay/Perk_skyhook_sekt",
+      "data": {
+        "perk_id": "skyhook_sekt"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_trigger_tonic",
+      "type": "perk",
+      "pos": [
+        -20.8,
+        0.0,
+        70.0
+      ],
+      "floor": 0,
+      "label": "Trigger Tonic",
+      "price": 3000,
+      "node_path": "Gameplay/Perk_trigger_tonic",
+      "key": "Gameplay/Perk_trigger_tonic",
+      "data": {
+        "perk_id": "trigger_tonic"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_twin_barrel",
+      "type": "perk",
+      "pos": [
+        -57.2,
+        -6.0,
+        112.8
+      ],
+      "floor": 1,
+      "label": "Twin Barrel Bitters",
+      "price": 2000,
+      "node_path": "Gameplay/Perk_twin_barrel",
+      "key": "Gameplay/Perk_twin_barrel",
+      "data": {
+        "perk_id": "twin_barrel"
+      }
+    },
+    {
+      "id": "power_switch:Gameplay/Generator",
+      "type": "power_switch",
+      "pos": [
+        -64.0,
+        0.0,
+        99.3
+      ],
+      "floor": 0,
+      "label": "Power: the generator",
+      "price": 0,
+      "node_path": "Gameplay/Generator",
+      "key": "Gameplay/Generator"
+    },
+    {
+      "id": "trap:Gameplay/Lever_FuelDump",
+      "type": "trap",
+      "pos": [
+        -36.0,
+        0.0,
+        97.0
+      ],
+      "floor": 0,
+      "label": "Live Wire Fence",
+      "price": 1000,
+      "node_path": "Gameplay/Lever_FuelDump",
+      "key": "Gameplay/Lever_FuelDump",
+      "data": {
+        "trap_id": "fuel_dump",
+        "kind": "live_wire"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_bar",
+      "type": "wall_buy",
+      "pos": [
+        -69.83,
+        1.5,
+        70.0
+      ],
+      "floor": 0,
+      "label": "BAR",
+      "price": 1800,
+      "node_path": "Gameplay/WallBuy_bar",
+      "key": "Gameplay/WallBuy_bar",
+      "data": {
+        "weapon_id": "bar"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_m1_carbine",
+      "type": "wall_buy",
+      "pos": [
+        -13.83,
+        1.5,
+        -30.0
+      ],
+      "floor": 0,
+      "label": "M1 Carbine",
+      "price": 600,
+      "node_path": "Gameplay/WallBuy_m1_carbine",
+      "key": "Gameplay/WallBuy_m1_carbine",
+      "data": {
+        "weapon_id": "m1_carbine"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_m1_garand",
+      "type": "wall_buy",
+      "pos": [
+        -59.83,
+        1.5,
+        20.0
+      ],
+      "floor": 0,
+      "label": "M1 Garand",
+      "price": 600,
+      "node_path": "Gameplay/WallBuy_m1_garand",
+      "key": "Gameplay/WallBuy_m1_garand",
+      "data": {
+        "weapon_id": "m1_garand"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_springfield",
+      "type": "wall_buy",
+      "pos": [
+        69.83,
+        1.5,
+        110.0
+      ],
+      "floor": 0,
+      "label": "Springfield M1903",
+      "price": 0,
+      "node_path": "Gameplay/WallBuy_springfield",
+      "key": "Gameplay/WallBuy_springfield",
+      "data": {
+        "weapon_id": "springfield"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_thompson",
+      "type": "wall_buy",
+      "pos": [
+        69.83,
+        1.5,
+        72.0
+      ],
+      "floor": 0,
+      "label": "Thompson M1A1",
+      "price": 1200,
+      "node_path": "Gameplay/WallBuy_thompson",
+      "key": "Gameplay/WallBuy_thompson",
+      "data": {
+        "weapon_id": "thompson"
+      }
+    },
+    {
+      "id": "workbench:Gameplay/Workbench",
+      "type": "workbench",
+      "pos": [
+        -60.0,
+        -6.0,
+        114.2
+      ],
+      "floor": 1,
+      "label": "Workbench (Lodestone)",
+      "price": 0,
+      "node_path": "Gameplay/Workbench",
+      "key": "Gameplay/Workbench",
+      "data": {
+        "buildable_id": "lodestone"
+      }
+    }
+  ],
+  "connectors": [
+    {
+      "kind": "stairs",
+      "a": [
+        -45.0,
+        -6.18,
+        105.96
+      ],
+      "b": [
+        -45.0,
+        0.0,
+        105.96
+      ],
+      "floor_a": 0,
+      "floor_b": 1
+    },
+    {
+      "kind": "stairs",
+      "a": [
+        0.01,
+        -6.2,
+        137.0
+      ],
+      "b": [
+        0.01,
+        0.0,
+        137.0
+      ],
+      "floor_a": 0,
+      "floor_b": 1
+    }
+  ]
+}

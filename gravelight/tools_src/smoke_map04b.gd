@@ -436,14 +436,17 @@ func _run() -> void:
 		if swapped:
 			await _secs(2.0)
 			var m3: MapRoot = _map_root()
-			_check(RoundManager.current_round == 20 and RoundManager.state == RoundManager.State.BREAK, "Act III starts at the end of round 20 (grace), round 21 next (round %d, state %d)" % [RoundManager.current_round, RoundManager.state])
-			_check(RoundManager.act_start == 21 and RoundManager.act_label(21) == "ACT III · 1", "round 21 reads 'ACT III · 1' (" + RoundManager.act_label(21) + ")")
+			# the smoke left the Kranich during round 19 (by console), so the act continues from there: the arrival
+			# round is the act's first round, whatever it is (the campaign's own run leaves on 20 and arrives on 21)
+			var arrive: int = RoundManager.current_round + 1
+			_check(RoundManager.state == RoundManager.State.BREAK and arrive >= 20, "Act III starts in the arrival grace, round %d next (state %d)" % [arrive, RoundManager.state])
+			_check(RoundManager.act_start == arrive and RoundManager.act_label(arrive) == "ACT III · 1", "the arrival round reads 'ACT III · 1' (" + RoundManager.act_label(arrive) + ")")
 			_check(m3.players.size() == 4, "the same squad came down (1 human + 3 bots)")
 			var hp: Player = m3.player
 			_check(hp != null and hp.weapons.find_weapon(&"thompson_up") != null and hp.weapons.find_weapon(&"mp40_up") != null, "the human's guns carried (Thompson II, the forged MP40)")
 			_check(PerkManager.owned(1).has(&"ironhide_stout"), "the perks carried")
 			var x3: ExfilPoint = _exfil()
-			_check(x3 != null and x3.state == ExfilPoint.State.DORMANT and x3.next_round() == 29, "the gantry lift is dormant, due at round 29 (%s)" % (str(x3.next_round()) if x3 != null else "none"))
+			_check(x3 != null and x3.state == ExfilPoint.State.DORMANT and x3.next_round() == RoundManager.act_start + 8, "the gantry lift is dormant, due on act round 9 (match %s)" % (str(x3.next_round()) if x3 != null else "none"))
 			_check(m3.get_node_or_null("Gameplay/GroomController") != null, "the GroomController is on the salt")
 	else:
 		var ended: bool = await _until(func() -> bool: return _end_screen() != null, 90.0)
