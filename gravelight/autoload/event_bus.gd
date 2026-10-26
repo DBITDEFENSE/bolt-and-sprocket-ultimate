@@ -76,6 +76,8 @@ signal shootable_hit(target_id: StringName, weapon_id: StringName, upgraded: boo
 ## Every trigger pull that fires (muzzle origin + aim direction). Perk machines use it to reveal their plan-ID
 ## stencils in an upgraded weapon's muzzle flash (T&C section 11.2).
 signal weapon_fired(player: int, weapon_id: StringName, upgraded: bool, origin: Vector3, direction: Vector3)
+## The Totenglocke's Great Toll rang (T-095): Effects draws the refraction ring racing out to `range_m` from `origin`.
+signal great_toll(player: int, origin: Vector3, direction: Vector3, range_m: float)
 signal intel_found(intel_id: StringName)
 
 # VO / presentation

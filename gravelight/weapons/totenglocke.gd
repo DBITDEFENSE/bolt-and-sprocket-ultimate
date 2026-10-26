@@ -286,6 +286,8 @@ static func bot_toll(p: Player, w: WeaponInstance, origin: Vector3, fwd: Vector3
 	drop_shards(p, b, res["kill_pos"])
 	_chain_fx(p, res)
 	GLBus.weapon_fired.emit(p.player_id, w.id, w.upgraded, origin, fwd)
+	if great:
+		GLBus.great_toll.emit(p.player_id, origin, fwd, cone_for(b, great).x)   # T-095
 	return res
 
 
@@ -525,6 +527,7 @@ func _feedback(w: WeaponInstance, b: Dictionary, great: bool, res: Dictionary, o
 	shock_ring(holder, origin + fwd * 0.6, fwd, cone.x, col, great)
 	var wall_d: float = blow_dust(holder, origin, fwd, cone.x, cone.y, 16 if great else 6, great)
 	if great:
+		GLBus.great_toll.emit(p.player_id, origin, fwd, cone.x)   # T-095: Effects' world-space refraction ring
 		screen_ring(holder, 0.055, 0.85, col)
 		# the delayed echo off the walls: there and back at the speed of sound, plus the bell's own swell
 		var delay: float = clampf(2.0 * wall_d / 343.0, 0.08, 0.5) + 0.22
