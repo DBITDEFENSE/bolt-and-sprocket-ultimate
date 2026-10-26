@@ -7,13 +7,17 @@ extends Node
 ##   yield      the human walks straight at a holding bot: it steps aside, the human walks through unhindered
 ##   hold       a hold spot reached and faced
 ##   mantle     a waist-high box across the way (not in the navmesh) is vaulted with the shared mantle
+##   furniture  a deep waist-high box across the way (a table top the navmesh doesn't know): the bot never climbs
+##              onto it (UPDATE 07 Q-14: a mantle needs navmesh under its landing) and still gets to the goal
+##   marooned   a bot put on top of the taproom's centre table (chairs all round) steps down onto the navmesh
+##              within a few seconds and reaches its goal (Q-14: no 4-minute stuck ladder on the table)
 ##   door       a goal behind the shut stable door: the bot never walks through the door
 ##   train      one bot trains a horde round the taproom loop: laps it ahead of the train, keeps it tight, stays in
 ##              the ring, and turns back when zombies cut it off
 ##   stuck      a wall across the way (not in the navmesh): repath, nudge, then a teleport only once no human sees it
 ##   budget     the layer's average tick cost per bot
 ## Scenes: loco_lab.tscn (this; args below) and smoke_bot_loco.tscn (the same script, the smoke set).
-## Usage: godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/loco_lab.tscn [-- --only=train --clip]
+## Usage: godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/loco_lab.tscn [-- --only=train[,stuck] --clip]
 ## --clip: windowed run for the movie maker: just the train phase, 10 zombies, an overhead camera in the taproom.
 ## Prints "[loco] ..." lines and RESULT PASS/FAIL (exit code 0/1).
 
@@ -26,7 +30,7 @@ var _map: Node3D
 var _t: float = 0.0
 var _phase: String = "boot"
 var _phase_t: float = 0.0
-var _queue: Array[String] = ["routes", "follow", "moving", "yield", "hold", "mantle", "door", "train", "stuck", "budget"]
+var _queue: Array[String] = ["routes", "follow", "moving", "yield", "hold", "mantle", "furniture", "marooned", "door", "train", "stuck", "budget"]
 var _fails: PackedStringArray = []
 var _passes: int = 0
 var _done: bool = false
@@ -53,7 +57,8 @@ func _ready() -> void:
 		_only = "train"
 	if _only != "":
 		_queue.clear()
-		_queue.append(_only)
+		for ph: String in _only.split(",", false):   # one phase, or a comma list in order
+			_queue.append(ph)
 	ProfileSave.path = "user://_qa_loco_profile.json"
 	ProfileSave.profile = ProfileSave.new_profile()
 	GameState.character_id = &"peg"
@@ -394,6 +399,69 @@ func _ph_mantle(delta: float) -> void:
 		return
 	_check(there, "mantle: crossed a waist-high box the navmesh doesn't know about")
 	_check(_locos[0].mantles_started > int(_s["start_m"]) and _bots[0].mantles > 0, "mantle: with the shared vault (%d mantles)" % _bots[0].mantles)
+	_next()
+
+
+# ================================================================== furniture (Q-14)
+
+func _setup_furniture() -> void:
+	_place(_bots[0], Vector3(12.5, 0, 8.0), -PI * 0.5)
+	# a table (1.2 x 1.2 x 0.75 m) square in the way: a climb, not a vault; its top has no navmesh under it
+	_wall("LabTable", Vector3(14.9, 0, 7.4), Vector3(16.1, 0.75, 8.6))
+	# the human stands in the stable doorway looking away: the way round the box is the nudge's random walk, and a
+	# bot nobody watches may also take the ladder's teleport (the stuck phase checks that rule on its own)
+	_place(_human, Vector3(4.0, 0, 3.0), PI * 0.5)
+	_s["start_m"] = _locos[0].mantles_started
+	_s["max_y"] = 0.0
+
+
+func _ph_furniture(delta: float) -> void:
+	_locos[0].move_to(Vector3(18.5, 0, 8.0), 0.5, 0.5)
+	_locos[1].stop()
+	_locos[2].stop()
+	_tick_locos(delta)
+	_s["max_y"] = maxf(float(_s["max_y"]), _bots[0].global_position.y)
+	var there: bool = _flat(_bots[0].global_position, Vector3(18.5, 0, 8.0)) < 0.8
+	if not there and _phase_t < 25.0:
+		return
+	_check(_locos[0].mantles_started == int(_s["start_m"]), "furniture: never climbed onto the table top (%d mantles)" % (_locos[0].mantles_started - int(_s["start_m"])))
+	_check(float(_s["max_y"]) < 0.45, "furniture: feet stayed below the table top (max y %.2f)" % float(_s["max_y"]))
+	_check(there, "furniture: went round it and reached the goal (%.0f s)" % _phase_t)
+	_next()
+
+
+# ================================================================== marooned (Q-14)
+
+func _setup_marooned() -> void:
+	# on top of the taproom's centre table (16.5, 11.5), four chairs round it: the soak's 37-event stuck spot
+	var b: Player = _bots[0]
+	b.global_position = Vector3(16.5, 0.8, 11.5)
+	b.velocity = Vector3.ZERO
+	b.rotation.y = PI * 0.5
+	_place(_bots[1], Vector3(4.0, 0, 3.0))
+	_place(_bots[2], Vector3(5.0, 0, 3.0))
+	_s["drops0"] = _locos[0].drops
+	_s["tp0"] = _locos[0].teleports
+	_s["down_t"] = -1.0
+	var nav: RID = b.get_world_3d().navigation_map
+	print("[loco] marooned: snap of the table top %s; path %s" % [NavigationServer3D.map_get_closest_point(nav, b.global_position),
+		NavigationServer3D.map_get_path(nav, b.global_position, Vector3(20.0, 0, 8.0), true, _root().squad.nav_mask())])
+
+
+func _ph_marooned(delta: float) -> void:
+	_locos[0].move_to(Vector3(20.0, 0, 8.0), 0.5, 0.6)
+	_locos[1].stop()
+	_locos[2].stop()
+	_tick_locos(delta)
+	var b: Player = _bots[0]
+	if float(_s["down_t"]) < 0.0 and b.global_position.y < 0.3:
+		_s["down_t"] = _phase_t
+	var there: bool = _flat(b.global_position, Vector3(20.0, 0, 8.0)) < 0.8
+	if not there and _phase_t < 15.0:
+		return
+	_check(float(_s["down_t"]) >= 0.0 and float(_s["down_t"]) <= 4.0, "marooned: off the table within 4 s (%.1f s)" % float(_s["down_t"]))
+	print("[loco] marooned: drops %d, teleports %d on the way" % [_locos[0].drops - int(_s["drops0"]), _locos[0].teleports - int(_s["tp0"])])
+	_check(there, "marooned: reached the goal (%.0f s)" % _phase_t)
 	_next()
 
 

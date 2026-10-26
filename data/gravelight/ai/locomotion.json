@@ -18,7 +18,10 @@
     "fire_cost": 25.0,
     "lift_cost": 30.0,
     "alt_threshold": 6.0,
-    "alt_offsets_m": [2.5, 4.5]
+    "alt_offsets_m": [
+      2.5,
+      4.5
+    ]
   },
   "speed": {
     "_doc": "urgency (0 walk .. 1 flee) >= sprint_urgency sprints when no look is set, the path ahead is at least sprint_min_m and the body faces within sprint_face_deg of it (the shared code only sprints forward-ish). arrive_slow_m: slows into the stop.",
@@ -39,7 +42,7 @@
     "choke_leave_s": 0.6
   },
   "stuck": {
-    "_doc": "No progress (the goal never got progress_m closer, and the body didn't move window_m net in any window_s: a moving goal never gets closer while the body walks fine) for repath_s: re-plan; nudge_s: a local random walk (nudge_walk_s to a navmesh point nudge_r_m away); teleport_s: to the nearest safe navmesh point on the way, only when no human sees the bot or the spot (a view cone of view_cone_deg out to view_m, plus line of sight), and it is logged (BotMetrics teleport). Once a ladder has nudged, window movement only counts as progress escape_m or more from where the bot got stuck (walking back from a nudge to the same wall is not progress).",
+    "_doc": "No progress (the goal never got progress_m closer, and the body didn't move window_m net in any window_s: a moving goal never gets closer while the body walks fine) for repath_s: re-plan; nudge_s: a local random walk (nudge_walk_s to a navmesh point nudge_r_m away); teleport_s: to the nearest safe navmesh point on the way, only when no human sees the bot or the spot (a view cone of view_cone_deg out to view_m, plus line of sight), and it is logged (BotMetrics teleport). Once a ladder has nudged, window movement only counts as progress escape_m or more from where the bot got stuck (walking back from a nudge to the same wall is not progress). UPDATE 07 Q-14: a bot only mantles where the landing has navmesh under it (mantle_land_m sideways, mantle_land_y up/down: vaults land on the floor, climbs onto table tops are refused); a bot standing above the navmesh (marooned_up_m up, within marooned_reach_m) for drop_after_s steps down onto the nearest navmesh point (logged as a drop, never a teleport).",
     "progress_m": 0.3,
     "window_s": 1.0,
     "window_m": 0.6,
@@ -47,15 +50,65 @@
     "nudge_s": 4.0,
     "teleport_s": 8.0,
     "nudge_walk_s": 1.2,
-    "nudge_r_m": [1.5, 3.0],
+    "nudge_r_m": [
+      1.5,
+      3.0
+    ],
     "escape_m": 4.0,
     "view_cone_deg": 65.0,
-    "view_m": 60.0
+    "view_m": 60.0,
+    "mantle_land_m": 0.35,
+    "mantle_land_y": 0.3,
+    "marooned_up_m": 0.4,
+    "marooned_reach_m": 1.5,
+    "drop_after_s": 2.0
   },
   "formation": {
     "_doc": "follow(): a loose wedge round the leader, slots [angle_deg from the heading, radius_m]. still = the leader stands (heading = where they look); moving = the leader moves faster than moving_mps (heading = their velocity, the slot predicted lead_s ahead): beside and a little ahead, never in the space behind them the horde follows. A slot further than run_m away is run to. Angles are spread wide so the squad never lines up in one cone.",
-    "still": [[135.0, 2.8], [-135.0, 2.8], [180.0, 3.8], [100.0, 3.6], [-100.0, 3.6]],
-    "moving": [[80.0, 2.4], [-80.0, 2.4], [40.0, 3.6], [115.0, 3.4], [-115.0, 3.4]],
+    "still": [
+      [
+        135.0,
+        2.8
+      ],
+      [
+        -135.0,
+        2.8
+      ],
+      [
+        180.0,
+        3.8
+      ],
+      [
+        100.0,
+        3.6
+      ],
+      [
+        -100.0,
+        3.6
+      ]
+    ],
+    "moving": [
+      [
+        80.0,
+        2.4
+      ],
+      [
+        -80.0,
+        2.4
+      ],
+      [
+        40.0,
+        3.6
+      ],
+      [
+        115.0,
+        3.4
+      ],
+      [
+        -115.0,
+        3.4
+      ]
+    ],
     "moving_mps": 1.6,
     "lead_s": 0.6,
     "refresh_s": 0.3,
