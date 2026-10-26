@@ -86,6 +86,7 @@ func _ready() -> void:
 	_root = Control.new()
 	_root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_root.mouse_filter = Control.MOUSE_FILTER_STOP
+	MenuKit.apply_theme(_root)
 	add_child(_root)
 	var bg: ColorRect = ColorRect.new()
 	bg.color = Color(0.02, 0.02, 0.04, 0.8)
@@ -208,9 +209,8 @@ func _build_map_page(page: Control) -> void:
 	page.add_child(_map_slot)
 	var ph: PanelContainer = MenuKit.panel()
 	ph.set_anchors_preset(Control.PRESET_FULL_RECT)
-	var sb: StyleBoxFlat = (ph.get_theme_stylebox("panel") as StyleBoxFlat).duplicate() as StyleBoxFlat
-	sb.bg_color = Color(0.86, 0.81, 0.69, 0.96)
-	sb.border_color = Color(0.36, 0.25, 0.16)
+	var sb: StyleBoxFlat = MenuKit.paper_box(0.96)
+	sb.set_content_margin_all(18)
 	ph.add_theme_stylebox_override("panel", sb)
 	_map_slot.add_child(ph)
 	_map_placeholder = ph
@@ -227,12 +227,14 @@ func _build_map_page(page: Control) -> void:
 	v.add_child(_ink_label("(The full field map is still being drawn: this page holds its place.)", 15, ObjectivesView.LEDGER_FAINT))
 
 
+## Ink on the ledger page: no outline (MenuKit "paper"); body text in the sans, headers in the stamp face.
 func _ink_label(text: String, size: int, color: Color, stamp: bool = false) -> Label:
 	var l: Label = Label.new()
 	l.text = text
-	l.add_theme_font_override("font", MenuKit.stamp_font() if stamp else MenuKit.type_font())
-	l.add_theme_font_size_override("font_size", size)
+	l.add_theme_font_override("font", MenuKit.stamp_font() if stamp else MenuKit.body_font())
+	l.add_theme_font_size_override("font_size", MenuKit.px(size))
 	l.add_theme_color_override("font_color", color)
+	MenuKit.outline(l, "paper")
 	return l
 
 
@@ -547,7 +549,8 @@ func perk_row(pid: int, perk_id: StringName, md: MapData) -> Control:
 
 
 static func _row_label(text: String, size: int, color: Color, stamp: bool = false) -> Label:
-	var l: Label = MenuKit.label(text, size, color, stamp)
+	var l: Label = MenuKit.label(text, size, color, stamp) if stamp or size >= 19 else MenuKit.para(text, size, color)
+	l.autowrap_mode = TextServer.AUTOWRAP_OFF
 	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	l.clip_text = true
 	l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS

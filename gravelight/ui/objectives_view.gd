@@ -75,6 +75,8 @@ func _ready() -> void:
 		_spoiler.add_item(n)
 	_spoiler.focus_mode = Control.FOCUS_ALL
 	_spoiler.add_theme_font_size_override("font_size", 15)
+	if skin == "ledger":
+		_spoiler.add_theme_font_override("font", MenuKit.type_font())
 	_spoiler.item_selected.connect(func(i: int) -> void: spoiler_changed.emit(ObjectiveLog.LEVELS[i]))
 	top.add_child(_spoiler)
 	_scroll = ScrollContainer.new()
@@ -96,29 +98,29 @@ func _ready() -> void:
 	right.add_child(dv)
 	_d_status = _label("", 14, _accent(), true)
 	dv.add_child(_d_status)
-	_d_title = _label("", 21, _ink())
+	_d_title = _label("", 21, _ink(), false, true)
 	_d_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	dv.add_child(_d_title)
 	_d_bar = _bar()
 	_d_bar.visible = false
 	dv.add_child(_d_bar)
-	_d_story = _label("", 16, _ink())
+	_d_story = _label("", 17, _ink(), false, true)
 	_d_story.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_d_story.modulate = Color(1, 1, 1, 0.82)
 	dv.add_child(_d_story)
-	_d_text = _label("", 17, _ink())
+	_d_text = _label("", 18, _ink(), false, true)
 	_d_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	dv.add_child(_d_text)
-	_d_quote = _label("", 15, _faint())
+	_d_quote = _label("", 15, _faint(), false, true)
 	_d_quote.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	dv.add_child(_d_quote)
-	_d_where = _label("", 16, _accent())
+	_d_where = _label("", 16, _accent(), false, true)
 	_d_where.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	dv.add_child(_d_where)
 	_d_buttons = HBoxContainer.new()
 	_d_buttons.add_theme_constant_override("separation", 10)
 	dv.add_child(_d_buttons)
-	_d_feedback = _label("", 15, _faint())
+	_d_feedback = _label("", 15, _faint(), false, true)
 	_d_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	dv.add_child(_d_feedback)
 	if not _log.is_empty():
@@ -310,12 +312,14 @@ func _faint() -> Color:
 	return LEDGER_FAINT if skin == "ledger" else HOLO_FAINT
 
 
-func _label(text: String, size: int, color: Color, stamp: bool = false) -> Label:
+## Ledger skin (T-096): stamps in the stencil, headers / short lines in the typewriter, paragraphs (the story, the
+## instruction, the quote: anything that wraps) in the readable body face; ink on paper, no outline.
+func _label(text: String, size: int, color: Color, stamp: bool = false, body: bool = false) -> Label:
 	var l: Label = Label.new()
 	l.text = text
 	if skin == "ledger":
-		l.add_theme_font_override("font", MenuKit.stamp_font() if stamp else MenuKit.type_font())
-	l.add_theme_font_size_override("font_size", size)
+		l.add_theme_font_override("font", MenuKit.stamp_font() if stamp else (MenuKit.body_font() if body else MenuKit.type_font()))
+	l.add_theme_font_size_override("font_size", MenuKit.px(size))
 	l.add_theme_color_override("font_color", color)
 	if skin != "ledger":
 		l.add_theme_constant_override("outline_size", 3)

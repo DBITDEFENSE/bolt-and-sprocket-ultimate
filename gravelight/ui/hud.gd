@@ -101,7 +101,18 @@ func _ready() -> void:
 	_stamp_label.add_theme_color_override("font_color", INK)
 	MenuKit.outline(_stamp_label, "stamp")
 	_stamp_label.text = ""
-	_stamp_panel.add_child(_stamp_label)
+	_stamp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	# the digits fill the box: a clipped holder the height of the numerals, the label's line gap hidden above
+	var fs: float = float(MenuKit.size("hud_stamp"))
+	var holder: Control = Control.new()
+	holder.custom_minimum_size = Vector2(fs * 0.72, fs * 0.8)
+	holder.clip_contents = true
+	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_stamp_label.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_stamp_label.offset_top = -fs * 0.27
+	_stamp_label.offset_bottom = fs * 0.1
+	holder.add_child(_stamp_label)
+	_stamp_panel.add_child(holder)
 	_stamp_panel.visible = false
 	root.add_child(_stamp_panel)
 	# bottom-right column: Scrip, the gun, ammo, grenades (counters in the mono face so digits line up)
@@ -214,7 +225,11 @@ func _layout() -> void:
 	var vp: Vector2 = get_viewport().get_visible_rect().size
 	var m: Vector2 = MenuKit.hud_margin(vp)
 	_layout_vp = vp
-	_br.position = Vector2(-m.x, -m.y)
+	# the counters' column: pinned by its bottom-right corner (offsets, not position: the box has a size by now)
+	_br.offset_right = -m.x
+	_br.offset_bottom = -m.y
+	_br.offset_left = -m.x - maxf(_br.size.x, _br.get_combined_minimum_size().x)
+	_br.offset_top = -m.y - maxf(_br.size.y, _br.get_combined_minimum_size().y)
 	_prompt.offset_left = m.x
 	_prompt.offset_right = -m.x
 	_banner.offset_left = m.x

@@ -72,6 +72,8 @@ var _drag: bool = false
 var _drag_moved: bool = false
 var _press_at: Vector2 = Vector2.ZERO
 var _fit_zoom: float = 1.0
+var _fit_size: Vector2 = Vector2.ZERO   # the canvas size the first fit used (re-fitted while the layout settles)
+var _fit_stable: int = 0
 var _hover: Dictionary = {}
 var _nav_hold_t: float = 0.0
 var _last_floor_auto: int = -1
@@ -285,17 +287,52 @@ func _fit_now() -> void:
 			get_tree().process_frame.connect(_fit_now, CONNECT_ONE_SHOT)   # laid out next frame
 		return
 	var keep_zoom: float = canvas.zoom
-	canvas.fit_floor(24.0)
-	_fit_zoom = canvas.zoom
+	var pm: Dictionary = MenuKit.cfg().get("pause_map", {})
+	var margin: float = float(pm.get("fit_margin_px", 24.0))
+	canvas.fit_floor(margin)
+	_fit_zoom = canvas.zoom   # the whole rect (the Grounds too): the floor of the zoom range
 	var f: int = state.local_floor()
 	set_floor(f)
 	var me: Node3D = state.local_body()
 	if _fitted:
-		canvas.zoom = clampf(keep_zoom, _fit_zoom * 0.8, ZOOM_MAX)
+		canvas.zoom = clampf(keep_zoom, _fit_zoom * 0.8, ZOOM_MAX)   # the last zoom of the match is kept
+	else:
+		# T-096: the first view fits the built zones (Map 0: the inn, stable and yard), not the whole 104 x 118 m
+		# rect that left the inn a thumbnail in the middle; the Grounds stay reachable by zoom and pan.
+		canvas.fit_rect(built_rect(state.data, float(pm.get("fit_zone_max_frac", 0.4))), margin)
+		canvas.zoom = clampf(canvas.zoom, _fit_zoom * 0.8, ZOOM_MAX)
 	_fitted = true
+	_fit_size = canvas.size
+	_fit_stable = 0
 	if me != null and canvas.zoom > _fit_zoom * 1.05:
 		canvas.center = Vector2(me.global_position.x, me.global_position.z)
 	cursor = _area.size * 0.5
+
+
+## The rect (world XZ) round the built zones of a map: the union of the bounding boxes of every zone whose own
+## bounding box covers at most `max_frac` of the map's world rect (open ground like Map 0's Grounds is left out);
+## the whole world rect when no zone qualifies.
+static func built_rect(md: MapData, max_frac: float = 0.4) -> Rect2:
+	if md == null:
+		return Rect2()
+	var total: float = maxf(1.0, md.world_rect.get_area())
+	var out: Rect2 = Rect2()
+	var any: bool = false
+	for z: Dictionary in md.zones:
+		var r: Rect2 = Rect2()
+		var first: bool = true
+		for poly: Variant in z.get("polys", []):
+			for q: Vector2 in poly:
+				if first:
+					r = Rect2(q, Vector2.ZERO)
+					first = false
+				else:
+					r = r.expand(q)
+		if first or r.get_area() / total > max_frac:
+			continue
+		out = r if not any else out.merge(r)
+		any = true
+	return out.grow(4.0) if any else md.world_rect
 
 
 ## Highlights a place (the OBJECTIVES tab's "Show on map"): its floor, centred, a pulsing ring for 8 s.
@@ -514,6 +551,12 @@ func _input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
+	if _fitted and _fit_stable < 3 and state != null:
+		if canvas.size != _fit_size:   # the containers were still settling when the first fit ran: fit again
+			_fitted = false
+			_fit_now()
+		else:
+			_fit_stable += 1
 	if not is_visible_in_tree() or state == null:
 		return
 	# the controller: the cursor, panning, zoom (sticks and triggers)

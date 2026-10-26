@@ -21,8 +21,7 @@ func _init() -> void:
 
 
 func _ready() -> void:
-	var font: SystemFont = SystemFont.new()
-	font.font_names = PackedStringArray(["Consolas", "Courier New"])
+	var font: Font = MenuKit.mono_font()
 	_panel = PanelContainer.new()
 	_panel.set_anchors_preset(Control.PRESET_TOP_WIDE)
 	_panel.custom_minimum_size = Vector2(0, 380)
@@ -40,7 +39,7 @@ func _ready() -> void:
 	_log.scroll_following = true
 	_log.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_log.add_theme_font_override("normal_font", font)
-	_log.add_theme_font_size_override("normal_font_size", 16)
+	_log.add_theme_font_size_override("normal_font_size", MenuKit.size("hud_debug"))
 	v.add_child(_log)
 	_input = LineEdit.new()
 	_input.add_theme_font_override("font", font)

@@ -11,8 +11,8 @@ const INK: Color = Color(0.62, 0.09, 0.08)
 const PAPER: Color = Color(0.93, 0.89, 0.8)
 const SCRIP_COL: Color = Color(0.95, 0.86, 0.55)
 
-var _font: SystemFont
-var _stamp: SystemFont
+var _font: Font
+var _stamp: Font
 var _list: VBoxContainer
 var _rows: Dictionary = {}      # pid -> Label
 var _caps: Dictionary = {}      # pid -> PerkCap (the bonus perk)
@@ -26,14 +26,12 @@ func _init() -> void:
 
 
 func _ready() -> void:
-	_font = SystemFont.new()
-	_font.font_names = PackedStringArray(["Courier New", "Consolas", "Monospace"])
-	_font.font_weight = 700
-	_stamp = SystemFont.new()
-	_stamp.font_names = PackedStringArray(["Stencil", "Impact", "Arial Black"])
+	_font = MenuKit.mono_font()   # the ledger: names and Scrip line up
+	_stamp = MenuKit.stamp_font()
 	var root: Control = Control.new()
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	MenuKit.apply_theme(root)
 	add_child(root)
 	_markers = Markers.new()
 	_markers.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -45,10 +43,9 @@ func _ready() -> void:
 	root.add_child(_list)
 	_center = Label.new()
 	_center.add_theme_font_override("font", _stamp)
-	_center.add_theme_font_size_override("font_size", 34)
+	_center.add_theme_font_size_override("font_size", MenuKit.size("coop_banner"))
 	_center.add_theme_color_override("font_color", PAPER)
-	_center.add_theme_constant_override("outline_size", 8)
-	_center.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+	MenuKit.outline(_center, "banner")
 	_center.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_center.anchor_left = 0.0
 	_center.anchor_right = 1.0
@@ -101,6 +98,7 @@ func _process(_delta: float) -> void:
 	if s == null:
 		return
 	visible = GameState.phase != GameState.Phase.MENU
+	_list.position.x = MenuKit.hud_margin(get_viewport().get_visible_rect().size).x   # the HUD grid (T-096)
 	_list.position.y = maxf(300.0, Minimap.layout_bottom + 50.0)   # clear of the minimap (Update 04, T-065)
 	_update_list(s)
 	_update_center(s)
@@ -123,9 +121,8 @@ func _update_list(s: NetMatch) -> void:
 		if not _rows.has(pid2):
 			var l: Label = Label.new()
 			l.add_theme_font_override("font", _font)
-			l.add_theme_font_size_override("font_size", 20)
-			l.add_theme_constant_override("outline_size", 4)
-			l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.75))
+			l.add_theme_font_size_override("font_size", MenuKit.size("coop_row"))
+			MenuKit.outline(l, "hud")
 			var hb: HBoxContainer = HBoxContainer.new()
 			hb.add_theme_constant_override("separation", 16)
 			hb.mouse_filter = Control.MOUSE_FILTER_IGNORE

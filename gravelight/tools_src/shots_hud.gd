@@ -110,6 +110,9 @@ func _run() -> void:
 	PerkManager.set_tier(1, &"ironhide_stout", 2)
 	PowerupManager.apply(&"double_scrip", 1)
 	GLSettings.values["subtitles"] = true
+	var hud: Hud = get_tree().get_first_node_in_group(&"hud") as Hud
+	if hud != null:
+		hud.call("_on_round_started", 7, false)   # the round stamp (the opening holds round 1 back)
 	# the boss bar, forced on with a stand-in boss
 	_boss_hud = BossHud.new()
 	_map.add_child(_boss_hud)

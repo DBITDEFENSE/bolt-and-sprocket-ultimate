@@ -11,7 +11,7 @@
   },
   "roles": {
     "_doc": "role -> font key, for MenuKit.text(role, ...) and the theme: stamps and titles are the stencil, headings / buttons / prompts the typewriter, paragraphs the sans, counters the mono.",
-    "display": "stamp", "stamp": "stamp", "title": "stamp", "heading": "type", "subheading": "type", "button": "type",
+    "display": "stamp", "wordmark": "stamp", "stamp": "stamp", "title": "stamp", "title_small": "stamp", "heading": "type", "subheading": "type", "button": "type",
     "body": "body", "body_large": "body", "caption": "body", "fine": "body", "mono": "mono", "counter": "mono_bold"
   },
   "scale": {
@@ -27,6 +27,9 @@
     "title": 46,
     "display": 64,
     "wordmark": 104,
+    "stamp": 96,
+    "mono": 18,
+    "counter": 40,
     "hud_stamp": 96,
     "hud_scrip": 40,
     "hud_ammo": 46,
@@ -40,7 +43,7 @@
     "hud_subtitle": 24,
     "hud_powerup": 30,
     "hud_zone_stamp": 22,
-    "hud_floor": 15,
+    "hud_floor": 16,
     "boss_name": 17,
     "boss_card": 84,
     "boss_card_small": 30,

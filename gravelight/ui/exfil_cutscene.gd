@@ -70,15 +70,13 @@ func _build_overlay() -> void:
 	_fade.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_layer.add_child(_fade)
-	var stamp: SystemFont = SystemFont.new()
-	stamp.font_names = PackedStringArray(["Stencil", "Impact", "Arial Black"])
-	var type_font: SystemFont = SystemFont.new()
-	type_font.font_names = PackedStringArray(["Courier New", "Consolas"])
-	type_font.font_weight = 700
+	var stamp: Font = MenuKit.stamp_font()
+	var type_font: Font = MenuKit.type_font()
+	MenuKit.apply_theme(_fade)
 	_title = Label.new()
 	_title.text = str(_def.get("title", ""))
 	_title.add_theme_font_override("font", stamp)
-	_title.add_theme_font_size_override("font_size", 112)
+	_title.add_theme_font_size_override("font_size", MenuKit.px(112))
 	_title.add_theme_color_override("font_color", Color(0.93, 0.89, 0.8))
 	_title.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
 	_title.add_theme_constant_override("shadow_offset_y", 4)
@@ -91,7 +89,8 @@ func _build_overlay() -> void:
 	_sub = Label.new()
 	_sub.text = str(_def.get("subtitle", ""))
 	_sub.add_theme_font_override("font", type_font)
-	_sub.add_theme_font_size_override("font_size", 26)
+	_sub.add_theme_font_size_override("font_size", MenuKit.size("subheading"))
+	MenuKit.outline(_sub, "menu")
 	_sub.add_theme_color_override("font_color", Color(0.62, 0.45, 0.85))
 	_sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_sub.set_anchors_preset(Control.PRESET_CENTER)
@@ -102,7 +101,8 @@ func _build_overlay() -> void:
 	_skip = Label.new()
 	_skip.text = ""
 	_skip.add_theme_font_override("font", type_font)
-	_skip.add_theme_font_size_override("font_size", 20)
+	_skip.add_theme_font_size_override("font_size", MenuKit.size("body_large"))
+	MenuKit.outline(_skip, "menu")
 	_skip.add_theme_color_override("font_color", Color(0.93, 0.89, 0.8, 0.85))
 	_skip.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_skip.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)

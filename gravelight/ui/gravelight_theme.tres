@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=25 format=3]
+[gd_resource type="Theme" load_steps=27 format=3]
 
 [ext_resource type="FontFile" path="res://assets/third_party/google_fonts/ibm-plex-sans/IBMPlexSans-Variable.ttf" id="1_sans"]
 [ext_resource type="FontFile" path="res://assets/third_party/google_fonts/special-elite/SpecialElite-Regular.ttf" id="2_type"]
@@ -212,6 +212,24 @@ thickness = 1
 
 [sub_resource type="StyleBoxEmpty" id="sb_empty"]
 
+[sub_resource type="StyleBoxFlat" id="sb_check"]
+content_margin_left = 12.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 2
+border_color = Color(0.4, 0.33, 0.25, 0.6)
+
+[sub_resource type="StyleBoxFlat" id="sb_check_hover"]
+content_margin_left = 12.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.62, 0.09, 0.08, 0.14)
+border_width_left = 2
+border_color = Color(0.95, 0.86, 0.55, 0.9)
+
 [resource]
 default_font = SubResource("FontVariation_body")
 default_font_size = 18
@@ -235,7 +253,12 @@ CheckBox/colors/font_focus_color = Color(0.95, 0.86, 0.55, 1)
 CheckBox/colors/font_hover_color = Color(0.95, 0.86, 0.55, 1)
 CheckBox/font_sizes/font_size = 20
 CheckBox/fonts/font = ExtResource("2_type")
+CheckBox/styles/disabled = SubResource("sb_check")
 CheckBox/styles/focus = SubResource("sb_focus_plain")
+CheckBox/styles/hover = SubResource("sb_check_hover")
+CheckBox/styles/hover_pressed = SubResource("sb_check_hover")
+CheckBox/styles/normal = SubResource("sb_check")
+CheckBox/styles/pressed = SubResource("sb_check")
 CheckButton/colors/font_color = Color(0.93, 0.89, 0.8, 1)
 CheckButton/colors/font_focus_color = Color(0.95, 0.86, 0.55, 1)
 CheckButton/colors/font_hover_color = Color(0.95, 0.86, 0.55, 1)
@@ -243,7 +266,12 @@ CheckButton/colors/font_outline_color = Color(0, 0, 0, 0.7)
 CheckButton/constants/outline_size = 2
 CheckButton/font_sizes/font_size = 20
 CheckButton/fonts/font = ExtResource("2_type")
+CheckButton/styles/disabled = SubResource("sb_check")
 CheckButton/styles/focus = SubResource("sb_focus_plain")
+CheckButton/styles/hover = SubResource("sb_check_hover")
+CheckButton/styles/hover_pressed = SubResource("sb_check_hover")
+CheckButton/styles/normal = SubResource("sb_check")
+CheckButton/styles/pressed = SubResource("sb_check")
 HSeparator/styles/separator = SubResource("sb_separator")
 HSlider/styles/focus = SubResource("sb_focus_plain")
 HSlider/styles/grabber_area = SubResource("sb_slider_fill")

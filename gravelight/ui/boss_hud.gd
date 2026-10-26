@@ -72,7 +72,7 @@ func add_bar(key: String, boss: Node, big: String, small: String) -> void:
 		sub = Label.new()
 		sub.text = small
 		sub.add_theme_font_override("font", MenuKit.type_font())
-		sub.add_theme_font_size_override("font_size", MenuKit.size("caption"))
+		sub.add_theme_font_size_override("font_size", MenuKit.size("fine"))
 		sub.add_theme_color_override("font_color", PAPER)
 		MenuKit.outline(sub, "hud")
 		sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -245,12 +245,13 @@ class BarFrame extends Control:
 		if holder == null:
 			return
 		var x0: float = NAME_W
-		holder.position = Vector2(x0, 10.0)
+		var with_sub: bool = sub_label != null
+		holder.position = Vector2(x0, 8.0 if with_sub else 10.0)
 		holder.size = Vector2(maxf(40.0, size.x - x0 - 12.0), 10.0)
-		if sub_label != null:
-			sub_label.position = Vector2(x0, 20.0)   # under the bar
-			sub_label.size = Vector2(holder.size.x, 14.0)
-			custom_minimum_size.y = 40.0
+		if with_sub:
+			sub_label.position = Vector2(x0, 20.0)   # the in-world name typed under the bar
+			sub_label.size = Vector2(holder.size.x, 16.0)
+			custom_minimum_size = Vector2(0, 40.0)
 
 	func _draw() -> void:
 		var r: Rect2 = Rect2(Vector2.ZERO, size)

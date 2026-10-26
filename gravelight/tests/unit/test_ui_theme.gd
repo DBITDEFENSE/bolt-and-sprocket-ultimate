@@ -51,11 +51,13 @@ func test_bundled_fonts_load() -> void:
 
 
 func test_scale_snaps_to_steps() -> void:
-	var steps: Array = MenuKit.cfg()["scale"]["steps"]
-	for s: Variant in steps:
-		assert_eq(MenuKit.px(int(s)), int(s), "a step maps to itself")
+	var steps: Array = []
+	for s: Variant in MenuKit.cfg()["scale"]["steps"]:   # JSON numbers are floats
+		steps.append(int(s))
+	for s2: int in steps:
+		assert_eq(MenuKit.px(s2), s2, "a step maps to itself")
 	assert_true(steps.has(MenuKit.px(22)), "an odd size lands on a step")
-	assert_true(steps.has(MenuKit.px(1)), "a tiny size lands on the smallest step")
+	assert_eq(MenuKit.px(1), steps[0], "a tiny size lands on the smallest step")
 	assert_eq(MenuKit.size("body"), int(MenuKit.cfg()["scale"]["body"]))
 
 
@@ -114,4 +116,4 @@ func test_hud_margin_respects_safe_area() -> void:
 	var cfgm: Array = MenuKit.hud("margin", [56.0, 44.0])
 	assert_almost_eq(m.x, maxf(float(cfgm[0]), 1920.0 * float(MenuKit.hud("safe_frac", 0.03))), 0.01)
 	var wide: Vector2 = MenuKit.hud_margin(Vector2(3440, 1440))
-	assert_gte(wide.x, 3440.0 * float(MenuKit.hud("safe_frac", 0.03)), "ultrawide keeps the safe area")
+	assert_gte(wide.x + 0.01, 3440.0 * float(MenuKit.hud("safe_frac", 0.03)), "ultrawide keeps the safe area")

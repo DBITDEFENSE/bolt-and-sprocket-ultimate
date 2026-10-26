@@ -34,7 +34,12 @@ func _ready() -> void:
 
 func _layout() -> void:
 	var m: Vector2 = MenuKit.hud_margin(get_viewport().get_visible_rect().size)
-	_box.position = Vector2(float(MenuKit.hud("powerup_x", 140.0)), -m.y - 4.0)
+	var x: float = float(MenuKit.hud("powerup_x", 140.0))
+	var sz: Vector2 = _box.get_combined_minimum_size().max(_box.size)
+	_box.offset_left = x
+	_box.offset_right = x + maxf(sz.x, 10.0)
+	_box.offset_bottom = -m.y - 4.0
+	_box.offset_top = -m.y - 4.0 - maxf(sz.y, 10.0)
 
 
 func _process(_delta: float) -> void:
@@ -55,7 +60,10 @@ func _process(_delta: float) -> void:
 			_box.add_child(l)
 			_labels[id] = l
 		var left: float = float(timers[id])
-		l.text = "%s  %d" % [PowerupManager.display_name(StringName(str(id))), int(ceil(left))]
+		var txt: String = "%s  %d" % [PowerupManager.display_name(StringName(str(id))), int(ceil(left))]
+		if l.text != txt:
+			l.text = txt
+			_layout.call_deferred()   # the box grew or shrank: keep its bottom on the margin
 		var warn: bool = left < 5.0 and fmod(left, 0.5) < 0.25
 		var col: Color = WARN if warn else STENCIL
 		if not l.has_theme_color_override("font_color") or l.get_theme_color("font_color") != col:
