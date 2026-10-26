@@ -404,24 +404,31 @@ func _hold_after() -> float:
 
 
 func _build_costume() -> void:
-	# the bob with straight bangs (never over the face)
-	costume("Head", [
-		sph(0.138, Vector3(0, 0.105, 0.012), HAIR, Vector3(1.03, 0.98, 1.05), true),
-		boxp(Vector3(0.27, 0.17, 0.05), Vector3(0, 0.045, 0.1), HAIR),
-		boxp(Vector3(0.045, 0.16, 0.2), Vector3(0.122, 0.05, 0.0), HAIR),
-		boxp(Vector3(0.045, 0.16, 0.2), Vector3(-0.122, 0.05, 0.0), HAIR),
-		boxp(Vector3(0.22, 0.045, 0.05), Vector3(0, 0.185, -0.105), HAIR, Vector3(-0.3, 0, 0))])
-	# the high-collared flannel nightgown under a buttoned cardigan
-	var top: Array = [
-		cyl(0.2, 0.215, 0.36, Vector3(0, 0.15, 0.004), KNIT, Vector3.ZERO, Vector3(1.0, 1.0, 0.7)),
-		cyl(0.07, 0.085, 0.08, Vector3(0, 0.31, 0), FLANNEL)]
-	for k: int in 4:
-		top.append(sph(0.012, Vector3(0, 0.25 - 0.075 * float(k), -0.152), FLANNEL.darkened(0.4)))
-	costume("Chest", top)
-	costume("Spine", [cyl(0.2, 0.21, 0.26, Vector3(0, 0.1, 0.004), KNIT, Vector3.ZERO, Vector3(1.05, 1.0, 0.78))])
-	costume("Hips", [cyl(0.21, 0.35, 0.88, Vector3(0, -0.43, 0.0), FLANNEL, Vector3.ZERO, Vector3(1.06, 1.0, 0.94))])   # to the ankle
+	# T-092: the modelled doll carries her hair, nightgown and cardigan (the sleeves end torn at the elbow); the
+	# primitives stay for the legacy bodies. The stretched-arm fillers below are kept either way.
+	if not modelled():
+		# the bob with straight bangs (never over the face)
+		costume("Head", [
+			sph(0.138, Vector3(0, 0.105, 0.012), HAIR, Vector3(1.03, 0.98, 1.05), true),
+			boxp(Vector3(0.27, 0.17, 0.05), Vector3(0, 0.045, 0.1), HAIR),
+			boxp(Vector3(0.045, 0.16, 0.2), Vector3(0.122, 0.05, 0.0), HAIR),
+			boxp(Vector3(0.045, 0.16, 0.2), Vector3(-0.122, 0.05, 0.0), HAIR),
+			boxp(Vector3(0.22, 0.045, 0.05), Vector3(0, 0.185, -0.105), HAIR, Vector3(-0.3, 0, 0))])
+		# the high-collared flannel nightgown under a buttoned cardigan
+		var top: Array = [
+			cyl(0.2, 0.215, 0.36, Vector3(0, 0.15, 0.004), KNIT, Vector3.ZERO, Vector3(1.0, 1.0, 0.7)),
+			cyl(0.07, 0.085, 0.08, Vector3(0, 0.31, 0), FLANNEL)]
+		for k: int in 4:
+			top.append(sph(0.012, Vector3(0, 0.25 - 0.075 * float(k), -0.152), FLANNEL.darkened(0.4)))
+		costume("Chest", top)
+		costume("Spine", [cyl(0.2, 0.21, 0.26, Vector3(0, 0.1, 0.004), KNIT, Vector3.ZERO, Vector3(1.05, 1.0, 0.78))])
+		costume("Hips", [cyl(0.21, 0.35, 0.88, Vector3(0, -0.43, 0.0), FLANNEL, Vector3.ZERO, Vector3(1.06, 1.0, 0.94))])   # to the ankle
 	var e: float = float(bcfg.get("arm_extra", 0.22))
 	for side: String in ["Left", "Right"]:
+		if modelled():
+			costume(side + "UpperArm", [cyl(0.034, 0.032, e + 0.04, Vector3(0, -0.3 - e * 0.5, 0), SKIN)])   # the stretched arm below the torn elbow
+			costume(side + "LowerArm", [cyl(0.032, 0.03, e * 0.5 + 0.03, Vector3(0, -0.29 - e * 0.25, 0), SKIN)])
+			continue
 		costume(side + "UpperArm", [cyl(0.062, 0.058, 0.3, Vector3(0, -0.14, 0), KNIT),
 			cyl(0.042, 0.04, e + 0.04, Vector3(0, -0.3 - e * 0.5, 0), SKIN)])   # the stretched arm below the torn elbow
 		costume(side + "LowerArm", [cyl(0.05, 0.045, 0.27, Vector3(0, -0.13, 0), SKIN),

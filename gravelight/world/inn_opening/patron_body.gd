@@ -13,6 +13,11 @@ extends Node3D
 ## zombie's get-up starts where the patron fell).
 ## The survivors upstairs (T-077, InnSurvivor) add: cower (on the floor against a wall, knees drawn up, arms round
 ## them, trembling; flinch() ducks the head into the arms) and aim (standing with the rifle shouldered; show_rifle).
+## T-092 (UPDATE_05 section 4): a patron or survivor with a modelled body (people.json, the GLB built by
+## tools/build_people.sh) is drawn by a PersonRig driven from this pose every frame, with a FaceDriver (fear while
+## they panic, run, struggle or cower; pain as they fall; the eyes closed once dead; determined with the rifle; a
+## smile now and then at the table; lip flap on their lines). The primitives stay built (hidden) as the fallback.
+## When they turn, PeopleBodies.dress_risen puts the same person, risen, on the zombie that gets up.
 
 const UPPER: float = 0.3
 const FORE: float = 0.28
@@ -46,6 +51,11 @@ var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _blend: Dictionary = {}
 var _rifle: Node3D = null
 var _flinch: float = 0.0
+## T-092: the modelled body (null: the primitives are drawn) and the pose handed to it each frame.
+var person: PersonRig = null
+var _legs_d: Array = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
+var _hand_t: Array = [null, null]
+var _poles: Array = [Vector3(-0.6, -1.0, 0.3), Vector3(0.6, -1.0, 0.3)]
 
 
 ## Builds the body from a patron row (map00_opening.json patrons[]).
@@ -63,6 +73,7 @@ func setup(row: Dictionary) -> void:
 		"apron": _mat(Color(0.86, 0.84, 0.78)), "hair": _mat(_col(look, "head", Color(0.25, 0.18, 0.12))),
 	}
 	_build_body(str(look.get("headgear", "none")), bool(look.get("skirt", false)), bool(look.get("apron", false)), look.has("scarf"))
+	_build_person()
 	pose = StringName(str(row.get("pose", "stand")))
 	_last_pos = global_position if is_inside_tree() else position
 
@@ -169,6 +180,34 @@ func _build_body(headgear: String, skirt: bool, apron: bool, scarf: bool) -> voi
 		cm.height = 0.6
 		cm.radial_segments = 10
 		_skirt = _mesh(_hips, cm, Vector3(0, -0.28, 0), "jacket")
+
+
+## T-092: the person's modelled body in place of the primitives (kept, hidden, as the fallback).
+func _build_person() -> void:
+	var p: PersonRig = PersonRig.new()
+	if not p.setup(patron_id):
+		p.free()
+		return
+	person = p
+	_pivot.add_child(p)
+	_head.position = Vector3(0, 0.5, 0)
+	for n: Node in _pivot.find_children("*", "MeshInstance3D", true, false):
+		if not p.is_ancestor_of(n):
+			(n as MeshInstance3D).visible = false
+
+
+## The face for the pose (T-092).
+func _face_state() -> StringName:
+	match pose:
+		&"panic", &"run", &"push", &"struggle", &"clutch", &"cower":
+			return &"fear"
+		&"fall", &"dead":
+			return &"pain"
+		&"aim":
+			return &"determined"
+		&"sit", &"lean":
+			return &"smile" if sin(_t * 0.31 + float(hash(patron_id) % 7)) > 0.55 else &"neutral"
+	return &"neutral"
 
 
 # ================================================================== API for InnOpening
@@ -321,13 +360,15 @@ func _pose_body(delta: float) -> void:
 		var foot: MeshInstance3D = _joints["foot_" + s]
 		foot.position = ankle + Vector3(0, -0.02, -0.06)
 		foot.rotation = Vector3.ZERO
+		_legs_d[side] = [thigh_a, knee_a, 0.0]
 	if _skirt != null:
 		_skirt.rotation.x = -0.5 * b_sit
 		_skirt.scale = Vector3(1.0, lerpf(1.0, 0.75, b_sit), 1.0)
 	# --- arms: hand targets in chest space, blended per pose
 	var cp: Transform3D = _chest.global_transform
-	var rest_l: Vector3 = Vector3(-0.26, -0.05, -0.02)
-	var rest_r: Vector3 = Vector3(0.26, -0.05, -0.02)
+	var rest_y: float = -0.05 if person == null else -0.2   # T-092: the modelled arms hang from lower shoulders
+	var rest_l: Vector3 = Vector3(-0.23 if person != null else -0.26, rest_y, -0.02)
+	var rest_r: Vector3 = Vector3(0.23 if person != null else 0.26, rest_y, -0.02)
 	var pump: float = sin(ph) * 0.28
 	var tl: Vector3 = rest_l + Vector3(0, 0.0, -pump * 0.4) * clampf(swing * 2.0, 0.0, 1.0)
 	var tr: Vector3 = rest_r + Vector3(0, 0.0, pump * 0.4) * clampf(swing * 2.0, 0.0, 1.0)
@@ -374,3 +415,11 @@ func _pose_body(delta: float) -> void:
 		RemoteBody._place(_limbs["upper_" + s2] as MeshInstance3D, sh, elbow)
 		RemoteBody._place(_limbs["fore_" + s2] as MeshInstance3D, elbow, hand)
 		(_joints["hand_" + s2] as MeshInstance3D).position = hand
+		_hand_t[side2] = hand
+		_poles[side2] = pole
+	if person != null:
+		person.drive({"hips": _hips.position, "chest": _chest.basis, "head": _head.basis, "legs": _legs_d,
+			"hands": _hand_t, "poles": _poles, "plant": _fall_k <= 0.0 and pose != &"dead"})
+		person.face.set_expression(_face_state())
+		if pose == &"dead" and _pose_t > 1.0:
+			person.face.force_blink(0.5)   # the eyes stay shut

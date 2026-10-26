@@ -149,9 +149,9 @@
   "expressions": {
     "_doc": "FaceDriver: the shape weights an expression holds (state -> expression: downed = pain, low health = fear, firing = determined, calm idle = rest). Lip flap drives jaw_open on top.",
     "neutral": {},
-    "fear": {"fear": 1.0},
-    "determined": {"determined": 0.85},
-    "pain": {"pain": 1.0},
+    "fear": {"fear": 1.0, "jaw_open": 0.15},
+    "determined": {"determined": 1.0},
+    "pain": {"pain": 1.0, "jaw_open": 0.1},
     "smile": {"smile": 0.7}
   }
 }

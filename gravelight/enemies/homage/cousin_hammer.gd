@@ -332,37 +332,39 @@ func _death_tick(_delta: float) -> void:
 
 
 func _build_costume() -> void:
-	# hair: blonde, one long braid down the back (frost in it)
-	costume("Head", [
-		sph(0.138, Vector3(0, 0.105, 0.012), BLONDE, Vector3(1.0, 1.0, 1.05), true),
-		boxp(Vector3(0.25, 0.15, 0.05), Vector3(0, 0.06, 0.1), BLONDE),
-		boxp(Vector3(0.045, 0.13, 0.17), Vector3(0.118, 0.07, 0.01), BLONDE),
-		boxp(Vector3(0.045, 0.13, 0.17), Vector3(-0.118, 0.07, 0.01), BLONDE)])
-	var braid: Array = []
-	for i: int in 6:
-		braid.append(sph(0.036 - 0.003 * float(i), Vector3(0, 0.36 - 0.075 * float(i), 0.14 + 0.006 * float(i)), BLONDE.darkened(0.05 * float(i % 2))))
-	braid.append(cyl(0.02, 0.02, 0.03, Vector3(0, -0.08, 0.17), MITTEN_RED))   # the tie
-	costume("Chest", braid)
-	# the oversized man's wool overcoat, buttoned to the throat
-	var coat: Array = [
-		cyl(0.205, 0.225, 0.37, Vector3(0, 0.15, 0.005), COAT, Vector3.ZERO, Vector3(1.0, 1.0, 0.7)),
-		cyl(0.078, 0.095, 0.075, Vector3(0, 0.31, 0), COAT),
-		sph(0.075, Vector3(-0.2, 0.27, 0), COAT, Vector3(1.0, 0.7, 1.0)),
-		sph(0.075, Vector3(0.2, 0.27, 0), COAT, Vector3(1.0, 0.7, 1.0))]
-	for k: int in 4:
-		coat.append(sph(0.013, Vector3(0, 0.26 - 0.085 * float(k), -0.162), IRON))
-	costume("Chest", coat)
-	costume("Spine", [cyl(0.205, 0.215, 0.26, Vector3(0, 0.1, 0.005), COAT, Vector3.ZERO, Vector3(1.05, 1.0, 0.78))])
-	costume("Hips", [
-		cyl(0.235, 0.33, 0.52, Vector3(0, -0.21, 0.005), COAT, Vector3.ZERO, Vector3(1.06, 1.0, 0.94)),   # the coat's skirts to the knee
-		cyl(0.21, 0.355, 0.82, Vector3(0, -0.4, 0.0), SKIRT, Vector3.ZERO, Vector3(1.06, 1.0, 0.94))])      # the long wool skirt
-	for side: String in ["Left", "Right"]:
-		costume(side + "UpperArm", [cyl(0.068, 0.062, 0.32, Vector3(0, -0.15, 0), COAT)])
-		costume(side + "LowerArm", [cyl(0.06, 0.066, 0.26, Vector3(0, -0.12, 0), COAT), cyl(0.074, 0.074, 0.07, Vector3(0, -0.23, 0), CUFF)])
-		costume(side + "Hand", [sph(0.058, Vector3(0, -0.065, 0), MITTEN_RED, Vector3(0.9, 1.15, 0.8)),
-			cyl(0.05, 0.05, 0.035, Vector3(0, -0.015, 0), MITTEN_GREY),
-			sph(0.024, Vector3(0.045 * (1.0 if side == "Right" else -1.0), -0.045, -0.03), MITTEN_GREY)])
-		costume(side + "Foot", [boxp(Vector3(0.1, 0.12, 0.2), Vector3(0, -0.02, -0.03), IRON.darkened(0.3))])   # laced winter boots
+	# T-092: the modelled doll carries her hair and clothes; the primitives stay for the legacy bodies
+	if not modelled():
+		# hair: blonde, one long braid down the back (frost in it)
+		costume("Head", [
+			sph(0.138, Vector3(0, 0.105, 0.012), BLONDE, Vector3(1.0, 1.0, 1.05), true),
+			boxp(Vector3(0.25, 0.15, 0.05), Vector3(0, 0.06, 0.1), BLONDE),
+			boxp(Vector3(0.045, 0.13, 0.17), Vector3(0.118, 0.07, 0.01), BLONDE),
+			boxp(Vector3(0.045, 0.13, 0.17), Vector3(-0.118, 0.07, 0.01), BLONDE)])
+		var braid: Array = []
+		for i: int in 6:
+			braid.append(sph(0.036 - 0.003 * float(i), Vector3(0, 0.36 - 0.075 * float(i), 0.14 + 0.006 * float(i)), BLONDE.darkened(0.05 * float(i % 2))))
+		braid.append(cyl(0.02, 0.02, 0.03, Vector3(0, -0.08, 0.17), MITTEN_RED))   # the tie
+		costume("Chest", braid)
+		# the oversized man's wool overcoat, buttoned to the throat
+		var coat: Array = [
+			cyl(0.205, 0.225, 0.37, Vector3(0, 0.15, 0.005), COAT, Vector3.ZERO, Vector3(1.0, 1.0, 0.7)),
+			cyl(0.078, 0.095, 0.075, Vector3(0, 0.31, 0), COAT),
+			sph(0.075, Vector3(-0.2, 0.27, 0), COAT, Vector3(1.0, 0.7, 1.0)),
+			sph(0.075, Vector3(0.2, 0.27, 0), COAT, Vector3(1.0, 0.7, 1.0))]
+		for k: int in 4:
+			coat.append(sph(0.013, Vector3(0, 0.26 - 0.085 * float(k), -0.162), IRON))
+		costume("Chest", coat)
+		costume("Spine", [cyl(0.205, 0.215, 0.26, Vector3(0, 0.1, 0.005), COAT, Vector3.ZERO, Vector3(1.05, 1.0, 0.78))])
+		costume("Hips", [
+			cyl(0.235, 0.33, 0.52, Vector3(0, -0.21, 0.005), COAT, Vector3.ZERO, Vector3(1.06, 1.0, 0.94)),   # the coat's skirts to the knee
+			cyl(0.21, 0.355, 0.82, Vector3(0, -0.4, 0.0), SKIRT, Vector3.ZERO, Vector3(1.06, 1.0, 0.94))])      # the long wool skirt
+		for side: String in ["Left", "Right"]:
+			costume(side + "UpperArm", [cyl(0.068, 0.062, 0.32, Vector3(0, -0.15, 0), COAT)])
+			costume(side + "LowerArm", [cyl(0.06, 0.066, 0.26, Vector3(0, -0.12, 0), COAT), cyl(0.074, 0.074, 0.07, Vector3(0, -0.23, 0), CUFF)])
+			costume(side + "Hand", [sph(0.058, Vector3(0, -0.065, 0), MITTEN_RED, Vector3(0.9, 1.15, 0.8)),
+				cyl(0.05, 0.05, 0.035, Vector3(0, -0.015, 0), MITTEN_GREY),
+				sph(0.024, Vector3(0.045 * (1.0 if side == "Right" else -1.0), -0.045, -0.03), MITTEN_GREY)])
+			costume(side + "Foot", [boxp(Vector3(0.1, 0.12, 0.2), Vector3(0, -0.02, -0.03), IRON.darkened(0.3))])   # laced winter boots
 	# the splitting maul, dragged head-down from the right mitten
 	var hand: Node3D = bone_attachment("RightHand")
 	_prop = Node3D.new()

@@ -16,6 +16,10 @@ extends Node3D
 ## for co-op teammates they come from the replicated events (perk_bought, weapon_acquired, ammo_bought,
 ## board_repaired, the reviver state) and the flags, so remote players animate the same way.
 ## Shots: muzzle flash + light, 3D gunfire, a tracer. Bots wear a BotPlates nameplate instead of the 3D name tag.
+## T-092 (UPDATE_05 section 4): the survivor is drawn as their modelled body (PersonRig: the person's GLB on the
+## ZombieRig skeleton, people.json) driven by this puppet's pose every frame, with a FaceDriver (blink, the
+## expression by state: downed = pain, low health = fear, shooting = determined; lip flap on their VO lines). The
+## primitive boxes stay built (hidden) as the fallback when a person has no GLB and for `-- --legacy-people`.
 
 const UPPER: float = 0.3
 const FORE: float = 0.28
@@ -86,6 +90,11 @@ var _fidget_t: float = 0.0        # seconds into the current fidget (< 0: waitin
 var _since_shot: float = 99.0
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 static var _fire_keys: Dictionary = {}
+## T-092: the modelled body (null: the primitives are drawn) and the pose handed to it each frame.
+var person: PersonRig = null
+var _legs_d: Array = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
+var _hand_t: Array = [null, null]
+var _poles: Array = [Vector3(-0.6, -1.0, 0.3), Vector3(0.6, -1.0, 0.3)]
 
 
 func setup(character_id: StringName, player_id: int) -> void:
@@ -104,6 +113,7 @@ func setup(character_id: StringName, player_id: int) -> void:
 		"stubble": _mat(Color(0.3, 0.27, 0.25)), "shirt": _mat(Color(0.42, 0.37, 0.3)), "bandage": _mat(Color(0.86, 0.83, 0.76)),
 	}
 	_build_body(str(o[5]))
+	_build_person()
 	set_weapon(&"m1911")
 	if _ai():
 		_tag.visible = false   # bots (and Jakub) wear the screen-space nameplate (BotPlates)
@@ -268,6 +278,49 @@ func _build_body(headgear: String) -> void:
 		var m: MeshInstance3D = n as MeshInstance3D
 		if m != _flash:
 			m.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if m.get_parent() == _chest else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
+## T-092: the modelled body in place of the primitives (when the person has a GLB). The props, the held gun, Wren's
+## slung rifle and Jakub's bandage stay (the bandage moves onto the head bone); the hand spheres keep carrying the
+## props but draw nothing; the head node drops to the rig's head pivot so head-relative targets (the drink) meet the
+## modelled mouth.
+func _build_person() -> void:
+	var p: PersonRig = PersonRig.new()
+	if not p.setup(String(character)):
+		p.free()
+		return
+	person = p
+	_pivot.add_child(p)
+	_head.position = Vector3(0, 0.5, 0)
+	p.body.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	var keep: Array[Node] = [_gun_pivot, p]
+	for k: String in _props.keys():
+		keep.append(_props[k] as Node)
+	var sling: Node = _chest.get_node_or_null("SlungRifle")
+	if sling != null:
+		keep.append(sling)
+	var band: Node3D = find_child("Bandage", true, false) as Node3D
+	if band != null:
+		var vis: bool = band.visible
+		band.get_parent().remove_child(band)
+		p.attachment("Head").add_child(band)
+		band.position = Vector3(0, -0.035, 0.0)
+		band.scale = Vector3(0.82, 1.0, 0.86)
+		band.visible = vis
+		keep.append(band)
+	for n: Node in _pivot.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		var kept: bool = false
+		for k2: Node in keep:
+			if k2 == mi or k2.is_ancestor_of(mi):
+				kept = true
+				break
+		if kept:
+			continue
+		if mi == _joints.get("hand_l") or mi == _joints.get("hand_r"):
+			mi.mesh = null   # still carries the props
+		else:
+			mi.visible = false
 
 
 ## Dutch: the BAR man. Netting over the helmet, a BAR belt of magazine pouches, a canteen, a pack, the diamond
@@ -718,6 +771,7 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 		var foot: MeshInstance3D = _joints["foot_" + s]
 		foot.position = ankle + Vector3(0, -0.02, -0.06)
 		foot.rotation = Vector3(-shin_dir if (kneel > 0.5 and side == 1) else 0.0, 0, 0)
+		_legs_d[side] = [thigh_a, knee_a, foot.rotation.x]
 	# --- arms: both hands on the gun (right on the grip, left on the support point) unless an action takes them
 	var grip: Vector3 = _gun_pivot.global_transform * Vector3(0.12, -0.05, -0.24)
 	var support: Vector3 = _gun_pivot.global_transform * Vector3(0.1, -0.03, -0.5)
@@ -788,10 +842,16 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 		if b_stretch > 0.5:
 			pole = Vector3(-1.0 if side2 == 0 else 1.0, 0.2, 0.3)
 		var elbow: Vector3 = WeaponHolder._solve_elbow(sh, hand, UPPER, FORE, pole)
+		_hand_t[side2] = hand
+		_poles[side2] = pole
 		_place(_limbs["upper_" + s2] as MeshInstance3D, sh, elbow)
 		_place(_limbs["fore_" + s2] as MeshInstance3D, elbow, hand)
 		(_joints["hand_" + s2] as MeshInstance3D).position = hand
 	_update_props(b_drink, b_write, b_rep, b_tap)
+	if person != null:
+		person.drive({"hips": _hips.position, "chest": _chest.basis, "head": _head.basis, "legs": _legs_d,
+			"hands": _hand_t, "poles": _poles, "plant": _down_b < 0.05})
+		person.face.set_expression(_face_state(downed, pose))
 	# footsteps for nearby teammates
 	if moving and _down_b < 0.5:
 		_step_t -= delta * speed / stride
@@ -800,6 +860,21 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 			var cam: Camera3D = get_viewport().get_camera_3d() if is_inside_tree() else null
 			if cam != null and cam.global_position.distance_squared_to(global_position) < 400.0:
 				AudioDirector.play_3d("footstep_stone", global_position, -10.0, 0.1)
+
+
+## The face for the moment (T-092): downed = pain, low health = fear, shooting = determined, else the rest face
+## (a smile now and then while calm and fidgeting).
+func _face_state(downed: bool, pose: StringName) -> StringName:
+	if downed:
+		return &"pain"
+	var p: Player = get_parent() as Player
+	if p != null and p.max_hp > 0.0 and p.hp / p.max_hp < 0.35:
+		return &"fear"
+	if _since_shot < 2.0 or _reload_b > 0.5:
+		return &"determined"
+	if pose != &"" and _fidget_t > 1.5 and _fidget_t < 3.5 and pose == StringName(str(_build.get("fidget", ""))):
+		return &"smile"
+	return &"neutral"
 
 
 ## The props follow the hands: the perk bottle, Wren's notebook and pencil, the plank, Deacon's wrench.

@@ -209,6 +209,7 @@ func _rise(s: InnSurvivor) -> void:
 		return
 	z.global_position = at
 	z.rotation.y = yaw
+	PeopleBodies.dress_risen(z, s.sid)   # T-092: the same person gets up
 	z.rise_from_floor(float(ally().get("rise_getup_seconds", 2.4)))
 	s.risen_zombie = z
 	print("[survivors] %s rose" % s.sid)

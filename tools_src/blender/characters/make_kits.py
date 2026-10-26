@@ -817,8 +817,8 @@ def head_piece(P, kind, keyname="hat"):
             bv, bf = MB.box(c0 + np.array([sx * 0.104 * hs[0], -0.012, 0.004]), np.array([0.004, 0.035, 0.008]))
             out.append(rigid(bv, bf, "leather"))
     elif kind == "beret":
-        v, f = dm((0.0, 0.07, 0.004), (0.112, 0.042, 0.116), lambda a: -40.0, thick=0.008, n_el=8)
-        pivot = c0 + np.array([0, 0.07, 0])
+        v, f = dm((0.0, 0.086, 0.004), (0.114, 0.044, 0.118), lambda a: -50.0, thick=0.008, n_el=8)
+        pivot = c0 + np.array([0, 0.086, 0])
         v = (v - pivot) @ C.rot_z(-0.32).T + pivot + np.array([0.012, 0.0, 0.0])
         out.append(rigid(v, f, keyname))
         bv, bf = MB.box(c0 + np.array([-0.055, 0.074, -0.09]), np.array([0.011, 0.013, 0.004]))

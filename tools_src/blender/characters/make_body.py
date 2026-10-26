@@ -392,7 +392,7 @@ def head_mesh(P):
         loc = loc.copy()
         dy = loc[:, 1] + 0.061
         band = C.smoothstep(0.016, 0.004, np.abs(dy)) * C.smoothstep(0.03, 0.018, np.abs(loc[:, 0])) * C.smoothstep(-0.03, -0.05, loc[:, 2])
-        loc[:, 1] -= dy * mc * 0.62 * band
+        loc[:, 1] -= dy * mc * 0.8 * band
     v = loc + HEAD_C
     # weights: Head; the jaw (below the mouth line, in front of the ears) on Jaw; the neck stub on Neck
     y = loc[:, 1]

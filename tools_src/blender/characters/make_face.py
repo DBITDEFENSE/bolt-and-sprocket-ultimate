@@ -32,18 +32,18 @@ SHAPES = ["blink", "jaw_open", "fear", "determined", "pain", "smile"]
 LID_OPEN = (17.0, -33.0)
 LID = {
     "blink": (-31.0, -34.0),
-    "fear": (31.0, -40.0),
-    "determined": (7.0, -24.0),
-    "pain": (-6.0, -14.0),
-    "smile": (13.0, -20.0),
+    "fear": (40.0, -46.0),
+    "determined": (3.0, -20.0),
+    "pain": (-12.0, -10.0),
+    "smile": (10.0, -16.0),
     "jaw_open": LID_OPEN,
 }
 # brow offsets per shape: (inner up, outer up, inner toward the centre) in metres
 BROW = {
-    "fear": (0.0085, 0.004, 0.0),
-    "determined": (-0.005, -0.001, 0.003),
-    "pain": (0.0055, -0.002, 0.0032),
-    "smile": (0.0012, 0.0012, 0.0),
+    "fear": (0.0125, 0.007, -0.001),
+    "determined": (-0.009, -0.002, 0.005),
+    "pain": (0.011, -0.004, 0.0065),
+    "smile": (0.002, 0.002, 0.0),
 }
 
 
@@ -151,7 +151,7 @@ def lid(c, r, edge, upper, na=12, ne=5):
 def eye_layout(P, S):
     """Eye centres (head-local) and radius from the socket the head sculpt made."""
     hs = (P.face or {}).get("head", (1.0, 1.0, 1.0)) if getattr(P, "face", None) else (1.0, 1.0, 1.0)
-    r = 0.0142
+    r = 0.0152
     out = []
     for sx in (-1.0, 1.0):
         x = sx * 0.031 * hs[0]
@@ -200,8 +200,8 @@ def face_parts(P, B, S, person):
     # mouth cavity (dark), upper teeth on the head, lower teeth on the jaw (as make_body), moving with the jaw shapes
     for verts, faces, keyname, bone, bone2, w2 in (
             MB.box(HEAD_C + np.array([0, -0.064, -0.052]), np.array([0.019, 0.012, 0.012])) + ("dark", "Head", "Jaw", 0.5),
-            MB.box(HEAD_C + np.array([0, -0.0562, -0.066]), np.array([0.0145, 0.0042, 0.0035])) + ("teeth", "Head", None, 0.0),
-            MB.box(HEAD_C + np.array([0, -0.0668, -0.064]), np.array([0.013, 0.0038, 0.0035])) + ("teeth", "Jaw", None, 0.0)):
+            MB.box(HEAD_C + np.array([0, -0.0566, -0.061]), np.array([0.0135, 0.0042, 0.0035])) + ("teeth", "Head", None, 0.0),
+            MB.box(HEAD_C + np.array([0, -0.0664, -0.059]), np.array([0.012, 0.0038, 0.0035])) + ("teeth", "Jaw", None, 0.0)):
         jw = 1.0 if bone == "Jaw" else (w2 if bone2 == "Jaw" else 0.0)
         pb.add(verts, faces, keyname, bone, bone2, w2, shapes=mouth_shapes(verts - HEAD_C, np.full(len(verts), jw)))
     mo = person.get("moustache", "")
@@ -221,8 +221,8 @@ def brow(P, S, sx, person):
     """A brow ribbon on the brow ridge; returns verts (absolute), faces, shape offsets."""
     female = P.female
     n = 9
-    thick_in = 0.0078 if not female else 0.0056
-    thick_out = 0.0042 if not female else 0.003
+    thick_in = 0.0092 if not female else 0.0064
+    thick_out = 0.005 if not female else 0.0034
     rows = []   # per s: (front_top, front_bot, back_top, back_bot)
     params = []
     for i in range(n + 1):
@@ -365,18 +365,18 @@ def body_shapes(loc, jaw_w=None):
         o[:, 2] = dz * corners
         return o
 
-    fear = 0.3 * jaw + corner_move(0.0022, -0.002, 0.0)
-    fear[:, 1] += 0.002 * mf["forehead"] + 0.003 * mf["brow_inner"]
+    fear = 0.45 * jaw + corner_move(0.004, -0.004, 0.0)
+    fear[:, 1] += 0.004 * mf["forehead"] + 0.007 * mf["brow_inner"]
     S["fear"] = fear
-    det = corner_move(-0.001, -0.0012, 0.0)
-    det[:, 1] += 0.001 * mf["lower_lip"] - 0.002 * mf["brow_inner"]
-    det[:, 2] -= 0.0008 * mf["lower_lip"]
+    det = corner_move(-0.0015, -0.0025, 0.0)
+    det[:, 1] += 0.0018 * mf["lower_lip"] - 0.0045 * mf["brow_inner"]
+    det[:, 2] -= 0.0015 * mf["lower_lip"]
     S["determined"] = det
-    pain = 0.22 * jaw + corner_move(0.003, 0.001, 0.0018)
-    pain[:, 1] += 0.0016 * mf["upper_lip"] + 0.0015 * mf["brow_inner"] + 0.0012 * (mf["cheek_l"] + mf["cheek_r"])
+    pain = 0.35 * jaw + corner_move(0.006, 0.0015, 0.003)
+    pain[:, 1] += 0.003 * mf["upper_lip"] + 0.004 * mf["brow_inner"] + 0.003 * (mf["cheek_l"] + mf["cheek_r"])
     S["pain"] = pain
-    smile = corner_move(0.0018, 0.0042, 0.0026)
-    smile[:, 1] += 0.0018 * (mf["cheek_l"] + mf["cheek_r"])
+    smile = corner_move(0.003, 0.0068, 0.0035)
+    smile[:, 1] += 0.0032 * (mf["cheek_l"] + mf["cheek_r"])
     smile[:, 2] -= 0.0012 * (mf["cheek_l"] + mf["cheek_r"])
     S["smile"] = smile
     return S
@@ -386,7 +386,7 @@ def mouth_shapes(loc, jaw_w):
     """Teeth and the mouth cavity: they ride the jaw rotation in jaw_open and the expressions' part of it."""
     jaw = rot_jaw(loc, jaw_w, JAW_OPEN)
     z = np.zeros_like(loc)
-    return {"blink": z, "jaw_open": jaw, "fear": 0.3 * jaw, "determined": z.copy(), "pain": 0.22 * jaw, "smile": z.copy()}
+    return {"blink": z, "jaw_open": jaw, "fear": 0.45 * jaw, "determined": z.copy(), "pain": 0.35 * jaw, "smile": z.copy()}
 
 
 def head_mask(v):
