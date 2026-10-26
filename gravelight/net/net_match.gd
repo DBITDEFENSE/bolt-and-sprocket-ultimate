@@ -799,7 +799,7 @@ func _send_zombies() -> void:
 func _send_spawn(z: Zombie) -> void:
 	var kind_class: int = 1 if z is Foreman else (2 if z is Screamer else 0)
 	Net._rpc_zev.rpc(z.net_id, &"spawn", [String(z.enemy_id), String(z.tier), z.variant_name(), z.max_hp, z.global_position,
-		z.rotation.y, int(z.state), kind_class, z.net_sub_state()])
+		z.rotation.y, int(z.state), kind_class, z.net_sub_state(), str(z.get_meta("person", ""))])   # [9] T-099: a risen person
 
 
 ## Host: a zombie died (Zombie._die). The death variant goes to the clients so the fall matches.
@@ -1088,6 +1088,8 @@ func on_zombie_event(net_id: int, ev: StringName, args: Array) -> void:
 			if z != null:
 				z.puppet_activate(StringName(str(args[0])), StringName(str(args[1])), str(args[2]), float(args[3]),
 					args[4] as Vector3, float(args[5]), int(args[6]), int(args[8]), local_player)
+				if args.size() > 9 and str(args[9]) != "":
+					PeopleBodies.dress_risen(z, str(args[9]))   # T-099: the client's puppet wears the same person
 		&"die":
 			var zd: Zombie = zombie_by_net_id(net_id)
 			if zd != null and zd.puppet:

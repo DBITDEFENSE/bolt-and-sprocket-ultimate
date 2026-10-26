@@ -1767,6 +1767,8 @@ func _set_inst(key: String, v: Variant) -> void:
 
 
 func _reset_presentation() -> void:
+	if has_meta("person"):
+		remove_meta("person")   # T-099: a pooled zombie that was a risen person goes back to its kit
 	_end_ragdoll()
 	ZombieGore.restore(self)
 	_severed_logic.clear()

@@ -3,6 +3,7 @@
   "version": 1,
   "shapes": ["blink", "jaw_open", "fear", "determined", "pain", "smile"],
   "budget": {"body_tris": 6000, "kit_tris": 4500, "parts_tris": 3000},
+  "neck": {"_doc": "T-099: the neck read long. build_people.shorter_neck raises the base of the neck, the collarbones and the trapezius by lift (m) and thickens the neck by thick; per person override with a \"neck\" object. Mesh only: bones and hitboxes stay.", "lift": 0.024, "thick": 1.12},
   "dir": "res://assets/ours/characters/people",
   "file": "char_person_%s.glb",
   "people": {

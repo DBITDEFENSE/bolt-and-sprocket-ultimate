@@ -273,3 +273,106 @@ func test_cousins_keep_their_rig_hitboxes_and_pose_layer() -> void:
 			hb.queue_free()
 		assert_eq(sigs[0], sigs[1], key + ": hitboxes identical with the modelled and the legacy body")
 	PeopleBodies.legacy = false
+
+
+# ---------------------------------------------------------------- T-099 fixes
+
+func _held(ch: StringName, gun: StringName, flags: int) -> RemoteBody:
+	var b: RemoteBody = RemoteBody.new()
+	add_child_autofree(b)
+	b.setup(ch, 51)
+	b.set_weapon(gun)
+	b.set("_since_shot", 3.0)
+	for i: int in 60:
+		b.update_pose(1.0 / 60.0, 0.0, 0.0, flags)
+	return b
+
+
+func test_squad_holds_the_gun_by_its_grips_with_the_elbows_down() -> void:
+	for flags: int in [0, NetMatch.PF_ADS]:
+		for pair: Array in [[&"wren", &"kar98k"], [&"dutch", &"bar"], [&"peg", &"thompson"], [&"deacon", &"trench_gun"]]:
+			var b: RemoteBody = _held(pair[0], pair[1], flags)
+			var tag: String = "%s %s %s" % [pair[0], pair[1], "ads" if flags != 0 else "hip"]
+			var gun: Node3D = b.get("_gun")
+			var hold: Dictionary = b.get("_gun_hold")
+			assert_eq(str(hold["kind"]), "long", tag + ": a long gun")
+			var r: PersonRig = b.person
+			var lh: Vector3 = (gun.get_node("LeftHand") as Node3D).global_position
+			var l_hand: Vector3 = r.bone_world("LeftHand")
+			assert_lt(l_hand.distance_to(lh), 0.3, tag + ": the support hand at the handguard / foregrip (it may slide back 20 cm)")
+			var axis: Vector3 = gun.global_transform.basis.z.normalized()
+			var off: Vector3 = l_hand - lh
+			assert_lt((off - axis * off.dot(axis)).length(), 0.11, tag + ": the support wrist close under the gun's line")
+			assert_lt(l_hand.y, lh.y + 0.02, tag + ": the support wrist under it, not across the chest")
+			assert_lt(r.bone_world("LeftLowerArm").y, r.bone_world("LeftUpperArm").y - 0.06, tag + ": the support elbow hangs down")
+			assert_lt(r.bone_world("RightHand").distance_to(gun.global_transform * (hold["grip_r"] as Transform3D).origin), 0.12, tag + ": the firing hand on the grip")
+			var butt: Vector3 = gun.global_transform * (hold["pivot"] as Vector3)
+			assert_lt(butt.distance_to(r.bone_world("RightUpperArm")), 0.3, tag + ": the butt at the right shoulder")
+
+
+func test_pistol_is_held_out_in_both_hands_and_raised_to_the_eye_aimed() -> void:
+	var hip: RemoteBody = _held(&"jakub", &"m1911", 0)
+	var ads: RemoteBody = _held(&"jakub", &"m1911", NetMatch.PF_ADS)
+	for b: RemoteBody in [hip, ads]:
+		var gun: Node3D = b.get("_gun")
+		assert_eq(str((b.get("_gun_hold") as Dictionary)["kind"]), "pistol")
+		assert_lt(b.person.bone_world("RightHand").distance_to(gun.global_position), 0.12, "the gun hand on the grip")
+		assert_lt(b.person.bone_world("LeftHand").distance_to(gun.global_position), 0.14, "the other hand cupping it")
+	var gy_hip: float = (hip.get("_gun") as Node3D).global_position.y
+	var gy_ads: float = (ads.get("_gun") as Node3D).global_position.y
+	assert_gt(gy_ads - gy_hip, 0.1, "aimed: up to the eye")
+
+
+func _risen_zombie(host: Node3D) -> Zombie:
+	var sp: ZombieSpawn = ZombieSpawn.new()
+	sp.kind = &"ground"
+	host.add_child(sp)
+	var z: Zombie = Zombie.new()
+	host.add_child(z)
+	z.activate({"enemy_id": "ganger", "tier": "walk", "health": 400, "variant": "villager"}, sp, null)
+	return z
+
+
+func test_risen_patron_loses_his_own_arm_and_the_pool_forgets_him() -> void:
+	GLSettings.values["gore"] = "full"
+	var host: Node3D = Node3D.new()
+	add_child_autofree(host)
+	var z: Zombie = _risen_zombie(host)
+	PeopleBodies.dress_risen(z, "kubiak")
+	assert_eq(str(z.get_meta("person", "")), "kubiak")
+	var piece: ArrayMesh = PeopleBodies.piece_mesh("kubiak", "LeftUpperArm")
+	assert_not_null(piece)
+	assert_eq(str(piece.get_meta("person", "")), "kubiak", "cut from his own mesh")
+	assert_gt(piece.get_surface_count(), 0)
+	z.sever_limb("LeftUpperArm")
+	var thrown: Array = ZombieGore._pieces.filter(func(p: Variant) -> bool: return is_instance_valid(p))
+	assert_false(thrown.is_empty(), "a piece flew")
+	var mi: MeshInstance3D = ((thrown.back() as Node).find_children("*", "MeshInstance3D", true, false)[0]) as MeshInstance3D
+	assert_same(mi.mesh, piece, "the flying arm is his sleeve, not the villager kit's")
+	z.activate({"enemy_id": "ganger", "tier": "walk", "health": 400, "variant": "villager"}, host.get_child(0) as ZombieSpawn, null)
+	assert_false(z.has_meta("person"), "a pooled zombie reused for a plain spawn is not him any more")
+	for t: Variant in thrown:
+		if is_instance_valid(t):
+			(t as Node).free()
+
+
+func test_coop_client_dresses_the_risen_person_from_the_spawn_event() -> void:
+	var host: Node3D = Node3D.new()
+	add_child_autofree(host)
+	var z: Zombie = Zombie.new()
+	host.add_child(z)
+	z.make_puppet()
+	var dir: ZombieDirector = autofree(ZombieDirector.new())
+	dir.puppet_mode = true
+	dir._pool.append(z)
+	var mr: MapRoot = autofree(MapRoot.new())
+	mr.director = dir
+	var nm: NetMatch = autofree(NetMatch.new())
+	nm.map = mr
+	nm.on_zombie_event(0, &"spawn", ["ganger", "walk", "villager", 150.0, Vector3.ZERO, 0.0, int(Zombie.State.CHASE), 0, 0, "kubiak"])
+	assert_eq(str(z.get_meta("person", "")), "kubiak", "the client's puppet is the same person")
+	assert_eq(str(((z.get("_body") as MeshInstance3D).mesh).get_meta("person", "")), "kubiak", "wearing his body")
+	nm.on_zombie_event(0, &"spawn", ["ganger", "walk", "villager", 150.0, Vector3.ZERO, 0.0, int(Zombie.State.CHASE), 0, 0])
+	assert_false(z.has_meta("person"), "an old host (no person field) gives the plain kit")
+	var src: String = (load("res://gravelight/net/net_match.gd") as GDScript).source_code
+	assert_true(src.contains("z.net_sub_state(), str(z.get_meta(\"person\", \"\"))]"), "the host sends the person with the spawn")

@@ -96,6 +96,12 @@ var person: PersonRig = null
 var _legs_d: Array = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
 var _hand_t: Array = [null, null]
 var _poles: Array = [Vector3(-0.6, -1.0, 0.3), Vector3(0.6, -1.0, 0.3)]
+## T-099: how the held gun sits (set_weapon, hold_of): "long" (the butt in the shoulder) or "pistol" (two hands, arms
+## out), the hold point and sight height in the gun's frame, the support grip's axis and radius, the firing grip.
+var _gun_hold: Dictionary = {}
+var _hand_b: Array = [null, null]   # the hands' bases on the gun (pivot space) for PersonRig; null = follow the forearm
+var _hand_w: Array = [0.0, 0.0]     # how much each hand is on the gun (the actions take them off)
+var _blade: float = 0.0             # T-099: the body turned side-on behind a long gun (radians, left shoulder forward)
 
 
 func setup(character_id: StringName, player_id: int) -> void:
@@ -536,6 +542,7 @@ func set_weapon(weapon_id: StringName) -> void:
 		_gun.add_child(_flash)   # never shown (melee only), but kept in the tree with the model
 		for n0: Node in _gun.find_children("*", "MeshInstance3D", true, false):
 			(n0 as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		_gun_hold = hold_of(_gun, &"coal_shovel")
 		return
 	var base: StringName = StringName(String(weapon_id).trim_suffix("_up"))
 	_gun = WeaponModels.build(base, String(weapon_id).ends_with("_up"), &"", look)
@@ -548,6 +555,7 @@ func set_weapon(weapon_id: StringName) -> void:
 	_muzzle = _gun.get_node_or_null("Muzzle") as Node3D
 	if _muzzle != null:
 		_muzzle.add_child(_flash)
+	_gun_hold = hold_of(_gun, base)
 
 
 var _look_sig: String = ""
@@ -734,12 +742,19 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 	var aim: float = clampf(pitch, -1.2, 1.2)
 	var head_x: float = lerpf(aim * 0.6, 0.6, _down_b) - _chest.rotation.x * 0.4
 	head_x += 0.35 * b_drink * clampf((1.7 - _act_t) * 2.0, 0.0, 1.0) - 0.55 * b_watch - 0.5 * b_write - 0.25 * kneel + 0.3 * b_stretch - 0.12 * b_warm
-	head_x += 0.12 * _ads_b   # cheek down onto the stock
+	var long_gun: bool = str(_gun_hold.get("kind", "long")) == "long"
+	head_x += (0.3 if long_gun else 0.12) * _ads_b   # cheek down onto the stock (behind a pistol the head stays up)
 	_head.rotation.x = head_x
-	_head.rotation.y = 0.35 * b_tap * sin(t_now * 0.7)
+	# T-099: behind a long gun the body turns side-on (the feet and hips with it), left shoulder forward, so the
+	# support hand reaches the handguard; the head and the gun turn back to the front
+	var blade_to: float = (0.55 + 0.2 * _ads_b) * (1.0 - low) * (1.0 - sling) * (1.0 - _down_b) * (1.0 - 0.6 * _sprint_b)
+	_blade = move_toward(_blade, blade_to if long_gun and _gun != null else 0.0, delta * 3.0)
+	_pivot.rotation.y = -_blade
+	_head.rotation.y = 0.35 * b_tap * sin(t_now * 0.7) + 0.9 * _blade
+	_head.rotation.z = (-0.16 if long_gun else 0.0) * _ads_b   # T-099: the head leans onto the stock
 	# gun: aimed in both hands -> held low -> slung on the back
-	var aim_xf: Transform3D = Transform3D(Basis.from_euler(Vector3(lerpf(aim, -0.75, _sprint_b) - _chest.rotation.x + _recoil * 0.12, 0.0, 0.0)),
-		Vector3(0.0, 0.43 - float(_build.get("gun_drop", 0.0)), -0.05).lerp(Vector3(0.05, 0.53 - float(_build.get("gun_drop", 0.0)), 0.02), _ads_b))
+	var aim_xf: Transform3D = Transform3D(Basis(Vector3.UP, _blade) * Basis.from_euler(Vector3(lerpf(aim, -0.75, _sprint_b) - _chest.rotation.x + _recoil * 0.12, 0.0, 0.0)),
+		Vector3.ZERO)
 	if _down_b > 0.5:
 		aim_xf.basis = Basis.from_euler(Vector3(aim + 1.15 - _chest.rotation.x, 0.0, 0.0))
 	if _reload_b > 0.0:
@@ -747,6 +762,12 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 		aim_xf.basis = aim_xf.basis * tip
 	if _melee_t > 0.0:
 		aim_xf.basis = aim_xf.basis * Basis(Vector3.UP, sin(_melee_t / 0.35 * PI) * 0.8)
+	# T-099: the gun turns about its hold point, placed on the body actually drawn (_hold_anchor): a long gun's butt
+	# tucked under the shoulder at the hip and in the shoulder pocket aimed; a pistol's grip out in both hands
+	var gun_at: Vector3 = _gun.position if _gun != null else Vector3(0.12, -0.02, -0.28)
+	var hold_pt: Vector3 = gun_at + (_gun_hold.get("pivot", Vector3.ZERO) as Vector3)
+	var old_o: Vector3 = Vector3(0.0, 0.43 - float(_build.get("gun_drop", 0.0)), -0.05)
+	aim_xf.origin = (_hold_anchor(_ads_b) - aim_xf.basis * hold_pt).lerp(old_o, _down_b)
 	var low_xf: Transform3D = Transform3D(Basis.from_euler(Vector3(-1.05, 0.35, 0.0)), Vector3(-0.08, 0.22, -0.12))
 	var sling_xf: Transform3D = Transform3D(Basis.looking_at(Vector3(0.55, 0.83, 0.0), Vector3.BACK), Vector3(-0.2, 0.05, 0.24))
 	var gxf: Transform3D = aim_xf.interpolate_with(low_xf, low)
@@ -779,11 +800,30 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 	# --- arms: both hands on the gun (right on the grip, left on the support point) unless an action takes them
 	var grip: Vector3 = _gun_pivot.global_transform * Vector3(0.12, -0.05, -0.24)
 	var support: Vector3 = _gun_pivot.global_transform * Vector3(0.1, -0.03, -0.5)
+	var hb: Array = [null, null]
 	if _gun != null:
 		var lh: Node3D = _gun.get_node_or_null("LeftHand") as Node3D
 		if lh != null:
 			support = lh.global_position
 		grip = _gun.global_position
+		# T-099: the wrists sit back from the grips so the palms close on them (PersonRig turns the hands to fit)
+		var on_gun: Array = hand_on_gun(_gun_hold, _gun.global_transform.basis.orthonormalized(), grip, support, s_k())
+		grip = on_gun[0]
+		support = on_gun[2]
+		if long_gun:
+			# a long gun's support hand slides back along the handguard (at most 20 cm) when the arm can't reach
+			var k2: float = s_k()
+			var sh_l: Vector3 = _chest.global_transform * (Vector3(-0.2 * k2, (0.95 + 0.51 * k2 - 1.07) if person != null else 0.5, 0.0))
+			var reach: float = (UPPER + FORE) * k2 * 0.9   # a little bend left in the elbow
+			var back_dir: Vector3 = _gun.global_transform.basis.orthonormalized().z
+			var slide: float = 0.0
+			while slide < 0.2 and (support + back_dir * slide).distance_to(sh_l) > reach:
+				slide += 0.01
+			support += back_dir * slide
+		hb = [on_gun[3], on_gun[1]]
+	# how much each hand is on the gun (the actions below take them off it)
+	var on_l: float = (1.0 - low) * (1.0 - sling) * (1.0 - _reload_b) * (1.0 if _throw_t <= 0.0 and _down_b < 0.5 else 0.0)
+	var on_r: float = (1.0 - low * (1.0 - b_watch)) * (1.0 - sling) * (1.0 if _down_b < 0.5 else 0.0)
 	if _throw_t > 0.0:
 		var k: float = sin(_throw_t / 0.4 * PI)
 		support = _chest.global_transform * Vector3(-0.25, 0.55 + 0.3 * k, -0.2 - 0.3 * k)
@@ -843,18 +883,27 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 		var sh: Vector3 = _pivot.to_local(_chest.global_transform * Vector3(-0.24 if side2 == 0 else 0.24, 0.5, 0))
 		var hand: Vector3 = _pivot.to_local(left if side2 == 0 else right)
 		var pole: Vector3 = Vector3(-0.6 if side2 == 0 else 0.6, -1.0, 0.3)
+		# T-099: on the gun the elbows hang down and a little out (the support elbow under the handguard)
+		var on: float = on_l if side2 == 0 else on_r
+		if on > 0.0:
+			var gp: Vector3 = Vector3(-0.3, -1.0, 0.0) if side2 == 0 else Vector3(0.75, -0.7, 0.25)
+			if not long_gun:
+				gp = Vector3(-0.5 if side2 == 0 else 0.5, -1.0, 0.1)
+			pole = pole.lerp(_pivot.global_transform.basis.inverse() * (_chest.global_transform.basis * gp), on)
 		if b_stretch > 0.5:
 			pole = Vector3(-1.0 if side2 == 0 else 1.0, 0.2, 0.3)
 		var elbow: Vector3 = WeaponHolder._solve_elbow(sh, hand, UPPER, FORE, pole)
 		_hand_t[side2] = hand
 		_poles[side2] = pole
+		_hand_w[side2] = on_l if side2 == 0 else on_r
+		_hand_b[side2] = null if hb[side2] == null else _pivot.global_transform.basis.orthonormalized().inverse() * (hb[side2] as Basis)
 		_place(_limbs["upper_" + s2] as MeshInstance3D, sh, elbow)
 		_place(_limbs["fore_" + s2] as MeshInstance3D, elbow, hand)
 		(_joints["hand_" + s2] as MeshInstance3D).position = hand
 	_update_props(b_drink, b_write, b_rep, b_tap)
 	if person != null:
 		person.drive({"hips": _hips.position, "chest": _chest.basis, "head": _head.basis, "legs": _legs_d,
-			"hands": _hand_t, "poles": _poles, "plant": _down_b < 0.05})
+			"hands": _hand_t, "poles": _poles, "plant": _down_b < 0.05, "hand_basis": _hand_b, "hand_w": _hand_w})
 		person.face.set_expression(_face_state(downed, pose))
 	# footsteps for nearby teammates
 	if moving and _down_b < 0.5:
@@ -864,6 +913,114 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 			var cam: Camera3D = get_viewport().get_camera_3d() if is_inside_tree() else null
 			if cam != null and cam.global_position.distance_squared_to(global_position) < 400.0:
 				AudioDirector.play_3d("footstep_stone", global_position, -10.0, 0.1)
+
+
+## T-099: the drawn person's height scale (1.0 for the primitives).
+func s_k() -> float:
+	return person.scale_k if person != null else 1.0
+
+
+## T-099: where the gun's hold point goes in the gun pivot's parent space (the puppet's chest node), from the hip
+## hold (ads 0) to the aimed one (ads 1), on the body actually drawn: the modelled person's rig shoulder and eye
+## (rig.json rest heads times the person's height, relative to the puppet chest at hips + 0.12) or the primitives'.
+func _hold_anchor(ads: float) -> Vector3:
+	var k: float = s_k()
+	var drop: float = float(_build.get("gun_drop", 0.0))
+	var sh_y: float = (0.95 + 0.51 * k - 1.07) if person != null else 0.5
+	var eye_y: float = (0.95 + 0.765 * k - 1.07) if person != null else 0.74
+	var sight_y: float = float(_gun_hold.get("sight_y", 0.07))
+	if str(_gun_hold.get("kind", "long")) == "pistol":
+		var hip_p: Vector3 = Vector3(0.05, sh_y - 0.14 - drop, -0.36 * k)
+		var ads_p: Vector3 = Vector3(0.035, eye_y - 0.05 - sight_y, -0.47 * k)
+		return hip_p.lerp(ads_p, ads)
+	var hip_l: Vector3 = Vector3(0.14 * k, sh_y - 0.07 - drop, -0.09 * k)
+	var ads_y: float = clampf(eye_y - 0.075 - sight_y, sh_y - 0.02, sh_y + 0.1)
+	var ads_l: Vector3 = Vector3(0.085 * k, ads_y - drop * 0.5, -0.12 * k)
+	return hip_l.lerp(ads_l, ads)
+
+
+## T-099: how a gun is held, measured from its model: "pistol" (class pistol, or nothing behind the grip) or
+## "long"; "pivot" = the hold point in the gun's frame (a long gun's butt: the back of its meshes at the grip's
+## height; a pistol: its grip, the origin); "sight_y" = the sight line (SightPoint) over that point; the support
+## grip's axis / radius (WeaponModels lhand metas) and the firing grip (grip_r, grip_r_radius).
+static func hold_of(gun: Node3D, weapon_id: StringName) -> Dictionary:
+	var out: Dictionary = {"kind": "long", "pivot": Vector3.ZERO, "sight_y": 0.07, "lh_axis": "z", "lh_r": 0.024,
+		"grip_r": Transform3D.IDENTITY, "grip_rr": 0.016}
+	if gun == null:
+		return out
+	var row: Dictionary = (GLData.table("weapons").get("weapons", {}) as Dictionary).get(String(weapon_id), {})
+	var cls: String = str(row.get("class", ""))
+	var back: float = 0.0
+	for n: Node in gun.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		if mi.mesh == null or not mi.visible:
+			continue
+		var bb: AABB = _rel_xf(gun, mi) * mi.get_aabb()
+		back = maxf(back, bb.end.z)
+	var pistol: bool = cls == "pistol" or back < 0.1 or weapon_id == &"coal_shovel"
+	out["kind"] = "pistol" if pistol else "long"
+	out["pivot"] = Vector3.ZERO if pistol else Vector3(0.0, 0.01, back - 0.015)
+	var sp: Node3D = gun.get_node_or_null("SightPoint") as Node3D
+	if sp != null:
+		out["sight_y"] = (_rel_xf(gun, sp).origin - (out["pivot"] as Vector3)).y
+	out["lh_axis"] = str(gun.get_meta("lh_axis", "y" if pistol else "z"))
+	out["lh_r"] = float(gun.get_meta("lh_radius", 0.024))
+	if gun.has_meta("grip_r"):
+		out["grip_r"] = gun.get_meta("grip_r")
+		out["grip_rr"] = float(gun.get_meta("grip_r_radius", 0.016))
+	return out
+
+
+## A node's transform relative to an ancestor (works outside the tree).
+static func _rel_xf(root: Node3D, n: Node3D) -> Transform3D:
+	var xf: Transform3D = Transform3D.IDENTITY
+	var cur: Node = n
+	while cur != null and cur != root:
+		if cur is Node3D:
+			xf = (cur as Node3D).transform * xf
+		cur = cur.get_parent()
+	return xf
+
+
+## T-099: the hands on a gun, global space: [right wrist, right hand basis, left wrist, left hand basis]. `gb` is the
+## gun's basis, `grip` its origin (the firing grip), `lh` its LeftHand marker. A hand basis is the rig's Hand bone
+## frame (+Y from the fingers back to the wrist; +X the left palm's normal, the back of the right hand), so the
+## fingers, which curl toward the palm, close round the grip. The wrist sits back from the grip by the palm.
+static func hand_on_gun(hold: Dictionary, gb: Basis, grip: Vector3, lh: Vector3, k: float) -> Array:
+	var g: Transform3D = hold.get("grip_r", Transform3D.IDENTITY)
+	var grip_c: Vector3 = grip + gb * g.origin
+	# the firing hand: the palm on the grip's right side, knuckles forward and down, fingers round its front
+	var f_r: Vector3 = (gb * (g.basis * Vector3(0.0, -0.32, -0.95))).normalized()
+	var n_r: Vector3 = (gb * Vector3(-1.0, 0.0, 0.0)).normalized()   # from the palm toward the grip
+	var wr: Vector3 = grip_c - f_r * 0.05 * k - n_r * (float(hold.get("grip_rr", 0.016)) + 0.012) * k
+	var r: float = float(hold.get("lh_r", 0.024))
+	var c: Vector3 = lh
+	var f: Vector3
+	var n: Vector3
+	if str(hold.get("kind", "long")) == "pistol":
+		# cupping the gun hand from the left and below
+		c = grip + gb * Vector3(-0.015, -0.04, -0.005)
+		f = (gb * Vector3(0.3, -0.3, -0.9)).normalized()
+		n = (gb * Vector3(1.0, 0.3, 0.0)).normalized()
+		r = 0.02
+	elif str(hold.get("lh_axis", "z")) == "y":
+		# round an upright foregrip / magazine: palm on its left, fingers round the front
+		f = (gb * Vector3(0.15, -0.25, -0.96)).normalized()
+		n = (gb * Vector3(1.0, 0.0, 0.0)).normalized()
+	else:
+		# under the handguard: palm up and a little right, thumb along the left side, fingers over the right
+		f = (gb * Vector3(0.3, 0.12, -0.95)).normalized()
+		n = (gb * Vector3(0.4, 0.92, 0.0)).normalized()
+	var wl: Vector3 = c - f * 0.05 * k - n * (r + 0.012) * k
+	return [wr, _hand_basis(f_r, -n_r), wl, _hand_basis(f, n)]
+
+
+## The Hand bone basis for fingers along `fingers` and the bone's +X along `x_dir`.
+static func _hand_basis(fingers: Vector3, x_dir: Vector3) -> Basis:
+	var y: Vector3 = -fingers.normalized()
+	var x: Vector3 = x_dir - y * x_dir.dot(y)
+	x = x.normalized() if x.length_squared() > 1e-6 else Vector3.RIGHT
+	return Basis(x, y, x.cross(y).normalized())
 
 
 ## The face for the moment (T-092): downed = pain, low health = fear, shooting = determined, else the rest face

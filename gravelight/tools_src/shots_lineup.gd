@@ -7,6 +7,9 @@ extends Node3D
 ## `-- --legacy-people` gives the before shots (the primitive bodies). Silent, off-screen, no mouse capture:
 ##   godot --audio-driver Dummy --position -4000,-4000 --resolution 1920x1080 --path . res://gravelight/tools_src/shots_lineup.tscn -- --out=<dir> [--legacy-people] [--only=lineup,faces]
 ## -> <dir>/lineup.png, lineup_row2.png, lineup_back.png, faces_<expression>.png, cousins_faces.png, risen.png
+## T-099: --only=hold -> hold_<hip|ads>_<side|threeq>.png (the squad's gun hold, every weapon class: Dutch's BAR,
+## Peg's Thompson, Deacon's trench gun, Wren's Kar98k, Jakub's pistol), heads.png (the hair under the caps, the
+## necks), and --only=gore -> gore_arm.png (a risen patron's severed arm cut from the person, the old kit piece beside)
 
 const SQUAD: Array = [[&"dutch", &"bar"], [&"peg", &"thompson"], [&"deacon", &"trench_gun"], [&"wren", &"kar98k"], [&"jakub", &"coal_shovel"]]
 const COUSINS: Array = ["hammer", "reach", "alix"]
@@ -19,6 +22,7 @@ var _squad: Array[RemoteBody] = []
 var _cousins: Array[Node3D] = []
 var _row2: Array[PatronBody] = []
 var _tags: Array[Label3D] = []
+var _flags: int = 0   # T-099: the replicated pose flags the squad gets each frame (PF_ADS for the aimed hold)
 
 
 func _ready() -> void:
@@ -139,7 +143,7 @@ func _frames(n: int, each: Callable = Callable()) -> void:
 	for f: int in n:
 		for b: RemoteBody in _squad:
 			b.set("_since_shot", 3.0)   # no idle fidgets (they bow the head), no "determined" face
-			b.update_pose(1.0 / 60.0, 0.0, 0.0, 0)
+			b.update_pose(1.0 / 60.0, 0.0, 0.0, _flags)
 		if each.is_valid():
 			each.call(f)
 		await get_tree().process_frame
@@ -240,6 +244,10 @@ func _run() -> void:
 		_cam.look_at(Vector3(0.0, 1.6, 3.0), Vector3.UP)
 		await _frames(20)
 		await _shot("cousins_faces.png")
+	if _want("hold"):
+		await _holds()
+	if _want("gore") and PeopleBodies.available("kubiak"):
+		await _gore()
 	if _want("risen") and PeopleBodies.available("kubiak"):
 		# a risen patron beside the living one (the zombie that gets up wears the same person)
 		for pb2: PatronBody in _row2:
@@ -265,3 +273,93 @@ func _run() -> void:
 		await _frames(10)
 		await _shot("risen.png")
 	get_tree().quit()
+
+
+## T-099: the squad's gun hold at the hip and aimed, in profile and three-quarter, every weapon class.
+func _holds() -> void:
+	for t: Label3D in _tags:
+		t.visible = false
+	for c: Node3D in _cousins:
+		c.visible = false
+	for pb: PatronBody in _row2:
+		pb.visible = false
+	var guns: Array = [&"bar", &"thompson", &"trench_gun", &"kar98k", &"m1911"]
+	for i: int in _squad.size():
+		_squad[i].position = Vector3(-2.4 + 1.2 * float(i), 0, 0)
+		_squad[i].set_weapon(guns[i])
+	_cam.fov = 30.0
+	for mode: String in ["hip", "ads"]:
+		_flags = NetMatch.PF_ADS if mode == "ads" else 0
+		for view: String in ["side", "threeq"]:
+			for b: RemoteBody in _squad:
+				b.rotation.y = -PI * 0.5 if view == "side" else PI * 0.75
+			if view == "side":
+				_cam.position = Vector3(0.0, 1.45, 7.6)
+				_cam.look_at(Vector3(0.0, 1.2, 0.0), Vector3.UP)
+			else:
+				_cam.position = Vector3(0.6, 1.6, 5.4)
+				_cam.look_at(Vector3(0.0, 1.25, 0.0), Vector3.UP)
+			await _frames(40)
+			await _shot("hold_%s_%s.png" % [mode, view])
+	_flags = 0
+	# the heads: hair under the caps, the necks (front and side); empty-handed, so the head is square to the camera
+	for i2: int in _squad.size():
+		_squad[i2].set_weapon(&"")
+		_squad[i2].position = Vector3(-0.84 + 0.42 * float(i2), 0, 3.0)
+		_squad[i2].rotation.y = PI
+	_cam.fov = 24.0
+	_cam.position = Vector3(0.0, 1.62, 4.9)
+	_cam.look_at(Vector3(0.0, 1.55, 3.0), Vector3.UP)
+	await _frames(20)
+	await _shot("heads.png")
+	for b2: RemoteBody in _squad:
+		b2.rotation.y = PI * 0.5
+	await _frames(10)
+	await _shot("heads_side.png")
+	for i3: int in _squad.size():
+		_squad[i3].position = Vector3(-5.0 + 1.0 * float(i3), 0, 0)
+		_squad[i3].rotation.y = PI
+		_squad[i3].set_weapon(SQUAD[i3][1])
+	for c2: Node3D in _cousins:
+		c2.visible = true
+
+
+## T-099: a risen patron (Kubiak) with his left arm off at the shoulder; the arm that flew off, cut from his own
+## risen mesh (PeopleBodies.piece_mesh), lies at his feet, and the generic villager piece (what it was) beside it.
+func _gore() -> void:
+	for b: RemoteBody in _squad:
+		b.position.x += 40.0
+	for c: Node3D in _cousins:
+		c.visible = false
+	for pb: PatronBody in _row2:
+		pb.visible = false
+	for t: Label3D in _tags:
+		t.visible = false
+	var sk: Skeleton3D = ZombieRig.build_skeleton()
+	add_child(sk)
+	sk.position = Vector3(0.0, 0, 3.0)
+	sk.rotation.y = PI
+	var z: MeshInstance3D = MeshInstance3D.new()
+	sk.add_child(z)
+	z.mesh = PeopleBodies.mesh("kubiak", true)
+	z.skeleton = NodePath("..")
+	z.skin = sk.create_skin_from_rest_transforms()
+	sk.set_bone_pose_scale(sk.find_bone("LeftUpperArm"), Vector3.ONE * 0.001)
+	sk.set_bone_pose_rotation(sk.find_bone("RightUpperArm"), Quaternion(Vector3.RIGHT, -0.7))
+	var pieces: Array = [[PeopleBodies.piece_mesh("kubiak", "LeftUpperArm"), Vector3(0.75, 0.06, 3.15), "his own arm (T-099)"],
+		[ZombieBody.piece_mesh("villager", "medium", false, "LeftUpperArm"), Vector3(-0.85, 0.06, 3.15), "the old villager piece"]]
+	for pc: Array in pieces:
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.mesh = pc[0]
+		add_child(mi)
+		mi.position = pc[1]
+		mi.rotation = Vector3(0.0, 0.3, PI * 0.5)
+		_tag(str(pc[2]), (pc[1] as Vector3) + Vector3(0.25 * signf((pc[1] as Vector3).x), 0.22, 0.25))
+	_cam.fov = 40.0
+	_cam.position = Vector3(0.0, 1.35, 6.9)
+	_cam.look_at(Vector3(0.0, 0.85, 3.0), Vector3.UP)
+	await _frames(10)
+	await _shot("gore_arm.png")
+	sk.queue_free()
+	for b2: RemoteBody in _squad:
+		b2.position.x -= 40.0
