@@ -593,7 +593,10 @@ func _ammo_candidate(anc: Vector3, rng: float, scrip: int) -> Dictionary:
 			var best: AmmoBox = null
 			for n: Node in brain.get_tree().get_nodes_in_group(&"ammo_boxes"):
 				var ab: AmmoBox = n as AmmoBox
-				if ab == null or not ab.is_visible_in_tree() or _flat(ab.global_position, anc) > rng * 1.3:
+				# nearly dry: any reachable box, however far from the anchor (a bot following the human into a room with
+				# no box used to follow on with an empty main gun and Scrip in its pocket)
+				var reach_m: float = INF if worst < 0.12 else rng * 1.3
+				if ab == null or not ab.is_visible_in_tree() or _flat(ab.global_position, anc) > reach_m:
 					continue
 				if ab.cooldown_left(player.player_id) > 0.0 or not brain.squad.can_claim(ab, player.player_id) or not brain.reachable(BotBrain._front_of(ab)):
 					continue

@@ -200,8 +200,11 @@ func _physics_process(delta: float) -> void:
 						bp.weapons.current_index = i
 						w.reserve = 0
 						w.mag = 1
-				Economy.grant(_ammo_pid, 3000)
-				_note("emptied P%d's upgraded reserve (%s) and gave it 3000 Scrip" % [_ammo_pid, str(bp.weapons.current().id)])
+				# exactly 3000 Scrip: box ammo for a taught gun (2500) yes, the next teaching (7500) no, so the only way
+				# back to a full gun is the ammo box this phase checks (a re-teaching also refills it, T-083); the human
+				# is in the cellar, which has no box: the dry bot must walk to one
+				Economy.grant(_ammo_pid, 3000 - Economy.get_scrip(_ammo_pid))
+				_note("emptied P%d's upgraded reserve (%s) and set its Scrip to 3000" % [_ammo_pid, str(bp.weapons.current().id)])
 			elif _phase_t > 150.0:
 				_fail("no bot upgraded a gun at the Crucible within 150 s")
 				for line: String in root.squad.report():
