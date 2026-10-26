@@ -37,6 +37,7 @@
     "buy_task": "value of the best purchase (bot_economy.gd, 0 none)",
     "crate_task": "value of a Requisition Crate pull (0 none)",
     "resupply_task": "value of an ammo box / wall ammo for the main gun (0 none; 1 when nearly dry)",
+    "resupply_ammo": "the ammo fraction of the gun the resupply candidate refills (the fullest long gun when there is none; QA Q-05)",
     "powerup_task": "value of a power-up it may take (etiquette, 0 none)",
     "trap_task": "value of a trap it may pull (only when ordered or the player used it, 0 none)",
     "chatter_ok": "1 when a chatter line is off cooldown",
@@ -102,7 +103,7 @@
     ]},
     "resupply": {"weight": 0.95, "considerations": [
       {"input": "resupply_task", "curve": "value"},
-      {"input": "ammo", "curve": {"type": "points", "points": [[0.0, 1.0], [0.15, 0.95], [0.3, 0.7], [0.6, 0.4], [0.8, 0.0]]}},
+      {"input": "resupply_ammo", "curve": {"type": "points", "points": [[0.0, 1.0], [0.15, 0.95], [0.3, 0.7], [0.6, 0.4], [0.8, 0.0]]}},
       {"input": "pressure", "curve": {"type": "points", "points": [[0.0, 1.0], [0.3, 0.85], [0.6, 0.5], [0.85, 0.15], [1.0, 0.0]]}}
     ]},
     "crate": {"weight": 0.75, "considerations": [

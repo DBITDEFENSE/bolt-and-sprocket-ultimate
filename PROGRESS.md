@@ -1,8 +1,8 @@
 # PROGRESS
 
-RESUME HERE: UPDATE 07 (MAP 4 FERNFLUG + QA pass), 2026-10-26, branch map4-fernflug (also pushed to claude/new-session-wugi0p). Phase 0 DONE. Phase 1 DONE. Phase 2: Acts I–IV MERGED (T-104..T-113), perks+Lodestone (T-105), the main egg Acts I–II (T-114); the chain is map00→01→02→04a→04b→04c→04d. Running now in worktrees: u07-egg2 (egg steps Acts III–IV + routes/plans for the four acts, T-115) and u07-soak (ai_soak scenario `fernflug`, smoke_map04_full, launcher smoke, T-116). NEXT after they merge: run the fernflug soak with bots (both kinds), fix what it finds, full GUT + full smokes on a quiet tree, merge map4-fernflug into master, morning/MORNING_REPORT.md + NEEDS_DEVIN.md, push master. MERGE RULE: worker branches from the current tip merge --no-ff; VO json/intel/story_props resolve as key unions; the lodestone/skyhook/magpie binaries stay plain git files (lfs.github.com blocked).
+RESUME HERE: UPDATE 07 is DONE and merged into master (2026-10-26). Map 4 Fernflug (four acts, two perks, the Lodestone, four bosses, the egg, both endings) and the Phase 0 QA fixes are on master; the morning report is morning/MORNING_REPORT.md, the owner's to-dos morning/NEEDS_DEVIN.md (0c: allow lfs.github.com, bake Map 4's ~310 VO lines on the PC, check FPS, name an HB4 likeness). Open tuning items (not bugs): bots alone cannot carry Map 4 past Act II (QA Q-19), bots alone reach the Kaltenbrunn power late. Next work order starts from master.
 
-## UPDATE 07, 2026-10-26: Map 4 Fernflug + QA pass
+## UPDATE 07, 2026-10-26: Map 4 Fernflug + QA pass (DONE, merged to master)
 
 Phase 0 QA: running (T-103 merged; Map 0/Map 1 workers out). Phase 1 design: DONE. Phase 2: Acts I–IV MERGED (T-104, T-108/T-109, T-110/T-111, T-112/T-113), perks+Lodestone MERGED (T-105), egg Acts I–II MERGED (T-114), boarding, Act 2, crash, Act 3, rocket, Act 4, perks/wonder/egg/endings (pending). Finish: pending.
 

@@ -24,7 +24,7 @@ func _ctx(over: Dictionary = {}) -> Dictionary:
 		"pressure": 0.0, "near": 1.0, "n5": 0.0, "n10": 0.0, "known": 0.0, "sprinter_close": 0.0, "has_target": 0.0,
 		"revive_mine": 0.0, "revive_bleed": 1.0, "revive_blocked": 0.0, "revive_path": 0.2, "revive_speed": 1.0, "reviving": 0.0,
 		"cover_need": 0.0, "leader_far": 0.1, "is_leader": 0.0, "squad_far": 0.1, "break": 0.0, "round": 0.3, "loop": 1.0,
-		"hold_spot": 0.0, "repair_task": 0.0, "buy_task": 0.0, "crate_task": 0.0, "resupply_task": 0.0, "powerup_task": 0.0, "trap_task": 0.0,
+		"hold_spot": 0.0, "repair_task": 0.0, "buy_task": 0.0, "crate_task": 0.0, "resupply_task": 0.0, "resupply_ammo": 0.9, "powerup_task": 0.0, "trap_task": 0.0,
 		"chatter_ok": 0.0, "objective": 0.0, "order": 0.0, "escort": 0.0, "escort_far": 0.0, "stand_fast": 0.0, "ee_task": 0.0, "mark_order": 0.0, "trainer": 0.0}
 	c.merge(over, true)
 	return c
@@ -378,7 +378,7 @@ func test_the_spending_plan_names_real_perks_and_weapons() -> void:
 
 
 func test_running_dry_mid_round_goes_for_ammo() -> void:
-	var c: Dictionary = _ctx({"ammo": 0.08, "resupply_task": 1.0, "pressure": 0.35, "has_target": 1.0, "known": 0.3, "mag": 0.3})
+	var c: Dictionary = _ctx({"ammo": 0.08, "resupply_ammo": 0.08, "resupply_task": 1.0, "pressure": 0.35, "has_target": 1.0, "known": 0.3, "mag": 0.3})
 	assert_eq(_best(c, "fight"), "resupply", "nearly dry with zombies about but not swarmed: to the ammo box")
 	c["pressure"] = 1.0
 	assert_ne(_best(c, "fight"), "resupply", "not through a swarm")
@@ -390,3 +390,22 @@ func test_bunched_in_with_everything_dry_it_still_reloads_the_best_gun() -> void
 	var wc: Dictionary = combat["weapons"]
 	var hot: Dictionary = {"crowd": 6, "boss": false, "close": true, "danger": true, "near": true}
 	assert_gt(BotAim.weapon_value("smg", 0, 180, 30, hot, wc, {}), BotAim.weapon_value("pistol", 0, 60, 8, hot, wc, {}))
+
+
+## QA Q-05 (UPDATE 07): a dry Crucible-taught gun gets its ammo errand even when a full crate gun rides beside it.
+func test_resupply_weighs_the_gun_it_refills() -> void:
+	var dry: WeaponInstance = WeaponInstance.create(&"thompson")
+	dry.mag = 1
+	dry.reserve = 0
+	var full: WeaponInstance = WeaponInstance.create(&"mg42")
+	full.mag = full.mag_size()
+	full.reserve = full.reserve_max()
+	var slots: Array = [WeaponInstance.create(&"m1911"), dry, full]
+	assert_lt(BotBrain.resupply_ammo_of(slots, 1, 1.0), 0.05, "the candidate's own gun: nearly dry")
+	assert_eq(BotBrain.resupply_ammo_of(slots, -1, 0.7), 0.7, "no candidate: the fullest long gun, as before")
+	assert_eq(BotBrain.resupply_ammo_of(slots, 9, 0.7), 0.7, "a stale slot falls back too")
+	var acts: Dictionary = BotAIData.table("actions")
+	var inputs: Array = []
+	for c: Variant in ((acts.get("actions", acts) as Dictionary).get("resupply", {}) as Dictionary).get("considerations", []):
+		inputs.append(str((c as Dictionary).get("input", "")))
+	assert_true(inputs.has("resupply_ammo") and not inputs.has("ammo"), "the resupply action reads resupply_ammo (%s)" % str(inputs))

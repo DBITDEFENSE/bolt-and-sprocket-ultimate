@@ -1,6 +1,6 @@
 # Morning report — UPDATE 07: Map 4 "Fernflug" + a QA pass on every map, 2026-10-26
 
-Map 4 is in and playable from start to finish: four acts, two new perks, a gravity wonder weapon, four bosses, a four-act Easter egg and two endings. Everything is merged into `master`.
+Map 4 is in and playable from start to finish: four acts, two new perks, a gravity wonder weapon, four bosses, a four-act Easter egg and two endings. Everything is merged into `master`. Final checks: all 1,321 unit tests pass and all 45 smoke tests pass.
 
 ## How to play Map 4
 Double-click **`Play.bat`**. The dev launcher has a new **Map 4 — Fernflug** block:
@@ -27,6 +27,7 @@ Full list with before/after numbers: `docs/QA_REPORT_U07.md`.
 - **Totenhafen:** zombies no longer fall off the quay's landing stages, and the BAR and Thompson wall guns can actually be reached.
 - **Crossroads Inn:** bots no longer climb onto the taproom tables and get stuck there (42 stuck moments → 3).
 - **Kaltenbrunn:** bots playing without you now open the doors and head for the power (they used to buy nothing and die in the yard at round 9; now round 12 with four doors open). The Admin stairs no longer trap bots on their side.
+- **All maps, bots:** a bot carrying a full gun from the crate now still refills its empty Crucible gun at an ammo box (it used to ignore the empty one).
 - **All maps:** a zombie that can't reach anyone for 45 s is moved near the players, and a round with nowhere to spawn falls back to any spawn, so a round can't hang forever any more (one Kaltenbrunn round had hung for 140 minutes).
 - Tooling: the minimaps were re-baked, the test suite runs clean in the cloud, and the ADS check runs without a screen (322/322 sights aligned).
 

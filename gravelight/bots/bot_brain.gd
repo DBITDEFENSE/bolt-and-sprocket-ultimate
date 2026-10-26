@@ -542,6 +542,8 @@ func context(now: float) -> Dictionary:
 	c["crate_task"] = float((b.get("crate", {}) as Dictionary).get("value", 0.0))
 	var rb: Dictionary = economy.best(now) if per.pressure < 0.85 and now >= _task_block_t else {}
 	c["resupply_task"] = float((rb.get("resupply", {}) as Dictionary).get("value", 0.0))
+	# QA Q-05 (UPDATE 07): the errand's own gun, not the fullest one (a full crate gun hid a dry taught gun)
+	c["resupply_ammo"] = resupply_ammo_of(player.weapons.slots, int((rb.get("resupply", {}) as Dictionary).get("slot", -1)), float(c.get("ammo", 1.0)))
 	c["powerup_task"] = _powerup_value(now)
 	c["trap_task"] = _trap_value()
 	c["chatter_ok"] = 1.0 if now >= _chatter_next else 0.0
@@ -1249,3 +1251,15 @@ func status_line() -> String:
 
 func _flat(a: Vector3, b: Vector3) -> float:
 	return Vector2(a.x - b.x, a.z - b.z).length()
+
+
+## The ammo fraction the resupply action weighs (QA Q-05, UPDATE 07): the slot its candidate refills (mag + reserve
+## over their maxima), else `fallback` (the brain's "ammo": the fullest long gun). With only the fullest gun, a bot
+## carrying a full crate gun never refilled its dry Crucible-taught one.
+static func resupply_ammo_of(slots: Array, slot: int, fallback: float) -> float:
+	if slot < 0 or slot >= slots.size():
+		return fallback
+	var w: WeaponInstance = slots[slot] as WeaponInstance
+	if w == null:
+		return fallback
+	return float(w.mag + w.reserve) / float(maxi(1, w.mag_size() + w.reserve_max()))

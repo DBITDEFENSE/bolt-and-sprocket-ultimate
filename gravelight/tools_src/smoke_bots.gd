@@ -47,6 +47,7 @@ var _bot_buys: Array = []        # [pid, item]
 var _door_ids: Dictionary = {}
 var _map_key: String = "map00"
 var _crucible_only: bool = false
+var _refill_pid: int = 0   # --refill-bot=N: the bot that runs dry in the refill phase (default: the first to upgrade)
 var _upgrades: Array = []        # [pid, weapon id]
 var _ammo_pid: int = 0
 var _ammo_bought: bool = false
@@ -63,6 +64,8 @@ func _ready() -> void:
 			_map_key = a.substr(6)
 		elif a == "--crucible-only":
 			_crucible_only = true
+		elif a.begins_with("--refill-bot="):
+			_refill_pid = int(a.substr(13))
 	ProfileSave.path = "user://_qa_bots_profile.json"
 	ProfileSave.profile = ProfileSave.new_profile()
 	GameState.character_id = &"peg"
@@ -193,7 +196,24 @@ func _physics_process(delta: float) -> void:
 				_phase = 12
 				_phase_t = 0.0
 				_ammo_pid = int((_upgrades[0] as Array)[0])
+				for u: Variant in _upgrades:
+					if _refill_pid > 0 and int((u as Array)[0]) == _refill_pid:
+						_ammo_pid = _refill_pid
 				var bp: Player = _bots_by_id(_ammo_pid)
+				# QA Q-05: a full second long gun beside the dry taught one (a crate pull), the case that used to hide
+				# the dry gun from the resupply action; the bot must still walk to a box for the taught gun
+				var has_other_long: bool = false
+				for w0: WeaponInstance in bp.weapons.slots:
+					has_other_long = has_other_long or (not w0.upgraded and w0.weapon_class() != &"pistol")
+				if not has_other_long:
+					var full: WeaponInstance = WeaponInstance.create(&"mg42")
+					if bp.weapons.slots.size() < bp.weapons.max_slots():
+						bp.weapons.slots.append(full)
+					else:
+						for i0: int in bp.weapons.slots.size():
+							if not (bp.weapons.slots[i0] as WeaponInstance).upgraded:
+								bp.weapons.slots[i0] = full
+								break
 				for i: int in bp.weapons.slots.size():
 					var w: WeaponInstance = bp.weapons.slots[i]
 					if w.upgraded:
@@ -219,6 +239,7 @@ func _physics_process(delta: float) -> void:
 				_phase_t = 0.0
 			elif _phase_t > 90.0:
 				_fail("P%d never refilled its upgraded gun at an ammo box" % _ammo_pid)
+				_explain_refill(root)   # QA Q-05: why the dry bot found no box
 				for line: String in root.squad.report():
 					print("[bots]   ", line)
 				_phase = 2 if not _crucible_only else 99
@@ -497,3 +518,33 @@ func _finish() -> void:
 		print("[bots] RESULT FAIL")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://_qa_bots_profile.json"))
 	get_tree().quit(0 if _fails.is_empty() else 1)
+
+
+## QA Q-05 (UPDATE 07): when the refill phase fails, say why: the dry bot's guns, its Scrip, its order, and for
+## every ammo box the reasons _ammo_candidate would reject it (hidden, cooldown, claimed, unreachable front).
+func _explain_refill(root: Node) -> void:
+	var bp: Player = _bots_by_id(_ammo_pid)
+	if bp == null:
+		return
+	var brain: BotBrain = null
+	for b: BotBrain in root.squad.brains:
+		if b.player == bp:
+			brain = b
+	print("[bots]   refill: P%d scrip %d, order %s, at %s, in_break %s" % [_ammo_pid, Economy.get_scrip(_ammo_pid),
+		str(brain.order_id()) if brain != null else "?", str(bp.global_position.snapped(Vector3.ONE * 0.1)),
+		str(brain.in_break()) if brain != null else "?"])
+	for i: int in bp.weapons.slots.size():
+		var w: WeaponInstance = bp.weapons.slots[i]
+		print("[bots]   refill:   slot %d %s %d/%d (max %d+%d) upgraded %s class %s" % [i, str(w.id), w.mag, w.reserve,
+			w.mag_size(), w.reserve_max(), str(w.upgraded), str(w.weapon_class())])
+	for n: Node in get_tree().get_nodes_in_group(&"ammo_boxes"):
+		var ab: AmmoBox = n as AmmoBox
+		if ab == null:
+			continue
+		var front: Vector3 = BotBrain._front_of(ab)
+		print("[bots]   refill:   box %s at %s: visible %s, cooldown %.1f, claimable %s, reachable %s, %.0f m" % [ab.name,
+			str(ab.global_position.snapped(Vector3.ONE * 0.1)), str(ab.is_visible_in_tree()), ab.cooldown_left(_ammo_pid),
+			str(root.squad.can_claim(ab, _ammo_pid)), str(brain.reachable(front)) if brain != null else "?",
+			bp.global_position.distance_to(ab.global_position)])
+	if brain != null:
+		print("[bots]   refill:   brain " + brain.status_line())
