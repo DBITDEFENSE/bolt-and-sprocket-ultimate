@@ -50,3 +50,13 @@ Godot processes sharing the machine, so single runs swing by ~10 FPS:
   (2 on Low). Particles stay CPUParticles3D for the one-shot bursts (dozens of tiny emitters with a mesh swap per
   burst, which GPUParticles3D cannot do without a buffer rebuild); the continuous layers (near / far snow, beam
   motes) are GPUParticles3D. `vfx_quality` low halves counts and drops the smoke wisps.
+
+## UPDATE 05 section 5, the environment pass (T-093)
+Same scene (perf_marks, High, round 15, 3 bots + Jakub, 24 zombies, marks), back to back on the same machine with
+other builders' Godot processes running (single runs swing by ~10 FPS):
+- before (master ab098f8's map, landscape and materials): avg 81.1 / 87.3 FPS, 1% low 46.1 / 58.1, 0 frames over 40 ms.
+- after, first cut (LOD0 trees out to 140 m, the tree line casting moon shadows): 70.7 / 74.4 FPS, 1% low 50.7 / 51.5.
+- after (LOD1 past 95 m, the tree line's alpha-scissored shadows off): see the T-093 report's final runs.
+What it spends: the library's triplanar surface shader samples three maps per projection; the scripted trees are
+alpha-scissored cards (overdraw near the edge); the library props are MultiMeshes (one draw call per prop mesh,
+chairs and small props cast no shadows).

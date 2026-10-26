@@ -107,9 +107,10 @@ func test_flag_hands_the_library_to_mats_only_for_enabled_keys() -> void:
 	assert_true(floor_m is ShaderMaterial, "floorboards comes from the library when enabled")
 	assert_same(floor_m, MaterialLibrary.get_mat("floorboards"))
 	assert_same(floor_m, MaterialLibrary.for_generator("floorboards"))
-	var planks: Material = Mats.get_mat("planks")
-	assert_true(planks is StandardMaterial3D, "planks stays procedural until it is enabled")
-	assert_null(MaterialLibrary.for_generator("planks"))
+	# a key that is mapped but not enabled stays procedural (T-093 switched Map 0's keys on; "cloth" -> wool is not)
+	assert_eq(MaterialLibrary.generator_key("cloth"), "wool")
+	assert_false((MaterialLibrary.data()["generator"]["enabled"] as Array).has("cloth"))
+	assert_null(MaterialLibrary.for_generator("cloth"), "mapped but not enabled: no library material")
 	assert_null(MaterialLibrary.for_generator("nachtglas"), "an unmapped key is never swapped")
 	# the master switch
 	MaterialLibrary.data()["generator"]["use_library"] = false
