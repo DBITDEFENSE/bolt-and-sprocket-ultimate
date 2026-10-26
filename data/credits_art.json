@@ -449,6 +449,51 @@
    ]
   },
   {
+   "folder": "assets/third_party/polyhaven/dark-paneled-wood",
+   "source": "polyhaven",
+   "id": "dark-paneled-wood",
+   "title": "Dark Paneled Wood",
+   "author": "Dimitrios Savva",
+   "url": "https://polyhaven.com/a/dark_paneled_wood",
+   "license": "CC0",
+   "credit": "\"Dark Paneled Wood\" by Dimitrios Savva (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/dark_paneled_wood_albedo.png",
+    "textures/dark_paneled_wood_normal.png",
+    "textures/dark_paneled_wood_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/dark-wood",
+   "source": "polyhaven",
+   "id": "dark-wood",
+   "title": "Dark Wood",
+   "author": "Dario Barresi (Baking), Dimitrios Savva (Photography), Rico Cilliers (Tiling)",
+   "url": "https://polyhaven.com/a/dark_wood",
+   "license": "CC0",
+   "credit": "\"Dark Wood\" by Dario Barresi (Baking), Dimitrios Savva (Photography), Rico Cilliers (Tiling) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/dark_wood_albedo.png",
+    "textures/dark_wood_normal.png",
+    "textures/dark_wood_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/green-metal-rust",
+   "source": "polyhaven",
+   "id": "green-metal-rust",
+   "title": "Green Metal Rust",
+   "author": "Rob Tuytel",
+   "url": "https://polyhaven.com/a/green_metal_rust",
+   "license": "CC0",
+   "credit": "\"Green Metal Rust\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/green_metal_rust_albedo.png",
+    "textures/green_metal_rust_normal.png",
+    "textures/green_metal_rust_orm.png"
+   ]
+  },
+  {
    "folder": "assets/third_party/polyhaven/grey-plaster",
    "source": "polyhaven",
    "id": "grey-plaster",
@@ -601,6 +646,21 @@
    ]
   },
   {
+   "folder": "assets/third_party/polyhaven/pine-bark",
+   "source": "polyhaven",
+   "id": "pine-bark",
+   "title": "Pine Bark",
+   "author": "Dimitrios Savva",
+   "url": "https://polyhaven.com/a/pine_bark",
+   "license": "CC0",
+   "credit": "\"Pine Bark\" by Dimitrios Savva (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/pine_bark_albedo.png",
+    "textures/pine_bark_normal.png",
+    "textures/pine_bark_orm.png"
+   ]
+  },
+  {
    "folder": "assets/third_party/polyhaven/plastered-stone-wall",
    "source": "polyhaven",
    "id": "plastered-stone-wall",
@@ -614,6 +674,51 @@
     "textures/plastered_stone_wall_height.png",
     "textures/plastered_stone_wall_normal.png",
     "textures/plastered_stone_wall_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/red-brick-03",
+   "source": "polyhaven",
+   "id": "red-brick-03",
+   "title": "Red Brick 03",
+   "author": "Rob Tuytel",
+   "url": "https://polyhaven.com/a/red_brick_03",
+   "license": "CC0",
+   "credit": "\"Red Brick 03\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/red_brick_03_albedo.png",
+    "textures/red_brick_03_normal.png",
+    "textures/red_brick_03_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/reed-roof-04",
+   "source": "polyhaven",
+   "id": "reed-roof-04",
+   "title": "Reed Roof 04",
+   "author": "Rob Tuytel",
+   "url": "https://polyhaven.com/a/reed_roof_04",
+   "license": "CC0",
+   "credit": "\"Reed Roof 04\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/reed_roof_04_albedo.png",
+    "textures/reed_roof_04_normal.png",
+    "textures/reed_roof_04_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/rock-boulder-dry",
+   "source": "polyhaven",
+   "id": "rock-boulder-dry",
+   "title": "Rock Boulder Dry",
+   "author": "Dimitrios Savva (Photography), Rico Cilliers (Processing)",
+   "url": "https://polyhaven.com/a/rock_boulder_dry",
+   "license": "CC0",
+   "credit": "\"Rock Boulder Dry\" by Dimitrios Savva (Photography), Rico Cilliers (Processing) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/rock_boulder_dry_albedo.png",
+    "textures/rock_boulder_dry_normal.png",
+    "textures/rock_boulder_dry_orm.png"
    ]
   },
   {
@@ -649,6 +754,21 @@
    ]
   },
   {
+   "folder": "assets/third_party/polyhaven/rustic-stone-wall",
+   "source": "polyhaven",
+   "id": "rustic-stone-wall",
+   "title": "Rustic Stone Wall",
+   "author": "Dimitrios Savva",
+   "url": "https://polyhaven.com/a/rustic_stone_wall",
+   "license": "CC0",
+   "credit": "\"Rustic Stone Wall\" by Dimitrios Savva (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/rustic_stone_wall_albedo.png",
+    "textures/rustic_stone_wall_normal.png",
+    "textures/rustic_stone_wall_orm.png"
+   ]
+  },
+  {
    "folder": "assets/third_party/polyhaven/rusty-metal-04",
    "source": "polyhaven",
    "id": "rusty-metal-04",
@@ -664,19 +784,33 @@
    ]
   },
   {
-   "folder": "assets/third_party/polyhaven/snow-02",
+   "folder": "assets/third_party/polyhaven/snow-01",
    "source": "polyhaven",
-   "id": "snow-02",
-   "title": "Snow 02",
+   "id": "snow-01",
+   "title": "Snow 01",
    "author": "Rob Tuytel",
-   "url": "https://polyhaven.com/a/snow_02",
+   "url": "https://polyhaven.com/a/snow_01",
    "license": "CC0",
-   "credit": "\"Snow 02\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "credit": "\"Snow 01\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
    "files": [
-    "textures/snow_02_albedo.png",
-    "textures/snow_02_height.png",
-    "textures/snow_02_normal.png",
-    "textures/snow_02_orm.png"
+    "textures/snow_01_albedo.png",
+    "textures/snow_01_normal.png",
+    "textures/snow_01_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/stone-floor",
+   "source": "polyhaven",
+   "id": "stone-floor",
+   "title": "Stone Floor",
+   "author": "Dimitrios Savva",
+   "url": "https://polyhaven.com/a/stone_floor",
+   "license": "CC0",
+   "credit": "\"Stone Floor\" by Dimitrios Savva (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/stone_floor_albedo.png",
+    "textures/stone_floor_normal.png",
+    "textures/stone_floor_orm.png"
    ]
   },
   {
@@ -821,6 +955,21 @@
     "textures/wood_floor_worn_height.png",
     "textures/wood_floor_worn_normal.png",
     "textures/wood_floor_worn_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/wood-table-001",
+   "source": "polyhaven",
+   "id": "wood-table-001",
+   "title": "Wood Table 001",
+   "author": "Dimitrios Savva (Photography), Rico Cilliers (Processing)",
+   "url": "https://polyhaven.com/a/wood_table_001",
+   "license": "CC0",
+   "credit": "\"Wood Table 001\" by Dimitrios Savva (Photography), Rico Cilliers (Processing) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/wood_table_001_albedo.png",
+    "textures/wood_table_001_normal.png",
+    "textures/wood_table_001_orm.png"
    ]
   },
   {
@@ -1250,6 +1399,39 @@
    ]
   },
   {
+   "credit": "\"Dark Paneled Wood\" by Dimitrios Savva (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Dark Paneled Wood"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/dark-paneled-wood"
+   ]
+  },
+  {
+   "credit": "\"Dark Wood\" by Dario Barresi (Baking), Dimitrios Savva (Photography), Rico Cilliers (Tiling) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Dark Wood"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/dark-wood"
+   ]
+  },
+  {
+   "credit": "\"Green Metal Rust\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Green Metal Rust"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/green-metal-rust"
+   ]
+  },
+  {
    "credit": "\"Grey Plaster\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
    "license": "CC0",
    "source": "polyhaven",
@@ -1360,6 +1542,17 @@
    ]
   },
   {
+   "credit": "\"Pine Bark\" by Dimitrios Savva (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Pine Bark"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/pine-bark"
+   ]
+  },
+  {
    "credit": "\"Plastered Stone Wall\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
    "license": "CC0",
    "source": "polyhaven",
@@ -1368,6 +1561,39 @@
    ],
    "folders": [
     "assets/third_party/polyhaven/plastered-stone-wall"
+   ]
+  },
+  {
+   "credit": "\"Red Brick 03\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Red Brick 03"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/red-brick-03"
+   ]
+  },
+  {
+   "credit": "\"Reed Roof 04\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Reed Roof 04"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/reed-roof-04"
+   ]
+  },
+  {
+   "credit": "\"Rock Boulder Dry\" by Dimitrios Savva (Photography), Rico Cilliers (Processing) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Rock Boulder Dry"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/rock-boulder-dry"
    ]
   },
   {
@@ -1393,6 +1619,17 @@
    ]
   },
   {
+   "credit": "\"Rustic Stone Wall\" by Dimitrios Savva (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Rustic Stone Wall"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/rustic-stone-wall"
+   ]
+  },
+  {
    "credit": "\"Rusty Metal 04\" by Amal Kumar (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
    "license": "CC0",
    "source": "polyhaven",
@@ -1404,14 +1641,25 @@
    ]
   },
   {
-   "credit": "\"Snow 02\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "credit": "\"Snow 01\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
    "license": "CC0",
    "source": "polyhaven",
    "titles": [
-    "Snow 02"
+    "Snow 01"
    ],
    "folders": [
-    "assets/third_party/polyhaven/snow-02"
+    "assets/third_party/polyhaven/snow-01"
+   ]
+  },
+  {
+   "credit": "\"Stone Floor\" by Dimitrios Savva (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Stone Floor"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/stone-floor"
    ]
   },
   {
@@ -1500,6 +1748,17 @@
    ],
    "folders": [
     "assets/third_party/polyhaven/wood-floor-worn"
+   ]
+  },
+  {
+   "credit": "\"Wood Table 001\" by Dimitrios Savva (Photography), Rico Cilliers (Processing) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Wood Table 001"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/wood-table-001"
    ]
   },
   {

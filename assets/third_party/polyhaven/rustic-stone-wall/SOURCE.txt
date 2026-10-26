@@ -1,0 +1,12 @@
+Title: Rustic Stone Wall
+Authors: Dimitrios Savva
+Source: https://polyhaven.com/a/rustic_stone_wall
+File: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rustic_stone_wall/rustic_stone_wall_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rustic_stone_wall/rustic_stone_wall_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rustic_stone_wall/rustic_stone_wall_arm_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Rustic Stone Wall" by Dimitrios Savva (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 1k (albedo, normal OpenGL +Y, ORM at 1k)
+Tile size: 1.52 x 1.52 m
+Poly Haven id: rustic_stone_wall
+Library key: cellar_stone
+Downloaded: 2026-10-25 by Claude Code (u05-env builder, T-093) (tools/fetch_cc0_materials.py)
+Files used: textures/rustic_stone_wall_albedo.png, textures/rustic_stone_wall_normal.png, textures/rustic_stone_wall_orm.png

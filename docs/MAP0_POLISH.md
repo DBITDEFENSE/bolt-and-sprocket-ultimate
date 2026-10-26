@@ -127,3 +127,33 @@ Audio
   shelving, a lamp, a curtain, a persistent hole, a scorch, hay, a room door, footprints, the loops playing).
 - `tools_src/soak_map00.tscn`: the whole-map zombie pathing soak (every door open, every spawn live, 20 spots in
   every room, 10 minutes from round 8).
+
+---
+
+## UPDATE 05 art pass (T-093): Crossroads Inn stops reading as untextured shapes
+
+Gameplay geometry did not move: colliders, doors, windows, spawns, prompts and zones are as T-084 left them, and
+both navmesh bakes fingerprint byte-for-byte the same as master's (`test_map00_art`).
+
+- **Materials.** Every `Mats` key gen_map00 draws with is on the CC0 library (`data/gravelight/materials.json`
+  `generator.enabled`, 27 keys): dark oak beams and half-timbering, worn-oak furniture, panelled wainscot, the
+  plasters, planks, shingles, fieldstone, iron, rubble / flagstone / brick / limewash in the cellars, reed straw
+  for the hay, olive-over-rust for GRAVELIGHT ONE, clean wind-packed snow (snow_01, 2K) and trodden snow over
+  frozen dirt. Grime climbs the skirtings, frost sits on the roofs' and rocks' up faces, the cellars are wet at
+  the floor (the shared shader's wear parameters).
+- **Props** (`PropScatter`, node `LibraryProps`, built at load time as one MultiMesh per prop mesh): round and
+  plank tables over the table colliders (tops at exactly 0.75 m, so the meals and the patrol's map still lie on
+  them), farmhouse chairs (the knocked-over ones too), iron bed frames round the beds' mattresses, nightstands, the
+  wine casks, the 1937/41/43 casks on their cradles and the KREUZWEG stack in the barrel vault, Fanny's bucket, the
+  chopping block and axe in the yard, the guard's stool at the cage.
+- **Exterior.** Half-timbered west and east faces (studs and K-braces) to match the north, a soft snow lip along
+  every eave, split-rail fences, dead trees in pine bark.
+- **Nature.** Scripted spruces and birches (`tools_src/blender/nature/make_trees.py`, LOD0 1.8k / 0.55k tris,
+  LOD1 ~150 / ~90) replace the cone pines in the tree line (`EdgeTrees`, a `NatureRows` node) and the Landscape's
+  near and mid forests (LOD0 inside 95 m, LOD1 beyond, the impostor cards kept for the far rows); bare bushes and
+  boulders on the near swell and the stream banks; the near terrain height-blends the snow into frozen mud on the
+  roads with ruts; the far hills' rock faces are textured.
+
+Not done: lamp meshes (the hanging lanterns keep their code mesh: the lit glass, LampGlow and the Cousins'
+lamp groups key off it), glass panes in the windows (they are broken and barricaded), a fieldstone yard wall (the
+yard is fenced, T-080), benches and bar stools (no library model at seat height), wardrobes and washstands.

@@ -148,6 +148,20 @@ static func bed(parent: Node3D, a: Vector3, b: Vector3, blanket: String = "cloth
 		block(parent, Vector3(lo.x - 0.06, lo.y, lo.z), Vector3(lo.x, lo.y + 1.0, hi.z), "furniture")
 
 
+## The bed's soft parts only (mattress, blanket, pillow) at the same heights as bed(), for a frame drawn by
+## something else (Map 0's iron bed frames from the prop library, T-093).
+static func bed_soft(parent: Node3D, a: Vector3, b: Vector3, blanket: String = "cloth_red") -> void:
+	var lo: Vector3 = Vector3(minf(a.x, b.x), a.y, minf(a.z, b.z))
+	var hi: Vector3 = Vector3(maxf(a.x, b.x), b.y, maxf(a.z, b.z))
+	var h: float = hi.y - lo.y
+	block(parent, Vector3(lo.x + 0.05, lo.y + h * 0.45, lo.z + 0.05), Vector3(hi.x - 0.05, lo.y + h * 0.85, hi.z - 0.05), "linen")
+	block(parent, Vector3(lo.x + 0.04, lo.y + h * 0.85, lo.z + (hi.z - lo.z) * 0.3), Vector3(hi.x - 0.04, lo.y + h * 0.95, hi.z - 0.04), blanket)
+	if hi.z - lo.z > hi.x - lo.x:
+		block(parent, Vector3(lo.x + 0.1, lo.y + h * 0.85, lo.z + 0.08), Vector3(hi.x - 0.1, lo.y + h * 1.05, lo.z + 0.4), "linen")
+	else:
+		block(parent, Vector3(lo.x + 0.08, lo.y + h * 0.85, lo.z + 0.1), Vector3(lo.x + 0.4, lo.y + h * 1.05, hi.z - 0.1), "linen")
+
+
 static func trunk(parent: Node3D, a: Vector3, b: Vector3) -> void:
 	block(parent, a, b, "furniture")
 	block(parent, Vector3(a.x - 0.01, b.y - 0.06, a.z - 0.01), Vector3(b.x + 0.01, b.y, b.z + 0.01), "iron")
@@ -321,46 +335,55 @@ static func cart(parent: Node3D, pos: Vector3, yaw: float) -> void:
 		hay_bale(g, Vector3(-0.3 + i * 0.3, 0.65, 0.3 - i * 0.5), 15.0 * i)
 
 
+## A rail fence from a to b: square posts and two split rails per bay (T-093: the rails are hewn round poles in the
+## weathered planks, the posts dark oak; two MultiMeshes). A bay is left open now and then.
 static func fence(parent: Node3D, a: Vector3, b: Vector3, seed_v: int) -> void:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = seed_v
 	var length: float = a.distance_to(b)
 	var count: int = int(length / 2.2) + 1
-	var mm: MultiMesh = MultiMesh.new()
-	mm.transform_format = MultiMesh.TRANSFORM_3D
-	mm.mesh = unit_box()
-	var xf: Array[Transform3D] = []
+	var posts: Array[Transform3D] = []
+	var rails: Array[Transform3D] = []
 	var dir: Vector3 = (b - a).normalized()
 	var yaw: float = atan2(dir.x, dir.z)
 	for i: int in count:
 		var p: Vector3 = a.lerp(b, float(i) / maxf(1.0, float(count - 1)))
 		var tilt: Basis = Basis(Vector3.RIGHT, rng.randf_range(-0.08, 0.08)) * Basis(Vector3.FORWARD, rng.randf_range(-0.08, 0.08))
-		xf.append(Transform3D(tilt * Basis.from_scale(Vector3(0.12, 1.3, 0.12)), p + Vector3(0, 0.6, 0)))
+		posts.append(Transform3D(tilt * Basis.from_scale(Vector3(0.12, 1.3, 0.12)), p + Vector3(0, 0.6, 0)))
 		if i < count - 1 and rng.randf() > 0.15:
 			var q: Vector3 = a.lerp(b, (float(i) + 0.5) / maxf(1.0, float(count - 1)))
 			for h: float in [0.5, 1.0]:
 				var rb: Basis = Basis(Vector3.UP, yaw) * Basis(Vector3.RIGHT, rng.randf_range(-0.05, 0.05))
-				xf.append(Transform3D(rb * Basis.from_scale(Vector3(0.06, 0.1, length / maxf(1.0, float(count - 1)) + 0.1)), q + Vector3(0, h, 0)))
-	mm.instance_count = xf.size()
-	for i: int in xf.size():
-		mm.set_instance_transform(i, xf[i])
-	var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
-	mmi.multimesh = mm
-	mmi.material_override = Mats.get_mat("beam")
-	parent.add_child(mmi)
+				var span: float = length / maxf(1.0, float(count - 1)) + 0.1
+				rails.append(Transform3D(rb * Basis(Vector3.RIGHT, PI * 0.5) * Basis.from_scale(Vector3(0.1, span, 0.08)), q + Vector3(0, h, 0)))
+	for part: Array in [[posts, unit_box(), "beam"], [rails, unit_hex(), "planks"]]:
+		var xf: Array[Transform3D] = part[0]
+		if xf.is_empty():
+			continue
+		var mm: MultiMesh = MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.mesh = part[1]
+		mm.instance_count = xf.size()
+		for i: int in xf.size():
+			mm.set_instance_transform(i, xf[i])
+		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
+		mmi.multimesh = mm
+		mmi.material_override = Mats.get_mat(str(part[2]))
+		parent.add_child(mmi)
 
 
 static func dead_tree(parent: Node3D, pos: Vector3, seed_v: int, height: float = 7.0) -> void:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = seed_v
 	var g: Node3D = group(parent, "DeadTree", pos, rng.randf() * 360.0)
-	cyl(g, Vector3(0, height * 0.5, 0), 0.22, height, "beam", Vector3(rng.randf_range(-4, 4), 0, rng.randf_range(-4, 4)))
+	var wood: String = "bark" if MaterialLibrary.for_generator("bark") != null else "beam"   # T-093: the library's bark when it's on
+	cyl(g, Vector3(0, height * 0.5, 0), 0.22, height, wood, Vector3(rng.randf_range(-4, 4), 0, rng.randf_range(-4, 4)))
 	for i: int in 7:
 		var y: float = height * rng.randf_range(0.35, 0.95)
 		var a: float = rng.randf() * 360.0
 		var blen: float = rng.randf_range(1.2, 2.8) * (1.0 - y / height * 0.5)
 		var br: Node3D = group(g, "Branch", Vector3(0, y, 0), a)
-		obox(br, Vector3(0, blen * 0.35, -blen * 0.3), Vector3(0.09, blen, 0.09), "beam", Vector3(-rng.randf_range(35, 65), 0, 0))
+		obox(br, Vector3(0, blen * 0.35, -blen * 0.3), Vector3(0.09, blen, 0.09), wood, Vector3(-rng.randf_range(35, 65), 0, 0))
 	# snow on the ground around the roots
 	ball(g, Vector3(0, 0.0, 0), Vector3(1.6, 0.35, 1.6), "snow")
 
