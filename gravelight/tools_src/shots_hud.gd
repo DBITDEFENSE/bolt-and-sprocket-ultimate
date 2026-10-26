@@ -109,6 +109,10 @@ func _subtitles() -> void:
 
 func _run() -> void:
 	await _wait(9.0)
+	if _size.x > 0 and DisplayServer.window_get_size() != _size:   # T-100: the window came back maximized: ask again
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		DisplayServer.window_set_size(_size)
+		await _frames(20)
 	var p: Player = _map.get_node("Player1") as Player
 	for pk: StringName in SIX:
 		PerkManager.grant(1, pk)
