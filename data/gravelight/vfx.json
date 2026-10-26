@@ -69,11 +69,12 @@
   },
   "toll_ring": {"slots": 2, "seconds": 0.55, "strength": 0.06, "color": [0.72, 0.42, 1.0]},
   "atmosphere": {
-    "near_snow": {"amount": 140, "box": [12.0, 7.0, 12.0], "flake": 0.085, "fall": [0.9, 1.6], "drift": 0.9, "ahead": 2.5},
-    "far_snow": {"amount_mult": 0.6, "flake": 0.028, "alpha": 0.55},
+    "near_snow": {"amount": 140, "box": [12.0, 7.0, 12.0], "flake": 0.085, "fall": [0.9, 1.6], "drift": 0.9, "ahead": 2.5, "fade": [1.0, 2.4], "max_angle": 0.010},
+    "mid_snow": {"_doc": "T-100: Snowfall's world-fixed mid layer. Every snow layer (near/mid/far) is invisible inside fade[0] m of the camera, fully drawn past fade[1] m, and never wider on screen than max_angle radians (snow_flake.gdshader), so no flake drifts through the lens as a white blur.", "fade": [1.5, 3.5], "max_angle": 0.007},
+    "far_snow": {"amount_mult": 0.6, "flake": 0.028, "alpha": 0.55, "fade": [4.0, 8.0], "max_angle": 0.004},
     "motes": {"per_beam": 18, "flake": 0.012, "color": [0.75, 0.8, 1.0, 0.55]},
     "west_fog": {"position": [-10.0, 1.0, 20.0], "size": [22.0, 2.4, 90.0], "density": 0.045},
-    "breath": {"sprint_interval_mult": 0.5, "sprint_speed_scale": 1.35},
+    "breath": {"sprint_interval_mult": 0.5, "sprint_speed_scale": 1.35, "local": {"_doc": "T-100: the first-person puff (camera space, metres): small, faint and low so it never reads as a white blur over the sights", "offset": [0.0, -0.3, -0.45], "size": 0.1, "alpha": 0.07, "amount": 5}},
     "flicker": {"fire_names": ["hearth", "wreck", "candle", "fire", "brazier", "lantern_burnt"], "fire_speed_mult": 1.7, "fire_amount_mult": 1.25, "gutter_threshold": 0.74, "gutter_depth": 0.55}
   }
 }

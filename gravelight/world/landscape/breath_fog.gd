@@ -12,6 +12,8 @@ var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _scan: float = 0.0
 static var _pm: ParticleProcessMaterial
 static var _quad: QuadMesh
+static var _pm_cam: ParticleProcessMaterial
+static var _quad_cam: QuadMesh
 
 
 static func _process_mat() -> ParticleProcessMaterial:
@@ -41,6 +43,46 @@ static func _mesh() -> QuadMesh:
 	_quad.size = Vector2(0.22, 0.22)
 	_quad.material = Props._particle_mat(Color(1, 1, 1), Color(1, 1, 1), 0.0, false)
 	return _quad
+
+
+## T-100: the local player's own breath. The shared puff (eight 0.22 m sprites 0.3 m in front of the lens) read as a
+## big white blur filling the middle of the screen; the first-person puff is now its own small, faint one that
+## starts low (at the bottom edge of the view) and drifts forward and down, out of the sight line. Data:
+## vfx.json atmosphere.breath "local" {offset, size, alpha, amount}.
+static func local_cfg() -> Dictionary:
+	var br: Dictionary = (Effects.vfx.get("atmosphere", {}) as Dictionary).get("breath", {}) if Effects.vfx != null else {}
+	return br.get("local", {})
+
+
+static func _process_mat_cam() -> ParticleProcessMaterial:
+	if _pm_cam != null:
+		return _pm_cam
+	var a: float = float(local_cfg().get("alpha", 0.07))
+	_pm_cam = ParticleProcessMaterial.new()
+	_pm_cam.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	_pm_cam.emission_sphere_radius = 0.02
+	_pm_cam.direction = Vector3(0, -0.35, -1)
+	_pm_cam.spread = 14.0
+	_pm_cam.initial_velocity_min = 0.3
+	_pm_cam.initial_velocity_max = 0.5
+	_pm_cam.gravity = Vector3(0, 0.02, 0)
+	_pm_cam.damping_min = 0.4
+	_pm_cam.damping_max = 0.7
+	_pm_cam.scale_min = 0.6
+	_pm_cam.scale_max = 1.0
+	_pm_cam.scale_curve = Props._curve_tex([[0.0, 0.3], [1.0, 1.0]])
+	_pm_cam.color_ramp = Props._ramp_tex([[0.0, Color(0.85, 0.88, 0.95, 0.0)], [0.2, Color(0.85, 0.88, 0.95, a)], [1.0, Color(0.85, 0.88, 0.95, 0.0)]])
+	return _pm_cam
+
+
+static func _mesh_cam() -> QuadMesh:
+	if _quad_cam != null:
+		return _quad_cam
+	var sz: float = float(local_cfg().get("size", 0.1))
+	_quad_cam = QuadMesh.new()
+	_quad_cam.size = Vector2(sz, sz)
+	_quad_cam.material = Props._particle_mat(Color(1, 1, 1), Color(1, 1, 1), 0.0, false)
+	return _quad_cam
 
 
 ## True where breath shows: outside the heated rooms, or anywhere once the fire is out.
@@ -97,7 +139,12 @@ func _attach_new() -> void:
 		p.visibility_aabb = AABB(Vector3(-2, -2, -3), Vector3(4, 4, 5))
 		var cam: Camera3D = pl.get("camera") as Camera3D
 		if cam != null and bool(pl.get("is_local")) and not bool(pl.get("is_bot")):
-			p.position = Vector3(0.0, -0.16, -0.3)
+			var lc: Dictionary = local_cfg()
+			var off: Array = lc.get("offset", [0.0, -0.3, -0.45])
+			p.position = Vector3(float(off[0]), float(off[1]), float(off[2]))
+			p.amount = int(lc.get("amount", 5))
+			p.process_material = _process_mat_cam()
+			p.draw_pass_1 = _mesh_cam()
 			cam.add_child(p)
 		else:
 			p.position = Vector3(0.0, 1.55, -0.28)
