@@ -106,6 +106,9 @@ func _run() -> void:
 	_dir.debug_spawn(1)
 	await _frames(2)
 	var z: Zombie = _dir.active_zombies()[0]
+	# a ground spawn is still under the snow two frames in, its hitboxes off until head-out (T-085): park it at the
+	# end of its rise so the shot meets a standing body whichever spawn the director picked (was a random flake)
+	z.debug_emerge_seek("standard", 1.0)
 	z.set_physics_process(false)
 	z.global_position = Vector3(14, 0, 6)
 	z.rotation.y = 0.0
