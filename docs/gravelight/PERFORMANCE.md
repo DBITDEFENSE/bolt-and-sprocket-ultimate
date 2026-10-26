@@ -56,7 +56,10 @@ Same scene (perf_marks, High, round 15, 3 bots + Jakub, 24 zombies, marks), back
 other builders' Godot processes running (single runs swing by ~10 FPS):
 - before (master ab098f8's map, landscape and materials): avg 81.1 / 87.3 FPS, 1% low 46.1 / 58.1, 0 frames over 40 ms.
 - after, first cut (LOD0 trees out to 140 m, the tree line casting moon shadows): 70.7 / 74.4 FPS, 1% low 50.7 / 51.5.
-- after (LOD1 past 95 m, the tree line's alpha-scissored shadows off): see the T-093 report's final runs.
+- after (LOD1 past 95 m, the tree line's alpha-scissored shadows off): 75.4 / 68.4 / 71.2 FPS, 1% low 51.5 / 41.0 / 42.1,
+  0 frames over 40 ms (a fourth run, 49.5, was the machine). About 12% under master on the average, still over the
+  60 FPS target. Next levers if it is needed: impostor cards from ~70 m for the near ring, a cheaper (non-triplanar)
+  material for the big flat floors and the snow slab, MultiMesh visibility ranges per sector.
 What it spends: the library's triplanar surface shader samples three maps per projection; the scripted trees are
 alpha-scissored cards (overdraw near the edge); the library props are MultiMeshes (one draw call per prop mesh,
 chairs and small props cast no shadows).
