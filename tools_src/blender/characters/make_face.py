@@ -545,7 +545,7 @@ def hair(P, B, person):
         acc.add(bv, bf, "hair", "Head", "Neck", 0.15)
     elif style == "buns2":
         for sx in (-1.0, 1.0):
-            bv, bf = MB.uv_sphere(HEAD_C + np.array([sx * 0.07 * hs[0], 0.088 * hs[1], 0.022]), 0.042, 10, 7)
+            bv, bf = MB.uv_sphere(HEAD_C + np.array([sx * 0.066 * hs[0], 0.035 * hs[1], 0.078 * hs[2]]), 0.04, 10, 7)
             acc.add(bv, bf, "hair", "Head")
     elif style == "braid":
         bv, bf = MB.uv_sphere(HEAD_C + np.array([0, -0.06, 0.094 * hs[2]]), 0.03, 10, 6)

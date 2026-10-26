@@ -90,7 +90,7 @@ func _cast() -> void:
 	for i: int in SQUAD.size():
 		var b: RemoteBody = RemoteBody.new()
 		add_child(b)
-		b.position = Vector3(-6.3 + 1.3 * float(i), 0, 0)
+		b.position = Vector3(-5.0 + 1.0 * float(i), 0, 0)
 		b.rotation.y = PI
 		b.setup(SQUAD[i][0], 10 + i)
 		b.set_weapon(SQUAD[i][1])
@@ -100,7 +100,7 @@ func _cast() -> void:
 	for k: int in COUSINS.size():
 		var hb: HomageBoss = CousinHammer.new() if COUSINS[k] == "hammer" else (CousinReach.new() if COUSINS[k] == "reach" else CousinAlix.new())
 		add_child(hb)
-		var at: Vector3 = Vector3(0.6 + 1.35 * float(k), 0, 0)
+		var at: Vector3 = Vector3(0.25 + 1.0 * float(k), 0, 0)
 		hb.spawn_homage(at, 1000.0)
 		hb.set_physics_process(false)   # posed: no brain; the idle clip still plays
 		hb.global_position = at
@@ -121,7 +121,7 @@ func _cast() -> void:
 		var row: Dictionary = (rows.get(ROW2[j], {"id": ROW2[j]}) as Dictionary).duplicate(true)
 		row["pose"] = "stand"
 		pb.setup(row)
-		pb.position = Vector3(-5.6 + 1.4 * float(j), 0, -3.2)
+		pb.position = Vector3(-3.3 + 0.95 * float(j), 0, -3.2)
 		pb.rotation.y = PI
 		_row2.append(pb)
 		_tag(str(row.get("display", ROW2[j])), pb.position + Vector3(0, 0.08, 0.6))
@@ -160,17 +160,25 @@ func _faces() -> Array[FaceDriver]:
 func _run() -> void:
 	await _frames(30)
 	if _want("lineup"):
-		_cam.fov = 38.0
-		_cam.position = Vector3(-0.9, 1.25, 9.6)
-		_cam.look_at(Vector3(-0.9, 0.95, 0.0), Vector3.UP)
+		_cam.fov = 30.0
+		_cam.position = Vector3(-1.35, 1.3, 10.2)
+		_cam.look_at(Vector3(-1.35, 0.92, 0.0), Vector3.UP)
 		for t: Label3D in _tags:
 			t.visible = t.position.z > -1.0
+		for pb: PatronBody in _row2:
+			pb.visible = false
 		await _frames(10)
 		await _shot("lineup.png")
-		_cam.position = Vector3(-0.2, 1.3, 6.4)
-		_cam.look_at(Vector3(-0.2, 0.95, -3.2), Vector3.UP)
+		_cam.position = Vector3(0.0, 1.3, 5.6)
+		_cam.look_at(Vector3(0.0, 0.95, -3.2), Vector3.UP)
 		for t: Label3D in _tags:
 			t.visible = t.position.z < -1.0
+		for pb: PatronBody in _row2:
+			pb.visible = true
+		for b: RemoteBody in _squad:
+			b.position.x += 40.0   # out of the way (update_pose keeps them visible)
+		for c: Node3D in _cousins:
+			c.visible = false
 		await _frames(10)
 		await _shot("lineup_row2.png")
 		# the backs (silhouettes, packs, the braid, the slung rifle)
@@ -178,10 +186,16 @@ func _run() -> void:
 			b.rotation.y = 0.0
 		for c: Node3D in _cousins:
 			c.rotation.y = 0.0
-		_cam.position = Vector3(-0.9, 1.25, 9.6)
-		_cam.look_at(Vector3(-0.9, 0.95, 0.0), Vector3.UP)
+		_cam.position = Vector3(-1.35, 1.3, 10.2)
+		_cam.look_at(Vector3(-1.35, 0.92, 0.0), Vector3.UP)
 		for t: Label3D in _tags:
 			t.visible = false
+		for pb: PatronBody in _row2:
+			pb.visible = false
+		for b: RemoteBody in _squad:
+			b.position.x -= 40.0
+		for c: Node3D in _cousins:
+			c.visible = true
 		await _frames(10)
 		await _shot("lineup_back.png")
 		for b: RemoteBody in _squad:
@@ -212,7 +226,7 @@ func _run() -> void:
 			await _shot("faces_%s.png" % e)
 		# the Cousins' faces
 		for i: int in _squad.size():
-			_squad[i].position = Vector3(-6.3 + 1.3 * float(i), 0, 0)
+			_squad[i].position = Vector3(-5.0 + 1.0 * float(i), 0, 0)
 		for k: int in _cousins.size():
 			_cousins[k].global_position = Vector3(-0.5 + 0.5 * float(k), 0, 3.0)
 		_cam.position = Vector3(0.0, 1.66, 4.5)
@@ -221,11 +235,13 @@ func _run() -> void:
 		await _shot("cousins_faces.png")
 	if _want("risen") and PeopleBodies.available("kubiak"):
 		# a risen patron beside the living one (the zombie that gets up wears the same person)
+		for pb2: PatronBody in _row2:
+			pb2.visible = true
 		_row2[2].visible = false
 		var z: MeshInstance3D = MeshInstance3D.new()
 		var sk: Skeleton3D = ZombieRig.build_skeleton()
 		add_child(sk)
-		sk.position = Vector3(-2.8, 0, -3.2)
+		sk.position = Vector3(-1.4, 0, -3.2)
 		sk.rotation.y = PI
 		sk.add_child(z)
 		z.mesh = PeopleBodies.mesh("kubiak", true)
@@ -235,8 +251,10 @@ func _run() -> void:
 			if sk.get_bone_name(c).ends_with("Arm"):
 				sk.set_bone_pose_rotation(c, Quaternion(Vector3.RIGHT, -0.6 if sk.get_bone_name(c).ends_with("UpperArm") else -0.3))
 		_cam.fov = 34.0
-		_cam.position = Vector3(-3.5, 1.45, -0.6)
-		_cam.look_at(Vector3(-3.5, 1.15, -3.2), Vector3.UP)
+		for b2: RemoteBody in _squad:
+			b2.position.x += 40.0
+		_cam.position = Vector3(-1.9, 1.45, -0.7)
+		_cam.look_at(Vector3(-1.9, 1.15, -3.2), Vector3.UP)
 		await _frames(10)
 		await _shot("risen.png")
 	get_tree().quit()

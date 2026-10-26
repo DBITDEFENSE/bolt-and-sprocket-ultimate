@@ -873,6 +873,11 @@ def head_piece(P, kind, keyname="hat"):
     return out
 
 
+
+def P_coat(y_lo, y_hi=1.545):
+    """A coat's body: the trunk and the hip sides (thigh-dominant skin above the hem), not the arms."""
+    return lambda b: np.isin(b.dom, list(TORSO | THIGHS)) & (b.v[:, 1] > y_lo) & (b.v[:, 1] < y_hi) & (b.region == 0) & (np.abs(b.v[:, 0]) < 0.24)
+
 def P_palm():
     """The palm and the back of the hand, not the fingers (fingerless gloves)."""
     def f(b):
@@ -904,22 +909,22 @@ def buttons(k, piece, x, y0, n, step, keyname="dark", size=0.015):
 def stitches(k, body, ys_neck=(), wrist_y=None):
     """The Cousins' doll seams: a thin dark band at the neck and/or wrists."""
     for y in ys_neck:
-        k.add(band(body, neck_pts(body), y, 0.006, "stitch", pad=0.0015, thick=0.002))
+        k.add(band(body, neck_pts(body), y, 0.005, "stitch", pad=0.0006, thick=0.0016))
     if wrist_y is not None:
         for side in ("Left", "Right"):
-            k.add(cuff_band(body, side, wrist_y, 0.006, "stitch", pad=0.0015, thick=0.002))
+            k.add(cuff_band(body, side, wrist_y, 0.006, "stitch", pad=0.0015, thick=0.002, bones=("LowerArm", "Hand")))
 
 
 def kit_dutch(body, P):
     k = Kit("dutch")
-    jacket = add_shell(k, body, P_or(P_torso(0.86), P_arms(0.92)), thick_by_y(0.021, 0.016), "cloth")
-    k.add(band(body, neck_pts(body), 1.5, 0.05, "cloth", pad=0.014, thick=0.009))
-    add_shell(k, body, P_legs(0.3, 0.98), 0.01, "cloth2")
+    jacket = add_shell(k, body, P_or(P_coat(0.86), P_arms(0.92)), thick_by_y(0.021, 0.016), "cloth")
+    k.add(band(body, neck_pts(body), 1.522, 0.062, "cloth", pad=0.014, thick=0.009))
+    add_shell(k, body, P_legs(0.28, 0.98), 0.01, "cloth2")
     add_shell(k, body, P_boots(0.34), 0.013, "canvas", rim=0.006, push=boot_push())     # canvas leggings
     add_shell(k, body, P_boots(0.13), 0.019, "leather", rim=0.006, push=boot_push(0.014))
     add_shell(k, body, P_hands(), 0.0045, "glove", rim=0.0)
     for sx, side in ((-1, "Left"), (1, "Right")):
-        k.add(cuff_band(body, side, 0.92, 0.035, "glove", pad=0.012, thick=0.006))           # glove gauntlets
+        k.add(cuff_band(body, side, 0.92, 0.035, "glove", pad=0.012, thick=0.006, bones=("LowerArm", "Hand")))           # glove gauntlets
         k.add(pstud(jacket, "cloth", sx * 0.075, 1.33, (0.075, 0.05, 0.007)))                # breast pocket flaps
     buttons(k, jacket, 0.012, 1.42, 4, 0.1)
     k.add(pstud(jacket, "cloth2", 0.0, 1.465, (0.075, 0.07, 0.004)))                         # the wool shirt at the collar
@@ -939,13 +944,13 @@ def kit_dutch(body, P):
 
 def kit_peg(body, P):
     k = Kit("peg")
-    smock = add_shell(k, body, P_or(P_torso(0.84), P_arms(0.935)), thick_by_y(0.022, 0.017), "cloth")
+    smock = add_shell(k, body, P_or(P_coat(0.84), P_arms(0.935)), thick_by_y(0.022, 0.017), "cloth")
     with_ao(smock, mottle(smock.v, 8.0, 0.38, 1.0) * mottle(smock.v, 13.0, 0.2, 4.0))
     sk = skirt(body, trunk(smock), 0.9, 0.7, "cloth", flare=0.12, ease=0.004, rings=5)
     k.add(with_ao(sk, mottle(sk.v, 8.0, 0.38, 1.0)))
-    k.add(band(body, neck_pts(body), 1.5, 0.05, "cloth", pad=0.016, thick=0.01))
+    k.add(band(body, neck_pts(body), 1.522, 0.062, "cloth", pad=0.016, thick=0.01))
     for side in ("Left", "Right"):
-        k.add(cuff_band(body, side, 0.945, 0.04, "cloth3", pad=0.012, thick=0.007))         # knitted smock cuffs
+        k.add(cuff_band(body, side, 0.945, 0.04, "cloth3", pad=0.012, thick=0.007, bones=("LowerArm", "Hand")))         # knitted smock cuffs
     add_shell(k, body, P_legs(0.22, 0.98), 0.01, "cloth2")
     add_shell(k, body, P_boots(0.21), 0.013, "canvas", push=boot_push())                    # anklets
     add_shell(k, body, P_boots(0.11), 0.017, "leather", push=boot_push(0.013))
@@ -955,7 +960,7 @@ def kit_peg(body, P):
     for i in range(2):
         k.add(pstud(smock, "canvas", -0.15, 0.9 + 0.1 * i, (0.1, 0.11, 0.075)))            # satchel charges
     k.add(pstud(smock, "leather", 0.15, 0.93, (0.06, 0.12, 0.05)))                          # holster
-    k.add(cuff_band(body, "Left", 0.905, 0.016, "leather", pad=0.016, thick=0.004))       # wristwatch
+    k.add(cuff_band(body, "Left", 0.905, 0.016, "leather", pad=0.016, thick=0.004, bones=("LowerArm", "Hand")))       # wristwatch
     for p in head_piece(P, "beret", "hat"):
         k.add(p)
     return k
@@ -963,14 +968,14 @@ def kit_peg(body, P):
 
 def kit_deacon(body, P):
     k = Kit("deacon")
-    cov = add_shell(k, body, P_or(P_torso(0.85), P_arms(0.92), P_legs(0.28, 1.0)), lambda p: np.where(np.abs(p[:, 0]) > 0.2, 0.012, 0.013), "cloth")
+    cov = add_shell(k, body, P_or(P_coat(0.85), P_arms(0.92), P_legs(0.28, 1.0)), lambda p: np.where(np.abs(p[:, 0]) > 0.2, 0.012, 0.013), "cloth")
     with_ao(cov, mottle(cov.v, 7.0, 0.45, 2.3, 0.08))                                     # grease stains
-    k.add(band(body, neck_pts(body), 1.49, 0.04, "cloth", pad=0.012, thick=0.008))
+    k.add(band(body, neck_pts(body), 1.512, 0.052, "cloth", pad=0.012, thick=0.008))
     k.add(pstud(cov, "white", 0.0, 1.43, (0.07, 0.07, 0.004)))                              # the undershirt at the open collar
     k.add(pstud(cov, "cloth2", 0.0, 1.2, (0.022, 0.38, 0.006)))                             # the placket
     for sx in (-1, 1):
         k.add(pstud(cov, "cloth2", sx * 0.075, 1.3, (0.085, 0.1, 0.008)))
-        k.add(cuff_band(body, "Left" if sx < 0 else "Right", 0.93, 0.04, "cloth", pad=0.013, thick=0.006))   # rolled cuffs
+        k.add(cuff_band(body, "Left" if sx < 0 else "Right", 0.93, 0.04, "cloth", pad=0.013, thick=0.006, bones=("LowerArm", "Hand")))   # rolled cuffs
     k.add(band(body, trunk(cov), 0.99, 0.05, "leather", pad=0.002, thick=0.008))
     k.add(pstud(cov, "metal", 0.15, 0.9, (0.026, 0.25, 0.012)))                             # the wrench
     k.add(pstud(cov, "metal", 0.15, 0.77, (0.07, 0.045, 0.014)))
@@ -984,20 +989,20 @@ def kit_deacon(body, P):
 
 def kit_wren(body, P):
     k = Kit("wren")
-    smock = add_shell(k, body, P_or(P_torso(0.8), P_arms(0.935)), thick_by_y(0.025, 0.02), "cloth")
+    smock = add_shell(k, body, P_or(P_coat(0.8), P_arms(0.935)), thick_by_y(0.025, 0.02), "cloth")
     with_ao(smock, mottle(smock.v, 6.0, 0.12, 3.0))
     sk = skirt(body, trunk(smock), 0.9, 0.66, "cloth", flare=0.14, ease=0.005, rings=5)
     k.add(with_ao(sk, mottle(sk.v, 6.0, 0.12, 3.0)))
     k.add(band(body, trunk(smock), 1.02, 0.03, "cloth3", pad=0.002, thick=0.006))         # the drawstring
-    k.add(band(body, neck_pts(body), 1.49, 0.075, "cloth", pad=0.032, thick=0.018))      # the hood, down
+    k.add(band(body, neck_pts(body), 1.512, 0.087, "cloth", pad=0.032, thick=0.018))      # the hood, down
     k.add(band(body, neck_pts(body), 1.535, 0.06, "accent", pad=0.02, thick=0.016))       # the scarf
     k.add(pstud(smock, "accent", -0.06, 1.36, (0.06, 0.22, 0.014), tilt=0.12))             # its tail
     k.add(cuff_band(body, "Left", 1.3, 0.032, "white", pad=0.02, thick=0.004, bones=("UpperArm",)))      # the AK armband
     k.add(cuff_band(body, "Left", 1.268, 0.032, "armband", pad=0.02, thick=0.004, bones=("UpperArm",)))
     for side in ("Left", "Right"):
-        k.add(cuff_band(body, side, 0.935, 0.04, "knit", pad=0.012, thick=0.007))           # sweater cuffs
+        k.add(cuff_band(body, side, 0.935, 0.04, "knit", pad=0.012, thick=0.007, bones=("LowerArm", "Hand")))           # sweater cuffs
     add_shell(k, body, P_palm(), 0.004, "glove", rim=0.0)                                   # fingerless gloves
-    add_shell(k, body, P_legs(0.25, 0.98), 0.01, "cloth2")
+    add_shell(k, body, P_legs(0.22, 0.98), 0.01, "cloth2")
     add_shell(k, body, P_boots(0.29), 0.015, "leather", rim=0.008, push=boot_push())
     k.add(band(body, trunk(smock), 0.97, 0.035, "leather", pad=0.001, thick=0.006))
     k.add(pstud(smock, "patch", -0.15, 0.91, (0.08, 0.11, 0.025)))                           # the stained notebook
@@ -1010,16 +1015,16 @@ def kit_wren(body, P):
 
 def kit_jakub(body, P):
     k = Kit("jakub")
-    shirt = add_shell(k, body, P_torso(0.86), 0.008, "cloth3")
-    coat = add_shell(k, body, P_not_front_strip(P_or(P_torso(0.84), P_arms(0.905)), 0.05), thick_by_y(0.03, 0.025), "cloth", push=shoulders_push(0.022))
+    shirt = add_shell(k, body, P_coat(0.86), 0.008, "cloth3")
+    coat = add_shell(k, body, P_not_front_strip(P_or(P_coat(0.84), P_arms(0.905)), 0.05), thick_by_y(0.03, 0.025), "cloth", push=shoulders_push(0.022))
     sk = skirt(body, trunk(coat), 0.88, 0.42, "cloth", flare=0.3, ease=0.012)
     k.add(cut_front(sk, 0.075))
-    k.add(band(body, neck_pts(body), 1.51, 0.095, "cloth", pad=0.03, thick=0.016))      # the collar turned up
+    k.add(band(body, neck_pts(body), 1.532, 0.107, "cloth", pad=0.03, thick=0.016))      # the collar turned up
     for sx in (-1.0, 1.0):
         buttons(k, coat, sx * 0.085, 1.36, 3, 0.11, "metal", 0.017)
     k.add(band(body, trunk(shirt), 0.985, 0.04, "leather", pad=0.002, thick=0.006))
     k.add(pstud(shirt, "metal", 0.03, 0.94, (0.012, 0.09, 0.012)))                           # the empty lamp hook
-    add_shell(k, body, P_legs(0.2, 0.98), 0.01, "cloth2")
+    add_shell(k, body, P_legs(0.16, 0.98), 0.01, "cloth2")
     add_shell(k, body, P_boots(0.22), 0.015, "leather", rim=0.008, push=boot_push())
     for p in head_piece(P, "flatcap", "hat"):
         k.add(p)
@@ -1028,13 +1033,13 @@ def kit_jakub(body, P):
 
 def kit_rother(body, P):
     k = Kit("rother")
-    coat = add_shell(k, body, P_or(P_torso(0.84), P_arms(0.91)), thick_by_y(0.024, 0.019), "cloth")
+    coat = add_shell(k, body, P_or(P_coat(0.84), P_arms(0.91)), thick_by_y(0.024, 0.019), "cloth")
     with_ao(coat, mottle(coat.v, 6.0, 0.15, 5.0))
     k.add(skirt(body, trunk(coat), 0.9, 0.66, "cloth", flare=0.18, ease=0.006, rings=5))
     buttons(k, coat, 0.012, 1.36, 4, 0.1)
     k.add(band(body, neck_pts(body), 1.53, 0.07, "knit", pad=0.022, thick=0.018))        # the scarf
     k.add(pstud(coat, "knit", 0.05, 1.37, (0.06, 0.18, 0.016), tilt=-0.1))
-    add_shell(k, body, P_legs(0.3, 0.98), 0.01, "cloth2")
+    add_shell(k, body, P_legs(0.24, 0.98), 0.01, "cloth2")
     add_shell(k, body, P_boots(0.3), 0.016, "leather", rim=0.008, push=boot_push())
     for p in head_piece(P, "flatcap", "hat"):
         k.add(p)
@@ -1043,13 +1048,13 @@ def kit_rother(body, P):
 
 def kit_kubiak(body, P):
     k = Kit("kubiak")
-    jacket = add_shell(k, body, P_or(P_torso(0.88), P_arms(0.91)), thick_by_y(0.017, 0.013), "cloth")
-    k.add(band(body, neck_pts(body), 1.49, 0.045, "cloth3", pad=0.012, thick=0.008))
+    jacket = add_shell(k, body, P_or(P_coat(0.88), P_arms(0.91)), thick_by_y(0.017, 0.013), "cloth")
+    k.add(band(body, neck_pts(body), 1.512, 0.057, "cloth3", pad=0.012, thick=0.008))
     k.add(pstud(jacket, "cloth3", 0.0, 1.42, (0.06, 0.07, 0.004)))                           # the shirt at the collar
     buttons(k, jacket, 0.012, 1.32, 3, 0.1)
     for sx in (-1, 1):
         k.add(pstud(jacket, "cloth2", sx * 0.09, 1.04, (0.09, 0.07, 0.006)))
-    add_shell(k, body, P_legs(0.2, 0.98), 0.009, "cloth2")
+    add_shell(k, body, P_legs(0.15, 0.98), 0.009, "cloth2")
     add_shell(k, body, P_boots(0.2), 0.013, "leather", push=boot_push())
     k.add(band(body, trunk(jacket), 0.97, 0.03, "leather", pad=0.001, thick=0.005))
     return k
@@ -1057,10 +1062,10 @@ def kit_kubiak(body, P):
 
 def kit_pohl(body, P):
     k = Kit("pohl")
-    coat = add_shell(k, body, P_or(P_torso(0.85), P_arms(0.905)), thick_by_y(0.02, 0.016), "cloth")
+    coat = add_shell(k, body, P_or(P_coat(0.85), P_arms(0.905)), thick_by_y(0.02, 0.016), "cloth")
     k.add(skirt(body, trunk(coat), 0.9, 0.3, "cloth", flare=0.34, ease=0.006))
     buttons(k, coat, 0.0, 1.38, 5, 0.09)
-    k.add(band(body, neck_pts(body), 1.52, 0.06, "knit", pad=0.02, thick=0.016))         # a wool scarf
+    k.add(band(body, neck_pts(body), 1.542, 0.072, "knit", pad=0.02, thick=0.016))         # a wool scarf
     add_shell(k, body, P_legs(0.08, 0.6), 0.003, "cloth2", rim=0.0)                         # stockings
     add_shell(k, body, P_boots(0.11), 0.009, "leather", push=boot_push(0.009))
     for p in head_piece(P, "kerchief", "hat"):
@@ -1070,9 +1075,9 @@ def kit_pohl(body, P):
 
 def kit_trudi(body, P):
     k = Kit("trudi")
-    blouse = add_shell(k, body, P_or(P_torso(0.92), P_arms(0.92)), thick_by_y(0.008, 0.008), "cloth")
+    blouse = add_shell(k, body, P_or(P_coat(0.92), P_arms(0.92)), thick_by_y(0.008, 0.008), "cloth")
     bodice = add_shell(k, body, P_torso(0.95, 1.4), 0.015, "cloth2", cover=False)
-    k.add(band(body, neck_pts(body), 1.5, 0.04, "cloth", pad=0.012, thick=0.008))
+    k.add(band(body, neck_pts(body), 1.522, 0.052, "cloth", pad=0.012, thick=0.008))
     sk = skirt(body, trunk(blouse), 0.98, 0.1, "cloth3", flare=0.32, ease=0.012)
     k.add(sk)
     pan = shell(BodyLike(sk), lambda b: (b.v[:, 2] < -0.02) & (np.abs(b.v[:, 0]) < 0.16) & (b.v[:, 1] > 0.3), 0.004, "white", 0.0)[0]
@@ -1087,9 +1092,9 @@ def kit_trudi(body, P):
 
 def kit_sobotta(body, P):
     k = Kit("sobotta")
-    tunic = add_shell(k, body, P_or(P_torso(0.84), P_arms(0.91)), thick_by_y(0.018, 0.014), "cloth")
+    tunic = add_shell(k, body, P_or(P_coat(0.84), P_arms(0.91)), thick_by_y(0.018, 0.014), "cloth")
     k.add(skirt(body, trunk(tunic), 0.92, 0.76, "cloth", flare=0.1, ease=0.003, rings=4))
-    k.add(band(body, neck_pts(body), 1.5, 0.055, "cloth2", pad=0.016, thick=0.01))
+    k.add(band(body, neck_pts(body), 1.522, 0.067, "cloth2", pad=0.016, thick=0.01))
     buttons(k, tunic, 0.0, 1.4, 4, 0.1, "metal")
     for sx in (-1, 1):
         k.add(pstud(tunic, "dark", sx * 0.045, 1.475, (0.028, 0.038, 0.007), tilt=sx * 0.3))   # plain collar tabs
@@ -1097,7 +1102,7 @@ def kit_sobotta(body, P):
         k.add(pstud(tunic, "cloth", sx * 0.09, 0.93, (0.09, 0.05, 0.008)))
     k.add(band(body, trunk(tunic), 0.99, 0.05, "leather", pad=0.002, thick=0.008))
     k.add(pstud(tunic, "metal", 0.0, 0.99, (0.05, 0.042, 0.012)))
-    add_shell(k, body, P_legs(0.35, 0.98), 0.01, "cloth2")
+    add_shell(k, body, P_legs(0.36, 0.98), 0.01, "cloth2")
     add_shell(k, body, P_boots(0.43), 0.015, "leather", rim=0.008, push=boot_push())      # jackboots
     for p in head_piece(P, "sidecap", "hat"):
         k.add(p)
@@ -1106,12 +1111,12 @@ def kit_sobotta(body, P):
 
 def kit_wiesner(body, P):
     k = Kit("wiesner")
-    jacket = add_shell(k, body, P_or(P_torso(0.84), P_arms(0.91)), thick_by_y(0.019, 0.015), "cloth")
+    jacket = add_shell(k, body, P_or(P_coat(0.84), P_arms(0.91)), thick_by_y(0.019, 0.015), "cloth")
     k.add(skirt(body, trunk(jacket), 0.92, 0.76, "cloth", flare=0.12, ease=0.004, rings=4))
     for sx in (-1.0, 1.0):
         buttons(k, jacket, sx * 0.06, 1.38, 4, 0.1, "brass", 0.016)                       # double-breasted
     k.add(band(body, neck_pts(body), 1.53, 0.065, "knit", pad=0.02, thick=0.016))
-    add_shell(k, body, P_legs(0.3, 0.98), 0.01, "cloth2")
+    add_shell(k, body, P_legs(0.24, 0.98), 0.01, "cloth2")
     add_shell(k, body, P_boots(0.3), 0.015, "leather", rim=0.008, push=boot_push())
     for p in head_piece(P, "peaked", "hat"):
         k.add(p)
@@ -1120,11 +1125,11 @@ def kit_wiesner(body, P):
 
 def kit_brandt(body, P):
     k = Kit("brandt")
-    coat = add_shell(k, body, P_or(P_torso(0.86), P_arms(0.905)), thick_by_y(0.017, 0.014), "cloth")
+    coat = add_shell(k, body, P_or(P_coat(0.86), P_arms(0.905)), thick_by_y(0.017, 0.014), "cloth")
     k.add(skirt(body, trunk(coat), 0.92, 0.66, "cloth", flare=0.3, ease=0.016, rings=5))
     k.add(skirt(body, trunk(coat), 0.9, 0.16, "cloth2", flare=0.26, ease=0.006))
     buttons(k, coat, 0.0, 1.36, 4, 0.09)
-    k.add(band(body, neck_pts(body), 1.5, 0.035, "white", pad=0.012, thick=0.008))
+    k.add(band(body, neck_pts(body), 1.522, 0.047, "white", pad=0.012, thick=0.008))
     k.add(band(body, neck_pts(body), 1.535, 0.055, "knit", pad=0.02, thick=0.015))
     k.add(pstud(coat, "knit", -0.045, 1.38, (0.055, 0.17, 0.014), tilt=0.12))
     add_shell(k, body, P_legs(0.08, 0.6), 0.003, "dark", rim=0.0)
@@ -1134,10 +1139,10 @@ def kit_brandt(body, P):
 
 def kit_kroll(body, P):
     k = Kit("kroll")
-    jacket = add_shell(k, body, P_or(P_torso(0.86), P_arms(0.91)), thick_by_y(0.016, 0.013), "cloth")
+    jacket = add_shell(k, body, P_or(P_coat(0.86), P_arms(0.91)), thick_by_y(0.016, 0.013), "cloth")
     k.add(skirt(body, trunk(jacket), 0.94, 0.28, "cloth2", flare=0.26, ease=0.006))
     buttons(k, jacket, 0.0, 1.4, 5, 0.09, "brass", 0.014)
-    k.add(band(body, neck_pts(body), 1.5, 0.045, "cloth", pad=0.014, thick=0.008))
+    k.add(band(body, neck_pts(body), 1.522, 0.057, "cloth", pad=0.014, thick=0.008))
     k.add(sash(jacket, (0.1, 1.45), (-0.16, 0.99), 0.032, "leather"))                     # the post satchel's strap
     k.add(sash(jacket, (0.1, 1.45), (-0.16, 0.99), 0.032, "leather", front=False))
     k.add(pstud(jacket, "leather", -0.15, 0.9, (0.18, 0.16, 0.07)))                         # the satchel
@@ -1150,16 +1155,16 @@ def kit_kroll(body, P):
 
 def kit_cousin_hammer(body, P):
     k = Kit("cousin_hammer")
-    coat = add_shell(k, body, P_or(P_torso(0.84), P_arms(0.925)), thick_by_y(0.032, 0.027), "cloth", push=shoulders_push(0.024))
+    coat = add_shell(k, body, P_or(P_coat(0.84), P_arms(0.925)), thick_by_y(0.032, 0.027), "cloth", push=shoulders_push(0.024))
     k.add(skirt(body, trunk(coat), 0.88, 0.42, "cloth", flare=0.36, ease=0.014))
     k.add(skirt(body, trunk(coat), 0.9, 0.08, "cloth2", flare=0.3, ease=0.006))              # the long wool skirt
     buttons(k, coat, 0.0, 1.46, 5, 0.1, "metal", 0.018)                                      # buttoned to the throat
-    k.add(band(body, neck_pts(body), 1.515, 0.07, "cloth", pad=0.022, thick=0.014))
+    k.add(band(body, neck_pts(body), 1.537, 0.082, "cloth", pad=0.022, thick=0.014))
     for side in ("Left", "Right"):
-        k.add(cuff_band(body, side, 0.97, 0.09, "cloth3", pad=0.03, thick=0.012))           # sleeves turned back twice
+        k.add(cuff_band(body, side, 0.97, 0.09, "cloth3", pad=0.03, thick=0.012, bones=("LowerArm", "Hand")))           # sleeves turned back twice
     add_shell(k, body, P_hands(), 0.011, "knit", rim=0.0)                                   # red mittens
     for side in ("Left", "Right"):
-        k.add(cuff_band(body, side, 0.885, 0.035, "white", pad=0.016, thick=0.008))         # their grey cuffs
+        k.add(cuff_band(body, side, 0.885, 0.035, "white", pad=0.016, thick=0.008, bones=("LowerArm", "Hand")))         # their grey cuffs
     add_shell(k, body, P_boots(0.2), 0.013, "leather", rim=0.006, push=boot_push())
     stitches(k, body, ys_neck=(1.585,))
     return k
@@ -1167,9 +1172,9 @@ def kit_cousin_hammer(body, P):
 
 def kit_cousin_reach(body, P):
     k = Kit("cousin_reach")
-    gown = add_shell(k, body, P_or(P_torso(0.85), P_arms(1.15)), thick_by_y(0.009, 0.009), "cloth")
+    gown = add_shell(k, body, P_or(P_coat(0.85), P_arms(1.15)), thick_by_y(0.009, 0.009), "cloth")
     k.add(skirt(body, trunk(gown), 0.95, 0.05, "cloth", flare=0.24, ease=0.008))               # to the ankle
-    k.add(band(body, neck_pts(body), 1.52, 0.07, "cloth", pad=0.012, thick=0.008))         # the high collar
+    k.add(band(body, neck_pts(body), 1.542, 0.082, "cloth", pad=0.012, thick=0.008))         # the high collar
     card = add_shell(k, body, P_or(P_torso(0.9, 1.49), P_arms(1.17)), thick_by_y(0.021, 0.018), "knit", cover=False)
     k.add(band(body, trunk(card), 0.91, 0.04, "knit", pad=0.004, thick=0.008))
     buttons(k, card, 0.0, 1.38, 5, 0.1, "metal", 0.015)
@@ -1181,12 +1186,12 @@ def kit_cousin_reach(body, P):
 
 def kit_cousin_alix(body, P):
     k = Kit("cousin_alix")
-    dress = add_shell(k, body, P_or(P_torso(0.86), P_arms(0.92)), thick_by_y(0.012, 0.012), "cloth")
+    dress = add_shell(k, body, P_or(P_coat(0.86), P_arms(0.92)), thick_by_y(0.012, 0.012), "cloth")
     k.add(skirt(body, trunk(dress), 0.97, 0.36, "cloth", flare=0.3, ease=0.016))            # below the knee
-    k.add(band(body, neck_pts(body), 1.505, 0.035, "white", pad=0.014, thick=0.008))       # the white collar
+    k.add(band(body, neck_pts(body), 1.527, 0.047, "white", pad=0.014, thick=0.008))       # the white collar
     for sx in (-1.0, 1.0):
         k.add(pstud(dress, "white", sx * 0.045, 1.465, (0.075, 0.03, 0.005), tilt=sx * 0.35))
-        k.add(cuff_band(body, "Left" if sx < 0 else "Right", 0.935, 0.03, "white", pad=0.014, thick=0.006))
+        k.add(cuff_band(body, "Left" if sx < 0 else "Right", 0.935, 0.03, "white", pad=0.014, thick=0.006, bones=("LowerArm", "Hand")))
     # the wide red ribbon bow at the breastbone (it hides the root of the third arm)
     for sx in (-1.0, 1.0):
         k.add(pstud(dress, "accent", sx * 0.045, 1.3, (0.075, 0.06, 0.02), tilt=sx * 0.45))
