@@ -24,7 +24,7 @@
    "drops": [
     "resupply"
    ],
-   "flag": "hangar_key",
+   "flag": "kranfuehrer_down",
    "spawn_vo": "OPR_M4A_KRAN_SPAWN_01",
    "death_vo": "OPR_M4A_KRAN_DEATH_01",
    "rail": {

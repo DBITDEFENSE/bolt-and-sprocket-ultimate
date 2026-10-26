@@ -262,7 +262,7 @@ func _run() -> void:
 		boss.debug_kill(1)
 		await _secs(1.0)
 		_check(not boss.is_active(), "the Kranführer is dead")
-		_check(GameState.has_flag(&"hangar_key"), "he dropped the hangar key flag")
+		_check(GameState.has_flag(&"kranfuehrer_down") and not GameState.has_flag(&"hangar_key"), "he dropped his flag; the hangar key is the egg's (only a kill over the ramp, T-114)")
 	# a Fliegeralarm circle, driven directly
 	var fa: Fliegeralarm = _g("Fliegeralarm") as Fliegeralarm
 	_check(fa != null and fa.director == _dir and _dir.special_handler == fa, "the Fliegeralarm owns the act's special rounds")

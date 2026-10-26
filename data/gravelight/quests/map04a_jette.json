@@ -1,0 +1,33 @@
+{
+  "id": "map04a_jette",
+  "display_name": "Jette's Logbook",
+  "map": "map04a_thalbach",
+  "version": 1,
+  "_doc": "Act I side egg (UPDATE 07, docs/MAP4_FERNFLUG.md §9.2; T-114): three glider models hidden in the works go on Jette Maurer's desk through the office hatch; the logbook reads itself (INT_M4_JETTE). Reward: Skyhook Sekt tier II free for the match, the 'Jette' calling card, the Archive entry.",
+  "steps": [
+    {
+      "id": "s1_models",
+      "type": "collect",
+      "bot_task": {"type": "collect", "targets": {"class": "QuestNote", "where": {"tag": "glider_model", "visible": true}}, "id_prop": "item_id", "what": "Jette's glider models", "ping": "INTEL"},
+      "params": {"tag": "glider_model", "count": 3},
+      "requires": [],
+      "on_item": [{"vo_actor": "M4A_GLIDER", "patience": 45.0}],
+      "on_complete": [{"banner": "Three gliders. The office hatch is in the wind tunnel's east wall."}]
+    },
+    {
+      "id": "s2_hatch",
+      "type": "interact",
+      "bot_task": {"type": "interact_sequence", "target": {"class": "QuestInteract", "where": {"target": "jette_hatch"}}, "what": "Jette's office hatch", "ping": "INTEL"},
+      "params": {"target": "jette_hatch"},
+      "requires": ["s1_models"],
+      "on_complete": [
+        {"archive": "INT_M4_JETTE"},
+        {"perk_tier_grant": ["skyhook_sekt", 2]},
+        {"profile_list": ["calling_cards", "jette"]},
+        {"banner": "JETTE'S LOGBOOK\n\"Gewicht 61 400 kg. Nein.\""},
+        {"vo_squad": "M4A_JETTE", "patience": 45.0}
+      ]
+    }
+  ],
+  "rewards": {"match": [], "profile": ["archive:INT_M4_JETTE"]}
+}

@@ -7,7 +7,8 @@ extends HomageBoss
 ## (a chain rattle telegraph, then a 2.5 m impact that hurts everyone and kills zombies); (2) at `sweep_at` HP
 ## he lowers the hook and SWEEPS the floor along the bridge at 3 m/s (duck under the Kranich's belly or get
 ## off the line); (3) at `park_at` he PARKS over the ramp and drops a RING of casings round it, and the cab is
-## best reached from the crane-rail catwalks. Reward: Scrip per player, a Resupply, and the `hangar_key` flag.
+## best reached from the crane-rail catwalks. Reward: Scrip per player, a Resupply, the `kranfuehrer_down` flag (the hangar key is
+## the egg's: only a kill while he is parked over the ramp, T-114).
 ## He never leaves the rail; `failsafe_seconds` after spawning he retreats (a round can never softlock on him).
 ## Pure rules are static for the tests (`phase_of`, `next_trolley_z`, `hook_hits`).
 
@@ -176,6 +177,8 @@ func _tick(delta: float) -> void:
 				want_z = target.global_position.z
 			trolley_z = next_trolley_z(trolley_z, want_z, speed, delta, z_min, z_max)
 			if phase == 3 and absf(trolley_z - want_z) < 0.5 and cd_ready("ring"):
+				if not GameState.has_flag(&"under_ramp"):
+					GameState.set_flag(&"under_ramp")   # the egg's kill condition (T-114): he dies parked over the ramp
 				kstate = K.PARK_TELEGRAPH
 				_kt = 0.0
 				bstate = B.TELEGRAPH
@@ -316,6 +319,8 @@ func _on_retreat() -> void:
 	# the reserve_alive of the spawn and the take_extra_spawn count: a death pays the latter in HomageBoss._boss_die,
 	# a retreat has no death, and the round could never end on it (T-109)
 	RoundManager.release_alive(2)
+	if GameState.has_flag(&"under_ramp"):
+		GameState.set_flag(&"under_ramp", false)   # back to the rails: the egg's condition resets, nothing is lost
 
 
 func _start_authored_death() -> void:

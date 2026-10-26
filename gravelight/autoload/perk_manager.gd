@@ -222,6 +222,10 @@ func grant(player: int, perk_id: StringName) -> void:
 	if kept.has(String(perk_id)):
 		_tier_dict(player)[String(perk_id)] = int(kept[String(perk_id)])
 		kept.erase(String(perk_id))
+	# UPDATE 07 (T-114): a tier the egg made free for the match (Skyhook II after the wind tunnel ran)
+	var free_tier: int = int(GameState.flags.get(StringName("perk_tier_free_" + String(perk_id)), 0))
+	if free_tier > tier_of(player, perk_id):
+		_tier_dict(player)[String(perk_id)] = free_tier
 	GLBus.perk_bought.emit(player, perk_id)
 	GLBus.perks_changed.emit(player)
 

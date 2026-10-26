@@ -36,7 +36,7 @@ func test_scaled_health_and_data() -> void:
 	assert_gt(float(t["failsafe_seconds"]), 60.0, "a fail-safe so the round never softlocks")
 	assert_true(bool(t["bots_alone"]["enabled"]))
 	assert_eq(int(k["kill_scrip_per_player"]), 1500)
-	assert_eq(str(k["flag"]), "hangar_key")
+	assert_eq(str(k["flag"]), "kranfuehrer_down", "his fall is a flag; the hangar key is the egg's, only over the ramp (T-114)")
 	var lines: Dictionary = GLData.load_json("res://data/gravelight/vo/lines.json")
 	assert_true(lines.has(str(k["spawn_vo"])) and lines.has(str(k["death_vo"])), "his Operator lines exist")
 	var rail: Dictionary = k["rail"]

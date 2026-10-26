@@ -96,8 +96,10 @@ func _ready() -> void:
 	JakubCompanion.attach(self)   # the prisoner companion (U02 section 6.2): his cage on Map 0, or he travels with you
 	PlayerBot.attach(self)   # player bot mode (T-071): off until F6 / the pause menu / `botmode on` / --botmode
 	GLBus.match_started.emit(map_id)
+	Campaign.restore_flags(self)   # UPDATE 07 (T-114): the acts' carried flags (london_seen, bomb_*, ...)
 	for q: String in quest_files:
 		QuestManager.load_quest(q)
+	Campaign.restore_quests(self)   # UPDATE 07 (T-114): the egg's progress from the act before
 	_init_crate()
 	_spawn_intel.call_deferred()
 	if Campaign.active:

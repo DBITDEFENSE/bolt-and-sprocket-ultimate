@@ -524,5 +524,20 @@
       ],
       "grenades": 4
     }
-  }
+  },
+  "carry_flags": [
+    "london_seen",
+    "bomb_*",
+    "peg_*",
+    "dee_*",
+    "hangar_code_known",
+    "hangar_key",
+    "autopilot_key",
+    "autopilot_ripped",
+    "tunnel_ran",
+    "relay_coil_taken",
+    "burn_known",
+    "ignition_key"
+  ],
+  "_doc_carry_flags": "UPDATE 07 (T-114): the world flags that follow the squad from one Map 4 act to the next (exact names and prefix* patterns; Campaign.carried_flags), restored by MapRoot before the act's systems read them."
 }

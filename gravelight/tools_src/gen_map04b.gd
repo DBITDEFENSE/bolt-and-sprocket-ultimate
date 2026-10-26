@@ -306,6 +306,11 @@ func build_dressing() -> void:
 func build_gameplay_extra() -> void:
 	_node("res://gravelight/maps/map04_fernflug/act_controller.gd", "ActController", {}, Vector3.ZERO)
 	_node("res://gravelight/world/map04/flight_controller.gd", "FlightController", {}, Vector3.ZERO)
+	# the main egg continues aboard (UPDATE 07, T-114): the three crew tags (s7a) at the bunks, the radio room, a blister
+	map_root.set("quest_files", PackedStringArray(["res://data/gravelight/quests/map04_kuendigung.json"]))
+	for t: Array in [["Tag1", "I", "Riedl, A.", Vector3(7.0, 0.72, 27.0)], ["Tag2", "II", "Haas, W.", Vector3(7.0, 1.12, 48.0)], ["Tag3", "III", "Pohl, K.", Vector3(62.0, 0.1, 25.6)]]:
+		_node("res://gravelight/world/quest_note.gd", str(t[0]), {"tag": &"crew_tag", "item_id": StringName("tag_%s" % str(t[1]).to_lower()), "numeral": str(t[1]),
+			"kind": "tag", "note_text": str(t[2])}, t[3], 0.0)
 	# the breach panels in the wings' leading-edge walls (two a side)
 	for bp: Array in [["BreachL1", "C_FLUEGEL_L", Vector3(-20, 0, 46), 180.0], ["BreachL2", "C_FLUEGEL_L", Vector3(-40, 0, 46), 180.0],
 			["BreachR1", "C_FLUEGEL_R", Vector3(20, 0, 46), 180.0], ["BreachR2", "C_FLUEGEL_R", Vector3(40, 0, 46), 180.0]]:

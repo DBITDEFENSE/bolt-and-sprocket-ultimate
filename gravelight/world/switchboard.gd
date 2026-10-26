@@ -5,6 +5,11 @@ extends Interactable
 const QUEST: StringName = &"map01_requiem"
 
 @export var target: StringName = &"switchboard"
+## UPDATE 07 (T-114): the same board serves the Thalbach canteen's PA line (quest map04_kuendigung, step s3).
+@export var quest: StringName = &"map01_requiem"
+@export var step: StringName = &"s2b_switchboard"
+@export var sign: String = "AMT KALTENBRUNN  ·  VERMITTLUNG"
+@export var prompt_text: String = "work the switchboard"
 
 var _ui: CanvasLayer
 
@@ -18,17 +23,17 @@ func _ready() -> void:
 func build_greybox() -> void:
 	# the jack field, cords and plugs, lamps and the shelf on the front of the board (cached)
 	InteractableArt.place(self, "switchboard", func(r: Node3D) -> void: InteractableArt.switchboard(r))
-	add_label(self, "AMT KALTENBRUNN  ·  VERMITTLUNG", Vector3(0, 2.0, -0.065), 18, Color(0.9, 0.8, 0.55))
+	add_label(self, sign, Vector3(0, 2.0, -0.065), 18, Color(0.9, 0.8, 0.55))
 
 
 func get_prompt(_player: Player) -> String:
-	if QuestManager.is_active(QUEST, &"s2b_switchboard"):
-		return "Hold [%s] to work the switchboard" % prompt_key(&"interact")
+	if QuestManager.is_active(quest, step):
+		return "Hold [%s] to %s" % [prompt_key(&"interact"), prompt_text]
 	return ""
 
 
 func can_interact(_player: Player) -> bool:
-	return QuestManager.is_active(QUEST, &"s2b_switchboard")
+	return QuestManager.is_active(quest, step)
 
 
 ## Co-op: the board's UI opens on the user's machine; each plug goes to the host (plug()).

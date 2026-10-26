@@ -247,6 +247,7 @@ func _montage() -> void:
 	wall_x("KraftN", 75.0, -60 - T * 0.5, -48 + T * 0.5, 0, 4.0, [], "concrete")
 	box(geo, "KraftRoof", Vector3(-60.3, 4.0, 59.7), Vector3(-47.7, 4.3, 75.3), "concrete")
 	box(geo, "NavBlock_Generator", Vector3(-58, 0, 69), Vector3(-52, 1.6, 73), "machine")
+	box(geo, "NavBlock_DeskE", Vector3(-15.0, 0, 105.2), Vector3(-13.8, 0.8, 106.0), "furniture")   # hall 2's office desk: Fernflug file 1 (T-114)
 	for w: Array in windows:
 		if str(w[1]) == "E_MONTAGE":
 			closet(w[2], float(w[3]))
@@ -265,6 +266,7 @@ func _windkanal() -> void:
 	box(geo, "TunnelGlass", Vector3(26, 0, 118 - T * 0.5), Vector3(38, 2.4, 118 + T * 0.5), "glass")
 	box(geo, "Fan", Vector3(0.3, 0, 110.5), Vector3(3.2, 7.0, 119.5), "steel")
 	box(geo, "NavBlock_Sting", Vector3(30.6, 0, 114.6), Vector3(31.4, 1.2, 115.4), "steel")
+	box(geo, "NavBlock_DeskF", Vector3(40.4, 0, 120.6), Vector3(41.6, 0.8, 121.4), "furniture")   # the tunnel office's hatch desk: file 2 (T-114)
 	for w: Array in windows:
 		if str(w[1]) == "F_WINDKANAL":
 			closet(w[2], float(w[3]))
@@ -284,6 +286,7 @@ func _pruefstand() -> void:
 	wall_z("BunkerE", -48.0, 138, 150, 0, 4.0, [door(144, 0)], "concrete")
 	wall_x("BunkerS", 138.0, -60 - T * 0.5, -48 + T * 0.5, 0, 4.0, [], "concrete")
 	box(geo, "BunkerRoof", Vector3(-60.3, 4.0, 137.7), Vector3(-47.7, 4.3, 150.3), "concrete")
+	box(geo, "NavBlock_DeskG", Vector3(-58.2, 0, 146.6), Vector3(-57.0, 0.8, 147.4), "furniture")   # the bunker's desk: file 3 (T-114)
 	for w: Array in windows:
 		if str(w[1]) == "G_PRUEFSTAND":
 			closet(w[2], float(w[3]))
@@ -403,3 +406,26 @@ func build_gameplay_extra() -> void:
 	if halle != null:
 		halle.set("requires_flag", &"halle_unlocked")
 		halle.set("requires_text", "The hangar is sealed: find the Fernflug files")
+	# the main egg "Kündigung" and the side egg "Jette's logbook" (UPDATE 07, T-114; docs/MAP4_FERNFLUG.md §9)
+	map_root.set("quest_files", PackedStringArray(["res://data/gravelight/quests/map04_kuendigung.json", "res://data/gravelight/quests/map04a_jette.json"]))
+	# the three Fernflug files (each shows two digits of the PA extension, seeded per match)
+	var files: Array = [["File1", "I", Vector3(-14.4, 0.82, 105.6), 0], ["File2", "II", Vector3(41.0, 0.82, 121.0), 2], ["File3", "III", Vector3(-57.6, 0.82, 147.0), 4]]
+	for i: int in files.size():
+		var f: Array = files[i]
+		_node("res://gravelight/world/quest_note.gd", str(f[0]), {"tag": &"fernflug_file", "item_id": StringName("file_%d" % (i + 1)), "numeral": str(f[1]),
+			"kind": "file", "set_flag": StringName("file_%d" % (i + 1)), "random_key": "map04_kuendigung:files", "digit_from": int(f[3]), "digit_count": 2,
+			"note_text": "??"}, f[2], 0.0)
+	# the canteen stage's PA switchboard: dial the three files' extensions in order (s3)
+	_node("res://gravelight/world/switchboard.gd", "PASwitchboard", {"target": &"pa_switchboard", "quest": &"map04_kuendigung", "step": &"s3_pa_line",
+		"sign": "WERK THALBACH  ·  HAUSANLAGE", "prompt_text": "dial the office line"}, Vector3(-39.0, 0.0, 53.2), 0.0)
+	# the wind tunnel's fan control (s4; also a trap)
+	_node("res://gravelight/world/map04/wind_tunnel.gd", "WindTunnel", {"lo": Vector3(6, 0, 112), "hi": Vector3(38, 2.4, 118)}, Vector3(4.6, 0, 121.0), 90.0)
+	# the Kranich's ramp: the boarding step (s6) needs the hangar key and the door code
+	_node("res://gravelight/world/quest_interact.gd", "RampSwitch", {"target": &"kranich_ramp", "label_text": "DER KRANICH · LADERAMPE", "prompt_text": "board the Kranich",
+		"missing_text": "The ramp is locked: it needs %s", "flag_labels": {"hangar_key": "the hangar key", "hangar_code_known": "the door code"}}, Vector3(-20.0, 0, 160.5), 180.0)
+	# Jette's logbook: three glider models and the office hatch
+	for m: Array in [["Glider1", "I", "the canteen stage", Vector3(-36.0, 0.3, 54.3)], ["Glider2", "II", "the hall 2 jig", Vector3(-42.0, 0.1, 96.0)], ["Glider3", "III", "the test-section glass", Vector3(33.0, 0.1, 119.6)]]:
+		_node("res://gravelight/world/quest_note.gd", str(m[0]), {"tag": &"glider_model", "item_id": StringName("glider_%s" % str(m[1]).to_lower()), "numeral": str(m[1]),
+			"kind": "model", "note_text": str(m[2])}, m[3], 0.0)
+	_node("res://gravelight/world/quest_interact.gd", "JetteHatch", {"target": &"jette_hatch", "label_text": "WINDKANAL · BÜRO MAURER", "prompt_text": "put the models on Jette's desk",
+		"missing_text": "The hatch is shut: %s", "flag_labels": {}, "size": Vector3(1.0, 1.6, 1.0)}, Vector3(43.2, 0, 124.0), -90.0)
