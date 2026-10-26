@@ -8,8 +8,8 @@ const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 ## SHA-1 over the navigation mesh's vertices and polygons (var_to_bytes), from master ab098f8, the bake T-093 began
 ## with. A change here means gameplay geometry moved: the art pass must never do that (UPDATE_05 section 0.4).
 const NAV_FP: Dictionary = {
-	"Navigation": "8a8969c85b77154fc9dd0c0e954351330dee2a9a",
-	"NavigationBreachOpen": "cb7ed2d93620cbf6201b602cb55389aff03bf07a",
+	"Navigation": "29a4dd48d692189de8b7e27a99bc20d5d700d92f",
+	"NavigationBreachOpen": "dcdd46068ee2534034f38b42ff2ccfe32257e66f",
 }
 ## Library-prop triangles within CAM_RADIUS of any capture camera (data/gravelight/capture_cams.json).
 const CAM_RADIUS: float = 12.0
@@ -42,7 +42,7 @@ func test_navmesh_unchanged_by_the_art_pass() -> void:
 		assert_not_null(r, rn)
 		if r == null:
 			continue
-		assert_eq(nav_fingerprint(r.navigation_mesh), str(NAV_FP[rn]), "%s is byte-for-byte the bake T-093 started from" % rn)
+		assert_eq(nav_fingerprint(r.navigation_mesh), str(NAV_FP[rn]), "%s is byte-for-byte the T-106 bake (T-093 art pass; T-106 dropped furniture-top islands)" % rn)
 
 
 func test_every_generator_material_key_resolves_to_the_library() -> void:

@@ -115,6 +115,7 @@ static func pick_tier(weights: Dictionary, roll: float, sprint_streak: int, max_
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_PAUSABLE
 	rng.randomize()
+	_cfg = GLData.table("rounds")   # QA Q-09: valid before start_game too (take_spawn/speed tiers read it)
 
 
 func start_game(player_count: int) -> void:
