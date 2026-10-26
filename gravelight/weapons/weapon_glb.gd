@@ -335,6 +335,8 @@ static func build(weapon_id: StringName, is_upgraded: bool = false, camo_id: Str
 		(root.get_node("KitFlash") as Node3D).hide()
 	WeaponShader.apply(root, {"upgraded": b.upgraded, "camo": camo_id, "finish": str(look_d.get("finish", "")),
 		"palette": _is_palette(StringName(base)), "scale": t.basis.get_scale().x, "fit": f.get("shader", {})})
+	if f.has("wonder"):
+		WonderLook.finish(root, base, b.upgraded, f["wonder"])   # T-090: glass / fluid / glow surfaces, the Crucible parts and look
 	return root
 
 

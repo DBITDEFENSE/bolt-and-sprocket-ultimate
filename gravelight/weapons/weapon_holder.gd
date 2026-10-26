@@ -31,6 +31,9 @@ const RELOAD_CUES: Dictionary = {
 	"enbloc": [[0.55, "reload_mag_in"], [0.68, "reload_bolt_fwd"]],
 	"break": [[0.06, "reload_cover_open"], [0.6, "reload_shell_insert"], [0.86, "reload_cover_close"]],
 	"rocket": [[0.45, "reload_rocket_load"]],
+	# T-090: the Ashlight's capsule charges up after an empty reload; the Sankt-Elmsfeuer's magneto winds and arcs
+	"capsule_empty": [[0.86, "ashlight_charge"]],
+	"crank": [[0.12, "totenglocke_crank"], [0.38, "scrip_tick"], [0.58, "scrip_tick"], [0.8, "ashlight_charge"], [0.9, "perk_overclock_arc"]],
 }
 const FIRE_BUFFER: float = 0.12    # seconds a too-early semi-auto click is remembered
 const SWAP_TIME: float = 0.42      # raise time after a weapon swap (firing is blocked meanwhile)
@@ -2083,6 +2086,8 @@ func _animate(delta: float, sprinting: bool) -> void:
 	_reset_parts()
 	if _bell != null:
 		_bell.pose_parts(_bell_crank, _model)   # wind-up crank spin, the bell's ring-out vibration
+	if _model != null and _model.has_meta("wonder"):
+		WonderLook.tick(self, _model, delta)   # T-090: the wonder weapons' fluid, gauges, hammer, arcs (driven by this state)
 	var lh_override: Variant = null      # support-hand target in gun space, if a reload moves it
 	var tilt: float = 0.0
 	if _reloading and w != null:
@@ -2679,6 +2684,8 @@ func _animate_reload(p: float) -> Variant:
 				return lh_home.lerp(valve.position + Vector3(-0.03, 0.0, 0.0), _seg(p, 0.05, 0.2) * (1.0 - _seg(p, 0.85, 0.98)))
 		"bell":
 			return bell_logic().reload_hand(p, _part("Crank"), lh_home)   # the crank IS the reload
+		"crank":
+			return WonderLook.reload_crank(self, p, lh_home)   # T-090: the Sankt-Elmsfeuer's magneto crank
 	return null
 
 

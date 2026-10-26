@@ -25,11 +25,13 @@ func after_each() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 
+## The downloaded (conventional) guns with a GLB; the wonder weapons are ours and have their own test
+## (test_wonder_models, T-090).
 func _glb_ids() -> Array[String]:
 	var out: Array[String] = []
 	var w: Dictionary = WeaponGLB.models().get("weapons", {})
 	for id: String in w.keys():
-		if WeaponGLB.glb_path(StringName(id)) != "":
+		if WeaponGLB.glb_path(StringName(id)) != "" and str((w[id] as Dictionary).get("source", "")) != "ours":
 			out.append(id)
 	return out
 

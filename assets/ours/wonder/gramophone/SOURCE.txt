@@ -1,0 +1,9 @@
+Title: Siren Gramophone (tactical)
+Author: GRAVELIGHT project (modelled in-house by tools_src/blender/wonder/gramophone.py, T-090)
+Source: this repository (tools_src/blender/wonder/gramophone.py + wonder_lib.py)
+License: Ours (original work, in-house)
+Credit line: none needed
+Format: GLB (Blender 5.1.2 export, external PNG textures): nodes Body, Crank, Lid, Record, Tonearm; 12220 tris; baked PBR set 1024px (albedo, normal OpenGL, ORM)
+Downloaded: n/a (generated 2026-10-26 by Claude for Devin Blair)
+Files used: model.glb, textures/gramophone_albedo.png, textures/gramophone_normal.png, textures/gramophone_orm.png
+Game use: the thrown Siren Gramophone (gravelight/weapons/gramophone.gd + wonder_look.gd)

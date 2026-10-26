@@ -91,6 +91,14 @@ func pick(path: String, forced: String) -> Dictionary:
 	var ext: String = path.get_extension().to_lower()
 	var low: String = path.to_lower()
 	var fallback: Dictionary = {}
+	# a folder's forced preset only claims the extensions it imports (T-090: a weapon folder's textures still get
+	# the normal-map / data presets by name)
+	var forced_here: bool = false
+	for q: Dictionary in _presets:
+		if str(q["name"]) == forced and (q["extensions"] as Array).has(ext):
+			forced_here = true
+	if not forced_here:
+		forced = ""
 	for p: Dictionary in _presets:
 		if not (p["extensions"] as Array).has(ext):
 			continue

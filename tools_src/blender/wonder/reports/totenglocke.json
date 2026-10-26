@@ -1,0 +1,176 @@
+{
+ "id": "totenglocke",
+ "tris": 21214,
+ "nodes": [
+  {
+   "name": "Bell",
+   "tris": 7276,
+   "bbox_min": [
+    -0.148,
+    -0.083,
+    -0.467
+   ],
+   "bbox_max": [
+    0.148,
+    0.2288,
+    -0.188
+   ],
+   "materials": [
+    "totenglocke_atlas"
+   ]
+  },
+  {
+   "name": "Body",
+   "tris": 10150,
+   "bbox_min": [
+    -0.128,
+    -0.1118,
+    -0.262
+   ],
+   "bbox_max": [
+    0.1228,
+    0.231,
+    0.112
+   ],
+   "materials": [
+    "totenglocke_atlas"
+   ]
+  },
+  {
+   "name": "Crank",
+   "tris": 2408,
+   "bbox_min": [
+    0.069,
+    0.009,
+    -0.061
+   ],
+   "bbox_max": [
+    0.1215,
+    0.141,
+    -0.0321
+   ],
+   "materials": [
+    "totenglocke_atlas"
+   ]
+  },
+  {
+   "name": "Hammer",
+   "tris": 476,
+   "bbox_min": [
+    -0.164,
+    0.06,
+    -0.4045
+   ],
+   "bbox_max": [
+    -0.1018,
+    0.09,
+    -0.2078
+   ],
+   "materials": [
+    "totenglocke_atlas"
+   ]
+  },
+  {
+   "name": "Pawl",
+   "tris": 120,
+   "bbox_min": [
+    0.044,
+    0.0503,
+    -0.0457
+   ],
+   "bbox_max": [
+    0.05,
+    0.066,
+    -0.018
+   ],
+   "materials": [
+    "totenglocke_atlas"
+   ]
+  },
+  {
+   "name": "Runes",
+   "tris": 784,
+   "bbox_min": [
+    -0.1415,
+    -0.0765,
+    -0.443
+   ],
+   "bbox_max": [
+    0.1415,
+    0.2065,
+    -0.421
+   ],
+   "materials": [
+    "totenglocke_atlas",
+    "runes"
+   ]
+  }
+ ],
+ "bbox_min": [
+  -0.164,
+  -0.1118,
+  -0.467
+ ],
+ "bbox_max": [
+  0.148,
+  0.231,
+  0.112
+ ],
+ "size": [
+  0.312,
+  0.3428,
+  0.579
+ ],
+ "blender": "5.1.2",
+ "frame": "game frame: -Z forward, +Y up, origin at the right-hand grip, metres",
+ "markers": {
+  "Muzzle": [
+   0,
+   0.065,
+   -0.47
+  ],
+  "SightPoint": [
+   0,
+   0.228,
+   -0.205
+  ],
+  "FrontSight": [
+   0,
+   0.228,
+   -0.452
+  ],
+  "LeftHand": [
+   0,
+   -0.045,
+   -0.2
+  ],
+  "grip_r": [
+   0,
+   -0.045,
+   0.055
+  ],
+  "Crank": [
+   0.07199999690055847,
+   0.019999999552965164,
+   -0.05000000074505806
+  ],
+  "Hammer": [
+   -0.10599999874830246,
+   0.07500000298023224,
+   -0.21199999749660492
+  ],
+  "Pawl": [
+   0.05000000074505806,
+   0.06199999898672104,
+   -0.02199999988079071
+  ]
+ },
+ "glb_bytes": 900664,
+ "textures": [
+  "totenglocke_albedo.png",
+  "totenglocke_normal.png",
+  "totenglocke_orm.png"
+ ],
+ "texture_size": 2048,
+ "build_seconds": 46.8
+}

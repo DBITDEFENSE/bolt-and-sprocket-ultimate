@@ -1,0 +1,138 @@
+{
+ "id": "gramophone",
+ "tris": 12220,
+ "nodes": [
+  {
+   "name": "Body",
+   "tris": 6264,
+   "bbox_min": [
+    -0.1695,
+    -0.083,
+    -0.148
+   ],
+   "bbox_max": [
+    0.2191,
+    0.2409,
+    0.2718
+   ],
+   "materials": [
+    "gramophone_atlas"
+   ]
+  },
+  {
+   "name": "Crank",
+   "tris": 540,
+   "bbox_min": [
+    0.143,
+    -0.0378,
+    -0.0228
+   ],
+   "bbox_max": [
+    0.1985,
+    -0.0222,
+    0.0545
+   ],
+   "materials": [
+    "gramophone_atlas"
+   ]
+  },
+  {
+   "name": "Lid",
+   "tris": 2244,
+   "bbox_min": [
+    -0.146,
+    0.0361,
+    0.1409
+   ],
+   "bbox_max": [
+    0.146,
+    0.3254,
+    0.2114
+   ],
+   "materials": [
+    "gramophone_atlas"
+   ]
+  },
+  {
+   "name": "Record",
+   "tris": 1996,
+   "bbox_min": [
+    -0.1015,
+    0.0585,
+    -0.0895
+   ],
+   "bbox_max": [
+    0.1015,
+    0.0612,
+    0.1135
+   ],
+   "materials": [
+    "gramophone_atlas"
+   ]
+  },
+  {
+   "name": "Tonearm",
+   "tris": 1176,
+   "bbox_min": [
+    -0.0098,
+    0.041,
+    -0.0442
+   ],
+   "bbox_max": [
+    0.1143,
+    0.093,
+    0.1114
+   ],
+   "materials": [
+    "gramophone_atlas"
+   ]
+  }
+ ],
+ "bbox_min": [
+  -0.1695,
+  -0.083,
+  -0.148
+ ],
+ "bbox_max": [
+  0.2191,
+  0.3254,
+  0.2718
+ ],
+ "size": [
+  0.3886,
+  0.4084,
+  0.4198
+ ],
+ "blender": "5.1.2",
+ "frame": "game frame: -Z forward, +Y up, origin at the right-hand grip, metres",
+ "markers": {
+  "Record": [
+   0.0,
+   0.0595,
+   0.012000000104308128
+  ],
+  "Crank": [
+   0.14499999582767487,
+   -0.029999999329447746,
+   0.05000000074505806
+  ],
+  "Tonearm": [
+   0.10499999672174454,
+   0.04500000178813934,
+   0.10499999672174454
+  ],
+  "Lid": [
+   0,
+   0.045,
+   0.14
+  ]
+ },
+ "glb_bytes": 515680,
+ "textures": [
+  "gramophone_albedo.png",
+  "gramophone_normal.png",
+  "gramophone_orm.png"
+ ],
+ "texture_size": 1024,
+ "build_seconds": 23.0
+}
