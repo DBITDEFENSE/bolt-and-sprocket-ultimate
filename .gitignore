@@ -17,3 +17,4 @@ __pycache__/
 assets/user_supplied/
 tools_src/_downloads/
 !assets/third_party/**/*.import
+!assets/ours/**/*.import

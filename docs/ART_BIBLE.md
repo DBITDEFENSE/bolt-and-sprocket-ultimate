@@ -59,7 +59,7 @@ Roughness ranges per family (read from the ORM map, then clamped by `rough_min/r
 | raw / painted wood | 0.55–0.95 | 0 | boards run along the long axis; `uv_scale` = tiles per metre from the set's tile size |
 | plaster, stone, brick | 0.75–1.0 | 0 | grime strongest here |
 | iron, steel (world) | 0.35–0.8 | 0.9 (rust 0.2) | rust is an albedo+roughness mask, never a second mesh |
-| gun metal (viewmodel) | 0.25–0.55 | 1.0 | the shared weapon shader (u05-intake) adds bluing, edge wear, grime, frost |
+| gun metal (viewmodel) | 0.25–0.55 | 1.0 | the shared weapon shader (`assets/materials/shaders/weapon.gdshader`, T-089) adds bluing, edge wear, grime, frost; weapon rules: `docs/WEAPON_MODELS.md` "Viewmodel fit" |
 | cloth: wool, canvas, burlap | 0.85–1.0 | 0 | no specular highlight wider than a thumb |
 | leather | 0.45–0.7 | 0 | |
 | snow | 0.6–0.9 | 0 | subsurface-ish: albedo lifted 10% in shadow via `frost` |

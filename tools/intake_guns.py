@@ -348,8 +348,29 @@ def build_models_json(entries, reports, weapons_ids):
 
 
 WEAPON_MODELS_MD = os.path.join(ROOT, "docs", "WEAPON_MODELS.md")
-# phase 2 (u05-guns) edits this when a pack's animations are retargeted; everything else is ours
+# The packs ship no first-person animations (Pichuliru's rigs are not FP clips): every gun animates on our rig,
+# WeaponHolder's procedural choreography driving the GLB's own parts (T-089). A pack's clips go here if one ever does.
 ANIMS = {}
+ANIM_OURS = "ours: holder choreography on the GLB parts"
+# Per-gun viewmodel fit notes (T-089, u05-guns): what model_fit.json does and what still reads wrong.
+FIT_NOTES = {
+    "m1911": "Grip at the converter's trigger; sights ride the Slide; the M1911 kit (T-068) is placed per slot by kit_offset / kit_offset_front (the OGA slide is 2.8 cm shorter than the procedural one).",
+    "walther_p38": "Slide carries the rear notch; the front blade is fixed to the frame (the P38's open-top slide).",
+    "webley": "Barrels hinge at the frame front; Cylinder is parented under Barrels so the break tips both; Mk IV model for the game's Mk VI.",
+    "kar98k": "Sketchfab hero. Bolt pivots on its axis, the holder's Handle wraps the whole bolt (lifts and draws back on every shot); an empty Mag node marks the stripper-clip guide.",
+    "m1_garand": "Sketchfab hero. The floating en-bloc clip is moved into the receiver and is the holder's Mag (the ping on the last round, the clip into the top on reload). No separate op rod: the Bolt is an empty node.",
+    "gewehr43": "Rear notch raised to the leaf top so the line clears the bolt carrier.",
+    "m1_carbine": "Aperture on the receiver rear.",
+    "mp40": "Support hand on the magazine housing (lh_axis y), as the procedural MP40.",
+    "thompson": "Sketchfab hero: a 1928 with the 50-round drum (Mag) and vertical foregrip; support hand on the foregrip.",
+    "stg44": "Rear leaf on the receiver; the stock comb shows at the bottom of the sight picture.",
+    "trench_gun": "Pump is the whole action slide (forend + bolt); an empty Mag node is the loading port.",
+    "bar": "Support hand on the handguard just ahead of the magazine (no bipod in the model).",
+    "ppsh41": "71-round drum as Mag.",
+    "mg42": "Cover hinges at its front for the belt reload; the belt drum, cover and handle are forced to metal in the shader (the palette's tan read as wood).",
+    "sawed_off": "Built from the full-length double: Barrels scaled to 42 %, the stock to 72 % about the action (part_scale); Barrels hinge at the action front.",
+    "springfield": "Iron-sighted model; a procedural M73B1-style scope is added (model_fit scope) so the sniper keeps its scope picture.",
+}
 SPARE_WW2 = ["FG 42", "C96", "Hi-Power", "Nagant M1895", "Welrod", "Bren", "DP 28", "Mosin Nagant", "SVT 40", "M3 Grease", "Sten"]
 
 
@@ -389,7 +410,7 @@ def write_weapon_models_md(doc, weapons):
         alt = (" (alt: " + ", ".join("`%s`" % x for x in w["alt"]) + ")") if w.get("alt") else ""
         L.append("| `%s` | %s | %s | %s | `%s`%s | %s | %s | %s | %s, %.3f m -> x%.3f, %d tris | %s |" % (
             wid, name, cls, w["source"], w["asset"], alt, a["author"].replace("|", "/"), a["license"], parts,
-            n["forward"], n["length_m"], n["scale"], n["tris"], ANIMS.get(wid, "ours (phase 2)")))
+            n["forward"], n["length_m"], n["scale"], n["tris"], ANIMS.get(wid, ANIM_OURS)))
     L.append("")
     L.append("Greybox (no model yet): " + ", ".join("`%s`" % g for g in doc["greybox"]) + ". Picks for Devin are in `models.json` "
              "(`weapons.<id>.notes`) and `FREE_ASSET_LIST.md`.")
@@ -419,6 +440,24 @@ def write_weapon_models_md(doc, weapons):
     L.append("")
     L.append("World War 2 set: " + ", ".join(SPARE_WW2) + " (one `.blend` each, same palette; import with `tools/intake_guns.py` when a weapon id needs one). "
              "Main set: 50 modern guns (AKs, M4, FAL, MP5, shotguns, DMRs...), none period-correct for GRAVELIGHT.")
+    L.append("")
+    L.append("## Viewmodel fit (T-089)")
+    L.append("")
+    L.append("`gravelight/weapons/weapon_glb.gd` (`WeaponGLB`) builds each gun above from its GLB: normalised by the `native` block, "
+             "the pack's meshes regrouped under our contract names at their pivots, markers (Muzzle, SightPoint, FrontSight, LeftHand) "
+             "and metas (reload, length, port, bore, grip_r, lh_axis...) from a geometry scan and the procedural model of the same id, "
+             "then hand-fit in `data/gravelight/weapons/model_fit.json` (its `_doc` lists every key). All surfaces go through the shared "
+             "`assets/materials/shaders/weapon.gdshader` (`WeaponShader`): wood grain, edge wear, bluing, scratches, cavity grime, frost "
+             "per map, Nachtglas veins for the Crucible version; the OGA palette guns get all their detail from it. "
+             "`GLSettings.values[\"greybox_guns\"]` (vm_shots `--greybox`) switches back to the procedural guns for A/B. "
+             "Fit sheets: `gravelight/tools_src/glb_fit_shots.tscn`; numbers: `glb_fit_dump.tscn`; alignment: `tools/ads_check.sh`.")
+    L.append("")
+    L.append("**Weapon art rules.** Downloaded only for real guns (never modelled); the barrel along -Z, origin at the grip, real "
+             "length (+-10 %, tested); moving parts named for the holder; one weapon shader for every gun; the Crucible look is a "
+             "material on the same mesh; reload / draw timings come from weapons.json, never from a model.")
+    L.append("")
+    for wid, note in FIT_NOTES.items():
+        L.append("- `%s`: %s" % (wid, note))
     L.append("")
     L.append("## Conversion notes")
     L.append("")

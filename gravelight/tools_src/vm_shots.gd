@@ -6,6 +6,7 @@ extends Node3D
 ## --wall=<m> puts a wall (with collision) that far in front of the eye, plus a zombie-sized post 0.15 m in
 ## front of it off to the right, to check the viewmodel never clips into geometry (D-062).
 ## --compress=<k> overrides feel.viewmodel_compress for the run (1.0 = the old, uncompressed viewmodel).
+## --greybox draws the procedural guns instead of the downloaded models (T-089 A/B); --char=<id> picks whose arms.
 ## --lit renders in a dim interior lit by a warm lantern (materials read like in the maps). Upgraded ids
 ## (mp40_up) work too. The camera uses the game's default FOV (80).
 ## Each row is one weapon; columns follow POSES.
@@ -14,7 +15,7 @@ const POSES: Array = [["hip", 0.0], ["ads", 0.0], ["sprint", 0.0], ["reload", 0.
 ## Extra poses, only via --poses=: swap (mid raise), melee (mid swing), nade (cooking), cycle (bolt / pump stroke),
 ## sprint_reload (T-083: reloading on the run, halfway; a gun that can't shows its plain sprint pose). An id may be
 ## a WeaponKit build string ("m1_garand:grip=quick_sling") to shoot a gun with attachments.
-const EXTRA: Array = [["swap", 0.0], ["melee", 0.0], ["nade", 0.0], ["cycle", 0.0], ["sprint_reload", 0.5]]
+const EXTRA: Array = [["swap", 0.0], ["melee", 0.0], ["nade", 0.0], ["cycle", 0.0], ["sprint_reload", 0.5], ["reload", 0.5]]
 var ROWS: int = 3
 var TW: int = 384
 var TH: int = 216
@@ -60,6 +61,17 @@ func _ready() -> void:
 				for pz: Array in POSES + EXTRA:
 					if str(pz[0]) + ("" if str(pz[0]) != "reload" else str(int(float(pz[1]) * 100))) == k or str(pz[0]) == k:
 						_poses.append(pz)
+		elif a.begins_with("--frost="):
+			WeaponShader.set_frost(float(a.substr(8)))      # T-089: rime as on a cold map (model_fit frost_by_map)
+			WeaponShader._frost_map = GameState.map_id
+		elif a == "--noshader":
+			WeaponShader.enabled = false
+		elif a.begins_with("--shader_debug="):
+			WeaponShader.debug = int(a.substr(15))
+		elif a == "--greybox":
+			GLSettings.values["greybox_guns"] = true      # T-089: the procedural guns instead of the GLBs (A/B)
+		elif a.begins_with("--char="):
+			GameState.character_id = StringName(a.substr(7))   # T-089: whose arms (Arms.character)
 		elif a.begins_with("--tw="):
 			TW = int(a.substr(5))
 			TH = TW * 9 / 16

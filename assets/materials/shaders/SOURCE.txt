@@ -1,0 +1,9 @@
+Title: GRAVELIGHT shared material shaders (weapon.gdshader)
+Author: GRAVELIGHT project (written in-house, T-089)
+Source: this repository
+License: Ours (original work, in-house)
+Credit line: none needed
+Format: Godot 4 .gdshader
+Downloaded: n/a (authored 2026-10-25 by Claude for Devin Blair)
+Files used: weapon.gdshader
+Game use: every downloaded gun's surfaces (WeaponShader)
