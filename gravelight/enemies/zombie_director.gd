@@ -111,6 +111,7 @@ func _physics_process(delta: float) -> void:
 				_spawn_t = RoundManager.current_interval() / _current_boost()
 			else:
 				_spawn_t = 0.5
+				no_spawn_t += 0.5
 		_update_screamer()
 	_update_last_zombie(delta)
 	_update_stranded(delta)
@@ -210,6 +211,7 @@ func _on_round_started(round_number: int, special: bool) -> void:
 			_set_special_fx(true)
 		return
 	_spawn_t = 1.5
+	no_spawn_t = 0.0
 	_last_t = 0.0
 	_pack_t = 2.0
 	_last_bell_pos = Vector3.INF
@@ -774,14 +776,35 @@ func spawn_special(enemy_id: StringName, count: int, points: Array) -> int:
 	return made
 
 
+## Seconds the round has had zombies to spawn and no spawn to put them at (the players somewhere no active spawn
+## serves: a closed zone, a gap, every ground spawn in sight). After `NO_SPAWN_FALLBACK_S` any active spawn
+## will do (T-116: the bots-alone soak on Werk Thalbach sat in a closed zone for an hour on round 5).
+var no_spawn_t: float = 0.0
+var no_spawn_fallbacks: int = 0
+const NO_SPAWN_FALLBACK_S: float = 20.0
+
+
+## True when a spawn-less stretch of `no_spawn_s` with `to_spawn` zombies waiting should fall back to any spawn.
+static func spawn_fallback_due(no_spawn_s: float, to_spawn: int) -> bool:
+	return to_spawn > 0 and no_spawn_s >= NO_SPAWN_FALLBACK_S
+
+
 func _spawn_one() -> bool:
 	var want_glass: bool = _roll_glasshide()
 	var sp: ZombieSpawn = _choose_spawn(want_glass)
 	if sp == null and want_glass:
 		want_glass = false
 		sp = _choose_spawn()
+	if sp == null and spawn_fallback_due(no_spawn_t, RoundManager.to_spawn):
+		sp = _choose_spawn(false, true)
+		if sp != null:
+			no_spawn_fallbacks += 1
+			if no_spawn_fallbacks == 1 or no_spawn_fallbacks % 20 == 0:
+				print("[director] no spawn served the players for %.0f s on round %d (zones %s): falling back to any active spawn (%s, %d so far)" % [
+					no_spawn_t, RoundManager.current_round, str(_player_zones().keys()), sp.name, no_spawn_fallbacks])
 	if sp == null:
 		return false
+	no_spawn_t = 0.0
 	var spec: Dictionary = RoundManager.take_spawn()
 	spec["variant"] = _pick_variant()
 	if ZoneVolume.vacuum_at(get_tree(), sp.global_position) and _map_allows(&"suited") and (GLData.table("enemies")["enemies"] as Dictionary).has("suited"):
@@ -848,7 +871,8 @@ func _roll_glasshide() -> bool:
 	return _rng.randf() < RoundManager.glasshide_chance(RoundManager.current_round, e)
 
 
-func _choose_spawn(ground_only: bool = false) -> ZombieSpawn:
+## `any_active`: the fallback above: every active spawn, whatever zone the players are in and whoever sees it.
+func _choose_spawn(ground_only: bool = false, any_active: bool = false) -> ZombieSpawn:
 	var round_number: int = maxi(1, RoundManager.current_round)
 	var player_zones: Dictionary = _player_zones()
 	var roamers: Array[Vector3] = _roaming_players()
@@ -857,11 +881,11 @@ func _choose_spawn(ground_only: bool = false) -> ZombieSpawn:
 	var total: float = 0.0
 	for n: Node in get_tree().get_nodes_in_group(&"zombie_spawns"):
 		var sp: ZombieSpawn = n as ZombieSpawn
-		if sp == null or not sp.is_active(round_number) or not _zone_allowed(sp.zone_id, player_zones):
+		if sp == null or not sp.is_active(round_number) or (not any_active and not _zone_allowed(sp.zone_id, player_zones)):
 			continue
-		if sp.player_zone_only and not player_zones.has(sp.zone_id):
+		if sp.player_zone_only and not player_zones.has(sp.zone_id) and not any_active:
 			continue
-		if sp.hide_from_m > 0.0 and _seen_from(sp.global_position, sp.hide_from_m, roamers, get_world_3d().direct_space_state):
+		if sp.hide_from_m > 0.0 and not any_active and _seen_from(sp.global_position, sp.hide_from_m, roamers, get_world_3d().direct_space_state):
 			continue
 		if ground_only and sp.kind != &"ground":
 			continue

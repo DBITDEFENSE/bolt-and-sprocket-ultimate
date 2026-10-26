@@ -358,6 +358,22 @@ func _set_votes(who: Array) -> void:
 		votes[int(pid)] = true
 
 
+## Tools only (the AI soak's bots-alone run, T-116): the squad leaves without a human holding the beacon. Only
+## a lit beacon whose required flag is set (the act's own rules still gate it); its stage counts as held, every
+## human counts as voted, and the departure follows. True when it departed.
+func force_depart() -> bool:
+	if not Net.is_authority() or state != State.ACTIVE or _needs_flag():
+		return false
+	if _in_stage():
+		GameState.set_flag(StringName(str(cfg["stage_flag"])))
+		print("[campaign] exfil stage '%s' held by the harness" % str(cfg["stage_flag"]))
+	for pid: int in GameState.human_ids():
+		votes[pid] = true
+	print("[campaign] exfil forced by the harness at round %d" % RoundManager.current_round)
+	_depart()
+	return state == State.DEPARTING
+
+
 # ---------------------------------------------------------------- departure (host / solo)
 
 func _depart() -> void:
