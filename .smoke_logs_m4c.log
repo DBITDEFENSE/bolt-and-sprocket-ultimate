@@ -1,0 +1,1222 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+WARNING: MapState: no map data for map04c_groomlake (run tools/bake_minimap.sh)
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] attach (res://core/map/map_state.gd:77)
+         [1] _ready (res://gravelight/maps/map_root.gd:72)
+[campaign] begin_at kit applied on map04c_groomlake: 2 weapons, 4 perks, 0 Scrip
+[campaign] begin_at map04c_groomlake at round 21 (act start 21)
+[m4c] Lodestone parts seeded by the controller: { &"ls_part_coil": &"bomber_bay", &"ls_part_cradle": &"dish_gimbal", &"ls_part_lens": &"specimen_3" }
+[m4c] begin_at: round 21 is next after the arrival grace (round 20, state 1)     ok
+[m4c] act numbering: match 21 is 'ACT III · 1' (ACT III · 1)                     ok
+[m4c] the arrival kit is on the human (Thompson, STG-44, upgraded)               ok
+[m4c] the kit's four perks ([&"ironhide_stout", &"second_wind", &"marathon_malt", &"trigger_tonic"]) ok
+[m4c] four grenades in the kit (4)                                               ok
+[m4c] the gantry lift is dormant, due at match round 29 (29)                     ok
+[m4c] the Test Pilot's round is reserved at match 26 (26)                        ok
+[m4c] the GroomController owns the act's systems and the dust storm              ok
+[m4c] the kill plane is at -25 (the shaft, the trench)                           ok
+[m4c] wreck aft -> wreck bay                                                     ok (pts 11, end (0.0, 0.5, -8.0))
+[m4c] wreck -> the salt (B open)                                                 ok (pts 12, end (0.941176, 0.5, 29.76471))
+[m4c] wreck -> the salt with B shut                                              ok (pts 7, end (0.616115, 0.5, -4.502391))
+[m4c] the salt -> the hangar (C open)                                            ok (pts 20, end (30.0, 0.5, 80.0))
+[m4c] the salt -> the hangar with C shut                                         ok (pts 9, end (30.0, 0.5, 59.25))
+[m4c] the salt -> the motor pool (D open)                                        ok (pts 28, end (-45.0, 0.5, 80.0))
+[m4c] the hangar -> the motor pool by Dee's side door and the lane               ok (pts 18, end (-45.0, 0.5, 80.0))
+[m4c] the hangar -> the lane with D shut                                         ok (pts 4, end (20.75, 0.5, 93.0))
+[m4c] the hangar -> the radar rise (E open)                                      ok (pts 16, end (45.0, 0.5, 130.0))
+[m4c] the hangar -> the radar rise with E shut                                   ok (pts 6, end (45.0, 0.5, 99.25))
+[m4c] the motor pool -> down the hatch ramp into the lab (F open)                ok (pts 14, end (-40.0, -5.5, 125.0))
+[m4c] the motor pool -> the lab with F shut                                      ok (pts 8, end (-40.0, 0.5, 99.25))
+[m4c] the radar rise -> down the cable trench into the lab                       ok (pts 15, end (-40.0, -5.5, 125.0))
+[m4c] the lab hall -> specimen room 2 (the pit)                                  ok (pts 9, end (-64.0, -5.5, 126.0))
+[m4c] the lab -> the silo control room (G open)                                  ok (pts 14, end (-58.0, -5.5, 170.0))
+[m4c] the lab -> the silo with G shut                                            ok (pts 10, end (-58.0, -5.5, 149.25))
+[m4c] the silo control room -> the shaft, the lift's foot                        ok (pts 7, end (-38.0, -5.5, 172.0))
+[m4c] the wreck -> the lift (everything open)                                    ok (pts 56, end (-38.0, -5.5, 172.0))
+[m4c] every ground / burrow spawn stands on the navmesh                          ok
+[m4c] A_WRECK spawn counts match map04c.json ({ "windows": 2, "ground": 1, "catwalk": 0 }) ok
+[m4c] B_LAKEBED spawn counts match map04c.json ({ "windows": 0, "ground": 2, "catwalk": 6 }) ok
+[m4c] C_HANGAR spawn counts match map04c.json ({ "windows": 3, "ground": 1, "catwalk": 0 }) ok
+[m4c] D_MOTORPOOL spawn counts match map04c.json ({ "windows": 2, "ground": 1, "catwalk": 0 }) ok
+[m4c] E_RADAR spawn counts match map04c.json ({ "windows": 1, "ground": 1, "catwalk": 0 }) ok
+[m4c] F_LAB spawn counts match map04c.json ({ "windows": 2, "ground": 1, "catwalk": 0 }) ok
+[m4c] G_SILO spawn counts match map04c.json ({ "windows": 1, "ground": 1, "catwalk": 0 }) ok
+[m4c] 9 perk machines placed (9)                                                 ok
+[m4c] three crate spots (the wreck, the hangar, the lab)                         ok
+[m4c] the act block is loaded (index 3)                                          ok
+[m4c] the lab hatch: 'Power must be activated' (Power must be activated)         ok
+[m4c] the Crucible refuses before the generator                                  ok
+[m4c] Dee's side door starts shut                                                ok
+[m4c] Dee's radio prompt: Hold [F] to answer Dee's radio                         ok
+[m4c] dee_radio answered by P1
+[m4c] her radio answered: dee_radio_done, the side door opened for free          ok
+[m4c] generator on: 20/20 zone lights lit                                        ok
+[m4c] power-on burst spawned zombies (4)                                         ok
+[m4c] with the power the lab hatch sells for 1,500 (Hold [F] to open the laboratory hatch [1500]) ok
+[m4c] the hatch and the cable trench open together (one link group)              ok
+[m4c] three Lodestone parts live, one per part ({ &"ls_part_coil": &"bomber_bay", &"ls_part_cradle": &"dish_gimbal", &"ls_part_lens": &"specimen_3" }) ok
+[m4c] the three parts picked up (3)                                              ok
+[m4c] the workbench offers the build (Hold [F] to build the Lodestone)           ok
+[m4c] the Lodestone is built                                                     ok
+[m4c] the human took the Lodestone                                               ok
+[m4c] the burrow points moved to 6-12 m of the player on the salt (6 of 6)       ok
+[m4c] a Canary: tagged, hooded, torso x1.5                                       ok
+ERROR: The object does not have any 'meta' values with the key 'groom_rig'.
+   at: get_meta (core/object/object.cpp:1053)
+   GDScript backtrace (most recent call first):
+       [0] _on_enemy_killed_at (res://gravelight/world/map04/groom_controller.gd:429)
+       [1] _die (res://gravelight/enemies/zombie.gd:1619)
+       [2] take_damage (res://gravelight/enemies/zombie.gd:1464)
+       [3] _run (res://gravelight/tools_src/smoke_map04c.gd:327)
+       [4] _frames (res://gravelight/tools_src/smoke_map04c.gd:71)
+ERROR: The object does not have any 'meta' values with the key 'groom_stamp'.
+   at: get_meta (core/object/object.cpp:1053)
+   GDScript backtrace (most recent call first):
+       [0] _on_enemy_killed_at (res://gravelight/world/map04/groom_controller.gd:429)
+       [1] _die (res://gravelight/enemies/zombie.gd:1619)
+       [2] take_damage (res://gravelight/enemies/zombie.gd:1464)
+       [3] _run (res://gravelight/tools_src/smoke_map04c.gd:327)
+       [4] _frames (res://gravelight/tools_src/smoke_map04c.gd:71)
+[m4c] a head kill left a gas cloud                                               ok
+[m4c] the cloud hurts the player standing in it (230 hits, god mode)             ok
+[m4c] the cloud blew away after its seconds                                      ok
+[m4c] a Jumpjockey: tagged, rigged                                               ok
+[m4c] it leaped (airborne, pushed)                                               ok
+[m4c] it landed near the player (0.7 m)                                          ok
+ERROR: The object does not have any 'meta' values with the key 'groom_hood'.
+   at: get_meta (core/object/object.cpp:1053)
+   GDScript backtrace (most recent call first):
+       [0] _on_enemy_killed_at (res://gravelight/world/map04/groom_controller.gd:429)
+       [1] _die (res://gravelight/enemies/zombie.gd:1619)
+       [2] take_damage (res://gravelight/enemies/zombie.gd:1464)
+       [3] _tick_jumpjockeys (res://gravelight/world/map04/groom_controller.gd:517)
+       [4] _process (res://gravelight/world/map04/groom_controller.gd:232)
+ERROR: The object does not have any 'meta' values with the key 'groom_stamp'.
+   at: get_meta (core/object/object.cpp:1053)
+   GDScript backtrace (most recent call first):
+       [0] _on_enemy_killed_at (res://gravelight/world/map04/groom_controller.gd:429)
+       [1] _die (res://gravelight/enemies/zombie.gd:1619)
+       [2] take_damage (res://gravelight/enemies/zombie.gd:1464)
+       [3] _tick_jumpjockeys (res://gravelight/world/map04/groom_controller.gd:517)
+       [4] _process (res://gravelight/world/map04/groom_controller.gd:232)
+[m4c] shot in the air: the rig fails, it falls and dies                          ok
+[m4c] a Backorder: phased (no collision, no physics)                             ok
+[m4c] phased: every hitbox off (immune)                                          ok
+[m4c] it walks at the player while phased (-1.2 -> 2.8)                          ok
+[m4c] it solidified at its target (collision and physics back)                   ok
+ERROR: The object does not have any 'meta' values with the key 'groom_hood'.
+   at: get_meta (core/object/object.cpp:1053)
+   GDScript backtrace (most recent call first):
+       [0] _on_enemy_killed_at (res://gravelight/world/map04/groom_controller.gd:429)
+       [1] _die (res://gravelight/enemies/zombie.gd:1619)
+       [2] kill_silently (res://gravelight/enemies/zombie.gd:1705)
+       [3] kill_all (res://gravelight/enemies/zombie_director.gd:971)
+       [4] _run (res://gravelight/tools_src/smoke_map04c.gd:372)
+       [5] _until (res://gravelight/tools_src/smoke_map04c.gd:82)
+ERROR: The object does not have any 'meta' values with the key 'groom_rig'.
+   at: get_meta (core/object/object.cpp:1053)
+   GDScript backtrace (most recent call first):
+       [0] _on_enemy_killed_at (res://gravelight/world/map04/groom_controller.gd:429)
+       [1] _die (res://gravelight/enemies/zombie.gd:1619)
+       [2] kill_silently (res://gravelight/enemies/zombie.gd:1705)
+       [3] kill_all (res://gravelight/enemies/zombie_director.gd:971)
+       [4] _run (res://gravelight/tools_src/smoke_map04c.gd:372)
+       [5] _until (res://gravelight/tools_src/smoke_map04c.gd:82)
+[m4c] the Test Pilot is summoned at the hall anchor ((-40.0, -6.0, 130.0))       ok
+[m4c] his health is 32,000 scaled (80000)                                        ok
+[m4c] while he stands the round counts him twice (alive 2, bodies 1)             ok
+[m4c] he leaped and landed (leaps 1, landings 1)                                 ok
+[m4c] he landed on the player (0.7 m)                                            ok
+[m4c] vulnerable on the ground after the landing (x1.0)                          ok
+[m4c] under 60 %: the lakebed phase (2)                                          ok
+ERROR: The object does not have any 'meta' values with the key 'groom_hood'.
+   at: get_meta (core/object/object.cpp:1053)
+   GDScript backtrace (most recent call first):
+       [0] _untag (res://gravelight/world/map04/groom_controller.gd:247)
+       [1] _prune (res://gravelight/world/map04/groom_controller.gd:241)
+       [2] _process (res://gravelight/world/map04/groom_controller.gd:227)
+ERROR: The object does not have any 'meta' values with the key 'groom_rig'.
+   at: get_meta (core/object/object.cpp:1053)
+   GDScript backtrace (most recent call first):
+       [0] _untag (res://gravelight/world/map04/groom_controller.gd:247)
+       [1] _prune (res://gravelight/world/map04/groom_controller.gd:241)
+       [2] _process (res://gravelight/world/map04/groom_controller.gd:227)
+ERROR: The object does not have any 'meta' values with the key 'groom_stamp'.
+   at: get_meta (core/object/object.cpp:1053)
+   GDScript backtrace (most recent call first):
+       [0] _untag (res://gravelight/world/map04/groom_controller.gd:247)
+       [1] _prune (res://gravelight/world/map04/groom_controller.gd:241)
+       [2] _process (res://gravelight/world/map04/groom_controller.gd:227)
+[m4c] he leaps again (toward the lake bed)                                       ok
+[m4c] caught mid-leap by a stagger: slammed_once, dropped, vulnerable            ok
+[m4c] he took the fight up to the lake bed (pilot_on_lake)                       ok
+ERROR: The object does not have any 'meta' values with the key 'groom_hood'.
+   at: get_meta (core/object/object.cpp:1053)
+   GDScript backtrace (most recent call first):
+       [0] _untag (res://gravelight/world/map04/groom_controller.gd:247)
+       [1] _prune (res://gravelight/world/map04/groom_controller.gd:241)
+       [2] _process (res://gravelight/world/map04/groom_controller.gd:227)
+ERROR: The object does not have any 'meta' values with the key 'groom_rig'.
+   at: get_meta (core/object/object.cpp:1053)
+   GDScript backtrace (most recent call first):
+       [0] _untag (res://gravelight/world/map04/groom_controller.gd:247)
+       [1] _prune (res://gravelight/world/map04/groom_controller.gd:241)
+       [2] _process (res://gravelight/world/map04/groom_controller.gd:227)
+ERROR: The object does not have any 'meta' values with the key 'groom_stamp'.
+   at: get_meta (core/object/object.cpp:1053)
+   GDScript backtrace (most recent call first):
+       [0] _untag (res://gravelight/world/map04/groom_controller.gd:247)
+       [1] _prune (res://gravelight/world/map04/groom_controller.gd:241)
+       [2] _process (res://gravelight/world/map04/groom_controller.gd:227)
+ERROR: Lambda capture at index 0 was freed. Passed "null" instead.
+   at: call (modules/gdscript/gdscript_lambda_callable.cpp:110)
+   GDScript backtrace (most recent call first):
+       [0] _until (res://gravelight/tools_src/smoke_map04c.gd:81)
+[m4c] a retreat releases both counts (alive 0, bodies 0)                         ok
+[m4c] dead by console: the ignition key and a Resupply                           ok
+[m4c] his death releases both counts (alive 0, bodies 0)                         ok
+[m4c] the core's prompt: Hold [F] to lift the impeller core (no sprint, slow)    ok
+[m4c] the human carries the core (ballast status)                                ok
+[m4c] the hatch takes a carried core: Hold [F] to set the impeller core in the office hatch ok
+[m4c] hangar_cradle: the core is at the hatch, the choice is open (P1 decides)
+[m4c] the choice is open (P1 decides), the core set down at the hatch            ok
+[m4c] Peg's choice: keep
+[m4c] keep: peg_resigned, the core is bound for the rocket                       ok
+[m4c] carried again (heavier the second time)                                    ok
+[m4c] rocket_cradle took impeller_core
+[m4c] the rocket's engine bay took the core (core_in_rocket)                     ok
+[m4c] cage item casing taken by P1
+[m4c] cage item bomber_coil taken by P1
+[m4c] cage item honey taken by P1
+[m4c] Dee's three cage items complete the yard rule                              ok
+[m4c] the console: the key stage (Hold [F] to turn the ignition key)             ok
+[m4c] ignition key turned by P1
+[m4c] the key turned; the burn is not known yet (The burn numbers are not known: the radar shack's radio, with the power on) ok
+[m4c] the console refuses the burn until Fasbender's numbers                     ok
+[m4c] radar_radio answered by P1
+[m4c] Fasbender's radio: burn_known, three numbers ([61, 14, 36])                ok
+[m4c] the lift is still dormant before the burn                                  ok
+[m4c] with the numbers: the burn stage (Hold [F] to enter the burn sequence (61 · 14 · 36)) ok
+[campaign] exfil beacon lit at round 23 (attempt 0, 120 s)
+[m4c] burn sequence entered by P1: the rocket is ready
+[m4c] rocket_ready: the gantry lift lit (trigger_flag)                           ok
+[m4c] the lift's vote prompt, 3 s (Hold [F] to exfil to map04d_mondlicht  ·  1:59) ok
+[campaign] exfil vote by P1 (1/1)
+[campaign] departing map04c_groomlake for map04d_mondlicht (exfil_m4c_m4d)
+[m4c] the vote passed: the MONDLICHT cutscene plays                              ok
+[m4c] Act IV scene present: false
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] _start_shot (res://gravelight/ui/exfil_cutscene.gd:179)
+         [1] _process (res://gravelight/ui/exfil_cutscene.gd:152)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] _start_shot (res://gravelight/ui/exfil_cutscene.gd:179)
+         [1] _process (res://gravelight/ui/exfil_cutscene.gd:152)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: Target and up vectors are colinear. This is not advised as it may cause unwanted rotation around local Z axis.
+     at: looking_at (core/math/basis.cpp:1045)
+     GDScript backtrace (most recent call first):
+         [0] <anonymous lambda> (res://gravelight/ui/exfil_cutscene.gd:185)
+WARNING: [campaign] target map map04d_mondlicht has no scene yet (res://gravelight/maps/map04d_mondlicht/map04d.tscn): the campaign continues later
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] finish_travel (res://gravelight/world/exfil_point.gd:453)
+         [1] _finish (res://gravelight/ui/exfil_cutscene.gd:341)
+         [2] _process (res://gravelight/ui/exfil_cutscene.gd:166)
+[m4c] the launch fx lifted the rocket (-5 -> 395)                                ok
+[m4c] no Act IV in this build: the 'campaign continues' screen showed after the launch ok
+[m4c] profile: Mondlicht unlocked by the exfil                                   ok
+[m4c] RESULT: PASS
+ERROR: Pages in use exist at exit in PagedAllocator: N20RasterizerSceneDummy21GeometryInstanceDummyE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.
+   at: ~Dependency (servers/rendering/storage/utilities.cpp:56)
+WARNING: 641 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 180 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+ERROR: Pages in use exist at exit in PagedAllocator: N12VariantPools12BucketMediumE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)
+ERROR: 90 RID allocations of type 'N13RendererDummy15MaterialStorage13DummyMaterialE' were leaked at exit.
+ERROR: 15 RID allocations of type 'N13RendererDummy15MaterialStorage11DummyShaderE' were leaked at exit.
+ERROR: 135 RID allocations of type 'N13RendererDummy9DummyMeshE' were leaked at exit.
+ERROR: 64 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.
+ERROR: 104 RID allocations of type 'N17RendererSceneCull8InstanceE' were leaked at exit.

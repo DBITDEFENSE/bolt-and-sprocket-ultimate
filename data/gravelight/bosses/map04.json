@@ -139,6 +139,79 @@
     "off_gauge_mult": 0.15
    },
    "stagger_seconds": 0.6
+  },
+  "testpilot": {
+   "boss_id": "testpilot",
+   "title": "THE TEST PILOT",
+   "subtitle": "Maj. C. Rourke, USAAF (fictional)",
+   "hp_base": 32000,
+   "kill_scrip_per_player": 1500,
+   "drops": [
+    "resupply"
+   ],
+   "flag": "ignition_key",
+   "spawn_vo": "OPR_M4C_PILOT_SPAWN_01",
+   "death_vo": "OPR_M4C_PILOT_DEATH_01",
+   "anchor_hall": [
+    -40.0,
+    -6.0,
+    130.0
+   ],
+   "anchor_lake": [
+    0.0,
+    0.0,
+    30.0
+   ],
+   "anchor_lake2": [
+    -30.0,
+    0.0,
+    20.0
+   ],
+   "speed": 2.6,
+   "tier": "jog",
+   "height": 1.05,
+   "limb_mult": {
+    "head": 1.5,
+    "neck": 1.2,
+    "torso": 1.0,
+    "arms": 0.7,
+    "legs": 0.5
+   },
+   "phases": {
+    "lake_at": 0.6,
+    "stall_at": 0.3
+   },
+   "leap": {
+    "telegraph": 1.1,
+    "air_seconds": 1.4,
+    "arc_height": 6.0,
+    "range": 22.0,
+    "range_lake": 40.0,
+    "lead": 0.5,
+    "cooldown": 3.0,
+    "shock_radius": 3.0,
+    "shock_damage": 100,
+    "zombie_damage": 2500,
+    "vuln_seconds": 4.0,
+    "air_mult": 0.5,
+    "idle_mult": 0.25,
+    "ground_speed": 2.6
+   },
+   "drag": {
+    "reach": 2.5,
+    "seconds": 3.0,
+    "speed": 4.0,
+    "damage": 60,
+    "mash": 5,
+    "team": 300.0
+   },
+   "stall": {
+    "seconds": 6.0,
+    "speed_mult": 1.3,
+    "vuln_mult": 2.0
+   },
+   "catch_mult": 3.0,
+   "stagger_seconds": 0.6
   }
  }
 }

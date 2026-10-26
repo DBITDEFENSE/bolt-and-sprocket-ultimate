@@ -347,6 +347,22 @@
    "map": "0",
    "text": "Marto, moja kochana (Marta, my dear),\n\nI am writing this with a pencil the length of my thumbnail, on the back of a coal bill, in a cage in the cellar of the Kreuzweg, where we used to sell Anselm his winter coal. Do not laugh. I know you are laughing.\n\nI am out of Kaltenbrunn. On the night of the twentieth the bell rang and did not stop, and the guards ran from something they would not name. We went up the old Maintenance Stairs, eleven of us, the way we planned it in the spring. The guards on the third landing were still shooting. I was slow, because of my knee, and slow is careful, and careful is alive. I am sorry to tell you I was the only one who reached the snow. I said their names at the top, and I will say them to you at our table, every one.\n\nI took a coat off the guardroom hook. It is too big and it smells of a stranger, and I cut the badges off with a shovel. On the road a patrol caught me and brought me here, and then they heard something on the road behind them and ran, and took the key with them.\n\nSomething is walking about upstairs. I am not afraid. I was under that mountain almost four years and it did not keep me. Tell Hania her father is coming home. Tell her to set the extra plate at Wigilia, for the stranger at the door. This year, God willing, the stranger is me.\n\nYour Jakub.\n\nP.S. The chalk is still on the props in Gallery Nine. Three strokes and a hook. If anyone ever asks you what it meant, tell them: we did not build their mountain well.",
    "placement": "companion"
+  },
+  {
+   "id": "INT_M4_MANIFEST",
+   "title": "Consignment Manifest, Crate D/LANTERN",
+   "type": "DOC",
+   "map": "4c",
+   "placement": "fixed",
+   "text": "A shipping manifest in a celluloid sleeve, tacked to the lid of a crate stencilled with a diamond and the word LANTERN. Typed, two carbons, a signature in ink.\n\nCONSIGNMENT: one (1) crate, sealed, 212 lb. CONTENTS: specimen, geological, with fittings. ORIGIN: Totenhafen (occupied), by the hand of the retrieving officer. ROUTED: London, Admiralty annexe, for onward carriage. CONSIGNOR: Lt. M. Ashworth, R.N.V.R. (W). CONSIGNEE: Mr. L. Hale, Groom Lake range, Nevada, U.S.A. Priority: DIRECTIVE LANTERN. Retrieve at any cost.\n\nUnder the typed lines, pencil, an American hand: \"Rec'd 14 April. Signed for by Mr. Hale personally. Opened in the lab 6 May. Nobody told the sergeant.\""
+  },
+  {
+   "id": "INT_M4_PROGRAM",
+   "title": "Program Log, Mr. L. Hale",
+   "type": "DOC",
+   "map": "4c",
+   "placement": "fixed",
+   "text": "A bound program log on the office sill, open where it can be read through the glass. A civilian hand, exact and unhurried.\n\n11 Aug 1944. Bolide over the range, 02:10. Impact on the dry lake, a crater the size of a motor car. Logged with the Weather Bureau as a meteor. It is not a meteor. It hums. The stone is in the lab pit by 15 Aug.\n\n3 Sep. The dish pointed at the stone at the sergeant's suggestion (she wanted the tower's generator for her lights). The stone answers the dish. Direction of the reply: 0.5 degrees off the Moon's limb, the dark side of the crack. Nine months of listening since. It answers.\n\n14 Apr 1945. The British crate. The second specimen is the same material. The two speak to each other through the floor.\n\n6 May. The crate opened in the pit. Major Rourke insisted on standing closest. I have written to his wife. The program is not stopped; the program is why the rocket exists. Something on the Moon talks back, and I would like to know what, before anyone else does.\n\nThe last line, in a different pen: \"The sergeant says I asked the Canaries nice. I did. I always do.\""
   }
  ]
 }

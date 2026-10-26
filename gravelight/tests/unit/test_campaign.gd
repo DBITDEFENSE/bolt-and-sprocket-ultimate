@@ -20,7 +20,7 @@ func after_each() -> void:
 # ---------------------------------------------------------------- exfil data
 
 func test_chain_is_map0_map1_map2_then_map4_acts() -> void:
-	assert_eq(Campaign.chain(), ["map00_crossroads", "map01_kaltenbrunn", "map02_totenhafen", "map04a_thalbach", "map04b_kranich"])
+	assert_eq(Campaign.chain(), ["map00_crossroads", "map01_kaltenbrunn", "map02_totenhafen", "map04a_thalbach", "map04b_kranich", "map04c_groomlake"])
 	assert_eq(Campaign.first_map(), &"map00_crossroads")
 	assert_eq(Campaign.scene_for(&"map00_crossroads"), "res://gravelight/maps/map00_crossroads/map00.tscn")
 	assert_eq(Campaign.scene_for(&"map02_totenhafen"), "res://gravelight/maps/map02_totenhafen/map02.tscn")

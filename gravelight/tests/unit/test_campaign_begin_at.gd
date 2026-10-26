@@ -8,10 +8,10 @@ func after_each() -> void:
 
 func test_chain_runs_into_map4_and_morgenrot_is_noted() -> void:
 	var c: Dictionary = Campaign.cfg()
-	assert_eq(Campaign.chain(), ["map00_crossroads", "map01_kaltenbrunn", "map02_totenhafen", "map04a_thalbach", "map04b_kranich"])
+	assert_eq(Campaign.chain(), ["map00_crossroads", "map01_kaltenbrunn", "map02_totenhafen", "map04a_thalbach", "map04b_kranich", "map04c_groomlake"])
 	assert_true(str(c["_doc"]).contains("map03"), "the doc says where Morgenrot slots in")
 	assert_false((c.get("standalone", []) as Array).has("map04a_thalbach"), "Act I left the standalone list when it joined the chain")
-	for id: String in ["map04a_thalbach", "map04b_kranich"]:
+	for id: String in ["map04a_thalbach", "map04b_kranich", "map04c_groomlake"]:
 		assert_true((c["scenes"] as Dictionary).has(id) and (c["display_names"] as Dictionary).has(id), "%s registered" % id)
 
 

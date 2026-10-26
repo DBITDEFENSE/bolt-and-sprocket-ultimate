@@ -56,6 +56,12 @@
         "map04b_kranich": {
           "soldier": 0.55,
           "technician": 0.45
+        },
+        "map04c_groomlake": {
+          "technician": 0.4,
+          "soldier": 0.3,
+          "labstaff": 0.2,
+          "villager": 0.1
         }
       }
     },
@@ -90,7 +96,8 @@
         "map01_kaltenbrunn",
         "map02_totenhafen",
         "map04a_thalbach",
-        "map04b_kranich"
+        "map04b_kranich",
+        "map04c_groomlake"
       ]
     },
     "bellringer": {
@@ -221,6 +228,48 @@
         "map04b_kranich"
       ],
       "scrip": 60
+    },
+    "burrower": {
+      "_doc": "Map 4 Act III (UPDATE 07, docs/MAP4_FERNFLUG.md 5.5): the range's construction crews under the salt. Not a pooled type: Gangers rising at the lakebed's burrow points are tagged by the GroomController (map04c.json groom.burrower), the staged rise is the tell.",
+      "kind": "ganger_variant",
+      "kit": "technician",
+      "health_mult": 1.0,
+      "maps": [
+        "map04c_groomlake"
+      ],
+      "scrip": 60
+    },
+    "canary": {
+      "_doc": "Map 4 Act III: the program's test subjects in hazmat suits with glass hoods. Tagged Gangers (groom.canary): health x1.3, torso x1.5, a head kill releases the hood gas (GasCloud). Body shots are the clean kill.",
+      "kind": "ganger_variant",
+      "kit": "labstaff",
+      "health_mult": 1.3,
+      "maps": [
+        "map04c_groomlake"
+      ],
+      "scrip": 70
+    },
+    "jumpjockey": {
+      "_doc": "Map 4 Act III (and the Moon): test pilots with the program's jump rigs. Tagged Gangers (groom.jumpjockey): health x1.2, a leap from a launch point; shot in the air they fall and die.",
+      "kind": "ganger_variant",
+      "kit": "soldier",
+      "health_mult": 1.2,
+      "maps": [
+        "map04c_groomlake",
+        "map04d_mondlicht"
+      ],
+      "scrip": 70
+    },
+    "backorder": {
+      "_doc": "Map 4 Act III (and the Moon): Darkmatter's retention construct, phased through walls, solid to attack. Tagged Gangers (groom.backorder), max 2, after the relay coil is taken.",
+      "kind": "ganger_variant",
+      "kit": "labstaff",
+      "health_mult": 1.0,
+      "maps": [
+        "map04c_groomlake",
+        "map04d_mondlicht"
+      ],
+      "scrip": 150
     }
   },
   "repath": {
@@ -277,6 +326,11 @@
     "ballast": {
       "_doc": "Map 2: carrying a lead coffin (the Ballast mechanic, deferred; data only).",
       "move_mult": 0.5
+    },
+    "gas_slow": {
+      "_doc": "Map 4 Act III: inside a Canary's hood gas (gravelight/world/map04/gas_cloud.gd).",
+      "move_mult": 0.7,
+      "fx": true
     }
   },
   "emerge": {

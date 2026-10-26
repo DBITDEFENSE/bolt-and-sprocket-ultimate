@@ -5,7 +5,8 @@
     "map01_kaltenbrunn",
     "map02_totenhafen",
     "map04a_thalbach",
-    "map04b_kranich"
+    "map04b_kranich",
+    "map04c_groomlake"
   ],
   "standalone": [],
   "scenes": {
@@ -13,14 +14,16 @@
     "map01_kaltenbrunn": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
     "map02_totenhafen": "res://gravelight/maps/map02_totenhafen/map02.tscn",
     "map04a_thalbach": "res://gravelight/maps/map04_fernflug/map04a.tscn",
-    "map04b_kranich": "res://gravelight/maps/map04_fernflug/map04b.tscn"
+    "map04b_kranich": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+    "map04c_groomlake": "res://gravelight/maps/map04_fernflug/map04c.tscn"
   },
   "display_names": {
     "map00_crossroads": "Crossroads Inn",
     "map01_kaltenbrunn": "Kaltenbrunn",
     "map02_totenhafen": "Totenhafen",
     "map04a_thalbach": "Fernflug — Act I: Werk Thalbach",
-    "map04b_kranich": "Fernflug — Act II: der Kranich"
+    "map04b_kranich": "Fernflug — Act II: der Kranich",
+    "map04c_groomlake": "Fernflug — Act III: Groom Lake"
   },
   "arrival_grace_seconds": 14.0,
   "arrival_banner": "%s\nThe squad arrives. Round %d begins shortly.",
@@ -461,6 +464,123 @@
           ],
           "fov": 54,
           "fx": ""
+        }
+      ]
+    },
+    "exfil_m4c_m4d": {
+      "title": "MONDLICHT.",
+      "subtitle": "",
+      "seconds": 40.0,
+      "title_at": 35.5,
+      "fade_at": 38.0,
+      "shots": [
+        {
+          "t": 0.0,
+          "from": [
+            -40.0,
+            -5.0,
+            170.0
+          ],
+          "to": [
+            -39.0,
+            -4.6,
+            172.0
+          ],
+          "look": [
+            -33.0,
+            8.0,
+            176.0
+          ],
+          "fov": 62,
+          "fx": "",
+          "vo": "DEE_M4C_LAST_01",
+          "vo_at": 0.8
+        },
+        {
+          "t": 7.5,
+          "from": [
+            -35.5,
+            16.5,
+            173.5
+          ],
+          "to": [
+            -35.0,
+            16.8,
+            174.0
+          ],
+          "look": [
+            -33.0,
+            15.5,
+            178.0
+          ],
+          "fov": 58,
+          "fx": "",
+          "vo": "JAK_M4C_ROCKET_01",
+          "vo_at": 1.0
+        },
+        {
+          "t": 13.5,
+          "from": [
+            -62.0,
+            20.0,
+            150.0
+          ],
+          "to": [
+            -64.0,
+            22.0,
+            147.0
+          ],
+          "look": [
+            -33.0,
+            10.0,
+            176.0
+          ],
+          "fov": 64,
+          "fx": "launch",
+          "vo": "OPR_EXFIL_GO_M4C_01",
+          "vo_at": 1.5
+        },
+        {
+          "t": 23.5,
+          "from": [
+            -33.0,
+            60.0,
+            176.0
+          ],
+          "to": [
+            -33.0,
+            390.0,
+            176.0
+          ],
+          "look": [
+            -33.0,
+            0.0,
+            176.0
+          ],
+          "fov": 70,
+          "fx": ""
+        },
+        {
+          "t": 31.0,
+          "from": [
+            -33.0,
+            420.0,
+            176.0
+          ],
+          "to": [
+            -33.0,
+            432.0,
+            176.0
+          ],
+          "look": [
+            -33.0,
+            900.0,
+            176.0
+          ],
+          "fov": 50,
+          "fx": "",
+          "vo": "DUT_M4C_MOON_01",
+          "vo_at": 0.8
         }
       ]
     }

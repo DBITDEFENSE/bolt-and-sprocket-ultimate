@@ -540,6 +540,10 @@
     "map04b_kranich": {
       "from": "map04a_thalbach",
       "round": 15
+    },
+    "map04c_groomlake": {
+      "from": "map04b_kranich",
+      "round": 20
     }
   }
 }

@@ -10,6 +10,8 @@
   {"id": "INT_M2_01", "map": "2", "style": "letter", "position": [-28.6, 0.55, 7.8], "yaw": -90, "where": "Cannery infirmary, the south cot's blanket (top 0.55), facing the room"},
   {"id": "INT_M2_02", "map": "2", "style": "logbook", "position": [50.8, -2.2, 63.0], "yaw": 90, "where": "Lower pens, the keeper's desk (top -2.2) by the Pumpenschalter, facing west"},
   {"id": "INT_M2_03", "map": "2", "style": "docket", "position": [43.97, 1.5, 54.0], "yaw": 90, "where": "Pen Hall, the crane office's west wall face (x 44), facing the apron"},
-  {"id": "INT_M2_04", "map": "2", "style": "clipping", "position": [47.0, 8.6, 33.2], "yaw": 180, "where": "Signal Tower, north wall face (z 33.2) between the two windows"}
+  {"id": "INT_M2_04", "map": "2", "style": "clipping", "position": [47.0, 8.6, 33.2], "yaw": 180, "where": "Signal Tower, north wall face (z 33.2) between the two windows"},
+  {"id": "INT_M4_MANIFEST", "map": "4c", "style": "docket", "position": [24.0, 1.45, 64.0], "yaw": 180, "where": "Groom Lake hangar, the British crate's lid by the west wall (flat on the lid)"},
+  {"id": "INT_M4_PROGRAM", "map": "4c", "style": "logbook", "position": [28.0, 1.1, 91.5], "yaw": 180, "where": "Groom Lake hangar, the office's glass front, read through the glass (Hale never opens the door)"}
  ]
 }
