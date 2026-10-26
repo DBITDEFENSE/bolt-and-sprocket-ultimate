@@ -168,3 +168,35 @@ New clothes for a named character: write a kit function (or a `kit_<character>`)
 - `shots_zombie_anim -- --only=lineup` (rendered, off-screen): the lineup, before / after close-ups (front, side,
   damaged, crawler, ragdoll), faces, the living set. `--only=emerge`: the T-085 rise sheets.
 - `smoke_zombie_anim`: foot-slide, climbs, gore, knockdown, deaths and ragdolls.
+
+## 9. The named people (T-092)
+
+The squad (Dutch, Peg, Deacon, Wren), Jakub, the Map 0 patrons (Rother, Kubiak, Frau Pohl, Trudi, Gefreiter
+Sobotta), the three survivors upstairs (Wiesner, Fräulein Brandt, Ida Kroll) and the Cousins (the Hammer, the Reach,
+Alix) are built by the same scripts, one GLB per person.
+
+| File | What it does |
+|---|---|
+| `data/gravelight/art/people.json` | Per person: build / sex / body overrides (`w`, `sh`, `limb` multiply; `belly`, `sink` set), face knobs (`head` scale, `jaw`, `chin`, `brow`, `nose`, `nose_w`, `lips`, `ears`, `mouth_close`), hair style, kit, skin tone (linear), palette (sRGB per part key), skin paint, height, VO speaker, face driver (blink range, rest face), `look` (porcelain). Also the shape list, the budgets and the expressions (shape weights per expression). |
+| `tools_src/blender/characters/make_face.py` | The people's face: eyes placed by ray-cast onto the sculpted socket (white, iris, pupil), upper / lower **lids** and lash lines (spherical patches at an edge angle), **brows** (ribbons on the brow ridge), teeth and the mouth cavity, a moustache; hair styles (crop, bun, braid, bob, two buns, via `dome()` for smooth edges); the skin paint; the **shape keys** as displacement fields (the lids and brows are regenerated at each shape's edge angles / offsets). |
+| `tools_src/blender/characters/make_kits.py` (section "the named people") | `kit_<person>(body, P)` for all sixteen, plus `head_piece` (helmet with netting, beret, knit cap, flat cap, peaked cap, kerchief, side cap), `sash` (straps laid on a garment by ray), `pstud` (studs placed by ray, not snapped to the nearest vertex), `P_coat` (a coat over the hip sides), `cut_front` (an open coat), `P_palm` (fingerless gloves), `stitches` (the Cousins' seams), `mottle` (camouflage / grease as per-vertex AO). |
+| `tools_src/blender/characters/build_people.py` | Builds one person: body (with the face knobs) → UVs transferred from the canonical living medium male (the shared living skin textures fit) → the kit → the skin under the kit deleted → decimated to `budget.body_tris` sparing the face and hands → paint → shape keys → `Body` / `Parts` / `Hair` / `Kit` + the rig into `assets/ours/characters/people/char_person_<id>.glb`. `--preview=<dir>` / `--faces=<dir>` render Workbench sheets (every shape). |
+| `tools/build_people.sh [--only=dutch,peg]` | Runs it and imports. |
+| `gravelight/world/people/people_bodies.gd` | `PeopleBodies.mesh(id, risen=false)`: the GLB merged into the two-surface layout with the six blend shapes on both surfaces and mesh LODs; `dress_risen(zombie, id)` puts the same person, risen (infection skin, violet eyes), on the zombie a patron / survivor turns into; `legacy` / `-- --legacy-people` for before shots. |
+| `gravelight/world/people/person_rig.gd` | `PersonRig`: the person's mesh on a ZombieRig skeleton, driven from a procedural puppet's pose (`drive()`: hips, chest / head rotations split over the spine and neck, the puppet's leg angles, two-bone IK from the rig's shoulders to the puppet's hand targets, the lower foot planted). RemoteBody (squad, Jakub) and PatronBody (patrons, survivors) keep every pose, action and timing they had and hand it over each frame. |
+| `gravelight/world/face_driver.gd` | `FaceDriver`: blinks on a timer, eases to the owner's expression (RemoteBody: downed = pain, low health = fear, shooting / reloading = determined, a smile in an idle fidget; PatronBody: panic / run / cower = fear, falling = pain, eyes shut once dead, the rifle = determined, a smile at the table), lip flap on `GLBus.vo_line_started` for its speaker (a syllable rhythm from the line's vowel groups over its duration). |
+
+Shape keys: `blink`, `jaw_open` (the jaw region rotated about a hinge below the ear; the lower teeth and the cavity
+ride it), `fear` (brows up, lids wide, mouth corners out and down, jaw a little open), `determined` (brows down and
+in, a squint, lips pressed), `pain` (inner brows up and pinched, eyes screwed shut, a grimace, teeth showing),
+`smile` (corners up and back, cheeks up, lower lids up). Bodies keep the Jaw bone too (the Cousins' MZ clips still
+key it).
+
+The Cousins wear their person mesh on their own Zombie skeleton (`HomageBoss.modelled()`): the costume primitives
+for hair and clothes are skipped, the maul, the Reach's telescoping arms and stretch fillers, Alix's third arm and
+the HomagePoseMod layer are untouched, and the hitboxes are the same nodes (test_people_bodies compares them with
+the legacy bodies).
+
+Checks: GUT `test_people_bodies`; shots `gravelight/tools_src/shots_lineup.tscn` (the lineup, faces per expression,
+the Cousins' faces, a risen patron) and `shots_people_ingame.tscn` (patrons at their tables, the bots, a fight, the
+Cousins' round), both with `-- --legacy-people` for the before set.

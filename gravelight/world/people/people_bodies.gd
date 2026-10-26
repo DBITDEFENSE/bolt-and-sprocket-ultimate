@@ -7,7 +7,7 @@ extends RefCounted
 ## surface 1 the face parts, hair and clothes with the shared kit shader: two draw calls) and keeps the face's blend
 ## shapes (people.json "shapes": blink, jaw_open, fear, determined, pain, smile) on both surfaces, plus Godot's mesh
 ## LODs. `mesh(id, true)` is the same person risen (the infection skin, the violet eyes) for a patron or survivor who
-## turns. Colours: the person's palette (people.json) over ZombieBody.KEY_LOOK; the skin is the shared living
+## turns. Colours: the person's palette (people.json, sRGB) over ZombieBody.KEY_LOOK (linear); the skin is the shared living
 ## texture set times the person's tone times the painted skin (lips, cheeks, stubble, doll paint).
 ## `legacy` (`-- --legacy-people`) keeps the old primitive bodies for before / after shots.
 
@@ -125,10 +125,11 @@ static func look_of(id: String, key: String, risen: bool = false) -> Array:
 	if key == "lid":
 		return [tone * 0.93, 0.6, 0.0, 0.0]
 	var base: Array = (LOOK.get(key, ZombieBody.KEY_LOOK.get(key, [Color(1, 0, 1), 0.8, 0.0, 0.0])) as Array).duplicate()
+	# palette colours are picked as sRGB albedo (like RemoteBody's OUTFITS were); the kit shader takes linear
 	if pal.has(key):
-		base[0] = _color(pal[key], base[0])
+		base[0] = _color(pal[key], base[0]).srgb_to_linear()
 	elif key == "brow" and pal.has("hair"):
-		base[0] = _color(pal["hair"], base[0]) * 0.8
+		base[0] = _color(pal["hair"], base[0]).srgb_to_linear() * 0.8
 	if key == "iris" and str(r.get("look", "")) == "porcelain":
 		base = [base[0], 0.04, 0.0, 0.25]   # glassy doll eyes with a faint glint of their own
 	return base
