@@ -17,6 +17,8 @@ Options:
   --preview out.png    also render a side+top Workbench preview (off-screen; no window) with one colour per object
   --min-faces N        groups with fewer faces than N fold into the biggest group (default 1)
   --drop NAME          delete this object after the split/rename (stray rounds, scene clutter); repeatable
+  --opaque             every material exported OPAQUE (a gun has no see-through parts; Sketchfab packs alpha junk
+                       into the albedo and the glTF exporter then writes alphaMode BLEND). T-098.
   --auto-tex           texel-density cap per material: the longest side of the geometry a material covers decides
                        its cap (>= 0.6 m: max-tex; >= 0.25 m: max-tex/2; smaller: max-tex/4)
 
@@ -41,7 +43,7 @@ def _args():
         print(__doc__)
         sys.exit(2)
     opt = {"in": argv[0], "out": argv[1], "objects": [], "max_tex": 2048, "split": False, "map": {},
-           "keep_rig": False, "drop_black_emissive": False, "preview": None, "min_faces": 1, "drop": [], "auto_tex": False}
+           "keep_rig": False, "drop_black_emissive": False, "preview": None, "min_faces": 1, "drop": [], "auto_tex": False, "opaque": False}
     i = 2
     while i < len(argv):
         a = argv[i]
@@ -67,6 +69,8 @@ def _args():
             opt["min_faces"] = int(argv[i + 1]); i += 2
         elif a == "--drop":
             opt["drop"].append(argv[i + 1]); i += 2
+        elif a == "--opaque":
+            opt["opaque"] = True; i += 1
         elif a == "--auto-tex":
             opt["auto_tex"] = True; i += 1
         else:
@@ -382,7 +386,22 @@ def forward_guess(objs, mn, mx):
     return sign + gl, {"muzzle_end_area": round(min(lo_area, hi_area), 5), "butt_end_area": round(max(lo_area, hi_area), 5)}
 
 
-def export(out_glb):
+def fix_materials(js, opaque):
+    """T-098: an emissiveFactor with no emissive texture (Sketchfab's exporter leaves [1,1,1] behind once the black
+    emissive map is dropped) would make every plain loader draw the gun glowing white: it is removed. With `opaque`,
+    alphaMode BLEND / MASK becomes OPAQUE. Same rules as tools/glb_sanitize.py (for GLBs already converted)."""
+    for m in js.get("materials", []):
+        if "emissiveTexture" not in m and "emissiveFactor" in m:
+            del m["emissiveFactor"]
+        ext = m.get("extensions", {})
+        if "emissiveTexture" not in m and "KHR_materials_emissive_strength" in ext:
+            del ext["KHR_materials_emissive_strength"]
+        if opaque and m.get("alphaMode", "OPAQUE") != "OPAQUE":
+            m.pop("alphaMode", None)
+            m.pop("alphaCutoff", None)
+
+
+def export(out_glb, opaque=False):
     meshes = [o for o in bpy.data.objects if o.type == "MESH"]
     if not meshes:
         raise SystemExit("nothing to export")
@@ -402,6 +421,7 @@ def export(out_glb):
         bpy.ops.export_scene.gltf(**kwargs)
     with open(gltf_path, "r", encoding="utf-8") as f:
         js = json.load(f)
+    fix_materials(js, opaque)
     bins = js.get("buffers", [])
     if len(bins) != 1 or "uri" not in bins[0]:
         raise SystemExit("expected one external .bin buffer, got %r" % bins)
@@ -554,7 +574,7 @@ def main():
         d["bbox_min"], d["bbox_max"] = [min(a[0], b[0]), min(a[1], b[1]), min(a[2], b[2])], [max(a[0], b[0]), max(a[1], b[1]), max(a[2], b[2])]
     gmn, gmx = to_gltf(mn), to_gltf(mx)
     gmn, gmx = [min(gmn[k], gmx[k]) for k in range(3)], [max(gmn[k], gmx[k]) for k in range(3)]
-    written = export(out)
+    written = export(out, opt["opaque"])
     colors = preview(opt["preview"], meshes, mn, mx) if opt["preview"] else {}
     rep = {"in": src, "out": out, "objects": objs, "tris": sum(d["tris"] for d in objs),
            "bbox_min": gmn, "bbox_max": gmx, "size": [round(gmx[k] - gmn[k], 4) for k in range(3)],

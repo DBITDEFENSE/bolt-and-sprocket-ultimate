@@ -70,7 +70,7 @@ def sketchfab(asset_id, folder, title, author, url, game, real_len, args, notes=
         "credit": '"%s" by %s (%s), licensed under CC-BY 4.0. Modified.' % (title, author.split(" (")[0], url),
         "format": SKETCHFAB_FORMAT,
         "downloaded": TODAY + " by Devin Blair (Sketchfab); converted " + TODAY + " by Claude (T-087)",
-        "args": ["--drop-black-emissive", "--auto-tex"] + args,
+        "args": ["--drop-black-emissive", "--opaque", "--auto-tex"] + args,
         "game": game, "real_len": real_len, "notes": notes, "parts": parts or {}, **kw}
 
 

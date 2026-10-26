@@ -648,6 +648,8 @@
   },
   "thompson": {
    "feel": {
+    "hip": [0.14, -0.13, -0.41],
+    "hip_rot": [-3.5, 11, 3],
     "cam_pitch": 0.85,
     "cam_yaw": 0.18,
     "cam_keep": 0.5,

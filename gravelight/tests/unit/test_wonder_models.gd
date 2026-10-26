@@ -194,3 +194,62 @@ func test_gramophone_model_and_body() -> void:
 	assert_not_null(box, "collision unchanged")
 	assert_eq(box.size, Vector3(0.3, 0.18, 0.3), "the gameplay box is the same size")
 	assert_not_null(g.get_node_or_null("Visual"), "the modelled gramophone is its visual")
+
+
+## T-098: the Ashlight's capsule reload keeps the old and the fresh capsule in front of the camera and below its
+## centre all the way through: before, the fresh capsule was fed in from 25 cm behind the chamber and swung up past
+## the eye (the viewmodel is compressed toward the eye, D-062: camera-space z here is about a third of the drawn
+## distance, the camera's near plane is 0.01).
+func test_capsule_reload_stays_in_front_of_the_camera() -> void:
+	var h: WeaponHolder = _p.weapons
+	h.slots.clear()
+	h.give_weapon(&"ashlight")
+	h.current_index = 0
+	h.call("_rebuild_gun")
+	var w: WeaponInstance = h.current()
+	w.mag = 0
+	var cam: Camera3D = _p.camera
+	assert_not_null(cam, "the player has a camera")
+	for i: int in 30:
+		h.tick(1.0 / 60.0, {})
+	# the capsule seated at the hip: the reference for how near the eye a capsule may come
+	var rest: Vector2 = _capsule_extent(cam, [(h.get("_model") as Node3D).get_node("Mag")])
+	h.start_reload()
+	assert_true(h.is_reloading(), "the capsule reload started")
+	var nearest: float = -INF
+	var highest: float = -INF
+	var frames: int = 0
+	var saw_prop: bool = false
+	while h.is_reloading() and frames < 600:
+		h.tick(1.0 / 60.0, {})
+		frames += 1
+		var prop: Variant = h.get("_prop")
+		if prop != null and is_instance_valid(prop):
+			saw_prop = true
+		var e: Vector2 = _capsule_extent(cam, [prop, (h.get("_model") as Node3D).get_node_or_null("Mag")])
+		nearest = maxf(nearest, e.x)
+		highest = maxf(highest, e.y)
+	assert_true(saw_prop, "a fresh capsule was in the hand")
+	# before T-098: nearest z -0.017 (at the near plane), tan up 1.24 (the top-right corner of the screen); the seated
+	# capsule itself reaches tan up ~0.2 in the raised reload pose
+	assert_lt(nearest, rest.x + 0.02, "the capsules come no nearer the eye than ~2 cm (compressed) of where the seated one sits (%.3f vs %.3f)" % [nearest, rest.x])
+	assert_lt(highest, 0.3, "the capsules stay low on screen (max tan up %.2f)" % highest)
+
+
+## [nearest camera-space z, highest tan-up] over every mesh corner of the visible nodes.
+func _capsule_extent(cam: Camera3D, nodes: Array) -> Vector2:
+	var out: Vector2 = Vector2(-INF, -INF)
+	var inv: Transform3D = cam.global_transform.affine_inverse()
+	for n: Variant in nodes:
+		if n == null or not is_instance_valid(n) or not (n as Node3D).is_visible_in_tree():
+			continue
+		for c: Node in (n as Node3D).find_children("*", "MeshInstance3D", true, false):
+			var mi: MeshInstance3D = c as MeshInstance3D
+			if mi.mesh == null:
+				continue
+			var bb: AABB = mi.mesh.get_aabb()
+			for k: int in 8:
+				var cp: Vector3 = inv * (mi.global_transform * bb.get_endpoint(k))
+				out.x = maxf(out.x, cp.z)
+				out.y = maxf(out.y, cp.y / maxf(0.001, -cp.z))
+	return out

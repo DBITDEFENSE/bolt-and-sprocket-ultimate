@@ -69,8 +69,16 @@ void fragment() {
 	metal *= 1.0 - rime;
 	vec3 emis = vec3(0.0);
 	if (veins > 0.0) {
-		float v1 = 1.0 - abs(2.0 * fbm(v_pos * 45.0 + 41.0) - 1.0);
-		float vein = smoothstep(0.9, 0.97, v1) * smoothstep(0.3, 0.8, metal);
+		// T-098: thin lines, not patches. The old ridge of a 3-octave fbm went wide and flat where the octaves
+		// cancelled (the blotches); now the 0.5 contour of one warped noise octave, kept a constant few pixels wide
+		// with fwidth, and thinned out by a slow mask so the veins run in streaks across the metal.
+		vec3 q = v_pos * 38.0 + 41.0;
+		q += (vec3(vn(q * 0.45 + 13.0), vn(q * 0.45 + 29.0), vn(q * 0.45 + 47.0)) - 0.5) * 1.8;
+		float r = abs(vn(q) - 0.5);
+		float w = fwidth(r) * 1.3 + 0.01;
+		float line = 1.0 - smoothstep(0.0, w, r);
+		float streak = smoothstep(0.38, 0.62, vn(v_pos * 9.0 + 5.0));
+		float vein = line * streak * smoothstep(0.3, 0.8, metal);
 		emis = vein * vein_color.rgb * veins * energy * (2.4 + flash * 3.0);
 		col = mix(col, col * vec3(0.5, 0.4, 0.62), veins * 0.4);
 	}
