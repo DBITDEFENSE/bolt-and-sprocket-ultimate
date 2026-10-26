@@ -320,6 +320,10 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	var box_c: Dictionary = _ammo_candidate(anc, rng, scrip)
 	if not box_c.is_empty():
 		out.append(box_c)
+		# a nearly dry main gun's refill comes first: hold its price back from every other purchase (a bot with an
+		# empty taught Thompson rolled the crate for 950 and could no longer afford the 2500 refill)
+		if float(box_c.get("value", 0.0)) >= 1.0:
+			reserve += int(box_c.get("cost", 0))
 	if not shopping or order == &"revive":
 		return out
 	# ---- the power (T-058): bots alone (no human in the match) open the way to the power switch and throw it;
