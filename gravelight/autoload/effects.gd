@@ -7,6 +7,20 @@ extends Node3D
 ## snow, where they fill in after a few seconds. Holes in things that move or vanish (doors, seals, machines) stay
 ## short-lived quads, so nothing floats in the air when a door rises. Real explosions leave a scorch mark (a
 ## pooled Decal, SCORCHES of them, oldest reused). Both are wiped when a match starts.
+##
+## UPDATE 05 section 6 (T-095): the world-space gun and hit VFX live here, data in data/gravelight/vfx.json,
+## helpers under gravelight/world/vfx/. Muzzle flashes per weapon class (FlashPool) are driven from
+## GLBus.weapon_fired for every shooter (the local viewmodel's true muzzle, a bot's or teammate's third-person gun,
+## else the shot origin); ejected casings use the real cartridge models (CasingPool; WeaponHolder ejects through
+## GunFx.eject, which forwards here); impacts add per-surface debris (ImpactFx) to the decals; zombie hits get a
+## mist, droplets and, from a Crucible-taught weapon, a Nachtglas spark burst; the Glasshide shatter and the
+## Totenglocke's Great Toll refraction ring are pooled here too. GLSettings "vfx_quality" (low / medium / high)
+## scales counts through quality(). The atmosphere pass (VfxAtmosphere: near snow, dust in the light shafts, the
+## west field fog) attaches to the map at match start. TODO (hooks for other owners, see the T-095 report):
+##   weapon_holder.gd _trace: after `Effects.blood(pos, -dir)` call `Effects.zombie_hit(pos, -dir, w.id, w.upgraded)`
+##   weapon_holder.gd _eject_casing: pass the weapon id, `fx.eject(kind, from, vel, basis, w.id)`
+##   zombie.gd _shards: `Effects.shatter(global_position + Vector3.UP * 1.1, color, amount, speed_max)` instead of a new emitter
+##   menu_settings.gd: a "VFX quality" option for GLSettings "vfx_quality" (low / medium / high)
 
 const IMPACTS: int = 48
 const BLOOD: int = 16
@@ -28,7 +42,36 @@ const DECALS: Dictionary = {
 	"snow": {"hole": Color(0.42, 0.47, 0.56, 0.55), "rim": Color(0.92, 0.95, 1.0, 0.5), "size": 0.13, "rim_w": 0.55, "rag": 0.2},
 	"metal": {"hole": Color(0.04, 0.04, 0.045, 0.95), "rim": Color(0.82, 0.82, 0.85, 0.9), "size": 0.05, "rim_w": 0.22, "rag": 0.08},
 	"hay": {"hole": Color(0.14, 0.11, 0.05, 0.8), "rim": Color(0.75, 0.62, 0.3, 0.5), "size": 0.07, "rim_w": 0.4, "rag": 0.7},
+	# T-095: a plaster crater (a grey pit in a pale chipped ring), a glass star (a pale ragged hole with a white rim)
+	"plaster": {"hole": Color(0.42, 0.4, 0.37, 0.9), "rim": Color(0.93, 0.91, 0.86, 0.85), "size": 0.11, "rim_w": 0.55, "rag": 0.45},
+	"glass": {"hole": Color(0.8, 0.88, 0.95, 0.4), "rim": Color(1.0, 1.0, 1.0, 0.55), "size": 0.09, "rim_w": 0.6, "rag": 0.95},
 }
+const SHATTERS: int = 4
+const TOLL_RINGS: int = 2
+const MODELS_PATH: String = "res://data/gravelight/weapons/models.json"
+const VM_LAYER: int = 1 << 19
+const TOLL_RING_SHADER: String = """
+shader_type spatial;
+render_mode unshaded, cull_disabled, depth_draw_never, blend_mix;
+uniform sampler2D screen_tex : hint_screen_texture, filter_linear_mipmap;
+uniform vec2 center_uv = vec2(0.5, 0.5);
+uniform float k = 0.0;          // 0 at birth -> 1 gone
+uniform float strength = 0.035;
+uniform vec4 tint : source_color = vec4(0.72, 0.42, 1.0, 1.0);
+void fragment() {
+	float r = length(UV - 0.5) * 2.0;        // 0 at the ring's centre, 1 at the mesh edge (the front of the ring)
+	float band = smoothstep(0.55, 1.0, r) * smoothstep(1.0, 0.92, r);
+	float fade = 1.0 - k;
+	vec2 dir = SCREEN_UV - center_uv;
+	float dl = length(dir);
+	dir = dl > 0.0001 ? dir / dl : vec2(0.0);
+	vec2 off = dir * band * strength * fade;
+	vec3 c = texture(screen_tex, SCREEN_UV - off).rgb;
+	c += tint.rgb * band * 0.12 * fade;
+	ALBEDO = c;
+	ALPHA = clamp(band * (0.55 + 0.45 * fade), 0.0, 1.0) * fade;
+}
+"""
 
 var _impacts: Array[MeshInstance3D] = []
 var _decal_mats: Dictionary = {}       # surface -> material (DECALS); "" = the plain dark mark
@@ -55,9 +98,50 @@ var _snow_life: PackedFloat32Array = PackedFloat32Array()
 var _snow_alive: int = 0
 var _scorches: Array[Decal] = []
 var _nsc: int = 0
+# ---- T-095
+var vfx: Dictionary = {}                 # data/gravelight/vfx.json
+var flash: FlashPool
+var casings: CasingPool
+var impact_fx: ImpactFx
+var _shatters: Array[Node3D] = []
+var _shatter_life: PackedFloat32Array = PackedFloat32Array()
+var _nsh: int = 0
+var _toll: Array[MeshInstance3D] = []
+var _toll_life: PackedFloat32Array = PackedFloat32Array()
+var _toll_mat: Array[ShaderMaterial] = []
+var _toll_range: PackedFloat32Array = PackedFloat32Array()
+var _toll_origin: Array[Vector3] = []
+var _ntoll: int = 0
+## The last shot by player id: {"weapon": StringName, "upgraded": bool, "frame": int} (the zombie-hit bridge: a hit
+## reported in the same physics frame as an upgraded weapon's shot throws Nachtglas sparks until the holder passes
+## the weapon itself, see zombie_hit()).
+var _last_shot: Dictionary = {}
+var _skip_bridge: bool = false
+var _atmosphere: Node = null
+## Flashes drawn / casings thrown (tests, the dev overlay).
+var stats: Dictionary = {"flashes": 0, "casings": 0, "impacts": 0, "hits": 0, "shatters": 0, "tolls": 0}
 
 
 func _ready() -> void:
+	vfx = GLData.table("vfx")
+	flash = FlashPool.new()
+	flash.name = "Flash"
+	flash.setup(vfx.get("flash", {}), int((vfx.get("smoke", {}) as Dictionary).get("slots", 6)))
+	add_child(flash)
+	casings = CasingPool.new()
+	casings.name = "Casings"
+	casings.setup(vfx.get("casings", {}), GLData.load_json(MODELS_PATH).get("extras", {}))
+	add_child(casings)
+	impact_fx = ImpactFx.new()
+	impact_fx.name = "Impacts"
+	impact_fx.setup(vfx.get("impacts", {}), vfx.get("hits", {}))
+	add_child(impact_fx)
+	_build_shatters()
+	_build_toll_rings()
+	if not GLBus.weapon_fired.is_connected(_on_weapon_fired):
+		GLBus.weapon_fired.connect(_on_weapon_fired)
+	if not GLBus.great_toll.is_connected(_on_great_toll):
+		GLBus.great_toll.connect(_on_great_toll)
 	var dark: StandardMaterial3D = StandardMaterial3D.new()
 	dark.albedo_color = Color(0.05, 0.05, 0.05, 0.85)
 	dark.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -203,6 +287,15 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if _snow_alive > 0:
 		_fade_snow_holes(delta)
+	for i: int in SHATTERS:
+		if _shatter_life[i] > 0.0:
+			_shatter_life[i] -= delta
+			var k: float = clampf(_shatter_life[i] / 0.5, 0.0, 1.0)
+			(_shatters[i].get_node("Light") as OmniLight3D).light_energy = k * k * 6.0
+			if _shatter_life[i] <= 0.0:
+				_shatters[i].hide()
+	if _ntoll_live() > 0:
+		_update_toll_rings(delta)
 	for i: int in IMPACTS:
 		if _impact_life[i] > 0.0:
 			_impact_life[i] -= delta
@@ -247,6 +340,15 @@ func _process(delta: float) -> void:
 ## A bullet hole at `pos` facing `normal`, styled by `surface` (wood / stone / snow / metal / hay; "" = plain).
 ## `collider` (what was hit) decides whether the hole persists: see persists_on().
 func impact(pos: Vector3, normal: Vector3, surface: String = "", collider: Object = null) -> void:
+	stats["impacts"] = int(stats["impacts"]) + 1
+	if impact_fx != null:
+		impact_fx.burst(pos, normal, surface, particles_k())   # T-095: the per-surface debris
+	var decal: String = surface
+	if impact_fx != null and impact_fx.impacts.has(surface):
+		decal = str((impact_fx.impacts[surface] as Dictionary).get("decal", surface))
+	if decal == "" and surface != "":
+		return   # cloth, earth: no mark
+	surface = decal
 	if persists_on(collider) and _holes.has(surface):
 		_persistent_hole(pos, normal, surface)
 		return
@@ -304,8 +406,20 @@ static func _decal_mat(d: Dictionary) -> StandardMaterial3D:
 
 
 func blood(pos: Vector3, toward: Vector3) -> void:
+	# T-095 bridge: a hit in the same physics frame as a Crucible-taught weapon's shot throws Nachtglas sparks too
+	# (the holder calls blood() right after weapon_fired; zombie_hit() is the proper call once the holder passes the weapon)
+	if not _skip_bridge:
+		var frame: int = Engine.get_physics_frames()
+		for pid: Variant in _last_shot.keys():
+			var s: Dictionary = _last_shot[pid]
+			if int(s.get("frame", -1)) == frame and bool(s.get("upgraded", false)):
+				nachtglas_spark(pos, toward)
+				break
+	stats["hits"] = int(stats["hits"]) + 1
 	if str(GLSettings.values.get("gore", "full")) != "full":
 		return   # the Gore setting (MZ, T-041): Off and Low show no spray
+	if impact_fx != null:
+		impact_fx.blood(pos, toward, particles_k())   # the mist and the droplets (T-095)
 	var p: CPUParticles3D = _blood[_nb]
 	_nb = (_nb + 1) % BLOOD
 	p.global_position = pos
@@ -589,6 +703,7 @@ func clear_marks() -> void:
 
 func _on_match_started(_map_id: StringName) -> void:
 	clear_marks()
+	_attach_atmosphere.call_deferred()   # T-095: the map is in the tree by then (MapRoot._ready emits match_started)
 
 
 ## Soot: a dark, ragged disc that thins out to the edge, with a few streaks thrown outward.
@@ -616,3 +731,405 @@ static func _scorch_texture() -> ImageTexture:
 			k = pow(k, 0.7) * (0.75 + 0.25 * noise.get_noise_2d(x * 3.0, y * 3.0))
 			img.set_pixel(x, y, Color(0.03, 0.025, 0.02, clampf(k * 0.95, 0.0, 0.92)))
 	return ImageTexture.create_from_image(img)
+
+
+# ================================================================== UPDATE 05 section 6 (T-095)
+
+## The quality row for GLSettings "vfx_quality" (low / medium / high; unknown = high).
+func quality() -> Dictionary:
+	var q: Dictionary = vfx.get("quality", {})
+	var key: String = str(GLSettings.values.get("vfx_quality", "high"))
+	return (q.get(key, q.get("high", {})) as Dictionary)
+
+
+## The particle-count multiplier of the current quality.
+func particles_k() -> float:
+	return float(quality().get("particles", 1.0))
+
+
+# ---- muzzle flashes
+
+## A muzzle flash at `pos` along `dir` for `weapon_id` (the class comes from weapons.json; upgraded ids resolve
+## through their base). `scale` grows third-person flashes a little; `with_light` false skips the pooled light
+## pulse (the local viewmodel already has its own flash light).
+func muzzle_flash(pos: Vector3, dir: Vector3, weapon_id: StringName, upgraded: bool, scale: float = 1.0, with_light: bool = true) -> void:
+	if flash == null:
+		return
+	var cls: String = weapon_class_of(weapon_id)
+	var q: Dictionary = quality()
+	if not with_light:
+		q = q.duplicate()
+		q["flash_lights"] = 0
+	flash.fire(pos, dir, cls, upgraded, scale, q)
+	stats["flashes"] = int(stats["flashes"]) + 1
+
+
+## The weapon class of a weapon id (an upgraded id through its base row), "rifle" when unknown.
+static func weapon_class_of(weapon_id: StringName) -> String:
+	var t: Dictionary = GLData.table("weapons")
+	var id: String = String(weapon_id)
+	var rows: Dictionary = t.get("weapons", {})
+	if rows.has(id):
+		return str((rows[id] as Dictionary).get("class", "rifle"))
+	var up: Dictionary = t.get("upgraded", {})
+	if up.has(id):
+		var row: Dictionary = up[id]
+		if row.has("class"):
+			return str(row["class"])
+		var base: String = str(row.get("base", ""))
+		if rows.has(base):
+			return str((rows[base] as Dictionary).get("class", "rifle"))
+	return "rifle"
+
+
+## Every trigger pull (GLBus.weapon_fired): resolve where the muzzle really is and draw the class flash there.
+## The local human's own gun: its viewmodel muzzle (wall-clamped, the holder's _muzzle_world), and when
+## vfx.json flash.first_person is "effects" the holder's own star is suppressed through the "size" meta it reads
+## (its flash light stays: no pooled light is spent on it). A bot or remote teammate: its RemoteBody's "Muzzle"
+## (its own flash is hidden, since it was shown just before this signal). Anyone else: the shot origin.
+func _on_weapon_fired(player: int, weapon_id: StringName, upgraded: bool, origin: Vector3, direction: Vector3) -> void:
+	_last_shot[player] = {"weapon": weapon_id, "upgraded": upgraded, "frame": Engine.get_physics_frames()}
+	var cls: String = weapon_class_of(weapon_id)
+	if flash == null or not flash.has_class(cls):
+		return
+	var fp_effects: bool = str((vfx.get("flash", {}) as Dictionary).get("first_person", "effects")) == "effects"
+	var p: Node3D = player_node(player)
+	var pos: Vector3 = origin + direction * 0.55 - Vector3.UP * 0.12
+	var dir: Vector3 = direction
+	var scale: float = 1.0
+	var with_light: bool = true
+	if p != null:
+		if bool(p.get("is_local")) and not bool(p.get("is_bot")):
+			var holder: Node = p.get("weapons") as Node
+			if holder != null and holder.has_method("_muzzle_world"):
+				var mx: Transform3D = holder.call("_muzzle_world")
+				pos = mx.origin
+				dir = -mx.basis.z
+				with_light = false   # the holder's own flash light already pulses
+				if fp_effects:
+					var fm: Node = holder.get("_flash_mesh") as Node
+					if fm != null and is_instance_valid(fm):
+						fm.set_meta("size", 0.0)   # the holder scales its star by this: zero = the world flash alone
+						if fm is Node3D:
+							(fm as Node3D).hide()
+				else:
+					return   # the holder draws the first-person flash itself
+		else:
+			var body: Node = p.get("remote_body") as Node
+			if body != null and is_instance_valid(body):
+				var mz: Node3D = body.get("_muzzle") as Node3D
+				if mz != null and is_instance_valid(mz):
+					pos = mz.global_position
+					var gun: Node3D = body.get("_gun") as Node3D
+					if gun != null and is_instance_valid(gun):
+						dir = -gun.global_basis.z
+				scale = 1.3
+				var bf: Node = body.get("_flash") as Node
+				if bf is Node3D and is_instance_valid(bf):
+					(bf as Node3D).hide()
+				var bl: Node = body.get("_flash_light") as Node
+				if bl is Light3D and is_instance_valid(bl):
+					(bl as Light3D).light_energy = 0.0
+	muzzle_flash(pos, dir, weapon_id, upgraded, scale, with_light)
+
+
+## The Player node for an id (the "players" group), or null.
+static func player_node(player: int) -> Node3D:
+	var tree: SceneTree = Engine.get_main_loop() as SceneTree
+	if tree == null:
+		return null
+	for n: Node in tree.get_nodes_in_group(&"players"):
+		if int(n.get("player_id")) == player:
+			return n as Node3D
+	return null
+
+
+# ---- casings
+
+## Throws the cartridge model for `weapon_id` (or the holder's `kind`: pistol / rifle / shell) from `from`.
+func casing(kind: String, from: Vector3, vel: Vector3, basis: Basis, weapon_id: StringName = &"") -> void:
+	if casings == null:
+		return
+	if weapon_id == &"":
+		weapon_id = _local_weapon_id()
+	casings.eject(casings.node_for(weapon_id, kind), from, vel, basis, float(quality().get("casings", 1.0)))
+	stats["casings"] = int(stats["casings"]) + 1
+
+
+## The weapon the local human is holding (GunFx.eject does not know the weapon; only the local viewmodel ejects).
+func _local_weapon_id() -> StringName:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return &""
+	for n: Node in tree.get_nodes_in_group(&"players"):
+		if bool(n.get("is_local")) and not bool(n.get("is_bot")):
+			var holder: Node = n.get("weapons") as Node
+			if holder != null and holder.has_method("current"):
+				var w: Variant = holder.call("current")
+				if w != null:
+					return StringName(str(w.get("id")))
+	return &""
+
+
+# ---- smoke, hits, shatter
+
+## A muzzle smoke puff at `at` drifting along `dir` (the holder's bolt / shotgun smoke; the flash's own wisp is smaller).
+func muzzle_smoke(at: Vector3, dir: Vector3, strength: float = 1.0) -> void:
+	if flash == null or flash._smoke.is_empty() or not bool(quality().get("smoke", true)):
+		return
+	var p: CPUParticles3D = flash._smoke[flash._nsmoke]
+	flash._nsmoke = (flash._nsmoke + 1) % flash._smoke.size()
+	var amount: int = clampi(int((4.0 + 4.0 * strength) * particles_k()), 2, 10)
+	if p.amount != amount:
+		p.amount = amount
+	p.initial_velocity_max = 0.7 + 0.8 * strength
+	p.global_position = at
+	var f: Vector3 = dir.normalized() if dir.length_squared() > 0.0001 else Vector3.FORWARD
+	p.global_basis = Basis.looking_at(-f, Vector3.UP if absf(f.dot(Vector3.UP)) < 0.98 else Vector3.RIGHT)
+	p.restart()
+	p.emitting = true
+
+
+## A bullet hit on a zombie at `pos`, the spray flying `toward`: blood (gore-gated) plus, from a Crucible-taught
+## weapon, the violet Nachtglas spark burst. The proper hook for WeaponHolder._trace (see the TODO at the top).
+func zombie_hit(pos: Vector3, toward: Vector3, _weapon_id: StringName, upgraded: bool) -> void:
+	if upgraded:
+		nachtglas_spark(pos, toward)
+	_skip_bridge = true   # no second burst from blood()'s same-frame bridge
+	blood(pos, toward)
+	_skip_bridge = false
+
+
+## Violet-teal glints at `pos` flying `toward` (Nachtglas: a taught weapon's hit, a Glasshide's crystal plates).
+func nachtglas_spark(pos: Vector3, toward: Vector3) -> void:
+	if impact_fx != null:
+		impact_fx.nachtglas(pos, toward)
+
+
+func _build_shatters() -> void:
+	var piece: PrismMesh = PrismMesh.new()
+	piece.size = Vector3(0.05, 0.09, 0.025)
+	var pm: StandardMaterial3D = StandardMaterial3D.new()
+	pm.albedo_color = Color(1, 1, 1, 0.85)
+	pm.vertex_color_use_as_albedo = true
+	pm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	pm.roughness = 0.12
+	pm.metallic_specular = 1.0
+	pm.emission_enabled = true
+	pm.emission = Color(0.6, 0.4, 1.0)
+	pm.emission_energy_multiplier = 1.6
+	piece.material = pm
+	var flash_mesh: SphereMesh = SphereMesh.new()
+	flash_mesh.radius = 0.5
+	flash_mesh.height = 1.0
+	for i: int in SHATTERS:
+		var root: Node3D = Node3D.new()
+		root.name = "Shatter%d" % i
+		var p: CPUParticles3D = CPUParticles3D.new()
+		p.name = "Pieces"
+		p.emitting = false
+		p.one_shot = true
+		p.amount = 40
+		p.lifetime = 0.9
+		p.explosiveness = 1.0
+		p.mesh = piece
+		p.direction = Vector3.UP
+		p.spread = 80.0
+		p.initial_velocity_min = 2.4
+		p.initial_velocity_max = 6.0
+		p.gravity = Vector3(0, -9.0, 0)
+		p.angular_velocity_min = -720.0
+		p.angular_velocity_max = 720.0
+		p.scale_amount_min = 0.5
+		p.scale_amount_max = 1.3
+		var g: Gradient = Gradient.new()
+		g.set_color(0, Color(1, 1, 1, 1))
+		g.set_color(1, Color(1, 1, 1, 0))
+		g.add_point(0.7, Color(1, 1, 1, 1))
+		p.color_ramp = g
+		p.local_coords = false
+		p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(p)
+		var core: MeshInstance3D = MeshInstance3D.new()
+		core.name = "Core"
+		core.mesh = flash_mesh
+		var cm: StandardMaterial3D = StandardMaterial3D.new()
+		cm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		cm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		cm.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+		cm.albedo_color = Color(0.7, 0.45, 1.0, 0.6)
+		core.material_override = cm
+		core.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(core)
+		var l: OmniLight3D = OmniLight3D.new()
+		l.name = "Light"
+		l.light_color = Color(0.65, 0.35, 1.0)
+		l.omni_range = 7.0
+		l.shadow_enabled = false
+		l.light_energy = 0.0
+		root.add_child(l)
+		root.hide()
+		add_child(root)
+		_shatters.append(root)
+		_shatter_life.append(0.0)
+
+
+## A burst of crystal shards and a violet flash at `pos` (a Glasshide shattering, a Bellringer's lantern, a
+## portal): `color` tints the pieces, `amount` and `speed` size the burst. Pooled; the hook for Zombie._shards.
+func shatter(pos: Vector3, color: Color = Color(0.6, 0.3, 1.0), amount: int = 40, speed: float = 6.0) -> void:
+	var b: Node3D = _shatters[_nsh]
+	_shatter_life[_nsh] = 0.5
+	_nsh = (_nsh + 1) % SHATTERS
+	stats["shatters"] = int(stats["shatters"]) + 1
+	b.global_position = pos
+	b.show()
+	var p: CPUParticles3D = b.get_node("Pieces")
+	var want: int = clampi(int(round(float(amount) * particles_k())), 6, 60)
+	if p.amount != want:
+		p.amount = want
+	p.color = color
+	p.initial_velocity_min = speed * 0.4
+	p.initial_velocity_max = speed
+	p.restart()
+	p.emitting = true
+	var core: MeshInstance3D = b.get_node("Core")
+	(core.material_override as StandardMaterial3D).albedo_color = Color(color.lightened(0.2), 0.6)
+	core.scale = Vector3.ONE * clampf(speed * 0.12, 0.4, 1.2)
+	(b.get_node("Light") as OmniLight3D).light_color = color
+	(b.get_node("Light") as OmniLight3D).light_energy = 6.0
+	var tw: Tween = core.create_tween()   # the core flash dies with the light
+	tw.tween_property(core, "scale", Vector3.ONE * 0.05, 0.3).set_ease(Tween.EASE_IN)
+
+
+# ---- the Totenglocke's Great Toll ring
+
+func _build_toll_rings() -> void:
+	var sh: Shader = Shader.new()
+	sh.code = TOLL_RING_SHADER
+	var disc: PlaneMesh = PlaneMesh.new()
+	disc.size = Vector2(2.0, 2.0)
+	var tr: Dictionary = vfx.get("toll_ring", {})
+	var col: Array = tr.get("color", [0.72, 0.42, 1.0])
+	for i: int in TOLL_RINGS:
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.name = "TollRing%d" % i
+		mi.mesh = disc
+		var m: ShaderMaterial = ShaderMaterial.new()
+		m.shader = sh
+		m.set_shader_parameter("strength", float(tr.get("strength", 0.035)))
+		m.set_shader_parameter("tint", Color(float(col[0]), float(col[1]), float(col[2])))
+		mi.material_override = m
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		mi.custom_aabb = AABB(Vector3(-60, -5, -60), Vector3(120, 10, 120))
+		mi.hide()
+		add_child(mi)
+		_toll.append(mi)
+		_toll_mat.append(m)
+		_toll_life.append(0.0)
+		_toll_range.append(10.0)
+		_toll_origin.append(Vector3.ZERO)
+
+
+## The Great Toll's refraction ring: a flat disc racing out from `origin` to `range_m` over the ring's seconds,
+## bending what is behind its rim (a screen-texture spatial shader) with a violet glow. World-space, so a
+## teammate's toll shows too. Hooked on GLBus.great_toll.
+func toll_ring(origin: Vector3, range_m: float) -> void:
+	var i: int = _ntoll
+	_ntoll = (_ntoll + 1) % TOLL_RINGS
+	stats["tolls"] = int(stats["tolls"]) + 1
+	_toll_life[i] = float((vfx.get("toll_ring", {}) as Dictionary).get("seconds", 0.55))
+	_toll_range[i] = maxf(2.0, range_m)
+	_toll_origin[i] = origin
+	var mi: MeshInstance3D = _toll[i]
+	mi.global_transform = Transform3D(Basis.IDENTITY, origin + Vector3.UP * 0.9)
+	mi.scale = Vector3.ONE * 0.2
+	_toll_mat[i].set_shader_parameter("k", 0.0)
+	mi.show()
+
+
+func _on_great_toll(_player: int, origin: Vector3, _direction: Vector3, range_m: float) -> void:
+	toll_ring(origin, range_m)
+
+
+func _ntoll_live() -> int:
+	var n: int = 0
+	for i: int in TOLL_RINGS:
+		if _toll_life[i] > 0.0:
+			n += 1
+	return n
+
+
+func _update_toll_rings(delta: float) -> void:
+	var total: float = float((vfx.get("toll_ring", {}) as Dictionary).get("seconds", 0.55))
+	var cam: Camera3D = get_viewport().get_camera_3d() if get_viewport() != null else null
+	for i: int in TOLL_RINGS:
+		if _toll_life[i] <= 0.0:
+			continue
+		_toll_life[i] -= delta
+		if _toll_life[i] <= 0.0:
+			_toll[i].hide()
+			continue
+		var k: float = 1.0 - clampf(_toll_life[i] / total, 0.0, 1.0)   # 0 -> 1
+		var grow: float = 1.0 - (1.0 - k) * (1.0 - k)
+		var r: float = maxf(0.2, _toll_range[i] * grow)
+		_toll[i].scale = Vector3(r, 1.0, r)
+		_toll_mat[i].set_shader_parameter("k", k)
+		if cam != null and not cam.is_position_behind(_toll_origin[i]):
+			var vp: Vector2 = get_viewport().get_visible_rect().size
+			var uv: Vector2 = cam.unproject_position(_toll_origin[i]) / Vector2(maxf(1.0, vp.x), maxf(1.0, vp.y))
+			_toll_mat[i].set_shader_parameter("center_uv", uv)
+
+
+# ---- surfaces
+
+## What a bullet hit is made of, for decals and debris: the collider's (or its parent's) "surface" meta, then the
+## vfx.json surfaces.name_hints table against the collider's and its parent's names, then by map and facing: open
+## ground (nothing above it) is the map's open-ground surface, other floors the map's floor default, walls the
+## map's wall default. (The maps' static meshes are merged at generation, so the colliders carry no material.)
+static func surface_of(collider: Object, at: Vector3, normal: Vector3, space: PhysicsDirectSpaceState3D) -> String:
+	var n: Node = collider as Node
+	var s: Dictionary = GLData.table("vfx").get("surfaces", {})
+	var map_id: String = String(GameState.map_id)
+	var wall: String = str((s.get("wall_default", {}) as Dictionary).get(map_id, "stone"))
+	if n == null:
+		return wall
+	for k: Node in [n, n.get_parent()]:
+		if k != null and k.has_meta("surface"):
+			return str(k.get_meta("surface"))
+	if n is AnimatableBody3D:
+		return "metal"
+	var names: Array[String] = [String(n.name).to_lower()]
+	if n.get_parent() != null and n.get_parent().get_script() == null:
+		names.append(String(n.get_parent().name).to_lower())
+	for nm: String in names:
+		if nm.begins_with("ground"):
+			if space != null:
+				var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(at + Vector3.UP * 0.3, at + Vector3.UP * 10.0, 1)
+				if space.intersect_ray(q).is_empty():
+					return str((s.get("open_ground", {}) as Dictionary).get(map_id, "snow"))
+			return str((s.get("floor_default", {}) as Dictionary).get(map_id, "stone"))
+		for pair: Variant in (s.get("name_hints", []) as Array):
+			var h: Array = pair
+			if nm.contains(str(h[0])):
+				return str(h[1])
+	if absf(normal.y) > 0.6:
+		return str((s.get("floor_default", {}) as Dictionary).get(map_id, "stone"))
+	return wall
+
+
+# ---- atmosphere
+
+## At match start: wipe the marks (above) and attach the atmosphere pass to the map once it is in the tree.
+func _attach_atmosphere() -> void:
+	if _atmosphere != null and is_instance_valid(_atmosphere):
+		_atmosphere.queue_free()
+	_atmosphere = null
+	var dir_node: Node = get_tree().get_first_node_in_group(&"director")
+	var map: Node3D = dir_node.get_parent() as Node3D if dir_node != null else null
+	if map == null:
+		return
+	_atmosphere = VfxAtmosphere.attach(map, vfx.get("atmosphere", {}))
+
+
+func atmosphere() -> Node:
+	return _atmosphere if _atmosphere != null and is_instance_valid(_atmosphere) else null

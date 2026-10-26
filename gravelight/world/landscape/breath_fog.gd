@@ -64,11 +64,18 @@ func _process(delta: float) -> void:
 		e[1] = float(e[1]) - delta
 		if float(e[1]) > 0.0:
 			continue
-		e[1] = _rng.randf_range(float(iv[0]), float(iv[1]))
+		# T-095: a sprinter breathes hard: the next breath comes sooner and leaves faster (data: vfx.json
+		# atmosphere.breath sprint_interval_mult / sprint_speed_scale)
+		var sprinting: bool = bool(pl.get("sprinting"))
+		var br: Dictionary = (Effects.vfx.get("atmosphere", {}) as Dictionary).get("breath", {}) if Effects.vfx != null else {}
+		var im: float = float(br.get("sprint_interval_mult", 0.5)) if sprinting else 1.0
+		e[1] = _rng.randf_range(float(iv[0]), float(iv[1])) * im
 		if bool(pl.get("downed")) or bool(pl.get("spectating")) or not pl.visible:
 			continue
 		if is_cold(ZoneVolume.zone_at(get_tree(), pl.global_position), warm, fire_out):
-			(e[0] as GPUParticles3D).restart()
+			var puff: GPUParticles3D = e[0] as GPUParticles3D
+			puff.speed_scale = float(br.get("sprint_speed_scale", 1.35)) if sprinting else 1.0
+			puff.restart()
 
 
 func _attach_new() -> void:
