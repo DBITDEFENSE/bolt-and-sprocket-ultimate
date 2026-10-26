@@ -18,6 +18,8 @@ const TREE_SHADER: String = "res://gravelight/world/landscape/shaders/tree.gdsha
 const NATURE_TEX: String = "res://assets/ours/env/nature/textures/"
 ## Share of the forest that is birch, near and mid (the rest spruce).
 const BIRCH_SHARE: float = 0.16
+## Trees nearer CENTER than this use the full LOD0 model; the rest of the near ring LOD1 (they sit in the map's fog).
+const DETAIL_R: float = 95.0
 const SH_DIR: String = "res://gravelight/world/landscape/shaders/"
 ## How much brighter the custom far haze is than the environment's fog colour: the near world's distant haze is
 ## the fog colour plus the volumetric fog's in-scatter, which the far layers (fog_disabled) don't get.
@@ -115,6 +117,8 @@ func _far_mat(file: String, params: Dictionary = {}) -> ShaderMaterial:
 	m.shader = _shader(file)
 	for k: String in params.keys():
 		m.set_shader_parameter(k, params[k])
+	if file == "far_land.gdshader" and MaterialLibrary.texture("rock", "albedo") != null:
+		m.set_shader_parameter("rock_tex", MaterialLibrary.texture("rock", "albedo"))   # T-093
 	far_mats.append(m)
 	return m
 
@@ -436,16 +440,18 @@ func _build_forests() -> void:
 		if scripted:   # T-093: the scripted spruces and birches (LOD0 near, LOD1 in the mid ring)
 			for ring: int in 2:
 				var src: Array = near_by[s2] if ring == 0 else mid_by[s2]
-				var sp: Array[Transform3D] = []
-				var bi: Array[Transform3D] = []
+				# [spruce, birch] x [LOD0 (inside DETAIL_R), LOD1 (the rest of the near ring, and the mid ring)]
+				var lists: Array = [[] as Array[Transform3D], [] as Array[Transform3D], [] as Array[Transform3D], [] as Array[Transform3D]]
 				for xf4: Transform3D in src:
-					(bi if is_birch(xf4.origin) else sp).append(uniform_tree_xform(xf4))
-				var lod: String = "LOD0" if ring == 0 else "LOD1"
+					var far_lod: bool = ring == 1 or LandscapeTerrain.radius(xf4.origin.x, xf4.origin.z) > DETAIL_R
+					(lists[(1 if is_birch(xf4.origin) else 0) * 2 + (1 if far_lod else 0)] as Array[Transform3D]).append(uniform_tree_xform(xf4))
 				var tag: String = "Near" if ring == 0 else "Mid"
-				if not sp.is_empty():
-					_multimesh("Spruces%s%d" % [tag, s2], tree_mesh("Spruce_" + lod, ring == 0), sp, null)
-				if not bi.is_empty():
-					_multimesh("Birches%s%d" % [tag, s2], tree_mesh("Birch_" + lod, ring == 0), bi, null)
+				for li: int in 4:
+					if (lists[li] as Array).is_empty():
+						continue
+					var kind: String = "Birch" if li >= 2 else "Spruce"
+					var lod: String = "LOD1" if li % 2 == 1 else "LOD0"
+					_multimesh("%s%s%s_%d" % [kind, tag, lod, s2], tree_mesh(kind + "_" + lod, ring == 0), lists[li], null)
 		else:
 			if (near_by[s2] as Array).size() > 0:
 				_multimesh("PinesNear%d" % s2, pm, near_by[s2], near_pine)

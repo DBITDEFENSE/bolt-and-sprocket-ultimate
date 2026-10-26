@@ -487,17 +487,6 @@
       "key": "snow",
       "note": "clean wind-packed snow: the Grounds, the near terrain (replaces snow_02, whose twig marks read as cracks, T-093)",
       "tile_m": 2.0
-    },
-    {
-      "source": "polyhaven",
-      "id": "snow_05",
-      "kind": "texture",
-      "res": "1k",
-      "orm_res": "1k",
-      "height": false,
-      "key": "snow_trodden",
-      "note": "snow with cart and boot tracks: the ring, the yard paths, the roads (T-093)",
-      "tile_m": 3.0
     }
   ]
 }

@@ -2306,6 +2306,7 @@ func _dress_exterior() -> void:
 	for i: int in 6:
 		var x0: float = 0.2 + i * 4.0
 		Props.obox(g, Vector3(x0 + 1.5, UP_Y + 1.5, -0.22), Vector3(0.18, 3.6, 0.08), "beam", Vector3(0, 0, 40 if i % 2 == 0 else -40))
+	_half_timber_sides(g)
 	# pitched roofs with snow (inn, stair tower, stable) and the chimney stack
 	_gable(g, Vector3(-0.6, UP_TOP + 0.2, -0.8), Vector3(24.6, UP_TOP + 0.2, 10.8), 3.4)
 	_gable(g, Vector3(STAIR_X1 + 0.1, TAP_H + 0.3, 9.8), Vector3(24.6, TAP_H + 0.3, 16.6), 1.0)
@@ -2349,6 +2350,30 @@ func _dress_exterior() -> void:
 	motes.set("areas", [AABB(Vector3(1, 0.3, 1), Vector3(22, 3.0, 14)), AABB(Vector3(STB_X0 + 0.5, 0.3, 23), Vector3(STB_X1 - STB_X0 - 1.0, 6, 10))] as Array[AABB])
 	motes.set("motes", true)
 	map_root.add_child(motes)
+
+
+## T-093: the half-timbering on the inn's west and east faces (only the north had its posts and braces): studs between
+## the sill, the storey rail and the wall plate, clear of the windows, the cellar door and the Old Cellar's lean-to,
+## and K-braces in the upper storey, dark oak over the plaster (the east face south of z 10 is inside the cellar's
+## stair hall, so it gets none). Dressing only (0.12 m proud of the wall, like the
+## north face's).
+func _half_timber_sides(g: Node3D) -> void:
+	# [outer face x, outward sign, ground-floor stud z list, upper-storey stud z list, upper storey's z extent]
+	for side: Array in [[-0.15, -1.0, [2.5, 4.8, 7.2], [0.0, 2.5, 5.0, 7.5, 10.0, 13.0, 16.0], 16.0],
+			[24.15, 1.0, [2.5, 5.0, 6.95, 9.05], [0.0, 2.5, 5.0, 7.5, 10.0], 10.0]]:
+		var fx: float = float(side[0])
+		var o: float = float(side[1])
+		var x0: float = fx if o > 0 else fx - 0.12
+		var x1: float = fx + 0.12 if o > 0 else fx
+		for z: float in side[2]:
+			Props.block(g, Vector3(x0, 0.0, z - 0.12), Vector3(x1, TAP_H, z + 0.12), "beam")
+		var studs: Array = side[3]
+		for k: int in studs.size():
+			var z2: float = float(studs[k])
+			Props.block(g, Vector3(x0, TAP_H, z2 - 0.12), Vector3(x1, UP_TOP, z2 + 0.12), "beam")
+			if k < studs.size() - 1 and float(studs[k + 1]) <= float(side[4]):
+				var zc: float = (z2 + float(studs[k + 1])) * 0.5
+				Props.obox(g, Vector3((x0 + x1) * 0.5, UP_Y + 1.4, zc), Vector3(0.08, 3.4, 0.18), "beam", Vector3(38.0 if k % 2 == 0 else -38.0, 0, 0))
 
 
 ## The grounds' drawing (T-080; colliders: build_grounds): the boundary fences and the spruce tree line beyond them
@@ -2661,6 +2686,11 @@ func _gable(parent: Node3D, a: Vector3, b: Vector3, rise: float) -> void:
 		var cz: float = a.z + half + side * -half * 0.5
 		Props.obox(parent, Vector3(cx, a.y + rise * 0.5, cz), Vector3(w, 0.2, slope_len), "roof", Vector3(-ang * side, 0, 0))
 		Props.obox(parent, Vector3(cx, a.y + rise * 0.5 + 0.14, cz), Vector3(w + 0.1, 0.1, slope_len - 0.3), "snow", Vector3(-ang * side, 0, 0))
+		# T-093: the snow load's soft edge, a rounded lip along the eave (and a little overhang of snow)
+		var ez: float = a.z if side > 0.0 else b.z
+		var lip: MeshInstance3D = Props.cyl(parent, Vector3(cx, a.y + 0.12, ez + (0.12 if side > 0.0 else -0.12)), 0.16, w + 0.12, "snow", Vector3(0, 0, 90))
+		lip.scale.x *= 0.55
+		lip.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	# gable end walls
 	for x: float in [a.x + 0.3, b.x - 0.3]:
 		for k: int in 6:

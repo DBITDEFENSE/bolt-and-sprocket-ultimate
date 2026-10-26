@@ -12,8 +12,9 @@ const MODELS: Dictionary = {"spruces": "Spruce_LOD0", "birches": "Birch_LOD0", "
 @export var birches: Array[Transform3D] = []
 @export var bushes: Array[Transform3D] = []
 @export var rocks: Array[Transform3D] = []
-## The tree line casts the moon's shadow onto the snow at the edge (the forest beyond does not).
-@export var tree_shadows: bool = true
+## Whether the tree line casts the moon's shadow. Off by default: an alpha-scissored shadow pass for 137 trees is
+## costly in the round 15 bench (T-093), and the edge reads without it.
+@export var tree_shadows: bool = false
 
 var built: bool = false
 
