@@ -314,5 +314,9 @@ func test_models_build_for_every_option() -> void:
 				m.free()
 	var comp: WeaponInstance = _pistol("m1911:barrel=suppressor")
 	var mc: Node3D = WeaponModels.build(comp.base_id(), false, &"", M1911KitModels.look_of(comp))
-	assert_lt((mc.get_node("Muzzle") as Node3D).position.z, -0.3, "the can moves the muzzle")
+	# relative to the plain pistol (T-089: the downloaded M1911's muzzle is not the procedural one's)
+	var plain: Node3D = WeaponModels.build(&"m1911")
+	var z0: float = (plain.get_node("Muzzle") as Node3D).position.z
+	assert_lt((mc.get_node("Muzzle") as Node3D).position.z, z0 - 0.14, "the can moves the muzzle a can's length forward")
+	plain.free()
 	mc.free()

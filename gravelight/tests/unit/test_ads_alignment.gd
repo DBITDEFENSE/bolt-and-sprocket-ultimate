@@ -127,15 +127,30 @@ func test_wall_pull_and_shake_keep_the_sight_line() -> void:
 
 
 func test_thompson_sight_line_clears_the_receiver() -> void:
-	# the old model's cocking knob stood on the sight line and hid the blade (the Update 02 report)
+	# the old model's cocking knob stood on the sight line and hid the blade (the Update 02 report). T-089: the
+	# downloaded 1928 keeps its knob on top, so the check is against the line itself: wherever the knob is, the line
+	# from the rear sight to the front blade passes above it, and both sights stand above the receiver.
 	var h: WeaponHolder = _aim("thompson")
 	var marks: Array = h.sight_marks_model()
 	var rear: Vector3 = marks[0]
 	var front: Vector3 = marks[1]
-	var bolt: Node3D = h.get("_model").find_child("Bolt", true, false) as Node3D
-	assert_gt(absf(bolt.position.x), 0.015, "the cocking knob rides on the side, off the sight line")
-	assert_gt(rear.y - 0.06, 0.012, "the peep stands clear of the receiver top")
-	assert_gt(front.y - 0.046, 0.02, "the blade stands clear of the compensator")
+	var model: Node3D = h.get("_model")
+	var bolt: Node3D = model.find_child("Bolt", true, false) as Node3D
+	var bb: AABB = WeaponKitModels._bounds(bolt)
+	var top_z: float = bolt.position.z + bb.get_center().z
+	var t: float = clampf((top_z - rear.z) / (front.z - rear.z), 0.0, 1.0)
+	var line_y: float = lerpf(rear.y, front.y, t)
+	var knob_top: float = bolt.position.y + bb.end.y
+	if absf(bolt.position.x + bb.get_center().x) < 0.015:
+		assert_gt(line_y, knob_top - 0.0005, "the sight line passes over the cocking knob (%.4f over %.4f)" % [line_y, knob_top])
+	else:
+		pass_test("the cocking knob rides on the side, off the sight line")
+	var recv_top: float = -INF
+	for row: Array in WeaponGLB.top_profile(model):
+		if float(row[0]) > front.z + 0.05 and float(row[0]) < rear.z - 0.05 and not str(row[2]) in ["Bolt", "RearSight"]:
+			recv_top = maxf(recv_top, float(row[1]))
+	assert_gt(rear.y, recv_top, "the peep stands above the receiver top")
+	assert_gt(front.y, recv_top, "the blade stands above the receiver top")
 
 
 func test_idle_ads_sway_is_calm() -> void:
