@@ -144,7 +144,7 @@ Readability rules:
 **Common features.** Every Gänger has violet eye-glow (emissive, blooms in fog). Violet-amber hairline cracks run from the eyes and the hands, because Nachtglas spreads along the last nerves to fire. The cracks brighten as the round number climbs (a material parameter `crack_intensity = clamp(r/30, 0.1, 1.0)`), which also tells the player the round is getting harder.
 
 #### 2.1.1 Animation and body (MZ, T-041; `docs/ZOMBIE_ANIM_SPEC.md`, `data/gravelight/anim.json`)
-- **Rig:** one shared humanoid `Skeleton3D` (`zombie_rig.gd`, 19 bones named after `SkeletonProfileHumanoid` with a `BoneMap`, identity rests) for every Gänger kind, the Bellringer, the Glasshide and the Screamer; the Foreman keeps his own body. The procedural body is one skinned mesh per kit/build/sex (`ZombieBody.build_skinned`): surface 0 skin (the infection shader), surface 1 everything else (vertex-coloured, one shared shader), so a body is two draw calls. Gear (helmets, caps, goggles, armbands, packs...) hangs on bone attachments and is rolled per spawn. Base bodies: thin / medium / heavy × two heights, male and female.
+- **Rig:** one shared humanoid `Skeleton3D` (`zombie_rig.gd`, 19 bones named after `SkeletonProfileHumanoid` with a `BoneMap`, identity rests) for every Gänger kind, the Bellringer, the Glasshide and the Screamer; the Foreman keeps his own body. The body is one skinned mesh per kit/build/sex (`ZombieBody.build_skinned`; modelled since T-091, §2.1.3): surface 0 skin (the infection shader), surface 1 everything else (vertex-coloured, one shared shader), so a body is two draw calls. Gear (helmets, caps, goggles, armbands, packs...) hangs on bone attachments and is rolled per spawn. Base bodies: thin / medium / heavy × two heights, male and female.
 - **Clips:** all procedural, baked in-engine by `zombie_clips.gd` into one shared `AnimationLibrary` (no imported animation). Locomotion per tier: shamble ×3, walk ×3, jog ×2, run ×3, sprint ×2, crawler ×2 (belly drag, four-limb scuttle), each with lean-left/right variants; turn-in-place ×2; idle, window wait; tears ×3 (grab-and-rip, two-hand wrench, shoulder slam); vault ×2 and a drop-down; emerges ×5 (dig-out, roll-up, portal step, chute drop, wade-up); climb loop + mantle; attacks: 4 swipes, lunge, sprinter grab, crawler bite, headbutt, window swipe; stagger, knockdown front/back, get-up front/back, fall-into-crawler; 9 deaths (headshot snap, gut collapse, spin, knee-drop, backward fall, face-plant, sit-down, sprint tumble, headless walk) + a crawler death; 8 posture traits; 7 directional flinches.
 - **Tree:** `AnimationTree` state machine Spawn / Emerge / Climb / Barricade / Locomotion (BlendSpace2D speed × turn) / Attack (BlendSpace1D variant) / React / Crawl / Death, plus an additive posture layer (Add2) and an additive OneShot for flinches. Locomotion clips carry root motion on a Root bone whose speed equals the tier speed; the zombie sets the time scale from its nav velocity (and its height scale), so **root motion = nav speed, no foot-sliding** (`smoke_zombie_anim` compares the stride distance with the body travel over half-second windows and requires 5%; measured worst 0.8–1.3%). Every zombie keeps its own stride phase (random start, transitions into Locomotion do not reset) and rolls one posture trait.
 - **Senses and IK:** foot IK (two rays per physics step within 15 m, hips drop to the lower foot, analytic two-bone legs, off beyond 25 m) and head look-at toward the nearest player (`LookAtModifier3D`, 60° cone, 0.2 s), both in `zombie_modifier.gd` / `_update_senses`. Hit springs on the arm chains and the head stand in for the partial ragdoll on flinches.
@@ -170,6 +170,37 @@ Ground spawns are the thing players watch, so the rise is a staged dig-out rathe
 - **Stages on the ground:** the ground bulges and trembles (a mound mesh at the spawn, snow / earth / stone by the surface under it: a `ZombieSpawn` meta `surface`, else the floor collider's surface meta / name hints, else the map default in `emerge.surface_by_map`; Map 0 snow, Map 1 earth, Map 2 stone); the first hand bursts the crust (spray + `emerge_burst_*`, the dark broken ring shows), each raking hand scrapes (`emerge_dig_*`, rate-capped horde-wide), the head tears free (big spray + a groan), clumps fall off the shoulders, small sprays at the elbow and knee plants, a dust puff and a settle crunch at the stagger step. Nothing pokes through the ground before its stage (the GUT test samples the baked poses). Particles are one pooled `CPUParticles3D` set in `Effects` (`dirt_burst`, `dust_puff`, 24 emitters, no per-burst allocation beyond a mesh swap); effects are culled beyond 24 m of the zombie's target.
 - **Gameplay rules:** the **hitboxes are off until `head_out`** and on from then (a rising zombie can be shot the moment its head shows, never through the ground before); any early exit from the rise (a risen patron's get-up, the opening's attackers) turns them back on. Navigation starts at `done`. A zombie **killed before `stand`** slides back into the ground (the rise clip in reverse at 1.6×, mound kept, no ragdoll or corpse) and returns to the pool. The head look-at runs from `head_out`. Bots keep ignoring rising zombies as targets.
 - **Capture:** `shots_zombie_anim.tscn -- --only=emerge` (rendered): one row per variant at eight stage times, the three surfaces, and a live row.
+
+#### 2.1.3 Art: the modelled bodies (T-091, UPDATE_05 §3; `docs/CHARACTER_PIPELINE.md`)
+- **Bodies:** six base bodies (thin / medium / heavy × male / female) built by script in headless Blender
+  (`tools_src/blender/characters/`, `tools/build_characters.sh`) and skinned to the ZombieRig bone names:
+  `assets/ours/characters/zombie_base/char_zombie_base_<m|f>_<build>.glb`. ~7 200 triangles each with the face parts
+  (≤ 8 000, ART_BIBLE §5). Faces: deep sunken sockets with a flattened violet glow lens in each, a real mouth opening
+  on the Jaw bone (teeth on Head and Jaw), gaunt cheeks, brow, nose, ears; clawed hands. Weights are computed (bone
+  segments, side masks) in an A-pose and unposed onto the rig's rest.
+- **Skin:** one shared 1K set (`tex_zombie_skin_albedo / normal / orm.png`, the six bodies share one UV layout):
+  pale mottled skin, blue-violet veins, frostbite at the fingers, toes, nose, ears and lips, bruised sockets,
+  lividity in the legs; the albedo's alpha marks where the Nachtglas starts (eyes, mouth, hands) and the shader opens
+  the round's cracks there first. Everything the infection shader did stays (veins on `gl_hum`, cracks on
+  `gl_round_k`, tint, dirt, frost, char, fuel, dissolve).
+- **Kits as clothing:** the nine kits are real garments fitted to every body (greatcoat with its skirt, belt,
+  pouches, double buttons, collar and tabs over trousers and jackboots; villager jacket and trousers or blouse, long
+  skirt, shawl and stockings; miner jacket, braces, ties; lab coat, gloves, pockets; technician coverall, tool belt,
+  rubber boots and gloves; sailor's pea jacket, brass buttons, bell-bottoms; dockworker's jumper, roll neck, rubber
+  boots; the Bellringer's ragged bound tunic, barefoot; the nurse's dress, white apron, collar, stockings), ≤ 3 000
+  triangles each, coloured per kit from `KIT_CLOTH` / `KEY_LOOK` with a wool / leather detail texture (the T-088
+  library). The skin they cover is dropped from the draw. Gear rolled per spawn stays on bone attachments; the
+  soldiers' optional armband (30%) and the Projekt Wiederkehr armbands carry the fictional Sunburst-and-Split-Bell
+  (ART_FACTIONS.md). No real insignia anywhere.
+- **Gameplay is untouched:** `ZombieBody.HITBOXES` are unchanged (GUT checks the meshes sit inside them), as are
+  the ragdoll shapes, clips, timings and the gore rules. Dismemberment pieces are cut from the body itself by
+  dominant bone (a sleeve comes off with the arm), the stump caps are sized per joint and build.
+- **LODs:** Godot's mesh LODs generated on the merged mesh (`characters.json lod.mode "auto"`), measured against no
+  LODs and the pre-T-091 bodies in `docs/gravelight/PERFORMANCE.md`.
+- **Crawlers:** the crawl pose's hips were under the floor (T-085's open item: rendered crawlers were invisible);
+  it now lies on its belly on the floor.
+- **Kind parts:** the Glasshide's crystal plates and arm, the Bellringer's lantern and the Foreman's own body are
+  unchanged; the Cousins (homage) use the villager thin female body until the people builder's models land.
 
 **Audio tells.**
 - Idle/chase: a wet, low "hum-groan" pitched to sit *under* the Nachtglas hum. They are droning at the same frequency as the stone.
