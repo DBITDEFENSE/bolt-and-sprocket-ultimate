@@ -12,6 +12,11 @@ extends Node
 ##                      normalized times across a row, on snow, the last stage's spray live (new only)
 ##   za_09_emerge_surfaces  the standard rise at head-out on snow / earth / stone
 ##   za_10_emerge_live  eight standard rises started 0.25 s apart, caught mid-flight (the real timing)
+##   za_11_lineup_a/b   T-091: every kit on every build and sex it spawns with (anim.json kits), standing (new only)
+##   za_12..16          T-091 close-ups, BEFORE (the procedural MZ bodies, ZombieBody.legacy_bodies) on the left and
+##                      AFTER (the modelled bodies) on the right: 12 front, 13 side, 14 damaged (a forearm, an arm
+##                      and the jaw off, wounds), 15 crawler, 16 ragdoll (two seconds after a kill); 17 a face close-up;
+##                      18 the living set (ZombieBody.build_living) the people builder starts from
 ## Usage (silent, off-screen, no mouse capture):
 ##   godot --audio-driver Dummy --position -4000,-4000 --resolution 1600x900 --path . res://gravelight/tools_src/shots_zombie_anim.tscn -- --out=<dir> [--only=emerge]
 
@@ -205,7 +210,7 @@ func _process(delta: float) -> void:
 	if _t < 1.5:
 		return
 	_busy = true
-	var names: Array = ["walking", "tearing", "hits", "dying", "kits", "closeup", "emerge"]
+	var names: Array = ["walking", "tearing", "hits", "dying", "kits", "closeup", "emerge", "lineup"]
 	if _only != "" and _step < names.size() and str(names[_step]) != _only:
 		_step += 1
 		_busy = false
@@ -225,6 +230,8 @@ func _process(delta: float) -> void:
 			await _scene_closeup()
 		6:
 			await _scene_emerge()
+		7:
+			await _scene_lineup()
 		_:
 			get_tree().quit()
 			return
@@ -442,3 +449,144 @@ func _scene_emerge() -> void:
 	await _shot("10_emerge_live")
 	_clear()
 	_spawn.remove_meta("surface")
+
+
+# ---------------------------------------------------------------- T-091: the modelled bodies
+
+## Stands a zombie still facing the camera (-Z faces the camera at +Z... the camera looks along +Z, so yaw 0).
+func _stand(spec: Dictionary, pos: Vector3, legacy: bool = false) -> Zombie:
+	ZombieBody.legacy_bodies = legacy
+	var z: Zombie = _place_new(spec, pos)
+	ZombieBody.legacy_bodies = false
+	z.set("state", Zombie.State.CHASE)
+	z.call("_enter", Zombie.State.CHASE)
+	z.speed = 0.0
+	z.rotation.y = 0.0
+	return z
+
+
+func _scene_lineup() -> void:
+	var l2: Label = _label.get_parent().get_child(1) as Label
+	if l2 != null:
+		l2.text = ""
+	_player.position = Vector3(0, 0.1, -30)
+	var kits: Dictionary = GLData.table("anim")["kits"]
+	var combos: Array = []
+	for kit: String in ZombieBody.KITS:
+		var k: Dictionary = kits[kit]
+		var fem: float = float(k.get("female", 0.0))
+		for b: String in k.get("builds", ["medium"]):
+			if fem < 1.0:
+				combos.append([kit, str(b), false])
+			if fem > 0.0:
+				combos.append([kit, str(b), true])
+	var half: int = (combos.size() + 1) / 2
+	for part: int in 2:
+		var row: Array = combos.slice(part * half, mini(combos.size(), (part + 1) * half))
+		_label.text = "11 lineup %s: every kit x build x sex it spawns with (%d of %d)" % ["a" if part == 0 else "b", row.size(), combos.size()]
+		_cam.position = Vector3(0, 1.25, -6.6)
+		_cam.rotation_degrees = Vector3(-2, 180, 0)
+		_cam.fov = 58
+		for i: int in row.size():
+			var c: Array = row[i]
+			var x: float = (float(row.size() - 1) * 0.5 - float(i)) * 0.78 + 0.33
+			var z: Zombie = _stand({"enemy_id": "ganger", "tier": "walk", "health": 300, "variant": c[0], "female": c[2]}, Vector3(x, 0, 0.0))
+			z.debug_set_body(c[0], c[1], c[2])
+		await get_tree().create_timer(1.2).timeout
+		await _shot("11_lineup_" + ("a" if part == 0 else "b"))
+		_clear()
+	# before / after close-ups
+	var pair_kits: Array = [["soldier", false], ["villager", true], ["miner", false]]
+	for view: String in ["front", "side"]:
+		_label.text = "%s %s: BEFORE (left, procedural MZ bodies) / AFTER (right, modelled bodies): soldier, villager, miner" % ["12" if view == "front" else "13", view]
+		for i: int in pair_kits.size():
+			var k2: Array = pair_kits[i]
+			_stand({"enemy_id": "ganger", "tier": "walk", "health": 300, "variant": k2[0], "female": k2[1]}, Vector3(2.5 - 0.8 * float(i), 0, 0.0), true)
+			_stand({"enemy_id": "ganger", "tier": "walk", "health": 300, "variant": k2[0], "female": k2[1]}, Vector3(-0.9 - 0.8 * float(i), 0, 0.0), false)
+		if view == "front":
+			_cam.position = Vector3(0, 1.4, -3.9)
+			_cam.rotation_degrees = Vector3(-4, 180, 0)
+		else:
+			for z: Zombie in _new:
+				z.rotation.y = -PI * 0.5
+			_cam.position = Vector3(0, 1.4, -3.9)
+			_cam.rotation_degrees = Vector3(-4, 180, 0)
+		_cam.fov = 55
+		await get_tree().create_timer(1.2).timeout
+		await _shot("%s_before_after_%s" % ["12" if view == "front" else "13", view])
+		_clear()
+	# damaged
+	_label.text = "14 damaged: forearm, arm and jaw off, wounds. BEFORE left / AFTER right"
+	for legacy: bool in [true, false]:
+		for i: int in 3:
+			var x1: float = (1.9 if legacy else -0.5) - 0.7 * float(i)
+			var z1: Zombie = _stand({"enemy_id": "ganger", "tier": "walk", "health": 900, "variant": ["soldier", "villager", "labstaff"][i]}, Vector3(x1, 0, 0.0), legacy)
+			ZombieBody.legacy_bodies = legacy
+			z1.sever_limb(["LeftLowerArm", "RightUpperArm", "Jaw"][i])
+			for h: int in 3:
+				z1.take_damage(10.0, [&"torso", &"arms", &"head"][h], &"kar98k", 1, &"bullet")
+			ZombieBody.legacy_bodies = false
+	_cam.position = Vector3(0.35, 1.35, -3.6)
+	_cam.rotation_degrees = Vector3(-4, 180, 0)
+	await get_tree().create_timer(0.8).timeout
+	await _shot("14_damaged")
+	_clear()
+	# crawler
+	_label.text = "15 crawlers: BEFORE left / AFTER right"
+	for legacy2: bool in [true, false]:
+		for i: int in 2:
+			var x2: float = (1.3 if legacy2 else -0.5) - 0.9 * float(i)
+			var z2: Zombie = _stand({"enemy_id": "ganger", "tier": "walk", "health": 300, "variant": ["soldier", "villager"][i]}, Vector3(x2, 0, 0.0), legacy2)
+			ZombieBody.legacy_bodies = legacy2
+			z2.become_crawler()
+			ZombieBody.legacy_bodies = false
+	await get_tree().create_timer(1.7).timeout
+	for zc: Zombie in _new:
+		zc.set_physics_process(false)   # hold them where the fall landed them
+	_cam.position = Vector3(0.3, 1.5, -3.6)
+	_cam.rotation_degrees = Vector3(-24, 180, 0)
+	await get_tree().create_timer(0.3).timeout
+	await _shot("15_crawler")
+	_clear()
+	# ragdoll
+	_label.text = "16 ragdolls two seconds after the kill: BEFORE left / AFTER right"
+	for legacy3: bool in [true, false]:
+		for i: int in 2:
+			var x3: float = (1.4 if legacy3 else -0.4) - 1.0 * float(i)
+			var z3: Zombie = _stand({"enemy_id": "ganger", "tier": "walk", "health": 100, "variant": ["soldier", "dockworker"][i]}, Vector3(x3, 0, 0.0), legacy3)
+			ZombieBody.legacy_bodies = legacy3
+			z3.take_damage(z3.hp + 1.0, &"torso", &"kar98k", 1, &"bullet" if i == 0 else &"explosive")
+			ZombieBody.legacy_bodies = false
+	_cam.position = Vector3(0.4, 1.9, -2.2)
+	_cam.rotation_degrees = Vector3(-38, 180, 0)
+	await get_tree().create_timer(2.5).timeout
+	await _shot("16_ragdoll")
+	_clear()
+	# face close-up (after only): the sockets, the glow, the slack jaw, the veins at round 15
+	_label.text = "17 faces (after): soldier, villager (f), labstaff at round 15"
+	for i: int in 3:
+		var z4: Zombie = _stand({"enemy_id": "ganger", "tier": "walk", "health": 300, "variant": ["soldier", "villager", "labstaff"][i], "female": i == 1}, Vector3(0.42 - 0.42 * float(i), 0, 0.0))
+		z4.set_physics_process(false)
+	_cam.position = Vector3(0, 1.66, -1.25)
+	_cam.rotation_degrees = Vector3(-1, 180, 0)
+	_cam.fov = 40
+	await get_tree().create_timer(0.6).timeout
+	await _shot("17_faces")
+	_clear()
+	# the living set for the people builder (ZombieBody.build_living): plain eyes, warm skin, no Nachtglas
+	_label.text = "18 living humans (ZombieBody.build_living, the people builder's base): villager m / f, labstaff f, soldier"
+	var liv: Array = [["villager", "medium", false], ["villager", "thin", true], ["labstaff", "medium", true], ["soldier", "heavy", false]]
+	for i: int in liv.size():
+		var lv: Array = liv[i]
+		var z5: Zombie = _stand({"enemy_id": "ganger", "tier": "walk", "health": 300, "variant": lv[0]}, Vector3(1.2 - 0.8 * float(i), 0, 0.0))
+		z5.body_mesh().mesh = ZombieBody.build_living(lv[0], lv[1], lv[2])
+		for g: Node in z5.find_children("*", "MeshInstance3D", true, false):
+			if g != z5.body_mesh() and g.get_parent() is BoneAttachment3D:
+				(g as MeshInstance3D).hide()   # no zombie gear
+		z5.set_posture("none", 0.0)
+	_cam.position = Vector3(0, 1.45, -3.2)
+	_cam.rotation_degrees = Vector3(-6, 180, 0)
+	_cam.fov = 50
+	await get_tree().create_timer(1.0).timeout
+	await _shot("18_living")
+	_clear()

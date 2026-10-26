@@ -8,6 +8,16 @@ extends RefCounted
 
 static var _pieces: Array[RigidBody3D] = []
 const STUMP_FLIP: PackedStringArray = ["Head", "Jaw"]
+## Stump cap size per severed bone (T-091): the cap mesh is sized for a 6 cm limb; the modelled bodies' joints
+## differ (a thigh at the hip is ~9 cm, a jaw ~3 cm). Scaled further by the body's build width.
+const STUMP_SCALE: Dictionary = {"LeftUpperArm": 1.05, "RightUpperArm": 1.05, "LeftLowerArm": 0.85, "RightLowerArm": 0.85,
+	"LeftUpperLeg": 1.55, "RightUpperLeg": 1.55, "LeftLowerLeg": 1.0, "RightLowerLeg": 1.0, "Head": 1.05, "Jaw": 0.6}
+
+
+static func stump_scale(z: Zombie, bone: String) -> float:
+	var builds: Dictionary = GLData.table("anim")["builds"]
+	var w: float = float((builds.get(z.build_name(), {}) as Dictionary).get("w", 1.0))
+	return float(STUMP_SCALE.get(bone, 1.0)) * w
 
 
 static func level() -> String:
@@ -65,6 +75,7 @@ static func _cap(z: Zombie, bone: String) -> void:
 		at.add_child(cap)
 	cap.position = ZombieRig.rest_offset(bone)
 	cap.rotation = Vector3(PI, 0, 0) if STUMP_FLIP.has(bone) else Vector3.ZERO
+	cap.scale = Vector3.ONE * stump_scale(z, bone)
 	cap.show()
 
 
@@ -96,7 +107,7 @@ static func _throw_piece(z: Zombie, bone: String, impulse: Vector3) -> void:
 	var stump: MeshInstance3D = MeshInstance3D.new()
 	stump.mesh = ZombieBody.stump_mesh()
 	stump.rotation = Vector3.ZERO if STUMP_FLIP.has(bone) else Vector3(PI, 0, 0)
-	stump.scale = z.pivot_scale()
+	stump.scale = z.pivot_scale() * stump_scale(z, bone)
 	body.add_child(stump)
 	host.add_child(body)
 	body.global_transform = at.global_transform

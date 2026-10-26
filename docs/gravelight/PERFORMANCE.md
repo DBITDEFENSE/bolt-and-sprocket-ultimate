@@ -63,3 +63,16 @@ other builders' Godot processes running (single runs swing by ~10 FPS):
 What it spends: the library's triplanar surface shader samples three maps per projection; the scripted trees are
 alpha-scissored cards (overdraw near the edge); the library props are MultiMeshes (one draw call per prop mesh,
 chairs and small props cast no shadows).
+
+## UPDATE 05 section 3, the modelled zombies (T-091)
+Same scene (perf_marks, High, round 15, 3 bots + Jakub, 24 zombies, marks), RTX 5090, other builders' Godot
+processes on the machine (single runs swing 20+ FPS), three runs each, alternating:
+- pre-T-091 procedural bodies (`-- --legacy-bodies`): avg 63.3 / 67.1 / 84.3 FPS (median 67.1), 1% low 27.5 / 35.7 / 53.8.
+- modelled bodies, no LODs (`-- --body-lod=none`): 64.7 / 60.8 / 68.4 (median 64.7), 1% low 29.9 / 35.0 / 34.0.
+- modelled bodies with Godot's mesh LODs (the default, `--body-lod=auto`): 58.7 / 77.8 / 87.8 (median 77.8), 1% low
+  31.9 / 45.9 / 59.5, no frame over 40 ms.
+The scene is CPU-bound, so ~9k-triangle bodies cost little; the generated LODs win back what they add. Still two
+draw calls per body (plus a gear piece or two, as before). The scripted LOD meshes in the GLBs (`Body_LOD1/2`) are
+not used at runtime: swapping them needs two more skinned MeshInstance3D per zombie (each skinned every frame
+whatever its visibility range), while Godot's LODs are index buffers on the same mesh. They stay in the GLB for
+other tools and the people builder.

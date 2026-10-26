@@ -1887,6 +1887,14 @@ func _pick(arr: Array) -> Variant:
 	return arr[randi() % arr.size()]
 
 
+## T-091 tools (lineups, captures): forces the body's kit / build / sex after activation.
+func debug_set_body(kit: String, build: String, female: bool) -> void:
+	_variant = kit
+	_build = build
+	_female = female
+	_body.mesh = ZombieBody.build_skinned(kit, build, female)
+
+
 ## Shows the variant's extra pieces (crystal plates, lantern) and adjusts the body.
 func _apply_kind() -> void:
 	(_kind_nodes["glass"] as Node3D).visible = enemy_id == &"glasshide"

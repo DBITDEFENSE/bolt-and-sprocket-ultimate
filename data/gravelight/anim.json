@@ -194,7 +194,7 @@
   },
   "kits": {
     "_doc": "Outfit kits per map/faction (docs/ART_FACTIONS.md marks only). gear = optional pieces rolled per instance. 'laborer' is retired: forced laborers are never zombies (v2 section 0.1).",
-    "soldier": {"faction": "wehrmacht", "builds": ["medium", "heavy"], "female": 0.0, "gear": {"helmet": 0.85, "sling": 0.5}, "skin": [0.55, 0.6, 0.62]},
+    "soldier": {"faction": "wehrmacht", "builds": ["medium", "heavy"], "female": 0.0, "gear": {"helmet": 0.85, "sling": 0.5, "armband": 0.3}, "skin": [0.55, 0.6, 0.62]},
     "villager": {"faction": "crossroads", "builds": ["thin", "medium", "heavy"], "female": 0.5, "gear": {"cap": 0.4, "scarf": 0.5, "apron": 0.3}, "skin": [0.6, 0.6, 0.6]},
     "miner": {"faction": "kaltenbrunn", "builds": ["medium", "heavy"], "female": 0.0, "gear": {"lamp_cap": 0.9, "apron": 0.8}, "skin": [0.5, 0.52, 0.52]},
     "labstaff": {"faction": "wiederkehr", "builds": ["thin", "medium"], "female": 0.35, "gear": {"goggles": 0.6, "armband": 0.7}, "skin": [0.58, 0.6, 0.64]},
