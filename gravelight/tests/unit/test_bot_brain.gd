@@ -273,6 +273,13 @@ func test_crate_doors_and_the_never_touch_rule() -> void:
 	assert_true(BotEconomy.door_allowed(eco, false, false, 1, 4.0), "the human opens doors and stands by this one")
 	assert_false(BotEconomy.door_allowed(eco, false, false, 1, 30.0))
 	assert_true(BotEconomy.door_allowed(eco, false, true, 0, INF), "no human leads: the bots decide")
+	# T-107: the power route is planned across every zone except the ones bots cannot cross (the lift), so a
+	# per-zone navmesh map (Kaltenbrunn) gives a self-led squad a door to buy, as Map 0's single region always did
+	var zb: Dictionary = {"A_MINEHEAD": 1, "B_RAILYARD": 2, "E_LIFT": 5, "F_CHAPEL": 7}
+	assert_eq(BotEconomy.plan_mask_of(zb, ["E_LIFT"]), 1 | 2 | 64, "every zone's layer but the lift's (layer 1 always)")
+	assert_eq(BotEconomy.plan_mask_of(zb, []), 1 | 2 | 16 | 64)
+	assert_eq(BotEconomy.plan_mask_of({}, ["E_LIFT"]), 0x7FFFFFFF, "a single-region map: every layer")
+	assert_true((eco.get("power", {}) as Dictionary).get("plan_avoid_zones", []).has("E_LIFT"), "economy.json names the lift")
 	for k: String in ["quest", "part", "power"]:
 		assert_false(BotEconomy.may_touch(k, false, false, false), "never %s on its own" % k)
 		assert_true(BotEconomy.may_touch(k, true, false, false), "%s when ordered" % k)

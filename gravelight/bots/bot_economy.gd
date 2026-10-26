@@ -503,7 +503,17 @@ func power_plan(now: float) -> Dictionary:
 		_power = {"switch": sw, "stand": st}
 		return _power
 	var me: Vector3 = player.global_position
-	var path: PackedVector3Array = NavigationServer3D.map_get_path(player.get_world_3d().navigation_map, me, brain.snap(sw.global_position), true, brain.squad.nav_mask())
+	var nav: RID = player.get_world_3d().navigation_map
+	var goal: Vector3 = brain.snap(sw.global_position)
+	var path: PackedVector3Array = NavigationServer3D.map_get_path(nav, me, goal, true, brain.squad.nav_mask())
+	if path.is_empty() or path[path.size() - 1].distance_to(goal) > 2.0:
+		# (a path that stops short is the server's partial path to the closest reachable point, not a way there)
+		# UPDATE 07 QA (T-107): on a map with one navmesh region per zone (Kaltenbrunn, Totenhafen) the open
+		# zones' mask never reaches a switch behind a closed door, so the squad planned nothing and bought nothing
+		# for the whole match. Plan the way across every zone (minus the ones bots can't use, e.g. the lift) and
+		# buy the nearest closed door that path crosses, as the single-region Map 0 always allowed.
+		var zb: Dictionary = brain.squad.map.director.zone_bits if brain.squad.map != null and brain.squad.map.director != null else {}
+		path = NavigationServer3D.map_get_path(nav, me, goal, true, plan_mask_of(zb, pw_avoid_zones()))
 	if path.is_empty():
 		return _power
 	var best: BuyDoor = null
@@ -518,6 +528,23 @@ func power_plan(now: float) -> Dictionary:
 	if best != null:
 		_power = {"door": best}
 	return _power
+
+
+## The nav layer mask for planning a way across the whole map: every zone's bit (and the always-on layer 1)
+## except the zones in `avoid` (zones a bot cannot cross on foot: the Kaltenbrunn lift). Pure, tested.
+static func plan_mask_of(zone_bits: Dictionary, avoid: Array) -> int:
+	if zone_bits.is_empty():
+		return 0x7FFFFFFF
+	var m: int = 1
+	for z: Variant in zone_bits.keys():
+		if avoid.has(String(z)):
+			continue
+		m |= 1 << (int(zone_bits[z]) - 1)
+	return m
+
+
+func pw_avoid_zones() -> Array:
+	return (eco.get("power", {}) as Dictionary).get("plan_avoid_zones", []) as Array
 
 
 ## Doors an authored training route on this map still needs (door_id -> true): a squad leading itself opens them

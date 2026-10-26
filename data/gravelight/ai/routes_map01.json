@@ -17,7 +17,7 @@
       "points": [[-13.0, -12, 63.0], [12.0, -12, 63.0], [37.0, -12, 63.0], [37.0, -12, 71.0], [37.0, -12, 79.0], [12.0, -12, 79.0], [-13.0, -12, 79.0], [-13.0, -12, 71.0]],
       "ring_width": 3.0,
       "smooth": 2,
-      "requires_doors": [],
+      "requires_doors": ["door_barracks", "door_stairs"],
       "requires_zones": ["F_CHAPEL"]
     },
     {
@@ -27,7 +27,7 @@
       "points": [[42.5, -12, 64.0], [49.5, -12, 63.6], [56.0, -12, 64.0], [56.0, -12, 70.0], [56.0, -12, 76.0], [49.5, -12, 76.5], [42.5, -12, 76.0], [42.5, -12, 70.0]],
       "ring_width": 3.5,
       "smooth": 2,
-      "requires_doors": [],
+      "requires_doors": ["door_barracks", "door_stairs", "door_gen"],
       "requires_zones": ["G_GENERATOR"]
     }
   ]

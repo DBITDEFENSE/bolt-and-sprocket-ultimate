@@ -803,7 +803,9 @@ func _roam_fallback(delta: float) -> bool:
 ## True when the navmesh takes this zombie to within roam.reach_m of `goal` without crossing a shut BuyDoor or a
 ## window (doors aren't baked into the navmesh; windows are only crossed by tearing the boards and climbing).
 func can_walk_to(goal: Vector3) -> bool:
-	var path: PackedVector3Array = NavigationServer3D.map_get_path(get_world_3d().navigation_map, global_position, goal, true)
+	# the open zones' layers (T-107): the default mask is layer 1 only, which on a per-zone-region map is one zone
+	var mask: int = (director as ZombieDirector).nav_mask if director != null else 0x7FFFFFFF
+	var path: PackedVector3Array = NavigationServer3D.map_get_path(get_world_3d().navigation_map, global_position, goal, true, mask)
 	if path.is_empty():
 		return false
 	var end: Vector3 = path[path.size() - 1]
@@ -980,6 +982,22 @@ func _crossing_link() -> bool:
 
 
 var _link_t: float = 0.0          # seconds spent on the current link point (the re-path hold has a limit)
+
+
+## Where this zombie's current nav path ends (the agent's last computed path), or INF with no path yet.
+func path_end() -> Vector3:
+	if _agent == null or not _agent.is_inside_tree():
+		return Vector3.INF
+	var path: PackedVector3Array = _agent.get_current_navigation_path()
+	if path.is_empty():
+		return Vector3.INF
+	return path[path.size() - 1]
+
+
+## Recompute the path on the next move tick (after a relocation).
+func force_repath() -> void:
+	_repath_t = 0.0
+	_link_t = 0.0
 
 
 func _nav_move(goal: Vector3, spd: float, delta: float, repath_interval: float) -> void:

@@ -176,6 +176,12 @@
       }
     ]
   },
+  "stranded": {
+    "_doc": "UPDATE 07 QA (T-107): a round that cannot end. When nothing is left to spawn and a chasing zombie's path end has stayed farther than far_m from every living player for `seconds` (the players went somewhere its path never reaches: a crawler jammed at a doorway on Kaltenbrunn held round 12 for 140 minutes), the director relocates it to an active ground spawn near the players. Checked every check_every_s. Any map, any act.",
+    "seconds": 45.0,
+    "far_m": 6.0,
+    "check_every_s": 1.0
+  },
   "special_round": {
     "first_min": 5,
     "first_max": 6,

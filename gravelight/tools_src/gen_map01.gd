@@ -492,6 +492,12 @@ func build_surface() -> void:
 	box(geo, "AdminSlab3", Vector3(-16, 3.5, 28), Vector3(0, 3.8, 32), "floor_wood")
 	ramp_z("AdminStairs", -15.2, -12.2, 28.0, 21.0, 0.0, 3.8, "furniture", "beam")
 	box(geo, "AdminRail", Vector3(-12.2, 3.8, 21), Vector3(-12.0, 4.8, 27.5), "metal")
+	# UPDATE 07 QA (T-107): closed stair strings on both sides of the Admin stairs. The bake used to run the navmesh
+	# over the ramp's low east edge (0.27 m at z 27.5, under max_climb), so paths entered the stairs from the side
+	# and a bot stood against the ramp's face for minutes ("lost 956 s" at (-11.8, 0, 27.4)); with the strings the
+	# navmesh enters the stairs only at their foot and head.
+	box(geo, "AdminStairStringE", Vector3(-12.25, 0, 21.0), Vector3(-12.05, 3.5, 28.3), "furniture")
+	box(geo, "AdminStairStringW", Vector3(-15.35, 0, 21.0), Vector3(-15.15, 3.5, 28.3), "furniture")
 	box(geo, "Switchboard", Vector3(-6, 0, 29.5), Vector3(-1, 2.2, 31.6), "furniture")
 	box(geo, "FilingA", Vector3(-15.6, 0, 9), Vector3(-14.3, 1.6, 12), "furniture")
 	wall_x("AdminPart", 16.0, -16, -2.5, 3.8, 7.0, [door(-9, 3.8, 1.6)], "wall", [[1, "wainscot", 1.0, 0.025], [-1, "wainscot", 1.0, 0.025]])

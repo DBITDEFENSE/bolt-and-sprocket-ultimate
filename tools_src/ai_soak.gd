@@ -743,8 +743,8 @@ func _watch_stall() -> void:
 		return
 	_stall_next += 60.0
 	var zs: Array = _map.director.active_zombies() if _map.director != null else []
-	print("[soak] STALL round %d at %.0f s: alive %d, to_spawn %d, holdout %s, %d active zombies" % [_stall_round,
-		_game_t - _stall_t0, RoundManager.alive, RoundManager.to_spawn, str(RoundManager.is_held()), zs.size()])
+	print("[soak] STALL round %d at %.0f s: alive %d, to_spawn %d, holdout %s, %d active zombies, %d stranded relocations" % [_stall_round,
+		_game_t - _stall_t0, RoundManager.alive, RoundManager.to_spawn, str(RoundManager.is_held()), zs.size(), _map.director.stranded_relocations])
 	var nav: RID = _map.get_world_3d().navigation_map
 	for n: Node in get_tree().get_nodes_in_group(&"players"):
 		var pl: Player = n as Player
@@ -758,7 +758,7 @@ func _watch_stall() -> void:
 	for z: Zombie in zs:
 		var c: Vector3 = NavigationServer3D.map_get_closest_point(nav, z.global_position)
 		var tg: Node3D = z.target
-		var path: PackedVector3Array = NavigationServer3D.map_get_path(nav, z.global_position, tg.global_position, true) if tg != null else PackedVector3Array()
+		var path: PackedVector3Array = NavigationServer3D.map_get_path(nav, z.global_position, tg.global_position, true, _map.director.nav_mask) if tg != null else PackedVector3Array()
 		print("[soak]   %s%s %s at %s (navmesh %s) -> %s, path ends %s" % [z.enemy_id, " (crawler)" if z.is_crawler else "", Zombie.State.keys()[z.state], z.global_position.snapped(Vector3.ONE * 0.1),
 			c.snapped(Vector3.ONE * 0.1), Net.display_name((tg as Player).player_id) if tg is Player else str(tg),
 			path[path.size() - 1].snapped(Vector3.ONE * 0.1) if not path.is_empty() else "none"])
