@@ -127,6 +127,8 @@ func _ready() -> void:
 	col.add_child(MenuKit.button("Map 0 — art slice (round 1)", func() -> void: _start_gl(map0, 1), 22, "ui_confirm"))
 	col.add_child(MenuKit.button("Map 0 — art slice (round 12, 3 bots)", func() -> void: _start_gl(map0, 12, "", 3), 22, "ui_confirm"))
 	col.add_child(MenuKit.button("Weapon viewer — every gun in hand  ( [ / ] cycle guns )", func() -> void: AdsRange.launch(get_tree()), 22, "ui_confirm"))
+	col.add_child(MenuKit.button("Character lineup — renders the squad, Jakub, the Cousins, patrons and faces to morning/screenshots/u05/people/", func() -> void:
+		_spawn_tool("res://gravelight/tools_src/shots_lineup.tscn", ["--out=" + ProjectSettings.globalize_path("res://morning/screenshots/u05/people")], false), 22, "ui_confirm"))
 	col.add_child(_header("Muster (your sidearm and Field Habits; saved per survivor, used by every match)"))
 	col.add_child(MenuKit.button("Muster — pick the sidearm and Field Habits for the survivor above", func() -> void: add_child(MenuMuster.new(CHARACTERS[_char.selected])), 22, "ui_confirm"))
 	col.add_child(_header("Bot mode (an AI plays your survivor; F6 or any input takes over)"))
