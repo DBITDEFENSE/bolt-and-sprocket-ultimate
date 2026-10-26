@@ -225,6 +225,8 @@ func _ready() -> void:
 			player_kit = "baseline" if bots_alone else "realistic"
 		if bots_alone:
 			player_kit = "baseline"
+			if ee_mode == "":
+				ee_mode = "off"   # no human to escort or hand over to: the egg tasks would loop on "the player left"
 	if max_minutes < 0.0:
 		max_minutes = 240.0 if scenario == "fernflug" else 150.0
 	if map_key == "":
@@ -980,7 +982,7 @@ func _end_run_fernflug(why: String) -> void:
 	lines.append("| act | map | rounds | min | bot downs | revived | bled | stuck | stuck s | teleports | stranded | spent | doors | bosses | power r | transition | end |")
 	lines.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
 	for a: Dictionary in _acts:
-		lines.append("| %d | %s | %d-%d (%d) | %.1f | %d | %d | %d | %d | %.1f | %d | %d | %d | %d | %d | %s | %s |" % [int(a["act"]), str(a["map"]).trim_prefix("map04"), int(a["first_round"]), int(a["round_reached"]),
+		lines.append("| %d | %s | %d-%d (%d) | %.1f | %d | %d | %d | %d | %.1f | %d | %d | %d | %d | %d | %d | %s | %s |" % [int(a["act"]), str(a["map"]).trim_prefix("map04"), int(a["first_round"]), int(a["round_reached"]),
 			int(a["rounds"]), float(a["minutes"]), int(a["bot_downs"]), int(a["revived"]), int(a["bled"]), int(a["stuck_events"]), float(a["stuck_time"]), int(a["teleports"]), int(a["stranded"]),
 			int(a["scrip_spent"]), int(a["doors_open"]), int(a["bosses"]), int(a["power_round"]), str(a["transition"]) + (" x%d" % int(a["forced"]) if int(a["forced"]) > 0 else ""), str(a["end"])])
 	for l: String in lines:
@@ -1023,13 +1025,17 @@ func _watch_stall() -> void:
 		return
 	_stall_next += 60.0
 	var zs: Array = _map.director.active_zombies() if _map.director != null else []
-	print("[soak] STALL round %d at %.0f s: alive %d, to_spawn %d, holdout %s, %d active zombies, %d stranded relocations" % [_stall_round,
-		_game_t - _stall_t0, RoundManager.alive, RoundManager.to_spawn, str(RoundManager.is_held()), zs.size(), _map.director.stranded_relocations])
+	print("[soak] STALL round %d at %.0f s: alive %d, to_spawn %d, holdout %s, %d active zombies, %d stranded relocations, open zones %s, spawn fallbacks %d" % [_stall_round,
+		_game_t - _stall_t0, RoundManager.alive, RoundManager.to_spawn, str(RoundManager.is_held()), zs.size(), _map.director.stranded_relocations,
+		str(GameState.open_zones.keys()), _map.director.no_spawn_fallbacks])
 	var nav: RID = _map.get_world_3d().navigation_map
 	for n: Node in get_tree().get_nodes_in_group(&"players"):
 		var pl: Player = n as Player
-		print("[soak]   player %s at %s alive %s downed %s spectating %s" % [Net.display_name(pl.player_id), pl.global_position.snapped(Vector3.ONE * 0.1),
-			pl.is_alive(), pl.get("downed"), pl.get("spectating")])
+		print("[soak]   player %s at %s (zone %s) alive %s downed %s spectating %s" % [Net.display_name(pl.player_id), pl.global_position.snapped(Vector3.ONE * 0.1),
+			ZoneVolume.zone_at(get_tree(), pl.global_position), pl.is_alive(), pl.get("downed"), pl.get("spectating")])
+	if _map.squad != null:
+		for b: BotBrain in _map.squad.brains:
+			print("[soak]   bot %s | task %s" % [b.status_line(), str(b.task.get("label", "-"))])
 	if _pb != null and is_instance_valid(_pb) and _pb.brain != null:
 		var sb: BotBrain = _pb.brain
 		print("[soak]   agent: %s | %s | known %d | trainer %s f%d h%.1f | scrip %d" % [str(sb.recent[-1]) if not sb.recent.is_empty() else "-",

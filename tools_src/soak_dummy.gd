@@ -156,17 +156,18 @@ func _build_route() -> void:
 				pts.append_array(MAP00_STABLE)
 		route_name = "map00 taproom" + (" + stable" if _stable_open else "")
 	else:
+		# (T-116) the widest ring the spawn's navmesh allows: a yard loop a train can follow, not a tight circle
 		var c: Vector3 = player.global_position
-		for k2: int in 10:
-			var a: float = float(k2) / 10.0 * TAU
-			pts.append(c + Vector3(cos(a), 0.0, sin(a)) * 6.5)
-		route_name = "ring round the spawn"
-	var keep: PackedVector3Array = PackedVector3Array()
-	for p: Vector3 in pts:
-		var s: Vector3 = NavigationServer3D.map_get_closest_point(_nav(), p + Vector3.UP * 0.5)
-		if Vector2(s.x - p.x, s.z - p.z).length() < 1.2:
-			keep.append(s)
-	_route = keep
+		for radius: float in [11.0, 8.5, 6.5]:
+			var ring: Array[Vector3] = []
+			for k2: int in 12:
+				var a: float = float(k2) / 12.0 * TAU
+				ring.append(c + Vector3(cos(a), 0.0, sin(a)) * radius)
+			if _on_navmesh(ring).size() >= 8 or is_equal_approx(radius, 6.5):
+				pts = ring
+				route_name = "ring round the spawn (r %.1f)" % radius
+				break
+	_route = _on_navmesh(pts)
 	# start at the loop point nearest to us
 	var best: float = INF
 	for k3: int in _route.size():
@@ -176,6 +177,16 @@ func _build_route() -> void:
 			_i = k3
 	_start_i = _i
 	_path = PackedVector3Array()
+
+
+## The points of `pts` that sit on the navmesh (within 1.2 m flat), snapped to it.
+func _on_navmesh(pts: Array[Vector3]) -> PackedVector3Array:
+	var keep: PackedVector3Array = PackedVector3Array()
+	for p: Vector3 in pts:
+		var s: Vector3 = NavigationServer3D.map_get_closest_point(_nav(), p + Vector3.UP * 0.5)
+		if Vector2(s.x - p.x, s.z - p.z).length() < 1.2:
+			keep.append(s)
+	return keep
 
 
 func _door_open(id: StringName) -> bool:

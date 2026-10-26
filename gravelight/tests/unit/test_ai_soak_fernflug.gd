@@ -79,3 +79,10 @@ func test_dummy_has_the_beacon_counters() -> void:
 	assert_eq(int(d.get("doors_bought")), 0)
 	assert_eq(int(d.get("ALL_LAYERS")), 0x7FFFFFFF)
 	assert_true(float(d.get("EXFIL_ERRAND_S")) > 40.0, "a beacon errand outlasts the shopping limit")
+
+
+func test_director_spawn_fallback_rule() -> void:
+	assert_false(ZombieDirector.spawn_fallback_due(0.0, 20), "the round just started: no fallback")
+	assert_false(ZombieDirector.spawn_fallback_due(19.5, 20), "under the limit")
+	assert_true(ZombieDirector.spawn_fallback_due(20.0, 20), "20 s without a spawn to serve the players: any active spawn")
+	assert_false(ZombieDirector.spawn_fallback_due(60.0, 0), "nothing left to spawn: nothing to fall back to")
