@@ -28,7 +28,7 @@ const GREY_INK: Color = Color(0.72, 0.72, 0.7)
 const GREY_INK2: Color = Color(0.3, 0.3, 0.3)
 const COPPER: Color = Color(0.82, 0.5, 0.24)
 const GLYPHS: PackedStringArray = ["ironhide_stout", "second_wind", "trigger_tonic", "twin_barrel", "marathon_malt",
-	"hawkeye_brandy", "packmule_porter", "blastproof_bock", "overclock_cordial"]
+	"hawkeye_brandy", "packmule_porter", "blastproof_bock", "overclock_cordial", "skyhook_sekt", "magpie_mead"]
 
 static var _fallback_font: SystemFont = null
 
@@ -186,6 +186,54 @@ static func _glyph(ci: CanvasItem, c: Vector2, g: float, perk: StringName, ink: 
 			_ram_burst(ci, c, g, ink, ink2, detail)
 		&"overclock_cordial":
 			_cog_bolt(ci, c, g, ink, ink2, face, copper, detail)
+		&"skyhook_sekt":
+			_crane(ci, c, g, ink, face, detail)
+		&"magpie_mead":
+			_magpie_eye(ci, c, g, ink, ink2, face, detail)
+
+
+## Skyhook Sekt (T-105): Fräulein Kranich, a crane in flight: a long neck and bill, two spread wings, trailing legs.
+static func _crane(ci: CanvasItem, c: Vector2, g: float, ink: Color, face: Color, detail: bool) -> void:
+	# body
+	ci.draw_colored_polygon(_pts(c, g, [Vector2(-0.35, 0.05), Vector2(0.2, -0.05), Vector2(0.4, 0.12), Vector2(0.05, 0.3), Vector2(-0.4, 0.25)]), ink)
+	# wings, spread
+	ci.draw_colored_polygon(_pts(c, g, [Vector2(-0.1, 0.0), Vector2(-0.95, -0.55), Vector2(-0.75, -0.7), Vector2(0.15, -0.1)]), ink)
+	ci.draw_colored_polygon(_pts(c, g, [Vector2(0.0, 0.1), Vector2(0.85, -0.6), Vector2(0.98, -0.42), Vector2(0.25, 0.2)]), ink)
+	# neck and head, bill forward
+	_capsule(ci, c, g, Vector2(0.3, 0.02), Vector2(0.62, -0.3), 0.09, ink)
+	ci.draw_circle(c + Vector2(0.64, -0.34) * g, g * 0.12, ink)
+	ci.draw_colored_polygon(_pts(c, g, [Vector2(0.7, -0.38), Vector2(1.0, -0.3), Vector2(0.72, -0.26)]), ink)
+	# legs trailing
+	var w: float = maxf(1.0, g * 0.07)
+	ci.draw_line(c + Vector2(-0.3, 0.25) * g, c + Vector2(-0.8, 0.6) * g, ink, w)
+	ci.draw_line(c + Vector2(-0.2, 0.28) * g, c + Vector2(-0.65, 0.68) * g, ink, w)
+	if detail:
+		ci.draw_circle(c + Vector2(0.66, -0.37) * g, g * 0.035, face)
+		# the flying scarf, out straight behind the head
+		ci.draw_line(c + Vector2(0.55, -0.3) * g, c + Vector2(0.1, -0.5) * g, face, maxf(1.0, g * 0.06))
+
+
+## Magpie Mead (T-105): the magpie's eye in a sergeant's chevron.
+static func _magpie_eye(ci: CanvasItem, c: Vector2, g: float, ink: Color, ink2: Color, face: Color, detail: bool) -> void:
+	# the chevron (three stripes) under the eye
+	var w: float = maxf(1.0, g * 0.1)
+	for i: int in 3:
+		var y: float = 0.35 + i * 0.2
+		ci.draw_line(c + Vector2(-0.6, y - 0.2) * g, c + Vector2(0.0, y) * g, ink2, w)
+		ci.draw_line(c + Vector2(0.0, y) * g, c + Vector2(0.6, y - 0.2) * g, ink2, w)
+	# the eye: a lens, a dark iris, a bright glint
+	var lens: PackedVector2Array = []
+	var steps: int = 8
+	for i: int in steps + 1:
+		var t: float = float(i) / float(steps)
+		lens.append(c + Vector2(lerpf(-0.75, 0.75, t), -0.25 - 0.4 * sin(PI * t)) * g)
+	for i2: int in steps - 1:
+		var t2: float = 1.0 - float(i2 + 1) / float(steps)
+		lens.append(c + Vector2(lerpf(-0.75, 0.75, t2), -0.25 + 0.4 * sin(PI * t2)) * g)
+	ci.draw_colored_polygon(lens, face)
+	ci.draw_circle(c + Vector2(0.0, -0.25) * g, g * 0.3, ink)
+	if detail:
+		ci.draw_circle(c + Vector2(0.1, -0.35) * g, g * 0.09, face)
 
 
 static func _pts(c: Vector2, g: float, unit: Array) -> PackedVector2Array:

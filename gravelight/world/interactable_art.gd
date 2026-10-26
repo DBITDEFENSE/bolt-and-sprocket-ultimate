@@ -258,6 +258,10 @@ static func perk_body(g: Node3D, shape: String, fp: Vector3, brand: Color) -> vo
 			_safe(g, fp, en)
 		"coil":
 			_coil_tower(g, fp, en)
+		"glider":
+			_glider(g, fp, en)
+		"bandit":
+			_bandit(g, fp, en)
 		_:
 			B(g, Vector3(-fp.x * 0.5, 0, -fp.z * 0.5), Vector3(fp.x * 0.5, fp.y, fp.z * 0.5), en)
 	# sign board (the neon tubes and the label sit in front of it)
@@ -284,6 +288,36 @@ static func perk_body(g: Node3D, shape: String, fp: Vector3, brand: Color) -> vo
 	for a: float in [0.0, 120.0, 240.0]:
 		var d: Vector3 = Vector3(cos(deg_to_rad(a)), 0, sin(deg_to_rad(a))) * 0.08
 		S(g, lp + Vector3(0, -0.05, 0) + d, lp + Vector3(0, 0.11, 0) + d * 0.4, 0.012, "brass")
+
+
+## Skyhook Sekt (T-105): a glider fuselage stood on its tail: a slim tapering body, a canopy frame round the
+## bottle window, stub wings low down as the feet, a tail fin behind the sign.
+static func _glider(g: Node3D, fp: Vector3, en: String) -> void:
+	var hx: float = fp.x * 0.5
+	var hz: float = fp.z * 0.5
+	B(g, Vector3(-hx * 0.8, 0.0, -hz * 0.8), Vector3(hx * 0.8, 0.5, hz * 0.8), en)
+	B(g, Vector3(-hx, 0.5, -hz), Vector3(hx, fp.y - 0.45, hz), en)
+	B(g, Vector3(-hx * 0.7, fp.y - 0.45, -hz * 0.7), Vector3(hx * 0.7, fp.y - 0.1, hz * 0.7), en)
+	C(g, Vector3(0, fp.y - 0.08, 0), hx * 0.45, 0.16, en)
+	for sgn: float in [-1.0, 1.0]:
+		B(g, Vector3(sgn * hx, 0.08, -hz * 0.3), Vector3(sgn * (hx + 0.45), 0.16, hz * 0.3), "chrome")
+	B(g, Vector3(-0.04, fp.y - 0.4, hz), Vector3(0.04, fp.y + 0.1, hz + 0.3), en)
+	for y: float in [0.9, 1.5, 2.0]:
+		ring(g, Vector3(0, y, 0), hx * 1.02, 0.015, "chrome", Vector3(90, 0, 0))
+
+
+## Magpie Mead (T-105): the standard cabinet under olive paint, chipped to Packmule's brown at the edges, a bare
+## bulb in a cage instead of neon, the lever's bracket on the right, a stencil plate on the front.
+static func _bandit(g: Node3D, fp: Vector3, en: String) -> void:
+	var hx: float = fp.x * 0.5
+	var hz: float = fp.z * 0.5
+	B(g, Vector3(-hx, 0, -hz), Vector3(hx, fp.y, hz), en)
+	for corner: Vector3 in [Vector3(-hx, 0.0, -hz), Vector3(hx - 0.04, 0.0, -hz), Vector3(-hx, fp.y - 0.04, -hz), Vector3(hx - 0.04, fp.y - 0.04, -hz)]:
+		B(g, corner - Vector3(0, 0, 0.004), corner + Vector3(0.04, 0.04, 0.0), "enamel:#6b5a2e")   # the chips
+	B(g, Vector3(hx, 1.1, -hz * 0.5), Vector3(hx + 0.07, 1.5, hz * 0.0), "steel")
+	B(g, Vector3(-hx * 0.6, 0.62, -hz - 0.012), Vector3(hx * 0.6, 0.7, -hz), "olive_drab")
+	for k: int in 4:
+		S(g, Vector3(-0.18 + k * 0.12, fp.y - 0.26, -hz - 0.06), Vector3(-0.18 + k * 0.12, fp.y - 0.06, -hz - 0.06), 0.006, "steel")
 
 
 ## Neon tubes around the sign board, the lamp globe and the Ledger dial's face, lit or dark.
@@ -769,6 +803,65 @@ static func coil_arc(g: Node3D) -> void:
 	var pts2: Array = [Vector3(-0.15, -0.02, 0.03), Vector3(-0.1, 0.05, -0.02), Vector3(-0.11, 0.1, 0.02), Vector3(-0.05, 0.16, 0.0)]
 	for i2: int in pts2.size() - 1:
 		S(g, pts2[i2], pts2[i2 + 1], 0.008, "neon:#c07dff")
+
+
+## The Lodestone's parts (T-105): the relay coil (a copper winding on a ceramic former), the gyro cradle (three
+## brass rings), the lead-glass lens (a violet sphere on a felt pad); and the built weapon on the bench.
+static func part_coil(g: Node3D) -> void:
+	C(g, Vector3(0, 0.08, 0), 0.05, 0.16, "cream")
+	for i: int in 9:
+		ring(g, Vector3(0, 0.02 + i * 0.015, 0), 0.058, 0.007, "copper", Vector3(90, 0, 0))
+	B(g, Vector3(-0.09, 0.0, -0.09), Vector3(0.09, 0.012, 0.09), "steel")
+
+
+static func part_cradle(g: Node3D) -> void:
+	ring(g, Vector3(0, 0.12, 0), 0.11, 0.012, "brass", Vector3(0, 0, 0))
+	ring(g, Vector3(0, 0.12, 0), 0.095, 0.01, "brass", Vector3(90, 0, 0))
+	ring(g, Vector3(0, 0.12, 0), 0.08, 0.009, "brass", Vector3(0, 90, 0))
+	B(g, Vector3(-0.03, 0.0, -0.03), Vector3(0.03, 0.02, 0.03), "brass")
+
+
+static func part_lens(g: Node3D) -> void:
+	B(g, Vector3(-0.1, 0.0, -0.1), Vector3(0.1, 0.03, 0.1), "cream")
+	ell(g, Vector3(0, 0.1, 0), Vector3(0.14, 0.14, 0.14), "glass:#b07cff")
+	dot(g, Vector3(0.03, 0.12, -0.03), 0.02, "neon:#c07dff")
+
+
+static func lodestone(g: Node3D) -> void:
+	B(g, Vector3(-0.015, 0.0, -0.15), Vector3(0.015, 0.03, 0.25), "brass")
+	ring(g, Vector3(0, 0.14, -0.2), 0.1, 0.012, "brass")
+	ring(g, Vector3(0, 0.14, -0.2), 0.085, 0.01, "brass", Vector3(90, 0, 0))
+	ell(g, Vector3(0, 0.14, -0.2), Vector3(0.12, 0.12, 0.12), "glass:#b07cff")
+	for i: int in 6:
+		ring(g, Vector3(0, 0.015, 0.0 + i * 0.015), 0.028, 0.006, "copper")
+
+
+## Skyhook Sekt's propeller (T-105): a two-blade wooden prop on a brass hub, pivot at the origin, turning about Z.
+static func glider_prop(g: Node3D) -> void:
+	dot(g, Vector3.ZERO, 0.045, "brass")
+	C(g, Vector3(0, 0, -0.03), 0.03, 0.06, "brass", Vector3(90, 0, 0))
+	for sgn: float in [-1.0, 1.0]:
+		OB(g, Vector3(0, sgn * 0.19, 0), Vector3(0.06, 0.34, 0.012), "oak_stave", Vector3(0, 0, 0))
+		OB(g, Vector3(0, sgn * 0.33, 0), Vector3(0.045, 0.1, 0.01), "oak_stave")
+
+
+## Magpie Mead's one-armed-bandit lever (T-105): a steel arm with a red ball, pivot at the origin, pulled about X.
+static func bandit_lever(g: Node3D) -> void:
+	dot(g, Vector3.ZERO, 0.04, "steel")
+	S(g, Vector3.ZERO, Vector3(0, 0.36, 0), 0.016, "steel")
+	dot(g, Vector3(0, 0.38, 0), 0.05, "red_paint")
+
+
+## Magpie Mead's three reels in the bottle window (T-105): drums that spin about X, AMMO / SCRIP / GRENADE faces.
+static func bandit_reels(g: Node3D) -> void:
+	for i: int in 3:
+		var reel: Node3D = Node3D.new()
+		reel.position = Vector3(-0.14 + i * 0.14, 0, 0)
+		g.add_child(reel)
+		C(reel, Vector3.ZERO, 0.075, 0.1, "cream", Vector3(0, 0, 90))
+		for k: int in 3:
+			var a: float = TAU * float(k) / 3.0
+			OB(reel, Vector3(0, cos(a) * 0.076, sin(a) * 0.076), Vector3(0.08, 0.03, 0.01), ["brass", "olive_drab", "red_paint"][k], Vector3(-rad_to_deg(a), 0, 0))
 
 
 ## The gauge needle (pivot at the origin, points +Y at rest; the script turns it about Z).

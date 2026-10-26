@@ -90,6 +90,13 @@ var _slide_dir: Vector3 = Vector3.ZERO
 var _slide_speed: float = 0.0            # current slide speed (decays with friction, slopes add or take)
 var _slide_cd: float = 0.0               # seconds until the next slide may start
 var _slide_k: float = 0.0                # 0..1 camera blend for the slide dip / tilt
+# UPDATE 07 (T-105): outside pushes (turbulence, a breach's suction, the Bordwart's pull, the Lodestone) and
+# Skyhook Sekt's air hop / stomp.
+var _push_v: Vector3 = Vector3.ZERO
+var _push_t: float = 0.0
+var _hops_left: int = 0
+var _did_hop: bool = false
+var _stomp_cd: float = 0.0
 var slides: int = 0                      # slides started this match (tools / HUD)
 var slide_jumps: int = 0
 var _lunge_t: float = 0.0
@@ -327,6 +334,9 @@ func _gather_intent() -> Dictionary:
 # ---------------------------------------------------------------- update
 
 func _physics_process(delta: float) -> void:
+	if _push_t > 0.0:
+		_push_t -= delta   # every body, bots included (their adapter adds push_velocity())
+	_stomp_cd = maxf(0.0, _stomp_cd - delta)
 	if not is_local:
 		if not is_bot:
 			_remote_tick(delta)   # a bot's BotBrain moves it
@@ -476,7 +486,7 @@ func _update_movement(delta: float) -> void:
 		horizontal = horizontal.move_toward(wish * target_speed, rate * delta)
 	else:
 		# air control: weak, and never faster than you left the ground (no bunny-hop gain)
-		horizontal = horizontal.move_toward(wish * target_speed, float(_mv.get("air_accel", 5.0)) * delta)
+		horizontal = horizontal.move_toward(wish * target_speed, float(_mv.get("air_accel", 5.0)) * float(PerkManager.stat(player_id, "air_accel_mult", 1.0)) * delta)
 		var cap: float = maxf(_air_cap, target_speed) * float(_mv.get("air_speed_cap_mult", 1.0))
 		if horizontal.length() > cap:
 			horizontal = horizontal.limit_length(cap)
@@ -487,13 +497,26 @@ func _update_movement(delta: float) -> void:
 			velocity.y = float(_cfg["jump_velocity"])
 			_air_cap = horizontal_speed()
 			weapons.on_jump()
+			GLBus.player_jumped.emit(player_id, global_position)
 		elif velocity.y < 0.0:
 			velocity.y = -0.5
 	else:
+		# Skyhook Sekt: one more jump in the air (air_hops), a smaller one, reset on landing (tier II: on a slide too)
+		if jump_pressed and _hops_left > 0 and not sliding and not prone and not _mantle_air_catching():
+			_hops_left -= 1
+			_did_hop = true
+			velocity.y = float(_cfg["jump_velocity"]) * float(PerkManager.stat(player_id, "air_hop_mult", 0.6))
+			_air_cap = maxf(_air_cap, horizontal_speed())
+			weapons.on_jump()
+			AudioDirector.play_2d("perk_skyhook_hop", -6.0, 0.1)
+			GLBus.player_jumped.emit(player_id, global_position)
+			PerkManager.note_proc(player_id, &"skyhook_sekt", &"hop")
 		velocity.y -= GRAVITY * delta
 	_update_stance_shape(delta)
 	_slide_k = move_toward(_slide_k, 1.0 if sliding else 0.0, delta * (9.0 if sliding else 5.0))
 	var fall_speed: float = -velocity.y
+	if _push_t > 0.0:
+		velocity += _push_v
 	move_and_slide()
 	if not _was_on_floor and is_on_floor():
 		_on_landed(fall_speed)
@@ -611,11 +634,14 @@ func _update_sprint(delta: float, input: Vector2, on_floor: bool) -> void:
 func _on_landed(fall_speed: float) -> void:
 	var J: Dictionary = _mv.get("jump", {})
 	var h: float = fall_speed * fall_speed / (2.0 * GRAVITY)
-	_shake = maxf(_shake, clampf((h - float(J.get("shake_from_m", 0.25))) * float(J.get("shake_per_m", 0.22)), 0.0, float(J.get("shake_max", 0.7))))
-	_land_dip_v -= minf(float(J.get("land_head_dip_max", 0.12)), maxf(0.0, fall_speed - 1.5) * float(J.get("land_head_dip", 0.012))) * 30.0
-	_footstep(-2.0 + clampf(h - 0.5, 0.0, 4.0))
-	weapons.on_landed(fall_speed)
-	if not sliding:
+	var safe: bool = bool(PerkManager.stat(player_id, "safe_landing", false))   # Skyhook Sekt (T-105)
+	var shake_mult: float = float(PerkManager.stat(player_id, "landing_shake_mult", 1.0)) if safe else 1.0
+	_shake = maxf(_shake, clampf((h - float(J.get("shake_from_m", 0.25))) * float(J.get("shake_per_m", 0.22)), 0.0, float(J.get("shake_max", 0.7))) * shake_mult)
+	if not safe:
+		_land_dip_v -= minf(float(J.get("land_head_dip_max", 0.12)), maxf(0.0, fall_speed - 1.5) * float(J.get("land_head_dip", 0.012))) * 30.0
+	_footstep(-2.0 + clampf(h - 0.5, 0.0, 4.0) - (4.0 if safe else 0.0))
+	weapons.on_landed(fall_speed * (0.4 if safe else 1.0))
+	if not sliding and not safe:
 		var hv: Vector2 = Vector2(velocity.x, velocity.z)
 		var walk: float = float(_cfg["sprint_speed"] if sprinting else _cfg["walk_speed"])
 		if hv.length() > walk:
@@ -623,6 +649,14 @@ func _on_landed(fall_speed: float) -> void:
 			hv = hv.limit_length(keep)
 			velocity.x = hv.x
 			velocity.z = hv.y
+	_hops_left = int(PerkManager.stat(player_id, "air_hops", 0))
+	if safe and bool(PerkManager.stat(player_id, "instant_sprint_out_on_land", false)):
+		weapons.instant_sprint_out()
+	if _did_hop:
+		_did_hop = false
+		if bool(PerkManager.stat(player_id, "hop_stomp", false)) and _stomp_cd <= 0.0:
+			_stomp_cd = float(PerkManager.stat(player_id, "hop_stomp_cooldown", 1.5))
+			PerkManager.hop_stomp(self)
 
 
 func _stride() -> float:
@@ -929,11 +963,13 @@ func _start_slide(wish: Vector3) -> void:
 	sprinting = false
 	crouching = true
 	slides += 1
-	_slide_t = float(S.get("duration", _cfg.get("slide_duration", 0.7)))
+	_slide_t = float(S.get("duration", _cfg.get("slide_duration", 0.7))) * float(PerkManager.stat(player_id, "slide_duration_mult", 1.0))
+	if bool(PerkManager.stat(player_id, "hop_reset_on_slide", false)):
+		_hops_left = int(PerkManager.stat(player_id, "air_hops", 0))   # Skyhook II: a slide re-arms the hop
 	_slide_dir = wish.normalized() if wish.length_squared() > 0.01 else -global_basis.z
 	_slide_dir.y = 0.0
 	_slide_dir = _slide_dir.normalized()
-	_slide_speed = maxf(float(S.get("speed", _cfg.get("slide_speed", 8.5))), horizontal_speed() + 1.0)
+	_slide_speed = maxf(float(S.get("speed", _cfg.get("slide_speed", 8.5))), horizontal_speed() + 1.0) * float(PerkManager.stat(player_id, "slide_speed_mult", 1.0))
 	_slide_dur = maxf(0.05, _slide_t)
 	_slide_v0 = _slide_speed
 	_slide_cd = float(S.get("cooldown", 0.45))
@@ -978,7 +1014,7 @@ func _slide_jump() -> void:
 	slide_jumps += 1
 	velocity.x = _slide_dir.x * spd
 	velocity.z = _slide_dir.z * spd
-	velocity.y = float(_cfg["jump_velocity"]) + float(S.get("jump_boost", 0.6))
+	velocity.y = float(_cfg["jump_velocity"]) + float(S.get("jump_boost", 0.6)) * float(PerkManager.stat(player_id, "slide_jump_boost_mult", 1.0))
 	_slide_cd = maxf(_slide_cd, float(S.get("cooldown", 0.45)))
 
 
@@ -1363,6 +1399,38 @@ func lunge_toward(target: Vector3, distance: float) -> void:
 
 func is_alive() -> bool:
 	return not downed
+
+
+# ---------------------------------------------------------------- outside forces (UPDATE 07, T-105)
+
+## Adds `v` (m/s, world frame) to this body's motion for `seconds`: the Kranich's turbulence, a breach's suction,
+## the impeller pit's and the Bordwart's pull (`kind` &"pull"), the Lodestone's slam wave. Skyhook Sekt resists
+## pushes (push_resist) and pulls (pull_resist); the Lodestone's holder ignores pulls (Ballast). Bots take it
+## through push_velocity() in their adapter.
+func external_push(v: Vector3, seconds: float, kind: StringName = &"push") -> void:
+	if downed or spectating:
+		return
+	var resist: float = float(PerkManager.stat(player_id, "pull_resist" if kind == &"pull" else "push_resist", 0.0))
+	if kind == &"pull" and lodestone_ballast():
+		return
+	_push_v = v * (1.0 - clampf(resist, 0.0, 1.0))
+	_push_t = maxf(0.05, seconds)
+
+
+## The current push (zero when none), for the bots' movement adapter.
+func push_velocity() -> Vector3:
+	return _push_v if _push_t > 0.0 else Vector3.ZERO
+
+
+## True while the Lodestone is in hand: immune to pulls and to its own slam's shockwave (docs/MAP4_FERNFLUG.md 8.2).
+func lodestone_ballast() -> bool:
+	var w: WeaponInstance = weapons.current() if weapons != null else null
+	return w != null and w.data.has("gravity")
+
+
+## True while a jump pressed in the air could still catch a ledge (the mantle wins over Skyhook's hop).
+func _mantle_air_catching() -> bool:
+	return mantling
 
 
 func take_hit(amount: float, _source: Node) -> void:

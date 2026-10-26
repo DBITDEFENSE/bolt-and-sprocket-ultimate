@@ -1973,6 +1973,8 @@ learns what a plan or a patent is. The ids carry `SQ6` so the bake can run them 
 - `WRN_SQ6_PLAQUE_CRUCIBLE_01`: "A furnace that teaches guns. Of course they built that before bread."
 
 **Jakub (`JAK`)** (he never drinks; the plates only)
+- `JAK_PERK_REFUSE_M4_01`: "No. Not that one either." *(UPDATE 07, T-105: the two Map 4 tonics; the usual PERK_REFUSE route)*
+- `JAK_PERK_REFUSE_M4_02`: "They are painting them now. It does not change what is in them."
 - `JAK_SQ6_PLAQUE_01`: "We carried these down the ladder. Twelve men to a cabinet. Two did not come back up."
 - `JAK_SQ6_PLAQUE_CRUCIBLE_01`: "The cooling plant. We were told never to look inside it."
 

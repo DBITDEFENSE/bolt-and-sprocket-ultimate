@@ -206,6 +206,8 @@ static func _shape_footprint(shape: String) -> Vector3:
 		"wagon": return Vector3(1.7, 1.7, 0.85)
 		"safe": return Vector3(1.1, 1.9, 0.95)
 		"coil": return Vector3(0.8, 2.3, 0.6)   # Overclock Cordial: the cabinet footprint (Map 0 placement relies on it)
+		"glider": return Vector3(0.8, 2.4, 0.7)   # Skyhook Sekt (T-105): a glider fuselage on its tail
+		"bandit": return Vector3(0.9, 2.3, 0.65)  # Magpie Mead (T-105): the Allied-painted cabinet with the bandit lever
 	return Vector3(1.0, 2.0, 0.7)
 
 
@@ -284,6 +286,27 @@ func _build_procedural() -> void:
 			_anim.position = Vector3(0.24, 0.98, -fp.z * 0.5 - 0.09)
 			_greybox.add_child(_anim)
 			InteractableArt.place(_anim, "perk_safe_wheel", func(r: Node3D) -> void: InteractableArt.safe_wheel(r))
+		"glider":
+			# Skyhook Sekt: the two-blade propeller on the nose, ticking round a quarter turn now and then, spinning
+			# when someone near it jumps (T-105)
+			_anim = Node3D.new()
+			_anim.position = Vector3(0, 2.52, -fp.z * 0.5 - 0.02)
+			_greybox.add_child(_anim)
+			InteractableArt.place(_anim, "perk_glider_prop", func(r: Node3D) -> void: InteractableArt.glider_prop(r), Vector3.ZERO, false)
+			GLBus.player_jumped.connect(_on_player_jumped)
+		"bandit":
+			# Magpie Mead: the one-armed-bandit lever (pulled on dispense) and the three reels in the window
+			_anim = Node3D.new()
+			_anim.position = Vector3(fp.x * 0.5 + 0.06, 1.3, -fp.z * 0.25)
+			_greybox.add_child(_anim)
+			InteractableArt.place(_anim, "perk_bandit_lever", func(r: Node3D) -> void: InteractableArt.bandit_lever(r), Vector3.ZERO, false)
+			_needle = Node3D.new()
+			_needle.position = (lay["win"] as Vector3) + Vector3(0, 0, 0.06)
+			_greybox.add_child(_needle)
+			InteractableArt.place(_needle, "perk_bandit_reels", func(r: Node3D) -> void: InteractableArt.bandit_reels(r), Vector3.ZERO, false)
+			GLBus.perk_bought.connect(func(_pid: int, pk: StringName) -> void:
+				if pk == perk_id:
+					_reel_spin = 2.5)
 		"coil":
 			# the arc (shown for a flash every few seconds) at the coil's top turn
 			_anim = Node3D.new()
@@ -323,6 +346,14 @@ func _process(delta: float) -> void:
 	_anim_t += delta
 	var on: bool = is_powered()
 	match _anim_shape:
+		"glider":
+			_cab_next -= delta
+			_tick_glider(delta, on)
+			return
+		"bandit":
+			_cab_next -= delta
+			_tick_bandit(delta, on)
+			return
 		"cabinet":
 			if on:
 				_anim.rotation.y += delta * 0.6
@@ -375,6 +406,39 @@ func _tick_coil(delta: float, on: bool) -> void:
 		var jitter: float = sin(_anim_t * 11.0) * 0.03 + sin(_anim_t * 2.3) * 0.04
 		var want: float = _needle_target + (jitter if _needle_target == NEEDLE_LEER else 0.0)
 		_needle.rotation.z = lerpf(_needle.rotation.z, want, clampf(delta * (14.0 if _needle_hold > 0.0 else 3.0), 0.0, 1.0))
+
+
+var _prop_spin: float = 0.0      # Skyhook's propeller: rad/s, decays
+var _reel_spin: float = 0.0      # Magpie's reels: seconds of spin left
+
+
+## Skyhook Sekt: a jump within 6 m spins the propeller up (T-105).
+func _on_player_jumped(_pid: int, at: Vector3) -> void:
+	if at.distance_to(global_position) <= 6.0:
+		_prop_spin = 18.0
+
+
+func _tick_glider(delta: float, on: bool) -> void:
+	if _anim == null:
+		return
+	_prop_spin = maxf(0.0, _prop_spin - 9.0 * delta)
+	if on and _cab_next <= 0.0:
+		_cab_next = randf_range(6.0, 10.0)
+		_prop_spin = maxf(_prop_spin, 4.0)   # the idle quarter-turn tick
+	_anim.rotation.z += (_prop_spin + (0.4 if on else 0.0)) * delta
+
+
+func _tick_bandit(delta: float, on: bool) -> void:
+	if _anim != null:
+		var pull: float = clampf(_reel_spin, 0.0, 1.0)
+		_anim.rotation.x = -0.9 * pull
+	if _needle != null and on:
+		_reel_spin = maxf(0.0, _reel_spin - delta)
+		if _reel_spin > 0.0 or _cab_next <= 0.0:
+			if _cab_next <= 0.0:
+				_cab_next = randf_range(4.0, 7.0)
+			for c: Node in _needle.get_children():
+				(c as Node3D).rotation.x += (6.0 if _reel_spin > 0.0 else 0.6) * delta
 
 
 func _on_overclock_burst(_player: int, at: Vector3, spent: float, _radius: float) -> void:
@@ -528,6 +592,8 @@ const CAB_SUBLINES: Dictionary = {
 	"ironhide_stout": ["Stout · Stark · Standhaft", 0.0, -0.105],
 	"twin_barrel": ["Bitters", 0.0, -0.1],
 	"overclock_cordial": ["Cordial", 0.0, -0.085],
+	"skyhook_sekt": ["Leicht · Lieber · Landen", 0.0, -0.1],
+	"magpie_mead": ["Nothing on this range goes to waste", 0.0, -0.1],
 }
 const CAP_PX: int = 256
 
@@ -779,6 +845,10 @@ func _cab_idle(delta: float) -> void:
 		_light.light_energy = 0.9 * (0.9 + 0.1 * sin(t * 1.7))   # the lamp breathes
 	_cab_next -= delta
 	match _anim_shape:
+		"glider":
+			_tick_glider(delta, on)
+		"bandit":
+			_tick_bandit(delta, on)
 		"barrel":
 			# Fassl flexes, slow and proud; the side valve puffs every ~8 s
 			var arm: Node3D = _cab_part("Arm")

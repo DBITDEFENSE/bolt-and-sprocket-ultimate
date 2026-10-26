@@ -648,8 +648,16 @@
   },
   "thompson": {
    "feel": {
-    "hip": [0.14, -0.13, -0.41],
-    "hip_rot": [-3.5, 11, 3],
+    "hip": [
+     0.14,
+     -0.13,
+     -0.41
+    ],
+    "hip_rot": [
+     -3.5,
+     11,
+     3
+    ],
     "cam_pitch": 0.85,
     "cam_yaw": 0.18,
     "cam_keep": 0.5,
@@ -1277,7 +1285,11 @@
     "ring_sound": "totenglocke_toll",
     "great_sound": "totenglocke_great",
     "chime_sound": "",
-    "color": [1.0, 0.62, 0.25]
+    "color": [
+     1.0,
+     0.62,
+     0.25
+    ]
    },
    "flavor": "Ring it once for the living. They've had enough of that."
   },
@@ -1347,6 +1359,93 @@
     "chain": 3
    },
    "flavor": "The pens' arc lamp, rewired by a boat's electrician who had stopped sleeping. It jumps from one of them to the next, the way the stories said the saint's fire jumped from mast to mast."
+  },
+  "lodestone": {
+   "feel": {
+    "hip": [
+     0.16,
+     -0.2,
+     -0.4
+    ],
+    "hip_rot": [
+     -4,
+     8,
+     3
+    ],
+    "reload_tilt": 0.4,
+    "cam_pitch": 2.0,
+    "cam_recover": 7.0,
+    "shake": 0.3,
+    "fov_punch": 2.0,
+    "vm_back": 0.05,
+    "vm_climb": 4.0,
+    "vm_spring": 10.0,
+    "eye_relief": 0.4,
+    "ads_zoom": 0.97
+   },
+   "name": "Lodestone",
+   "class": "wonder",
+   "damage": 0,
+   "pellets": 1,
+   "rpm": 60,
+   "mode": "gravity",
+   "mag": 8,
+   "reserve": 24,
+   "reload_partial": 2.4,
+   "reload_empty": 2.8,
+   "per_round_reload": false,
+   "ads_time": 0.3,
+   "sway": 0.2,
+   "penetration": 0,
+   "move_mult": 0.9,
+   "falloff_start": 999,
+   "falloff_end": 1000,
+   "falloff_min": 1.0,
+   "spread_hip": 0.0,
+   "spread_ads": 0.0,
+   "limb_mults": {},
+   "wall_price": 0,
+   "upgraded": "lodestone_up",
+   "buildable": true,
+   "gravity": {
+    "_doc": "UPDATE 07 (T-105, docs/MAP4_FERNFLUG.md section 8): LIFT (tap: a well lift_ahead m ahead, lift_radius m, lifts max_targets non-boss zombies lift_height m for hold_seconds; tap again = SLAM at slam_health_mult x health(r) with a wave of wave_radius m / wave_damage; the hold ending by itself = DROP at drop_health_mult x health(r)), FLING (hold alt-fire fling_hold_s then release: a cone of fling_cone_m m, thrown fling_distance m (x fling_lowg_mult in low gravity), fling_health_mult x health(r) on landing, x1.5 into a wall; off a drop / into vacuum = a returned kill). lift_cost / fling_cost charges. Bosses: boss_stagger_s and boss_slam_damage instead of a lift. pull_from_m > 0 (Escape Velocity) draws zombies into the well before the lift; fling_chain = bounces off other zombies.",
+    "lift_radius": 4.0,
+    "lift_radius_ads": 2.5,
+    "lift_ahead": 5.0,
+    "lift_ahead_ads": 7.0,
+    "lift_height": 3.0,
+    "hold_seconds": 2.5,
+    "max_targets": 8,
+    "lift_cost": 1,
+    "slam_health_mult": 2.2,
+    "drop_health_mult": 0.8,
+    "wave_radius": 2.0,
+    "wave_damage": 60.0,
+    "fling_cone_m": 6.0,
+    "fling_cone_deg": 50.0,
+    "fling_hold_s": 0.6,
+    "fling_distance": 12.0,
+    "fling_lowg_mult": 2.5,
+    "fling_health_mult": 1.0,
+    "fling_cost": 2,
+    "fling_chain": 0,
+    "pull_from_m": 0.0,
+    "pull_speed": 0.0,
+    "boss_stagger_s": 0.6,
+    "boss_slam_damage": 0.0,
+    "lift_cooldown": 0.5,
+    "limb_mult_lifted": 1.5,
+    "lift_sound": "lodestone_lift",
+    "slam_sound": "lodestone_slam",
+    "fling_sound": "lodestone_fling",
+    "hum_sound": "lodestone_hum",
+    "color": [
+     0.75,
+     0.45,
+     1.0
+    ]
+   },
+   "flavor": "Everything that goes up."
   }
  },
  "tactical": {
@@ -2134,7 +2233,11 @@
     "ring_sound": "totenglocke_toll",
     "great_sound": "totenglocke_great",
     "chime_sound": "totenglocke_midnight",
-    "color": [0.65, 0.35, 1.0]
+    "color": [
+     0.65,
+     0.35,
+     1.0
+    ]
    },
    "flavor": "Midnight. Every bell in Silesia, all at once.",
    "base": "totenglocke",
@@ -2214,6 +2317,97 @@
     }
    },
    "flavor": "Ball lightning. It goes where it likes, and it likes company."
+  },
+  "lodestone_up": {
+   "feel": {
+    "hip": [
+     0.16,
+     -0.2,
+     -0.4
+    ],
+    "hip_rot": [
+     -4,
+     8,
+     3
+    ],
+    "reload_tilt": 0.4,
+    "cam_pitch": 2.0,
+    "cam_recover": 7.0,
+    "shake": 0.3,
+    "fov_punch": 2.0,
+    "vm_back": 0.05,
+    "vm_climb": 4.0,
+    "vm_spring": 10.0,
+    "eye_relief": 0.4,
+    "ads_zoom": 0.97
+   },
+   "name": "Lodestone: Escape Velocity",
+   "class": "wonder",
+   "damage": 0,
+   "pellets": 1,
+   "rpm": 60,
+   "mode": "gravity",
+   "mag": 12,
+   "reserve": 36,
+   "reload_partial": 2.0,
+   "reload_empty": 2.4,
+   "per_round_reload": false,
+   "ads_time": 0.3,
+   "sway": 0.2,
+   "penetration": 0,
+   "move_mult": 0.9,
+   "falloff_start": 999,
+   "falloff_end": 1000,
+   "falloff_min": 1.0,
+   "spread_hip": 0.0,
+   "spread_ads": 0.0,
+   "limb_mults": {},
+   "wall_price": 0,
+   "buildable": true,
+   "gravity": {
+    "_doc": "UPDATE 07 (T-105, docs/MAP4_FERNFLUG.md section 8): LIFT (tap: a well lift_ahead m ahead, lift_radius m, lifts max_targets non-boss zombies lift_height m for hold_seconds; tap again = SLAM at slam_health_mult x health(r) with a wave of wave_radius m / wave_damage; the hold ending by itself = DROP at drop_health_mult x health(r)), FLING (hold alt-fire fling_hold_s then release: a cone of fling_cone_m m, thrown fling_distance m (x fling_lowg_mult in low gravity), fling_health_mult x health(r) on landing, x1.5 into a wall; off a drop / into vacuum = a returned kill). lift_cost / fling_cost charges. Bosses: boss_stagger_s and boss_slam_damage instead of a lift. pull_from_m > 0 (Escape Velocity) draws zombies into the well before the lift; fling_chain = bounces off other zombies.",
+    "lift_radius": 6.0,
+    "lift_radius_ads": 3.5,
+    "lift_ahead": 5.0,
+    "lift_ahead_ads": 7.0,
+    "lift_height": 3.0,
+    "hold_seconds": 3.5,
+    "max_targets": 12,
+    "lift_cost": 1,
+    "slam_health_mult": 2.8,
+    "drop_health_mult": 0.8,
+    "wave_radius": 3.0,
+    "wave_damage": 60.0,
+    "fling_cone_m": 6.0,
+    "fling_cone_deg": 50.0,
+    "fling_hold_s": 0.6,
+    "fling_distance": 18.0,
+    "fling_lowg_mult": 2.5,
+    "fling_health_mult": 1.0,
+    "fling_cost": 2,
+    "fling_chain": 2,
+    "pull_from_m": 10.0,
+    "pull_speed": 6.0,
+    "boss_stagger_s": 1.0,
+    "boss_slam_damage": 1500.0,
+    "lift_cooldown": 0.5,
+    "limb_mult_lifted": 1.5,
+    "lift_sound": "lodestone_lift",
+    "slam_sound": "lodestone_slam",
+    "fling_sound": "lodestone_fling",
+    "hum_sound": "lodestone_hum",
+    "color": [
+     0.75,
+     0.45,
+     1.0
+    ]
+   },
+   "flavor": "Nothing has to come down.",
+   "base": "lodestone",
+   "properties": {
+    "escape_velocity": true,
+    "pull_well": true
+   }
   }
  },
  "recoil": {

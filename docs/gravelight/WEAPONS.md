@@ -988,3 +988,23 @@ sight line; bipod (MG42/M1919 replace their own `BipodLeg` nodes), foregrip, sli
 
 ## 27. Weapon models: the downloaded guns (UPDATE 05A, T-087)
 The conventional guns are downloaded, never modelled: every weapon id's model, source pack, licence, named parts (Mag / Bolt / Slide / Pump / Cover / Barrels...) and native scale / forward axis are in `data/gravelight/weapons/models.json` and the generated `docs/WEAPON_MODELS.md` (`python -I tools/intake_guns.py`); credits and paperwork in `docs/ASSETS.md`. The wonder weapons are ours. Since T-089 the 16 downloaded guns are the viewmodels (`WeaponGLB`, hand fit in `data/gravelight/weapons/model_fit.json`, one shared weapon shader, per-survivor arms from `assets/ours/arms/`); fit notes and the weapon art rules are in `docs/WEAPON_MODELS.md` ("Viewmodel fit"). Timings stay in weapons.json.
+
+## 28. The Lodestone (`lodestone`), Map 4 "Fernflug" buildable (UPDATE 07, T-105; design in `docs/MAP4_FERNFLUG.md` §8)
+
+Parts: the **relay coil** (`ls_part_coil`, the Groom Lake hangar), the **gyro cradle** (`ls_part_cradle`, the radar tower), the **lead-glass lens** (`ls_part_lens`, the lab); built at the lab's workbench (`Workbench` with `buildable_id` "lodestone", the Totenglocke's rules; `BuildablePart.BUILDABLES`). Data: `weapons.json` `weapons.lodestone` / `upgraded.lodestone_up`, the `gravity` block; rules in `gravelight/weapons/lodestone.gd` (tests: `test_lodestone.gd`).
+
+| Stat | Lodestone | Escape Velocity (`lodestone_up`) |
+|---|---|---|
+| **LIFT** (tap) | a well 5 m ahead (7 m aimed), radius 4 m (2.5 m aimed): up to 8 non-boss zombies lifted 3 m and held 2.5 s, limb ×1.5; 1 charge | radius 6 m (3.5 aimed), 12 zombies, 3.5 s; zombies within 10 m are **pulled** into the well first (6 m/s) and lifted on a second pass |
+| **SLAM** (tap again) | 2.2 × health(r) each (lethal to a Gänger of its round), a 2 m shockwave of 60 at each impact (zombies too; the holder is immune: Ballast); free | 2.8 × health(r), a 3 m wave; bosses take a flat 1500 |
+| **DROP** (the hold ends) | 0.8 × health(r) and a stagger | the same |
+| **FLING** (alt-fire, a 0.6 s wind-up) | a 6 m cone (50°): thrown 12 m along the aim (30 m in low gravity), 1.0 × health(r) on landing, ×1.5 into a wall; off a drop / into vacuum = gone (100 Scrip, `economy.json returned_kill`); 2 charges | 18 m, and the thrown bounce into 2 more zombies each (60% a hop) |
+| **Bosses** | never lifted: a 0.6 s stagger in the well | a 1 s stagger |
+| Charges | 8 in the lens, 24 reserve; Crucible refill (wonder ammo 1000), Max Ammo, Magpie drops (1 charge); no wall ammo | 12 / 36 |
+| Reload | the yoke down, the lens's quarter turn in the cradle, the yoke up (2.8 s / 2.4 s partial; reload kind `lodestone`) | 2.4 / 2.0 |
+| Move | ×0.9 | ×0.9 |
+| Flavor | *"Everything that goes up."* | *"Nothing has to come down."* |
+
+Zombie side: `Zombie.lift / drop / slam` (State.LIFTED), `Zombie.external_push` (the fling, the kill plane `Zombie.kill_plane_y`); player side: `Player.external_push` (turbulence, suction, pulls; Skyhook's resistances) and `Player.lodestone_ballast()`. Bots: `Lodestone.bot_lift / bot_slam / bot_fling`, a lift-and-slam only on `lodestone_min` (4) zombies in the well and never with a downed teammate in the wave (`ai/combat.json totenglocke`).
+
+Model layout (`tools_src/blender/wonder/lodestone.py`, greybox `WeaponModels._w_lodestone`, `model_fit.json`): the lens hangs in its cradle **under the end of the yoke's bar**; the bar runs out over it to the bead, so the sight line along the bar's top (rear notch at z -0.02, bead at the tip z -0.44, y ≈ 0.054) is clear of the lens, the cradle and the coil (`test_sight_clearance`). ADS is the same notch-to-bead aim as any gun; what it changes is the well (tighter, further).

@@ -316,6 +316,9 @@ func max_range(w: WeaponInstance) -> float:
 		return 2.0
 	if w.data.has("bell"):
 		return float((w.data["bell"] as Dictionary).get("range", 8.0))
+	if w.data.has("gravity"):   # the Lodestone's well: ahead plus its radius (T-105)
+		var g: Dictionary = w.data["gravity"]
+		return float(g.get("lift_ahead", 5.0)) + float(g.get("lift_radius", 4.0))
 	return float((_a.get("max_range_m", {}) as Dictionary).get(String(w.weapon_class()), 30.0))
 
 
@@ -435,6 +438,8 @@ func _fire_if_on(aim_dir: Vector3, aim_p: Vector3, delta: float) -> void:
 		return   # T-058: the target went behind a wall / window frame since the think: no shot into the masonry
 	if w.data.has("bell") and _bell_logic(w):
 		return
+	if w.data.has("gravity") and _gravity_logic(w):
+		return
 	if w.fire_mode == "auto":
 		if d > float(_a.get("burst_range_m", 9.0)):
 			if _burst_t <= 0.0:
@@ -461,6 +466,37 @@ var fire_blocks: Dictionary = {}
 func _blk(why: String) -> void:
 	if brain.is_player_bot:
 		fire_blocks[why] = int(fire_blocks.get(why, 0)) + 1
+
+
+## The Lodestone (T-105): a lift-and-slam on a clump of 4+ in the well (never within 3 m of a downed teammate:
+## the slam's wave), a fling when a drop or vacuum is known ahead (GameState.flags "fling_targets" later); else
+## it waits. True when it handled this frame.
+func _gravity_logic(w: WeaponInstance) -> bool:
+	if fire_cd > 0.0:
+		return true
+	var g: Dictionary = w.data["gravity"]
+	var known: Array = []
+	for e: Variant in brain.perception.known:
+		known.append((e as Dictionary)["node"])
+	var clump: int = Lodestone.bot_clump(player, w, eye(), brain.facing(), known)
+	if clump < int(_tg.get("lodestone_min", 4)):
+		return true   # not worth a charge
+	var c: Vector3 = Lodestone.well_center(eye(), brain.facing(), g, false)
+	for n: Node in player.get_tree().get_nodes_in_group(&"players"):
+		var pl: Player = n as Player
+		if pl != null and pl.downed and pl.global_position.distance_to(c) < float(g.get("wave_radius", 2.0)) + 1.0:
+			return true   # the slam's wave would hurt them
+	if w.mag < int(g.get("lift_cost", 1)):
+		start_reload()
+		return true
+	var res: Dictionary = Lodestone.bot_lift(player, w, eye(), brain.facing())
+	shots += 1
+	fire_cd = float(g.get("lift_cooldown", 0.5)) + 0.35
+	if not (res.get("lifted", []) as Array).is_empty():
+		player.get_tree().create_timer(0.35).timeout.connect(func() -> void: Lodestone.bot_slam(player, w, res))
+	if w.mag <= 0 and w.reserve > 0:
+		start_reload()
+	return true
 
 
 ## Totenglocke choices: the Great Toll on a bunched crowd. True when it handled this frame.
@@ -551,6 +587,13 @@ func fire(w: WeaponInstance) -> void:
 	var basis: Basis = Basis.looking_at(fwd, Vector3.UP) if absf(fwd.y) < 0.99 else Basis.from_euler(Vector3(player.head.rotation.x, player.rotation.y, 0.0))
 	if w.data.has("bell"):
 		Totenglocke.bot_toll(player, w, origin, fwd)
+		if w.mag <= 0 and w.reserve > 0:
+			start_reload()
+		return
+	if w.data.has("gravity"):
+		var lres: Dictionary = Lodestone.bot_lift(player, w, origin, fwd)
+		if not (lres.get("lifted", []) as Array).is_empty():
+			player.get_tree().create_timer(0.35).timeout.connect(func() -> void: Lodestone.bot_slam(player, w, lres))
 		if w.mag <= 0 and w.reserve > 0:
 			start_reload()
 		return

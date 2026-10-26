@@ -29,6 +29,8 @@ FP = {
     "barrel": (1.2, 1.9, 1.2), "cabinet": (0.8, 2.3, 0.6), "crate": (1.0, 2.0, 0.65), "twin": (1.2, 2.1, 0.6),
     "teardrop": (1.0, 2.4, 0.9), "periscope": (0.9, 1.8, 0.65), "wagon": (1.7, 1.7, 0.85), "safe": (1.1, 1.9, 0.95),
     "coil": (0.8, 2.3, 0.6),
+    "glider": (0.8, 2.4, 0.7),   # Skyhook Sekt (UPDATE 07, T-105): a glider fuselage on its tail
+    "bandit": (0.9, 2.3, 0.65),  # Magpie Mead (T-105): the Allied-painted cabinet with the bandit lever
 }
 
 PERKS = {
@@ -42,6 +44,10 @@ PERKS = {
     "packmule_porter": ("wagon", "6b5a2e", "4a3010", "swingtop"),
     "blastproof_bock": ("safe", "e0661a", "8a3a10", "bock"),
     "overclock_cordial": ("coil", "2fa8a0", "2fa8a0", "cordial"),
+    # UPDATE 07 (T-105): built on the PC; until a shell function exists for the shape, build() falls back to the
+    # plain cabinet shell (SHELLS.get) so the game keeps its procedural glider / bandit (perk_machine.gd).
+    "skyhook_sekt": ("glider", "9fc6e6", "e8f4ff", "sekt"),
+    "magpie_mead": ("bandit", "5b6b3a", "f2e6b8", "mead"),
 }
 
 
@@ -51,6 +57,10 @@ def layout(shape, fp):
         "barrel": {"sign": (0, 2.2, -0.42), "sign_size": (1.3, 0.36), "win": (0, 1.28, -0.63), "win_size": (0.46, 0.4),
                    "lamp": (0.38, 1.98, -0.05), "price": (0, 0.44, -0.62), "hatch": (0, 0.74, -0.62), "slot": (0.32, 1.02, -0.58)},
         "cabinet": {"sign": (0, 2.62, -0.2), "sign_size": (1.15, 0.3), "win": (0, 1.36, fz - 0.02), "win_size": (0.5, 0.56),
+                    "lamp": (0, 2.36, 0.0), "price": (0, 0.42, fz - 0.02), "hatch": (0, 0.8, fz - 0.02), "slot": (0.28, 1.0, fz - 0.01)},
+        "glider": {"sign": (0, 2.62, -0.2), "sign_size": (1.15, 0.3), "win": (0, 1.36, fz - 0.02), "win_size": (0.5, 0.56),
+                    "lamp": (0, 2.36, 0.0), "price": (0, 0.42, fz - 0.02), "hatch": (0, 0.8, fz - 0.02), "slot": (0.28, 1.0, fz - 0.01)},
+        "bandit": {"sign": (0, 2.62, -0.2), "sign_size": (1.15, 0.3), "win": (0, 1.36, fz - 0.02), "win_size": (0.5, 0.56),
                     "lamp": (0, 2.36, 0.0), "price": (0, 0.42, fz - 0.02), "hatch": (0, 0.8, fz - 0.02), "slot": (0.28, 1.0, fz - 0.01)},
         "crate": {"sign": (0, 2.22, fz + 0.1), "sign_size": (1.45, 0.34), "win": (0, 1.4, fz - 0.02), "win_size": (0.56, 0.5),
                   "lamp": (-0.38, 2.05, 0.05), "price": (0, 0.5, fz - 0.02), "hatch": (0, 0.88, fz - 0.02), "slot": (0.36, 1.12, fz - 0.01)},
@@ -107,6 +117,9 @@ BOTTLES = {
     "swingtop": [(0, 0), (0.19, 0), (0.2, 0.05), (0.2, 0.58), (0.16, 0.68), (0.09, 0.78), (0.085, 0.88), (0, 0.88)],
     "bock": [(0, 0), (0.12, 0), (0.22, 0.12), (0.24, 0.28), (0.2, 0.42), (0.06, 0.52), (0.05, 0.86), (0.065, 0.88), (0, 0.9)],
     "cordial": [(0, 0), (0.16, 0), (0.17, 0.05), (0.17, 0.45), (0.12, 0.55), (0.05, 0.6), (0.045, 0.83), (0.06, 0.86), (0, 0.86)],
+    # UPDATE 07 (T-105): a Sekt bottle (long neck, foil cap) and a squat mead jar with a cork
+    "sekt": [(0, 0), (0.13, 0), (0.145, 0.04), (0.145, 0.5), (0.1, 0.62), (0.05, 0.7), (0.045, 0.9), (0.06, 0.93), (0.06, 0.97), (0, 0.97)],
+    "mead": [(0, 0), (0.18, 0), (0.2, 0.06), (0.2, 0.52), (0.15, 0.64), (0.09, 0.7), (0.09, 0.8), (0.1, 0.84), (0, 0.84)],
 }
 
 
@@ -794,7 +807,9 @@ def overclock(p, fp, lay, en):
 
 SHELLS = {"ironhide_stout": ironhide, "second_wind": second_wind, "trigger_tonic": trigger, "twin_barrel": twin_barrel,
           "marathon_malt": marathon, "hawkeye_brandy": hawkeye, "packmule_porter": packmule,
-          "blastproof_bock": blastproof, "overclock_cordial": overclock}
+          "blastproof_bock": blastproof, "overclock_cordial": overclock,
+          # T-105: the two Map 4 cabinets reuse the apothecary shell until their own are modelled on the PC
+          "skyhook_sekt": second_wind, "magpie_mead": second_wind}
 
 
 def build(perk):

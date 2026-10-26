@@ -157,7 +157,7 @@ static func merge_static(n: Node3D) -> void:
 static func known_ids() -> PackedStringArray:
 	return PackedStringArray(["m1911", "walther_p38", "luger_p08", "webley", "kar98k", "m1_garand", "gewehr43", "m1_carbine", "mp40", "thompson", "stg44",
 		"trench_gun", "bar", "ppsh41", "mg42", "m1919", "sawed_off", "type100", "ptrs41", "springfield", "panzerschreck",
-		"flamethrower", "ashlight", "totenglocke", "elmsfeuer", "gramophone", "trench_knife", "etool", "frag"])
+		"flamethrower", "ashlight", "totenglocke", "elmsfeuer", "lodestone", "gramophone", "trench_knife", "etool", "frag"])
 
 
 # ================================================================== materials
@@ -1740,6 +1740,39 @@ func _w_totenglocke() -> void:
 	marker("Muzzle", Vector3(0, 0.06, -0.46))
 	lhand(Vector3(0, -0.042, -0.2), "y", 0.017)
 	meta("bell", 0.5)
+
+
+## The Lodestone (T-105): a Nachtglas lens in a brass gyro cradle hung under the end of a yoke, carried two-handed
+## like a lantern on a pole; the relay coil wound round the yoke behind the front grip. The sight line runs along
+## the bar's top (notch at the rear, bead at the bar's tip over the lens), so the lens hangs under the picture.
+## Sphere spins, Cradle opens, Coil glows (Lodestone.pose_parts).
+func _w_lodestone() -> void:
+	var head: Vector3 = Vector3(0, -0.11, -0.34)                                                               # the lens's centre, under the bar's end
+	prof(P([[0.1, 0.0], [-0.46, 0.0], [-0.46, 0.035], [0.1, 0.035]]), 0.03, "brass")                                  # the yoke's bar, out over the lens to the bead
+	for s: float in [-1.0, 1.0]:                                                                                 # the fork down to the cradle's side pivots
+		box(Vector3(0.008, 0.19, 0.01), Vector3(s * 0.066, -0.045, -0.34), "brass", Vector3(0, 0, s * 35.0))
+		tube(0.009, 0.009, 0.012, Vector3(s * 0.118, -0.11, -0.34), "brass", "x")
+	var cradle: Node3D = group("Cradle", head)                                                                   # the gyro rings (open on a lift)
+	ring(0.1, 0.112, Vector3.ZERO, "brass", "z", cradle)
+	ring(0.086, 0.096, Vector3.ZERO, "brass", "x", cradle)
+	ring(0.072, 0.08, Vector3.ZERO, "brass", "y", cradle)
+	var sphere: Node3D = group("Sphere", head)                                                                   # the lead-glass lens
+	ball(0.062, Vector3.ZERO, "glass", Vector3.ONE, sphere)
+	ball(0.02, Vector3(0.02, 0.015, -0.02), "nachtglas", Vector3.ONE, sphere)
+	var coil: Node3D = group("Coil", Vector3(0, 0.02, -0.16))                                                    # the relay coil round the bar (under the sight line)
+	for i: int in 7:
+		ring(0.022, 0.028, Vector3(0, 0, -0.03 + i * 0.012), "bronze", "z", coil)
+	grip(0.04, 0.0, 0.1, "wood", 15.0, 0.042, 0.034)
+	grip(-0.2, 0.0, 0.09, "wood", 0.0, 0.035, 0.03)
+	var corona: Node3D = group("Corona", head)                                                                   # Escape Velocity's ring (hidden on the base)
+	ring(0.066, 0.074, Vector3.ZERO, "nachtglas", "z", corona)
+	corona.visible = upgraded
+	marker("Muzzle", Vector3(0, -0.11, -0.41))
+	rear_notch(-0.02, 0.035, 0.02, "brass", 0.03, 0.008)                                                        # SightPoint (0, 0.0538, -0.024)
+	box(Vector3(0.008, 0.014, 0.008), Vector3(0, 0.04, -0.44), "brass")                                          # the bead's post on the bar's tip
+	front_bead(Vector3(0, 0.05, -0.44), 0.004, "brass")                                                         # FrontSight (0, 0.0528, -0.44)
+	lhand(Vector3(0, -0.042, -0.2), "y", 0.017)
+	meta("lodestone", 0.56)
 
 
 ## Sankt-Elmsfeuer: a ship's arc projector rebuilt as a carbine. A copper induction coil in a glass sleeve over

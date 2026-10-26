@@ -17,7 +17,13 @@
     "_doc": "Threat per zombie = proximity (1 - d / range_m)^prox_exp x the speed tier's tier_mult x the type multiplier (ai_counters.json threat_mult) x targeting_me (it chases this bot) or targeting_downed (a downed teammate) x behind (outside the bot's view cone) x outside_window (still outside a barricade). Threat pressure = the sum / pressure_norm, clamped to 0..1.",
     "range_m": 16.0,
     "prox_exp": 1.4,
-    "tier_mult": {"shamble": 0.55, "walk": 0.75, "jog": 1.0, "run": 1.3, "sprint": 1.7},
+    "tier_mult": {
+      "shamble": 0.55,
+      "walk": 0.75,
+      "jog": 1.0,
+      "run": 1.3,
+      "sprint": 1.7
+    },
     "crawler_mult": 0.5,
     "targeting_me": 1.5,
     "targeting_downed": 1.4,
@@ -29,7 +35,12 @@
     "_doc": "Target choice: threat x the counters' priority, + specials_first (personality) for specials/bosses, x vulnerable_priority / grab_priority (counters), x escort_bonus for what goes for the escorted player; kill-steal etiquette until kill_steal_until_round: a zombie under kill_steal_hp_frac of its health that the human is shooting is left to them unless it threatens someone. Headshot chance = base_head by weapon class x skill head_aim_mult + personality / counter head_bias, + slow_or_close_head for slow or close targets. Fire discipline: autos burst (burst_s / pause_s) beyond burst_range_m and fire freely inside it; semi rifles single shots at the skill's semi_max_rpm; nothing beyond max_range_m[class] (no spraying what it can't hit); never through a teammate (a 0.6 m line-of-fire check).",
     "reacquire_lost_s": 0.8,
     "body_half_width_m": 0.22,
-    "crawler_aim_heights": [0.5, 0.68, 0.35, 0.85],
+    "crawler_aim_heights": [
+      0.5,
+      0.68,
+      0.35,
+      0.85
+    ],
     "_crawler_aim_doc": "T-071 pass 3: a crawler is aimed at the first of these heights (m above its feet) with a clear line from the eye (BotAim._crawler_aim_h): a fixed 0.5 m sat below a low lip on Map 0's yard and a bot never fired at the round's last crawler.",
     "sights_on_mult": 1.6,
     "spray_width_mult": 3.0,
@@ -38,12 +49,42 @@
     "quick_switch_deg": 20.0,
     "quick_switch_s": 0.06,
     "_quick_switch_doc": "T-058: a new target within quick_switch_deg of where it already aims is a flick (quick_switch_s), not a fresh reaction delay.",
-    "base_head": {"pistol": 0.55, "rifle": 0.8, "bolt": 0.85, "sniper": 0.85, "smg": 0.6, "assault": 0.65, "lmg": 0.45, "shotgun": 0.15, "launcher": 0.0, "special": 0.0, "wonder": 0.1},
+    "base_head": {
+      "pistol": 0.55,
+      "rifle": 0.8,
+      "bolt": 0.85,
+      "sniper": 0.85,
+      "smg": 0.6,
+      "assault": 0.65,
+      "lmg": 0.45,
+      "shotgun": 0.15,
+      "launcher": 0.0,
+      "special": 0.0,
+      "wonder": 0.1
+    },
     "slow_or_close_head": 0.15,
-    "max_range_m": {"pistol": 25.0, "rifle": 60.0, "bolt": 70.0, "sniper": 90.0, "smg": 30.0, "assault": 40.0, "lmg": 45.0, "shotgun": 13.0, "launcher": 40.0, "special": 9.0, "wonder": 30.0},
+    "max_range_m": {
+      "pistol": 25.0,
+      "rifle": 60.0,
+      "bolt": 70.0,
+      "sniper": 90.0,
+      "smg": 30.0,
+      "assault": 40.0,
+      "lmg": 45.0,
+      "shotgun": 13.0,
+      "launcher": 40.0,
+      "special": 9.0,
+      "wonder": 30.0
+    },
     "burst_range_m": 9.0,
-    "burst_s": [0.3, 0.6],
-    "pause_s": [0.18, 0.35],
+    "burst_s": [
+      0.3,
+      0.6
+    ],
+    "pause_s": [
+      0.18,
+      0.35
+    ],
     "conserve_pause_mult": 1.8,
     "kill_steal_until_round": 6,
     "kill_steal_hp_frac": 0.4,
@@ -55,10 +96,37 @@
   },
   "weapons": {
     "_doc": "Weapon choice: the class value (class_value) x the personality's class_pref x the situation (crowd_bonus for crowd classes when crowd_n or more are within 10 m, single_bonus for single-target classes on a boss, close_bonus for close classes within close_m) x ammo (an empty magazine: empty_mag_mult; nothing at all: 0). The pistol trap fix: the bot goes back to its best gun as soon as nothing is within swap_back_safe_m (or the worse gun runs dry), and never stays on the pistol while a better gun has ammo.",
-    "class_value": {"pistol": 0.3, "bolt": 0.55, "rifle": 0.65, "sniper": 0.6, "smg": 0.85, "assault": 0.9, "shotgun": 0.75, "lmg": 0.95, "launcher": 0.7, "special": 0.7, "wonder": 1.2},
-    "crowd_classes": ["wonder", "lmg", "shotgun", "special", "launcher"],
-    "single_classes": ["rifle", "bolt", "sniper", "launcher"],
-    "close_classes": ["shotgun", "smg", "special"],
+    "class_value": {
+      "pistol": 0.3,
+      "bolt": 0.55,
+      "rifle": 0.65,
+      "sniper": 0.6,
+      "smg": 0.85,
+      "assault": 0.9,
+      "shotgun": 0.75,
+      "lmg": 0.95,
+      "launcher": 0.7,
+      "special": 0.7,
+      "wonder": 1.2
+    },
+    "crowd_classes": [
+      "wonder",
+      "lmg",
+      "shotgun",
+      "special",
+      "launcher"
+    ],
+    "single_classes": [
+      "rifle",
+      "bolt",
+      "sniper",
+      "launcher"
+    ],
+    "close_classes": [
+      "shotgun",
+      "smg",
+      "special"
+    ],
     "crowd_n": 5,
     "crowd_bonus": 1.3,
     "single_bonus": 1.25,
@@ -99,10 +167,11 @@
     "lone_radius_m": 6.0
   },
   "totenglocke": {
-    "_doc": "The Totenglocke (the holder's rules in totenglocke.gd): quick tolls at what the cone reaches; the Great Toll only on great_min or more zombies bunched within great_bunch_m inside the great cone; the Bell Dome (dome) when reviving or covering with dome_min_pressure or more.",
+    "_doc": "The Totenglocke (the holder's rules in totenglocke.gd): quick tolls at what the cone reaches; the Great Toll only on great_min or more zombies bunched within great_bunch_m inside the great cone; the Bell Dome (dome) when reviving or covering with dome_min_pressure or more. The Lodestone (T-105, lodestone.gd): a lift-and-slam only on lodestone_min or more zombies inside the well, never with a downed teammate in the slam's wave.",
     "great_min": 6,
     "great_bunch_m": 3.5,
-    "dome_min_pressure": 0.3
+    "dome_min_pressure": 0.3,
+    "lodestone_min": 4
   },
   "revive": {
     "_doc": "Revives (section 5): claimed on the squad blackboard by the nearest healthy bot with a safe path (path_safety_m: no known zombie that close to the path; medic_discount_m off the path length for the Medic). blocked_sprinter_m / blocked_bleed_s: no start with a sprinter that close to the downed one while more than that much bleed-out is left; last_chance_s: under that, go anyway. A second bot covers (cover claim) when the threat at the downed spot is over cover_threat. Mid-revive it only stops for something in knife reach while more than last_chance_s are left. Priority: the human, then bots, then Jakub (options.revive_priority).",
@@ -162,7 +231,11 @@
   },
   "powerups": {
     "_doc": "Power-up etiquette: always_take when it's safe; the rest (Death's Door, Double Scrip, Blackout, Clearance) only with the human within shared_m of it too, or no human in the match. Never one the human is walking toward (within toward_cone_deg of their heading, within toward_m).",
-    "always_take": ["resupply", "fortify", "tonic_bottle"],
+    "always_take": [
+      "resupply",
+      "fortify",
+      "tonic_bottle"
+    ],
     "shared_m": 9.0,
     "toward_cone_deg": 30.0,
     "toward_m": 16.0,

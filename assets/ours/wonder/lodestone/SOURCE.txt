@@ -1,0 +1,9 @@
+Title: Lodestone (the Groom Lake gravity caster, built from the Map 4 parts)
+Author: GRAVELIGHT project (modelled in-house by tools_src/blender/wonder/lodestone.py, T-090)
+Source: this repository (tools_src/blender/wonder/lodestone.py + wonder_lib.py)
+License: Ours (original work, in-house)
+Credit line: none needed
+Format: GLB (Blender 5.2.3 LTS export, external PNG textures): nodes Body, Coil, Corona, Cradle, Grip_L, Grip_R, Sphere, Yoke; 13020 tris; baked PBR set 2048px (albedo, normal OpenGL, ORM)
+Downloaded: n/a (generated 2026-10-26 by Claude for Devin Blair)
+Files used: model.glb, textures/lodestone_albedo.png, textures/lodestone_normal.png, textures/lodestone_orm.png
+Game use: first-person wonder weapon (gravelight/weapons/weapon_glb.gd + wonder_look.gd)

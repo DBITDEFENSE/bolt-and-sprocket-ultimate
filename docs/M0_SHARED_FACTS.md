@@ -39,6 +39,8 @@ Every M0 document uses these facts verbatim, so the docs agree with each other. 
 | Blastproof Bock | blastproof_bock | LIABILITY WAIVER | DMS-VP-LIA-07 |
 | Fine Print Fernet (new) | fine_print_fernet | DISCLOSURE (unreleased) | DMS-VP-DIS-X1 |
 | Overclock Cordial (new) | overclock_cordial | SURGE (unreleased) | DMS-VP-SRG-X2 |
+| Skyhook Sekt (Map 4, UPDATE 07) | skyhook_sekt | ELEVATION | DMS-VP-ELV-08 |
+| Magpie Mead (Map 4, UPDATE 07) | magpie_mead | RECOVERY | DMS-VP-REC-09 |
 
 ## Timeline anchors
 - **9 Nov 1938:** the probe lands. V-1 survives. The first retained miner rises (Ch. 2).

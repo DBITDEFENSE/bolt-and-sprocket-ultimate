@@ -928,6 +928,66 @@
    },
    "notes": "Navy-grey magneto breech with a hand crank (the reload), ammeter Dial, copper coil in a glass sleeve over a brass bore, porcelain insulator sights, violet discharge gap (Arc flickers), wooden stock; Orb = Kugelblitz's ball lightning (Crucible only).",
    "script": "tools_src/blender/wonder/elmsfeuer.py"
+  },
+  "lodestone": {
+   "source": "ours",
+   "asset": "ours/wonder/lodestone",
+   "glb": "res://assets/ours/wonder/lodestone/model.glb",
+   "parts": {
+    "sphere": "Sphere",
+    "cradle": "Cradle",
+    "yoke": "Yoke",
+    "coil": "Coil",
+    "grip_l": "Grip_L",
+    "grip_r": "Grip_R",
+    "corona": "Corona",
+    "body": "Body"
+   },
+   "native": {
+    "forward": "-Z",
+    "up": "+Y",
+    "origin": "the right-hand grip (authored in the game frame)",
+    "length_m": 0.566,
+    "real_length_m": 0.566,
+    "scale": 1.0,
+    "size": [
+     0.254,
+     0.2755,
+     0.566
+    ],
+    "bbox_min": [
+     -0.127,
+     -0.2205,
+     -0.466
+    ],
+    "bbox_max": [
+     0.127,
+     0.055,
+     0.1
+    ],
+    "tris": 13020,
+    "materials": [
+     "coil_glow",
+     "emitter",
+     "glass",
+     "halo",
+     "lodestone_atlas"
+    ],
+    "textures": 3
+   },
+   "alt": [],
+   "nodes": {
+    "Body": 760,
+    "Coil": 4560,
+    "Corona": 768,
+    "Cradle": 2832,
+    "Grip_L": 280,
+    "Grip_R": 280,
+    "Sphere": 1680,
+    "Yoke": 1860
+   },
+   "notes": "A lead-glass lens (Sphere, spins; the Nachtglas seed inside) in a three-ring brass gyro cradle (Cradle, opens on a lift) on a brass yoke with a stencilled yard tag, the relay coil on a ceramic former behind the head (Coil, glows on the fling charge), wooden rear and front grips; Corona = Escape Velocity's violet ring of light round the lens (Crucible only).",
+   "script": "tools_src/blender/wonder/lodestone.py"
   }
  },
  "greybox": [

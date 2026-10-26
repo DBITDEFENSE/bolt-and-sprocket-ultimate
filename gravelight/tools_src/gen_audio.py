@@ -1614,7 +1614,8 @@ def gen_crate():
 
 PERK_ROOTS = {"ironhide_stout": "Bb2", "second_wind": "F3", "trigger_tonic": "Eb3", "twin_barrel": "D3",
               "marathon_malt": "G2", "hawkeye_brandy": "C3", "packmule_porter": "A2", "blastproof_bock": "F2",
-              "overclock_cordial": "F#2"}   # the cracked reed's note: this Plan never resolves
+              "overclock_cordial": "F#2",   # the cracked reed's note: this Plan never resolves
+              "skyhook_sekt": "A2", "magpie_mead": "G2"}   # T-105
 
 
 def gen_perks():
@@ -2400,12 +2401,142 @@ def write_manifest():
         fh.write(text + "\n")
 
 
+
+# ════════════════════════════════════════════════════ Map 4 perks (UPDATE 07, T-105)
+
+def skyhook_jingle(r):
+    """\"Skyhook Sekt\" incipit (JINGLES.md section 14): a Viennese waltz in A at 96 BPM, four bars of the organ
+    incipit (I A C# E A, II D F# A F#, III E G# B E, IV A E C# A) on strings with a clarinet-ish organ doubling,
+    a glockenspiel (music box) on the up-beats, a soft kick on the one, a cork pop and a fizz at the start."""
+    beat = 60.0 / 96.0
+    bars = [["A4", "C#5", "E5", "A5"], ["D5", "F#5", "A5", "F#5"], ["E5", "G#5", "B5", "E5"], ["A5", "E5", "C#5", "A4"]]
+    bass = ["A2", "D3", "E3", "A2"]
+    total = beat * 12 + 2.4
+    x = zeros(total)
+    place(x, nrm(hp(white(r, 0.03), 1800)) * expenv(N(0.03), 0.006), 0.0, 0.5)          # the cork
+    place(x, bp(white(r, 0.9), 3000, 9000) * adsr(N(0.9), 0.05, 0.1, 0.4, 0.5), 0.05, 0.12)   # the fizz
+    for b, bar in enumerate(bars):
+        t_bar = 0.35 + b * 3 * beat
+        bn = bass[b]
+        place(x, (sine(hz(bn), beat * 2.6) + 0.35 * sine(hz(bn) * 2, beat * 2.6)) * adsr(N(beat * 2.6), 0.01, 0.2, 0.5, 0.3), t_bar, 0.4)
+        place(x, kick(r, 0.35, 95, 45, 0.08, 0.3), t_bar, 0.3)
+        for k in range(3):
+            if k > 0:
+                place(x, music_box(r, hz(bar[k]) * 2, 0.9), t_bar + k * beat, 0.22)           # the glockenspiel on 2 and 3
+            note = bar[min(k, 3)] if k < 3 else bar[3]
+            place(x, strings(r, hz(note), beat * 0.95, 0.08, 0.5), t_bar + k * beat, 0.42)
+            place(x, organ(r, hz(note), beat * 0.9, 0.05, 0.3, 0.8), t_bar + k * beat, 0.18)
+        place(x, strings(r, hz(bar[3]), beat * 1.4, 0.05, 0.6), t_bar + 2 * beat, 0.25)       # the fourth note sings over the bar line
+    place(x, bell(r, hz("A5"), 1.6, 2.5, 0.4, 0.8), 0.35 + 12 * beat, 0.3)                      # the tag's upbeat (the organ ghost)
+    return reverb(x, r, 1.3, 0.28, 6500)
+
+
+def magpie_jingle(r):
+    """\"Magpie Mead\" incipit (JINGLES.md section 15): Western swing in G at 140 BPM, four bars of the incipit
+    (I G B D G, II C E G E, III D F# A D, IV G D B G) on a plucky lead with a walking bass, a brushed snare on 2
+    and 4, a fiddle-ish string swell into bar III, the lever's clunk and the reels' ticks under the first bar,
+    and a bell when the reels stop."""
+    beat = 60.0 / 140.0
+    bars = [["G4", "B4", "D5", "G5"], ["C5", "E5", "G5", "E5"], ["D5", "F#5", "A5", "D5"], ["G5", "D5", "B4", "G4"]]
+    bass = [["G2", "B2", "D3", "B2"], ["C3", "E3", "G3", "E3"], ["D3", "F#3", "A3", "F#3"], ["G2", "D3", "G2", "D3"]]
+    total = beat * 16 + 2.0
+    x = zeros(total)
+    place(x, nrm(lp(white(r, 0.05), 900)) * expenv(N(0.05), 0.012), 0.0, 0.7)                 # the lever's clunk
+    for k in range(10):
+        place(x, nrm(hp(white(r, 0.008), 2500)) * expenv(N(0.008), 0.002), 0.08 + k * 0.07, 0.18)   # the reels
+    for b, bar in enumerate(bars):
+        for k, note in enumerate(bar):
+            t0 = 0.3 + (b * 4 + k) * beat
+            swing = 0.05 if k % 2 == 1 else 0.0
+            place(x, piano(r, hz(note), beat * 0.8, 0.5, 0.9), t0 + swing, 0.45)             # the plucky lead
+            place(x, music_box(r, hz(note) * 2, 0.5), t0 + swing, 0.08)
+            bn = bass[b][k]
+            place(x, (sine(hz(bn), beat * 0.9) + 0.3 * sine(hz(bn) * 2, beat * 0.9)) * adsr(N(beat * 0.9), 0.005, 0.1, 0.5, 0.1), t0, 0.42)
+            if k in (1, 3):
+                place(x, snare(r, 0.4, 200, 0.2, 0.3, 4500), t0 + 0.01, 0.3)
+            else:
+                place(x, kick(r, 0.45, 115, 46, 0.06, 0.25), t0, 0.3)
+    place(x, strings(r, hz("D5"), beat * 3.0, 0.5, 0.6, 2600, 2), 0.3 + beat * 6, 0.22)      # the fiddle swell into bar III
+    place(x, bell(r, hz("G6"), 1.2, 2.0, 0.5, 1.0), 0.3 + beat * 16, 0.3)                      # the reels stop: the bell
+    place(x, organ(r, hz("G3"), 1.8, 0.4, 0.8, 0.5), 0.3 + beat * 15, 0.12)                    # the held G the engineer left in
+    return reverb(x, r, 0.9, 0.2, 7000)
+
+
+def gen_lodestone():
+    """The Lodestone (T-105): the lift's cracked-bell ring over a sub-bass wind-up, the slam's thud-and-crack, the
+    fling's rising whoosh, the fling wind-up hum, the reload's quarter turn."""
+    r = rng_for("ls_lift")
+    x = zeros(1.6)
+    n = N(0.5)
+    place(x, np.sin(2 * np.pi * phase_of(np.geomspace(38.0, 70.0, n), n)) * adsr(n, 0.05, 0.1, 0.8, 0.2), 0.0, 0.6)   # the sub-bass wind-up
+    place(x, bell(r, hz("F#4"), 1.3, 2.2, 0.7, 0.6), 0.35, 0.55)                                                    # the lead glass rings (a tone under the bell)
+    place(x, bell(r, hz("F#4") * 1.012, 1.1, 1.8, 0.4, 0.5), 0.37, 0.3)                                              # the crack: a detuned partial
+    emit("lodestone_lift", "sfx/weapons/lodestone_lift_01", reverb(x, r, 1.0, 0.25), -1.0, bus="SFX", volume_db=-2.0, max_voices=2, pitch=[0.97, 1.03], attenuation="loud")
+    r = rng_for("ls_slam")
+    x = zeros(1.2)
+    place(x, kick(r, 1.0, 150, 36, 0.14, 0.7), 0.0, 1.0)
+    place(x, nrm(lp(white(r, 0.3), 500)) * expenv(N(0.3), 0.06), 0.0, 0.7)
+    place(x, crackle(r, 0.25, 400, 1.0, 1500, 6000) * expenv(N(0.25), 0.05), 0.02, 0.5)                                # the crack
+    emit("lodestone_slam", "sfx/weapons/lodestone_slam_01", reverb(x, r, 0.8, 0.2), -0.5, bus="SFX", volume_db=0.0, max_voices=2, pitch=[0.95, 1.05], attenuation="loud")
+    r = rng_for("ls_fling")
+    x = zeros(1.4)
+    place(x, sweep_noise(r, 1.1, 300, 4200, 3) * adsr(N(1.1), 0.1, 0.1, 0.8, 0.4), 0.0, 0.7)                            # the rising whoosh, Dopplering off
+    n = N(0.9)
+    place(x, np.sin(2 * np.pi * phase_of(np.geomspace(90.0, 400.0, n), n)) * adsr(n, 0.02, 0.1, 0.6, 0.3), 0.0, 0.3)
+    emit("lodestone_fling", "sfx/weapons/lodestone_fling_01", reverb(x, r, 0.9, 0.2), -1.0, bus="SFX", volume_db=-1.0, max_voices=2, pitch=[0.95, 1.05], attenuation="loud")
+    r = rng_for("ls_hum")
+    x = zeros(0.8)
+    n = N(0.7)
+    place(x, np.sin(2 * np.pi * phase_of(np.geomspace(55.0, 180.0, n), n)) * adsr(n, 0.05, 0.0, 1.0, 0.1), 0.0, 0.6)   # the wind-up hum (the relay's note)
+    place(x, np.sin(2 * np.pi * phase_of(np.geomspace(110.0, 360.0, n), n)) * adsr(n, 0.05, 0.0, 1.0, 0.1), 0.0, 0.25)
+    emit("lodestone_hum", "sfx/weapons/lodestone_hum_01", x, -3.0, bus="SFX", volume_db=-6.0, max_voices=1, pitch=[1.0, 1.0], attenuation="quiet")
+    r = rng_for("ls_turn")
+    x = zeros(0.5)
+    for k in range(4):
+        place(x, nrm(hp(white(r, 0.01), 2500)) * expenv(N(0.01), 0.003), k * 0.07, 0.4)                                # the ratchet of the quarter turn
+    place(x, bell(r, hz("F#5"), 0.4, 1.5, 0.3, 0.6), 0.28, 0.3)
+    emit("lodestone_turn", "sfx/weapons/lodestone_turn_01", x, -4.0, bus="SFX", volume_db=-6.0, max_voices=1, pitch=[0.98, 1.02], attenuation="quiet")
+
+
+def gen_map4_perks():
+    """Skyhook Sekt and Magpie Mead (UPDATE 07, T-105): the hop, the stomp, the jingles; the Magpie drop and pick."""
+    r = rng_for("sk_hop")
+    x = zeros(0.5)
+    n = N(0.35)
+    place(x, np.sin(2 * np.pi * phase_of(np.geomspace(420.0, 1300.0, n), n)) * adsr(n, 0.01, 0.05, 0.6, 0.15), 0.0, 0.35)   # the fizz rising
+    place(x, bp(white(r, 0.3), 2500, 7000) * expenv(N(0.3), 0.08), 0.0, 0.25)
+    emit("perk_skyhook_hop", "sfx/world/perks/skyhook_hop_01", x, -3.0, bus="SFX", volume_db=-6.0, max_voices=2, pitch=[0.95, 1.05], attenuation="quiet")
+    r = rng_for("sk_stomp")
+    x = zeros(0.9)
+    place(x, kick(r, 1.0, 140, 38, 0.12, 0.6), 0.0, 1.0)
+    place(x, nrm(lp(white(r, 0.25), 600)) * expenv(N(0.25), 0.05), 0.0, 0.6)
+    place(x, music_box(r, hz("A5"), 0.5), 0.02, 0.25)
+    emit("perk_skyhook_stomp", "sfx/world/perks/skyhook_stomp_01", reverb(x, r, 0.6, 0.2), -1.0, bus="SFX", volume_db=-2.0, max_voices=2, pitch=[0.95, 1.05], attenuation="loud")
+    r = rng_for("mm_drop")
+    x = zeros(0.6)
+    place(x, music_box(r, hz("E6"), 0.5), 0.0, 0.5)
+    place(x, music_box(r, hz("G6"), 0.45), 0.08, 0.4)
+    emit("perk_magpie_drop", "sfx/world/perks/magpie_drop_01", x, -4.0, bus="SFX", volume_db=-6.0, max_voices=3, pitch=[0.96, 1.04], attenuation="quiet")
+    r = rng_for("mm_pick")
+    x = zeros(0.5)
+    place(x, nrm(hp(white(r, 0.02), 2000)) * expenv(N(0.02), 0.004), 0.0, 0.5)
+    place(x, music_box(r, hz("C6"), 0.4), 0.02, 0.4)
+    place(x, music_box(r, hz("G6"), 0.35), 0.1, 0.3)
+    emit("perk_magpie_pick", "sfx/world/perks/magpie_pick_01", x, -3.0, bus="SFX", volume_db=-5.0, max_voices=3, pitch=[0.96, 1.04], attenuation="quiet")
+    r = rng_for("sk_jingle")
+    emit("jingle_skyhook_sekt", "jingles/skyhook_sekt_01", skyhook_jingle(r), -2.0, bus="Jingles", volume_db=-4.0, max_voices=1, pitch=[1.0, 1.0], attenuation="world")
+    r = rng_for("mm_jingle")
+    emit("jingle_magpie_mead", "jingles/magpie_mead_01", magpie_jingle(r), -2.0, bus="Jingles", volume_db=-4.0, max_voices=1, pitch=[1.0, 1.0], attenuation="world")
+
+
 def main():
     gen_weapons()
     gen_zombies()
     gen_player()
     gen_world()
     gen_overclock()
+    gen_map4_perks()
+    gen_lodestone()
     gen_ambience()
     gen_music()
     legacy_aliases()

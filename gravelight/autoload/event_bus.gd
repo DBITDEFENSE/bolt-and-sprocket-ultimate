@@ -71,6 +71,10 @@ signal quest_completed(quest_id: StringName)
 signal quest_step_failed(quest_id: StringName, step_id: StringName, reason: StringName)
 signal item_picked_up(item_id: StringName, by_player: int)
 signal buildable_completed(buildable_id: StringName, by_player: int)
+## Magpie Mead (T-105): a kill left something for `player` at `position` (ammo / scrip / grenade / powerup).
+signal magpie_drop(player: int, kind: StringName, position: Vector3)
+## A survivor left the ground on purpose (a jump, a slide-jump, a Skyhook hop): the Skyhook cabinet's propeller listens.
+signal player_jumped(player: int, at: Vector3)
 signal cylinder_played(index: int)
 signal shootable_hit(target_id: StringName, weapon_id: StringName, upgraded: bool, by_player: int)
 ## Every trigger pull that fires (muzzle origin + aim direction). Perk machines use it to reveal their plan-ID

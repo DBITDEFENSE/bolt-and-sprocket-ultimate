@@ -934,3 +934,182 @@ The English is the singable adaptation; the German is canon. (*Dran sein* is "to
   - **Before he attacks the keys stop**, and the silence is the cue: the mix ducks the ambient −6 dB in that 0.6 s.
   - **The Watch Room:** no music; a clock that **doesn't** tick; your own breathing.
   - **Death:** the lantern's hiss going out, then a single, warm major chord (the first in the map's score) as the sky reddens.
+
+## 14. Skyhook Sekt (`skyhook_sekt`), 2500 (NEW, Map 4 "Fernflug", UPDATE 07)
+
+| | |
+|---|---|
+| **Plan** | **ELEVATION** · `DMS-VP-ELV-08` |
+| **Availability** | Map 4 "Fernflug", every act (the wind tunnel, the Kranich's galley, the silo, the relay's concourse). Helvetia Works after the Map 4 ending (profile unlock `gl_perk_skyhook`). Counts toward the perk cap (6). Effects and numbers in `docs/MAP4_FERNFLUG.md` §7.1 and `data/gravelight/perks.json`. |
+| **Cost** | 2500 (Vendelin's trait: 2250) · tier II "Thermal" 3500 · tier III "Stall Turn" 7000 |
+| **Color** | pale sky-blue enamel `#9fc6e6`, chrome trim, a white crane on the cap |
+
+**Machine.** A tall, slim cabinet shaped like a **glider fuselage stood on its tail**, 2.4 m to the hub. The bottle window sits where the cockpit canopy would be, under a chrome canopy frame; the stub wings low down are its feet; the tail fin stands behind the sign. On the nose, a two-blade wooden **propeller** on a brass hub: it ticks round a quarter turn every few seconds and spins up when anyone within six metres leaves the ground. Neon: **SKYHOOK** in italic script, with the line *Leicht · Lieber · Landen* beneath. Mascot **"Fräulein Kranich,"** a crane in a flying helmet with her scarf out straight behind her, painted on the fin.
+- **Idle:** the propeller's quarter-turn tick; a wind-in-wires hum that rises with the prop.
+- **Signature sound:** a cork pop, a fizz, a wire twang on cap-off; the prop winding up on dispense.
+- **Bottle cap:** sky-blue with a white crane in flight and a chrome rim.
+- **The works (Thalbach):** the only cabinet Vendelin built on request (Jette sent a sketch of the glider nose and the word *bitte*). On the Kranich it is bolted to the galley floor beside the forge; at Groom Lake it stands in the silo in its own paint, the only one the Allies did not repaint ("it looked like a plane; we have planes").
+
+**Ad copy (the 1945 works poster, never pasted up):**
+> **"ONE GLASS AND THE GROUND CAN WAIT."**
+> *Skyhook Sekt: for people who have somewhere to be, above.*
+> Small print: *Helvetia Automaten AG accepts no liability for ceilings, trees, or the landing.*
+
+**The human: Henriette "Jette" Maurer.** Werk Thalbach's wind-tunnel technician, thirty-one, a glider pilot who flew the Rhön in 1934 and never flew a thing with an engine again. Asked to make the ELEVATION substrate drinkable for the Kranich's crew ("they will be at altitude for eleven hours; they should not mind it"), she made it a **Sekt**, because you open Sekt when something lifts off, and she dosed it low enough that it makes a person *land* well rather than fly: she said the point of flying was always the landing. She refused to test it on the crew and refused to fly the wing. Her tunnel logbook ends with the Kranich's weight in kilos and the one word *nein*. She is alive (the epilogue says so). The cabinet is the only one Vendelin built from someone else's drawing; he wrote to thank her and she never answered, which he took as a kindness.
+
+**Music direction.** A Viennese **waltz**, 3/4, 96 BPM, A major; strings, a clarinet, a glockenspiel on the "up" beats, a light soprano singing as if from the back of a dance hall, recorded "through a tin horn" (band-limited 300 Hz–5 kHz, soft crackle). *Tone:* the only jingle that sounds like a holiday.
+- **Pump-organ origin:** written in March 1945 on the harmonium's *Flöte 4'*, in three, the first waltz Vendelin ever wrote; he had to look up how. Brand Compliance edited one line (the original chorus said *and when you come down, you'll land where you choose*; Marketing wanted *the town*).
+- **Organ ghost:** the glockenspiel's upbeat on the tag.
+
+**Canon jingle: "Skyhook Sekt"**
+
+> **Verse 1**
+> `jingle.skyhook_sekt.01` There's a window in the tunnel, and a wind that never ends,
+> `jingle.skyhook_sekt.02` and a little wooden glider that the wind pretends to bend;
+> `jingle.skyhook_sekt.03` there's a girl who flew the Rhön once, and she'll tell you, if you ask,
+> `jingle.skyhook_sekt.04` that the flying's for the landing, and the landing's not a task.
+>
+> **Chorus**
+> `jingle.skyhook_sekt.05` Skyhook, Skyhook,
+> `jingle.skyhook_sekt.06` one glass and you're light,
+> `jingle.skyhook_sekt.07` Skyhook, Skyhook, the floor can wait till night;
+> `jingle.skyhook_sekt.08` Skyhook, Skyhook,
+> `jingle.skyhook_sekt.09` and when you come down,
+> `jingle.skyhook_sekt.10` you'll land like a feather in the middle of the town.
+>
+> **Verse 2**
+> `jingle.skyhook_sekt.11` Now the engineers have told you that a man is built to walk,
+> `jingle.skyhook_sekt.12` and the ground is where he's going, and the rest of it is talk;
+> `jingle.skyhook_sekt.13` but a sip of something sparkling and a second in the air,
+> `jingle.skyhook_sekt.14` and you'll find there was a staircase, and it's always been there.
+>
+> **Chorus** (repeat .05–.10)
+>
+> **Bridge (clarinet under, sung softly, the waltz slowing)**
+> `jingle.skyhook_sekt.15` Up, up, the hop is a gift,
+> `jingle.skyhook_sekt.16` down, down, and nobody's hurt...
+>
+> **Final Chorus**
+> `jingle.skyhook_sekt.17` Skyhook, Skyhook,
+> `jingle.skyhook_sekt.18` one more for the sky,
+> `jingle.skyhook_sekt.19` you'll land like a feather, and you'll never wonder why.
+>
+> **Tag (spoken, the soprano, smiling)**
+> `jingle.skyhook_sekt.20` "Skyhook Sekt. Helvetia Automaten. Mind the ceiling."
+
+**True first draft** (`jingle.skyhook_sekt.80`: wordless, March 1945): the waltz alone on the harmonium's *Flöte 4'*, with the original chorus line's shape (the last bar lands a third lower than the shipped one: *where you choose*).
+
+*Organ incipit:* I `A C♯ E A` · II `D F♯ A F♯` · III `E G♯ B E` · IV `A E C♯ A` *(a plain waltz cadence; not in Clause Zero's target pool)*
+
+**Fine-print panel**
+
+`panel.skyhook_sekt`
+> **HELVETIA AUTOMATEN AG · BASEL · CONDITIONS OF USE: SKYHOOK SEKT**
+> **(BUILT TO ORDER · WERK THALBACH · 1945)**
+>
+> **§1. Benefit.** **Lift is provided. Landing is the Holder's responsibility.** The Product raises the Holder's expectations and, briefly, the Holder. It steadies the Holder's feet in the air, lets the Holder step once more where there is nothing to step on, and softens the ground on the way back.
+>
+> **§2. Origin.** The formula was made drinkable by a technician who would not fly the aircraft it was made for. The undersigned wishes it recorded that this is not the same as not wanting to, and that he understands the difference better than he once did.
+>
+> **§3. The Provider's note.** The Provider observes that a customer who can leave the ground has not yet left the Plan. The undersigned observes that the customer can at least see the Plan from up there.
+>
+> **§4. The second jump.** The second jump is a courtesy. There is no third. The Holder is advised not to go looking for one.
+>
+> **§5. Side effects.** Holders may experience lightness, a sudden interest in rooftops, and a reluctance to come down. These pass. The landing does not.
+>
+> **§6. Cancellation.** Land. The Product cannot prevent it and the undersigned would not want it to.
+>
+> *She drew the nose and wrote "please." It is the only drawing I was ever sent.*
+> *— V.*
+
+---
+
+## 15. Magpie Mead (`magpie_mead`), 3000 (NEW, Map 4 "Fernflug", UPDATE 07)
+
+| | |
+|---|---|
+| **Plan** | **RECOVERY** · `DMS-VP-REC-09` |
+| **Availability** | Map 4 "Fernflug", Acts III and IV (the Groom Lake hangar and silo, the relay's concourse). Helvetia Works after the Map 4 ending (profile unlock `gl_perk_magpie`). Counts toward the perk cap (6). Effects and numbers in `docs/MAP4_FERNFLUG.md` §7.2 and `data/gravelight/perks.json`. |
+| **Cost** | 3000 (Vendelin's trait: 2700) · tier II "Scavenger" 4000 · tier III "Pawn Shop" 8000 |
+| **Color** | olive drab `#5b6b3a` over Packmule's brown, with a black-and-white magpie; cap: the magpie's eye in a sergeant's chevron |
+
+**Machine.** The **Allied-pattern** cabinet: a standard Vendelin shell (it was a Packmule Porter cabinet; the brown shows at the chips) **painted olive drab over the enamel**, re-stencilled MAGPIE MEAD in US Army block letters, with a **one-armed-bandit lever** bolted on the right where the Scrip slot was (Nevada), three little **reels** in the bottle window that spin on a pull and stop on AMMO · SCRIP · GRENADE, and a tin magpie on top that pecks when a kill leaves something. There is no neon: the Allies never wired it; a bare bulb in a cage lights the sign. Vendelin's fine-print panel is on the back under the paint, **scraped clear** by someone who read it.
+- **Idle:** the reels tick round; the bulb buzzes; the lever creaks in the heat.
+- **Signature sound:** the lever's clunk, the reels, a bell, a cork on cap-off.
+- **Bottle cap:** olive, the magpie's eye under three chevron stripes.
+- **Where it came from:** the crate from Europe (April 1945) held six Helvetia cabinets wholesale; the Woman in Violet sold the Allied program the same Vitality Plans she had sold the Reich, with the jingles "localized" (re-recorded in English by a Hollywood session band and a studio announcer). Magpie Mead is the one Plan the Allies made drinkable themselves.
+
+**Ad copy (hand-lettered on the supply cage, by the formulator):**
+> **"PICK IT UP. IT'S YOURS NOW."**
+> Under it, smaller: *Nothing on this range goes to waste.*
+
+**The human: Sgt. Dolores "Dee" Marchetti.** Women's Army Corps, the supply sergeant who ran the Groom Lake salvage yard, from Bayonne, New Jersey, a scrap dealer's daughter. The program handed her a crate of RECOVERY substrate and an olive-painted Helvetia cabinet with the jingle re-recorded in English, and told her to make it drinkable for the range. She made it a **mead** with the beekeeper's mesquite honey, because mead is what you make when you have nothing but what is lying around, and because she would not put it in the men's coffee. She refused to let the program test it on the test subjects in the lab. She tested it on herself, like Kessler, and said it tasted like a pawn shop. Her yard rule, painted over the cage: NOTHING ON THIS RANGE GOES TO WASTE. She is the last living person on the range when the squad arrives, and the one who stays.
+
+**Music direction.** **Western swing**, 4/4, 140 BPM, G major; steel guitar, fiddle, upright bass, a tin-pan drum, a mixed trio singing close, and a studio announcer on the tag: the "localized" Hollywood re-record of Vendelin's tune (band-limited, bright, a little too cheerful). *Tone:* a radio ad for a thing you didn't know you were allowed to want.
+- **Pump-organ origin:** Vendelin's original (`.80`) was a slow harmonium hymn in G, in German, about leaving things where they lie; Brand Compliance sent it to the Allied market as a "swing arrangement" and the session band made it a dance. He has heard the re-record. He says it is better than his.
+- **Organ ghost:** the harmonium's held G under the announcer's tag, which the session engineer left in by mistake.
+
+**Canon jingle: "Magpie Mead"** (the localized record)
+
+> **Verse 1**
+> `jingle.magpie_mead.01` Well, the fella in the ditch there, he was carrying a clip,
+> `jingle.magpie_mead.02` and the fella by the fence post had a nickel on his hip,
+> `jingle.magpie_mead.03` and it's lying there a-shining in the dust beside the dead,
+> `jingle.magpie_mead.04` so you pick it up, you pick it up, you pick it up instead!
+>
+> **Chorus**
+> `jingle.magpie_mead.05` Magpie, Magpie, pick it up, pick it up,
+> `jingle.magpie_mead.06` what's shiny on the ground is gonna fill your cup;
+> `jingle.magpie_mead.07` Magpie, Magpie, nothing goes to waste,
+> `jingle.magpie_mead.08` one more for the road and a honey aftertaste!
+>
+> **Verse 2**
+> `jingle.magpie_mead.09` Now a magpie is a thief, friend, and a magpie is a bird,
+> `jingle.magpie_mead.10` and a magpie keeps on coming back, or so I've always heard,
+> `jingle.magpie_mead.11` so you take it like a magpie and you don't you let it lie,
+> `jingle.magpie_mead.12` 'cause there's honey in the bottle and there's silver in the sky!
+>
+> **Chorus** (repeat .05–.08)
+>
+> **Break (fiddle solo; the trio answering)**
+> `jingle.magpie_mead.13` (Fiddle) ... (Trio) Pick it up!
+> `jingle.magpie_mead.14` (Fiddle) ... (Trio) It's yours now!
+> `jingle.magpie_mead.15` (Fiddle) ... (Trio) Nothing goes to waste!
+>
+> **Verse 3**
+> `jingle.magpie_mead.16` When the range is long and empty and the box is far away,
+> `jingle.magpie_mead.17` and the sergeant in the cage says "that's the last of it today,"
+> `jingle.magpie_mead.18` well, the dead were always carrying, and they were always paid,
+> `jingle.magpie_mead.19` so you pick it up, you pick it up, you pick it up, Magpie Mead!
+>
+> **Tag (the studio announcer, bright)**
+> `jingle.magpie_mead.20` "Magpie Mead. Nothing on this range goes to waste."
+
+**True first draft** (`jingle.magpie_mead.80`: wordless, 1944): the harmonium hymn in G, slow, the melody the band sped up by half again; the German words are not recorded anywhere.
+
+*Organ incipit:* I `G B D G` · II `C E G E` · III `D F♯ A D` · IV `G D B G` *(the hymn's cadence; the swing record keeps the notes and loses the time; not in Clause Zero's target pool)*
+
+**Fine-print panel**
+
+`panel.magpie_mead`
+> **HELVETIA AUTOMATEN AG · BASEL · CONDITIONS OF USE: MAGPIE MEAD**
+> **(EXPORT PATTERN · REPAINTED BY THE CUSTOMER)**
+>
+> **§1. Benefit.** **Recovery is not refund.** What the Holder recovers was already paid for, by someone. The Product only lets the Holder see it lying there.
+>
+> **§2. Who it is sold to.** The Provider does not sell this Plan to persons who already own a yard. It sells it to persons who think they do.
+>
+> **§3. The bird.** The magpie is a thief. The formulator wishes it recorded that it is also the only bird that comes back.
+>
+> **§4. The yard rule.** Nothing on the range goes to waste. The Provider agrees, and means something else by it.
+>
+> **§5. Side effects.** Holders may experience thrift, a habit of looking down, and an unwillingness to leave a thing where it lies. The undersigned has all three.
+>
+> **§6. Cancellation.** Leave it where it lies. The Product will not stop you. Nothing here will.
+>
+> *They painted over this. Someone scraped it clear again. Hello.*
+> *— V.*
+>
+> *(In pencil, under the signature, a second hand:)* **Read this. — D.M.**
+
+---

@@ -139,11 +139,11 @@ func test_coop_down_loses_all() -> void:
 	GameState.player_ids = [PID]
 
 
-# ---------------------------------------------------------------- data integrity (nine machines, lore)
+# ---------------------------------------------------------------- data integrity (eleven machines, lore)
 
 func test_perks_json_valid() -> void:
 	var perks: Dictionary = GLData.table("perks")["perks"]
-	assert_eq(perks.size(), 9, "nine perk tonics")
+	assert_eq(perks.size(), 11, "nine perk tonics plus Map 4's two (Skyhook Sekt, Magpie Mead; T-105)")
 	var shapes: Dictionary = {}
 	for id: String in perks.keys():
 		var p: Dictionary = perks[id]

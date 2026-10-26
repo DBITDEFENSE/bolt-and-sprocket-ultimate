@@ -11,7 +11,7 @@
     "m1911": 0.5, "kar98k": 1.0, "m1_carbine": 2.0, "m1_garand": 2.4, "gewehr43": 2.8, "springfield": 2.6, "sawed_off": 2.6,
     "mp40": 3.2, "type100": 3.3, "trench_gun": 3.3, "thompson": 3.6, "ptrs41": 3.4, "stg44": 4.2, "ppsh41": 4.3,
     "bar": 4.4, "m1919": 4.4, "mg42": 4.8, "flamethrower": 3.8, "panzerschreck": 4.0,
-    "ashlight": 6.0, "elmsfeuer": 6.0, "totenglocke": 6.5,
+    "ashlight": 6.0, "elmsfeuer": 6.0, "totenglocke": 6.5, "lodestone": 6.5,
     "walther_p38": 0.5, "webley": 0.5, "luger_p08": 0.5
   },
   "upgraded_tier_bonus": 1.5,

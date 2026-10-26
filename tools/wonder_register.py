@@ -34,6 +34,11 @@ TABLE = {
                   "Navy-grey magneto breech with a hand crank (the reload), ammeter Dial, copper coil in a glass sleeve over a brass "
                   "bore, porcelain insulator sights, violet discharge gap (Arc flickers), wooden stock; Orb = Kugelblitz's ball "
                   "lightning (Crucible only).", True),
+    "lodestone": ("Lodestone (the Groom Lake gravity caster, built from the Map 4 parts)", {"sphere": "Sphere", "cradle": "Cradle", "yoke": "Yoke",
+                  "coil": "Coil", "grip_l": "Grip_L", "grip_r": "Grip_R", "corona": "Corona", "body": "Body"},
+                  "A lead-glass lens (Sphere, spins; the Nachtglas seed inside) in a three-ring brass gyro cradle (Cradle, opens on a lift) on a "
+                  "brass yoke with a stencilled yard tag, the relay coil on a ceramic former behind the head (Coil, glows on the fling charge), "
+                  "wooden rear and front grips; Corona = Escape Velocity's violet ring of light round the lens (Crucible only).", True),
     "gramophone": ("Siren Gramophone (tactical)", {"record": "Record", "crank": "Crank", "tonearm": "Tonearm", "lid": "Lid", "body": "Body"},
                    "Portable wind-up gramophone: leatherette case with brass corners, open lid, felt platter, the record (spins while it "
                    "plays), tonearm with a brass horn (drops at the needle), side crank (turns while it plays).", False),
@@ -101,15 +106,15 @@ def main():
     # docs/WEAPON_MODELS.md: the wonder rows
     with open(WEAPONS_MD, "r", encoding="utf-8") as f:
         md = f.read()
-    for wid in ("ashlight", "totenglocke", "elmsfeuer"):
+    for wid in ("ashlight", "totenglocke", "elmsfeuer", "lodestone"):
         if wid not in rows:
             continue
         entry, rep, title = rows[wid]
         parts = ", ".join("%s=%s" % (k, v) for k, v in entry["parts"].items())
         n = entry["native"]
-        new = ("| `%s` | %s | wonder | ours | `ours/wonder/%s` (`tools_src/blender/wonder/%s.py`) | GRAVELIGHT (in-house, T-090) | Ours | %s | "
+        new = ("| `%s` | %s | wonder | ours | `ours/wonder/%s` (`tools_src/blender/wonder/%s.py`) | GRAVELIGHT (in-house, %s) | Ours | %s | "
                "-Z, %.3f m -> x1.000, %d tris | ours: holder choreography + WonderLook part drivers |" % (
-                   wid, title.split(" (")[0], wid, wid, parts, n["length_m"], n["tris"]))
+                   wid, title.split(" (")[0], wid, wid, "T-105" if wid == "lodestone" else "T-090", parts, n["length_m"], n["tris"]))
         md = re.sub(r"^\| `%s` \|.*$" % wid, new.replace("\\", "\\\\"), md, flags=re.M)
     with open(WEAPONS_MD, "w", encoding="utf-8", newline="\n") as f:
         f.write(_section(md, rows))

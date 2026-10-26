@@ -19,7 +19,7 @@ extends CharacterBody3D
 ## death from the host's death event (variant, side, head pop). Damage from the client's own weapons is
 ## predicted locally (hit markers, wounds) and sent to the host with the shot ray (NetMatch.send_hit).
 
-enum State { INACTIVE, EMERGE, TO_WINDOW, WAIT_WINDOW, TEAR, CLIMB, CHASE, ATTACK, STAGGER, DEAD, KNOCKDOWN, GETUP, CLIMB_LINK }
+enum State { INACTIVE, EMERGE, TO_WINDOW, WAIT_WINDOW, TEAR, CLIMB, CHASE, ATTACK, STAGGER, DEAD, KNOCKDOWN, GETUP, CLIMB_LINK, LIFTED }
 
 const LAYER_WORLD: int = 1
 const LAYER_PLAYER: int = 1 << 1
@@ -103,6 +103,26 @@ var _prey_attack: bool = false
 var _getup_len: float = -1.0
 var _getup_window: bool = false
 var _force_female: int = -1   # a spec's "female" (a risen patron keeps their sex); -1 = rolled from the kit
+# UPDATE 07 (T-105): outside forces. A push is an added velocity for a while (turbulence, a breach's suction, the
+# Lodestone's fling); a lift holds the body in the air (State.LIFTED) until it is dropped or slammed.
+var _push_v: Vector3 = Vector3.ZERO
+var _push_t: float = 0.0
+var _push_by: int = 0
+var _push_land_dmg: float = 0.0        # damage dealt when a fling ends (landing), x1.5 into a wall
+var _push_weapon: StringName = &""
+var _push_wall_hit: bool = false
+var _lift_t: float = 0.0
+var _lift_total: float = 0.0
+var _lift_y0: float = 0.0
+var _lift_h: float = 0.0
+var _lift_by: int = 0
+var _lift_weapon: StringName = &""
+var _lift_drop_dmg: float = 0.0
+var _lift_slam_dmg: float = 0.0
+var _lift_slam_wave: float = 0.0       # the slam's shockwave radius (0 = none)
+var _lift_slam_wave_dmg: float = 0.0
+## Below this height a flung zombie is "gone" (off a drop, into a shaft); MapRoot sets it from the act json.
+static var kill_plane_y: float = -15.0
 
 
 func _init() -> void:
@@ -292,6 +312,8 @@ func _enter(s: State) -> void:
 			_tree_play("Climb", _climb_clip, ZombieClips.length_of(_climb_clip) / maxf(0.1, _climb_dur()))
 		State.CLIMB_LINK:
 			_tree_play("Climb", str(_anim["clips"]["climb"]["loop"]), 1.0)
+		State.LIFTED:
+			_tree_play("React", str(_anim["clips"]["react"]["stagger"]), 0.35)   # a slow flail in the air
 		State.DEAD:
 			if _death_sink:
 				_emerge_sink_back()
@@ -309,7 +331,12 @@ func _physics_process(delta: float) -> void:
 		return
 	_state_t += delta
 	_attack_cd = maxf(0.0, _attack_cd - delta)
+	if _push_t > 0.0 and state != State.DEAD and state != State.INACTIVE and state != State.LIFTED:
+		_update_push(delta)
+		return
 	match state:
+		State.LIFTED:
+			_update_lifted(delta)
 		State.EMERGE:
 			_emerge_tick(delta)
 			if _state_t >= _emerge_seconds():
@@ -1087,6 +1114,163 @@ func _off_navmesh_height() -> float:
 	if Vector2(c.x - global_position.x, c.z - global_position.z).length() > 1.5:
 		return 0.0   # nowhere near the mesh horizontally (climbing, scripted moves): not this check's business
 	return global_position.y - c.y
+
+
+# ---------------------------------------------------------------- outside forces (UPDATE 07, T-105)
+
+## Adds `v` (m/s, world frame) to this body's motion for `seconds` (turbulence, suction, the Lodestone's fling).
+## A fling (land_damage > 0) hurts when it ends: land_damage on landing, x1.5 against a wall; below kill_plane_y the
+## body is gone for good (the flinger's kill). Bosses are pushed at a third of the velocity and never flung.
+func external_push(v: Vector3, seconds: float, by_player: int = 0, weapon_id: StringName = &"", land_damage: float = 0.0) -> void:
+	if puppet or not is_active() or state == State.LIFTED:
+		return
+	var boss: bool = self is Foreman or self is Screamer or self is HomageBoss
+	_push_v = v * (0.33 if boss else 1.0)
+	_push_t = maxf(0.05, seconds)
+	_push_by = by_player
+	_push_weapon = weapon_id
+	_push_land_dmg = 0.0 if boss else maxf(0.0, land_damage)
+	_push_wall_hit = false
+	_grab_t = 0.0
+	if window != null:
+		window.release(self)
+		window = null
+	_agent.avoidance_enabled = false
+	_safe_vel = Vector3.ZERO
+
+
+func is_pushed() -> bool:
+	return _push_t > 0.0
+
+
+func _update_push(delta: float) -> void:
+	_push_t -= delta
+	velocity.x = _push_v.x
+	velocity.z = _push_v.z
+	if _push_v.y != 0.0 and _state_t < 0.05:
+		velocity.y = _push_v.y
+	else:
+		velocity.y -= GRAVITY * delta
+	_push_v.y = 0.0
+	move_and_slide()
+	if _push_land_dmg > 0.0 and not _push_wall_hit:
+		for i: int in get_slide_collision_count():
+			var c: KinematicCollision3D = get_slide_collision(i)
+			if c.get_normal().y < 0.5 and Vector2(_push_v.x, _push_v.z).length() > 4.0:
+				_push_wall_hit = true
+				break
+	var gone: bool = global_position.y < kill_plane_y and _push_land_dmg > 0.0
+	if gone:
+		_push_t = 0.0
+		_push_v = Vector3.ZERO
+		if _push_by > 0:
+			Economy.award(_push_by, int((GLData.table("economy") as Dictionary).get("returned_kill", 100)))
+		take_damage(hp + 1.0, &"torso", _push_weapon, _push_by, &"world")
+		return
+	if _push_t <= 0.0 or (is_on_floor() and _state_t > 0.25 and _push_land_dmg > 0.0) or _push_wall_hit:
+		_end_push()
+
+
+func _end_push() -> void:
+	var dmg: float = _push_land_dmg * (1.5 if _push_wall_hit else 1.0)
+	_push_t = 0.0
+	_push_v = Vector3.ZERO
+	_push_land_dmg = 0.0
+	velocity = Vector3.ZERO
+	_agent.avoidance_enabled = true
+	if dmg > 0.0:
+		if take_damage(dmg, &"torso", _push_weapon, _push_by, &"explosive", true):
+			return
+		if state == State.CHASE or state == State.ATTACK or state == State.STAGGER:
+			_react_clip = ""
+			_enter(State.STAGGER)
+	_state_t = 0.0
+
+
+## Lifts the body `height` m off the ground and holds it there `seconds` (the Lodestone's well): no movement, no
+## attack. It ends with drop() (drop_damage, a stagger) or slam() (slam_damage and a shockwave of wave_radius /
+## wave_damage round the impact). Bosses are never lifted (the caller staggers them instead).
+func lift(height: float, seconds: float, by_player: int, weapon_id: StringName, drop_damage: float, slam_damage: float,
+		wave_radius: float = 0.0, wave_damage: float = 0.0) -> void:
+	if puppet or not is_active() or state == State.DEAD or self is Foreman or self is Screamer or self is HomageBoss:
+		return
+	_push_t = 0.0
+	_push_v = Vector3.ZERO
+	_grab_t = 0.0
+	if window != null:
+		window.release(self)
+		window = null
+	_lift_t = 0.0
+	_lift_total = maxf(0.2, seconds)
+	_lift_y0 = global_position.y
+	_lift_h = maxf(0.3, height)
+	_lift_by = by_player
+	_lift_weapon = weapon_id
+	_lift_drop_dmg = drop_damage
+	_lift_slam_dmg = slam_damage
+	_lift_slam_wave = wave_radius
+	_lift_slam_wave_dmg = wave_damage
+	_agent.avoidance_enabled = false
+	_safe_vel = Vector3.ZERO
+	velocity = Vector3.ZERO
+	_enter(State.LIFTED)
+
+
+func is_lifted() -> bool:
+	return state == State.LIFTED
+
+
+func _update_lifted(delta: float) -> void:
+	if state != State.LIFTED:
+		return
+	_lift_t += delta
+	var k: float = clampf(_lift_t / 0.3, 0.0, 1.0)
+	var bob: float = 0.08 * sin(_lift_t * 5.0)
+	global_position.y = _lift_y0 + _lift_h * (k * k * (3.0 - 2.0 * k)) + bob * k
+	velocity = Vector3.ZERO
+	if _lift_t >= _lift_total:
+		drop()
+
+
+## The hold ends: the body falls (drop damage, then a stagger on landing).
+func drop() -> void:
+	if state != State.LIFTED:
+		return
+	_agent.avoidance_enabled = true
+	velocity = Vector3.ZERO
+	global_position.y = _lift_y0
+	if take_damage(_lift_drop_dmg, &"torso", _lift_weapon, _lift_by, &"explosive", true):
+		return
+	_react_clip = ""
+	_enter(State.STAGGER)
+
+
+## Slammed down: the slam damage (lethal to a Gänger of its round), a shockwave round the impact that hurts
+## everything near it (zombies included; the Lodestone's holder is immune through its Ballast rule), a knockdown
+## if it lives.
+func slam() -> void:
+	if state != State.LIFTED:
+		return
+	_agent.avoidance_enabled = true
+	velocity = Vector3.ZERO
+	global_position.y = _lift_y0
+	var pos: Vector3 = global_position
+	var killed: bool = take_damage(_lift_slam_dmg, &"torso", _lift_weapon, _lift_by, &"explosive", true)
+	if _lift_slam_wave > 0.0 and director != null and director.has_method("active_zombies"):
+		for z: Zombie in director.call("active_zombies"):
+			if z == self or not z.is_active() or z.state == State.LIFTED:
+				continue
+			if z.global_position.distance_to(pos) <= _lift_slam_wave:
+				z.take_damage(_lift_slam_wave_dmg, &"torso", _lift_weapon, _lift_by, &"explosive", true)
+		for n: Node in get_tree().get_nodes_in_group(&"players"):
+			var p: Player = n as Player
+			if p == null or not p.is_alive() or p.has_method("lodestone_ballast") and bool(p.call("lodestone_ballast")):
+				continue
+			if p.global_position.distance_to(pos) <= _lift_slam_wave:
+				p.take_hit(_lift_slam_wave_dmg * 0.5, self)
+	if killed:
+		return
+	_knockdown()
 
 
 func _halt(delta: float) -> void:

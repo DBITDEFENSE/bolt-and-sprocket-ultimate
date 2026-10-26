@@ -394,7 +394,7 @@ func add_intel(intel_id: StringName) -> void:
 ## an upgraded muzzle flash reveals it). The eight standard perks and Overclock Cordial (in the game since T-034);
 ## Fine Print Fernet joins when it ships with Helvetia Works.
 const CABINET_PERKS: PackedStringArray = ["ironhide_stout", "second_wind", "trigger_tonic", "twin_barrel",
-	"marathon_malt", "hawkeye_brandy", "packmule_porter", "blastproof_bock", "overclock_cordial"]
+	"marathon_malt", "hawkeye_brandy", "packmule_porter", "blastproof_bock", "overclock_cordial", "skyhook_sekt", "magpie_mead"]
 
 
 func _add_cabinet_rows() -> void:

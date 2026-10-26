@@ -73,5 +73,7 @@
       "max_alive": 6,
       "max_per_round": 4
     }
-  }
+  },
+  "returned_kill": 100,
+  "_returned_kill_doc": "UPDATE 07 (T-105): Scrip for a zombie flung off a drop or into vacuum by the Lodestone (Zombie.external_push's kill plane)."
 }

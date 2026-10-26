@@ -72,6 +72,8 @@ var host_unlocks: Dictionary = {}
 
 
 func _ready() -> void:
+	GLBus.enemy_killed.connect(_on_enemy_killed_magpie)
+	GLBus.enemy_killed_at.connect(_on_enemy_killed_at_magpie)
 	GLBus.match_started.connect(_on_match_started)
 	GLBus.enemy_killed.connect(_on_enemy_killed_mastery)
 	GLBus.round_ended.connect(_on_round_ended_mastery)
@@ -631,8 +633,157 @@ func _proc(pid: int, perk_id: StringName, effect: StringName) -> void:
 	_first_vo(pid, "proc", "PERK_PROC")
 
 
+## A perk effect fired for `pid` (world code: Skyhook's hop, the Lodestone's Ballast...): the proc signal and the
+## survivor's first-of-match line.
+func note_proc(pid: int, perk_id: StringName, effect: StringName) -> void:
+	_proc(pid, perk_id, effect)
+
+
+# ---------------------------------------------------------------- Skyhook Sekt III: the stomp (UPDATE 07, T-105)
+
+## Damage one stomp does to a zombie of this round's health (hop_stomp_health_mult x health(r)); bosses take the
+## flat hop_stomp_boss_damage.
+static func stomp_damage(round_health: float, boss: bool, effects: Dictionary) -> float:
+	if boss:
+		return float(effects.get("hop_stomp_boss_damage", 400.0))
+	return float(effects.get("hop_stomp_health_mult", 0.4)) * round_health
+
+
+## Landing from a Skyhook hop with Stall Turn: every zombie within hop_stomp_radius is hurt and staggered
+## (hop_stomp_max_targets, nearest first). Lifted zombies are left to the Lodestone.
+func hop_stomp(p: Player) -> void:
+	var fx: Dictionary = effects_for(&"skyhook_sekt", tier_of(p.player_id, &"skyhook_sekt"))
+	var radius: float = float(fx.get("hop_stomp_radius", 2.5))
+	var director: Node = get_tree().get_first_node_in_group(&"director")
+	if director == null or not director.has_method("active_zombies"):
+		return
+	var hr: float = float(RoundManager.zombie_health(maxi(1, RoundManager.current_round), GLData.table("rounds")))
+	var cands: Array = []
+	for z: Zombie in director.call("active_zombies"):
+		if not z.is_active() or z.is_lifted():
+			continue
+		var d: float = z.global_position.distance_to(p.global_position)
+		if d <= radius:
+			cands.append([d, z])
+	cands.sort_custom(func(a: Array, b: Array) -> bool: return float(a[0]) < float(b[0]))
+	var n: int = mini(int(fx.get("hop_stomp_max_targets", 8)), cands.size())
+	for i: int in n:
+		var z: Zombie = cands[i][1] as Zombie
+		var boss: bool = OVERCLOCK_BOSSES.has(String(z.enemy_id)) or z is HomageBoss
+		if not z.take_damage(stomp_damage(hr, boss, fx), &"torso", &"skyhook_sekt", p.player_id, &"explosive", true) and not boss:
+			z.force_stagger()
+	if n > 0:
+		Effects.explosion(p.global_position + Vector3.UP * 0.2, radius * 0.5)
+		AudioDirector.play_3d("perk_skyhook_stomp", p.global_position, -4.0, 0.1)
+		_proc(p.player_id, &"skyhook_sekt", &"stomp")
+
+
+# ---------------------------------------------------------------- Magpie Mead (UPDATE 07, T-105)
+
+var _magpie_last: Dictionary = {}     # pid -> {limb, weapon, kind} of the kill that enemy_killed_at follows
+var _magpie_cd: Dictionary = {}       # pid -> ms until the next roll
+var _magpie_count: Dictionary = {}    # pid -> drops so far this match (Pawn Shop's every-25th)
+var magpie_rng: RandomNumberGenerator = RandomNumberGenerator.new()
+
+
+## The drop chance of one kill: magpie_head_chance on a head or melee kill, else magpie_chance.
+static func magpie_chance(effects: Dictionary, limb: StringName, melee: bool) -> float:
+	if limb == &"head" or melee:
+		return float(effects.get("magpie_head_chance", 0.0))
+	return float(effects.get("magpie_chance", 0.0))
+
+
+## What a drop is: "ammo" / "scrip" / "grenade" by the magpie_w_* weights, from one roll in [0, 1).
+static func magpie_kind(effects: Dictionary, roll: float) -> StringName:
+	var wa: float = float(effects.get("magpie_w_ammo", 0.5))
+	var ws: float = float(effects.get("magpie_w_scrip", 0.35))
+	var wg: float = float(effects.get("magpie_w_grenade", 0.15))
+	var tot: float = maxf(0.001, wa + ws + wg)
+	var r: float = roll * tot
+	if r < wa:
+		return &"ammo"
+	if r < wa + ws:
+		return &"scrip"
+	return &"grenade"
+
+
+## Scrip in a Scrip drop on this round.
+static func magpie_scrip(effects: Dictionary, round_number: int) -> int:
+	return mini(int(effects.get("magpie_scrip_max", 250)), int(effects.get("magpie_scrip_base", 60)) + int(effects.get("magpie_scrip_per_round", 10)) * maxi(1, round_number))
+
+
+func _on_enemy_killed_magpie(_enemy_id: StringName, limb: StringName, weapon_id: StringName, by_player: int) -> void:
+	if by_player <= 0 or not has_perk(by_player, &"magpie_mead"):
+		return
+	_magpie_last[by_player] = {"limb": limb, "weapon": weapon_id}
+
+
+func _on_enemy_killed_at_magpie(_enemy_id: StringName, position: Vector3, by_player: int) -> void:
+	if by_player <= 0 or not _magpie_last.has(by_player) or not Net.is_authority():
+		return
+	var last: Dictionary = _magpie_last[by_player]
+	_magpie_last.erase(by_player)
+	var now: int = Time.get_ticks_msec()
+	if int(_magpie_cd.get(by_player, 0)) > now:
+		return
+	var fx: Dictionary = effects_for(&"magpie_mead", tier_of(by_player, &"magpie_mead"))
+	var melee: bool = String(last.get("weapon", "")) in ["trench_knife", "etool", "mallet", "kinderhammer", "service_key"]
+	if magpie_rng.randf() >= magpie_chance(fx, StringName(last.get("limb", &"torso")), melee):
+		return
+	_magpie_cd[by_player] = now + int(float(fx.get("magpie_cooldown", 1.5)) * 1000.0)
+	spawn_magpie_drop(by_player, position, fx, StringName(last.get("weapon", "")))
+
+
+## Places one drop at `position` for `pid` (every 25th on Pawn Shop is a power-up). Returns the drop node.
+func spawn_magpie_drop(pid: int, position: Vector3, fx: Dictionary, weapon_id: StringName = &"") -> Node3D:
+	var parent: Node = get_tree().current_scene
+	if parent == null:
+		parent = get_tree().root
+	if parent is MapRoot:
+		position = (parent as MapRoot).clamp_inside(position)
+	var count: int = int(_magpie_count.get(pid, 0)) + 1
+	_magpie_count[pid] = count
+	var drop: MagpieDrop = MagpieDrop.new()
+	var every: int = int(fx.get("magpie_powerup_every", 0))
+	if every > 0 and count % every == 0:
+		drop.kind = &"powerup"
+		drop.powerup_id = &"resupply" if magpie_rng.randf() < 0.5 else &"double_scrip"
+	else:
+		drop.kind = magpie_kind(fx, magpie_rng.randf())
+	match drop.kind:
+		&"ammo":
+			drop.amount = int(fx.get("magpie_mags", 1))
+			var near: float = float(fx.get("magpie_upgraded_near_m", 0.0))
+			drop.upgraded_ammo = near > 0.0 and String(weapon_id).ends_with("_up")
+		&"scrip":
+			drop.amount = magpie_scrip(fx, RoundManager.current_round)
+		_:
+			drop.amount = 1
+	drop.owner_pid = pid
+	drop.shared = bool(fx.get("magpie_shared", false))
+	drop.life = float(fx.get("magpie_life", 20.0))
+	parent.add_child(drop)
+	drop.global_position = position + Vector3.UP * 0.25
+	AudioDirector.play_3d("perk_magpie_drop", drop.global_position, -6.0, 0.1)
+	GLBus.magpie_drop.emit(pid, drop.kind, drop.global_position)
+	return drop
+
+
+## A drop was picked up: the proc line (once a match) and the tonic's signal.
+func magpie_taken(pid: int, kind: StringName) -> void:
+	_proc(pid, &"magpie_mead", kind)
+
+
+## Scavenger (Magpie II): the economy's salvage (dog tag) chance for this killer is multiplied.
+func salvage_mult(pid: int) -> float:
+	return float(stat(pid, "salvage_mult", 1.0))
+
+
 ## Tests: forget every window and cooldown.
 func clear_tier_timers() -> void:
+	_magpie_cd.clear()
+	_magpie_count.clear()
+	_magpie_last.clear()
 	_until.clear()
 	_last_shot_ms.clear()
 

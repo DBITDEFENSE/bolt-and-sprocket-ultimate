@@ -34,6 +34,8 @@ const RELOAD_CUES: Dictionary = {
 	# T-090: the Ashlight's capsule charges up after an empty reload; the Sankt-Elmsfeuer's magneto winds and arcs
 	"capsule_empty": [[0.86, "ashlight_charge"]],
 	"crank": [[0.12, "totenglocke_crank"], [0.38, "scrip_tick"], [0.58, "scrip_tick"], [0.8, "ashlight_charge"], [0.9, "perk_overclock_arc"]],
+	# T-105: the Lodestone's yoke down, a quarter turn of the lens in its cradle, the yoke up
+	"lodestone": [[0.2, "scrip_tick"], [0.5, "lodestone_turn"], [0.82, "lodestone_lift"]],
 }
 const FIRE_BUFFER: float = 0.12    # seconds a too-early semi-auto click is remembered
 const SWAP_TIME: float = 0.42      # raise time after a weapon swap (firing is blocked meanwhile)
@@ -79,6 +81,7 @@ var _burst_cd: float = 0.0
 var _ground_t: float = 0.0
 var _fired_this_frame: bool = false
 var _bell: Totenglocke = null      # Totenglocke wind-and-toll logic (gravelight/weapons/totenglocke.gd), made on first use
+var _lode: Lodestone = null        # the Lodestone's lift / slam / fling (gravelight/weapons/lodestone.gd, T-105), made on first use
 var _bell_crank: Node3D = null
 var _fire_keys: Dictionary = {}    # base weapon id -> fire sound key (cached: "fire_<id>" or the class key)
 var _fire_buffer: float = 0.0      # a semi-auto click that arrived slightly early fires as soon as it can
@@ -667,6 +670,8 @@ func tick(delta: float, intent: Dictionary) -> void:
 		_move_fire_buffer = MOVE_FIRE_BUFFER
 	if w != null and w.data.has("bell"):
 		_tick_bell(w, delta, can_shoot and bool(intent.get("fire_held", false)), bool(intent.get("fire_pressed", false)))
+	elif w != null and w.data.has("gravity"):
+		_tick_gravity(w, delta, can_shoot and bool(intent.get("fire_held", false)), can_shoot and bool(intent.get("fire_pressed", false)))
 	elif can_shoot and _burst_left > 0 and _burst_cd <= 0.0 and w.mag > 0:
 		_burst_left -= 1
 		_burst_cd = 60.0 / 900.0
@@ -901,6 +906,9 @@ func _fire_stream(w: WeaponInstance) -> void:
 # ---------------------------------------------------------------- upgraded-weapon behavior (Crucible)
 
 func _alt_fire(w: WeaponInstance) -> void:
+	if w.data.has("gravity"):
+		gravity_logic().alt_fire(w)   # the Lodestone's fling (T-105)
+		return
 	if w.data.has("bell"):
 		bell_logic().alt_fire(w)   # the Bell Dome
 		return
@@ -1157,6 +1165,17 @@ func bell_logic() -> Totenglocke:
 	if _bell == null:
 		_bell = Totenglocke.new(self)
 	return _bell
+
+
+## The Lodestone (T-105): tap = lift, tap again = slam, alt = fling.
+func _tick_gravity(w: WeaponInstance, delta: float, held: bool, pressed: bool) -> void:
+	gravity_logic().tick(w, delta, held, pressed)
+
+
+func gravity_logic() -> Lodestone:
+	if _lode == null:
+		_lode = Lodestone.new(self)
+	return _lode
 
 
 func start_reload() -> void:
@@ -2090,6 +2109,8 @@ func _animate(delta: float, sprinting: bool) -> void:
 	_reset_parts()
 	if _bell != null:
 		_bell.pose_parts(_bell_crank, _model)   # wind-up crank spin, the bell's ring-out vibration
+	if _lode != null and w != null and w.data.has("gravity"):
+		_lode.pose_parts(_model)   # T-105: the lens spins, the cradle opens on a lift, the coil glows on the charge
 	if _model != null and _model.has_meta("wonder"):
 		WonderLook.tick(self, _model, delta)   # T-090: the wonder weapons' fluid, gauges, hammer, arcs (driven by this state)
 	var lh_override: Variant = null      # support-hand target in gun space, if a reload moves it
@@ -2468,6 +2489,11 @@ func _feel_rig(delta: float) -> void:
 
 
 ## Jump take-off: the gun dips (and a hair of roll) on the same spring as the shot kick.
+## Skyhook Sekt II (T-105): the gun comes up at once after a landing.
+func instant_sprint_out() -> void:
+	_sprint_out_t = 0.0
+
+
 func on_jump() -> void:
 	var wv: float = float(_feel.get("vm_spring", 20.0))
 	var k: float = float((GLData.table("movement").get("jump", {}) as Dictionary).get("takeoff_dip", 0.6))
@@ -2701,6 +2727,8 @@ func _animate_reload(p: float) -> Variant:
 			return bell_logic().reload_hand(p, _part("Crank"), lh_home)   # the crank IS the reload
 		"crank":
 			return WonderLook.reload_crank(self, p, lh_home)   # T-090: the Sankt-Elmsfeuer's magneto crank
+		"lodestone":
+			return gravity_logic().reload_hand(p, _model, lh_home)   # T-105: the lens's quarter turn in the cradle
 	return null
 
 

@@ -522,6 +522,27 @@ Fine Print Fernet and Overclock Cordial reach every Gravelight map after The Fin
 | `gl.all.wren.perk_overclock.01` | "My rifle hums when it is empty. Fine. Let it sing." |
 | `gl.all.wren.perk_overclock.02` | "Static in the blood. My brother would have laughed at this." |
 
+**Map 4 "Fernflug" (UPDATE 07, T-105): Skyhook Sekt and Magpie Mead** (`docs/MAP4_FERNFLUG.md` §12.8; the same `PERK_SKYHOOK` / `PERK_MAGPIE` token route).
+
+| ID | Line |
+|---|---|
+| `gl.all.dutch.perk_skyhook.01` | "Fizzy. ...Hey. HEY. The floor got further away." |
+| `gl.all.dutch.perk_skyhook.02` | "Tastes like a wedding. A wedding where somebody jumped off something." |
+| `gl.all.peg.perk_skyhook.01` | "Sekt. Of course it's Sekt. One doesn't open champagne for a landing." |
+| `gl.all.peg.perk_skyhook.02` | "...I feel I ought to have a parachute. I feel I am a parachute." |
+| `gl.all.deacon.perk_skyhook.01` | "Light as a feather. Light as a bird. Lord, don't let me get used to it." |
+| `gl.all.deacon.perk_skyhook.02` | "Somebody made this so you'd land soft. That's a kind thing to make. I'd like to meet 'em." |
+| `gl.all.wren.perk_skyhook.01` | "Bubbles. ...I don't like my feet off the ground. I'll make an exception." |
+| `gl.all.wren.perk_skyhook.02` | "Jette. The label says Jette. ...She said no. Good." |
+| `gl.all.dutch.perk_magpie.01` | "Honey. And... metal? Like licking a pawn shop. ...I like it." |
+| `gl.all.dutch.perk_magpie.02` | "Pick it up, it's yours now. Lady after my own heart." |
+| `gl.all.peg.perk_magpie.01` | "Mead. A sergeant brewed mead on a bomb range. I'm going to write her a commendation and she's going to frame it in the cage." |
+| `gl.all.peg.perk_magpie.02` | "Everything the dead drop is ours. It always was. Now we're simply picking it up." |
+| `gl.all.deacon.perk_magpie.01` | "Mesquite honey. She made it with what was lying around. That's the best way anything's ever been made." |
+| `gl.all.deacon.perk_magpie.02` | "Nothing on this range goes to waste. Amen, sergeant." |
+| `gl.all.wren.perk_magpie.01` | "A thief's bird. ...The only one that comes back. I read the label. I read everything." |
+| `gl.all.wren.perk_magpie.02` | "Sixty-two kills and now they pay me twice. Good." |
+
 The Crucible plaque line `gl.map01.deacon.plaque.01` is in `docs/gravelight/LORE.md` §4.2. It's tier 1, once per match, the first time Deacon reads the plaque.
 
 ---

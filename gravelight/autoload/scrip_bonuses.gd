@@ -189,7 +189,8 @@ func _on_enemy_killed_at(_enemy_id: StringName, position: Vector3, by_player: in
 	_tags = live
 	var c: Dictionary = cfg()
 	var r: int = maxi(1, RoundManager.current_round)
-	if not should_drop_tag(r, _tags_round, _tags.size(), rng.randf(), c):
+	# Magpie Mead II (T-105): the killer's salvage chance is multiplied (a roll divided by the multiplier)
+	if not should_drop_tag(r, _tags_round, _tags.size(), rng.randf() / maxf(1.0, PerkManager.salvage_mult(by_player)), c):
 		return
 	var t: Node3D = spawn_tag(position, tag_value(r, c))
 	if t != null:

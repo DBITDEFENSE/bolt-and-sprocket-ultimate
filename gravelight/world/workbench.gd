@@ -1,7 +1,8 @@
 class_name Workbench
 extends Interactable
-## The Generator Hall workbench: with all three parts, hold to build the Totenglocke (3 s, Deacon 15% faster).
-## Once built, every player may take one Totenglocke from it, free.
+## A buildable's workbench: the Generator Hall's for the Totenglocke, the Groom Lake lab's for the Lodestone
+## (T-105). With all three parts (BuildablePart.BUILDABLES), hold to build it (3 s, Deacon 15% faster). Once
+## built, every player may take one from it, free.
 
 @export var buildable_id: StringName = &"totenglocke"
 @export var build_seconds: float = 3.0
@@ -31,15 +32,23 @@ func build_greybox() -> void:
 		func(r: Node3D) -> void: InteractableArt.part_bell(r),
 		func(r: Node3D) -> void: InteractableArt.part_frame(r),
 		func(r: Node3D) -> void: InteractableArt.part_crank(r)]
-	var ids: Array = BuildablePart.NAMES.keys()
+	if buildable_id == &"lodestone":
+		builders = [
+			func(r: Node3D) -> void: InteractableArt.part_coil(r),
+			func(r: Node3D) -> void: InteractableArt.part_cradle(r),
+			func(r: Node3D) -> void: InteractableArt.part_lens(r)]
+	var ids: Array = BuildablePart.parts_of(buildable_id)
 	for i: int in ids.size():
 		var pid: StringName = StringName(ids[i])
-		var mi: MeshInstance3D = InteractableArt.place(self, "tg_" + String(pid), builders[i % 3], Vector3(-0.55 + i * 0.55, BENCH_TOP, 0.22))
+		var mi: MeshInstance3D = InteractableArt.place(self, "wb_" + String(pid), builders[i % 3], Vector3(-0.55 + i * 0.55, BENCH_TOP, 0.22))
 		_part_vis[pid] = mi
 	_bell_vis = Node3D.new()
 	_bell_vis.position = Vector3(0, BENCH_TOP, 0.3)
 	add_child(_bell_vis)
-	InteractableArt.place(_bell_vis, "totenglocke_built", func(r: Node3D) -> void: InteractableArt.totenglocke(r))
+	if buildable_id == &"lodestone":
+		InteractableArt.place(_bell_vis, "lodestone_built", func(r: Node3D) -> void: InteractableArt.lodestone(r))
+	else:
+		InteractableArt.place(_bell_vis, "totenglocke_built", func(r: Node3D) -> void: InteractableArt.totenglocke(r))
 	_bell_vis.hide()
 	var glow: OmniLight3D = OmniLight3D.new()
 	glow.light_color = Color(1.0, 0.75, 0.45)
@@ -60,24 +69,28 @@ func _refresh_parts() -> void:
 		(_part_vis[pid] as Node3D).visible = not built and BuildablePart.has_part(StringName(pid))
 
 
+func _label() -> String:
+	return str(BuildablePart.cfg_of(buildable_id).get("label", "Totenglocke"))
+
+
 func get_prompt(player: Player) -> String:
 	var key: String = prompt_key(&"interact")
 	if built:
-		if _taken_by.has(player.player_id) and player.weapons.find_weapon_base(&"totenglocke") != null:
+		if _taken_by.has(player.player_id) and player.weapons.find_weapon_base(buildable_id) != null:
 			return ""
-		return "Hold [%s] to take the Totenglocke" % key
-	if BuildablePart.parts_held() >= 3:
-		return "Hold [%s] to build the Totenglocke" % key
+		return "Hold [%s] to take the %s" % [key, _label()]
+	if BuildablePart.parts_held(buildable_id) >= 3:
+		return "Hold [%s] to build the %s" % [key, _label()]
 	var parts: PackedStringArray = []
-	for id: Variant in BuildablePart.NAMES.keys():
+	for id: Variant in BuildablePart.parts_of(buildable_id):
 		parts.append(("[x] " if BuildablePart.has_part(StringName(id)) else "[ ] ") + str(BuildablePart.NAMES[id]))
-	return "Totenglocke parts:  " + "   ".join(parts)
+	return "%s parts:  " % _label() + "   ".join(parts)
 
 
 func can_interact(player: Player) -> bool:
 	if built:
-		return player.weapons.find_weapon_base(&"totenglocke") == null
-	return BuildablePart.parts_held() >= 3
+		return player.weapons.find_weapon_base(buildable_id) == null
+	return BuildablePart.parts_held(buildable_id) >= 3
 
 
 func hold_time(player: Player) -> float:
@@ -91,14 +104,14 @@ func hold_time(player: Player) -> float:
 
 func interact(player: Player) -> void:
 	if not built:
-		if BuildablePart.parts_held() < 3:
+		if BuildablePart.parts_held(buildable_id) < 3:
 			return
 		build(player.player_id)
 		return
-	if player.weapons.find_weapon_base(&"totenglocke") == null:
-		player.weapons.give_weapon(&"totenglocke")
+	if player.weapons.find_weapon_base(buildable_id) == null:
+		player.weapons.give_weapon(buildable_id)
 		_taken_by[player.player_id] = true
-		GLBus.weapon_acquired.emit(player.player_id, &"totenglocke", &"workbench")
+		GLBus.weapon_acquired.emit(player.player_id, buildable_id, &"workbench")
 
 
 func build(by_player: int) -> void:

@@ -1,0 +1,212 @@
+{
+ "id": "lodestone",
+ "tris": 13020,
+ "nodes": [
+  {
+   "name": "Body",
+   "tris": 760,
+   "bbox_min": [
+    -0.0028,
+    -0.0362,
+    -0.0546
+   ],
+   "bbox_max": [
+    0.0028,
+    0.0006,
+    0.0318
+   ],
+   "materials": [
+    "lodestone_atlas"
+   ]
+  },
+  {
+   "name": "Coil",
+   "tris": 4560,
+   "bbox_min": [
+    -0.1109,
+    -0.0986,
+    -0.3387
+   ],
+   "bbox_max": [
+    0.1109,
+    0.048,
+    -0.105
+   ],
+   "materials": [
+    "lodestone_atlas",
+    "coil_glow"
+   ]
+  },
+  {
+   "name": "Corona",
+   "tris": 768,
+   "bbox_min": [
+    -0.074,
+    -0.184,
+    -0.344
+   ],
+   "bbox_max": [
+    0.074,
+    -0.036,
+    -0.336
+   ],
+   "materials": [
+    "halo"
+   ]
+  },
+  {
+   "name": "Cradle",
+   "tris": 2832,
+   "bbox_min": [
+    -0.1105,
+    -0.2205,
+    -0.435
+   ],
+   "bbox_max": [
+    0.1105,
+    0.0005,
+    -0.245
+   ],
+   "materials": [
+    "lodestone_atlas"
+   ]
+  },
+  {
+   "name": "Grip_L",
+   "tris": 280,
+   "bbox_min": [
+    -0.02,
+    -0.102,
+    -0.22
+   ],
+   "bbox_max": [
+    0.02,
+    0.005,
+    -0.18
+   ],
+   "materials": [
+    "lodestone_atlas"
+   ]
+  },
+  {
+   "name": "Grip_R",
+   "tris": 280,
+   "bbox_min": [
+    -0.023,
+    -0.1118,
+    0.0243
+   ],
+   "bbox_max": [
+    0.023,
+    0.0125,
+    0.0933
+   ],
+   "materials": [
+    "lodestone_atlas"
+   ]
+  },
+  {
+   "name": "Sphere",
+   "tris": 1680,
+   "bbox_min": [
+    -0.062,
+    -0.179,
+    -0.402
+   ],
+   "bbox_max": [
+    0.062,
+    -0.041,
+    -0.278
+   ],
+   "materials": [
+    "lodestone_atlas",
+    "glass",
+    "emitter"
+   ]
+  },
+  {
+   "name": "Yoke",
+   "tris": 1860,
+   "bbox_min": [
+    -0.127,
+    -0.119,
+    -0.466
+   ],
+   "bbox_max": [
+    0.127,
+    0.055,
+    0.1
+   ],
+   "materials": [
+    "lodestone_atlas"
+   ]
+  }
+ ],
+ "bbox_min": [
+  -0.127,
+  -0.2205,
+  -0.466
+ ],
+ "bbox_max": [
+  0.127,
+  0.055,
+  0.1
+ ],
+ "size": [
+  0.254,
+  0.2755,
+  0.566
+ ],
+ "blender": "5.2.3 LTS",
+ "frame": "game frame: -Z forward, +Y up, origin at the right-hand grip, metres",
+ "markers": {
+  "Muzzle": [
+   0,
+   -0.11,
+   -0.41
+  ],
+  "SightPoint": [
+   0,
+   0.0538,
+   -0.024
+  ],
+  "FrontSight": [
+   0,
+   0.0528,
+   -0.44
+  ],
+  "LeftHand": [
+   0,
+   -0.045,
+   -0.2
+  ],
+  "grip_r": [
+   0,
+   -0.045,
+   0.055
+  ],
+  "Sphere": [
+   0.0,
+   -0.11,
+   -0.34
+  ],
+  "Cradle": [
+   0.0,
+   -0.11,
+   -0.34
+  ],
+  "Coil": [
+   0,
+   0.02,
+   -0.16
+  ]
+ },
+ "glb_bytes": 521352,
+ "textures": [
+  "lodestone_albedo.png",
+  "lodestone_normal.png",
+  "lodestone_orm.png"
+ ],
+ "texture_size": 2048,
+ "build_seconds": 244.6
+}

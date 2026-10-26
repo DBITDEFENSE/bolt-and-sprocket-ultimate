@@ -720,6 +720,7 @@ func _move(delta: float) -> void:
 	player.velocity.x = horizontal.x
 	player.velocity.z = horizontal.z
 	player.velocity.y = -0.5 if on_floor and player.velocity.y < 0.0 else player.velocity.y - GRAVITY * delta
+	player.velocity += player.push_velocity()   # turbulence, suction, pulls (T-105)
 	player.sprinting = sprinting
 	_sprint_t = _sprint_t + delta if sprinting else 0.0
 	sprinted_s = _sprint_t

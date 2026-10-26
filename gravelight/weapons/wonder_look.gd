@@ -223,6 +223,8 @@ static func tick(holder: WeaponHolder, model: Node3D, delta: float) -> void:
 			_tick_bell(holder, model, w, s, energy, delta)
 		"elmsfeuer":
 			_tick_elmsfeuer(holder, model, w, s, frac, energy, delta)
+		"lodestone":
+			_tick_lodestone(holder, model, w, s, frac, energy, delta)
 
 
 ## The fluid surface's up in mesh space: gravity and the gun's acceleration (the viewmodel's own motion: turns,
@@ -381,6 +383,26 @@ static func _tick_elmsfeuer(holder: WeaponHolder, model: Node3D, w: WeaponInstan
 		if om != null:
 			om.set_instance_shader_parameter("energy", energy)
 			om.set_instance_shader_parameter("flash", flash)
+
+
+## The Lodestone (T-105): the lens's glow follows the charges left and the fling wind-up; the holder's
+## Lodestone.pose_parts already spins the Sphere, opens the Cradle and lights the Coil, so this only drives the
+## shader parameters (energy, flash) on the glass and the coil's emissive mesh.
+static func _tick_lodestone(holder: WeaponHolder, model: Node3D, _w: WeaponInstance, s: Dictionary, frac: float, energy: float, _delta: float) -> void:
+	var lode: Lodestone = holder._lode
+	var charge: float = lode.charge() if lode != null else 0.0
+	var holding: float = lode.ring_open() if lode != null else 0.0
+	var sphere: Node3D = model.get_node_or_null("Sphere") as Node3D
+	if sphere != null:
+		var sm: MeshInstance3D = _first_mesh(sphere)
+		if sm != null:
+			sm.set_instance_shader_parameter("energy", energy * (0.4 + 1.2 * frac + 2.0 * holding + 3.0 * charge))
+			sm.set_instance_shader_parameter("flash", clampf(float(s["flash"]) + charge, 0.0, 1.0))
+	var coil: Node3D = model.get_node_or_null("Coil") as Node3D
+	if coil != null:
+		var cm: MeshInstance3D = _first_mesh(coil)
+		if cm != null:
+			cm.set_instance_shader_parameter("energy", energy * (0.2 + 4.0 * charge))
 
 
 static func _first_mesh(n: Node) -> MeshInstance3D:

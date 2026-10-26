@@ -50,7 +50,7 @@ func test_caps_draw_at_every_size() -> void:
 					n += 1
 	await get_tree().process_frame
 	await get_tree().process_frame
-	assert_eq(n, 9 * 3 * 3 * 2, "every cap was drawn once (a script error in _draw shows in the run's log)")
+	assert_eq(n, (GLData.table("perks")["perks"] as Dictionary).size() * 3 * 3 * 2, "every cap was drawn once (a script error in _draw shows in the run's log)")
 	# the fallback: a tonic id with no glyph draws its letters (no error either)
 	var odd: PerkCap = PerkCap.new()
 	odd.perk_id = &"fine_print_fernet"

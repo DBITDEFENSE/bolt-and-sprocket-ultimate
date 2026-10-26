@@ -883,6 +883,105 @@
      }
     }
    }
+  },
+  "lodestone": {
+   "grip_native": [
+    0,
+    0,
+    0
+   ],
+   "length": 0.56,
+   "muzzle": [
+    0,
+    -0.11,
+    -0.41
+   ],
+   "sight_rear": [
+    0,
+    0.0538,
+    -0.024
+   ],
+   "sight_front": [
+    0,
+    0.0528,
+    -0.44
+   ],
+   "sights_on": "root",
+   "left_hand": [
+    0,
+    -0.045,
+    -0.2
+   ],
+   "lh_axis": "y",
+   "lh_radius": 0.02,
+   "grip_r": [
+    0,
+    -0.045,
+    0.055
+   ],
+   "grip_lean": 15,
+   "grip_r_radius": 0.02,
+   "no_bore": true,
+   "reload": "lodestone",
+   "pivots": {
+    "Sphere": [
+     0,
+     -0.11,
+     -0.34
+    ],
+    "Cradle": [
+     0,
+     -0.11,
+     -0.34
+    ],
+    "Coil": [
+     0,
+     0.02,
+     -0.16
+    ]
+   },
+   "shader": {
+    "wear": 0.08,
+    "grime": 0.2,
+    "scratches": 0.08
+   },
+   "wonder": {
+    "crucible_parts": [
+     "Corona"
+    ],
+    "materials": {
+     "halo": {
+      "strength": 2.5,
+      "color": [
+       0.75,
+       0.45,
+       1.0
+      ]
+     },
+     "emitter": {
+      "strength": 2.0,
+      "color": [
+       0.62,
+       0.3,
+       1.0
+      ]
+     }
+    },
+    "upgraded": {
+     "energy": 1.6,
+     "shader": {
+      "patina": [
+       0.25,
+       0.12,
+       0.42,
+       0.7
+      ],
+      "patina_rough": 0.4,
+      "veins": 0.3
+     }
+    }
+   },
+   "_doc": "T-105 the Lodestone (tools_src/blender/wonder/lodestone.py): a lantern-sized lens hung in its gyro cradle under the end of the yoke's bar; the sight line runs along the bar's top (the rear notch to the bead on the bar's tip), so the lens hangs under the ADS picture (test_sight_clearance); reload = the lens's quarter turn in the cradle (Lodestone.reload_hand); Corona = Escape Velocity's violet ring."
   }
  }
 }

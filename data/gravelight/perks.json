@@ -327,6 +327,103 @@
      }
     }
    }
+  },
+  "skyhook_sekt": {
+   "name": "Skyhook Sekt",
+   "desc": "Air control, one hop in the air, soft landings and longer slides. The floor is a suggestion.",
+   "cost": 2500,
+   "needs_power": true,
+   "effects": {
+    "air_accel_mult": 2.5,
+    "air_hops": 1,
+    "air_hop_mult": 0.6,
+    "safe_landing": true,
+    "landing_shake_mult": 0.3,
+    "slide_speed_mult": 1.25,
+    "slide_duration_mult": 1.2,
+    "push_resist": 0.3,
+    "pull_resist": 0.5
+   },
+   "color": "#9fc6e6",
+   "abbr": "SK",
+   "shape": "glider",
+   "sign": "SKYHOOK",
+   "neon": "#e8f4ff",
+   "_doc": "UPDATE 07 (T-105, docs/MAP4_FERNFLUG.md section 7.1, JINGLES.md section 14): ELEVATION, DMS-VP-ELV-08. air_accel_mult scales movement.json air_accel; air_hops = extra jumps in the air (air_hop_mult x jump_velocity), reset on landing; safe_landing = no land_speed_loss, no land head dip, landing_shake_mult on the shake; slide_speed_mult / slide_duration_mult on player.json slide; push_resist cuts Player.external_push (turbulence, breaches), pull_resist the Lodestone / Bordwart pulls. Shape 'glider': a tall slim fuselage cabinet, footprint 0.8 x 2.4 x 0.7.",
+   "tiers": {
+    "2": {
+     "name": "Thermal",
+     "cost": 3500,
+     "desc": "The hop also resets on a slide; a slide-jump launches harder; sprint-out after a landing is instant.",
+     "effects": {
+      "hop_reset_on_slide": true,
+      "slide_jump_boost_mult": 1.5,
+      "instant_sprint_out_on_land": true
+     }
+    },
+    "3": {
+     "name": "Stall Turn",
+     "cost": 7000,
+     "desc": "Landing from a hop stomps: zombies within 2.5 m are staggered and hurt (bosses a little).",
+     "effects": {
+      "hop_stomp": true,
+      "hop_stomp_radius": 2.5,
+      "hop_stomp_health_mult": 0.4,
+      "hop_stomp_max_targets": 8,
+      "hop_stomp_boss_damage": 400,
+      "hop_stomp_cooldown": 1.5
+     }
+    }
+   }
+  },
+  "magpie_mead": {
+   "name": "Magpie Mead",
+   "desc": "Your kills sometimes drop a clip, a few Scrip or a grenade. Pick it up. It's yours now.",
+   "cost": 3000,
+   "needs_power": true,
+   "effects": {
+    "magpie_chance": 0.12,
+    "magpie_head_chance": 0.18,
+    "magpie_mags": 1,
+    "magpie_shared": false,
+    "magpie_cooldown": 1.5,
+    "magpie_life": 20.0,
+    "magpie_scrip_base": 60,
+    "magpie_scrip_per_round": 10,
+    "magpie_scrip_max": 250,
+    "magpie_w_ammo": 0.5,
+    "magpie_w_scrip": 0.35,
+    "magpie_w_grenade": 0.15
+   },
+   "color": "#5b6b3a",
+   "abbr": "MM",
+   "shape": "bandit",
+   "sign": "MAGPIE MEAD",
+   "neon": "#f2e6b8",
+   "_doc": "UPDATE 07 (T-105, docs/MAP4_FERNFLUG.md section 7.2, JINGLES.md section 15): RECOVERY, DMS-VP-REC-09, the Allied-pattern cabinet. A kill by the holder rolls magpie_chance (magpie_head_chance on head and melee kills) for a MagpieDrop at the body: ammo (magpie_mags magazines of the holder's current gun; a wonder weapon gets one charge), Scrip (base + per_round x round, capped) or a grenade, by the magpie_w_* weights; the drop lives magpie_life s, the holder only unless magpie_shared. Shape 'bandit': a cabinet with a one-armed-bandit lever, footprint 0.9 x 2.3 x 0.65.",
+   "tiers": {
+    "2": {
+     "name": "Scavenger",
+     "cost": 4000,
+     "desc": "Drops come more often and hold two magazines; your salvage bonus is doubled.",
+     "effects": {
+      "magpie_chance": 0.18,
+      "magpie_head_chance": 0.26,
+      "magpie_mags": 2,
+      "salvage_mult": 2.0
+     }
+    },
+    "3": {
+     "name": "Pawn Shop",
+     "cost": 8000,
+     "desc": "Anyone can take your drops; every 25th drop is a power-up; drops near a taught gun's kill hold upgraded ammo.",
+     "effects": {
+      "magpie_shared": true,
+      "magpie_powerup_every": 25,
+      "magpie_upgraded_near_m": 3.0
+     }
+    }
+   }
   }
  },
  "drink_seconds": 1.2,

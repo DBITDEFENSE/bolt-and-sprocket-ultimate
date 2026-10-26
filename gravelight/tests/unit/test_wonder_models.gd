@@ -5,12 +5,12 @@ extends GutTest
 ## same as with the greybox), the part drivers follow the holder's state, and the Siren Gramophone's world model has
 ## its moving parts while its gameplay body is unchanged.
 
-const WONDER: Array[String] = ["ashlight", "totenglocke", "elmsfeuer"]
+const WONDER: Array[String] = ["ashlight", "totenglocke", "elmsfeuer", "lodestone"]
 ## Parts each model must carry (the holder's or WonderLook's drivers move them).
 const PARTS: Dictionary = {"ashlight": ["Mag", "Needle", "Halo"], "totenglocke": ["Bell", "Crank", "Hammer", "Pawl", "Runes"],
-	"elmsfeuer": ["Crank", "Dial", "Arc", "Orb"]}
+	"elmsfeuer": ["Crank", "Dial", "Arc", "Orb"], "lodestone": ["Sphere", "Cradle", "Coil", "Corona"]}
 ## The Crucible-only parts (hidden on the base weapon).
-const CRUCIBLE: Dictionary = {"ashlight": "Halo", "totenglocke": "Runes", "elmsfeuer": "Orb"}
+const CRUCIBLE: Dictionary = {"ashlight": "Halo", "totenglocke": "Runes", "elmsfeuer": "Orb", "lodestone": "Corona"}
 
 var _p: Player
 

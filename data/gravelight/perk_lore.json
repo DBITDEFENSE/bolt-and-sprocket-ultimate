@@ -252,6 +252,60 @@
     "[i]He hummed the bass line wrong. I left it in.[/i]",
     "[i]— V.[/i]"
    ]
+  },
+  "skyhook_sekt": {
+   "name": "Skyhook Sekt",
+   "plan_name": "ELEVATION",
+   "plan_id": "DMS-VP-ELV-08",
+   "human": "Henriette \"Jette\" Maurer.",
+   "human_story": "Werk Thalbach's wind-tunnel technician, thirty-one, a glider pilot who flew the Rhön in 1934 and never flew a thing with an engine again. Asked to make the ELEVATION substrate drinkable for the Kranich's crew (\"they will be at altitude for eleven hours; they should not mind it\"), she made it a [b]Sekt[/b], because you open Sekt when something lifts off, and she dosed it low enough that it makes a person [i]land[/i] well rather than fly: she said the point of flying was always the landing. She refused to test it on the crew and refused to fly the wing. Her tunnel logbook ends with the Kranich's weight in kilos and the one word [i]nein[/i]. She is alive (the epilogue says so). The cabinet is the only one Vendelin built from someone else's drawing; he wrote to thank her and she never answered, which he took as a kindness.",
+   "panel": [
+    "[b]HELVETIA AUTOMATEN AG · BASEL · CONDITIONS OF USE: SKYHOOK SEKT[/b]",
+    "[b](BUILT TO ORDER · WERK THALBACH · 1945)[/b]",
+    "",
+    "[b]§1. Benefit.[/b] [b]Lift is provided. Landing is the Holder's responsibility.[/b] The Product raises the Holder's expectations and, briefly, the Holder. It steadies the Holder's feet in the air, lets the Holder step once more where there is nothing to step on, and softens the ground on the way back.",
+    "",
+    "[b]§2. Origin.[/b] The formula was made drinkable by a technician who would not fly the aircraft it was made for. The undersigned wishes it recorded that this is not the same as not wanting to, and that he understands the difference better than he once did.",
+    "",
+    "[b]§3. The Provider's note.[/b] The Provider observes that a customer who can leave the ground has not yet left the Plan. The undersigned observes that the customer can at least see the Plan from up there.",
+    "",
+    "[b]§4. The second jump.[/b] The second jump is a courtesy. There is no third. The Holder is advised not to go looking for one.",
+    "",
+    "[b]§5. Side effects.[/b] Holders may experience lightness, a sudden interest in rooftops, and a reluctance to come down. These pass. The landing does not.",
+    "",
+    "[b]§6. Cancellation.[/b] Land. The Product cannot prevent it and the undersigned would not want it to.",
+    "",
+    "[i]She drew the nose and wrote \"please.\" It is the only drawing I was ever sent.[/i]",
+    "[i]— V.[/i]"
+   ]
+  },
+  "magpie_mead": {
+   "name": "Magpie Mead",
+   "plan_name": "RECOVERY",
+   "plan_id": "DMS-VP-REC-09",
+   "human": "Sgt. Dolores \"Dee\" Marchetti.",
+   "human_story": "Women's Army Corps, the supply sergeant who ran the Groom Lake salvage yard, from Bayonne, New Jersey, a scrap dealer's daughter. The program handed her a crate of RECOVERY substrate and an olive-painted Helvetia cabinet with the jingle re-recorded in English, and told her to make it drinkable for the range. She made it a [b]mead[/b] with the beekeeper's mesquite honey, because mead is what you make when you have nothing but what is lying around, and because she would not put it in the men's coffee. She refused to let the program test it on the test subjects in the lab. She tested it on herself, like Kessler, and said it tasted like a pawn shop. Her yard rule, painted over the cage: NOTHING ON THIS RANGE GOES TO WASTE. She is the last living person on the range when the squad arrives, and the one who stays.",
+   "panel": [
+    "[b]HELVETIA AUTOMATEN AG · BASEL · CONDITIONS OF USE: MAGPIE MEAD[/b]",
+    "[b](EXPORT PATTERN · REPAINTED BY THE CUSTOMER)[/b]",
+    "",
+    "[b]§1. Benefit.[/b] [b]Recovery is not refund.[/b] What the Holder recovers was already paid for, by someone. The Product only lets the Holder see it lying there.",
+    "",
+    "[b]§2. Who it is sold to.[/b] The Provider does not sell this Plan to persons who already own a yard. It sells it to persons who think they do.",
+    "",
+    "[b]§3. The bird.[/b] The magpie is a thief. The formulator wishes it recorded that it is also the only bird that comes back.",
+    "",
+    "[b]§4. The yard rule.[/b] Nothing on the range goes to waste. The Provider agrees, and means something else by it.",
+    "",
+    "[b]§5. Side effects.[/b] Holders may experience thrift, a habit of looking down, and an unwillingness to leave a thing where it lies. The undersigned has all three.",
+    "",
+    "[b]§6. Cancellation.[/b] Leave it where it lies. The Product will not stop you. Nothing here will.",
+    "",
+    "[i]They painted over this. Someone scraped it clear again. Hello.[/i]",
+    "[i]— V.[/i]",
+    "",
+    "[i](In pencil, under the signature, a second hand:)[/i] [b]Read this. — D.M.[/b]"
+   ]
   }
  }
 }

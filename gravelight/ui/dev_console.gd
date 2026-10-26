@@ -260,10 +260,16 @@ func _cmd_give(a: PackedStringArray) -> String:
 	if QUEST_ITEMS.has(a[0]):
 		QuestManager.give_item(StringName(a[0]), _ctx_pid)
 		return "Gave quest item " + a[0]
-	if a[0].begins_with("tg_part_"):
+	if a[0].begins_with("tg_part_") or a[0].begins_with("ls_part_"):   # the Totenglocke's and the Lodestone's parts (T-105)
 		GameState.set_flag(StringName("part_" + a[0]), true)
 		GLBus.item_picked_up.emit(StringName(a[0]), _ctx_pid)
 		return "Gave part " + a[0]
+	if a[0] == "lodestone_parts" or a[0] == "totenglocke_parts":   # every part of a buildable at once
+		var bid: StringName = StringName(a[0].trim_suffix("_parts"))
+		for pid: Variant in BuildablePart.parts_of(bid):
+			GameState.set_flag(StringName("part_" + String(pid)), true)
+			GLBus.item_picked_up.emit(StringName(pid), _ctx_pid)
+		return "Gave every %s part" % bid
 	if weps["weapons"].has(a[0]) or (weps.get("upgraded", {}) as Dictionary).has(a[0]):
 		p.weapons.give_weapon(StringName(a[0]))
 	elif weps["melee"].has(a[0]):

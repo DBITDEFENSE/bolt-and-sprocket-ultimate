@@ -369,6 +369,20 @@
    "bus": "SFX",
    "attenuation": "world"
   },
+  "casing_tink": {
+   "_doc": "T-095: a spent case landing (synthesized, project-owned; CasingPool plays it on the first bounce)",
+   "files": [
+    "res://gravelight/audio/sfx/world/casing_tink_01.wav",
+    "res://gravelight/audio/sfx/world/casing_tink_02.wav",
+    "res://gravelight/audio/sfx/world/casing_tink_03.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -10.0,
+   "pitch": [0.9, 1.15],
+   "vol_jitter_db": 2.0,
+   "max_voices": 4,
+   "attenuation": "quiet"
+  },
   "cellar_drip": {
    "files": [
     "res://gravelight/audio/sfx/world/cellar_drip_01.wav",
@@ -485,6 +499,98 @@
    "max_voices": 2,
    "bus": "SFX",
    "attenuation": "world"
+  },
+  "emerge_burst_earth": {
+   "_doc": "T-085 rise: earth/stone breaking (stone footsteps slowed; a real earth-burst sample would replace it).",
+   "files": [
+    "res://gravelight/audio/sfx/player/footstep_stone_01.wav",
+    "res://gravelight/audio/sfx/player/footstep_stone_02.wav",
+    "res://gravelight/audio/sfx/player/footstep_stone_03.wav",
+    "res://gravelight/audio/sfx/player/footstep_stone_04.wav",
+    "res://gravelight/audio/sfx/player/footstep_stone_05.wav"
+   ],
+   "volume_db": -1.0,
+   "max_voices": 4,
+   "bus": "SFX",
+   "attenuation": "zombie",
+   "pitch": [0.48, 0.62],
+   "vol_jitter_db": 2.0
+  },
+  "emerge_burst_snow": {
+   "_doc": "T-085 rise: the crust breaking (snow footsteps slowed; a real snow-burst sample would replace it).",
+   "files": [
+    "res://gravelight/audio/sfx/player/footstep_snow_01.wav",
+    "res://gravelight/audio/sfx/player/footstep_snow_02.wav",
+    "res://gravelight/audio/sfx/player/footstep_snow_03.wav",
+    "res://gravelight/audio/sfx/player/footstep_snow_04.wav",
+    "res://gravelight/audio/sfx/player/footstep_snow_05.wav"
+   ],
+   "volume_db": -2.0,
+   "max_voices": 4,
+   "bus": "SFX",
+   "attenuation": "zombie",
+   "pitch": [0.52, 0.66],
+   "vol_jitter_db": 2.0
+  },
+  "emerge_dig_earth": {
+   "files": [
+    "res://gravelight/audio/sfx/player/footstep_stone_01.wav",
+    "res://gravelight/audio/sfx/player/footstep_stone_02.wav",
+    "res://gravelight/audio/sfx/player/footstep_stone_03.wav",
+    "res://gravelight/audio/sfx/player/footstep_stone_04.wav",
+    "res://gravelight/audio/sfx/player/footstep_stone_05.wav"
+   ],
+   "volume_db": -9.0,
+   "max_voices": 6,
+   "bus": "SFX",
+   "attenuation": "zombie",
+   "pitch": [0.66, 0.84],
+   "vol_jitter_db": 3.0
+  },
+  "emerge_dig_snow": {
+   "files": [
+    "res://gravelight/audio/sfx/player/footstep_snow_01.wav",
+    "res://gravelight/audio/sfx/player/footstep_snow_02.wav",
+    "res://gravelight/audio/sfx/player/footstep_snow_03.wav",
+    "res://gravelight/audio/sfx/player/footstep_snow_04.wav",
+    "res://gravelight/audio/sfx/player/footstep_snow_05.wav"
+   ],
+   "volume_db": -9.0,
+   "max_voices": 6,
+   "bus": "SFX",
+   "attenuation": "zombie",
+   "pitch": [0.7, 0.88],
+   "vol_jitter_db": 3.0
+  },
+  "emerge_settle_earth": {
+   "files": [
+    "res://gravelight/audio/sfx/player/footstep_stone_01.wav",
+    "res://gravelight/audio/sfx/player/footstep_stone_02.wav",
+    "res://gravelight/audio/sfx/player/footstep_stone_03.wav",
+    "res://gravelight/audio/sfx/player/footstep_stone_04.wav",
+    "res://gravelight/audio/sfx/player/footstep_stone_05.wav"
+   ],
+   "volume_db": -10.0,
+   "max_voices": 4,
+   "bus": "SFX",
+   "attenuation": "quiet",
+   "pitch": [0.74, 0.88],
+   "vol_jitter_db": 2.0
+  },
+  "emerge_settle_snow": {
+   "files": [
+    "res://gravelight/audio/sfx/player/footstep_snow_01.wav",
+    "res://gravelight/audio/sfx/player/footstep_snow_02.wav",
+    "res://gravelight/audio/sfx/player/footstep_snow_03.wav",
+    "res://gravelight/audio/sfx/player/footstep_snow_04.wav",
+    "res://gravelight/audio/sfx/player/footstep_snow_05.wav"
+   ],
+   "volume_db": -10.0,
+   "max_voices": 4,
+   "bus": "SFX",
+   "attenuation": "quiet",
+   "pitch": [0.78, 0.9],
+   "vol_jitter_db": 2.0
   },
   "explosion_large": {
    "files": [
@@ -897,20 +1003,6 @@
    "max_voices": 1,
    "vol_jitter_db": 0.0
   },
-  "casing_tink": {
-   "_doc": "T-095: a spent case landing (synthesized, project-owned; CasingPool plays it on the first bounce)",
-   "files": [
-    "res://gravelight/audio/sfx/world/casing_tink_01.wav",
-    "res://gravelight/audio/sfx/world/casing_tink_02.wav",
-    "res://gravelight/audio/sfx/world/casing_tink_03.wav"
-   ],
-   "bus": "SFX",
-   "volume_db": -10.0,
-   "pitch": [0.9, 1.15],
-   "vol_jitter_db": 2.0,
-   "max_voices": 4,
-   "attenuation": "quiet"
-  },
   "glass_break": {
    "files": [
     "res://gravelight/audio/sfx/world/glass_break_01.wav",
@@ -1204,6 +1296,16 @@
    "volume_db": -3.0,
    "max_voices": 1
   },
+  "jingle_magpie_mead": {
+   "files": [
+    "res://gravelight/audio/jingles/magpie_mead_01.wav"
+   ],
+   "bus": "Jingles",
+   "volume_db": -4.0,
+   "max_voices": 1,
+   "pitch": [1.0, 1.0],
+   "attenuation": "world"
+  },
   "jingle_overclock_cordial": {
    "files": [
     "res://gravelight/audio/jingles/overclock_cordial_01.wav"
@@ -1217,6 +1319,16 @@
   "jingle_overclock_cordial_resolved": {
    "files": [
     "res://gravelight/audio/jingles/overclock_cordial_resolved_01.wav"
+   ],
+   "bus": "Jingles",
+   "volume_db": -4.0,
+   "max_voices": 1,
+   "pitch": [1.0, 1.0],
+   "attenuation": "world"
+  },
+  "jingle_skyhook_sekt": {
+   "files": [
+    "res://gravelight/audio/jingles/skyhook_sekt_01.wav"
    ],
    "bus": "Jingles",
    "volume_db": -4.0,
@@ -1292,6 +1404,56 @@
    "attenuation": "world",
    "loop": true
   },
+  "lodestone_fling": {
+   "files": [
+    "res://gravelight/audio/sfx/weapons/lodestone_fling_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -1.0,
+   "max_voices": 2,
+   "pitch": [0.95, 1.05],
+   "attenuation": "loud"
+  },
+  "lodestone_hum": {
+   "files": [
+    "res://gravelight/audio/sfx/weapons/lodestone_hum_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -6.0,
+   "max_voices": 1,
+   "pitch": [1.0, 1.0],
+   "attenuation": "quiet"
+  },
+  "lodestone_lift": {
+   "files": [
+    "res://gravelight/audio/sfx/weapons/lodestone_lift_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -2.0,
+   "max_voices": 2,
+   "pitch": [0.97, 1.03],
+   "attenuation": "loud"
+  },
+  "lodestone_slam": {
+   "files": [
+    "res://gravelight/audio/sfx/weapons/lodestone_slam_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": 0.0,
+   "max_voices": 2,
+   "pitch": [0.95, 1.05],
+   "attenuation": "loud"
+  },
+  "lodestone_turn": {
+   "files": [
+    "res://gravelight/audio/sfx/weapons/lodestone_turn_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -6.0,
+   "max_voices": 1,
+   "pitch": [0.98, 1.02],
+   "attenuation": "quiet"
+  },
   "music_menu": {
    "files": [
     "res://gravelight/audio/music/menu_theme_loop.wav"
@@ -1366,6 +1528,17 @@
    "attenuation": "hum",
    "loop": true
   },
+  "perk_hum_magpie_mead": {
+   "files": [
+    "res://gravelight/audio/sfx/world/perks/hum_magpie_mead.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -10.0,
+   "pitch": [1.0, 1.0],
+   "max_voices": 1,
+   "attenuation": "hum",
+   "loop": true
+  },
   "perk_hum_marathon_malt": {
    "files": [
     "res://gravelight/audio/sfx/world/perks/hum_marathon_malt.wav"
@@ -1410,6 +1583,17 @@
    "attenuation": "hum",
    "loop": true
   },
+  "perk_hum_skyhook_sekt": {
+   "files": [
+    "res://gravelight/audio/sfx/world/perks/hum_skyhook_sekt.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -10.0,
+   "pitch": [1.0, 1.0],
+   "max_voices": 1,
+   "attenuation": "hum",
+   "loop": true
+  },
   "perk_hum_trigger_tonic": {
    "files": [
     "res://gravelight/audio/sfx/world/perks/hum_trigger_tonic.wav"
@@ -1431,6 +1615,26 @@
    "max_voices": 1,
    "attenuation": "hum",
    "loop": true
+  },
+  "perk_magpie_drop": {
+   "files": [
+    "res://gravelight/audio/sfx/world/perks/magpie_drop_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -6.0,
+   "max_voices": 3,
+   "pitch": [0.96, 1.04],
+   "attenuation": "quiet"
+  },
+  "perk_magpie_pick": {
+   "files": [
+    "res://gravelight/audio/sfx/world/perks/magpie_pick_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -5.0,
+   "max_voices": 3,
+   "pitch": [0.96, 1.04],
+   "attenuation": "quiet"
   },
   "perk_overclock_arc": {
    "files": [
@@ -1462,6 +1666,26 @@
    "max_voices": 1,
    "pitch": [1.0, 1.0],
    "attenuation": "world"
+  },
+  "perk_skyhook_hop": {
+   "files": [
+    "res://gravelight/audio/sfx/world/perks/skyhook_hop_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -6.0,
+   "max_voices": 2,
+   "pitch": [0.95, 1.05],
+   "attenuation": "quiet"
+  },
+  "perk_skyhook_stomp": {
+   "files": [
+    "res://gravelight/audio/sfx/world/perks/skyhook_stomp_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -2.0,
+   "max_voices": 2,
+   "pitch": [0.95, 1.05],
+   "attenuation": "loud"
   },
   "perks_lost": {
    "files": [
@@ -2479,32 +2703,6 @@
    "attenuation": "zombie",
    "pitch": [0.94, 1.06],
    "vol_jitter_db": 2.0
-  },
-  "emerge_burst_snow": {
-    "_doc": "T-085 rise: the crust breaking (snow footsteps slowed; a real snow-burst sample would replace it).",
-    "files": ["res://gravelight/audio/sfx/player/footstep_snow_01.wav", "res://gravelight/audio/sfx/player/footstep_snow_02.wav", "res://gravelight/audio/sfx/player/footstep_snow_03.wav", "res://gravelight/audio/sfx/player/footstep_snow_04.wav", "res://gravelight/audio/sfx/player/footstep_snow_05.wav"],
-    "volume_db": -2.0, "max_voices": 4, "bus": "SFX", "attenuation": "zombie", "pitch": [0.52, 0.66], "vol_jitter_db": 2.0
-  },
-  "emerge_burst_earth": {
-    "_doc": "T-085 rise: earth/stone breaking (stone footsteps slowed; a real earth-burst sample would replace it).",
-    "files": ["res://gravelight/audio/sfx/player/footstep_stone_01.wav", "res://gravelight/audio/sfx/player/footstep_stone_02.wav", "res://gravelight/audio/sfx/player/footstep_stone_03.wav", "res://gravelight/audio/sfx/player/footstep_stone_04.wav", "res://gravelight/audio/sfx/player/footstep_stone_05.wav"],
-    "volume_db": -1.0, "max_voices": 4, "bus": "SFX", "attenuation": "zombie", "pitch": [0.48, 0.62], "vol_jitter_db": 2.0
-  },
-  "emerge_dig_snow": {
-    "files": ["res://gravelight/audio/sfx/player/footstep_snow_01.wav", "res://gravelight/audio/sfx/player/footstep_snow_02.wav", "res://gravelight/audio/sfx/player/footstep_snow_03.wav", "res://gravelight/audio/sfx/player/footstep_snow_04.wav", "res://gravelight/audio/sfx/player/footstep_snow_05.wav"],
-    "volume_db": -9.0, "max_voices": 6, "bus": "SFX", "attenuation": "zombie", "pitch": [0.7, 0.88], "vol_jitter_db": 3.0
-  },
-  "emerge_dig_earth": {
-    "files": ["res://gravelight/audio/sfx/player/footstep_stone_01.wav", "res://gravelight/audio/sfx/player/footstep_stone_02.wav", "res://gravelight/audio/sfx/player/footstep_stone_03.wav", "res://gravelight/audio/sfx/player/footstep_stone_04.wav", "res://gravelight/audio/sfx/player/footstep_stone_05.wav"],
-    "volume_db": -9.0, "max_voices": 6, "bus": "SFX", "attenuation": "zombie", "pitch": [0.66, 0.84], "vol_jitter_db": 3.0
-  },
-  "emerge_settle_snow": {
-    "files": ["res://gravelight/audio/sfx/player/footstep_snow_01.wav", "res://gravelight/audio/sfx/player/footstep_snow_02.wav", "res://gravelight/audio/sfx/player/footstep_snow_03.wav", "res://gravelight/audio/sfx/player/footstep_snow_04.wav", "res://gravelight/audio/sfx/player/footstep_snow_05.wav"],
-    "volume_db": -10.0, "max_voices": 4, "bus": "SFX", "attenuation": "quiet", "pitch": [0.78, 0.9], "vol_jitter_db": 2.0
-  },
-  "emerge_settle_earth": {
-    "files": ["res://gravelight/audio/sfx/player/footstep_stone_01.wav", "res://gravelight/audio/sfx/player/footstep_stone_02.wav", "res://gravelight/audio/sfx/player/footstep_stone_03.wav", "res://gravelight/audio/sfx/player/footstep_stone_04.wav", "res://gravelight/audio/sfx/player/footstep_stone_05.wav"],
-    "volume_db": -10.0, "max_voices": 4, "bus": "SFX", "attenuation": "quiet", "pitch": [0.74, 0.88], "vol_jitter_db": 2.0
   },
   "zombie_sprint": {
    "files": [
