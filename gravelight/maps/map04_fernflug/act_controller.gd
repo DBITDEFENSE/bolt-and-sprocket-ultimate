@@ -30,6 +30,7 @@ static func halle_due(act_round: int, open_round: int, files_read: int, files_ne
 
 func _ready() -> void:
 	name = "ActController"
+	add_to_group(&"act_controllers")
 	GLBus.match_started.connect(_on_match_started)
 	GLBus.round_started.connect(_on_round_started)
 	GLBus.round_ended.connect(_on_round_ended)
@@ -46,6 +47,27 @@ func _on_match_started(_map: StringName) -> void:
 	(func() -> void:
 		_reserve_boss()
 		_check_halle()).call_deferred()
+
+
+## UPDATE 07 (T-114): the main egg fires an act's clock event early through the quest action {"act_event": name}:
+## "open_halle" (the hangar unlock), "london_window" and "bomb_run" (the FlightController's beats, Act II).
+func fire_event(ev: StringName) -> void:
+	match ev:
+		&"open_halle":
+			if not GameState.has_flag(&"halle_unlocked"):
+				GameState.set_flag(&"halle_unlocked")
+		&"london_window", &"bomb_run":
+			var fc: Node = get_parent().get_node_or_null("FlightController") if get_parent() != null else null
+			if fc == null:
+				fc = get_tree().get_first_node_in_group(&"flight_controller")
+			if fc == null:
+				return
+			if ev == &"london_window" and fc.has_method("start_london"):
+				fc.call("start_london")
+			elif ev == &"bomb_run" and fc.has_method("start_bomb_run"):
+				fc.call("start_bomb_run")
+		_:
+			print("[act] unknown act_event %s" % ev)
 
 
 ## The boss's match round, once RoundManager knows the act's start round (start_game / resume_at run after match_started).

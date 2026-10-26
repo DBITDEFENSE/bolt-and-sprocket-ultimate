@@ -341,6 +341,7 @@
     "hold_seconds": 6.0,
     "vo_open": "OPR_EXFIL_OPEN_M4B_01",
     "vo_wait": "OPR_EXFIL_WAIT_M4B_01",
-    "vo_missed": "OPR_EXFIL_MISSED_M4B_01"
+    "vo_missed": "OPR_EXFIL_MISSED_M4B_01",
+    "done_flag": "autopilot_ripped"
   }
 }

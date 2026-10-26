@@ -351,8 +351,14 @@
           "text": "Survive until the ramp comes down."
         }
       ],
-      "easter_egg": [],
-      "side": []
+      "easter_egg": [
+        "map04_kuendigung"
+      ],
+      "side": [
+        {
+          "quest": "map04a_jette"
+        }
+      ]
     },
     "map02_totenhafen": {
       "current": [
@@ -483,7 +489,9 @@
           "text": "Hold on. Nobody is flying."
         }
       ],
-      "easter_egg": [],
+      "easter_egg": [
+        "map04_kuendigung"
+      ],
       "side": []
     }
   },
@@ -683,6 +691,141 @@
           "where": "Laboratory Wing, the Intake tag board",
           "nodes": [
             "Tag_KB4471"
+          ]
+        }
+      }
+    },
+    "map04_kuendigung": {
+      "title": "Kündigung",
+      "steps": {
+        "s1_power": {
+          "done": "The works' power is on.",
+          "hint": "The town is dark. Somewhere a breaker waits.",
+          "guide": "Throw the main breaker in the Kraftzentrale, the annex off assembly hall 2 (Montage, 1,250).",
+          "where": "Montage · Kraftzentrale",
+          "nodes": [
+            "Hauptschalter"
+          ]
+        },
+        "s2_files": {
+          "done": "Read the three Fernflug files.",
+          "hint": "The works kept paper on everything. Three files say what the Kranich is. ({n}/3)",
+          "guide": "Read the engine ledger (hall 2's office desk), the flight plan (the wind-tunnel office desk) and the crew list (the test-stand bunker). Each carries two digits of a PA extension. ({n}/3)",
+          "where": "Montage · Windkanal · Prüfstand",
+          "nodes": [
+            "File1",
+            "File2",
+            "File3"
+          ]
+        },
+        "s3_pa_line": {
+          "done": "Wittkamp's office line is open.",
+          "hint": "The canteen stage has a house switchboard. The files know the number.",
+          "guide": "On the canteen's PA board dial the three files' extensions in file order (I, II, III). Wittkamp answers and gives the hangar's door code.",
+          "where": "Kantine",
+          "nodes": [
+            "PASwitchboard"
+          ]
+        },
+        "s4_tunnel": {
+          "done": "Twenty of the dead went through the running tunnel.",
+          "hint": "The wind tunnel still has a fan, and the fan still has a switch. ({n}/20)",
+          "guide": "With the power on, run the wind tunnel from its fan control and kill 20 in the test section while it blows (the dead tumble). Reward: Skyhook Sekt's second tier free for the match. ({n}/20)",
+          "where": "Windkanal",
+          "nodes": [
+            "WindTunnel"
+          ]
+        },
+        "s5_kranfuehrer": {
+          "done": "The crane driver fell over the ramp; the hangar key is yours.",
+          "hint": "The hangar's crane has a driver. He keeps something the ramp needs, and he must fall in the right place.",
+          "guide": "Kill Der Kranführer while he is parked over the Kranich's ramp (his last phase, at 30%: climb the crane-rail catwalks and shoot the cab). Killed on the rails, he comes back; nothing is lost.",
+          "where": "Great Hangar",
+          "nodes": [
+            "Door_Halle"
+          ]
+        },
+        "s6_board": {
+          "done": "Boarded the Kranich.",
+          "hint": "The ramp wants a key and a code. Then it wants you.",
+          "guide": "With the hangar key (the crane driver) and the door code (Wittkamp's line), hold [interact] on the ramp switch: the beacon lights at once, before act round 15. Board.",
+          "where": "Great Hangar",
+          "nodes": [
+            "RampSwitch",
+            "ExfilPoint"
+          ]
+        },
+        "s7a_crew_tags": {
+          "done": "Three crew tags: Riedl, Haas, Pohl.",
+          "hint": "Every seat has a harness buckled over nobody. Somebody left their names. ({n}/3)",
+          "guide": "Take the three crew tags: a bunk, the radio room's tape deck, under a gunner's blister seat. ({n}/3)",
+          "where": "Mittelrumpf · Kanzel",
+          "nodes": [
+            "Tag1",
+            "Tag2",
+            "Tag3"
+          ]
+        },
+        "s7_bordwart": {
+          "done": "The flight engineer fell at his station; the autopilot key is yours.",
+          "hint": "Someone is still in the port engine room. He has the key and he will not leave.",
+          "guide": "Kill Der Bordwart in the port engine room (Triebwerk, 1,250 from the port wing). He drops the autopilot key.",
+          "where": "Triebwerk",
+          "nodes": [
+            "Door_Triebwerk"
+          ]
+        },
+        "s8_london": {
+          "done": "Saw what fell on London.",
+          "hint": "The aft blister looks back the way you came.",
+          "guide": "The London window plays once the crew tags are found (or at act round 3 on the clock).",
+          "where": "Kanzel",
+          "nodes": [
+            "Door_Kanzel"
+          ]
+        },
+        "s9_bomb_run": {
+          "done": "The bomb run is over.",
+          "hint": "The racks drop one by one. Jam what you can reach.",
+          "guide": "When the bay doors open, hold [interact] on each rack's shackle before it drops (one every 35 s). Marked casings are duds; leave them, take the next.",
+          "where": "Bombenschacht",
+          "nodes": [
+            "Rack1",
+            "Rack6"
+          ]
+        },
+        "s10_autopilot": {
+          "done": "The autopilot is out. The Kranich is falling.",
+          "hint": "The cockpit door takes the key. The cradle takes both hands.",
+          "guide": "Unlock the autopilot with the key, then hold [interact] on the cradle to rip it out. The crash follows.",
+          "where": "Cockpit",
+          "nodes": [
+            "ExfilPoint"
+          ]
+        }
+      }
+    },
+    "map04a_jette": {
+      "title": "Jette's Logbook",
+      "steps": {
+        "s1_models": {
+          "done": "Three glider models found.",
+          "hint": "Someone in this works built little wings for fun. Three of them are still around. ({n}/3)",
+          "guide": "Find the three glider models: the canteen stage, beside hall 2's jig, by the test-section glass. They glint after the wind tunnel has run (or with Fine Print Fernet). ({n}/3)",
+          "where": "Kantine · Montage · Windkanal",
+          "nodes": [
+            "Glider1",
+            "Glider2",
+            "Glider3"
+          ]
+        },
+        "s2_hatch": {
+          "done": "The models are on Jette's desk; her logbook read itself.",
+          "hint": "The tunnel office has a hatch in its wall.",
+          "guide": "Hold [interact] on the office hatch in the wind tunnel's east wall. Reward: Skyhook Sekt tier II free, the Jette calling card, the Archive entry.",
+          "where": "Windkanal",
+          "nodes": [
+            "JetteHatch"
           ]
         }
       }

@@ -84,6 +84,14 @@ func load_quest(path: String) -> StringName:
 	_apply_vo_substitutions(qid, def)
 	for step: Dictionary in def["steps"]:
 		_state[qid][StringName(step["id"])] = {"status": "locked", "progress": null}
+	# UPDATE 07 (T-114): a quest spanning Map 4's acts marks the steps of earlier acts done when an act is entered
+	# by a skip (the launcher's "skip to Act n"): a step's "act" is the act it lives on; the carry (apply_carry)
+	# restores the real progress on a campaign arrival instead.
+	# (the map's own block, not RoundManager.act: at load time that still holds the act before)
+	var here: int = int(RoundManager.act_block_of(GameState.map_id).get("index", 0))
+	for step2: Dictionary in def["steps"]:
+		if step2.has("act") and here > 0 and int(step2["act"]) < here:
+			_state[qid][StringName(step2["id"])]["status"] = "complete"
 	if Net.is_authority():
 		_refresh(qid)
 	quest_loaded.emit(qid)
@@ -356,7 +364,11 @@ func interact(target: StringName, by_player: int = 1) -> bool:
 				continue
 			if p.has("requires_item") and not has_item(StringName(p["requires_item"])):
 				continue
+			if not flags_met(p):
+				continue
+			_ctx = {"sid": StringName(step["id"]), "n": -1, "by": by_player}
 			_complete(qid, StringName(step["id"]))
+			_ctx = {}
 			return true
 		for step2: Dictionary in _active_steps(qid, "holdout"):
 			if StringName(str(step2["params"].get("start_target", ""))) == target and not _holdouts.has("%s/%s" % [qid, step2["id"]]):
@@ -370,12 +382,84 @@ func interact_ready(target: StringName) -> bool:
 	for qid: Variant in _quests.keys():
 		for step: Dictionary in _active_steps(qid, "interact"):
 			var p: Dictionary = step["params"]
-			if StringName(p["target"]) == target and (not p.has("requires_item") or has_item(StringName(p["requires_item"]))):
+			if StringName(p["target"]) == target and (not p.has("requires_item") or has_item(StringName(p["requires_item"]))) and flags_met(p):
 				return true
 		for step2: Dictionary in _active_steps(qid, "holdout"):
 			if StringName(str(step2["params"].get("start_target", ""))) == target and not _holdouts.has("%s/%s" % [qid, step2["id"]]):
 				return true
 	return false
+
+
+## UPDATE 07 (T-114): an interact step may also wait on world flags ("requires_flags": [names]): the Kranich's ramp
+## takes the hangar key and the door code. Pure for the tests.
+static func flags_met_in(p: Dictionary, flags: Dictionary) -> bool:
+	for f: Variant in p.get("requires_flags", []):
+		if not bool(flags.get(StringName(str(f)), false)):
+			return false
+	return true
+
+
+func flags_met(p: Dictionary) -> bool:
+	return flags_met_in(p, GameState.flags)
+
+
+## The flags an interact target still needs (for prompts: "needs the hangar key").
+func missing_flags(target: StringName) -> PackedStringArray:
+	var out: PackedStringArray = []
+	for qid: Variant in _quests.keys():
+		for step: Dictionary in _active_steps(qid, "interact"):
+			var p: Dictionary = step["params"]
+			if StringName(p["target"]) != target:
+				continue
+			for f: Variant in p.get("requires_flags", []):
+				if not GameState.has_flag(StringName(str(f))):
+					out.append(str(f))
+	return out
+
+
+# ---------------------------------------------------------------- carry across Map 4's acts (UPDATE 07, T-114)
+
+## What the campaign carries to `next_map` for every quest whose "maps" list names it: the steps already done,
+## the rolled randoms (the hangar code stays the same code on the Kranich) and the step progress.
+func carry_snapshot(next_map: StringName) -> Dictionary:
+	var out: Dictionary = {}
+	for qid: Variant in _quests.keys():
+		var maps: Array = _quests[qid].get("maps", [])
+		if not maps.has(String(next_map)):
+			continue
+		var done: Array = []
+		var prog: Dictionary = {}
+		for sid: Variant in _state[qid].keys():
+			var st: Dictionary = _state[qid][sid]
+			if str(st.get("status", "")) == "complete":
+				done.append(String(sid))
+			elif st.get("progress") != null:
+				prog[String(sid)] = st["progress"]
+		out[String(qid)] = {"done": done, "progress": prog, "random": _random[qid].duplicate(true), "checkpoints": checkpoints.get(qid, []).duplicate()}
+	return out
+
+
+## On the next act, after its quests loaded: the carried steps are done (silently: their beats already played),
+## the randoms are the same, the progress of the open steps is back. Steps that are open again get their on_start.
+func apply_carry(data: Dictionary) -> void:
+	for qk: Variant in data.keys():
+		var qid: StringName = StringName(str(qk))
+		if not _quests.has(qid):
+			continue
+		var d: Dictionary = data[qk]
+		if d.has("random"):
+			_random[qid] = (d["random"] as Dictionary).duplicate(true)
+			_apply_vo_substitutions(qid, _quests[qid])
+		for sid: Variant in d.get("done", []):
+			if _state[qid].has(StringName(str(sid))):
+				_state[qid][StringName(str(sid))]["status"] = "complete"
+		for sid2: Variant in (d.get("progress", {}) as Dictionary).keys():
+			if _state[qid].has(StringName(str(sid2))):
+				_state[qid][StringName(str(sid2))]["progress"] = (d["progress"] as Dictionary)[sid2]
+		if d.has("checkpoints"):
+			checkpoints[qid] = (d["checkpoints"] as Array).duplicate()
+		if Net.is_authority():
+			_refresh(qid)
 
 
 ## A step failed in a recoverable way (drummer escaped, holdout abandoned, Foreman killed in the wrong place).
@@ -415,6 +499,11 @@ func _on_enemy_killed_at(enemy_id: StringName, pos: Vector3, by_player: int) -> 
 						_state[qid][StringName(step["id"])]["warned"] = true
 						_run_actions(qid, step.get("on_out_of_range", []))
 					continue
+			# UPDATE 07 (T-114): kills in a zone, while a world flag holds (the wind tunnel running)
+			if p.has("zone") and ZoneVolume.zone_at(get_tree(), pos) != StringName(str(p["zone"])):
+				continue
+			if p.has("world_flag") and not GameState.has_flag(StringName(str(p["world_flag"]))):
+				continue
 			var st: Dictionary = _state[qid][StringName(step["id"])]
 			st["progress"] = (int(st["progress"]) if st["progress"] != null else 0) + 1
 			if int(st["progress"]) >= kill_target(step):
@@ -747,6 +836,15 @@ func _do_action(qid: StringName, a: Dictionary, by: int) -> void:
 	if a.has("exfil_now"):   # UPDATE 07: light the map's act beacon before its round (the boarding, the autopilot)
 		for x: Node in get_tree().get_nodes_in_group(&"exfil_points"):
 			x.call("trigger_now")
+	if a.has("act_event"):   # UPDATE 07 (T-114): the egg fires an act's clock event early (the London window, the bomb run)
+		for ac: Node in get_tree().get_nodes_in_group(&"act_controllers"):
+			ac.call("fire_event", StringName(str(a["act_event"])))
+	if a.has("perk_tier_grant"):   # UPDATE 07 (T-114): [perk, tier] free for the match: owners now, buyers when they drink
+		var pg: Array = a["perk_tier_grant"]
+		GameState.set_flag(StringName("perk_tier_free_" + str(pg[0])), int(pg[1]))
+		for pid3: int in GameState.player_ids:
+			if PerkManager.has_perk(pid3, StringName(str(pg[0]))) and PerkManager.tier_of(pid3, StringName(str(pg[0]))) < int(pg[1]):
+				PerkManager.set_tier(pid3, StringName(str(pg[0])), int(pg[1]))
 	if a.has("vo"):
 		GLVO.play(StringName(a["vo"]))
 	if a.has("vo_list"):

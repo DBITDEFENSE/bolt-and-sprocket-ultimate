@@ -2411,3 +2411,49 @@ manifest's `missing` ("map4: bake on the PC") and play as timed silence with sub
 | WRN_M4B_RACK_DROP_01 | ...That one's gone. I'm sorry. I'm {sorry}. | a rack drops |
 | JAK_M4B_MARKS_01 | The hook means DO NOT TRUST IT. Two of them. They will not go off. The boys made {sure}. | the bomb run begins (Jakub) |
 | JAK_M4B_LONDON_01 | ...Marta. Hania. ...It is far from there. It is {far}. | the London window |
+
+### 14.7 Act I — the main egg "Kündigung" and Jette's logbook (`WIT` the works' PA tier 4 first then 2; `OPR` tier 3; the squad tier 2; UPDATE 07 T-114)
+
+| ID | Line | When |
+|---|---|---|
+| WIT_M4A_PA_01 | Is that... are there people on the line? This is Wittkamp. I'm in the tunnel office. I can see you on the canteen camera. Don't... the doors lock from my side. I locked them. I'm {sorry}. | the first file step starts (the canteen speaker) |
+| WIT_M4A_PA_02 | You've turned the lights on. Thank you. I've been in the dark for six days with a model {aeroplane}. | power on |
+| WIT_M4A_FILE_01 | The engines. Four of them. We didn't build them. She sold them to us. The valve plates are in a language that isn't a {language}. | file 1 read |
+| WIT_M4A_FILE_02 | The flight plan. The Atlantic. And a last waypoint in a desert nobody here had heard of. I asked who wrote it. Nobody wrote {it}. | file 2 read |
+| WIT_M4A_FILE_03 | The crew list. Crew: provided. I asked, provided by whom. They said it was handled. I resigned that afternoon. Nobody accepted {it}. | file 3 read |
+| WIT_M4A_SWITCH_01 | You've got my line. Listen. The hangar door is a key and a code. The code is the wing's weight in kilos. It's in the tunnel log. Jette wrote it. Then she wrote {no}. | the PA line dialled |
+| WIT_M4A_KRANICH_01 | There she is. Der Kranich. The most beautiful thing I have ever made. I would give anything for her never to {fly}. | the hangar opens |
+| WIT_M4A_KRAN_01 | That... that was Beck. The night crane. He wouldn't leave the hangar {either}. | the crane driver falls |
+| OPR_M4A_FILE_01 | You've found a document. Documents are provided for your convenience and may not be {binding}. | the first file |
+| OPR_M4A_FILE_03 | Crew: provided. Yes. We've handled {that}. | the third file |
+| DUT_M4A_ARRIVE_01 | A factory town. Great. I grew up in one. The smell's the {same}. | arrival |
+| DUT_M4A_FILE_01 | Four engines, sold by 'V.' I'm gonna find V. I'm gonna have a word with {V}. | a file read (M4A_FILE) |
+| DUT_M4A_FILE_02 | 'Crew: provided.' Provided by {WHO}? | a file read (M4A_FILE) |
+| DUT_M4A_KRANICH_01 | That's not a plane. That's a church with a {propeller}. | the hangar |
+| DUT_M4A_TUNNEL_01 | Okay, Pittsburgh, nothing surprises you. The WIND is on our {side}. | the tunnel ran (M4A_TUNNEL) |
+| DUT_M4A_GLIDER_01 | A toy plane. Somebody here still liked {flying}. | a glider model (M4A_GLIDER) |
+| DUT_M4A_JETTE_01 | She said no. In writing. ...I like {her}. | Jette's logbook (M4A_JETTE) |
+| PEG_M4A_ARRIVE_01 | An aircraft works. Hale's cable said 'retrieve the engines.' He didn't say what they were {in}. | arrival |
+| PEG_M4A_FILE_01 | Four engines, and a seller with one initial. I've seen that initial on a manifest at {Totenhafen}. | a file read (M4A_FILE) |
+| PEG_M4A_FILE_02 | A last waypoint in Nevada. Nobody here could have written that. Nobody here could have {spelled} it. | a file read (M4A_FILE) |
+| PEG_M4A_KRANICH_01 | ...Right. That is rather more than an {engine}. | the hangar |
+| PEG_M4A_TUNNEL_01 | A wind tunnel that clears a room. Note for the {report}. | the tunnel ran (M4A_TUNNEL) |
+| PEG_M4A_GLIDER_01 | Balsa and tissue. Rather good {work}. | a glider model (M4A_GLIDER) |
+| PEG_M4A_JETTE_01 | 'Nein.' One word. More than anyone else here {managed}. | Jette's logbook (M4A_JETTE) |
+| DEA_M4A_ARRIVE_01 | Lord, listen to that. Something in that hangar's running and it's running {sweet}. | arrival |
+| DEA_M4A_FILE_01 | That engine's not burning anything. It's just... turning. Nothing turns for free. {Nothing}. | a file read (M4A_FILE) |
+| DEA_M4A_FILE_02 | 'Provided.' They put a crew on a list and never put one on the {plane}. | a file read (M4A_FILE) |
+| DEA_M4A_KRANICH_01 | ...She's beautiful. God forgive me, she's the most beautiful thing I ever saw and she's full of {poison}. | the hangar |
+| DEA_M4A_TUNNEL_01 | Easy, girl. Blow 'em over. That's {it}. | the tunnel ran (M4A_TUNNEL) |
+| DEA_M4A_GLIDER_01 | Somebody made this with their hands. For nothing but the {flying}. | a glider model (M4A_GLIDER) |
+| DEA_M4A_JETTE_01 | She wouldn't fly it and she wouldn't drug the men. That's good {hands}. | Jette's logbook (M4A_JETTE) |
+| WRN_M4A_ARRIVE_01 | The transfer lists said Thalbach. Two hundred names. I'm going to find where they put {them}. | arrival |
+| WRN_M4A_FILE_01 | Engines sold. Routes written. Crews 'provided'. Everything here was bought from {someone}. | a file read (M4A_FILE) |
+| WRN_M4A_FILE_02 | A waypoint in a desert. They were never coming {back}. | a file read (M4A_FILE) |
+| WRN_M4A_KRANICH_01 | Sixty-one. Sixty-two. ...That thing has no number. I don't have a number for {that}. | the hangar |
+| WRN_M4A_TUNNEL_01 | Twenty. In the wind. ...Good. {Good}. | the tunnel ran (M4A_TUNNEL) |
+| WRN_M4A_GLIDER_01 | A model. Hers, I think. Jette. The label says {Jette}. | a glider model (M4A_GLIDER) |
+| WRN_M4A_JETTE_01 | 'Nein.' She said no. {Good}. | Jette's logbook (M4A_JETTE) |
+| JAK_M4A_ARRIVE_01 | I turned back at Sankt Aurel. The lists said Thalbach. I know Thalbach men. ...I will look for {them}. | arrival |
+| JAK_M4A_FILE_01 | Paper. They always had paper for everything but {us}. | a file read (M4A_FILE) |
+| JAK_M4A_CHALK_01 | Three strokes and a hook. That is ours. Someone from the Nine wrote that. On a bomb. ...Good {lad}. | the first chalk mark |

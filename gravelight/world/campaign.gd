@@ -246,7 +246,48 @@ static func snapshot(map: MapRoot, target: StringName, cutscene_id: String) -> D
 		"characters": chars,
 		"god_mode": GameState.god_mode,
 		"companion": JakubCompanion.snapshot_of(map),   # Jakub (U02 section 6.2): {} unless he is with the squad
+		"quests": QuestManager.carry_snapshot(target),   # UPDATE 07 (T-114): Map 4's egg spans the acts
+		"flags": carried_flags(GameState.flags, cfg().get("carry_flags", [])),
 	}
+
+
+## UPDATE 07 (T-114): the world flags that follow the squad to the next act: exact names and "prefix*" patterns
+## from campaign.json "carry_flags" (london_seen, bomb_*, peg_*...). Pure for the tests.
+static func carried_flags(flags: Dictionary, spec: Array) -> Dictionary:
+	var out: Dictionary = {}
+	for f: Variant in flags.keys():
+		var name: String = String(f)
+		for pat: Variant in spec:
+			var ps: String = str(pat)
+			if (ps.ends_with("*") and name.begins_with(ps.trim_suffix("*"))) or ps == name:
+				out[name] = flags[f]
+				break
+	return out
+
+
+## The payload of an arrival on `map_id`: the carry before on_players_spawned consumed it, the consumed copy
+## (`_arrival`, cleared by on_rounds_started) after. {} when the match is not an arrival on this map.
+static func arrival_payload(map_id: StringName) -> Dictionary:
+	if arriving(map_id):
+		return carry
+	if active and str(_arrival.get("to", "")) == String(map_id):
+		return _arrival
+	return {}
+
+
+## MapRoot, after match_started reset the flags: the carried flags are back before the act's systems read them.
+static func restore_flags(map: MapRoot) -> void:
+	var src: Dictionary = arrival_payload(map.map_id)
+	for f: Variant in (src.get("flags", {}) as Dictionary).keys():
+		GameState.flags[StringName(str(f))] = (src["flags"] as Dictionary)[f]
+
+
+## MapRoot, after the map's quests loaded: the egg's progress from the act before.
+static func restore_quests(map: MapRoot) -> void:
+	var src: Dictionary = arrival_payload(map.map_id)
+	if src.is_empty():
+		return
+	QuestManager.apply_carry(src.get("quests", {}))
 
 
 ## Every weapon id in the payload exists in the weapons tables (a stale save could not), the round is sane.

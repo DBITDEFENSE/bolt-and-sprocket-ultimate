@@ -364,6 +364,8 @@ func _depart() -> void:
 	if state != State.ACTIVE:
 		return
 	state = State.DEPARTING
+	if str(cfg.get("done_flag", "")) != "":   # UPDATE 07 (T-114): the egg's step for this transition (the autopilot ripped out)
+		GameState.set_flag(StringName(str(cfg["done_flag"])))
 	var map: MapRoot = get_tree().current_scene as MapRoot
 	if map == null:
 		map = get_parent() as MapRoot
