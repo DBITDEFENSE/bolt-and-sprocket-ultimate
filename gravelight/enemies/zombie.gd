@@ -1142,6 +1142,8 @@ func _off_navmesh_height() -> float:
 func external_push(v: Vector3, seconds: float, by_player: int = 0, weapon_id: StringName = &"", land_damage: float = 0.0) -> void:
 	if puppet or not is_active() or state == State.LIFTED:
 		return
+	if state in [State.EMERGE, State.TO_WINDOW, State.WAIT_WINDOW, State.TEAR, State.CLIMB, State.CLIMB_LINK]:
+		return   # still on its way in: a push here would strand it (window-bound states need their window; T-109)
 	var boss: bool = self is Foreman or self is Screamer or self is HomageBoss
 	_push_v = v * (0.33 if boss else 1.0)
 	_push_t = maxf(0.05, seconds)

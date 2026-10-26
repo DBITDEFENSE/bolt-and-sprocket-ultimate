@@ -1,24 +1,26 @@
 {
-  "_doc": "The campaign chain (DECISIONS T-033): Map 0 -> Map 1 -> Map 2. Each map's own json carries its 'exfil' block (round, target, beacon position, window); this table holds what is shared: the scene for every map id, the arrival rules on a new map, the vote/skip tuning, and the two transition cutscenes (shots are data: camera from/to/look in the departing map's frame, seconds, VO ids, effects). A map whose scene is missing ends the run on a 'campaign continues' screen with the profile updated. standalone: built levels playable from the launcher that are not in the chain yet (UPDATE 07: Map 4's acts land here one by one and move into the chain with the boarding step); MapCatalog lists them so they bake map data and are checked like the rest.",
+  "_doc": "The campaign chain (DECISIONS T-033): Map 0 -> Map 1 -> Map 2. Each map's own json carries its 'exfil' block (round, target, beacon position, window); this table holds what is shared: the scene for every map id, the arrival rules on a new map, the vote/skip tuning, and the two transition cutscenes (shots are data: camera from/to/look in the departing map's frame, seconds, VO ids, effects). A map whose scene is missing ends the run on a 'campaign continues' screen with the profile updated. standalone: built levels playable from the launcher that are not in the chain yet (UPDATE 07: Map 4's acts land here one by one and move into the chain with the boarding step); MapCatalog lists them so they bake map data and are checked like the rest. UPDATE 07 (T-108): the chain continues past Totenhafen into Map 4 'Fernflug' as four act scenes (map04a..d); Morgenrot (map03, design-only) slots between map02_totenhafen and map04a_thalbach when it is built (its exfil would replace map02's). `standalone`: built levels playable from the launcher before they join the chain. `arrival_kits`: what a launcher 'skip to Act n' start carries (Campaign.begin_at).",
   "chain": [
     "map00_crossroads",
     "map01_kaltenbrunn",
-    "map02_totenhafen"
+    "map02_totenhafen",
+    "map04a_thalbach",
+    "map04b_kranich"
   ],
-  "standalone": [
-    "map04a_thalbach"
-  ],
+  "standalone": [],
   "scenes": {
     "map00_crossroads": "res://gravelight/maps/map00_crossroads/map00.tscn",
     "map01_kaltenbrunn": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
     "map02_totenhafen": "res://gravelight/maps/map02_totenhafen/map02.tscn",
-    "map04a_thalbach": "res://gravelight/maps/map04_fernflug/map04a.tscn"
+    "map04a_thalbach": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+    "map04b_kranich": "res://gravelight/maps/map04_fernflug/map04b.tscn"
   },
   "display_names": {
     "map00_crossroads": "Crossroads Inn",
     "map01_kaltenbrunn": "Kaltenbrunn",
     "map02_totenhafen": "Totenhafen",
-    "map04a_thalbach": "Fernflug — Act I: Werk Thalbach"
+    "map04a_thalbach": "Fernflug — Act I: Werk Thalbach",
+    "map04b_kranich": "Fernflug — Act II: der Kranich"
   },
   "arrival_grace_seconds": 14.0,
   "arrival_banner": "%s\nThe squad arrives. Round %d begins shortly.",
@@ -40,13 +42,94 @@
     "exfil_m4a_m4b": {
       "title": "DER KRANICH",
       "subtitle": "somewhere over the North Sea  ·  03:40",
-      "seconds": 30.0,
-      "title_at": 22.0,
-      "fade_at": 27.5,
+      "seconds": 38.0,
+      "title_at": 33.0,
+      "fade_at": 35.5,
       "shots": [
-        {"t": 0.0, "from": [-20.0, 1.6, 152.0], "to": [-20.0, 2.2, 157.0], "look": [-20.0, 3.0, 168.0], "fov": 62, "fx": "", "vo": "OPR_EXFIL_GO_M4A_01", "vo_at": 1.0},
-        {"t": 9.0, "from": [-50.0, 6.0, 212.0], "to": [-30.0, 8.0, 210.0], "look": [-20.0, 6.0, 185.0], "fov": 58, "fx": "doors"},
-        {"t": 19.0, "from": [20.0, 24.0, 120.0], "to": [-10.0, 30.0, 100.0], "look": [-20.0, 8.0, 185.0], "fov": 50}
+        {
+          "t": 0.0,
+          "from": [
+            -20.0,
+            1.2,
+            152.0
+          ],
+          "to": [
+            -20.0,
+            2.4,
+            161.0
+          ],
+          "look": [
+            -20.0,
+            3.0,
+            172.0
+          ],
+          "fov": 62,
+          "fx": "",
+          "vo": "OPR_EXFIL_GO_M4A_01",
+          "vo_at": 1.0
+        },
+        {
+          "t": 7.0,
+          "from": [
+            -20.0,
+            2.8,
+            170.0
+          ],
+          "to": [
+            -20.0,
+            2.6,
+            167.0
+          ],
+          "look": [
+            -20.0,
+            1.0,
+            156.0
+          ],
+          "fov": 64,
+          "fx": "ramp",
+          "vo": "WIT_M4A_NOTME_01",
+          "vo_at": 4.5
+        },
+        {
+          "t": 14.0,
+          "from": [
+            -50.0,
+            6.0,
+            212.0
+          ],
+          "to": [
+            -30.0,
+            8.0,
+            210.0
+          ],
+          "look": [
+            -20.0,
+            6.0,
+            185.0
+          ],
+          "fov": 58,
+          "fx": "doors"
+        },
+        {
+          "t": 24.0,
+          "from": [
+            20.0,
+            24.0,
+            120.0
+          ],
+          "to": [
+            -10.0,
+            30.0,
+            100.0
+          ],
+          "look": [
+            -20.0,
+            8.0,
+            185.0
+          ],
+          "fov": 50,
+          "fx": "kranich_takeoff"
+        }
       ]
     },
     "exfil_m0_m1": {
@@ -194,6 +277,252 @@
           "vo_at": 0.8
         }
       ]
+    },
+    "exfil_m2_m4": {
+      "title": "WERK THALBACH",
+      "subtitle": "Thuringian Forest  ·  May 1945",
+      "seconds": 24.0,
+      "title_at": 16.0,
+      "fade_at": 21.5,
+      "shots": [
+        {
+          "t": 0.0,
+          "from": [
+            4.0,
+            2.0,
+            70.0
+          ],
+          "to": [
+            6.0,
+            2.4,
+            78.0
+          ],
+          "look": [
+            7.0,
+            0.5,
+            86.0
+          ],
+          "fov": 60,
+          "fx": "",
+          "vo": "OPR_EXFIL_GO_M2_01",
+          "vo_at": 1.0
+        },
+        {
+          "t": 8.0,
+          "from": [
+            -8.0,
+            6.0,
+            40.0
+          ],
+          "to": [
+            -4.0,
+            5.0,
+            36.0
+          ],
+          "look": [
+            7.0,
+            -1.0,
+            60.0
+          ],
+          "fov": 56,
+          "fx": ""
+        },
+        {
+          "t": 15.0,
+          "from": [
+            20.0,
+            14.0,
+            20.0
+          ],
+          "to": [
+            26.0,
+            18.0,
+            10.0
+          ],
+          "look": [
+            7.0,
+            0.0,
+            60.0
+          ],
+          "fov": 48,
+          "fx": ""
+        }
+      ]
+    },
+    "exfil_m4b_m4c": {
+      "title": "GROOM LAKE, NEVADA  ·  9 MAY 1945",
+      "subtitle": "An Army Air Forces test range. A place that does not have a name yet. One day it will be called Area 51.",
+      "seconds": 40.0,
+      "title_at": 34.8,
+      "fade_at": 37.8,
+      "shots": [
+        {
+          "t": 0.0,
+          "from": [
+            0.0,
+            1.6,
+            66.0
+          ],
+          "to": [
+            0.4,
+            1.5,
+            67.5
+          ],
+          "look": [
+            0.0,
+            1.1,
+            69.0
+          ],
+          "fov": 58,
+          "fx": "",
+          "vo": "DEA_M4B_AUTOPILOT_02",
+          "vo_at": 0.7
+        },
+        {
+          "t": 7.0,
+          "from": [
+            0.0,
+            1.6,
+            68.0
+          ],
+          "to": [
+            0.0,
+            1.4,
+            70.0
+          ],
+          "look": [
+            0.0,
+            -2.0,
+            110.0
+          ],
+          "fov": 66,
+          "fx": "",
+          "vo": "DUT_M4B_CRASH_01",
+          "vo_at": 2.2
+        },
+        {
+          "t": 15.7,
+          "from": [
+            3.0,
+            1.9,
+            61.0
+          ],
+          "to": [
+            2.0,
+            1.8,
+            63.0
+          ],
+          "look": [
+            0.0,
+            1.2,
+            67.0
+          ],
+          "fov": 60,
+          "fx": "",
+          "vo": "PEG_M4B_CRASH_01",
+          "vo_at": 0.9
+        },
+        {
+          "t": 20.9,
+          "from": [
+            0.0,
+            -182.0,
+            -110.0
+          ],
+          "to": [
+            20.0,
+            -184.0,
+            -60.0
+          ],
+          "look": [
+            0.0,
+            -188.0,
+            -40.0
+          ],
+          "fov": 62,
+          "fx": "crash"
+        },
+        {
+          "t": 31.3,
+          "from": [
+            -40.0,
+            -180.0,
+            10.0
+          ],
+          "to": [
+            -30.0,
+            -181.0,
+            0.0
+          ],
+          "look": [
+            0.0,
+            -186.0,
+            -10.0
+          ],
+          "fov": 54,
+          "fx": ""
+        }
+      ]
+    }
+  },
+  "arrival_kits": {
+    "_doc": "Campaign.begin_at kits for the launcher's act skips: weapons [id, tier], perks, grenades; scrip is filled by the launcher (scrip_for_round) unless given.",
+    "map04b_kranich": {
+      "weapons": [
+        [
+          "thompson_up",
+          1
+        ],
+        [
+          "mp40",
+          1
+        ]
+      ],
+      "perks": [
+        "ironhide_stout",
+        "second_wind",
+        "marathon_malt"
+      ],
+      "grenades": 3
+    },
+    "map04c_groomlake": {
+      "weapons": [
+        [
+          "thompson_up",
+          2
+        ],
+        [
+          "stg44_up",
+          1
+        ]
+      ],
+      "perks": [
+        "ironhide_stout",
+        "second_wind",
+        "marathon_malt",
+        "trigger_tonic"
+      ],
+      "grenades": 4
+    },
+    "map04d_mondlicht": {
+      "weapons": [
+        [
+          "lodestone",
+          1
+        ],
+        [
+          "thompson_up",
+          3
+        ]
+      ],
+      "perks": [
+        "ironhide_stout",
+        "second_wind",
+        "marathon_malt",
+        "trigger_tonic",
+        "skyhook_sekt"
+      ],
+      "grenades": 4
     }
   }
 }

@@ -1,537 +1,545 @@
 {
- "_doc": "Meta progression (GDD section 16). Rank XP to next: base + linear*(n-1) + quad*(n-1)^2.",
- "rank_curve": {
-  "base": 800,
-  "linear": 120,
-  "quad": 6,
-  "max_rank": 60
- },
- "max_prestige": 10,
- "xp": {
-  "kill": 10,
-  "headshot_kill": 15,
-  "round_mult": 50,
-  "revive": 100,
-  "door": 25,
-  "egg_step": 500,
-  "egg_complete": 10000,
-  "intel": 150
- },
- "no_progress_maps": [
-  "test_range"
- ],
- "unlocks": [
-  {
-   "rank": 1,
-   "id": "card_ledger_stamp",
-   "kind": "calling_card",
-   "name": "Ledger Stamp"
+  "_doc": "Meta progression (GDD section 16). Rank XP to next: base + linear*(n-1) + quad*(n-1)^2.",
+  "rank_curve": {
+    "base": 800,
+    "linear": 120,
+    "quad": 6,
+    "max_rank": 60
   },
-  {
-   "rank": 2,
-   "id": "card_snow_fence",
-   "kind": "calling_card",
-   "name": "Snow Fence"
+  "max_prestige": 10,
+  "xp": {
+    "kill": 10,
+    "headshot_kill": 15,
+    "round_mult": 50,
+    "revive": 100,
+    "door": 25,
+    "egg_step": 500,
+    "egg_complete": 10000,
+    "intel": 150
   },
-  {
-   "rank": 3,
-   "id": "card_kreuzweg_sign",
-   "kind": "calling_card",
-   "name": "Kreuzweg Sign"
-  },
-  {
-   "rank": 4,
-   "id": "card_rail_spike",
-   "kind": "calling_card",
-   "name": "Rail Spike"
-  },
-  {
-   "rank": 5,
-   "id": "card_ration_tin",
-   "kind": "calling_card",
-   "name": "Ration Tin"
-  },
-  {
-   "rank": 6,
-   "id": "card_field_radio",
-   "kind": "calling_card",
-   "name": "Field Radio"
-  },
-  {
-   "rank": 7,
-   "id": "card_barbed_wire",
-   "kind": "calling_card",
-   "name": "Barbed Wire"
-  },
-  {
-   "rank": 8,
-   "id": "card_pit_lamp",
-   "kind": "calling_card",
-   "name": "Pit Lamp"
-  },
-  {
-   "rank": 9,
-   "id": "card_gate_pass",
-   "kind": "calling_card",
-   "name": "Gate Pass"
-  },
-  {
-   "rank": 10,
-   "id": "card_salt_lantern",
-   "kind": "calling_card",
-   "name": "Salt Lantern"
-  },
-  {
-   "rank": 2,
-   "id": "emblem_shovel_and_pick",
-   "kind": "emblem",
-   "name": "Shovel and Pick"
-  },
-  {
-   "rank": 5,
-   "id": "emblem_broken_bell",
-   "kind": "emblem",
-   "name": "Broken Bell"
-  },
-  {
-   "rank": 8,
-   "id": "emblem_tally_mark",
-   "kind": "emblem",
-   "name": "Tally Mark"
-  },
-  {
-   "rank": 10,
-   "id": "emblem_cracked_lens",
-   "kind": "emblem",
-   "name": "Cracked Lens"
-  },
-  {
-   "rank": 11,
-   "id": "cap_enamel",
-   "kind": "cap_style",
-   "name": "Enamel bottle caps"
-  },
-  {
-   "rank": 14,
-   "id": "cap_rusted",
-   "kind": "cap_style",
-   "name": "Rusted bottle caps"
-  },
-  {
-   "rank": 17,
-   "id": "cap_bakelite",
-   "kind": "cap_style",
-   "name": "Bakelite bottle caps"
-  },
-  {
-   "rank": 20,
-   "id": "cap_frosted",
-   "kind": "cap_style",
-   "name": "Frosted bottle caps"
-  },
-  {
-   "rank": 21,
-   "id": "theme_rail_yard_at_dawn",
-   "kind": "menu_theme",
-   "name": "Rail Yard at Dawn"
-  },
-  {
-   "rank": 25,
-   "id": "theme_the_salt_chapel",
-   "kind": "menu_theme",
-   "name": "The Salt Chapel"
-  },
-  {
-   "rank": 30,
-   "id": "theme_generator_hall",
-   "kind": "menu_theme",
-   "name": "Generator Hall"
-  },
-  {
-   "rank": 31,
-   "id": "card_anim_turning_turbine",
-   "kind": "calling_card",
-   "name": "Turning Turbine (animated)"
-  },
-  {
-   "rank": 34,
-   "id": "card_anim_falling_snow",
-   "kind": "calling_card",
-   "name": "Falling Snow (animated)"
-  },
-  {
-   "rank": 37,
-   "id": "card_anim_swinging_lantern",
-   "kind": "calling_card",
-   "name": "Swinging Lantern (animated)"
-  },
-  {
-   "rank": 40,
-   "id": "card_anim_flickering_sign",
-   "kind": "calling_card",
-   "name": "Flickering Sign (animated)"
-  },
-  {
-   "rank": 42,
-   "id": "ink_violet",
-   "kind": "stamp_ink",
-   "name": "Violet round-stamp ink"
-  },
-  {
-   "rank": 45,
-   "id": "ink_amber",
-   "kind": "stamp_ink",
-   "name": "Amber round-stamp ink"
-  },
-  {
-   "rank": 46,
-   "id": "emblem_the_ledger",
-   "kind": "emblem",
-   "name": "The Ledger"
-  },
-  {
-   "rank": 50,
-   "id": "emblem_hauptbuch",
-   "kind": "emblem",
-   "name": "Hauptbuch"
-  },
-  {
-   "rank": 55,
-   "id": "emblem_final_tally",
-   "kind": "emblem",
-   "name": "Final Tally"
-  },
-  {
-   "rank": 60,
-   "id": "cap_gold",
-   "kind": "cap_style",
-   "name": "Gold bottle caps"
-  }
- ],
- "commendations": [
-  {
-   "prestige": 1,
-   "id": "commendation_1",
-   "kind": "emblem",
-   "name": "Commendation I"
-  },
-  {
-   "prestige": 2,
-   "id": "commendation_2",
-   "kind": "emblem",
-   "name": "Commendation II"
-  },
-  {
-   "prestige": 3,
-   "id": "commendation_3",
-   "kind": "emblem",
-   "name": "Commendation III"
-  },
-  {
-   "prestige": 4,
-   "id": "commendation_4",
-   "kind": "emblem",
-   "name": "Commendation IV"
-  },
-  {
-   "prestige": 5,
-   "id": "commendation_5",
-   "kind": "emblem",
-   "name": "Commendation V"
-  },
-  {
-   "prestige": 6,
-   "id": "commendation_6",
-   "kind": "emblem",
-   "name": "Commendation VI"
-  },
-  {
-   "prestige": 7,
-   "id": "commendation_7",
-   "kind": "emblem",
-   "name": "Commendation VII"
-  },
-  {
-   "prestige": 8,
-   "id": "commendation_8",
-   "kind": "emblem",
-   "name": "Commendation VIII"
-  },
-  {
-   "prestige": 9,
-   "id": "commendation_9",
-   "kind": "emblem",
-   "name": "Commendation IX"
-  },
-  {
-   "prestige": 10,
-   "id": "commendation_10",
-   "kind": "emblem",
-   "name": "Commendation X"
-  }
- ],
- "camos": {
-  "thresholds": [
-   {
-    "id": "olive_drab",
-    "name": "Olive Drab",
-    "kills": 100
-   },
-   {
-    "id": "winter",
-    "name": "Winter",
-    "kills": 250
-   },
-   {
-    "id": "bronze",
-    "name": "Bronze",
-    "kills": 500
-   },
-   {
-    "id": "silver",
-    "name": "Silver",
-    "kills": 1000
-   },
-   {
-    "id": "gold",
-    "name": "Gold",
-    "kills": 2000
-   }
+  "no_progress_maps": [
+    "test_range"
   ],
-  "meta": {
-   "id": "nachtglas",
-   "name": "Nachtglas",
-   "rule": "gold_on_every_base_weapon"
-  }
- },
- "challenges": {
-  "active_per_map": 3,
-  "pool": [
-   {
-    "id": "m0_round10",
-    "maps": [
-     "map00_crossroads"
-    ],
-    "name": "Last Orders",
-    "desc": "Reach round 10 at the Crossroads Inn.",
-    "event": "round",
-    "target": 10,
-    "scope": "match",
-    "xp": 2000,
-    "card": "card_last_orders"
-   },
-   {
-    "id": "m0_knife",
-    "maps": [
-     "map00_crossroads"
-    ],
-    "name": "Closing Time",
-    "desc": "Knife 15 zombies in one match at the Inn.",
-    "event": "kill",
-    "filter": {
-     "melee": true
+  "unlocks": [
+    {
+      "rank": 1,
+      "id": "card_ledger_stamp",
+      "kind": "calling_card",
+      "name": "Ledger Stamp"
     },
-    "target": 15,
-    "scope": "match",
-    "xp": 1500,
-    "card": "card_closing_time"
-   },
-   {
-    "id": "m0_boards",
-    "maps": [
-     "map00_crossroads"
-    ],
-    "name": "Carpenters' Guild",
-    "desc": "Rebuild 60 boards at the Inn.",
-    "event": "boards",
-    "target": 60,
-    "scope": "career",
-    "xp": 1500,
-    "card": "card_carpenters"
-   },
-   {
-    "id": "m0_nodoors",
-    "maps": [
-     "map00_crossroads"
-    ],
-    "name": "Snug",
-    "desc": "Reach round 8 without opening a door.",
-    "event": "round",
-    "filter": {
-     "no_doors": true
+    {
+      "rank": 2,
+      "id": "card_snow_fence",
+      "kind": "calling_card",
+      "name": "Snow Fence"
     },
-    "target": 8,
-    "scope": "match",
-    "xp": 2500,
-    "card": "card_snug"
-   },
-   {
-    "id": "m0_heads",
-    "maps": [
-     "map00_crossroads"
-    ],
-    "name": "Marksman's Ledger",
-    "desc": "Get 150 headshot kills at the Inn.",
-    "event": "kill",
-    "filter": {
-     "headshot": true
+    {
+      "rank": 3,
+      "id": "card_kreuzweg_sign",
+      "kind": "calling_card",
+      "name": "Kreuzweg Sign"
     },
-    "target": 150,
-    "scope": "career",
-    "xp": 2000,
-    "card": "card_marksman"
-   },
-   {
-    "id": "m1_traps",
-    "maps": [
-     "map01_kaltenbrunn"
-    ],
-    "name": "Industrial Accident",
-    "desc": "Kill 50 zombies with traps.",
-    "event": "kill",
-    "filter": {
-     "weapon_prefix": "trap_"
+    {
+      "rank": 4,
+      "id": "card_rail_spike",
+      "kind": "calling_card",
+      "name": "Rail Spike"
     },
-    "target": 50,
-    "scope": "career",
-    "xp": 3000,
-    "card": "card_industrial"
-   },
-   {
-    "id": "m1_noperk",
-    "maps": [
-     "map01_kaltenbrunn"
-    ],
-    "name": "Teetotal",
-    "desc": "Reach round 15 without buying a perk.",
-    "event": "round",
-    "filter": {
-     "no_perks": true
+    {
+      "rank": 5,
+      "id": "card_ration_tin",
+      "kind": "calling_card",
+      "name": "Ration Tin"
     },
-    "target": 15,
-    "scope": "match",
-    "xp": 5000,
-    "card": "card_teetotal"
-   },
-   {
-    "id": "m1_bellclean",
-    "maps": [
-     "map01_kaltenbrunn",
-     "map00_crossroads"
-    ],
-    "name": "Unrung",
-    "desc": "Clear a Bellringer round without taking damage.",
-    "event": "special_clean",
-    "target": 1,
-    "scope": "career",
-    "xp": 3000,
-    "card": "card_unrung"
-   },
-   {
-    "id": "m1_crucible",
-    "maps": [
-     "map01_kaltenbrunn"
-    ],
-    "name": "Re-Taught",
-    "desc": "Upgrade 3 weapons at the Crucible.",
-    "event": "upgrade",
-    "target": 3,
-    "scope": "career",
-    "xp": 2500,
-    "card": "card_retaught"
-   },
-   {
-    "id": "m1_smg",
-    "maps": [
-     "map01_kaltenbrunn"
-    ],
-    "name": "Spray and Pray",
-    "desc": "Kill 300 zombies with SMGs at Kaltenbrunn.",
-    "event": "kill",
-    "filter": {
-     "weapon_class": "smg"
+    {
+      "rank": 6,
+      "id": "card_field_radio",
+      "kind": "calling_card",
+      "name": "Field Radio"
     },
-    "target": 300,
-    "scope": "career",
-    "xp": 2500,
-    "card": "card_spray"
-   },
-   {
-    "id": "m1_round20",
-    "maps": [
-     "map01_kaltenbrunn"
-    ],
-    "name": "Deep Shift",
-    "desc": "Reach round 20 at Kaltenbrunn.",
-    "event": "round",
-    "target": 20,
-    "scope": "match",
-    "xp": 5000,
-    "card": "card_deep_shift"
-   },
-   {
-    "id": "any_powerups",
-    "maps": [
-     "any"
-    ],
-    "name": "Quartermaster's Favourite",
-    "desc": "Collect 25 power-ups.",
-    "event": "powerup",
-    "target": 25,
-    "scope": "career",
-    "xp": 1500,
-    "card": "card_quartermaster"
-   },
-   {
-    "id": "any_crate",
-    "maps": [
-     "any"
-    ],
-    "name": "Lost and Found",
-    "desc": "Open the Requisition Crate 20 times.",
-    "event": "crate",
-    "target": 20,
-    "scope": "career",
-    "xp": 1500,
-    "card": "card_lost_found"
-   },
-   {
-    "id": "any_boom",
-    "maps": [
-     "any"
-    ],
-    "name": "Demolitions School",
-    "desc": "Get 100 explosive kills (frags and launchers).",
-    "event": "kill",
-    "filter": {
-     "weapon_in": [
-      "frag",
-      "panzerschreck",
-      "panzerschreck_up",
-      "gramophone"
-     ]
+    {
+      "rank": 7,
+      "id": "card_barbed_wire",
+      "kind": "calling_card",
+      "name": "Barbed Wire"
     },
-    "target": 100,
-    "scope": "career",
-    "xp": 2000,
-    "card": "card_demolitions"
-   }
-  ]
- },
- "main_eggs": {
-  "map01_requiem": {
-   "unlock_map": "map02_totenhafen",
-   "perk_slot_map": "map01_kaltenbrunn"
-  }
- },
- "map_unlock_rounds": {
-  "map01_kaltenbrunn": {
-   "from": "map00_crossroads",
-   "round": 10
+    {
+      "rank": 8,
+      "id": "card_pit_lamp",
+      "kind": "calling_card",
+      "name": "Pit Lamp"
+    },
+    {
+      "rank": 9,
+      "id": "card_gate_pass",
+      "kind": "calling_card",
+      "name": "Gate Pass"
+    },
+    {
+      "rank": 10,
+      "id": "card_salt_lantern",
+      "kind": "calling_card",
+      "name": "Salt Lantern"
+    },
+    {
+      "rank": 2,
+      "id": "emblem_shovel_and_pick",
+      "kind": "emblem",
+      "name": "Shovel and Pick"
+    },
+    {
+      "rank": 5,
+      "id": "emblem_broken_bell",
+      "kind": "emblem",
+      "name": "Broken Bell"
+    },
+    {
+      "rank": 8,
+      "id": "emblem_tally_mark",
+      "kind": "emblem",
+      "name": "Tally Mark"
+    },
+    {
+      "rank": 10,
+      "id": "emblem_cracked_lens",
+      "kind": "emblem",
+      "name": "Cracked Lens"
+    },
+    {
+      "rank": 11,
+      "id": "cap_enamel",
+      "kind": "cap_style",
+      "name": "Enamel bottle caps"
+    },
+    {
+      "rank": 14,
+      "id": "cap_rusted",
+      "kind": "cap_style",
+      "name": "Rusted bottle caps"
+    },
+    {
+      "rank": 17,
+      "id": "cap_bakelite",
+      "kind": "cap_style",
+      "name": "Bakelite bottle caps"
+    },
+    {
+      "rank": 20,
+      "id": "cap_frosted",
+      "kind": "cap_style",
+      "name": "Frosted bottle caps"
+    },
+    {
+      "rank": 21,
+      "id": "theme_rail_yard_at_dawn",
+      "kind": "menu_theme",
+      "name": "Rail Yard at Dawn"
+    },
+    {
+      "rank": 25,
+      "id": "theme_the_salt_chapel",
+      "kind": "menu_theme",
+      "name": "The Salt Chapel"
+    },
+    {
+      "rank": 30,
+      "id": "theme_generator_hall",
+      "kind": "menu_theme",
+      "name": "Generator Hall"
+    },
+    {
+      "rank": 31,
+      "id": "card_anim_turning_turbine",
+      "kind": "calling_card",
+      "name": "Turning Turbine (animated)"
+    },
+    {
+      "rank": 34,
+      "id": "card_anim_falling_snow",
+      "kind": "calling_card",
+      "name": "Falling Snow (animated)"
+    },
+    {
+      "rank": 37,
+      "id": "card_anim_swinging_lantern",
+      "kind": "calling_card",
+      "name": "Swinging Lantern (animated)"
+    },
+    {
+      "rank": 40,
+      "id": "card_anim_flickering_sign",
+      "kind": "calling_card",
+      "name": "Flickering Sign (animated)"
+    },
+    {
+      "rank": 42,
+      "id": "ink_violet",
+      "kind": "stamp_ink",
+      "name": "Violet round-stamp ink"
+    },
+    {
+      "rank": 45,
+      "id": "ink_amber",
+      "kind": "stamp_ink",
+      "name": "Amber round-stamp ink"
+    },
+    {
+      "rank": 46,
+      "id": "emblem_the_ledger",
+      "kind": "emblem",
+      "name": "The Ledger"
+    },
+    {
+      "rank": 50,
+      "id": "emblem_hauptbuch",
+      "kind": "emblem",
+      "name": "Hauptbuch"
+    },
+    {
+      "rank": 55,
+      "id": "emblem_final_tally",
+      "kind": "emblem",
+      "name": "Final Tally"
+    },
+    {
+      "rank": 60,
+      "id": "cap_gold",
+      "kind": "cap_style",
+      "name": "Gold bottle caps"
+    }
+  ],
+  "commendations": [
+    {
+      "prestige": 1,
+      "id": "commendation_1",
+      "kind": "emblem",
+      "name": "Commendation I"
+    },
+    {
+      "prestige": 2,
+      "id": "commendation_2",
+      "kind": "emblem",
+      "name": "Commendation II"
+    },
+    {
+      "prestige": 3,
+      "id": "commendation_3",
+      "kind": "emblem",
+      "name": "Commendation III"
+    },
+    {
+      "prestige": 4,
+      "id": "commendation_4",
+      "kind": "emblem",
+      "name": "Commendation IV"
+    },
+    {
+      "prestige": 5,
+      "id": "commendation_5",
+      "kind": "emblem",
+      "name": "Commendation V"
+    },
+    {
+      "prestige": 6,
+      "id": "commendation_6",
+      "kind": "emblem",
+      "name": "Commendation VI"
+    },
+    {
+      "prestige": 7,
+      "id": "commendation_7",
+      "kind": "emblem",
+      "name": "Commendation VII"
+    },
+    {
+      "prestige": 8,
+      "id": "commendation_8",
+      "kind": "emblem",
+      "name": "Commendation VIII"
+    },
+    {
+      "prestige": 9,
+      "id": "commendation_9",
+      "kind": "emblem",
+      "name": "Commendation IX"
+    },
+    {
+      "prestige": 10,
+      "id": "commendation_10",
+      "kind": "emblem",
+      "name": "Commendation X"
+    }
+  ],
+  "camos": {
+    "thresholds": [
+      {
+        "id": "olive_drab",
+        "name": "Olive Drab",
+        "kills": 100
+      },
+      {
+        "id": "winter",
+        "name": "Winter",
+        "kills": 250
+      },
+      {
+        "id": "bronze",
+        "name": "Bronze",
+        "kills": 500
+      },
+      {
+        "id": "silver",
+        "name": "Silver",
+        "kills": 1000
+      },
+      {
+        "id": "gold",
+        "name": "Gold",
+        "kills": 2000
+      }
+    ],
+    "meta": {
+      "id": "nachtglas",
+      "name": "Nachtglas",
+      "rule": "gold_on_every_base_weapon"
+    }
   },
-  "map02_totenhafen": {
-   "from": "map01_kaltenbrunn",
-   "round": 30
+  "challenges": {
+    "active_per_map": 3,
+    "pool": [
+      {
+        "id": "m0_round10",
+        "maps": [
+          "map00_crossroads"
+        ],
+        "name": "Last Orders",
+        "desc": "Reach round 10 at the Crossroads Inn.",
+        "event": "round",
+        "target": 10,
+        "scope": "match",
+        "xp": 2000,
+        "card": "card_last_orders"
+      },
+      {
+        "id": "m0_knife",
+        "maps": [
+          "map00_crossroads"
+        ],
+        "name": "Closing Time",
+        "desc": "Knife 15 zombies in one match at the Inn.",
+        "event": "kill",
+        "filter": {
+          "melee": true
+        },
+        "target": 15,
+        "scope": "match",
+        "xp": 1500,
+        "card": "card_closing_time"
+      },
+      {
+        "id": "m0_boards",
+        "maps": [
+          "map00_crossroads"
+        ],
+        "name": "Carpenters' Guild",
+        "desc": "Rebuild 60 boards at the Inn.",
+        "event": "boards",
+        "target": 60,
+        "scope": "career",
+        "xp": 1500,
+        "card": "card_carpenters"
+      },
+      {
+        "id": "m0_nodoors",
+        "maps": [
+          "map00_crossroads"
+        ],
+        "name": "Snug",
+        "desc": "Reach round 8 without opening a door.",
+        "event": "round",
+        "filter": {
+          "no_doors": true
+        },
+        "target": 8,
+        "scope": "match",
+        "xp": 2500,
+        "card": "card_snug"
+      },
+      {
+        "id": "m0_heads",
+        "maps": [
+          "map00_crossroads"
+        ],
+        "name": "Marksman's Ledger",
+        "desc": "Get 150 headshot kills at the Inn.",
+        "event": "kill",
+        "filter": {
+          "headshot": true
+        },
+        "target": 150,
+        "scope": "career",
+        "xp": 2000,
+        "card": "card_marksman"
+      },
+      {
+        "id": "m1_traps",
+        "maps": [
+          "map01_kaltenbrunn"
+        ],
+        "name": "Industrial Accident",
+        "desc": "Kill 50 zombies with traps.",
+        "event": "kill",
+        "filter": {
+          "weapon_prefix": "trap_"
+        },
+        "target": 50,
+        "scope": "career",
+        "xp": 3000,
+        "card": "card_industrial"
+      },
+      {
+        "id": "m1_noperk",
+        "maps": [
+          "map01_kaltenbrunn"
+        ],
+        "name": "Teetotal",
+        "desc": "Reach round 15 without buying a perk.",
+        "event": "round",
+        "filter": {
+          "no_perks": true
+        },
+        "target": 15,
+        "scope": "match",
+        "xp": 5000,
+        "card": "card_teetotal"
+      },
+      {
+        "id": "m1_bellclean",
+        "maps": [
+          "map01_kaltenbrunn",
+          "map00_crossroads"
+        ],
+        "name": "Unrung",
+        "desc": "Clear a Bellringer round without taking damage.",
+        "event": "special_clean",
+        "target": 1,
+        "scope": "career",
+        "xp": 3000,
+        "card": "card_unrung"
+      },
+      {
+        "id": "m1_crucible",
+        "maps": [
+          "map01_kaltenbrunn"
+        ],
+        "name": "Re-Taught",
+        "desc": "Upgrade 3 weapons at the Crucible.",
+        "event": "upgrade",
+        "target": 3,
+        "scope": "career",
+        "xp": 2500,
+        "card": "card_retaught"
+      },
+      {
+        "id": "m1_smg",
+        "maps": [
+          "map01_kaltenbrunn"
+        ],
+        "name": "Spray and Pray",
+        "desc": "Kill 300 zombies with SMGs at Kaltenbrunn.",
+        "event": "kill",
+        "filter": {
+          "weapon_class": "smg"
+        },
+        "target": 300,
+        "scope": "career",
+        "xp": 2500,
+        "card": "card_spray"
+      },
+      {
+        "id": "m1_round20",
+        "maps": [
+          "map01_kaltenbrunn"
+        ],
+        "name": "Deep Shift",
+        "desc": "Reach round 20 at Kaltenbrunn.",
+        "event": "round",
+        "target": 20,
+        "scope": "match",
+        "xp": 5000,
+        "card": "card_deep_shift"
+      },
+      {
+        "id": "any_powerups",
+        "maps": [
+          "any"
+        ],
+        "name": "Quartermaster's Favourite",
+        "desc": "Collect 25 power-ups.",
+        "event": "powerup",
+        "target": 25,
+        "scope": "career",
+        "xp": 1500,
+        "card": "card_quartermaster"
+      },
+      {
+        "id": "any_crate",
+        "maps": [
+          "any"
+        ],
+        "name": "Lost and Found",
+        "desc": "Open the Requisition Crate 20 times.",
+        "event": "crate",
+        "target": 20,
+        "scope": "career",
+        "xp": 1500,
+        "card": "card_lost_found"
+      },
+      {
+        "id": "any_boom",
+        "maps": [
+          "any"
+        ],
+        "name": "Demolitions School",
+        "desc": "Get 100 explosive kills (frags and launchers).",
+        "event": "kill",
+        "filter": {
+          "weapon_in": [
+            "frag",
+            "panzerschreck",
+            "panzerschreck_up",
+            "gramophone"
+          ]
+        },
+        "target": 100,
+        "scope": "career",
+        "xp": 2000,
+        "card": "card_demolitions"
+      }
+    ]
+  },
+  "main_eggs": {
+    "map01_requiem": {
+      "unlock_map": "map02_totenhafen",
+      "perk_slot_map": "map01_kaltenbrunn"
+    }
+  },
+  "map_unlock_rounds": {
+    "map01_kaltenbrunn": {
+      "from": "map00_crossroads",
+      "round": 10
+    },
+    "map02_totenhafen": {
+      "from": "map01_kaltenbrunn",
+      "round": 30
+    },
+    "map04a_thalbach": {
+      "from": "map02_totenhafen",
+      "round": 40
+    },
+    "map04b_kranich": {
+      "from": "map04a_thalbach",
+      "round": 15
+    }
   }
- }
 }

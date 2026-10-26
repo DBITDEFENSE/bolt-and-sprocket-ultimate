@@ -313,7 +313,9 @@ func _boss_die(limb: StringName, weapon_id: StringName, by_player: int, kind: St
 
 
 func _on_retreat() -> void:
-	RoundManager.release_alive(1)
+	# the reserve_alive of the spawn and the take_extra_spawn count: a death pays the latter in HomageBoss._boss_die,
+	# a retreat has no death, and the round could never end on it (T-109)
+	RoundManager.release_alive(2)
 
 
 func _start_authored_death() -> void:

@@ -193,6 +193,14 @@ func _start_shot(s: Dictionary, has_next: bool) -> void:
 			_fx_doors()
 		"dawn":
 			_fx_dawn(dur / speed)
+		"ramp":
+			_fx_ramp(dur / speed)
+		"kranich_takeoff":
+			_fx_kranich_takeoff(dur / speed)
+		"crash":
+			_fx_crash(dur / speed)
+		"launch":
+			_fx_launch(dur / speed)
 
 
 static func _v3(a: Variant) -> Vector3:
@@ -245,6 +253,63 @@ func _fx_dawn(seconds: float) -> void:
 		tw.tween_property(env, "fog_density", 0.012, seconds)
 		if env.volumetric_fog_enabled:
 			tw.tween_property(env, "volumetric_fog_albedo", Color(0.95, 0.8, 0.75), seconds)
+
+
+## UPDATE 07 Map 4 (docs/MAP4_FERNFLUG.md §11): the Kranich's ramp closes on its own (a node named KranichRamp,
+## hinged at its top edge, swings up), the wing rolls out and lifts (a node named Kranich tweens forward and up),
+## the wing comes down on the lake bed (a node named WingDiorama slides and sinks, dust and a 1.0 shake), and the
+## LANTERN rocket leaves its silo (a node named Rocket climbs). Each is a no-op when its node is missing.
+func _fx_ramp(seconds: float) -> void:
+	var ramp: Node3D = get_parent().find_child("KranichRamp", true, false) as Node3D
+	if ramp == null:
+		return
+	AudioDirector.play_3d("door_open", ramp.global_position + Vector3.UP, 4.0, -0.6)
+	var tw: Tween = create_tween()
+	tw.tween_interval(0.6)
+	tw.tween_property(ramp, "rotation:x", deg_to_rad(-82.0), maxf(1.0, seconds - 1.2)).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_callback(func() -> void:
+		AudioDirector.play_3d("board_slam", ramp.global_position + Vector3.UP, 5.0, -0.4))
+
+
+func _fx_kranich_takeoff(seconds: float) -> void:
+	var wing: Node3D = get_parent().find_child("Kranich", true, false) as Node3D
+	if wing == null:
+		return
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		n.set("_shake", 0.4)
+	var tw: Tween = create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(wing, "position:z", wing.position.z + 200.0, seconds).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tw.tween_property(wing, "position:y", wing.position.y + 60.0, seconds).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	tw.tween_property(wing, "rotation:x", deg_to_rad(-8.0), seconds).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+
+
+func _fx_crash(seconds: float) -> void:
+	var wing: Node3D = get_parent().find_child("WingDiorama", true, false) as Node3D
+	if wing == null:
+		return
+	var tw: Tween = create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(wing, "position:y", wing.position.y - 12.0, seconds * 0.55).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tw.tween_property(wing, "position:z", wing.position.z + 70.0, seconds).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(wing, "rotation:z", deg_to_rad(6.0), seconds * 0.7)
+	get_tree().create_timer(seconds * 0.55).timeout.connect(func() -> void:
+		if _done:
+			return
+		AudioDirector.play_3d("board_slam", wing.global_position, 10.0, -0.9)
+		for n: Node in get_tree().get_nodes_in_group(&"players"):
+			n.set("_shake", 1.0)
+		Effects.dust_puff(wing.global_position, "earth", 40))
+
+
+func _fx_launch(seconds: float) -> void:
+	var rocket: Node3D = get_parent().find_child("Rocket", true, false) as Node3D
+	if rocket == null:
+		return
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		n.set("_shake", 0.8)
+	var tw: Tween = create_tween()
+	tw.tween_property(rocket, "position:y", rocket.position.y + 400.0, seconds).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 
 
 func _show_title() -> void:

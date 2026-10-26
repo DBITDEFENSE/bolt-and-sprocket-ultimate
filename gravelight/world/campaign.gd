@@ -41,12 +41,53 @@ static func reset() -> void:
 	active = false
 	carry = {}
 	_arrival = {}
+	_pending_start = {}
 
 
 ## Starts a campaign run from the first map of the chain (the menu's "Campaign" button).
 static func begin() -> void:
 	reset()
 	active = true
+
+
+## UPDATE 07 (docs/MAP4_FERNFLUG.md §2, §14): starts a campaign run on `map_id` at match round `round_n` with an
+## arrival kit, for the launcher's "Map 4 — full run / skip to Act n" buttons and the console's `act <n>`. The
+## map is loaded by the caller (change_scene_to_file(scene_for(map_id))); MapRoot's arrival hooks then apply the
+## kit to every player (on_players_spawned) and resume the round count (on_rounds_started), exactly as a carried
+## arrival would, so the beacon, the act-relative rounds and the HUD behave as in a real run.
+## kit: {"weapons": [[id, tier], ...], "perks": [ids], "scrip": int, "grenades": int} ({} = nothing: the map's
+## usual start kit and the launcher's Scrip).
+static func begin_at(map_id: StringName, round_n: int, kit: Dictionary = {}) -> void:
+	reset()
+	active = true
+	_pending_start = {"map": String(map_id), "round": maxi(1, round_n), "kit": kit.duplicate(true)}
+
+
+static var _pending_start: Dictionary = {}
+
+
+## The arrival kit campaign.json names for a map ("arrival_kits"), {} when none.
+static func arrival_kit(map_id: StringName) -> Dictionary:
+	return ((cfg().get("arrival_kits", {}) as Dictionary).get(String(map_id), {}) as Dictionary).duplicate(true)
+
+
+## A kit's weapons as a to_net inventory (full magazines from the weapon tables; tiers kept), for apply_carry.
+static func kit_to_net(kit: Dictionary, weapons: Dictionary) -> Dictionary:
+	var s: Array = []
+	var base: Dictionary = weapons.get("weapons", {})
+	var up: Dictionary = weapons.get("upgraded", {})
+	for w: Variant in kit.get("weapons", []):
+		var id: String = str((w as Array)[0]) if w is Array else str(w)
+		var tier: int = int((w as Array)[1]) if w is Array and (w as Array).size() > 1 else 1
+		var row: Dictionary = up.get(id, base.get(id, {}))
+		if row.is_empty():
+			continue
+		s.append([id, int(row.get("mag", 0)), int(row.get("reserve", 0)), "", false, 0, maxi(1, tier), "", ""])
+	return {"s": s, "c": 0, "m": "trench_knife", "g": int(kit.get("grenades", 2)), "t": "", "tc": 0}
+
+
+static func pending_start_for(map_id: StringName) -> Dictionary:
+	return _pending_start if str(_pending_start.get("map", "")) == String(map_id) else {}
 
 
 static func chain() -> Array:
@@ -112,6 +153,27 @@ static func exfil_position(e: Dictionary) -> Vector3:
 ## missed window, so nobody is soft-locked by one bad round.
 static func exfil_round(e: Dictionary, attempt: int) -> int:
 	return int(e.get("round", 10)) + maxi(0, attempt) * int(e.get("retry_rounds", 3))
+
+
+## UPDATE 07: on an act map an exfil block may give `act_round` (act-relative, like everything else in the act),
+## which wins over the nominal `round` once RoundManager knows the act's start; the retries stay as they are.
+static func exfil_round_on(e: Dictionary, attempt: int, act_start: int, has_act: bool) -> int:
+	if has_act and e.has("act_round"):
+		return act_start + int(e["act_round"]) - 1 + maxi(0, attempt) * int(e.get("retry_rounds", 3))
+	return exfil_round(e, attempt)
+
+
+## The match round an act map's first act round falls on: 1 plus the lengths of the acts before it in the chain
+## (Act I 1, Act II 15, Act III 21, Act IV 30); 1 for a map that is not in the chain or has no act.
+static func act_first_round(map_id: StringName) -> int:
+	var start: int = 1
+	for m: Variant in chain():
+		if StringName(str(m)) == map_id:
+			return start
+		var a: Dictionary = RoundManager.act_block_of(StringName(str(m)))
+		if not a.is_empty():
+			start += int(a.get("length_rounds", 0))
+	return 1
 
 
 ## The round the next map starts on: the round the squad left on, plus one.
@@ -257,6 +319,7 @@ static func on_roster(map: MapRoot) -> void:
 ## gets its inventory from its owner over the usual inventory stream. Scrip and perks are the authority's.
 static func on_players_spawned(map: MapRoot) -> void:
 	if not arriving(map.map_id):
+		_apply_pending_kit(map)
 		return
 	_arrival = carry.duplicate(true)
 	carry = {}
@@ -322,6 +385,7 @@ static func restore_account(pid: int, d: Dictionary) -> void:
 ## round on the new map (round N+1) waits arrival_grace_seconds instead of the usual intro.
 static func on_rounds_started(map: MapRoot) -> void:
 	if _arrival.is_empty() or str(_arrival.get("to", "")) != String(map.map_id):
+		_resume_pending_start(map)
 		return
 	var left_on: int = int(_arrival.get("round", 0))
 	RoundManager.resume_at(left_on, int(_arrival.get("next_special", 0)), int(_arrival.get("next_boss", 0)),
@@ -329,3 +393,45 @@ static func on_rounds_started(map: MapRoot) -> void:
 	if map.hud != null:
 		map.hud.show_banner(str(cfg().get("arrival_banner", "%s\nRound %d")) % [map.display_name.to_upper(), arrival_round(left_on)], 4.0)
 	_arrival = {}
+
+
+# ---------------------------------------------------------------- begin_at (UPDATE 07)
+
+## A begin_at start on this map: everyone gets the kit (weapons, perks, Scrip) the way a carried arrival would.
+static func _apply_pending_kit(map: MapRoot) -> void:
+	var ps: Dictionary = pending_start_for(map.map_id)
+	if ps.is_empty():
+		return
+	var kit: Dictionary = ps.get("kit", {})
+	if kit.is_empty():
+		return
+	var inv: Dictionary = kit_to_net(kit, GLData.table("weapons"))
+	for pid: Variant in map.players.keys():
+		var p: Player = map.players[pid] as Player
+		if p == null:
+			continue
+		if not (inv.get("s", []) as Array).is_empty() and (p.is_local or (p.is_bot and Net.is_authority())):
+			restore_loadout(p, inv)
+		if Net.is_authority():
+			var perks: Array = []
+			for perk: Variant in kit.get("perks", []):
+				perks.append(String(perk))
+			restore_account(int(pid), {"scrip": int(kit.get("scrip", Economy.get_scrip(int(pid)))), "perks": perks, "bonus_slots": 0, "bonus_perk": "", "perk_tiers": {}})
+	print("[campaign] begin_at kit applied on %s: %d weapons, %d perks, %d Scrip" % [map.map_id, (inv.get("s", []) as Array).size(), (kit.get("perks", []) as Array).size(), int(kit.get("scrip", 0))])
+
+
+## A begin_at start past round 1: the round count resumes there (act_start = that round), with the arrival grace.
+static func _resume_pending_start(map: MapRoot) -> void:
+	var ps: Dictionary = pending_start_for(map.map_id)
+	if ps.is_empty():
+		return
+	var r: int = int(ps.get("round", 1))
+	_pending_start = {}
+	if r <= 1:
+		return
+	RoundManager.resume_at(r - 1, 0, 0, float(cfg().get("arrival_grace_seconds", 14.0)))
+	if RoundManager.has_act():
+		RoundManager.act_start = act_first_round(map.map_id)   # a mid-act start keeps the act's own numbering
+	if map.hud != null:
+		map.hud.show_banner(str(cfg().get("arrival_banner", "%s\nRound %d")) % [map.display_name.to_upper(), r], 4.0)
+	print("[campaign] begin_at %s at round %d (act start %d)" % [map.map_id, r, RoundManager.act_start])

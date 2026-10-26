@@ -65,6 +65,7 @@ func _ready() -> void:
 	add_child(body)
 	add_to_group(&"exfil_points")
 	GLBus.round_started.connect(_on_round_started)
+	GLBus.flag_changed.connect(_on_flag_changed)
 	_refresh_board()
 
 
@@ -77,7 +78,7 @@ func target_name() -> String:
 
 
 func next_round() -> int:
-	return Campaign.exfil_round(cfg, attempt)
+	return Campaign.exfil_round_on(cfg, attempt, RoundManager.act_start, RoundManager.has_act())
 
 
 func is_active() -> bool:
@@ -202,6 +203,23 @@ func _on_round_started(round_number: int, _special: bool) -> void:
 		Net.mirror(self, &"_activate")
 
 
+## UPDATE 07: the beacon can be lit by a flag before its round (`trigger_flag` in the exfil block; the main egg's
+## boarding step sets it through the quest action {"exfil_now": true}, which calls trigger_now on every beacon).
+func _on_flag_changed(flag: StringName, value: Variant) -> void:
+	var tf: String = str(cfg.get("trigger_flag", ""))
+	if tf == "" or String(flag) != tf or not bool(value):
+		return
+	trigger_now()
+
+
+## Lights the beacon now whatever the round (authority; mirrored). No-op unless dormant.
+func trigger_now() -> void:
+	if not Net.is_authority() or state != State.DORMANT:
+		return
+	_activate()
+	Net.mirror(self, &"_activate")
+
+
 ## The beacon lights (host, then every peer). The exfil's zone opens for free when the data says so.
 func _activate() -> void:
 	state = State.ACTIVE
@@ -273,10 +291,27 @@ func _needed() -> int:
 	return maxi(1, n)
 
 
+## UPDATE 07 (the Kranich's autopilot): an exfil may need a flag before anyone can touch it (`requires_flag`,
+## `requires_text`) and may have a first stage (`stage_flag`: the first hold sets it, `stage_prompt`, `stage_hold`,
+## `vo_stage`), after which the usual vote follows; `hold_seconds` overrides the vote's hold.
+func _needs_flag() -> bool:
+	var f: String = str(cfg.get("requires_flag", ""))
+	return f != "" and not GameState.has_flag(StringName(f))
+
+
+func _in_stage() -> bool:
+	var f: String = str(cfg.get("stage_flag", ""))
+	return f != "" and not GameState.has_flag(StringName(f))
+
+
 func get_prompt(player: Player) -> String:
 	if state != State.ACTIVE:
 		return ""
 	var key: String = prompt_key(&"interact")
+	if _needs_flag():
+		return str(cfg.get("requires_text", "Locked"))
+	if _in_stage():
+		return str(cfg.get("stage_prompt", "Hold [%s]")).replace("%s", key)
 	var clock: String = "%d:%02d" % [int(window_left) / 60, int(window_left) % 60]
 	var need: int = _needed()
 	if votes.has(player.player_id):
@@ -287,15 +322,27 @@ func get_prompt(player: Player) -> String:
 
 
 func can_interact(player: Player) -> bool:
-	return state == State.ACTIVE and not votes.has(player.player_id) and not player.downed
+	return state == State.ACTIVE and not _needs_flag() and not votes.has(player.player_id) and not player.downed
 
 
-func hold_time(_player: Player) -> float:
-	return float(Campaign.cfg().get("vote_hold_seconds", 1.5))
+func hold_time(player: Player) -> float:
+	var base: float = float(cfg.get("hold_seconds", Campaign.cfg().get("vote_hold_seconds", 1.5)))
+	if _in_stage():
+		base = float(cfg.get("stage_hold", base))
+	if player != null and GameState.player_has_trait(player.player_id, &"deacon"):
+		base *= float((GLData.table("player")["traits"] as Dictionary).get("deacon_work_speed_mult", 0.85))   # Good Hands
+	return base
 
 
 func interact(player: Player) -> void:
-	if not Net.is_authority() or state != State.ACTIVE:
+	if not Net.is_authority() or state != State.ACTIVE or _needs_flag():
+		return
+	if _in_stage():
+		GameState.set_flag(StringName(str(cfg["stage_flag"])))
+		feedback_2d(player, "buy", -2.0)
+		if str(cfg.get("vo_stage", "")) != "":
+			GLVO.play(StringName(str(cfg["vo_stage"])))
+		print("[campaign] exfil stage '%s' done by P%d" % [str(cfg["stage_flag"]), player.player_id])
 		return
 	votes[player.player_id] = true
 	Net.mirror(self, &"_set_votes", [votes.keys()])

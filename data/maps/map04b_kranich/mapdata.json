@@ -1,0 +1,919 @@
+{
+  "_doc": "Baked map data (Update 04 section 1, DECISIONS T-065). Written by tools/bake_minimap.sh; do not edit by hand (edit data/maps/bake_config.json and re-bake). world_rect = [min x, min z, width, depth] in metres, every floor image covers it, north (-Z) up.",
+  "map_id": "map04b_kranich",
+  "game": "gravelight",
+  "style": "ink",
+  "display_name": "Fernflug — Act II: der Kranich",
+  "world_rect": [
+    -92.817,
+    -12.0,
+    182.833,
+    98.0
+  ],
+  "px_per_m": 6.0,
+  "image_size": [
+    1097,
+    588
+  ],
+  "baked_at": "2026-10-26T13:27:04",
+  "poi_signature": "4c40ab976bb0a64ad5946dd1493cb6b2",
+  "floors": [
+    {
+      "id": "deck",
+      "name": "der Kranich (deck)",
+      "y_min": -1.0,
+      "y_max": 9.0,
+      "base_y": 0.0,
+      "cut": 1.5,
+      "rects": [],
+      "depth": 0.6,
+      "image": "floor_0_deck.png"
+    }
+  ],
+  "zones": [
+    {
+      "id": "A_BOMBENSCHACHT",
+      "name": "Aft Bomb Bay",
+      "y_min": -1.5,
+      "y_max": 6.0,
+      "polys": [
+        [
+          [
+            -9.0,
+            0.0
+          ],
+          [
+            9.0,
+            0.0
+          ],
+          [
+            9.0,
+            24.0
+          ],
+          [
+            -9.0,
+            24.0
+          ]
+        ],
+        [
+          [
+            -11.8,
+            10.7
+          ],
+          [
+            -9.05,
+            10.7
+          ],
+          [
+            -9.05,
+            13.3
+          ],
+          [
+            -11.8,
+            13.3
+          ]
+        ],
+        [
+          [
+            9.05,
+            10.7
+          ],
+          [
+            11.8,
+            10.7
+          ],
+          [
+            11.8,
+            13.3
+          ],
+          [
+            9.05,
+            13.3
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          6.0
+        ],
+        [
+          -1.0,
+          3.3
+        ],
+        [
+          -1.0,
+          3.3
+        ]
+      ]
+    },
+    {
+      "id": "B_MITTELRUMPF",
+      "name": "Centre Body",
+      "y_min": -1.5,
+      "y_max": 6.0,
+      "polys": [
+        [
+          [
+            -9.0,
+            24.0
+          ],
+          [
+            9.0,
+            24.0
+          ],
+          [
+            9.0,
+            54.0
+          ],
+          [
+            -9.0,
+            54.0
+          ]
+        ],
+        [
+          [
+            -11.8,
+            46.7
+          ],
+          [
+            -9.05,
+            46.7
+          ],
+          [
+            -9.05,
+            49.3
+          ],
+          [
+            -11.8,
+            49.3
+          ]
+        ],
+        [
+          [
+            9.05,
+            46.7
+          ],
+          [
+            11.8,
+            46.7
+          ],
+          [
+            11.8,
+            49.3
+          ],
+          [
+            9.05,
+            49.3
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          6.0
+        ],
+        [
+          -1.0,
+          3.3
+        ],
+        [
+          -1.0,
+          3.3
+        ]
+      ]
+    },
+    {
+      "id": "C_FLUEGEL_L",
+      "name": "Port Wing",
+      "y_min": -1.5,
+      "y_max": 4.0,
+      "polys": [
+        [
+          [
+            -52.0,
+            28.0
+          ],
+          [
+            -9.0,
+            28.0
+          ],
+          [
+            -9.0,
+            46.0
+          ],
+          [
+            -52.0,
+            46.0
+          ]
+        ],
+        [
+          [
+            -31.3,
+            25.2
+          ],
+          [
+            -28.7,
+            25.2
+          ],
+          [
+            -28.7,
+            27.95
+          ],
+          [
+            -31.3,
+            27.95
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          4.0
+        ],
+        [
+          -1.0,
+          3.3
+        ]
+      ]
+    },
+    {
+      "id": "C_FLUEGEL_R",
+      "name": "Starboard Wing",
+      "y_min": -1.5,
+      "y_max": 4.0,
+      "polys": [
+        [
+          [
+            9.0,
+            28.0
+          ],
+          [
+            52.0,
+            28.0
+          ],
+          [
+            52.0,
+            46.0
+          ],
+          [
+            9.0,
+            46.0
+          ]
+        ],
+        [
+          [
+            28.7,
+            25.2
+          ],
+          [
+            31.3,
+            25.2
+          ],
+          [
+            31.3,
+            27.95
+          ],
+          [
+            28.7,
+            27.95
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          4.0
+        ],
+        [
+          -1.0,
+          3.3
+        ]
+      ]
+    },
+    {
+      "id": "D_TRIEBWERK",
+      "name": "Port Engine Room",
+      "y_min": -1.5,
+      "y_max": 6.0,
+      "polys": [
+        [
+          [
+            -78.0,
+            24.0
+          ],
+          [
+            -52.0,
+            24.0
+          ],
+          [
+            -52.0,
+            58.0
+          ],
+          [
+            -78.0,
+            58.0
+          ]
+        ],
+        [
+          [
+            -52.0,
+            50.0
+          ],
+          [
+            -22.0,
+            50.0
+          ],
+          [
+            -22.0,
+            58.0
+          ],
+          [
+            -52.0,
+            58.0
+          ]
+        ],
+        [
+          [
+            -80.8,
+            28.7
+          ],
+          [
+            -78.05,
+            28.7
+          ],
+          [
+            -78.05,
+            31.3
+          ],
+          [
+            -80.8,
+            31.3
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          6.0
+        ],
+        [
+          -1.5,
+          4.0
+        ],
+        [
+          -1.0,
+          3.3
+        ]
+      ]
+    },
+    {
+      "id": "E_KANZEL",
+      "name": "Gun Blisters",
+      "y_min": -1.5,
+      "y_max": 6.0,
+      "polys": [
+        [
+          [
+            52.0,
+            24.0
+          ],
+          [
+            78.0,
+            24.0
+          ],
+          [
+            78.0,
+            58.0
+          ],
+          [
+            52.0,
+            58.0
+          ]
+        ],
+        [
+          [
+            22.0,
+            50.0
+          ],
+          [
+            52.0,
+            50.0
+          ],
+          [
+            52.0,
+            58.0
+          ],
+          [
+            22.0,
+            58.0
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          6.0
+        ],
+        [
+          -1.5,
+          4.0
+        ]
+      ]
+    },
+    {
+      "id": "F_COCKPIT",
+      "name": "Flight Deck",
+      "y_min": -1.5,
+      "y_max": 6.0,
+      "polys": [
+        [
+          [
+            -22.0,
+            54.0
+          ],
+          [
+            22.0,
+            54.0
+          ],
+          [
+            22.0,
+            74.0
+          ],
+          [
+            -22.0,
+            74.0
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          6.0
+        ]
+      ]
+    }
+  ],
+  "pois": [
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Bay",
+      "type": "ammo_box",
+      "pos": [
+        -8.48,
+        0.0,
+        20.0
+      ],
+      "floor": 0,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Bay",
+      "key": "Gameplay/AmmoBox_Bay"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Galley",
+      "type": "ammo_box",
+      "pos": [
+        8.48,
+        0.0,
+        50.0
+      ],
+      "floor": 0,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Galley",
+      "key": "Gameplay/AmmoBox_Galley"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Kanzel",
+      "type": "ammo_box",
+      "pos": [
+        77.48,
+        0.0,
+        44.0
+      ],
+      "floor": 0,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Kanzel",
+      "key": "Gameplay/AmmoBox_Kanzel"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Triebwerk",
+      "type": "ammo_box",
+      "pos": [
+        -77.48,
+        0.0,
+        44.0
+      ],
+      "floor": 0,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Triebwerk",
+      "key": "Gameplay/AmmoBox_Triebwerk"
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_Galley",
+      "type": "crate_spot",
+      "pos": [
+        -6.0,
+        0.0,
+        50.0
+      ],
+      "floor": 0,
+      "label": "Requisition Crate (Galley)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_Galley",
+      "key": "Gameplay/Crate_Galley",
+      "data": {
+        "spot_index": 0,
+        "can_start": true
+      }
+    },
+    {
+      "id": "crucible:Gameplay/Crucible",
+      "type": "crucible",
+      "pos": [
+        -6.0,
+        0.0,
+        34.0
+      ],
+      "floor": 0,
+      "label": "The Crucible",
+      "price": 5000,
+      "node_path": "Gameplay/Crucible",
+      "key": "Gameplay/Crucible",
+      "data": {
+        "needs_power": true
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_CockpitL",
+      "type": "door",
+      "pos": [
+        -22.0,
+        0.0,
+        56.0
+      ],
+      "floor": 0,
+      "label": "the flight deck",
+      "price": 1500,
+      "node_path": "Gameplay/Door_CockpitL",
+      "key": "Gameplay/Door_CockpitL",
+      "data": {
+        "door_id": "door_cockpit",
+        "opens_zone": "F_COCKPIT",
+        "requires_power": true
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_CockpitR",
+      "type": "door",
+      "pos": [
+        22.0,
+        0.0,
+        56.0
+      ],
+      "floor": 0,
+      "label": "the flight deck",
+      "price": 1500,
+      "node_path": "Gameplay/Door_CockpitR",
+      "key": "Gameplay/Door_CockpitR",
+      "data": {
+        "door_id": "door_cockpit",
+        "opens_zone": "F_COCKPIT",
+        "requires_power": true
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_FluegelL",
+      "type": "door",
+      "pos": [
+        -9.0,
+        0.0,
+        36.0
+      ],
+      "floor": 0,
+      "label": "the port wing",
+      "price": 1000,
+      "node_path": "Gameplay/Door_FluegelL",
+      "key": "Gameplay/Door_FluegelL",
+      "data": {
+        "door_id": "door_fluegel_l",
+        "opens_zone": "C_FLUEGEL_L",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_FluegelR",
+      "type": "door",
+      "pos": [
+        9.0,
+        0.0,
+        36.0
+      ],
+      "floor": 0,
+      "label": "the starboard wing",
+      "price": 1000,
+      "node_path": "Gameplay/Door_FluegelR",
+      "key": "Gameplay/Door_FluegelR",
+      "data": {
+        "door_id": "door_fluegel_r",
+        "opens_zone": "C_FLUEGEL_R",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Kanzel",
+      "type": "door",
+      "pos": [
+        52.0,
+        0.0,
+        36.0
+      ],
+      "floor": 0,
+      "label": "the gun blisters",
+      "price": 1250,
+      "node_path": "Gameplay/Door_Kanzel",
+      "key": "Gameplay/Door_Kanzel",
+      "data": {
+        "door_id": "door_kanzel",
+        "opens_zone": "E_KANZEL",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Mittelrumpf",
+      "type": "door",
+      "pos": [
+        0.0,
+        0.0,
+        24.0
+      ],
+      "floor": 0,
+      "label": "the centre body",
+      "price": 750,
+      "node_path": "Gameplay/Door_Mittelrumpf",
+      "key": "Gameplay/Door_Mittelrumpf",
+      "data": {
+        "door_id": "door_mittelrumpf",
+        "opens_zone": "B_MITTELRUMPF",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Triebwerk",
+      "type": "door",
+      "pos": [
+        -52.0,
+        0.0,
+        36.0
+      ],
+      "floor": 0,
+      "label": "the port engine room",
+      "price": 1250,
+      "node_path": "Gameplay/Door_Triebwerk",
+      "key": "Gameplay/Door_Triebwerk",
+      "data": {
+        "door_id": "door_triebwerk",
+        "opens_zone": "D_TRIEBWERK",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_blastproof_bock",
+      "type": "perk",
+      "pos": [
+        -60.0,
+        0.0,
+        25.4
+      ],
+      "floor": 0,
+      "label": "Blastproof Bock",
+      "price": 2000,
+      "node_path": "Gameplay/Perk_blastproof_bock",
+      "key": "Gameplay/Perk_blastproof_bock",
+      "data": {
+        "perk_id": "blastproof_bock"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_hawkeye_brandy",
+      "type": "perk",
+      "pos": [
+        56.0,
+        0.0,
+        56.6
+      ],
+      "floor": 0,
+      "label": "Hawkeye Brandy",
+      "price": 1500,
+      "node_path": "Gameplay/Perk_hawkeye_brandy",
+      "key": "Gameplay/Perk_hawkeye_brandy",
+      "data": {
+        "perk_id": "hawkeye_brandy"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_ironhide_stout",
+      "type": "perk",
+      "pos": [
+        -24.0,
+        0.0,
+        44.6
+      ],
+      "floor": 0,
+      "label": "Ironhide Stout",
+      "price": 2500,
+      "node_path": "Gameplay/Perk_ironhide_stout",
+      "key": "Gameplay/Perk_ironhide_stout",
+      "data": {
+        "perk_id": "ironhide_stout"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_marathon_malt",
+      "type": "perk",
+      "pos": [
+        24.0,
+        0.0,
+        44.6
+      ],
+      "floor": 0,
+      "label": "Marathon Malt",
+      "price": 2000,
+      "node_path": "Gameplay/Perk_marathon_malt",
+      "key": "Gameplay/Perk_marathon_malt",
+      "data": {
+        "perk_id": "marathon_malt"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_packmule_porter",
+      "type": "perk",
+      "pos": [
+        6.0,
+        0.0,
+        72.6
+      ],
+      "floor": 0,
+      "label": "Packmule Porter",
+      "price": 4000,
+      "node_path": "Gameplay/Perk_packmule_porter",
+      "key": "Gameplay/Perk_packmule_porter",
+      "data": {
+        "perk_id": "packmule_porter"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_second_wind",
+      "type": "perk",
+      "pos": [
+        6.0,
+        0.0,
+        22.8
+      ],
+      "floor": 0,
+      "label": "Second Wind Schnapps",
+      "price": 500,
+      "node_path": "Gameplay/Perk_second_wind",
+      "key": "Gameplay/Perk_second_wind",
+      "data": {
+        "perk_id": "second_wind"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_skyhook_sekt",
+      "type": "perk",
+      "pos": [
+        -7.8,
+        0.0,
+        30.0
+      ],
+      "floor": 0,
+      "label": "Skyhook Sekt",
+      "price": 2500,
+      "node_path": "Gameplay/Perk_skyhook_sekt",
+      "key": "Gameplay/Perk_skyhook_sekt",
+      "data": {
+        "perk_id": "skyhook_sekt"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_trigger_tonic",
+      "type": "perk",
+      "pos": [
+        7.8,
+        0.0,
+        33.6
+      ],
+      "floor": 0,
+      "label": "Trigger Tonic",
+      "price": 3000,
+      "node_path": "Gameplay/Perk_trigger_tonic",
+      "key": "Gameplay/Perk_trigger_tonic",
+      "data": {
+        "perk_id": "trigger_tonic"
+      }
+    },
+    {
+      "id": "power_switch:Gameplay/AuxBus",
+      "type": "power_switch",
+      "pos": [
+        8.7,
+        0.0,
+        42.0
+      ],
+      "floor": 0,
+      "label": "Power: the auxiliary bus",
+      "price": 0,
+      "node_path": "Gameplay/AuxBus",
+      "key": "Gameplay/AuxBus"
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_bar",
+      "type": "wall_buy",
+      "pos": [
+        66.0,
+        1.5,
+        57.83
+      ],
+      "floor": 0,
+      "label": "BAR",
+      "price": 1800,
+      "node_path": "Gameplay/WallBuy_bar",
+      "key": "Gameplay/WallBuy_bar",
+      "data": {
+        "weapon_id": "bar"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_kar98k",
+      "type": "wall_buy",
+      "pos": [
+        -8.83,
+        1.5,
+        6.0
+      ],
+      "floor": 0,
+      "label": "Kar98k",
+      "price": 200,
+      "node_path": "Gameplay/WallBuy_kar98k",
+      "key": "Gameplay/WallBuy_kar98k",
+      "data": {
+        "weapon_id": "kar98k"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_mp40",
+      "type": "wall_buy",
+      "pos": [
+        8.83,
+        1.5,
+        30.0
+      ],
+      "floor": 0,
+      "label": "MP40",
+      "price": 1000,
+      "node_path": "Gameplay/WallBuy_mp40",
+      "key": "Gameplay/WallBuy_mp40",
+      "data": {
+        "weapon_id": "mp40"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_stg44",
+      "type": "wall_buy",
+      "pos": [
+        30.0,
+        1.5,
+        45.83
+      ],
+      "floor": 0,
+      "label": "STG-44",
+      "price": 1200,
+      "node_path": "Gameplay/WallBuy_stg44",
+      "key": "Gameplay/WallBuy_stg44",
+      "data": {
+        "weapon_id": "stg44"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_thompson",
+      "type": "wall_buy",
+      "pos": [
+        -30.0,
+        1.5,
+        45.83
+      ],
+      "floor": 0,
+      "label": "Thompson M1A1",
+      "price": 1200,
+      "node_path": "Gameplay/WallBuy_thompson",
+      "key": "Gameplay/WallBuy_thompson",
+      "data": {
+        "weapon_id": "thompson"
+      }
+    }
+  ],
+  "connectors": []
+}

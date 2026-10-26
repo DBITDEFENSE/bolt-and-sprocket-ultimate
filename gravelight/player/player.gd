@@ -135,6 +135,8 @@ var _bob_k: float = 0.0
 var _land_dip: float = 0.0               # head dip on landing (spring)
 var _land_dip_v: float = 0.0
 var _punch_roll: float = 0.0             # damage punch roll (decays)
+var ext_roll_deg: float = 0.0            # UPDATE 07: the Kranich banks (FlightController sets it; eased in the camera tick)
+var _ext_roll: float = 0.0
 var _slide_dur: float = 1.0
 var _slide_v0: float = 1.0
 var _mantle_t: float = 0.0
@@ -1279,7 +1281,8 @@ func _update_camera(delta: float) -> void:
 	var roll_target: float = -clampf(lateral / maxf(0.1, walk), -1.0, 1.0) * deg_to_rad(float(C.get("strafe_roll_deg", 1.5))) * bob_scale
 	_roll = lerpf(_roll, roll_target, 1.0 - exp(-float(C.get("roll_rate", 8.0)) * delta))
 	_punch_roll = move_toward(_punch_roll, 0.0, delta * maxf(0.2, absf(_punch_roll) * 6.0))
-	camera.rotation.z = -_lean * 0.12 - _slide_k * (deg_to_rad(float(S.get("cam_tilt_deg", 3.5))) * (0.6 + 0.4 * side)) + _roll + bob_roll + _punch_roll + mk * 0.05
+	_ext_roll = lerpf(_ext_roll, deg_to_rad(ext_roll_deg), 1.0 - exp(-3.0 * delta))
+	camera.rotation.z = -_lean * 0.12 - _slide_k * (deg_to_rad(float(S.get("cam_tilt_deg", 3.5))) * (0.6 + 0.4 * side)) + _roll + bob_roll + _punch_roll + mk * 0.05 + _ext_roll
 	# shake (smooth pseudo-noise rather than per-frame white noise, scaled by the Screen Shake setting)
 	_shake = maxf(0.0, _shake - delta * 1.8)
 	_shake_t += delta * 38.0
@@ -1407,6 +1410,11 @@ func is_alive() -> bool:
 ## the impeller pit's and the Bordwart's pull (`kind` &"pull"), the Lodestone's slam wave. Skyhook Sekt resists
 ## pushes (push_resist) and pulls (pull_resist); the Lodestone's holder ignores pulls (Ballast). Bots take it
 ## through push_velocity() in their adapter.
+## True while an external push / pull (a bank, a breach, the Lodestone) still drives this body.
+func is_pushed() -> bool:
+	return _push_t > 0.0
+
+
 func external_push(v: Vector3, seconds: float, kind: StringName = &"push") -> void:
 	if downed or spectating:
 		return

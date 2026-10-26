@@ -1,39 +1,136 @@
 {
   "_doc": "The pause menu's OBJECTIVES tab (Update 04 section 4, DECISIONS T-066; docs/gravelight/OBJECTIVES.md). Read by ObjectiveLog (gravelight/ui/objective_log.gd), a pure model: it never reads the game itself, the pause menu hands it a snapshot. maps.<map_id>: current (the soft CURRENT OBJECTIVE: the first rule whose `when` holds and whose `done` does not), easter_egg (QuestManager quest ids), side (QuestManager quest ids, or tracked side quests built from match flags). quests.<quest_id>.steps.<step_id>: the three texts every step needs, one per spoiler level: done (plain words, shown once it is complete), hint (an in-character nudge for the current step at Hints), guide (a clear instruction plus where, at Full Guide), and where (a short location line, Full Guide only). Optional per step: nodes (scene node names to highlight on the MAP tab), nodes_random ({key, format}: node names from the quest's seeded picks; {g} = group, {v} = pick), pos ([x, y, z] when there is no node), progress ({flag, max} for flag steps; collect / sequence / kill_count / holdout steps count by themselves). Text tokens: {n} and {target} (the step's progress), {rand:<key>} (a seeded value; Full Guide only, and only once the step is current, i.e. after the squad has heard it). Conditions (current, side quest steps, show_when): {power}, {flag}, {flag_at_least: [flag, n]}, {zone_open}, {round_at_least}, {step: [quest, step]}, {quest_done}, {intel_match}, {jakub_in: [states]}, {exfil_active}, {setting}, {all: [...]}, {any: [...]}, {not: cond}. A future map adds a maps.<id> block and its quests' text; nothing in code changes.",
-  "spoiler_levels": ["hidden", "hints", "full"],
+  "spoiler_levels": [
+    "hidden",
+    "hints",
+    "full"
+  ],
   "spoiler_default": "hints",
   "maps": {
     "map00_crossroads": {
       "current": [
-        { "when": { "exfil_active": true }, "text": "The Carters' Road is open: get to the beacon in the yard", "nodes": ["ExfilPoint"] },
-        { "done": { "any": [ { "zone_open": "CELLAR" }, { "power": true } ] }, "text": "Open the way to the cellar (the door off the taproom, 1,500)", "nodes": ["Door_Cellar"] },
-        { "done": { "power": true }, "text": "Turn on the power: throw the cellar lever", "nodes": ["Kellerschalter"] },
-        { "done": { "round_at_least": 10 }, "text": "Survive to round 10", "progress": { "round": 10 } },
-        { "text": "Survive." }
+        {
+          "when": {
+            "exfil_active": true
+          },
+          "text": "The Carters' Road is open: get to the beacon in the yard",
+          "nodes": [
+            "ExfilPoint"
+          ]
+        },
+        {
+          "done": {
+            "any": [
+              {
+                "zone_open": "CELLAR"
+              },
+              {
+                "power": true
+              }
+            ]
+          },
+          "text": "Open the way to the cellar (the door off the taproom, 1,500)",
+          "nodes": [
+            "Door_Cellar"
+          ]
+        },
+        {
+          "done": {
+            "power": true
+          },
+          "text": "Turn on the power: throw the cellar lever",
+          "nodes": [
+            "Kellerschalter"
+          ]
+        },
+        {
+          "done": {
+            "round_at_least": 10
+          },
+          "text": "Survive to round 10",
+          "progress": {
+            "round": 10
+          }
+        },
+        {
+          "text": "Survive."
+        }
       ],
-      "easter_egg": ["map00_radio"],
+      "easter_egg": [
+        "map00_radio"
+      ],
       "side": [
         {
           "id": "jakub_escape",
           "title": "The Man in the Coal Cage",
           "public": true,
-          "show_when": { "not": { "jakub_in": [""] } },
+          "show_when": {
+            "not": {
+              "jakub_in": [
+                ""
+              ]
+            }
+          },
           "steps": [
-            { "id": "s1_find", "when": { "any": [ { "zone_open": "OLD_CELLAR" }, { "jakub_in": ["breakout", "freed", "waiting", "joined", "fallen"] } ] },
+            {
+              "id": "s1_find",
+              "when": {
+                "any": [
+                  {
+                    "zone_open": "OLD_CELLAR"
+                  },
+                  {
+                    "jakub_in": [
+                      "breakout",
+                      "freed",
+                      "waiting",
+                      "joined",
+                      "fallen"
+                    ]
+                  }
+                ]
+              },
               "done": "Found Jakub Ostrowski, locked in the coal cage under the inn.",
               "hint": "Someone is calling from under the floor. The voice carries up from the old cellar.",
               "guide": "Open the Old Cellar (Door 5, 1,250, from the cellar stair) and follow the voice to the coal cage.",
-              "where": "Old Cellar, the coal room", "nodes": ["JakubCage"] },
-            { "id": "s2_out", "when": { "jakub_in": ["freed", "waiting", "joined", "fallen"] },
+              "where": "Old Cellar, the coal room",
+              "nodes": [
+                "JakubCage"
+              ]
+            },
+            {
+              "id": "s2_out",
+              "when": {
+                "jakub_in": [
+                  "freed",
+                  "waiting",
+                  "joined",
+                  "fallen"
+                ]
+              },
               "done": "Jakub broke out of the cage with the coal shovel.",
               "hint": "The cage is old and the coal window is open. Something will come for him through it. Be close when it does.",
               "guide": "At round 5 a zombie climbs in through the coal window and bursts the cage hinge; Jakub fights it off with his shovel. Be there to help.",
-              "where": "Old Cellar, the coal window", "nodes": ["JakubCage"] },
-            { "id": "s3_join", "when": { "jakub_in": ["joined"] },
+              "where": "Old Cellar, the coal window",
+              "nodes": [
+                "JakubCage"
+              ]
+            },
+            {
+              "id": "s3_join",
+              "when": {
+                "jakub_in": [
+                  "joined"
+                ]
+              },
               "done": "Jakub is with you.",
               "hint": "He waits by the cage. A tired man, a long way from home: talk to him.",
               "guide": "Hold USE by the cage to talk to Jakub. GIVE HIM A GUN hands him the gun in your hands; NOT YET and he comes with his shovel. Either way he follows you.",
-              "where": "Old Cellar, by the cage", "nodes": ["JakubWait"] }
+              "where": "Old Cellar, by the cage",
+              "nodes": [
+                "JakubWait"
+              ]
+            }
           ]
         },
         {
@@ -41,70 +138,350 @@
           "title": "Three Ribbons",
           "requires_setting": "homage_bosses",
           "steps": [
-            { "id": "s1_round10", "when": { "any": [ { "round_at_least": 10 }, { "flag": "passage_ice_cellar_open" } ] },
+            {
+              "id": "s1_round10",
+              "when": {
+                "any": [
+                  {
+                    "round_at_least": 10
+                  },
+                  {
+                    "flag": "passage_ice_cellar_open"
+                  }
+                ]
+              },
               "done": "Held the inn until round 10, when the lamps went out.",
               "hint": "The innkeeper's children were never found. Hold out long enough and the house will remember them.",
               "guide": "Survive to round 10 with Homage Bosses on: the Cousins come.",
-              "where": "" },
-            { "id": "s2_cousins", "when": { "flag": "passage_ice_cellar_open" },
+              "where": ""
+            },
+            {
+              "id": "s2_cousins",
+              "when": {
+                "flag": "passage_ice_cellar_open"
+              },
               "done": "The Cousins are at rest. The ice cellar behind the coal room is open: their chalk drawings and the aunt's letter are inside.",
               "hint": "Three girls who never stopped playing. Let them finish the game.",
               "guide": "Kill all three Cousins on round 10 (the Hammer, the Reach, then Alix from the trapdoor behind the bar). The bricked-up ice cellar off the coal room opens on the clear.",
-              "where": "Old Cellar, the ice cellar off the coal room", "nodes": ["IceCellarChalk", "IceCellarSeal"] }
+              "where": "Old Cellar, the ice cellar off the coal room",
+              "nodes": [
+                "IceCellarChalk",
+                "IceCellarSeal"
+              ]
+            }
           ]
         }
       ]
     },
     "map01_kaltenbrunn": {
       "current": [
-        { "when": { "exfil_active": true }, "text": "The North Gate is open: get to the beacon at the Minehead", "nodes": ["ExfilPoint"] },
-        { "done": { "any": [ { "zone_open": "G_GENERATOR" }, { "power": true } ] }, "text": "Open the path to the Generator Hall", "nodes": ["Door_Lift", "Door_Stairs", "Door_Generator"] },
-        { "done": { "power": true }, "text": "Turn on the power: throw the Hauptschalter", "nodes": ["Hauptschalter"] },
-        { "done": { "any": [ { "flag_at_least": ["pylons_attuned", 3] }, { "flag": "core_vault_open" } ] }, "text": "Attune the 3 Resonance Pylons", "progress": { "flag": "pylons_attuned", "max": 3 }, "nodes": ["Pylon_A", "Pylon_F", "Pylon_H"] },
-        { "done": { "round_at_least": 30 }, "text": "Survive to round 30", "progress": { "round": 30 } },
-        { "text": "Survive." }
+        {
+          "when": {
+            "exfil_active": true
+          },
+          "text": "The North Gate is open: get to the beacon at the Minehead",
+          "nodes": [
+            "ExfilPoint"
+          ]
+        },
+        {
+          "done": {
+            "any": [
+              {
+                "zone_open": "G_GENERATOR"
+              },
+              {
+                "power": true
+              }
+            ]
+          },
+          "text": "Open the path to the Generator Hall",
+          "nodes": [
+            "Door_Lift",
+            "Door_Stairs",
+            "Door_Generator"
+          ]
+        },
+        {
+          "done": {
+            "power": true
+          },
+          "text": "Turn on the power: throw the Hauptschalter",
+          "nodes": [
+            "Hauptschalter"
+          ]
+        },
+        {
+          "done": {
+            "any": [
+              {
+                "flag_at_least": [
+                  "pylons_attuned",
+                  3
+                ]
+              },
+              {
+                "flag": "core_vault_open"
+              }
+            ]
+          },
+          "text": "Attune the 3 Resonance Pylons",
+          "progress": {
+            "flag": "pylons_attuned",
+            "max": 3
+          },
+          "nodes": [
+            "Pylon_A",
+            "Pylon_F",
+            "Pylon_H"
+          ]
+        },
+        {
+          "done": {
+            "round_at_least": 30
+          },
+          "text": "Survive to round 30",
+          "progress": {
+            "round": 30
+          }
+        },
+        {
+          "text": "Survive."
+        }
       ],
-      "easter_egg": ["map01_requiem"],
+      "easter_egg": [
+        "map01_requiem"
+      ],
       "side": [
-        { "quest": "map01_song" },
-        { "quest": "map01_wren_tag" },
+        {
+          "quest": "map01_song"
+        },
+        {
+          "quest": "map01_wren_tag"
+        },
         {
           "id": "jakub_road",
           "title": "Jakub's Road",
           "public": true,
-          "show_when": { "jakub_in": ["joined", "fallen"] },
+          "show_when": {
+            "jakub_in": [
+              "joined",
+              "fallen"
+            ]
+          },
           "steps": [
-            { "id": "s1_with_you", "when": { "jakub_in": ["joined", "fallen"] },
+            {
+              "id": "s1_with_you",
+              "when": {
+                "jakub_in": [
+                  "joined",
+                  "fallen"
+                ]
+              },
               "done": "Jakub came with you to Kaltenbrunn: the mine he walked out of two days ago.",
-              "hint": "", "guide": "", "where": "" },
-            { "id": "s2_shortcut", "when": { "zone_open": "M_STAIRS" },
+              "hint": "",
+              "guide": "",
+              "where": ""
+            },
+            {
+              "id": "s2_shortcut",
+              "when": {
+                "zone_open": "M_STAIRS"
+              },
               "done": "Jakub showed you the Maintenance Stairs.",
               "hint": "He worked this mine. Ask him the quick way down.",
               "guide": "While Jakub is with you the Maintenance Stairs door costs 500 less.",
-              "where": "Minehead, the Maintenance Stairs door", "nodes": ["Door_Stairs"] }
+              "where": "Minehead, the Maintenance Stairs door",
+              "nodes": [
+                "Door_Stairs"
+              ]
+            }
           ]
         }
       ]
     },
     "map04a_thalbach": {
       "current": [
-        {"when": {"exfil_active": true}, "text": "The ramp is down: board the Kranich", "nodes": ["ExfilPoint"]},
-        {"done": {"any": [{"zone_open": "E_MONTAGE"}, {"power": true}]}, "text": "Find the works' power: the assembly halls", "nodes": ["Door_Montage", "Door_Kantine", "Door_Bahnhof"]},
-        {"done": {"power": true}, "text": "Turn on the power: the Kraftzentrale's main breaker", "nodes": ["Hauptschalter"]},
-        {"done": {"zone_open": "H_HALLE"}, "text": "Open the Great Hangar", "nodes": ["Door_Halle"]},
-        {"text": "Survive until the ramp comes down."}
+        {
+          "when": {
+            "exfil_active": true
+          },
+          "text": "The ramp is down: board the Kranich",
+          "nodes": [
+            "ExfilPoint"
+          ]
+        },
+        {
+          "done": {
+            "any": [
+              {
+                "zone_open": "E_MONTAGE"
+              },
+              {
+                "power": true
+              }
+            ]
+          },
+          "text": "Find the works' power: the assembly halls",
+          "nodes": [
+            "Door_Montage",
+            "Door_Kantine",
+            "Door_Bahnhof"
+          ]
+        },
+        {
+          "done": {
+            "power": true
+          },
+          "text": "Turn on the power: the Kraftzentrale's main breaker",
+          "nodes": [
+            "Hauptschalter"
+          ]
+        },
+        {
+          "done": {
+            "zone_open": "H_HALLE"
+          },
+          "text": "Open the Great Hangar",
+          "nodes": [
+            "Door_Halle"
+          ]
+        },
+        {
+          "text": "Survive until the ramp comes down."
+        }
       ],
       "easter_egg": [],
       "side": []
     },
     "map02_totenhafen": {
       "current": [
-        { "when": { "exfil_active": true }, "text": "The exfil is open: get to the beacon", "nodes": ["ExfilPoint"] },
-        { "done": { "any": [ { "zone_open": "D_PENHALL" }, { "power": true } ] }, "text": "Open the path to the Pen Hall", "nodes": ["Door_PenHall_W", "Door_PenHall_E", "Door_Cannery", "Door_Workshop"] },
-        { "done": { "any": [ { "flag": "ballast_loaded" }, { "power": true } ] }, "text": "Hang a ballast coffin on the crane hook", "nodes": ["BallastHook"] },
-        { "done": { "any": [ { "zone_open": "F_LOWERPENS" }, { "power": true } ] }, "text": "Open the way down to the pump room", "nodes": ["Door_Pumps"] },
-        { "done": { "power": true }, "text": "Turn on the power: throw the Pumpenschalter", "nodes": ["Pumpenschalter"] },
-        { "text": "Survive." }
+        {
+          "when": {
+            "exfil_active": true
+          },
+          "text": "The exfil is open: get to the beacon",
+          "nodes": [
+            "ExfilPoint"
+          ]
+        },
+        {
+          "done": {
+            "any": [
+              {
+                "zone_open": "D_PENHALL"
+              },
+              {
+                "power": true
+              }
+            ]
+          },
+          "text": "Open the path to the Pen Hall",
+          "nodes": [
+            "Door_PenHall_W",
+            "Door_PenHall_E",
+            "Door_Cannery",
+            "Door_Workshop"
+          ]
+        },
+        {
+          "done": {
+            "any": [
+              {
+                "flag": "ballast_loaded"
+              },
+              {
+                "power": true
+              }
+            ]
+          },
+          "text": "Hang a ballast coffin on the crane hook",
+          "nodes": [
+            "BallastHook"
+          ]
+        },
+        {
+          "done": {
+            "any": [
+              {
+                "zone_open": "F_LOWERPENS"
+              },
+              {
+                "power": true
+              }
+            ]
+          },
+          "text": "Open the way down to the pump room",
+          "nodes": [
+            "Door_Pumps"
+          ]
+        },
+        {
+          "done": {
+            "power": true
+          },
+          "text": "Turn on the power: throw the Pumpenschalter",
+          "nodes": [
+            "Pumpenschalter"
+          ]
+        },
+        {
+          "text": "Survive."
+        }
+      ],
+      "easter_egg": [],
+      "side": []
+    },
+    "map04b_kranich": {
+      "current": [
+        {
+          "when": {
+            "exfil_active": true
+          },
+          "text": "Rip out the autopilot",
+          "nodes": [
+            "ExfilPoint"
+          ]
+        },
+        {
+          "done": {
+            "power": true
+          },
+          "text": "Throw the auxiliary bus in the centre body",
+          "nodes": [
+            "AuxBus",
+            "Door_Mittelrumpf"
+          ]
+        },
+        {
+          "done": {
+            "any": [
+              {
+                "zone_open": "D_TRIEBWERK"
+              },
+              {
+                "zone_open": "E_KANZEL"
+              }
+            ]
+          },
+          "text": "Get into the wings: the engine room and the gun blisters",
+          "nodes": [
+            "Door_FluegelL",
+            "Door_FluegelR"
+          ]
+        },
+        {
+          "done": {
+            "zone_open": "F_COCKPIT"
+          },
+          "text": "Reach the cockpit",
+          "nodes": [
+            "Door_Cockpit"
+          ]
+        },
+        {
+          "text": "Hold on. Nobody is flying."
+        }
       ],
       "easter_egg": [],
       "side": []
@@ -122,7 +499,11 @@
           "hint": "Glasmacher's technician wrote his frequencies down and left them about the inn: three scraps, numbered like chapters. ({n}/3)",
           "guide": "Pick up the three notes: Note I (3.120) under the beer stein on the taproom mantel; Note II (5.785) in the technician's trunk in Upstairs Room 2 (Door 1, 750); Note III (7.440) nailed to the hayloft beam in the stable (Door 2, 1,000). ({n}/3)",
           "where": "Taproom mantel · Upstairs Room 2 · Stable hayloft",
-          "nodes": ["NoteA", "NoteB", "NoteC"]
+          "nodes": [
+            "NoteA",
+            "NoteB",
+            "NoteC"
+          ]
         },
         "s2_tune": {
           "story": "Three numbered frequencies, lowest first. Lock them on the bar radio in order and Glasmacher answers for real: who he is, what is in the salt under Kaltenbrunn, and where the squad has to go when the snow stops. A wrong lock is a burst of static that every dead thing outside can hear, and the order starts again. When the third lock lands, someone else cuts in on his frequency, cheerful and faint, and the house's tonic cabinets light up on his account.",
@@ -131,7 +512,9 @@
           "hint": "The radio behind the bar keeps calling for Gravelight. Read the notes in their order and the dial will answer. ({n}/{target})",
           "guide": "At the field radio behind the taproom bar, hold USE and turn the dial: lock 3.120, then 5.785, then 7.440. A wrong frequency bursts static (and draws zombies) and starts the order again. ({n}/{target} locked)",
           "where": "Taproom, behind the bar",
-          "nodes": ["FieldRadio"]
+          "nodes": [
+            "FieldRadio"
+          ]
         }
       }
     },
@@ -143,58 +526,84 @@
           "hint": "The whole mine is dark. Somewhere below the chapel, a great switch waits for a hand.",
           "guide": "Go down (the Lift, 1,250, or the Maintenance Stairs, 1,500), open the Generator Hall (1,500) and throw the Hauptschalter on its north wall.",
           "where": "Generator Hall, north wall",
-          "nodes": ["Hauptschalter"]
+          "nodes": [
+            "Hauptschalter"
+          ]
         },
         "s1_vault": {
           "done": "Attuned the three Resonance Pylons; the Core Vault is open.",
           "hint": "Three crystals hum out of tune: one where the cage comes up, one where they prayed, one where they were measured. Tune them and something deep opens. ({n}/3)",
           "guide": "Attune the three Resonance Pylons (1,500 each, then hold the ring for 45 s): Pylon A at the Minehead, Pylon F in the Salt Chapel, Pylon H in the Laboratory Wing (2,000 door, needs power). The Core Vault opens when all three sing. ({n}/3)",
           "where": "Minehead · Salt Chapel · Laboratory Wing",
-          "nodes": ["Pylon_A", "Pylon_F", "Pylon_H"],
-          "progress": { "flag": "pylons_attuned", "max": 3 }
+          "nodes": [
+            "Pylon_A",
+            "Pylon_F",
+            "Pylon_H"
+          ],
+          "progress": {
+            "flag": "pylons_attuned",
+            "max": 3
+          }
         },
         "s2a_radios": {
           "done": "Heard Fasbender's three code fragments on the radios.",
           "hint": "Fasbender said the codes are in the radios. Listen for the ones that crackle. ({n}/3)",
           "guide": "Three radios crackle (you hear them within 12 m), one on the surface, one in the depths, one in the lab; their spots change each match. Use each to hear a two-digit fragment and whether it comes first, in the middle or last. ({n}/3)",
           "where": "One radio on the surface, one in the depths, one in the lab",
-          "nodes_random": { "key": "radios", "format": "Radio_{v}" }
+          "nodes_random": {
+            "key": "radios",
+            "format": "Radio_{v}"
+          }
         },
         "s2b_switchboard": {
           "done": "Patched the code into the Admin switchboard: Fasbender spoke to us himself.",
           "hint": "Six digits, three voices, one board in Administration. Mind which voice said 'first'. ({n}/{target})",
           "guide": "At the switchboard in Administration, plug in the six digits: the 'first' fragment, then 'the middle', then 'last'. This match the code is {rand:code}. A wrong jack sparks and resets. ({n}/{target})",
           "where": "Administration, the switchboard room",
-          "nodes": ["Switchboard"]
+          "nodes": [
+            "Switchboard"
+          ]
         },
         "s3_build": {
           "done": "Built the Totenglocke at the Generator Hall workbench.",
           "hint": "A bell, a frame and a crank, hidden by men who wanted no more bells. Put them together where the turbines turn.",
           "guide": "Collect the three Totenglocke parts (the spot changes each match): the bell in the Rail Yard (boxcar, signal box or locomotive cab), the firing frame in the Barracks (top bunk, quartermaster's cage or mess-hall stage), the crank in the Salt Chapel (bell-tower base, sacristy or confessional). Build it at the Generator Hall workbench.",
           "where": "Rail Yard · Barracks · Salt Chapel, then the Generator Hall workbench",
-          "nodes_random": { "key": "parts", "format": "Part_{g}_{v}" },
-          "nodes": ["Workbench"]
+          "nodes_random": {
+            "key": "parts",
+            "format": "Part_{g}_{v}"
+          },
+          "nodes": [
+            "Workbench"
+          ]
         },
         "s4_key": {
           "done": "Took the Overseer's Key from the Foreman, under the lit bell.",
           "hint": "The Foreman keeps the key to what Reinholt locked away, and he only gives it up beneath a burning bell.",
           "guide": "Shoot the great bell 14 m above the Salt Chapel altar with an upgraded (Crucible) weapon: it glows amber for 90 s (75 s in co-op) and calls the Foreman if he isn't about. Kill the Foreman inside the chapel while it glows; he drops the Overseer's Key.",
           "where": "Salt Chapel, the bell above the altar",
-          "nodes": ["ChapelBell"]
+          "nodes": [
+            "ChapelBell"
+          ]
         },
         "s5_reliquary": {
           "done": "Opened the reliquary: Liesl's music box.",
           "hint": "A key, an altar, and something of hers that Reinholt would rather you left alone.",
           "guide": "Take the Overseer's Key to the Salt Chapel altar and use it: the reliquary opens on Liesl's music box. It plays a four-note melody; use it again to replay it.",
           "where": "Salt Chapel, the altar",
-          "nodes": ["Altar"]
+          "nodes": [
+            "Altar"
+          ]
         },
         "s6_bells": {
           "done": "Rang the four hidden bells in the music box's order.",
           "hint": "Four small bells hide in the mine, one for each note the music box plays. Ring them in her order. ({n}/4)",
           "guide": "Find the four small bells (one on the surface, one in Administration or the Barracks, one in the depths, one in the lab; the spots change each match) and shoot them in the melody's order. A wrong bell puts every glow out: start again. ({n}/4)",
           "where": "Surface · Admin or Barracks · depths · lab",
-          "nodes_random": { "key": "bells", "format": "Bell_{v}" }
+          "nodes_random": {
+            "key": "bells",
+            "format": "Bell_{v}"
+          }
         },
         "s7_drummer": {
           "done": "Caught Herr Tamtam and took the Nachtglas shard.",
@@ -207,21 +616,29 @@
           "hint": "The shard wants to go home to the fire that makes the guns sing. The switchboard, the bell and the drummer must all be behind you first.",
           "guide": "With the switchboard done, the Totenglocke built and the shard in hand, use the Crucible in the Core (no cost) to set the shard in it.",
           "where": "The Core, the Crucible",
-          "nodes": ["Crucible"]
+          "nodes": [
+            "Crucible"
+          ]
         },
         "s8b_charge": {
           "done": "Fed the heart: the Crucible is charged.",
           "hint": "The heart hears only the bell. Toll it close to the pit. ({n}/{target})",
           "guide": "Get {target} kills with the Totenglocke (either version) within 15 m of the heart's pit rim in the Core. Kills further out don't count. ({n}/{target})",
           "where": "The Core, around the heart's pit",
-          "pos": [34, -18, 116]
+          "pos": [
+            34,
+            -18,
+            116
+          ]
         },
         "s9_heartstorm": {
           "done": "Survived the Heartstorm.",
           "hint": "When the shard is full, wake the heart and stand your ground in its chamber.",
           "guide": "Use the charged Crucible to start the Heartstorm, then hold the Core for 2:00 against Gängers, Bellringers and the Foreman (at 0:40 and 1:30). If everyone leaves or is down for 10 s it starts over; the charge is kept.",
           "where": "The Core",
-          "nodes": ["Crucible"]
+          "nodes": [
+            "Crucible"
+          ]
         },
         "s10_ending": {
           "done": "The heart of Kaltenbrunn is broken.",
@@ -239,14 +656,20 @@
           "hint": "Somebody hid a song in three pieces. Listen for a faint hum near a lantern, a prayer and a child's room. ({n}/3)",
           "guide": "Pick up the three wax cylinders (they hum within 4 m): on the guard's shelf behind a lantern in the Minehead gatehouse; in a Salt Chapel confessional (hold USE 1 s); on the nursery dresser in the Laboratory Wing (needs power and the Lab door). ({n}/3)",
           "where": "Minehead gatehouse · Salt Chapel confessional · Lab nursery",
-          "nodes": ["Cylinder1", "Cylinder2", "Cylinder3"]
+          "nodes": [
+            "Cylinder1",
+            "Cylinder2",
+            "Cylinder3"
+          ]
         },
         "s2_phonograph": {
           "done": "Played 'Lanterns Down Below' on the phonograph.",
           "hint": "Three cylinders and no music. The Kommandant kept a phonograph for his evenings.",
           "guide": "Take the cylinders to the phonograph in Reinholt's office (Administration, upstairs) and use it.",
           "where": "Administration, Reinholt's office",
-          "nodes": ["Phonograph"]
+          "nodes": [
+            "Phonograph"
+          ]
         }
       }
     },
@@ -258,7 +681,9 @@
           "hint": "Wren's brother came through here. Among a hundred numbered tags, one hangs askew.",
           "guide": "In the Laboratory Wing's Intake room, use tag KB-4471 on the tag board (it glints when Wren is in the match).",
           "where": "Laboratory Wing, the Intake tag board",
-          "nodes": ["Tag_KB4471"]
+          "nodes": [
+            "Tag_KB4471"
+          ]
         }
       }
     }

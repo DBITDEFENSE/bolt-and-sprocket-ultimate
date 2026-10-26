@@ -18,6 +18,7 @@ const MAPS: Dictionary = {
 	"map01": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
 	"map02": "res://gravelight/maps/map02_totenhafen/map02.tscn",
 	"map04a": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+	"map04b": "res://gravelight/maps/map04_fernflug/map04b.tscn",
 }
 const PROFILE: String = "user://_bot_profile.json"
 const TURN_RATE: float = 7.0          # rad/s, a quick but human flick
@@ -654,7 +655,9 @@ func _hold_position() -> void:
 
 func _check_player_stuck(delta: float) -> void:
 	var moving_wanted: bool = not _path.is_empty() and _path_i < _path.size()
-	if moving_wanted and player.global_position.distance_to(_last_pos) < 0.02:
+	if player.is_pushed():
+		_stuck_t = 0.0   # held by a bank / a breach (Map 4): not stuck, pinned
+	elif moving_wanted and player.global_position.distance_to(_last_pos) < 0.02:
 		_stuck_t += delta
 		if _stuck_t > 2.5:
 			var msg: String = "player stuck while walking a nav path near %s" % _v(player.global_position.snapped(Vector3.ONE))
@@ -956,6 +959,8 @@ func _watch_zombies(delta: float) -> void:
 			_z_track[id] = {"pos": z.global_position, "t": 0.0, "state": z.state}
 			continue
 		tr["t"] = float(tr["t"]) + delta
+		if z is HomageBoss:
+			continue   # a tethered / rail-bound boss stands still by design (the Kranführer, the Bordwart)
 		var limit: float = 30.0 if z.state in [Zombie.State.WAIT_WINDOW, Zombie.State.TEAR] else 20.0
 		if float(tr["t"]) > limit and not bool(tr.get("flag", false)):
 			tr["flag"] = true

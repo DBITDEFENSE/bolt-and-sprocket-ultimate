@@ -6,7 +6,14 @@
   "REI",
   "LSL",
   "CUT",
-  "NPC"
+  "NPC",
+  "WIT",
+  "PA",
+  "BWT",
+  "DEE",
+  "HAL",
+  "RRK",
+  "WIV"
  ],
  "player_speakers": [
   "DUT",
@@ -30,7 +37,14 @@
   "WRN": 1,
   "BNT": 0,
   "TAG": 4,
-  "JAK": 1
+  "JAK": 1,
+  "WIT": 4,
+  "PA": 3,
+  "BWT": 2,
+  "DEE": 4,
+  "HAL": 4,
+  "RRK": 2,
+  "WIV": 4
  },
  "category_priority": {
   "PWR_EXPIRE": 2,
@@ -366,7 +380,8 @@
    "OPR_TIDE_WARN_01",
    "OPR_TIDE_RISING_01"
   ],
-  "map04a": []
+  "map04a": [],
+  "map04b": []
  },
  "slip_cooldown_s": 300.0,
  "slip_cooldown_hw_map03_s": 240.0,

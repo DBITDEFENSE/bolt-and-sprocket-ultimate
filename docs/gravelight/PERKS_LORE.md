@@ -713,3 +713,124 @@ Chalked on the goods shed's door: the works' standing order for the rail yard ("
 
 ### chalk.bar
 **Plate:** BAR · Prüfstand, east wall · "test-stand crew, never fired"
+
+## 9. Map 4, Act II: der Kranich (`map04b_kranich`)
+
+<!-- Parsed by tools/build_perk_lore.py like §4–§7 (UPDATE 07, docs/MAP4_FERNFLUG.md §4, §13.1). The wing's
+     cabinets were bolted in for a crew that never existed; every plate carries the works' crane-in-a-cog stencil. -->
+
+**Archive map:** 4b
+
+### perk.second_wind
+**Plate:** Consignment W.T. · Cabinet 1 of 8 · aft bay · do not disconnect · V.
+**Archive:** Maker's Plate: Second Wind (the bomb bay)
+
+The pale-blue apothecary cabinet strapped to the aft bay's forward bulkhead between the rack rows, its standby cell glowing behind the louvres while the bay doors are shut.
+
+HELVETIA AUTOMATEN AG · BASEL. Hygienic beverage dispenser, cabinet pattern. Formula: Schw. A. W. Consignment Werk Thalbach, aircraft fit, 1 of 8. Under the maker's line the scratched note Vendelin leaves on every one of these.
+
+The crew list says "provided." The cabinet was fitted for them anyway: the works' fitters bolted eight machines into a flying wing because the consignment said eight and nobody asked who would drink.
+
+### perk.skyhook_sekt
+**Plate:** Consignment W.T. · Cabinet 2 of 8 · ELEVATION · galley, port side · J. Maurer
+**Archive:** Maker's Plate: Skyhook Sekt (the galley)
+
+The pale sky-blue glider-nosed cabinet bolted beside the galley's kettle, its little propeller ticking round whenever the deck drops under a jump, Fräulein Kranich's scarf out straight on the enamel.
+
+HELVETIA AUTOMATEN AG · BASEL. Hygienic beverage dispenser, glider pattern. Formula: H. Maurer, Windkanal Thalbach. Consignment Werk Thalbach, aircraft fit, 2 of 8. "Leicht · Lieber · Landen."
+
+Jette Maurer's Sekt, made so a crew at altitude for eleven hours would land well rather than fly; she refused to fly the wing and refused to test it on anyone. The cabinet went aboard without her, with her name on the plate, which is the only part of the Kranich she ever signed.
+
+### perk.trigger_tonic
+**Plate:** Consignment W.T. · Cabinet 3 of 8 · galley, starboard · Dr. I. Vogt
+**Archive:** Maker's Plate: Trigger Tonic (the galley)
+
+The crate-shaped cabinet across the galley from the Sekt, the tin hare running toward the radio room.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: Dr. I. Vogt, Kaltwerk Chemie. Consignment Werk Thalbach, aircraft fit, 3 of 8. Pour-time set to the watch.
+
+Ilse Vogt's reload tonic, pour-time set to a flight watch nobody would stand. The galley's kettle beside it is still warm; the hare on the glass has a scratch across its eye from the day the cabinet was strapped down.
+
+### perk.ironhide_stout
+**Plate:** Consignment W.T. · Cabinet 4 of 8 · port wing, rib bay 3 · O. Kessler
+**Archive:** Maker's Plate: Ironhide Stout (the port wing)
+
+The iron-red barrel cabinet wedged into a rib bay of the port crawlspace, its hoops scraped silver where it was dragged along the spar.
+
+HELVETIA AUTOMATEN AG · BASEL · SEIT 1921. Formula: O. Kessler. Consignment Werk Thalbach, aircraft fit, 4 of 8. "For the gunners."
+
+Kessler's stout for gunners who were never aboard. It was the last cabinet the fitters carried in; the drag marks along the spar are theirs, and so is the chalk arrow on the rib that says "zu schwer" (too heavy).
+
+### perk.marathon_malt
+**Plate:** Consignment W.T. · Cabinet 5 of 8 · starboard wing, rib bay 3 · Gähwiler
+**Archive:** Maker's Plate: Marathon Malt (the starboard wing)
+
+The tall teardrop cabinet in the starboard crawlspace's third rib bay, the runner on its glass tilted with the wing.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: Gähwiler family (Grindelwald). Consignment Werk Thalbach, aircraft fit, 5 of 8.
+
+Res Gähwiler's grandmother's malt, "the taste of running home," fitted to a wing whose flight plan has no home on it. The runner on the glass leans with every bank.
+
+### perk.blastproof_bock
+**Plate:** Consignment W.T. · Cabinet 6 of 8 · port engine room · LIABILITY
+**Archive:** Maker's Plate: Blastproof Bock (the engine room)
+
+The safe-shaped cabinet bolted into the port engine room beside the engineer's station, its enamel blistered by the impeller's heat, the waiver text on its glass gone brown.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: demolitions school, Kaltenbrunn. Consignment Werk Thalbach, aircraft fit, 6 of 8. Under the maker's line, a second stencil in another hand: "a Darkm— part in a Reich wing" scratched out to "a foreign part".
+
+The flight engineer drank it before every engine run, the station log says, "for the vents." It is the only cabinet aboard with a drinker's name in a log, and the log stops the day the impellers were lit.
+
+### perk.hawkeye_brandy
+**Plate:** Consignment W.T. · Cabinet 7 of 8 · gunner gallery · "FOKUS"
+**Archive:** Maker's Plate: Hawkeye Brandy (the gun blisters)
+
+The periscope-shaped cabinet at the head of the blister gallery, its lens turned to the aft dome that looks back and down.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: derived, Kaltenbrunn laboratory. Consignment Werk Thalbach, aircraft fit, 7 of 8. "For the observers."
+
+Derived from tests on a captured sniper, which the plate does not say and Wren knows. It was fitted beside the window through which, on this flight, the squad watches London burn; nobody aboard will ever drink it for the reason it was built.
+
+### perk.packmule_porter
+**Plate:** Consignment W.T. · Cabinet 8 of 8 · flight deck · G. Ammer
+**Archive:** Maker's Plate: Packmule Porter (the cockpit)
+
+The wagon-shaped cabinet behind the two empty seats on the flight deck, strapped under the autopilot's cradle so the crew could reach it without unbuckling.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: Fw. G. Ammer, quartermaster. Consignment Werk Thalbach, aircraft fit, 8 of 8.
+
+Gustl Ammer's porter, from the man who used the capacity trials to smuggle food to labourers. It is the last cabinet before the autopilot and the only one with its bottle window scratched, as if someone looked at it for a long time and did not drink.
+
+### crucible
+**Plate:** MOD. R-E · PAT. PEND. BLZ-40417 · UNIT 4 · GALLEY, DECK FITTING · VIOLET STRAP
+**Archive:** The Crucible aboard the Kranich (the galley)
+
+The fourth violet forge, bolted to the galley's deck plates with the consignment's violet strap, for a crew's weapons that were never carried aboard.
+
+MOD. R-E · PAT. PEND. BLZ-40417 · UNIT 4. The same brass plaque as the vault's, the U-boat's and the bunker's, with a fitter's chalk beside it: "warum?" (why?).
+
+### chalk
+**Plate:** Three strokes and a hook, in chalk, on the casings in the aft bay
+**Archive:** Chalk aboard the Kranich: the labourers' alphabet on the bombs
+
+Chalked on the bomb casings in the aft bay, low on the shackle side where a fitter would not look: three strokes and a hook, the Kaltenbrunn gangs' mark for "weak, ours, don't trust it." The marked casings are the duds. The men who marked them were marched west on the second of May and are not aboard.
+
+### chalk.kar98k
+**Plate:** Chalk by the aft bay's rifle rack: "Ersatz, 1 Stück" (spare, 1 piece)
+**Archive:** Chalk: the bay's Kar98k
+
+### chalk.mp40
+**Plate:** Chalk on the galley bulkhead: "Bordwaffe · Pistolenmunition hinten" (ship's weapon, pistol ammunition aft)
+**Archive:** Chalk: the galley's MP40
+
+### chalk.thompson
+**Plate:** Chalk on the port spar: "Beute · funktioniert" (captured, works)
+**Archive:** Chalk: the port wing's Thompson
+
+### chalk.stg44
+**Plate:** Chalk on the starboard spar: "für die Kanzel" (for the blisters)
+**Archive:** Chalk: the starboard wing's STG-44
+
+### chalk.bar
+**Plate:** Chalk under the blister gallery's rack: "Reserve, Dom 4" (spare, dome 4)
+**Archive:** Chalk: the blister gallery's BAR

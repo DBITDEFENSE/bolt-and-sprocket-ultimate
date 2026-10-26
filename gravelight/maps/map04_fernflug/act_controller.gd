@@ -82,6 +82,13 @@ func _on_round_started(r: int, special: bool) -> void:
 	if act.is_empty() or special or director == null or not Net.is_authority():
 		return
 	if r == boss_round_match and not boss_spawned:
+		var arena: StringName = StringName(str((act.get("boss", {}) as Dictionary).get("arena_zone", "")))
+		if arena != &"" and not GameState.is_zone_open(arena):
+			# the squad has not opened his arena yet: he waits a round (the act's fallback covers a squad that never does)
+			boss_round_match = r + 1
+			RoundManager.reserve_round(boss_round_match)
+			print("[act] boss waits: %s is shut (next round %d)" % [arena, boss_round_match])
+			return
 		_spawn_boss()
 	elif boss_spawned and boss != null and is_instance_valid(boss) and boss.gone and not boss.is_active():
 		# a retreated boss returns a couple of rounds later, on the rail again

@@ -1,5 +1,5 @@
 {
-  "_doc": "Map 2 (Totenhafen) settings not in the generic tables (MAPS.md Map 2, DECISIONS T-036). power: the Pumpenschalter in the pump room (PowerSwitch config_table map02). tide: the Pen Hall water (gravelight/maps/map02_totenhafen/tide_controller.gd): high tide on every round divisible by every_rounds from min_round, rising over rise_seconds at that round's start and falling over fall_seconds at the next round's start, between low_y and high_y; anyone inside a flood box and below the surface + 0.4 wades (players: the enemies.json status player_status, refreshed every tick; zombies: the frost slow zombie_slow); the named spawns switch while flooded; the Operator reads the forecast the round before (vo_warn), then vo_rising / vo_falling. zones/doors/roster: the zone graph the generator builds (tests/unit/test_map02_data.gd checks it against map02.tscn, enemies.json and weapons.json). ballast: the carry mechanic's data, deferred (the coffins are dressing in this pass). No exfil block: this is the last map of the campaign chain.",
+  "_doc": "Map 2 (Totenhafen) settings not in the generic tables (MAPS.md Map 2, DECISIONS T-036). power: the Pumpenschalter in the pump room (PowerSwitch config_table map02). tide: the Pen Hall water (gravelight/maps/map02_totenhafen/tide_controller.gd): high tide on every round divisible by every_rounds from min_round, rising over rise_seconds at that round's start and falling over fall_seconds at the next round's start, between low_y and high_y; anyone inside a flood box and below the surface + 0.4 wades (players: the enemies.json status player_status, refreshed every tick; zombies: the frost slow zombie_slow); the named spawns switch while flooded; the Operator reads the forecast the round before (vo_warn), then vo_rising / vo_falling. zones/doors/roster: the zone graph the generator builds (tests/unit/test_map02_data.gd checks it against map02.tscn, enemies.json and weapons.json). ballast: the carry mechanic's data, deferred (the coffins are dressing in this pass). UPDATE 07: the exfil block leads on to Map 4 (Werk Thalbach) at round 40 from the pen hall apron.",
   "power": {
     "vo_delay": 1.5,
     "light_sweep_start": 2.0,
@@ -197,9 +197,51 @@
     }
   },
   "climb_links": [
-    {"name": "Ladder_CatwalkW", "zone": "D_PENHALL", "from": [-16.2, 0.0, 60.0], "to": [-19.0, 4.0, 60.0], "_doc": "pier 0 -> west catwalk ladder (MZ climb volume, T-041)"},
-    {"name": "Ladder_CatwalkE", "zone": "D_PENHALL", "from": [48.2, 0.0, 60.0], "to": [51.0, 4.0, 60.0], "_doc": "east apron -> east catwalk ladder"},
-    {"name": "Ladder_CatwalkN", "zone": "D_PENHALL", "from": [17.0, 0.0, 37.5], "to": [17.0, 4.0, 34.0], "_doc": "apron -> north catwalk ladder"}
+    {
+      "name": "Ladder_CatwalkW",
+      "zone": "D_PENHALL",
+      "from": [
+        -16.2,
+        0.0,
+        60.0
+      ],
+      "to": [
+        -19.0,
+        4.0,
+        60.0
+      ],
+      "_doc": "pier 0 -> west catwalk ladder (MZ climb volume, T-041)"
+    },
+    {
+      "name": "Ladder_CatwalkE",
+      "zone": "D_PENHALL",
+      "from": [
+        48.2,
+        0.0,
+        60.0
+      ],
+      "to": [
+        51.0,
+        4.0,
+        60.0
+      ],
+      "_doc": "east apron -> east catwalk ladder"
+    },
+    {
+      "name": "Ladder_CatwalkN",
+      "zone": "D_PENHALL",
+      "from": [
+        17.0,
+        0.0,
+        37.5
+      ],
+      "to": [
+        17.0,
+        4.0,
+        34.0
+      ],
+      "_doc": "apron -> north catwalk ladder"
+    }
   ],
   "ballast": {
     "_doc": "The Ballast carry mechanic (T-036 follow-up): BallastCoffin interactables at coffin_spots can be lifted (lift_seconds) and carried (carry_status from enemies.json, carry_offset in the carrier's frame) to the BallastHook at crane_hook (hook_seconds); once `needed` coffins hang there the flag `flag` is set and the Pumpenschalter (PowerSwitch.requires_flag) will take the throw. A carrier who goes down drops the coffin back onto its pallet.",
@@ -239,5 +281,24 @@
         "BLST-07"
       ]
     ]
+  },
+  "exfil": {
+    "round": 40,
+    "target": "map04a_thalbach",
+    "position": [
+      7.0,
+      0.0,
+      35.0
+    ],
+    "yaw": 180.0,
+    "zone": "D_PENHALL",
+    "opens_zone": true,
+    "window_seconds": 90.0,
+    "retry_rounds": 3,
+    "cutscene": "exfil_m2_m4",
+    "label": "THE THALBACH TRANSFER",
+    "vo_open": "OPR_EXFIL_OPEN_M2_01",
+    "vo_wait": "OPR_EXFIL_WAIT_01",
+    "vo_missed": "OPR_EXFIL_MISSED_M2_01"
   }
 }

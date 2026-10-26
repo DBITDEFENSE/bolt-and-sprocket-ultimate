@@ -324,15 +324,26 @@ func _halle() -> void:
 # ================================================================== dressing + lights
 
 func build_dressing() -> void:
-	# the Kranich's upper body (non-colliding): the hump of the centre body and the wing's thickness taper
-	B(Vector3(-30, 3.0, 165), Vector3(-10, 8.0, 203), "steel")
-	B(Vector3(-27, 8.0, 172), Vector3(-13, 12.0, 198), "steel")
-	B(Vector3(-60, 2.0, 178), Vector3(-30, 3.6, 192), "steel")
-	B(Vector3(-10, 2.0, 178), Vector3(20, 3.6, 192), "steel")
-	for ix: float in [-50.0, -38.0, -2.0, 10.0]:
-		CYL(Vector3(ix, 5.0, 185), 2.3, 1.0, "nachtglas")   # the intake rim glow
-		_noshadow(CYL(Vector3(ix, 2.5, 179.6), 1.2, 0.3, "nachtglas_crystal"))
-		lamp(Vector3(ix, 3.0, 180), VIOLET, 1.2, 10.0, 0.08, 0.8)
+	# the Kranich's visible body (non-colliding) as ONE kept group named "Kranich" so the boarding cutscene's
+	# `kranich_takeoff` fx can roll it out and lift it (UPDATE 07 §11.1): the hump of the centre body, the wings'
+	# thickness taper, the intake rims; the ramp plank is its own kept group "KranichRamp", hinged at the top edge,
+	# so the `ramp` fx swings it shut
+	var kr: Node3D = Props.group(dress, "Kranich", Vector3(-20, 0, 185))
+	kr.set_meta("keep", true)
+	Props.block(kr, Vector3(-10, 3.0, -20), Vector3(10, 8.0, 18), "steel")
+	Props.block(kr, Vector3(-7, 8.0, -13), Vector3(7, 12.0, 13), "steel")
+	Props.block(kr, Vector3(-40, 2.0, -7), Vector3(-10, 3.6, 7), "steel")
+	Props.block(kr, Vector3(10, 2.0, -7), Vector3(40, 3.6, 7), "steel")
+	Props.block(kr, Vector3(-40, 0.0, -10), Vector3(-10, 2.0, 10), "steel")
+	Props.block(kr, Vector3(10, 0.0, -10), Vector3(40, 2.0, 10), "steel")
+	Props.block(kr, Vector3(-10, 0.0, -20), Vector3(10, 3.0, 20), "steel")
+	for ix: float in [-30.0, -18.0, 18.0, 30.0]:
+		Props.cyl(kr, Vector3(ix, 2.5, 0), 2.5, 5.0, "steel")
+		Props.cyl(kr, Vector3(ix, 5.0, 0), 2.3, 1.0, "nachtglas")   # the intake rim glow
+		lamp(Vector3(ix - 20.0, 3.0, 180), VIOLET, 1.2, 10.0, 0.08, 0.8)
+	var rp: Node3D = Props.group(dress, "KranichRamp", Vector3(-20, 2.05, 165))
+	rp.set_meta("keep", true)
+	Props.block(rp, Vector3(-3.9, -0.12, -6.3), Vector3(3.9, 0.0, 0.0), "steel_grate")
 	label("der KRANICH", Vector3(-20, 9.0, 163.5), 180.0, 72, Color(0.85, 0.82, 0.72, 0.9))
 	# the hangar doors (dressing panels that `fx: doors` swings down), the crane bridge at rest, fog on the floor
 	var gd: Node3D = Props.group(dress, "GreatDoors", Vector3(-20, 0, 214.6))

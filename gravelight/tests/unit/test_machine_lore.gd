@@ -7,6 +7,7 @@ const MAPS: Dictionary = {
 	"map01_kaltenbrunn": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
 	"map02_totenhafen": "res://gravelight/maps/map02_totenhafen/map02.tscn",
 	"map04a_thalbach": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+	"map04b_kranich": "res://gravelight/maps/map04_fernflug/map04b.tscn",
 }
 
 

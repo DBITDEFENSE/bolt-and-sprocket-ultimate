@@ -172,6 +172,9 @@ func _register_builtins() -> void:
 	register("hp", _cmd_hp, "Show player health")
 	register("traits", _cmd_traits, "traits [dutch|peg|deacon|wren]: set character for trait testing")
 	register("quest", _cmd_quest, "quest list|skip <q> <step>|skipto <q> <step>|reset <q> [step]|reveal|seed <n>")
+	register("exfil", _cmd_exfil, "exfil now|status: light the map's campaign beacon now (UPDATE 07)")
+	register("act", _cmd_act, "act <1-4>: start Map 4 at that act (campaign mode, the act's arrival kit)")
+	register("campaign", _cmd_campaign, "campaign begin <map_id> [round]: start a campaign run there")
 	register("boss", _cmd_boss, "boss <foreman|screamer>: summon a boss in front of you")
 	register("spawn_boss", _cmd_spawn_boss, "spawn_boss cousins|hammer|reach|alix: start the Cousins Round now (Map 0), or one cousin alone")
 	register("cousins", _cmd_cousins, "cousins [status|kill <hammer|reach|alix|all>|bored]: the Cousins Round")
@@ -210,6 +213,46 @@ func _cmd_round(a: PackedStringArray) -> String:
 			d.on_zombie_returned(z)
 	RoundManager.debug_set_round(int(a[0]))
 	return "Next round: %d" % int(a[0])
+
+
+func _cmd_exfil(a: PackedStringArray) -> String:
+	var pts: Array[Node] = get_tree().get_nodes_in_group(&"exfil_points")
+	if pts.is_empty():
+		return "No campaign beacon on this map (start it in campaign mode: `act <n>` or `campaign begin <map>`)."
+	if not a.is_empty() and a[0] == "now":
+		for x: Node in pts:
+			x.call("trigger_now")
+		return "Beacon lit."
+	var x0: Node = pts[0]
+	return "Beacon %s: state %s, next round %d" % [str(x0.get("cfg").get("label", "")), str(x0.get("state")), int(x0.call("next_round"))]
+
+
+const ACT_MAPS: Array = ["map04a_thalbach", "map04b_kranich", "map04c_groomlake", "map04d_mondlicht"]
+const ACT_ROUNDS: Array = [1, 15, 21, 30]
+
+
+func _cmd_act(a: PackedStringArray) -> String:
+	if a.is_empty() or not a[0].is_valid_int() or int(a[0]) < 1 or int(a[0]) > 4:
+		return "usage: act <1-4>"
+	var i: int = int(a[0]) - 1
+	var map_id: StringName = StringName(str(ACT_MAPS[i]))
+	if not Campaign.scene_exists(map_id):
+		return "Act %d (%s) is not built yet." % [i + 1, map_id]
+	Campaign.begin_at(map_id, int(ACT_ROUNDS[i]), Campaign.arrival_kit(map_id))
+	get_tree().change_scene_to_file.call_deferred(Campaign.scene_for(map_id))
+	return "Starting %s at round %d." % [map_id, int(ACT_ROUNDS[i])]
+
+
+func _cmd_campaign(a: PackedStringArray) -> String:
+	if a.size() < 2 or a[0] != "begin":
+		return "usage: campaign begin <map_id> [round]"
+	var map_id: StringName = StringName(a[1])
+	if not Campaign.scene_exists(map_id):
+		return "No scene for %s." % map_id
+	var r: int = int(a[2]) if a.size() > 2 and a[2].is_valid_int() else 1
+	Campaign.begin_at(map_id, r, Campaign.arrival_kit(map_id))
+	get_tree().change_scene_to_file.call_deferred(Campaign.scene_for(map_id))
+	return "Campaign run: %s at round %d." % [map_id, r]
 
 
 func _cmd_god(_a: PackedStringArray) -> String:

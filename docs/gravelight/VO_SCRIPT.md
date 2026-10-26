@@ -2299,3 +2299,115 @@ manifest's `missing` ("map4: bake on the PC") and play as timed silence with sub
 | OPR_EXFIL_WAIT_M4A_01 | The aircraft will not wait indefinitely. The aircraft has somewhere to {be}. | co-op, some have voted |
 | OPR_EXFIL_MISSED_M4A_01 | Boarding has closed. It will reopen. It {always} reopens. | the window closed |
 | OPR_EXFIL_GO_M4A_01 | Boarding is now complete. Please take any {seat}. | the boarding cutscene (tier 4) |
+
+### 14.2 Totenhafen → Werk Thalbach: the exfil (`OPR`, tier 3; the beacon on the pen hall apron at round 40)
+
+| ID | Line | When |
+|---|---|---|
+| OPR_EXFIL_OPEN_M2_01 | A transfer has been arranged. Rail siding, pen hall. The paperwork says {Thalbach}. | the beacon lights |
+| OPR_EXFIL_MISSED_M2_01 | The transfer has left without you. There will be {another}. There is always another. | the window closed |
+| OPR_EXFIL_GO_M2_01 | Werk Thalbach. An aircraft works. We think you'll find it {familiar}. | the cutscene |
+
+### 14.3 Act I → Act II: the boarding and Wittkamp (`WIT`, the works' PA; tier 4 first, then 2)
+
+| ID | Line | When |
+|---|---|---|
+| OPR_EXFIL_GO_M4A_01 | Boarding is now complete. Please take any {seat}. | the boarding cutscene |
+| WIT_M4A_NOTME_01 | I did not do {that}. | the ramp closes on its own |
+| WIT_M4A_RAMP_01 | The impellers are turning over. I didn't start them. If you go in there... if you go in there, cut the fuel lines in the port room. Please. It's the only thing I {ask}. | the ramp beacon lights |
+| WIT_M4B_TAPE_01 | If anyone is hearing this aboard, I'm sorry. The autopilot takes a key and both hands. It was never meant to take a {crew}. | Act II, the radio room's tape |
+| WIT_M4B_TAPE_02 | Anselm, if you're still in there. It was never a test. I should have told {you}. | Act II, the engine room |
+
+### 14.4 Act II — der Kranich: the Operator (`OPR`, tier 3; the bomb run and London tier 4)
+
+| ID | Line | When |
+|---|---|---|
+| OPR_M4B_ARRIVE_01 | You are now in flight. Cabin crew are not available at this time. Cabin crew are... {elsewhere}. | arrival |
+| OPR_M4B_TURB_01 | A little turbulence. The aircraft is adjusting course. The aircraft is very good at {that}. | the first turbulence |
+| OPR_M4B_STRAFE_01 | Unauthorized third parties are attempting to engage with the product. Please stay away from the {windows}. | the first strafing run |
+| OPR_M4B_BREACH_01 | A small loss of pressure. This is within tolerance. Yours, we {mean}. | the first breach |
+| OPR_M4B_DRUCK_01 | Pressure drop. Everything not secured will be returned to {sender}. | Druckabfall begins |
+| OPR_M4B_DRUCK_END_01 | Pressure restored. Resupply authorized. Please re-stow your belongings and your {colleagues}. | Druckabfall ends |
+| OPR_M4B_TAGS_03 | Those crew members have been re-deployed. Darkm... the works thanks them for their {service}. | the third crew tag |
+| OPR_M4B_BORDWART_SPAWN_01 | Our flight engineer will be with you shortly. He's very attached to his {work}. | the Bordwart arrives |
+| OPR_M4B_BORDWART_DEATH_01 | The engineer is... resting. The engine will manage without him. The engine always {could}. | the Bordwart dies |
+| OPR_M4B_LONDON_01 | Valued customers. We said we'd be in {touch}. | the London window |
+| OPR_M4B_LONDON_02 | Your region has been {expanded}. | the London window, after |
+| OPR_M4B_BOMBRUN_01 | Regional sampling begins now. You are welcome to {observe}. | the bomb run begins |
+| OPR_M4B_RACK_DROP_01 | Sample {delivered}. | a rack drops |
+| OPR_M4B_RACK_DROP_02 | Another sample delivered. Thank {you}. | a rack drops |
+| OPR_M4B_RACK_JAM_01 | A sample has been... withheld. We'll note {that}. | a rack is jammed |
+| OPR_M4B_RACK_DUD_01 | That sample appears to be... hm. Somebody has been writing on the {inventory}. | a marked rack drops |
+| OPR_M4B_BOMBRUN_END_01 | Sampling complete. Proceeding to the point of delivery. Our customer is expecting {us}. | the bomb run ends |
+| OPR_EXFIL_OPEN_M4B_01 | The flight deck is open. We strongly advise against touching the autopilot. We're required to say {that}. | the autopilot beacon |
+| OPR_EXFIL_WAIT_M4B_01 | The autopilot does not negotiate. We've {tried}. | co-op, some have voted |
+| OPR_EXFIL_MISSED_M4B_01 | The autopilot has resumed. It will be available again. It is {patient}. | the window closed |
+| OPR_EXFIL_GO_M4B_01 | You've disabled the autopilot. We hope you have a plan. We {don't}. | the crash cutscene |
+
+### 14.5 Act II — the Bordfunk (`PA`, German, subtitled with a gloss) and the Bordwart (`BWT`, the boss channel)
+
+| ID | Line | When |
+|---|---|---|
+| PA_M4B_HEADING_01 | Kurs drei-null-null. Steigflug. (Heading 300. Climbing.) | arrival |
+| PA_M4B_HEADING_02 | Kurs zwei-neun-null. Reiseflughöhe erreicht. (Heading 290. Cruise altitude.) | act round 16 |
+| PA_M4B_HEADING_03 | Kurs zwei-sieben-null. Beobachter an die Kanzel. (Heading 270. Observers to the blisters.) | the London window |
+| PA_M4B_HEADING_04 | Kurs zwei-sechs-null. Zielanflug. (Heading 260. Approach to target.) | the bomb run begins |
+| PA_M4B_HEADING_05 | Kurs zwei-fünf-null. Endanflug. Auslieferung. (Heading 250. Final approach. Delivery.) | the bomb run ends |
+| PA_M4B_TURB_01 | Achtung. Turbulenz. (Attention. Turbulence.) | 3 s before a bank |
+| PA_M4B_BREACH_01 | Achtung. Druckverlust, Backbord. (Attention. Pressure loss, port.) | a port breach |
+| PA_M4B_BREACH_02 | Achtung. Druckverlust, Steuerbord. (Attention. Pressure loss, starboard.) | a starboard breach |
+| PA_M4B_DRUCK_01 | Achtung. Druckabfall. Alle Luken sichern. (Attention. Pressure drop. Secure all hatches.) | Druckabfall |
+| PA_M4B_RACK_01 | Schacht eins, Abwurf. (Rack one, release.) | rack 1 |
+| PA_M4B_RACK_02 | Schacht zwei, Abwurf. (Rack two, release.) | rack 2 |
+| PA_M4B_RACK_03 | Schacht drei, Abwurf. (Rack three, release.) | rack 3 |
+| PA_M4B_RACK_04 | Schacht vier, Abwurf. (Rack four, release.) | rack 4 |
+| PA_M4B_RACK_05 | Schacht fünf, Abwurf. (Rack five, release.) | rack 5 |
+| PA_M4B_RACK_06 | Schacht sechs, Abwurf. (Rack six, release.) | rack 6 |
+| BWT_BARK_01 | Besatzung, melden. (Crew, report.) | bark |
+| BWT_BARK_02 | Die Drehzahl stimmt nicht. Wer ist an meiner Station? (The revs are wrong. Who is at my station?) | bark |
+| BWT_BARK_03 | Es ist nur ein Test. Es ist nur ein Test. (It is only a test.) | bark |
+| BWT_PHASE_01 | Backbord läuft heiß. Ich halte sie. Ich halte sie. (Port is running hot. I'll hold her.) | phase 1 |
+| BWT_PHASE_02 | Lorenz? Lorenz, sag ihnen, es ist nur ein Test. (Lorenz, tell them it is only a test.) | phase 2 |
+| BWT_PHASE_03 | Überdrehzahl. Ich kann nicht... ich kann nicht loslassen. (Overspeed. I can't let go.) | phase 3 |
+| BWT_DEATH_01 | ...melden. (...report.) | death |
+
+### 14.6 Act II — the squad (`DUT` / `PEG` / `DEA` / `WRN` / `JAK`; the London lines tier 4, the rest tier 2)
+
+| ID | Line | When |
+|---|---|---|
+| DUT_M4B_ARRIVE_01 | Nobody's flying it. Nobody's flying the plane. I want that {noted}. | arrival |
+| DUT_M4B_TURB_01 | Whoa... whoa... who's {driving}? | turbulence |
+| DUT_M4B_BREACH_01 | Hole! HOLE! Grab {something}! | a breach |
+| DUT_M4B_STRAFE_01 | Those are ours too! They're shooting at us with our... okay, fair, we're in the bad {plane}. | strafing |
+| DUT_M4B_LONDON_01 | ...Peg. Peg, don't {look}. | the London window |
+| DUT_M4B_BOMBRUN_01 | Boston! That's BOSTON! Get on the racks, GET ON THE {RACKS}! | the bomb run |
+| DUT_M4B_RACK_JAM_01 | Got it! One stays up {here}! | a rack jammed |
+| DUT_M4B_CRASH_01 | That's not an airfield. ...That's not {anything}. | the crash |
+| PEG_M4B_ARRIVE_01 | The plan has been {revised}. | arrival |
+| PEG_M4B_TURB_01 | Brace. It's {banking}. | turbulence |
+| PEG_M4B_BREACH_01 | Seal it. SEAL it, or we'll be a great deal {lighter}. | a breach |
+| PEG_M4B_LONDON_01 | That's not Morgenrot. That's... that's a second {battery}. | the London window |
+| PEG_M4B_LONDON_02 | ...My mother's in Islington. ...Right. Racks. Where are the {racks}. | the London window, after |
+| PEG_M4B_BOMBRUN_01 | Racks in order, one every half minute. Nearest first. {GO}. | the bomb run |
+| PEG_M4B_RACK_DUD_01 | That one's marked. It's a dud. Leave it, take the {next}. | a marked rack |
+| PEG_M4B_CRASH_01 | Hold on to something {British}. | the crash |
+| DEA_M4B_ARRIVE_01 | No crew. Harnesses buckled over nobody. ...Lord, that's wrong. That's wrong in a way I don't have a word {for}. | arrival |
+| DEA_M4B_TURB_01 | Easy, girl. Easy. Nobody's at the {stick}. | turbulence |
+| DEA_M4B_CRUCIBLE_01 | They bolted a forge to the galley floor. For the crew. The crew they didn't {have}. | the Crucible |
+| DEA_M4B_BORDWART_01 | He's part of the engine. He's PART of it. Anselm... I'm sorry, brother. I'm gonna shut her {down}. | the Bordwart |
+| DEA_M4B_LONDON_01 | ...Oh, no. Oh, no, no, {no}. | the London window |
+| DEA_M4B_BOMBRUN_01 | I'll take the far racks! Deacon's on the far {racks}! | the bomb run |
+| DEA_M4B_RACK_JAM_01 | Jammed! She's {holding}! | a rack jammed |
+| DEA_M4B_AUTOPILOT_01 | Okay. Okay, girl. Key's in. Now I need you to let {go}. | the autopilot unlocked |
+| DEA_M4B_AUTOPILOT_02 | Easy. Easy, girl. You don't have to go where they pointed {you}. | the crash cutscene |
+| DEA_M4B_HEADING_01 | That's not home. Where's it taking {us}? | after the bomb run |
+| WRN_M4B_ARRIVE_01 | No crew. Buckled harnesses. ...They were taken OUT. Like Tomek. Like all of {them}. | arrival |
+| WRN_M4B_TAGS_01 | 'Riedl, A.' ...I'll keep {it}. | the first crew tag |
+| WRN_M4B_TAGS_03 | Three names. They had names. I have them {now}. | the third crew tag |
+| WRN_M4B_BREACH_01 | Hole in the wing. Good. It's a {window}. | a breach |
+| WRN_M4B_LONDON_01 | — | the London window (silence, 3 s) |
+| WRN_M4B_MARKS_01 | Two of the racks are marked. The hook. They're duds. They MADE them duds. Thank you. Thank you, whoever you {are}. | the bomb run begins |
+| WRN_M4B_BOMBRUN_01 | Count with me. Thirty seconds. Dwadzieścia dziewięć, dwadzieścia {osiem}... | the bomb run |
+| WRN_M4B_RACK_DROP_01 | ...That one's gone. I'm sorry. I'm {sorry}. | a rack drops |
+| JAK_M4B_MARKS_01 | The hook means DO NOT TRUST IT. Two of them. They will not go off. The boys made {sure}. | the bomb run begins (Jakub) |
+| JAK_M4B_LONDON_01 | ...Marta. Hania. ...It is far from there. It is {far}. | the London window |

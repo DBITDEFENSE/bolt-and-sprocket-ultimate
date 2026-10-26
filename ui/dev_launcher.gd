@@ -100,6 +100,16 @@ func _ready() -> void:
 		col.add_child(mb)
 		if first == null:
 			first = mb
+	col.add_child(_header("Map 4 — Fernflug (campaign mode: the act beacons, carry-over, act-relative rounds)"))
+	col.add_child(MenuKit.button("Map 4 — Fernflug (full run: Act I from round 1)", func() -> void: _start_act("map04a_thalbach", 1), 22, "ui_confirm"))
+	for act: Array in [["Map 4 — skip to Act II: der Kranich (round 15)", "map04b_kranich", 15], ["Map 4 — skip to Act III: Groom Lake (round 21)", "map04c_groomlake", 21],
+			["Map 4 — skip to Act IV: Mondlicht (round 30)", "map04d_mondlicht", 30]]:
+		var aid: String = str(act[1])
+		var ar: int = int(act[2])
+		var built: bool = Campaign.scene_exists(StringName(aid))
+		var ab: Button = MenuKit.button(str(act[0]) + ("" if built else "   (not built yet)"), func() -> void: _start_act(aid, ar), 22, "ui_confirm")
+		ab.disabled = not built
+		col.add_child(ab)
 	col.add_child(_header("Boss tests"))
 	for b: Array in BOSS_TESTS:
 		var bscene: String = str(b[1])
@@ -175,6 +185,34 @@ func _start_gl(scene: String, start_round: int, boss: String = "", force_bots: i
 	_pending_god = _god.button_pressed
 	_pending_scrip = scrip_for_round(start_round)
 	_pending_boss = boss
+	if not GLBus.match_started.is_connected(DevLauncher._on_match_started):
+		GLBus.match_started.connect(DevLauncher._on_match_started, CONNECT_ONE_SHOT)
+	get_tree().change_scene_to_file(scene)
+
+
+## UPDATE 07: a Map 4 act in campaign mode (Campaign.begin_at): the act's beacon exists, the rounds are
+## act-relative, and a skip past round 1 lands with the act's arrival kit (campaign.json "arrival_kits") plus
+## the launcher's Scrip for that round. Bots, survivor and god mode from the fields above.
+func _start_act(map_id: String, start_round: int) -> void:
+	var scene: String = Campaign.scene_for(StringName(map_id))
+	if not ResourceLoader.exists(scene):
+		_status.text = "Missing scene: %s" % scene
+		return
+	var bots: int = _bots.selected
+	GLSettings.set_value("bots", bots)
+	GLSettings.set_value("bot_local_ai", _ai.button_pressed)
+	GameState.character_id = StringName(CHARACTERS[_char.selected])
+	GameState.bot_count = BotConfig.clamp_bots(BotConfig.cfg(), bots)
+	GameState.bot_skill = str(GLSettings.values.get("bot_skill", "regular"))
+	GameState.bot_ai_mode = BotConfig.ai_mode_from_settings(GLSettings.values, GameState.bot_count)
+	var kit: Dictionary = Campaign.arrival_kit(StringName(map_id)) if start_round > 1 else {}
+	if not kit.is_empty() and not kit.has("scrip"):
+		kit["scrip"] = scrip_for_round(start_round)
+	Campaign.begin_at(StringName(map_id), start_round, kit)
+	_pending_round = 0
+	_pending_scrip = 0
+	_pending_boss = ""
+	_pending_god = _god.button_pressed
 	if not GLBus.match_started.is_connected(DevLauncher._on_match_started):
 		GLBus.match_started.connect(DevLauncher._on_match_started, CONNECT_ONE_SHOT)
 	get_tree().change_scene_to_file(scene)

@@ -697,6 +697,15 @@ func summon_boss(enemy_id: StringName, at: Vector3) -> Node3D:
 			GLBus.boss_spawned.emit(&"kranfuehrer")
 			GLBus.enemy_spawned.emit(kf.enemy_id, kf.get_instance_id())
 			return kf
+		&"bordwart":
+			var bw: Bordwart = Bordwart.new()
+			bw.director = self
+			add_extra(bw)
+			RoundManager.take_extra_spawn()
+			bw.spawn_bordwart(at, HomageBoss.scaled_hp(float(bw.boss_cfg().get("hp_base", 30000)), RoundManager.players, float(bw.boss_cfg().get("hp_player_step", 0.75))))
+			GLBus.boss_spawned.emit(&"bordwart")
+			GLBus.enemy_spawned.emit(bw.enemy_id, bw.get_instance_id())
+			return bw
 		&"foreman":
 			var f: Foreman = Foreman.new()
 			f.director = self

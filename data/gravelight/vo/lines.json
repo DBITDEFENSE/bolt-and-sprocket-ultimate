@@ -8297,5 +8297,435 @@
     "speaker": "WRN",
     "category": "PERK_MAGPIE",
     "text": "Sixty-two kills and now they pay me twice. Good."
+  },
+  "OPR_EXFIL_OPEN_M2_01": {
+    "speaker": "OPR",
+    "category": "EXFIL_OPEN_M2",
+    "text": "A transfer has been arranged. Rail siding, pen hall. The paperwork says {Thalbach}."
+  },
+  "OPR_EXFIL_MISSED_M2_01": {
+    "speaker": "OPR",
+    "category": "EXFIL_MISSED_M2",
+    "text": "The transfer has left without you. There will be {another}. There is always another."
+  },
+  "OPR_EXFIL_GO_M2_01": {
+    "speaker": "OPR",
+    "category": "EXFIL_GO_M2",
+    "text": "Werk Thalbach. An aircraft works. We think you'll find it {familiar}."
+  },
+  "WIT_M4A_NOTME_01": {
+    "speaker": "WIT",
+    "category": "M4A_NOTME",
+    "text": "I did not do {that}."
+  },
+  "WIT_M4A_RAMP_01": {
+    "speaker": "WIT",
+    "category": "M4A_RAMP",
+    "text": "The impellers are turning over. I didn't start them. If you go in there... if you go in there, cut the fuel lines in the port room. Please. It's the only thing I {ask}."
+  },
+  "WIT_M4B_TAPE_01": {
+    "speaker": "WIT",
+    "category": "M4B_TAPE",
+    "text": "If anyone is hearing this aboard, I'm sorry. The autopilot takes a key and both hands. It was never meant to take a {crew}."
+  },
+  "WIT_M4B_TAPE_02": {
+    "speaker": "WIT",
+    "category": "M4B_TAPE",
+    "text": "Anselm, if you're still in there. It was never a test. I should have told {you}."
+  },
+  "OPR_M4B_ARRIVE_01": {
+    "speaker": "OPR",
+    "category": "M4B_ARRIVE",
+    "text": "You are now in flight. Cabin crew are not available at this time. Cabin crew are... {elsewhere}."
+  },
+  "OPR_M4B_TURB_01": {
+    "speaker": "OPR",
+    "category": "M4B_TURB",
+    "text": "A little turbulence. The aircraft is adjusting course. The aircraft is very good at {that}."
+  },
+  "OPR_M4B_STRAFE_01": {
+    "speaker": "OPR",
+    "category": "M4B_STRAFE",
+    "text": "Unauthorized third parties are attempting to engage with the product. Please stay away from the {windows}."
+  },
+  "OPR_M4B_BREACH_01": {
+    "speaker": "OPR",
+    "category": "M4B_BREACH",
+    "text": "A small loss of pressure. This is within tolerance. Yours, we {mean}."
+  },
+  "OPR_M4B_DRUCK_01": {
+    "speaker": "OPR",
+    "category": "M4B_DRUCK",
+    "text": "Pressure drop. Everything not secured will be returned to {sender}."
+  },
+  "OPR_M4B_DRUCK_END_01": {
+    "speaker": "OPR",
+    "category": "M4B_DRUCK_END",
+    "text": "Pressure restored. Resupply authorized. Please re-stow your belongings and your {colleagues}."
+  },
+  "OPR_M4B_TAGS_03": {
+    "speaker": "OPR",
+    "category": "M4B_TAGS",
+    "text": "Those crew members have been re-deployed. Darkm... the works thanks them for their {service}."
+  },
+  "OPR_M4B_BORDWART_SPAWN_01": {
+    "speaker": "OPR",
+    "category": "M4B_BORDWART_SPAWN",
+    "text": "Our flight engineer will be with you shortly. He's very attached to his {work}."
+  },
+  "OPR_M4B_BORDWART_DEATH_01": {
+    "speaker": "OPR",
+    "category": "M4B_BORDWART_DEATH",
+    "text": "The engineer is... resting. The engine will manage without him. The engine always {could}."
+  },
+  "OPR_M4B_LONDON_01": {
+    "speaker": "OPR",
+    "category": "M4B_LONDON",
+    "text": "Valued customers. We said we'd be in {touch}."
+  },
+  "OPR_M4B_LONDON_02": {
+    "speaker": "OPR",
+    "category": "M4B_LONDON",
+    "text": "Your region has been {expanded}."
+  },
+  "OPR_M4B_BOMBRUN_01": {
+    "speaker": "OPR",
+    "category": "M4B_BOMBRUN",
+    "text": "Regional sampling begins now. You are welcome to {observe}."
+  },
+  "OPR_M4B_RACK_DROP_01": {
+    "speaker": "OPR",
+    "category": "M4B_RACK_DROP",
+    "text": "Sample {delivered}."
+  },
+  "OPR_M4B_RACK_DROP_02": {
+    "speaker": "OPR",
+    "category": "M4B_RACK_DROP",
+    "text": "Another sample delivered. Thank {you}."
+  },
+  "OPR_M4B_RACK_JAM_01": {
+    "speaker": "OPR",
+    "category": "M4B_RACK_JAM",
+    "text": "A sample has been... withheld. We'll note {that}."
+  },
+  "OPR_M4B_RACK_DUD_01": {
+    "speaker": "OPR",
+    "category": "M4B_RACK_DUD",
+    "text": "That sample appears to be... hm. Somebody has been writing on the {inventory}."
+  },
+  "OPR_M4B_BOMBRUN_END_01": {
+    "speaker": "OPR",
+    "category": "M4B_BOMBRUN_END",
+    "text": "Sampling complete. Proceeding to the point of delivery. Our customer is expecting {us}."
+  },
+  "OPR_EXFIL_OPEN_M4B_01": {
+    "speaker": "OPR",
+    "category": "EXFIL_OPEN_M4B",
+    "text": "The flight deck is open. We strongly advise against touching the autopilot. We're required to say {that}."
+  },
+  "OPR_EXFIL_WAIT_M4B_01": {
+    "speaker": "OPR",
+    "category": "EXFIL_WAIT_M4B",
+    "text": "The autopilot does not negotiate. We've {tried}."
+  },
+  "OPR_EXFIL_MISSED_M4B_01": {
+    "speaker": "OPR",
+    "category": "EXFIL_MISSED_M4B",
+    "text": "The autopilot has resumed. It will be available again. It is {patient}."
+  },
+  "OPR_EXFIL_GO_M4B_01": {
+    "speaker": "OPR",
+    "category": "EXFIL_GO_M4B",
+    "text": "You've disabled the autopilot. We hope you have a plan. We {don't}."
+  },
+  "BWT_BARK_01": {
+    "speaker": "BWT",
+    "category": "BARK",
+    "text": "Besatzung, melden. (Crew, report.)"
+  },
+  "BWT_BARK_02": {
+    "speaker": "BWT",
+    "category": "BARK",
+    "text": "Die Drehzahl stimmt nicht. Wer ist an meiner Station? (The revs are wrong. Who is at my station?)"
+  },
+  "BWT_BARK_03": {
+    "speaker": "BWT",
+    "category": "BARK",
+    "text": "Es ist nur ein Test. Es ist nur ein Test. (It is only a test.)"
+  },
+  "BWT_PHASE_01": {
+    "speaker": "BWT",
+    "category": "PHASE",
+    "text": "Backbord läuft heiß. Ich halte sie. Ich halte sie. (Port is running hot. I'll hold her.)"
+  },
+  "BWT_PHASE_02": {
+    "speaker": "BWT",
+    "category": "PHASE",
+    "text": "Lorenz? Lorenz, sag ihnen, es ist nur ein Test. (Lorenz, tell them it is only a test.)"
+  },
+  "BWT_PHASE_03": {
+    "speaker": "BWT",
+    "category": "PHASE",
+    "text": "Überdrehzahl. Ich kann nicht... ich kann nicht loslassen. (Overspeed. I can't let go.)"
+  },
+  "BWT_DEATH_01": {
+    "speaker": "BWT",
+    "category": "DEATH",
+    "text": "...melden. (...report.)"
+  },
+  "DUT_M4B_ARRIVE_01": {
+    "speaker": "DUT",
+    "category": "M4B_ARRIVE",
+    "text": "Nobody's flying it. Nobody's flying the plane. I want that {noted}."
+  },
+  "DUT_M4B_TURB_01": {
+    "speaker": "DUT",
+    "category": "M4B_TURB",
+    "text": "Whoa... whoa... who's {driving}?"
+  },
+  "DUT_M4B_BREACH_01": {
+    "speaker": "DUT",
+    "category": "M4B_BREACH",
+    "text": "Hole! HOLE! Grab {something}!"
+  },
+  "DUT_M4B_STRAFE_01": {
+    "speaker": "DUT",
+    "category": "M4B_STRAFE",
+    "text": "Those are ours too! They're shooting at us with our... okay, fair, we're in the bad {plane}."
+  },
+  "DUT_M4B_LONDON_01": {
+    "speaker": "DUT",
+    "category": "M4B_LONDON",
+    "text": "...Peg. Peg, don't {look}."
+  },
+  "DUT_M4B_BOMBRUN_01": {
+    "speaker": "DUT",
+    "category": "M4B_BOMBRUN",
+    "text": "Boston! That's BOSTON! Get on the racks, GET ON THE {RACKS}!"
+  },
+  "DUT_M4B_RACK_JAM_01": {
+    "speaker": "DUT",
+    "category": "M4B_RACK_JAM",
+    "text": "Got it! One stays up {here}!"
+  },
+  "DUT_M4B_CRASH_01": {
+    "speaker": "DUT",
+    "category": "M4B_CRASH",
+    "text": "That's not an airfield. ...That's not {anything}."
+  },
+  "PEG_M4B_ARRIVE_01": {
+    "speaker": "PEG",
+    "category": "M4B_ARRIVE",
+    "text": "The plan has been {revised}."
+  },
+  "PEG_M4B_TURB_01": {
+    "speaker": "PEG",
+    "category": "M4B_TURB",
+    "text": "Brace. It's {banking}."
+  },
+  "PEG_M4B_BREACH_01": {
+    "speaker": "PEG",
+    "category": "M4B_BREACH",
+    "text": "Seal it. SEAL it, or we'll be a great deal {lighter}."
+  },
+  "PEG_M4B_LONDON_01": {
+    "speaker": "PEG",
+    "category": "M4B_LONDON",
+    "text": "That's not Morgenrot. That's... that's a second {battery}."
+  },
+  "PEG_M4B_LONDON_02": {
+    "speaker": "PEG",
+    "category": "M4B_LONDON",
+    "text": "...My mother's in Islington. ...Right. Racks. Where are the {racks}."
+  },
+  "PEG_M4B_BOMBRUN_01": {
+    "speaker": "PEG",
+    "category": "M4B_BOMBRUN",
+    "text": "Racks in order, one every half minute. Nearest first. {GO}."
+  },
+  "PEG_M4B_RACK_DUD_01": {
+    "speaker": "PEG",
+    "category": "M4B_RACK_DUD",
+    "text": "That one's marked. It's a dud. Leave it, take the {next}."
+  },
+  "PEG_M4B_CRASH_01": {
+    "speaker": "PEG",
+    "category": "M4B_CRASH",
+    "text": "Hold on to something {British}."
+  },
+  "DEA_M4B_ARRIVE_01": {
+    "speaker": "DEA",
+    "category": "M4B_ARRIVE",
+    "text": "No crew. Harnesses buckled over nobody. ...Lord, that's wrong. That's wrong in a way I don't have a word {for}."
+  },
+  "DEA_M4B_TURB_01": {
+    "speaker": "DEA",
+    "category": "M4B_TURB",
+    "text": "Easy, girl. Easy. Nobody's at the {stick}."
+  },
+  "DEA_M4B_CRUCIBLE_01": {
+    "speaker": "DEA",
+    "category": "M4B_CRUCIBLE",
+    "text": "They bolted a forge to the galley floor. For the crew. The crew they didn't {have}."
+  },
+  "DEA_M4B_BORDWART_01": {
+    "speaker": "DEA",
+    "category": "M4B_BORDWART",
+    "text": "He's part of the engine. He's PART of it. Anselm... I'm sorry, brother. I'm gonna shut her {down}."
+  },
+  "DEA_M4B_LONDON_01": {
+    "speaker": "DEA",
+    "category": "M4B_LONDON",
+    "text": "...Oh, no. Oh, no, no, {no}."
+  },
+  "DEA_M4B_BOMBRUN_01": {
+    "speaker": "DEA",
+    "category": "M4B_BOMBRUN",
+    "text": "I'll take the far racks! Deacon's on the far {racks}!"
+  },
+  "DEA_M4B_RACK_JAM_01": {
+    "speaker": "DEA",
+    "category": "M4B_RACK_JAM",
+    "text": "Jammed! She's {holding}!"
+  },
+  "DEA_M4B_AUTOPILOT_01": {
+    "speaker": "DEA",
+    "category": "M4B_AUTOPILOT",
+    "text": "Okay. Okay, girl. Key's in. Now I need you to let {go}."
+  },
+  "DEA_M4B_AUTOPILOT_02": {
+    "speaker": "DEA",
+    "category": "M4B_AUTOPILOT",
+    "text": "Easy. Easy, girl. You don't have to go where they pointed {you}."
+  },
+  "DEA_M4B_HEADING_01": {
+    "speaker": "DEA",
+    "category": "M4B_HEADING",
+    "text": "That's not home. Where's it taking {us}?"
+  },
+  "WRN_M4B_ARRIVE_01": {
+    "speaker": "WRN",
+    "category": "M4B_ARRIVE",
+    "text": "No crew. Buckled harnesses. ...They were taken OUT. Like Tomek. Like all of {them}."
+  },
+  "WRN_M4B_TAGS_01": {
+    "speaker": "WRN",
+    "category": "M4B_TAGS",
+    "text": "'Riedl, A.' ...I'll keep {it}."
+  },
+  "WRN_M4B_TAGS_03": {
+    "speaker": "WRN",
+    "category": "M4B_TAGS",
+    "text": "Three names. They had names. I have them {now}."
+  },
+  "WRN_M4B_BREACH_01": {
+    "speaker": "WRN",
+    "category": "M4B_BREACH",
+    "text": "Hole in the wing. Good. It's a {window}."
+  },
+  "WRN_M4B_LONDON_01": {
+    "speaker": "WRN",
+    "category": "M4B_LONDON",
+    "text": "—"
+  },
+  "WRN_M4B_MARKS_01": {
+    "speaker": "WRN",
+    "category": "M4B_MARKS",
+    "text": "Two of the racks are marked. The hook. They're duds. They MADE them duds. Thank you. Thank you, whoever you {are}."
+  },
+  "WRN_M4B_BOMBRUN_01": {
+    "speaker": "WRN",
+    "category": "M4B_BOMBRUN",
+    "text": "Count with me. Thirty seconds. Dwadzieścia dziewięć, dwadzieścia {osiem}..."
+  },
+  "WRN_M4B_RACK_DROP_01": {
+    "speaker": "WRN",
+    "category": "M4B_RACK_DROP",
+    "text": "...That one's gone. I'm sorry. I'm {sorry}."
+  },
+  "JAK_M4B_MARKS_01": {
+    "speaker": "JAK",
+    "category": "M4B_MARKS",
+    "text": "The hook means DO NOT TRUST IT. Two of them. They will not go off. The boys made {sure}."
+  },
+  "JAK_M4B_LONDON_01": {
+    "speaker": "JAK",
+    "category": "M4B_LONDON",
+    "text": "...Marta. Hania. ...It is far from there. It is {far}."
+  },
+  "PA_M4B_HEADING_01": {
+    "speaker": "PA",
+    "category": "M4B_HEADING",
+    "text": "Kurs drei-null-null. Steigflug. (Heading 300. Climbing.)"
+  },
+  "PA_M4B_HEADING_02": {
+    "speaker": "PA",
+    "category": "M4B_HEADING",
+    "text": "Kurs zwei-neun-null. Reiseflughöhe erreicht. (Heading 290. Cruise altitude.)"
+  },
+  "PA_M4B_HEADING_03": {
+    "speaker": "PA",
+    "category": "M4B_HEADING",
+    "text": "Kurs zwei-sieben-null. Beobachter an die Kanzel. (Heading 270. Observers to the blisters.)"
+  },
+  "PA_M4B_HEADING_04": {
+    "speaker": "PA",
+    "category": "M4B_HEADING",
+    "text": "Kurs zwei-sechs-null. Zielanflug. (Heading 260. Approach to target.)"
+  },
+  "PA_M4B_HEADING_05": {
+    "speaker": "PA",
+    "category": "M4B_HEADING",
+    "text": "Kurs zwei-fünf-null. Endanflug. Auslieferung. (Heading 250. Final approach. Delivery.)"
+  },
+  "PA_M4B_TURB_01": {
+    "speaker": "PA",
+    "category": "M4B_TURB",
+    "text": "Achtung. Turbulenz. (Attention. Turbulence.)"
+  },
+  "PA_M4B_BREACH_01": {
+    "speaker": "PA",
+    "category": "M4B_BREACH",
+    "text": "Achtung. Druckverlust, Backbord. (Attention. Pressure loss, port.)"
+  },
+  "PA_M4B_BREACH_02": {
+    "speaker": "PA",
+    "category": "M4B_BREACH",
+    "text": "Achtung. Druckverlust, Steuerbord. (Attention. Pressure loss, starboard.)"
+  },
+  "PA_M4B_DRUCK_01": {
+    "speaker": "PA",
+    "category": "M4B_DRUCK",
+    "text": "Achtung. Druckabfall. Alle Luken sichern. (Attention. Pressure drop. Secure all hatches.)"
+  },
+  "PA_M4B_RACK_01": {
+    "speaker": "PA",
+    "category": "M4B_RACK",
+    "text": "Schacht eins, Abwurf. (Rack one, release.)"
+  },
+  "PA_M4B_RACK_02": {
+    "speaker": "PA",
+    "category": "M4B_RACK",
+    "text": "Schacht zwei, Abwurf. (Rack two, release.)"
+  },
+  "PA_M4B_RACK_03": {
+    "speaker": "PA",
+    "category": "M4B_RACK",
+    "text": "Schacht drei, Abwurf. (Rack three, release.)"
+  },
+  "PA_M4B_RACK_04": {
+    "speaker": "PA",
+    "category": "M4B_RACK",
+    "text": "Schacht vier, Abwurf. (Rack four, release.)"
+  },
+  "PA_M4B_RACK_05": {
+    "speaker": "PA",
+    "category": "M4B_RACK",
+    "text": "Schacht fünf, Abwurf. (Rack five, release.)"
+  },
+  "PA_M4B_RACK_06": {
+    "speaker": "PA",
+    "category": "M4B_RACK",
+    "text": "Schacht sechs, Abwurf. (Rack six, release.)"
   }
 }

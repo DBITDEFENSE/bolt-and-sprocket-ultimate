@@ -744,6 +744,9 @@ func _do_action(qid: StringName, a: Dictionary, by: int) -> void:
 			Net.mirror(Net.session, &"_quest_actions", [pres])
 	if a.has("flag"):
 		GameState.set_flag(StringName(a["flag"]), true)
+	if a.has("exfil_now"):   # UPDATE 07: light the map's act beacon before its round (the boarding, the autopilot)
+		for x: Node in get_tree().get_nodes_in_group(&"exfil_points"):
+			x.call("trigger_now")
 	if a.has("vo"):
 		GLVO.play(StringName(a["vo"]))
 	if a.has("vo_list"):

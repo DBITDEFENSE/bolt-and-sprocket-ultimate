@@ -1,5 +1,5 @@
 {
-  "_doc": "Enemy tuning (docs/ENEMIES.md). Tier speeds in m/s; each spawn gets \u00c2\u00b1jitter.",
+  "_doc": "Enemy tuning (docs/ENEMIES.md). Tier speeds in m/s; each spawn gets Â±jitter.",
   "tiers": {
     "shamble": 1.3,
     "walk": 2.0,
@@ -52,6 +52,10 @@
           "technician": 0.45,
           "villager": 0.35,
           "soldier": 0.2
+        },
+        "map04b_kranich": {
+          "soldier": 0.55,
+          "technician": 0.45
         }
       }
     },
@@ -85,7 +89,8 @@
       "maps": [
         "map01_kaltenbrunn",
         "map02_totenhafen",
-        "map04a_thalbach"
+        "map04a_thalbach",
+        "map04b_kranich"
       ]
     },
     "bellringer": {
@@ -205,6 +210,17 @@
         "map01_kaltenbrunn",
         "map02_totenhafen"
       ]
+    },
+    "bordschuetze": {
+      "_doc": "Map 4 Act II (UPDATE 07, docs/MAP4_FERNFLUG.md 4.5): the Kranich's phantom gunners in flight gear climb in over the blister rims and through open breaches. Not a pooled type of its own: the FlightController spawns Gängers with this spec (kit, tier, health_mult, no barricade to tear) at the climb entries (gravelight/world/map04/flight_controller.gd), on Druckabfall rounds in place of the window spawns.",
+      "kind": "ganger_variant",
+      "kit": "soldier",
+      "tier": "jog",
+      "health_mult": 1.2,
+      "maps": [
+        "map04b_kranich"
+      ],
+      "scrip": 60
     }
   },
   "repath": {
@@ -242,23 +258,23 @@
       "move_mult": 0.55
     },
     "boss_grab": {
-   "_doc": "HB1: held by a homage boss's grab (the Reach's Long Reach, Alix's Holding Hand); the boss drags the player. Refreshed every tick while held.",
-   "move_mult": 0.0
-  },
-  "held_hand": {
-   "_doc": "HB1: Alix's Holding Hand (the vignette + the audio low-pass of the status FX).",
-   "move_mult": 0.0,
-   "fx": true
-  },
-  "splinters": {
-   "_doc": "HB1: the Hammer's Overhead Split floor zone.",
-   "move_mult": 0.6
-  },
-  "reach_slow": {
-   "_doc": "HB1: the Reach's Through-the-Wall punch.",
-   "move_mult": 0.7
-  },
-  "ballast": {
+      "_doc": "HB1: held by a homage boss's grab (the Reach's Long Reach, Alix's Holding Hand); the boss drags the player. Refreshed every tick while held.",
+      "move_mult": 0.0
+    },
+    "held_hand": {
+      "_doc": "HB1: Alix's Holding Hand (the vignette + the audio low-pass of the status FX).",
+      "move_mult": 0.0,
+      "fx": true
+    },
+    "splinters": {
+      "_doc": "HB1: the Hammer's Overhead Split floor zone.",
+      "move_mult": 0.6
+    },
+    "reach_slow": {
+      "_doc": "HB1: the Reach's Through-the-Wall punch.",
+      "move_mult": 0.7
+    },
+    "ballast": {
       "_doc": "Map 2: carrying a lead coffin (the Ballast mechanic, deferred; data only).",
       "move_mult": 0.5
     }
@@ -268,50 +284,164 @@
     "variants": {
       "fast": {
         "_doc": "A lunge out of the ground: both hands almost together, one heave, a stagger-lunge to standing.",
-        "seconds": 1.4, "weight": 0.3,
-        "stages": {"bulge": 0.0, "hand": 0.1, "hand2": 0.18, "head_out": 0.32, "shoulders": 0.42, "elbow": 0.52, "knee": 0.64, "stand": 0.86, "done": 1.0}
+        "seconds": 1.4,
+        "weight": 0.3,
+        "stages": {
+          "bulge": 0.0,
+          "hand": 0.1,
+          "hand2": 0.18,
+          "head_out": 0.32,
+          "shoulders": 0.42,
+          "elbow": 0.52,
+          "knee": 0.64,
+          "stand": 0.86,
+          "done": 1.0
+        }
       },
       "standard": {
         "_doc": "The dig-out: one hand claws, the second, the head and shoulders heave out twisting, an elbow plant, a knee, a lurch up with a stagger step.",
-        "seconds": 2.1, "weight": 0.4,
-        "stages": {"bulge": 0.0, "hand": 0.1, "hand2": 0.26, "head_out": 0.4, "shoulders": 0.5, "elbow": 0.6, "knee": 0.72, "stand": 0.92, "done": 1.0}
+        "seconds": 2.1,
+        "weight": 0.4,
+        "stages": {
+          "bulge": 0.0,
+          "hand": 0.1,
+          "hand2": 0.26,
+          "head_out": 0.4,
+          "shoulders": 0.5,
+          "elbow": 0.6,
+          "knee": 0.72,
+          "stand": 0.92,
+          "done": 1.0
+        }
       },
       "slow": {
         "_doc": "A long clawing rise: it hangs at the rim (pause), shudders, and tears free with a second heave.",
-        "seconds": 3.0, "weight": 0.15,
-        "stages": {"bulge": 0.0, "hand": 0.08, "hand2": 0.24, "head_out": 0.36, "shoulders": 0.44, "pause": 0.5, "heave2": 0.6, "elbow": 0.66, "knee": 0.78, "stand": 0.94, "done": 1.0}
+        "seconds": 3.0,
+        "weight": 0.15,
+        "stages": {
+          "bulge": 0.0,
+          "hand": 0.08,
+          "hand2": 0.24,
+          "head_out": 0.36,
+          "shoulders": 0.44,
+          "pause": 0.5,
+          "heave2": 0.6,
+          "elbow": 0.66,
+          "knee": 0.78,
+          "stand": 0.94,
+          "done": 1.0
+        }
       },
       "roll": {
         "_doc": "Face first: it drags itself out flat onto its belly, rolls onto its side, comes up on a knee at the rim.",
-        "seconds": 2.3, "weight": 0.15,
-        "stages": {"bulge": 0.0, "hand": 0.08, "hand2": 0.16, "head_out": 0.28, "shoulders": 0.36, "flat": 0.52, "roll": 0.68, "knee": 0.8, "stand": 0.94, "done": 1.0}
+        "seconds": 2.3,
+        "weight": 0.15,
+        "stages": {
+          "bulge": 0.0,
+          "hand": 0.08,
+          "hand2": 0.16,
+          "head_out": 0.28,
+          "shoulders": 0.36,
+          "flat": 0.52,
+          "roll": 0.68,
+          "knee": 0.8,
+          "stand": 0.94,
+          "done": 1.0
+        }
       },
       "crawler": {
         "_doc": "Crawlers (spec crawler: true, or legs lost mid-rise): elbows planted, they drag out onto their belly and stay down. Never rolled for walkers (weight 0).",
-        "seconds": 2.4, "weight": 0.0,
-        "stages": {"bulge": 0.0, "hand": 0.1, "hand2": 0.22, "head_out": 0.36, "elbow": 0.48, "flat": 0.8, "done": 1.0}
+        "seconds": 2.4,
+        "weight": 0.0,
+        "stages": {
+          "bulge": 0.0,
+          "hand": 0.1,
+          "hand2": 0.22,
+          "head_out": 0.36,
+          "elbow": 0.48,
+          "flat": 0.8,
+          "done": 1.0
+        }
       }
     },
     "tier_weight_mult": {
-      "shamble": {"fast": 0.4, "slow": 1.6},
-      "jog": {"fast": 1.5, "slow": 0.7},
-      "run": {"fast": 3.0, "slow": 0.3},
-      "sprint": {"fast": 6.0, "slow": 0.0, "roll": 0.5}
+      "shamble": {
+        "fast": 0.4,
+        "slow": 1.6
+      },
+      "jog": {
+        "fast": 1.5,
+        "slow": 0.7
+      },
+      "run": {
+        "fast": 3.0,
+        "slow": 0.3
+      },
+      "sprint": {
+        "fast": 6.0,
+        "slow": 0.0,
+        "roll": 0.5
+      }
     },
-    "round_scale": {"start_round": 1, "end_round": 20, "start": 1.0, "end": 0.7},
-    "surface_by_map": {"map00_crossroads": "snow", "map01_kaltenbrunn": "earth", "map02_totenhafen": "stone", "map04a_thalbach": "earth", "default": "earth"},
-    "surface_classes": {"snow": "snow", "stone": "stone", "metal": "stone", "wood": "earth", "hay": "earth", "water": "earth"},
+    "round_scale": {
+      "start_round": 1,
+      "end_round": 20,
+      "start": 1.0,
+      "end": 0.7
+    },
+    "surface_by_map": {
+      "map00_crossroads": "snow",
+      "map01_kaltenbrunn": "earth",
+      "map02_totenhafen": "stone",
+      "map04a_thalbach": "earth",
+      "default": "earth",
+      "map04b_kranich": "stone"
+    },
+    "surface_classes": {
+      "snow": "snow",
+      "stone": "stone",
+      "metal": "stone",
+      "wood": "earth",
+      "hay": "earth",
+      "water": "earth"
+    },
     "sounds": {
-      "burst": {"snow": "emerge_burst_snow", "earth": "emerge_burst_earth"},
-      "dig": {"snow": "emerge_dig_snow", "earth": "emerge_dig_earth"},
-      "settle": {"snow": "emerge_settle_snow", "earth": "emerge_settle_earth"},
-      "heave": {"earth": "zombie_groan"}
+      "burst": {
+        "snow": "emerge_burst_snow",
+        "earth": "emerge_burst_earth"
+      },
+      "dig": {
+        "snow": "emerge_dig_snow",
+        "earth": "emerge_dig_earth"
+      },
+      "settle": {
+        "snow": "emerge_settle_snow",
+        "earth": "emerge_settle_earth"
+      },
+      "heave": {
+        "earth": "zombie_groan"
+      }
     },
     "effects": {
       "_doc": "Mound: the bulge radius / height (m) before the crust breaks; hole: the dark broken ring. dig_every: seconds between claw crunches while a hand rakes. spray: particle counts.",
-      "mound_radius": 0.55, "mound_height": 0.14, "hole_radius": 0.4,
-      "dig_every": [0.18, 0.3], "range_m": 24.0,
-      "spray": {"hand": 12, "head": 18, "shoulders": 8, "heave2": 14, "elbow": 6, "knee": 6, "flat": 8, "stand": 10}
+      "mound_radius": 0.55,
+      "mound_height": 0.14,
+      "hole_radius": 0.4,
+      "dig_every": [
+        0.18,
+        0.3
+      ],
+      "range_m": 24.0,
+      "spray": {
+        "hand": 12,
+        "head": 18,
+        "shoulders": 8,
+        "heave2": 14,
+        "elbow": 6,
+        "knee": 6,
+        "flat": 8,
+        "stand": 10
+      }
     },
     "death_sink_speed": 1.6
   },

@@ -19,7 +19,7 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 DOCS = ("docs/gravelight/VO_SCRIPT.md", "docs/gravelight/CHARACTERS.md")
 LINES_PATH = os.path.join(ROOT, "data", "gravelight", "vo", "lines.json")
 RULES_PATH = os.path.join(ROOT, "data", "gravelight", "vo", "rules.json")
-ID_RE = r"[A-Z]{3}_[A-Z0-9_]+"
+ID_RE = r"[A-Z]{2,3}_[A-Z0-9_]+"   # 2-letter speakers since UPDATE 07 (PA, the Bordfunk)
 lines = {}
 
 
