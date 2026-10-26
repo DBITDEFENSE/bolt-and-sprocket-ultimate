@@ -305,8 +305,17 @@ def build_models_json(entries, reports, weapons_ids):
         }
     weapons = {}
     greybox = []
+    # T-090: the wonder weapons are registered by tools/wonder_register.py; keep whatever it wrote
+    prev = {}
+    if os.path.exists(MODELS_JSON):
+        with open(MODELS_JSON, "r", encoding="utf-8") as f:
+            prev = json.load(f)
     for wid in weapons_ids:
         if wid in WONDER:
+            old = prev.get("weapons", {}).get(wid, {})
+            if old.get("source") == "ours" and old.get("glb"):
+                weapons[wid] = old
+                continue
             weapons[wid] = {"source": "ours", "asset": None, "glb": None, "parts": {}, "notes": "wonder weapon: modelled by us (UPDATE_05 section 2, tools_src/blender/wonder/)"}
             continue
         key = PRIMARY.get(wid)
@@ -325,6 +334,8 @@ def build_models_json(entries, reports, weapons_ids):
         extras["cartridges"] = {"asset": cart_key, "glb": assets[cart_key]["glb"], "nodes": assets[cart_key]["nodes"],
                                 "casing_for": {k: v for k, v in CASINGS.items() if v in assets[cart_key]["nodes"]},
                                 "notes": "nearest-shape stand-ins from a modern cartridge set; the ejected casing is the case only (phase 2 cuts the bullet, or scales)"}
+    if "gramophone" in prev.get("extras", {}):
+        extras["gramophone"] = prev["extras"]["gramophone"]     # T-090 (tools/wonder_register.py)
     extras["stick_grenade"] = {"source": None, "asset": None, "notes": "no model in the packs; FREE_ASSET_LIST pick: 'Stielhandgranate 24' by dsamuta (Sketchfab, CC-BY)"}
     extras["frag_grenade"] = {"source": None, "asset": None, "notes": "no model in the packs; FREE_ASSET_LIST pick: 'FREE Hand-Painted WW2 Grenade MK 2' (Unity Asset Store)"}
     doc = {
@@ -399,7 +410,14 @@ def write_weapon_models_md(doc, weapons):
         name = wj.get("name", wid)
         cls = wj.get("class", "")
         if w["source"] == "ours":
-            L.append("| `%s` | %s | %s | ours | modelled in phase 2 (`tools_src/blender/wonder/`) | GRAVELIGHT | ours | | | ours |" % (wid, name, cls))
+            if w.get("glb"):
+                # the row tools/wonder_register.py writes (T-090)
+                parts = ", ".join("%s=%s" % (k, v) for k, v in w["parts"].items())
+                L.append("| `%s` | %s | wonder | ours | `ours/wonder/%s` (`tools_src/blender/wonder/%s.py`) | GRAVELIGHT (in-house, T-090) | Ours | %s | "
+                         "-Z, %.3f m -> x1.000, %d tris | ours: holder choreography + WonderLook part drivers |" % (
+                             wid, name, wid, wid, parts, w["native"]["length_m"], w["native"]["tris"]))
+            else:
+                L.append("| `%s` | %s | %s | ours | modelled in phase 2 (`tools_src/blender/wonder/`) | GRAVELIGHT | ours | | | ours |" % (wid, name, cls))
             continue
         if w["source"] is None:
             L.append("| `%s` | %s | %s | **greybox** | procedural `WeaponModels` | ours | ours | | | ours |" % (wid, name, cls))
@@ -459,6 +477,15 @@ def write_weapon_models_md(doc, weapons):
     for wid, note in FIT_NOTES.items():
         L.append("- `%s`: %s" % (wid, note))
     L.append("")
+    # T-090: keep the wonder-weapon section tools/wonder_register.py writes
+    if os.path.exists(WEAPON_MODELS_MD):
+        with open(WEAPON_MODELS_MD, "r", encoding="utf-8") as f:
+            old_md = f.read()
+        if "## Wonder weapons (T-090)" in old_md:
+            a = old_md.index("## Wonder weapons (T-090)")
+            b = old_md.find("\n## ", a + 10)
+            L.extend(old_md[a:b if b >= 0 else len(old_md)].rstrip("\n").split("\n"))
+            L.append("")
     L.append("## Conversion notes")
     L.append("")
     L.append("- OGA `.blend`: one mesh per gun under an armature whose bones (body, slide, bolt, mag, hammer, trigger...) are the "

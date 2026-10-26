@@ -770,24 +770,164 @@
   },
   "ashlight": {
    "source": "ours",
-   "asset": null,
-   "glb": null,
-   "parts": {},
-   "notes": "wonder weapon: modelled by us (UPDATE_05 section 2, tools_src/blender/wonder/)"
+   "asset": "ours/wonder/ashlight",
+   "glb": "res://assets/ours/wonder/ashlight/model.glb",
+   "parts": {
+    "mag": "Mag",
+    "needle": "Needle",
+    "halo": "Halo",
+    "body": "Body"
+   },
+   "native": {
+    "forward": "-Z",
+    "up": "+Y",
+    "origin": "the right-hand grip (authored in the game frame)",
+    "length_m": 0.3871,
+    "real_length_m": 0.3871,
+    "scale": 1.0,
+    "size": [
+     0.0882,
+     0.2113,
+     0.3871
+    ],
+    "bbox_min": [
+     -0.0441,
+     -0.1103,
+     -0.3036
+    ],
+    "bbox_max": [
+     0.0441,
+     0.101,
+     0.0835
+    ],
+    "tris": 24416,
+    "materials": [
+     "ashlight_atlas",
+     "coil_glow",
+     "emitter",
+     "fluid",
+     "glass",
+     "glow",
+     "halo"
+    ],
+    "textures": 3
+   },
+   "alt": [],
+   "nodes": {
+    "Body": 21356,
+    "Halo": 1552,
+    "Mag": 1448,
+    "Needle": 60
+   },
+   "notes": "Brass spine, glass chamber with the Nachtglas capsule (Mag, slides out of the back), copper coils over the barrel, bronze emitter bell, leather-wrapped grip; Needle = the charge gauge; Halo = the Ashlight Corona ring (Crucible only).",
+   "script": "tools_src/blender/wonder/ashlight.py"
   },
   "totenglocke": {
    "source": "ours",
-   "asset": null,
-   "glb": null,
-   "parts": {},
-   "notes": "wonder weapon: modelled by us (UPDATE_05 section 2, tools_src/blender/wonder/)"
+   "asset": "ours/wonder/totenglocke",
+   "glb": "res://assets/ours/wonder/totenglocke/model.glb",
+   "parts": {
+    "bell": "Bell",
+    "crank": "Crank",
+    "hammer": "Hammer",
+    "pawl": "Pawl",
+    "runes": "Runes",
+    "body": "Body"
+   },
+   "native": {
+    "forward": "-Z",
+    "up": "+Y",
+    "origin": "the right-hand grip (authored in the game frame)",
+    "length_m": 0.579,
+    "real_length_m": 0.579,
+    "scale": 1.0,
+    "size": [
+     0.312,
+     0.3428,
+     0.579
+    ],
+    "bbox_min": [
+     -0.164,
+     -0.1118,
+     -0.467
+    ],
+    "bbox_max": [
+     0.148,
+     0.231,
+     0.112
+    ],
+    "tris": 21214,
+    "materials": [
+     "runes",
+     "totenglocke_atlas"
+    ],
+    "textures": 3
+   },
+   "alt": [],
+   "nodes": {
+    "Bell": 7276,
+    "Body": 10150,
+    "Crank": 2408,
+    "Hammer": 476,
+    "Pawl": 120,
+    "Runes": 784
+   },
+   "notes": "Rail-yard locomotive bell on its cast yoke, barracks bunk-tube frame with a quartermaster stencil, Salt Chapel turret-clock crank with a hank of bell rope; Bell vibrates, Crank winds, Hammer cocks on the wind and strikes on the toll, Clapper swings, Pawl clicks; Runes = Mitternacht's violet runes (Crucible only).",
+   "script": "tools_src/blender/wonder/totenglocke.py"
   },
   "elmsfeuer": {
    "source": "ours",
-   "asset": null,
-   "glb": null,
-   "parts": {},
-   "notes": "wonder weapon: modelled by us (UPDATE_05 section 2, tools_src/blender/wonder/)"
+   "asset": "ours/wonder/elmsfeuer",
+   "glb": "res://assets/ours/wonder/elmsfeuer/model.glb",
+   "parts": {
+    "crank": "Crank",
+    "dial": "Dial",
+    "arc": "Arc",
+    "orb": "Orb",
+    "body": "Body"
+   },
+   "native": {
+    "forward": "-Z",
+    "up": "+Y",
+    "origin": "the right-hand grip (authored in the game frame)",
+    "length_m": 0.8505,
+    "real_length_m": 0.8505,
+    "scale": 1.0,
+    "size": [
+     0.1143,
+     0.2225,
+     0.8505
+    ],
+    "bbox_min": [
+     -0.0418,
+     -0.1059,
+     -0.5705
+    ],
+    "bbox_max": [
+     0.0725,
+     0.1166,
+     0.28
+    ],
+    "tris": 22204,
+    "materials": [
+     "arc",
+     "coil_glow",
+     "elmsfeuer_atlas",
+     "glass",
+     "orb"
+    ],
+    "textures": 3
+   },
+   "alt": [],
+   "nodes": {
+    "Arc": 408,
+    "Body": 20616,
+    "Crank": 656,
+    "Dial": 60,
+    "Orb": 464
+   },
+   "notes": "Navy-grey magneto breech with a hand crank (the reload), ammeter Dial, copper coil in a glass sleeve over a brass bore, porcelain insulator sights, violet discharge gap (Arc flickers), wooden stock; Orb = Kugelblitz's ball lightning (Crucible only).",
+   "script": "tools_src/blender/wonder/elmsfeuer.py"
   }
  },
  "greybox": [
@@ -3178,6 +3318,56 @@
    "source": null,
    "asset": null,
    "notes": "no model in the packs; FREE_ASSET_LIST pick: 'FREE Hand-Painted WW2 Grenade MK 2' (Unity Asset Store)"
+  },
+  "gramophone": {
+   "source": "ours",
+   "asset": "ours/wonder/gramophone",
+   "glb": "res://assets/ours/wonder/gramophone/model.glb",
+   "parts": {
+    "record": "Record",
+    "crank": "Crank",
+    "tonearm": "Tonearm",
+    "lid": "Lid",
+    "body": "Body"
+   },
+   "native": {
+    "forward": "-Z",
+    "up": "+Y",
+    "origin": "the right-hand grip (authored in the game frame)",
+    "length_m": 0.4198,
+    "real_length_m": 0.4198,
+    "scale": 1.0,
+    "size": [
+     0.3886,
+     0.4084,
+     0.4198
+    ],
+    "bbox_min": [
+     -0.1695,
+     -0.083,
+     -0.148
+    ],
+    "bbox_max": [
+     0.2191,
+     0.3254,
+     0.2718
+    ],
+    "tris": 12220,
+    "materials": [
+     "gramophone_atlas"
+    ],
+    "textures": 3
+   },
+   "alt": [],
+   "nodes": {
+    "Body": 6264,
+    "Crank": 540,
+    "Lid": 2244,
+    "Record": 1996,
+    "Tonearm": 1176
+   },
+   "notes": "Portable wind-up gramophone: leatherette case with brass corners, open lid, felt platter, the record (spins while it plays), tonearm with a brass horn (drops at the needle), side crank (turns while it plays).",
+   "script": "tools_src/blender/wonder/gramophone.py"
   }
  }
 }

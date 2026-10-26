@@ -1,0 +1,166 @@
+{
+ "id": "elmsfeuer",
+ "tris": 22204,
+ "nodes": [
+  {
+   "name": "Arc",
+   "tris": 408,
+   "bbox_min": [
+    -0.0191,
+    0.0435,
+    -0.5344
+   ],
+   "bbox_max": [
+    0.0189,
+    0.0662,
+    -0.4155
+   ],
+   "materials": [
+    "arc"
+   ]
+  },
+  {
+   "name": "Body",
+   "tris": 20616,
+   "bbox_min": [
+    -0.0418,
+    -0.1059,
+    -0.5395
+   ],
+   "bbox_max": [
+    0.0431,
+    0.1166,
+    0.28
+   ],
+   "materials": [
+    "elmsfeuer_atlas",
+    "glass",
+    "coil_glow"
+   ]
+  },
+  {
+   "name": "Crank",
+   "tris": 656,
+   "bbox_min": [
+    0.031,
+    0.0458,
+    -0.1267
+   ],
+   "bbox_max": [
+    0.0725,
+    0.1018,
+    -0.1133
+   ],
+   "materials": [
+    "elmsfeuer_atlas"
+   ]
+  },
+  {
+   "name": "Dial",
+   "tris": 60,
+   "bbox_min": [
+    -0.0347,
+    0.0583,
+    -0.0817
+   ],
+   "bbox_max": [
+    -0.0333,
+    0.071,
+    -0.0783
+   ],
+   "materials": [
+    "elmsfeuer_atlas"
+   ]
+  },
+  {
+   "name": "Orb",
+   "tris": 464,
+   "bbox_min": [
+    -0.0203,
+    0.0297,
+    -0.5705
+   ],
+   "bbox_max": [
+    0.0203,
+    0.0703,
+    -0.5393
+   ],
+   "materials": [
+    "orb",
+    "arc"
+   ]
+  }
+ ],
+ "bbox_min": [
+  -0.0418,
+  -0.1059,
+  -0.5705
+ ],
+ "bbox_max": [
+  0.0725,
+  0.1166,
+  0.28
+ ],
+ "size": [
+  0.1143,
+  0.2225,
+  0.8505
+ ],
+ "blender": "5.1.2",
+ "frame": "game frame: -Z forward, +Y up, origin at the right-hand grip, metres",
+ "markers": {
+  "Muzzle": [
+   0,
+   0.05,
+   -0.54
+  ],
+  "SightPoint": [
+   0,
+   0.1068,
+   -0.002
+  ],
+  "FrontSight": [
+   0,
+   0.1068,
+   -0.4
+  ],
+  "LeftHand": [
+   0,
+   -0.004,
+   -0.28
+  ],
+  "grip_r": [
+   0,
+   -0.045,
+   0.058
+  ],
+  "Crank": [
+   0.03500000014901161,
+   0.05000000074505806,
+   -0.11999999731779099
+  ],
+  "Dial": [
+   -0.03350000083446503,
+   0.05999999865889549,
+   -0.07999999821186066
+  ],
+  "Arc": [
+   0,
+   0.05,
+   -0.48
+  ],
+  "Orb": [
+   0,
+   0.05,
+   -0.556
+  ]
+ },
+ "glb_bytes": 906256,
+ "textures": [
+  "elmsfeuer_albedo.png",
+  "elmsfeuer_normal.png",
+  "elmsfeuer_orm.png"
+ ],
+ "texture_size": 2048,
+ "build_seconds": 30.6
+}

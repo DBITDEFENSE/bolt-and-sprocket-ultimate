@@ -1,0 +1,9 @@
+Title: Totenglocke (Opitz's bell cannon, built from the Map 1 parts)
+Author: GRAVELIGHT project (modelled in-house by tools_src/blender/wonder/totenglocke.py, T-090)
+Source: this repository (tools_src/blender/wonder/totenglocke.py + wonder_lib.py)
+License: Ours (original work, in-house)
+Credit line: none needed
+Format: GLB (Blender 5.1.2 export, external PNG textures): nodes Bell, Body, Crank, Hammer, Pawl, Runes; 21214 tris; baked PBR set 2048px (albedo, normal OpenGL, ORM)
+Downloaded: n/a (generated 2026-10-26 by Claude for Devin Blair)
+Files used: model.glb, textures/totenglocke_albedo.png, textures/totenglocke_normal.png, textures/totenglocke_orm.png
+Game use: first-person wonder weapon (gravelight/weapons/weapon_glb.gd + wonder_look.gd)

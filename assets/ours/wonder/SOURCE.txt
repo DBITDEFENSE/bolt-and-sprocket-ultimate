@@ -1,0 +1,9 @@
+Title: GRAVELIGHT wonder weapons: shaders and models (Ashlight, Totenglocke, Sankt-Elmsfeuer, Siren Gramophone)
+Author: GRAVELIGHT project (in-house, T-090)
+Source: this repository (tools_src/blender/wonder/, assets/ours/wonder/shaders/)
+License: Ours (original work, in-house)
+Credit line: none needed
+Format: Godot shaders (wonder_glass, wonder_fluid, wonder_glow) and one folder per model with its own SOURCE.txt
+Downloaded: n/a (written 2026-10-26 by Claude for Devin Blair)
+Files used: shaders/*.gdshader, <id>/model.glb, <id>/textures/*.png
+Game use: the wonder weapons' special surfaces (gravelight/weapons/wonder_look.gd)
