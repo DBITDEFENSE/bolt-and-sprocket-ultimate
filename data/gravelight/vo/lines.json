@@ -9877,5 +9877,25 @@
     "speaker": "VEN",
     "category": "M4C_CABINET",
     "text": "The panel is still here. Under the paint. Someone scraped it clear. Someone read it. ...{Hello}."
+  },
+  "DUT_M4D_SMILE_01": {
+    "speaker": "DUT",
+    "category": "M4D_SMILE",
+    "text": "...Huh. It's smiling. We put a smile on the Moon and it's looking at us. Babcia would've said that means something. I'm not asking what."
+  },
+  "PEG_M4D_SMILE_01": {
+    "speaker": "PEG",
+    "category": "M4D_SMILE",
+    "text": "That is our rocket's work. Fasbender aimed it. I signed for the fuel. I find I'm not sorry. Note that down against me."
+  },
+  "DEA_M4D_SMILE_01": {
+    "speaker": "DEA",
+    "category": "M4D_SMILE",
+    "text": "Lord, that's a long way to come to look at a scar. ...It's smiling. All right. Somebody up here was glad to see us."
+  },
+  "WRN_M4D_SMILE_01": {
+    "speaker": "WRN",
+    "category": "M4D_SMILE",
+    "text": "A crack. Twelve kilometres, maybe more. I can't count that. ...I'll write 'one'."
   }
 }

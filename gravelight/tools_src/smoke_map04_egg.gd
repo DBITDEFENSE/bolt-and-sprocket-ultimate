@@ -1,6 +1,6 @@
 extends Node
-## Headless smoke test for Map 4's main egg "Kündigung" across Acts I and II (UPDATE 07, docs/MAP4_FERNFLUG.md
-## §9; T-114), played the way a squad would, by console where a human would hold a key:
+## Headless smoke test for Map 4's main egg "Kündigung" across the four acts (UPDATE 07, docs/MAP4_FERNFLUG.md
+## §9; T-114, T-115), played the way a squad would, by console where a human would hold a key:
 ##   1. Werk Thalbach in campaign mode: the egg and Jette's side egg load; s1 (power) is the only open step
 ##   2. the Hauptschalter: s1 done, s2 (files) and s4 (tunnel) open; the three files spell the seeded extension
 ##      in order and raise file_1..3; s3 opens
@@ -14,13 +14,21 @@ extends Node
 ##   7. the ramp switch: locked until key + code, then it lights the beacon before its round; the squad boards
 ##   8. der Kranich: the carry brings s1-s6 done, s7a/s7 open and the same code; the three crew tags; the London
 ##      window is fired by the egg (act_event) and completes s8; the bomb run follows (s9), the Bordwart over
-##      his station (s7); the autopilot step lights the cradle, the rip-out completes s10 and the quest
+##      his station (s7); the autopilot step lights the cradle, the rip-out completes s10; the crash
+##   9. Groom Lake (T-115): the carry brings s1-s10 done, Dee's radio (s11a) and the Lodestone (s12) open; her radio;
+##      the core to the hatch and Peg's choice (keep: peg_resigned completes s11b, an `any` step); the Lodestone's
+##      parts and the workbench (s12); Fasbender's numbers (s12b); the Test Pilot caught once by a stagger in the air
+##      (slammed_once) and killed (s13); the silo console's key and burn (s14, rocket_ready); the lift; the launch
+##  10. Mondlicht: the yard's airlock (s15a, a `zone` step); the three columns read (s15, an `all` step) and the
+##      Account (s16); the Manager escalates (s17); the smile at the rim (the side egg); `cancel now` (s18): the
+##      quest completes with its profile rewards (card, mutator, title, dossier page, Archive) and the ending runs
 ## Usage: godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/smoke_map04_egg.tscn
 
 const MAP_A: String = "res://gravelight/maps/map04_fernflug/map04a.tscn"
 const QID: StringName = &"map04_kuendigung"
 const SIDE: StringName = &"map04a_jette"
-const TIMEOUT: float = 700.0
+const TIMEOUT: float = 1200.0
+const LAB_Y: float = -6.0
 
 var _fails: PackedStringArray = []
 var _t: float = 0.0
@@ -384,20 +392,192 @@ func _run() -> void:
 	await _frames(2)
 	_check(x.state == ExfilPoint.State.DEPARTING, "the vote passed: the crash cutscene plays")
 	_check(GameState.has_flag(&"autopilot_ripped") and _status(&"s10_autopilot") == "complete", "the exfil's done_flag completed s10")
-	_check(QuestManager.is_complete(QID), "Kündigung, Acts I-II: complete")
+	for sid: String in ["s1_power", "s2_files", "s3_pa_line", "s4_tunnel", "s5_kranfuehrer", "s6_board", "s7a_crew_tags", "s7_bordwart", "s8_london", "s9_bomb_run", "s10_autopilot"]:
+		if _status(StringName(sid)) != "complete":
+			_fails.append(sid + " not complete after the rip-out")
+	_check(_status(&"s11a_dee") == "active" and _status(&"s12_lodestone") == "active" and _status(&"s11b_choice") == "locked", "Acts I-II done: Dee's radio and the Lodestone are the open steps")
 	var has_c: bool = Campaign.scene_exists(&"map04c_groomlake")
 	print("[m4egg] Act III scene present: %s" % str(has_c))
-	if has_c:
-		var to_c: bool = await _until(func() -> bool:
-			var m: MapRoot = _map()
-			return m != null and m.map_id == &"map04c_groomlake" and m.is_node_ready(), 90.0)
-		_check(to_c, "Groom Lake loaded after the crash")
-		if to_c:
-			await _secs(2.0)
-			_check(QuestManager.has_quest(QID) and _status(&"s10_autopilot") == "complete", "the egg's progress reached Act III")
-	else:
+	if not has_c:
 		var ended: bool = await _until(func() -> bool: return _end_screen() != null, 90.0)
 		_check(ended, "no Act III in this build: the 'campaign continues' screen showed after the crash")
+		_finish()
+		return
+	var to_c: bool = await _until(func() -> bool:
+		var m: MapRoot = _map()
+		return m != null and m.map_id == &"map04c_groomlake" and m.is_node_ready(), 90.0)
+	_check(to_c, "Groom Lake loaded after the crash")
+	if not to_c:
+		_finish()
+		return
+	await _secs(2.5)
+
+	# ---- 9. Groom Lake
+	map = _map()
+	human = map.player
+	dir = map.director
+	_check(QuestManager.has_quest(QID) and _status(&"s10_autopilot") == "complete" and _status(&"s11a_dee") == "active", "the egg's progress reached Act III")
+	_check(QuestManager.has_quest(&"map04c_cage"), "Dee's yard rule is loaded with the act")
+	RoundManager.stop()
+	dir.kill_all(true)
+	for d: Node in get_tree().get_nodes_in_group(&"doors"):
+		(d as BuyDoor).open(0)
+	await _frames(3)
+	_check(GameState.is_zone_open(&"F_LAB") and GameState.is_zone_open(&"G_SILO"), "every door opened by console (the lab and the silo)")
+	var dee: StoryRadio = _g("DeeRadio") as StoryRadio
+	await _tp(human, Vector3(60.0, 0.2, 96.0), 90.0)
+	_check(dee != null and dee.can_interact(human), "Dee's radio takes the call")
+	human.use_interactable(dee)
+	await _frames(3)
+	_check(_status(&"s11a_dee") == "complete" and _status(&"s11b_choice") == "active" and _status(&"s12b_burn") == "active", "s11a done: the choice and Fasbender's burn open")
+	# the core: the human carries it to the hatch, Peg's choice by console (keep)
+	var core: CarryObject = _g("ImpellerCore") as CarryObject
+	await _tp(human, Vector3(20.0, 0.2, 14.5), 0.0)
+	human.use_interactable(core)
+	await _frames(3)
+	_check(core != null and core.carrier == 1, "the human carries the core")
+	var cradle: CarryCradle = _g("HangarCradle") as CarryCradle
+	await _tp(human, Vector3(38.0, 0.2, 96.0), -90.0)
+	human.use_interactable(cradle)
+	await _frames(3)
+	var pc: PegsChoice = get_tree().root.get_node_or_null("PegsChoice") as PegsChoice
+	_check(pc != null and cradle.deciding, "the choice is open at the hatch")
+	if pc != null:
+		pc.choose("keep")
+		await _frames(3)
+	_check(GameState.has_flag(&"peg_resigned") and _status(&"s11b_choice") == "complete", "keep: peg_resigned completes s11b (any of the two flags)")
+	# the power (the radar radio needs it), then the Lodestone
+	(_g("Generator")).call("run_sequence", 1)
+	var powered_c: bool = await _until(func() -> bool: return GameState.power_on, 20.0)
+	_check(powered_c, "the generator ran")
+	dir.kill_all(true)
+	var live: Dictionary = {}
+	for n3: Node in get_tree().get_nodes_in_group(&"buildable_parts"):
+		var bp: BuildablePart = n3 as BuildablePart
+		if bp.buildable_id == &"lodestone" and bp._live:
+			live[bp.part_id] = bp
+	_check(live.size() == 3, "three Lodestone parts live (%d)" % live.size())
+	for pid: Variant in live.keys():
+		var bp2: BuildablePart = live[pid]
+		await _tp(human, bp2.global_position + Vector3(0.8, 0.2, 0), 0.0)
+		human.use_interactable(bp2)
+		await _frames(2)
+	var wb: Workbench = _g("Workbench") as Workbench
+	await _tp(human, Vector3(-60.0, LAB_Y + 0.2, 116.0), 180.0)
+	human.use_interactable(wb)
+	await _frames(3)
+	_check(wb != null and wb.built and _status(&"s12_lodestone") == "complete", "the Lodestone built: s12 done")
+	human.use_interactable(wb)
+	await _frames(2)
+	_check(_status(&"s13_testpilot") == "active", "the Test Pilot step opens with the weapon")
+	# Fasbender's numbers
+	var rr: StoryRadio = _g("RadarRadio") as StoryRadio
+	await _tp(human, Vector3(62.0, 0.2, 125.5), 0.0)
+	human.use_interactable(rr)
+	await _frames(3)
+	_check(GameState.has_flag(&"burn_known") and _status(&"s12b_burn") == "complete", "Fasbender's radio: burn_known completes s12b")
+	# the Test Pilot: caught once by a lift (a stagger in the air), then killed
+	var tp: TestPilot = dir.summon_boss(&"testpilot", Vector3.ZERO) as TestPilot
+	_check(tp != null and tp.is_active(), "the Test Pilot is summoned by console")
+	if tp != null:
+		await _tp(human, Vector3(-40.0, LAB_Y + 0.2, 122.0), 0.0)
+		var air: bool = await _until(func() -> bool: return tp.pstate == TestPilot.P.AIR, 25.0)
+		if air:
+			tp.force_stagger()
+			await _frames(3)
+		_check(air and GameState.has_flag(&"slammed_once"), "caught mid-leap: slammed_once (air %s)" % str(air))
+		tp.set_physics_process(false)
+		tp.debug_kill(1)
+		await _secs(0.6)
+		_check(_status(&"s13_testpilot") == "complete" and GameState.has_flag(&"ignition_key"), "killed after the catch: s13 done, the ignition key")
+	dir.kill_all(true)
+	# the console: the key, then the burn
+	var con: SiloConsole = _g("SiloConsole") as SiloConsole
+	await _tp(human, Vector3(-58.0, LAB_Y + 0.2, 175.5), 0.0)
+	_check(con != null and _status(&"s14_rocket") == "active" and con.can_interact(human), "s14 open: the console takes the key")
+	human.use_interactable(con)
+	await _frames(3)
+	_check(GameState.has_flag(&"rocket_key_turned") and con.can_interact(human), "the key turned; the burn is known: the burn stage")
+	human.use_interactable(con)
+	await _frames(3)
+	x = _exfil()
+	_check(GameState.has_flag(&"rocket_ready") and _status(&"s14_rocket") == "complete" and x != null and x.is_active(), "rocket_ready completes s14 and lights the lift")
+	await _tp(human, x.global_position + x.global_basis * Vector3(0, 0, -1.6), 0.0)
+	human.use_interactable(x)
+	await _frames(2)
+	_check(x.state == ExfilPoint.State.DEPARTING, "the vote passed: the launch cutscene plays")
+	var has_d: bool = Campaign.scene_exists(&"map04d_mondlicht")
+	print("[m4egg] Act IV scene present: %s" % str(has_d))
+	if not has_d:
+		_finish()
+		return
+	var to_d: bool = await _until(func() -> bool:
+		var m: MapRoot = _map()
+		return m != null and m.map_id == &"map04d_mondlicht" and m.is_node_ready(), 90.0)
+	_check(to_d, "Mondlicht loaded after the launch")
+	if not to_d:
+		_finish()
+		return
+	await _secs(2.5)
+
+	# ---- 10. Mondlicht
+	map = _map()
+	human = map.player
+	dir = map.director
+	_check(_status(&"s14_rocket") == "complete" and _status(&"s15a_yard") == "active", "the egg's progress reached the Moon: the yard step is open")
+	_check(GameState.has_flag(&"peg_resigned") and GameState.has_flag(&"burn_known"), "peg_* and burn_known were carried up")
+	RoundManager.stop()
+	dir.kill_all(true)
+	for d: Node in get_tree().get_nodes_in_group(&"doors"):
+		if (d as BuyDoor).door_id == &"door_concourse" or (d as BuyDoor).door_id == &"door_yard":
+			(d as BuyDoor).open(0)
+	await _frames(3)
+	_check(GameState.is_zone_open(&"C_YARD") and _status(&"s15a_yard") == "complete", "the airlock opened: the zone step completes s15a")
+	for d: Node in get_tree().get_nodes_in_group(&"doors"):
+		(d as BuyDoor).open(0)
+	await _frames(3)
+	var cols: Array[Node] = get_tree().get_nodes_in_group(&"retention_columns")
+	cols.sort_custom(func(a: Node, b: Node) -> bool: return int(a.get("index")) < int(b.get("index")))
+	_check(cols.size() == 3 and _status(&"s15_columns") == "active", "three columns, the read step open")
+	(cols[0] as RetentionColumn).read_terms(1)
+	(cols[1] as RetentionColumn).read_terms(1)
+	await _secs(1.0)
+	_check(_status(&"s15_columns") == "active", "two dark: the `all` step waits for the third")
+	(cols[2] as RetentionColumn).read_terms(1)
+	await _secs(1.5)
+	_check(_status(&"s15_columns") == "complete" and GameState.has_flag(&"account_open") and _status(&"s16_account") == "complete", "three dark: s15 and the Account (s16) done")
+	# the Manager escalates
+	var ctl: Node = get_tree().get_first_node_in_group(&"mondlicht_controller")
+	GameState.open_zone(&"F_CORE")
+	dir.recompute_nav_mask()
+	var am_up: bool = await _until(func() -> bool: return ctl != null and ctl.get("boss") != null, 12.0)
+	var am: Node = ctl.get("boss") if ctl != null else null
+	_check(am_up and am != null, "the Account Manager attends the open Account")
+	if am != null:
+		await _tp(human, Vector3(28, 0.2, -26), 180.0)
+		await _secs(1.0)
+		am.set("presenting", 0.0)
+		am.call("take_damage", float(am.get("max_hp")) * 2.0, &"torso", &"console", 1, &"world")
+		await _frames(3)
+	_check(GameState.has_flag(&"manager_escalated") and _status(&"s17_manager") == "complete", "she escalates: s17 done, the cancel step opens")
+	# the smile at the rim (the side egg)
+	var marker: QuestInteract = _g("SmileMarker") as QuestInteract
+	await _tp(human, Vector3(0.0, 0.2, 102.5), 0.0)
+	_check(marker != null and QuestManager.has_quest(&"map04d_smile") and marker.can_interact(human), "the rim marker is live in the vacuum")
+	if marker != null:
+		marker.interact(human)
+		await _frames(3)
+	_check(QuestManager.is_complete(&"map04d_smile") and (ProfileSave.profile.get("charms", []) as Array).has("mondstein"), "the smile seen: the Mondstein charm")
+	# cancel now
+	var out: String = GLConsole.run("cancel now")
+	print("[m4egg] console: " + out)
+	await _frames(4)
+	_check(GameState.has_flag(&"cancelled") and _status(&"s18_cancel") == "complete" and QuestManager.is_complete(QID), "the key turned: s18 done, KÜNDIGUNG complete")
+	var prof: Dictionary = ProfileSave.profile
+	_check((prof.get("calling_cards", []) as Array).has("kuendigung") and (prof.get("mutators", []) as Array).has("low_gravity_all") and (prof.get("titles", []) as Array).has("Cancelled"), "profile: the card, the mutator, the title")
+	_check(int((prof.get("dossiers", {}) as Dictionary).get("wren", 0)) >= 10 and (prof.get("intel", []) as Array).has("INT_M4_KUENDIGUNG") and (prof.get("egg_rewards", {}) as Dictionary).has("map04_kuendigung"), "profile: dossier page 10, the Archive entry, the egg reward")
+	var over: bool = await _until(func() -> bool: return GameState.phase == GameState.Phase.GAME_OVER, 120.0)
+	_check(over and (ProfileSave.profile.get("endings_seen", []) as Array).has("kuendigung"), "the cancel ending ran to the credits (endings_seen kuendigung)")
 	_finish()
 
 

@@ -1,0 +1,183 @@
+{
+  "_doc": "Training loops for Map 4 Act I Werk Thalbach (UPDATE 07, T-115). Same format as routes_map01.json; requires_doors names the BuyDoor ids on the way (bots alone buy them, T-107). Validate: route_tool.tscn -- --map=map04a --validate.",
+  "routes": [
+    {
+      "id": "map04a_canteen",
+      "label": "the canteen tables",
+      "notes": "C_KANTINE: the aisle round the three long tables (x -38..-11, z 38/44/50); the serving hatch to the west, the stage to the east.",
+      "points": [
+        [
+          -40,
+          0,
+          36
+        ],
+        [
+          -22,
+          0,
+          34
+        ],
+        [
+          -6,
+          0,
+          36
+        ],
+        [
+          -6,
+          0,
+          54
+        ],
+        [
+          -22,
+          0,
+          56
+        ],
+        [
+          -40,
+          0,
+          54
+        ]
+      ],
+      "ring_width": 3.0,
+      "smooth": 2,
+      "requires_doors": [
+        "door_bahnhof",
+        "door_kantine"
+      ]
+    },
+    {
+      "id": "map04a_jig",
+      "label": "round hall 1's jig",
+      "notes": "E_MONTAGE: round the hall-1 jig and the east workbench (x -12.25..-11.5, z 75..78); the partition at x -48 and the bench at z 75 keep the loop east of x -46.",
+      "points": [
+        [
+          -46,
+          0,
+          68
+        ],
+        [
+          -30,
+          0,
+          65
+        ],
+        [
+          -10.5,
+          0,
+          66
+        ],
+        [
+          -10.5,
+          0,
+          80
+        ],
+        [
+          -30,
+          0,
+          82
+        ],
+        [
+          -46,
+          0,
+          80
+        ]
+      ],
+      "ring_width": 3.0,
+      "smooth": 2,
+      "requires_doors": [
+        "door_bahnhof",
+        "door_kantine",
+        "door_montage"
+      ]
+    },
+    {
+      "id": "map04a_ring_road",
+      "label": "the Prüfstand ring road",
+      "notes": "G_PRUEFSTAND: the north aisle in front of the four test-stand cells (z 124..131); the z-134 rail only opens at x > -4, so the loop stays north of the cells.",
+      "points": [
+        [
+          -56,
+          0,
+          115
+        ],
+        [
+          -30,
+          0,
+          115
+        ],
+        [
+          -6,
+          0,
+          115
+        ],
+        [
+          -6,
+          0,
+          121.5
+        ],
+        [
+          -30,
+          0,
+          121.5
+        ],
+        [
+          -56,
+          0,
+          121.5
+        ]
+      ],
+      "ring_width": 3.0,
+      "smooth": 2,
+      "requires_doors": [
+        "door_bahnhof",
+        "door_kantine",
+        "door_montage",
+        "door_pruefstand"
+      ]
+    },
+    {
+      "id": "map04a_hangar",
+      "label": "the hangar floor",
+      "notes": "H_HALLE: the hangar floor round the whole Kranich (body x -30..-10 z 165..205, wings x -60..20 z 175..195: their edges block the navmesh), inside the catwalk ramps.",
+      "points": [
+        [
+          -64,
+          0,
+          157
+        ],
+        [
+          -20,
+          0,
+          156
+        ],
+        [
+          22,
+          0,
+          157
+        ],
+        [
+          22,
+          0,
+          211
+        ],
+        [
+          -20,
+          0,
+          212
+        ],
+        [
+          -64,
+          0,
+          211
+        ]
+      ],
+      "ring_width": 4.0,
+      "smooth": 2,
+      "requires_doors": [
+        "door_bahnhof",
+        "door_kantine",
+        "door_montage",
+        "door_pruefstand",
+        "door_halle"
+      ]
+    }
+  ]
+}

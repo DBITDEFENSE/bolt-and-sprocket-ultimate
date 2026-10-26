@@ -58,7 +58,7 @@ func _build() -> void:
 			Props.block(self, Vector3(-4, 0, -5.5), Vector3(4, 1.1, -4.5), "walnut")   # the bar
 			Props.bench(self, Vector3(0, 0, -3.2), 0.0, 3.0)
 			_figure(Vector3(0, 0, -3.6), "feldgrau")   # the Gänger, standing at the bar
-			Props.block(self, Vector3(4.5, 0, -1), Vector3(5.9, 2.2, 1), "fieldstone")   # the hearth
+			Props.block(self, Vector3(4.5, 0, -1), Vector3(5.9, 2.2, 1), "stone_dark")   # the hearth
 			_lamp(Vector3(4.8, 0.8, 0), Color(1.0, 0.6, 0.3), 2.5, 9.0)
 			_lamp(Vector3(0, 3.2, 0), Color(1.0, 0.8, 0.55), 0.9, 10.0)
 			cam_pos = Vector3(-3.5, 1.5, 3.5)

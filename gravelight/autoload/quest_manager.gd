@@ -41,6 +41,7 @@ func _ready() -> void:
 	GLBus.buildable_completed.connect(_on_buildable_completed)
 	GLBus.item_picked_up.connect(_on_item_picked_up)
 	GLBus.vo_line_started.connect(_on_vo_started)
+	GLBus.zone_opened.connect(_on_zone_opened_step)   # UPDATE 07 (T-115): flag steps that wait on a zone
 
 
 func _on_match_started(_m: StringName) -> void:
@@ -549,8 +550,39 @@ func on_flag(flag: StringName) -> void:
 		return
 	for qid: Variant in _quests.keys():
 		for step: Dictionary in _active_steps(qid, "flag"):
-			if StringName(step["params"]["flag"]) == flag:
+			if flag_step_satisfied(step["params"], flag):
 				_complete(qid, StringName(step["id"]))
+
+
+## A zone opened: flag steps with params.zone complete (UPDATE 07, T-115: the yard's airlock).
+func _on_zone_opened_step(_zone: StringName) -> void:
+	if not Net.is_authority():
+		return
+	for qid: Variant in _quests.keys():
+		for step: Dictionary in _active_steps(qid, "flag"):
+			if step["params"].has("zone") and flag_step_satisfied(step["params"]):
+				_complete(qid, StringName(step["id"]))
+
+
+## Is a `flag` step's condition met? params: {"flag": f} (f is set), {"any": [f...]} (one set), {"all": [f...]}
+## (every one set), {"zone": id} (the zone is open). `just` is the flag that just changed (so a step waiting on
+## that flag completes even before GameState has it... it does: on_flag runs after the set), unused otherwise.
+static func flag_step_satisfied(params: Dictionary, just: StringName = &"") -> bool:
+	if params.has("flag"):
+		return GameState.has_flag(StringName(params["flag"])) or StringName(params["flag"]) == just
+	if params.has("any"):
+		for f: Variant in params["any"]:
+			if GameState.has_flag(StringName(str(f))) or StringName(str(f)) == just:
+				return true
+		return false
+	if params.has("all"):
+		for f: Variant in params["all"]:
+			if not (GameState.has_flag(StringName(str(f))) or StringName(str(f)) == just):
+				return false
+		return true
+	if params.has("zone"):
+		return GameState.is_zone_open(StringName(params["zone"]))
+	return false
 
 
 ## Runners (cutscenes) and world objects finish their own steps through this.
@@ -703,7 +735,7 @@ func _refresh(qid: StringName) -> void:
 				_ctx = {"sid": sid, "n": 0, "by": 0}
 				_run_actions(qid, step.get("on_start", []))
 				_ctx = {}
-				if str(step["type"]) == "flag" and GameState.has_flag(StringName(step["params"]["flag"])):
+				if str(step["type"]) == "flag" and flag_step_satisfied(step["params"]):
 					_complete(qid, sid)
 				elif str(step["type"]) == "cutscene":
 					_start_cutscene(qid, sid)
@@ -891,6 +923,17 @@ func _do_action(qid: StringName, a: Dictionary, by: int) -> void:
 			list.append(pl[1])
 		ProfileSave.profile[str(pl[0])] = list
 		ProfileSave.save_profile()
+	if a.has("dossier_page"):   # UPDATE 07 (T-115): every character in the match reaches at least this dossier page
+		var page: int = int(a["dossier_page"])
+		var dos: Dictionary = ProfileSave.profile.get("dossiers", {})
+		var present: Array = GameState.characters.values() if GameState.characters is Dictionary else []
+		present.append(GameState.character_id)   # solo: everyone is character_id
+		for cid: Variant in present:
+			if str(cid) == "":
+				continue
+			dos[str(cid)] = maxi(int(dos.get(str(cid), 0)), page)
+		ProfileSave.profile["dossiers"] = dos
+		ProfileSave.save_profile()
 	if a.has("summon_boss"):
 		var sb: Array = a["summon_boss"]
 		summon_boss(StringName(str(sb[0])), Vector3(float(sb[1]), float(sb[2]), float(sb[3])))
@@ -1044,6 +1087,10 @@ static func validate(def: Dictionary) -> PackedStringArray:
 		ids[str(step["id"])] = step
 		if not STEP_TYPES.has(str(step["type"])):
 			errors.append("unknown type %s" % step["type"])
+		elif str(step["type"]) == "flag":
+			var fp: Dictionary = step.get("params", {})
+			if not (fp.has("flag") or fp.has("any") or fp.has("all") or fp.has("zone")):
+				errors.append("flag step %s names no flag/any/all/zone" % step["id"])
 	for step: Dictionary in def["steps"]:
 		for r: Variant in step.get("requires", []):
 			if not ids.has(str(r)):

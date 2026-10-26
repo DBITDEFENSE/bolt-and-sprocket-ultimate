@@ -573,7 +573,10 @@
           "text": "Cancel."
         }
       ],
-      "easter_egg": [],
+      "easter_egg": [
+        "map04_kuendigung",
+        "map04d_smile"
+      ],
       "side": [
         {
           "done": {
@@ -666,7 +669,9 @@
           "text": "Hold the range."
         }
       ],
-      "easter_egg": [],
+      "easter_egg": [
+        "map04_kuendigung"
+      ],
       "side": [
         {
           "done": {
@@ -679,15 +684,7 @@
           ]
         },
         {
-          "done": {
-            "flag": "dee_cage_done"
-          },
-          "text": "Dee's yard rule: the casing, the bomber's coil, the honey",
-          "nodes": [
-            "CageItem_casing",
-            "CageItem_bomber_coil",
-            "CageItem_honey"
-          ]
+          "quest": "map04c_cage"
         }
       ]
     }
@@ -999,6 +996,107 @@
           "nodes": [
             "ExfilPoint"
           ]
+        },
+        "s11a_dee": {
+          "done": "Dee answered. The hangar's side door is hers to open.",
+          "hint": "Someone is still alive on the range. Her radio is in the hangar.",
+          "guide": "Reach the hangar and hold [interact] on the supply cage's radio.",
+          "where": "Hangar",
+          "nodes": [
+            "DeeRadio"
+          ]
+        },
+        "s11b_choice": {
+          "done": "The core is placed. Peg has chosen.",
+          "hint": "The impeller core on the salt belongs somewhere. Hale thinks he knows where.",
+          "guide": "Carry the core from the lakebed to the hangar cradle (pistol only, no sprint). Then choose: keep it for the rocket, or hand it through the office hatch.",
+          "where": "Lakebed → Hangar",
+          "nodes": [
+            "ImpellerCore",
+            "HangarCradle"
+          ]
+        },
+        "s12_lodestone": {
+          "done": "The Lodestone is built.",
+          "hint": "The program left three parts of one device: the hangar, the tower, the lab.",
+          "guide": "Bring the relay coil, the gyro cradle and the lead-glass lens to the lab workbench.",
+          "where": "Lab",
+          "nodes": [
+            "Workbench"
+          ]
+        },
+        "s12b_burn": {
+          "done": "Fasbender's numbers are known.",
+          "hint": "The radar shack's radio reaches a mountain in Bavaria, once the generator runs.",
+          "guide": "Throw the generator, then hold [interact] on the radar shack's radio. Write the three numbers down.",
+          "where": "Radar tower",
+          "nodes": [
+            "RadarRadio"
+          ]
+        },
+        "s13_testpilot": {
+          "done": "The Test Pilot is down. He had the ignition key.",
+          "hint": "He leaps. Something that lifts could catch him in the air.",
+          "guide": "Catch him once mid-leap with the Lodestone's lift, then finish him. He keeps the key otherwise and comes back.",
+          "where": "Lab → Lakebed",
+          "nodes": []
+        },
+        "s14_rocket": {
+          "done": "The rocket is lit. The gantry lift is up.",
+          "hint": "The silo console takes a key and three numbers.",
+          "guide": "Turn the ignition key at the silo console, enter the burn, then take the gantry lift.",
+          "where": "Silo",
+          "nodes": [
+            "SiloConsole",
+            "ExfilPoint"
+          ]
+        },
+        "s15a_yard": {
+          "done": "The yard's airlock is open.",
+          "hint": "The relay's columns are past the yard. The yard has no air.",
+          "guide": "Open the concourse's airlock to the yard (watch the AIR gauge; the posts refill it).",
+          "where": "Concourse",
+          "nodes": [
+            "Door_Yard"
+          ]
+        },
+        "s15_columns": {
+          "done": "Every column is dark. The sign has lost its letters.",
+          "hint": "The terms were always on the backs of the machines. The columns quote them.",
+          "guide": "Hold [interact] on each column's terms plate and read (the Lodestone's lift on the cap makes it quick). All three, any order.",
+          "where": "Retention Hall",
+          "nodes": [
+            "Column1",
+            "Column2",
+            "Column3"
+          ]
+        },
+        "s16_account": {
+          "done": "The Account is open.",
+          "hint": "Three dark columns open the last door.",
+          "guide": "With the columns dark, the Account's door opens. Go in.",
+          "where": "Retention Hall → the Account",
+          "nodes": [
+            "Door_Account"
+          ]
+        },
+        "s17_manager": {
+          "done": "She has escalated. The console is unlocked.",
+          "hint": "She never dies. She can only be made to step away.",
+          "guide": "Fight the Account Manager through her three contracts until she escalates. Fling her shield-cells into the shaft with the Lodestone.",
+          "where": "The Account",
+          "nodes": [
+            "AccountConsole"
+          ]
+        },
+        "s18_cancel": {
+          "done": "Cancelled.",
+          "hint": "Nobody cancels. That is a claim, not a rule.",
+          "guide": "Lift the console's cover, vote, and turn the key.",
+          "where": "The Account",
+          "nodes": [
+            "AccountConsole"
+          ]
         }
       }
     },
@@ -1023,6 +1121,36 @@
           "where": "Windkanal",
           "nodes": [
             "JetteHatch"
+          ]
+        }
+      }
+    },
+    "map04d_smile": {
+      "title": "The Smile",
+      "steps": {
+        "s1_rim": {
+          "done": "You saw it from the rim.",
+          "hint": "The crack on the Moon is a short walk through nothing.",
+          "guide": "Cross the yard to the crater rim's marker with a full suit of air (a hop helps) and hold [interact].",
+          "where": "Yard (vacuum)",
+          "nodes": [
+            "SmileMarker"
+          ]
+        }
+      }
+    },
+    "map04c_cage": {
+      "title": "The Yard Rule",
+      "steps": {
+        "s1_rule": {
+          "done": "Dee's three things are in the cage.",
+          "hint": "Dee's yard rule asks for three things. She said what, on the radio.",
+          "guide": "Bring Dee a casing from the wreck on the lake bed, a coil from the bomber in the hangar and the honey jar from the lab's kitchen corner; hold [interact] on each.",
+          "where": "Lake bed, Hangar, Lab",
+          "nodes": [
+            "CageItem_casing",
+            "CageItem_bomber_coil",
+            "CageItem_honey"
           ]
         }
       }

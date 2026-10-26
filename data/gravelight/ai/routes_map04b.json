@@ -1,0 +1,101 @@
+{
+  "_doc": "Training loops for Map 4 Act II der Kranich (UPDATE 07, T-115): narrow loops inside the wing; the turbulence banks push across them.",
+  "routes": [
+    {
+      "id": "map04b_galley",
+      "label": "the galley-radio ring",
+      "notes": "C_MITTELRUMPF: the galley aisle between the lockers (x 5.5..9.5 at z 26..32 and 46..50) and the port bulkhead.",
+      "points": [
+        [
+          -5,
+          0,
+          29
+        ],
+        [
+          4.5,
+          0,
+          29
+        ],
+        [
+          4.5,
+          0,
+          49
+        ],
+        [
+          -5,
+          0,
+          49
+        ]
+      ],
+      "ring_width": 2.5,
+      "smooth": 2,
+      "requires_doors": [
+        "door_mittelrumpf"
+      ]
+    },
+    {
+      "id": "map04b_blisters",
+      "label": "the blister gallery",
+      "notes": "E_KANZEL: the gallery along the four blisters; climbers come over the rims.",
+      "points": [
+        [
+          56,
+          0,
+          28
+        ],
+        [
+          74,
+          0,
+          28
+        ],
+        [
+          74,
+          0,
+          54
+        ],
+        [
+          56,
+          0,
+          54
+        ]
+      ],
+      "ring_width": 2.5,
+      "smooth": 2,
+      "requires_doors": [
+        "door_mittelrumpf",
+        "door_fluegel_r",
+        "door_kanzel"
+      ]
+    },
+    {
+      "id": "map04b_bay",
+      "label": "the bay catwalks",
+      "notes": "A_BOMBENSCHACHT (spawn): up and down the central aisle between the two bomb racks (x +-4..+-7.5).",
+      "points": [
+        [
+          -2.5,
+          0,
+          2
+        ],
+        [
+          2.5,
+          0,
+          2
+        ],
+        [
+          2.5,
+          0,
+          21.5
+        ],
+        [
+          -2.5,
+          0,
+          21.5
+        ]
+      ],
+      "ring_width": 2.5,
+      "smooth": 2,
+      "requires_doors": []
+    }
+  ]
+}

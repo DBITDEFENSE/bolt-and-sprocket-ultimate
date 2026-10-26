@@ -2,16 +2,17 @@ extends Node
 ## Training-route tool (Update 03 section 3, T-056). Loads a map, waits for the navmesh, then:
 ##   --validate                      checks every route in data/gravelight/ai/routes_<map>.json on the navmesh
 ##                                   (TrainingRoute.validate_on) and prints PASS/FAIL per route
-##   --dump=x0,z0,x1,z1,y[,step]     prints the walkable navmesh of a box as ASCII (. walkable, # not), with the
-##                                   routes' samples drawn as o (for authoring points)
+##   --dump=x0,z0,x1,z1,y[,step]     prints the walkable navmesh of a box as ASCII (. walkable, # not, "," raised
+##                                   more than 0.6 m above y), with the routes' samples drawn as o / q (repeatable)
 ## Usage: godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/route_tool.tscn -- --map=map00 --validate
 ## Exit code: the number of routes that failed validation.
 
-const MAPS: Dictionary = {"map00": "res://gravelight/maps/map00_crossroads/map00.tscn", "map01": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", "map02": "res://gravelight/maps/map02_totenhafen/map02.tscn"}
+const MAPS: Dictionary = {"map00": "res://gravelight/maps/map00_crossroads/map00.tscn", "map01": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", "map02": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+	"map04a": "res://gravelight/maps/map04_fernflug/map04a.tscn", "map04b": "res://gravelight/maps/map04_fernflug/map04b.tscn", "map04c": "res://gravelight/maps/map04_fernflug/map04c.tscn", "map04d": "res://gravelight/maps/map04_fernflug/map04d.tscn"}
 
 var _map_key: String = "map00"
 var _validate: bool = false
-var _dump: PackedFloat32Array = PackedFloat32Array()
+var _dumps: Array[PackedFloat32Array] = []
 var _probe: PackedFloat32Array = PackedFloat32Array()
 var _map: Node3D
 var _frames: int = 0
@@ -27,8 +28,10 @@ func _ready() -> void:
 			for v: String in a.substr(8).split(","):
 				_probe.append(float(v))
 		elif a.begins_with("--dump="):
+			var d: PackedFloat32Array = PackedFloat32Array()
 			for v: String in a.substr(7).split(","):
-				_dump.append(float(v))
+				d.append(float(v))
+			_dumps.append(d)
 	ProfileSave.path = "user://_qa_routes_profile.json"
 	ProfileSave.profile = ProfileSave.new_profile()
 	GameState.bot_count = 0
@@ -56,8 +59,9 @@ func _physics_process(_delta: float) -> void:
 		var a: Vector3 = Vector3(_probe[0], _probe[1], _probe[2])
 		var b: Vector3 = Vector3(_probe[3], _probe[4], _probe[5])
 		print("[routes] path %s -> %s: %s" % [a, b, NavigationServer3D.map_get_path(world.navigation_map, a, b, true)])
-	if _dump.size() >= 5:
-		_print_dump(world)
+	for d: PackedFloat32Array in _dumps:
+		if d.size() >= 5:
+			_print_dump(world, d)
 	if _validate:
 		fails = validate_map(world, _map_key)
 		print("[routes] RESULT %s (%d failed)" % ["PASS" if fails == 0 else "FAIL", fails])
@@ -87,7 +91,7 @@ static func validate_map(world: World3D, map_key: String) -> int:
 	return fails
 
 
-func _print_dump(world: World3D) -> void:
+func _print_dump(world: World3D, _dump: PackedFloat32Array) -> void:
 	var x0: float = _dump[0]
 	var z0: float = _dump[1]
 	var x1: float = _dump[2]
@@ -119,10 +123,11 @@ func _print_dump(world: World3D) -> void:
 			var p: Vector3 = Vector3(x + step * 0.5, y, z + step * 0.5)
 			var c: Vector3 = NavigationServer3D.map_get_closest_point(nav, p + Vector3.UP * 0.4)
 			var walk: bool = Vector2(c.x - p.x, c.z - p.z).length() < step * 0.6 and absf(c.y - y) < 0.8
+			var raised: bool = walk and absf(c.y - y) > 0.6  # a table top / step the validator rejects (dy > 0.6)
 			if marks.has(Vector2i(ci, row)):
-				line += "o" if walk else "X"
+				line += ("o" if not raised else "q") if walk else "X"
 			else:
-				line += "." if walk else "#"
+				line += ("." if not raised else ",") if walk else "#"
 			x += step
 			ci += 1
 		print(line)

@@ -176,13 +176,13 @@ func _start_shot(s: Dictionary, has_next: bool) -> void:
 	var look: Vector3 = _v3(s.get("look", to + Vector3.FORWARD))
 	_cam.fov = float(s.get("fov", 60.0))
 	_cam.global_position = from
-	_cam.look_at(look, Vector3.UP)
+	_cam.look_at(look, _up_for(from, look))
 	if _tween != null and _tween.is_valid():
 		_tween.kill()
 	_tween = create_tween()
 	_tween.tween_method(func(k: float) -> void:
 		_cam.global_position = from.lerp(to, k)
-		_cam.look_at(look, Vector3.UP), 0.0, 1.0, dur / speed).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		_cam.look_at(look, _up_for(_cam.global_position, look)), 0.0, 1.0, dur / speed).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	var vo: String = str(s.get("vo", ""))
 	if vo != "":
 		get_tree().create_timer(float(s.get("vo_at", 0.5)) / speed).timeout.connect(func() -> void:
@@ -349,3 +349,11 @@ func stop() -> void:
 	if map != null and map.player != null and map.player.camera != null:
 		map.player.camera.current = true
 	queue_free()
+
+
+## A shot looking straight up or down (the rocket's climb) has no usable world-up; use north as up then.
+static func _up_for(eye: Vector3, target: Vector3) -> Vector3:
+	var d: Vector3 = target - eye
+	if d.length_squared() < 0.0001 or absf(d.normalized().dot(Vector3.UP)) > 0.999:
+		return Vector3.FORWARD
+	return Vector3.UP

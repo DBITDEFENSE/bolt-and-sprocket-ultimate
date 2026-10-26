@@ -9,9 +9,17 @@ extends GutTest
 
 const MAIN: String = "res://data/gravelight/quests/map04_kuendigung.json"
 const SIDE: String = "res://data/gravelight/quests/map04a_jette.json"
+const SIDE_C: String = "res://data/gravelight/quests/map04c_cage.json"
+const SIDE_D: String = "res://data/gravelight/quests/map04d_smile.json"
+const ACT_ONE: Array = ["s1_power", "s2_files", "s3_pa_line", "s4_tunnel", "s5_kranfuehrer", "s6_board"]
+const ACT_TWO: Array = ["s7a_crew_tags", "s7_bordwart", "s8_london", "s9_bomb_run", "s10_autopilot"]
+const ACT_THREE: Array = ["s11a_dee", "s11b_choice", "s12_lodestone", "s12b_burn", "s13_testpilot", "s14_rocket"]
+const ACT_FOUR: Array = ["s15a_yard", "s15_columns", "s16_account", "s17_manager", "s18_cancel"]
 const EDGES: GDScript = preload("res://gravelight/tests/unit/test_map02_edges.gd")
 const SCENE_A: String = "res://gravelight/maps/map04_fernflug/map04a.tscn"
 const SCENE_B: String = "res://gravelight/maps/map04_fernflug/map04b.tscn"
+const SCENE_C: String = "res://gravelight/maps/map04_fernflug/map04c.tscn"
+const SCENE_D: String = "res://gravelight/maps/map04_fernflug/map04d.tscn"
 
 var _saved_path: String = ""
 var _saved_map: StringName = &""
@@ -54,21 +62,34 @@ func _ids(path: String) -> Array:
 
 func test_quest_files_validate_and_reference_real_vo() -> void:
 	var lines: Dictionary = GLData.load_json("res://data/gravelight/vo/lines.json")
-	for path: String in [MAIN, SIDE]:
+	for path: String in [MAIN, SIDE, SIDE_C, SIDE_D]:
 		var def: Dictionary = GLData.load_json(path)
 		assert_eq(QuestManager.validate(def), PackedStringArray(), path)
 		for id: String in QuestManager.referenced_vo(def):
 			assert_true(lines.has(id), "%s references missing VO %s" % [path, id])
 	var main: Dictionary = GLData.load_json(MAIN)
 	assert_eq(main["maps"], ["map04a_thalbach", "map04b_kranich", "map04c_groomlake", "map04d_mondlicht"], "the egg spans the four acts")
-	assert_eq(_ids(MAIN), ["s1_power", "s2_files", "s3_pa_line", "s4_tunnel", "s5_kranfuehrer", "s6_board", "s7a_crew_tags", "s7_bordwart",
-			"s8_london", "s9_bomb_run", "s10_autopilot"])
+	assert_eq(_ids(MAIN), ACT_ONE + ACT_TWO + ACT_THREE + ACT_FOUR)
+	var acts: Dictionary = {}
 	for s: Dictionary in main["steps"]:
-		assert_true(s.has("act") and int(s["act"]) in [1, 2], "%s names its act" % s["id"])
+		assert_true(s.has("act") and int(s["act"]) in [1, 2, 3, 4], "%s names its act" % s["id"])
+		acts[str(s["id"])] = int(s.get("act", 0))
+		if str(s["id"]) in ACT_THREE + ACT_FOUR:
+			assert_true(s.has("debug_skip") and str(s["debug_skip"]) != "", "%s has a dev skip" % s["id"])
+	for sid: String in ACT_THREE:
+		assert_eq(acts[sid], 3, sid + " is Act III")
+	for sid: String in ACT_FOUR:
+		assert_eq(acts[sid], 4, sid + " is Act IV")
+	var texts: Dictionary = GLData.load_json("res://data/gravelight/objectives.json")["quests"]
+	for sid: String in ACT_THREE + ACT_FOUR:
+		var t: Dictionary = (texts["map04_kuendigung"]["steps"] as Dictionary).get(sid, {})
+		for k: String in ["done", "hint", "guide"]:
+			assert_true(str(t.get(k, "")) != "", "%s has objectives text '%s'" % [sid, k])
+	assert_true(texts.has("map04c_cage") and texts.has("map04d_smile"), "the side eggs have objectives text")
 
 
 func test_every_step_has_a_valid_bot_task() -> void:
-	for path: String in [MAIN, SIDE]:
+	for path: String in [MAIN, SIDE, SIDE_C, SIDE_D]:
 		for s: Dictionary in GLData.load_json(path)["steps"]:
 			var t: Dictionary = BotEECatalog.task_def(s)
 			assert_eq(BotEECatalog.validate(t), PackedStringArray(), "%s/%s bot_task" % [path.get_file(), s["id"]])
@@ -300,6 +321,161 @@ func test_side_egg_rewards() -> void:
 		if str(e.get("id", "")) == "INT_M4_JETTE":
 			found = true
 	assert_true(found, "the logbook is an intel entry")
+
+
+# ---------------------------------------------------------------- Acts III-IV: any / all / zone steps, the carry (T-115)
+
+func test_flag_step_satisfied_reads_any_all_and_zone() -> void:
+	assert_false(QuestManager.flag_step_satisfied({"any": ["peg_resigned", "peg_delivered"]}))
+	assert_true(QuestManager.flag_step_satisfied({"any": ["peg_resigned", "peg_delivered"]}, &"peg_delivered"), "the flag just set counts")
+	GameState.set_flag(&"peg_resigned")
+	assert_true(QuestManager.flag_step_satisfied({"any": ["peg_resigned", "peg_delivered"]}))
+	assert_false(QuestManager.flag_step_satisfied({"all": ["column_1_dark", "column_2_dark", "column_3_dark"]}))
+	GameState.set_flag(&"column_1_dark")
+	GameState.set_flag(&"column_2_dark")
+	assert_false(QuestManager.flag_step_satisfied({"all": ["column_1_dark", "column_2_dark", "column_3_dark"]}), "two of three")
+	assert_true(QuestManager.flag_step_satisfied({"all": ["column_1_dark", "column_2_dark", "column_3_dark"]}, &"column_3_dark"))
+	GameState.set_flag(&"column_3_dark")
+	assert_true(QuestManager.flag_step_satisfied({"all": ["column_1_dark", "column_2_dark", "column_3_dark"]}))
+	assert_false(QuestManager.flag_step_satisfied({"zone": "C_YARD"}))
+	GameState.open_zones[&"C_YARD"] = true
+	assert_true(QuestManager.flag_step_satisfied({"zone": "C_YARD"}))
+	GameState.open_zones.erase(&"C_YARD")
+	assert_false(QuestManager.flag_step_satisfied({}), "a flag step with nothing named never completes")
+	var errs: PackedStringArray = QuestManager.validate({"id": "x", "steps": [{"id": "a", "type": "flag", "params": {}, "requires": []}]})
+	var named: bool = false
+	for e: String in errs:
+		if e.contains("names no flag"):
+			named = true
+	assert_true(named, "the validator wants flag/any/all/zone: " + str(errs))
+
+
+func test_act_three_steps_complete_on_either_choice_and_the_act_four_group_on_all_three() -> void:
+	GameState.map_id = &"map04c_groomlake"
+	RoundManager.act = RoundManager.act_block_of(&"map04c_groomlake")
+	assert_eq(RoundManager.act_index(), 3)
+	var qid: StringName = QuestManager.load_quest(MAIN)
+	for sid: String in ACT_ONE + ACT_TWO:
+		assert_eq(QuestManager.status(qid, StringName(sid)), "complete", sid + " is done on a skip to Act III")
+	assert_eq(QuestManager.status(qid, &"s11a_dee"), "active")
+	assert_eq(QuestManager.status(qid, &"s12_lodestone"), "active")
+	assert_eq(QuestManager.status(qid, &"s11b_choice"), "locked")
+	GameState.set_flag(&"dee_radio_done")
+	QuestManager.on_flag(&"dee_radio_done")
+	assert_eq(QuestManager.status(qid, &"s11b_choice"), "active", "Dee's radio opens the choice")
+	GameState.set_flag(&"peg_delivered")
+	QuestManager.on_flag(&"peg_delivered")
+	assert_eq(QuestManager.status(qid, &"s11b_choice"), "complete", "either flag completes the `any` step")
+	# the Act IV group: the zone step, the `all` step
+	QuestManager.clear()
+	GameState.flags.clear()
+	GameState.map_id = &"map04d_mondlicht"
+	RoundManager.act = RoundManager.act_block_of(&"map04d_mondlicht")
+	var q4: StringName = QuestManager.load_quest(MAIN)
+	for sid: String in ACT_THREE:
+		assert_eq(QuestManager.status(q4, StringName(sid)), "complete", sid + " is done on a skip to Act IV")
+	assert_eq(QuestManager.status(q4, &"s15a_yard"), "active")
+	GameState.open_zone(&"C_YARD")
+	assert_eq(QuestManager.status(q4, &"s15a_yard"), "complete", "opening the yard completes the zone step")
+	assert_eq(QuestManager.status(q4, &"s15_columns"), "active")
+	for f: StringName in [&"column_2_dark", &"column_1_dark"]:
+		GameState.set_flag(f)
+		QuestManager.on_flag(f)
+	assert_eq(QuestManager.status(q4, &"s15_columns"), "active", "two columns are not three")
+	GameState.set_flag(&"column_3_dark")
+	QuestManager.on_flag(&"column_3_dark")
+	assert_eq(QuestManager.status(q4, &"s15_columns"), "complete")
+	assert_eq(QuestManager.status(q4, &"s16_account"), "active")
+	GameState.open_zones.erase(&"C_YARD")
+
+
+func test_the_cancel_rewards_the_profile() -> void:
+	GameState.map_id = &"map04d_mondlicht"
+	RoundManager.act = RoundManager.act_block_of(&"map04d_mondlicht")
+	GameState.character_id = &"deacon"
+	var qid: StringName = QuestManager.load_quest(MAIN)
+	QuestManager.debug_skipto(qid, &"s18_cancel")
+	assert_eq(QuestManager.status(qid, &"s18_cancel"), "active")
+	var xp0: int = int(ProfileSave.profile.get("xp", 0))
+	GameState.set_flag(&"cancelled")
+	QuestManager.on_flag(&"cancelled")
+	assert_true(QuestManager.is_complete(qid), "KÜNDIGUNG completes on the key")
+	var prof: Dictionary = ProfileSave.profile
+	assert_true((prof.get("calling_cards", []) as Array).has("kuendigung"), "the calling card")
+	assert_true((prof.get("mutators", []) as Array).has("low_gravity_all"), "the mutator")
+	assert_true((prof.get("titles", []) as Array).has("Cancelled"), "the title")
+	assert_true((prof.get("intel", []) as Array).has("INT_M4_KUENDIGUNG"), "the Archive entry")
+	assert_eq(int((prof.get("dossiers", {}) as Dictionary).get("deacon", 0)), 10, "dossier page 10 for the character present")
+	assert_true(int(prof.get("xp", 0)) >= xp0, "xp did not go down")
+	GameState.character_id = &"wren"
+
+
+func test_side_eggs_the_smile_and_the_yard_rule() -> void:
+	var smile: StringName = QuestManager.load_quest(SIDE_D)
+	assert_eq(QuestManager.status(smile, &"s1_rim"), "active")
+	assert_true(QuestManager.interact_ready(&"smile_marker"))
+	assert_true(QuestManager.interact(&"smile_marker", 1))
+	assert_true(QuestManager.is_complete(smile))
+	assert_true((ProfileSave.profile.get("charms", []) as Array).has("mondstein"), "the Mondstein charm")
+	assert_true((ProfileSave.profile.get("intel", []) as Array).has("INT_M4_SMILE"))
+	var cage: StringName = QuestManager.load_quest(SIDE_C)
+	assert_eq(QuestManager.status(cage, &"s1_rule"), "active")
+	for f: StringName in [&"cage_casing", &"cage_bomber_coil"]:
+		GameState.set_flag(f)
+		QuestManager.on_flag(f)
+	assert_false(QuestManager.is_complete(cage), "two things are not the rule")
+	GameState.set_flag(&"cage_honey")
+	QuestManager.on_flag(&"cage_honey")
+	assert_true(QuestManager.is_complete(cage), "the three things keep the rule")
+	var spec: Array = Campaign.cfg().get("carry_flags", [])
+	assert_true(spec.has("dee_*"), "dee_cage_done flies to the Moon (her radio in Act IV)")
+
+
+func test_carry_from_the_kranich_to_groom_lake_and_the_moon() -> void:
+	GameState.map_id = &"map04b_kranich"
+	RoundManager.act = RoundManager.act_block_of(&"map04b_kranich")
+	var qid: StringName = QuestManager.load_quest(MAIN)
+	QuestManager.debug_skipto(qid, &"s10_autopilot")
+	GameState.set_flag(&"autopilot_ripped")
+	QuestManager.on_flag(&"autopilot_ripped")
+	assert_eq(QuestManager.status(qid, &"s10_autopilot"), "complete")
+	var snap: Dictionary = QuestManager.carry_snapshot(&"map04c_groomlake")
+	assert_true(snap.has("map04_kuendigung"), "the egg follows the squad into the crash")
+	for sid: String in ACT_ONE + ACT_TWO:
+		assert_true((snap["map04_kuendigung"]["done"] as Array).has(sid), sid + " carried as done")
+	QuestManager.clear()
+	GameState.flags.clear()
+	GameState.map_id = &"map04c_groomlake"
+	RoundManager.act = RoundManager.act_block_of(&"map04c_groomlake")
+	var q3: StringName = QuestManager.load_quest(MAIN)
+	QuestManager.apply_carry(snap)
+	assert_eq(QuestManager.status(q3, &"s11a_dee"), "active")
+	assert_eq(QuestManager.status(q3, &"s12_lodestone"), "active")
+	assert_eq(QuestManager.status(q3, &"s11b_choice"), "locked")
+	# the Act III flags the Moon needs
+	var flags: Dictionary = {&"peg_resigned": true, &"peg_choice_done": true, &"burn_known": true, &"burn": [12, 7, 3], &"dee_cage_done": true, &"ignition_key": true, &"power_on": true, &"rocket_ready": true}
+	var out: Dictionary = Campaign.carried_flags(flags, Campaign.cfg().get("carry_flags", []))
+	for want: String in ["peg_resigned", "peg_choice_done", "burn_known", "dee_cage_done", "ignition_key"]:
+		assert_true(out.has(want), want + " is carried")
+	assert_false(out.has("power_on"), "the generator stays on Earth")
+	QuestManager.debug_skipto(q3, &"s14_rocket")
+	GameState.set_flag(&"rocket_ready")
+	QuestManager.on_flag(&"rocket_ready")
+	var snap4: Dictionary = QuestManager.carry_snapshot(&"map04d_mondlicht")
+	assert_true((snap4["map04_kuendigung"]["done"] as Array).has("s14_rocket"), "the rocket step rides up")
+	QuestManager.clear()
+	GameState.flags.clear()
+	GameState.map_id = &"map04d_mondlicht"
+	RoundManager.act = RoundManager.act_block_of(&"map04d_mondlicht")
+	var q4: StringName = QuestManager.load_quest(MAIN)
+	QuestManager.apply_carry(snap4)
+	assert_eq(QuestManager.status(q4, &"s15a_yard"), "active")
+	assert_eq(QuestManager.status(q4, &"s15_columns"), "locked")
+
+
+func test_act_three_and_four_quest_objects_stand_by_the_navmesh() -> void:
+	_assert_reachable(SCENE_C, ["DeeRadio", "ImpellerCore", "HangarCradle", "RocketCradle", "RadarRadio", "SiloConsole", "Workbench", "CageItem_casing", "CageItem_bomber_coil", "CageItem_honey"])
+	_assert_reachable(SCENE_D, ["SmileMarker", "AccountConsole", "Column_1", "Column_2", "Column_3"])
 
 
 # ---------------------------------------------------------------- the objects on the generated scenes

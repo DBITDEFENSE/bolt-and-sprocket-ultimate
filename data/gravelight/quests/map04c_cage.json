@@ -1,0 +1,42 @@
+{
+  "id": "map04c_cage",
+  "display_name": "The Yard Rule",
+  "map": "map04c_groomlake",
+  "version": 1,
+  "_doc": "Map 4 Act III side egg 'Dee's cage' (UPDATE 07, docs/MAP4_FERNFLUG.md §9.2; T-115). Dee's yard rule asks for three things: a casing from the wreck, a coil from the bomber, the honey jar from the lab's kitchen (CageItem nodes, flags cage_<item>; all three set dee_cage_done). Reward: her last line changes (CageItem) and she gets a radio in Act IV (MondlichtController plays DEE_M4D_RADIO_01..03 when dee_cage_done is carried: campaign.json carry_flags dee_*). This quest only tracks the rule for the HUD and the Archive.",
+  "steps": [
+    {
+      "id": "s1_rule",
+      "type": "flag",
+      "params": {
+        "all": [
+          "cage_casing",
+          "cage_bomber_coil",
+          "cage_honey"
+        ]
+      },
+      "requires": [],
+      "bot_task": {
+        "type": "collect",
+        "targets": {
+          "class": "CageItem",
+          "where": {
+            "taken": false
+          }
+        },
+        "id_prop": "item_id",
+        "what": "the three things Dee's rule asks for",
+        "ping": "INTEL"
+      },
+      "on_complete": [
+        {
+          "banner": "The yard rule is kept. Dee will find a radio."
+        },
+        {
+          "archive": "INT_M4_MANIFEST"
+        }
+      ],
+      "debug_skip": "flag cage_casing; flag cage_bomber_coil; flag cage_honey"
+    }
+  ]
+}

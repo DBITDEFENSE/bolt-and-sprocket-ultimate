@@ -2,72 +2,220 @@
   "id": "map04_kuendigung",
   "display_name": "Kündigung",
   "map": "map04a_thalbach",
-  "maps": ["map04a_thalbach", "map04b_kranich", "map04c_groomlake", "map04d_mondlicht"],
+  "maps": [
+    "map04a_thalbach",
+    "map04b_kranich",
+    "map04c_groomlake",
+    "map04d_mondlicht"
+  ],
   "version": 1,
-  "_doc": "Map 4's main egg (UPDATE 07, docs/MAP4_FERNFLUG.md §9.1; T-114): one quest spanning the four acts. Each step carries the act it lives on (`act`); a skip to a later act marks earlier acts' steps done, a campaign arrival carries the real progress (Campaign.snapshot 'quests'). Acts I and II here; Acts III and IV follow their builds. No hidden hard-fails: every step is retryable, every step has a dev skip and a bot_task.",
+  "_doc": "Map 4's main egg (UPDATE 07, docs/MAP4_FERNFLUG.md §9.1; T-114): one quest spanning the four acts. Each step carries the act it lives on (`act`); a skip to a later act marks earlier acts' steps done, a campaign arrival carries the real progress (Campaign.snapshot 'quests'). Acts I and II here; Acts III and IV follow their builds. No hidden hard-fails: every step is retryable, every step has a dev skip and a bot_task. T-115 adds the Act III group (s11a Dee's radio, s11b the core carry and Peg's choice (any of peg_resigned / peg_delivered), s12 the Lodestone build, s12b Fasbender's burn, s13 the Test Pilot caught once by a lift, s14 the console → rocket_ready) and the Act IV group (s15a the yard airlock, s15 the three columns read (all dark), s16a the crew's tags (optional), s16 the Account opens, s17 the Manager escalates, s18 CANCEL). Flag steps may name `any`, `all` or `zone` (QuestManager.flag_step_satisfied).",
   "bot_knowledge": {
-    "files": {"label": "read the three Fernflug files (the PA extension)", "on_collect": {"tag": "fernflug_file", "count": 3}},
-    "code": {"label": "Wittkamp gave the hangar's door code", "on_vo": ["WIT_M4A_SWITCH_01"]}
+    "files": {
+      "label": "read the three Fernflug files (the PA extension)",
+      "on_collect": {
+        "tag": "fernflug_file",
+        "count": 3
+      }
+    },
+    "code": {
+      "label": "Wittkamp gave the hangar's door code",
+      "on_vo": [
+        "WIT_M4A_SWITCH_01"
+      ]
+    }
   },
   "random": {
-    "files": {"type": "digits", "count": 6}
+    "files": {
+      "type": "digits",
+      "count": 6
+    }
   },
   "steps": [
     {
       "id": "s1_power",
       "act": 1,
       "type": "flag",
-      "bot_task": {"type": "interact_sequence", "target": {"group": "power_switch"}, "what": "the Kraftzentrale's breaker", "ping": "POWER"},
-      "params": {"flag": "power_on"},
+      "bot_task": {
+        "type": "interact_sequence",
+        "target": {
+          "group": "power_switch"
+        },
+        "what": "the Kraftzentrale's breaker",
+        "ping": "POWER"
+      },
+      "params": {
+        "flag": "power_on"
+      },
       "requires": [],
-      "on_complete": [{"vo": "WIT_M4A_PA_02", "after": 4.0}],
+      "on_complete": [
+        {
+          "vo": "WIT_M4A_PA_02",
+          "after": 4.0
+        }
+      ],
       "debug_skip": "power_on"
     },
     {
       "id": "s2_files",
       "act": 1,
       "type": "collect",
-      "bot_task": {"type": "collect", "targets": {"class": "QuestNote", "where": {"tag": "fernflug_file", "visible": true}}, "id_prop": "item_id", "what": "the Fernflug files", "ping": "INTEL"},
-      "params": {"tag": "fernflug_file", "count": 3},
-      "requires": ["s1_power"],
-      "on_start": [{"vo": "WIT_M4A_PA_01", "after": 2.0}],
-      "on_item": [
-        {"vo": "OPR_M4A_FILE_01", "at_n": 1},
-        {"vo": "WIT_M4A_FILE_01", "at_n": 1, "after": 3.0},
-        {"vo": "WIT_M4A_FILE_02", "at_n": 2, "after": 1.0},
-        {"vo": "OPR_M4A_FILE_03", "at_n": 3},
-        {"vo": "WIT_M4A_FILE_03", "at_n": 3, "after": 3.0},
-        {"vo_actor": "M4A_FILE", "hold": ["INTEL", 8.0], "patience": 60.0}
+      "bot_task": {
+        "type": "collect",
+        "targets": {
+          "class": "QuestNote",
+          "where": {
+            "tag": "fernflug_file",
+            "visible": true
+          }
+        },
+        "id_prop": "item_id",
+        "what": "the Fernflug files",
+        "ping": "INTEL"
+      },
+      "params": {
+        "tag": "fernflug_file",
+        "count": 3
+      },
+      "requires": [
+        "s1_power"
       ],
-      "on_complete": [{"banner": "The three files: the engines, the flight plan, the crew.\nDial the extensions on the canteen's PA board."}],
+      "on_start": [
+        {
+          "vo": "WIT_M4A_PA_01",
+          "after": 2.0
+        }
+      ],
+      "on_item": [
+        {
+          "vo": "OPR_M4A_FILE_01",
+          "at_n": 1
+        },
+        {
+          "vo": "WIT_M4A_FILE_01",
+          "at_n": 1,
+          "after": 3.0
+        },
+        {
+          "vo": "WIT_M4A_FILE_02",
+          "at_n": 2,
+          "after": 1.0
+        },
+        {
+          "vo": "OPR_M4A_FILE_03",
+          "at_n": 3
+        },
+        {
+          "vo": "WIT_M4A_FILE_03",
+          "at_n": 3,
+          "after": 3.0
+        },
+        {
+          "vo_actor": "M4A_FILE",
+          "hold": [
+            "INTEL",
+            8.0
+          ],
+          "patience": 60.0
+        }
+      ],
+      "on_complete": [
+        {
+          "banner": "The three files: the engines, the flight plan, the crew.\nDial the extensions on the canteen's PA board."
+        }
+      ],
       "debug_skip": "quest skipto map04_kuendigung s3_pa_line"
     },
     {
       "id": "s3_pa_line",
       "act": 1,
       "type": "sequence",
-      "bot_task": {"type": "interact_sequence", "target": {"class": "Switchboard", "where": {"target": "pa_switchboard"}}, "input": {"method": "plug", "arg": "int"}, "needs": ["files"], "what": "the canteen's PA board", "ping": "SWITCHBOARD"},
-      "params": {"target": "pa_switchboard", "inputs_from": "files"},
-      "requires": ["s2_files"],
-      "reset": {"on": "wrong_input", "actions": [{"vo_category": ["OPR", "BELL_WRONG"]}]},
+      "bot_task": {
+        "type": "interact_sequence",
+        "target": {
+          "class": "Switchboard",
+          "where": {
+            "target": "pa_switchboard"
+          }
+        },
+        "input": {
+          "method": "plug",
+          "arg": "int"
+        },
+        "needs": [
+          "files"
+        ],
+        "what": "the canteen's PA board",
+        "ping": "SWITCHBOARD"
+      },
+      "params": {
+        "target": "pa_switchboard",
+        "inputs_from": "files"
+      },
+      "requires": [
+        "s2_files"
+      ],
+      "reset": {
+        "on": "wrong_input",
+        "actions": [
+          {
+            "vo_category": [
+              "OPR",
+              "BELL_WRONG"
+            ]
+          }
+        ]
+      },
       "on_complete": [
-        {"flag": "hangar_code_known"},
-        {"vo": "WIT_M4A_SWITCH_01"},
-        {"banner": "Wittkamp's line is open. The hangar door takes a key and a code."},
-        {"save_point": true}
+        {
+          "flag": "hangar_code_known"
+        },
+        {
+          "vo": "WIT_M4A_SWITCH_01"
+        },
+        {
+          "banner": "Wittkamp's line is open. The hangar door takes a key and a code."
+        },
+        {
+          "save_point": true
+        }
       ]
     },
     {
       "id": "s4_tunnel",
       "act": 1,
       "type": "kill_count",
-      "bot_task": {"type": "escort", "target": {"class": "WindTunnel"}, "what": "the wind tunnel", "ping": "TRAP"},
-      "params": {"zone": "F_WINDKANAL", "world_flag": "tunnel_running", "count": 20, "per_extra_player": 5},
-      "requires": ["s1_power"],
+      "bot_task": {
+        "type": "escort",
+        "target": {
+          "class": "WindTunnel"
+        },
+        "what": "the wind tunnel",
+        "ping": "TRAP"
+      },
+      "params": {
+        "zone": "F_WINDKANAL",
+        "world_flag": "tunnel_running",
+        "count": 20,
+        "per_extra_player": 5
+      },
+      "requires": [
+        "s1_power"
+      ],
       "on_complete": [
-        {"perk_tier_grant": ["skyhook_sekt", 2]},
-        {"banner": "The tunnel has run. Jette's models would catch the light now."},
-        {"vo_squad": "M4A_TUNNEL", "patience": 45.0}
+        {
+          "perk_tier_grant": [
+            "skyhook_sekt",
+            2
+          ]
+        },
+        {
+          "banner": "The tunnel has run. Jette's models would catch the light now."
+        },
+        {
+          "vo_squad": "M4A_TUNNEL",
+          "patience": 45.0
+        }
       ],
       "debug_skip": "quest skip map04_kuendigung s4_tunnel"
     },
@@ -75,30 +223,88 @@
       "id": "s5_kranfuehrer",
       "act": 1,
       "type": "kill_condition",
-      "bot_task": {"type": "escort", "boss": "kranfuehrer", "what": "the crane driver, parked over the ramp", "ping": "BOSS"},
-      "params": {"enemy": "kranfuehrer", "zone": "H_HALLE", "world_flag": "under_ramp"},
-      "requires": ["s1_power", "s2_files"],
-      "on_complete": [
-        {"flag": "hangar_key"},
-        {"vo": "WIT_M4A_KRAN_01"},
-        {"banner": "THE HANGAR KEY"},
-        {"save_point": true}
+      "bot_task": {
+        "type": "escort",
+        "boss": "kranfuehrer",
+        "what": "the crane driver, parked over the ramp",
+        "ping": "BOSS"
+      },
+      "params": {
+        "enemy": "kranfuehrer",
+        "zone": "H_HALLE",
+        "world_flag": "under_ramp"
+      },
+      "requires": [
+        "s1_power",
+        "s2_files"
       ],
-      "fail": {"default": [{"banner": "The crane driver fell on the rails, not over the ramp. He will be back."}]},
+      "on_complete": [
+        {
+          "flag": "hangar_key"
+        },
+        {
+          "vo": "WIT_M4A_KRAN_01"
+        },
+        {
+          "banner": "THE HANGAR KEY"
+        },
+        {
+          "save_point": true
+        }
+      ],
+      "fail": {
+        "default": [
+          {
+            "banner": "The crane driver fell on the rails, not over the ramp. He will be back."
+          }
+        ]
+      },
       "debug_skip": "flag hangar_key"
     },
     {
       "id": "s6_board",
       "act": 1,
       "type": "interact",
-      "bot_task": {"type": "interact_sequence", "target": {"class": "QuestInteract", "where": {"target": "kranich_ramp"}}, "player_only": "final", "needs": ["code"], "what": "the Kranich's ramp", "ping": "EXFIL"},
-      "params": {"target": "kranich_ramp", "requires_flags": ["hangar_key", "hangar_code_known"]},
-      "requires": ["s5_kranfuehrer", "s3_pa_line", "s4_tunnel"],
+      "bot_task": {
+        "type": "interact_sequence",
+        "target": {
+          "class": "QuestInteract",
+          "where": {
+            "target": "kranich_ramp"
+          }
+        },
+        "player_only": "final",
+        "needs": [
+          "code"
+        ],
+        "what": "the Kranich's ramp",
+        "ping": "EXFIL"
+      },
+      "params": {
+        "target": "kranich_ramp",
+        "requires_flags": [
+          "hangar_key",
+          "hangar_code_known"
+        ]
+      },
+      "requires": [
+        "s5_kranfuehrer",
+        "s3_pa_line",
+        "s4_tunnel"
+      ],
       "on_complete": [
-        {"exfil_now": true},
-        {"vo": "WIT_M4A_RAMP_01"},
-        {"banner": "The ramp is down. Board when you are ready."},
-        {"save_point": true}
+        {
+          "exfil_now": true
+        },
+        {
+          "vo": "WIT_M4A_RAMP_01"
+        },
+        {
+          "banner": "The ramp is down. Board when you are ready."
+        },
+        {
+          "save_point": true
+        }
       ],
       "debug_skip": "exfil now"
     },
@@ -106,62 +312,503 @@
       "id": "s7a_crew_tags",
       "act": 2,
       "type": "collect",
-      "bot_task": {"type": "collect", "targets": {"class": "QuestNote", "where": {"tag": "crew_tag", "visible": true}}, "id_prop": "item_id", "what": "the crew's tags", "ping": "INTEL"},
-      "params": {"tag": "crew_tag", "count": 3},
-      "requires": ["s6_board"],
-      "on_item": [
-        {"vo": "WRN_M4B_TAGS_01", "at_n": 1},
-        {"vo": "WRN_M4B_TAGS_03", "at_n": 3},
-        {"vo": "OPR_M4B_TAGS_03", "at_n": 3, "after": 4.0}
+      "bot_task": {
+        "type": "collect",
+        "targets": {
+          "class": "QuestNote",
+          "where": {
+            "tag": "crew_tag",
+            "visible": true
+          }
+        },
+        "id_prop": "item_id",
+        "what": "the crew's tags",
+        "ping": "INTEL"
+      },
+      "params": {
+        "tag": "crew_tag",
+        "count": 3
+      },
+      "requires": [
+        "s6_board"
       ],
-      "on_complete": [{"banner": "Three names. The crew was taken out, not lost."}]
+      "on_item": [
+        {
+          "vo": "WRN_M4B_TAGS_01",
+          "at_n": 1
+        },
+        {
+          "vo": "WRN_M4B_TAGS_03",
+          "at_n": 3
+        },
+        {
+          "vo": "OPR_M4B_TAGS_03",
+          "at_n": 3,
+          "after": 4.0
+        }
+      ],
+      "on_complete": [
+        {
+          "banner": "Three names. The crew was taken out, not lost."
+        }
+      ]
     },
     {
       "id": "s7_bordwart",
       "act": 2,
       "type": "kill_condition",
-      "bot_task": {"type": "escort", "boss": "bordwart", "what": "the flight engineer", "ping": "BOSS"},
-      "params": {"enemy": "bordwart", "zone": "D_TRIEBWERK"},
-      "requires": ["s6_board"],
-      "on_complete": [{"banner": "THE AUTOPILOT KEY"}, {"save_point": true}],
-      "fail": {"default": [{"banner": "The engineer went down outside his station. He will be back."}]},
+      "bot_task": {
+        "type": "escort",
+        "boss": "bordwart",
+        "what": "the flight engineer",
+        "ping": "BOSS"
+      },
+      "params": {
+        "enemy": "bordwart",
+        "zone": "D_TRIEBWERK"
+      },
+      "requires": [
+        "s6_board"
+      ],
+      "on_complete": [
+        {
+          "banner": "THE AUTOPILOT KEY"
+        },
+        {
+          "save_point": true
+        }
+      ],
+      "fail": {
+        "default": [
+          {
+            "banner": "The engineer went down outside his station. He will be back."
+          }
+        ]
+      },
       "debug_skip": "flag autopilot_key"
     },
     {
       "id": "s8_london",
       "act": 2,
       "type": "flag",
-      "bot_task": {"type": "escort", "player_only": "cutscene", "what": "the London window", "ping": "STORY"},
-      "params": {"flag": "london_seen"},
-      "requires": ["s7a_crew_tags"],
-      "on_start": [{"act_event": "london_window", "after": 2.0}],
+      "bot_task": {
+        "type": "escort",
+        "player_only": "cutscene",
+        "what": "the London window",
+        "ping": "STORY"
+      },
+      "params": {
+        "flag": "london_seen"
+      },
+      "requires": [
+        "s7a_crew_tags"
+      ],
+      "on_start": [
+        {
+          "act_event": "london_window",
+          "after": 2.0
+        }
+      ],
       "debug_skip": "flag london_seen"
     },
     {
       "id": "s9_bomb_run",
       "act": 2,
       "type": "flag",
-      "bot_task": {"type": "interact_sequence", "target": {"class": "BombRack", "where": {"decided": false}}, "what": "the bomb racks", "ping": "RACK"},
-      "params": {"flag": "bomb_run_done"},
-      "requires": ["s8_london"],
-      "on_start": [{"act_event": "bomb_run", "after": 60.0}],
-      "on_complete": [{"save_point": true}],
+      "bot_task": {
+        "type": "interact_sequence",
+        "target": {
+          "class": "BombRack",
+          "where": {
+            "decided": false
+          }
+        },
+        "what": "the bomb racks",
+        "ping": "RACK"
+      },
+      "params": {
+        "flag": "bomb_run_done"
+      },
+      "requires": [
+        "s8_london"
+      ],
+      "on_start": [
+        {
+          "act_event": "bomb_run",
+          "after": 60.0
+        }
+      ],
+      "on_complete": [
+        {
+          "save_point": true
+        }
+      ],
       "debug_skip": "flag bomb_run_done"
     },
     {
       "id": "s10_autopilot",
       "act": 2,
       "type": "flag",
-      "bot_task": {"type": "turn_key", "target": {"class": "ExfilPoint"}, "player_only": "final", "what": "the autopilot", "ping": "EXFIL"},
-      "params": {"flag": "autopilot_ripped"},
-      "requires": ["s7_bordwart", "s9_bomb_run"],
-      "on_start": [{"exfil_now": true}, {"banner": "The autopilot takes the key and both hands."}],
-      "on_complete": [{"save_point": true}],
+      "bot_task": {
+        "type": "turn_key",
+        "target": {
+          "class": "ExfilPoint"
+        },
+        "player_only": "final",
+        "what": "the autopilot",
+        "ping": "EXFIL"
+      },
+      "params": {
+        "flag": "autopilot_ripped"
+      },
+      "requires": [
+        "s7_bordwart",
+        "s9_bomb_run"
+      ],
+      "on_start": [
+        {
+          "exfil_now": true
+        },
+        {
+          "banner": "The autopilot takes the key and both hands."
+        }
+      ],
+      "on_complete": [
+        {
+          "save_point": true
+        }
+      ],
       "debug_skip": "exfil now"
+    },
+    {
+      "id": "s11a_dee",
+      "type": "flag",
+      "act": 3,
+      "requires": [
+        "s10_autopilot"
+      ],
+      "params": {
+        "flag": "dee_radio_done"
+      },
+      "bot_task": {
+        "type": "interact_sequence",
+        "target": {
+          "class": "StoryRadio",
+          "where": {
+            "radio_id": "dee_radio"
+          }
+        },
+        "what": "Dee's radio in the hangar",
+        "ping": "INTEL"
+      },
+      "on_complete": [
+        {
+          "save_point": true
+        }
+      ],
+      "debug_skip": "flag dee_radio_done"
+    },
+    {
+      "id": "s11b_choice",
+      "type": "flag",
+      "act": 3,
+      "requires": [
+        "s11a_dee"
+      ],
+      "params": {
+        "any": [
+          "peg_resigned",
+          "peg_delivered"
+        ]
+      },
+      "bot_task": {
+        "type": "carry",
+        "target": {
+          "class": "CarryObject",
+          "where": {
+            "carry_id": "impeller_core"
+          }
+        },
+        "player_only": "final",
+        "what": "the impeller core to the hangar cradle (the choice is yours)",
+        "ping": "CARRY"
+      },
+      "debug_skip": "flag peg_resigned"
+    },
+    {
+      "id": "s12_lodestone",
+      "type": "build",
+      "act": 3,
+      "requires": [
+        "s10_autopilot"
+      ],
+      "params": {
+        "buildable": "lodestone"
+      },
+      "bot_task": {
+        "type": "collect",
+        "targets": {
+          "class": "BuildablePart",
+          "where": {
+            "buildable_id": "lodestone",
+            "visible": true
+          }
+        },
+        "what": "the Lodestone's parts to the lab workbench",
+        "ping": "PART",
+        "id_prop": "part_id"
+      },
+      "on_complete": [
+        {
+          "save_point": true
+        }
+      ],
+      "debug_skip": "give lodestone"
+    },
+    {
+      "id": "s12b_burn",
+      "type": "flag",
+      "act": 3,
+      "requires": [
+        "s11a_dee"
+      ],
+      "params": {
+        "flag": "burn_known"
+      },
+      "bot_task": {
+        "type": "interact_sequence",
+        "target": {
+          "class": "StoryRadio",
+          "where": {
+            "radio_id": "radar_radio"
+          }
+        },
+        "needs": [
+          "power"
+        ],
+        "what": "Fasbender on the radar shack's radio",
+        "ping": "INTEL"
+      },
+      "debug_skip": "flag burn_known"
+    },
+    {
+      "id": "s13_testpilot",
+      "type": "kill_condition",
+      "act": 3,
+      "requires": [
+        "s12_lodestone"
+      ],
+      "params": {
+        "enemy": "testpilot",
+        "world_flag": "slammed_once"
+      },
+      "reset": {
+        "on": "conditions_unmet",
+        "scope": "none"
+      },
+      "bot_task": {
+        "type": "escort",
+        "boss": "testpilot",
+        "what": "the Test Pilot, caught once by the Lodestone",
+        "ping": "BOSS"
+      },
+      "debug_skip": "flag ignition_key"
+    },
+    {
+      "id": "s14_rocket",
+      "type": "flag",
+      "act": 3,
+      "requires": [
+        "s11b_choice",
+        "s12b_burn",
+        "s13_testpilot"
+      ],
+      "params": {
+        "flag": "rocket_ready"
+      },
+      "bot_task": {
+        "type": "interact_sequence",
+        "target": {
+          "class": "SiloConsole"
+        },
+        "needs": [
+          "burn"
+        ],
+        "player_only": "final",
+        "what": "the silo console: the key, then the burn",
+        "ping": "EXFIL"
+      },
+      "on_complete": [
+        {
+          "save_point": true
+        }
+      ],
+      "debug_skip": "flag rocket_ready"
+    },
+    {
+      "id": "s15a_yard",
+      "type": "flag",
+      "act": 4,
+      "requires": [
+        "s14_rocket"
+      ],
+      "params": {
+        "zone": "C_YARD"
+      },
+      "bot_task": {
+        "type": "interact_sequence",
+        "target": {
+          "class": "BuyDoor",
+          "where": {
+            "door_id": "door_yard"
+          }
+        },
+        "what": "the yard's airlock",
+        "ping": "DOOR"
+      },
+      "debug_skip": "open_doors"
+    },
+    {
+      "id": "s15_columns",
+      "type": "flag",
+      "act": 4,
+      "requires": [
+        "s15a_yard"
+      ],
+      "params": {
+        "all": [
+          "column_1_dark",
+          "column_2_dark",
+          "column_3_dark"
+        ]
+      },
+      "bot_task": {
+        "type": "interact_sequence",
+        "target": {
+          "class": "RetentionColumn",
+          "where": {
+            "dark": false
+          }
+        },
+        "what": "the terms on the three columns, read aloud",
+        "ping": "READ"
+      },
+      "on_complete": [
+        {
+          "save_point": true
+        }
+      ],
+      "debug_skip": "flag column_1_dark"
+    },
+    {
+      "id": "s16_account",
+      "type": "flag",
+      "act": 4,
+      "requires": [
+        "s15_columns"
+      ],
+      "params": {
+        "flag": "account_open"
+      },
+      "bot_task": {
+        "type": "interact_sequence",
+        "target": {
+          "class": "BuyDoor",
+          "where": {
+            "door_id": "door_account"
+          }
+        },
+        "what": "the Account's door, once the sign goes dark",
+        "ping": "DOOR"
+      },
+      "debug_skip": "flag account_open"
+    },
+    {
+      "id": "s17_manager",
+      "type": "flag",
+      "act": 4,
+      "requires": [
+        "s16_account"
+      ],
+      "params": {
+        "flag": "manager_escalated"
+      },
+      "bot_task": {
+        "type": "escort",
+        "boss": "account_manager",
+        "what": "the Account Manager, until she escalates",
+        "ping": "BOSS"
+      },
+      "debug_skip": "flag manager_escalated"
+    },
+    {
+      "id": "s18_cancel",
+      "type": "flag",
+      "act": 4,
+      "requires": [
+        "s17_manager"
+      ],
+      "params": {
+        "flag": "cancelled"
+      },
+      "bot_task": {
+        "type": "turn_key",
+        "target": {
+          "class": "AccountConsole"
+        },
+        "player_only": "final",
+        "what": "the console: CANCEL",
+        "ping": "EXFIL"
+      },
+      "on_complete": [
+        {
+          "save_point": true
+        }
+      ],
+      "debug_skip": "cancel now"
     }
   ],
   "rewards": {
     "match": [],
-    "profile": ["archive:kuendigung_part1"]
-  }
+    "profile": [
+      "xp:40000",
+      "archive:INT_M4_KUENDIGUNG",
+      "calling_card:kuendigung",
+      "mutator:low_gravity_all",
+      "title:Cancelled",
+      "dossier_page:10"
+    ]
+  },
+  "on_complete": [
+    {
+      "xp": 40000
+    },
+    {
+      "archive": "INT_M4_KUENDIGUNG"
+    },
+    {
+      "profile_list": [
+        "calling_cards",
+        "kuendigung"
+      ]
+    },
+    {
+      "profile_list": [
+        "mutators",
+        "low_gravity_all"
+      ]
+    },
+    {
+      "profile_list": [
+        "titles",
+        "Cancelled"
+      ]
+    },
+    {
+      "dossier_page": 10
+    },
+    {
+      "egg_reward": "map04_kuendigung"
+    }
+  ]
 }
