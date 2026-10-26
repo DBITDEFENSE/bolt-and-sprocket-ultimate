@@ -14,6 +14,7 @@ extends Node
 ##                taken out of the co-op life-cycle (never respawns, isn't counted for the wipe), never fights
 ##   cousins      player3 forced to round 10 (the Cousins round, HB1; Homage Bosses on), until the round is over
 ##                (cleared, or the cousins got bored and left) or the squad wipes; every player gets 3000 Scrip
+##   totenhafen   player3 on Map 2 (Totenhafen), rounds 1 to 20 (--max-round, default 20); UPDATE 07 QA.
 ##   kaltenbrunn  player3 on Map 1, rounds 1 to 20 (--max-round, default 20). The Update 03 brief also forces Paul
 ##                at round 15; Paul doesn't exist yet, so that part is skipped
 ##   ee_full      (Update 04 section 5, T-067) player3 on Map 0 with "Bot Easter-Egg Help" on Full Partner: the bots
@@ -42,6 +43,7 @@ extends Node
 const MAPS: Dictionary = {
 	"map00": "res://gravelight/maps/map00_crossroads/map00.tscn",
 	"map01": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+	"map02": "res://gravelight/maps/map02_totenhafen/map02.tscn",
 }
 const Dummy: GDScript = preload("res://tools_src/soak_dummy.gd")
 
@@ -172,14 +174,14 @@ func _ready() -> void:
 			BotTrainer.force_loop = a.substr(7)   # (tuning only, T-071 pass 2) the agent trains on this loop only
 		elif a.begins_with("--loco="):
 			BotLocomotion.force_mode = a.substr(7)   # U03 section 3: v1 / v2 against bots.json locomotion
-	if not ["player3", "bots3", "cousins", "kaltenbrunn", "ee_full", "botmode"].has(scenario):
-		print("[soak] unknown --scenario=%s (player3, bots3, cousins, kaltenbrunn, ee_full, botmode)" % scenario)
+	if not ["player3", "bots3", "cousins", "kaltenbrunn", "totenhafen", "ee_full", "botmode"].has(scenario):
+		print("[soak] unknown --scenario=%s (player3, bots3, cousins, kaltenbrunn, totenhafen, ee_full, botmode)" % scenario)
 		print("[soak] RESULT FAIL")
 		get_tree().quit(2)
 		return
 	if map_key == "":
-		map_key = "map01" if scenario == "kaltenbrunn" else "map00"
-	if scenario == "kaltenbrunn" and max_round <= 0:
+		map_key = "map01" if scenario == "kaltenbrunn" else ("map02" if scenario == "totenhafen" else "map00")
+	if (scenario == "kaltenbrunn" or scenario == "totenhafen") and max_round <= 0:
 		max_round = 20
 	if scenario == "cousins":
 		max_round = 10

@@ -1,0 +1,34 @@
+{
+  "_doc": "Training loops for Map 2 Totenhafen (UPDATE 07 QA, T-103). Same format as routes_map00.json / routes_map01.json. Validate: gravelight/tools_src/route_tool.tscn -- --map=map02 --validate; test_map02_edges checks every point sits on the navmesh.",
+  "routes": [
+    {
+      "id": "map02_hut",
+      "label": "round the harbourmaster's hut",
+      "notes": "The Quay (spawn): the ring round the harbourmaster's hut (x 10-18, z 10-17), the beached cutter to the north-east and the parapet to the north kept 2 m off; the two quay windows (S) and the stage windows (N) all open onto the ring.",
+      "points": [[7.5, 0, 8.0], [14.0, 0, 7.5], [20.5, 0, 8.8], [20.5, 0, 13.5], [20.5, 0, 19.5], [14.0, 0, 20.0], [7.5, 0, 19.5], [7.5, 0, 13.5]],
+      "ring_width": 3.0,
+      "smooth": 2,
+      "requires_doors": []
+    },
+    {
+      "id": "map02_cannery",
+      "label": "round the gut lines",
+      "notes": "The Fish Cannery: the ring round the two gutting lines (x -22 to -6, z 13.3-19.7), south of the conveyor and north of the brine tanks and the can pallets; Second Wind on the north wall and Marathon on the south are both one step off the ring.",
+      "points": [[-24.0, 0, 11.5], [-14.0, 0, 11.3], [-4.0, 0, 11.8], [-3.5, 0, 16.5], [-4.0, 0, 21.3], [-14.0, 0, 21.8], [-24.0, 0, 21.0], [-24.8, 0, 16.5]],
+      "ring_width": 2.5,
+      "smooth": 2,
+      "requires_doors": ["door_cannery"],
+      "requires_zones": ["B_CANNERY"]
+    },
+    {
+      "id": "map02_apron",
+      "label": "the pump-stair corner",
+      "notes": "The Pen Hall's north-east apron corner (x 40-51, z 34-41): the open slab between the coffin pallets (x 35-40) and the pump-stair landing, kept north of the z 41.5 region seam and off the stair.",
+      "points": [[41.0, 0, 34.5], [46.0, 0, 34.3], [50.5, 0, 35.0], [51.0, 0, 38.0], [50.5, 0, 41.0], [46.0, 0, 41.0], [41.0, 0, 40.6], [40.5, 0, 37.5]],
+      "ring_width": 3.0,
+      "smooth": 2,
+      "requires_doors": ["door_penhall"],
+      "requires_zones": ["D_PENHALL"]
+    }
+  ]
+}

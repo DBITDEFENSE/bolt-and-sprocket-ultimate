@@ -812,14 +812,40 @@ func _worst_held_price() -> int:
 
 ## Where to stand to use something: 1 m out from its use area, on the side the area sticks out (a perk
 ## machine's front, a wall-buy's chalk); the node itself when the area is centred.
-func _front_of(node: Interactable) -> Vector3:
-	if node.area == null:
-		return node.global_position
-	var off: Vector3 = node.area.global_position - node.global_position
-	off.y = 0.0
+## The direction an interactable faces: its prompt area's offset from its origin, else (a wall-buy keeps its
+## area on its origin and offsets only the shape) its local -Z, which the generators point into the room.
+func _facing(node: Interactable) -> Vector3:
+	var off: Vector3 = Vector3.ZERO
+	if node.area != null:
+		off = node.area.global_position - node.global_position
+		off.y = 0.0
 	if off.length() < 0.05:
+		if node is WallBuy:
+			off = node.global_basis * Vector3(0, 0, -1)
+			off.y = 0.0
+		else:
+			return Vector3.ZERO
+	return off.normalized()
+
+
+## True when `p` lies on the side the interactable faces. A wall-buy chalked on the Cannery's face of the quay
+## wall is 1.3 m from the quay's navmesh, within the path tolerance, but the wall is in the way: the errand walked
+## to the wrong face and timed out, round after round (UPDATE 07 QA, Map 2).
+func _in_front(node: Interactable, p: Vector3) -> bool:
+	var f: Vector3 = _facing(node)
+	if f == Vector3.ZERO:
+		return true
+	var to: Vector3 = p - node.global_position
+	to.y = 0.0
+	return to.dot(f) > -0.2
+
+
+func _front_of(node: Interactable) -> Vector3:
+	var f: Vector3 = _facing(node)
+	if f == Vector3.ZERO:
 		return node.global_position
-	var p: Vector3 = node.area.global_position + off.normalized() * 1.0
+	var base: Vector3 = node.area.global_position if node.area != null else node.global_position
+	var p: Vector3 = base + f * 1.0
 	p.y = node.global_position.y
 	return p
 
@@ -859,6 +885,8 @@ func _choose_errand() -> Dictionary:
 				NavigationServer3D.map_get_closest_point(player.get_world_3d().navigation_map, it.global_position), true)
 		if path.is_empty() or path[path.size() - 1].distance_to(_front_of(it)) > 2.5:
 			continue
+		if it is WallBuy and not _in_front(it, path[path.size() - 1]):
+			continue   # the path ends behind the board (a wall-buy on the far face of a wall we stand beside)
 		var s: float = -INF
 		var kind: String = ""
 		var label: String = ""
