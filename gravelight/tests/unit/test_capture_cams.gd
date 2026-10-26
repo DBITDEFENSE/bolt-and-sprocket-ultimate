@@ -89,6 +89,27 @@ func test_every_camera_stands_on_the_navmesh_inside_the_map() -> void:
 			assert_true(_near_navmesh(_v3(s)), "%s's subjects are on the navmesh" % n)
 
 
+## T-094: the world-object set (one camera per object type, before / after) stands on the same floor, and its
+## "do" steps are ones capture.gd knows.
+func test_objects_set_stands_on_the_navmesh() -> void:
+	var s: Dictionary = (_load()["sets"] as Dictionary).get("u05_objects", {})
+	assert_false(s.is_empty(), "capture_cams.json has the u05_objects set")
+	if s.is_empty():
+		return
+	assert_eq(str(s["map"]), MAP)
+	var names: Dictionary = {}
+	for c: Dictionary in s["cams"]:
+		var n: String = str(c["name"])
+		assert_false(names.has(n), "%s is unique" % n)
+		names[n] = true
+		assert_true(_near_navmesh(_v3(c["pos"])), "%s at %s stands on or just above the navmesh" % [n, str(c["pos"])])
+		for op: Variant in c.get("do", []):
+			assert_true(["power", "open", "tear", "exfil"].has(str(op).split(":")[0]), "%s: a known step (%s)" % [n, op])
+	for want: String in ["perk_dark", "perk_powered", "crate", "ammo_box", "wall_buy_trench", "barricade_torn", "door_unbought",
+			"door_bought", "bench", "crucible", "radio", "lever", "gate", "exfil_beacon"]:
+		assert_true(names.has(want), "the objects set shows %s" % want)
+
+
 func _load() -> Dictionary:
 	var f: FileAccess = FileAccess.open("res://data/gravelight/capture_cams.json", FileAccess.READ)
 	var d: Variant = JSON.parse_string(f.get_as_text())
