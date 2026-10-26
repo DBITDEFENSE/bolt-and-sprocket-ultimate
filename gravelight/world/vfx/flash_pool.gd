@@ -180,6 +180,9 @@ func fire(pos: Vector3, dir: Vector3, weapon_class: String, upgraded: bool, scal
 	root.show()
 	# the light pulse: one of the budgeted pooled lights, stealing the one with the least life left
 	_light_budget = clampi(int(quality.get("flash_lights", 4)), 0, _lights.size())
+	for li: int in range(_light_budget, _lights.size()):   # a smaller budget than last shot: drop the extras
+		if _light_slot[li] >= 0:
+			_release_light(_light_slot[li])
 	if _light_budget > 0:
 		var li: int = _pick_light()
 		var l: OmniLight3D = _lights[li]

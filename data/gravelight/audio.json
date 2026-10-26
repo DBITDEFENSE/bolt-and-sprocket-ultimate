@@ -897,6 +897,20 @@
    "max_voices": 1,
    "vol_jitter_db": 0.0
   },
+  "casing_tink": {
+   "_doc": "T-095: a spent case landing (synthesized, project-owned; CasingPool plays it on the first bounce)",
+   "files": [
+    "res://gravelight/audio/sfx/world/casing_tink_01.wav",
+    "res://gravelight/audio/sfx/world/casing_tink_02.wav",
+    "res://gravelight/audio/sfx/world/casing_tink_03.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -10.0,
+   "pitch": [0.9, 1.15],
+   "vol_jitter_db": 2.0,
+   "max_voices": 4,
+   "attenuation": "quiet"
+  },
   "glass_break": {
    "files": [
     "res://gravelight/audio/sfx/world/glass_break_01.wav",
