@@ -46,6 +46,7 @@ uniform float metal_metallic = -1.0;
 uniform float metal_roughness = -1.0;
 uniform float grain_scale = 1.0;
 uniform float seed = 0.0;
+uniform float debug = 0.0;
 
 varying vec3 v_pos;
 varying vec3 v_nrm;
@@ -126,8 +127,10 @@ void fragment() {
 	wood_col *= mix(1.0, 1.18, smoothstep(0.55, 0.85, n_mid) * 0.5);
 	float wood_rough = mix(0.68, 0.5, band) + (n_fine - 0.5) * 0.1;
 	if (camo_tint.a > 0.0) {
+		// the camo colour carries the grain's light and dark (a whitewash still shows the wood under it)
 		float lum = dot(wood_col, vec3(0.3, 0.59, 0.11));
-		wood_col = mix(wood_col, camo_tint.rgb * (0.55 + lum * 1.2), camo_tint.a);
+		vec3 tinted = min(camo_tint.rgb * (0.3 + 0.7 * clamp(lum / 0.22, 0.0, 1.4)), vec3(0.92));
+		wood_col = mix(wood_col, tinted, camo_tint.a);
 	}
 
 	// ---- metal: bluing cast, edge wear to bright steel, scratches, roughness mottle
@@ -150,11 +153,12 @@ void fragment() {
 	metal_m = mix(metal_m, 0.95, worn);
 	metal_rough = mix(metal_rough, 0.28, worn);
 	if (camo_metal > 0.0) {
-		wood_col = mix(wood_col, camo_tint.rgb * mix(0.8, 1.05, band), camo_tint.a);
+		wood_col = mix(wood_col, min(camo_tint.rgb * mix(0.8, 1.05, band), vec3(0.95)), camo_tint.a);
 	}
 
 	// ---- blend by material kind
 	vec3 base = mix(metal_col, wood_col, wood);
+	vec3 dbg7 = base;
 	float m_out = mix(metal_m, camo_metal > 0.0 ? camo_metal : 0.0, wood);
 	float r_out = mix(metal_rough, camo_metal > 0.0 ? 0.25 : wood_rough, wood);
 
@@ -164,6 +168,7 @@ void fragment() {
 	base = mix(base, base * vec3(0.4, 0.36, 0.3) + vec3(0.02, 0.018, 0.012), dirt);
 	r_out = mix(r_out, 0.9, dirt * 0.7);
 	m_out *= 1.0 - dirt * 0.5;
+	vec3 dbg8 = base;
 
 	// ---- frost on the up faces (cold maps)
 	float rime = frost * smoothstep(0.05, 0.75, up_face) * smoothstep(0.32, 0.7, n_mid * 0.55 + n_fine * 0.45 + n_big * 0.15);
@@ -185,21 +190,56 @@ void fragment() {
 		emis = nachtglas * (vein * vec3(0.55, 0.2, 1.0) * 2.6 + amber * vec3(1.0, 0.55, 0.15) * 2.4);
 	}
 
+	bool plain_normal = false;
+	if (debug > 9.5 && debug < 11.5) {
+		// 10: the final albedo with a flat dielectric; 11: the same without the procedural bump
+		m_out = 0.0;
+		r_out = 1.0;
+		plain_normal = true;
+	} else if (debug > 0.5) {
+		base = alb.rgb;
+		if (debug > 1.5) base = vec3(wood);
+		if (debug > 2.5) base = vec3(worn);
+		if (debug > 3.5) base = vec3(dirt);
+		if (debug > 4.5) base = vec3(rime);
+		if (debug > 5.5) base = vec3(edge);
+		if (debug > 6.5) base = dbg7;
+		if (debug > 7.5) base = dbg8;
+		if (debug > 8.5) base = vec3(m_out, r_out, 0.0);
+		if (debug > 11.5) base = vec3(n_fine, n_mid, n_big);
+		if (debug > 12.5) base = vec3(band, ring, 0.0);
+		if (debug > 13.5) base = nl * 0.5 + 0.5;
+		if (debug > 14.5) base = vec3(isnan(dot(q, q)) ? 1.0 : 0.0, isnan(dot(nl, nl)) ? 1.0 : 0.0, isnan(wood_col.r) ? 1.0 : 0.0);
+		if (debug > 15.5) base = q * 2.0 + 0.5;
+		if (debug > 16.5) base = fract(VERTEX * 4.0);
+		if (debug > 17.5) base = fract((inverse(MODEL_MATRIX) * (INV_VIEW_MATRIX * vec4(VERTEX, 1.0))).xyz * 4.0);
+		m_out = 0.0;
+		r_out = 1.0;
+		emis = vec3(0.0);
+	}
 	ALBEDO = base;
 	METALLIC = clamp(m_out, 0.0, 1.0);
 	ROUGHNESS = clamp(r_out, 0.04, 1.0);
 	AO = ao;
 	AO_LIGHT_AFFECT = 0.6;
 	EMISSION = emis;
-	// normal: the map when there is one, plus a faint procedural bump (grain on wood, pitting on metal)
-	vec3 nm = has_normal > 0.5 ? texture(normal_tex, UV).rgb : vec3(0.5, 0.5, 1.0);
+	// normal: a procedural bump (grain on wood, pitting on metal) perturbed in object space, so it needs no
+	// tangents (the palette meshes' per-face UVs are degenerate and their generated tangents are garbage), then
+	// the pack's normal map on top where there is one
+	vec3 t_obj = normalize(cross(nl, abs(dot(nl, u)) < 0.9 ? u : s));
+	vec3 b_obj = cross(nl, t_obj);
+	vec3 tq = vec3(dot(t_obj, s), dot(t_obj, u), dot(t_obj, f));
+	vec3 bq = vec3(dot(b_obj, s), dot(b_obj, u), dot(b_obj, f));
 	float e = 0.0025;
 	float bump_k = mix(0.9, 1.6, wood) * (palette > 0.5 ? 1.0 : 0.45) * (1.0 - rime);
-	float h0 = fbm(q * 70.0 + 2.0) * 0.6 + band * wood * 0.4;
-	float hx = fbm((q + vec3(e, 0.0, 0.0)) * 70.0 + 2.0) * 0.6 + band * wood * 0.4;
-	float hy = fbm((q + vec3(0.0, e, 0.0)) * 70.0 + 2.0) * 0.6 + band * wood * 0.4;
-	vec2 slope = vec2(hx - h0, hy - h0) * 12.0 * bump_k;
-	nm.xy = nm.xy + slope * 0.5;
-	NORMAL_MAP = nm;
-	NORMAL_MAP_DEPTH = has_normal > 0.5 ? normal_depth : 0.6;
+	float h0 = fbm(q * 70.0 + 2.0);
+	float ht = fbm((q + e * tq) * 70.0 + 2.0);
+	float hb = fbm((q + e * bq) * 70.0 + 2.0);
+	vec3 n_obj = normalize(nl - (t_obj * (ht - h0) + b_obj * (hb - h0)) * (bump_k * 0.0035 / e));
+	if (plain_normal) n_obj = nl;
+	NORMAL = normalize(mat3(VIEW_MATRIX) * (MODEL_NORMAL_MATRIX * n_obj));
+	if (has_normal > 0.5) {
+		NORMAL_MAP = texture(normal_tex, UV).rgb;
+		NORMAL_MAP_DEPTH = normal_depth;
+	}
 }

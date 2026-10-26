@@ -16,6 +16,10 @@ var _model: Node3D
 var _grid: Node3D
 var _label: Label
 var _busy: bool = false
+var _vmlayer: bool = false   # debug: the model on render layer 20 like the viewmodel
+var _undercam: bool = false  # debug: the model parented under the camera like the viewmodel
+var _persp: float = 0.0   # debug: a perspective camera (fov 80, near 0.01) this far from the gun instead of the ortho views
+var _rigscale: Vector3 = Vector3.ONE   # debug: the model under a scaled parent (the viewmodel rig is (k, k, 1) x compress)
 
 
 func _ready() -> void:
@@ -27,6 +31,16 @@ func _ready() -> void:
 			_ids = PackedStringArray(a.substr(7).split(","))
 		elif a == "--up":
 			_up = true
+		elif a.begins_with("--shader_debug="):
+			WeaponShader.debug = int(a.substr(15))
+		elif a == "--vmlayer":
+			_vmlayer = true
+		elif a == "--undercam":
+			_undercam = true
+		elif a.begins_with("--persp="):
+			_persp = float(a.substr(8))
+		elif a.begins_with("--rigscale="):
+			_rigscale = WeaponGLB._v3(a.substr(11).split(","), Vector3.ONE)
 	if _ids.is_empty():
 		var keys: Array = (WeaponGLB.models().get("weapons", {}) as Dictionary).keys()
 		keys.sort()
@@ -71,7 +85,14 @@ func _start() -> void:
 		_grid.queue_free()
 	var id: String = _ids[_i]
 	_model = WeaponModels.build(StringName(id), _up)
-	add_child(_model)
+	if _rigscale != Vector3.ONE:
+		var holder: Node3D = Node3D.new()
+		holder.scale = _rigscale
+		add_child(holder)
+		holder.add_child(_model)
+		_model.scale = Vector3.ONE / _rigscale
+	else:
+		add_child(_model)
 	var bb: AABB = WeaponModels.model_bounds(_model)
 	_grid = Node3D.new()
 	add_child(_grid)
@@ -105,8 +126,16 @@ func _start() -> void:
 		_line(g.origin, g.origin + g.basis.y * 0.05, Color.MAGENTA, 0.0015)
 	if _model.has_meta("port"):
 		_dot(_model.get_meta("port"), Color.ORANGE, 0.004)
+	if _vmlayer:
+		WeaponHolder._set_vm_layer(_model)
 	_view = 0
 	_aim(bb)
+	if _undercam and _persp > 0.0:
+		var p: Node3D = _model.get_parent() as Node3D
+		var gxf: Transform3D = p.global_transform
+		p.get_parent().remove_child(p)
+		_cam.add_child(p)
+		p.global_transform = gxf
 
 
 func _root_pos(n: Node3D) -> Vector3:
@@ -122,7 +151,13 @@ func _aim(bb: AABB) -> void:
 	var c: Vector3 = bb.get_center()
 	var size: float = maxf(bb.size.z, bb.size.y * 1.78) * 1.1 + 0.05
 	_cam.size = size / 1.78 * 1.0
-	if _view == 0:
+	if _persp > 0.0:
+		_cam.projection = Camera3D.PROJECTION_PERSPECTIVE
+		_cam.fov = 80.0
+		c = c * _rigscale
+		_cam.position = c + Vector3(-_persp * 0.7, _persp * 0.5, _persp * 0.5) if _view == 0 else c + Vector3(0, _persp, 0.001)
+		_cam.look_at(c, Vector3.UP)
+	elif _view == 0:
 		_cam.position = Vector3(-2.0, c.y, c.z)
 		_cam.look_at(Vector3(0, c.y, c.z), Vector3.UP)
 	else:

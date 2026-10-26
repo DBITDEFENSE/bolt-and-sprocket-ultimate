@@ -15,6 +15,9 @@ static var _cache: Dictionary = {}       # key -> ShaderMaterial
 static var _palettes: Dictionary = {}    # source texture rid -> upscaled ImageTexture
 static var frost: float = -1.0           # -1 = not resolved yet (frost_for_map on first use)
 static var _frost_map: StringName = &"?"
+## Tools: false leaves the imported StandardMaterial3Ds on (vm_shots --noshader); debug 1 = raw albedo, 2 = the wood mask.
+static var enabled: bool = true
+static var debug: int = 0
 
 
 static func shader() -> Shader:
@@ -49,6 +52,8 @@ static func _tick_frost() -> void:
 ## Wraps the GLB surfaces under `root` (meshes tagged meta "glb"). opts: upgraded, camo, finish, palette, scale,
 ## fit (model_fit "shader": wear, grime, scratches, bluing [r,g,b], wood {material: share}).
 static func apply(root: Node3D, opts: Dictionary) -> void:
+	if not enabled:
+		return
 	_tick_frost()
 	for c: Node in root.find_children("*", "MeshInstance3D", true, false):
 		var mi: MeshInstance3D = c as MeshInstance3D
@@ -101,6 +106,7 @@ static func material_for(src: BaseMaterial3D, opts: Dictionary, fwd: Vector3, up
 		m.set_shader_parameter("metallic_f", sm.metallic if not palette else 0.8)
 		m.set_shader_parameter("roughness_f", sm.roughness if not palette else 0.5)
 	m.set_shader_parameter("palette", 1.0 if palette else 0.0)
+	m.set_shader_parameter("debug", float(debug))
 	m.set_shader_parameter("detail_scale", scale)
 	m.set_shader_parameter("fwd_axis", fwd)
 	m.set_shader_parameter("up_axis", up)

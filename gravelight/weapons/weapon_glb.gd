@@ -243,6 +243,12 @@ static func build(weapon_id: StringName, is_upgraded: bool = false, camo_id: Str
 			var sxf: Transform3D = Transform3D(Basis(), about) * Transform3D(Basis.from_scale(sc), Vector3.ZERO) * Transform3D(Basis(), -about)
 			for item: Array in by_group[contract]:
 				item[1] = sxf * (item[1] as Transform3D)
+		var po: Dictionary = f.get("part_offset", {})
+		if po.has(contract):
+			# a part moved to where it belongs on the gun (the Garand's floating clip into the receiver)
+			var shift: Transform3D = Transform3D(Basis(), _v3(po[contract]))
+			for item: Array in by_group[contract]:
+				item[1] = shift * (item[1] as Transform3D)
 		if pivots.has(contract):
 			pivot = _v3(pivots[contract])
 		else:
@@ -289,16 +295,16 @@ static func build(weapon_id: StringName, is_upgraded: bool = false, camo_id: Str
 	b.marker("Muzzle", muzzle)
 	var rear: Vector3 = _v3(f.get("sight_rear"), scan["rear"])
 	var front: Vector3 = _v3(f.get("sight_front"), scan["front"])
-	var sight_host: Node3D = root
-	if groups.has("Slide") and (f.get("sights_on", "Slide") == "Slide"):
-		sight_host = groups["Slide"]
-	elif f.has("sights_on") and groups.has(str(f["sights_on"])):
-		sight_host = groups[str(f["sights_on"])]
+	# the sights ride on the part that carries them: a pistol's Slide by default, else the root (fixed);
+	# model_fit sight_rear_on / sight_front_on name another group ("root" for the gun body)
+	var default_host: String = "Slide" if groups.has("Slide") else "root"
+	var rear_host: Node3D = _host(root, groups, str(f.get("sight_rear_on", f.get("sights_on", default_host))))
+	var front_host: Node3D = _host(root, groups, str(f.get("sight_front_on", f.get("sights_on", default_host))))
 	if f.has("scope"):
 		_add_scope(b, f["scope"])
 	else:
-		b.sight_mark("SightPoint", _into(root, sight_host, rear), sight_host)
-		b.sight_mark("FrontSight", _into(root, sight_host, front), sight_host)
+		b.sight_mark("SightPoint", _into(root, rear_host, rear), rear_host)
+		b.sight_mark("FrontSight", _into(root, front_host, front), front_host)
 	var proc_lh: Node3D = proc.get_node_or_null("LeftHand") as Node3D
 	var lh: Vector3 = _v3(f.get("left_hand"), proc_lh.position if proc_lh != null else Vector3(0, -0.02, -0.25))
 	b.lhand(lh, str(f.get("lh_axis", root.get_meta("lh_axis", "z"))), float(f.get("lh_radius", root.get_meta("lh_radius", 0.024))))
@@ -330,6 +336,10 @@ static func build(weapon_id: StringName, is_upgraded: bool = false, camo_id: Str
 	WeaponShader.apply(root, {"upgraded": b.upgraded, "camo": camo_id, "finish": str(look_d.get("finish", "")),
 		"palette": _is_palette(StringName(base)), "scale": t.basis.get_scale().x, "fit": f.get("shader", {})})
 	return root
+
+
+static func _host(root: Node3D, groups: Dictionary, name: String) -> Node3D:
+	return groups[name] as Node3D if groups.has(name) else root
 
 
 ## A point in root space expressed in `host`'s space (host is root or a direct part group of it).
