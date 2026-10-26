@@ -15,6 +15,8 @@ var _fails: PackedStringArray = []
 
 func _ready() -> void:
 	ProfileSave.path = "user://_qa_profile_muster_%d.json" % OS.get_process_id()
+	GLSettings.path = "user://_qa_settings_muster_%d.cfg" % OS.get_process_id()   # never the player's settings (their local-AI bot would keep an Ollama request open and the run never exits)
+	GLSettings.values["bot_local_ai"] = false
 	ProfileSave.profile = ProfileSave.new_profile()
 	ProfileSave.profile["xp"] = ProfileSave.total_for_rank(30, ProfileSave.curve())
 	Muster.save_loadout("dutch", KIT)   # saved to the temp profile, then read back like a fresh start
