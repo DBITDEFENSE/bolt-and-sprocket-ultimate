@@ -240,6 +240,83 @@
      "plate": "Pier 2, by the gangway · the boarding party's, a trophy"
     }
    }
+  },
+  "map04a_thalbach": {
+   "name": "Map 4, Act I: Werk Thalbach",
+   "archive_map": "4a",
+   "entries": {
+    "perk.second_wind": {
+     "plate": "Consignment W.T. · Cabinet 2 · please do not disconnect · V.",
+     "title": "Maker's Plate: Second Wind (the Siedlung)",
+     "text": "The pale-blue apothecary cabinet in the courtyard of the workers' housing, under the washing lines, its standby cell glowing behind the louvres as it does everywhere.\n\nHELVETIA AUTOMATEN AG · BASEL. Hygienic beverage dispenser, cabinet pattern. Formula: Schw. A. W. Consignment Werk Thalbach, with engines, 4 (four). Under the maker's line, the same scratched note as on every cabinet of this pattern: \"Cabinet 2: please do not disconnect. V.\"\n\nIt arrived on the same flatcars as the four impellers, crated beside them, and the yardmaster's book lists it as \"comfort equipment, 8 pcs.\" The families in the blocks drank from it while the works ran nights. It is the one cabinet in the town that never needed the works' power, which is why it is the one that was still lit on the night the coffin cracked."
+    },
+    "perk.ironhide_stout": {
+     "plate": "Consignment W.T. · Kessler recipe · for the rail yard crews",
+     "title": "Maker's Plate: Ironhide Stout (the rail yard)",
+     "text": "The iron-red barrel cabinet on the yard side of the housing wall, where the shunters drank between trains.\n\nHELVETIA AUTOMATEN AG · BASEL · SEIT 1921. Hygienic beverage dispenser, barrel pattern. Formula: O. Kessler. Consignment Werk Thalbach. For the loading crews, Bahnhof.\n\nKessler's stout, made to taste like Sunday, poured for the men who unloaded lead coffins stencilled with a port's name and asked no questions because the stout stopped them feeling the cold, and then everything else. The plate's delivery tag is still wired to the hoop: \"with engines, handle as one lot.\""
+    },
+    "perk.trigger_tonic": {
+     "plate": "Consignment W.T. · Dr. I. Vogt · pour-time set to the shift",
+     "title": "Maker's Plate: Trigger Tonic (the canteen)",
+     "text": "The crate-shaped cabinet by the canteen's east door, the tin hare running across the glass toward the serving hatch.\n\nHELVETIA AUTOMATEN AG · BASEL. Formula: Dr. I. Vogt, Kaltwerk Chemie. Consignment Werk Thalbach, canteen. Pour-time adjusted to the shift quota.\n\nThe canteen poured it with the midday soup. Ilse Vogt worked reload times out like shift quotas and quit when she learned what the tanks downstairs were for; here there were no tanks downstairs, only a banner for a works concert that never happened and a radio set on the stage that Wittkamp used, later, to talk to strangers."
+    },
+    "perk.twin_barrel": {
+     "plate": "Consignment W.T. · by order of Maj. A. Brück · for the parish house",
+     "title": "Maker's Plate: Twin Barrel Bitters (the church square)",
+     "text": "The twin-barrelled cabinet against the parish house, the Major's moustache in enamel over the spouts, bomb dust on the glass.\n\nHELVETIA AUTOMATEN AG · BASEL. Formula selected by Maj. A. Brück, ordnance, \"for the morale of the line\". Consignment Werk Thalbach, church square.\n\nThe Major chose the bitters for other men. The parish priest, the housekeeper's note says, refused to have it inside and so it stands outside, where the Allied raids that were aimed at a fighter works found the church tower instead, three times."
+    },
+    "perk.marathon_malt": {
+     "plate": "Consignment W.T. · family recipe, Grindelwald · hall 2, north wall",
+     "title": "Maker's Plate: Marathon Malt (the assembly halls)",
+     "text": "The tall teardrop cabinet at the north end of the assembly halls, between the jig gantries, its runner frozen mid-stride under the chutes.\n\nHELVETIA AUTOMATEN AG · BASEL. Formula: Gähwiler family (Grindelwald). Consignment Werk Thalbach, Montage 2.\n\nThe fitters ran the halls' length between the two jigs a hundred times a shift; the works put the malt where the run ended. Res Gähwiler's grandmother's remedy, gentian and lady's mantle and honey, which Vendelin asked for as \"the taste of running home\". The delivery docket is signed in Res's hand. He drove this lorry too."
+    },
+    "perk.hawkeye_brandy": {
+     "plate": "Consignment W.T. · \"FOKUS\" · wind tunnel, test section",
+     "title": "Maker's Plate: Hawkeye Brandy (the wind tunnel)",
+     "text": "The periscope-shaped cabinet beside the wind tunnel's glass wall, where the model Kranich sits on its sting.\n\nHELVETIA AUTOMATEN AG · BASEL. Formula: derived, Kaltenbrunn laboratory. Consignment Werk Thalbach, Windkanal.\n\nThe tunnel technicians drank it to read the smoke lines on the model's wing. Its formula was derived from tests on a captured sniper, which the plate does not say and Wren knows; the technician who ran this tunnel, Jette Maurer, drank it once, wrote the model's lift numbers in her log, and then wrote *nein*."
+    },
+    "perk.packmule_porter": {
+     "plate": "Consignment W.T. · Fw. G. Ammer · test-stand stores",
+     "title": "Maker's Plate: Packmule Porter (the engine test stands)",
+     "text": "The wagon-shaped cabinet against the north wall of the test stands, by the bunker door.\n\nHELVETIA AUTOMATEN AG · BASEL. Formula: Fw. G. Ammer, quartermaster. Consignment Werk Thalbach, Prüfstand stores.\n\nAmmer used the extra-capacity trials to smuggle food to labourers at Kaltenbrunn; here his porter stood beside a store of test-stand parts and nobody carried anything out of it but engines. The stencil under the enamel is the same as on every cabinet of this pattern. Vendelin covered for him. The porter still does."
+    },
+    "perk.blastproof_bock": {
+     "plate": "Consignment W.T. · demolitions pattern · behind the blast wall",
+     "title": "Maker's Plate: Blastproof Bock (the engine test stands)",
+     "text": "The safe-shaped cabinet behind the test stands' blast wall, between the pits, its door scorched by every engine run.\n\nHELVETIA AUTOMATEN AG · BASEL. Formula: demolitions school, Kaltenbrunn. Consignment Werk Thalbach, Prüfstand.\n\nThe one cabinet on the map that was put somewhere sensible: behind the blast wall, where the engine crews stood. A sample of this formula reached the SOE in 1943 through a delivery driver's cousin, which is how Peg's orders exist, which is why she is here."
+    },
+    "crucible": {
+     "plate": "MOD. R-E · PAT. PEND. BLZ-40417 · UNIT 3 · PRÜFSTAND BUNKER",
+     "title": "The Crucible at Thalbach (the control bunker)",
+     "text": "The third violet forge the squad has seen, bolted to the floor of the test stands' control bunker behind the lead-glass slit, its violet strap still on. Unit 3 of a consignment of four: the works got one for the engine crews' tools and sent one aboard the wing.\n\nMOD. R-E · PAT. PEND. BLZ-40417 · UNIT 3. The same brass plaque as the one in the Kaltenbrunn vault and the one in the U-boat's torpedo room, with a works stencil over it: \"Prüfstand, Werkzeug\" (test stand, tools). The bunker's log lists what it re-taught: wrenches, a rivet gun, a Flak crew's sidearms, and, on the last page in a different hand, \"the engineer's hands. Do not do this again.\""
+    },
+    "chalk": {
+     "plate": "Three strokes and a hook, in chalk, on a casing in the goods shed",
+     "title": "Chalk at Thalbach: the works' standing orders and the labourers' alphabet",
+     "text": "Chalked on the goods shed's door: the works' standing order for the rail yard (\"all consignments marked W.T. unload under the netting; no lamps\"), the shunters' tally, and, lower, in a different chalk, three strokes and a hook. The labourers who were marched west on 2 May left the alphabet on everything they touched: a bomb casing, a jig frame, a crate of valve plates. Three strokes and a hook means \"weak, ours, don't trust it.\" Wall guns chalked in the works: the Kar98k by the cellar, the M1 Carbine on the housing wall, the MP40 on the yard wall, the Thompson over the canteen stage, the M1 Garand on the church tower, the STG-44 in the assembly hall, the BAR by the test stands."
+    },
+    "chalk.kar98k": {
+     "plate": "Kar98k · Hausblock 1, cellar door · \"for the warden\""
+    },
+    "chalk.m1_carbine": {
+     "plate": "M1 Carbine · Siedlung wall · \"found on the road, 2.V.\""
+    },
+    "chalk.mp40": {
+     "plate": "MP40 · Bahnhof, east wall · \"yard guard\""
+    },
+    "chalk.thompson": {
+     "plate": "Thompson · canteen, over the stage · \"concert cancelled\""
+    },
+    "chalk.m1_garand": {
+     "plate": "M1 Garand · church tower, east face · \"from the airmen\""
+    },
+    "chalk.stg44": {
+     "plate": "STG-44 · Montage 1, east wall · \"works guard, hall 1\""
+    },
+    "chalk.bar": {
+     "plate": "BAR · Prüfstand, east wall · \"test-stand crew, never fired\""
+    }
+   }
   }
  }
 }

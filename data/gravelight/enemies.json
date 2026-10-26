@@ -47,6 +47,11 @@
           "sailor": 0.4,
           "dockworker": 0.35,
           "soldier": 0.25
+        },
+        "map04a_thalbach": {
+          "technician": 0.45,
+          "villager": 0.35,
+          "soldier": 0.2
         }
       }
     },
@@ -79,7 +84,8 @@
       "max_active": 3,
       "maps": [
         "map01_kaltenbrunn",
-        "map02_totenhafen"
+        "map02_totenhafen",
+        "map04a_thalbach"
       ]
     },
     "bellringer": {
@@ -293,7 +299,7 @@
       "sprint": {"fast": 6.0, "slow": 0.0, "roll": 0.5}
     },
     "round_scale": {"start_round": 1, "end_round": 20, "start": 1.0, "end": 0.7},
-    "surface_by_map": {"map00_crossroads": "snow", "map01_kaltenbrunn": "earth", "map02_totenhafen": "stone", "default": "earth"},
+    "surface_by_map": {"map00_crossroads": "snow", "map01_kaltenbrunn": "earth", "map02_totenhafen": "stone", "map04a_thalbach": "earth", "default": "earth"},
     "surface_classes": {"snow": "snow", "stone": "stone", "metal": "stone", "wood": "earth", "hay": "earth", "water": "earth"},
     "sounds": {
       "burst": {"snow": "emerge_burst_snow", "earth": "emerge_burst_earth"},

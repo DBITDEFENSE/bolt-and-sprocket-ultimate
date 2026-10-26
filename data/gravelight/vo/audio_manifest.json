@@ -21190,7 +21190,19 @@
  },
  "missing": {
   "LSL_REC_DRUMMER_01": "no speech: stage direction only ([faint giggle under the drum])",
-  "REI_HEART_END": "no speech: stage direction only ([scream that becomes the bell toll; PA d)"
+  "REI_HEART_END": "no speech: stage direction only ([scream that becomes the bell toll; PA d)",
+  "OPR_M4A_ARRIVE_01": "map4: bake on the PC (no Linux voice for this speaker)",
+  "OPR_M4A_ARRIVE_02": "map4: bake on the PC (no Linux voice for this speaker)",
+  "OPR_M4A_POWER_01": "map4: bake on the PC (no Linux voice for this speaker)",
+  "OPR_M4A_HALLE_01": "map4: bake on the PC (no Linux voice for this speaker)",
+  "OPR_M4A_KRAN_SPAWN_01": "map4: bake on the PC (no Linux voice for this speaker)",
+  "OPR_M4A_KRAN_DEATH_01": "map4: bake on the PC (no Linux voice for this speaker)",
+  "OPR_M4A_FLIEGER_01": "map4: bake on the PC (no Linux voice for this speaker)",
+  "OPR_M4A_FLIEGER_END_01": "map4: bake on the PC (no Linux voice for this speaker)",
+  "OPR_EXFIL_OPEN_M4A_01": "map4: bake on the PC (no Linux voice for this speaker)",
+  "OPR_EXFIL_WAIT_M4A_01": "map4: bake on the PC (no Linux voice for this speaker)",
+  "OPR_EXFIL_MISSED_M4A_01": "map4: bake on the PC (no Linux voice for this speaker)",
+  "OPR_EXFIL_GO_M4A_01": "map4: bake on the PC (no Linux voice for this speaker)"
  },
  "neural_tool_version": "1"
 }

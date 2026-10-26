@@ -26,6 +26,10 @@ var _warned: bool = false
 ## either is pushed to the next free round, as the Foreman already is by a Bellringer round. Set by the map's
 ## event (CousinsRound) when it is created; cleared by stop() when the map is left.
 var _reserved: Dictionary = {}
+## Map 4's acts (UPDATE 07, docs/MAP4_FERNFLUG.md §10): the act block of the current map's json ("act": index,
+## numeral, length_rounds, ...) and the match round the act started on (1 standalone; the arrival round by exfil).
+var act: Dictionary = {}
+var act_start: int = 1
 
 
 static func zombie_health(round_number: int, cfg: Dictionary) -> int:
@@ -124,6 +128,8 @@ func start_game(player_count: int) -> void:
 	_warned = false
 	players = player_count
 	current_round = 0
+	act = act_block_of(GameState.map_id)
+	act_start = 1
 	to_spawn = 0
 	alive = 0
 	state = State.BREAK
@@ -306,6 +312,7 @@ static func carried_schedule(next_round: int, arrival: int, gap_min: int, gap_ma
 func resume_at(left_on: int, carried_special: int, carried_boss: int, grace: float) -> void:
 	current_round = maxi(0, left_on)
 	var arrival: int = current_round + 1
+	act_start = arrival
 	var sr: Dictionary = _cfg["special_round"]
 	var fm: Dictionary = GLData.table("enemies")["enemies"]["foreman"]
 	next_special = carried_schedule(carried_special, arrival, int(sr["interval_min"]), int(sr["interval_max"]), rng)
@@ -318,6 +325,41 @@ func resume_at(left_on: int, carried_special: int, carried_boss: int, grace: flo
 	break_left = maxf(0.5, grace)
 	_skip_reserved()
 	GameState.stats[&"round"] = current_round
+
+
+## The "act" block of a map's json ({} when the map has none).
+static func act_block_of(map_id: StringName) -> Dictionary:
+	var path: String = "res://data/gravelight/%s.json" % String(map_id).get_slice("_", 0)
+	if not FileAccess.file_exists(path):
+		return {}
+	var v: Variant = GLData.load_json(path).get("act", {})
+	return v if v is Dictionary else {}
+
+
+## Rounds are act-relative on an act map: act round n = match round - act_start + 1 (0 when the map has no act).
+static func act_round_of(match_round: int, start: int, has_act: bool) -> int:
+	return maxi(0, match_round - start + 1) if has_act else 0
+
+
+func has_act() -> bool:
+	return not act.is_empty()
+
+
+func act_round(r: int = -1) -> int:
+	return act_round_of(current_round if r < 0 else r, act_start, has_act())
+
+
+func act_index() -> int:
+	return int(act.get("index", 0))
+
+
+func act_numeral() -> String:
+	return str(act.get("numeral", "")) if has_act() else ""
+
+
+## The HUD's act line under the round stamp ("ACT I · 7"), "" off act maps.
+func act_label(r: int = -1) -> String:
+	return "ACT %s · %d" % [act_numeral(), act_round(r)] if has_act() else ""
 
 
 ## Dev console: jump so the NEXT round is `target`. Active zombies are cleared by the caller.

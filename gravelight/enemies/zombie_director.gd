@@ -31,6 +31,9 @@ var _temp_spawns: Dictionary = {}  # key -> Array[ZombieSpawn]
 var _extras: Array[Zombie] = []    # bosses and screamers (not pooled)
 var _pack_t: float = 0.0
 var _last_bell_pos: Vector3 = Vector3.INF
+## A map's own special round (UPDATE 07: Map 4's Fliegeralarm): when set, it runs the special round's spawning
+## instead of the Bellringer packs (`tick_special(delta)`), and leaves `_last_bell_pos` where the Resupply drops.
+var special_handler: Node = null
 var _boss_pending: float = -1.0    # seconds until a scheduled Foreman bursts out
 var _screamer_at: float = -1.0     # fraction of the round spawned at which a Screamer appears
 var _special_fx: bool = false
@@ -184,6 +187,9 @@ func _spec_for(enemy_id: StringName, spec: Dictionary) -> Dictionary:
 # ---------------------------------------------------------------- Bellringer rounds
 
 func _update_special(delta: float) -> void:
+	if special_handler != null and is_instance_valid(special_handler):
+		special_handler.call("tick_special", delta)
+		return
 	_pack_t -= delta
 	if _pack_t > 0.0 or not RoundManager.can_spawn() or _free.is_empty():
 		return
@@ -593,6 +599,15 @@ func summon_boss(enemy_id: StringName, at: Vector3) -> Node3D:
 			hb.spawn_homage(_snap(at), CousinsRound.boss_hp(key, RoundManager.players, HomageBoss.cfg()))
 			GLBus.enemy_spawned.emit(hb.enemy_id, hb.get_instance_id())
 			return hb
+		&"kranfuehrer":
+			var kf: Kranfuehrer = Kranfuehrer.new()
+			kf.director = self
+			add_extra(kf)
+			RoundManager.take_extra_spawn()
+			kf.spawn_crane(at, HomageBoss.scaled_hp(float(kf.boss_cfg().get("hp_base", 24000)), RoundManager.players, float(kf.boss_cfg().get("hp_player_step", 0.75))))
+			GLBus.boss_spawned.emit(&"kranfuehrer")
+			GLBus.enemy_spawned.emit(kf.enemy_id, kf.get_instance_id())
+			return kf
 		&"foreman":
 			var f: Foreman = Foreman.new()
 			f.director = self

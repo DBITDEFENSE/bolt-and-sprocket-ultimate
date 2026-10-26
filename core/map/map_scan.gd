@@ -228,7 +228,7 @@ static func _walk(root: Node) -> Array[Node]:
 
 ## The climb links (ladders) a GRAVELIGHT map's json lists (data/gravelight/<map>.json "climb_links").
 static func climb_links(map_id: StringName) -> Array[Dictionary]:
-	var key: String = String(map_id).substr(0, 5)   # map00_crossroads -> map00
+	var key: String = String(map_id).get_slice("_", 0)   # map00_crossroads -> map00, map04a_thalbach -> map04a
 	var d: Dictionary = _json("res://data/gravelight/%s.json" % key)
 	var out: Array[Dictionary] = []
 	for c: Variant in d.get("climb_links", []):
@@ -241,7 +241,7 @@ static func climb_links(map_id: StringName) -> Array[Dictionary]:
 
 ## Zone labels from a GRAVELIGHT map's json ("zones": {id: {name}}), for maps that keep them there.
 static func gl_zone_names(map_id: StringName) -> Dictionary:
-	var key: String = String(map_id).substr(0, 5)
+	var key: String = String(map_id).get_slice("_", 0)
 	var d: Dictionary = _json("res://data/gravelight/%s.json" % key)
 	var out: Dictionary = {}
 	var z: Variant = d.get("zones", {})

@@ -2273,3 +2273,27 @@ Bots in Full Partner add `EE_COMMIT_SELF` (section 18) when the player hasn't co
 - `DEA_SQ7_M0_EGG_TONICS_01` (Deacon): "Every cabinet in the house just woke up. That voice did that. Think on it."
 - `WRN_SQ7_M0_EGG_TONICS_01` (Wren): "The cabinets. Open. All of them. A gift from a voice we don't know."
 - `JAK_SQ7_M0_EGG_TONICS_01` (Jakub): "Those machines. I told you what they put in them. Now they pour it free. Think why."
+
+## 14. MAP 4 "FERNFLUG" (UPDATE 07; design doc `docs/MAP4_FERNFLUG.md` §12): the lines the build references
+
+The full Map 4 script (every speaker, every act) is in `docs/MAP4_FERNFLUG.md` §12; this section holds the ids the
+data and code reference as they are built, so `extract_vo.py` picks them up. Act tokens: `M4A` Werk Thalbach,
+`M4B` der Kranich, `M4C` Groom Lake, `M4D` Mondlicht. No Linux voice bakes the Operator: these are listed in the
+manifest's `missing` ("map4: bake on the PC") and play as timed silence with subtitles until the PC bakes them.
+
+### 14.1 Act I — Werk Thalbach: the Operator (`OPR`, tier 3; exfil lines as §3.15)
+
+| ID | Line | When |
+|---|---|---|
+| OPR_M4A_ARRIVE_01 | Market localization complete. Welcome back, valued {customers}. You're in a new territory. | match start / arrival |
+| OPR_M4A_ARRIVE_02 | Thalbach. A company town. We have always {liked} a company town. | match start, second |
+| OPR_M4A_POWER_01 | Power restored. Thank you for your patience. The works would like to {show} you something. | the main breaker |
+| OPR_M4A_HALLE_01 | The Great Hangar is now open. Please mind the {weather}. | the hangar door opens |
+| OPR_M4A_KRAN_SPAWN_01 | A valued colleague is joining us from above. He's been with the works a {long} time. | the Kranführer arrives |
+| OPR_M4A_KRAN_DEATH_01 | The crane is... no longer in service. We'll let the {works} know. | the Kranführer dies |
+| OPR_M4A_FLIEGER_01 | Visitors from the west. They've been told this is a fighter works. Nobody has {corrected} them. | Fliegeralarm begins |
+| OPR_M4A_FLIEGER_END_01 | The visitors have moved on. Resupply has been {authorized}. | Fliegeralarm ends |
+| OPR_EXFIL_OPEN_M4A_01 | Boarding has begun. The aircraft is prepared. The aircraft is *very* {prepared}. | the ramp beacon lights |
+| OPR_EXFIL_WAIT_M4A_01 | The aircraft will not wait indefinitely. The aircraft has somewhere to {be}. | co-op, some have voted |
+| OPR_EXFIL_MISSED_M4A_01 | Boarding has closed. It will reopen. It {always} reopens. | the window closed |
+| OPR_EXFIL_GO_M4A_01 | Boarding is now complete. Please take any {seat}. | the boarding cutscene (tier 4) |

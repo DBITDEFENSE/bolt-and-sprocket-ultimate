@@ -86,6 +86,17 @@
         }
       ]
     },
+    "map04a_thalbach": {
+      "current": [
+        {"when": {"exfil_active": true}, "text": "The ramp is down: board the Kranich", "nodes": ["ExfilPoint"]},
+        {"done": {"any": [{"zone_open": "E_MONTAGE"}, {"power": true}]}, "text": "Find the works' power: the assembly halls", "nodes": ["Door_Montage", "Door_Kantine", "Door_Bahnhof"]},
+        {"done": {"power": true}, "text": "Turn on the power: the Kraftzentrale's main breaker", "nodes": ["Hauptschalter"]},
+        {"done": {"zone_open": "H_HALLE"}, "text": "Open the Great Hangar", "nodes": ["Door_Halle"]},
+        {"text": "Survive until the ramp comes down."}
+      ],
+      "easter_egg": [],
+      "side": []
+    },
     "map02_totenhafen": {
       "current": [
         { "when": { "exfil_active": true }, "text": "The exfil is open: get to the beacon", "nodes": ["ExfilPoint"] },

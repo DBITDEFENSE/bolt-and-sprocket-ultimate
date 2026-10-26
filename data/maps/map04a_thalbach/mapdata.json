@@ -1,0 +1,1420 @@
+{
+  "_doc": "Baked map data (Update 04 section 1, DECISIONS T-065). Written by tools/bake_minimap.sh; do not edit by hand (edit data/maps/bake_config.json and re-bake). world_rect = [min x, min z, width, depth] in metres, every floor image covers it, north (-Z) up.",
+  "map_id": "map04a_thalbach",
+  "game": "gravelight",
+  "style": "ink",
+  "display_name": "Fernflug — Act I: Werk Thalbach",
+  "world_rect": [
+    -82.017,
+    -14.817,
+    140.833,
+    241.833
+  ],
+  "px_per_m": 6.0,
+  "image_size": [
+    845,
+    1451
+  ],
+  "baked_at": "2026-10-26T10:37:32",
+  "poi_signature": "fd5fbc2ad9bf0da42a8aecbb941c3869",
+  "floors": [
+    {
+      "id": "works",
+      "name": "Werk Thalbach",
+      "y_min": -1.0,
+      "y_max": 10.0,
+      "base_y": 0.0,
+      "cut": 1.7,
+      "rects": [],
+      "depth": 0.6,
+      "image": "floor_0_works.png"
+    },
+    {
+      "id": "catwalks",
+      "name": "Hangar catwalks (+12)",
+      "y_min": 10.0,
+      "y_max": 24.0,
+      "base_y": 12.0,
+      "cut": 13.4,
+      "rects": [
+        [
+          -70.0,
+          150.0,
+          100.0,
+          65.0
+        ],
+        [
+          -70.0,
+          150.0,
+          3.5,
+          65.0
+        ],
+        [
+          26.5,
+          150.0,
+          3.5,
+          65.0
+        ]
+      ],
+      "depth": 0.6,
+      "image": "floor_1_catwalks.png"
+    }
+  ],
+  "zones": [
+    {
+      "id": "A_SIEDLUNG",
+      "name": "Siedlung",
+      "y_min": -1.5,
+      "y_max": 7.0,
+      "polys": [
+        [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            40.0,
+            0.0
+          ],
+          [
+            40.0,
+            30.0
+          ],
+          [
+            0.0,
+            30.0
+          ]
+        ],
+        [
+          [
+            18.7,
+            -2.8
+          ],
+          [
+            21.3,
+            -2.8
+          ],
+          [
+            21.3,
+            -0.05
+          ],
+          [
+            18.7,
+            -0.05
+          ]
+        ],
+        [
+          [
+            32.7,
+            -2.8
+          ],
+          [
+            35.3,
+            -2.8
+          ],
+          [
+            35.3,
+            -0.05
+          ],
+          [
+            32.7,
+            -0.05
+          ]
+        ],
+        [
+          [
+            -2.8,
+            14.7
+          ],
+          [
+            -0.05,
+            14.7
+          ],
+          [
+            -0.05,
+            17.3
+          ],
+          [
+            -2.8,
+            17.3
+          ]
+        ],
+        [
+          [
+            40.05,
+            14.7
+          ],
+          [
+            42.8,
+            14.7
+          ],
+          [
+            42.8,
+            17.3
+          ],
+          [
+            40.05,
+            17.3
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          7.0
+        ],
+        [
+          -1.0,
+          3.3
+        ],
+        [
+          -1.0,
+          3.3
+        ],
+        [
+          -1.0,
+          3.3
+        ],
+        [
+          -1.0,
+          3.3
+        ]
+      ]
+    },
+    {
+      "id": "B_BAHNHOF",
+      "name": "Rail Yard",
+      "y_min": -1.5,
+      "y_max": 7.0,
+      "polys": [
+        [
+          [
+            0.0,
+            30.0
+          ],
+          [
+            40.0,
+            30.0
+          ],
+          [
+            40.0,
+            60.0
+          ],
+          [
+            0.0,
+            60.0
+          ]
+        ],
+        [
+          [
+            -2.8,
+            38.7
+          ],
+          [
+            -0.05,
+            38.7
+          ],
+          [
+            -0.05,
+            41.3
+          ],
+          [
+            -2.8,
+            41.3
+          ]
+        ],
+        [
+          [
+            12.7,
+            60.05
+          ],
+          [
+            15.3,
+            60.05
+          ],
+          [
+            15.3,
+            62.8
+          ],
+          [
+            12.7,
+            62.8
+          ]
+        ],
+        [
+          [
+            40.05,
+            38.7
+          ],
+          [
+            42.8,
+            38.7
+          ],
+          [
+            42.8,
+            41.3
+          ],
+          [
+            40.05,
+            41.3
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          7.0
+        ],
+        [
+          -1.0,
+          3.3
+        ],
+        [
+          -1.0,
+          3.3
+        ],
+        [
+          -1.0,
+          3.3
+        ]
+      ]
+    },
+    {
+      "id": "C_KANTINE",
+      "name": "Canteen",
+      "y_min": -1.5,
+      "y_max": 7.0,
+      "polys": [
+        [
+          [
+            -44.0,
+            30.0
+          ],
+          [
+            0.0,
+            30.0
+          ],
+          [
+            0.0,
+            60.0
+          ],
+          [
+            -44.0,
+            60.0
+          ]
+        ],
+        [
+          [
+            -46.8,
+            46.7
+          ],
+          [
+            -44.05,
+            46.7
+          ],
+          [
+            -44.05,
+            49.3
+          ],
+          [
+            -46.8,
+            49.3
+          ]
+        ],
+        [
+          [
+            -23.3,
+            27.2
+          ],
+          [
+            -20.7,
+            27.2
+          ],
+          [
+            -20.7,
+            29.95
+          ],
+          [
+            -23.3,
+            29.95
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          7.0
+        ],
+        [
+          -1.0,
+          3.3
+        ],
+        [
+          -1.0,
+          3.3
+        ]
+      ]
+    },
+    {
+      "id": "D_KIRCHPLATZ",
+      "name": "Church Square",
+      "y_min": -1.5,
+      "y_max": 7.0,
+      "polys": [
+        [
+          [
+            0.0,
+            60.0
+          ],
+          [
+            40.0,
+            60.0
+          ],
+          [
+            40.0,
+            100.0
+          ],
+          [
+            0.0,
+            100.0
+          ]
+        ],
+        [
+          [
+            40.05,
+            68.7
+          ],
+          [
+            42.8,
+            68.7
+          ],
+          [
+            42.8,
+            71.3
+          ],
+          [
+            40.05,
+            71.3
+          ]
+        ],
+        [
+          [
+            40.05,
+            92.7
+          ],
+          [
+            42.8,
+            92.7
+          ],
+          [
+            42.8,
+            95.3
+          ],
+          [
+            40.05,
+            95.3
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          7.0
+        ],
+        [
+          -1.0,
+          3.3
+        ],
+        [
+          -1.0,
+          3.3
+        ]
+      ]
+    },
+    {
+      "id": "E_MONTAGE",
+      "name": "Assembly Halls",
+      "y_min": -1.5,
+      "y_max": 7.0,
+      "polys": [
+        [
+          [
+            -60.0,
+            60.0
+          ],
+          [
+            0.0,
+            60.0
+          ],
+          [
+            0.0,
+            110.0
+          ],
+          [
+            -60.0,
+            110.0
+          ]
+        ],
+        [
+          [
+            -45.3,
+            110.05
+          ],
+          [
+            -42.7,
+            110.05
+          ],
+          [
+            -42.7,
+            112.8
+          ],
+          [
+            -45.3,
+            112.8
+          ]
+        ],
+        [
+          [
+            -62.8,
+            88.7
+          ],
+          [
+            -60.05,
+            88.7
+          ],
+          [
+            -60.05,
+            91.3
+          ],
+          [
+            -62.8,
+            91.3
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          7.0
+        ],
+        [
+          -1.0,
+          3.3
+        ],
+        [
+          -1.0,
+          3.3
+        ]
+      ]
+    },
+    {
+      "id": "F_WINDKANAL",
+      "name": "Wind Tunnel",
+      "y_min": -1.5,
+      "y_max": 7.0,
+      "polys": [
+        [
+          [
+            0.0,
+            100.0
+          ],
+          [
+            44.0,
+            100.0
+          ],
+          [
+            44.0,
+            130.0
+          ],
+          [
+            0.0,
+            130.0
+          ]
+        ],
+        [
+          [
+            44.05,
+            106.7
+          ],
+          [
+            46.8,
+            106.7
+          ],
+          [
+            46.8,
+            109.3
+          ],
+          [
+            44.05,
+            109.3
+          ]
+        ],
+        [
+          [
+            20.7,
+            130.05
+          ],
+          [
+            23.3,
+            130.05
+          ],
+          [
+            23.3,
+            132.8
+          ],
+          [
+            20.7,
+            132.8
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          7.0
+        ],
+        [
+          -1.0,
+          3.3
+        ],
+        [
+          -1.0,
+          3.3
+        ]
+      ]
+    },
+    {
+      "id": "G_PRUEFSTAND",
+      "name": "Engine Test Stands",
+      "y_min": -1.5,
+      "y_max": 7.0,
+      "polys": [
+        [
+          [
+            -60.0,
+            110.0
+          ],
+          [
+            0.0,
+            110.0
+          ],
+          [
+            0.0,
+            150.0
+          ],
+          [
+            -60.0,
+            150.0
+          ]
+        ],
+        [
+          [
+            -62.8,
+            116.7
+          ],
+          [
+            -60.05,
+            116.7
+          ],
+          [
+            -60.05,
+            119.3
+          ],
+          [
+            -62.8,
+            119.3
+          ]
+        ],
+        [
+          [
+            0.05,
+            134.7
+          ],
+          [
+            2.8,
+            134.7
+          ],
+          [
+            2.8,
+            137.3
+          ],
+          [
+            0.05,
+            137.3
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          7.0
+        ],
+        [
+          -1.0,
+          3.3
+        ],
+        [
+          -1.0,
+          3.3
+        ]
+      ]
+    },
+    {
+      "id": "H_HALLE",
+      "name": "The Great Hangar",
+      "y_min": -1.5,
+      "y_max": 15.0,
+      "polys": [
+        [
+          [
+            -70.0,
+            150.0
+          ],
+          [
+            30.0,
+            150.0
+          ],
+          [
+            30.0,
+            215.0
+          ],
+          [
+            -70.0,
+            215.0
+          ]
+        ],
+        [
+          [
+            -70.0,
+            150.0
+          ],
+          [
+            -66.5,
+            150.0
+          ],
+          [
+            -66.5,
+            215.0
+          ],
+          [
+            -70.0,
+            215.0
+          ]
+        ],
+        [
+          [
+            26.5,
+            150.0
+          ],
+          [
+            30.0,
+            150.0
+          ],
+          [
+            30.0,
+            215.0
+          ],
+          [
+            26.5,
+            215.0
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -1.5,
+          11.4
+        ],
+        [
+          10.9,
+          15.0
+        ],
+        [
+          10.9,
+          15.0
+        ]
+      ]
+    }
+  ],
+  "pois": [
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Bahnhof",
+      "type": "ammo_box",
+      "pos": [
+        0.52,
+        0.0,
+        34.0
+      ],
+      "floor": 0,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Bahnhof",
+      "key": "Gameplay/AmmoBox_Bahnhof"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Halle",
+      "type": "ammo_box",
+      "pos": [
+        -69.48,
+        0.0,
+        153.0
+      ],
+      "floor": 0,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Halle",
+      "key": "Gameplay/AmmoBox_Halle"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Kantine",
+      "type": "ammo_box",
+      "pos": [
+        -43.48,
+        0.0,
+        34.0
+      ],
+      "floor": 0,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Kantine",
+      "key": "Gameplay/AmmoBox_Kantine"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Montage",
+      "type": "ammo_box",
+      "pos": [
+        -30.0,
+        0.0,
+        60.52
+      ],
+      "floor": 0,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Montage",
+      "key": "Gameplay/AmmoBox_Montage"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Pruefstand",
+      "type": "ammo_box",
+      "pos": [
+        -59.48,
+        0.0,
+        134.0
+      ],
+      "floor": 0,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Pruefstand",
+      "key": "Gameplay/AmmoBox_Pruefstand"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Siedlung",
+      "type": "ammo_box",
+      "pos": [
+        6.0,
+        0.0,
+        29.48
+      ],
+      "floor": 0,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Siedlung",
+      "key": "Gameplay/AmmoBox_Siedlung"
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_Bunker",
+      "type": "crate_spot",
+      "pos": [
+        -50.0,
+        0.0,
+        148.6
+      ],
+      "floor": 0,
+      "label": "Requisition Crate (Bunker)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_Bunker",
+      "key": "Gameplay/Crate_Bunker",
+      "data": {
+        "spot_index": 3,
+        "can_start": false
+      }
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_Cellar",
+      "type": "crate_spot",
+      "pos": [
+        7.0,
+        0.0,
+        3.2
+      ],
+      "floor": 0,
+      "label": "Requisition Crate (Cellar)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_Cellar",
+      "key": "Gameplay/Crate_Cellar",
+      "data": {
+        "spot_index": 0,
+        "can_start": true
+      }
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_Parish",
+      "type": "crate_spot",
+      "pos": [
+        36.0,
+        0.0,
+        98.6
+      ],
+      "floor": 0,
+      "label": "Requisition Crate (Parish)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_Parish",
+      "key": "Gameplay/Crate_Parish",
+      "data": {
+        "spot_index": 2,
+        "can_start": false
+      }
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_Shed",
+      "type": "crate_spot",
+      "pos": [
+        34.0,
+        0.0,
+        58.6
+      ],
+      "floor": 0,
+      "label": "Requisition Crate (Shed)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_Shed",
+      "key": "Gameplay/Crate_Shed",
+      "data": {
+        "spot_index": 1,
+        "can_start": true
+      }
+    },
+    {
+      "id": "crucible:Gameplay/Crucible",
+      "type": "crucible",
+      "pos": [
+        -58.5,
+        0.0,
+        146.0
+      ],
+      "floor": 0,
+      "label": "The Crucible",
+      "price": 5000,
+      "node_path": "Gameplay/Crucible",
+      "key": "Gameplay/Crucible",
+      "data": {
+        "needs_power": true
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Bahnhof",
+      "type": "door",
+      "pos": [
+        20.0,
+        0.0,
+        30.0
+      ],
+      "floor": 0,
+      "label": "Rail Yard",
+      "price": 750,
+      "node_path": "Gameplay/Door_Bahnhof",
+      "key": "Gameplay/Door_Bahnhof",
+      "data": {
+        "door_id": "door_bahnhof",
+        "opens_zone": "B_BAHNHOF",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Halle",
+      "type": "door",
+      "pos": [
+        -30.0,
+        0.0,
+        150.0
+      ],
+      "floor": 0,
+      "label": "The Great Hangar",
+      "price": 2000,
+      "node_path": "Gameplay/Door_Halle",
+      "key": "Gameplay/Door_Halle",
+      "data": {
+        "door_id": "door_halle",
+        "opens_zone": "H_HALLE",
+        "requires_power": true
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Kantine",
+      "type": "door",
+      "pos": [
+        0.0,
+        0.0,
+        45.0
+      ],
+      "floor": 0,
+      "label": "Canteen",
+      "price": 1000,
+      "node_path": "Gameplay/Door_Kantine",
+      "key": "Gameplay/Door_Kantine",
+      "data": {
+        "door_id": "door_kantine",
+        "opens_zone": "C_KANTINE",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Kirchplatz",
+      "type": "door",
+      "pos": [
+        20.0,
+        0.0,
+        60.0
+      ],
+      "floor": 0,
+      "label": "Church Square",
+      "price": 1000,
+      "node_path": "Gameplay/Door_Kirchplatz",
+      "key": "Gameplay/Door_Kirchplatz",
+      "data": {
+        "door_id": "door_kirchplatz",
+        "opens_zone": "D_KIRCHPLATZ",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Montage",
+      "type": "door",
+      "pos": [
+        -22.0,
+        0.0,
+        60.0
+      ],
+      "floor": 0,
+      "label": "Assembly Halls",
+      "price": 1250,
+      "node_path": "Gameplay/Door_Montage",
+      "key": "Gameplay/Door_Montage",
+      "data": {
+        "door_id": "door_montage",
+        "opens_zone": "E_MONTAGE",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Pruefstand",
+      "type": "door",
+      "pos": [
+        -30.0,
+        0.0,
+        110.0
+      ],
+      "floor": 0,
+      "label": "Engine Test Stands",
+      "price": 1500,
+      "node_path": "Gameplay/Door_Pruefstand",
+      "key": "Gameplay/Door_Pruefstand",
+      "data": {
+        "door_id": "door_pruefstand",
+        "opens_zone": "G_PRUEFSTAND",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_ServiceGate",
+      "type": "door",
+      "pos": [
+        0.0,
+        0.0,
+        122.0
+      ],
+      "floor": 0,
+      "label": "Engine Test Stands",
+      "price": 1500,
+      "node_path": "Gameplay/Door_ServiceGate",
+      "key": "Gameplay/Door_ServiceGate",
+      "data": {
+        "door_id": "door_pruefstand",
+        "opens_zone": "G_PRUEFSTAND",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "door:Gameplay/Door_Windkanal",
+      "type": "door",
+      "pos": [
+        8.0,
+        0.0,
+        100.0
+      ],
+      "floor": 0,
+      "label": "Wind Tunnel",
+      "price": 1250,
+      "node_path": "Gameplay/Door_Windkanal",
+      "key": "Gameplay/Door_Windkanal",
+      "data": {
+        "door_id": "door_windkanal",
+        "opens_zone": "F_WINDKANAL",
+        "requires_power": false
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_blastproof_bock",
+      "type": "perk",
+      "pos": [
+        -40.0,
+        0.0,
+        149.0
+      ],
+      "floor": 0,
+      "label": "Blastproof Bock",
+      "price": 2000,
+      "node_path": "Gameplay/Perk_blastproof_bock",
+      "key": "Gameplay/Perk_blastproof_bock",
+      "data": {
+        "perk_id": "blastproof_bock"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_hawkeye_brandy",
+      "type": "perk",
+      "pos": [
+        1.0,
+        0.0,
+        126.0
+      ],
+      "floor": 0,
+      "label": "Hawkeye Brandy",
+      "price": 1500,
+      "node_path": "Gameplay/Perk_hawkeye_brandy",
+      "key": "Gameplay/Perk_hawkeye_brandy",
+      "data": {
+        "perk_id": "hawkeye_brandy"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_ironhide_stout",
+      "type": "perk",
+      "pos": [
+        36.0,
+        0.0,
+        31.0
+      ],
+      "floor": 0,
+      "label": "Ironhide Stout",
+      "price": 2500,
+      "node_path": "Gameplay/Perk_ironhide_stout",
+      "key": "Gameplay/Perk_ironhide_stout",
+      "data": {
+        "perk_id": "ironhide_stout"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_marathon_malt",
+      "type": "perk",
+      "pos": [
+        -10.0,
+        0.0,
+        109.0
+      ],
+      "floor": 0,
+      "label": "Marathon Malt",
+      "price": 2000,
+      "node_path": "Gameplay/Perk_marathon_malt",
+      "key": "Gameplay/Perk_marathon_malt",
+      "data": {
+        "perk_id": "marathon_malt"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_packmule_porter",
+      "type": "perk",
+      "pos": [
+        -20.0,
+        0.0,
+        149.0
+      ],
+      "floor": 0,
+      "label": "Packmule Porter",
+      "price": 4000,
+      "node_path": "Gameplay/Perk_packmule_porter",
+      "key": "Gameplay/Perk_packmule_porter",
+      "data": {
+        "perk_id": "packmule_porter"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_second_wind",
+      "type": "perk",
+      "pos": [
+        1.0,
+        0.0,
+        22.0
+      ],
+      "floor": 0,
+      "label": "Second Wind Schnapps",
+      "price": 500,
+      "node_path": "Gameplay/Perk_second_wind",
+      "key": "Gameplay/Perk_second_wind",
+      "data": {
+        "perk_id": "second_wind"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_trigger_tonic",
+      "type": "perk",
+      "pos": [
+        -1.0,
+        0.0,
+        56.0
+      ],
+      "floor": 0,
+      "label": "Trigger Tonic",
+      "price": 3000,
+      "node_path": "Gameplay/Perk_trigger_tonic",
+      "key": "Gameplay/Perk_trigger_tonic",
+      "data": {
+        "perk_id": "trigger_tonic"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_twin_barrel",
+      "type": "perk",
+      "pos": [
+        6.0,
+        0.0,
+        99.0
+      ],
+      "floor": 0,
+      "label": "Twin Barrel Bitters",
+      "price": 2000,
+      "node_path": "Gameplay/Perk_twin_barrel",
+      "key": "Gameplay/Perk_twin_barrel",
+      "data": {
+        "perk_id": "twin_barrel"
+      }
+    },
+    {
+      "id": "power_switch:Gameplay/Hauptschalter",
+      "type": "power_switch",
+      "pos": [
+        -59.0,
+        0.0,
+        66.0
+      ],
+      "floor": 0,
+      "label": "Power: the works' main breaker",
+      "price": 0,
+      "node_path": "Gameplay/Hauptschalter",
+      "key": "Gameplay/Hauptschalter"
+    },
+    {
+      "id": "trap:Gameplay/Lever_CoalHopper",
+      "type": "trap",
+      "pos": [
+        39.6,
+        0.0,
+        47.0
+      ],
+      "floor": 0,
+      "label": "Chandelier Drop",
+      "price": 1000,
+      "node_path": "Gameplay/Lever_CoalHopper",
+      "key": "Gameplay/Lever_CoalHopper",
+      "data": {
+        "trap_id": "coal_hopper",
+        "kind": "chandelier"
+      }
+    },
+    {
+      "id": "trap:Gameplay/Lever_JigCrane",
+      "type": "trap",
+      "pos": [
+        -0.4,
+        0.0,
+        90.0
+      ],
+      "floor": 0,
+      "label": "Chandelier Drop",
+      "price": 1000,
+      "node_path": "Gameplay/Lever_JigCrane",
+      "key": "Gameplay/Lever_JigCrane",
+      "data": {
+        "trap_id": "jig_crane",
+        "kind": "chandelier"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_bar",
+      "type": "wall_buy",
+      "pos": [
+        -0.17,
+        1.5,
+        114.0
+      ],
+      "floor": 0,
+      "label": "BAR",
+      "price": 1800,
+      "node_path": "Gameplay/WallBuy_bar",
+      "key": "Gameplay/WallBuy_bar",
+      "data": {
+        "weapon_id": "bar"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_kar98k",
+      "type": "wall_buy",
+      "pos": [
+        12.17,
+        1.5,
+        6.0
+      ],
+      "floor": 0,
+      "label": "Kar98k",
+      "price": 200,
+      "node_path": "Gameplay/WallBuy_kar98k",
+      "key": "Gameplay/WallBuy_kar98k",
+      "data": {
+        "weapon_id": "kar98k"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_m1_carbine",
+      "type": "wall_buy",
+      "pos": [
+        36.0,
+        1.5,
+        29.83
+      ],
+      "floor": 0,
+      "label": "M1 Carbine",
+      "price": 600,
+      "node_path": "Gameplay/WallBuy_m1_carbine",
+      "key": "Gameplay/WallBuy_m1_carbine",
+      "data": {
+        "weapon_id": "m1_carbine"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_m1_garand",
+      "type": "wall_buy",
+      "pos": [
+        26.17,
+        1.5,
+        90.0
+      ],
+      "floor": 0,
+      "label": "M1 Garand",
+      "price": 600,
+      "node_path": "Gameplay/WallBuy_m1_garand",
+      "key": "Gameplay/WallBuy_m1_garand",
+      "data": {
+        "weapon_id": "m1_garand"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_mp40",
+      "type": "wall_buy",
+      "pos": [
+        39.83,
+        1.5,
+        50.0
+      ],
+      "floor": 0,
+      "label": "MP40",
+      "price": 1000,
+      "node_path": "Gameplay/WallBuy_mp40",
+      "key": "Gameplay/WallBuy_mp40",
+      "data": {
+        "weapon_id": "mp40"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_stg44",
+      "type": "wall_buy",
+      "pos": [
+        -0.17,
+        1.5,
+        80.0
+      ],
+      "floor": 0,
+      "label": "STG-44",
+      "price": 1200,
+      "node_path": "Gameplay/WallBuy_stg44",
+      "key": "Gameplay/WallBuy_stg44",
+      "data": {
+        "weapon_id": "stg44"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_thompson",
+      "type": "wall_buy",
+      "pos": [
+        -10.0,
+        1.5,
+        59.83
+      ],
+      "floor": 0,
+      "label": "Thompson M1A1",
+      "price": 1200,
+      "node_path": "Gameplay/WallBuy_thompson",
+      "key": "Gameplay/WallBuy_thompson",
+      "data": {
+        "weapon_id": "thompson"
+      }
+    },
+    {
+      "id": "workbench:Gameplay/ArmorersBench",
+      "type": "workbench",
+      "pos": [
+        30.0,
+        0.0,
+        0.66
+      ],
+      "floor": 0,
+      "label": "Armorer's Bench (M1911 attachments)",
+      "price": 0,
+      "node_path": "Gameplay/ArmorersBench",
+      "key": "Gameplay/ArmorersBench",
+      "data": {
+        "bench": "armorer"
+      }
+    }
+  ],
+  "connectors": [
+    {
+      "kind": "ladder",
+      "a": [
+        -66.0,
+        0.0,
+        190.0
+      ],
+      "b": [
+        -68.2,
+        12.0,
+        190.0
+      ],
+      "floor_a": 0,
+      "floor_b": 1
+    },
+    {
+      "kind": "ladder",
+      "a": [
+        26.0,
+        0.0,
+        190.0
+      ],
+      "b": [
+        28.2,
+        12.0,
+        190.0
+      ],
+      "floor_a": 0,
+      "floor_b": 1
+    }
+  ]
+}

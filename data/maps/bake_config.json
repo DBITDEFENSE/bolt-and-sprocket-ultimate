@@ -33,6 +33,13 @@
       ],
       "zone_names": {"A_MINEHEAD": "Minehead Yard", "B_RAILYARD": "Rail Yard", "C_ADMIN": "Administration Block", "D_BARRACKS": "Barracks & Mess Hall", "E_LIFT": "Lift Shaft", "M_STAIRS": "Maintenance Stairs", "F_CHAPEL": "Salt Chapel", "G_GENERATOR": "Generator Hall", "H_LAB": "Laboratory Wing", "I_CORE": "Core Vault"}
     },
+    "map04a_thalbach": {
+      "px_per_m": 6.0,
+      "floors": [
+        {"id": "works", "name": "Werk Thalbach", "y_min": -1.0, "y_max": 10.0, "base_y": 0.0, "cut": 1.7},
+        {"id": "catwalks", "name": "Hangar catwalks (+12)", "y_min": 10.0, "y_max": 24.0, "base_y": 12.0, "cut": 13.4, "zones": ["H_HALLE"]}
+      ]
+    },
     "map02_totenhafen": {
       "px_per_m": 8.0,
       "floors": [

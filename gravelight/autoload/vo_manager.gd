@@ -635,6 +635,8 @@ static func line_map_of(id: String, rec: Dictionary, rules_cfg: Dictionary) -> S
 	for tok: String in str(rec.get("category", "")).split("_"):
 		if tok.length() == 2 and tok[0] == "M" and tok[1] >= "0" and tok[1] <= "9":
 			return "map0" + tok[1]
+		if tok.length() == 3 and tok[0] == "M" and tok[1] >= "0" and tok[1] <= "9" and tok[2] >= "A" and tok[2] <= "D":
+			return "map0" + tok[1] + tok[2].to_lower()   # Map 4's acts: M4A -> map04a (UPDATE 07)
 	var re: RegEx = RegEx.create_from_string("\\bmap (\\d)\\b")
 	var mt: RegExMatch = re.search(str(rec.get("condition", "")).to_lower())
 	if mt != null:

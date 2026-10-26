@@ -1,19 +1,24 @@
 {
-  "_doc": "The campaign chain (DECISIONS T-033): Map 0 -> Map 1 -> Map 2. Each map's own json carries its 'exfil' block (round, target, beacon position, window); this table holds what is shared: the scene for every map id, the arrival rules on a new map, the vote/skip tuning, and the two transition cutscenes (shots are data: camera from/to/look in the departing map's frame, seconds, VO ids, effects). A map whose scene is missing ends the run on a 'campaign continues' screen with the profile updated.",
+  "_doc": "The campaign chain (DECISIONS T-033): Map 0 -> Map 1 -> Map 2. Each map's own json carries its 'exfil' block (round, target, beacon position, window); this table holds what is shared: the scene for every map id, the arrival rules on a new map, the vote/skip tuning, and the two transition cutscenes (shots are data: camera from/to/look in the departing map's frame, seconds, VO ids, effects). A map whose scene is missing ends the run on a 'campaign continues' screen with the profile updated. standalone: built levels playable from the launcher that are not in the chain yet (UPDATE 07: Map 4's acts land here one by one and move into the chain with the boarding step); MapCatalog lists them so they bake map data and are checked like the rest.",
   "chain": [
     "map00_crossroads",
     "map01_kaltenbrunn",
     "map02_totenhafen"
   ],
+  "standalone": [
+    "map04a_thalbach"
+  ],
   "scenes": {
     "map00_crossroads": "res://gravelight/maps/map00_crossroads/map00.tscn",
     "map01_kaltenbrunn": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
-    "map02_totenhafen": "res://gravelight/maps/map02_totenhafen/map02.tscn"
+    "map02_totenhafen": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+    "map04a_thalbach": "res://gravelight/maps/map04_fernflug/map04a.tscn"
   },
   "display_names": {
     "map00_crossroads": "Crossroads Inn",
     "map01_kaltenbrunn": "Kaltenbrunn",
-    "map02_totenhafen": "Totenhafen"
+    "map02_totenhafen": "Totenhafen",
+    "map04a_thalbach": "Fernflug — Act I: Werk Thalbach"
   },
   "arrival_grace_seconds": 14.0,
   "arrival_banner": "%s\nThe squad arrives. Round %d begins shortly.",
@@ -32,6 +37,18 @@
     "dormant_energy": 0.0
   },
   "cutscenes": {
+    "exfil_m4a_m4b": {
+      "title": "DER KRANICH",
+      "subtitle": "somewhere over the North Sea  ·  03:40",
+      "seconds": 30.0,
+      "title_at": 22.0,
+      "fade_at": 27.5,
+      "shots": [
+        {"t": 0.0, "from": [-20.0, 1.6, 152.0], "to": [-20.0, 2.2, 157.0], "look": [-20.0, 3.0, 168.0], "fov": 62, "fx": "", "vo": "OPR_EXFIL_GO_M4A_01", "vo_at": 1.0},
+        {"t": 9.0, "from": [-50.0, 6.0, 212.0], "to": [-30.0, 8.0, 210.0], "look": [-20.0, 6.0, 185.0], "fov": 58, "fx": "doors"},
+        {"t": 19.0, "from": [20.0, 24.0, 120.0], "to": [-10.0, 30.0, 100.0], "look": [-20.0, 8.0, 185.0], "fov": 50}
+      ]
+    },
     "exfil_m0_m1": {
       "title": "KALTENBRUNN",
       "subtitle": "Kaltenbrunn salt mine  ·  9 km east  ·  dawn, 24 December 1944",
