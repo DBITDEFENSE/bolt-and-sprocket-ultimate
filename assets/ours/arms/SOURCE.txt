@@ -1,0 +1,9 @@
+Title: GRAVELIGHT first-person arms (dutch, peg, deacon, wren, bolt, vendelin)
+Author: GRAVELIGHT project (generated in-house by tools_src/blender/arms/make_arms.py, T-089)
+Source: this repository (tools_src/blender/arms/make_arms.py)
+License: Ours (original work, in-house)
+Credit line: none needed
+Format: GLB (Blender 5.1 export): HandR_fist|trigger_s|m|l, HandL_fist|open_s|m|l, Forearm, Sleeve; flat PBR colours
+Downloaded: n/a (generated 2026-10-25 by Claude for Devin Blair)
+Files used: dutch.glb, peg.glb, deacon.glb, wren.glb, bolt.glb, vendelin.glb
+Game use: first-person viewmodel arms per survivor (gravelight/weapons/arms.gd)

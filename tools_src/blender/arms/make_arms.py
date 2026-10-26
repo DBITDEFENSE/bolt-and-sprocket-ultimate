@@ -57,7 +57,7 @@ CHARACTERS = {
 }
 RADII = {"s": 0.014, "m": 0.019, "l": 0.027}
 # Godot's hand_mesh: how much smaller the visible metaball surface is than the ball radius (calibrated: --calib)
-SURF = 0.5
+SURF = 0.42
 
 
 def B(gx, gy, gz):
@@ -87,7 +87,9 @@ def material(name, col, rough=0.75, metal=0.0):
     m = bpy.data.materials.new(name)
     m.use_nodes = True
     bsdf = m.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = (col[0], col[1], col[2], 1.0)
+    # the colours above are sRGB (picked like the procedural arms' albedo); glTF baseColorFactor is linear
+    lin = [c ** 2.2 for c in col]
+    bsdf.inputs["Base Color"].default_value = (lin[0], lin[1], lin[2], 1.0)
     bsdf.inputs["Roughness"].default_value = rough
     bsdf.inputs["Metallic"].default_value = metal
     _mats[key] = m

@@ -1494,6 +1494,7 @@ func _build_viewmodel() -> void:
 		_set_vm_layer(n)
 	for a2: MeshInstance3D in _arm_r + _arm_l:
 		_set_vm_layer(a2)
+	_apply_arms()
 	_rebuild_gun()
 	_rebuild_knife()
 	_vm.position = _hip
@@ -1550,8 +1551,8 @@ func _rebuild_gun() -> void:
 	_grip_r_radius = float(_model.get_meta("grip_r_radius", WeaponModels.HAND_R0))
 	_lh_axis = str(_model.get_meta("lh_axis", "z"))
 	_lh_radius = float(_model.get_meta("lh_radius", 0.024))
-	(_hand_r.get_node("Mesh") as MeshInstance3D).mesh = WeaponModels.hand_mesh(false, _grip_r_radius)
-	(_hand_l.get_node("Mesh") as MeshInstance3D).mesh = WeaponModels.hand_mesh(true, _lh_radius)
+	(_hand_r.get_node("Mesh") as MeshInstance3D).mesh = _hand_mesh(false, _grip_r_radius, "fist")
+	(_hand_l.get_node("Mesh") as MeshInstance3D).mesh = _hand_mesh(true, _lh_radius, "open" if _lh_axis == "z" else "fist")
 	_muzzle = _model.get_node("Muzzle") as Node3D
 	# One flash mesh per gun, reused for every shot (re-aimed and re-scaled per shot in _on_shot_fx).
 	_flash_t = 0.0
@@ -1589,6 +1590,36 @@ func _rebuild_gun() -> void:
 	# Empty Garand: the clip is gone and the bolt is locked back until a new en-bloc goes in.
 	if _reload_kind == "enbloc" and w.mag == 0 and _parts.has("Mag"):
 		(_parts["Mag"] as Node3D).hide()
+
+
+## T-089: the survivor's own arms (Arms: assets/ours/arms/<character>.glb, Dutch's when a survivor has none) on the
+## same IK rig; without a set the procedural WeaponModels arms built in _build_viewmodel stay.
+var _arms_char: StringName = &""
+
+
+func _apply_arms() -> void:
+	_arms_char = Arms.character_for(player)
+	if _arms_char == &"":
+		return
+	var fm: Mesh = Arms.forearm(_arms_char)
+	for f: MeshInstance3D in [_forearm_r, _forearm_l]:
+		if fm != null:
+			f.mesh = fm
+			f.material_override = null
+	var sm: Mesh = Arms.sleeve(_arms_char)
+	for a: MeshInstance3D in _arm_r + _arm_l:
+		if sm != null:
+			a.mesh = sm
+			a.material_override = null
+
+
+## The hand mesh for a grip (Arms when the survivor has a set, else the procedural glove).
+func _hand_mesh(left: bool, radius: float, pose: String) -> Mesh:
+	if _arms_char != &"":
+		var m: Mesh = Arms.hand(_arms_char, left, radius, pose)
+		if m != null:
+			return m
+	return WeaponModels.hand_mesh(left, radius)
 
 
 ## ADS pose (T-047): the gun is placed so its SightPoint marker sits exactly on the camera's center ray at
