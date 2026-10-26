@@ -1,10 +1,10 @@
 # PROGRESS
 
-RESUME HERE: UPDATE 07 (MAP 4 FERNFLUG + QA pass), 2026-10-26, branch map4-fernflug (also pushed to claude/new-session-wugi0p). Phase 0 QA in progress: GUT baseline 2 fails (stale minimap POIs map01/rustvane: re-baked under xvfb, fixed), tools/*.sh exec bits fixed, Totenhafen playtest to r14 found: zombies falling out of the world at the quay edge (22,0,0)/(26,0,0), bot errands to the frag/trench wall-buys timing out; soaks (map00 bots3, map01 kaltenbrunn) and the full smoke suite running into logs/qa/ and .smoke_logs/u07/. Phase 1 design is DONE (docs/MAP4_FERNFLUG.md). Next: finish docs/QA_REPORT_U07.md from the logs, fix every issue with tests, then Phase 2 build order 1..8 (Act 1 greybox first, gen_map04a.gd). Section status under 'UPDATE 07' below.
+RESUME HERE: UPDATE 07 (MAP 4 FERNFLUG + QA pass), 2026-10-26, branch map4-fernflug (also pushed to claude/new-session-wugi0p). Phase 1 design DONE (docs/MAP4_FERNFLUG.md). Phase 0 QA: report docs/QA_REPORT_U07.md in progress; merged fixes T-103 (Totenhafen); workers running for Map 0 (Q-14, branch u07-qa-map00) and Map 1 (Q-15/Q-16, u07-qa-map01); soak/playtest queue in logs/qa/ (queue.log, queue2.log = the two suspect smokes re-run alone). Phase 2: step 1 Act I MERGED (T-104, map04a standalone, launcher button 'Map 4 — Act I'); perks + Lodestone worker on branch u07-perks-lodestone finishing (merge next, T-105); then step 2 boarding + step 3 Act II builder (needs Player/Zombie.external_push from the perks branch). Build order after that: crash, Act III, rocket, Act IV, egg/endings/Play.bat, full soak, merge to master, morning report.
 
 ## UPDATE 07, 2026-10-26: Map 4 Fernflug + QA pass
 
-Phase 0 QA: running. Phase 1 design: DONE. Phase 2: Act 1 (pending), boarding, Act 2, crash, Act 3, rocket, Act 4, perks/wonder/egg/endings (pending). Finish: pending.
+Phase 0 QA: running (T-103 merged; Map 0/Map 1 workers out). Phase 1 design: DONE. Phase 2: Act 1 MERGED (T-104), boarding, Act 2, crash, Act 3, rocket, Act 4, perks/wonder/egg/endings (pending). Finish: pending.
 
 ## Overnight run, 2026-10-25 -> 26: UPDATE 05 "Look the part" (plan)
 
