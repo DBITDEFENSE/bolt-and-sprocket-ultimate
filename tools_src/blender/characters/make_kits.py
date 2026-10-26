@@ -452,7 +452,7 @@ def kit_soldier(body, P):
     k.add(stud(coat, "metal", 0.0, 1.0, (0.05, 0.04, 0.012)))     # buckle
     k.add(band(body, neck_pts(body), 1.49, 0.06, "cloth2", pad=0.016, thick=0.012))   # collar
     for sx, side in ((-1, "Left"), (1, "Right")):
-        k.add(cuff_band(body, side, 0.93, 0.05, "cloth2", pad=0.016, thick=0.006))
+        k.add(cuff_band(body, side, 0.93, 0.05, "cloth2", pad=0.016, thick=0.006, bones=("LowerArm", "Hand")))   # T-099: arm only (no wrist-to-thigh ring)
     return k
 
 
@@ -549,7 +549,7 @@ def kit_dockworker(body, P):
     k.add(band(body, neck_pts(body), 1.55, 0.09, "knit", pad=0.014, thick=0.014))   # roll neck
     k.add(band(body, trunk(jumper), 0.94, 0.05, "knit", pad=0.002, thick=0.008))    # ribbed hem
     for sx, side in ((-1, "Left"), (1, "Right")):
-        k.add(cuff_band(body, side, 0.92, 0.05, "knit", pad=0.014, thick=0.006))
+        k.add(cuff_band(body, side, 0.92, 0.05, "knit", pad=0.014, thick=0.006, bones=("LowerArm", "Hand")))   # T-099: arm only
     return k
 
 
@@ -579,7 +579,7 @@ def kit_nurse(body, P):
     k.add(band(body, neck_pts(body), 1.49, 0.04, "white", pad=0.012, thick=0.008))
     k.add(band(body, trunk(dress), 1.0, 0.04, "white", pad=0.004, thick=0.005))    # apron strings
     for sx, side in ((-1, "Left"), (1, "Right")):
-        k.add(cuff_band(body, side, 1.13, 0.04, "white", pad=0.012, thick=0.005))
+        k.add(cuff_band(body, side, 1.13, 0.04, "white", pad=0.012, thick=0.005, bones=("UpperArm", "LowerArm")))   # T-099: arm only
     return k
 
 
@@ -792,8 +792,12 @@ def head_piece(P, kind, keyname="hat"):
     c0 = MB.HEAD_C
     out = []
 
-    def dm(center, radii, edge, **kw):
-        return MF.dome(c0 + np.array(center), (radii[0] * hs[0], radii[1] * hs[1], radii[2] * hs[2]), edge, **kw)
+    def dm(center, radii, edge, hat=True, **kw):
+        sr = (radii[0] * hs[0], radii[1] * hs[1], radii[2] * hs[2])
+        if hat:
+            # T-099: the hair under it is trimmed to fit (make_face.hair reads P.hat)
+            P.hat = {"center": c0 + np.array(center), "radii": sr, "edge": edge, "thick": float(kw.get("thick", 0.004)), "kind": kind}
+        return MF.dome(c0 + np.array(center), sr, edge, **kw)
 
     def sc(radii):
         return (radii[0] * hs[0], radii[1] * hs[1], radii[2] * hs[2])
@@ -817,7 +821,7 @@ def head_piece(P, kind, keyname="hat"):
             bv, bf = MB.box(c0 + np.array([sx * 0.104 * hs[0], -0.012, 0.004]), np.array([0.004, 0.035, 0.008]))
             out.append(rigid(bv, bf, "leather"))
     elif kind == "beret":
-        v, f = dm((0.0, 0.086, 0.004), (0.114, 0.044, 0.118), lambda a: -50.0, thick=0.008, n_el=8)
+        v, f = dm((0.0, 0.086, 0.004), (0.114, 0.044, 0.118), lambda a: -50.0, hat=False, thick=0.008, n_el=8)
         pivot = c0 + np.array([0, 0.086, 0])
         v = (v - pivot) @ C.rot_z(-0.32).T + pivot + np.array([0.012, 0.0, 0.0])
         out.append(rigid(v, f, keyname))
@@ -866,7 +870,7 @@ def head_piece(P, kind, keyname="hat"):
         kv, kf = MB.uv_sphere(c0 + np.array([0.0, -0.118, -0.03]), 0.016, 8, 5)
         out.append(rigid(kv, kf, keyname))
     elif kind == "sidecap":
-        v, f = dm((0.008, 0.083, 0.004), (0.06, 0.056, 0.122), lambda a: -22.0, thick=0.005, n_el=8)
+        v, f = dm((0.008, 0.083, 0.004), (0.06, 0.056, 0.122), lambda a: -22.0, hat=False, thick=0.005, n_el=8)
         pivot = c0 + np.array([0, 0.083, 0])
         v = (v - pivot) @ C.rot_z(-0.12).T + pivot
         out.append(rigid(v, f, keyname))

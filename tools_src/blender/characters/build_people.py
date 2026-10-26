@@ -78,6 +78,26 @@ def person_params(person):
     return P
 
 
+def shorter_neck(v, region, lift, thick):
+    """T-099: the base of the neck, the collarbones and the top of the trapezius rise by `lift` (fading out toward
+    the shoulder tips and to nothing just under the head, so the head's seam doesn't move), and the neck between the
+    collar and the jaw thickens by `thick`. Trunk vertices only (region 0); the head, hands and bones are untouched."""
+    if lift <= 0.0 and abs(thick - 1.0) < 1e-6:
+        return v
+    out = v.copy()
+    x, y, z = v[:, 0], v[:, 1], v[:, 2]
+    trunk = (region == 0).astype(np.float64)
+    near = C.smoothstep(0.22, 0.09, np.abs(x))
+    rise = C.smoothstep(1.30, 1.49, y) * C.smoothstep(1.615, 1.53, y)
+    front = C.smoothstep(0.06, -0.01, z)   # the front and sides (the back of the neck keeps its line: no hump)
+    out[:, 1] += trunk * near * rise * front * lift
+    k = 1.0 + (thick - 1.0) * C.smoothstep(1.46, 1.52, y) * C.smoothstep(1.64, 1.59, y) * C.smoothstep(0.13, 0.09, np.abs(x))
+    cz = 0.012
+    out[:, 0] = x + trunk * (x * k - x)
+    out[:, 2] = z + trunk * ((z - cz) * k + cz - z)
+    return out
+
+
 def canonical():
     """The canonical living medium male's UV layout (the layout the shared living skin textures were baked on)."""
     C.reset_scene()
@@ -193,6 +213,13 @@ def build_person(pid, person, canon, a):
     cov = np.zeros(len(B.v), dtype=bool)
     cov[list(kit.covered)] = True
     dead = [fi for fi, f in enumerate(B.f) if all(cov[i] for i in f)]
+    # T-099: a shorter-reading neck: the body (after the UVs, so the shared skin textures still fit) and later the
+    # clothes and hair (the same field, so the collars stay on it) are reshaped; the head and every bone stay put
+    # (hitboxes and the rig are the gameplay contract)
+    nk = dict(PEOPLE.get("neck", {}))
+    nk.update(person.get("neck", {}))
+    lift, thick = float(nk.get("lift", 0.0)), float(nk.get("thick", 1.0))
+    C.set_verts(body, shorter_neck(B.v, B.region, lift, thick))
     delete_faces(body, dead)
     # decimate, sparing the head and the hands
     v_now = C.get_verts(body)
@@ -215,9 +242,11 @@ def build_person(pid, person, canon, a):
     hacc = MF.hair(P, B, person)
     if hacc.v:
         hv, hf, hk, hbi, hbw = hacc.arrays()
+        hv = shorter_neck(hv, np.zeros(len(hv), dtype=np.int64), lift, thick)
         objs["Hair"] = MB.object_from("Hair", hv, hf, hbi, hbw, MB.part_colors(hk))
     # the kit
     kv, kf, kk, kbi, kbw, kao = kit_arrays(kit)
+    kv = shorter_neck(kv, np.zeros(len(kv), dtype=np.int64), lift, thick)
     kob = MB.object_from("Kit", kv, kf, kbi, kbw, MB.part_colors(kk, kao))
     stats = {"body_raw": raw_body, "body_culled_faces": len(dead), "kit_raw": C.tri_count(kob)}
     if not os.environ.get("PEOPLE_NODEC"):

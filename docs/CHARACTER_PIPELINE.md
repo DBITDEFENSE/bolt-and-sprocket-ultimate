@@ -200,3 +200,30 @@ the legacy bodies).
 Checks: GUT `test_people_bodies`; shots `gravelight/tools_src/shots_lineup.tscn` (the lineup, faces per expression,
 the Cousins' faces, a risen patron) and `shots_people_ingame.tscn` (patrons at their tables, the bots, a fight, the
 Cousins' round), both with `-- --legacy-people` for the before set.
+
+### T-099 fixes (the T-092 known issues)
+
+- **Gun hold.** `RemoteBody.hold_of(gun, id)` measures each held gun: a long gun's hold point is its butt (the back
+  of its meshes), a pistol's its grip; `sight_y` from SightPoint; the support grip's axis / radius (`lh_axis`,
+  `lh_radius`) and the firing grip (`grip_r`). The gun turns about that point, placed on the body actually drawn
+  (`_hold_anchor`: the rig shoulder and eye times the person's height): a long gun's butt tucked under the right
+  shoulder at the hip, in the shoulder pocket with the sight under the leaning eye aimed (PF_ADS); a pistol out in
+  both hands at chest height, at eye height aimed. Behind a long gun the body turns side-on (`_blade`, the feet and
+  hips with it, the head and gun turned back to the front) so the support hand reaches; if it still can't, the
+  support grip slides back along the handguard (16 cm at most). `hand_on_gun` puts the wrists back from the grips
+  and gives each hand a basis (support palm up under a handguard, thumb along the left; round an upright foregrip;
+  cupping a pistol hand; the firing palm on the grip); `PersonRig.drive` takes `hand_basis` / `hand_w` and turns the
+  Hand bones to them (wrist bend capped at `WRIST_MAX`). The elbows hang down and a little out on the gun.
+- **Hair under hats.** `make_kits.head_piece` records the hat's dome on `P.hat` (not for the beret or side cap, which
+  sit on the hair); `make_face.under_hat` pulls the hair inside the hat, and in a 24° band under its edge, in to the
+  hat's inner surface, and drops the faces hidden inside it.
+- **Necks.** `build_people.shorter_neck` (people.json `neck`: `lift`, `thick`, per person overridable) raises the base
+  of the neck, the collarbones and the trapezius and thickens the neck, after the UV transfer (the shared skin
+  textures still fit) and before the kit (the collars sit on it). No bone or hitbox moves.
+- **Zombie cuffs.** The soldier, dockworker and nurse cuff bands take only the arm's vertices (`bones=`), the fix
+  T-092 made for the people: a band at wrist height used to average in the thigh beside it and stretch a ring from
+  the wrist to the thigh.
+- **Risen people.** Their severed pieces are cut from their own risen mesh (`PeopleBodies.piece_mesh`, used by
+  `ZombieGore._throw_piece` when the zombie has a `person` meta); the host sends the person id as field 9 of the
+  zombie spawn event and the co-op client calls `dress_risen` on its puppet; `Zombie._reset_presentation` drops the
+  meta when the pool reuses the zombie.

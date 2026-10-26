@@ -100,7 +100,9 @@ static func _throw_piece(z: Zombie, bone: String, impulse: Vector3) -> void:
 	cs.shape = sh
 	body.add_child(cs)
 	var mi: MeshInstance3D = MeshInstance3D.new()
-	mi.mesh = ZombieBody.piece_mesh(z.kit_name(), z.build_name(), z.is_female(), bone)
+	var who: String = str(z.get_meta("person", ""))   # T-099: a risen patron / survivor loses their own limb
+	var own: ArrayMesh = PeopleBodies.piece_mesh(who, bone) if who != "" else null
+	mi.mesh = own if own != null else ZombieBody.piece_mesh(z.kit_name(), z.build_name(), z.is_female(), bone)
 	mi.scale = z.pivot_scale()
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	body.add_child(mi)

@@ -322,7 +322,9 @@ static func _shape_arrays(obj: Array, shapes: PackedStringArray) -> Array:
 ## A patron or survivor who turns (T-076 / T-077): the zombie that gets up wears the same person, risen (the same
 ## face, hair and clothes; the infection skin and the violet eyes), on the zombie's own skeleton, so its rise, clips,
 ## hitboxes and gore are the zombie's. The rolled gear is hidden and the build / sex follow the person (the gore
-## pieces come from the zombie kit of that build). No-op without a built GLB (the zombie keeps its kit).
+## pieces are cut from the same person: piece_mesh, T-099). No-op without a built GLB (the zombie keeps its kit).
+## The id is kept as the zombie's "person" meta; the host sends it with the zombie's spawn event so co-op clients
+## dress their puppet the same (NetMatch._send_spawn, T-099); Zombie._reset_presentation clears it on pool reuse.
 static func dress_risen(z: Node, id: String) -> void:
 	if z == null or not available(id):
 		return
@@ -337,3 +339,21 @@ static func dress_risen(z: Node, id: String) -> void:
 	z.set("_build", str(r.get("build", "medium")))
 	z.set("_female", bool(r.get("female", false)))
 	z.set_meta("person", id)
+
+
+## T-099: a severed piece of a risen person (ZombieGore._throw_piece): the person's risen mesh cut by dominant bone
+## at `root_bone` (ZombieBody._cut_piece, the same split the zombie bodies use), so a turned patron's arm flies off in
+## their own sleeve, not the generic villager kit. null without a built GLB (the caller falls back to the kit piece).
+static func piece_mesh(id: String, root_bone: String) -> ArrayMesh:
+	if not available(id):
+		return null
+	var key: String = "piece:%s:%s" % [id, root_bone]
+	if _meshes.has(key):
+		return _meshes[key]
+	var m: ArrayMesh = mesh(id, true)
+	if m == null:
+		return null
+	var cut: ArrayMesh = ZombieBody._cut_piece(m, root_bone)
+	cut.set_meta("person", id)
+	_meshes[key] = cut
+	return cut

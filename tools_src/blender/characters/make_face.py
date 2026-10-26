@@ -529,6 +529,34 @@ def dome(center, radii, edge_fn, n_az=40, n_el=10, thick=0.004, flare=0.0, top=8
     return verts, out
 
 
+def under_hat(v, f, hat, band=24.0, margin=0.0025):
+    """T-099: hair under headgear (make_kits.head_piece records P.hat: the dome's centre, radii, edge elevation per
+    azimuth and thickness). Inside the hat and in a band of `band` degrees under its edge the hair is pulled in to
+    the hat's inner surface less `margin` (it can't poke through the knit or past the rim at the ears); the faces
+    hidden well inside the hat are dropped. The sideburns and the nape below the band stay as they were."""
+    c = np.asarray(hat["center"], dtype=np.float64)
+    r = np.asarray(hat["radii"], dtype=np.float64)
+    edge = hat["edge"]
+    d = (v - c) / r
+    L = np.linalg.norm(d, axis=1)
+    el = np.degrees(np.arcsin(np.clip(d[:, 1] / np.maximum(L, 1e-9), -1.0, 1.0)))
+    az = np.degrees(np.arctan2(d[:, 0], -d[:, 2]))
+    e = np.array([edge(a) for a in az])
+    r_mean = float(np.mean(r))
+    lim = 1.0 - (float(hat["thick"]) + margin) / r_mean
+    w = C.smoothstep(e - band, e - band * 0.4, el)
+    # in the band under the rim the hair tucks a little further in (under the skin at the temples and ears: cut to
+    # the cap line), so nothing shows between the rim and the ear but a short sideburn
+    lim_v = lim - (0.010 / r_mean) * C.smoothstep(e - band * 0.7, e - band * 0.2, el)
+    newL = L - w * np.maximum(0.0, L - lim_v)
+    out = c + d * (newL / np.maximum(L, 1e-9))[:, None] * r
+    hidden = el > e + 6.0
+    keep = [fc for fc in f if not all(hidden[i] for i in fc)]
+    used = sorted({i for fc in keep for i in fc})
+    remap = {o: k for k, o in enumerate(used)}
+    return out[used], [[remap[i] for i in fc] for fc in keep]
+
+
 def hair(P, B, person):
     """The person's hair object as a PartsBuilder-free accumulator (no shapes): crop / bun / braid / bob / buns2."""
     style = person.get("hair", "crop")
@@ -539,6 +567,8 @@ def hair(P, B, person):
     if style in ("crop", "bun", "braid", "buns2"):
         female = style != "crop"
         v, f = hair_cap(B, female, 0.0065 if not female else 0.0095)
+        if getattr(P, "hat", None):
+            v, f = under_hat(v, f, P.hat)
         acc.add(v, f, "hair", "Head")
     if style == "bun":
         bv, bf = MB.uv_sphere(HEAD_C + np.array([0, -0.035, 0.098 * hs[2]]), 0.036, 10, 6)

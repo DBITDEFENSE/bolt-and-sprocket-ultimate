@@ -20,6 +20,8 @@ var scale_k: float = 1.0
 var _idx: Dictionary = {}
 var _rest: Dictionary = {}          # bone -> rest offset (Vector3)
 var _attach: Dictionary = {}        # bone -> BoneAttachment3D
+## T-099: the most a hand may bend at the wrist to meet a grip (radians).
+const WRIST_MAX: float = 1.25
 
 
 ## Builds the body for person `id`; false when the person has no built GLB (the owner keeps its old body).
@@ -64,7 +66,8 @@ func attachment(bone: String) -> BoneAttachment3D:
 ##   hips: Vector3, the hip node's position; chest: Basis, the chest relative to the hips; head: Basis, the head
 ##   relative to the chest; legs: [[thigh_a, knee_a, foot_x], [...]] left, right (radians, the puppet's angles about
 ##   X: + swings the knee forward); hands: [Vector3, Vector3] targets or null (hang); poles: [Vector3, Vector3]
-##   elbow directions; plant: keep the lower foot on the floor (standing, walking, sitting, kneeling).
+##   elbow directions; plant: keep the lower foot on the floor (standing, walking, sitting, kneeling);
+##   hand_basis: [Basis or null, ...] the Hand bones' wanted frames (on a gun grip, T-099) and hand_w their weights.
 func drive(d: Dictionary) -> void:
 	if skeleton == null:
 		return
@@ -140,7 +143,18 @@ func drive(d: Dictionary) -> void:
 		var fo_l: Basis = b_up.inverse() * b_fo
 		_rot(pre2 + "UpperArm", up_l.get_rotation_quaternion())
 		_rot(pre2 + "LowerArm", fo_l.get_rotation_quaternion())
-		_rot(pre2 + "Hand", Quaternion(Vector3.RIGHT, -0.15))
+		var q_hand: Quaternion = Quaternion(Vector3.RIGHT, -0.15)
+		# T-099: a hand on a gun turns to the grip (RemoteBody.hand_on_gun), the wrist's bend capped
+		var hbs: Array = d.get("hand_basis", [])
+		var hws: Array = d.get("hand_w", [])
+		var hw: float = float(hws[side2]) if side2 < hws.size() else 0.0
+		if side2 < hbs.size() and hbs[side2] != null and hw > 0.0:
+			var want: Quaternion = (b_fo.inverse() * (hbs[side2] as Basis)).get_rotation_quaternion()
+			var bend: float = want.get_angle()
+			if bend > WRIST_MAX:
+				want = Quaternion.IDENTITY.slerp(want, WRIST_MAX / bend)
+			q_hand = q_hand.slerp(want, clampf(hw, 0.0, 1.0))
+		_rot(pre2 + "Hand", q_hand)
 
 
 ## A bone basis whose +Y points along `up` (toward the parent: the bone hangs along -Y at rest) and +X along the hinge.
