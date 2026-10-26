@@ -506,7 +506,8 @@ func power_plan(now: float) -> Dictionary:
 	var nav: RID = player.get_world_3d().navigation_map
 	var goal: Vector3 = brain.snap(sw.global_position)
 	var path: PackedVector3Array = NavigationServer3D.map_get_path(nav, me, goal, true, brain.squad.nav_mask())
-	if path.is_empty():
+	if path.is_empty() or path[path.size() - 1].distance_to(goal) > 2.0:
+		# (a path that stops short is the server's partial path to the closest reachable point, not a way there)
 		# UPDATE 07 QA (T-107): on a map with one navmesh region per zone (Kaltenbrunn, Totenhafen) the open
 		# zones' mask never reaches a switch behind a closed door, so the squad planned nothing and bought nothing
 		# for the whole match. Plan the way across every zone (minus the ones bots can't use, e.g. the lift) and
