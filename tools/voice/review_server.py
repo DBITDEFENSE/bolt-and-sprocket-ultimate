@@ -89,8 +89,15 @@ class Handler(BaseHTTPRequestHandler):
 
 def serve(port: int = 8765, open_browser: bool = True) -> int:
     Handler.ids = {ln.file_id for ln in V.collect_all()}
-    srv = ThreadingHTTPServer(("127.0.0.1", port), Handler)
     url = "http://127.0.0.1:%d/voice_review/index.html" % port
+    try:
+        srv = ThreadingHTTPServer(("127.0.0.1", port), Handler)
+    except OSError:
+        # already running (a second click on the launcher button): just show the page
+        print("a review server is already running on port %d" % port)
+        if open_browser:
+            webbrowser.open(url)
+        return 0
     print("voice review page:", url, "(Ctrl+C to stop)")
     if open_browser:
         threading.Timer(0.6, lambda: webbrowser.open(url)).start()
