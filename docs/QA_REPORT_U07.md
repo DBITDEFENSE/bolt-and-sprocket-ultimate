@@ -51,6 +51,7 @@ Every issue below has a number (Q-NN), a rank, the evidence, and its fix (with t
 | Q-15 | Kaltenbrunn | **Bots alone never spend a Scrip on Kaltenbrunn**: with no human they are meant to lead (open the way, throw the power, buy perks; Map 0: 216,300 spent, round 21), but both Map 1 runs end at round 9 with **0 Scrip spent**, no door, no gun, no perk, milling at the yard's north wall (stuck 101 and 122 events, teleports 7 and 6). | `--scenario=bots3 --map=map01` seeds 41–42: `logs/ai_runs/20261026_104126_bots3_r{1,2}_s4{1,2}.csv`; stuck clusters (30.9, 0, 3.5) ×7, (38.7, 0, 6.4) ×4, (8.7, 0, 3.1), (3.6, 0, 4.3); teleports at (4.9, 0.6, 3.5). | **In progress** (worker u07-qa-map01): the door/shop candidate rules for a bot-led squad on a per-zone navmesh map; test. |
 | Q-16 | Kaltenbrunn | **A bot is "lost" for 956 s at one spot in the Administration Block** (−11.8, 0, 27.4): 17 stuck/stretch events there and two teleports nearby, in a run with every door open and the power on. | `--scenario=kaltenbrunn --open-doors=all --power` seed 51: wipe at round 12, spent 30,310, revives 67%, stuck 19 / 42.2 s, teleports 2, lost 956 s (`20261026_104126_kaltenbrunn_r1_s51.csv`). | **In progress** (worker u07-qa-map01): the geometry/navmesh at that spot and the unstick; test. |
 | Q-17 | Kaltenbrunn | **A round that never ends**: in bot mode (player agent + 3 bots) round 12 stalled for 140 minutes until the 150-min cap. The players were down in the Generator Hall (y −12); four zombies stayed upstairs, a crawler at (2.0, 0, 24.9) whose path ends at (39.2, 0.5, 31.2) on the surface. It cannot reach the players, and the last-zombie rule never culls a crawler, so nothing ends the round. | `logs/qa/soak_map01_botmode.log`: 129 identical STALL blocks; `20261026_105053_botmode_r1_s71.csv`: end=time cap, round 12, 150 min. | **In progress** (worker u07-qa-map01, task C2): the missing path down (stairs/lift links) and a generic director fail-safe (a zombie whose path has not reached any player for N s while nothing is left to spawn is respawned near the players); tests. |
+| Q-18 | Crossroads Inn | Two single 20 s zombie idles in a 16-round playtest: one in TO_WINDOW at (26, 0, −1) (a west-side window closet) and one in CHASE at (4, 0, 15) while the player stood upstairs at (20, 4, 3); plus one "player stuck while walking a nav path" at (24, 4, 32) (the stable loft) and two wall-buy errand timeouts (Kar98k ammo at (0.2, 1.5, 3.1), MP40 at (0.2, 5.3, 3.4): the agent's own approach, as in Q-10). | `logs/qa/playtest_map00_r15_bots3.log`: REACHED round 15 (16 in 22.8 min), 1 bot down, frame p50 7.9 / p99 20.7 ms. | Each a one-off (no repeats in 23 minutes); the idlers are the case the generic unreachable-zombie fail-safe from Q-17 covers (a zombie that cannot reach any player is respawned near them); the loft snag is the T-106 hay-stair rail hug; the errands are the tool. Re-measured in the final soak. |
 | Q-12 | Totenhafen | **The squad wipes together at the quay around round 14 with three bots and a weak human**: all three bots went down within 2 m of each other at (1, 0, 29) in the same round with 0 bot-to-bot revives (1 revive of the human all match). | playtest DOWN block r14; `bots revived each other 0 times`. | Evidence for the AI pass (§6): re-measured with the real soak once Q-11 lands; the Map 0 baseline for the same squad is 71–91% bot revives. |
 
 ## 4. Readability (HUD, prompts, minimap, audio mix, subtitles)
@@ -128,4 +129,30 @@ Map 0's same squad: 18.0 mean round, 23 stuck events, 0 teleports, 160,750 spent
 
 The Kaltenbrunn run is Q-17 (a round that never ends); its 146 stuck events are the agent's, mostly in the long stall. Map 0's agent reaches round 18 with the squad, against the U04 target of 20–25.
 
-*(Map 0 and Map 1 playtest tables (rounds reached, revive rate, stuck time, Scrip earned by round 3/5/8) and the bot-mode tables follow as the runs finish.)*
+**Crossroads Inn (map00), to round 16 (the cap), 22.8 min:**
+
+| Round | s | Agent kills | Dmg | Scrip after | Max alive |
+|---|---|---|---|---|---|
+| 1 | 66 | 2 | 0 | 605 | 7 |
+| 2 | 97 | 3 | 300 | 1010 | 13 |
+| 3 | 83 | 2 | 0 | 425 | 12 |
+| 4 | 76 | 3 | 0 | 3060 | 12 |
+| 5 | 79 | 8 | 50 | 2875 | 9 |
+| 6 | 31 | 0 | 210 | 3560 | 12 |
+| 7 | 101 | 7 | 100 | 3580 | 8 |
+| 8 | 98 | 4 | 50 | 5105 | 7 |
+| 9 | 107 | 0 | 100 | 5670 | 8 |
+| 10 (Cousins) | 60 | 2 | 550 | 9615 | 9 |
+| 11 | 117 | 3 | 150 | 10760 | 9 |
+| 12 | 132 | 0 | 150 | 11515 | 9 |
+| 13 | 36 | 1 | 175 | 11770 | 8 |
+| 14 | 134 | 6 | 200 | 8075 | 13 |
+| 15 | 141 | 1 | 250 | 1360 | 13 |
+
+Bots 726 kills, 1 bot down, 1 bot-to-bot revive; frame p50 7.9 / p99 20.7 / max 246 ms.
+
+**Kaltenbrunn (map01), game over at round 9 (10.7 min):** r1–r8 at 47 / 56 / 59 / 74 / 31 / 88 / 91 / 101 s, agent kills 2 / 1 / 3 / 3 / 2 / 7 / 6 / 5, Scrip 605 → 6,695, max alive 5–10; the agent down twice in round 8 at the yard's north wall (38, 0, 3), the squad wiped in round 9 at (37, 0, 31) with 0 bot-to-bot revives. The same picture as Q-13/Q-15: nobody leaves the Minehead Yard.
+
+**Economy across the three maps (the agent's Scrip after round 8, the same weak player):** Inn 5,105 · Kaltenbrunn 6,695 · Totenhafen 4,380; doors to open the whole map 7,750 / 9,250 / 9,000. Totenhafen pays least per round at the quay (its spawns are the slowest to arrive: max alive 5–9 vs the Inn's 7–13), so it is the map where a cautious squad stalls on Scrip; Kaltenbrunn pays best because the yard feeds from three sides. Map 4's acts are tuned against these (MAP4_FERNFLUG §13.2).
+
+*(The bot-mode and final-soak tables (rounds reached, revive rate, stuck time, Scrip earned by round 3/5/8) and the bot-mode tables follow as the runs finish.)*
