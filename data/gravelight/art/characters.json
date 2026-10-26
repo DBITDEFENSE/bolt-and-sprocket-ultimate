@@ -1,0 +1,88 @@
+{
+  "_doc": "The skinned humanoid bodies (T-091, docs/CHARACTER_PIPELINE.md). Read by tools_src/blender/characters/*.py (which build the GLBs) and by ZombieBody (which loads them). part_keys: the material key of every non-skin vertex, stored as COLOR_0.r = index / 255 in the GLB; the colours / roughness / metallic / emission of a key live in ZombieBody.KEY_LOOK and KIT_CLOTH (unchanged). kit_order: bit i of a body vertex's coverage mask (COLOR_0.b = bits 0-7 / 255, COLOR_0.a = 0 when bit 8 is set) means kit i covers it and the merge drops that skin triangle.",
+  "part_keys": [
+    "skin",
+    "dark",
+    "eye",
+    "teeth",
+    "leather",
+    "metal",
+    "helmet",
+    "wood",
+    "lens",
+    "white",
+    "patch",
+    "crystal",
+    "glove",
+    "hair",
+    "hat",
+    "navy",
+    "oilskin",
+    "rubber",
+    "knit",
+    "armband",
+    "brass",
+    "rope",
+    "stump",
+    "cloth",
+    "cloth2",
+    "eye_white",
+    "iris",
+    "lip",
+    "nail"
+  ],
+  "kit_order": [
+    "soldier",
+    "villager",
+    "miner",
+    "labstaff",
+    "technician",
+    "sailor",
+    "dockworker",
+    "bellringer",
+    "nurse"
+  ],
+  "zombie_dir": "res://assets/ours/characters/zombie_base",
+  "zombie_file": "char_zombie_base_%s_%s.glb",
+  "living_file": "char_human_base_%s_%s.glb",
+  "textures": {
+    "zombie": {
+      "albedo": "tex_zombie_skin_albedo.png",
+      "normal": "tex_zombie_skin_normal.png",
+      "orm": "tex_zombie_skin_orm.png"
+    },
+    "living": {
+      "albedo": "tex_human_skin_albedo.png",
+      "normal": "tex_human_skin_normal.png",
+      "orm": "tex_human_skin_orm.png"
+    }
+  },
+  "budget": {
+    "body_tris": 8000,
+    "kit_tris": 3000
+  },
+  "body": {
+    "a_pose_deg": 42.0,
+    "subsurf": 2,
+    "head_res": 16,
+    "living_sink": 0.35,
+    "body_tris": 7200
+  },
+  "lod": {
+    "_doc": "mode auto: Godot's mesh LODs (ImporterMesh.generate_lods on the merged two-surface mesh, picked per screen size, no extra nodes or draw calls); scripted: the GLB's Body_LOD1 / Body_LOD2 swapped by visibility ranges. The bench picked auto (docs/gravelight/PERFORMANCE.md, T-091).",
+    "mode": "auto",
+    "lod1_ratio": 0.5,
+    "lod2_ratio": 0.25,
+    "lod1_m": 15.0,
+    "lod2_m": 35.0
+  },
+  "hair": {
+    "_doc": "Hair object per kit and sex (Hair_m short crop, Hair_f drawn back into a bun, \"\" bald / covered). Default Hair_m / Hair_f.",
+    "bellringer": {
+      "m": ""
+    },
+    "nurse": {
+      "f": ""
+    }
+  }
+}

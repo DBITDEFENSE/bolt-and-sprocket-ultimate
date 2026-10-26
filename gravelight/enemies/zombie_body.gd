@@ -58,6 +58,10 @@ const KEY_LOOK: Dictionary = {
 	"brass": [Color(0.6, 0.5, 0.25), 0.4, 0.8, 0.0],
 	"rope": [Color(0.5, 0.42, 0.28), 1.0, 0.0, 0.0],
 	"stump": [Color(0.3, 0.02, 0.03), 0.35, 0.0, 0.0],
+	"eye_white": [Color(0.74, 0.7, 0.64), 0.25, 0.0, 0.0],
+	"iris": [Color(0.16, 0.12, 0.09), 0.2, 0.0, 0.0],
+	"lip": [Color(0.4, 0.28, 0.3), 0.5, 0.0, 0.0],
+	"nail": [Color(0.46, 0.42, 0.4), 0.4, 0.0, 0.0],
 }
 ## Kit cloth colours [cloth, cloth2].
 const KIT_CLOTH: Dictionary = {
@@ -323,6 +327,14 @@ uniform float vein_energy = 1.4;
 uniform float hum_pulse = 0.7;
 uniform float roughness = 0.68;
 uniform float metallic = 0.0;
+// T-091: the base body's painted maps on its UVs (albedo: skin variation around linear 0.5 x the kit's skin tone,
+// alpha = where the Nachtglas starts: eyes, mouth, hands; normal OpenGL +Y; ORM). use_maps 0 = the procedural look.
+uniform sampler2D albedo_tex : source_color, filter_linear_mipmap_anisotropic, hint_default_white;
+uniform sampler2D normal_tex : hint_normal, filter_linear_mipmap_anisotropic;
+uniform sampler2D orm_tex : filter_linear_mipmap, hint_default_white;
+uniform float use_maps = 0.0;
+uniform float normal_depth = 0.6;
+uniform float origin_bias = 0.09;
 instance uniform vec4 inst_tint : source_color = vec4(1.0);
 instance uniform float inst_dirt = 0.3;
 instance uniform float inst_frost = 0.0;
@@ -343,7 +355,10 @@ void vertex() {
 void fragment() {
 	vec3 nz = tri(noise_tex, v_pos, v_nrm, 3.0);
 	float n = nz.r;
-	vec3 base = v_col.rgb * skin_mul * inst_tint.rgb * mix(0.62, 1.1, n);
+	vec4 alb = texture(albedo_tex, UV);
+	vec3 orm = texture(orm_tex, UV).rgb;
+	vec3 painted = alb.rgb * 1.75 * mix(0.9, 1.06, n);
+	vec3 base = v_col.rgb * skin_mul * inst_tint.rgb * mix(vec3(mix(0.62, 1.1, n)), painted, use_maps);
 	float dirt = inst_dirt * (1.0 - smoothstep(0.0, 1.3, v_h)) * (0.4 + 0.6 * n);
 	base = mix(base, base * vec3(0.5, 0.42, 0.38), dirt);
 	float up = clamp(v_nrm.y, 0.0, 1.0);
@@ -351,16 +366,24 @@ void fragment() {
 	base = mix(base, vec3(0.86, 0.9, 0.96), frost);
 	base = mix(base, vec3(0.03, 0.02, 0.02), clamp(inst_char * smoothstep(0.15, 0.75, n + inst_char * 0.4), 0.0, 1.0));
 	ALBEDO = base;
-	ROUGHNESS = mix(roughness, 0.2, max(inst_fuel, frost * 0.6));
+	ROUGHNESS = mix(roughness, 0.2, max(inst_fuel, frost * 0.6)) * mix(1.0, orm.g / max(roughness, 0.05), use_maps);
 	METALLIC = metallic;
+	if (use_maps > 0.5) {
+		NORMAL_MAP = texture(normal_tex, UV).rgb;
+		NORMAL_MAP_DEPTH = normal_depth;
+		AO = orm.r;
+		AO_LIGHT_AFFECT = 0.6;
+	}
+	// where the Nachtglas starts (eyes, mouth, hands): cracks open there first and the veins run thicker
+	float origin = alb.a * use_maps;
 	// cracks: the ridged noise thresholded by the round (more of the body crystallises as rounds climb)
 	float ridge = tri(ridge_tex, v_pos, v_nrm, 3.0).r;
-	float thr = mix(0.93, 0.74, gl_round_k);
+	float thr = mix(0.93, 0.74, gl_round_k) - origin_bias * origin;
 	float cr = smoothstep(thr, thr + 0.03, ridge);
 	float cr_edge = smoothstep(thr - 0.05, thr, ridge) * (1.0 - cr);
 	// veins: cellular edges under the skin, pulsing with the map's hum
 	float cell = tri(vein_tex, v_pos, v_nrm, 2.2).r;
-	float vein = (1.0 - smoothstep(0.0, 0.09, cell)) * 0.55;
+	float vein = (1.0 - smoothstep(0.0, 0.09, cell)) * 0.55 * mix(1.0, 0.45 + 0.9 * alb.a, use_maps);
 	float pulse = 0.35 + hum_pulse * gl_hum;
 	vec3 em = crack_color * cr * crack_energy * gl_round_k + crack_edge * cr_edge * crack_energy * 0.35 * gl_round_k
 		+ vein_color * vein * vein_energy * pulse * (0.35 + 0.65 * gl_round_k);
@@ -385,6 +408,14 @@ shader_type spatial;
 render_mode cull_back;
 global uniform float gl_hum;
 uniform sampler2D noise_tex : filter_linear_mipmap, repeat_enable;
+uniform sampler2D fabric_tex : source_color, filter_linear_mipmap, repeat_enable, hint_default_white;
+uniform sampler2D leather_tex : source_color, filter_linear_mipmap, repeat_enable, hint_default_white;
+uniform float fabric_mean = 1.0;
+uniform float leather_mean = 1.0;
+uniform float fabric_scale = 7.0;
+uniform float knit_scale = 4.0;
+uniform float leather_scale = 5.0;
+uniform float detail_amount = 0.0;
 instance uniform vec4 inst_tint : source_color = vec4(1.0);
 instance uniform float inst_dirt = 0.3;
 instance uniform float inst_frost = 0.0;
@@ -408,6 +439,18 @@ void fragment() {
 	float n = tri(noise_tex, v_pos, v_nrm, 4.0).r;
 	float emit = v_cus.b;
 	vec3 base = v_col.rgb * mix(0.7, 1.08, n);
+	// T-091: tiling detail by class (CUSTOM0.a): 1 wool, 2 knit, 5 canvas -> the fabric weave; 3 leather, 4 rubber
+	// -> the leather grain (rubber flattened); triplanar on the rest position, centred on its mean so the vertex
+	// colour stays the colour
+	float cls = floor(v_cus.a + 0.5);
+	if (cls > 0.5) {
+		bool leathery = cls > 2.5 && cls < 4.5;
+		float sc = cls > 1.5 && cls < 2.5 ? knit_scale : (leathery ? leather_scale : fabric_scale);
+		vec3 t = leathery ? tri(leather_tex, v_pos, v_nrm, sc) : tri(fabric_tex, v_pos, v_nrm, sc);
+		float l = dot(t, vec3(0.333)) / max(leathery ? leather_mean : fabric_mean, 0.05);
+		float amt = cls > 3.5 && cls < 4.5 ? 0.25 : detail_amount;
+		base *= mix(1.0, clamp(l, 0.3, 1.8), amt);
+	}
 	if (emit < 0.01) { base *= inst_tint.rgb; }
 	float dirt = inst_dirt * (1.0 - smoothstep(0.0, 1.3, v_h)) * (0.4 + 0.6 * n) * (1.0 - step(0.01, emit));
 	base = mix(base, base * vec3(0.5, 0.45, 0.4), dirt);
@@ -453,8 +496,30 @@ static func skin_material(look: String = "base") -> ShaderMaterial:
 			m.set_shader_parameter("metallic", 0.25)
 			m.set_shader_parameter("roughness", 0.35)
 			m.set_shader_parameter("crack_energy", float(inf.get("crack_energy_glass", 4.2)))
+		"living":
+			# the people builder's living humans (no Nachtglas: no cracks, no veins)
+			m.set_shader_parameter("crack_energy", 0.0)
+			m.set_shader_parameter("vein_energy", 0.0)
+			m.set_shader_parameter("roughness", 0.55)
+	# T-091: the painted maps of the base bodies (all six share one UV layout)
+	var set_name: String = "living" if look == "living" else "zombie"
+	var tex: Dictionary = (char_cfg().get("textures", {}) as Dictionary).get(set_name, {})
+	var dir: String = str(char_cfg().get("zombie_dir", "res://assets/ours/characters/zombie_base"))
+	if set_name == "living":
+		dir = dir.get_base_dir().path_join("human_base")
+	var alb: String = dir.path_join(str(tex.get("albedo", "")))
+	if not tex.is_empty() and ResourceLoader.exists(alb):
+		m.set_shader_parameter("albedo_tex", load(alb))
+		m.set_shader_parameter("normal_tex", load(dir.path_join(str(tex.get("normal", "")))))
+		m.set_shader_parameter("orm_tex", load(dir.path_join(str(tex.get("orm", "")))))
+		m.set_shader_parameter("use_maps", 1.0)
 	_mats[key] = m
 	return m
+
+
+## Fabric and leather detail for the kit shader (the CC0 library's wool and leather sets, T-088).
+const FABRIC_TEX: String = "res://assets/third_party/ambientcg/fabric-031/textures/Fabric031_albedo.png"
+const LEATHER_TEX: String = "res://assets/third_party/ambientcg/leather-014/textures/Leather014_albedo.png"
 
 
 static func kit_material() -> ShaderMaterial:
@@ -463,8 +528,31 @@ static func kit_material() -> ShaderMaterial:
 	var m: ShaderMaterial = ShaderMaterial.new()
 	m.shader = kit_shader()
 	m.set_shader_parameter("noise_tex", _noise_tex(31, 0.06, Color(0.65, 0.65, 0.65), Color(1.08, 1.08, 1.08)))
+	for pair: Array in [["fabric", FABRIC_TEX], ["leather", LEATHER_TEX]]:
+		if ResourceLoader.exists(str(pair[1])):
+			var t: Texture2D = load(str(pair[1])) as Texture2D
+			m.set_shader_parameter(str(pair[0]) + "_tex", t)
+			m.set_shader_parameter(str(pair[0]) + "_mean", _linear_mean(t))
+			m.set_shader_parameter("detail_amount", 0.55)
 	_mats["shader:kit"] = m
 	return m
+
+
+## Mean linear luminance of a texture (so a detail map multiplies around 1.0).
+static func _linear_mean(t: Texture2D) -> float:
+	var img: Image = t.get_image()
+	if img == null:
+		return 1.0
+	img = img.duplicate() as Image
+	if img.is_compressed():
+		img.decompress()
+	img.resize(16, 16, Image.INTERPOLATE_BILINEAR)
+	var sum: float = 0.0
+	for y: int in 16:
+		for x: int in 16:
+			var c: Color = img.get_pixel(x, y).srgb_to_linear()
+			sum += (c.r + c.g + c.b) / 3.0
+	return maxf(0.05, sum / 256.0)
 
 
 ## Builds the kits a map uses up front (avoids a hitch on first spawn).
@@ -481,6 +569,265 @@ static func warm_up(kits: PackedStringArray = KITS) -> void:
 	blood_material()
 	stump_mesh()
 	ZombieClips.library()
+
+
+# ================================================================== GLB bodies (T-091, docs/CHARACTER_PIPELINE.md)
+
+const CHARACTERS_JSON: String = "res://data/gravelight/art/characters.json"
+static var _char_cfg: Dictionary = {}
+static var _base: Dictionary = {}      # "m_medium" / "living:f_thin" -> {object name: arrays (bones remapped to the rig)}
+
+## Detail class per part key for the kit shader's tiling fabric (CUSTOM0.a): 0 none, 1 wool, 2 knit, 3 leather,
+## 4 rubber / oilskin, 5 canvas / linen.
+const DETAIL: Dictionary = {"cloth": 1, "cloth2": 1, "navy": 1, "hat": 1, "armband": 1, "knit": 2, "leather": 3,
+	"glove": 4, "rubber": 4, "oilskin": 4, "white": 5, "patch": 5, "rope": 5}
+
+
+static func char_cfg() -> Dictionary:
+	if _char_cfg.is_empty():
+		_char_cfg = GLData.load_json(CHARACTERS_JSON)
+	return _char_cfg
+
+
+## res:// path of a base body GLB (zombie or living).
+static func body_path(build: String, female: bool, living: bool = false) -> String:
+	var c: Dictionary = char_cfg()
+	var dir: String = str(c.get("zombie_dir", "res://assets/ours/characters/zombie_base"))
+	if living:
+		dir = dir.get_base_dir().path_join("human_base")
+	return dir.path_join(str(c.get("living_file" if living else "zombie_file", "")) % ["f" if female else "m", build])
+
+
+## Every mesh object of a body GLB as surface arrays, the skin's bind indices remapped to ZombieRig bone indices
+## (the GLB's joints carry the rig's bone names; the bind order is the exporter's). Cached; {} when the GLB is absent.
+static func base_parts(build: String, female: bool, living: bool = false) -> Dictionary:
+	var key: String = ("living:" if living else "") + ("f_" if female else "m_") + build
+	if _base.has(key):
+		return _base[key]
+	var out: Dictionary = {}
+	var path: String = body_path(build, female, living)
+	if ResourceLoader.exists(path):
+		var ps: PackedScene = load(path) as PackedScene
+		if ps != null:
+			var root: Node = ps.instantiate()
+			for n: Node in root.find_children("*", "MeshInstance3D", true, false):
+				var mi: MeshInstance3D = n as MeshInstance3D
+				var am: ArrayMesh = mi.mesh as ArrayMesh
+				if am == null or am.get_surface_count() == 0:
+					continue
+				var arrays: Array = am.surface_get_arrays(0)
+				_remap_binds(arrays, mi.skin)
+				out[String(mi.name)] = arrays
+			root.free()
+	_base[key] = out
+	return out
+
+
+static func _remap_binds(arrays: Array, skin: Skin) -> void:
+	if skin == null or arrays[Mesh.ARRAY_BONES] == null:
+		return
+	var map: PackedInt32Array = []
+	for i: int in skin.get_bind_count():
+		map.append(maxi(0, ZombieRig.bone_index(String(skin.get_bind_name(i)))))
+	var bones: PackedInt32Array = arrays[Mesh.ARRAY_BONES]
+	for i: int in bones.size():
+		bones[i] = map[bones[i]] if bones[i] < map.size() else 0
+	arrays[Mesh.ARRAY_BONES] = bones
+
+
+static func part_keys() -> Array:
+	return char_cfg().get("part_keys", [])
+
+
+## Bit of a kit in a body vertex's coverage mask (characters.json kit_order).
+static func kit_bit(kit: String) -> int:
+	var i: int = (char_cfg().get("kit_order", []) as Array).find(kit)
+	return 0 if i < 0 else 1 << i
+
+
+## The coverage mask a body vertex carries in its colour (bits 0-7 in blue, bit 8 = alpha below one half).
+static func mask_of(c: Color) -> int:
+	return int(round(c.b * 255.0)) | (0x100 if c.a < 0.5 else 0)
+
+
+## Which hair object a kit wears (characters.json "hair"; "" = bald).
+static func hair_for(kit: String, female: bool) -> String:
+	var k: Dictionary = (char_cfg().get("hair", {}) as Dictionary).get(kit, {})
+	return str(k.get("f" if female else "m", "Hair_f" if female else "Hair_m"))
+
+
+## The two-surface mesh from a body GLB: surface 0 = Body minus the triangles the kit covers (all three vertices
+## carry the kit's bit), surface 1 = the face parts, the hair and the kit's clothes (vertex colour = the part key's
+## look x baked AO, CUSTOM0 = roughness / metallic / emission / detail class, CUSTOM1 = rest position). With
+## characters.json lod.mode "auto" Godot's mesh LODs are generated on the result (no extra nodes or draw calls).
+static func _merge_glb(base: Dictionary, kit: String, female: bool, living: bool = false) -> ArrayMesh:
+	var keys: Array = part_keys()
+	var bit: int = kit_bit(kit)
+	var tone: Color = _look(kit, "skin")[0]
+	var flags: int = (Mesh.ARRAY_CUSTOM_RGBA_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM0_SHIFT) | (Mesh.ARRAY_CUSTOM_RGBA_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM1_SHIFT)
+	# ---- surface 0: skin
+	var b: Array = base["Body"]
+	var sv: PackedVector3Array = b[Mesh.ARRAY_VERTEX]
+	var scol: PackedColorArray = b[Mesh.ARRAY_COLOR]
+	var sidx: PackedInt32Array = b[Mesh.ARRAY_INDEX]
+	var keep: PackedInt32Array = []
+	for t: int in range(0, sidx.size(), 3):
+		if bit != 0 and (mask_of(scol[sidx[t]]) & mask_of(scol[sidx[t + 1]]) & mask_of(scol[sidx[t + 2]]) & bit) != 0:
+			continue
+		keep.append(sidx[t])
+		keep.append(sidx[t + 1])
+		keep.append(sidx[t + 2])
+	var cols: PackedColorArray = []
+	cols.resize(sv.size())
+	var cus1: PackedFloat32Array = []
+	cus1.resize(sv.size() * 4)
+	for i: int in sv.size():
+		var ao: float = scol[i].g
+		cols[i] = Color(tone.r * ao, tone.g * ao, tone.b * ao, 1.0)
+		cus1[i * 4] = sv[i].x
+		cus1[i * 4 + 1] = sv[i].y
+		cus1[i * 4 + 2] = sv[i].z
+	var skin_arr: Array = []
+	skin_arr.resize(Mesh.ARRAY_MAX)
+	for slot: int in [Mesh.ARRAY_VERTEX, Mesh.ARRAY_NORMAL, Mesh.ARRAY_TANGENT, Mesh.ARRAY_TEX_UV, Mesh.ARRAY_BONES, Mesh.ARRAY_WEIGHTS]:
+		skin_arr[slot] = b[slot]
+	skin_arr[Mesh.ARRAY_COLOR] = cols
+	skin_arr[Mesh.ARRAY_CUSTOM1] = cus1
+	skin_arr[Mesh.ARRAY_INDEX] = keep
+	# ---- surface 1: parts + hair + clothes
+	var acc: _SurfaceAcc = _SurfaceAcc.new()
+	var objs: Array = ["Parts"]
+	var hair: String = hair_for(kit, female)
+	if hair != "":
+		objs.append(hair)
+	objs.append("Kit_" + kit)
+	var looks: Dictionary = {}
+	for name: String in objs:
+		if not base.has(name):
+			continue
+		var a: Array = base[name]
+		var v: PackedVector3Array = a[Mesh.ARRAY_VERTEX]
+		var n: PackedVector3Array = a[Mesh.ARRAY_NORMAL]
+		var c: PackedColorArray = a[Mesh.ARRAY_COLOR]
+		var bones: PackedInt32Array = a[Mesh.ARRAY_BONES]
+		var weights: PackedFloat32Array = a[Mesh.ARRAY_WEIGHTS]
+		var stride: int = bones.size() / maxi(1, v.size())
+		var start: int = acc.verts.size()
+		for i: int in v.size():
+			var ki: int = int(round(c[i].r * 255.0))
+			var kname: String = str(keys[ki]) if ki < keys.size() else "dark"
+			if living and kname == "eye":
+				kname = "eye_white"
+			if not looks.has(kname):
+				looks[kname] = _look(kit, kname)
+			var look: Array = looks[kname]
+			var ao: float = c[i].g
+			var col: Color = look[0]
+			acc.verts.append(v[i])
+			acc.norms.append(n[i])
+			acc.cols.append(Color(col.r * ao, col.g * ao, col.b * ao, 1.0))
+			acc.cus0.append_array(PackedFloat32Array([float(look[1]), float(look[2]), float(look[3]), float(DETAIL.get(kname, 0))]))
+			acc.cus1.append_array(PackedFloat32Array([v[i].x, v[i].y, v[i].z, 0.0]))
+			for k: int in 4:
+				acc.bones.append(bones[i * stride + k] if k < stride else 0)
+				acc.weights.append(weights[i * stride + k] if k < stride else 0.0)
+		var idx: PackedInt32Array = a[Mesh.ARRAY_INDEX]
+		for i: int in idx.size():
+			acc.index.append(idx[i] + start)
+	var kit_arr: Array = []
+	kit_arr.resize(Mesh.ARRAY_MAX)
+	kit_arr[Mesh.ARRAY_VERTEX] = acc.verts
+	kit_arr[Mesh.ARRAY_NORMAL] = acc.norms
+	kit_arr[Mesh.ARRAY_COLOR] = acc.cols
+	kit_arr[Mesh.ARRAY_CUSTOM0] = acc.cus0
+	kit_arr[Mesh.ARRAY_CUSTOM1] = acc.cus1
+	kit_arr[Mesh.ARRAY_BONES] = acc.bones
+	kit_arr[Mesh.ARRAY_WEIGHTS] = acc.weights
+	kit_arr[Mesh.ARRAY_INDEX] = acc.index
+	var im: ImporterMesh = ImporterMesh.new()
+	im.add_surface(Mesh.PRIMITIVE_TRIANGLES, skin_arr, [], {}, skin_material("living" if living else _skin_look(kit)), "skin", flags)
+	im.add_surface(Mesh.PRIMITIVE_TRIANGLES, kit_arr, [], {}, kit_material(), "kit", flags)
+	if str((char_cfg().get("lod", {}) as Dictionary).get("mode", "auto")) == "auto":
+		im.generate_lods(60.0, 25.0, [])
+	var mesh: ArrayMesh = im.get_mesh()
+	mesh.set_meta("lod_counts", [im.get_surface_lod_count(0), im.get_surface_lod_count(1)])
+	return mesh
+
+
+## The triangles of a merged body under `root_bone`'s chain (by dominant weight), unskinned, in that bone's rest
+## frame, keeping every vertex attribute and the surface materials.
+static func _cut_piece(body: ArrayMesh, root_bone: String) -> ArrayMesh:
+	var chain: Dictionary = {}
+	for bn: String in ZombieRig.chain_of(root_bone):
+		chain[ZombieRig.bone_index(bn)] = true
+	var origin: Vector3 = ZombieRig.rest_global(root_bone).origin
+	var flags: int = (Mesh.ARRAY_CUSTOM_RGBA_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM0_SHIFT) | (Mesh.ARRAY_CUSTOM_RGBA_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM1_SHIFT)
+	var out: ArrayMesh = ArrayMesh.new()
+	for si: int in body.get_surface_count():
+		var a: Array = body.surface_get_arrays(si)
+		var v: PackedVector3Array = a[Mesh.ARRAY_VERTEX]
+		var dom: PackedInt32Array = dominant_bones(a)
+		var idx: PackedInt32Array = a[Mesh.ARRAY_INDEX]
+		var remap: Dictionary = {}
+		var nidx: PackedInt32Array = []
+		for t: int in range(0, idx.size(), 3):
+			if not (chain.has(dom[idx[t]]) and chain.has(dom[idx[t + 1]]) and chain.has(dom[idx[t + 2]])):
+				continue
+			for k: int in 3:
+				var o: int = idx[t + k]
+				if not remap.has(o):
+					remap[o] = remap.size()
+				nidx.append(remap[o])
+		if nidx.is_empty():
+			continue
+		var order: Array = remap.keys()
+		var na: Array = []
+		na.resize(Mesh.ARRAY_MAX)
+		var nv: PackedVector3Array = []
+		var nn: PackedVector3Array = []
+		var nc: PackedColorArray = []
+		for o: int in order:
+			nv.append(v[o] - origin)
+			nn.append((a[Mesh.ARRAY_NORMAL] as PackedVector3Array)[o])
+			nc.append((a[Mesh.ARRAY_COLOR] as PackedColorArray)[o])
+		na[Mesh.ARRAY_VERTEX] = nv
+		na[Mesh.ARRAY_NORMAL] = nn
+		na[Mesh.ARRAY_COLOR] = nc
+		if a[Mesh.ARRAY_TEX_UV] != null:
+			var uv: PackedVector2Array = []
+			for o: int in order:
+				uv.append((a[Mesh.ARRAY_TEX_UV] as PackedVector2Array)[o])
+			na[Mesh.ARRAY_TEX_UV] = uv
+		for slot: int in [Mesh.ARRAY_TANGENT, Mesh.ARRAY_CUSTOM0, Mesh.ARRAY_CUSTOM1]:
+			if a[slot] != null:
+				var src: PackedFloat32Array = a[slot]
+				var dst: PackedFloat32Array = []
+				for o: int in order:
+					dst.append_array(src.slice(o * 4, o * 4 + 4))
+				na[slot] = dst
+		na[Mesh.ARRAY_INDEX] = nidx
+		out.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, na, [], {}, flags)
+		var s2: int = out.get_surface_count() - 1
+		out.surface_set_name(s2, body.surface_get_name(si))
+		out.surface_set_material(s2, body.surface_get_material(si))
+	return out
+
+
+## Dominant rig bone of every vertex of a surface's arrays (the gore split, tests).
+static func dominant_bones(arrays: Array) -> PackedInt32Array:
+	var v: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var bones: PackedInt32Array = arrays[Mesh.ARRAY_BONES]
+	var weights: PackedFloat32Array = arrays[Mesh.ARRAY_WEIGHTS]
+	var stride: int = bones.size() / maxi(1, v.size())
+	var out: PackedInt32Array = []
+	out.resize(v.size())
+	for i: int in v.size():
+		var best: int = 0
+		for k: int in range(1, stride):
+			if weights[i * stride + k] > weights[i * stride + best]:
+				best = k
+		out[i] = bones[i * stride + best]
+	return out
 
 
 # ================================================================== geometry primitives
@@ -549,13 +896,19 @@ static func _cache_key(kit: String, build: String, female: bool) -> String:
 	return "%s/%s/%s" % [kit, build, "f" if female else "m"]
 
 
-## The whole body as one skinned ArrayMesh (surface 0 skin, surface 1 kit). Cached per kit/build/sex.
+## The whole body as one skinned ArrayMesh (surface 0 skin, surface 1 kit). Cached per kit/build/sex. Since T-091
+## the body and its clothes come from the Blender-built GLBs (`base_parts`, `_merge_glb`); the procedural primitives
+## below stay as the fallback when a GLB is missing (a checkout that has not imported yet).
 static func build_skinned(kit: String, build: String = "medium", female: bool = false) -> ArrayMesh:
 	var key: String = "skinned:" + _cache_key(kit, build, female)
 	if _meshes.has(key):
 		return _meshes[key]
-	var parts_by_bone: Dictionary = body_parts(kit, build, female)
-	var mesh: ArrayMesh = _skin_parts(parts_by_bone, kit)
+	var mesh: ArrayMesh
+	var base: Dictionary = base_parts(build, female)
+	if base.has("Body"):
+		mesh = _merge_glb(base, kit, female)
+	else:
+		mesh = _skin_parts(body_parts(kit, build, female), kit)
 	_meshes[key] = mesh
 	return mesh
 
@@ -635,20 +988,25 @@ class _SurfaceAcc:
 	var index: PackedInt32Array = []
 
 
-## A detachable piece (a severed forearm, a head): the chain under `root_bone` as an unskinned mesh in that
-## bone's frame, legacy materials (the piece is a short-lived prop).
+## A detachable piece (a severed forearm, a head): the triangles of the skinned body whose vertices all belong
+## (by dominant bone weight) to the chain under `root_bone`, unskinned, in that bone's rest frame, both surfaces
+## with the body's own materials (a sleeve comes off with the arm). Procedural fallback: the legacy primitives.
 static func piece_mesh(kit: String, build: String, female: bool, root_bone: String) -> ArrayMesh:
 	var key: String = "piece:%s:%s" % [_cache_key(kit, build, female), root_bone]
 	if _meshes.has(key):
 		return _meshes[key]
-	var all: Dictionary = body_parts(kit, build, female)
-	var parts: Array = []
-	var root_inv: Transform3D = ZombieRig.rest_global(root_bone).affine_inverse()
-	for bone: String in ZombieRig.chain_of(root_bone):
-		var rel: Transform3D = root_inv * ZombieRig.rest_global(bone)
-		for p: Array in all.get(bone, []):
-			parts.append([p[0], rel * (p[1] as Transform3D), p[2]])
-	var mesh: ArrayMesh = build_mesh(kit, parts)
+	var mesh: ArrayMesh
+	if base_parts(build, female).has("Body"):
+		mesh = _cut_piece(build_skinned(kit, build, female), root_bone)
+	else:
+		var all: Dictionary = body_parts(kit, build, female)
+		var parts: Array = []
+		var root_inv: Transform3D = ZombieRig.rest_global(root_bone).affine_inverse()
+		for bone: String in ZombieRig.chain_of(root_bone):
+			var rel: Transform3D = root_inv * ZombieRig.rest_global(bone)
+			for p: Array in all.get(bone, []):
+				parts.append([p[0], rel * (p[1] as Transform3D), p[2]])
+		mesh = build_mesh(kit, parts)
 	_meshes[key] = mesh
 	return mesh
 
