@@ -1,12 +1,12 @@
-extends SceneTree
+extends Node
 ## Fit helper for the downloaded guns (T-089): builds every GLB-backed weapon through WeaponGLB and prints, in rig
 ## space (metres, barrel -Z, origin at the grip), its bounds, every part group's bounds and pivot, the markers it
 ## ended up with (Muzzle / SightPoint / FrontSight / LeftHand / grip_r), and the top profile (max y per cm of z,
 ## with the part), so model_fit.json can be written from the geometry. Headless:
-##   godot --headless --audio-driver Dummy --path . --script res://gravelight/tools_src/glb_fit_dump.gd -- [--only=a,b] [--profile]
+##   godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/glb_fit_dump.tscn -- [--only=a,b] [--profile]
 
 
-func _init() -> void:
+func _ready() -> void:
 	var only: PackedStringArray = []
 	var profile: bool = false
 	for a: String in OS.get_cmdline_user_args():
@@ -44,7 +44,7 @@ func _init() -> void:
 				line += "%+.2f:%.3f%s " % [float(r[0]), float(r[1]), ("(" + str(r[2]).substr(0, 3) + ")") if str(r[2]) != "" else ""]
 			print("   top: " + line)
 		m.free()
-	quit(0)
+	get_tree().quit(0)
 
 
 static func _v(p: Vector3) -> String:

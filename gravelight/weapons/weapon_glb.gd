@@ -145,21 +145,38 @@ static func normal_transform(weapon_id: StringName) -> Transform3D:
 	return Transform3D(m, off - m * g)
 
 
-## A part's bounds in rig space (from the converter's native bounds), or an empty AABB.
+## A part's bounds in rig space, from the imported mesh itself (the converter's part_bounds in models.json are
+## not reliable for every part), or an empty AABB when the node is not in the GLB.
 static func part_bounds(weapon_id: StringName, node_name: String) -> AABB:
-	var e: Dictionary = entry(weapon_id)
-	var a: Dictionary = (_models.get("assets", {}) as Dictionary).get(str(e.get("asset", "")), {})
-	var pb: Dictionary = a.get("part_bounds", {})
-	if not pb.has(node_name):
+	var path: String = glb_path(weapon_id)
+	if path == "" or not ResourceLoader.exists(path):
 		return AABB()
-	var mn: Vector3 = _v3(pb[node_name][0])
-	var mx: Vector3 = _v3(pb[node_name][1])
-	var t: Transform3D = normal_transform(weapon_id)
-	var out: AABB = AABB(t * mn, Vector3.ZERO)
-	for i: int in 8:
-		var c: Vector3 = Vector3(mx.x if i & 1 else mn.x, mx.y if i & 2 else mn.y, mx.z if i & 4 else mn.z)
-		out = out.expand(t * c)
+	var inst: Node3D = _scene(path).instantiate() as Node3D
+	var mi: MeshInstance3D = inst.find_child(node_name, true, false) as MeshInstance3D
+	var out: AABB = AABB()
+	if mi != null and mi.mesh != null:
+		var rel: Transform3D = mi.transform
+		var p: Node = mi.get_parent()
+		while p != null and p != inst:
+			rel = (p as Node3D).transform * rel
+			p = p.get_parent()
+		out = (normal_transform(weapon_id) * rel) * mi.mesh.get_aabb()
+	inst.free()
 	return out
+
+
+## Rig-space bounds of a group's meshes ([[mesh, xf_rig, node name]] as collected by build).
+static func _mesh_bounds(items: Array) -> AABB:
+	var bb: AABB = AABB()
+	var first: bool = true
+	for item: Array in items:
+		var mi: MeshInstance3D = item[0]
+		if mi.mesh == null:
+			continue
+		var a: AABB = (item[1] as Transform3D) * mi.mesh.get_aabb()
+		bb = a if first else bb.merge(a)
+		first = false
+	return bb
 
 
 # ================================================================== build
@@ -218,18 +235,18 @@ static func build(weapon_id: StringName, is_upgraded: bool = false, camo_id: Str
 		(by_group[contract] as Array).append([mi, t * rel, node_name])
 	for contract: String in by_group.keys():
 		var pivot: Vector3
+		# a per-part scale about a point (model_fit part_scale / part_scale_about): the Sawed-Off's barrels cut down
+		var ps: Dictionary = f.get("part_scale", {})
+		if ps.has(contract):
+			var sc: Vector3 = _v3(ps[contract], Vector3.ONE)
+			var about: Vector3 = _v3((f.get("part_scale_about", {}) as Dictionary).get(contract), _mesh_bounds(by_group[contract]).get_center())
+			var sxf: Transform3D = Transform3D(Basis(), about) * Transform3D(Basis.from_scale(sc), Vector3.ZERO) * Transform3D(Basis(), -about)
+			for item: Array in by_group[contract]:
+				item[1] = sxf * (item[1] as Transform3D)
 		if pivots.has(contract):
 			pivot = _v3(pivots[contract])
 		else:
-			var bb: AABB = AABB()
-			var first: bool = true
-			for item: Array in by_group[contract]:
-				var pb: AABB = part_bounds(StringName(base), str(item[2]))
-				if pb.size == Vector3.ZERO and pb.position == Vector3.ZERO:
-					continue
-				bb = pb if first else bb.merge(pb)
-				first = false
-			pivot = bb.get_center() if not first else Vector3.ZERO
+			pivot = _mesh_bounds(by_group[contract]).get_center()
 		group_pivot[contract] = pivot
 		var g: Node3D = Node3D.new()
 		g.name = contract
@@ -255,6 +272,7 @@ static func build(weapon_id: StringName, is_upgraded: bool = false, camo_id: Str
 		for item: Array in by_group[contract]:
 			var mi: MeshInstance3D = item[0]
 			var xf: Transform3D = item[1]
+			mi.owner = null
 			mi.get_parent().remove_child(mi)
 			mi.name = str(item[2]) if str(item[2]) != contract else "Mesh"
 			mi.transform = Transform3D(Basis(), -(group_pivot[contract] as Vector3)) * xf
