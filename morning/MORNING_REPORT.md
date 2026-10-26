@@ -40,14 +40,14 @@ Full list with before/after numbers: `docs/QA_REPORT_U07.md`.
 | The main egg across all four acts + three side eggs | **works** (tested end to end with dev skips) |
 | Both endings | **works** |
 | Play.bat buttons (full run, skip to Act II/III/IV) | **works** |
-| Full-run soak with bots | see below |
+| Full-run soak with bots | **partly**: the whole chain passes with dev skips; bots alone get to Act II |
 
-FULL_RUN_SOAK_PLACEHOLDER
+**The full-run soak.** With the player's dev skips, the whole map plays from Act I to the ending and the egg runs end to end (both tests pass, 0 script errors). Without skips, three bots on their own cleared Act I to round 15, boarded, and died in Act II at round 19. Dropped cold into Act III or IV, bots alone are overrun in the first minute. Map 4 is tuned for you leading the squad, not for bots alone. Details: `docs/QA_REPORT_U07.md` §7.
 
 ## Doesn't work yet / known issues
 - **No voice audio for Map 4.** All ~310 new lines play as subtitles with timed silence. They need the PC's voices (`gen_vo.py`), or your friends' recordings.
 - **Greybox art.** The four acts are blocked out in plain materials. Only the Lodestone and the two perk cabinets have real models.
-- **The bots aren't good at Map 4 on their own.** Without you they open doors and train, but they don't do the egg's carry-and-choice steps alone, and they reach the Kaltenbrunn power too late. Playing with them works fine.
+- **The bots aren't good at Map 4 on their own.** Without you they open doors and train, but alone they die in Act II, and a cold skip into Act III or IV overruns them in the first minute. They also reach the Kaltenbrunn power too late when playing alone.
 - **Act III shortcuts.** Burrowers don't bite on the way up, a frag doesn't kill them underground, and Jumpjockeys don't take extra damage in the air.
 - **Small gaps.** Dee's alternate goodbye line isn't wired in. Fasbender's burn numbers show on screen rather than being spoken. The air-raid warning still uses the bell sound. The Account Manager's "free trial" strips every perk you hold, which may be too harsh.
 - **Not built:** Morgenrot (Map 3) is still design-only, and the Homage-boss slot on Map 4 is reserved but empty until you name a likeness. Bolt and Vendelin's Map 4 lines are written but can't be heard (they aren't playable on Gravelight maps yet).

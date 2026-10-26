@@ -16,7 +16,7 @@ Every issue below has a number (Q-NN), a rank, the evidence, and its fix (with t
 |---|---|---|---|
 | Crash / softlock | 9 (Q-01..Q-09: 2 stale bakes, exec bits, a non-headless tool, 3 tooling flakes/artefacts, 2 order-dependent tests, zombies falling off the quay) | 7 fixed with tests, 2 verified as load flakes (Q-05, Q-06) | 0 |
 | Core feel | 0 code changes: the global tables (health ×1.1 from round 10, Scrip 50/100, round pay 40+20r, door ladder 750–2000, perk tiers, Crucible ×1.5/×2, crate pity) were reviewed and the three maps' curves measured (§6.1 economy); nothing is out of line, and the next step up is Map 4's own data (MAP4_FERNFLUG §13.2) | — | — |
-| AI | 9 (Q-10..Q-18: unreachable wall-buys, no soak on Totenhafen, bots stuck on furniture, bots passive on Kaltenbrunn, a 16-minute "lost" bot, a round that never ends, one-off idlers) | 7 fixed with tests (T-103, T-106, T-107); Q-12 re-measured (the wipe was the quay stall); Q-18 covered by the stranded fail-safe | 0 (one tuning item: bots alone reach the Kaltenbrunn power late) |
+| AI | 10 (Q-10..Q-19: unreachable wall-buys, no soak on Totenhafen, bots stuck on furniture, bots passive on Kaltenbrunn, a 16-minute "lost" bot, a round that never ends, one-off idlers) | 7 fixed with tests (T-103, T-106, T-107); Q-12 re-measured (the wipe was the quay stall); Q-18 covered by the stranded fail-safe | 0 bugs; two tuning items reported: bots alone reach the Kaltenbrunn power late, and bots alone cannot carry Map 4 past Act II (Q-19, §7) |
 | Readability | 0: VO coverage is complete (1578 audio files, 2 stage directions listed), every HUD/minimap/subtitle rule has a data table; nothing measurable in a headless pass | — | the on-screen pass stays the owner's (Play.bat) |
 | Polish | 0 new beyond the morning report's known list (window grime, footprints, plane smoke) | — | unchanged |
 
@@ -158,3 +158,29 @@ Bots 726 kills, 1 bot down, 1 bot-to-bot revive; frame p50 7.9 / p99 20.7 / max 
 **Economy across the three maps (the agent's Scrip after round 8, the same weak player):** Inn 5,105 · Kaltenbrunn 6,695 · Totenhafen 4,380; doors to open the whole map 7,750 / 9,250 / 9,000. Totenhafen pays least per round at the quay (its spawns are the slowest to arrive: max alive 5–9 vs the Inn's 7–13), so it is the map where a cautious squad stalls on Scrip; Kaltenbrunn pays best because the yard feeds from three sides. Map 4's acts are tuned against these (MAP4_FERNFLUG §13.2).
 
 *(The bot-mode and final-soak tables (rounds reached, revive rate, stuck time, Scrip earned by round 3/5/8) and the bot-mode tables follow as the runs finish.)*
+
+## 7. Map 4 "Fernflug": the full-run soak (UPDATE 07 Phase 2 finish; T-116)
+
+`tools/ai_soak.sh --scenario=fernflug` plays Map 4 as one campaign run with 3 Veteran bots, headless, `--fixed-fps 60`. Two kinds of proof:
+
+**The whole chain, Act I → the ending** (dev skips a player has: `exfil now`, `quest skipto`, console gives, `cancel now`):
+- `smoke_map04_full`: Act I → the boarding → Act II → the crash → Act III → the rocket → Act IV → the KÜNDIGUNG ending, the carry checked at every arrival (guns, perks, Scrip, round, act label, `london_seen`/`bomb_*`/`peg_*` flags); then a skip to Act IV and the renewal into the Retained state. **PASS, 74 s, 0 script errors.**
+- `smoke_map04_egg`: the main egg s1–s18 across the four acts with the bots on Full Partner, the two Act IV side eggs, the profile rewards, the ending to the credits. **PASS, 163 s, 0 script errors.**
+
+**Unskipped runs with bots** (no dev skips; the clock moves the acts):
+
+| run | act | rounds | game min | bot downs | revived | stuck events / s | teleports | Scrip spent | doors | end |
+|---|---|---|---|---|---|---|---|---|---|---|
+| bots + scripted human (seed 91) | I Werk Thalbach | 1–12 | 18.0 | 5 | 10 | 8 / 25.0 | 1 | 13,300 | 3 | wipe |
+| bots alone (seed 92) | I Werk Thalbach | 1–15 | 24.7 | 0 | 0 | 21 / 70.8 | 3 | 53,600 | 5 | boarded (the harness held the beacon) |
+| bots alone (seed 92) | II der Kranich | 16–19 | 9.0 | 3 | 0 | 33 / 92.8 | 3 | 20,500 | 3 | wipe |
+| bots alone, skip to Act III (seed 94) | III Groom Lake | 21 | 0.7 | 3 | 0 | 2 / 0.0 | 0 | 0 | 0 | wipe |
+| bots alone, skip to Act IV (seed 95) | IV Mondlicht | 30 | 1.8 | 4 | 1 | 1 / 1.9 | 0 | 3,000 | 0 | wipe |
+
+0 script errors and 0 stalls in every run (the stranded fail-safe and the no-spawn fallback were never needed in these seeds).
+
+**What the runs say:**
+- **The chain and the transitions are sound.** A bots-only squad cleared Act I to round 15, opened five doors, threw the power in round 2, boarded and arrived in Act II with its kit, round and Scrip.
+- **Q-19 (balance, reported, not retuned):** bots without a human cannot carry Map 4 past Act II. A cold skip into Act III (round 21) or Act IV (round 30) is overrun inside the first wave (8 fast zombies within 3 m at 38 s), even with the arrival kit (a taught STG-44/Thompson, Ironhide). With a human leading, the same squad is the U03 bots; Map 4's difficulty is set for players. The arrival kits stay as designed (the owner judges them on the PC); the bots' Map 4 routes and plans (T-115) are in place for a later tuning pass.
+- **A harness limit, not a game bug:** a god-mode run (seed 93) was stopped at Act I round 14: all three bots had bled out and the invulnerable scripted player cannot clear 24 zombies, so the round could not end. Real players don't hit this (a downed solo player ends the match; god mode is a dev toggle).
+- Two smoke-tool bugs found and fixed on the way (T-115): the egg smoke never printed its RESULT; the Act III smoke polled the freed map after the hand-over to Act IV.
