@@ -129,9 +129,12 @@ func _crucible(cr: Crucible, e: Dictionary) -> bool:
 		Crucible.Phase.IDLE:
 			if fed:
 				return true
-			if Crucible.action_for(player.weapons.current()) != &"upgrade":
-				brain.aim.select(brain._upgradeable_slot())
-				return brain._upgradeable_slot() < 0
+			var teach: int = brain._upgradeable_slot()
+			if teach < 0:
+				return true
+			if teach != player.weapons.current_index:
+				brain.aim.select(teach)   # T-121: the gun it means to teach (its best), not just whatever is in hand
+				return false
 			if cr.can_interact(player):
 				cr.interact(player)
 			e["fed"] = cr.phase == Crucible.Phase.FORGING and cr._fed_by == player.player_id

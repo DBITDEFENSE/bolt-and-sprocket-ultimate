@@ -273,9 +273,26 @@ func test_bots_upgrade_only_when_nothing_new_and_affordable() -> void:
 	var eco: Dictionary = BotAIData.table("economy")
 	var ups: Dictionary = {"ironhide_stout": 3500, "marathon_malt": 3000}
 	assert_eq(BotEconomy.upgrade_wanted(eco, {}, ups, "smg", 12, 20000, 1000, false), &"", "a base perk still to buy comes first")
-	assert_eq(BotEconomy.upgrade_wanted(eco, {}, ups, "smg", 8, 20000, 1000, true), &"", "not before min_round")
+	assert_eq(BotEconomy.upgrade_wanted(eco, {}, ups, "smg", 7, 20000, 1000, true), &"", "not before min_round (8, the machine's own, T-121)")
+	assert_eq(BotEconomy.upgrade_wanted(eco, {}, ups, "smg", 8, 20000, 1000, true), &"ironhide_stout", "from round 8")
 	assert_eq(BotEconomy.upgrade_wanted(eco, {}, ups, "smg", 12, 20000, 1000, true), &"ironhide_stout", "plan order")
 	assert_eq(BotEconomy.upgrade_wanted(eco, {}, ups, "smg", 12, 4000, 1000, true), &"", "saves for its first choice")
-	assert_eq(BotEconomy.upgrade_wanted(eco, {"ironhide_stout": 2}, {"ironhide_stout": 7000}, "smg", 15, 20000, 1000, true), &"",
+	assert_eq(BotEconomy.upgrade_wanted(eco, {"ironhide_stout": 2}, {"ironhide_stout": 7000}, "smg", 14, 20000, 1000, true), &"",
 		"tier III waits for tier3_min_round")
-	assert_eq(BotEconomy.upgrade_wanted(eco, {"ironhide_stout": 2}, {"ironhide_stout": 7000}, "smg", 18, 20000, 1000, true), &"ironhide_stout")
+	assert_eq(BotEconomy.upgrade_wanted(eco, {"ironhide_stout": 2}, {"ironhide_stout": 7000}, "smg", 15, 20000, 1000, true), &"ironhide_stout")
+
+
+## T-121: a squad bot has no profile, so the mastery lock is not its; a human (or the bot-mode agent) keeps it.
+func test_bots_skip_the_mastery_lock() -> void:
+	PerkManager.meta_gate_override = 1
+	var saved_bots: Variant = GameState.bot_ids.duplicate()
+	GameState.bot_ids = [7]
+	PerkManager.grant(7, &"ironhide_stout")
+	PerkManager.grant(PID, &"ironhide_stout")
+	var human_locked: bool = not PerkManager.tier_unlocked(&"ironhide_stout", 2)
+	assert_eq(PerkManager.can_upgrade(7, &"ironhide_stout"), &"ok", "the bot brews tier II")
+	if human_locked:
+		assert_eq(PerkManager.can_upgrade(PID, &"ironhide_stout"), &"locked", "the human still has to earn it")
+	PerkManager.set_tier(7, &"ironhide_stout", 2)
+	assert_eq(PerkManager.can_upgrade(7, &"ironhide_stout"), &"ok", "and tier III")
+	GameState.bot_ids = saved_bots

@@ -38,10 +38,27 @@ static func want_tier(round_n: int, table: Array) -> float:
 	return t
 
 
-## A weapon's tier (economy.json weapon_tiers, + upgraded_tier_bonus for a Crucible gun).
-static func tier_of(base_id: String, upgraded: bool, e: Dictionary) -> float:
+## A weapon's tier (economy.json weapon_tiers, + upgraded_tier_bonus for a Crucible gun, + reteach_tier_bonus for
+## each teaching after the first: `crucible_tier` is WeaponInstance.tier, 1..3).
+static func tier_of(base_id: String, upgraded: bool, e: Dictionary, crucible_tier: int = 1) -> float:
 	var t: float = float((e.get("weapon_tiers", {}) as Dictionary).get(base_id, 2.0))
-	return t + (float(e.get("upgraded_tier_bonus", 1.5)) if upgraded else 0.0)
+	if not upgraded:
+		return t
+	return t + float(e.get("upgraded_tier_bonus", 1.5)) + float(e.get("reteach_tier_bonus", 0.6)) * float(maxi(0, crucible_tier - 1))
+
+
+## T-121: the Scrip a bot holds back for the Crucible's next teaching of a gun it has already taught (its best one):
+## the teaching's price while `taught_tier` (1 or 2) is under `max_tier`, from crucible.min_round, when a powered
+## Crucible is on the map and the gun is good enough (crucible.min_tier); else 0. The crate and the wall guns
+## must leave this much (plus the reserve), so the 7500 / 10000 re-teach is saved for, not spent on rolls.
+static func reteach_save(e: Dictionary, base_tier: float, upgraded: bool, taught_tier: int, max_tier: int, round_n: int,
+		crucible_on_map: bool, price: int) -> int:
+	var c: Dictionary = e.get("crucible", {})
+	if not crucible_on_map or not upgraded or taught_tier >= max_tier or not bool(c.get("save_for_reteach", true)):
+		return 0
+	if round_n < int(c.get("min_round", 5)) or base_tier < float(c.get("min_tier", 3.4)):
+		return 0
+	return price
 
 
 ## Allowed to buy this gun in this round? (weapon_max_round: no Kar98k after round 10.)
@@ -400,9 +417,16 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	for w: WeaponInstance in player.weapons.slots:
 		var wrow: Dictionary = wtable.get(String(w.base_id()), {})
 		var q: int = 5000 if w.upgraded else (int(wrow.get("wall_price", 0)) if int(wrow.get("wall_price", 0)) > 0 or w.weapon_class() == &"pistol" else 1500)
-		held.append({"id": String(w.base_id()), "tier": tier_of(String(w.base_id()), w.upgraded, eco), "q": q})
+		held.append({"id": String(w.base_id()), "tier": tier_of(String(w.base_id()), w.upgraded, eco, w.tier), "q": q})
 	var free_slot: bool = player.weapons.slots.size() < player.weapons.max_slots()
-	var gun: StringName = gun_wanted(eco, held, walls, classes, (brain.personality.get("aim", {}) as Dictionary).get("class_pref", {}), rnd, scrip, reserve, free_slot)
+	# T-121: a gun already taught is fed again (twice, three times): hold its price back from rolls and wall guns
+	var save_up: int = 0
+	var rs_slot: int = brain._upgradeable_slot()
+	if rs_slot >= 0:
+		var rw: WeaponInstance = player.weapons.slots[rs_slot]
+		save_up = reteach_save(eco, tier_of(String(rw.base_id()), false, eco), rw.upgraded, rw.tier, WeaponInstance.max_tier(), rnd,
+			_powered_crucible(), Crucible.price_for(&"upgrade", econ, rw.tier))
+	var gun: StringName = gun_wanted(eco, held, walls, classes, (brain.personality.get("aim", {}) as Dictionary).get("class_pref", {}), rnd, scrip, reserve + save_up, free_slot)
 	if gun != &"" and nodes.has(String(gun)):
 		var wb2: WallBuy = nodes[String(gun)]
 		out.append({"node": wb2, "kind": "gun", "value": _pv("gun", _flat(wb2.global_position, me)), "cost": wb2.price(),
@@ -442,7 +466,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	for h: Variant in held:
 		best_tier = maxf(best_tier, float((h as Dictionary)["tier"]))
 	var ccrate: Dictionary = eco.get("crate", {})
-	if crate_pulls_this_round < int(ccrate.get("max_pulls_per_round", 1)) and crate_wanted(eco, scrip, CrateManager.cost(), best_tier, rnd, reserve):
+	if crate_pulls_this_round < int(ccrate.get("max_pulls_per_round", 1)) and crate_wanted(eco, scrip, CrateManager.cost(), best_tier, rnd, reserve + save_up):
 		for cn: Node in brain.get_tree().get_nodes_in_group(&"crate_spots"):
 			var cr: MysteryCrate = cn as MysteryCrate
 			if cr == null or cr.phase != MysteryCrate.Phase.CLOSED or not cr.is_visible_in_tree() or _flat(cr.global_position, anc) > rng * 1.5 or not _near_enough(cr.global_position):
@@ -581,11 +605,19 @@ func _main_gun() -> WeaponInstance:
 	var best: WeaponInstance = null
 	var best_t: float = -1.0
 	for w: WeaponInstance in player.weapons.slots:
-		var t: float = tier_of(String(w.base_id()), w.upgraded, eco)
+		var t: float = tier_of(String(w.base_id()), w.upgraded, eco, w.tier)
 		if t > best_t:
 			best_t = t
 			best = w
 	return best
+
+
+## Is a powered Crucible on the map (T-121: worth saving for its next teaching)?
+func _powered_crucible() -> bool:
+	for cn: Node in brain.get_tree().get_nodes_in_group(&"crucible"):
+		if cn is Crucible and (cn as Crucible).is_powered():
+			return true
+	return false
 
 
 ## Ammo: the driest carried long gun under ammo_box_below (or wall_ammo_below with its own wall-buy near): the

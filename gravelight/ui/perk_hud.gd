@@ -60,6 +60,7 @@ func _rebuild() -> void:
 		var cap: BottleCap = BottleCap.new()
 		cap.perk_id = StringName(perk_id)
 		cap.tier = PerkManager.tier_of(player_id, StringName(perk_id))
+		cap.sealed = PerkManager.is_sealed(player_id, StringName(perk_id))
 		cap.font = _font
 		cap.size = Vector2(_cap_size, _cap_size)
 		cap.position = Vector2(i * (_cap_size + _gap), 0)
@@ -74,6 +75,7 @@ class BottleCap extends Control:
 	var font: Font
 	var perk_id: StringName = &""
 	var tier: int = 1
+	var sealed: bool = false
 
 	func _init() -> void:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -87,4 +89,5 @@ class BottleCap extends Control:
 	func _draw() -> void:
 		var r: float = size.x * 0.5
 		draw_circle(size * 0.5 + Vector2(1.5, 3.0), r + 1.0, Color(0, 0, 0, 0.45))   # the drop shadow (snow)
-		PerkCap.draw_cap(self, size * 0.5, r, perk_id, false, font, 1.0, tier)
+		# the gold ring: a tonic kept through a down (a tonic bottle's measure, T-121), as on a bot's bonus perk
+		PerkCap.draw_cap(self, size * 0.5, r, perk_id, sealed, font, 1.0, tier)

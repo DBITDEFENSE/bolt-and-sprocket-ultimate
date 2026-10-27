@@ -709,7 +709,7 @@ func _send_state(delta_since: float) -> void:
 			RoundManager.alive, RoundManager.round_total, RoundManager.players],
 		"sc": Economy._scrip, "mu": Economy.multiplier,
 		"pk": PerkManager._owned, "bs": PerkManager._bonus_slots, "cb": PerkManager.base_cap(),
-		"pt": [PerkManager._tiers, PerkManager.unlocked_tiers()],   # perk tiers + the host's unlocks (T-075)
+		"pt": [PerkManager._tiers, PerkManager.unlocked_tiers(), PerkManager._sealed],   # perk tiers + the host's unlocks (T-075) + sealed tonics (T-121)
 		"sw": [PerkManager.solo_self_revives_left, PerkManager.second_wind_gone],
 		"pw": GameState.power_on, "z": GameState.open_zones.keys(), "f": GameState.flags,
 		"cr": CrateManager.location_index, "pu": PowerupManager._timers,
@@ -1027,6 +1027,8 @@ func on_state(d: Dictionary) -> void:
 			for cpid: Variant in changed:
 				GLBus.perks_changed.emit(int(cpid))
 		PerkManager.host_unlocks = (pt[1] as Dictionary).duplicate()
+		if pt.size() >= 3:
+			PerkManager._sealed = (pt[2] as Dictionary).duplicate(true)
 
 	var sw: Array = d.get("sw", [3, false])
 	PerkManager.solo_self_revives_left = int(sw[0])

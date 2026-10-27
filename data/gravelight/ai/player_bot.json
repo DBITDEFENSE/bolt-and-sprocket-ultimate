@@ -108,6 +108,14 @@
         },
         {
           "perk": "trigger_tonic"
+        },
+        {
+          "crucible": "*",
+          "tier": 2
+        },
+        {
+          "crucible": "*",
+          "tier": 3
         }
       ],
       "train_at": [
@@ -230,6 +238,14 @@
         },
         {
           "perk": "trigger_tonic"
+        },
+        {
+          "crucible": "*",
+          "tier": 2
+        },
+        {
+          "crucible": "*",
+          "tier": 3
         }
       ],
       "train_at": [
@@ -295,6 +311,14 @@
         },
         {
           "door": "door_halle"
+        },
+        {
+          "crucible": "*",
+          "tier": 2
+        },
+        {
+          "crucible": "*",
+          "tier": 3
         }
       ],
       "train_at": [
@@ -376,6 +400,14 @@
         },
         {
           "door": "door_cockpit"
+        },
+        {
+          "crucible": "*",
+          "tier": 2
+        },
+        {
+          "crucible": "*",
+          "tier": 3
         }
       ],
       "train_at": [
@@ -455,6 +487,14 @@
         },
         {
           "perk": "skyhook_sekt"
+        },
+        {
+          "crucible": "*",
+          "tier": 2
+        },
+        {
+          "crucible": "*",
+          "tier": 3
         }
       ],
       "train_at": [
@@ -525,6 +565,14 @@
         },
         {
           "door": "door_yard"
+        },
+        {
+          "crucible": "*",
+          "tier": 2
+        },
+        {
+          "crucible": "*",
+          "tier": 3
         }
       ],
       "train_at": [
@@ -551,7 +599,8 @@
         "value": 0.85,
         "every_s": 2.0
       }
-    }
+    },
+    "_tiers_doc": "T-121: every plan with a Crucible ends with {crucible: *, tier: 2} and {crucible: *, tier: 3}: once the rest is bought, the agent saves for the second and third teaching (7500, 10000) of its best gun (BotBrain.best_to_teach). Map 1's plan has no Crucible step, so its ordinary economy (which re-teaches too) takes over after the plan."
   },
   "points": {
     "_doc": "T-071 pass 3: Scrip in the first rounds the way a solo player makes it: up to knife_until_round, a lone zombie (nothing else within crowd_m, the agent unhurt) is shot in the body until the knife kills it, then let come and knifed (130 Scrip a knife kill; BotAim.knife_for_points). 0 turns it off.",

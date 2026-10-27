@@ -109,20 +109,46 @@ func test_gift_tonic_respects_the_cap() -> void:
 	assert_eq(PerkManager.tier_of(PID, StringName(g["perk"])), 2)
 
 
-func test_gift_tonic_full_cap_and_locked_tiers_pay_scrip() -> void:
-	PerkManager.meta_gate_override = 1   # no tier unlocked by this test profile... unless it has mastery
+## T-121: the bottle's measure ignores the mastery lock, and the tonic it raised is kept through a down.
+func test_gift_tonic_full_cap_levels_a_tonic_even_when_locked_and_seals_it() -> void:
+	PerkManager.meta_gate_override = 1   # the lock is on
 	_fill_cap()
-	var locked: bool = true
-	for id: Variant in PerkManager.owned(PID):
-		if PerkManager.tier_unlocked(StringName(id), 2):
-			locked = false
 	var before: int = Economy.get_scrip(PID)
 	var g: Dictionary = PowerupManager.gift_tonic(PID)
-	if locked:
-		assert_eq(g.get("kind"), "scrip")
-		assert_eq(Economy.get_scrip(PID), before + int(pcfg["tonic_bottle"]["full_cap_scrip"]))
-	else:
-		assert_eq(g.get("kind"), "tier", "the profile has a tier unlocked")
+	assert_eq(g.get("kind"), "tier", "a level on a carried tonic, locked or not")
+	var gp: StringName = StringName(g["perk"])
+	assert_eq(PerkManager.tier_of(PID, gp), 2)
+	assert_true(PerkManager.is_sealed(PID, gp))
+	assert_eq(Economy.get_scrip(PID), before, "no Scrip instead")
+	PerkManager.on_player_downed(PID)
+	assert_eq(PerkManager.owned(PID), [gp], "a down takes every tonic but the sealed one")
+	assert_eq(PerkManager.tier_of(PID, gp), 2, "at its tier")
+	var g2: Dictionary = PowerupManager.gift_tonic(PID)
+	assert_eq(g2.get("kind"), "perk", "room under the cap again: a new tonic")
+
+
+func test_gift_tonic_full_cap_every_tonic_at_the_top_pays_scrip() -> void:
+	_fill_cap()
+	for id: Variant in PerkManager.owned(PID):
+		PerkManager.set_tier(PID, StringName(id), PerkManager.max_tier())
+	var before: int = Economy.get_scrip(PID)
+	var g: Dictionary = PowerupManager.gift_tonic(PID)
+	assert_eq(g.get("kind"), "scrip")
+	assert_eq(Economy.get_scrip(PID), before + int(pcfg["tonic_bottle"]["full_cap_scrip"]))
+
+
+func test_sealed_tonics_survive_downs_and_a_solo_self_revive() -> void:
+	PerkManager.grant(PID, &"ironhide_stout")
+	PerkManager.grant(PID, &"marathon_malt")
+	PerkManager.set_tier(PID, &"ironhide_stout", 3)
+	PerkManager.seal(PID, &"ironhide_stout")
+	PerkManager.on_player_downed(PID)
+	PerkManager.on_player_downed(PID)
+	assert_eq(PerkManager.owned(PID), [&"ironhide_stout"])
+	assert_eq(PerkManager.tier_of(PID, &"ironhide_stout"), 3)
+	assert_eq(PerkManager.kept_on_down([&"a", &"b", &"c"], &"c", ["a"]), [&"a", &"c"], "bonus + sealed, in order")
+	PerkManager.remove(PID, &"ironhide_stout")
+	assert_false(PerkManager.is_sealed(PID, &"ironhide_stout"), "remove clears the seal")
 
 
 func test_solo_second_wind_gone_is_skipped() -> void:

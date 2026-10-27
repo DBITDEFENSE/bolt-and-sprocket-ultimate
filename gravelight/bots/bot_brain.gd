@@ -1076,13 +1076,20 @@ func _slot_to_give_up() -> int:
 
 ## The slot holding a gun the Crucible can upgrade: a wall gun before the start pistol, the one in hand first.
 func _upgradeable_slot() -> int:
+	return BotBrain.best_to_teach(player.weapons.slots, player.weapons.current_index, BotAIData.table("economy"))
+
+
+## Pure (T-121): the slot the Crucible should teach next: its best gun by economy tier (a taught gun counts its
+## teachings, so a Thompson taught once is fed again before a fresh MP40), pistols last, the gun in hand on a tie.
+## -1 when nothing carried can learn more.
+static func best_to_teach(slots: Array, current: int, eco: Dictionary) -> int:
 	var best: int = -1
-	var best_s: int = -1
-	for i: int in player.weapons.slots.size():
-		var w: WeaponInstance = player.weapons.slots[i]
+	var best_s: float = -INF
+	for i: int in slots.size():
+		var w: WeaponInstance = slots[i]
 		if Crucible.action_for(w) != &"upgrade":
 			continue
-		var s: int = (0 if w.weapon_class() == &"pistol" else 2) + (1 if i == player.weapons.current_index else 0)
+		var s: float = BotEconomy.tier_of(String(w.base_id()), w.upgraded, eco, w.tier) - (10.0 if w.weapon_class() == &"pistol" else 0.0) 			+ (0.01 if i == current else 0.0)
 		if s > best_s:
 			best_s = s
 			best = i

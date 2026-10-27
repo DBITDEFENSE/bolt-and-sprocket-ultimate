@@ -22,7 +22,7 @@
     "lifetime_seconds": 60.0, "blink_from_seconds": 50.0, "ahead_m": 1.8, "spacing_m": 1.3
   },
   "tonic_bottle": {
-    "_doc": "The tonic bottle (milestone only, never in the bag): every player still in the match (not bled out) gets a free perk tonic they don't own, at random among the map's perk machines (every perks.json perk if the map has none), no power needed. Under the perk cap only; a full cap gets the next tier of a carried tonic instead (if the profile has unlocked it; the round gate is waived), else full_cap_scrip. Solo Second Wind is skipped once its machine has left.",
+    "_doc": "The tonic bottle (milestone only, never in the bag): every player still in the match (not bled out) gets a free perk tonic they don't own, at random among the map's perk machines (every perks.json perk if the map has none), no power needed. Under the perk cap only; a full cap (or no tonic left to give) gets the next tier of a carried tonic at random instead (T-121: no mastery lock, no round gate) and that tonic is sealed: it and its tier survive every down (PerkManager.seal); with every carried tonic at its top tier, full_cap_scrip. Solo Second Wind is skipped once its machine has left.",
     "full_cap_scrip": 1500
   }
 }
