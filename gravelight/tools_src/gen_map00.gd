@@ -361,7 +361,12 @@ func build_geometry() -> void:
 	# flight's open edge as walkable into the vestibule and zombies wedged on the mid rail at the foot and the
 	# head (T-040 playtest). Two hidden panels along the rail lines cut it properly; the flight still meets the
 	# landing at its foot and the hall at its head.
-	box(geo, "StairRailPanel", Vector3(bx - 0.08, 0.0, STAIR_Z1 - 0.05), Vector3(bx + 0.08, UP_Y + 1.0, STAIR_Z0), "wall", true, false)
+	# The stairwell is shut at z = 10 (StairN / StairNu); north of that the flight's last metre runs over the
+	# taproom, so the panel there starts under the soffit, not on the floor. It used to reach the floor all the
+	# way to z 8.95: an invisible wall at x 3.6 beside the bar's west end, across the way to the Old Cellar door,
+	# that players and zombies stuck on.
+	box(geo, "StairRailPanel", Vector3(bx - 0.08, 0.0, 10.15), Vector3(bx + 0.08, UP_Y + 1.0, STAIR_Z0), "wall", true, false)
+	box(geo, "StairRailPanelHead", Vector3(bx - 0.08, _stair_y(10.15) - 0.42, STAIR_Z1 - 0.05), Vector3(bx + 0.08, UP_Y + 1.0, 10.15), "wall", true, false)
 	box(geo, "HallRailPanel", Vector3(bx - 0.08, UP_Y, hz - 0.08), Vector3(STAIR_X1 - T * 0.5, UP_Y + 1.0, hz + 0.08), "wall", true, false)
 	# ceiling slabs: A = upstairs floor (z 0..10; the flight lands in it west of the vestibule), B = taproom roof
 	box(geo, "SlabA", Vector3(-T * 0.5, TAP_H, -T * 0.5), Vector3(FLIGHT_X1, UP_Y, STAIR_Z1), "floor_wood")
