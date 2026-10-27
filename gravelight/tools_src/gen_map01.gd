@@ -102,9 +102,22 @@ const BUYS: Array = [
 ## trench-gun chalk (west of the lockers); the Chapel's east wall between a pilaster and the side-altar niche; the
 ## Lab's south-middle (intake) room, on its east wall.
 const AMMO_BOXES: Array = [
+	["Yard", Vector3(20.0, 0, 31.52), 0.0],   # T-123: the spawn yard's own, on its bare south wall
 	["RailYard", Vector3(40.48, 0, 32.5), -90.0], ["Barracks", Vector3(-1.6, 0, 32.48), 180.0],
 	["SaltChapel", Vector3(39.43, DY, 78.5), 90.0], ["LabWing", Vector3(83.5, DY, 95.0), 90.0],
 ]
+## T-123: the spawn yard's solid props (drawn by _dress_yard_south): [collider name, low corner, high corner].
+## Built before the bake (build_yard_prop_blocks) so the navmesh goes round them.
+const YARD_PROPS: Array = [
+	["YardPropDrum", Vector3(6.65, 0, 30.85), Vector3(7.35, 0.95, 31.55)],
+	["YardPropRack", Vector3(15.9, 0, 31.45), Vector3(17.7, 1.9, 31.85)],
+	["YardPropTimber", Vector3(22.4, 0, 30.6), Vector3(26.6, 0.95, 31.85)],
+	["YardPropSet", Vector3(27.4, 0, 31.35), Vector3(29.6, 2.6, 31.85)],
+	["YardPropBench", Vector3(30.45, 0, 31.0), Vector3(32.55, 0.95, 31.85)],
+	["YardPropCart", Vector3(34.0, 0, 30.2), Vector3(36.0, 1.1, 31.6)],
+	["YardPropCrates", Vector3(36.6, 0, 30.6), Vector3(38.4, 1.5, 31.85)],
+]
+
 ## The Armorer's Bench (UPDATE_04 section 6, T-068): [floor position against the wall, yaw so local -Z faces the yard].
 ## At the gatehouse, against its east face north of the Kar98k corner, clear of the shelf by its door.
 const ARMORERS_BENCH: Array = [Vector3(12.01, 0, 8.8), -90.0]
@@ -135,6 +148,7 @@ const MAT_RULES: Array = [
 ## Greybox visuals replaced by dressing (colliders stay). Also the faces of walls that coincide with a
 ## neighbour's wall (the neighbour's visual is kept, and the hidden side gets a lining instead).
 const HIDE: Array = [
+	"YardProp*",   # T-123: the yard's props are drawn by _dress_yard_south; these are their colliders
 	"YardS_*", "YardW_1*", "YardW_end", "AdminGS_*", "BarrE_*", "LiftHouseN_*", "LedgerN_*",
 	"Rail", "TowerLeg", "TowerHead", "SnowMound?", "Drift", "Boxcar", "Locomotive", "LocoCab", "BufferStop", "SignalBox",
 	"Gate", "FilingA", "Bunk", "MessTable", "ServingLine", "Pews", "Altar", "AltarTop", "Bell", "Font", "ChandelierVis",
@@ -185,6 +199,7 @@ func _initialize() -> void:
 	build_core()
 	build_closets()
 	build_ammo_blocks()
+	build_yard_prop_blocks()
 
 
 func _process(_delta: float) -> bool:
@@ -720,6 +735,12 @@ func build_closets() -> void:
 				sp + half_out + side.abs() * 0.15 + Vector3(0, 3.0, 0), "rock")
 
 
+## T-123: the yard props' hidden colliders (YARD_PROPS), in the Geometry the bake parses.
+func build_yard_prop_blocks() -> void:
+	for yp: Array in YARD_PROPS:
+		box(geo, str(yp[0]), yp[1], yp[2], "furniture")
+
+
 ## The ammo boxes' footprints as hidden colliders, so the navmesh is cut round them (the boxes are placed in
 ## build_gameplay and make their own runtime collision).
 func build_ammo_blocks() -> void:
@@ -921,6 +942,8 @@ func build_dressing() -> void:
 	_dress_ground()
 	_dress_yard()
 	_dress_headframe()
+	_dress_hoist_house()
+	_dress_yard_south()
 	_dress_admin()
 	_dress_barracks()
 	_dress_railyard()
@@ -1081,6 +1104,128 @@ func _dress_yard() -> void:
 	for gn: Array in [[Vector3(12.0, 3.5, 0.15), 180.0], [Vector3(28.0, 3.5, 0.15), 180.0], [Vector3(39.85, 3.5, 18.0), 90.0],
 			[Vector3(12.0, 3.4, 31.85), 0.0], [Vector3(31.0, 3.4, 31.85), 0.0], [Vector3(0.15, 3.0, 21.0), -90.0]]:
 		goose("A_MINEHEAD", gn[0], float(gn[1]))
+
+
+## T-123: the headframe's base (TowerBase, a bare 10 x 10 x 6 m concrete block) dressed as the hoist house: a brick
+## plinth, corner pilasters and a cornice, barred high windows, the shaft's signal box and conduit, the notices. Visual
+## only and flush to the faces (0.12 m at most), so the collider, the navmesh and the headframe loop are unchanged.
+func _dress_hoist_house() -> void:
+	var x0: float = 15.0
+	var x1: float = 25.0
+	var z0: float = 10.0
+	var z1: float = 20.0
+	B(Vector3(x0 - 0.06, 0.0, z0 - 0.06), Vector3(x1 + 0.06, 0.9, z1 + 0.06), "brick")
+	B(Vector3(x0 - 0.08, 0.9, z0 - 0.08), Vector3(x1 + 0.08, 0.98, z1 + 0.08), "concrete")
+	B(Vector3(x0 - 0.12, 5.55, z0 - 0.12), Vector3(x1 + 0.12, 6.0, z1 + 0.12), "concrete")
+	_noshadow(B(Vector3(x0 - 0.1, 6.0, z0 - 0.1), Vector3(x1 + 0.1, 6.06, z1 + 0.1), "snow", false))
+	for cx: float in [x0, x1]:
+		for cz: float in [z0, z1]:
+			var sx: float = -1.0 if cx == x0 else 1.0
+			var sz: float = -1.0 if cz == z0 else 1.0
+			B(Vector3(minf(cx + sx * 0.1, cx - sx * 0.5), 0.98, minf(cz + sz * 0.1, cz - sz * 0.5)),
+				Vector3(maxf(cx + sx * 0.1, cx - sx * 0.5), 5.55, maxf(cz + sz * 0.1, cz - sz * 0.5)), "brick")
+	# barred high windows: two on each side face and on the south face either side of the stencil
+	var wins: Array = [   # [centre on the face, outward normal]
+		[Vector3(16.6, 3.9, z1), Vector3(0, 0, 1)], [Vector3(23.4, 3.9, z1), Vector3(0, 0, 1)],
+		[Vector3(x0, 3.9, 12.6), Vector3(-1, 0, 0)], [Vector3(x0, 3.9, 17.4), Vector3(-1, 0, 0)],
+		[Vector3(x1, 3.9, 12.6), Vector3(1, 0, 0)], [Vector3(x1, 3.9, 17.4), Vector3(1, 0, 0)],
+	]
+	for w: Array in wins:
+		var c: Vector3 = w[0]
+		var nrm: Vector3 = w[1]
+		var along: Vector3 = Vector3(absf(nrm.z), 0, absf(nrm.x))   # the face's horizontal direction
+		B(c - along * 0.55 + Vector3(0, -0.8, 0), c + along * 0.55 + Vector3(0, 0.8, 0) + nrm * 0.08, "concrete")
+		_noshadow(B(c - along * 0.45 + Vector3(0, -0.7, 0) + nrm * 0.07, c + along * 0.45 + Vector3(0, 0.7, 0) + nrm * 0.1, "window_dark", false))
+		for k: int in 4:
+			var bp: Vector3 = c + along * (-0.33 + 0.22 * k) + nrm * 0.11
+			B(bp + Vector3(-0.015, -0.7, -0.015), bp + Vector3(0.015, 0.7, 0.015), "iron")
+		B(c - along * 0.6 + Vector3(0, -0.88, 0), c + along * 0.6 + Vector3(0, -0.8, 0) + nrm * 0.12, "concrete")
+	# south face (the side the squad starts on): the shaft-signal box, its conduit and bell, the closure notice
+	Props.fuse_box(dress, Vector3(23.6, 1.6, z1), 180.0, 0.6, 0.8)
+	Props.pipe(dress, Vector3(23.75, 2.0, z1 + 0.06), Vector3(23.75, 5.5, z1 + 0.06), 0.035, "iron")
+	CYL(Vector3(23.1, 2.55, z1 + 0.1), 0.13, 0.16, "brass")
+	B(Vector3(23.05, 2.7, z1), Vector3(23.15, 2.78, z1 + 0.12), "iron")
+	B(Vector3(15.7, 1.05, z1), Vector3(17.25, 1.95, z1 + 0.05), "planks")
+	_noshadow(B(Vector3(15.8, 1.12, z1 + 0.05), Vector3(17.15, 1.88, z1 + 0.06), "paper", false))
+	_label("SEILFAHRT\nEINGESTELLT", Vector3(16.47, 1.5, z1 + 0.07), 0.0, 22, Color(0.2, 0.17, 0.14, 0.95))
+	# north face: a lintel over the iron door, the warning, a bulkhead lamp
+	B(Vector3(18.4, 2.4, z0 - 0.1), Vector3(21.6, 2.65, z0), "concrete")
+	_label("BETRETEN VERBOTEN", Vector3(20.0, 2.95, z0 - 0.02), 180.0, 30, Color(0.85, 0.82, 0.72, 0.85))
+	Props.bulkhead_lamp(dress, Vector3(20.0, 3.45, z0), 0.0)
+	# east face: the cable conduit to the winding engine
+	Props.pipe(dress, Vector3(x1 + 0.06, 0.98, 15.0), Vector3(x1 + 0.06, 5.5, 15.0), 0.05, "iron")
+	Props.pipe(dress, Vector3(x1 + 0.06, 0.98, 15.3), Vector3(x1 + 0.06, 5.5, 15.3), 0.035, "iron")
+
+
+## T-123: the yard's south side, where the squad starts: it was bare snow and a blank wall. Along the south wall
+## (z 30..31.85, outside the headframe loop's ring, clear of the doors, the windows and the ground spawn at (3, 29)):
+## a fire barrel and a lantern so the spawn is not dark before the power, the miners' tag board and lamp rack, the
+## yard's ammo box (AMMO_BOXES "Yard"), a stack of pit props and a spare set, a workbench, a tipped ore cart in a
+## salt spill, crates and sacks. Each solid prop has a hidden YardProp* collider (YARD_PROPS), baked into the navmesh.
+func _dress_yard_south() -> void:
+	var wz: float = 31.85   # the south wall's yard face
+	# the night shift's third brazier, by the spawn
+	Props.oil_drum(dress, Vector3(7.0, 0, 31.2), "rust")
+	Props.flames(dress, Vector3(7.0, 0.92, 31.2), 0.42, 0.55, 20)
+	Props.embers(dress, Vector3(7.0, 1.1, 31.2), 0.2, 8)
+	lamp(Vector3(7.3, 1.6, 30.8), Color(1.0, 0.5, 0.2), 2.2, 9.0, 0.35, 0.6)
+	Props.puddle(dress, Vector3(7.0, 0, 30.4), 1.6, 1.0, 10.0)
+	# a lantern on a bracket over the spawn (unpowered, like the gatehouse's)
+	Props.wall_lamp(dress, Vector3(10.0, 2.5, wz), 0.0)
+	lamp(Vector3(10.0, 2.3, 31.1), Color(1.0, 0.68, 0.38), 1.3, 9.0, 0.08)
+	# the miners' tag board: a brass tag on a hook per man; the empty hooks are the men still down there
+	B(Vector3(13.4, 1.15, wz - 0.06), Vector3(15.6, 2.3, wz), "planks")
+	B(Vector3(13.35, 2.3, wz - 0.1), Vector3(15.65, 2.38, wz), "beam")
+	_label("MARKENKONTROLLE", Vector3(14.5, 2.55, wz - 0.02), 180.0, 26, Color(0.85, 0.82, 0.72, 0.85))
+	var trng: RandomNumberGenerator = RandomNumberGenerator.new()
+	trng.seed = 1938
+	for row: int in 4:
+		for col: int in 10:
+			var tp: Vector3 = Vector3(13.6 + col * 0.2, 2.1 - row * 0.24, wz - 0.06)
+			B(tp + Vector3(-0.008, 0.02, -0.04), tp + Vector3(0.008, 0.05, 0.0), "iron")
+			if trng.randf() < 0.35:
+				continue
+			_noshadow(B(tp + Vector3(-0.035, -0.06, -0.035), tp + Vector3(0.035, 0.02, -0.02), "brass"))
+	# the lamp rack beside it: two shelves of miners' lamps
+	for rx: float in [15.95, 17.65]:
+		B(Vector3(rx - 0.04, 0, 31.47), Vector3(rx + 0.04, 1.9, wz), "beam")
+	for sy: float in [0.95, 1.55]:
+		B(Vector3(15.9, sy, 31.47), Vector3(17.7, sy + 0.04, wz), "planks")
+		for li: int in 6:
+			var lx: float = 16.15 + li * 0.27
+			if (li + int(sy * 10.0)) % 4 == 0:
+				continue   # a lamp gone with its man
+			CYL(Vector3(lx, sy + 0.14, 31.66), 0.06, 0.2, "brass")
+			_noshadow(CYL(Vector3(lx, sy + 0.27, 31.66), 0.045, 0.06, "lantern_glass"))
+	# a stack of pit props (timber for the roof sets below) and a spare set stood against the wall
+	for layer: int in 3:
+		var n: int = 4 - layer
+		for li2: int in n:
+			var lz: float = 30.85 + (li2 + layer * 0.5) * 0.3
+			CYL(Vector3(24.5, 0.15 + layer * 0.27, lz), 0.14, 4.0, "pine", Vector3(0, 0, 90))
+	for stx: float in [22.5, 26.5]:
+		B(Vector3(stx - 0.06, 0, 30.6), Vector3(stx + 0.06, 1.0, 30.72), "beam")
+	Props.pit_prop(dress, Vector3(28.5, 0, 31.6), 0.0, 2.2, 2.4)
+	# the workbench under the gooseneck, picks and shovels on a board over it
+	Props.workbench(dress, Vector3(31.5, 0, 31.45), 0.0, 2.0, 0.7)
+	B(Vector3(30.6, 1.25, wz - 0.04), Vector3(32.4, 2.15, wz), "planks")
+	for tx: float in [30.9, 31.5, 32.1]:
+		Props.strut(dress, Vector3(tx, 1.3, wz - 0.08), Vector3(tx, 2.05, wz - 0.08), 0.035, "pine", true)
+	B(Vector3(30.7, 1.95, wz - 0.12), Vector3(31.1, 2.02, wz - 0.05), "iron")
+	B(Vector3(31.3, 1.95, wz - 0.12), Vector3(31.7, 2.02, wz - 0.05), "iron")
+	B(Vector3(31.97, 1.25, wz - 0.12), Vector3(32.23, 1.5, wz - 0.06), "iron")
+	# a tipped ore cart that spilled its salt
+	Props.ore_cart(dress, Vector3(35.0, 0.0, 30.9), 90.0, "", 14.0)
+	_noshadow(Props.ball(dress, Vector3(33.6, 0.0, 30.5), Vector3(1.1, 0.32, 0.9), "ore_salt"))
+	_noshadow(Props.ball(dress, Vector3(34.6, 0.0, 29.9), Vector3(0.8, 0.2, 0.6), "ore_salt"))
+	# crates and sacks in the corner (the drift beyond them is the old one)
+	Props.crate(dress, Vector3(37.0, 0, 31.2), 0.85, 6.0, "SALZ")
+	Props.crate(dress, Vector3(37.95, 0, 31.25), 0.8, -10.0)
+	Props.crate(dress, Vector3(37.4, 0.85, 31.25), 0.6, 18.0)
+	Props.sack(dress, Vector3(36.9, 0, 30.55), 30.0)
+	Props.sack(dress, Vector3(37.6, 0, 30.6), -20.0, 0.9)
+	# a trodden strip along the wall: the squad's way between the spawn, the board and the box
+	_noshadow(B(Vector3(6.0, 0.0, 28.6), Vector3(36.5, 0.012, 30.6), "snow_trodden", false))
 
 
 func _dress_headframe() -> void:
