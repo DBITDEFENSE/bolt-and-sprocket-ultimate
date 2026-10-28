@@ -76,6 +76,44 @@ order intends.
   - Player-only `final` steps: s6, s10, s11b (Peg's choice), s14, s18.
   - s12b needs `power`, which isn't in the quest's `bot_knowledge`.
 
-## After (UPDATE 08)
+## After (UPDATE 08, this run: partial)
 
-*(filled in at the end of the run)*
+### Egg completion
+Bot-only runs: bot mode plays the human, with 3 Full Partner bots. The Kaltenbrunn runs were exploratory: god mode
+so the squad lives long enough to reach later steps, 4× speed, `--until-egg`.
+
+| Map | Egg | Runs | Completed | Furthest the bots got | What stopped them |
+|---|---|---|---|---|---|
+| Crossroads Inn | Glasmacher Calling | 1 (baseline) | **1/1** | complete | — |
+| Kaltenbrunn | Requiem for Kaltenbrunn | 6 exploratory | **0/6** | s0 power, s3 parts, **Pylon A charged** (new) | Pylons F/H, then the untested later steps (below) |
+| Totenhafen | — | — | — | the map has no egg | — |
+| Fernflug | Kündigung | 1 (baseline) | 0/1 | s1 | The baseline used the scripted player; the new data fixes (s12b/s14 knowledge, Peg's default pick) aren't soaked yet |
+
+What the Kaltenbrunn runs found, in order. Each was fixed, then the next run went further:
+1. **No egg block for map01:** the agent never worked the Requiem. *Fixed.*
+2. **The agent trained underground:** the surface tonics were 80–90 m away, so its plan stalled at Second Wind with 24,000 Scrip in hand, and the Lab door (behind which Pylon H stands) was never bought. *Fixed:* surface loop first, Lab door in the plan.
+3. **Pylons waited for "a human within 22 m":** in bot mode the human is the agent, which never brought itself. *Fixed:* the agent counts as the human.
+4. **The trainer pulled the agent off a charging pylon:** a charging pylon holds the round open, so the round never ended. *Fixed:* the agent stays while a pylon charges or a holdout runs.
+5. **A Full Partner bot fell through the yard by Pylon A** and fell for the rest of the match with its egg step. *Fixed:* a fall rescue for every bot.
+6. **Open:** in god mode the agent can kite two straggling crawlers for 30+ minutes while nobody hunts them, so the round doesn't end. This only shows up because god mode stops the wipe.
+7. **Not reached by bots yet:**
+   - s4: shoot the Chapel bell with a Crucible gun, then kill the Foreman in the Chapel while it's lit.
+   - s6: the four bells.
+   - s7: the drummer chase.
+   - s8b: 30 Totenglocke kills.
+   - s9: the Heartstorm holdout. The agent can start it now, but the 120 s hold, with Bellringers and two Foremen, is untested.
+
+Acceptance (3/5 on Kaltenbrunn, at least once on every other map) is **not met**. The egg data test passes for every
+step of every built egg (`test_bot_ee`). The per-map "completes within a time budget" smokes aren't written: they
+wait on the eggs actually completing.
+
+### Tier IV balance
+No soak reached round 30 (the honest baselines wiped at rounds 10–20), so the "strong but not trivial at 30+" check
+is still open.
+
+The economy says tier IV comes late: in the Map 0 baseline nobody banked 12,000+ spare before round 17. The
+Perk tier IV test button lets you feel it by hand.
+
+### Late kit
+Verified by `smoke_late_kit`. Its effect on bot survival past round 25 isn't measured, for the same reason as tier IV:
+no run lived that long.

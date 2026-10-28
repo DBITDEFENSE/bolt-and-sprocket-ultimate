@@ -198,6 +198,10 @@
         {
           "crucible": "*",
           "tier": 2
+        },
+        {
+          "crucible": "*",
+          "tier": 3
         }
       ],
       "train_at": [
