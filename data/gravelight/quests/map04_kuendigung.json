@@ -23,6 +23,16 @@
       "on_vo": [
         "WIT_M4A_SWITCH_01"
       ]
+    },
+    "power": {
+      "label": "found the power on (the radar shack's radio runs on it)",
+      "on_power": true
+    },
+    "burn": {
+      "label": "heard Fasbender read out the burn on the shack's radio",
+      "on_step": [
+        "s12b_burn"
+      ]
     }
   },
   "random": {
@@ -529,7 +539,7 @@
             "carry_id": "impeller_core"
           }
         },
-        "player_only": "final",
+        "player_only": "choice",
         "what": "the impeller core to the hangar cradle (the choice is yours)",
         "ping": "CARRY"
       },

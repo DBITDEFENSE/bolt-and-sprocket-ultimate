@@ -112,6 +112,13 @@ static func gate(t: Dictionary, ctx: Dictionary) -> Dictionary:
 	if t.is_empty():
 		return _no("no_task", "The squad doesn't know how to help with that one.")
 	if is_player_only(t):
+		# U08 (T-131): the bot-mode agent IS the player: it does the player's steps itself (a cutscene, the last
+		# input, a hand-off; a choice takes its default pick). In Full Partner a squad bot may take a choice's
+		# default pick when the player is away or down, so the egg can finish; every other player step stays theirs.
+		if bool(ctx.get("agent", false)):
+			return {"ok": true, "code": "ok", "reason": "", "as": "task"}
+		if str(t.get("player_only", "")) == "choice" and mode == "full" and bool(ctx.get("player_absent", false)):
+			return {"ok": true, "code": "ok", "reason": "The player isn't here: taking the default.", "as": "task"}
 		if ordered or (mode == "full" and bool(ctx.get("player_near", false))):
 			return {"ok": true, "code": "player_only", "reason": "That one's yours (%s): covering you instead." % player_only_why(t), "as": "escort"}
 		return _no("player_only", "That one's yours (%s)." % player_only_why(t))

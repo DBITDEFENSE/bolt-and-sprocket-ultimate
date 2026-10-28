@@ -388,6 +388,9 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 		"hold_zone":
 			var running: bool = not QuestManager.holdout_state(qid, sid).is_empty()
 			w["holdout_running"] = running
+			w["is_agent"] = brain.is_player_bot   # U08 (T-131): the agent starts a holdout that is the player's to start
+			var sn: Interactable = _first(t.get("target", {}), null) as Interactable
+			w["start_node"] = sn if sn != null and sn.can_interact(player) else null
 			var pts: Array = params.get("points", [])
 			var sum: Vector3 = Vector3.ZERO
 			for pt: Variant in pts:
@@ -584,6 +587,8 @@ static func plan_hold(t: Dictionary, w: Dictionary) -> Dictionary:
 		if bool(w.get("holdout_running", false)):
 			return {"do": "hold", "pos": w.get("center", Vector3.ZERO), "radius": float(t.get("radius", 5.0))}
 		if str(t.get("start", "")) == "player":
+			if bool(w.get("is_agent", false)) and w.get("start_node") != null:
+				return {"do": "use", "node": w["start_node"]}
 			return {"do": "escort"}
 		return {"do": "wait"}
 	var charging: Dictionary = {}

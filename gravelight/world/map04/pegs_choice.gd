@@ -1,7 +1,8 @@
 class_name PegsChoice
 extends CanvasLayer
 ## Peg's choice (UPDATE 07, docs/MAP4_FERNFLUG.md §5.6): the impeller core is at Hale's hatch. Hand it over, or
-## keep it for the rocket. No time limit; the decider is whoever plays Peg, else the first human; bots never choose.
+## keep it for the rocket. No time limit; the decider is whoever plays Peg, else the first human; bots never choose
+## (U08: but in Full Partner the default, KEEP, is taken when the decider is away, down, or the bot-mode agent).
 ## The runner is a panel with two buttons (keys 1 / 2 too) on the decider's machine; `choose()` is the one entry
 ## (the console, the tests and the host's mirror use it). Flags: `peg_resigned` (keep, canon) or `peg_delivered`.
 ## The lines: the Operator's and Hale's on open, the squad's on the decision (only the characters in the match).
@@ -112,9 +113,41 @@ func _build() -> void:
 	b2.grab_focus()
 
 
+## U08 (T-131): the story choice's default pick, so a bot squad can finish the egg. Only with Bot Easter-Egg Help on
+## Full Partner, and only when the decider can't decide: down, out of the match, or played by the bot-mode agent.
+## After DEFAULT_AFTER_S of that it takes KEEP (Peg resigns: the canon pick). A present human always decides.
+const DEFAULT_AFTER_S: float = 20.0
+var _default_t: float = 0.0
+
+
+static func default_due(mode: String, decider_away: bool, agent: bool, waited_s: float) -> bool:
+	return mode == "full" and (decider_away or agent) and waited_s >= DEFAULT_AFTER_S
+
+
+func _decider_state() -> Array:
+	var away: bool = true
+	var agent: bool = false
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		var p: Player = n as Player
+		if p != null and p.player_id == decider:
+			away = p.downed or p.spectating
+	var map: Node = get_tree().current_scene
+	var sq: BotSquad = map.get("squad") as BotSquad if map != null else null
+	if sq != null and sq.player_bot != null and is_instance_valid(sq.player_bot) and sq.player_bot.player.player_id == decider:
+		agent = true
+	return [away, agent]
+
+
 func _process(delta: float) -> void:
 	if chosen != "":
 		return
+	if Net.is_authority():
+		var ds: Array = _decider_state()
+		_default_t = (_default_t + delta) if (bool(ds[0]) or bool(ds[1])) else 0.0
+		if default_due(str(GLSettings.values.get("bot_ee_help", "full")), bool(ds[0]), bool(ds[1]), _default_t):
+			print("[pegs_choice] the default pick (keep): the decider can't decide")
+			choose(KEEP)
+			return
 	_insist_t -= delta
 	if _insist_t <= 0.0:
 		_insist_t = INF

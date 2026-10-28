@@ -4,8 +4,11 @@ extends GutTest
 ## fake nodes), and the never-sequence-break rule (the planners against the real QuestManager: a bot never makes a
 ## wrong input, never the player's commit, never a risky trigger unless ordered).
 
-const QUESTS: PackedStringArray = ["map00_radio", "map01_requiem", "map01_song", "map01_wren_tag"]
-const PLAYER_ONLY: PackedStringArray = ["map01_requiem/s10_ending", "map01_song/s2_phonograph", "map01_wren_tag/s1_tag"]
+const QUESTS: PackedStringArray = ["map00_radio", "map01_requiem", "map01_song", "map01_wren_tag", "map04_kuendigung",
+	"map04a_jette", "map04c_cage", "map04d_smile"]
+const PLAYER_ONLY: PackedStringArray = ["map01_requiem/s10_ending", "map01_song/s2_phonograph", "map01_wren_tag/s1_tag",
+	"map04_kuendigung/s6_board", "map04_kuendigung/s8_london", "map04_kuendigung/s10_autopilot", "map04_kuendigung/s11b_choice",
+	"map04_kuendigung/s14_rocket", "map04_kuendigung/s18_cancel", "map04d_smile/s1_rim"]
 
 
 class FakeKey extends Node3D:
@@ -55,6 +58,42 @@ func test_every_step_of_every_quest_has_a_valid_bot_task() -> void:
 			assert_eq(BotEECatalog.is_player_only(t), PLAYER_ONLY.has(where), "%s player-only as designed" % where)
 			for k: Variant in t.get("needs", []):
 				assert_true(keys.has(str(k)), "%s needs '%s', defined in the quest's bot_knowledge" % [where, k])
+
+
+## U08 section 4.4 (T-131): every step of every built egg has a bot task, or is player-only with a stated reason.
+func test_every_player_only_step_says_why() -> void:
+	for qid: String in QUESTS:
+		for st: Variant in _def(qid)["steps"]:
+			var t: Dictionary = BotEECatalog.task_def(st as Dictionary)
+			if BotEECatalog.is_player_only(t):
+				assert_true(["cutscene", "final", "choice", "handoff"].has(str(t["player_only"])), "%s/%s says why it's the player's" % [qid, (st as Dictionary)["id"]])
+				assert_ne(BotEECatalog.player_only_why(t), "it's yours")
+
+
+## U08 (T-131): the bot-mode agent is the player: it does a player-only step itself; in Full Partner a squad bot may
+## take a story choice's default pick when the player is away or down, never another player step.
+func test_the_agent_does_the_players_steps_and_bots_take_a_choices_default() -> void:
+	var fin: Dictionary = {"type": "turn_key", "target": {"class": "ExfilPoint"}, "player_only": "final"}
+	var choice: Dictionary = {"type": "carry", "target": {"class": "CarryObject"}, "player_only": "choice"}
+	assert_eq(str(BotEECatalog.gate(fin, _ctx({"agent": true}))["as"]), "task", "the agent turns the key itself")
+	assert_eq(str(BotEECatalog.gate(fin, _ctx({"mode": "full", "ordered": false, "player_near": true}))["as"]), "escort", "a squad bot covers the player")
+	assert_false(bool(BotEECatalog.gate(fin, _ctx({"mode": "full", "ordered": false, "player_near": false, "player_absent": true}))["ok"]), "a last step stays the player's")
+	assert_eq(str(BotEECatalog.gate(choice, _ctx({"mode": "full", "ordered": false, "player_near": false, "player_absent": true}))["as"]), "task", "Full Partner, the player away: the default pick")
+	assert_false(bool(BotEECatalog.gate(choice, _ctx({"mode": "ask", "ordered": false, "player_near": false, "player_absent": true}))["ok"]), "When Asked: never")
+	assert_eq(str(BotEECatalog.gate(choice, _ctx({"mode": "full", "ordered": false, "player_near": true, "player_absent": false}))["as"]), "escort", "the player here: their choice")
+	assert_true(PegsChoice.default_due("full", true, false, 25.0), "Peg's choice: the decider down, Full Partner, 20 s: keep")
+	assert_false(PegsChoice.default_due("ask", true, false, 25.0))
+	assert_false(PegsChoice.default_due("full", false, false, 99.0), "a present human always decides")
+	assert_false(PegsChoice.default_due("full", true, false, 5.0))
+
+
+func test_power_knowledge() -> void:
+	var was: bool = GameState.power_on
+	GameState.power_on = false
+	assert_eq(BotEEHub.entry_due(&"x", {"on_power": true}), "")
+	GameState.power_on = true
+	assert_eq(BotEEHub.entry_due(&"x", {"on_power": true}), "power")
+	GameState.power_on = was
 
 
 func test_validate_catches_bad_tasks() -> void:
