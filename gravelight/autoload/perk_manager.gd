@@ -14,7 +14,8 @@ extends Node
 ##   grant(player, perk_id) -> void            gives the perk (no cost); used after the machine's drink beat
 ##   price(perk_id) -> int                     solo/co-op aware
 ##   try_self_revive(player) -> bool           consumes a Second Wind solo use if available
-##   on_player_downed(player) -> void          co-op rule: every perk is lost (a bot's bonus perk stays)
+##   on_player_downed(player) -> void          co-op rule: every perk is lost (a bot's bonus perk and sealed tonics stay)
+##   seal(player, perk_id) / is_sealed / sealed(player): a tonic kept through every down (tonic bottle, T-121)
 ##   grant_bonus(player, perk_id) / bonus_perk(player) / is_bonus(player, perk_id) / capped_count(player):
 ##       a bot's random bonus perk (U02 section 5, BotSquad): owned like any perk, outside the cap, kept on going down
 ##   reset_match() -> void
@@ -59,6 +60,7 @@ var _hud: CanvasLayer = null
 var _overclock_ready_at: Dictionary = {}   # player -> msec when the 3 s cooldown ends
 var _tiers: Dictionary = {}        # player -> {perk_id String: tier int >= 2} (tier 1 = owned, not stored)
 var _kept_tiers: Dictionary = {}   # player -> {perk_id String: tier}: Second Wind's tier through a solo self-revive
+var _sealed: Dictionary = {}       # player -> {perk_id String: true}: kept through a down (a tonic bottle's free measure, T-121)
 var _revive_tier: Dictionary = {}  # player -> the Second Wind tier that is getting them up (solo self-revive)
 var _until: Dictionary = {}        # "pid:key" -> msec: iron_skin / invuln / boost / fresh_clip windows, dodge cooldown
 var _boost_mult: Dictionary = {}   # player -> the speed multiplier of their running boost
@@ -89,6 +91,7 @@ func reset_match() -> void:
 	_overclock_ready_at.clear()
 	_tiers.clear()
 	_kept_tiers.clear()
+	_sealed.clear()
 	_revive_tier.clear()
 	_until.clear()
 	_boost_mult.clear()
@@ -105,6 +108,7 @@ func _on_match_started(_map_id: StringName) -> void:
 	if _hud == null or not is_instance_valid(_hud):
 		_hud = (load("res://gravelight/ui/perk_hud.gd") as GDScript).new() as CanvasLayer
 		add_child(_hud)
+	_hud.offset = Vector2.ZERO   # T-122: a transition that hid the row never leaves it hidden in the next match
 	_hud.call("_rebuild")
 
 
@@ -247,7 +251,29 @@ func remove(player: int, perk_id: StringName) -> void:
 	if has_perk(player, perk_id):
 		(_owned[player] as Array).erase(perk_id)
 		_tier_dict(player).erase(String(perk_id))
+		(_sealed.get(player, {}) as Dictionary).erase(String(perk_id))
 		GLBus.perks_changed.emit(player)
+
+
+# ---- kept tonics (T-121): a tonic bottle that finds the cap full raises a carried tonic a tier and seals it: from
+# then on that tonic (at its tier) survives every down, solo and co-op. Lost only by remove() or a new match.
+
+func seal(player: int, perk_id: StringName) -> void:
+	if not Net.is_authority() or not has_perk(player, perk_id):
+		return
+	if not _sealed.has(player):
+		_sealed[player] = {}
+	(_sealed[player] as Dictionary)[String(perk_id)] = true
+	GLBus.perks_changed.emit(player)
+
+
+func is_sealed(player: int, perk_id: StringName) -> bool:
+	return (_sealed.get(player, {}) as Dictionary).has(String(perk_id))
+
+
+## The player's sealed tonics (perk ids as Strings).
+func sealed(player: int) -> Array:
+	return (_sealed.get(player, {}) as Dictionary).keys()
 
 
 ## Solo: going down with Second Wind uses it up (other perks are kept). Three uses per game.
@@ -255,9 +281,15 @@ func try_self_revive(player: int) -> bool:
 	if not Net.is_authority() or not GameState.is_solo() or not has_perk(player, &"second_wind") or solo_self_revives_left <= 0:
 		return false
 	solo_self_revives_left -= 1
-	(_owned[player] as Array).erase(&"second_wind")
 	var t: int = int(_tier_dict(player).get("second_wind", 1))
 	_revive_tier[player] = t
+	if is_sealed(player, &"second_wind") and solo_self_revives_left > 0:
+		# a sealed Second Wind is not used up by the self-revive (the three uses per game still count down)
+		GLBus.self_revive.emit(player, solo_self_revives_left)
+		GLBus.perks_changed.emit(player)
+		return true
+	(_owned[player] as Array).erase(&"second_wind")
+	(_sealed.get(player, {}) as Dictionary).erase("second_wind")
 	if t > 1:
 		_tier_dict(player).erase("second_wind")
 		if not _kept_tiers.has(player):
@@ -307,12 +339,26 @@ func on_player_downed(player: int) -> void:
 		return
 	if GameState.retained:
 		return   # the Retained state (Map 4 Act IV's renewal, T-113): the Plan keeps your tonics; nobody is let go
-	var keep: StringName = bonus_perk(player)
-	var kt: int = int(_tier_dict(player).get(String(keep), 1))
-	_owned[player] = [keep] if keep != &"" and has_perk(player, keep) else []
-	_tiers[player] = {String(keep): kt} if keep != &"" and kt > 1 and has_perk(player, keep) else {}
+	var keep_ids: Array = kept_on_down(owned(player), bonus_perk(player), sealed(player))
+	var old_tiers: Dictionary = _tier_dict(player)
+	var new_tiers: Dictionary = {}
+	for k: Variant in keep_ids:
+		if int(old_tiers.get(String(k), 1)) > 1:
+			new_tiers[String(k)] = int(old_tiers[String(k)])
+	_owned[player] = keep_ids
+	_tiers[player] = new_tiers
 	GLBus.perks_lost.emit(player)
 	GLBus.perks_changed.emit(player)
+
+
+## Pure: the tonics a down leaves in the player's system, in their order: a bot's bonus perk and every sealed one.
+static func kept_on_down(owned_ids: Array, bonus: StringName, sealed_ids: Array) -> Array:
+	var out: Array = []
+	for p: Variant in owned_ids:
+		var id: StringName = StringName(str(p))
+		if (bonus != &"" and id == bonus) or sealed_ids.has(String(id)):
+			out.append(id)
+	return out
 
 
 static func cost_for(perk: Dictionary, solo: bool) -> int:
@@ -577,8 +623,8 @@ func can_upgrade(player: int, perk_id: StringName) -> StringName:
 		return &"no_power"
 	if RoundManager.current_round < tier_min_round(t + 1):
 		return &"round"
-	if not tier_unlocked(perk_id, t + 1):
-		return &"locked"
+	if not tier_unlocked(perk_id, t + 1) and not GameState.is_bot(player):
+		return &"locked"   # T-121: a squad bot has no profile to earn mastery in, so the lock is the humans' only
 	return &"ok"
 
 

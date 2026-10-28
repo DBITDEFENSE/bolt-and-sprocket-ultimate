@@ -341,6 +341,14 @@ func _finish() -> void:
 		exfil.finish_travel()
 
 
+## T-122: the perk row lives under PerkManager and outlives the scene change that ends a transition, so it is put
+## back whenever the cutscene leaves the tree (it stayed 8000 px up for the rest of the run: "perks disappear").
+func _exit_tree() -> void:
+	var ph: CanvasLayer = PerkManager.get("_hud") as CanvasLayer
+	if ph != null and is_instance_valid(ph) and ph.offset.y <= -4000.0:
+		ph.offset = _perk_hud_offset
+
+
 ## Presentation over without a scene change (the target map is missing): back to the map's camera.
 func stop() -> void:
 	_done = true

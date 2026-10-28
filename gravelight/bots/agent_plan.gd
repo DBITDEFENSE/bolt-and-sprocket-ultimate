@@ -6,7 +6,8 @@ extends RefCounted
 ##   {"power": true}                           the map's power on
 ##   {"perk": "<perk id>"}                     drunk (lost on a down: it becomes the current step again)
 ##   {"gun": "<weapon id>", "or_tier": 3.6}    held (or any gun of that economy.json tier or better)
-##   {"crucible": "<weapon id>"}               held upgraded (Crucible)
+##   {"crucible": "<weapon id>"}               held upgraded (Crucible); "*" any gun
+##   {"crucible": "*", "tier": 2}              held taught twice (3: three times; T-121)
 ## A step may carry "from_round" (not before that round). The current step is the first one not done; the
 ## agent's economy (BotEconomy.candidates) then keeps only what that step needs, plus what keeps it alive
 ## anyway (ammo, an ammo box, the boards, the power switch). With every step done (or no plan for
@@ -49,8 +50,8 @@ static func step_done(step: Dictionary, st: Dictionary) -> bool:
 	if step.has("crucible"):
 		for g2: Variant in st.get("guns", []):
 			var gd2: Dictionary = g2 as Dictionary
-			if bool(gd2.get("upgraded", false)) and (str(gd2.get("id", "")) == str(step["crucible"]) or str(step["crucible"]) == "*"):
-				return true
+			if bool(gd2.get("upgraded", false)) and (str(gd2.get("id", "")) == str(step["crucible"]) or str(step["crucible"]) == "*") 					and int(gd2.get("ctier", 1)) >= int(step.get("tier", 1)):
+				return true   # T-121: {"crucible": "*", "tier": 2} = a gun taught twice
 		return false
 	return true   # an unknown step never blocks the plan
 
@@ -214,7 +215,8 @@ static func state_of(brain: BotBrain) -> Dictionary:
 	var guns: Array = []
 	var eco: Dictionary = BotAIData.table("economy")
 	for w: WeaponInstance in brain.player.weapons.slots:
-		guns.append({"id": String(w.base_id()), "upgraded": w.upgraded, "tier": BotEconomy.tier_of(String(w.base_id()), w.upgraded, eco)})
+		guns.append({"id": String(w.base_id()), "upgraded": w.upgraded, "tier": BotEconomy.tier_of(String(w.base_id()), w.upgraded, eco, w.tier),
+			"ctier": w.tier if w.upgraded else 0})
 	return {"doors": doors, "power": GameState.power_on, "perks": perks, "guns": guns, "round": RoundManager.current_round}
 
 
@@ -264,7 +266,8 @@ static func price_of(step: Dictionary, brain: BotBrain) -> int:
 	if step.has("perk"):
 		return PerkManager.price(StringName(str(step["perk"]))) if not PerkManager.perk_data(StringName(str(step["perk"]))).is_empty() else -1
 	if step.has("crucible"):
-		return int(GLData.table("economy").get("crucible_upgrade", 5000))
+		var t: int = int(step.get("tier", 1))
+		return Crucible.price_for(&"upgrade", GLData.table("economy"), t - 1)   # tier 1: 5000, II: 7500, III: 10000
 	if step.has("door"):
 		for n: Node in brain.get_tree().get_nodes_in_group(&"doors"):
 			if n is BuyDoor and String((n as BuyDoor).door_id) == str(step["door"]):

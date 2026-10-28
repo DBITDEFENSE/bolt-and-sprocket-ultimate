@@ -1,6 +1,6 @@
 # PROGRESS
 
-RESUME HERE: UPDATE 07 is DONE and merged into master (2026-10-26). Map 4 Fernflug (four acts, two perks, the Lodestone, four bosses, the egg, both endings) and the Phase 0 QA fixes are on master; the morning report is morning/MORNING_REPORT.md, the owner's to-dos morning/NEEDS_DEVIN.md (0c: allow lfs.github.com, bake Map 4's ~310 VO lines on the PC, check FPS, name an HB4 likeness). Open tuning items (not bugs): bots alone cannot carry Map 4 past Act II (QA Q-19), bots alone reach the Kaltenbrunn power late. Next work order starts from master.
+RESUME HERE: branch bots-pap-tiers-bar-fix (2026-10-27, owner requests, not merged): T-120 Map 0 bar invisible wall fixed; T-121 bots buy perk tiers and Crucible re-teaches, tonic bottle full-cap level is sealed (kept on a down); T-122 round stamp fits high rounds, perk row restored after transitions; T-123 Kaltenbrunn spawn yard dressed + yard ammo box (minimap re-baked). Unit suite passed (1333) before T-122/T-123; full smoke run in progress (.smoke_logs/t121); bot-mode before/after soak not done (the master worktree had no LFS files). Next: finish smokes, soak bot mode, merge to master.
 
 ## UPDATE 07, 2026-10-26: Map 4 Fernflug + QA pass (DONE, merged to master)
 

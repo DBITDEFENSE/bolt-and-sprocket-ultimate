@@ -273,7 +273,8 @@ func gift_tonic(pid: int) -> Dictionary:
 	for p: Variant in PerkManager.owned(pid):
 		var pp: StringName = StringName(str(p))
 		var t: int = PerkManager.tier_of(pid, pp)
-		if t >= 1 and t < PerkManager.max_tier() and not PerkManager.tier_data(pp, t + 1).is_empty() and PerkManager.tier_unlocked(pp, t + 1):
+		# T-121: the bottle's measure is a gift, so the profile's mastery lock doesn't apply (nor the round gate)
+		if t >= 1 and t < PerkManager.max_tier() and not PerkManager.tier_data(pp, t + 1).is_empty():
 			upgradable.append(pp)
 	var g: Dictionary = pick_gift(PerkManager.owned(pid), map_perks, PerkManager.capped_count(pid), PerkManager.cap_for(pid),
 		excluded, upgradable, int(tb.get("full_cap_scrip", 1500)), rng)
@@ -285,8 +286,9 @@ func gift_tonic(pid: int) -> Dictionary:
 		"tier":
 			var nt: int = PerkManager.tier_of(pid, gp) + 1
 			PerkManager.set_tier(pid, gp, nt)
+			PerkManager.seal(pid, gp)   # T-121: and it stays through a down
 			g["tier"] = nt
-			GLBus.bonus_awarded.emit(pid, &"tonic_bottle", 0, "FREE MEASURE: %s" % PerkManager.tier_name(gp, nt).to_upper())
+			GLBus.bonus_awarded.emit(pid, &"tonic_bottle", 0, "FREE MEASURE: %s  ·  KEPT FOR GOOD" % PerkManager.tier_name(gp, nt).to_upper())
 		_:
 			Economy.grant(pid, int(g["scrip"]))
 			GLBus.bonus_awarded.emit(pid, &"tonic_bottle", int(g["scrip"]), "PERKS FULL: TONIC MONEY")

@@ -584,7 +584,7 @@ static func perk_where(perk_id: StringName, md: MapData) -> String:
 ## ("II at round 8 · 3500", "III locked · mastery 340 / 1200", "max").
 static func perk_line(pid: int, perk_id: StringName) -> String:
 	var t: int = PerkManager.tier_of(pid, perk_id)
-	var s: String = PerkManager.tier_name(perk_id, t) + ("  (bonus)" if PerkManager.is_bonus(pid, perk_id) else "")
+	var s: String = PerkManager.tier_name(perk_id, t) + ("  (bonus)" if PerkManager.is_bonus(pid, perk_id) else "") 		+ ("  (kept on a down)" if PerkManager.is_sealed(pid, perk_id) else "")
 	var next: int = t + 1
 	if PerkManager.tier_data(perk_id, next).is_empty():
 		return s + ("  ·  max" if t > 1 else "")

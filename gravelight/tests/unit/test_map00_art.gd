@@ -7,9 +7,10 @@ extends GutTest
 const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 ## SHA-1 over the navigation mesh's vertices and polygons (var_to_bytes), from master ab098f8, the bake T-093 began
 ## with. A change here means gameplay geometry moved: the art pass must never do that (UPDATE_05 section 0.4).
+## Re-baked by T-120: the stair-rail panel no longer reaches the taproom floor beside the bar.
 const NAV_FP: Dictionary = {
-	"Navigation": "29a4dd48d692189de8b7e27a99bc20d5d700d92f",
-	"NavigationBreachOpen": "dcdd46068ee2534034f38b42ff2ccfe32257e66f",
+	"Navigation": "ff34f4b6c285eeb611087b70b2afd28b0cf8dc32",
+	"NavigationBreachOpen": "3dc9c7487d098f6f534bbe86bf652c2939202294",
 }
 ## Library-prop triangles within CAM_RADIUS of any capture camera (data/gravelight/capture_cams.json).
 const CAM_RADIUS: float = 12.0
@@ -42,7 +43,57 @@ func test_navmesh_unchanged_by_the_art_pass() -> void:
 		assert_not_null(r, rn)
 		if r == null:
 			continue
-		assert_eq(nav_fingerprint(r.navigation_mesh), str(NAV_FP[rn]), "%s is byte-for-byte the T-106 bake (T-093 art pass; T-106 dropped furniture-top islands)" % rn)
+		assert_eq(nav_fingerprint(r.navigation_mesh), str(NAV_FP[rn]), "%s is byte-for-byte the T-120 bake (T-093 art pass; T-106 dropped furniture-top islands; T-120 the bar walkway)" % rn)
+
+
+## T-120: the walkway between the bar's west end and the stairwell wall (the way to the Old Cellar door) is open.
+## The stair-rail panel used to run down to the floor to z 8.95, an invisible wall at x 3.6 that players and
+## zombies stuck on. Nothing solid stands there below head height, and the navmesh covers it.
+func test_bar_walkway_has_no_invisible_wall() -> void:
+	# sample the walkway (x 1..4.9, z 8.95..9.7, 0.1..1.9 m up) against every box collider, oriented as placed
+	var pts: Array[Vector3] = []
+	for xi: int in 20:
+		for zi: int in 4:
+			for yi: int in 4:
+				pts.append(Vector3(1.0 + xi * 0.2, 0.1 + yi * 0.6, 8.95 + zi * 0.25))
+	var blockers: PackedStringArray = []
+	for n: Node in map.find_children("*", "CollisionShape3D", true, false):
+		var cs: CollisionShape3D = n as CollisionShape3D
+		if cs.disabled or not (cs.shape is BoxShape3D) or not (cs.get_parent() is StaticBody3D):
+			continue
+		var half: Vector3 = (cs.shape as BoxShape3D).size * 0.5
+		var inv: Transform3D = _local_xf(cs).affine_inverse()
+		for pt: Vector3 in pts:
+			var lp: Vector3 = inv * pt
+			if absf(lp.x) < half.x and absf(lp.y) < half.y and absf(lp.z) < half.z:
+				blockers.append("%s at %s" % [cs.get_parent().name, str(pt)])
+				break
+	assert_eq(blockers.size(), 0, "nothing solid in the bar walkway: %s" % ", ".join(blockers))
+	var nm: NavigationMesh = (map.get_node("Navigation") as NavigationRegion3D).navigation_mesh
+	var verts: PackedVector3Array = nm.get_vertices()
+	for pt2: Vector2 in [Vector2(3.6, 9.0), Vector2(2.5, 9.0), Vector2(3.0, 8.9)]:
+		var on: bool = false
+		for i: int in nm.get_polygon_count():
+			var poly: PackedInt32Array = nm.get_polygon(i)
+			if absf(verts[poly[0]].y) > 0.6:
+				continue   # the cellar below, the floor above
+			var flat: PackedVector2Array = PackedVector2Array()
+			for vi: int in poly:
+				flat.append(Vector2(verts[vi].x, verts[vi].z))
+			if Geometry2D.is_point_in_polygon(pt2, flat):
+				on = true
+				break
+		assert_true(on, "the taproom navmesh runs through the bar walkway at %s" % str(pt2))
+
+
+## A node's transform relative to the map root (the map isn't in the tree here).
+static func _local_xf(n: Node3D) -> Transform3D:
+	var xf: Transform3D = n.transform
+	var p: Node = n.get_parent()
+	while p != null and p is Node3D and p.get_parent() != null:
+		xf = (p as Node3D).transform * xf
+		p = p.get_parent()
+	return xf
 
 
 func test_every_generator_material_key_resolves_to_the_library() -> void:

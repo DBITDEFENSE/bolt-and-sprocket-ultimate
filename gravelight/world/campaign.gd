@@ -212,6 +212,7 @@ static func serialize_player(p: Player) -> Dictionary:
 		"bonus_slots": int(PerkManager._bonus_slots.get(pid, 0)),
 		"bonus_perk": String(PerkManager.bonus_perk(pid)),
 		"perk_tiers": PerkManager.tiers(pid),   # T-075: upgrades travel with their tonics
+		"perk_sealed": PerkManager.sealed(pid),   # T-121: and a tonic bottle's seal with them
 	}
 
 
@@ -421,6 +422,11 @@ static func restore_account(pid: int, d: Dictionary) -> void:
 		if perks.has(StringName(str(pk))) and int(carried[pk]) > 1:
 			tiers[str(pk)] = clampi(int(carried[pk]), 2, PerkManager.max_tier())
 	PerkManager._tiers[pid] = tiers
+	var seals: Dictionary = {}
+	for sk: Variant in d.get("perk_sealed", []):
+		if perks.has(StringName(str(sk))):
+			seals[str(sk)] = true
+	PerkManager._sealed[pid] = seals
 	GLBus.perks_changed.emit(pid)
 
 

@@ -296,6 +296,22 @@ static func _font_color(l: Label, c: Color) -> void:
 		l.add_theme_color_override("font_color", c)
 
 
+## T-122: the digit box was one numeral wide with clipping on, so round 10 and up lost digits. It now fits the
+## number (one numeral's width at least), and the panel shrinks back to it.
+func _fit_stamp() -> void:
+	var holder: Control = _stamp_label.get_parent() as Control
+	if holder == null:
+		return
+	var fs: int = MenuKit.size("hud_stamp")
+	var font: Font = _stamp_label.get_theme_font("font")
+	var w: float = fs * 0.72
+	if font != null:
+		w = maxf(w, font.get_string_size(_stamp_label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x + fs * 0.08)
+	holder.custom_minimum_size.x = w
+	_stamp_panel.reset_size()
+	_stamp_panel.pivot_offset = _stamp_panel.size * 0.5
+
+
 ## The grid: margins (with the safe area) from ui.json; the stamp sits in the bottom-left corner, the counters in
 ## the bottom-right one, the prompt strip inside the side margins.
 func _layout() -> void:
@@ -401,6 +417,7 @@ func show_banner(text: String, hold: float = 3.0) -> void:
 func _on_round_started(round_number: int, special: bool) -> void:
 	_stamp_panel.visible = true
 	_stamp_label.text = str(round_number)
+	_fit_stamp()
 	if _act_label != null:
 		_act_label.text = RoundManager.act_label(round_number)
 		_act_label.visible = _act_label.text != ""

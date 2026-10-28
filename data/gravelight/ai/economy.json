@@ -31,9 +31,9 @@
   "second_wind_coop_only": true,
   "perk_min_round": 2,
   "perk_upgrades": {
-    "_doc": "T-075: perk tiers (BotEconomy.upgrade_wanted). Only when the perk plan has nothing left to buy (cap full or everything drunk), from min_round (tier III from tier3_min_round), in this plan's order ('@weapon' as in perk_plan), keeping reserve + extra_reserve; an unaffordable first choice is saved for. Gated by the host's mastery like everyone's.",
-    "min_round": 10,
-    "tier3_min_round": 18,
+    "_doc": "T-075: perk tiers (BotEconomy.upgrade_wanted). Only when the perk plan has nothing left to buy (cap full or everything drunk), from min_round (tier III from tier3_min_round), in this plan's order ('@weapon' as in perk_plan), keeping reserve + extra_reserve; an unaffordable first choice is saved for. T-121: the rounds match the machines' own gates (perks.json upgrades.min_round: II from 8, III from 15), and a squad bot has no mastery lock (it has no profile; PerkManager.can_upgrade). The bot-mode agent plays the human's survivor and keeps the human's lock.",
+    "min_round": 8,
+    "tier3_min_round": 15,
     "extra_reserve": 500,
     "plan": [
       "ironhide_stout",
@@ -80,6 +80,7 @@
     "luger_p08": 0.5
   },
   "upgraded_tier_bonus": 1.5,
+  "reteach_tier_bonus": 0.6,
   "weapon_max_round": {
     "kar98k": 10,
     "m1_carbine": 14,
@@ -125,8 +126,10 @@
     "rich_until_tier": 5.5
   },
   "crucible": {
+    "_doc": "T-121: a bot feeds its best gun (BotBrain.best_to_teach: a taught gun counts its teachings, so it is fed again before a fresh one), from min_round, a gun of min_tier or better. save_for_reteach: once its best gun is taught and can learn more, the crate and the wall guns leave the next teaching's price (7500 / 10000) on top of the reserve, so it reaches the second and third teaching instead of rolling the crate.",
     "min_tier": 3.4,
-    "min_round": 5
+    "min_round": 5,
+    "save_for_reteach": true
   },
   "doors": {
     "bot_led": true,
