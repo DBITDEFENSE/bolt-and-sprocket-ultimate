@@ -223,7 +223,7 @@ func refresh() -> void:
 		_body.visible = here
 		_body.position.y = 0.0
 		_set_lantern(here)
-	_blocker.collision_layer = (1 << 8) if here else 0
+	_blocker.collision_layer = (1 | (1 << 8)) if here else 0   # T-125: world too (shots, zombies): the baked footprint is off at runtime
 	area.collision_layer = LAYER_INTERACTABLE if here else 0
 
 

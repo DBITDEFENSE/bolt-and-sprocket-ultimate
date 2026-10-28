@@ -1,8 +1,11 @@
 class_name Props
 extends RefCounted
+
 ## Procedural prop builders for set dressing (original, code-built). Everything here is decorative:
 ## no collision, so props never change the navmesh. Boxes reuse one shared unit mesh scaled per instance;
 ## materials are world-triplanar (Mats), so scaling never stretches textures.
+
+const BAKED_MM: Script = preload("res://gravelight/world/baked_multimesh.gd")   # T-125
 
 static var _unit: BoxMesh
 static var _cyl: CylinderMesh
@@ -212,11 +215,10 @@ static func bottles(parent: Node3D, a: Vector3, b: Vector3, count: int, seed_v: 
 			var tall: float = rng.randf_range(0.24, 0.34) if k != "stein" else 0.17
 			var rad: float = 0.04 if k != "stein" else 0.06
 			xf.append(Transform3D(Basis.from_scale(Vector3(rad * 2.0, tall, rad * 2.0)), p + Vector3(0, tall * 0.5, rng.randf_range(-0.06, 0.06))))
-		mm.instance_count = xf.size()
-		for i: int in xf.size():
-			mm.set_instance_transform(i, xf[i])
-		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
+		var mmi: MultiMeshInstance3D = BAKED_MM.new()   # T-125: transforms kept on the node
+		mmi.set("transforms", xf)
 		mmi.multimesh = mm
+		mmi.call("fill")
 		mmi.material_override = Mats.get_mat(k)
 		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		parent.add_child(mmi)
@@ -337,7 +339,8 @@ static func cart(parent: Node3D, pos: Vector3, yaw: float) -> void:
 
 ## A rail fence from a to b: square posts and two split rails per bay (T-093: the rails are hewn round poles in the
 ## weathered planks, the posts dark oak; two MultiMeshes). A bay is left open now and then.
-static func fence(parent: Node3D, a: Vector3, b: Vector3, seed_v: int) -> void:
+## `tall` (T-125): a 2.3 m corral fence with four rails and no open bays, drawn over a collider that tall.
+static func fence(parent: Node3D, a: Vector3, b: Vector3, seed_v: int, tall: bool = false) -> void:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = seed_v
 	var length: float = a.distance_to(b)
@@ -349,10 +352,14 @@ static func fence(parent: Node3D, a: Vector3, b: Vector3, seed_v: int) -> void:
 	for i: int in count:
 		var p: Vector3 = a.lerp(b, float(i) / maxf(1.0, float(count - 1)))
 		var tilt: Basis = Basis(Vector3.RIGHT, rng.randf_range(-0.08, 0.08)) * Basis(Vector3.FORWARD, rng.randf_range(-0.08, 0.08))
-		posts.append(Transform3D(tilt * Basis.from_scale(Vector3(0.12, 1.3, 0.12)), p + Vector3(0, 0.6, 0)))
-		if i < count - 1 and rng.randf() > 0.15:
+		if tall:
+			posts.append(Transform3D(tilt * Basis.from_scale(Vector3(0.14, 2.45, 0.14)), p + Vector3(0, 1.17, 0)))
+		else:
+			posts.append(Transform3D(tilt * Basis.from_scale(Vector3(0.12, 1.3, 0.12)), p + Vector3(0, 0.6, 0)))
+		var open_bay: bool = rng.randf() <= 0.15 if i < count - 1 else true
+		if i < count - 1 and (not open_bay or tall):
 			var q: Vector3 = a.lerp(b, (float(i) + 0.5) / maxf(1.0, float(count - 1)))
-			for h: float in [0.5, 1.0]:
+			for h: float in ([0.5, 1.0, 1.6, 2.15] if tall else [0.5, 1.0]):
 				var rb: Basis = Basis(Vector3.UP, yaw) * Basis(Vector3.RIGHT, rng.randf_range(-0.05, 0.05))
 				var span: float = length / maxf(1.0, float(count - 1)) + 0.1
 				rails.append(Transform3D(rb * Basis(Vector3.RIGHT, PI * 0.5) * Basis.from_scale(Vector3(0.1, span, 0.08)), q + Vector3(0, h, 0)))
@@ -363,11 +370,11 @@ static func fence(parent: Node3D, a: Vector3, b: Vector3, seed_v: int) -> void:
 		var mm: MultiMesh = MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
 		mm.mesh = part[1]
-		mm.instance_count = xf.size()
-		for i: int in xf.size():
-			mm.set_instance_transform(i, xf[i])
-		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
+		# T-125: the transforms live on the node (a headless generator's MultiMesh saves none)
+		var mmi: MultiMeshInstance3D = BAKED_MM.new()
+		mmi.set("transforms", xf)
 		mmi.multimesh = mm
+		mmi.call("fill")
 		mmi.material_override = Mats.get_mat(str(part[2]))
 		parent.add_child(mmi)
 

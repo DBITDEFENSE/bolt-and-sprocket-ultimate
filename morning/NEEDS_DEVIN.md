@@ -88,3 +88,8 @@ Optional too: a stick grenade (Stielhandgranate 24 by dsamuta).
    budget. No action from you unless you'd rather buy a clean period-furniture pack.
 3. **The sky**: the two night HDRIs are reference only; the procedural sky dome (landscape.gd) stays until someone
    decides to swap it. No action.
+
+## T-125 (2026-10-28): look at Map 0's yard in game
+The fences round the barn's yard (and the roadside fence) were never drawn since 2026-10-25: their drawings were
+lost when the map was generated headless. They are drawn now, as taller corral fences where they block you. I could
+not render it here: please walk out of the stable's south door and check the yard fences show up and look right.

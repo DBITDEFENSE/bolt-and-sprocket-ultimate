@@ -54,6 +54,9 @@ func _ready() -> void:
 	GameState.reset_match(map_id, display_name, start_zone)
 	GameState.apply_act_physics(RoundManager.act_block_of(map_id))   # Map 4 Act IV: gravity scale, slides, vacuum (T-112)
 	GameState.bot_ids = []
+	for n: Node in get_tree().get_nodes_in_group(&"bake_only"):
+		if n is CollisionObject3D:
+			(n as CollisionObject3D).collision_layer = 0   # T-125: navmesh-bake footprints (empty crate spots) never block
 	if _online:
 		GameState.player_ids = Net.player_ids()
 	else:

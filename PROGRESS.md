@@ -1,6 +1,6 @@
 # PROGRESS
 
-RESUME HERE: 2026-10-28 T-124 (bots lost their gun in the Crucible when pulled off the errand mid-forge; they now always go back for it) on branch bot-crucible-reclaim, merged to master. Before that: T-120..T-123 merged (6acca31). Open: a before/after bot-mode soak (not run). Next work order starts from master.
+RESUME HERE: 2026-10-28 T-125 (Map 0: invisible walls outside the barn; the fence MultiMeshes saved no transforms headless, now BakedMultiMesh; yard/roadside fences shot-solid only to their rails; crate-spot footprints bake-only) on branch map00-fences, merged to master. T-124 (bots keep their Crucible gun) merged before it. Open: a rendered look at the yard; Map 1 regen picks up its bottle shelves (same MultiMesh fix); a before/after bot-mode soak (not run). Next work order starts from master.
 
 ## UPDATE 07, 2026-10-26: Map 4 Fernflug + QA pass (DONE, merged to master)
 
