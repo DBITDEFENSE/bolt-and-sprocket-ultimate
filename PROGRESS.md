@@ -1,6 +1,6 @@
 # PROGRESS
 
-RESUME HERE: 2026-10-28 T-126 (Map 0: GRAVELIGHT ONE hollow, enterable by two starboard openings; Flt Lt Selwyn pinned in the cockpit, a turret with any gun you hand him; his model, voice, canon change) on branch wreck-pilot, merged to master. T-127 (Jakub buys perks) is on branch jakub-perks from a parallel agent: merge it next if not merged. T-124/T-125 merged. Open: a rendered look at the yard fences, the wreck and Selwyn; bots never arm Selwyn; Map 1 regen picks up its bottle shelves; a before/after bot-mode soak (not run). Next work order starts from master.
+RESUME HERE: 2026-10-28 T-124..T-127 merged to master: bots keep their Crucible gun; Map 0 no invisible walls outside the barn (fence MultiMeshes kept, shot-solid only to the rails); GRAVELIGHT ONE hollow with Flt Lt Selwyn pinned in the cockpit as a turret; Jakub can be sent for a tonic on the talker's Scrip. Open: a rendered look at the yard fences, the wreck and Selwyn; bots never arm Selwyn or send Jakub for tonics; Map 1 regen picks up its bottle shelves; a before/after bot-mode soak (not run). Next work order starts from master.
 
 ## UPDATE 07, 2026-10-26: Map 4 Fernflug + QA pass (DONE, merged to master)
 

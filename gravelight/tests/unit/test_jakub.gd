@@ -44,12 +44,44 @@ func test_data_and_brain_options() -> void:
 		assert_true(keys.has(k2), "BotBrain knows the option %s" % k2)
 
 
-func test_no_perks() -> void:
+func test_no_perks_of_his_own_accord() -> void:
 	var p: Dictionary = BotAIData.personality("jakub")
-	assert_true(bool(p["economy"]["refuses_perks"]), "his personality refuses perks")
+	assert_true(bool(p["economy"]["refuses_perks"]), "his own shopping never picks a perk")
 	assert_eq(float(p["actions"]["buy"]), 0.0, "and never shops")
 	assert_false(bool(JakubCompanion.brain_options(HUMAN, true)["perks"]), "no spawn-kit perks, no bonus perk, no perk buys")
-	assert_true(PerkManager.owned(JAK).is_empty(), "he owns none")
+	assert_true(PerkManager.owned(JAK).is_empty(), "he owns none until he is sent for one")
+
+
+## T-127: "Talk to Jakub" -> GET YOURSELF A TONIC: when a machine is his to drink from on the talker's Scrip.
+func test_tonic_rule() -> void:
+	assert_eq(JakubCompanion.tonic_rule(&"ok", 3000, 2500, false), "", "affordable, his to buy")
+	assert_eq(JakubCompanion.tonic_rule(&"ok", 2499, 2500, false), "scrip", "the talker's Scrip is short")
+	assert_eq(JakubCompanion.tonic_rule(&"ok", 2500, 2500, false), "", "exactly enough")
+	assert_eq(JakubCompanion.tonic_rule(&"owned", 9000, 2500, false), "owned")
+	assert_eq(JakubCompanion.tonic_rule(&"cap", 9000, 2500, false), "cap", "the normal tonic cap holds for him")
+	assert_eq(JakubCompanion.tonic_rule(&"no_power", 9000, 2500, false), "power")
+	assert_eq(JakubCompanion.tonic_rule(&"gone", 9000, 2500, false), "gone")
+	assert_eq(JakubCompanion.tonic_rule(&"ok", 9000, 2500, true), "busy", "a machine mid-pour, or he is already on his way")
+	var c: Dictionary = JakubCompanion.cfg()
+	assert_true(bool(c.get("tonics", false)), "tonics are on")
+	assert_gt(float(c.get("tonic_range_m", 0.0)), 20.0)
+	assert_true(BotBrain.order_response(&"buy_tonic").has("order"), "the errand answers the buy_tonic order (not a wheel order: 60 s)")
+
+
+## T-127: the PerkManager side: his tonics count against the same cap and go on a down (co-op rule) like anyone's.
+func test_his_tonics_follow_the_rules() -> void:
+	PerkManager.reset_match()
+	var was_power: bool = GameState.power_on
+	GameState.power_on = true
+	var ids: Array = GLData.table("perks")["perks"].keys()
+	assert_eq(PerkManager.can_buy(JAK, StringName(ids[0])), &"ok")
+	PerkManager.grant(JAK, StringName(ids[0]))
+	assert_true(PerkManager.has_perk(JAK, StringName(ids[0])))
+	assert_eq(PerkManager.can_buy(JAK, StringName(ids[0])), &"owned")
+	PerkManager.on_player_downed(JAK)
+	assert_true(PerkManager.owned(JAK).is_empty(), "lost on a down")
+	GameState.power_on = was_power
+	PerkManager.reset_match()
 
 
 func test_bleeds_out_after_60_s_and_never_respawns() -> void:
@@ -197,7 +229,7 @@ func test_his_lines_exist() -> void:
 		if str(r["speaker"]) == "JAK":
 			cats[str(r["category"])] = true
 	for c: String in ["CAGE_HELLO", "CAGE_TALK", "ALARM", "BREAKOUT", "BREAKOUT_SELF", "FIGHT_KILL", "FREED", "CALL", "TALK_ASK",
-			"JOIN_UNARMED", "GUN_BOLT", "GUN_RIFLE", "GUN_AUTO", "GUN_PISTOL", "GUN_SHOTGUN", "GUN_OTHER", "GUN_SWAP", "PERK_REFUSE",
+			"JOIN_UNARMED", "GUN_BOLT", "GUN_RIFLE", "GUN_AUTO", "GUN_PISTOL", "GUN_SHOTGUN", "GUN_OTHER", "GUN_SWAP", "PERK_REFUSE", "PERK_NEAR", "PERK_ACCEPT", "PERK_DRINK", "PERK_SHORT",
 			"COUSINS", "COUSINS_AFTER", "MIDNIGHT", "RETURN_WOUNDED", "M1_ARRIVE", "M1_SHORTCUT", "M2_ARRIVE", "DOWN", "REVIVED",
 			"REVIVE", "TEAM_DOWN", "SPRINTER_BEHIND", "CRATE_MOVED", "POWERUP_SEEN", "CHATTER", "CMD_FOLLOW", "CMD_HOLD"]:
 		assert_true(cats.has(c), "JAK:%s has lines" % c)

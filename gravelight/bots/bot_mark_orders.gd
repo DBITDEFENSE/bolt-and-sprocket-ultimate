@@ -161,7 +161,7 @@ static func refusal_text(code: String, who: String) -> String:
 		"refuse_buy":
 			return "Jakub has no Scrip of his own."
 		"refuse_perk":
-			return "Jakub won't touch the perk machines."
+			return "Talk to Jakub to send him for a tonic (your Scrip)."   # T-127: the card is his way to a machine
 		"refuse_crucible":
 			return "Jakub won't go near the Crucible."
 		"owned":
@@ -192,7 +192,7 @@ static func refusal_lines(code: String) -> Array:
 		"refuse_buy":
 			return ["MARK_REFUSE_BUY", "EE_CANT"]
 		"refuse_perk":
-			return ["EE_REFUSE_PERK"]
+			return ["PERK_NEAR"]   # T-127: no longer "I don't drink from them": ask him (Talk to Jakub)
 		"refuse_crucible":
 			return ["EE_REFUSE_CRUCIBLE"]
 		"owned":

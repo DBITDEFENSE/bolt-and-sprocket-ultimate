@@ -7,9 +7,13 @@ extends Node
 ## section 16 (speaker JAK, voiced with the offline TTS bake). Canon and his arc: docs/CANON.md section 6.4.
 ##
 ## He is a bot-style Player (is_bot, is_companion, the fixed pid in the data) driven by the Update 03 brain
-## through BotSquad.add_brain(player, options): his personality (personality_jakub.json), no perks / kit / bonus
-## perk / shopping, ~70% of a player's accuracy, escort = the player who freed him, ammo boxes paid from that
-## player's Scrip at half price, revived after the humans and the bots. He is NOT a player: no id in
+## through BotSquad.add_brain(player, options): his personality (personality_jakub.json), no kit / bonus perk /
+## shopping of his own, ~70% of a player's accuracy, escort = the player who freed him, ammo boxes paid from that
+## player's Scrip at half price, revived after the humans and the bots. Tonics (T-127): he never buys one on his
+## own, but "Talk to Jakub" can send him for one ("Get yourself a tonic"): he walks to the nearest machine he can
+## drink from and it is paid from the talker's Scrip at the normal price (re-checked at the till); he holds them
+## under the same cap and loses them on a down like anyone (PerkMachine.sell_to_companion, the brain's
+## buy_tonic order). He is NOT a player: no id in
 ## GameState.player_ids / bot_ids, no co-op lobby slot, no round scaling, no scoreboard row, and a solo match
 ## never stays alive on him alone. His own co-op clock: downed, revivable, bleeds out after 60 s; then he is out
 ## cold for the rest of the match (his body stays where he fell, nobody can wake him) and comes back on the next
@@ -73,6 +77,7 @@ var _choice: JakubChoice = null
 var _discounted: Dictionary = {}  # BuyDoor -> its own cost
 var _perk_cd: float = 0.0
 var _perk_near_done: bool = false
+var _tonic_pending: StringName = &""   # T-127: the tonic he was sent for (&"" none)
 var _cousins_said: bool = false
 
 
@@ -283,6 +288,7 @@ func _make_body(xf: Transform3D) -> void:
 	p.bleedout_seconds = float(cfg().get("bleedout_seconds", 60.0))
 	p.max_hp = float(cfg().get("max_hp", 100.0)) * (float(cfg().get("wounded_hp_mult", 0.7)) if wounded else 1.0)
 	p.hp = p.max_hp
+	p.hp_scale = p.max_hp / maxf(1.0, float(GLData.table("player").get("max_health", 100.0)))   # T-127: tonics scale from his own
 	p.bot_damage_mult = 0.0   # nothing can hurt him while the scene plays (he is no zombie target until he joins)
 	p.remove_from_group(&"players")
 	p.remove_from_group(&"bots")
@@ -532,13 +538,14 @@ func _tick_joined(_delta: float) -> void:
 		return
 	if player.downed:
 		return
-	# he refuses perks: the first time he stands by a machine
+	_tick_tonic()
+	# T-127: the first time he stands by a machine: wary of them, but he'd drink one if you sent him
 	if not _perk_near_done:
 		for n: Node in get_tree().get_nodes_in_group(&"perk_machines"):
 			var pm: Node3D = n as Node3D
 			if pm != null and _flat(pm.global_position, player.global_position) < 3.0 and absf(pm.global_position.y - player.global_position.y) < 2.0:
 				_perk_near_done = true
-				if _perk_cd <= 0.0 and _say("PERK_REFUSE"):
+				if _perk_cd <= 0.0 and _say("PERK_NEAR"):
 					_perk_cd = 90.0
 				break
 	if not _wren_done:
@@ -569,8 +576,13 @@ func talk_prompt(p: Player) -> String:
 			return "Hold [%s] to talk to Jakub" % key
 		State.JOINED:
 			var o: Dictionary = gun_offer(p)
+			var t: Dictionary = tonic_offer(p)
+			if bool(o.get("ok", false)) and bool(t.get("ok", false)):
+				return "Hold [%s] to talk to Jakub (a gun, or a tonic on your Scrip)" % key
 			if bool(o.get("ok", false)):
 				return "Hold [%s] to give Jakub your %s%s" % [key, str(o["name"]), " (he gives you his)" if not player.weapons.slots.is_empty() else ""]
+			if bool(t.get("ok", false)):
+				return "Hold [%s] to send Jakub for a tonic: %s [%d, your Scrip]" % [key, str(t["name"]), int(t["price"])]
 			if str(o.get("code", "")) in ["only_gun", "refused", "nachtglas"]:
 				return "Jakub: %s" % str(o.get("reason", ""))
 	return ""
@@ -580,7 +592,7 @@ func can_talk(p: Player) -> bool:
 	if p == null or p.is_bot or p.is_companion or not talk_open():
 		return false
 	if state == State.JOINED:
-		return bool(gun_offer(p).get("ok", false))
+		return bool(gun_offer(p).get("ok", false)) or bool(tonic_offer(p).get("ok", false))
 	return true
 
 
@@ -595,17 +607,122 @@ func on_talk(p: Player) -> void:
 		State.WAITING:
 			_say("TALK_ASK")
 			if p.is_local and DisplayServer.get_name() != "headless":
-				_choice = JakubChoice.new()
-				_choice.companion = self
-				_choice.player = p
-				_choice.offer = gun_offer(p)
-				_choice.timeout_s = float(cfg().get("choice_timeout_s", 12.0))
-				_choice.tree_exited.connect(func() -> void: _choice = null)
-				map.add_child(_choice)
+				_open_choice(p)
 			else:
 				choose(p, bool(gun_offer(p).get("ok", false)))   # headless tools: the gun if he'd take it
 		State.JOINED:
-			_take_gun(p)
+			var tonic: Dictionary = tonic_offer(p)
+			if bool(tonic.get("ok", false)) and p.is_local and DisplayServer.get_name() != "headless":
+				_open_choice(p, tonic)   # T-127: a gun, a tonic, or never mind
+			elif bool(gun_offer(p).get("ok", false)):
+				_take_gun(p)
+			elif bool(tonic.get("ok", false)):
+				choose_tonic(p)
+
+
+func _open_choice(p: Player, tonic: Dictionary = {}) -> void:
+	_choice = JakubChoice.new()
+	_choice.companion = self
+	_choice.player = p
+	_choice.offer = gun_offer(p)
+	_choice.tonic = tonic
+	_choice.joined = state == State.JOINED
+	_choice.timeout_s = float(cfg().get("choice_timeout_s", 12.0))
+	_choice.tree_exited.connect(func() -> void: _choice = null)
+	map.add_child(_choice)
+
+
+# ================================================================== tonics (T-127)
+
+## Why he can't drink this machine's tonic on the payer's Scrip ("" = he can). `can_buy` = PerkManager.can_buy for
+## him; `busy` = the machine is pouring or he is already on his way to one (pure, unit-tested).
+static func tonic_rule(can_buy: StringName, payer_scrip: int, price: int, busy: bool) -> String:
+	if busy:
+		return "busy"
+	match can_buy:
+		&"owned":
+			return "owned"
+		&"cap":
+			return "cap"
+		&"no_power":
+			return "power"
+		&"gone":
+			return "gone"
+	if can_buy != &"ok":
+		return String(can_buy)
+	if payer_scrip < price:
+		return "scrip"
+	return ""
+
+
+## The nearest machine he can drink from on `p`'s Scrip (powered, his to buy, reachable, within tonic_range_m):
+## {ok, machine, perk, name, price} or {ok: false, code}.
+func tonic_offer(p: Player) -> Dictionary:
+	if p == null or state != State.JOINED or player == null or player.downed or brain == null:
+		return {"ok": false, "code": "none"}
+	if not bool(cfg().get("tonics", true)):
+		return {"ok": false, "code": "off"}
+	if brain.order_id() == &"buy_tonic":
+		return {"ok": false, "code": "busy"}
+	var best: PerkMachine = null
+	var best_d: float = INF
+	var code: String = "none"
+	var range_m: float = float(cfg().get("tonic_range_m", 70.0))
+	var scrip: int = Economy.get_scrip(p.player_id)
+	for n: Node in get_tree().get_nodes_in_group(&"perk_machines"):
+		var pm: PerkMachine = n as PerkMachine
+		if pm == null or not pm.visible:
+			continue
+		var d: float = pm.global_position.distance_to(player.global_position)
+		if d > range_m:
+			continue
+		var why: String = tonic_rule(PerkManager.can_buy(player.player_id, pm.perk_id), scrip, PerkManager.price(pm.perk_id),
+			bool(pm.get("_drinking")) or bool(pm.get("_gone")))
+		if why == "" and not brain._reachable(BotBrain._front_of(pm)):
+			why = "unreachable"
+		if why != "":
+			if code == "none" or why == "scrip":
+				code = why
+			continue
+		if d < best_d:
+			best_d = d
+			best = pm
+	if best == null:
+		return {"ok": false, "code": code}
+	return {"ok": true, "machine": best, "perk": best.perk_id, "name": PerkManager.display_name(best.perk_id),
+		"price": PerkManager.price(best.perk_id)}
+
+
+## Sends him for the tonic `tonic_offer(p)` names, paid from `p`'s Scrip at the till (the card's choice; tools).
+func choose_tonic(p: Player) -> bool:
+	var t: Dictionary = tonic_offer(p)
+	if not bool(t.get("ok", false)):
+		return false
+	brain.options["perk_payer_pid"] = p.player_id
+	brain.tonic_result = &""
+	brain.on_order(&"buy_tonic", Vector3.INF, t["machine"] as Node)
+	_tonic_pending = t["perk"] as StringName
+	_event("tonic_sent:%s" % _tonic_pending)
+	_later_say(0.3, "PERK_ACCEPT")
+	return true
+
+
+## The errand's end: the machine's answer (a refusal at the till gets a line), or the order ran out.
+func _tick_tonic() -> void:
+	if _tonic_pending == &"" or brain == null:
+		return
+	var res: StringName = brain.tonic_result
+	if res != &"":
+		brain.tonic_result = &""
+		if res != &"ok":
+			_event("tonic_failed:%s" % res)
+			if res == &"no_scrip":
+				_later_say(0.3, "PERK_SHORT")
+		_tonic_pending = &""
+	elif brain.order_id() != &"buy_tonic":
+		brain.options.erase("perk_payer_pid")
+		_event("tonic_dropped:%s" % _tonic_pending)
+		_tonic_pending = &""
 
 
 ## What GIVE HIM A GUN would hand over: {ok, name, code, reason}.
@@ -807,7 +924,11 @@ func _on_round_ended(_r: int) -> void:
 		add_dossier_xp("round_with_him")
 
 
-func _on_perk_bought(by: int, _perk: StringName) -> void:
+func _on_perk_bought(by: int, perk: StringName) -> void:
+	if player != null and by == player.player_id:
+		_event("tonic:%s" % perk)   # T-127: his own, after the drink beat
+		_later_say(1.2, "PERK_DRINK")
+		return
 	if state != State.JOINED or player == null or player.downed or _perk_cd > 0.0:
 		return
 	var h: Player = map.players.get(by) as Player
