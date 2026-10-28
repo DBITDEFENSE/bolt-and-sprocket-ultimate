@@ -1,6 +1,6 @@
 # PROGRESS
 
-RESUME HERE: 2026-10-27 owner requests are MERGED to master (6acca31): T-120 Map 0 bar invisible wall; T-121 bots buy perk tiers and Crucible re-teaches, tonic bottle full-cap level sealed (kept on a down); T-122 round stamp fits high rounds, perk row restored after transitions; T-123 Kaltenbrunn spawn yard dressed + yard ammo box. Unit suite 1337/1337, all 44 smokes pass. Open: a before/after bot-mode soak (not run). Next work order starts from master.
+RESUME HERE: 2026-10-28 T-124 (bots lost their gun in the Crucible when pulled off the errand mid-forge; they now always go back for it) on branch bot-crucible-reclaim, merged to master. Before that: T-120..T-123 merged (6acca31). Open: a before/after bot-mode soak (not run). Next work order starts from master.
 
 ## UPDATE 07, 2026-10-26: Map 4 Fernflug + QA pass (DONE, merged to master)
 

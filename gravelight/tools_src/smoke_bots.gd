@@ -52,6 +52,8 @@ var _upgrades: Array = []        # [pid, weapon id]
 var _ammo_pid: int = 0
 var _ammo_bought: bool = false
 var _ammo_diag: bool = false
+var _yanked_pid: int = 0   # T-124: the bot pulled off its errand while its gun forged
+var _expired: Array = []
 
 
 
@@ -99,6 +101,9 @@ func _ready() -> void:
 		if GameState.is_bot(p):
 			_upgrades.append([p, w])
 			print("[bots] P%d (%s) took %s from the Crucible at t=%.0fs" % [p, Net.display_name(p), w, _t]))
+	GLBus.crucible_expired.connect(func(w: StringName) -> void:
+		_expired.append(w)
+		print("[bots] the Crucible offer of %s EXPIRED at t=%.0fs" % [w, _t]))
 	GLBus.player_downed.connect(func(p: int) -> void:
 		_downs.append(p)
 		print("[bots] P%d down at t=%.0fs" % [p, _t]))
@@ -189,10 +194,27 @@ func _physics_process(delta: float) -> void:
 			_phase_t = 0.0
 		11:
 			RoundManager.break_left = maxf(RoundManager.break_left, 30.0)   # a long break: the Crucible is a break errand
+			if _yanked_pid == 0:
+				# T-124: the first bot to feed the forge is knocked off its errand (as a zombie in reach, the train or an
+				# order would): it must still come back and take its gun before the offer runs out
+				for cn: Node in get_tree().get_nodes_in_group(&"crucible"):
+					var cr0: Crucible = cn as Crucible
+					if cr0.phase == Crucible.Phase.FORGING and GameState.is_bot(cr0._fed_by):
+						for b0: BotBrain in root.squad.brains:
+							if b0.player.player_id == cr0._fed_by:
+								_yanked_pid = cr0._fed_by
+								b0.drop_task()
+								b0._set_action("idle")
+								_note("pulled P%d off the Crucible errand while it forges" % _yanked_pid)
+			if not _expired.is_empty():
+				_fail("a bot's Crucible gun expired untaken: %s" % str(_expired))
+				_expired.clear()
 			if int(_phase_t * 60.0) % 600 == 0:
 				for b: BotBrain in root.squad.brains:
 					_note("  t+%.0f %s | task %s" % [_phase_t, b.status_line(), str(b.task.get("label", "-"))])
 			if not _upgrades.is_empty() and (_upgrades.size() >= 3 or _phase_t > 100.0):
+				if _yanked_pid != 0 and not _upgrades.any(func(u: Variant) -> bool: return int((u as Array)[0]) == _yanked_pid):
+					_fail("P%d, pulled away mid-forge, never took its gun back" % _yanked_pid)
 				_note("crucible: %d bot upgrade(s) after %.0fs: %s" % [_upgrades.size(), _phase_t, str(_upgrades)])
 				_phase = 12
 				_phase_t = 0.0

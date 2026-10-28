@@ -146,7 +146,13 @@ func _crucible(cr: Crucible, e: Dictionary) -> bool:
 		Crucible.Phase.OFFERED:
 			if cr._fed_by != player.player_id:
 				return not fed   # never a teammate's weapon
-			cr.interact(player)
+			if player.weapons.slots.size() >= player.weapons.max_slots():
+				# T-124: picked up a gun while it forged: hand over the weakest slot, never the taught gun
+				var give: int = brain._slot_to_give_up()
+				if give >= 0 and give != player.weapons.current_index:
+					brain.aim.select(give)
+					return false
+			cr._take(player)   # straight to the take: a quest step on the Crucible must not eat the pickup
 			brain.aim.cancel_reload()
 			brain.aim.swap_t = BotAim.SWAP_TIME
 			if player.remote_body != null:

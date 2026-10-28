@@ -451,6 +451,14 @@ func _think() -> void:
 		best = action   # a gun in the Crucible, a paid crate, a held objective: only an emergency pulls it away
 	if is_player_bot and trainer != null and best != "revive" and (trainer.owns_round() or trainer.escaping()):
 		best = "lead_train"   # T-071 pass 2: from its own_from_round the agent's trainer owns the round
+	var my_cr: Crucible = crucible_holding_mine()
+	if my_cr != null and not (["revive", "retreat"].has(best) and float(scores.get(best, 0.0)) > 0.8) \
+			and (my_cr.phase == Crucible.Phase.OFFERED or perception.nearest_d >= 2.5):
+		# T-124: our gun is in the Crucible: whatever pulled us off the errand (a zombie in reach, the train, an
+		# order, a down), go back for it before the offer runs out. Fighting at arm's length only while it forges.
+		best = "buy"
+		if action == "buy" and not task.is_empty() and str(task.get("kind", "")) != "crucible":
+			drop_task()
 	top3 = BotUtility.top(scores, 3)
 	if best != action and (now - _action_t >= float(_acfg.get("min_action_s", 0.4)) or action == "idle" or best == "retreat" or best == "revive"):
 		_set_action(best)
@@ -700,6 +708,7 @@ func start_task(kind: String) -> void:
 	task = {}
 	var now: float = squad.time()
 	var c: Dictionary = {}
+	var my_cr: Crucible = crucible_holding_mine() if kind == "buy" else null
 	match kind:
 		"buy", "repair", "crate", "resupply":
 			c = (economy.best(now).get(kind, {}) as Dictionary)
@@ -709,6 +718,10 @@ func start_task(kind: String) -> void:
 			c = _order_task()
 		"objective":
 			c = _planner_c
+	if my_cr != null:
+		# T-124: the errand back to our own gun (already paid and fed)
+		c = {"node": my_cr, "kind": "crucible", "slot": -1, "value": 1.0, "cost": 0, "fed": true,
+			"label": "take the gun back from the Crucible"}
 	if c.is_empty() or not is_instance_valid(c.get("node")):
 		_task_unavailable(kind)
 		return
@@ -773,6 +786,16 @@ func drop_task() -> void:
 	elif node != null and is_instance_valid(node):
 		squad.release(node as Node, player.player_id)
 	task = {}
+
+
+## T-124: a Crucible forging or offering the gun this bot fed it (null none): the bot must come back for it.
+func crucible_holding_mine() -> Crucible:
+	for cn: Node in get_tree().get_nodes_in_group(&"crucible"):
+		var cr: Crucible = cn as Crucible
+		if cr != null and cr._fed_by == player.player_id and cr.is_powered() \
+				and (cr.phase == Crucible.Phase.FORGING or cr.phase == Crucible.Phase.OFFERED):
+			return cr
+	return null
 
 
 func crucible_sticky() -> bool:
