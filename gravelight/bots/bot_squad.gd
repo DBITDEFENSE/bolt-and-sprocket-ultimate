@@ -256,6 +256,100 @@ func apply_kit(p: Player, weapons: bool) -> void:
 			push_warning("bots.json spawn_kit: no perk '%s'" % perk)
 			continue
 		PerkManager.grant(p.player_id, perk)
+	apply_late_kit(p)
+
+
+# ================================================================== U08 section 3 (T-130): the late-round kit
+
+## The late kit is due at `round` (bots.json late_kit): enabled, the round reached, the Bot Bonus Perk setting on
+## and Classic Rules off. Pure.
+static func late_kit_due(round_number: int, lcfg: Dictionary, settings_values: Dictionary) -> bool:
+	if not bool(lcfg.get("enabled", true)) or round_number < int(lcfg.get("round", 25)):
+		return false
+	return bool(settings_values.get("bot_bonus_perk", true)) and not bool(settings_values.get("classic_rules", false))
+
+
+## The late kit's tonic for one bot: from `map_perks`, never one in `taken` (held, its bonus, the kit, another
+## bot's late perk) or `exclude`; &"" when the pool is empty. Sorted then drawn by `rng` (repeatable). Pure.
+static func pick_late_perk(map_perks: Array, taken: Array, exclude: Array, rng: RandomNumberGenerator) -> StringName:
+	var pool: Array[String] = []
+	for pk: Variant in map_perks:
+		var s: String = str(pk)
+		if s == "" or pool.has(s) or taken.has(s) or taken.has(StringName(s)) or exclude.has(s):
+			continue
+		pool.append(s)
+	if pool.is_empty():
+		return &""
+	pool.sort()
+	return StringName(pool[rng.randi_range(0, pool.size() - 1)])
+
+
+var late_perk: Dictionary = {}   # pid -> the late kit's tonic (so no two bots share one, and a respawn redraws)
+
+
+## Gives a bot the late kit when it is due (spawn, respawn, revive, join, round 25's start). Idempotent: a bot that
+## still holds its late tonic and a taught Thompson at the tier gets nothing more. True when it handed anything.
+func apply_late_kit(p: Player) -> bool:
+	if p == null or not Net.is_authority() or not p.is_bot or p.is_companion or p.downed or p.spectating:
+		return false
+	var lcfg: Dictionary = _cfg.get("late_kit", {})
+	if not late_kit_due(RoundManager.current_round, lcfg, GLSettings.values):
+		return false
+	var pid: int = p.player_id
+	var gave: bool = false
+	var tier: int = int(lcfg.get("perk_tier", 3))
+	var mine: StringName = StringName(str(late_perk.get(pid, "")))
+	if mine == &"" or not PerkManager.has_perk(pid, mine):
+		var taken: Array = PerkManager.owned(pid).duplicate()
+		taken.append_array(((_cfg.get("spawn_kit", {}) as Dictionary).get("perks", []) as Array))
+		for other: Variant in late_perk.keys():
+			if int(other) != pid:
+				taken.append(str(late_perk[other]))
+		var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+		rng.randomize()
+		var pick: StringName = pick_late_perk(map_perk_ids(), taken, lcfg.get("exclude", []), rng)
+		if pick != &"":
+			PerkManager.grant(pid, pick)
+			PerkManager.set_tier(pid, pick, tier)
+			late_perk[pid] = String(pick)
+			gave = true
+	elif PerkManager.tier_of(pid, mine) < tier:
+		PerkManager.set_tier(pid, mine, tier)
+		gave = true
+	if p.weapons != null:
+		var wid: StringName = StringName(str(lcfg.get("weapon", "thompson_up")))
+		var ct: int = int(lcfg.get("crucible_tier", 2))
+		var have: WeaponInstance = p.weapons.find_weapon(wid)
+		if have == null or have.tier < ct:
+			if have == null and p.weapons.slots.size() >= p.weapons.max_slots():
+				p.weapons.current_index = _weakest_slot(p)   # the late gun takes the weakest slot's place
+			p.weapons.give_weapon(wid)
+			var w: WeaponInstance = p.weapons.find_weapon(wid)
+			if w != null:
+				w.tier = ct
+				w.refill()
+				p.weapons.current_index = p.weapons.slots.find(w)
+				p.weapons.call("_rebuild_gun")
+				if p.remote_body != null:
+					p.remote_body.set_weapon(w.id)
+			gave = true
+	if gave:
+		GLVO.say_as(pid, "LATE_KIT", 1.0)
+		GLBus.perks_changed.emit(pid)
+	return gave
+
+
+func _weakest_slot(p: Player) -> int:
+	var eco: Dictionary = BotAIData.table("economy")
+	var worst: int = 0
+	var worst_t: float = INF
+	for i: int in p.weapons.slots.size():
+		var w: WeaponInstance = p.weapons.slots[i]
+		var t: float = BotEconomy.tier_of(String(w.base_id()), w.upgraded, eco, w.tier)
+		if t < worst_t:
+			worst_t = t
+			worst = i
+	return worst
 
 
 func _start_planner() -> void:
@@ -1126,6 +1220,8 @@ func _on_round_started(_round: int, _special: bool) -> void:
 	blackboard.clear_round_claims()
 	for b: BotBrain in brains:
 		b.on_round_started()
+		if b.player != null and is_instance_valid(b.player) and not b.player.is_companion:
+			apply_late_kit(b.player)   # U08 (T-130): bots alive when round 25 starts gear up
 	if player_bot != null and is_instance_valid(player_bot):
 		player_bot.on_round_started()
 

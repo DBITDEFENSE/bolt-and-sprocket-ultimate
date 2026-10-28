@@ -10072,5 +10072,45 @@
     "speaker": "JAK",
     "category": "PERK_TIER4",
     "text": "This one stays with me. Like the cold. Like the songs."
+  },
+  "DUT_SQ8_LATE_KIT_01": {
+    "speaker": "DUT",
+    "category": "LATE_KIT",
+    "text": "Round twenty-five. Fine. Hand me the good stuff and point me at 'em."
+  },
+  "DUT_SQ8_LATE_KIT_02": {
+    "speaker": "DUT",
+    "category": "LATE_KIT",
+    "text": "Chicago Lament, second pressing. Now we're talking."
+  },
+  "PEG_SQ8_LATE_KIT_01": {
+    "speaker": "PEG",
+    "category": "LATE_KIT",
+    "text": "Twenty-five rounds. I've earned the strong measure and a proper gun."
+  },
+  "PEG_SQ8_LATE_KIT_02": {
+    "speaker": "PEG",
+    "category": "LATE_KIT",
+    "text": "The Thompson again, taught twice. Let's not waste it."
+  },
+  "DEA_SQ8_LATE_KIT_01": {
+    "speaker": "DEA",
+    "category": "LATE_KIT",
+    "text": "Lord, it's a long night. All right. I'm loaded for the rest of it."
+  },
+  "DEA_SQ8_LATE_KIT_02": {
+    "speaker": "DEA",
+    "category": "LATE_KIT",
+    "text": "Fresh tonic, fresh drum. Come on then."
+  },
+  "WRN_SQ8_LATE_KIT_01": {
+    "speaker": "WRN",
+    "category": "LATE_KIT",
+    "text": "Round twenty-five. New gun, new measure. I'm counting from here."
+  },
+  "WRN_SQ8_LATE_KIT_02": {
+    "speaker": "WRN",
+    "category": "LATE_KIT",
+    "text": "Chicago Lament, twice taught. Thirty rounds. I'll make them count."
   }
 }

@@ -1977,6 +1977,17 @@ the permanent tier; forced, every time); the Operator on the match's first (`PER
 - `WRN_SQ8_PERK_TIER4_02`: "Four measures. It doesn't wear off. One fewer thing to count."
 - `JAK_SQ8_PERK_TIER4_01`: "This one stays with me. Like the cold. Like the songs."
 
+**U08 (T-130) the late kit**: `LATE_KIT`: a bot gears up from round 25 (a tier III tonic and the Chicago Lament II;
+BotSquad.apply_late_kit; forced). Bake with the SQ8 prefixes.
+- `DUT_SQ8_LATE_KIT_01`: "Round twenty-five. Fine. Hand me the good stuff and point me at 'em."
+- `DUT_SQ8_LATE_KIT_02`: "Chicago Lament, second pressing. Now we're talking."
+- `PEG_SQ8_LATE_KIT_01`: "Twenty-five rounds. I've earned the strong measure and a proper gun."
+- `PEG_SQ8_LATE_KIT_02`: "The Thompson again, taught twice. Let's not waste it."
+- `DEA_SQ8_LATE_KIT_01`: "Lord, it's a long night. All right. I'm loaded for the rest of it."
+- `DEA_SQ8_LATE_KIT_02`: "Fresh tonic, fresh drum. Come on then."
+- `WRN_SQ8_LATE_KIT_01`: "Round twenty-five. New gun, new measure. I'm counting from here."
+- `WRN_SQ8_LATE_KIT_02`: "Chicago Lament, twice taught. Thirty rounds. I'll make them count."
+
 **Dutch (`DUT`)**
 - `DUT_SQ6_PERK_TIER_01`: "Second helping. Tastes worse. Works better. That's the Army in a bottle."
 - `DUT_SQ6_PERK_TIER_02`: "The machine gave me the strong stuff. I don't like that it knew I was ready."
