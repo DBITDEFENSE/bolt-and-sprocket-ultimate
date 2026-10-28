@@ -1,6 +1,6 @@
 # PROGRESS
 
-RESUME HERE: branch bots-pap-tiers-bar-fix (2026-10-27, owner requests, not merged): T-120 Map 0 bar invisible wall fixed; T-121 bots buy perk tiers and Crucible re-teaches, tonic bottle full-cap level is sealed (kept on a down); T-122 round stamp fits high rounds, perk row restored after transitions; T-123 Kaltenbrunn spawn yard dressed + yard ammo box (minimap re-baked). Unit suite passed (1333) before T-122/T-123; full smoke run in progress (.smoke_logs/t121); bot-mode before/after soak not done (the master worktree had no LFS files). Next: finish smokes, soak bot mode, merge to master.
+RESUME HERE: 2026-10-27 owner requests are MERGED to master (6acca31): T-120 Map 0 bar invisible wall; T-121 bots buy perk tiers and Crucible re-teaches, tonic bottle full-cap level sealed (kept on a down); T-122 round stamp fits high rounds, perk row restored after transitions; T-123 Kaltenbrunn spawn yard dressed + yard ammo box. Unit suite 1337/1337, all 44 smokes pass. Open: a before/after bot-mode soak (not run). Next work order starts from master.
 
 ## UPDATE 07, 2026-10-26: Map 4 Fernflug + QA pass (DONE, merged to master)
 
