@@ -40,6 +40,10 @@ const LOFT_DROP: Vector2 = Vector2(18.6, 20.0)   # the bale drop: the open bay i
 ## (Player.MASK_MOVE), shots, projectiles, blasts and the aim/interaction rays don't (they mask layer 1), so a
 ## zombie beyond the edge can be shot. The navmesh bake reads it (bake_navmesh's geometry_collision_mask).
 const EDGE_LAYER: int = 1 << 10
+## T-125: a blocking fence (the yard's, the roadside one) is solid on the world layer only up to its drawn rails;
+## above that, to its 2.3 m top, it is on EDGE_LAYER (players can't hop it; shots pass between the tall fence's
+## upper rails) and it is drawn as a tall closed corral fence, so nothing that stops you is invisible.
+const FENCE_SOLID_H: float = 1.25
 const WIN_SILL: float = 0.9
 const WIN_TOP: float = 2.2
 const DOOR_H: float = 2.4
@@ -533,25 +537,37 @@ func build_yard() -> void:
 	var win: Array = [WIN_SILL, WIN_TOP]
 	# west fence (x 2) with a gap at z 40.2..41.8; east fence (x 34) with a gap at z 40.2..41.8
 	for fx: float in [2.0, 34.0]:
-		box(geo, "YardFence", Vector3(fx - 0.1, 0, 34.0), Vector3(fx + 0.1, fh, 40.2), "snow", true, false)
-		box(geo, "YardFence", Vector3(fx - 0.1, 0, 41.8), Vector3(fx + 0.1, fh, 48.1), "snow", true, false)
+		_fence_box(geo, "YardFence", Vector3(fx - 0.1, 0, 34.0), Vector3(fx + 0.1, fh, 40.2))
+		_fence_box(geo, "YardFence", Vector3(fx - 0.1, 0, 41.8), Vector3(fx + 0.1, fh, 48.1))
 		box(geo, "YardSill", Vector3(fx - 0.1, 0, 40.2), Vector3(fx + 0.1, WIN_SILL, 41.8), "snow", true, false)
 		box(geo, "YardTop", Vector3(fx - 0.1, WIN_TOP, 40.2), Vector3(fx + 0.1, fh, 41.8), "snow", true, false)
 	# south fence (z 48) with gaps at x 8.2..9.8 and 26.2..27.8, and the barred gate at x 16..20
 	for seg: Array in [[2.0, 8.2], [9.8, 16.0], [20.0, 26.2], [27.8, 34.0]]:
-		box(geo, "YardFence", Vector3(float(seg[0]), 0, 47.9), Vector3(float(seg[1]), fh, 48.1), "snow", true, false)
+		_fence_box(geo, "YardFence", Vector3(float(seg[0]), 0, 47.9), Vector3(float(seg[1]), fh, 48.1))
 	for gx: float in [8.2, 26.2]:
 		box(geo, "YardSill", Vector3(gx, 0, 47.9), Vector3(gx + 1.6, WIN_SILL, 48.1), "snow", true, false)
 		box(geo, "YardTop", Vector3(gx, WIN_TOP, 47.9), Vector3(gx + 1.6, fh, 48.1), "snow", true, false)
 	# (the barred gate at x 16..20 is a bought door since T-080, Door_Gate: not baked, its own collider shuts it)
 	# the plot's north edges beside the stable (keeps the yard off the cellar's roof and the inn's east side)
-	box(geo, "YardFence", Vector3(STB_X1, 0, 33.9), Vector3(34.1, fh, 34.1), "snow", true, false)
-	box(geo, "YardFence", Vector3(1.9, 0, 33.9), Vector3(STB_X0, fh, 34.1), "snow", true, false)
+	_fence_box(geo, "YardFence", Vector3(STB_X1, 0, 33.9), Vector3(34.1, fh, 34.1))
+	_fence_box(geo, "YardFence", Vector3(1.9, 0, 33.9), Vector3(STB_X0, fh, 34.1))
 	# the well, the woodpile against the stable, the snowed cart
 	box(geo, "Well", Vector3(9.0, 0, 41.0), Vector3(11.0, 1.0, 43.0), "stone", true, false)
 	box(geo, "Woodpile", Vector3(13.3, 0, 34.15), Vector3(15.9, 1.3, 35.4), "furniture", true, false)   # east of the window W_STB_S (x 11.2..12.8), which the zombies need clear (T-040)
 	box(geo, "YardCart", Vector3(27.0, 0, 37.0), Vector3(29.6, 1.1, 39.2), "furniture", true, false)
 	box(geo, "YardTrough", Vector3(30.5, 0, 44.0), Vector3(33.5, 0.7, 45.0), "furniture", true, false)
+
+
+## T-125: a blocking fence's collider: the world layer up to FENCE_SOLID_H (zombies and shots stop at the drawn
+## rails), EDGE_LAYER above it to b.y (players can't hop it; shots pass). Drawn with Props.fence(..., true).
+var _fence_n: int = 0
+
+
+func _fence_box(parent: Node3D, name_: String, a: Vector3, b: Vector3) -> void:
+	_fence_n += 1   # unique names (a repeated name comes back as @StaticBody3D@n), so tests can find them
+	box(parent, "%s%d" % [name_, _fence_n], a, Vector3(b.x, FENCE_SOLID_H, b.z), "snow", true, false)
+	var top: Node3D = box(parent, "%s%dTop" % [name_, _fence_n], Vector3(a.x, FENCE_SOLID_H, a.z), b, "snow", true, false)
+	(top as StaticBody3D).collision_layer = EDGE_LAYER
 
 
 ## THE GROUNDS (T-080; the user: "the outside area on the first map needs some work, make it bigger and make it so
@@ -724,7 +740,7 @@ func build_grounds() -> void:
 		if _on_edge(a2, b2):
 			_edge_box(geo, "GroundsFence", a2, b2, 2.3)
 		else:
-			box(geo, "GroundsFence", Vector3(minf(a2.x, b2.x) - 0.1, 0, minf(a2.y, b2.y) - 0.1), Vector3(maxf(a2.x, b2.x) + 0.1, 2.3, maxf(a2.y, b2.y) + 0.1), "snow", true, false)
+			_fence_box(geo, "GroundsFence", Vector3(minf(a2.x, b2.x) - 0.1, 0, minf(a2.y, b2.y) - 0.1), Vector3(maxf(a2.x, b2.x) + 0.1, 2.3, maxf(a2.y, b2.y) + 0.1))
 	_carve_beyond_edge()
 	for t: Array in OUT_DEAD_TREES:
 		var tp: Vector3 = t[0]
@@ -922,7 +938,9 @@ func build_nav_blocks() -> void:
 	for cr: Array in CRATES:
 		var half: Vector3 = Vector3(0.7, 0, 0.35) if absf(float(cr[2])) != 90.0 else Vector3(0.35, 0, 0.7)
 		var p: Vector3 = cr[1]
-		box(geo, "NavBlock_Crate", p - half, p + half + Vector3(0, 0.75, 0), "metal", true, false)
+		# T-125: only for the bake: the crate's own blocker (MysteryCrate) is solid where the crate stands; an empty
+		# spot (the yard's well) must not keep an invisible box. MapRoot switches the "bake_only" group off.
+		box(geo, "NavBlock_Crate", p - half, p + half + Vector3(0, 0.75, 0), "metal", true, false).add_to_group(&"bake_only", true)
 	for ab: Array in AMMO_BOXES:
 		var ah: Vector3 = Vector3(0.52, 0, 0.3) if absf(float(ab[2])) != 90.0 else Vector3(0.3, 0, 0.52)
 		var ap: Vector3 = ab[1]
@@ -2395,7 +2413,7 @@ func _dress_grounds() -> void:
 		var f: Array = segs[i]
 		var a: Vector2 = f[0]
 		var b: Vector2 = f[1]
-		Props.fence(g, Vector3(a.x, 0, a.y), Vector3(b.x, 0, b.y), 30 + i)
+		Props.fence(g, Vector3(a.x, 0, a.y), Vector3(b.x, 0, b.y), 30 + i, not _on_edge(a, b))   # T-125: the roadside fence blocks to 2.3 m
 	# a rail down in the snow at each broken bay of the edge fence
 	var pr: RandomNumberGenerator = RandomNumberGenerator.new()
 	pr.seed = 84
@@ -2615,16 +2633,16 @@ func _dress_carters_road() -> void:
 ## woodpile, the snowed cart and trough, a lit lantern on the gatepost, a lamp over the yard door, paths, drifts.
 func _dress_yard() -> void:
 	var g: Node3D = Props.group(dress, "Yard", Vector3.ZERO)
-	Props.fence(g, Vector3(2, 0, 34), Vector3(2, 0, 40.2), 11)
-	Props.fence(g, Vector3(2, 0, 41.8), Vector3(2, 0, 48), 12)
-	Props.fence(g, Vector3(34, 0, 34), Vector3(34, 0, 40.2), 13)
-	Props.fence(g, Vector3(34, 0, 41.8), Vector3(34, 0, 48), 14)
-	Props.fence(g, Vector3(2, 0, 48), Vector3(8.2, 0, 48), 15)
-	Props.fence(g, Vector3(9.8, 0, 48), Vector3(15.8, 0, 48), 16)
-	Props.fence(g, Vector3(20.2, 0, 48), Vector3(26.2, 0, 48), 17)
-	Props.fence(g, Vector3(27.8, 0, 48), Vector3(34, 0, 48), 18)
-	Props.fence(g, Vector3(STB_X1 + 0.2, 0, 34), Vector3(34, 0, 34), 19)
-	Props.fence(g, Vector3(2, 0, 34), Vector3(STB_X0 - 0.2, 0, 34), 20)
+	Props.fence(g, Vector3(2, 0, 34), Vector3(2, 0, 40.2), 11, true)
+	Props.fence(g, Vector3(2, 0, 41.8), Vector3(2, 0, 48), 12, true)
+	Props.fence(g, Vector3(34, 0, 34), Vector3(34, 0, 40.2), 13, true)
+	Props.fence(g, Vector3(34, 0, 41.8), Vector3(34, 0, 48), 14, true)
+	Props.fence(g, Vector3(2, 0, 48), Vector3(8.2, 0, 48), 15, true)
+	Props.fence(g, Vector3(9.8, 0, 48), Vector3(15.8, 0, 48), 16, true)
+	Props.fence(g, Vector3(20.2, 0, 48), Vector3(26.2, 0, 48), 17, true)
+	Props.fence(g, Vector3(27.8, 0, 48), Vector3(34, 0, 48), 18, true)
+	Props.fence(g, Vector3(STB_X1 + 0.2, 0, 34), Vector3(34, 0, 34), 19, true)
+	Props.fence(g, Vector3(2, 0, 34), Vector3(STB_X0 - 0.2, 0, 34), 20, true)
 	# the fence gaps: a post either side and a snow-capped sill rail (the barricades hang in them)
 	for gp: Array in [[Vector3(2, 0, 40.2), Vector3(2, 0, 41.8)], [Vector3(34, 0, 40.2), Vector3(34, 0, 41.8)],
 			[Vector3(8.2, 0, 48), Vector3(9.8, 0, 48)], [Vector3(26.2, 0, 48), Vector3(27.8, 0, 48)]]:
@@ -2633,6 +2651,8 @@ func _dress_yard() -> void:
 		var lo: Vector3 = gp[0]
 		var hi: Vector3 = gp[1]
 		Props.block(g, Vector3(minf(lo.x, hi.x) - 0.08, WIN_SILL - 0.1, minf(lo.z, hi.z) - 0.08), Vector3(maxf(lo.x, hi.x) + 0.08, WIN_SILL, maxf(lo.z, hi.z) + 0.08), "beam")
+		# T-125: the lintel over the gap, where the YardTop collider is (it was invisible)
+		Props.block(g, Vector3(minf(lo.x, hi.x) - 0.08, WIN_TOP, minf(lo.z, hi.z) - 0.08), Vector3(maxf(lo.x, hi.x) + 0.08, 2.3, maxf(lo.z, hi.z) + 0.08), "beam")
 	# (the gate's two leaves and their chain are Door_Gate's own since T-080: GateDoor draws and swings them)
 	# the well: a stone ring, two posts, a windlass and a bucket; the crate spot's lantern stake stands beside it
 	Props.cyl(g, Vector3(10.0, 0.5, 42.0), 1.05, 1.0, "stone")
