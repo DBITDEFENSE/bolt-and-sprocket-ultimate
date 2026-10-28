@@ -315,8 +315,16 @@ func _refresh_plan() -> void:
 		if dn != null and is_instance_valid(dn) and not dn.is_open and float(_failed_nodes.get(dn.get_instance_id(), -INF)) <= _now():
 			return   # on the way to open a door: no second-guessing every think
 	var w: Dictionary = snapshot(task["qid"], task["sid"], task["def"], task.get("focus"), bool(task["ordered"]), str(task["type"]))
+	var was: String = "%s %s" % [str(_plan.get("do", "")), str((_plan.get("node") as Node).name) if _plan.get("node") is Node and is_instance_valid(_plan.get("node")) else ""]
 	_plan = plan(str(task["type"]), task["def"], w)
 	var d: String = str(_plan.get("do", ""))
+	if OS.has_environment("EGG_DEBUG"):
+		var now_s: String = "%s %s" % [d, str((_plan.get("node") as Node).name) if _plan.get("node") is Node and is_instance_valid(_plan.get("node")) else ""]
+		if now_s != was:
+			var anchors: String = ""
+			for r: Variant in w.get("anchors", []):
+				anchors += " %s:%s" % [str(((r as Dictionary)["node"] as Node).name), str((r as Dictionary)["state"])]
+			_log("plan %s -> %s%s" % [was, now_s, (" |" + anchors) if anchors != "" else ""])
 	if d == "done":
 		_finish(true)
 	elif d == "fail":
@@ -1078,12 +1086,13 @@ func _anchor_state(a: Node3D, t: Dictionary, near_m: float) -> String:
 			return "charging"
 		if py.state == Pylon.State.ATTUNED:
 			return "done"
-		if py.can_interact(player) and Economy.get_scrip(player.player_id) >= int(Pylon.cfg().get("cost", 1500)) and (near_m <= 0.0 or _human_near(a.global_position, near_m)):
+		# U08 (T-131): the bot-mode agent is the player: it brings itself (a squad bot waits for the human)
+		if py.can_interact(player) and Economy.get_scrip(player.player_id) >= int(Pylon.cfg().get("cost", 1500)) 				and (near_m <= 0.0 or brain.is_player_bot or _human_near(a.global_position, near_m)):
 			return "start_ok"
 		return "idle"
 	if a.has_method("is_holding") and bool(a.call("is_holding")):
 		return "charging"
-	if str(t.get("start", "")) == "interact" and a is Interactable and (a as Interactable).can_interact(player) and (near_m <= 0.0 or _human_near(a.global_position, near_m)):
+	if str(t.get("start", "")) == "interact" and a is Interactable and (a as Interactable).can_interact(player) 			and (near_m <= 0.0 or brain.is_player_bot or _human_near(a.global_position, near_m)):
 		return "start_ok"
 	return "idle"
 
