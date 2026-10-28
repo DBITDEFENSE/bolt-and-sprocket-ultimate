@@ -561,8 +561,11 @@ class Crosshair extends Control:
 ## Hit confirmation, three states that read apart at a glance (sizes in ui.json "hitmarker"):
 ##   hit      four short white ticks;
 ##   headshot longer amber ticks with a dot at the centre;
-##   kill     a thick red X that pops out (amber-edged when the kill was a headshot).
+##   kill     a thick red X that pops out with a ring racing outward (amber-edged, an amber ring, on a headshot kill).
 ## Multiple hits in quick succession re-pop it; a kill or headshot is never downgraded by a plain hit in the burst.
+## T-128: hits landing within streak_s of each other build a streak (each a little bigger and brighter, up to
+## streak_max), every mark gets a small random tilt so a burst doesn't stamp the same shape, and each state's pop
+## (how far it starts out) is in the config.
 class HitMarker extends Control:
 	const HIT: Color = Color(1.0, 1.0, 1.0, 0.92)
 	const HEAD: Color = Color(1.0, 0.72, 0.2, 0.97)
@@ -572,6 +575,12 @@ class HitMarker extends Control:
 	var _kill: bool = false
 	var _head: bool = false
 	var _cfg: Dictionary = {}
+	var _streak: int = 0
+	var _last_hit_ms: int = -100000
+	var _tilt: float = 0.0
+	var _ring_t: float = 0.0
+	var _ring_dur: float = 0.3
+	var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 	func _init() -> void:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -581,6 +590,17 @@ class HitMarker extends Control:
 		return _cfg.get(key, {"gap": 8.0, "len": 8.0, "width": 2.0, "seconds": 0.2})
 
 	func flash(killed: bool, headshot: bool) -> void:
+		var now: int = Time.get_ticks_msec()
+		if now - _last_hit_ms <= int(float(_cfg.get("streak_s", 0.3)) * 1000.0):
+			_streak = mini(_streak + 1, int(_cfg.get("streak_max", 5)))
+		else:
+			_streak = 0
+		_last_hit_ms = now
+		_tilt = deg_to_rad(_rng.randf_range(-1.0, 1.0) * float(_cfg.get("tilt_deg", 6.0)))
+		if killed:
+			var rc: Dictionary = _cfg.get("ring", {})
+			_ring_dur = float(rc.get("seconds", 0.3))
+			_ring_t = _ring_dur
 		# a kill or headshot is never downgraded by a plain hit arriving in the same burst
 		if _t > 0.0 and (_kill and not killed or _head and not headshot and not killed):
 			_t = maxf(_t, 0.12)
@@ -591,24 +611,39 @@ class HitMarker extends Control:
 		_kill = killed
 		_head = headshot
 
+	## The streak's growth now (1 = none), pure for the tests: each step `step`, `streak` steps.
+	static func streak_scale(streak: int, step: float) -> float:
+		return 1.0 + step * float(maxi(0, streak))
+
 	func _process(delta: float) -> void:
-		if _t > 0.0:
+		if _t > 0.0 or _ring_t > 0.0:
 			_t -= delta
+			_ring_t -= delta
 			queue_redraw()
 
 	func _draw() -> void:
+		var s: float = Hud.canvas_scale(self)
+		if _ring_t > 0.0:   # the kill's ring, racing outward and thinning
+			var rc: Dictionary = _cfg.get("ring", {})
+			var rk: float = 1.0 - _ring_t / _ring_dur
+			var ease: float = 1.0 - pow(1.0 - rk, 3.0)
+			var rr: float = lerpf(float(rc.get("from", 10.0)), float(rc.get("to", 34.0)), ease)
+			var rcol: Color = HEAD if _head else KILL
+			rcol.a = 0.85 * (1.0 - rk)
+			draw_arc(Vector2.ZERO, rr, 0.0, TAU, 48, rcol, maxf(1.0, float(rc.get("width", 2.5)) * (1.0 - rk)), true)
 		if _t <= 0.0:
 			return
-		var s: float = Hud.canvas_scale(self)
 		var st: Dictionary = _state("kill" if _kill else ("head" if _head else "hit"))
 		var age: float = 1.0 - _t / _dur                     # 0 -> 1
 		var fade: float = clampf(_t / (_dur * 0.45), 0.0, 1.0)
-		var pop: float = 1.0 + 0.45 * (1.0 - clampf(age / 0.18, 0.0, 1.0))   # starts big, settles fast
+		var pop: float = 1.0 + float(st.get("pop", 0.45)) * (1.0 - clampf(age / 0.18, 0.0, 1.0))   # starts big, settles fast
+		pop *= streak_scale(_streak, float(_cfg.get("streak_step", 0.06)))
 		var gap: float = float(st.get("gap", 8.0)) * pop
 		var length: float = float(st.get("len", 8.0)) * pop
-		var width: float = float(st.get("width", 2.0))
+		var width: float = float(st.get("width", 2.0)) * (1.0 + 0.04 * float(_streak))
 		var c: Color = KILL if _kill else (HEAD if _head else HIT)
 		c.a *= fade
+		draw_set_transform(Vector2.ZERO, _tilt, Vector2.ONE)
 		for d: Vector2 in [Vector2(0.7071, 0.7071), Vector2(-0.7071, 0.7071), Vector2(0.7071, -0.7071), Vector2(-0.7071, -0.7071)]:
 			var a: Vector2 = d * gap
 			var b: Vector2 = d * (gap + length)
@@ -618,6 +653,7 @@ class HitMarker extends Control:
 			draw_line(a, b, c, width, true)
 		if _head and not _kill:
 			draw_circle(Vector2.ZERO, maxf(1.5, 2.0 * pop), c)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
 ## Scoped ADS (rifles with a "scope" model meta): a round field of view with an original post-and-wire

@@ -1336,6 +1336,17 @@
    "pitch": [1.0, 1.0],
    "attenuation": "world"
   },
+  "kill_confirm": {
+   "files": [
+    "res://gravelight/audio/sfx/weapons/kill_confirm_01.wav",
+    "res://gravelight/audio/sfx/weapons/kill_confirm_02.wav",
+    "res://gravelight/audio/sfx/weapons/kill_confirm_03.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -1.0,
+   "max_voices": 2,
+   "pitch": [0.97, 1.03]
+  },
   "knife_hit": {
    "files": [
     "res://gravelight/audio/sfx/weapons/knife_hit_01.wav",

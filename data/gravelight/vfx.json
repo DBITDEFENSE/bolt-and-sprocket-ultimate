@@ -68,6 +68,31 @@
     "shatter_slots": 4
   },
   "toll_ring": {"slots": 2, "seconds": 0.55, "strength": 0.06, "color": [0.72, 0.42, 1.0]},
+  "tracer": {
+    "_doc": "T-128: Effects.tracer. A streak (a hot core and a glow glow_width_mult wider) flies from the muzzle to the hit at speed m/s (a visual speed: slow enough to see), length metres long, and drains into the hit. first_person_skip_m: the first metres in front of the shooter's own camera stay dark (the streak never crosses the sights); remote_skip_m the same for anyone else's shots. min_dist_m: no tracer for a shot that lands closer. max_m: the longest flight drawn. color / core: the glow and the core (HDR, additive); upgraded_*: a Crucible-taught gun's (violet, the Nachtglas). classes: per weapons.json class (default for the rest): length, width (m), speed, alpha.",
+    "speed": 380.0,
+    "first_person_skip_m": 2.4,
+    "remote_skip_m": 0.6,
+    "min_dist_m": 2.5,
+    "max_m": 160.0,
+    "glow_width_mult": 3.5,
+    "glow_alpha": 0.28,
+    "color": [1.0, 0.66, 0.32],
+    "core": [1.7, 1.35, 0.95],
+    "upgraded_color": [0.62, 0.36, 1.0],
+    "upgraded_core": [1.3, 0.95, 1.9],
+    "classes": {
+      "default": {"length": 4.0, "width": 0.011, "speed": 380.0, "alpha": 0.85},
+      "pistol": {"length": 2.6, "width": 0.009, "speed": 340.0, "alpha": 0.7},
+      "smg": {"length": 3.0, "width": 0.009, "speed": 360.0, "alpha": 0.7},
+      "assault": {"length": 3.8, "width": 0.011, "speed": 400.0, "alpha": 0.85},
+      "rifle": {"length": 4.5, "width": 0.012, "speed": 420.0, "alpha": 0.9},
+      "bolt": {"length": 6.0, "width": 0.013, "speed": 480.0, "alpha": 1.0},
+      "sniper": {"length": 7.0, "width": 0.015, "speed": 520.0, "alpha": 1.0},
+      "lmg": {"length": 5.0, "width": 0.014, "speed": 420.0, "alpha": 0.95},
+      "shotgun": {"length": 1.6, "width": 0.006, "speed": 330.0, "alpha": 0.45}
+    }
+  },
   "atmosphere": {
     "near_snow": {"amount": 140, "box": [12.0, 7.0, 12.0], "flake": 0.085, "fall": [0.9, 1.6], "drift": 0.9, "ahead": 2.5, "fade": [1.0, 2.4], "max_angle": 0.010},
     "mid_snow": {"_doc": "T-100: Snowfall's world-fixed mid layer. Every snow layer (near/mid/far) is invisible inside fade[0] m of the camera, fully drawn past fade[1] m, and never wider on screen than max_angle radians (snow_flake.gdshader), so no flake drifts through the lens as a white blur.", "fade": [1.5, 3.5], "max_angle": 0.007},

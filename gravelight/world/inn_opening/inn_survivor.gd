@@ -256,7 +256,7 @@ func show_shot(to: Vector3) -> void:
 	if Vector2(flat.x, flat.z).length() > 0.05:
 		rotation.y = atan2(-flat.x, -flat.z)
 	AudioDirector.play_3d("fire_" + str(arm_cfg().get("weapon", "kar98k")), mz, -1.0, 0.08)
-	Effects.tracer(mz, to)
+	Effects.tracer(mz, to, false, &"bolt")
 	body.set("_jolt", 0.25)   # the recoil
 
 

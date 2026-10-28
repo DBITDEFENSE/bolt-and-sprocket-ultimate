@@ -775,7 +775,12 @@ func _fire(w: WeaponInstance) -> void:
 		if killed:
 			PerkManager.on_bullet_kill(pid, w, head)   # Hawkeye II: a headshot kill refunds a round
 		GLBus.enemy_hit_feedback.emit(pid, killed, head)
-		AudioDirector.play_2d("headshot" if head else "hitmarker", -3.0 if head else -4.0)
+		if killed:   # T-128: a kill has its own confirm (a headshot kill layers the headshot's crack on it)
+			AudioDirector.play_2d("kill_confirm", -3.0, 0.03)
+			if head:
+				AudioDirector.play_2d("headshot", -6.0)
+		else:
+			AudioDirector.play_2d("headshot" if head else "hitmarker", -3.0 if head else -4.0)
 		_on_hit_effects(w, zz, limb, killed, pos)
 	if w.has_property("ricochet"):
 		_ricochet(w, hits)
@@ -1009,7 +1014,7 @@ func _ricochet(w: WeaponInstance, hits: Dictionary) -> void:
 		return
 	var killed: bool = best.take_damage(w.f("damage", 120.0) * mult, &"torso", w.id, player.player_id, &"bullet")
 	GLBus.enemy_hit_feedback.emit(player.player_id, killed, false)
-	Effects.tracer(origin, best.global_position + Vector3.UP)
+	Effects.tracer(origin, best.global_position + Vector3.UP, true, w.weapon_class())
 	Effects.blood(best.global_position + Vector3.UP * 1.2, Vector3.UP)
 
 
@@ -1128,7 +1133,7 @@ func _trace(origin: Vector3, dir: Vector3, w: WeaponInstance, hits: Dictionary) 
 				fx.impact(pos, res["normal"], col, surf)
 			break
 	_last_impact = last_hit
-	Effects.tracer(_muzzle_world().origin, last_hit)
+	Effects.tracer(_muzzle_world().origin, last_hit, w.upgraded, w.weapon_class(), not mirror and player != null and player.is_local)
 
 
 ## Quest objects (bells, the drummer) are Area3Ds on the hitbox layer with an on_shot() method on

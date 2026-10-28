@@ -614,7 +614,8 @@ func fire(kind: int, weapon_id: StringName, origin: Vector3, end: Vector3) -> vo
 		_flash.scale = Vector3.ONE * 2.2
 	AudioDirector.play_3d(key, mz, 0.0, 0.08)
 	if kind == 0 and origin.distance_squared_to(end) > 1.0:
-		Effects.tracer(mz, end)
+		var wd: Dictionary = GLData.table("weapons")["weapons"].get(String(weapon_id).trim_suffix("_up"), {})
+		Effects.tracer(mz, end, String(weapon_id).ends_with("_up"), StringName(str(wd.get("class", ""))))
 
 
 ## Same choice the shooter's WeaponHolder makes: the weapon's own recording, else its class sound.

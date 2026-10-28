@@ -324,7 +324,7 @@ func _shot_fx(from: Vector3, to: Vector3) -> void:
 		return
 	var dir: Vector3 = (to - from).normalized()
 	Effects.muzzle_flash(from, dir, gun.id, gun.upgraded, 1.0, true)
-	Effects.tracer(from, to)
+	Effects.tracer(from, to, gun.upgraded, gun.weapon_class())
 	AudioDirector.play_3d(fire_key(gun), from, 0.0, 0.05)
 	if body != null:
 		body.kick()
