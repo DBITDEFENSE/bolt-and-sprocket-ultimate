@@ -15,8 +15,8 @@
     1136,
     1304
   ],
-  "baked_at": "2026-10-26T10:07:51",
-  "poi_signature": "ddf5e5cfebb2b3bb4a1a8ef646b00679",
+  "baked_at": "2026-10-27T20:29:07",
+  "poi_signature": "079460381eba24e0c2f026895c403ac5",
   "floors": [
     {
       "id": "vault",
@@ -464,6 +464,20 @@
       "price": 250,
       "node_path": "Gameplay/AmmoBox_SaltChapel",
       "key": "Gameplay/AmmoBox_SaltChapel"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Yard",
+      "type": "ammo_box",
+      "pos": [
+        20.0,
+        0.0,
+        31.52
+      ],
+      "floor": 2,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Yard",
+      "key": "Gameplay/AmmoBox_Yard"
     },
     {
       "id": "crate_spot:Gameplay/Crate_Boxcar",
