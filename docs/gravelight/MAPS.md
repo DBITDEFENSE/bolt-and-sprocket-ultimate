@@ -231,8 +231,9 @@ Outside the play space (nothing here collides; since T-080 the Grounds' edge wal
   at the first shots, a far dog (stops at round 10), the church bell at midnight (round 9), chimney smoke that stops
   when the Cousins put the fire out, breath fog in the cold rooms, frost creeping round the windows, the hanging
   lanterns swinging when shells land close, moonlight leaking through the stable's boards, ground fog in the field.
-- **GRAVELIGHT ONE**: burning harder (engine, wing, hold, small fires in the snow), the open cockpit with the pilot's
-  seat empty (Dutch's line the first time someone looks in), the hold's cargo thrown about, a parachute caught in the
+- **GRAVELIGHT ONE**: burning harder (engine, wing, hold, small fires in the snow), the crushed cockpit with Flt Lt
+  Selwyn pinned alive in his seat (T-126: hand him a gun from the cabin and he shoots from it; the squad's line the first time
+  someone looks in), the hull hollow (a cabin, in by the cargo door or the torn hole on the starboard side), the hold's cargo thrown about, a parachute caught in the
   dead tree by the yard's north-east corner, ammunition cooking off now and then.
 
 ## Map 0 spawn points

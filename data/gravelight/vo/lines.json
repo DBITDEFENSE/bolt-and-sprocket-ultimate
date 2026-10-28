@@ -4227,22 +4227,22 @@
   "DUT_WRECK_PILOT_01": {
     "speaker": "DUT",
     "category": "WRECK_PILOT",
-    "text": "Pilot's seat's empty. Selwyn was in that seat. I checked him for a pulse myself. ...So who unbuckled him?"
+    "text": "Selwyn? ...He's breathing. I checked him for a pulse myself, I'd have sworn. Hang on, Lieutenant. We'll get you something to shoot."
   },
   "PEG_WRECK_PILOT_01": {
     "speaker": "PEG",
     "category": "WRECK_PILOT",
-    "text": "The pilot's seat is empty. Dutch swore Selwyn was dead in it, and Dutch doesn't get that sort of thing wrong."
+    "text": "The pilot's alive. Dutch swore Selwyn was dead in that seat. The cold must have slowed his heart. ...Thank God for the cold."
   },
   "DEA_WRECK_PILOT_01": {
     "speaker": "DEA",
     "category": "WRECK_PILOT",
-    "text": "Straps on the pilot's seat are open. Not torn. Unbuckled. Selwyn didn't walk out of there on his own."
+    "text": "Lord, Selwyn's moving. He's pinned under the panel. We can't lift that, but we can put a rifle in his hands."
   },
   "WRN_WRECK_PILOT_01": {
     "speaker": "WRN",
     "category": "WRECK_PILOT",
-    "text": "The pilot's seat. Empty. No tracks in the snow around the nose. Write that down. ...I am writing that down."
+    "text": "The pilot. He's alive. Legs trapped under the panel. Write that down: Selwyn, alive. ...I am writing that down."
   },
   "DUT_MIDNIGHT_01": {
     "speaker": "DUT",
@@ -9897,5 +9897,80 @@
     "speaker": "WRN",
     "category": "M4D_SMILE",
     "text": "A crack. Twelve kilometres, maybe more. I can't count that. ...I'll write 'one'."
+  },
+  "SEL_CALL_01": {
+    "speaker": "SEL",
+    "category": "CALL",
+    "text": "Over here! In the cockpit! My legs are caught under the panel. I can't get out, but I can still shoot."
+  },
+  "SEL_CALL_02": {
+    "speaker": "SEL",
+    "category": "CALL",
+    "text": "Hello? Is someone in the cabin? Hand me a rifle and I'll keep the nose clear."
+  },
+  "SEL_CALL_03": {
+    "speaker": "SEL",
+    "category": "CALL",
+    "text": "Selwyn. Flight Lieutenant. I'm stuck fast in here. Give me something that shoots."
+  },
+  "SEL_GIVEN_01": {
+    "speaker": "SEL",
+    "category": "GIVEN",
+    "text": "Right. I've got the front. You mind the doors."
+  },
+  "SEL_GIVEN_02": {
+    "speaker": "SEL",
+    "category": "GIVEN",
+    "text": "Thank you. Now they'll have to come through me."
+  },
+  "SEL_GIVEN_03": {
+    "speaker": "SEL",
+    "category": "GIVEN",
+    "text": "Lovely. Safety's off."
+  },
+  "SEL_SWAP_01": {
+    "speaker": "SEL",
+    "category": "SWAP",
+    "text": "Here, have yours back. I'll take this one."
+  },
+  "SEL_SWAP_02": {
+    "speaker": "SEL",
+    "category": "SWAP",
+    "text": "Fair swap. Look after the old girl."
+  },
+  "SEL_THANKS_AMMO_01": {
+    "speaker": "SEL",
+    "category": "THANKS_AMMO",
+    "text": "That's the stuff. Back in business."
+  },
+  "SEL_THANKS_AMMO_02": {
+    "speaker": "SEL",
+    "category": "THANKS_AMMO",
+    "text": "Ammunition. Bless you."
+  },
+  "SEL_DRY_01": {
+    "speaker": "SEL",
+    "category": "DRY",
+    "text": "I'm dry! I need ammunition up here!"
+  },
+  "SEL_DRY_02": {
+    "speaker": "SEL",
+    "category": "DRY",
+    "text": "Out! Somebody bring me rounds!"
+  },
+  "SEL_KILL_01": {
+    "speaker": "SEL",
+    "category": "KILL",
+    "text": "Got him."
+  },
+  "SEL_KILL_02": {
+    "speaker": "SEL",
+    "category": "KILL",
+    "text": "That one's down."
+  },
+  "SEL_KILL_03": {
+    "speaker": "SEL",
+    "category": "KILL",
+    "text": "Another one for the logbook."
   }
 }

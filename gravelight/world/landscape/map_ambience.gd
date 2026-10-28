@@ -1077,13 +1077,13 @@ func _build_spindrift() -> void:
 		_spindrift.append(p)
 
 
-## Dutch's line the first time someone gets a look at the empty pilot's seat (or the nearest squad-mate's
-## version of it when Dutch isn't here).
+## Dutch's line the first time someone gets a look into the cockpit, where Selwyn sits pinned alive (T-126), or the
+## nearest squad-mate's version of it when Dutch isn't here.
 func _check_pilot_line() -> void:
 	var pl: Dictionary = cfg.get("pilot_line", {})
 	if pilot_said or land == null or land.wreck_node == null or _t < float(pl.get("min_seconds", 12.0)):
 		return
-	var seat: Vector3 = land.wreck_node.global_transform * Vector3(-0.45, 2.2, -5.6)
+	var seat: Vector3 = land.wreck_node.global_transform * Vector3(-0.35, 1.5, -5.75)   # his head (gen_map00 WRECK_PILOT_SEAT)
 	for n: Node in get_tree().get_nodes_in_group(&"players"):
 		var p: Player = n as Player
 		if p == null or not p.is_local or p.is_bot or p.camera == null:

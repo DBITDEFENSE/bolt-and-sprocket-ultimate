@@ -102,7 +102,7 @@ This is the **unspoken threat over the playable squad.** Every tonic they drink 
 | 20 Dec 1944 | Reinholt's "great attempt": she drives the Heart to full resonance to reach Liesl. The **Erwachen** (Awakening). Every dead body within 30 km begins to move. Most of the garrison dies within hours and rises. |
 | 21–22 Dec | The Ledger begins tallying with no operator present. The PA keeps announcing. |
 | 20–22 Dec *(U02 §6.2, new row)* | On the night of the Erwachen eleven forced labourers go up the Maintenance Stairs; the guards on the third landing are still shooting, and only **Jakub Ostrowski** (KB-2210, of Wilcza Góra; Tomasz Nowak's gang leader in Gallery Nine in 1942–43) reaches the snow (21 Dec). On the 22nd a retreating road patrol catches him and locks him in the Kreuzweg's coal cage, then flees with the key. He writes to his wife Marta on the back of a coal bill (`INT_JAK_01`). CANON §6.4. |
-| **23 Dec 1944** | **GRAVELIGHT ONE** (C-47, out of Brindisi) crosses the Silesian border at 23:10. At 23:41, a violet light rises from the hills, the engines lose all power at once, and the plane comes down near the **Gasthaus Zum Kreuzweg** (the Crossroads Inn, kept by Anselm Vogt). The pilots die. The four passengers survive. |
+| **23 Dec 1944** | **GRAVELIGHT ONE** (C-47, out of Brindisi) crosses the Silesian border at 23:10. At 23:41, a violet light rises from the hills, the engines lose all power at once, and the plane comes down near the **Gasthaus Zum Kreuzweg** (the Crossroads Inn, kept by Anselm Vogt). The co-pilot dies; Flt Lt Harry Selwyn is pinned alive in the cockpit (T-126). The four passengers survive. |
 | **23–24 Dec** | **MAP 0: Crossroads Inn.** The squad holds out through the night. Fasbender's radio finds them. |
 | **25 Dec 1944 →** | **MAP 1: Kaltenbrunn.** The squad follows the rail line to the mine. |
 | (Map 1 ending) | The Heart collapses. Reinholt escapes on the ore train with a fragment. Peg pockets a shard. |
@@ -326,7 +326,7 @@ In October 1944, SOE receives Fasbender's offer via the Home Army. London sees t
 - **Zofia "Wren" Nowak** (Home Army): the guide. She knows the mine, the rail line, and the villages. She volunteered because her brother went in and never came out.
 
 ### 9.2 The crash
-GRAVELIGHT ONE flew out of Brindisi on 23 December 1944. At 23:41, near the Kaltenbrunn hills, the crew saw a violet column of light rise from the ground. Both engines stopped at the same instant, along with the instruments, the radio, and the crew's watches. The pilot, Flight Lieutenant Harry Selwyn, glided the plane into a frozen field beside a crossroads inn. The pilots died. The squad crawled out and saw the inn's windows lit and figures moving inside.
+GRAVELIGHT ONE flew out of Brindisi on 23 December 1944. At 23:41, near the Kaltenbrunn hills, the crew saw a violet column of light rise from the ground. Both engines stopped at the same instant, along with the instruments, the radio, and the crew's watches. The pilot, Flight Lieutenant Harry Selwyn, glided the plane into a frozen field beside a crossroads inn. The co-pilot died; Selwyn lived, pinned in his seat by the instrument panel (T-126: he fights from the cockpit with whatever gun the squad hands him). The squad crawled out and saw the inn's windows lit and figures moving inside.
 
 ### 9.3 Map story questions
 Each map **answers one question and raises a new one.**

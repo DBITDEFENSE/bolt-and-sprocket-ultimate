@@ -1209,9 +1209,29 @@ def kit_cousin_alix(body, P):
     return k
 
 
+def kit_selwyn(body, P):
+    """T-126: Flt Lt Harry Selwyn, GRAVELIGHT ONE's pilot: a sheepskin flying jacket (leather out, the fleece at the
+    collar, cuffs and hem), RAF blue-grey battledress trousers, flying boots, a leather flying helmet."""
+    k = Kit("selwyn")
+    jacket = add_shell(k, body, P_or(P_coat(0.9), P_arms(0.92)), thick_by_y(0.026, 0.02), "cloth")
+    k.add(band(body, neck_pts(body), 1.5, 0.11, "knit", pad=0.03, thick=0.026))            # the big fleece collar
+    k.add(band(body, trunk(jacket), 0.95, 0.06, "knit", pad=0.006, thick=0.016))           # the fleece at the hem
+    for side in ("Left", "Right"):
+        k.add(cuff_band(body, side, 0.92, 0.05, "knit", pad=0.016, thick=0.012, bones=("LowerArm", "Hand")))
+    k.add(sash(jacket, (0.03, 1.47), (0.05, 0.96), 0.012, "metal"))                          # the zip
+    k.add(band(body, trunk(jacket), 1.03, 0.04, "leather", pad=0.004, thick=0.008))         # a belt over the jacket
+    add_shell(k, body, P_legs(0.3, 0.98), 0.011, "cloth2")
+    add_shell(k, body, P_boots(0.36), 0.02, "leather", rim=0.008, push=boot_push(0.015))     # suede flying boots
+    k.add(band(body, neck_pts(body), 1.535, 0.05, "white", pad=0.012, thick=0.008))         # the silk scarf
+    for p in head_piece(P, "knit", "hat"):                                                   # the leather helmet (close, over the ears)
+        k.add(p)
+    return k
+
+
 PEOPLE_KITS = {
     "dutch": kit_dutch, "peg": kit_peg, "deacon": kit_deacon, "wren": kit_wren, "jakub": kit_jakub,
     "rother": kit_rother, "kubiak": kit_kubiak, "pohl": kit_pohl, "trudi": kit_trudi, "sobotta": kit_sobotta,
     "wiesner": kit_wiesner, "brandt": kit_brandt, "kroll": kit_kroll,
     "cousin_hammer": kit_cousin_hammer, "cousin_reach": kit_cousin_reach, "cousin_alix": kit_cousin_alix,
+    "selwyn": kit_selwyn,
 }

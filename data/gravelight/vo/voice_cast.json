@@ -54,7 +54,11 @@
   "KRO": {"who": "Ida Kroll, the postwoman from Sankt Anna (20s): quick and talkative when scared, a young bright voice, a light German accent (T-077)",
           "voice": "af_sky:0.4,bf_lily:0.35,if_sara:0.25", "lexicon": "gb", "speed": 1.08, "accent": "german_light",
           "native_polish": false, "native_german": true, "emotion_scale": 1.0, "hp_hz": 150,
-          "eq": [[900, 1800, 0.8], [2600, 4500, 1.0]], "warmth": 1.0, "lufs_offset": 0.0}
+          "eq": [[900, 1800, 0.8], [2600, 4500, 1.0]], "warmth": 1.0, "lufs_offset": 0.0},
+  "SEL": {"who": "Flt Lt Harry Selwyn, GRAVELIGHT ONE's pilot (T-126), RAF, early 30s: clipped and dry, pinned in his seat and in pain, holding it together with manners",
+          "voice": "bm_lewis:0.6,bm_george:0.4", "lexicon": "gb", "speed": 0.97, "accent": "",
+          "native_polish": false, "emotion_scale": 0.8, "hp_hz": 90,
+          "eq": [[200, 600, 1.5], [3200, 6000, -1.0]], "warmth": 1.1, "lufs_offset": 0.0}
  },
  "accents": {
   "_doc": "Phoneme rewrites on the misaki GB phonemes of English words (Polish words are not touched). Rules model a Polish first language: th-stopping, a tapped r, Polish vowel qualities, final devoicing. Kept light on purpose: these are people speaking a second language well, not a comic accent.",

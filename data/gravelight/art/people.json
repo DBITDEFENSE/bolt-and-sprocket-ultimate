@@ -145,6 +145,14 @@
       "palette": {"cloth": [0.1, 0.12, 0.22], "cloth2": [0.08, 0.09, 0.16], "white": [0.82, 0.8, 0.76], "accent": [0.6, 0.04, 0.07], "cloth3": [0.05, 0.05, 0.06], "leather": [0.06, 0.05, 0.05], "hair": [0.05, 0.04, 0.04], "brow": [0.05, 0.04, 0.04], "iris": [0.16, 0.12, 0.2], "stitch": [0.18, 0.1, 0.12]},
       "paint": {"doll": 1.0},
       "face_driver": {"blink": [0.0, 0.0], "rest": "neutral"}
+    },
+    "selwyn": {
+      "group": "pilot", "name": "Flt Lt Harry Selwyn", "build": "medium", "female": false, "kit": "selwyn", "hair": "crop",
+      "face": {"jaw": 0.12, "chin": 0.012, "brow": 0.01, "nose": 0.03, "nose_w": 0.92, "ears": 0.015, "head": [0.98, 1.02, 1.0]},
+      "tone": [0.66, 0.52, 0.45], "height": 1.02, "speaker": "SEL",
+      "palette": {"cloth": [0.2, 0.12, 0.07], "cloth2": [0.18, 0.2, 0.26], "knit": [0.72, 0.66, 0.55], "white": [0.82, 0.8, 0.74], "leather": [0.16, 0.11, 0.07], "metal": [0.4, 0.4, 0.42], "hat": [0.14, 0.09, 0.06], "hair": [0.3, 0.2, 0.11], "brow": [0.24, 0.16, 0.09], "iris": [0.28, 0.33, 0.4]},
+      "paint": {"stubble": 0.3, "stubble_col": [0.45, 0.35, 0.3], "lips": 0.15, "cheeks": 0.1},
+      "face_driver": {"blink": [2.0, 5.0], "rest": "neutral"}
     }
   },
   "expressions": {

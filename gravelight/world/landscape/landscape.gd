@@ -715,7 +715,8 @@ func _build_town() -> void:
 # ================================================================== the crash site
 
 ## GRAVELIGHT ONE, burning harder: more flames along the wing root and an engine, little fires in the snow, the
-## open cockpit with the pilot's seat empty, the hold's cargo thrown about, a parachute caught in a tree.
+## crushed cockpit where the pilot sits pinned (T-126: TrappedPilot), the hold's cargo thrown about, a parachute
+## caught in a tree. The hull is hollow since T-126, so the fires and the cook-offs stay outside the cabin.
 func _build_crash_site() -> void:
 	var w: Node3D = Node3D.new()
 	w.name = "WreckExtras"
@@ -727,11 +728,10 @@ func _build_crash_site() -> void:
 	ws.name = "WreckStatic"
 	ws.transform = w.transform
 	_static.add_child(ws)
-	LandscapeProps.empty_cockpit(ws)
-	Props.block(ws, Vector3(-1.0, 1.6, -6.6), Vector3(-0.9, 2.4, -5.0), "char")     # the cockpit's torn side
+	LandscapeProps.pinned_cockpit(ws)
 	Props.flames(w, Vector3(3.2, 1.3, -1.0), 1.1, 1.3, 24)       # the starboard engine
 	Props.flames(w, Vector3(-6.0, 0.8, 0.3), 1.6, 1.0, 22)       # along the port wing
-	Props.flames(w, Vector3(0.0, 1.0, 3.5), 1.2, 1.1, 18)        # the hold
+	Props.flames(w, Vector3(-2.3, 0.7, 4.2), 1.2, 1.1, 18)       # the hold's cargo, burning in the snow off the port side
 	Props.embers(w, Vector3(-4.0, 1.2, 0.0), 3.5, 30)
 	Props.smoke(w, Vector3(-5.0, 2.0, 0.5), 0.8, 1.8, 18)
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -740,7 +740,7 @@ func _build_crash_site() -> void:
 		var p: Vector3 = WRECK_POS + Vector3(rng.randf_range(-10, 10), 0.05, rng.randf_range(-9, 10))
 		Props.flames(self, p, 0.5, 0.5, 8)
 		Props._noshadow(Props.cyl(_static, p + Vector3(0, -0.04, 0), 0.9, 0.02, "char"))
-	for lp: Vector3 in [Vector3(0, 2.2, -2.5), Vector3(0, 1.8, 1.5), Vector3(-3.2, 1.0, -1.0), Vector3(3.2, 1.2, -0.8), Vector3(0, 1.2, 4.0)]:
+	for lp: Vector3 in [Vector3(0, 2.95, -2.5), Vector3(-2.3, 1.0, 3.0), Vector3(-3.2, 1.0, -1.0), Vector3(3.2, 1.2, -0.8), Vector3(-2.4, 1.0, 4.6)]:
 		cookoff_points.append(w.transform * lp)
 	# a dark melt around the hull, the fire's warm pool on the snow
 	Props._noshadow(Props.cyl(_static, WRECK_POS + Vector3(0, 0.005, 0), 9.0, 0.012, "dirt"))
