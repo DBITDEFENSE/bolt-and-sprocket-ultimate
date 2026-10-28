@@ -236,7 +236,7 @@ func test_jakub_refuses_perks_the_crucible_and_buying() -> void:
 	assert_eq(BotMarkOrders.refusal("crucible", {"companion": true}), "refuse_crucible")
 	assert_eq(BotMarkOrders.refusal("gun", {"companion": true}), "refuse_buy")
 	assert_eq(BotMarkOrders.refusal("power", {"companion": true}), "", "he may throw the switch")
-	assert_eq(BotMarkOrders.refusal_lines("refuse_perk")[0], "EE_REFUSE_PERK", "his section 5 refusal, in character")
+	assert_eq(BotMarkOrders.refusal_lines("refuse_perk")[0], "PERK_NEAR", "T-127: a mark doesn't send him; asking him does (in character)")
 	assert_true(GLVO.lines.has("JAK_SQ5_MARK_REFUSE_BUY_01"))
 
 

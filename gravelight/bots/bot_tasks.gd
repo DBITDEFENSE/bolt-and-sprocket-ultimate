@@ -104,7 +104,11 @@ func _shop(e: Dictionary, node: Interactable, delta: float) -> String:
 			if want_slot >= 0 and want_slot < player.weapons.slots.size() and want_slot != player.weapons.current_index:
 				brain.aim.select(want_slot)
 				return "running"
-		if kind == "ammo_box" and int(brain.options.get("ammo_payer_pid", 0)) > 0:
+		if kind == "perk" and int(brain.options.get("perk_payer_pid", 0)) > 0 and node is PerkMachine:
+			# T-127: Jakub, sent for a tonic: the one who sent him pays, at the normal price (re-checked at the till)
+			brain.tonic_result = (node as PerkMachine).sell_to_companion(player, int(brain.options["perk_payer_pid"]))
+			brain.options.erase("perk_payer_pid")
+		elif kind == "ammo_box" and int(brain.options.get("ammo_payer_pid", 0)) > 0:
 			# a companion: refilled from the party's Scrip at its price multiplier (Jakub: half price)
 			(node as AmmoBox).use_holder(player.weapons, player.player_id, int(brain.options["ammo_payer_pid"]), float(brain.options.get("ammo_price_mult", 0.5)))
 		elif node.can_interact(player):

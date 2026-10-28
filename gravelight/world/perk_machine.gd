@@ -144,6 +144,31 @@ func interact(player: Player) -> void:
 		PerkManager.grant(pid, perk_id))
 
 
+## T-127: a tonic for a companion (Jakub), paid from `payer_pid`'s Scrip at the normal price: the same checks for
+## him (cap, owned, power), the same drink beat and jingle, then PerkManager.grant to him. Returns &"ok" or why not
+## (&"owned", &"cap", &"no_power", &"gone", &"busy", &"no_scrip"); a refusal changes nothing.
+func sell_to_companion(companion: Player, payer_pid: int) -> StringName:
+	if companion == null or not companion.is_companion:
+		return &"gone"
+	if _gone or _drinking:
+		return &"busy"
+	var cid: int = companion.player_id
+	var st: StringName = PerkManager.can_buy(cid, perk_id)
+	if st != &"ok":
+		return st
+	if not Economy.spend(payer_pid, perk_id, PerkManager.price(perk_id)):
+		return &"no_scrip"
+	AudioDirector.play_3d("buy", global_position, -4.0)
+	Net.sfx_all("buy", global_position, -4.0)
+	_drinking = true
+	_play_jingle()
+	_cab_dispense()
+	get_tree().create_timer(float(GLData.table("perks").get("drink_seconds", 1.2))).timeout.connect(func() -> void:
+		_drinking = false
+		PerkManager.grant(cid, perk_id))
+	return &"ok"
+
+
 ## The next tier of a tonic the player carries: pay, the same drink beat and jingle, then PerkManager.set_tier.
 func _brew_tier(player: Player) -> void:
 	var pid: int = player.player_id

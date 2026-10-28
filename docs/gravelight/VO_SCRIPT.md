@@ -1343,10 +1343,27 @@ his banter are `BNT_*` exchanges on the squad's player channel. The other surviv
 - `JAK_GUN_OTHER_01`: "I don't know this one. It will learn me, or I will learn it."
 - `JAK_GUN_SWAP_01`: "Take mine, then. A fair trade. It is still warm."
 
-**`PERK_REFUSE`** (he never drinks a perk: the first time he stands by a machine, or when a survivor drinks one near him):
+**`PERK_REFUSE`** (when a survivor drinks one near him; T-127: he no longer refuses outright, but he stays wary of the machines):
 - `JAK_PERK_REFUSE_01`: "I've seen what they put in those."
 - `JAK_PERK_REFUSE_02`: "No, thank you. I carried the crates for those machines at Kaltenbrunn. I know what comes out of that mountain."
 - `JAK_PERK_REFUSE_03`: "Drink if you must. I have seen men drink that and keep walking after they should have stopped."
+
+**`PERK_NEAR`** (T-127: the first time he stands by a machine with you; wary, but he would drink one if you asked):
+- `JAK_PERK_NEAR_01`: "I carried the crates for these machines at Kaltenbrunn. I swore I would never drink from one. ...But I would like to see Wilcza Góra again. Ask me, and I will."
+- `JAK_PERK_NEAR_02`: "Helvetia. We unloaded their crates at the pithead. If it keeps a man standing beside you, I will drink it. Ask."
+
+**`PERK_ACCEPT`** (T-127: "Talk to Jakub" → GET YOURSELF A TONIC; he sets off for the machine, your Scrip):
+- `JAK_PERK_ACCEPT_01`: "For you, then. Not for them."
+- `JAK_PERK_ACCEPT_02`: "One. I will drink one. Watch my back while I do."
+- `JAK_PERK_ACCEPT_03`: "Your Scrip, my stomach. Agreed."
+
+**`PERK_DRINK`** (T-127: after he drinks it):
+- `JAK_PERK_DRINK_01`: "It tastes like the gallery air. ...And it is working. God forgive me, it is working."
+- `JAK_PERK_DRINK_02`: "Warm, like a stove in the chest. I do not like how much I like it."
+- `JAK_PERK_DRINK_03`: "Done. Now let us make it worth what you paid."
+
+**`PERK_SHORT`** (T-127: at the till your Scrip no longer covers it):
+- `JAK_PERK_SHORT_01`: "Your pocket is lighter than you think, friend. Another time."
 
 **`COUSINS`** / **`COUSINS_AFTER`** (round 10, the Cousins Round; the rhyme the three of them hum):
 - `JAK_COUSINS_01`: "I know that song. Everyone in this valley knows that song."

@@ -4866,6 +4866,51 @@
     "category": "PERK_REFUSE",
     "text": "Drink if you must. I have seen men drink that and keep walking after they should have stopped."
   },
+  "JAK_PERK_NEAR_01": {
+    "speaker": "JAK",
+    "category": "PERK_NEAR",
+    "text": "I carried the crates for these machines at Kaltenbrunn. I swore I would never drink from one. ...But I would like to see Wilcza Góra again. Ask me, and I will."
+  },
+  "JAK_PERK_NEAR_02": {
+    "speaker": "JAK",
+    "category": "PERK_NEAR",
+    "text": "Helvetia. We unloaded their crates at the pithead. If it keeps a man standing beside you, I will drink it. Ask."
+  },
+  "JAK_PERK_ACCEPT_01": {
+    "speaker": "JAK",
+    "category": "PERK_ACCEPT",
+    "text": "For you, then. Not for them."
+  },
+  "JAK_PERK_ACCEPT_02": {
+    "speaker": "JAK",
+    "category": "PERK_ACCEPT",
+    "text": "One. I will drink one. Watch my back while I do."
+  },
+  "JAK_PERK_ACCEPT_03": {
+    "speaker": "JAK",
+    "category": "PERK_ACCEPT",
+    "text": "Your Scrip, my stomach. Agreed."
+  },
+  "JAK_PERK_DRINK_01": {
+    "speaker": "JAK",
+    "category": "PERK_DRINK",
+    "text": "It tastes like the gallery air. ...And it is working. God forgive me, it is working."
+  },
+  "JAK_PERK_DRINK_02": {
+    "speaker": "JAK",
+    "category": "PERK_DRINK",
+    "text": "Warm, like a stove in the chest. I do not like how much I like it."
+  },
+  "JAK_PERK_DRINK_03": {
+    "speaker": "JAK",
+    "category": "PERK_DRINK",
+    "text": "Done. Now let us make it worth what you paid."
+  },
+  "JAK_PERK_SHORT_01": {
+    "speaker": "JAK",
+    "category": "PERK_SHORT",
+    "text": "Your pocket is lighter than you think, friend. Another time."
+  },
   "JAK_COUSINS_01": {
     "speaker": "JAK",
     "category": "COUSINS",

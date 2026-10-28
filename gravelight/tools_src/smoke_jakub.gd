@@ -7,10 +7,12 @@ extends Node
 ##     Kar98k goes to him, the profile flag is saved, Wren's scene); he fights beside the human (kills, shots);
 ##     he is downed (his own 60 s clock) and the human revives him; rounds 6-10 with him, the Cousins Round on
 ##     round 10 (Homage Bosses On) with Jakub still on his feet, his line about the song, then rounds 11 and 12.
-##     The round size never counts him; he never drinks a perk.
+##     The round size never counts him; he never drinks a perk of his own accord.
 ##   NOT YET (as Dutch, Door 5 shut): the breakout comes anyway, he waits in the shut cellar and calls out;
 ##     Door 5 opens, NOT YET: he follows with the coal shovel; a wall-buy with him beside it sells him the
-##     Gewehr 43; an ammo box refills him from the human's Scrip at half price; then he is downed and nobody
+##     Gewehr 43; an ammo box refills him from the human's Scrip at half price; the power on, "Talk to Jakub" sends
+##     him for a tonic (T-127): he walks to a cellar machine and drinks it on the human's Scrip; then he is downed
+##     (the tonic is lost) and nobody
 ##     comes: he bleeds out after 60 s, is out cold for the rest of the match and never respawns.
 ##   CARRY: the campaign payload from that map carries him to Kaltenbrunn: he arrives with the squad, wounded
 ##     ("Not yet. Not tonight."), and the Maintenance Stairs cost 500 less while he is with you.
@@ -259,7 +261,7 @@ func _case_give() -> void:
 	_check(jc.events.has("wren_scene"), "Wren is in the match: their quiet scene")
 	_check(jp.is_in_group(&"players") and not GameState.player_ids.has(jp.player_id) and not GameState.bot_ids.has(jp.player_id),
 		"a zombie target now, still no player slot")
-	_check(PerkManager.owned(jp.player_id).is_empty() and not bool(jc.brain.options.get("perks", true)), "no perks")
+	_check(PerkManager.owned(jp.player_id).is_empty() and not bool(jc.brain.options.get("perks", true)), "no perks of his own accord")
 	# he fights beside the human
 	var shots0: int = jc.brain.shots
 	var fought: bool = await _until(func() -> bool: return _jkills >= 2 and jc.brain != null and jc.brain.shots > shots0, 200.0,
@@ -381,11 +383,43 @@ func _case_not_yet() -> void:
 		var res: StringName = box.use_holder(jp.weapons, jp.player_id, 1, float(JakubCompanion.cfg()["brain"]["ammo_price_mult"]))
 		_check(res == &"ok" and s1 - Economy.get_scrip(1) == int(ceil(full * 0.5)) and w.reserve > 0,
 			"ammo box: %d Scrip from the human, half of %d" % [s1 - Economy.get_scrip(1), full])
+	# T-127: "Talk to Jakub" -> GET YOURSELF A TONIC: he walks to the nearest cellar machine and drinks one, paid from
+	# the human's Scrip at the normal price (the card's choice: choose_tonic)
+	if jp.downed:
+		_revive_jakub()
+	if not GameState.power_on:
+		GameState.power_on = true
+		GameState.set_flag(&"power_on", true)
+		GLBus.power_activated.emit()
+	Economy.grant(1, 8000)
+	var dc: BuyDoor = _door(&"door_cellar")   # the Helvetia cellar, where Map 0's machines stand
+	_check(jc.tonic_offer(h).get("code", "") == "unreachable" or dc == null or dc.is_open, "no tonic on offer while the machines are shut away")
+	if dc != null and not dc.is_open:
+		dc.open(1)
+	_place(jp.global_position + Vector3(-0.6, 0.0, 1.2))
+	await _secs(0.5)
+	var ton: Dictionary = jc.tonic_offer(h)
+	_check(bool(ton.get("ok", false)), "a tonic is on offer for him (%s)" % str(ton.get("name", ton.get("code", "?"))))
+	_check(jc.talk_prompt(h).contains("tonic"), "the talk prompt offers it: \"%s\"" % jc.talk_prompt(h))
+	if bool(ton.get("ok", false)):
+		var s2: int = Economy.get_scrip(1)
+		var want: StringName = ton["perk"] as StringName
+		_check(jc.choose_tonic(h), "he is sent for the %s" % str(ton["name"]))
+		var drank: bool = await _until(func() -> bool: return PerkManager.has_perk(jp.player_id, want), 60.0,
+			func() -> void:
+				_cull(25.0, 12.0)
+				if jp.downed:
+					_revive_jakub())
+		_check(drank, "he walks to the machine and drinks it (events %s)" % str(jc.events.slice(-4)))
+		_check(s2 - Economy.get_scrip(1) == PerkManager.price(want), "paid from the human's Scrip at the normal price (%d)" % (s2 - Economy.get_scrip(1)))
+		_check(jc.events.has("tonic:%s" % want), "his tonic event")
+		_check(not jc.tonic_offer(h).has("machine") or jc.tonic_offer(h).get("perk") != want, "never the same tonic twice")
 	# downed and left: he bleeds out after 60 s and stays out cold
 	_place(Vector3(14, 0, 8))
 	if not jp.downed:
 		jp.take_hit(jp.hp + 1.0, null)
 	await _secs(0.2)
+	_check(PerkManager.owned(jp.player_id).is_empty(), "downed: his tonic is lost, like anyone's (T-127)")
 	var t0: float = _clock
 	Engine.time_scale = 4.0
 	var bled: bool = await _until(func() -> bool: return jc.state == JakubCompanion.State.FALLEN, 80.0, _cull)

@@ -130,6 +130,8 @@ var _order_node: Node = null
 var _order_at: Vector3 = Vector3.INF
 var _order_reported: bool = true
 var _order_done: bool = false
+## T-127: the last tonic errand's answer from the machine (&"" none yet): JakubCompanion reads and clears it.
+var tonic_result: StringName = &""
 # hold / power-ups / traps / planner
 var _hold: Dictionary = {}
 var _hold_key: String = ""
@@ -274,7 +276,7 @@ static func order_response(order_id: StringName) -> PackedStringArray:
 			return ["revive", "cover"]
 		&"buy_perks":
 			return ["buy"]
-		&"open_door", &"fetch_part":
+		&"open_door", &"fetch_part", &"buy_tonic":
 			return ["order"]
 	return []
 
@@ -575,7 +577,8 @@ func context(now: float) -> Dictionary:
 			"objective": "objective", "order": "order"}.get(str(task.get("action", "")), ""))
 		if key != "":
 			c[key] = maxf(float(c.get(key, 0.0)), float(task.get("value", 0.7)) if key.ends_with("_task") else 1.0)
-	_sticky = not task.is_empty() and (crucible_sticky() or str(task.get("kind", "")) == "hold" or bool(task.get("paid", false)) or str(task.get("kind", "")) == "shoot_moving")
+	_sticky = not task.is_empty() and (crucible_sticky() or str(task.get("kind", "")) == "hold" or bool(task.get("paid", false)) or str(task.get("kind", "")) == "shoot_moving"
+		or (str(task.get("kind", "")) == "perk" and _order_id == &"buy_tonic"))   # T-127: Jakub sent for a tonic: escorting doesn't pull him back
 	return c
 
 
@@ -743,6 +746,8 @@ func start_task(kind: String) -> void:
 	var timeout: float = float((_cfg.get("shopping", {}) as Dictionary).get("errand_timeout_s", 20.0))
 	if kind == "objective":
 		timeout = float((_cfg.get("local_ai", {}) as Dictionary).get("errand_timeout_s", 60.0)) + float(c.get("extra_s", 0.0))
+	elif kind == "order":
+		timeout += float(c.get("extra_s", 0.0))   # T-127: a tonic errand may cross the map
 	if node is Crucible:
 		timeout += (node as Crucible).forge_seconds + (node as Crucible).offer_seconds
 	task["until"] = now + timeout
@@ -806,8 +811,15 @@ func crucible_sticky() -> bool:
 func _order_task() -> Dictionary:
 	var oid: StringName = order_id()
 	var n: Node = order_node()
-	if n == null or (oid != &"open_door" and oid != &"fetch_part"):
+	if n == null or (oid != &"open_door" and oid != &"fetch_part" and oid != &"buy_tonic"):
 		return {}
+	if oid == &"buy_tonic":
+		# T-127: Jakub sent for a tonic: the machine he was pointed at, paid from options.perk_payer_pid at the till
+		var pm: PerkMachine = n as PerkMachine
+		if pm == null or PerkManager.can_buy(player.player_id, pm.perk_id) != &"ok":
+			_order_done = true
+			return {}
+		return {"node": pm, "kind": "perk", "extra_s": 25.0, "label": "drink a %s (sent for it)" % PerkManager.display_name(pm.perk_id)}
 	if n is BuyDoor:
 		if (n as BuyDoor).is_open:
 			_order_done = true

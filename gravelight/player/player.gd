@@ -53,6 +53,9 @@ var bleedout_seconds: float = 0.0  # > 0: this player's own co-op bleed-out cloc
 ## no slot, no scaling, no perks). It always goes into last stand when downed (even in solo) and never keeps a
 ## solo match alive on its own (MapRoot._on_player_downed).
 var is_companion: bool = false
+## T-127: max health relative to player.json max_health (Jakub: his own 100, x0.7 wounded), so a tonic's
+## max_health (Ironhide) scales with it and losing it never resets him to a player's base.
+var hp_scale: float = 1.0
 ## Player bot mode (T-071, gravelight/bots/player_bot.gd): the local human's survivor driven by a BotBrain while
 ## they watch. Movement, aim and firing come from the brain (drive_bot, bot_view_tick); the local input is not read.
 var bot_driven: bool = false
@@ -1482,7 +1485,7 @@ func has_explosive_immunity() -> bool:
 func _on_perks_changed(pid: int) -> void:
 	if pid != player_id:
 		return
-	var new_max: float = float(PerkManager.stat(player_id, "max_health", float(_cfg["max_health"])))
+	var new_max: float = float(PerkManager.stat(player_id, "max_health", float(_cfg["max_health"]))) * hp_scale
 	if new_max > max_hp:
 		hp += new_max - max_hp
 	max_hp = new_max
@@ -1702,7 +1705,7 @@ func respawn_at(xf: Transform3D) -> void:
 	collision_layer = LAYER_PLAYER
 	global_transform = xf
 	velocity = Vector3.ZERO
-	max_hp = float(PerkManager.stat(player_id, "max_health", float(_cfg["max_health"])))
+	max_hp = float(PerkManager.stat(player_id, "max_health", float(_cfg["max_health"]))) * hp_scale
 	hp = max_hp
 	_since_hit = 99.0
 	_status.clear()
