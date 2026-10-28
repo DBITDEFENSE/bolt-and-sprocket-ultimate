@@ -445,12 +445,94 @@ func build_geometry() -> void:
 	# T-080: the crash site is in the play space now (the GROUNDS): cover, never a perch (no_mantle), the engine
 	# nacelles that hang out ahead of the wing are solid too, and the wing reaches the snow (no crawl space under it)
 	# (the hull is rolled 8 deg: the port wing tip stands 1.25 m off the snow, so the boxes reach down into the ground)
-	box(wreck, "Fuselage", Vector3(-1.4, -0.4, -7), Vector3(1.4, 2.6, 6), "wreck", true, false).set_meta("no_mantle", true)
-	box(wreck, "Wing", Vector3(-9, -1.4, -1.5), Vector3(7, 0.7, 1.5), "wreck", true, false).set_meta("no_mantle", true)
+	build_wreck_hull(wreck)
+	for wx: Array in [[-9.0, -1.4], [1.4, 7.0]]:   # T-126: the wing stops at the hull (the cabin floor runs over its root)
+		box(wreck, "Wing", Vector3(float(wx[0]), -1.4, -1.5), Vector3(float(wx[1]), 0.7, 1.5), "wreck", true, false).set_meta("no_mantle", true)
 	for sx: float in [-3.2, 3.2]:
 		box(wreck, "Nacelle", Vector3(sx - 0.65, -0.6, -2.35), Vector3(sx + 0.65, 1.55, -1.5), "wreck", true, false).set_meta("no_mantle", true)
 	box(wreck, "TailPlane", Vector3(-2.5, 1.5, 5.3), Vector3(2.5, 1.85, 6.7), "wreck", true, false).set_meta("no_mantle", true)
 	build_grounds()
+
+
+## T-126 (the owner: "improve the plane wreck, make it so you can go into the plane, have a pilot trapped in there"):
+## GRAVELIGHT ONE's hull is hollow. In the wreck's frame (x across, -z the nose; rolled 8 deg, the port side up): a
+## cabin floor (top WRECK_FLOOR) from the cockpit to the aft bulkhead, walls WRECK_WALL thick, a roof; two ways in on
+## the low starboard side, the cargo door aft and a torn hole forward of the wing; the cockpit behind a bulkhead whose
+## doorway is choked waist-high with wreckage (you see and reach the pilot over it; nothing walks in); the cockpit's
+## windscreen and side windows broken out from a sill nobody can jump to (WRECK_SILL), so the pinned pilot shoots out.
+## Openings: [side (-1 port, 1 starboard, 0 the nose), z0, z1, y0, y1]. Drawn by _dress_wreck from the same table.
+const WRECK_FLOOR: float = 0.2
+const WRECK_ROOF: float = 2.35
+const WRECK_TOP: float = 2.6
+const WRECK_HALF: float = 1.4
+const WRECK_WALL: float = 0.25
+const WRECK_NOSE_Z: float = -6.9
+const WRECK_BULK_Z: float = -4.9
+const WRECK_AFT_Z: float = 5.3
+const WRECK_SILL: float = 1.4
+## The windscreen's sill: under the seated pilot's eye (TrappedPilot eye_y 1.3 over the floor), over a jump.
+const WRECK_SCREEN: float = 1.1
+const WRECK_OPENINGS: Array = [
+	[1, 2.2, 4.0, WRECK_FLOOR, WRECK_ROOF],  # the cargo door (starboard, aft): the low side; up to the roof line (navmesh headroom)
+	[1, -4.3, -2.45, WRECK_FLOOR, WRECK_ROOF], # the torn hole forward of the wing (1.85 m: the navmesh erodes 0.5 m off each jamb)
+	[1, -6.5, -5.1, WRECK_SILL, 2.25],      # the cockpit's starboard window, glass gone
+	[-1, -6.5, -5.1, WRECK_SILL, 2.25],     # its port window
+	[0, -1.0, 1.0, WRECK_SCREEN, 2.25],     # the windscreen (x -1..1 across the nose)
+]
+## The pilot's seat (the cockpit floor under it), in the wreck's frame; the bulkhead doorway is x -0.5..0.5.
+const WRECK_PILOT_SEAT: Vector3 = Vector3(-0.35, WRECK_FLOOR, -5.75)
+
+
+## The wreck's frame (as the Wreck collider node and the WreckDress group stand).
+static func wreck_xf() -> Transform3D:
+	return Transform3D(Basis.from_euler(Vector3(0, deg_to_rad(28), deg_to_rad(-8))), Vector3(46, 0, 6))
+
+
+## A wall of the hull along z at x0..x1 from z0 to z1, full height, cut by the openings on `side`.
+func _wreck_wall(wreck: Node3D, side: int, x0: float, x1: float, z0: float, z1: float) -> void:
+	var cuts: Array = []
+	for o: Array in WRECK_OPENINGS:
+		if int(o[0]) == side:
+			cuts.append(o)
+	cuts.sort_custom(func(a: Array, b: Array) -> bool: return float(a[1]) < float(b[1]))
+	var z: float = z0
+	for o2: Array in cuts:
+		var oz0: float = float(o2[1])
+		var oz1: float = float(o2[2])
+		if oz0 > z:
+			box(wreck, "HullWall", Vector3(x0, WRECK_FLOOR, z), Vector3(x1, WRECK_TOP, oz0), "wreck", true, false).set_meta("no_mantle", true)
+		if float(o2[3]) > WRECK_FLOOR:
+			box(wreck, "HullSill", Vector3(x0, WRECK_FLOOR, oz0), Vector3(x1, float(o2[3]), oz1), "wreck", true, false).set_meta("no_mantle", true)
+		box(wreck, "HullLintel", Vector3(x0, float(o2[4]), oz0), Vector3(x1, WRECK_TOP, oz1), "wreck", true, false).set_meta("no_mantle", true)
+		z = oz1
+	if z < z1:
+		box(wreck, "HullWall", Vector3(x0, WRECK_FLOOR, z), Vector3(x1, WRECK_TOP, z1), "wreck", true, false).set_meta("no_mantle", true)
+
+
+func build_wreck_hull(wreck: Node3D) -> void:
+	var h: float = WRECK_HALF
+	var w: float = WRECK_WALL
+	# the floor (reaching into the snow: the hull is rolled) and the roof
+	box(wreck, "HullFloor", Vector3(-h, -0.4, WRECK_NOSE_Z), Vector3(h, WRECK_FLOOR, WRECK_AFT_Z), "wreck", true, false).set_meta("no_mantle", true)
+	box(wreck, "HullRoof", Vector3(-h, WRECK_ROOF, WRECK_NOSE_Z - 0.3), Vector3(h, WRECK_TOP, WRECK_AFT_Z), "wreck", true, false).set_meta("no_mantle", true)
+	_wreck_wall(wreck, -1, -h, -h + w, WRECK_NOSE_Z, WRECK_AFT_Z)
+	_wreck_wall(wreck, 1, h - w, h, WRECK_NOSE_Z, WRECK_AFT_Z)
+	# the nose: a front wall with the windscreen out
+	var ws: Array = WRECK_OPENINGS[4]
+	var nz0: float = WRECK_NOSE_Z - 0.3
+	box(wreck, "HullNose", Vector3(-h, -0.4, nz0), Vector3(h, float(ws[3]), WRECK_NOSE_Z), "wreck", true, false).set_meta("no_mantle", true)
+	box(wreck, "HullNose", Vector3(-h, float(ws[3]), nz0), Vector3(float(ws[1]), WRECK_TOP, WRECK_NOSE_Z), "wreck", true, false).set_meta("no_mantle", true)
+	box(wreck, "HullNose", Vector3(float(ws[2]), float(ws[3]), nz0), Vector3(h, WRECK_TOP, WRECK_NOSE_Z), "wreck", true, false).set_meta("no_mantle", true)
+	box(wreck, "HullNose", Vector3(float(ws[1]), float(ws[4]), nz0), Vector3(float(ws[2]), WRECK_TOP, WRECK_NOSE_Z), "wreck", true, false).set_meta("no_mantle", true)
+	# the cockpit bulkhead: its doorway (x -0.5..0.5) choked with wreckage to 1.15 m; open above to 2.05
+	var bz0: float = WRECK_BULK_Z
+	var bz1: float = WRECK_BULK_Z + 0.25
+	box(wreck, "HullBulkhead", Vector3(-h + w, WRECK_FLOOR, bz0), Vector3(-0.5, WRECK_ROOF, bz1), "wreck", true, false).set_meta("no_mantle", true)
+	box(wreck, "HullBulkhead", Vector3(0.5, WRECK_FLOOR, bz0), Vector3(h - w, WRECK_ROOF, bz1), "wreck", true, false).set_meta("no_mantle", true)
+	box(wreck, "HullBulkhead", Vector3(-0.5, 2.05, bz0), Vector3(0.5, WRECK_ROOF, bz1), "wreck", true, false).set_meta("no_mantle", true)
+	box(wreck, "CockpitChoke", Vector3(-0.5, WRECK_FLOOR, bz0 - 0.35), Vector3(0.5, 1.15, bz1), "wreck", true, false).set_meta("no_mantle", true)
+	# the aft bulkhead and the tail cone behind it
+	box(wreck, "HullTail", Vector3(-h, -0.4, WRECK_AFT_Z), Vector3(h, WRECK_TOP, 6.0), "wreck", true, false).set_meta("no_mantle", true)
 
 
 ## The hayloft (T-084): the west block, the gallery along the south wall with the stair well in its east end, the
@@ -2729,12 +2811,109 @@ func _gable(parent: Node3D, a: Vector3, b: Vector3, rise: float) -> void:
 			Props.block(parent, Vector3(x - 0.12, a.y + rise * t, a.z + half - hz), Vector3(x + 0.12, a.y + rise * (t + 1.0 / 6.0), a.z + half + hz), "planks")
 
 
+## T-126: the hull's cross-section (x, y) in the wreck frame, port to starboard over the top and back under: the
+## walls stand on the colliders (x +-1.15..1.4), the roof over WRECK_ROOF.
+const WRECK_RING: Array = [Vector2(1.3, -0.1), Vector2(1.42, 0.6), Vector2(1.44, 1.3), Vector2(1.38, 1.95), Vector2(1.12, 2.42),
+	Vector2(0.6, 2.68), Vector2(0.0, 2.75), Vector2(-0.6, 2.68), Vector2(-1.12, 2.42), Vector2(-1.38, 1.95), Vector2(-1.44, 1.3),
+	Vector2(-1.42, 0.6), Vector2(-1.3, -0.1), Vector2(0.0, -0.22)]
+
+
+## True when a hull panel centred at (x, y, z) in the wreck frame falls in one of WRECK_OPENINGS (a side opening).
+static func _wreck_open(x: float, y: float, z: float) -> bool:
+	for o: Array in WRECK_OPENINGS:
+		var side: int = int(o[0])
+		if side == 0 or (side < 0) != (x < 0.0) or absf(x) < 0.9:
+			continue
+		if z > float(o[1]) - 0.05 and z < float(o[2]) + 0.05 and y > float(o[3]) - 0.05 and y < float(o[4]) + 0.05:
+			return true
+	return false
+
+
+## The shell: panels round WRECK_RING in 0.4 m bays from the nose to the tail, the openings left out with torn,
+## charred edges; the nose tapering to the broken windscreen; ribs, the cabin floor, the bucket seats along the port
+## wall, the static line, a cargo net and a crate; the choked cockpit doorway (LandscapeProps draws the pilot's corner).
+func _dress_wreck_hull(w: Node3D) -> void:
+	var g: Node3D = Props.group(w, "Hull", Vector3.ZERO)
+	var bay: float = 0.4
+	var z: float = WRECK_NOSE_Z
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 126
+	while z < 6.0 - 0.01:
+		var z1: float = minf(z + bay, 6.0)
+		var zc: float = (z + z1) * 0.5
+		for i: int in WRECK_RING.size():
+			var a: Vector2 = WRECK_RING[i]
+			var b: Vector2 = WRECK_RING[(i + 1) % WRECK_RING.size()]
+			var m: Vector2 = (a + b) * 0.5
+			if _wreck_open(m.x, m.y, zc):
+				if rng.randf() < 0.5:   # a torn flap at the edge of the hole
+					Props.obox(g, Vector3(m.x * 0.98, m.y, zc), Vector3(0.05, 0.12, rng.randf_range(0.15, 0.35)), "char",
+						Vector3(rng.randf_range(-30, 30), rng.randf_range(-20, 20), rng.randf_range(-40, 40)))
+				continue
+			var d: Vector2 = b - a
+			Props.obox(g, Vector3(m.x, m.y, zc), Vector3(d.length() + 0.04, 0.05, z1 - z + 0.02), "wreck", Vector3(0, 0, rad_to_deg(atan2(d.y, d.x))))
+		z = z1
+	# the nose: two tapering rings ahead of the cockpit, the windscreen's frame with its glass out
+	for k: int in 2:
+		var sc: float = 0.86 - 0.18 * k
+		var nz: float = WRECK_NOSE_Z - 0.2 - 0.35 * k
+		for i2: int in WRECK_RING.size():
+			var a2: Vector2 = WRECK_RING[i2] * sc + Vector2(0, 0.25 * k)
+			var b2: Vector2 = WRECK_RING[(i2 + 1) % WRECK_RING.size()] * sc + Vector2(0, 0.25 * k)
+			var m2: Vector2 = (a2 + b2) * 0.5
+			if m2.y > WRECK_SCREEN and absf(m2.x) < 1.1:
+				continue   # the windscreen
+			var d2: Vector2 = b2 - a2
+			Props.obox(g, Vector3(m2.x, m2.y, nz), Vector3(d2.length() + 0.04, 0.05, 0.42), "wreck", Vector3(0, 0, rad_to_deg(atan2(d2.y, d2.x))))
+	Props.obox(g, Vector3(0, WRECK_SCREEN - 0.35, WRECK_NOSE_Z - 0.75), Vector3(1.4, 0.7, 0.06), "wreck", Vector3(-20, 0, 0))   # the nose cap under it
+	for fx: float in [-0.95, -0.05, 0.85]:   # the windscreen frame, bent
+		Props.obox(g, Vector3(fx, 1.95, WRECK_NOSE_Z - 0.15), Vector3(0.05, 0.85, 0.05), "rust", Vector3(25, 0, rng.randf_range(-12, 12)))
+	# inside: ribs every 1.2 m, the floor's planking and its tie-downs
+	var rz: float = WRECK_BULK_Z + 0.9
+	while rz < WRECK_AFT_Z - 0.2:
+		for i3: int in WRECK_RING.size() - 2:
+			var a3: Vector2 = WRECK_RING[i3] * 0.94 + Vector2(0, 0.08)
+			var b3: Vector2 = WRECK_RING[i3 + 1] * 0.94 + Vector2(0, 0.08)
+			var m3: Vector2 = (a3 + b3) * 0.5
+			if m3.y < WRECK_FLOOR + 0.1 or _wreck_open(m3.x / 0.94, m3.y, rz):
+				continue
+			var d3: Vector2 = b3 - a3
+			Props.obox(g, Vector3(m3.x, m3.y, rz), Vector3(d3.length(), 0.06, 0.08), "rust", Vector3(0, 0, rad_to_deg(atan2(d3.y, d3.x))))
+		rz += 1.2
+	Props.block(g, Vector3(-1.15, WRECK_FLOOR - 0.03, WRECK_BULK_Z), Vector3(1.15, WRECK_FLOOR + 0.005, WRECK_AFT_Z), "planks")
+	Props.block(g, Vector3(-1.4, WRECK_ROOF - 0.02, WRECK_NOSE_Z), Vector3(1.4, WRECK_ROOF, WRECK_AFT_Z), "char")   # the soot-black ceiling
+	for tz: float in [-3.0, -1.0, 1.0, 3.0]:
+		Props.block(g, Vector3(-0.04, WRECK_FLOOR, tz - 0.04), Vector3(0.04, WRECK_FLOOR + 0.03, tz + 0.04), "iron")
+	# the bucket seats along the port wall (a paratroop fit), one torn loose
+	for sz: float in [-3.6, -2.9, -2.2, -1.5, -0.8, -0.1, 0.6, 1.3]:
+		Props.block(g, Vector3(-1.12, 0.52, sz - 0.28), Vector3(-0.82, 0.57, sz + 0.28), "iron")
+		Props.obox(g, Vector3(-1.13, 0.85, sz), Vector3(0.04, 0.55, 0.5), "paint:#4b5333", Vector3(0, 0, 4))
+	Props.obox(g, Vector3(-0.6, WRECK_FLOOR + 0.1, 2.0), Vector3(0.56, 0.05, 0.3), "iron", Vector3(0, 35, 70))
+	Props.cyl(g, Vector3(0.55, 2.2, -0.5), 0.012, 8.5, "iron", Vector3(90, 0, 0))   # the static line
+	Props.obox(g, Vector3(0.3, WRECK_FLOOR + 0.06, 4.4), Vector3(1.6, 0.06, 1.0), "rope", Vector3(0, 20, 3))   # a cargo net
+	Props.crate(g, Vector3(0.75, WRECK_FLOOR, 4.6), 0.55, 15.0, "U.S.")
+	# the cockpit's choked doorway: the bent door, a fallen radio rack and a panel over the wreckage
+	Props.obox(g, Vector3(-0.1, 0.55, WRECK_BULK_Z + 0.05), Vector3(1.0, 0.75, 0.08), "wreck", Vector3(-25, 8, 12))
+	Props.obox(g, Vector3(0.25, 0.75, WRECK_BULK_Z - 0.15), Vector3(0.5, 0.6, 0.35), "paint:#3b3a2c", Vector3(10, -20, 35))
+	Props.obox(g, Vector3(-0.3, 1.0, WRECK_BULK_Z - 0.05), Vector3(0.7, 0.08, 0.45), "rust", Vector3(0, 0, -18))
+	for bx: float in [-0.75, 0.75]:
+		Props.obox(g, Vector3(bx * 1.25, 1.3, WRECK_BULK_Z + 0.12), Vector3(0.75, 2.2, 0.06), "wreck")
+	Props.obox(g, Vector3(0, 2.2, WRECK_BULK_Z + 0.12), Vector3(1.0, 0.3, 0.06), "wreck")
+	# a dim light inside: the hold's fire through the cargo door
+	var ll: OmniLight3D = OmniLight3D.new()
+	ll.name = "CabinGlow"
+	ll.light_color = Color(1.0, 0.5, 0.2)
+	ll.light_energy = 0.7
+	ll.omni_range = 5.5
+	ll.shadow_enabled = false
+	ll.position = Vector3(0.3, 1.9, 0.5)
+	g.add_child(ll)
+
+
 func _dress_wreck() -> void:
 	var w: Node3D = Props.group(dress, "WreckDress", Vector3(46, 0, 6), 28.0)
 	w.rotation.z = deg_to_rad(-8)
-	Props.cyl(w, Vector3(0, 1.3, -0.5), 1.35, 12.5, "wreck", Vector3(90, 0, 0))     # fuselage
-	Props.ball(w, Vector3(0, 1.5, -6.6), Vector3(2.4, 2.2, 2.6), "wreck")             # nose
-	Props.block(w, Vector3(-0.9, 2.2, -6.4), Vector3(0.9, 2.7, -5.5), "char")         # smashed cockpit
+	_dress_wreck_hull(w)   # T-126: a panelled shell you can walk into (was a solid cylinder and a nose ball)
 	Props.obox(w, Vector3(-4.5, 0.6, 0), Vector3(9.0, 0.28, 3.0), "wreck", Vector3(0, 0, 4))
 	Props.obox(w, Vector3(3.8, 0.4, 0.4), Vector3(6.5, 0.28, 2.8), "wreck", Vector3(0, 12, -9))   # snapped wing
 	for s: float in [-1.0, 1.0]:
@@ -3749,6 +3928,10 @@ func build_gameplay() -> void:
 		ammo.position = ab2[1]
 		ammo.rotation.y = deg_to_rad(float(ab2[2]))
 		gameplay.add_child(ammo)
+	# T-126: Flt Lt Selwyn, pinned in GRAVELIGHT ONE's cockpit (TrappedPilot), facing out of the nose
+	var pilot: Node3D = _scripted(Node3D.new(), "res://gravelight/world/trapped_pilot.gd", "TrappedPilot", {})
+	pilot.transform = wreck_xf() * Transform3D(Basis.IDENTITY, WRECK_PILOT_SEAT)
+	gameplay.add_child(pilot)
 	var bench: Node3D = _scripted(Node3D.new(), "res://gravelight/world/armorers_bench.gd", "ArmorersBench", {})
 	bench.position = ARMORERS_BENCH[0]
 	bench.rotation.y = deg_to_rad(float(ARMORERS_BENCH[1]))

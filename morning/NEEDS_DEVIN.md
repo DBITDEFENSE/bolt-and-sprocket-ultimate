@@ -93,3 +93,10 @@ Optional too: a stick grenade (Stielhandgranate 24 by dsamuta).
 The fences round the barn's yard (and the roadside fence) were never drawn since 2026-10-25: their drawings were
 lost when the map was generated headless. They are drawn now, as taller corral fences where they block you. I could
 not render it here: please walk out of the stable's south door and check the yard fences show up and look right.
+
+## T-126 (2026-10-28): look at the plane wreck and Selwyn in game
+GRAVELIGHT ONE is hollow now: walk in by the cargo door or the torn hole on the starboard (low) side. The pilot,
+Flt Lt Selwyn, is pinned in the cockpit: stand in the cabin at the wrecked doorway and hold the interact key to hand
+him a second gun (not your only one); he shoots zombies ahead of the nose and asks for ammo when dry. I tested it
+headless only: please check the hull reads well from inside and out, that Selwyn sits right in his seat and turns
+to his targets, and that his gun sits in his hands. The minimap's wreck outline is unchanged (no re-bake needed).

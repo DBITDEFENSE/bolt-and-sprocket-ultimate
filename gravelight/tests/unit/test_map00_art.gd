@@ -8,9 +8,10 @@ const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 ## SHA-1 over the navigation mesh's vertices and polygons (var_to_bytes), from master ab098f8, the bake T-093 began
 ## with. A change here means gameplay geometry moved: the art pass must never do that (UPDATE_05 section 0.4).
 ## Re-baked by T-120: the stair-rail panel no longer reaches the taproom floor beside the bar.
+## Re-baked by T-126: GRAVELIGHT ONE's hull is hollow (the cabin, its two starboard openings).
 const NAV_FP: Dictionary = {
-	"Navigation": "ff34f4b6c285eeb611087b70b2afd28b0cf8dc32",
-	"NavigationBreachOpen": "3dc9c7487d098f6f534bbe86bf652c2939202294",
+	"Navigation": "58a8427ecf85274b8aeb0f297872aabeb788800d",
+	"NavigationBreachOpen": "d5c68d300d9b6b6f7b4f6350460ec39a4f85712c",
 }
 ## Library-prop triangles within CAM_RADIUS of any capture camera (data/gravelight/capture_cams.json).
 const CAM_RADIUS: float = 12.0
@@ -43,7 +44,7 @@ func test_navmesh_unchanged_by_the_art_pass() -> void:
 		assert_not_null(r, rn)
 		if r == null:
 			continue
-		assert_eq(nav_fingerprint(r.navigation_mesh), str(NAV_FP[rn]), "%s is byte-for-byte the T-120 bake (T-093 art pass; T-106 dropped furniture-top islands; T-120 the bar walkway)" % rn)
+		assert_eq(nav_fingerprint(r.navigation_mesh), str(NAV_FP[rn]), "%s is byte-for-byte the T-126 bake (T-093 art pass; T-106 dropped furniture-top islands; T-120 the bar walkway; T-126 the wreck's cabin)" % rn)
 
 
 ## T-120: the walkway between the bar's west end and the stairwell wall (the way to the Old Cellar door) is open.

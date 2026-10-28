@@ -1146,13 +1146,14 @@ hills (it mirrors GRAVELIGHT ONE's own fall). One random standing survivor.
 - `WRN_SKY_PLANE_DOWN_02`: "No violet light this time. Only flak. ...That is almost a comfort."
 
 **`WRECK_PILOT`**: the first time a survivor gets a clear look at GRAVELIGHT ONE's open cockpit (within ~27 m, looking at
-it). Dutch says it if he is in the match; otherwise whoever is. The pilots died in the crash (LORE.md §9.2); the seat is
-empty. **[OPEN]**: where Flight Lieutenant Selwyn went is not answered on Map 0.
+it). Dutch says it if he is in the match; otherwise whoever is. T-126: Flight Lieutenant Selwyn is alive in that seat, pinned
+under the instrument panel (STORY_CHANGES 2026-10-28; he was the "[OPEN]: where did Selwyn go" before). Dutch had found
+no pulse after the crash. The line also tells the squad they can arm him (TrappedPilot).
 
-- `DUT_WRECK_PILOT_01`: "Pilot's seat's empty. Selwyn was in that seat. I checked him for a pulse myself. ...So who unbuckled him?"
-- `PEG_WRECK_PILOT_01`: "The pilot's seat is empty. Dutch swore Selwyn was dead in it, and Dutch doesn't get that sort of thing wrong."
-- `DEA_WRECK_PILOT_01`: "Straps on the pilot's seat are open. Not torn. Unbuckled. Selwyn didn't walk out of there on his own."
-- `WRN_WRECK_PILOT_01`: "The pilot's seat. Empty. No tracks in the snow around the nose. Write that down. ...I am writing that down."
+- `DUT_WRECK_PILOT_01`: "Selwyn? ...He's breathing. I checked him for a pulse myself, I'd have sworn. Hang on, Lieutenant. We'll get you something to shoot."
+- `PEG_WRECK_PILOT_01`: "The pilot's alive. Dutch swore Selwyn was dead in that seat. The cold must have slowed his heart. ...Thank God for the cold."
+- `DEA_WRECK_PILOT_01`: "Lord, Selwyn's moving. He's pinned under the panel. We can't lift that, but we can put a rifle in his hands."
+- `WRN_WRECK_PILOT_01`: "The pilot. He's alive. Legs trapped under the panel. Write that down: Selwyn, alive. ...I am writing that down."
 
 **`MIDNIGHT`**: the church on the far hill rings twelve during round 9: it is the twenty-fourth, Christmas Eve (Wigilia).
 
@@ -2693,3 +2694,27 @@ The Operator is local here for the first time: it is in the walls. Its slips run
 | `PEG_M4D_SMILE_01` | PEG | "That is our rocket's work. Fasbender aimed it. I signed for the fuel. I find I'm not sorry. Note that down against me." |
 | `DEA_M4D_SMILE_01` | DEA | "Lord, that's a long way to come to look at a scar. ...It's smiling. All right. Somebody up here was glad to see us." |
 | `WRN_M4D_SMILE_01` | WRN | "A crack. Twelve kilometres, maybe more. I can't count that. ...I'll write 'one'." |
+
+### 14.15 Map 0 — Flt Lt Harry Selwyn, GRAVELIGHT ONE's pilot (`SEL`, tier 1; positional from the cockpit, subtitled "FLT LT SELWYN"; T-126)
+
+Pinned in the crushed cockpit by the instrument panel, alive (STORY_CHANGES: the pilots no longer both die). Clipped,
+dry, in pain, polite about it. CALL while he is unarmed and someone is near; GIVEN / SWAP when handed a gun; DRY when
+he runs out; THANKS_AMMO when passed ammo; KILL now and then. Cooldowns in data/gravelight/pilot.json.
+
+| ID | Speaker | Line |
+|---|---|---|
+| `SEL_CALL_01` | SEL | "Over here! In the cockpit! My legs are caught under the panel. I can't get out, but I can still shoot." |
+| `SEL_CALL_02` | SEL | "Hello? Is someone in the cabin? Hand me a rifle and I'll keep the nose clear." |
+| `SEL_CALL_03` | SEL | "Selwyn. Flight Lieutenant. I'm stuck fast in here. Give me something that shoots." |
+| `SEL_GIVEN_01` | SEL | "Right. I've got the front. You mind the doors." |
+| `SEL_GIVEN_02` | SEL | "Thank you. Now they'll have to come through me." |
+| `SEL_GIVEN_03` | SEL | "Lovely. Safety's off." |
+| `SEL_SWAP_01` | SEL | "Here, have yours back. I'll take this one." |
+| `SEL_SWAP_02` | SEL | "Fair swap. Look after the old girl." |
+| `SEL_THANKS_AMMO_01` | SEL | "That's the stuff. Back in business." |
+| `SEL_THANKS_AMMO_02` | SEL | "Ammunition. Bless you." |
+| `SEL_DRY_01` | SEL | "I'm dry! I need ammunition up here!" |
+| `SEL_DRY_02` | SEL | "Out! Somebody bring me rounds!" |
+| `SEL_KILL_01` | SEL | "Got him." |
+| `SEL_KILL_02` | SEL | "That one's down." |
+| `SEL_KILL_03` | SEL | "Another one for the logbook." |

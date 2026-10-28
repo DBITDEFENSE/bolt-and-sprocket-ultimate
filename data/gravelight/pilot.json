@@ -1,0 +1,60 @@
+{
+  "_doc": "T-126: Flt Lt Harry Selwyn, GRAVELIGHT ONE's pilot, pinned in the crushed cockpit of Map 0's wreck (gravelight/world/trapped_pilot.gd). Hand him a gun from the cabin and he fights from his seat. range_m: how far he engages; max_yaw_deg: how far he can twist either way from straight ahead; fire_cone_deg: how close his aim must be before he fires; turn_rad_s: how fast he turns; rate_mult / rate_cap: his fire rate from the gun's rpm (a wounded man), capped; spread_mult / spread_add_deg: his cone, from the gun's aimed spread; head_chance: the share of shots he aims at the head; reload_mult: his reload time from the gun's; refused_classes: guns he won't take (also anything with a projectile or a stream); hold_s: the hold to hand over a gun or ammo; eye_y: his eye over the cockpit floor (line-of-sight checks); call_every_s / call_within_m: while unarmed he calls to anyone in the wreck this often; kill_line_every: a line every n kills; look: his PatronBody colours (linear-ish RGB 0..1, as map00_opening.json patrons). display: his subtitle name; line_cooldown_s: per category, the least gap between two of his lines (lines.json speaker SEL).",
+  "range_m": 32.0,
+  "max_yaw_deg": 100.0,
+  "fire_cone_deg": 7.0,
+  "turn_rad_s": 3.0,
+  "think_s": 0.2,
+  "rate_mult": 0.7,
+  "rate_cap": 550.0,
+  "spread_mult": 1.5,
+  "spread_add_deg": 0.8,
+  "head_chance": 0.25,
+  "reload_mult": 1.4,
+  "refused_classes": [
+    "wonder"
+  ],
+  "hold_s": 0.6,
+  "eye_y": 1.3,
+  "call_every_s": 50.0,
+  "call_within_m": 14.0,
+  "kill_line_every": 6,
+  "look": {
+    "jacket": [
+      0.29,
+      0.204,
+      0.137
+    ],
+    "trousers": [
+      0.231,
+      0.227,
+      0.173
+    ],
+    "skin": [
+      0.847,
+      0.706,
+      0.604
+    ],
+    "head": [
+      0.227,
+      0.165,
+      0.11
+    ],
+    "scarf": [
+      0.851,
+      0.824,
+      0.753
+    ],
+    "headgear": "cap",
+    "build": 1.0
+  },
+  "display": "FLT LT SELWYN",
+  "line_cooldown_s": {
+    "CALL": 45.0,
+    "GIVEN": 3.0,
+    "SWAP": 3.0,
+    "THANKS_AMMO": 10.0,
+    "DRY": 20.0,
+    "KILL": 25.0
+  }
+}

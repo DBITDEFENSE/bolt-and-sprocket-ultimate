@@ -286,8 +286,36 @@ static func icicles(parent: Node3D, a: Vector3, b: Vector3, seed_v: int, spacing
 	parent.add_child(mmi)
 
 
-## The transport's open cockpit: the pilot's seat (empty, straps hanging loose), the control yoke, the shattered
-## canopy frame. In the wreck's local frame (see gen_map00 _dress_wreck).
+## T-126: the crushed cockpit where Flt Lt Selwyn sits pinned (TrappedPilot sits in the left seat at gen_map00
+## WRECK_PILOT_SEAT): his seat on the cockpit floor, the instrument panel driven down across his legs, the bent
+## control column, the co-pilot's seat torn loose and empty, the throttle quadrant, maps in the footwell. In the
+## wreck's local frame (see gen_map00 _dress_wreck_hull).
+static func pinned_cockpit(w: Node3D) -> void:
+	var c: Node3D = Props.group(w, "Cockpit", Vector3(-0.35, 0.2, -5.75), 0.0)
+	Props.block(c, Vector3(-0.27, 0.38, -0.24), Vector3(0.27, 0.46, 0.26), "rust")                   # seat pan
+	Props.obox(c, Vector3(0, 0.82, 0.3), Vector3(0.54, 0.78, 0.07), "paint:#3b3a2c", Vector3(-10, 0, 0))   # seat back
+	Props.obox(c, Vector3(0, 0.95, 0.26), Vector3(0.42, 0.4, 0.04), "paint:#4a3a26", Vector3(-10, 0, 0))   # the leather pad
+	for lx: float in [-0.22, 0.22]:
+		Props.block(c, Vector3(lx - 0.03, 0.0, -0.2), Vector3(lx + 0.03, 0.38, 0.2), "iron")       # the seat's legs
+	# the panel, driven down and back across his knees (it pins him), its dials dark, wiring hanging out
+	Props.obox(c, Vector3(0.2, 0.78, -0.62), Vector3(1.5, 0.48, 0.12), "paint:#262622", Vector3(-38, 6, -7))
+	for k: int in 5:
+		Props.cyl(c, Vector3(-0.35 + k * 0.18, 0.84, -0.66), 0.045, 0.02, "iron", Vector3(52, 0, 0))
+	for k2: int in 4:
+		Props.cyl(c, Vector3(-0.2 + k2 * 0.15, 0.45, -0.5), 0.006, 0.45, "rope", Vector3(15 + k2 * 6, 0, k2 * 9))
+	Props.cyl(c, Vector3(0.05, 0.62, -0.45), 0.03, 0.6, "iron", Vector3(-55, 0, 14))                # control column, bent
+	Props.obox(c, Vector3(0.12, 0.84, -0.66), Vector3(0.38, 0.05, 0.05), "iron", Vector3(0, 0, 21))  # the yoke
+	# the co-pilot's seat, torn off its rails and on its side, empty; the throttles between them
+	Props.obox(c, Vector3(0.95, 0.33, 0.05), Vector3(0.52, 0.08, 0.5), "rust", Vector3(0, 25, 72))
+	Props.obox(c, Vector3(1.05, 0.62, 0.25), Vector3(0.5, 0.7, 0.07), "paint:#3b3a2c", Vector3(15, 25, 70))
+	Props.block(c, Vector3(0.42, 0.3, -0.35), Vector3(0.6, 0.62, 0.05), "iron")
+	for t: int in 3:
+		Props.obox(c, Vector3(0.45 + t * 0.06, 0.72, -0.2), Vector3(0.025, 0.2, 0.025), "rust", Vector3(-25, 0, 0))
+	Props.obox(c, Vector3(-0.15, 0.03, 0.55), Vector3(0.45, 0.01, 0.32), "paint:#cfc6a8", Vector3(0, 18, 0))   # a chart on the floor
+
+
+## The transport's open cockpit (before T-126): the pilot's seat empty, straps hanging loose, the control yoke, the
+## shattered canopy frame. In the wreck's local frame. Unused on Map 0 since the pilot sits pinned there.
 static func empty_cockpit(w: Node3D) -> void:
 	var c: Node3D = Props.group(w, "Cockpit", Vector3(-0.45, 1.85, -5.6), 0.0)
 	Props.block(c, Vector3(-0.28, 0.0, -0.25), Vector3(0.28, 0.1, 0.25), "rust")            # seat pan

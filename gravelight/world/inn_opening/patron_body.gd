@@ -56,6 +56,15 @@ var person: PersonRig = null
 var _legs_d: Array = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
 var _hand_t: Array = [null, null]
 var _poles: Array = [Vector3(-0.6, -1.0, 0.3), Vector3(0.6, -1.0, 0.3)]
+## T-126 (TrappedPilot): a seated aim. aim_upper_only keeps the legs out of the aim blend (he sits pinned); the
+## owner drives aim_weight (0..1, over the pose's own blend), aim_yaw / aim_pitch (radians, the chest and head turn
+## to the target) and kick() (a shot's recoil). hold_gun() puts a weapon model in his hands.
+var aim_upper_only: bool = false
+var aim_weight: float = 0.0
+var aim_yaw: float = 0.0
+var aim_pitch: float = 0.0
+var _kick: float = 0.0
+var _held_gun: Node3D = null
 
 
 ## Builds the body from a patron row (map00_opening.json patrons[]).
@@ -268,6 +277,24 @@ func show_rifle(on: bool) -> void:
 		_rifle.visible = on
 
 
+## T-126: a weapon model (WeaponModels.build, -Z forward) shouldered where show_rifle's rifle sits; null clears it.
+func hold_gun(model: Node3D) -> void:
+	if _held_gun != null and is_instance_valid(_held_gun):
+		_held_gun.queue_free()
+	_held_gun = model
+	if model == null:
+		return
+	model.position = Vector3(0.11, 0.33, -0.12)
+	_chest.add_child(model)
+	for n: Node in model.find_children("*", "MeshInstance3D", true, false):
+		(n as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
+## A shot's recoil: the shoulders rock back.
+func kick() -> void:
+	_kick = 1.0
+
+
 # ================================================================== posing
 
 func _process(delta: float) -> void:
@@ -285,9 +312,12 @@ func _process(delta: float) -> void:
 		if _fall_k >= 1.0:
 			pose = &"dead"
 	_flinch = move_toward(_flinch, 0.0, delta * 1.2)
+	_kick = move_toward(_kick, 0.0, delta * 6.0)
 	for k: StringName in [&"sit", &"lean", &"work", &"panic", &"run", &"push", &"struggle", &"clutch", &"cower", &"aim"]:
 		var want: float = 1.0 if pose == k else 0.0
 		_blend[k] = move_toward(float(_blend.get(k, 1.0 if pose == k else 0.0)), want, delta * 5.0)
+	if aim_upper_only:
+		_blend[&"aim"] = maxf(float(_blend[&"aim"]), aim_weight)
 	_pose_body(delta)
 
 
@@ -325,14 +355,14 @@ func _pose_body(delta: float) -> void:
 	_hips.position = Vector3(0, hip_y, lerpf(0.0, 0.08, b_sit) + 0.12 * b_cower)
 	var chest_x: float = -0.32 * b_run - 0.12 * b_sit - 0.17 * b_lean - 0.2 * b_work + 0.25 * b_strug - 0.3 * b_clutch - 0.15 * b_push
 	chest_x += -0.42 * b_cower - 0.25 * _flinch * b_cower + tremble - 0.04 * b_aim
-	chest_x += 0.35 * _jolt + twitch
+	chest_x += 0.35 * _jolt + twitch + (aim_pitch * 0.6 + 0.12 * _kick) * b_aim
 	_chest.rotation.x = chest_x
-	_chest.rotation.y = sin(ph) * 0.1 * swing + 0.25 * b_strug * sin(_t * 9.0) + 0.22 * b_aim
+	_chest.rotation.y = sin(ph) * 0.1 * swing + 0.25 * b_strug * sin(_t * 9.0) + (0.22 + aim_yaw * 0.8) * b_aim
 	_chest.rotation.z = 0.12 * b_lean + 0.08 * b_clutch
 	# head: looking back over the shoulder now and then while running; down while clutching; shaking in a panic
 	var look_back: float = b_run * clampf(sin(_t * 0.9 + 1.0) * 2.0 - 1.2, 0.0, 1.0)
 	_head.rotation = Vector3(-0.1 * b_sit - 0.4 * b_clutch - 0.35 * b_cower * (1.0 + _flinch) + 0.05 * b_aim,
-		1.4 * look_back + 0.25 * b_panic * sin(_t * 7.0) + 0.3 * b_cower * sin(_t * 0.7) * (1.0 - _flinch) - 0.2 * b_aim, 0.0)
+		1.4 * look_back + 0.25 * b_panic * sin(_t * 7.0) + 0.3 * b_cower * sin(_t * 0.7) * (1.0 - _flinch) + (-0.2 + aim_yaw * 0.2) * b_aim, 0.0)
 	# --- legs (hip -> knee -> ankle in pivot space)
 	var stance: float = 0.1 * _build
 	for side: int in [0, 1]:
@@ -348,7 +378,8 @@ func _pose_body(delta: float) -> void:
 		knee_a = lerpf(knee_a, -0.5, b_strug * 0.7)
 		thigh_a = lerpf(thigh_a, 2.15 + (0.05 if side == 0 else -0.05), b_cower)   # knees drawn up
 		knee_a = lerpf(knee_a, -2.4, b_cower)
-		thigh_a = lerpf(thigh_a, 0.12 if side == 0 else -0.08, b_aim)          # a braced stance
+		if not aim_upper_only:
+			thigh_a = lerpf(thigh_a, 0.12 if side == 0 else -0.08, b_aim)          # a braced stance
 		if pose == &"dead" or pose == &"fall":
 			thigh_a = lerpf(thigh_a, (-0.3 if side == 0 else 0.5), fk)
 			knee_a = lerpf(knee_a, (-0.6 if side == 0 else -0.3), fk)

@@ -72,3 +72,8 @@ Every change to an **existing** line from the original web build is logged here 
 - The saga's ending: the squad cancels. On Earth the dead stop walking. The Operator's last line is unscripted. Darkmatter records the event as "not a cancellation" (FINEPRINT_LORE's classification stands; the squad never learns that).
 - New fictional people: Wittkamp, Riedl, Beck, Jette Maurer, Lionel Hale (the "Hale, L." consignee of Totenhafen), Dolores Marchetti, Calvin Rourke. Sable Vantage attends through a machine and stays unnamed.
 - The Allies had their own Nachtglas program (Groom Lake), fed by Peg's samples, Res's 1943 vial, the Morgenrot crate and a second probe (TM-SOL3-002, 11 Aug 1944). Peg's canon choice is to refuse Hale and resign.
+
+## 2026-10-28 (T-126): GRAVELIGHT ONE's pilot lives (the owner: "have a pilot trapped in there that you can give a gun")
+- Changed canon (LORE section 9.2 and the 23 Dec 1944 timeline row): old "The pilots died." / "The pilots die." -> new: the co-pilot died; **Flt Lt Harry Selwyn** survived the glide pinned in his seat, his legs caught under the instrument panel. He can't be freed on Map 0; he fights from the cockpit with any gun the squad hands him. Why: the owner's request for a trapped pilot who turns into a turret.
+- His fate after Map 0 is **[OPEN]** (he is not carried to Kaltenbrunn). The flight log (`INT_M0_05`) is still his last entry before the crash; nothing in it changes.
+- New lines, not changes: `SEL_*` (VO_SCRIPT section 14.15).
