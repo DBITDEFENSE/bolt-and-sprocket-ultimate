@@ -1,6 +1,6 @@
 # PROGRESS
 
-RESUME HERE: 2026-10-28 T-124..T-127 merged to master: bots keep their Crucible gun; Map 0 no invisible walls outside the barn (fence MultiMeshes kept, shot-solid only to the rails); GRAVELIGHT ONE hollow with Flt Lt Selwyn pinned in the cockpit as a turret; Jakub can be sent for a tonic on the talker's Scrip. Open: a rendered look at the yard fences, the wreck and Selwyn; bots never arm Selwyn or send Jakub for tonics; Map 1 regen picks up its bottle shelves; a before/after bot-mode soak (not run). Next work order starts from master.
+RESUME HERE: 2026-10-28 UPDATE 08 in progress on branch u08 (work order docs/work_orders/UPDATE_08.md). T-124..T-128 merged to master. U08 step 1: baseline soaks running (logs .smoke_logs/u08/base_*.log, CSVs logs/ai_runs/); BotMetrics now logs scrip per round, perk tiers, egg steps. Next: write docs/QA_REPORT_U08.md baseline, then section 2 tier IV perks, section 3 late bot kit, section 4 eggs (survey: map01 requiem blockers = no player_bot egg block for map01, s9 heartstorm start player-only, s4 risky+no Foreman tactics, s7 crate needs order, s1 needs human within 22 m; map02 has no egg; map04 s12b needs undefined bot_knowledge power/burn).
 
 ## UPDATE 07, 2026-10-26: Map 4 Fernflug + QA pass (DONE, merged to master)
 

@@ -95,6 +95,9 @@ func setup(map_root: MapRoot, scenario_name: String, id: String, seed_value: int
 	GLBus.purchase_made.connect(_on_purchase)
 	GLBus.round_started.connect(_on_round_started)
 	GLBus.game_over.connect(_on_game_over)
+	PerkManager.perk_tier_changed.connect(_on_perk_tier)
+	GLBus.quest_step_completed.connect(_on_step_done)
+	GLBus.quest_step_failed.connect(_on_step_failed)
 	_on_round_started(maxi(1, RoundManager.current_round), false)
 
 
@@ -102,7 +105,8 @@ func _exit_tree() -> void:
 	if _active == self:
 		_active = null
 	for pair: Array in [[GLBus.enemy_killed, _on_killed], [GLBus.player_downed, _on_downed], [GLBus.player_revived, _on_revived],
-			[GLBus.purchase_made, _on_purchase], [GLBus.round_started, _on_round_started], [GLBus.game_over, _on_game_over]]:
+			[GLBus.purchase_made, _on_purchase], [GLBus.round_started, _on_round_started], [GLBus.game_over, _on_game_over],
+			[PerkManager.perk_tier_changed, _on_perk_tier], [GLBus.quest_step_completed, _on_step_done], [GLBus.quest_step_failed, _on_step_failed]]:
 		var sig: Signal = pair[0]
 		if sig.is_connected(pair[1]):
 			sig.disconnect(pair[1])
@@ -542,6 +546,24 @@ func _on_round_started(r: int, _special: bool) -> void:
 		(rounds[r - 1] as Dictionary)["t1"] = t
 	_round_row(r)
 	round_reached = maxi(round_reached, r)
+	for pid: int in stats.keys():   # U08: the Scrip curve (each player's purse at every round's start)
+		_event(pid, "scrip", float(Economy.get_scrip(pid)) if Economy.has_account(pid) else -1.0, "")
+
+
+## U08: the perk-tier timeline (a tier bought, or kept / lost) and the egg's steps, as events.
+func _on_perk_tier(pid: int, perk_id: StringName, tier: int) -> void:
+	if not finished:
+		_event(pid, "perk_tier", float(tier), String(perk_id))
+
+
+func _on_step_done(quest_id: StringName, step_id: StringName) -> void:
+	if not finished:
+		_event(0, "egg_step", 1.0, "%s/%s" % [quest_id, step_id])
+
+
+func _on_step_failed(quest_id: StringName, step_id: StringName, reason: StringName) -> void:
+	if not finished:
+		_event(0, "egg_fail", 0.0, "%s/%s:%s" % [quest_id, step_id, reason])
 
 
 func _on_game_over(_stats: Dictionary) -> void:

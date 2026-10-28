@@ -1962,6 +1962,21 @@ learns what a plan or a patent is. The ids carry `SQ6` so the bake can run them 
 - `OPR_SQ6_CRUCIBLE_FIRST_01`: "The furnace is lit! Patent pending, and pending, and {pending}."
 - `OPR_SQ6_CRUCIBLE_FIRST_02`: "Our cooling plant is open for business! It has never cooled {anything}."
 
+**U08 (T-129) tier IV, "perma perks"**: `PERK_TIER4`: a survivor makes a tonic permanent (PerkManager.set_tier at
+the permanent tier; forced, every time); the Operator on the match's first (`PERK_TIER4`). Bake alone with
+`--only=SQ8`.
+- `OPR_SQ8_PERK_TIER4_01`: "Congratulations! You've been enrolled in our Lifetime Measure. There is no {cancellation}."
+- `OPR_SQ8_PERK_TIER4_02`: "The fourth chamber! A permanent arrangement. We do so love {permanence}."
+- `DUT_SQ8_PERK_TIER4_01`: "This one's mine for good. Whatever's in it, it's staying in."
+- `DUT_SQ8_PERK_TIER4_02`: "Bottle number four. Nobody's taking this one off me."
+- `PEG_SQ8_PERK_TIER4_01`: "This one's mine for good. I'll explain it to London later."
+- `PEG_SQ8_PERK_TIER4_02`: "A permanent measure. I'd file a complaint if it didn't work so well."
+- `DEA_SQ8_PERK_TIER4_01`: "This one's mine for good. Lord, keep it that way."
+- `DEA_SQ8_PERK_TIER4_02`: "Fourth glass. That one went all the way down. I can feel it in my bones."
+- `WRN_SQ8_PERK_TIER4_01`: "This one's mine for good. I'm writing that down so I believe it."
+- `WRN_SQ8_PERK_TIER4_02`: "Four measures. It doesn't wear off. One fewer thing to count."
+- `JAK_SQ8_PERK_TIER4_01`: "This one stays with me. Like the cold. Like the songs."
+
 **Dutch (`DUT`)**
 - `DUT_SQ6_PERK_TIER_01`: "Second helping. Tastes worse. Works better. That's the Army in a bottle."
 - `DUT_SQ6_PERK_TIER_02`: "The machine gave me the strong stuff. I don't like that it knew I was ready."

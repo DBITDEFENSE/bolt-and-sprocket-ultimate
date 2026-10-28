@@ -619,8 +619,10 @@ func fire(w: WeaponInstance) -> void:
 		var limb: StringName = StringName(h["limb"])
 		zz.last_hit_bone = str(h.get("bone", ""))
 		var killed: bool = zz.take_damage(float(h["dmg"]) * tier_mult, limb, w.id, pid, &"bullet", piercing)
+		if not killed and zz.is_active() and PerkManager.shot_is_shock(pid):
+			zz.force_stagger()   # Trigger Tonic IV
 		if killed:
-			PerkManager.on_bullet_kill(pid, w, limb == &"head")
+			PerkManager.on_bullet_kill(pid, w, limb == &"head", zz.global_position + Vector3.UP * 1.6)
 		if killed and limb == &"head":
 			brain.squad.callout(brain, "HEADSHOT")
 			brain.bonus_event("headshot")
@@ -1002,6 +1004,7 @@ func _tick_reload(delta: float) -> void:
 	_reload_t -= delta
 	if _reload_t > 0.0:
 		return
+	var frac_before: float = 1.0   # T-129: what was left in the mag (Trigger Tonic IV)
 	if _reload_per_round:
 		var add: int = mini(1, w.reserve)
 		w.mag += add
@@ -1010,12 +1013,13 @@ func _tick_reload(delta: float) -> void:
 			_reload_t = w.f("reload_partial", 0.5) * _reload_mult(w)
 			return
 	else:
+		frac_before = float(w.mag) / float(maxi(1, w.mag_size()))
 		var take: int = mini(w.mag_size() - w.mag, w.reserve)
 		w.mag += take
 		w.reserve -= take
 	reloading = false
 	_reload_per_round = false
-	PerkManager.reload_finished(player.player_id)
+	PerkManager.reload_finished(player.player_id, frac_before)
 	AudioDirector.play_3d("reload_end", eye(), -9.0)
 
 

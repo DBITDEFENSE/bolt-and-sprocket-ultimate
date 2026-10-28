@@ -5028,6 +5028,34 @@
    "phonemes": "stˈæɾɪk lˈIk ðæt kˈɛɹiz. stˈɑɹt əɡˈɛn, lˈO tə hˈI.",
    "source": "tts"
   },
+  "DEA_SQ8_PERK_TIER4_01": {
+   "line": "DEA_SQ8_PERK_TIER4_01",
+   "speaker": "DEA",
+   "hash": "f00d0ce5dd41b741",
+   "path": "res://gravelight/audio/vo/dea/DEA_SQ8_PERK_TIER4_01.ogg",
+   "format": "ogg",
+   "duration": 3.415,
+   "voice": "am_michael:0.7,am_puck:0.3",
+   "engine": "kokoro",
+   "source": "tts",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "ðˌɪs wˈʌnz mˈIn fɔɹ ɡˈʊd. lˈɔɹd, kˈip ɪt ðæt wˈA."
+  },
+  "DEA_SQ8_PERK_TIER4_02": {
+   "line": "DEA_SQ8_PERK_TIER4_02",
+   "speaker": "DEA",
+   "hash": "7d1dc7abc88fdd66",
+   "path": "res://gravelight/audio/vo/dea/DEA_SQ8_PERK_TIER4_02.ogg",
+   "format": "ogg",
+   "duration": 4.537,
+   "voice": "am_michael:0.7,am_puck:0.3",
+   "engine": "kokoro",
+   "source": "tts",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "fˈɔɹθ ɡlˈæs. ðˌæt wˈʌn wˈɛnt ˈɔl ðə wˈA dˌWn. ˌI kæn fˈil ɪt ɪn mI bˈOnz."
+  },
   "DEA_STREAK_01": {
    "line": "DEA_STREAK_01",
    "speaker": "DEA",
@@ -8318,6 +8346,34 @@
    "phonemes": "ɹˈɔŋ wˈʌn. ðˌA hˈɜɹd ɪt. bˈæk tə ðə fˈɜɹst nˈʌmbəɹ.",
    "source": "tts"
   },
+  "DUT_SQ8_PERK_TIER4_01": {
+   "line": "DUT_SQ8_PERK_TIER4_01",
+   "speaker": "DUT",
+   "hash": "1092c9172e030591",
+   "path": "res://gravelight/audio/vo/dut/DUT_SQ8_PERK_TIER4_01.ogg",
+   "format": "ogg",
+   "duration": 3.666,
+   "voice": "am_onyx:0.55,am_fenrir:0.45",
+   "engine": "kokoro",
+   "source": "tts",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "ðˌɪs wˈʌnz mˈIn fɔɹ ɡˈʊd. wəɾˈɛvəɹz ɪn ɪt, ɪts stˈAɪŋ ˈɪn."
+  },
+  "DUT_SQ8_PERK_TIER4_02": {
+   "line": "DUT_SQ8_PERK_TIER4_02",
+   "speaker": "DUT",
+   "hash": "5a1a92781bde345c",
+   "path": "res://gravelight/audio/vo/dut/DUT_SQ8_PERK_TIER4_02.ogg",
+   "format": "ogg",
+   "duration": 3.469,
+   "voice": "am_onyx:0.55,am_fenrir:0.45",
+   "engine": "kokoro",
+   "source": "tts",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "bˈɑɾəl nˈʌmbəɹ fˈɔɹ. nˈObˌɑdiz tˈAkɪŋ ðɪs wˈʌn ˈɔf mˌi."
+  },
   "DUT_STREAK_01": {
    "line": "DUT_STREAK_01",
    "speaker": "DUT",
@@ -11027,6 +11083,20 @@
    "phonemes": "dˌat nˈYs. ˌin də mˈIn, dat nˈYs mˈɛnt ɾˈan. tɾˈI əɡˈɛn, fɾɔm də fˈɛɾst.",
    "source": "tts"
   },
+  "JAK_SQ8_PERK_TIER4_01": {
+   "line": "JAK_SQ8_PERK_TIER4_01",
+   "speaker": "JAK",
+   "hash": "dfd5a67755ea58f2",
+   "path": "res://gravelight/audio/vo/jak/JAK_SQ8_PERK_TIER4_01.ogg",
+   "format": "ogg",
+   "duration": 4.457,
+   "voice": "bm_george:0.6,bm_lewis:0.4",
+   "engine": "kokoro",
+   "source": "tts",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "dˌis wˈan stˈɛjs wit mˌi. lˈIk də kˈɔlt. lˈIk də sˈɔŋs."
+  },
   "JAK_TALK_ASK_01": {
    "line": "JAK_TALK_ASK_01",
    "speaker": "JAK",
@@ -13580,6 +13650,30 @@
    "engine": "onecore",
    "chain": "tannoy",
    "source": "tts"
+  },
+  "OPR_SQ8_PERK_TIER4_01": {
+   "line": "OPR_SQ8_PERK_TIER4_01",
+   "speaker": "OPR",
+   "hash": "5486e0fa672a99a7",
+   "path": "res://gravelight/audio/vo/opr/OPR_SQ8_PERK_TIER4_01.ogg",
+   "format": "ogg",
+   "duration": 5.865,
+   "voice": "Mark",
+   "engine": "onecore",
+   "source": "tts",
+   "chain": "tannoy"
+  },
+  "OPR_SQ8_PERK_TIER4_02": {
+   "line": "OPR_SQ8_PERK_TIER4_02",
+   "speaker": "OPR",
+   "hash": "56236afc37f9ee8b",
+   "path": "res://gravelight/audio/vo/opr/OPR_SQ8_PERK_TIER4_02.ogg",
+   "format": "ogg",
+   "duration": 5.269,
+   "voice": "Mark",
+   "engine": "onecore",
+   "source": "tts",
+   "chain": "tannoy"
   },
   "OPR_TIDE_FALLING_01": {
    "line": "OPR_TIDE_FALLING_01",
@@ -16854,6 +16948,34 @@
    "lufs": -17.52,
    "phonemes": "ðˌat wɒz lˈWd. əɡˈɛn, fɹɒm ðə fˈɜːst. kˈɛːfʊli.",
    "source": "tts"
+  },
+  "PEG_SQ8_PERK_TIER4_01": {
+   "line": "PEG_SQ8_PERK_TIER4_01",
+   "speaker": "PEG",
+   "hash": "14027633875226bd",
+   "path": "res://gravelight/audio/vo/peg/PEG_SQ8_PERK_TIER4_01.ogg",
+   "format": "ogg",
+   "duration": 3.468,
+   "voice": "bf_emma",
+   "engine": "kokoro",
+   "source": "tts",
+   "delivery": "calm",
+   "lufs": -17.51,
+   "phonemes": "ðˌɪs wˈʌnz mˈIn fɔː ɡˈʊd. ˌIl ɪksplˈAn ɪt tə lˈʌndən lˈAtə."
+  },
+  "PEG_SQ8_PERK_TIER4_02": {
+   "line": "PEG_SQ8_PERK_TIER4_02",
+   "speaker": "PEG",
+   "hash": "dcb8f56cd4bfd218",
+   "path": "res://gravelight/audio/vo/peg/PEG_SQ8_PERK_TIER4_02.ogg",
+   "format": "ogg",
+   "duration": 3.89,
+   "voice": "bf_emma",
+   "engine": "kokoro",
+   "source": "tts",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "ɐ pˈɜːmənənt mˈɛʒə. ˌId fˈIl ɐ kəmplˈAnt ɪf ɪt dˈɪdnt wˈɜːk sˌQ wˈɛl."
   },
   "PEG_STREAK_01": {
    "line": "PEG_STREAK_01",
@@ -21114,6 +21236,34 @@
    "lufs": -17.5,
    "phonemes": "nˈɔ. də fˈɜːst nˈambə. dˈɛn də sˈɛkᵊnd. dˌA hˈɜːd dˈat.",
    "source": "tts"
+  },
+  "WRN_SQ8_PERK_TIER4_01": {
+   "line": "WRN_SQ8_PERK_TIER4_01",
+   "speaker": "WRN",
+   "hash": "8b2a3f822fd70307",
+   "path": "res://gravelight/audio/vo/wrn/WRN_SQ8_PERK_TIER4_01.ogg",
+   "format": "ogg",
+   "duration": 4.06,
+   "voice": "bf_isabella:0.75,bf_lily:0.25",
+   "engine": "kokoro",
+   "source": "tts",
+   "delivery": "calm",
+   "lufs": -17.51,
+   "phonemes": "dˌɪs wˈanz mˈIn fɔː ɡˈʊd. ˌIm ɾˈItɪŋ dat dˌWn sˌɔ ˌI bɪlˈiːv ɪt."
+  },
+  "WRN_SQ8_PERK_TIER4_02": {
+   "line": "WRN_SQ8_PERK_TIER4_02",
+   "speaker": "WRN",
+   "hash": "71141e30de24aa23",
+   "path": "res://gravelight/audio/vo/wrn/WRN_SQ8_PERK_TIER4_02.ogg",
+   "format": "ogg",
+   "duration": 3.646,
+   "voice": "bf_isabella:0.75,bf_lily:0.25",
+   "engine": "kokoro",
+   "source": "tts",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "fˈɔː mˈɛʒəs. ˌɪt dˈazᵊnt wˈɛː ˈɒf. wˈan fjˈuːə tˈɪŋ tə kˈWnt."
   },
   "WRN_STREAK_01": {
    "line": "WRN_STREAK_01",

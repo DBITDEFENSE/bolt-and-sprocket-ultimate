@@ -90,6 +90,8 @@ func test_upgrade_needs_the_perk_power_round_and_order() -> void:
 	RoundManager.current_round = 15
 	assert_eq(PerkManager.upgrade_for(PID, &"ironhide_stout"), &"ok")
 	assert_eq(PerkManager.tier_of(PID, &"ironhide_stout"), 3)
+	assert_eq(PerkManager.can_upgrade(PID, &"ironhide_stout"), &"ok", "U08 (T-129): tier IV is next")
+	PerkManager.set_tier(PID, &"ironhide_stout", 4)
 	assert_eq(PerkManager.can_upgrade(PID, &"ironhide_stout"), &"max")
 
 
@@ -113,7 +115,7 @@ func test_mastery_gate() -> void:
 	assert_eq(PerkManager.can_upgrade(PID, &"hawkeye_brandy"), &"locked", "tier III needs more")
 	PerkManager.add_mastery(&"hawkeye_brandy", PerkManager.mastery_needed(3))
 	assert_eq(PerkManager.can_upgrade(PID, &"hawkeye_brandy"), &"ok")
-	assert_eq(int(PerkManager.unlocked_tiers()["hawkeye_brandy"]), 3)
+	assert_eq(int(PerkManager.unlocked_tiers()["hawkeye_brandy"]), 4, "tier IV unlocks with tier III's mastery (T-129)")
 
 
 func test_tiers_take_no_cap_slot_and_go_with_the_perk() -> void:

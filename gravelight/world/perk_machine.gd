@@ -181,7 +181,31 @@ func _brew_tier(player: Player) -> void:
 	_cab_dispense()
 	get_tree().create_timer(float(GLData.table("perks").get("drink_seconds", 1.2))).timeout.connect(func() -> void:
 		_drinking = false
-		PerkManager.set_tier(pid, perk_id, next))
+		PerkManager.set_tier(pid, perk_id, next)
+		if next >= PerkManager.permanent_tier():
+			_tier4_flourish()
+			Net.mirror(self, &"_tier4_flourish"))
+
+
+## U08 (T-129): a tonic made permanent: the tier IV sting over the jingle, a gold light that swells and fades
+## round the cabinet, and the cabinet's punch (every peer).
+func _tier4_flourish() -> void:
+	AudioDirector.play_3d("perk_tier4_sting", global_position + Vector3.UP * 1.6, 0.0, 0.0)
+	var glow: OmniLight3D = OmniLight3D.new()
+	glow.light_color = Color(1.0, 0.8, 0.35)
+	glow.omni_range = 5.0
+	glow.light_energy = 0.0
+	glow.shadow_enabled = false
+	glow.position = Vector3(0, 1.8, -0.6)
+	add_child(glow)
+	var tw: Tween = create_tween()
+	tw.tween_property(glow, "light_energy", 6.0, 0.25)
+	tw.tween_property(glow, "light_energy", 0.0, 1.4)
+	tw.tween_callback(glow.queue_free)
+	var base: Vector3 = scale
+	var punch: Tween = create_tween()
+	punch.tween_property(self, "scale", base * 1.04, 0.08)
+	punch.tween_property(self, "scale", base, 0.35).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 
 
 # ---------------------------------------------------------------- power / retire
