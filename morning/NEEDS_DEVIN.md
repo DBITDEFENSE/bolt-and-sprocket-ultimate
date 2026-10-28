@@ -100,3 +100,9 @@ Flt Lt Selwyn, is pinned in the cockpit: stand in the cabin at the wrecked doorw
 him a second gun (not your only one); he shoots zombies ahead of the nose and asks for ammo when dry. I tested it
 headless only: please check the hull reads well from inside and out, that Selwyn sits right in his seat and turns
 to his targets, and that his gun sits in his hands. The minimap's wreck outline is unchanged (no re-bake needed).
+
+## UPDATE 08 (2026-10-28): what's left for the egg work
+Tier IV perks and the bots' round-25 kit are done and merged. "Bots finish every Easter egg" is partly done: Map 0's
+egg completes with bots, and Kaltenbrunn's now gets as far as the power, the parts and the first pylon. The rest
+isn't done yet: `docs/QA_REPORT_U08.md` (After) lists every blocker found and the ones still open. The work carries
+on from the PROGRESS.md resume line. Nothing for you to do; try the new launcher buttons if you like.

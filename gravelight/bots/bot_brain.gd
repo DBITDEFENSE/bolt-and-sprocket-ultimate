@@ -451,7 +451,7 @@ func _think() -> void:
 	var best: String = str(pick[0]) if str(pick[0]) != "" else "idle"
 	if _sticky and best != action and not (["revive", "retreat", "cover"].has(best) and float(scores.get(best, 0.0)) > 0.8):
 		best = action   # a gun in the Crucible, a paid crate, a held objective: only an emergency pulls it away
-	if is_player_bot and trainer != null and best != "revive" and (trainer.owns_round() or trainer.escaping()):
+	if is_player_bot and trainer != null and best != "revive" and (trainer.owns_round() or trainer.escaping()) 			and not (ee != null and ee.holding_now() and not trainer.escaping()):
 		best = "lead_train"   # T-071 pass 2: from its own_from_round the agent's trainer owns the round
 	var my_cr: Crucible = crucible_holding_mine()
 	if my_cr != null and not (["revive", "retreat"].has(best) and float(scores.get(best, 0.0)) > 0.8) \

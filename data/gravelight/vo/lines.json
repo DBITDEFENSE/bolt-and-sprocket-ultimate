@@ -10017,5 +10017,100 @@
     "speaker": "SEL",
     "category": "KILL",
     "text": "Another one for the logbook."
+  },
+  "OPR_SQ8_PERK_TIER4_01": {
+    "speaker": "OPR",
+    "category": "PERK_TIER4",
+    "text": "Congratulations! You've been enrolled in our Lifetime Measure. There is no {cancellation}."
+  },
+  "OPR_SQ8_PERK_TIER4_02": {
+    "speaker": "OPR",
+    "category": "PERK_TIER4",
+    "text": "The fourth chamber! A permanent arrangement. We do so love {permanence}."
+  },
+  "DUT_SQ8_PERK_TIER4_01": {
+    "speaker": "DUT",
+    "category": "PERK_TIER4",
+    "text": "This one's mine for good. Whatever's in it, it's staying in."
+  },
+  "DUT_SQ8_PERK_TIER4_02": {
+    "speaker": "DUT",
+    "category": "PERK_TIER4",
+    "text": "Bottle number four. Nobody's taking this one off me."
+  },
+  "PEG_SQ8_PERK_TIER4_01": {
+    "speaker": "PEG",
+    "category": "PERK_TIER4",
+    "text": "This one's mine for good. I'll explain it to London later."
+  },
+  "PEG_SQ8_PERK_TIER4_02": {
+    "speaker": "PEG",
+    "category": "PERK_TIER4",
+    "text": "A permanent measure. I'd file a complaint if it didn't work so well."
+  },
+  "DEA_SQ8_PERK_TIER4_01": {
+    "speaker": "DEA",
+    "category": "PERK_TIER4",
+    "text": "This one's mine for good. Lord, keep it that way."
+  },
+  "DEA_SQ8_PERK_TIER4_02": {
+    "speaker": "DEA",
+    "category": "PERK_TIER4",
+    "text": "Fourth glass. That one went all the way down. I can feel it in my bones."
+  },
+  "WRN_SQ8_PERK_TIER4_01": {
+    "speaker": "WRN",
+    "category": "PERK_TIER4",
+    "text": "This one's mine for good. I'm writing that down so I believe it."
+  },
+  "WRN_SQ8_PERK_TIER4_02": {
+    "speaker": "WRN",
+    "category": "PERK_TIER4",
+    "text": "Four measures. It doesn't wear off. One fewer thing to count."
+  },
+  "JAK_SQ8_PERK_TIER4_01": {
+    "speaker": "JAK",
+    "category": "PERK_TIER4",
+    "text": "This one stays with me. Like the cold. Like the songs."
+  },
+  "DUT_SQ8_LATE_KIT_01": {
+    "speaker": "DUT",
+    "category": "LATE_KIT",
+    "text": "Round twenty-five. Fine. Hand me the good stuff and point me at 'em."
+  },
+  "DUT_SQ8_LATE_KIT_02": {
+    "speaker": "DUT",
+    "category": "LATE_KIT",
+    "text": "Chicago Lament, second pressing. Now we're talking."
+  },
+  "PEG_SQ8_LATE_KIT_01": {
+    "speaker": "PEG",
+    "category": "LATE_KIT",
+    "text": "Twenty-five rounds. I've earned the strong measure and a proper gun."
+  },
+  "PEG_SQ8_LATE_KIT_02": {
+    "speaker": "PEG",
+    "category": "LATE_KIT",
+    "text": "The Thompson again, taught twice. Let's not waste it."
+  },
+  "DEA_SQ8_LATE_KIT_01": {
+    "speaker": "DEA",
+    "category": "LATE_KIT",
+    "text": "Lord, it's a long night. All right. I'm loaded for the rest of it."
+  },
+  "DEA_SQ8_LATE_KIT_02": {
+    "speaker": "DEA",
+    "category": "LATE_KIT",
+    "text": "Fresh tonic, fresh drum. Come on then."
+  },
+  "WRN_SQ8_LATE_KIT_01": {
+    "speaker": "WRN",
+    "category": "LATE_KIT",
+    "text": "Round twenty-five. New gun, new measure. I'm counting from here."
+  },
+  "WRN_SQ8_LATE_KIT_02": {
+    "speaker": "WRN",
+    "category": "LATE_KIT",
+    "text": "Chicago Lament, twice taught. Thirty rounds. I'll make them count."
   }
 }

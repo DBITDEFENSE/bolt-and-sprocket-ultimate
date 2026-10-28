@@ -180,18 +180,54 @@
           "perk": "ironhide_stout"
         },
         {
+          "door": "door_lab"
+        },
+        {
           "perk": "marathon_malt"
         },
         {
           "gun": "stg44",
           "or_tier": 4.2
+        },
+        {
+          "crucible": "*"
+        },
+        {
+          "perk": "trigger_tonic"
+        },
+        {
+          "crucible": "*",
+          "tier": 2
+        },
+        {
+          "crucible": "*",
+          "tier": 3
         }
       ],
       "train_at": [
+        "map01_headframe",
         "map01_turbines",
-        "map01_pews",
-        "map01_headframe"
-      ]
+        "map01_pews"
+      ],
+      "egg": {
+        "_doc": "U08 (T-131): the agent works the Requiem (BotEEHub.pick_for as the player): from round 2 once the Rail Yard is open, in the breaks; after Ironhide also mid-round when nothing is near. The Chapel bell (s4) needs a Crucible-taught gun, so the plan gets one after the StG-44.",
+        "quest": "map01_requiem",
+        "after": [
+          {
+            "door": "door_a_b"
+          }
+        ],
+        "from_round": 2,
+        "crawler_after": [
+          {
+            "perk": "ironhide_stout"
+          }
+        ],
+        "max_pressure": 0.3,
+        "quiet_m": 14.0,
+        "value": 0.85,
+        "every_s": 2.0
+      }
     },
     "map02": {
       "_why": "Totenhafen solo (UPDATE 07 QA, T-103): the M1 Carbine off the quay wall, the Cannery for Second Wind (solo, no power needed) and the Workshop for Ironhide and the MP40 (the two 1000 doors off the quay), then the Pen Hall and the Lower Pens to throw the pumps (the power), Marathon back in the Cannery, the StG-44 in the Workshop into the Crucible.",

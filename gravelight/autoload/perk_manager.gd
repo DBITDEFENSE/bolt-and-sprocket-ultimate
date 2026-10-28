@@ -67,6 +67,11 @@ var _boost_mult: Dictionary = {}   # player -> the speed multiplier of their run
 var _last_shot_ms: Dictionary = {} # player -> msec of their last shot (Hawkeye III)
 var _vo_said: Dictionary = {}      # "pid:what" -> true: first-of-match lines
 var _fx_cache: Dictionary = {}     # "perk:tier" -> merged effects
+var _last_stand_round: Dictionary = {}   # player -> the round Ironhide IV last held them up (once a round, T-129)
+var _shock_left: Dictionary = {}   # player -> shock rounds left (Trigger Tonic IV)
+var _shots_fired: Dictionary = {}  # player -> bullets fired this match (Twin Barrel IV's every 10th)
+var _knock_at: Dictionary = {}     # zombie instance id -> msec it may be knocked down again (Marathon IV)
+var _knock_tick: float = 0.0
 ## Tests / dev: -1 = the data's upgrades.meta_gate, 0 = no mastery gate, 1 = gated.
 var meta_gate_override: int = -1
 ## Co-op client: the host's unlocked tiers (perk -> highest unlocked tier), from the state snapshot.
@@ -84,6 +89,10 @@ func _ready() -> void:
 
 
 func reset_match() -> void:
+	_last_stand_round.clear()
+	_shock_left.clear()
+	_shots_fired.clear()
+	_knock_at.clear()
 	_owned.clear()
 	_bonus_slots.clear()   # the Map 1 egg slot is re-applied on match_started
 	_base_cap = -1         # Classic Rules is read again for the new match
@@ -113,6 +122,7 @@ func _on_match_started(_map_id: StringName) -> void:
 
 
 func _process(_delta: float) -> void:
+	_tick_knockdown(_delta)
 	if _hud != null and is_instance_valid(_hud):
 		_hud.visible = GameState.phase != GameState.Phase.MENU
 
@@ -283,7 +293,7 @@ func try_self_revive(player: int) -> bool:
 	solo_self_revives_left -= 1
 	var t: int = int(_tier_dict(player).get("second_wind", 1))
 	_revive_tier[player] = t
-	if is_sealed(player, &"second_wind") and solo_self_revives_left > 0:
+	if (is_sealed(player, &"second_wind") or is_permanent(player, &"second_wind")) and solo_self_revives_left > 0:
 		# a sealed Second Wind is not used up by the self-revive (the three uses per game still count down)
 		GLBus.self_revive.emit(player, solo_self_revives_left)
 		GLBus.perks_changed.emit(player)
@@ -339,7 +349,7 @@ func on_player_downed(player: int) -> void:
 		return
 	if GameState.retained:
 		return   # the Retained state (Map 4 Act IV's renewal, T-113): the Plan keeps your tonics; nobody is let go
-	var keep_ids: Array = kept_on_down(owned(player), bonus_perk(player), sealed(player))
+	var keep_ids: Array = kept_on_down(owned(player), bonus_perk(player), sealed(player) + permanent(player))
 	var old_tiers: Dictionary = _tier_dict(player)
 	var new_tiers: Dictionary = {}
 	for k: Variant in keep_ids:
@@ -485,6 +495,25 @@ static func max_tier() -> int:
 	return int(upgrades_cfg().get("max_tier", 3))
 
 
+## U08 (T-129): the tier from which a tonic is permanent ("perma perk"; perks.json upgrades.permanent_tier, 4).
+static func permanent_tier() -> int:
+	return int(upgrades_cfg().get("permanent_tier", 999))
+
+
+## A tonic the player holds at its permanent tier: kept through every down, bleed-out and self-revive.
+func is_permanent(player: int, perk_id: StringName) -> bool:
+	return tier_of(player, perk_id) >= permanent_tier()
+
+
+## The player's permanent tonics (perk ids as Strings).
+func permanent(player: int) -> Array:
+	var out: Array = []
+	for k: Variant in (_tiers.get(player, {}) as Dictionary).keys():
+		if int((_tiers[player] as Dictionary)[k]) >= permanent_tier() and has_perk(player, StringName(str(k))):
+			out.append(str(k))
+	return out
+
+
 ## "II" / "III" ("" for tier 1).
 static func tier_mark(tier: int) -> String:
 	return str((upgrades_cfg().get("marks", {}) as Dictionary).get(str(tier), "")) if tier > 1 else ""
@@ -612,6 +641,8 @@ func _on_round_ended_mastery(_round_number: int) -> void:
 ## &"no_power", &"round" (the round is under the tier's min_round), &"locked" (mastery), &"gone" (solo Second Wind
 ## retired). Scrip is checked by the purchase.
 func can_upgrade(player: int, perk_id: StringName) -> StringName:
+	if bool(GLSettings.values.get("classic_rules", false)):
+		return &"classic"   # U08 (T-129): Classic Rules keeps every tier off
 	if perk_id == &"second_wind" and GameState.is_solo() and second_wind_gone:
 		return &"gone"
 	var t: int = tier_of(player, perk_id)
@@ -655,7 +686,13 @@ func set_tier(player: int, perk_id: StringName, tier: int) -> void:
 		_tier_dict(player)[String(perk_id)] = tier
 	perk_tier_changed.emit(player, perk_id, tier)
 	GLBus.perks_changed.emit(player)
-	if tier > 1:
+	if tier >= permanent_tier():   # U08 (T-129): "This one's mine for good." (every time a tonic becomes permanent)
+		GLVO.say_as(player, "PERK_TIER4", 1.0)
+		_vo_said["%d:tier" % player] = true
+		if not _vo_said.has("opr:tier%d" % tier):
+			_vo_said["opr:tier%d" % tier] = true
+			GLVO.play_category(&"OPR", "PERK_TIER%d" % tier)
+	elif tier > 1:
 		_first_vo(player, "tier", "PERK_TIER")
 		if not _vo_said.has("opr:tier%d" % tier):
 			_vo_said["opr:tier%d" % tier] = true
@@ -857,6 +894,13 @@ func filter_hit(p: Player, amount: float) -> float:
 		_boost(pid, float(stat(pid, "sprint_dodge_boost_mult", 1.15)), float(stat(pid, "sprint_dodge_boost_seconds", 1.5)))
 		_proc(pid, &"marathon_malt", &"dodge")
 		return 0.0
+	# Ironhide IV (T-129): once a round, the hit that would put you down leaves you on 1 hp with a window of iron
+	var last: float = float(stat(pid, "last_stand_invuln_seconds", 0.0))
+	if last > 0.0 and amount >= p.hp and int(_last_stand_round.get(pid, -1)) != RoundManager.current_round:
+		_last_stand_round[pid] = RoundManager.current_round
+		_open_window(pid, "iron_skin", last)
+		_proc(pid, &"ironhide_stout", &"last_stand")
+		return maxf(0.0, p.hp - 1.0)
 	var thr: float = float(stat(pid, "iron_skin_threshold", 0.0))
 	if thr > 0.0 and not _active(pid, "iron_cd"):
 		var left: float = p.hp - amount
@@ -891,7 +935,29 @@ func shot_mult(pid: int, aimed: bool) -> float:
 		m *= float(stat(pid, "patience_damage_mult", 1.0))
 		perk_proc.emit(pid, &"hawkeye_brandy", &"patience")
 	_last_shot_ms[pid] = now
+	var shock: int = int(_shock_left.get(pid, 0))
+	if shock > 0:   # Trigger Tonic IV: a shock round
+		_shock_left[pid] = shock - 1
+		m *= float(stat(pid, "shock_damage_mult", 1.6))
+		_last_shock_ms[pid] = now
+	var every: int = int(stat(pid, "double_hit_every", 0))
+	if every > 0:   # Twin Barrel IV: every nth bullet hits twice
+		_shots_fired[pid] = int(_shots_fired.get(pid, 0)) + 1
+		if int(_shots_fired[pid]) % every == 0:
+			m *= 2.0
+			perk_proc.emit(pid, &"twin_barrel", &"double")
 	return m
+
+
+## Trigger Tonic IV: the shot just taken was a shock round (WeaponHolder / BotAim stagger what it hits).
+var _last_shock_ms: Dictionary = {}
+func shot_is_shock(pid: int) -> bool:
+	return bool(stat(pid, "shock_stagger", false)) and Time.get_ticks_msec() - int(_last_shock_ms.get(pid, -100000)) < 50
+
+
+## Pure: Twin Barrel IV doubles every `every`th bullet (n counted from 1).
+static func double_hit(n: int, every: int) -> bool:
+	return every > 0 and n > 0 and n % every == 0
 
 
 ## Twin Barrel III: this shot costs no round (never for wonder weapons).
@@ -903,20 +969,50 @@ func round_saved(pid: int, w: WeaponInstance) -> bool:
 
 
 ## A bullet kill: Hawkeye II puts a round back in the magazine for a headshot kill.
-func on_bullet_kill(pid: int, w: WeaponInstance, head: bool) -> void:
+func on_bullet_kill(pid: int, w: WeaponInstance, head: bool, at: Vector3 = Vector3.INF) -> void:
 	if not head or w == null:
 		return
+	var chain: float = float(stat(pid, "headshot_chain_mult", 0.0))
+	if chain > 0.0 and at.is_finite() and Net.is_authority():
+		_headshot_chain(pid, w, at, chain)
 	var n: int = int(stat(pid, "headshot_kill_refund", 0))
 	if n > 0 and w.mag < w.mag_size():
 		w.mag = mini(w.mag_size(), w.mag + n)
 		perk_proc.emit(pid, &"hawkeye_brandy", &"refund")
 
 
-## A reload completed: Trigger Tonic III opens its fresh-clip window.
-func reload_finished(pid: int) -> void:
+## Hawkeye IV (T-129): a headshot kill at `at` sends a `mult`-strength shot of the same gun on to the nearest
+## active zombie within headshot_chain_range (a tracer shows it).
+func _headshot_chain(pid: int, w: WeaponInstance, at: Vector3, mult: float) -> void:
+	var director: Node = get_tree().get_first_node_in_group(&"director") if is_inside_tree() else null
+	if director == null or not director.has_method("active_zombies"):
+		return
+	var reach: float = float(stat(pid, "headshot_chain_range", 15.0))
+	var best: Zombie = null
+	var best_d: float = reach
+	for z: Zombie in director.call("active_zombies"):
+		var dd: float = z.global_position.distance_to(at)
+		if z.is_active() and dd > 0.5 and dd < best_d:
+			best_d = dd
+			best = z
+	if best == null:
+		return
+	var to: Vector3 = best.global_position + Vector3.UP * 1.5
+	Effects.tracer(at, to, w.upgraded, w.weapon_class())
+	best.take_damage(w.f("damage", 50.0) * mult, &"head", w.id, pid, &"bullet")
+	perk_proc.emit(pid, &"hawkeye_brandy", &"chain")
+
+
+## A reload completed: Trigger Tonic III opens its fresh-clip window; Trigger Tonic IV loads shock rounds when the
+## magazine had `shock_reload_frac` or less left in it (`frac_before`: what was left over the mag size).
+func reload_finished(pid: int, frac_before: float = 1.0) -> void:
 	var secs: float = float(stat(pid, "fresh_clip_seconds", 0.0))
 	if secs > 0.0:
 		_open_window(pid, "fresh_clip", secs)
+	var n: int = int(stat(pid, "shock_rounds", 0))
+	if n > 0 and frac_before <= float(stat(pid, "shock_reload_frac", 0.34)):
+		_shock_left[pid] = n
+		_proc(pid, &"trigger_tonic", &"shock")
 
 
 ## Packmule II: ammo bought at the chalk or an ammo box costs this much of the price.
@@ -942,13 +1038,16 @@ func blast_heal(p: Player, pos: Vector3, radius: float) -> void:
 ## zombie's health this round).
 func slide_shock_damage(pid: int, base: float) -> float:
 	var m: float = float(stat(pid, "slide_shockwave_round_mult", 0.0))
+	var mult: float = float(stat(pid, "slide_shockwave_mult", 1.0))   # Blastproof IV: twice as hard
 	if m <= 0.0:
-		return base
-	return maxf(base, m * float(RoundManager.zombie_health(maxi(1, RoundManager.current_round), GLData.table("rounds"))))
+		return base * mult
+	return maxf(base, m * float(RoundManager.zombie_health(maxi(1, RoundManager.current_round), GLData.table("rounds")))) * mult
 
 
 ## One zombie in a slide shockwave: the damage, and Blastproof III knocks down what survives it (not bosses).
 func slide_hit(p: Player, z: Zombie, dmg: float) -> void:
+	if z.is_crawler and bool(stat(p.player_id, "slide_kills_crawlers", false)) and not OVERCLOCK_BOSSES.has(String(z.enemy_id)):
+		dmg = maxf(dmg, z.hp + 1.0)   # Blastproof IV: a crawler doesn't get up from it
 	var killed: bool = z.take_damage(dmg, &"torso", &"blastproof_bock", p.player_id, &"explosive")
 	if not killed and z.is_active() and bool(stat(p.player_id, "slide_shockwave_stagger", false)) and not OVERCLOCK_BOSSES.has(String(z.enemy_id)):
 		z.force_stagger()
@@ -988,6 +1087,7 @@ func _overclock_arcs(player: Player, e: float, radius: float, hit: Array, health
 func _on_round_started_tiers(round_number: int, _special: bool) -> void:
 	if round_number <= 1 or not is_inside_tree():
 		return
+	_refill_self_revive(round_number)
 	for n: Node in get_tree().get_nodes_in_group(&"players"):
 		var p: Player = n as Player
 		if p == null or p.weapons == null or p.spectating or not (p.is_local or (p.is_bot and Net.is_authority())):
@@ -1000,12 +1100,63 @@ func resupply(p: Player) -> bool:
 	var frac: float = float(stat(p.player_id, "round_resupply_frac", 0.0))
 	if frac <= 0.0:
 		return false
+	var mags: bool = bool(stat(p.player_id, "round_resupply_mags", false))   # Packmule IV: and a full magazine
 	for w: WeaponInstance in p.weapons.slots:
 		if w != null and w.weapon_class() != &"wonder":
 			w.reserve = mini(w.reserve_max(), w.reserve + ceili(float(w.reserve_max()) * frac))
+			if mags:
+				w.mag = w.mag_size()
 	p.weapons.grenades = mini(p.weapons.grenade_max(), p.weapons.grenades + int(stat(p.player_id, "round_resupply_grenades", 0)))
 	perk_proc.emit(p.player_id, &"packmule_porter", &"resupply")
 	return true
+
+
+## Second Wind IV (T-129): in solo, a spent self-revive comes back every self_revive_refill_rounds rounds (to the
+## starting three at most) while a survivor holds Second Wind IV (it is permanent, so the tonic is still there).
+func _refill_self_revive(round_number: int) -> void:
+	if not GameState.is_solo() or not Net.is_authority():
+		return
+	for pid: Variant in _owned.keys():
+		var every: int = int(stat(int(pid), "self_revive_refill_rounds", 0))
+		if every > 0 and round_number % every == 0:
+			var most: int = int(GLData.table("perks").get("solo_self_revives", 3))
+			if solo_self_revives_left < most:
+				solo_self_revives_left += 1
+				second_wind_gone = false
+				_proc(int(pid), &"second_wind", &"refill")
+			return
+
+
+## Marathon IV (T-129): a sprinting survivor knocks down every (non-boss) zombie within sprint_knockdown_radius in
+## front of them; each zombie once per sprint_knockdown_cooldown. Ticked ~10 times a second, on the host.
+func _tick_knockdown(delta: float) -> void:
+	_knock_tick -= delta
+	if _knock_tick > 0.0 or not Net.is_authority() or not is_inside_tree():
+		return
+	_knock_tick = 0.1
+	var director: Node = get_tree().get_first_node_in_group(&"director")
+	if director == null or not director.has_method("active_zombies"):
+		return
+	var now: int = Time.get_ticks_msec()
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		var p: Player = n as Player
+		if p == null or not p.sprinting or p.downed:
+			continue
+		var r: float = float(stat(p.player_id, "sprint_knockdown_radius", 0.0))
+		if r <= 0.0:
+			continue
+		var fwd: Vector3 = -p.global_basis.z
+		for z: Zombie in director.call("active_zombies"):
+			var to: Vector3 = z.global_position - p.global_position
+			to.y = 0.0
+			if to.length() > r or (to.length() > 0.3 and fwd.dot(to.normalized()) < 0.2) or OVERCLOCK_BOSSES.has(String(z.enemy_id)):
+				continue
+			var key: int = z.get_instance_id()
+			if now < int(_knock_at.get(key, 0)):
+				continue
+			_knock_at[key] = now + int(float(stat(p.player_id, "sprint_knockdown_cooldown", 2.0)) * 1000.0)
+			z.force_stagger()
+			_proc(p.player_id, &"marathon_malt", &"knockdown")
 
 
 ## Second Wind II / III on a revive: the reviver's tier (or, for a solo self-revive, the tier that was used up) gives

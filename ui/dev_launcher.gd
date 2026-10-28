@@ -145,6 +145,11 @@ func _ready() -> void:
 	col.add_child(MenuKit.button("Map 0 — voice test (round 1–3; logs each line's source to logs/voice_test.txt)", func() -> void:
 		GLVO.voice_test = true
 		_start_gl("res://gravelight/maps/map00_crossroads/map00.tscn", 1), 22, "ui_confirm"))
+	col.add_child(_header("Update 08 — tier IV perks, the bots' late kit, bots finish the egg"))
+	col.add_child(MenuKit.button("Kaltenbrunn — bots finish the egg (watch: bot mode plays you, 3 Full Partner bots)", func() -> void:
+		_spawn_tool("res://gravelight/tools_src/play_ee_full.tscn", ["--botmode", "--bots=3"], false), 22, "ui_confirm"))
+	col.add_child(MenuKit.button("Perk tier IV test (50,000 Scrip, power on, round 15)", func() -> void: _start_tool_scene("res://gravelight/tools_src/play_tier4.tscn"), 22, "ui_confirm"))
+	col.add_child(MenuKit.button("Round 25 bot kit test (Map 0, round 25, 3 bots)", func() -> void: _start_gl(map0, 25, "", 3), 22, "ui_confirm"))
 	col.add_child(_header("Muster (your sidearm and Field Habits; saved per survivor, used by every match)"))
 	col.add_child(MenuKit.button("Muster — pick the sidearm and Field Habits for the survivor above", func() -> void: add_child(MenuMuster.new(CHARACTERS[_char.selected])), 22, "ui_confirm"))
 	col.add_child(_header("Bot mode (an AI plays your survivor; F6 or any input takes over)"))

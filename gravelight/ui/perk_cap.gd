@@ -5,7 +5,7 @@ extends Control
 ##
 ## A cap is a crimped cap in the tonic's enamel colour with a bevelled face, and on it the tonic's glyph (one drawn
 ## symbol per tonic, embossed: a shadow pass under cream on dark enamel, ink on pale), the tier band (a brass strip
-## with II / III under the glyph; the crimp turns gold at III) and, for a bot's bonus perk, a gold ring and a star at
+## with II / III / IV under the glyph; the crimp turns gold at III; a permanent tier IV adds a thick gold rim, T-129) and, for a bot's bonus perk, a gold ring and a star at
 ## the rim. `dim` draws a tonic the player does not hold: desaturated, faded, grey glyph (the pause list).
 ##
 ## The glyphs follow the cabinets' art bible (docs/gravelight/JINGLES.md, "Bottle cap" per tonic): Ironhide a flexed
@@ -75,6 +75,10 @@ static func draw_cap(ci: CanvasItem, c: Vector2, r: float, perk: StringName, is_
 	ink2.a = alpha
 	if is_bonus:
 		ci.draw_circle(c, r + 2.5, Color(1.0, 0.82, 0.3, 0.95 * alpha))
+	var perma: bool = tier >= PerkManager.permanent_tier() and not dim
+	if perma:   # U08 (T-129): a permanent tonic: a thick gold rim with a bright inner line round the crimp
+		ci.draw_circle(c, r + maxf(2.0, r * 0.16), Color(0.55, 0.38, 0.08, alpha))
+		ci.draw_circle(c, r + maxf(1.2, r * 0.1), Color(1.0, 0.82, 0.3, alpha))
 	# the crimped edge (gold at tier III)
 	var teeth: PackedVector2Array = []
 	var n: int = 24 if r < 20.0 else 42
@@ -117,6 +121,8 @@ static func draw_cap(ci: CanvasItem, c: Vector2, r: float, perk: StringName, is_
 	# the tier band: a brass strip across the lower cap with the Roman numeral (a brass arc on tiny caps)
 	if tier >= 2:
 		var brass: Color = (Color(0.78, 0.62, 0.26) if tier < 3 else Color(1.0, 0.84, 0.36))
+		if perma:
+			brass = Color(1.0, 0.93, 0.62)   # the IV band: pale gold
 		if dim:
 			brass = Color(0.5, 0.47, 0.4)
 		brass.a = alpha

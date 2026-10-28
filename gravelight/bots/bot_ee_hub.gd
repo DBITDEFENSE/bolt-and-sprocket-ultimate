@@ -189,7 +189,7 @@ func try_brain(b: BotBrain, qid: StringName, sid: StringName, t: Dictionary, ord
 	var ctx: Dictionary = {"mode": mode(), "ordered": ordered, "active": QuestManager.is_active(qid, sid), "done": QuestManager.is_step_done(qid, sid),
 		"companion": b.player.is_companion, "known": knowledge.known, "labels": knowledge.labels,
 		"player_near": _human_within(step_anchor(qid, sid, t, focus), float(BotEECatalog.cfg().get("presence_m", 20.0))) or final_wait_over(qid, sid),
-		"jakub": BotEECatalog.cfg().get("jakub", {})}
+		"jakub": BotEECatalog.cfg().get("jakub", {}), "agent": b.is_player_bot, "player_absent": _player_absent()}
 	var g: Dictionary = BotEECatalog.gate(t, ctx)
 	if not bool(g["ok"]):
 		if str(g.get("code", "")) == "needs_player" and not _final_first_t.has("%s/%s" % [qid, sid]):
@@ -207,6 +207,12 @@ func try_brain(b: BotBrain, qid: StringName, sid: StringName, t: Dictionary, ord
 		return {"ok": false, "code": "wait", "reason": "Nothing to do on that one yet.", "as": ""}
 	g["do"] = pv.get("do", "")
 	return g
+
+
+## U08 (T-131): the human player is away from the egg: benched (a bots-alone soak), bled out, or down.
+func _player_absent() -> bool:
+	var h: Player = squad.human()
+	return h == null or not is_instance_valid(h) or h.spectating or h.downed
 
 
 static func reason_text(code: String, t: Dictionary) -> String:
@@ -330,7 +336,7 @@ func _process(delta: float) -> void:
 			_full_partner()
 
 
-## The quest data's bot_knowledge entries that are polled: on_collect, on_step, on_flag, on_seen.
+## The quest data's bot_knowledge entries that are polled: on_collect, on_step, on_flag, on_power (U08), on_seen.
 func _poll_knowledge() -> void:
 	var now: float = squad.time()
 	for qid: StringName in QuestManager.quest_ids():
@@ -372,6 +378,8 @@ static func entry_due(qid: StringName, e: Dictionary) -> String:
 	for f: Variant in e.get("on_flag", []):
 		if GameState.has_flag(StringName(str(f))):
 			return "flag"
+	if bool(e.get("on_power", false)) and GameState.power_on:
+		return "power"   # U08 (T-131): the map's power is on (Groom Lake's radar shack radio needs it)
 	return ""
 
 

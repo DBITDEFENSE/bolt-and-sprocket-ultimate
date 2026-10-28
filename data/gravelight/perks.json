@@ -35,6 +35,14 @@
       "iron_skin_seconds": 2.0,
       "iron_skin_cooldown": 40.0
      }
+    },
+    "4": {
+     "name": "Cast Iron",
+     "cost": 15000,
+     "desc": "Permanent: never lost on a down. And once a round, the hit that would put you down leaves you standing on your last breath instead, with 3 s where nothing gets through.",
+     "effects": {
+      "last_stand_invuln_seconds": 3.0
+     }
     }
    }
   },
@@ -72,6 +80,16 @@
       "revive_invuln_seconds": 3.0,
       "revive_stagger_radius": 4.0
      }
+    },
+    "4": {
+     "name": "The Second Sunrise",
+     "cost": 15000,
+     "desc": "Permanent. Revives are instant, the revived get 5 s nobody can touch, and in solo a spent self-revive comes back every 10 rounds.",
+     "effects": {
+      "revive_speed_mult": 60.0,
+      "revive_invuln_seconds": 5.0,
+      "self_revive_refill_rounds": 10
+     }
     }
    }
   },
@@ -105,6 +123,17 @@
       "fresh_clip_seconds": 2.0,
       "fresh_clip_damage_mult": 1.3
      }
+    },
+    "4": {
+     "name": "Live Rounds",
+     "cost": 13000,
+     "desc": "Permanent. Reload a magazine with a third or less left in it and the next 6 rounds are shock rounds: 60% harder, and they knock the target off its feet.",
+     "effects": {
+      "shock_reload_frac": 0.34,
+      "shock_rounds": 6,
+      "shock_damage_mult": 1.6,
+      "shock_stagger": true
+     }
     }
    }
   },
@@ -136,6 +165,14 @@
      "desc": "One shot in four doesn't use a round.",
      "effects": {
       "ammo_save_chance": 0.25
+     }
+    },
+    "4": {
+     "name": "Brace of Barrels",
+     "cost": 13500,
+     "desc": "Permanent. Every 10th bullet hits twice.",
+     "effects": {
+      "double_hit_every": 10
      }
     }
    }
@@ -172,6 +209,15 @@
       "sprint_dodge_boost_mult": 1.15,
       "sprint_dodge_boost_seconds": 1.5
      }
+    },
+    "4": {
+     "name": "Through the Crowd",
+     "cost": 12000,
+     "desc": "Permanent. Sprint into zombies and they go down: anything you run into is knocked off its feet (not the big ones).",
+     "effects": {
+      "sprint_knockdown_radius": 1.4,
+      "sprint_knockdown_cooldown": 2.0
+     }
     }
    }
   },
@@ -206,6 +252,15 @@
       "patience_seconds": 1.2,
       "patience_damage_mult": 1.75
      }
+    },
+    "4": {
+     "name": "The Long Count",
+     "cost": 12000,
+     "desc": "Permanent. A headshot kill sends a half-strength shot on to the nearest zombie within 15 m.",
+     "effects": {
+      "headshot_chain_mult": 0.5,
+      "headshot_chain_range": 15.0
+     }
     }
    }
   },
@@ -239,6 +294,15 @@
      "effects": {
       "round_resupply_frac": 0.2,
       "round_resupply_grenades": 1
+     }
+    },
+    "4": {
+     "name": "Quartermaster",
+     "cost": 15000,
+     "desc": "Permanent. Every round each gun you carry gets 30% of its reserve back and a full magazine, and you get a grenade.",
+     "effects": {
+      "round_resupply_frac": 0.3,
+      "round_resupply_mags": true
      }
     }
    }
@@ -276,6 +340,16 @@
       "slide_shockwave_round_mult": 0.6,
       "slide_shockwave_stagger": true,
       "slide_shockwave_radius": 3.8
+     }
+    },
+    "4": {
+     "name": "Sapper's Pride",
+     "cost": 13000,
+     "desc": "Permanent. The slide shockwave hits twice as hard, reaches 5 m and kills crawlers outright.",
+     "effects": {
+      "slide_shockwave_mult": 2.0,
+      "slide_shockwave_radius": 5.0,
+      "slide_kills_crawlers": true
      }
     }
    }
@@ -325,6 +399,16 @@
       "overclock_aftershock_delay": 0.8,
       "overclock_aftershock_mult": 0.5
      }
+    },
+    "4": {
+     "name": "Dynamo",
+     "cost": 14000,
+     "desc": "Permanent. The burst recharges in 1.5 s, and every burst from a magazine 40% empty or more rings a second time at full strength.",
+     "effects": {
+      "overclock_cooldown": 1.5,
+      "overclock_aftershock_spent": 0.4,
+      "overclock_aftershock_mult": 1.0
+     }
     }
    }
   },
@@ -372,6 +456,17 @@
       "hop_stomp_max_targets": 8,
       "hop_stomp_boss_damage": 400,
       "hop_stomp_cooldown": 1.5
+     }
+    },
+    "4": {
+     "name": "Kite String",
+     "cost": 12500,
+     "desc": "Permanent. Two hops in the air, and the landing stomp reaches 4 m and hits much harder.",
+     "effects": {
+      "air_hops": 2,
+      "hop_stomp_radius": 4.0,
+      "hop_stomp_health_mult": 0.7,
+      "hop_stomp_cooldown": 1.0
      }
     }
    }
@@ -422,6 +517,17 @@
       "magpie_powerup_every": 25,
       "magpie_upgraded_near_m": 3.0
      }
+    },
+    "4": {
+     "name": "Treasury",
+     "cost": 13000,
+     "desc": "Permanent. Drops come one kill in four, last twice as long, and every 12th is a power-up.",
+     "effects": {
+      "magpie_chance": 0.25,
+      "magpie_head_chance": 0.35,
+      "magpie_life": 40.0,
+      "magpie_powerup_every": 12
+     }
     }
    }
   }
@@ -429,12 +535,13 @@
  "drink_seconds": 1.2,
  "solo_self_revives": 3,
  "upgrades": {
-  "_doc": "Perk upgrades (DECISIONS T-075, docs/gravelight/PERKS_LORE.md section 1). Each perk has tiers 2 and 3 ('tiers' in its row): bought in the match at the machine you already drank from (hold Use), once the power is on and the round is at least min_round; the profile-wide gate is mastery: points earned with the perk in your system (per_kill for every kill, per_round for every round you finish holding it) unlock each tier for good (unlock). A tier's effects merge over the perk's own (same key = the tier's value). Tiers count no extra cap slot, go with the perk when it is lost, and carry with it (campaign exfil, co-op snapshot). marks = the HUD cap's tier mark.",
+  "_doc": "Perk upgrades (DECISIONS T-075, docs/gravelight/PERKS_LORE.md section 1). Each perk has tiers 2 and 3 ('tiers' in its row): bought in the match at the machine you already drank from (hold Use), once the power is on and the round is at least min_round; the profile-wide gate is mastery: points earned with the perk in your system (per_kill for every kill, per_round for every round you finish holding it) unlock each tier for good (unlock). A tier's effects merge over the perk's own (same key = the tier's value). Tiers count no extra cap slot, go with the perk when it is lost, and carry with it (campaign exfil, co-op snapshot). marks = the HUD cap's tier mark. U08 (T-129): tier 4 'perma perks': bought at the machine once tier 3 is held and the power is on, from min_round 4 (no later than tier 3's), unlocked with tier 3's mastery; 12000-15000 Scrip by the tonic's strength. A tonic at permanent_tier or above is never lost: not on a down, a bleed-out and respawn, or a self-revive; it still counts toward the cap. Classic Rules keeps every tier off.",
   "needs_power": true,
-  "max_tier": 3,
+  "max_tier": 4,
   "min_round": {
    "2": 8,
-   "3": 15
+   "3": 15,
+   "4": 15
   },
   "meta_gate": true,
   "mastery": {
@@ -442,12 +549,15 @@
    "per_round": 20,
    "unlock": {
     "2": 250,
-    "3": 1200
+    "3": 1200,
+    "4": 1200
    }
   },
   "marks": {
    "2": "II",
-   "3": "III"
-  }
+   "3": "III",
+   "4": "IV"
+  },
+  "permanent_tier": 4
  }
 }

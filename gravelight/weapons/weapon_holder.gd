@@ -771,9 +771,11 @@ func _fire(w: WeaponInstance) -> void:
 		var pos: Vector3 = zz.global_position + Vector3.UP * 1.6
 		zz.last_hit_bone = str(h.get("bone", ""))
 		var killed: bool = zz.take_damage(float(h["dmg"]) * tier_mult, limb, w.id, pid, &"bullet", piercing)
+		if not killed and zz.is_active() and PerkManager.shot_is_shock(pid):
+			zz.force_stagger()   # Trigger Tonic IV: a shock round knocks it off its feet
 		var head: bool = limb == &"head"
 		if killed:
-			PerkManager.on_bullet_kill(pid, w, head)   # Hawkeye II: a headshot kill refunds a round
+			PerkManager.on_bullet_kill(pid, w, head, pos)   # Hawkeye II refunds a round, IV chains a shot on
 		GLBus.enemy_hit_feedback.emit(pid, killed, head)
 		if killed:   # T-128: a kill has its own confirm (a headshot kill layers the headshot's crack on it)
 			AudioDirector.play_2d("kill_confirm", -3.0, 0.03)
@@ -1234,6 +1236,7 @@ func _tick_reload(delta: float, fire_pressed: bool) -> void:
 	if _reload_t > 0.0:
 		return
 	_flush_reload_cues()
+	var frac_before: float = 1.0   # T-129: what was left in the mag (Trigger Tonic IV)
 	if _reload_per_round:
 		var add: int = mini(1, w.reserve)
 		w.mag += add
@@ -1246,6 +1249,7 @@ func _tick_reload(delta: float, fire_pressed: bool) -> void:
 			_cue_i = 0
 			return
 	else:
+		frac_before = float(w.mag) / float(maxi(1, w.mag_size()))
 		var take: int = mini(w.mag_size() - w.mag, w.reserve)
 		w.mag += take
 		w.reserve -= take
@@ -1253,7 +1257,7 @@ func _tick_reload(delta: float, fire_pressed: bool) -> void:
 			AudioDirector.play_2d("reload_end", -4.0)
 	_reloading = false
 	_reload_per_round = false
-	PerkManager.reload_finished(player.player_id)   # Trigger Tonic III's fresh clip
+	PerkManager.reload_finished(player.player_id, frac_before)   # Trigger Tonic III's fresh clip, IV's shock rounds
 	_on_reload_finished()
 
 

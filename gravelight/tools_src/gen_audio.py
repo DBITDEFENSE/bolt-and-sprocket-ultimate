@@ -2542,6 +2542,15 @@ def gen_map4_perks():
     emit("jingle_skyhook_sekt", "jingles/skyhook_sekt_01", skyhook_jingle(r), -2.0, bus="Jingles", volume_db=-4.0, max_voices=1, pitch=[1.0, 1.0], attenuation="world")
     r = rng_for("mm_jingle")
     emit("jingle_magpie_mead", "jingles/magpie_mead_01", magpie_jingle(r), -2.0, bus="Jingles", volume_db=-4.0, max_voices=1, pitch=[1.0, 1.0], attenuation="world")
+    # U08 (T-129): the tier IV sting: a rising bell arpeggio (C E G C) over a short brass swell, rung after the
+    # tonic's own jingle when a tonic becomes permanent
+    r = rng_for("perk_t4")
+    x = zeros(2.6)
+    place(x, brass_cluster(r, ["C4", "G4", "C5", "E5"], 1.6, 0.35) * np.linspace(1.0, 0.0, N(1.6)) ** 1.5, 0.15, 0.45)
+    for k, nm in enumerate(["C5", "E5", "G5", "C6"]):
+        place(x, bell(r, hz(nm), 1.6, decay=1.4, strike=0.4, bright=1.2), 0.11 * k, 0.55 if k < 3 else 0.8)
+    emit("perk_tier4_sting", "jingles/perk_tier4_sting_01", reverb(x, r, 1.4, 0.3), -2.0, bus="Jingles", volume_db=-3.0,
+         max_voices=1, pitch=[1.0, 1.0], attenuation="world")
 
 
 def main():

@@ -56,6 +56,17 @@ func setup(b: BotBrain) -> void:
 	player = b.player
 
 
+## U08 (T-131): holding a zone that keeps the round open (a charging pylon, a running holdout): nothing may pull the
+## bot off it (the agent's trainer would leave the pylon empty and the round could never end).
+func holding_now() -> bool:
+	if not active() or str(_plan.get("do", "")) != "hold":
+		return false
+	var n: Node = _plan.get("node") as Node
+	if n is Pylon:
+		return (n as Pylon).state == Pylon.State.CHARGING
+	return true
+
+
 func active() -> bool:
 	return not task.is_empty()
 
@@ -304,8 +315,16 @@ func _refresh_plan() -> void:
 		if dn != null and is_instance_valid(dn) and not dn.is_open and float(_failed_nodes.get(dn.get_instance_id(), -INF)) <= _now():
 			return   # on the way to open a door: no second-guessing every think
 	var w: Dictionary = snapshot(task["qid"], task["sid"], task["def"], task.get("focus"), bool(task["ordered"]), str(task["type"]))
+	var was: String = "%s %s" % [str(_plan.get("do", "")), str((_plan.get("node") as Node).name) if _plan.get("node") is Node and is_instance_valid(_plan.get("node")) else ""]
 	_plan = plan(str(task["type"]), task["def"], w)
 	var d: String = str(_plan.get("do", ""))
+	if OS.has_environment("EGG_DEBUG"):
+		var now_s: String = "%s %s" % [d, str((_plan.get("node") as Node).name) if _plan.get("node") is Node and is_instance_valid(_plan.get("node")) else ""]
+		if now_s != was:
+			var anchors: String = ""
+			for r: Variant in w.get("anchors", []):
+				anchors += " %s:%s" % [str(((r as Dictionary)["node"] as Node).name), str((r as Dictionary)["state"])]
+			_log("plan %s -> %s%s" % [was, now_s, (" |" + anchors) if anchors != "" else ""])
 	if d == "done":
 		_finish(true)
 	elif d == "fail":
@@ -388,6 +407,9 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 		"hold_zone":
 			var running: bool = not QuestManager.holdout_state(qid, sid).is_empty()
 			w["holdout_running"] = running
+			w["is_agent"] = brain.is_player_bot   # U08 (T-131): the agent starts a holdout that is the player's to start
+			var sn: Interactable = _first(t.get("target", {}), null) as Interactable
+			w["start_node"] = sn if sn != null and sn.can_interact(player) else null
 			var pts: Array = params.get("points", [])
 			var sum: Vector3 = Vector3.ZERO
 			for pt: Variant in pts:
@@ -584,6 +606,8 @@ static func plan_hold(t: Dictionary, w: Dictionary) -> Dictionary:
 		if bool(w.get("holdout_running", false)):
 			return {"do": "hold", "pos": w.get("center", Vector3.ZERO), "radius": float(t.get("radius", 5.0))}
 		if str(t.get("start", "")) == "player":
+			if bool(w.get("is_agent", false)) and w.get("start_node") != null:
+				return {"do": "use", "node": w["start_node"]}
 			return {"do": "escort"}
 		return {"do": "wait"}
 	var charging: Dictionary = {}
@@ -1062,12 +1086,13 @@ func _anchor_state(a: Node3D, t: Dictionary, near_m: float) -> String:
 			return "charging"
 		if py.state == Pylon.State.ATTUNED:
 			return "done"
-		if py.can_interact(player) and Economy.get_scrip(player.player_id) >= int(Pylon.cfg().get("cost", 1500)) and (near_m <= 0.0 or _human_near(a.global_position, near_m)):
+		# U08 (T-131): the bot-mode agent is the player: it brings itself (a squad bot waits for the human)
+		if py.can_interact(player) and Economy.get_scrip(player.player_id) >= int(Pylon.cfg().get("cost", 1500)) 				and (near_m <= 0.0 or brain.is_player_bot or _human_near(a.global_position, near_m)):
 			return "start_ok"
 		return "idle"
 	if a.has_method("is_holding") and bool(a.call("is_holding")):
 		return "charging"
-	if str(t.get("start", "")) == "interact" and a is Interactable and (a as Interactable).can_interact(player) and (near_m <= 0.0 or _human_near(a.global_position, near_m)):
+	if str(t.get("start", "")) == "interact" and a is Interactable and (a as Interactable).can_interact(player) 			and (near_m <= 0.0 or brain.is_player_bot or _human_near(a.global_position, near_m)):
 		return "start_ok"
 	return "idle"
 

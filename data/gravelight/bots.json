@@ -32,6 +32,15 @@
     },
     "fallback_round": 4
   },
+  "late_kit": {
+    "_doc": "UPDATE 08 section 3 (T-130): from `round` on, every bot that spawns, respawns (a bleed-out), is revived or joins gets one random tonic at `perk_tier` (from the perks the map's machines sell; never one it holds, its bonus perk, a spawn-kit perk or an `exclude` one; no two bots the same), on top of its bonus perk, and `weapon` taught by the Crucible to `crucible_tier` (the Chicago Lament II), full. Bots alive when `round` starts get it then. Off with the 'Bot Bonus Perk' setting, with Classic Rules, or `enabled` false. The bot says a LATE_KIT line when it gears up.",
+    "enabled": true,
+    "round": 25,
+    "perk_tier": 3,
+    "weapon": "thompson_up",
+    "crucible_tier": 2,
+    "exclude": []
+  },
   "local_ai": {
     "_doc": "One bot (squad index bot_index) gets a planner that picks its objective: the map's easter egg steps, the power, doors, perks, guns, the Crucible, boards, or sticking with the team. In mode 'local' a local LLM served by Ollama (endpoint) makes the pick every decide_every_s from a short text summary of the match and a numbered option list (structured JSON output, the option ids as an enum); the first installed model in `models` is used and kept loaded for keep_alive. When Ollama is unreachable, slow (timeout_s) or answers nonsense, the scripted planner (each option's own score) decides instead, so the bot never stalls. autostart_ollama runs `ollama serve` (hidden) when the API is down and the exe is found. The bot then roams the whole map for its objectives (no leash) and fights from where it stands. speak: the LLM's short remark as a subtitle in the bot's voice, at most every speak_cooldown_s.",
     "bot_index": 0,

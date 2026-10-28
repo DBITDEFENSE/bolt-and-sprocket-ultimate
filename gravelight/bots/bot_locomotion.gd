@@ -332,6 +332,8 @@ func tick(delta: float) -> void:
 	_t_rev_cd -= delta
 	_tp_try_t -= delta
 	_sprint_out -= delta
+	if _fell_out(delta):
+		return
 	var me: Vector3 = player.global_position
 	# 1. where to: the mode's goal (follow / train recompute theirs)
 	match mode:
@@ -1376,6 +1378,39 @@ func _teleport_safe(goal: Vector3) -> bool:
 
 ## For the brain's "cut off from the leader" catch-up: a teleport near the leader under the same rule (no human
 ## sees the bot vanish or appear). True when it happened.
+## U08 (T-131): a bot in free fall for FALL_RESCUE_S (it slipped through a floor: seen at Kaltenbrunn's yard, a
+## Full Partner bot falling for the rest of the match with its egg step) is put back on the navmesh behind its leader
+## (or the nearest navmesh point to where it fell from). Map-independent: no fixed kill height.
+const FALL_RESCUE_S: float = 2.5
+var _fall_t: float = 0.0
+var _fall_from: Vector3 = Vector3.INF
+var fall_rescues: int = 0
+
+
+func _fell_out(delta: float) -> bool:
+	if player.is_on_floor() or player.velocity.y > -12.0:
+		_fall_t = 0.0
+		_fall_from = player.global_position
+		return false
+	_fall_t += delta
+	if _fall_t < FALL_RESCUE_S:
+		return false
+	_fall_t = 0.0
+	var l: Player = squad.leader_for_player(player) if squad != null else null
+	var base: Vector3 = l.global_position if l != null and l != player and is_instance_valid(l) else _fall_from
+	if not base.is_finite():
+		return false
+	var p: Vector3 = NavigationServer3D.map_get_closest_point(player.get_world_3d().navigation_map, base + Vector3.BACK * 1.5)
+	player.global_position = p + Vector3.UP * 0.05
+	player.velocity = Vector3.ZERO
+	_clear_path()
+	teleports += 1
+	fall_rescues += 1
+	BotMetrics.note(player.player_id, &"teleport", 1.0, "fell")
+	print("[loco] %s fell out of the world: back at %s" % [player.name, str(p.snapped(Vector3.ONE * 0.1))])
+	return true
+
+
 func teleport_near(leader: Player) -> bool:
 	if leader == null or not is_instance_valid(leader):
 		return false

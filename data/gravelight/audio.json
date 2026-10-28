@@ -1698,6 +1698,16 @@
    "pitch": [0.95, 1.05],
    "attenuation": "loud"
   },
+  "perk_tier4_sting": {
+   "files": [
+    "res://gravelight/audio/jingles/perk_tier4_sting_01.wav"
+   ],
+   "bus": "Jingles",
+   "volume_db": -3.0,
+   "max_voices": 1,
+   "pitch": [1.0, 1.0],
+   "attenuation": "world"
+  },
   "perks_lost": {
    "files": [
     "res://gravelight/audio/sfx/player/perks_lost_01.wav"
