@@ -180,6 +180,9 @@
           "perk": "ironhide_stout"
         },
         {
+          "door": "door_lab"
+        },
+        {
           "perk": "marathon_malt"
         },
         {
@@ -198,9 +201,9 @@
         }
       ],
       "train_at": [
+        "map01_headframe",
         "map01_turbines",
-        "map01_pews",
-        "map01_headframe"
+        "map01_pews"
       ],
       "egg": {
         "_doc": "U08 (T-131): the agent works the Requiem (BotEEHub.pick_for as the player): from round 2 once the Rail Yard is open, in the breaks; after Ironhide also mid-round when nothing is near. The Chapel bell (s4) needs a Crucible-taught gun, so the plan gets one after the StG-44.",

@@ -71,6 +71,10 @@ var scenario: String = "player3"
 var runs: int = 1
 var seed_base: int = 1
 var max_round: int = 0
+## U08 (T-131) --until-egg: a run ends when the map's main egg (its first quest) completes; the egg's result is
+## logged per run (egg_complete, egg_minutes, egg_last_step) and the batch prints the completion rate and mean time.
+var until_egg: bool = false
+var _egg_runs: Array = []   # [complete bool, minutes, last step]
 var speed: float = 1.0
 var max_minutes: float = -1.0   # < 0: the scenario's default (150; fernflug 240)
 var skill: String = "veteran"
@@ -178,6 +182,8 @@ func _ready() -> void:
 			map_key = a.substr(6)
 		elif a == "--god":
 			god = true
+		elif a == "--until-egg":
+			until_egg = true
 		elif a.begins_with("--trace="):
 			trace_s = float(a.substr(8))
 		elif a.begins_with("--orders="):
@@ -396,6 +402,8 @@ func _physics_process(delta: float) -> void:
 		_end_run("ending: renewed (RETAINED)")
 	elif scenario == "ee_full" and QuestManager.is_complete(&"map00_radio"):
 		_end_run("egg complete")
+	elif until_egg and _main_quest() != &"" and QuestManager.is_complete(_main_quest()):
+		_end_run("egg complete (%s)" % _main_quest())
 	elif max_round > 0 and RoundManager.current_round > max_round:
 		_end_run("reached round %d" % RoundManager.current_round)
 	elif scenario == "cousins" and _cousins_over():
@@ -603,6 +611,12 @@ func _cousins_over() -> bool:
 	return RoundManager.current_round > 10
 
 
+## The map's main egg: its first quest (MapRoot quest_files order), &"" for a map without one.
+func _main_quest() -> StringName:
+	var q: Array[StringName] = QuestManager.quest_ids()
+	return q[0] if not q.is_empty() else &""
+
+
 func _end_run(why: String) -> void:
 	if scenario == "fernflug":
 		_end_run_fernflug(why)
@@ -678,6 +692,19 @@ func _end_run(why: String) -> void:
 			_metrics.extra["ee_complete"] = QuestManager.is_complete(&"map00_radio")
 		for e: String in _ee_events:
 			print("[soak]   EE ", e)
+	var mq: StringName = _main_quest()
+	if mq != &"":
+		var done: bool = QuestManager.is_complete(mq)
+		var last: String = ""
+		for st: Variant in QuestManager.steps_of(mq):
+			if QuestManager.is_step_done(mq, StringName(str((st as Dictionary)["id"]))):
+				last = str((st as Dictionary)["id"])
+		_metrics.extra["egg_main"] = String(mq)
+		_metrics.extra["egg_complete"] = done
+		_metrics.extra["egg_minutes"] = snappedf(_game_t / 60.0, 0.1)
+		_metrics.extra["egg_last_step"] = last
+		_egg_runs.append([done, _game_t / 60.0, last])
+		print("[soak] EGG %s: %s at %.1f game min (last step done: %s)" % [mq, "COMPLETE" if done else "not complete", _game_t / 60.0, last if last != "" else "none"])
 	_metrics.extra["wall_s"] = snappedf(float(Time.get_ticks_msec() - _wall0) / 1000.0, 0.1)
 	_metrics.extra["frame_ms"] = snappedf(_phys_us / maxf(1.0, float(_frames)) / 1000.0, 0.01)
 	_metrics.extra["speed"] = speed
@@ -819,6 +846,14 @@ func _write_table_cols(dir: String, cols: Array) -> void:
 	print("[soak] table -> %s" % path)
 	for l: String in lines:
 		print("[soak] ", l)
+	if not _egg_runs.is_empty():
+		var n_ok: int = 0
+		var mins: float = 0.0
+		for er: Variant in _egg_runs:
+			if bool((er as Array)[0]):
+				n_ok += 1
+				mins += float((er as Array)[1])
+		print("[soak] EGG RATE %d/%d complete; mean completion %.1f game min" % [n_ok, _egg_runs.size(), mins / maxf(1.0, float(n_ok))])
 	print("[soak] RESULT PASS (%d run(s) logged)" % _results.size())
 	Engine.time_scale = 1.0
 	get_tree().quit(0)
