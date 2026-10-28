@@ -90,9 +90,12 @@
     "alpha": 0.9
   },
   "hitmarker": {
-    "hit": {"gap": 7.0, "len": 7.0, "width": 2.0, "seconds": 0.18},
-    "head": {"gap": 9.0, "len": 9.0, "width": 2.0, "seconds": 0.26},
-    "kill": {"gap": 8.0, "len": 12.0, "width": 3.0, "seconds": 0.34}
+    "_doc": "Per state gap / len / width (px at 1080p), seconds, pop (how much bigger it starts). T-128: hits within streak_s of each other build a streak, each streak_step bigger, up to streak_max; tilt_deg: a random tilt per mark; ring: a kill's ring racing out from..to px.",
+    "hit": {"gap": 7.0, "len": 7.0, "width": 2.0, "seconds": 0.18, "pop": 0.35},
+    "head": {"gap": 9.0, "len": 9.0, "width": 2.0, "seconds": 0.28, "pop": 0.5},
+    "kill": {"gap": 8.0, "len": 13.0, "width": 3.0, "seconds": 0.4, "pop": 0.7},
+    "streak_s": 0.3, "streak_step": 0.06, "streak_max": 5, "tilt_deg": 6.0,
+    "ring": {"from": 10.0, "to": 34.0, "width": 2.5, "seconds": 0.3}
   },
   "minimap": {
     "ring_px": 16,

@@ -942,7 +942,22 @@ def gen_melee_lethal():
         r = rng_for(f"hm{i}")
         x = zeros(0.12)
         place(x, mech_click(r, r.uniform(3800, 4400), 0.05, 0.003), 0.0)
+        # T-128: a little body under the tick (a muffled knock), so a hit reads as landing, not just a click
+        place(x, kick(r, 1.0, r.uniform(240, 280), 150, 0.014, 0.08), 0.0, 0.45)
         emit("hitmarker", f"sfx/weapons/hitmarker_{i:02d}", x, -3.0, bus="SFX", volume_db=-2.0, max_voices=3, pitch=[0.98, 1.02])
+    for i in variants(3):
+        # T-128: the kill confirm: a deep, short thock (felt more than heard), a bright double tick on top and a
+        # breath of air after, distinct from the hit's tick and the headshot's crack
+        r = rng_for(f"kc{i}")
+        dur = 0.32
+        x = zeros(dur)
+        place(x, kick(r, 1.0, r.uniform(150, 175), 62, 0.055, 0.22), 0.0, 1.0)
+        place(x, mech_click(r, r.uniform(3000, 3400), 0.06, 0.004), 0.0, 0.7)
+        place(x, mech_click(r, r.uniform(4600, 5200), 0.04, 0.003), 0.028, 0.45)
+        t = tax(N(0.2))
+        air = nrm(bp(white(r, 0.2), 1400, 5200)) * np.exp(-t / 0.05)
+        place(x, air, 0.01, 0.18)
+        emit("kill_confirm", f"sfx/weapons/kill_confirm_{i:02d}", x, -2.0, bus="SFX", volume_db=-1.0, max_voices=2, pitch=[0.97, 1.03])
     for i in variants(3):
         r = rng_for(f"hs{i}")
         dur = 0.5

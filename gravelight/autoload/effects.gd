@@ -24,7 +24,7 @@ extends Node3D
 
 const IMPACTS: int = 48
 const BLOOD: int = 16
-const TRACERS: int = 12
+const TRACERS: int = 48
 const BLASTS: int = 4
 const STATICS: int = 4
 const STATIC_LIFE: float = 0.42
@@ -80,8 +80,13 @@ var _blood: Array[CPUParticles3D] = []
 var _dirt: Array[CPUParticles3D] = []    # the rise from the ground (T-085): snow / earth / stone sprays and puffs
 var _dirt_meshes: Dictionary = {}        # surface class -> Mesh
 var _ndirt: int = 0
-var _tracers: Array[MeshInstance3D] = []
+var _tracers: Array[Node3D] = []
 var _tracer_life: Array[float] = []
+## T-128: each live tracer's flight: {from, dir, total, skip, speed, length, t}.
+var _tracer_fly: Array[Dictionary] = []
+## T-128: [core, glow] materials per tracer look (normal / upgraded), additive.
+var _tracer_mats: Dictionary = {}
+var _tracer_cfg: Dictionary = {}
 var _blasts: Array[Node3D] = []
 var _blast_life: Array[float] = []
 var _statics: Array[Node3D] = []
@@ -186,21 +191,7 @@ func _ready() -> void:
 		add_child(p)
 		_blood.append(p)
 	_build_dirt()
-	var tracer_mat: StandardMaterial3D = StandardMaterial3D.new()
-	tracer_mat.albedo_color = Color(1.0, 0.85, 0.55, 0.5)
-	tracer_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	tracer_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	var tracer_mesh: BoxMesh = BoxMesh.new()
-	tracer_mesh.size = Vector3(0.008, 0.008, 1.0)
-	for i: int in TRACERS:
-		var t: MeshInstance3D = MeshInstance3D.new()
-		t.mesh = tracer_mesh
-		t.material_override = tracer_mat
-		t.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		t.hide()
-		add_child(t)
-		_tracers.append(t)
-		_tracer_life.append(0.0)
+	_build_tracers()
 	var fire_mat: StandardMaterial3D = StandardMaterial3D.new()
 	fire_mat.albedo_color = Color(1.0, 0.55, 0.2, 0.8)
 	fire_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -301,11 +292,7 @@ func _process(delta: float) -> void:
 			_impact_life[i] -= delta
 			if _impact_life[i] <= 0.0:
 				_impacts[i].hide()
-	for i: int in TRACERS:
-		if _tracer_life[i] > 0.0:
-			_tracer_life[i] -= delta
-			if _tracer_life[i] <= 0.0:
-				_tracers[i].hide()
+	_tick_tracers(delta)
 	for i: int in BLASTS:
 		if _blast_life[i] > 0.0:
 			_blast_life[i] -= delta
@@ -520,17 +507,116 @@ func dust_puff(pos: Vector3, kind: String, amount: int = 10) -> void:
 	p.emitting = true
 
 
-func tracer(from: Vector3, to: Vector3) -> void:
+## T-128 (the owner: "make sure ... tracers and hitmarkers feel satisfying"): a tracer is a short bright streak with a
+## soft glow that flies from the muzzle to the hit at the class's visual speed and drains into the impact (it used to
+## be a muzzle-to-hit line shown for 0.04 s). vfx.json "tracer": per-class length, width and speed; the first metres
+## in front of your own camera are skipped so the streak never smears across the sights; a Crucible-taught gun's
+## tracers burn violet (the Nachtglas). `cls` is the weapons.json class; `first_person` is the local shooter's own.
+func tracer(from: Vector3, to: Vector3, upgraded: bool = false, cls: StringName = &"", first_person: bool = false) -> void:
+	var cfg: Dictionary = _tracer_cfg
 	var dist: float = from.distance_to(to)
-	if dist < 1.5:
+	if dist < float(cfg.get("min_dist_m", 2.0)):
 		return
-	var t: MeshInstance3D = _tracers[_nt]
-	_tracer_life[_nt] = 0.04
+	var look: Dictionary = (cfg.get("classes", {}) as Dictionary).get(String(cls), (cfg.get("classes", {}) as Dictionary).get("default", {}))
+	var i: int = _nt
 	_nt = (_nt + 1) % TRACERS
-	t.show()
-	t.global_position = from.lerp(to, 0.5)
-	t.look_at(to, Vector3.UP if absf((to - from).normalized().dot(Vector3.UP)) < 0.98 else Vector3.RIGHT)
-	t.scale = Vector3(1, 1, dist)
+	var node: Node3D = _tracers[i]
+	var mats: Array = _tracer_mats[&"upgraded" if upgraded else &"normal"]
+	var core: MeshInstance3D = node.get_child(0)
+	var glow: MeshInstance3D = node.get_child(1)
+	core.material_override = mats[0]
+	glow.material_override = mats[1]
+	var w: float = float(look.get("width", 0.012))
+	core.scale = Vector3(w, w, 1.0)
+	var gw: float = w * float(cfg.get("glow_width_mult", 3.5))
+	glow.scale = Vector3(gw, gw, 1.0)
+	var alpha: float = float(look.get("alpha", 0.85))
+	node.set_meta("alpha", alpha)
+	var total: float = minf(dist, float(cfg.get("max_m", 160.0)))
+	_tracer_fly[i] = {"from": from, "dir": (to - from) / dist, "total": total,
+		"skip": minf(total * 0.5, float(cfg.get("first_person_skip_m" if first_person else "remote_skip_m", 0.5))),
+		"speed": float(look.get("speed", cfg.get("speed", 380.0))), "length": float(look.get("length", 4.0)), "t": 0.0}
+	_tracer_life[i] = 1.0
+	node.hide()   # shown on its first tick, once it has a length
+
+
+## The tracer pool: two stretched boxes per tracer (a hot core and a wider, fainter glow), additive and unshaded.
+func _build_tracers() -> void:
+	_tracer_cfg = (_cfg_table() as Dictionary).get("tracer", {})
+	for key: StringName in [&"normal", &"upgraded"]:
+		var col: Array = _tracer_cfg.get("upgraded_color" if key == &"upgraded" else "color", [1.0, 0.72, 0.38])
+		var core_col: Array = _tracer_cfg.get("upgraded_core" if key == &"upgraded" else "core", [1.6, 1.35, 1.0])
+		_tracer_mats[key] = [_tracer_mat(Color(float(core_col[0]), float(core_col[1]), float(core_col[2]), 1.0)),
+			_tracer_mat(Color(float(col[0]), float(col[1]), float(col[2]), float(_tracer_cfg.get("glow_alpha", 0.28))))]
+	var box: BoxMesh = BoxMesh.new()
+	box.size = Vector3.ONE
+	for i: int in TRACERS:
+		var node: Node3D = Node3D.new()
+		node.name = "Tracer"
+		for part: String in ["Core", "Glow"]:
+			var mi: MeshInstance3D = MeshInstance3D.new()
+			mi.name = part
+			mi.mesh = box
+			mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			mi.gi_mode = GeometryInstance3D.GI_MODE_DISABLED
+			node.add_child(mi)
+		node.hide()
+		add_child(node)
+		_tracers.append(node)
+		_tracer_life.append(0.0)
+		_tracer_fly.append({})
+
+
+func _cfg_table() -> Dictionary:
+	return GLData.table("vfx")
+
+
+static func _tracer_mat(c: Color) -> StandardMaterial3D:
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.albedo_color = c
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.no_depth_test = false
+	m.disable_receive_shadows = true
+	m.disable_fog = true
+	return m
+
+
+## Flies every live tracer: the head runs out at its speed and stops at the hit; the tail follows `length` behind
+## and drains into the hit; the streak fades over its last stretch.
+func _tick_tracers(delta: float) -> void:
+	for i: int in TRACERS:
+		if _tracer_life[i] <= 0.0:
+			continue
+		var f: Dictionary = _tracer_fly[i]
+		f["t"] = float(f["t"]) + delta
+		var run: float = float(f["speed"]) * float(f["t"])
+		var total: float = float(f["total"])
+		var head: float = minf(run, total)
+		var tail: float = maxf(float(f["skip"]), run - float(f["length"]))
+		var node: Node3D = _tracers[i]
+		if tail >= total - 0.02:
+			_tracer_life[i] = 0.0
+			node.hide()
+			continue
+		var seg: float = head - tail
+		if seg < 0.02:
+			node.hide()
+			continue
+		var dir: Vector3 = f["dir"]
+		var from: Vector3 = f["from"]
+		var mid: Vector3 = from + dir * ((head + tail) * 0.5)
+		var up: Vector3 = Vector3.UP if absf(dir.dot(Vector3.UP)) < 0.98 else Vector3.RIGHT
+		node.global_transform = Transform3D(Basis.looking_at(dir, up), mid)
+		for c: Node in node.get_children():
+			var mi: MeshInstance3D = c as MeshInstance3D
+			mi.scale.z = seg
+		# fade in over the first metre it shows, out as it drains into the hit
+		var a: float = float(node.get_meta("alpha", 0.85)) * clampf(seg / minf(1.0, float(f["length"])), 0.0, 1.0)
+		for c2: Node in node.get_children():
+			(c2 as GeometryInstance3D).transparency = 1.0 - a
+		node.show()
 
 
 func explosion(pos: Vector3, radius: float) -> void:
