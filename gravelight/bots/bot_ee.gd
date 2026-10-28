@@ -56,6 +56,17 @@ func setup(b: BotBrain) -> void:
 	player = b.player
 
 
+## U08 (T-131): holding a zone that keeps the round open (a charging pylon, a running holdout): nothing may pull the
+## bot off it (the agent's trainer would leave the pylon empty and the round could never end).
+func holding_now() -> bool:
+	if not active() or str(_plan.get("do", "")) != "hold":
+		return false
+	var n: Node = _plan.get("node") as Node
+	if n is Pylon:
+		return (n as Pylon).state == Pylon.State.CHARGING
+	return true
+
+
 func active() -> bool:
 	return not task.is_empty()
 
