@@ -710,7 +710,20 @@ func tick(delta: float, intent: Dictionary) -> void:
 	if not (bool(intent.get("fire_held", false)) and w != null and w.fire_mode == "auto") and not _fired_this_frame:
 		_fire_cd = maxf(_fire_cd, 0.0)
 	_look_in += intent.get("look_delta", Vector2.ZERO) as Vector2
-	_animate(delta, sprinting)
+	if animate_per_frame:
+		_anim_sprinting = sprinting   # T-133: the viewmodel animates in _process, every rendered frame
+	else:
+		_animate(delta, sprinting)
+
+
+## T-133 (smooth motion): the local human's viewmodel animates at the render rate (Player.set_smooth_view).
+var animate_per_frame: bool = false
+var _anim_sprinting: bool = false
+
+
+func _process(delta: float) -> void:
+	if animate_per_frame and player != null and player.is_local and not player.bot_driven and not mirror:
+		_animate(delta, _anim_sprinting)
 
 
 func _select(index: int) -> void:

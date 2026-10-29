@@ -40,6 +40,13 @@ var player_id: int = 1
 var character_id: StringName = &"dutch"
 ## false = a teammate's puppet on this peer (set by the map before add_child).
 var is_local: bool = true
+## T-133 "Smooth motion (high refresh)": the local human's camera (pitch, bob, recoil, roll, FOV) and viewmodel update
+## every rendered frame instead of every 60 Hz physics tick, and the eye follows the body's position interpolated
+## between ticks, so a 144 / 240 Hz screen doesn't show the view in 60 Hz steps. Bots and tools keep the tick path.
+var smooth_view: bool = false
+var _view_live: bool = false
+var _tick_prev: Vector3 = Vector3.INF
+var _tick_cur: Vector3 = Vector3.INF
 ## An AI teammate (with is_local = false): simulated here, driven by its BotBrain (set before add_child).
 var is_bot: bool = false
 var remote_body: RemoteBody = null
@@ -204,6 +211,7 @@ func _ready() -> void:
 	weapons.name = "Weapons"
 	camera.add_child(weapons)
 	weapons.setup(self)
+	set_smooth_view(bool(GLSettings.values.get("smooth_motion", true)) and DisplayServer.get_name() != "headless")
 	_heartbeat = AudioDirector.make_loop_2d("heartbeat", self)
 	GLBus.explosion.connect(_on_explosion)
 	GLBus.perks_changed.connect(_on_perks_changed)
@@ -278,6 +286,30 @@ func _unhandled_input(event: InputEvent) -> void:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 var _wheel_swap: bool = false
+
+
+## T-133: the smooth-motion switch (Settings > Video), applied live.
+func set_smooth_view(on: bool) -> void:
+	smooth_view = on
+	_tick_prev = Vector3.INF
+	_tick_cur = Vector3.INF
+	if weapons != null:
+		weapons.animate_per_frame = on
+
+
+## T-133: with smooth motion, the camera and the eye's tick interpolation run at the render rate.
+func _process(delta: float) -> void:
+	if not smooth_view or not is_local or bot_driven or camera == null:
+		return
+	if not _view_live or GameState.phase != GameState.Phase.PLAYING or downed or spectating or GameState.input_blocked:
+		_view_live = false
+		return
+	_update_camera(delta)
+	if _tick_prev.is_finite() and _tick_cur.is_finite():
+		var interp: Vector3 = _tick_prev.lerp(_tick_cur, Engine.get_physics_interpolation_fraction())
+		var off: Vector3 = global_basis.inverse() * (interp - global_position)
+		head.position += Vector3(off.x, off.y, 0.0)
+		head.position.z = off.z
 
 
 func _apply_look(rel: Vector2) -> void:
@@ -359,6 +391,7 @@ func _physics_process(delta: float) -> void:
 	if bot_driven:
 		return   # T-071: the brain moves, aims and fires this body, then calls bot_view_tick (camera, viewmodel)
 	if GameState.phase != GameState.Phase.PLAYING or downed or spectating:
+		_view_live = false
 		_set_heartbeat(false)
 		if last_stand and GameState.phase == GameState.Phase.PLAYING:
 			_last_stand_tick(delta)
@@ -373,7 +406,14 @@ func _physics_process(delta: float) -> void:
 	_update_health(delta)
 	_update_interaction(delta)
 	weapons.tick(delta, _gather_intent())
-	_update_camera(delta)
+	_view_live = true
+	if smooth_view:
+		_tick_prev = _tick_cur if _tick_cur.is_finite() else global_position
+		_tick_cur = global_position
+		if _tick_prev.distance_to(_tick_cur) > 2.0:
+			_tick_prev = _tick_cur   # a teleport: no smear through space
+	else:
+		_update_camera(delta)
 
 
 ## The local human's movement intent, from the input actions (the same reads the movement code made before T-056).

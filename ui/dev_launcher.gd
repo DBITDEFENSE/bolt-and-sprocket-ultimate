@@ -273,6 +273,8 @@ func _spawn_tool(scene: String, args: Array, headless: bool) -> void:
 	argv.append_array(["--path", ProjectSettings.globalize_path("res://"), scene, "--"])
 	for a: Variant in args:
 		argv.append(str(a))
+	if not headless and OS.get_cmdline_user_args().has("--frame-log"):
+		argv.append("--frame-log")   # the frame logger follows a watched window too
 	var pid: int = OS.create_process(OS.get_executable_path(), argv, false)
 	if pid <= 0:
 		_status.text = "Could not start %s" % scene

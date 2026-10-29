@@ -16,11 +16,28 @@ const PAD_AXES: Dictionary = {
 	"TRIGGER_LEFT": JOY_AXIS_TRIGGER_LEFT, "TRIGGER_RIGHT": JOY_AXIS_TRIGGER_RIGHT,
 }
 const COLORBLIND_MODES: PackedStringArray = ["off", "protanopia", "deuteranopia", "tritanopia"]
+## T-133: the graphics presets. Each preset is a full set of the individual gfx_* settings (Settings > Video): picking
+## a preset writes them all; changing one afterwards keeps the rest (the preset reads "Custom").
+const PRESET_ORDER: PackedStringArray = ["low", "medium", "high", "ultra"]
 const PRESETS: Dictionary = {
-	"low": {"msaa": Viewport.MSAA_DISABLED, "scale": 0.75, "dir_shadow": 1024, "pos_shadow": 1024, "vol_fog": false, "sdfgi": false, "ssil": false, "ssr": false},
-	"medium": {"msaa": Viewport.MSAA_2X, "scale": 0.9, "dir_shadow": 2048, "pos_shadow": 2048, "vol_fog": true, "sdfgi": false, "ssil": true, "ssr": false},
-	"high": {"msaa": Viewport.MSAA_2X, "scale": 1.0, "dir_shadow": 4096, "pos_shadow": 4096, "vol_fog": true, "sdfgi": true, "ssil": true, "ssr": true},
+	"low": {"gfx_aa": "fxaa", "gfx_scale": 0.75, "gfx_upscaler": "fsr1", "gfx_shadows": "low", "gfx_ao": "low", "gfx_gi": false,
+		"gfx_ssil": false, "gfx_ssr": false, "gfx_fog": "off", "gfx_lod": "low"},
+	"medium": {"gfx_aa": "msaa2", "gfx_scale": 0.9, "gfx_upscaler": "fsr1", "gfx_shadows": "medium", "gfx_ao": "medium", "gfx_gi": false,
+		"gfx_ssil": true, "gfx_ssr": false, "gfx_fog": "low", "gfx_lod": "medium"},
+	"high": {"gfx_aa": "msaa2", "gfx_scale": 1.0, "gfx_upscaler": "bilinear", "gfx_shadows": "high", "gfx_ao": "high", "gfx_gi": true,
+		"gfx_ssil": true, "gfx_ssr": true, "gfx_fog": "high", "gfx_lod": "high"},
+	"ultra": {"gfx_aa": "msaa4_taa", "gfx_scale": 1.0, "gfx_upscaler": "bilinear", "gfx_shadows": "ultra", "gfx_ao": "ultra", "gfx_gi": true,
+		"gfx_ssil": true, "gfx_ssr": true, "gfx_fog": "ultra", "gfx_lod": "ultra"},
 }
+## The quality tiers behind the individual settings (RenderingServer's global quality, per tier).
+const SHADOW_Q: Dictionary = {   # [directional atlas, positional atlas, soft filter quality 0..5]
+	"low": [1024, 1024, 1], "medium": [2048, 2048, 2], "high": [4096, 4096, 3], "ultra": [8192, 8192, 4]}
+const AO_Q: Dictionary = {"low": 0, "medium": 1, "high": 2, "ultra": 3}            # SSAO / SSIL quality (VERY_LOW..HIGH / ULTRA)
+const FOG_Q: Dictionary = {"low": [64, 64], "high": [96, 96], "ultra": [160, 128]}   # volumetric fog [volume size, depth]
+const LOD_Q: Dictionary = {"low": 2.0, "medium": 1.4, "high": 1.0, "ultra": 0.5}  # mesh LOD threshold (px): lower = more detail
+const SDFGI_RAYS: Dictionary = {"low": 0, "medium": 1, "high": 2, "ultra": 4}     # RenderingServer.ENV_SDFGI_RAY_COUNT_*
+const AA_MODES: PackedStringArray = ["off", "fxaa", "smaa", "msaa2", "msaa4", "msaa8", "taa", "msaa4_taa"]
+const UPSCALERS: PackedStringArray = ["bilinear", "fsr1", "fsr2"]
 
 var values: Dictionary = {
 	"fov": 80.0,
@@ -35,6 +52,9 @@ var values: Dictionary = {
 	"colorblind": "off",
 	"film_grain": true,
 	"graphics_preset": "high",
+	"smooth_motion": true,         # T-133: camera + viewmodel at the render rate, the eye interpolated (high-refresh screens)
+	"brightness": 1.0,             # T-133: scales each map's own adjustment brightness (0.7..1.4)
+	"gfx_sharpness": 0.4,          # T-133: the FSR sharpening (0 = sharpest, 2 = softest)
 	"lean_enabled": true,
 	"sprint_mode": "hold",     # hold / toggle (Update 02 §1)
 	"prone_enabled": false,    # hold crouch to go prone (Update 02 §1)
@@ -78,6 +98,8 @@ var _grain_rect: ColorRect
 
 func _ready() -> void:
 	load_settings()
+	if OS.get_cmdline_user_args().has("--frame-log"):   # dev: a played session's frame times (tools_src/frame_log.gd)
+		add_child((load("res://gravelight/tools_src/frame_log.gd") as GDScript).new())
 	_build_overlays()
 	_overlay.visible = false   # Gravelight only: see activate() (T-024)
 	get_tree().node_added.connect(_on_node_added)
@@ -109,6 +131,9 @@ func get_f(key: String) -> float:
 
 ## Sets a value, saves, and re-applies anything visual or audible.
 func set_value(key: String, v: Variant) -> void:
+	if key == "graphics_preset" and PRESETS.has(str(v)):
+		set_preset(str(v))   # T-133: a preset writes its individual settings
+		return
 	values[key] = v
 	save_settings()
 	apply_visuals()
@@ -345,20 +370,100 @@ func preset() -> Dictionary:
 	return PRESETS.get(str(values.get("graphics_preset", "high")), PRESETS["high"])
 
 
+## T-133: an individual graphics setting: the player's own choice, else the current preset's.
+func gfx(key: String) -> Variant:
+	if values.has(key):
+		return values[key]
+	return preset().get(key, PRESETS["high"].get(key))
+
+
+## T-133: picks a preset and writes its individual settings (one save, one apply).
+func set_preset(name_: String) -> void:
+	if not PRESETS.has(name_):
+		return
+	values["graphics_preset"] = name_
+	for k: Variant in (PRESETS[name_] as Dictionary).keys():
+		values[str(k)] = PRESETS[name_][k]
+	save_settings()
+	apply_visuals()
+
+
+## T-133: the preset the individual settings match ("custom" when any differs). Pure over `vals`.
+static func matching_preset(vals: Dictionary) -> String:
+	for pn: String in PRESET_ORDER:
+		var ok: bool = true
+		for k: Variant in (PRESETS[pn] as Dictionary).keys():
+			if vals.has(str(k)) and vals[str(k)] != PRESETS[pn][k]:
+				ok = false
+				break
+		if ok:
+			return pn
+	return "custom"
+
+
+## T-133: the anti-aliasing mode on a viewport (MSAA, the screen-space filter, TAA).
+static func apply_aa(vp: Viewport, mode: String) -> void:
+	vp.msaa_3d = Viewport.MSAA_DISABLED
+	vp.screen_space_aa = Viewport.SCREEN_SPACE_AA_DISABLED
+	vp.use_taa = false
+	match mode:
+		"fxaa":
+			vp.screen_space_aa = Viewport.SCREEN_SPACE_AA_FXAA
+		"smaa":
+			vp.screen_space_aa = ClassDB.class_get_integer_constant(&"Viewport", &"SCREEN_SPACE_AA_SMAA") as Viewport.ScreenSpaceAA \
+				if ClassDB.class_has_integer_constant(&"Viewport", &"SCREEN_SPACE_AA_SMAA") else Viewport.SCREEN_SPACE_AA_FXAA
+		"msaa2":
+			vp.msaa_3d = Viewport.MSAA_2X
+		"msaa4":
+			vp.msaa_3d = Viewport.MSAA_4X
+		"msaa8":
+			vp.msaa_3d = Viewport.MSAA_8X
+		"taa":
+			vp.use_taa = true
+		"msaa4_taa":
+			vp.msaa_3d = Viewport.MSAA_4X
+			vp.use_taa = true
+
+
 func apply_visuals() -> void:
 	if _cb_rect != null:
 		var mode: int = maxi(0, COLORBLIND_MODES.find(str(values.get("colorblind", "off"))))
 		_cb_rect.visible = mode > 0
 		(_cb_rect.material as ShaderMaterial).set_shader_parameter("mode", mode)
 		_grain_rect.visible = bool(values.get("film_grain", true))
-	var p: Dictionary = preset()
 	var vp: Viewport = get_tree().root
-	vp.msaa_3d = int(p["msaa"]) as Viewport.MSAA
-	vp.scaling_3d_scale = float(p["scale"])
-	vp.positional_shadow_atlas_size = int(p["pos_shadow"])
-	RenderingServer.directional_shadow_atlas_set_size(int(p["dir_shadow"]), true)
+	apply_aa(vp, str(gfx("gfx_aa")))
+	vp.use_debanding = true   # T-133: no banding in the dark gradients (fog, the cellar's lamplight)
+	var scale: float = clampf(float(gfx("gfx_scale")), 0.5, 1.0)
+	vp.scaling_3d_scale = scale
+	match str(gfx("gfx_upscaler")):
+		"fsr1":
+			vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_FSR if scale < 0.999 else Viewport.SCALING_3D_MODE_BILINEAR
+		"fsr2":
+			vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_FSR2   # also a temporal AA at 100%
+		_:
+			vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR
+	vp.fsr_sharpness = clampf(float(values.get("gfx_sharpness", 0.4)), 0.0, 2.0)
+	vp.mesh_lod_threshold = float(LOD_Q.get(str(gfx("gfx_lod")), 1.0))
+	var sq: Array = SHADOW_Q.get(str(gfx("gfx_shadows")), SHADOW_Q["high"])
+	vp.positional_shadow_atlas_size = int(sq[1])
+	RenderingServer.directional_shadow_atlas_set_size(int(sq[0]), true)
+	RenderingServer.directional_soft_shadow_filter_set_quality(int(sq[2]) as RenderingServer.ShadowQuality)
+	RenderingServer.positional_soft_shadow_filter_set_quality(int(sq[2]) as RenderingServer.ShadowQuality)
+	var aq: int = int(AO_Q.get(str(gfx("gfx_ao")), 2))
+	RenderingServer.environment_set_ssao_quality(aq as RenderingServer.EnvironmentSSAOQuality, aq <= 1, 0.5, 2, 50.0, 300.0)
+	RenderingServer.environment_set_ssil_quality(aq as RenderingServer.EnvironmentSSILQuality, aq <= 1, 0.5, 4, 50.0, 300.0)
+	RenderingServer.environment_set_sdfgi_ray_count(int(SDFGI_RAYS.get(str(gfx("gfx_shadows")), 2)) as RenderingServer.EnvironmentSDFGIRayCount)
+	RenderingServer.environment_set_ssr_roughness_quality(mini(aq, 3) as RenderingServer.EnvironmentSSRRoughnessQuality)
+	var fq: Array = FOG_Q.get(str(gfx("gfx_fog")), FOG_Q["high"])
+	RenderingServer.environment_set_volumetric_fog_volume_size(int(fq[0]), int(fq[1]))
+	RenderingServer.environment_set_volumetric_fog_filter_active(true)
 	for n: Node in get_tree().root.find_children("*", "WorldEnvironment", true, false):
 		_apply_env(n as WorldEnvironment)
+	for pn: Node in get_tree().get_nodes_in_group(&"players"):
+		var pl: Player = pn as Player
+		if pl != null and pl.is_local and pl.camera != null and pl.camera.current:
+			pl.set_smooth_view(bool(values.get("smooth_motion", true)) and DisplayServer.get_name() != "headless")
 	if active:
 		apply_aspect()
 
@@ -386,13 +491,20 @@ func _apply_env(we: WorldEnvironment) -> void:
 	if we == null or we.environment == null:
 		return
 	var env: Environment = we.environment
-	var p: Dictionary = preset()
-	env.volumetric_fog_enabled = bool(p["vol_fog"])
-	for fx: String in ["sdfgi", "ssil", "ssr"]:
+	var allow: Dictionary = {"volumetric_fog": str(gfx("gfx_fog")) != "off", "sdfgi": bool(gfx("gfx_gi")), "ssil": bool(gfx("gfx_ssil")),
+		"ssr": bool(gfx("gfx_ssr")), "ssao": str(gfx("gfx_ao")) != "off"}
+	for fx: String in allow.keys():
 		var key: String = "gl_want_" + fx
 		if not env.has_meta(key):
 			env.set_meta(key, bool(env.get(fx + "_enabled")))
-		env.set(fx + "_enabled", bool(env.get_meta(key)) and bool(p.get(fx, true)))
+		env.set(fx + "_enabled", bool(env.get_meta(key)) and bool(allow[fx]))
+	# T-133: brightness scales the map's own grade (its adjustment brightness, remembered the first time)
+	if not env.has_meta("gl_base_brightness"):
+		env.set_meta("gl_base_brightness", env.adjustment_brightness if env.adjustment_enabled else 1.0)
+	var b: float = clampf(float(values.get("brightness", 1.0)), 0.6, 1.5)
+	if not is_equal_approx(b, 1.0) or env.adjustment_enabled:
+		env.adjustment_enabled = true
+		env.adjustment_brightness = float(env.get_meta("gl_base_brightness")) * b
 
 
 ## The shared game hosts several modes: Gravelight's bindings, screen overlays (colorblind, film grain) and

@@ -129,8 +129,8 @@ func pull_from_gravelight() -> void:
 		if not glv.has(gk):
 			continue
 		var v: Variant = glv[gk]
-		if k == "quality" and str(values.get("quality", "")) == "ultra" and str(v) == "high":
-			continue   # Gravelight has no ultra; keep ours
+		if k == "quality" and str(v) == "custom":
+			continue   # T-133: a custom Gravelight mix has no core equivalent; keep ours
 		values[k] = v
 	apply_all()
 
