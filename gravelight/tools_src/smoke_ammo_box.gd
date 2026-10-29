@@ -7,7 +7,7 @@ extends Node
 
 const MAPS: Array = [
 	["map00", "res://gravelight/maps/map00_crossroads/map00.tscn", 4],   # + the Old Cellar's (T-051), + the Grounds' (T-080)
-	["map01", "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", 4],
+	["map01", "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", 5],   # T-123: + the spawn yard's box
 	["map02", "res://gravelight/maps/map02_totenhafen/map02.tscn", 4],
 ]
 

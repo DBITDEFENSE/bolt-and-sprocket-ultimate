@@ -186,11 +186,7 @@ func _audio() -> void:
 
 
 func _video() -> void:
-	var presets: PackedStringArray = ["low", "medium", "high"]
-	var cur: int = maxi(0, presets.find(str(GLSettings.values.get("graphics_preset", "high"))))
-	content.add_child(MenuKit.row("Graphics preset", MenuKit.options(PackedStringArray(["Low", "Medium", "High"]), cur,
-		func(i: int) -> void: GLSettings.set_value("graphics_preset", presets[i]))))
-	content.add_child(MenuKit.para("Low: no volumetric fog, smaller shadows, 75% render scale. Medium: 90% scale. High: full.", 16, MenuKit.DIM))
+	_graphics()
 	content.add_child(MenuKit.check("Film grain", bool(GLSettings.values.get("film_grain", true)), _setter("film_grain")))
 	var gore_levels: PackedStringArray = ["off", "low", "full"]
 	var gcur: int = maxi(0, gore_levels.find(str(GLSettings.values.get("gore", "full"))))
@@ -211,6 +207,57 @@ func _video() -> void:
 	content.add_child(MenuKit.check("Fullscreen", fs, func(on: bool) -> void:
 		if DisplayServer.get_name() != "headless":
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if on else DisplayServer.WINDOW_MODE_WINDOWED)))
+
+
+## T-133: the graphics block. A preset fills in every setting below it; change any one and the preset reads Custom.
+func _graphics() -> void:
+	var g: Node = GLSettings
+	var names: PackedStringArray = ["Low", "Medium", "High", "Ultra", "Custom"]
+	var now: String = GLSettings.matching_preset(_gfx_values())
+	var pi: int = GLSettings.PRESET_ORDER.find(now)
+	content.add_child(MenuKit.row("Graphics preset", MenuKit.options(names, pi if pi >= 0 else 4, func(i: int) -> void:
+		if i < GLSettings.PRESET_ORDER.size():
+			GLSettings.set_preset(GLSettings.PRESET_ORDER[i])
+			rebuild())))
+	content.add_child(MenuKit.para("Low and Medium render below full resolution and upscale it; High is full quality; Ultra adds 4x MSAA with TAA, 8K shadows, the best AO, fog and level of detail (a fast GPU: RTX 3080 and up).", 16, MenuKit.DIM))
+	_choice("Anti-aliasing", "gfx_aa", GLSettings.AA_MODES, ["Off", "FXAA (cheap, soft)", "SMAA (sharp)", "MSAA 2x", "MSAA 4x", "MSAA 8x", "TAA (smoothest, softer in motion)", "MSAA 4x + TAA (best)"])
+	content.add_child(MenuKit.row("Render scale", MenuKit.slider(50, 100, 5, float(g.call("gfx", "gfx_scale")) * 100.0, func(v: float) -> void:
+		GLSettings.set_value("gfx_scale", v / 100.0))))
+	_choice("Upscaler", "gfx_upscaler", GLSettings.UPSCALERS, ["Bilinear", "AMD FSR 1", "AMD FSR 2 (also anti-aliases)"])
+	content.add_child(MenuKit.row("Sharpening (FSR)", MenuKit.slider(0.0, 2.0, 0.1, 2.0 - float(GLSettings.values.get("gfx_sharpness", 0.4)), func(v: float) -> void:
+		GLSettings.set_value("gfx_sharpness", 2.0 - v))))
+	_choice("Shadows", "gfx_shadows", PackedStringArray(["low", "medium", "high", "ultra"]), ["Low", "Medium", "High", "Ultra"])
+	_choice("Ambient occlusion", "gfx_ao", PackedStringArray(["off", "low", "medium", "high", "ultra"]), ["Off", "Low", "Medium", "High", "Ultra"])
+	content.add_child(MenuKit.check("Global illumination (bounce light)", bool(g.call("gfx", "gfx_gi")), _setter("gfx_gi")))
+	content.add_child(MenuKit.check("Indirect light (SSIL)", bool(g.call("gfx", "gfx_ssil")), _setter("gfx_ssil")))
+	content.add_child(MenuKit.check("Reflections (SSR)", bool(g.call("gfx", "gfx_ssr")), _setter("gfx_ssr")))
+	_choice("Volumetric fog", "gfx_fog", PackedStringArray(["off", "low", "high", "ultra"]), ["Off", "Low", "High", "Ultra"])
+	_choice("Level of detail", "gfx_lod", PackedStringArray(["low", "medium", "high", "ultra"]), ["Low", "Medium", "High", "Ultra"])
+	content.add_child(MenuKit.row("Brightness", MenuKit.slider(0.7, 1.4, 0.05, float(GLSettings.values.get("brightness", 1.0)), _setter("brightness"))))
+	content.add_child(MenuKit.check("Smooth motion (high-refresh screens)", bool(GLSettings.values.get("smooth_motion", true)), _setter("smooth_motion")))
+	content.add_child(MenuKit.para("The camera and the gun move every frame instead of 60 times a second: on a 144 or 240 Hz screen aiming and strafing stop looking steppy. On by default.", 16, MenuKit.DIM))
+	# vsync and the frame cap live in the shared Settings (core/settings.gd): every mode of the game uses them
+	content.add_child(MenuKit.check("V-Sync", bool(Settings.values.get("vsync", true)), func(on: bool) -> void: Settings.set_value("vsync", on)))
+	var caps: Array = [0, 60, 120, 144, 165, 240, 360]
+	var ccur: int = maxi(0, caps.find(int(Settings.values.get("maxFps", 0))))
+	content.add_child(MenuKit.row("Frame cap", MenuKit.options(PackedStringArray(["Off", "60", "120", "144", "165", "240", "360"]), ccur,
+		func(i: int) -> void: Settings.set_value("maxFps", caps[i]))))
+	content.add_child(MenuKit.para("With V-Sync on the game runs at your screen's refresh rate. V-Sync off with a frame cap at your refresh rate gives the least input lag.", 16, MenuKit.DIM))
+
+
+func _gfx_values() -> Dictionary:
+	var out: Dictionary = {}
+	for k: Variant in (GLSettings.PRESETS["high"] as Dictionary).keys():
+		out[str(k)] = GLSettings.gfx(str(k))
+	return out
+
+
+## One individual graphics option (ids from GLSettings, labels shown); changing it makes the preset Custom.
+func _choice(label: String, key: String, ids: PackedStringArray, labels: Array) -> void:
+	var cur: int = maxi(0, ids.find(str(GLSettings.gfx(key))))
+	content.add_child(MenuKit.row(label, MenuKit.options(PackedStringArray(labels), cur, func(i: int) -> void:
+		GLSettings.set_value(key, ids[i])
+		rebuild())))
 
 
 func _access() -> void:
