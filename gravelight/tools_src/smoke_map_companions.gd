@@ -157,6 +157,13 @@ func _case(cid: String, scene: String) -> void:
 	_note("---- %s on %s" % [cid, scene.get_file()])
 	await _load(scene)
 	var mc: MapCompanion = _comp(cid)
+	var appear: int = int(MapCompanion.entry(cid).get("appear_round", 1))
+	if appear > 1 and mc != null:
+		_check(mc.player == null, "%s: not there before round %d" % [cid, appear])
+		await _secs(3.0)
+		while RoundManager.current_round < appear:
+			RoundManager.advance_round()   # (the human here doesn't fight: skip ahead to the round it turns up)
+		await _secs(1.0)
 	_check(mc != null and mc.player != null, "%s: is on the map" % cid)
 	var opened: int = 0
 	for n: Node in get_tree().get_nodes_in_group(&"doors"):

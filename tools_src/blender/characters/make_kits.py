@@ -1526,10 +1526,98 @@ def kit_selwyn(body, P):
     return k
 
 
+def kit_ammer(body, P):
+    """T-135: Fw. August "Gustl" Ammer, Kaltenbrunn's quartermaster: a long grey storeman's dust coat over a plain
+    field-grey tunic (no insignia, no badges, no symbols of any kind), a leather belt with a plain buckle and a
+    pencil in the breast pocket, a plain side cap."""
+    k = Kit("ammer")
+    tunic = add_shell(k, body, P_coat(0.86), 0.009, "cloth3")
+    coat = add_shell(k, body, P_or(P_coat(0.84), P_arms(0.91)), thick_by_y(0.024, 0.02), "cloth", push=shoulders_push(0.016))
+    with_ao(coat, mottle(coat.v, 7.0, 0.14, 6.0))                                           # store dust
+    sk = skirt(body, trunk(coat), 0.9, 0.52, "cloth", flare=0.2, ease=0.008, rings=5)
+    k.add(grime(sk, 0.4, 0.16, 0.3, 8.0))
+    k.add(band(body, neck_pts(body), 1.53, 0.06, "cloth", pad=0.02, thick=0.012))
+    collar_points(k, coat, "cloth", y=1.48, dx=0.07, w=0.075, h=0.05, tilt=0.5)
+    for sx in (-1.0, 1.0):
+        buttons(k, coat, sx * 0.07, 1.36, 4, 0.12, "dark", 0.017)
+        pocket(k, coat, sx * 0.13, 0.94, 0.11, 0.12, "cloth", "dark", bag=True)                 # deep tally pockets
+        welt(k, coat, (sx * 0.06, 1.46), (sx * 0.07, 0.86), "cloth")
+    pocket(k, tunic, 0.09, 1.33, 0.07, 0.07, "cloth3", "dark")                                 # the breast pocket
+    k.add(pstud(tunic, "wood", 0.1, 1.39, (0.006, 0.06, 0.006)))                               # the pencil in it
+    for i in range(4):
+        k.add(pstud(tunic, "dark", 0.0, 1.43 - i * 0.09, (0.01, 0.01, 0.006)))
+    back_seams(k, coat, "cloth", y_hem=0.9)
+    cuffs(k, body, 0.915, "cloth", 0.024, 0.034, 0.005)
+    k.add(band(body, trunk(coat), 1.0, 0.045, "leather", pad=0.004, thick=0.008))
+    buckle(k, coat, 0.0, 1.0, 0.046, 0.04, "metal", 0.016)
+    k.add(pstud(coat, "leather", -0.16, 0.95, (0.07, 0.09, 0.05)))                            # the keys' pouch
+    legs = add_shell(k, body, P_legs(0.24, 0.98), 0.01, "cloth2")
+    boots = add_shell(k, body, P_boots(0.3), 0.015, "leather", rim=0.008, push=boot_push())
+    boots_finish(k, body, boots, 0.3)
+    trousers_finish(k, legs, 0.3)
+    for p in head_piece(P, "sidecap", "hat"):
+        k.add(p)
+    return k
+
+
+def kit_petersen(body, P):
+    """T-135: Hinnerk Petersen, Totenhafen's old harbour pilot: a navy double-breasted pea coat with plain horn
+    buttons over a knitted roll-neck, a peaked pilot's cap (no badge), sea boots."""
+    k = Kit("petersen")
+    coat = add_shell(k, body, P_or(P_coat(0.84), P_arms(0.91)), thick_by_y(0.024, 0.018), "cloth")
+    with_ao(coat, mottle(coat.v, 6.0, 0.12, 5.0))                                           # salt bloom
+    k.add(skirt(body, trunk(coat), 0.9, 0.72, "cloth", flare=0.14, ease=0.006, rings=4))
+    k.add(band(body, neck_pts(body), 1.535, 0.085, "knit", pad=0.022, thick=0.02))         # the roll-neck
+    for sx in (-1.0, 1.0):
+        buttons(k, coat, sx * 0.075, 1.38, 3, 0.12, "brass", 0.019)                         # double-breasted, horn
+        pocket(k, coat, sx * 0.13, 0.98, 0.1, 0.08, "cloth", "", bag=False, tilt=sx * 0.18)  # slash hand pockets
+    welt(k, coat, (0.09, 1.45), (0.09, 0.86), "cloth")
+    collar_points(k, coat, "cloth", y=1.49, dx=0.07, w=0.085, h=0.055, tilt=0.65)           # the broad lapels
+    cuffs(k, body, 0.92, "cloth", 0.02, 0.035, 0.005)
+    back_seams(k, coat, "cloth", y_hem=0.9)
+    legs = add_shell(k, body, P_legs(0.34, 0.98), 0.011, "cloth2")
+    boots = add_shell(k, body, P_boots(0.36), 0.017, "leather", rim=0.01, push=boot_push())   # sea boots
+    boots_finish(k, body, boots, 0.36)
+    trousers_finish(k, legs, 0.36)
+    for p in head_piece(P, "peaked", "hat"):
+        k.add(p)
+    return k
+
+
+def kit_jette(body, P):
+    """T-135: Henriette "Jette" Maurer, Fernflug's wind-tunnel technician and glider pilot: one-piece work coveralls
+    with the sleeves rolled, a webbing belt, a spanner in the thigh pocket, a knotted kerchief over her hair."""
+    k = Kit("jette")
+    suit = add_shell(k, body, P_or(P_coat(0.84), P_arms(0.86)), thick_by_y(0.016, 0.013), "cloth")
+    with_ao(suit, mottle(suit.v, 9.0, 0.2, 7.0))                                            # oil and dust
+    k.add(skirt(body, trunk(suit), 0.92, 0.84, "cloth", flare=0.06, ease=0.003, rings=3))
+    legs = add_shell(k, body, P_legs(0.2, 0.98), 0.012, "cloth")
+    k.add(band(body, neck_pts(body), 1.52, 0.05, "cloth", pad=0.016, thick=0.01))
+    collar_points(k, suit, "cloth", dx=0.05)
+    welt(k, suit, (0.0, 1.46), (0.0, 0.92), "metal", width=0.007)                           # the front buttons' fly
+    for i in range(5):
+        k.add(pstud(suit, "dark", 0.0, 1.42 - i * 0.1, (0.01, 0.01, 0.006)))
+    for sx in (-1.0, 1.0):
+        pocket(k, suit, sx * 0.09, 1.31, 0.08, 0.09, "cloth", "dark")                          # chest pockets
+        k.add(cuff_band(body, "Left" if sx < 0 else "Right", 0.86, 0.05, "cloth", pad=0.016, thick=0.01, bones=("LowerArm", "Hand")))   # rolled sleeves
+    pocket(k, legs, 0.12, 0.62, 0.09, 0.12, "cloth", "", bag=True)                             # the thigh pocket
+    k.add(pstud(legs, "metal", 0.12, 0.7, (0.012, 0.09, 0.008)))                               # the spanner in it
+    back_seams(k, suit, "cloth", y_hem=0.92)
+    k.add(band(body, trunk(suit), 1.0, 0.04, "canvas", pad=0.004, thick=0.007))             # webbing belt
+    buckle(k, suit, 0.0, 1.0, 0.04, 0.036, "metal", 0.014)
+    boots = add_shell(k, body, P_boots(0.18), 0.015, "leather", push=boot_push(0.012))
+    boots_finish(k, body, boots, 0.18)
+    trousers_finish(k, legs, 0.18)
+    for p in head_piece(P, "kerchief", "hat"):
+        k.add(p)
+    return k
+
+
 PEOPLE_KITS = {
     "dutch": kit_dutch, "peg": kit_peg, "deacon": kit_deacon, "wren": kit_wren, "jakub": kit_jakub,
     "rother": kit_rother, "kubiak": kit_kubiak, "pohl": kit_pohl, "trudi": kit_trudi, "sobotta": kit_sobotta,
     "wiesner": kit_wiesner, "brandt": kit_brandt, "kroll": kit_kroll,
     "cousin_hammer": kit_cousin_hammer, "cousin_reach": kit_cousin_reach, "cousin_alix": kit_cousin_alix,
     "selwyn": kit_selwyn,
+    "ammer": kit_ammer, "petersen": kit_petersen, "jette": kit_jette,   # T-135: the map companions
 }

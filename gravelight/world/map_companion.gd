@@ -109,9 +109,15 @@ func setup(map_root: MapRoot, cid: String) -> void:
 		if gun != "" and (GLData.table("weapons").get("weapons", {}) as Dictionary).has(gun):
 			player.weapons.give_weapon(StringName(gun))
 		_join(1, true)
+	elif RoundManager.current_round >= int(cfg.get("appear_round", 1)):
+		_appear()
 	else:
-		_make_body(_spot())
-		_event("waiting")
+		_event("not_yet")   # (Trudi: she is still at the inn in round 1, then runs; she turns up in the stable after)
+
+
+func _appear() -> void:
+	_make_body(_spot())
+	_event("waiting")
 	var con: Node = get_node_or_null("/root/GLConsole")
 	if con != null and con.has_method("register"):
 		con.call("register", "comp_" + id, _cmd, "comp_%s status|join|down: the map companion %s (T-135)" % [id, str(cfg.get("name", id))])
@@ -390,6 +396,10 @@ func _fall() -> void:
 
 ## The round's gift to the one it follows, while they stand near (not on round 1, not while either is down).
 func _on_round_started(r: int, _special: bool) -> void:
+	if player == null:
+		if r >= int(cfg.get("appear_round", 1)):
+			_appear()
+		return
 	if state != State.JOINED or r == _gift_round or player.downed:
 		return
 	var h: Player = map.players.get(escort_pid) as Player

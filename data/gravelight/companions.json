@@ -18,6 +18,7 @@
       "find_on": ["map00"],
       "spot": [17.0, 0.0, 29.5],
       "spot_note": "the stable, behind the hay: she ran out into the snow in round 1 and hid here",
+      "appear_round": 2,
       "max_hp": 90,
       "bleedout_seconds": 60.0,
       "melee": "trench_knife",
