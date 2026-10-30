@@ -25,7 +25,8 @@ const GROUP_COMPANION: StringName = &"companion"
 const LINES_PATH: String = "res://data/gravelight/vo/lines.json"
 const RULES_PATH: String = "res://data/gravelight/vo/rules.json"
 const AUDIO_DIR: String = "res://gravelight/audio/vo/"
-const CHARACTER_SPEAKERS: Dictionary = {&"dutch": &"DUT", &"peg": &"PEG", &"deacon": &"DEA", &"wren": &"WRN", &"jakub": &"JAK"}
+const CHARACTER_SPEAKERS: Dictionary = {&"dutch": &"DUT", &"peg": &"PEG", &"deacon": &"DEA", &"wren": &"WRN", &"jakub": &"JAK",
+	&"trudi": &"TRU", &"ammer": &"AMM", &"petersen": &"PET", &"jette": &"JET"}   # T-135: the map companions
 const POWERUP_TOKENS: Dictionary = {&"resupply": "RESUPPLY", &"deaths_door": "DEATHSDOOR", &"double_scrip": "DOUBLESCRIP",
 	&"blackout": "BLACKOUT", &"fortify": "FORTIFY", &"clearance": "CLEARANCE", &"tonic_bottle": "TONIC"}
 const PERK_TOKENS: Dictionary = {&"ironhide_stout": "IRONHIDE", &"second_wind": "SECONDWIND", &"trigger_tonic": "TRIGGER",
@@ -355,7 +356,7 @@ func pick_squad_pid(category: String, exclude_pid: int = -1) -> int:
 	var pool: Array[int] = []
 	for pid: int in standing_pids():
 		if pid != exclude_pid:
-			if JakubCompanion.is_companion_pid(pid) and not _index.has("%s:%s" % [speaker_of(pid), category]):
+			if (JakubCompanion.is_companion_pid(pid) or MapCompanion.is_companion_pid(pid)) and not _index.has("%s:%s" % [speaker_of(pid), category]):
 				continue   # the companion only takes the turn for a category he has lines for
 			pool.append(pid)
 	if pool.is_empty():
