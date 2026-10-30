@@ -227,3 +227,11 @@ Cousins' round), both with `-- --legacy-people` for the before set.
   `ZombieGore._throw_piece` when the zombie has a `person` meta); the host sends the person id as field 9 of the
   zombie spawn event and the co-op client calls `dress_risen` on its puppet; `Zombie._reset_presentation` drops the
   meta when the pool reuses the zombie.
+- **Detail pass (T-134).** people.json `budget`: `head_res` (20; the zombies keep characters.json's 16) and
+  `hand_res` (1: rounder palm, 8-sided fingers with knuckles; `make_body.fine_finger`) make the people's heads and
+  hands finer; their UVs map through the canonical head / hand surface (`build_all._region_uvs`). `hair_tris` caps
+  the hair; the kit is decimated to `min(kit_tris, hero_tris - body - parts - hair)` with the small finishing pieces
+  (≤ 120 faces) spared. The finishing helpers in `make_kits.py` (`pocket`, `buckle`, `keepers`, `welt`,
+  `collar_points`, `cuffs`, `back_seams`, `boots_finish`, `grime`, `scuff`) lay pieces on a garment by ray and skin
+  them to the vertex under them; grime and scuffs go into the kit's `.g` AO channel. Buckles and patches stay plain
+  (no badges or emblems).

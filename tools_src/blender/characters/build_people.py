@@ -71,6 +71,10 @@ def person_params(person):
         P.belly = float(ov["belly"])
     if "sink" in ov:
         P.sink = float(ov["sink"])
+    # T-134: the people's heads and hands are finer than the zombies' (people.json budget head_res / hand_res)
+    bud = PEOPLE.get("budget", {})
+    P.head_res = int(bud.get("head_res", P.head_res))
+    P.hand_res = int(bud.get("hand_res", 0))
     P.face = dict(person.get("face", {}))
     P.face.setdefault("mouth_close", 1.0)
     if "head" in P.face:
@@ -244,13 +248,26 @@ def build_person(pid, person, canon, a):
         hv, hf, hk, hbi, hbw = hacc.arrays()
         hv = shorter_neck(hv, np.zeros(len(hv), dtype=np.int64), lift, thick)
         objs["Hair"] = MB.object_from("Hair", hv, hf, hbi, hbw, MB.part_colors(hk))
+        if not os.environ.get("PEOPLE_NODEC") and "hair_tris" in budget:
+            MB.decimate_to(objs["Hair"], int(budget["hair_tris"]))       # T-134: long hair stays inside the budget
     # the kit
     kv, kf, kk, kbi, kbw, kao = kit_arrays(kit)
     kv = shorter_neck(kv, np.zeros(len(kv), dtype=np.int64), lift, thick)
     kob = MB.object_from("Kit", kv, kf, kbi, kbw, MB.part_colors(kk, kao))
     stats = {"body_raw": raw_body, "body_culled_faces": len(dead), "kit_raw": C.tri_count(kob)}
     if not os.environ.get("PEOPLE_NODEC"):
-        MB.decimate_to(kob, int(budget["kit_tris"]))
+        # T-134: the kit gets what the hero budget leaves after the body, the face parts and the hair (a person
+        # with a lot of hair gets a little less kit), never more than kit_tris
+        rest = sum(C.tri_count(o) for o in objs.values())
+        target = min(int(budget["kit_tris"]), int(budget.get("hero_tris", 10 ** 9)) - rest - 150)
+        stats["kit_target"] = target
+        if C.tri_count(kob) > target:
+            # the small finishing pieces (buttons, buckles, laces, welts, flaps) are spared; the big shells give way
+            small = np.concatenate([np.full(len(p.v), len(p.f) <= 120) for p in kit.pieces])
+            if len(small) == len(kob.data.vertices):
+                decimate_protected(kob, target, small)
+            if C.tri_count(kob) > target:
+                MB.decimate_to(kob, target)
     objs["Kit"] = kob
     add_shapes(body, v_body, shapes)
     add_shapes(parts, pv, pshapes)

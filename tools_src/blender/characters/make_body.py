@@ -69,6 +69,7 @@ class Params:
         self.a_pose = math.radians(float(CFG["body"]["a_pose_deg"]))
         self.subsurf = int(CFG["body"]["subsurf"])
         self.head_res = int(CFG["body"]["head_res"])
+        self.hand_res = 0      # T-134: 0 = the zombies' low hand; 1 = the people's (rounder palm, finer fingers, knuckles)
         self.sink = 1.0 if not living else float(CFG["body"]["living_sink"])
 
     def tag(self):
@@ -439,13 +440,25 @@ def tube(path, radii, sides=6, cap_end=True):
     return np.array(verts), faces
 
 
-def rounded_box(c, half, n=(2, 3, 2), round_k=0.55):
+def rounded_box(c, half, n=(2, 3, 2), round_k=0.55, res=2):
     """A subdivided box blended toward an ellipsoid (a soft palm)."""
-    u, faces = quad_sphere(2)
+    u, faces = quad_sphere(res)
     # quad_sphere(2) is a cube-ish sphere; push back toward the cube by round_k
     cube = u / np.max(np.abs(u), axis=1, keepdims=True)
     p = cube * (1.0 - round_k) + u * round_k
     return c + p * half, faces
+
+
+def fine_finger(pts, r):
+    """T-134: each finger segment split in two, with a knuckle swell at every joint and a slimmer middle."""
+    pts = [np.asarray(p, dtype=np.float64) for p in pts]
+    out_p, out_r = [pts[0]], [r[0]]
+    for i in range(len(pts) - 1):
+        out_p.append((pts[i] + pts[i + 1]) * 0.5)
+        out_r.append((r[i] + r[i + 1]) * 0.5 * 0.9)
+        out_p.append(pts[i + 1])
+        out_r.append(r[i + 1] * (1.06 if i + 1 < len(pts) - 1 else 1.0))
+    return out_p, np.array(out_r)
 
 
 def hand_mesh(P, sx):
@@ -454,7 +467,8 @@ def hand_mesh(P, sx):
     lw = P.limb * (0.94 if P.female else 1.0)
     inward = -sx   # palm normal along +x for the left hand
     palm_c = wrist + np.array([inward * 0.004, -0.048, -0.004])
-    pv, pf = rounded_box(palm_c, np.array([0.014, 0.045, 0.038]) * lw)
+    fine = int(getattr(P, "hand_res", 0)) > 0
+    pv, pf = rounded_box(palm_c, np.array([0.014, 0.045, 0.038]) * lw, res=3 if fine else 2)
     verts = [pv]
     faces = [pf]
     off = len(pv)
@@ -470,7 +484,9 @@ def hand_mesh(P, sx):
             d = np.array([inward * math.sin(ang), -math.cos(ang), 0.0])
             pts.append(pts[-1] + d * seg)
         r = np.array([0.0105, 0.0095, 0.0085, 0.0075]) * lw
-        tv, tf = tube(pts, r, sides=6)
+        if fine:
+            pts, r = fine_finger(pts, r)
+        tv, tf = tube(pts, r, sides=8 if fine else 6)
         verts.append(tv)
         faces.append([[i + off for i in f] for f in tf])
         off += len(tv)
@@ -478,7 +494,10 @@ def hand_mesh(P, sx):
     tb = wrist + np.array([inward * 0.006, -0.03, -0.03]) * np.array([1, lw, lw])
     pts = [tb, tb + np.array([inward * 0.008, -0.022, -0.016]) * lw, tb + np.array([inward * 0.016, -0.044, -0.022]) * lw,
            tb + np.array([inward * 0.022, -0.062, -0.02]) * lw]
-    tv, tf = tube(pts, np.array([0.013, 0.011, 0.0095, 0.0085]) * lw, sides=6)
+    r = np.array([0.013, 0.011, 0.0095, 0.0085]) * lw
+    if fine:
+        pts, r = fine_finger(pts, r)
+    tv, tf = tube(pts, r, sides=8 if fine else 6)
     verts.append(tv)
     faces.append([[i + off for i in f] for f in tf])
     v = np.concatenate(verts)
