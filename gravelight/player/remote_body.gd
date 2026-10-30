@@ -35,6 +35,11 @@ const OUTFITS: Dictionary = {
 	# Jakub Ostrowski (U02 section 6.2): a field-grey army greatcoat two sizes too big over brown work clothes,
 	# a tweed cloth cap, the miner's lamp hook on his belt
 	&"jakub": [Color(0.36, 0.38, 0.32), Color(0.33, 0.26, 0.19), Color(0.23, 0.21, 0.19), Color(0.78, 0.65, 0.56), Color(0.52, 0.4, 0.22), "cap"],
+	# T-135: the map companions (their modelled bodies come from people.json; these are the fallback colours)
+	&"trudi": [Color(0.6, 0.55, 0.47), Color(0.3, 0.12, 0.1), Color(0.45, 0.3, 0.14), Color(0.86, 0.72, 0.62), Color(0.8, 0.78, 0.72), "knit"],
+	&"ammer": [Color(0.4, 0.41, 0.36), Color(0.36, 0.37, 0.33), Color(0.36, 0.37, 0.33), Color(0.82, 0.66, 0.56), Color(0.3, 0.24, 0.16), "cap"],
+	&"petersen": [Color(0.14, 0.16, 0.22), Color(0.2, 0.2, 0.22), Color(0.12, 0.13, 0.18), Color(0.8, 0.62, 0.52), Color(0.6, 0.55, 0.45), "cap"],
+	&"jette": [Color(0.42, 0.4, 0.33), Color(0.33, 0.3, 0.25), Color(0.32, 0.2, 0.12), Color(0.9, 0.76, 0.66), Color(0.55, 0.42, 0.25), "knit"],
 }
 ## character -> build: chest width scale, stance half-width, gun drop (BAR posture), lean, fidget kind
 const BUILDS: Dictionary = {
@@ -43,6 +48,10 @@ const BUILDS: Dictionary = {
 	&"deacon": {"width": 1.04, "stance": 0.11, "gun_drop": 0.02, "lean": 0.03, "fidget": "tap"},
 	&"wren": {"width": 0.88, "stance": 0.09, "gun_drop": 0.0, "lean": 0.04, "fidget": "write"},
 	&"jakub": {"width": 0.86, "stance": 0.1, "gun_drop": 0.03, "lean": 0.07, "fidget": "warm"},
+	&"trudi": {"width": 0.9, "stance": 0.095, "gun_drop": 0.0, "lean": 0.0, "fidget": "watch"},
+	&"ammer": {"width": 1.1, "stance": 0.13, "gun_drop": 0.04, "lean": -0.03, "fidget": "stretch"},
+	&"petersen": {"width": 1.0, "stance": 0.12, "gun_drop": 0.03, "lean": 0.05, "fidget": "warm"},
+	&"jette": {"width": 0.88, "stance": 0.095, "gun_drop": 0.0, "lean": 0.02, "fidget": "tap"},
 }
 ## Timed actions (seconds).
 const ACTION_SECONDS: Dictionary = {&"drink": 1.7, &"buy": 0.9, &"repair": 0.75, &"revive": 0.5}
@@ -441,7 +450,7 @@ func set_wounded(on: bool) -> void:
 
 ## An AI-driven body (bots, the companion): screen-space nameplate, calm from the brain.
 func _ai() -> bool:
-	return GameState.is_bot(pid) or character == &"jakub"
+	return GameState.is_bot(pid) or character == &"jakub" or MapCompanion.is_companion_pid(pid)
 
 
 ## Jakub's coal shovel in both hands (his melee while he has no gun): a long wooden shaft with a D-grip, the

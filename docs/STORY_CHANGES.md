@@ -77,3 +77,9 @@ Every change to an **existing** line from the original web build is logged here 
 - Changed canon (LORE section 9.2 and the 23 Dec 1944 timeline row): old "The pilots died." / "The pilots die." -> new: the co-pilot died; **Flt Lt Harry Selwyn** survived the glide pinned in his seat, his legs caught under the instrument panel. He can't be freed on Map 0; he fights from the cockpit with any gun the squad hands him. Why: the owner's request for a trapped pilot who turns into a turret.
 - His fate after Map 0 is **[OPEN]** (he is not carried to Kaltenbrunn). The flight log (`INT_M0_05`) is still his last entry before the crash; nothing in it changes.
 - New lines, not changes: `SEL_*` (VO_SCRIPT section 14.15).
+
+## 2026-10-29 (T-135): one more companion per map (the owner: "add an additional NPC on each map like Jakob")
+- **Trudi Hanke** (Map 0): after she runs out of the inn in round 1 she hides in the stable; she can join the survivors. (Her fate after the opening was unstated.)
+- **Fw. August "Gustl" Ammer** (Kaltenbrunn): alive, locked in the barracks stores by his own sergeant for feeding the labourers; he can join. No insignia anywhere.
+- **Hinnerk Petersen** (Totenhafen, NEW character): the old harbour pilot who refused to take the cargo ship out at night, shut in the signal tower. Chosen over Sister Agnieszka, whom Map 4 already sends away with the cargo.
+- **Jette Maurer** (Fernflug): alive, locked in the yardmaster's hut for refusing to fly the glider; she goes with the squad through Acts I-III and stays behind at Groom Lake (the rocket seats four). Her logbook egg is unchanged.

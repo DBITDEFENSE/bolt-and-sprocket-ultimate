@@ -8,7 +8,11 @@ extends CanvasLayer
 ## T-127: once he is with you the card can also send him for a tonic ([reload]: GET YOURSELF A TONIC, paid from
 ## your Scrip at the machine) when JakubCompanion.tonic_offer found one; [crouch] / [pause] is then "never mind".
 
-var companion: JakubCompanion
+var companion: Node              # JakubCompanion, or a MapCompanion (T-135): choose(p, give) / choose_tonic(p)
+var title: String = "JAKUB OSTROWSKI"
+var ask_text: String = ""         # "" = Jakub's own question
+var unarmed_text: String = "he follows you with the coal shovel"
+var give_label: String = "GIVE HIM A GUN"
 var player: Player
 var offer: Dictionary = {}       # JakubCompanion.gun_offer(player)
 var tonic: Dictionary = {}       # JakubCompanion.tonic_offer(player) ({} or not ok: no tonic line)
@@ -40,10 +44,10 @@ func _ready() -> void:
 	var v: VBoxContainer = VBoxContainer.new()
 	v.add_theme_constant_override("separation", 8)
 	panel.add_child(v)
-	v.add_child(_label("JAKUB OSTROWSKI", font, 26, Color(0.72, 0.8, 0.62)))
-	var ask: String = "\"What do you need, friend?\"" if joined else "\"So. Do I come with you as a man with a gun, or a man with a shovel?\""
+	v.add_child(_label(title, font, 26, Color(0.72, 0.8, 0.62)))
+	var ask: String = "\"What do you need, friend?\"" if joined else ("\"So. Do I come with you as a man with a gun, or a man with a shovel?\"" if ask_text == "" else ask_text)
 	v.add_child(_label(ask, font, 18, Color(0.9, 0.88, 0.8)))
-	var give: String = "[%s]  GIVE HIM A GUN" % GLSettings.action_label(&"interact")
+	var give: String = "[%s]  %s" % [GLSettings.action_label(&"interact"), give_label]
 	if bool(offer.get("ok", false)):
 		give += "  ·  your %s (you lose it)" % str(offer.get("name", "gun"))
 	else:
@@ -56,9 +60,10 @@ func _ready() -> void:
 		v.add_child(_label("[%s / %s]  NEVER MIND" % [GLSettings.action_label(&"crouch"), GLSettings.action_label(&"pause")],
 			font, 20, Color(0.85, 0.85, 0.8)))
 	else:
-		v.add_child(_label("[%s / %s]  NOT YET  ·  he follows you with the coal shovel" % [GLSettings.action_label(&"crouch"), GLSettings.action_label(&"pause")],
+		v.add_child(_label("[%s / %s]  NOT YET  ·  %s" % [GLSettings.action_label(&"crouch"), GLSettings.action_label(&"pause"), unarmed_text],
 			font, 20, Color(0.85, 0.85, 0.8)))
-		v.add_child(_label("Or buy him one at a wall: stand at it with Jakub beside you.", font, 15, Color(0.62, 0.62, 0.58)))
+		if companion is JakubCompanion:
+			v.add_child(_label("Or buy him one at a wall: stand at it with Jakub beside you.", font, 15, Color(0.62, 0.62, 0.58)))
 
 
 func _tonic_ok() -> bool:
@@ -93,7 +98,7 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"reload") and _tonic_ok():
 		get_viewport().set_input_as_handled()
 		_done = true
-		companion.choose_tonic(player)
+		companion.call("choose_tonic", player)
 		queue_free()
 	elif event.is_action_pressed(&"crouch") or event.is_action_pressed(&"pause"):
 		get_viewport().set_input_as_handled()
@@ -116,5 +121,5 @@ func _close(give: bool) -> void:
 	if _done:
 		return
 	_done = true
-	companion.choose(player, give)
+	companion.call("choose", player, give)
 	queue_free()

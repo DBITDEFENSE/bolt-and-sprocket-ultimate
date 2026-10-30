@@ -622,7 +622,10 @@
     }
   },
   "companion_speakers": [
-    "JAK"
+    "JAK",
+    "AMM",
+    "PET",
+    "JET"
   ],
   "any_map_lines": {
     "_doc": "Lines that name a place as the past or a destination, not as where the squad stands (T-059: Jakub escaped from Kaltenbrunn): test_vo_maps lets them play on any map.",

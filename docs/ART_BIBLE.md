@@ -97,7 +97,7 @@ weapons at the firing hand's grip (`weapon_models.gd`'s frame).
 |---|---|---|---|
 | Viewmodel gun | ≤ 25 000 (hero ≤ 35 000 for the wonder weapons) | 2K set, 1K for attachments | none (always close) |
 | Zombie body | ≤ 8 000 + ≤ 3 000 per outfit kit piece | one 2K atlas per kit | LOD1 at 15 m (50%), LOD2 at 35 m (25%), impostor crowd past 24 active |
-| Hero character (squad, Jakub, the Cousins) | ≤ 15 000 | 2K body + 1K head | LOD1 at 20 m |
+| Hero character (squad, Jakub, the Cousins, the named people) | ≤ 20 000 (T-134; people.json budget.hero_tris 19 600) | 2K body + 1K head | LOD1 at 20 m |
 | Prop | 200–3 000 | 1K (512 small) | auto LOD (import preset) past 1 000 tris |
 | Tree | LOD0 ≤ 4 000, LOD1 ≤ 1 200, impostor card past 60 m | 1K bark + 1K branch atlas | required |
 | World block (generator) | whatever the box is | the material library, triplanar | merged by StaticBatches |

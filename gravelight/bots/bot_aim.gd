@@ -464,7 +464,7 @@ var fire_blocks: Dictionary = {}
 
 
 func _blk(why: String) -> void:
-	if brain.is_player_bot:
+	if brain.is_player_bot or brain.player.is_companion:
 		fire_blocks[why] = int(fire_blocks.get(why, 0)) + 1
 
 

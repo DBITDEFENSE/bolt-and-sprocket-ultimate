@@ -7,7 +7,7 @@ extends GutTest
 ## gameplay moved: RemoteBody and PatronBody still carry no collision, the Cousins keep the same skeleton, hitboxes
 ## (bone, limb, size, place) and pose layer whether they wear the modelled doll or the legacy primitives.
 
-const HERO_TRIS: int = 15000
+const HERO_TRIS: int = 20000
 
 
 func after_each() -> void:
@@ -23,7 +23,7 @@ func _tris(m: ArrayMesh) -> int:
 
 func test_every_person_has_a_glb_and_builds() -> void:
 	var ids: PackedStringArray = PeopleBodies.ids()
-	assert_eq(ids.size(), 17, "squad 4 + Jakub + 5 patrons + 3 survivors + 3 Cousins + Selwyn (T-126)")
+	assert_eq(ids.size(), 20, "squad 4 + Jakub + 5 patrons + 3 survivors + 3 Cousins + Selwyn (T-126) + 3 map companions (T-135)")
 	for id: String in ids:
 		assert_true(PeopleBodies.available(id), id + ": GLB built and imported")
 		var m: ArrayMesh = PeopleBodies.mesh(id)

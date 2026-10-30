@@ -101,6 +101,7 @@ func _ready() -> void:
 	PlayerBot.attach(self)   # player bot mode (T-071): off until F6 / the pause menu / `botmode on` / --botmode
 	GLBus.match_started.emit(map_id)
 	Campaign.restore_flags(self)   # UPDATE 07 (T-114): the acts' carried flags (london_seen, bomb_*, ...)
+	MapCompanion.attach(self)   # T-135: one more companion per map (after the flags: Jette follows you between acts)
 	for q: String in quest_files:
 		QuestManager.load_quest(q)
 	Campaign.restore_quests(self)   # UPDATE 07 (T-114): the egg's progress from the act before
@@ -322,7 +323,7 @@ func _player_spawn() -> Node3D:
 func _on_player_downed(pid: int) -> void:
 	if not Net.is_authority():
 		return   # a client hears this relayed from the host, which already decided
-	if JakubCompanion.is_companion_pid(pid):
+	if JakubCompanion.is_companion_pid(pid) or MapCompanion.is_companion_pid(pid):
 		if session != null:
 			session.coop_downed(pid)   # a companion's own bleed-out clock, in solo too (he is no player)
 		return

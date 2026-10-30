@@ -10112,5 +10112,215 @@
     "speaker": "WRN",
     "category": "LATE_KIT",
     "text": "Chicago Lament, twice taught. Thirty rounds. I'll make them count."
+  },
+  "TRU_COMP_CALL_01": {
+    "speaker": "TRU",
+    "category": "COMP_CALL",
+    "text": "Hello? Is somebody there? I'm in the stable, behind the hay!"
+  },
+  "TRU_COMP_CALL_02": {
+    "speaker": "TRU",
+    "category": "COMP_CALL",
+    "text": "Over here! Please, in the stable. I'm not one of them!"
+  },
+  "TRU_COMP_CALL_03": {
+    "speaker": "TRU",
+    "category": "COMP_CALL",
+    "text": "Is that you, from the inn? I'm back here, by the stalls!"
+  },
+  "TRU_COMP_MEET_01": {
+    "speaker": "TRU",
+    "category": "COMP_MEET",
+    "text": "You came back. I ran. I ran out the front and kept running, and then I couldn't go any further."
+  },
+  "TRU_COMP_JOIN_ARMED_01": {
+    "speaker": "TRU",
+    "category": "COMP_JOIN_ARMED",
+    "text": "Right. I've shot foxes off the henhouse. These are bigger foxes."
+  },
+  "TRU_COMP_JOIN_ARMED_02": {
+    "speaker": "TRU",
+    "category": "COMP_JOIN_ARMED",
+    "text": "Thank you. I'll carry it back to you when this is over."
+  },
+  "TRU_COMP_JOIN_UNARMED_01": {
+    "speaker": "TRU",
+    "category": "COMP_JOIN_UNARMED",
+    "text": "Then I keep the bread knife. Stay close, I'm right behind you."
+  },
+  "TRU_COMP_GIFT_01": {
+    "speaker": "TRU",
+    "category": "COMP_GIFT",
+    "text": "Here. I found it in the bar, behind the till. Take it."
+  },
+  "TRU_COMP_GIFT_02": {
+    "speaker": "TRU",
+    "category": "COMP_GIFT",
+    "text": "One more grenade. Don't ask me where it was hidden."
+  },
+  "TRU_COMP_FALLEN_01": {
+    "speaker": "TRU",
+    "category": "COMP_FALLEN",
+    "text": "I'm sorry. I can't... go on without me."
+  },
+  "AMM_COMP_CALL_01": {
+    "speaker": "AMM",
+    "category": "COMP_CALL",
+    "text": "You there! In the stores, behind the grille! I am no guard, I am locked in!"
+  },
+  "AMM_COMP_CALL_02": {
+    "speaker": "AMM",
+    "category": "COMP_CALL",
+    "text": "Hey! The barracks stores! Open up, I can help you!"
+  },
+  "AMM_COMP_CALL_03": {
+    "speaker": "AMM",
+    "category": "COMP_CALL",
+    "text": "Over here! Sergeant Lenz locked me in. He is not coming back for me."
+  },
+  "AMM_COMP_MEET_01": {
+    "speaker": "AMM",
+    "category": "COMP_MEET",
+    "text": "You are not from here. Good. I fed the men in the stairs for two winters, out of these stores. They found out."
+  },
+  "AMM_COMP_JOIN_ARMED_01": {
+    "speaker": "AMM",
+    "category": "COMP_JOIN_ARMED",
+    "text": "A rifle. I have not carried one since Flanders. It comes back."
+  },
+  "AMM_COMP_JOIN_ARMED_02": {
+    "speaker": "AMM",
+    "category": "COMP_JOIN_ARMED",
+    "text": "Thank you. I will pay for every round of it."
+  },
+  "AMM_COMP_JOIN_UNARMED_01": {
+    "speaker": "AMM",
+    "category": "COMP_JOIN_UNARMED",
+    "text": "Then I come with the knife. A quartermaster always has a knife."
+  },
+  "AMM_COMP_GIFT_01": {
+    "speaker": "AMM",
+    "category": "COMP_GIFT",
+    "text": "Here, a full magazine. I keep count, you shoot."
+  },
+  "AMM_COMP_GIFT_02": {
+    "speaker": "AMM",
+    "category": "COMP_GIFT",
+    "text": "From the stores. I know where everything is in this place."
+  },
+  "AMM_COMP_FALLEN_01": {
+    "speaker": "AMM",
+    "category": "COMP_FALLEN",
+    "text": "Go on. Count them for me."
+  },
+  "PET_COMP_CALL_01": {
+    "speaker": "PET",
+    "category": "COMP_CALL",
+    "text": "Ahoy! Up the tower! The signal tower, here!"
+  },
+  "PET_COMP_CALL_02": {
+    "speaker": "PET",
+    "category": "COMP_CALL",
+    "text": "Hello down there! Up the stairs, I am in the tower!"
+  },
+  "PET_COMP_CALL_03": {
+    "speaker": "PET",
+    "category": "COMP_CALL",
+    "text": "Up here! Forty years a pilot in this harbour, and now this."
+  },
+  "PET_COMP_MEET_01": {
+    "speaker": "PET",
+    "category": "COMP_MEET",
+    "text": "They wanted me to take the cargo ship out, at night, no lights. I said no. So they put me up here with the lamp."
+  },
+  "PET_COMP_JOIN_ARMED_01": {
+    "speaker": "PET",
+    "category": "COMP_JOIN_ARMED",
+    "text": "A gun. Well. I have steered worse things through worse water."
+  },
+  "PET_COMP_JOIN_ARMED_02": {
+    "speaker": "PET",
+    "category": "COMP_JOIN_ARMED",
+    "text": "Thank you. Keep your head down, I will keep mine."
+  },
+  "PET_COMP_JOIN_UNARMED_01": {
+    "speaker": "PET",
+    "category": "COMP_JOIN_UNARMED",
+    "text": "Then I come as I am. I know every stair in this pen."
+  },
+  "PET_COMP_GIFT_01": {
+    "speaker": "PET",
+    "category": "COMP_GIFT",
+    "text": "Take this. A drowned man's wages, he won't need them."
+  },
+  "PET_COMP_GIFT_02": {
+    "speaker": "PET",
+    "category": "COMP_GIFT",
+    "text": "Here. Money from the harbour office. Nobody will miss it now."
+  },
+  "PET_COMP_FALLEN_01": {
+    "speaker": "PET",
+    "category": "COMP_FALLEN",
+    "text": "Steady... steady as she goes. Without me."
+  },
+  "JET_COMP_CALL_01": {
+    "speaker": "JET",
+    "category": "COMP_CALL",
+    "text": "Hello! In the yardmaster's hut! I am not with them!"
+  },
+  "JET_COMP_CALL_02": {
+    "speaker": "JET",
+    "category": "COMP_CALL",
+    "text": "Over here, by the tracks! Please!"
+  },
+  "JET_COMP_CALL_03": {
+    "speaker": "JET",
+    "category": "COMP_CALL",
+    "text": "Hey! The hut by the station! I can get you across the field!"
+  },
+  "JET_COMP_MEET_01": {
+    "speaker": "JET",
+    "category": "COMP_MEET",
+    "text": "They wanted me to fly their glider over the line. I wouldn't. So they locked me in with the timetables."
+  },
+  "JET_COMP_JOIN_ARMED_01": {
+    "speaker": "JET",
+    "category": "COMP_JOIN_ARMED",
+    "text": "I know how this works. I have taken apart better ones."
+  },
+  "JET_COMP_JOIN_ARMED_02": {
+    "speaker": "JET",
+    "category": "COMP_JOIN_ARMED",
+    "text": "Good. Now we go, before they come back."
+  },
+  "JET_COMP_JOIN_UNARMED_01": {
+    "speaker": "JET",
+    "category": "COMP_JOIN_UNARMED",
+    "text": "Then I bring my spanner. I know where the fences are weak."
+  },
+  "JET_COMP_ARRIVE_01": {
+    "speaker": "JET",
+    "category": "COMP_ARRIVE",
+    "text": "Still here. Still with you. Which way now?"
+  },
+  "JET_COMP_ARRIVE_02": {
+    "speaker": "JET",
+    "category": "COMP_ARRIVE",
+    "text": "Another field, another fence. Follow me, I know this kind of place."
+  },
+  "JET_COMP_GIFT_01": {
+    "speaker": "JET",
+    "category": "COMP_GIFT",
+    "text": "From the armoury cart. I took two, here's one."
+  },
+  "JET_COMP_GIFT_02": {
+    "speaker": "JET",
+    "category": "COMP_GIFT",
+    "text": "Here, catch. Don't pull the pin."
+  },
+  "JET_COMP_FALLEN_01": {
+    "speaker": "JET",
+    "category": "COMP_FALLEN",
+    "text": "Go. Get up there without me."
   }
 }

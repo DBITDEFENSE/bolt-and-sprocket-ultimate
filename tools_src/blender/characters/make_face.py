@@ -139,7 +139,7 @@ def cap(c, r, axis_e, axis_a, ang, n_ring=3, n_seg=12):
     return v, out
 
 
-def lid(c, r, edge, upper, na=12, ne=5):
+def lid(c, r, edge, upper, na=18, ne=6):
     """One lid: the upper covers elevations [edge, 86], the lower [-86, edge]; the open edge is at index ne."""
     top = 86.0 if upper else -86.0
     v, f = sphere_patch(c, r, top, edge, -105.0, 105.0, ne, na)
@@ -170,11 +170,14 @@ def face_parts(P, B, S, person):
     iris_ang = 31.0 if doll > 0 else 27.0
     for sx, c in eyes:
         cg = c + HEAD_C
-        v, f = MB.uv_sphere(cg, r, 14, 9)
+        v, f = MB.uv_sphere(cg, r, 20, 12)
         pb.add(v, f, "eye_white", "Head")
-        v, f = cap(cg, r + 0.0004, 0.0, 0.0, iris_ang)
+        # T-134: a thin dark limbal ring under the iris (the eye reads as an eye from further away), a finer iris
+        v, f = cap(cg, r + 0.0002, 0.0, 0.0, iris_ang + 2.2, 1, 20)
+        pb.add(v, f, "brow", "Head")
+        v, f = cap(cg, r + 0.0004, 0.0, 0.0, iris_ang, 4, 20)
         pb.add(v, f, "iris", "Head")
-        v, f = cap(cg, r + 0.0007, 0.0, 0.0, 11.0 if doll <= 0 else 13.0, 2, 10)
+        v, f = cap(cg, r + 0.0007, 0.0, 0.0, 11.0 if doll <= 0 else 13.0, 2, 14)
         pb.add(v, f, "dark", "Head")
         # lids: rebuilt at each shape's edge angles, the offsets are the difference
         rl = r + 0.0011
@@ -211,7 +214,7 @@ def face_parts(P, B, S, person):
     return pb
 
 
-def lash(c, r, edge, upper, na=12):
+def lash(c, r, edge, upper, na=18):
     """A thin strip at the lid edge (2 degrees wide)."""
     d = 3.0 if upper else -3.0
     return sphere_patch(c, r, edge + d, edge - (0.5 if upper else -0.5), -100.0, 100.0, 1, na)
@@ -220,7 +223,7 @@ def lash(c, r, edge, upper, na=12):
 def brow(P, S, sx, person):
     """A brow ribbon on the brow ridge; returns verts (absolute), faces, shape offsets."""
     female = P.female
-    n = 9
+    n = 14
     thick_in = 0.0092 if not female else 0.0064
     thick_out = 0.005 if not female else 0.0034
     rows = []   # per s: (front_top, front_bot, back_top, back_bot)
@@ -557,6 +560,28 @@ def under_hat(v, f, hat, band=24.0, margin=0.0025):
     return out[used], [[remap[i] for i in fc] for fc in keep]
 
 
+def hair_clumps(v, f, depth):
+    """T-134: hair volume that reads as locks, not a shell: each vertex pushed out along its normal by a few
+    millimetres of streaky noise (long along the fall of the hair, narrow across it)."""
+    v = np.asarray(v, dtype=np.float64)
+    if len(v) == 0 or depth <= 0.0:
+        return v
+    n = np.zeros_like(v)
+    for fc in f:
+        p = v[fc]
+        fn = np.cross(p[1] - p[0], p[2] - p[0])
+        for i in fc:
+            n[i] += fn
+    ln = np.linalg.norm(n, axis=1, keepdims=True)
+    n = np.where(ln > 1e-12, n / np.maximum(ln, 1e-12), 0.0)
+    out = np.sign(np.einsum("ij,ij->i", n, v - v.mean(axis=0)))      # outward whatever the winding
+    n = n * np.where(out == 0, 1.0, out)[:, None]
+    loc = v - HEAD_C
+    az = np.arctan2(loc[:, 0], -loc[:, 2])
+    streak = (np.sin(az * 23.0 + loc[:, 1] * 9.0) * 0.6 + np.sin(az * 37.0 - loc[:, 1] * 14.0 + 1.3) * 0.4)
+    return v + n * (depth * (0.5 + 0.5 * streak))[:, None]
+
+
 def hair(P, B, person):
     """The person's hair object as a PartsBuilder-free accumulator (no shapes): crop / bun / braid / bob / buns2."""
     style = person.get("hair", "crop")
@@ -566,19 +591,23 @@ def hair(P, B, person):
         return acc
     if style in ("crop", "bun", "braid", "buns2"):
         female = style != "crop"
-        v, f = hair_cap(B, female, 0.0065 if not female else 0.0095)
+        v, f = hair_cap(B, female, 0.0082 if not female else 0.0118)
+        v = hair_clumps(v, f, 0.0016 if not female else 0.0022)
         if getattr(P, "hat", None):
             v, f = under_hat(v, f, P.hat)
         acc.add(v, f, "hair", "Head")
     if style == "bun":
-        bv, bf = MB.uv_sphere(HEAD_C + np.array([0, -0.035, 0.098 * hs[2]]), 0.036, 10, 6)
+        bv, bf = MB.uv_sphere(HEAD_C + np.array([0, -0.035, 0.098 * hs[2]]), 0.038, 16, 9)
+        bv = hair_clumps(bv, bf, 0.003)
         acc.add(bv, bf, "hair", "Head", "Neck", 0.15)
     elif style == "buns2":
         for sx in (-1.0, 1.0):
-            bv, bf = MB.uv_sphere(HEAD_C + np.array([sx * 0.066 * hs[0], 0.035 * hs[1], 0.078 * hs[2]]), 0.04, 10, 7)
+            bv, bf = MB.uv_sphere(HEAD_C + np.array([sx * 0.066 * hs[0], 0.035 * hs[1], 0.078 * hs[2]]), 0.042, 16, 10)
+            bv = hair_clumps(bv, bf, 0.003)
             acc.add(bv, bf, "hair", "Head")
     elif style == "braid":
-        bv, bf = MB.uv_sphere(HEAD_C + np.array([0, -0.06, 0.094 * hs[2]]), 0.03, 10, 6)
+        bv, bf = MB.uv_sphere(HEAD_C + np.array([0, -0.06, 0.094 * hs[2]]), 0.032, 14, 8)
+        bv = hair_clumps(bv, bf, 0.0025)
         acc.add(bv, bf, "hair", "Head", "Neck", 0.3)
         # the braid hangs down the back over the coat collar to the shoulder blades
         n = 9
@@ -587,7 +616,7 @@ def hair(P, B, person):
             y = 1.62 - 0.36 * t
             zz = 0.118 + 0.03 * math.sin(t * math.pi * 0.8) + 0.015 * t
             r = 0.026 - 0.008 * t
-            sv, sf = MB.uv_sphere(np.array([0.004 * math.sin(i * 1.7), y, zz]), r, 8, 5)
+            sv, sf = MB.uv_sphere(np.array([0.004 * math.sin(i * 1.7), y, zz]), r, 12, 6)
             sv = np.array([0.004 * math.sin(i * 1.7), y, zz]) + (sv - np.array([0.004 * math.sin(i * 1.7), y, zz])) * np.array([1.0, 1.35, 0.9])
             if y > 1.55:
                 acc.add(sv, sf, "hair", "Head", "Neck", 0.5)
@@ -605,7 +634,7 @@ def hair(P, B, person):
             if aa < 80.0:
                 return 26.0 + (-48.0 - 26.0) * C.smoothstep(48.0, 80.0, aa)
             return -48.0
-        v, f = dome(HEAD_C + np.array([0.0, 0.004, 0.006]), (0.095 * hs[0], 0.126 * hs[1], 0.112 * hs[2]), edge, 44, 12, 0.006, flare=0.14)
+        v, f = dome(HEAD_C + np.array([0.0, 0.004, 0.006]), (0.095 * hs[0], 0.126 * hs[1], 0.112 * hs[2]), edge, 60, 16, 0.0075, flare=0.15)
         # straight bangs: flatten the front fringe onto the forehead plane
         loc = v - HEAD_C
         frontm = (loc[:, 2] < -0.07) & (loc[:, 1] < 0.08)

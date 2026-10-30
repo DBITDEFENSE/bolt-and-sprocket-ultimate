@@ -402,8 +402,12 @@ func _case_not_yet() -> void:
 	_check(bool(ton.get("ok", false)), "a tonic is on offer for him (%s)" % str(ton.get("name", ton.get("code", "?"))))
 	_check(jc.talk_prompt(h).contains("tonic"), "the talk prompt offers it: \"%s\"" % jc.talk_prompt(h))
 	if bool(ton.get("ok", false)):
-		var s2: int = Economy.get_scrip(1)
 		var want: StringName = ton["perk"] as StringName
+		var paid: Array[int] = [0]   # what the purchase itself cost (kill rewards land in the same window: no Scrip delta)
+		var on_buy: Callable = func(pl: int, _item: StringName, cost: int) -> void:
+			if pl == 1:
+				paid[0] += cost
+		GLBus.purchase_made.connect(on_buy)
 		_check(jc.choose_tonic(h), "he is sent for the %s" % str(ton["name"]))
 		var drank: bool = await _until(func() -> bool: return PerkManager.has_perk(jp.player_id, want), 60.0,
 			func() -> void:
@@ -411,7 +415,8 @@ func _case_not_yet() -> void:
 				if jp.downed:
 					_revive_jakub())
 		_check(drank, "he walks to the machine and drinks it (events %s)" % str(jc.events.slice(-4)))
-		_check(s2 - Economy.get_scrip(1) == PerkManager.price(want), "paid from the human's Scrip at the normal price (%d)" % (s2 - Economy.get_scrip(1)))
+		GLBus.purchase_made.disconnect(on_buy)
+		_check(paid[0] == PerkManager.price(want), "paid from the human's Scrip at the normal price (%d)" % paid[0])
 		_check(jc.events.has("tonic:%s" % want), "his tonic event")
 		_check(not jc.tonic_offer(h).has("machine") or jc.tonic_offer(h).get("perk") != want, "never the same tonic twice")
 	# downed and left: he bleeds out after 60 s and stays out cold

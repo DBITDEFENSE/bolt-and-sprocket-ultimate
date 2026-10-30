@@ -78,6 +78,41 @@ class Canon:
         self.bvh = mathutils.bvhtree.BVHTree.FromPolygons([tuple(p) for p in B.v], tri_f)
 
 
+def _region_bvh(canon, region):
+    cache = canon.__dict__.setdefault("_rbvh", {})
+    if region not in cache:
+        ids = [i for i, r in enumerate(canon.face_region) if r == region]
+        cache[region] = (ids, mathutils.bvhtree.BVHTree.FromPolygons([tuple(p) for p in canon.v], [canon.f[i] for i in ids]))
+    return cache[region]
+
+
+def _region_uvs(canon, pts, region, head_scale, hand_k):
+    """Corner UVs of one head (1) / hand (2) face of a body whose head / hand topology differs from the canonical:
+    the face's centre picks the canonical face it lands on, the corners map through that face's affine UV frame
+    (one island per face, as the trunk)."""
+    pts = np.asarray(pts, dtype=np.float64)
+    if region == 1:
+        q = MB.HEAD_C + (pts - MB.HEAD_C) / head_scale
+    else:
+        m = pts.mean(axis=0)
+        w = min((np.asarray(MB.RIG.head[s], dtype=np.float64) for s in ("LeftHand", "RightHand")),
+                key=lambda x: float(np.linalg.norm(x - m)))
+        q = w + (pts - w) * hand_k
+    ids, bvh = _region_bvh(canon, region)
+    hit = bvh.find_nearest(tuple(q.mean(axis=0)))
+    cf_global = ids[hit[2]]
+    cf = canon.f[cf_global]
+    uv = canon.face_uv[cf_global]
+    p0, p1, p2 = canon.v[cf[0]], canon.v[cf[1]], canon.v[cf[2]]
+    M = np.stack([p1 - p0, p2 - p0], axis=1)
+    out = []
+    for c in q:
+        h = np.array(bvh.find_nearest(tuple(c))[0])
+        ab_, _r, _rk, _s = np.linalg.lstsq(M, h - p0, rcond=None)
+        out.append(uv[0] + ab_[0] * (uv[1] - uv[0]) + ab_[1] * (uv[2] - uv[0]))
+    return out
+
+
 def transfer_uvs(canon, P, B):
     """UVs for a body whose skin-modifier topology differs from the canonical one: every trunk face casts its
     corners outward from its bone's axis onto the canonical surface and maps the hits through the UVs of the
@@ -88,11 +123,20 @@ def transfer_uvs(canon, P, B):
     out = []
     face_region = [int(B.region[f[0]]) for f in B.f]
     other_canon = [i for i, r in enumerate(canon.face_region) if r != 0]
+    # T-134: the people's finer head and hands (people.json head_res / hand_res) don't share the canonical topology;
+    # their faces map through the canonical head / hand surface instead (head knobs and hand size scaled out)
+    same = sum(1 for r in face_region if r != 0) == len(other_canon) and int(getattr(P, "hand_res", 0)) == 0
+    hs = np.array((P.face or {}).get("head", (1.0, 1.0, 1.0)) if getattr(P, "face", None) else (1.0, 1.0, 1.0), dtype=np.float64)
+    lw_c = MB.Params("medium", False, True).limb
+    lw = P.limb * (0.94 if P.female else 1.0)
     other_k = 0
     for fi, f in enumerate(B.f):
-        if face_region[fi] != 0:
+        if face_region[fi] != 0 and same:
             out.extend(canon.face_uv[other_canon[other_k]])
             other_k += 1
+            continue
+        if face_region[fi] != 0:
+            out.extend(_region_uvs(canon, B.v[f], face_region[fi], hs, lw_c / lw))
             continue
         pts = B.v[f]
         c = pts.mean(axis=0)
