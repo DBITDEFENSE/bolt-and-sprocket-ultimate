@@ -7,7 +7,7 @@ extends GutTest
 ## gameplay moved: RemoteBody and PatronBody still carry no collision, the Cousins keep the same skeleton, hitboxes
 ## (bone, limb, size, place) and pose layer whether they wear the modelled doll or the legacy primitives.
 
-const HERO_TRIS: int = 15000
+const HERO_TRIS: int = 20000
 
 
 func after_each() -> void:
