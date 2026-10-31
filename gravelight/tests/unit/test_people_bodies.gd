@@ -23,7 +23,7 @@ func _tris(m: ArrayMesh) -> int:
 
 func test_every_person_has_a_glb_and_builds() -> void:
 	var ids: PackedStringArray = PeopleBodies.ids()
-	assert_eq(ids.size(), 20, "squad 4 + Jakub + 5 patrons + 3 survivors + 3 Cousins + Selwyn (T-126) + 3 map companions (T-135)")
+	assert_eq(ids.size(), 21, "squad 4 + Jakub + 5 patrons + 3 survivors + 3 Cousins + Selwyn (T-126) + 3 map companions (T-135) + the bank teller (T-136)")
 	for id: String in ids:
 		assert_true(PeopleBodies.available(id), id + ": GLB built and imported")
 		var m: ArrayMesh = PeopleBodies.mesh(id)

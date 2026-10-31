@@ -57,6 +57,19 @@ func grant(player: int, amount: int) -> void:
 	GLBus.scrip_changed.emit(player, get_scrip(player), amount)
 
 
+## T-136: Scrip in or out of the savings bank (BankAccount): no earning and no purchase, so stats, challenges and
+## power-up drops never count it (`moving` is true while scrip_changed is out).
+var moving: bool = false
+
+func bank_move(player: int, delta: int) -> void:
+	if not Net.is_authority() or delta == 0:
+		return
+	_scrip[player] = maxi(0, get_scrip(player) + delta)
+	moving = true
+	GLBus.scrip_changed.emit(player, get_scrip(player), delta)
+	moving = false
+
+
 func spend(player: int, item_id: StringName, cost: int) -> bool:
 	if not Net.is_authority():
 		return false

@@ -10322,5 +10322,100 @@
     "speaker": "JET",
     "category": "COMP_FALLEN",
     "text": "Go. Get up there without me."
+  },
+  "TEL_BANK_GREET_01": {
+    "speaker": "TEL",
+    "category": "BANK_GREET",
+    "text": "Oh! Oh, thank God, a customer. A living one. The, the bank is open. We are always open. Herr Direktor said so."
+  },
+  "TEL_BANK_GREET_02": {
+    "speaker": "TEL",
+    "category": "BANK_GREET",
+    "text": "Please don't let them in. I mean, good evening. Welcome to the Darlehenskasse. How may I help you?"
+  },
+  "TEL_BANK_GREET_03": {
+    "speaker": "TEL",
+    "category": "BANK_GREET",
+    "text": "I locked the door, but there is no door anymore. Deposits? Withdrawals? Please be quick."
+  },
+  "TEL_BANK_GREET_M1_01": {
+    "speaker": "TEL",
+    "category": "BANK_GREET_M1",
+    "text": "You again! I carried the cash box all the way up from the crossroads. Your account is safe. I am not."
+  },
+  "TEL_BANK_GREET_M1_02": {
+    "speaker": "TEL",
+    "category": "BANK_GREET_M1",
+    "text": "Lohnbüro, pay office, bank, whatever this is now. Your savings came with me. Every pfennig, I counted twice."
+  },
+  "TEL_BANK_DEPOSIT_01": {
+    "speaker": "TEL",
+    "category": "BANK_DEPOSIT",
+    "text": "Deposited. One per cent a round, compounded. It is, it is a very good rate, under the circumstances."
+  },
+  "TEL_BANK_DEPOSIT_02": {
+    "speaker": "TEL",
+    "category": "BANK_DEPOSIT",
+    "text": "Into the safe it goes. Into the safe. Nobody touches the safe."
+  },
+  "TEL_BANK_DEPOSIT_03": {
+    "speaker": "TEL",
+    "category": "BANK_DEPOSIT",
+    "text": "Received with thanks. I am writing it in the ledger. My hand is shaking, but it is in the ledger."
+  },
+  "TEL_BANK_DEPOSIT_04": {
+    "speaker": "TEL",
+    "category": "BANK_DEPOSIT",
+    "text": "Very good. Your money is safer than either of us."
+  },
+  "TEL_BANK_WITHDRAW_01": {
+    "speaker": "TEL",
+    "category": "BANK_WITHDRAW",
+    "text": "Here. Count it, please. I can't, my hands won't."
+  },
+  "TEL_BANK_WITHDRAW_02": {
+    "speaker": "TEL",
+    "category": "BANK_WITHDRAW",
+    "text": "Withdrawal. Of course. Spend it on bullets, please. Lots of bullets."
+  },
+  "TEL_BANK_WITHDRAW_03": {
+    "speaker": "TEL",
+    "category": "BANK_WITHDRAW",
+    "text": "Your money, sir. Please come back. Please come back alive."
+  },
+  "TEL_BANK_BROKE_01": {
+    "speaker": "TEL",
+    "category": "BANK_BROKE",
+    "text": "I am sorry, there is, there is nothing there. The ledger doesn't lie. I checked."
+  },
+  "TEL_BANK_BROKE_02": {
+    "speaker": "TEL",
+    "category": "BANK_BROKE",
+    "text": "I can't give you what isn't there. I would, believe me, I would."
+  },
+  "TEL_BANK_SCARED_01": {
+    "speaker": "TEL",
+    "category": "BANK_SCARED",
+    "text": "They're here, they're right here! Do something!"
+  },
+  "TEL_BANK_SCARED_02": {
+    "speaker": "TEL",
+    "category": "BANK_SCARED",
+    "text": "Oh God. Oh God oh God. Don't look at me, don't look at me."
+  },
+  "TEL_BANK_SCARED_03": {
+    "speaker": "TEL",
+    "category": "BANK_SCARED",
+    "text": "I'm only the junior clerk! I'm only the junior clerk!"
+  },
+  "TEL_BANK_SCARED_04": {
+    "speaker": "TEL",
+    "category": "BANK_SCARED",
+    "text": "Shoot it, shoot it, please shoot it!"
+  },
+  "TEL_BANK_CLOSED_01": {
+    "speaker": "TEL",
+    "category": "BANK_CLOSED",
+    "text": "The bank is closed. Rules are rules. Even now. Especially now."
   }
 }

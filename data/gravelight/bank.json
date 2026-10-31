@@ -1,0 +1,32 @@
+{
+  "_doc": "T-136: the savings bank (BankAccount, BankLedger, BankBranch, BankCounter, BankCard). Deposit Scrip at a branch; the balance is kept in your profile between matches and earns interest_per_round (1%) at the start of every round you play, on any map (rounded down, at least min_interest while there is anything in it), up to max_balance. Withdraw it at a branch in any later match. Off in Classic Rules and online (the counter is shut, no interest). Moving Scrip in or out is no earning: it never counts toward stats, challenges or power-up drops (Economy.bank_move). Branches: the Crossroads' woodshed, now the village Darlehenskasse (gen_map00 build_bank_shed), and the pay office in Kaltenbrunn's administration block. A branch is set in its own frame: at = the counter's centre on the floor, yaw = where the customers' side faces (deg: 0 = +z, 90 = +x, 180 = -z); local x along the counter.",
+  "interest_per_round": 0.01,
+  "min_interest": 1,
+  "max_balance": 1000000,
+  "step": 1000,
+  "card_idle_close_s": 25.0,
+  "teller_scared_m": 12.0,
+  "line_cooldown_s": {"BANK_GREET": 40.0, "BANK_GREET_M1": 40.0, "BANK_DEPOSIT": 6.0, "BANK_WITHDRAW": 6.0, "BANK_BROKE": 6.0, "BANK_SCARED": 14.0, "BANK_CLOSED": 10.0},
+  "teller": {"id": "teller", "speaker": "TEL", "display": "LASSMANN", "name": "Erwin Lassmann"},
+  "branches": {
+    "map00": {
+      "title": "DARLEHENSKASSE KREUZWEG",
+      "at": [-4.5, 0.0, 58.8],
+      "yaw": 180.0,
+      "width": 4.72,
+      "teller_z": -0.72,
+      "safe": [1.75, -0.95],
+      "greet": "BANK_GREET"
+    },
+    "map01": {
+      "title": "BERGMANNSKASSE KALTENBRUNN  ·  LOHNBÜRO",
+      "at": [-13.45, 0.0, 18.25],
+      "yaw": 90.0,
+      "width": 5.0,
+      "teller_z": -0.85,
+      "safe": [2.0, -1.6],
+      "sign": [0.0, 2.85, -2.35],
+      "greet": "BANK_GREET_M1"
+    }
+  }
+}

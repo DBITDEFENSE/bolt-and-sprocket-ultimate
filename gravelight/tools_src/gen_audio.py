@@ -946,6 +946,16 @@ def gen_melee_lethal():
         place(x, kick(r, 1.0, r.uniform(240, 280), 150, 0.014, 0.08), 0.0, 0.45)
         emit("hitmarker", f"sfx/weapons/hitmarker_{i:02d}", x, -3.0, bus="SFX", volume_db=-2.0, max_voices=3, pitch=[0.98, 1.02])
     for i in variants(3):
+        # T-136: the bank's till: the counter bell's ding, the drawer's click and a few coins settling in the tray
+        r = rng_for(f"till{i}")
+        dur = 0.75
+        x = zeros(dur)
+        place(x, bell(r, r.uniform(2350, 2550), 0.7, decay=5.0, strike=0.5, bright=0.8), 0.0, 0.5)
+        place(x, mech_click(r, r.uniform(1600, 1900), 0.05, 0.004), 0.12, 0.6)
+        for k in range(4):
+            place(x, mech_click(r, r.uniform(5200, 7000), 0.03, 0.002), 0.18 + k * r.uniform(0.04, 0.07), r.uniform(0.25, 0.45))
+        emit("bank_till", f"sfx/ui/bank_till_{i:02d}", x, -3.0, bus="SFX", volume_db=-4.0, max_voices=2, pitch=[0.98, 1.02])
+    for i in variants(3):
         # T-128: the kill confirm: a deep, short thock (felt more than heard), a bright double tick on top and a
         # breath of air after, distinct from the hit's tick and the headshot's crack
         r = rng_for(f"kc{i}")

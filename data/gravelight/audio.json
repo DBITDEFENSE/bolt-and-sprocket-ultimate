@@ -249,6 +249,17 @@
    "max_voices": 4,
    "attenuation": "world"
   },
+  "bank_till": {
+   "files": [
+    "res://gravelight/audio/sfx/ui/bank_till_01.wav",
+    "res://gravelight/audio/sfx/ui/bank_till_02.wav",
+    "res://gravelight/audio/sfx/ui/bank_till_03.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -4.0,
+   "max_voices": 2,
+   "pitch": [0.98, 1.02]
+  },
   "bell_toll": {
    "files": [
     "res://gravelight/audio/sfx/world/bell_chapel_toll_01.wav"

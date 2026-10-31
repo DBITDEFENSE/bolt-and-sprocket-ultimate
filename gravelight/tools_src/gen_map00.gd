@@ -683,7 +683,6 @@ const OUT_DEAD_TREES: Array = [
 ## Solid things out on the grounds (cover; nobody stands on them: no_mantle): [name, centre on the snow, size, yaw].
 ## Drawn by _dress_grounds.
 const OUT_SOLIDS: Array = [
-	["Woodshed", Vector3(-4.5, 0, 58.5), Vector3(5.0, 2.6, 3.5), 0.0],
 	["HayRick", Vector3(22.0, 0, -23.5), Vector3(3.4, 2.8, 3.4), 0.0],
 	["Shrine", Vector3(-15.4, 0, -11.4), Vector3(0.5, 2.4, 0.5), 0.0],
 	["HayWagon", Vector3(-15.6, 0, 22.0), Vector3(1.9, 1.1, 3.0), 8.0],
@@ -834,6 +833,7 @@ func build_grounds() -> void:
 		box(geo, "Post", pp + Vector3(-hw, 0, -hw), pp + Vector3(hw, NAV_SOLID_H, hw), "beam", true, false).set_meta("no_mantle", true)
 	for sd: Array in OUT_SOLIDS:
 		_solid(str(sd[0]), sd[1], sd[2], float(sd[3]))
+	build_bank_shed()
 	# the crash site's cargo, thrown out of the hold (Landscape scattered_cargo, seed 77, round (37, 15)): the same
 	# draws, so each crate's collider sits under its drawing
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -1009,6 +1009,29 @@ var _cellar_lit: Node3D   # holder for the lit bulb glass (shown with the first 
 const NAV_SOLID_H: float = 1.6
 ## Perk machines and crates make their collision bodies at runtime, after the bake. Their footprints go into
 ## the navmesh here (invisible colliders) so zombies path round them instead of into them (T-027).
+## T-136: the woodshed by the west road is the village's savings bank now (the Darlehenskasse's branch, its counter
+## and teller set up by BankBranch at load): plank walls you can walk inside, a doorway in the north wall between the
+## posts, the window lit. Its footprint is the old woodshed's (x -7..-2, z 56.75..60.25), 2.35 m walls.
+const BANK_X0: float = -7.0
+const BANK_X1: float = -2.0
+const BANK_Z0: float = 56.75
+const BANK_Z1: float = 60.25
+const BANK_H: float = 2.35
+const BANK_T: float = 0.14
+const BANK_DOOR: Vector2 = Vector2(-5.35, -3.65)   # the doorway's x span in the north wall (1.7 m: the navmesh's 0.5 m radius needs it)
+const BANK_DOOR_H: float = 2.05
+
+func build_bank_shed() -> void:
+	var t: float = BANK_T
+	box(geo, "BankWall", Vector3(BANK_X0, 0, BANK_Z0), Vector3(BANK_DOOR.x, BANK_H, BANK_Z0 + t), "planks").set_meta("no_mantle", true)
+	box(geo, "BankWall", Vector3(BANK_DOOR.y, 0, BANK_Z0), Vector3(BANK_X1, BANK_H, BANK_Z0 + t), "planks").set_meta("no_mantle", true)
+	box(geo, "BankWall", Vector3(BANK_DOOR.x, BANK_DOOR_H, BANK_Z0), Vector3(BANK_DOOR.y, BANK_H, BANK_Z0 + t), "planks").set_meta("no_mantle", true)
+	box(geo, "BankWall", Vector3(BANK_X0, 0, BANK_Z1 - t), Vector3(BANK_X1, BANK_H, BANK_Z1), "planks").set_meta("no_mantle", true)
+	box(geo, "BankWall", Vector3(BANK_X0, 0, BANK_Z0 + t), Vector3(BANK_X0 + t, BANK_H, BANK_Z1 - t), "planks").set_meta("no_mantle", true)
+	box(geo, "BankWall", Vector3(BANK_X1 - t, 0, BANK_Z0 + t), Vector3(BANK_X1, BANK_H, BANK_Z1 - t), "planks").set_meta("no_mantle", true)
+	box(geo, "BankFloor", Vector3(BANK_X0 + t, 0.0, BANK_Z0 + t), Vector3(BANK_X1 - t, 0.03, BANK_Z1 - t), "floor_wood", false)
+
+
 func build_nav_blocks() -> void:
 	var pdata: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perks.json"))["perks"]
 	for pk: Array in CELLAR_PERKS:
@@ -2509,16 +2532,42 @@ func _dress_grounds() -> void:
 	_tree_line(g)
 	# the woodshed by the west road: plank walls, a lean-to roof falling to the south, a door, logs stacked on its
 	# east side under the eave, snow on the roof and drifted against the north wall
+	# T-136: the savings bank now (build_bank_shed: the walls; BankBranch: the counter and the teller)
 	var sh: Node3D = Props.group(g, "Woodshed", Vector3(-4.5, 0, 58.5))
-	Props.block(sh, Vector3(-2.5, 0, -1.75), Vector3(2.5, 2.35, 1.75), "planks")
-	for bx: float in [-2.45, -0.8, 0.8, 2.45]:
+	for bx: float in [-2.45, -1.0, 1.0, 2.45]:
 		Props.block(sh, Vector3(bx - 0.08, 0, -1.8), Vector3(bx + 0.08, 2.4, -1.72), "beam")
 	Props.obox(sh, Vector3(0, 2.55, 0.0), Vector3(5.5, 0.14, 4.3), "roof", Vector3(-9, 0, 0))
 	Props.obox(sh, Vector3(0, 2.66, -0.05), Vector3(5.6, 0.1, 4.1), "snow", Vector3(-9, 0, 0))
-	Props.block(sh, Vector3(-1.4, 0.02, -1.79), Vector3(-0.3, 1.95, -1.75), "board_wood_v")
-	Props.block(sh, Vector3(-0.4, 0.95, -1.82), Vector3(-0.34, 1.05, -1.79), "iron")
-	Props.block(sh, Vector3(0.9, 1.2, -1.78), Vector3(1.7, 1.75, -1.75), "window_dark")
-	Props.snow_drift(sh, Vector3(1.2, 0, -2.2), Vector3(3.0, 0.6, 1.2))
+	Props.block(sh, Vector3(-2.36, 2.37, -1.61), Vector3(2.36, 2.42, 1.61), "planks")             # the ceiling boards
+	Props.block(sh, Vector3(-0.93, 0, -1.82), Vector3(-0.85, 2.12, -1.72), "beam")               # the door frame
+	Props.block(sh, Vector3(0.85, 0, -1.82), Vector3(0.93, 2.12, -1.72), "beam")
+	Props.block(sh, Vector3(-0.93, 2.05, -1.82), Vector3(0.93, 2.13, -1.72), "beam")
+	Props.block(sh, Vector3(1.3, 1.2, -1.78), Vector3(2.1, 1.75, -1.75), "bulb_warm")           # the window, lit
+	Props.block(sh, Vector3(1.28, 1.18, -1.8), Vector3(2.12, 1.22, -1.76), "beam")
+	Props.block(sh, Vector3(1.28, 1.73, -1.8), Vector3(2.12, 1.77, -1.76), "beam")
+	Props.block(sh, Vector3(1.68, 1.2, -1.8), Vector3(1.72, 1.75, -1.77), "beam")
+	Props.block(sh, Vector3(-2.2, 2.14, -1.82), Vector3(-1.1, 2.36, -1.78), "paint_green")     # the signboard
+	var sign: Label3D = Label3D.new()
+	sign.text = "DARLEHENSKASSE"
+	sign.font_size = 34
+	sign.pixel_size = 0.0035
+	sign.modulate = Color(0.92, 0.84, 0.6)
+	sign.outline_size = 0
+	sign.position = Vector3(-1.65, 2.25, -1.84)
+	sign.rotation.y = PI
+	sh.add_child(sign)
+	var plate: Label3D = Label3D.new()
+	plate.text = "Spar- und Darlehenskasse
+Kreuzweg  ·  Zweigstelle"
+	plate.font_size = 22
+	plate.pixel_size = 0.003
+	plate.modulate = Color(0.2, 0.17, 0.12)
+	plate.outline_size = 0
+	plate.position = Vector3(-1.6, 1.5, -1.84)
+	plate.rotation.y = PI
+	Props.block(sh, Vector3(-2.02, 1.38, -1.8), Vector3(-1.18, 1.62, -1.76), "paint_cream")
+	sh.add_child(plate)
+	Props.snow_drift(sh, Vector3(1.8, 0, -2.2), Vector3(2.2, 0.6, 1.2))
 	for row: int in 3:
 		for k: int in 5:
 			Props.cyl(sh, Vector3(2.75, 0.17 + row * 0.3, -1.2 + k * 0.6), 0.15, 0.9, "pine" if (row + k) % 2 == 0 else "beam", Vector3(0, 0, 90))
