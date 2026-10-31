@@ -101,6 +101,7 @@ func _ready() -> void:
 	PlayerBot.attach(self)   # player bot mode (T-071): off until F6 / the pause menu / `botmode on` / --botmode
 	GLBus.match_started.emit(map_id)
 	Campaign.restore_flags(self)   # UPDATE 07 (T-114): the acts' carried flags (london_seen, bomb_*, ...)
+	BankBranch.attach(self)   # T-136: the savings bank's interest on every map, a branch on Map 0 and Kaltenbrunn
 	MapCompanion.attach(self)   # T-135: one more companion per map (after the flags: Jette follows you between acts)
 	for q: String in quest_files:
 		QuestManager.load_quest(q)

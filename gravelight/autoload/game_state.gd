@@ -182,7 +182,7 @@ func _on_enemy_killed(_enemy_id: StringName, limb: StringName, weapon_id: String
 
 
 func _on_scrip_changed(_player: int, _total: int, delta: int) -> void:
-	if delta > 0:
+	if delta > 0 and not Economy.moving:   # (a bank withdrawal is no earning, T-136)
 		_bump(&"scrip_earned", delta)
 
 

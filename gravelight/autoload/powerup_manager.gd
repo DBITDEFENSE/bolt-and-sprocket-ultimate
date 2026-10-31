@@ -154,7 +154,7 @@ func _on_round_started(_round: int, _special: bool) -> void:
 
 
 func _on_scrip_changed(player: int, _total: int, delta: int) -> void:
-	if delta > 0:
+	if delta > 0 and not Economy.moving:   # (a bank withdrawal never feeds the drops, T-136)
 		_earned[player] = int(_earned.get(player, 0)) + delta
 
 

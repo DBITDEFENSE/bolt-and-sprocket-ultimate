@@ -1526,6 +1526,31 @@ def kit_selwyn(body, P):
     return k
 
 
+def kit_teller(body, P):
+    """T-136: Erwin Lassmann, the Darlehenskasse's junior clerk: a white shirt with sleeve garters, a dark waistcoat
+    with a watch chain, a narrow tie, dark trousers, polished black shoes."""
+    k = Kit("teller")
+    shirt = add_shell(k, body, P_or(P_coat(0.86), P_arms(0.925)), thick_by_y(0.012, 0.01), "white")
+    vest = add_shell(k, body, P_coat(0.88), thick_by_y(0.02, 0.016), "cloth", push=shoulders_push(0.004))
+    k.add(skirt(body, trunk(vest), 0.94, 0.88, "cloth", flare=0.04, ease=0.002, rings=3))
+    k.add(band(body, neck_pts(body), 1.525, 0.05, "white", pad=0.012, thick=0.008))         # the stiff collar
+    k.add(sash(shirt, (0.0, 1.5), (0.0, 1.2), 0.03, "cloth2"))                               # the tie
+    k.add(pstud(shirt, "cloth2", 0.0, 1.495, (0.03, 0.02, 0.012)))                           # its knot
+    buttons(k, vest, 0.03, 1.36, 5, 0.075, "dark", 0.012)
+    for sx in (-1.0, 1.0):
+        pocket(k, vest, sx * 0.1, 1.06, 0.07, 0.04, "cloth", "", bag=False)
+    k.add(sash(vest, (-0.1, 1.07), (0.03, 1.12), 0.006, "brass"))                            # the watch chain
+    for side in ("Left", "Right"):
+        k.add(cuff_band(body, side, 0.83, 0.03, "cloth2", pad=0.01, thick=0.006, bones=("UpperArm", "LowerArm")))   # sleeve garters
+    back_seams(k, vest, "cloth", y_hem=0.95)
+    k.add(band(body, trunk(shirt), 0.99, 0.035, "leather", pad=0.003, thick=0.006))
+    legs = add_shell(k, body, P_legs(0.1, 0.98), 0.009, "cloth2")
+    shoes = add_shell(k, body, P_boots(0.1), 0.012, "leather", push=boot_push(0.01))
+    boots_finish(k, body, shoes, 0.1, sole="dark", sole_pad=0.011, rows=(0.075,))
+    trousers_finish(k, legs, 0.1)
+    return k
+
+
 def kit_ammer(body, P):
     """T-135: Fw. August "Gustl" Ammer, Kaltenbrunn's quartermaster: a long grey storeman's dust coat over a plain
     field-grey tunic (no insignia, no badges, no symbols of any kind), a leather belt with a plain buckle and a
@@ -1620,4 +1645,5 @@ PEOPLE_KITS = {
     "cousin_hammer": kit_cousin_hammer, "cousin_reach": kit_cousin_reach, "cousin_alix": kit_cousin_alix,
     "selwyn": kit_selwyn,
     "ammer": kit_ammer, "petersen": kit_petersen, "jette": kit_jette,   # T-135: the map companions
+    "teller": kit_teller,   # T-136: the bank teller
 }

@@ -83,3 +83,6 @@ Every change to an **existing** line from the original web build is logged here 
 - **Fw. August "Gustl" Ammer** (Kaltenbrunn): alive, locked in the barracks stores by his own sergeant for feeding the labourers; he can join. No insignia anywhere.
 - **Hinnerk Petersen** (Totenhafen, NEW character): the old harbour pilot who refused to take the cargo ship out at night, shut in the signal tower. Chosen over Sister Agnieszka, whom Map 4 already sends away with the cargo.
 - **Jette Maurer** (Fernflug): alive, locked in the yardmaster's hut for refusing to fly the glider; she goes with the squad through Acts I-III and stays behind at Groom Lake (the rocket seats four). Her logbook egg is unchanged.
+
+## 2026-10-31 (T-136): the savings bank
+- **Erwin Lassmann** (NEW character): the junior clerk of the village's Spar- und Darlehenskasse, whose branch is the old woodshed by the west road at the Crossroads. Terrified, polite to the end. He carries the cash box up to Kaltenbrunn and keeps the accounts in the pay office there.
