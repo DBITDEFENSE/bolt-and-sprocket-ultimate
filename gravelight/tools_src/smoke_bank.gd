@@ -6,6 +6,10 @@ extends Node
 ##     profile's balance; a round start adds 1%; a zombie by the counter makes him cower.
 ##   Kaltenbrunn: the pay office; the balance is still there (from the saved profile); WITHDRAW ALL brings it back
 ##     into your pocket, and none of it counted as earned Scrip.
+##   T-141 (UPDATE 09 contract C6), every other map: Totenhafen's Marinekasse, Werk Thalbach's Lohnkasse, the Kranich's
+##     Bordkasse, Groom Lake's Range Finance Office, Darkmatter's Accounts: the branch, its teller (or the Operator's
+##     speaking-tube window), the navmesh reaches the counter, the greeting in the right voice, a deposit and a
+##     withdrawal, the same account; Ledger Lager's machine is on every map and the navmesh reaches it.
 ## Prints "[bank-smoke] ..." and "[bank-smoke] RESULT: PASS/FAIL"; exit code 0/1.
 
 const MAP0: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
@@ -27,7 +31,7 @@ func _ready() -> void:
 	GameState.bot_count = 0
 	Campaign.reset()
 	GLBus.vo_line_started.connect(func(id: StringName, _who: StringName, _text: String, _d: float) -> void:
-		if String(id).begins_with("TEL_"):
+		if String(id).contains("_BANK_"):
 			_tel_lines.append(String(id))
 			print("[bank-smoke] teller: %s" % id))
 	_run.call_deferred()
@@ -176,4 +180,58 @@ func _run() -> void:
 			_check(got == saved and Economy.get_scrip(1) == p0 + saved, "map01: WITHDRAW ALL brings back %d" % got)
 			b.counter.card.close()
 		_check(int(GameState.stats.get(&"scrip_earned", 0)) - earned0 <= 4500 + 50000, "no bank move counted as earned (only the test's grant)")
+	await _other_maps()
 	_finish()
+
+
+## The five branches of UPDATE 09 (T-141) and Ledger Lager's machine on each (and on Map 0 / Kaltenbrunn).
+func _other_maps() -> void:
+	var rows: Array = [
+		["map02", "res://gravelight/maps/map02_totenhafen/map02.tscn", "JES_BANK_GREET_M2_"],
+		["map04a", "res://gravelight/maps/map04_fernflug/map04a.tscn", "RUH_BANK_GREET_M4A_"],
+		["map04b", "res://gravelight/maps/map04_fernflug/map04b.tscn", "RUH_BANK_GREET_M4B_"],
+		["map04c", "res://gravelight/maps/map04_fernflug/map04c.tscn", "PRU_BANK_GREET_M4C_"],
+		["map04d", "res://gravelight/maps/map04_fernflug/map04d.tscn", "OPR_BANK_GREET_M4D_"],
+	]
+	for row: Array in rows:
+		var tag: String = str(row[0])
+		_tel_lines.clear()
+		await _load(str(row[1]))
+		var b: BankBranch = _branch()
+		_check(b != null and b.counter != null and (b.teller != null or b.construct), "%s: the branch, its teller or window, its counter" % tag)
+		if b == null:
+			continue
+		var h: Player = _root().player
+		var front: Vector3 = b.counter.global_position + b.global_basis.z * 0.5
+		var nav: RID = h.get_world_3d().navigation_map
+		var path: PackedVector3Array = NavigationServer3D.map_get_path(nav, _root().spawn_transform(1).origin, front, true, 0xFFFFFFFF)
+		_check(not path.is_empty() and path[path.size() - 1].distance_to(front) < 0.8, "%s: the navmesh reaches the counter (%d points, ends %s, counter %s)" % [tag, path.size(),
+			str(path[path.size() - 1].snapped(Vector3.ONE * 0.1)) if not path.is_empty() else "-", str(front.snapped(Vector3.ONE * 0.1))])
+		h.global_position = front + b.global_basis.z * 0.4
+		h.velocity = Vector3.ZERO
+		await _until(func() -> bool: return _tel_lines.size() > 0, 5.0)
+		_check(_tel_lines.size() > 0 and _tel_lines[0].begins_with(str(row[2])), "%s: the greeting (%s)" % [tag, _tel_lines[0] if _tel_lines.size() > 0 else "-"])
+		_check(b.counter.get_prompt(h).begins_with("Bank:"), "%s: the counter's prompt \"%s\"" % [tag, b.counter.get_prompt(h)])
+		Economy.grant_raw(1, 3000)
+		var p0: int = Economy.get_scrip(1)
+		var bal: int = BankAccount.balance()
+		b.counter.interact(h)
+		await _secs(0.3)
+		var card: BankCard = b.counter.card
+		_check(card != null, "%s: the card opens" % tag)
+		if card != null:
+			_check(card.move("deposit") == 1000, "%s: DEPOSIT 1000" % tag)
+			_check(card.move("withdraw_all") >= 1000 + bal and BankAccount.balance() == 0, "%s: WITHDRAW ALL" % tag)
+			card.close()
+			await _secs(0.2)
+		_check(Economy.get_scrip(1) >= p0, "%s: the Scrip came back" % tag)
+		# Ledger Lager's machine
+		var lm: PerkMachine = null
+		for n: Node in get_tree().get_nodes_in_group(&"perk_machines"):
+			if n is PerkMachine and (n as PerkMachine).perk_id == &"ledger_lager":
+				lm = n as PerkMachine
+		_check(lm != null, "%s: Ledger Lager's machine is there" % tag)
+		if lm != null:
+			var mf: Vector3 = lm.global_position - lm.global_basis.z * 1.0
+			var mp: PackedVector3Array = NavigationServer3D.map_get_path(nav, _root().spawn_transform(1).origin, mf, true, 0xFFFFFFFF)
+			_check(not mp.is_empty() and mp[mp.size() - 1].distance_to(mf) < 0.8, "%s: the navmesh reaches the machine (ends %s, front %s)" % [tag, str(mp[mp.size() - 1].snapped(Vector3.ONE * 0.1)) if not mp.is_empty() else "-", str(mf.snapped(Vector3.ONE * 0.1))])

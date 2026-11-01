@@ -240,6 +240,18 @@
       ],
       "yaw": 0,
       "where": "Reception, the desk top (1.0) under the bell, facing the capsule (T-137)"
+    },
+    {
+      "id": "INT_M1_FENSKE_LEDGER",
+      "map": "1",
+      "style": "logbook",
+      "position": [
+        -14.55,
+        0.03,
+        12.6
+      ],
+      "yaw": -90,
+      "where": "Kaltenbrunn pay office (C_ADMIN), on the floor beside its lifted board, between Ledger Lager and Second Wind on the west wall"
     }
   ]
 }

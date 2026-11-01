@@ -233,6 +233,14 @@
       "text": "\"I turned it to full. Something said Mama. I am sure of it. I am sure of it. And then the garrison started screaming.\""
     },
     {
+      "id": "INT_M1_FENSKE_LEDGER",
+      "title": "The Second Ledger (R. Fenske, Lohnbuchhalter)",
+      "type": "DOC",
+      "map": "1",
+      "text": "A clothbound pay ledger wrapped in oilcloth, kept under a lifted board of the pay office floor; the pencil is still tied to it with string. Columns in a bookkeeper's hand, ruled with a ruler. Translated.\n\nLABOURERS' PAY WITHHELD, KALTENBRUNN. Opened 3 March 1941. Closed: not closed.\nOne line per man, per week, to the pfennig. 3.III.41, Gallery Two crew, 41 men, nine weeks: RM 4,428.30. 10.III.41, same crew: RM 492.00. 17.III.41, same crew: RM 492.00. The totals run to the foot of the sixth page, across to the seventh, and over.\nNobody ordered this book. The Ledger has a column for the marked and no column for these men, so I made one. I do not know who will read it. I know the figure is correct. It is the only thing in this building that is.\nSomebody should pay it one day. Not the Provider. Somebody.\n(Beneath, in the same pencil, a short stroke at every thousand, as on the wall behind the counter.) R. FENSKE",
+      "placement": "fixed"
+    },
+    {
       "id": "INT_GEN_01",
       "title": "SOE Briefing Extract: GRAVELIGHT",
       "type": "DOC",

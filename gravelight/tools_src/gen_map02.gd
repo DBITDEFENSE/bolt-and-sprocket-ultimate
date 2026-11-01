@@ -806,7 +806,7 @@ func build_tower() -> void:
 	box(geo, "NavBlock_Overclock", Vector3(42.3, TY, 35.8), Vector3(43.5, TY + 2.0, 37.6), "metal")
 	box(geo, "NavBlock_Hawkeye", Vector3(50.8, TY, 35.6), Vector3(52, TY + 2.0, 37.0), "metal")
 	# T-141: Ledger Lager (on the crane office's south wall) and the Marinekasse's counter, teller and safe (bank.json)
-	box(geo, "NavBlock_Ledger", Vector3(46.4, 0, 57.1), Vector3(47.6, 1.6, 58.1), "metal")
+	box(geo, "NavBlock_Ledger", Vector3(48.6, 0, 57.0), Vector3(49.8, 1.6, 58.0), "metal")
 	var bnk: Dictionary = (JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/bank.json")) as Dictionary).get("branches", {}).get("map02", {})
 	if bnk.has("nav_block"):
 		var nb: Array = bnk["nav_block"]
@@ -2315,8 +2315,9 @@ func build_gameplay() -> void:
 		["second_wind", Vector3(-26, 0, 0.9), 180.0], ["marathon_malt", Vector3(-5, 0, 29.3), 0.0],
 		["ironhide_stout", Vector3(32.8, 0, 8), -90.0], ["trigger_tonic", Vector3(40, 0, 0.8), 180.0],
 		["overclock_cordial", Vector3(42.9, TY, 36.7), -90.0], ["hawkeye_brandy", Vector3(51.4, TY, 36.3), 90.0],
-		# Ledger Lager (T-141): against the crane office's south wall, beside the Marinekasse's pay window on its west wall
-		["ledger_lager", Vector3(47.0, 0, 57.6), 180.0],
+		# Ledger Lager (T-141): against the crane office's south wall, at the east end of the Marinekasse's pay window
+		# (the west wall keeps the manifest INT_M2_03 and its reading spot)
+		["ledger_lager", Vector3(49.2, 0, 57.4), 180.0],
 	]
 	for p: Array in perks:
 		_node("res://gravelight/world/perk_machine.gd", "Perk_" + str(p[0]), {"perk_id": StringName(p[0])}, p[1], float(p[2]))

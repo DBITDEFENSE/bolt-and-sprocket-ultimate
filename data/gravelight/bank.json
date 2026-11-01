@@ -1,5 +1,5 @@
 {
-  "_doc": "T-136: the savings bank (BankAccount, BankLedger, BankBranch, BankCounter, BankCard). Deposit Scrip at a branch; the balance is kept in your profile between matches and earns interest_per_round (1%) at the start of every round you play, on any map (rounded down, at least min_interest while there is anything in it), up to max_balance. Withdraw it at a branch in any later match. Off in Classic Rules and online (the counter is shut, no interest). Moving Scrip in or out is no earning: it never counts toward stats, challenges or power-up drops (Economy.bank_move). T-141 (UPDATE 09 contract C6): a branch on every map and a teller per map. Ledger Lager II adds bank_interest_bonus to the rate, Ledger Lager IV pays a severance out of the balance when its holder goes down (BankAccount.pay_severance). Branches: the Crossroads' woodshed, now the village Darlehenskasse (gen_map00 build_bank_shed), the pay office in Kaltenbrunn's administration block, Totenhafen's pay window in the crane office (the Marinekasse), Werk Thalbach's Lohnkasse in the yardmaster's hut, the Kranich's Bordkasse (the quartermaster's locker in the centre body), Groom Lake's Range Finance Office at Dee's supply cage, and Darkmatter's Accounts window on the relay's concourse (a construct: the brass speaking-tube window with the Operator's voice for a teller). A branch is set in its own frame: at = the counter's centre on the floor, yaw = where the customers' side faces (deg: 0 = +z, 90 = +x, 180 = -z, 270 = -x); local x along the counter. sign = [x, y, z] in that frame (the signboard over the teller); construct = true builds the speaking-tube window instead of a teller and a safe; nav_block = [[min x,y,z],[max x,y,z]] in world metres is the footprint the map generator cuts out of the navmesh (informational: the generators carry the same numbers). tellers: per map (a map id prefix), {id (people.json), speaker (VO), display (subtitle name), name}; a map without a row uses `teller`.",
+  "_doc": "T-136: the savings bank (BankAccount, BankLedger, BankBranch, BankCounter, BankCard). Deposit Scrip at a branch; the balance is kept in your profile between matches and earns interest_per_round (1%) at the start of every round you play, on any map (rounded down, at least min_interest while there is anything in it), up to max_balance. Withdraw it at a branch in any later match. Off in Classic Rules and online (the counter is shut, no interest). Moving Scrip in or out is no earning: it never counts toward stats, challenges or power-up drops (Economy.bank_move). T-141 (UPDATE 09 contract C6): a branch on every map and a teller per map. Ledger Lager II adds bank_interest_bonus to the rate, Ledger Lager IV pays a severance out of the balance when its holder goes down (BankAccount.pay_severance). Branches: the Crossroads' woodshed, now the village Darlehenskasse (gen_map00 build_bank_shed), the pay office in Kaltenbrunn's administration block, Totenhafen's pay window on the crane office's south wall (the Marinekasse), Werk Thalbach's Lohnkasse in the yardmaster's hut, the Kranich's Bordkasse (the quartermaster's locker in the centre body), Groom Lake's Range Finance Office at Dee's supply cage, and Darkmatter's Accounts window on the relay's concourse (a construct: the brass speaking-tube window with the Operator's voice for a teller). A branch is set in its own frame: at = the counter's centre on the floor, yaw = where the customers' side faces (deg: 0 = +z, 90 = +x, 180 = -z, 270 = -x); local x along the counter. sign = [x, y, z] in that frame (the signboard over the teller); construct = true builds the speaking-tube window instead of a teller and a safe; nav_block = [[min x,y,z],[max x,y,z]] in world metres is the footprint the map generator cuts out of the navmesh (informational: the generators carry the same numbers). tellers: per map (a map id prefix), {id (people.json), speaker (VO), display (subtitle name), name}; a map without a row uses `teller`.",
   "interest_per_round": 0.01,
   "min_interest": 1,
   "max_balance": 1000000,
@@ -39,14 +39,14 @@
     },
     "map02": {
       "title": "MARINEKASSE TOTENHAFEN  ·  ZAHLSTELLE",
-      "at": [42.65, 0.0, 54.5],
-      "yaw": 270.0,
-      "width": 4.7,
+      "at": [46.2, 0.0, 58.3],
+      "yaw": 0.0,
+      "width": 3.2,
       "teller_z": -0.75,
-      "safe": [1.75, -0.95],
-      "sign": [0.0, 2.62, -0.1],
+      "safe": [-1.1, -0.85],
+      "sign": [0.0, 2.4, -1.28],
       "greet": "BANK_GREET_M2",
-      "nav_block": [[42.3, 0.0, 52.05], [44.0, 1.6, 56.95]]
+      "nav_block": [[44.5, 0.0, 57.0], [47.9, 1.6, 58.6]]
     },
     "map04a": {
       "title": "LOHNKASSE WERK THALBACH  ·  ZAHLSTELLE",

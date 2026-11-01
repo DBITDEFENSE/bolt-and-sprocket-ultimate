@@ -83,6 +83,7 @@ Costs are the same solo and co-op.
 | **Packmule Porter** | **Ammer's Ledger** (4500): **half price** ammo at the chalk and at ammo boxes; **a second extra grenade** carried. | **Training Load** (8500): at the start of every round, every gun you carry gets **20% of its reserve** back, plus a grenade. |
 | **Blastproof Bock** | **Liability Waiver** (3000): **explosions that reach you heal you 25**; the slide shockwave hits for 675 (was 450). | **Demolition School** (6500): the slide shockwave **scales with the round** (at least 60% of a zombie's health that round), reaches 3.8 m and **knocks survivors down**. |
 | **Overclock Cordial** | **Live Wire** (3500): burst cooldown **2 s** (was 3); **arcs jump to 3 more zombies** out to twice the radius, at half damage. | **Aftershock** (7000): a burst from a magazine **75%+ empty rings again 0.8 s later** at half strength. |
+| **Ledger Lager** *(UPDATE 09, T-141: the points tonic; JINGLES.md §16, 3000)* | **Compound Interest** (4000): the savings bank pays **3% a round** instead of 1%. | **Insider Rate** (7500): **10% off every purchase** (discount rounded down; the prompts show the struck price) and a **Marke kill pays a 15 Scrip tip**. Tier I: **+20% on every Scrip you earn**; **tier IV Golden Parachute** (14000, permanent): a round finished standing pays **5% of your wallet** (cap 2500) and a down pays **10% of your savings** (cap 2500). |
 | **Fine Print Fernet** *(not in the game yet: Helvetia Works)* | **Second Reading** (2500): the despawn rings and the egg glint reach twice as far (80 m / 50 m). | **Read It Through** (5500): the holder's timed power-ups last 60 s, not 45. Added to `perks.json` when the Fernet cabinet ships. |
 
 ### 1.3 Balance notes
@@ -553,7 +554,7 @@ The loading manifest in the crane office lists fourteen ballast units, one medic
 **Plate:** Marinekasse · Zahlstelle · consignment from Kaltenbrunn · Fenske recipe
 **Archive:** Maker's Plate: Ledger Lager (the crane office)
 
-The amber register against the crane office's south wall, a paper ZAHLTAG card in its window and a brass drum turning on its top, a few steps from the Marinekasse's pay window.
+The amber register against the crane office's south wall, a paper ZAHLTAG card in its window and a brass drum turning on its top, at the end of the Marinekasse's pay window.
 
 HELVETIA AUTOMATEN AG · BASEL. Formula: R. Fenske. A spare from the Kaltenbrunn pay office, forwarded north with the Navy's pay chests: the crate is stencilled "ZAHLMEISTEREI", and under it, in pencil, "do not count the drum".
 
