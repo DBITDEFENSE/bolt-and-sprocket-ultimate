@@ -1,7 +1,7 @@
 // UPDATE 09 section 2c (T-139): the password gate for the browser build (Vercel Routing Middleware, Edge runtime,
 // no framework, no packages). CZ_PASSWORD is a project environment variable; unset = the site is open.
 // A correct answer POSTed to /gate sets the cookie cz_gate = sha256("cz:" + password); everything else passes through.
-export const config = { matcher: '/((?!_vercel|favicon.ico).*)' };
+export const config = { matcher: '/((?!_vercel|favicon).*)' };
 
 const COOKIE = 'cz_gate';
 const PASS = { headers: { 'x-middleware-next': '1' } };   // what @vercel/functions' next() returns: continue to the files

@@ -111,7 +111,7 @@ def finish(out_dir, lists_path):
         os.replace(src, os.path.join(packs_dir, name))
         manifest["packs"][pack] = {"file": name, "bytes": os.path.getsize(os.path.join(packs_dir, name))}
     json.dump(manifest, open(os.path.join(packs_dir, "manifest.json"), "w", encoding="utf-8"), indent=1)
-    for f in ("vercel.json", "middleware.js"):
+    for f in ("vercel.json", "middleware.js", "favicon.png"):
         src = os.path.join("web", f)
         if os.path.exists(src):
             shutil.copy(src, os.path.join(out_dir, f))
