@@ -1,0 +1,14 @@
+{
+  "_doc": "UPDATE 09 section 2 (docs/U09_CONTRACTS.md C3). Online lobbies and WebRTC signaling through Supabase. Only the public anon / publishable keys live here (they are meant to ship in the client; Row Level Security protects the tables). Never put a service-role key in this repo. TURN is optional: leave urls empty and most connections work through STUN alone.",
+  "supabase_url": "https://fkoebguijrmlqdqrsgdy.supabase.co",
+  "supabase_anon_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrb2ViZ3VpanJtbHFkcXJzZ2R5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1NTIwMDUsImV4cCI6MjEwOTEyODAwNX0.s4eWdM6Els5Z-AQ2PFFbx2f2zv-2JpohIhbwapprcrk",
+  "supabase_publishable_key": "sb_publishable_P_l2g50b_dml1cruIm4P0g_-6xzcMyz",
+  "stun": ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"],
+  "turn": {"urls": [], "username": "", "credential": ""},
+  "lobby_heartbeat_s": 20,
+  "lobby_expire_s": 120,
+  "join_code_len": 6,
+  "rejoin_grace_s": 60,
+  "connect_timeout_s": 15,
+  "max_players": 4
+}
