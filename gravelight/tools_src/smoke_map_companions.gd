@@ -195,6 +195,11 @@ func _case(cid: String, scene: String) -> void:
 	_check(mc.can_talk(h), "%s: the human can talk to it" % cid)
 	mc.on_talk(h)
 	await _secs(0.3)
+	if mc.cfg.has("trade"):   # T-143: the quartermaster's Talk card comes first: TAKE HIM WITH YOU opens the choice
+		_check(mc._card != null, "%s: the Talk card opens (the trade, and the way to take him along)" % cid)
+		if mc._card != null:
+			mc._card.choose(&"interact")
+		await _secs(0.3)
 	_check(mc._choice != null, "%s: the choice card opens" % cid)
 	if mc._choice != null:
 		mc._choice._close(true)
