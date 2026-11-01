@@ -82,7 +82,7 @@ func setup(row: Dictionary) -> void:
 		"apron": _mat(Color(0.86, 0.84, 0.78)), "hair": _mat(_col(look, "head", Color(0.25, 0.18, 0.12))),
 	}
 	_build_body(str(look.get("headgear", "none")), bool(look.get("skirt", false)), bool(look.get("apron", false)), look.has("scarf"))
-	_build_person()
+	_build_person(str(row.get("person", patron_id)))
 	pose = StringName(str(row.get("pose", "stand")))
 	_last_pos = global_position if is_inside_tree() else position
 
@@ -192,9 +192,9 @@ func _build_body(headgear: String, skirt: bool, apron: bool, scarf: bool) -> voi
 
 
 ## T-092: the person's modelled body in place of the primitives (kept, hidden, as the fallback).
-func _build_person() -> void:
+func _build_person(person_id: String = "") -> void:
 	var p: PersonRig = PersonRig.new()
-	if not p.setup(patron_id):
+	if not p.setup(person_id if person_id != "" else patron_id):
 		p.free()
 		return
 	person = p

@@ -1,0 +1,183 @@
+{
+  "_doc": "T-143 (UPDATE 09 section 4): more people on Map 0 (Crossroads Inn) and Kaltenbrunn, as ExtraPerson nodes (gravelight/world/extra_person.gd; ExtraPeople reads this table). Kept apart from companions.json on purpose: a MapCompanion JOINS the squad (a Player body, a brain, a pid), these stay where they are: a PatronBody (a modelled person from people.json, no new body pipeline, no collider, nothing to push) with a Talk card (PersonCard) and, mostly, one favour. Offline only, like the companions. Per person: maps (map id prefixes), name / title / bio (the Talk card), speaker (VO code, voice_cast.json) and lines (category PEOPLE_<KIND>), bodies (the first one speaks; person = a people.json id, look = the primitive fallback colours, pose), appear_round, favour {kind fetch: item_at is where the item lies once the favour is accepted; reward.kind scrip | scrip_mark | revive_point | intel_ping | cover | unbolt_door; reward.rounds = how many rounds it lasts}, trade {cost, once_per_round} (the courier's tip). poi = the minimap marker label. All positions are in the map generator's frame and are checked on the navmesh by NpcWallProbe (and test_people_extra).",
+  "talk_hold_s": 0.35,
+  "near_m": 25.0,
+  "scared_m": 8.0,
+  "line_gap_s": 6.0,
+  "card_close_s": 25.0,
+  "people": {
+    "miners": {
+      "name": "Alois Brzezina and two miners",
+      "title": "ALOIS BRZEZINA",
+      "maps": ["map01"],
+      "speaker": "MIN",
+      "display": "BRZEZINA",
+      "poi": "Miners hiding",
+      "bio": "A Silesian shift boss and two of his hewers, hired men from the villages round the mine, not guards and not prisoners. When the bell rang on 20 December they stayed where they were, in an old side gallery with a dead lamp, and have been quiet since. Brzezina knows every working in the mine and has worked with Jakub's gang.",
+      "bodies": [
+        {"person": "rother", "at": [-13.0, -12.0, 74.0], "yaw": 180.0, "pose": "stand", "look": {"jacket": [0.2, 0.2, 0.22], "trousers": [0.17, 0.16, 0.15], "skin": [0.8, 0.64, 0.55], "head": [0.14, 0.13, 0.12], "headgear": "cap", "build": 1.1}},
+        {"person": "sobotta", "at": [-13.0, -12.0, 75.8], "yaw": 150.0, "pose": "cower", "look": {"jacket": [0.24, 0.22, 0.2], "trousers": [0.18, 0.17, 0.16], "skin": [0.82, 0.66, 0.57], "head": [0.2, 0.15, 0.1], "headgear": "cap", "build": 1.0}},
+        {"person": "petersen", "at": [-12.2, -12.0, 72.6], "yaw": 210.0, "pose": "cower", "look": {"jacket": [0.18, 0.2, 0.24], "trousers": [0.16, 0.16, 0.17], "skin": [0.78, 0.62, 0.54], "head": [0.3, 0.3, 0.3], "headgear": "none", "build": 1.0}}
+      ],
+      "favour": {
+        "kind": "fetch",
+        "item": "lamp",
+        "item_name": "miner's lamp",
+        "item_at": [4.5, 0.0, 38.0],
+        "ask": "Our lamp is dead. A safety lamp hangs by the bunks in the barracks. Bring it, and I will chalk you a short way.",
+        "have": "You have the lamp. Give it to Brzezina?",
+        "done": "They keep the lamp lit low. Brzezina chalked a way through the old workings on your map.",
+        "reward": {"kind": "scrip_mark", "scrip": 500, "mark": [20.0, -12.0, 70.0], "mark_label": "Miners' short way"}
+      },
+      "jakub_line": "JAK_PEOPLE_MINERS_01",
+      "lines": {
+        "talk": ["MIN_PEOPLE_TALK_01", "MIN_PEOPLE_TALK_02"],
+        "ask": ["MIN_PEOPLE_ASK_01"],
+        "thanks": ["MIN_PEOPLE_THANKS_01"],
+        "round": ["MIN_PEOPLE_ROUND_01", "MIN_PEOPLE_ROUND_02"],
+        "down": ["MIN_PEOPLE_DOWN_01"],
+        "jakub": ["MIN_PEOPLE_JAKUB_01"]
+      }
+    },
+    "medic": {
+      "name": "Matthias Roth, medic",
+      "title": "MATTHIAS ROTH",
+      "maps": ["map01"],
+      "speaker": "MED",
+      "display": "ROTH",
+      "poi": "Field medic",
+      "bio": "A medical orderly of the garrison's infirmary, 40, who stayed with the sick and wounded in the barracks when his unit pulled out. He wears no insignia, only a white apron over his tunic; he treated the labour gangs' injured too, on the quiet, and says so to no one.",
+      "bodies": [
+        {"person": "wiesner", "at": [-7.75, 0.0, 42.0], "yaw": 90.0, "pose": "stand", "look": {"jacket": [0.42, 0.4, 0.34], "trousers": [0.22, 0.22, 0.2], "skin": [0.8, 0.64, 0.55], "head": [0.22, 0.2, 0.16], "headgear": "none", "build": 1.0, "apron": true}}
+      ],
+      "favour": {
+        "kind": "fetch",
+        "item": "bandages",
+        "item_name": "bandages",
+        "item_at": [10.0, 0.0, 34.5],
+        "ask": "My linen is gone. There is a crate of bandages from the infirmary at the far end of the bunks. Fetch it.",
+        "have": "You have the bandages. Hand them to Roth?",
+        "done": "For two rounds Roth will get to anyone who goes down within reach of the bunks.",
+        "reward": {"kind": "revive_point", "rounds": 2, "range_m": 9.0, "delay_s": 2.5}
+      },
+      "lines": {
+        "talk": ["MED_PEOPLE_TALK_01", "MED_PEOPLE_TALK_02"],
+        "ask": ["MED_PEOPLE_ASK_01"],
+        "thanks": ["MED_PEOPLE_THANKS_01"],
+        "round": ["MED_PEOPLE_ROUND_01"],
+        "down": ["MED_PEOPLE_DOWN_01"],
+        "serve": ["MED_PEOPLE_SERVE_01", "MED_PEOPLE_SERVE_02"]
+      }
+    },
+    "radio": {
+      "name": "Marta Seidl, switchboard operator",
+      "title": "MARTA SEIDL",
+      "maps": ["map01"],
+      "speaker": "RAD",
+      "display": "SEIDL",
+      "poi": "Switchboard operator",
+      "bio": "The mine's civilian telephonist, 30, who was at her board when the line to Breslau went dead and a voice that is not human began to count on it. She still plugs the jacks in and out, listening. She relays what the Operator says, in her own words, to anyone who will hear.",
+      "bodies": [
+        {"person": "brandt", "at": [-3.5, 0.0, 28.3], "yaw": 0.0, "pose": "stand", "look": {"jacket": [0.3, 0.26, 0.26], "trousers": [0.2, 0.2, 0.22], "skin": [0.87, 0.73, 0.65], "head": [0.25, 0.18, 0.12], "headgear": "bun", "build": 0.9, "skirt": true}}
+      ],
+      "favour": {
+        "kind": "fetch",
+        "item": "valve",
+        "item_name": "radio valve",
+        "item_at": [-12.25, 3.8, 11.0],
+        "ask": "My set lost its valve. There is a spare in the radio room upstairs, on the desk. Bring it down and I will listen for you.",
+        "have": "You have the valve. Fit it to Seidl's set?",
+        "done": "The set hums. Seidl sweeps the line once and marks where the dead are gathering.",
+        "reward": {"kind": "intel_ping", "radius_m": 70.0, "seconds": 10.0}
+      },
+      "relay": {"speaker": "OPR", "chance": 0.7, "cooldown_s": 40.0},
+      "lines": {
+        "talk": ["RAD_PEOPLE_TALK_01", "RAD_PEOPLE_TALK_02"],
+        "ask": ["RAD_PEOPLE_ASK_01"],
+        "thanks": ["RAD_PEOPLE_THANKS_01"],
+        "round": ["RAD_PEOPLE_ROUND_01"],
+        "down": ["RAD_PEOPLE_DOWN_01"],
+        "relay": ["RAD_PEOPLE_RELAY_01", "RAD_PEOPLE_RELAY_02"],
+        "ping": ["RAD_PEOPLE_PING_01"]
+      }
+    },
+    "deserter": {
+      "name": "Gerd Lanz, a deserter",
+      "title": "GERD LANZ",
+      "maps": ["map00"],
+      "speaker": "DES",
+      "display": "LANZ",
+      "poi": "Deserter in the hayloft",
+      "bio": "Nineteen, walked away from a column on the carters' road and has been hiding in the hayloft since the snow. No uniform left to speak of, no insignia, no gun. He wants to see the spring, and he will fight for it if someone trusts him with a rifle.",
+      "bodies": [
+        {"person": "kubiak", "at": [7.0, 3.5, 24.0], "yaw": 90.0, "pose": "cower", "look": {"jacket": [0.3, 0.28, 0.24], "trousers": [0.22, 0.21, 0.2], "skin": [0.84, 0.68, 0.58], "head": [0.3, 0.2, 0.12], "headgear": "none", "build": 0.95}}
+      ],
+      "favour": {
+        "kind": "gun",
+        "ask": "Give me a rifle and I will watch the stable door. I owe somebody, and it may as well be you.",
+        "have": "Hand Lanz the gun in your hands? He keeps it.",
+        "done": "Lanz has the gun and covers the stable door for the rest of this round.",
+        "reward": {"kind": "cover", "rounds": 1, "range_m": 18.0, "fire_interval": 1.4, "hit_chance": 0.75, "damage_mult": 1.0}
+      },
+      "lines": {
+        "talk": ["DES_PEOPLE_TALK_01", "DES_PEOPLE_TALK_02"],
+        "ask": ["DES_PEOPLE_ASK_01"],
+        "thanks": ["DES_PEOPLE_THANKS_01"],
+        "round": ["DES_PEOPLE_ROUND_01"],
+        "down": ["DES_PEOPLE_DOWN_01"],
+        "cover": ["DES_PEOPLE_COVER_01", "DES_PEOPLE_COVER_02"]
+      }
+    },
+    "widow": {
+      "name": "Hanne Ebert, a carter's widow",
+      "title": "HANNE EBERT",
+      "maps": ["map00"],
+      "speaker": "WID",
+      "display": "EBERT",
+      "poi": "Carter's widow",
+      "bio": "Sixty, the widow of the last salt carter on this road. She took a room above the taproom the autumn he died and stayed. Her husband went out to the yard for his lamp the night the plane came down, and she has not unlatched the side door since.",
+      "bodies": [
+        {"person": "pohl", "at": [21.0, 3.8, 6.75], "yaw": 180.0, "pose": "stand", "look": {"jacket": [0.2, 0.17, 0.2], "trousers": [0.18, 0.17, 0.17], "skin": [0.86, 0.72, 0.64], "head": [0.55, 0.55, 0.55], "headgear": "kerchief", "build": 0.95, "skirt": true, "scarf": [0.26, 0.22, 0.24]}}
+      ],
+      "favour": {
+        "kind": "fetch",
+        "item": "lamp",
+        "item_name": "carter's lamp",
+        "item_at": [30.25, 0.0, 39.0],
+        "ask": "His lamp hangs on the cart in the yard. Bring it to me, and I will draw the bolt on the side door.",
+        "have": "You have the carter's lamp. Give it to Ebert?",
+        "done": "Ebert draws the bolt: the kitchen back door opens free for two rounds.",
+        "reward": {"kind": "unbolt_door", "door": "door_stable", "rounds": 2, "fallback_scrip": 300}
+      },
+      "lines": {
+        "talk": ["WID_PEOPLE_TALK_01", "WID_PEOPLE_TALK_02"],
+        "ask": ["WID_PEOPLE_ASK_01"],
+        "thanks": ["WID_PEOPLE_THANKS_01"],
+        "round": ["WID_PEOPLE_ROUND_01", "WID_PEOPLE_ROUND_02"],
+        "down": ["WID_PEOPLE_DOWN_01"],
+        "bolt": ["WID_PEOPLE_BOLT_01"]
+      }
+    },
+    "courier": {
+      "name": "Lotte Hager, a courier",
+      "title": "LOTTE HAGER",
+      "maps": ["map00"],
+      "speaker": "COU",
+      "display": "HAGER",
+      "poi": "Courier at the gate",
+      "bio": "A district courier, 25, bicycle post for the villages, stuck at the carters' gate with a snapped chain and a canvas bag of letters. She has ridden every road in the district and knows where things are left; she trades what she has seen for Scrip.",
+      "bodies": [
+        {"person": "kroll", "at": [21.0, 0.0, 51.5], "yaw": 0.0, "pose": "stand", "look": {"jacket": [0.24, 0.27, 0.34], "trousers": [0.2, 0.21, 0.24], "skin": [0.88, 0.75, 0.66], "head": [0.4, 0.3, 0.18], "headgear": "kerchief", "build": 0.88, "skirt": false}}
+      ],
+      "trade": {"kind": "crate_tip", "cost": 200, "once_per_round": true, "tip_seconds": 90.0},
+      "lines": {
+        "talk": ["COU_PEOPLE_TALK_01", "COU_PEOPLE_TALK_02"],
+        "tip": ["COU_PEOPLE_TIP_01", "COU_PEOPLE_TIP_02"],
+        "broke": ["COU_PEOPLE_BROKE_01"],
+        "once": ["COU_PEOPLE_ONCE_01"],
+        "round": ["COU_PEOPLE_ROUND_01"],
+        "down": ["COU_PEOPLE_DOWN_01"]
+      }
+    }
+  }
+}

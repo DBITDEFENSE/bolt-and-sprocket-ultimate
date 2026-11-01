@@ -953,6 +953,22 @@ Banter triggers between rounds (in the round transition break) when two characte
 - `LSL_SAMPLE_04`: "(*cough*) I'm not tired. I'm only resting my eyes. Like Papa used to."
 - `LSL_SAMPLE_05`: "Mama, when you go down in the salt, does it hum for you too?"
 
+### The extra people (T-143, UPDATE 09 section 4)
+
+Seven people who stand where they are (they do not join the squad; the companions of T-135 do that). Each is a modelled person from `people.json` (a kit reused from the Map 0 patrons and survivors and the T-135 companions, no new body pipeline), a Talk card (`PersonCard`: name, bio, what they say now, up to three options), usually one favour, reactions to round starts and downs, and a minimap marker. Data: `data/gravelight/people_extra.json`; code: `ExtraPeople` / `ExtraPerson`. Offline only. No insignia on anyone; the labour gangs were people, never marked, never zombies (CANON 2.2).
+
+| Person | Where | Kit | Voice | Favour and reward |
+|---|---|---|---|---|
+| **Alois Brzezina** and two hewers, miners hiding (Kaltenbrunn) | the Salt Chapel's west aisle (x -13, z 72-76, level -2) | rother, sobotta, petersen | MIN (Silesian shift boss, 50s, low and careful) | fetch a safety lamp from the barracks bunks: 500 Scrip and a chalked short way on the map. Reacts to round starts, downs; if Jakub is with you and in the room he knows them (MIN_PEOPLE_JAKUB_01, JAK_PEOPLE_MINERS_01) |
+| **Matthias Roth**, medic (Kaltenbrunn) | the barracks, between the first two bunk rows | wiesner | MED (infirmary orderly, 40s, kind and tired) | fetch the infirmary bandages from the north wall of the bunk room: for 2 rounds he is a revive point (a player down within 9 m is got up after 2.5 s) |
+| **Marta Seidl**, switchboard operator (Kaltenbrunn) | the Administration Block's switchboard, ground floor | brandt | RAD (telephonist, 30, clipped, frightened) | fetch a radio valve from the radio room upstairs: one free intel ping (every zombie within 70 m blips for 10 s). She relays the Operator's slips: "Someone is counting on this line." |
+| **August "Gustl" Ammer**, quartermaster (Kaltenbrunn, T-135) | the barracks stores (his companion spot) | ammer | AMM | no favour: his Talk card sells a random ammo refill or a grenade pack for 1500 Scrip, once a round (he is the companion; the card also takes him with you or hands him your gun) |
+| **Gerd Lanz**, a deserter (Map 0) | the hayloft, west block | kubiak | DES (nineteen, whispering) | hand him the gun in your hands (he keeps it): he covers the stable door for the rest of the round (the damage of the gun you handed him, 75% hits, a shot every 1.4 s, within 18 m, in sight) |
+| **Hanne Ebert**, a carter's widow (Map 0) | upstairs, Room 3 | pohl | WID (60s, soft, grief held still) | fetch her husband Josef's lamp from the cart in the yard: the kitchen back door (Door_Stable) is free for 2 rounds (a 300 Scrip purse if it is already open) |
+| **Lotte Hager**, a courier (Map 0) | the carters' road, outside the Gate | kroll | COU (25, brisk, cheeky) | no favour: sells a map tip, 200 Scrip, once a round: the Requisition Crate marked on your map for 90 s |
+
+Each has 6 to 10 lines baked with Kokoro (category `PEOPLE_<KIND>`: TALK, ASK, THANKS, ROUND, DOWN plus SERVE / RELAY / PING / COVER / BOLT / TIP / BROKE / ONCE / JAKUB); the quartermaster has `COMP_TALK`, `COMP_TRADE`, `COMP_TRADE_BROKE`, `COMP_TRADE_ONCE`. Voice cast entries: MIN, MED, RAD, DES, WID, COU.
+
 ---
 
 ## Character Dossiers

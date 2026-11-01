@@ -236,6 +236,18 @@ Outside the play space (nothing here collides; since T-080 the Grounds' edge wal
   someone looks in), the hull hollow (a cabin, in by the cargo door or the torn hole on the starboard side), the hold's cargo thrown about, a parachute caught in the
   dead tree by the yard's north-east corner, ammunition cooking off now and then.
 
+## Map 0 extra people (T-143, UPDATE 09 section 4)
+
+Three more people stand about the inn (data/gravelight/people_extra.json; ExtraPerson; code and cards in CHARACTERS.md "The extra people"). Each has a Talk card, a minimap marker (a note pin with the label below) and is offline only.
+
+| Person | Spot (generator frame) | Minimap label | Favour / trade |
+|---|---|---|---|
+| Gerd Lanz, a deserter | the hayloft's west block, (7, 3.5, 24), cowering | Deserter in the hayloft | hand him a gun: he covers the stable door for the rest of the round |
+| Hanne Ebert, a carter's widow | upstairs Room 3, (21, 3.8, 6.75) | Carter's widow | fetch Josef's lamp from the cart in the yard (30.25, 0, 39): the kitchen back door (Door_Stable) is free for 2 rounds |
+| Lotte Hager, a courier | the carters' road outside the Gate, (21, 0, 51.5) | Courier at the gate | 200 Scrip, once a round: the Requisition Crate is marked on your map for 90 s |
+
+The upstairs survivors' walk (T-077) is shaped since T-143: InnSurvivor.shape_path pushes the path 0.5 m off the walls and puts it on the floor (it ran 0.5 m in the air and brushed the doorway's jamb).
+
 ## Map 0 spawn points
 
 | Zone | Window spawns | Ground/other spawns | Active when |
@@ -622,6 +634,17 @@ D  .  .  .  .  .  .  Q(part:frame)  .  W     C* crate spot (mess hall serving li
 - **Entrances:** 3 ramps (from F, G, H), all sealed by blast doors until **all 3 pylons are attuned**.
 - **Spawns:** 3 ground emerge points (rim), plus fog portals on Heartstorm.
 - **Story:** the reason the facility exists. The strike site. The cage was built around the crystal, not the other way around. The Ledger sits in the ante-room because the resonance readings had to be taken within 30 m.
+
+## Map 1 extra people (T-143, UPDATE 09 section 4)
+
+Three more people on Kaltenbrunn plus the quartermaster's trade card (people_extra.json; companions.json "trade"; offline only; a note pin on the minimap each):
+
+| Person | Spot | Minimap label | Favour / trade |
+|---|---|---|---|
+| Alois Brzezina and two miners | F_CHAPEL west aisle, (-13, -12, 74), (-13, -12, 75.8), (-12.2, -12, 72.6) | Miners hiding | fetch a safety lamp from the barracks bunks (4.5, 0, 38): 500 Scrip and a short way chalked on the map; they know Jakub |
+| Matthias Roth, medic | D_BARRACKS between the first bunk rows, (-7.75, 0, 42) | Field medic | fetch bandages from the bunk room's north wall (10, 0, 34.5): for 2 rounds a revive point (9 m, 2.5 s) |
+| Marta Seidl, switchboard operator | C_ADMIN ground floor at the switchboard, (-3.5, 0, 28.3) | Switchboard operator | fetch a radio valve from the radio room upstairs (-12.25, 3.8, 11): one free intel ping; she relays the Operator's slips |
+| Gustl Ammer, quartermaster (T-135) | D_BARRACKS stores, (30, 0, 41) | (his companion marker) | Talk card: 1500 Scrip for a random ammo refill or grenade pack, once a round |
 
 ## Map 1 crate spots (5)
 
