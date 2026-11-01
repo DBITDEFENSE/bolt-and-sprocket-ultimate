@@ -3,8 +3,8 @@ extends Control
 ## Shown while a map loads (UPDATE 09 section 7, DECISIONS T-144): the map's preview art full screen under a dark
 ## grade, its act and name, the date line, one lore line for the map and one tip (data/gravelight/tips.json), and a
 ## thin violet bar with the loader's progress. `LoadingScreen.go(tree, scene)` swaps to this screen and loads the
-## map on a thread (ResourceLoader.load_threaded_request); when MapPacks exists (the web build's pack fetcher,
-## contract C4) its pack is fetched first. The screen stays at least MIN_SHOW_S so it can be read.
+## map on a thread (ResourceLoader.load_threaded_request); MapPacks.ensure (the web build's pack fetcher, contract C4,
+## T-139) runs first, its progress on the same bar (desktop: it returns at once). The screen stays at least MIN_SHOW_S so it can be read.
 ## Opened with no pending load (shots, tests) it just shows `demo_map`.
 
 const SCENE: String = "res://gravelight/ui/loading_screen.tscn"
@@ -169,12 +169,20 @@ func _build() -> void:
 
 
 func _begin() -> void:
-	var mp: Node = get_tree().root.get_node_or_null("MapPacks")
-	if mp != null and mp.has_method("ensure"):
+	# T-139 (contract C4): the browser build fetches the map's packs first; its progress drives this bar
+	if MapPacks.pending():
 		_status.text = "FETCHING"
-		var r: Variant = mp.call("ensure", map_id)
-		if r is Signal:
-			await r
+		MapPacks.progress.connect(_on_pack_progress)
+	var ok: bool = await MapPacks.ensure(scene_path)
+	if MapPacks.progress.is_connected(_on_pack_progress):
+		MapPacks.progress.disconnect(_on_pack_progress)
+	if not ok:
+		_status.text = "THE MAP COULD NOT BE FETCHED"
+		_done = true
+		await get_tree().create_timer(3.0).timeout
+		if is_inside_tree():
+			get_tree().change_scene_to_file("res://gravelight/ui/main_menu.tscn")
+		return
 	if not is_inside_tree():
 		return
 	var err: int = ResourceLoader.load_threaded_request(scene_path, "PackedScene", true)
@@ -185,6 +193,11 @@ func _begin() -> void:
 		return
 	_status.text = "LOADING"
 	_requested = true
+
+
+func _on_pack_progress(_pack: String, fraction: float, _bytes: int, _total: int) -> void:
+	if _bar != null:
+		_bar.value = fraction
 
 
 func _process(delta: float) -> void:

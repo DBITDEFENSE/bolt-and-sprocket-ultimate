@@ -92,11 +92,7 @@ var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 ## The web / Compatibility test (contract C4: GLSettings.is_web / is_compat when present, else our own).
 static func want_web() -> bool:
-	var gs: Node = Engine.get_main_loop().root.get_node_or_null("GLSettings") if Engine.get_main_loop() is SceneTree else null
-	if gs != null and gs.has_method("is_web") and gs.has_method("is_compat"):
-		return bool(gs.call("is_web")) or bool(gs.call("is_compat"))
-	return OS.has_feature("web") or str(ProjectSettings.get_setting("rendering/renderer/rendering_method", "")) == "gl_compatibility" \
-		or RenderingServer.get_current_rendering_method() == "gl_compatibility"
+	return GLSettings.is_web() or GLSettings.is_compat()   # contract C4 (T-139)
 
 
 static func walker_count(is_web: bool) -> int:
@@ -133,7 +129,7 @@ func _ready() -> void:
 	fernflug = ProfileSave.fernflug_beaten()
 	egg_done = ProfileSave.egg_done("map00_radio")
 	var steps: Array[Callable] = [_build_inn, _build_environment, _build_set, _build_zombies, _build_squad, _build_camera,
-		_build_hooks, _build_ambience, _enforce_budget]
+		_build_hooks, _build_ambience, _web_profile, _enforce_budget]
 	var timing: PackedStringArray = []
 	for s: Callable in steps:
 		var t1: int = Time.get_ticks_msec()
@@ -797,6 +793,13 @@ static func _patch(c: Dictionary, key: String, over: Dictionary) -> void:
 
 
 # ================================================================== budgets
+
+## T-139's browser profile on the real Compatibility renderer (depth fog, capped shadows, halved particles); a forced
+## web variant on the desktop (tests, shots) skips it, since it also sets global LOD and snow scales.
+func _web_profile() -> void:
+	if web and GLSettings.is_compat():
+		WebProfile.apply(self)
+
 
 ## Shadowed lights stay inside the budget: the Moon and the barrel first, then nothing else casts.
 func _enforce_budget() -> void:
