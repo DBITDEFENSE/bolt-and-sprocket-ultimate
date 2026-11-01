@@ -67,6 +67,8 @@ func clear() -> void:
 	_random.clear()
 	checkpoints.clear()
 	_holdouts.clear()
+	if GameState.has_flag(&"holdout"):
+		GameState.set_flag(&"holdout", false)
 	_pending.clear()
 	_ctx = {}
 	_restore_vo()
@@ -602,6 +604,7 @@ func _start_holdout(qid: StringName, sid: StringName) -> void:
 	_holdouts[key] = {"qid": qid, "sid": sid, "t": 0.0, "empty": 0.0, "wave_t": 2.0, "fired": {}}
 	RoundManager.set_hold(StringName("quest_" + key), true)
 	_run_actions(qid, _step(qid, sid).get("on_holdout_start", []))
+	GameState.set_flag(&"holdout", true)   # T-142: no relief squad during a holdout
 	holdout_changed.emit(qid, sid, true)
 
 
@@ -609,6 +612,8 @@ func _end_holdout(key: String) -> void:
 	RoundManager.set_hold(StringName("quest_" + key), false)
 	var h: Dictionary = _holdouts[key]
 	_holdouts.erase(key)
+	if _holdouts.is_empty() and GameState.has_flag(&"holdout"):
+		GameState.set_flag(&"holdout", false)
 	holdout_changed.emit(h["qid"], h["sid"], false)
 
 
@@ -753,6 +758,7 @@ func _start_cutscene(qid: StringName, sid: StringName) -> void:
 	runner.set("quest_id", qid)
 	runner.set("step_id", sid)
 	runner.set("params", p)
+	GameState.hold_flag_while(&"cutscene", runner)   # T-142: the runner's lifetime is the cutscene
 	var host: Node = get_tree().current_scene if get_tree().current_scene != null else get_tree().root
 	host.add_child.call_deferred(runner)
 

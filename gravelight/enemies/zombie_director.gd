@@ -43,6 +43,8 @@ var _lights: Array = []            # [OmniLight3D, base energy, uses_base_energy
 var _flicker_t: float = 0.0
 ## The homage-boss encounter on its map (HB1: the Cousins Round on Map 0); null elsewhere and on co-op clients.
 var cousins: CousinsRound = null
+## T-142: relief-squad soldiers alive right now (ReliefSquad keeps it): each holds one actor slot.
+var soldiers_alive: int = 0
 
 
 func _ready() -> void:
@@ -1046,6 +1048,43 @@ func remove_temp_spawns(key: StringName) -> void:
 		if is_instance_valid(sp):
 			(sp as Node).queue_free()
 	_temp_spawns.erase(key)
+
+
+# ---------------------------------------------------------------- relief squads (T-142, contract C5)
+
+## The active-actor cap left for zombies with `soldiers` relief-squad soldiers alive (rounds.json max_active counts
+## every actor): max_active - soldiers, never below 0.
+static func budget_for(max_active: int, soldiers: int) -> int:
+	return maxi(0, max_active - maxi(0, soldiers))
+
+
+## How many zombies may be active now (the round's spawning stops at it; the queue waits, it is never cut).
+func actor_budget() -> int:
+	return budget_for(RoundManager.max_active(), soldiers_alive)
+
+
+func set_soldiers_alive(n: int) -> void:
+	soldiers_alive = maxi(0, n)
+	RoundManager.actor_reserve = soldiers_alive
+
+
+## A dead soldier gets up (the Marke at work, or the substrate near the squad maps; CANON 2.2): a pooled zombie at
+## `at` in the soldier's clothes (`kit`: a SoldierKits tag, or a plain zombie kit), outside the round queue (it adds
+## one to the alive count, like a power-on burst) so it must die before the round can end, and it fills an active
+## slot like any zombie. It gets up off the floor over `getup_s`. null on a client or with the pool empty.
+func rise_at(at: Vector3, kit: String, getup_s: float = 2.2) -> Zombie:
+	if puppet_mode or _free.is_empty():
+		return null
+	var spec: Dictionary = RoundManager.take_extra_spawn()
+	spec["variant"] = SoldierKits.zombie_variant(kit)
+	var z: Zombie = _activate_at(spec, _snap(at))
+	if z == null:
+		RoundManager.alive = maxi(0, RoundManager.alive - 1)
+		return null
+	if SoldierKits.is_tag(kit):
+		SoldierKits.dress_risen(z, kit)
+	z.rise_from_floor(getup_s)
+	return z
 
 
 ## Activates a zombie whose round slot was already taken off the queue (RoundManager.take_spawn) at `at`: it

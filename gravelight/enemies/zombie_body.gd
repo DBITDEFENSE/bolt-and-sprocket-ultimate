@@ -705,6 +705,25 @@ static func build_living(kit: String, build: String = "medium", female: bool = f
 	return mesh
 
 
+## T-142 (the relief squads): a body in `kit`'s clothes recoloured by `palette` (part key -> linear Color: cloth,
+## cloth2, hair, leather...), living (the human_base GLB, the living skin, plain eyes, skin `tone`) or risen (the zombie
+## base GLB, the kit's dead skin and the violet eyes). Same layout, rig and LODs as every body. Cached per argument set.
+static func build_dressed(kit: String, build: String, female: bool, tone: Color, palette: Dictionary, living: bool = true) -> ArrayMesh:
+	var pk: PackedStringArray = []
+	for k: Variant in palette.keys():
+		pk.append("%s=%s" % [str(k), (palette[k] as Color).to_html()])
+	pk.sort()
+	var key: String = "dressed:%s:%s:%s:%s" % [("living" if living else "risen"), _cache_key(kit, build, female), tone.to_html(), ",".join(pk)]
+	if _meshes.has(key):
+		return _meshes[key]
+	var base: Dictionary = base_parts(build, female, living)
+	if not base.has("Body"):
+		return build_living(kit, build, female, tone) if living else build_skinned(kit, build, female)
+	var mesh: ArrayMesh = _merge_glb(base, kit, female, living, Color(tone.r, tone.g, tone.b, 1.0) if living else Color(0, 0, 0, 0), palette)
+	_meshes[key] = mesh
+	return mesh
+
+
 ## Every mesh object of a body GLB as surface arrays, the skin's bind indices remapped to ZombieRig bone indices
 ## (the GLB's joints carry the rig's bone names; the bind order is the exporter's). Cached; {} when the GLB is absent.
 static func base_parts(build: String, female: bool, living: bool = false) -> Dictionary:
@@ -767,7 +786,7 @@ static func hair_for(kit: String, female: bool) -> String:
 ## carry the kit's bit), surface 1 = the face parts, the hair and the kit's clothes (vertex colour = the part key's
 ## look x baked AO, CUSTOM0 = roughness / metallic / emission / detail class, CUSTOM1 = rest position). With
 ## characters.json lod.mode "auto" Godot's mesh LODs are generated on the result (no extra nodes or draw calls).
-static func _merge_glb(base: Dictionary, kit: String, female: bool, living: bool = false, tone_override: Color = Color(0, 0, 0, 0)) -> ArrayMesh:
+static func _merge_glb(base: Dictionary, kit: String, female: bool, living: bool = false, tone_override: Color = Color(0, 0, 0, 0), palette: Dictionary = {}) -> ArrayMesh:
 	var keys: Array = part_keys()
 	var bit: int = kit_bit(kit)
 	var tone: Color = _look(kit, "skin")[0] if tone_override.a <= 0.0 else tone_override
@@ -827,6 +846,10 @@ static func _merge_glb(base: Dictionary, kit: String, female: bool, living: bool
 				kname = "eye_white"
 			if not looks.has(kname):
 				looks[kname] = _look(kit, kname)
+				if palette.has(kname):
+					var lk: Array = (looks[kname] as Array).duplicate()
+					lk[0] = palette[kname]
+					looks[kname] = lk
 			var look: Array = looks[kname]
 			var ao: float = c[i].g
 			var col: Color = look[0]
@@ -1165,6 +1188,14 @@ static func gear_mesh(piece: String, female: bool = false) -> Array:
 				_box(Vector3(0.28, 0.03, 0.2), Vector3(-0.16, 0.22, 0.02), "white", Vector3(0, 0, 0.5)),
 				_box(Vector3(0.28, 0.03, 0.2), Vector3(0.16, 0.22, 0.02), "white", Vector3(0, 0, -0.5)),
 				_box(Vector3(0.22, 0.24, 0.03), Vector3(0, 0.06, 0.1), "white")]
+		"beret":
+			# T-142: a commando's beret, pulled down over the right ear
+			parts = [_sph(0.128, Vector3(0.03, 0.2, 0.0), "hat", Vector3(1.1, 0.32, 1.05), false, 12),
+				_cyl(0.118, 0.118, 0.016, Vector3(0, 0.178, 0), "leather", Vector3(0, 0, -0.12), Vector3.ONE, 12, false)]
+		"side_cap":
+			# T-142: a folded side cap (a scout's pilotka, a field cap without its badge)
+			parts = [_box(Vector3(0.11, 0.07, 0.25), Vector3(0, 0.215, 0.0), "hat", Vector3(0, 0, 0)),
+				_box(Vector3(0.13, 0.03, 0.26), Vector3(0, 0.185, 0.0), "hat")]
 		"sailor_cap":
 			parts = [_cyl(0.13, 0.12, 0.05, Vector3(0, 0.2, 0), "navy", Vector3.ZERO, Vector3(1, 1, 1.05), 10),
 				_cyl(0.125, 0.125, 0.018, Vector3(0, 0.175, 0), "dark", Vector3.ZERO, Vector3.ONE, 10),

@@ -137,6 +137,9 @@ static func mat(c: Color, emit: float = 0.0, rough: float = 0.9) -> StandardMate
 
 func _ready() -> void:
 	super._ready()
+	add_to_group(&"homage_bosses")
+	if not puppet and Net.is_authority():
+		GameState.set_flag(&"boss_fight", true)   # T-142: no relief squad during a boss fight
 	ecfg = cfg()
 	bcfg = (ecfg["bosses"] as Dictionary).get(boss_key, {})
 	_pose = HomagePoseMod.new()
@@ -476,11 +479,25 @@ func _tick_retreat(delta: float) -> void:
 ## Out of the match without a kill event (retreated, or the round's cleanup of a body).
 func _vanish() -> void:
 	gone = true
+	sync_fight_flag(get_tree(), self)
 	_release_all_grabs("gone")
 	bstate = B.GONE
 	deactivate()
 	if director != null:
 		director.call("on_zombie_returned", self)
+
+
+## T-142: GameState's `boss_fight` flag = any homage boss still in the fight (not `leaving`, not gone, not dead).
+static func sync_fight_flag(tree: SceneTree, leaving: Node) -> void:
+	if tree == null or not Net.is_authority():
+		return
+	var on: bool = false
+	for n: Node in tree.get_nodes_in_group(&"homage_bosses"):
+		var b: HomageBoss = n as HomageBoss
+		if b != null and b != leaving and not b.gone and not b.puppet and b.state != State.DEAD and b.state != State.INACTIVE:
+			on = true
+	if GameState.has_flag(&"boss_fight") != on:
+		GameState.set_flag(&"boss_fight", on)
 
 
 ## The round's cleanup: a body (or anything left) goes away now.
@@ -602,6 +619,7 @@ func _boss_die(limb: StringName, weapon_id: StringName, by_player: int, _kind: S
 	GLBus.enemy_killed.emit(enemy_id, &"head" if limb == &"head" else limb, weapon_id, by_player)
 	GLBus.enemy_killed_at.emit(enemy_id, global_position, by_player)
 	_start_authored_death()
+	sync_fight_flag(get_tree(), self)
 	died_boss.emit(self)
 	# the encounter hears it first (the last cousin's clear and rewards), then the round count: her slot can be
 	# the one that ends the round

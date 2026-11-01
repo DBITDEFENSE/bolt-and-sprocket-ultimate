@@ -30,6 +30,9 @@ var _reserved: Dictionary = {}
 ## numeral, length_rounds, ...) and the match round the act started on (1 standalone; the arrival round by exfil).
 var act: Dictionary = {}
 var act_start: int = 1
+## T-142: actor slots held by living relief-squad soldiers (ZombieDirector.set_soldiers_alive): the active cap for
+## zombies is max_active() - actor_reserve. The round's queue is never cut, only spread out while they stand.
+var actor_reserve: int = 0
 
 
 static func zombie_health(round_number: int, cfg: Dictionary) -> int:
@@ -242,7 +245,7 @@ func max_active() -> int:
 func can_spawn() -> bool:
 	if state == State.ROUND and to_spawn <= 0 and not _holds.is_empty():
 		to_spawn = 1   # holdouts keep the zombies coming
-	return state == State.ROUND and to_spawn > 0 and alive < max_active()
+	return state == State.ROUND and to_spawn > 0 and alive < max_active() - actor_reserve
 
 
 ## While any hold is set the round keeps spawning and can't end (e.g. a pylon charging).

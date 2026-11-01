@@ -14,6 +14,7 @@ var _presentation: bool = false
 
 
 func _ready() -> void:
+	GameState.hold_flag_while(&"cutscene", self)   # T-142: no relief squad during a cutscene
 	_presentation = Net.is_client()
 	_was_god = GameState.god_mode
 	if not _presentation:

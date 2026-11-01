@@ -33,6 +33,10 @@ var slide_distance_mult: float = 1.0
 var vacuum_cfg: Dictionary = {}
 var retained: bool = false
 var _g_base: Dictionary = {}
+## T-142 (UPDATE 09 section 4): the event flags the relief squads keep out of (`boss_fight`, `holdout`, `cutscene`).
+## A flag held by nodes (hold_flag_while) stays on while any of its nodes lives: flag -> {instance id: true}.
+const EVENT_FLAGS: Array[StringName] = [&"boss_fight", &"holdout", &"cutscene"]
+var _flag_holders: Dictionary = {}
 
 
 func _ready() -> void:
@@ -50,6 +54,7 @@ func reset_match(new_map_id: StringName, display_name: String, start_zone: Strin
 	phase = Phase.PLAYING
 	power_on = false
 	flags.clear()
+	_flag_holders.clear()
 	open_zones = {start_zone: true}
 	gravity_scale = 1.0
 	slide_distance_mult = 1.0
@@ -158,6 +163,39 @@ func set_flag(flag: StringName, value: Variant = true) -> void:
 
 func has_flag(flag: StringName) -> bool:
 	return bool(flags.get(flag, false))
+
+
+## T-142: true while a boss fight, a holdout or a cutscene runs (GameState.EVENT_FLAGS).
+func in_event() -> bool:
+	for f: StringName in EVENT_FLAGS:
+		if has_flag(f):
+			return true
+	return false
+
+
+## T-142: `flag` is on while `n` lives (a cutscene runner, an ending, the exfil cutscene): set now, cleared when the
+## last node holding it leaves the tree. A node already gone (or null) does nothing.
+func hold_flag_while(flag: StringName, n: Node) -> void:
+	if n == null or not is_instance_valid(n) or n.is_queued_for_deletion():
+		return
+	var set_of: Dictionary = _flag_holders.get(flag, {})
+	var id: int = n.get_instance_id()
+	if set_of.has(id):
+		return
+	set_of[id] = true
+	_flag_holders[flag] = set_of
+	set_flag(flag, true)
+	n.tree_exiting.connect(func() -> void: release_flag_holder(flag, id), CONNECT_ONE_SHOT)
+
+
+func release_flag_holder(flag: StringName, id: int) -> void:
+	var set_of: Dictionary = _flag_holders.get(flag, {})
+	if not set_of.has(id):
+		return
+	set_of.erase(id)
+	if set_of.is_empty():
+		_flag_holders.erase(flag)
+		set_flag(flag, false)
 
 
 func elapsed_seconds() -> float:

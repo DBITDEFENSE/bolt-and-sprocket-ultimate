@@ -70,6 +70,9 @@ var _delay_ms: float = 100.0
 var _p_acc: float = 0.0
 var _z_acc: float = 0.0
 var _s_acc: float = 0.0
+var _sq_acc: float = 0.0              # T-142: relief-squad soldier snapshots
+var _sqknown: Dictionary = {}         # host: soldier net_id -> Soldier replicated
+var _sqpuppets: Dictionary = {}       # client: soldier net_id -> Soldier puppet
 var _clock: Dictionary = {}        # sender key -> clock offset (ms)
 var _latest: Dictionary = {}       # host: pid -> [t, pos, yaw, pitch, flags] newest state from that client
 var _loaded: Dictionary = {}       # host: pid -> true once its map is ready
@@ -175,6 +178,10 @@ func _host_tick(delta: float) -> void:
 	if _s_acc >= 1.0 / float(_cfg.get("state_send_hz", 5)):
 		_s_acc = 0.0
 		_send_state(delta)
+	_sq_acc += delta
+	if _sq_acc >= 1.0 / float(_cfg.get("soldier_send_hz", 10)):
+		_sq_acc = 0.0
+		_send_soldiers()
 	_check_inventory(delta)
 	_tick_bleed(delta)
 
@@ -1212,6 +1219,99 @@ func on_state(d: Dictionary) -> void:
 	Net.applying = false
 
 
+# ================================================================== relief-squad soldiers (T-142)
+
+## Host: new soldiers get a reliable spawn event (map, faction, seed, weapon, index, position), vanished ones a
+## "gone"; then one unreliable packet: u32 ms, u8 count, per soldier u8 id, 3 x f32 position, u16 yaw, u8 anim
+## flags, u8 state (17 bytes).
+func _send_soldiers() -> void:
+	var rs: ReliefSquad = ReliefSquad.instance(get_tree())
+	var list: Array[Soldier] = []
+	if rs != null:
+		for sd: Soldier in rs.soldiers:
+			if is_instance_valid(sd) and sd.net_id >= 0:
+				list.append(sd)
+	var now_ids: Dictionary = {}
+	for sd2: Soldier in list:
+		now_ids[sd2.net_id] = true
+		if not _sqknown.has(sd2.net_id) or _sqknown[sd2.net_id] != sd2:
+			_sqknown[sd2.net_id] = sd2
+			soldier_event(sd2.net_id, &"spawn", [ReliefSquad.map_key(String(map.map_id)), str(sd2.faction.get("id", "")),
+				int(sd2.look.get("seed", 0)), String(sd2.weapon_id), sd2.idx, sd2.global_position, sd2.rotation.y])
+	for id: Variant in _sqknown.keys():
+		if not now_ids.has(id):
+			_sqknown.erase(id)
+			soldier_event(int(id), &"gone", [])
+	if list.is_empty():
+		return
+	var b: StreamPeerBuffer = StreamPeerBuffer.new()
+	b.put_u32(Time.get_ticks_msec())
+	b.put_u8(mini(255, list.size()))
+	for sd3: Soldier in list:
+		b.put_u8(sd3.net_id)
+		b.put_float(sd3.global_position.x)
+		b.put_float(sd3.global_position.y)
+		b.put_float(sd3.global_position.z)
+		b.put_u16(int(roundf(wrapf(sd3.rotation.y, -PI, PI) / PI * 32767.0)) + 32768)
+		b.put_u8(sd3.anim_flags & 0xFF)
+		b.put_u8(int(sd3.state))
+	Net._rpc_ssnap.rpc(b.data_array)
+
+
+func soldier_event(net_id: int, ev: StringName, args: Array) -> void:
+	if Net.replicating():
+		Net._rpc_sev.rpc(net_id, ev, args)
+
+
+func on_soldier_event(net_id: int, ev: StringName, args: Array) -> void:
+	Net.applying = true
+	match ev:
+		&"spawn":
+			var old: Soldier = _sqpuppets.get(net_id) as Soldier
+			if old != null and is_instance_valid(old):
+				old.queue_free()
+			var fac: Dictionary = ReliefSquad.faction_by_id(str(args[0]), str(args[1]), ReliefSquad.table())
+			if not fac.is_empty():
+				var sd: Soldier = Soldier.new()
+				sd.setup(null, int(args[4]), fac, int(args[2]), StringName(str(args[3])), false)
+				sd.net_id = net_id
+				map.add_child(sd)
+				sd.global_position = args[5] as Vector3
+				sd.rotation.y = float(args[6])
+				sd.interp.snap(float(Time.get_ticks_msec()), sd.global_position, sd.rotation.y)
+				_sqpuppets[net_id] = sd
+		&"gone":
+			var g: Soldier = _sqpuppets.get(net_id) as Soldier
+			_sqpuppets.erase(net_id)
+			if g != null and is_instance_valid(g):
+				g.queue_free()
+		&"arrive":
+			if map.hud != null and not args.is_empty():
+				map.hud.show_banner(str(args[0]), 3.5)
+	Net.applying = false
+
+
+func on_soldier_snapshot(data: PackedByteArray) -> void:
+	if data.size() < 5:
+		return
+	var b: StreamPeerBuffer = StreamPeerBuffer.new()
+	b.data_array = data
+	var t: float = _to_local("h", float(b.get_u32()))
+	var n: int = b.get_u8()
+	for i: int in n:
+		if b.get_available_bytes() < 17:
+			return
+		var id: int = b.get_u8()
+		var pos: Vector3 = Vector3(b.get_float(), b.get_float(), b.get_float())
+		var yaw: float = (float(b.get_u16()) - 32768.0) / 32767.0 * PI
+		var f: int = b.get_u8()
+		var st: int = b.get_u8()
+		var sd: Soldier = _sqpuppets.get(id) as Soldier
+		if sd == null or not is_instance_valid(sd) or sd.interp == null:
+			continue
+		sd.interp.push(t, pos, yaw, 0.0, f, st)
+
+
 func on_zombie_snapshot(data: PackedByteArray) -> void:
 	if data.size() < 5 or map.director == null:
 		return
@@ -1246,7 +1346,10 @@ func on_zombie_event(net_id: int, ev: StringName, args: Array) -> void:
 				z.puppet_activate(StringName(str(args[0])), StringName(str(args[1])), str(args[2]), float(args[3]),
 					args[4] as Vector3, float(args[5]), int(args[6]), int(args[8]), local_player)
 				if args.size() > 9 and str(args[9]) != "":
-					PeopleBodies.dress_risen(z, str(args[9]))   # T-099: the client's puppet wears the same person
+					if SoldierKits.is_tag(str(args[9])):
+						SoldierKits.dress_risen(z, str(args[9]))   # T-142: a risen relief-squad soldier
+					else:
+						PeopleBodies.dress_risen(z, str(args[9]))   # T-099: the client's puppet wears the same person
 		&"die":
 			var zd: Zombie = zombie_by_net_id(net_id)
 			if zd != null and zd.puppet:

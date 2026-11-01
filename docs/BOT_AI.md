@@ -1030,3 +1030,74 @@ on enable and ticks the plan; the HUD tag shows the task. Smoke: `smoke_ee_bots 
 nobody asks: notes, locks, the hand-off wait, the bots' own commit, the story beats, every tonic on the Ledger's
 credit). Soak: `tools/ai_soak.sh --scenario=botmode --map=map00` (the `ee_notes` / `ee_tune_locks` /
 `ee_complete` columns say how far the agent got).
+
+
+## 12. Relief squads (UPDATE 09 section 4, T-142; contract C5)
+
+Soldiers who walk in from the edge of the map, fight beside the players for a while, and mostly do not get out. Not
+squad bots: no Player body, no economy, no eggs, no commands, no perks. Data: `data/gravelight/squads.json`.
+
+**The event** (`gravelight/world/relief_squad.gd`, `ReliefSquad`, one per map on the host / offline, attached by
+MapRoot). At each round start it rolls: never before `from_round` (4), never with a squad still active (`max_active`
+1), never within `cooldown_rounds` (3) of the last arrival, never in a special round, never while GameState has
+`boss_fight`, `holdout` or `cutscene` (`GameState.in_event()`); then `chance_per_round` (0.35). A squad of `size`
+(3-6) soldiers of one of the map's factions (weighted) walks in from one of the faction's `edge_spawns`: one at least
+20 m from every living player with a path to the nearest player through the zones open now (a gated zone's edge waits
+for its door; every faction has points in the always-open start zone). The leader barks `ARRIVE` and the HUD shows
+"A relief squad is coming in" (a NetMatch soldier event shows it on clients). They hold near the players for
+`stay_seconds` (60-150), then `survivor_chance` (0.25) picks the healthiest to stay to the round's end (`SURVIVE`,
+`GLBus.squad_survivor`, a free crate at its feet, then it walks off); the others pull out to the edge spawn farthest
+from the players (`LEAVE`) and each is overrun with `overrun_bias` (0.8): three zombies are sent after it, it takes
+three times the damage, and at the edge (or after `leave_timeout_s`) it dies if it was marked to be caught, else it
+escapes. A squad whose soldiers all died is lost (`GLBus.squad_lost`). A boss fight, holdout or cutscene starting
+mid-squad despawns it on the next frame (no rises, no loot). Console: `squad force [faction]|now [faction]|status|clear`.
+
+**Zombies hunt them** through the zombies' own `prey` hook (the inn opening's patrons): every 0.5 s ReliefSquad gives
+`prey_per_soldier` (1; 3 while leaving) chasing zombie(s) within 18 m to each soldier; `Soldier.is_catchable()` /
+`struck(zombie)` take the hit (the zombie's damage). Down at 0 health for `down_seconds` (12; a zombie hit takes 4 s
+off), revived once by a squad mate (`revives_each`), dead after.
+
+**The brain** (`gravelight/bots/soldier_brain.gd`, `SoldierBrain`): the utility brain cut down. Modes (`decide`, pure):
+leave > retreat (under `retreat_hp_frac` 30%) > revive (a downed mate within 20 m, its one revive unused, fewer than
+3 zombies within 6 m) > fight > follow. It holds a point in a fan on the leader's side of the player nearest the leader,
+6-12 m out (`hold_point`, pure), and shoots from there. Targets: BotPerception's threat score plus a far term to the
+weapon class's `max_range_m`, line of sight checked for the best 3 per think. Aim: skills.json `recruit` (reaction
+delay, error settling from `aim_error_deg` to `settle_error_deg` over `track_tau_s`, `fire_tolerance_deg`) times the
+kit's `aim_mult`; autos burst past `burst_range_m`; a magazine and a reload from weapons.json. Damage = weapon damage
+x `damage_mult` (0.55) x `limb_mult`, through `Zombie.take_damage(..., by_player 0)`: no Scrip of its own; the
+nearest player gets `scrip_share` (25%) of the kill's value through `Economy.award` (Double Scrip and Ledger Lager
+apply). Thinks at `think_hz` (6), staggered; moves and aims every frame; paths with the director's zone mask.
+
+**The Marke at work.** A dead soldier drops loot (the squad's first death an ammo crate, `SquadCrate`, free for
+`crate_uses` 4 refills; its gun as an open `WeaponParcel` anyone can take; a grenade pouch, `SquadPouch`; all gone
+after 90 s) and rises after `rise_delay_s` (4-8 s, only while a round runs) through `ZombieDirector.rise_at(pos, tag)`:
+a pooled zombie outside the round queue (`RoundManager.take_extra_spawn`: it must die before the round ends) in the
+soldier's own clothes (`SoldierKits.dress_risen`), getting up off the floor. Factions carry `marked`: the Volkssturm
+and the Kriegsmarine shore party are marked (CANON 2.2: German soldiers, the Totenhafen detachment) and rise with a
+Marke weak point; the Allied factions are not marked and rise because every squad map sits near raw substrate (2.2:
+"unmarked people who die near raw substrate can still rise"), so their risen have no Marke. The first rise of a match
+draws a `SQD_RISE` line from a survivor (Deacon, Wren, Dutch, Peg: 2 each).
+
+**The actor budget.** Every living soldier (standing or down) holds one slot of rounds.json `max_active` (24):
+`ZombieDirector.actor_budget() = max_active - soldiers_alive` (`budget_for`, pure), enforced in
+`RoundManager.can_spawn` through `actor_reserve`. The round's queue (`to_spawn`) is never cut, only spread out while
+soldiers stand, so a round has the same kills as without them, plus the risen soldiers.
+
+**Bodies** (`SoldierKits`, `SoldierBody`): no new Blender work: a human_base body in an existing zombie kit's clothes
+(soldier, villager, sailor; `ZombieBody.build_dressed`) recoloured with the faction's palette, ZombieBody gear pieces
+for the headgear (helmet, cap, sailor cap, and two new primitive pieces, `beret` and `side_cap`) in the faction colour,
+a plain armband for the Home Army (white and red) and the MPs (black, no lettering); no insignia anywhere. RemoteBody's
+puppet draws it (walk, run, the gun, reload, downed, the revive kneel, muzzle flash, tracer). A look is a pure function
+of (kit, seed), so a co-op puppet and a risen soldier match the host.
+
+**Online.** Host-authoritative. NetMatch sends a reliable spawn event per soldier (map, faction, seed, weapon, index,
+position) and "gone", and a 10 Hz snapshot (17 bytes a soldier: id, position, yaw, anim flags, state); clients build
+puppets (`Soldier.puppet`, an InterpBuffer). A risen soldier replicates as a normal zombie whose spawn carries the tag
+as its "person" (`SoldierKits.dress_risen` on the client).
+
+**Tests.** `test_relief_squad` (the roll with a seeded RNG, from_round, cooldown, max_active, the event flags, the
+faction / kit / bark tables, looks and tags, the budget arithmetic, the Scrip share), `test_soldier_brain` (the pure
+decisions), `smoke_squads` (Map 0, a forced squad: navmesh spawn, shots, a death, a rise in the soldier's clothes, loot,
+the round ending after the rise, a boss fight despawning a second squad, and the brains' milliseconds per frame with
+six soldiers, 24 zombies and three bots), `probe_squad_spawns` (`-- --map=mapXX [--regions]`: every edge spawn snaps
+onto the navmesh, stands 20 m from the start and has a path to it).

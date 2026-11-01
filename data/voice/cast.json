@@ -178,6 +178,12 @@
     "actor": "devin",
     "status": "not in the game yet",
     "voiced_by": "Devin (the owner)"
+   },
+   "SQD": {
+    "name": "Relief squad soldiers (T-142)",
+    "who": "Soldiers of seven relief squads who walk in from the map edge (UPDATE 09 section 4): Home Army partisans (SQD_AK), a Red Army scout (SQD_SOV), Volkssturm deserters, old men (SQD_VS), British commandos (SQD_CDO), a Kriegsmarine rating (SQD_KM), a US paratrooper (SQD_PARA), a Groom Lake MP (SQD_MP).",
+    "voice_notes": "One voice per faction, each a real person under fire: English with the odd word of their own language, accents light and played straight, never comic; the Volkssturm old men with dignity.",
+    "actor": "[ACTOR]"
    }
   },
   "bs": {

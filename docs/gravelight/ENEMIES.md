@@ -317,6 +317,7 @@ any → DIE
 - **Window spawns** are preferred (70%) while the player is in a zone with intact windows. Ground-emerge spawns (30%) add variety and make camping less reliable.
 - **Special enemies** (Glasshide, Screamer) roll at spawn time. A roll that would exceed a cap falls back to a Gänger.
 - **Co-op:** spawns are weighted toward the player with the fewest zombies chasing them, so one player can't hold all the aggro.
+- **Relief squads (T-142, UPDATE 09 section 4):** living soldiers (`data/gravelight/squads.json`, docs/BOT_AI.md section 12) hold one slot of `max_active` each while they live (`ZombieDirector.actor_budget() = max_active - soldiers alive`; the round's queue waits, it is never cut). Zombies hunt them through the `prey` hook. A dead soldier rises 4-8 s later through `ZombieDirector.rise_at(position, tag)`: a pooled zombie outside the round queue (it must die before the round ends) dressed as that soldier; marked factions (Volkssturm, Kriegsmarine) keep a Marke, unmarked Allied soldiers (risen by the substrate) have none.
 - **The debug console** can spawn any type: `spawn <id> [count]`, `set_round <n>`, `special_round now`, `foreman now`.
 
 ## 4. Data file shape (`data/enemies.tres`, one `EnemyData` resource per type)

@@ -1,0 +1,189 @@
+{
+	"_doc": "Relief squads (UPDATE 09 section 4, contract C5, DECISIONS T-142; docs/gravelight/BOT_AI.md 'Relief squads'). ReliefSquad (gravelight/world/relief_squad.gd) rolls at each round start: never before from_round, never while another squad is active (max_active), never within cooldown_rounds of the last arrival, never in a boss fight, holdout or cutscene (GameState flags boss_fight / holdout / cutscene) nor a special round; then chance_per_round. A squad of size soldiers walks in from one of the map faction's edge_spawns, holds near the players for stay_seconds, then rolls survivor_chance (one stays to the round's end) and the rest try to leave: overrun_bias is each leaver's chance to be caught before the edge, so most squads are lost. A dead soldier rises after rise_delay_s as a zombie (ZombieDirector.rise_at). Soldiers' kills pay the nearest player scrip_share of the kill value (Economy.award). Every living soldier holds one slot of rounds.json max_active (ZombieDirector.actor_budget). Kits: bodies from ZombieBody.build_dressed (an existing zombie kit's clothes, living skin, the faction palette in sRGB), headgear from ZombieBody.gear_mesh; no insignia anywhere. 'marked': the faction carries the Marke (CANON 2.2: German soldiers, the Totenhafen detachment); unmarked factions rise because every squad map sits near raw substrate (2.2: 'unmarked people who die near raw substrate can still rise').",
+	"version": 1,
+	"global": {
+		"from_round": 4,
+		"chance_per_round": 0.35,
+		"max_active": 1,
+		"cooldown_rounds": 3,
+		"size": [3, 6],
+		"stay_seconds": [60, 150],
+		"survivor_chance": 0.25,
+		"scrip_share": 0.25,
+		"overrun_bias": 0.8,
+		"skip_special_rounds": true,
+		"rise_delay_s": [4.0, 8.0],
+		"hold_m": [6.0, 12.0],
+		"retreat_hp_frac": 0.3,
+		"revives_each": 1,
+		"down_seconds": 12.0,
+		"revive_seconds": 3.0,
+		"leave_timeout_s": 40.0,
+		"leave_prey_per_soldier": 3,
+		"prey_radius_m": 18.0,
+		"prey_per_soldier": 1,
+		"damage_mult": 0.55,
+		"limb_mult": {"head": 2.0, "torso": 1.0, "arms": 0.75, "legs": 0.75},
+		"think_hz": 6.0,
+		"repath_s": 0.8,
+		"walk_speed": 3.4,
+		"run_speed": 5.2,
+		"announce": "A relief squad is coming in",
+		"loot": {
+			"crate_uses": 4,
+			"weapon_chance": 0.6,
+			"grenade_chance": 0.4,
+			"grenades": 2,
+			"loot_seconds": 90.0
+		},
+		"survivor_gift": "crate"
+	},
+	"kits": {
+		"partisan": {
+			"_doc": "Home Army partisans (Armia Krajowa): civilian coats and captured field kit, a cloth cap or a captured helmet, the white-and-red armband.",
+			"bases": {"villager": 0.6, "soldier": 0.4},
+			"builds": ["thin", "medium"],
+			"female": 0.2,
+			"heights": [0.95, 1.03],
+			"tones": [[0.62, 0.5, 0.44], [0.68, 0.54, 0.47], [0.58, 0.47, 0.41]],
+			"palettes": [
+				{"cloth": [0.33, 0.29, 0.22], "cloth2": [0.25, 0.24, 0.22]},
+				{"cloth": [0.38, 0.4, 0.34], "cloth2": [0.28, 0.25, 0.2]},
+				{"cloth": [0.3, 0.25, 0.2], "cloth2": [0.21, 0.21, 0.23]}
+			],
+			"hair": [[0.2, 0.15, 0.1], [0.35, 0.25, 0.15], [0.12, 0.1, 0.08]],
+			"headgear": {"cap": 0.55, "helmet": 0.15, "side_cap": 0.1},
+			"headgear_color": {"cap": [0.22, 0.2, 0.18], "helmet": [0.32, 0.34, 0.28], "side_cap": [0.3, 0.3, 0.26]},
+			"armband": {"band": [0.92, 0.9, 0.86], "patch": [0.75, 0.1, 0.12]},
+			"hp": 140.0
+		},
+		"soviet_scout": {
+			"_doc": "A Red Army scout patrol (razvedchiki): khaki tunics, side caps, a few helmets.",
+			"bases": {"soldier": 1.0},
+			"builds": ["thin", "medium"],
+			"female": 0.15,
+			"heights": [0.95, 1.04],
+			"tones": [[0.64, 0.5, 0.43], [0.6, 0.48, 0.42], [0.56, 0.46, 0.38]],
+			"palettes": [
+				{"cloth": [0.45, 0.42, 0.3], "cloth2": [0.36, 0.34, 0.25]},
+				{"cloth": [0.4, 0.39, 0.28], "cloth2": [0.3, 0.29, 0.22]}
+			],
+			"hair": [[0.2, 0.15, 0.1], [0.4, 0.3, 0.18], [0.1, 0.08, 0.07]],
+			"headgear": {"side_cap": 0.6, "helmet": 0.3},
+			"headgear_color": {"side_cap": [0.42, 0.4, 0.28], "helmet": [0.3, 0.35, 0.25]},
+			"hp": 150.0
+		},
+		"volkssturm": {
+			"_doc": "Volkssturm deserters: old men in their own coats and a field cap, shown with dignity; no armband, no insignia.",
+			"bases": {"villager": 1.0},
+			"builds": ["thin", "medium"],
+			"female": 0.0,
+			"heights": [0.93, 1.0],
+			"tones": [[0.66, 0.52, 0.46], [0.62, 0.5, 0.45]],
+			"palettes": [
+				{"cloth": [0.3, 0.3, 0.31], "cloth2": [0.25, 0.24, 0.22]},
+				{"cloth": [0.36, 0.3, 0.24], "cloth2": [0.27, 0.26, 0.25]},
+				{"cloth": [0.38, 0.39, 0.35], "cloth2": [0.24, 0.23, 0.21]}
+			],
+			"hair": [[0.62, 0.6, 0.58], [0.75, 0.74, 0.72], [0.45, 0.44, 0.43]],
+			"headgear": {"cap": 0.5, "side_cap": 0.35},
+			"headgear_color": {"cap": [0.25, 0.24, 0.22], "side_cap": [0.38, 0.4, 0.36]},
+			"hp": 110.0,
+			"speed_mult": 0.85,
+			"aim_mult": 0.85
+		},
+		"commando": {
+			"_doc": "British commandos landed from the sea: battledress, the beret or the knitted cap comforter.",
+			"bases": {"soldier": 1.0},
+			"builds": ["medium", "heavy"],
+			"female": 0.0,
+			"heights": [0.97, 1.05],
+			"tones": [[0.68, 0.53, 0.46], [0.64, 0.5, 0.43], [0.55, 0.42, 0.35]],
+			"palettes": [{"cloth": [0.42, 0.38, 0.27], "cloth2": [0.36, 0.33, 0.24]}],
+			"hair": [[0.2, 0.15, 0.1], [0.45, 0.32, 0.18], [0.12, 0.1, 0.08]],
+			"headgear": {"beret": 0.75, "cap": 0.2},
+			"headgear_color": {"beret": [0.18, 0.28, 0.17], "cap": [0.3, 0.27, 0.2]},
+			"hp": 160.0,
+			"aim_mult": 1.1
+		},
+		"shore_party": {
+			"_doc": "A Kriegsmarine shore party deserting the port: navy jackets and caps, no insignia.",
+			"bases": {"sailor": 1.0},
+			"builds": ["thin", "medium"],
+			"female": 0.0,
+			"heights": [0.95, 1.03],
+			"tones": [[0.66, 0.52, 0.45], [0.62, 0.49, 0.42]],
+			"palettes": [{"cloth": [0.12, 0.14, 0.22], "cloth2": [0.13, 0.14, 0.18]}],
+			"hair": [[0.25, 0.18, 0.1], [0.5, 0.4, 0.25], [0.12, 0.1, 0.08]],
+			"headgear": {"sailor_cap": 0.8},
+			"headgear_color": {},
+			"hp": 130.0
+		},
+		"paratrooper": {
+			"_doc": "An American paratrooper stick dropped off-target: tan jump suits and the M2 helmet.",
+			"bases": {"soldier": 1.0},
+			"builds": ["medium", "heavy"],
+			"female": 0.0,
+			"heights": [0.97, 1.05],
+			"tones": [[0.68, 0.53, 0.46], [0.62, 0.5, 0.43], [0.72, 0.58, 0.5]],
+			"palettes": [{"cloth": [0.47, 0.44, 0.32], "cloth2": [0.4, 0.37, 0.27]}],
+			"hair": [[0.2, 0.15, 0.1], [0.5, 0.36, 0.2], [0.12, 0.1, 0.08]],
+			"headgear": {"helmet": 0.95},
+			"headgear_color": {"helmet": [0.3, 0.32, 0.22]},
+			"hp": 160.0,
+			"aim_mult": 1.05
+		},
+		"mp": {
+			"_doc": "Groom Lake MPs and range guards: olive drab, the white helmet, a plain black brassard (no lettering).",
+			"bases": {"soldier": 1.0},
+			"builds": ["medium", "heavy"],
+			"female": 0.0,
+			"heights": [0.97, 1.05],
+			"tones": [[0.68, 0.53, 0.46], [0.62, 0.49, 0.42], [0.5, 0.38, 0.3]],
+			"palettes": [{"cloth": [0.36, 0.33, 0.22], "cloth2": [0.4, 0.35, 0.26]}],
+			"hair": [[0.2, 0.15, 0.1], [0.45, 0.32, 0.18]],
+			"headgear": {"helmet": 1.0},
+			"headgear_color": {"helmet": [0.88, 0.88, 0.85]},
+			"armband": {"band": [0.08, 0.08, 0.09], "patch": [0.08, 0.08, 0.09]},
+			"hp": 150.0
+		}
+	},
+	"maps": {
+		"map00": {
+			"_doc": "Crossroads Inn, Silesia, December 1944: the forest edges.",
+			"factions": [
+				{"id": "ak", "display": "Home Army partisans", "kit": "partisan", "marked": false, "weight": 0.6, "weapons": ["kar98k", "mp40", "kar98k", "walther_p38"], "barks_prefix": "SQD_AK", "edge_spawns": [[45.0, 0.0, 68.5], [2.0, 0.0, 68.5], [-24.5, 0.0, 44.0]]},
+				{"id": "sov", "display": "Soviet scout patrol", "kit": "soviet_scout", "marked": false, "weight": 0.4, "weapons": ["ppsh41", "ppsh41", "kar98k"], "barks_prefix": "SQD_SOV", "edge_spawns": [[64.5, 0.0, 46.0], [64.5, 0.0, -1.0], [47.0, 0.0, -34.5]]}
+			]
+		},
+		"map01": {
+			"_doc": "Kaltenbrunn: the rail line and the woods past the yard.",
+			"factions": [
+				{"id": "ak", "display": "Home Army partisans", "kit": "partisan", "marked": false, "weight": 0.55, "weapons": ["kar98k", "mp40", "kar98k", "walther_p38"], "barks_prefix": "SQD_AK", "edge_spawns": [[3.0, 0.0, 2.5], [37.5, 0.0, 2.5], [-14.0, 0.0, 44.0]]},
+				{"id": "vs", "display": "Volkssturm deserters", "kit": "volkssturm", "marked": true, "weight": 0.45, "weapons": ["kar98k", "kar98k", "luger_p08", "gewehr43"], "barks_prefix": "SQD_VS", "edge_spawns": [[38.0, 0.0, 29.0], [57.0, 0.0, 45.0], [58.0, 0.0, 16.5]]}
+			]
+		},
+		"map02": {
+			"_doc": "Totenhafen: the sea side and the land gate.",
+			"factions": [
+				{"id": "cdo", "display": "British commandos", "kit": "commando", "marked": false, "weight": 0.6, "weapons": ["thompson", "thompson", "webley", "m1_garand"], "barks_prefix": "SQD_CDO", "edge_spawns": [[3.0, 0.0, 2.0], [-28.0, 0.0, 2.0], [60.0, 0.0, 2.0]]},
+				{"id": "km", "display": "Kriegsmarine shore party", "kit": "shore_party", "marked": true, "weight": 0.4, "weapons": ["mp40", "kar98k", "walther_p38"], "barks_prefix": "SQD_KM", "edge_spawns": [[2.0, 0.0, 28.0], [-16.0, 0.0, 40.0], [48.0, 0.0, 38.0]]}
+			]
+		},
+		"map04a": {
+			"_doc": "Werk Thalbach, May 1945: the valley road and the far side of the Siedlung.",
+			"factions": [
+				{"id": "para", "display": "US paratroopers (off-target stick)", "kit": "paratrooper", "marked": false, "weight": 0.6, "weapons": ["m1_carbine", "thompson", "m1_garand", "bar"], "barks_prefix": "SQD_PARA", "edge_spawns": [[38.0, 0.0, 2.0], [-40.0, 0.0, 57.0], [38.0, 0.0, 98.0]]},
+				{"id": "vs", "display": "Volkssturm deserters", "kit": "volkssturm", "marked": true, "weight": 0.4, "weapons": ["kar98k", "kar98k", "luger_p08", "gewehr43"], "barks_prefix": "SQD_VS", "edge_spawns": [[38.0, 0.0, 28.0], [2.0, 0.0, 58.0], [38.0, 0.0, 58.0]]}
+			]
+		},
+		"map04b": {"_doc": "None: der Kranich is a plane in flight; nobody walks in from the edge of the sky.", "factions": []},
+		"map04c": {
+			"_doc": "Groom Lake: the motor pool road and the salt.",
+			"factions": [
+				{"id": "mp", "display": "Groom Lake MPs", "kit": "mp", "marked": false, "weight": 1.0, "weapons": ["m1_carbine", "trench_gun", "m1911", "m1_garand"], "barks_prefix": "SQD_MP", "edge_spawns": [[12.0, 0.0, -6.0], [-12.0, 0.0, -6.0], [56.0, 0.0, 56.0], [-56.0, 0.0, 56.0], [-66.0, 0.0, 96.0]]}
+			]
+		},
+		"map04d": {"_doc": "None: the Moon. Nobody comes to relieve you there.", "factions": []}
+	}
+}

@@ -110,6 +110,7 @@ func _ready() -> void:
 	Campaign.restore_flags(self)   # UPDATE 07 (T-114): the acts' carried flags (london_seen, bomb_*, ...)
 	BankBranch.attach(self)   # T-136: the savings bank's interest on every map, a branch on Map 0 and Kaltenbrunn
 	MapCompanion.attach(self)   # T-135: one more companion per map (after the flags: Jette follows you between acts)
+	ReliefSquad.attach(self)   # T-142: relief squads from the map edge (host / offline; clients get puppets)
 	for q: String in quest_files:
 		QuestManager.load_quest(q)
 	Campaign.restore_quests(self)   # UPDATE 07 (T-114): the egg's progress from the act before

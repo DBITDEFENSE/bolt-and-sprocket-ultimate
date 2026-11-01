@@ -244,6 +244,8 @@ func _on_round_started(r: int, _special: bool) -> void:
 ## Starts the encounter on round `r` (the round has just started).
 func begin(r: int) -> void:
 	phase = Phase.ACTIVE
+	if Net.is_authority():
+		GameState.set_flag(&"boss_fight", true)   # T-142: the Cousins Round is a boss fight from its first second
 	event_round = r
 	t = 0.0
 	dead.clear()
@@ -562,6 +564,7 @@ func retreat() -> void:
 
 
 func _round_over() -> void:
+	HomageBoss.sync_fight_flag(get_tree(), null)   # T-142
 	# the bodies stay a while (their deaths play out), then go
 	var bodies: Array = []
 	for k: Variant in bosses.keys():

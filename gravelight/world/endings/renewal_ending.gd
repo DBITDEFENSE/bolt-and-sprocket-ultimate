@@ -22,6 +22,7 @@ static func retained_rules() -> Dictionary:
 
 
 func _ready() -> void:
+	GameState.hold_flag_while(&"cutscene", self)   # T-142: no relief squad during a cutscene
 	_k = 1.0 / maxf(0.01, Campaign.cutscene_speed)
 	_was_god = GameState.god_mode
 	if Net.is_authority():

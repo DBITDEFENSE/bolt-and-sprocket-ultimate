@@ -31,9 +31,17 @@ func setup(id: String, risen: bool = false) -> bool:
 	var m: ArrayMesh = PeopleBodies.mesh(id, risen)
 	if m == null:
 		return false
-	person_id = id
+	return setup_mesh(m, PeopleBodies.height_of(id), id)
+
+
+## T-142: the same rig on any merged two-surface body mesh (a relief squad soldier's dressed body: ZombieBody's
+## build_dressed); `tag` names it (person_id); the face driver runs without blend shapes (blinks nothing).
+func setup_mesh(m: ArrayMesh, height: float, tag: String) -> bool:
+	if m == null:
+		return false
+	person_id = tag
 	name = "Person"
-	scale_k = PeopleBodies.height_of(id)
+	scale_k = height
 	skeleton = ZombieRig.build_skeleton()
 	skeleton.scale = Vector3.ONE * scale_k
 	add_child(skeleton)
@@ -46,7 +54,7 @@ func setup(id: String, risen: bool = false) -> bool:
 	for b: String in ZombieRig.bone_names():
 		_idx[b] = skeleton.find_bone(b)
 		_rest[b] = ZombieRig.rest_offset(b)
-	face = FaceDriver.attach(body, id)
+	face = FaceDriver.attach(body, tag)
 	return true
 
 

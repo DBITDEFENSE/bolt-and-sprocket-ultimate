@@ -30,6 +30,7 @@ static var _pending_round: int = 0
 static var _pending_god: bool = false
 static var _pending_scrip: int = 0
 static var _pending_boss: String = ""
+static var _pending_squad: bool = false   # T-142: force a relief squad on the next round
 
 var _round: SpinBox
 var _god: CheckBox
@@ -150,6 +151,10 @@ func _ready() -> void:
 		_spawn_tool("res://gravelight/tools_src/play_ee_full.tscn", ["--botmode", "--bots=3"], false), 22, "ui_confirm"))
 	col.add_child(MenuKit.button("Perk tier IV test (50,000 Scrip, power on, round 15)", func() -> void: _start_tool_scene("res://gravelight/tools_src/play_tier4.tscn"), 22, "ui_confirm"))
 	col.add_child(MenuKit.button("Round 25 bot kit test (Map 0, round 25, 3 bots)", func() -> void: _start_gl(map0, 25, "", 3), 22, "ui_confirm"))
+	col.add_child(_header("Update 09 — a living war (relief squads from the map edge)"))
+	col.add_child(MenuKit.button("Relief squad test (Map 0, round 6, a squad forced on the next round)", func() -> void:
+		_pending_squad = true
+		_start_gl(map0, 6), 22, "ui_confirm"))
 	col.add_child(_header("Muster (your sidearm and Field Habits; saved per survivor, used by every match)"))
 	col.add_child(MenuKit.button("Muster — pick the sidearm and Field Habits for the survivor above", func() -> void: add_child(MenuMuster.new(CHARACTERS[_char.selected])), 22, "ui_confirm"))
 	col.add_child(_header("Bot mode (an AI plays your survivor; F6 or any input takes over)"))
@@ -300,6 +305,13 @@ static func _on_match_started(_map_id: StringName) -> void:
 			Economy.grant.call_deferred(pid, _pending_scrip)
 	_pending_round = 0
 	_pending_scrip = 0
+	if _pending_squad:
+		_pending_squad = false
+		var t2: SceneTree = Engine.get_main_loop() as SceneTree
+		t2.process_frame.connect(func() -> void:
+			var rs: ReliefSquad = ReliefSquad.instance(t2)
+			if rs != null:
+				rs.force_next = true, CONNECT_ONE_SHOT)
 	if _pending_boss == "cousins":
 		_pending_boss = ""   # round 10 on Map 0 is the Cousins Round itself (HB1): nothing to summon
 	if _pending_boss != "":
