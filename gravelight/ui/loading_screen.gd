@@ -65,8 +65,10 @@ static func lore_line(id: String, pick: int = -1) -> String:
 
 
 func _ready() -> void:
-	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	if not (get_parent() is Control):   # under a CanvasLayer or a plain Node (tools, tests): follow the viewport
+	if get_parent() is Control:
+		set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	else:   # the scene root, or under a CanvasLayer / a plain Node (tools, tests): sized to the viewport
+		set_anchors_preset(Control.PRESET_TOP_LEFT)
 		get_viewport().size_changed.connect(_fit)
 		_fit()
 	MenuKit.apply_theme(self)
