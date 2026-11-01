@@ -34,6 +34,27 @@ const HITBOXES: Array = [
 	["shin_r", &"legs", Vector3(0.14, 0.52, 0.17), Vector3(0, -0.25, -0.02)],
 ]
 
+## The Marke (UPDATE 09 section 1, T-137; docs/U09_CONTRACTS.md C1): Darkmatter's chip under the skin, the weak
+## point. site -> [bone, offset on that bone, the host limb a hit counts as]. Not part of HITBOXES (that layout is
+## the body contract the mesh tests check); Zombie builds the "marke" hitbox and the glint from this table.
+const MARKE_SITES: Dictionary = {
+	&"hand": ["RightHand", Vector3(0.0, -0.05, 0.0), &"arms"],         # between thumb and forefinger
+	&"forehead": ["Head", Vector3(0.04, 0.17, -0.125), &"head"],       # above the right brow
+}
+const MARKE_COLOR: Color = Color(0.75, 0.49, 1.0)   # Darkmatter violet (#c07dff)
+
+## Which site a zombie's Marke sits on, from its net_id: deterministic, so a co-op client's puppet shows the same
+## site as the host's zombie without anything being sent. hand_chance of a right-hand mark, else the forehead.
+static func marke_site_for(net_id: int, hand_chance: float) -> StringName:
+	var h: int = posmod(net_id * 2654435761 + 97, 1000)
+	return &"hand" if float(h) / 1000.0 < hand_chance else &"forehead"
+
+
+## The limb a hit on the Marke continues as (armour, wounds, death clips, the headshot path).
+static func marke_host_limb(site: StringName) -> StringName:
+	return StringName((MARKE_SITES.get(site, MARKE_SITES[&"hand"]) as Array)[2])
+
+
 ## Colour / roughness / metallic / emission per material key (vertex-baked into the kit surface).
 const KEY_LOOK: Dictionary = {
 	"dark": [Color(0.05, 0.03, 0.04), 1.0, 0.0, 0.0],
@@ -301,6 +322,59 @@ static func ensure_globals() -> void:
 	# keeps the add to one call (global_shader_parameter_get_list is editor-only)
 	RenderingServer.global_shader_parameter_add("gl_hum", RenderingServer.GLOBAL_VAR_TYPE_FLOAT, 0.5)
 	RenderingServer.global_shader_parameter_add("gl_round_k", RenderingServer.GLOBAL_VAR_TYPE_FLOAT, 0.1)
+
+
+# ================================================================== the Marke's glint (T-137)
+
+static var _marke_shader: Shader
+static var _marke_mesh: ArrayMesh
+
+## One shared unshaded violet material for every Marke glint: its emission pulses with the map hum (gl_hum) between
+## enemies.json marke.glow_min and glow_max and brightens with the round (gl_round_k), all on the GPU (no per-frame
+## work per zombie). A tiny glass bead with a slow amber shimmer inside, like the veins.
+static func marke_material() -> ShaderMaterial:
+	var key: String = "shader:marke"
+	if _mats.has(key):
+		return _mats[key]
+	ensure_globals()
+	if _marke_shader == null:
+		_marke_shader = Shader.new()
+		_marke_shader.code = """
+shader_type spatial;
+render_mode unshaded, cull_back;
+global uniform float gl_hum;
+global uniform float gl_round_k;
+uniform vec3 glint_color : source_color = vec3(0.75, 0.49, 1.0);
+uniform float glow_min = 0.25;
+uniform float glow_max = 1.0;
+void fragment() {
+	float pulse = mix(glow_min, glow_max, clamp(gl_hum, 0.0, 1.0));
+	float ring = 0.6 + 0.4 * sin(TIME * 2.6 + UV.x * 6.2831);
+	vec3 core = mix(glint_color, vec3(1.0, 0.8, 0.45), 0.25 * ring);   // the amber vein inside the violet
+	float k = pulse * (0.6 + 0.6 * gl_round_k);
+	ALBEDO = core * 0.35;
+	EMISSION = core * (1.6 + 2.4 * k);
+}
+"""
+	var mk: Dictionary = (GLData.table("enemies") as Dictionary).get("marke", {})
+	var m: ShaderMaterial = ShaderMaterial.new()
+	m.shader = _marke_shader
+	m.set_shader_parameter("glint_color", MARKE_COLOR)
+	m.set_shader_parameter("glow_min", float(mk.get("glow_min", 0.25)))
+	m.set_shader_parameter("glow_max", float(mk.get("glow_max", 1.0)))
+	_mats[key] = m
+	return m
+
+
+## The glint's mesh (shared): a bead a little smaller than the hitbox, so it reads as something under the skin.
+static func marke_glint_mesh() -> ArrayMesh:
+	if _marke_mesh != null:
+		return _marke_mesh
+	var mk: Dictionary = (GLData.table("enemies") as Dictionary).get("marke", {})
+	var r: float = float(mk.get("hitbox_m", 0.07)) * 0.22
+	_marke_mesh = build_mesh("_", [_sph(r, Vector3.ZERO, "crystal", Vector3(1.0, 0.75, 1.0), false, 8)])
+	_marke_mesh.surface_set_material(0, marke_material())
+	return _marke_mesh
 
 
 # ================================================================== shaders (skinned path)

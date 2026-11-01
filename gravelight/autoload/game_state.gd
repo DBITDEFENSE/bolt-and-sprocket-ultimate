@@ -37,6 +37,7 @@ var _g_base: Dictionary = {}
 
 func _ready() -> void:
 	GLBus.enemy_killed.connect(_on_enemy_killed)
+	GLBus.marke_kill.connect(_on_marke_kill)
 	GLBus.scrip_changed.connect(_on_scrip_changed)
 	GLBus.door_opened.connect(_on_door_opened)
 	GLBus.player_downed.connect(_on_player_downed)
@@ -55,7 +56,7 @@ func reset_match(new_map_id: StringName, display_name: String, start_zone: Strin
 	vacuum_cfg = {}
 	retained = false
 	stats = {&"kills": 0, &"headshots": 0, &"melee_kills": 0, &"scrip_earned": 0, &"doors": 0,
-		&"downs": 0, &"boards": 0, &"round": 0}
+		&"downs": 0, &"boards": 0, &"round": 0, &"marke_kills": 0}
 	_start_msec = Time.get_ticks_msec()
 
 
@@ -179,6 +180,11 @@ func _on_enemy_killed(_enemy_id: StringName, limb: StringName, weapon_id: String
 		_bump(&"headshots")
 	if weapon_id == &"trench_knife" or weapon_id == &"etool":
 		_bump(&"melee_kills")
+
+
+## T-137: kills from a hit on the Marke (every mode; the bonus is the zombie's business and skips Classic Rules).
+func _on_marke_kill(_by_player: int, _enemy_id: StringName) -> void:
+	_bump(&"marke_kills")
 
 
 func _on_scrip_changed(_player: int, _total: int, delta: int) -> void:

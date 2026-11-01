@@ -619,6 +619,8 @@ func fire(w: WeaponInstance) -> void:
 		var limb: StringName = StringName(h["limb"])
 		zz.last_hit_bone = str(h.get("bone", ""))
 		var killed: bool = zz.take_damage(float(h["dmg"]) * tier_mult, limb, w.id, pid, &"bullet", piercing)
+		if limb == &"marke":
+			limb = zz.marke_host_limb()   # T-137: the callouts below are the host limb's
 		if not killed and zz.is_active() and PerkManager.shot_is_shock(pid):
 			zz.force_stagger()   # Trigger Tonic IV
 		if killed:
@@ -695,8 +697,9 @@ func _trace(origin: Vector3, dir: Vector3, w: WeaponInstance, hits: Dictionary) 
 			if z == null or not z.is_active():
 				exclude.append(hb.get_rid())
 				continue
-			var mult: float = w.limb_mult(hb.limb)
-			if hb.limb == &"head":
+			var wl: StringName = z.marke_host_limb() if hb.limb == &"marke" else hb.limb   # T-137: the weapon's x is the host limb's
+			var mult: float = w.limb_mult(wl)
+			if wl == &"head":
 				mult *= float(PerkManager.stat(player.player_id, "head_damage_mult", 1.0))
 			var dmg: float = w.f("damage", 50.0) * w.falloff(origin.distance_to(pos)) * mult
 			var cur_h: Dictionary = hits.get(z, {"dmg": 0.0, "limb": "torso", "mult": 0.0})
