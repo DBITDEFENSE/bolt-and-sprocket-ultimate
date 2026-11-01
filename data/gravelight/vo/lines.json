@@ -11071,7 +11071,8 @@
   "PEG_SQD_RISE_02": {
     "speaker": "PEG",
     "category": "SQD_RISE",
-    "text": "We'll mourn them later. Now we shoot them.",
+    "text": "We'll mourn them later. Now we shoot them."
+  },
   "MIN_PEOPLE_TALK_01": {
     "speaker": "MIN",
     "category": "PEOPLE_TALK",
