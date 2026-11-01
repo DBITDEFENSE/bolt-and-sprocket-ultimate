@@ -92,7 +92,7 @@ which is hunger: "NOBODY CANCELS". The marks stay active only while the relay si
 carrier** on Earth, Darkmatter's **Regional Retention Relay RR-7** on the Moon above it (`MAP4_FERNFLUG.md` §6). That is
 why cutting the relay in the Fernflug finale stops the dead: the hum stops, the first retained miner's hand stops, and
 every Marke goes dark the same second. Unmarked people who die near raw substrate can still rise (the mine's Erwachen,
-the sealed galleries, the dosed subjects of the Laboratory Wing); far from the mine, everything that rises was marked.
+the sealed galleries, the dosed subjects of the Laboratory Wing); far from the mine, everything that rises was marked, with one exception: every place the squad fights is a Darkmatter site (the cabinets, the Crucible, the coffins in the pens, the impellers, the Nevada stone, the relay), and the substrate in it is enough that whoever dies inside the site's reach rises too, Marke or not (that is how the relief squads' Allied dead rise, T-142); the Marke is what makes a body rise *anywhere*.
 **The Erwachen of 20 December 1944** was both at once: the mine's raw substrate driven to full resonance, and every
 marked guard who died that night getting up.
 
