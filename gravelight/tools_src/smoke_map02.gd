@@ -181,7 +181,11 @@ func _run() -> void:
 		if int(s.get("spot_index")) == CrateManager.location_index:
 			start_spot = s
 	_check(start_spot != null and bool(start_spot.get("can_start")), "crate started at the hut or the warhead store")
-	_check(get_tree().get_nodes_in_group(&"story_props").size() == 4, "4 Map 2 story items spawned")
+	var want_props: int = 0
+	for row: Dictionary in (GLData.table("story_props").get("props", []) as Array):
+		if str(row.get("map", "")) == "2":
+			want_props += 1
+	_check(get_tree().get_nodes_in_group(&"story_props").size() == want_props, "%d Map 2 story items spawned (data says %d)" % [get_tree().get_nodes_in_group(&"story_props").size(), want_props])
 	var sig: BuyDoor = _g("Door_Signal") as BuyDoor
 	_check(sig.get_prompt(_p) == "Power must be activated", "Signal Tower door: 'Power must be activated'")
 	var cru: Node = _g("Crucible")
