@@ -55,6 +55,8 @@ var _pred_dmg: float = 0.0
 
 var _cfg: Dictionary = {}
 var _anim: Dictionary = {}
+## T-139: scales anim.json's lod distances (WebProfile halves them on the Compatibility renderer / in the browser).
+static var anim_lod_scale: float = 1.0
 var _agent: NavigationAgent3D
 var _safe_vel: Vector3 = Vector3.ZERO
 var _pivot: Node3D
@@ -509,9 +511,11 @@ func _process(delta: float) -> void:
 	var d2: float = global_position.distance_squared_to(target.global_position) if target != null else 0.0
 	var lod: Dictionary = _anim["lod"]
 	var div: int = 1
-	if d2 > float(lod["half_m"]) * float(lod["half_m"]):
+	var half_m: float = float(lod["half_m"]) * anim_lod_scale
+	var full_m: float = float(lod["full_m"]) * anim_lod_scale
+	if d2 > half_m * half_m:
 		div = 4
-	elif d2 > float(lod["full_m"]) * float(lod["full_m"]):
+	elif d2 > full_m * full_m:
 		div = 2
 	if _anim_skip % div != 0:
 		return

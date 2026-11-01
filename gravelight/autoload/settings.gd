@@ -28,7 +28,13 @@ const PRESETS: Dictionary = {
 		"gfx_ssil": true, "gfx_ssr": true, "gfx_fog": "high", "gfx_lod": "high"},
 	"ultra": {"gfx_aa": "msaa4_taa", "gfx_scale": 1.0, "gfx_upscaler": "bilinear", "gfx_shadows": "ultra", "gfx_ao": "ultra", "gfx_gi": true,
 		"gfx_ssil": true, "gfx_ssr": true, "gfx_fog": "ultra", "gfx_lod": "ultra"},
+	# T-139 (UPDATE 09 section 2c): the browser / Compatibility renderer. No MSAA (FXAA instead), bilinear 85% scale
+	# (FSR needs Forward+), low shadows, none of SSAO / SDFGI / SSIL / SSR / volumetric fog (the Compatibility
+	# renderer has none of them; WebProfile turns the maps' volumetric fog into depth fog), coarse LODs.
+	"web": {"gfx_aa": "fxaa", "gfx_scale": 0.85, "gfx_upscaler": "bilinear", "gfx_shadows": "low", "gfx_ao": "off", "gfx_gi": false,
+		"gfx_ssil": false, "gfx_ssr": false, "gfx_fog": "off", "gfx_lod": "low"},
 }
+const WEB_PRESET: String = "web"
 ## The quality tiers behind the individual settings (RenderingServer's global quality, per tier).
 const SHADOW_Q: Dictionary = {   # [directional atlas, positional atlas, soft filter quality 0..5]
 	"low": [1024, 1024, 1], "medium": [2048, 2048, 2], "high": [4096, 4096, 3], "ultra": [8192, 8192, 4]}
@@ -92,14 +98,19 @@ var path: String = PATH   # tests point this elsewhere
 var using_pad: bool = false
 
 var _overlay: CanvasLayer
+var _had_preset: bool = false   # T-139: a saved graphics_preset was found (else auto_detect_preset runs once)
 var _cb_rect: ColorRect
 var _grain_rect: ColorRect
 
 
 func _ready() -> void:
 	load_settings()
-	if OS.get_cmdline_user_args().has("--frame-log"):   # dev: a played session's frame times (tools_src/frame_log.gd)
-		add_child((load("res://gravelight/tools_src/frame_log.gd") as GDScript).new())
+	if not _had_preset and DisplayServer.get_name() != "headless":
+		var picked: String = auto_detect_preset()   # T-139: first launch picks low / medium / high / web from the GPU
+		print("[GLSettings] first launch: graphics preset %s (%s)" % [picked, RenderingServer.get_video_adapter_name()])
+		set_preset(picked)
+	if OS.get_cmdline_user_args().has("--frame-log") and ResourceLoader.exists("res://gravelight/tools_src/frame_log.gd"):
+		add_child((load("res://gravelight/tools_src/frame_log.gd") as GDScript).new())   # dev: a played session's frame times (not in the web build)
 	_build_overlays()
 	_overlay.visible = false   # Gravelight only: see activate() (T-024)
 	get_tree().node_added.connect(_on_node_added)
@@ -107,8 +118,10 @@ func _ready() -> void:
 
 func load_settings() -> void:
 	var cfg: ConfigFile = ConfigFile.new()
+	_had_preset = false
 	if cfg.load(path) != OK:
 		return
+	_had_preset = cfg.has_section_key("settings", "graphics_preset")
 	for key: String in values.keys():
 		values[key] = cfg.get_value("settings", key, values[key])
 	overrides = cfg.get_value("bindings", "overrides", {})
@@ -388,9 +401,67 @@ func set_preset(name_: String) -> void:
 	apply_visuals()
 
 
+## T-139: the presets the Settings menu offers: the desktop four, plus "web" on the Compatibility renderer.
+static func preset_order(compat: bool) -> PackedStringArray:
+	var out: PackedStringArray = PRESET_ORDER.duplicate()
+	if compat:
+		out.append(WEB_PRESET)
+	return out
+
+
+## T-139 (UPDATE 09 section 2c): the browser build (an HTML5 export).
+static func is_web() -> bool:
+	return OS.has_feature("web")
+
+
+## T-139: the Compatibility (OpenGL / WebGL 2) renderer: always on the web, and on a desktop started with
+## --rendering-method gl_compatibility or --rendering-driver opengl3. Tests may force it with `compat_override`.
+static var compat_override: int = -1   # -1 = ask the renderer, 0 = no, 1 = yes
+
+
+static func is_compat() -> bool:
+	if compat_override >= 0:
+		return compat_override == 1
+	return is_web() or RenderingServer.get_current_rendering_method() == "gl_compatibility"
+
+
+## T-139: the first-launch preset from the GPU's name, its type (RenderingDevice.DeviceType) and the renderer:
+## Compatibility -> web; integrated (Intel UHD / Iris, AMD's "Radeon Graphics" / 680M / 780M) or software -> low;
+## a discrete NVIDIA or AMD card -> high; anything else (unknown, Intel Arc, Apple) -> medium. Never ultra. Pure.
+static func detect_preset(adapter: String, adapter_type: int, rendering_method: String) -> String:
+	if rendering_method == "gl_compatibility":
+		return WEB_PRESET
+	var a: String = adapter.to_lower()
+	if adapter_type == RenderingDevice.DEVICE_TYPE_CPU or adapter_type == RenderingDevice.DEVICE_TYPE_VIRTUAL_GPU:
+		return "low"
+	for sw: String in ["llvmpipe", "lavapipe", "swiftshader", "software", "microsoft basic"]:
+		if a.contains(sw):
+			return "low"
+	if adapter_type == RenderingDevice.DEVICE_TYPE_INTEGRATED_GPU:
+		return "low"
+	for ig: String in ["uhd graphics", "hd graphics", "iris", "radeon(tm) graphics", "radeon graphics", "radeon vega", "vega 8",
+			"vega 7", "vega 6", "610m", "660m", "680m", "740m", "760m", "780m", "880m", "890m"]:
+		if a.contains(ig):
+			return "low"
+	var nv_amd: bool = a.contains("nvidia") or a.contains("geforce") or a.contains("quadro") or a.contains("rtx") or a.contains("amd") or a.contains("radeon")
+	if adapter_type == RenderingDevice.DEVICE_TYPE_DISCRETE_GPU and nv_amd:
+		return "high"
+	if a.contains("geforce") or a.contains("rtx") or a.contains("radeon rx") or a.contains("radeon pro"):
+		return "high"   # the type is unknown (some drivers) but the name is a discrete card's
+	return "medium"
+
+
+## T-139: the preset for this machine (GLSettings._ready calls it on first launch, when no preset was saved).
+func auto_detect_preset() -> String:
+	var method: String = "gl_compatibility" if is_compat() else str(RenderingServer.get_current_rendering_method())
+	return detect_preset(RenderingServer.get_video_adapter_name(), int(RenderingServer.get_video_adapter_type()), method)
+
+
 ## T-133: the preset the individual settings match ("custom" when any differs). Pure over `vals`.
 static func matching_preset(vals: Dictionary) -> String:
-	for pn: String in PRESET_ORDER:
+	var order: PackedStringArray = PRESET_ORDER.duplicate()
+	order.append(WEB_PRESET)
+	for pn: String in order:
 		var ok: bool = true
 		for k: Variant in (PRESETS[pn] as Dictionary).keys():
 			if vals.has(str(k)) and vals[str(k)] != PRESETS[pn][k]:
@@ -451,13 +522,14 @@ func apply_visuals() -> void:
 	RenderingServer.directional_soft_shadow_filter_set_quality(int(sq[2]) as RenderingServer.ShadowQuality)
 	RenderingServer.positional_soft_shadow_filter_set_quality(int(sq[2]) as RenderingServer.ShadowQuality)
 	var aq: int = int(AO_Q.get(str(gfx("gfx_ao")), 2))
-	RenderingServer.environment_set_ssao_quality(aq as RenderingServer.EnvironmentSSAOQuality, aq <= 1, 0.5, 2, 50.0, 300.0)
-	RenderingServer.environment_set_ssil_quality(aq as RenderingServer.EnvironmentSSILQuality, aq <= 1, 0.5, 4, 50.0, 300.0)
-	RenderingServer.environment_set_sdfgi_ray_count(int(SDFGI_RAYS.get(str(gfx("gfx_shadows")), 2)) as RenderingServer.EnvironmentSDFGIRayCount)
-	RenderingServer.environment_set_ssr_roughness_quality(mini(aq, 3) as RenderingServer.EnvironmentSSRRoughnessQuality)
-	var fq: Array = FOG_Q.get(str(gfx("gfx_fog")), FOG_Q["high"])
-	RenderingServer.environment_set_volumetric_fog_volume_size(int(fq[0]), int(fq[1]))
-	RenderingServer.environment_set_volumetric_fog_filter_active(true)
+	if not is_compat():   # T-139: the Compatibility renderer has no SSAO / SSIL / SDFGI / SSR / volumetric fog to tune
+		RenderingServer.environment_set_ssao_quality(aq as RenderingServer.EnvironmentSSAOQuality, aq <= 1, 0.5, 2, 50.0, 300.0)
+		RenderingServer.environment_set_ssil_quality(aq as RenderingServer.EnvironmentSSILQuality, aq <= 1, 0.5, 4, 50.0, 300.0)
+		RenderingServer.environment_set_sdfgi_ray_count(int(SDFGI_RAYS.get(str(gfx("gfx_shadows")), 2)) as RenderingServer.EnvironmentSDFGIRayCount)
+		RenderingServer.environment_set_ssr_roughness_quality(mini(aq, 3) as RenderingServer.EnvironmentSSRRoughnessQuality)
+		var fq: Array = FOG_Q.get(str(gfx("gfx_fog")), FOG_Q["high"])
+		RenderingServer.environment_set_volumetric_fog_volume_size(int(fq[0]), int(fq[1]))
+		RenderingServer.environment_set_volumetric_fog_filter_active(true)
 	for n: Node in get_tree().root.find_children("*", "WorldEnvironment", true, false):
 		_apply_env(n as WorldEnvironment)
 	for pn: Node in get_tree().get_nodes_in_group(&"players"):

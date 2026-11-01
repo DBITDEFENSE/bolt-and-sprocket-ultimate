@@ -123,6 +123,9 @@ func _ready() -> void:
 	AudioDirector.start_ambient()
 	(func() -> void: LampGlow.attach(self)).call_deferred()   # lamp glass dims with its light (T-057)
 	ShadowProxies.build(self)   # the static batches' shadows drawn from a few merged depth meshes (T-070)
+	if GLSettings.is_compat():   # T-139: the browser / Compatibility profile (no SDFGI / SSIL / SSR / volumetrics, capped shadows)
+		print("[WebProfile] %s: %s" % [map_id, str(WebProfile.apply(self))])
+		(func() -> void: WebProfile.apply(self)).call_deferred()   # again for what spawns deferred (intel, lamp glow)
 	(func() -> void: RenderWarm.run(self)).call_deferred()   # first-use shader stalls paid at load (T-070)
 	if _online and Net.is_client():
 		session.report_loaded()

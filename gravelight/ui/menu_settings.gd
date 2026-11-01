@@ -212,12 +212,16 @@ func _video() -> void:
 ## T-133: the graphics block. A preset fills in every setting below it; change any one and the preset reads Custom.
 func _graphics() -> void:
 	var g: Node = GLSettings
-	var names: PackedStringArray = ["Low", "Medium", "High", "Ultra", "Custom"]
+	var order: PackedStringArray = GLSettings.preset_order(GLSettings.is_compat())   # T-139: + "Browser" on the web
+	var names: PackedStringArray = ["Low", "Medium", "High", "Ultra"]
+	if order.size() > 4:
+		names.append("Browser")
+	names.append("Custom")
 	var now: String = GLSettings.matching_preset(_gfx_values())
-	var pi: int = GLSettings.PRESET_ORDER.find(now)
-	content.add_child(MenuKit.row("Graphics preset", MenuKit.options(names, pi if pi >= 0 else 4, func(i: int) -> void:
-		if i < GLSettings.PRESET_ORDER.size():
-			GLSettings.set_preset(GLSettings.PRESET_ORDER[i])
+	var pi: int = order.find(now)
+	content.add_child(MenuKit.row("Graphics preset", MenuKit.options(names, pi if pi >= 0 else order.size(), func(i: int) -> void:
+		if i < order.size():
+			GLSettings.set_preset(order[i])
 			rebuild())))
 	content.add_child(MenuKit.para("Low and Medium render below full resolution and upscale it; High is full quality; Ultra adds 4x MSAA with TAA, 8K shadows, the best AO, fog and level of detail (a fast GPU: RTX 3080 and up).", 16, MenuKit.DIM))
 	_choice("Anti-aliasing", "gfx_aa", GLSettings.AA_MODES, ["Off", "FXAA (cheap, soft)", "SMAA (sharp)", "MSAA 2x", "MSAA 4x", "MSAA 8x", "TAA (smoothest, softer in motion)", "MSAA 4x + TAA (best)"])

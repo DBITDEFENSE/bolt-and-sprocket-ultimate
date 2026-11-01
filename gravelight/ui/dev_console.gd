@@ -241,8 +241,14 @@ func _cmd_act(a: PackedStringArray) -> String:
 	if not Campaign.scene_exists(map_id):
 		return "Act %d (%s) is not built yet." % [i + 1, map_id]
 	Campaign.begin_at(map_id, int(ACT_ROUNDS[i]), Campaign.arrival_kit(map_id))
-	get_tree().change_scene_to_file.call_deferred(Campaign.scene_for(map_id))
+	_go_map.call_deferred(Campaign.scene_for(map_id))
 	return "Starting %s at round %d." % [map_id, int(ACT_ROUNDS[i])]
+
+
+## T-139: changes to a map once its pack is in (the browser build; the desktop changes at once).
+func _go_map(scene: String) -> void:
+	if await MapPacks.ensure(scene):
+		get_tree().change_scene_to_file(scene)
 
 
 func _mondlicht() -> Node:
@@ -285,7 +291,7 @@ func _cmd_campaign(a: PackedStringArray) -> String:
 		return "No scene for %s." % map_id
 	var r: int = int(a[2]) if a.size() > 2 and a[2].is_valid_int() else 1
 	Campaign.begin_at(map_id, r, Campaign.arrival_kit(map_id))
-	get_tree().change_scene_to_file.call_deferred(Campaign.scene_for(map_id))
+	_go_map.call_deferred(Campaign.scene_for(map_id))
 	return "Campaign run: %s at round %d." % [map_id, r]
 
 
