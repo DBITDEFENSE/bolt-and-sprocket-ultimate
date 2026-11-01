@@ -58,6 +58,20 @@ func _probe() -> void:
 	for i: int in mini(14, rows.size()):
 		var r: Array = rows[i]
 		print("[probe]   cand %-26s %-7s zone %-10s at %s  %.0f m from start, snap %.2f" % [r[1], r[2], r[3], str((r[4] as Vector3).snapped(Vector3.ONE * 0.1)), r[0], r[5]])
+	if OS.get_cmdline_user_args().has("--regions"):
+		for n2: Node in _map.find_children("*", "NavigationRegion3D", true, false):
+			var nr: NavigationRegion3D = n2 as NavigationRegion3D
+			if nr.navigation_mesh == null:
+				continue
+			var vs: PackedVector3Array = nr.navigation_mesh.get_vertices()
+			if vs.is_empty():
+				continue
+			var bb: AABB = AABB(nr.global_transform * vs[0], Vector3.ZERO)
+			for v: Vector3 in vs:
+				bb = bb.expand(nr.global_transform * v)
+			print("[probe]   region %-28s layers %d  aabb %s .. %s  verts %d" % [nr.name, nr.navigation_layers,
+				str(bb.position.snapped(Vector3.ONE * 0.5)), str(bb.end.snapped(Vector3.ONE * 0.5)), vs.size()])
+		print("[probe]   zone bits %s always %s" % [str(_map.nav_zone_bits), str(_map.nav_always_bits)])
 	var tbl: Dictionary = ReliefSquad.table()
 	var mkey: String = ReliefSquad.map_key(String(_map.map_id))
 	for f: Dictionary in ReliefSquad.factions_for(mkey, tbl):

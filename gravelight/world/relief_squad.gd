@@ -273,11 +273,13 @@ func spawn_squad(fid: String = "") -> int:
 	return n
 
 
-## An edge spawn of the faction at least 20 m from every living player (random among those), else the farthest.
+## An edge spawn of the faction at least 20 m from every living player (random among those), else the farthest;
+## only points with a path to a player through the zones open now (a gated zone's edge waits for its door).
 func _pick_edge(fac: Dictionary) -> Vector3:
 	var pts: Array[Vector3] = []
 	for e: Variant in fac.get("edge_spawns", []):
-		pts.append(vec(e))
+		if reachable(vec(e)):
+			pts.append(vec(e))
 	if pts.is_empty():
 		return Vector3.INF
 	var ok: Array[Vector3] = []
@@ -293,6 +295,19 @@ func _pick_edge(fac: Dictionary) -> Vector3:
 			best_d = dmin
 			best = p
 	return ok[rng.randi() % ok.size()] if not ok.is_empty() else best
+
+
+## A path from `p` (snapped onto the navmesh) to the nearest living player on the open zones' layers.
+func reachable(p: Vector3) -> bool:
+	var pl: Player = _nearest_player(p)
+	if pl == null or map == null:
+		return true
+	var nav: RID = map.get_world_3d().navigation_map
+	var a: Vector3 = NavigationServer3D.map_get_closest_point(nav, p)
+	if a.distance_to(p) > 3.0:
+		return false
+	var path: PackedVector3Array = NavigationServer3D.map_get_path(nav, a, pl.global_position, true, nav_mask())
+	return not path.is_empty() and flat(path[path.size() - 1], pl.global_position) < 3.0
 
 
 func _players() -> Array[Player]:

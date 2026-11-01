@@ -152,36 +152,36 @@
 		"map00": {
 			"_doc": "Crossroads Inn, Silesia, December 1944: the forest edges.",
 			"factions": [
-				{"id": "ak", "display": "Home Army partisans", "kit": "partisan", "marked": false, "weight": 0.6, "weapons": ["kar98k", "mp40", "kar98k", "walther_p38"], "barks_prefix": "SQD_AK", "edge_spawns": []},
-				{"id": "sov", "display": "Soviet scout patrol", "kit": "soviet_scout", "marked": false, "weight": 0.4, "weapons": ["ppsh41", "ppsh41", "kar98k"], "barks_prefix": "SQD_SOV", "edge_spawns": []}
+				{"id": "ak", "display": "Home Army partisans", "kit": "partisan", "marked": false, "weight": 0.6, "weapons": ["kar98k", "mp40", "kar98k", "walther_p38"], "barks_prefix": "SQD_AK", "edge_spawns": [[45.0, 0.0, 68.5], [2.0, 0.0, 68.5], [-24.5, 0.0, 44.0]]},
+				{"id": "sov", "display": "Soviet scout patrol", "kit": "soviet_scout", "marked": false, "weight": 0.4, "weapons": ["ppsh41", "ppsh41", "kar98k"], "barks_prefix": "SQD_SOV", "edge_spawns": [[64.5, 0.0, 46.0], [64.5, 0.0, -1.0], [47.0, 0.0, -34.5]]}
 			]
 		},
 		"map01": {
 			"_doc": "Kaltenbrunn: the rail line and the woods past the yard.",
 			"factions": [
-				{"id": "ak", "display": "Home Army partisans", "kit": "partisan", "marked": false, "weight": 0.55, "weapons": ["kar98k", "mp40", "kar98k", "walther_p38"], "barks_prefix": "SQD_AK", "edge_spawns": []},
-				{"id": "vs", "display": "Volkssturm deserters", "kit": "volkssturm", "marked": true, "weight": 0.45, "weapons": ["kar98k", "kar98k", "luger_p08", "gewehr43"], "barks_prefix": "SQD_VS", "edge_spawns": []}
+				{"id": "ak", "display": "Home Army partisans", "kit": "partisan", "marked": false, "weight": 0.55, "weapons": ["kar98k", "mp40", "kar98k", "walther_p38"], "barks_prefix": "SQD_AK", "edge_spawns": [[3.0, 0.0, 2.5], [37.5, 0.0, 2.5], [-14.0, 0.0, 44.0]]},
+				{"id": "vs", "display": "Volkssturm deserters", "kit": "volkssturm", "marked": true, "weight": 0.45, "weapons": ["kar98k", "kar98k", "luger_p08", "gewehr43"], "barks_prefix": "SQD_VS", "edge_spawns": [[38.0, 0.0, 29.0], [57.0, 0.0, 45.0], [58.0, 0.0, 16.5]]}
 			]
 		},
 		"map02": {
 			"_doc": "Totenhafen: the sea side and the land gate.",
 			"factions": [
-				{"id": "cdo", "display": "British commandos", "kit": "commando", "marked": false, "weight": 0.6, "weapons": ["thompson", "thompson", "webley", "m1_garand"], "barks_prefix": "SQD_CDO", "edge_spawns": []},
-				{"id": "km", "display": "Kriegsmarine shore party", "kit": "shore_party", "marked": true, "weight": 0.4, "weapons": ["mp40", "kar98k", "walther_p38"], "barks_prefix": "SQD_KM", "edge_spawns": []}
+				{"id": "cdo", "display": "British commandos", "kit": "commando", "marked": false, "weight": 0.6, "weapons": ["thompson", "thompson", "webley", "m1_garand"], "barks_prefix": "SQD_CDO", "edge_spawns": [[3.0, 0.0, 2.0], [-28.0, 0.0, 2.0], [60.0, 0.0, 2.0]]},
+				{"id": "km", "display": "Kriegsmarine shore party", "kit": "shore_party", "marked": true, "weight": 0.4, "weapons": ["mp40", "kar98k", "walther_p38"], "barks_prefix": "SQD_KM", "edge_spawns": [[2.0, 0.0, 28.0], [-16.0, 0.0, 40.0], [48.0, 0.0, 38.0]]}
 			]
 		},
 		"map04a": {
 			"_doc": "Werk Thalbach, May 1945: the valley road and the far side of the Siedlung.",
 			"factions": [
-				{"id": "para", "display": "US paratroopers (off-target stick)", "kit": "paratrooper", "marked": false, "weight": 0.6, "weapons": ["m1_carbine", "thompson", "m1_garand", "bar"], "barks_prefix": "SQD_PARA", "edge_spawns": []},
-				{"id": "vs", "display": "Volkssturm deserters", "kit": "volkssturm", "marked": true, "weight": 0.4, "weapons": ["kar98k", "kar98k", "luger_p08", "gewehr43"], "barks_prefix": "SQD_VS", "edge_spawns": []}
+				{"id": "para", "display": "US paratroopers (off-target stick)", "kit": "paratrooper", "marked": false, "weight": 0.6, "weapons": ["m1_carbine", "thompson", "m1_garand", "bar"], "barks_prefix": "SQD_PARA", "edge_spawns": [[38.0, 0.0, 2.0], [-40.0, 0.0, 57.0], [38.0, 0.0, 98.0]]},
+				{"id": "vs", "display": "Volkssturm deserters", "kit": "volkssturm", "marked": true, "weight": 0.4, "weapons": ["kar98k", "kar98k", "luger_p08", "gewehr43"], "barks_prefix": "SQD_VS", "edge_spawns": [[38.0, 0.0, 28.0], [2.0, 0.0, 58.0], [38.0, 0.0, 58.0]]}
 			]
 		},
 		"map04b": {"_doc": "None: der Kranich is a plane in flight; nobody walks in from the edge of the sky.", "factions": []},
 		"map04c": {
 			"_doc": "Groom Lake: the motor pool road and the salt.",
 			"factions": [
-				{"id": "mp", "display": "Groom Lake MPs", "kit": "mp", "marked": false, "weight": 1.0, "weapons": ["m1_carbine", "trench_gun", "m1911", "m1_garand"], "barks_prefix": "SQD_MP", "edge_spawns": []}
+				{"id": "mp", "display": "Groom Lake MPs", "kit": "mp", "marked": false, "weight": 1.0, "weapons": ["m1_carbine", "trench_gun", "m1911", "m1_garand"], "barks_prefix": "SQD_MP", "edge_spawns": [[12.0, 0.0, -6.0], [-12.0, 0.0, -6.0], [56.0, 0.0, 56.0], [-56.0, 0.0, 56.0], [-66.0, 0.0, 96.0]]}
 			]
 		},
 		"map04d": {"_doc": "None: the Moon. Nobody comes to relieve you there.", "factions": []}
