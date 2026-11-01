@@ -368,9 +368,11 @@ func _on_player_downed(pid: int) -> void:
 func _game_over() -> void:
 	if GameState.phase == GameState.Phase.GAME_OVER:
 		return
+	var st: Dictionary = GameState.stats.duplicate()
+	st[&"players"] = GameState.player_stats.duplicate(true)   # T-144: the ledger's per-player rows
 	if session != null and Net.is_host():
-		Net._rpc_game_over.rpc(GameState.stats, GameState.elapsed_seconds())
-	show_game_over(GameState.stats, GameState.elapsed_seconds())
+		Net._rpc_game_over.rpc(st, GameState.elapsed_seconds())
+	show_game_over(st, GameState.elapsed_seconds())
 
 
 ## Ends the match on this peer (the host's call, or the host's word on a client).

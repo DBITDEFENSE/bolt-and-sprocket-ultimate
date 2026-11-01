@@ -1,6 +1,7 @@
 class_name GameOverScreen
 extends CanvasLayer
-## Shown when the last survivor goes down. Shows the round reached and match stats.
+## Shown when the last survivor goes down: the round reached, the time, and the ledger (T-144: one line per player:
+## kills, headshots, Marke kills, Scrip earned, downs, revives) with "The account is closed." typed under it.
 
 signal restart_requested
 signal menu_requested
@@ -9,6 +10,39 @@ signal menu_requested
 func _init() -> void:
 	layer = 20
 	process_mode = Node.PROCESS_MODE_ALWAYS
+
+
+## The ledger's columns: [header, player_stats key, team-stats fallback key].
+const LEDGER_COLS: Array = [["KILLS", &"kills", &"kills"], ["HEADSHOTS", &"headshots", &"headshots"],
+	["MARKE", &"marke_kills", &"marke_kills"], ["SCRIP", &"scrip", &"scrip_earned"], ["DOWNS", &"downs", &"downs"],
+	["REVIVES", &"revives", &""]]
+const CLOSING_LINE: String = "The account is closed."
+const LEDGER_INK: Color = Color(0.2, 0.13, 0.09)
+
+var typed: Label = null
+var ledger_rows: int = 0
+
+
+## T-144: the ledger rows (one per player: kills, headshots, Marke kills, Scrip earned, downs, revives) from the
+## match stats' "players" block (MapRoot adds it; the host's copy reaches every client); without one, the squad's
+## totals make one row.
+static func ledger(stats: Dictionary) -> Array:
+	var out: Array = []
+	var players: Dictionary = stats.get(&"players", stats.get("players", {})) as Dictionary
+	var pids: Array = players.keys()
+	pids.sort()
+	for pid: Variant in pids:
+		var row: Dictionary = players[pid]
+		var vals: Array = []
+		for c: Array in LEDGER_COLS:
+			vals.append(int(row.get(c[1], row.get(String(c[1]), 0))))
+		out.append([Net.display_name(int(pid)), vals])
+	if out.is_empty():
+		var vals2: Array = []
+		for c2: Array in LEDGER_COLS:
+			vals2.append(int(stats.get(c2[2], 0)) if c2[2] != &"" else 0)
+		out.append(["Squad", vals2])
+	return out
 
 
 func show_stats(stats: Dictionary, map_name: String, seconds: float) -> void:
@@ -20,14 +54,15 @@ func show_stats(stats: Dictionary, map_name: String, seconds: float) -> void:
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	MenuKit.apply_theme(bg)
 	add_child(bg)
+	var center: CenterContainer = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	MenuKit.apply_theme(center)
+	add_child(center)
 	var box: VBoxContainer = VBoxContainer.new()
-	box.set_anchors_preset(Control.PRESET_CENTER)
-	box.custom_minimum_size = Vector2(760, 0)
-	box.position = Vector2(-380, -300)
+	box.custom_minimum_size = Vector2(1180, 0)
 	box.add_theme_constant_override("separation", 10)
 	box.modulate.a = 0.0
-	MenuKit.apply_theme(box)
-	add_child(box)
+	center.add_child(box)
 	var title: Label = Label.new()
 	title.text = "THE LEDGER IS CLOSED"
 	title.add_theme_font_override("font", stamp)
@@ -38,36 +73,61 @@ func show_stats(stats: Dictionary, map_name: String, seconds: float) -> void:
 	box.add_child(title)
 	var r: int = int(stats.get(&"round", 0))
 	var sub: Label = Label.new()
-	sub.text = "%s  ·  You survived %d round%s" % [map_name, r, "" if r == 1 else "s"]
+	sub.text = "%s  ·  %d round%s  ·  %d:%02d" % [map_name, r, "" if r == 1 else "s", int(seconds) / 60, int(seconds) % 60]
 	sub.add_theme_font_override("font", font)
 	sub.add_theme_font_size_override("font_size", MenuKit.px(28))
 	MenuKit.outline(sub, "menu")
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(sub)
+	# the ledger page: cream paper, ruled, the survivors' lines in ink
+	var page: PanelContainer = PanelContainer.new()
+	var psb: StyleBoxFlat = MenuKit.paper_box(0.97)
+	psb.set_content_margin_all(22)
+	page.add_theme_stylebox_override("panel", psb)
+	box.add_child(page)
 	var grid: GridContainer = GridContainer.new()
-	grid.columns = 2
-	grid.add_theme_constant_override("h_separation", 60)
-	box.add_child(grid)
-	var rows: Array = [
-		["Kills", stats.get(&"kills", 0)],
-		["Headshots", stats.get(&"headshots", 0)],
-		["Knife kills", stats.get(&"melee_kills", 0)],
-		["Scrip earned", stats.get(&"scrip_earned", 0)],
-		["Doors opened", stats.get(&"doors", 0)],
-		["Boards rebuilt", stats.get(&"boards", 0)],
-		["Time", "%d:%02d" % [int(seconds) / 60, int(seconds) % 60]],
-	]
+	grid.name = "Ledger"
+	grid.columns = 1 + LEDGER_COLS.size()
+	grid.add_theme_constant_override("h_separation", 34)
+	grid.add_theme_constant_override("v_separation", 8)
+	page.add_child(grid)
+	var head_font: Font = MenuKit.spaced(font, 3)
+	for i: int in grid.columns:
+		var h: Label = Label.new()
+		h.text = "SURVIVOR" if i == 0 else str(LEDGER_COLS[i - 1][0])
+		h.add_theme_font_override("font", head_font)
+		h.add_theme_font_size_override("font_size", 20)
+		h.add_theme_color_override("font_color", Color(0.45, 0.12, 0.1))
+		h.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT if i == 0 else HORIZONTAL_ALIGNMENT_RIGHT
+		h.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		grid.add_child(h)
+	var rows: Array = ledger(stats)
+	ledger_rows = rows.size()
 	for row: Array in rows:
-		for i: int in 2:
+		var name_l: Label = Label.new()
+		name_l.text = str(row[0])
+		name_l.add_theme_font_override("font", font)
+		name_l.add_theme_font_size_override("font_size", 26)
+		name_l.add_theme_color_override("font_color", LEDGER_INK)
+		grid.add_child(name_l)
+		for v: Variant in row[1]:
 			var l: Label = Label.new()
-			l.text = str(row[i])
-			l.add_theme_font_override("font", mono if i == 1 else font)   # the numbers in the ledger's mono
-			l.add_theme_font_size_override("font_size", MenuKit.size("button"))
-			l.add_theme_color_override("font_color", Color(0.93, 0.89, 0.8))
-			MenuKit.outline(l, "menu")
-			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if i == 1 else HORIZONTAL_ALIGNMENT_LEFT
-			l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			l.text = _thousands(int(v))
+			l.add_theme_font_override("font", mono)   # the numbers in the ledger's mono
+			l.add_theme_font_size_override("font_size", 26)
+			l.add_theme_color_override("font_color", LEDGER_INK)
+			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 			grid.add_child(l)
+	typed = Label.new()
+	typed.name = "Closing"
+	typed.text = CLOSING_LINE
+	typed.visible_characters = 0
+	typed.add_theme_font_override("font", font)
+	typed.add_theme_font_size_override("font_size", 30)
+	typed.add_theme_color_override("font_color", MenuKit.PAPER)
+	MenuKit.outline(typed, "menu")
+	typed.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(typed)
 	_add_progression(box, font)
 	var buttons: HBoxContainer = HBoxContainer.new()
 	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -82,12 +142,30 @@ func show_stats(stats: Dictionary, map_name: String, seconds: float) -> void:
 	var menu: Button = _button("Main menu" if not Net.is_online() else ("Back to lobby" if Net.is_host() else "Leave"), font)
 	menu.pressed.connect(func() -> void: menu_requested.emit())
 	buttons.add_child(menu)
+	again.focus_neighbor_right = again.get_path_to(menu)
+	menu.focus_neighbor_left = menu.get_path_to(again)
 	if coop_client:
 		again = menu
 	var tw: Tween = create_tween()
-	tw.tween_property(bg, "color:a", 0.82, 1.5)
+	tw.tween_property(bg, "color:a", 0.84, 1.5)
 	tw.parallel().tween_property(box, "modulate:a", 1.0, 1.5).set_delay(1.0)
 	tw.tween_callback(again.grab_focus)
+	# the closing line typed out, a key at a time
+	for i2: int in CLOSING_LINE.length():
+		tw.tween_interval(0.055)
+		tw.tween_callback(func() -> void:
+			typed.visible_characters = i2 + 1
+			if CLOSING_LINE[i2] != " ":
+				AudioDirector.play_2d("ui_tick", -4.0, 0.08))
+
+
+static func _thousands(n: int) -> String:
+	var s: String = str(absi(n))
+	var out: String = ""
+	while s.length() > 3:
+		out = "," + s.substr(s.length() - 3) + out
+		s = s.substr(0, s.length() - 3)
+	return ("-" if n < 0 else "") + s + out
 
 
 func _button(text: String, font: Font) -> Button:
