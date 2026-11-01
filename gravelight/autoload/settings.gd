@@ -28,10 +28,11 @@ const PRESETS: Dictionary = {
 		"gfx_ssil": true, "gfx_ssr": true, "gfx_fog": "high", "gfx_lod": "high"},
 	"ultra": {"gfx_aa": "msaa4_taa", "gfx_scale": 1.0, "gfx_upscaler": "bilinear", "gfx_shadows": "ultra", "gfx_ao": "ultra", "gfx_gi": true,
 		"gfx_ssil": true, "gfx_ssr": true, "gfx_fog": "ultra", "gfx_lod": "ultra"},
-	# T-139 (UPDATE 09 section 2c): the browser / Compatibility renderer. No MSAA (FXAA instead), bilinear 85% scale
+	# T-139 (UPDATE 09 section 2c): the browser / Compatibility renderer. No anti-aliasing (no MSAA by the work order;
+	# the Compatibility renderer has no FXAA / SMAA / TAA), bilinear 85% scale
 	# (FSR needs Forward+), low shadows, none of SSAO / SDFGI / SSIL / SSR / volumetric fog (the Compatibility
 	# renderer has none of them; WebProfile turns the maps' volumetric fog into depth fog), coarse LODs.
-	"web": {"gfx_aa": "fxaa", "gfx_scale": 0.85, "gfx_upscaler": "bilinear", "gfx_shadows": "low", "gfx_ao": "off", "gfx_gi": false,
+	"web": {"gfx_aa": "off", "gfx_scale": 0.85, "gfx_upscaler": "bilinear", "gfx_shadows": "low", "gfx_ao": "off", "gfx_gi": false,
 		"gfx_ssil": false, "gfx_ssr": false, "gfx_fog": "off", "gfx_lod": "low"},
 }
 const WEB_PRESET: String = "web"
@@ -475,6 +476,11 @@ static func matching_preset(vals: Dictionary) -> String:
 ## T-133: the anti-aliasing mode on a viewport (MSAA, the screen-space filter, TAA).
 static func apply_aa(vp: Viewport, mode: String) -> void:
 	vp.msaa_3d = Viewport.MSAA_DISABLED
+	if is_compat():   # T-139: screen-space AA and TAA don't exist on the Compatibility renderer (setting them warns)
+		var ms: Dictionary = {"msaa2": Viewport.MSAA_2X, "msaa4": Viewport.MSAA_4X, "msaa8": Viewport.MSAA_8X}
+		if mode.begins_with("msaa"):
+			vp.msaa_3d = ms.get(mode.substr(0, 5), Viewport.MSAA_4X)
+		return
 	vp.screen_space_aa = Viewport.SCREEN_SPACE_AA_DISABLED
 	vp.use_taa = false
 	match mode:

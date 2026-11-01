@@ -927,6 +927,8 @@ func _board_gap_texture() -> ImageTexture:
 ## Ground fog over the east field (around the wreck) and a thinner skin over the yard and the road: FogVolumes,
 ## so the volumetric fog thickens where the fire and the flares can light it.
 func _build_field_fog() -> void:
+	if GLSettings.is_compat():
+		return   # T-139: no volumetric fog on the Compatibility renderer (its fog shader can't even compile there)
 	var noise: NoiseTexture3D = NoiseTexture3D.new()
 	noise.width = 48
 	noise.height = 16

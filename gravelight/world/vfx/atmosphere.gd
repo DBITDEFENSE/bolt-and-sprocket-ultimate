@@ -172,6 +172,8 @@ func mote_count() -> int:
 # ---------------------------------------------------------------- the west field fog
 
 func _build_west_fog() -> void:
+	if GLSettings.is_compat():
+		return   # T-139: no volumetric fog on the Compatibility renderer (its fog shader can't even compile there)
 	var c: Dictionary = cfg.get("west_fog", {})
 	if c.is_empty():
 		return

@@ -112,3 +112,8 @@ Tier IV perks and the bots' round-25 kit are done and merged. "Bots finish every
 egg completes with bots, and Kaltenbrunn's now gets as far as the power, the parts and the first pylon. The rest
 isn't done yet: `docs/QA_REPORT_U08.md` (After) lists every blocker found and the ones still open. The work carries
 on from the PROGRESS.md resume line. Nothing for you to do; try the new launcher buttons if you like.
+
+## UPDATE 09 §2c/2d (T-139): the browser and Windows builds, one line each
+- Frame cost on your RTX: play a match on each map with `--frame-log` (the launcher forwards it) and leave logs/frame_log_*.csv for the next session (T-133/T-134 and the U09 changes were only measured headless and in software GL).
+- Vercel, once: `npx vercel login`, then `sh tools/deploy_web.sh` (builds build/web and deploys it); the password: `npx vercel env add CZ_PASSWORD production` in build/web, then deploy again.
+- Try the browser build on a laptop with Intel Iris Xe or Radeon 680M if you have one: `sh tools/serve_web.sh`, open http://127.0.0.1:8060/ in Chrome, and note the FPS on Map 0 (target 30+).
