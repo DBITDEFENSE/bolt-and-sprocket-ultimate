@@ -127,7 +127,7 @@ func _fail(reason: String) -> void:
 
 
 func _on_frame(text: String) -> void:
-	var f: Variant = JSON.parse_string(text)
+	var f: Variant = NetSignaling.parse_json(text)
 	if not (f is Dictionary):
 		return
 	var frame: Dictionary = f

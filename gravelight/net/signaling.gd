@@ -67,7 +67,7 @@ static func decode(msg: Variant, my_id: String) -> Dictionary:
 	if msg is String:
 		if (msg as String).length() > MAX_MESSAGE_BYTES:
 			return {}
-		msg = JSON.parse_string(msg as String)
+		msg = parse_json(msg as String)
 	if not (msg is Dictionary):
 		return {}
 	var d: Dictionary = msg
@@ -80,6 +80,14 @@ static func decode(msg: Variant, my_id: String) -> Dictionary:
 	if to_id != my_id and to_id != EVERYONE:
 		return {}
 	return d
+
+
+## JSON from the network, quietly: malformed text is null (JSON.parse_string would log an engine error).
+static func parse_json(text: String) -> Variant:
+	var j: JSON = JSON.new()
+	if j.parse(text) != OK:
+		return null
+	return j.data
 
 
 static func random_id(n: int) -> String:

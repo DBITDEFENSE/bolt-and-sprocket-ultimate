@@ -76,7 +76,7 @@ func _process(_delta: float) -> void:
 
 
 func _on_text(p: Dictionary, text: String) -> void:
-	var v: Variant = JSON.parse_string(text)
+	var v: Variant = NetSignaling.parse_json(text)
 	if not (v is Dictionary):
 		return
 	var m: Dictionary = v

@@ -65,7 +65,7 @@ func _process(delta: float) -> void:
 			_queue.clear()
 			channel_ready.emit()
 		while _ws.get_available_packet_count() > 0:
-			var v: Variant = JSON.parse_string(_ws.get_packet().get_string_from_utf8())
+			var v: Variant = NetSignaling.parse_json(_ws.get_packet().get_string_from_utf8())
 			if v is Dictionary and str((v as Dictionary).get("op", "")) == "msg":
 				_deliver(decode((v as Dictionary).get("data"), self_id))
 	elif st == WebSocketPeer.STATE_CONNECTING:

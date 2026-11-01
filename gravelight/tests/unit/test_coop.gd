@@ -274,3 +274,36 @@ func test_inventory_round_trip() -> void:
 	assert_eq(owner.net_signature()[0], copy.net_signature()[0])
 	owner.free()
 	copy.free()
+
+
+# ---------------------------------------------------------------- online roster with bots (T-138)
+
+func test_bots_in_the_roster_dont_block_ready_and_are_named() -> void:
+	var saved: Dictionary = Net.roster.duplicate(true)
+	var saved_slots: int = Net.slots
+	Net.roster = {1: {"peer": 1, "character": "dutch", "ready": true, "name": "Hosty"},
+		2: {"peer": 77, "character": "wren", "ready": false, "name": "Clienta"},
+		3: {"peer": 0, "character": "peg", "ready": false, "bot": true, "name": "Bot"}}
+	assert_false(Net.all_ready(), "a human who isn't ready holds up the start")
+	(Net.roster[2] as Dictionary)["ready"] = true
+	assert_true(Net.all_ready(), "a bot never holds up the start")
+	var bots: Array[int] = Net.bot_pids()
+	assert_eq(bots.size(), 1)
+	assert_eq(bots[0], 3)
+	assert_eq(Net.human_pids().size(), 2)
+	assert_true(Net.is_bot_pid(3))
+	assert_false(Net.is_bot_pid(2))
+	assert_eq(Net.player_name(2), "Clienta")
+	assert_string_contains(Net.player_name(3), "Bot")
+	assert_eq(Net.peer_of(3), 0, "a bot has no network peer")
+	Net.slots = 3
+	assert_eq(Net.max_slots(), 3, "the lobby's max_players caps the slots")
+	Net.slots = 9
+	assert_eq(Net.max_slots(), int(net_cfg["max_players"]), "never more than net.json allows")
+	Net.slots = saved_slots
+	Net.roster = saved
+
+
+func test_offline_is_never_webrtc() -> void:
+	assert_false(Net.is_webrtc())
+	assert_eq(Net.transport, Net.Transport.ENET)

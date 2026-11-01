@@ -72,6 +72,8 @@ var _rtc: RtcTransport = null
 var _tokens: Dictionary = {}      # host: session token -> pid
 var _dropped: Dictionary = {}     # host: pid -> {"token": String, "until": msec, "bot": bool}
 var _host_bye: bool = false       # client: the host announced it is leaving
+var _lingering: Array[MultiplayerPeer] = []   # peers of a session just left, polled until they close
+const LINGER_S: float = 0.6
 var session: NetMatch = null
 var match_seed: int = 0
 var map_scene: String = ""
@@ -351,6 +353,19 @@ func _ice() -> Dictionary:
 	return RtcTransport.ice_config(GLData.table("online"))
 
 
+## Keeps a closed session's peer polled for a moment (its last reliable messages still go out), then closes it.
+func _linger_close(peer: MultiplayerPeer, rtc: RtcTransport) -> void:
+	_lingering.append(peer)
+	if rtc != null and is_instance_valid(rtc):
+		rtc.say_bye()
+	get_tree().create_timer(LINGER_S, true, false, true).timeout.connect(func() -> void:
+		_lingering.erase(peer)
+		if rtc != null and is_instance_valid(rtc):
+			rtc.close()
+			rtc.queue_free()
+		peer.close())
+
+
 func _drop_rtc() -> void:
 	if _rtc != null and is_instance_valid(_rtc):
 		_rtc.close()
@@ -381,13 +396,21 @@ func leave(reason: String = "") -> void:
 	if session != null and is_instance_valid(session):
 		session.shutdown()
 	session = null
-	if mode == Mode.HOST and multiplayer.multiplayer_peer != null and not (multiplayer.multiplayer_peer is OfflineMultiplayerPeer):
-		if multiplayer.get_peers().size() > 0:
-			_rpc_bye.rpc(HOST_LEFT)   # best effort: the clients learn before the connection drops
-			multiplayer.multiplayer_peer.poll()
+	var old_peer: MultiplayerPeer = multiplayer.multiplayer_peer
+	if old_peer != null and not (old_peer is OfflineMultiplayerPeer):
+		var has_peers: bool = multiplayer.get_peers().size() > 0
+		if mode == Mode.HOST and has_peers:
+			_rpc_bye.rpc(HOST_LEFT)   # the clients learn the host left (not "lost the connection")
+		multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
+		if has_peers:
+			_linger_close(old_peer, _rtc)   # let the goodbye (and the WebRTC close) go out before closing
+		else:
+			if _rtc != null and is_instance_valid(_rtc):
+				_rtc.close()
+				_rtc.queue_free()
+			old_peer.close()
+		_rtc = null
 	_drop_rtc()
-	if multiplayer.multiplayer_peer != null and not (multiplayer.multiplayer_peer is OfflineMultiplayerPeer):
-		multiplayer.multiplayer_peer.close()
 	multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
 	mode = Mode.OFFLINE
 	transport = Transport.ENET
@@ -558,6 +581,8 @@ func _broadcast_roster() -> void:
 
 
 func _process(delta: float) -> void:
+	for lp: MultiplayerPeer in _lingering:
+		lp.poll()
 	if _connect_left > 0.0:
 		_connect_left -= delta
 		if _connect_left <= 0.0 and is_client() and local_pid == 0:
@@ -718,6 +743,8 @@ func _rpc_hello(character: String, egg_slot: bool, token: String = "", pname: St
 	roster[pid] = {"peer": peer, "character": _free_character(character), "ready": false, "egg_slot": egg_slot,
 		"name": pname}
 	_rpc_welcome.rpc_id(peer, pid)
+	if not lobby.is_empty():
+		_rpc_lobby.rpc_id(peer, lobby)
 	_broadcast_roster()
 
 
@@ -740,6 +767,25 @@ func _rejoin_peer(peer: int, pid: int, pname: String) -> void:
 	_broadcast_roster()
 	_rpc_rejoin.rpc_id(peer, map_scene, match_seed, Campaign.active)
 	player_rejoined.emit(pid)
+
+
+## Host: lobby settings (map_id, is_public, fill_bots, max_players) changed; every client's lobby screen follows.
+func share_lobby(d: Dictionary) -> void:
+	if not is_host():
+		return
+	lobby.merge(d, true)
+	fill_bots = bool(lobby.get("fill_bots", fill_bots))
+	slots = int(lobby.get("max_players", slots))
+	_rpc_lobby.rpc(lobby)
+	roster_changed.emit()
+
+
+@rpc("authority", "call_remote", "reliable")
+func _rpc_lobby(d: Dictionary) -> void:
+	lobby = d
+	fill_bots = bool(d.get("fill_bots", false))
+	slots = int(d.get("max_players", 0))
+	roster_changed.emit()
 
 
 ## A display name as the lobby shows it: trimmed, at most 24 characters, never empty.

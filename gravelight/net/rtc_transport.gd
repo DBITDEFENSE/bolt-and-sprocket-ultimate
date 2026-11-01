@@ -38,6 +38,7 @@ var _pending: Array = []           # client: offer / ice that arrived before the
 var _assigned_id: int = 0
 var _hello_t: float = 99.0
 var _closed: bool = false
+var _said_bye: bool = false
 
 
 ## True when this build can make WebRTC connections: always on the web; on desktop only with the webrtc-native
@@ -96,13 +97,19 @@ func signaling_id() -> String:
 	return signaling.self_id if signaling != null else ""
 
 
+## Tells the lobby channel we are leaving (the close follows a moment later, Net._linger_close).
+func say_bye() -> void:
+	if signaling != null and signaling.is_ready() and not _said_bye:
+		_said_bye = true
+		signaling.send(NetSignaling.EVERYONE, "bye", {})
+
+
 func close() -> void:
 	if _closed:
 		return
+	say_bye()
 	_closed = true
 	if signaling != null:
-		if signaling.is_ready():
-			signaling.send(NetSignaling.EVERYONE, "bye", {})
 		signaling.close()
 	for id: Variant in _conns.keys():
 		(_conns[id] as WebRTCPeerConnection).close()

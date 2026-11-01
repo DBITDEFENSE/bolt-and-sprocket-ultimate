@@ -10,6 +10,7 @@ const TABLES: PackedStringArray = [
 	"bosses/cousins", "bosses/likeness",   # the homage bosses (HB1): table("bosses/cousins") reads data/gravelight/bosses/cousins.json
 	"bosses/map04",   # Map 4 "Fernflug" bosses (UPDATE 07): the Kranführer, the Bordwart, the Test Pilot, the Account Manager
 	"bank",   # T-136: the savings bank (BankAccount)
+	"online",   # T-138: online lobbies (LobbyService), WebRTC ICE servers, rejoin grace, timeouts
 	"companions",   # T-135: one more companion per map (MapCompanion)
 	"pilot",   # T-126: GRAVELIGHT ONE's trapped pilot (TrappedPilot), Map 0's wreck
 	"vfx",   # UPDATE 05 section 6 (T-095): muzzle flashes, casings, impact debris, atmosphere (Effects)
