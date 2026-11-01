@@ -304,3 +304,24 @@ func test_webrtc_is_available_on_desktop_builds() -> void:
 		pending("addons/webrtc not present")
 		return
 	assert_true(RtcTransport.available(), "the webrtc-native GDExtension loads (headless too)")
+
+
+# ---------------------------------------------------------------- the lobby screens build (C7 restyles them later)
+
+func test_lobby_screens_build_every_page() -> void:
+	var was_kind: String = Lobbies.backend_kind
+	MockLobbyService.shared = MockLobbyBackend.new()
+	Lobbies.use_mock(0)
+	var m: MenuLobby = MenuLobby.new()
+	add_child_autofree(m)
+	await wait_frames(2)
+	for page: String in ["name", "home", "create", "browse", "join", "lan"]:
+		m._go(page)
+		await wait_frames(1)
+		assert_gt(m.content.get_child_count(), 0, "page %s has content" % page)
+	m._go("home")
+	await wait_frames(1)
+	Lobbies.stop_browsing()
+	MockLobbyService.shared = null
+	if was_kind == "supabase":
+		Lobbies.use_supabase()
