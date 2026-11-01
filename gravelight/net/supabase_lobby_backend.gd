@@ -9,7 +9,7 @@ extends Node
 ## the SQL raises (lobby_not_found, lobby_full, lobby_closed, rate_limited, one_open_lobby) or "duplicate" (code
 ## taken), "network" / "http_<code>" otherwise.
 
-const TIMEOUT_S: float = 10.0
+const TIMEOUT_S: float = 12.0
 const SELECT: String = "code,map_id,is_public,host_name,players,fill_bots,status,max_players,created_at,heartbeat_at"
 
 var url: String = ""
@@ -55,7 +55,11 @@ func _rpc(name: String, body: Dictionary, cb: Callable) -> void:
 	_send(HTTPClient.METHOD_POST, "/rest/v1/rpc/" + name, body, [], cb)
 
 
-func _send(method: int, path: String, body: Variant, extra: Array, cb: Callable) -> void:
+## `retries`: a request that got no HTTP answer at all (a cold DNS / TLS start can time out once) is sent again;
+## creates never are (an insert that did land would then fail as "one open lobby").
+func _send(method: int, path: String, body: Variant, extra: Array, cb: Callable, retries: int = -1) -> void:
+	if retries < 0:
+		retries = 0 if path == "/rest/v1/lobbies" and method == HTTPClient.METHOD_POST else 1
 	if not is_configured():
 		cb.call(false, null, "not_configured")
 		return
@@ -70,7 +74,10 @@ func _send(method: int, path: String, body: Variant, extra: Array, cb: Callable)
 		http.queue_free()
 		var text: String = data.get_string_from_utf8()
 		if result != HTTPRequest.RESULT_SUCCESS:
-			cb.call(false, null, "network")
+			if retries > 0 and is_inside_tree():
+				_send(method, path, body, extra, cb, retries - 1)
+			else:
+				cb.call(false, null, "network")
 			return
 		if code >= 200 and code < 300:
 			var parsed: Variant = NetSignaling.parse_json(text) if text.strip_edges() != "" else null
