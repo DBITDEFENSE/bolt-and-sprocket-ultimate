@@ -1640,7 +1640,7 @@ def gen_crate():
 PERK_ROOTS = {"ironhide_stout": "Bb2", "second_wind": "F3", "trigger_tonic": "Eb3", "twin_barrel": "D3",
               "marathon_malt": "G2", "hawkeye_brandy": "C3", "packmule_porter": "A2", "blastproof_bock": "F2",
               "overclock_cordial": "F#2",   # the cracked reed's note: this Plan never resolves
-              "skyhook_sekt": "A2", "magpie_mead": "G2"}   # T-105
+              "skyhook_sekt": "A2", "magpie_mead": "G2", "ledger_lager": "F2"}   # T-105, T-141
 
 
 def gen_perks():
@@ -2487,6 +2487,55 @@ def magpie_jingle(r):
     return reverb(x, r, 0.9, 0.2, 7000)
 
 
+def ledger_jingle(r):
+    """\"Ledger Lager\" incipit (JINGLES.md section 16): a brass-band foxtrot in F at 112 BPM in 2/4, four bars of the
+    incipit (I F A C F, II Bb D F D, III C E G C, IV F C A F) on cornets, the tuba on the beats and a muted trombone on
+    the off-beats, a brush snare, the drawer's bell on the downbeat and again on the tag; band-limited like a tin horn."""
+    eighth = 60.0 / 112.0 / 2.0
+    bars = [["F4", "A4", "C5", "F5"], ["Bb4", "D5", "F5", "D5"], ["C5", "E5", "G5", "C6"], ["F5", "C5", "A4", "F4"]]
+    tuba = [["F2", "C3"], ["Bb1", "F2"], ["C2", "G2"], ["F2", "C2"]]
+    total = eighth * 16 + 2.6
+    x = zeros(total)
+    place(x, bell(r, hz("C7"), 1.3, 1.6, 0.8, 1.4), 0.0, 0.3)                                    # the drawer's bell on the downbeat
+    place(x, nrm(lp(white(r, 0.05), 700)) * expenv(N(0.05), 0.012), 0.0, 0.35)                   # the drawer slides out
+    for b, bar in enumerate(bars):
+        for k, note in enumerate(bar):
+            t0 = 0.3 + (b * 4 + k) * eighth
+            place(x, brass_cluster(r, [note], eighth * 1.7, 0.05), t0, 0.28)                      # the cornet lead
+            if k % 2 == 0:
+                tn = tuba[b][k // 2]
+                place(x, (sine(hz(tn), eighth * 1.8) + 0.4 * sine(hz(tn) * 2, eighth * 1.8)) * adsr(N(eighth * 1.8), 0.01, 0.1, 0.6, 0.1), t0, 0.5)   # the tuba
+                place(x, kick(r, 0.4, 100, 50, 0.05, 0.22), t0, 0.2)
+            else:
+                place(x, brass_cluster(r, [bar[0], bar[2]], eighth * 1.2, 0.04), t0, 0.14)         # the trombone off-beat
+                place(x, snare(r, 0.35, 220, 0.16, 0.2, 5000), t0 + 0.005, 0.22)                  # the brush
+    place(x, bell(r, hz("C7"), 1.6, 1.8, 0.8, 1.4), 0.3 + eighth * 16, 0.3)                       # the tag's bell
+    place(x, brass_cluster(r, ["F3", "A3", "C4"], 1.6, 0.15), 0.3 + eighth * 16, 0.2)             # the last chord
+    place(x, sine(hz("F2"), 0.7) * adsr(N(0.7), 0.01, 0.1, 0.5, 0.2), 0.3 + eighth * 17, 0.35)    # the organ ghost: the tuba's off-beat
+    return reverb(bp(x, 300, 5000) * 1.4, r, 0.8, 0.18, 6000)
+
+
+def gen_ledger():
+    """Ledger Lager (UPDATE 09, T-141): the drawer's bell, the tally drum's click, the jingle."""
+    r = rng_for("ll_drawer")
+    x = zeros(1.6)
+    place(x, nrm(lp(white(r, 0.06), 600)) * expenv(N(0.06), 0.015), 0.0, 0.5)                    # the drawer slides
+    place(x, mech_click(r, 1700, 0.06, 0.005), 0.05, 0.6)                                           # the catch
+    place(x, bell(r, hz("C7"), 1.2, 1.4, 0.9, 1.5), 0.08, 0.5)                                      # ka-ching: a real register bell
+    place(x, bell(r, hz("G6"), 1.0, 1.2, 0.5, 1.3), 0.11, 0.3)
+    emit("perk_ledger_drawer", "sfx/world/perks/ledger_drawer_01", reverb(x, r, 0.6, 0.15), -2.0, bus="SFX", volume_db=-4.0, max_voices=2,
+         pitch=[0.98, 1.02], attenuation="world")
+    r = rng_for("ll_tally")
+    x = zeros(0.25)
+    for k in range(3):
+        place(x, mech_click(r, r.uniform(2400, 3200), 0.03, 0.003), k * 0.035, 0.5)                 # the drum turning over a digit
+    emit("perk_ledger_tally", "sfx/world/perks/ledger_tally_01", x, -5.0, bus="SFX", volume_db=-9.0, max_voices=2, pitch=[0.96, 1.04],
+         attenuation="quiet")
+    r = rng_for("ll_jingle")
+    emit("jingle_ledger_lager", "jingles/ledger_lager_01", ledger_jingle(r), -2.0, bus="Jingles", volume_db=-4.0, max_voices=1,
+         pitch=[1.0, 1.0], attenuation="world")
+
+
 def gen_lodestone():
     """The Lodestone (T-105): the lift's cracked-bell ring over a sub-bass wind-up, the slam's thud-and-crack, the
     fling's rising whoosh, the fling wind-up hum, the reload's quarter turn."""
@@ -2570,6 +2619,7 @@ def main():
     gen_world()
     gen_overclock()
     gen_map4_perks()
+    gen_ledger()
     gen_lodestone()
     gen_ambience()
     gen_music()

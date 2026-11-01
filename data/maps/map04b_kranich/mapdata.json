@@ -16,7 +16,7 @@
     588
   ],
   "baked_at": "2026-10-26T13:27:04",
-  "poi_signature": "29f08d2a59df78eda87b4f4d5c0605a1",
+  "poi_signature": "6ead4469bf20bea523e9f9713361d862",
   "floors": [
     {
       "id": "deck",
@@ -512,6 +512,20 @@
       "key": "Gameplay/AmmoBox_Triebwerk"
     },
     {
+      "id": "bank:BankBranch",
+      "type": "bank",
+      "pos": [
+        0.0,
+        0.0,
+        52.5
+      ],
+      "floor": 0,
+      "label": "BORDKASSE · DER KRANICH",
+      "price": 0,
+      "node_path": "BankBranch/Counter",
+      "key": "BankBranch"
+    },
+    {
       "id": "crate_spot:Gameplay/Crate_Galley",
       "type": "crate_spot",
       "pos": [
@@ -728,6 +742,23 @@
       "key": "Gameplay/Perk_ironhide_stout",
       "data": {
         "perk_id": "ironhide_stout"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_ledger_lager",
+      "type": "perk",
+      "pos": [
+        -5.0,
+        0.0,
+        53.45
+      ],
+      "floor": 0,
+      "label": "Ledger Lager",
+      "price": 3000,
+      "node_path": "Gameplay/Perk_ledger_lager",
+      "key": "Gameplay/Perk_ledger_lager",
+      "data": {
+        "perk_id": "ledger_lager"
       }
     },
     {

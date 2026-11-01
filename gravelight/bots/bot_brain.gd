@@ -188,6 +188,9 @@ func setup(bot_player: Player, bot_squad: BotSquad, i: int) -> void:
 	PerkManager.overclock_triggered.connect(func(pid: int, _spent: float) -> void:
 		if pid == player.player_id:
 			bonus_event("overclock"))
+	GLBus.scrip_changed.connect(func(pid: int, _total: int, delta: int) -> void:   # T-141: Ledger Lager, the first sum it earns
+		if pid == player.player_id and delta > 0 and not Economy.moving:
+			bonus_event("earn"))
 
 
 func skill_name() -> String:

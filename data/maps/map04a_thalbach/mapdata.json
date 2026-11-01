@@ -16,7 +16,7 @@
     1451
   ],
   "baked_at": "2026-10-26T10:37:32",
-  "poi_signature": "9372d5e1432a89f32e35cdf10e6e3244",
+  "poi_signature": "3ff2bdeab4b347ec128f92fb54650b00",
   "floors": [
     {
       "id": "works",
@@ -822,6 +822,20 @@
       "key": "Gameplay/AmmoBox_Siedlung"
     },
     {
+      "id": "bank:BankBranch",
+      "type": "bank",
+      "pos": [
+        3.0,
+        0.0,
+        52.0
+      ],
+      "floor": 0,
+      "label": "LOHNKASSE WERK THALBACH · ZAHLSTELLE",
+      "price": 0,
+      "node_path": "BankBranch/Counter",
+      "key": "BankBranch"
+    },
+    {
       "id": "crate_spot:Gameplay/Crate_Bunker",
       "type": "crate_spot",
       "pos": [
@@ -1111,6 +1125,23 @@
       "key": "Gameplay/Perk_ironhide_stout",
       "data": {
         "perk_id": "ironhide_stout"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_ledger_lager",
+      "type": "perk",
+      "pos": [
+        3.6,
+        0.0,
+        57.45
+      ],
+      "floor": 0,
+      "label": "Ledger Lager",
+      "price": 3000,
+      "node_path": "Gameplay/Perk_ledger_lager",
+      "key": "Gameplay/Perk_ledger_lager",
+      "data": {
+        "perk_id": "ledger_lager"
       }
     },
     {

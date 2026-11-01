@@ -307,7 +307,7 @@ func show_beam() -> void:
 func get_prompt(player: Player) -> String:
 	match phase:
 		Phase.CLOSED:
-			return "Hold [%s] to open the Requisition Crate [%s]" % [prompt_key(&"interact"), Economy.price_text(player.player_id, CrateManager.cost())]
+			return "Hold [%s] to open the Requisition Crate [%s]" % [prompt_key(&"interact"), price_str(player, CrateManager.cost())]
 		Phase.OFFERED:
 			if player.player_id != _owner_player:
 				return ""

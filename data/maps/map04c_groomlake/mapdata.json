@@ -16,7 +16,7 @@
     1036
   ],
   "baked_at": "2026-10-26T15:18:51",
-  "poi_signature": "d707efa12dd582e37cb8ce9a43ec46f6",
+  "poi_signature": "e25aa14b62a4592f56054233e42fdc59",
   "floors": [
     {
       "id": "surface",
@@ -611,6 +611,20 @@
       "key": "Gameplay/AmmoBox_Wreck"
     },
     {
+      "id": "bank:BankBranch",
+      "type": "bank",
+      "pos": [
+        64.0,
+        0.0,
+        90.9
+      ],
+      "floor": 0,
+      "label": "RANGE FINANCE OFFICE · U.S. ARMY",
+      "price": 0,
+      "node_path": "BankBranch/Counter",
+      "key": "BankBranch"
+    },
+    {
       "id": "crate_spot:Gameplay/Crate_Hangar",
       "type": "crate_spot",
       "pos": [
@@ -882,6 +896,23 @@
       "key": "Gameplay/Perk_ironhide_stout",
       "data": {
         "perk_id": "ironhide_stout"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_ledger_lager",
+      "type": "perk",
+      "pos": [
+        54.0,
+        0.0,
+        99.45
+      ],
+      "floor": 0,
+      "label": "Ledger Lager",
+      "price": 3000,
+      "node_path": "Gameplay/Perk_ledger_lager",
+      "key": "Gameplay/Perk_ledger_lager",
+      "data": {
+        "perk_id": "ledger_lager"
       }
     },
     {

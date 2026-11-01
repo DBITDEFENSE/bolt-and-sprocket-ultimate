@@ -63,7 +63,7 @@ func get_prompt(player: Player) -> String:
 		return ""
 	if not bool(t.call("can_activate")):
 		return str(t.call("status_text"))
-	return "Hold [%s] to activate the %s [%s]" % [prompt_key(&"interact"), t.call("trap_name"), Economy.price_text(player.player_id, int(t.call("cost")))]
+	return "Hold [%s] to activate the %s [%s]" % [prompt_key(&"interact"), t.call("trap_name"), price_str(player, int(t.call("cost")))]
 
 
 func can_interact(_player: Player) -> bool:

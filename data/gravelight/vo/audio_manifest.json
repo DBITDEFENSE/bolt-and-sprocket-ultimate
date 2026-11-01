@@ -2298,6 +2298,20 @@
    "phonemes": "stˈWts stˈɪl ɪn mˌi. ˌIm bˈɪlt lˈIk ɐ ʃˈɜɹmən tədˈA.",
    "source": "tts"
   },
+  "DEA_BONUS_LEDGER_01": {
+   "line": "DEA_BONUS_LEDGER_01",
+   "speaker": "DEA",
+   "hash": "94ad1a2f2a4dd975",
+   "path": "res://gravelight/audio/vo/dea/DEA_BONUS_LEDGER_01.ogg",
+   "format": "ogg",
+   "duration": 5.565,
+   "voice": "am_michael:0.7,am_puck:0.3",
+   "engine": "kokoro",
+   "source": "tts",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "ɐ lˈɪɾᵊl ˈɛkstɹə ɪn ðə tˈɪn ˈɛvəɹi tˈIm. ðə lˈɔɹd pɹəvˈIdz, ænd sˌO dˈʌz ðə lˈɑɡəɹ."
+  },
   "DEA_BONUS_MARATHON_01": {
    "line": "DEA_BONUS_MARATHON_01",
    "speaker": "DEA",
@@ -5811,6 +5825,20 @@
    "lufs": -17.5,
    "phonemes": "ðˌæt stˈWts stˈɪl ɪn mI blˈʌd. ˌI kæn tˈAk ɐ hˈɪt.",
    "source": "tts"
+  },
+  "DUT_BONUS_LEDGER_01": {
+   "line": "DUT_BONUS_LEDGER_01",
+   "speaker": "DUT",
+   "hash": "5b5bc729d34ef0eb",
+   "path": "res://gravelight/audio/vo/dut/DUT_BONUS_LEDGER_01.ogg",
+   "format": "ogg",
+   "duration": 3.367,
+   "voice": "am_onyx:0.55,am_fenrir:0.45",
+   "engine": "kokoro",
+   "source": "tts",
+   "delivery": "calm",
+   "lufs": -17.5,
+   "phonemes": "ˈɛvəɹi hˈɪt ɹˈɪŋz ɐ bˈɛl nˈW. ˌI kʊd ɡɛt jˈuzd tə ðˈɪs."
   },
   "DUT_BONUS_MARATHON_01": {
    "line": "DUT_BONUS_MARATHON_01",
@@ -15231,6 +15259,20 @@
    "phonemes": "ˌI had ɐ stˈWt bɪfˈɔː wiː sˈɛt ˈWt. mɪdˈɪsənᵊl. ˌɪts hˈQldɪŋ ˌʌp ɹˈɑːðə wˈɛl.",
    "source": "tts"
   },
+  "PEG_BONUS_LEDGER_01": {
+   "line": "PEG_BONUS_LEDGER_01",
+   "speaker": "PEG",
+   "hash": "406d87d1c4279544",
+   "path": "res://gravelight/audio/vo/peg/PEG_BONUS_LEDGER_01.ogg",
+   "format": "ogg",
+   "duration": 4.181,
+   "voice": "bf_emma",
+   "engine": "kokoro",
+   "source": "tts",
+   "delivery": "calm",
+   "lufs": -17.52,
+   "phonemes": "mˌI ˈɜːnɪŋz ɑː ɹˈʌnɪŋ ɐ fˈɪfθ ˈQvə. ˌI hav dɪsˈIdɪd nˌɒt tʊ ˈɔːdɪt ɪt."
+  },
   "PEG_BONUS_MARATHON_01": {
    "line": "PEG_BONUS_MARATHON_01",
    "speaker": "PEG",
@@ -21674,6 +21716,20 @@
    "lufs": -17.54,
    "phonemes": "də stˈWt ɪz stˈɪl ɪn mˌiː. hˈɪt mˌiː. dˌA wɪl sˈiː.",
    "source": "tts"
+  },
+  "WRN_BONUS_LEDGER_01": {
+   "line": "WRN_BONUS_LEDGER_01",
+   "speaker": "WRN",
+   "hash": "fd1151af31991683",
+   "path": "res://gravelight/audio/vo/wrn/WRN_BONUS_LEDGER_01.ogg",
+   "format": "ogg",
+   "duration": 2.744,
+   "voice": "bf_isabella:0.75,bf_lily:0.25",
+   "engine": "kokoro",
+   "source": "tts",
+   "delivery": "calm",
+   "lufs": -17.6,
+   "phonemes": "ˌɪts kˈWntɪŋ fɔː mˌiː. fˈIn. ˌI kˈWnt tˈuː."
   },
   "WRN_BONUS_MARATHON_01": {
    "line": "WRN_BONUS_MARATHON_01",

@@ -107,7 +107,7 @@ func get_prompt(player: Player) -> String:
 		return "Power must be activated"
 	if requires_flag != &"" and not GameState.has_flag(requires_flag):
 		return requires_text
-	return "Hold [%s] to open %s [%s]" % [prompt_key(&"interact"), label, Economy.price_text(player.player_id, cost)]
+	return "Hold [%s] to open %s [%s]" % [prompt_key(&"interact"), label, price_str(player, cost)]
 
 
 func can_interact(_player: Player) -> bool:

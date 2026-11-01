@@ -76,6 +76,12 @@ func hold_changed(_player: Player, _active: bool) -> void:
 	pass
 
 
+## T-141: a price as a prompt shows it: the list price, or "855, was 950" under Ledger Lager III's insider rate
+## (a prompt may be asked about with no player: the list price).
+func price_str(player: Player, cost: int) -> String:
+	return Economy.price_text(player.player_id if player != null else -1, cost)
+
+
 ## Helper: tries to spend Scrip; plays buy/deny feedback (to the buyer's own machine in co-op).
 func try_purchase(player: Player, item_id: StringName, cost: int) -> bool:
 	if Economy.spend(player.player_id, item_id, cost):

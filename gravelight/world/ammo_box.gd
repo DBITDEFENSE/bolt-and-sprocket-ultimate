@@ -90,8 +90,8 @@ func get_prompt(player: Player) -> String:
 	var key: String = prompt_key(&"interact")
 	if bool(q["refill_weapon"]):
 		var w: WeaponInstance = q["weapon"]
-		return "Hold [%s] for %s ammo [%s]" % [key, _weapon_label(w), Economy.price_text(player.player_id, int(q["price"]))]
-	return "Hold [%s] for Grenades [%s]" % [key, Economy.price_text(player.player_id, int(q["price"]))]
+		return "Hold [%s] for %s ammo [%s]" % [key, _weapon_label(w), price_str(player, int(q["price"]))]
+	return "Hold [%s] for Grenades [%s]" % [key, price_str(player, int(q["price"]))]
 
 
 func can_interact(player: Player) -> bool:

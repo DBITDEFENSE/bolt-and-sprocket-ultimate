@@ -127,7 +127,7 @@ func get_prompt(player: Player) -> String:
 		State.IDLE:
 			if not GameState.power_on:
 				return "Power must be activated"
-			return "Hold [%s] to attune the Resonance Pylon [%s]" % [prompt_key(&"interact"), Economy.price_text(player.player_id, int(cfg()["cost"]))]
+			return "Hold [%s] to attune the Resonance Pylon [%s]" % [prompt_key(&"interact"), price_str(player, int(cfg()["cost"]))]
 	return ""
 
 

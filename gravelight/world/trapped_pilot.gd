@@ -78,7 +78,7 @@ func get_prompt(player: Player) -> String:
 	var key: String = prompt_key(&"interact")
 	var w: WeaponInstance = player.weapons.current()
 	if gun != null and not gun.is_full():
-		return "Hold [%s] to pass Selwyn ammo for the %s [%s]" % [key, gun.display_name(), Economy.price_text(player.player_id, ammo_price(player))]
+		return "Hold [%s] to pass Selwyn ammo for the %s [%s]" % [key, gun.display_name(), price_str(player, ammo_price(player))]
 	if w == null:
 		return "Flt Lt Selwyn, pinned in his seat" if gun == null else "Selwyn: %s" % gun.display_name()
 	match gift_rule(player.weapons.slots.size(), w.data, cfgd.get("refused_classes", ["wonder"])):

@@ -86,7 +86,7 @@ func get_prompt(player: Player) -> String:
 			return "Power must be activated" + _plate_line()
 		&"cap":
 			return "You can only hold %d tonics" % PerkManager.cap_for(player.player_id) + _plate_line()
-	return "Hold [%s] to drink %s [%s]" % [prompt_key(&"interact"), PerkManager.display_name(perk_id), Economy.price_text(player.player_id, PerkManager.price(perk_id))]
+	return "Hold [%s] to drink %s [%s]" % [prompt_key(&"interact"), PerkManager.display_name(perk_id), price_str(player, PerkManager.price(perk_id))]
 
 
 ## The maker's plate one-liner under a prompt that has nothing to sell (MachineLore, PERKS_LORE.md).
@@ -102,7 +102,7 @@ func _upgrade_prompt(player: Player) -> String:
 	var nm: String = PerkManager.tier_name(perk_id, next)
 	match PerkManager.can_upgrade(pid, perk_id):
 		&"ok":
-			return "Hold [%s] to brew %s [%s]\n%s" % [prompt_key(&"interact"), nm, Economy.price_text(pid, PerkManager.tier_price(perk_id, next)),
+			return "Hold [%s] to brew %s [%s]\n%s" % [prompt_key(&"interact"), nm, price_str(player, PerkManager.tier_price(perk_id, next)),
 				PerkManager.tier_data(perk_id, next).get("desc", "")]
 		&"no_power":
 			return "%s: power must be activated" % nm
@@ -135,6 +135,7 @@ func interact(player: Player) -> void:
 	# The dispense sound is AudioDirector's (GLBus.purchase_made -> perk_dispense at this machine).
 	_play_jingle()
 	_cab_dispense()
+	_ledger_drawer()
 	if perk_id == PerkManager.OVERCLOCK and AudioDirector.has_sound("perk_overclock_capoff"):
 		# the signature cap-off: a capacitor whine, a fat ZAP and the two-tone bee-boop (JINGLES.md section 10)
 		get_tree().create_timer(1.1).timeout.connect(func() -> void:
@@ -179,6 +180,7 @@ func _brew_tier(player: Player) -> void:
 	_drinking = true
 	_play_jingle()
 	_cab_dispense()
+	_ledger_drawer()
 	get_tree().create_timer(float(GLData.table("perks").get("drink_seconds", 1.2))).timeout.connect(func() -> void:
 		_drinking = false
 		PerkManager.set_tier(pid, perk_id, next)
@@ -499,6 +501,19 @@ var _drum_target: float = 0.0
 func _on_scrip_tally(pid: int, _total: int, delta: int) -> void:
 	if delta > 0 and not Economy.moving and PerkManager.has_perk(pid, perk_id):
 		_drum_target = minf(_drum_target + TAU / 10.0, TAU)
+		var now: float = Time.get_ticks_msec() / 1000.0
+		if now >= _tally_sfx_at and is_inside_tree() and AudioDirector.has_sound("perk_ledger_tally"):
+			_tally_sfx_at = now + 0.18
+			AudioDirector.play_3d("perk_ledger_tally", global_position + Vector3.UP * 1.9, -6.0)
+
+
+var _tally_sfx_at: float = 0.0
+
+
+## The cash drawer's bell when this machine pours (Ledger Lager only).
+func _ledger_drawer() -> void:
+	if perk_id == &"ledger_lager" and AudioDirector.has_sound("perk_ledger_drawer"):
+		AudioDirector.play_3d("perk_ledger_drawer", global_position + Vector3.UP * 0.9, -2.0)
 
 
 func _tick_register(delta: float) -> void:

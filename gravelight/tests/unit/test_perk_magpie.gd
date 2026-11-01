@@ -106,8 +106,8 @@ func test_salvage_mult() -> void:
 	assert_almost_eq(PerkManager.salvage_mult(PID), 2.0, 0.001, "Scavenger doubles the salvage chance")
 
 
-func test_cap_of_six_still_holds_with_eleven_tonics() -> void:
+func test_cap_of_six_still_holds_with_twelve_tonics() -> void:
 	var perks: Dictionary = GLData.table("perks")["perks"]
-	assert_eq(perks.size(), 11)
+	assert_eq(perks.size(), 12)
 	assert_eq(PerkManager.data_cap(false), 6)
 	assert_eq(PerkCap.GLYPHS.size(), perks.size(), "every tonic draws a glyph")
