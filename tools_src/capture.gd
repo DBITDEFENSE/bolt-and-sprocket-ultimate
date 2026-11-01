@@ -126,11 +126,32 @@ func _cam_set() -> void:
 		return
 	p.set_process_unhandled_input(false)
 	var cams: Array = set_d.get("cams", [])
+	var cur_map_path: String = str(set_d["map"])
 	for i: int in cams.size():
 		var cam: Dictionary = cams[i]
 		var cname: String = str(cam.get("name", "cam%02d" % i))
 		if not _only.is_empty() and not _only.has(cname):
 			continue
+		# UPDATE 09 §5: a camera may name its own `map` (the u09_ref set mixes Map 0 and Map 1): the current map is
+		# freed and the new one spawned the same way as the set's first (bots standing, no round, god mode)
+		var want_map: String = str(cam.get("map", cur_map_path))
+		if want_map != cur_map_path:
+			if _scene != null and is_instance_valid(_scene):
+				_scene.free()
+				_scene = null
+			await _secs(0.5)
+			Campaign.reset()
+			map = _load(want_map) as MapRoot
+			cur_map_path = want_map
+			GameState.god_mode = true
+			await _secs(float(set_d.get("settle_s", 6.0)))
+			RoundManager.stop()
+			p = map.player
+			dir = map.director
+			if p == null:
+				push_error("[capture] the map %s has no player" % want_map)
+				return
+			p.set_process_unhandled_input(false)
 		var kind: String = str(cam.get("kind", "view"))
 		var pos: Vector3 = _v3(cam.get("pos", [0, 0, 0]))
 		var yaw: float = float(cam.get("yaw", 0.0))
