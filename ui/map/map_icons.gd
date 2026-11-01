@@ -10,7 +10,7 @@ extends RefCounted
 const LETTERS: Dictionary = {
 	"perk": "P", "wall_buy": "W", "ammo_box": "A", "crate_spot": "?", "crucible": "C", "workbench": "B", "trap": "T",
 	"power_switch": "E", "lift": "L", "objective": "!", "powerup": "+", "vendor": "$", "save": "S", "checkpoint": "R",
-	"exit": "X", "npc": "!", "ship": "H",
+	"exit": "X", "npc": "!", "ship": "H", "bank": "$",
 }
 const MARK_LETTERS: Dictionary = {"go": "G", "defend": "D", "danger": "!", "regroup": "R", "note": "N", "buy": "$", "collect": "C"}
 
@@ -73,6 +73,14 @@ static func draw(ci: CanvasItem, kind: String, p: Vector2, s: float, col: Color,
 			ci.draw_colored_polygon(_grow(tr, p, 1.18), ol)
 			ci.draw_colored_polygon(tr, col)
 			_letter(ci, "!", p + Vector2(0, r * 0.2), s * 0.7, Color(0, 0, 0, col.a))
+		"bank":
+			# T-141: the savings bank, a little pediment on two pillars (never colour alone)
+			var roof: PackedVector2Array = PackedVector2Array([p + Vector2(0, -r), p + Vector2(r, -r * 0.3), p + Vector2(-r, -r * 0.3)])
+			ci.draw_colored_polygon(_grow(roof, p, 1.15), ol)
+			ci.draw_colored_polygon(roof, col)
+			ci.draw_rect(Rect2(p + Vector2(-r * 0.85, r * 0.62), Vector2(s * 0.85, r * 0.38)), col)
+			for sx: float in [-0.55, 0.0, 0.55]:
+				ci.draw_rect(Rect2(p + Vector2(r * sx - r * 0.12, -r * 0.2), Vector2(r * 0.24, r * 0.8)), col)
 		"power_switch":
 			var bolt: PackedVector2Array = PackedVector2Array([p + Vector2(r * 0.2, -r), p + Vector2(-r * 0.6, r * 0.15), p + Vector2(-r * 0.05, r * 0.15),
 				p + Vector2(-r * 0.25, r), p + Vector2(r * 0.6, -r * 0.2), p + Vector2(r * 0.05, -r * 0.2)])

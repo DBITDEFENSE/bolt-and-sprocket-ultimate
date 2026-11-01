@@ -13,7 +13,7 @@ extends RefCounted
 ## list of XZ rectangles ("rects") it is limited to (the Inn's upstairs only exists over the inn), the height the
 ## bake cut it at ("cut"), and its image.
 ## POIs: {id, type, pos (Vector3), floor, label, price, node_path, key} (types: door, perk, wall_buy, ammo_box,
-## crate_spot, crucible, power_switch, workbench, trap, lift; B&S: vendor, save, checkpoint, exit, npc, ship, gate,
+## crate_spot, crucible, power_switch, workbench, trap, lift, bank (T-141); B&S: vendor, save, checkpoint, exit, npc, ship, gate,
 ## lift). node_path is relative to the level's root node, for live state lookups (MapState.poi_state).
 ## Connectors (stairs / ladders / lifts): {kind, a (Vector3, low end), b (high end), floor_a, floor_b}.
 

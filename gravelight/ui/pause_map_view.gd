@@ -22,10 +22,10 @@ signal mark_placed(result: Dictionary)
 const TYPE_NAMES: Dictionary = {
 	"perk": "Perk machine", "wall_buy": "Wall weapon", "ammo_box": "Ammo box", "door": "Door", "crate_spot": "Requisition Crate",
 	"crucible": "The Crucible", "workbench": "Workbench", "trap": "Trap", "power_switch": "Power switch", "lift": "Lift",
-	"vendor": "Vendor", "save": "Save point", "checkpoint": "Checkpoint", "exit": "Exit", "npc": "Someone to talk to", "ship": "Ship",
+	"bank": "Savings bank", "vendor": "Vendor", "save": "Save point", "checkpoint": "Checkpoint", "exit": "Exit", "npc": "Someone to talk to", "ship": "Ship",
 }
 const LEGEND: Array = [["perk", "Perk"], ["wall_buy", "Wall weapon"], ["ammo_box", "Ammo"], ["door", "Door"], ["crate_spot", "Crate"],
-	["crucible", "Crucible"], ["workbench", "Bench"], ["trap", "Trap"], ["power_switch", "Power"], ["objective", "Objective"],
+	["crucible", "Crucible"], ["workbench", "Bench"], ["trap", "Trap"], ["bank", "Bank"], ["power_switch", "Power"], ["objective", "Objective"],
 	["powerup", "Power-up"], ["marker", "Mark"], ["bot", "Bot"], ["player", "You"]]
 const LEGEND_BS: Array = [["door", "Door"], ["vendor", "Vendor"], ["checkpoint", "Checkpoint"], ["save", "Save"], ["exit", "Exit"],
 	["npc", "NPC"], ["objective", "Objective"], ["marker", "Mark"], ["player", "You"]]
@@ -697,6 +697,9 @@ static func state_text(ty: String, st: Dictionary, poi: Dictionary, local_pid: i
 			return "Built" if bool(st.get("open", false)) else "Not built yet"
 		"power_switch":
 			return "ON" if bool(st.get("open", false)) else "Off"
+		"bank":
+			var why: String = BankAccount.closed_reason()
+			return "Shut (%s)" % why if why != "" else "Deposit Scrip: it earns interest every round, kept in your profile"
 		"crate_spot":
 			return "The crate is here" if bool(st.get("here", true)) else "The crate was here"
 		"wall_buy":

@@ -306,6 +306,32 @@
     "",
     "[i](In pencil, under the signature, a second hand:)[/i] [b]Read this. — D.M.[/b]"
    ]
+  },
+  "ledger_lager": {
+   "name": "Ledger Lager",
+   "plan_name": "DIVIDEND",
+   "plan_id": "DMS-VP-DIV-09",
+   "human": "Rudolf \"Rudi\" Fenske.",
+   "human_story": "The Kaltenbrunn pay clerk (Lohnbuchhalter), fifty-four, a Breslau bookkeeper who had kept a coal merchant's ledgers for thirty years before Abteilung III requisitioned him for the pay office in the Administration Block (the room that is now the Bergmannskasse's Lohnbüro, Map 1). His job from 1942 was the Marken tally: every marked guard, clerk and volunteer drew pay and rations against the chip in his hand, and Fenske's ledger was the paper copy of what the Ledger counted. He was the first man at Kaltenbrunn to notice that the dead kept drawing pay. The Ledger never struck a name; he did, in pencil, and the next morning the pencil was gone and the name was back. Asked to make the DIVIDEND substrate drinkable \"for the pay parades\", he made it a [b]lager[/b]: pale, cheap, cold, \"what you drink on Zahltag with your hat on the bar\", brewed with the mess's own light malt and far too much hops to hide the tin. His sabotage was a bookkeeper's: he over-posted every tally by a fifth. The Ledger's figures and the paymasters' books never balanced again, and by the autumn of 1944 the pay office was paying a fifth more than Berlin had sent. \"Twenty percent,\" he told Vendelin, \"is the most a man can steal and still look honest.\" Vendelin wrote it into the formula instead of the books. Fenske also kept a second ledger, under the floor of the pay office, of the labourers' pay withheld since March 1941, to the pfennig, \"so that someone can pay it one day\". Jakub knew him as the clerk who always had the figures. The second ledger is Map 1's intel INT_M1_FENSKE_LEDGER and the reason the Kaltenbrunn branch of the bank is in his office. He was marked in October 1944, like every clerk; what became of him the Archive leaves open, except that the pay office's lamp was still on when the squad arrived.",
+   "panel": [
+    "[b]HELVETIA AUTOMATEN AG · BASEL · CONDITIONS OF USE: LEDGER LAGER[/b]",
+    "[b](PLAN DIVIDEND · ISSUED 1944 · KALTENBRUNN PAY OFFICE)[/b]",
+    "",
+    "[b]§1. Benefit.[/b] [b]The Holder is counted generously.[/b] Every unit the Holder earns is posted at one hundred and twenty on the hundred. The undersigned did not choose the rate. A clerk did, in pencil, and the undersigned has declined to correct it.",
+    "",
+    "[b]§2. Interest.[/b] Sums left with the bank grow a little faster while the Holder drinks this. The Provider calls this \"retention of deposits\". The clerk called it \"the only honest interest in the building\".",
+    "",
+    "[b]§3. The insider rate.[/b] At the third tier the house sells to the Holder at a tenth off. The Provider's note: a discount is a retention instrument. The undersigned's note: so is a friend.",
+    "",
+    "[b]§4. The parachute.[/b] At the fourth tier the Plan is permanent and the bank pays a dividend at the end of every round the Holder finishes standing. Should the Holder fall, nothing is taken, and a severance is paid. The undersigned is aware that the Provider's own terms say NOBODY CANCELS. This clause is the nearest he could get to somebody leaving with their money.",
+    "",
+    "[b]§5. Side effects.[/b] Holders may experience a fondness for round numbers, an urge to check the drawer, and the sound of a bell when there is no bell. These pass. The ledger does not.",
+    "",
+    "[b]§6. Cancellation.[/b] The books are kept elsewhere. The undersigned keeps a second set.",
+    "",
+    "[i]He over-posted every tally by a fifth for two years and nobody noticed. I have been in this business for six and they notice everything. I would like to have been a bookkeeper.[/i]",
+    "[i]— V.[/i]"
+   ]
   }
  }
 }

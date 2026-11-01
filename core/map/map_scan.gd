@@ -66,6 +66,13 @@ static func scan_gl(root: Node) -> Dictionary:
 			var lf: Lift = n as Lift
 			var lo: Vector3 = global_xform(n).origin
 			lifts.append({"a": Vector3(lo.x, lf.bottom_y, lo.z), "b": Vector3(lo.x, lf.top_y, lo.z), "path": path})
+	# T-141: the savings bank's branch on this map (BankBranch is built at load from data/gravelight/bank.json, so the
+	# scene has no node to find: the POI is read from the same table; its node_path is where the counter will be)
+	var branch: Dictionary = BankBranch.branch_for(str(root.get("map_id")))
+	if not branch.is_empty():
+		var bat: Array = branch.get("at", [0, 0, 0])
+		pois.append({"id": "bank:BankBranch", "type": "bank", "pos": Vector3(float(bat[0]), float(bat[1]), float(bat[2])), "floor": 0,
+			"label": str(branch.get("title", "Bank")).replace("  ", " "), "price": 0, "node_path": "BankBranch/Counter", "key": "BankBranch"})
 	pois.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return str(a["id"]) < str(b["id"]))
 	# the map's extent: its zones (the play space) and every POI; the navmesh only when there are no zones (it
 	# also covers fields outside the play space)

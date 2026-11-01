@@ -284,6 +284,16 @@ HELVETIA AUTOMATEN AG · BASEL · Prototyp · Rezeptur: ein Freund.
 
 The docket nailed to the pillar lists eight dispensers. This is the ninth. The landlord's notebook does not mention it, the installers' tunnel was bricked up behind them in October, and the solder on its coil is bright, as if it was finished last week. The gauge over the porthole reads LEER, HALB, VOLL, and the needle swings whenever someone nearby runs a magazine dry. There is a small round robot on the enamel holding a lightning bolt over his head, and he looks extremely pleased with himself.
 
+### perk.ledger_lager
+**Plate:** Replacement unit 3 of 8 · Fenske recipe · held at the Kreuzweg, 9.X.44
+**Archive:** Maker's Plate: Ledger Lager (the Kreuzweg cellar)
+
+The amber cash register at the cellar's south-east corner, standing in for a cabinet: a brass till on an iron base with a drum of violet digits on top, and a paper card in its window that says ZAHLTAG.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: R. Fenske. Replacement unit 3 of 8, held at the Kreuzweg for the pay parades. A line pencilled under the plate: the tally drum "to be read weekly by the pay office".
+
+Nobody came to read it. The drum has been turning since the day it was bolted down, one digit for every sum somebody earned in the cellar above, and it is the only thing in the vault that is exactly on time. Fenske made the lager at Kaltenbrunn; this is the unit the Provider sent south to be ready for a payday that never reached the crossroads.
+
 ### crucible
 **Plate:** MOD. R-E · PAT. PEND. BLZ-40417 · crate 2/3, off the docket
 **Archive:** The Crucible in the Alcove (crate 2/3)
@@ -417,6 +427,16 @@ HELVETIA AUTOMATEN AG · BASEL · Prototyp · Rezeptur: ein Freund.
 
 Every other cabinet at Kaltenbrunn has a unit number and a list of service visits on its plate. This one has neither. The contract says twelve dispensers; the Amt's inventory counts eleven here and eight on the salt road and none of them is this. Opitz's last maintenance note, 19 December: "The new cabinet in the switchgear gap is not new. Nobody installed it. It has been there, the men say, since the twentieth. Today is the nineteenth." His relays answer it. He did not write down what they say.
 
+### perk.ledger_lager
+**Plate:** Pay office · the original cabinet · Fenske recipe · "Zahltag"
+**Archive:** Maker's Plate: Ledger Lager (the pay office)
+
+The original cash-register cabinet, bolted to the pay office wall beside Fenske's desk, its violet tally drum still turning, and a pencil line on the plaster beside it at every thousand.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: R. Fenske. Unit 1 of 8, pay office, Administration Block, Abt. III. The Provider's service label has been crossed through in pencil and a second line written over it: "Rounding in the house's favour."
+
+This is where the lager was made. The rooms behind the counter are the Bergmannskasse's now, and the machine stands where a clerk could reach it from his stool. He over-posted every tally by a fifth, and the machine posts it still: the drum turns for every sum the squad earns here, and the pencil marks on the wall climb in thousands to a height no clerk could reach, which is how you know somebody stood on the desk.
+
 ### crucible
 **Plate:** MOD. R-E · PAT. PEND. BLZ-40417 · crate 1/3, signed E. Fasbender
 **Archive:** The Crucible in the Core Vault (crate 1/3)
@@ -528,6 +548,16 @@ The teal cabinet in the signal room, beside the teletype. Its coil arcs to a bra
 HELVETIA AUTOMATEN AG · BASEL · Prototyp · Rezeptur: ein Freund.
 
 The loading manifest in the crane office lists fourteen ballast units, one medical attendant and nothing else. The forwarding agent's consignment notes list the cabinets one by one. Neither lists this. The signal watch's log: "6.I. A Helvetia cabinet in the tower. Nobody carried it up the ramp. The coil sings when the teletype runs. The teletype runs all night now." The little robot on the enamel holds his lightning bolt up toward the window, toward the sea.
+
+### perk.ledger_lager
+**Plate:** Marinekasse · Zahlstelle · consignment from Kaltenbrunn · Fenske recipe
+**Archive:** Maker's Plate: Ledger Lager (the crane office)
+
+The amber register against the crane office's south wall, a paper ZAHLTAG card in its window and a brass drum turning on its top, a few steps from the Marinekasse's pay window.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: R. Fenske. A spare from the Kaltenbrunn pay office, forwarded north with the Navy's pay chests: the crate is stencilled "ZAHLMEISTEREI", and under it, in pencil, "do not count the drum".
+
+The Navy's paymaster took it for office equipment and had it bolted beside the pay window because the pay office has always had a register. Nobody at Totenhafen has been paid in weeks. The drum counts anyway, and the paymaster's mate behind the window keeps looking at it, which is the only reason he is still at his desk.
 
 ### crucible
 **Plate:** MOD. R-E · PAT. PEND. BLZ-40417 · crate 3/3, consignee HALE, L.
@@ -679,6 +709,16 @@ HELVETIA AUTOMATEN AG · BASEL. Formula: demolitions school, Kaltenbrunn. Consig
 
 The one cabinet on the map that was put somewhere sensible: behind the blast wall, where the engine crews stood. A sample of this formula reached the SOE in 1943 through a delivery driver's cousin, which is how Peg's orders exist, which is why she is here.
 
+### perk.ledger_lager
+**Plate:** Consignment W.T. · Cabinet 9 · the works' Lohnkasse · Fenske recipe
+**Archive:** Maker's Plate: Ledger Lager (the Lohnkasse)
+
+The amber cash register on the far wall of the yardmaster's hut, which has been the works' pay window since the cashier's office was bombed, its drum of violet digits turning over a stack of unclaimed pay packets.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: R. Fenske. Fitted to Werk Thalbach with the engines, listed in the yardmaster's book as "office equipment, till, 1".
+
+The hut's desk is the wages desk and the till is the Provider's. Ilse Ruhland, the wages clerk, kept it counting on shift nights: the machine posts a fifth over on every sum, and the works' wage sheets ran a fifth over from the day it was fitted to the day the line stopped. She thought it was her own arithmetic.
+
 ### crucible
 **Plate:** MOD. R-E · PAT. PEND. BLZ-40417 · UNIT 3 · PRÜFSTAND BUNKER
 **Archive:** The Crucible at Thalbach (the control bunker)
@@ -800,6 +840,16 @@ The wagon-shaped cabinet behind the two empty seats on the flight deck, strapped
 HELVETIA AUTOMATEN AG · BASEL. Formula: Fw. G. Ammer, quartermaster. Consignment Werk Thalbach, aircraft fit, 8 of 8.
 
 Gustl Ammer's porter, from the man who used the capacity trials to smuggle food to labourers. It is the last cabinet before the autopilot and the only one with its bottle window scratched, as if someone looked at it for a long time and did not drink.
+
+### perk.ledger_lager
+**Plate:** Not on the consignment · Cabinet 9 · forward bulkhead · Bordkasse
+**Archive:** Maker's Plate: Ledger Lager (the Bordkasse)
+
+An amber cash register bolted to the centre body's forward bulkhead beside a little brass window that reads BORDKASSE, its tally drum turning, a ZAHLTAG card in its window.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: R. Fenske. The crew list says eight cabinets; this is the ninth, fitted off the manifest with the quartermaster's locker, in the quartermaster's stencil.
+
+A wing the size of a street has a payroll, and somebody at Thalbach decided it needed a till. The clerk who brought the cash box aboard at Thalbach found the register bolted up before she did. The drum has not stopped turning since the engines took the wing off the ground; it counts every earning aboard, and there is no one else to tell.
 
 ### crucible
 **Plate:** MOD. R-E · PAT. PEND. BLZ-40417 · UNIT 4 · GALLEY, DECK FITTING · VIOLET STRAP
@@ -923,6 +973,16 @@ The heavy two-door cabinet inside the Account's door, the only cabinet in the ro
 HELVETIA AUTOMATEN AG · BASEL. Carrier pattern, field issue, 8 of 8. The stamp on the back reads NOBODY CANCELS, and under it, in Vendelin's hand, a smaller stamp: "...except you."
 
 A porter for carrying more, in the one room where what you carry is the point. The Provider installed it for the Account Manager's guests, who were expected to arrive with a great deal and leave with nothing. The small stamp was not on the consignment.
+
+### perk.ledger_lager
+**Plate:** Relay RR-7 · Cabinet 9 · concourse, east wall · DIVIDEND (RETAINED)
+**Archive:** Maker's Plate: Ledger Lager (the concourse)
+
+The register on the concourse wall facing Accounts, brass and amber under a tarnish of lunar dust, its drum of violet digits still turning with the power from the relay.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: R. Fenske. Fitted by the Provider's fulfillment teams with Accounts: the dividend instrument. The account holder's name on the tally label has been left blank.
+
+The Provider counts what its customers earn, and the drum is where it does it. It posts a fifth over, because that is what the formula says, and nobody on the relay has ever audited the formula. The window card that says ZAHLTAG has been turned to face the wall once, and turned back, by a hand that knew what the word means.
 
 ### crucible
 **Plate:** MOD. R-E · PAT. PEND. BLZ-40417 · UNIT 001 · CONCOURSE · NEVER LIT
@@ -1053,6 +1113,16 @@ The sky-blue glider-nosed cabinet against the shaft's east wall under the gantry
 HELVETIA AUTOMATEN AG · BASEL. Hygienic beverage dispenser, glider pattern. Formula: H. Maurer, Windkanal Thalbach. Consignment Groom Lake, range fit, 9 of 9. "Leicht · Lieber · Landen."
 
 Jette Maurer's Sekt, made so a crew would land well rather than fly, in a silo built to send four people where nobody lands. The fitters set it where the rocket crew would drink it last. That is the one kindness in the silo.
+
+### perk.ledger_lager
+**Plate:** U.S. ARMY · LOCALIZED · Cabinet 10 · Finance Department requisition · "pay table, 1"
+**Archive:** Maker's Plate: Ledger Lager (the hangar)
+
+An olive-drab cash register with a violet-digit drum on the hangar's north wall, a wedge of paper in its window that says PAYDAY, stencilled in English under the Provider's German.
+
+HELVETIA AUTOMATEN AG · BASEL. Export pattern, field issue. Formula: R. Fenske. The program bought it as the Finance Department's pay table; the requisition is signed by a captain who never read the label.
+
+It stands near the Range Finance Office because the finance clerk was ordered to keep it there. The drum counts what the range earns, the Army's tally and the Provider's together, and the clerk's note on the side says it runs 20 per cent over every month and that he reported it twice. Both times he was told the figures were fine.
 
 ### crucible
 **Plate:** MOD. R-E · PAT. PEND. BLZ-40417 · UNIT 4 · SILO CONTROL ROOM · OLIVE DRAB, BADLY
