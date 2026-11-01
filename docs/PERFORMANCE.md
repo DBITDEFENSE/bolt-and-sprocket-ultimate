@@ -55,3 +55,62 @@ Settings > Video can change it at any time; nothing is picked again once a prese
   beyond (anim.json lod; halved in the browser). The state (blends, flinch, the fall) still runs every frame.
 - **Compatibility guards**: screen-space AA / TAA are not set on the Compatibility renderer (it warned on every
   apply), the SSAO / SSIL / SDFGI / volumetric quality calls are skipped there.
+
+## Results (2026-11-01)
+
+### Rendering census, the browser preset (WSL + Xvfb, Compatibility renderer, llvmpipe)
+
+`tools/wsl_perf.sh <map> web` (perf_marks `--quick`: round 15, 24 zombies kept alive, 3 bots + Jakub + the map's
+companion, the player at the map's spawn, 6 frames averaged after the census). Per frame, **all passes counted**
+(the main view plus every shadow render: the Compatibility renderer's counters don't split them).
+
+| Map | Shadowed lights (most per zone) | Draw calls | Objects | Primitives |
+|---|---|---|---|---|
+| Crossroads Inn (map00), **no profile** | 17 (5) | 12,068 | 9,533 | 7,136k |
+| Crossroads Inn, first profile (cube shadows, 4 cascades) | 15 (4) | 9,524 | 7,450 | 6,638k |
+| **Crossroads Inn, final profile** | 15 (4) | **5,804** | **4,024** | **1,738k** |
+| Kaltenbrunn (map01) | 2 (1) | 1,448 | 2,494 | 375k |
+| Totenhafen (map02), **no profile** | 17 (11 outside zones: window moon shafts + 5 sea lights) | 6,253 | 4,021 | 1,015k |
+| **Totenhafen, final profile** | 9 (3) | **3,303** | **3,009** | **639k** |
+| Fernflug I Werk Thalbach (map04a) | 6 (2) | 868 | 1,875 | 236k |
+| Fernflug II der Kranich (map04b) | 0 | 478 | 1,449 | 91k |
+| Fernflug III Groom Lake (map04c) | 0 | 583 | 1,642 | 148k |
+| Fernflug IV Mondlicht (map04d) | 1 (1) | 767 | 1,696 | 177k |
+
+Against the C4 browser budget (2,500 draw calls and 200k triangles in view): the Fernflug acts and Kaltenbrunn's
+draw calls are inside it; **the Crossroads Inn and Totenhafen are not** even with every shadow pass included in the
+count: the inn's landscape (672 mesh pines, 3,627 impostor cards, the village) and its 15 shadowed lights, and
+Totenhafen's moon shafts and sea lights. These are the next levers (below).
+
+### CPU census, the scripts (headless, `tools/perf_census.sh`, Low)
+
+Per frame / per physics tick (60 a second), `perf_marks --probe`; the machine was shared with one or two WSL
+software renderers for every map but Map 0, so the absolute numbers run high; the proportions hold.
+
+| Map | Scripts `_process` ms/frame | Scripts `_physics_process` ms/tick | Zombies (32 nodes) process + physics | Bot brains (n) physics | People posing (PatronBody) | Faces | Players process + physics | Shadow-casting geometry |
+|---|---|---|---|---|---|---|---|---|
+| map00 | 2.59 | 6.67 | 0.80 + 3.03 | 2.94 (4) | 0.33 (10) | 0.08 | 0.01 + 0.35 | 1002 |
+| map01 | 3.86 | 12.64 | 1.32 + 6.37 | 4.90 (3) | 0.13 (1) | 0.10 | 0.01 + 0.62 | 659 |
+| map02 | 3.77 | 13.57 | 1.75 + 7.93 | 3.99 (3) | - | 0.05 | 0.01 + 0.73 | 462 |
+| map04a | 2.75 | 10.68 | 1.20 + 5.13 | 4.05 (3) | - | 0.07 | 0.01 + 0.73 | 403 |
+| map04b | 2.35 | 9.19 | 1.24 + 4.94 | 3.22 (3) | - | 0.05 | 0.01 + 0.71 | 274 |
+| map04c | 2.93 | 9.98 | 1.48 + 5.14 | 3.83 (3) | - | 0.06 | 0.01 + 0.87 | 358 |
+| map04d | 2.17 | 8.23 | 0.88 + 3.12 | 4.26 (3) | - | 0.05 | 0.01 + 0.73 | 286 |
+
+The T-133 smooth-motion update (the local player's camera and viewmodel in `_process`) is inside `player.gd`'s
+process column: about 0.01 ms (it is off headless, so its cost is the tick path's; on a real screen it adds the
+viewmodel animation per rendered frame, priced by the owner's `--frame-log`). The T-134 people's posing is
+`PatronBody` (0.33 ms for Map 0's 10 people); their faces (`face_driver.gd`) 0.05-0.10 ms.
+
+**The CPU is the risk for 60 FPS on Low** on a 4-core laptop: the scripts take ~9-16 ms a frame (zombies ~0.15-0.25
+ms each per tick, the bot brains 1-1.6 ms each). Not changed in this pass: both are gameplay (AI timings, senses,
+paths). Next levers if the owner's laptop numbers need it: a zombie think-rate LOD (far zombies plan every 2nd-4th
+tick, as their animation already does), staggering the brains' heavy planning across ticks.
+
+### Next levers for the browser (not done)
+
+- The inn's landscape: shorter visibility ranges for the pines / impostor cards and the village props on the
+  Compatibility renderer, or a lower impostor density.
+- Shadowed lights: 2 per zone instead of 4 in the browser (the profile's MAX_SHADOWED_PER_ZONE), or zombies not
+  casting into omni shadows there.
+- Totenhafen: the five 60 m sea spotlights could share one shadowed light.
