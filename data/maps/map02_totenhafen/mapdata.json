@@ -16,7 +16,7 @@
     880
   ],
   "baked_at": "2026-10-26T11:21:07",
-  "poi_signature": "3179c1e33ce2b1becfa67c9fc22f549d",
+  "poi_signature": "6640c2bacc7c507a23ffde0565db7c0e",
   "floors": [
     {
       "id": "lower",
@@ -778,12 +778,12 @@
       "id": "bank:BankBranch",
       "type": "bank",
       "pos": [
-        42.65,
+        44.9,
         0.0,
-        54.5
+        58.3
       ],
       "floor": 1,
-      "label": "MARINEKASSE TOTENHAFEN · ZAHLSTELLE",
+      "label": "MARINEKASSE · ZAHLSTELLE",
       "price": 0,
       "node_path": "BankBranch/Counter",
       "key": "BankBranch"
@@ -1066,9 +1066,9 @@
       "id": "perk:Gameplay/Perk_ledger_lager",
       "type": "perk",
       "pos": [
-        47.0,
+        43.6,
         0.0,
-        57.6
+        56.1
       ],
       "floor": 1,
       "label": "Ledger Lager",
