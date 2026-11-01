@@ -142,10 +142,10 @@
       "favour": {
         "kind": "fetch",
         "item": "lamp",
-        "item_name": "Josef's lamp",
+        "item_name": "carter's lamp",
         "item_at": [30.25, 0.0, 39.0],
         "ask": "His lamp hangs on the cart in the yard. Bring it to me, and I will draw the bolt on the side door.",
-        "have": "You have Josef's lamp. Give it to Ebert?",
+        "have": "You have the carter's lamp. Give it to Ebert?",
         "done": "Ebert draws the bolt: the kitchen back door opens free for two rounds.",
         "reward": {"kind": "unbolt_door", "door": "door_stable", "rounds": 2, "fallback_scrip": 300}
       },

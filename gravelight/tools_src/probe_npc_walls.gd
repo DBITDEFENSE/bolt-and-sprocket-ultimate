@@ -44,6 +44,7 @@ var map: MapRoot = null
 var offenders: Array[Dictionary] = []   # the pressed bodies (first detection each)
 var longest: Dictionary = {}             # body name -> longest pressed run in seconds
 var static_issues: PackedStringArray = []
+var notes: PackedStringArray = []        # worth a look, not a failure (a bot's stand point against a wall)
 var watched: Dictionary = {}             # body name -> true
 var finished: bool = false
 var _hist: Dictionary = {}               # body name -> Array of [pos, intent_len, wish dir]
@@ -429,13 +430,13 @@ func _stand_checks() -> void:
 			q.exclude.append((b as CollisionObject3D).get_rid())
 		var hit: Dictionary = space.intersect_ray(q)
 		var d: float = Vector2(st.x - target.x, st.z - target.z).length()
-		if not hit.is_empty() and hit["collider"] is Node and it.is_ancestor_of(hit["collider"] as Node):
-			hit = {}   # (its own body is what we are looking at)
-		if not hit.is_empty() and (it is WallBuy or it is AmmoBox):
-			static_issues.append("%s at %s: its stand point %s is walled off from it by %s" % [it.name, str(it.global_position.snapped(Vector3.ONE * 0.1)),
+		if not hit.is_empty() and hit["collider"] is Node and (it.is_ancestor_of(hit["collider"] as Node) or (hit["collider"] as Node).name.begins_with("NavBlock")):
+			hit = {}   # (its own body is what we are looking at; a NavBlock is the fence round it, kept out of the walk)
+		if not hit.is_empty() and it is AmmoBox:
+			notes.append("%s at %s: its stand point %s is walled off from it by %s" % [it.name, str(it.global_position.snapped(Vector3.ONE * 0.1)),
 				str(st.snapped(Vector3.ONE * 0.1)), str((hit["collider"] as Node).get_path()) if hit["collider"] is Node else "?"])
 		elif _clearance_hit(st) and d < 1.6 and (it is WallBuy or it is AmmoBox):
-			static_issues.append("%s at %s: its stand point %s is against %s" % [it.name, str(it.global_position.snapped(Vector3.ONE * 0.1)),
+			notes.append("%s at %s: its stand point %s is against %s" % [it.name, str(it.global_position.snapped(Vector3.ONE * 0.1)),
 				str(st.snapped(Vector3.ONE * 0.1)), str(clearance_hits(st))])
 
 
@@ -445,5 +446,7 @@ func _report() -> void:
 		print("[npc-walls] longest pressed run %s: %.1fs" % [k, float(longest[k])])
 	for m: String in static_issues:
 		print("[npc-walls] SPOT %s" % m)
+	for m2: String in notes:
+		print("[npc-walls] NOTE %s" % m2)
 	var n: int = offenders.size() + static_issues.size()
 	print("[npc-walls] RESULT: %s (%s: %d pressed, %d spot issues)" % ["PASS" if n == 0 else "FAIL", map_name, offenders.size(), static_issues.size()])

@@ -92,6 +92,8 @@ var _nudge_t: float = 0.0
 var _nudge_to: Vector3 = Vector3.INF
 var _last_pos: Vector3 = Vector3.ZERO
 var _block_t: float = 0.0
+var _press_t: float = 0.0       # T-143: seconds it wanted to move and did not (under 0.3 m/s)
+var _press_stage: int = 0
 var _tp_try_t: float = 0.0
 var _marooned_t: float = 0.0          # seconds standing above the navmesh (on a table, a chair, a crate)
 var _rebase: bool = false
@@ -1250,6 +1252,23 @@ func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bo
 	if wants_move and moved < 0.015:
 		BotMetrics.note(player.player_id, &"stuck_time", delta)
 	_block_t = _block_t + delta if wants_move and moved < 0.02 * (delta * 60.0) else 0.0
+	# T-143: pressed against something (it wants to move and has hardly moved: under 0.3 m/s) for wall_repath_s: re-plan
+	# at once, for wall_nudge_s: step off to a nearby navmesh point. A second line of defence apart from the progress
+	# ladder below (that one waits on a goal that may keep coming closer, or on a window of net movement).
+	if wants_move and detour != 1 and moved < 0.005 * (delta * 60.0):
+		_press_t += delta
+		if _press_t >= float(_g("stuck", "wall_repath_s", 1.5)) and _press_stage < 1:
+			_press_stage = 1
+			_need_plan = true
+			_path_goal = Vector3.INF
+			BotMetrics.note(player.player_id, &"stuck")
+		elif _press_t >= float(_g("stuck", "wall_nudge_s", 2.4)) and _press_stage < 2:
+			_press_stage = 2
+			_start_nudge(now)
+			BotMetrics.note(player.player_id, &"stuck")
+	else:
+		_press_t = 0.0
+		_press_stage = 0
 	# marooned on furniture (Q-14): a bot that ended up on a table top (pushed, or an old mantle) walks toward the
 	# navmesh first; if it is still up there after drop_after_s (chairs round the table pen it in), it steps down
 	# onto the nearest navmesh point: a hop of under reach_m, never a teleport, and it is logged as a drop

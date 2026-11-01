@@ -50,6 +50,9 @@
     "nudge_s": 4.0,
     "teleport_s": 8.0,
     "nudge_walk_s": 1.2,
+    "wall_repath_s": 1.5,
+    "wall_nudge_s": 2.4,
+    "progress_move_m": 0.2,
     "nudge_r_m": [
       1.5,
       3.0
