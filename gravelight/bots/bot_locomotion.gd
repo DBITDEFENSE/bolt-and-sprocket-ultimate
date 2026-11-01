@@ -102,6 +102,7 @@ var _win_pos: Vector3 = Vector3.ZERO
 var _stuck_at: Vector3 = Vector3.INF   # where this ladder's first nudge started (window progress must escape it)
 # yielding to humans
 var _aside_t: float = 0.0
+var _no_aside_t: float = 0.0   # u09: no step-aside for a while after one pressed into a wall
 var _aside_to: Vector3 = Vector3.INF
 var _choke_t: float = 0.0
 # sprint / slide
@@ -331,6 +332,7 @@ func tick(delta: float) -> void:
 			return
 	_repath_t -= delta
 	_aside_t -= delta
+	_no_aside_t -= delta
 	_slide_cd -= delta
 	_t_rev_cd -= delta
 	_tp_try_t -= delta
@@ -475,14 +477,27 @@ func _raw_path(from: Vector3, to: Vector3) -> PackedVector3Array:
 	return path
 
 
-## True when a wall (physics layer 1) is within 0.55 m of the bot's middle along `dir` (T-143).
+## True when a wall (physics layer 1) is within ~0.8 m of the bot's middle along `dir` (T-143; u09: a knee- and a
+## chest-high sphere sweep like the npc-walls probe's, since one ray at 0.6 m missed low ledges and props).
 func wall_ahead(dir: Vector3) -> bool:
 	var d: Vector3 = Vector3(dir.x, 0.0, dir.z)
 	if d.length_squared() < 0.0001:
 		return false
-	var from: Vector3 = player.global_position + Vector3.UP * 0.6
-	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, from + d.normalized() * 0.55, 1, [player.get_rid()])
-	return not player.get_world_3d().direct_space_state.intersect_ray(q).is_empty()
+	d = d.normalized()
+	var space: PhysicsDirectSpaceState3D = player.get_world_3d().direct_space_state
+	for hgt: float in [0.45, 1.1]:
+		var sh: SphereShape3D = SphereShape3D.new()
+		sh.radius = 0.1
+		var q: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+		q.shape = sh
+		q.transform = Transform3D(Basis.IDENTITY, player.global_position + Vector3.UP * hgt)
+		q.motion = d * 0.8
+		q.collision_mask = 1
+		q.exclude = [player.get_rid()]
+		var r: PackedFloat32Array = space.cast_motion(q)
+		if r.size() >= 2 and r[0] < 1.0:
+			return true
+	return false
 
 
 ## Plans to `goal`: the plain path, and when it runs through danger, detours beside its worst spot; the cheapest
@@ -1010,7 +1025,7 @@ func _no_closer(me: Vector3, wish: Vector3) -> Vector3:
 ## Steps aside: a human about to pass through us, a stopped bot in a choke (door, stairs) or on the human's
 ## training line. Sets a short-lived aside goal that overrides the brain's for ~1 s.
 func _tick_yield(delta: float) -> void:
-	if squad == null or _aside_t > 0.0:
+	if squad == null or _aside_t > 0.0 or _no_aside_t > 0.0:
 		return
 	var me: Vector3 = player.global_position
 	var stopped: bool = _arrived or _goal == Vector3.INF
@@ -1269,14 +1284,22 @@ func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bo
 	# T-143: pressed against something (it wants to move and has hardly moved: under 0.3 m/s) for wall_repath_s: re-plan
 	# at once, for wall_nudge_s: step off to a nearby navmesh point. A second line of defence apart from the progress
 	# ladder below (that one waits on a goal that may keep coming closer, or on a window of net movement).
-	if wants_move and detour != 1 and moved < 0.005 * (delta * 60.0):
+	# u09: a step-aside (detour 1) that presses into a wall counts too (Jakub in the taproom leaned 3 s on a prop while
+	# a human stood near): after wall_repath_s the aside is dropped and not retaken for 1.5 s
+	if wants_move and moved < 0.005 * (delta * 60.0):
 		_press_t += delta
-		if _press_t >= float(_g("stuck", "wall_repath_s", 1.5)) and _press_stage < 1:
+		if detour == 1:
+			if _press_t >= float(_g("stuck", "wall_repath_s", 1.5)):
+				_aside_t = 0.0
+				_no_aside_t = 1.5
+				_need_plan = true
+				_press_t = 0.0
+		elif _press_t >= float(_g("stuck", "wall_repath_s", 1.5)) and _press_stage < 1:
 			_press_stage = 1
 			_need_plan = true
 			_path_goal = Vector3.INF
 			BotMetrics.note(player.player_id, &"stuck")
-		elif _press_t >= float(_g("stuck", "wall_nudge_s", 2.4)) and _press_stage < 2:
+		elif detour != 1 and _press_t >= float(_g("stuck", "wall_nudge_s", 2.4)) and _press_stage < 2:
 			_press_stage = 2
 			_start_nudge(now)
 			BotMetrics.note(player.player_id, &"stuck")

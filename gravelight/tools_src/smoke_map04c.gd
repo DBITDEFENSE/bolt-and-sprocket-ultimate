@@ -44,6 +44,7 @@ func _ready() -> void:
 	ProfileSave.path = "user://_qa_profile_m4c.json"
 	ProfileSave.profile = ProfileSave.new_profile()
 	GLSettings.path = "user://_qa_m4c_settings.cfg"
+	GLSettings.values["bot_ee_help"] = "off"   # u09: a Full Partner bot would do the radar-radio step (burn_known) before the human-ordered console checks
 	GLSettings.values["homage_bosses"] = false
 	GameState.character_id = &"peg"
 	GameState.bot_count = 3
