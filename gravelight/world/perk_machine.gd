@@ -86,7 +86,7 @@ func get_prompt(player: Player) -> String:
 			return "Power must be activated" + _plate_line()
 		&"cap":
 			return "You can only hold %d tonics" % PerkManager.cap_for(player.player_id) + _plate_line()
-	return "Hold [%s] to drink %s [%d]" % [prompt_key(&"interact"), PerkManager.display_name(perk_id), PerkManager.price(perk_id)]
+	return "Hold [%s] to drink %s [%s]" % [prompt_key(&"interact"), PerkManager.display_name(perk_id), Economy.price_text(player.player_id, PerkManager.price(perk_id))]
 
 
 ## The maker's plate one-liner under a prompt that has nothing to sell (MachineLore, PERKS_LORE.md).
@@ -102,7 +102,7 @@ func _upgrade_prompt(player: Player) -> String:
 	var nm: String = PerkManager.tier_name(perk_id, next)
 	match PerkManager.can_upgrade(pid, perk_id):
 		&"ok":
-			return "Hold [%s] to brew %s [%d]\n%s" % [prompt_key(&"interact"), nm, PerkManager.tier_price(perk_id, next),
+			return "Hold [%s] to brew %s [%s]\n%s" % [prompt_key(&"interact"), nm, Economy.price_text(pid, PerkManager.tier_price(perk_id, next)),
 				PerkManager.tier_data(perk_id, next).get("desc", "")]
 		&"no_power":
 			return "%s: power must be activated" % nm

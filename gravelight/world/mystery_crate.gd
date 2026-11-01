@@ -307,7 +307,7 @@ func show_beam() -> void:
 func get_prompt(player: Player) -> String:
 	match phase:
 		Phase.CLOSED:
-			return "Hold [%s] to open the Requisition Crate [%d]" % [prompt_key(&"interact"), CrateManager.cost()]
+			return "Hold [%s] to open the Requisition Crate [%s]" % [prompt_key(&"interact"), Economy.price_text(player.player_id, CrateManager.cost())]
 		Phase.OFFERED:
 			if player.player_id != _owner_player:
 				return ""
@@ -407,7 +407,7 @@ func _close() -> void:
 
 
 func _start_drummer() -> void:
-	Economy.grant(_owner_player, _paid)   # refund (no Double Scrip)
+	Economy.grant_raw(_owner_player, _paid)   # refund (no Double Scrip, no Ledger Lager: it is moved, not earned, T-141)
 	GLBus.crate_drummer.emit(spot_index)
 	_maybe_start_chase()
 

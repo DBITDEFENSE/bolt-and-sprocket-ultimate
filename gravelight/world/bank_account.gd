@@ -33,7 +33,22 @@ static func closed_reason() -> String:
 static func interest_for(bal: int, rate: float, min_i: int, cap: int) -> int:
 	if bal <= 0 or bal >= cap:
 		return 0
-	return mini(maxi(min_i, int(floor(float(bal) * rate))), cap - bal)
+	return mini(maxi(min_i, int(floor(float(bal) * rate + 0.000001))), cap - bal)
+
+
+## T-141: the rate a round pays `pid`: the base rate plus Ledger Lager II's `bank_interest_bonus` (pid < 0: base only).
+static func rate_for(pid: int) -> float:
+	var base: float = float(cfg().get("interest_per_round", 0.01))
+	if pid < 0:
+		return base
+	return base + maxf(0.0, float(PerkManager.stat(pid, "bank_interest_bonus", 0.0)))
+
+
+## T-141: Ledger Lager IV's severance (pure): what a down pays out of a balance of `bal`.
+static func severance_for(bal: int, pct: float, cap: int) -> int:
+	if bal <= 0 or pct <= 0.0:
+		return 0
+	return mini(cap, maxi(1, int(floor(float(bal) * pct + 0.000001))))
 
 
 ## Pays `amount` (or as much as `pid` has) into the account; the amount moved.
@@ -76,12 +91,13 @@ static func withdraw(pid: int, amount: int) -> int:
 	return n
 
 
-## A round's interest (BankLedger); the amount added.
-static func accrue() -> int:
+## A round's interest (BankLedger); the amount added. `pid` is the saver whose tonics raise the rate (Ledger Lager
+## II adds 2%); -1 pays the base rate.
+static func accrue(pid: int = -1) -> int:
 	if closed_reason() != "":
 		return 0
 	var c: Dictionary = cfg()
-	var i: int = interest_for(balance(), float(c.get("interest_per_round", 0.01)), int(c.get("min_interest", 1)),
+	var i: int = interest_for(balance(), rate_for(pid), int(c.get("min_interest", 1)),
 		int(c.get("max_balance", 1000000)))
 	if i <= 0:
 		return 0
@@ -124,3 +140,21 @@ static func on_host_reply(op: String, asked: int, moved: int) -> void:
 			r["balance"] = balance() + maxi(0, asked - moved)
 			r["withdrawn"] = int(r.get("withdrawn", 0)) + maxi(0, moved)
 	ProfileSave.save_profile()
+
+
+## T-141: Ledger Lager IV's severance: when `pid` goes down the bank pays `severance_pct` of the balance (capped at
+## `severance_cap`) into their pocket on the spot, out of the account. Nothing is taken from the player. The amount paid.
+static func pay_severance(pid: int) -> int:
+	if closed_reason() != "" or not Net.is_authority():
+		return 0
+	var pct: float = float(PerkManager.stat(pid, "severance_pct", 0.0))
+	var n: int = severance_for(balance(), pct, int(PerkManager.stat(pid, "severance_cap", 0)))
+	if n <= 0:
+		return 0
+	var r: Dictionary = _rec()
+	r["balance"] = balance() - n
+	r["withdrawn"] = int(r.get("withdrawn", 0)) + n
+	r["severance"] = int(r.get("severance", 0)) + n
+	Economy.bank_move(pid, n)
+	ProfileSave.save_profile()
+	return n

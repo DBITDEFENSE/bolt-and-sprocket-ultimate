@@ -90,11 +90,11 @@ func _set_present(on: bool) -> void:
 
 # ================================================================== the prompt (any peer, from mirrored state)
 
-func get_prompt(_player: Player) -> String:
+func get_prompt(player: Player) -> String:
 	match state:
 		State.HIDING:
 			var a: Dictionary = arm_cfg()
-			return "Hold [%s] to arm %s with a %s [%d]" % [prompt_key(&"interact"), str(row.get("name", display)), str(a.get("weapon_name", "rifle")), int(a.get("cost", 750))]
+			return "Hold [%s] to arm %s with a %s [%s]" % [prompt_key(&"interact"), str(row.get("name", display)), str(a.get("weapon_name", "rifle")), Economy.price_text(player.player_id, int(a.get("cost", 750)))]
 		State.DOWNED:
 			return "Hold [%s] to help %s up" % [prompt_key(&"interact"), str(row.get("name", display)).get_slice(" ", 0)]
 	return ""

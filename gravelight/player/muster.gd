@@ -373,7 +373,7 @@ static func apply_match_start(players: Dictionary, grant_scrip: bool) -> void:
 			p.bleedout_seconds = float(GLData.table("player")["bleedout_seconds"]) + bonus
 		var s: int = int(value(int(pid), "start_scrip", 0))
 		if grant_scrip and s > 0 and Net.is_authority():
-			Economy.grant(int(pid), s)
+			Economy.grant_raw(int(pid), s)   # a starting kit is no earning (T-141)
 
 
 ## A starting (or respawn) loadout in WeaponHolder: reserve, grenades and the tactical from the habits.

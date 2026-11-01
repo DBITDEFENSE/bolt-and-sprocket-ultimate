@@ -204,8 +204,8 @@ func get_prompt(player: Player) -> String:
 	match action_for(w):
 		&"upgrade":
 			if w.upgraded:
-				return "Hold [%s] to re-teach %s [%d]" % [key, w.display_name(), price_for(&"upgrade", econ, w.tier)]
-			return "Hold [%s] to feed the Crucible [%d]" % [key, price_for(&"upgrade", econ)]
+				return "Hold [%s] to re-teach %s [%s]" % [key, w.display_name(), Economy.price_text(player.player_id, price_for(&"upgrade", econ, w.tier))]
+			return "Hold [%s] to feed the Crucible [%s]" % [key, Economy.price_text(player.player_id, price_for(&"upgrade", econ))]
 		&"full":
 			return "%s has learned all the Crucible can teach." % w.display_name()
 		&"nothing":
