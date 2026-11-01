@@ -21,6 +21,16 @@ static func balance() -> int:
 	return int(_rec().get("balance", 0))
 
 
+## T-141: the teller of the branch on `map_id` (bank.json "tellers", matched by map id prefix; the default `teller`
+## when the map has no row): {id (people.json), speaker (VO), display, name, construct (bool)}.
+static func teller_for(map_id: String) -> Dictionary:
+	var all: Dictionary = cfg().get("tellers", {})
+	for k: Variant in all.keys():
+		if map_id.begins_with(str(k)):
+			return all[k]
+	return cfg().get("teller", {})
+
+
 ## "" when the bank is open for business; else why not ("classic"). Online it is open (T-138): every player's
 ## balance is in their own profile; a client's Scrip moves on the host through Net._rpc_bank_req / _rpc_bank_state.
 static func closed_reason() -> String:

@@ -9,6 +9,8 @@ extends Node3D
 ## MapRoot attaches it (and a BankLedger, the interest, on every map).
 
 var cfgb: Dictionary = {}         # this branch's bank.json row
+var tcfg: Dictionary = {}         # this branch's teller row (bank.json tellers; T-141)
+var construct: bool = false       # Darkmatter's Accounts window: a speaking tube, no person (T-141)
 var map: MapRoot
 var teller: PatronBody
 var counter: BankCounter
@@ -49,13 +51,17 @@ func _ready() -> void:
 	_rng.seed = 7151
 	var a: Array = cfgb.get("at", [0, 0, 0])
 	global_transform = Transform3D(Basis(Vector3.UP, deg_to_rad(float(cfgb.get("yaw", 0.0)))), Vector3(float(a[0]), float(a[1]), float(a[2])))
+	tcfg = BankAccount.teller_for(String(map.map_id) if map != null else "")
+	construct = bool(cfgb.get("construct", false)) or bool(tcfg.get("construct", false))
 	_build_furniture()
-	var tc: Dictionary = BankAccount.cfg().get("teller", {})
-	teller = PatronBody.new()
-	teller.name = "Teller"
-	add_child(teller)
-	teller.position = Vector3(0.0, 0.0, float(cfgb.get("teller_z", -0.75)))
-	teller.setup({"id": str(tc.get("id", "teller")), "pose": "clutch"})
+	if construct:
+		_build_construct_window()
+	else:
+		teller = PatronBody.new()
+		teller.name = "Teller"
+		add_child(teller)
+		teller.position = Vector3(0.0, 0.0, float(cfgb.get("teller_z", -0.75)))
+		teller.setup({"id": str(tcfg.get("id", "teller")), "pose": "clutch"})
 	counter = BankCounter.new()
 	counter.name = "Counter"
 	counter.branch = self
@@ -114,24 +120,26 @@ func _build_pieces() -> void:
 	lamp.position = Vector3(0, 2.05, -0.2)
 	_cyl(Vector3(0, 2.2, -0.2), 0.12, 0.14, "lantern_glass")
 	_cyl(Vector3(0, 2.32, -0.2), 0.008, 0.2, "iron")
-	# the safe behind him
-	var sf: Array = cfgb.get("safe", [1.6, -1.0])
-	var sp: Vector3 = Vector3(float(sf[0]), 0.0, float(sf[1]))
-	_solid_box(sp + Vector3(0, 0.55, 0), Vector3(0.75, 1.1, 0.6))
-	_box(sp + Vector3(0, 0.55, 0), Vector3(0.75, 1.1, 0.6), "loco_black")
-	_box(sp + Vector3(0, 0.55, 0.302), Vector3(0.6, 0.92, 0.01), "steel")
-	_cyl(sp + Vector3(0, 0.62, 0.32), 0.07, 0.03, "brass", Vector3(90, 0, 0))
-	_box(sp + Vector3(0.18, 0.45, 0.32), Vector3(0.03, 0.14, 0.03), "brass")
+	# the safe behind him (the Accounts window has none: the Provider keeps the books)
+	if not construct:
+		var sf: Array = cfgb.get("safe", [1.6, -1.0])
+		var sp: Vector3 = Vector3(float(sf[0]), 0.0, float(sf[1]))
+		_solid_box(sp + Vector3(0, 0.55, 0), Vector3(0.75, 1.1, 0.6))
+		_box(sp + Vector3(0, 0.55, 0), Vector3(0.75, 1.1, 0.6), "loco_black")
+		_box(sp + Vector3(0, 0.55, 0.302), Vector3(0.6, 0.92, 0.01), "steel")
+		_cyl(sp + Vector3(0, 0.62, 0.32), 0.07, 0.03, "brass", Vector3(90, 0, 0))
+		_box(sp + Vector3(0.18, 0.45, 0.32), Vector3(0.03, 0.14, 0.03), "brass")
 	# a sign over his head, where the branch has a wall for it (the Crossroads' is painted outside)
 	if cfgb.has("sign"):
 		var sa: Array = cfgb["sign"]
 		var sp2: Vector3 = Vector3(float(sa[0]), float(sa[1]), float(sa[2]))
-		_box(sp2 + Vector3(0, 0, -0.02), Vector3(2.9, 0.34, 0.03), "paint_green")
+		var sw: float = float(cfgb.get("sign_width", 2.9))
+		_box(sp2 + Vector3(0, 0, -0.02), Vector3(sw, 0.34, 0.03), "nachtglas" if construct else "paint_green")
 		var l: Label3D = Label3D.new()
 		l.text = str(cfgb.get("title", "BANK"))
 		l.font_size = 30
 		l.pixel_size = 0.0034
-		l.modulate = Color(0.92, 0.84, 0.6)
+		l.modulate = Color(0.78, 0.6, 1.0) if construct else Color(0.92, 0.84, 0.6)
 		l.outline_size = 0
 		l.shaded = true
 		add_child(l)
@@ -165,6 +173,40 @@ func _flush_batch() -> void:
 		mi.mesh = (b[mat] as SurfaceTool).commit()
 		mi.material_override = Mats.get_mat(mat)
 		add_child(mi)
+
+
+## T-141: Darkmatter's Accounts window (Mondlicht's concourse): no clerk, a brass plate on the wall behind the grille
+## with three speaking tubes (the Operator answers), a violet pilot lamp and a brass bell pull. The Operator is "the
+## teller": his lines play from the plate.
+func _build_construct_window() -> void:
+	var z: float = float(cfgb.get("teller_z", -0.5))
+	_box(Vector3(0, 1.55, z - 0.1), Vector3(1.5, 0.9, 0.04), "brass_plate")
+	_box(Vector3(0, 1.55, z - 0.07), Vector3(1.38, 0.78, 0.01), "black_paint")
+	for i: int in 3:
+		var x: float = -0.4 + i * 0.4
+		_cyl(Vector3(x, 1.55, z + 0.0), 0.05, 0.14, "brass", Vector3(90, 0, 0))
+		_cyl(Vector3(x, 1.55, z + 0.08), 0.085, 0.03, "brass", Vector3(90, 0, 0))
+		_cyl(Vector3(x, 1.55, z + 0.098), 0.06, 0.012, "iron", Vector3(90, 0, 0))
+	var pilot: MeshInstance3D = MeshInstance3D.new()
+	var sm: SphereMesh = SphereMesh.new()
+	sm.radius = 0.035
+	sm.height = 0.07
+	pilot.mesh = sm
+	pilot.material_override = Mats.get_mat("nachtglas")
+	pilot.position = Vector3(0.6, 1.88, z - 0.05)
+	add_child(pilot)
+	var vl: OmniLight3D = OmniLight3D.new()
+	vl.name = "AccountsGlow"
+	vl.light_color = Color(0.62, 0.4, 1.0)
+	vl.light_energy = 0.5
+	vl.omni_range = 3.0
+	add_child(vl)
+	vl.position = Vector3(0.6, 1.88, z + 0.1)
+	_cyl(Vector3(-0.62, 1.86, z - 0.04), 0.03, 0.05, "brass", Vector3(90, 0, 0))   # the bell pull
+	_voice_anchor = Vector3(0, 1.55, z + 0.1)
+
+
+var _voice_anchor: Vector3 = Vector3.ZERO
 
 
 func _box(c: Vector3, sz: Vector3, mat: String) -> void:
@@ -215,11 +257,12 @@ func _solid_box(c: Vector3, sz: Vector3) -> void:
 func _physics_process(delta: float) -> void:
 	_check_t -= delta
 	_scared_t = maxf(0.0, _scared_t - delta)
-	if _check_t > 0.0 or teller == null:
+	if _check_t > 0.0 or (teller == null and not construct):
 		return
 	_check_t = 0.4
 	var near: bool = _dead_near(float(BankAccount.cfg().get("teller_scared_m", 12.0)))
-	teller.set_pose(&"cower" if near or _scared_t > 0.0 else &"clutch")
+	if teller != null:
+		teller.set_pose(&"cower" if near or _scared_t > 0.0 else &"clutch")
 	if near:
 		say("BANK_SCARED")
 	var h: Player = _human_near(5.0)
@@ -229,9 +272,10 @@ func _physics_process(delta: float) -> void:
 
 
 func _on_shot(_p: int, _w: StringName, _u: bool, origin: Vector3, _d: Vector3) -> void:
-	if teller != null and origin.distance_to(global_position) < 9.0:
+	if (teller != null or construct) and origin.distance_to(global_position) < 9.0:
 		_scared_t = 2.5
-		teller.flinch()
+		if teller != null:
+			teller.flinch()
 
 
 func _dead_near(r: float) -> bool:
@@ -259,7 +303,7 @@ func say(category: String) -> void:
 	var cds: Dictionary = BankAccount.cfg().get("line_cooldown_s", {})
 	if now < float(_said_at.get(category, -INF)) + float(cds.get(category, 8.0)):
 		return
-	var spk: String = str((BankAccount.cfg().get("teller", {}) as Dictionary).get("speaker", "TEL"))
+	var spk: String = str(tcfg.get("speaker", "TEL"))
 	var pool: Array = []
 	for id: String in GLVO.lines.keys():
 		var rec: Dictionary = GLVO.lines[id]
@@ -283,9 +327,9 @@ func say(category: String) -> void:
 			ap.unit_size = 5.0
 			ap.max_distance = 30.0
 			add_child(ap)
-			ap.position = teller.position + Vector3(0, 1.6, 0)
+			ap.position = (teller.position + Vector3(0, 1.6, 0)) if teller != null else _voice_anchor
 			ap.play()
 			ap.finished.connect(ap.queue_free)
 			dur = maxf(dur, stream.get_length())
 	lines_said += 1
-	GLBus.vo_line_started.emit(StringName(line), StringName(str((BankAccount.cfg().get("teller", {}) as Dictionary).get("display", "TELLER"))), text, dur)
+	GLBus.vo_line_started.emit(StringName(line), StringName(str(tcfg.get("display", "TELLER"))), text, dur)
