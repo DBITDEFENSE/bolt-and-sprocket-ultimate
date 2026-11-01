@@ -164,6 +164,22 @@
    ]
   },
   {
+   "folder": "assets/third_party/opengameart/beach-ocean-waves",
+   "source": "opengameart",
+   "id": "beach-ocean-waves",
+   "title": "Beach Ocean Waves",
+   "author": "jasinski (recording, freesound.org sound 18363 \"alkaibeach\"); submitted to OpenGameArt by qubodup",
+   "url": "https://opengameart.org/node/11174",
+   "license": "CC0",
+   "credit": "\"Beach Ocean Waves\" by jasinski (freesound / OpenGameArt, submitted by qubodup), CC0",
+   "files": [
+    "wave_01_cc0-18363__jasinski__alkaibeach.flac",
+    "wave_02_cc0-18363__jasinski__alkaibeach.flac",
+    "wave_03_cc0-18363__jasinski__alkaibeach.flac",
+    "wave_04_cc0-18363__jasinski__alkaibeach.flac"
+   ]
+  },
+  {
    "folder": "assets/third_party/opengameart/pichuliru-cartridges",
    "source": "opengameart",
    "id": "pichuliru-cartridges",
@@ -175,6 +191,19 @@
    "files": [
     "model.glb",
     "textures/pichuliru_cartridges_ultimatelowpolyguns_albedo.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/opengameart/sea-and-river-wave-sounds",
+   "source": "opengameart",
+   "id": "sea-and-river-wave-sounds",
+   "title": "Sea and River Wave Sounds",
+   "author": "RandomMind",
+   "url": "https://opengameart.org/content/sea-and-river-wave-sounds",
+   "license": "CC0",
+   "credit": "\"Sea and River Wave Sounds\" by RandomMind (OpenGameArt), CC0",
+   "files": [
+    "vistula_excerpt_120s.ogg"
    ]
   },
   {
@@ -1323,6 +1352,17 @@
    ]
   },
   {
+   "credit": "\"Beach Ocean Waves\" by jasinski (freesound / OpenGameArt, submitted by qubodup), CC0",
+   "license": "CC0",
+   "source": "opengameart",
+   "titles": [
+    "Beach Ocean Waves"
+   ],
+   "folders": [
+    "assets/third_party/opengameart/beach-ocean-waves"
+   ]
+  },
+  {
    "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
    "license": "CC-BY 4.0",
    "source": "opengameart",
@@ -1363,6 +1403,17 @@
     "assets/third_party/opengameart/tt-thompson-m1a1",
     "assets/third_party/opengameart/tt-walther-p38",
     "assets/third_party/opengameart/tt-webley-mkiv"
+   ]
+  },
+  {
+   "credit": "\"Sea and River Wave Sounds\" by RandomMind (OpenGameArt), CC0",
+   "license": "CC0",
+   "source": "opengameart",
+   "titles": [
+    "Sea and River Wave Sounds"
+   ],
+   "folders": [
+    "assets/third_party/opengameart/sea-and-river-wave-sounds"
    ]
   },
   {

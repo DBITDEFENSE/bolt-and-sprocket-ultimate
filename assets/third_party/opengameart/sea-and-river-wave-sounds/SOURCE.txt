@@ -1,0 +1,11 @@
+Title: Sea and River Wave Sounds
+Author: RandomMind
+Source: https://opengameart.org/content/sea-and-river-wave-sounds
+File: https://opengameart.org/sites/default/files/VistulaShort_0.mp3
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Sea and River Wave Sounds" by RandomMind (OpenGameArt), CC0
+Format: OGG Vorbis q4, a 120 s excerpt (from 0:30) of the 5-minute "VistulaShort" recording
+Downloaded: 2026-11-01 by Claude (u09-5-totenhafen, T-145)
+Files used: vistula_excerpt_120s.ogg
+Game use: Totenhafen ambience (UPDATE 09 section 5): the dock water slapping the piers (pen hall), lapping at the pump deck (lower pens) and muffled through the hull (U-boat) in gravelight/tools_src/gen_ambience_map02.py's beds
+Modified: trimmed and re-encoded; band-passed and mixed into loops

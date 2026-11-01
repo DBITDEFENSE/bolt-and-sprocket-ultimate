@@ -1,0 +1,12 @@
+Title: Beach Ocean Waves
+Author: jasinski (recording, freesound.org sound 18363 "alkaibeach"); submitted to OpenGameArt by qubodup
+Source: https://opengameart.org/node/11174
+Author URL: http://www.freesound.org/people/jasinski/sounds/18363/
+File: https://opengameart.org/sites/default/files/wave_01_cc0-18363__jasinski__alkaibeach.flac (and wave_02..04)
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Beach Ocean Waves" by jasinski (freesound / OpenGameArt, submitted by qubodup), CC0
+Format: FLAC, four single wave crashes, kept as downloaded
+Downloaded: 2026-11-01 by Claude (u09-5-totenhafen, T-145)
+Files used: wave_01_cc0-18363__jasinski__alkaibeach.flac, wave_02_cc0-18363__jasinski__alkaibeach.flac, wave_03_cc0-18363__jasinski__alkaibeach.flac, wave_04_cc0-18363__jasinski__alkaibeach.flac
+Game use: Totenhafen ambience (UPDATE 09 section 5): layered into the quay surf, the storm bed, the pen hall bed and the amb_m2_wave one-shots by gravelight/tools_src/gen_ambience_map02.py (output gravelight/audio/sfx/ambience/map02/)
+Modified: decoded, resampled, varispeed, panned, low-passed and mixed with synthesized parts into loops
