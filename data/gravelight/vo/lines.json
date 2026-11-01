@@ -10542,5 +10542,280 @@
     "speaker": "FAS",
     "category": "MARKE_RELAY",
     "text": "They offered me one in forty-two. I refused, and Lenz wrote my name in a column. It is the only wise thing I did in that place."
+  },
+  "MIN_PEOPLE_TALK_01": {
+    "speaker": "MIN",
+    "category": "PEOPLE_TALK",
+    "text": "Quiet. They hear boots. We are three, and we have been in the dark since the bell."
+  },
+  "MIN_PEOPLE_TALK_02": {
+    "speaker": "MIN",
+    "category": "PEOPLE_TALK",
+    "text": "Eleven years I worked this seam. I know every gallery. I do not know what walks in them now."
+  },
+  "MIN_PEOPLE_ASK_01": {
+    "speaker": "MIN",
+    "category": "PEOPLE_ASK",
+    "text": "Our lamp is dead. A safety lamp hangs by the bunks, up in the barracks. Bring it, and I will chalk you a short way."
+  },
+  "MIN_PEOPLE_THANKS_01": {
+    "speaker": "MIN",
+    "category": "PEOPLE_THANKS",
+    "text": "A real flame. God bless you. Here, the chalk. Follow my marks, and you will shorten your walk."
+  },
+  "MIN_PEOPLE_ROUND_01": {
+    "speaker": "MIN",
+    "category": "PEOPLE_ROUND",
+    "text": "Another one begins. I can hear it in the timbers."
+  },
+  "MIN_PEOPLE_ROUND_02": {
+    "speaker": "MIN",
+    "category": "PEOPLE_ROUND",
+    "text": "They are walking overhead again. Stay low, boys. Stay low."
+  },
+  "MIN_PEOPLE_DOWN_01": {
+    "speaker": "MIN",
+    "category": "PEOPLE_DOWN",
+    "text": "Somebody fell up there. Please. Somebody help them."
+  },
+  "MIN_PEOPLE_JAKUB_01": {
+    "speaker": "MIN",
+    "category": "PEOPLE_JAKUB",
+    "text": "Jakub? Jakub Ostrowski, you are alive? We thought the gallery had you."
+  },
+  "JAK_PEOPLE_MINERS_01": {
+    "speaker": "JAK",
+    "category": "PEOPLE_MINERS",
+    "text": "Alois. You counted the lamps, I see. Good. I will bring them out."
+  },
+  "MED_PEOPLE_TALK_01": {
+    "speaker": "MED",
+    "category": "PEOPLE_TALK",
+    "text": "I am not a soldier tonight. I am what is left of the infirmary. Mind the bunks. They are my patients."
+  },
+  "MED_PEOPLE_TALK_02": {
+    "speaker": "MED",
+    "category": "PEOPLE_TALK",
+    "text": "Eleven came in with frostbite and three with worse. The ones who stopped breathing, I will not talk about."
+  },
+  "MED_PEOPLE_ASK_01": {
+    "speaker": "MED",
+    "category": "PEOPLE_ASK",
+    "text": "My linen is gone. There is a crate of bandages from the infirmary at the far end of the bunks. Fetch it, please."
+  },
+  "MED_PEOPLE_THANKS_01": {
+    "speaker": "MED",
+    "category": "PEOPLE_THANKS",
+    "text": "Clean linen. Good. For two rounds, if one of you goes down near the bunks, I come."
+  },
+  "MED_PEOPLE_ROUND_01": {
+    "speaker": "MED",
+    "category": "PEOPLE_ROUND",
+    "text": "Another wave. Keep your heads, and keep out of my wounded's way."
+  },
+  "MED_PEOPLE_DOWN_01": {
+    "speaker": "MED",
+    "category": "PEOPLE_DOWN",
+    "text": "Someone is down! Bring them here! Bring them close!"
+  },
+  "MED_PEOPLE_SERVE_01": {
+    "speaker": "MED",
+    "category": "PEOPLE_SERVE",
+    "text": "Hold still. Breathe. I have you."
+  },
+  "MED_PEOPLE_SERVE_02": {
+    "speaker": "MED",
+    "category": "PEOPLE_SERVE",
+    "text": "Up. Up now. There is more to do."
+  },
+  "RAD_PEOPLE_TALK_01": {
+    "speaker": "RAD",
+    "category": "PEOPLE_TALK",
+    "text": "Amt switchboard, nobody answering. I keep the plugs warm anyway. Habit."
+  },
+  "RAD_PEOPLE_TALK_02": {
+    "speaker": "RAD",
+    "category": "PEOPLE_TALK",
+    "text": "There is a voice on the line that is not ours. It counts. It says it is counting on us."
+  },
+  "RAD_PEOPLE_ASK_01": {
+    "speaker": "RAD",
+    "category": "PEOPLE_ASK",
+    "text": "My set lost its valve. There is a spare in the radio room upstairs, on the desk. Bring it down, and I will listen for you."
+  },
+  "RAD_PEOPLE_THANKS_01": {
+    "speaker": "RAD",
+    "category": "PEOPLE_THANKS",
+    "text": "There. Hear that hum? One sweep, and I will tell you where they gather."
+  },
+  "RAD_PEOPLE_ROUND_01": {
+    "speaker": "RAD",
+    "category": "PEOPLE_ROUND",
+    "text": "New traffic on the board. Here we go."
+  },
+  "RAD_PEOPLE_DOWN_01": {
+    "speaker": "RAD",
+    "category": "PEOPLE_DOWN",
+    "text": "Somebody is down. I heard it on the floor."
+  },
+  "RAD_PEOPLE_RELAY_01": {
+    "speaker": "RAD",
+    "category": "PEOPLE_RELAY",
+    "text": "It is speaking again. Someone is counting on this line."
+  },
+  "RAD_PEOPLE_RELAY_02": {
+    "speaker": "RAD",
+    "category": "PEOPLE_RELAY",
+    "text": "Same voice, same smile. Someone is counting on this line, and I do not like who."
+  },
+  "RAD_PEOPLE_PING_01": {
+    "speaker": "RAD",
+    "category": "PEOPLE_PING",
+    "text": "Sweep done. They are there, there, and there. Keep your eyes up."
+  },
+  "DES_PEOPLE_TALK_01": {
+    "speaker": "DES",
+    "category": "PEOPLE_TALK",
+    "text": "Do not shout. I am not here. I was never here. I walked away from a column and a captain who wanted me to die tidily."
+  },
+  "DES_PEOPLE_TALK_02": {
+    "speaker": "DES",
+    "category": "PEOPLE_TALK",
+    "text": "I am nineteen. I want to see the spring. That is the whole of my ambition."
+  },
+  "DES_PEOPLE_ASK_01": {
+    "speaker": "DES",
+    "category": "PEOPLE_ASK",
+    "text": "Give me a rifle, and I will watch the stable door. I owe somebody, and it may as well be you."
+  },
+  "DES_PEOPLE_THANKS_01": {
+    "speaker": "DES",
+    "category": "PEOPLE_THANKS",
+    "text": "Right. Right, I have it. Nobody comes through that door while I am breathing."
+  },
+  "DES_PEOPLE_ROUND_01": {
+    "speaker": "DES",
+    "category": "PEOPLE_ROUND",
+    "text": "They are coming again. Stay low, please."
+  },
+  "DES_PEOPLE_DOWN_01": {
+    "speaker": "DES",
+    "category": "PEOPLE_DOWN",
+    "text": "Someone is hit! Can anyone reach them?"
+  },
+  "DES_PEOPLE_COVER_01": {
+    "speaker": "DES",
+    "category": "PEOPLE_COVER",
+    "text": "Contact at the door! I have them!"
+  },
+  "DES_PEOPLE_COVER_02": {
+    "speaker": "DES",
+    "category": "PEOPLE_COVER",
+    "text": "Down. Down you go."
+  },
+  "WID_PEOPLE_TALK_01": {
+    "speaker": "WID",
+    "category": "PEOPLE_TALK",
+    "text": "The carters came down this road for forty years. My Josef was the last. He went out to the yard for his lamp, and did not come back."
+  },
+  "WID_PEOPLE_TALK_02": {
+    "speaker": "WID",
+    "category": "PEOPLE_TALK",
+    "text": "The road is shut with the snow, and with the other thing. Do not trust the road."
+  },
+  "WID_PEOPLE_ASK_01": {
+    "speaker": "WID",
+    "category": "PEOPLE_ASK",
+    "text": "His lamp hangs on the cart in the yard. Bring it to me, and I will draw the bolt on the side door."
+  },
+  "WID_PEOPLE_THANKS_01": {
+    "speaker": "WID",
+    "category": "PEOPLE_THANKS",
+    "text": "His lamp. Oh, Josef. Take the side door, it is yours for two rounds. I will not need it."
+  },
+  "WID_PEOPLE_ROUND_01": {
+    "speaker": "WID",
+    "category": "PEOPLE_ROUND",
+    "text": "It begins again. Sometimes I hear them on the stairs."
+  },
+  "WID_PEOPLE_ROUND_02": {
+    "speaker": "WID",
+    "category": "PEOPLE_ROUND",
+    "text": "Hush now. They go away if you do not answer them."
+  },
+  "WID_PEOPLE_DOWN_01": {
+    "speaker": "WID",
+    "category": "PEOPLE_DOWN",
+    "text": "Someone is hurt, down there. Please, help them."
+  },
+  "WID_PEOPLE_BOLT_01": {
+    "speaker": "WID",
+    "category": "PEOPLE_BOLT",
+    "text": "The bolt is drawn."
+  },
+  "COU_PEOPLE_TALK_01": {
+    "speaker": "COU",
+    "category": "PEOPLE_TALK",
+    "text": "Post for the villages, and a bicycle that died at the gate. I have been mending it an hour, and the dead keep coming up the road."
+  },
+  "COU_PEOPLE_TALK_02": {
+    "speaker": "COU",
+    "category": "PEOPLE_TALK",
+    "text": "I ride the whole district. I know every crate and every cache. For a little Scrip I will tell you what I saw."
+  },
+  "COU_PEOPLE_TIP_01": {
+    "speaker": "COU",
+    "category": "PEOPLE_TIP",
+    "text": "For two hundred. The crate is there, the one the soldiers left. I saw the lid lifted with my own eyes."
+  },
+  "COU_PEOPLE_TIP_02": {
+    "speaker": "COU",
+    "category": "PEOPLE_TIP",
+    "text": "A tip is a tip. Do not spend it all in one place."
+  },
+  "COU_PEOPLE_BROKE_01": {
+    "speaker": "COU",
+    "category": "PEOPLE_BROKE",
+    "text": "No money, no map. Come back when you have it."
+  },
+  "COU_PEOPLE_ONCE_01": {
+    "speaker": "COU",
+    "category": "PEOPLE_ONCE",
+    "text": "I told you already. I have one tip a round, and you have it."
+  },
+  "COU_PEOPLE_ROUND_01": {
+    "speaker": "COU",
+    "category": "PEOPLE_ROUND",
+    "text": "Another wave. I think I will push the bike."
+  },
+  "COU_PEOPLE_DOWN_01": {
+    "speaker": "COU",
+    "category": "PEOPLE_DOWN",
+    "text": "Someone is down! I cannot leave the bike. I cannot!"
+  },
+  "AMM_COMP_TALK_01": {
+    "speaker": "AMM",
+    "category": "COMP_TALK",
+    "text": "Come to the shelf. Everything on it is written in the book, and the book is honest."
+  },
+  "AMM_COMP_TRADE_01": {
+    "speaker": "AMM",
+    "category": "COMP_TRADE",
+    "text": "One refill from the stores. Fifteen hundred, all in the book."
+  },
+  "AMM_COMP_TRADE_02": {
+    "speaker": "AMM",
+    "category": "COMP_TRADE",
+    "text": "A pack of grenades. I counted them twice."
+  },
+  "AMM_COMP_TRADE_BROKE_01": {
+    "speaker": "AMM",
+    "category": "COMP_TRADE_BROKE",
+    "text": "The book does not balance. You are short."
+  },
+  "AMM_COMP_TRADE_ONCE_01": {
+    "speaker": "AMM",
+    "category": "COMP_TRADE_ONCE",
+    "text": "Once a round, I said. The stores are not a well."
   }
 }

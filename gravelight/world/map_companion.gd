@@ -26,6 +26,9 @@ var state: State = State.WAITING
 var escort_pid: int = 1
 var _mi: MoveIntent = MoveIntent.new()
 var _choice: JakubChoice = null
+var _card: PersonCard = null
+var _trade_round: int = -1
+var _trade_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _call_t: float = 4.0
 var _met: bool = false
 var _gift_round: int = -1
@@ -251,7 +254,7 @@ func talk_open() -> bool:
 
 
 func talk_prompt(p: Player) -> String:
-	if state == State.WAITING:
+	if state == State.WAITING or cfg.has("trade"):
 		return "Talk to %s" % str(cfg.get("name", id))
 	var o: Dictionary = gun_offer(p)
 	return ("Give %s your %s" % [_first_name(), str(o.get("name", "gun"))]) if bool(o.get("ok", false)) else ""
@@ -261,15 +264,82 @@ func can_talk(p: Player) -> bool:
 	if p == null or p.is_bot or p.downed or not talk_open():
 		return false
 	if state == State.JOINED:
-		return bool(gun_offer(p).get("ok", false))
+		return cfg.has("trade") or bool(gun_offer(p).get("ok", false))
 	return true
 
 
 func on_talk(p: Player) -> void:
 	if not can_talk(p):
 		return
+	if cfg.has("trade"):
+		_open_talk_card(p)   # T-143: the quartermaster's Talk card: the trade, and the way to take him along
+		return
 	if state == State.JOINED:
 		_take_gun(p)
+		return
+	_open_choice(p)
+
+
+## T-143 (Ammer): a Talk card with the trade (companions.json "trade": Scrip for a random ammo refill or a grenade
+## pack, once a round) and, as before, the join choice while he waits or the gun hand-over once he is with you.
+func _open_talk_card(p: Player) -> void:
+	if _card != null:
+		return
+	_say("TALK")
+	var tr: Dictionary = cfg.get("trade", {})
+	var card: PersonCard = PersonCard.new()
+	card.player = p
+	card.title = str(cfg.get("title", str(cfg.get("name", id)).to_upper()))
+	card.bio = str(cfg.get("bio", ""))
+	card.said = "\"%s\"" % str(tr.get("said", "The stores are open."))
+	var opts: Array = []
+	if state == State.WAITING:
+		opts.append({"action": &"interact", "label": "TAKE HIM WITH YOU", "call": func(pl: Player) -> void: _open_choice(pl), "enabled": true})
+	else:
+		var o: Dictionary = gun_offer(p)
+		opts.append({"action": &"interact", "label": ("GIVE %s YOUR %s" % [_first_name().to_upper(), str(o.get("name", "gun")).to_upper()]) if bool(o.get("ok", false)) else "GIVE A GUN  (%s)" % str(o.get("reason", "")),
+			"call": func(pl: Player) -> void: _take_gun(pl), "enabled": bool(o.get("ok", false))})
+	var open: bool = ExtraPeople.trade_open(_trade_round, RoundManager.current_round, bool(tr.get("once_per_round", true)))
+	opts.append({"action": &"reload", "label": "TRADE  (ǂ %d): A RANDOM AMMO REFILL OR GRENADE PACK%s" % [int(tr.get("cost", 1500)), "" if open else "  (ONCE A ROUND)"],
+		"call": func(pl: Player) -> void: trade(pl), "enabled": open})
+	card.options = opts
+	card.close_after_s = float(ExtraPeople.cfg().get("card_close_s", 25.0))
+	_card = card
+	map.add_child(card)
+	card.tree_exited.connect(func() -> void: _card = null)
+
+
+## The trade (T-143): `cost` Scrip for a random ammo refill or a grenade pack, once per round. Returns the outcome
+## ("ammo" / "grenades"), or "" when it didn't happen ("once", "broke").
+func trade(p: Player) -> String:
+	var tr: Dictionary = cfg.get("trade", {})
+	if tr.is_empty() or p == null:
+		return ""
+	if not ExtraPeople.trade_open(_trade_round, RoundManager.current_round, bool(tr.get("once_per_round", true))):
+		_say("TRADE_ONCE")
+		_event("trade_once")
+		return ""
+	if not Economy.spend(p.player_id, &"quartermaster", int(tr.get("cost", 1500))):
+		_say("TRADE_BROKE")
+		AudioDirector.play_2d("deny", -4.0)
+		_event("trade_broke")
+		return ""
+	_trade_round = RoundManager.current_round
+	var out: String = ExtraPeople.trade_outcome(_trade_rng.randf(), tr.get("outcomes", ["ammo", "grenades"]))
+	match out:
+		"ammo":
+			p.weapons.refill_all()
+		"grenades":
+			p.weapons.grenades = mini(p.weapons.grenade_max(), p.weapons.grenades + int(tr.get("grenades", 2)))
+	_say("TRADE")
+	_event("trade:" + out)
+	if map.hud != null:
+		map.hud.show_banner("%s: %s" % [_first_name().to_upper(), "AMMO REFILLED" if out == "ammo" else "GRENADE PACK"], 2.5)
+	return out
+
+
+func _open_choice(p: Player) -> void:
+	if _choice != null:
 		return
 	if not _met:
 		_met = true
