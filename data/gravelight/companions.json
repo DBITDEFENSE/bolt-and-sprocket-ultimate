@@ -57,7 +57,7 @@
       "speaker": "PET",
       "maps": ["map02"],
       "find_on": ["map02"],
-      "spot": [40.0, 7.0, 35.5],
+      "spot": [40.0, 6.8, 34.4],
       "spot_note": "the signal tower: the old harbour pilot who would not take the cargo ship out",
       "max_hp": 110,
       "bleedout_seconds": 60.0,

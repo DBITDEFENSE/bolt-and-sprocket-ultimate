@@ -85,6 +85,7 @@ var _look: Vector3 = Vector3.ZERO
 var _look_set: bool = false
 # stuck ladder
 var _best_rem: float = INF
+var _prog_pos: Vector3 = Vector3.INF   # where the last progress was counted (T-143)
 var _no_prog_t: float = 0.0
 var _stage_done: int = 0
 var _nudge_t: float = 0.0
@@ -412,6 +413,7 @@ func _set_mode(m: Mode) -> void:
 		mode = m
 		_no_prog_t = 0.0
 		_best_rem = INF
+		_prog_pos = Vector3.INF
 		_stage_done = 0
 
 
@@ -1273,6 +1275,7 @@ func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bo
 	if detour == 0 and (goal == Vector3.INF or _arrived):
 		_no_prog_t = 0.0
 		_best_rem = INF
+		_prog_pos = Vector3.INF
 		_stage_done = 0
 		return
 	if detour == 0 and not wants_move and _path.is_empty() and not _need_plan:
@@ -1284,9 +1287,14 @@ func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bo
 		_best_rem = minf(_best_rem, rem)   # back from a nudge: where it landed is not progress by itself
 	if detour == 0 and (_best_rem == INF or rem < _best_rem - float(_g("stuck", "progress_m", 0.3))):
 		_best_rem = rem
-		_no_prog_t = 0.0
-		_stage_done = 0
-		return
+		# T-143: a goal that comes to the bot (a leader's slot walking closer) is not progress by itself: the body must
+		# have moved too (progress_move_m since the last progress), else a bot pressed against a stair wall kept
+		# resetting its own ladder for as long as the human kept walking (Wren on the Maintenance Stairs, 3.3 s+)
+		if _prog_pos == Vector3.INF or _flat(now, _prog_pos) >= float(_g("stuck", "progress_move_m", 0.2)):
+			_prog_pos = now
+			_no_prog_t = 0.0
+			_stage_done = 0
+			return
 	# a goal that moves (a leader's slot, a train's lead point) may never get closer while the body walks fine:
 	# real movement (window_m in a window_s window, on the real goal's path) also counts as progress. Once this
 	# ladder has nudged, only movement that has left the stuck spot (escape_m) counts: walking back from a nudge
@@ -1320,6 +1328,7 @@ func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bo
 		if _teleport_safe(_goal):
 			_no_prog_t = 0.0
 			_best_rem = INF
+			_prog_pos = Vector3.INF
 			_stage_done = 0
 		else:
 			_start_nudge(now)   # someone is watching: keep wriggling, try again in a second

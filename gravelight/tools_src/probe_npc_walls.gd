@@ -167,11 +167,12 @@ func _query_tools() -> void:
 				continue
 			var p: Vector3 = Vector3(float(f[0]), float(f[1]), float(f[2]))
 			var c: Vector3 = NavigationServer3D.map_get_closest_point(nm, p)
+			print("[npc-walls] SPOTQ raw point hits: %s" % str(clearance_hits(p)))
 			var rq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(c + Vector3.UP * 1.0, c + Vector3.DOWN * 3.0, 1)
 			var rh: Dictionary = map.get_world_3d().direct_space_state.intersect_ray(rq)
 			print("[npc-walls] SPOTQ %s -> nav %s floor_y=%s (off %.2f up %.2f) clearance_hit=%s zone=%s" % [str(p), str(c.snapped(Vector3.ONE * 0.01)),
 				("%.2f" % (rh["position"] as Vector3).y) if not rh.is_empty() else "none",
-				Vector2(c.x - p.x, c.z - p.z).length(), c.y - p.y, str(_clearance_hit(c)), String(ZoneVolume.zone_at(get_tree(), c))])
+				Vector2(c.x - p.x, c.z - p.z).length(), c.y - p.y, str(_clearance_hit(c)) + (" " + str(clearance_hits(c)) if _clearance_hit(c) else ""), String(ZoneVolume.zone_at(get_tree(), c))])
 	if scan_arg != "":
 		var g: PackedStringArray = scan_arg.split(",")
 		var x0: float = float(g[0])
@@ -323,18 +324,34 @@ func spot_issue(label: String, p: Vector3) -> String:
 	return msg
 
 
-func _clearance_hit(at: Vector3) -> bool:
+## The floor under a point (a ray down from 0.8 above to 1.2 below; the point's own y when there is none).
+func _floor_y(at: Vector3) -> float:
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(at + Vector3.UP * 0.8, at + Vector3.DOWN * 1.2, 1)
+	var hit: Dictionary = map.get_world_3d().direct_space_state.intersect_ray(q)
+	return (hit["position"] as Vector3).y if not hit.is_empty() else at.y
+
+
+## What a walker standing at `at` (a floor point or a navmesh point) would be in: collider paths, with a 0.3 m body at
+## knee and chest height over the floor (the --spots tool prints them).
+func clearance_hits(at: Vector3) -> PackedStringArray:
+	var out: PackedStringArray = []
 	var space: PhysicsDirectSpaceState3D = map.get_world_3d().direct_space_state
-	for hgt: float in [0.6, 1.2]:
+	var fy: float = _floor_y(at)
+	for hgt: float in [0.5, 1.1]:
 		var sh: SphereShape3D = SphereShape3D.new()
 		sh.radius = CLEAR_R
 		var q: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
 		q.shape = sh
-		q.transform = Transform3D(Basis.IDENTITY, at + Vector3.UP * hgt)
+		q.transform = Transform3D(Basis.IDENTITY, Vector3(at.x, fy + hgt, at.z))
 		q.collision_mask = 1
-		if not space.intersect_shape(q, 1).is_empty():
-			return true
-	return false
+		for r: Dictionary in space.intersect_shape(q, 4):
+			var c: Object = r.get("collider")
+			out.append("%.1f:%s" % [hgt, str((c as Node).get_path()) if c is Node else str(c)])
+	return out
+
+
+func _clearance_hit(at: Vector3) -> bool:
+	return not clearance_hits(at).is_empty()
 
 
 ## Samples a nav path every 0.25 m and returns the first point where the walker (0.3 m round) would be in a wall.
@@ -343,6 +360,12 @@ func path_clip(from: Vector3, to: Vector3) -> String:
 	var path: PackedVector3Array = NavigationServer3D.map_get_path(nm, from, to, true)
 	if path.size() < 2:
 		return ""
+	path.append(to)
+	var raw_path: PackedVector3Array = path
+	path = InnSurvivor.shape_path(map.get_world_3d().direct_space_state, path)   # (the walk the survivors really take)
+	if OS.get_cmdline_user_args().has("--debug-paths"):
+		print("[npc-walls] PATH raw %s" % str(Array(raw_path).map(func(v: Vector3) -> Vector3: return v.snapped(Vector3.ONE * 0.01))))
+		print("[npc-walls] PATH shaped %s" % str(Array(path).map(func(v: Vector3) -> Vector3: return v.snapped(Vector3.ONE * 0.01))))
 	for i: int in path.size() - 1:
 		var a: Vector3 = path[i]
 		var b: Vector3 = path[i + 1]
@@ -371,6 +394,7 @@ func _static_checks() -> void:
 			var clip: String = path_clip(h, po)
 			if clip != "":
 				static_issues.append("survivor %s %s" % [r["id"], clip])
+	_stand_checks()
 	for c: MapCompanion in MapCompanion.instances(get_tree()):
 		var a: Array = c.cfg.get("spot", [0, 0, 0])
 		var m2: String = spot_issue("companion %s spot" % c.id, Vector3(float(a[0]), float(a[1]), float(a[2])))
@@ -380,6 +404,39 @@ func _static_checks() -> void:
 		var m3: String = spot_issue("extra person spot", sp)
 		if m3 != "":
 			static_issues.append(m3)
+
+
+## Where a bot stands to use each thing (BotBrain.stand_point): there must be a place, on the floor, with a clear line
+## to the thing's use box (a wall-buy behind a bench, a spot behind a post: the bot walks up to the wall and waits).
+func _stand_checks() -> void:
+	if map.squad == null or map.squad.brains.is_empty():
+		return
+	var brain: BotBrain = map.squad.brains[0]
+	var space: PhysicsDirectSpaceState3D = map.get_world_3d().direct_space_state
+	for n: Node in map.find_children("*", "Interactable", true, false):
+		var it: Interactable = n as Interactable
+		if it == null or it.area == null or it.area.collision_layer == 0 or it is ExtraPerson.ExtraTalk or it is ExtraPerson.FavourItem:
+			continue
+		if not (it is WallBuy or it is BuyDoor or it is AmmoBox or it is MysteryCrate):
+			continue
+		var st: Vector3 = brain.stand_point(it)
+		if st == Vector3.INF:
+			continue   # (no stand point from where the bot is now: a shut door, not a fault)
+		var target: Vector3 = it.global_position + it.interact_offset
+		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(st + Vector3.UP * 1.4, target, 1)
+		q.exclude = []
+		for b: Node in it.find_children("*", "CollisionObject3D", true, false):
+			q.exclude.append((b as CollisionObject3D).get_rid())
+		var hit: Dictionary = space.intersect_ray(q)
+		var d: float = Vector2(st.x - target.x, st.z - target.z).length()
+		if not hit.is_empty() and hit["collider"] is Node and it.is_ancestor_of(hit["collider"] as Node):
+			hit = {}   # (its own body is what we are looking at)
+		if not hit.is_empty() and (it is WallBuy or it is AmmoBox):
+			static_issues.append("%s at %s: its stand point %s is walled off from it by %s" % [it.name, str(it.global_position.snapped(Vector3.ONE * 0.1)),
+				str(st.snapped(Vector3.ONE * 0.1)), str((hit["collider"] as Node).get_path()) if hit["collider"] is Node else "?"])
+		elif _clearance_hit(st) and d < 1.6 and (it is WallBuy or it is AmmoBox):
+			static_issues.append("%s at %s: its stand point %s is against %s" % [it.name, str(it.global_position.snapped(Vector3.ONE * 0.1)),
+				str(st.snapped(Vector3.ONE * 0.1)), str(clearance_hits(st))])
 
 
 func _report() -> void:

@@ -190,8 +190,55 @@ func start_walk(post: Vector3) -> void:
 		path = PackedVector3Array([post])   # no path (a test map): walk straight there
 	else:
 		path.append(post)
+		path = shape_path(get_world_3d().direct_space_state, path)
 	_path = path
 	_pi = 0
+
+
+## T-143 (the walkers with no collider walk the navmesh path as it is): the path's corners hug a doorway's jamb (a 1.5 m
+## door leaves a 0.3 m strip to it: the shoulder went through the wall) and its points sit where the navmesh floats, up
+## to 0.5 m over the floor (they walked in the air). Every inner corner is pushed to 0.5 m from the walls round it
+## (eight chest-high rays), every point is put on the floor (a ray down); the first and last stay where they are.
+static func shape_path(space: PhysicsDirectSpaceState3D, path: PackedVector3Array) -> PackedVector3Array:
+	var dense: PackedVector3Array = PackedVector3Array()
+	for i: int in path.size():
+		if i > 0:
+			var n: int = int(path[i - 1].distance_to(path[i]) / 0.3)   # (a segment can run along a jamb between its corners)
+			for k: int in range(1, n + 1):
+				dense.append(path[i - 1].lerp(path[i], float(k) / float(n + 1)))
+		dense.append(path[i])
+	var out: PackedVector3Array = PackedVector3Array()
+	for i2: int in dense.size():
+		var p: Vector3 = dense[i2]
+		if i2 > 0 and i2 < dense.size() - 1:
+			p = clear_of_walls(space, p, 0.5)
+		if i2 < dense.size() - 1:
+			p = on_floor(space, p)
+		out.append(p)
+	return out
+
+
+static func clear_of_walls(space: PhysicsDirectSpaceState3D, p: Vector3, want_m: float) -> Vector3:
+	for _pass: int in 3:
+		var push: Vector3 = Vector3.ZERO
+		var chest: Vector3 = p + Vector3.UP * 0.3
+		for k: int in 8:
+			var a: float = TAU * float(k) / 8.0
+			var dir: Vector3 = Vector3(cos(a), 0.0, sin(a))
+			var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(chest, chest + dir * want_m, 1)
+			var hit: Dictionary = space.intersect_ray(q)
+			if not hit.is_empty():
+				push -= dir * (want_m - chest.distance_to(hit["position"] as Vector3))
+		if push.length() < 0.01:
+			break
+		p += push.limit_length(0.4)
+	return p
+
+
+static func on_floor(space: PhysicsDirectSpaceState3D, p: Vector3) -> Vector3:
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(p + Vector3.UP * 0.8, p + Vector3.DOWN * 1.2, 1)
+	var hit: Dictionary = space.intersect_ray(q)
+	return Vector3(p.x, (hit["position"] as Vector3).y, p.z) if not hit.is_empty() else p
 
 
 func _face(p: Vector3, delta: float) -> void:
