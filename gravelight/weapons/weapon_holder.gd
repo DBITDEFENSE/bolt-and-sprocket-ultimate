@@ -578,6 +578,8 @@ func net_signature() -> Array:
 func _report_fire(kind: int, weapon_id: StringName, origin: Vector3, end: Vector3) -> void:
 	if Net.session != null and not mirror:
 		Net.session.local_fired(kind, weapon_id, origin, end)
+	elif Net.session != null and player != null and player.is_bot and Net.is_host():
+		Net.session.bot_fired(player.player_id, kind, weapon_id, origin, end)   # online bots (T-138)
 
 
 func _throw_tactical() -> void:

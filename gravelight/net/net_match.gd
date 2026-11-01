@@ -187,8 +187,8 @@ func _tick_bleed(delta: float) -> void:
 
 func _all_loaded() -> bool:
 	for pid: int in Net.player_ids():
-		if pid != Net.local_player_id() and not _loaded.has(pid):
-			return false
+		if pid != Net.local_player_id() and not _loaded.has(pid) and Net.peer_of(pid) > 1:
+			return false   # bots (peer 0) and dropped players never report in
 	return true
 
 
@@ -200,6 +200,120 @@ func _begin() -> void:
 
 func on_client_loaded(pid: int) -> void:
 	_loaded[pid] = true
+	if begun:
+		resync_peer(pid)   # a rejoin (T-138): the match is already running
+
+
+# ---------------------------------------------------------------- online bots, drops and rejoins (T-138)
+
+## Host: a client dropped. `as_bot`: its body keeps playing as a bot until it returns; else the body steps out
+## (hidden, out of the zombies' reach and the co-op count) until it returns or the grace ends.
+func on_player_dropped(pid: int, as_bot: bool) -> void:
+	var p: Player = players.get(pid) as Player
+	_latest.erase(pid)
+	_loaded.erase(pid)
+	if p == null:
+		return
+	if as_bot:
+		_make_bot(p, true)
+	else:
+		_set_away(p, true)
+
+
+## Host: the dropped client is back: the bot lets go of the body, or the body steps back in.
+func on_player_returning(pid: int, was_bot: bool) -> void:
+	var p: Player = players.get(pid) as Player
+	if p == null:
+		return
+	if was_bot or p.is_bot:
+		_make_bot(p, false)
+	_set_away(p, false)
+	if p.interp != null:
+		p.interp.snap(float(Time.get_ticks_msec()), p.global_position, p.rotation.y)
+
+
+func _make_bot(p: Player, on: bool) -> void:
+	if p.is_bot == on:
+		return
+	p.become_bot(on)
+	var pid: int = p.player_id
+	if on:
+		var sq: BotSquad = map.ensure_online_squad()   # before bot_ids changes: setup() builds brains from it
+		if not GameState.bot_ids.has(pid):
+			GameState.bot_ids.append(pid)
+		sq.add_brain(p, {"kit": false})   # the dropped player's own kit stays as it was
+	else:
+		GameState.bot_ids.erase(pid)
+		if map.squad != null:
+			for b: BotBrain in map.squad.brains.duplicate():
+				if b.player == p:
+					map.squad.remove_brain(b)
+
+
+func _set_away(p: Player, on: bool) -> void:
+	p.set_away(on)
+	if on:
+		coop.remove(p.player_id)
+	elif not coop.players.has(p.player_id):
+		coop.add(p.player_id)
+	if Net.is_host():
+		world_call(self, &"_net_away", [p.player_id, on])
+
+
+## Every client: a dropped player's body steps out / back in (hidden, no collision).
+func _net_away(pid: int, on: bool) -> void:
+	var p: Player = players.get(pid) as Player
+	if p != null and not p.is_local:
+		p.set_away(on)
+
+
+## Host -> a peer that (re)joined the running match: its body's place and kit, the zombies alive right now, the
+## doors and boards as they stand. Everything else (round, Scrip, perks, power, zones, flags, the crate, quest
+## state) reaches it with the next state snapshot.
+func resync_peer(pid: int) -> void:
+	var peer: int = Net.peer_of(pid)
+	if peer <= 1:
+		return
+	Net._rpc_begin.rpc_id(peer)
+	var p: Player = players.get(pid) as Player
+	var d: Dictionary = {}
+	if p != null:
+		d = {"xf": p.global_transform, "inv": p.weapons.to_net(), "hp": p.hp, "downed": p.downed, "spec": p.spectating}
+	Net._rpc_resync.rpc_id(peer, d)
+	for id: Variant in _zknown.keys():
+		var z: Zombie = _zknown[id] as Zombie
+		if z != null and is_instance_valid(z) and z.is_active() and not z.net_died:
+			var kind_class: int = 1 if z is Foreman else (2 if z is Screamer else 0)
+			Net._rpc_zev.rpc_id(peer, z.net_id, &"spawn", [String(z.enemy_id), String(z.tier), z.variant_name(), z.max_hp,
+				z.global_position, z.rotation.y, int(z.state), kind_class, z.net_sub_state(), str(z.get_meta("person", ""))])
+	for n: Node in get_tree().get_nodes_in_group(&"doors"):
+		if bool(n.get("is_open")) and n.has_method("_net_open"):
+			Net._rpc_world.rpc_id(peer, String(map.get_path_to(n)), &"_net_open", [])
+	for n2: Node in get_tree().get_nodes_in_group(&"barricades"):
+		if n2.has_method("_net_boards") and n2.get("boards") != null:
+			Net._rpc_world.rpc_id(peer, String(map.get_path_to(n2)), &"_net_boards", [int(n2.get("boards"))])
+	for opid: Variant in players.keys():
+		var op: Player = players[opid]
+		if op != p and op.away:
+			Net._rpc_world.rpc_id(peer, String(map.get_path_to(self)), &"_net_away", [int(opid), true])
+		if op != p and op.weapons != null and int(opid) != Net.local_player_id():
+			Net._rpc_inv_of.rpc_id(peer, int(opid), op.weapons.to_net())
+	if local_player != null and local_player.weapons != null:
+		Net._rpc_inv_of.rpc_id(peer, Net.local_player_id(), local_player.weapons.to_net())
+
+
+## Client (rejoining): put our body where the host kept it, with what it carried.
+func on_resync(d: Dictionary) -> void:
+	if local_player == null or d.is_empty():
+		return
+	Net.applying = true
+	local_player.global_transform = d.get("xf", local_player.global_transform) as Transform3D
+	local_player.velocity = Vector3.ZERO
+	if d.has("inv"):
+		local_player.weapons.apply_carry(d["inv"] as Dictionary)
+	if d.has("hp"):
+		local_player.hp = clampf(float(d["hp"]), 1.0, local_player.max_hp)
+	Net.applying = false
 
 
 func on_player_left(pid: int) -> void:
@@ -221,7 +335,7 @@ func _send_players() -> void:
 	var rows: Array = []
 	for pid: Variant in players.keys():
 		var p: Player = players[pid]
-		if p.is_local:
+		if p.is_local or p.is_bot:   # the host's bots move here; every client sees them as teammates (T-138)
 			rows.append([int(pid), p.global_position, p.rotation.y, p.head.rotation.x, local_flags(p)])
 		elif _latest.has(pid):
 			var l: Array = _latest[pid]
@@ -573,6 +687,16 @@ func local_fired(kind: int, weapon_id: StringName, origin: Vector3, end: Vector3
 		Net._rpc_fire.rpc_id(1, data)
 
 
+## Host: one of its bots fired; the clients draw the tracer and the muzzle flash on its puppet (T-138).
+func bot_fired(pid: int, kind: int, weapon_id: StringName, origin: Vector3, end: Vector3) -> void:
+	if Net.is_host() and session_has_clients():
+		Net._rpc_fire_of.rpc(pid, [kind, String(weapon_id), origin, end])
+
+
+func session_has_clients() -> bool:
+	return Net.is_online() and multiplayer.get_peers().size() > 0
+
+
 # ---------------------------------------------------------------- co-op rules (host)
 
 ## A companion joins the life cycle (offline sessions only): downed, revived, bled out; never respawned.
@@ -872,6 +996,8 @@ func send_shootable(target: Node, weapon_id: StringName, upgraded: bool) -> void
 
 
 func _check_inventory(delta: float) -> void:
+	if Net.is_host():
+		_check_bot_inventories(delta)
 	if local_player == null or local_player.weapons == null:
 		return
 	_inv_t += delta
@@ -888,6 +1014,25 @@ func _check_inventory(delta: float) -> void:
 		Net._rpc_inv_of.rpc(Net.local_player_id(), inv)
 	else:
 		Net._rpc_inv.rpc_id(1, inv)
+
+
+var _bot_inv: Dictionary = {}   # host: bot pid -> [structural signature, ammo hash, seconds since sent]
+
+
+## Host: each bot's inventory goes to the clients like a human's (the third-person gun, the scoreboard) (T-138).
+func _check_bot_inventories(delta: float) -> void:
+	for pid: Variant in players.keys():
+		var p: Player = players[pid]
+		if not p.is_bot or p.weapons == null:
+			continue
+		var sig: Array = p.weapons.net_signature()
+		var last: Array = _bot_inv.get(pid, ["", 0, 0.0])
+		last[2] = float(last[2]) + delta
+		var structural: bool = str(sig[0]) != str(last[0])
+		if structural or (int(sig[1]) != int(last[1]) and float(last[2]) >= 1.0):
+			last = [str(sig[0]), int(sig[1]), 0.0]
+			Net._rpc_inv_of.rpc(int(pid), p.weapons.to_net())
+		_bot_inv[pid] = last
 
 
 func on_players(data: PackedByteArray) -> void:

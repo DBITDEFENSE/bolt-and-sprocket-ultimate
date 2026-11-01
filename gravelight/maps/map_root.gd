@@ -59,6 +59,11 @@ func _ready() -> void:
 			(n as CollisionObject3D).collision_layer = 0   # T-125: navmesh-bake footprints (empty crate spots) never block
 	if _online:
 		GameState.player_ids = Net.player_ids()
+		GameState.bot_ids = Net.bot_pids()   # online bots (T-138): simulated on the host, puppets on the clients
+		var chars: Dictionary = {}
+		for opid: int in GameState.player_ids:
+			chars[opid] = Net.character_of(opid)
+		GameState.characters = chars
 	else:
 		GameState.player_ids = [1]
 		_assign_bots()
@@ -95,6 +100,8 @@ func _ready() -> void:
 		Net.session = session
 		var coop_hud: CanvasLayer = (load("res://gravelight/ui/coop_hud.gd") as GDScript).new() as CanvasLayer
 		add_child(coop_hud)
+		if Net.is_host() and not GameState.bot_ids.is_empty():
+			ensure_online_squad()
 	elif not GameState.bot_ids.is_empty():
 		_start_bot_session()
 	JakubCompanion.attach(self)   # the prisoner companion (U02 section 6.2): his cage on Map 0, or he travels with you
@@ -119,7 +126,7 @@ func _ready() -> void:
 	(func() -> void: RenderWarm.run(self)).call_deferred()   # first-use shader stalls paid at load (T-070)
 	if _online and Net.is_client():
 		session.report_loaded()
-		hud.show_banner("Waiting for the host...", 2.0)
+		hud.show_banner("Rejoining the match..." if Net.rejoining else "Waiting for the host...", 2.0)
 	elif _online and Net.is_host() and GameState.player_ids.size() > 1:
 		hud.show_banner("Waiting for everyone to arrive...", 2.0)   # NetMatch calls start_rounds()
 	else:
@@ -180,6 +187,17 @@ func _start_bot_session() -> void:
 	squad.setup(self)
 
 
+## Online host (T-138): the squad that drives the host's bots (the lobby's fill_bots slots, and a dropped client's
+## body while it is away). Created on first need; the session already exists.
+func ensure_online_squad() -> BotSquad:
+	if squad == null:
+		squad = BotSquad.new()
+		squad.name = "BotSquad"
+		add_child(squad)
+		squad.setup(self)
+	return squad
+
+
 ## A companion joins a solo match that has no bots (U02 section 6.2): the offline session (his downs, revives and
 ## bleed-out; the human keeps the solo rules) and an empty BotSquad for his brain. No co-op HUD. Returns the squad.
 func ensure_companion_session() -> BotSquad:
@@ -206,7 +224,7 @@ func _spawn_players() -> void:
 		var p: Player = Player.new()
 		p.player_id = pid
 		p.is_local = pid == local_pid
-		p.is_bot = GameState.is_bot(pid)
+		p.is_bot = GameState.is_bot(pid) and not (_online and Net.is_client())   # a client sees the host's bots as puppets
 		p.name = "Player%d" % pid
 		add_child(p)
 		p.global_transform = spawn_transform(pid)

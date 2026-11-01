@@ -1,0 +1,10 @@
+webrtc-native 1.2.2-stable (GDExtension, Godot 4.3+), by the Godot Engine contributors.
+Source: https://github.com/godotengine/webrtc-native
+Release: https://github.com/godotengine/webrtc-native/releases/download/1.2.2-stable/godot-extension-webrtc_native.zip (published 2026-09-30)
+Licence: MIT (LICENSE.txt). Bundled libraries and their licences: libdatachannel 0.24.6 (MPL-2.0), libjuice (MPL-2.0),
+usrsctp (BSD-3-Clause), libsrtp (BSD-3-Clause), mbedTLS 3.6.7 (Apache-2.0), plog (MIT): LICENSE.<name>.txt here.
+Kept: Windows x86_64 and Linux x86_64 (debug + release templates). The web build uses the engine's built-in
+WebRTC (the .gdextension excludes the "web" tag). Why: desktop builds of Godot have no WebRTC of their own; this
+adds WebRTCPeerConnection / WebRTCMultiplayerPeer on desktop for online co-op (docs/DECISIONS.md T-138).
+Downloaded 2026-11-01 for UPDATE 09 section 2a. The folder was renamed webrtc_native -> webrtc and the
+.gdextension trimmed to the kept platforms.
