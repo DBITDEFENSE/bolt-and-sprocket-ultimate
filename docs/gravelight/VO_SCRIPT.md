@@ -2761,3 +2761,43 @@ he runs out; THANKS_AMMO when passed ammo; KILL now and then. Cooldowns in data/
 | `SEL_KILL_01` | SEL | "Got him." |
 | `SEL_KILL_02` | SEL | "That one's down." |
 | `SEL_KILL_03` | SEL | "Another one for the logbook." |
+
+## 25. THE MARK (UPDATE 09 §1, DECISIONS T-137; canon CANON §2.2, LORE §2.5)
+
+The dead come from a chip, the Marke, under the skin of the right hand or the forehead (contract C1). The squad never
+learns the word for it (CANON §8): to them it is "the mark", "the chip", "the glass in the hand". **Triggers**
+(`VoManager._on_marke_kill`, `GLBus.marke_kill`): the first kill from a Marke hit in a match is a story beat: the killer
+says their `MARKE_FIRST` line (tier 2; anyone with the line if the killer has none), the Operator's `MARKE_OPR` follows
+6 s later, and Fasbender's `MARKE_RELAY` 18 s after that (the one line in the game that explains the carrier: the mark
+listens; silence it and they lie down). Later Marke kills roll the killer's `MARKE_KILL` (45 s, 20%; squad echo 12 s)
+and the Operator's `MARKE_OPR` (120 s, 35%). Deacon names it from memory, quietly, not as a sermon; Peg admits her
+orders; Wren has seen it on the dead by the road; Dutch is blunt; Jakub says why he refused. No line names a map, so
+they play everywhere.
+
+| ID | Speaker | Line |
+|---|---|---|
+| `DEA_MARKE_FIRST_01` | DEA | "[quiet] Hold on. Look at the hand. ...Right hand. There's a light in it, under the skin. [a breath] 'The mark in the right hand, or in the forehead.' My daddy read that one slow, every time. Lord. I did not come all this way to find it true." |
+| `DEA_MARKE_KILL_01` | DEA | "Right in the mark. Went out like a lamp." |
+| `DEA_MARKE_KILL_02` | DEA | "Forehead, this one. Same little light. Same book." |
+| `DEA_MARKE_KILL_03` | DEA | "I keep hitting that spot, and I keep not liking how easy they go." |
+| `PEG_MARKE_FIRST_01` | PEG | "Right hand, between the thumb and the finger. A chip of the stuff, under the skin. [a pause] My orders had a line about tokens. 'Retrieve the tokens.' I took it to mean their papers. ...Carry on." |
+| `PEG_MARKE_KILL_01` | PEG | "That's the token. One for the tin, then." |
+| `PEG_MARKE_KILL_02` | PEG | "Another in the hand. London wanted these and never said what for. I begin to see why they didn't." |
+| `PEG_MARKE_KILL_03` | PEG | "Shoot the hand. Don't ask me how I know. I read it somewhere I wasn't meant to." |
+| `WRN_MARKE_FIRST_01` | WRN | "I have seen it before tonight. On the dead by the road. A glass splinter in the right hand, and it was still warm. Same hand, every time. I thought it was a wound. It is not a wound." |
+| `WRN_MARKE_KILL_01` | WRN | "Same hand. Every time." |
+| `WRN_MARKE_KILL_02` | WRN | "The splinter. Hit it and they fall like men again." |
+| `WRN_MARKE_KILL_03` | WRN | "Above the eye, that one. They put it there. So did I." |
+| `DUT_MARKE_FIRST_01` | DUT | "The hand. Something's lit up in the hand. ...They put a piece of that rock in these guys? On purpose? [spits] Swell. Shoot the hand, then." |
+| `DUT_MARKE_KILL_01` | DUT | "Hit the chip. Down he goes." |
+| `DUT_MARKE_KILL_02` | DUT | "They signed up for that. Nobody signs up for that." |
+| `DUT_MARKE_KILL_03` | DUT | "Forehead glass. Easy to see, easy to shoot. First easy thing all night." |
+| `JAK_MARKE_FIRST_01` | JAK | "[low] You see it now. The mark. They came down to Nine with a box and a needle and asked the gang leaders. 'The mark that keeps you,' they said. I said: I have a name. It is enough to carry. Nobody in Nine took it. ...That is why I am standing here, and they are not." |
+| `JAK_MARKE_KILL_01` | JAK | "The hand. Yes. That is where they put it." |
+| `JAK_MARKE_KILL_02` | JAK | "He took it for bread. I know. I was hungry too." |
+| `JAK_MARKE_KILL_03` | JAK | "They offered it to us once. Once. Nobody in Nine was asked twice." |
+| `OPR_MARKE_OPR_01` | OPR | "[warm] A valued customer, {retained}. Thank you for keeping the account {active}." |
+| `OPR_MARKE_OPR_02` | OPR | "Oh, you've found the loyalty programme! Every member is counted, in the hand or on the brow. {Nobody} is lost to us." |
+| `OPR_MARKE_OPR_03` | OPR | "One mark, one name, one {account}. Closed with... [tape squeal] ...no. No. Accounts here do not {close}." |
+| `FAS_MARKE_RELAY_01` | FAS | "[radio, low] You have found the marks. Listen to me. The chip does nothing by itself. It listens. It listens for the Ledger's carrier, the hum, the thing you feel in your teeth. While the hum reaches it, the body remembers the last thing it wanted. Silence the carrier and they lie down. I have seen it once, for eleven seconds, when Opitz blew a fuse. Eleven seconds of quiet. Then it came back." |
+| `FAS_MARKE_RELAY_02` | FAS | "They offered me one in forty-two. I refused, and Lenz wrote my name in a column. It is the only wise thing I did in that place." |
