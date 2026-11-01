@@ -14,6 +14,9 @@ from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 W, H = 960, 540
+## A gentle gamma lift for the renders too dark to read at card size (the software-GL render of the Kranich's
+## red-lit bomb bay, the Thalbach yard at night). 1.0 = as rendered.
+GAMMA = {"map04a_thalbach": 1.35, "map04b_kranich": 1.9}
 
 
 def main() -> int:
@@ -36,6 +39,10 @@ def main() -> int:
             y0 = (im.height - nh) // 2
             im = im.crop((0, y0, im.width, y0 + nh))
         im = im.resize((W, H), Image.LANCZOS)
+        g = GAMMA.get(f[:-4], 1.0)
+        if g != 1.0:
+            lut = [min(255, int(round(255.0 * (i / 255.0) ** (1.0 / g)))) for i in range(256)]
+            im = im.point(lut * 3)
         im.save(os.path.join(dst, f), optimize=True)
         n += 1
         print("menu_previews:", f)
