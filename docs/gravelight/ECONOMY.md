@@ -135,3 +135,51 @@ Scrip 50), so a Marke kill from the hand pays 75, between a body kill and a head
 pays 125: the mark rewards the harder shot a little, never more than a headshot streak would. Measured in test_marke
 (bonus once per kill, none on a body kill, doubled by Double Scrip, none in Classic Rules).
 
+
+
+## 8. Ledger Lager and the bank on every map (UPDATE 09 section 3, T-141)
+
+**The tonic** (`perks.json` `ledger_lager`, JINGLES.md §16; plan DIVIDEND): 3000, then 4000 / 7500 / 14000 for tiers II-IV
+(II from round 8, III and IV from round 15, the same gates as every tonic; IV is permanent). Classic Rules: tier I only.
+
+| Tier | Effect key | What it does | Where |
+|---|---|---|---|
+| I Ledger Lager | `scrip_earn_mult` 1.2 | every Scrip you **earn** is paid at 120% (nearest whole Scrip); the HUD "+N" shows the boosted number | `Economy.award`, `Economy.grant` |
+| II Compound Interest | `bank_interest_bonus` 0.02 | the savings bank pays 3% a round, not 1% | `BankAccount.rate_for` / `accrue(pid)` |
+| III Insider Rate | `purchase_discount` 0.10, `marke_tip` 15 | 10% off every purchase (the discount rounded down); a Marke kill pays 15 more | `Economy.spend` / `price_for`; `PerkManager.marke_tip` (read by `Zombie.marke_bonus_for`, contract C1) |
+| IV Golden Parachute | `golden_parachute_pct` 0.05 / `_cap` 2500, `severance_pct` 0.10 / `_cap` 2500 | a round finished without a down moves 5% of the wallet in (a "DIVIDEND" slip); a down pays 10% of the savings out of the bank into the pocket; a down takes nothing | `ScripBonuses._on_round_ended` / `_on_player_downed`, `BankAccount.pay_severance` |
+
+**Earning versus moving.** `Economy.award` (hits, kills, repairs, revives, power-up and Marke money, squad shares) and
+`Economy.grant` (round pay, clean rounds, streaks, dog tags, quest and egg rewards, boss drops, companion gifts) apply
+Double Scrip (`award` only) and then the earn multiplier. `Economy.bank_move` (deposits, withdrawals, the dividend, the
+severance), `Economy.grant_raw` (the Requisition Crate's return when Herr Tamtam drums, the dev console, a match's
+starting kit, the tonic bottle's "tonic money" when the cap is full) and a negative `grant` (the Account Manager's cut)
+never take the multiplier. The multiplier is per player (`Economy.earn_mult(pid)`), so it goes with the tonic when a
+down takes it. **Every price is `Economy.price_for(pid, list_price)`**: `Economy.spend` charges it and every prompt
+(`Interactable.price_str`) shows "[855, was 950]" under Insider Rate.
+
+**The bank on every map** (`bank.json`): the Crossroads' woodshed, Kaltenbrunn's pay office, and (new) Totenhafen's
+Marinekasse on the crane office's south wall (teller Karl Jessen), Werk Thalbach's Lohnkasse in the yardmaster's hut
+(Ilse Ruhland), the Kranich's Bordkasse at the centre body's forward bulkhead (Ruhland again, a stowaway with the cash
+box), Groom Lake's Range Finance Office at Dee's cage (Pvt. Eugene Pruitt) and Darkmatter's Accounts window in
+Mondlicht's concourse (no clerk: a brass speaking-tube window, the Operator answers). One balance in the profile.
+Each branch carries a `nav_block` footprint the map generators cut out of the navmesh.
+
+**Balance by soak** (`tools/ai_soak.sh --scenario=botmode --map=map00 --bots=3 --speed=4 --max-round=14 --seed=21`,
+`ledger_curve.py`-style reading of `logs/ai_runs/*.csv`: earned = wallet change + Scrip spent in the round).
+
+| Round | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Mean Scrip earned by a survivor, master's economy | 760 | 1710 | 1750 | 1680 | 1380 | 2420 | 2590 | 3410 | 6950 | 4120 | 4370 | 1710 | 4720 |
+| Extra at +20% of base (bought at round 3) | 150 | 340 | 350 | 340 | 280 | 480 | 520 | 680 | 1390 | 820 | 870 | 340 | 940 |
+
+A 3000 tonic bought at round 3 is paid back in round **9-10** for all four survivors (net +3300 to +5300 by round 14);
+bought when a bot can first afford it (round 5-6) in round **11-12**. That is neither before round 8 nor past round 15, so
+the prices stay: 3000 / 4000 / 7500 / 14000. In the bots' own run the squad bought it at rounds 10-12 (it sits third in
+`perk_plan`, but doors, guns and the second tonic come first), so it pays back around round 15 there: the bots take it
+late, as a human who saves for doors would.
+
+A third run gave Peg (the agent's survivor) the tonic from round 1 (`--give=ledger_lager`, same seed): the squad's mean
+Scrip earned per survivor over rounds 3-14 was 38,660 against 36,820 on master's economy (+5.0%, the +20% on one
+survivor of four, inside the run-to-run noise). Logs: `.smoke_logs/u09/soak/{A,B,C}.log` (A: master's economy, Ledger
+Lager out of every bot plan and bonus roll; B: the branch as shipped; C: Peg holds it).
