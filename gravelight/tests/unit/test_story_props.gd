@@ -117,15 +117,15 @@ func test_spawn_all_places_the_map_0_items() -> void:
 	assert_eq(StoryProp.spawn_all(none, "3"), 0, "none on a map without fixed props")
 	var m2: Node3D = Node3D.new()
 	add_child_autofree(m2)
-	assert_eq(StoryProp.spawn_all(m2, "2"), 4, "four Map 2 items")
+	assert_eq(StoryProp.spawn_all(m2, "2"), 5, "five Map 2 items (four plus the T-137 surgeon's notes)")
 	var m4d: Node3D = Node3D.new()
 	add_child_autofree(m4d)
-	assert_eq(StoryProp.spawn_all(m4d, "4d"), 4, "four Mondlicht items")
+	assert_eq(StoryProp.spawn_all(m4d, "4d"), 5, "five Mondlicht items (four plus the T-137 Terms of the Mark)")
 	var m4c: Node3D = Node3D.new()
 	add_child_autofree(m4c)
 	assert_eq(StoryProp.spawn_all(m4c, "4c"), 2, "two Groom Lake items (the manifest, the program log)")
 	var by_name: Dictionary = {}
-	for c: Node in root.get_children():
+	for c: Node in root.get_children() + other.get_children():
 		by_name[c.name] = c
 	for c2: Node in m2.get_children():
 		by_name[c2.name] = c2
