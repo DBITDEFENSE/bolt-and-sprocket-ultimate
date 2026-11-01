@@ -144,8 +144,20 @@ func _ready() -> void:
 
 # ================================================================== the set
 
+## Starts loading the set on a thread (the Terms & Conditions hub calls it, so the menu opens on a cached set).
+static func preload_set() -> void:
+	if ResourceLoader.has_cached(INN_SCENE) or not ResourceLoader.exists(INN_SCENE):
+		return
+	if ResourceLoader.load_threaded_get_status(INN_SCENE) == ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
+		ResourceLoader.load_threaded_request(INN_SCENE, "PackedScene", true)
+
+
 func _build_inn() -> void:
-	var ps: PackedScene = load(INN_SCENE) as PackedScene
+	var ps: PackedScene = null
+	if ResourceLoader.load_threaded_get_status(INN_SCENE) != ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
+		ps = ResourceLoader.load_threaded_get(INN_SCENE) as PackedScene   # the hub's preload (waits if still loading)
+	if ps == null:
+		ps = load(INN_SCENE) as PackedScene
 	if ps == null:
 		push_error("MenuScene: %s missing (run tools_src/gen_menu_scene.gd)" % INN_SCENE)
 		inn = Node3D.new()
@@ -353,7 +365,6 @@ func _silhouette_texture() -> ImageTexture:
 func _clip_library() -> AnimationLibrary:
 	if _lib != null:
 		return _lib
-	var full: AnimationLibrary = ZombieClips.library()
 	_lib = AnimationLibrary.new()
 	var names: Array[String] = []
 	for w: Array in WALKERS:
@@ -361,10 +372,14 @@ func _clip_library() -> AnimationLibrary:
 	for t: Array in TEARERS:
 		names.append(str(t[5]))
 	names.append("idle")
+	if ZombieClips._bones.is_empty():
+		ZombieClips._bones = ZombieRig.bone_names()   # generate() samples these; library() would bake all ~100 clips
 	for n: String in names:
-		if _lib.has_animation(n) or not full.has_animation(n):
+		if _lib.has_animation(n) or not ZombieClips.all_clip_names().has(n):
 			continue
-		var a: Animation = (full.get_animation(n) as Animation).duplicate(true) as Animation
+		# only the clips the menu plays, generated straight from anim.json (the game's whole library is not needed)
+		var src: Animation = ZombieClips._lib.get_animation(n) if ZombieClips._lib != null and ZombieClips._lib.has_animation(n) else ZombieClips.generate(n)
+		var a: Animation = src.duplicate(true) as Animation
 		var root_t: int = a.find_track(NodePath("Skel:Root"), Animation.TYPE_POSITION_3D)
 		if root_t >= 0:
 			a.remove_track(root_t)   # the root motion: MenuScene moves the body down the lane itself
