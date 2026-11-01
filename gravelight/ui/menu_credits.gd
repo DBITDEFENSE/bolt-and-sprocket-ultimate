@@ -5,10 +5,10 @@ extends MenuScreen
 ## `python -I tools/assets_manifest.py` generates from every assets/third_party/**/SOURCE.txt (T-087), so the
 ## in-game credits can never drift from the paperwork.
 
-const TEXT: String = """GRAVELIGHT
+const TEXT: String = """{MODE}
 An original homage to round-based zombies survival.
 
-Design, code, writing: the GRAVELIGHT team
+Design, code, writing: the {MODE} team
 Engine: Godot Engine 4.7 (MIT license), godotengine.org
 Unit tests: GUT (Godot Unit Test) 9.6, MIT license
 
@@ -35,7 +35,7 @@ func _init() -> void:
 
 
 func build() -> void:
-	content.add_child(MenuKit.para(TEXT, 20))
+	content.add_child(MenuKit.para(TEXT.replace("{MODE}", Game.GAME_MODE_NAME), 20))
 	var art: PackedStringArray = art_credit_lines()
 	if not art.is_empty():
 		content.add_child(MenuKit.label(ART_HEADING, 26, MenuKit.GOLD, true))

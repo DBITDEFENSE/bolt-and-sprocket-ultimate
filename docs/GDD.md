@@ -2,7 +2,7 @@
 
 One Godot 4 game with three connected stories:
 1. **Bolt & Sprocket (remade):** a third-person action-platformer-shooter.
-2. **Gravelight:** a WW2 round-based zombies FPS.
+2. **CLAUDE ZOMBIES (code name GRAVELIGHT):** a WW2 round-based zombies FPS.
 3. **The Fine Print:** an origin story that bridges the two and ends in a crossover zombies map.
 
 This GDD is the top level. Details live in the per-area docs it links to.
@@ -31,7 +31,7 @@ This GDD is the top level. Details live in the per-area docs it links to.
 | Door | Contents |
 |---|---|
 | BOLT & SPROCKET | Campaign, side modes, NG+ |
-| GRAVELIGHT | Map select |
+| CLAUDE ZOMBIES | Map select |
 | THE FINE PRINT | Chapter select (locked until unlocked) |
 | THE ARCHIVE | The shared Archive |
 | EXTRAS | Gallery, ads, trophies, photo mode, credits |
@@ -139,7 +139,7 @@ A companion with a body, four moods and opinions, never a silent tool.
 
 All new text is in `data/bs/story/additions.json`. The synergy-screening invite leads directly into The Fine Print.
 
-## 4. Gravelight
+## 4. CLAUDE ZOMBIES (code name GRAVELIGHT)
 Gravelight is already designed and built in the GRAVELIGHT project (DECISIONS T-007): `gravelight/GDD_GRAVELIGHT.md` and the docs beside it. The amendments in brief §11 are applied in those docs.
 
 **The loop:** rounds → Scrip → doors → power → perks → Crucible → Easter egg.

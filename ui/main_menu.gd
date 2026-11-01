@@ -20,6 +20,7 @@ var _status: Label
 var _card: Control
 var _kicker: Label
 var _title: Label
+var _wordmark: Control   # the CLAUDE ZOMBIES wordmark, shown in the title slot of the "gl" door (T-140)
 var _desc: Label
 var _state: Label
 var _accept: Label
@@ -98,6 +99,10 @@ func _build() -> void:
 	cv.add_child(_kicker)
 	_title = UIKit.label("", 72, UIKit.PAPER, true)
 	cv.add_child(_title)
+	_wordmark = MenuKit.wordmark(150.0)
+	_wordmark.visible = false
+	_wordmark.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	cv.add_child(_wordmark)
 	_desc = UIKit.para("", 25, UIKit.PAPER.darkened(0.12), 680)
 	cv.add_child(_desc)
 	var fill: Control = Control.new()
@@ -180,6 +185,9 @@ func _select(i: int) -> void:
 	_kicker.text = str(d.get("kicker", ""))
 	_kicker.add_theme_color_override("font_color", accent)
 	_title.text = str(d.get("title", ""))
+	var is_gl: bool = str(d.get("id", "")) == "gl"
+	_title.visible = not is_gl
+	_wordmark.visible = is_gl
 	_desc.text = str(d.get("desc", ""))
 	_state.text = _state_text(d)
 	if locked:

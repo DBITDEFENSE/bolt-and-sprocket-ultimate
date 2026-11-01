@@ -26,7 +26,7 @@
     {"id": "bs", "title": "BOLT & SPROCKET", "kicker": "THE REPOSSESSION", "unlock": "bs_campaign", "action": "launch_bs", "accent": "#ffd23e",
      "desc": "A junkyard mechanic, a robot with opinions and a ship the bank wants back. Planet-hop, blast repo bots, smash things with a mallet and keep up the payments.",
      "status_new": "Start the campaign", "status_cont": "Continue the campaign"},
-    {"id": "gl", "title": "GRAVELIGHT", "kicker": "SILESIA, WINTER 1944", "unlock": "gl_map00", "action": "launch_gl", "accent": "#b9a4ff",
+    {"id": "gl", "title": "CLAUDE ZOMBIES", "kicker": "SILESIA, WINTER 1944", "unlock": "gl_map00", "action": "launch_gl", "accent": "#b9a4ff",
      "desc": "The squad came back from Basel three months early. The dead are already here. Survive the rounds, power the station and find out who signed for this.",
      "status_new": "Round-based survival - solo or 1-4 co-op", "status_cont": "Round-based survival - solo or 1-4 co-op"},
     {"id": "fp", "title": "THE FINE PRINT", "kicker": "WHERE IT STARTED", "unlock": "fp_ch1", "action": "soon", "milestone": "M7", "accent": "#ff6b5b",

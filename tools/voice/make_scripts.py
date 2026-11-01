@@ -30,7 +30,7 @@ import voicelib as V  # noqa: E402
 
 FONT_DIR = os.path.join(V.ROOT, "assets", "third_party", "google_fonts", "ibm-plex-mono")
 
-GUIDE_TXT = """VOICE RECORDING GUIDE (Terms & Conditions / Gravelight / Bolt & Sprocket)
+GUIDE_TXT = """VOICE RECORDING GUIDE (Terms & Conditions / Claude Zombies / Bolt & Sprocket)
 
 Thank you! Here is everything on one page.
 
@@ -72,7 +72,7 @@ CONSENT
 - No AI voice cloning of you, ever, unless you separately opt in.
 """
 
-RELEASE_TXT = """VOICE RELEASE (version 1) - Terms & Conditions (Gravelight / Bolt & Sprocket)
+RELEASE_TXT = """VOICE RELEASE (version 1) - Terms & Conditions (Claude Zombies / Bolt & Sprocket)
 
 Please read this, then reply "I agree" with today's date.
 
@@ -189,7 +189,7 @@ def _story(actor: str, lines: list[V.Line], cast: dict, title_extra: str, date: 
         c = cast.get("characters", {}).get(game, {}).get(char, {})
         story.append(PageBreak())
         story.append(Paragraph(html.escape(V.character_label(cast, game, char)) + " <font size=9 color='#777777'>(%s · %s · %d lines)</font>"
-                               % (html.escape(char), "Gravelight" if game == "gl" else "Bolt &amp; Sprocket", len(cl)), st["h1"]))
+                               % (html.escape(char), "Claude Zombies" if game == "gl" else "Bolt &amp; Sprocket", len(cl)), st["h1"]))
         if c.get("who"):
             story.append(Paragraph(html.escape(str(c["who"])), st["small"]))
         if c.get("voice_notes"):
