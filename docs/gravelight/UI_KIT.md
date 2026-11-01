@@ -1,4 +1,4 @@
-# GRAVELIGHT UI kit (UPDATE 05 section 7, DECISIONS T-096)
+# CLAUDE ZOMBIES (GRAVELIGHT) UI kit (UPDATE 05 section 7, DECISIONS T-096)
 
 One period style for the HUD and every menu, readable in the dark cellar and on bright snow. Everything is
 data in `data/gravelight/ui.json`, served by `MenuKit` (`gravelight/ui/menu_kit.gd`) and the Theme resource
@@ -65,6 +65,16 @@ The MAP tab's first view fits the built zones (`PauseMapView.built_rect`: the zo
 `fit_zone_max_frac` of the map's rect; Map 0: the inn, stable and yard), not the whole rect; the whole rect stays
 the zoom-out floor so the Grounds are reachable by zoom and pan, and the last zoom is kept for the match. Zone
 labels belong to the floor their polygon's middle height is on (no more Old Cellar over Taproom).
+
+## Wordmark (T-140)
+
+The zombies mode is CLAUDE ZOMBIES (`Game.GAME_MODE_NAME` / `GAME_MODE_NAME_TITLE`). Its wordmark is
+`gravelight/ui/wordmark/claude_zombies.svg` (Stardos Stencil Bold outlines, OFL, built by `tools/gen_wordmark_svg.py`:
+CLAUDE small and letter-spaced over ZOMBIES, violet #c07dff glow, amber cracks, a five-stroke tally under the word),
+rasterised headless to `claude_zombies.png` (2048 wide, transparent, the glow baked from the lettering's alpha) by
+`gravelight/tools_src/render_wordmark.gd`; `claude_zombies_icon.png` (256 px, the Z with the tally) is also copied to
+`web/favicon.png`. `MenuKit.wordmark(height_px) -> Control` returns it as a TextureRect (aspect kept); the Gravelight
+main menu's title slot and the hub's CLAUDE ZOMBIES door card use it.
 
 ## Tooling and tests
 

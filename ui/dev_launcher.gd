@@ -5,11 +5,11 @@ extends Control
 ## Choices are remembered in the GRAVELIGHT settings file where they already live there (bots, bot_local_ai).
 
 const GL_MAPS: Array = [
-	["GRAVELIGHT — Crossroads Inn (Map 0)", "res://gravelight/maps/map00_crossroads/map00.tscn"],
-	["GRAVELIGHT — Kaltenbrunn (Map 1)", "res://gravelight/maps/map01_kaltenbrunn/map01.tscn"],
-	["GRAVELIGHT — Totenhafen (Map 2)", "res://gravelight/maps/map02_totenhafen/map02.tscn"],
-	["GRAVELIGHT — Map 4 Fernflug, Act I: Werk Thalbach", "res://gravelight/maps/map04_fernflug/map04a.tscn"],
-	["GRAVELIGHT — Test Range (dev)", "res://gravelight/maps/test_range/test_range.tscn"],
+	["CLAUDE ZOMBIES — Crossroads Inn (Map 0)", "res://gravelight/maps/map00_crossroads/map00.tscn"],
+	["CLAUDE ZOMBIES — Kaltenbrunn (Map 1)", "res://gravelight/maps/map01_kaltenbrunn/map01.tscn"],
+	["CLAUDE ZOMBIES — Totenhafen (Map 2)", "res://gravelight/maps/map02_totenhafen/map02.tscn"],
+	["CLAUDE ZOMBIES — Map 4 Fernflug, Act I: Werk Thalbach", "res://gravelight/maps/map04_fernflug/map04a.tscn"],
+	["CLAUDE ZOMBIES — Test Range (dev)", "res://gravelight/maps/test_range/test_range.tscn"],
 ]
 ## [label, scene, round, boss id] boss tests: a GRAVELIGHT map started at a late round, the boss summoned in
 ## front of the player a few seconds in (QuestManager.summon_boss, like the console's `boss`).
@@ -58,7 +58,7 @@ func _ready() -> void:
 	col.add_theme_constant_override("separation", 6)
 	scroll.add_child(col)
 	col.add_child(MenuKit.label("DEV LAUNCHER", 54, MenuKit.GOLD, true))
-	col.add_child(MenuKit.para("Pick something to play. The options below apply to GRAVELIGHT maps. Esc in a match opens the pause menu; ` (backquote) opens the dev console.", 16, MenuKit.DIM))
+	col.add_child(MenuKit.para("Pick something to play. The options below apply to CLAUDE ZOMBIES maps. Esc in a match opens the pause menu; ` (backquote) opens the dev console.", 16, MenuKit.DIM))
 
 	# ---- options row
 	var row: HBoxContainer = HBoxContainer.new()
@@ -92,7 +92,7 @@ func _ready() -> void:
 	row.add_child(_ai)
 
 	# ---- the things to play
-	col.add_child(_header("GRAVELIGHT"))
+	col.add_child(_header(Game.GAME_MODE_NAME))
 	var first: Button = null
 	for m: Array in GL_MAPS:
 		var scene: String = str(m[1])
@@ -162,7 +162,7 @@ func _ready() -> void:
 		col.add_child(MenuKit.button(str(l[0]), func() -> void: _start_bs(lscene), 22, "ui_confirm"))
 	col.add_child(_header("Menus"))
 	col.add_child(MenuKit.button("The full game menu (Terms & Conditions hub)", func() -> void: get_tree().change_scene_to_file("res://ui/main_menu.tscn"), 22))
-	col.add_child(MenuKit.button("GRAVELIGHT menu (characters, campaign, archive)", func() -> void: get_tree().change_scene_to_file("res://gravelight/ui/main_menu.tscn"), 22))
+	col.add_child(MenuKit.button(Game.GAME_MODE_NAME + " menu (characters, campaign, archive)", func() -> void: get_tree().change_scene_to_file("res://gravelight/ui/main_menu.tscn"), 22))
 	col.add_child(MenuKit.button("Quit", func() -> void: get_tree().quit(), 22, "ui_back"))
 	_status = MenuKit.para("", 16, MenuKit.VIOLET)
 	col.add_child(_status)

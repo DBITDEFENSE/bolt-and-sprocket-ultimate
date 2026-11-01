@@ -49,7 +49,7 @@ func _ready() -> void:
 	v.add_child(_input)
 	_panel.visible = false
 	_register_builtins()
-	print_line("[color=#9f9]GRAVELIGHT dev console. Type [b]help[/b].[/color]")
+	print_line("[color=#9f9]%s dev console. Type [b]help[/b].[/color]" % Game.GAME_MODE_NAME)
 
 
 func register(cmd: String, fn: Callable, help: String) -> void:

@@ -58,7 +58,8 @@ func _build() -> void:
 		_menu.remove_child(c)
 		c.queue_free()
 
-	_menu.add_child(MenuKit.text("wordmark", "GRAVELIGHT", Color(0.85, 0.82, 0.74)))
+	_menu.add_child(MenuKit.wordmark(250.0))   # CLAUDE ZOMBIES (T-140)
+	get_window().title = Game.GAME_MODE_NAME + " — " + Game.GAME_TITLE
 	_menu.add_child(MenuKit.text("subheading", "Silesia, winter 1944. The dead are keeping count.", MenuKit.VIOLET))
 	# profile header: rank stamp + XP bar
 	var head: HBoxContainer = HBoxContainer.new()

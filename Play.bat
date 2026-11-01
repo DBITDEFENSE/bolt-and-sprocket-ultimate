@@ -1,5 +1,5 @@
 @echo off
-REM Launches the dev launcher: a button for every playable thing (GRAVELIGHT maps, boss tests,
+REM Launches the dev launcher: a button for every playable thing (CLAUDE ZOMBIES maps, boss tests,
 REM Bolt ^& Sprocket planets), a skip-to-round field, god mode, and the bot squad. The full game menu
 REM (TERMS ^& CONDITIONS hub) is one button away. Pass --menu to go straight to the hub instead.
 cd /d "%~dp0"

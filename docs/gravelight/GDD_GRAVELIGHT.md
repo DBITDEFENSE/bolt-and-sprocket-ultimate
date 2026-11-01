@@ -1,4 +1,4 @@
-# GRAVELIGHT — Game Design Document
+# CLAUDE ZOMBIES (code name GRAVELIGHT) — Game Design Document
 
 > **§11 note:** two more perks exist after The Fine Print: Fine Print Fernet and Overclock Cordial (`docs/gravelight/WEAPONS.md` §21, `docs/JINGLES.md`). Neither raises the cap. The cap itself went from 4 to **6** in T-081 (4 under Classic Rules). The combined game's GDD is `docs/GDD.md`.
 

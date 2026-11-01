@@ -26,7 +26,7 @@
       {"key": "maxFps", "label": "Frame Rate Limit", "type": "cycle", "options": [0, 60, 120, 144, 165, 240], "labels": ["Unlimited", "60", "120", "144", "165", "240"], "new": true},
       {"key": "quality", "label": "Quality Preset", "type": "cycle", "options": ["low", "medium", "high", "ultra"], "labels": ["Low", "Medium", "High", "Ultra"]},
       {"key": "fov", "label": "Field of View", "type": "range", "min": 60, "max": 110, "step": 1, "fmt": "deg"},
-      {"key": "fp_fov", "label": "Field of View (Gravelight)", "type": "range", "min": 65, "max": 110, "step": 1, "fmt": "deg", "new": true},
+      {"key": "fp_fov", "label": "Field of View (Claude Zombies)", "type": "range", "min": 65, "max": 110, "step": 1, "fmt": "deg", "new": true},
       {"key": "shakeMul", "label": "Screen Shake", "type": "range", "min": 0, "max": 1.5, "step": 0.05, "fmt": "pct"},
       {"key": "fps", "label": "FPS Counter", "type": "toggle"}
     ]},
@@ -41,8 +41,8 @@
     {"head": "ACCESSIBILITY", "rows": [
       {"key": "subtitles", "label": "Subtitles", "type": "toggle", "new": true},
       {"key": "colorblind", "label": "Colorblind Filter", "type": "cycle", "options": ["off", "protanopia", "deuteranopia", "tritanopia"], "labels": ["Off", "Protanopia", "Deuteranopia", "Tritanopia"], "new": true},
-      {"key": "film_grain", "label": "Film Grain (Gravelight)", "type": "toggle", "new": true},
-      {"key": "hint_mode", "label": "Hint Mode (Gravelight)", "type": "toggle", "new": true}
+      {"key": "film_grain", "label": "Film Grain (Claude Zombies)", "type": "toggle", "new": true},
+      {"key": "hint_mode", "label": "Hint Mode (Claude Zombies)", "type": "toggle", "new": true}
     ]}
   ]
 }

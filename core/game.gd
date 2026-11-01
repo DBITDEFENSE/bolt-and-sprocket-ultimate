@@ -3,6 +3,9 @@ extends Node
 ## GAME_TITLE is the single place the working title lives.
 
 const GAME_TITLE: String = "TERMS & CONDITIONS"
+## The zombies mode's player-facing name (UPDATE 09 section 6, T-140). Code folders, classes and save keys keep "gravelight".
+const GAME_MODE_NAME: String = "CLAUDE ZOMBIES"
+const GAME_MODE_NAME_TITLE: String = "Claude Zombies"
 const VERSION: String = "0.1.0-m1"
 
 enum Mode { MENU, BOLT_AND_SPROCKET, GRAVELIGHT, FINE_PRINT }

@@ -236,6 +236,22 @@ static func text(role: String, text_str: String, color: Color = PAPER, outline_k
 	return l
 
 
+const WORDMARK_PATH: String = "res://gravelight/ui/wordmark/claude_zombies.png"
+
+
+## The CLAUDE ZOMBIES wordmark (T-140) as a TextureRect, height_px tall, aspect kept (the png is 2048 x 940).
+static func wordmark(height_px: float) -> Control:
+	var tr: TextureRect = TextureRect.new()
+	tr.name = "Wordmark"
+	if ResourceLoader.exists(WORDMARK_PATH):
+		tr.texture = load(WORDMARK_PATH) as Texture2D
+	tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	tr.custom_minimum_size = Vector2(height_px * 2048.0 / 940.0, height_px)
+	tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return tr
+
+
 ## A readable paragraph in the body face, word-wrapped.
 static func para(text_str: String, size: int = -1, color: Color = PAPER) -> Label:
 	var l: Label = Label.new()
