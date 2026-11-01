@@ -155,8 +155,8 @@ static func on_host_reply(op: String, asked: int, moved: int) -> void:
 ## T-141: Ledger Lager IV's severance: when `pid` goes down the bank pays `severance_pct` of the balance (capped at
 ## `severance_cap`) into their pocket on the spot, out of the account. Nothing is taken from the player. The amount paid.
 static func pay_severance(pid: int) -> int:
-	if closed_reason() != "" or not Net.is_authority():
-		return 0
+	if closed_reason() != "" or not Net.is_authority() or Net.is_online():
+		return 0   # (online a client keeps its balance in its own profile: no severance there yet)
 	var pct: float = float(PerkManager.stat(pid, "severance_pct", 0.0))
 	var n: int = severance_for(balance(), pct, int(PerkManager.stat(pid, "severance_cap", 0)))
 	if n <= 0:
