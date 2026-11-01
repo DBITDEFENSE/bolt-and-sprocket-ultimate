@@ -80,6 +80,9 @@ var _delayed: Array[Dictionary] = [] # {at, pid, cat, chance} squad lines schedu
 var _match_t: float = -INF
 var _last_special: bool = false
 var _crucible_first: bool = false
+## T-137: the first kill from a Marke hit this match has its story beat (the killer names the mark, the Operator
+## remarks, Fasbender explains the relay where he has a radio); later ones roll the squad's MARKE_KILL lines.
+var _marke_first: bool = false
 var _banter_last: float = -INF
 var _banter_at: float = INF
 # Operator corporate slips (VO_SCRIPT section 10)
@@ -191,6 +194,7 @@ func reset_match() -> void:
 	_match_t = _now
 	_last_special = false
 	_crucible_first = false
+	_marke_first = false
 	_banter_last = -INF
 	_banter_at = INF
 	_slip_last = -INF
@@ -1076,11 +1080,19 @@ func _tick_delayed() -> void:
 		if not tier2 and not _current[GROUP_STORY].is_empty() and _now < float(d["at"]) + 10.0:
 			keep.append(d)
 			continue
-		if pid == 0:
+		if d.has("speaker"):   # a story speaker's line (T-137: the Operator's and Fasbender's Marke remarks)
+			play_category(StringName(str(d["speaker"])), str(d["cat"]), float(d["chance"]))
+		elif pid == 0:
 			squad_say(str(d["cat"]), float(d["chance"]))
 		else:
 			say_as(pid, str(d["cat"]), float(d["chance"]))
 	_delayed = keep
+
+
+## A story speaker's category line `seconds` from now (the Operator, Fasbender): the same delayed tick as the
+## squad's `_later`, so a test's advance() reaches it.
+func _later_story(seconds: float, speaker: StringName, category: String, chance: float = -1.0) -> void:
+	_delayed.append({"at": _now + seconds, "pid": -1, "speaker": String(speaker), "cat": category, "chance": chance})
 
 
 # ================================================================== triggers (VO_SCRIPT §2)
@@ -1113,6 +1125,8 @@ func _connect_triggers() -> void:
 	GLBus.radio_tuned.connect(_on_radio_tuned)
 	GLBus.trap_activated.connect(_on_trap_activated)
 	GLBus.intel_found.connect(_on_intel_found)
+	if GLBus.has_signal(&"marke_kill"):
+		GLBus.marke_kill.connect(_on_marke_kill)
 	if GLBus.has_signal(&"crucible_started"):
 		GLBus.crucible_started.connect(_on_crucible_started)
 		GLBus.crucible_ready.connect(func(_w: StringName) -> void: _opr("CRUCIBLE_READY"))
@@ -1381,6 +1395,27 @@ func _on_trap_activated(_trap_id: StringName, by_player: int) -> void:
 
 func _on_intel_found(_intel_id: StringName) -> void:
 	say_player("INTEL")
+
+
+## T-137: a kill from a hit on the Marke. The first of the match is a story beat: the killer (or a survivor who
+## has the line) names the mark, the Operator calls it a valued customer retained, and where Fasbender has a radio
+## he explains the carrier a little later. After that the squad's MARKE_KILL lines roll on their cooldown, with the
+## Operator's rarer remark.
+func _on_marke_kill(by_player: int, _enemy_id: StringName) -> void:
+	if by_player <= 0:
+		return
+	if not _marke_first:
+		_marke_first = true
+		var pid: int = by_player if _index.has("%s:MARKE_FIRST" % speaker_of(by_player)) else -1
+		say_story_beat(pid, "MARKE_FIRST", 0.6)
+		_later_story(6.0, &"OPR", "MARKE_OPR", 1.0)
+		if _index.has("FAS:MARKE_RELAY"):
+			_later_story(18.0, &"FAS", "MARKE_RELAY", 1.0)
+		return
+	if GameState.is_bot(by_player) or (by_player != _local_player() and not Net.is_online()):
+		return
+	say_as(by_player, "MARKE_KILL")
+	_opr("MARKE_OPR")
 
 
 func _on_crucible_started(_player: int, _weapon_id: StringName) -> void:

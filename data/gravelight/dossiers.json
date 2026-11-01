@@ -134,7 +134,7 @@
     "level": 10,
     "kind": "secret",
     "title": "The secret: Directive LANTERN, in full.",
-    "text": "MOST SECRET — EYES ONLY — LT. M. ASHWORTH\nDIRECTIVE LANTERN (supersedes GRAVELIGHT operational orders where in conflict)\n1. Primary objective: recover a viable sample of the material designated NACHTGLAS. Secure in the lead-lined container provided. Do not expose to living tissue.\n2. Dr. E. Fasbender is desirable but not essential. If extraction endangers the primary objective, he is to be abandoned.\n3. On recovery, destroy the facility and all records. No third party (Allied or otherwise) is to receive any sample, document, or witness account.\n4. Team members are expendable in pursuit of the primary objective. They are not to be informed of this directive.\n5. Report to Mr. Hale in person only.\nThis order is deniable. So are you."
+    "text": "MOST SECRET — EYES ONLY — LT. M. ASHWORTH\nDIRECTIVE LANTERN (supersedes GRAVELIGHT operational orders where in conflict)\n1. Primary objective: recover a viable sample of the material designated NACHTGLAS. Secure in the lead-lined container provided. Do not expose to living tissue. Retrieve the tokens: the small implanted pieces reported in enemy personnel (right hand or brow), as many as practicable, from the dead. Same container. Do not ask the bearer.\n2. Dr. E. Fasbender is desirable but not essential. If extraction endangers the primary objective, he is to be abandoned.\n3. On recovery, destroy the facility and all records. No third party (Allied or otherwise) is to receive any sample, document, or witness account.\n4. Team members are expendable in pursuit of the primary objective. They are not to be informed of this directive.\n5. Report to Mr. Hale in person only.\nThis order is deniable. So are you."
    }
   ],
   "deacon": [
@@ -184,7 +184,7 @@
     "level": 8,
     "kind": "diary",
     "title": "Audio diary 2",
-    "text": "\"The Operator called me by name today. Said Hattie remembers. I don't think a machine ought to remember. I don't think anything here ought to.\""
+    "text": "\"The Operator called me by name today. Said Hattie remembers. I don't think a machine ought to remember. I don't think anything here ought to. ...There's a light in their hands. Right hand, every one of them, or up over the eye. Daddy's book has a verse about that and I am not going to say it into a wire recorder.\""
    },
    {
     "level": 9,
@@ -246,7 +246,7 @@
     "level": 8,
     "kind": "diary",
     "title": "Audio diary 2",
-    "text": "\"Sister Agnieszka's note. She said Tomek was moved to the Lab Wing. I knew before I came. I didn't tell them. I'm telling you.\""
+    "text": "\"Sister Agnieszka's note. She said Tomek was moved to the Lab Wing. I knew before I came. I didn't tell them. I'm telling you. ...The glass in their hands. Same hand, every time. I have looked at every right hand on this road, and not one of ours has it. Not one. I write that down so that I believe it.\""
    },
    {
     "level": 9,

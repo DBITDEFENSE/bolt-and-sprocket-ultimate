@@ -86,3 +86,46 @@ Every change to an **existing** line from the original web build is logged here 
 
 ## 2026-10-31 (T-136): the savings bank
 - **Erwin Lassmann** (NEW character): the junior clerk of the village's Spar- und Darlehenskasse, whose branch is the old woodshed by the west road at the Crossroads. Terrified, polite to the end. He carries the cash box up to Kaltenbrunn and keeps the accounts in the pay office there.
+
+## UPDATE 09: the Marke (2026-11-01, T-137; section 1 "THE MARK")
+
+The dead come from a chip, not only a sickness (CANON section 2.2, LORE section 2.5, contract C1 in `docs/U09_CONTRACTS.md`).
+
+**VO lines checked for a contradiction.** Every record in `data/gravelight/vo/lines.json` (1938 lines) and the whole of
+`docs/gravelight/VO_SCRIPT.md` were searched for sickness / virus / plague / infection / infected / disease / contagion /
+epidemic / "in the water" / bite / caught / cure. Nothing in the game ever explained the dead as a sickness: the only
+hits are two curses ("bright plague", *cholera jasna*), a gun that "bites back", "Spread out", Deacon's "full of poison"
+(the Kranich's Nachtglas fuel) and Fasbender's `FAS_M0_FREQ2_01` ("The dead near it... remember. Only one thing.
+Hunger."), which is the raw-substrate truth the Marke canon keeps (the mine's Erwachen). **No existing line was
+changed.** Deacon's `DEA_SQ7_M0_EGG_LOCK2_01` ("The dead remember. One thing.") stands for the same reason.
+
+**Canon text changed (old -> new, why):**
+- Directive LANTERN item 1 (Peg's dossier 10 and the CHARACTERS.md secret): old "recover a viable sample of the
+  material designated NACHTGLAS" only -> new: also "Retrieve the tokens: the small implanted pieces reported in enemy
+  personnel (right hand or brow), as many as practicable, from the dead. Same container. Do not ask the bearer." Why:
+  C1 ("Peg's sealed orders say retrieve the tokens"); London learned of the mark with Res's 1943 sample.
+- Deacon's audio diary 2 and Wren's audio diary 2 (dossier level 8): each gains a sentence about the glass in the right
+  hand (Deacon will not say the verse into a wire recorder; Wren has checked every right hand on the road and none of
+  "ours" has it). Why: the dossiers are where the Archive explains the outbreak; the respect rule in the same breath.
+- LORE section 4.1, Abteilung III: old "Tonic formulas, the dispenser program with Helvetia" -> new adds "from June
+  1942 the Marken: cutting, implanting, the pay-office readers". Why: the same department, the same people.
+- LORE section 3 / TIMELINE.md: new dated rows, no existing date moved: 14 Jun 1942 the first Marken cut (implant order
+  14/42); Aug 1942 Major Brueck takes the first one, the garrison recruited under "DIE MARKE, DIE DICH HAELT"; May 1943
+  the labour gangs' overseers are offered it and refuse, Jakub in Gallery Nine; 20 Dec 1944 the Erwachen explained as
+  both the raw substrate *and* every marked guard who died that night; May 1945 Fernflug Act IV: the key turns on
+  RR-7 and every Marke goes dark the same second (MAP4_FERNFLUG section 6.8 gains that sentence).
+- CANON section 3 table: the Nachtglas row notes the Marken; a new row "The Marke". Section 8 gains the respect rule.
+
+**New canon, not changes:** Brueck was the first volunteer; Kessler took it; Ammer took it and regrets it; Fasbender
+refused in 1942 and Lenz wrote his name in a column; Agnieszka was never marked; Tomasz and the Laboratory Wing's
+subjects rose unmarked, from the ore. Far from the mine, everything that rises was marked. The labourers were never
+offered it, and nobody in Gallery Nine was asked twice.
+
+**New lines (not changes):** `DUT/PEG/DEA/WRN/JAK_MARKE_FIRST_01`, `*_MARKE_KILL_01..03`, `OPR_MARKE_OPR_01..03`,
+`FAS_MARKE_RELAY_01..02` (VO_SCRIPT section 25). **New intel:** `INT_MARKE_ORDER` (Kaltenbrunn, random pool),
+`INT_MARKE_POSTER` (the inn's notice wall), `INT_MARKE_MEDIC` (the Totenhafen infirmary's middle cot),
+`INT_MARKE_TERMS` (the Moon's reception desk), `INT_MARKE_JAKUB` (the Maintenance Stairs' second landing).
+
+**Respect rule (CANON section 8):** the Marke is never a camp tattoo or a number, never on a forced labourer; it was
+sold, to people who had a choice.
+

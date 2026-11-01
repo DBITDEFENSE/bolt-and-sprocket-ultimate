@@ -1,3 +1,13 @@
 ﻿line_id,character,text,recorded
+TRU_COMP_FALLEN_01,Trudi Hanke,I'm sorry. I can't... go on without me.,
+TRU_COMP_GIFT_01,Trudi Hanke,"Here. I found it in the bar, behind the till. Take it.",
+TRU_COMP_GIFT_02,Trudi Hanke,One more grenade. Don't ask me where it was hidden.,
+TRU_COMP_JOIN_ARMED_01,Trudi Hanke,Right. I've shot foxes off the henhouse. These are bigger foxes.,
+TRU_COMP_JOIN_ARMED_02,Trudi Hanke,Thank you. I'll carry it back to you when this is over.,
+TRU_COMP_JOIN_UNARMED_01,Trudi Hanke,"Then I keep the bread knife. Stay close, I'm right behind you.",
+TRU_COMP_MEET_01,Trudi Hanke,"You came back. I ran. I ran out the front and kept running, and then I couldn't go any further.",
 TRU_INN_ARRIVE_01,Trudi Hanke,There's soup on the hearth. Get warm first. Then you can tell us what fell out of the sky.,
+TRU_COMP_CALL_01,Trudi Hanke,"Hello? Is somebody there? I'm in the stable, behind the hay!",
+TRU_COMP_CALL_02,Trudi Hanke,"Over here! Please, in the stable. I'm not one of them!",
+TRU_COMP_CALL_03,Trudi Hanke,"Is that you, from the inn? I'm back here, by the stalls!",
 TRU_INN_FLEE_01,Trudi Hanke,"The front door! Out, all of you, out and up the road to the village!",

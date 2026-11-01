@@ -1,0 +1,9 @@
+﻿line_id,character,text,recorded
+HAL_M4C_CHOICE_01,HAL,"That is the engine. The actual engine. Lieutenant, with that we are a year ahead of everyone. With that, nobody needs to go to the Moon at all. Hand it through the hatch and your orders are complete. Every one of them.",
+HAL_M4C_CHOICE_02,HAL,I'm not going to insist. I've never had to.,
+HAL_M4C_DELIVER_01,HAL,"Thank you, Lieutenant. Mr. Hale is in your debt. Your country is in your debt. The rocket will run on the stone; it's rougher, I'm told.",
+HAL_M4C_GLASS_01,HAL,Lieutenant Ashworth. You're rather late. I had a man at the siding in Thalbach for you.,
+HAL_M4C_GLASS_02,HAL,"The crate, yes. Your crate. Please don't look at the sergeant like that; she had no part in it. I had no part in it. It was simply the orders.",
+HAL_M4C_GLASS_03,HAL,"That is why the program exists. It talks to the Moon, Lieutenant. Something on the Moon talks back. We would like to know what, before the Russians do.",
+HAL_M4C_LAUNCH_01,HAL,Ashworth. For what it's worth. I hope it's a light and nothing more.,
+HAL_M4C_RESIGN_01,HAL,...I see. I shall note that you were under considerable strain.,

@@ -322,6 +322,22 @@
     "POWERUP_SEEN": [
       0,
       1.0
+    ],
+    "MARKE_FIRST": [
+      0,
+      1.0
+    ],
+    "MARKE_KILL": [
+      45,
+      0.2
+    ],
+    "MARKE_OPR": [
+      120,
+      0.35
+    ],
+    "MARKE_RELAY": [
+      0,
+      1.0
     ]
   },
   "round_start_always": [
@@ -584,7 +600,8 @@
     "M0_EGG_LOCK2": 2,
     "M0_EGG_WRONG": 2,
     "M0_EGG_DONE": 2,
-    "M0_EGG_TONICS": 2
+    "M0_EGG_TONICS": 2,
+    "MARKE_FIRST": 2
   },
   "squad_second_channel": [
     "TEAM_DOWN",
@@ -618,7 +635,8 @@
       "BELL": 12.0,
       "CHATTER": 20.0,
       "GRUMBLE": 10.0,
-      "BUY_AMMO": 6.0
+      "BUY_AMMO": 6.0,
+      "MARKE_KILL": 12.0
     }
   },
   "companion_speakers": [

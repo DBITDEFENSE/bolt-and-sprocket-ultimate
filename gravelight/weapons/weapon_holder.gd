@@ -783,7 +783,9 @@ func _fire(w: WeaponInstance) -> void:
 		var limb: StringName = StringName(h["limb"])
 		var pos: Vector3 = zz.global_position + Vector3.UP * 1.6
 		zz.last_hit_bone = str(h.get("bone", ""))
-		var killed: bool = zz.take_damage(float(h["dmg"]) * tier_mult, limb, w.id, pid, &"bullet", piercing)
+		if limb == &"marke":
+			limb = zz.marke_host_limb()   # T-137: the feedback below is the host limb's; the zombie sees "marke"
+		var killed: bool = zz.take_damage(float(h["dmg"]) * tier_mult, StringName(h["limb"]), w.id, pid, &"bullet", piercing)
 		if not killed and zz.is_active() and PerkManager.shot_is_shock(pid):
 			zz.force_stagger()   # Trigger Tonic IV: a shock round knocks it off its feet
 		var head: bool = limb == &"head"
@@ -1117,9 +1119,14 @@ func _trace(origin: Vector3, dir: Vector3, w: WeaponInstance, hits: Dictionary) 
 			if z == null or not z.is_active():
 				exclude.append(hb.get_rid())
 				continue
-			var mult: float = w.limb_mult(hb.limb)
-			if hb.limb == &"head":
+			# the Marke (T-137): the weapon's multiplier is the host limb's (the hand's arms, the forehead's head);
+			# the zombie adds the Marke's own x on top and continues the hit on that limb
+			var wl: StringName = z.marke_host_limb() if hb.limb == &"marke" else hb.limb
+			var mult: float = w.limb_mult(wl)
+			if wl == &"head":
 				mult *= float(PerkManager.stat(player.player_id, "head_damage_mult", 1.0))
+			if hb.limb == &"marke":
+				mult *= 1.0001   # the Marke box wins a tie with the limb box it sits in
 			var dmg: float = w.f("damage", 50.0) * w.falloff(origin.distance_to(pos)) * mult
 			var cur: Dictionary = hits.get(z, {"dmg": 0.0, "limb": "torso", "mult": 0.0})
 			cur["dmg"] = float(cur["dmg"]) + dmg

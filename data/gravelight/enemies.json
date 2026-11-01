@@ -184,7 +184,8 @@
       "maps": [
         "map01_kaltenbrunn",
         "map02_totenhafen"
-      ]
+      ],
+      "marke": false
     },
     "screamer": {
       "health_mult": 0.8,
@@ -216,7 +217,8 @@
       "maps": [
         "map01_kaltenbrunn",
         "map02_totenhafen"
-      ]
+      ],
+      "marke": false
     },
     "bordschuetze": {
       "_doc": "Map 4 Act II (UPDATE 07, docs/MAP4_FERNFLUG.md 4.5): the Kranich's phantom gunners in flight gear climb in over the blister rims and through open breaches. Not a pooled type of its own: the FlightController spawns Gängers with this spec (kit, tier, health_mult, no barricade to tear) at the climb entries (gravelight/world/map04/flight_controller.gd), on Druckabfall rounds in place of the window spawns.",
@@ -270,7 +272,8 @@
       },
       "maps": [
         "map04d_mondlicht"
-      ]
+      ],
+      "marke": false
     },
     "burrower": {
       "_doc": "Map 4 Act III (UPDATE 07, docs/MAP4_FERNFLUG.md 5.5): the range's construction crews under the salt. Not a pooled type: Gangers rising at the lakebed's burrow points are tagged by the GroomController (map04c.json groom.burrower), the staged rise is the tell.",
@@ -312,8 +315,18 @@
         "map04c_groomlake",
         "map04d_mondlicht"
       ],
-      "scrip": 150
+      "scrip": 150,
+      "marke": false
     }
+  },
+  "marke": {
+    "_doc": "UPDATE 09 section 1 (T-137, docs/U09_CONTRACTS.md C1): the Marke, Darkmatter's chip under the skin, the weak point every Ganger shows (never a boss, never the Backorder construct; the Suited keep it on the hand). Site picked per zombie from its net_id (hand_chance of a right-hand mark, else the forehead) so co-op puppets match the host. hitbox_m: the cube on bone RightHand / the front of Head, limb \"marke\". A Marke hit does damage_mult x the damage and then counts as a hit on the host limb (arms / head). A kill from a Marke hit pays scrip_bonus through Economy.award (Double Scrip applies; nothing in Classic Rules) and emits GLBus.marke_kill. glow_min..glow_max: the glint's emission with the map hum (gl_hum), brighter with gl_round_k.",
+    "damage_mult": 1.5,
+    "scrip_bonus": 25,
+    "hand_chance": 0.6,
+    "hitbox_m": 0.07,
+    "glow_min": 0.25,
+    "glow_max": 1.0
   },
   "repath": {
     "near_m": 15.0,

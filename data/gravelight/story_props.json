@@ -192,6 +192,54 @@
       ],
       "yaw": 180,
       "where": "Groom Lake hangar, the office's glass front, read through the glass (Hale never opens the door)"
+    },
+    {
+      "id": "INT_MARKE_POSTER",
+      "map": "0",
+      "style": "docket",
+      "position": [
+        13.0,
+        1.85,
+        15.85
+      ],
+      "yaw": 0,
+      "where": "Taproom, south wall (z 15.85 face) above the benches, west of the framed clipping: the notice wall (T-137)"
+    },
+    {
+      "id": "INT_MARKE_JAKUB",
+      "map": "1",
+      "style": "drawing",
+      "position": [
+        -8.0,
+        -6.5,
+        46.15
+      ],
+      "yaw": 180,
+      "where": "Maintenance Stairs, the second landing (y -8) north wall (z 46.15 face), eye height, facing the flight (T-137)"
+    },
+    {
+      "id": "INT_MARKE_MEDIC",
+      "map": "2",
+      "style": "logbook",
+      "position": [
+        -28.6,
+        0.55,
+        5.0
+      ],
+      "yaw": -90,
+      "where": "Cannery infirmary, the middle cot's blanket (top 0.55), facing the room (T-137)"
+    },
+    {
+      "id": "INT_MARKE_TERMS",
+      "map": "4d",
+      "style": "letter",
+      "position": [
+        8.6,
+        1.0,
+        14.6
+      ],
+      "yaw": 0,
+      "where": "Reception, the desk top (1.0) under the bell, facing the capsule (T-137)"
     }
   ]
 }

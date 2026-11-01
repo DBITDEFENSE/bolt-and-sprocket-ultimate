@@ -295,10 +295,11 @@ func _fire() -> void:
 			var z: Zombie = hb.enemy as Zombie
 			if z == null or not z.is_active():
 				continue
-			var dmg: float = gun.f("damage", 50.0) * gun.falloff(from.distance_to(pos)) * gun.limb_mult(hb.limb)
+			var wl: StringName = z.marke_host_limb() if hb.limb == &"marke" else hb.limb   # T-137
+			var dmg: float = gun.f("damage", 50.0) * gun.falloff(from.distance_to(pos)) * gun.limb_mult(wl)
 			var cur: Dictionary = hits.get(z, {"dmg": 0.0, "limb": "torso", "bone": ""})
 			cur["dmg"] = float(cur["dmg"]) + dmg
-			if hb.limb == &"head" or str(cur["limb"]) != "head":
+			if wl == &"head" or str(cur["limb"]) != "head":
 				cur["limb"] = String(hb.limb)
 				cur["bone"] = hb.bone
 			hits[z] = cur

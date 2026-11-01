@@ -121,3 +121,17 @@ lost `crucible_ammo`); a bot's taught gun under `ammo_box_below` (25%, 60% betwe
 ordinary ammo-box errand at the box's upgraded price (`BotEconomy._ammo_candidate`). `smoke_bots` phase 12 now checks
 that refill. `BotMetrics.category_of` files any `<id>_ammo` purchase as wall ammo (`crucible` is upgrades only).
 
+## 7. The Marke bonus (UPDATE 09 section 1, T-137)
+
+Every Gänger carries the Marke, Darkmatter's chip under the skin of the right hand or the forehead (CANON section 2.2,
+ENEMIES.md section 2.1): a small violet glint, a `"marke"` hitbox that does x1.5 on top of the host limb's multiplier.
+A kill from a Marke hit pays **25 Scrip** (`enemies.json marke.scrip_bonus`) on top of the kill's Scrip, through
+`Economy.award` right after the normal reward, so Double Scrip doubles it and section 3's `scrip_earn_mult` (the Ledger
+Lager perk, contract C6) applies; `Zombie.marke_bonus_for(pid)` adds the perk's tier III `marke_tip` when PerkManager
+has it. It shows as a "THE MARK" slip above the Scrip (`GLBus.bonus_awarded`, kind `&"marke"`) and counts in
+`GameState.stats[&"marke_kills"]`. **Classic Rules pays nothing** (the weak point stays: it is part of the zombie). Bots
+earn it like anyone when their shot lands on the mark; they do not aim for it. Why 25: a hand mark is an arm hit (body
+Scrip 50), so a Marke kill from the hand pays 75, between a body kill and a head kill (100), and a forehead Marke kill
+pays 125: the mark rewards the harder shot a little, never more than a headshot streak would. Measured in test_marke
+(bonus once per kill, none on a body kill, doubled by Double Scrip, none in Classic Rules).
+

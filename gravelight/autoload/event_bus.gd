@@ -15,6 +15,11 @@ signal enemy_damaged(enemy_id: StringName, limb: StringName, amount: float, by_p
 signal enemy_killed(enemy_id: StringName, limb: StringName, weapon_id: StringName, by_player: int)
 signal enemy_killed_at(enemy_id: StringName, position: Vector3, by_player: int)
 signal enemy_hit_feedback(by_player: int, killed: bool, headshot: bool)
+## The Marke (UPDATE 09 section 1, T-137; C1): a hit on a zombie's Marke (the HUD tints the hitmarker violet;
+## emitted by the host's zombie and by a client's predicted hit), and a kill from a Marke hit, right after the
+## normal kill reward (stats, the bonus slip, the squad's lines).
+signal marke_hit(by_player: int)
+signal marke_kill(by_player: int, enemy_id: StringName)
 signal explosion(position: Vector3, radius: float)
 signal boss_spawned(enemy_id: StringName)
 signal player_status(player: int, effect: StringName, seconds: float)

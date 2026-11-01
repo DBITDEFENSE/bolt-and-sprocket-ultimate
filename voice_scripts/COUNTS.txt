@@ -1,10 +1,12 @@
-Line counts per actor (voice_scripts/ (script version edca95e0); 2342 spoken lines in all)
+Line counts per actor (voice_scripts/ (script version 711ea014); 2819 spoken lines in all)
 
 cousin_1                  12   The Cousins (together) 4, The Hammer (Mara) 8
 cousin_2                  10   The Cousins (together) 4, The Reach (Jo) 6
 cousin_3                  12   The Cousins (together) 4, The Third Hand (Alix) 8
 devin                      0   no lines yet
 paul                       0   no lines yet
+slot_amm                  10   AMM 10
+slot_blt                   4   BLT 4
 slot_bra                   9   Fraeulein Hedwig Brandt 9
 slot_bs_bathrobe           8   Confused Customer 8
 slot_bs_bellhop           12   Bellhop-9 12
@@ -29,19 +31,32 @@ slot_bs_sprocket         235   Sprocket 235
 slot_bs_squat             23   The Squatter 23
 slot_bs_statue             1   Statue 1
 slot_bs_tourist            6   Tourist 6
-slot_dea                 262   Cpl. Elijah "Deacon" Brooks 262
-slot_dut                 268   Sgt. Walter "Dutch" Kowalczyk 268
-slot_fas                  50   Dr. Emil Fasbender 50
-slot_jak                 161   Jakub Ostrowski 161
+slot_bwt                   7   BWT 7
+slot_dea                 310   Cpl. Elijah "Deacon" Brooks 310
+slot_dee                  18   DEE 18
+slot_dut                 316   Sgt. Walter "Dutch" Kowalczyk 316
+slot_fas                  56   Dr. Emil Fasbender 56
+slot_hal                   8   HAL 8
+slot_jak                 187   Jakub Ostrowski 187
+slot_jet                  12   JET 12
 slot_kro                   9   Ida Kroll 9
 slot_kub                   3   Franz Kubiak 3
 slot_lsl                  10   Liesl 10
-slot_opr                 237   The Operator 237
-slot_peg                 257   Lt. Margaret "Peg" Ashworth 257
+slot_opr                 319   The Operator 319
+slot_pa                   15   PA 15
+slot_peg                 304   Lt. Margaret "Peg" Ashworth 304
+slot_pet                  10   PET 10
 slot_poh                   2   Frau Agnes Pohl 2
 slot_rei                  23   Dr. Augusta Reinholt 23
 slot_rot                   3   Ewald Rother 3
+slot_rrk                   7   RRK 7
+slot_sel                  15   SEL 15
 slot_sob                   5   Gefreiter Willi Sobotta 5
-slot_tru                   2   Trudi Hanke 2
+slot_spr                   5   SPR 5
+slot_tel                  19   TEL 19
+slot_tru                  12   Trudi Hanke 12
+slot_ven                   9   VEN 9
 slot_wie                   9   Konrad Wiesner 9
-slot_wrn                 278   Zofia "Wren" Nowak 278
+slot_wit                  12   WIT 12
+slot_wiv                  13   WIV 13
+slot_wrn                 324   Zofia "Wren" Nowak 324

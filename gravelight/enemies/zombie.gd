@@ -60,6 +60,15 @@ var _safe_vel: Vector3 = Vector3.ZERO
 var _pivot: Node3D
 var _parts: Dictionary = {}       # name -> Node3D (the Foreman's own parts)
 var _hitboxes: Array[Hitbox] = []
+## The Marke (UPDATE 09 section 1, T-137; docs/U09_CONTRACTS.md C1): the site picked from net_id (&"hand" or
+## &"forehead"; &"" = none: bosses, the Backorder construct, rig-less bodies), one "marke" hitbox per site (only the
+## site's is live; not in _hitboxes, which is the limb layout the tests and the emerge gate walk), the glints, whether
+## the last hit landed on it (consumed by _die for the bonus) and whether the marked hand has been shot off.
+var marke_site: StringName = &""
+var _marke_hit: bool = false
+var _marke_lost: bool = false
+var _marke_hb: Dictionary = {}       # site -> Hitbox
+var _marke_glint: Dictionary = {}    # site -> MeshInstance3D
 var _collision: CollisionShape3D
 var _state_t: float = 0.0
 var _repath_t: float = 0.0
@@ -223,12 +232,14 @@ func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 	_apply_variant(String(spec.get("variant", "soldier")))
 	_force_female = -1
 	_apply_kind()
+	_apply_marke()
 	show()
 	process_mode = Node.PROCESS_MODE_INHERIT
 	collision_layer = LAYER_ZBODY
 	collision_mask = LAYER_WORLD | LAYER_PLAYER | LAYER_ZBODY | LAYER_DOOR
 	for hb: Hitbox in _hitboxes:
 		hb.collision_layer = Hitbox.LAYER_HITBOX
+	_marke_layers(true)
 	if bool(spec.get("crawler", false)) and bool(_cfg.get("can_crawl", true)):
 		_spawn_as_crawler()
 	_pivot.rotation = Vector3.ZERO
@@ -274,6 +285,7 @@ func deactivate() -> void:
 	collision_layer = 0
 	for hb: Hitbox in _hitboxes:
 		hb.collision_layer = 0
+	_marke_layers(false)
 	velocity = Vector3.ZERO
 	global_position = Vector3(0, -200, 0)
 	process_mode = Node.PROCESS_MODE_DISABLED
@@ -287,7 +299,84 @@ func hitbox_rids() -> Array[RID]:
 	var out: Array[RID] = []
 	for hb: Hitbox in _hitboxes:
 		out.append(hb.get_rid())
+	for mhb: Hitbox in _marke_hb.values():
+		out.append(mhb.get_rid())
 	return out
+
+
+# ---------------------------------------------------------------- the Marke (T-137)
+
+## Picks the Marke's site from net_id (a co-op puppet derives the same one, nothing is sent), shows that site's
+## glint and forgets the last hit. Bosses, the Backorder construct and the shield cells (enemies.json "marke":
+## false) and rig-less bodies (the Foreman) have none. The hitboxes' layers are the activate / emerge / puppet
+## paths' business (_marke_layers), like the limb boxes.
+func _apply_marke() -> void:
+	_marke_hit = false
+	_marke_lost = false
+	marke_site = &""
+	if has_marke():
+		var mk: Dictionary = (GLData.table("enemies") as Dictionary).get("marke", {})
+		var id: int = net_id if net_id >= 0 else int(get_instance_id() % 1000003)
+		marke_site = ZombieBody.marke_site_for(id, float(mk.get("hand_chance", 0.6)))
+	for site: StringName in _marke_glint.keys():
+		(_marke_glint[site] as MeshInstance3D).visible = site == marke_site
+
+
+## True when this body carries a Marke (the kind allows it and the body was built with the sites).
+func has_marke() -> bool:
+	return not _marke_hb.is_empty() and bool(_cfg.get("marke", true))
+
+
+## The limb a hit on this zombie's Marke continues as (&"arms" for the hand, &"head" for the forehead).
+func marke_host_limb() -> StringName:
+	return ZombieBody.marke_host_limb(marke_site)
+
+
+## The Marke hitbox of this zombie (null without one); tools and tests.
+func marke_hitbox() -> Hitbox:
+	return _marke_hb.get(marke_site) as Hitbox
+
+
+## Turns the site's Marke box on or off with the limb boxes; the other site's box, a lost hand's and a body
+## without a Marke stay off.
+func _marke_layers(on: bool) -> void:
+	for site: StringName in _marke_hb.keys():
+		var live: bool = on and site == marke_site and not _marke_lost
+		(_marke_hb[site] as Hitbox).collision_layer = Hitbox.LAYER_HITBOX if live else 0
+
+
+## The marked hand is gone with the arm: no weak point left, the glint goes with the piece.
+func _marke_on_sever(bone: String) -> void:
+	if marke_site != &"hand" or _marke_lost:
+		return
+	if bone in ["RightUpperArm", "RightLowerArm", "RightHand"]:
+		_marke_lost = true
+		_marke_layers(false)
+		if _marke_glint.has(&"hand"):
+			(_marke_glint[&"hand"] as MeshInstance3D).visible = false
+
+
+## The Marke bonus a kill from a Marke hit pays `by_player` (enemies.json marke.scrip_bonus; section 3's Ledger
+## Lager tier III `marke_tip` adds to it through PerkManager when it exists). Nothing in Classic Rules.
+static func marke_bonus_for(by_player: int) -> int:
+	if bool(GLSettings.values.get("classic_rules", false)):
+		return 0
+	var mk: Dictionary = (GLData.table("enemies") as Dictionary).get("marke", {})
+	var bonus: int = int(mk.get("scrip_bonus", 25))
+	if PerkManager.has_method("stat"):
+		bonus += int(PerkManager.stat(by_player, "marke_tip", 0.0))
+	return bonus
+
+
+## A kill from a Marke hit: the signal (always: the stat counts in every mode), then the bonus through
+## Economy.award (Double Scrip and the earn multiplier apply) with its slip on the HUD; none in Classic Rules.
+func _pay_marke_bonus(by_player: int) -> void:
+	GLBus.marke_kill.emit(by_player, enemy_id)
+	var bonus: int = marke_bonus_for(by_player)
+	if bonus <= 0:
+		return
+	Economy.award(by_player, bonus)
+	GLBus.bonus_awarded.emit(by_player, &"marke", bonus * Economy.multiplier, "THE MARK")
 
 
 func _enter(s: State) -> void:
@@ -1552,6 +1641,15 @@ func _nearest_player() -> Player:
 func take_damage(amount: float, limb: StringName, weapon_id: StringName, by_player: int, kind: StringName = &"bullet", armor_piercing: bool = false) -> bool:
 	if puppet:
 		return _puppet_damage(amount, limb, weapon_id, by_player, kind, armor_piercing)
+	# the Marke (T-137): damage_mult x, then the hit goes on as one on the host limb (armour, wounds, the death
+	# clips, the headshot path); _marke_hit is read by _die for the bonus and cleared by any other hit
+	_marke_hit = limb == &"marke"
+	if _marke_hit:
+		limb = marke_host_limb()
+		if marke_site != &"":
+			last_hit_bone = str((ZombieBody.MARKE_SITES[marke_site] as Array)[0])
+		amount *= float(((GLData.table("enemies") as Dictionary).get("marke", {}) as Dictionary).get("damage_mult", 1.5))
+		GLBus.marke_hit.emit(by_player)
 	# the caller's hitbox bone belongs to this hit only: consumed before any early return so it can never leak
 	# into a later boneless hit (explosions, fire) as the wrong wound side
 	var side: String = _hit_side(limb)
@@ -1649,6 +1747,7 @@ func sever_limb(bone: String) -> void:
 		AudioDirector.play_3d("zombie_gib", global_position + Vector3.UP * 1.2, -3.0)
 	ZombieGore.sever(self, bone, imp)
 	_severed_logic[bone] = true
+	_marke_on_sever(bone)
 	if Net.replicating():
 		Net.session.zombie_event(self, &"fx", [&"sever", bone, imp])
 
@@ -1716,6 +1815,7 @@ func _die(limb: StringName, weapon_id: StringName, by_player: int, kind: StringN
 	collision_mask = LAYER_WORLD
 	for hb: Hitbox in _hitboxes:
 		hb.collision_layer = 0
+	_marke_layers(false)
 	_agent.avoidance_enabled = false
 	_safe_vel = Vector3.ZERO
 	velocity = Vector3.ZERO
@@ -1728,6 +1828,8 @@ func _die(limb: StringName, weapon_id: StringName, by_player: int, kind: StringN
 		if limb == &"head" and kind != &"melee" and GameState.player_has_trait(by_player, &"wren"):
 			value += int(GLData.table("player")["traits"]["wren_headshot_scrip_bonus"])
 		Economy.award(by_player, value)
+		if _marke_hit:
+			_pay_marke_bonus(by_player)   # T-137: a kill from a Marke hit, right after the normal reward
 	AudioDirector.play_3d("zombie_death", global_position + Vector3.UP * 1.2, -1.0)
 	_death_burst()
 	GLBus.enemy_killed.emit(enemy_id, limb, weapon_id, by_player)
@@ -1930,6 +2032,30 @@ func _build_body() -> void:
 		hb.position = h[3]
 		bone_attachment(bone).add_child(hb)
 		_hitboxes.append(hb)
+	# the Marke (T-137): a hitbox and a glint per site; _apply_marke picks the live one at every spawn
+	var mk: Dictionary = (GLData.table("enemies") as Dictionary).get("marke", {})
+	var cube: float = float(mk.get("hitbox_m", 0.07))
+	for site: StringName in ZombieBody.MARKE_SITES.keys():
+		var ms: Array = ZombieBody.MARKE_SITES[site]
+		var at: BoneAttachment3D = bone_attachment(str(ms[0]))
+		if at == null:
+			continue
+		var mhb: Hitbox = Hitbox.new()
+		mhb.name = "marke"
+		mhb.setup(self, &"marke", Vector3(cube, cube, cube))
+		mhb.bone = str(ms[0])
+		mhb.position = ms[1]
+		mhb.collision_layer = 0
+		at.add_child(mhb)
+		_marke_hb[site] = mhb
+		var gl: MeshInstance3D = MeshInstance3D.new()
+		gl.name = "MarkeGlint"
+		gl.mesh = ZombieBody.marke_glint_mesh()
+		gl.position = ms[1]
+		gl.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		gl.visible = false
+		at.add_child(gl)
+		_marke_glint[site] = gl
 	# the animation tree
 	_ap = AnimationPlayer.new()
 	_ap.name = "AP"
@@ -2645,6 +2771,7 @@ func _set_emerge_hitboxes(on: bool) -> void:
 		if on and is_crawler and hb.limb == &"legs":
 			continue
 		hb.collision_layer = Hitbox.LAYER_HITBOX if on else 0
+	_marke_layers(on)
 
 
 ## Spawned as a crawler (spec "crawler": true): the legs are gone from the start (no gib sound, no pieces) and
@@ -3067,6 +3194,7 @@ func puppet_activate(enemy: StringName, tier_v: StringName, variant: String, hp_
 	_set_crawl_pose(false)
 	_apply_variant(variant)
 	_apply_kind()
+	_apply_marke()   # from net_id: the same site the host picked
 	_puppet_show(pos, yaw)
 	state = State.CHASE
 	_emerge_kind = "portal" if enemy_id == &"bellringer" else "ground"
@@ -3086,6 +3214,7 @@ func _puppet_show(pos: Vector3, yaw: float) -> void:
 	collision_mask = 0
 	for hb: Hitbox in _hitboxes:
 		hb.collision_layer = Hitbox.LAYER_HITBOX
+	_marke_layers(true)
 	_pivot.rotation = Vector3.ZERO
 	_pivot.position = Vector3.ZERO
 	velocity = Vector3.ZERO
@@ -3146,12 +3275,22 @@ func _puppet_dead(delta: float) -> void:
 
 ## A hit from this client's own weapon: wounds, flinch and the hit marker now (predicted); the host decides.
 func _puppet_damage(amount: float, limb: StringName, weapon_id: StringName, by_player: int, kind: StringName, armor_piercing: bool) -> bool:
+	# the Marke (T-137): the host gets the report as a Marke hit and does its own mapping and the bonus; the
+	# prediction here (wound, flinch, the hitmarker's tint) runs on the host limb
+	var marke: bool = limb == &"marke"
+	if marke:
+		limb = marke_host_limb()
+		if marke_site != &"":
+			last_hit_bone = str((ZombieBody.MARKE_SITES[marke_site] as Array)[0])
 	var side: String = _hit_side(limb)
 	last_hit_bone = ""   # consumed by this hit even when it is not predicted here (see take_damage)
 	if not is_active() or Net.session == null or by_player != Net.local_player_id() or Net.applying:
 		return false
-	Net.session.send_hit(self, amount, limb, weapon_id, kind, armor_piercing)
+	Net.session.send_hit(self, amount, &"marke" if marke else limb, weapon_id, kind, armor_piercing)
 	var eff: float = amount
+	if marke:   # the host multiplies the report itself; the prediction matches it
+		GLBus.marke_hit.emit(by_player)
+		eff *= float(((GLData.table("enemies") as Dictionary).get("marke", {}) as Dictionary).get("damage_mult", 1.5))
 	if (limb == &"torso" or limb == &"arms") and kind == &"bullet" and not armor_piercing:
 		eff *= armor_torso_mult
 	if GameState.has_flag(&"deaths_door") and kind != &"world":

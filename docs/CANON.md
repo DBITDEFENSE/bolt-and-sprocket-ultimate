@@ -69,6 +69,46 @@ The original game ends with Darkmatter as sequel bait (`cs.postCredits.01–03`)
   - He learned from humans, understood what his product does to them, and sabotaged it from inside.
   - His recall clause is **Clause 0: "Field units are inventory."**
 
+### 2.2 The Marke (UPDATE 09 §1, DECISIONS T-137; binding text in `docs/U09_CONTRACTS.md` C1)
+**What it is.** Raw Nachtglas retains whatever dies near it (Pilch in 1938, the Erwachen in the mine). From 1942
+**Projekt Wiederkehr's Abteilung III** (Venner's formulation department, the same people as the tonics) cut the substrate
+into chips the size of a grain of rice, the **Marken** (singular *Marke*; player-facing "the mark"), and implanted them
+under the skin of the **right hand**, between thumb and forefinger, or the **forehead**, above the right brow. It was sold
+to soldiers, guards, staff and volunteers as a loyalty and identity tag: **"die Marke, die dich hält"** (the mark that
+keeps you). Pay, rations and facility Scrip were tallied against it; the Ledger counts the marked; Vendelin's cabinets
+read it; the Operator calls a marked person "a valued customer". It is Darkmatter's subscription token in the flesh.
+
+**Who got it.** Major Anselm Brück took the first one in front of the garrison in August 1942 ("for morale"); the guard
+roster was a list of the marked by that Christmas (Lenz's duty roster, `INT_M1_19`, is that list). Abteilung staff,
+the 1943–44 field-trial soldiers (which is why eleven of them rose on the Eastern Front, far from any ore), the
+Totenhafen detachment and U-1047's ratings, Werk Thalbach's works guard. Kessler took it. Ammer took it and regrets it.
+**Who refused it.** The forced labourers were never offered it. In May 1943 the overseers of the labour gangs were
+offered the tag and the few who were asked refused; **Jakub Ostrowski** refused it in Gallery Nine ("I have a name. It
+is enough to carry."), which is why he was never one of them and is alive. Sister Agnieszka was never marked.
+Fasbender refused it and was marked down for it.
+
+**What it does.** A marked person who dies does not stay dead: the Marke keeps the body running on its last impulse,
+which is hunger: "NOBODY CANCELS". The marks stay active only while the relay signal reaches them: the **Ledger's
+carrier** on Earth, Darkmatter's **Regional Retention Relay RR-7** on the Moon above it (`MAP4_FERNFLUG.md` §6). That is
+why cutting the relay in the Fernflug finale stops the dead: the hum stops, the first retained miner's hand stops, and
+every Marke goes dark the same second. Unmarked people who die near raw substrate can still rise (the mine's Erwachen,
+the sealed galleries, the dosed subjects of the Laboratory Wing); far from the mine, everything that rises was marked.
+**The Erwachen of 20 December 1944** was both at once: the mine's raw substrate driven to full resonance, and every
+marked guard who died that night getting up.
+
+**Who knows what.** The squad never learns the corporate truth (§8): to them the mark is a thing the Germans put under
+their skin that will not let them die. **Deacon**, a preacher's son, names it from memory ("the mark in the right hand,
+or in the forehead"), quietly, not as a sermon. **Peg's** sealed orders say "retrieve the tokens" (Directive LANTERN §1
+as amended; she does not know what they are for). **Wren** keeps finding them on the dead ("same hand, every time").
+**Dutch** is blunt. **Fasbender** explains the carrier: the mark listens for a signal; silence it and they lie down.
+**The Operator** calls a marked kill "a valued customer, retained."
+
+**In play** (contract C1): every Gänger shows a faint violet glint under the skin of the right hand (60%) or the forehead
+(40%), pulsing with the infection shader; it is a weak point (×1.5, a small Scrip bonus for a kill from it, none in
+Classic Rules). Bosses and Darkmatter's constructs (the Backorder) have none. **Respect rule:** the Marke is never a
+camp tattoo or a number; it is a violet glint under the skin, offered, never forced on the labourers; forced
+labourers were not marked.
+
 ---
 
 ## 3. What each Gravelight system really is
@@ -77,7 +117,8 @@ The Gravelight squad never learns any of this. The player learns it through The 
 
 | Gravelight thing | What Earth thinks it is | What it really is |
 |---|---|---|
-| Nachtglas | A meteorite mineral | DARK-GLASS™ retention substrate from probe TM-SOL3-001 |
+| Nachtglas | A meteorite mineral | DARK-GLASS™ retention substrate from probe TM-SOL3-001; from 1942 cut into the Marken (§2.2) |
+| The Marke | A loyalty and identity tag under the skin of the right hand or the forehead ("die Marke, die dich hält"): pay, rations and Scrip tallied against it | Darkmatter's subscription token in the flesh (retention substrate, chip-sized; the Ledger counts the marked, and the marks run only while the relay's carrier reaches them). A marked person who dies gets up: NOBODY CANCELS |
 | Perk Tonics / Helvetia Automaten AG | A Swiss vending company and its tonic formulas | Darkmatter **Vitality Plans** (plan IDs stenciled under the paint, listed in `M0_SHARED_FACTS.md`). Cabinets and jingles by Vendelin; each formula made drinkable by a human (§4) |
 | The Crucible | A Nachtglas forge that "re-teaches" weapons | Blartz's patented **Omega Forge** (BLZ-40417). It was confiscated by OmniScrap when Blartz was arrested, sold to Darkmatter in OmniScrap's fire sale, rebuilt as **Crucible Mod. R-E (Re-Education)**, and shipped to 1944. Its brass plaque reads **"MOD. R-E · PAT. PEND. BLZ-40417"** |
 | The Ledger / Scrip | A relay computer tallying kills and paying tokens | Darkmatter's engagement-metrics engine. Scrip are localized **loyalty points** |
@@ -241,6 +282,7 @@ chalk alphabet with them: the **Witnesses' Marks** (v2 §4.2 step 3) are written
 - **Gravelight** stays grim. **Gravelight characters never learn the word "subscription."** To them this is cosmic horror. The corporate truth surfaces only as the Operator's eerie slips. Dramatic irony is the point: the player knows and the soldiers don't.
 - **The Fine Print** is where the tones meet. Corporate horror is played straight, with Bolt & Sprocket comedy on one side and a quiet, sad robot in 1940s Basel on the other.
 - **Real history** (occupation, forced labor) is handled with respect: no jokes at victims' expense, and fictional places and companies wherever a real one could be implicated.
+- **The Marke** (§2.2) is handled with the same respect: never a camp tattoo, never a number, never on a forced labourer. The labourers were never marked and the few who were offered it refused. It was *sold*, to people who had a choice, and the horror is that they took it. In text it is "the mark" or "die Marke", a violet glint under the skin, and nothing else.
 
 ---
 

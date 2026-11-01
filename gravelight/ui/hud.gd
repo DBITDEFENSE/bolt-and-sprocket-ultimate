@@ -261,6 +261,7 @@ func _ready() -> void:
 	GLBus.scrip_changed.connect(_on_scrip_changed)
 	GLBus.bonus_awarded.connect(_on_bonus_awarded)
 	GLBus.enemy_hit_feedback.connect(_on_hit_feedback)
+	GLBus.marke_hit.connect(_on_marke_hit)
 	GLBus.dev_overlay_toggled.connect(_on_overlay)
 	_layout()
 
@@ -484,6 +485,13 @@ func _on_hit_feedback(p: int, killed: bool, headshot: bool) -> void:
 		_hitmarker.flash(killed, headshot)
 
 
+## T-137: a hit on the Marke arrives from the zombie just before the weapon's hit feedback; the marker that
+## follows within a frame is tinted violet.
+func _on_marke_hit(p: int) -> void:
+	if player != null and p == player.player_id:
+		_hitmarker.marke()
+
+
 func _on_overlay(overlay: StringName, enabled: bool) -> void:
 	match overlay:
 		&"fps":
@@ -570,10 +578,15 @@ class HitMarker extends Control:
 	const HIT: Color = Color(1.0, 1.0, 1.0, 0.92)
 	const HEAD: Color = Color(1.0, 0.72, 0.2, 0.97)
 	const KILL: Color = Color(0.9, 0.12, 0.1, 0.97)
+	## T-137: a hit on the Marke tints the ticks Darkmatter violet (a kill keeps its red X with violet ticks' edge).
+	const MARKE: Color = Color(0.75, 0.49, 1.0, 0.97)
+	const MARKE_LATCH_MS: int = 50
 	var _t: float = 0.0
 	var _dur: float = 0.2
 	var _kill: bool = false
 	var _head: bool = false
+	var _marke: bool = false
+	var _marke_ms: int = -100000
 	var _cfg: Dictionary = {}
 	var _streak: int = 0
 	var _last_hit_ms: int = -100000
@@ -589,8 +602,17 @@ class HitMarker extends Control:
 	func _state(key: String) -> Dictionary:
 		return _cfg.get(key, {"gap": 8.0, "len": 8.0, "width": 2.0, "seconds": 0.2})
 
+	## A hit on the Marke was reported (GLBus.marke_hit); the flash that follows within MARKE_LATCH_MS wears violet.
+	func marke() -> void:
+		_marke_ms = Time.get_ticks_msec()
+
+	## Pure, for the tests: is a flash at `now_ms` a Marke flash after a marke() call at `marke_ms`?
+	static func marke_latched(now_ms: int, marke_ms: int) -> bool:
+		return now_ms - marke_ms <= MARKE_LATCH_MS
+
 	func flash(killed: bool, headshot: bool) -> void:
 		var now: int = Time.get_ticks_msec()
+		var marke_now: bool = marke_latched(now, _marke_ms)
 		if now - _last_hit_ms <= int(float(_cfg.get("streak_s", 0.3)) * 1000.0):
 			_streak = mini(_streak + 1, int(_cfg.get("streak_max", 5)))
 		else:
@@ -610,6 +632,7 @@ class HitMarker extends Control:
 		_t = _dur
 		_kill = killed
 		_head = headshot
+		_marke = marke_now
 
 	## The streak's growth now (1 = none), pure for the tests: each step `step`, `streak` steps.
 	static func streak_scale(streak: int, step: float) -> float:
@@ -628,7 +651,7 @@ class HitMarker extends Control:
 			var rk: float = 1.0 - _ring_t / _ring_dur
 			var ease: float = 1.0 - pow(1.0 - rk, 3.0)
 			var rr: float = lerpf(float(rc.get("from", 10.0)), float(rc.get("to", 34.0)), ease)
-			var rcol: Color = HEAD if _head else KILL
+			var rcol: Color = MARKE if _marke else (HEAD if _head else KILL)
 			rcol.a = 0.85 * (1.0 - rk)
 			draw_arc(Vector2.ZERO, rr, 0.0, TAU, 48, rcol, maxf(1.0, float(rc.get("width", 2.5)) * (1.0 - rk)), true)
 		if _t <= 0.0:
@@ -641,14 +664,16 @@ class HitMarker extends Control:
 		var gap: float = float(st.get("gap", 8.0)) * pop
 		var length: float = float(st.get("len", 8.0)) * pop
 		var width: float = float(st.get("width", 2.0)) * (1.0 + 0.04 * float(_streak))
-		var c: Color = KILL if _kill else (HEAD if _head else HIT)
+		var c: Color = KILL if _kill else (MARKE if _marke else (HEAD if _head else HIT))
 		c.a *= fade
 		draw_set_transform(Vector2.ZERO, _tilt, Vector2.ONE)
 		for d: Vector2 in [Vector2(0.7071, 0.7071), Vector2(-0.7071, 0.7071), Vector2(0.7071, -0.7071), Vector2(-0.7071, -0.7071)]:
 			var a: Vector2 = d * gap
 			var b: Vector2 = d * (gap + length)
 			draw_line(a + Vector2(1, 1), b + Vector2(1, 1), Color(0, 0, 0, 0.5 * fade), width + 1.5 / s, true)
-			if _kill and _head:
+			if _kill and _marke:
+				draw_line(a, b, Color(MARKE.r, MARKE.g, MARKE.b, fade), width + 2.0, true)   # T-137: a Marke kill's violet edge
+			elif _kill and _head:
 				draw_line(a, b, Color(HEAD.r, HEAD.g, HEAD.b, fade), width + 2.0, true)
 			draw_line(a, b, c, width, true)
 		if _head and not _kill:

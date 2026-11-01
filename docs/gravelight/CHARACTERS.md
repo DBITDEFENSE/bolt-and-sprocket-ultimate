@@ -169,7 +169,7 @@ She is the commander of Operation Gravelight. Officially, her mission is to extr
 She lost two teams in France following orders she didn't fully understand. LANTERN is the same kind of order, and she has started to suspect it's worse.
 
 ### Secret: Directive LANTERN
-Retrieve a viable Nachtglas sample at any cost, secure it, and report to Mr. Hale. Destroy the facility and all records. Fasbender is "desirable but not essential." The squad is "expendable in pursuit of the primary objective." Peg pockets a shard at the end of Map 1.
+Retrieve a viable Nachtglas sample at any cost, secure it, and report to Mr. Hale. Destroy the facility and all records. Fasbender is "desirable but not essential." The squad is "expendable in pursuit of the primary objective." Peg pockets a shard at the end of Map 1. **(T-137)** The directive also says *"retrieve the tokens"*: the small implanted pieces reported in enemy personnel, from the dead, "do not ask the bearer." Peg does not know what they are for; London does not know either, only that Res's 1943 sample came with a note about "the mark that keeps you." She has a lead-lined tin for them and never shows it. Wren, who keeps finding them on the dead ("same hand, every time"), is the one who works out that Peg wants them.
 
 ### Arc
 - **Map 0:** Calm command. She plans the escape and the route to Kaltenbrunn. She asks Fasbender one odd question over the radio: "Is the material stable in transit?"
@@ -998,7 +998,7 @@ Dossier XP comes from playing as that character (any map). Each level unlocks it
 10. **The secret: Directive LANTERN, in full.**
     > MOST SECRET — EYES ONLY — LT. M. ASHWORTH
     > DIRECTIVE LANTERN (supersedes GRAVELIGHT operational orders where in conflict)
-    > 1. Primary objective: recover a viable sample of the material designated NACHTGLAS. Secure in the lead-lined container provided. Do not expose to living tissue.
+    > 1. Primary objective: recover a viable sample of the material designated NACHTGLAS. Secure in the lead-lined container provided. Do not expose to living tissue. Retrieve the tokens: the small implanted pieces reported in enemy personnel (right hand or brow), as many as practicable, from the dead. Same container. Do not ask the bearer.
     > 2. Dr. E. Fasbender is desirable but not essential. If extraction endangers the primary objective, he is to be abandoned.
     > 3. On recovery, destroy the facility and all records. No third party (Allied or otherwise) is to receive any sample, document, or witness account.
     > 4. Team members are expendable in pursuit of the primary objective. They are not to be informed of this directive.
@@ -1013,7 +1013,7 @@ Dossier XP comes from playing as that character (any map). Each level unlocks it
 5. **Quote pack 1:** additional blues lines and machine-naming.
 6. **The Black Panthers:** his battalion, the men he served with, how they were treated at home and how they fought anyway.
 7. **Outfit:** grease-stained overalls over fatigues, a wrench on his belt.
-8. **Audio diary 2:** "The Operator called me by name today. Said Hattie remembers. I don't think a machine ought to remember. I don't think anything here ought to."
+8. **Audio diary 2:** "The Operator called me by name today. Said Hattie remembers. I don't think a machine ought to remember. I don't think anything here ought to. ...There's a light in their hands. Right hand, every one of them, or up over the eye. Daddy's book has a verse about that and I am not going to say it into a wire recorder."
 9. **Quote pack 2 + calling card:** "Hattie" (a turbine with a hand-painted name).
 10. **The secret: the letter home to Ruthie, unsent, in full.**
     > *Dear Ruthie,*
@@ -1041,7 +1041,7 @@ Dossier XP comes from playing as that character (any map). Each level unlocks it
 5. **Quote pack 1:** additional Polish lines and notebook counts.
 6. **The letter:** Tomasz's only letter, in full. "The work is cold, the food is thin, and the walls hum at night. Don't worry. I'm practicing my aim on the rats. I still miss."
 7. **Outfit:** blood-dark smock, notebook tied to her belt.
-8. **Audio diary 2:** "Sister Agnieszka's note. She said Tomek was moved to the Lab Wing. I knew before I came. I didn't tell them. I'm telling you."
+8. **Audio diary 2:** "Sister Agnieszka's note. She said Tomek was moved to the Lab Wing. I knew before I came. I didn't tell them. I'm telling you. ...The glass in their hands. Same hand, every time. I have looked at every right hand on this road, and not one of ours has it. Not one. I write that down so that I believe it."
 9. **Quote pack 2 + calling card:** "The Good Page" (a notebook page with one name, no tally marks).
 10. **The secret: what happened to Tomasz.** Reinholt's specimen log, entry 211:
     > *Subject KB-4471 (Nowak, T., Polish, 20). Selected for dosage trial 7 owing to unusual tolerance. Subject asked repeatedly for his sister. Dosage at 0.4 strength: survived 11 days. Subject's final impulse (per resonance trace): "looking for someone." Reanimated subject does not attack. Subject wanders toward the mine entrance and must be restrained. Of no further use. Disposal deferred.*
