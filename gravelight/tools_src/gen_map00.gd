@@ -984,6 +984,7 @@ const MACHINE_FOOTPRINTS: Dictionary = {
 	"twin": Vector3(1.2, 2.1, 0.6), "teardrop": Vector3(1.0, 2.4, 0.9), "periscope": Vector3(0.9, 1.8, 0.65),
 	"wagon": Vector3(1.7, 1.7, 0.85), "safe": Vector3(1.1, 1.9, 0.95),
 	"coil": Vector3(0.8, 2.3, 0.6),   # Overclock Cordial: cabinet-sized (perks.json)
+	"register": Vector3(1.0, 2.2, 0.75),   # Ledger Lager (T-141): the brass cash register
 }
 ## crate spots: [name, position, yaw, can_start]
 const CRATES: Array = [["Hearth", Vector3(22.9, 0, 14.0), 90.0, true], ["GuestBed", Vector3(22.0, UP_Y, 0.8), 180.0, false],

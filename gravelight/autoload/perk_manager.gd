@@ -181,6 +181,11 @@ func stat(player: int, key: String, default: Variant) -> Variant:
 	return value
 
 
+## Ledger Lager III (T-141): the tip a Marke kill pays on top of the Marke bonus (UPDATE 09 contract C1/C6; 0 without it).
+func marke_tip(player: int) -> int:
+	return maxi(0, int(stat(player, "marke_tip", 0)))
+
+
 func price(perk_id: StringName) -> int:
 	return cost_for(perk_data(perk_id), GameState.is_solo())
 

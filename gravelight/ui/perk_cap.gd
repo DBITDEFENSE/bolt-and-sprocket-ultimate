@@ -28,7 +28,7 @@ const GREY_INK: Color = Color(0.72, 0.72, 0.7)
 const GREY_INK2: Color = Color(0.3, 0.3, 0.3)
 const COPPER: Color = Color(0.82, 0.5, 0.24)
 const GLYPHS: PackedStringArray = ["ironhide_stout", "second_wind", "trigger_tonic", "twin_barrel", "marathon_malt",
-	"hawkeye_brandy", "packmule_porter", "blastproof_bock", "overclock_cordial", "skyhook_sekt", "magpie_mead"]
+	"hawkeye_brandy", "packmule_porter", "blastproof_bock", "overclock_cordial", "skyhook_sekt", "magpie_mead", "ledger_lager"]
 
 static var _fallback_font: SystemFont = null
 
@@ -196,6 +196,8 @@ static func _glyph(ci: CanvasItem, c: Vector2, g: float, perk: StringName, ink: 
 			_crane(ci, c, g, ink, face, detail)
 		&"magpie_mead":
 			_magpie_eye(ci, c, g, ink, ink2, face, detail)
+		&"ledger_lager":
+			_tally_marks(ci, c, g, ink, ink2, detail)
 
 
 ## Skyhook Sekt (T-105): Fräulein Kranich, a crane in flight: a long neck and bill, two spread wings, trailing legs.
@@ -240,6 +242,17 @@ static func _magpie_eye(ci: CanvasItem, c: Vector2, g: float, ink: Color, ink2: 
 	ci.draw_circle(c + Vector2(0.0, -0.25) * g, g * 0.3, ink)
 	if detail:
 		ci.draw_circle(c + Vector2(0.1, -0.35) * g, g * 0.09, face)
+
+
+## Ledger Lager (T-141): the tally mark, four strokes and a fifth across, over the register's drawer line.
+static func _tally_marks(ci: CanvasItem, c: Vector2, g: float, ink: Color, ink2: Color, detail: bool) -> void:
+	var w: float = maxf(1.0, g * 0.13)
+	for i: int in 4:
+		var x: float = -0.48 + i * 0.32
+		ci.draw_line(c + Vector2(x, -0.62) * g, c + Vector2(x, 0.42) * g, ink, w)
+	ci.draw_line(c + Vector2(-0.72, 0.3) * g, c + Vector2(0.72, -0.5) * g, ink2, w)
+	if detail:
+		ci.draw_line(c + Vector2(-0.8, 0.68) * g, c + Vector2(0.8, 0.68) * g, ink, maxf(1.0, g * 0.07))
 
 
 static func _pts(c: Vector2, g: float, unit: Array) -> PackedVector2Array:
