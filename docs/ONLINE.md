@@ -145,11 +145,11 @@ on every file; we measured no reason to switch yet.
 | What | Size | Over the wire (gzip/brotli) |
 |---|---|---|
 | Engine (`cz-<hash>.wasm` + js) | 37.7 MB | ~10 MB |
-| Main pack (menus, scripts, data, characters, sounds, music) | 90.4 MB | ~78 MB |
-| **To reach the menu** | **128.4 MB** | **~88 MB** |
-| Game packs `game1..game4` (voices, the material and prop libraries, guns, wonder weapons, world objects, arms) | 234.4 MB | |
-| Map packs: Crossroads 22.2, Kaltenbrunn 5.5, Totenhafen 4.1, Fernflug shared 2.7 + acts 0.3-0.5 each | 36.0 MB | |
-| **Before the first match** (menu + game packs + the map) | **366-385 MB** | |
+| Main pack (menus, scripts, data, characters, sounds, music) | 90.9 MB | ~78 MB |
+| **To reach the menu** | **129.0 MB** | **~88 MB** |
+| Game packs `game1..game4` (voices, the material and prop libraries, guns, wonder weapons, world objects, arms) | 236.3 MB | |
+| Map packs: Crossroads 22.2, Kaltenbrunn 5.5, Totenhafen 4.1, Fernflug shared 2.7 + acts 0.3-0.5 each | 36.1 MB | |
+| **Before the first match** (menu + game packs + the map) | **368-387 MB** | |
 
 How it loads: the page downloads the engine and the main pack (the loading bar), then shows the menu. While you
 are in the menu the four game packs download in the background. When you pick a map, its pack downloads (a few
