@@ -38,6 +38,7 @@ Gameplay scenes never reference art directly. Each actor or prop has a `Visual` 
 | Path | What | Source | License | Status |
 |---|---|---|---|---|
 | `addons/gut/` | GUT 9.6.1 unit-test framework | github.com/bitwes/Gut | MIT (`addons/gut/LICENSE.md`) | in use (dev only, not shipped) |
+| `addons/webrtc/` | webrtc-native 1.2.2-stable GDExtension (WebRTC on desktop; libdatachannel, libjuice, usrsctp, libsrtp, mbedTLS, plog) | github.com/godotengine/webrtc-native | MIT (`addons/webrtc/LICENSE.txt`; bundled: MPL-2.0 / BSD-3 / Apache-2.0 / MIT, `LICENSE.<name>.txt`) | in use (shipped, online co-op, T-138) |
 | `tools/node_modules/acorn/` | acorn 8.14.0 JavaScript parser, used by the extraction tool | npmjs.com/package/acorn | MIT | dev tool, git-ignored |
 | `tools/dl_godot/` | Godot 4.7.2-stable editor binary | godotengine.org | MIT | dev tool, git-ignored |
 

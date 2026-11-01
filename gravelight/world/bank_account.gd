@@ -21,12 +21,11 @@ static func balance() -> int:
 	return int(_rec().get("balance", 0))
 
 
-## "" when the bank is open for business; else why not ("classic", "online").
+## "" when the bank is open for business; else why not ("classic"). Online it is open (T-138): every player's
+## balance is in their own profile; a client's Scrip moves on the host through Net._rpc_bank_req / _rpc_bank_state.
 static func closed_reason() -> String:
 	if bool(GLSettings.values.get("classic_rules", false)):
 		return "classic"
-	if Net.is_online():
-		return "online"
 	return ""
 
 
@@ -45,6 +44,9 @@ static func deposit(pid: int, amount: int) -> int:
 	var n: int = mini(mini(amount, Economy.get_scrip(pid)), room)
 	if n <= 0:
 		return 0
+	if Net.is_client():
+		Net._rpc_bank_req.rpc_id(1, "deposit", n)   # the balance grows when the host confirms the Scrip left (on_host_reply)
+		return n
 	Economy.bank_move(pid, -n)
 	var r: Dictionary = _rec()
 	r["balance"] = balance() + n
@@ -60,6 +62,12 @@ static func withdraw(pid: int, amount: int) -> int:
 	var n: int = mini(amount, balance())
 	if n <= 0:
 		return 0
+	if Net.is_client():
+		var rc: Dictionary = _rec()
+		rc["balance"] = balance() - n   # taken out now (no double spend while the request travels); refunded if refused
+		ProfileSave.save_profile()
+		Net._rpc_bank_req.rpc_id(1, "withdraw", n)
+		return n
 	Economy.bank_move(pid, n)
 	var r: Dictionary = _rec()
 	r["balance"] = balance() - n
@@ -82,3 +90,37 @@ static func accrue() -> int:
 	r["interest"] = int(r.get("interest", 0)) + i
 	ProfileSave.save_profile()
 	return i
+
+
+## Host (T-138): a client's deposit / withdrawal, the Scrip side only (its balance lives in its own profile).
+## A deposit moves at most the Scrip the client has; a withdrawal can't be checked against a balance the host
+## never sees, so it is capped at max_balance per request (the client already took it from its balance).
+## Returns the amount moved.
+static func host_move_for(pid: int, op: String, amount: int) -> int:
+	if closed_reason() != "" or not Net.is_host() or GameState.phase != GameState.Phase.PLAYING:
+		return 0
+	var n: int = clampi(amount, 0, int(cfg().get("max_balance", 1000000)))
+	match op:
+		"deposit":
+			n = mini(n, Economy.get_scrip(pid))
+			if n > 0:
+				Economy.bank_move(pid, -n)
+			return maxi(0, n)
+		"withdraw":
+			if n > 0:
+				Economy.bank_move(pid, n)
+			return n
+	return 0
+
+
+## Client (T-138): the host's answer. A deposit lands in the balance; a refused (part of a) withdrawal goes back.
+static func on_host_reply(op: String, asked: int, moved: int) -> void:
+	var r: Dictionary = _rec()
+	match op:
+		"deposit":
+			r["balance"] = balance() + maxi(0, moved)
+			r["deposited"] = int(r.get("deposited", 0)) + maxi(0, moved)
+		"withdraw":
+			r["balance"] = balance() + maxi(0, asked - moved)
+			r["withdrawn"] = int(r.get("withdrawn", 0)) + maxi(0, moved)
+	ProfileSave.save_profile()

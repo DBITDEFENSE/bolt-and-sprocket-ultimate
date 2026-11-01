@@ -54,6 +54,9 @@ var escort_pid: int = 0
 var wounded: bool = false
 ## Online co-op: he stays in his cage.
 var online_caged: bool = false
+## Online client (T-138, CompanionNet): his body here is a puppet of the host's Jakub (no brain, no state machine).
+var puppet: bool = false
+var _net_sig: Array = []
 var breakout_round: int = 5
 var breakout_zombie: Zombie = null
 ## Tools / tests: what happened, in order ("caged", "breakout", "burst", "kill", "waiting", "joined", "armed", ...).
@@ -243,13 +246,15 @@ func setup(map_root: MapRoot, mode: String, carried: Dictionary, cage_node: Hold
 	var c: Dictionary = cfg()
 	breakout_round = int((c.get("breakout", {}) as Dictionary).get("round", 5))
 	online_caged = Net.is_online() and not bool(c.get("online", false))
-	GLBus.round_started.connect(_on_round_started)
-	GLBus.round_ended.connect(_on_round_ended)
-	GLBus.perk_bought.connect(_on_perk_bought)
-	GLBus.zone_opened.connect(_on_zone_opened)
-	GLBus.boss_spawned.connect(_on_boss_spawned)
-	GLBus.power_activated.connect(_on_power)
-	GLBus.player_revived.connect(_on_revived)
+	puppet = CompanionNet.puppet_mode()
+	if not puppet:   # a client's puppet reacts to nothing itself: the host's Jakub does, and mirrors (T-138)
+		GLBus.round_started.connect(_on_round_started)
+		GLBus.round_ended.connect(_on_round_ended)
+		GLBus.perk_bought.connect(_on_perk_bought)
+		GLBus.zone_opened.connect(_on_zone_opened)
+		GLBus.boss_spawned.connect(_on_boss_spawned)
+		GLBus.power_activated.connect(_on_power)
+		GLBus.player_revived.connect(_on_revived)
 	var con: Node = get_node_or_null("/root/GLConsole")
 	if con != null and con.has_method("register"):
 		con.call("register", "jakub", _cmd, "jakub status|breakout|join|arm <weapon>|down: Jakub, the prisoner companion (U02 section 6.2)")
@@ -278,13 +283,15 @@ func _make_body(xf: Transform3D) -> void:
 	var p: Player = Player.new()
 	p.player_id = pid()
 	p.is_local = false
-	p.is_bot = true
+	p.is_bot = not puppet   # a client's Jakub is a puppet the host's stream moves (T-138)
 	p.is_companion = true
 	p.name = "Jakub"
 	GameState.characters[p.player_id] = &"jakub"
 	_active_pid = p.player_id
 	map.add_child(p)
 	p.global_transform = xf
+	if puppet:
+		CompanionNet.register_puppet(p)
 	p.bleedout_seconds = float(cfg().get("bleedout_seconds", 60.0))
 	p.max_hp = float(cfg().get("max_hp", 100.0)) * (float(cfg().get("wounded_hp_mult", 0.7)) if wounded else 1.0)
 	p.hp = p.max_hp
@@ -339,6 +346,9 @@ func _physics_process(delta: float) -> void:
 	_perk_cd = maxf(0.0, _perk_cd - delta)
 	if player == null or not is_instance_valid(player) or GameState.phase != GameState.Phase.PLAYING:
 		return
+	if puppet:
+		return   # the host runs him; _net_state / _net_say keep this body in step
+	_net_sig = CompanionNet.sync(self, _net_sig, _sig())
 	_tick_later()
 	match state:
 		State.CAGED:
@@ -606,13 +616,17 @@ func on_talk(p: Player) -> void:
 				_say("CAGE_TALK")
 		State.WAITING:
 			_say("TALK_ASK")
-			if p.is_local and DisplayServer.get_name() != "headless":
+			if CompanionNet.is_remote_human(p):
+				CompanionNet.send_card(self, p, gun_offer(p), {})   # online: the card opens on their screen (T-138)
+			elif p.is_local and DisplayServer.get_name() != "headless":
 				_open_choice(p)
 			else:
 				choose(p, bool(gun_offer(p).get("ok", false)))   # headless tools: the gun if he'd take it
 		State.JOINED:
 			var tonic: Dictionary = tonic_offer(p)
-			if bool(tonic.get("ok", false)) and p.is_local and DisplayServer.get_name() != "headless":
+			if bool(tonic.get("ok", false)) and CompanionNet.is_remote_human(p):
+				CompanionNet.send_card(self, p, gun_offer(p), tonic)   # online (T-138)
+			elif bool(tonic.get("ok", false)) and p.is_local and DisplayServer.get_name() != "headless":
 				_open_choice(p, tonic)   # T-127: a gun, a tonic, or never mind
 			elif bool(gun_offer(p).get("ok", false)):
 				_take_gun(p)
@@ -695,6 +709,9 @@ func tonic_offer(p: Player) -> Dictionary:
 
 ## Sends him for the tonic `tonic_offer(p)` names, paid from `p`'s Scrip at the till (the card's choice; tools).
 func choose_tonic(p: Player) -> bool:
+	if puppet:
+		CompanionNet.forward(self, &"net_by_choose_tonic", [])
+		return true
 	var t: Dictionary = tonic_offer(p)
 	if not bool(t.get("ok", false)):
 		return false
@@ -744,6 +761,9 @@ func gun_offer(p: Player) -> Dictionary:
 
 ## The choice card's answer (also tools / tests): give = the gun in `p`'s hands, else he comes with the shovel.
 func choose(p: Player, give: bool) -> void:
+	if puppet:
+		CompanionNet.forward(self, &"net_by_choose", [give])   # the host's Jakub decides (T-138)
+		return
 	if state != State.WAITING:
 		if state == State.JOINED and give:
 			_take_gun(p)
@@ -965,7 +985,74 @@ func _on_revived(who: int, _by: int) -> void:
 func _say(category: String) -> bool:
 	if player == null or not is_instance_valid(player):
 		return false
-	return GLVO.play_category(&"JAK", category, 1.0, player.player_id)
+	var ok: bool = GLVO.play_category(&"JAK", category, 1.0, player.player_id)
+	if ok and Net.replicating():
+		Net.mirror(self, &"_net_say", [category])   # online: his line on every client too (T-138)
+	return ok
+
+
+# ================================================================== online (T-138, CompanionNet)
+
+## What the clients mirror: [state, the weapon on his body, wounded].
+func _sig() -> Array:
+	var w: WeaponInstance = player.weapons.current() if player != null and player.weapons != null else null
+	var wid: String = String(w.id) if w != null else ("coal_shovel" if cage == null or cage.is_open else "")
+	return [int(state), wid, wounded]
+
+
+## Client: the host's Jakub changed state / weapon.
+func _net_state(st: int, wid: String, wnd: bool) -> void:
+	if player == null or not is_instance_valid(player):
+		return
+	var was: State = state
+	state = st as State
+	wounded = wnd
+	if player.remote_body != null:
+		player.remote_body.set_weapon(StringName(wid))
+		player.remote_body.set_wounded(wnd)
+	if state >= State.FREED:
+		var prop: Node3D = map.find_child("CoalShovel", true, false) as Node3D
+		if prop != null and not (prop is Player):
+			prop.visible = false
+	if state == State.JOINED and was != State.JOINED:
+		_event("joined")
+		if map.hud != null:
+			map.hud.show_banner("JAKUB OSTROWSKI JOINS YOU
+His letter is in the Archive.", 3.5)
+
+
+## Client: one of his lines (rolled here, from the same category).
+func _net_say(category: String) -> void:
+	if player != null and is_instance_valid(player):
+		GLVO.play_category(&"JAK", category, 1.0, player.player_id)
+
+
+## Client: the host opened his choice card for us (our talk reached him).
+func _net_card(_offer: Dictionary, tonic: Dictionary) -> void:
+	var me: Player = map.player
+	if me == null or not is_instance_valid(me):
+		return
+	if DisplayServer.get_name() == "headless":
+		choose(me, bool(gun_offer(me).get("ok", false)))   # headless tools: the gun if he'd take it
+		return
+	_open_choice(me, tonic)
+
+
+func net_callable() -> Array:
+	return ["net_by_choose", "net_by_choose_tonic"]
+
+
+## Host: a client's card answer (the pid comes from the connection, NetMatch.on_quest_request).
+func net_by_choose(pid: int, give: bool) -> void:
+	var p: Player = CompanionNet.player_for(pid)
+	if p != null:
+		choose(p, give)
+
+
+func net_by_choose_tonic(pid: int) -> void:
+	var p: Player = CompanionNet.player_for(pid)
+	if p != null:
+		choose_tonic(p)
 
 
 ## A line for later. If he's down when it comes due, or the line can't play yet (the channel is busy), it waits and

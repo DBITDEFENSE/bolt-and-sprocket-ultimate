@@ -50,7 +50,8 @@ const RELAY: PackedStringArray = [
 const QUEST_RELAY: PackedStringArray = ["sequence_progress", "sequence_reset", "holdout_changed"]
 ## Inventory calls the host may make on an owner's real WeaponHolder (WeaponHolder._forward_op).
 const INV_OPS: PackedStringArray = ["give_weapon", "set_melee", "refill_grenades", "refill_weapon", "refill_all",
-	"give_tactical", "remove_current", "fit_attachment", "set_kit"]   # the last two: M1911 attachments (UPDATE_04 section 6)
+	"give_tactical", "remove_current", "fit_attachment", "set_kit",
+	"give_net_entry", "gift_grenade", "gift_mag"]   # T-138: companions hand guns back and bring gifts online   # the last two: M1911 attachments (UPDATE_04 section 6)
 
 ## The ray of the shot being resolved right now (WeaponHolder._fire), sent with hits for host validation.
 static var shot_origin: Vector3 = Vector3.ZERO
@@ -340,6 +341,10 @@ func _send_players() -> void:
 		elif _latest.has(pid):
 			var l: Array = _latest[pid]
 			rows.append([int(pid), l[1], l[2], l[3], l[4]])
+	for c: Node in get_tree().get_nodes_in_group(&"companions"):   # Jakub, the map companions: host-simulated (T-138)
+		var cp: Player = c as Player
+		if cp != null and cp.is_bot and not players.has(cp.player_id) and cp.head != null:
+			rows.append([cp.player_id, cp.global_position, cp.rotation.y, cp.head.rotation.x, local_flags(cp)])
 	b.put_u8(rows.size())
 	for r: Array in rows:
 		b.put_u8(int(r[0]))
@@ -548,7 +553,10 @@ func on_quest_request(pid: int, op: StringName, args: Array) -> void:
 		var n: Node = map.get_node_or_null(NodePath(str(args[0])))
 		var method: StringName = StringName(str(args[1]))
 		if n != null and n.has_method(&"net_callable") and (n.call(&"net_callable") as Array).has(String(method)):
-			n.callv(method, args[2] as Array)
+			if String(method).begins_with("net_by_"):
+				n.callv(method, [pid] + (args[2] as Array))   # T-138: the host passes who asked (never trusted from the args)
+			else:
+				n.callv(method, args[2] as Array)
 
 
 ## Host -> the owner of `pid`: a call that must run on their machine (Player._forward). A bot's "machine" is
@@ -1051,7 +1059,9 @@ func on_players(data: PackedByteArray) -> void:
 		var pitch: float = b.get_float()
 		var flags: int = b.get_u8()
 		var p: Player = players.get(pid) as Player
-		if p != null and not p.is_local and p.interp != null:
+		if p == null:
+			p = companion_body(pid)
+		if p != null and not p.is_local and not p.is_bot and p.interp != null:
 			p.interp.push(t, pos, yaw, pitch, flags)
 
 
@@ -1349,3 +1359,84 @@ func _update_spectate(delta: float) -> void:
 	var look: Vector3 = eye - t.global_basis.z * 6.0
 	if _spectate_cam.global_position.distance_squared_to(look) > 0.01:
 		_spectate_cam.look_at(look, Vector3.UP)
+
+
+# ---------------------------------------------------------------- companions and the Bell Dome online (T-138)
+
+## A companion's body on this peer by its pid (host: the simulated one; client: the puppet), or null.
+func companion_body(pid: int) -> Player:
+	var c: Player = companions.get(pid) as Player
+	if c != null and is_instance_valid(c):
+		return c
+	for n: Node in get_tree().get_nodes_in_group(&"companions"):
+		var cp: Player = n as Player
+		if cp != null and cp.player_id == pid:
+			return cp
+	return null
+
+
+## Whitelisted client -> host calls on the session itself (on_quest_request "call").
+func net_callable() -> Array:
+	return ["net_by_bell_dome"]
+
+
+## The dome's settings as they travel: [pos, radius, seconds, slow, damage_mult, pull, color, upgraded].
+static func dome_args(d: BellDome) -> Array:
+	return [d.global_position if d.is_inside_tree() else d.position, d.radius, d.seconds, d.slow, d.damage_mult, d.pull, d.color, d.upgraded]
+
+
+## A dome was planted on this peer (BellDome.share). The working field always runs on the host, where the zombies
+## are simulated; every other peer gets the look (dome, ring, light, hum).
+func share_bell_dome(d: BellDome) -> void:
+	if not Net.is_online():
+		return
+	var args: Array = dome_args(d)
+	if Net.is_host():
+		_relay_dome(args, d.by_player)
+	else:
+		d.visual_only = true
+		request_call(self, &"net_by_bell_dome", [args])
+
+
+## Host: a client planted a dome: the working copy here (checked: near the planter, sane numbers), the look for
+## everyone else.
+func net_by_bell_dome(pid: int, args: Array) -> void:
+	var p: Player = players.get(pid) as Player
+	if p == null or args.size() < 8 or not (args[0] is Vector3):
+		return
+	var pos: Vector3 = args[0]
+	if pos.distance_to(p.global_position) > 12.0:
+		return
+	var d: BellDome = _spawn_dome(args, false)
+	if d != null:
+		d.by_player = pid
+		_relay_dome(dome_args(d), pid)
+
+
+func _relay_dome(args: Array, except_pid: int) -> void:
+	for other: int in Net.player_ids():
+		var peer: int = Net.peer_of(other)
+		if other != except_pid and other != Net.local_player_id() and peer > 1:
+			Net._rpc_world.rpc_id(peer, String(map.get_path_to(self)), &"_net_bell_dome", [args])
+
+
+## Every client: someone else's dome, to look at (the host runs the real one).
+func _net_bell_dome(args: Array) -> void:
+	_spawn_dome(args, true)
+
+
+func _spawn_dome(args: Array, visual: bool) -> BellDome:
+	if args.size() < 8 or map == null:
+		return null
+	var d: BellDome = BellDome.new()
+	d.radius = clampf(float(args[1]), 1.0, 10.0)
+	d.seconds = clampf(float(args[2]), 0.5, 15.0)
+	d.slow = clampf(float(args[3]), 0.0, 0.9)
+	d.damage_mult = clampf(float(args[4]), 1.0, 2.0)
+	d.pull = clampf(float(args[5]), 0.0, 3.0)
+	d.color = args[6] as Color if args[6] is Color else Color(0.6, 0.4, 1.0)
+	d.upgraded = bool(args[7])
+	d.visual_only = visual
+	map.add_child(d)
+	d.global_position = args[0] as Vector3
+	return d

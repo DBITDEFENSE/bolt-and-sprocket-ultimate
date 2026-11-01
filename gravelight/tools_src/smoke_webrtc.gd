@@ -39,6 +39,10 @@ var _bot_moved: float = 0.0
 var _bot_last: Vector3 = Vector3.INF
 var _bot_gun: String = ""
 var _old_map: Node = null
+var _jakub_ok: bool = false
+var _bank_t: float = -1.0
+var _bank_ok: bool = false
+var _bank_scrip0: int = 0
 
 
 func _ready() -> void:
@@ -302,6 +306,24 @@ func _client_tick(delta: float) -> void:
 				var w: WeaponInstance = bot.weapons.current() if bot.weapons != null else null
 				if w != null:
 					_bot_gun = String(w.id)
+			# Jakub (host-only, T-138): a puppet here, fed by the host's player stream
+			var jak: Player = map.get_node_or_null("Jakub") as Player if map != null else null
+			if jak != null and not _jakub_ok:
+				if jak.is_bot:
+					_fail("Jakub is simulated on the client")
+					_jakub_ok = true
+				elif jak.interp != null and not jak.interp.is_empty():
+					_jakub_ok = true
+					_notes.append("Jakub is a host-fed puppet on the client")
+			# the bank online (T-138): a deposit moves our Scrip on the host and lands in our own profile
+			if _step_t > 3.0 and _bank_t < 0.0 and Economy.get_scrip(2) >= 100:
+				_bank_scrip0 = Economy.get_scrip(2)
+				_bank_t = _step_t
+				if BankAccount.deposit(2, 100) != 100:
+					_fail("the bank refused a client deposit online")
+			elif _bank_t > 0.0 and not _bank_ok and BankAccount.balance() >= 100 and Economy.get_scrip(2) <= _bank_scrip0 - 100:
+				_bank_ok = true
+				_notes.append("bank deposit round-trip %.2f s (balance %d)" % [_step_t - _bank_t, BankAccount.balance()])
 			if _step_t > 200.0:
 				_fail("the host never asked us to drop")
 				_client_finish()
@@ -351,6 +373,10 @@ func _client_finish() -> void:
 		_fails.append("the bot puppet never got its gun")
 	else:
 		_notes.append("bot puppet moved %.1f m, gun %s" % [_bot_moved, _bot_gun])
+	if not _jakub_ok:
+		_fails.append("never saw Jakub as a host-fed puppet")
+	if not _bank_ok:
+		_fails.append("the client's bank deposit never round-tripped (balance %d)" % BankAccount.balance())
 	var res: Dictionary = {"pass": _fails.is_empty(), "fails": Array(_fails), "notes": Array(_notes)}
 	var f: FileAccess = FileAccess.open(RESULT_FILE, FileAccess.WRITE)
 	if f != null:

@@ -1055,3 +1055,23 @@ func _rpc_game_over(stats: Dictionary, elapsed: float) -> void:
 func _rpc_console_reply(text: String) -> void:
 	console_reply.emit(text)
 	GLConsole.print_line(text)
+
+
+# ================================================================== the bank online (C3, T-138)
+
+## Client -> host: move Scrip for a deposit / withdrawal at a bank counter (the balance is the client's own).
+@rpc("any_peer", "call_remote", "reliable")
+func _rpc_bank_req(op: String, amount: int) -> void:
+	if not is_host():
+		return
+	var pid: int = _sender_pid()
+	if pid == 0:
+		return
+	var moved: int = BankAccount.host_move_for(pid, op, amount)
+	_rpc_bank_state.rpc_id(multiplayer.get_remote_sender_id(), op, amount, moved)
+
+
+## Host -> that client: how much Scrip actually moved.
+@rpc("authority", "call_remote", "reliable")
+func _rpc_bank_state(op: String, asked: int, moved: int) -> void:
+	BankAccount.on_host_reply(op, asked, moved)

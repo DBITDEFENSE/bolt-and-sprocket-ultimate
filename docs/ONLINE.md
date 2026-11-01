@@ -78,6 +78,13 @@ Cloudflare Calls TURN, or run `coturn` on a small server), then put its details 
 Leave `urls` empty to switch it off again. (A TURN credential in the game is visible to players; use a provider's
 limited or time-boxed credentials, never an admin password.)
 
+## What works the same online
+Everything in a match runs on the host and shows on every screen: rounds, Scrip, perks, the crate, power-ups, quests,
+**Jakub and the map companions** (talk to them and their choice card opens on your screen; they fight, go down and get
+revived like offline), the Totenglocke's **Bell Dome** (whoever plants it, it slows and staggers the zombies on the
+host and everyone sees it), and **the bank** (each player's savings stay in their own profile; deposits and
+withdrawals move Scrip through the host).
+
 ## Known limits
 - **No host migration**: when the host leaves, the match ends.
 - **Strict networks without TURN** can't connect (the 15 s timeout message). Adding TURN fixes it.
@@ -88,6 +95,10 @@ limited or time-boxed credentials, never an admin password.)
 - The desktop build needs the `addons/webrtc` extension (webrtc-native, MIT; Windows and Linux 64-bit are included);
   the browser build has WebRTC built in. Without the extension, online lobbies say so and LAN still works.
 - Up to 4 players (humans + bots).
+- Online, Jakub is the Map 0 prisoner you free in the match; the Jakub who travels with you between campaign maps
+  (and the one from your profile on other maps) is still offline-only, as is a map companion carried between acts.
+- The bank trusts each player's own saved balance (it lives on their PC), so a tampered game could withdraw more than
+  it saved. Fine among friends; there is no server-side bank.
 
 ## For developers
 - Code: `gravelight/autoload/net.gd` (Net: ENet `host_game`/`join_game`, WebRTC `host_online`/`join_online`, the roster,

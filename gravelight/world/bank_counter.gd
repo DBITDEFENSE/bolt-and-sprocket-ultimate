@@ -20,13 +20,16 @@ func get_prompt(p: Player) -> String:
 	var why: String = BankAccount.closed_reason()
 	if why == "classic":
 		return "The bank is shut (Classic Rules)"
-	if why == "online":
-		return "The bank is shut (online)"
 	return "Bank: ǂ %d saved, +1%% a round" % BankAccount.balance()
 
 
 func can_interact(p: Player) -> bool:
 	return p != null and not p.is_bot and not p.downed and card == null and BankAccount.closed_reason() == "" and p.is_local
+
+
+## Online (T-138): the card opens on the player's own machine (their balance is in their own profile).
+func net_local() -> bool:
+	return true
 
 
 func hold_time(_p: Player) -> float:

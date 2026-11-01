@@ -325,3 +325,59 @@ func test_lobby_screens_build_every_page() -> void:
 	MockLobbyService.shared = null
 	if was_kind == "supabase":
 		Lobbies.use_supabase()
+
+
+# ---------------------------------------------------------------- host-only systems online (C3)
+
+func test_bank_client_reply_lands_in_its_own_profile() -> void:
+	var saved_profile: Dictionary = ProfileSave.profile.duplicate(true)
+	var saved_path: String = ProfileSave.path
+	var saved_classic: Variant = GLSettings.values.get("classic_rules", false)
+	ProfileSave.path = "user://_test_online_bank.json"
+	ProfileSave.profile = ProfileSave.new_profile()
+	GLSettings.values["classic_rules"] = false
+	assert_eq(BankAccount.closed_reason(), "", "the bank is open (online too)")
+	BankAccount.on_host_reply("deposit", 1000, 1000)
+	assert_eq(BankAccount.balance(), 1000, "a confirmed deposit lands in the client's balance")
+	BankAccount.on_host_reply("deposit", 500, 200)
+	assert_eq(BankAccount.balance(), 1200, "only what really moved")
+	# a withdrawal is taken from the balance when asked (withdraw), the reply refunds what the host refused
+	(ProfileSave.profile["bank"] as Dictionary)["balance"] = 700   # (as if withdraw(500) had already taken 500)
+	BankAccount.on_host_reply("withdraw", 500, 0)
+	assert_eq(BankAccount.balance(), 1200, "a refused withdrawal goes back")
+	assert_eq(BankAccount.host_move_for(2, "deposit", 100), 0, "offline nothing moves through the host path")
+	ProfileSave.profile = saved_profile
+	ProfileSave.path = saved_path
+	GLSettings.values["classic_rules"] = saved_classic
+
+
+func test_companion_cards_travel_without_objects() -> void:
+	var w: Dictionary = CompanionNet.wire({"ok": true, "name": "Thompson", "weapon": WeaponInstance.create(&"thompson"), "machine": Node3D.new()})
+	assert_eq(w.keys().size(), 2)
+	assert_true(bool(w["ok"]))
+	assert_false(w.has("weapon"))
+	assert_false(CompanionNet.is_remote_human(null))
+	assert_false(CompanionNet.puppet_mode(), "offline the companions are simulated here")
+
+
+func test_dome_args_and_whitelist() -> void:
+	var d: BellDome = BellDome.new()
+	d.radius = 7.0
+	d.seconds = 9.0
+	var a: Array = NetMatch.dome_args(d)
+	assert_eq(a.size(), 8)
+	assert_eq(float(a[1]), 7.0)
+	d.free()
+	var s: NetMatch = NetMatch.new()
+	assert_true(s.net_callable().has("net_by_bell_dome"))
+	s.free()
+	var jc: JakubCompanion = JakubCompanion.new()
+	assert_true(jc.net_callable().has("net_by_choose"))
+	assert_true(jc.net_callable().has("net_by_choose_tonic"))
+	jc.free()
+	assert_true(NetMatch.INV_OPS.has("give_net_entry") and NetMatch.INV_OPS.has("gift_grenade") and NetMatch.INV_OPS.has("gift_mag"))
+
+
+func test_jakub_comes_online() -> void:
+	var c: Dictionary = GLData.load_json("res://data/gravelight/companion_jakub.json")
+	assert_true(bool(c.get("online", false)), "online co-op: he breaks out and joins (host-simulated)")

@@ -202,7 +202,7 @@ func ensure_online_squad() -> BotSquad:
 ## bleed-out; the human keeps the solo rules) and an empty BotSquad for his brain. No co-op HUD. Returns the squad.
 func ensure_companion_session() -> BotSquad:
 	if _online:
-		return squad
+		return ensure_online_squad() if Net.is_host() else null   # T-138: companions run on the host online
 	if session == null:
 		session = NetMatch.new()
 		session.name = "NetMatch"
