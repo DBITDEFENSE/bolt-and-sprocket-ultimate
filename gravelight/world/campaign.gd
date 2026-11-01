@@ -331,7 +331,7 @@ static func travel(payload: Dictionary, tree: SceneTree) -> void:
 	if not await MapPacks.ensure(scene):   # T-139: the browser build fetches the map's pack first (desktop: at once)
 		return
 	tree.paused = false
-	tree.change_scene_to_file(scene)
+	LoadingScreen.go(tree, scene, String(target))   # T-144: the next map's art, a tip and a lore line while it loads
 
 
 ## Before the new map's MapRoot runs: the squad composition it will rebuild (bots, skill, survivors).

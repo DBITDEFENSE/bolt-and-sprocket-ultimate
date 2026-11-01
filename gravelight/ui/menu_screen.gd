@@ -1,12 +1,16 @@
 class_name MenuScreen
 extends Control
 ## Base for full-screen menu pages: a titled panel with a Back button. Back / Esc / pad B closes it.
+## T-144: the page comes in with a 0.25 s cross-fade and a 20 px slide over the live menu scene (a darker shade
+## behind it), and fades out the same way when it closes.
 
 signal closed
 
 var content: VBoxContainer
 var _title: String = ""
 var _scroll: ScrollContainer
+var _page_root: Control = null
+var _closing: bool = false
 
 
 func _init(title: String = "") -> void:
@@ -18,7 +22,7 @@ func _init(title: String = "") -> void:
 func _ready() -> void:
 	MenuKit.apply_theme(self)
 	var shade: ColorRect = ColorRect.new()
-	shade.color = Color(0, 0, 0, 0.55)
+	shade.color = Color(0.0, 0.0, 0.015, 0.66)
 	shade.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(shade)
 	var margin: MarginContainer = MarginContainer.new()
@@ -40,6 +44,10 @@ func _ready() -> void:
 	var back: Button = MenuKit.button("Back", close, 22, "")   # close() plays ui_back
 	back.custom_minimum_size = Vector2(140, 44)
 	head.add_child(back)
+	var rule: ColorRect = MenuKit.rule(2.0)
+	rule.custom_minimum_size = Vector2(0, 2)
+	rule.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	outer.add_child(rule)
 	var scroll: ScrollContainer = ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -52,7 +60,9 @@ func _ready() -> void:
 	build()
 	MenuKit.focus_first.call_deferred(content)
 	_scroll = scroll
+	_page_root = margin
 	_settle_scroll()
+	MenuKit.transition_in.call_deferred(margin)
 
 
 ## A long page (the Muster) opened part-way down: follow_focus scrolled before the layout settled. Once it has,
@@ -74,9 +84,20 @@ func build() -> void:
 
 
 func close() -> void:
+	if _closing:
+		return
+	_closing = true
 	AudioDirector.play_2d("ui_back", 0.0, 0.0)
 	closed.emit()
-	queue_free()
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	set_process_unhandled_input(false)
+	if _page_root != null and is_inside_tree() and is_visible_in_tree():
+		MenuKit.transition_out(_page_root, queue_free, 1.0, 0.16)
+		var sh: Node = get_child(0)
+		if sh is ColorRect:
+			create_tween().tween_property(sh, "modulate:a", 0.0, 0.16)
+	else:
+		queue_free()
 
 
 func _unhandled_input(event: InputEvent) -> void:

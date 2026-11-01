@@ -252,6 +252,128 @@ static func wordmark(height_px: float) -> Control:
 	return tr
 
 
+## T-144: a letter-spaced copy of a font (the menu's caps: "P L A Y"), cached per (font, spacing).
+static var _spaced: Dictionary = {}
+
+
+static func spaced(base: Font, spacing: int) -> Font:
+	var key: String = "%d|%d" % [base.get_instance_id(), spacing]
+	if _spaced.has(key):
+		return _spaced[key]
+	var fv: FontVariation = FontVariation.new()
+	fv.base_font = base
+	fv.spacing_glyph = spacing
+	_spaced[key] = fv
+	return fv
+
+
+## T-144: programmatic focus (a menu building its column) stays silent until this tick time.
+static var _quiet_until: int = 0
+
+
+static func quiet(msec: int = 250) -> void:
+	_quiet_until = Time.get_ticks_msec() + msec
+
+
+static func is_quiet() -> bool:
+	return Time.get_ticks_msec() < _quiet_until
+
+
+## T-144: the main menu's large column button (Special Elite, letter-spaced caps). Hover and focus are one state:
+## the label slides LINK_SLIDE px right, a violet glow comes up behind it and the typewriter ticks; a press stamps.
+const LINK_SLIDE: float = 12.0
+const LINK_MARGIN: float = 16.0
+
+
+static func menu_link(text_str: String, cb: Callable, size_px: int = 38) -> Button:
+	var b: Button = Button.new()
+	b.name = "Link_" + text_str.to_upper().replace(" ", "_").replace("&", "AND")
+	b.text = text_str.to_upper()
+	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	b.focus_mode = Control.FOCUS_ALL
+	b.add_theme_font_override("font", spaced(type_font(), 5))
+	b.add_theme_font_size_override("font_size", size_px)
+	b.add_theme_color_override("font_color", PAPER.darkened(0.12))
+	b.add_theme_color_override("font_hover_color", PAPER)
+	b.add_theme_color_override("font_focus_color", PAPER)
+	b.add_theme_color_override("font_pressed_color", GOLD)
+	b.add_theme_color_override("font_hover_pressed_color", GOLD)
+	b.add_theme_color_override("font_disabled_color", DIM.darkened(0.3))
+	b.add_theme_constant_override("outline_size", 6)
+	b.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.75))
+	var sb: StyleBoxFlat = StyleBoxFlat.new()
+	sb.bg_color = Color(VIOLET.r, VIOLET.g, VIOLET.b, 0.0)
+	sb.shadow_color = Color(VIOLET.r, VIOLET.g, VIOLET.b, 0.0)
+	sb.shadow_size = 18
+	sb.border_color = Color(VIOLET.r, VIOLET.g, VIOLET.b, 0.0)
+	sb.border_width_left = 3
+	sb.set_corner_radius_all(2)
+	sb.content_margin_left = LINK_MARGIN
+	sb.content_margin_right = 24
+	sb.content_margin_top = 4
+	sb.content_margin_bottom = 4
+	for state: String in ["normal", "hover", "pressed", "focus", "hover_pressed", "disabled"]:
+		b.add_theme_stylebox_override(state, sb)
+	b.custom_minimum_size = Vector2(0, size_px * 1.55)
+	b.set_meta("link_box", sb)
+	var lit: Callable = func(on: bool) -> void:
+		if not b.is_inside_tree():
+			return
+		var tw: Tween = b.create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tw.tween_property(sb, "content_margin_left", LINK_MARGIN + (LINK_SLIDE if on else 0.0), 0.16)
+		tw.tween_property(sb, "bg_color:a", 0.16 if on else 0.0, 0.16)
+		tw.tween_property(sb, "shadow_color:a", 0.38 if on else 0.0, 0.16)
+		tw.tween_property(sb, "border_color:a", 1.0 if on else 0.0, 0.16)
+	b.focus_entered.connect(func() -> void:
+		lit.call(true)
+		if not is_quiet():
+			AudioDirector.play_2d("ui_tick", 0.0, 0.06))
+	b.focus_exited.connect(lit.bind(false))
+	b.mouse_entered.connect(func() -> void:
+		if not b.disabled and b.focus_mode != Control.FOCUS_NONE:
+			b.grab_focus())
+	b.pressed.connect(func() -> void: AudioDirector.play_2d("ui_stamp", 0.0, 0.03))
+	if cb.is_valid():
+		b.pressed.connect(cb)
+	return b
+
+
+## T-144: a thin vertical violet rule (left of the main menu's column).
+static func rule(height: float, width: float = 2.0, color: Color = VIOLET) -> ColorRect:
+	var r: ColorRect = ColorRect.new()
+	r.name = "Rule"
+	r.color = Color(color.r, color.g, color.b, 0.85)
+	r.custom_minimum_size = Vector2(width, height)
+	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return r
+
+
+## T-144: a screen comes in: 0.25 s cross-fade with a 20 px slide (from the right; dir -1 from the left). The control
+## must not sit in a container (the container would put it back).
+static func transition_in(c: Control, dir: float = 1.0, secs: float = 0.25, px_off: float = 20.0) -> void:
+	if c == null or not c.is_inside_tree():
+		return
+	var home: Vector2 = c.position
+	c.modulate.a = 0.0
+	c.position = home + Vector2(px_off * dir, 0.0)
+	var tw: Tween = c.create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tw.tween_property(c, "modulate:a", 1.0, secs)
+	tw.tween_property(c, "position", home, secs)
+
+
+## T-144: the reverse; `done` runs when it has faded.
+static func transition_out(c: Control, done: Callable = Callable(), dir: float = -1.0, secs: float = 0.18, px_off: float = 20.0) -> void:
+	if c == null or not c.is_inside_tree():
+		if done.is_valid():
+			done.call()
+		return
+	var tw: Tween = c.create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	tw.tween_property(c, "modulate:a", 0.0, secs)
+	tw.tween_property(c, "position", c.position + Vector2(px_off * dir, 0.0), secs)
+	if done.is_valid():
+		tw.chain().tween_callback(done)
+
+
 ## A readable paragraph in the body face, word-wrapped.
 static func para(text_str: String, size: int = -1, color: Color = PAPER) -> Label:
 	var l: Label = Label.new()

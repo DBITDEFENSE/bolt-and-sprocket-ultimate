@@ -1,6 +1,9 @@
 class_name MenuCharacter
 extends MenuScreen
 ## Play: pick a survivor (traits + dossier level), then a map (respecting unlocks).
+## T-144: the maps are cards (MapCards: a 16:9 preview, the date line, the best round, the egg status), the campaign
+## is the first card; `campaign_only` (the main menu's PLAY > CAMPAIGN) shows just the campaign. A map loads through
+## the loading screen (LoadingScreen.go: its preview, a tip and a lore line).
 
 const CHARACTERS: Array = [
 	["dutch", "Sgt. Walter \"Dutch\" Kowalczyk", "US Army Ranger", "+10% melee damage"],
@@ -19,10 +22,18 @@ const MAPS: Array = [
 ]
 
 var _picked: String = ""
+## T-144: PLAY > CAMPAIGN: after the survivor, only the campaign card.
+var campaign_only: bool = false
 
 
 func _init() -> void:
 	super._init("Choose your survivor")
+
+
+func _ready() -> void:
+	if campaign_only:
+		_title = "Campaign: choose your survivor"
+	super._ready()
 
 
 func build() -> void:
@@ -53,26 +64,28 @@ func _build_maps() -> void:
 	content.add_child(MenuKit.para("Survivor: %s" % _picked.capitalize(), 20, MenuKit.GOLD))
 	_build_muster()
 	_build_squad()
-	# The campaign (T-033): the inn, then exfil at round 10 to Kaltenbrunn and at round 30 onward, kit and all.
-	var camp: Button = MenuKit.button("Campaign   ·   Crossroads Inn  >  Kaltenbrunn  >  Totenhafen", _start.bind(Campaign.scene_for(Campaign.first_map()), true), 24, "ui_confirm")
-	camp.custom_minimum_size = Vector2(0, 64)
-	content.add_child(camp)
-	content.add_child(MenuKit.para("Hold the inn to round 10, then take the exfil beacon with everything you carry. Round 30 at Kaltenbrunn opens the road north.", 16, MenuKit.DIM))
-	content.add_child(MenuKit.label("Single map", 22, MenuKit.PAPER))
-	for m: Array in MAPS:
-		var id: StringName = StringName(m[0])
-		var open: bool = ProfileSave.is_map_unlocked(id)
-		var best: int = ProfileSave.best_round(id)
-		var text: String = str(m[1])
-		if open and best > 0:
-			text += "   (best: round %d)" % best
-		if not open:
-			text += "   [locked] " + str(m[3])
-		elif str(m[2]) == "":
-			text += "   [unlocked: coming soon]"
-		var b: Button = MenuKit.button(text, _start.bind(str(m[2])), 24, "ui_confirm")
-		b.disabled = not open or str(m[2]) == ""
-		content.add_child(b)
+	# T-144: one card per map (MapCards), the campaign first (T-033: the inn, then exfil at round 10 to Kaltenbrunn
+	# and at round 30 onward, kit and all)
+	var grid: GridContainer = GridContainer.new()
+	grid.name = "MapCards"
+	grid.columns = 4
+	grid.add_theme_constant_override("h_separation", 16)
+	grid.add_theme_constant_override("v_separation", 16)
+	content.add_child(grid)
+	var first: String = String(Campaign.first_map())
+	var camp: Button = MapCards.card("CAMPAIGN", "The Road North", "Crossroads Inn  >  Kaltenbrunn  >  Totenhafen",
+		MapCards.preview(first), [["ROUND 10 EXFIL, THEN 30", MenuKit.GOLD]], _start.bind(Campaign.scene_for(Campaign.first_map()), true))
+	camp.name = "Card_Campaign"
+	grid.add_child(camp)
+	if campaign_only:
+		content.add_child(MenuKit.para("Hold the inn to round 10, then take the exfil beacon with everything you carry. Round 30 at Kaltenbrunn opens the road north.", 18, MenuKit.DIM))
+	else:
+		for m: Array in MAPS:
+			var id: String = str(m[0])
+			var c: Button = MapCards.map_card(id, _start.bind(str(m[2])))
+			if str(m[2]) == "":
+				c.disabled = true
+			grid.add_child(c)
 	content.add_child(MenuKit.button("Back to survivors", _unpick, 20, ""))
 
 
@@ -150,9 +163,7 @@ func _start(scene: String, campaign: bool = false) -> void:
 		Campaign.begin()
 	else:
 		Campaign.reset()   # single-map play: no beacon, no chain
-	if not await MapPacks.ensure(scene):   # T-139: the browser build fetches the map's pack first (desktop: at once)
-		return
-	get_tree().change_scene_to_file(scene)
+	LoadingScreen.go(get_tree(), scene)   # T-144: the map's art, a tip and a lore line; it awaits MapPacks.ensure (T-139) first
 
 
 

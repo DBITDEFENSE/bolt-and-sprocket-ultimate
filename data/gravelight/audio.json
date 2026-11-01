@@ -2516,6 +2516,33 @@
    "max_voices": 1,
    "pitch": [1.0, 1.0]
   },
+  "ui_stamp": {
+   "files": [
+    "res://gravelight/audio/sfx/ui/stamp_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -7.0,
+   "max_voices": 2,
+   "pitch": [0.97, 1.03]
+  },
+  "ui_tick": {
+   "files": [
+    "res://gravelight/audio/sfx/ui/tick_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -12.0,
+   "max_voices": 3,
+   "pitch": [0.94, 1.06]
+  },
+  "ui_whoosh": {
+   "files": [
+    "res://gravelight/audio/sfx/ui/whoosh_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -13.0,
+   "max_voices": 1,
+   "pitch": [0.96, 1.04]
+  },
   "ui_click": {
    "files": [
     "res://gravelight/audio/sfx/ui/click_01.wav"
