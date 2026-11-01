@@ -27,6 +27,7 @@ var _muted: bool = false
 
 
 func _ready() -> void:
+	GameState.hold_flag_while(&"cutscene", self)   # T-142: no relief squad during a cutscene
 	var map: Node = get_tree().current_scene
 	cfg = (GLData.load_json("res://data/gravelight/map04b.json").get("flight", {}) as Dictionary).get("london", {}) if cfg.is_empty() else cfg
 	_was_god = GameState.god_mode

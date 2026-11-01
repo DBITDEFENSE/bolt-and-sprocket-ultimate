@@ -1021,6 +1021,19 @@ func _rpc_zev(net_id: int, ev: StringName, args: Array) -> void:
 		session.on_zombie_event(net_id, ev, args)
 
 
+## T-142: relief-squad soldiers (NetMatch._send_soldiers / on_soldier_*).
+@rpc("authority", "call_remote", "unreliable_ordered", 5)
+func _rpc_ssnap(data: PackedByteArray) -> void:
+	if session != null:
+		session.on_soldier_snapshot(data)
+
+
+@rpc("authority", "call_remote", "reliable")
+func _rpc_sev(net_id: int, ev: StringName, args: Array) -> void:
+	if session != null:
+		session.on_soldier_event(net_id, ev, args)
+
+
 @rpc("authority", "call_remote", "reliable")
 func _rpc_world(path: String, ev: StringName, args: Array) -> void:
 	if session != null:

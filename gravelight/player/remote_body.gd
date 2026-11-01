@@ -301,9 +301,8 @@ func _build_body(headgear: String) -> void:
 ## props but draw nothing; the head node drops to the rig's head pivot so head-relative targets (the drink) meet the
 ## modelled mouth.
 func _build_person() -> void:
-	var p: PersonRig = PersonRig.new()
-	if not p.setup(String(character)):
-		p.free()
+	var p: PersonRig = _make_person_rig()
+	if p == null:
 		return
 	person = p
 	_pivot.add_child(p)
@@ -337,6 +336,15 @@ func _build_person() -> void:
 			mi.mesh = null   # still carries the props
 		else:
 			mi.visible = false
+
+
+## The modelled body for this puppet (null = keep the primitives). SoldierBody (T-142) dresses its own.
+func _make_person_rig() -> PersonRig:
+	var p: PersonRig = PersonRig.new()
+	if not p.setup(String(character)):
+		p.free()
+		return null
+	return p
 
 
 ## Dutch: the BAR man. Netting over the helmet, a BAR belt of magazine pouches, a canteen, a pack, the diamond

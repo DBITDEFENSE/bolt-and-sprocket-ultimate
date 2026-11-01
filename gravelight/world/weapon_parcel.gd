@@ -46,6 +46,9 @@ func build_greybox() -> void:
 func _refresh_label() -> void:
 	if _label == null:
 		return
+	if for_pid <= 0:
+		_label.text = "%s (dropped)" % _gun_name() if not carried else ""   # T-142: a fallen soldier's gun, anyone's
+		return
 	var who: String = Net.display_name(from_pid)
 	_label.text = "%s from %s" % [_gun_name(), who] if not carried else ""
 
@@ -84,20 +87,22 @@ func _process(delta: float) -> void:
 
 
 func get_prompt(player: Player) -> String:
+	if for_pid <= 0:
+		return "Hold [%s] to take the dropped %s" % [prompt_key(&"interact"), _gun_name()]   # T-142
 	if player.player_id != for_pid:
 		return ""
 	return "Hold [%s] to take the %s (%s bought it for you)" % [prompt_key(&"interact"), _gun_name(), Net.display_name(from_pid)]
 
 
 func can_interact(player: Player) -> bool:
-	return player.player_id == for_pid and player.weapons != null
+	return (for_pid <= 0 or player.player_id == for_pid) and player.weapons != null
 
 
 func interact(player: Player) -> void:
 	if not can_interact(player):
 		return
 	player.weapons.give_weapon(weapon_id)
-	GLBus.weapon_acquired.emit(player.player_id, weapon_id, &"teammate")
+	GLBus.weapon_acquired.emit(player.player_id, weapon_id, &"teammate" if for_pid > 0 else &"pickup")
 	AudioDirector.play_3d("buy", global_position, -6.0)
 	taken.emit(player.player_id)
 	queue_free()

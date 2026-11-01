@@ -824,6 +824,17 @@ def neural_hash(speaker: str, text: str, emo_name: str, emo: dict, cues: set[str
     return hashlib.sha1(key.encode("utf-8")).hexdigest()[:16]
 
 
+def cast_key(speaker: str, line_id: str) -> str:
+    """T-142: the voice_cast.json entry for a line. A speaker whose lines share a voice per id prefix (the relief
+    squads: speaker SQD, one voice per faction) has entries named after the prefix ("SQD_AK" for SQD_AK_ARRIVE_01);
+    the longest matching one wins, else the speaker's own entry."""
+    best = speaker
+    for k in CAST.get("cast", {}):
+        if k.startswith(speaker + "_") and line_id.startswith(k + "_") and len(k) > len(best):
+            best = k
+    return best
+
+
 def _wants(only: list[str], line_id: str, rec_speaker: str, part_speaker: str) -> bool:
     if not only:
         return True
@@ -870,16 +881,17 @@ def main() -> int:
             if not _wants(ONLY, line_id, speaker, spk):
                 continue
             file_id = "%s_p%d" % (line_id, i) if multi else line_id
-            if spk in neural_speakers:
+            ck = cast_key(spk, line_id)
+            if spk in neural_speakers or ck in neural_speakers:
                 parts, cues = speech_parts(raw_text)
                 say = plain_text(parts)
                 if not re.search(r"[A-Za-z0-9]", say):
                     missing[file_id] = "no speech: stage direction only (%s)" % raw_text[:40]
                     continue
-                emo_name, emo = emotion_for(category, say, spk)
-                c = CAST["cast"][spk]
-                wanted[file_id] = dict(line=line_id, speaker=spk, text=say, engine="kokoro", raw=raw_text,
-                                       hash=neural_hash(spk, say, emo_name, emo, cues), voice=str(c["voice"]),
+                emo_name, emo = emotion_for(category, say, ck)
+                c = CAST["cast"][ck]
+                wanted[file_id] = dict(line=line_id, speaker=spk, cast_key=ck, text=say, engine="kokoro", raw=raw_text,
+                                       hash=neural_hash(ck, say, emo_name, emo, cues), voice=str(c["voice"]),
                                        emo_name=emo_name, emo=emo, cues=cues, category=category,
                                        njob={"speaker": spk, "text": say, "voice": str(c["voice"]),
                                              "speed": round(float(c.get("speed", 1.0)) * float(emo["speed"]), 4),
@@ -1029,7 +1041,7 @@ def main() -> int:
         raw = os.path.join(tmp, fid + ".raw.wav")
         try:
             if job["engine"] == "kokoro":
-                y = process_neural(raw, job["speaker"], job["emo_name"], job["emo"], job["cues"], job["category"], fid)
+                y = process_neural(raw, job.get("cast_key", job["speaker"]), job["emo_name"], job["emo"], job["cues"], job["category"], fid)
             else:
                 y = process(raw, job["prof"], job["cues"], fid)
             proc = os.path.join(tmp, fid + ".proc.wav")

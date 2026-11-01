@@ -92,6 +92,7 @@ static func speaker_code(character: StringName) -> String:
 
 
 func _ready() -> void:
+	GameState.hold_flag_while(&"cutscene", self)   # T-142: no relief squad during a cutscene
 	var path: String = str(cfg.get("cards_file", "res://data/gravelight/cards_m4.json"))
 	data = GLData.load_json(path) if FileAccess.file_exists(path) else {}
 	_was_god = GameState.god_mode

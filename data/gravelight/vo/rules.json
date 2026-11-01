@@ -338,6 +338,178 @@
     "MARKE_RELAY": [
       0,
       1.0
+    ],
+    "AK_ARRIVE": [
+      0,
+      1.0
+    ],
+    "AK_CONTACT": [
+      20,
+      1.0
+    ],
+    "AK_HURT": [
+      8,
+      0.7
+    ],
+    "AK_DOWN": [
+      4,
+      1.0
+    ],
+    "AK_LEAVE": [
+      0,
+      1.0
+    ],
+    "AK_SURVIVE": [
+      0,
+      1.0
+    ],
+    "SOV_ARRIVE": [
+      0,
+      1.0
+    ],
+    "SOV_CONTACT": [
+      20,
+      1.0
+    ],
+    "SOV_HURT": [
+      8,
+      0.7
+    ],
+    "SOV_DOWN": [
+      4,
+      1.0
+    ],
+    "SOV_LEAVE": [
+      0,
+      1.0
+    ],
+    "SOV_SURVIVE": [
+      0,
+      1.0
+    ],
+    "VS_ARRIVE": [
+      0,
+      1.0
+    ],
+    "VS_CONTACT": [
+      20,
+      1.0
+    ],
+    "VS_HURT": [
+      8,
+      0.7
+    ],
+    "VS_DOWN": [
+      4,
+      1.0
+    ],
+    "VS_LEAVE": [
+      0,
+      1.0
+    ],
+    "VS_SURVIVE": [
+      0,
+      1.0
+    ],
+    "CDO_ARRIVE": [
+      0,
+      1.0
+    ],
+    "CDO_CONTACT": [
+      20,
+      1.0
+    ],
+    "CDO_HURT": [
+      8,
+      0.7
+    ],
+    "CDO_DOWN": [
+      4,
+      1.0
+    ],
+    "CDO_LEAVE": [
+      0,
+      1.0
+    ],
+    "CDO_SURVIVE": [
+      0,
+      1.0
+    ],
+    "KM_ARRIVE": [
+      0,
+      1.0
+    ],
+    "KM_CONTACT": [
+      20,
+      1.0
+    ],
+    "KM_HURT": [
+      8,
+      0.7
+    ],
+    "KM_DOWN": [
+      4,
+      1.0
+    ],
+    "KM_LEAVE": [
+      0,
+      1.0
+    ],
+    "KM_SURVIVE": [
+      0,
+      1.0
+    ],
+    "PARA_ARRIVE": [
+      0,
+      1.0
+    ],
+    "PARA_CONTACT": [
+      20,
+      1.0
+    ],
+    "PARA_HURT": [
+      8,
+      0.7
+    ],
+    "PARA_DOWN": [
+      4,
+      1.0
+    ],
+    "PARA_LEAVE": [
+      0,
+      1.0
+    ],
+    "PARA_SURVIVE": [
+      0,
+      1.0
+    ],
+    "MP_ARRIVE": [
+      0,
+      1.0
+    ],
+    "MP_CONTACT": [
+      20,
+      1.0
+    ],
+    "MP_HURT": [
+      8,
+      0.7
+    ],
+    "MP_DOWN": [
+      4,
+      1.0
+    ],
+    "MP_LEAVE": [
+      0,
+      1.0
+    ],
+    "MP_SURVIVE": [
+      0,
+      1.0
+    ],
+    "SQD_RISE": [
+      0,
+      1.0
     ]
   },
   "round_start_always": [
@@ -601,7 +773,8 @@
     "M0_EGG_WRONG": 2,
     "M0_EGG_DONE": 2,
     "M0_EGG_TONICS": 2,
-    "MARKE_FIRST": 2
+    "MARKE_FIRST": 2,
+    "SQD_RISE": 2
   },
   "squad_second_channel": [
     "TEAM_DOWN",

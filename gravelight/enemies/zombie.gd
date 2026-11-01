@@ -322,6 +322,24 @@ func _apply_marke() -> void:
 		(_marke_glint[site] as MeshInstance3D).visible = site == marke_site
 
 
+## T-142: a risen relief-squad soldier of an unmarked faction (CANON 2.2: risen near raw substrate, not by a Marke):
+## no site, no glint, no Marke hitbox. Puppets call it too (SoldierKits.dress_risen from the spawn event).
+func clear_marke() -> void:
+	marke_site = &""
+	for site: StringName in _marke_glint.keys():
+		(_marke_glint[site] as MeshInstance3D).visible = false
+	_marke_layers(false)
+
+
+## T-142: a risen soldier's headgear on this body's bones (SoldierKits.add_gear); freed on pool reuse.
+var _squad_gear: Array[MeshInstance3D] = []
+func dress_squad_gear(look: Dictionary) -> void:
+	for sg: MeshInstance3D in _squad_gear:
+		if is_instance_valid(sg):
+			sg.queue_free()
+	_squad_gear = SoldierKits.add_gear(look, func(bone: String) -> Node3D: return bone_attachment(bone), true)
+
+
 ## True when this body carries a Marke (the kind allows it and the body was built with the sites).
 func has_marke() -> bool:
 	return not _marke_hb.is_empty() and bool(_cfg.get("marke", true))
@@ -2214,6 +2232,10 @@ func _set_inst(key: String, v: Variant) -> void:
 func _reset_presentation() -> void:
 	if has_meta("person"):
 		remove_meta("person")   # T-099: a pooled zombie that was a risen person goes back to its kit
+	for sg: MeshInstance3D in _squad_gear:
+		if is_instance_valid(sg):
+			sg.queue_free()   # T-142: a risen soldier's headgear goes with him
+	_squad_gear.clear()
 	_end_ragdoll()
 	ZombieGore.restore(self)
 	_severed_logic.clear()

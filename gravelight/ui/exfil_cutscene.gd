@@ -32,6 +32,7 @@ var _perk_hud_offset: Vector2 = Vector2.ZERO
 
 
 func _ready() -> void:
+	GameState.hold_flag_while(&"cutscene", self)   # T-142: no relief squad during a cutscene
 	_def = (Campaign.cfg().get("cutscenes", {}) as Dictionary).get(cutscene_id, {})
 	if _def.is_empty():
 		push_warning("[campaign] no cutscene '%s' in campaign.json; skipping" % cutscene_id)

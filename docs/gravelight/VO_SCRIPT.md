@@ -2801,3 +2801,127 @@ they play everywhere.
 | `OPR_MARKE_OPR_03` | OPR | "One mark, one name, one {account}. Closed with... [tape squeal] ...no. No. Accounts here do not {close}." |
 | `FAS_MARKE_RELAY_01` | FAS | "[radio, low] You have found the marks. Listen to me. The chip does nothing by itself. It listens. It listens for the Ledger's carrier, the hum, the thing you feel in your teeth. While the hum reaches it, the body remembers the last thing it wanted. Silence the carrier and they lie down. I have seen it once, for eleven seconds, when Opitz blew a fuse. Eleven seconds of quiet. Then it came back." |
 | `FAS_MARKE_RELAY_02` | FAS | "They offered me one in forty-two. I refused, and Lenz wrote my name in a column. It is the only wise thing I did in that place." |
+
+## 26. RELIEF SQUADS (UPDATE 09 §4, DECISIONS T-142; data/gravelight/squads.json)
+
+Soldiers who come in from the edge of the map, hold with the squad a while, and mostly do not get out (contract C5).
+Speaker `SQD`, category `<FACTION>_<CAT>` (ids `SQD_<FACTION>_<CAT>_NN`); one voice per faction (voice_cast.json
+`SQD_AK`, `SQD_SOV`, ...). **Triggers** (`ReliefSquad._bark`): `ARRIVE` the leader as they walk in; `CONTACT` the first
+shot of the squad; `HURT` a hit (35%) or a revive; `DOWN` a squad mate when one goes down or dies; `LEAVE` when they
+pull out; `SURVIVE` the one who makes it to the round's end. The first soldier of a match who rises draws a `SQD_RISE`
+line from a survivor (`GLVO.squad_say`). Period voices, English with the odd word of their own language, no slurs;
+the Volkssturm are old men, played with dignity; nobody names the Marke (the squad never learns the word).
+
+| ID | Speaker | Line |
+|---|---|---|
+| `SQD_AK_ARRIVE_01` | SQD | "Armia Krajowa! Don't shoot, we are with you. We heard the guns from the forest." |
+| `SQD_AK_ARRIVE_02` | SQD | "Spokojnie, friends. Home Army. We came the long way round the dead." |
+| `SQD_AK_ARRIVE_03` | SQD | "We are Home Army, from the woods. Tell us where you want us." |
+| `SQD_AK_CONTACT_01` | SQD | "There, by the trees! Ognia!" |
+| `SQD_AK_CONTACT_02` | SQD | "They come! Hold the line, chłopaki!" |
+| `SQD_AK_CONTACT_03` | SQD | "Dead ones, many. Shoot for the head!" |
+| `SQD_AK_HURT_01` | SQD | "Ah! It's nothing. Nothing." |
+| `SQD_AK_HURT_02` | SQD | "Psiakrew... they bit through the coat." |
+| `SQD_AK_DOWN_01` | SQD | "Man down! Pomocy, help him!" |
+| `SQD_AK_DOWN_02` | SQD | "They have Stefan! Get him up!" |
+| `SQD_AK_LEAVE_01` | SQD | "We go now. Others wait for us in the forest. Z Bogiem." |
+| `SQD_AK_LEAVE_02` | SQD | "We cannot stay. Good luck to you. Hold your ground." |
+| `SQD_AK_SURVIVE_01` | SQD | "Only me left. Then I will tell them in the forest what you did here." |
+| `SQD_AK_SURVIVE_02` | SQD | "I am still breathing. Dziękuję. Thank you." |
+| `SQD_SOV_ARRIVE_01` | SQD | "Razvedka! Red Army scouts. We followed your shooting." |
+| `SQD_SOV_ARRIVE_02` | SQD | "Tovarishchi! Easy with the rifles. We are scouts, from the east." |
+| `SQD_SOV_ARRIVE_03` | SQD | "Soviet patrol. We saw the dead walking on the road and came to see who is still alive." |
+| `SQD_SOV_CONTACT_01` | SQD | "Here they come! Vperyod!" |
+| `SQD_SOV_CONTACT_02` | SQD | "Ogon! Fire, fire!" |
+| `SQD_SOV_CONTACT_03` | SQD | "Davai, davai, shoot them in the head!" |
+| `SQD_SOV_HURT_01` | SQD | "Chyort! I am hit." |
+| `SQD_SOV_HURT_02` | SQD | "Only a scratch. Keep shooting." |
+| `SQD_SOV_DOWN_01` | SQD | "Sasha is down! Pomogi!" |
+| `SQD_SOV_DOWN_02` | SQD | "They got Kolya! Somebody, get him!" |
+| `SQD_SOV_LEAVE_01` | SQD | "Our orders are east. We go. Udachi, comrades." |
+| `SQD_SOV_LEAVE_02` | SQD | "We must report this. Hold out. We go back." |
+| `SQD_SOV_SURVIVE_01` | SQD | "I am the last one. I will report what we saw here." |
+| `SQD_SOV_SURVIVE_02` | SQD | "Still alive. Spasibo, comrades." |
+| `SQD_VS_ARRIVE_01` | SQD | "Nicht schießen! We are only old men from the village. We threw the armbands in the ditch." |
+| `SQD_VS_ARRIVE_02` | SQD | "Volkssturm, ja. But we are finished with that. Let us stand with you." |
+| `SQD_VS_ARRIVE_03` | SQD | "We heard you fighting. Better to stand here than hang for running." |
+| `SQD_VS_CONTACT_01` | SQD | "Da! There they come. Steady, old hands." |
+| `SQD_VS_CONTACT_02` | SQD | "Feuer! Aim low, Herr Nachbar, they are close." |
+| `SQD_VS_CONTACT_03` | SQD | "Mein Gott, so many. Shoot, shoot!" |
+| `SQD_VS_HURT_01` | SQD | "Ach... my old bones." |
+| `SQD_VS_HURT_02` | SQD | "I am hit. It is not so bad. Not so bad." |
+| `SQD_VS_DOWN_01` | SQD | "Karl is down! Help him up, quickly!" |
+| `SQD_VS_DOWN_02` | SQD | "They have the schoolmaster! Get him!" |
+| `SQD_VS_LEAVE_01` | SQD | "We go to our families now. Gott schütze euch." |
+| `SQD_VS_LEAVE_02` | SQD | "Enough. We are going home, if there is still a home." |
+| `SQD_VS_SURVIVE_01` | SQD | "I am the last of us. Forty years in that village... Danke. Thank you." |
+| `SQD_VS_SURVIVE_02` | SQD | "Still here. I will tell their wives they stood." |
+| `SQD_CDO_ARRIVE_01` | SQD | "Commando. Came in off the beach. Thought you could use a hand." |
+| `SQD_CDO_ARRIVE_02` | SQD | "Don't shoot, we're British! Came in with the boats." |
+| `SQD_CDO_ARRIVE_03` | SQD | "Evening. We heard the racket from the water. Where do you want us?" |
+| `SQD_CDO_CONTACT_01` | SQD | "Contact front! Bloody hundreds of them!" |
+| `SQD_CDO_CONTACT_02` | SQD | "Here they come, lads. Make every round count." |
+| `SQD_CDO_CONTACT_03` | SQD | "Rapid fire! Heads, aim for the heads!" |
+| `SQD_CDO_HURT_01` | SQD | "Ah, the blighter got me." |
+| `SQD_CDO_HURT_02` | SQD | "I'm hit. Carry on, carry on." |
+| `SQD_CDO_DOWN_01` | SQD | "Man down! Get to him!" |
+| `SQD_CDO_DOWN_02` | SQD | "Taff's down! Somebody pull him back!" |
+| `SQD_CDO_LEAVE_01` | SQD | "Right, the boats won't wait. We're off. Good luck." |
+| `SQD_CDO_LEAVE_02` | SQD | "That's us. Back to the beach, lads, at the double." |
+| `SQD_CDO_SURVIVE_01` | SQD | "Just me, then. I'll see the night out with you." |
+| `SQD_CDO_SURVIVE_02` | SQD | "Still standing. Someone has to tell them at home." |
+| `SQD_KM_ARRIVE_01` | SQD | "Nicht schießen! Navy. We left the pens. We are done with all of it." |
+| `SQD_KM_ARRIVE_02` | SQD | "We are sailors, not fighters. But we can shoot. Let us help." |
+| `SQD_KM_ARRIVE_03` | SQD | "The port is lost. Mein Gott, the things in the water. We come to you." |
+| `SQD_KM_CONTACT_01` | SQD | "Achtung! On the quay, there!" |
+| `SQD_KM_CONTACT_02` | SQD | "Feuer frei! Fire, fire!" |
+| `SQD_KM_CONTACT_03` | SQD | "They come out of the water. Shoot!" |
+| `SQD_KM_HURT_01` | SQD | "Verdammt, I am hit." |
+| `SQD_KM_HURT_02` | SQD | "Ah... it is nothing. Keep shooting." |
+| `SQD_KM_DOWN_01` | SQD | "Hein is down! Help him!" |
+| `SQD_KM_DOWN_02` | SQD | "They have Jupp! Pull him back!" |
+| `SQD_KM_LEAVE_01` | SQD | "We take a boat, if there is one left. Viel Glück." |
+| `SQD_KM_LEAVE_02` | SQD | "We go along the shore. Maybe the British will take us." |
+| `SQD_KM_SURVIVE_01` | SQD | "Only me. I will stay with you until it is over." |
+| `SQD_KM_SURVIVE_02` | SQD | "Still alive. Danke. I did not think I would say that tonight." |
+| `SQD_PARA_ARRIVE_01` | SQD | "Hey! Don't shoot, we're Americans! Jumped last night and missed by about forty miles." |
+| `SQD_PARA_ARRIVE_02` | SQD | "Airborne. We got scattered all over this valley. Mind if we tag along?" |
+| `SQD_PARA_ARRIVE_03` | SQD | "Thank God, somebody alive. We've been fighting these things since we hit the ground." |
+| `SQD_PARA_CONTACT_01` | SQD | "Here they come! Light 'em up!" |
+| `SQD_PARA_CONTACT_02` | SQD | "Contact! Shoot for the head, they don't stop otherwise!" |
+| `SQD_PARA_CONTACT_03` | SQD | "Holy smokes, there's a ton of 'em!" |
+| `SQD_PARA_HURT_01` | SQD | "I'm hit! I'm okay, I'm okay." |
+| `SQD_PARA_HURT_02` | SQD | "Son of a gun got me." |
+| `SQD_PARA_DOWN_01` | SQD | "Medic! Somebody get Murphy back up!" |
+| `SQD_PARA_DOWN_02` | SQD | "Man down! Cover him!" |
+| `SQD_PARA_LEAVE_01` | SQD | "We gotta find our outfit. Good luck, folks." |
+| `SQD_PARA_LEAVE_02` | SQD | "That's our cue. Rally point's west. Keep your heads down." |
+| `SQD_PARA_SURVIVE_01` | SQD | "Just me left. Guess I'm with you now." |
+| `SQD_PARA_SURVIVE_02` | SQD | "Still kicking. Thanks for having our backs." |
+| `SQD_MP_ARRIVE_01` | SQD | "Military Police! Range security. Who's in charge here?" |
+| `SQD_MP_ARRIVE_02` | SQD | "MPs, from the motor pool. The whole range has gone to hell." |
+| `SQD_MP_ARRIVE_03` | SQD | "Stand easy, we're with you. Nobody told us about any of this." |
+| `SQD_MP_CONTACT_01` | SQD | "Here they come! Weapons free!" |
+| `SQD_MP_CONTACT_02` | SQD | "Contact on the salt! Open fire!" |
+| `SQD_MP_CONTACT_03` | SQD | "Those were our guys this morning. Shoot 'em anyway!" |
+| `SQD_MP_HURT_01` | SQD | "Ah! I'm hit!" |
+| `SQD_MP_HURT_02` | SQD | "Took one. Still in it." |
+| `SQD_MP_DOWN_01` | SQD | "Sarge is down! Get him up!" |
+| `SQD_MP_DOWN_02` | SQD | "Man down! Cover me, I'm going for him!" |
+| `SQD_MP_LEAVE_01` | SQD | "Orders are to secure the gate. We're moving out." |
+| `SQD_MP_LEAVE_02` | SQD | "We're pulling back to the radar tower. Good luck." |
+| `SQD_MP_SURVIVE_01` | SQD | "Last one standing. Guess the paperwork's on me." |
+| `SQD_MP_SURVIVE_02` | SQD | "Still here. I'll put you all in my report. The good parts." |
+
+The squad on the first soldier who gets up (`SQD_RISE`, a story beat, once a match):
+
+| ID | Speaker | Line |
+|---|---|---|
+| `DEA_SQD_RISE_01` | DEA | "They came to help us, and now they're getting up. Lord, have mercy." |
+| `DEA_SQD_RISE_02` | DEA | "Don't look at the faces. Just... don't look at the faces." |
+| `WRN_SQD_RISE_01` | WRN | "Those were the men who came for us. Now they come for us again." |
+| `WRN_SQD_RISE_02` | WRN | "Shoot them. They would want it. I would want it." |
+| `DUT_SQD_RISE_01` | DUT | "Aw, hell. Sorry, pal. Nothing personal." |
+| `DUT_SQD_RISE_02` | DUT | "They got back up. Course they got back up." |
+| `PEG_SQD_RISE_01` | PEG | "They're turning. Put them down before they stand." |
+| `PEG_SQD_RISE_02` | PEG | "We'll mourn them later. Now we shoot them." |

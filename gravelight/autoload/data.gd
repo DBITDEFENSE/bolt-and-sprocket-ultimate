@@ -13,6 +13,7 @@ const TABLES: PackedStringArray = [
 	"online",   # T-138: online lobbies (LobbyService), WebRTC ICE servers, rejoin grace, timeouts
 	"companions",   # T-135: one more companion per map (MapCompanion)
 	"pilot",   # T-126: GRAVELIGHT ONE's trapped pilot (TrappedPilot), Map 0's wreck
+	"squads",   # T-142: the relief squads (ReliefSquad, Soldier, SoldierBrain)
 	"vfx",   # UPDATE 05 section 6 (T-095): muzzle flashes, casings, impact debris, atmosphere (Effects)
 
 ]
