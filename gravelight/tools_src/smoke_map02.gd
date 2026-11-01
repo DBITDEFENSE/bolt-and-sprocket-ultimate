@@ -182,7 +182,7 @@ func _run() -> void:
 			start_spot = s
 	_check(start_spot != null and bool(start_spot.get("can_start")), "crate started at the hut or the warhead store")
 	var want_props: int = 0
-	for row: Dictionary in (GLData.table("story_props").get("props", []) as Array):
+	for row: Dictionary in (GLData.load_json(StoryProp.DATA_PATH).get("props", []) as Array):
 		if str(row.get("map", "")) == "2":
 			want_props += 1
 	_check(get_tree().get_nodes_in_group(&"story_props").size() == want_props, "%d Map 2 story items spawned (data says %d)" % [get_tree().get_nodes_in_group(&"story_props").size(), want_props])
