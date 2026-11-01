@@ -629,6 +629,24 @@
    ]
   },
   {
+   "folder": "assets/third_party/polyhaven/hanging-industrial-lamp",
+   "source": "polyhaven",
+   "id": "hanging-industrial-lamp",
+   "title": "Hanging Industrial Lamp",
+   "author": "Kuutti Siitonen",
+   "url": "https://polyhaven.com/a/hanging_industrial_lamp",
+   "license": "CC0",
+   "credit": "\"Hanging Industrial Lamp\" by Kuutti Siitonen (Poly Haven), CC0. Modified: glTF packed to GLB, textures converted to PNG and resized, mesh decimated in Blender (tools/decimate_props.py).",
+   "files": [
+    "model.glb",
+    "textures/hanging_industrial_lamp_arm.png",
+    "textures/hanging_industrial_lamp_diff.png",
+    "textures/hanging_industrial_lamp_emissive.png",
+    "textures/hanging_industrial_lamp_glass_nor_gl.png",
+    "textures/hanging_industrial_lamp_nor_gl.png"
+   ]
+  },
+  {
    "folder": "assets/third_party/polyhaven/hessian-230",
    "source": "polyhaven",
    "id": "hessian-230",
@@ -641,6 +659,26 @@
     "textures/hessian_230_albedo.png",
     "textures/hessian_230_normal.png",
     "textures/hessian_230_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/industrial-wall-lamp",
+   "source": "polyhaven",
+   "id": "industrial-wall-lamp",
+   "title": "Industrial Wall Lamp",
+   "author": "Kuutti Siitonen",
+   "url": "https://polyhaven.com/a/industrial_wall_lamp",
+   "license": "CC0",
+   "credit": "\"Industrial Wall Lamp\" by Kuutti Siitonen (Poly Haven), CC0. Modified: glTF packed to GLB, textures converted to PNG and resized, mesh decimated in Blender (tools/decimate_props.py).",
+   "files": [
+    "model.glb",
+    "textures/industrial_wall_lamp_arm.png",
+    "textures/industrial_wall_lamp_diff.png",
+    "textures/industrial_wall_lamp_emissive.png",
+    "textures/industrial_wall_lamp_glass_arm.png",
+    "textures/industrial_wall_lamp_glass_diff.png",
+    "textures/industrial_wall_lamp_glass_nor_gl.png",
+    "textures/industrial_wall_lamp_nor_gl.png"
    ]
   },
   {
@@ -796,6 +834,22 @@
    ]
   },
   {
+   "folder": "assets/third_party/polyhaven/old-gas-mask",
+   "source": "polyhaven",
+   "id": "old-gas-mask",
+   "title": "Old Gas Mask",
+   "author": "Michał Wiśniewski",
+   "url": "https://polyhaven.com/a/old_gas_mask",
+   "license": "CC0",
+   "credit": "\"Old Gas Mask\" by Michał Wiśniewski (Poly Haven), CC0. Modified: glTF packed to GLB, textures converted to PNG and resized, mesh decimated in Blender (tools/decimate_props.py).",
+   "files": [
+    "model.glb",
+    "textures/old_gas_mask_arm.png",
+    "textures/old_gas_mask_diff.png",
+    "textures/old_gas_mask_nor_gl.png"
+   ]
+  },
+  {
    "folder": "assets/third_party/polyhaven/painted-wooden-bench",
    "source": "polyhaven",
    "id": "painted-wooden-bench",
@@ -844,6 +898,21 @@
    ]
   },
   {
+   "folder": "assets/third_party/polyhaven/peeling-painted-wall",
+   "source": "polyhaven",
+   "id": "peeling-painted-wall",
+   "title": "Peeling Painted Wall",
+   "author": "Dimitrios Savva",
+   "url": "https://polyhaven.com/a/peeling_painted_wall",
+   "license": "CC0",
+   "credit": "\"Peeling Painted Wall\" by Dimitrios Savva (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/peeling_painted_wall_albedo.png",
+    "textures/peeling_painted_wall_normal.png",
+    "textures/peeling_painted_wall_orm.png"
+   ]
+  },
+  {
    "folder": "assets/third_party/polyhaven/pine-bark",
    "source": "polyhaven",
    "id": "pine-bark",
@@ -856,6 +925,21 @@
     "textures/pine_bark_albedo.png",
     "textures/pine_bark_normal.png",
     "textures/pine_bark_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/plank-flooring-02",
+   "source": "polyhaven",
+   "id": "plank-flooring-02",
+   "title": "Plank Flooring 02",
+   "author": "Dario Barresi (Processing), Dimitrios Savva (Photography)",
+   "url": "https://polyhaven.com/a/plank_flooring_02",
+   "license": "CC0",
+   "credit": "\"Plank Flooring 02\" by Dario Barresi (Processing), Dimitrios Savva (Photography) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/plank_flooring_02_albedo.png",
+    "textures/plank_flooring_02_normal.png",
+    "textures/plank_flooring_02_orm.png"
    ]
   },
   {
@@ -1776,6 +1860,17 @@
    ]
   },
   {
+   "credit": "\"Hanging Industrial Lamp\" by Kuutti Siitonen (Poly Haven), CC0. Modified: glTF packed to GLB, textures converted to PNG and resized, mesh decimated in Blender (tools/decimate_props.py).",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Hanging Industrial Lamp"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/hanging-industrial-lamp"
+   ]
+  },
+  {
    "credit": "\"Hessian 230\" by colormass (Photography), Rico Cilliers (Processing) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
    "license": "CC0",
    "source": "polyhaven",
@@ -1784,6 +1879,17 @@
    ],
    "folders": [
     "assets/third_party/polyhaven/hessian-230"
+   ]
+  },
+  {
+   "credit": "\"Industrial Wall Lamp\" by Kuutti Siitonen (Poly Haven), CC0. Modified: glTF packed to GLB, textures converted to PNG and resized, mesh decimated in Blender (tools/decimate_props.py).",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Industrial Wall Lamp"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/industrial-wall-lamp"
    ]
   },
   {
@@ -1897,6 +2003,17 @@
    ]
   },
   {
+   "credit": "\"Old Gas Mask\" by Michał Wiśniewski (Poly Haven), CC0. Modified: glTF packed to GLB, textures converted to PNG and resized, mesh decimated in Blender (tools/decimate_props.py).",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Old Gas Mask"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/old-gas-mask"
+   ]
+  },
+  {
    "credit": "\"Painted Wooden Bench\" by Kirill Sannikov (Poly Haven), CC0. Modified: glTF packed to GLB, textures converted to PNG and resized.",
    "license": "CC0",
    "source": "polyhaven",
@@ -1930,6 +2047,17 @@
    ]
   },
   {
+   "credit": "\"Peeling Painted Wall\" by Dimitrios Savva (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Peeling Painted Wall"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/peeling-painted-wall"
+   ]
+  },
+  {
    "credit": "\"Pine Bark\" by Dimitrios Savva (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
    "license": "CC0",
    "source": "polyhaven",
@@ -1938,6 +2066,17 @@
    ],
    "folders": [
     "assets/third_party/polyhaven/pine-bark"
+   ]
+  },
+  {
+   "credit": "\"Plank Flooring 02\" by Dario Barresi (Processing), Dimitrios Savva (Photography) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Plank Flooring 02"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/plank-flooring-02"
    ]
   },
   {

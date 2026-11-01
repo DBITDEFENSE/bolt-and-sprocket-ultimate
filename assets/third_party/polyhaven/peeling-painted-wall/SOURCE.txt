@@ -1,0 +1,12 @@
+Title: Peeling Painted Wall
+Authors: Dimitrios Savva
+Source: https://polyhaven.com/a/peeling_painted_wall
+File: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/peeling_painted_wall/peeling_painted_wall_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/peeling_painted_wall/peeling_painted_wall_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/peeling_painted_wall/peeling_painted_wall_arm_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Peeling Painted Wall" by Dimitrios Savva (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 1k (albedo, normal OpenGL +Y, ORM at 1k)
+Tile size: 1.80 x 1.80 m
+Poly Haven id: peeling_painted_wall
+Library key: fl_plaster
+Downloaded: 2026-11-01 by Claude Code (U09 Act I builder, T-146) (tools/fetch_cc0_materials.py)
+Files used: textures/peeling_painted_wall_albedo.png, textures/peeling_painted_wall_normal.png, textures/peeling_painted_wall_orm.png
