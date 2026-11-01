@@ -50,7 +50,8 @@ const RELAY: PackedStringArray = [
 const QUEST_RELAY: PackedStringArray = ["sequence_progress", "sequence_reset", "holdout_changed"]
 ## Inventory calls the host may make on an owner's real WeaponHolder (WeaponHolder._forward_op).
 const INV_OPS: PackedStringArray = ["give_weapon", "set_melee", "refill_grenades", "refill_weapon", "refill_all",
-	"give_tactical", "remove_current", "fit_attachment", "set_kit"]   # the last two: M1911 attachments (UPDATE_04 section 6)
+	"give_tactical", "remove_current", "fit_attachment", "set_kit",
+	"give_net_entry", "gift_grenade", "gift_mag"]   # T-138: companions hand guns back and bring gifts online   # the last two: M1911 attachments (UPDATE_04 section 6)
 
 ## The ray of the shot being resolved right now (WeaponHolder._fire), sent with hits for host validation.
 static var shot_origin: Vector3 = Vector3.ZERO
@@ -187,8 +188,8 @@ func _tick_bleed(delta: float) -> void:
 
 func _all_loaded() -> bool:
 	for pid: int in Net.player_ids():
-		if pid != Net.local_player_id() and not _loaded.has(pid):
-			return false
+		if pid != Net.local_player_id() and not _loaded.has(pid) and Net.peer_of(pid) > 1:
+			return false   # bots (peer 0) and dropped players never report in
 	return true
 
 
@@ -200,6 +201,120 @@ func _begin() -> void:
 
 func on_client_loaded(pid: int) -> void:
 	_loaded[pid] = true
+	if begun:
+		resync_peer(pid)   # a rejoin (T-138): the match is already running
+
+
+# ---------------------------------------------------------------- online bots, drops and rejoins (T-138)
+
+## Host: a client dropped. `as_bot`: its body keeps playing as a bot until it returns; else the body steps out
+## (hidden, out of the zombies' reach and the co-op count) until it returns or the grace ends.
+func on_player_dropped(pid: int, as_bot: bool) -> void:
+	var p: Player = players.get(pid) as Player
+	_latest.erase(pid)
+	_loaded.erase(pid)
+	if p == null:
+		return
+	if as_bot:
+		_make_bot(p, true)
+	else:
+		_set_away(p, true)
+
+
+## Host: the dropped client is back: the bot lets go of the body, or the body steps back in.
+func on_player_returning(pid: int, was_bot: bool) -> void:
+	var p: Player = players.get(pid) as Player
+	if p == null:
+		return
+	if was_bot or p.is_bot:
+		_make_bot(p, false)
+	_set_away(p, false)
+	if p.interp != null:
+		p.interp.snap(float(Time.get_ticks_msec()), p.global_position, p.rotation.y)
+
+
+func _make_bot(p: Player, on: bool) -> void:
+	if p.is_bot == on:
+		return
+	p.become_bot(on)
+	var pid: int = p.player_id
+	if on:
+		var sq: BotSquad = map.ensure_online_squad()   # before bot_ids changes: setup() builds brains from it
+		if not GameState.bot_ids.has(pid):
+			GameState.bot_ids.append(pid)
+		sq.add_brain(p, {"kit": false})   # the dropped player's own kit stays as it was
+	else:
+		GameState.bot_ids.erase(pid)
+		if map.squad != null:
+			for b: BotBrain in map.squad.brains.duplicate():
+				if b.player == p:
+					map.squad.remove_brain(b)
+
+
+func _set_away(p: Player, on: bool) -> void:
+	p.set_away(on)
+	if on:
+		coop.remove(p.player_id)
+	elif not coop.players.has(p.player_id):
+		coop.add(p.player_id)
+	if Net.is_host():
+		world_call(self, &"_net_away", [p.player_id, on])
+
+
+## Every client: a dropped player's body steps out / back in (hidden, no collision).
+func _net_away(pid: int, on: bool) -> void:
+	var p: Player = players.get(pid) as Player
+	if p != null and not p.is_local:
+		p.set_away(on)
+
+
+## Host -> a peer that (re)joined the running match: its body's place and kit, the zombies alive right now, the
+## doors and boards as they stand. Everything else (round, Scrip, perks, power, zones, flags, the crate, quest
+## state) reaches it with the next state snapshot.
+func resync_peer(pid: int) -> void:
+	var peer: int = Net.peer_of(pid)
+	if peer <= 1:
+		return
+	Net._rpc_begin.rpc_id(peer)
+	var p: Player = players.get(pid) as Player
+	var d: Dictionary = {}
+	if p != null:
+		d = {"xf": p.global_transform, "inv": p.weapons.to_net(), "hp": p.hp, "downed": p.downed, "spec": p.spectating}
+	Net._rpc_resync.rpc_id(peer, d)
+	for id: Variant in _zknown.keys():
+		var z: Zombie = _zknown[id] as Zombie
+		if z != null and is_instance_valid(z) and z.is_active() and not z.net_died:
+			var kind_class: int = 1 if z is Foreman else (2 if z is Screamer else 0)
+			Net._rpc_zev.rpc_id(peer, z.net_id, &"spawn", [String(z.enemy_id), String(z.tier), z.variant_name(), z.max_hp,
+				z.global_position, z.rotation.y, int(z.state), kind_class, z.net_sub_state(), str(z.get_meta("person", ""))])
+	for n: Node in get_tree().get_nodes_in_group(&"doors"):
+		if bool(n.get("is_open")) and n.has_method("_net_open"):
+			Net._rpc_world.rpc_id(peer, String(map.get_path_to(n)), &"_net_open", [])
+	for n2: Node in get_tree().get_nodes_in_group(&"barricades"):
+		if n2.has_method("_net_boards") and n2.get("boards") != null:
+			Net._rpc_world.rpc_id(peer, String(map.get_path_to(n2)), &"_net_boards", [int(n2.get("boards"))])
+	for opid: Variant in players.keys():
+		var op: Player = players[opid]
+		if op != p and op.away:
+			Net._rpc_world.rpc_id(peer, String(map.get_path_to(self)), &"_net_away", [int(opid), true])
+		if op != p and op.weapons != null and int(opid) != Net.local_player_id():
+			Net._rpc_inv_of.rpc_id(peer, int(opid), op.weapons.to_net())
+	if local_player != null and local_player.weapons != null:
+		Net._rpc_inv_of.rpc_id(peer, Net.local_player_id(), local_player.weapons.to_net())
+
+
+## Client (rejoining): put our body where the host kept it, with what it carried.
+func on_resync(d: Dictionary) -> void:
+	if local_player == null or d.is_empty():
+		return
+	Net.applying = true
+	local_player.global_transform = d.get("xf", local_player.global_transform) as Transform3D
+	local_player.velocity = Vector3.ZERO
+	if d.has("inv"):
+		local_player.weapons.apply_carry(d["inv"] as Dictionary)
+	if d.has("hp"):
+		local_player.hp = clampf(float(d["hp"]), 1.0, local_player.max_hp)
+	Net.applying = false
 
 
 func on_player_left(pid: int) -> void:
@@ -221,11 +336,15 @@ func _send_players() -> void:
 	var rows: Array = []
 	for pid: Variant in players.keys():
 		var p: Player = players[pid]
-		if p.is_local:
+		if p.is_local or p.is_bot:   # the host's bots move here; every client sees them as teammates (T-138)
 			rows.append([int(pid), p.global_position, p.rotation.y, p.head.rotation.x, local_flags(p)])
 		elif _latest.has(pid):
 			var l: Array = _latest[pid]
 			rows.append([int(pid), l[1], l[2], l[3], l[4]])
+	for c: Node in get_tree().get_nodes_in_group(&"companions"):   # Jakub, the map companions: host-simulated (T-138)
+		var cp: Player = c as Player
+		if cp != null and cp.is_bot and not players.has(cp.player_id) and cp.head != null:
+			rows.append([cp.player_id, cp.global_position, cp.rotation.y, cp.head.rotation.x, local_flags(cp)])
 	b.put_u8(rows.size())
 	for r: Array in rows:
 		b.put_u8(int(r[0]))
@@ -434,7 +553,10 @@ func on_quest_request(pid: int, op: StringName, args: Array) -> void:
 		var n: Node = map.get_node_or_null(NodePath(str(args[0])))
 		var method: StringName = StringName(str(args[1]))
 		if n != null and n.has_method(&"net_callable") and (n.call(&"net_callable") as Array).has(String(method)):
-			n.callv(method, args[2] as Array)
+			if String(method).begins_with("net_by_"):
+				n.callv(method, [pid] + (args[2] as Array))   # T-138: the host passes who asked (never trusted from the args)
+			else:
+				n.callv(method, args[2] as Array)
 
 
 ## Host -> the owner of `pid`: a call that must run on their machine (Player._forward). A bot's "machine" is
@@ -571,6 +693,16 @@ func local_fired(kind: int, weapon_id: StringName, origin: Vector3, end: Vector3
 		Net._rpc_fire_of.rpc(Net.local_player_id(), data)
 	else:
 		Net._rpc_fire.rpc_id(1, data)
+
+
+## Host: one of its bots fired; the clients draw the tracer and the muzzle flash on its puppet (T-138).
+func bot_fired(pid: int, kind: int, weapon_id: StringName, origin: Vector3, end: Vector3) -> void:
+	if Net.is_host() and session_has_clients():
+		Net._rpc_fire_of.rpc(pid, [kind, String(weapon_id), origin, end])
+
+
+func session_has_clients() -> bool:
+	return Net.is_online() and multiplayer.get_peers().size() > 0
 
 
 # ---------------------------------------------------------------- co-op rules (host)
@@ -872,6 +1004,8 @@ func send_shootable(target: Node, weapon_id: StringName, upgraded: bool) -> void
 
 
 func _check_inventory(delta: float) -> void:
+	if Net.is_host():
+		_check_bot_inventories(delta)
 	if local_player == null or local_player.weapons == null:
 		return
 	_inv_t += delta
@@ -890,6 +1024,25 @@ func _check_inventory(delta: float) -> void:
 		Net._rpc_inv.rpc_id(1, inv)
 
 
+var _bot_inv: Dictionary = {}   # host: bot pid -> [structural signature, ammo hash, seconds since sent]
+
+
+## Host: each bot's inventory goes to the clients like a human's (the third-person gun, the scoreboard) (T-138).
+func _check_bot_inventories(delta: float) -> void:
+	for pid: Variant in players.keys():
+		var p: Player = players[pid]
+		if not p.is_bot or p.weapons == null:
+			continue
+		var sig: Array = p.weapons.net_signature()
+		var last: Array = _bot_inv.get(pid, ["", 0, 0.0])
+		last[2] = float(last[2]) + delta
+		var structural: bool = str(sig[0]) != str(last[0])
+		if structural or (int(sig[1]) != int(last[1]) and float(last[2]) >= 1.0):
+			last = [str(sig[0]), int(sig[1]), 0.0]
+			Net._rpc_inv_of.rpc(int(pid), p.weapons.to_net())
+		_bot_inv[pid] = last
+
+
 func on_players(data: PackedByteArray) -> void:
 	if data.size() < 5:
 		return
@@ -906,7 +1059,9 @@ func on_players(data: PackedByteArray) -> void:
 		var pitch: float = b.get_float()
 		var flags: int = b.get_u8()
 		var p: Player = players.get(pid) as Player
-		if p != null and not p.is_local and p.interp != null:
+		if p == null:
+			p = companion_body(pid)
+		if p != null and not p.is_local and not p.is_bot and p.interp != null:
 			p.interp.push(t, pos, yaw, pitch, flags)
 
 
@@ -1204,3 +1359,84 @@ func _update_spectate(delta: float) -> void:
 	var look: Vector3 = eye - t.global_basis.z * 6.0
 	if _spectate_cam.global_position.distance_squared_to(look) > 0.01:
 		_spectate_cam.look_at(look, Vector3.UP)
+
+
+# ---------------------------------------------------------------- companions and the Bell Dome online (T-138)
+
+## A companion's body on this peer by its pid (host: the simulated one; client: the puppet), or null.
+func companion_body(pid: int) -> Player:
+	var c: Player = companions.get(pid) as Player
+	if c != null and is_instance_valid(c):
+		return c
+	for n: Node in get_tree().get_nodes_in_group(&"companions"):
+		var cp: Player = n as Player
+		if cp != null and cp.player_id == pid:
+			return cp
+	return null
+
+
+## Whitelisted client -> host calls on the session itself (on_quest_request "call").
+func net_callable() -> Array:
+	return ["net_by_bell_dome"]
+
+
+## The dome's settings as they travel: [pos, radius, seconds, slow, damage_mult, pull, color, upgraded].
+static func dome_args(d: BellDome) -> Array:
+	return [d.global_position if d.is_inside_tree() else d.position, d.radius, d.seconds, d.slow, d.damage_mult, d.pull, d.color, d.upgraded]
+
+
+## A dome was planted on this peer (BellDome.share). The working field always runs on the host, where the zombies
+## are simulated; every other peer gets the look (dome, ring, light, hum).
+func share_bell_dome(d: BellDome) -> void:
+	if not Net.is_online():
+		return
+	var args: Array = dome_args(d)
+	if Net.is_host():
+		_relay_dome(args, d.by_player)
+	else:
+		d.visual_only = true
+		request_call(self, &"net_by_bell_dome", [args])
+
+
+## Host: a client planted a dome: the working copy here (checked: near the planter, sane numbers), the look for
+## everyone else.
+func net_by_bell_dome(pid: int, args: Array) -> void:
+	var p: Player = players.get(pid) as Player
+	if p == null or args.size() < 8 or not (args[0] is Vector3):
+		return
+	var pos: Vector3 = args[0]
+	if pos.distance_to(p.global_position) > 12.0:
+		return
+	var d: BellDome = _spawn_dome(args, false)
+	if d != null:
+		d.by_player = pid
+		_relay_dome(dome_args(d), pid)
+
+
+func _relay_dome(args: Array, except_pid: int) -> void:
+	for other: int in Net.player_ids():
+		var peer: int = Net.peer_of(other)
+		if other != except_pid and other != Net.local_player_id() and peer > 1:
+			Net._rpc_world.rpc_id(peer, String(map.get_path_to(self)), &"_net_bell_dome", [args])
+
+
+## Every client: someone else's dome, to look at (the host runs the real one).
+func _net_bell_dome(args: Array) -> void:
+	_spawn_dome(args, true)
+
+
+func _spawn_dome(args: Array, visual: bool) -> BellDome:
+	if args.size() < 8 or map == null:
+		return null
+	var d: BellDome = BellDome.new()
+	d.radius = clampf(float(args[1]), 1.0, 10.0)
+	d.seconds = clampf(float(args[2]), 0.5, 15.0)
+	d.slow = clampf(float(args[3]), 0.0, 0.9)
+	d.damage_mult = clampf(float(args[4]), 1.0, 2.0)
+	d.pull = clampf(float(args[5]), 0.0, 3.0)
+	d.color = args[6] as Color if args[6] is Color else Color(0.6, 0.4, 1.0)
+	d.upgraded = bool(args[7])
+	d.visual_only = visual
+	map.add_child(d)
+	d.global_position = args[0] as Vector3
+	return d

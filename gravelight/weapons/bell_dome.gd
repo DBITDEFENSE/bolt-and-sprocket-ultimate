@@ -4,8 +4,8 @@ extends Node3D
 ## `radius` move at (1 - slow) of their speed (Zombie.apply_frost, refreshed) and take `damage_mult` damage
 ## (Zombie.set_vulnerable); crossing into it staggers a zombie once. Mitternacht's dome also pulls them toward the bell (`pull` m/s, collision-aware).
 ## Bosses are slowed but never pulled. One per player at a time (the Totenglocke instance keeps it).
-## Co-op: the field runs on the machine that planted it; frost is forwarded to the host by Zombie.apply_frost,
-## the damage bonus and the pull only act on zombies this machine simulates.
+## Co-op (T-138): the working field always runs on the host (a client's dome is a look there, and the host plants
+## the real one, checked, through NetMatch.share_bell_dome); every other peer sees the dome too.
 
 const TICK: float = 0.1
 
@@ -17,6 +17,8 @@ var pull: float = 0.0
 var color: Color = Color(1.0, 0.62, 0.25)
 var upgraded: bool = false
 var by_player: int = 1
+## Online (T-138): only the look (dome, ring, light, hum); the working field runs on the host (NetMatch.share_bell_dome).
+var visual_only: bool = false
 
 var _t: float = 0.0
 var _tick: float = 0.0
@@ -131,7 +133,15 @@ func _process(delta: float) -> void:
 		queue_free()
 
 
+## Online (T-138): a dome planted here works on the host and shows on every peer (call after placing it).
+static func share(d: BellDome) -> void:
+	if d != null and Net.is_online() and Net.session != null:
+		Net.session.share_bell_dome(d)
+
+
 func _physics_process(delta: float) -> void:
+	if visual_only:
+		return
 	_tick -= delta
 	if _tick > 0.0 or _t >= seconds:
 		return

@@ -332,6 +332,7 @@ func give_weapon(weapon_id: StringName) -> void:
 func give_instance(w: WeaponInstance) -> void:
 	if w == null:
 		return
+	_forward_op(&"give_net_entry", [net_entry(w)])   # online (T-138): a companion hands a teammate's gun back
 	if slots.size() < max_slots():
 		slots.append(w)
 		current_index = slots.size() - 1
@@ -340,6 +341,34 @@ func give_instance(w: WeaponInstance) -> void:
 	_cancel_reload()
 	_swap_t = SWAP_TIME * w.draw_mult()
 	_rebuild_gun()
+
+
+## Online (T-138): the owner's side of give_instance: the very gun (ammo, tier, attachments) from its net entry.
+func give_net_entry(e: Array) -> void:
+	var probe: WeaponHolder = WeaponHolder.new()
+	probe.apply_net({"s": [e]})
+	var w: WeaponInstance = probe.slots[0] if not probe.slots.is_empty() else null
+	probe.free()
+	give_instance(w)
+
+
+## A companion's round gift (T-135/T-138): one grenade, false when already full. Forwarded to a remote owner.
+func gift_grenade() -> bool:
+	if grenades >= grenade_max():
+		return false
+	_forward_op(&"gift_grenade", [])
+	grenades += 1
+	return true
+
+
+## A companion's round gift: one magazine into the reserve of the gun in hand, false without one.
+func gift_mag() -> bool:
+	var w: WeaponInstance = current()
+	if w == null:
+		return false
+	_forward_op(&"gift_mag", [])
+	w.reserve += w.mag_size()
+	return true
 
 
 ## Fits one attachment to the held weapon `weapon_id` (the Armorer's Bench, any gun: WeaponKit; "" clears the slot). Co-op: the
@@ -578,6 +607,8 @@ func net_signature() -> Array:
 func _report_fire(kind: int, weapon_id: StringName, origin: Vector3, end: Vector3) -> void:
 	if Net.session != null and not mirror:
 		Net.session.local_fired(kind, weapon_id, origin, end)
+	elif Net.session != null and player != null and player.is_bot and Net.is_host():
+		Net.session.bot_fired(player.player_id, kind, weapon_id, origin, end)   # online bots (T-138)
 
 
 func _throw_tactical() -> void:

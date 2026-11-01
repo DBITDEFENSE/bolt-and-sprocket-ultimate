@@ -2,6 +2,12 @@
 
 Short, phone-readable. Nothing here blocks the build.
 
+## UPDATE 09 online play (T-138, docs/ONLINE.md)
+- Nothing required: the Supabase project exists and the lobby tables are live (checked 2026-11-01).
+- Optional, for friends on strict networks (company / school / mobile): make a TURN account (e.g. Metered.ca "Open Relay" free tier or Cloudflare Calls TURN) and put its urls / username / credential in `data/gravelight/online.json` "turn" (docs/ONLINE.md "TURN").
+- Optional: Supabase dashboard > Database > Extensions > enable `pg_cron`, then re-run `supabase/migrations/0001_lobbies.sql` in the SQL editor (sweeps dead lobbies every minute; the game sweeps on its own too).
+- Optional: check Supabase > Realtime > Settings keeps "Allow public access" on (the lobby signaling uses public broadcast channels).
+
 ## 0. Start a cloud session (UPDATE 06 Part A is done)
 The repo is on GitHub, **private**: https://github.com/DBITDEFENSE/bolt-and-sprocket-ultimate
 (every branch and tag; big files in Git LFS).

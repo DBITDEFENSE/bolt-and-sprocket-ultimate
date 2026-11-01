@@ -37,6 +37,7 @@ AudioDirector="*res://gravelight/autoload/audio_director.gd"
 GLVO="*res://gravelight/autoload/vo_manager.gd"
 Effects="*res://gravelight/autoload/effects.gd"
 Net="*res://gravelight/autoload/net.gd"
+Lobbies="*res://gravelight/net/lobby_service.gd"
 GLConsole="*res://gravelight/ui/dev_console.gd"
 
 [display]

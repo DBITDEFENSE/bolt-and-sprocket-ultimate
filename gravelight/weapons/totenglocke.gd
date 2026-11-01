@@ -310,6 +310,7 @@ static func bot_dome(p: Player, w: WeaponInstance) -> BellDome:
 	d.by_player = p.player_id
 	p.get_parent().add_child(d)
 	d.global_position = p.global_position
+	BellDome.share(d)   # online: the host's bot dome shows on every client (T-138)
 	return d
 
 
@@ -608,6 +609,7 @@ func alt_fire(w: WeaponInstance) -> void:
 	d.by_player = p.player_id
 	p.get_parent().add_child(d)
 	d.global_position = p.global_position
+	BellDome.share(d)   # online: works on the host, shows for everyone (T-138)
 	_dome = d
 	_vibe_amp = 0.8
 	_vibe_total = 1.2

@@ -31,6 +31,9 @@ var _met: bool = false
 var _gift_round: int = -1
 var _snap_left: float = 0.0
 var events: PackedStringArray = []   # tests / tools
+## Online client (T-138): the body here is a puppet of the host's companion.
+var puppet: bool = false
+var _net_sig: Array = []
 
 
 static func table() -> Dictionary:
@@ -86,8 +89,8 @@ static func instances(tree: SceneTree) -> Array[MapCompanion]:
 
 static func attach(map_root: MapRoot) -> void:
 	_pids.clear()
-	if Net.is_online() or map_root == null:
-		return
+	if map_root == null:
+		return   # online too (T-138): simulated on the host, a puppet on every client (CompanionNet)
 	for cid: String in ids_for_map(String(map_root.map_id), GameState.flags, table()):
 		var c: MapCompanion = MapCompanion.new()
 		c.name = "Companion_" + cid
@@ -99,6 +102,7 @@ func setup(map_root: MapRoot, cid: String) -> void:
 	map = map_root
 	id = cid
 	cfg = entry(cid)
+	puppet = CompanionNet.puppet_mode()
 	add_to_group(&"map_companion")
 	GLBus.round_started.connect(_on_round_started)
 	var cf: String = str(cfg.get("carry_flag", ""))
@@ -136,13 +140,15 @@ func _make_body(xf: Transform3D) -> void:
 	var p: Player = Player.new()
 	p.player_id = int(cfg.get("pid", 10))
 	p.is_local = false
-	p.is_bot = true
+	p.is_bot = not puppet   # a client's companion is a puppet the host's stream moves (T-138)
 	p.is_companion = true
 	p.name = id.capitalize()
 	GameState.characters[p.player_id] = StringName(id)
 	_pids[p.player_id] = true
 	map.add_child(p)
 	p.global_transform = xf
+	if puppet:
+		CompanionNet.register_puppet(p)
 	p.bleedout_seconds = float(cfg.get("bleedout_seconds", 60.0))
 	p.max_hp = float(cfg.get("max_hp", 100.0))
 	p.hp = p.max_hp
@@ -203,6 +209,9 @@ func _beside_spawn(escort: int) -> Transform3D:
 func _physics_process(delta: float) -> void:
 	if player == null or not is_instance_valid(player) or GameState.phase != GameState.Phase.PLAYING:
 		return
+	if puppet:
+		return   # the host runs it; _net_state / _net_say keep this body in step
+	_net_sig = CompanionNet.sync(self, _net_sig, _sig())
 	match state:
 		State.WAITING:
 			if _snap_left > 0.0:
@@ -265,6 +274,13 @@ func on_talk(p: Player) -> void:
 	if not _met:
 		_met = true
 		_say("MEET")
+	if CompanionNet.is_remote_human(p):
+		CompanionNet.send_card(self, p, gun_offer(p), {})   # online: the card opens on their screen (T-138)
+		return
+	_open_card(p)
+
+
+func _open_card(p: Player) -> void:
 	_choice = JakubChoice.new()
 	_choice.companion = self
 	_choice.player = p
@@ -295,6 +311,9 @@ func gun_offer(p: Player) -> Dictionary:
 
 ## The choice card's answer (JakubChoice; also tests): give = the gun in `p`'s hands, else it comes with its melee.
 func choose(p: Player, give: bool) -> void:
+	if puppet:
+		CompanionNet.forward(self, &"net_by_choose", [give])   # the host's companion decides (T-138)
+		return
 	if state == State.JOINED:
 		if give:
 			_take_gun(p)
@@ -314,6 +333,8 @@ func choose_tonic(_p: Player) -> bool:
 
 
 func _take_gun(p: Player) -> void:
+	if puppet:
+		return
 	var o: Dictionary = gun_offer(p)
 	if not bool(o.get("ok", false)):
 		return
@@ -354,7 +375,7 @@ func brain_options(escort: int, armed: bool) -> Dictionary:
 
 
 func _join(escort: int, arrival: bool) -> void:
-	if state != State.WAITING:
+	if state != State.WAITING or puppet:
 		return
 	escort_pid = escort if escort > 0 else 1
 	var squad: BotSquad = map.ensure_companion_session()
@@ -400,6 +421,8 @@ func _on_round_started(r: int, _special: bool) -> void:
 		if r >= int(cfg.get("appear_round", 1)):
 			_appear()
 		return
+	if puppet:
+		return   # gifts are the host's
 	if state != State.JOINED or r == _gift_round or player.downed:
 		return
 	var h: Player = map.players.get(escort_pid) as Player
@@ -414,14 +437,11 @@ func _on_round_started(r: int, _special: bool) -> void:
 func give_gift(h: Player) -> bool:
 	match str(cfg.get("gift", "")):
 		"grenade":
-			if h.weapons.grenades >= h.weapons.grenade_max():
+			if not h.weapons.gift_grenade():   # (forwarded to a remote teammate's own holder online, T-138)
 				return false
-			h.weapons.grenades += 1
 		"ammo":
-			var w: WeaponInstance = h.weapons.current()
-			if w == null:
+			if not h.weapons.gift_mag():
 				return false
-			w.reserve += w.mag_size()
 		"scrip":
 			Economy.grant(h.player_id, int(cfg.get("gift_scrip", 250)))
 		_:
@@ -435,7 +455,63 @@ func give_gift(h: Player) -> bool:
 func _say(category: String) -> bool:
 	if player == null or not is_instance_valid(player):
 		return false
-	return GLVO.play_category(StringName(str(cfg.get("speaker", ""))), "COMP_" + category, 1.0, player.player_id)
+	var ok: bool = GLVO.play_category(StringName(str(cfg.get("speaker", ""))), "COMP_" + category, 1.0, player.player_id)
+	if ok and Net.replicating():
+		Net.mirror(self, &"_net_say", [category])   # online: its line on every client too (T-138)
+	return ok
+
+
+# ================================================================== online (T-138, CompanionNet)
+
+## What the clients mirror: [state, the weapon on its body].
+func _sig() -> Array:
+	var w: WeaponInstance = player.weapons.current() if player != null and player.weapons != null else null
+	return [int(state), String(w.id) if w != null else String(player.weapons.melee_id)]
+
+
+## Client: the host's companion changed state / weapon.
+func _net_state(st: int, wid: String) -> void:
+	if player == null or not is_instance_valid(player):
+		return
+	var was: State = state
+	state = st as State
+	if player.remote_body != null:
+		player.remote_body.set_weapon(StringName(wid))
+	if state == State.JOINED and was != State.JOINED:
+		_event("joined")
+		if map.hud != null:
+			map.hud.show_banner(str(cfg.get("banner", "%s JOINS YOU" % str(cfg.get("name", id)).to_upper())), 3.0)
+	elif state == State.FALLEN and was != State.FALLEN:
+		_event("fallen")
+		if map.hud != null:
+			map.hud.show_banner("%s is out cold." % _first_name(), 3.0)
+
+
+func _net_say(category: String) -> void:
+	if player != null and is_instance_valid(player):
+		GLVO.play_category(StringName(str(cfg.get("speaker", ""))), "COMP_" + category, 1.0, player.player_id)
+
+
+## Client: the host opened its choice card for us.
+func _net_card(_offer: Dictionary, _tonic: Dictionary) -> void:
+	var me: Player = map.player
+	if me == null or not is_instance_valid(me):
+		return
+	if DisplayServer.get_name() == "headless":
+		choose(me, bool(gun_offer(me).get("ok", false)))
+		return
+	_open_card(me)
+
+
+func net_callable() -> Array:
+	return ["net_by_choose"]
+
+
+## Host: a client's card answer (the pid comes from the connection).
+func net_by_choose(pid: int, give: bool) -> void:
+	var p: Player = CompanionNet.player_for(pid)
+	if p != null:
+		choose(p, give)
 
 
 func _later(seconds: float, category: String) -> void:

@@ -49,6 +49,8 @@ var _tick_prev: Vector3 = Vector3.INF
 var _tick_cur: Vector3 = Vector3.INF
 ## An AI teammate (with is_local = false): simulated here, driven by its BotBrain (set before add_child).
 var is_bot: bool = false
+## Online (T-138): this body's owner dropped and may rejoin; the body is out of the match meanwhile (set_away).
+var away: bool = false
 var remote_body: RemoteBody = null
 var last_stand: bool = false      # co-op: downed and crawling with a pistol
 var spectating: bool = false      # co-op: bled out, watching a teammate until the next round
@@ -1757,6 +1759,44 @@ func respawn_at(xf: Transform3D) -> void:
 	weapons.reset_loadout()
 	if is_local:
 		camera.current = true
+
+
+## Online (T-138): a teammate's puppet on the host becomes a bot (its owner dropped and the lobby fills slots with
+## bots), or hands the body back when the owner rejoins. Same setup as a bot spawned at the start (_ready_remote).
+func become_bot(on: bool) -> void:
+	if is_local or is_bot == on:
+		return
+	is_bot = on
+	if on:
+		add_to_group(&"bots")
+		collision_mask = MASK_MOVE
+		floor_max_angle = deg_to_rad(46.0)
+		floor_snap_length = 0.35
+		if not GLBus.player_status.is_connected(_on_player_status):
+			GLBus.player_status.connect(_on_player_status)
+	else:
+		remove_from_group(&"bots")
+		collision_mask = 0
+		velocity = Vector3.ZERO
+		if GLBus.player_status.is_connected(_on_player_status):
+			GLBus.player_status.disconnect(_on_player_status)
+	if interp == null:
+		interp = InterpBuffer.new()
+
+
+## Online (T-138): a dropped player's body steps out of the match while its owner may still rejoin: hidden, no
+## collision, out of the "players" group the zombies hunt. `false` brings it back.
+func set_away(on: bool) -> void:
+	away = on
+	visible = not on
+	if on:
+		remove_from_group(&"players")
+		collision_layer = 0
+	else:
+		if not is_in_group(&"players"):
+			add_to_group(&"players")
+		collision_layer = LAYER_PLAYER
+	set_physics_process(not on)
 
 
 ## Host -> owner: a call that has to run on the player's own machine (see take_hit / apply_status).

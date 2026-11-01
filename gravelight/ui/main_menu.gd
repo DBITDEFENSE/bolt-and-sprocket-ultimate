@@ -85,11 +85,12 @@ func _build() -> void:
 	_menu.add_child(MenuKit.button("Credits", _open.bind(MenuCredits), 26))
 	_menu.add_child(MenuKit.button("Test Range (dev)", func() -> void: get_tree().change_scene_to_file(TEST_RANGE), 20))
 	_menu.add_child(MenuKit.button("Back to Terms & Conditions", func() -> void: get_tree().change_scene_to_file("res://ui/main_menu.tscn"), 26))
-	if Net.last_error != "":
+	var reopen: bool = Net.reopen_lobby   # T-138: back from an online match (host left / dropped): the lobby screen says why
+	if Net.last_error != "" and not reopen:
 		_menu.add_child(MenuKit.para(Net.last_error, 18, MenuKit.INK.lightened(0.35)))
 		Net.last_error = ""
 	play.grab_focus.call_deferred()
-	if Net.is_online() and _screen == null:
+	if (Net.is_online() or reopen) and _screen == null:
 		_open.call_deferred(MenuLobby)
 
 
