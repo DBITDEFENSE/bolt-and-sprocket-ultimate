@@ -187,7 +187,7 @@ func _build_inn() -> void:
 static func moon_dir() -> Vector3:
 	var f: Vector3 = _fwd()
 	var r: Vector3 = _right()
-	return (f * cos(deg_to_rad(21.0)) + r * 0.2 + Vector3.UP * sin(deg_to_rad(21.0))).normalized()
+	return (f * cos(deg_to_rad(26.0)) + r * 0.2 + Vector3.UP * sin(deg_to_rad(26.0))).normalized()
 
 
 func _build_environment() -> void:

@@ -24,8 +24,8 @@ const ROWS: Array = [
 	["map04d_mondlicht", "FERNFLUG  ·  ACT IV", "Mondlicht", "May 1945  ·  the Moon", "res://gravelight/maps/map04_fernflug/map04d.tscn",
 		"Ride the rocket from Groom Lake (act round 30).", "map04_kuendigung"],
 ]
-const CARD_W: float = 420.0
-const PREVIEW_W: float = 404.0
+const CARD_W: float = 400.0
+const PREVIEW_W: float = 384.0
 
 
 static func ids() -> PackedStringArray:
@@ -97,7 +97,7 @@ static func card(kicker: String, title: String, date: String, preview_tex: Textu
 	var b: Button = Button.new()
 	b.name = "Card_" + title.replace(" ", "_")
 	b.focus_mode = Control.FOCUS_ALL
-	b.custom_minimum_size = Vector2(CARD_W, 372)
+	b.custom_minimum_size = Vector2(CARD_W, 350)
 	var normal: StyleBoxFlat = _box(MenuKit.BRASS_DARK, Color(0.04, 0.04, 0.06, 0.9), 2)
 	var lit: StyleBoxFlat = _box(MenuKit.VIOLET, Color(0.08, 0.06, 0.12, 0.95), 3)
 	lit.shadow_color = Color(MenuKit.VIOLET.r, MenuKit.VIOLET.g, MenuKit.VIOLET.b, 0.35)
@@ -111,7 +111,7 @@ static func card(kicker: String, title: String, date: String, preview_tex: Textu
 	var v: VBoxContainer = VBoxContainer.new()
 	v.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	v.position = Vector2(8, 8)
-	v.size = Vector2(PREVIEW_W, 356)
+	v.size = Vector2(PREVIEW_W, 334)
 	v.add_theme_constant_override("separation", 3)
 	b.add_child(v)
 	var pic: TextureRect = TextureRect.new()

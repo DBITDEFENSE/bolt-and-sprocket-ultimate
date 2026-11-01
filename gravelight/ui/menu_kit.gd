@@ -325,8 +325,8 @@ static func menu_link(text_str: String, cb: Callable, size_px: int = 38) -> Butt
 			return
 		var tw: Tween = b.create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tw.tween_property(sb, "content_margin_left", LINK_MARGIN + (LINK_SLIDE if on else 0.0), 0.16)
-		tw.tween_property(sb, "bg_color:a", 0.16 if on else 0.0, 0.16)
-		tw.tween_property(sb, "shadow_color:a", 0.38 if on else 0.0, 0.16)
+		tw.tween_property(sb, "bg_color:a", 0.07 if on else 0.0, 0.16)
+		tw.tween_property(sb, "shadow_color:a", 0.12 if on else 0.0, 0.16)
 		tw.tween_property(sb, "border_color:a", 1.0 if on else 0.0, 0.16)
 	b.focus_entered.connect(func() -> void:
 		lit.call(true)

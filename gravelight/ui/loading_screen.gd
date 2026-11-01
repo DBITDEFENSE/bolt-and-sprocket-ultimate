@@ -65,7 +65,10 @@ static func lore_line(id: String, pick: int = -1) -> String:
 
 
 func _ready() -> void:
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	if not (get_parent() is Control):   # under a CanvasLayer or a plain Node (tools, tests): follow the viewport
+		get_viewport().size_changed.connect(_fit)
+		_fit()
 	MenuKit.apply_theme(self)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	if not pending.is_empty():
@@ -79,6 +82,11 @@ func _ready() -> void:
 	_build()
 	if scene_path != "":
 		_begin.call_deferred()
+
+
+func _fit() -> void:
+	position = Vector2.ZERO
+	size = get_viewport_rect().size
 
 
 func _build() -> void:

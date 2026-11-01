@@ -61,8 +61,7 @@ func _pick(id: String) -> void:
 
 
 func _build_maps() -> void:
-	content.add_child(MenuKit.para("Survivor: %s" % _picked.capitalize(), 20, MenuKit.GOLD))
-	_build_muster()
+	_build_muster()   # T-144: the survivor, the Muster and the squad share one row, so both rows of cards fit at 1080p
 	_build_squad()
 	# T-144: one card per map (MapCards), the campaign first (T-033: the inn, then exfil at round 10 to Kaltenbrunn
 	# and at round 30 onward, kit and all)
@@ -92,8 +91,12 @@ func _build_maps() -> void:
 ## The Muster (T-079): this survivor's sidearm and Field Habits, and the way to change them before the match.
 func _build_muster() -> void:
 	var row: HBoxContainer = HBoxContainer.new()
+	row.name = "TopRow"
 	row.add_theme_constant_override("separation", 14)
 	content.add_child(row)
+	var who: Label = MenuKit.label(Net.DISPLAY.get(_picked, _picked.capitalize()), 24, MenuKit.GOLD)
+	who.custom_minimum_size = Vector2(110, 0)
+	row.add_child(who)
 	var kit: Dictionary = Muster.loadout_for(_picked, ProfileSave.profile)
 	var b: Button = MenuKit.button("Muster: " + Muster.summary(kit), _open_muster, 20)
 	b.custom_minimum_size = Vector2(0, 44)
@@ -119,9 +122,11 @@ func _build_squad() -> void:
 	var c: Dictionary = BotConfig.cfg()
 	var bots: int = BotConfig.clamp_bots(c, int(GLSettings.values.get("bots", 0)))
 	var skill: String = BotConfig.skill_key(c, str(GLSettings.values.get("bot_skill", c.get("skill_default", "veteran"))))
-	var row: HBoxContainer = HBoxContainer.new()
-	row.add_theme_constant_override("separation", 10)
-	content.add_child(row)
+	var row: HBoxContainer = content.get_node_or_null("TopRow") as HBoxContainer
+	if row == null:
+		row = HBoxContainer.new()
+		row.add_theme_constant_override("separation", 10)
+		content.add_child(row)
 	var names: Array = ["Squad: just you", "Squad: you + 1 bot", "Squad: you + 2 bots", "Squad: you + 3 bots"]
 	var b: Button = MenuKit.button(str(names[mini(bots, names.size() - 1)]), func() -> void:
 		GLSettings.set_value("bots", BotConfig.clamp_bots(c, (bots + 1) % (int(c.get("max_bots", 3)) + 1)))

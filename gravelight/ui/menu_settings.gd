@@ -255,7 +255,7 @@ func _graphics() -> void:
 static func detected_line() -> String:
 	var gs: Node = (Engine.get_main_loop() as SceneTree).root.get_node_or_null("GLSettings")
 	var adapter: String = RenderingServer.get_video_adapter_name()
-	var renderer: String = str(ProjectSettings.get_setting("rendering/renderer/rendering_method", "forward_plus"))
+	var renderer: String = RenderingServer.get_current_rendering_method()   # what is running (a --rendering-driver flag can differ from the project)
 	if gs != null and gs.has_method("auto_detect_preset"):
 		var pick: String = str(gs.call("auto_detect_preset"))
 		return "Auto-detect suggests %s for this machine (%s, %s)." % [pick.capitalize(), adapter if adapter != "" else "unknown GPU", renderer]

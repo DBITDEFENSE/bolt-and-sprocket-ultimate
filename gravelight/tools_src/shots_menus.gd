@@ -252,7 +252,7 @@ func _match() -> void:
 		st[&"players"] = {1: {&"kills": 412, &"headshots": 131, &"marke_kills": 38, &"scrip": 18450, &"downs": 2, &"revives": 3},
 			2: {&"kills": 377, &"headshots": 96, &"marke_kills": 29, &"scrip": 15920, &"downs": 4, &"revives": 1}}
 		map.show_game_over(st, 1934.0)
-		await _settle(5.0, 12)
+		await _settle(9.0, 40)   # the fade (2.5 s) and the closing line typed out (1.3 s), at software-GL frame rates
 		await _shot("17_game_over")
 	get_tree().paused = false
 	map.queue_free()

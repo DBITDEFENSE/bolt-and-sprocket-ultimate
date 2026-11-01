@@ -8,7 +8,7 @@ signal menu_requested
 
 
 func _init() -> void:
-	layer = 20
+	layer = 40   # T-144: over the HUD (10-15), the subtitles and the pause page
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
 
