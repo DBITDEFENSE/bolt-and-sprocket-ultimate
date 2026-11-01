@@ -27,7 +27,7 @@ var _dirty: bool = false
 
 
 func _init() -> void:
-	super._init("Co-op")
+	super._init("Online")   # T-144: PLAY > ONLINE (LAN stays a page inside it)
 
 
 func _ready() -> void:

@@ -775,6 +775,20 @@
         {"name": "ref_barracks", "pos": [-14.0, 0.0, 39.0], "yaw": -90.0, "pitch": -0.2, "note": "Kaltenbrunn barracks along the bunk rows", "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn"},
         {"name": "ref_chapel", "pos": [12.0, -12.0, 63.0], "yaw": 180.0, "pitch": 11.3, "note": "Kaltenbrunn salt chapel toward the altar", "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn"}
       ]
+    },
+    "u09_menu_previews": {
+      "_doc": "T-144: the map select's and the loading screens' 16:9 previews, one establishing frame per map and act (capture.gd mode 'maps': each cam loads its own map; no bots, no HUD, a free camera at the eye `pos`, or behind the map's first player spawn with `spawn`). Rendered through WSL (tools/wsl_godot.sh ... capture.tscn -- --set=u09_menu_previews), copied to gravelight/ui/map_previews/<name>.png at 960x540 by tools/menu_previews.py.",
+      "mode": "maps",
+      "settle_s": 7.0,
+      "cams": [
+        {"name": "map00_crossroads", "map": "res://gravelight/maps/map00_crossroads/map00.tscn", "pos": [-16.0, 2.2, -12.0], "yaw": -126.0, "pitch": 3.0, "fov": 62.0, "note": "the inn from the west road at night, as the main menu sees it"},
+        {"name": "map01_kaltenbrunn", "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", "spawn": true, "back": 4.0, "up": 1.4, "pitch": -8.0},
+        {"name": "map02_totenhafen", "map": "res://gravelight/maps/map02_totenhafen/map02.tscn", "spawn": true, "back": 4.0, "up": 1.4, "pitch": -8.0},
+        {"name": "map04a_thalbach", "map": "res://gravelight/maps/map04_fernflug/map04a.tscn", "spawn": true, "back": 4.0, "up": 1.4, "pitch": -8.0},
+        {"name": "map04b_kranich", "map": "res://gravelight/maps/map04_fernflug/map04b.tscn", "spawn": true, "back": 3.0, "up": 0.8, "pitch": -6.0},
+        {"name": "map04c_groomlake", "map": "res://gravelight/maps/map04_fernflug/map04c.tscn", "spawn": true, "back": 4.0, "up": 1.4, "pitch": -8.0},
+        {"name": "map04d_mondlicht", "map": "res://gravelight/maps/map04_fernflug/map04d.tscn", "spawn": true, "back": 4.0, "up": 1.4, "pitch": -6.0}
+      ]
     }
   }
 }

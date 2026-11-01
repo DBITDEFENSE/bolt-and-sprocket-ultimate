@@ -92,8 +92,12 @@ static func frame_inset(vp: Vector2) -> float:
 static func keep_centred(margin: MarginContainer, base: float) -> void:
 	var fit: Callable = func() -> void:
 		var inset: float = frame_inset(margin.size)
-		margin.add_theme_constant_override("margin_left", int(base + inset))
-		margin.add_theme_constant_override("margin_right", int(base + inset))
+		var want: int = int(base + inset)
+		# T-144: only on a change; an unsized parent made this feed back (margins -> min size -> resized -> margins)
+		if margin.get_theme_constant("margin_left") == want and margin.get_theme_constant("margin_right") == want:
+			return
+		margin.add_theme_constant_override("margin_left", want)
+		margin.add_theme_constant_override("margin_right", want)
 	margin.resized.connect(fit)
 	fit.call()
 

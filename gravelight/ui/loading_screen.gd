@@ -111,7 +111,6 @@ func _build() -> void:
 	for side: String in ["left", "right", "top", "bottom"]:
 		margin.add_theme_constant_override("margin_" + side, 96 if side in ["left", "right"] else 72)
 	add_child(margin)
-	MenuKit.keep_centred(margin, 96.0)
 	var col: VBoxContainer = VBoxContainer.new()
 	col.alignment = BoxContainer.ALIGNMENT_END
 	col.add_theme_constant_override("separation", 8)
