@@ -388,6 +388,10 @@ func tick(delta: float) -> void:
 	# personal space / bot spacing (always on, even when standing)
 	var push: Vector3 = _space_push(me)
 	wish = _no_closer(me, wish)
+	# T-143: a bot standing still (no goal to walk to) that a neighbour's personal-space push shoves into a wall just
+	# leans on it for as long as the neighbour stays (Dutch against the stairwell wall, 3.9 s): no push into a wall
+	if not goal_move and push.length_squared() > 0.0004 and wall_ahead(push):
+		push = Vector3.ZERO
 	wish += push
 	if wish.length_squared() > 1.0:
 		wish = wish.normalized()
@@ -469,6 +473,16 @@ func _raw_path(from: Vector3, to: Vector3) -> PackedVector3Array:
 		if d != null and not d.is_open and path_crosses_door(path, d.global_position, d.global_basis.z, d.global_basis.x, d.size.x * 0.5 + 0.3):
 			return PackedVector3Array()
 	return path
+
+
+## True when a wall (physics layer 1) is within 0.55 m of the bot's middle along `dir` (T-143).
+func wall_ahead(dir: Vector3) -> bool:
+	var d: Vector3 = Vector3(dir.x, 0.0, dir.z)
+	if d.length_squared() < 0.0001:
+		return false
+	var from: Vector3 = player.global_position + Vector3.UP * 0.6
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, from + d.normalized() * 0.55, 1, [player.get_rid()])
+	return not player.get_world_3d().direct_space_state.intersect_ray(q).is_empty()
 
 
 ## Plans to `goal`: the plain path, and when it runs through danger, detours beside its worst spot; the cheapest
