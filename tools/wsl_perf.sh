@@ -24,7 +24,7 @@ for m in ${MAPS//,/ }; do
 		tag="${m}_${p}$(echo "$EXTRA" | tr -dc 'a-z_' | head -c 24)"
 		echo "[wsl_perf] $m $p $EXTRA"
 		timeout 900 xvfb-run -a -s "-screen 0 1280x720x24" "$G" $DRV --audio-driver Dummy --resolution 1280x720 --path . \
-			res://gravelight/tools_src/perf_marks.tscn -- --map="$m" --preset="$p" --breakdown $EXTRA > "$OUT/$tag.log" 2>&1
+			res://gravelight/tools_src/perf_marks.tscn -- --map="$m" --preset="$p" --breakdown --quick $EXTRA > "$OUT/$tag.log" 2>&1
 		grep -E "^\[perf\] (per frame|shadowed omni|in play|census:|env:|renderer|map |WebProfile)|^\[WebProfile\]|SHADER ERROR|shader compilation failed" "$OUT/$tag.log" | head -20
 	done
 done

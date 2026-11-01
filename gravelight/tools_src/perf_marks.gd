@@ -51,6 +51,10 @@ var _added_prev: PackedStringArray = []
 ## hide_movers (zombies and players hidden), omni_dp (dual-paraboloid omni shadows), no_spot_shadows
 var _ab: PackedStringArray = []
 var _map_path: String = MAP
+const QUICK_FRAMES: int = 6
+## T-139: `--quick` (software GL under Xvfb, a frame a second or slower): census at 6 s, then 6 frames sampled, quit
+## (no pause-map phase). Counts (draw calls, triangles, lights) are what it is for, not timings.
+var _quick: bool = "--quick" in OS.get_cmdline_user_args()
 
 
 func _ready() -> void:
@@ -114,7 +118,7 @@ func _process(delta: float) -> void:
 					_place_marks()
 				print("[perf] round %d, bots %d, jakub %s, marks %d" % [RoundManager.current_round, GameState.bot_ids.size(),
 					str(JakubCompanion.instance(get_tree()) != null), MapMarks.current().marks().size()])
-		2 when _t > 8.0 and not _census_done:
+		2 when _t > (6.0 if _quick else 8.0) and not _census_done:
 			_census_done = true
 			if _breakdown or not _ab.is_empty():
 				_census()
@@ -131,14 +135,18 @@ func _process(delta: float) -> void:
 				_print_timestamps()
 			if "--mm-bench" in OS.get_cmdline_user_args() and _t > 16.0 and _t - delta <= 16.0:
 				_minimap_bench()
-			if _t > 9.0 and _t < 24.0:
+			if (_quick and _census_done) or (_t > 9.0 and _t < 24.0):
 				_samples.append(delta)
 				_frame_stats(delta)
-			if _t >= 24.0:
+			if (_quick and _samples.size() >= QUICK_FRAMES) or (not _quick and _t >= 24.0):
 				_report("in play", _samples)
 				_report_breakdown()
 				if _probe:
 					_probe_release()
+				if _quick:
+					print("[perf] active zombies %d   GPU: %s" % [_map.director.active_zombies().size(), RenderingServer.get_video_adapter_name()])
+					get_tree().quit()
+					return
 				_phase = 3
 				_map.pause_menu.toggle()
 		3:
@@ -306,7 +314,7 @@ func _probe_scan() -> void:
 func probe_tick(physics: bool, delta: float) -> void:
 	if _phase != 2:
 		return
-	var counting: bool = _t > 9.0 and _t < 24.0
+	var counting: bool = (_quick and _census_done) or (_t > 9.0 and _t < 24.0)
 	if counting:
 		if physics:
 			_probe_pframes += 1
