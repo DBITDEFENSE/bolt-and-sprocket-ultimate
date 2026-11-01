@@ -248,7 +248,7 @@ func _run() -> void:
 	for n2: Node in _g("").get_children():
 		if n2 is PerkMachine:
 			perks += 1
-	_check(perks == 9, "9 perk machines placed (%d)" % perks)
+	_check(perks == 10, "10 perk machines placed (%d; Ledger Lager T-141)" % perks)
 	_check(get_tree().get_nodes_in_group(&"crate_spots").size() == 3, "three crate spots (the wreck, the hangar, the lab)")
 	_check(RoundManager.has_act() and RoundManager.act_index() == 3, "the act block is loaded (index 3)")
 	var lab: BuyDoor = _g("Door_Lab") as BuyDoor

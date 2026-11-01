@@ -232,6 +232,6 @@ func _other_maps() -> void:
 				lm = n as PerkMachine
 		_check(lm != null, "%s: Ledger Lager's machine is there" % tag)
 		if lm != null:
-			var mf: Vector3 = lm.global_position - lm.global_basis.z * 1.0
+			var mf: Vector3 = lm.global_position - lm.global_basis.z * 1.6
 			var mp: PackedVector3Array = NavigationServer3D.map_get_path(nav, _root().spawn_transform(1).origin, mf, true, 0xFFFFFFFF)
 			_check(not mp.is_empty() and mp[mp.size() - 1].distance_to(mf) < 0.8, "%s: the navmesh reaches the machine (ends %s, front %s)" % [tag, str(mp[mp.size() - 1].snapped(Vector3.ONE * 0.1)) if not mp.is_empty() else "-", str(mf.snapped(Vector3.ONE * 0.1))])

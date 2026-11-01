@@ -554,7 +554,7 @@ The loading manifest in the crane office lists fourteen ballast units, one medic
 **Plate:** Marinekasse · Zahlstelle · consignment from Kaltenbrunn · Fenske recipe
 **Archive:** Maker's Plate: Ledger Lager (the crane office)
 
-The amber register against the crane office's south wall, a paper ZAHLTAG card in its window and a brass drum turning on its top, at the end of the Marinekasse's pay window.
+The amber register against the crane office's west wall, below the loading manifest, a paper ZAHLTAG card in its window and a brass drum turning on its top, a few steps from the Marinekasse's pay window.
 
 HELVETIA AUTOMATEN AG · BASEL. Formula: R. Fenske. A spare from the Kaltenbrunn pay office, forwarded north with the Navy's pay chests: the crate is stencilled "ZAHLMEISTEREI", and under it, in pencil, "do not count the drum".
 

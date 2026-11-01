@@ -214,7 +214,7 @@ func _run() -> void:
 	for n2: Node in _map.get_node("Gameplay").get_children():
 		if n2 is PerkMachine:
 			perks += 1
-	_check(perks == 8, "8 perk machines (%d)" % perks)
+	_check(perks == 9, "9 perk machines (%d; Ledger Lager T-141)" % perks)
 	_check(get_tree().get_nodes_in_group(&"crate_spots").size() == 2, "2 crate spots")
 	_check(_g("Crucible") != null, "the first Crucible stands in the concourse")
 	_check(get_tree().get_nodes_in_group(&"retention_columns").size() == 3, "3 retention columns")

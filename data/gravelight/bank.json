@@ -38,15 +38,16 @@
       "greet": "BANK_GREET_M1"
     },
     "map02": {
-      "title": "MARINEKASSE TOTENHAFEN  ·  ZAHLSTELLE",
-      "at": [46.2, 0.0, 58.3],
+      "title": "MARINEKASSE  ·  ZAHLSTELLE",
+      "at": [44.9, 0.0, 58.3],
       "yaw": 0.0,
-      "width": 3.2,
+      "width": 2.4,
       "teller_z": -0.75,
-      "safe": [-1.1, -0.85],
+      "safe": [-0.8, -0.85],
       "sign": [0.0, 2.4, -1.28],
+      "sign_width": 2.2,
       "greet": "BANK_GREET_M2",
-      "nav_block": [[44.5, 0.0, 57.0], [47.9, 1.6, 58.6]]
+      "nav_block": [[43.6, 0.0, 57.0], [46.2, 1.6, 58.6]]
     },
     "map04a": {
       "title": "LOHNKASSE WERK THALBACH  ·  ZAHLSTELLE",
