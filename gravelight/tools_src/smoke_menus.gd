@@ -151,6 +151,7 @@ func _finish() -> void:
 		return
 	_done = true
 	var secs: float = float(Time.get_ticks_msec() - _t0) / 1000.0
-	print("[menus] RESULT: %s (%.0f s, %d screens)" % ["PASS" if _fails.is_empty() else "FAIL (%d): %s" % [_fails.size(), ", ".join(_fails)], secs, _opened.size()))
+	var verdict: String = "PASS" if _fails.is_empty() else "FAIL (%d): %s" % [_fails.size(), ", ".join(_fails)]
+	print("[menus] RESULT: %s (%.0f s, %d screens)" % [verdict, secs, _opened.size()])
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(ProfileSave.path))
 	get_tree().quit(0 if _fails.is_empty() else 1)

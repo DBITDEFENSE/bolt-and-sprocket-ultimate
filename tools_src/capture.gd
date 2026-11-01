@@ -252,7 +252,7 @@ func _cam_set_maps(set_d: Dictionary) -> void:
 		RoundManager.stop()
 		if map.director != null:
 			map.director.kill_all(true)
-		for cl: Node in map.find_children("*", "CanvasLayer", true, false):
+		for cl: Node in get_tree().root.find_children("*", "CanvasLayer", true, false):   # the HUD, subtitles, toasts
 			if not (cl.get_script() != null and str((cl.get_script() as Script).resource_path).ends_with("postfx.gd")):
 				(cl as CanvasLayer).visible = false
 		var c3: Camera3D = Camera3D.new()
@@ -263,7 +263,16 @@ func _cam_set_maps(set_d: Dictionary) -> void:
 		var eye: Vector3
 		var yaw: float = deg_to_rad(float(cam.get("yaw", 0.0)))
 		var pitch: float = deg_to_rad(float(cam.get("pitch", -6.0)))
-		if bool(cam.get("spawn", false)):
+		if bool(cam.get("player", false)) and map.player != null and map.player.camera != null:
+			# the map's own start view: the player's camera as the map placed it, pulled back and up a little
+			var pc: Transform3D = map.player.camera.global_transform
+			var fwd2: Vector3 = -pc.basis.z
+			fwd2.y = 0.0
+			fwd2 = fwd2.normalized() if fwd2.length() > 0.01 else Vector3.FORWARD
+			yaw = atan2(-fwd2.x, -fwd2.z) + deg_to_rad(float(cam.get("turn", 0.0)))
+			fwd2 = Vector3(-sin(yaw), 0.0, -cos(yaw))
+			eye = pc.origin - fwd2 * float(cam.get("back", 1.5)) + Vector3.UP * float(cam.get("up", 0.5))
+		elif bool(cam.get("spawn", false)):
 			var mk: Node3D = null
 			for n: Node in map.find_children("PlayerSpawn*", "", true, false):
 				if n is Node3D:

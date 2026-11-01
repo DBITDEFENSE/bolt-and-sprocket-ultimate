@@ -55,6 +55,8 @@ const MARKE_SCALE: float = 2.6
 
 ## -1 = decide (web build or Compatibility renderer), 0 = desktop, 1 = web. Set before adding to the tree.
 var force_web: int = -1
+## Tools (shots_menus --desktop): the variant every MenuScene picks when its own force_web is -1.
+static var override_web: int = -1
 var web: bool = false
 var load_ms: int = -1
 var walkers: Array[Node3D] = []
@@ -126,7 +128,8 @@ static func _right() -> Vector3:
 func _ready() -> void:
 	_t0 = Time.get_ticks_msec()
 	_rng.seed = 19441223
-	web = want_web() if force_web < 0 else force_web == 1
+	var fw: int = force_web if force_web >= 0 else override_web
+	web = want_web() if fw < 0 else fw == 1
 	fernflug = ProfileSave.fernflug_beaten()
 	egg_done = ProfileSave.egg_done("map00_radio")
 	var steps: Array[Callable] = [_build_inn, _build_environment, _build_set, _build_zombies, _build_squad, _build_camera,

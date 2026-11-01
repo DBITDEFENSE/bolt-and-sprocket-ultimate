@@ -28,6 +28,8 @@ func _ready() -> void:
 			_only = a.substr(7).split(",", false)
 		elif a.begins_with("--suffix="):
 			_suffix = a.substr(9)
+		elif a == "--desktop":
+			MenuScene.override_web = 0   # the desktop variant even on the Compatibility renderer (the census)
 	if not _out.begins_with("res://") and not _out.is_absolute_path():
 		_out = "res://" + _out
 	_headless = DisplayServer.get_name() == "headless"
