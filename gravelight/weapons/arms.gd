@@ -38,7 +38,8 @@ static func available(ch: StringName) -> bool:
 		return true
 	var path: String = DIR + String(ch) + ".glb"
 	if not ResourceLoader.exists(path):
-		_missing[ch] = true
+		if not MapPacks.pending():   # T-139: in the browser the arms arrive with a game pack; don't remember a miss before
+			_missing[ch] = true
 		return false
 	var ps: PackedScene = load(path) as PackedScene
 	if ps == null:

@@ -115,7 +115,7 @@ static func display_name(map_id: StringName) -> String:
 ## True when the map a run would travel to exists in this build (the third map may still be in the works).
 static func scene_exists(map_id: StringName) -> bool:
 	var path: String = scene_for(map_id)
-	return path != "" and ResourceLoader.exists(path)
+	return path != "" and (ResourceLoader.exists(path) or MapPacks.knows(map_id))   # T-139: the web build's maps live in packs
 
 
 ## A map's "exfil" block (data/gravelight/<map00>.json), {} when the map has none.
@@ -327,6 +327,8 @@ static func travel(payload: Dictionary, tree: SceneTree) -> void:
 	prepare_state(payload)
 	if Net.is_host():
 		Net.travel(scene, payload)
+		return
+	if not await MapPacks.ensure(scene):   # T-139: the browser build fetches the map's pack first (desktop: at once)
 		return
 	tree.paused = false
 	tree.change_scene_to_file(scene)

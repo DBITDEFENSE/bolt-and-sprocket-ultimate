@@ -150,6 +150,8 @@ func _start(scene: String, campaign: bool = false) -> void:
 		Campaign.begin()
 	else:
 		Campaign.reset()   # single-map play: no beacon, no chain
+	if not await MapPacks.ensure(scene):   # T-139: the browser build fetches the map's pack first (desktop: at once)
+		return
 	get_tree().change_scene_to_file(scene)
 
 

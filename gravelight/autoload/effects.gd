@@ -830,7 +830,8 @@ func quality() -> Dictionary:
 
 ## The particle-count multiplier of the current quality.
 func particles_k() -> float:
-	return float(quality().get("particles", 1.0))
+	# T-139: halved on the Compatibility renderer (the browser build's WebProfile)
+	return float(quality().get("particles", 1.0)) * (WebProfile.PARTICLE_RATIO if GLSettings.is_compat() else 1.0)
 
 
 # ---- muzzle flashes

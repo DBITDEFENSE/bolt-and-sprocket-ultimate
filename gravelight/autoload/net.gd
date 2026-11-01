@@ -521,6 +521,9 @@ func _begin_match(scene: String, seed_value: int, campaign: bool = false) -> voi
 	GameState.characters = chars
 	GameState.character_id = character_of(local_pid)
 	QuestManager.pending_seed = seed_value
+	if not await MapPacks.ensure(scene):   # T-139: the browser build fetches the map's pack first (desktop: at once)
+		leave("Couldn't download the map.")
+		return
 	get_tree().paused = false
 	match_started.emit(scene, seed_value)
 	get_tree().change_scene_to_file(scene)

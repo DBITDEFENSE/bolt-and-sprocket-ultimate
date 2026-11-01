@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+<title>CLAUDE ZOMBIES</title>
+<!-- UPDATE 09 section 2c (T-139): the browser build's page. Godot fills the $GODOT_* placeholders at export.
+     Dark loading screen, a progress bar with a violet accent, no video. -->
+<style>
+:root { --bg: #08070c; --ink: #e9e4f2; --dim: #8d86a0; --violet: #8f5cff; --violet-glow: rgba(143, 92, 255, 0.45); }
+html, body, #canvas { margin: 0; padding: 0; border: 0; }
+body { color: var(--ink); background: var(--bg); overflow: hidden; touch-action: none;
+	font-family: "Segoe UI", "Noto Sans", "Helvetica Neue", Arial, sans-serif; }
+#canvas { display: block; }
+#canvas:focus { outline: none; }
+#status { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center;
+	background: radial-gradient(ellipse at 50% 38%, #1a1426 0%, var(--bg) 62%); visibility: hidden; z-index: 2; }
+#title { font-size: clamp(28px, 6vw, 64px); font-weight: 800; letter-spacing: 0.32em; margin: 0 0 0.25em 0.32em;
+	text-shadow: 0 0 24px var(--violet-glow); }
+#sub { color: var(--dim); font-size: clamp(11px, 1.4vw, 14px); letter-spacing: 0.28em; text-transform: uppercase; margin-bottom: 3.5em; }
+#bar { width: min(520px, 76vw); height: 6px; background: #1d1828; border-radius: 3px; overflow: hidden;
+	box-shadow: 0 0 0 1px #2a2338 inset; }
+#fill { width: 0; height: 100%; background: linear-gradient(90deg, #5b34c9, var(--violet)); box-shadow: 0 0 14px var(--violet-glow);
+	transition: width 0.15s linear; }
+#fill.indeterminate { width: 30%; animation: slide 1.4s ease-in-out infinite; }
+@keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(340%); } }
+#info { margin-top: 1.1em; color: var(--dim); font-size: 13px; letter-spacing: 0.08em; min-height: 1.4em; font-variant-numeric: tabular-nums; }
+#notice { display: none; max-width: min(560px, 86vw); margin-top: 2em; padding: 1em 1.2em; border-radius: 8px; line-height: 1.4;
+	background: #241a33; border: 1px solid var(--violet); color: var(--ink); text-align: center; font-size: 14px; }
+#hint { position: absolute; bottom: 4vh; color: #5d5670; font-size: 12px; letter-spacing: 0.06em; text-align: center; padding: 0 16px; }
+</style>
+$GODOT_HEAD_INCLUDE
+</head>
+<body>
+<canvas id="canvas">Your browser does not support the canvas tag.</canvas>
+<noscript>CLAUDE ZOMBIES needs JavaScript and WebGL 2.</noscript>
+<div id="status">
+	<div id="title">CLAUDE ZOMBIES</div>
+	<div id="sub">Terms &amp; Conditions</div>
+	<div id="bar"><div id="fill" class="indeterminate"></div></div>
+	<div id="info">Starting…</div>
+	<div id="notice"></div>
+	<div id="hint">Browser build: simpler lighting than the desktop game. Best in Chrome, Edge or Firefox on a desktop PC.</div>
+</div>
+<script src="$GODOT_URL"></script>
+<script>
+const GODOT_CONFIG = $GODOT_CONFIG;
+const GODOT_THREADS_ENABLED = $GODOT_THREADS_ENABLED;
+const engine = new Engine(GODOT_CONFIG);
+(function () {
+	const overlay = document.getElementById('status');
+	const fill = document.getElementById('fill');
+	const info = document.getElementById('info');
+	const notice = document.getElementById('notice');
+	let initializing = true;
+	const mb = (b) => (b / 1048576).toFixed(1);
+	function show() { overlay.style.visibility = 'visible'; }
+	function hide() { if (initializing) { overlay.remove(); initializing = false; } }
+	function fail(err) {
+		console.error(err);
+		notice.textContent = (err instanceof Error) ? err.message : (typeof err === 'string' ? err : 'An unknown error occurred.');
+		notice.style.display = 'block';
+		info.textContent = 'Could not start.';
+		fill.classList.remove('indeterminate');
+		initializing = false;
+	}
+	show();
+	const missing = Engine.getMissingFeatures({ threads: GODOT_THREADS_ENABLED });
+	if (missing.length !== 0) {
+		fail('This browser is missing what the game needs:\n' + missing.join(', ') + '\nTry a current Chrome, Edge or Firefox with WebGL 2 on.');
+		return;
+	}
+	engine.startGame({
+		'onProgress': function (current, total) {
+			if (current > 0 && total > 0) {
+				fill.classList.remove('indeterminate');
+				fill.style.width = Math.min(100, (100 * current / total)).toFixed(1) + '%';
+				info.textContent = 'Loading ' + mb(current) + ' / ' + mb(total) + ' MB';
+			} else {
+				fill.classList.add('indeterminate');
+				info.textContent = 'Loading…';
+			}
+		},
+	}).then(hide, fail);
+}());
+</script>
+</body>
+</html>

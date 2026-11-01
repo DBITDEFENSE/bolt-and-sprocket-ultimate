@@ -11,6 +11,8 @@ extends Node3D
 @export var motes: bool = false              # true = indoor dust motes instead of snow
 
 static var _flake_tex: GradientTexture2D = null
+## T-139: scales every layer's flake count (WebProfile halves it on the Compatibility renderer / in the browser).
+static var density_scale: float = 1.0
 const FLAKE_SHADER: String = "res://gravelight/world/vfx/snow_flake.gdshader"
 var layers: int = 0
 var _mid_cfg: Dictionary = {}
@@ -75,7 +77,7 @@ func _layer(box: AABB, k: float, far: bool, far_cfg: Dictionary) -> void:
 		amount = clampi(int(float(amount) * float(far_cfg.get("amount_mult", 0.6))), 8, 3000)
 	elif not motes:
 		amount = maxi(16, int(float(amount) * clampf(k, 0.3, 1.0)))
-	p.amount = amount
+	p.amount = maxi(8, int(float(amount) * density_scale))
 	p.lifetime = 9.0 if not motes else 12.0
 	if far:
 		p.lifetime = 12.0

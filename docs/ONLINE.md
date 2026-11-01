@@ -111,3 +111,52 @@ withdrawals move Scrip through the host).
 - Tests: `gravelight/tests/unit/test_online.gd`, `test_coop.gd`; smokes `smoke_webrtc` (two headless instances over
   WebRTC + the mock relay: lobby, 2 rounds with a bot, drop + rejoin, host leaves) and `smoke_lobby` (the lobby state
   machine on the mock backend).
+
+## The browser build: what to expect
+
+*(UPDATE 09 §2c, DECISIONS T-139.)*
+
+**It looks simpler than the desktop game, on purpose.** Browsers run Godot on WebGL 2, which means Godot's
+*Compatibility* renderer, not the *Forward+* renderer the desktop game uses. The Compatibility renderer has none of:
+SDFGI (the bounce light), SSIL (indirect light), SSR (reflections), SSAO, volumetric fog and fog volumes, FSR
+upscaling, TAA. So in the browser:
+- the maps that use volumetric fog get plain distance ("depth") fog in the same colour instead;
+- shadows from the sun reach 40 m, and each zone keeps at most 4 lamps that cast shadows (the ones nearest where
+  you start; the others still light the room, without shadows);
+- textures are at most 1024 px (the desktop has 2048 px on the guns, wonder weapons and the Poly Haven materials);
+- particles and snow are halved, and zombies far away animate at a lower rate (from half the desktop distance);
+- anti-aliasing is FXAA, the 3D view renders at 85% and is scaled up.
+
+The game, its rules, timings, hitboxes and maps are the same. The browser picks this "Browser" graphics preset by
+itself; Settings > Video still lets you change it.
+
+**What computer.** A desktop browser (Chrome, Edge or Firefox, recent) with WebGL 2 and a GPU from the last few
+years. Phones and tablets are not supported. The target is 30 FPS or more on a laptop with Intel Iris Xe graphics
+(docs/PERFORMANCE.md; not yet measured on such a laptop), more on anything with a real graphics card. The desktop (Windows) build is faster and looks better on the same machine.
+
+**Threads and headers.** The browser build uses Godot's single-threaded web template (`web_nothreads`). That
+means the site needs no special `Cross-Origin-Opener-Policy` / `Cross-Origin-Embedder-Policy` headers, works on
+any static host, and works inside other pages. The price is that audio and loading share one thread with the game,
+so a heavy moment can stutter a little more than on the desktop. The threaded template would need those headers
+on every file; we measured no reason to switch yet.
+
+**How big it is (the real numbers of the 2026-11-01 build, `tools/build_web.sh`).**
+
+| What | Size | Over the wire (gzip/brotli) |
+|---|---|---|
+| Engine (`cz-<hash>.wasm` + js) | 37.7 MB | ~10 MB |
+| Main pack (menus, scripts, data, characters, sounds, music) | 90.9 MB | ~78 MB |
+| **To reach the menu** | **129.0 MB** | **~88 MB** |
+| Game packs `game1..game4` (voices, the material and prop libraries, guns, wonder weapons, world objects, arms) | 236.3 MB | |
+| Map packs: Crossroads 22.2, Kaltenbrunn 5.5, Totenhafen 4.1, Fernflug shared 2.7 + acts 0.3-0.5 each | 36.1 MB | |
+| **Before the first match** (menu + game packs + the map) | **368-387 MB** | |
+
+How it loads: the page downloads the engine and the main pack (the loading bar), then shows the menu. While you
+are in the menu the four game packs download in the background. When you pick a map, its pack downloads (a few
+MB, Crossroads 22 MB) and the match starts; if the game packs are not finished yet, a progress bar shows what is
+left. Everything is cached by the browser after the first visit (the file names carry a hash, so a new version is
+always fetched fresh and an old one never sticks).
+
+**Running it yourself.** `tools/build_web.sh` builds `build/web/`; `tools/serve_web.sh` serves it on
+http://127.0.0.1:8060/; `tools/deploy_web.sh` puts it on Vercel (one-time `npx vercel login`; set `CZ_PASSWORD`
+in the Vercel project to put the site behind a password; without it the site is open).

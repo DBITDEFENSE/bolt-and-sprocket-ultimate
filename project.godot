@@ -38,6 +38,7 @@ GLVO="*res://gravelight/autoload/vo_manager.gd"
 Effects="*res://gravelight/autoload/effects.gd"
 Net="*res://gravelight/autoload/net.gd"
 Lobbies="*res://gravelight/net/lobby_service.gd"
+MapPacks="*res://gravelight/autoload/map_packs.gd"
 GLConsole="*res://gravelight/ui/dev_console.gd"
 
 [display]
@@ -49,12 +50,17 @@ window/stretch/mode="canvas_items"
 [rendering]
 
 renderer/rendering_method="forward_plus"
+renderer/rendering_method.web="gl_compatibility"
 textures/default_filters/anisotropic_filtering_level=4
 anti_aliasing/quality/msaa_3d=2
 
 [audio]
 
 general/text_to_speech=true
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gl_web_export/plugin.cfg")
 
 [layer_names]
 

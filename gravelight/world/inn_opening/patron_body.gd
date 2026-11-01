@@ -318,7 +318,38 @@ func _process(delta: float) -> void:
 		_blend[k] = move_toward(float(_blend.get(k, 1.0 if pose == k else 0.0)), want, delta * 5.0)
 	if aim_upper_only:
 		_blend[&"aim"] = maxf(float(_blend[&"aim"]), aim_weight)
-	_pose_body(delta)
+	# T-139: the zombies' animation LOD (anim.json lod): the limbs are posed every frame within full_m of the camera,
+	# every 2nd frame to half_m, every 4th beyond, with the time they skipped (the state above runs every frame).
+	_pose_acc += delta
+	_pose_skip += 1
+	var div: int = _pose_div()
+	if _pose_skip % div != 0 and pose != &"fall":
+		return
+	_pose_body(_pose_acc)
+	_pose_acc = 0.0
+
+
+var _pose_acc: float = 0.0
+var _pose_skip: int = 0
+static var _lod: Dictionary = {}
+
+
+func _pose_div() -> int:
+	var cam: Camera3D = get_viewport().get_camera_3d() if is_inside_tree() else null
+	if cam == null:
+		return 1
+	if _lod.is_empty():
+		_lod = (GLData.table("anim").get("lod", {}) as Dictionary) if has_node(^"/root/GLData") else {}
+		if _lod.is_empty():
+			_lod = {"full_m": 15.0, "half_m": 35.0}
+	var d2: float = cam.global_position.distance_squared_to(global_position)
+	var half_m: float = float(_lod["half_m"]) * Zombie.anim_lod_scale
+	var full_m: float = float(_lod["full_m"]) * Zombie.anim_lod_scale
+	if d2 > half_m * half_m:
+		return 4
+	if d2 > full_m * full_m:
+		return 2
+	return 1
 
 
 func _pose_body(delta: float) -> void:

@@ -1,5 +1,8 @@
 # GRAVELIGHT performance notes (Update 04, DECISIONS T-070)
 
+> UPDATE 09 (T-139): the minimum spec, the targets, the per-map census and the browser build are in
+> [docs/PERFORMANCE.md](../PERFORMANCE.md). This file keeps the Update 04-05 Map 0 notes.
+
 ## Measuring
 `gravelight/tools_src/perf_marks.tscn` is the measuring scene: Map 0 at round 15 with the minimap, 3 bots and Jakub, 24
 zombies kept alive and marks in play, with vsync off. It prints the average FPS, the worst frame, the 1% low, the

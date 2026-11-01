@@ -92,6 +92,8 @@ func _ready() -> void:
 	snow.mesh = flake
 	add_child(snow)
 	_build_walker()
+	if GLSettings.is_compat():   # T-139: the browser profile (depth fog for the volumetric fog, capped shadows)
+		WebProfile.apply(self)
 
 
 func _box(pos: Vector3, size: Vector3, c: Color) -> MeshInstance3D:

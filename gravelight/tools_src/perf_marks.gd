@@ -14,6 +14,10 @@ extends Node
 ## `-- --probe` also times every scripted node's _process/_physics_process by script (it takes the nodes off the
 ## engine's own loop and calls them itself, so the totals run a little higher than a plain run): use it to find
 ## which scripts cost what, not for the headline numbers.
+## T-139 (UPDATE 09 section 2d): `--map=<map id>` measures another map (map01_kaltenbrunn, map02_totenhafen,
+## map04a_thalbach ... map04d_mondlicht; the default is Map 0); `--preset=web` the browser preset;
+## `--no-webprofile` keeps WebProfile off on the Compatibility renderer (the before / after of the profile). The
+## census then also lists the shadowed omni / spot lights per zone (contract C4 budget: 6 per zone).
 
 const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 const SPIKE_MS: float = 40.0
@@ -46,14 +50,25 @@ var _added_prev: PackedStringArray = []
 ## no_omni_shadows, no_dir_shadows, no_sdfgi, no_fog, no_anim, no_ssao, no_glow, no_lights, no_shadow_proxy,
 ## hide_movers (zombies and players hidden), omni_dp (dual-paraboloid omni shadows), no_spot_shadows
 var _ab: PackedStringArray = []
+var _map_path: String = MAP
+const QUICK_FRAMES: int = 6
+## T-139: `--quick` (software GL under Xvfb, a frame a second or slower): census at 6 s, then 6 frames sampled, quit
+## (no pause-map phase). Counts (draw calls, triangles, lights) are what it is for, not timings.
+var _quick: bool = "--quick" in OS.get_cmdline_user_args()
 
 
 func _ready() -> void:
 	for a: String in OS.get_cmdline_user_args():
 		if a.begins_with("--ab="):
 			_ab = a.substr(5).split(",")
-		elif a.begins_with("--preset="):   # low / medium / high (the default)
+		elif a.begins_with("--preset="):   # low / medium / high (the default) / web
 			GLSettings.values["graphics_preset"] = a.substr(9)
+			for k: Variant in (GLSettings.PRESETS.get(a.substr(9), {}) as Dictionary).keys():   # T-139: the individual settings too
+				GLSettings.values[str(k)] = GLSettings.PRESETS[a.substr(9)][k]
+		elif a.begins_with("--map="):
+			_map_path = Campaign.scene_for(StringName(a.substr(6)))
+		elif a == "--no-webprofile":
+			GLSettings.compat_override = 0
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 	for i: int in AudioServer.bus_count:
@@ -71,7 +86,8 @@ func _ready() -> void:
 	if _breakdown:
 		RenderingServer.viewport_set_measure_render_time(get_viewport().get_viewport_rid(), true)
 		get_tree().node_added.connect(_on_node_added)
-	_map = (load(MAP) as PackedScene).instantiate() as MapRoot
+	print("[perf] map %s, renderer %s, adapter %s" % [_map_path, RenderingServer.get_current_rendering_method(), RenderingServer.get_video_adapter_name()])
+	_map = (load(_map_path) as PackedScene).instantiate() as MapRoot
 	get_tree().root.add_child.call_deferred(_map)
 	get_tree().set_deferred("current_scene", _map)
 	if _probe:
@@ -102,7 +118,7 @@ func _process(delta: float) -> void:
 					_place_marks()
 				print("[perf] round %d, bots %d, jakub %s, marks %d" % [RoundManager.current_round, GameState.bot_ids.size(),
 					str(JakubCompanion.instance(get_tree()) != null), MapMarks.current().marks().size()])
-		2 when _t > 8.0 and not _census_done:
+		2 when _t > (6.0 if _quick else 8.0) and not _census_done:
 			_census_done = true
 			if _breakdown or not _ab.is_empty():
 				_census()
@@ -119,14 +135,18 @@ func _process(delta: float) -> void:
 				_print_timestamps()
 			if "--mm-bench" in OS.get_cmdline_user_args() and _t > 16.0 and _t - delta <= 16.0:
 				_minimap_bench()
-			if _t > 9.0 and _t < 24.0:
+			if (_quick and _census_done) or (_t > 9.0 and _t < 24.0):
 				_samples.append(delta)
 				_frame_stats(delta)
-			if _t >= 24.0:
+			if (_quick and _samples.size() >= QUICK_FRAMES) or (not _quick and _t >= 24.0):
 				_report("in play", _samples)
 				_report_breakdown()
 				if _probe:
 					_probe_release()
+				if _quick:
+					print("[perf] active zombies %d   GPU: %s" % [_map.director.active_zombies().size(), RenderingServer.get_video_adapter_name()])
+					get_tree().quit()
+					return
 				_phase = 3
 				_map.pause_menu.toggle()
 		3:
@@ -294,7 +314,7 @@ func _probe_scan() -> void:
 func probe_tick(physics: bool, delta: float) -> void:
 	if _phase != 2:
 		return
-	var counting: bool = _t > 9.0 and _t < 24.0
+	var counting: bool = (_quick and _census_done) or (_t > 9.0 and _t < 24.0)
 	if counting:
 		if physics:
 			_probe_pframes += 1
@@ -420,6 +440,16 @@ func _census() -> void:
 			_lights.append([l, l.global_position])
 			print("[perf]   shadow light %s (%s, %s, range %.1f, energy %.2f, at %s, script %s)" % [_map.get_path_to(l), l.get_class(), mode, rng, l.light_energy,
 				str(l.global_position.snapped(Vector3.ONE * 0.1)), (l.get_script() as Script).resource_path.get_file() if l.get_script() != null else "-"])
+	var per_zone: Dictionary = {}
+	for e: Array in _lights:
+		var z: String = str(ZoneVolume.zone_at(get_tree(), (e[0] as Node3D).global_position))
+		per_zone[z if z != "" else "(outside)"] = int(per_zone.get(z if z != "" else "(outside)", 0)) + 1
+	var zparts: PackedStringArray = []
+	var zmax: int = 0
+	for z2: String in per_zone:
+		zparts.append("%s %d" % [z2, per_zone[z2]])
+		zmax = maxi(zmax, int(per_zone[z2]))
+	print("[perf] shadowed omni/spot lights: %d, per zone: %s (most %d, budget 6)" % [_lights.size(), ", ".join(zparts), zmax])
 	var env: Environment = _env()
 	if env != null:
 		print("[perf] env: sdfgi %s ssao %s ssil %s ssr %s glow %s fog %s vol fog %s" % [env.sdfgi_enabled, env.ssao_enabled, env.ssil_enabled, env.ssr_enabled, env.glow_enabled, env.fog_enabled, env.volumetric_fog_enabled])
