@@ -148,10 +148,180 @@ and chrome inside. Hero: the dish over the crater, the retention columns, the Ea
 - **E Retention Hall:** the nave with the three columns and their caps and plates, NOBODY CANCELS three metres high.
 - **F The Account:** the round room, the console with the CANCEL key, the first retained miner's hand under the glass.
 
-## 4. As built (the audit worker fills this in from the before captures)
-_Per zone: a one-line verdict (bare box / partly dressed / dressed), what is missing from the list in §2.5, draw-call
-and light census from `tools/wsl_godot.sh ... --breakdown`._
+## 4. As built (audit of the `u09_before` captures, 2026-11-01)
 
-## 5. The plan per zone (the audit worker writes it; each zone worker ticks it off)
-_Per zone: the pieces to add (library piece / free asset / Blender piece), the lights, the sound zone, the story props,
-the capture cameras, the acceptance commands._
+**Method.** Camera sets `u09_map02`, `u09_map04a`..`u09_map04d` (3 per zone: wide from the entrance, hero, detail corner; eye 1.62 m, power on) and `u09_ref` (the bar: Crossroads taproom, cellar, yard; Kaltenbrunn minehead, barracks, chapel) in `data/gravelight/capture_cams.json`, rendered at 1280x720 with `tools/wsl_godot.sh --path . res://tools_src/capture.tscn -- --set=<set> --out=<dir>` (WSL + Xvfb, Linux Godot, software GL). PNGs: `morning/screenshots/u09_before/<set>/` (git-ignored): 21 + 6 + 22 + 18 + 21 + 18 = 106.
+**Caveats (read before judging a picture).** (1) WSL runs the **Compatibility** renderer: no volumetric fog, SSR, SSIL or SDFGI, so every fog shaft, glow and reflection the generators set up is missing or flat in these shots; the "after" captures must be taken the same way so the pairs compare, and the mood must also be checked on the PC in Forward+ by the owner. (2) The HUD, a pistol and the Operator's subtitles are in every frame (capture.gd draws the real viewport). (3) Some cameras are off-target (a few stand in a corner or look at a wall, e.g. `u09_map04a/15_F_wide`, `u09_map04b/13_E_london`, `u09_map04b/16_F_glass` are nearly black): treat black as "unlit in Compatibility or mis-aimed", not as a verdict; the zone workers fix the cameras they own (section 5). (4) Kaltenbrunn's barracks (`u09_ref/04_ref_barracks`) is also black in these captures: it is lit by the power switch that this set only throws on Map 0's first camera; the reference bar is therefore the taproom, the yard (`02_ref_yard`) and the minehead (`03_ref_minehead`).
+
+**The bar, measured.** `Props.`-library calls per generator (what dresses a room): gen_map00 806 (4271 lines), gen_map01 319 (3398), **gen_map02 278** (2357), gen_map04a 17 (431), gen_map04b 9 (335), gen_map04c 29 (477), gen_map04d 34 (349) (+13 in the shared gen_map04_lib). Per zone in gen_map02 (Props calls / light calls): A Quay 44/13, B Cannery 19/7, C Workshop 18/4, D Pen Hall 38/17, E U-boat 51/6, F Lower Pens 26/6, G Tower 14/4. What the bar looks like in a frame: a stone well with a rope, a plank fence, trees and falling snow under a starry sky (yard); a headframe lattice with a brick base, a nameplate, a violet pylon crystal and a lit window (minehead); framed windows, curtains, a fire, antlers, pictures, candles (taproom).
+
+**Census (software GL, Compatibility renderer, power on, `gravelight/tools_src/census_map.tscn`; numbers per camera set, peak over the set's cameras; triangles are what the renderer reports for the frame).**
+
+| Scene (set) | draw calls, peak camera | primitives (triangles), peak camera | omni / spot / dir | shadowed lights (whole map; generators set no `zone` meta on them) | geometry instances | static bodies | mesh triangles in the scene |
+|---|---|---|---|---|---|---|---|
+| map02 (`u09_map02`, 21 cams) | **7242** (E_wide; 2.9x budget); median ~2600 | **1.07 M** (E_wide; 2.7x); median ~0.45 M | 103 / 17 / 1 | 18 (cap is 6 per zone; D Pen Hall has the 3 `i % 3` shadow floods and pole lamps) | 1899 | 395 | 0.98 M |
+| map04a (`u09_map04a`, 22) | 1939 | 379 k | 45 / 8 / 1 | 7 | 1316 | 335 | 0.77 M |
+| map04b (`u09_map04b`, 18) | 1702 | 372 k | 38 / 0 / 1 | 1 | 968 | 196 | 0.59 M |
+| map04c (`u09_map04c`, 21) | 1995 | 371 k | 39 / 0 / 1 | 1 | 1167 | 247 | 0.67 M |
+| map04d (`u09_map04d`, 18) | 1196 | 201 k | 48 / 1 / 2 | 2 | 1035 | 126 | 0.58 M |
+
+Reading it: **Map 2 is already over the draw-call and triangle budgets** from its worst viewpoints (the U-boat interior seen through its bulkhead doors, the pen hall, the workshop), before any rebuild adds anything; software GL counts every pass (shadow casters included) in the frame, so the on-PC Forward+ numbers will be lower, but the ranking holds. The first Map 2 job is therefore to cut before it adds: merge the static meshes per material and cell (`merge_static_meshes` exists), `BakedMultiMesh` for repeated bollards, poles, pipes and rails, `ShadowProxies`, visibility ranges on the interiors (U-boat, lower pens, tower) so they are not drawn from the hall. The four acts are well inside the budgets (1.2-2.0 k draw calls, 0.2-0.4 M triangles), so they have headroom of roughly 500 draw calls and 20-100 k triangles per view before they reach the limits; Act I's seven shadowed lights are over the 6-per-zone cap only if they sit in one zone (they do not carry zone meta; the zone workers add it).
+
+Contract C4 budgets: <= 2500 draw calls in view, <= 6 shadowed lights per zone, <= 400k triangles in view (<= 200k on web). The rebuild adds geometry, so the zone workers rerun the census per zone and report the peak against these.
+
+### 4.1 Totenhafen (`map02`): the nearest to the bar; every zone "partly dressed"
+| Zone | Verdict | Missing from the section 2.5 list | The ugliest things |
+|---|---|---|---|
+| A Quay | partly dressed | wall/floor materials with trim, visible fog/surf, sound zone, life (gulls, halyard), the sea beyond the parapet (not visible from the spawn view) | the bunker face and cliff are **one blue noise texture** with no form-board lines or drip stains; the quay floor is mottled brown/white "camouflage" patches; the hut's door is a black rectangle with no frame, its window a white glowing rectangle, no tarred roof; the cutter is a box hull with a pole (no planks, wheel, nets) |
+| B Cannery | partly dressed (best floor on the map) | wall material and trim (walls are the same noise), sound zone, life | checker tile floor and pendants are good; the brine tanks are bare cylinders without lids or hoops, no conveyor/cans/hooks visible, ceiling is flat black, no skylights |
+| C Workshop | partly dressed | floor material (flat grey cloud noise), the overhead gantry/chain hoist, tool wall, lathe and trolley track read as nothing, no sound zone | the torpedoes are plain cylinders with one red band (no fins, hatch, propeller, cradle detail); the warhead cage is a thin frame; caged bulkhead lamps are fine |
+| D Pen Hall | partly dressed (the hero zone, not yet a hero) | U-1047 silhouette, ceiling/curtain/lightning, drips, water edge detail, sound zone | U-1047 is a long flat box with two poles and a small sail (no saddle tanks, tower railings, deck gun); the apron floor is a flat dark slab; piers/rails/pole lamps/gantry are present and are the map's best work |
+| E U-boat | partly dressed | round hatches, valves, bunks readable, torpedo room detail, sound zone | corridor walls are one rough texture; red lighting is dark; pipes and gauges exist but the Crucible room is not readable from the wide view |
+| F Lower Pens | partly dressed | pump silhouettes (flywheels), grilles, drowned effects, sound zone | the pumps are boxes with round "bolt" discs; columns have a hazard sign but are bare concrete; the water surface is a single noise sheet; very dark |
+| G Signal Tower | dressed (relatively) | window weather, the swaying-tower shake, sound zone | checker floor, notice board, chalk desk, shelves, Hawkeye cabinet are good; walls again the same noise; the "windows over the storm" show nothing |
+
+### 4.2 Fernflug Act I, Werk Thalbach (`map04a`): bare boxes with a brick skin
+| Zone | Verdict | Missing | Ugliest |
+|---|---|---|---|
+| A Siedlung | bare box | everything but a burning barrel: facades, windows with curtains, balconies, washing lines, crater, sandbags, notice, chalk game | the courtyard is a flat blue slab; the housing blocks are 6 m **brick-textured wall sheets** with a few doors; a pink moire pattern on the walls (texture repeat); no roofs, sky is black |
+| B Bahnhof | bare box | rails/sleepers, platform clock, water crane, signals, coffin stencils, hut detail | flat slab; the only light is a crystal chandelier hanging in the open air; the flatcars and coffins are boxes |
+| C Kantine | bare box | tables with benches, hatch, stage, banner, PA, enamel signs | one brick room, near black, a single pendant; the tables are plain slabs |
+| D Kirchplatz | bare box | the tower silhouette (belfry, broken top), well, fountain, parish house | the "bombed tower" is a 12 x 14 m stone box; the open sky is a flat dark colour; no Fliegeralarm read |
+| E Montage | bare box | sawtooth roofs, netting, jig ribs/spars, rivet rigs, gantry | pendant lamps and crystal chandeliers reused from Kaltenbrunn (wrong for a works); jigs are 2.5 m steel slabs |
+| F Windkanal | bare box | horn, fan blades, glass test section, model | not readable (the capture is black); the fan is a 3 x 7 m steel box |
+| G Prüfstand | bare box | pit walls, burnt engines, control bunker detail | one slab-textured wall, the impeller is a glowing violet disc on a box |
+| H Halle | bare box (mass, no silhouette) | trusses, netting, floor fog, crane, the Kranich's wing silhouette and intakes | the Kranich is three boxes (body, two wings) under a flat roof; violet intake lights are the only life |
+
+### 4.3 Fernflug Act II, der Kranich (`map04b`): box corridors (the act that is a box)
+| Zone | Verdict | Missing | Ugliest |
+|---|---|---|---|
+| A Bombenschacht | partly dressed | ribs, skin panels, rivets, door actuators, catwalk grating, the ocean breach | the six casings with city labels are the only objects; flat corridor walls; hanging lamp is a kitchen shade |
+| B Mittelrumpf | partly dressed | bunks/harness/radio/oxygen readable, ribs | galley counter is a brick-textured box; the Crucible with violet strap is the one good silhouette |
+| C Flügel | bare box | curved ribs, spars, fuel cells, inspection lamps, sky through breaches | a straight low corridor with red lamps; the "ribs" are posts |
+| D Triebwerk | bare box | the core behind lead glass (it is a white rectangle), pipes, heat shimmer | a violet grating floor and a glowing rectangle |
+| E Kanzel | bare box | four perspex blisters, gun mounts, the London window | black frame: no sky outside any window |
+| F Cockpit | bare box | seats, instruments, glass, autopilot | black frame: the whole-front glass shows nothing |
+Missing map-wide: the `FlightSky` (sky, clouds, coast/ocean, fighters), shell lofting, hanging things that sway; the act has **no outside**.
+
+### 4.4 Fernflug Act III, Groom Lake (`map04c`): partly dressed (materials exist, silhouettes do not)
+| Zone | Verdict | Missing | Ugliest |
+|---|---|---|---|
+| A Wreck | bare box | the wing/hull silhouette, fire, smoke, debris | a grey slab room with painted doors; fog and amber shafts are good |
+| B Lakebed | bare box | range markers (a single box at 30 m), tyre tracks, dust sweeps | flat salt plane, paper-cut mountain boxes at the horizon |
+| C Hangar | bare box | trusses, sliding doors, bomber, workbenches, tarp | a big brown room, the bomber is an olive box |
+| D Motor pool | bare box | truck models, drums, generator shed | trucks are 6 x 8 m olive boxes |
+| E Radar | partly dressed | dish, shack, scrub | the lattice mast reads as a tapered brick obelisk with guy wires; no dish visible |
+| F Lab | dressed (relatively) | glass-front rooms, bench props | caliche cobble walls and a violet light make a place; rafters present |
+| G Silo | partly dressed | the rocket silhouette reads as a grey cylinder, gantry | ceiling/walls one rough texture |
+
+### 4.5 Fernflug Act IV, Mondlicht (`map04d`): partly dressed, one floor for the whole moon base
+| Zone | Verdict | Missing | Ugliest |
+|---|---|---|---|
+| A Reception | partly dressed | airlock cycle, desk bell/sign, capsule detail | capsule is a black cone, walls flat grey |
+| B Concourse | partly dressed | slogans, glass model, Crucible 001 | purple flat walls, the checker tile floor |
+| C Yard | partly dressed | the Earth (not in frame), boot prints, air posts, dish | regolith with dark sky; the rim reads as black boxes |
+| D Fulfillment | bare box | suited inventory racks, tags, conveyor | purple 2.4 m boxes standing in rows |
+| E Retention Hall | dressed (relatively) | cap and plate details | the pylons, trusses and the 3 m NOBODY CANCELS make the one real hero of the act |
+| F The Account | partly dressed | round room, first retained, CANCEL key | a square dark room with a console box; the Pilch glass pit is not readable |
+One checker-tile floor material is used in every dome; one wall tone per dome.
+
+### 4.6 Findings that apply to all five scenes (plan items)
+1. **One noise texture on every wall/ceiling** (Map 2's concrete, Act I's brick, Act III's walls): no trim, no panel seams, no weathering decals. A material pass (distinct floor, wall, trim per zone) is the cheapest big win.
+2. **No visible light fixtures** outside Map 2's pendants and pole lamps; the acts have shafts of light from nothing, or Kaltenbrunn's crystal chandeliers hanging in an open yard (04a B/E).
+3. **No per-zone sound.** `data/gravelight/audio.json` `music.ambient` has beds only for `map00_crossroads` and `map01_kaltenbrunn`; map02 and the four acts fall back to `ambient_map00` (the inn's wind). There is no `ZoneAmbience` node (nothing crossfades a loop when `ZoneVolume` changes). Plan item for the first zone worker of each map: write `gravelight/world/zone_ambience.gd` (child of `ZoneVolume`: `bed` key + `gain_db` + `fade_s`, handled by `AudioDirector`), add beds `ambient_map02`, `ambient_map04a..d` (and per-zone loops) to `audio.json`, and source CC0 loops (see section 5.0).
+4. **No outside**: Act II's windows, Map 2's quay sea, the pen mouth's storm are not visible; the sky is black. A `FlightSky` / pen-mouth storm card is a priority.
+5. **No life** (steam, drips, gulls, a banging sheet of iron, radio) in any acts zone; Map 2 has smoke and a few fires only.
+6. **Compatibility renderer vs Forward+**: depth fog and emissive must carry the mood for `WebProfile`; keep every new light cheap (<= 6 shadowed per zone).
+7. The acts' generators are small (335-477 lines) and use only `Props`-light vocabulary; `gen_detail_lib.gd` (section 2.2) is not written yet, so the first worker of Act I writes it and the others extend it.
+
+## 5. The plan per zone (execute zone by zone; tick each box in the PR)
+
+### 5.0 Shared pieces, verified downloads and commands
+**Free assets (CC0, verified to exist on 2026-11-01; file under `assets/third_party/<source>/<id>/` with `SOURCE.txt` + `LICENSE.txt` + a row in `docs/ASSETS.md`, then `python -I tools/assets_manifest.py`).**
+- Poly Haven models (https://polyhaven.com/a/<id>): `overhead_crane`, `modular_industrial_pipes_01`, `barrel_stove`, `ocean_buoy`, `lifebuoy`, `old_military_crate`, `wooden_military_crate`, `hanging_industrial_lamp`, `industrial_wall_lamp`, `street_lamp_01`, `metal_jerrycan`, `propane_tank`, `modular_chainlink_fence`, `rollershutter_door`, `rollershutter_window_01`, `dutch_ship_medium`, `ship_pinnace`, `rusted_wheel_rim_01`, `metal_toolbox`, `metal_office_desk`, `industrial_storage_cart`, `portable_welding_cart`, `tool_cart`, `hand_truck`, `ladder_sectioned_01`, `cement_bag`, `old_gas_mask`, `ammo_box`, `power_box_01`, `utility_box_01`, `pipe_wrench`, `large_iron_gate`, `old_bed_frame`, `vintage_day_bed`.
+- Poly Haven textures (https://polyhaven.com/a/<id>): concrete `concrete_wall_004`, `concrete_wall_005`, `concrete_slab_wall`, `concrete_panels`, `concrete_floor_worn_001`, `damaged_concrete_floor`, `concrete_block_wall`, `cracked_concrete_wall`, `dirty_concrete`; metal `corrugated_iron`, `rusty_corrugated_iron`, `worn_corrugated_iron`, `metal_grate_rusty`, `rusty_metal_grid`, `rusty_painted_metal`, `metal_plate`, `blue_metal_plate`, `rusted_shutter`; brick `factory_brick`, `brick_wall_001`, `painted_brick`, `red_brick_plaster_patch_02`; ground `dry_ground_rocks`, `dirt_aerial_02`, `coast_sand_01`, `damp_sand`, `cracked_red_ground`, `burned_ground_01`, `gravel_road`, `asphalt_pit_lane`; moon `moon_dusted_01`, `moon_footprints_01`, `moon_track_01`, `moon_macro_01`, `moon_meteor_01`; planks `plank_flooring_02`, `old_planks_02`, `roof_planks`, `raw_plank_wall`; plaster `peeling_painted_wall`, `grey_plaster_02`, `damaged_plaster`.
+- ambientCG (https://ambientcg.com/a/<id>, CC0): `CorrugatedSteel005`, `CorrugatedSteel007A`, `DiamondPlate001`, `DiamondPlate008A`, `Concrete034`, `Concrete048`, `Bricks105`, `Bricks113A`, `Asphalt033`, `Rock063`, `Road013A`.
+- Kenney (https://kenney.nl/assets/<slug>, CC0): `pirate-kit` (boats, barrels, ropes, cannons: the quay and the pens), `space-kit` (airlocks, rovers, pods: Act IV), `survival-kit` (already in the repo), `modular-buildings`. Quaternius (https://quaternius.com, CC0): the "Ultimate Modular Sci-Fi" and "Sci-Fi Essentials" packs (Act IV domes, consoles), "Ultimate Space Kit"; check each page's licence line before filing.
+- Sound (CC0 loops for `ZoneAmbience`; freesound.org CC0 filter or OpenGameArt "Industrial Ambience"/"Wind" CC0 packs; Kenney "Impact Sounds" for hits): harbour surf and gulls, bunker drone and drips, cannery machinery hum, workshop hiss, plane drone/cabin (Act II), desert wind (Act III), airlock hiss and suit breath (Act IV). Each file gets `SOURCE.txt`/`LICENSE.txt` in its folder (the GUT licence gate).
+- Blender-scripted pieces only where nothing fits (`tools/build_world_objects.sh` pattern): U-1047's Type VII hull, the Kranich wing shell (ribs + skin), the Kranich wreck, the church tower, the lattice radar tower with dish, the relay dish, the capsule.
+
+**Gameplay-neutral wall thickening (what may gain thickness without moving a loop).** Walls are generated by `wall_x/wall_z` at `T = 0.3`; the navmesh is baked from the geometry and the loops are paths between solids, so a wall may grow **away from the walkable side**: Map 2: the quay parapet (outward, to the sea), the bunker face `MassFace` (already 3 m, any trim goes on its south or north faces only if it stays within 0.15 m of the face; the pen passage and window closets keep their 3 m depth), cannery/workshop outer walls (outward), hull sides (outward only; the infirmary partition stays 0.3 and gets non-colliding trim). Act I: housing blocks, assembly-hall and hangar outer walls (outward), the Kraftzentrale annex (outward). Act II: the hull skin outside the deck rectangle; ribs/spars may be non-colliding dressing. Act III: hangar/motor-pool outer walls, the lab and silo walls (into the rock, away from the hall). Act IV: dome hulls (outward). **Never** thicken a wall that bounds a loop lane, a door frame (doors are `door(c, y, w)` openings: frames are dressing outside the opening), a window closet, a link point (`LINKS`), or a `NavBlock_*` box. All trim, skirting, cornices, door frames, pipes, rails and decals are `Dressing` (no collider). Rebake with the generator, run `tools/check_mapdata.sh`, then the smokes.
+
+**Acceptance commands (every zone worker, from the repo root; Windows Git Bash).**
+```
+# regenerate (headless, once per generator edit; example Map 2)
+. tools/env.sh && "$GODOT" --headless --audio-driver Dummy --path . --script res://gravelight/tools_src/gen_map02.gd
+python -I tools/assets_manifest.py --check
+"$GODOT" --headless --audio-driver Dummy --path . --script res://gravelight/tools_src/check_scripts.gd
+"$GODOT" --headless --audio-driver Dummy --path . -s addons/gut/gut_cmdln.gd -gconfig=res://.gutconfig.json
+tools/check_mapdata.sh                      # after a minimap bake: tools/bake_minimap.sh (through tools/wsl_godot.sh if it renders)
+tools/run_smokes.sh .smoke_logs/u09 map02   # also: m2 | map04a | map04b | map04c | map04d | map04_flow | map04_full | map04_egg
+tools/ai_soak.sh totenhafen --runs=1 --max-minutes=10      # Map 2; fernflug for Map 4: tools/ai_soak.sh fernflug --max-minutes=10 [--skip-to-act=2|3|4]
+# captures (invisible, software GL; one set at a time, 5-15 min each):
+sh tools/wsl_godot.sh --path . res://tools_src/capture.tscn -- --set=u09_map02 --out=$PWD_WSL/morning/screenshots/u09_after/u09_map02
+sh tools/wsl_godot.sh --path . res://gravelight/tools_src/census_map.tscn -- --set=u09_map02
+```
+(`tools/ai_soak.sh` has no `--map=`/`--minutes=`: the scenario names are `totenhafen` and `fernflug`, the length is `--max-minutes`; the real flag list is in the script header. `tools/wsl_capture.sh <milestone> only=map02` runs the older, per-map capture targets, not the u09 sets; use the `--set` form above, `$PWD_WSL` being the /mnt/c/... path of the repo.)
+
+### 5.1 Totenhafen (`map02`): extend `gen_map02.gd` (`_dress_*` functions, `Props.`, `lamp/pendant/bulkhead/flood`)
+Common to every zone: a distinct **floor** and **wall** material from the lists above (replace the single concrete noise with form-board concrete + trim), skirting and a cornice line (dressing boxes), door frames and a hung door on every `door()` opening, drip/rust decals (`decal()`), a `ZoneAmbience` per zone, 3 story props from `story_props.json`. Lights: keep <= 6 shadowed per zone; the key light is the one that casts.
+| Zone | Pieces to add | Lights (key casts shadow) | Sound zone | Story props / life | Cameras (`u09_map02`) |
+|---|---|---|---|---|---|
+| A Quay | cutter: planked hull (clinker strips), wheel, wheelhouse door, nets/floats (Kenney pirate-kit barrel/rope, Poly Haven `ocean_buoy`, `lifebuoy`); hut: tarred roof, framed door and window with shutters, stove pipe, tide table; bollards with real cleats, fish crates (`wooden_crate_01`), drums, `street_lamp_01` pole; bunker face: stencilled name, blast door with counterweight, drip lines (`concrete_wall_004`); a visible sea (existing water shader, whitecaps) and a breakwater light | 4 pole/bulkhead (no shadow), 1 hurricane lamp on the hut, the key: the flood on the pen passage (shadow) | `ambient_map02_quay`: surf, wind, halyard slap; gulls one-shots | Harbourmaster's log (hut), last-boat notice; gulls, a loose sheet banging | A_wide, A_hero, A_detail |
+| B Cannery | zinc table tops with scale glints, conveyor with cans and a belt, brine tanks with lids/hoops (`barrel_03`, `modular_industrial_pipes_01`), pallets, hooks on rails, infirmary: partitions with a screen, cots with blankets, stove, skylight row with snow, door frames | 7 pendants (1 shadow: the middle one), stove glow (omni, no shadow) | `ambient_map02_cannery`: machinery hum, a dripping tap | Infirmary letter (T-135 fixed), cannery ledger; steam from the stove | B_wide, B_hero, B_detail |
+| C Workshop | torpedoes on cradles with fins, nose caps, hatches, a prop (Blender piece), overhead gantry with a chain hoist (`overhead_crane`), tool wall + lathe (`metal_toolbox`, `metal_office_desk`), trolley track with a loaded trolley, the warhead cage with lead coffins (violet seam), welding bench flicker; floor `concrete_floor_worn_001` | 4 caged bulkheads, welding flicker omni, key: the cage's lamp (shadow) | `ambient_map02_workshop`: hiss, a ticking cooling pipe | warhead manifest, coffin plates; sparks | C_wide, C_hero, C_detail |
+| D Pen Hall | U-1047 Type VII hull (Blender piece: saddle tanks, tower with railings and periscope housings, deck gun, gangway), pier kerbs, bollards, crane hook and cab (`overhead_crane`), coffins on pallets, catwalk grating (`metal_grate_rusty`) and handrails, steel curtain with lightning card, ceiling trusses, drips (particles) | 12 pole lamps (no shadow), 2 floods, the key: one flood (shadow), lightning flash omni | `ambient_map02_penhall`: echo, drips, curtain groan, tide alarm | loading manifest (crane office), chalk tally on pier 1; dripping, water slap | D_wide, D_hero, D_detail |
+| E U-boat | round bulkhead hatches, valve wheels, pipe runs (`modular_industrial_pipes_01`), bunks with blankets (`old_bed_frame`), torpedo tubes, the Crucible strapped in, red battle lanterns | 6 red lanterns, key: the Crucible's glow (shadow) | `ambient_map02_uboat`: hull creak, ticking pipes | boat log, Deacon's map; creak | E_wide, E_hero, E_detail |
+| F Lower Pens | pumps with flywheels and pipe flanges, grilles, columns with bases and paint bands, deck-water edge, drowned sailors' effects, `rusted_shutter` sea grille | 6 bulkhead lamps, key: switch dais lamp (shadow) | `ambient_map02_pens`: water, pump idle, a drip | pump-room log; bubbles | F_wide, F_hero, F_detail |
+| G Signal Tower | teletype with a paper strip, chart table, signal lamp with a visible lens, window frames with mullions and storm card, shelves | 2 pendants, signal lamp spot (shadow) | `ambient_map02_tower`: wind, a flapping paper | teletype strip (fixed), Hinnerk Petersen (T-135) | G_wide, G_hero, G_detail |
+Camera fixes in the set (first worker of the map): D_detail, F_detail look at dark corners; raise settle/aim after the dressing lands.
+
+### 5.2 Act I, Werk Thalbach (`map04a`): first write `gen_detail_lib.gd`; extend `gen_map04a.gd` + `gen_map04_lib.gd`
+Common: brick/plaster/concrete with distinct tone per block, window frames with curtains (non-colliding), roof pieces so the sky is bounded by real edges, camouflage netting (a dressing sheet with alpha), searchlights sweeping (existing), frost decals, one `ZoneAmbience` each (dawn wind, distant sirens), 3 story props per zone, bank branch where §3 placed it.
+| Zone | Pieces | Lights | Sound | Story props / life | Cameras (`u09_map04a`) |
+|---|---|---|---|---|---|
+| A Siedlung | two façades with window frames, curtains, balconies, roof lines; crater with rim debris; washing lines with sheets; sandbag cellar entrance; Volkssturm notice; child's chalk game (Jakub alphabet); `barrel_stove` + `old_gas_mask`; ground `dirt_aerial_02` + frost | 3 window glows (no shadow), 1 searchlight beam, key: courtyard pump lantern (shadow) | `ambient_map04a_siedlung`: dawn wind, far sirens | pump, notice, chalk; crows | A_wide, A_crater, A_cellar |
+| B Bahnhof | goods shed with sliding doors, platform with clock, 2 flatcars with TOTENHAFEN coffins (one cracked, violet), rails and sleepers (dressing instances), water crane, signals, yardmaster hut | 2 signal lamps, shed lamp, key: platform lamp | `ambient_map04a_bahnhof`: steam idle, rail ticks | transfer list (hut), Jette's desk | B_wide, B_flatcars, B_shed |
+| C Kantine | long tables with benches (`wood-table`/Poly Haven `dining_table`), serving hatch, stage with radio and concert banner, PA speaker, coat rack, enamel signs, `plank_flooring_02` | 4 pendants (works green shades), 1 stage lamp (key, shadow) | `ambient_map04a_kantine`: radio hum, PA click | Wittkamp's PA, banner | C_wide, C_stage, C_hatch |
+| D Kirchplatz | church tower silhouette (Blender piece: belfry broken), well, frozen fountain, parish house façade, Fliegeralarm circles | moon/flare omni only, key: well lantern | `ambient_map04a_church`: bell tick, wind | well, fountain | D_wide, D_tower, D_fountain |
+| E Montage | sawtooth roofs + netting, jigs with ribs/spars/half-skin (Blender), rivet rigs, engine stands, gantries, Kraftzentrale annex with breaker (power switch prop) | works pendants (replace crystal chandeliers), 2 gantry lights (1 shadow) | `ambient_map04a_montage`: dripping iron, distant press | engine ledger (file 1), jig crane trap | E_wide, E_jig, E_kraft |
+| F Windkanal | brick horn, fan with blades, glass test section, model on sting, Jette's glass office | fan glow (violet), office lamp (key) | `ambient_map04a_tunnel`: low rumble (louder when run) | flight plan (file 2) | F_wide, F_glass (fix: F_wide stands too low) |
+| G Prüfstand | pit walls, burnt engines, blast wall, humming impeller, control bunker | impeller violet omni (key), 2 bunker lamps | `ambient_map04a_pits`: impeller hum | crew list (file 3) | G_wide, G_impeller |
+| H Halle | trusses + netting, floor fog, the Kranich wing silhouette (Blender: wing shell + 4 intakes glowing), gantry crane on rails, Kranführer cab | 4 intake glows, 2 gantry floods (1 shadow), skylight shafts | `ambient_map04a_hangar`: huge room tone, intakes | ramp switch | H_wide, H_kranich, H_ramp |
+
+### 5.3 Act II, der Kranich (`map04b`): build the wing shell first (Blender), then dress rooms
+The shell: curved ribs every 1.5 m, spars along the span, riveted skin with stringers, crawlways, frames with lightening holes, cable runs and control rods. Replace the diorama with `FlightSky` (night sky, scrolling cloud layers, coast then ocean plane far below, searchlights and flak at the London window, fighter strafes, turbulence shake and swaying hangings). `WebProfile`: depth fog + emissive only.
+| Zone | Pieces | Lights | Sound | Story / life | Cameras (`u09_map04b`) |
+|---|---|---|---|---|---|
+| A Bombenschacht | bay doors with actuators, six racks with casings (chalk marks), catwalk grating, ramp, breach to the ocean | 3 red/amber caged lamps, key: the breach (cold moon spot) | `ambient_map04b_bay`: wind rising at the breach, creak | chalk marks, rack tags | A_wide, A_racks, A_corner |
+| B Mittelrumpf | galley (kettle, cupboards), bunks with harness, radio room with Bordfunk deck, Crucible, oxygen bottles, map table | 3 cabin lamps, Crucible violet (key) | `ambient_map04b_body`: engine drone, tape deck | Bordfunk tape, galley kettle | B_wide, B_galley, B_bunks |
+| C Flügel (L/R) | ribs, spars, fuel cells, inspection lamps, breach panels with the sky | inspection lamps (1 shadow), breach moon spot | `ambient_map04b_wing`: wind, rib rattle | cable runs, placards | C_wide, C_breach, C_starboard |
+| D Triebwerk | core behind lead glass (turning, violet), engineer station, pipes, heat shimmer | core violet omni (key), 2 lamps | `ambient_map04b_engine`: impeller hum + engine | engineer's log | D_wide, D_core, D_corner |
+| E Kanzel | 4 perspex blisters with gun mounts, the London window | blister moon spots, flak flashes | `ambient_map04b_blister`: wind, flak thumps | gun mount ammo belts | E_wide, E_london, E_corner |
+| F Cockpit | 2 seats, autopilot cradle, instruments lit, the glass with the night outside | instrument glow, key: autopilot strap violet | `ambient_map04b_cockpit`: instruments, hiss | autopilot placard | F_wide, F_glass, F_cradle |
+(Cameras E/F were black: re-aim and add a start light after the shell lands.)
+
+### 5.4 Act III, Groom Lake (`map04c`): keep the strong lab; add silhouettes
+| Zone | Pieces | Lights | Sound | Story / life | Cameras (`u09_map04c`) |
+|---|---|---|---|---|---|
+| A Wreck | torn wing and hull silhouette (Blender), fire with heat distortion, smoke columns, debris, `burned_ground_01` salt | fire omni flicker (key), ember glows | `ambient_map04c_wreck`: fire roar, creak | torn manifest | A_wide, A_outside, A_corner |
+| B Lakebed | range markers with numbers, impeller core crater, tyre tracks (`moon_track` style decal), dust sweeps (particles + fog) | sun directional only (key, shadow), core violet | `ambient_map04c_lakebed`: desert wind, dust hiss | markers, core hum | B_wide, B_core, B_marker |
+| C Hangar | wooden trusses, sliding doors, the bomber on jacks (Quaternius/Blender), workbenches, relay under tarp (canvas sheet), Dee's cage, Hale's office | 4 hangar pendants, window shafts, key: office lamp | `ambient_map04c_hangar`: wood creak, radio | Dee's radio, manifest | C_wide, C_bomber, C_relay |
+| D Motor pool | trucks (CC0 vehicle models: Poly Haven has none; use Quaternius/Kenney "car-kit"), drums, `metal_jerrycan`, generator shed | lanterns, generator lamp (key) | `ambient_map04c_motorpool`: diesel idle | generator, fuel notices | D_wide, D_trucks, D_fuel |
+| E Radar | lattice mast with dish (Blender), shack with radio, scrub | tower aircraft-warning red (key) | `ambient_map04c_radar`: wind in lattice, relay clicks | Fasbender's radio | E_wide, E_tower, E_shack |
+| F Lab | glass-front rooms with specimens, the Nevada stone in its pit, bench props | rafters lamps, stone violet (key) | `ambient_map04c_lab`: hum, vents | program notes | F_wide, F_pit, F_bench |
+| G Silo | the LANTERN rocket with gantry, control room, lift | gantry floods (key), console glow | `ambient_map04c_silo`: shaft echo, wind overhead | silo console | G_wide, G_rocket, G_console |
+
+### 5.5 Act IV, Mondlicht (`map04d`): a different floor and tone per dome; the Earth
+| Zone | Pieces | Lights | Sound | Story / life | Cameras (`u09_map04d`) |
+|---|---|---|---|---|---|
+| A Reception | capsule with hatch (Blender), airlock with a real cycle (lights, vacuum fog), desk with bell and sign | white strips, airlock red/green (key) | `ambient_map04d_reception`: air handling, airlock hiss | desk sign, bell | A_wide, A_capsule, A_desk |
+| B Concourse | slogans in Darkmatter type, glass model of the relay, Crucible 001 with plaque, prototype perk cabinets | violet strips (key: model case) | `ambient_map04d_concourse`: soft hum | plaque, slogans | B_wide, B_model, B_airlock |
+| C Yard | `moon_dusted_01` + `moon_footprints_01` floor, boulders (`rock-boulder`), the Earth huge and blue overhead, stars, dish on the rim, air posts | Earth-light directional (key, shadow), air post lamps | none but suit breath (`ambient_map04d_yard`: near silence + breath) | air posts, boot prints | C_wide, C_dish, C_boulder |
+| D Fulfillment | racks of suited inventory with tags, fold pad, conveyor with moving boxes | rack strips, pad violet (key) | `ambient_map04d_store`: conveyor | the crew's tags | D_wide, D_racks, D_conveyor |
+| E Retention Hall | keep; add column caps/plates, floor inlay, glass ceiling ribs | columns violet (key), nave strips | `ambient_map04d_hall`: choir-like hum | terms plates | E_wide, E_columns, E_plinth |
+| F The Account | round room, console with CANCEL key, Pilch under glass, vacuum shaft above | console (key), shaft light | `ambient_map04d_account`: single note | Pilch tag | F_wide, F_console, F_retained |
+
+### 5.6 Order of work and per-zone "done" checklist
+Suggested order (each a branch `u09-5-<map>-<zone>`, one worker per branch, rebased on master): (1) shared: `gen_detail_lib.gd`, `ZoneAmbience` + `audio.json` beds + CC0 sound files, material set (floors/walls/trim) for all five scenes; (2) Map 2 D Pen Hall, A Quay; (3) Act I H Halle (the Kranich silhouette), A, E; (4) Act II shell + `FlightSky`; (5) Act III A, C, E; (6) Act IV C Yard (Earth), D; then the rest.
+Done for a zone: [ ] materials with trim; [ ] one hero silhouette; [ ] 3+ story props; [ ] visible light sources, one key light, <= 6 shadowed; [ ] `ZoneAmbience` + bed in `audio.json`; [ ] life (particles/one-shots); [ ] no collider moved (diff of `NavBlock_*` and loop walls is empty; `check_mapdata.sh` clean); [ ] before/after captures of its cameras (`morning/screenshots/u09_after/`) and the census within C4; [ ] smokes + 10-minute soak green; [ ] assets manifest passes and `docs/ASSETS.md` has the credit rows; [ ] one T-0NN paragraph in `docs/DECISIONS.md`.
