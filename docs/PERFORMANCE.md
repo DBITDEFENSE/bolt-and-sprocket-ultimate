@@ -82,6 +82,21 @@ draw calls are inside it; **the Crossroads Inn and Totenhafen are not** even wit
 count: the inn's landscape (672 mesh pines, 3,627 impostor cards, the village) and its 15 shadowed lights, and
 Totenhafen's moon shafts and sea lights. These are the next levers (below).
 
+### Rendering census, the desktop Low preset (WSL + Xvfb, Forward+ through lavapipe Vulkan)
+
+`tools/wsl_perf.sh map00_crossroads,map02_totenhafen low` (the same scene; Forward+ in software is very slow, so
+only the two heaviest maps were run). All passes counted, cube omni shadows (the desktop keeps them).
+
+| Map | Shadowed lights | Draw calls | Objects | Primitives |
+|---|---|---|---|---|
+| Crossroads Inn (map00) | 17 | 7,042 | 9,767 | 7,161k |
+| Totenhafen (map02) | 17 | 2,825 | 4,129 | 1,025k |
+
+On a real desktop GPU these are cheap (Update 04-05 measured Map 0 at 70-80 FPS on High on the RTX 5090 with the
+CPU as the limit); on an Iris Xe the inn's 7k draw calls and 7M primitives a frame (mostly its ten cube-shadowed
+lamps re-rendered as the squad and the zombies move) are the risk for 60 FPS on Low: the next lever there is the
+browser profile's dual-paraboloid omni shadows for the Low preset too (owner's call: it looks worse, T-070).
+
 ### CPU census, the scripts (headless, `tools/perf_census.sh`, Low)
 
 Per frame / per physics tick (60 a second), `perf_marks --probe`; the machine was shared with one or two WSL
