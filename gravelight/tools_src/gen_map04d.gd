@@ -87,6 +87,8 @@ func setup_tables() -> void:
 		["ironhide_stout", Vector3(12.7, 0, 50.0), 90.0], ["trigger_tonic", Vector3(43.3, 0, 28.0), -90.0],
 		["hawkeye_brandy", Vector3(12.7, 0, 16.0), 90.0], ["blastproof_bock", Vector3(43.3, 0, -8.0), -90.0],
 		["packmule_porter", Vector3(14.7, 0, -24.0), 90.0],
+		# Ledger Lager (T-141): on the concourse's east wall between the Thompson and the store door; Accounts is opposite (bank.json)
+		["ledger_lager", Vector3(11.45, 0, 36.6), -90.0],
 	]
 	crates = [
 		["Reception", Vector3(-7.0, 0, 18.0), 90.0, true, [Vector3(-7, 0, 14), Vector3(-4, 0, 12), Vector3(0, 0, 12)]],

@@ -93,6 +93,12 @@ func _initialize() -> void:
 	for p: Array in perks:
 		var pp: Vector3 = p[1]
 		box(geo, "NavBlock_Perk_" + str(p[0]), pp + Vector3(-0.7, 0, -0.5), pp + Vector3(0.7, 2.0, 0.5), "metal")
+	# T-141: the savings bank's counter, teller and safe (data/gravelight/bank.json "branches", nav_block): the navmesh goes round
+	var bank_rows: Dictionary = (JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/bank.json")) as Dictionary).get("branches", {})
+	for bk: Variant in bank_rows.keys():
+		if map_id.begins_with(str(bk)) and (bank_rows[bk] as Dictionary).has("nav_block"):
+			var nb: Array = bank_rows[bk]["nav_block"]
+			box(geo, "NavBlock_Bank", Vector3(float(nb[0][0]), float(nb[0][1]), float(nb[0][2])), Vector3(float(nb[1][0]), float(nb[1][1]), float(nb[1][2])), "metal")
 	if not armorers_bench.is_empty():
 		var bp: Vector3 = armorers_bench[0]
 		box(geo, "NavBlock_ArmorersBench", bp + Vector3(-0.75, 0, 0), bp + Vector3(0.75, 0.9, 0.72), "metal")

@@ -201,7 +201,7 @@ func _cmd_help(_a: PackedStringArray) -> String:
 
 func _cmd_give_scrip(a: PackedStringArray) -> String:
 	var n: int = int(a[0]) if a.size() > 0 else 10000
-	Economy.grant(_ctx_pid, n)
+	Economy.grant_raw(_ctx_pid, n)
 	return "Gave %d Scrip" % n
 
 

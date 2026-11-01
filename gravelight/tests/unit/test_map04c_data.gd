@@ -82,7 +82,7 @@ func test_wall_buys_perks_and_roster_reference_real_ids() -> void:
 	var perks: Dictionary = GLData.table("perks")["perks"]
 	for pk: String in cfg["perks"]:
 		assert_true(perks.has(pk), "perk %s exists" % pk)
-	assert_eq((cfg["perks"] as Array).size(), 9, "nine cabinets (the two new tonics among them)")
+	assert_eq((cfg["perks"] as Array).size(), 10, "nine cabinets (the two new tonics among them) and Ledger Lager (T-141)")
 	assert_true((cfg["perks"] as Array).has("magpie_mead") and (cfg["perks"] as Array).has("skyhook_sekt"), "Magpie Mead and Skyhook Sekt are on the range")
 	var enemies: Dictionary = GLData.table("enemies")["enemies"]
 	for e: String in cfg["roster"]:

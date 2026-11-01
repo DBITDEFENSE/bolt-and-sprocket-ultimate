@@ -230,6 +230,11 @@ static func perk_layout(shape: String, fp: Vector3) -> Dictionary:
 			return {"sign": Vector3(0, 2.16, fz + 0.06), "sign_size": Vector2(1.1, 0.3), "win": Vector3(0, 1.14, fz - 0.02), "win_size": Vector2(0.44, 0.44),
 				"lamp": Vector3(0, 2.46, 0.05), "price": Vector3(0, 0.38, fz - 0.02), "hatch": Vector3(0, 0.7, fz - 0.02), "slot": Vector3(0.27, 0.95, fz - 0.01),
 				"dial": Vector3(-0.27, 0.98, fz - 0.03), "round": true}
+		"register":
+			# Ledger Lager (T-141): the paper-roll window over the key bank, the cash drawer is the hatch, the tally
+			# drum sits on top between the sign and the body, the lamp globe on a bracket to the right of the drum.
+			return {"sign": Vector3(0, 2.34, fz + 0.04), "sign_size": Vector2(1.0, 0.28), "win": Vector3(0, 1.42, fz - 0.02), "win_size": Vector2(0.5, 0.42),
+				"lamp": Vector3(0.4, 1.9, 0.0), "price": Vector3(0, 0.36, fz - 0.02), "hatch": Vector3(0, 0.6, fz - 0.03), "slot": Vector3(0.33, 0.62, fz - 0.02)}
 	return {"sign": Vector3(0, fp.y + 0.28, fz), "sign_size": Vector2(fp.x + 0.2, 0.3), "win": Vector3(0, 1.45, fz - 0.02), "win_size": Vector2(0.5, 0.45),
 		"lamp": Vector3(0, fp.y + 0.1, 0), "price": Vector3(0, 0.55, fz - 0.02), "hatch": Vector3(0, 0.85, fz - 0.02), "slot": Vector3(0.3, 1.05, fz - 0.01)}
 
@@ -262,6 +267,8 @@ static func perk_body(g: Node3D, shape: String, fp: Vector3, brand: Color) -> vo
 			_glider(g, fp, en)
 		"bandit":
 			_bandit(g, fp, en)
+		"register":
+			_register(g, fp, en)
 		_:
 			B(g, Vector3(-fp.x * 0.5, 0, -fp.z * 0.5), Vector3(fp.x * 0.5, fp.y, fp.z * 0.5), en)
 	# sign board (the neon tubes and the label sit in front of it)
@@ -318,6 +325,46 @@ static func _bandit(g: Node3D, fp: Vector3, en: String) -> void:
 	B(g, Vector3(-hx * 0.6, 0.62, -hz - 0.012), Vector3(hx * 0.6, 0.7, -hz), "olive_drab")
 	for k: int in 4:
 		S(g, Vector3(-0.18 + k * 0.12, fp.y - 0.26, -hz - 0.06), Vector3(-0.18 + k * 0.12, fp.y - 0.06, -hz - 0.06), 0.006, "steel")
+
+
+## Ledger Lager (T-141): a brass cash register stood up to cabinet height on a black iron base: a drawer cabinet
+## (the hatch is the cash drawer, with its brass front), a strip of amber glass keys under the paper-roll window,
+## a bell on the shoulder, two brass posts carrying the tally drum on top (the drum itself turns: register_drum()).
+static func _register(g: Node3D, fp: Vector3, en: String) -> void:
+	var hx: float = fp.x * 0.5
+	var hz: float = fp.z * 0.5
+	B(g, Vector3(-hx, 0.0, -hz), Vector3(hx, 0.28, hz), "iron")
+	B(g, Vector3(-hx - 0.02, 0.26, -hz - 0.02), Vector3(hx + 0.02, 0.3, hz + 0.02), "brass")   # the base's brass rail
+	B(g, Vector3(-hx * 0.94, 0.3, -hz * 0.94), Vector3(hx * 0.94, 1.72, hz * 0.94), en)
+	# the drawer's brass front and a lip under it
+	B(g, Vector3(-hx * 0.8, 0.42, -hz * 0.94 - 0.012), Vector3(hx * 0.8, 0.8, -hz * 0.94), "brass_plate")
+	B(g, Vector3(-hx * 0.84, 0.38, -hz * 0.94 - 0.03), Vector3(hx * 0.84, 0.42, -hz * 0.94), "brass")
+	# the key bank: three rows of amber glass keys on a dark strip, a violet tally stripe down the left edge
+	B(g, Vector3(-hx * 0.88, 0.9, -hz * 0.94 - 0.01), Vector3(hx * 0.88, 1.14, -hz * 0.94), "black_paint")
+	for row: int in 3:
+		for col: int in 9:
+			var kx: float = -0.38 + col * 0.095
+			C(g, Vector3(kx, 0.94 + row * 0.07, -hz * 0.94 - 0.022), 0.026, 0.02, "enamel:#d9a441", Vector3(90, 0, 0))
+	B(g, Vector3(-hx * 0.94 - 0.004, 0.3, -hz * 0.94 - 0.006), Vector3(-hx * 0.94 + 0.05, 1.72, -hz * 0.94), "enamel:#7a4fb0")
+	# the shoulder: a bell on the right, the posts carrying the drum on the top
+	B(g, Vector3(-hx * 0.94, 1.72, -hz * 0.94), Vector3(hx * 0.94, 1.76, hz * 0.94), "brass")
+	C(g, Vector3(0.32, 1.8, -0.1), 0.06, 0.07, "brass")
+	dot(g, Vector3(0.32, 1.86, -0.1), 0.012, "brass")
+	for sgn: float in [-1.0, 1.0]:
+		S(g, Vector3(sgn * 0.34, 1.76, 0.0), Vector3(sgn * 0.34, 2.1, 0.0), 0.022, "brass")
+	# a coil of paper roll behind the window
+	C(g, Vector3(0.0, 1.4, hz * 0.4), 0.11, 0.3, "paper_old", Vector3(0, 0, 90))
+
+
+## The tally drum (pivot at the origin, turns about X): a cream drum with a ring of violet digit plates; it turns
+## over once for every Scrip the holder earns (PerkMachine, JINGLES.md section 16). `gold` = a tier IV drum.
+static func register_drum(g: Node3D, gold: bool = false) -> void:
+	C(g, Vector3.ZERO, 0.17, 0.5, "cream", Vector3(0, 0, 90))
+	for k: int in 10:
+		var a: float = TAU * float(k) / 10.0
+		OB(g, Vector3(0, cos(a) * 0.172, sin(a) * 0.172), Vector3(0.4, 0.05, 0.012), "enamel:#e0b84a" if gold else "enamel:#7a4fb0", Vector3(-rad_to_deg(a) + 90.0, 0, 0))
+	C(g, Vector3(0.27, 0, 0), 0.05, 0.03, "brass", Vector3(0, 0, 90))
+	C(g, Vector3(-0.27, 0, 0), 0.05, 0.03, "brass", Vector3(0, 0, 90))
 
 
 ## Neon tubes around the sign board, the lamp globe and the Ledger dial's face, lit or dark.

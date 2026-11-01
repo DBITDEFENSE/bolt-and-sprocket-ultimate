@@ -685,6 +685,20 @@ Four more fixed props, Map 2 "Totenhafen" (MAPS.md Map 2, DECISIONS T-036), same
 | `INT_M4_PILCH` | A tag and a carbon in a logbook | F_CORE, the rim of the floor glass over the first retained |
 | `INT_MARKE_TERMS` | A printed form, flat, under the bell (T-137) | A_RECEPTION, the reception desk's top, facing the capsule |
 
+### 13.2a Map 1 fixed story items (hand-placed, UPDATE 09, T-141)
+
+One more fixed prop, Kaltenbrunn's pay office, same rules as §13.1 (`placement: fixed`, placed in `data/gravelight/story_props.json`, map `"1"`). It is the other half of the Ledger Lager story (JINGLES.md §16): the clerk who over-posted every tally by a fifth also kept a book the Ledger never asked for.
+
+| ID | Title | Type | Map | Text |
+|---|---|---|---|---|
+| `INT_M1_FENSKE_LEDGER` | The Second Ledger (R. Fenske, Lohnbuchhalter) | DOC | 1 | A clothbound pay ledger wrapped in oilcloth, kept under a lifted board of the pay office floor; the pencil is still tied to it with string. Columns in a bookkeeper's hand, ruled with a ruler. Translated.<br><br>LABOURERS' PAY WITHHELD, KALTENBRUNN. Opened 3 March 1941. Closed: not closed.<br>One line per man, per week, to the pfennig. 3.III.41, Gallery Two crew, 41 men, nine weeks: RM 4,428.30. 10.III.41, same crew: RM 492.00. 17.III.41, same crew: RM 492.00. The totals run to the foot of the sixth page, across to the seventh, and over.<br>Nobody ordered this book. The Ledger has a column for the marked and no column for these men, so I made one. I do not know who will read it. I know the figure is correct. It is the only thing in this building that is.<br>Somebody should pay it one day. Not the Provider. Somebody.<br>(Beneath, in the same pencil, a short stroke at every thousand, as on the wall behind the counter.) R. FENSKE |
+
+**Where it is** (Map 1 generator frame: +X east, +Z south, y up):
+
+| ID | Prop | Room, surface |
+|---|---|---|
+| `INT_M1_FENSKE_LEDGER` | Logbook lying on the floor beside its lifted board | C_ADMIN, the pay office, between Ledger Lager and Second Wind on the west wall |
+
 ### 13.3 Homage boss Archive entries (HB1–HB3; reserved, not extracted yet)
 
 These are **event unlocks**, not random spawns and not fixed props, so this table deliberately has **no Text column** and `extract_intel.py` skips it (it only reads five-cell `INT_` rows). The full texts are in `docs/HOMAGE_BOSSES.md` §4.7, §5.7 and §6.9. When HB1 lands, the extractor gains an `unlock` field and this table gains its Text column. `%TOKENS%` resolve from `data/gravelight/bosses/likeness.json`.

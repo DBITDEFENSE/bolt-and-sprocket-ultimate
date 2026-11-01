@@ -973,6 +973,8 @@ const CELLAR_PERKS: Array = [
 	["trigger_tonic", Vector3(25.9, CELLAR_Y, 28.6), -90.0],
 	["twin_barrel", Vector3(34.1, CELLAR_Y, 21.6), 90.0], ["marathon_malt", Vector3(34.1, CELLAR_Y, 24.6), 90.0],
 	["hawkeye_brandy", Vector3(34.1, CELLAR_Y, 27.6), 90.0],
+	# Ledger Lager (T-141): the east row's fourth, in the south-east corner (1.6 m below Hawkeye, 1.9 m from Blastproof)
+	["ledger_lager", Vector3(34.1, CELLAR_Y, 30.2), 90.0],
 	["packmule_porter", Vector3(28.6, CELLAR_Y, 29.4), 0.0], ["blastproof_bock", Vector3(31.4, CELLAR_Y, 29.4), 0.0],
 	# the ninth (M3): between the south pair, on the vault's axis, under its own bulb
 	["overclock_cordial", Vector3(30.15, CELLAR_Y, 29.4), 0.0],
@@ -984,6 +986,7 @@ const MACHINE_FOOTPRINTS: Dictionary = {
 	"twin": Vector3(1.2, 2.1, 0.6), "teardrop": Vector3(1.0, 2.4, 0.9), "periscope": Vector3(0.9, 1.8, 0.65),
 	"wagon": Vector3(1.7, 1.7, 0.85), "safe": Vector3(1.1, 1.9, 0.95),
 	"coil": Vector3(0.8, 2.3, 0.6),   # Overclock Cordial: cabinet-sized (perks.json)
+	"register": Vector3(1.0, 2.2, 0.75),   # Ledger Lager (T-141): the brass cash register
 }
 ## crate spots: [name, position, yaw, can_start]
 const CRATES: Array = [["Hearth", Vector3(22.9, 0, 14.0), 90.0, true], ["GuestBed", Vector3(22.0, UP_Y, 0.8), 180.0, false],

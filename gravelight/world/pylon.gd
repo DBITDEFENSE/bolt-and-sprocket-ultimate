@@ -122,12 +122,12 @@ func _build_ring() -> void:
 	add_child(_beam)
 
 
-func get_prompt(_player: Player) -> String:
+func get_prompt(player: Player) -> String:
 	match state:
 		State.IDLE:
 			if not GameState.power_on:
 				return "Power must be activated"
-			return "Hold [%s] to attune the Resonance Pylon [%d]" % [prompt_key(&"interact"), int(cfg()["cost"])]
+			return "Hold [%s] to attune the Resonance Pylon [%s]" % [prompt_key(&"interact"), price_str(player, int(cfg()["cost"]))]
 	return ""
 
 

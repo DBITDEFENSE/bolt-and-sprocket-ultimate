@@ -57,13 +57,13 @@ func _process(delta: float) -> void:
 	_lamp.material_override = Mats.get_mat("lamp_green" if armed else "emergency_red")
 
 
-func get_prompt(_player: Player) -> String:
+func get_prompt(player: Player) -> String:
 	var t: Node = trap()
 	if t == null:
 		return ""
 	if not bool(t.call("can_activate")):
 		return str(t.call("status_text"))
-	return "Hold [%s] to activate the %s [%d]" % [prompt_key(&"interact"), t.call("trap_name"), int(t.call("cost"))]
+	return "Hold [%s] to activate the %s [%s]" % [prompt_key(&"interact"), t.call("trap_name"), price_str(player, int(t.call("cost")))]
 
 
 func can_interact(_player: Player) -> bool:

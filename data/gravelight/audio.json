@@ -1307,6 +1307,16 @@
    "volume_db": -3.0,
    "max_voices": 1
   },
+  "jingle_ledger_lager": {
+   "files": [
+    "res://gravelight/audio/jingles/ledger_lager_01.wav"
+   ],
+   "bus": "Jingles",
+   "volume_db": -4.0,
+   "max_voices": 1,
+   "pitch": [1.0, 1.0],
+   "attenuation": "world"
+  },
   "jingle_magpie_mead": {
    "files": [
     "res://gravelight/audio/jingles/magpie_mead_01.wav"
@@ -1550,6 +1560,17 @@
    "attenuation": "hum",
    "loop": true
   },
+  "perk_hum_ledger_lager": {
+   "files": [
+    "res://gravelight/audio/sfx/world/perks/hum_ledger_lager.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -10.0,
+   "pitch": [1.0, 1.0],
+   "max_voices": 1,
+   "attenuation": "hum",
+   "loop": true
+  },
   "perk_hum_magpie_mead": {
    "files": [
     "res://gravelight/audio/sfx/world/perks/hum_magpie_mead.wav"
@@ -1637,6 +1658,26 @@
    "max_voices": 1,
    "attenuation": "hum",
    "loop": true
+  },
+  "perk_ledger_drawer": {
+   "files": [
+    "res://gravelight/audio/sfx/world/perks/ledger_drawer_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -4.0,
+   "max_voices": 2,
+   "pitch": [0.98, 1.02],
+   "attenuation": "world"
+  },
+  "perk_ledger_tally": {
+   "files": [
+    "res://gravelight/audio/sfx/world/perks/ledger_tally_01.wav"
+   ],
+   "bus": "SFX",
+   "volume_db": -9.0,
+   "max_voices": 2,
+   "pitch": [0.96, 1.04],
+   "attenuation": "quiet"
   },
   "perk_magpie_drop": {
    "files": [

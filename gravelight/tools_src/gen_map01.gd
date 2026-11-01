@@ -3274,6 +3274,9 @@ func build_gameplay() -> void:
 		# Overclock Cordial (T-034): in the Generator Hall, wired into the north-wall switchgear in the gap between
 		# the first two panel sections (x 59.5-61), facing the turbines. The hall's own bus feeds the coil.
 		["overclock_cordial", Vector3(60.25, DY, 60.45), 180.0],
+		# Ledger Lager (T-141): the pay office's original cabinet, bolted beside Fenske's desk wall, 3 m north of
+		# Second Wind and the Bergmannskasse's counter (the bank branch is at z 15.75..20.75)
+		["ledger_lager", Vector3(-15.2, 0, 11.0), -90.0],
 	]
 	for p: Array in perks:
 		_node("res://gravelight/world/perk_machine.gd", "Perk_" + str(p[0]), {"perk_id": StringName(p[0])}, p[1], float(p[2]))

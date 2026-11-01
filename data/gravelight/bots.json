@@ -28,7 +28,8 @@
       "blastproof_bock": "explosion",
       "overclock_cordial": "overclock",
       "ironhide_stout": "hurt",
-      "second_wind": "revive"
+      "second_wind": "revive",
+      "ledger_lager": "earn"
     },
     "fallback_round": 4
   },

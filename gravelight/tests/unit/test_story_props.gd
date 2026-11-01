@@ -12,7 +12,7 @@ const MAP4D_IDS: PackedStringArray = ["INT_M4_RELAY", "INT_M4_CREWTAGS", "INT_M4
 ## Map 4 Act III (UPDATE 07, docs/MAP4_FERNFLUG.md 13.1): the British crate's manifest and Hale's program log, in the hangar.
 const MAP4C_IDS: PackedStringArray = ["INT_M4_MANIFEST", "INT_M4_PROGRAM"]
 ## Map 1 (LORE.md section 13.5, T-137): Jakub's refusal on the Maintenance Stairs' second landing.
-const MAP1_IDS: PackedStringArray = ["INT_MARKE_JAKUB"]
+const MAP1_IDS: PackedStringArray = ["INT_MARKE_JAKUB", "INT_M1_FENSKE_LEDGER"]   # (T-141: Fenske's second ledger)
 
 
 func _intel() -> Array:
@@ -111,7 +111,7 @@ func test_spawn_all_places_the_map_0_items() -> void:
 	assert_eq(StoryProp.spawn_all(root, "0"), 7, "seven Map 0 items (six plus the T-137 poster)")
 	var other: Node3D = Node3D.new()
 	add_child_autofree(other)
-	assert_eq(StoryProp.spawn_all(other, "1"), 1, "Jakub's refusal on Map 1 (T-137)")
+	assert_eq(StoryProp.spawn_all(other, "1"), 2, "Jakub's refusal (T-137) and Fenske's second ledger (T-141) on Map 1")
 	var none: Node3D = Node3D.new()
 	add_child_autofree(none)
 	assert_eq(StoryProp.spawn_all(none, "3"), 0, "none on a map without fixed props")

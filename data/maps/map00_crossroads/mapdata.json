@@ -16,7 +16,7 @@
     1056
   ],
   "baked_at": "2026-10-25T18:44:19",
-  "poi_signature": "ff7af57b5d71a390a9d72a2a45d5f964",
+  "poi_signature": "7f907a2bde49d46e15ec16fc58a7d779",
   "floors": [
     {
       "id": "cellar",
@@ -1075,6 +1075,20 @@
       "key": "Gameplay/AmmoBox_Taproom"
     },
     {
+      "id": "bank:BankBranch",
+      "type": "bank",
+      "pos": [
+        -4.5,
+        0.0,
+        58.8
+      ],
+      "floor": 1,
+      "label": "DARLEHENSKASSE KREUZWEG",
+      "price": 0,
+      "node_path": "BankBranch/Counter",
+      "key": "BankBranch"
+    },
+    {
       "id": "crate_spot:Gameplay/Crate_GuestBed",
       "type": "crate_spot",
       "pos": [
@@ -1345,6 +1359,23 @@
       "key": "Gameplay/Perk_ironhide_stout",
       "data": {
         "perk_id": "ironhide_stout"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_ledger_lager",
+      "type": "perk",
+      "pos": [
+        34.1,
+        -3.2,
+        30.2
+      ],
+      "floor": 0,
+      "label": "Ledger Lager",
+      "price": 3000,
+      "node_path": "Gameplay/Perk_ledger_lager",
+      "key": "Gameplay/Perk_ledger_lager",
+      "data": {
+        "perk_id": "ledger_lager"
       }
     },
     {

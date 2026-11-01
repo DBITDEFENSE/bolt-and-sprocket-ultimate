@@ -100,14 +100,14 @@ func _refresh_lock_lamp() -> void:
 		_lock_lamp.material_override = Mats.get_mat("lamp_green" if GameState.power_on else "emergency_red")
 
 
-func get_prompt(_player: Player) -> String:
+func get_prompt(player: Player) -> String:
 	if is_open:
 		return ""
 	if requires_power and not GameState.power_on:
 		return "Power must be activated"
 	if requires_flag != &"" and not GameState.has_flag(requires_flag):
 		return requires_text
-	return "Hold [%s] to open %s [%d]" % [prompt_key(&"interact"), label, cost]
+	return "Hold [%s] to open %s [%s]" % [prompt_key(&"interact"), label, price_str(player, cost)]
 
 
 func can_interact(_player: Player) -> bool:

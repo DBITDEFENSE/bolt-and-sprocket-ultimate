@@ -16,7 +16,7 @@
     1304
   ],
   "baked_at": "2026-10-27T20:29:07",
-  "poi_signature": "079460381eba24e0c2f026895c403ac5",
+  "poi_signature": "e33852b1eee795528d132afe168b142a",
   "floors": [
     {
       "id": "vault",
@@ -480,6 +480,20 @@
       "key": "Gameplay/AmmoBox_Yard"
     },
     {
+      "id": "bank:BankBranch",
+      "type": "bank",
+      "pos": [
+        -13.45,
+        0.0,
+        18.25
+      ],
+      "floor": 2,
+      "label": "BERGMANNSKASSE KALTENBRUNN · LOHNBÜRO",
+      "price": 0,
+      "node_path": "BankBranch/Counter",
+      "key": "BankBranch"
+    },
+    {
       "id": "crate_spot:Gameplay/Crate_Boxcar",
       "type": "crate_spot",
       "pos": [
@@ -855,6 +869,23 @@
       "key": "Gameplay/Perk_ironhide_stout",
       "data": {
         "perk_id": "ironhide_stout"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_ledger_lager",
+      "type": "perk",
+      "pos": [
+        -15.2,
+        0.0,
+        11.0
+      ],
+      "floor": 2,
+      "label": "Ledger Lager",
+      "price": 3000,
+      "node_path": "Gameplay/Perk_ledger_lager",
+      "key": "Gameplay/Perk_ledger_lager",
+      "data": {
+        "perk_id": "ledger_lager"
       }
     },
     {

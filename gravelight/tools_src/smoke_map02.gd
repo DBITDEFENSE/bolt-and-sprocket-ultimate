@@ -174,7 +174,7 @@ func _run() -> void:
 	for n2: Node in _g("").get_children():
 		if n2 is PerkMachine:
 			perks += 1
-	_check(perks == 6, "6 perk machines placed")
+	_check(perks == 7, "7 perk machines placed (Ledger Lager T-141)")
 	_check(get_tree().get_nodes_in_group(&"crate_spots").size() == 5, "5 crate spots")
 	var start_spot: Node = null
 	for s: Node in get_tree().get_nodes_in_group(&"crate_spots"):

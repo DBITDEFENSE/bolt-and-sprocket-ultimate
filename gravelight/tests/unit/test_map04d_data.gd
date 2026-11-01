@@ -82,7 +82,7 @@ func test_wall_buys_perks_and_roster_reference_real_ids() -> void:
 	var perks: Dictionary = GLData.table("perks")["perks"]
 	for p: String in cfg["perks"]:
 		assert_true(perks.has(p), "perk %s exists" % p)
-	assert_eq((cfg["perks"] as Array).size(), 8, "eight cabinets")
+	assert_eq((cfg["perks"] as Array).size(), 9, "eight cabinets and Ledger Lager (T-141)")
 	assert_true((cfg["perks"] as Array).has("skyhook_sekt") and (cfg["perks"] as Array).has("magpie_mead"), "both new tonics")
 	var enemies: Dictionary = GLData.table("enemies")["enemies"]
 	var bosses: Dictionary = GLData.table("bosses/map04").get("bosses", {})
@@ -164,7 +164,7 @@ func test_scene_places_what_the_table_says() -> void:
 				found[key] = true
 	for d: Dictionary in cfg["doors"]:
 		assert_true(door_ids.has(str(d["id"])), "door %s is placed" % d["id"])
-	assert_eq(perks, 8, "eight perk machines")
+	assert_eq(perks, 9, "eight perk machines and Ledger Lager (T-141)")
 	assert_eq(crates, 2, "two crate spots")
 	for zone: String in (cfg["spawn_table"] as Dictionary).keys():
 		if zone.begins_with("_"):

@@ -16,7 +16,7 @@
     890
   ],
   "baked_at": "2026-10-26T15:27:43",
-  "poi_signature": "f08b0f51f5c9c6100c36325a9c2110ed",
+  "poi_signature": "36e5e3852a0b96b3e58f7f5404bc4678",
   "floors": [
     {
       "id": "relay",
@@ -458,6 +458,20 @@
       "key": "Gameplay/AmmoBox_Store"
     },
     {
+      "id": "bank:BankBranch",
+      "type": "bank",
+      "pos": [
+        -11.1,
+        0.0,
+        35.2
+      ],
+      "floor": 0,
+      "label": "DARKMATTER · ACCOUNTS",
+      "price": 0,
+      "node_path": "BankBranch/Counter",
+      "key": "BankBranch"
+    },
+    {
       "id": "crate_spot:Gameplay/Crate_Concourse",
       "type": "crate_spot",
       "pos": [
@@ -673,6 +687,23 @@
       "key": "Gameplay/Perk_ironhide_stout",
       "data": {
         "perk_id": "ironhide_stout"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_ledger_lager",
+      "type": "perk",
+      "pos": [
+        11.45,
+        0.0,
+        36.6
+      ],
+      "floor": 0,
+      "label": "Ledger Lager",
+      "price": 3000,
+      "node_path": "Gameplay/Perk_ledger_lager",
+      "key": "Gameplay/Perk_ledger_lager",
+      "data": {
+        "perk_id": "ledger_lager"
       }
     },
     {

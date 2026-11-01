@@ -93,6 +93,8 @@ func setup_tables() -> void:
 		["ironhide_stout", Vector3(-24.0, 0, 44.6), 180.0], ["marathon_malt", Vector3(24.0, 0, 44.6), 180.0],
 		["blastproof_bock", Vector3(-60.0, 0, 25.4), 0.0], ["hawkeye_brandy", Vector3(56.0, 0, 56.6), 180.0],
 		["packmule_porter", Vector3(6.0, 0, 72.6), 180.0],
+		# Ledger Lager (T-141): on the forward bulkhead of the centre body, 5 m port of the Bordkasse (bank.json)
+		["ledger_lager", Vector3(-5.0, 0, 53.45), 0.0],
 	]
 	crates = [["Galley", Vector3(-6.0, 0, 50.0), 90.0, true, [Vector3(-6, 0, 47), Vector3(-6, 0, 44), Vector3(0, 0, 44)]]]
 	player_spawns = [[Vector3(-2, 0, 8), 0.0], [Vector3(2, 0, 8), 0.0], [Vector3(-2, 0, 11), 0.0], [Vector3(2, 0, 11), 0.0]]

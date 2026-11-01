@@ -86,7 +86,7 @@ func get_prompt(player: Player) -> String:
 			return "Power must be activated" + _plate_line()
 		&"cap":
 			return "You can only hold %d tonics" % PerkManager.cap_for(player.player_id) + _plate_line()
-	return "Hold [%s] to drink %s [%d]" % [prompt_key(&"interact"), PerkManager.display_name(perk_id), PerkManager.price(perk_id)]
+	return "Hold [%s] to drink %s [%s]" % [prompt_key(&"interact"), PerkManager.display_name(perk_id), price_str(player, PerkManager.price(perk_id))]
 
 
 ## The maker's plate one-liner under a prompt that has nothing to sell (MachineLore, PERKS_LORE.md).
@@ -102,7 +102,7 @@ func _upgrade_prompt(player: Player) -> String:
 	var nm: String = PerkManager.tier_name(perk_id, next)
 	match PerkManager.can_upgrade(pid, perk_id):
 		&"ok":
-			return "Hold [%s] to brew %s [%d]\n%s" % [prompt_key(&"interact"), nm, PerkManager.tier_price(perk_id, next),
+			return "Hold [%s] to brew %s [%s]\n%s" % [prompt_key(&"interact"), nm, price_str(player, PerkManager.tier_price(perk_id, next)),
 				PerkManager.tier_data(perk_id, next).get("desc", "")]
 		&"no_power":
 			return "%s: power must be activated" % nm
@@ -135,6 +135,7 @@ func interact(player: Player) -> void:
 	# The dispense sound is AudioDirector's (GLBus.purchase_made -> perk_dispense at this machine).
 	_play_jingle()
 	_cab_dispense()
+	_ledger_drawer()
 	if perk_id == PerkManager.OVERCLOCK and AudioDirector.has_sound("perk_overclock_capoff"):
 		# the signature cap-off: a capacitor whine, a fat ZAP and the two-tone bee-boop (JINGLES.md section 10)
 		get_tree().create_timer(1.1).timeout.connect(func() -> void:
@@ -179,6 +180,7 @@ func _brew_tier(player: Player) -> void:
 	_drinking = true
 	_play_jingle()
 	_cab_dispense()
+	_ledger_drawer()
 	get_tree().create_timer(float(GLData.table("perks").get("drink_seconds", 1.2))).timeout.connect(func() -> void:
 		_drinking = false
 		PerkManager.set_tier(pid, perk_id, next)
@@ -190,6 +192,7 @@ func _brew_tier(player: Player) -> void:
 ## U08 (T-129): a tonic made permanent: the tier IV sting over the jingle, a gold light that swells and fades
 ## round the cabinet, and the cabinet's punch (every peer).
 func _tier4_flourish() -> void:
+	_gild_register()
 	AudioDirector.play_3d("perk_tier4_sting", global_position + Vector3.UP * 1.6, 0.0, 0.0)
 	var glow: OmniLight3D = OmniLight3D.new()
 	glow.light_color = Color(1.0, 0.8, 0.35)
@@ -257,6 +260,7 @@ static func _shape_footprint(shape: String) -> Vector3:
 		"coil": return Vector3(0.8, 2.3, 0.6)   # Overclock Cordial: the cabinet footprint (Map 0 placement relies on it)
 		"glider": return Vector3(0.8, 2.4, 0.7)   # Skyhook Sekt (T-105): a glider fuselage on its tail
 		"bandit": return Vector3(0.9, 2.3, 0.65)  # Magpie Mead (T-105): the Allied-painted cabinet with the bandit lever
+		"register": return Vector3(1.0, 2.2, 0.75)   # Ledger Lager (T-141): the brass cash register with the tally drum
 	return Vector3(1.0, 2.0, 0.7)
 
 
@@ -356,6 +360,16 @@ func _build_procedural() -> void:
 			GLBus.perk_bought.connect(func(_pid: int, pk: StringName) -> void:
 				if pk == perk_id:
 					_reel_spin = 2.5)
+		"register":
+			# Ledger Lager: the tally drum on the posts (turns a digit for every Scrip its holder earns, even unpowered),
+			# a card ZAHLTAG in the paper-roll window; a gold drum once a tier IV was brewed here
+			_anim = Node3D.new()
+			_anim.position = Vector3(0, 1.98, 0.0)
+			_greybox.add_child(_anim)
+			InteractableArt.place(_anim, "perk_register_drum", func(r: Node3D) -> void: InteractableArt.register_drum(r), Vector3.ZERO, false)
+			var zt: Label3D = add_label(_greybox, "ZAHLTAG", (lay["win"] as Vector3) + Vector3(0, -0.12, -0.05), 12, Color(0.12, 0.08, 0.05, 1.0))
+			zt.outline_size = 0
+			GLBus.scrip_changed.connect(_on_scrip_tally)
 		"coil":
 			# the arc (shown for a flash every few seconds) at the coil's top turn
 			_anim = Node3D.new()
@@ -402,6 +416,9 @@ func _process(delta: float) -> void:
 		"bandit":
 			_cab_next -= delta
 			_tick_bandit(delta, on)
+			return
+		"register":
+			_tick_register(delta)
 			return
 		"cabinet":
 			if on:
@@ -475,6 +492,45 @@ func _tick_glider(delta: float, on: bool) -> void:
 		_cab_next = randf_range(6.0, 10.0)
 		_prop_spin = maxf(_prop_spin, 4.0)   # the idle quarter-turn tick
 	_anim.rotation.z += (_prop_spin + (0.4 if on else 0.0)) * delta
+
+
+## Ledger Lager (T-141): the drum turns a tenth of a turn (one digit plate) for every earning of the holder.
+## It runs with the power off: it is the Ledger's own counter.
+var _drum_target: float = 0.0
+
+func _on_scrip_tally(pid: int, _total: int, delta: int) -> void:
+	if delta > 0 and not Economy.moving and PerkManager.has_perk(pid, perk_id):
+		_drum_target = minf(_drum_target + TAU / 10.0, TAU)
+		var now: float = Time.get_ticks_msec() / 1000.0
+		if now >= _tally_sfx_at and is_inside_tree() and AudioDirector.has_sound("perk_ledger_tally"):
+			_tally_sfx_at = now + 0.18
+			AudioDirector.play_3d("perk_ledger_tally", global_position + Vector3.UP * 1.9, -6.0)
+
+
+var _tally_sfx_at: float = 0.0
+
+
+## The cash drawer's bell when this machine pours (Ledger Lager only).
+func _ledger_drawer() -> void:
+	if perk_id == &"ledger_lager" and AudioDirector.has_sound("perk_ledger_drawer"):
+		AudioDirector.play_3d("perk_ledger_drawer", global_position + Vector3.UP * 0.9, -2.0)
+
+
+func _tick_register(delta: float) -> void:
+	if _anim == null:
+		return
+	var step: float = minf(_drum_target, 14.0 * delta)
+	_anim.rotation.x += step
+	_drum_target -= step
+
+
+## Ledger Lager IV brewed here: the drum's plates turn to gold (T-141).
+func _gild_register() -> void:
+	if _anim == null or _anim_shape != "register":
+		return
+	for c: Node in _anim.get_children():
+		c.queue_free()
+	InteractableArt.place(_anim, "perk_register_drum_gold", func(r: Node3D) -> void: InteractableArt.register_drum(r, true), Vector3.ZERO, false)
 
 
 func _tick_bandit(delta: float, on: bool) -> void:

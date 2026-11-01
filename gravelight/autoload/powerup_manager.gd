@@ -290,7 +290,7 @@ func gift_tonic(pid: int) -> Dictionary:
 			g["tier"] = nt
 			GLBus.bonus_awarded.emit(pid, &"tonic_bottle", 0, "FREE MEASURE: %s  ·  KEPT FOR GOOD" % PerkManager.tier_name(gp, nt).to_upper())
 		_:
-			Economy.grant(pid, int(g["scrip"]))
+			Economy.grant_raw(pid, int(g["scrip"]))   # T-141: a substitute for the free tonic, no earning
 			GLBus.bonus_awarded.emit(pid, &"tonic_bottle", int(g["scrip"]), "PERKS FULL: TONIC MONEY")
 	print("[powerups] tonic bottle -> P%d: %s" % [pid, str(g)])
 	return g

@@ -45,6 +45,13 @@ static func round_pay(round_number: int, c: Dictionary) -> int:
 	return mini(int(rp.get("max", 0)), int(rp.get("base", 0)) + int(rp.get("per_round", 0)) * round_number)
 
 
+## Ledger Lager IV's dividend (pure): `pct` of the wallet, at most `cap`, none on an empty wallet (T-141).
+static func parachute(wallet: int, pct: float, cap: int) -> int:
+	if wallet <= 0 or pct <= 0.0 or cap <= 0:
+		return 0
+	return mini(cap, maxi(1, int(floor(float(wallet) * pct + 0.000001))))
+
+
 ## The clean-round extra: [untouched part, no-down part]. A player who went down took a hit, so gets neither.
 static func clean_bonus(round_number: int, hit: bool, downed: bool, c: Dictionary) -> Array[int]:
 	var cr: Dictionary = c.get("clean_round", {})
@@ -108,8 +115,8 @@ func reset() -> void:
 func pay(pid: int, kind: StringName, amount: int, label: String) -> void:
 	if amount <= 0 or not Net.is_authority():
 		return
-	Economy.grant(pid, amount)
-	GLBus.bonus_awarded.emit(pid, kind, amount, label)
+	var paid: int = Economy.grant(pid, amount)   # T-141: Ledger Lager's boost is in what the slip shows
+	GLBus.bonus_awarded.emit(pid, kind, paid, label)
 	_first_lines(pid, kind)
 
 
@@ -147,6 +154,11 @@ func _on_player_downed(pid: int) -> void:
 	_downed[pid] = true
 	_hit[pid] = true
 	_streak[pid] = 0
+	# Ledger Lager IV (T-141): a down costs no Scrip and the bank pays a severance out of the savings account
+	if Net.is_authority() and PerkManager.has_perk(pid, &"ledger_lager"):
+		var sev: int = BankAccount.pay_severance(pid)
+		if sev > 0:
+			GLBus.bonus_awarded.emit(pid, &"severance", sev, "SEVERANCE")
 
 
 func _on_round_ended(r: int) -> void:
@@ -164,6 +176,13 @@ func _on_round_ended(r: int) -> void:
 			pay(pid, &"untouched", clean[0], "UNTOUCHED")
 		if clean[1] > 0:
 			pay(pid, &"no_down", clean[1], "ON YOUR FEET")
+		# Ledger Lager IV (T-141): the bank's dividend for a round finished standing (never downed in it): a slip by the
+		# Scrip, moved not earned (no power-up drops, no stats)
+		if not bool(_downed.get(pid, false)):
+			var div: int = parachute(Economy.get_scrip(pid), float(PerkManager.stat(pid, "golden_parachute_pct", 0.0)), int(PerkManager.stat(pid, "golden_parachute_cap", 0)))
+			if div > 0:
+				Economy.bank_move(pid, div)
+				GLBus.bonus_awarded.emit(pid, &"dividend", div, "DIVIDEND")
 
 
 func _on_enemy_killed(_enemy_id: StringName, limb: StringName, _weapon_id: StringName, by_player: int) -> void:

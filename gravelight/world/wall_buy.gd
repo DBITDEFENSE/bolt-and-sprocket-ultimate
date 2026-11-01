@@ -59,21 +59,21 @@ func _prompt(player: Player) -> String:
 
 	var key: String = prompt_key(&"interact")
 	if JakubCompanion.buys_here(self, player):
-		return "Hold [%s] to buy the %s for Jakub [%d]" % [key, d.get("name", ""), price()]
+		return "Hold [%s] to buy the %s for Jakub [%s]" % [key, d.get("name", ""), price_str(player, price())]
 	match _mode(player):
 		&"frag":
 			if player.weapons.grenades >= player.weapons.grenade_max():
 				return "Grenades full"
-			return "Hold [%s] to buy %s [%d]" % [key, d.get("name", "Frags"), price()]
+			return "Hold [%s] to buy %s [%s]" % [key, d.get("name", "Frags"), price_str(player, price())]
 		&"owned_melee":
 			return ""
 		&"melee":
-			return "Hold [%s] to buy %s [%d]" % [key, d.get("name", ""), price()]
+			return "Hold [%s] to buy %s [%s]" % [key, d.get("name", ""), price_str(player, price())]
 		&"ammo":
 			if player.weapons.find_weapon_base(weapon_id).is_full():
 				return "%s ammo full" % d.get("name", "")
-			return "Hold [%s] for Ammo [%d]" % [key, ammo_price(player)]
-	return "Hold [%s] to buy %s [%d]" % [key, d.get("name", ""), price()]
+			return "Hold [%s] for Ammo [%s]" % [key, price_str(player, ammo_price(player))]
+	return "Hold [%s] to buy %s [%s]" % [key, d.get("name", ""), price_str(player, price())]
 
 
 func can_interact(player: Player) -> bool:

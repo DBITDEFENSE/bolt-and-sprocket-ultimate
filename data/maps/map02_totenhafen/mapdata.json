@@ -16,7 +16,7 @@
     880
   ],
   "baked_at": "2026-10-26T11:21:07",
-  "poi_signature": "b216adebd9389c151f4a40fde0d3255f",
+  "poi_signature": "6640c2bacc7c507a23ffde0565db7c0e",
   "floors": [
     {
       "id": "lower",
@@ -775,6 +775,20 @@
       "key": "Gameplay/AmmoBox_Workshop"
     },
     {
+      "id": "bank:BankBranch",
+      "type": "bank",
+      "pos": [
+        44.9,
+        0.0,
+        58.3
+      ],
+      "floor": 1,
+      "label": "MARINEKASSE · ZAHLSTELLE",
+      "price": 0,
+      "node_path": "BankBranch/Counter",
+      "key": "BankBranch"
+    },
+    {
       "id": "crate_spot:Gameplay/Crate_Hut",
       "type": "crate_spot",
       "pos": [
@@ -1046,6 +1060,23 @@
       "key": "Gameplay/Perk_ironhide_stout",
       "data": {
         "perk_id": "ironhide_stout"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_ledger_lager",
+      "type": "perk",
+      "pos": [
+        43.6,
+        0.0,
+        56.1
+      ],
+      "floor": 1,
+      "label": "Ledger Lager",
+      "price": 3000,
+      "node_path": "Gameplay/Perk_ledger_lager",
+      "key": "Gameplay/Perk_ledger_lager",
+      "data": {
+        "perk_id": "ledger_lager"
       }
     },
     {

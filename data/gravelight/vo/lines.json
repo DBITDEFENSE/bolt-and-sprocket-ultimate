@@ -11347,5 +11347,250 @@
     "speaker": "AMM",
     "category": "COMP_TRADE_ONCE",
     "text": "Once a round, I said. The stores are not a well."
+  },
+  "DUT_PERK_LEDGER_01": {
+    "speaker": "DUT",
+    "category": "PERK_LEDGER",
+    "text": "Tastes like payday in a bad bar. I've had worse paydays."
+  },
+  "DUT_PERK_LEDGER_02": {
+    "speaker": "DUT",
+    "category": "PERK_LEDGER",
+    "text": "Somebody's counting. Fine. Count faster."
+  },
+  "PEG_PERK_LEDGER_01": {
+    "speaker": "PEG",
+    "category": "PERK_LEDGER",
+    "text": "A lager that keeps books. The War Office would have bought a thousand."
+  },
+  "PEG_PERK_LEDGER_02": {
+    "speaker": "PEG",
+    "category": "PERK_LEDGER",
+    "text": "Twenty on the hundred. Someone fiddled the figures, and I like them."
+  },
+  "DEA_PERK_LEDGER_01": {
+    "speaker": "DEA",
+    "category": "PERK_LEDGER",
+    "text": "Ka-ching. Lord forgive me, that's a beautiful sound."
+  },
+  "DEA_PERK_LEDGER_02": {
+    "speaker": "DEA",
+    "category": "PERK_LEDGER",
+    "text": "Machine says I'm solvent. Machine's the first one ever did."
+  },
+  "WRN_PERK_LEDGER_01": {
+    "speaker": "WRN",
+    "category": "PERK_LEDGER",
+    "text": "Cold, cheap, and it counts. Like the man who made it, probably."
+  },
+  "WRN_PERK_LEDGER_02": {
+    "speaker": "WRN",
+    "category": "PERK_LEDGER",
+    "text": "A bell every time I earn. I will shoot the bell."
+  },
+  "JAK_PERK_LEDGER_01": {
+    "speaker": "JAK",
+    "category": "PERK_LEDGER",
+    "text": "Fenske's beer. He always had the figures. He had ours too, under the floor."
+  },
+  "JAK_PERK_LEDGER_02": {
+    "speaker": "JAK",
+    "category": "PERK_LEDGER",
+    "text": "Zahltag. We never had one. I will drink to the day we do."
+  },
+  "OPR_PERK_TIER4_LEDGER_01": {
+    "speaker": "OPR",
+    "category": "PERK_TIER4_LEDGER",
+    "text": "A dividend has been declared. The account thanks you for your continued engagement."
+  },
+  "JES_BANK_GREET_M2_01": {
+    "speaker": "JES",
+    "category": "BANK_GREET_M2",
+    "text": "Zahlstelle, Marinekasse Totenhafen. Thank God, a living face. Please speak quietly. The water carries."
+  },
+  "JES_BANK_GREET_M2_02": {
+    "speaker": "JES",
+    "category": "BANK_GREET_M2",
+    "text": "Deposits, withdrawals, nothing else. The Commandant ordered the pay window kept open until relieved. Nobody has relieved me."
+  },
+  "JES_BANK_DEPOSIT_01": {
+    "speaker": "JES",
+    "category": "BANK_DEPOSIT",
+    "text": "Entered. One per cent a round, the Navy's own rate. It is the only thing on this base that still pays on time."
+  },
+  "JES_BANK_WITHDRAW_01": {
+    "speaker": "JES",
+    "category": "BANK_WITHDRAW",
+    "text": "Your money, in full. Count it, please. I am not able to count just now."
+  },
+  "JES_BANK_BROKE_01": {
+    "speaker": "JES",
+    "category": "BANK_BROKE",
+    "text": "There is nothing entered under your name. I looked twice. A paymaster's mate does not look a third time."
+  },
+  "JES_BANK_SCARED_01": {
+    "speaker": "JES",
+    "category": "BANK_SCARED",
+    "text": "They are on the quay! On the quay! Shoot them, please, shoot them!"
+  },
+  "JES_BANK_SCARED_02": {
+    "speaker": "JES",
+    "category": "BANK_SCARED",
+    "text": "Gott im Himmel. I am only the paymaster's mate!"
+  },
+  "JES_BANK_CLOSED_01": {
+    "speaker": "JES",
+    "category": "BANK_CLOSED",
+    "text": "I may not open the strongbox just now. Orders. The Navy has regulations for the end of the world."
+  },
+  "RUH_BANK_GREET_M4A_01": {
+    "speaker": "RUH",
+    "category": "BANK_GREET_M4A",
+    "text": "Lohnkasse, Werk Thalbach. Ilse Ruhland. The shift is gone and the pay is late, and I am still here. Please come to the window."
+  },
+  "RUH_BANK_GREET_M4A_02": {
+    "speaker": "RUH",
+    "category": "BANK_GREET_M4A",
+    "text": "Good morning. I think it is morning. The savings book is open. Nobody has asked in three days."
+  },
+  "RUH_BANK_GREET_M4B_01": {
+    "speaker": "RUH",
+    "category": "BANK_GREET_M4B",
+    "text": "It is me again! I put the cash box in the equipment locker when the siren went, and then the siren was the engines, and now I am very far up. Your book came with me."
+  },
+  "RUH_BANK_GREET_M4B_02": {
+    "speaker": "RUH",
+    "category": "BANK_GREET_M4B",
+    "text": "Bordkasse, the quartermaster's locker. I know. I do not know what I am doing on an aeroplane either. Please do not open the hatches."
+  },
+  "RUH_BANK_DEPOSIT_01": {
+    "speaker": "RUH",
+    "category": "BANK_DEPOSIT",
+    "text": "Entered in your book. One per cent a round. I have always liked a book that balances."
+  },
+  "RUH_BANK_WITHDRAW_01": {
+    "speaker": "RUH",
+    "category": "BANK_WITHDRAW",
+    "text": "Here is your money. It is only paper. Everything here is only paper now."
+  },
+  "RUH_BANK_BROKE_01": {
+    "speaker": "RUH",
+    "category": "BANK_BROKE",
+    "text": "Your book is empty. I am sorry. I would put something in it myself, if I had anything left."
+  },
+  "RUH_BANK_SCARED_01": {
+    "speaker": "RUH",
+    "category": "BANK_SCARED",
+    "text": "They are coming through the yard! Oh no, oh no, please!"
+  },
+  "RUH_BANK_SCARED_02": {
+    "speaker": "RUH",
+    "category": "BANK_SCARED",
+    "text": "I only do the wages! I only do the wages!"
+  },
+  "RUH_BANK_CLOSED_01": {
+    "speaker": "RUH",
+    "category": "BANK_CLOSED",
+    "text": "The cash window is closed. Works regulation. Even now."
+  },
+  "PRU_BANK_GREET_M4C_01": {
+    "speaker": "PRU",
+    "category": "BANK_GREET_M4C",
+    "text": "Range Finance Office, Private Pruitt. Hey, you're alive. Hold on, let me find the form. Everybody's accounts survived. The rest of the base, not so much."
+  },
+  "PRU_BANK_GREET_M4C_02": {
+    "speaker": "PRU",
+    "category": "BANK_GREET_M4C",
+    "text": "I stayed at the desk. Sergeant Marchetti said somebody had to keep the books, and then she locked the cage. We're neighbors. She says she's fine."
+  },
+  "PRU_BANK_DEPOSIT_01": {
+    "speaker": "PRU",
+    "category": "BANK_DEPOSIT",
+    "text": "Credited. One percent a round, per the Finance Department. I'm, I'm not sure the Finance Department is still there."
+  },
+  "PRU_BANK_WITHDRAW_01": {
+    "speaker": "PRU",
+    "category": "BANK_WITHDRAW",
+    "text": "Cash on the barrelhead. Count it, please. My hands won't hold still."
+  },
+  "PRU_BANK_BROKE_01": {
+    "speaker": "PRU",
+    "category": "BANK_BROKE",
+    "text": "Nothing in your account. I checked the ledger twice. It's a very clean ledger."
+  },
+  "PRU_BANK_SCARED_01": {
+    "speaker": "PRU",
+    "category": "BANK_SCARED",
+    "text": "They're on the salt! They're on the salt, they're on the salt!"
+  },
+  "PRU_BANK_SCARED_02": {
+    "speaker": "PRU",
+    "category": "BANK_SCARED",
+    "text": "I'm just a finance clerk! I just fill out the forms!"
+  },
+  "PRU_BANK_CLOSED_01": {
+    "speaker": "PRU",
+    "category": "BANK_CLOSED",
+    "text": "Window's closed. Regulations. I know what it sounds like."
+  },
+  "OPR_BANK_GREET_M4D_01": {
+    "speaker": "OPR",
+    "category": "BANK_GREET_M4D",
+    "text": "Welcome to Accounts, valued customer. Your balance is held in the Provider's care, and has never been so well held."
+  },
+  "OPR_BANK_GREET_M4D_02": {
+    "speaker": "OPR",
+    "category": "BANK_GREET_M4D",
+    "text": "Accounts is open. Accounts is always open. Please deposit, withdraw, or continue to engage."
+  },
+  "OPR_BANK_DEPOSIT_01": {
+    "speaker": "OPR",
+    "category": "BANK_DEPOSIT",
+    "text": "Your deposit has been received. Retention improves every round. The Provider thanks you for your continued engagement."
+  },
+  "OPR_BANK_WITHDRAW_01": {
+    "speaker": "OPR",
+    "category": "BANK_WITHDRAW",
+    "text": "A withdrawal has been processed. We are sorry to see your balance leave. It will be welcome back."
+  },
+  "OPR_BANK_BROKE_01": {
+    "speaker": "OPR",
+    "category": "BANK_BROKE",
+    "text": "Your balance is zero. A zero balance is a retained balance. We have noted your enthusiasm."
+  },
+  "OPR_BANK_SCARED_01": {
+    "speaker": "OPR",
+    "category": "BANK_SCARED",
+    "text": "A disturbance has been logged at the Accounts window. Please remain a valued customer."
+  },
+  "OPR_BANK_SCARED_02": {
+    "speaker": "OPR",
+    "category": "BANK_SCARED",
+    "text": "Please do not feed the retained. They are already well fed."
+  },
+  "OPR_BANK_CLOSED_01": {
+    "speaker": "OPR",
+    "category": "BANK_CLOSED",
+    "text": "Accounts is not available under your current plan. We regret nothing."
+  },
+  "DUT_BONUS_LEDGER_01": {
+    "speaker": "DUT",
+    "category": "BONUS_LEDGER",
+    "text": "Every hit rings a bell now. I could get used to this."
+  },
+  "PEG_BONUS_LEDGER_01": {
+    "speaker": "PEG",
+    "category": "BONUS_LEDGER",
+    "text": "My earnings are running a fifth over. I have decided not to audit it."
+  },
+  "DEA_BONUS_LEDGER_01": {
+    "speaker": "DEA",
+    "category": "BONUS_LEDGER",
+    "text": "A little extra in the tin every time. The Lord provides, and so does the lager."
+  },
+  "WRN_BONUS_LEDGER_01": {
+    "speaker": "WRN",
+    "category": "BONUS_LEDGER",
+    "text": "It's counting for me. Fine. I count too."
   }
 }

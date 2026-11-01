@@ -91,7 +91,7 @@ func test_wall_buys_perks_and_roster_reference_real_ids() -> void:
 	for pk: String in cfg["perks"]:
 		assert_true(perks.has(pk), "perk %s exists" % pk)
 	assert_true((cfg["perks"] as Array).has("overclock_cordial"), "Overclock Cordial is on the map")
-	assert_true((cfg["perks"] as Array).size() >= 5 and (cfg["perks"] as Array).size() <= 6, "5-6 perks")
+	assert_true((cfg["perks"] as Array).size() >= 5 and (cfg["perks"] as Array).size() <= 7, "5-7 perks (Ledger Lager T-141)")
 	var enemies: Dictionary = GLData.table("enemies")["enemies"]
 	for e: String in cfg["roster"]:
 		assert_true(enemies.has(e), "enemy %s exists" % e)

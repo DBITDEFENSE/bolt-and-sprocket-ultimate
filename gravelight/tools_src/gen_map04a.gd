@@ -102,6 +102,8 @@ func setup_tables() -> void:
 		["trigger_tonic", Vector3(-1.0, 0, 56.0), 90.0], ["twin_barrel", Vector3(6.0, 0, 99.0), 0.0],
 		["marathon_malt", Vector3(-10.0, 0, 109.0), 0.0], ["hawkeye_brandy", Vector3(1.0, 0, 126.0), -90.0],
 		["packmule_porter", Vector3(-20.0, 0, 149.0), 0.0], ["blastproof_bock", Vector3(-40.0, 0, 149.0), 0.0],
+		# Ledger Lager (T-141): in the yardmaster's hut, on its far wall; the hut's south wall is the works' pay window (bank.json)
+		["ledger_lager", Vector3(3.6, 0, 57.45), 0.0],
 	]
 	crates = [
 		["Cellar", Vector3(7, 0, 3.2), 180.0, true, [Vector3(7, 0, 6), Vector3(7, 0, 12), Vector3(14, 0, 14)]],

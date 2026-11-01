@@ -112,6 +112,8 @@ func setup_tables() -> void:
 		["blastproof_bock", Vector3(-20.8, LAB_Y, 125.0), -90.0],
 		["packmule_porter", Vector3(-69.2, LAB_Y, 170.0), 90.0],
 		["skyhook_sekt", Vector3(-20.8, LAB_Y, 165.0), -90.0],
+		# Ledger Lager (T-141): on the hangar's north wall, 8 m west of Dee's cage and the Range Finance Office (bank.json)
+		["ledger_lager", Vector3(54.0, 0, 99.45), 0.0],
 	]
 	crates = [
 		["Wreck", Vector3(6.0, 0, -12.0), -90.0, true, [Vector3(6, 0, -15), Vector3(0, 0, -15), Vector3(0, 0, -20)]],

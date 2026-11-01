@@ -155,6 +155,8 @@ func _ready() -> void:
 	col.add_child(MenuKit.button("Relief squad test (Map 0, round 6, a squad forced on the next round)", func() -> void:
 		_pending_squad = true
 		_start_gl(map0, 6), 22, "ui_confirm"))
+	col.add_child(_header("Update 09 — Ledger Lager and the bank on every map"))
+	col.add_child(MenuKit.button("Ledger Lager test (Map 0, 20,000 Scrip, power on, round 10)", func() -> void: _start_tool_scene("res://gravelight/tools_src/play_ledger.tscn"), 22, "ui_confirm"))
 	col.add_child(_header("Muster (your sidearm and Field Habits; saved per survivor, used by every match)"))
 	col.add_child(MenuKit.button("Muster — pick the sidearm and Field Habits for the survivor above", func() -> void: add_child(MenuMuster.new(CHARACTERS[_char.selected])), 22, "ui_confirm"))
 	col.add_child(_header("Bot mode (an AI plays your survivor; F6 or any input takes over)"))

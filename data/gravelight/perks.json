@@ -530,6 +530,52 @@
      }
     }
    }
+  },
+  "ledger_lager": {
+   "name": "Ledger Lager",
+   "desc": "Every Scrip you earn is posted at 120 on the 100. Rounding in the house's favour.",
+   "cost": 3000,
+   "needs_power": true,
+   "effects": {
+    "scrip_earn_mult": 1.2
+   },
+   "color": "#d9a441",
+   "abbr": "LL",
+   "shape": "register",
+   "sign": "LEDGER",
+   "neon": "#7a4fb0",
+   "_doc": "UPDATE 09 (T-141, docs/U09_LEDGER_LAGER.md, JINGLES.md section 16): DIVIDEND, DMS-VP-DIV-09, the points perk. scrip_earn_mult multiplies every Scrip the holder EARNS (Economy.award / Economy.grant: hits, kills, repairs, revives, the round and clean-round bonuses, quest and egg rewards, squad shares; never bank_move, a refund or a starting kit) and the HUD '+N' shows the boosted number. Tier II bank_interest_bonus is added to the savings bank's per-round rate (BankAccount.rate_for). Tier III purchase_discount comes off every price in Economy.spend / Economy.price_for (the discount rounded down; the prompts show it) and marke_tip is paid on top of the Marke bonus for a Marke kill (Zombie.marke_bonus_for, contract C1). Tier IV (permanent): golden_parachute_pct of the wallet (at most golden_parachute_cap) is moved in by the bank at the end of every round the holder was never downed in (ScripBonuses), and severance_pct of the bank balance (at most severance_cap) is paid out on a down (BankAccount.pay_severance); no_scrip_loss_on_down documents that a down takes nothing. Shape 'register': a brass cash register on an iron base with a tally drum on top, footprint 1.0 x 2.2 x 0.75.",
+   "tiers": {
+    "2": {
+     "name": "Compound Interest",
+     "cost": 4000,
+     "desc": "The savings bank pays you 3% a round instead of 1%.",
+     "effects": {
+      "bank_interest_bonus": 0.02
+     }
+    },
+    "3": {
+     "name": "Insider Rate",
+     "cost": 7500,
+     "desc": "Ten percent off every purchase, and a Marke kill pays a tip on top.",
+     "effects": {
+      "purchase_discount": 0.1,
+      "marke_tip": 15
+     }
+    },
+    "4": {
+     "name": "Golden Parachute",
+     "cost": 14000,
+     "desc": "Permanent. Every round you finish standing the bank pays 5% of your Scrip (up to 2500); a down takes nothing and pays you 10% of your savings (up to 2500).",
+     "effects": {
+      "golden_parachute_pct": 0.05,
+      "golden_parachute_cap": 2500,
+      "severance_pct": 0.1,
+      "severance_cap": 2500,
+      "no_scrip_loss_on_down": true
+     }
+    }
+   }
   }
  },
  "drink_seconds": 1.2,

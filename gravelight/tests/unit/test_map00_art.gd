@@ -9,9 +9,10 @@ const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 ## with. A change here means gameplay geometry moved: the art pass must never do that (UPDATE_05 section 0.4).
 ## Re-baked by T-120: the stair-rail panel no longer reaches the taproom floor beside the bar.
 ## Re-baked by T-126: GRAVELIGHT ONE's hull is hollow (the cabin, its two starboard openings).
+## Re-baked by T-141: Ledger Lager's footprint in the cellar's south-east corner (gen_map00 CELLAR_PERKS).
 const NAV_FP: Dictionary = {
-	"Navigation": "ef70ddc7e07564e4628be1c7592843f77e112fb9",
-	"NavigationBreachOpen": "743230d494ca16db5953daad4f04735a23be73b7",
+	"Navigation": "f8b9ce80b2e168434327d3d6d41ff16af14fb1f2",
+	"NavigationBreachOpen": "1bbcde3146c7ec3360a0afb951cd2829eb8b28a1",
 }
 ## Library-prop triangles within CAM_RADIUS of any capture camera (data/gravelight/capture_cams.json).
 const CAM_RADIUS: float = 12.0
