@@ -137,7 +137,7 @@ static func card(kicker: String, title: String, date: String, preview_tex: Textu
 	d.custom_minimum_size = Vector2(PREVIEW_W, 0)
 	v.add_child(d)
 	if locked:
-		var lt: Label = MenuKit.para(lock_text, 15, MenuKit.DIM)
+		var lt: Label = MenuKit.para(lock_text, 14, MenuKit.DIM)
 		lt.custom_minimum_size = Vector2(PREVIEW_W, 0)
 		lt.max_lines_visible = 2
 		v.add_child(lt)
@@ -184,7 +184,7 @@ static func map_card(map_id: String, cb: Callable) -> Button:
 		_:
 			prog.append(["NO EGG", MenuKit.DIM.darkened(0.2)])
 	var c: Button = card(str(r.get("kicker", "")), str(r.get("name", map_id)), str(r.get("date", "")), preview(map_id), prog, cb,
-		not open, "Locked: " + str(r.get("unlock", "")))
+		not open, str(r.get("unlock", "")))
 	c.set_meta("map_id", map_id)
 	c.set_meta("egg", egg)
 	c.set_meta("best", best)
