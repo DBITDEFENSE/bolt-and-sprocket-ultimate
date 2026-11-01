@@ -4,9 +4,11 @@ extends RefCounted
 ## MapRoot._ready and the menu's 3D backdrop call `WebProfile.apply(root)` when GLSettings.is_compat():
 ##   - no SDFGI / SSIL / SSR / volumetric fog: a map that wanted volumetric fog gets depth fog of the same colour
 ##     (the Compatibility renderer has none of those; FogVolumes are hidden: they would do nothing),
-##   - directional shadows reach SHADOW_DIST_M (40 m) at most, MSAA off,
+##   - directional shadows reach SHADOW_DIST_M (40 m) at most in 2 cascades (not 4), MSAA off,
 ##   - at most MAX_SHADOWED_PER_ZONE (4) shadowed omni / spot lights per zone (ZoneVolume; lights outside every zone
-##     count as one more zone): the ones nearest the players' spawn keep their shadow, the rest light without one,
+##     count as one more zone): the ones nearest the players' spawn keep their shadow, the rest light without one;
+##     the omni lights that keep one use dual-paraboloid shadows (2 shadow renders a frame instead of a cube's 6:
+##     the first census had Map 0 at 9.5k draw calls a frame on the Compatibility renderer, mostly shadow passes),
 ##   - zombie animation LOD distances halved (anim.json lod: Zombie.anim_lod_scale),
 ##   - particle amounts halved (GPUParticles3D.amount_ratio; Effects' bursts through Effects.particles_k; the
 ##     snowfall's layers through Snowfall.density_scale).
@@ -52,6 +54,8 @@ static func apply(root: Node) -> Dictionary:
 			var dl: DirectionalLight3D = n as DirectionalLight3D
 			if dl.directional_shadow_max_distance > SHADOW_DIST_M:
 				dl.directional_shadow_max_distance = SHADOW_DIST_M
+			if dl.directional_shadow_mode == DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS:
+				dl.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
 			out["dir_lights"] = int(out["dir_lights"]) + 1
 		elif n is OmniLight3D or n is SpotLight3D:
 			var l: Light3D = n as Light3D
@@ -74,6 +78,9 @@ static func apply(root: Node) -> Dictionary:
 		var r2: Vector2i = cap_shadows(by_zone[z] as Array, spawn, MAX_SHADOWED_PER_ZONE)
 		out["shadowed_kept"] = int(out["shadowed_kept"]) + r2.x
 		out["shadows_off"] = int(out["shadows_off"]) + r2.y
+		for l: Variant in by_zone[z]:
+			if l is OmniLight3D and (l as OmniLight3D).shadow_enabled:
+				(l as OmniLight3D).omni_shadow_mode = OmniLight3D.SHADOW_DUAL_PARABOLOID
 	return out
 
 
