@@ -71,6 +71,15 @@ func _split_build() -> bool:
 	return _local_dir != "" or (GLSettings.is_web() and not ResourceLoader.exists("res://gravelight/maps/map00_crossroads/map00.tscn"))
 
 
+## True while a split build still has packs it hasn't mounted (caches of "this model is missing" must not stick).
+func pending() -> bool:
+	if not _split_build():
+		return false
+	if manifest.is_empty():
+		return true
+	return mounted.size() < (manifest.get("packs", {}) as Dictionary).size()
+
+
 ## True when the map is not loadable yet but this build has it in a pack (Campaign.scene_exists asks).
 func knows(map_id: StringName) -> bool:
 	return _split_build() and SCENE_MAP.values().has(String(map_id))

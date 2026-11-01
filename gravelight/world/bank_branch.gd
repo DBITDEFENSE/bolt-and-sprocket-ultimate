@@ -67,6 +67,12 @@ func _ready() -> void:
 # ================================================================== the room
 
 func _build_furniture() -> void:
+	_batch = {}   # T-139: the boxes and cylinders below merge into one mesh per material (was ~65 draw calls + casters)
+	_build_pieces()
+	_flush_batch()
+
+
+func _build_pieces() -> void:
 	var w: float = float(cfgb.get("width", 4.5))
 	var d: float = 0.5
 	var h: float = 1.05
@@ -132,10 +138,41 @@ func _build_furniture() -> void:
 		l.position = sp2 + Vector3(0, 0, 0.005)
 
 
+## T-139: material -> SurfaceTool while the furniture is built (null = add each piece as its own node).
+var _batch: Variant = null
+
+
+func _add_piece(mesh: PrimitiveMesh, mat: String, xf: Transform3D) -> bool:
+	if not (_batch is Dictionary):
+		return false
+	var b: Dictionary = _batch
+	if not b.has(mat):
+		var st: SurfaceTool = SurfaceTool.new()
+		st.begin(Mesh.PRIMITIVE_TRIANGLES)
+		b[mat] = st
+	(b[mat] as SurfaceTool).append_from(mesh, 0, xf)
+	return true
+
+
+func _flush_batch() -> void:
+	if not (_batch is Dictionary):
+		return
+	var b: Dictionary = _batch
+	_batch = null
+	for mat: String in b:
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.name = "Furniture_" + mat
+		mi.mesh = (b[mat] as SurfaceTool).commit()
+		mi.material_override = Mats.get_mat(mat)
+		add_child(mi)
+
+
 func _box(c: Vector3, sz: Vector3, mat: String) -> void:
-	var mi: MeshInstance3D = MeshInstance3D.new()
 	var bm: BoxMesh = BoxMesh.new()
 	bm.size = sz
+	if _add_piece(bm, mat, Transform3D(Basis(), c)):
+		return
+	var mi: MeshInstance3D = MeshInstance3D.new()
 	mi.mesh = bm
 	mi.material_override = Mats.get_mat(mat)
 	mi.position = c
@@ -149,6 +186,9 @@ func _cyl(c: Vector3, r: float, h: float, mat: String, rot: Vector3 = Vector3.ZE
 	cm.bottom_radius = r
 	cm.height = h
 	cm.radial_segments = 12
+	if _add_piece(cm, mat, Transform3D(Basis.from_euler(rot * (PI / 180.0)), c)):
+		mi.free()
+		return
 	mi.mesh = cm
 	mi.material_override = Mats.get_mat(mat)
 	mi.position = c
