@@ -70,6 +70,8 @@ var objectives_done: int = 0
 var planner: BotPlanner = null
 ## Its easter-egg work (Update 04 section 5, T-067; BotEE, given by the squad's BotEEHub): the utility action ee_task.
 var ee: BotEE = null
+## U10 (T-163): Fernflug's set-pieces (the storm, a breach's pull, the meteors, the wing walk, the vent lever).
+var setpieces: BotSetPieces = null
 ## Its map-mark order (Update 04 section 3, T-069; BotMarkTask, given by the squad's BotMarkOrders): the utility
 ## action mark_order.
 var mark: BotMarkTask = null
@@ -181,6 +183,8 @@ func setup(bot_player: Player, bot_squad: BotSquad, i: int) -> void:
 	tasks.setup(self)
 	economy = BotEconomy.new()
 	economy.setup(self)
+	setpieces = BotSetPieces.new()
+	setpieces.setup(self)
 	command = squad.command
 	GLBus.explosion.connect(_on_explosion)
 	GLBus.player_damaged.connect(_on_player_damaged)
@@ -376,7 +380,10 @@ func _physics_process(delta: float) -> void:
 		us_think += float(Time.get_ticks_usec() - tt)
 		thinks += 1
 	loco.clear_look()   # a look lasts one frame: the aim layer (or the executor) asks again every frame
-	actions.run(action, delta)
+	if aim.break_free():
+		loco.stop()   # U10 (T-163): held by a boss's grab: knife it free (the action waits)
+	else:
+		actions.run(action, delta)
 	loco.tick(delta)
 	_sprint_t = _sprint_t + delta if player.sprinting else 0.0
 	if _sprint_t > 1.0:
@@ -428,6 +435,8 @@ func _think() -> void:
 		ee.tick_think(now)
 	if mark != null:
 		mark.tick_think(now)
+	if setpieces != null:
+		setpieces.think(now)
 	if player.remote_body != null:
 		var cw: WeaponInstance = aim.cur()
 		var shown: StringName = cw.id if cw != null else &""
@@ -464,8 +473,10 @@ func _think() -> void:
 		best = "buy"
 		if action == "buy" and not task.is_empty() and str(task.get("kind", "")) != "crucible":
 			drop_task()
+	if setpieces != null and setpieces.wants_control() and best != "revive" 			and (setpieces.urgent() or not (["retreat", "cover"].has(best) and float(scores.get(best, 0.0)) > 0.8)):
+		best = "setpiece"   # U10 (T-163): a rail in a breach's pull, shelter from the meteors, the wing walk, the vent
 	top3 = BotUtility.top(scores, 3)
-	if best != action and (now - _action_t >= float(_acfg.get("min_action_s", 0.4)) or action == "idle" or best == "retreat" or best == "revive"):
+	if best != action and (now - _action_t >= float(_acfg.get("min_action_s", 0.4)) or action == "idle" or best == "retreat" or best == "revive" or best == "setpiece"):
 		_set_action(best)
 		actions.enter(best)
 	if not _order_reported and order_response(_order_id).has(action):
@@ -620,6 +631,8 @@ func armed() -> bool:
 func in_break() -> bool:
 	if crawler != null and crawler.holding():
 		return true   # T-071 pass 3: the round's last zombie crawling behind: errands as in a break
+	if is_player_bot and trainer != null and trainer.errand_window():
+		return true   # U10 (T-163): the last ones left to the squad's hunt: the agent's errand as in a break
 	return RoundManager.state != RoundManager.State.ROUND or (RoundManager.to_spawn <= 0 and perception.known.is_empty() and squad.director() != null and squad.director().active_zombies().is_empty())
 
 
@@ -627,6 +640,8 @@ func in_break() -> bool:
 ## holds, no training, no running off alone; the squad stands together and shoots (combat.json / ai_counters
 ## hold_ground).
 func stand_fast() -> bool:
+	if setpieces != null and setpieces.stand_fast():
+		return true   # U10 (T-163, Q-19): the Kranich's hull, every round (setpieces.json stand_fast)
 	return RoundManager.is_special_round and RoundManager.state == RoundManager.State.ROUND
 
 
@@ -753,6 +768,11 @@ func start_task(kind: String) -> void:
 		timeout += float(c.get("extra_s", 0.0))   # T-127: a tonic errand may cross the map
 	if node is Crucible:
 		timeout += (node as Crucible).forge_seconds + (node as Crucible).offer_seconds
+	if node is Node3D and kind != "objective":
+		# U10 (T-163): the walk counts too (a flat 20 s never covered the agent's 83 m to Kaltenbrunn's Lab door: it
+		# set out, timed out on the stairs and set out again, round after round, with 12,000 Scrip in hand)
+		var far: float = _flat((node as Node3D).global_position, player.global_position)
+		timeout += maxf(0.0, far - 20.0) / float((_cfg.get("shopping", {}) as Dictionary).get("errand_walk_mps", 3.5))
 	task["until"] = now + timeout
 
 
@@ -922,7 +942,7 @@ func _trap_value() -> float:
 		var trap: Node = lever.call("trap") if lever.has_method("trap") else null
 		var tid: StringName = StringName(str(trap.get("trap_id"))) if trap != null and trap.get("trap_id") != null else &""
 		var ordered: bool = order_node() == lever
-		if not BotEconomy.may_touch("trap", ordered, planner != null, _human_used_traps.has(tid)):
+		if not BotEconomy.may_touch("trap", ordered, planner != null, _human_used_traps.has(tid), squad.bots_alone()):
 			continue
 		var at: Vector3 = (trap as Node3D).global_position if trap is Node3D else lever.global_position
 		if perception.count_near(at, 6.0) < 5 and not ordered:
@@ -1090,6 +1110,8 @@ func crucible_for_me(range_m: float, anchor: Vector3) -> Crucible:
 		var cr: Crucible = cn as Crucible
 		if cr == null or not cr.is_powered() or cr.phase != Crucible.Phase.IDLE or _flat(cr.global_position, anchor) > range_m:
 			continue
+		if QuestManager.interact_ready(&"crucible_shard") or QuestManager.interact_ready(&"crucible_heartstorm"):
+			continue   # U10 (T-163): a forging gun hides the Requiem's shard slot / Heartstorm start (the agent's "couldn't use")
 		if not squad.can_claim(cr, player.player_id) or not _reachable(_front_of(cr)):
 			continue
 		return cr
@@ -1120,14 +1142,21 @@ func _upgradeable_slot() -> int:
 ## Pure (T-121): the slot the Crucible should teach next: its best gun by economy tier (a taught gun counts its
 ## teachings, so a Thompson taught once is fed again before a fresh MP40), pistols last, the gun in hand on a tie.
 ## -1 when nothing carried can learn more.
+## U10 (T-163): a gun before a wonder: while no regular gun in the slots is taught yet, a wonder (the Totenglocke)
+## waits (-20): its toll never rings a quest bell, so a squad that taught only wonders could never light the
+## Requiem's Chapel bell (s4 needs a Crucible gun).
 static func best_to_teach(slots: Array, current: int, eco: Dictionary) -> int:
 	var best: int = -1
 	var best_s: float = -INF
+	var gun_taught: bool = false
+	for w0: Variant in slots:
+		if (w0 as WeaponInstance).upgraded and (w0 as WeaponInstance).weapon_class() != &"wonder":
+			gun_taught = true
 	for i: int in slots.size():
 		var w: WeaponInstance = slots[i]
 		if Crucible.action_for(w) != &"upgrade":
 			continue
-		var s: float = BotEconomy.tier_of(String(w.base_id()), w.upgraded, eco, w.tier) - (10.0 if w.weapon_class() == &"pistol" else 0.0) 			+ (0.01 if i == current else 0.0)
+		var s: float = BotEconomy.tier_of(String(w.base_id()), w.upgraded, eco, w.tier) - (10.0 if w.weapon_class() == &"pistol" else 0.0) 			+ (0.01 if i == current else 0.0) - (20.0 if w.weapon_class() == &"wonder" and not gun_taught else 0.0)
 		if s > best_s:
 			best_s = s
 			best = i
@@ -1317,7 +1346,7 @@ func invalidate_stand_cache() -> void:
 
 
 ## A reachable navmesh spot that sees `target` (a bell overhead), nearest rings first; INF when none within 12 m.
-func vantage_for(target_p: Vector3) -> Vector3:
+func vantage_for(target_p: Vector3, avoid: Array = []) -> Vector3:
 	var eye_h: float = float(BotAIData.combat("perception").get("eye_height", 1.55))
 	for r: float in [2.5, 4.5, 7.0, 10.0, 12.0]:
 		for k: int in 12:
@@ -1327,11 +1356,25 @@ func vantage_for(target_p: Vector3) -> Vector3:
 				var s: Vector3 = snap(want)
 				if s.distance_to(want) > 1.6 or s.y > target_p.y:
 					continue
-				if not los_point(s + Vector3.UP * eye_h, target_p):
+				var near_bad: bool = false
+				for av: Variant in avoid:
+					if (av as Vector3).distance_to(s) < 2.0:
+						near_bad = true   # U10 (T-163): a spot whose shots never reached it (another angle)
+				if near_bad:
+					continue
+				if not shot_clear(s + Vector3.UP * eye_h, target_p):
 					continue
 				if _reachable(s):
 					return s
 	return Vector3.INF
+
+
+## U10 (T-163): would a bullet from `from` reach `to`? The guns' own blockers (WeaponHolder.MASK_SHOT less the
+## zombie hitboxes: world, doors and the decor layer), not the sight mask: the Four Bells' specimen-tank bell sits
+## between copper pipes on the decor layer, in sight from spots whose every round hit the pipes.
+func shot_clear(from: Vector3, to: Vector3) -> bool:
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to, 1 | (1 << 8) | DecorHit.LAYER, [player.get_rid()])
+	return player.get_world_3d().direct_space_state.intersect_ray(q).is_empty()
 
 
 ## One line for the squad report / the debug overlay.

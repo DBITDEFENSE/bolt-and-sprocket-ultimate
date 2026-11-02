@@ -1,0 +1,65 @@
+{
+  "_doc": "UPDATE 10 §7 (contract C7, DECISIONS T-163): the bots' rules for Fernflug's set-pieces (gravelight/bots/bot_setpieces.gd, BotSetPieces). Per-map positions live in routes_<map>.json 'setpieces' (the meteor shelters, the radar perch). Bot tuning only: nothing here changes a set-piece for a human.",
+  "stand_fast": {
+    "_doc": "Q-19 (T-163): acts too tight to run from sprinters: the squad stands together and shoots every round there (BotBrain.stand_fast, the special round's rule: no sprint-away retreat, no solo training, no window holds). In the Kranich the bots died backing into the hull walls.",
+    "maps": ["map04b"]
+  },
+  "moves": {
+    "_doc": "A non-urgent move (wing walk, lever, pad, the walk to the perch) gives the body back to the fight while a zombie is within yield_m; a rail in a breach's pull, the meteor shelter and the perch once climbed keep it.",
+    "yield_m": 6.0
+  },
+  "storm": {
+    "_doc": "Act III's dust storm (GroomController.dust_active): no sprinting, the formation at spacing_mult, and no shot at a stalker (Zombie.hunt_by_sound) farther than quiet_fire_m unless it is within on_us_m or chasing this bot, a teammate is down or the bot is under half health. A shot makes every stalker within 18 m hear it (SoundHunter: 6 m x3).",
+    "quiet_fire_m": 7.0,
+    "on_us_m": 4.0,
+    "spacing_mult": 0.6
+  },
+  "collapse": {
+    "_doc": "Act III's wreck: a warned section's box is a danger disc (its half diagonal + margin_m, cost) until it falls; the burning hull's spread_points are fire discs for good.",
+    "margin_m": 1.5,
+    "cost": 6.0,
+    "fire_radius_m": 2.8,
+    "fire_cost": 3.0
+  },
+  "decompression": {
+    "_doc": "Act II's breaches (DecompressionBreach): warning or pulling and the bot within radius + grip_margin_m: the nearest rail_grips rail of that breach, held until it is over; no rail: out of the radius.",
+    "grip_margin_m": 4.0
+  },
+  "wing_walk": {
+    "_doc": "Act II's wing walk as a risky optional task: one bot, self-led squads / Full Partner / ordered, only in a break or with nothing known within quiet_m, hp at least hp_min, never in a warned tilt; clip in at the first tether post, the wingtip locker's token (and part), back in. Given up after max_s.",
+    "quiet_m": 18.0,
+    "hp_min": 0.7,
+    "max_s": 120.0,
+    "_doc_alone": "With no human in the match (bots_alone) only in a break with at least alone_break_s left (Q-19: the walk split a three-bot squad in its hardest act).",
+    "alone_break_s": 25.0
+  },
+  "meteor": {
+    "_doc": "Act IV's meteor shower: from the warning to the end, out of the yard box (grown by box_margin_m) to the nearest shelter point.",
+    "box_margin_m": 1.5
+  },
+  "shaft_grate": {
+    "_doc": "Act IV's vent: within use_within_m of the lever, min_dead known zombies on the grate, and the price leaves reserve_scrip.",
+    "use_within_m": 14.0,
+    "min_dead": 4,
+    "reserve_scrip": 1500
+  },
+  "jump_pads": {
+    "_doc": "Act IV's pads as route links: on a trip of at least min_trip_m, a pad within max_detour_m whose landing saves gain_m of path; never with a zombie within quiet_m.",
+    "quiet_m": 6.0,
+    "min_trip_m": 18.0,
+    "max_detour_m": 12.0,
+    "gain_m": 8.0
+  },
+  "favour": {
+    "_doc": "Act IV's Pohl: his favour as an optional task (self-led, Full Partner or ordered): in a break or with nothing known within quiet_m, accept it at Pohl and read his tag in at the Account's slot once that is reachable; never after CANCEL; given up after max_s.",
+    "quiet_m": 18.0,
+    "max_s": 90.0
+  },
+  "perch": {
+    "_doc": "Act III's radar tower perch: the high-ground shooter goes up with nothing within quiet_m, comes down when crowd zombies are within 4 m of the deck, below hp_min, a teammate down, the storm or the break; cooldown_s before the next climb.",
+    "quiet_m": 8.0,
+    "hp_min": 0.6,
+    "crowd": 2,
+    "cooldown_s": 30.0
+  }
+}

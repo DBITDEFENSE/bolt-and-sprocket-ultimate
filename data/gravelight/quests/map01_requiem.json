@@ -207,7 +207,7 @@
     {
       "id": "s4_key",
       "type": "kill_condition",
-      "bot_task": {"type": "shoot_target", "target": {"group": "quest_bells", "where": {"kind": "chapel"}}, "need_upgraded": true, "lit_flag": "chapel_bell_lit", "risky": "shoot", "then_hold": {"radius": 4.0}, "what": "the Chapel bell", "ping": "BELL"},
+      "bot_task": {"type": "shoot_target", "target": {"group": "quest_bells", "where": {"kind": "chapel"}}, "need_upgraded": true, "lit_flag": "chapel_bell_lit", "risky": "shoot", "full_partner": ["shoot"], "then_hold": {"radius": 4.0}, "what": "the Chapel bell", "ping": "BELL"},
       "params": {
         "enemy": "foreman",
         "zone": "F_CHAPEL",
@@ -319,7 +319,7 @@
     {
       "id": "s7_drummer",
       "type": "chase",
-      "bot_task": {"type": "shoot_target", "target": {"group": "quest_drummers"}, "moving": true, "trigger": "crate", "risky": "trigger", "then_pickup": {"class": "QuestPickup", "where": {"item_id": "nachtglas_shard", "visible": true}}, "what": "Herr Tamtam", "ping": "DRUMMER"},
+      "bot_task": {"type": "shoot_target", "target": {"group": "quest_drummers"}, "moving": true, "trigger": "crate", "risky": "trigger", "full_partner": ["trigger"], "pause_pressure": 0.85, "then_pickup": {"class": "QuestPickup", "where": {"item_id": "nachtglas_shard", "visible": true}}, "what": "Herr Tamtam", "ping": "DRUMMER"},
       "params": {
         "actor": "drummer",
         "item": "nachtglas_shard",

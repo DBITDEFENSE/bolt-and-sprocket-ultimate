@@ -191,8 +191,8 @@ static func door_allowed(e: Dictionary, ordered: bool, bot_led: bool, human_open
 ## parts ("part") only when ordered onto that object, or (traps) when the human already used that one, or for the
 ## local-AI planner bot (the user-sanctioned exception) when its setting is on. `self_led` (T-058): no human is in
 ## the match (BotSquad.bots_alone()), so the squad is its own leader and throws the power itself (the rule
-## protects a human's choices; with no human there is nobody to take the step from). Easter eggs, parts and
-## traps stay off limits even then. Everything else is fine.
+## protects a human's choices; with no human there is nobody to take the step from). Traps too, when the caller
+## passes bots_alone (U10 T-163: the Kranich's bay doors). Easter eggs and parts stay off limits even then.
 static func may_touch(kind: String, ordered: bool, planner: bool, human_did: bool, self_led: bool = false) -> bool:
 	match kind:
 		"quest", "part":
@@ -200,7 +200,8 @@ static func may_touch(kind: String, ordered: bool, planner: bool, human_did: boo
 		"power":
 			return ordered or planner or self_led
 		"trap":
-			return ordered or planner or human_did
+			# U10 (T-163, Q-19): with nobody human in the match (bots_alone) a trap is nobody's choice to protect
+			return ordered or planner or human_did or self_led
 	return true
 
 
@@ -221,6 +222,14 @@ static func self_led_door_ok(is_power_door: bool, route_door: bool, scrip: int, 
 func _pv(kind: String, dist: float) -> float:
 	var m: Dictionary = brain.personality_economy("priority_mult", {}) as Dictionary
 	return clampf(value_of(eco, kind, dist) * float(m.get(kind, 1.0)), 0.0, 1.0)
+
+
+## U10 (T-163) pure: take a free wonder from a bench? Its tier must beat the worst gun held by wonder_margin (or a
+## slot is free).
+static func wonder_wanted(wonder_tier: float, worst_held: float, free_slot: bool, e: Dictionary) -> bool:
+	if free_slot:
+		return true
+	return wonder_tier > worst_held + float(e.get("wonder_margin", 0.5))
 
 
 ## The value (0..1) of a shopping candidate: its priority, a little less the farther it is.
@@ -433,10 +442,32 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 		var wb2: WallBuy = nodes[String(gun)]
 		out.append({"node": wb2, "kind": "gun", "value": _pv("gun", _flat(wb2.global_position, me)), "cost": wb2.price(),
 			"label": "buy the %s wall gun (%d Scrip)" % [BotBrain.weapon_name(gun), wb2.price()]})
+	# ---- U10 (T-163): a built wonder on a bench (Kaltenbrunn's Totenglocke, Totenhafen's Undertow) is free for each
+	# player: taken when its tier beats the worst gun held (or a slot is free). Bots only ever took one for an egg
+	# step (s8b's kill_with_weapon); a squad with four bells from round 8 lives longer.
+	var worst_tier: float = INF
+	for h2: Variant in held:
+		worst_tier = minf(worst_tier, float((h2 as Dictionary)["tier"]))
+	for wbn: Node in brain.get_tree().get_nodes_in_group(&"workbenches"):
+		var bench: Workbench = wbn as Workbench
+		if bench == null or not is_instance_valid(bench) or not bench.built or not bench.is_visible_in_tree() or not bench.can_interact(player):
+			continue
+		if not wonder_wanted(tier_of(String(bench.buildable_id), false, eco), worst_tier, free_slot, eco):
+			continue
+		if _flat(bench.global_position, anc) > rng * 1.5 or not squad.can_claim(bench, pid):
+			continue
+		var bst: Vector3 = brain.stand_point(bench)
+		if bst == Vector3.INF:
+			continue
+		out.append({"node": bench, "kind": "gun", "wonder": true, "value": _pv("gun", _flat(bench.global_position, me)), "cost": 0, "stand": bst,
+			"label": "take the %s from the workbench" % BotBrain.weapon_name(bench.buildable_id)})
 	# ---- doors
 	var dcfg: Dictionary = (cfg.get("shopping", {}) as Dictionary).get("doors", {})
 	var ordered_door: Node = brain.order_node() if order == &"open_door" else null
-	if bool(dcfg.get("enabled", true)) and squad.round_time() >= float(dcfg.get("round_delay_s", 20.0)) * (0.0 if ordered_door != null else 1.0) \
+	# (U10 T-163, Q-19: a self-led squad also buys in a break: the arrival grace of an act skip was spent idle and
+	# the first round's horde met it in the spawn bay; the delay exists to leave a human the first pick)
+	if bool(dcfg.get("enabled", true)) and (squad.round_time() >= float(dcfg.get("round_delay_s", 20.0)) * (0.0 if ordered_door != null else 1.0) \
+			or (self_led and brain.in_break())) \
 			and brain.doors_bought_round < int(dcfg.get("max_per_round_per_bot", 1)):
 		var human: Player = squad.human()
 		var route_doors: Dictionary = _route_doors() if self_led else {}
@@ -596,10 +627,19 @@ func _route_doors() -> Dictionary:
 ## nobody walks off alone into a spawn room while the round is on (the bots3 downs in the cellar).
 func _near_enough(p: Vector3) -> bool:
 	var squad: BotSquad = brain.squad
-	if not squad.bot_led() or brain.in_break():
+	if not squad.bot_led():
 		return true
 	var home: Vector3 = squad.home.center() if squad.home != null else anchor()
-	return _flat(p, home) <= float(eco.get("self_led_mid_round_m", 16.0)) and absf(p.y - home.y) < 2.5
+	var near: bool = _flat(p, home) <= float(eco.get("self_led_mid_round_m", 16.0)) and absf(p.y - home.y) < 2.5
+	if brain.in_break():
+		# U10 (T-163, Q-19): a far errand in a break only if the trip there and back fits in what is left of it
+		# (an act skip's 14 s arrival grace sent a bot 50 m off to the Kranich's gun blisters, and the first wave
+		# found it there alone)
+		if near or RoundManager.state != RoundManager.State.BREAK:
+			return true
+		var trip: float = _flat(player.global_position, p) + _flat(p, home)
+		return trip / float(eco.get("self_led_trip_mps", 4.0)) + float(eco.get("self_led_trip_margin_s", 5.0)) <= RoundManager.break_left
+	return near
 
 
 ## The main gun: the best-tier gun carried that isn't the start pistol (else whatever it holds).

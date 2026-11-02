@@ -180,6 +180,10 @@ func target_value(z: Zombie) -> float:
 	var per: BotPerception = brain.perception
 	var c: Dictionary = BotAIData.counter(z.enemy_id)
 	var th: float = float(per.threat.get(z.get_instance_id(), 0.0))
+	if brain.squad != null and brain.squad.ee != null and BotPerception.is_boss(z):
+		var kz: StringName = brain.squad.ee.kill_zone_for(z.enemy_id)
+		if kz != &"" and hold_fire_for_zone(ZoneVolume.zone_at(brain.get_tree(), z.global_position), kz, _flat(z.global_position, player.global_position)):
+			return 0.0   # U10 (T-163): not yet: it has to die in its zone (the Foreman in the lit Chapel)
 	var d: float = _flat(z.global_position, player.global_position)
 	var w: WeaponInstance = cur()
 	var max_r: float = max_range(w)
@@ -213,6 +217,12 @@ func target_value(z: Zombie) -> float:
 			if not near_anyone and BotConfig.in_fire_cone(h.head.global_position, -h.camera.global_basis.z, z.global_position, 22.0, 40.0):
 				return 0.0
 	return s
+
+
+## U10 (T-163) pure: hold fire on an enemy an armed kill condition wants killed in `want_zone` while it is
+## elsewhere, unless it is at arm's length (self-defence first).
+static func hold_fire_for_zone(at_zone: StringName, want_zone: StringName, dist_m: float, close_m: float = 3.0) -> bool:
+	return want_zone != &"" and at_zone != want_zone and dist_m > close_m
 
 
 func _holds_teammate(b: HomageBoss) -> bool:
@@ -265,6 +275,38 @@ func _update_weak_point() -> void:
 				if d < best_d and _los(eye(), arm.hitbox.global_position, target):
 					best_d = d
 					aim_node = arm.hitbox
+	elif target is Paul:
+		aim_node = paul_aim_node(target as Paul)
+
+
+## U10 (T-163): PAUL (T-159) is survived more than killed (75,000 HP; he retreats after 6 minutes): a bottle on his
+## rack takes 20 rage off him, so from rage bottles_from_rage on (Angry: Charge, Leap Slam) the bots break the
+## nearest bottle they can see; behind him (more than 120 deg off his facing) the neck takes x2; else the chest.
+func paul_aim_node(pl: Paul) -> Node3D:
+	var pc: Dictionary = BotAIData.counter(&"paul")
+	var me: Vector3 = eye()
+	if pl.rage != null and pl.rage.value >= float(pc.get("bottles_from_rage", 34.0)):
+		var best: Node3D = null
+		var best_d: float = INF
+		for i: int in pl.bottle_boxes.size():
+			var hb: Hitbox = pl.bottle_boxes[i]
+			if hb == null or not is_instance_valid(hb) or i >= pl.bottles_hp.size() or pl.bottles_hp[i] <= 0.0:
+				continue
+			var d: float = hb.global_position.distance_to(me)
+			if d < best_d and _los(me, hb.global_position, pl):
+				best_d = d
+				best = hb
+		if best != null:
+			return best
+	var to_me: Vector3 = me - pl.global_position
+	to_me.y = 0.0
+	if to_me.length() > 0.1 and pl.basis_fwd().angle_to(to_me.normalized()) > deg_to_rad(float(pc.get("neck_from_deg", 125.0))):
+		var hbs: Variant = pl.get("_hitboxes")
+		if hbs is Array:
+			for hb2: Variant in hbs:
+				if hb2 is Hitbox and (hb2 as Hitbox).limb == &"neck" and _los(me, (hb2 as Hitbox).global_position, pl):
+					return hb2 as Hitbox
+	return null
 
 
 ## Head when going for it (and the head hitbox is there), a weak point when set, else the chest.
@@ -331,6 +373,8 @@ func max_range(w: WeaponInstance) -> float:
 func update(delta: float, may_fire: bool) -> bool:
 	if target == null or not BotPerception.targetable(target):
 		target = null
+		if may_fire:
+			_knife_unseen()
 		return false
 	var p: Vector3 = aim_point(target)
 	var aim_dir: Vector3 = _perceived_dir(p, delta)
@@ -401,6 +445,9 @@ func _fire_if_on(aim_dir: Vector3, aim_p: Vector3, delta: float) -> void:
 		return
 	var tol: float = deg_to_rad(float(_sk.get("fire_tolerance_deg", 3.0)))
 	var d: float = eye().distance_to(aim_p)
+	if brain.setpieces != null and not brain.setpieces.may_fire_at(target, d):
+		_blk("quiet")   # U10 (T-163): the dust storm: a far stalker hunts by sound; a shot calls them all
+		return
 	# T-058: up close the body fills the view: anything within the target's own width (body_half_width_m at this
 	# range) is a hit, as for a person hip-firing. The fixed 1.8 degree tolerance kept a bot with a zombie at
 	# 0.7 m (its aim point swinging across 20+ degrees) from firing at all.
@@ -1060,8 +1107,25 @@ func _try_melee_target() -> void:
 	# never reloaded at all); otherwise it finishes the reload while the executor backs it off.
 	if dry and not knife_kills(z) and not z.is_crawler:
 		return
-	if z.is_crawler or dry or lone or (bool(pc.get("melee_lone", false)) and per.n5 <= 1) or (z == target and knife_for_points() == z):
+	# U10 (T-163): one at arm's length the bot can't see (pushed into a hull wall, it hits through it: Q-19's Act II
+	# round held open for 25 minutes with three bots standing beside it, none with a line to shoot) gets the knife
+	var hidden: bool = not per.is_visible(z)
+	if z.is_crawler or dry or lone or hidden or (bool(pc.get("melee_lone", false)) and per.n5 <= 1) or (z == target and knife_for_points() == z):
 		melee(z)
+
+
+## U10 (T-163): nothing to shoot, yet a known zombie at arm's length the bot can't see (pushed into a hull wall, it
+## hits through it): the knife, which needs no line (see _try_melee_target).
+func _knife_unseen() -> void:
+	var per: BotPerception = brain.perception
+	var z: Zombie = per.nearest
+	if z == null or melee_cd > 0.0 or per.nearest_d > float(_m.get("range_m", 1.7)) or per.is_visible(z):
+		return
+	if BotPerception.is_boss(z) or bool(BotAIData.counter(z.enemy_id).get("never_melee", false)):
+		return
+	if brain.crawler != null and brain.crawler.target == z:
+		return
+	melee(z)
 
 
 ## True when one knife swing kills `z` (its health left against the knife's damage, Dutch's trait included).
@@ -1071,6 +1135,35 @@ func knife_kills(z: Zombie) -> bool:
 	if GameState.player_has_trait(player.player_id, &"dutch"):
 		dmg *= float(GLData.table("player")["traits"]["dutch_melee_mult"])
 	return z != null and z.hp <= dmg
+
+
+## U10 (T-163): held in a boss's grab (the Kielholer's pull at a dock edge, a Cousin's hand): knife the grabber, the
+## held player's own way out (HomageBoss._grab_damage counts the held player's melee hits as the mash); teammates
+## break it from outside by shooting it (ai_counters break_grab). True while held (the brain skips its action then).
+func break_free() -> bool:
+	if not (player.has_status(&"boss_grab") or player.has_status(&"held_hand")):
+		return false
+	var d: ZombieDirector = brain.squad.director() if brain.squad != null else null
+	if d == null:
+		return false
+	for z: Variant in d.active_zombies():
+		var b: HomageBoss = z as HomageBoss
+		if b == null or not is_instance_valid(b):
+			continue
+		for g: Dictionary in b.grabs():
+			if g.get("p") == player:
+				var fwd: Vector3 = b.global_position - player.global_position
+				fwd.y = 0.0
+				if fwd.length() > 0.01:
+					brain.loco.look_at_dir(fwd.normalized())
+				if melee_cd <= 0.0:
+					var md: Dictionary = (GLData.table("weapons")["melee"] as Dictionary).get(String(player.weapons.melee_id), {})
+					melee_cd = float(md.get("swing", 0.55)) + 0.15
+					cancel_reload()
+					player.remote_fire(3, player.weapons.melee_id, eye(), eye() + fwd.normalized())
+					b.take_damage(float(md.get("damage", 150.0)), &"torso", player.weapons.melee_id, player.player_id, &"melee")
+				return true
+	return false
 
 
 ## Melee with no firearm (Jakub's coal shovel): any non-boss in reach.

@@ -86,6 +86,9 @@ func exit(id: String) -> void:
 		"lead_train":
 			if brain.trainer != null:
 				brain.trainer.exit()
+		"setpiece":
+			if brain.setpieces != null:
+				brain.setpieces.on_exit()
 
 
 func run(id: String, delta: float) -> void:
@@ -131,6 +134,11 @@ func run(id: String, delta: float) -> void:
 			_escort(delta)
 		"chatter":
 			_chatter(delta)
+		"setpiece":
+			if brain.setpieces != null:
+				brain.setpieces.run(delta)   # U10 (T-163): Fernflug's set-pieces
+			else:
+				_idle(delta)
 		_:
 			_idle(delta)
 
@@ -475,6 +483,14 @@ func retreat_point() -> Vector3:
 			s -= _flat(leader.global_position, p) * 0.15
 		if not brain.squad.choke_at(p).is_empty():
 			s -= 2.0
+		# U10 (T-163, Q-19): a spot with a wall right behind it is a dead end (the Kranich's hull: the bots backed
+		# into the bay's and the galley's walls and went down there): the navmesh must go on past it
+		var probe: float = float(rc.get("escape_probe_m", 0.0))
+		if probe > 0.0:
+			var beyond: Vector3 = p + dir * probe
+			var bq: Vector3 = brain.snap(beyond)
+			if bq.distance_to(beyond) > 1.2 or absf(bq.y - p.y) > 1.2:
+				s -= float(rc.get("dead_end_cost", 4.0))
 		if s > best_s:
 			best_s = s
 			best = p

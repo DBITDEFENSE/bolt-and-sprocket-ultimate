@@ -88,6 +88,13 @@ static func validate(t: Dictionary) -> PackedStringArray:
 			var spec: Dictionary = t[k]
 			if not spec.has("group") and not spec.has("class"):
 				out.append("%s: a node spec needs a group or a class" % k)
+	if t.has("full_partner"):
+		if not t["full_partner"] is Array:
+			out.append("full_partner must be a list of stages")
+		else:
+			for st: Variant in t["full_partner"]:
+				if str(t.get("risky", "")) != str(st):
+					out.append("full_partner '%s' is not the task's risky stage" % str(st))
 	return out
 
 
@@ -180,6 +187,16 @@ static func is_risky(t: Dictionary, stage: String) -> bool:
 	return str(r) == stage
 
 
+## U10 (T-163): may this risky stage run now? Ordered (the player, or the agent who is the player) always; in Full
+## Partner also a stage the task lists under "full_partner" (the Requiem's crate pull for Herr Tamtam, whose miss
+## only resets the chase; the Chapel bell with a Crucible gun): the bot-mode agent works the egg in the 10-15 s
+## breaks alone (its trainer owns the rounds), so those stages waited for it for whole matches.
+static func stage_allowed(t: Dictionary, stage: String, ordered: bool, mode: String) -> bool:
+	if not is_risky(t, stage) or ordered:
+		return true
+	return mode == "full" and (t.get("full_partner", []) as Array).has(stage)
+
+
 # ------------------------------------------------------------------ the never-sequence-break guard (pure)
 
 ## May a bot make this ordered input? Only the input the sequence expects next (`expected[progress]`), unless the
@@ -227,6 +244,11 @@ static func pause_reason(s: Dictionary, c: Dictionary) -> String:
 		return "player_away"
 	# hysteresis: once paused for threat it waits for the pressure to drop to resume_pressure
 	var limit: float = float(pc.get("resume_pressure", 0.45)) if str(s.get("was", "")) == "threat" else float(pc.get("pressure", 0.65))
+	if float(s.get("pause_pressure", -1.0)) > 0.0:
+		# U10 (T-163): a task's own threshold (the drummer's crate pulls go on under more pressure); resume the same
+		# margin below it
+		var own: float = float(s["pause_pressure"])
+		limit = own - (float(pc.get("pressure", 0.65)) - float(pc.get("resume_pressure", 0.45))) if str(s.get("was", "")) == "threat" else own
 	if not (pc.get("no_threat_pause_types", []) as Array).has(ty) and float(s.get("pressure", 0.0)) >= limit:
 		return "threat"
 	if bool(s.get("teammate_down", false)) and not (pc.get("no_down_pause_types", []) as Array).has(ty):
@@ -301,6 +323,8 @@ static func verb(t: Dictionary, stage: String = "") -> String:
 			return "Covering you at %s" % what
 		"turn_key":
 			return "Standing at %s" % what
+		"scout":
+			return "Looking for %s" % what
 	return "On %s" % what
 
 

@@ -128,7 +128,48 @@ static func egg_may_work_now(brain: BotBrain) -> bool:
 	var egg: Dictionary = egg_block(TrainingRoute.map_key_of(String(brain.squad.map.map_id)))
 	if egg.is_empty() or egg_full(egg, state_with_eggs(brain)):
 		return true
-	return RoundManager.state != RoundManager.State.ROUND
+	return RoundManager.state != RoundManager.State.ROUND or brain.in_break()
+
+
+## U10 (T-163): an errand worth the errand window (BotTrainer.errand_window): the plan's current step affordable
+## (the power: not on yet), or an open egg step for the agent.
+static func errand_pending(brain: BotBrain) -> bool:
+	if brain == null or brain.squad == null or brain.squad.map == null:
+		return false
+	var step: Dictionary = current_for(brain)
+	if not step.is_empty():
+		if step.has("power"):
+			if not GameState.power_on:
+				return true
+		else:
+			var keep: int = int((BotAIData.table("economy").get("reserve", {}) as Dictionary).get("min_scrip", 300))
+			var pr: int = price_of(step, brain)
+			if pr >= 0 and Economy.get_scrip(brain.player.player_id) >= pr + keep:
+				return true
+	return egg_pending(brain)
+
+
+## U10 (T-163) pure: does the plan's purchase come before the egg in this break? A perk, gun or door step the agent
+## can pay for (price + the reserve) while the brain has a buy to make (its buy score over buy_first_score): the
+## 10-15 s breaks went to egg work (ee_task 0.85 beat buy 0.78) and the U10 god-mode soak's agent held 21,000 Scrip
+## at round 12 without Ironhide (its plan's step since round 8). Never mid-round (the trainer owns the round).
+static func buy_first_rule(step: Dictionary, price: int, scrip: int, keep: int, buy_score: float, in_round: bool, min_score: float = 0.3) -> bool:
+	if in_round or step.is_empty() or price < 0:
+		return false
+	if not (step.has("perk") or step.has("gun") or step.has("door")):
+		return false
+	return scrip >= price + keep and buy_score > min_score
+
+
+static func buy_first(brain: BotBrain) -> bool:
+	if brain == null or not brain.is_player_bot or brain.squad == null or brain.squad.map == null:
+		return false
+	var step: Dictionary = current_for(brain)
+	if step.is_empty():
+		return false
+	var keep: int = int((BotAIData.table("economy").get("reserve", {}) as Dictionary).get("min_scrip", 300))
+	return buy_first_rule(step, price_of(step, brain), Economy.get_scrip(brain.player.player_id), keep,
+		float(brain.scores.get("buy", 0.0)), RoundManager.state == RoundManager.State.ROUND and not brain.in_break())
 
 
 ## Pure: the value of starting egg work now (0 = not now): in a quiet moment (a break, the crawler break) or
@@ -182,10 +223,12 @@ static func tick_egg(brain: BotBrain) -> void:
 	var quiet: bool = brain.in_break()
 	if egg_value(egg, quiet, brain.perception.pressure, brain.perception.nearest_d) <= 0.0:
 		return
+	if buy_first(brain):
+		return   # U10 (T-163): the plan's purchase takes this break
 	if not quiet and brain.trainer != null and brain.trainer.owns_round():
 		return   # the trainer owns this round: egg work in the break (or the crawler break)
-	if not egg_full(egg, st) and RoundManager.state == RoundManager.State.ROUND:
-		return   # before Ironhide: the round breaks only
+	if not egg_full(egg, st) and RoundManager.state == RoundManager.State.ROUND and not quiet:
+		return   # before Ironhide: the round breaks only (and the errand window, U10)
 	if OS.has_environment("EGG_DEBUG"):
 		print("[egg debug] t=%.0f r%d trying a pick (quiet %s, pressure %.2f)" % [now, RoundManager.current_round, str(quiet), brain.perception.pressure])
 	var pick: Dictionary = brain.squad.ee.pick_for(brain, {}, true)
@@ -286,6 +329,20 @@ static func price_of(step: Dictionary, brain: BotBrain) -> int:
 ## can't spend (the pass-2 traces: 1,500-3,000 Scrip in hand while the yard door it needed was filtered out behind
 ## a Second Wind rebuy in the cellar).
 static func filter(cands: Array[Dictionary], brain: BotBrain) -> Array[Dictionary]:
+	# U10 (T-163): a free wonder from a bench (the Totenglocke, the Undertow) is never held back by the plan
+	var wonders: Array[Dictionary] = []
+	var rest: Array[Dictionary] = []
+	for cd: Dictionary in cands:
+		if bool(cd.get("wonder", false)):
+			wonders.append(cd)
+		else:
+			rest.append(cd)
+	var out: Array[Dictionary] = _filter(rest, brain)
+	out.append_array(wonders)
+	return out
+
+
+static func _filter(cands: Array[Dictionary], brain: BotBrain) -> Array[Dictionary]:
 	var step: Dictionary = current_for(brain)
 	last_raw = PackedStringArray(cands.map(func(x: Dictionary) -> String: return str(x.get("label", ""))))
 	if step.is_empty():
@@ -387,7 +444,31 @@ static func errand_for(step: Dictionary, brain: BotBrain) -> Dictionary:
 
 
 ## The trainer's bonus for a loop: plan_bonus for the plan's first open choice, less for the later ones.
+## U10 (T-163) pure: the plan's loop order now. `train_at_after` rows ({"step": egg step id, "order": [...]}) take
+## over once their step is done (`done`: step id -> true): Kaltenbrunn's egg moves underground from the Core Vault on
+## (the Chapel, the Lab, the Core), and the agent kept training on the Headframe 90 m above it, the squad strung out
+## between the floors.
+static func train_order(plan: Dictionary, done: Dictionary) -> Array:
+	var order: Array = plan.get("train_at", [])
+	for row: Variant in (plan.get("egg", {}) as Dictionary).get("train_at_after", []):
+		if bool(done.get(str((row as Dictionary).get("step", "")), false)):
+			order = (row as Dictionary).get("order", order)
+	return order
+
+
+static func _done_steps_of(plan: Dictionary) -> Dictionary:
+	var out: Dictionary = {}
+	var q: StringName = StringName(str((plan.get("egg", {}) as Dictionary).get("quest", "")))
+	if q == &"" or not QuestManager.quest_ids().has(q):
+		return out
+	for st: Variant in QuestManager.steps_of(q):
+		var sid: StringName = StringName(str((st as Dictionary)["id"]))
+		if QuestManager.is_step_done(q, sid):
+			out[String(sid)] = true
+	return out
+
+
 static func loop_bonus(map_key: String, route_id: String, bonus: float) -> float:
-	var order: Array = plan_for(map_key).get("train_at", [])
+	var order: Array = train_order(plan_for(map_key), _done_steps_of(plan_for(map_key)))
 	var i: int = order.find(route_id)
 	return 0.0 if i < 0 else bonus / float(i + 1)
