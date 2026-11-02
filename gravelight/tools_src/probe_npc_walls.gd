@@ -31,6 +31,7 @@ const BODY_R: float = 0.4
 const INTENT_MIN: float = 0.3
 const INTENT_FRAC: float = 0.8
 const CLEAR_R: float = 0.3
+const NAV_TOL_M: float = 0.3   # T-162: a spot may be at most this far (XZ) from the navmesh in the unit test
 
 var map_name: String = "map00"
 var minutes: float = 4.0
@@ -47,6 +48,8 @@ var static_issues: PackedStringArray = []
 var notes: PackedStringArray = []        # worth a look, not a failure (a bot's stand point against a wall)
 var watched: Dictionary = {}             # body name -> true
 var finished: bool = false
+var spots_checked: int = 0      # how many authored spots spot_issue looked at (the unit test wants > 0)
+var nav_tol: float = 0.6        # spot_issue's allowed distance to the navmesh (static_only tightens it to NAV_TOL_M)
 var _hist: Dictionary = {}               # body name -> Array of [pos, intent_len, wish dir]
 var _t: float = 0.0
 var _acc: float = 0.0
@@ -134,6 +137,52 @@ func run() -> void:
 	Engine.time_scale = 1.0
 	_report()
 	_end(offenders.size())
+
+
+## T-162 (UPDATE 10 s6 item 3): the static half alone, for the unit test. Loads `name`'s map (3 bots, the companions),
+## waits for the navmesh, checks every authored spot (survivors, companions, extra people, the player start and the
+## squad's start positions) against the navmesh within NAV_TOL_M and for wall clearance, frees the map, and returns
+## the issue lines (empty = clean).
+func static_only(name: String) -> PackedStringArray:
+	map_name = name
+	nav_tol = NAV_TOL_M
+	GameState.bot_count = 3
+	GameState.bot_ai_mode = "squad"
+	GameState.character_id = &"peg"
+	Campaign.reset()
+	var path: String = scene_for(name)
+	if path == "":
+		return PackedStringArray(["unknown map %s" % name])
+	map = (load(path) as PackedScene).instantiate() as MapRoot
+	get_tree().root.add_child(map)
+	var guard: int = 0
+	while (map.player == null or not map.player.is_inside_tree()) and guard < 600:
+		await get_tree().process_frame
+		guard += 1
+	for i: int in 30:
+		await get_tree().physics_frame
+	_static_checks()
+	_start_checks()
+	var out: PackedStringArray = static_issues.duplicate()
+	map.queue_free()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	map = null
+	return out
+
+
+## The player's start and the squad bots' start positions must be on the navmesh.
+func _start_checks() -> void:
+	if map.player != null:
+		var m: String = spot_issue("player start", map.player.global_position)
+		if m != "":
+			static_issues.append(m)
+	if map.squad != null:
+		for b: BotBrain in map.squad.brains:
+			if b.player != null and b.player != map.player:
+				var m2: String = spot_issue("squad bot %s start" % b.player.name, b.player.global_position)
+				if m2 != "":
+					static_issues.append(m2)
 
 
 func _end(code: int) -> void:
@@ -313,12 +362,13 @@ func _brain_of(p: Player) -> BotBrain:
 
 ## A spot's navmesh distance and wall clearance, as a text when it is bad ("" when fine).
 func spot_issue(label: String, p: Vector3) -> String:
+	spots_checked += 1
 	var nm: RID = map.get_world_3d().navigation_map
 	var c: Vector3 = NavigationServer3D.map_get_closest_point(nm, p)
 	var off: float = Vector2(c.x - p.x, c.z - p.z).length()
 	var up: float = absf(c.y - p.y)
 	var msg: String = ""
-	if off > 0.6 or up > 1.0:
+	if off > nav_tol or up > 1.0:
 		msg = "%s at %s is %.2fm (up %.2f) from the navmesh" % [label, str(p), off, up]
 	elif _clearance_hit(c):
 		msg = "%s at %s has a wall within %.1fm" % [label, str(p), CLEAR_R]
