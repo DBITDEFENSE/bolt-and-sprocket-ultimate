@@ -952,6 +952,28 @@
         {"name": "T_night", "pos": [0.0, 0.0, 62.0], "yaw": 180.0, "pitch": 4.0, "note": "late in the act: the yard in night, lit by the Earth and the field units", "do": ["call:ZombieDirector:kill_all:0.3", "call:Terminator:capture_night:4"]}
       ]
     },
+    "u10_map02": {
+      "_doc": "UPDATE 10 §2 Totenhafen systems (T-153; cameras T-167): the spring tide over the aprons, the Pumpenschalter crank, a sparking cable, the ballast dump, the searchlight, the Crane Drop, a Kielholer, the cipher machine and a log page, a diesel hold, THE UNDERTOW, the curtain, U-1047 ready and mid-sail. `do` verbs in tools_src/capture_do.gd; `look_at` aims at a node by name; `make` turns a zombie camera's subject into a Kielholer; `shot_on` waits for a GLBus signal. Shot through tools/wsl_godot.sh only; the cameras run in order (the quest is skipped forward as they go).",
+      "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {"name": "spring_aprons", "pos": [-3.0, 0.0, 40.5], "yaw": 0.0, "pitch": -18.0, "note": "T-153 Tide v2: from pier 1's dry root looking north down at the north apron under the spring sheet (y 0.35), the hall's north wall above it", "do": ["power", "tide:spring:240"], "settle_s": 2.0},
+        {"name": "pump_crank", "pos": [48.0, 0.0, 43.2], "look_at": "PumpCrank", "look_up": 0.9, "note": "the Pumpenschalter crank at the head of the pump stair, running (the hold ring on the HUD, the wheel turning)", "do": ["start:PumpCrank"], "settle_s": 2.0},
+        {"name": "cable_spark", "pos": [17.0, 0.0, 40.0], "yaw": -60.0, "pitch": -8.0, "kind": "zombie", "subject": [24.0, 0.0, 36.0], "walk_s": 0.5, "shot_on": "tide_cable_spark", "shot_on_timeout": 6.0, "note": "the north apron cable (cable_apron_n) live under the spring sheet with the power on: a Ganger stunned in it, shot on the spark"},
+        {"name": "ballast_dump", "pos": [14.5, 0.0, 6.0], "look_at": "BallastDump", "look_up": 0.8, "note": "Ballast v2: the dump at the quay parapet over the sea stairs (the shard's spot beside it after three dumps)", "do": ["callv:BallastDump:dumped:1:0.3"], "settle_s": 1.5},
+        {"name": "searchlight_lit", "pos": [36.0, 0.0, 46.0], "look_at": "Searchlight", "look_up": 1.6, "note": "the signal-tower searchlight lit, tracking the boat on its own (set_auto_track), from the east apron", "do": ["callv:Searchlight:set_auto_track:true:1"], "settle_s": 1.5},
+        {"name": "crane_drop", "pos": [40.0, 0.0, 62.0], "yaw": 180.0, "pitch": 8.0, "note": "the Crane Drop over the east apron: the pallet mid-fall into the 6 x 4 m kill box (activate at t-2.6 s)", "do": ["callv:Trap_CraneDrop:activate:1:2.4"], "settle_s": 0.2},
+        {"name": "kielholer", "pos": [17.5, 0.0, 50.0], "yaw": 36.0, "pitch": -8.0, "kind": "zombie", "subject": [14.6, 0.0, 46.0], "make": "kielholer_diver", "walk_s": 0.8, "note": "a Kielholer diver risen at pier 2's Surface_* point (the drowned kit, the brass helmet), facing the camera", "do": ["flag:flooded"]},
+        {"name": "cipher_machine", "pos": [47.8, 7.0, 36.8], "look_at": "CipherMachine", "look_up": 1.0, "note": "Letzte Fahrt: SCHLUESSELGERAET HAFEN mid-room in the signal tower, s2_cipher active", "do": ["skipto:map02_letzte_fahrt:s2_cipher"], "settle_s": 1.5},
+        {"name": "crane_office_page", "pos": [44.5, 0.0, 50.2], "look_at": "LogPage_INT_M2_LOG_3", "look_up": 0.9, "note": "the crane office: log page 3 at its seeded spot, the Undertow bench and the Crane Drop lever in the room", "settle_s": 1.5},
+        {"name": "diesel_injector", "pos": [58.0, 0.0, 12.5], "look_at": "Diesel_inj_injector", "look_up": 0.8, "note": "the injector diesel hold in the workshop running (s5a_injector): the ring, the HUD timer, x1.5 spawns", "do": ["skipto:map02_letzte_fahrt:s5a_injector", "start:Diesel_inj_injector"], "settle_s": 2.0},
+        {"name": "undertow_hand", "pos": [19.0, 0.0, 60.0], "yaw": -90.0, "pitch": -8.0, "kind": "viewmodel", "note": "THE UNDERTOW in hand on pier 2, the east basin and the lower pens beyond", "do": ["give:undertow"], "settle_s": 1.5},
+        {"name": "curtain_lever", "pos": [17.0, 0.0, 78.5], "look_at": "CurtainLever", "look_up": 1.0, "note": "the VORHANG lever at pier 2's end with the key turned (s8_curtain active), the pen curtain behind it", "do": ["skipto:map02_letzte_fahrt:s8_curtain", "flag:lf_key_turned", "wait:6"], "settle_s": 1.5},
+        {"name": "helm_ready", "pos": [8.6, 1.0, 63.5], "look_at": "UboatSail", "look_up": 1.0, "note": "the curtain open (the storm in the pen, spring water): U-1047 ready to cast off at the helm", "do": ["use:CurtainLever", "wait:2"], "settle_s": 1.5},
+        {"name": "mid_sail", "pos": [8.6, 1.0, 63.5], "yaw": 180.0, "pitch": 2.0, "note": "cast off: mid-sail from the deck toward the pen mouth, the scenery cards going past, the hall hidden behind the sea cell, the searchlight on the boat", "do": ["use:UboatSail", "wait:36"], "settle_s": 0.5}
+      ]
+    },
     "u09_ref": {
       "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
       "bots": 0,

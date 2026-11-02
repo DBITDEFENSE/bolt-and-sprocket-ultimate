@@ -162,6 +162,15 @@ func _cam_set() -> void:
 		var subject: Node3D = null
 		var posed: Array[Node3D] = []
 		await _cam_do(map, cam.get("do", []))
+		if cam.has("look_at"):
+			# T-167: aim at a node by name (a seeded log page, a station placed from data) instead of fixed angles
+			var tgt: Node = CaptureDo.find(map, str(cam["look_at"]))
+			if tgt is Node3D:
+				var a: Vector2 = CaptureDo.aim(pos + Vector3.UP * 1.62, (tgt as Node3D).global_position + Vector3.UP * float(cam.get("look_up", 0.5)))
+				yaw = a.x
+				pitch = a.y
+			else:
+				print("[capture] look_at: no node %s for %s" % [cam["look_at"], cname])
 		p.global_position = pos
 		p.velocity = Vector3.ZERO
 		p.rotation.y = deg_to_rad(yaw)
@@ -191,6 +200,14 @@ func _cam_set() -> void:
 					z.set_physics_process(false)
 					z.global_position = at
 					z.look_at(Vector3(pos.x, at.y, pos.z), Vector3.UP, true)
+					if cam.has("make"):
+						# T-167: a Kielholer (kits drowned / drowned_diver) at a Surface_* point: the controller's own cut
+						var kc: Node = get_tree().get_first_node_in_group(&"kielholer_controller")
+						if kc != null and kc.has_method("make"):
+							kc.call("make", str(cam["make"]), z)
+							print("[capture] made %s a %s" % [z.name, cam["make"]])
+						else:
+							print("[capture] make: no KielholerController for %s" % cname)
 				else:
 					subject = null
 			if subject == null:
@@ -212,6 +229,9 @@ func _cam_set() -> void:
 					k += 1
 			print("[capture] squad posed %d bots" % posed.size())
 		await _secs(float(cam.get("settle_s", 1.0 if i > 0 else 2.0)))
+		if cam.has("shot_on"):
+			# T-167: wait (up to shot_on_timeout s) for a GLBus signal, e.g. tide_cable_spark, and shoot the next frame
+			await _wait_signal(str(cam["shot_on"]), float(cam.get("shot_on_timeout", 6.0)))
 		await _shot("%02d_%s" % [i, cname])
 		for b: Node3D in posed:
 			if is_instance_valid(b):
@@ -301,45 +321,26 @@ func _cam_set_maps(set_d: Dictionary) -> void:
 		await _secs(1.5)
 
 
-## A camera's `do` list (T-094, the u05_objects set): world states to show before the shot, in order. "power"
-## throws the lights on without the lever's zombie burst (the lever's own sweep, GameState.power_on,
-## GLBus.power_activated); "open:<door node>" buys a door for free; "tear:<window node>:<n>" pulls n boards;
-## "exfil" puts up the campaign beacon (it only exists on a campaign run).
+## A camera's `do` list: see tools_src/capture_do.gd (shared with the tour clips, T-167).
 func _cam_do(map: Node, ops: Array) -> void:
-	for op_v: Variant in ops:
-		var op: PackedStringArray = str(op_v).split(":")
-		match op[0]:
-			"power":
-				if not GameState.power_on:
-					var sw: Node = get_tree().get_first_node_in_group(&"power_switch")
-					GameState.power_on = true
-					GameState.set_flag(&"power_on", true)
-					if sw != null and sw.has_method("_sequence_visual"):
-						sw.call("_sequence_visual")
-					GLBus.power_activated.emit()
-					await _secs(2.5)
-			"open":
-				var d: Node = map.find_child(op[1], true, false)
-				if d != null and d.has_method("open"):
-					d.call("open", 0)
-					await _secs(float(GLData.table("world")["door"]["open_seconds"]) + 1.0)
-			"tear":
-				var w: Node = map.find_child(op[1], true, false)
-				if w != null and w.has_method("tear_board"):
-					for k: int in (int(op[2]) if op.size() > 2 else 3):
-						w.call("tear_board")
-					await _secs(0.6)
-			"exfil":
-				if map.find_child("ExfilPoint", true, false) == null and map is MapRoot:
-					ExfilPoint.spawn(map as MapRoot)
-					await _secs(0.5)
-			"call":
-				# "call:<node>:<method>[:<wait s>]" (T-147): a set-piece by its own entry point, e.g. the Kranich's
-				# London window (FlightController.start_london), shot `wait` seconds in
-				var cn: Node = map.find_child(op[1], true, false) if op.size() > 2 else null
-				if cn != null and cn.has_method(op[2]):
-					cn.call(op[2])
-					await _secs(float(op[3]) if op.size() > 3 else 1.0)
+	var p: Player = (map as MapRoot).player if map is MapRoot else null
+	await CaptureDo.run(get_tree(), map, p, ops)
+
+
+func _wait_signal(sig: String, timeout: float) -> void:
+	if not GLBus.has_signal(sig):
+		print("[capture] shot_on: GLBus has no signal %s" % sig)
+		return
+	var got: Array = [false]
+	var cb: Callable = func(_a: Variant = null, _b: Variant = null, _c: Variant = null, _d: Variant = null) -> void:
+		got[0] = true
+	GLBus.connect(sig, cb)
+	var t: float = 0.0
+	while not got[0] and t < timeout:
+		await get_tree().process_frame
+		t += get_process_delta_time()
+	GLBus.disconnect(sig, cb)
+	print("[capture] shot_on %s: %s after %.1fs" % [sig, "fired" if got[0] else "timed out", t])
 
 
 static func load_cams() -> Dictionary:

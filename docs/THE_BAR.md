@@ -543,7 +543,10 @@ The re-score at FINISH (§1.3) and the blind review (§1.4) use the same sources
    --out=<dir>` (WSL + Xvfb, Compatibility, invisible), into `morning/screenshots/u10_after/<set>/`. New cameras for
    new set-pieces are added to the same sets (not a new set) so before/after pairs stay comparable; add a
    `u10_before` copy of `u09_after` before the first UPDATE 10 merge. A Forward+ set on the PC (with the owner's
-   OK) is a second opinion, never a replacement.
+   OK) is a second opinion, never a replacement. Totenhafen's UPDATE 10 systems (T-153) have their own set
+   `u10_map02` (14 cameras: the spring tide, the crank, a cable, the dump, the searchlight, the Crane Drop, a
+   Kielholer, the cipher and a log page, a diesel hold, the Undertow, the curtain, the helm, mid-sail), rendered
+   the same way into `morning/screenshots/u10_after/u10_map02/`.
 2. **Same soak and QA numbers.** `tools/ai_soak.sh --scenario=totenhafen|fernflug --runs=3 --max-minutes=20
    [--skip-to-act=N]` (note `--scenario=`; the bare word runs Map 1) and the botmode baselines of QA_U08's table
    re-run with the same seeds; Scrip after r8 for the same weak agent as QA_U07 §6.5; bot egg completions per map
@@ -573,6 +576,13 @@ The re-score at FINISH (§1.3) and the blind review (§1.4) use the same sources
   `tools/wsl_godot.sh` or on the PC with the owner's OK; one file per map in `morning/clips/u10_blind/`).
 - The reviewer does not read `docs/DECISIONS.md` T-15x, the morning report or any branch diff before scoring, and
   scores Map 1 and Map 2 from the same kind of evidence so the bar is scored blind too.
+- Files produced for the review (T-167; all rendered through `tools/wsl_godot.sh`, Compatibility renderer, software
+  GL): stills `morning/screenshots/u10_after/u09_map02/` (21, re-rendered after T-153) and
+  `morning/screenshots/u10_after/u10_map02/` (14, the T-153 systems); clips `morning/clips/u10_blind/map00.mp4`
+  (set u05), `map01.mp4` (u10_map01 + u09_ref's Kaltenbrunn cameras), `map02.mp4` (u09_map02 + u10_map02),
+  `map04a.mp4` .. `map04d.mp4` (u09_map04x + u10_map04x), each 2 minutes at 1280x720, 24 fps, with the game's audio
+  (beds, VO, the round), and beside each its 12-frame `<map>_contact.png` and the tour's `<map>.log`. Made by
+  `tools/wsl_clip.sh <sets> 120 morning/clips/u10_blind <map>` (gravelight/tools_src/clip_tour.gd).
 - The reviewer fills a 28-row table per map (0–3 with a one-line reason each), lists each map's "only here"
   features as it sees them, and marks every row where Totenhafen or an act scores **below both Map 1 and Map 2**.
 - Any such row goes back to its build worker before FINISH; the reviewer re-scores only those rows after the fix.
