@@ -626,10 +626,19 @@ func _route_doors() -> Dictionary:
 ## nobody walks off alone into a spawn room while the round is on (the bots3 downs in the cellar).
 func _near_enough(p: Vector3) -> bool:
 	var squad: BotSquad = brain.squad
-	if not squad.bot_led() or brain.in_break():
+	if not squad.bot_led():
 		return true
 	var home: Vector3 = squad.home.center() if squad.home != null else anchor()
-	return _flat(p, home) <= float(eco.get("self_led_mid_round_m", 16.0)) and absf(p.y - home.y) < 2.5
+	var near: bool = _flat(p, home) <= float(eco.get("self_led_mid_round_m", 16.0)) and absf(p.y - home.y) < 2.5
+	if brain.in_break():
+		# U10 (T-163, Q-19): a far errand in a break only if the trip there and back fits in what is left of it
+		# (an act skip's 14 s arrival grace sent a bot 50 m off to the Kranich's gun blisters, and the first wave
+		# found it there alone)
+		if near or RoundManager.state != RoundManager.State.BREAK:
+			return true
+		var trip: float = _flat(player.global_position, p) + _flat(p, home)
+		return trip / float(eco.get("self_led_trip_mps", 4.0)) + float(eco.get("self_led_trip_margin_s", 5.0)) <= RoundManager.break_left
+	return near
 
 
 ## The main gun: the best-tier gun carried that isn't the start pistol (else whatever it holds).

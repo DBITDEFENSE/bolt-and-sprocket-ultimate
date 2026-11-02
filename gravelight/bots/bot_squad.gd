@@ -668,9 +668,14 @@ func _pick_route() -> void:
 	if bot_led():
 		# T-058: a squad leading itself has a home loop (routes_<map>.json "home"); it trains there when the
 		# leader isn't by another loop
+		var home_s: float = -INF
 		for r2: TrainingRoute in TrainingRoute.for_map(String(map.map_id)):
-			if r2.home > 0.0 and (home == null or r2.home > home.home):
+			# U10 (T-163): on the Moon a loop on the day side beats one the terminator has put in the night
+			# (night zones spawn x1.5 and strain the suit)
+			var hs: float = r2.home - (10.0 if BotSetPieces.night_at(get_tree() if is_inside_tree() else null, r2.center()) else 0.0)
+			if r2.home > 0.0 and (home == null or hs > home_s):
 				home = r2
+				home_s = hs
 		if player_bot != null:
 			# T-071 pass 3: the agent's home is its plan's first open training ground (the yard once it is open)
 			var order: Array = AgentPlan.plan_for(TrainingRoute.map_key_of(String(map.map_id))).get("train_at", [])

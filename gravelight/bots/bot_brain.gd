@@ -70,6 +70,8 @@ var objectives_done: int = 0
 var planner: BotPlanner = null
 ## Its easter-egg work (Update 04 section 5, T-067; BotEE, given by the squad's BotEEHub): the utility action ee_task.
 var ee: BotEE = null
+## U10 (T-163): Fernflug's set-pieces (the storm, a breach's pull, the meteors, the wing walk, the vent lever).
+var setpieces: BotSetPieces = null
 ## Its map-mark order (Update 04 section 3, T-069; BotMarkTask, given by the squad's BotMarkOrders): the utility
 ## action mark_order.
 var mark: BotMarkTask = null
@@ -181,6 +183,8 @@ func setup(bot_player: Player, bot_squad: BotSquad, i: int) -> void:
 	tasks.setup(self)
 	economy = BotEconomy.new()
 	economy.setup(self)
+	setpieces = BotSetPieces.new()
+	setpieces.setup(self)
 	command = squad.command
 	GLBus.explosion.connect(_on_explosion)
 	GLBus.player_damaged.connect(_on_player_damaged)
@@ -431,6 +435,8 @@ func _think() -> void:
 		ee.tick_think(now)
 	if mark != null:
 		mark.tick_think(now)
+	if setpieces != null:
+		setpieces.think(now)
 	if player.remote_body != null:
 		var cw: WeaponInstance = aim.cur()
 		var shown: StringName = cw.id if cw != null else &""
@@ -467,8 +473,10 @@ func _think() -> void:
 		best = "buy"
 		if action == "buy" and not task.is_empty() and str(task.get("kind", "")) != "crucible":
 			drop_task()
+	if setpieces != null and setpieces.wants_control() and best != "revive" 			and (setpieces.urgent() or not (["retreat", "cover"].has(best) and float(scores.get(best, 0.0)) > 0.8)):
+		best = "setpiece"   # U10 (T-163): a rail in a breach's pull, shelter from the meteors, the wing walk, the vent
 	top3 = BotUtility.top(scores, 3)
-	if best != action and (now - _action_t >= float(_acfg.get("min_action_s", 0.4)) or action == "idle" or best == "retreat" or best == "revive"):
+	if best != action and (now - _action_t >= float(_acfg.get("min_action_s", 0.4)) or action == "idle" or best == "retreat" or best == "revive" or best == "setpiece"):
 		_set_action(best)
 		actions.enter(best)
 	if not _order_reported and order_response(_order_id).has(action):

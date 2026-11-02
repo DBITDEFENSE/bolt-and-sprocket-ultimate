@@ -227,7 +227,10 @@
     "sprint_within_m": 3.2,
     "cornered_m": 1.6,
     "sprint_cornered_s": 0.8,
-    "fight_back_s": 1.5
+    "fight_back_s": 1.5,
+    "_doc_dead_end": "U10 (T-163, Q-19): a retreat spot whose navmesh does not go on escape_probe_m further the same way is a dead end (a wall right behind): -dead_end_cost on its score. The Kranich's bots backed into the hull walls and went down there.",
+    "escape_probe_m": 3.0,
+    "dead_end_cost": 4.0
   },
   "powerups": {
     "_doc": "Power-up etiquette: always_take when it's safe; the rest (Death's Door, Double Scrip, Blackout, Clearance) only with the human within shared_m of it too, or no human in the match. Never one the human is walking toward (within toward_cone_deg of their heading, within toward_m).",

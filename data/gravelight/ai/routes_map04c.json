@@ -102,5 +102,16 @@
         "door_lab"
       ]
     }
-  ]
+  ],
+  "setpieces": {
+    "_doc": "U10 T-163 (BotSetPieces): perch: the radar tower deck (TowerLadder_Top lands here, the top of Climb_TowerPerch); the high-ground shooter fights from it while the squad is within watch_m",
+    "perch": {
+      "pos": [
+        45.0,
+        16.0,
+        118.3
+      ],
+      "watch_m": 30.0
+    }
+  }
 }

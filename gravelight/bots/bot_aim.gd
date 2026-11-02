@@ -443,6 +443,9 @@ func _fire_if_on(aim_dir: Vector3, aim_p: Vector3, delta: float) -> void:
 		return
 	var tol: float = deg_to_rad(float(_sk.get("fire_tolerance_deg", 3.0)))
 	var d: float = eye().distance_to(aim_p)
+	if brain.setpieces != null and not brain.setpieces.may_fire_at(target, d):
+		_blk("quiet")   # U10 (T-163): the dust storm: a far stalker hunts by sound; a shot calls them all
+		return
 	# T-058: up close the body fills the view: anything within the target's own width (body_half_width_m at this
 	# range) is a hit, as for a person hip-firing. The fixed 1.8 degree tolerance kept a bot with a zombie at
 	# 0.7 m (its aim point swinging across 20+ degrees) from firing at all.

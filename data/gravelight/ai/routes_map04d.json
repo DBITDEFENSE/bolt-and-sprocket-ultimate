@@ -135,5 +135,20 @@
         "door_yard"
       ]
     }
-  ]
+  ],
+  "setpieces": {
+    "_doc": "U10 T-163 (BotSetPieces): meteor_shelter: where a bot in the yard goes from the meteor warning to the end of the shower (under the concourse roof, by the yard airlock; nothing lands under a roof)",
+    "meteor_shelter": [
+      [
+        -7.5,
+        0,
+        56.5
+      ],
+      [
+        -3.0,
+        0,
+        52.0
+      ]
+    ]
+  }
 }
