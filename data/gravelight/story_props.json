@@ -252,6 +252,54 @@
       ],
       "yaw": -90,
       "where": "Kaltenbrunn pay office (C_ADMIN), on the floor beside its lifted board, between Ledger Lager and Second Wind on the west wall"
+    },
+    {
+      "id": "INT_M4D_DELIVERY_LOG",
+      "map": "4d",
+      "style": "logbook",
+      "position": [
+        -3.6,
+        0.0,
+        2.6
+      ],
+      "yaw": 90,
+      "where": "Reception, on the landing pad's rim by the amber lamps (the pad the field units left lit)"
+    },
+    {
+      "id": "INT_M4D_HAAS_TAG",
+      "map": "4d",
+      "style": "docket",
+      "position": [
+        27.0,
+        1.25,
+        41.3
+      ],
+      "yaw": 0,
+      "where": "Fulfillment, rack 2, bay 5's hanger face in the middle aisle (Haas), beside Pohl's empty bay"
+    },
+    {
+      "id": "INT_M4D_RELAY_CARD",
+      "map": "4d",
+      "style": "docket",
+      "position": [
+        36.75,
+        3.05,
+        99.36
+      ],
+      "yaw": 0,
+      "where": "The yard, the junction box on the dish foundation (2.2 m up: a low-gravity hop; vacuum)"
+    },
+    {
+      "id": "INT_M4D_FLIGHT_CARD",
+      "map": "4d",
+      "style": "logbook",
+      "position": [
+        -4.4,
+        0.0,
+        6.2
+      ],
+      "yaw": -90,
+      "where": "Reception, on the floor by the LANTERN's open hatch steps"
     }
   ]
 }

@@ -178,6 +178,34 @@
         "round": ["COU_PEOPLE_ROUND_01"],
         "down": ["COU_PEOPLE_DOWN_01"]
       }
+    },
+    "pohl": {
+      "name": "Obergefreiter Pohl, the Kranich's wireless operator",
+      "title": "OBERGEFREITER POHL",
+      "maps": ["map04d"],
+      "speaker": "OGP",
+      "display": "POHL",
+      "poi": "Pohl, in the racks",
+      "bio": "The Kranich's wireless operator, 22, Riedl's man at the set. The field units hung the crew on the racks in Fulfillment with the rest of the inventory, and Pohl did not go to sleep. He climbed down out of bay six and has stood in the aisle beside it since, keeping out of the way, keeping very still when the dead go past. He does not fight. He asks for one thing: that somebody reads his name into the record, so that it says Pohl and not a number.",
+      "bodies": [
+        {"person": "kubiak", "at": [30.4, 0.0, 39.9], "yaw": 0.0, "pose": "stand", "look": {"jacket": [0.36, 0.38, 0.42], "trousers": [0.3, 0.32, 0.36], "skin": [0.84, 0.74, 0.68], "head": [0.33, 0.25, 0.16], "headgear": "none", "build": 0.92, "skirt": false}}
+      ],
+      "favour": {
+        "kind": "deliver",
+        "item": "tag",
+        "item_name": "Pohl's tag",
+        "ask": "My tag is still on the hanger, on the wrist. Take it to their console in the Account, before you do whatever you are going to do there. There is a slot. Read it in. So it says Pohl. Not rack two, bay six.",
+        "have": "You carry Pohl's tag. The slot is on the console's dais in the Account: read it in before the end.",
+        "done": "Pohl's name is in the record. Somewhere in the relay a number becomes a man again.",
+        "reward": {"kind": "scrip_mark", "scrip": 750}
+      },
+      "lines": {
+        "talk": ["OGP_PEOPLE_TALK_01", "OGP_PEOPLE_TALK_02", "OGP_PEOPLE_TALK_03"],
+        "ask": ["OGP_PEOPLE_ASK_01"],
+        "thanks": ["OGP_PEOPLE_THANKS_01"],
+        "round": ["OGP_PEOPLE_ROUND_01"],
+        "down": ["OGP_PEOPLE_DOWN_01"]
+      }
     }
   }
 }
