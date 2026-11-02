@@ -355,6 +355,10 @@ func preview(qid: StringName, sid: StringName, t: Dictionary, ordered: bool, foc
 ## A world snapshot for the planners (the live game state, read once).
 ## T-153: per quest step, when a thinking solver may make its first input (think_s in the bot_task).
 var _think_until: Dictionary = {}
+## T-153: the closed door last found between this bot and its egg target ({door, until}): BotEconomy holds its price
+## back from other purchases until it is open (a bot walked the long way round to door_signal, spent its Scrip on the
+## way during threat pauses, and could never buy it).
+var _door_want: Dictionary = {}
 
 func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, ordered: bool, ty: String) -> Dictionary:
 	var now: float = _now()
@@ -976,6 +980,17 @@ func _try_door(goal: Vector3) -> bool:
 	return true
 
 
+## Scrip to keep for the door an egg task is waiting on (0 when none, it is open, or the want is stale).
+func door_reserve() -> int:
+	if _door_want.is_empty() or _now() > float(_door_want.get("until", 0.0)):
+		return 0
+	var d: BuyDoor = _door_want.get("door") as BuyDoor if is_instance_valid(_door_want.get("door")) else null
+	if d == null or d.is_open:
+		_door_want = {}
+		return 0
+	return Economy.price_for(player.player_id, d.cost)
+
+
 func _do_door(delta: float) -> void:
 	var d: BuyDoor = _plan.get("node") as BuyDoor
 	if d == null or d.is_open:
@@ -1028,6 +1043,8 @@ func _blocking_door(goal: Vector3) -> BuyDoor:
 		if dd < best_d:
 			best_d = dd
 			best = d
+	if best != null and best.can_interact(player):
+		_door_want = {"door": best, "until": _now() + 180.0}
 	if best == null or not best.can_interact(player) or Economy.get_scrip(player.player_id) < best.cost:
 		return null
 	if float(_failed_nodes.get(best.get_instance_id(), -INF)) > _now():
