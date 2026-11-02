@@ -4,27 +4,27 @@
     {
       "id": "map04b_galley",
       "label": "the galley-radio ring",
-      "notes": "C_MITTELRUMPF: the galley aisle between the lockers (x 5.5..9.5 at z 26..32 and 46..50) and the port bulkhead.",
+      "notes": "C_MITTELRUMPF: the galley aisle between the lockers (x 5.5..9.5 at z 26..32 and 46..50) and the port bulkhead. U10 T-163 (Q-19): the west and north sides 1.5 m in, off the port window W_B_L (-9, 48) and the crate (-6, 50): the train ran past the window the horde climbs through (160 stuck events there in one run).",
       "points": [
         [
-          -5,
+          -3.5,
           0,
-          29
+          30
         ],
         [
           4.5,
           0,
-          29
+          30
         ],
         [
           4.5,
           0,
-          49
+          47.5
         ],
         [
-          -5,
+          -3.5,
           0,
-          49
+          47.5
         ]
       ],
       "ring_width": 2.5,
