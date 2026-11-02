@@ -1,1 +1,18 @@
-{"version": 1, "bosses": {}}
+{
+ "_doc": "Morgenrot (map03, not built) bosses: the hook UPDATE 10 C5 keeps for THE SLENDER (DECISIONS T-160). He moved to Totenhafen as the Hafenwaechter (bosses/map02.json the_slender is the live entry); this placeholder points at the same script so he can return to the Hohe Wacht when Morgenrot is built (HOMAGE_BOSSES.md section 6: round 20, the Kessel floodlights, the truck, the Leuchtpistole, the Launch Clock). 'map' names a map id that does not exist yet, so HomageEncounter.make_for never builds it today.",
+ "version": 1,
+ "bosses": {
+  "the_slender": {
+   "_doc": "Placeholder: when Morgenrot exists, copy the_slender's block from bosses/map02.json here, set map to Morgenrot's id, round 20, needs_power true (the Kessel floodlights), waits_for_flags for the Heartstorm / Reinholt steps, and the forest's light pools; make_for then needs a branch for map03.",
+   "boss_id": "the_slender",
+   "slot": "devin",
+   "map": "map03_morgenrot",
+   "placeholder": true,
+   "script": "res://gravelight/enemies/homage/slender.gd",
+   "encounter": "res://gravelight/enemies/homage/slender_encounter.gd",
+   "round": 20,
+   "hp_base": 35000,
+   "failsafe_seconds": 480.0
+  }
+ }
+}

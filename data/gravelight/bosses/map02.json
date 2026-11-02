@@ -131,7 +131,7 @@
     "scrip_per_player": 2500,
     "drops": [],
     "unlocks": ["card_night_shift", "charm_violet_lantern", "ARC_HB_SLENDER", "squad_overwatch"],
-    "intel": ["INT_HB_04"],
+    "intel": ["INT_HB_04", "ARC_HB_SLENDER"],
     "overwatch_m": 12.0,
     "overwatch_max": 24,
     "flag": "slender_relieved"

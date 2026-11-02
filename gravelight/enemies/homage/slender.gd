@@ -57,6 +57,7 @@ var unlocks_done: int = 0
 var decoys: Array[Node3D] = []
 var shift_changes: int = 0
 var decoy_hits: int = 0
+var _door_cache: Dictionary = {}     # door node name -> BuyDoor (or null)
 var end_of_shift_done: bool = false
 var dark_t: float = 0.0
 var pools_on: Array[bool] = []
@@ -609,11 +610,16 @@ func point_lit(p: Vector3) -> bool:
 	if lit_by_pools(p, _lcfg.get("pools", []), pools_on, GameState.power_on, float(_lcfg.get("pool_height", 5.0))):
 		return true
 	for path: Variant in _lcfg.get("searchlight_nodes", []):
-		var m: Node = _map_root()
-		var l: SpotLight3D = m.get_node_or_null("Dressing/" + str(path)) as SpotLight3D if m != null else null
-		if l == null and m != null:
-			l = m.find_child(str(path).get_file(), true, false) as SpotLight3D
-		if in_spot(l, p):
+		var key: String = "spot:" + str(path)
+		if not _door_cache.has(key):   # looked up once (the same cache as the doors)
+			var m: Node = _map_root()
+			var found: SpotLight3D = m.get_node_or_null("Dressing/" + str(path)) as SpotLight3D if m != null else null
+			if found == null and m != null:
+				var lamp: Node = m.find_child(str(path).get_slice("/", 0), true, false)
+				found = lamp.get_node_or_null(str(path).get_slice("/", 1)) as SpotLight3D if lamp != null else null
+			_door_cache[key] = found
+		var l: SpotLight3D = _door_cache[key] as SpotLight3D
+		if l != null and is_instance_valid(l) and in_spot(l, p):
 			return true
 	for n: Node in get_tree().get_nodes_in_group(&"searchlights"):
 		if n.has_method("lights_point") and bool(n.call("lights_point", p)):
@@ -763,8 +769,11 @@ func _tick_doors() -> void:
 		return
 	for e: Variant in dc.get("list", []):
 		var spec: Dictionary = e
-		var d: BuyDoor = m.find_child(str(spec.get("node", "")), true, false) as BuyDoor
-		if d == null:
+		var key: String = str(spec.get("node", ""))
+		if not _door_cache.has(key):
+			_door_cache[key] = m.find_child(key, true, false) as BuyDoor   # looked up once per spawn
+		var d: BuyDoor = _door_cache[key] as BuyDoor
+		if d == null or not is_instance_valid(d):
 			continue
 		if not d.boss_locked:
 			if d.global_position.distance_to(global_position) <= float(dc.get("lock_radius", 4.5)) and not _player_in_doorway(d):

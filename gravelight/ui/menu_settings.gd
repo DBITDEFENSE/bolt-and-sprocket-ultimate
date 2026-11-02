@@ -69,7 +69,7 @@ func _gameplay() -> void:
 	var spoil: int = maxi(0, ObjectiveLog.LEVELS.find(ObjectiveLog.level(v.get("objective_spoilers", "hints"))))
 	content.add_child(MenuKit.row("Objective spoilers (pause OBJECTIVES tab)", MenuKit.options(ObjectiveLog.LEVEL_NAMES, spoil,
 		func(i: int) -> void: GLSettings.set_value("objective_spoilers", ObjectiveLog.LEVELS[i]))))
-	content.add_child(MenuKit.check("Homage Bosses (the Cousins, Map 0 round 10)", bool(v.get("homage_bosses", true)), _setter("homage_bosses")))
+	content.add_child(MenuKit.check("Homage Bosses (the Cousins, PAUL, THE SLENDER)", bool(v.get("homage_bosses", true)), _setter("homage_bosses")))
 	content.add_child(MenuKit.check("Bot Bonus Perk (each AI teammate gets one random perk)", bool(v.get("bot_bonus_perk", true)), _setter("bot_bonus_perk")))
 	var bc: Dictionary = BotConfig.cfg()
 	var skill_ids: Array = bc.get("skill_order", ["recruit", "veteran", "elite"])

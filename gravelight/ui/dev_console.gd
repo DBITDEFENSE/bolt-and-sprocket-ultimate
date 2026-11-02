@@ -177,8 +177,9 @@ func _register_builtins() -> void:
 	register("renewal", _cmd_renewal, "renewal now|clock: Map 4 Act IV: the bad ending now, or start its clock (UPDATE 07)")
 	register("cancel", _cmd_cancel, "cancel now: Map 4 Act IV: the key turns, the canon ending runs (UPDATE 07)")
 	register("campaign", _cmd_campaign, "campaign begin <map_id> [round]: start a campaign run there")
-	register("boss", _cmd_boss, "boss <foreman|screamer>: summon a boss in front of you")
-	register("spawn_boss", _cmd_spawn_boss, "spawn_boss cousins|hammer|reach|alix: start the Cousins Round now (Map 0), or one cousin alone")
+	register("boss", _cmd_boss, "boss <foreman|screamer>: summon a boss in front of you; boss spawn paul|slender (UPDATE 10: start the homage boss now on its map); boss rage <0-100> (PAUL); boss leave|kill|status")
+	register("set_rage", _cmd_set_rage, "set_rage <0-100>: PAUL's rage and the stage that goes with it")
+	register("spawn_boss", _cmd_spawn_boss, "spawn_boss cousins|hammer|reach|alix|paul|slender: start a homage boss now on its map, or one cousin alone")
 	register("cousins", _cmd_cousins, "cousins [status|kill <hammer|reach|alix|all>|bored]: the Cousins Round")
 	register("homage", _cmd_homage, "homage on|off: the Homage Bosses setting (this session)")
 	register("homage_names", _cmd_homage_names, "homage_names real|world: the Homage Names setting (this session)")
@@ -396,12 +397,60 @@ func _cmd_quest(a: PackedStringArray) -> String:
 
 
 func _cmd_boss(a: PackedStringArray) -> String:
+	if a.size() > 0 and ["spawn", "rage", "leave", "kill", "status"].has(a[0]):
+		return _cmd_homage_boss(a)
 	var p: Player = _player()
 	if p == null:
 		return "No player"
 	var id: StringName = StringName(a[0]) if a.size() > 0 else &"foreman"
 	QuestManager.summon_boss(id, p.global_position - p.global_basis.z * 8.0)
 	return "Summoned " + String(id)
+
+
+## UPDATE 10 (T-159, T-160): the single homage boss of this map (PAUL on Kaltenbrunn, THE SLENDER on Totenhafen).
+func _homage_enc() -> HomageEncounter:
+	var d: ZombieDirector = _director()
+	return d.homage if d != null else null
+
+
+func _cmd_homage_boss(a: PackedStringArray) -> String:
+	var enc: HomageEncounter = _homage_enc()
+	match a[0]:
+		"spawn":
+			var which: String = a[1] if a.size() > 1 else ""
+			var want: String = "paul" if which == "paul" else ("the_slender" if which.contains("slender") else which)
+			if want == "cousins":
+				return _cmd_spawn_boss(PackedStringArray(["cousins"]))
+			if enc == null or enc.boss_id != want:
+				var home: String = "Kaltenbrunn (map01)" if want == "paul" else "Totenhafen (map02)"
+				return "%s lives on %s; this is %s" % [which.to_upper(), home, String(GameState.map_id)]
+			enc.start_now()
+			return "%s: starting now (round %d)" % [want, enc.event_round]
+		"rage":
+			return _cmd_set_rage(a.slice(1))
+		"leave":
+			if enc == null or enc.phase != HomageEncounter.Phase.ACTIVE:
+				return "No homage boss in the fight"
+			enc.leave()
+			return "%s leaves (the fail-safe)" % enc.boss_id
+		"kill":
+			if enc == null or enc.boss == null or not is_instance_valid(enc.boss):
+				return "No homage boss in the fight"
+			enc.boss.debug_kill(_ctx_pid)
+			return "%s beaten" % enc.boss_id
+	if enc == null:
+		return "No homage boss on this map"
+	return "%s: phase %s, round %d, visits %d, t %.0f s" % [enc.boss_id, HomageEncounter.Phase.keys()[enc.phase], enc.event_round, enc.visits, enc.boss_seconds()]
+
+
+func _cmd_set_rage(a: PackedStringArray) -> String:
+	var enc: HomageEncounter = _homage_enc()
+	var paul: Paul = (enc as PaulEncounter).paul() if enc is PaulEncounter else null
+	if paul == null:
+		return "PAUL is not in the fight"
+	if a.size() > 0:
+		paul.set_rage(float(a[0]))
+	return "PAUL's rage %.0f (%s)" % [paul.rage.value, paul.rage.stage_name().to_upper()]
 
 
 func _cousins() -> CousinsRound:
@@ -412,6 +461,8 @@ func _cousins() -> CousinsRound:
 func _cmd_spawn_boss(a: PackedStringArray) -> String:
 	var which: String = a[0] if a.size() > 0 else "cousins"
 	var c: Dictionary = HomageBoss.cfg()
+	if which == "paul" or which == "slender" or which == "the_slender":
+		return _cmd_homage_boss(PackedStringArray(["spawn", which]))
 	if which == "cousins":
 		var cr: CousinsRound = _cousins()
 		if cr == null:

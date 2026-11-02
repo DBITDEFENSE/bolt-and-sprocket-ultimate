@@ -210,7 +210,8 @@ func _case_on() -> void:
 	var left: bool = await _until(func() -> bool: return enc.phase == HomageEncounter.Phase.LEFT, 3.0)
 	_check(left, "past 6:00 he leaves (the fail-safe)")
 	_check(enc.lines_said.has("PAU_LEAVE_01"), "I'm coming, fellas! HOLD ON!")
-	var gone: bool = await _until(func() -> bool: return not is_instance_valid(p) or p.gone, 10.0)
+	var pw: WeakRef = weakref(p)   # he is freed when he has gone (a plain capture would be a freed lambda capture)
+	var gone: bool = await _until(func() -> bool: return pw.get_ref() == null or (pw.get_ref() as Paul).gone, 10.0)
 	_check(gone, "he climbs the headframe and leaps away north")
 	_check(enc.event_round >= 23 and enc.event_round <= 25 and RoundManager.is_reserved(enc.event_round), "he is due back 8-10 rounds later (round %d)" % enc.event_round)
 	_check(not enc.rewards_given, "no rewards for a retreat")
@@ -249,8 +250,15 @@ func _case_on() -> void:
 	_check(GameState.has_flag(&"paul_down"), "paul_down is set")
 	await _secs(4.0)
 	_check(enc.lines_said.has("OPR_BOSS_PAUL_DEAD_01"), "the Operator's quiet line after the fall")
-	var ended2: bool = await _until(func() -> bool: return RoundManager.state == RoundManager.State.BREAK, 20.0)
-	_check(ended2 and enc.event_round == -1, "the round ends and he is gone for the match (never undone)")
+	# the round's queued horde is skipped so the round can end now (the culling only removes what has spawned)
+	RoundManager.round_total -= RoundManager.to_spawn
+	RoundManager.to_spawn = 0
+	var ended2: bool = await _until(func() -> bool: return RoundManager.state == RoundManager.State.BREAK, 30.0)
+	_check(ended2 and enc.event_round == -1 and enc.phase == HomageEncounter.Phase.CLEARED, "the round ends and he is gone for the match (never undone)")
+	RoundManager.debug_set_round(back + 10)
+	await _until(func() -> bool: return RoundManager.state == RoundManager.State.ROUND, 6.0)
+	await _secs(1.0)
+	_check(enc.paul() == null or not enc.paul().is_active(), "no PAUL on a later round (his death is never undone)")
 
 
 # ================================================================== case BOTS

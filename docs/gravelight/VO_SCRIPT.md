@@ -819,6 +819,11 @@ Total planned: ~190 lines. Bolt's and Vendelin's packs are gated on v1 §11.9 (p
 | `OPR_BOSS_COUSINS_DEAD_M0_03` | all three dead (death line) | [static, almost gentle] ...game... {over}. Good... {night}. |
 | `OPR_BOSS_COUSINS_BORED_M0_01` | the 6:00 retreat | [static] ...they'll... come {back}... *[giggling under the hiss]* |
 | `OPR_BOSS_COUSINS_RETURN_M0_01` | the round-15 return | [static] ...{ready}... or {not}... |
+
+HB2 / HB3 rows (extracted, UPDATE 10 s4, T-159 / T-160):
+
+| ID | Trigger | Line |
+|---|---|---|
 | `OPR_BOSS_PAUL_01` | Map 1, after the PA roar (spawn) | Oh my! A {gentleman} from overseas has broken into the {studio}! Do give him a warm welcome! |
 | `OPR_BOSS_PAUL_02` | spawn (variant) | Ladies and gentlemen, our {strongest} account! Tremendous {tolerance}. Simply tremendous! |
 | `OPR_BOSS_PAUL_03` | a return visit | Back by popular {demand}! And bigger than {ever}! |
@@ -875,7 +880,7 @@ Total planned: ~190 lines. Bolt's and Vendelin's packs are gated on v1 §11.9 (p
 
 ### 12.3 PAUL (`PAU`)
 
-| Line id | Trigger | Line |
+| ID | Trigger | Line |
 |---|---|---|
 | `PAU_PA_01` | arrival, over the PA (channel PA) | WHERE'S MY SQUAD?! |
 | `PAU_LAND_01` | the crater landing | [a roar with a man's voice inside it] |
@@ -902,7 +907,7 @@ Total planned: ~190 lines. Bolt's and Vendelin's packs are gated on v1 §11.9 (p
 
 ### 12.4 THE SLENDER (`SLN`)
 
-| Line id | Trigger | Line |
+| ID | Trigger | Line |
 |---|---|---|
 | `SLN_ARRIVE_01` | arrival, from the trees | [keys, then a calm voice] Evening. Don't mind me. I'm only on my rounds. |
 | `SLN_TIER_LOW_01` | a player reaches LOW | [whisper] Noted. |
@@ -961,6 +966,11 @@ Total planned: ~190 lines. Bolt's and Vendelin's packs are gated on v1 §11.9 (p
 | `WRN_COUSINS_DEAD_01` | round cleared | I will not write them in the book. They were not marks. |
 | `WRN_LETTER_01` | reads the letter | She went to get her daughter. That is all. That is the whole story. |
 | `WRN_KINDERHAMMER_01` | picks it up | Heavy. Good. It comes back, which is more than most things here. |
+
+HB2 / HB3 rows (extracted, UPDATE 10 s4, T-159 / T-160):
+
+| ID | Trigger | Line |
+|---|---|---|
 | `DUT_PAUL_01` | the PA roar | That's an American voice on the PA. ...That's an American VOICE. |
 | `DUT_PAUL_02` | first sight | Big fella's wearing dog tags. Ours. Aw, hell. |
 | `DUT_PAUL_RAGE_01` | his first Angry | The bottles on his back! Shoot the bottles, calm him down! |
@@ -969,7 +979,7 @@ Total planned: ~190 lines. Bolt's and Vendelin's packs are gated on v1 §11.9 (p
 | `PEG_PAUL_01` | first sight | American. A private, engineers, what's left of the sleeve says so. They did this to one of ours. |
 | `PEG_PAUL_02` | his first Angry | The bottles on his back are feeding him. Break them and he cools. |
 | `PEG_PAUL_DEAD_01` | after the fall (tier 2) | Note it. Private Paul. Carried his share. ...Somebody in London ought to read that. |
-| `PEG_PAUL_DEAD_NAMED_01` | the same, when `[PAUL_LASTNAME]` is filled | Note it. Private Paul %PAUL_LASTNAME%. Carried his share. ...Somebody in London ought to read that. |
+| `PEG_PAUL_DEAD_NAMED_01` (reserved until the surname is supplied; not extracted) | the same, when `[PAUL_LASTNAME]` is filled | Note it. Private Paul %PAUL_LASTNAME%. Carried his share. ...Somebody in London ought to read that. |
 | `PEG_PAUL_CUP_01` | Peg receives the cup | [quietly] I'll see it gets home, Private. You have my word. |
 | `DEA_PAUL_01` | first sight | That's a soldier. That's a GI. Lord have mercy, what'd they pump into him? |
 | `DEA_PAUL_02` | Calm, after a bottle breaks | Easy, big man. Easy. Nobody's leaving you. |

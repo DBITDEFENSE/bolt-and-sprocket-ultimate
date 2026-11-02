@@ -168,6 +168,7 @@ func _on_round_started(r: int, special: bool) -> void:
 	if r != event_round:
 		return
 	if not HomageBoss.homage_on() and not _force:
+		RoundManager.unreserve_round(event_round)   # switched off mid-match: the round plays as a normal round
 		return
 	# a Foreman or a special round still sitting on it (a late reservation): the boss moves +1
 	var foreman_now: int = r if RoundManager.boss_due() else -1

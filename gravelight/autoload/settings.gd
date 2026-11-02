@@ -75,7 +75,7 @@ var values: Dictionary = {
 	"bot_ee_help_rev": 2,          # T-086: a settings file saved before this revision gets the new Full Partner default once
 	"gore": "full",                # off / low / full: dismemberment and blood (MZ, T-041); the shatter VFX always shows
 	"vfx_quality": "high",         # low / medium / high: particle counts, flash lights, casings, near snow, motes (U05 section 6, T-095; Effects.quality())
-	"homage_bosses": true,         # the homage bosses (HB1: the Cousins on Map 0 round 10); Off = those rounds play normally
+	"homage_bosses": true,         # the homage bosses (the Cousins on Map 0 round 10, PAUL on Kaltenbrunn round 15, THE SLENDER on Totenhafen round 25 / 45); Off = those rounds play normally
 	"homage_names": "real",        # real / world: real first names on the title cards, bars and subtitles, or the in-world names only
 	"objective_spoilers": "hints", # hidden / hints / full: the pause OBJECTIVES tab (Update 04 section 4, ObjectiveLog)
 	"classic_hud": false,          # Update 04 section 2: true = no minimap (the v1 classic HUD)

@@ -96,7 +96,7 @@
     "scrip_per_player": 2000,
     "drops": ["double_scrip"],
     "unlocks": ["card_carried_my_share", "ARC_HB_PAUL", "trinket_tin_cup"],
-    "intel": ["INT_HB_02", "INT_HB_03"],
+    "intel": ["INT_HB_02", "INT_HB_03", "ARC_HB_PAUL"],
     "last_round_overshield": 100,
     "flag": "paul_down"
    },

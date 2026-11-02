@@ -38,13 +38,33 @@ func _init() -> void:
 func _ready() -> void:
 	super._ready()
 	GLBus.weapon_fired.connect(_on_weapon_fired)
-	GLBus.player_downed.connect(func(pid: int) -> void: _log("Subject %s went down. Noted." % _who(pid)))
-	GLBus.player_revived.connect(func(pid: int, by: int) -> void: _log("Subject %s got %s back on their feet. Good." % [_who(by), _who(pid)]))
-	GLBus.perk_bought.connect(func(pid: int, perk: StringName) -> void: _log("Subject %s bought a %s. Receipt kept." % [_who(pid), String(perk).replace("_", " ")]))
-	GLBus.door_opened.connect(func(door: StringName, pid: int) -> void:
-		if pid > 0:
-			_log("Subject %s opened the way at %s. Door left open. Noted." % [_who(pid), String(door).replace("door_", "")]))
-	GLBus.power_activated.connect(func() -> void: _log("Power restored at the pumps. Lights in the pens. Lovely."))
+	# bound methods (not lambdas): the connections go away with the encounter when the map is freed
+	GLBus.player_downed.connect(_log_down)
+	GLBus.player_revived.connect(_log_revive)
+	GLBus.perk_bought.connect(_log_perk)
+	GLBus.door_opened.connect(_log_door)
+	GLBus.power_activated.connect(_log_power)
+
+
+func _log_down(pid: int) -> void:
+	_log("Subject %s went down. Noted." % _who(pid))
+
+
+func _log_revive(pid: int, by: int) -> void:
+	_log("Subject %s got %s back on their feet. Good." % [_who(by), _who(pid)])
+
+
+func _log_perk(pid: int, perk: StringName) -> void:
+	_log("Subject %s bought a %s. Receipt kept." % [_who(pid), String(perk).replace("_", " ")])
+
+
+func _log_door(door: StringName, pid: int) -> void:
+	if pid > 0:
+		_log("Subject %s opened the way at %s. Door left open. Noted." % [_who(pid), String(door).replace("door_", "")])
+
+
+func _log_power() -> void:
+	_log("Power restored at the pumps. Lights in the pens. Lovely.")
 
 
 ## Round 25 standalone, 45 in the campaign.
