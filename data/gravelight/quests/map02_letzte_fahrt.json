@@ -14,7 +14,7 @@
       "groups": {
         "INT_M2_LOG_1": ["cabin_bunk", "cabin_locker"],
         "INT_M2_LOG_2": ["radio_desk", "radio_shelf"],
-        "INT_M2_LOG_3": ["office_desk", "office_shelf"],
+        "INT_M2_LOG_3": ["office_north_wall", "office_west_bench"],
         "INT_M2_LOG_4": ["pump_locker", "pump_bench"]
       }
     },

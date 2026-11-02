@@ -723,15 +723,15 @@
         ]
       },
       "INT_M2_LOG_3": {
-        "office_desk": [
-          46.2,
+        "office_north_wall": [
+          46.0,
           0.0,
-          56.2
+          51.4
         ],
-        "office_shelf": [
-          49.4,
+        "office_west_bench": [
+          43.0,
           0.0,
-          52.6
+          52.3
         ]
       },
       "INT_M2_LOG_4": {

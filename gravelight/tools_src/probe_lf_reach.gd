@@ -39,4 +39,24 @@ func _body() -> void:
 			if bad:
 				far += 1
 			print("[lf_reach] %-20s %-34s at %s  navmesh %.2f m (dy %.2f)  path end %.2f m  %s" % [g, n.name, str(to), d_mesh, near.y - to.y, d_end, "FAR" if bad else "ok"])
+	# every seeded candidate spot in the data, not only the ones this match's seed placed
+	var cfg: Dictionary = GLData.load_json("res://data/gravelight/map02.json")
+	var spots: Dictionary = {}
+	for page: Variant in (cfg["letzte_fahrt"]["log_spots"] as Dictionary).keys():
+		for sname: Variant in (cfg["letzte_fahrt"]["log_spots"][page] as Dictionary).keys():
+			spots["%s/%s" % [page, sname]] = cfg["letzte_fahrt"]["log_spots"][page][sname]
+	for part: Variant in (cfg["undertow"]["spots"] as Dictionary).keys():
+		for sname2: Variant in (cfg["undertow"]["spots"][part] as Dictionary).keys():
+			spots["%s/%s" % [part, sname2]] = cfg["undertow"]["spots"][part][sname2]
+	for k: Variant in spots.keys():
+		var a: Array = spots[k]
+		var sp: Vector3 = Vector3(float(a[0]), float(a[1]), float(a[2]))
+		var nr: Vector3 = NavigationServer3D.map_get_closest_point(rid, sp)
+		var pth: PackedVector3Array = NavigationServer3D.map_get_path(rid, from, nr, true, 0xFFFFFFFF)
+		var de: float = pth[pth.size() - 1].distance_to(nr) if not pth.is_empty() else 999.0
+		var dm: float = Vector2(nr.x - sp.x, nr.z - sp.z).length()
+		var bad2: bool = dm > 1.6 or absf(nr.y - sp.y) > 1.2 or de > 1.0
+		if bad2:
+			far += 1
+		print("[lf_reach] spot %-34s at %s  navmesh %.2f m  path end %.2f m  %s" % [str(k), str(sp), dm, de, "FAR" if bad2 else "ok"])
 	print("[lf_reach] %d unreachable" % far)
