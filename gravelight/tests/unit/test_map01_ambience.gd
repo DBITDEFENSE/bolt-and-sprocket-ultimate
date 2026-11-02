@@ -19,7 +19,7 @@ func test_file_validates_and_map0_still_does() -> void:
 
 
 func test_every_block_the_order_asks_for_is_there() -> void:
-	for k: String in ["bombers", "fighters", "plane_down", "dogfight", "avalanche", "cable_car", "siren", "snow_harder", "dust_fall", "chains", "drips", "salt_glint", "artillery"]:
+	for k: String in ["bombers", "fighters", "plane_down", "dogfight", "avalanche", "cable_car", "siren", "snow_harder", "dust_fall", "lift_chains", "gallery_drips", "salt_glint", "artillery"]:
 		assert_true(cfg.has(k), "section %s" % k)
 	assert_true((cfg["plane_down"] as Dictionary).get("ridge", false), "the plane goes down onto the ridge")
 	assert_false(cfg.has("crows") or cfg.has("frost") or cfg.has("bell") or cfg.has("farm_light"), "Map 0's inn pieces stay off")

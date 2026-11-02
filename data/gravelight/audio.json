@@ -4545,6 +4545,198 @@
       ],
       "max_voices": 1,
       "bus": "Master"
+    },
+    "ambient_map01_minehead": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map01/minehead_bed.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 2,
+      "loop": true
+    },
+    "ambient_map01_railyard": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map01/railyard_bed.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 2,
+      "loop": true
+    },
+    "ambient_map01_admin": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map01/admin_bed.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 2,
+      "loop": true
+    },
+    "ambient_map01_barracks": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map01/barracks_bed.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 2,
+      "loop": true
+    },
+    "ambient_map01_lift": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map01/lift_bed.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 2,
+      "loop": true
+    },
+    "ambient_map01_stairs": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map01/stairs_bed.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 2,
+      "loop": true
+    },
+    "ambient_map01_chapel": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map01/chapel_bed.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 2,
+      "loop": true
+    },
+    "ambient_map01_generator": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map01/generator_bed.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 2,
+      "loop": true
+    },
+    "ambient_map01_lab": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map01/lab_bed.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 2,
+      "loop": true
+    },
+    "ambient_map01_core": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map01/core_bed.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 2,
+      "loop": true
+    },
+    "amb_m1_siren": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map01/siren_01.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "max_voices": 1,
+      "attenuation": "loud"
+    },
+    "amb_m1_avalanche": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map01/avalanche_01.ogg",
+        "res://gravelight/audio/sfx/ambience/map01/avalanche_02.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "max_voices": 2,
+      "attenuation": "quiet"
+    },
+    "amb_m1_dust": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map01/dust_01.ogg",
+        "res://gravelight/audio/sfx/ambience/map01/dust_02.ogg",
+        "res://gravelight/audio/sfx/ambience/map01/dust_03.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "max_voices": 2,
+      "attenuation": "quiet"
+    },
+    "amb_m1_chain_clank": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map01/chain_clank_01.ogg",
+        "res://gravelight/audio/sfx/ambience/map01/chain_clank_02.ogg",
+        "res://gravelight/audio/sfx/ambience/map01/chain_clank_03.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "max_voices": 2,
+      "attenuation": "world"
+    },
+    "amb_m1_cable_creak": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map01/cable_creak_01.ogg",
+        "res://gravelight/audio/sfx/ambience/map01/cable_creak_02.ogg",
+        "res://gravelight/audio/sfx/ambience/map01/cable_creak_03.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "max_voices": 1,
+      "attenuation": "quiet"
+    },
+    "amb_m1_gust_tin": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map01/gust_tin_01.ogg",
+        "res://gravelight/audio/sfx/ambience/map01/gust_tin_02.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "max_voices": 1,
+      "attenuation": "quiet"
     }
   }
 }

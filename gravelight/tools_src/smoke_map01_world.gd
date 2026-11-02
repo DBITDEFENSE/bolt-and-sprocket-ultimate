@@ -71,10 +71,10 @@ func _run() -> void:
 	await _wait(4.0)
 	_check(snow0 == null and map.find_child("SnowHarder", true, false) != null and amb.blizzard_level() > 0.9, "round 20: the snow thickens (level %.2f)" % amb.blizzard_level())
 	# --- the sky and the ridge
-	amb.debug_trigger("avalanche", 10.0)
+	amb._ev_avalanche(10.0)
 	await _wait(1.0)
 	_check(int(amb.counts.get("avalanche", 0)) == 1 and amb._k_plumes.size() > 0, "avalanche: plume sliding down the ridge")
-	amb.debug_trigger("plane_down_ridge", 40.0)
+	amb.debug_plane_down_ridge(40.0)
 	await _wait(20.0)
 	var glow: Node3D = amb.get_node_or_null("CrashGlow") as Node3D
 	_check(int(amb.counts.get("plane_down", 0)) > 0 and int(amb.counts.get("crash", 0)) > 0, "a plane went down (%d crash)" % int(amb.counts.get("crash", 0)))
@@ -85,18 +85,18 @@ func _run() -> void:
 	_check(int(amb.counts.get("cable_creak", 0)) > 0 or absf(amb._k_cable_a) > 0.003, "the gondola swings (angle %.3f, %d creaks)" % [amb._k_cable_a, int(amb.counts.get("cable_creak", 0))])
 	# --- the surface is shelled: dust and chains underground
 	var dust0: int = int(amb.counts.get("dust_fall", 0))
-	var chain0: int = int(amb.counts.get("chains", 0))
+	var chain0: int = int(amb.counts.get("lift_chains", 0))
 	amb.shell(250.0, 1.0)
 	await _wait(3.6)
 	_check(int(amb.counts.get("dust_fall", 0)) > dust0, "a shell landed: dust fell from the ceilings")
-	_check(int(amb.counts.get("chains", 0)) > chain0, "...and the lift chains clanked")
+	_check(int(amb.counts.get("lift_chains", 0)) > chain0, "...and the lift chains clanked")
 	# the lift moving clanks the chains too
 	await _wait(1.0)
-	var chain1: int = int(amb.counts.get("chains", 0))
+	var chain1: int = int(amb.counts.get("lift_chains", 0))
 	if amb._k_lift != null:
 		amb._k_lift_y = float(amb._k_lift.call("cage_y")) + 1.0
 	await _wait(0.4)
-	_check(amb._k_lift != null and int(amb.counts.get("chains", 0)) > chain1, "the lift moved: the chains clanked")
+	_check(amb._k_lift != null and int(amb.counts.get("lift_chains", 0)) > chain1, "the lift moved: the chains clanked")
 	# --- a drip in the chapel
 	var p: Player = map.get("player") as Player
 	if p != null:
