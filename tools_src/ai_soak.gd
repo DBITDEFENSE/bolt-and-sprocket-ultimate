@@ -597,6 +597,9 @@ func _skip_egg_to(sid: StringName) -> void:
 				for wb: Node in _map.find_children("*", "Workbench", true, false):
 					if StringName(str(wb.get("buildable_id"))) == StringName(str(pr.get("buildable", ""))) and not bool(wb.get("built")):
 						wb.call("build", 1)
+	for ab: Node in _map.find_children("*", "", true, false):
+		if ab.has_method("play_box") and QuestManager.has_item(&"music_box"):
+			ab.call("play_box")   # the melody is learned when the reliquary opens (the box plays): as the skipped s5 would
 	print("[soak] --egg-from: %s now at %s" % [q, sid])
 
 

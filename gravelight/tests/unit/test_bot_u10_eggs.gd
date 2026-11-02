@@ -91,6 +91,31 @@ func test_main_egg_beats_every_side_quest() -> void:
 	assert_gt(worst_main, best_side, "an open main-egg step 120 m away still beats the best side-quest step next door")
 
 
+# ---------------------------------------------------------------- Full Partner's risky stages
+
+func test_stage_allowed() -> void:
+	var drum: Dictionary = {"risky": "trigger", "full_partner": ["trigger"]}
+	assert_true(BotEECatalog.stage_allowed(drum, "trigger", false, "full"), "Full Partner pulls the crate for Herr Tamtam unasked")
+	assert_false(BotEECatalog.stage_allowed(drum, "trigger", false, "ask"), "When Asked: only on an order")
+	assert_true(BotEECatalog.stage_allowed(drum, "trigger", true, "ask"), "ordered: always")
+	var bell: Dictionary = {"risky": "shoot"}
+	assert_false(BotEECatalog.stage_allowed(bell, "shoot", false, "full"), "no full_partner list: still the player's call")
+	assert_true(BotEECatalog.stage_allowed(bell, "", false, "off"), "the safe part of a task")
+
+
+func test_requiem_full_partner_stages() -> void:
+	var q: Dictionary = GLData.load_json("res://data/gravelight/quests/map01_requiem.json")
+	var want: Dictionary = {"s4_key": "shoot", "s7_drummer": "trigger"}
+	for st: Variant in q["steps"]:
+		var sd: Dictionary = st
+		var t: Dictionary = BotEECatalog.task_def(sd)
+		assert_eq(BotEECatalog.validate(t), PackedStringArray(), "%s bot_task valid" % sd["id"])
+		if want.has(str(sd["id"])):
+			assert_true(BotEECatalog.stage_allowed(t, str(want[sd["id"]]), false, "full"), "%s: Full Partner may do its risky stage" % sd["id"])
+	assert_false(BotEECatalog.validate({"type": "shoot_target", "target": {"group": "g"}, "risky": "shoot", "full_partner": ["trigger"]}).is_empty(),
+		"full_partner must name the task's own risky stage")
+
+
 # ---------------------------------------------------------------- boss grabs
 
 func test_kielholer_counter() -> void:

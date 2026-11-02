@@ -431,6 +431,7 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 			var crate: MysteryCrate = _current_crate()
 			w["crate"] = crate
 			w["can_trigger"] = crate != null and Economy.get_scrip(player.player_id) >= CrateManager.cost()
+			w["mode"] = hub.mode() if hub_ok else ""   # U10 (T-163): Full Partner may do the task's full_partner stages
 		"hold_zone":
 			var running: bool = not QuestManager.holdout_state(qid, sid).is_empty()
 			w["holdout_running"] = running
@@ -614,7 +615,7 @@ static func plan_shoot(t: Dictionary, w: Dictionary) -> Dictionary:
 		if w.get("pickup") != null:
 			return {"do": "use", "node": w["pickup"]}
 		if str(t.get("trigger", "")) == "crate":
-			if BotEECatalog.is_risky(t, "trigger") and not ordered:
+			if not BotEECatalog.stage_allowed(t, "trigger", ordered, str(w.get("mode", ""))):
 				return {"do": "wait"}
 			if bool(w.get("can_trigger", false)):
 				return {"do": "crate", "node": w.get("crate")}
@@ -624,7 +625,7 @@ static func plan_shoot(t: Dictionary, w: Dictionary) -> Dictionary:
 		return {"do": "fail", "code": "not_found"}
 	if bool(w.get("lit", false)):
 		return {"do": "hold", "node": target, "vantage": true, "radius": float((t.get("then_hold", {}) as Dictionary).get("radius", 4.0))}
-	if BotEECatalog.is_risky(t, "shoot") and not ordered:
+	if not BotEECatalog.stage_allowed(t, "shoot", ordered, str(w.get("mode", ""))):
 		return {"do": "fail", "code": "risky"}
 	if bool(t.get("need_upgraded", false)) and not bool(w.get("has_upgraded", false)):
 		return {"do": "fail", "code": "no_upgraded"}

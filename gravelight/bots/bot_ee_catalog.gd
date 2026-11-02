@@ -88,6 +88,13 @@ static func validate(t: Dictionary) -> PackedStringArray:
 			var spec: Dictionary = t[k]
 			if not spec.has("group") and not spec.has("class"):
 				out.append("%s: a node spec needs a group or a class" % k)
+	if t.has("full_partner"):
+		if not t["full_partner"] is Array:
+			out.append("full_partner must be a list of stages")
+		else:
+			for st: Variant in t["full_partner"]:
+				if str(t.get("risky", "")) != str(st):
+					out.append("full_partner '%s' is not the task's risky stage" % str(st))
 	return out
 
 
@@ -178,6 +185,16 @@ static func is_risky(t: Dictionary, stage: String) -> bool:
 	if stage == "":
 		return false   # a stage-only risk: the rest of the task is safe
 	return str(r) == stage
+
+
+## U10 (T-163): may this risky stage run now? Ordered (the player, or the agent who is the player) always; in Full
+## Partner also a stage the task lists under "full_partner" (the Requiem's crate pull for Herr Tamtam, whose miss
+## only resets the chase; the Chapel bell with a Crucible gun): the bot-mode agent works the egg in the 10-15 s
+## breaks alone (its trainer owns the rounds), so those stages waited for it for whole matches.
+static func stage_allowed(t: Dictionary, stage: String, ordered: bool, mode: String) -> bool:
+	if not is_risky(t, stage) or ordered:
+		return true
+	return mode == "full" and (t.get("full_partner", []) as Array).has(stage)
 
 
 # ------------------------------------------------------------------ the never-sequence-break guard (pure)
