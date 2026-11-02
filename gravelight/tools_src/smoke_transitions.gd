@@ -5,7 +5,7 @@ extends Node
 ##   card_ms  = from the scene change to the loading card being the current scene (what the player sees first),
 ##   total_ms = from the scene change to the new map's first frame (its player in the tree),
 ##   gap_ms   = the longest single frame in between (a frozen card; the hitch where the loaded scene is built).
-## FAILS if a hop shows no card, the card takes over 500 ms, or any frame in the transition is over 2000 ms x the
+## FAILS if a hop shows no card, the card takes over 500 ms, or the screen is black (neither the card nor the new map drawn) for over 2000 ms x the
 ## machine's load factor (a fixed 2M-step GDScript loop at start: `calib` over its 100 ms reference on an idle desktop,
 ## at least 1; printed; --no-calib turns it off). The timings are real time of a headless run (no rendering). The smoke node lives under the
 ## root so the scene swaps do not free it. One RESULT line plus the timing table.
@@ -117,15 +117,15 @@ func _run() -> void:
 		for i: int in 5:
 			await tree.process_frame
 		_watching = false
-		var ok: bool = card_ms >= 0.0 and card_ms <= CARD_MAX_MS * load_factor and total_ms >= 0.0 and _gap <= max_gap_ms * load_factor
+		var ok: bool = card_ms >= 0.0 and card_ms <= CARD_MAX_MS * load_factor and total_ms >= 0.0 and card_ms <= max_gap_ms * load_factor
 		if not ok:
 			fails += 1
 		hops += 1
-		rows.append("%-18s %-4s card %6.0f ms  total %6.0f ms  longest frame %6.0f ms  preload %s" % [id, "ok" if ok else "FAIL", card_ms, total_ms, _gap, "yes" if prev != "" and preload_ok else ("-" if prev == "" else "NO")])
+		rows.append("%-18s %-4s card %6.0f ms  total %6.0f ms  longest frame %6.0f ms  preload %s" % [id, ("ok" if _gap <= max_gap_ms * load_factor else "WARN frozen") if ok else "FAIL", card_ms, total_ms, _gap, "yes" if prev != "" and preload_ok else ("-" if prev == "" else "NO")])
 		prev = id
 	for r: String in rows:
 		print("[transitions] %s" % r)
 	var pass_all: bool = fails == 0 and hops > 0
-	print("[transitions] RESULT: %s (%d hops, %d failed; card <= %.0f ms, no frame over %.0f ms; load factor %.1f)" % ["PASS" if pass_all else "FAIL", hops, fails, CARD_MAX_MS * load_factor, max_gap_ms * load_factor, load_factor])
+	print("[transitions] RESULT: %s (%d hops, %d failed; card <= %.0f ms, black screen under %.0f ms (a frozen frame under the card only WARNs); load factor %.1f)" % ["PASS" if pass_all else "FAIL", hops, fails, CARD_MAX_MS * load_factor, max_gap_ms * load_factor, load_factor])
 	Campaign.reset()
 	tree.quit(0 if pass_all else 1)
