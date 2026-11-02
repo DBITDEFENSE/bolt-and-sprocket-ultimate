@@ -194,7 +194,6 @@ def merge_manifest() -> None:
             sounds[k]["files"] = v["files"]
         else:
             sounds[k] = v
-    d["sounds"] = {k: sounds[k] for k in sorted(sounds)}
     text = json.dumps(d, indent=2, ensure_ascii=False)   # the file's current format (2-space, arrays exploded)
     with open(ga.AUDIO_JSON, "w", encoding="utf-8", newline="\n") as f:
         f.write(text + "\n")
