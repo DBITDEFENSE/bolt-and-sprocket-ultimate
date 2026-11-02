@@ -213,7 +213,7 @@ func _setup() -> void:
 	if cfg.has("chimney"):
 		_find_fire_and_chimney()
 	_find_snow()
-	if land != null:
+	if land != null and not cfg.has("no_spindrift"):
 		_build_spindrift()
 	_build_cookoff()
 	for key: String in ["bombers", "fighters", "artillery", "tracers", "flares", "machine_guns", "gusts", "dog", "cookoff"]:
@@ -289,7 +289,7 @@ func _find_fire_and_chimney() -> void:
 
 
 func _find_snow() -> void:
-	var s: Node = get_parent().find_child("Snowfall", false, false)
+	var s: Node = get_parent().find_child("Snowfall", true, false)
 	if s == null:
 		return
 	for c: Node in s.get_children():
@@ -543,7 +543,7 @@ func shell(bearing: float, km: float) -> void:
 		_flash_light_e = maxf(_flash_light_e, lerpf(0.0, 0.55, clampf((4.0 - km) / 2.5, 0.0, 1.0)))
 		_flash_light.light_color = Color(1.0, 0.75, 0.5)
 		var p: Vector3 = LandscapeTerrain.at_bearing(bearing, 300.0) + Vector3(0, 40, 0)
-		_flash_light.look_at_from_position(p, Vector3(12, 0, 20), Vector3.UP)
+		_flash_light.look_at_from_position(p, _c3(0.0), Vector3.UP)
 	var vr: Array = a.get("volume_db", [-14.0, 2.0])
 	var vol: float = lerpf(float(vr[0]), float(vr[1]), near)
 	var key: String = str(a.get("near_sound", "")) if km < float(a.get("near_km", 3.0)) else str(a.get("sound", ""))
@@ -552,6 +552,8 @@ func shell(bearing: float, km: float) -> void:
 		far_sound(key, where, vol)
 		if km < float(a.get("shake_km", 3.0)):
 			_shake(float(a.get("shake", 0.3)) * clampf((float(a.get("shake_km", 3.0)) - km) / 1.5, 0.2, 1.0))
+		for sfn: Callable in _shell_fns:
+			sfn.call(bearing, km)
 		if km < float(a.get("sway_km", 3.4)) and sway != null:
 			sway.impulse(-LandscapeTerrain.dir_of(bearing), float((cfg.get("lamp_sway", {}) as Dictionary).get("impulse", 0.22)) * clampf(3.6 - km, 0.3, 1.5)))
 
@@ -764,7 +766,7 @@ func spawn_flare(bearing: float = -1.0, r: float = -1.0) -> Node3D:
 	_flares.append({"node": n, "light": l, "glow": glow, "t": 0.0, "burn": float(f.get("burn_seconds", 38.0)), "energy": float(f.get("light_energy", 2.4)),
 		"drift": Vector3(_rng.randf_range(-0.6, 0.6), 0, _rng.randf_range(-0.4, 0.4)), "col": col})
 	far_sound(str(f.get("sound", "")), n.global_position, -6.0)
-	add_flash((n.global_position - Vector3(12, 1.6, 20)).normalized(), col, 0.5, 0.25, 6.0)
+	add_flash((n.global_position - _c3(1.6)).normalized(), col, 0.5, 0.25, 6.0)
 	_count("flare")
 	return n
 
@@ -910,6 +912,9 @@ func _shoot_down(f: SkyFlight, index: int) -> void:
 	var b: float = clampf(LandscapeTerrain.bearing(at.x, at.z) + _rng.randf_range(-15, 25), float(cb[0]), float(cb[1]))
 	var crash: Vector3 = LandscapeTerrain.at_bearing(b, float(pd.get("crash_radius", 255.0)))
 	crash.y = LandscapeTerrain.height(crash.x, crash.z) - 6.0
+	if bool(pd.get("ridge", false)):   # U10 Kaltenbrunn: it hits the mountain wall, high up, and burns there
+		crash = LandscapeTerrain.at_bearing(b, 330.0)
+		crash.y = LandscapeTerrain.ridge_crest(1, b) * 0.78
 	# flak bursts round it first
 	for k: int in 4:
 		var off: Vector3 = Vector3(_rng.randf_range(-12, 12), _rng.randf_range(-6, 10), _rng.randf_range(-12, 12))
@@ -929,12 +934,12 @@ func _shoot_down(f: SkyFlight, index: int) -> void:
 
 func _on_crash(pos: Vector3) -> void:
 	var pd: Dictionary = cfg.get("plane_down", {})
-	var dir: Vector3 = (pos - Vector3(12, 1.6, 20)).normalized() + Vector3(0, 0.04, 0)
+	var dir: Vector3 = (pos - _c3(1.6)).normalized() + Vector3(0, 0.04, 0)
 	add_flash(dir, Color(1.0, 0.55, 0.22), 2.4, 0.6, 7.0)
 	_glow(pos + Vector3(0, 12, 0), 90.0, Color(1.0, 0.55, 0.25), 2.2, 1.8)
 	_flash_light_e = 0.35
 	_flash_light.light_color = Color(1.0, 0.6, 0.3)
-	_flash_light.look_at_from_position(pos + Vector3(0, 60, 0), Vector3(12, 0, 20), Vector3.UP)
+	_flash_light.look_at_from_position(pos + Vector3(0, 60, 0), _c3(0.0), Vector3.UP)
 	# what burns on behind the hill for the rest of the round
 	var g: MeshInstance3D = LandscapeProps.glow_sprite(pos + Vector3(0, 8, 0), 34.0, Color(1.0, 0.45, 0.15), 0.8)
 	g.name = "CrashGlow"
@@ -2519,6 +2524,681 @@ func _uboat_white() -> void:
 		var tw: Tween = l.create_tween()
 		tw.tween_method(func(e: float) -> void: _set_light_e(l, e), e0, e0 * to, 1.6)
 	_count("uboat_white")
+
+
+# ---- U10 Kaltenbrunn ----------------------------------------------------------------------------------------------
+# UPDATE 10 section 5 (DECISIONS T-161): the kinds Kaltenbrunn's file (data/gravelight/map01_ambience.json) adds on top
+# of Map 0's schema. Each is a data block that defaults to off when its key is absent, so Map 0 is unchanged:
+#   dogfight     two fighters circling over the mountains at a round, MG bursts, one trailing smoke
+#   plane_down   (Map 0's block) + "ridge": true aims the crash at the Alpine wall and leaves the glow there
+#   avalanche    a low rumble from a ridge every few minutes with a snow plume sliding down the face
+#   cable_car    the gondola on KaltenLandscape's rope swings on the wind and creaks
+#   siren        the minehead siren wails at a round (lamp pulsing on the headframe)
+#   snow_harder  from a round the snowfall thickens and the wind leans on it (a second Snowfall layer fades in)
+#   dust_fall    underground dust sifting from the ceilings when a shell lands near (the artillery block's impacts)
+#   chains       hoist chains in the lift bay that swing and clank on a shell and when the lift moves
+#   drips        water dripping in the galleries near the listener
+#   salt_glint   a sparkle pass on the halite materials driven by the viewer's headlamp cone
+#   no_spindrift true: skip Map 0's roof spindrift (its positions are the inn's)
+
+var _k_cable_a: float = 0.0
+var _k_cable_va: float = 0.0
+var _k_cable_b: float = 0.0
+var _k_cable_vb: float = 0.0
+var _k_creak_cd: float = 0.0
+var _k_siren_t: float = -1.0
+var _k_siren_done: bool = false
+var _k_dog_done: bool = false
+var _k_dog: Node3D
+var _k_dog_planes: Array[Node3D] = []
+var _k_dog_t: float = 0.0
+var _k_dog_burst: float = 2.0
+var _k_dog_sound: float = 0.0
+var _k_dog_tracers: Array = []
+var _k_dog_center: Vector3 = Vector3.ZERO
+var _k_blizzard: float = 0.0
+var _k_blizzard_on: bool = false
+var _k_snow_extra: Node3D
+var _k_snow_orig: Node3D
+var _k_plumes: Array = []             # {mi, t, life, from, to, size}
+var _k_dust: Array[GPUParticles3D] = []
+var _k_dust_cd: float = 0.0
+var _k_chains: Array = []             # {node, a, v, b, w}
+var _k_clank_cd: float = 0.0
+var _k_lift: Node
+var _k_lift_y: float = 1e9
+var _k_lift_cd: float = 0.0
+var _k_drip_cd: float = 3.0
+var _k_glint: ShaderMaterial
+var _k_glint_t: float = 0.0
+var _k_drops: Array = []              # {mi, from, to, t, dur, snd, db}
+
+
+func _c3(y: float) -> Vector3:
+	return Vector3(LandscapeTerrain.CENTER.x, y, LandscapeTerrain.CENTER.y)
+
+
+# ---- pure rules (unit-tested)
+
+## Has the snow-harder round been reached? (The seconds-long ramp itself is runtime: blizzard_level().)
+static func snow_harder_at(r: int, c: Dictionary) -> bool:
+	var s: Dictionary = c.get("snow_harder", {})
+	return not s.is_empty() and r >= int(s.get("round", 20))
+
+
+static func siren_due_at(r: int, c: Dictionary) -> bool:
+	var s: Dictionary = c.get("siren", {})
+	return not s.is_empty() and r == int(s.get("round", 10))
+
+
+static func dogfight_due_at(r: int, c: Dictionary) -> bool:
+	var s: Dictionary = c.get("dogfight", {})
+	return not s.is_empty() and r == int(s.get("round", 7))
+
+
+## Does a shell `km` away shake dust down in the galleries (dust_fall.km) and move the lift chains?
+static func dust_falls_for(km: float, c: Dictionary) -> bool:
+	var d: Dictionary = c.get("dust_fall", {})
+	return not d.is_empty() and km <= float(d.get("km", 3.6))
+
+
+## Schema problems in an ambience file (empty = valid): every block a dictionary, every [min, max] pair ordered, the
+## round numbers positive, the sound keys strings. Used by the unit tests over every data/gravelight/*_ambience.json.
+static func validate(c: Dictionary) -> PackedStringArray:
+	var errs: PackedStringArray = []
+	if c.is_empty():
+		errs.append("empty")
+		return errs
+	for key: String in c.keys():
+		if key.begins_with("_"):
+			continue
+		var v: Variant = c[key]
+		if not (v is Dictionary):
+			errs.append("%s is not a dictionary" % key)
+			continue
+		var sec: Dictionary = v
+		for k2: String in sec.keys():
+			var x: Variant = sec[k2]
+			if x is Array and (k2 in ["first_after", "interval", "interval_late", "km", "km_late", "altitude", "count", "bursts", "seconds", "volume_db", "every", "burst_every"]):
+				var a: Array = x
+				if a.size() != 2 or not (a[0] is float or a[0] is int) or not (a[1] is float or a[1] is int) or float(a[0]) > float(a[1]):
+					errs.append("%s.%s is not an ordered [min, max]" % [key, k2])
+			elif k2.ends_with("sound") and not (x is String):
+				errs.append("%s.%s is not a sound key" % [key, k2])
+			elif (k2 == "round" or k2 == "min_round") and (not (x is float or x is int) or int(x) < 1):
+				errs.append("%s.%s is not a round number" % [key, k2])
+	return errs
+
+
+# ---- setup (the kinds registry runs this by name at setup; every part returns at once when its key is absent)
+
+var _shell_fns: Array[Callable] = []     # called as fn(bearing, km) when a shell's boom arrives
+
+
+func _kinds_setup_u10_kaltenbrunn() -> void:
+	var mine: bool = false
+	for k: String in ["dogfight", "avalanche", "cable_car", "siren", "snow_harder", "dust_fall", "lift_chains", "gallery_drips", "salt_glint"]:
+		mine = mine or cfg.has(k)
+	if not mine:
+		return
+	if cfg.has("avalanche"):
+		_every("avalanche", cfg["avalanche"], _ev_avalanche)
+	if cfg.has("dust_fall"):
+		_u10_build_dust()
+	if cfg.has("lift_chains"):
+		_u10_build_chains()
+	if cfg.has("salt_glint"):
+		_u10_build_glint()
+	_k_lift = get_parent().find_child("Lift", true, false)
+	if snow_harder_at(round_now, cfg):
+		_k_blizzard_on = true
+	_round_fns.append(func(br: int) -> void: _u10_round(br))
+	_ticks.append(func(delta: float) -> void: _u10_process(delta))
+	_shell_fns.append(func(bearing: float, km: float) -> void: _u10_on_shell(bearing, km))
+	debug_kinds["dogfight"] = _ev_dogfight
+	debug_kinds["siren"] = _ev_siren
+	debug_kinds["avalanche"] = func() -> void: _ev_avalanche()
+	debug_kinds["snow_harder"] = _ev_snow_harder
+	debug_kinds["dust_fall"] = func() -> void: _u10_on_shell(0.0, 0.5)
+	debug_kinds["lift_chains"] = func() -> void: _ev_lift_chains(1.0)
+	debug_kinds["gallery_drip"] = func() -> void: _ev_drip(true)
+
+
+func _u10_round(r: int) -> void:
+	if dogfight_due_at(r, cfg) and not _k_dog_done:
+		_k_dog_done = true
+		_after(float((cfg.get("dogfight", {}) as Dictionary).get("delay", 10.0)) * delay_scale, _ev_dogfight)
+	if siren_due_at(r, cfg) and not _k_siren_done:
+		_k_siren_done = true
+		_after(float((cfg.get("siren", {}) as Dictionary).get("delay", 12.0)) * delay_scale, _ev_siren)
+	if snow_harder_at(r, cfg) and not _k_blizzard_on:
+		_ev_snow_harder()
+
+
+## Dev / smoke hook: a plane shot down onto the ridge now (bearing = where the flight crosses).
+func debug_plane_down_ridge(bearing: float) -> void:
+	plane_down_done = false
+	var f: SkyFlight = spawn_bombers(bearing + 90.0, 0.0, 9)
+	f.position = Vector3(LandscapeTerrain.CENTER.x, f.position.y, LandscapeTerrain.CENTER.y) + LandscapeTerrain.dir_of(bearing) * 90.0 - f.heading * 130.0
+	_after(3.0, func() -> void:
+		if is_instance_valid(f):
+			_shoot_down(f, 4))
+
+
+func _u10_process(delta: float) -> void:
+	_u10_cable(delta)
+	_u10_siren(delta)
+	_u10_dogfight(delta)
+	_u10_plumes(delta)
+	_u10_blizzard(delta)
+	_u10_chains(delta)
+	_u10_lift(delta)
+	_u10_drips(delta)
+	_u10_drops(delta)
+	_k_dust_cd = maxf(0.0, _k_dust_cd - delta)
+	_k_glint_t -= delta
+	if _k_glint != null and _k_glint_t <= 0.0:
+		_k_glint_t = 0.05
+		_u10_glint_update()
+
+
+# ---- the dogfight
+
+func _ev_dogfight() -> void:
+	if _k_dog != null and is_instance_valid(_k_dog):
+		return
+	var c: Dictionary = cfg.get("dogfight", {})
+	var alt: Array = c.get("altitude", [95, 125])
+	_k_dog_center = LandscapeTerrain.at_bearing(float(c.get("bearing", 24.0)), float(c.get("distance", 150.0))) + Vector3(0, _rng.randf_range(float(alt[0]), float(alt[1])), 0)
+	_k_dog = Node3D.new()
+	_k_dog.name = "Dogfight"
+	add_child(_k_dog)
+	_k_dog_planes.clear()
+	for i: int in 2:
+		var p: MeshInstance3D = MeshInstance3D.new()
+		p.mesh = PlaneModels.fighter()
+		p.scale = Vector3.ONE * float(c.get("wingspan", 3.4))
+		p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		_k_dog.add_child(p)
+		_k_dog_planes.append(p)
+	var trail: GPUParticles3D = _flare_smoke()
+	trail.name = "LeadSmoke"
+	trail.amount = 70
+	trail.lifetime = 7.0
+	trail.local_coords = false
+	(trail.draw_pass_1 as QuadMesh).size = Vector2(5.5, 5.5)
+	var pm: ParticleProcessMaterial = trail.process_material as ParticleProcessMaterial
+	pm.initial_velocity_min = 0.2
+	pm.initial_velocity_max = 0.8
+	pm.color_ramp = Props._ramp_tex([[0.0, Color(0.95, 0.5, 0.2, 0.7)], [0.08, Color(0.16, 0.14, 0.14, 0.6)], [1.0, Color(0.1, 0.1, 0.12, 0.0)]])
+	trail.visibility_aabb = AABB(Vector3(-300, -200, -300), Vector3(600, 400, 600))
+	_k_dog_planes[0].add_child(trail)
+	_k_dog_t = 0.0
+	_k_dog_burst = 2.0
+	_k_dog_sound = 0.0
+	_count("dogfight")
+
+
+func _dog_path(t: float, lead: bool) -> Vector3:
+	var c: Dictionary = cfg.get("dogfight", {})
+	var rad: float = float(c.get("radius", 72.0))
+	var w: float = float(c.get("speed", 36.0)) / rad
+	var th: float = t * w
+	var rr: float = rad * (1.0 + 0.12 * sin(t * 0.7)) * (1.0 if lead else 0.9)
+	return _k_dog_center + Vector3(cos(th) * rr, sin(t * 0.45) * 14.0 + (0.0 if lead else -3.0), sin(th) * rr)
+
+
+func _u10_dogfight(delta: float) -> void:
+	if _k_dog == null or not is_instance_valid(_k_dog):
+		return
+	var c: Dictionary = cfg.get("dogfight", {})
+	_k_dog_t += delta
+	var secs: float = float(c.get("seconds", 46.0))
+	var lag: float = float(c.get("chase_lag", 1.25))
+	if _k_dog_t <= secs:
+		for i: int in 2:
+			var t: float = _k_dog_t - (0.0 if i == 0 else lag)
+			var p: Vector3 = _dog_path(t, i == 0)
+			var q: Vector3 = _dog_path(t + 0.1, i == 0)
+			var fwd: Vector3 = (q - p).normalized()
+			(_k_dog_planes[i] as Node3D).global_transform = Transform3D(Basis.looking_at(fwd, Vector3.UP) * Basis(Vector3(0, 0, 1), -0.9), p)
+			(_k_dog_planes[i] as Node3D).scale = Vector3.ONE * float(c.get("wingspan", 3.4))
+	else:
+		# the pair breaks off along its last heading and is gone
+		for i3: int in 2:
+			var pl: Node3D = _k_dog_planes[i3]
+			pl.global_position += -pl.global_transform.basis.z * float(c.get("speed", 36.0)) * delta
+		if _k_dog_t > secs + 6.0:
+			_k_dog.queue_free()
+			_k_dog = null
+			_k_dog_planes.clear()
+			_k_dog_tracers.clear()
+			return
+	_k_dog_sound -= delta
+	if _k_dog_sound <= 0.0:
+		_k_dog_sound = 9.0
+		far_sound(str(c.get("sound", "")), _k_dog_planes[0].global_position, float(c.get("volume_db", 0.0)))
+	_k_dog_burst -= delta
+	if _k_dog_burst <= 0.0 and _k_dog_t < secs - 2.0:
+		var br: Array = c.get("burst_every", [1.6, 3.4])
+		_k_dog_burst = _rng.randf_range(float(br[0]), float(br[1]))
+		var chaser: Node3D = _k_dog_planes[1]
+		var target: Node3D = _k_dog_planes[0]
+		for k: int in _rng.randi_range(5, 9):
+			var dir: Vector3 = (target.global_position - chaser.global_position).normalized()
+			dir = (dir + Vector3(_rng.randf_range(-0.05, 0.05), _rng.randf_range(-0.04, 0.05), _rng.randf_range(-0.05, 0.05))).normalized()
+			var tr: MeshInstance3D = MeshInstance3D.new()
+			tr.mesh = Props.unit_box()
+			tr.material_override = PlaneModels.tracer_material()
+			tr.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			_k_dog.add_child(tr)
+			tr.global_transform = Transform3D(Basis.looking_at(dir, Vector3.UP) * Basis.from_scale(Vector3(0.18, 0.18, 6.0)), chaser.global_position + dir * (2.0 + k * 9.0))
+			_k_dog_tracers.append([tr, dir * 300.0, 0.8])
+		far_sound(str(c.get("mg_sound", "")), chaser.global_position, 0.0)
+		_count("dogfight_burst")
+	for i2: int in range(_k_dog_tracers.size() - 1, -1, -1):
+		var e: Array = _k_dog_tracers[i2]
+		e[2] = float(e[2]) - delta
+		var tr2: MeshInstance3D = e[0]
+		if float(e[2]) <= 0.0 or not is_instance_valid(tr2):
+			if is_instance_valid(tr2):
+				tr2.queue_free()
+			_k_dog_tracers.remove_at(i2)
+		else:
+			tr2.global_position += (e[1] as Vector3) * delta
+
+
+# ---- the avalanche
+
+func _ev_avalanche(bearing: float = -1.0) -> void:
+	var a: Dictionary = cfg.get("avalanche", {})
+	var br: Array = a.get("bearings", [320, 420])
+	if bearing < 0.0:
+		bearing = fposmod(_rng.randf_range(float(br[0]), float(br[1])), 360.0)
+	var top: Vector3 = LandscapeTerrain.at_bearing(bearing, 326.0)
+	top.y = LandscapeTerrain.ridge_crest(1, bearing) * 0.8
+	var bottom: Vector3 = LandscapeTerrain.at_bearing(bearing, 304.0)
+	bottom.y = LandscapeTerrain.ridge_crest(1, bearing) * 0.12
+	var life: float = float(a.get("plume_seconds", 11.0))
+	for k: int in 3:
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.name = "AvalanchePlume"
+		var q: QuadMesh = QuadMesh.new()
+		q.size = Vector2.ONE
+		mi.mesh = q
+		var m: StandardMaterial3D = StandardMaterial3D.new()
+		m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		m.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		m.disable_fog = true
+		m.albedo_texture = Snowfall.flake_texture()
+		m.albedo_color = Color(0.74, 0.8, 0.92, 0.0)
+		mi.material_override = m
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(mi)
+		mi.global_position = top
+		_k_plumes.append({"mi": mi, "t": -float(k) * 0.9, "life": life, "from": top + Vector3(_rng.randf_range(-8, 8), 0, _rng.randf_range(-8, 8)),
+			"to": bottom + Vector3(_rng.randf_range(-14, 14), 0, _rng.randf_range(-14, 14)), "size": _rng.randf_range(70.0, 130.0)})
+	var km: float = float(a.get("km", 1.4))
+	var where: Vector3 = top
+	_after(boom_delay(km, cfg), func() -> void:
+		far_sound(str(a.get("sound", "")), where, float(a.get("volume_db", -2.0)))
+		_shake(float(a.get("shake", 0.1))))
+	_count("avalanche")
+
+
+func _u10_plumes(delta: float) -> void:
+	for i: int in range(_k_plumes.size() - 1, -1, -1):
+		var e: Dictionary = _k_plumes[i]
+		e["t"] = float(e["t"]) + delta
+		var u: float = clampf(float(e["t"]) / float(e["life"]), 0.0, 1.0)
+		var mi: MeshInstance3D = e["mi"]
+		if not is_instance_valid(mi):
+			_k_plumes.remove_at(i)
+			continue
+		if float(e["t"]) < 0.0:
+			continue
+		mi.global_position = (e["from"] as Vector3).lerp(e["to"], u * u * (3.0 - 2.0 * u))
+		var sz: float = float(e["size"]) * (0.25 + 1.1 * u)
+		mi.scale = Vector3(sz, sz * 0.8, 1.0)
+		var alpha: float = smoothstep(0.0, 0.15, u) * (1.0 - smoothstep(0.55, 1.0, u)) * 0.5
+		(mi.material_override as StandardMaterial3D).albedo_color = Color(0.74, 0.8, 0.92, alpha)
+		if u >= 1.0:
+			mi.queue_free()
+			_k_plumes.remove_at(i)
+
+
+# ---- the cable car, the siren
+
+func _u10_cable(delta: float) -> void:
+	if not (land is KaltenLandscape) or (land as KaltenLandscape).cable_pivot == null:
+		return
+	var cc: Dictionary = cfg.get("cable_car", {})
+	var piv: Node3D = (land as KaltenLandscape).cable_pivot
+	var k: float = float(cc.get("stiffness", 2.6))
+	var damp: float = float(cc.get("damping", 0.1))
+	var push: float = float(cc.get("wind_gain", 0.55)) * (_wind - 0.15)
+	# across the rope (z) the wind pushes; along it (x) a slower coupled swing
+	var tq: float = push * (0.6 + 0.4 * sin(_t * 0.93)) - k * _k_cable_a - damp * _k_cable_va
+	var prev: float = _k_cable_va
+	_k_cable_va += tq * delta
+	_k_cable_a = clampf(_k_cable_a + _k_cable_va * delta, -0.35, 0.35)
+	var tb: float = push * 0.3 * sin(_t * 0.61 + 1.0) - k * 1.4 * _k_cable_b - damp * 1.5 * _k_cable_vb
+	_k_cable_vb += tb * delta
+	_k_cable_b = clampf(_k_cable_b + _k_cable_vb * delta, -0.25, 0.25)
+	piv.rotation = Vector3(_k_cable_b, 0.0, _k_cable_a)
+	_k_creak_cd -= delta
+	if signf(prev) != signf(_k_cable_va) and absf(_k_cable_a) > float(cc.get("creak_min_swing", 0.03)) and _k_creak_cd <= 0.0:
+		_k_creak_cd = float(cc.get("creak_cooldown", 3.5))
+		far_sound(str(cc.get("creak_sound", "")), piv.global_position, float(cc.get("volume_db", -8.0)))
+		_count("cable_creak")
+
+
+func _ev_siren() -> void:
+	var s: Dictionary = cfg.get("siren", {})
+	_k_siren_t = 0.0
+	if land is KaltenLandscape and (land as KaltenLandscape).siren_node != null:
+		AudioDirector.play_3d(str(s.get("sound", "")), (land as KaltenLandscape).siren_node.global_position, float(s.get("volume_db", 4.0)), 0.0)
+	else:
+		AudioDirector.play_2d(str(s.get("sound", "")), float(s.get("volume_db", 0.0)))
+	var vo: String = str(s.get("vo_category", ""))
+	if vo != "":
+		_after(float(s.get("vo_delay", 6.0)), func() -> void: _squad_line(vo))
+	_count("siren")
+
+
+func _u10_siren(delta: float) -> void:
+	if _k_siren_t < 0.0:
+		return
+	var s: Dictionary = cfg.get("siren", {})
+	_k_siren_t += delta
+	var secs: float = float(s.get("seconds", 20.0))
+	var kl: KaltenLandscape = land as KaltenLandscape
+	var lamp: OmniLight3D = kl.siren_lamp if kl != null else null
+	if lamp != null:
+		var on: float = 0.5 + 0.5 * sin(_k_siren_t * TAU / 3.2 - 1.2)
+		lamp.visible = _k_siren_t < secs
+		lamp.light_energy = float(s.get("lamp_energy", 7.0)) * on * (1.0 - smoothstep(secs - 2.0, secs, _k_siren_t))
+		var horns: Node3D = kl.siren_node.get_node_or_null("Horns") as Node3D
+		if horns != null:
+			horns.rotation.y = _k_siren_t * 1.6
+	if _k_siren_t >= secs:
+		_k_siren_t = -1.0
+		if lamp != null:
+			lamp.visible = false
+			lamp.light_energy = 0.0
+
+
+# ---- the snow
+
+func _ev_snow_harder() -> void:
+	_k_blizzard_on = true
+	if _k_snow_extra != null or _k_snow_orig == null:
+		return
+	var sh: Dictionary = cfg.get("snow_harder", {})
+	var extra: Node3D = Node3D.new()
+	extra.set_script(load("res://gravelight/world/snowfall.gd"))
+	extra.name = "SnowHarder"
+	extra.set("areas", _k_snow_orig.get("areas"))
+	extra.set("density", float(_k_snow_orig.get("density")) * float(sh.get("density_mult", 1.4)))
+	_k_snow_orig.get_parent().add_child(extra)
+	for ch: Node in extra.get_children():
+		if ch is GPUParticles3D:
+			(ch as GPUParticles3D).amount_ratio = 0.05
+	_k_snow_extra = extra
+	_count("snow_harder")
+
+
+func _u10_blizzard(delta: float) -> void:
+	var sh: Dictionary = cfg.get("snow_harder", {})
+	if sh.is_empty():
+		return
+	if _k_snow_orig == null:
+		_k_snow_orig = get_parent().find_child("Snowfall", true, false) as Node3D
+		if _k_snow_orig != null and _k_blizzard_on:
+			_ev_snow_harder()
+	var target: float = 1.0 if _k_blizzard_on else 0.0
+	_k_blizzard = move_toward(_k_blizzard, target, delta / maxf(1.0, float(sh.get("ramp_seconds", 25.0))))
+	if _k_blizzard <= 0.0:
+		return
+	var lean: float = _k_blizzard * float(sh.get("wind_lean", 1.6))
+	for pm: ParticleProcessMaterial in _snow_pms:
+		pm.gravity += Vector3(lean, 0.0, lean * 0.3)   # on top of the gust code's gravity, written just before
+	if _k_snow_extra != null:
+		for ch: Node in _k_snow_extra.get_children():
+			var p: GPUParticles3D = ch as GPUParticles3D
+			if p == null:
+				continue
+			p.amount_ratio = clampf(_k_blizzard, 0.05, 1.0)
+			if p.process_material is ParticleProcessMaterial:
+				(p.process_material as ParticleProcessMaterial).gravity = Vector3(0.25 + lean + _gust * 2.6, -0.6, 0.05 + lean * 0.3)
+
+
+## 0..1: how far the snow has thickened (the smoke and the capture tool read it).
+func blizzard_level() -> float:
+	return _k_blizzard
+
+
+# ---- underground: dust, chains, drips
+
+func _u10_build_dust() -> void:
+	for i: int in 4:
+		var p: GPUParticles3D = GPUParticles3D.new()
+		p.name = "CeilingDust"
+		p.amount = 36
+		p.lifetime = 2.6
+		p.one_shot = true
+		p.explosiveness = 0.9
+		p.emitting = false
+		p.local_coords = false
+		p.visibility_aabb = AABB(Vector3(-4, -14, -4), Vector3(8, 16, 8))
+		var pm: ParticleProcessMaterial = ParticleProcessMaterial.new()
+		pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+		pm.emission_box_extents = Vector3(1.6, 0.1, 1.6)
+		pm.direction = Vector3(0, -1, 0)
+		pm.spread = 25.0
+		pm.initial_velocity_min = 0.2
+		pm.initial_velocity_max = 1.1
+		pm.gravity = Vector3(0, -1.4, 0)
+		pm.turbulence_enabled = true
+		pm.turbulence_noise_strength = 0.5
+		pm.scale_min = 0.6
+		pm.scale_max = 1.8
+		pm.color_ramp = Props._ramp_tex([[0.0, Color(0.78, 0.74, 0.68, 0.0)], [0.12, Color(0.78, 0.74, 0.68, 0.5)], [1.0, Color(0.7, 0.68, 0.64, 0.0)]])
+		p.process_material = pm
+		var q: QuadMesh = QuadMesh.new()
+		q.size = Vector2(0.22, 0.22)
+		q.material = Props._particle_mat(Color(1, 1, 1), Color(1, 1, 1), 0.0, false)
+		p.draw_pass_1 = q
+		p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(p)
+		_k_dust.append(p)
+
+
+func _u10_build_chains() -> void:
+	var c: Dictionary = cfg.get("lift_chains", {})
+	for pt: Variant in c.get("points", []):
+		var v: Array = pt
+		var len: float = float(c.get("length", 3.2))
+		var n: Node3D = Node3D.new()
+		n.name = "HoistChain"
+		add_child(n)
+		n.global_position = Vector3(float(v[0]), float(v[1]), float(v[2]))
+		Props.block(n, Vector3(-0.025, -len, -0.025), Vector3(0.025, 0.0, 0.025), "iron", false)
+		Props.block(n, Vector3(-0.07, -len, -0.01), Vector3(0.07, -len + 0.12, 0.01), "iron", false)
+		Props.block(n, Vector3(-0.16, -len - 0.5, -0.16), Vector3(0.16, -len, 0.16), "iron", false)   # the hook block
+		_k_chains.append({"node": n, "a": 0.0, "v": 0.0, "b": 0.0, "w": 0.0})
+
+
+func _u10_chains(delta: float) -> void:
+	for e: Dictionary in _k_chains:
+		if absf(float(e["a"])) < 0.002 and absf(float(e["v"])) < 0.002 and absf(float(e["b"])) < 0.002 and absf(float(e["w"])) < 0.002:
+			continue
+		e["v"] = float(e["v"]) + (-7.0 * float(e["a"]) - 0.5 * float(e["v"])) * delta
+		e["a"] = float(e["a"]) + float(e["v"]) * delta
+		e["w"] = float(e["w"]) + (-6.0 * float(e["b"]) - 0.5 * float(e["w"])) * delta
+		e["b"] = float(e["b"]) + float(e["w"]) * delta
+		(e["node"] as Node3D).rotation = Vector3(float(e["b"]), 0.0, float(e["a"]))
+	_k_clank_cd = maxf(0.0, _k_clank_cd - delta)
+
+
+## The lift chains swing and clank (a shell landed, or the lift moved). `power` 0..1.
+func _ev_lift_chains(power: float) -> void:
+	var c: Dictionary = cfg.get("lift_chains", {})
+	if c.is_empty():
+		return
+	for e: Dictionary in _k_chains:
+		e["v"] = float(e["v"]) + _rng.randf_range(-1.0, 1.0) * 2.2 * power
+		e["w"] = float(e["w"]) + _rng.randf_range(-1.0, 1.0) * 1.6 * power
+	if _k_clank_cd <= 0.0 and not _k_chains.is_empty():
+		_k_clank_cd = float(c.get("cooldown", 0.8))
+		var at: Vector3 = ((_k_chains[0] as Dictionary)["node"] as Node3D).global_position
+		AudioDirector.play_3d(str(c.get("sound", "")), at, lerpf(-8.0, 0.0, power), 0.0)
+		_count("lift_chains")
+
+
+func _u10_lift(delta: float) -> void:
+	if _k_lift == null or not is_instance_valid(_k_lift) or not _k_lift.has_method("cage_y"):
+		return
+	_k_lift_cd -= delta
+	var y: float = float(_k_lift.call("cage_y"))
+	if _k_lift_y < 1e8 and absf(y - _k_lift_y) > 0.002 and _k_lift_cd <= 0.0:
+		_k_lift_cd = 0.9
+		_ev_lift_chains(0.5)
+	_k_lift_y = y
+
+
+## Called when a shell's boom arrives (shell()): dust sifts down in the galleries and the chains swing.
+func _u10_on_shell(_bearing: float, km: float) -> void:
+	if not dust_falls_for(km, cfg):
+		return
+	var d: Dictionary = cfg.get("dust_fall", {})
+	var power: float = clampf((float(d.get("km", 3.6)) - km) / maxf(0.5, float(d.get("km", 3.6)) - 0.8), 0.25, 1.0)
+	_ev_lift_chains(power)
+	if _k_dust_cd > 0.0 or _k_dust.is_empty():
+		return
+	_k_dust_cd = float(d.get("cooldown", 1.2))
+	var pts: Array = d.get("points", [])
+	if pts.is_empty():
+		return
+	var cam: Camera3D = _listener()
+	var order: Array = pts.duplicate()
+	if cam != null:   # the ceilings nearest the listener first, so the dust is where you can see it
+		order.sort_custom(func(a: Array, b: Array) -> bool:
+			return Vector3(float(a[0]), float(a[1]), float(a[2])).distance_to(cam.global_position) < Vector3(float(b[0]), float(b[1]), float(b[2])).distance_to(cam.global_position))
+	var n: int = mini(int(d.get("count", 3)), _k_dust.size())
+	for i: int in n:
+		var v: Array = order[i] if i < 2 or order.size() <= 2 else order[_rng.randi() % order.size()]
+		var p: GPUParticles3D = _k_dust[i]
+		p.global_position = Vector3(float(v[0]), float(v[1]), float(v[2]))
+		(p.process_material as ParticleProcessMaterial).initial_velocity_max = lerpf(0.6, 1.4, power)
+		p.restart()
+		if i == 0:
+			AudioDirector.play_3d(str(d.get("sound", "")), p.global_position, lerpf(-12.0, -2.0, power), 0.0)
+	_count("dust_fall")
+
+
+# ---- drips
+
+func _u10_drips(delta: float) -> void:
+	if not cfg.has("gallery_drips"):
+		return
+	_k_drip_cd -= delta
+	if _k_drip_cd > 0.0:
+		return
+	var d: Dictionary = cfg.get("gallery_drips", {})
+	var ev: Array = d.get("every", [2.5, 6.0])
+	_k_drip_cd = _rng.randf_range(float(ev[0]), float(ev[1]))
+	_ev_drip(false)
+
+
+## One drop: found by a ray up from a spot near the listener (the gallery ceiling), falls to the floor and sounds.
+func _ev_drip(force: bool) -> void:
+	var cam: Camera3D = _listener()
+	if cam == null or not is_inside_tree():
+		return
+	var d: Dictionary = cfg.get("gallery_drips", {})
+	if cam.global_position.y > float(d.get("below_y", -3.0)) and not force:
+		return
+	var r: float = float(d.get("range", 11.0))
+	var origin: Vector3 = cam.global_position + Vector3(_rng.randf_range(-r, r), -0.6, _rng.randf_range(-r, r))
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	var up: Dictionary = space.intersect_ray(PhysicsRayQueryParameters3D.create(origin, origin + Vector3(0, 17, 0), 1))
+	if up.is_empty():
+		return
+	var ceil_p: Vector3 = (up["position"] as Vector3) - Vector3(0, 0.05, 0)
+	var dn: Dictionary = space.intersect_ray(PhysicsRayQueryParameters3D.create(ceil_p - Vector3(0, 0.1, 0), ceil_p - Vector3(0, 19, 0), 1))
+	if dn.is_empty():
+		return
+	var floor_p: Vector3 = dn["position"]
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	var sm: SphereMesh = SphereMesh.new()
+	sm.radius = 0.018
+	sm.height = 0.05
+	sm.radial_segments = 6
+	sm.rings = 3
+	mi.mesh = sm
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.albedo_color = Color(0.7, 0.82, 0.95)
+	mi.material_override = m
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(mi)
+	mi.global_position = ceil_p
+	var fall: float = sqrt(2.0 * maxf(0.3, ceil_p.y - floor_p.y) / 9.8)
+	_k_drops.append({"mi": mi, "from": ceil_p, "to": floor_p, "t": 0.0, "dur": fall, "snd": str(d.get("sound", "")), "db": float(d.get("volume_db", -6.0))})
+
+
+func _u10_drops(delta: float) -> void:
+	for i: int in range(_k_drops.size() - 1, -1, -1):
+		var e: Dictionary = _k_drops[i]
+		e["t"] = float(e["t"]) + delta
+		var u: float = clampf(float(e["t"]) / float(e["dur"]), 0.0, 1.0)
+		var mi: MeshInstance3D = e["mi"]
+		mi.global_position = (e["from"] as Vector3).lerp(e["to"], u * u)
+		if u >= 1.0:
+			AudioDirector.play_3d(str(e["snd"]), e["to"], float(e["db"]), 0.0)
+			mi.queue_free()
+			_k_drops.remove_at(i)
+			_count("drip")
+
+
+# ---- salt glints
+
+func _u10_build_glint() -> void:
+	var g: Dictionary = cfg.get("salt_glint", {})
+	var sh: Shader = load("res://gravelight/world/landscape/shaders/salt_glint.gdshader") as Shader
+	if sh == null:
+		return
+	_k_glint = ShaderMaterial.new()
+	_k_glint.shader = sh
+	_k_glint.set_shader_parameter("strength", float(g.get("strength", 1.5)))
+	_k_glint.set_shader_parameter("lamp_range", float(g.get("range", 16.0)))
+	_k_glint.set_shader_parameter("cone_cos", cos(deg_to_rad(float(g.get("cone_deg", 38.0)))))
+	var names: Array = g.get("materials", ["mats_halite", "mats_halite_floor", "mats_halite_carved"])
+	var seen: Dictionary = {}
+	var patched: int = 0
+	for n: Node in get_parent().find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		if mi.mesh == null:
+			continue
+		for s: int in mi.mesh.get_surface_count():
+			var mat: Material = mi.get_active_material(s)
+			if mat != null and names.has(mat.resource_name) and not seen.has(mat):
+				seen[mat] = true
+				mat.next_pass = _k_glint
+				patched += 1
+	counts["glint_materials"] = patched
+
+
+func _u10_glint_update() -> void:
+	var cam: Camera3D = _listener()
+	if cam == null:
+		return
+	var below: bool = cam.global_position.y < float((cfg.get("salt_glint", {}) as Dictionary).get("below_y", -2.0))
+	_k_glint.set_shader_parameter("lamp_on", 1.0 if below else 0.0)
+	_k_glint.set_shader_parameter("lamp_pos", cam.global_position)
+	_k_glint.set_shader_parameter("lamp_dir", -cam.global_transform.basis.z)
 
 
 # ---- U10 Act IV ----

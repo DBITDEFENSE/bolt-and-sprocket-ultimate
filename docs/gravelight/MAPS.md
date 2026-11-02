@@ -1094,6 +1094,16 @@ Triggered by holding [F] on the Rheinschalter in the Quay turbine house (free; i
 
 ---
 
+## Map 1: the living world (UPDATE 10 section 5, DECISIONS T-161)
+Beyond the yard walls (4 m: you see it over them, from the upper floor, through the windows and from the gate) Kaltenbrunn is a place on a mountain, not a diorama. Code: `world/landscape/kalten_landscape.gd` (a `Landscape` subclass, built at load time, nothing collides), `kalten_terrain.gd` (height, ridges, forest), `data/gravelight/map01_ambience.json` run by `MapAmbience`; the beds are `data/gravelight/ambience/map01.json` (ZoneAmbience, built by `tools_src/gen_ambience_map01.py`, synthesized).
+- **The land.** The mine sits on a flat shelf (y 0, edge to edge with the Ground slabs). North, east and west it drops ~40 m into a snow valley; to the south the land climbs over the chapel, generator hall, lab and vault (the underground roofs are always under snow). Foothills with a forest (mesh spruces to ~170 m, impostor cards beyond and along the wooded ridge), mist cards in the valley, then two Alpine ridge bands (the wall runs along the north and east, up to ~200 m) and Map 0's night-sky dome, so the war's flashes and searchlight beams work the same way.
+- **The snow-buried rail line** leaves the rail yard's north end (x 48), takes a cut terrace along the valley flank to the north-east and runs off into the dark: rails showing where the wind scoured the drifts, a telegraph line (one pole down), a freight wagon under a drift.
+- **The dead cable car**: two lattice towers (the near one on the shelf's north-east corner, the far one on the opposite flank), two ropes, a gondola a third of the way across. It swings on the wind (a pendulum, `cable_car` block) and creaks at the ends of its swing.
+- **The sky.** Bomber streams (the Map 0 block retuned: higher, heading south-east), fighter passes, a plane shot down that now hits the Alpine wall and burns there (`plane_down.ridge`), searchlights, flares, far artillery/MG/flak from the west and south-west. **Round 7: the dogfight**, two fighters circling ~150 m out for 46 s, MG bursts, the lead trailing smoke. **Avalanches**: a low rumble from a ridge every few minutes, a snow plume sliding down the face.
+- **Timed beats.** Round 10: the minehead siren on the headframe wails for 20 s (horns turning, a red lamp pulsing; no Operator line: no existing line fits). From round 20: a second snow layer fades in over 25 s and the wind leans on every layer.
+- **Underground (zones E to I).** A shell within 3.6 km shakes dust from the ceilings (nearest ceilings to the player first), swings the hoist chains in the lift bay and clanks them; the lift moving clanks them too. Drops fall from the gallery ceilings near the player. The halite materials carry a sparkle pass lit by the viewer's headlamp cone (there is no flashlight in the game).
+- **Audio beds** per zone: surface wind, rail yard, admin hum, barracks stove, lift winch, stair draught, chapel drip, generator hall, lab buzz, vault drone; one-shots siren, avalanche, cable creak, dust, chain clank, tin.
+
 # MAP 2 — "TOTENHAFEN" (first playable, DECISIONS T-036)
 
 **Story question answered:** *Where is the Nachtglas going?* Into U-boats, as ballast in lead-sealed coffins, consigned through a neutral company to a buyer abroad.

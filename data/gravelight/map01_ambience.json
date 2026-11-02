@@ -1,0 +1,61 @@
+{
+ "_doc": "Kaltenbrunn's living world (UPDATE 10 section 5, DECISIONS T-161), read by gravelight/world/landscape/map_ambience.gd on Map 0's schema (data/gravelight/map00_ambience.json) plus the U10 kinds appended at the end of that script: dogfight, avalanche, cable_car, siren, snow_harder, dust_fall, chains, drips, salt_glint, and plane_down.ridge. Presentation only: nothing here touches gameplay. Blocks a map does not list stay off (no crows, frost, farm light, bell...). Ranges are [min, max] seconds; *_late is the range at full intensity (the war getting closer, round 1 -> full_round). Bearings are compass degrees from the Minehead Yard (0 north, 90 east); the Alpine wall runs along the north and east, the front is beyond the mountains to the west and south-west. Distances to the war are virtual kilometres (seconds_per_km sets the boom's delay).",
+ "intensity": {"start_round": 1, "full_round": 20},
+ "bombers": {
+  "first_after": [40, 75], "interval": [130, 250], "interval_late": [90, 160],
+  "count": [8, 14], "altitude": [170, 235], "speed": 9.0, "wingspan": 6.5, "spacing": 11.0,
+  "headings": [100, 140], "offset": [-150, 130],
+  "sound": "war_bomber_drone", "volume_db": 1.0, "unit_size": 70.0, "max_distance": 900.0
+ },
+ "fighters": {
+  "first_after": [90, 150], "interval": [100, 190], "interval_late": [55, 110],
+  "altitude": [45, 90], "speed": 42.0, "pass_distance": [90, 210], "length": 640.0, "wingspan": 3.4,
+  "bursts": [2, 5], "chase_lag": 0.9,
+  "sound": "war_fighter_pass", "mg_sound": "war_fighter_mg", "volume_db": 0.0, "unit_size": 45.0, "max_distance": 700.0
+ },
+ "plane_down": {
+  "min_round": 5, "chance_per_flight": 0.55, "fighter_share": 0.4, "crash_bearing": [15, 110], "crash_radius": 330.0, "ridge": true,
+  "crash_km": 1.8, "burn_lead": 3.0, "dive_seconds": 12.0,
+  "crash_sound": "war_crash_boom", "dive_sound": "war_plane_down", "vo_category": "SKY_PLANE_DOWN", "vo_delay": 2.5,
+  "wreck_glow_seconds": 150.0
+ },
+ "dogfight": {
+  "round": 7, "delay": 10.0, "seconds": 46.0, "bearing": 28.0, "distance": 150.0, "altitude": [100, 125],
+  "radius": 72.0, "speed": 36.0, "wingspan": 3.4, "chase_lag": 1.25, "burst_every": [1.6, 3.4],
+  "sound": "war_fighter_pass", "mg_sound": "war_fighter_mg", "volume_db": 0.0
+ },
+ "searchlights": {"bearings": [28, 74], "radius": 296.0, "elevation": [40, 74], "sweep": [0.04, 0.1], "intensity": 0.1, "length": 330.0, "cloud_height": 250.0},
+ "artillery": {
+  "first_after": [8, 16], "interval": [10, 24], "interval_late": [2.8, 7.5],
+  "km": [5.0, 8.5], "km_late": [1.6, 4.4], "bearings": [205, 305], "seconds_per_km": 2.9,
+  "barrage_chance": 0.12, "barrage_chance_late": 0.35, "barrage_shells": [3, 7],
+  "sound": "war_artillery_boom", "near_sound": "war_artillery_near", "near_km": 3.0,
+  "volume_db": [-14.0, 2.0], "shake_km": 3.0, "shake": 0.3, "flash": [0.5, 1.6]
+ },
+ "tracers": {"first_after": [25, 45], "interval": [18, 42], "interval_late": [6, 15], "bearings": [215, 300], "burst": [1.5, 4.0]},
+ "flares": {
+  "min_round": 3, "first_after": [50, 90], "interval": [60, 120], "interval_late": [25, 50],
+  "radius": [75, 165], "bearings": [0, 360], "height": [55, 85], "fall_speed": 2.2, "burn_seconds": 38.0,
+  "red_share": 0.4, "light_range": 150.0, "light_energy": 3.2, "sound": "war_flare_pop"
+ },
+ "machine_guns": {"first_after": [18, 38], "interval": [24, 58], "interval_late": [7, 20], "bearings": [205, 305], "km": [1.5, 4.0], "sound": "war_mg_distant"},
+ "town": {"strength": [0.18, 0.4], "flicker": 0.25},
+ "gusts": {"first_after": [14, 28], "interval": [25, 60], "seconds": [3.0, 6.0], "sound": "amb_wind_gust", "snow_push": 3.0},
+ "no_spindrift": {},
+ "avalanche": {
+  "first_after": [80, 140], "interval": [190, 300], "interval_late": [150, 240], "bearings": [320, 420], "km": 1.3,
+  "sound": "amb_m1_avalanche", "volume_db": -2.0, "shake": 0.08, "plume_seconds": 11.0
+ },
+ "cable_car": {"stiffness": 2.6, "damping": 0.1, "wind_gain": 0.55, "creak_sound": "amb_m1_cable_creak", "volume_db": -8.0, "creak_min_swing": 0.03, "creak_cooldown": 3.5},
+ "siren": {"round": 10, "delay": 12.0, "seconds": 20.0, "sound": "amb_m1_siren", "volume_db": 4.0, "lamp_energy": 7.0, "vo_category": ""},
+ "snow_harder": {"round": 20, "ramp_seconds": 25.0, "density_mult": 1.4, "wind_lean": 1.6},
+ "dust_fall": {
+  "km": 3.6, "count": 3, "cooldown": 1.2, "sound": "amb_m1_dust",
+  "points": [[25, -8.7, 56.5], [22.5, -8.7, 58.0], [8, 1.8, 70], [30, 1.8, 66], [-8, 1.8, 74], [12, 1.8, 84],
+   [50, -2.2, 70], [62, -2.2, 66], [76, -2.2, 72], [62, -7.2, 90], [80, -7.2, 88], [96, -7.2, 92],
+   [34, -5.9, 110], [26, -5.9, 122], [44, -5.9, 106]]
+ },
+ "lift_chains": {"length": 2.2, "cooldown": 0.8, "sound": "amb_m1_chain_clank", "points": [[22.6, -8.55, 57.2], [27.4, -8.55, 57.2], [25.0, -8.55, 55.0]]},
+ "gallery_drips": {"every": [2.5, 6.0], "range": 11.0, "below_y": -3.0, "sound": "cellar_drip", "volume_db": -4.0},
+ "salt_glint": {"strength": 1.5, "range": 16.0, "cone_deg": 38.0, "below_y": -2.0, "materials": ["mats_halite", "mats_halite_floor", "mats_halite_carved"]}
+}

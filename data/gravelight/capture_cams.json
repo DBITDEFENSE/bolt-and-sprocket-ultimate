@@ -628,6 +628,19 @@
         {"name": "loft_north", "pos": [12.5, 3.5, 26.6], "yaw": 25.0, "pitch": -12.0, "note": "T-100: the loft's north wall: sacks, crates, the bucket, hay scatter, the chute"}
       ]
     },
+    "u10_map01": {
+      "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {"name": "A_yard_ridges", "pos": [6.0, 0.0, 26.0], "yaw": -20.0, "pitch": 9.0, "note": "Minehead Yard looking north over the wall at the Alpine wall and the foothill forest", "do": ["power"], "settle_s": 4.0},
+        {"name": "B_railyard", "pos": [48.0, 0.0, 45.0], "yaw": 0.0, "pitch": 6.0, "note": "Rail yard: up the tracks to where the snow-buried line runs off into the valley"},
+        {"name": "C_cablecar", "pos": [47.0, 0.0, 20.0], "yaw": -30.0, "pitch": 14.0, "note": "Rail yard looking north-east over the wall to the dead cable car tower over the valley"},
+        {"name": "D_chapel", "pos": [12.0, -12.0, 63.0], "yaw": 180.0, "pitch": 11.3, "note": "Salt chapel toward the altar (glint pass lit by the headlamp cone)", "do": ["power"], "settle_s": 4.0},
+        {"name": "E_generator", "pos": [46.0, -12.0, 65.0], "yaw": -90.0, "pitch": 4.0, "note": "Generator hall along the turbines"},
+        {"name": "F_vault", "pos": [34.0, -18.0, 104.0], "yaw": 180.0, "pitch": -3.0, "note": "The vault (Core) toward the pit"}
+      ]
+    },
     "u09_map02": {
       "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
       "bots": 0,
