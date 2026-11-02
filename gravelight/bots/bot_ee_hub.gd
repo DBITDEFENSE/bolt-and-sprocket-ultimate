@@ -507,6 +507,7 @@ func _full_partner() -> void:
 				continue
 			if ty != "collect" and not (ty == "carry" and (b.ee.task["def"] as Dictionary).has("pickups")):
 				taken["%s/%s" % [b.ee.task["qid"], b.ee.task["sid"]]] = true
+	_main_first(taken)
 	if busy >= cap:
 		return
 	for b2: BotBrain in squad.brains:
@@ -524,6 +525,24 @@ func _full_partner() -> void:
 			busy += 1
 			if str(best["as"]) == "escort" or (str((best["t"] as Dictionary).get("type", "")) != "collect" and not (best["t"] as Dictionary).has("pickups")):
 				taken["%s/%s" % [best["qid"], best["sid"]]] = true
+
+
+## U10 (T-163): a Full Partner bot on a side quest drops it for an open main-egg step it can do now (it took the
+## Song's cylinders at round 1 because the power switch was still behind doors, and kept them for eight rounds).
+func _main_first(taken: Dictionary) -> void:
+	var qids: Array[StringName] = QuestManager.quest_ids()
+	if qids.is_empty() or QuestManager.is_complete(qids[0]):
+		return
+	for b: BotBrain in squad.brains:
+		if b.ee == null or not b.ee.active() or str(b.ee.task.get("source", "")) != "full" or b.ee.task["qid"] == qids[0]:
+			continue
+		var best: Dictionary = pick_for(b, taken, false)
+		if best.is_empty() or best["qid"] != qids[0]:
+			continue
+		b.ee.cancel("the main egg first")
+		start_on(b, best["qid"], best["sid"], best["t"], false, "full", null, best["as"])
+		if str(best["as"]) == "escort" or (str((best["t"] as Dictionary).get("type", "")) != "collect" and not (best["t"] as Dictionary).has("pickups")):
+			taken["%s/%s" % [best["qid"], best["sid"]]] = true
 
 
 ## U10 (T-163): a lit shoot_target with a then_hold (the Chapel bell: the Foreman comes 20 s later and must die in

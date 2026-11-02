@@ -200,9 +200,10 @@ func tick_think(now: float) -> void:
 	if why != "" and str(task.get("source", "")) == "full" and now - float(task.get("paused_t", now)) > float((_cfg().get("pause", {}) as Dictionary).get("full_drop_after_s", 60.0)):
 		cancel("paused too long")
 		return
-	# U10 (T-163): waiting the whole of wait_timeout_s, not a wait moment in a task older than that (the drummer's
-	# crate pulls wait out each offered gun between pulls: the task was cancelled mid-series after 150 s)
-	if now - float(task.get("wait_t0", now)) > float(_cfg().get("wait_timeout_s", 150.0)) and str(_plan.get("do", "")) == "wait" and str(task.get("source", "")) == "full":
+	# U10 (T-163): no errand finished for wait_timeout_s (not "a wait moment in a task older than that": the drummer's
+	# crate pulls wait out each offered gun between pulls and were cancelled mid-series; nor "waiting the whole time":
+	# a bot flipping between an unreachable cylinder and a wait kept a side quest for eight rounds)
+	if now - float(task.get("prog_t", task.get("t0", now))) > float(_cfg().get("wait_timeout_s", 150.0)) and str(_plan.get("do", "")) == "wait" and str(task.get("source", "")) == "full":
 		cancel("nothing to do")
 		return
 	if str(task["type"]) == "escort" and str(task.get("source", "")) == "full" and hub != null:
@@ -330,11 +331,6 @@ func _refresh_plan() -> void:
 	var was: String = "%s %s" % [str(_plan.get("do", "")), str((_plan.get("node") as Node).name) if is_instance_valid(_plan.get("node")) and _plan.get("node") is Node else ""]
 	_plan = plan(str(task["type"]), task["def"], w)
 	var d: String = str(_plan.get("do", ""))
-	if d == "wait":
-		if not task.has("wait_t0"):
-			task["wait_t0"] = _now()
-	else:
-		task.erase("wait_t0")
 	if OS.has_environment("EGG_DEBUG"):
 		var now_s: String = "%s %s" % [d, str((_plan.get("node") as Node).name) if is_instance_valid(_plan.get("node")) and _plan.get("node") is Node else ""]
 		if now_s != was:
@@ -804,6 +800,8 @@ func _run_errand(e: Dictionary, delta: float) -> String:
 	var r: String = brain.tasks.run(_errand, delta)
 	if r != "running":
 		_errand = {}
+	if r == "done" and active():
+		task["prog_t"] = _now()   # U10 (T-163): progress, for the "nothing to do" cancel
 	return r
 
 
