@@ -2572,6 +2572,129 @@ def gen_lodestone():
     emit("lodestone_turn", "sfx/weapons/lodestone_turn_01", x, -4.0, bus="SFX", volume_db=-6.0, max_voices=1, pitch=[0.98, 1.02], attenuation="quiet")
 
 
+def gen_undertow():
+    """THE UNDERTOW (UPDATE 10, T-153): the harpoon's pneumatic slam and the chain paying out, the reel's ratcheting
+    winch, one pump stroke of the diver's pump (the reload plays it three times), the whirlpool's sucking roar,
+    and a body splash (the whirl's drownings, the tide's lost drops)."""
+    r = rng_for("ut_fire")
+    x = zeros(1.4)
+    place(x, kick(r, 1.0, 160, 45, 0.1, 0.5), 0.0, 0.8)                                                            # the pneumatic slam
+    place(x, nrm(bp(white(r, 0.25), 300, 3500)) * expenv(N(0.25), 0.05), 0.0, 0.7)                                   # the air dump
+    for k in range(9):
+        place(x, nrm(hp(white(r, 0.012), 2200)) * expenv(N(0.012), 0.004), 0.05 + k * 0.045, 0.35 * (1.0 - k / 10.0))   # the chain paying out
+    place(x, bell(r, hz("C#3"), 0.9, 1.5, 0.5, 0.4), 0.02, 0.25)                                                    # the cylinder's ring
+    emit("undertow_fire", "sfx/weapons/undertow_fire_01", reverb(x, r, 0.8, 0.2), -1.0, bus="SFX", volume_db=-1.0, max_voices=2, pitch=[0.96, 1.04], attenuation="loud")
+    r = rng_for("ut_reel")
+    x = zeros(1.4)
+    for k in range(22):
+        place(x, nrm(bp(white(r, 0.015), 900, 5000)) * expenv(N(0.015), 0.005), k * 0.055, 0.45)                       # the ratchet clicks
+    n = N(1.2)
+    place(x, np.sin(2 * np.pi * phase_of(np.geomspace(70.0, 120.0, n), n)) * adsr(n, 0.05, 0.1, 0.7, 0.3), 0.0, 0.35)   # the winch's growl
+    emit("undertow_reel", "sfx/weapons/undertow_reel_01", reverb(x, r, 0.5, 0.15), -3.0, bus="SFX", volume_db=-4.0, max_voices=2, pitch=[0.97, 1.03], attenuation="world")
+    r = rng_for("ut_pump")
+    x = zeros(0.45)
+    place(x, sweep_noise(r, 0.3, 500, 2600, 3) * adsr(N(0.3), 0.04, 0.05, 0.7, 0.15), 0.0, 0.55)                    # the air drawn in
+    place(x, nrm(hp(white(r, 0.02), 1500)) * expenv(N(0.02), 0.006), 0.28, 0.6)                                     # the valve's click
+    emit("undertow_pump", "sfx/weapons/undertow_pump_01", x, -4.0, bus="SFX", volume_db=-5.0, max_voices=2, pitch=[0.95, 1.05], attenuation="quiet")
+    r = rng_for("ut_whirl")
+    x = zeros(3.5)
+    n = N(3.4)
+    place(x, nrm(lp(pink(r, 3.4), 700)) * adsr(n, 0.3, 0.3, 0.8, 1.2), 0.0, 0.8)                                      # the water's roar
+    place(x, sweep_noise(r, 3.4, 1500, 300, 3) * adsr(n, 0.2, 0.3, 0.6, 1.0), 0.0, 0.45)                              # the suck, falling
+    place(x, np.sin(2 * np.pi * phase_of(np.geomspace(48.0, 34.0, n), n)) * adsr(n, 0.4, 0.2, 0.7, 1.0), 0.0, 0.4)    # the deep drone
+    emit("undertow_whirl", "sfx/weapons/undertow_whirl_01", reverb(x, r, 1.2, 0.3), -1.5, bus="SFX", volume_db=-2.0, max_voices=2, pitch=[0.95, 1.05], attenuation="loud")
+    r = rng_for("water_splash")
+    x = zeros(1.0)
+    place(x, nrm(bp(white(r, 0.5), 400, 6000)) * expenv(N(0.5), 0.09), 0.0, 0.8)
+    place(x, kick(r, 0.6, 120, 50, 0.06, 0.3), 0.0, 0.4)
+    for k in range(6):
+        place(x, nrm(bp(white(r, 0.03), 1500, 7000)) * expenv(N(0.03), 0.01), 0.12 + k * 0.06 + r.uniform(0, 0.03), 0.25)   # the drops falling back
+    emit("water_splash", "sfx/world/water_splash_01", reverb(x, r, 0.6, 0.2), -2.0, bus="SFX", volume_db=-3.0, max_voices=4, pitch=[0.9, 1.1], attenuation="world")
+
+
+def gen_totenhafen():
+    """Totenhafen's UPDATE 10 systems (T-153): the drowned surfacing and the diver-helmet's roar, DER KIELHOLER's
+    anchor-chain sweep, the Crane Drop's crash, the searchlight's carbon arc striking, the cipher machine's rotor
+    click, the teletype printing, the diesels catching, U-1047's horn and the hull's groan."""
+    r = rng_for("kl_surface")
+    x = zeros(1.6)
+    place(x, nrm(lp(white(r, 0.9), 900)) * adsr(N(0.9), 0.15, 0.1, 0.6, 0.4), 0.0, 0.6)                              # the water parting
+    for k in range(5):
+        place(x, nrm(bp(white(r, 0.05), 300, 2500)) * expenv(N(0.05), 0.02), 0.2 + k * 0.12, 0.3)                     # the gurgle
+    n = N(0.8)
+    place(x, np.sin(2 * np.pi * phase_of(np.geomspace(90.0, 70.0, n), n)) * adsr(n, 0.1, 0.1, 0.6, 0.3) * (0.6 + 0.4 * np.sin(2 * np.pi * 7 * tax(n))), 0.5, 0.45)   # a drowned breath
+    emit("kielholer_surface", "sfx/zombies/kielholer_surface_01", reverb(x, r, 0.9, 0.3), -2.0, bus="SFX", volume_db=-2.0, max_voices=3, pitch=[0.9, 1.1], attenuation="world")
+    r = rng_for("kl_roar")
+    x = zeros(2.0)
+    n = N(1.6)
+    vib = 1.0 + 0.03 * np.sin(2 * np.pi * 5.5 * tax(n))
+    place(x, nrm(saw(np.geomspace(85.0, 60.0, n) * vib) * adsr(n, 0.08, 0.2, 0.8, 0.6)), 0.0, 0.5)                     # the roar inside the helmet
+    place(x, nrm(bp(pink(r, 1.6), 200, 1400)) * adsr(n, 0.05, 0.2, 0.7, 0.6), 0.0, 0.4)
+    place(x, bell(r, hz("D2"), 1.6, 1.2, 0.3, 0.3), 0.0, 0.25)                                                       # the brass bowl ringing with it
+    emit("kielholer_roar", "sfx/zombies/kielholer_roar_01", reverb(x, r, 1.4, 0.35), -1.0, bus="SFX", volume_db=0.0, max_voices=2, pitch=[0.95, 1.05], attenuation="loud")
+    r = rng_for("chain_sweep")
+    x = zeros(1.6)
+    place(x, sweep_noise(r, 0.9, 200, 2000, 3) * adsr(N(0.9), 0.3, 0.1, 0.8, 0.2), 0.0, 0.5)                          # the swing overhead
+    for k in range(14):
+        place(x, nrm(hp(white(r, 0.014), 1800)) * expenv(N(0.014), 0.006), 0.6 + k * 0.03, 0.5)                       # the links rattling out
+    place(x, kick(r, 0.9, 130, 40, 0.1, 0.5), 1.0, 0.7)                                                              # the anchor hitting home
+    emit("chain_sweep", "sfx/zombies/chain_sweep_01", reverb(x, r, 0.9, 0.25), -1.0, bus="SFX", volume_db=-1.0, max_voices=2, pitch=[0.95, 1.05], attenuation="loud")
+    r = rng_for("crane_crash")
+    x = zeros(2.6)
+    place(x, kick(r, 1.0, 120, 32, 0.2, 0.9), 0.0, 1.0)                                                              # the pallet lands
+    place(x, crackle(r, 0.8, 300, 1.0, 600, 7000) * expenv(N(0.8), 0.18), 0.0, 0.7)                                    # the crates splintering
+    place(x, nrm(lp(white(r, 1.6), 400)) * expenv(N(1.6), 0.5), 0.05, 0.5)                                            # the dust rolling
+    for k in range(5):
+        place(x, bell(r, hz("A3") * (1.0 + 0.13 * k), 0.6, 2.5, 0.6, 0.6), 0.1 + k * 0.17, 0.12)                       # loose tins
+    emit("crane_crash", "sfx/world/crane_crash_01", reverb(x, r, 1.3, 0.3), -0.5, bus="SFX", volume_db=0.0, max_voices=1, pitch=[0.96, 1.04], attenuation="loud")
+    r = rng_for("searchlight_on")
+    x = zeros(1.4)
+    place(x, nrm(hp(white(r, 0.03), 1500)) * expenv(N(0.03), 0.01), 0.0, 0.7)                                        # the shutter's clack
+    place(x, kick(r, 0.5, 90, 50, 0.05, 0.2), 0.0, 0.4)
+    place(x, crackle(r, 1.2, 60, 0.5, 2000, 9000) * adsr(N(1.2), 0.1, 0.2, 0.6, 0.4), 0.08, 0.35)                      # the carbon arc's sputter
+    n = N(1.2)
+    place(x, sine(100.0, 1.2) * adsr(n, 0.1, 0.0, 1.0, 0.4), 0.08, 0.25)                                              # the mains hum
+    emit("searchlight_on", "sfx/world/searchlight_on_01", reverb(x, r, 0.7, 0.2), -2.0, bus="SFX", volume_db=-3.0, max_voices=1, pitch=[0.98, 1.02], attenuation="world")
+    r = rng_for("cipher_wheel")
+    x = zeros(0.35)
+    place(x, nrm(bp(white(r, 0.012), 1200, 6000)) * expenv(N(0.012), 0.004), 0.0, 0.7)                                # the detent
+    place(x, bell(r, hz("E6"), 0.25, 6.0, 0.6, 0.5), 0.004, 0.12)
+    place(x, nrm(lp(white(r, 0.04), 1500)) * expenv(N(0.04), 0.012), 0.02, 0.3)
+    emit("cipher_wheel", "sfx/world/cipher_wheel_01", x, -4.0, bus="SFX", volume_db=-6.0, max_voices=3, pitch=[0.94, 1.06], attenuation="quiet")
+    r = rng_for("teletype_print")
+    x = zeros(2.6)
+    for k in range(34):
+        t0 = 0.05 + k * 0.07 + (0.12 if k % 6 == 5 else 0.0) * (k // 6)
+        if t0 < 2.4:
+            place(x, nrm(bp(white(r, 0.02), 800, 5000)) * expenv(N(0.02), 0.006), t0, 0.55 * r.uniform(0.7, 1.0))       # the type bars
+    for k in range(3):
+        place(x, bell(r, hz("A5"), 0.4, 4.0, 0.7, 0.8), 0.6 + k * 0.8, 0.15)                                         # the carriage bell
+    emit("teletype_print", "sfx/world/teletype_print_01", reverb(x, r, 0.4, 0.15), -3.0, bus="SFX", volume_db=-4.0, max_voices=1, pitch=[0.98, 1.02], attenuation="world")
+    r = rng_for("diesel_start")
+    x = zeros(4.0)
+    for k in range(10):
+        place(x, kick(r, 0.5 + 0.05 * k, 70, 40, 0.08, 0.3), 0.05 + k * max(0.09, 0.32 - 0.025 * k), 0.4)             # the cranking, catching faster
+    n = N(2.4)
+    tt = tax(n)
+    putt = 0.5 + 0.5 * np.sign(np.sin(2 * np.pi * 9.0 * tt))
+    place(x, nrm(lp(white(r, 2.4), 300)) * putt * adsr(n, 0.2, 0.2, 0.9, 0.4), 1.5, 0.6)                              # the diesel running
+    place(x, saw(np.full(n, 54.0)) * adsr(n, 0.3, 0.2, 0.7, 0.4), 1.5, 0.25)
+    emit("diesel_start", "sfx/world/diesel_start_01", reverb(x, r, 1.4, 0.35), -1.0, bus="SFX", volume_db=-1.0, max_voices=1, pitch=[0.98, 1.02], attenuation="loud")
+    r = rng_for("boat_horn")
+    x = zeros(3.6)
+    n = N(2.6)
+    tone = saw(np.full(n, 98.0)) * 0.6 + saw(np.full(n, 98.0 * 1.5)) * 0.4
+    place(x, nrm(lp(tone, 1200)) * adsr(n, 0.15, 0.2, 0.85, 0.6), 0.0, 0.8)                                            # the horn's fifth
+    emit("boat_horn", "sfx/world/boat_horn_01", reverb(x, r, 2.0, 0.4), -1.0, bus="SFX", volume_db=-1.0, max_voices=1, pitch=[1.0, 1.0], attenuation="loud")
+    r = rng_for("hull_groan")
+    x = zeros(3.0)
+    n = N(2.6)
+    place(x, nrm(lp(saw(np.geomspace(42.0, 58.0, n) * (1.0 + 0.04 * np.sin(2 * np.pi * 0.9 * tax(n)))), 400)) * adsr(n, 0.5, 0.2, 0.7, 0.9), 0.0, 0.6)   # the steel groaning
+    for k in range(4):
+        place(x, nrm(hp(white(r, 0.02), 1000)) * expenv(N(0.02), 0.008), 0.4 + k * 0.55 + r.uniform(0, 0.1), 0.35)      # rivets ticking
+    emit("hull_groan", "sfx/world/hull_groan_01", reverb(x, r, 1.8, 0.4), -2.0, bus="SFX", volume_db=-2.0, max_voices=1, pitch=[0.92, 1.05], attenuation="loud")
+
+
 def gen_map4_perks():
     """Skyhook Sekt and Magpie Mead (UPDATE 07, T-105): the hop, the stomp, the jingles; the Magpie drop and pick."""
     r = rng_for("sk_hop")
@@ -2621,6 +2744,8 @@ def main():
     gen_map4_perks()
     gen_ledger()
     gen_lodestone()
+    gen_undertow()
+    gen_totenhafen()
     gen_ambience()
     gen_music()
     legacy_aliases()

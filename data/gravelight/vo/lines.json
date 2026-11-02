@@ -12746,5 +12746,80 @@
     "speaker": "OPR",
     "category": "CRANE_DROP",
     "text": "Freight delivered. Express. Mind your {heads}."
+  },
+  "KLH_STAYS_01": {
+    "speaker": "KLH",
+    "category": "STAYS",
+    "text": "Sie bleibt hier. (She stays here.)"
+  },
+  "KLH_CARGO_01": {
+    "speaker": "KLH",
+    "category": "CARGO",
+    "text": "Die Fracht bleibt hier. (The cargo stays here.)"
+  },
+  "KLH_BRECHT_01": {
+    "speaker": "KLH",
+    "category": "BRECHT",
+    "text": "Brecht… du hast es aufgeschrieben. (Brecht… you wrote it down.)"
+  },
+  "KLH_DEATH_01": {
+    "speaker": "KLH",
+    "category": "DEATH",
+    "text": "Dann fahrt. Fahrt sie raus. (Then sail. Take her out.)"
+  },
+  "OPR_BOSS_KIELHOLER_SPAWN_01": {
+    "speaker": "OPR",
+    "category": "BOSS_KIELHOLER_SPAWN",
+    "text": "A retained captain is surfacing in the pen hall. Kapitänleutnant Lenz. He has {opinions} about the cargo. Please don't share them."
+  },
+  "OPR_BOSS_KIELHOLER_DEATH_01": {
+    "speaker": "OPR",
+    "category": "BOSS_KIELHOLER_DEATH",
+    "text": "Captain Lenz has resigned his command. Collect the key, please. The boat is company property. So is the {cargo}."
+  },
+  "OPR_KIELHOLER_GRAB_01": {
+    "speaker": "OPR",
+    "category": "KIELHOLER_GRAB",
+    "text": "The harbour is reclaiming personnel at the pier edges. Personnel are {advised} to resist."
+  },
+  "DUT_BOSS_KIELHOLER_01": {
+    "speaker": "DUT",
+    "category": "BOSS_KIELHOLER",
+    "text": "That's her captain. Went down with her and he's still standing watch."
+  },
+  "DUT_BOSS_KIELHOLER_02": {
+    "speaker": "DUT",
+    "category": "BOSS_KIELHOLER",
+    "text": "Rest easy, skipper. We'll take her from here."
+  },
+  "PEG_BOSS_KIELHOLER_01": {
+    "speaker": "PEG",
+    "category": "BOSS_KIELHOLER",
+    "text": "Diving dress, captain's cuffs. That's Lenz. The man who wouldn't sail."
+  },
+  "PEG_BOSS_KIELHOLER_02": {
+    "speaker": "PEG",
+    "category": "BOSS_KIELHOLER",
+    "text": "He said take her out. All right, Kapitän. We will."
+  },
+  "DEA_BOSS_KIELHOLER_01": {
+    "speaker": "DEA",
+    "category": "BOSS_KIELHOLER",
+    "text": "Lord, he's still guarding that boat. Let's give the man his rest."
+  },
+  "DEA_BOSS_KIELHOLER_02": {
+    "speaker": "DEA",
+    "category": "BOSS_KIELHOLER",
+    "text": "Go on home, Captain. Your watch is over."
+  },
+  "WRN_BOSS_KIELHOLER_01": {
+    "speaker": "WRN",
+    "category": "BOSS_KIELHOLER",
+    "text": "Behind the helmet glass. Same violet. Break the glass, aim for the light."
+  },
+  "WRN_BOSS_KIELHOLER_02": {
+    "speaker": "WRN",
+    "category": "BOSS_KIELHOLER",
+    "text": "He let go at the end. Didn't fight it."
   }
 }

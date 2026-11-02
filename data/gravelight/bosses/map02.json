@@ -1,29 +1,869 @@
 {
- "_doc": "Totenhafen (map02) bosses (UPDATE 10 C5): one entry under \"bosses\" keyed by id. the_slender: HB3 THE SLENDER, the Hafenwaechter, the pens' night watchman (docs/HOMAGE_BOSSES.md section 6; docs/U10_TOTENHAFEN_DESIGN.md section 9; DECISIONS T-160): gravelight/enemies/homage/slender.gd with SlenderEncounter. der_kielholer: the Totenhafen systems worker's (T-153). hp_base is solo; HP = hp_base x (1 + hp_player_step x (players - 1)). Likeness fields stay in likeness.json (slot devin); no placeholder token is ever shown.",
- "version": 1,
- "bosses": {
-  "the_slender": {
-   "boss_id": "the_slender",
-   "slot": "devin",
-   "map": "map02_totenhafen",
-   "fallback_name": "THE SLENDER",
-   "watchman_word": "the watchman",
-   "round": 25,
-   "round_campaign": 45,
-   "needs_power": true,
-   "waits_for_flags": ["sailing", "boss_fight"],
-   "hp_base": 35000,
-   "hp_player_step": 0.75,
-   "return_hp_step": 0.0,
-   "return_after": 5,
-   "horde_fraction": 0.5,
-   "failsafe_seconds": 480.0,
-   "kill_scrip_per_player": 0,
-   "height": 1.42,
-   "limb_scale": 1.12,
-   "speed": 1.6,
-   "tier": "walk",
-   "bots_alone": {
+  "_doc": "Totenhafen (map02) bosses (UPDATE 10 C5): one entry under \"bosses\" keyed by id. the_slender: HB3 THE SLENDER, the Hafenwaechter, the pens' night watchman (docs/HOMAGE_BOSSES.md section 6; docs/U10_TOTENHAFEN_DESIGN.md section 9; DECISIONS T-160): gravelight/enemies/homage/slender.gd with SlenderEncounter. der_kielholer: the Totenhafen systems worker's (T-153). hp_base is solo; HP = hp_base x (1 + hp_player_step x (players - 1)). Likeness fields stay in likeness.json (slot devin); no placeholder token is ever shown. Map 2 'Totenhafen' bosses (UPDATE 10 contract C5, docs/U10_TOTENHAFEN_DESIGN.md section 4, DECISIONS T-153). Loaded as GLData.table(\"bosses/map02\"). hp_base is solo; HP = hp_base x (1 + hp_player_step x (players - 1)) like HB1. DER KIELHOLER comes from Letzte Fahrt's s6 (the quest's summon_boss at letzte_fahrt.boss_docks.dock2) or standalone on `round` (campaign: `campaign_round`) when the Homage Bosses setting is on and the egg has not brought him; the horde runs at horde_fraction during the fight; failsafe_seconds after he surfaces he dives for good and the ignition key floats up at the nearest dock edge (the egg can never softlock on him). bots_alone mirrors cousins.json (T-060). THE SLENDER (the Hafenwaechter, T-160) joins this file under bosses.the_slender from section 4.",
+  "version": 1,
+  "bosses": {
+    "the_slender": {
+      "boss_id": "the_slender",
+      "slot": "devin",
+      "map": "map02_totenhafen",
+      "fallback_name": "THE SLENDER",
+      "watchman_word": "the watchman",
+      "round": 25,
+      "round_campaign": 45,
+      "needs_power": true,
+      "waits_for_flags": [
+        "sailing",
+        "boss_fight"
+      ],
+      "hp_base": 35000,
+      "hp_player_step": 0.75,
+      "return_hp_step": 0.0,
+      "return_after": 5,
+      "horde_fraction": 0.5,
+      "failsafe_seconds": 480.0,
+      "kill_scrip_per_player": 0,
+      "height": 1.42,
+      "limb_scale": 1.12,
+      "speed": 1.6,
+      "tier": "walk",
+      "bots_alone": {
+        "enabled": true,
+        "hp_mult": 0.5,
+        "damage_mult": 0.6,
+        "cooldown_mult": 1.3,
+        "speed_mult": 0.9,
+        "horde_mult": 0.6,
+        "engage_after": 4.0,
+        "release_after": 2.0
+      },
+      "limb_mult": {
+        "head": 2.0,
+        "neck": 1.0,
+        "torso": 1.0,
+        "arms": 1.0,
+        "legs": 1.0,
+        "lantern": 2.0,
+        "book": 1.0
+      },
+      "watch": {
+        "_doc": "Section 6.3: the LOGGED meter per player (WatchMeter). Rates per second unless noted. pool_radius: his lantern's pool; sweep: the Lantern Sweep cone; sight_m: how far he logs by sight; look_cone_deg: 'looking straight at him'; teammate_m: the drain's radius. noisy_zones: firing an unsuppressed weapon there logs +2 a shot (the pen hall's echo stands in for Morgenrot's forest).",
+        "pool_per_s": 12.0,
+        "sweep_per_s": 35.0,
+        "look_after": 1.5,
+        "look_per_s": 8.0,
+        "still_after": 2.0,
+        "still_per_s": 4.0,
+        "shot": 2.0,
+        "shot_cap_per_s": 10.0,
+        "decoy_hit": 15.0,
+        "unseen_per_s": -6.0,
+        "light_per_s": -15.0,
+        "teammate_per_s": -4.0,
+        "bot_cap": 94.0,
+        "immune_s": 10.0,
+        "tiers": [
+          10.0,
+          40.0,
+          70.0,
+          95.0
+        ],
+        "pool_radius": 8.0,
+        "sight_m": 40.0,
+        "look_cone_deg": 12.0,
+        "teammate_m": 6.0,
+        "noisy_zones": [
+          "D_PENHALL"
+        ]
+      },
+      "quarantine": {
+        "room_seconds": 25.0,
+        "room_seconds_solo": 35.0,
+        "tear_hold": 1.5,
+        "release_per_lantern_hit": 0.2,
+        "return_invuln": 3.0,
+        "walk_in_mps": 1.0,
+        "room_at": [
+          16.0,
+          -60.0,
+          58.0
+        ]
+      },
+      "moves": {
+        "_doc": "Section 6.4. telegraph s, cooldown s.",
+        "teleport": {
+          "distance": 15.0,
+          "cooldown": 4.0,
+          "min_range": 12.0
+        },
+        "mirror": {
+          "range": 30.0
+        },
+        "sweep": {
+          "telegraph": 1.0,
+          "active": 2.0,
+          "cone_deg": 70.0,
+          "length": 20.0,
+          "arc_deg": 90.0,
+          "cooldown": 12.0,
+          "range": 18.0
+        },
+        "lash": {
+          "silence": 0.6,
+          "backswing": 0.4,
+          "telegraph": 1.0,
+          "min_range": 0.0,
+          "range": 4.0,
+          "damage": 85,
+          "stagger": 0.6,
+          "cooldown": 4.0
+        },
+        "shift_change": {
+          "phase_at": 0.5,
+          "decoys": 2,
+          "seconds": 25.0,
+          "recast": 40.0,
+          "break_fraction": 0.05
+        },
+        "end_of_shift": {
+          "phase_at": 0.2,
+          "dark_seconds": 30.0,
+          "lever_hold": 5.0
+        }
+      },
+      "weak_points": {
+        "lantern_fraction": 0.03,
+        "lantern_stun": 6.0,
+        "book_fraction": 0.02,
+        "book_window": 4.0,
+        "book_mult": 1.5,
+        "book_lock": 30.0,
+        "muzzle_m": 5.0
+      },
+      "lights": {
+        "_doc": "Section 6.5 at Totenhafen: he can only be damaged while lit. pools: [x, y, z, radius, needs_power] (the quay floods, the pen hall's key light and wall floods, the catwalk bulkheads, the pole lamps; gen_map02.gd). searchlight_nodes: SpotLight3D nodes whose cone lights him (the signal tower's battery lamp, and C2's manned Searchlight if it exists in the 'searchlights' group). levers: the three fuse boxes that relight a pool group after End of Shift (a 5 s hold each).",
+        "pools": [
+          [
+            12.0,
+            0.0,
+            10.0,
+            8.0,
+            true
+          ],
+          [
+            22.0,
+            0.0,
+            6.0,
+            8.0,
+            true
+          ],
+          [
+            16.0,
+            0.0,
+            60.0,
+            9.0,
+            true
+          ],
+          [
+            -14.0,
+            0.0,
+            44.0,
+            6.0,
+            true
+          ],
+          [
+            -14.0,
+            0.0,
+            62.0,
+            6.0,
+            true
+          ],
+          [
+            -14.0,
+            0.0,
+            80.0,
+            6.0,
+            true
+          ],
+          [
+            46.0,
+            0.0,
+            44.0,
+            6.0,
+            true
+          ],
+          [
+            46.0,
+            0.0,
+            62.0,
+            6.0,
+            true
+          ],
+          [
+            46.0,
+            0.0,
+            80.0,
+            6.0,
+            true
+          ],
+          [
+            -19.0,
+            4.0,
+            40.0,
+            3.5,
+            true
+          ],
+          [
+            -19.0,
+            4.0,
+            52.0,
+            3.5,
+            true
+          ],
+          [
+            -19.0,
+            4.0,
+            64.0,
+            3.5,
+            true
+          ],
+          [
+            -19.0,
+            4.0,
+            76.0,
+            3.5,
+            true
+          ],
+          [
+            51.0,
+            4.0,
+            40.0,
+            3.5,
+            true
+          ],
+          [
+            51.0,
+            4.0,
+            52.0,
+            3.5,
+            true
+          ],
+          [
+            51.0,
+            4.0,
+            64.0,
+            3.5,
+            true
+          ],
+          [
+            51.0,
+            4.0,
+            76.0,
+            3.5,
+            true
+          ],
+          [
+            -3.0,
+            0.0,
+            50.0,
+            3.5,
+            true
+          ],
+          [
+            -3.0,
+            0.0,
+            64.0,
+            3.5,
+            true
+          ],
+          [
+            17.0,
+            0.0,
+            50.0,
+            3.5,
+            true
+          ],
+          [
+            46.0,
+            -3.0,
+            64.0,
+            3.5,
+            true
+          ]
+        ],
+        "pool_height": 5.0,
+        "searchlight_nodes": [
+          "SignalLamp/Beam"
+        ],
+        "levers": [
+          {
+            "at": [
+              16.0,
+              0.0,
+              37.5
+            ],
+            "pools": [
+              2,
+              9,
+              10,
+              11,
+              12
+            ]
+          },
+          {
+            "at": [
+              -12.0,
+              0.0,
+              38.0
+            ],
+            "pools": [
+              3,
+              4,
+              5,
+              17,
+              18
+            ]
+          },
+          {
+            "at": [
+              44.0,
+              0.0,
+              38.0
+            ],
+            "pools": [
+              0,
+              1,
+              6,
+              7,
+              8,
+              13,
+              14,
+              15,
+              16,
+              19,
+              20
+            ]
+          }
+        ]
+      },
+      "doors": {
+        "_doc": "He locks these as he walks past (within lock_radius): the Pen Hall doors and the pump stair. A locked door re-opens for free when he leaves its zone (outside every box and farther than unlock_m) or dies, or leaves the map. box: [min xyz, max xyz].",
+        "lock_radius": 4.5,
+        "unlock_m": 9.0,
+        "list": [
+          {
+            "node": "Door_PenHall_W",
+            "zone": "D_PENHALL",
+            "boxes": [
+              [
+                -20.0,
+                -0.5,
+                30.0,
+                52.0,
+                7.0,
+                84.0
+              ]
+            ]
+          },
+          {
+            "node": "Door_PenHall_E",
+            "zone": "D_PENHALL",
+            "boxes": [
+              [
+                -20.0,
+                -0.5,
+                30.0,
+                52.0,
+                7.0,
+                84.0
+              ]
+            ]
+          },
+          {
+            "node": "Door_Pumps",
+            "zone": "F_LOWERPENS",
+            "boxes": [
+              [
+                32.0,
+                -4.0,
+                40.0,
+                52.0,
+                -0.5,
+                84.0
+              ],
+              [
+                44.0,
+                -4.0,
+                39.0,
+                52.0,
+                1.5,
+                50.0
+              ]
+            ]
+          }
+        ]
+      },
+      "route": {
+        "_doc": "His rounds when nobody is in sight: the pen hall's catwalks, the pump stair and the quay (navmesh points from smoke_map02's checks; gen_map02.gd).",
+        "points": [
+          [
+            -19.0,
+            4.0,
+            70.0
+          ],
+          [
+            -17.0,
+            4.0,
+            37.0
+          ],
+          [
+            -10.0,
+            0.0,
+            34.5
+          ],
+          [
+            20.0,
+            4.0,
+            34.0
+          ],
+          [
+            51.0,
+            4.0,
+            76.0
+          ],
+          [
+            49.0,
+            4.0,
+            69.0
+          ],
+          [
+            49.0,
+            0.0,
+            59.0
+          ],
+          [
+            44.0,
+            0.0,
+            40.0
+          ],
+          [
+            49.0,
+            0.0,
+            43.5
+          ],
+          [
+            49.0,
+            -3.0,
+            51.0
+          ],
+          [
+            42.0,
+            -3.0,
+            76.0
+          ],
+          [
+            49.0,
+            -3.0,
+            51.0
+          ],
+          [
+            49.0,
+            0.0,
+            43.5
+          ],
+          [
+            44.0,
+            0.0,
+            34.0
+          ],
+          [
+            44.0,
+            0.0,
+            20.0
+          ],
+          [
+            24.0,
+            0.0,
+            12.0
+          ],
+          [
+            30.0,
+            0.0,
+            36.0
+          ]
+        ]
+      },
+      "arrival": {
+        "jingle_points": [
+          [
+            -19.0,
+            4.0,
+            80.0
+          ],
+          [
+            51.0,
+            4.0,
+            80.0
+          ],
+          [
+            16.0,
+            0.0,
+            10.0
+          ],
+          [
+            44.0,
+            0.0,
+            20.0
+          ],
+          [
+            -15.0,
+            0.0,
+            15.0
+          ]
+        ],
+        "voice_at": 1.6,
+        "lantern_at": 3.4,
+        "spawn": [
+          -19.0,
+          4.0,
+          80.0
+        ]
+      },
+      "exit": {
+        "_doc": "The fail-safe: he walks to the quay's east surf steps and off the edge into the storm (the rails don't stop him).",
+        "points": [
+          [
+            30.8,
+            0.0,
+            1.2
+          ],
+          [
+            30.8,
+            -2.4,
+            -4.0
+          ],
+          [
+            30.8,
+            -5.0,
+            -12.0
+          ]
+        ]
+      },
+      "rewards": {
+        "scrip_per_player": 2500,
+        "drops": [],
+        "unlocks": [
+          "card_night_shift",
+          "charm_violet_lantern",
+          "ARC_HB_SLENDER",
+          "squad_overwatch"
+        ],
+        "intel": [
+          "INT_HB_04",
+          "ARC_HB_SLENDER"
+        ],
+        "overwatch_m": 12.0,
+        "overwatch_max": 24,
+        "flag": "slender_relieved"
+      },
+      "archive": {
+        "ARC_HB_SLENDER": {
+          "title": "THE SLENDER",
+          "type": "CARD",
+          "map": "2",
+          "text": "The Hafenwaechter: the pens' night watchman, a tall, thin, quiet man who took the overnight shift every night because he liked the silence and the harbour lights. He walked the catwalks with a lantern and a ring of keys, logged every boat and every light in a thick watch-book, and on the night of the Erwachen he locked every door behind him so the dead would stay in the pens. The Marke kept him walking. Nothing got past him. Inspired by Devin."
+        },
+        "INT_HB_04": {
+          "title": "The Watch-Book",
+          "type": "DOC",
+          "map": "2",
+          "text": "A thick bound book set down on the quay under a cold lantern. The flyleaf: \"Property of %DEVIN_LASTNAME% Night Watch, Totenhafen pens.\" Every hour of every night in a perfect hand. The last pages are about you."
+        }
+      },
+      "lines": {
+        "_doc": "Section 8 (8.1 the Operator, 8.4 THE SLENDER, 8.5 the squad). Baked placeholder TTS in data/gravelight/vo/lines.json takes over when present; else the subtitle shows silently. speaker SLN = the boss (shown per Homage Names).",
+        "SLN_ARRIVE_01": {
+          "speaker": "SLN",
+          "text": "Evening. Don't mind me. I'm only on my rounds."
+        },
+        "SLN_TIER_LOW_01": {
+          "speaker": "SLN",
+          "text": "Noted."
+        },
+        "SLN_TIER_MED_01": {
+          "speaker": "SLN",
+          "text": "Observed."
+        },
+        "SLN_TIER_HIGH_01": {
+          "speaker": "SLN",
+          "text": "Logged."
+        },
+        "SLN_TIER_CRIT_01": {
+          "speaker": "SLN",
+          "text": "Quarantined."
+        },
+        "SLN_WRITE_01": {
+          "speaker": "SLN",
+          "text": "...three-twelve. Subject out after curfew. Noted."
+        },
+        "SLN_WRITE_02": {
+          "speaker": "SLN",
+          "text": "...stood very still. Thought I wouldn't see."
+        },
+        "SLN_MIRROR_01": {
+          "speaker": "SLN",
+          "text": "You stop, I stop. That's only manners."
+        },
+        "SLN_SWEEP_01": {
+          "speaker": "SLN",
+          "text": "Let's have a look at you."
+        },
+        "SLN_ROOM_01": {
+          "speaker": "SLN",
+          "text": "Everyone has a page. Find yours."
+        },
+        "SLN_ROOM_02": {
+          "speaker": "SLN",
+          "text": "It's three o'clock. It's always three o'clock in here."
+        },
+        "SLN_ROOM_ESCAPE_01": {
+          "speaker": "SLN",
+          "text": "...Fair enough. You're excused."
+        },
+        "SLN_ROOM_FAIL_01": {
+          "speaker": "SLN",
+          "text": "Noted."
+        },
+        "SLN_DECOY_01": {
+          "speaker": "SLN",
+          "text": "Change of shift."
+        },
+        "SLN_DECOY_SHOT_01": {
+          "speaker": "SLN",
+          "text": "Wrong lantern. Noted."
+        },
+        "SLN_DARK_01": {
+          "speaker": "SLN",
+          "text": "Lights out. Last round of the night."
+        },
+        "SLN_BOOK_01": {
+          "speaker": "SLN",
+          "text": "...Ah. My book. One moment."
+        },
+        "SLN_LANTERN_01": {
+          "speaker": "SLN",
+          "text": "...Can't see. Can't see a thing."
+        },
+        "SLN_LEAVE_01": {
+          "speaker": "SLN",
+          "text": "Rounds aren't finished. I'll be back this way."
+        },
+        "SLN_DEATH_01": {
+          "speaker": "SLN",
+          "text": "...Shift's over. Someone else has the watch now."
+        },
+        "OPR_BOSS_SLENDER_01": {
+          "speaker": "OPR",
+          "text": "Attention, valued customers: the night {shift} is now on duty. Please have your {papers} ready."
+        },
+        "OPR_BOSS_SLENDER_02": {
+          "speaker": "OPR",
+          "text": "Our {watchman} has never missed a night. Not {one}. Do try not to be {noticed}!"
+        },
+        "OPR_BOSS_SLENDER_03": {
+          "speaker": "OPR",
+          "text": "Shift {change}! Three for the price of {one}!"
+        },
+        "OPR_BOSS_SLENDER_04": {
+          "speaker": "OPR",
+          "text": "We are experiencing a brief {outage}. Please remain where you can be {seen}."
+        },
+        "OPR_BOSS_SLENDER_QUAR_01": {
+          "speaker": "OPR",
+          "text": "A {customer} has been taken in for {review}."
+        },
+        "OPR_BOSS_SLENDER_LEFT_01": {
+          "speaker": "OPR",
+          "text": "The watch is... {rescheduled}. He'll be by again. He's always {by}."
+        },
+        "OPR_BOSS_SLENDER_DEAD_01": {
+          "speaker": "OPR",
+          "text": "The night watch has clocked {out}! And dawn is... {closer} than you think."
+        },
+        "DUT_SLENDER_01": {
+          "speaker": "DUT",
+          "text": "Tall fella with a lantern. Just watching. I hate the ones that just watch."
+        },
+        "DUT_SLENDER_02": {
+          "speaker": "DUT",
+          "text": "He's writing. He's writing about ME."
+        },
+        "DUT_QUARANTINE_01": {
+          "speaker": "DUT",
+          "text": "Room full of books and a clock that don't move. I'm never goin' in a library again."
+        },
+        "DUT_SLENDER_DEAD_01": {
+          "speaker": "DUT",
+          "text": "...Shift's over, pal. Get some sleep."
+        },
+        "PEG_SLENDER_01": {
+          "speaker": "PEG",
+          "text": "He only bleeds in the light. Bring him to the floodlights. Politely."
+        },
+        "PEG_SLENDER_02": {
+          "speaker": "PEG",
+          "text": "Three of him. Watch the lanterns. The steady one's real."
+        },
+        "PEG_QUARANTINE_01": {
+          "speaker": "PEG",
+          "text": "A clerk's office with no clerk. I've been interrogated in worse."
+        },
+        "PEG_SLENDER_DEAD_01": {
+          "speaker": "PEG",
+          "text": "A man who kept his post when everyone else ran. I've known worse men in better uniforms."
+        },
+        "DEA_SLENDER_01": {
+          "speaker": "DEA",
+          "text": "He's just doing his rounds. Lord, he's been doing his rounds this whole time."
+        },
+        "DEA_SLENDER_02": {
+          "speaker": "DEA",
+          "text": "Keys went quiet- MOVE!"
+        },
+        "DEA_QUARANTINE_01": {
+          "speaker": "DEA",
+          "text": "Clock stopped at three. Mama always said nothing good happens after three."
+        },
+        "DEA_SLENDER_DEAD_01": {
+          "speaker": "DEA",
+          "text": "Rest easy, watchman. We'll keep the lights on."
+        },
+        "WRN_SLENDER_01": {
+          "speaker": "WRN",
+          "text": "He stops when I stop. He turns when I turn. ...Good. I can count on him."
+        },
+        "WRN_SLENDER_02": {
+          "speaker": "WRN",
+          "text": "The book! Shoot the book out of his hands!"
+        },
+        "WRN_QUARANTINE_01": {
+          "speaker": "WRN",
+          "text": "My page was neat. He has better handwriting than me."
+        },
+        "WRN_SLENDER_DEAD_01": {
+          "speaker": "WRN",
+          "text": "He wrote everything down. Every hour. ...I understand him."
+        }
+      }
+    },
+    "der_kielholer": {
+      "_doc": "Kptlt. Arvid Lenz in the harbour's salvage diving dress (design 4). hp_base 28000: between the Kranfuehrer (24000, a rail boss you can't reach half the time) and PAUL (30000): he spends ~20% of the fight under water (three submerges of 6-10 s), so his effective time-to-kill matches a 30000 boss that is always up. Weak points: helmet_glass x1.0 until helmet_break_fraction of max HP has been taken, then it breaks (a roar) and the violet glow behind it (the Marke he wears under the glass) takes x2.0; the back of the suit where the chain rubs x1.3. submerge_every: he goes under each time another quarter of his HP is gone (75/50/25 %), invulnerable, and surfaces at another dock after submerge_seconds with a ripple telegraph of ripple_seconds. At high and spring tide he is tide_speed_mult faster and surfaces at the dock nearest his target.",
+      "boss_id": "der_kielholer",
+      "title": "DER KIELHOLER",
+      "subtitle": "Kapitänleutnant Arvid Lenz, U-1047",
+      "date_line": "JANUAR 1945  ·  TOTENHAFEN",
+      "hp_base": 28000,
+      "speed": 2.6,
+      "tier": "walk",
+      "height": 1.12,
+      "kill_scrip_per_player": 1500,
+      "drops": [
+        "resupply"
+      ],
+      "flag": "kielholer_down",
+      "spawn_vo": "OPR_BOSS_KIELHOLER_SPAWN_01",
+      "death_vo": "OPR_BOSS_KIELHOLER_DEATH_01",
+      "limb_mult": {
+        "head": 0.8,
+        "neck": 1.0,
+        "torso": 1.0,
+        "arms": 0.6,
+        "legs": 0.5,
+        "helmet_glass": 1.0,
+        "helmet_glow": 2.0,
+        "back": 1.3
+      },
+      "helmet_break_fraction": 0.15,
+      "submerge_every": 0.25,
+      "submerge_seconds": [
+        6.0,
+        10.0
+      ],
+      "ripple_seconds": 1.6,
+      "sink_seconds": 1.4,
+      "tide_speed_mult": 1.3,
+      "tide_fast_stages": [
+        "high",
+        "spring"
+      ],
+      "chain_sweep": {
+        "telegraph": 1.2,
+        "range": 9.0,
+        "half_width": 1.1,
+        "pull_m": 4.0,
+        "pull_seconds": 0.35,
+        "damage": 45,
+        "knockdown_s": 1.2,
+        "cooldown": 7.0,
+        "min_range": 3.0
+      },
+      "charge": {
+        "telegraph": 1.0,
+        "speed": 9.0,
+        "max_m": 14.0,
+        "hit_radius": 1.3,
+        "damage": 70,
+        "knock_mps": 7.0,
+        "cooldown": 9.0,
+        "min_range": 5.0,
+        "max_range": 18.0
+      },
+      "grab": {
+        "range": 2.2,
+        "pull_mps": 1.8,
+        "dps": 12.0,
+        "edge_dps": 28.0,
+        "edge_m": 1.6,
+        "break_melee": 4,
+        "break_team_damage": 300.0,
+        "break_weak_damage": 400.0,
+        "max_hold": 5.0,
+        "cooldown": 10.0
+      },
+      "swipe": {
+        "range": 2.4,
+        "damage": 55,
+        "cooldown": 1.6,
+        "telegraph": 0.5
+      },
+      "lines_spawn": [
+        "KLH_STAYS_01"
+      ],
+      "lines_hurt": [
+        "KLH_CARGO_01",
+        "KLH_BRECHT_01"
+      ],
+      "line_death": "KLH_DEATH_01",
+      "squad_spawn": [
+        "DUT_BOSS_KIELHOLER_01",
+        "PEG_BOSS_KIELHOLER_01",
+        "DEA_BOSS_KIELHOLER_01",
+        "WRN_BOSS_KIELHOLER_01"
+      ],
+      "squad_death": [
+        "DUT_BOSS_KIELHOLER_02",
+        "PEG_BOSS_KIELHOLER_02",
+        "DEA_BOSS_KIELHOLER_02",
+        "WRN_BOSS_KIELHOLER_02"
+      ],
+      "intel": "INT_HB_KIELHOLER"
+    }
+  },
+  "hp_player_step": 0.75,
+  "horde_fraction": 0.5,
+  "failsafe_seconds": 420.0,
+  "round": 20,
+  "campaign_round": 40,
+  "bots_alone": {
     "enabled": true,
     "hp_mult": 0.5,
     "damage_mult": 0.6,
@@ -32,160 +872,8 @@
     "horde_mult": 0.6,
     "engage_after": 4.0,
     "release_after": 2.0
-   },
-   "limb_mult": {"head": 2.0, "neck": 1.0, "torso": 1.0, "arms": 1.0, "legs": 1.0, "lantern": 2.0, "book": 1.0},
-   "watch": {
-    "_doc": "Section 6.3: the LOGGED meter per player (WatchMeter). Rates per second unless noted. pool_radius: his lantern's pool; sweep: the Lantern Sweep cone; sight_m: how far he logs by sight; look_cone_deg: 'looking straight at him'; teammate_m: the drain's radius. noisy_zones: firing an unsuppressed weapon there logs +2 a shot (the pen hall's echo stands in for Morgenrot's forest).",
-    "pool_per_s": 12.0,
-    "sweep_per_s": 35.0,
-    "look_after": 1.5,
-    "look_per_s": 8.0,
-    "still_after": 2.0,
-    "still_per_s": 4.0,
-    "shot": 2.0,
-    "shot_cap_per_s": 10.0,
-    "decoy_hit": 15.0,
-    "unseen_per_s": -6.0,
-    "light_per_s": -15.0,
-    "teammate_per_s": -4.0,
-    "bot_cap": 94.0,
-    "immune_s": 10.0,
-    "tiers": [10.0, 40.0, 70.0, 95.0],
-    "pool_radius": 8.0,
-    "sight_m": 40.0,
-    "look_cone_deg": 12.0,
-    "teammate_m": 6.0,
-    "noisy_zones": ["D_PENHALL"]
-   },
-   "quarantine": {
-    "room_seconds": 25.0,
-    "room_seconds_solo": 35.0,
-    "tear_hold": 1.5,
-    "release_per_lantern_hit": 0.2,
-    "return_invuln": 3.0,
-    "walk_in_mps": 1.0,
-    "room_at": [16.0, -60.0, 58.0]
-   },
-   "moves": {
-    "_doc": "Section 6.4. telegraph s, cooldown s.",
-    "teleport": {"distance": 15.0, "cooldown": 4.0, "min_range": 12.0},
-    "mirror": {"range": 30.0},
-    "sweep": {"telegraph": 1.0, "active": 2.0, "cone_deg": 70.0, "length": 20.0, "arc_deg": 90.0, "cooldown": 12.0, "range": 18.0},
-    "lash": {"silence": 0.6, "backswing": 0.4, "telegraph": 1.0, "min_range": 0.0, "range": 4.0, "damage": 85, "stagger": 0.6, "cooldown": 4.0},
-    "shift_change": {"phase_at": 0.5, "decoys": 2, "seconds": 25.0, "recast": 40.0, "break_fraction": 0.05},
-    "end_of_shift": {"phase_at": 0.2, "dark_seconds": 30.0, "lever_hold": 5.0}
-   },
-   "weak_points": {
-    "lantern_fraction": 0.03,
-    "lantern_stun": 6.0,
-    "book_fraction": 0.02,
-    "book_window": 4.0,
-    "book_mult": 1.5,
-    "book_lock": 30.0,
-    "muzzle_m": 5.0
-   },
-   "lights": {
-    "_doc": "Section 6.5 at Totenhafen: he can only be damaged while lit. pools: [x, y, z, radius, needs_power] (the quay floods, the pen hall's key light and wall floods, the catwalk bulkheads, the pole lamps; gen_map02.gd). searchlight_nodes: SpotLight3D nodes whose cone lights him (the signal tower's battery lamp, and C2's manned Searchlight if it exists in the 'searchlights' group). levers: the three fuse boxes that relight a pool group after End of Shift (a 5 s hold each).",
-    "pools": [
-     [12.0, 0.0, 10.0, 8.0, true], [22.0, 0.0, 6.0, 8.0, true],
-     [16.0, 0.0, 60.0, 9.0, true],
-     [-14.0, 0.0, 44.0, 6.0, true], [-14.0, 0.0, 62.0, 6.0, true], [-14.0, 0.0, 80.0, 6.0, true],
-     [46.0, 0.0, 44.0, 6.0, true], [46.0, 0.0, 62.0, 6.0, true], [46.0, 0.0, 80.0, 6.0, true],
-     [-19.0, 4.0, 40.0, 3.5, true], [-19.0, 4.0, 52.0, 3.5, true], [-19.0, 4.0, 64.0, 3.5, true], [-19.0, 4.0, 76.0, 3.5, true],
-     [51.0, 4.0, 40.0, 3.5, true], [51.0, 4.0, 52.0, 3.5, true], [51.0, 4.0, 64.0, 3.5, true], [51.0, 4.0, 76.0, 3.5, true],
-     [-3.0, 0.0, 50.0, 3.5, true], [-3.0, 0.0, 64.0, 3.5, true], [17.0, 0.0, 50.0, 3.5, true], [46.0, -3.0, 64.0, 3.5, true]
-    ],
-    "pool_height": 5.0,
-    "searchlight_nodes": ["SignalLamp/Beam"],
-    "levers": [
-     {"at": [16.0, 0.0, 37.5], "pools": [2, 9, 10, 11, 12]},
-     {"at": [-12.0, 0.0, 38.0], "pools": [3, 4, 5, 17, 18]},
-     {"at": [44.0, 0.0, 38.0], "pools": [0, 1, 6, 7, 8, 13, 14, 15, 16, 19, 20]}
-    ]
-   },
-   "doors": {
-    "_doc": "He locks these as he walks past (within lock_radius): the Pen Hall doors and the pump stair. A locked door re-opens for free when he leaves its zone (outside every box and farther than unlock_m) or dies, or leaves the map. box: [min xyz, max xyz].",
-    "lock_radius": 4.5,
-    "unlock_m": 9.0,
-    "list": [
-     {"node": "Door_PenHall_W", "zone": "D_PENHALL", "boxes": [[-20.0, -0.5, 30.0, 52.0, 7.0, 84.0]]},
-     {"node": "Door_PenHall_E", "zone": "D_PENHALL", "boxes": [[-20.0, -0.5, 30.0, 52.0, 7.0, 84.0]]},
-     {"node": "Door_Pumps", "zone": "F_LOWERPENS", "boxes": [[32.0, -4.0, 40.0, 52.0, -0.5, 84.0], [44.0, -4.0, 39.0, 52.0, 1.5, 50.0]]}
-    ]
-   },
-   "route": {
-    "_doc": "His rounds when nobody is in sight: the pen hall's catwalks, the pump stair and the quay (navmesh points from smoke_map02's checks; gen_map02.gd).",
-    "points": [[-19.0, 4.0, 70.0], [-17.0, 4.0, 37.0], [-10.0, 0.0, 34.5], [20.0, 4.0, 34.0], [51.0, 4.0, 76.0], [49.0, 4.0, 69.0], [49.0, 0.0, 59.0], [44.0, 0.0, 40.0], [49.0, 0.0, 43.5], [49.0, -3.0, 51.0], [42.0, -3.0, 76.0], [49.0, -3.0, 51.0], [49.0, 0.0, 43.5], [44.0, 0.0, 34.0], [44.0, 0.0, 20.0], [24.0, 0.0, 12.0], [30.0, 0.0, 36.0]]
-   },
-   "arrival": {
-    "jingle_points": [[-19.0, 4.0, 80.0], [51.0, 4.0, 80.0], [16.0, 0.0, 10.0], [44.0, 0.0, 20.0], [-15.0, 0.0, 15.0]],
-    "voice_at": 1.6,
-    "lantern_at": 3.4,
-    "spawn": [-19.0, 4.0, 80.0]
-   },
-   "exit": {
-    "_doc": "The fail-safe: he walks to the quay's east surf steps and off the edge into the storm (the rails don't stop him).",
-    "points": [[30.8, 0.0, 1.2], [30.8, -2.4, -4.0], [30.8, -5.0, -12.0]]
-   },
-   "rewards": {
-    "scrip_per_player": 2500,
-    "drops": [],
-    "unlocks": ["card_night_shift", "charm_violet_lantern", "ARC_HB_SLENDER", "squad_overwatch"],
-    "intel": ["INT_HB_04", "ARC_HB_SLENDER"],
-    "overwatch_m": 12.0,
-    "overwatch_max": 24,
-    "flag": "slender_relieved"
-   },
-   "archive": {
-    "ARC_HB_SLENDER": {"title": "THE SLENDER", "type": "CARD", "map": "2", "text": "The Hafenwaechter: the pens' night watchman, a tall, thin, quiet man who took the overnight shift every night because he liked the silence and the harbour lights. He walked the catwalks with a lantern and a ring of keys, logged every boat and every light in a thick watch-book, and on the night of the Erwachen he locked every door behind him so the dead would stay in the pens. The Marke kept him walking. Nothing got past him. Inspired by Devin."},
-    "INT_HB_04": {"title": "The Watch-Book", "type": "DOC", "map": "2", "text": "A thick bound book set down on the quay under a cold lantern. The flyleaf: \"Property of %DEVIN_LASTNAME% Night Watch, Totenhafen pens.\" Every hour of every night in a perfect hand. The last pages are about you."}
-   },
-   "lines": {
-    "_doc": "Section 8 (8.1 the Operator, 8.4 THE SLENDER, 8.5 the squad). Baked placeholder TTS in data/gravelight/vo/lines.json takes over when present; else the subtitle shows silently. speaker SLN = the boss (shown per Homage Names).",
-    "SLN_ARRIVE_01": {"speaker": "SLN", "text": "Evening. Don't mind me. I'm only on my rounds."},
-    "SLN_TIER_LOW_01": {"speaker": "SLN", "text": "Noted."},
-    "SLN_TIER_MED_01": {"speaker": "SLN", "text": "Observed."},
-    "SLN_TIER_HIGH_01": {"speaker": "SLN", "text": "Logged."},
-    "SLN_TIER_CRIT_01": {"speaker": "SLN", "text": "Quarantined."},
-    "SLN_WRITE_01": {"speaker": "SLN", "text": "...three-twelve. Subject out after curfew. Noted."},
-    "SLN_WRITE_02": {"speaker": "SLN", "text": "...stood very still. Thought I wouldn't see."},
-    "SLN_MIRROR_01": {"speaker": "SLN", "text": "You stop, I stop. That's only manners."},
-    "SLN_SWEEP_01": {"speaker": "SLN", "text": "Let's have a look at you."},
-    "SLN_ROOM_01": {"speaker": "SLN", "text": "Everyone has a page. Find yours."},
-    "SLN_ROOM_02": {"speaker": "SLN", "text": "It's three o'clock. It's always three o'clock in here."},
-    "SLN_ROOM_ESCAPE_01": {"speaker": "SLN", "text": "...Fair enough. You're excused."},
-    "SLN_ROOM_FAIL_01": {"speaker": "SLN", "text": "Noted."},
-    "SLN_DECOY_01": {"speaker": "SLN", "text": "Change of shift."},
-    "SLN_DECOY_SHOT_01": {"speaker": "SLN", "text": "Wrong lantern. Noted."},
-    "SLN_DARK_01": {"speaker": "SLN", "text": "Lights out. Last round of the night."},
-    "SLN_BOOK_01": {"speaker": "SLN", "text": "...Ah. My book. One moment."},
-    "SLN_LANTERN_01": {"speaker": "SLN", "text": "...Can't see. Can't see a thing."},
-    "SLN_LEAVE_01": {"speaker": "SLN", "text": "Rounds aren't finished. I'll be back this way."},
-    "SLN_DEATH_01": {"speaker": "SLN", "text": "...Shift's over. Someone else has the watch now."},
-    "OPR_BOSS_SLENDER_01": {"speaker": "OPR", "text": "Attention, valued customers: the night {shift} is now on duty. Please have your {papers} ready."},
-    "OPR_BOSS_SLENDER_02": {"speaker": "OPR", "text": "Our {watchman} has never missed a night. Not {one}. Do try not to be {noticed}!"},
-    "OPR_BOSS_SLENDER_03": {"speaker": "OPR", "text": "Shift {change}! Three for the price of {one}!"},
-    "OPR_BOSS_SLENDER_04": {"speaker": "OPR", "text": "We are experiencing a brief {outage}. Please remain where you can be {seen}."},
-    "OPR_BOSS_SLENDER_QUAR_01": {"speaker": "OPR", "text": "A {customer} has been taken in for {review}."},
-    "OPR_BOSS_SLENDER_LEFT_01": {"speaker": "OPR", "text": "The watch is... {rescheduled}. He'll be by again. He's always {by}."},
-    "OPR_BOSS_SLENDER_DEAD_01": {"speaker": "OPR", "text": "The night watch has clocked {out}! And dawn is... {closer} than you think."},
-    "DUT_SLENDER_01": {"speaker": "DUT", "text": "Tall fella with a lantern. Just watching. I hate the ones that just watch."},
-    "DUT_SLENDER_02": {"speaker": "DUT", "text": "He's writing. He's writing about ME."},
-    "DUT_QUARANTINE_01": {"speaker": "DUT", "text": "Room full of books and a clock that don't move. I'm never goin' in a library again."},
-    "DUT_SLENDER_DEAD_01": {"speaker": "DUT", "text": "...Shift's over, pal. Get some sleep."},
-    "PEG_SLENDER_01": {"speaker": "PEG", "text": "He only bleeds in the light. Bring him to the floodlights. Politely."},
-    "PEG_SLENDER_02": {"speaker": "PEG", "text": "Three of him. Watch the lanterns. The steady one's real."},
-    "PEG_QUARANTINE_01": {"speaker": "PEG", "text": "A clerk's office with no clerk. I've been interrogated in worse."},
-    "PEG_SLENDER_DEAD_01": {"speaker": "PEG", "text": "A man who kept his post when everyone else ran. I've known worse men in better uniforms."},
-    "DEA_SLENDER_01": {"speaker": "DEA", "text": "He's just doing his rounds. Lord, he's been doing his rounds this whole time."},
-    "DEA_SLENDER_02": {"speaker": "DEA", "text": "Keys went quiet- MOVE!"},
-    "DEA_QUARANTINE_01": {"speaker": "DEA", "text": "Clock stopped at three. Mama always said nothing good happens after three."},
-    "DEA_SLENDER_DEAD_01": {"speaker": "DEA", "text": "Rest easy, watchman. We'll keep the lights on."},
-    "WRN_SLENDER_01": {"speaker": "WRN", "text": "He stops when I stop. He turns when I turn. ...Good. I can count on him."},
-    "WRN_SLENDER_02": {"speaker": "WRN", "text": "The book! Shoot the book out of his hands!"},
-    "WRN_QUARANTINE_01": {"speaker": "WRN", "text": "My page was neat. He has better handwriting than me."},
-    "WRN_SLENDER_DEAD_01": {"speaker": "WRN", "text": "He wrote everything down. Every hour. ...I understand him."}
-   }
+  },
+  "status": {
+    "grab": "kielholer_grab"
   }
- }
 }

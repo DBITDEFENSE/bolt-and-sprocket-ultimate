@@ -1654,3 +1654,32 @@ static func quest_bell_fittings(g: Node3D, h: float) -> void:
 	S(g, Vector3(0, 0.3 * h, 0), Vector3(0, -0.36 * h, 0), h * 0.04, "iron")
 	dot(g, Vector3(0, -0.4 * h, 0), h * 0.07, "iron")
 	C(g, Vector3(0, -0.46 * h, 0), 0.43 * h, 0.01 * h, "window_dark")
+
+
+# ---- THE UNDERTOW's parts and the built gun on the bench (T-153)
+static func part_ut_pump(g: Node3D) -> void:
+	C(g, Vector3(0, 0.12, 0), 0.06, 0.24, "brass")
+	C(g, Vector3(0, 0.27, 0), 0.012, 0.1, "steel")
+	B(g, Vector3(-0.07, 0.31, -0.015), Vector3(0.07, 0.34, 0.015), "black_paint")
+	ring(g, Vector3(0.0, 0.05, 0.0), 0.075, 0.012, "black_paint", Vector3(0, 0, 0))
+	B(g, Vector3(-0.1, 0.0, -0.1), Vector3(0.1, 0.015, 0.1), "steel")
+
+
+static func part_ut_head(g: Node3D) -> void:
+	C(g, Vector3(0, 0.03, -0.05), 0.008, 0.3, "steel", Vector3(90, 0, 0))
+	ell(g, Vector3(0, 0.03, -0.22), Vector3(0.05, 0.05, 0.11), "glass:#7a3fd0")
+	dot(g, Vector3(0, 0.03, -0.25), 0.015, "neon:#b070ff")
+	B(g, Vector3(-0.06, 0.0, -0.06), Vector3(0.06, 0.012, 0.12), "steel")
+
+
+static func part_ut_shard(g: Node3D) -> void:
+	B(g, Vector3(-0.09, 0.0, -0.05), Vector3(0.09, 0.025, 0.05), "steel")
+	ell(g, Vector3(0, 0.07, 0), Vector3(0.05, 0.13, 0.03), "glass:#6a2fb8", Vector3(0, 0, 18))
+	dot(g, Vector3(0.0, 0.1, 0.01), 0.014, "neon:#c07dff")
+
+
+static func undertow(g: Node3D) -> void:
+	C(g, Vector3(0, 0.07, -0.05), 0.045, 0.36, "brass", Vector3(90, 0, 0))
+	C(g, Vector3(0, 0.07, -0.35), 0.018, 0.24, "steel", Vector3(90, 0, 0))
+	B(g, Vector3(-0.018, 0.04, 0.12), Vector3(0.018, 0.09, 0.36), "planks")
+	ell(g, Vector3(0, 0.07, -0.5), Vector3(0.03, 0.03, 0.07), "glass:#7a3fd0")

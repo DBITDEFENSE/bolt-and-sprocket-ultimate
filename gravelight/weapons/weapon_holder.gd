@@ -36,6 +36,8 @@ const RELOAD_CUES: Dictionary = {
 	"crank": [[0.12, "totenglocke_crank"], [0.38, "scrip_tick"], [0.58, "scrip_tick"], [0.8, "ashlight_charge"], [0.9, "perk_overclock_arc"]],
 	# T-105: the Lodestone's yoke down, a quarter turn of the lens in its cradle, the yoke up
 	"lodestone": [[0.2, "scrip_tick"], [0.5, "lodestone_turn"], [0.82, "lodestone_lift"]],
+	# T-153: the Undertow's three pump strokes
+	"undertow": [[0.14, "undertow_pump"], [0.44, "undertow_pump"], [0.74, "undertow_pump"]],
 }
 const FIRE_BUFFER: float = 0.12    # seconds a too-early semi-auto click is remembered
 const SWAP_TIME: float = 0.42      # raise time after a weapon swap (firing is blocked meanwhile)
@@ -82,6 +84,7 @@ var _ground_t: float = 0.0
 var _fired_this_frame: bool = false
 var _bell: Totenglocke = null      # Totenglocke wind-and-toll logic (gravelight/weapons/totenglocke.gd), made on first use
 var _lode: Lodestone = null        # the Lodestone's lift / slam / fling (gravelight/weapons/lodestone.gd, T-105), made on first use
+var _harpoon: Undertow = null      # the Undertow's harpoon, reel and whirl (gravelight/weapons/undertow.gd, T-153), made on first use
 var _bell_crank: Node3D = null
 ## T-153 (Totenhafen Ballast v2): carrying a coffin limits the hands to melee and the pistol slot.
 var carry_limited: bool = false
@@ -740,6 +743,8 @@ func tick(delta: float, intent: Dictionary) -> void:
 		_tick_bell(w, delta, can_shoot and bool(intent.get("fire_held", false)), bool(intent.get("fire_pressed", false)))
 	elif w != null and w.data.has("gravity"):
 		_tick_gravity(w, delta, can_shoot and bool(intent.get("fire_held", false)), can_shoot and bool(intent.get("fire_pressed", false)))
+	elif w != null and w.data.has("harpoon"):
+		harpoon_logic().tick(w, delta, can_shoot and bool(intent.get("fire_held", false)), can_shoot and bool(intent.get("fire_pressed", false)))
 	elif can_shoot and _burst_left > 0 and _burst_cd <= 0.0 and w.mag > 0:
 		_burst_left -= 1
 		_burst_cd = 60.0 / 900.0
@@ -1265,6 +1270,13 @@ func bell_logic() -> Totenglocke:
 ## The Lodestone (T-105): tap = lift, tap again = slam, alt = fling.
 func _tick_gravity(w: WeaponInstance, delta: float, held: bool, pressed: bool) -> void:
 	gravity_logic().tick(w, delta, held, pressed)
+
+
+## The Undertow's logic for this holder (T-153).
+func harpoon_logic() -> Undertow:
+	if _harpoon == null:
+		_harpoon = Undertow.new(self)
+	return _harpoon
 
 
 func gravity_logic() -> Lodestone:
@@ -2208,6 +2220,8 @@ func _animate(delta: float, sprinting: bool) -> void:
 		_bell.pose_parts(_bell_crank, _model)   # wind-up crank spin, the bell's ring-out vibration
 	if _lode != null and w != null and w.data.has("gravity"):
 		_lode.pose_parts(_model)   # T-105: the lens spins, the cradle opens on a lift, the coil glows on the charge
+	if w != null and w.data.has("harpoon"):
+		harpoon_logic().pose_parts(_model, w)   # T-153: the gauge needle, the loaded harpoon, the pump handle
 	if _model != null and _model.has_meta("wonder"):
 		WonderLook.tick(self, _model, delta)   # T-090: the wonder weapons' fluid, gauges, hammer, arcs (driven by this state)
 	var lh_override: Variant = null      # support-hand target in gun space, if a reload moves it
@@ -2826,6 +2840,8 @@ func _animate_reload(p: float) -> Variant:
 			return WonderLook.reload_crank(self, p, lh_home)   # T-090: the Sankt-Elmsfeuer's magneto crank
 		"lodestone":
 			return gravity_logic().reload_hand(p, _model, lh_home)   # T-105: the lens's quarter turn in the cradle
+		"undertow":
+			return harpoon_logic().reload_hand(p, _model, lh_home)   # T-153: three strokes of the diver's pump
 	return null
 
 

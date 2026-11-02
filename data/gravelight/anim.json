@@ -130,7 +130,7 @@
   "climb": {"speed_mps": 1.4, "mantle_seconds": 0.45, "high_window_m": 1.2},
   "emerge": {"_doc": "Non-ground emerges; the ground rises are enemies.json emerge (T-085).", "portal_seconds": 0.7, "ceiling_seconds": 0.9, "water_seconds": 1.6},
   "emerge_by_spawn_prefix": {
-    "map02_totenhafen": {"Ground_A_QUAY_": "water"},
+    "map02_totenhafen": {"Ground_A_QUAY_": "water", "Surface_": "water"},
     "map01_kaltenbrunn": {"Chute": "ceiling"}
   },
   "ragdoll": {
@@ -200,6 +200,8 @@
     "labstaff": {"faction": "wiederkehr", "builds": ["thin", "medium"], "female": 0.35, "gear": {"goggles": 0.6, "armband": 0.7}, "skin": [0.58, 0.6, 0.64]},
     "technician": {"faction": "wiederkehr", "builds": ["thin", "medium"], "female": 0.25, "gear": {"cap": 0.6, "armband": 0.8, "pack": 0.3}, "skin": [0.56, 0.58, 0.6]},
     "sailor": {"faction": "kriegsmarine", "builds": ["thin", "medium"], "female": 0.0, "gear": {"sailor_cap": 0.8, "collar": 0.9}, "skin": [0.5, 0.56, 0.6]},
+    "drowned": {"_doc": "T-153: the Kielholer, U-1047's drowned ratings: the sailor kit's cut, waterlogged and weed-hung (ZombieBody.KIT_ALIAS draws it with the sailor geometry and DROWNED_PALETTE).", "faction": "kriegsmarine", "builds": ["thin", "medium"], "female": 0.0, "gear": {"sailor_cap": 0.25, "collar": 0.6, "weed": 0.9}, "skin": [0.44, 0.52, 0.52]},
+    "drowned_diver": {"_doc": "T-153: the Kielholer diver: the harbour salvage crew's diving dress and brass helmet (gear diver_helmet; its glass is the helmet_glass hitbox).", "faction": "kriegsmarine", "builds": ["medium", "heavy"], "female": 0.0, "gear": {"diver_helmet": 1.0, "weed": 0.6}, "skin": [0.42, 0.5, 0.5]},
     "dockworker": {"faction": "totenhafen", "builds": ["medium", "heavy"], "female": 0.2, "gear": {"hood": 0.5, "oilskin": 0.7}, "skin": [0.52, 0.55, 0.57]},
     "bellringer": {"faction": "kaltenbrunn", "builds": ["thin"], "female": 0.0, "gear": {}, "skin": [0.66, 0.64, 0.6]},
     "nurse": {"faction": "wiederkehr", "builds": ["thin"], "female": 1.0, "gear": {"wimple": 1.0}, "skin": [0.7, 0.68, 0.72]}

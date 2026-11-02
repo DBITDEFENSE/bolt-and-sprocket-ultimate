@@ -713,6 +713,19 @@ func summon_boss(enemy_id: StringName, at: Vector3) -> Node3D:
 			GLBus.boss_spawned.emit(&"kranfuehrer")
 			GLBus.enemy_spawned.emit(kf.enemy_id, kf.get_instance_id())
 			return kf
+		&"der_kielholer":
+			# T-153: Totenhafen's drowned captain (Letzte Fahrt's s6 or the standalone round); one at a time
+			for n: Node in get_tree().get_nodes_in_group(&"homage_bosses"):
+				if n is Kielholer and (n as Kielholer).is_active():
+					return n as Node3D
+			var kh: Kielholer = Kielholer.new()
+			kh.director = self
+			add_extra(kh)
+			RoundManager.take_extra_spawn()
+			kh.spawn_kielholer(_snap(at), HomageBoss.scaled_hp(float(kh.boss_cfg().get("hp_base", 28000)), RoundManager.players, float(Kielholer.table().get("hp_player_step", 0.75))))
+			GLBus.boss_spawned.emit(&"der_kielholer")
+			GLBus.enemy_spawned.emit(kh.enemy_id, kh.get_instance_id())
+			return kh
 		&"account_manager":
 			var am: AccountManager = AccountManager.new()
 			am.director = self

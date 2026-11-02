@@ -319,6 +319,8 @@ func max_range(w: WeaponInstance) -> float:
 	if w.data.has("gravity"):   # the Lodestone's well: ahead plus its radius (T-105)
 		var g: Dictionary = w.data["gravity"]
 		return float(g.get("lift_ahead", 5.0)) + float(g.get("lift_radius", 4.0))
+	if w.data.has("harpoon"):   # the Undertow: the harpoon's flight, a little short so the line has bodies in it (T-153)
+		return float((w.data["harpoon"] as Dictionary).get("range", 25.0)) * 0.8
 	return float((_a.get("max_range_m", {}) as Dictionary).get(String(w.weapon_class()), 30.0))
 
 
@@ -587,6 +589,12 @@ func fire(w: WeaponInstance) -> void:
 	var basis: Basis = Basis.looking_at(fwd, Vector3.UP) if absf(fwd.y) < 0.99 else Basis.from_euler(Vector3(player.head.rotation.x, player.rotation.y, 0.0))
 	if w.data.has("bell"):
 		Totenglocke.bot_toll(player, w, origin, fwd)
+		if w.mag <= 0 and w.reserve > 0:
+			start_reload()
+		return
+	if w.data.has("harpoon"):   # the Undertow (T-153): one harpoon down the facing; the line skewers what is behind
+		Undertow.bot_fire(player, w, origin, fwd, false)   # fire() above already spent the round
+		fire_cd = maxf(fire_cd, float((w.data["harpoon"] as Dictionary).get("cooldown", 0.35)) + 0.6)
 		if w.mag <= 0 and w.reserve > 0:
 			start_reload()
 		return

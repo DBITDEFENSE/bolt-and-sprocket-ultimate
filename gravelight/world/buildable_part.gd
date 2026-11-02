@@ -8,11 +8,14 @@ extends Interactable
 const QUEST: StringName = &"map01_requiem"   # the Totenglocke's (kept for the old callers)
 const NAMES: Dictionary = {&"tg_part_bell": "the small bronze bell", &"tg_part_frame": "the firing frame",
 	&"tg_part_crank": "the crank assembly",
-	&"ls_part_coil": "the relay coil", &"ls_part_cradle": "the gyro cradle", &"ls_part_lens": "the lead-glass lens"}
+	&"ls_part_coil": "the relay coil", &"ls_part_cradle": "the gyro cradle", &"ls_part_lens": "the lead-glass lens",
+	&"undertow_pump": "the diver's pump", &"undertow_head": "the harpoon head", &"undertow_shard": "the coffin shard"}
 ## buildable id -> {quest, random (the quest's random key with the seeded spot per part), parts, label}
 const BUILDABLES: Dictionary = {
 	&"totenglocke": {"quest": &"map01_requiem", "random": "parts", "parts": [&"tg_part_bell", &"tg_part_frame", &"tg_part_crank"], "label": "Totenglocke"},
 	&"lodestone": {"quest": &"map04_kuendigung", "random": "ls_parts", "parts": [&"ls_part_coil", &"ls_part_cradle", &"ls_part_lens"], "label": "Lodestone"},
+	# T-153: Totenhafen's harpoon gun (the shard only exists after the third coffin goes over the sea stairs)
+	&"undertow": {"quest": &"map02_letzte_fahrt", "random": "ut_parts", "parts": [&"undertow_pump", &"undertow_head", &"undertow_shard"], "label": "Undertow"},
 }
 
 @export var part_id: StringName = &"tg_part_bell"
@@ -64,6 +67,12 @@ func build_greybox() -> void:
 			InteractableArt.place(self, "ls_part_cradle", func(r: Node3D) -> void: InteractableArt.part_cradle(r))
 		&"ls_part_lens":
 			InteractableArt.place(self, "ls_part_lens", func(r: Node3D) -> void: InteractableArt.part_lens(r))
+		&"undertow_pump":
+			InteractableArt.place(self, "undertow_pump", func(r: Node3D) -> void: InteractableArt.part_ut_pump(r))
+		&"undertow_head":
+			InteractableArt.place(self, "undertow_head", func(r: Node3D) -> void: InteractableArt.part_ut_head(r))
+		&"undertow_shard":
+			InteractableArt.place(self, "undertow_shard", func(r: Node3D) -> void: InteractableArt.part_ut_shard(r))
 		_:
 			InteractableArt.place(self, "tg_tg_part_crank", func(r: Node3D) -> void: InteractableArt.part_crank(r))
 	var glow: OmniLight3D = OmniLight3D.new()
@@ -80,6 +89,15 @@ func _on_quest_loaded(qid: StringName) -> void:
 	var picks: Variant = QuestManager.random_value(qid, str(cfg_of(buildable_id).get("random", "parts")))
 	var mine: bool = picks is Dictionary and StringName(str((picks as Dictionary).get(String(part_id), ""))) == spot_id
 	_set_live(mine and not has_part(part_id))
+
+
+## Seed this part live without the quest (a map that places parts before / without its quest, T-153).
+func force_live(on: bool) -> void:
+	_set_live(on and not has_part(part_id))
+
+
+func is_live() -> bool:
+	return _live
 
 
 func _set_live(on: bool) -> void:
