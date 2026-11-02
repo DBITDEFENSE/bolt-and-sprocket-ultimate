@@ -23,14 +23,14 @@ const COLD: Color = Color(0.82, 0.9, 1.0)
 ## key -> [set folder, file id, tile metres, tint, [rough_min, rough_max], metallic_mul, grime, normal_strength, albedo]
 ## albedo "" uses the set's own; "white" swaps in a neutral albedo (the set's relief and wear, the tint's colour).
 const PBR: Dictionary = {
-	"floor_a": ["marble-tiles", "marble_tiles", 1.6, [0.98, 0.98, 1.04], [0.12, 0.5], 0.0, 0.08, 0.8, ""],
+	"floor_a": ["marble-tiles", "marble_tiles", 3.2, [0.98, 0.98, 1.04], [0.12, 0.5], 0.0, 0.08, 0.8, ""],
 	"floor_b": ["terrazzo-tiles", "terrazzo_tiles", 1.4, [0.62, 0.48, 0.98], [0.1, 0.45], 0.0, 0.1, 0.7, ""],
 	"floor_d": ["concrete-floor-painted", "concrete_floor_painted", 2.6, [0.9, 0.97, 1.12], [0.3, 0.85], 0.0, 0.25, 1.0, ""],
 	"floor_e": ["granite-tile", "granite_tile", 2.3, [0.78, 0.7, 0.98], [0.06, 0.4], 0.0, 0.05, 0.8, ""],
 	"floor_f": ["marble-tiles", "marble_tiles", 1.2, [0.34, 0.27, 0.46], [0.05, 0.3], 0.0, 0.05, 0.7, ""],
-	"regolith": ["moon-dusted-01", "moon_dusted_01", 2.4, [0.82, 0.82, 0.84], [0.82, 1.0], 0.0, 0.0, 1.2, ""],
-	"regolith_far": ["moon-dusted-01", "moon_dusted_01", 7.0, [0.7, 0.7, 0.73], [0.85, 1.0], 0.0, 0.0, 1.0, ""],
-	"rim_rock": ["moon-dusted-01", "moon_dusted_01", 3.2, [0.46, 0.46, 0.49], [0.85, 1.0], 0.0, 0.0, 1.6, ""],
+	"regolith": ["moon-dusted-01", "moon_dusted_01", 2.4, [0.6, 0.6, 0.62], [0.82, 1.0], 0.0, 0.0, 1.2, ""],
+	"regolith_far": ["moon-dusted-01", "moon_dusted_01", 7.0, [0.42, 0.42, 0.45], [0.85, 1.0], 0.0, 0.0, 1.0, ""],
+	"rim_rock": ["moon-dusted-01", "moon_dusted_01", 3.2, [0.34, 0.34, 0.36], [0.85, 1.0], 0.0, 0.0, 1.6, ""],
 	"wall_d": ["box-profile-metal-sheet", "box_profile_metal_sheet", 2.0, [0.66, 0.68, 0.72], [0.3, 0.7], 0.6, 0.1, 1.0, "white"],
 	"hull": ["box-profile-metal-sheet", "box_profile_metal_sheet", 3.0, [0.74, 0.74, 0.76], [0.4, 0.8], 0.3, 0.3, 0.6, "white"],
 }
@@ -39,14 +39,14 @@ const PBR: Dictionary = {
 const FLAT: Dictionary = {
 	"dm_white": [Color(0.86, 0.86, 0.88), 0.22, 0.0, null, 0.0, 1.0],
 	"dm_offwhite": [Color(0.7, 0.7, 0.73), 0.3, 0.0, null, 0.0, 1.0],
-	"dm_violet": [Color(0.27, 0.14, 0.46), 0.35, 0.0, null, 0.0, 1.0],
-	"dm_violet_hall": [Color(0.17, 0.08, 0.3), 0.3, 0.0, null, 0.0, 1.0],
+	"dm_violet": [Color(0.38, 0.22, 0.6), 0.35, 0.0, null, 0.0, 1.0],
+	"dm_violet_hall": [Color(0.24, 0.12, 0.4), 0.3, 0.0, null, 0.0, 1.0],
 	"dm_violet_deep": [Color(0.09, 0.04, 0.16), 0.3, 0.0, null, 0.0, 1.0],
 	"dm_graphite": [Color(0.06, 0.06, 0.07), 0.38, 0.2, null, 0.0, 1.0],
-	"dm_f_wall": [Color(0.11, 0.08, 0.15), 0.32, 0.1, null, 0.0, 1.0],
-	"dm_chrome": [Color(0.8, 0.8, 0.83), 0.1, 1.0, null, 0.0, 1.0],
-	"dm_chrome_dark": [Color(0.34, 0.33, 0.37), 0.18, 1.0, null, 0.0, 1.0],
-	"dm_steel_dark": [Color(0.22, 0.22, 0.24), 0.42, 0.8, null, 0.0, 1.0],
+	"dm_f_wall": [Color(0.2, 0.14, 0.27), 0.32, 0.1, null, 0.0, 1.0],
+	"dm_chrome": [Color(0.82, 0.82, 0.85), 0.22, 0.45, null, 0.0, 1.0],
+	"dm_chrome_dark": [Color(0.45, 0.44, 0.48), 0.28, 0.4, null, 0.0, 1.0],
+	"dm_steel_dark": [Color(0.3, 0.3, 0.32), 0.45, 0.3, null, 0.0, 1.0],
 	"dm_black_glass": [Color(0.015, 0.012, 0.025), 0.05, 0.5, null, 0.0, 1.0],
 	"dm_glow_violet": [Color(0.3, 0.16, 0.42), 0.4, 0.0, Color(0.753, 0.49, 1.0), 3.2, 1.0],
 	"dm_glow_violet_soft": [Color(0.2, 0.1, 0.3), 0.4, 0.0, Color(0.6, 0.36, 0.95), 1.4, 1.0],
@@ -56,13 +56,13 @@ const FLAT: Dictionary = {
 	"dm_glow_screen": [Color(0.05, 0.03, 0.08), 0.2, 0.0, Color(0.55, 0.35, 0.9), 1.2, 1.0],
 	"dm_glass": [Color(0.75, 0.8, 0.9), 0.02, 0.0, null, 0.0, 0.12],
 	"dm_glass_violet": [Color(0.55, 0.35, 0.85), 0.04, 0.0, null, 0.0, 0.2],
-	"dm_frosted": [Color(0.78, 0.8, 0.88), 0.5, 0.0, null, 0.0, 0.62],
+	"dm_frosted": [Color(0.78, 0.8, 0.88), 0.5, 0.0, null, 0.0, 0.45],
 	"suit": [Color(0.6, 0.6, 0.58), 0.85, 0.0, null, 0.0, 1.0],
 	"suit_dark": [Color(0.2, 0.2, 0.22), 0.7, 0.2, null, 0.0, 1.0],
 	"suit_violet": [Color(0.26, 0.13, 0.42), 0.6, 0.0, null, 0.0, 1.0],
 	"visor": [Color(0.06, 0.04, 0.1), 0.08, 0.9, null, 0.0, 1.0],
 	"tag": [Color(0.86, 0.83, 0.74), 0.9, 0.0, null, 0.0, 1.0],
-	"capsule": [Color(0.3, 0.3, 0.31), 0.45, 0.75, null, 0.0, 1.0],
+	"capsule": [Color(0.42, 0.41, 0.4), 0.5, 0.35, null, 0.0, 1.0],
 	"capsule_scorch": [Color(0.07, 0.055, 0.05), 0.9, 0.2, null, 0.0, 1.0],
 	"capsule_paint": [Color(0.55, 0.52, 0.45), 0.6, 0.1, null, 0.0, 1.0],
 	"dish": [Color(0.72, 0.72, 0.74), 0.45, 0.2, null, 0.0, 1.0],
@@ -392,6 +392,8 @@ static func spot(root: Node3D, n: String, pos: Vector3, aim: Vector3, color: Col
 	s.spot_angle_attenuation = 1.4
 	s.shadow_enabled = shadow
 	s.shadow_blur = 1.2
+	s.shadow_bias = 0.08
+	s.shadow_normal_bias = 1.5
 	s.light_volumetric_fog_energy = 0.8
 	s.set_meta("zone", StringName(zone))
 	root.add_child(s)

@@ -277,7 +277,7 @@ func _dress_shell() -> void:
 			["E_E", Vector3(1, 0, 0)], ["F_W", Vector3(-1, 0, 0)], ["F_E", Vector3(1, 0, 0)], ["F_S", Vector3(0, 0, -1)]]:
 		D.skin(dress, D.segments(geo, str(o[0])), o[1], "hull")
 	# ceilings: a skin under each roof in the room's tone (the roof box itself is hull on top)
-	for c: Array in [[Vector3(-12, CEIL_A - 0.02, 0), Vector3(12, CEIL_A, 24), "dm_white"], [Vector3(-12, CEIL_B - 0.02, 24), Vector3(12, CEIL_B, 60), "dm_violet_deep"],
+	for c: Array in [[Vector3(-12, CEIL_A - 0.02, 0), Vector3(12, CEIL_A, 24), "dm_white"], [Vector3(-12, CEIL_B - 0.02, 24), Vector3(12, CEIL_B, 60), "dm_violet_hall"],
 			[Vector3(12, CEIL_D - 0.02, 24), Vector3(44, CEIL_D, 60), "dm_offwhite"], [Vector3(12, CEIL_E - 0.02, -16), Vector3(44, CEIL_E, 24), "dm_violet_deep"],
 			[Vector3(14, CEIL_F - 0.02, -44), Vector3(25.5, CEIL_F, -16), "dm_graphite"], [Vector3(30.5, CEIL_F - 0.02, -44), Vector3(42, CEIL_F, -16), "dm_graphite"],
 			[Vector3(25.5, CEIL_F - 0.02, -44), Vector3(30.5, CEIL_F, -32.5), "dm_graphite"], [Vector3(25.5, CEIL_F - 0.02, -27.5), Vector3(30.5, CEIL_F, -16), "dm_graphite"]]:
@@ -362,7 +362,7 @@ func _dress_reception() -> void:
 	D.sign(dress, "LANDING DOME", Vector3(-11.83, 4.6, 6.5), 90.0, 4.2, 0.6, 52)
 	D.sign(dress, "ARRIVALS", Vector3(11.83, 4.6, 6.5), -90.0, 3.4, 0.6, 52)
 	# lights: the key falls on the capsule; strips; the airlock's violet; the desk's glow; the pad lamps
-	D.spot(map_root, "KeySpot_A_Capsule", Vector3(-3.0, CEIL_A - 0.4, 8.0), Vector3(-7.5, 1.4, 3.5), D.COLD, 7.0, 16.0, 30.0, "A_RECEPTION", true)
+	D.spot(map_root, "KeySpot_A_Capsule", Vector3(-4.2, CEIL_A - 1.2, 7.4), Vector3(-7.5, 0.9, 3.5), D.COLD, 6.0, 12.0, 24.0, "A_RECEPTION", true)
 	D.omni(map_root, "Lamp_A_Strip_1", Vector3(0, CEIL_A - 0.6, 8.0), D.COLD, 1.6, 15.0, "A_RECEPTION")
 	D.omni(map_root, "Lamp_A_Strip_2", Vector3(0, CEIL_A - 0.6, 18.0), D.COLD, 1.4, 13.0, "A_RECEPTION")
 	D.omni(map_root, "Lamp_A_Airlock", Vector3(0, 4.6, 22.6), VIOLET, 1.2, 8.0, "A_RECEPTION")
@@ -491,7 +491,9 @@ func _dress_concourse() -> void:
 	_airlock_yard()
 	# lights: violet strips, the model's key, the Crucible's bay
 	for i: int in 3:
-		D.omni(map_root, "Lamp_B_Strip_%d" % i, Vector3(0, CEIL_B - 0.5, 30.0 + 12.0 * float(i)), VIOLET, 1.7, 14.0, "B_CONCOURSE")
+		D.omni(map_root, "Lamp_B_Strip_%d" % i, Vector3(0, CEIL_B - 0.5, 30.0 + 12.0 * float(i)), VIOLET, 2.4, 15.0, "B_CONCOURSE")
+	for wx: float in [-8.5, 8.5]:
+		D.omni(map_root, "Lamp_B_Wash_%d" % int(wx), Vector3(wx, 3.4, 44.0), Color(0.78, 0.7, 1.0), 1.3, 11.0, "B_CONCOURSE")
 	D.spot(map_root, "KeySpot_B_Model", Vector3(0, CEIL_B - 0.25, 35.5), Vector3(0, 1.2, 39.0), D.COLD, 5.0, 9.0, 34.0, "B_CONCOURSE", true)
 	D.spot(map_root, "KeySpot_B_Crucible", Vector3(-6.5, CEIL_B - 0.25, 46.0), Vector3(-8.0, 0.8, 46.0), D.VIOLET, 4.0, 8.0, 32.0, "B_CONCOURSE", true)
 	D.omni(map_root, "Lamp_B_Airlock", Vector3(0, 3.0, 57.2), D.COLD, 0.8, 7.0, "B_CONCOURSE")
@@ -607,8 +609,8 @@ func _dress_yard() -> void:
 	_dome_caps()
 	# the yard's light: the Sun (the scene's Moon node, set in gameplay_extra), earthshine, the smile's glow
 	fog("YardDust", Vector3(0, 0.5, 85), Vector3(80, 1.2, 50), 0.008, Color(0.6, 0.6, 0.65))
-	D.omni(map_root, "Lamp_C_Earthshine", Vector3(0, 14.0, 88.0), Color(0.5, 0.62, 0.95), 0.5, 75.0, "C_YARD")
-	D.omni(map_root, "Lamp_C_Smile", Vector3(0, 26.0, 192.0), VIOLET, 3.0, 45.0, "C_YARD")
+	D.omni(map_root, "Lamp_C_Earthshine", Vector3(0, 14.0, 88.0), Color(0.5, 0.62, 0.95), 0.32, 75.0, "C_YARD")
+	D.omni(map_root, "Lamp_C_Smile", Vector3(0, 36.0, 204.0), VIOLET, 3.5, 50.0, "C_YARD")
 	D.omni(map_root, "Lamp_C_DishWarning", FAR_DISH + Vector3(2.4, 17.4, 2.4), Color(1.0, 0.15, 0.1), 1.2, 8.0, "C_YARD")
 
 
@@ -628,10 +630,12 @@ func _boulder_chunks(lo: Vector3, hi: Vector3, rng: RandomNumberGenerator) -> vo
 	for k: int in 4:
 		var off: Vector3 = Vector3(rng.randf_range(-0.35, 0.35) * sz.x, 0.0, rng.randf_range(-0.35, 0.35) * sz.z)
 		var s: Vector3 = Vector3(sz.x * rng.randf_range(0.45, 0.7), sz.y * rng.randf_range(0.5, 0.75), sz.z * rng.randf_range(0.45, 0.7))
-		D.obx(dress, Vector3(c.x + off.x, hi.y - s.y * 0.3, c.z + off.z), s, "rim_rock", Vector3(rng.randf_range(-14, 14), rng.randf_range(0, 360), rng.randf_range(-14, 14)))
+		var rk: MeshInstance3D = D.ball(dress, Vector3(c.x + off.x, hi.y - s.y * 0.25, c.z + off.z), s, "rim_rock")
+		rk.rotation = Vector3(deg_to_rad(rng.randf_range(-14, 14)), rng.randf_range(0, TAU), deg_to_rad(rng.randf_range(-14, 14)))
 	for k2: int in 3:
 		var p: Vector3 = Vector3(rng.randf_range(lo.x - 0.3, hi.x + 0.3), 0.0, rng.randf_range(lo.z - 0.3, hi.z + 0.3))
-		D.obx(dress, p + Vector3(0, 0.15, 0), Vector3(0.6, 0.35, 0.5) * rng.randf_range(0.6, 1.2), "rim_rock", Vector3(rng.randf_range(-20, 20), rng.randf_range(0, 360), 0))
+		var pb: MeshInstance3D = D.ball(dress, p + Vector3(0, 0.12, 0), Vector3(0.7, 0.4, 0.55) * rng.randf_range(0.6, 1.2), "rim_rock")
+		pb.rotation.y = rng.randf_range(0, TAU)
 
 
 ## The crater rim: broken slabs on top of the three rim walls and leaning against their outsides (the inner face
@@ -645,10 +649,11 @@ func _rim(rng: RandomNumberGenerator) -> void:
 		for i: int in n:
 			var p: Vector3 = a.lerp(b, (float(i) + 0.5) / float(n))
 			var h: float = rng.randf_range(0.6, 1.9)
-			D.obx(dress, p + Vector3(0, RIM_H + h * 0.3, 0), Vector3(rng.randf_range(2.2, 3.6), h, rng.randf_range(1.6, 2.4)), "rim_rock",
-				Vector3(rng.randf_range(-10, 10), rng.randf_range(0, 180), rng.randf_range(-12, 12)))
+			var top: MeshInstance3D = D.ball(dress, p + Vector3(0, RIM_H + h * 0.15, 0), Vector3(rng.randf_range(2.8, 4.2), h * 1.4, rng.randf_range(2.0, 2.8)), "rim_rock")
+			top.rotation = Vector3(deg_to_rad(rng.randf_range(-10, 10)), rng.randf_range(0, PI), deg_to_rad(rng.randf_range(-12, 12)))
 			var out: Vector3 = Vector3(signf(p.x) if absf(p.x) > 40.5 else 0.0, 0.0, 1.0 if p.z > 110.5 else 0.0)
-			D.obx(dress, p + out * 2.2 + Vector3(0, 1.2, 0), Vector3(3.4, 2.8, 2.2), "rim_rock", Vector3(rng.randf_range(-8, 8), rng.randf_range(0, 180), rng.randf_range(-15, 15)))
+			var lean: MeshInstance3D = D.ball(dress, p + out * 2.4 + Vector3(0, 1.0, 0), Vector3(4.2, 3.6, 3.0), "rim_rock")
+			lean.rotation = Vector3(deg_to_rad(rng.randf_range(-8, 8)), rng.randf_range(0, PI), deg_to_rad(rng.randf_range(-15, 15)))
 
 
 ## The crater's far wall: tilted slabs in a ring north, east and west of the yard, rising to a ragged skyline,
@@ -665,9 +670,10 @@ func _crater_wall(rng: RandomNumberGenerator) -> void:
 		var slab: MeshInstance3D = D.obx(g, p + Vector3(0, 10.0, 0), Vector3(w, 2.0, 60.0), "regolith_far", Vector3.ZERO)
 		slab.basis = Basis(Vector3.UP, deg_to_rad(yaw)) * Basis(Vector3.RIGHT, deg_to_rad(-32.0 + rng.randf_range(-5, 5))) * Basis.from_scale(Vector3(w, 2.0, 60.0))
 		slab.position = p + dir * 14.0 + Vector3(0, 12.0, 0)
-		if i % 3 == 0:
-			D.obx(g, p + dir * rng.randf_range(4.0, 20.0) + Vector3(0, rng.randf_range(2.0, 12.0), 0), Vector3(rng.randf_range(6, 14), rng.randf_range(3, 7), rng.randf_range(5, 10)), "rim_rock",
-				Vector3(rng.randf_range(-15, 15), rng.randf_range(0, 360), rng.randf_range(-15, 15)))
+		for k3: int in 2:
+			var along: float = rng.randf_range(2.0, 26.0)
+			var ridge: MeshInstance3D = D.ball(g, p + dir * along + Vector3(0, along * 0.62 - 3.0, 0), Vector3(rng.randf_range(10, 22), rng.randf_range(4, 9), rng.randf_range(8, 16)), "rim_rock" if k3 == 0 else "regolith_far")
+			ridge.rotation = Vector3(deg_to_rad(rng.randf_range(-10, 10)), rng.randf_range(0, TAU), deg_to_rad(rng.randf_range(-10, 10)))
 	for k: int in 6:
 		var t2: float = deg_to_rad(20.0 + 140.0 * float(k) / 5.0)
 		var p2: Vector3 = YARD_C + Vector3(cos(t2), 0.0, sin(t2)) * rng.randf_range(150.0, 190.0)
@@ -758,10 +764,10 @@ func _dish_foundation() -> void:
 
 ## The smile-crack in the far wall, north: a grin of violet glass veined with amber, a kilometre's stare.
 func _smile() -> void:
-	var g: Node3D = Props.group(dress, "Smile", Vector3(0, 19.0, 200.0))
+	var g: Node3D = Props.group(dress, "Smile", Vector3(0, 30.0, 214.0))
 	# the group lies on the crater wall's slope (local Y up the slope, local Z out toward the yard)
 	g.basis = Basis(Vector3(-1, 0, 0), Vector3(0, 0.53, 0.85), Vector3(0, 0.85, -0.53))
-	D.blk(g, Vector3(-36, -14, -2.6), Vector3(36, 12, -0.4), "rim_rock")
+	D.blk(g, Vector3(-40, -16, -2.6), Vector3(40, 14, -0.4), "rim_rock")
 	var n: int = 16
 	for i: int in n:
 		var u: float = -1.0 + 2.0 * float(i) / float(n - 1)
@@ -770,9 +776,9 @@ func _smile() -> void:
 		var u2: float = -1.0 + 2.0 * float(i + 1) / float(n - 1)
 		var dy: float = (-(1.0 - u2 * u2) * 7.0) - y
 		var ang: float = rad_to_deg(atan2(dy, 52.0 / float(n - 1)))
-		D.obx(g, Vector3(x, y, -0.3), Vector3(3.6, 0.9 + 0.7 * (1.0 - absf(u)), 0.9), "dm_glow_violet", Vector3(0, 0, ang))
+		D.obx(g, Vector3(x, y, -0.3), Vector3(3.9, 2.0 + 1.3 * (1.0 - absf(u)), 1.2), "dm_glow_violet", Vector3(0, 0, ang))
 		if i % 2 == 0:
-			D.obx(g, Vector3(x + 0.6, y + 0.1, 0.32), Vector3(2.0, 0.12, 0.1), "dm_glow_amber", Vector3(0, 0, ang + 8.0))
+			D.obx(g, Vector3(x + 0.6, y + 0.2, 0.35), Vector3(2.4, 0.3, 0.2), "dm_glow_amber", Vector3(0, 0, ang + 8.0))
 
 
 ## Each air post: a grated pad under its ring, a pylon with the sign both ways, a hose to the post, a beacon.
@@ -990,7 +996,7 @@ func _dress_hall() -> void:
 	# floor inlays: the nave runner and a ring round each column with its spokes
 	for x: float in [26.9, 29.1]:
 		D.blk(dress, Vector3(x - 0.04, 0.0, -15.8), Vector3(x + 0.04, 0.006, 23.8), "dm_glow_violet_soft", false)
-	D.blk(dress, Vector3(26.95, 0.0, -15.8), Vector3(29.05, 0.003, 23.8), "dm_black_glass")
+	D.blk(dress, Vector3(26.95, 0.0, -15.8), Vector3(29.05, 0.003, 23.8), "dm_violet_deep")
 	for cx: float in [18.0, 28.0, 38.0]:
 		for i: int in 24:
 			var a: float = TAU * float(i) / 24.0
@@ -1098,7 +1104,10 @@ func _dress_account() -> void:
 	D.sign(dress, "THE ACCOUNT", Vector3(28, 3.6, -15.83), 180.0, 4.6, 0.8, 70)
 	# lights: the shaft's key on the console, the vitrine's downlight, the room's violet
 	D.spot(map_root, "KeySpot_F_Shaft", Vector3(28, CEIL_F + 5.6, -30), Vector3(28, 0.0, -30), D.COLD, 9.0, 16.0, 22.0, "F_CORE", true)
-	D.omni(map_root, "Lamp_F_Room", Vector3(28, CEIL_F - 0.8, -24), VIOLET, 2.0, 18.0, "F_CORE")
+	D.omni(map_root, "Lamp_F_Room", Vector3(28, CEIL_F - 0.8, -24), VIOLET, 2.6, 18.0, "F_CORE")
+	for q: Vector2 in [Vector2(1, 1), Vector2(-1, 1), Vector2(1, -1), Vector2(-1, -1)]:
+		D.omni(map_root, "Lamp_F_Wash_%d_%d" % [int(q.x), int(q.y)], Vector3(28 + q.x * 10.5, 4.6, -30 + q.y * 10.5), Color(0.66, 0.5, 1.0), 1.1, 9.0, "F_CORE")
+	D.omni(map_root, "Lamp_F_Retained", Vector3(28.3, 0.3, -39.3), Color(0.7, 0.6, 1.0), 0.5, 2.2, "F_CORE")
 	D.omni(map_root, "Lamp_F_Vitrine", Vector3(28, 2.6, -39.75), D.COLD, 0.7, 6.0, "F_CORE")
 	D.omni(map_root, "Lamp_F_Pad", Vector3(37, 0.8, -37.5), VIOLET, 0.8, 6.0, "F_CORE")
 
@@ -1213,6 +1222,10 @@ func build_gameplay_extra() -> void:
 		we.environment.fog_density = 0.002
 		we.environment.volumetric_fog_density = 0.006
 		we.environment.fog_sky_affect = 0.0
+	for dd: Array in doors:
+		var dn: Node = gameplay.get_node_or_null(str(dd[0]))
+		if dn != null:
+			dn.set("art_style", &"steel")
 	_presentation()
 
 
@@ -1223,7 +1236,7 @@ func _presentation() -> void:
 	if sun != null:
 		sun.transform = Transform3D(Basis.looking_at(-_sun_dir, Vector3.UP), Vector3.ZERO)
 		sun.light_color = Color(1.0, 0.97, 0.92)
-		sun.light_energy = 1.8
+		sun.light_energy = 1.45
 		sun.light_volumetric_fog_energy = 0.3
 		sun.directional_shadow_max_distance = 90.0
 		sun.shadow_blur = 0.4
