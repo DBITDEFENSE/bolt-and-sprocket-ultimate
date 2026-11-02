@@ -19,6 +19,8 @@ static func get_mat(key: String) -> Material:
 		_cache[key] = lib
 		return lib
 	var m: Material = _build(key)
+	if m != null and key.begins_with("halite"):
+		m.resource_name = "mats_" + key   # U10 T-161: MapAmbience finds the salt by name to lay its glint pass over it
 	_cache[key] = m
 	return m
 

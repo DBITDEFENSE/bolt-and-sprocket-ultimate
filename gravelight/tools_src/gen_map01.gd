@@ -212,6 +212,7 @@ func _process(_delta: float) -> bool:
 	var merged: int = merge_static_meshes()
 	print("merged %d static meshes into batches" % merged)
 	build_lights()
+	build_landscape()
 	build_gameplay()
 	_prune(dress)
 	_prune(geo)
@@ -938,7 +939,6 @@ func spinner(parent: Node3D, n: String, pos: Vector3, axis: Vector3, speed: floa
 # ================================================================== art dressing
 
 func build_dressing() -> void:
-	_dress_mountains()
 	_dress_ground()
 	_dress_yard()
 	_dress_headframe()
@@ -959,39 +959,6 @@ func build_dressing() -> void:
 	_dress_treads()
 	_dress_readability()
 	_dress_weather()
-
-
-func _dress_mountains() -> void:
-	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
-	rng.seed = 1944
-	var c: Vector3 = Vector3(30, 0, 40)
-	for i: int in 26:
-		var a: float = TAU * float(i) / 26.0 + rng.randf_range(-0.08, 0.08)
-		var r: float = rng.randf_range(210.0, 270.0)
-		var w: float = rng.randf_range(70.0, 120.0)
-		var h: float = rng.randf_range(55.0, 120.0) * (1.3 if i % 5 == 0 else 1.0)
-		var d: float = rng.randf_range(110.0, 190.0)
-		var p: Vector3 = c + Vector3(cos(a) * r, h * 0.5 - 6.0, sin(a) * r)
-		var yaw: float = rad_to_deg(atan2(cos(a), sin(a))) + rng.randf_range(-20.0, 20.0)
-		var k: float = rng.randf_range(0.3, 0.45)
-		# a main peak and two lower shoulders, so the ridgeline isn't one clean triangle
-		for part: int in 3:
-			var side: float = 0.0 if part == 0 else (-1.0 if part == 1 else 1.0)
-			var ph: float = h * (1.0 if part == 0 else rng.randf_range(0.45, 0.7))
-			var pw: float = w * (1.0 if part == 0 else rng.randf_range(0.6, 0.9))
-			var tang: Vector3 = Vector3(-sin(a), 0, cos(a)) * side * w * rng.randf_range(0.45, 0.7)
-			var pp: Vector3 = Vector3(p.x, ph * 0.5 - 6.0, p.z) + tang + Vector3(cos(a), 0, sin(a)) * rng.randf_range(-15.0, 15.0)
-			var py: float = yaw + rng.randf_range(-12.0, 12.0)
-			_noshadow(Props.prism(dress, pp, Vector3(pw, ph, d), "mountain", Vector3(0, py, 0)))
-			_noshadow(Props.prism(dress, pp + Vector3(0, ph * 0.5 - ph * k * 0.5, 0), Vector3(pw * k * 1.04, ph * k, d * 1.01), "snow", Vector3(0, py, 0)))
-	# a dark fir line on the near slopes (cones), beyond the walls
-	for i2: int in 70:
-		var a2: float = rng.randf() * TAU
-		var r2: float = rng.randf_range(70.0, 120.0)
-		var p2: Vector3 = c + Vector3(cos(a2) * r2, 0, sin(a2) * r2)
-		var th: float = rng.randf_range(7.0, 13.0)
-		_noshadow(Props.cone(dress, p2 + Vector3(0, th * 0.5, 0), th * 0.22, th, "cloth_green"))
-		_noshadow(Props.cone(dress, p2 + Vector3(0, th * 0.62, 0), th * 0.17, th * 0.55, "snow"))
 
 
 func _dress_ground() -> void:
@@ -2804,6 +2771,17 @@ func _dress_treads() -> void:
 			var t: float = float(k2) / float(maxi(1, posts))
 			B(Vector3(rail_x - 0.02, lerpf(y_low, y_high, t), lerpf(z_low, z_high, t) - 0.02),
 				Vector3(rail_x + 0.02, lerpf(y_low, y_high, t) + 0.95, lerpf(z_low, z_high, t) + 0.02), "iron")
+
+
+## UPDATE 10 section 5 (T-161): the living world beyond the yard. The .tscn only carries the Landscape node (MapRoot adds the MapAmbience from map01_ambience.json):
+## KaltenLandscape builds the valley, ridges, forest, rail line, cable car and siren at load time (the old prism
+## mountains and cone firs of _dress_mountains are gone); MapAmbience runs the sky, the war and the reactive details
+## from data/gravelight/map01_ambience.json. Neither collides.
+func build_landscape() -> void:
+	var land: Node3D = Node3D.new()
+	land.set_script(load("res://gravelight/world/landscape/kalten_landscape.gd"))
+	land.name = "Landscape"
+	map_root.add_child(land)
 
 
 func _dress_weather() -> void:

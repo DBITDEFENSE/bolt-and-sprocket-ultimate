@@ -69,6 +69,7 @@ func build() -> void:
 	if built:
 		return
 	built = true
+	LandscapeTerrain.reset_profile()
 	var t0: int = Time.get_ticks_msec()
 	_static = Node3D.new()
 	_static.name = "Static"

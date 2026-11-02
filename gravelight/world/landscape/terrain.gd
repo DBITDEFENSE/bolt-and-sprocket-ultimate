@@ -12,7 +12,13 @@ extends RefCounted
 ## Frame as in gen_map00.gd: +X east, +Z south. Distances are measured from CENTER (the middle of the inn plot).
 ## The camera's far plane is 400 m, so nothing here is further than ~345 m from CENTER.
 
-const CENTER: Vector2 = Vector2(12.0, 20.0)
+const DEFAULT_CENTER: Vector2 = Vector2(12.0, 20.0)
+## Where bearings and radii are measured from. Map 0's plot by default; Kaltenbrunn's landscape (U10 section 5, T-161)
+## moves it to its own yard with use_profile() and the next Landscape.build() on Map 0 puts it back (reset_profile()).
+static var CENTER: Vector2 = DEFAULT_CENTER
+## Optional replacements for height(x, z) and ridge_crest(band, bearing): Callables, invalid = Map 0's own.
+static var height_fn: Callable = Callable()
+static var crest_fn: Callable = Callable()
 ## The collision slab (gen_map00 build_geometry "Ground*"): the terrain starts at its edges at height 0.
 const SLAB_MIN: Vector2 = Vector2(-45.0, -40.0)
 const SLAB_MAX: Vector2 = Vector2(70.0, 75.0)
@@ -42,6 +48,18 @@ static var _n_hill: FastNoiseLite
 static var _n_near: FastNoiseLite
 static var _n_ridge: FastNoiseLite
 static var _n_forest: FastNoiseLite
+
+
+static func use_profile(center: Vector2, h: Callable, crest: Callable) -> void:
+	CENTER = center
+	height_fn = h
+	crest_fn = crest
+
+
+static func reset_profile() -> void:
+	CENTER = DEFAULT_CENTER
+	height_fn = Callable()
+	crest_fn = Callable()
 
 
 static func _noises() -> void:
@@ -134,6 +152,8 @@ static func hill_gain(bearing_deg: float) -> float:
 
 ## Terrain height at (x, z). 0 at the slab edge (the slab top is y = 0).
 static func height(x: float, z: float) -> float:
+	if height_fn.is_valid():
+		return float(height_fn.call(x, z))
 	_noises()
 	var d: float = slab_distance(x, z)
 	if d <= 0.0:
@@ -157,6 +177,8 @@ static func height(x: float, z: float) -> float:
 
 ## Height of the ridge bands' crest on a bearing: band 0 = the nearer ridge (wooded), band 1 = the mountains.
 static func ridge_crest(band: int, bearing_deg: float) -> float:
+	if crest_fn.is_valid():
+		return float(crest_fn.call(band, bearing_deg))
 	_noises()
 	var a: float = deg_to_rad(bearing_deg)
 	var c: Vector2 = Vector2(cos(a), sin(a))
