@@ -17,6 +17,14 @@
       "rocket_fallback_round": 9
     }
   },
+  "radar": {
+    "_doc": "UPDATE 10 §3 (T-157, contract C6 radar_ping): the radar tower's dish (gravelight/world/map04/radar_dish.gd) turns at turn_dps once the generator is on; the first ping first_after_s later, then one every every_s: GLBus.radar_ping(seconds) shows every zombie on the minimap and the pause map for seconds.",
+    "turn_dps": 36.0,
+    "first_after_s": 8.0,
+    "every_s": 60.0,
+    "seconds": 10.0,
+    "first_banner": "RADAR: every contact on your map"
+  },
   "power": {
     "vo_delay": 1.5,
     "light_sweep_start": 1.5,

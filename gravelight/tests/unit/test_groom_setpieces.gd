@@ -123,3 +123,27 @@ func test_fire_spread_grows_per_round() -> void:
 	assert_eq(GroomController.spread_count(4, sp), 3)
 	assert_eq(GroomController.spread_count(40, sp), 5, "capped at the path's end on the loop")
 	assert_eq(GroomController.spread_count(5, {}), 0, "no spread block, no spread")
+
+
+# ---------------------------------------------------------------- the radar
+
+func test_ping_timer() -> void:
+	var rc: Dictionary = GLData.load_json("res://data/gravelight/map04c.json")["radar"]
+	assert_eq(float(rc["every_s"]), 60.0, "a ping every minute")
+	assert_eq(float(rc["seconds"]), 10.0, "for 10 s")
+	var times: Array[float] = RadarDish.ping_times(float(rc["first_after_s"]), float(rc["every_s"]), 3)
+	assert_eq(times, [8.0, 68.0, 128.0] as Array[float])
+	assert_false(RadarDish.ping_due(7.9, 8.0))
+	assert_true(RadarDish.ping_due(8.0, 8.0))
+
+
+func test_map_state_radar_ping_window() -> void:
+	var ms: MapState = MapState.new()
+	add_child_autofree(ms)
+	assert_false(ms.radar_active())
+	ms.radar_ping(10.0)
+	assert_true(ms.radar_active())
+	ms._process(9.5)
+	assert_true(ms.radar_active(), "still on at 9.5 s")
+	ms._process(0.6)
+	assert_false(ms.radar_active(), "off after 10 s")

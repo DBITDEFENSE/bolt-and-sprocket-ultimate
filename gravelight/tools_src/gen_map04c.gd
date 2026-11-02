@@ -798,7 +798,10 @@ func _dress_radar() -> void:
 	for y: float in [3.0, 6.0, 9.0, 12.0, 15.0]:
 		B(Vector3(44.05, y - 0.06, 119.05), Vector3(45.95, y + 0.06, 120.95), "black_paint")
 	CYL(Vector3(45, 17.3, 120), 0.45, 2.6, "iron")
-	D.dish(dress, Vector3(45, 19.6, 120), 4.0, 2.6, Vector3(0.8, 0.45, -0.4))
+	# the dish turns once the power is on (U10 §3, T-157: RadarDish rotates this group; kept out of the bake)
+	var dish: Node3D = D.dish(dress, Vector3(45, 19.6, 120), 4.0, 2.6, Vector3(0.8, 0.45, -0.4))
+	dish.name = "RadarDish"
+	dish.set_meta("keep", true)
 	CYL(Vector3(46.2, 21.0, 121.2), 0.05, 10.0, "iron")
 	_noshadow(Props.ball(dress, Vector3(46.2, 26.1, 121.2), Vector3(0.28, 0.32, 0.28), "lamp_red_lit"))
 	Props.cable(dress, Vector3(45, 16, 120), Vector3(62, 3.0, 132), 1.5, 0.03, 10, "rubber")
@@ -1054,6 +1057,8 @@ func build_gameplay_extra() -> void:
 	_node("res://gravelight/world/map04/groom_controller.gd", "GroomController", {}, Vector3.ZERO)
 	# U10 §3 (T-157): the bulkhead plate the second wreck collapse tears out (fills the AB wall's x 10 opening)
 	box(gameplay, "BulkheadPlate", Vector3(8.8, 0, -4.0 - T * 0.5), Vector3(11.2, 2.4, -4.0 + T * 0.5), "steel")
+	# U10 §3: the radar's controller at the dish (turns it, pings the minimap when powered)
+	_node("res://gravelight/world/map04/radar_dish.gd", "RadarController", {}, Vector3(45, 19.6, 120))
 	# the Jumpjockeys' launch points: the tower step's corners and the gantry post's foot
 	for lp: Array in [["Launch_Tower_1", Vector3(42.5, 1.0, 117.5)], ["Launch_Tower_2", Vector3(47.5, 1.0, 117.5)], ["Launch_Tower_3", Vector3(47.5, 1.0, 122.5)],
 			["Launch_Gantry", Vector3(ROCKET_X + 5.5, LAB_Y, ROCKET_Z + 1.5)]]:
