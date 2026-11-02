@@ -230,7 +230,7 @@ func test_his_lines_exist() -> void:
 			cats[str(r["category"])] = true
 	for c: String in ["CAGE_HELLO", "CAGE_TALK", "ALARM", "BREAKOUT", "BREAKOUT_SELF", "FIGHT_KILL", "FREED", "CALL", "TALK_ASK",
 			"JOIN_UNARMED", "GUN_BOLT", "GUN_RIFLE", "GUN_AUTO", "GUN_PISTOL", "GUN_SHOTGUN", "GUN_OTHER", "GUN_SWAP", "PERK_REFUSE", "PERK_NEAR", "PERK_ACCEPT", "PERK_DRINK", "PERK_SHORT",
-			"COUSINS", "COUSINS_AFTER", "MIDNIGHT", "RETURN_WOUNDED", "M1_ARRIVE", "M1_SHORTCUT", "M2_ARRIVE", "DOWN", "REVIVED",
+			"COUSINS", "COUSINS_AFTER", "MIDNIGHT", "RETURN_WOUNDED", "M1_ARRIVE", "M1_SHORTCUT", "M2_ARRIVE", "M2_FLOOD", "M2_SAIL", "DOWN", "REVIVED",
 			"REVIVE", "TEAM_DOWN", "SPRINTER_BEHIND", "CRATE_MOVED", "POWERUP_SEEN", "CHATTER", "CMD_FOLLOW", "CMD_HOLD"]:
 		assert_true(cats.has(c), "JAK:%s has lines" % c)
 	assert_eq(str(lines["JAK_PERK_REFUSE_01"]["text"]), "I've seen what they put in those.")
@@ -248,6 +248,18 @@ func test_his_lines_exist() -> void:
 	var rules: Dictionary = GLData.load_json("res://data/gravelight/vo/rules.json")
 	assert_true((rules["player_speakers"] as Array).has("JAK"), "positional, like the squad")
 	assert_eq(GLVO.CHARACTER_SPEAKERS.get(&"jakub"), &"JAK")
+
+
+## UPDATE 10 section 9 (T-170; THE_BAR row 21): his Totenhafen beats are baked and wired: the arrival (M2_ARRIVE, the
+## join's "M%s_ARRIVE" category), the first flood (M2_FLOOD on GLBus.tide_flood_begin) and the sail (M2_SAIL on
+## GLBus.sail_started), each with audio, and the companion listens for both signals.
+func test_his_totenhafen_beats() -> void:
+	for id: String in ["JAK_M2_ARRIVE_01", "JAK_M2_ARRIVE_02", "JAK_M2_FLOOD_01", "JAK_M2_SAIL_01"]:
+		assert_true(GLVO.lines.has(id), "%s exists" % id)
+		assert_true(FileAccess.file_exists("res://gravelight/audio/vo/jak/%s.ogg" % id), "%s is baked" % id)
+	assert_true(GLBus.has_signal(&"tide_flood_begin") and GLBus.has_signal(&"sail_started"), "the beats' signals")
+	var jc: JakubCompanion = autofree(JakubCompanion.new())
+	assert_true(jc.has_method(&"_on_flood") and jc.has_method(&"_on_sail"), "the companion listens for them")
 
 
 func test_his_body() -> void:

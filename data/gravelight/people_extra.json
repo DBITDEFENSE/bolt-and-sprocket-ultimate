@@ -373,6 +373,72 @@
         "round": ["BRK_PEOPLE_ROUND_01", "BRK_PEOPLE_ROUND_02"],
         "down": ["BRK_PEOPLE_DOWN_01"]
       }
+    },
+    "jessen": {
+      "_doc": "UPDATE 10 section 9 (T-170): Karl Jessen, the Marinekasse's paymaster's mate, at his pay window on the crane office's north face (the teller body is BankBranch's, as Ruhland's: body false; talked to at the window's east end). Favour: the harbour master's ledger page from the Hafenmeister's hut on the quay. Reactions at the bank (THE_BAR row 15): the ballast dump (lf_ballast_done) and the boat's key (boat_key).",
+      "name": "Zahlmeistersmaat Karl Jessen, the Marinekasse",
+      "title": "KARL JESSEN",
+      "maps": ["map02"],
+      "speaker": "JES",
+      "display": "JESSEN",
+      "poi": "Jessen (the Marinekasse)",
+      "bio": "The Marinekasse's paymaster's mate, fifty-four, a reservist clerk from Flensburg who kept the port's pay window for two years and was ordered to keep it open until relieved. Nobody relieved him. He keeps the window open behind its grille on the crane office, enters every deposit in the Navy's own hand, and will not close the week's book until the harbour master's missing page is back in it; the sums are the one thing in Totenhafen that can still be made to agree.",
+      "bodies": [
+        {"person": "teller_jessen", "at": [47.1, 0.0, 59.0], "yaw": 180.0, "pose": "stand", "body": false}
+      ],
+      "favour": {
+        "kind": "fetch",
+        "item": "ledger",
+        "item_name": "harbour master's ledger page",
+        "item_at": [13.0, 0.0, 12.3],
+        "ask": "The harbour master's ledger page. He left it in his hut on the quay, by the chart, when he went down to the pens. Bring it to me and I can close the week, and pay out what is owed.",
+        "have": "You have the harbour master's ledger page. Hand it through Jessen's grille?",
+        "done": "Jessen pasted the page in, ran the week's sums twice and closed the book. He paid out what the harbour owed.",
+        "reward": {"kind": "scrip_mark", "scrip": 1000}
+      },
+      "reactions": [
+        {"flag": "lf_ballast_done", "said": "Jessen has entered the three coffins you put over the side as lost at sea. He did not enter who lost them. 'The Navy has a column for that. I left it blank.'", "line": "JES_PEOPLE_REACT_BALLAST_01"},
+        {"flag": "boat_key", "said": "Jessen looks at the ignition key a long moment and opens the book to U-1047's page. 'He signed for her here. If she sails, I sign her out. Properly.'", "line": "JES_PEOPLE_REACT_KEY_01"}
+      ],
+      "lines": {
+        "talk": ["JES_PEOPLE_TALK_01", "JES_PEOPLE_TALK_02"],
+        "ask": ["JES_PEOPLE_ASK_01"],
+        "thanks": ["JES_PEOPLE_THANKS_01"],
+        "round": ["JES_PEOPLE_ROUND_01"],
+        "down": ["JES_PEOPLE_DOWN_01"],
+        "react": ["JES_PEOPLE_REACT_BALLAST_01", "JES_PEOPLE_REACT_KEY_01"]
+      }
+    },
+    "harms": {
+      "_doc": "UPDATE 10 section 9 (T-170): Liese Harms, a gutting-line worker of the cannery's night shift (the pay slip INT_M2_PAYSLIP is line II's), hidden under the clerk's desk by the delivery book since the doors were chained. A civilian, a person, never a joke. Favour: the infirmary's storm lantern (by the nurse's end cot); then she listens to the hall for you (intel_ping).",
+      "name": "Liese Harms, the night shift",
+      "title": "LIESE HARMS",
+      "maps": ["map02"],
+      "speaker": "HRM",
+      "display": "HARMS",
+      "poi": "Night shift (Harms)",
+      "bio": "Thirty-four, a gutting-line worker of the cannery's night shift, line two, from the town on the cliff. When the watch chained the hall's doors she was still at the belt; she got under the clerk's desk and has stayed under it, in the dark, while the others ran for the pens. Her boy is up in the town with her mother. She knows every sound the hall makes and asks for nothing but a light.",
+      "bodies": [
+        {"person": "brandt", "at": [-1.9, 0.0, 10.4], "yaw": -90.0, "pose": "cower", "look": {"jacket": [0.28, 0.3, 0.3], "trousers": [0.2, 0.2, 0.22], "skin": [0.84, 0.69, 0.6], "head": [0.28, 0.2, 0.14], "headgear": "kerchief", "build": 0.95, "skirt": true, "apron": true}}
+      ],
+      "favour": {
+        "kind": "fetch",
+        "item": "lamp",
+        "item_name": "storm lantern",
+        "item_at": [-27.0, 0.0, 7.6],
+        "ask": "The lamp from the infirmary. The nurse kept a storm lantern by the end cot. With a light I can see the hall, and I know every sound in it. Bring it and I will tell you where they are.",
+        "have": "You have the infirmary's storm lantern. Give it to Harms?",
+        "done": "Harms keeps the lantern turned low under the desk. She listens to the hall and tells you where the dead are moving.",
+        "reward": {"kind": "intel_ping", "radius_m": 60.0, "seconds": 10.0}
+      },
+      "lines": {
+        "talk": ["HRM_PEOPLE_TALK_01", "HRM_PEOPLE_TALK_02"],
+        "ask": ["HRM_PEOPLE_ASK_01"],
+        "thanks": ["HRM_PEOPLE_THANKS_01"],
+        "ping": ["HRM_PEOPLE_PING_01"],
+        "round": ["HRM_PEOPLE_ROUND_01"],
+        "down": ["HRM_PEOPLE_DOWN_01"]
+      }
     }
   }
 }

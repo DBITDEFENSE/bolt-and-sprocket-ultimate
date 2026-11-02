@@ -53,3 +53,26 @@ func test_jette_is_found_in_act_one_and_carried_after() -> void:
 	var keep: Dictionary = Campaign.carried_flags({&"jette_with_you": true, &"jette_gun": "kar98k"},
 		GLData.table("campaign").get("carry_flags", []))
 	assert_eq(keep.size(), 2, "the flag and her gun carry to the next act")
+
+
+## UPDATE 10 section 9 (T-170; THE_BAR row 5): Hinnerk's stair scene (companions.json "scene"): a GLBus signal the
+## bus has (the first flood), a category of his with a baked line (PET_LF_TRAPPED_01), a near distance, and the
+## card's text; MapCompanion plays it once (play_scene) and only while he waits.
+func test_petersen_scene() -> void:
+	var e: Dictionary = MapCompanion.entry("petersen")
+	var sc: Dictionary = e.get("scene", {})
+	assert_false(sc.is_empty(), "he has a scene")
+	assert_true(GLBus.has_signal(StringName(str(sc.get("signal", "")))), "its signal is on the bus: %s" % str(sc.get("signal", "")))
+	assert_gt(float(sc.get("near_m", 0.0)), 5.0, "a survivor near enough triggers it too")
+	assert_ne(str(sc.get("said", "")), "", "the card carries the scene")
+	var ids: PackedStringArray = []
+	for id: Variant in GLVO.lines.keys():
+		var r: Dictionary = GLVO.lines[id]
+		if str(r["speaker"]) == str(e["speaker"]) and str(r["category"]) == str(sc.get("category", "")):
+			ids.append(str(id))
+			assert_true(FileAccess.file_exists("res://gravelight/audio/vo/%s/%s.ogg" % [str(e["speaker"]).to_lower(), str(id)]), "%s is baked" % id)
+	assert_true(ids.has("PET_LF_TRAPPED_01"), "the trapped line is his scene's")
+	var c: MapCompanion = autofree(MapCompanion.new())
+	c.cfg = e
+	assert_false(c.play_scene(), "no body yet: nothing plays, and it stays unplayed")
+	assert_false(c._scene_done)

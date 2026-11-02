@@ -14,7 +14,7 @@ func _people() -> Dictionary:
 func test_the_table_counts() -> void:
 	assert_eq(ExtraPeople.ids_for_map("map01_kaltenbrunn", ExtraPeople.cfg()).size(), 3, "miners, a medic, a switchboard operator (the quartermaster is Ammer's trade card)")
 	assert_eq(ExtraPeople.ids_for_map("map00_crossroads", ExtraPeople.cfg()).size(), 3, "a deserter, a widow, a courier")
-	assert_eq(ExtraPeople.ids_for_map("map02_totenhafen", ExtraPeople.cfg()).size(), 0)
+	assert_eq(ExtraPeople.ids_for_map("map02_totenhafen", ExtraPeople.cfg()).size(), 2, "Jessen at the Marinekasse, Harms of the night shift (T-170)")
 	assert_eq(ExtraPeople.ids_for_map("map04a_thalbach", ExtraPeople.cfg()).size(), 2, "Erich Wendel and Otto Brack (T-155)")
 	assert_eq(ExtraPeople.ids_for_map("map04c_groomlake", ExtraPeople.cfg()).size(), 2, "Groom Lake: Dee in her cage, Hale in his office (U10 §3)")
 
@@ -112,11 +112,53 @@ func test_the_inn_spec() -> void:
 	assert_eq(str(_people()["courier"]["trade"]["kind"]), "crate_tip")
 
 
+## UPDATE 10 section 9 (T-170; THE_BAR rows 20 and 15): Totenhafen's people. Jessen is the bank's teller (body false, as
+## Ruhland: the PatronBody is BankBranch's), talked to beside the Marinekasse's window on the crane office, with a favour
+## (the harbour master's ledger page from the Hafenmeister's hut) and reactions at the bank to the egg's flags; Harms
+## of the cannery's night shift hides by the clerk's desk with a favour (the infirmary's lantern) that makes her listen.
+func test_the_totenhafen_spec() -> void:
+	var j: Dictionary = _people()["jessen"]
+	assert_eq(str(j["speaker"]), "JES", "the Marinekasse's own voice (bank.json tellers.map02)")
+	assert_eq(str((BankAccount.teller_for("map02_totenhafen") as Dictionary).get("id", "")), str(j["bodies"][0]["person"]), "the same man as the bank's teller")
+	assert_false(bool(j["bodies"][0].get("body", true)), "no second body: the teller behind the grille is BankBranch's")
+	var bank: Dictionary = (GLData.load_json("res://data/gravelight/bank.json") as Dictionary)["branches"]["map02"]
+	var at: Vector3 = ExtraPeople.vec(j["bodies"][0]["at"])
+	assert_lt(at.distance_to(ExtraPeople.vec(bank["at"])), 3.0, "talked to at the pay window")
+	var nb: Array = bank["nav_block"]
+	assert_true(at.x > float(nb[1][0]) or at.z > float(nb[1][2]), "and outside the counter's navigation block")
+	assert_eq(str(j["favour"]["item"]), "ledger")
+	assert_eq(str(j["favour"]["reward"]["kind"]), "scrip_mark")
+	var hut: Vector3 = ExtraPeople.vec(j["favour"]["item_at"])
+	assert_true(hut.x > 10.0 and hut.x < 18.0 and hut.z > 10.0 and hut.z < 17.0, "the ledger page lies inside the Hafenmeister's hut (gen_map02 HutN/S/W/E)")
+	var flags: PackedStringArray = []
+	for r: Variant in j["reactions"]:
+		flags.append(str((r as Dictionary).get("flag", "")))
+		assert_ne(str((r as Dictionary).get("said", "")), "", "a reaction says something on the card")
+		assert_true((j["lines"]["react"] as Array).has(str((r as Dictionary).get("line", ""))), "its line is in his react list")
+	assert_true(flags.has("lf_ballast_done") and flags.has("boat_key"), "he reacts to the ballast dump and the boat's key")
+	var h: Dictionary = _people()["harms"]
+	assert_eq(str(h["speaker"]), "HRM")
+	assert_eq(str(h["bodies"][0]["pose"]), "cower", "hidden under the clerk's desk")
+	var desk: Vector3 = ExtraPeople.vec(h["bodies"][0]["at"])
+	assert_lt(desk.distance_to(Vector3(-3.2, 0.0, 9.0)), 2.5, "by the cannery office's desk (the delivery book)")
+	assert_eq(str(h["favour"]["item"]), "lamp")
+	var inf: Vector3 = ExtraPeople.vec(h["favour"]["item_at"])
+	assert_true(inf.x < -20.0 and inf.z < 10.0, "the lantern lies in the infirmary (NW corner)")
+	assert_eq(str(h["favour"]["reward"]["kind"]), "intel_ping")
+	assert_true((h["lines"] as Dictionary).has("ping"), "she listens for you")
+	for pid: String in ["jessen", "harms"]:
+		var bio: String = str(_people()[pid]["bio"]).to_lower()
+		for bad: String in ["ss ", "swastika", "zombie", "joke"]:
+			assert_false(bio.contains(bad), "%s: a person, no insignia, never a joke" % pid)
+
+
 func test_spots_cover_every_body_and_item() -> void:
 	var m1: Array[Vector3] = ExtraPeople.spots_for("map01_kaltenbrunn")
 	assert_eq(m1.size(), 3 + 1 + 1 + 1 + 1 + 1 + 1 - 1, "3 miners, medic + its crate, radio + its valve, miners' lamp")
 	var m0: Array[Vector3] = ExtraPeople.spots_for("map00_crossroads")
 	assert_eq(m0.size(), 1 + 1 + 1 + 1, "deserter, widow + her lamp, courier")
+	var m2: Array[Vector3] = ExtraPeople.spots_for("map02_totenhafen")
+	assert_eq(m2.size(), 1 + 1 + 1 + 1, "Jessen's window + the ledger page, Harms + the lantern (T-170)")
 
 
 func test_favour_state_machine() -> void:

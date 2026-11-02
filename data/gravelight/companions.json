@@ -68,7 +68,14 @@
       "personality": "jakub",
       "ask": "\"Forty years I took ships through this harbour. I will take you through it. With a gun, if you have one to spare.\"",
       "unarmed": "he follows you with his boat hook knife",
-      "banner": "HINNERK PETERSEN JOINS YOU"
+      "banner": "HINNERK PETERSEN JOINS YOU",
+      "scene": {
+        "_doc": "UPDATE 10 section 9 (T-170): his stair scene while he waits (design section 6): the first flood (GLBus signal) or the first survivor within near_m plays his trapped line once (the speaker's category, positional at him) instead of the generic call; the card's said text is the scene's while he is still on the stair.",
+        "signal": "tide_flood_begin",
+        "category": "LF_TRAPPED",
+        "near_m": 18.0,
+        "said": "He is wedged on the tower stair above the water line, a boat hook in his fist, the dead on the catwalks below him. \"The stair's the only dry thing left. Give me something that shoots and I'll hold the tower.\""
+      }
     },
     "jette": {
       "name": "Henriette \"Jette\" Maurer",
