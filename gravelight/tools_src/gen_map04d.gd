@@ -255,6 +255,16 @@ func build_dressing() -> void:
 	_dress_account()
 	print("  shadow diet: %d small/flat/ceiling pieces stop casting" % D.shadow_diet(dress, _ceil_at))
 	print("  dressing triangles: %s" % D.tally(dress))
+	print("  zone batches (ViewCells): %d" % D.merge_by_group(dress, map_root, _vis_group))
+
+
+## A point's visibility group for ViewCells: the dome it stands in, else the yard (the crater, the dish, the smile).
+func _vis_group(p: Vector3) -> String:
+	for z: Array in [[-12.0, 12.0, 0.0, 24.0, "A_RECEPTION"], [-12.0, 12.0, 24.0, 60.0, "B_CONCOURSE"], [12.0, 44.0, 24.0, 60.0, "D_FULFILLMENT"],
+			[12.0, 44.0, -16.0, 24.0, "E_HALL"], [14.0, 42.0, -44.0, -16.0, "F_CORE"]]:
+		if p.x >= float(z[0]) and p.x <= float(z[1]) and p.z >= float(z[2]) and p.z <= float(z[3]):
+			return str(z[4])
+	return "C_YARD" if p.z >= 58.0 else "ALL"
 
 
 ## The ceiling over a point (0 in the yard and outside): the shadow diet's "near the ceiling" rule.
@@ -269,7 +279,7 @@ func _ceil_at(p: Vector3) -> float:
 ## Floors per dome (the shared Floor_Domes collider is hidden; an apron of regolith under the service hatches),
 ## the shared walls' second faces, ceilings, skirting / cornice / coves / pilasters, door and window frames.
 func _dress_shell() -> void:
-	D.blk(dress, Vector3(-14, -0.5, -46), Vector3(46, -0.03, 62), "regolith")
+	D.blk(dress, Vector3(-14, -0.5, -46), Vector3(46, -0.03, 62), "regolith").set_meta("vis", "ALL")
 	for f: Array in [[Vector3(-12, -0.1, 0), Vector3(12, 0, 24), "floor_a"], [Vector3(-12, -0.1, 24), Vector3(12, 0, 60), "floor_b"],
 			[Vector3(12, -0.1, 24), Vector3(44, 0, 60), "floor_d"], [Vector3(12, -0.1, -16), Vector3(44, 0, 24), "floor_e"],
 			[Vector3(14, -0.1, -44), Vector3(42, 0, -16), "floor_f"]]:
@@ -838,6 +848,7 @@ func _shadow_shells() -> void:
 func _shadow_only(a: Vector3, b: Vector3) -> void:
 	var mi: MeshInstance3D = D.blk(dress, a, b, "dm_graphite")
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
+	mi.set_meta("vis", "ALL")   # the Sun needs them wherever the camera is
 
 
 ## The domes seen from the yard: a shallow cap over each lid (above the ceiling, so nothing shows inside).
@@ -855,11 +866,12 @@ func _dome_caps() -> void:
 		mi.position = c[0]
 		mi.scale = c[1]
 		mi.material_override = D.mat("hull")
+		mi.set_meta("vis", "ALL")   # seen from the yard over the other domes
 		dress.add_child(mi)
 		for k: int in 8:
 			var a: float = TAU * float(k) / 8.0
 			var sc: Vector3 = c[1]
-			D.strut(dress, (c[0] as Vector3) + Vector3(cos(a) * sc.x * 0.5, 0.0, sin(a) * sc.z * 0.5), (c[0] as Vector3) + Vector3(0, sc.y * 0.5, 0), 0.18, "dm_chrome_dark")
+			D.strut(dress, (c[0] as Vector3) + Vector3(cos(a) * sc.x * 0.5, 0.0, sin(a) * sc.z * 0.5), (c[0] as Vector3) + Vector3(0, sc.y * 0.5, 0), 0.18, "dm_chrome_dark").set_meta("vis", "ALL")
 
 
 # ------------------------------------------------------------------ D Fulfillment
@@ -1312,3 +1324,23 @@ func _presentation() -> void:
 		i += 1
 	var shadowed: Dictionary = D.tag_lights(map_root, zone_boxes, "C_YARD")
 	print("  shadowed lights per zone: %s" % [shadowed])
+	# ViewCells: each dome shows itself and what its doors open onto; the act's lights follow their zone
+	for c: Node in map_root.get_children():
+		if c is Light3D and not (c is DirectionalLight3D) and c.has_meta("zone"):
+			c.set_meta("vis_group", str(c.get_meta("zone")))
+			c.add_to_group(&"view_cell_member", true)
+	var vc: Node = Node.new()
+	vc.set_script(load("res://gravelight/world/view_cells.gd"))
+	vc.name = "ViewCells"
+	var cells: Array = []
+	for cdef: Array in [["A_RECEPTION", Vector3(-12, -5, 0), Vector3(12, 60, 24), ["A_RECEPTION", "B_CONCOURSE", "C_YARD"]],
+			["B_CONCOURSE", Vector3(-12, -5, 24), Vector3(12, 60, 60), ["A_RECEPTION", "B_CONCOURSE", "C_YARD", "D_FULFILLMENT"]],
+			["D_FULFILLMENT", Vector3(12, -5, 24), Vector3(44, 60, 60), ["B_CONCOURSE", "C_YARD", "D_FULFILLMENT", "E_HALL"]],
+			["E_HALL", Vector3(12, -5, -16), Vector3(44, 60, 24), ["D_FULFILLMENT", "E_HALL", "F_CORE"]],
+			["F_CORE", Vector3(14, -5, -44), Vector3(42, 60, -16), ["E_HALL", "F_CORE"]],
+			["C_YARD", Vector3(-45, -5, 60), Vector3(45, 200, 115), ["B_CONCOURSE", "C_YARD", "D_FULFILLMENT"]]]:
+		var lo: Vector3 = cdef[1]
+		var hi: Vector3 = cdef[2]
+		cells.append({"name": str(cdef[0]), "aabb": AABB(lo, hi - lo), "show": PackedStringArray(cdef[3]), "moon": true})
+	vc.set("cells", cells)
+	map_root.add_child(vc)

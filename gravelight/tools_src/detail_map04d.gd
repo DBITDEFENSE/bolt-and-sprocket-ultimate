@@ -271,6 +271,96 @@ static func tally(root: Node3D, top: int = 12) -> String:
 	return ", ".join(out)
 
 
+## ViewCells (T-145's portal-lite visibility, used here for C4, T-149): merges the dressing's primitive meshes per
+## (visibility group, material, shadow mode) itself, before the shared lib's merge (whose 22 m cells mix the domes),
+## and tags the batches and every loose visual (labels, kept meshes, scripted pieces) with meta "vis_group" and the
+## persistent node group "view_cell_member". `group_of(p)` names a point's group; a node or an ancestor with meta
+## "vis" overrides it ("ALL" is never hidden: the dome caps, the shadow shells). Returns the batch count.
+static func merge_by_group(dress: Node3D, map_root: Node3D, group_of: Callable) -> int:
+	var groups: Dictionary = {}
+	var victims: Array[MeshInstance3D] = []
+	for n: Node in dress.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		if not (mi.mesh is PrimitiveMesh) or mi.material_override == null or _keep_in(mi, dress):
+			continue
+		var xf: Transform3D = _xf_in(mi, map_root)
+		var g: String = _vis_override(mi, dress)
+		if g == "":
+			g = str(group_of.call(xf * mi.mesh.get_aabb().get_center()))
+		var key: String = "%s|%d|%d" % [g, mi.material_override.get_instance_id(), mi.cast_shadow]
+		if not groups.has(key):
+			var st: SurfaceTool = SurfaceTool.new()
+			st.begin(Mesh.PRIMITIVE_TRIANGLES)
+			groups[key] = {"g": g, "mat": mi.material_override, "shadow": mi.cast_shadow, "st": st}
+		(groups[key]["st"] as SurfaceTool).append_from(mi.mesh, 0, xf)
+		victims.append(mi)
+	var holder: Node3D = Node3D.new()
+	holder.name = "ZoneBatches"
+	holder.set_meta("keep", true)
+	map_root.add_child(holder)
+	var i: int = 0
+	for key2: String in groups.keys():
+		var e: Dictionary = groups[key2]
+		var arrays: Array = (e["st"] as SurfaceTool).commit_to_arrays()
+		arrays[Mesh.ARRAY_TEX_UV] = null
+		var m: ArrayMesh = ArrayMesh.new()
+		m.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+		var out: MeshInstance3D = MeshInstance3D.new()
+		out.name = "ZB_%s_%d" % [e["g"], i]
+		out.mesh = m
+		out.material_override = e["mat"]
+		out.cast_shadow = e["shadow"]
+		_tag_vis(out, str(e["g"]))
+		holder.add_child(out)
+		i += 1
+	for v: MeshInstance3D in victims:
+		v.get_parent().remove_child(v)
+		v.free()
+	# the loose visuals that stay: labels, kept meshes (patches, the conveyor, the hand, the beam), scripted pieces
+	for n2: Node in dress.find_children("*", "", true, false):
+		var vis: bool = n2 is Label3D or (n2 is Node3D and (n2.has_meta("keep") or n2.get_script() != null))
+		if not vis or _tagged_above(n2, dress):
+			continue
+		var g2: String = _vis_override(n2, dress)
+		if g2 == "":
+			g2 = str(group_of.call(_xf_in(n2 as Node3D, map_root).origin))
+		_tag_vis(n2 as Node3D, g2)
+	return i
+
+
+static func _tag_vis(n: Node3D, g: String) -> void:
+	n.set_meta("vis_group", g)
+	if g != "ALL":
+		n.add_to_group(&"view_cell_member", true)
+
+
+static func _keep_in(n: Node, root: Node) -> bool:
+	var p: Node = n
+	while p != null and p != root:
+		if p.has_meta("keep"):
+			return true
+		p = p.get_parent()
+	return false
+
+
+static func _vis_override(n: Node, root: Node) -> String:
+	var p: Node = n
+	while p != null and p != root:
+		if p.has_meta("vis"):
+			return str(p.get_meta("vis"))
+		p = p.get_parent()
+	return ""
+
+
+static func _tagged_above(n: Node, root: Node) -> bool:
+	var p: Node = n.get_parent()
+	while p != null and p != root:
+		if p.has_meta("vis_group"):
+			return true
+		p = p.get_parent()
+	return false
+
+
 ## A mesh instance kept out of the static batches (meta keep: its UVs or its own mesh must survive).
 static func keep(parent: Node3D, n: String, mesh: Mesh, xf: Transform3D, key: String, shadows: bool = true) -> MeshInstance3D:
 	var mi: MeshInstance3D = MeshInstance3D.new()

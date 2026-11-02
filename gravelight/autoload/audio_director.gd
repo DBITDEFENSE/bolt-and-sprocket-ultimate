@@ -37,6 +37,7 @@ var _owner: Dictionary = {}        # player instance id -> voice-list id
 var _music: AudioStreamPlayer      # stingers
 var _music_loop: AudioStreamPlayer # menu theme and other looping cues
 var _ambient: AudioStreamPlayer
+var _vacuum: bool = false   # T-149: the listener is in a vacuum zone: the map's bed is silent, only the suit
 var _score: AudioStreamPlayer
 var _duck_tween: Tween
 var _vo_duck_tween: Tween
@@ -389,7 +390,18 @@ func start_ambient() -> void:
 		_score.play()
 
 
+## A vacuum zone (ZoneAmbience, an ambience json zone with `vacuum: true`, DECISIONS T-149): the map's ambient bed
+## fades to silence so nothing outside the suit is heard; leaving the zone brings it back.
+func set_vacuum_bed(on: bool) -> void:
+	if _vacuum == on:
+		return
+	_vacuum = on
+	if _ambient != null and _ambient.is_inside_tree():
+		create_tween().tween_property(_ambient, "volume_db", _ambient_db(), 1.2)
+
+
 func stop_all_music() -> void:
+	_vacuum = false
 	_music.stop()
 	_music_loop.stop()
 	_ambient.stop()
@@ -403,6 +415,8 @@ func _range_db(field: String, fallback: Array, t: float) -> float:
 
 
 func _ambient_db() -> float:
+	if _vacuum:
+		return SILENT_DB
 	return _range_db("ambient_db", [-6.0, -2.0], intensity)
 
 

@@ -117,5 +117,9 @@ func test_zone_ambience_table() -> void:
 		for o: Dictionary in e.get("oneshots", []):
 			assert_true(sounds.has(str(o["key"])), "%s's one-shot %s exists" % [z2, o["key"]])
 	assert_true(bool((zones["C_YARD"] as Dictionary).get("vacuum", false)), "the yard is vacuum: the suit only")
+	assert_true(ZoneAmbience.validate(amb).is_empty(), "the table passes ZoneAmbience.validate: %s" % [ZoneAmbience.validate(amb)])
+	assert_true(ZoneAmbience.is_vacuum(amb, &"C_YARD") and not ZoneAmbience.is_vacuum(amb, &"B_CONCOURSE"), "ZoneAmbience honours the flag")
+	assert_eq(str((GLData.load_json("res://data/gravelight/audio.json")["music"]["ambient"] as Dictionary).get("map04d_mondlicht", "")), "ambient_map04d_concourse",
+		"Mondlicht's map bed is the relay's hum, not the inn's wind")
 	for o2: Dictionary in (zones["C_YARD"] as Dictionary).get("oneshots", []):
 		assert_true(str(o2["key"]).contains("valve"), "only the suit's own sounds in vacuum")

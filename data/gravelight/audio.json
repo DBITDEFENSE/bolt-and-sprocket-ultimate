@@ -76,7 +76,8 @@
    "map00_crossroads": "ambient_map00",
    "map01_kaltenbrunn": "ambient_map01",
    "default": "ambient_map00",
-   "map02_totenhafen": "ambient_map02_storm"
+   "map02_totenhafen": "ambient_map02_storm",
+   "map04d_mondlicht": "ambient_map04d_concourse"
   },
   "ambient_db": [-6.0, -2.0],
   "score": "score_dread",
