@@ -1,0 +1,13 @@
+{
+  "_doc": "Map 4 Act III (Groom Lake) zone ambience (UPDATE 09 §5.4, DECISIONS T-148), read by ZoneAmbience: per zone a looping bed (an audio.json key) at db, and one-shots every [min, max] s. The beds and one-shots are synthesized by gravelight/tools_src/gen_audio_desert.py (owned); amb_wind_gust is gen_audio_war.py's.",
+  "crossfade_s": 1.5,
+  "zones": {
+    "A_WRECK": {"bed": "ambient_map04c_wreck", "db": -8.0, "oneshots": [{"key": "amb_m4c_metal_creak", "every_s": [9, 22], "db": -8}]},
+    "B_LAKEBED": {"bed": "ambient_map04c_lakebed", "db": -7.0, "oneshots": [{"key": "amb_wind_gust", "every_s": [8, 20], "db": -6}]},
+    "C_HANGAR": {"bed": "ambient_map04c_hangar", "db": -9.0, "oneshots": [{"key": "amb_m4c_wood_creak", "every_s": [7, 18], "db": -8}]},
+    "D_MOTORPOOL": {"bed": "ambient_map04c_motorpool", "db": -8.0, "oneshots": [{"key": "amb_m4c_tin_bang", "every_s": [12, 30], "db": -8}]},
+    "E_RADAR": {"bed": "ambient_map04c_radar", "db": -7.0, "oneshots": [{"key": "amb_m4c_relay_click", "every_s": [5, 14], "db": -10}, {"key": "amb_wind_gust", "every_s": [10, 24], "db": -8}]},
+    "F_LAB": {"bed": "ambient_map04c_lab", "db": -9.0, "oneshots": []},
+    "G_SILO": {"bed": "ambient_map04c_silo", "db": -8.0, "oneshots": [{"key": "amb_m4c_metal_creak", "every_s": [14, 32], "db": -12}]}
+  }
+}

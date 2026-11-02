@@ -165,6 +165,50 @@
    "bus": "SFX",
    "attenuation": "loud"
   },
+  "amb_m4c_metal_creak": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/m4c_metal_creak_01.wav",
+    "res://gravelight/audio/sfx/ambience/m4c_metal_creak_02.wav",
+    "res://gravelight/audio/sfx/ambience/m4c_metal_creak_03.wav"
+   ],
+   "bus": "Ambience",
+   "volume_db": -4.0,
+   "pitch": [0.9, 1.1],
+   "max_voices": 2
+  },
+  "amb_m4c_relay_click": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/m4c_relay_click_01.wav",
+    "res://gravelight/audio/sfx/ambience/m4c_relay_click_02.wav",
+    "res://gravelight/audio/sfx/ambience/m4c_relay_click_03.wav"
+   ],
+   "bus": "Ambience",
+   "volume_db": -6.0,
+   "pitch": [0.95, 1.05],
+   "max_voices": 2
+  },
+  "amb_m4c_tin_bang": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/m4c_tin_bang_01.wav",
+    "res://gravelight/audio/sfx/ambience/m4c_tin_bang_02.wav",
+    "res://gravelight/audio/sfx/ambience/m4c_tin_bang_03.wav"
+   ],
+   "bus": "Ambience",
+   "volume_db": -5.0,
+   "pitch": [0.9, 1.1],
+   "max_voices": 1
+  },
+  "amb_m4c_wood_creak": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/m4c_wood_creak_01.wav",
+    "res://gravelight/audio/sfx/ambience/m4c_wood_creak_02.wav",
+    "res://gravelight/audio/sfx/ambience/m4c_wood_creak_03.wav"
+   ],
+   "bus": "Ambience",
+   "volume_db": -4.0,
+   "pitch": [0.9, 1.1],
+   "max_voices": 2
+  },
   "amb_shutter_bang": {
    "files": [
     "res://gravelight/audio/sfx/ambience/shutter_bang_01.wav",
@@ -213,6 +257,76 @@
   "ambient_map01": {
    "files": [
     "res://gravelight/audio/sfx/ambience/map01_kaltenbrunn_bed.wav"
+   ],
+   "bus": "Ambience",
+   "volume_db": 0.0,
+   "pitch": [1.0, 1.0],
+   "max_voices": 1,
+   "loop": true
+  },
+  "ambient_map04c_hangar": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/map04c_hangar.wav"
+   ],
+   "bus": "Ambience",
+   "volume_db": 0.0,
+   "pitch": [1.0, 1.0],
+   "max_voices": 1,
+   "loop": true
+  },
+  "ambient_map04c_lab": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/map04c_lab.wav"
+   ],
+   "bus": "Ambience",
+   "volume_db": 0.0,
+   "pitch": [1.0, 1.0],
+   "max_voices": 1,
+   "loop": true
+  },
+  "ambient_map04c_lakebed": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/map04c_lakebed.wav"
+   ],
+   "bus": "Ambience",
+   "volume_db": 0.0,
+   "pitch": [1.0, 1.0],
+   "max_voices": 1,
+   "loop": true
+  },
+  "ambient_map04c_motorpool": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/map04c_motorpool.wav"
+   ],
+   "bus": "Ambience",
+   "volume_db": 0.0,
+   "pitch": [1.0, 1.0],
+   "max_voices": 1,
+   "loop": true
+  },
+  "ambient_map04c_radar": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/map04c_radar.wav"
+   ],
+   "bus": "Ambience",
+   "volume_db": 0.0,
+   "pitch": [1.0, 1.0],
+   "max_voices": 1,
+   "loop": true
+  },
+  "ambient_map04c_silo": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/map04c_silo.wav"
+   ],
+   "bus": "Ambience",
+   "volume_db": 0.0,
+   "pitch": [1.0, 1.0],
+   "max_voices": 1,
+   "loop": true
+  },
+  "ambient_map04c_wreck": {
+   "files": [
+    "res://gravelight/audio/sfx/ambience/map04c_wreck.wav"
    ],
    "bus": "Ambience",
    "volume_db": 0.0,
