@@ -428,9 +428,12 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 			w["has_item"] = item == "" or QuestManager.has_item(StringName(item))
 			w["pickup"] = _first(t.get("pickup", {}), null)
 			var prow: Array = []
+			w["carrying"] = false
 			if t.has("pickups") and hub_ok:
 				for pn: Node in hub.resolve(t["pickups"]):
 					var p3: Node3D = pn as Node3D
+					if p3 != null and "carrier" in p3 and int(p3.get("carrier")) == player.player_id:
+						w["carrying"] = true   # T-153: already holding one (a ballast coffin): deliver it
 					if p3 != null and _eligible(p3, t) and not hub.targeted_by_other(p3, brain):
 						prow.append({"node": p3, "d": _flat(p3.global_position, player.global_position)})
 			w["pickups"] = prow
@@ -635,7 +638,7 @@ static func plan_hold(t: Dictionary, w: Dictionary) -> Dictionary:
 
 ## Carry: fetch (the item's pickup, or each part), then deliver once the target is ready for it.
 static func plan_carry(t: Dictionary, w: Dictionary) -> Dictionary:
-	if t.has("pickups"):
+	if t.has("pickups") and not bool(w.get("carrying", false)):
 		var best: Dictionary = {}
 		for r: Variant in w.get("pickups", []):
 			var row: Dictionary = r

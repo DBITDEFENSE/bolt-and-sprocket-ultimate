@@ -161,6 +161,8 @@ func _finish(ok: bool, code: String = "") -> void:
 
 func _release() -> void:
 	var n: Variant = order.get("node")
+	if n is Searchlight and is_instance_valid(n) and (n as Searchlight).operator_id == player.player_id and Net.is_authority():
+		(n as Searchlight).leave()   # T-153: the order is over: off the tower light
 	if n is Node and is_instance_valid(n):
 		brain.squad.release(n as Node, player.player_id)
 	if not _repair.is_empty():
@@ -207,7 +209,7 @@ func tick_think(now: float) -> void:
 			order["interrupted"] = true
 		if away == "down":
 			return
-	if now - float(order.get("created", now)) > float(_cfg.get("order_s", 120.0)) and str(order.get("kind", "")) != "defend":
+	if now - float(order.get("created", now)) > float(_cfg.get("order_s", 120.0)) and str(order.get("kind", "")) != "defend" and str(order.get("kind", "")) != "man":
 		_finish(false, "timed out")
 		return
 	var node: Variant = order.get("node")
@@ -296,6 +298,8 @@ func run(delta: float) -> void:
 			_defend(delta)
 		"powerup":
 			_powerup(delta)
+		"man":
+			_man(delta)
 		_:
 			brain.loco.stop()
 
@@ -536,6 +540,29 @@ func _deliver(delta: float) -> void:
 	_finish(true, "delivered")
 
 
+## MAN_SEARCHLIGHT (T-153): walk to the tower light and take it; stay on it (the station holds the bot and aims for
+## it) until the mark is removed, another order replaces it, the light goes to the boat, or someone else has it.
+func _man(delta: float) -> void:
+	var sl: Searchlight = order.get("node") as Searchlight
+	if sl == null or not is_instance_valid(sl):
+		_finish(false, "gone")
+		return
+	if sl.operator_id == player.player_id:
+		brain.loco.stop()
+		brain.idle_look(delta)
+		return
+	if sl.operator_id != 0 or sl.auto_track or not GameState.power_on:
+		_finish(false, "taken" if GameState.power_on else "power")
+		return
+	if BotTasks._flat(sl.global_position, player.global_position) > 1.8 or absf(sl.global_position.y - player.global_position.y) > 1.8:
+		brain.loco.move_to(sl.global_position, 0.9, 1.2)
+		if not brain.aim.update(delta, true):
+			brain.idle_look(delta)
+		return
+	if Net.is_authority() and sl.can_interact(player):
+		sl.man(player.player_id)
+
+
 func _go(delta: float) -> void:
 	var p: Vector3 = order.get("pos", player.global_position)
 	var r: float = 1.4 if str(order.get("kind", "")) == "go" else float(_cfg.get("regroup_radius_m", 3.0))
@@ -699,6 +726,9 @@ func status() -> String:
 			return "Regrouping at %s" % (where if where != "" else "the mark")
 		"powerup":
 			return "Going for the %s" % label
+		"man":
+			var sl: Variant = order.get("node")
+			return "Manning the searchlight" if sl is Searchlight and is_instance_valid(sl) and (sl as Searchlight).operator_id == player.player_id else "Going to the searchlight"
 		"collect":
 			var t: Dictionary = brain.squad.ee_task_of(player.player_id)
 			return "Doing: %s" % str(t.get("label", label)) if not t.is_empty() else "Doing: %s" % label

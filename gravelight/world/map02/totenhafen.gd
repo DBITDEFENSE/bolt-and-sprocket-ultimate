@@ -42,6 +42,7 @@ func setup(m: MapRoot) -> void:
 	_place_optional("res://gravelight/world/map02/totenhafen_ballast.gd")
 	_place_optional("res://gravelight/world/map02/totenhafen_world.gd")
 	_place_optional("res://gravelight/world/map02/kielholer_controller.gd")
+	_place_optional("res://gravelight/world/map02/undertow_parts.gd")
 	_place_optional("res://gravelight/world/map02/letzte_fahrt_world.gd")
 	GLBus.weapon_acquired.connect(_on_weapon_acquired)
 

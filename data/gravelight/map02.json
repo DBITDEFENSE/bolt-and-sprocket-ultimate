@@ -324,10 +324,10 @@
     "screamer"
   ],
   "spawn_table": {
-    "_doc": "Which spawn points exist per zone (the generator places them; the smoke test counts them). windows = barricades, ground = emerge points live from round 1, catwalk = emerge points live only at high tide.",
+    "_doc": "Which spawn points exist per zone (the generator places them; the smoke test counts them). windows = barricades, ground = emerge points live from round 1, catwalk = emerge points live only at high tide. UPDATE 10 (T-153): A_QUAY gains Ground_A_QUAY_2/3 at runtime (TotenhafenWorld, the economy pass); the Kielholer Surface_* points (D_PENHALL pier edges) are live only while flooded and are not counted here.",
     "A_QUAY": {
       "windows": 4,
-      "ground": 2
+      "ground": 4
     },
     "B_CANNERY": {
       "windows": 3,
@@ -438,21 +438,9 @@
         0.0,
         22.5,
         "BLST-07"
-      ],
-      [
-        38.6,
-        0.0,
-        40.0,
-        "BLST-11"
-      ],
-      [
-        36.5,
-        0.0,
-        42.4,
-        "BLST-12"
       ]
     ],
-    "_doc_v2": "Ballast v2 (C2, T-153): a carrier's WeaponHolder is limited to melee and the pistol slot (set_carry_limit). Two destinations: the crane hook (ballast_loaded counter, Operator OPR_BALLAST_LOAD_*, +economy.json ballast_load_bonus Scrip to the carrier) and the sea-stairs dump (BallastDump at dump; ballast_dumped counter, Operator OPR_BALLAST_DUMP_*, the next round +1 glasshide via RoundManager.extra_spawn). A delivered coffin respawns on a free pallet from coffin_spots after respawn_seconds, so both choices stay open. shard_after_dumps: the Undertow's shard appears on the sea stairs after that many dumps.",
+    "_doc_v2": "Ballast v2 (C2, T-153): a carrier's WeaponHolder is limited to melee and the pistol slot (set_carry_limit). Two destinations: the crane hook (ballast_loaded counter, Operator OPR_BALLAST_LOAD_*, +economy.json ballast_load_bonus Scrip to the carrier) and the sea-stairs dump (BallastDump at dump; ballast_dumped counter, Operator OPR_BALLAST_DUMP_*, the next round +1 glasshide via RoundManager.extra_spawn). A delivered coffin respawns on a free pallet from coffin_spots + pallet_spots (the extra pallets beside the crane: no baked coffin stands on them) after respawn_seconds, so both choices stay open. shard_after_dumps: the Undertow's shard appears on the sea stairs after that many dumps.",
     "dump": [
       10.0,
       0.0,
@@ -481,7 +469,21 @@
       "WRN_BALLAST_DUMP_01"
     ],
     "squad_dump_third": "PEG_BALLAST_DUMP_THIRD_01",
-    "glasshide_per_dump": 1
+    "glasshide_per_dump": 1,
+    "pallet_spots": [
+      [
+        38.6,
+        0.0,
+        40.0,
+        "BLST-11"
+      ],
+      [
+        36.5,
+        0.0,
+        42.4,
+        "BLST-12"
+      ]
+    ]
   },
   "exfil": {
     "round": 40,

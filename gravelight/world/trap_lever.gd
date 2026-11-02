@@ -12,7 +12,7 @@ var _lamp: MeshInstance3D
 var _lamp_t: float = 0.0
 
 const STENCIL: Dictionary = {&"ore_cart": "FÖRDERWAGEN", &"live_wire": "HOCHSPANNUNG", &"chandelier": "KRONLEUCHTER",
-	&"fuel_dump": "FUEL DUMP", &"door_drop": "HANGAR DOOR", &"rivet_line": "NIETSTRASSE"}   # U10 §3 Act III (T-157), Act I (T-155)
+	&"fuel_dump": "FUEL DUMP", &"door_drop": "HANGAR DOOR", &"rivet_line": "NIETSTRASSE", &"crane_drop": "KRANABWURF"}   # U10 §3 Act III (T-157), Act I (T-155), §2 (T-153)
 
 
 func _ready() -> void:
