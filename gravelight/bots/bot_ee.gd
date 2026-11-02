@@ -323,11 +323,11 @@ func _refresh_plan() -> void:
 		if dn != null and is_instance_valid(dn) and not dn.is_open and float(_failed_nodes.get(dn.get_instance_id(), -INF)) <= _now():
 			return   # on the way to open a door: no second-guessing every think
 	var w: Dictionary = snapshot(task["qid"], task["sid"], task["def"], task.get("focus"), bool(task["ordered"]), str(task["type"]))
-	var was: String = "%s %s" % [str(_plan.get("do", "")), str((_plan.get("node") as Node).name) if _plan.get("node") is Node and is_instance_valid(_plan.get("node")) else ""]
+	var was: String = "%s %s" % [str(_plan.get("do", "")), str((_plan.get("node") as Node).name) if is_instance_valid(_plan.get("node")) and _plan.get("node") is Node else ""]
 	_plan = plan(str(task["type"]), task["def"], w)
 	var d: String = str(_plan.get("do", ""))
 	if OS.has_environment("EGG_DEBUG"):
-		var now_s: String = "%s %s" % [d, str((_plan.get("node") as Node).name) if _plan.get("node") is Node and is_instance_valid(_plan.get("node")) else ""]
+		var now_s: String = "%s %s" % [d, str((_plan.get("node") as Node).name) if is_instance_valid(_plan.get("node")) and _plan.get("node") is Node else ""]
 		if now_s != was:
 			var anchors: String = ""
 			for r: Variant in w.get("anchors", []):
@@ -723,7 +723,8 @@ static func plan_turn_key(_t: Dictionary, w: Dictionary) -> Dictionary:
 func _execute(delta: float) -> void:
 	_forced = {}
 	var d: String = str(_plan.get("do", ""))
-	var n: Node3D = _plan.get("node") as Node3D
+	var nv: Variant = _plan.get("node")
+	var n: Node3D = nv as Node3D if is_instance_valid(nv) else null   # T-153: the node can be freed under the plan (a picked-up key)
 	if _plan.has("node") and (n == null or not is_instance_valid(n)) and d != "escort" and d != "wait" and d != "hold":
 		_replan = true
 		_idle(delta)
@@ -909,7 +910,8 @@ func _do_shoot(n: Node3D, delta: float) -> void:
 
 
 func _do_hold(delta: float) -> void:
-	var n: Node3D = _plan.get("node") as Node3D
+	var nv: Variant = _plan.get("node")
+	var n: Node3D = nv as Node3D if is_instance_valid(nv) else null   # T-153: the node can be freed under the plan (a picked-up key)
 	var pos: Vector3 = _plan.get("pos", Vector3.INF)
 	var r: float = float(_plan.get("radius", 2.0))
 	if n != null and is_instance_valid(n):
