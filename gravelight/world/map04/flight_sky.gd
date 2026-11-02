@@ -604,7 +604,6 @@ func _tick_fighters(delta: float) -> void:
 func spawn_pass(with_strafe: bool) -> void:
 	if _fighter_mesh == null:
 		return
-	var fcfg: Dictionary = cfg.get("fighters", {})
 	var kind: int = _rng.randi_range(0, 2)
 	var side: float = -1.0 if _rng.randf() < 0.5 else 1.0
 	var a: Vector3
@@ -624,6 +623,21 @@ func spawn_pass(with_strafe: bool) -> void:
 			var x3: float = _rng.randf_range(40.0, 110.0) * (1.0 if _rng.randf() < 0.7 else -1.0)
 			a = Vector3(x3, 180.0, WING_Z - 90.0)
 			b = Vector3(x3 + side * 30.0, -200.0, WING_Z - 160.0)
+	_spawn_pass_ab(a, b, with_strafe, kind)
+
+
+## UPDATE 10 (T-156): a fighter strafing close over the wing walk: low past `near` from aft to fore, guns firing.
+func spawn_pass_near(near: Vector3) -> void:
+	if _fighter_mesh == null or desert:
+		return
+	var off: float = _rng.randf_range(-18.0, 18.0)
+	var a: Vector3 = near + Vector3(off - 40.0, _rng.randf_range(8.0, 16.0), -260.0)
+	var b: Vector3 = near + Vector3(off + 40.0, _rng.randf_range(4.0, 12.0), 260.0)
+	_spawn_pass_ab(a, b, true, 0)
+
+
+func _spawn_pass_ab(a: Vector3, b: Vector3, with_strafe: bool, kind: int) -> void:
+	var fcfg: Dictionary = cfg.get("fighters", {})
 	var node: Node3D = Node3D.new()
 	node.name = "Fighter%d" % passes_done
 	add_child(node)

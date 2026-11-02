@@ -19,6 +19,9 @@ const CEIL_WING: float = 2.2
 const CEIL_ROOM: float = 4.8
 const DIO_Y: float = -186.0   # the lake-bed diorama's ground
 const Detail = preload("res://gravelight/tools_src/detail_map04b.gd")
+## UPDATE 10 §3 (T-156): the act's set-piece data (map04b.json "flight": wing_walk, turbulence_tilt, decompression)
+var flight_cfg: Dictionary = {}
+var wing_box_index: int = -1
 ## T-147: geometry whose mesh the shell replaces (colliders kept): every wall, the lids, the deck, the old rib posts,
 ## the flight-deck glass box, the spars (dressing only)
 const SHELL_HIDDEN: Array = ["A_S*", "A_W*", "A_E*", "AB_*", "B_W*", "B_E*", "CL_*", "CR_*", "D_S*", "D_W*", "D_E*", "D_N*", "DW_S*",
@@ -54,7 +57,7 @@ func setup_tables() -> void:
 	zone_boxes = [
 		["A_BOMBENSCHACHT", Vector3(-9, -1, 0), Vector3(9, 6, 24)],
 		["B_MITTELRUMPF", Vector3(-9, -1, 24), Vector3(9, 6, 54)],
-		["C_FLUEGEL_L", Vector3(-52, -1, 28), Vector3(-9, 4, 46)],
+		["C_FLUEGEL_L", Vector3(-52, -1, 28), Vector3(-9, 3.0, 46)],   # T-156: stops under the wing walk's own box
 		["C_FLUEGEL_R", Vector3(9, -1, 28), Vector3(52, 4, 46)],
 		["D_TRIEBWERK", Vector3(-78, -1, 24), Vector3(-52, 6, 58)],
 		["D_TRIEBWERK", Vector3(-52, -1, 50), Vector3(-22, 4, 58)],   # the port walkway to the cockpit
@@ -64,6 +67,10 @@ func setup_tables() -> void:
 	]
 	for w: Array in windows:
 		zone_boxes.append(closet_box(str(w[1]), w[2], float(w[3])))
+	# T-156: the wing walk's catwalk (deck_y on stanchions) is its own nav island in C_FLUEGEL_L's layer (Nav_WingRails)
+	flight_cfg = (JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/map04b.json")) as Dictionary).get("flight", {})
+	zone_boxes.append(["C_FLUEGEL_L", Vector3(-118, 3.0, 16.5), Vector3(-38, 5.0, 46.0)])
+	wing_box_index = zone_boxes.size() - 1
 	links = [
 		[Vector3(0, 0, 23.6), Vector3(0, 0, 24.4), "B_MITTELRUMPF"],
 		[Vector3(-8.6, 0, 36), Vector3(-9.4, 0, 36), "C_FLUEGEL_L"],
@@ -148,6 +155,7 @@ func build_geometry() -> void:
 	_kanzel()
 	_cockpit()
 	_diorama()
+	_wing_walk()
 
 
 func _bay() -> void:
@@ -247,6 +255,26 @@ func _cockpit() -> void:
 	box(geo, "NavBlock_Cradle", Vector3(-0.6, 0, 65.4), Vector3(0.6, 1.0, 66.6), "machine")   # the autopilot's cradle (the beacon stands here)
 
 
+## T-156: the wing walk's catwalk: a grating deck on stanchions deck_y up, along `segments`, railed along `rails`
+## (both colliders: the deck is navmesh source for the wing's own box, the rails keep you on it; the turbulence
+## is what throws you over).
+func _wing_walk() -> void:
+	var ww: Dictionary = flight_cfg.get("wing_walk", {})
+	if ww.is_empty():
+		return
+	var dy: float = float(ww.get("deck_y", 3.4))
+	var i: int = 0
+	for r: Array in ww.get("segments", []):
+		var a: Array = r[0]
+		var b: Array = r[1]
+		box(geo, "WingDeck_%d" % i, Vector3(float(a[0]), dy - 0.12, float(a[1])), Vector3(float(b[0]), dy, float(b[1])), "deck")
+		i += 1
+	var j: int = 0
+	for rl: Array in ww.get("rails", []):
+		rail("WingRail_%d" % j, Vector3(float(rl[0]), dy, float(rl[1])), Vector3(float(rl[2]), dy, float(rl[3])), 1.05)
+		j += 1
+
+
 ## The lake bed far below the deck: what the crash cutscene films (never reachable; no navmesh, hidden from the bake).
 func _diorama() -> void:
 	box(geo, "SaltFlat", Vector3(-400, DIO_Y - 0.5, -400), Vector3(400, DIO_Y, 400), "salt", false)
@@ -281,6 +309,7 @@ func build_dressing() -> void:
 		var bp: MeshInstance3D = Props.block(dress, c - half, c + half, "steel")
 		if bp != null:
 			bp.material_override = KranichShell.frame_material()
+	_wing_walk_dressing()
 	fog("CoreHeat", Vector3(-70, 2.0, 40), Vector3(16, 4.0, 30), 0.05, Color(0.5, 0.35, 0.7), Color(0.08, 0.02, 0.12))
 	# the wing diorama for the crash: a flat wing, kept so the fx can slide it (FlightSky hides it until the crash)
 	var wd: Node3D = Props.group(dress, "WingDiorama", Vector3(0, DIO_Y + 14.0, -130))
@@ -289,6 +318,60 @@ func build_dressing() -> void:
 	Props.block(wd, Vector3(-8, 0, -14), Vector3(8, 4.0, 14), "steel")
 	for ix: float in [-22.0, -12.0, 12.0, 22.0]:
 		Props.cyl(wd, Vector3(ix, 2.6, 0), 1.6, 3.5, "steel")
+
+
+## T-156: what the wing walk shows outside: the outer wing panels port and starboard (the skin's primer), the
+## trailing-edge aprons, the catwalk's stanchions and the tether rail, the port wingtip's navigation light.
+func _wing_walk_dressing() -> void:
+	var ww: Dictionary = flight_cfg.get("wing_walk", {})
+	if ww.is_empty():
+		return
+	var dy: float = float(ww.get("deck_y", 3.4))
+	var skin: Material = KranichShell.frame_material()
+	var panels: Array = []
+	for sx: float in [-1.0, 1.0]:
+		panels.append([Vector3(-100.0, 2.72, 12.0), Vector3(-80.6, 3.08, 46.0), sx])
+		panels.append([Vector3(-122.0, 2.74, 15.0), Vector3(-100.0, 3.06, 40.0), sx])
+		panels.append([Vector3(-130.0, 2.76, 18.0), Vector3(-122.0, 3.04, 32.0), sx])
+		panels.append([Vector3(-80.6, 2.72, 14.0), Vector3(-46.0, 2.92, 23.9), sx])
+	for pn: Array in panels:
+		var lo: Vector3 = pn[0]
+		var hi: Vector3 = pn[1]
+		if float(pn[2]) > 0.0:
+			var t: float = lo.x
+			lo.x = -hi.x
+			hi.x = -t
+		var mi: MeshInstance3D = Props.block(dress, lo, hi, "steel", false)
+		if mi != null and skin != null:
+			mi.material_override = skin
+	# stanchions every ~3 m under the rails, the tether rail itself is the rail's top bar (a brass-yellow tube)
+	for rl: Array in ww.get("rails", []):
+		var a: Vector3 = Vector3(float(rl[0]), dy, float(rl[1]))
+		var b: Vector3 = Vector3(float(rl[2]), dy, float(rl[3]))
+		var n: int = maxi(1, int(a.distance_to(b) / 3.0))
+		for k: int in n + 1:
+			var p: Vector3 = a.lerp(b, float(k) / float(n))
+			Props.cyl(dress, p + Vector3(0, 0.52, 0), 0.03, 1.05, "iron")
+		var mid: Vector3 = (a + b) * 0.5 + Vector3(0, 1.05, 0)
+		var seg_len: float = a.distance_to(b)
+		var along_x: bool = absf(b.x - a.x) > absf(b.z - a.z)
+		Props.cyl(dress, mid, 0.025, seg_len, "yellow_paint", Vector3(0, 0, 90) if along_x else Vector3(90, 0, 0))
+	for r: Array in ww.get("segments", []):
+		var a2: Array = r[0]
+		var b2: Array = r[1]
+		var lo2: Vector3 = Vector3(float(a2[0]), 0, float(a2[1]))
+		var hi2: Vector3 = Vector3(float(b2[0]), 0, float(b2[1]))
+		var along: bool = absf(hi2.x - lo2.x) >= absf(hi2.z - lo2.z)
+		var len2: float = absf(hi2.x - lo2.x) if along else absf(hi2.z - lo2.z)
+		for k2: int in int(len2 / 4.0) + 1:
+			var c: Vector3 = Vector3(lerpf(lo2.x, hi2.x, 0.5), 0, lerpf(lo2.z, hi2.z, 0.5))
+			if along:
+				c.x = minf(lo2.x, hi2.x) + 2.0 + 4.0 * float(k2)
+			else:
+				c.z = minf(lo2.z, hi2.z) + 2.0 + 4.0 * float(k2)
+			Props.block(dress, Vector3(c.x - 0.06, 2.85, c.z - 0.06), Vector3(c.x + 0.06, dy - 0.12, c.z + 0.06), "iron", false)
+	lamp(Vector3(-129.5, 3.3, 25.0), Color(1.0, 0.15, 0.1), 1.2, 6.0)   # the port wingtip's navigation light
+	lamp(Vector3(129.5, 3.3, 25.0), Color(0.2, 1.0, 0.35), 1.0, 6.0)    # starboard
 
 
 ## T-147: every light carries a `zone` meta (contract C4: <= 6 shadowed per zone); the swinging bulbs go under their
@@ -386,4 +469,55 @@ func build_gameplay_extra() -> void:
 	for bp2: Node in gameplay.get_children():
 		if bp2.name.begins_with("Breach"):
 			bp2.set("see_through", true)
+	_set_pieces_u10()
 	_finish_lights()
+
+
+# ================================================================== UPDATE 10 §3 (T-156): the act's new set-pieces
+
+func _v(a: Variant) -> Vector3:
+	var arr: Array = a as Array
+	return Vector3(float(arr[0]), float(arr[1]), float(arr[2]))
+
+
+func _set_pieces_u10() -> void:
+	const W: String = "res://gravelight/world/map04/"
+	# the aux bus becomes its own findable board (AuxBus, a PowerSwitch): same place, same zone order and table
+	var ab: Node = gameplay.get_node_or_null("AuxBus")
+	if ab != null:
+		var zo: PackedStringArray = ab.get("zone_order")
+		var lbl: String = str(ab.get("label"))
+		var tbl: String = str(ab.get("config_table"))
+		ab.set_script(load(W + "aux_bus.gd"))
+		ab.set("zone_order", zo)
+		ab.set("label", lbl)
+		ab.set("config_table", tbl)
+	# the wing walk: its region gets a name the WingWalk finds, the hatches, the tether posts, the wingtip locker
+	var nav: Node = map_root.get_node_or_null("Navigation")
+	if nav != null and wing_box_index >= 0:
+		var r: Node = nav.get_node_or_null("Nav_C_FLUEGEL_L_%d" % wing_box_index)
+		if r != null:
+			r.name = "Nav_WingRails"
+	var ww: Dictionary = flight_cfg.get("wing_walk", {})
+	if not ww.is_empty():
+		_node(W + "wing_walk.gd", "WingWalk", {}, Vector3.ZERO)
+		_node(W + "wing_hatch.gd", "WingHatchOut", {"direction": "out", "to_pos": _v(ww["landing"]), "to_yaw": 0.0}, _v(ww["hatch"]), 0.0)
+		_node(W + "wing_hatch.gd", "WingHatchIn", {"direction": "in", "to_pos": _v(ww["hatch_foot"]), "to_yaw": 0.0}, _v(ww["hatch_in"]), 0.0)
+		var ci: int = 1
+		for cp: Array in ww.get("clip_points", []):
+			_node(W + "clip_point.gd", "ClipPoint%d" % ci, {"clip_hold": float(ww.get("clip_hold", 1.0))}, _v(cp), 0.0)
+			ci += 1
+		_node(W + "wing_chest.gd", "WingChest", {"wonder_slot": str(ww.get("wonder_slot", "undertow_class"))}, _v(ww["chest"]), float(ww.get("chest_yaw", 0.0)))
+	# the tilt's loose cargo
+	var si: int = 1
+	for sl: Dictionary in (flight_cfg.get("turbulence_tilt", {}) as Dictionary).get("sliders", []):
+		_node(W + "tilt_slider.gd", "Slider%d_%s" % [si, str(sl.get("kind", "crate"))], {"kind": str(sl.get("kind", "crate"))}, _v(sl["at"]), 0.0)
+		si += 1
+	# the decompression breaches (the bay's aft ramp seam, the starboard crawlway's leading edge) and their rails
+	var bay: Node3D = _node(W + "decompression.gd", "DecompBay", {}, Vector3(0, 0, 0.3), 0.0)
+	var stb: Node3D = _node(W + "decompression.gd", "DecompStarboard", {}, Vector3(30, 0, 45.75), 180.0)
+	for g: Array in [["GripBay1", Vector3(-8.6, 0, 3.0), 90.0, bay], ["GripBay2", Vector3(8.6, 0, 3.0), -90.0, bay],
+			["GripBay3", Vector3(-8.6, 0, 8.5), 90.0, bay], ["GripBay4", Vector3(8.6, 0, 8.5), -90.0, bay],
+			["GripStb1", Vector3(26.0, 0, 45.7), 180.0, stb], ["GripStb2", Vector3(34.0, 0, 45.7), 180.0, stb],
+			["GripStb3", Vector3(24.0, 0, 28.3), 0.0, stb], ["GripStb4", Vector3(36.0, 0, 28.3), 0.0, stb]]:
+		_node(W + "rail_grip.gd", str(g[0]), {"breach_path": NodePath("../" + (g[3] as Node).name)}, g[1], float(g[2]))

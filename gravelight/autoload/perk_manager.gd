@@ -91,6 +91,7 @@ func _ready() -> void:
 
 
 func reset_match() -> void:
+	discount_tokens.clear()
 	_last_stand_round.clear()
 	_shock_left.clear()
 	_shots_fired.clear()
@@ -608,6 +609,37 @@ func tier_name(perk_id: StringName, tier: int) -> String:
 
 func tier_price(perk_id: StringName, tier: int) -> int:
 	return int(tier_data(perk_id, tier).get("cost", 0))
+
+
+# ---- UPDATE 10 (T-156): the wing walk's discount token (map04b's wingtip chest)
+## pid -> tokens held this match. One token takes one tonic tier at `discount_token_mult` of its price (perks.json
+## "upgrades"; 0.5 when absent); the perk machine spends it with the tier.
+var discount_tokens: Dictionary = {}
+
+
+func grant_discount_token(pid: int, n: int = 1) -> void:
+	discount_tokens[pid] = int(discount_tokens.get(pid, 0)) + maxi(0, n)
+
+
+func has_discount_token(pid: int) -> bool:
+	return int(discount_tokens.get(pid, 0)) > 0
+
+
+static func discounted(cost: int, mult: float) -> int:
+	return maxi(0, int(floor(float(cost) * clampf(mult, 0.0, 1.0))))
+
+
+## The price a player pays for a tier: the list price, halved while they hold a discount token.
+func tier_price_for(pid: int, perk_id: StringName, tier: int) -> int:
+	var c: int = tier_price(perk_id, tier)
+	if has_discount_token(pid):
+		return discounted(c, float(upgrades_cfg().get("discount_token_mult", 0.5)))
+	return c
+
+
+func use_discount_token(pid: int) -> void:
+	if has_discount_token(pid):
+		discount_tokens[pid] = int(discount_tokens[pid]) - 1
 
 
 static func tier_min_round(tier: int) -> int:
