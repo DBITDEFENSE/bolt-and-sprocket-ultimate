@@ -23,7 +23,7 @@ there (a116a2e1 and df227ff8) and also completed 0/5. Every run was `--scenario=
 | 31 | wipe | 10 | 17.2 | s0, s3 | an early wipe: the squad was split across floors at round 10 |
 | 32 | wipe | 21 | 40.7 | s0, s3 | s1: the pylons were never started before round 21 (the bots worked s3 and the side quest; the agent's plan came first) |
 | 33 | wipe | 22 | 51.4 | s0, s1, s2a, s3 | s4: no bot had a Crucible gun yet ("no_upgraded") |
-| 34 | still running at round 28 when this report closed | 28+ | 67+ | s0-s5 | s6: the squad had not seen all four little bells; the new scout task didn't start because the Full Partner bots kept re-picking an open s2a step |
+| 34 | wipe | 29 | 80.0 | s0-s5 | s6: the squad had not seen all four little bells; the new scout task didn't start because the Full Partner bots kept re-picking an open s2a step |
 | 35 | wipe | 28 | 64.9 | s0-s5 (+ s2b) | s6: the same |
 
 **Earlier batches (before the gun-before-wonder, scout and errand-cap fixes):**
