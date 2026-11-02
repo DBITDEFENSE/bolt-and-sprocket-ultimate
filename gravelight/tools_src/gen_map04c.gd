@@ -811,7 +811,7 @@ func _dress_radar() -> void:
 	# the riser through the perch deck to the dish's yoke (the dish sits high enough to turn over heads on the deck)
 	CYL(Vector3(45, 18.6, 120), 0.45, 5.2, "iron")
 	# the dish turns once the power is on (U10 §3, T-157: RadarDish rotates this group; kept out of the bake)
-	var dish: Node3D = D.dish(dress, Vector3(45, 22.0, 120), 4.0, 2.6, Vector3(0.8, 0.45, -0.4))
+	var dish: Node3D = D.dish(dress, Vector3(45, 22.0, 120), 4.0, 2.6, Vector3(0.8, 0.45, -0.4), "olive_drab")  # grey_paint vanished into the dawn sky in the captures
 	dish.name = "RadarDish"
 	dish.set_meta("keep", true)
 	CYL(Vector3(46.2, 23.0, 121.2), 0.05, 10.0, "iron")

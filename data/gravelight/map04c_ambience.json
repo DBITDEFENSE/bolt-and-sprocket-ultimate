@@ -1,5 +1,5 @@
 {
-  "_doc": "Groom Lake's living world (UPDATE 10 §3 Act III, contract C1, DECISIONS T-157): MapRoot attaches a MapAmbience with this file (needs_landscape false: the act has no Landscape). Presentation only. Kinds (the 'U10 Act III' block of gravelight/world/landscape/map_ambience.gd): gusts (the shared Map 0 gust: the wind, the sand off the roofs), milky_way (the desert sky's band: strength[0] up to rounds[0], strength[1] from rounds[1], the dawn taking it), heat_shimmer (refraction cards over the salt from from_round, full at full_round: the sun is up), wildlife (jackrabbits on the salt and coyotes on the berms that bolt from a player within bolt_m / a shot within shot_bolt_m, a yip now and then), low_pass_b29 (four B-29s with landing lights on a long approach to a strip beyond the ridge, on the beat rounds 2 and 7 = match 22 / 27 in a campaign, delay s into the round), tumbleweeds (rolling west to east across the salt with the wind), searchlight_towers (four towers outside the berms, dark until the power, then up one by one stagger_s apart, sweeping), sand_roofs (sand blowing off the hangar's and the sheds' roof edges on a gust), quonset (two Quonset huts past the west berm, ticking in the heat, more from heat_round). Rounds are beat rounds (rounds on this map: the act round in a campaign).",
+  "_doc": "Groom Lake's living world (UPDATE 10 §3 Act III, contract C1, DECISIONS T-157): MapRoot attaches a MapAmbience with this file (needs_landscape false: the act has no Landscape). Presentation only. Kinds (the 'U10 Act III' block of gravelight/world/landscape/map_ambience.gd): gusts (the shared Map 0 gust: the wind, the sand off the roofs), milky_way (the desert sky's band: strength[0] up to rounds[0], strength[1] from rounds[1], the dawn taking it), heat_shimmer (refraction cards over the salt from from_round, full at full_round: the sun is up), wildlife (jackrabbits on the salt and coyotes on the berms that bolt from a player within bolt_m / a shot within shot_bolt_m, a yip now and then), low_pass_b29 (four B-29s with landing lights on a long approach to a strip beyond the ridge, on the beat rounds 2 and 7 = match 22 / 27 in a campaign, delay s into the round), tumbleweeds (rolling west to east across the salt with the wind), searchlight_towers (four towers outside the berms, dark until the power, then up one by one stagger_s apart, sweeping the sky: tilt_deg is the downward pitch, negative = up; pointed down, a full sweep from the tower at the hangar corner ran the beam through the hangar), sand_roofs (sand blowing off the hangar's and the sheds' roof edges on a gust), quonset (two Quonset huts past the west berm, ticking in the heat, more from heat_round). Rounds are beat rounds (rounds on this map: the act round in a campaign).",
   "needs_landscape": false,
   "gusts": {
     "first_after": [15, 30],
@@ -58,7 +58,7 @@
     "towers": [[-66.0, 0.0, -12.0], [66.0, 0.0, -12.0], [-76.0, 0.0, 56.0], [76.0, 0.0, 56.0]],
     "height": 12.0,
     "beam_len": 70.0,
-    "tilt_deg": 14.0,
+    "tilt_deg": -18.0,
     "sweep": [22.0, 40.0],
     "on_power": true,
     "stagger_s": 0.8
