@@ -328,3 +328,28 @@ the stick, fire, aim, jump, sprint, reload, use, knife, a grenade, a weapon key,
 - **Launcher:** `res://gravelight/tools_src/play_botmode.tscn` (args `-- --map=map00|map01 --bots=N --round=R`), or
   `--botmode` on any map.
 - Tuning: `data/gravelight/ai/player_bot.json`; the design and the numbers: `docs/BOT_AI.md` section 10.
+
+## UPDATE 10 (T-163): the bots on Kaltenbrunn's egg, the round's end, the new bosses
+
+What you will notice (the design and the numbers: `docs/BOT_AI.md` section 14; the soaks: `docs/QA_REPORT_U10.md`):
+- **The last zombies of a round get hunted.** When a round has nothing left to spawn and only a few zombies are up,
+  the bot-mode agent goes and finishes them (it knifes a crawler, shoots a straggler) instead of circling its loop. A
+  zombie that nobody can reach (wedged behind a fence) is left alone so the game can send it back in through a window.
+- **The agent shops in the round's last moments.** With bot teammates up, the agent leaves the last one or two
+  zombies to them and goes for the errand a short break can't hold (a far door, a perk, the power, an egg step), the
+  way you would leave the last zombie to a friend. In a break, its next planned perk or gun comes before egg work.
+- **Wonder weapons from the bench.** Once the Totenglocke (Kaltenbrunn) or the Undertow (Totenhafen) is built, every
+  bot takes its own from the workbench when it beats the worst gun it carries.
+- **Full Partner on the Requiem.** The main egg always comes before a side quest (the Song's cylinders, the tag), and
+  a bot drops a side quest when a main step opens. A bot with a Crucible gun may ring the Chapel bell on its own; while
+  the bell is lit, every free bot gathers in the Chapel and nobody shoots the Foreman until it is inside (it has to
+  die there). Bots try another angle when a bell won't ring from where they stand, keep pulling the crate for Herr
+  Tamtam, take the Totenglocke for the charge, and never feed a gun to the Crucible while the shard or the Heartstorm
+  is waiting there. Ringing the Chapel bell and pulling the crate are the only risky stages a Full Partner bot does
+  unasked (a miss only resets the step); When Asked still needs your order for them.
+- **Training underground.** Once the Core Vault is open, the agent trains on the Turbines / Pews loops, near the
+  Chapel, the Lab and the Core where the rest of the egg is.
+- **Bosses.** Grabbed by a boss (PAUL, the Kielholer at a dock edge, a Cousin), a bot knifes its way free while the
+  others shoot the grabber. Against PAUL they spread out, break his IV bottles once he gets angry (each one calms him)
+  and go for the neck from behind; against the Kielholer they keep out of his grab and the chain sweep and aim for the
+  helmet glass.
