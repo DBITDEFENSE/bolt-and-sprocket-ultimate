@@ -1197,7 +1197,7 @@ the trainer's phase.
 stage_allowed and the Requiem's full_partner data, the task pause threshold, hold-fire and the rally, wonder_wanted,
 the Kielholer counter, break_free, the soak switch).
 
-## 13. UPDATE 10: Fernflug set-pieces (T-163, contract C7)
+## 15. UPDATE 10 (T-163): Fernflug set-pieces and Q-19
 
 **BotSetPieces** (`gravelight/bots/bot_setpieces.gd`, data `data/gravelight/ai/setpieces.json`, per-map positions in
 `routes_<map>.json` "setpieces"): one per bot, ticked on the brain's think. It either changes how the other layers
