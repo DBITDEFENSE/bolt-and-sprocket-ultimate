@@ -758,6 +758,11 @@ func start_task(kind: String) -> void:
 		timeout += float(c.get("extra_s", 0.0))   # T-127: a tonic errand may cross the map
 	if node is Crucible:
 		timeout += (node as Crucible).forge_seconds + (node as Crucible).offer_seconds
+	if node is Node3D and kind != "objective":
+		# U10 (T-163): the walk counts too (a flat 20 s never covered the agent's 83 m to Kaltenbrunn's Lab door: it
+		# set out, timed out on the stairs and set out again, round after round, with 12,000 Scrip in hand)
+		var far: float = _flat((node as Node3D).global_position, player.global_position)
+		timeout += maxf(0.0, far - 20.0) / float((_cfg.get("shopping", {}) as Dictionary).get("errand_walk_mps", 3.5))
 	task["until"] = now + timeout
 
 
