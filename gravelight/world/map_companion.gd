@@ -34,6 +34,9 @@ var _met: bool = false
 var _gift_round: int = -1
 var _snap_left: float = 0.0
 var _scene_done: bool = false         # T-170: its waiting scene (companions.json "scene") played once
+var _scene_pending: bool = false      # the scene was asked for; done only once the voice manager has started the line
+var _scene_fired_before: int = 0      # GLVO.fired count of the scene's category when it was submitted
+var _scene_wait: float = 0.0          # seconds left before the pending scene is submitted again
 var events: PackedStringArray = []   # tests / tools
 ## Online client (T-138): the body here is a puppet of the host's companion.
 var puppet: bool = false
@@ -238,14 +241,17 @@ func _tick_waiting(delta: float) -> void:
 	if player.remote_body != null:
 		player.remote_body.calm = true
 		player.remote_body.update_pose(delta, 0.0, 0.0, NetMatch.PF_FLOOR)
+	_tick_scene(delta)
 	_call_t -= delta
 	if _call_t > 0.0:
 		return
 	_call_t = float(table().get("call_every_s", 18.0))
 	var sc: Dictionary = cfg.get("scene", {})
-	if not sc.is_empty() and not _scene_done and _nearest_human(float(sc.get("near_m", 18.0))) != null:
+	if not sc.is_empty() and not _scene_done and not _scene_pending and _nearest_human(float(sc.get("near_m", 18.0))) != null:
 		play_scene()   # T-170: the first survivor near enough gets the scene instead of the generic call
 		return
+	if _scene_pending:
+		return   # the scene is on its way: no generic call over it
 	var near: Player = _nearest_human(float(table().get("call_within_m", 26.0)))
 	if near != null and _flat(near.global_position, player.global_position) > float(table().get("call_unless_within_m", 6.0)):
 		_say("CALL")
@@ -269,18 +275,39 @@ func _connect_scene() -> void:
 	GLBus.connect(sig, cb.unbind(argc) if argc > 0 else cb)
 
 
-## The scene's line now (once, while waiting). False when it did not play.
+## Submits the scene's line (while waiting). True when the voice manager accepted it; the scene counts as played only
+## once the line has started (GLVO.fired, checked by _tick_scene: the companion channel is Jakub's too, and a queued
+## chatter line expires behind one of his), so a refused or dropped scene is submitted again after a wait, as his
+## own _later_say does.
 func play_scene() -> bool:
 	var sc: Dictionary = cfg.get("scene", {})
 	if sc.is_empty() or _scene_done or state != State.WAITING or player == null or not is_instance_valid(player):
 		return false
-	_scene_done = true
-	_call_t = float(table().get("call_every_s", 18.0))
+	_scene_fired_before = int(GLVO.fired.get(_scene_key(), 0))
+	_scene_pending = true
 	var ok: bool = GLVO.play_category(StringName(str(cfg.get("speaker", ""))), str(sc.get("category", "")), 1.0, player.player_id)
-	if ok and Net.replicating():
-		Net.mirror(self, &"_net_scene", [])
-	_event("scene")
+	_scene_wait = float(sc.get("heard_wait_s", 8.0)) if ok else float(sc.get("retry_s", 2.0))
 	return ok
+
+
+func _scene_key() -> String:
+	return "%s:%s" % [str(cfg.get("speaker", "")), str((cfg.get("scene", {}) as Dictionary).get("category", ""))]
+
+
+func _tick_scene(delta: float) -> void:
+	if _scene_done or not _scene_pending:
+		return
+	if int(GLVO.fired.get(_scene_key(), 0)) > _scene_fired_before:
+		_scene_done = true
+		_scene_pending = false
+		_call_t = float(table().get("call_every_s", 18.0))
+		if Net.replicating():
+			Net.mirror(self, &"_net_scene", [])
+		_event("scene")
+		return
+	_scene_wait -= delta
+	if _scene_wait <= 0.0:
+		play_scene()
 
 
 func _net_scene() -> void:

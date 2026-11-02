@@ -76,6 +76,18 @@ func _run() -> void:
 	for id: String in ["INT_M2_HALE_TELEGRAM", "INT_M2_PAYSLIP", "INT_M2_DRAWING", "INT_M2_RATION_BOOK"]:
 		_check(_map.find_child("Story_" + id, true, false) != null, "story prop %s spawned" % id)
 
+	# T-170 (THE_BAR row 22): the first step onto the quay: the harbour siren, then the storm's lightning
+	_check(_n("arrival") == 0, "no arrival beat before anyone moves")
+	if _p != null:
+		await _frames(3)
+		_p.global_position += Vector3(0, 0, 3.0)
+		var lf: LightningFlash = (_amb._lightnings[0][0] as LightningFlash) if _amb._lightnings.size() > 0 else null
+		_check(await _until(func() -> bool: return _n("arrival") == 1, 2.0), "the first step: the harbour siren sounds (arrival %d)" % _n("arrival"))
+		_check(await _until(func() -> bool: return _n("arrival_flash") == 1 and lf != null and (not lf._seq.is_empty() or lf.light_energy > 0.0), 3.0), "and the storm's lightning strikes over the mouth")
+		_p.global_position += Vector3(0, 0, 3.0)
+		await _secs(0.5)
+		_check(_n("arrival") == 1, "once a match")
+
 	# gulls scatter at the first shot
 	var shot_at: Vector3 = (_amb.gulls.crows[0]["node"] as Node3D).global_position + Vector3(4, 0, 6)
 	GLBus.weapon_fired.emit(1, &"m1911", false, shot_at, Vector3.FORWARD)
@@ -280,7 +292,8 @@ func _sendbacks() -> void:
 	_check(jk != null and jk.state == JakubCompanion.State.JOINED, "the profile's Jakub arrived with the squad")
 	_check(await _until(func() -> bool: return _said(&"JAK_M2_ARRIVE_01") or _said(&"JAK_M2_ARRIVE_02"), 12.0), "Jakub: the sea (JAK_M2_ARRIVE)")
 	GLBus.tide_flood_begin.emit()
-	_check(await _until(func() -> bool: return _said(&"PET_LF_TRAPPED_01"), 8.0), "the first flood: Hinnerk's stair scene (PET_LF_TRAPPED_01)")
+	# (the radio's German traffic may still hold the voice channel: a refused scene retries every 2 s)
+	_check(await _until(func() -> bool: return _said(&"PET_LF_TRAPPED_01"), 16.0), "the first flood: Hinnerk's stair scene (PET_LF_TRAPPED_01)")
 	_check(hp != null and hp.events.has("scene") and not hp.play_scene(), "played once")
 	_check(await _until(func() -> bool: return _said(&"JAK_M2_FLOOD_01"), 12.0), "Jakub: the water is coming in (JAK_M2_FLOOD_01)")
 	GLBus.sail_started.emit()

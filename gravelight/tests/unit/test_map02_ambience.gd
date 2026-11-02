@@ -5,7 +5,8 @@ extends GutTest
 ## rounds) hold, and Map 0's file still validates unchanged (none of the new kinds, its own sections intact).
 
 const KINDS: Array[String] = ["gulls", "lighthouse", "bell_tower", "ships", "low_pass", "raid", "chains", "drips",
-	"conveyor_jolt", "radio_chatter", "cutter_slip", "footprints", "frozen_spray", "fish_crates", "storm", "power_spectacle"]
+	"conveyor_jolt", "radio_chatter", "cutter_slip", "footprints", "frozen_spray", "fish_crates", "storm", "power_spectacle",
+	"arrival"]   # (+ T-170: the first step onto the quay)
 
 var cfg: Dictionary
 var sounds: Dictionary
@@ -25,6 +26,20 @@ func test_file_validates() -> void:
 		assert_true(cfg.get(k) is Dictionary, "event kind %s is a block" % k)
 	for k2: String in ["bombers", "fighters", "artillery", "crows", "dog", "bell", "farm_light", "frost", "chimney"]:
 		assert_false(cfg.has(k2), "no Map 0 inn section %s on Totenhafen" % k2)
+
+
+## T-170 (THE_BAR row 22): the arrival beat is data on the existing kinds: a move distance, a round ceiling, the
+## siren's posts with a sound audio.json has, and a flash delay; nothing it names is a new system.
+func test_arrival_beat() -> void:
+	var a: Dictionary = cfg.get("arrival", {})
+	assert_false(a.is_empty(), "an arrival block")
+	assert_between(float(a.get("first_move_m", 0.0)), 1.0, 6.0, "a step or two onto the quay")
+	assert_between(int(a.get("max_round", 0)), 1, 5, "only an opening")
+	assert_gt((a.get("siren", {}) as Dictionary).get("points", []).size(), 0, "siren posts")
+	assert_true(sounds.has(str(a["siren"].get("sound", ""))), "the siren's sound exists")
+	assert_between(float(a.get("flash_after", 0.0)), 0.5, 5.0, "the lightning follows the siren")
+	var amb: MapAmbience = autofree(MapAmbience.new())
+	assert_true(amb.has_method(&"_kinds_setup_arrival"), "the kind has its setup block")
 
 
 func test_beats_in_range() -> void:
