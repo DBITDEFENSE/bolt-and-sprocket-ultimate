@@ -78,7 +78,11 @@ func _run() -> void:
 	var props: Dictionary = {}
 	for n: Node in get_tree().get_nodes_in_group(&"story_props"):
 		props[String((n as StoryProp).intel_id)] = n
-	_check(props.size() == 6, "six story props spawned (%d)" % props.size())
+	var want_props: int = 0   # T-137 added the Marke poster: count from story_props.json
+	for row: Dictionary in (GLData.load_json(StoryProp.DATA_PATH).get("props", []) as Array):
+		if str(row.get("map", "")) == "0":
+			want_props += 1
+	_check(props.size() == want_props, "story props spawned (%d, data says %d)" % [props.size(), want_props])
 	for id: String in FIXED_IDS:
 		_check(props.has(id), "story prop %s present" % id)
 		_check(_map.get_node_or_null("Intel_" + id) == null, "%s not spawned as random intel" % id)
