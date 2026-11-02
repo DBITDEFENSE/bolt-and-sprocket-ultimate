@@ -593,6 +593,9 @@ func _finish_crawler(delta: float) -> bool:
 ## (backing round the loop, facing a train it could not see) and the round never ended. True while it hunts.
 var _quiet_t: float = 0.0
 var hunting: bool = false
+var _hunt_id: int = 0
+var _hunt_hp: float = 0.0
+var _hunt_hp_t: float = 0.0
 
 ## Pure: which straggler to hunt. `rows` = [{"d": m (flat, +30 on another floor), "crawler": bool}] for the round's
 ## active, targetable zombies; `quiet_s` = how long none on its feet has been within hunt_quiet_m. Returns {"idx":
@@ -656,13 +659,25 @@ func _hunt_stragglers(delta: float, me: Vector3) -> bool:
 		if not brain.aim.update(delta, true):
 			brain.loco.look_at_dir(zp - me)
 		return true
-	# a walker that won't come: close in to a shooting distance with the line of sight, then shoot it
+	# a walker that won't come: close in to a shooting distance with the line of sight, then shoot it. Its health
+	# not going down for hunt_stall_s (a Foreman wedged in a fence corner: in sight, but every shot hit the rail) ->
+	# close in to hunt_close_m and shoot from there.
+	if best.get_instance_id() != _hunt_id:
+		_hunt_id = best.get_instance_id()
+		_hunt_hp = best.hp
+		_hunt_hp_t = 0.0
+	if best.hp < _hunt_hp - 0.5:
+		_hunt_hp = best.hp
+		_hunt_hp_t = 0.0
+	else:
+		_hunt_hp_t += delta
 	var seen: bool = brain.perception.is_visible(best)
-	if not seen or best_d > _f("hunt_shoot_m", 12.0):
-		brain.loco.move_to(zp, 0.7, 3.0)
+	var shoot_m: float = _f("hunt_close_m", 3.5) if _hunt_hp_t > _f("hunt_stall_s", 4.0) else _f("hunt_shoot_m", 12.0)
+	if not seen or best_d > shoot_m:
+		brain.loco.move_to(zp, 0.7, maxf(1.5, shoot_m - 1.0))
 	else:
 		brain.loco.stop()
-		brain.aim.focus_target = best
+	brain.aim.focus_target = best
 	if not brain.aim.update(delta, true):
 		brain.loco.look_at_dir(zp - me)
 	return true
