@@ -4266,6 +4266,186 @@
         1.08
       ],
       "max_voices": 2
+    },
+    "m4d_dome_lights": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4d_dome_lights.wav"
+      ],
+      "volume_db": -4.0,
+      "pitch": [
+        0.95,
+        1.05
+      ],
+      "max_voices": 2,
+      "bus": "SFX",
+      "attenuation": "quiet"
+    },
+    "m4d_dust_settle": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4d_dust_settle.wav"
+      ],
+      "volume_db": -16.0,
+      "pitch": [
+        0.9,
+        1.1
+      ],
+      "max_voices": 2,
+      "bus": "SFX",
+      "attenuation": "quiet"
+    },
+    "m4d_heater_on": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4d_heater_on.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        0.99,
+        1.01
+      ],
+      "max_voices": 1,
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "m4d_meteor_impact": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4d_meteor_impact_01.wav",
+        "res://gravelight/audio/sfx/world/m4d_meteor_impact_02.wav",
+        "res://gravelight/audio/sfx/world/m4d_meteor_impact_03.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        0.9,
+        1.1
+      ],
+      "max_voices": 4,
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "m4d_meteor_warn": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4d_meteor_warn.wav"
+      ],
+      "volume_db": -2.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "bus": "SFX",
+      "attenuation": "quiet"
+    },
+    "m4d_orbit_scream": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4d_orbit_scream.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        0.92,
+        1.08
+      ],
+      "max_voices": 3,
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "m4d_pad_launch": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4d_pad_launch.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        0.95,
+        1.05
+      ],
+      "max_voices": 3,
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "m4d_perk_wake": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4d_perk_wake.wav"
+      ],
+      "volume_db": -4.0,
+      "pitch": [
+        0.94,
+        1.06
+      ],
+      "max_voices": 4,
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "m4d_tag_slot": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4d_tag_slot.wav"
+      ],
+      "volume_db": -3.0,
+      "pitch": [
+        0.99,
+        1.01
+      ],
+      "max_voices": 1,
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "m4d_vent_close": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4d_vent_close.wav"
+      ],
+      "volume_db": -2.0,
+      "pitch": [
+        0.98,
+        1.02
+      ],
+      "max_voices": 1,
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "m4d_vent_fall": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4d_vent_fall.wav"
+      ],
+      "volume_db": -2.0,
+      "pitch": [
+        0.9,
+        1.1
+      ],
+      "max_voices": 3,
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "m4d_vent_open": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4d_vent_open.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        0.98,
+        1.02
+      ],
+      "max_voices": 1,
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "m4d_vent_roar": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4d_vent_roar.wav"
+      ],
+      "volume_db": -2.0,
+      "max_voices": 1,
+      "bus": "SFX",
+      "attenuation": "world",
+      "loop": true
+    },
+    "m4d_visor": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4d_visor.wav"
+      ],
+      "volume_db": -6.0,
+      "pitch": [
+        0.97,
+        1.03
+      ],
+      "max_voices": 1,
+      "bus": "Master"
     }
   }
 }

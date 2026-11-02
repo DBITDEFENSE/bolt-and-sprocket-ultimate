@@ -62,7 +62,16 @@
     ],
     "map04d_mondlicht": [
       "The Moon, May 1945. Regional Retention Relay RR-7: the carrier that keeps the marked dead walking.",
-      "Every Marke on Earth answers to this place. Cut the line, and they all lie down."
+      "Every Marke on Earth answers to this place. Cut the line, and they all lie down.",
+      "LANTERN, capsule two: three days in the dark, and the relay's pad lights came on before anyone asked."
+    ],
+    "ending_kuendigung": [
+      "The line is cut. On the Earth the violet goes out over the cities one by one, and the dead lie down where they stand.",
+      "Somewhere a record says Pohl, and Pilch, and every name read in. Nobody renews."
+    ],
+    "ending_renewed": [
+      "The plan renewed itself. Nothing is required of you. Nothing is ever required of you again.",
+      "On the Earth the night side is violet from coast to coast. The relay thanks you for your continued engagement."
     ]
   }
 }

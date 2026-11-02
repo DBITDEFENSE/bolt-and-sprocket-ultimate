@@ -412,6 +412,8 @@ func _finish() -> void:
 		RoundManager.stop()
 	GLBus.flag_changed.emit(&"cancel_ending_done", true)
 	_show_end_screen()
+	# UPDATE 10 (T-158): the act's card falls as the curtain over the end screen, then lifts
+	LoadingScreen.curtain(get_tree().current_scene, "map04d_mondlicht", "ending_kuendigung", 4.0 * _k, "KÜNDIGUNG")
 
 
 func _show_end_screen() -> void:

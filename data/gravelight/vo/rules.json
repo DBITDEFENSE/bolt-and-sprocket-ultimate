@@ -72,7 +72,16 @@
     "EXFIL": 3,
     "CUT_EXFIL": 4,
     "TIDE": 3,
-    "BALLAST": 3
+    "BALLAST": 3,
+    "M4D_TERM": 3,
+    "M4D_GLARE": 3,
+    "M4D_HEATERS": 3,
+    "M4D_METEOR": 3,
+    "M4D_EARTH": 3,
+    "M4D_ORBIT": 3,
+    "M4D_PAD": 3,
+    "M4D_SHAFT": 3,
+    "M4D_CONSOLE": 3
   },
   "category_cooldown": {
     "ROUND_START": [

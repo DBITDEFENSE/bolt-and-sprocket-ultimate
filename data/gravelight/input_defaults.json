@@ -115,6 +115,9 @@
     "key": "N",
     "pad": "DPAD_LEFT"
   },
+  "visor": {
+    "key": "H"
+  },
   "bot_mode": {
     "key": "F6"
   }

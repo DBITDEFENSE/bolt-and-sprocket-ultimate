@@ -17,6 +17,10 @@ one-shots the zones and the airlocks play.
   amb_m4d_parcel             a parcel bumping over the rollers
   amb_m4d_valve              the suit's regulator: a click and a short hiss (the only one-shot in vacuum)
   amb_m4d_swell              the hall's hum swelling for a moment
+UPDATE 10 §3 Act IV (T-158), the set-pieces' one-shots (SFX bus):
+  m4d_visor m4d_heater_on m4d_dome_lights m4d_perk_wake m4d_pad_launch m4d_orbit_scream m4d_vent_open
+  m4d_vent_close m4d_vent_roar (loop) m4d_vent_fall m4d_tag_slot m4d_meteor_warn m4d_meteor_impact m4d_dust_settle
+  Only these:  python gravelight/tools_src/gen_audio_moon.py m4d_
 
 Keys are merged into data/gravelight/audio.json like gen_audio.py does (existing per-key tuning is kept).
 Run from the repo root:   python -I gravelight/tools_src/gen_audio_moon.py [key_prefix,...]
@@ -194,7 +198,109 @@ def gen_small():
          pitch=[0.98, 1.02], max_voices=1, **ONE)
 
 
+def _glide(f0, f1, sec, vib_hz=5.5, vib=0.03):
+    t = tax(N(sec))
+    f = f0 * (f1 / f0) ** (t / sec) * (1.0 + vib * np.sin(2 * np.pi * vib_hz * t))
+    return np.cumsum(2 * np.pi * f / SR)
+
+
+def gen_u10():
+    SFX = dict(bus="SFX", attenuation="world")
+    r = A.rng_for("m4d_visor")
+    x = np.zeros(N(0.35))
+    place(x, A.mech_click(r, 2600, 0.04, 0.003) * 0.6, 0.0)
+    place(x, bp(white(r, 0.25), 900, 4000) * expenv(N(0.25), 0.05) * 0.25, 0.03)
+    emit("m4d_visor", "sfx/world/m4d_visor", x, -8.0, volume_db=-6.0, pitch=[0.97, 1.03], max_voices=1, bus="Master")
+    r = A.rng_for("m4d_heater_on")
+    sec = 3.2
+    x = np.zeros(N(sec))
+    place(x, A.thunk(r, 90, 0.08, 0.4) * 0.9, 0.0)
+    place(x, A.mech_click(r, 1400, 0.08, 0.006) * 0.5, 0.02)
+    ph = _glide(40, 120, 2.8, 0.5, 0.0)
+    hum = (np.sin(ph) * 0.5 + np.sin(2 * ph) * 0.25 + np.sin(3 * ph) * 0.12) * adsr(N(2.8), 0.6, 0.6, 0.8, 1.0)
+    place(x, hum * 0.6, 0.15)
+    emit("m4d_heater_on", "sfx/world/m4d_heater_on", reverb(x, r, 1.6, 0.3, 4000), -2.0, volume_db=0.0, pitch=[0.99, 1.01], max_voices=1, **SFX)
+    r = A.rng_for("m4d_dome_lights")
+    x = np.zeros(N(1.2))
+    place(x, A.thunk(r, 70, 0.05, 0.3) * 0.7, 0.0)
+    place(x, bp(white(r, 0.9), 3000, 9000) * expenv(N(0.9), 0.25) * 0.12, 0.02)
+    emit("m4d_dome_lights", "sfx/world/m4d_dome_lights", reverb(x, r, 1.8, 0.35, 3000), -4.0, volume_db=-4.0, pitch=[0.95, 1.05], max_voices=2, bus="SFX", attenuation="quiet")
+    r = A.rng_for("m4d_perk_wake")
+    x = np.zeros(N(1.4))
+    place(x, A.bell(r, A.hz("A5"), 1.2, decay=1.2, strike=0.3, bright=0.7) * 0.35, 0.0)
+    place(x, bp(white(r, 0.3), 2000, 8000) * expenv(N(0.3), 0.04) * 0.4, 0.0)
+    emit("m4d_perk_wake", "sfx/world/m4d_perk_wake", reverb(x, r, 1.0, 0.25, 5000), -6.0, volume_db=-4.0, pitch=[0.94, 1.06], max_voices=4, **SFX)
+    r = A.rng_for("m4d_pad_launch")
+    sec = 1.4
+    x = np.zeros(N(sec))
+    place(x, A.thunk(r, 60, 0.09, 0.45) * 1.0, 0.0)
+    ph = _glide(180, 900, 0.9, 0.0, 0.0)
+    whoosh = np.sin(ph) * 0.25 * expenv(N(0.9), 0.35) + bp(white(r, 0.9), 400, 3000) * adsr(N(0.9), 0.05, 0.3, 0.4, 0.5) * 0.35
+    place(x, whoosh, 0.02)
+    emit("m4d_pad_launch", "sfx/world/m4d_pad_launch", reverb(x, r, 0.9, 0.2, 4000), -2.0, volume_db=0.0, pitch=[0.95, 1.05], max_voices=3, **SFX)
+    # the long fading scream: a voice-like glide down through two formants, breath under it, dying away
+    r = A.rng_for("m4d_orbit_scream")
+    sec = 5.5
+    ph = _glide(560, 170, sec, 6.0, 0.035)
+    src = np.zeros(N(sec))
+    for k in range(1, 12):
+        src += np.sin(k * ph) / k
+    voice = bp(src, 500, 1200) * 0.8 + bp(src, 2000, 3200) * 0.45
+    breath = bp(white(r, sec), 800, 5000) * 0.18
+    env = adsr(N(sec), 0.08, 0.5, 0.75, 4.4) * np.exp(-tax(N(sec)) / 2.4)
+    emit("m4d_orbit_scream", "sfx/world/m4d_orbit_scream", reverb((voice + breath) * env, r, 2.2, 0.35, 3500), -2.0, volume_db=0.0, pitch=[0.92, 1.08], max_voices=3, **SFX)
+    r = A.rng_for("m4d_vent_open")
+    x = np.zeros(N(1.6))
+    place(x, A.thunk(r, 75, 0.1, 0.5) * 0.9, 0.0)
+    for k in range(8):
+        place(x, A.mech_click(r, r.uniform(1200, 2400), 0.04, 0.004) * 0.35, 0.05 + 0.06 * k)
+    place(x, bp(white(r, 1.2), 200, 2500) * adsr(N(1.2), 0.2, 0.3, 0.8, 0.5) * 0.6, 0.3)
+    emit("m4d_vent_open", "sfx/world/m4d_vent_open", reverb(x, r, 1.4, 0.3, 4000), -2.0, volume_db=0.0, pitch=[0.98, 1.02], max_voices=1, **SFX)
+    r = A.rng_for("m4d_vent_close")
+    x = np.zeros(N(1.0))
+    for k in range(8):
+        place(x, A.mech_click(r, r.uniform(1200, 2400), 0.04, 0.004) * 0.3, 0.04 * k)
+    place(x, A.thunk(r, 85, 0.08, 0.4) * 0.9, 0.36)
+    emit("m4d_vent_close", "sfx/world/m4d_vent_close", reverb(x, r, 1.2, 0.3, 4000), -3.0, volume_db=-2.0, pitch=[0.98, 1.02], max_voices=1, **SFX)
+    r = A.rng_for("m4d_vent_roar")
+    sec = 4.0
+    roar = lp(brown(r, sec), 500) * 0.8 + bp(pink(r, sec), 150, 1800) * 0.35
+    emit("m4d_vent_roar", "sfx/world/m4d_vent_roar", loopify(roar, 0.4), -4.0, loop=True, volume_db=-2.0, max_voices=1, **SFX)
+    r = A.rng_for("m4d_vent_fall")
+    x = np.zeros(N(2.4))
+    ph = _glide(300, 90, 2.0, 0.0, 0.0)
+    place(x, (np.sin(ph) * 0.3 + bp(white(r, 2.0), 300, 2000) * 0.3) * expenv(N(2.0), 0.8), 0.0)
+    emit("m4d_vent_fall", "sfx/world/m4d_vent_fall", reverb(x, r, 1.8, 0.4, 3000), -4.0, volume_db=-2.0, pitch=[0.9, 1.1], max_voices=3, **SFX)
+    r = A.rng_for("m4d_tag_slot")
+    x = np.zeros(N(1.2))
+    place(x, A.mech_click(r, 3200, 0.03, 0.002) * 0.6, 0.0)
+    place(x, A.mech_click(r, 2100, 0.05, 0.004) * 0.5, 0.22)
+    place(x, A.bell(r, A.hz("E6"), 0.9, decay=0.9, strike=0.2, bright=0.5) * 0.2, 0.3)
+    emit("m4d_tag_slot", "sfx/world/m4d_tag_slot", reverb(x, r, 1.0, 0.25, 5000), -6.0, volume_db=-3.0, pitch=[0.99, 1.01], max_voices=1, **SFX)
+    # the relay's warning: a two-tone klaxon through the suit radio
+    r = A.rng_for("m4d_meteor_warn")
+    sec = 3.0
+    x = np.zeros(N(sec))
+    for k in range(4):
+        f = 660.0 if k % 2 == 0 else 520.0
+        b = np.sign(tone(f, 0.6)) * 0.3 * adsr(N(0.6), 0.01, 0.05, 0.9, 0.05)
+        place(x, bp(b, 400, 3000), 0.7 * k)
+    emit("m4d_meteor_warn", "sfx/world/m4d_meteor_warn", x, -3.0, volume_db=-2.0, pitch=[1.0, 1.0], max_voices=1, bus="SFX", attenuation="quiet")
+    # an impact felt through the regolith (vacuum: no air, a ground thud, a rattle in the suit)
+    for i in A.variants(3):
+        r = A.rng_for(f"m4d_meteor_impact{i}")
+        x = np.zeros(N(1.6))
+        place(x, A.thunk(r, r.uniform(38, 55), 0.18, 0.9) * 1.0, 0.0)
+        place(x, lp(brown(r, 1.2), 300) * expenv(N(1.2), 0.35) * 0.6, 0.0)
+        place(x, bp(white(r, 0.5), 1500, 6000) * expenv(N(0.5), 0.08) * 0.15, 0.03)
+        emit("m4d_meteor_impact", f"sfx/world/m4d_meteor_impact_{i:02d}", reverb(x, r, 0.8, 0.15, 2000), -1.0, volume_db=0.0, pitch=[0.9, 1.1], max_voices=4, **SFX)
+    r = A.rng_for("m4d_dust_settle")
+    x = bp(pink(r, 1.5), 300, 1600) * adsr(N(1.5), 0.05, 0.3, 0.3, 1.0) * 0.4
+    emit("m4d_dust_settle", "sfx/world/m4d_dust_settle", x, -14.0, volume_db=-16.0, pitch=[0.9, 1.1], max_voices=2, bus="SFX", attenuation="quiet")
+
+
 def main():
+    gen_u10()
     gen_reception()
     gen_concourse()
     gen_yard()

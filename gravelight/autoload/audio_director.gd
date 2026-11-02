@@ -398,6 +398,7 @@ func set_vacuum_bed(on: bool) -> void:
 	_vacuum = on
 	if _ambient != null and _ambient.is_inside_tree():
 		create_tween().tween_property(_ambient, "volume_db", _ambient_db(), 1.2)
+	_set_vacuum_muffle(on)   # UPDATE 10 (T-158): the world's sounds come through the suit, muffled
 
 
 func stop_all_music() -> void:
@@ -672,3 +673,33 @@ func _clear_hums() -> void:
 		if is_instance_valid(h):
 			(h as Node).queue_free()
 	_hums.clear()
+
+
+# ---- U10 Act IV (T-158): silence in vacuum ----
+# While the listener stands in a ZoneAmbience zone marked `vacuum` (set_vacuum_bed), the SFX bus is muffled through
+# the suit: a low-pass at vacuum_muffle.cutoff_hz and vacuum_muffle.db of gain. The suit's own sounds stay clear
+# (they play on the UI and VO buses). map04d_ambience.json's `vacuum_muffle` tunes it (MondlichtLiving); no other
+# map sets a vacuum bed, so nothing changes there.
+var vacuum_muffle: Dictionary = {"cutoff_hz": 420.0, "db": -12.0}
+var muffled: bool = false
+var _muffle_lp: AudioEffectLowPassFilter = null
+var _muffle_amp: AudioEffectAmplify = null
+
+
+func _set_vacuum_muffle(on: bool) -> void:
+	var bus: int = AudioServer.get_bus_index(&"SFX")
+	if bus < 0:
+		return
+	if _muffle_lp == null:
+		_muffle_lp = AudioEffectLowPassFilter.new()
+		_muffle_amp = AudioEffectAmplify.new()
+		AudioServer.add_bus_effect(bus, _muffle_lp)
+		AudioServer.add_bus_effect(bus, _muffle_amp)
+	_muffle_lp.cutoff_hz = float(vacuum_muffle.get("cutoff_hz", 420.0))
+	_muffle_lp.resonance = 0.3
+	_muffle_amp.volume_db = float(vacuum_muffle.get("db", -12.0))
+	for i: int in AudioServer.get_bus_effect_count(bus):
+		var fx: AudioEffect = AudioServer.get_bus_effect(bus, i)
+		if fx == _muffle_lp or fx == _muffle_amp:
+			AudioServer.set_bus_effect_enabled(bus, i, on)
+	muffled = on

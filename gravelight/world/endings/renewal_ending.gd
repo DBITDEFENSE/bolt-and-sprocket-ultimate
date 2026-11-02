@@ -147,6 +147,8 @@ func _finish() -> void:
 		if hud != null:
 			hud.call("show_banner", "RETAINED\nYour tonics stay. Nothing is required of you.", 5.0)
 	GLBus.flag_changed.emit(&"renewal_ending_done", true)
+	# UPDATE 10 (T-158): the act's card falls as a curtain between the renewal and the Retained match
+	LoadingScreen.curtain(get_tree().current_scene, "map04d_mondlicht", "ending_renewed", 3.0, "RETAINED")
 	queue_free()
 
 

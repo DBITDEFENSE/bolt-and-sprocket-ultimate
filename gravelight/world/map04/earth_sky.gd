@@ -55,6 +55,7 @@ func _ready() -> void:
 	refresh_from_flags()
 	GLBus.flag_changed.connect(func(_f: StringName, _v: Variant) -> void: refresh_from_flags())
 	GLBus.round_started.connect(_on_round_started)
+	GLBus.quest_step_completed.connect(_on_step_completed)   # UPDATE 10 (T-158): the cancel steps reverse the spread
 
 
 func _build() -> void:
@@ -164,7 +165,8 @@ func _on_round_started(r: int, _special: bool) -> void:
 	if frozen or faded or renewed or cfg.is_empty():
 		return
 	var ar: int = RoundManager.act_round(r) if RoundManager.has_act() else r
-	set_spread(spread_for(ar, int(cfg.get("spread_from_round", 3)), float(cfg.get("spread_per_round", 0.04)), float(cfg.get("spread_cap", 0.6))))
+	base_spread = spread_for(ar, int(cfg.get("spread_from_round", 3)), float(cfg.get("spread_per_round", 0.04)), float(cfg.get("spread_cap", 0.6)))
+	_apply_reversal()
 
 
 ## The signal's reach: `f` of the night side's points lit (seeded, so a value always draws the same picture).
@@ -221,3 +223,70 @@ func _process(delta: float) -> void:
 		_day.visible = on or _flicker_t <= 0.0
 		if _flicker_t <= 0.0:
 			_day.visible = true
+
+
+# ---- U10 Act IV (T-158): the Earthrise beats ----
+# The violet spread grows with the act's rounds (base_spread, above) and REVERSES as the Kündigung's cancel steps
+# complete: each completed step of map04d.json earth.reverse_steps takes 1/n of it away (reversed_spread); the city
+# points shrink with it; with all of them done (s18_cancel is CANCEL) the night side turns dark blue. The
+# MondlichtController voices it (earth.vo_dim by steps done, earth.vo_spread by act round).
+
+var base_spread: float = 0.0
+var steps_done: int = -1
+var dark_blue: bool = false
+
+
+## The spread left after `done` of `total` cancel steps: each takes an equal share away.
+static func reversed_spread(base: float, done: int, total: int) -> float:
+	if total <= 0:
+		return base
+	return clampf(base * (1.0 - float(clampi(done, 0, total)) / float(total)), 0.0, 1.0)
+
+
+## How many of the reverse steps are complete (QuestManager; 0 when the quest is not loaded).
+func count_steps_done() -> int:
+	var q: StringName = StringName(str(cfg.get("reverse_quest", "map04_kuendigung")))
+	var n: int = 0
+	for sid: Variant in cfg.get("reverse_steps", []):
+		if QuestManager.is_step_done(q, StringName(str(sid))):
+			n += 1
+	return n
+
+
+func _on_step_completed(qid: StringName, _sid: StringName) -> void:
+	if String(qid) == str(cfg.get("reverse_quest", "map04_kuendigung")):
+		_apply_reversal()
+
+
+func _apply_reversal() -> void:
+	if cfg.is_empty() or renewed:
+		return
+	var total: int = (cfg.get("reverse_steps", []) as Array).size()
+	var done: int = count_steps_done()
+	var changed: bool = done != steps_done
+	steps_done = done
+	if not frozen:
+		set_spread(reversed_spread(base_spread, done, total))
+	if changed and total > 0:
+		var k: float = 1.0 - 0.6 * float(done) / float(total)
+		for m: Variant in points.values():
+			var mi: MeshInstance3D = m as MeshInstance3D
+			if mi != null:
+				mi.create_tween().tween_property(mi, "scale", Vector3.ONE * maxf(0.05, k), 6.0)
+		if done >= total and not dark_blue:
+			go_dark_blue()
+		var c: Node = get_tree().get_first_node_in_group(&"mondlicht_controller") if is_inside_tree() else null
+		if c != null and c.has_method("earth_dimmed"):
+			c.call("earth_dimmed", done, total)
+
+
+## CANCEL: the night side goes a deep, ordinary blue (no violet left on it).
+func go_dark_blue() -> void:
+	dark_blue = true
+	var mat: StandardMaterial3D = _night.material_override as StandardMaterial3D if _night != null else null
+	if mat == null:
+		return
+	var a: Array = cfg.get("dark_blue", [0.04, 0.08, 0.3])
+	var tw: Tween = create_tween()
+	tw.tween_property(mat, "albedo_color", Color(float(a[0]), float(a[1]), float(a[2]), 0.55), 8.0 / maxf(0.01, Campaign.cutscene_speed))
+	print("[m4d] the Earth goes dark blue")
