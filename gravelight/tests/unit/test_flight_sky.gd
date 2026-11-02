@@ -153,6 +153,12 @@ func test_ambience_file_names_zones_and_keys_that_exist() -> void:
 			assert_true(sounds.has(str(o["key"])), "%s one-shot %s exists" % [z, o["key"]])
 			assert_eq((o["every_s"] as Array).size(), 2)
 	assert_true(sounds.has(str(GLData.load_json("res://data/gravelight/audio.json")["music"]["ambient"].get("map04b_kranich", ""))), "the act's base bed")
+	# T-145's ZoneAmbience picks the file up for the act and accepts it
+	var path: String = ZoneAmbience.config_path(&"map04b_kranich")
+	assert_eq(path, "res://data/gravelight/ambience/map04b.json", "MapRoot will attach it to der Kranich")
+	assert_eq(ZoneAmbience.validate(ZoneAmbience.load_config(path)).size(), 0, "the schema holds")
+	for z2: String in zones.keys():
+		assert_true(ZoneAmbience.resolvable(str((zones[z2] as Dictionary)["bed"])), "%s bed resolves" % z2)
 
 
 func _rooms() -> Array:
