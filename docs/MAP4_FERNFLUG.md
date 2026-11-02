@@ -260,8 +260,8 @@ The ramp beacon lights; the vote; the cutscene (§11.1): the squad goes up the r
 - **The training loop that survives late rounds** is the Prüfstand ring road (§3.5): wide, lit, the bunker as the
   bail-out, and since the raid a second way out of it (the breach into Montage 2). Verified by the 10-minute fernflug
   soak (stuck numbers in T-155).
-- **The boarding** preloads Act II while the exfil cutscene plays (`LoadingScreen.preload_next`); the card that follows
-  shows Act II's lore line.
+- **The boarding** preloads Act II while the exfil cutscene plays (master's `Campaign.preload_next`, T-157/T-158); the card
+  that follows shows the Act I -> II transition line (tips.json `transition_lines` "map04a>map04b").
 
 ## 4. ACT 2 — DER KRANICH, in flight (act rounds 15–20)
 
