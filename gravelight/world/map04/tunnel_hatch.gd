@@ -6,11 +6,18 @@ extends Node3D
 ## (`plug_name`, on the world layer, so the navmesh was baked shut) and a disabled NavigationLink (`link_path`);
 ## opening drops the plug's collider and enables the link (the bots path through it), closing restores both. The
 ## WindTunnel drives it (set_open / rattle); the host mirrors it. Flag `tunnel_hatch_open` while open.
+## The same node is the Siedlung cellar's side door (hinge "side", flag a1_cellar_side_open, opened for good by Erich
+## Wendel's favour): any wall passage that a plug and a NavigationLink stand for.
 
 @export var plug_name: String = "TunnelHatchPlug"
 @export var link_path: NodePath = NodePath("../../Navigation/Link_TunnelHatch")
 @export var width: float = 1.6
 @export var height: float = 2.0
+## "top": a pressure hatch that swings up into the plenum (+X); "side": a door hung on its -Z edge, swinging into +X.
+@export var hinge: String = "top"
+@export var plate_text: String = "DRUCKKLAPPE\nNICHT ÖFFNEN"
+@export var flag_name: StringName = &"tunnel_hatch_open"
+@export var leaf_key: String = "machine_grey"
 
 var is_open: bool = false
 var _leaf: Node3D
@@ -18,8 +25,7 @@ var _plug: CollisionObject3D
 
 
 func _ready() -> void:
-	name = "TunnelHatch"
-	add_to_group(&"a1_tunnel_hatch")
+	add_to_group(&"a1_tunnel_hatch" if hinge == "top" else &"a1_passages")
 	_build()
 	(func() -> void:
 		var root: Node = get_parent().get_parent() if get_parent() != null else null
@@ -36,23 +42,29 @@ func _build() -> void:
 			Props.obox(self, Vector3(side, height * 0.5, e * (width * 0.5 + 0.07)), Vector3(0.12, height, 0.14), "steel")
 	var pivot: Node3D = Node3D.new()
 	pivot.name = "Leaf"
-	pivot.position = Vector3(0.0, height, 0)
 	add_child(pivot)
-	Props.obox(pivot, Vector3(0, -height * 0.5, 0), Vector3(0.06, height - 0.04, width - 0.04), "machine_grey")
+	# the leaf's centre relative to its hinge line
+	var c: Vector3 = Vector3(0, -height * 0.5, 0)
+	if hinge == "side":
+		pivot.position = Vector3(0.0, 0.0, -width * 0.5)
+		c = Vector3(0, height * 0.5, width * 0.5)
+	else:
+		pivot.position = Vector3(0.0, height, 0)
+	Props.obox(pivot, c, Vector3(0.06, height - 0.04, width - 0.04), leaf_key)
 	for r: int in 5:
-		Props.obox(pivot, Vector3(0.04, -0.15 - float(r) * (height - 0.3) / 4.0, 0), Vector3(0.03, 0.03, width - 0.2), "iron")
-	Props.obox(pivot, Vector3(-0.06, -height * 0.55, width * 0.3), Vector3(0.05, 0.25, 0.08), "brass")
+		Props.obox(pivot, c + Vector3(0.04, height * 0.5 - 0.15 - float(r) * (height - 0.3) / 4.0, 0), Vector3(0.03, 0.03, width - 0.2), "iron")
+	Props.obox(pivot, c + Vector3(-0.06, -height * 0.05, width * 0.3), Vector3(0.05, 0.25, 0.08), "brass")
 	var plate: Label3D = Label3D.new()
-	plate.text = "DRUCKKLAPPE\nNICHT ÖFFNEN"
+	plate.text = plate_text
 	plate.font_size = 22
 	plate.pixel_size = 0.004
 	plate.modulate = Color(0.9, 0.85, 0.7)
-	plate.position = Vector3(-0.05, -0.55, 0)
+	plate.position = c + Vector3(-0.05, height * 0.5 - 0.55, 0)
 	plate.rotation.y = -PI * 0.5
 	pivot.add_child(plate)
 	_leaf = pivot
-	for c: Node in find_children("*", "GeometryInstance3D", true, false):
-		(c as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	for gi: Node in find_children("*", "GeometryInstance3D", true, false):
+		(gi as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 
 func set_open(v: bool) -> void:
@@ -85,12 +97,14 @@ func _apply(v: bool, instant: bool) -> void:
 	if link != null:
 		link.enabled = v
 	if Net.is_authority():
-		GameState.set_flag(&"tunnel_hatch_open", v)
+		GameState.set_flag(flag_name, v)
 	if _leaf != null:
-		var target: float = deg_to_rad(100.0) if v else 0.0   # into the plenum (+X), the way the draft pulls it
+		# the hatch swings up into the plenum (+X), the way the draft pulls it; a side door swings into +X too
+		var prop: String = "rotation:z" if hinge == "top" else "rotation:y"
+		var target: float = (deg_to_rad(100.0) if hinge == "top" else deg_to_rad(95.0)) if v else 0.0
 		if instant:
-			_leaf.rotation.z = target
+			_leaf.rotation = Vector3(0, 0, target) if hinge == "top" else Vector3(0, target, 0)
 		else:
 			var tw: Tween = create_tween()
-			tw.tween_property(_leaf, "rotation:z", target, 0.5 if v else 0.9).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			tw.tween_property(_leaf, prop, target, 0.5 if v else 0.9).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 			AudioDirector.play_3d("door_open" if v else "board_slam", global_position + Vector3.UP * 1.2, 2.0, 0.05)

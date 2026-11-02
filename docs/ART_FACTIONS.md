@@ -26,6 +26,21 @@ GRAVELIGHT is alternate history told with respect, and it is sold everywhere. **
 
 **Usage rules:** stencilled on rocket bodies (Morgenrot), crate lids, doors, lab paperwork, armbands of the Gänger outfit kits, the Leitstand's wall; never on a flag larger than a pennant; never animated as a "logo reveal". It can be defaced (chalk, bullet holes) and it is the only such mark; where a period source would show a national emblem, the game shows nothing or the plain words of a ministry ("AMT FÜR SONDERFORSCHUNG").
 
+## 1b. Werk Thalbach's works mark: the crane in a cog (UPDATE 10, DECISIONS T-155)
+
+**What it is:** the house mark of the fictional aircraft works at Thalbach (Fernflug Act I), on its posters, stair
+signs and pay slips. A company mark, not a state one: it carries no national emblem and nothing else is ever drawn
+into it.
+
+**Construction (procedural, `ThalbachLife.poster_texture("kranich")`):** a black **cog wheel** of 12 square teeth
+(ring width one fifth of the radius); across it, left to right, a **crane in flight** (the bird, "Kranich", the works'
+pet name for the big plane) as a black silhouette: long neck forward, the beak past the cog's rim, two wings in a
+shallow V, the legs trailing behind; under it the words **WERK THALBACH** and, on the propaganda posters, **WIR BAUEN
+DEN KRANICH** ("we build the crane") in plain block capitals. Black on old paper; never red, never violet.
+
+**Usage rules:** the works' own posters, signs and paperwork in Act I only; flapping posters (map04a_ambience.json
+`act1.posters`) carry either this mark or the P·W·K Sunburst-and-Split-Bell (§1) and nothing else.
+
 ## 2. The Kriegsmarine at Totenhafen
 
 No naval ensigns, no eagle, no fouled-anchor-with-eagle. The pen uses **plain stencilled text** (KRIEGSMARINE · U-BUNKER TOTENHAFEN) and invented boat and unit numbers (U-1047, "TOT·HAF·7", unit stencils BLST-nn). Coffins carry the Helvetia Automaten AG plate (a civilian mark) and a Wiederkehr P·W·K stamp on the manifest only.

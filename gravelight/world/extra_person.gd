@@ -8,6 +8,10 @@ extends Node3D
 ## FavourItem; bring it back), gun (hand over the gun in your hands), deliver (T-158: accepting hands you the thing;
 ## carry it to where it belongs, a TagSlot, which ends the favour). Rewards (reward.kind): scrip_mark, revive_point,
 ## intel_ping, cover, unbolt_door; the courier sells a tip (trade.kind crate_tip). Offline only.
+## UPDATE 10 Act I (T-155): items "coal" (a sack) and "signal" (the signal lever's handle: taking it is pulling the
+## lever, the item_name says so); rewards open_passage (opens a passage node for good: `node`, its set_open(true);
+## Werk Thalbach's cellar side door) and train_drop (from now on every train's arrival behind the goods shed drops
+## `powerup` at `at`, `drops` times: MapAmbience.a1_train_arrived).
 
 enum Favour { NONE, ASKED, HAVE, DONE }
 
@@ -286,6 +290,21 @@ func _reward(p: Player) -> void:
 			_unbolt(r, pid)
 		"supply_drop":
 			_supply_drop(r)
+		"open_passage":
+			var pn: Node = map.find_child(str(r.get("node", "")), true, false)
+			if pn != null and pn.has_method("set_open"):
+				pn.call("set_open", true)
+			if r.has("flag"):
+				GameState.set_flag(StringName(str(r["flag"])))
+			say("door")
+			_event("reward:open_passage")
+		"train_drop":
+			_drops_left = int(r.get("drops", 2))
+			for a: Node in get_tree().get_nodes_in_group(&"map_ambience"):
+				if a.has_signal("a1_train_arrived") and not a.is_connected("a1_train_arrived", _on_train_arrived):
+					a.connect("a1_train_arrived", _on_train_arrived)
+			say("train")
+			_event("reward:train_drop")
 	if map.hud != null:
 		map.hud.show_banner(str((cfg.get("favour", {}) as Dictionary).get("done", "")).split(".")[0].to_upper(), 3.5)
 
@@ -327,6 +346,21 @@ func _unbolt(r: Dictionary, pid: int) -> void:
 			return
 	Economy.grant(pid, int(r.get("fallback_scrip", 300)))   # the door is already open: a purse instead
 	_event("reward:scrip_fallback")
+
+
+var _drops_left: int = 0
+
+
+## UPDATE 10 (T-155): a train came in behind the goods shed: the railwayman's crate comes off it.
+func _on_train_arrived(_times: int) -> void:
+	if _drops_left <= 0:
+		return
+	var r: Dictionary = (cfg.get("favour", {}) as Dictionary).get("reward", {})
+	_drops_left -= 1
+	var at: Vector3 = ExtraPeople.vec(r.get("at", [34.0, 0.0, 41.0]))
+	PowerupManager.spawn(StringName(str(r.get("powerup", "resupply"))), at, float(r.get("lifetime", 45.0)))
+	say("train")
+	_event("train_drop:%d" % _drops_left)
 
 
 ## The courier's tip: Scrip for a marker on the Requisition Crate where it stands now (and a line).
@@ -640,6 +674,13 @@ class FavourItem extends Interactable:
 			"valve":
 				_box(Vector3(0.1, 0.04, 0.1), Vector3(0, 0.02, 0), Color(0.7, 0.55, 0.25))
 				_ball(0.045, Vector3(0, 0.1, 0), Color(0.7, 0.75, 0.78, 0.6))
+			"coal":   # UPDATE 10 (T-155): a sack of coal from the rail yard's spill
+				_box(Vector3(0.45, 0.32, 0.32), Vector3(0, 0.16, 0), Color(0.36, 0.3, 0.22))
+				_box(Vector3(0.3, 0.06, 0.22), Vector3(0, 0.34, 0), Color(0.06, 0.06, 0.07))
+			"signal":   # the signal lever on its frame by the semaphore (the handle is what you take: you pull it)
+				_box(Vector3(0.3, 0.5, 0.2), Vector3(0, 0.25, 0), Color(0.22, 0.2, 0.18))
+				_box(Vector3(0.05, 0.9, 0.05), Vector3(0, 0.9, 0), Color(0.55, 0.12, 0.08))
+				_box(Vector3(0.14, 0.06, 0.06), Vector3(0, 1.36, 0), Color(0.75, 0.72, 0.65))
 			_:
 				_box(Vector3(0.16, 0.04, 0.16), Vector3(0, 0.02, 0), Color(0.18, 0.18, 0.18))
 				_box(Vector3(0.1, 0.2, 0.1), Vector3(0, 0.14, 0), Color(0.9, 0.72, 0.36, 0.7))
@@ -691,7 +732,8 @@ class FavourItem extends Interactable:
 			area.collision_layer = 0
 
 	func get_prompt(_player: Player) -> String:
-		return ("Take the %s" % str((person.cfg.get("favour", {}) as Dictionary).get("item_name", "item"))) if shown else ""
+		var fv: Dictionary = person.cfg.get("favour", {}) as Dictionary
+		return ("%s the %s" % [str(fv.get("item_verb", "Take")), str(fv.get("item_name", "item"))]) if shown else ""
 
 	func can_interact(player: Player) -> bool:
 		return shown and player != null and not player.is_bot

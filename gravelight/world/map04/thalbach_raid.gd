@@ -123,11 +123,23 @@ func _ready() -> void:
 	if cfg.is_empty():
 		return
 	GLBus.round_started.connect(_on_round_started)
+	GLBus.flag_changed.connect(_on_flag_changed)
 	_build_rubble()
 	(func() -> void:
 		_hall2 = _map_root().find_child(str(cfg.get("collapse", "Hall2Roof")), true, false) as Node3D
 		_apply_route(false)
 		_seal_breach(true)).call_deferred()
+
+
+## Online (contract C8): a peer that joins after the fall gets the host's flags in its first state snapshot; the hall
+## comes down for it at once (no show), the fires light at the host's heat.
+func _on_flag_changed(flag: StringName, value: Variant) -> void:
+	if flag == &"a1_hall2_down" and bool(value) and not is_collapsed and not Net.is_authority():
+		if raid_act_round < 0:
+			raid_act_round = RoundManager.act_round() if RoundManager.has_act() else int(cfg.get("round", 8))
+		phase = Phase.DONE
+		_collapse(true)
+		_light_fires()
 
 
 func _map_root() -> Node:

@@ -308,7 +308,7 @@ static func resolve(spec: Dictionary, tree: SceneTree, pool: Array) -> Array[Nod
 	var cls: String = str(spec.get("class", ""))
 	var where: Dictionary = spec.get("where", {})
 	for n: Variant in src:
-		if not n is Node or not is_instance_valid(n):
+		if not is_instance_valid(n) or not n is Node:   # (validity first: the pool can hold freed nodes)
 			continue
 		var node: Node = n as Node
 		if cls != "" and not script_is(node, cls):

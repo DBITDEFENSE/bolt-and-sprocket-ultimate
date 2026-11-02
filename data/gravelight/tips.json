@@ -33,6 +33,7 @@
     "The account is never closed by them. You close it."
   ],
   "transition_lines": {
+    "map04a>map04b": ["The ramp closed behind you. Nobody at Thalbach pressed the button.", "Werk Thalbach falls away under the netting. The Kranich knows the way."],
     "_doc": "U10 §3 Act III (T-157): the loading card's line for a campaign transition, keyed '<from map prefix>><to map prefix>' (LoadingScreen.transition_line); the map's own lore_lines otherwise.",
     "map04b>map04c": ["The Kranich came down on a dry lake in Nevada at 05:41. The salt burned black for fifty metres. Nobody on the range had been told to expect her.", "Down on the salt. The fire is still going. Something under a tarp in the hangar heard her land."],
     "map04c>map04d": ["LANTERN cleared the gantry at 06:41 on a stolen engine and a burn read off a dead man's radio. Nobody on the range saw it come down, because it didn't.", "Groom Lake fell away under them. The relay did not."]

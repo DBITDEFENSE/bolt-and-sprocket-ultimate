@@ -1,0 +1,28 @@
+{
+  "_doc": "Fernflug Act I, Werk Thalbach: the living world (UPDATE 10 §3, contract C1, DECISIONS T-155). MapRoot attaches a MapAmbience with this file (MapRoot._attach_map_ambience); the map has no Landscape, so needs_landscape is false and every kind lives under \"act1\" (the U10 Act I block at the end of gravelight/world/landscape/map_ambience.gd; the visual pieces are ThalbachLife). Presentation only, per peer. Positions are map space (+X east, +Z north). windows_out: from act round from_round, per_round lit windows get their blackout blinds drawn at random times within spread_s (the Siedlung's first; markers Gameplay/LitWindows). bell: the church bell on the wind every interval s. low_pass: a test jet from `from` to `to` in `seconds` at act round `round` (+delay). searchlights: ThalbachSky.apply_cfg (forest = extra beam bases on the ridges). train: a locomotive and `cars` flatcars run in on the siding behind the goods shed at act round `round` and every every_rounds after, stopping at `stop` (emits a1_train_arrived: the railwayman's favour). kranich_glow: the intakes' violet breath up through the hangar skylight (seen from spawn above the works wall). rattle / sway / weld: the reactive details (points; sway rows are [x, y, z, drop, yaw]). posters: the two fictional marks only (docs/ART_FACTIONS.md §1 and §1b). power_on: the PA horns, the jig gantries' jolt, a sting per perk machine as its zone lights.",
+  "needs_landscape": false,
+  "act1": {
+    "seed": 1945,
+    "windows_out": {"from_round": 2, "per_round": 2, "spread_s": 70.0},
+    "bell": {"pos": [20.0, 16.1, 90.6], "interval": [35.0, 70.0], "first_after": [15.0, 30.0], "key": "amb_church_bell_far", "volume_db": -2.0},
+    "low_pass": {"round": 4, "delay": 25.0, "from": [-320.0, 46.0, 238.0], "to": [320.0, 38.0, 238.0], "seconds": 5.4, "shake": 0.25, "key": "a1_jet_pass"},
+    "searchlights": {"intensity": 0.14, "forest": [[-190.0, 28.0, 250.0], [230.0, 24.0, 110.0], [-230.0, 30.0, -40.0], [170.0, 26.0, -150.0]]},
+    "train": {"round": 3, "every_rounds": 4, "delay": 15.0, "stop": [48.0, 0.0, 55.5], "from_x": 260.0, "seconds": 14.0, "brake_seconds": 4.0, "cars": 3,
+      "whistle": "a1_train_whistle", "brakes": "a1_train_steam"},
+    "kranich_glow": {"pos": [-20.0, 20.5, 185.0], "length": 140.0, "intensity": 0.22, "top_radius": 14.0, "bottom_radius": 6.0},
+    "rattle": {"points": [[34.0, 4.4, 56.0], [-40.0, 9.4, 72.0], [-20.0, 20.4, 165.0], [20.0, 6.3, 8.0], [-22.0, 6.4, 45.0]], "interval": [5.0, 12.0],
+      "first_after": [8.0, 15.0], "min_wind": 0.35, "key": "a1_sheet_rattle"},
+    "sway": {"amp_deg": 5.0, "points": [[-54.0, 8.7, 96.0, 3.0, 0.0], [-52.0, 8.7, 80.0, 3.0, 90.0], [-4.0, 8.7, 74.0, 2.8, 0.0]]},
+    "weld": {"points": [[-26.0, 2.8, 74.5], [-30.0, 2.8, 98.5], [-14.0, 2.0, 168.0]], "interval": [6.0, 14.0], "first_after": [10.0, 20.0], "key": "amb_m2_weld"},
+    "posters": {"points": [
+      {"pos": [12.0, 2.3, 29.82], "yaw": 180.0, "kind": "kranich"},
+      {"pos": [30.5, 2.3, 29.82], "yaw": 180.0, "kind": "wiederkehr"},
+      {"pos": [27.82, 2.1, 58.0], "yaw": -90.0, "kind": "kranich"},
+      {"pos": [-43.82, 2.5, 38.0], "yaw": 90.0, "kind": "kranich"},
+      {"pos": [39.82, 2.3, 87.4], "yaw": -90.0, "kind": "wiederkehr"},
+      {"pos": [-59.82, 2.4, 100.0], "yaw": 90.0, "kind": "kranich"}
+    ]},
+    "power_on": {"pa_points": [[-38.5, 3.6, 53.4], [-26.0, 6.5, 61.0], [8.0, 5.2, 99.7], [-30.0, 4.4, 150.5]],
+      "gantry_points": [[-44.0, 8.0, 86.0], [-8.0, 8.0, 86.0], [-26.0, 8.4, 84.5]], "perk_sting": "perk_tier4_sting"}
+  }
+}

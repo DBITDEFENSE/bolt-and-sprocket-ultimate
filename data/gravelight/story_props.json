@@ -409,6 +409,54 @@
       ],
       "yaw": -90,
       "where": "Port engine room, the outboard wall (x -77.85 face) north of the ammo box, by the engineer's station"
+    },
+    {
+      "id": "INT_M4A_WORKSPASS",
+      "map": "4a",
+      "style": "docket",
+      "position": [
+        4.0,
+        1.5,
+        9.83
+      ],
+      "yaw": 0,
+      "where": "Siedlung, the air-raid cellar, pinned to the north wall beside the door"
+    },
+    {
+      "id": "INT_M4A_RIVETLOG",
+      "map": "4a",
+      "style": "docket",
+      "position": [
+        -47.83,
+        1.5,
+        73.4
+      ],
+      "yaw": -90,
+      "where": "Montage 1, the Kraftzentrale's east wall beside the rivet line's lever"
+    },
+    {
+      "id": "INT_M4A_WINDOWLETTER",
+      "map": "4a",
+      "style": "docket",
+      "position": [
+        39.75,
+        1.6,
+        22.0
+      ],
+      "yaw": 90,
+      "where": "Siedlung, block 2, tucked into a ground-floor window frame facing the courtyard"
+    },
+    {
+      "id": "INT_M4A_LOADSHEET",
+      "map": "4a",
+      "style": "docket",
+      "position": [
+        -64.0,
+        1.4,
+        153.55
+      ],
+      "yaw": 180,
+      "where": "The Great Hangar, clipped to the tool cage by the south-west corner"
     }
   ]
 }

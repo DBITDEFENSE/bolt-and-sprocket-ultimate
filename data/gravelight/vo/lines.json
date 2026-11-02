@@ -12506,5 +12506,125 @@
     "speaker": "RDL",
     "category": "PEOPLE_PING",
     "text": "Something in the port wing. Several. Moving forward. I can hear them on the spar."
+  },
+  "WDL_PEOPLE_TALK_01": {
+    "speaker": "WDL",
+    "category": "PEOPLE_TALK",
+    "text": "Down here, quick. My wife and the girls are behind the blanket. They don't need to see you."
+  },
+  "WDL_PEOPLE_TALK_02": {
+    "speaker": "WDL",
+    "category": "PEOPLE_TALK",
+    "text": "Twelve years I riveted wings in Hall One. Never once asked where they were going."
+  },
+  "WDL_PEOPLE_ASK_01": {
+    "speaker": "WDL",
+    "category": "PEOPLE_ASK",
+    "text": "The stove's dead and the little one's coughing. There's coal spilled by the platform in the yard. One sack. Bring it and I lift the bar on the side door."
+  },
+  "WDL_PEOPLE_THANKS_01": {
+    "speaker": "WDL",
+    "category": "PEOPLE_THANKS",
+    "text": "Coal. Thank you. Here, the side door, I'll take the bar off. Use it."
+  },
+  "WDL_PEOPLE_DOOR_01": {
+    "speaker": "WDL",
+    "category": "PEOPLE_DOOR",
+    "text": "Side door's open. In through the cellar and out the other side, if they're on your heels."
+  },
+  "WDL_PEOPLE_ROUND_01": {
+    "speaker": "WDL",
+    "category": "PEOPLE_ROUND",
+    "text": "Sirens again. Stay low, girls. Stay low."
+  },
+  "WDL_PEOPLE_ROUND_02": {
+    "speaker": "WDL",
+    "category": "PEOPLE_ROUND",
+    "text": "They walk past the window now. They don't stop. Not yet."
+  },
+  "WDL_PEOPLE_DOWN_01": {
+    "speaker": "WDL",
+    "category": "PEOPLE_DOWN",
+    "text": "Get up! Somebody get him up!"
+  },
+  "BRK_PEOPLE_TALK_01": {
+    "speaker": "BRK",
+    "category": "PEOPLE_TALK",
+    "text": "Thirty-one years on this yard. The last train I let in, I wish I'd sent back."
+  },
+  "BRK_PEOPLE_TALK_02": {
+    "speaker": "BRK",
+    "category": "PEOPLE_TALK",
+    "text": "Lead boxes from the coast. Heavy as sin. They hummed in the cold."
+  },
+  "BRK_PEOPLE_ASK_01": {
+    "speaker": "BRK",
+    "category": "PEOPLE_ASK",
+    "text": "There's one train still on the line, an ammunition run nobody stopped. The signal's at danger. Pull the lever by the goods shed and she'll come in."
+  },
+  "BRK_PEOPLE_THANKS_01": {
+    "speaker": "BRK",
+    "category": "PEOPLE_THANKS",
+    "text": "Signal's off. She comes in when she comes. I'll see the crates get to you."
+  },
+  "BRK_PEOPLE_TRAIN_01": {
+    "speaker": "BRK",
+    "category": "PEOPLE_TRAIN",
+    "text": "There she is. A crate off the second wagon, in the yard. Take it."
+  },
+  "BRK_PEOPLE_ROUND_01": {
+    "speaker": "BRK",
+    "category": "PEOPLE_ROUND",
+    "text": "Hear that? Rails are cold. Nothing moves tonight but them."
+  },
+  "BRK_PEOPLE_ROUND_02": {
+    "speaker": "BRK",
+    "category": "PEOPLE_ROUND",
+    "text": "Keep off the line. Old habit."
+  },
+  "BRK_PEOPLE_DOWN_01": {
+    "speaker": "BRK",
+    "category": "PEOPLE_DOWN",
+    "text": "Man down by the platform!"
+  },
+  "OPR_M4A_RAID_01": {
+    "speaker": "OPR",
+    "category": "M4A_RAID",
+    "text": "Attention, valued staff. An unscheduled delivery is arriving from above. Please proceed to the {cellars}."
+  },
+  "OPR_M4A_RAID_WARN_01": {
+    "speaker": "OPR",
+    "category": "M4A_RAID_WARN",
+    "text": "Assembly Hall Two is undergoing an unplanned restructuring. Please vacate the area. You have ten {seconds}."
+  },
+  "OPR_M4A_RAID_DOWN_01": {
+    "speaker": "OPR",
+    "category": "M4A_RAID_DOWN",
+    "text": "Restructuring complete. A new route to the apron has been {provided}. Free of charge."
+  },
+  "OPR_M4A_RAID_CLEAR_01": {
+    "speaker": "OPR",
+    "category": "M4A_RAID_CLEAR",
+    "text": "All clear. The fires are a {feature}. Please enjoy them responsibly."
+  },
+  "DUT_M4A_RAID_01": {
+    "speaker": "DUT",
+    "category": "M4A_RAID",
+    "text": "Roof's down in Hall Two. We go round by the hole they made."
+  },
+  "PEG_M4A_RAID_01": {
+    "speaker": "PEG",
+    "category": "M4A_RAID",
+    "text": "The bombers did us a favour. There's a breach through to the test stands."
+  },
+  "DEA_M4A_RAID_01": {
+    "speaker": "DEA",
+    "category": "M4A_RAID",
+    "text": "Lord, that was close. Nobody under it. Good."
+  },
+  "WRN_M4A_RAID_01": {
+    "speaker": "WRN",
+    "category": "M4A_RAID",
+    "text": "Old door's buried. New hole, west side. Move."
   }
 }

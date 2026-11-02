@@ -623,3 +623,15 @@ Der Kranich's side quest anyone can do (THE_BAR row 7): no power, no Bolt and no
 **Bots:** s1 is a `collect` task; s2 is an `interact_sequence` on the roster; s3 is `player_only: final` (the reel is the player's).
 
 **Checklist:** `smoke_map04b_world` runs the three steps end to end and checks the Archive entry.
+
+---
+
+## FERNFLUG ACT I SIDE EGG: Jette's logbook, findable (UPDATE 10, DECISIONS T-155)
+
+The egg itself is unchanged (`data/gravelight/quests/map04a_jette.json`, docs/MAP4_FERNFLUG.md §9.2): three glider
+models (the canteen stage, a jig in Montage 2, the test-section glass) set on Jette's desk through the hatch under her
+office; the logbook reads itself, Skyhook Sekt tier II is free for the match, the "jette" card and Archive
+`INT_M4_JETTE`. What UPDATE 10 adds is that a player can find it without a guide: `Gameplay/SightNote_Jette` puts a
+personal minimap note ("Jette's glider model", "Jette's desk hatch") on each model and on the hatch the first time it
+is in view (within 16 m, inside the view cone, nothing solid between). Its squad lines are recorded on master
+(`DUT/PEG/DEA/WRN_M4A_GLIDER_01` on each model, `_M4A_JETTE_01` at the end): `smoke_map04a_world` checks all eight files.
