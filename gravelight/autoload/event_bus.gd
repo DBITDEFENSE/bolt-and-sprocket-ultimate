@@ -92,6 +92,9 @@ signal weapon_fired(player: int, weapon_id: StringName, upgraded: bool, origin: 
 ## The Totenglocke's Great Toll rang (T-095): Effects draws the refraction ring racing out to `range_m` from `origin`.
 signal great_toll(player: int, origin: Vector3, direction: Vector3, range_m: float)
 signal intel_found(intel_id: StringName)
+## Groom Lake's radar dish pinged (UPDATE 10 §3, T-157): every zombie shows on the minimap and the pause map for
+## `seconds`, the minimap draws a sweep (RadarDish emits it on every peer).
+signal radar_ping(seconds: float)
 
 # VO / presentation
 signal vo_line_started(line_id: StringName, speaker: StringName, text: String, duration: float)

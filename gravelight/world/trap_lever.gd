@@ -11,7 +11,8 @@ var _handle: Node3D
 var _lamp: MeshInstance3D
 var _lamp_t: float = 0.0
 
-const STENCIL: Dictionary = {&"ore_cart": "FÖRDERWAGEN", &"live_wire": "HOCHSPANNUNG", &"chandelier": "KRONLEUCHTER"}
+const STENCIL: Dictionary = {&"ore_cart": "FÖRDERWAGEN", &"live_wire": "HOCHSPANNUNG", &"chandelier": "KRONLEUCHTER",
+	&"fuel_dump": "FUEL DUMP", &"door_drop": "HANGAR DOOR"}   # U10 §3 Act III (T-157)
 
 
 func _ready() -> void:

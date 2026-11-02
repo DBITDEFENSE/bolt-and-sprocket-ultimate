@@ -9613,6 +9613,31 @@
     "category": "M4C_RADIO",
     "text": "Those machines came with the crate. Olive drab's mine; I wasn't having violet in my hangar. The one with the lever, that's mine too. Don't drink it {fast}."
   },
+  "DEE_M4C_FAVOUR_ASK_01": {
+    "speaker": "DEE",
+    "category": "M4C_FAVOUR_ASK",
+    "text": "You want to be useful? My field radio's dead without its valve. There's a spare in the motor pool, in the parts box behind the second truck. Bring it {here}."
+  },
+  "DEE_M4C_FAVOUR_THANKS_01": {
+    "speaker": "DEE",
+    "category": "M4C_FAVOUR_THANKS",
+    "text": "That's the one. Hold on... Range supply, this is the cage. One crate, hangar apron, now. ...They owe me. It's {coming}."
+  },
+  "DEE_M4C_DROP_01": {
+    "speaker": "DEE",
+    "category": "M4C_DROP",
+    "text": "Crate's down by the hangar door. Don't say supply never gave you {anything}."
+  },
+  "HAL_M4C_TALK_01": {
+    "speaker": "HAL",
+    "category": "M4C_TALK",
+    "text": "Mind the glass, Lieutenant. Everything in this office has been signed for. Including, I'm afraid, {you}."
+  },
+  "HAL_M4C_TALK_02": {
+    "speaker": "HAL",
+    "category": "M4C_TALK",
+    "text": "I don't owe you an explanation. I owe one to a committee, and the committee doesn't {ask}."
+  },
   "DEE_M4C_DOOR_01": {
     "speaker": "DEE",
     "category": "M4C_DOOR",

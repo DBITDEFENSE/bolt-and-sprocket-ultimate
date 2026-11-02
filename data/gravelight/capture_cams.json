@@ -739,6 +739,122 @@
         {"name": "G_console", "pos": [-50.0, -6.0, 172.0], "yaw": 129.1, "pitch": -4.5, "note": "G Silo: the control room console"}
       ]
     },
+    "u10_map04c": {
+      "_doc": "UPDATE 10 §3 Act III (T-157): the act's new set-pieces: the jukebox, the radar sweep, the perch, the collapsed wreck, the gap, the spread fire, the storm (last: it stays on).",
+      "map": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {
+          "name": "J_jukebox",
+          "pos": [
+            25.0,
+            0.0,
+            76.0
+          ],
+          "yaw": 90.0,
+          "pitch": -4.0,
+          "note": "C Hangar: the jukebox in the break corner, lit and playing with the power",
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0
+        },
+        {
+          "name": "E_sweep",
+          "pos": [
+            34.0,
+            0.0,
+            104.0
+          ],
+          "yaw": -146.0,
+          "pitch": 38.0,
+          "note": "E Radar: the dish turned, the radar pinging (the minimap sweep on the HUD)",
+          "do": [
+            "call:RadarController:debug_ping_now:2"
+          ],
+          "settle_s": 2.0
+        },
+        {
+          "name": "E_perch",
+          "pos": [
+            46.6,
+            16.0,
+            118.0
+          ],
+          "yaw": 45.0,
+          "pitch": -8.0,
+          "note": "E Radar: the sniper perch on the tower's 16 m deck, over the base and the salt",
+          "settle_s": 2.0
+        },
+        {
+          "name": "A_collapsed",
+          "pos": [
+            2.0,
+            0.0,
+            -7.0
+          ],
+          "yaw": 80.0,
+          "pitch": -6.0,
+          "note": "A Wreck: the bay roof down on the west side, the new crate spot",
+          "do": [
+            "call:GroomController:debug_collapse_all:3"
+          ],
+          "settle_s": 3.0
+        },
+        {
+          "name": "A_gap",
+          "pos": [
+            10.0,
+            0.0,
+            6.0
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "A Wreck: the bulkhead plate torn out (the new gap to the salt)",
+          "settle_s": 1.5
+        },
+        {
+          "name": "A_fire",
+          "pos": [
+            -5.0,
+            0.0,
+            -29.0
+          ],
+          "yaw": 75.0,
+          "pitch": -5.0,
+          "note": "A Wreck: the fuel fire spread along the hull's west wall",
+          "settle_s": 1.5
+        },
+        {
+          "name": "B_storm",
+          "pos": [
+            0.0,
+            0.0,
+            20.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "B Lakebed: the dust storm, 15 m visibility, the sky dark",
+          "do": [
+            "call:GroomController:debug_storm_on:6"
+          ],
+          "settle_s": 2.0
+        },
+        {
+          "name": "C_storm",
+          "pos": [
+            40.0,
+            0.0,
+            50.0
+          ],
+          "yaw": 180.0,
+          "pitch": 4.0,
+          "note": "B/C: the hangar's door through the storm",
+          "settle_s": 1.5
+        }
+      ]
+    },
     "u09_map04d": {
       "map": "res://gravelight/maps/map04_fernflug/map04d.tscn",
       "bots": 0,

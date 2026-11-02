@@ -1,0 +1,261 @@
+extends GutTest
+## Groom Lake's U10 set-pieces (UPDATE 10 §3 Act III, DECISIONS T-157): the dust storm's schedule and fog, how a
+## stalker hears (SoundHunter), the wreck's collapse schedule and the fire's spread, the radar's ping timer.
+
+
+func after_each() -> void:
+	SoundHunter.reset()
+
+
+# ---------------------------------------------------------------- the storm's schedule
+
+func test_storm_every_fifth_act_round() -> void:
+	for ar: int in [5, 10, 15, 20]:
+		assert_true(GroomController.storm_round_due(ar, 5), "act round %d is a storm" % ar)
+	for ar2: int in [0, 1, 4, 6, 9, 11]:
+		assert_false(GroomController.storm_round_due(ar2, 5), "act round %d is not" % ar2)
+	assert_false(GroomController.storm_round_due(5, 0), "every 0 = never")
+
+
+func test_next_storm_round_is_act_relative() -> void:
+	# a campaign arrival on match round 21: act round 5 is match 25, then 30
+	assert_eq(GroomController.next_storm_round(20, 21, 5), 25)
+	assert_eq(GroomController.next_storm_round(24, 21, 5), 25)
+	assert_eq(GroomController.next_storm_round(25, 21, 5), 30)
+	# standalone (act_start 1): rounds 5, 10, 15 ... past the act's nine rounds (the loop)
+	assert_eq(GroomController.next_storm_round(0, 1, 5), 5)
+	assert_eq(GroomController.next_storm_round(12, 1, 5), 15)
+	assert_eq(GroomController.next_storm_round(30, 1, 5), 35)
+
+
+func test_fog_for_visibility() -> void:
+	assert_almost_eq(GroomController.fog_for_visibility(15.0), 0.2, 0.0001)
+	assert_almost_eq(GroomController.fog_for_visibility(30.0), 0.1, 0.0001)
+	assert_true(exp(-GroomController.fog_for_visibility(15.0) * 15.0) < 0.06, "~5 % of the light gets through at 15 m")
+
+
+func test_stalker_kinds_and_zones() -> void:
+	var hc: Dictionary = {"kinds": ["burrower", ""], "zones": ["B_LAKEBED", "C_HANGAR"]}
+	assert_true(GroomController.is_stalker("burrower", "B_LAKEBED", hc))
+	assert_true(GroomController.is_stalker("", "C_HANGAR", hc), "a plain Gänger on the surface")
+	assert_false(GroomController.is_stalker("canary", "C_HANGAR", hc), "the hooded Canaries keep their eyes")
+	assert_false(GroomController.is_stalker("", "F_LAB", hc), "underground the storm is not heard")
+
+
+func test_map04c_storm_data() -> void:
+	var dc: Dictionary = GLData.load_json("res://data/gravelight/map04c.json")["groom"]["dust_storm"]
+	assert_eq(int(dc["every_act_rounds"]), 5)
+	assert_eq(float(dc["visibility_m"]), 15.0)
+	assert_eq(str(dc["hud_line"]), "DUST STORM: they hunt by sound")
+	assert_eq(float(dc["hear"]["loud_mult"]), 3.0)
+
+
+# ---------------------------------------------------------------- hearing
+
+func test_hear_radius_triples_when_loud() -> void:
+	assert_eq(SoundHunter.hear_radius(6.0, false, 3.0), 6.0)
+	assert_eq(SoundHunter.hear_radius(6.0, true, 3.0), 18.0)
+	assert_true(SoundHunter.is_loud(true, false), "sprinting is loud")
+	assert_true(SoundHunter.is_loud(false, true), "a shot is loud")
+	assert_false(SoundHunter.is_loud(false, false), "walking is quiet")
+
+
+func test_can_hear_on_the_flat_and_not_through_floors() -> void:
+	assert_true(SoundHunter.can_hear(Vector3.ZERO, Vector3(12, 0, 0), 18.0))
+	assert_false(SoundHunter.can_hear(Vector3.ZERO, Vector3(12, 0, 0), 6.0), "12 m off, quiet: not heard")
+	assert_false(SoundHunter.can_hear(Vector3.ZERO, Vector3(2, -6, 0), 18.0), "the lab under the salt")
+
+
+func test_fire_window() -> void:
+	SoundHunter.note_fire(2, 10000)
+	assert_true(SoundHunter.fired_recently(2, 11000, 1.5))
+	assert_false(SoundHunter.fired_recently(2, 12000, 1.5), "1.5 s later the shot has faded")
+	assert_false(SoundHunter.fired_recently(3, 10000, 1.5), "another player never fired")
+
+
+func test_heard_player_picks_the_nearest_loud() -> void:
+	var host: Node3D = Node3D.new()
+	add_child_autofree(host)
+	var z: Node3D = Node3D.new()
+	host.add_child(z)
+	z.global_position = Vector3.ZERO
+	var far_quiet: Player = Player.new()
+	far_quiet.player_id = 1
+	var near_loud: Player = Player.new()
+	near_loud.player_id = 2
+	host.add_child(far_quiet)
+	host.add_child(near_loud)
+	far_quiet.global_position = Vector3(10, 0, 0)
+	near_loud.global_position = Vector3(15, 0, 0)
+	near_loud.sprinting = true
+	var heard: Node3D = SoundHunter.heard_player(z, 6.0, [far_quiet, near_loud])
+	assert_eq(heard, near_loud, "the quiet one at 10 m is not heard; the sprinter at 15 m is")
+	near_loud.sprinting = false
+	assert_null(SoundHunter.heard_player(z, 6.0, [far_quiet, near_loud]), "nobody loud, nobody within 6 m")
+
+
+# ---------------------------------------------------------------- the wreck
+
+func test_collapse_schedule() -> void:
+	var wc: Dictionary = GLData.load_json("res://data/gravelight/map04c.json")["groom"]["wreck_collapse"]
+	assert_eq(float(wc["warn_s"]), 10.0, "telegraphed 10 s ahead")
+	var r3: Array = GroomController.collapse_due(3, wc, {})
+	assert_eq(r3.size(), 1)
+	assert_eq(str((r3[0] as Dictionary)["id"]), "bay_roof", "act round 3 = match 23 in the campaign")
+	var r6: Array = GroomController.collapse_due(6, wc, {})
+	assert_eq(str((r6[0] as Dictionary)["id"]), "hull_west", "act round 6 = match 26")
+	assert_true(GroomController.collapse_due(3, wc, {"bay_roof": true}).is_empty(), "a section falls once")
+	for ar: int in [1, 2, 4, 5, 7, 9, 23, 26]:
+		assert_true(GroomController.collapse_due(ar, wc, {}).is_empty(), "nothing on act round %d" % ar)
+
+
+func test_collapse_box() -> void:
+	var box: Array = [[-13.7, 0.0, -12.2], [-8.4, 4.2, -4.6]]
+	assert_true(GroomController.in_box(Vector3(-11, 0, -8), box))
+	assert_false(GroomController.in_box(Vector3(-3, 0, -8.5), box), "push_to is outside")
+	assert_false(GroomController.in_box(Vector3(-11, 6, -8), box), "above the roof")
+
+
+func test_fire_spread_grows_per_round() -> void:
+	var sp: Dictionary = GLData.load_json("res://data/gravelight/map04c.json")["groom"]["fire"]["spread"]
+	assert_eq(GroomController.spread_count(1, sp), 0, "nothing before act round 2")
+	assert_eq(GroomController.spread_count(2, sp), 1)
+	assert_eq(GroomController.spread_count(4, sp), 3)
+	assert_eq(GroomController.spread_count(40, sp), 5, "capped at the path's end on the loop")
+	assert_eq(GroomController.spread_count(5, {}), 0, "no spread block, no spread")
+
+
+# ---------------------------------------------------------------- the radar
+
+func test_ping_timer() -> void:
+	var rc: Dictionary = GLData.load_json("res://data/gravelight/map04c.json")["radar"]
+	assert_eq(float(rc["every_s"]), 60.0, "a ping every minute")
+	assert_eq(float(rc["seconds"]), 10.0, "for 10 s")
+	var times: Array[float] = RadarDish.ping_times(float(rc["first_after_s"]), float(rc["every_s"]), 3)
+	assert_eq(times, [8.0, 68.0, 128.0] as Array[float])
+	assert_false(RadarDish.ping_due(7.9, 8.0))
+	assert_true(RadarDish.ping_due(8.0, 8.0))
+
+
+func test_map_state_radar_ping_window() -> void:
+	var ms: MapState = MapState.new()
+	add_child_autofree(ms)
+	assert_false(ms.radar_active())
+	ms.radar_ping(10.0)
+	assert_true(ms.radar_active())
+	ms._process(9.5)
+	assert_true(ms.radar_active(), "still on at 9.5 s")
+	ms._process(0.6)
+	assert_false(ms.radar_active(), "off after 10 s")
+
+
+# ---------------------------------------------------------------- the living world (map04c_ambience.json)
+
+func test_act3_ambience_file() -> void:
+	var c: Dictionary = GLData.load_json("res://data/gravelight/map04c_ambience.json")
+	assert_false(bool(c.get("needs_landscape", true)), "the act has no Landscape")
+	for k: String in ["milky_way", "heat_shimmer", "wildlife", "low_pass_b29", "tumbleweeds", "searchlight_towers", "sand_roofs", "quonset"]:
+		assert_true(c.has(k), k)
+	assert_false(c.has("low_pass"), "the B-29s are their own key: the Totenhafen low_pass kind never runs here")
+
+
+func test_milky_way_and_shimmer_with_the_dawn() -> void:
+	var c: Dictionary = GLData.load_json("res://data/gravelight/map04c_ambience.json")
+	assert_eq(MapAmbience.milky_way_at(1, c["milky_way"]), 1.0)
+	assert_almost_eq(MapAmbience.milky_way_at(6, c["milky_way"]), 0.0, 0.001)
+	assert_true(MapAmbience.milky_way_at(3, c["milky_way"]) < 1.0)
+	assert_eq(MapAmbience.shimmer_at(5, c["heat_shimmer"]), 0.0, "no shimmer before the sun is up")
+	assert_true(MapAmbience.shimmer_at(6, c["heat_shimmer"]) > 0.0)
+	assert_eq(MapAmbience.shimmer_at(9, c["heat_shimmer"]), 1.0)
+
+
+func test_wildlife_bolts() -> void:
+	assert_true(MapAmbience.should_bolt(Vector3.ZERO, [Vector3(5, 0, 0)], null, 9.0, 25.0), "a player 5 m off")
+	assert_false(MapAmbience.should_bolt(Vector3.ZERO, [Vector3(15, 0, 0)], null, 9.0, 25.0), "15 m off: it keeps nibbling")
+	assert_true(MapAmbience.should_bolt(Vector3.ZERO, [], Vector3(20, 0, 0), 9.0, 25.0), "a shot 20 m off")
+	assert_eq(MapAmbience.flee_dir(Vector3(1, 0, 0), Vector3.ZERO), Vector3.RIGHT, "straight away")
+
+
+# ---------------------------------------------------------------- the traps, the people, the perch
+
+func test_act3_traps_config() -> void:
+	var fd: Dictionary = TrapLever.cfg_for("fuel_dump")
+	assert_eq(float(fd["duration"]), 20.0, "a 20 s fire wall")
+	assert_eq(int(fd["cost"]), 1000)
+	var dd: Dictionary = TrapLever.cfg_for("door_drop")
+	assert_eq(float(dd["cooldown"]), 60.0, "the door drop's 60 s")
+	assert_eq(str(TrapLever.STENCIL.get(&"fuel_dump", "")), "FUEL DUMP")
+	assert_eq(str(TrapLever.STENCIL.get(&"door_drop", "")), "HANGAR DOOR")
+
+
+func test_dee_and_hale() -> void:
+	var dee: Dictionary = ExtraPeople.people()["dee"]
+	assert_eq(str(dee["favour"]["reward"]["kind"]), "supply_drop", "Dee calls in a supply drop")
+	assert_eq(str(dee["favour"]["item"]), "radio_valve")
+	var hale: Dictionary = ExtraPeople.people()["hale"]
+	assert_false(hale.has("favour"), "Hale: a Talk card only")
+	var flags: Array = (hale["reactions"] as Array).map(func(r: Dictionary) -> String: return str(r["flag"]))
+	assert_eq(flags, ["peg_resigned", "peg_delivered"], "he reacts to Peg's choice either way")
+	var spots: Array[Vector3] = ExtraPeople.spots_for("map04c_groomlake")
+	assert_true(spots.has(Vector3(61.2, 0.0, 94.0)) and spots.has(Vector3(37.4, 0.0, 94.0)), "their talk spots are the checked spots")
+	assert_false(spots.has(Vector3(64.2, 0.0, 95.6)), "Dee's body in the cage never walks: not a checked spot")
+
+
+func test_perch_climb_link() -> void:
+	var cl: Array = GLData.load_json("res://data/gravelight/map04c.json")["climb_links"]
+	assert_eq(cl.size(), 1)
+	assert_eq(str(cl[0]["zone"]), "E_RADAR")
+	assert_eq(float(cl[0]["to"][1]), 16.0, "up to the 16 m deck")
+
+
+# ---------------------------------------------------------------- the transitions (II -> III the crash, III -> IV the rocket)
+
+func test_transition_lore_lines() -> void:
+	var crash: String = LoadingScreen.transition_line("map04b_kranich", "map04c_groomlake")
+	assert_true(crash.contains("Nevada") or crash.contains("salt"), "the crash's line (%s)" % crash)
+	var rocket: String = LoadingScreen.transition_line("map04c_groomlake", "map04d_mondlicht")
+	assert_true(rocket.contains("LANTERN") or rocket.contains("Groom Lake"), "the rocket's line (%s)" % rocket)
+	assert_eq(LoadingScreen.transition_line("map00_crossroads", "map01_kaltenbrunn"), "", "no transition line: the map's own lore")
+	assert_eq(LoadingScreen.transition_line("", "map04c_groomlake"), "")
+
+
+func test_preload_next_act() -> void:
+	Campaign.preloading = ""
+	if not Campaign.scene_exists(&"map04d_mondlicht"):
+		pending("no Act IV scene in this build")
+		return
+	assert_true(Campaign.preload_next(&"map04d_mondlicht"), "the rocket's cutscene starts loading Act IV")
+	assert_eq(Campaign.preloading, Campaign.scene_for(&"map04d_mondlicht"))
+	assert_true(Campaign.preload_next(&"map04d_mondlicht"), "asking twice is fine")
+	var st: int = ResourceLoader.load_threaded_get_status(Campaign.preloading)
+	assert_ne(st, ResourceLoader.THREAD_LOAD_INVALID_RESOURCE, "a threaded load is under way")
+	while ResourceLoader.load_threaded_get_status(Campaign.preloading) == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
+		await get_tree().process_frame
+	ResourceLoader.load_threaded_get(Campaign.preloading)
+	Campaign.preloading = ""
+
+
+# ---------------------------------------------------------------- online (C8): the host decides, a peer replays
+
+func test_peer_replays_the_hosts_world_events() -> void:
+	var host: Node3D = Node3D.new()
+	add_child_autofree(host)
+	var gc: GroomController = GroomController.new()
+	host.add_child(gc)
+	gc.cfg = GLData.load_json("res://data/gravelight/map04c.json")["groom"]
+	var was: int = Net.mode
+	var start0: int = RoundManager.act_start
+	Net.mode = Net.Mode.CLIENT
+	gc._mirror_world("storm", true)
+	assert_true(gc.dust_active(), "the host's storm on a peer")
+	gc._mirror_world("spread", 2)
+	assert_eq(gc.spread_n, 2, "the fire's spread")
+	gc._mirror_world("act_start", 21)
+	assert_eq(RoundManager.act_start, 21, "the act's numbering (not in the round snapshot)")
+	gc._mirror_world("storm", false)
+	assert_false(gc.dust_active(), "the clear")
+	Net.mode = was
+	RoundManager.act_start = start0
+	# on the host the mirror is a no-op (it already ran the event)
+	gc._mirror_world("spread", 4)
+	assert_eq(gc.spread_n, 2)

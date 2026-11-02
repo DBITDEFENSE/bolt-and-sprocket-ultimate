@@ -16,6 +16,25 @@
     "warn_seconds": 1.0,
     "zombie_damage": 999999
   },
+  "fuel_dump": {
+    "_doc": "U10 §3 Act III (T-157): Groom Lake's fuel dump (gravelight/world/map04/trap_fuel_dump.gd): a 1 s hiss, the whump, a wall of fire for duration s; zombies that touch it die (zombie_damage, like the live wire), a player in it takes player_dps; the smoke column lingers smoke_linger_s.",
+    "cost": 1000,
+    "duration": 20.0,
+    "cooldown": 90.0,
+    "warn_seconds": 1.0,
+    "zombie_damage": 999999,
+    "burn_dps": 60.0,
+    "player_dps": 25.0,
+    "smoke_linger_s": 10.0
+  },
+  "door_drop": {
+    "_doc": "U10 §3 Act III (T-157): the hangar's door drop (gravelight/world/map04/trap_door_drop.gd): a 1 s scream of the rollers (players in the doorway are shoved clear), the door falls and crushes the zombies in the doorway, stays down duration s, winches up; cooldown s.",
+    "cost": 750,
+    "duration": 1.5,
+    "cooldown": 60.0,
+    "warn_seconds": 1.0,
+    "zombie_damage": 999999
+  },
   "chandelier": {
     "cost": 1000,
     "duration": 2.0,

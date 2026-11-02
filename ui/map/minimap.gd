@@ -43,6 +43,7 @@ var zoom_level: int = 1
 var zoom_level_effective: int = 1
 var _mask: ShapeMask
 var _glass: Glass
+var _sweep: Control
 var _frame: Frame
 var _zone: Label
 var _floor: Label
@@ -123,6 +124,8 @@ func _ready() -> void:
 	canvas.clamp_to_rim = true
 	canvas.record_hits = false
 	_mask.add_child(canvas)
+	_sweep = Sweep.new()   # U10 §3 (T-157): the radar's sweep while a ping runs
+	_mask.add_child(_sweep)
 	_glass = Glass.new()
 	_glass.owner_map = self
 	_mask.add_child(_glass)
@@ -294,6 +297,8 @@ func _layout() -> void:
 	canvas.rim_radius = _diam * 0.5 if not _mask.square else 0.0
 	_glass.position = Vector2.ZERO
 	_glass.size = _mask.size
+	_sweep.position = Vector2.ZERO
+	_sweep.size = _mask.size
 	_frame.position = _mask.position - Vector2(ring, ring)
 	_frame.size = _mask.size + Vector2(ring, ring) * 2.0
 	_stamp_box.reset_size()
@@ -554,3 +559,40 @@ class Lubber extends Node2D:
 		if frame.gl():
 			draw_colored_polygon(PackedVector2Array([top + Vector2(0, 8), top + Vector2(-6, -3), top + Vector2(6, -3)]), Color(0, 0, 0, 0.5))
 		draw_colored_polygon(PackedVector2Array([top + Vector2(0, 7), top + Vector2(-5, -2), top + Vector2(5, -2)]), INK if frame.gl() else HOLO_ORANGE)
+
+
+## The radar's sweep over the disc while a ping runs (U10 §3 Act III, T-157: GLBus.radar_ping -> MapState.radar_left):
+## a phosphor-green arm turning once every 2 s with a fading wedge behind it, fading out with the ping's last second.
+class Sweep extends Control:
+	var _a: float = 0.0
+	var _on: bool = false
+
+	func _init() -> void:
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	func _process(delta: float) -> void:
+		var ms: MapState = MapState.current()
+		var left: float = ms.radar_left if ms != null else 0.0
+		var on: bool = left > 0.0
+		if on:
+			_a = fmod(_a + delta * TAU * 0.5, TAU)
+			modulate.a = clampf(left, 0.0, 1.0)
+			queue_redraw()
+		elif _on:
+			queue_redraw()
+		_on = on
+
+	func _draw() -> void:
+		if not _on:
+			return
+		var c: Vector2 = size * 0.5
+		var r: float = minf(size.x, size.y) * 0.5
+		var col: Color = Color(0.45, 1.0, 0.55)
+		var steps: int = 14
+		for i: int in steps:
+			var a0: float = _a - 0.07 * float(i + 1)
+			var a1: float = _a - 0.07 * float(i)
+			var al: float = 0.32 * (1.0 - float(i) / steps)
+			draw_colored_polygon(PackedVector2Array([c, c + Vector2(cos(a0), sin(a0)) * r, c + Vector2(cos(a1), sin(a1)) * r]), Color(col.r, col.g, col.b, al))
+		draw_line(c, c + Vector2(cos(_a), sin(_a)) * r, Color(col.r, col.g, col.b, 0.9), 2.0, true)
+		draw_arc(c, r - 1.5, 0.0, TAU, 48, Color(col.r, col.g, col.b, 0.35), 2.0, true)

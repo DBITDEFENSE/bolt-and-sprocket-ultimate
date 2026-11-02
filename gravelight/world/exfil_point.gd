@@ -403,7 +403,7 @@ func _begin_cutscene(payload: Dictionary) -> void:
 	Campaign.carry = payload
 	skip_votes.clear()
 	if Campaign.scene_exists(target_id()):   # UPDATE 10 (T-158): the next map loads while the cutscene plays
-		LoadingScreen.preload_scene(Campaign.scene_for(target_id()))
+		Campaign.preload_next(target_id())   # T-157: LoadingScreen.preload_scene, not while the web build fetches packs
 	if _flare != null:
 		_flare.emitting = false
 	_refresh_board()

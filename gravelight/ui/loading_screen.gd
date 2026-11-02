@@ -28,11 +28,21 @@ var _status: Label
 
 
 ## Swap to the loading screen and load `scene_path` behind it (map_id from MapCards when not given).
-static func go(tree: SceneTree, scene: String, id: String = "") -> void:
+static func go(tree: SceneTree, scene: String, id: String = "", lore_override: String = "") -> void:
 	if scene == "":
 		return
-	pending = {"scene": scene, "map_id": id if id != "" else MapCards.id_for_scene(scene)}
+	pending = {"scene": scene, "map_id": id if id != "" else MapCards.id_for_scene(scene), "lore": lore_override}
 	tree.change_scene_to_file(SCENE)
+
+
+## U10 §3 (T-157): the line for a transition (tips.json transition_lines "<from prefix>><to prefix>", e.g.
+## "map04b>map04c" for the Kranich's crash), "" when it has none (the map's own lore line then).
+static func transition_line(from_id: String, to_id: String) -> String:
+	if from_id == "" or to_id == "":
+		return ""
+	var key: String = "%s>%s" % [from_id.get_slice("_", 0), to_id.get_slice("_", 0)]
+	var l: Array = (cfg().get("transition_lines", {}) as Dictionary).get(key, []) as Array
+	return str(l[randi() % l.size()]) if not l.is_empty() else ""
 
 
 static func cfg() -> Dictionary:
@@ -73,14 +83,16 @@ func _ready() -> void:
 		_fit()
 	MenuKit.apply_theme(self)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	var lore_override: String = ""
 	if not pending.is_empty():
 		scene_path = str(pending.get("scene", ""))
 		map_id = str(pending.get("map_id", ""))
+		lore_override = str(pending.get("lore", ""))
 		pending = {}
 	if map_id == "":
 		map_id = demo_map
 	tip = pick_tip()
-	lore = lore_line(lore_key if lore_key != "" else map_id)
+	lore = lore_override if lore_override != "" else lore_line(lore_key if lore_key != "" else map_id)
 	_build()
 	if curtain_s > 0.0:
 		_curtain_run()
@@ -244,8 +256,10 @@ func _begin() -> void:
 		return
 	if not is_inside_tree():
 		return
-	if preloaded == scene_path:   # T-158: the exfil cutscene already started this load
+	# T-158 / T-157: the exfil cutscene already started this load (LoadingScreen.preload_scene, via Campaign.preload_next)
+	if preloaded == scene_path or Campaign.preloading == scene_path:
 		preloaded = ""
+		Campaign.preloading = ""
 		_status.text = "LOADING"
 		_requested = true
 		return

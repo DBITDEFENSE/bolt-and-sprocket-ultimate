@@ -59,7 +59,8 @@ func setup(map_root: MapRoot, pid: String) -> void:
 	talk.name = "Talk"
 	talk.person = self
 	add_child(talk)
-	talk.global_position = ExtraPeople.vec((bodies_cfg[0] as Dictionary).get("at", [0, 0, 0]))
+	# U10 §3 (T-157): a person behind a counter or glass (Dee's cage, Hale's office) is talked to at `talk_at`
+	talk.global_position = ExtraPeople.vec(cfg["talk_at"]) if cfg.has("talk_at") else ExtraPeople.vec((bodies_cfg[0] as Dictionary).get("at", [0, 0, 0]))
 	GLBus.round_started.connect(_on_round_started)
 	GLBus.player_downed.connect(_on_player_downed)
 	GLBus.vo_line_started.connect(_on_vo_line)
@@ -109,7 +110,13 @@ func on_talk(p: Player) -> void:
 	card.close_after_s = float(ExtraPeople.cfg().get("card_close_s", 25.0))
 	var fav: Dictionary = cfg.get("favour", {})
 	var opts: Array = []
-	if cfg.has("trade"):
+	var react: Dictionary = reaction_now()
+	if not react.is_empty():
+		_react_said(react)
+	if fav.is_empty() and not cfg.has("trade"):
+		# a Talk card only (Hale): what he says now, his reaction to a flag first
+		card.said = str(react.get("said", cfg.get("said", "")))
+	elif cfg.has("trade"):
 		var tr: Dictionary = cfg["trade"]
 		var open: bool = ExtraPeople.trade_open(_trade_round, RoundManager.current_round, bool(tr.get("once_per_round", true)))
 		card.said = "A tip about the Crate costs %d Scrip, once a round." % int(tr.get("cost", 200)) if open else "She has given you this round's tip."
@@ -210,6 +217,29 @@ func give_gun(p: Player = null) -> void:
 	_reward(p)
 
 
+# ================================================================== reactions (U10 §3, T-157)
+
+## The newest reaction whose flag is set (cfg.reactions: [{flag, said, line}], later rows win), or {}.
+func reaction_now() -> Dictionary:
+	var out: Dictionary = {}
+	for r: Variant in cfg.get("reactions", []):
+		if GameState.has_flag(StringName(str((r as Dictionary).get("flag", "")))):
+			out = r
+	return out
+
+
+## A reaction's line plays once, the first time the person is talked to after its flag.
+func _react_said(r: Dictionary) -> void:
+	var key: String = "react_" + str(r.get("flag", ""))
+	if _said_at.has(key):
+		return
+	_said_at[key] = Time.get_ticks_msec() / 1000.0
+	var line: String = str(r.get("line", ""))
+	if line != "" and GLVO.lines.has(line):
+		_say_id(line, spot() + Vector3.UP * 1.6, str(cfg.get("display", id)))
+	_event("react:" + str(r.get("flag", "")))
+
+
 # ================================================================== rewards
 
 func _reward(p: Player) -> void:
@@ -241,8 +271,34 @@ func _reward(p: Player) -> void:
 			_event("reward:cover")
 		"unbolt_door":
 			_unbolt(r, pid)
+		"supply_drop":
+			_supply_drop(r)
 	if map.hud != null:
 		map.hud.show_banner(str((cfg.get("favour", {}) as Dictionary).get("done", "")).split(".")[0].to_upper(), 3.5)
+
+
+## U10 §3 (T-157): Dee calls one crate in: a supply crate lands at `at` with a Resupply on it (full ammo for the
+## squad), a "go" mark on the map, and her line when it is down.
+func _supply_drop(r: Dictionary) -> void:
+	var at: Vector3 = ExtraPeople.vec(r.get("at", [0, 0, 0]))
+	var crate: Node3D = Node3D.new()
+	crate.name = "SupplyDrop"
+	map.add_child(crate)
+	crate.global_position = at
+	var wood: StandardMaterial3D = StandardMaterial3D.new()
+	wood.albedo_color = Color(0.4, 0.42, 0.28)
+	Interactable.add_box(crate, Vector3(1.1, 0.7, 0.8), Vector3(0, 0.35, 0), wood)
+	var stencil: Label3D = Interactable.add_label(crate, "U.S. ARMY  ·  .30 CAL", Vector3(0, 0.4, -0.41), 22, Color(0.92, 0.9, 0.8, 0.9))
+	stencil.rotation.y = PI
+	Effects.dust_puff(at, "earth", 24)
+	AudioDirector.play_3d("board_slam", at, 0.0)
+	if Net.is_authority():
+		PowerupManager.spawn(StringName(str(r.get("powerup", "resupply"))), at + Vector3(0, 0.9, 0))
+	var ms: MapState = MapState.current()
+	if ms != null:
+		ms.add_marker({"pos": at, "kind": "go", "label": str(r.get("mark_label", "Supply drop")), "color": Color(0.85, 0.72, 0.38), "owner": 0, "target": "me"})
+	get_tree().create_timer(float(r.get("line_delay_s", 4.0))).timeout.connect(func() -> void: say("serve", true))
+	_event("reward:supply_drop")
 
 
 func _unbolt(r: Dictionary, pid: int) -> void:

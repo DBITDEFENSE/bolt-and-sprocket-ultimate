@@ -17,6 +17,14 @@
       "rocket_fallback_round": 9
     }
   },
+  "radar": {
+    "_doc": "UPDATE 10 §3 (T-157, contract C6 radar_ping): the radar tower's dish (gravelight/world/map04/radar_dish.gd) turns at turn_dps once the generator is on; the first ping first_after_s later, then one every every_s: GLBus.radar_ping(seconds) shows every zombie on the minimap and the pause map for seconds.",
+    "turn_dps": 36.0,
+    "first_after_s": 8.0,
+    "every_s": 60.0,
+    "seconds": 10.0,
+    "first_banner": "RADAR: every contact on your map"
+  },
   "power": {
     "vo_delay": 1.5,
     "light_sweep_start": 1.5,
@@ -173,7 +181,9 @@
       "ground": 1
     }
   },
-  "climb_links": [],
+  "climb_links": [
+    {"name": "Climb_TowerPerch", "zone": "E_RADAR", "from": [45.0, 0.0, 115.6], "to": [45.0, 16.0, 118.3], "bidirectional": true, "_doc": "U10 §3 (T-157): the zombies climb the radar tower ladder to the sniper perch deck"}
+  ],
   "groom": {
     "_doc": "The act's systems. kill_plane_y: the silo shaft and the trench are deep. fire: the wreck's burning wing root, a damage zone of radius m at one of points, moving every move_every s (dps on players). burrower: Gängers rising at the lakebed's burrow points from from_act_round; the points walk to near_min..near_max m of a player on the salt every relocate_every s. canary: from from_act_round in zones, a chance per spawn (max_active): health_mult, torso_mult, the hood gas (gas_radius / gas_seconds / gas_dps / gas_status) on a head kill. jumpjockey: from from_act_round in zones: health_mult, a leap of leap_min..leap_max m taking air_seconds, every cooldown s, from within launch_near_m of a launch point (after 8 s anyway); the landing hits land_radius for land_damage and pushes land_push. backorder: from from_act_round once requires_flag (or relay_coil_taken) is set, max_active, a chance per spawn; solid for solid_seconds within solidify_at_m of its target; kill_scrip on top of the kill. dust_storm: the special round (the director's gap; banner, lines, the fog, a burrow pack every spawn_gap s). events.rocket_fallback_round: act-relative.",
     "kill_plane_y": -25.0,
@@ -185,7 +195,61 @@
       ],
       "radius": 4.0,
       "dps": 10.0,
-      "move_every": 40.0
+      "move_every": 40.0,
+      "_doc_spread": "U10 §3 (T-157): the fuel fire spreads one node per act round from from_act_round (both lists grow together; the loop past round 9 keeps them at their ends). wing: flames along the torn port wing (seen from the salt, no damage: nobody walks there); hull: along the hull's west wall inside, a damage disc of radius at dps each.",
+      "spread": {
+        "from_act_round": 2,
+        "radius": 2.2,
+        "dps": 8.0,
+        "wing": [[-26.0, 1.4, -22.0], [-33.0, 1.4, -23.0], [-40.0, 1.4, -21.5], [-47.0, 1.3, -22.0], [-56.0, 0.9, -21.0]],
+        "hull": [[-12.4, 0.0, -24.8], [-12.4, 0.0, -29.0], [-12.0, 0.0, -33.4], [-7.5, 0.0, -34.6]]
+      }
+    },
+    "arrival": {
+      "_doc": "U10 §3 (T-157), row 22: the arrival on the salt: at least quiet_s before the first round's spawns with only the wind (gust) and the wreck's fire (fire at fire_at); the card is the map's intro banner.",
+      "quiet_s": 12.0,
+      "gust": "amb_wind_gust",
+      "fire": "fire_crackle",
+      "fire_at": [-17.6, 1.0, -22.0]
+    },
+    "power_wake": {
+      "_doc": "U10 §3, row 9: the perks wake with a sting each, nearest the generator first, start_s after the switch and gap_s apart.",
+      "start_s": 1.8,
+      "gap_s": 0.35
+    },
+    "cage_note": {
+      "_doc": "U10 §3 (T-157): Dee's cage side egg made findable: the first time the local player is in the hangar within radius_m of the cage, a minimap note at `at` and a banner.",
+      "at": [66.0, 0.0, 96.0],
+      "radius_m": 14.0,
+      "label": "Dee's yard rule: a casing, a coil, the honey",
+      "banner": "Dee's cage: she'll take a casing from the bay, the bomber's coil and the lab's honey"
+    },
+    "wreck_collapse": {
+      "_doc": "U10 §3 (T-157, contract C6 wreck_collapse): sections of the Kranich fall on act_round (3 and 6 = match 23 / 26 in a campaign), telegraphed warn_s ahead (groans, falling sparks over the box). At the fall: players in box are pushed toward push_to first (nobody is crushed), zombies under it die (no Scrip), debris colliders fill debris (boxes [lo, hi]) and the wreck's navmesh region (nav_region) is re-baked round them. seal_window: the window's spawn and boards are closed by the debris. crate_spot: a new Mystery Crate spot opens [pos, yaw]. gap: the plate (a gameplay StaticBody) falls out of the bulkhead and a NavigationLink opens on the zone's layer; open_door is bought for free if it is still shut.",
+      "warn_s": 10.0,
+      "nav_region": "Nav_A_WRECK_0",
+      "sections": [
+        {
+          "id": "bay_roof",
+          "act_round": 3,
+          "name": "the bay roof",
+          "box": [[-13.7, 0.0, -12.2], [-8.4, 4.2, -4.6]],
+          "push_to": [-3.0, 0.0, -8.5],
+          "debris": [[[-13.6, 0.0, -12.0], [-8.6, 1.5, -4.8]]],
+          "crate_spot": [[-6.4, 0.0, -11.0], 90.0]
+        },
+        {
+          "id": "hull_west",
+          "act_round": 6,
+          "name": "the west hull",
+          "box": [[-13.9, 0.0, -24.8], [-10.0, 4.2, -15.2]],
+          "push_to": [-5.0, 0.0, -20.0],
+          "debris": [[[-13.8, 0.0, -24.5], [-10.2, 1.8, -15.5]]],
+          "seal_window": "W_A_L",
+          "gap": {"plate": "BulkheadPlate", "from": [10.0, 0.0, -4.7], "to": [10.0, 0.0, -3.3], "layer_zone": "B_LAKEBED"},
+          "open_door": "Door_Lakebed"
+        }
+      ]
     },
     "burrower": {
       "from_act_round": 1,
@@ -240,7 +304,21 @@
       "fog_density": 0.06,
       "fog_color": [0.78, 0.68, 0.5],
       "spawn_gap": 2.0,
-      "burrow_pack": 2
+      "burrow_pack": 2,
+      "_doc_u10": "UPDATE 10 §3 (T-157): the storm is the round every every_act_rounds act rounds (5, 10...); visibility_m sets the fog (density 3/vis); sky_dim / ambient_dim / sun_dim darken it; hud_line shows once per match. hear: the stalkers (kinds: the Burrowers and the plain Gängers \"\" in the surface zones) hunt by sound: radius_m, x loud_mult while a player sprints or fired in the last fire_window_s.",
+      "every_act_rounds": 5,
+      "visibility_m": 15.0,
+      "sky_dim": 0.45,
+      "ambient_dim": 0.7,
+      "sun_dim": 0.3,
+      "hud_line": "DUST STORM: they hunt by sound",
+      "hear": {
+        "radius_m": 6.0,
+        "loud_mult": 3.0,
+        "fire_window_s": 1.5,
+        "kinds": ["burrower", ""],
+        "zones": ["A_WRECK", "B_LAKEBED", "C_HANGAR", "D_MOTORPOOL", "E_RADAR"]
+      }
     },
     "events": {
       "rocket_fallback_round": 9

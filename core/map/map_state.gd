@@ -50,6 +50,9 @@ var _seen_objectives: Dictionary = {}  # node instance id -> true
 var _fog_dirty: Dictionary = {}        # floor -> true
 var _fog_t: float = 0.0
 var _revealed_z: Dictionary = {}       # zombie instance id -> seconds left
+## A radar ping (U10 §3 Act III, T-157): seconds left; while it runs every zombie shows (any floor, any setting).
+var radar_left: float = 0.0
+var _radar_tick: float = 0.0
 var _markers: Array[Dictionary] = []
 var _next_marker: int = 1
 var _providers: Array[Callable] = []
@@ -116,6 +119,7 @@ func _ready() -> void:
 	if Engine.has_singleton(&"GLBus") or get_node_or_null(^"/root/GLBus") != null:
 		GLBus.weapon_fired.connect(_on_weapon_fired)
 		GLBus.crate_moved.connect(_on_crate_moved)
+		GLBus.radar_ping.connect(radar_ping)
 	_scan_quest_nodes.call_deferred()
 	get_tree().node_added.connect(_on_node_added)
 	if get_node_or_null(^"MapMarks") == null:
@@ -137,6 +141,23 @@ func _process(delta: float) -> void:
 		_revealed_z[k] = float(_revealed_z[k]) - delta
 		if float(_revealed_z[k]) <= 0.0:
 			_revealed_z.erase(k)
+	if radar_left > 0.0:
+		radar_left = maxf(0.0, radar_left - delta)
+		_radar_tick -= delta
+		if _radar_tick <= 0.0 and radar_left > 0.0:
+			_radar_tick = 0.5   # the ones that rise during the sweep show too
+			reveal_zombies(Vector3.ZERO, INF, radar_left)
+
+
+## The radar's ping: every zombie for `seconds`, whatever floor it is on and whatever the minimap setting.
+func radar_ping(seconds: float) -> void:
+	radar_left = maxf(radar_left, seconds)
+	_radar_tick = 0.5
+	reveal_zombies(Vector3.ZERO, INF, seconds)
+
+
+func radar_active() -> bool:
+	return radar_left > 0.0
 
 
 # ================================================================== players
@@ -726,7 +747,8 @@ func live_icons() -> Array[Dictionary]:
 		if b is Node3D and is_instance_valid(b) and (b as Node3D).is_inside_tree() and (not b.has_method("is_active") or bool(b.call("is_active"))):
 			_live.append({"kind": "boss", "pos": (b as Node3D).global_position, "label": "Boss", "blink": false})
 	var mode: String = zombie_mode()
-	if mode != "off" and me != null:
+	var radar: bool = radar_left > 0.0
+	if (mode != "off" or radar) and me != null:
 		var zc: Dictionary = cfg.get("zombies", {})
 		var near_r: float = float(zc.get("always_radius_m", 24.0))
 		var tol: float = float(zc.get("floor_tolerance_m", 2.6))
@@ -741,6 +763,6 @@ func live_icons() -> Array[Dictionary]:
 				continue
 			var zp: Vector3 = zn.global_position
 			var show: bool = revealed or zp.distance_to(mp) <= near_r
-			if show and absf(zp.y - mp.y) <= tol and not zn.is_in_group(&"bosses"):
+			if show and (radar or absf(zp.y - mp.y) <= tol) and not zn.is_in_group(&"bosses"):
 				_live.append({"kind": "zombie", "pos": zp, "blink": false})
 	return _live

@@ -42,6 +42,11 @@ var window: Barricade = null
 var target: Player = null
 ## A scripted target that wins over the nearest player while it stands (Jakub's breakout zombie, U02 section 6.2).
 var forced_target: Player = null
+## Act III's dust storm (U10 §3, T-157; SoundHunter): while set, this zombie hunts by sound instead of sight: it
+## chases only a player it hears within hear_radius_m (×3 when they sprint or fire) and otherwise walks to heard_at.
+var hunt_by_sound: bool = false
+var hear_radius_m: float = 6.0
+var heard_at: Vector3 = Vector3.INF
 var director: Node = null
 ## The hitbox bone of the last shot that landed (weapon_holder / bot_brain set it before take_damage), for the
 ## side of arm and leg hits. "" = unknown: a side is rolled.
@@ -198,6 +203,8 @@ func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 	var tiers: Dictionary = GLData.table("enemies")["tiers"]
 	var jitter: float = float(GLData.table("enemies")["speed_jitter"])
 	net_died = false
+	hunt_by_sound = false
+	heard_at = Vector3.INF
 	enemy_id = StringName(spec.get("enemy_id", "ganger"))
 	_cfg = kind_config(enemy_id)
 	tier = StringName(spec.get("tier", "shamble"))
@@ -801,6 +808,8 @@ func _update_chase(delta: float) -> void:
 		return
 	if _update_prey(delta):
 		return
+	if hunt_by_sound and _update_sound_hunt(delta):
+		return
 	target = _nearest_player()
 	if target == null:
 		_halt(delta)
@@ -860,6 +869,23 @@ func _update_chase(delta: float) -> void:
 var _progress_target: Player = null
 var _progress_best: float = INF
 var _progress_t: float = 0.0
+
+
+## The storm's hunt (SoundHunter): true when this frame was spent walking to the last heard spot or waiting there
+## (nobody heard); false hands the frame to the normal chase (someone is heard: they are the nearest target).
+func _update_sound_hunt(delta: float) -> bool:
+	if forced_target != null:
+		return false
+	var heard: Node3D = SoundHunter.heard_player(self, hear_radius_m, get_tree().get_nodes_in_group(&"players"))
+	if heard != null:
+		heard_at = heard.global_position
+		return false
+	if heard_at == Vector3.INF or _flat_dist(heard_at) < 1.5:
+		heard_at = Vector3.INF
+		_halt(delta)
+		return true
+	_nav_move(heard_at, speed, delta, 0.6)
+	return true
 
 
 # ---------------------------------------------------------------- the low-g hop (T-112)

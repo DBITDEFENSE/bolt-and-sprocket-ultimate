@@ -35,7 +35,11 @@ static func spots_for(map_id: String) -> Array[Vector3]:
 	for pid: String in ids_for_map(map_id, cfg()):
 		var row: Dictionary = people()[pid]
 		for b: Variant in row.get("bodies", []):
-			out.append(vec(b.get("at", [0, 0, 0])))
+			# U10 §3: a body that never walks (behind a counter, behind glass) is checked at its talk spot instead
+			if not bool((b as Dictionary).get("fixed", false)):
+				out.append(vec(b.get("at", [0, 0, 0])))
+		if row.has("talk_at"):
+			out.append(vec(row["talk_at"]))
 		var fav: Dictionary = row.get("favour", {})
 		if fav.has("item_at"):
 			out.append(vec(fav["item_at"]))
