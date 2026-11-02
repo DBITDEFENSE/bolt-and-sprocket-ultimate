@@ -5,6 +5,8 @@ extends RefCounted
 ## (C2 "two new quay spawn points"; named Ground_A_QUAY_* so they rise out of the water like the first two).
 
 const QUAY_SPAWNS: Array = [Vector3(20.5, 0.0, 1.5), Vector3(6.5, 0.0, 1.5)]
+const SURF_CUTTER: String = "Surf_Cutter"
+const SURF_CUTTER_POS: Vector3 = Vector3(13.5, 0.0, 1.8)   # the parapet by the sea stairs, between the two quay spawns
 
 
 static func attach(t: Totenhafen) -> void:
@@ -26,3 +28,11 @@ static func attach(t: Totenhafen) -> void:
 		sp.min_round = 1
 		t.place(sp, "Ground_A_QUAY_%d" % i, p)
 		i += 1
+	# The sea-stair spawn the living world's cutter slip opens (map02_ambience.json cutter_slip.spawn, T-154): shut
+	# until the wreck has gone over the parapet (the flag, so a late joiner and a loaded match agree).
+	var sc: ZombieSpawn = ZombieSpawn.new()
+	sc.zone_id = &"A_QUAY"
+	sc.kind = &"ground"
+	sc.min_round = 1
+	sc.enabled = GameState.has_flag(&"cutter_slipped")
+	t.place(sc, SURF_CUTTER, SURF_CUTTER_POS)

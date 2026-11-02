@@ -32,6 +32,7 @@ static var _pending_scrip: int = 0
 static var _pending_boss: String = ""
 static var _pending_squad: bool = false   # T-142: force a relief squad on the next round
 static var _pending_power: bool = false   # T-145: power on once the map is up
+static var _pending_setpiece: String = ""   # UPDATE 10 section 9: a set-piece forced a few seconds after the map is up
 
 ## UPDATE 09 section 8 (T-145): the targets of the "Update 09 — online, web, rebuilt maps" buttons, as data so
 ## smoke_launcher can check that every scene exists and every flag parses without opening a window.
@@ -43,6 +44,23 @@ const WEB_URL: String = "http://127.0.0.1:8060/"
 ## [label, act map id, start round] (the round numbers are the same as the "skip to Act" buttons above)
 const U09_ACTS: Array = [["Act I", "map04a_thalbach", 1], ["Act II", "map04b_kranich", 15],
 	["Act III", "map04c_groomlake", 21], ["Act IV", "map04d_mondlicht", 30]]
+const MAP01: String = "res://gravelight/maps/map01_kaltenbrunn/map01.tscn"
+## UPDATE 10 section 9: [label, hint, kind, target, round, bots, power, setpiece]. kind "gl" starts `target` (a scene)
+## with _start_gl, "act" starts the act id with _start_act, "egg" spawns play_ee_full on the map in `target`. The
+## setpiece names what _on_match_started forces a few seconds in (see _force_setpiece); smoke_launcher checks the
+## scenes resolve and every setpiece name is known.
+const U10_BUTTONS: Array = [
+	["Totenhafen — Spring Tide (round 9)", "Map 2 at round 9 with 3 bots, power on: the ninth round is a spring tide (the aprons go under, the piers stay dry; the Pumpenschalter crank shortens it).", "gl", MAP02, 9, 3, true, "spring"],
+	["Totenhafen — Letzte Fahrt (watch bots)", "Bot mode plays you with 3 Full Partner bots on Totenhafen: they run the whole egg (power, the cipher, the diesel holds, the key, the curtain, the sail). F6 or any input takes over.", "egg", "map02", 1, 3, true, ""],
+	["Totenhafen — sailing finale", "Map 2, power on, the egg skipped to the curtain with the key turned: pull the curtain lever in the pen hall, then use U-1047's helm to cast off; the searchlight tracks her, boarders climb the tanks, the dive at the depth mark.", "gl", MAP02, 5, 3, true, "sail"],
+	["PAUL (Kaltenbrunn round 15)", "Kaltenbrunn at round 15 with 3 bots: the reserved round, the headframe shakes, he arrives. Bottles cool him; the clock past 6:00 sends him off until a later round.", "gl", MAP01, 15, 3, false, ""],
+	["The Slender (Totenhafen)", "Map 2 at round 25 with 3 bots, power on: the Hafenwaechter's round (keys from everywhere, the lantern at the end of the west catwalk; stay in the lamp pools).", "gl", MAP02, 25, 3, true, ""],
+	["Fernflug Act I air raid", "Werk Thalbach at act round 8 (3 bots from the field above): the raid starts 8 s in; sirens, flak, the bomb walk, the roof bay comes down, the breach into the test stands opens.", "act", "map04a_thalbach", 8, -1, false, "air_raid"],
+	["Fernflug Act II wing walk", "Der Kranich at act round 18: 5 s in the breach panel tears off and the wing walk opens; climb out of the hatch (UNCLIPPED), clip to a tether post before the next tilt; the wingtip locker.", "act", "map04b_kranich", 18, -1, false, "wing_walk"],
+	["Fernflug Act III dust storm", "Groom Lake at act round 24: 10 s in the storm closes the fog to 15 m; the stalkers hunt by sound (walk; a sprint or a shot is heard three times as far).", "act", "map04c_groomlake", 24, -1, false, "dust_storm"],
+	["Fernflug Act IV terminator", "Mondlicht at act round 33: 5 s in the terminator stands at 55% (the yard, the concourse and reception are night; the store still day). The heater switch halves the suit strain.", "act", "map04d_mondlicht", 33, -1, false, "terminator"],
+]
+const U10_SETPIECES: Array = ["spring", "sail", "air_raid", "wing_walk", "dust_storm", "terminator"]
 ## the user args of the two windows of "Host a test lobby (local)": [host, guest]
 const HOST_ARGS: Array = ["--mock-online-serve=28500", "--open=online", "--auto-host"]
 const GUEST_ARGS: Array = ["--mock-online=28500", "--open=online", "--auto-join"]
@@ -174,6 +192,8 @@ func _ready() -> void:
 	col.add_child(MenuKit.button("Ledger Lager test (Map 0, 20,000 Scrip, power on, round 10)", func() -> void: _start_tool_scene("res://gravelight/tools_src/play_ledger.tscn"), 22, "ui_confirm"))
 	col.add_child(_header("Update 09 — online, the web build, the rebuilt maps"))
 	_add_u09_buttons(col, map0)
+	col.add_child(_header("Update 10 — beyond the inn (Totenhafen's systems, the homage bosses, the Fernflug set-pieces)"))
+	_add_u10_buttons(col)
 	col.add_child(_header("Muster (your sidearm and Field Habits; saved per survivor, used by every match)"))
 	col.add_child(MenuKit.button("Muster — pick the sidearm and Field Habits for the survivor above", func() -> void: add_child(MenuMuster.new(CHARACTERS[_char.selected])), 22, "ui_confirm"))
 	col.add_child(_header("Bot mode (an AI plays your survivor; F6 or any input takes over)"))
@@ -228,6 +248,77 @@ func _add_u09_buttons(col: Control, _map0: String) -> void:
 	col.add_child(MenuKit.para("Each act opens in campaign mode with its arrival kit; Acts II to IV start with the launcher's Scrip for that round.", 16, MenuKit.DIM))
 	_hinted(col, "Main menu (new)", "The rebuilt CLAUDE ZOMBIES main menu (the 3D inn scene, Play / Muster / Archive / Extras).",
 		func() -> void: get_tree().change_scene_to_file(MAIN_MENU_NEW))
+
+
+## UPDATE 10 section 9: one button per set-piece the work order names, from U10_BUTTONS.
+func _add_u10_buttons(col: Control) -> void:
+	for b: Array in U10_BUTTONS:
+		var kind: String = str(b[2])
+		var target: String = str(b[3])
+		var btn: Button = _hinted(col, str(b[0]), str(b[1]), func() -> void: _press_u10(b))
+		if kind == "act":
+			btn.disabled = not Campaign.scene_exists(StringName(target))
+		elif kind == "gl":
+			btn.disabled = not ResourceLoader.exists(target)
+
+
+func _press_u10(b: Array) -> void:
+	var kind: String = str(b[2])
+	var target: String = str(b[3])
+	var rnd: int = int(b[4])
+	var bots: int = int(b[5])
+	var power: bool = bool(b[6])
+	var piece: String = str(b[7])
+	if kind == "gl":
+		_pending_power = power
+		_pending_setpiece = piece
+		_start_gl(target, rnd, "", bots)
+	elif kind == "act":
+		_pending_setpiece = piece
+		_start_act(target, rnd)
+	elif kind == "egg":
+		var args: Array = ["--botmode", "--bots=%d" % bots, "--map=" + target]
+		if power:
+			args.append("--power")
+		if _god.button_pressed:
+			args.append("--god")
+		_spawn_tool("res://gravelight/tools_src/play_ee_full.tscn", args, false)
+
+
+## The set-piece a U10 button asked for, forced a few seconds after the map is up (the same entry points the
+## smokes use): the spring tide, the egg skipped to the curtain, the air raid, the wing walk, the dust storm, the
+## terminator at 55%.
+static func _force_setpiece(piece: String) -> void:
+	var tree: SceneTree = Engine.get_main_loop() as SceneTree
+	if tree == null:
+		return
+	match piece:
+		"spring":
+			var tide: TideController = tree.get_first_node_in_group(&"tide") as TideController
+			if tide != null:
+				tide.force_stage(&"spring", 240.0)
+		"sail":
+			QuestManager.debug_skipto(&"map02_letzte_fahrt", &"s8_curtain")
+			GameState.set_flag(&"lf_key_turned", true)
+			var hud: Node = tree.get_first_node_in_group(&"hud")
+			if hud != null and hud.has_method("show_banner"):
+				hud.call("show_banner", "LETZTE FAHRT: pull the curtain lever, then the helm", 5.0)
+		"air_raid":
+			var raid: Node = tree.get_first_node_in_group(&"a1_raid")
+			if raid != null and raid.has_method("start_raid"):
+				raid.call("start_raid")
+		"wing_walk":
+			var ww: Node = tree.get_first_node_in_group(&"wing_walks")
+			if ww != null and ww.has_method("open_now"):
+				ww.call("open_now")
+		"dust_storm":
+			var gc: Node = tree.get_first_node_in_group(&"groom_controller")
+			if gc != null and gc.has_method("debug_storm_on"):
+				gc.call("debug_storm_on")
+		"terminator":
+			var t: Node = tree.get_first_node_in_group(&"terminator")
+			if t != null and t.has_method("debug_progress"):
+				t.call("debug_progress", 0.55)
 
 
 ## Two game windows over the local mock relay: the host serves the relay and creates a public lobby, the guest
@@ -434,6 +525,11 @@ static func _on_match_started(_map_id: StringName) -> void:
 		_pending_power = false
 		GameState.set_deferred("power_on", true)
 		GLBus.power_activated.emit.call_deferred()
+	if _pending_setpiece != "":
+		var piece: String = _pending_setpiece
+		_pending_setpiece = ""
+		var delay: float = float({"spring": 3.0, "sail": 2.0, "air_raid": 8.0, "wing_walk": 5.0, "dust_storm": 10.0, "terminator": 5.0}.get(piece, 5.0))
+		(Engine.get_main_loop() as SceneTree).create_timer(delay).timeout.connect(func() -> void: _force_setpiece(piece))
 	if _pending_squad:
 		_pending_squad = false
 		var t2: SceneTree = Engine.get_main_loop() as SceneTree

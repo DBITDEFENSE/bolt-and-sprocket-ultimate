@@ -118,6 +118,17 @@ func _check_u09_targets() -> void:
 	for act: Array in DevLauncher.U09_ACTS:
 		var sc: String = Campaign.scene_for(StringName(str(act[1])))
 		_check(ResourceLoader.exists(sc) and Campaign.scene_exists(StringName(str(act[1]))), "Fernflug %s scene resolves: %s" % [str(act[0]), sc])
+	# UPDATE 10 section 9: the nine set-piece buttons' targets resolve and every setpiece name is one _force_setpiece knows
+	for b: Array in DevLauncher.U10_BUTTONS:
+		var kind: String = str(b[2])
+		var target: String = str(b[3])
+		if kind == "gl":
+			_check(ResourceLoader.exists(target), "U10 '%s' scene exists" % str(b[0]))
+		elif kind == "act":
+			_check(Campaign.scene_exists(StringName(target)), "U10 '%s' act resolves" % str(b[0]))
+		else:
+			_check(kind == "egg" and target in ["map01", "map02"], "U10 '%s' egg map known" % str(b[0]))
+		_check(str(b[7]) == "" or str(b[7]) in DevLauncher.U10_SETPIECES, "U10 '%s' setpiece known: %s" % [str(b[0]), str(b[7])])
 	# the flags of the two test-lobby windows parse the way the game reads them
 	for set: Array in [DevLauncher.HOST_ARGS, DevLauncher.GUEST_ARGS]:
 		for a: Variant in set:
