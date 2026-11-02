@@ -4850,6 +4850,134 @@
       "volume_db": 0.0,
       "max_voices": 1,
       "attenuation": "quiet"
+    },
+    "a1_bomb_whistle": {
+      "files": [
+        "res://gravelight/audio/sfx/map04a/a1_bomb_whistle.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        0.92,
+        1.08
+      ],
+      "max_voices": 3,
+      "bus": "SFX",
+      "attenuation": "loud"
+    },
+    "a1_collapse": {
+      "files": [
+        "res://gravelight/audio/sfx/map04a/a1_collapse.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "bus": "SFX",
+      "attenuation": "loud"
+    },
+    "a1_fan_spinup": {
+      "files": [
+        "res://gravelight/audio/sfx/map04a/a1_fan_spinup.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "bus": "SFX",
+      "attenuation": "loud"
+    },
+    "a1_jet_pass": {
+      "files": [
+        "res://gravelight/audio/sfx/map04a/a1_jet_pass.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        0.97,
+        1.03
+      ],
+      "max_voices": 1,
+      "bus": "SFX",
+      "attenuation": "loud"
+    },
+    "a1_pa_crackle": {
+      "files": [
+        "res://gravelight/audio/sfx/map04a/a1_pa_crackle.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 2
+    },
+    "a1_rivet_hammer": {
+      "files": [
+        "res://gravelight/audio/sfx/map04a/a1_rivet_hammer.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "a1_sheet_rattle": {
+      "files": [
+        "res://gravelight/audio/sfx/map04a/a1_sheet_rattle.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": 0.0,
+      "pitch": [
+        0.9,
+        1.1
+      ],
+      "max_voices": 3
+    },
+    "a1_siren": {
+      "files": [
+        "res://gravelight/audio/sfx/map04a/a1_siren.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        0.97,
+        1.03
+      ],
+      "max_voices": 4,
+      "bus": "SFX",
+      "attenuation": "loud"
+    },
+    "a1_train_steam": {
+      "files": [
+        "res://gravelight/audio/sfx/map04a/a1_train_steam.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "bus": "SFX",
+      "attenuation": "loud"
+    },
+    "a1_train_whistle": {
+      "files": [
+        "res://gravelight/audio/sfx/map04a/a1_train_whistle.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        0.98,
+        1.02
+      ],
+      "max_voices": 1,
+      "bus": "SFX",
+      "attenuation": "loud"
     }
   }
 }

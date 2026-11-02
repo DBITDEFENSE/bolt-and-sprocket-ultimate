@@ -24,6 +24,11 @@ var _beams: Array = []
 var _cloud_mat: ShaderMaterial
 var _t: float = 0.0
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
+## UPDATE 10 (T-155): the beams' sweep clock runs at speed_mult (the air raid makes them frantic); `_bt` is that clock.
+var speed_mult: float = 1.0
+var _bt: float = 0.0
+var _alarm: bool = false
+var _base_intensity: float = -1.0
 
 
 func _ready() -> void:
@@ -37,6 +42,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_t += delta
+	_bt += delta * speed_mult
 	_update(delta)
 
 
@@ -163,7 +169,7 @@ func _build_ridges() -> void:
 func _update(_delta: float) -> void:
 	var spots: Array = []
 	for b: Dictionary in _beams:
-		var d: Vector3 = beam_dir(float(b["bearing"]), float(b["phase"]), float(b["speed"]), _t, sweep_deg)
+		var d: Vector3 = beam_dir(float(b["bearing"]), float(b["phase"]), float(b["speed"]), _bt, sweep_deg)
 		var mi: MeshInstance3D = b["mi"]
 		var x: Vector3 = d.cross(Vector3.FORWARD if absf(d.z) < 0.9 else Vector3.RIGHT).normalized()
 		var base: Vector3 = b["base"]
@@ -175,3 +181,63 @@ func _update(_delta: float) -> void:
 		spots.append(Vector4(0, -1000, 0, 0))
 	if _cloud_mat != null:
 		_cloud_mat.set_shader_parameter("spots", PackedVector4Array(spots.slice(0, 4)))
+
+
+# ---- UPDATE 10 Act I (T-155): driven by the air raid and by data/gravelight/map04a_ambience.json "searchlights"
+
+## The air raid: the beams sweep three times as fast and burn brighter until the all clear.
+func set_alarm(on: bool) -> void:
+	_alarm = on
+	if _base_intensity < 0.0:
+		_base_intensity = intensity
+	speed_mult = 3.2 if on else 1.0
+	_set_intensity(_base_intensity * (1.9 if on else 1.0))
+
+
+## The living world's "searchlights" block: {intensity, sweep_deg, speed_mult, forest: [[x, y, z], ...]} (the
+## forest beams stand out on the valley's ridges and sweep the trees, not the works).
+func apply_cfg(c: Dictionary) -> void:
+	if c.has("intensity"):
+		intensity = float(c["intensity"])
+		_base_intensity = intensity
+		_set_intensity(intensity)
+	if c.has("sweep_deg"):
+		sweep_deg = float(c["sweep_deg"])
+	if c.has("speed_mult"):
+		speed_mult = float(c["speed_mult"])
+	var extra: PackedVector3Array = PackedVector3Array()
+	for v: Variant in c.get("forest", []):
+		var a: Array = v
+		extra.append(Vector3(float(a[0]), float(a[1]), float(a[2])))
+	if not extra.is_empty():
+		add_beams(extra)
+
+
+## More searchlights (beams sweep away from the works' centre like the others; at most 4 spots light the clouds).
+func add_beams(extra: PackedVector3Array) -> void:
+	var before: int = bases.size()
+	var all: PackedVector3Array = bases.duplicate()
+	all.append_array(extra)
+	bases = all
+	var keep: Array = _beams.duplicate()
+	_beams.clear()
+	_build_beams()
+	# _build_beams rebuilt every beam: drop the duplicates of the ones we already had
+	for i: int in before:
+		var old: Dictionary = keep[i]
+		var nb: Dictionary = _beams[i]
+		(nb["mi"] as Node).queue_free()
+		_beams[i] = old
+	_update(0.0)
+
+
+func beam_count() -> int:
+	return _beams.size()
+
+
+func _set_intensity(v: float) -> void:
+	for b: Dictionary in _beams:
+		var mi: MeshInstance3D = b["mi"]
+		var m: ShaderMaterial = mi.material_override as ShaderMaterial
+		if m != null:
+			m.set_shader_parameter("intensity", v)
