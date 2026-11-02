@@ -385,16 +385,19 @@ func _tick_tilt(delta: float, tilt: Dictionary) -> void:
 		_zslide[id] = e
 
 
-## Distance to the first world collider `reach` m ahead of `p` (chest height) along `dir`; -1 when clear.
+## Distance to the first world collider `reach` m ahead of `p` along `dir`, at chest and at knee height (a rack
+## base or a bunk stops a sliding body as hard as a wall); -1 when clear.
 func _wall_ahead(space: PhysicsDirectSpaceState3D, p: Vector3, dir: Vector3, reach: float) -> float:
 	if space == null:
 		return -1.0
-	var from: Vector3 = p + Vector3(0, 0.9, 0)
-	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, from + dir * reach, 1)
-	var hit: Dictionary = space.intersect_ray(q)
-	if hit.is_empty():
-		return -1.0
-	return from.distance_to(hit["position"] as Vector3)
+	var best: float = -1.0
+	for h: float in [0.9, 0.35]:
+		var from: Vector3 = p + Vector3(0, h, 0)
+		var hit: Dictionary = space.intersect_ray(PhysicsRayQueryParameters3D.create(from, from + dir * reach, 1))
+		if not hit.is_empty():
+			var d: float = from.distance_to(hit["position"] as Vector3)
+			best = d if best < 0.0 else minf(best, d)
+	return best
 
 
 ## A client: the mirrored tilt rolls the local camera until it ends (the host ends its own bank).

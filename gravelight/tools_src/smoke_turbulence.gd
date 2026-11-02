@@ -30,6 +30,8 @@ func _body() -> void:
 	_check(wall_z != null and bomb_z != null, "two gangers in the bay")
 	if bomb_z != null:
 		bomb_z.set_physics_process(false)   # it stands in the casing's path
+	if wall_z != null:
+		wall_z.set_physics_process(false)   # held where it stands until the floor tilts (it would walk to the player)
 	var bomb: TiltSlider = _g("Slider3_bomb") as TiltSlider
 	var crate: TiltSlider = _g("Slider5_crate") as TiltSlider
 	var bomb_x0: float = bomb.global_position.x if bomb != null else 0.0
@@ -37,6 +39,9 @@ func _body() -> void:
 	var p_x0: float = _p.global_position.x
 	_fc.bank_side = -1.0   # bank_now flips it: starboard goes down
 	_fc.bank_now()
+	if wall_z != null:
+		wall_z.global_position = Vector3(5.5, 0, 9.0)
+		wall_z.set_physics_process(true)
 	await _secs(2.0)
 	_check(_fc.banking and absf(_p.ext_roll_deg) > 6.0, "the floor tilts: the camera rolls %.1f°" % _p.ext_roll_deg)
 	_check(_p.global_position.x > p_x0 + 0.5, "the player is pushed downhill (%.1f -> %.1f)" % [p_x0, _p.global_position.x])
