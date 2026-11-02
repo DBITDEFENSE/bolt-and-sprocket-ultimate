@@ -314,6 +314,32 @@
         "jakub": "JAK_M4B_LONDON_01"
       },
       "peg_after": "PEG_M4B_LONDON_02"
+    },
+    "sky": {
+      "_doc": "The outside (UPDATE 09 s5.3, T-147; gravelight/world/map04/flight_sky.gd, presentation only). legs: what lies below per act round (the flight clock: the last leg whose act_round <= the act round): below sea | coast_in (sea, then the land comes from ahead) | coast_out (land, then the sea) | land; a coast sweeps from coast_span m ahead of the wing to coast_span behind over coast_s s of its leg; lights none | blackout | towns | london (the city grid round LondonPlate, the searchlights for the whole leg); clouds scales each sheet's coverage; ground_y / cloud_y / speed_k override the defaults for a leg (London sits on its plate 41 m down, slow, the clouds thin above it). cloud_layers: camera-following sheets (y, aft scroll speed m/s, noise scale m, coverage, opacity). fighters: passes_per_round silhouettes per round at deterministic times (first_s + one per slot of window_s), seconds per pass, guns_s of tracer, and one more with every FlightController strafe. london: by the LondonWindow's own clock (never changed): searchlight beams from beams_from_s, flak bursts every flak_every_s between flak_from_s and flak_to_s, the east turns violet from violet_from_s. swing: the bank swings group flight_swing nodes (max_deg, damping); shake.bank: the camera shake held through a bank. haze: the colour the ground fades into before the far plane (the sky shader's below-horizon colour). desert_y / dawn_s: the crash's salt flat (the exfil cutscene).",
+      "haze": "#121828",
+      "radius": 380.0,
+      "ground_y": -260.0,
+      "ground_speed": 9.0,
+      "desert_y": -186.5,
+      "dawn_s": 10.0,
+      "cloud_layers": [
+        {"y": -45.0, "speed": 38.0, "scale": 260.0, "coverage": 0.42, "opacity": 0.55},
+        {"y": -95.0, "speed": 24.0, "scale": 420.0, "coverage": 0.55, "opacity": 0.75},
+        {"y": -170.0, "speed": 14.0, "scale": 700.0, "coverage": 0.6, "opacity": 0.85}
+      ],
+      "legs": [
+        {"act_round": 1, "below": "sea", "clouds": 1.0, "lights": "none", "note": "the North Sea, 03:40"},
+        {"act_round": 2, "below": "coast_in", "coast_s": 160.0, "coast_span": 900.0, "clouds": 0.8, "lights": "blackout", "note": "the English coast comes up"},
+        {"act_round": 3, "below": "land", "lights": "london", "clouds": 0.3, "ground_y": -41.0, "cloud_y": [-12.0, -60.0, -90.0], "speed_k": 0.3, "note": "London (the window)"},
+        {"act_round": 4, "below": "coast_out", "coast_s": 160.0, "coast_span": 900.0, "clouds": 0.9, "lights": "blackout", "note": "out over the Atlantic"},
+        {"act_round": 5, "below": "coast_in", "coast_s": 200.0, "coast_span": 900.0, "clouds": 0.6, "lights": "towns", "note": "the American coast (the bomb run)"},
+        {"act_round": 6, "below": "land", "clouds": 0.7, "lights": "none", "note": "west, into the dark"}
+      ],
+      "fighters": {"passes_per_round": 3, "first_s": 20.0, "window_s": 150.0, "seconds": 2.6, "guns_s": 0.9, "sound": "war_fighter_pass", "sound_db": 4.0, "guns": "war_fighter_mg", "guns_db": -2.0},
+      "london": {"beams": 6, "beam_length": 170.0, "beams_from_s": 12.0, "flak_from_s": 16.0, "flak_to_s": 29.5, "flak_every_s": 0.55, "violet_from_s": 24.0, "flak_sound": "kranich_flak"},
+      "swing": {"max_deg": 10.0, "damping": 0.9},
+      "shake": {"bank": 0.06}
     }
   },
   "exfil": {

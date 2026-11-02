@@ -102,7 +102,8 @@
       "map04a_thalbach": "wind_howl",
       "default": "ambient_map00",
       "map02_totenhafen": "ambient_map02_storm",
-      "map04d_mondlicht": "ambient_map04d_concourse"
+      "map04d_mondlicht": "ambient_map04d_concourse",
+      "map04b_kranich": "ambient_map04b"
     },
     "ambient_db": [
       -6.0,
@@ -4103,6 +4104,168 @@
       "attenuation": "quiet",
       "max_voices": 1,
       "loop": true
+    },
+    "ambient_map04b": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/kranich_drone.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04b_bay": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/kranich_bay.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04b_blister": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/kranich_blister.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04b_body": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/kranich_body.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04b_cockpit": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/kranich_cockpit.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04b_engine": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/kranich_engine.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04b_wing": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/kranich_wing.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "kranich_bordfunk": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/kranich_bordfunk_01.wav",
+        "res://gravelight/audio/sfx/ambience/kranich_bordfunk_02.wav",
+        "res://gravelight/audio/sfx/ambience/kranich_bordfunk_03.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        0.97,
+        1.03
+      ],
+      "max_voices": 1
+    },
+    "kranich_creak": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/kranich_creak_01.wav",
+        "res://gravelight/audio/sfx/ambience/kranich_creak_02.wav",
+        "res://gravelight/audio/sfx/ambience/kranich_creak_03.wav",
+        "res://gravelight/audio/sfx/ambience/kranich_creak_04.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        0.9,
+        1.1
+      ],
+      "max_voices": 2
+    },
+    "kranich_flak": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/kranich_flak_01.wav",
+        "res://gravelight/audio/sfx/ambience/kranich_flak_02.wav",
+        "res://gravelight/audio/sfx/ambience/kranich_flak_03.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": 0.0,
+      "pitch": [
+        0.9,
+        1.1
+      ],
+      "max_voices": 3,
+      "attenuation": "loud"
+    },
+    "kranich_rattle": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/kranich_rattle_01.wav",
+        "res://gravelight/audio/sfx/ambience/kranich_rattle_02.wav",
+        "res://gravelight/audio/sfx/ambience/kranich_rattle_03.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        0.92,
+        1.08
+      ],
+      "max_voices": 2
+    },
+    "kranich_wind_gust": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/kranich_gust_01.wav",
+        "res://gravelight/audio/sfx/ambience/kranich_gust_02.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        0.92,
+        1.08
+      ],
+      "max_voices": 2
     }
   }
 }

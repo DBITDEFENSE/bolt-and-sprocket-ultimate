@@ -1,0 +1,64 @@
+{
+  "_doc": "Map 4 Act II 'der Kranich' per-zone ambience (UPDATE 09 s5.3, DECISIONS T-147) in the ZoneAmbience schema (gravelight/world/zone_ambience.gd, written by the Totenhafen worker, T-145): per zone a looping bed (an audio.json key) at db, plus one-shots fired every every_s [min, max] seconds at db; crossfade_s between zones. The whole wing's drone is the map's base bed (audio.json music.ambient map04b_kranich = ambient_map04b); these beds are the room's own texture over it. All synthesized by gravelight/tools_src/gen_audio_kranich.py (Owned).",
+  "zones": {
+    "A_BOMBENSCHACHT": {
+      "bed": "ambient_map04b_bay",
+      "db": -9.0,
+      "oneshots": [
+        {"key": "kranich_creak", "every_s": [7, 18], "db": -8},
+        {"key": "kranich_rattle", "every_s": [10, 24], "db": -12},
+        {"key": "kranich_wind_gust", "every_s": [14, 30], "db": -10}
+      ]
+    },
+    "B_MITTELRUMPF": {
+      "bed": "ambient_map04b_body",
+      "db": -10.0,
+      "oneshots": [
+        {"key": "kranich_bordfunk", "every_s": [12, 30], "db": -8},
+        {"key": "kranich_creak", "every_s": [10, 24], "db": -11}
+      ]
+    },
+    "C_FLUEGEL_L": {
+      "bed": "ambient_map04b_wing",
+      "db": -7.0,
+      "oneshots": [
+        {"key": "kranich_rattle", "every_s": [5, 14], "db": -8},
+        {"key": "kranich_creak", "every_s": [8, 20], "db": -8}
+      ]
+    },
+    "C_FLUEGEL_R": {
+      "bed": "ambient_map04b_wing",
+      "db": -7.0,
+      "oneshots": [
+        {"key": "kranich_rattle", "every_s": [5, 14], "db": -8},
+        {"key": "kranich_creak", "every_s": [8, 20], "db": -8}
+      ]
+    },
+    "D_TRIEBWERK": {
+      "bed": "ambient_map04b_engine",
+      "db": -6.0,
+      "oneshots": [
+        {"key": "kranich_creak", "every_s": [9, 22], "db": -9},
+        {"key": "kranich_rattle", "every_s": [12, 28], "db": -12}
+      ]
+    },
+    "E_KANZEL": {
+      "bed": "ambient_map04b_blister",
+      "db": -7.0,
+      "oneshots": [
+        {"key": "kranich_wind_gust", "every_s": [8, 20], "db": -7},
+        {"key": "kranich_flak", "every_s": [20, 45], "db": -14},
+        {"key": "kranich_creak", "every_s": [12, 26], "db": -10}
+      ]
+    },
+    "F_COCKPIT": {
+      "bed": "ambient_map04b_cockpit",
+      "db": -9.0,
+      "oneshots": [
+        {"key": "kranich_bordfunk", "every_s": [15, 35], "db": -10},
+        {"key": "kranich_creak", "every_s": [14, 30], "db": -12}
+      ]
+    }
+  },
+  "crossfade_s": 1.5
+}

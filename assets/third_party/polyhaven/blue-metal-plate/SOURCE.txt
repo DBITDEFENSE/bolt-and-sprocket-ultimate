@@ -1,0 +1,12 @@
+Title: Blue Metal Plate
+Authors: Rob Tuytel
+Source: https://polyhaven.com/a/blue_metal_plate
+File: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/blue_metal_plate/blue_metal_plate_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/blue_metal_plate/blue_metal_plate_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/blue_metal_plate/blue_metal_plate_arm_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Blue Metal Plate" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 1k (albedo, normal OpenGL +Y, ORM at 1k)
+Tile size: 2.50 x 2.50 m
+Poly Haven id: blue_metal_plate
+Library key: kranich_skin
+Downloaded: 2026-11-01 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: textures/blue_metal_plate_albedo.png, textures/blue_metal_plate_normal.png, textures/blue_metal_plate_orm.png

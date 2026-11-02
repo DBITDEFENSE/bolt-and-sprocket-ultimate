@@ -779,6 +779,17 @@
       "key": "dm_profile",
       "note": "Mondlicht: the fulfillment store's walls (T-149)",
       "tile_m": 2.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "blue_metal_plate",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "kranich_skin",
+      "note": "painted, scuffed steel sheet: the Kranich's inner skin and frames (T-147; the rivet rows and panel seams are drawn on top by kranich_skin.gdshader)",
+      "tile_m": 2.5
     }
   ]
 }

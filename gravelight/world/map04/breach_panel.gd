@@ -10,6 +10,9 @@ extends Interactable
 
 @export var panel_id: StringName = &"breach"
 @export var zone_id: StringName = &""
+## T-147: the Kranich's shell has a real hole behind the panel: when blown, show the night through it instead of the
+## dark plate (the plate still covers the hole while it is shut).
+@export var see_through: bool = false
 
 var is_open: bool = false
 var open_t: float = 0.0
@@ -86,7 +89,7 @@ func blow(flight_cfg: Dictionary) -> void:
 	open_t = float(cfg.get("seconds", 8.0))
 	times_blown += 1
 	_plate.visible = false
-	_hole.visible = true
+	_hole.visible = not see_through
 	_light.light_energy = 2.5
 	_wind.emitting = true
 	AudioDirector.play_3d("grenade_explode", hole_pos(), 6.0, 0.4)
