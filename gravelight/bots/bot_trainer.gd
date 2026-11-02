@@ -248,6 +248,8 @@ static func errand_window_rule(in_round: bool, to_spawn: int, special: bool, ali
 
 var _ew_t: float = -INF
 var _ew_v: bool = false
+var _ew_round: int = -1
+var _ew_since: float = -1.0
 
 ## The errand window now (cached for 0.5 s: the pending check asks the plan and the egg hub).
 func errand_window() -> bool:
@@ -268,6 +270,16 @@ func errand_window() -> bool:
 	if in_round and RoundManager.to_spawn <= 0 and alive >= 1 and alive <= int(_f("errand_left", 2.0)) and mates >= 1:
 		pending = AgentPlan.errand_pending(brain)
 	_ew_v = errand_window_rule(in_round, RoundManager.to_spawn, RoundManager.is_special_round, alive, brain.perception.nearest_d, mates, pending, c)
+	# at most errand_window_max_s a round: a pending step with no errand on offer (a Crucible teaching the plan
+	# can't reach now) held the round open with the whole squad standing 15 m from its last zombie (honest soak)
+	if RoundManager.current_round != _ew_round:
+		_ew_round = RoundManager.current_round
+		_ew_since = -1.0
+	if _ew_v:
+		if _ew_since < 0.0:
+			_ew_since = now
+		if now - _ew_since > _f("errand_window_max_s", 45.0):
+			_ew_v = false
 	return _ew_v
 
 
