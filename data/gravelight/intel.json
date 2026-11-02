@@ -628,6 +628,46 @@
       "map": "4a",
       "placement": "fixed",
       "text": "BELADEPLAN · WERKNUMMER 1 (\"KRANICH\"). Carbon copy, stamped, unsigned.<br><br>Fuel: full, four tanks. Bomb bay: six racks, loaded per Anlage B (not attached). Impellers: four, run-in complete, \"do not shut down\".<br>Crew: <b>provided</b>.<br>Passengers: none.<br>Ballast: lead caskets ex Totenhafen, three, forward of the bay.<br>Destination: see flight plan (Wittkamp).<br><br>In the margin, in a different hand, small and furious: <i>Weight is wrong by 900 kg. Nobody has weighed the caskets. Nobody will fly this. — J.M.</i>"
+    },
+    {
+      "id": "INT_M2_LOG_1",
+      "title": "U-1047 Log, Page 1: The Ballast",
+      "type": "DOC",
+      "map": "2",
+      "placement": "quest",
+      "text": "A loose page from U-1047's deck log, in Kapitänleutnant Lenz's small, upright hand. Translated.\n\n9 January 1945. Totenhafen, pen 2.\nFourteen crates came aboard by the night crane, each the length of a man, lead-sealed, stencilled BALLAST and a Basel number. Ballast does not come with a Swiss clerk to count it. The clerk counted it twice.\nObermaschinist Brecht asked me what ballast weighs eighty kilos and is warm to the hand. I told him it was not his business, which was a lie. It is my boat.\n10 January. Brecht opened one. He did it alone, at the third hour, with a cold chisel, so that only he would carry it. He came to my cabin white and asked me to look. I looked.\nI have had the fourteen moved to the warhead cage and locked. The key is on my neck. We do not sail with them."
+    },
+    {
+      "id": "INT_M2_LOG_2",
+      "title": "U-1047 Log, Page 2: Basel Replies",
+      "type": "DOC",
+      "map": "2",
+      "placement": "quest",
+      "text": "A page of the log, the lower half pasted over with a telegram strip. Lenz's hand above it. Translated.\n\n12 January 1945.\nI wired the Flotilla, and the Flotilla wired Basel, which tells me who commands this boat. The reply came on the teletype in the signal tower at 0400, not from the Flotilla:\n\n[strip] HALE L PER HELVETIA AUTOMATEN AG STOP CARGO IS BALLAST STOP SAIL ON THE NEXT TIDE OR THE DETACHMENT IS RETAINED STOP [end strip]\n\nRetained. Brecht says it the way the clerk said it, a word with a ledger behind it. I asked Petersen in the tower whether he had ever seen a telegram signed by a company. He said he had seen worse things signed by men.\nThe next tide is the 14th. I have told the crew we wait for weather. There is no weather."
+    },
+    {
+      "id": "INT_M2_LOG_3",
+      "title": "U-1047 Log, Page 3: The Detachment",
+      "type": "DOC",
+      "map": "2",
+      "placement": "quest",
+      "text": "A page torn along its fold, found in the crane office among the loading manifests. Lenz's hand, larger and less careful. Translated.\n\n16 January 1945.\nThe tide went out without us. On the 15th the Basel clerk came back with a doctor and a list, and the shore detachment, my diesel ratings among them, stood in the crane office in their shirtsleeves to be issued their Marken. Pay and rations will be tallied against the mark, the doctor said, as if it were a kindness. Two refused. They were not on the next roster.\nThe others came back to the boat holding the backs of their right hands and would not look at me. Brecht looked at me.\nI cannot unmark them. I can make sure this boat carries nothing anywhere. Tonight Brecht and I take the injectors out of both diesels, and the cells go into the lower pens where the water is deepest. Whoever wants her out of here will have to want it very much."
+    },
+    {
+      "id": "INT_M2_LOG_4",
+      "title": "U-1047 Log, Page 4: For Whoever Is Not Them",
+      "type": "DOC",
+      "map": "2",
+      "placement": "quest",
+      "text": "The last page, in the pump-deck locker, folded small. Not Lenz's hand: Obermaschinist Rolf Brecht's square engineer's capitals. Translated.\n\n20 JANUARY. THE KAPITÄNLEUTNANT WENT DOWN TO THE PUMP DECK IN THE SALVAGE DRESS WITH A LAMP TO FINISH THE CELLS. HE HAS NOT COME UP. THE WATER IS COMING UP INSTEAD.\nTHE DEAD ARE WALKING ON THE QUAY. THE MARKED ONES. I HAVE SEEN MY OWN STOKERS.\nFOR WHOEVER IS NOT THEM: SHE WILL STILL RUN.\n1. AN INJECTOR. THE WORKSHOP LATHE CAN TURN ONE, BUT THE BELT ONLY GRIPS WET. RUN IT WHEN THE PUMP ROOM FLOODS.\n2. ONE BATTERY CELL. LOWER PENS, BY PUMP 1. WHEN YOU LIFT IT THE LIGHTS GO. BRING YOUR OWN.\n3. THE START SEQUENCE AT THE ENGINE ROOM PANEL: AIR, FUEL, CLUTCH, BOTH, CONTACT. SAY IT OUT LOUD. IT HELPS.\nTHE KEY IS ON THE KAPITÄNLEUTNANT. DO NOT LET HIM KEEP HER IN THE PEN.\nTAKE HER OUT. TAKE THE CARGO WITH HER. THE CHART HAS THE DEEP WATER MARKED. LET IT BE DEEP."
+    },
+    {
+      "id": "INT_HB_KIELHOLER",
+      "title": "Der Kielholer",
+      "type": "DOC",
+      "map": "2",
+      "placement": "quest",
+      "text": "Kapitänleutnant Arvid Lenz, commanding U-1047. Harbour salvage record, pen hall, night of 20 January 1945: one diving dress (brass helmet, weighted boots) signed out from the salvage locker by the commander himself, \"for the pump deck\". Not returned.\n\nHis engineer, Obermaschinist Brecht, had opened one of the fourteen lead coffins loaded as ballast. Lenz read what Brecht wrote about it, locked the coffins in the warhead cage and refused to sail. When Basel ordered him out on the next tide, he went below with a lamp and wrecked the battery cells himself, so that nobody could take her out with that cargo.\n\nThe mark the detachment was given that week sat under his helmet glass. It kept him on the pump deck. Since that night his last order kept him at the dock edges: she stays here.\n\nWhen the squad brought her diesels back to life he let them go. His last words were an order too: take her out."
     }
   ]
 }
