@@ -373,6 +373,8 @@ func max_range(w: WeaponInstance) -> float:
 func update(delta: float, may_fire: bool) -> bool:
 	if target == null or not BotPerception.targetable(target):
 		target = null
+		if may_fire:
+			_knife_unseen()
 		return false
 	var p: Vector3 = aim_point(target)
 	var aim_dir: Vector3 = _perceived_dir(p, delta)
@@ -1105,8 +1107,25 @@ func _try_melee_target() -> void:
 	# never reloaded at all); otherwise it finishes the reload while the executor backs it off.
 	if dry and not knife_kills(z) and not z.is_crawler:
 		return
-	if z.is_crawler or dry or lone or (bool(pc.get("melee_lone", false)) and per.n5 <= 1) or (z == target and knife_for_points() == z):
+	# U10 (T-163): one at arm's length the bot can't see (pushed into a hull wall, it hits through it: Q-19's Act II
+	# round held open for 25 minutes with three bots standing beside it, none with a line to shoot) gets the knife
+	var hidden: bool = not per.is_visible(z)
+	if z.is_crawler or dry or lone or hidden or (bool(pc.get("melee_lone", false)) and per.n5 <= 1) or (z == target and knife_for_points() == z):
 		melee(z)
+
+
+## U10 (T-163): nothing to shoot, yet a known zombie at arm's length the bot can't see (pushed into a hull wall, it
+## hits through it): the knife, which needs no line (see _try_melee_target).
+func _knife_unseen() -> void:
+	var per: BotPerception = brain.perception
+	var z: Zombie = per.nearest
+	if z == null or melee_cd > 0.0 or per.nearest_d > float(_m.get("range_m", 1.7)) or per.is_visible(z):
+		return
+	if BotPerception.is_boss(z) or bool(BotAIData.counter(z.enemy_id).get("never_melee", false)):
+		return
+	if brain.crawler != null and brain.crawler.target == z:
+		return
+	melee(z)
 
 
 ## True when one knife swing kills `z` (its health left against the knife's damage, Dutch's trait included).
