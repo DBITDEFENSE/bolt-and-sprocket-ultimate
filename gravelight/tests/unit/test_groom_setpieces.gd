@@ -92,3 +92,34 @@ func test_heard_player_picks_the_nearest_loud() -> void:
 	assert_eq(heard, near_loud, "the quiet one at 10 m is not heard; the sprinter at 15 m is")
 	near_loud.sprinting = false
 	assert_null(SoundHunter.heard_player(z, 6.0, [far_quiet, near_loud]), "nobody loud, nobody within 6 m")
+
+
+# ---------------------------------------------------------------- the wreck
+
+func test_collapse_schedule() -> void:
+	var wc: Dictionary = GLData.load_json("res://data/gravelight/map04c.json")["groom"]["wreck_collapse"]
+	assert_eq(float(wc["warn_s"]), 10.0, "telegraphed 10 s ahead")
+	var r3: Array = GroomController.collapse_due(3, wc, {})
+	assert_eq(r3.size(), 1)
+	assert_eq(str((r3[0] as Dictionary)["id"]), "bay_roof", "act round 3 = match 23 in the campaign")
+	var r6: Array = GroomController.collapse_due(6, wc, {})
+	assert_eq(str((r6[0] as Dictionary)["id"]), "hull_west", "act round 6 = match 26")
+	assert_true(GroomController.collapse_due(3, wc, {"bay_roof": true}).is_empty(), "a section falls once")
+	for ar: int in [1, 2, 4, 5, 7, 9, 23, 26]:
+		assert_true(GroomController.collapse_due(ar, wc, {}).is_empty(), "nothing on act round %d" % ar)
+
+
+func test_collapse_box() -> void:
+	var box: Array = [[-13.7, 0.0, -12.2], [-8.4, 4.2, -4.6]]
+	assert_true(GroomController.in_box(Vector3(-11, 0, -8), box))
+	assert_false(GroomController.in_box(Vector3(-3, 0, -8.5), box), "push_to is outside")
+	assert_false(GroomController.in_box(Vector3(-11, 6, -8), box), "above the roof")
+
+
+func test_fire_spread_grows_per_round() -> void:
+	var sp: Dictionary = GLData.load_json("res://data/gravelight/map04c.json")["groom"]["fire"]["spread"]
+	assert_eq(GroomController.spread_count(1, sp), 0, "nothing before act round 2")
+	assert_eq(GroomController.spread_count(2, sp), 1)
+	assert_eq(GroomController.spread_count(4, sp), 3)
+	assert_eq(GroomController.spread_count(40, sp), 5, "capped at the path's end on the loop")
+	assert_eq(GroomController.spread_count(5, {}), 0, "no spread block, no spread")

@@ -177,7 +177,9 @@ func _wreck() -> void:
 	wall_x("A_S", -36.0, -14 - T * 0.5, 14 + T * 0.5, 0, CEIL_WRECK, [], "steel")
 	wall_z("Hull_W", -14.0, -36, -4, 0, CEIL_WRECK, [win(-20, 0)], "steel")
 	wall_z("Hull_E", 14.0, -36, -4, 0, CEIL_WRECK, [win(-20, 0)], "steel")
-	wall_x("AB", -4.0, -14 - T * 0.5, 14 + T * 0.5, 0, CEIL_WRECK, [door(0, 0, 2.4)], "steel")
+	# the bulkhead: the lake bed door, and at x 10 a plate that the second collapse tears out (U10 §3, T-157:
+	# BulkheadPlate below, a gameplay StaticBody the GroomController removes; its NavigationLink is made then)
+	wall_x("AB", -4.0, -14 - T * 0.5, 14 + T * 0.5, 0, CEIL_WRECK, [door(0, 0, 2.4), door(10, 0, 2.4)], "steel")
 	# the hull's ceiling (dressing), with the bomb bay torn open to the sky over its forward end (T-148)
 	box(geo, "HullRoof", Vector3(-14.3, CEIL_WRECK, -36.3), Vector3(14.3, CEIL_WRECK + 0.4, -12.5), "steel", false)
 	box(geo, "HullRoofW", Vector3(-14.3, CEIL_WRECK, -12.5), Vector3(-4.5, CEIL_WRECK + 0.4, -3.7), "steel", false)
@@ -1050,6 +1052,8 @@ func _zone_meta_and_count() -> void:
 func build_gameplay_extra() -> void:
 	_node("res://gravelight/maps/map04_fernflug/act_controller.gd", "ActController", {}, Vector3.ZERO)
 	_node("res://gravelight/world/map04/groom_controller.gd", "GroomController", {}, Vector3.ZERO)
+	# U10 §3 (T-157): the bulkhead plate the second wreck collapse tears out (fills the AB wall's x 10 opening)
+	box(gameplay, "BulkheadPlate", Vector3(8.8, 0, -4.0 - T * 0.5), Vector3(11.2, 2.4, -4.0 + T * 0.5), "steel")
 	# the Jumpjockeys' launch points: the tower step's corners and the gantry post's foot
 	for lp: Array in [["Launch_Tower_1", Vector3(42.5, 1.0, 117.5)], ["Launch_Tower_2", Vector3(47.5, 1.0, 117.5)], ["Launch_Tower_3", Vector3(47.5, 1.0, 122.5)],
 			["Launch_Gantry", Vector3(ROCKET_X + 5.5, LAB_Y, ROCKET_Z + 1.5)]]:
