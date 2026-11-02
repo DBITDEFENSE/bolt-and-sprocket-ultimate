@@ -1073,6 +1073,35 @@ func knife_kills(z: Zombie) -> bool:
 	return z != null and z.hp <= dmg
 
 
+## U10 (T-163): held in a boss's grab (the Kielholer's pull at a dock edge, a Cousin's hand): knife the grabber, the
+## held player's own way out (HomageBoss._grab_damage counts the held player's melee hits as the mash); teammates
+## break it from outside by shooting it (ai_counters break_grab). True while held (the brain skips its action then).
+func break_free() -> bool:
+	if not (player.has_status(&"boss_grab") or player.has_status(&"held_hand")):
+		return false
+	var d: ZombieDirector = brain.squad.director() if brain.squad != null else null
+	if d == null:
+		return false
+	for z: Variant in d.active_zombies():
+		var b: HomageBoss = z as HomageBoss
+		if b == null or not is_instance_valid(b):
+			continue
+		for g: Dictionary in b.grabs():
+			if g.get("p") == player:
+				var fwd: Vector3 = b.global_position - player.global_position
+				fwd.y = 0.0
+				if fwd.length() > 0.01:
+					brain.loco.look_at_dir(fwd.normalized())
+				if melee_cd <= 0.0:
+					var md: Dictionary = (GLData.table("weapons")["melee"] as Dictionary).get(String(player.weapons.melee_id), {})
+					melee_cd = float(md.get("swing", 0.55)) + 0.15
+					cancel_reload()
+					player.remote_fire(3, player.weapons.melee_id, eye(), eye() + fwd.normalized())
+					b.take_damage(float(md.get("damage", 150.0)), &"torso", player.weapons.melee_id, player.player_id, &"melee")
+				return true
+	return false
+
+
 ## Melee with no firearm (Jakub's coal shovel): any non-boss in reach.
 func melee_unarmed() -> void:
 	var per: BotPerception = brain.perception

@@ -376,7 +376,10 @@ func _physics_process(delta: float) -> void:
 		us_think += float(Time.get_ticks_usec() - tt)
 		thinks += 1
 	loco.clear_look()   # a look lasts one frame: the aim layer (or the executor) asks again every frame
-	actions.run(action, delta)
+	if aim.break_free():
+		loco.stop()   # U10 (T-163): held by a boss's grab: knife it free (the action waits)
+	else:
+		actions.run(action, delta)
 	loco.tick(delta)
 	_sprint_t = _sprint_t + delta if player.sprinting else 0.0
 	if _sprint_t > 1.0:

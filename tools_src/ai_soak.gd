@@ -124,6 +124,10 @@ var _bots_set: bool = false
 var open_doors: String = ""
 var power_on: bool = false
 var give: String = ""
+## --egg-from=<step id> (tuning only, U10 T-163): the main egg starts at that step: every prerequisite is completed
+## (QuestManager.debug_skipto) and its world effect applied (a flag step's flag, the power, the Core Vault, a
+## build step's bench), so a later step can be soaked on its own. Pair with --open-doors=all and --give.
+var egg_from: String = ""
 ## --posdump=<abs path stem> (tuning only): every 0.2 game s one JSON line per run (<stem>_r<run>.jsonl) with the
 ## agent (position, facing, phase, train) and every active zombie (position, state, known to the agent), plus the
 ## walkable navmesh polygons (<stem>_nav.json) once: tools for plotting what happened round a hit.
@@ -214,6 +218,8 @@ func _ready() -> void:
 			power_on = true
 		elif a.begins_with("--give="):
 			give = a.substr(7)
+		elif a.begins_with("--egg-from="):
+			egg_from = a.substr(11)
 		elif a.begins_with("--posdump="):
 			posdump = a.substr(10)
 		elif a.begins_with("--loop="):
@@ -555,12 +561,43 @@ func _apply_tuning() -> void:
 				n2.call("run_sequence", 1)
 	if give != "" and _map.player != null:
 		for g: String in give.split(","):
-			if (GLData.table("weapons")["weapons"] as Dictionary).has(g):
+			if (GLData.table("weapons")["weapons"] as Dictionary).has(g) or (GLData.table("weapons").get("upgraded", {}) as Dictionary).has(g):
 				_map.player.weapons.give_weapon(StringName(g))
 			elif not PerkManager.perk_data(StringName(g)).is_empty():
 				PerkManager.grant(_map.player.player_id, StringName(g))
 			else:
 				print("[soak] --give: no weapon or perk '%s'" % g)
+	if egg_from != "":
+		_skip_egg_to(StringName(egg_from))
+
+
+## --egg-from: complete the main egg up to `sid` with the world effects of the skipped steps.
+func _skip_egg_to(sid: StringName) -> void:
+	var q: StringName = _main_quest()
+	if q == &"" or not QuestManager.debug_skipto(q, sid):
+		print("[soak] --egg-from: no step '%s' in '%s'" % [sid, q])
+		return
+	for st: Variant in QuestManager.steps_of(q):
+		var sd: Dictionary = st as Dictionary
+		if not QuestManager.is_step_done(q, StringName(str(sd["id"]))):
+			continue
+		var pr: Dictionary = sd.get("params", {})
+		match str(sd.get("type", "")):
+			"flag":
+				var fl: StringName = StringName(str(pr.get("flag", "")))
+				if fl == &"power_on":
+					for n: Node in _map.find_children("*", "", true, false):
+						if n.has_method("run_sequence") and n.get_script() != null and str((n.get_script() as Script).resource_path).ends_with("power_switch.gd"):
+							n.call("run_sequence", 1)
+				elif fl == &"core_vault_open":
+					GameState.open_zone(&"I_CORE")
+				if fl != &"":
+					GameState.set_flag(fl, true)
+			"build":
+				for wb: Node in _map.find_children("*", "Workbench", true, false):
+					if StringName(str(wb.get("buildable_id"))) == StringName(str(pr.get("buildable", ""))) and not bool(wb.get("built")):
+						wb.call("build", 1)
+	print("[soak] --egg-from: %s now at %s" % [q, sid])
 
 
 ## ee_full: once the bots have tuned the radio up to its last frequency (they never take the player's commit), the
