@@ -93,3 +93,10 @@ func _ping_local(seconds: float) -> void:
 ## The dev console: the next ping in `s` seconds.
 func debug_next_ping_in(s: float) -> void:
 	_next_at = _since + s
+
+
+## The capture tool / console: power the dish (if dark) and ping now.
+func debug_ping_now() -> void:
+	if not powered:
+		_on_power()
+	ping(float(cfg.get("seconds", 10.0)))

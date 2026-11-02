@@ -838,6 +838,17 @@ func debug_storm(on: bool) -> void:
 		_dust_end()
 
 
+## No-argument entry points for the capture tool's "call:<node>:<method>" (the u10_map04c set) and the console.
+func debug_storm_on() -> void:
+	_dust_start()
+
+
+func debug_collapse_all() -> void:
+	for sec: Variant in (cfg.get("wreck_collapse", {}) as Dictionary).get("sections", []):
+		collapse(str((sec as Dictionary).get("id", "")))
+	_set_spread(spread_count(99, (cfg.get("fire", {}) as Dictionary).get("spread", {})))
+
+
 func _dust_end() -> void:
 	if not _dust_on:
 		return
