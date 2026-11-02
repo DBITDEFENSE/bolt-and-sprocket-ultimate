@@ -98,6 +98,7 @@ func recompute_nav_mask() -> void:
 	for z: Variant in zone_bits.keys():
 		if GameState.is_zone_open(StringName(z)):
 			m |= 1 << (int(zone_bits[z]) - 1)
+			m |= ClimbLink.climb_bit(int(zone_bits[z]))   # T-153: the zone's ladders open with it
 	nav_mask = m
 
 
