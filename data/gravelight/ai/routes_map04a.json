@@ -42,7 +42,8 @@
       "requires_doors": [
         "door_bahnhof",
         "door_kantine"
-      ]
+      ],
+      "home": 1
     },
     {
       "id": "map04a_jig",
@@ -86,7 +87,8 @@
         "door_bahnhof",
         "door_kantine",
         "door_montage"
-      ]
+      ],
+      "home": 2
     },
     {
       "id": "map04a_ring_road",

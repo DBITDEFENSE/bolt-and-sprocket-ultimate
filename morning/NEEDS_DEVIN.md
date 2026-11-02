@@ -2,8 +2,14 @@
 
 Short, phone-readable. Nothing here blocks the build.
 
-## UPDATE 10 s4 (2026-11-02): PAUL and THE SLENDER
-- **Likeness (optional):** send Paul's details (a catchphrase, team, item or tattoo; his surname and unit, see HOMAGE_BOSSES D4 for the unit/date clash; what his letter should talk about) and your own (hair, height, glasses, beard, style; your surname for the watch-book) so `data/gravelight/bosses/likeness.json` can be filled; until then both use the defaults and no placeholder ever shows.
+## UPDATE 10 (2026-11-02): the steps only you can do, one line each
+1. **Vercel and the site password:** unchanged from UPDATE 09 (items 1-2 below); the web build must be rebuilt from this master first: `sh tools/build_web.sh` then `sh tools/deploy_web.sh`.
+2. **Likeness (optional):** send Paul's details (a catchphrase, team, item or tattoo; his surname and unit, see HOMAGE_BOSSES D4 for the unit/date clash; what his letter should talk about) and your own (hair, height, glasses, beard, style; your surname for the watch-book) so `data/gravelight/bosses/likeness.json` can be filled; until then both use the defaults and no placeholder ever shows.
+3. **Look at it in Forward+ (the renders here were all software):** Totenhafen at the spring tide and the sail (Play.bat > "Totenhafen - Spring Tide" and "sailing finale"), the air raid, the wing walk, the dust storm, the terminator (the four act buttons), PAUL and the Slender. Each button forces its set-piece a few seconds in.
+4. **Real FPS:** play each map once with `--frame-log` (Play.bat forwards it) and leave `logs/frame_log_*.csv`; the smooth-zombies toggle (Settings > Video) is the one new per-frame cost.
+5. **Cast voices:** every new line is placeholder TTS; the Operator, the PA, Wittkamp, Dee, Hale, the Woman in Violet, the Kielholer's four German lines and the Totenhafen people want recordings (`docs/PLACEHOLDERS_U10.md` lists the keys; the review page in the launcher takes your recordings line by line).
+6. **Online, two real machines:** the lobby code path and a browser peer against a desktop host were only run as two processes on this PC; try it once with a friend (TURN is optional, item 4 below).
+7. **The bar:** the scorecard target moved to 76 because Kaltenbrunn's living world raised it; Totenhafen and the acts are under it (docs/THE_BAR.md section 3.3). Decide whether the next order keeps 76 as the bar or the seed rows alone.
 
 ## UPDATE 09 (2026-11-01): the account steps left for you, one line each
 1. **Vercel (publish the browser build):** `npx vercel login` then `sh tools/deploy_web.sh` (the session could not create the Vercel project itself: the permission guard blocks connecting the private repo to an outside service).

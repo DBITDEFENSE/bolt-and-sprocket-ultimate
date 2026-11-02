@@ -11,6 +11,7 @@ extends Node3D
 
 var cfg: Dictionary = {}
 var active: bool = false
+var warning: bool = false             # U10 T-163: between the warning and the first strike (the bots take shelter)
 var left: float = 0.0
 var impacts: int = 0
 var kills: int = 0
@@ -68,6 +69,7 @@ func begin() -> void:
 
 
 func _warn() -> void:
+	warning = true
 	AudioDirector.play_2d("m4d_meteor_warn", -2.0, 0.0)
 	var map: MapRoot = get_tree().current_scene as MapRoot
 	if map != null and map.hud != null:
@@ -76,6 +78,7 @@ func _warn() -> void:
 
 func _start() -> void:
 	active = true
+	warning = false
 	showers += 1
 	left = float(cfg.get("seconds", 40.0))
 	_next = 0.5

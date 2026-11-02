@@ -502,8 +502,12 @@ func _full_partner() -> void:
 		if b.ee != null and b.ee.active():
 			busy += 1
 			var ty: String = str(b.ee.task.get("type", ""))
+			if rally_now(b.ee.task["def"]):
+				cap = squad.brains.size()   # U10 (T-163): the Chapel bell is lit: everyone free joins the hold
+				continue
 			if ty != "collect" and not (ty == "carry" and (b.ee.task["def"] as Dictionary).has("pickups")):
 				taken["%s/%s" % [b.ee.task["qid"], b.ee.task["sid"]]] = true
+	_main_first(taken)
 	if busy >= cap:
 		return
 	for b2: BotBrain in squad.brains:
@@ -516,11 +520,91 @@ func _full_partner() -> void:
 		if b2.mark != null and b2.mark.active():
 			continue   # on the player's map-mark order (T-069)
 		var best: Dictionary = pick_for(b2, taken, false)
+		if best.is_empty():
+			best = scout_job()   # U10 (T-163): nothing to do but a "seen" need: go and look
 		if not best.is_empty():
 			start_on(b2, best["qid"], best["sid"], best["t"], false, "full", null, best["as"])
 			busy += 1
 			if str(best["as"]) == "escort" or (str((best["t"] as Dictionary).get("type", "")) != "collect" and not (best["t"] as Dictionary).has("pickups")):
 				taken["%s/%s" % [best["qid"], best["sid"]]] = true
+
+
+## U10 (T-163): a Full Partner bot on a side quest drops it for an open main-egg step it can do now (it took the
+## Song's cylinders at round 1 because the power switch was still behind doors, and kept them for eight rounds).
+func _main_first(taken: Dictionary) -> void:
+	var qids: Array[StringName] = QuestManager.quest_ids()
+	if qids.is_empty() or QuestManager.is_complete(qids[0]):
+		return
+	for b: BotBrain in squad.brains:
+		if b.ee == null or not b.ee.active() or str(b.ee.task.get("source", "")) != "full" or b.ee.task["qid"] == qids[0]:
+			continue
+		var best: Dictionary = pick_for(b, taken, false)
+		if best.is_empty() or best["qid"] != qids[0]:
+			continue
+		b.ee.cancel("the main egg first")
+		start_on(b, best["qid"], best["sid"], best["t"], false, "full", null, best["as"])
+		if str(best["as"]) == "escort" or (str((best["t"] as Dictionary).get("type", "")) != "collect" and not (best["t"] as Dictionary).has("pickups")):
+			taken["%s/%s" % [best["qid"], best["sid"]]] = true
+
+
+## U10 (T-163): the main egg's open step blocked only by a "seen" need nobody has found (the Four Bells: "found
+## where the four little bells hang", learned by seeing them): one free Full Partner bot scouts the open zones.
+## {} when there is none, or someone already scouts.
+func scout_job() -> Dictionary:
+	for b: BotBrain in squad.brains:
+		if b.ee != null and b.ee.active() and str(b.ee.task.get("type", "")) == "scout":
+			return {}
+	var qids: Array[StringName] = QuestManager.quest_ids()
+	if qids.is_empty() or QuestManager.is_complete(qids[0]):
+		return {}
+	var qid: StringName = qids[0]
+	for st: Variant in QuestManager.steps_of(qid):
+		var sd: Dictionary = st as Dictionary
+		var sid: StringName = StringName(str(sd["id"]))
+		if not QuestManager.is_active(qid, sid):
+			continue
+		var t: Dictionary = BotEECatalog.task_def(sd)
+		for need: Variant in BotEECatalog.missing_info(t, knowledge.known):
+			if _seen_need(str(need)):
+				return {"qid": qid, "sid": sid, "t": {"type": "scout", "need": str(need), "what": str(knowledge.labels.get(str(need), "what we haven't found"))}, "as": "task"}
+	return {}
+
+
+## Is a bot_knowledge key one learned by seeing things (on_seen)?
+func _seen_need(key: String) -> bool:
+	for q: StringName in QuestManager.quest_ids():
+		var bk: Dictionary = QuestManager.definition(q).get("bot_knowledge", {})
+		if bk.has(key) and (bk[key] as Dictionary).get("on_seen") is Dictionary:
+			return true
+	return false
+
+
+## U10 (T-163): a lit shoot_target with a then_hold (the Chapel bell: the Foreman comes 20 s later and must die in
+## the Chapel within the light) is a rally: every free bot joins the hold, not one.
+static func rally_now(t: Dictionary) -> bool:
+	return t.has("then_hold") and str(t.get("lit_flag", "")) != "" and GameState.has_flag(StringName(str(t["lit_flag"])))
+
+
+## U10 (T-163): the zone an armed kill condition wants `enemy_id` killed in ({} none): an active kill_condition
+## step with a zone and a world flag that is on now (the Requiem's s4: the Foreman, in F_CHAPEL, the bell lit).
+## Shot on its way in, it dies outside the zone and the step fails, so the bots hold fire until it is inside.
+var _kz_t: float = -INF
+var _kz: Dictionary = {}
+
+func kill_zone_for(enemy_id: StringName) -> StringName:
+	var now: float = squad.time()
+	if now - _kz_t >= 0.5:
+		_kz_t = now
+		_kz = {}
+		for qid: StringName in QuestManager.quest_ids():
+			for st: Variant in QuestManager.steps_of(qid):
+				var sd: Dictionary = st as Dictionary
+				if str(sd.get("type", "")) != "kill_condition" or not QuestManager.is_active(qid, StringName(str(sd["id"]))):
+					continue
+				var p: Dictionary = sd.get("params", {})
+				if p.has("zone") and p.has("world_flag") and GameState.has_flag(StringName(str(p["world_flag"]))):
+					_kz[StringName(str(p.get("enemy", "")))] = StringName(str(p["zone"]))
+	return _kz.get(enemy_id, &"")
 
 
 ## The best open step this brain can do now ({} none): {s, qid, sid, t, as}. Full Partner's pick, and the

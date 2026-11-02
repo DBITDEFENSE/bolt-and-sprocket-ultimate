@@ -1132,3 +1132,121 @@ onto the navmesh, stands 20 m from the start and has a path to it).
   holds together, split up under doubled spawns and were all downed with the round held open.
 - **Ballast v2:** carriers are limited to melee and the pistol (`WeaponHolder.set_carry_limit`), bots included.
 - **Smoke:** `smoke_letzte_fahrt` (three bots on Full Partner, the human following; the forcing is in its header).
+
+## 14. UPDATE 10 section 7 (T-163): the Kaltenbrunn egg, the round's end, Totenhafen
+
+What stopped the bots on "Requiem for Kaltenbrunn" after U08 (T-131), found with `--egg-from` soaks (below), and
+what changed. All of it is bot behaviour: no round, health, spawn count or human price moved.
+
+**Rounds that never ended.** Three causes, three rules:
+- *Crawlers left behind.* The agent FACEs a train it can no longer see (dead-reckoned crawlers far back on the loop)
+  while backing round the loop, never fires, and the crawlers never catch up. **The round-end hunt**
+  (`BotTrainer.hunt_pick`, player_bot.json `trainer.hunt_*`): nothing left to spawn, at most 3 up, nothing on its
+  feet within 8 m for 5 s (a crawler at once) -> the agent walks to the nearest one, knifes a crawler, shoots a
+  walker from 12 m, and from 3.5 m once its health hasn't dropped for 4 s (a Foreman wedged in a fence corner took
+  every round on the rail).
+- *A straggler nobody can reach.* A Foreman stuck on Kaltenbrunn's rail-yard fence line (x 41) has a navmesh path to
+  us and we to it, and neither gets closer. The game recycles such a zombie after 40 s of no progress
+  (enemies.json `no_progress_respawn_seconds`), but a hunter walking up and down the fence kept resetting that timer
+  (round 12 open for 30 game minutes). Now a straggler the hunter gets no nearer to and no shot reaches for 8 s is
+  left alone for 60 s (`BotSquad.mark_unreachable`; the agent's hunt and the squad's T-058 hunt both skip it), and
+  the game takes it.
+- *The agent's errands.* With bot teammates there is no crawler break, and a 10-15 s break never covered an 83 m
+  walk (the Lab door, Pylon H behind it): the agent sat on 12,000-22,000 Scrip with an MP40 at round 12. **The errand
+  window** (`BotTrainer.errand_window_rule`): bot teammates standing, nothing left to spawn, at most 2 zombies up,
+  none within 8 m, and an affordable plan step or an open egg step -> `BotBrain.in_break()` is true for the agent
+  and `lead_train` steps back; the stragglers are the squad's hunt. A purchase errand's timeout also counts the walk
+  (3.5 m/s past 20 m), and in a break the plan's affordable perk / gun / door goes before egg work
+  (`AgentPlan.buy_first`: the U08 agent spent every break on the pylons and drank Ironhide at round 13).
+
+**The egg steps.**
+- s1 pylons, s2a radios, s3 parts: worked already; Full Partner now always takes an open main-egg step before a
+  side quest (ee.json `scores.main_quest` 100) and drops a side quest when a main step opens (`BotEEHub._main_first`:
+  two bots held the Song's unreachable cylinders from round 1 to 8 while the power stayed off).
+- s4 the Chapel bell + the Foreman: `full_partner: ["shoot"]` in the bot_task lets a Full Partner bot with a
+  Crucible gun light the bell unasked (BotEECatalog.stage_allowed). While it is lit, every free bot joins the Chapel
+  hold (`BotEEHub.rally_now`), and nobody shoots the Foreman until it is inside F_CHAPEL (`BotEEHub.kill_zone_for`
+  reads any armed zone + world-flag kill condition; `BotAim.hold_fire_for_zone`, self-defence inside 3 m): it was
+  shot on its way in and the step failed. The bell needs a Crucible *gun*: a taught wonder's toll never rings it, so
+  `forced_slot` / `_has_upgraded` skip wonders and a bot's first teaching is a gun, the wonder after
+  (`BotBrain.best_to_teach`: the honest soaks' bots taught their Totenglocken and shot the bell from every angle).
+- s6 the Four Bells: shots are counted per bell and per vantage; 8 unanswered rounds -> another angle (3 at most).
+  `vantage_for` now tests the line with the guns' own blockers (world, doors, decor), not the sight mask: the
+  specimen-tank bell sits between copper pipes on the decor layer and was "in sight" from spots whose every round
+  hit them.
+- s7 Herr Tamtam: `full_partner: ["trigger"]` (a missed chase only resets the step) and `pause_pressure: 0.85` let a
+  Full Partner bot keep pulling the crate (the drummer comes after 4-12 pulls at one spot); Full Partner's "nothing
+  to do" cancel now needs 150 s of continuous waiting, not one wait moment in a task older than that (it cancelled
+  the pull series between two offers; it now counts from the last finished errand), and the plan stays on the crate
+  through the bot's own roll (it flipped to "wait" when the lid opened). Measured: the drummer after 6 pulls, shot,
+  s7 done in 5 game minutes.
+- s8b: a Full Partner bot takes the Totenglocke and farms the charge (worked once the rounds ended). Every player
+  may also take a built wonder from its bench now (`BotEconomy.wonder_wanted`: tier over the worst gun held + 0.5,
+  or a free slot; the agent's plan never holds it back): four Totenglocken from s3 on.
+- s9 the Heartstorm: the agent starts it (T-131); no bot feeds the Crucible while the shard slot or the Heartstorm
+  start is ready there (a forging gun hides them).
+
+**PAUL (T-159) and other bosses.** The `paul` counter is live: from rage 34 the bots break the nearest IV bottle
+they can see (-20 rage each; `BotAim.paul_aim_node`), the neck from behind (x2), wide spacing against the Charge and
+the Leap Slam, break_grab. A bot held by any boss grab knifes the grabber (`BotAim.break_free`: the held player's own
+"mash"); teammates shoot it off (break_grab). `der_kielholer` (Totenhafen) has its counter (the helmet glass, spread
+against the 9 m chain sweep, out of the 2.2 m dock-edge grab).
+
+**Soaking one step.** `tools/ai_soak.sh ... --egg-from=<step>` completes the main egg up to that step with the world
+effects of the skipped ones (a flag step's flag, the power, the Core Vault, the bench build, the music box's melody);
+pair it with `--open-doors=all --give=stg44_up,ironhide_stout --start-round=12`. EGG_DEBUG prints every plan change,
+each crate pull (with the location's use count) and "no hit ... another angle"; the trace shows `hunt` / `hunt!` as
+the trainer's phase.
+
+**Tests.** `test_bot_u10_eggs.gd` (the hunt and its give-up, the errand window, buy-first, the main-egg score order,
+stage_allowed and the Requiem's full_partner data, the task pause threshold, hold-fire and the rally, wonder_wanted,
+the Kielholer counter, break_free, the soak switch).
+
+## 15. UPDATE 10 (T-163): Fernflug set-pieces and Q-19
+
+**BotSetPieces** (`gravelight/bots/bot_setpieces.gd`, data `data/gravelight/ai/setpieces.json`, per-map positions in
+`routes_<map>.json` "setpieces"): one per bot, ticked on the brain's think. It either changes how the other layers
+behave (no sprint, hold fire, a tighter formation, danger zones on the blackboard) or takes the body for a move of its
+own: the brain's action `setpiece`, picked over the utility scores. Urgent moves (a rail in a breach's pull, the meteor
+shelter, the perch once climbed) keep the body against anything but a revive. The others (the wing walk, the vent
+lever, a jump pad, the walk to the perch, Pohl's favour) give it back while a zombie is within `moves.yield_m` (6 m)
+and resume after. The Act II classes are read by group and duck typing.
+
+| Act | Set-piece | What the bots do |
+|---|---|---|
+| II | decompression (`decompressions`, `rail_grips`) | Within radius + 4 m of a warning or pulling breach: to that breach's nearest rail, `RailGrip.hold(player, true)` until the event is over, then let go. The hole is a danger zone while it pulls. |
+| II | tilt (`flight_controller`, `tilt_sliders`) | No sprint while a tilt is warned or running. A sliding casing's lane is a danger zone. |
+| II | wing walk (`wing_walks`, `wing_hatches`, `clip_points`, `wing_chests`) | A `risky` optional task: self-led, Full Partner or ordered. Only in a quiet spell (a break, or nothing known within 18 m), one bot (blackboard claim `wing_walk`), hp at least 70 %, never in a warned tilt or the storm. Climb out, clip in at the nearest tether post before walking (bots are never unclipped), open the wingtip locker, take the discount token (and its wonder part when the slot is filled), climb back in. With no human in the match, only in a break with at least 25 s left. |
+| II | aux bus, bay doors | The aux bus is a `PowerSwitch`, so the economy's power plan throws it (in the arrival break). The bay doors are a `TrapLever` trap with `danger_contains`: the brain keeps out of it, and with no human in the match it may pull it. |
+| III | dust storm (`GroomController.dust_active()`) | No sprint. The formation at ×0.6. No shot at a stalker (`Zombie.hunt_by_sound`) farther than 7 m, unless it is within 4 m, a teammate is down or the bot is under half health. A shot makes every stalker within 18 m hear it. |
+| III | wreck collapse | A warned section's box (`wreck_collapse.sections[].box`) is a danger disc until it falls. The burning hull (`spread_points()`) is a fire disc for good. |
+| III | radar perch (`tower_ladders`, `routes_map04c.json setpieces.perch`) | A high-ground shooter (Wren) climbs the TowerLadder when the squad is within 30 m of the tower and nothing is within 8 m. She fights from the 16 m deck and climbs down when two zombies reach it, she is under 60 % health, a teammate is down, the storm comes or the round ends. 30 s cooldown. |
+| III | jukebox, Dee, Hale | Never errands: none of them is in a group a bot shops or works from (asserted). |
+| IV | terminator (`terminator`) | A self-led squad's home loop on the day side beats one on the night side (night zones spawn ×1.5). The visor is a player thing: bots have no glare. |
+| IV | jump pads (`jump_pads`) | Route links: on a trip of 18 m or more (follow, regroup, buy, resupply, power-up, order), a pad within 12 m whose landing saves 8 m of path is walked onto. JumpPad launches bots like players. |
+| IV | meteor shower (`meteor_shower`) | From the warning (`MeteorShower.warning`, new) to the end: out of the yard box to the nearest `meteor_shelter` point, under the concourse roof. Each strike is already a blackboard danger (T-158). |
+| IV | shaft grate (`shaft_grate_lever`, `shaft_grate`) | Pulled from within 14 m when four or more known zombies are on the grate and the bot keeps 1500 Scrip after the price. The open grate is a danger zone. |
+| IV | Pohl's favour (`tag_slot`) | An optional task: self-led, Full Partner or ordered, in a quiet spell. Accept it at Pohl (a "deliver" favour: the tag comes at once), then read the tag in at the Account's slot once that is reachable. Never after CANCEL. |
+
+**Q-19 (bots alone through Act II).**
+- Baseline: wiped in act round 1 every time (0/3, 0.9 to 1.6 min).
+  - No act had a `home` loop, so the squad stood in the spawn bay.
+  - The 14 s arrival grace went by with 24k Scrip unspent each.
+- Tuned:
+  - **Homes:** a `home` loop on every act.
+  - **Doors:** a self-led squad buys doors in a break.
+  - **Far errands:** a far errand in a break has to fit in what is left of it (`self_led_trip_mps` / `_margin_s`).
+  - **Retreat:** retreat spots need floor beyond them (`escape_probe_m`, `dead_end_cost`), so a bot no longer backs into the hull.
+  - **Stand fast:** in the Kranich the squad stands together and shoots every round (`setpieces.json stand_fast.maps`, the special round's rule).
+  - **Traps:** with no human in the match, the bots may pull a trap.
+  - **Boss counters:** for the Bordwart (aim the chest, keep 5.5 m from the vent and the cable) and the other three act bosses.
+  - **Galley loop:** the galley home loop now runs clear of the port window.
+
+The runs are in the report of T-163.
+
+**Tests.** `test_bot_u10` (pure rules, data, the new points on the navmesh, the Act II hooks); `smoke_bots_u10`:
+- Act III storm: no sprint, keeping close, a far stalker let be, a near one shot, a warned collapse as danger.
+- Act II: the wing walk with its clip and token, a decompression rail.
+- Act IV: the meteor shelter, Pohl's tag read in by a bot.
+
+The soak trace shows the move (`| setpiece wing_walk:chest`), and each bot's report line gets a `setpieces ...` counters line.

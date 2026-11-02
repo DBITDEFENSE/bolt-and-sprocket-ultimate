@@ -4,7 +4,7 @@
  "zones": {
   "A_MINEHEAD": {
    "bed": "ambient_map01_minehead",
-   "db": -6.0,
+   "db": -26,
    "oneshots": [
     {
      "key": "amb_wind_gust",
@@ -27,7 +27,7 @@
   },
   "B_RAILYARD": {
    "bed": "ambient_map01_railyard",
-   "db": -6.0,
+   "db": -26,
    "oneshots": [
     {
      "key": "amb_wind_gust",
@@ -50,7 +50,7 @@
   },
   "C_ADMIN": {
    "bed": "ambient_map01_admin",
-   "db": -9.0,
+   "db": -29,
    "oneshots": [
     {
      "key": "amb_shutter_bang",
@@ -65,7 +65,7 @@
   },
   "D_BARRACKS": {
    "bed": "ambient_map01_barracks",
-   "db": -8.0,
+   "db": -28,
    "oneshots": [
     {
      "key": "door_creak",
@@ -88,7 +88,7 @@
   },
   "E_LIFT": {
    "bed": "ambient_map01_lift",
-   "db": -7.0,
+   "db": -27,
    "oneshots": [
     {
      "key": "cellar_drip",
@@ -103,7 +103,7 @@
   },
   "M_STAIRS": {
    "bed": "ambient_map01_stairs",
-   "db": -8.0,
+   "db": -28,
    "oneshots": [
     {
      "key": "cellar_drip",
@@ -118,7 +118,7 @@
   },
   "F_CHAPEL": {
    "bed": "ambient_map01_chapel",
-   "db": -6.0,
+   "db": -26,
    "oneshots": [
     {
      "key": "cellar_drip",
@@ -133,7 +133,7 @@
   },
   "G_GENERATOR": {
    "bed": "ambient_map01_generator",
-   "db": -6.0,
+   "db": -26,
    "oneshots": [
     {
      "key": "cellar_drip",
@@ -148,7 +148,7 @@
   },
   "H_LAB": {
    "bed": "ambient_map01_lab",
-   "db": -8.0,
+   "db": -28,
    "oneshots": [
     {
      "key": "cellar_drip",
@@ -163,7 +163,7 @@
   },
   "I_CORE": {
    "bed": "ambient_map01_core",
-   "db": -6.0,
+   "db": -26,
    "oneshots": [
     {
      "key": "cellar_drip",

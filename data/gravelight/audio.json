@@ -110,6 +110,7 @@
       -6.0,
       -2.0
     ],
+    "ambient_trim_db": {"map00_crossroads": -15, "map01_kaltenbrunn": -20, "map04a_thalbach": -18.1, "map04b_kranich": -18.1, "map04c_groomlake": -17.7, "map04d_mondlicht": -22.3},
     "score": "score_dread",
     "score_db": [
       -30.0,

@@ -152,6 +152,8 @@ func _log(s: String) -> void:
 func value() -> float:
 	if brain != null and brain.is_player_bot and active() and not AgentPlan.egg_may_work_now(brain):
 		return 0.0   # T-086: the agent's egg work keeps to the breaks until its plan says it can afford a round
+	if brain != null and brain.is_player_bot and active() and not holding_now() and AgentPlan.buy_first(brain):
+		return 0.0   # U10 (T-163): the plan's purchase takes this break (Ironhide before the next pylon)
 	if not active() or str(task.get("paused", "")) != "":
 		return 0.0
 	var d: String = str(_plan.get("do", ""))
@@ -198,7 +200,10 @@ func tick_think(now: float) -> void:
 	if why != "" and str(task.get("source", "")) == "full" and now - float(task.get("paused_t", now)) > float((_cfg().get("pause", {}) as Dictionary).get("full_drop_after_s", 60.0)):
 		cancel("paused too long")
 		return
-	if now - float(task.get("t0", now)) > float(_cfg().get("wait_timeout_s", 150.0)) and str(_plan.get("do", "")) == "wait" and str(task.get("source", "")) == "full":
+	# U10 (T-163): no errand finished for wait_timeout_s (not "a wait moment in a task older than that": the drummer's
+	# crate pulls wait out each offered gun between pulls and were cancelled mid-series; nor "waiting the whole time":
+	# a bot flipping between an unreachable cylinder and a wait kept a side quest for eight rounds)
+	if now - float(task.get("prog_t", task.get("t0", now))) > float(_cfg().get("wait_timeout_s", 150.0)) and str(_plan.get("do", "")) == "wait" and str(task.get("source", "")) == "full":
 		cancel("nothing to do")
 		return
 	if str(task["type"]) == "escort" and str(task.get("source", "")) == "full" and hub != null:
@@ -241,7 +246,7 @@ func _pause_state() -> Dictionary:
 	else:
 		shop = BotEECatalog.shop_break_due(Economy.get_scrip(player.player_id), str(_plan.get("do", "")), _now(), _shop_next, sb)
 	return {"type": str(task["type"]) if str(_plan.get("do", "")) != "hold" else "hold_zone", "pressure": brain.perception.pressure,
-		"teammate_down": down, "round_left": left, "player_away": away, "shop": shop}
+		"teammate_down": down, "round_left": left, "player_away": away, "shop": shop, "pause_pressure": float(t.get("pause_pressure", -1.0))}
 
 
 ## The action "ee_task" was picked: carry the plan out this frame.
@@ -272,8 +277,8 @@ func forced_slot() -> int:
 		var w: WeaponInstance = player.weapons.slots[i]
 		if not ws.is_empty() and (ws.has(String(w.id)) or ws.has(String(w.base_id()))):
 			return i
-		if bool(_forced.get("upgraded", false)) and w.upgraded:
-			return i
+		if bool(_forced.get("upgraded", false)) and w.upgraded and w.weapon_class() != &"wonder":
+			return i   # U10 (T-163): a gun's round; a taught wonder (the Totenglocke's toll) never rang the Chapel bell
 	return -1
 
 
@@ -428,7 +433,28 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 			w["pickup"] = _first(t.get("then_pickup", {}), null)
 			var crate: MysteryCrate = _current_crate()
 			w["crate"] = crate
-			w["can_trigger"] = crate != null and Economy.get_scrip(player.player_id) >= CrateManager.cost()
+			w["can_trigger"] = crate != null and (Economy.get_scrip(player.player_id) >= CrateManager.cost() or _my_roll(crate))
+			w["mode"] = hub.mode() if hub_ok else ""   # U10 (T-163): Full Partner may do the task's full_partner stages
+		"scout":
+			w["known"] = hub_ok and hub.knowledge.knows(str(t.get("need", "")))
+			var visited: Dictionary = task.get("visited", {}) if active() else {}
+			var pts: Array = []
+			var n_all: int = 0
+			var n_open: int = 0
+			for zn: Node in brain.get_tree().get_nodes_in_group(&"zone_volumes"):
+				var zv: ZoneVolume = zn as ZoneVolume
+				n_all += 1
+				if zv == null or not GameState.is_zone_open(zv.zone_id):
+					continue
+				n_open += 1
+				var zp: Vector3 = brain.snap(zv.global_position)
+				if zp == Vector3.INF or not brain.reachable(zp):
+					continue
+				var zk: String = "%s@%d,%d" % [zv.zone_id, int(zp.x), int(zp.z)]
+				pts.append({"pos": zp, "key": zk, "d": _flat(zp, player.global_position) + absf(zp.y - player.global_position.y) * 3.0, "visited": visited.has(zk)})
+			w["points"] = pts
+			if OS.has_environment("EGG_DEBUG") and pts.is_empty():
+				_log("scout: no zone to walk (%d zones, %d open, none reachable)" % [n_all, n_open])
 		"hold_zone":
 			var running: bool = not QuestManager.holdout_state(qid, sid).is_empty()
 			w["holdout_running"] = running
@@ -520,7 +546,27 @@ static func plan(ty: String, t: Dictionary, w: Dictionary) -> Dictionary:
 			return plan_escort(t, w)
 		"turn_key":
 			return plan_turn_key(t, w)
+		"scout":
+			return plan_scout(t, w)
 	return {"do": "fail", "code": "no_task"}
+
+
+## U10 (T-163): scout for a "seen" need (the Four Bells' four spots): done once the squad knows it; else the nearest
+## open zone this bot hasn't walked through yet (a player looking round the map), and "not_found" once it has seen
+## them all. No knowledge of where the things are: only the map's open zones.
+static func plan_scout(_t: Dictionary, w: Dictionary) -> Dictionary:
+	if bool(w.get("known", false)):
+		return {"do": "done"}
+	var best: Dictionary = {}
+	for r: Variant in w.get("points", []):
+		var row: Dictionary = r
+		if bool(row.get("visited", false)):
+			continue
+		if best.is_empty() or float(row["d"]) < float(best["d"]):
+			best = row
+	if best.is_empty():
+		return {"do": "fail", "code": "not_found"}
+	return {"do": "scout_go", "pos": best["pos"], "key": str(best["key"])}
 
 
 ## Collect: the focus (a marked note) if it still counts, else the nearest eligible target not counted yet.
@@ -612,7 +658,7 @@ static func plan_shoot(t: Dictionary, w: Dictionary) -> Dictionary:
 		if w.get("pickup") != null:
 			return {"do": "use", "node": w["pickup"]}
 		if str(t.get("trigger", "")) == "crate":
-			if BotEECatalog.is_risky(t, "trigger") and not ordered:
+			if not BotEECatalog.stage_allowed(t, "trigger", ordered, str(w.get("mode", ""))):
 				return {"do": "wait"}
 			if bool(w.get("can_trigger", false)):
 				return {"do": "crate", "node": w.get("crate")}
@@ -622,7 +668,7 @@ static func plan_shoot(t: Dictionary, w: Dictionary) -> Dictionary:
 		return {"do": "fail", "code": "not_found"}
 	if bool(w.get("lit", false)):
 		return {"do": "hold", "node": target, "vantage": true, "radius": float((t.get("then_hold", {}) as Dictionary).get("radius", 4.0))}
-	if BotEECatalog.is_risky(t, "shoot") and not ordered:
+	if not BotEECatalog.stage_allowed(t, "shoot", ordered, str(w.get("mode", ""))):
 		return {"do": "fail", "code": "risky"}
 	if bool(t.get("need_upgraded", false)) and not bool(w.get("has_upgraded", false)):
 		return {"do": "fail", "code": "no_upgraded"}
@@ -744,6 +790,8 @@ func _execute(delta: float) -> void:
 			var r: String = _run_errand({"kind": "crate", "id": "ee", "node": n, "stand": brain.stand_point(n)}, delta)
 			if r != "running":
 				_replan = true
+				if OS.has_environment("EGG_DEBUG"):
+					_log("crate %s (uses here %d of %d)" % [r, CrateManager.uses_at_location, CrateManager.uses_until_move])
 		"hold":
 			_do_hold(delta)
 		"escort", "handoff", "wait":
@@ -770,6 +818,18 @@ func _execute(delta: float) -> void:
 			_replan = true
 		"door":
 			_do_door(delta)
+		"scout_go":
+			var sp: Vector3 = _plan.get("pos", player.global_position)
+			var vk: String = str(_plan.get("key", ""))
+			var vis: Dictionary = task.get("visited", {})
+			if _walk(sp, 3.0, delta) or (brain.loco.is_stuck() and _now() - float(task.get("scout_t", _now())) > 25.0):
+				vis[vk] = true   # walked through (or this one won't be reached: the next)
+				task["visited"] = vis
+				if OS.has_environment("EGG_DEBUG"):
+					_log("scout: walked %s (%d so far)" % [vk, vis.size()])
+				task["scout_t"] = _now()
+				task["prog_t"] = _now()
+				_replan = true
 		_:
 			_idle(delta)
 
@@ -792,6 +852,8 @@ func _run_errand(e: Dictionary, delta: float) -> String:
 	var r: String = brain.tasks.run(_errand, delta)
 	if r != "running":
 		_errand = {}
+	if r == "done" and active():
+		task["prog_t"] = _now()   # U10 (T-163): progress, for the "nothing to do" cancel
 	return r
 
 
@@ -886,12 +948,13 @@ func _do_shoot(n: Node3D, delta: float) -> void:
 	if bool(_plan.get("need_upgraded", false)):
 		_forced = {"upgraded": true}
 	var id: int = n.get_instance_id()
+	var bad: Dictionary = task.get("vbad", {})   # U10 (T-163): per target, the vantages whose shots never connected
 	if not _vantage.has(id):
-		_vantage[id] = brain.vantage_for(n.global_position)
+		_vantage[id] = brain.vantage_for(n.global_position, bad.get(id, []))
 	var vp: Vector3 = _vantage[id]
 	if vp == Vector3.INF:
 		if not _try_door(n.global_position):
-			_finish(false, "unreachable")
+			_finish(false, "unreachable" if not bad.has(id) else "missed")
 		return
 	if not _walk(vp, 0.8, delta):
 		return
@@ -900,12 +963,23 @@ func _do_shoot(n: Node3D, delta: float) -> void:
 		return
 	_shoot_target = n
 	_shoot_frame = Engine.get_physics_frames()
-	var before: int = int(task.get("shots", 0))
+	# shots counted per target (a sequence's next bell starts at 0: the U08 count ran over all four bells) and per
+	# vantage: shots_per_vantage without the target answering -> another angle (a bell inside the specimen tank
+	# was in sight from a spot whose every round hit the tank's frame)
+	var sk: String = "shots_%d" % id
 	if brain.aim.shoot_at(n.global_position, 1.0):
-		task["shots"] = before + 1
+		task[sk] = int(task.get(sk, 0)) + 1
 		brain.aim.fire_cd = maxf(brain.aim.fire_cd, 0.6)
 		_replan = true
-		if int(task["shots"]) > 24:
+		var per_v: int = int(_cfg().get("shots_per_vantage", 8))
+		if int(task[sk]) % per_v == 0:
+			var lst: Array = bad.get(id, [])
+			lst.append(vp)
+			bad[id] = lst
+			task["vbad"] = bad
+			_vantage.erase(id)
+			_log("no hit on %s from %s: another angle" % [n.name, str(vp.snapped(Vector3.ONE * 0.1))])
+		if int(task[sk]) >= per_v * int(_cfg().get("vantages_max", 3)):
 			_finish(false, "missed")
 
 
@@ -1153,7 +1227,7 @@ func _human_near(p: Vector3, r: float) -> bool:
 
 func _has_upgraded() -> bool:
 	for w: WeaponInstance in player.weapons.slots:
-		if w.upgraded:
+		if w.upgraded and w.weapon_class() != &"wonder":
 			return true
 	return false
 
@@ -1161,9 +1235,21 @@ func _has_upgraded() -> bool:
 func _current_crate() -> MysteryCrate:
 	for s: Node in brain.get_tree().get_nodes_in_group(&"crate_spots"):
 		var c: MysteryCrate = s as MysteryCrate
-		if c != null and c.spot_index == CrateManager.location_index and c.phase == MysteryCrate.Phase.CLOSED:
+		if c != null and c.spot_index == CrateManager.location_index and (c.phase == MysteryCrate.Phase.CLOSED or _my_roll(c)):
 			return c
 	return null
+
+
+## U10 (T-163): this bot's own roll is still going (cycling, offered): the plan stays on the crate, so the errand
+## sees it through (the plan used to flip to "wait" the moment the lid opened, dropping the errand mid-roll, and the
+## stale errand then reported the next attempt done without a pull: s7's pulls came at half the rate).
+func _my_roll(c: MysteryCrate) -> bool:
+	if int(c.get("_owner_player")) != player.player_id:
+		return false
+	if c.phase == MysteryCrate.Phase.CYCLING:
+		return true
+	# offered: only while our errand is still deciding (once it took or left the gun, the offer runs out on its own)
+	return c.phase == MysteryCrate.Phase.OFFERED and not _errand.is_empty() and _errand.get("node") == c
 
 
 # ---------------------------------------------------------------- the voice

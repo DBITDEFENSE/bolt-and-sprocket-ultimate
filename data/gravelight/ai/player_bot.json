@@ -212,6 +212,8 @@
       "egg": {
         "_doc": "U08 (T-131): the agent works the Requiem (BotEEHub.pick_for as the player): from round 2 once the Rail Yard is open, in the breaks; after Ironhide also mid-round when nothing is near. The Chapel bell (s4) needs a Crucible-taught gun, so the plan gets one after the StG-44.",
         "quest": "map01_requiem",
+        "train_at_after": [{"step": "s1_vault", "order": ["map01_turbines", "map01_pews", "map01_headframe"]}],
+        "_train_at_after_doc": "U10 (T-163): from the Core Vault on, the egg is underground (the Chapel, the Lab, the Core): train there (AgentPlan.train_order).",
         "after": [
           {
             "door": "door_a_b"
@@ -659,6 +661,22 @@
   "trainer": {
     "_doc": "BotTrainer: training the horde round a TrainingRoute (routes_<map>.json). The train: zombies following within follow_m behind on the loop (or within close_m anywhere). Gaps (flat metres to the train's head, the nearest follower): gap = its reach (ai_counters reach_m, 1.5 by default) + gap_margin_m + head speed x gap_per_speed_s (a runner gets more room); the agent runs (faces the way) when the head is inside gap, sprints inside gap - sprint_inside_m, turns to fire once it is beyond gap + turn_extra_m with the next ahead_need_m of the loop clear, and holds still to let a far train bunch up beyond hold_extra_m. A turn lasts at most face_max_s, then a glance forward of run_min_s (it can't see ahead while it looks back: no wallhacks). A zombie on the loop ahead within cut_m is a cutter: shot when the train is at least cut_kill_gap_m behind, passed on the ring's far side when there is room (pass_min_ring_m), else the loop is reversed when the other way is clear for reverse_clear_m. Unseen zombies' remembered positions are advanced toward the agent at their speed for up to dead_reckon_s (the train follows; a person knows that).",
     "think_hz": 10.0,
+    "hunt_enabled": true,
+    "hunt_max_left": 3,
+    "hunt_quiet_m": 8.0,
+    "hunt_after_s": 5.0,
+    "hunt_shoot_m": 12.0,
+    "hunt_stall_s": 4.0,
+    "hunt_close_m": 3.5,
+    "hunt_unreach_s": 8.0,
+    "hunt_giveup_s": 60.0,
+    "_hunt_unreach_doc": "U10 (T-163): a straggler the hunter gets no nearer to (1 m) and no shot reaches for hunt_unreach_s is left alone for hunt_giveup_s (BotSquad.mark_unreachable; the squad hunt skips it too), so nobody resets its no-progress timer and the game recycles it through a window (enemies.json no_progress_respawn_seconds). Seen: a Foreman wedged on Kaltenbrunn's rail-yard fence line held round 12 open for 30 game minutes.",
+    "errand_window": true,
+    "errand_left": 2,
+    "errand_clear_m": 8.0,
+    "errand_window_max_s": 45.0,
+    "_errand_doc": "U10 (T-163) the errand window (BotTrainer.errand_window_rule): with bot teammates standing, a round down to its last errand_left zombies (nothing left to spawn, none within errand_clear_m) counts as a break for the agent (BotBrain.in_break) while its plan has an affordable step or the egg an open step: it leaves the stragglers to the squad hunt and does the errand a 10-15 s break cannot hold (Kaltenbrunn: the Lab door 83 m from the Headframe loop, the Crucible in the Core).",
+    "_hunt_doc": "U10 (T-163) the round-end hunt (BotTrainer.hunt_pick): nothing left to spawn, at most hunt_max_left zombies up and none on its feet within hunt_quiet_m for hunt_after_s (a crawler at once): the agent leaves the loop for the nearest one (navmesh), knifes a crawler, shoots a walker from hunt_shoot_m with the line of sight, and from hunt_close_m once its health has not dropped for hunt_stall_s (a Foreman wedged in a fence corner took every shot on the rail). The U08 god-mode soaks had it circling the loop for 30+ minutes round crawlers left behind and a Foreman stuck in CHASE.",
     "follow_m": 13.0,
     "close_m": 3.5,
     "lateral_slack_m": 2.5,

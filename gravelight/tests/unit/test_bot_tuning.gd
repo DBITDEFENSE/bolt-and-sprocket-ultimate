@@ -22,10 +22,14 @@ func test_the_power_switch_with_a_human_stays_theirs() -> void:
 	assert_false(BotEconomy.may_touch("power", false, false, true, false), "'the human did that step' is the power being on: nothing left to throw")
 
 
-func test_a_self_led_squad_throws_the_power_but_still_leaves_eggs_traps_and_parts() -> void:
+func test_a_self_led_squad_throws_the_power_but_still_leaves_eggs_and_parts() -> void:
 	assert_true(BotEconomy.may_touch("power", false, false, false, true), "no human leads: the squad is its own leader")
-	for k: String in ["quest", "part", "trap"]:
+	for k: String in ["quest", "part"]:
 		assert_false(BotEconomy.may_touch(k, false, false, false, true), "%s stays off limits even self-led" % k)
+	# U10 (T-163, Q-19): BotBrain passes bots_alone() for traps: with nobody human in the match a trap is nobody's
+	# choice to protect (the Kranich's bay doors); with a human the old rule stands (ordered or used by them)
+	assert_true(BotEconomy.may_touch("trap", false, false, false, true), "no human in the match: the bots may pull a trap")
+	assert_false(BotEconomy.may_touch("trap", false, false, false, false), "a human plays: not on their own")
 	assert_true(BotEconomy.may_touch("perk", false, false, false, true))
 
 

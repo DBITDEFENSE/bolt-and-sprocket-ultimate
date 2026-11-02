@@ -1609,6 +1609,26 @@ def kit_petersen(body, P):
     return k
 
 
+def kit_ogpohl(body, P):
+    """T-162: Obergefreiter Pohl, the Kranich's wireless operator (a placeholder body replaced: he wore the kubiak kit
+    until now): the field tunic of kit_soldier, a side cap and a radio headset (two leather earcups, a headband)."""
+    k = kit_soldier(body, P)
+    k.name = "ogpohl"
+    for p in head_piece(P, "sidecap", "hat"):
+        k.add(p)
+    c0 = MB.HEAD_C
+    hs = hscale(P)
+    for sx in (-1.0, 1.0):
+        bv, bf = MB.box(c0 + np.array([sx * 0.108 * hs[0], -0.012, 0.004]), np.array([0.014, 0.034, 0.03]))
+        k.add(rigid(bv, bf, "leather"))
+        bv, bf = MB.box(c0 + np.array([sx * 0.118 * hs[0], -0.012, 0.004]), np.array([0.004, 0.026, 0.022]))
+        k.add(rigid(bv, bf, "metal"))
+    pts = [c0 + np.array([math.sin(a) * 0.112 * hs[0], math.cos(a) * 0.118 * hs[1] - 0.004, 0.004]) for a in np.radians(np.linspace(-84.0, 84.0, 11))]
+    tv, tf = MB.tube(np.array(pts), np.full(len(pts), 0.0045), sides=4, cap_end=False)
+    k.add(rigid(tv, tf, "leather"))
+    return k
+
+
 def kit_jette(body, P):
     """T-135: Henriette "Jette" Maurer, Fernflug's wind-tunnel technician and glider pilot: one-piece work coveralls
     with the sleeves rolled, a webbing belt, a spanner in the thigh pocket, a knotted kerchief over her hair."""
@@ -1644,6 +1664,7 @@ PEOPLE_KITS = {
     "wiesner": kit_wiesner, "brandt": kit_brandt, "kroll": kit_kroll,
     "cousin_hammer": kit_cousin_hammer, "cousin_reach": kit_cousin_reach, "cousin_alix": kit_cousin_alix,
     "selwyn": kit_selwyn,
+    "ogpohl": kit_ogpohl,
     "ammer": kit_ammer, "petersen": kit_petersen, "jette": kit_jette,   # T-135: the map companions
     "teller": kit_teller,   # T-136: the bank teller
 }

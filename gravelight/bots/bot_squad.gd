@@ -617,7 +617,7 @@ func _update_hunt(now: float) -> void:
 	var best: Zombie = null
 	for z: Variant in act:
 		var zz: Zombie = z as Zombie
-		if zz != null and is_instance_valid(zz) and BotPerception.targetable(zz) and (best == null or BotPerception.is_boss(zz)):
+		if zz != null and is_instance_valid(zz) and BotPerception.targetable(zz) and not is_unreachable(zz) and (best == null or BotPerception.is_boss(zz)):
 			best = zz
 	if best == null:
 		return
@@ -628,6 +628,22 @@ func _update_hunt(now: float) -> void:
 ## Where the squad hunts the round's last zombie (Vector3.INF: no hunt).
 func hunt_point() -> Vector3:
 	return hunt_at
+
+
+## U10 (T-163): stragglers nobody can get to (instance id -> squad time until which they are left alone). A zombie
+## wedged behind a collider the navmesh doesn't know (Kaltenbrunn's rail-yard fence line at x 41) has a path to us
+## and we to it, and neither gets closer; a hunter walking up and down that fence kept resetting its no-progress
+## timer (enemies.json no_progress_respawn_seconds: recycled after 40 s with nobody getting nearer), so the round
+## never ended. Left alone, the game recycles it through a window.
+var _unreachable: Dictionary = {}
+
+func mark_unreachable(z: Zombie, seconds: float) -> void:
+	if z != null and is_instance_valid(z):
+		_unreachable[z.get_instance_id()] = time() + seconds
+
+
+func is_unreachable(z: Zombie) -> bool:
+	return z != null and is_instance_valid(z) and float(_unreachable.get(z.get_instance_id(), -INF)) > time()
 
 
 ## The training route (U03 section 3, TrainingRoute.for_map: the map's authored loops whose doors and zones are
@@ -652,9 +668,14 @@ func _pick_route() -> void:
 	if bot_led():
 		# T-058: a squad leading itself has a home loop (routes_<map>.json "home"); it trains there when the
 		# leader isn't by another loop
+		var home_s: float = -INF
 		for r2: TrainingRoute in TrainingRoute.for_map(String(map.map_id)):
-			if r2.home > 0.0 and (home == null or r2.home > home.home):
+			# U10 (T-163): on the Moon a loop on the day side beats one the terminator has put in the night
+			# (night zones spawn x1.5 and strain the suit)
+			var hs: float = r2.home - (10.0 if BotSetPieces.night_at(get_tree() if is_inside_tree() else null, r2.center()) else 0.0)
+			if r2.home > 0.0 and (home == null or hs > home_s):
 				home = r2
+				home_s = hs
 		if player_bot != null:
 			# T-071 pass 3: the agent's home is its plan's first open training ground (the yard once it is open)
 			var order: Array = AgentPlan.plan_for(TrainingRoute.map_key_of(String(map.map_id))).get("train_at", [])
@@ -1256,6 +1277,8 @@ func report() -> PackedStringArray:
 			out.append("  " + b.planner.status_line())
 		if b.bonus_perk != &"":
 			out.append("  bonus perk %s (announced %s)" % [b.bonus_perk, str(b.bonus_said)])
+		if b.setpieces != null and b.setpieces.counts_line() != "":
+			out.append("  setpieces " + b.setpieces.counts_line())   # U10 (T-163)
 	var ts: Dictionary = think_stats()
 	out.append("squad: order %s, revives by bots %d, choke reports %d, brain %.3f ms/bot/frame (think %.3f ms)" % [command, revives_total(), choke_events.size(),
 		float(ts["ms_per_bot_frame"]), float(ts["ms_per_think"])])

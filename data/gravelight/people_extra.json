@@ -249,7 +249,7 @@
       "poi": "Pohl, in the racks",
       "bio": "The Kranich's wireless operator, 22, Riedl's man at the set. The field units hung the crew on the racks in Fulfillment with the rest of the inventory, and Pohl did not go to sleep. He climbed down out of bay six and has stood in the aisle beside it since, keeping out of the way, keeping very still when the dead go past. He does not fight. He asks for one thing: that somebody reads his name into the record, so that it says Pohl and not a number.",
       "bodies": [
-        {"person": "kubiak", "at": [30.4, 0.0, 39.9], "yaw": 0.0, "pose": "stand", "look": {"jacket": [0.36, 0.38, 0.42], "trousers": [0.3, 0.32, 0.36], "skin": [0.84, 0.74, 0.68], "head": [0.33, 0.25, 0.16], "headgear": "none", "build": 0.92, "skirt": false}}
+        {"person": "ogpohl", "at": [30.4, 0.0, 39.9], "yaw": 0.0, "pose": "stand", "look": {"jacket": [0.36, 0.38, 0.42], "trousers": [0.3, 0.32, 0.36], "skin": [0.84, 0.74, 0.68], "head": [0.33, 0.25, 0.16], "headgear": "none", "build": 0.92, "skirt": false}}
       ],
       "favour": {
         "kind": "deliver",

@@ -466,6 +466,8 @@ func _apply_ab() -> void:
 	if _ab.is_empty():
 		return
 	print("[perf] A/B: " + ",".join(_ab))
+	if "zsmooth" in _ab:   # T-162: the zombies' render-rate smoothing on (it is off headless), to price it with --probe
+		Zombie.smooth_motion = true
 	if "no_shadow_proxy" in _ab:   # the batches cast their own shadows again (before T-070's ShadowProxies)
 		ShadowProxies.undo(_map)
 	var env: Environment = _env()

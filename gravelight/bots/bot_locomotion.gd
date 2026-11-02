@@ -59,6 +59,9 @@ var yields: int = 0
 var slides_started: int = 0
 var mantles_started: int = 0
 var drops: int = 0                    # steps down off furniture the navmesh never knew about (Q-14)
+## U10 (T-163, BotSetPieces): no sprinting (the dust storm, a warned tilt, a breach) and the formation's spread.
+var no_sprint: bool = false
+var spacing_mult: float = 1.0
 
 var _c: Dictionary = {}
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -723,12 +726,12 @@ func _tick_follow_goal(delta: float) -> void:
 	var heading: Vector3 = lv if moving else -_leader.global_basis.z
 	var base: Vector3 = _leader.global_position + (lv * float(_g("formation", "lead_s", 0.6)) if moving else Vector3.ZERO)
 	var slots: Array = _g("formation", "moving" if moving else "still", [])
-	var off: Vector3 = wedge_offset(slots, _slot, heading)
+	var off: Vector3 = wedge_offset(slots, _slot, heading) * spacing_mult
 	# catch up at a run when the slot is far (a training leader walks at full speed)
 	var slot_d: float = _flat(base + off, player.global_position)
 	_urgency = 0.9 if slot_d > float(_g("formation", "run_m", 3.5)) else (0.6 if moving else 0.4)
 	var cands: Array[Vector3] = [base + off, base + off * 0.65]
-	var mirror: Vector3 = wedge_offset(slots, _slot, heading, true)
+	var mirror: Vector3 = wedge_offset(slots, _slot, heading, true) * spacing_mult
 	cands.append(base + mirror)
 	cands.append(base + mirror * 0.65)
 	var fallback: Vector3 = Vector3.INF
@@ -1094,7 +1097,7 @@ func _step_aside(me: Vector3, human: Vector3, hv: Vector3) -> void:
 # ================================================================== speed, facing, intent
 
 func _want_sprint(wish: Vector3, remaining: float) -> bool:
-	if _look_set or wish.length_squared() < 0.25:
+	if _look_set or wish.length_squared() < 0.25 or no_sprint:
 		return false
 	var u: float = _urgency
 	if _aside_t > 0.0:

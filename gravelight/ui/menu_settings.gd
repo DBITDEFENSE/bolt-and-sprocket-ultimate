@@ -242,6 +242,8 @@ func _graphics() -> void:
 	content.add_child(MenuKit.row("Brightness", MenuKit.slider(0.7, 1.4, 0.05, float(GLSettings.values.get("brightness", 1.0)), _setter("brightness"))))
 	content.add_child(MenuKit.check("Smooth motion (high-refresh screens)", bool(GLSettings.values.get("smooth_motion", true)), _setter("smooth_motion")))
 	content.add_child(MenuKit.para("The camera and the gun move every frame instead of 60 times a second: on a 144 or 240 Hz screen aiming and strafing stop looking steppy. On by default.", 16, MenuKit.DIM))
+	content.add_child(MenuKit.check("Smooth zombies (high-refresh screens)", bool(GLSettings.values.get("zombie_smooth", true)), _setter("zombie_smooth")))
+	content.add_child(MenuKit.para("Nearby zombies are drawn between their 60 Hz steps. Costs a little CPU with many on screen; turn it off on a slow laptop.", 16, MenuKit.DIM))
 	# vsync and the frame cap live in the shared Settings (core/settings.gd): every mode of the game uses them
 	content.add_child(MenuKit.check("V-Sync", bool(Settings.values.get("vsync", true)), func(on: bool) -> void: Settings.set_value("vsync", on)))
 	var caps: Array = [0, 60, 120, 144, 165, 240, 360]

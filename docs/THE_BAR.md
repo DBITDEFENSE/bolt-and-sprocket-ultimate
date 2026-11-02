@@ -80,9 +80,12 @@ when the Inn "feels great".
 Scored by the §9 scorer from the state of `master` at db4c9ef6 (UPDATE 10 sections 1–5 and 8 merged, section 9's
 launcher buttons in) by section 5's method: the same 0/1/2/3 scale, unmeasured is 1, a feature in data that no run,
 test, smoke or capture shows is 1, shared systems out, the evidence per cell in section 1.2b. Two merges were still
-pending when this block was written (`u10-6-polish`, T-162; `u10-7-bots`, T-163): rows **24, 26, 27 and 28** are
-marked *(p)* provisional and are finalised below the table once both are on `master`. Map 1 and Map 2 are re-scored
-too: Kaltenbrunn's living world (T-161) and PAUL (T-159) raise the bar.
+pending when this block was written (`u10-6-polish`, T-162; `u10-7-bots`, T-163); rows **24, 26, 27 and 28** were
+scored provisionally and **finalised at master 40cb5676** (both merged, 1827/1827 tests, 744 scripts): row 24 is 3
+on every map (all seven minimaps re-baked 2026-11-02 14:29–15:01, `tools/check_mapdata.sh` PASS), row 27 is 3 on
+Totenhafen (the Kielholer's four lines baked; the manifest's `missing` list is 6 stage directions), rows 26 and 28
+are unchanged (T-163's tests and smokes are shared; it reports step completions and act rounds, not Scrip). Map 1
+and Map 2 are re-scored too: Kaltenbrunn's living world (T-161) and PAUL (T-159) raise the bar.
 
 | # | Feature | M1 Inn | M2 Kalt. | M3 Toten. | Act I | Act II | Act III | Act IV |
 |---|---|---|---|---|---|---|---|---|
@@ -110,25 +113,25 @@ too: Kaltenbrunn's living world (T-161) and PAUL (T-159) raise the bar.
 | 21 | The Jakub arc on this map | 3 | 3 | 1 | 1 | 2 | 2 | 2 |
 | 22 | An opening / arrival you remember | 3 | 1 | 1 | 1 | 1 | 2 | 2 |
 | 23 | Zone audio beds (sound per room) | 2 | 2 | 3 | 2 | 2 | 2 | 3 |
-| 24 | Minimap and pause map current *(p)* | 3 | 2 | 2 | 3 | 3 | 3 | 1 |
+| 24 | Minimap and pause map current | 3 | 3 | 3 | 3 | 3 | 3 | 3 |
 | 25 | Crate / weapon-parcel drama | 2 | 3 | 2 | 2 | 1 | 2 | 2 |
-| 26 | Test coverage (launcher, smokes, GUT) *(p)* | 3 | 3 | 3 | 2 | 2 | 2 | 2 |
-| 27 | Recorded voice on the map *(p)* | 3 | 3 | 2 | 2 | 2 | 2 | 2 |
-| 28 | Pays well (Scrip per round) *(p)* | 2 | 3 | 3 | 2 | 1 | 1 | 1 |
-| | **Added rows 19–28** | **27** | **25** | **19** | **19** | **18** | **20** | **18** |
-| | **TOTAL (28 rows, max 84)** | **71** | **76** | **67** | **59** | **59** | **60** | **59** |
+| 26 | Test coverage (launcher, smokes, GUT) | 3 | 3 | 3 | 2 | 2 | 2 | 2 |
+| 27 | Recorded voice on the map | 3 | 3 | 3 | 2 | 2 | 2 | 2 |
+| 28 | Pays well (Scrip per round) | 2 | 3 | 3 | 2 | 1 | 1 | 1 |
+| | **Added rows 19–28** | **27** | **26** | **21** | **19** | **18** | **20** | **20** |
+| | **TOTAL (28 rows, max 84)** | **71** | **77** | **69** | **59** | **59** | **60** | **61** |
 | | *Baseline (1.1)* | *71* | *68* | *45* | *43* | *37* | *43* | *39* |
-| | *Change* | *0* | *+8* | *+22* | *+16* | *+22* | *+17* | *+20* |
+| | *Change* | *0* | *+9* | *+24* | *+16* | *+22* | *+17* | *+22* |
 
-**Expected after the two pending merges** (from T-162 / T-163 as written on their branches, to be confirmed when
-they land): row 24 → 3 on M2, M3 and Act IV (all seven minimaps re-baked, `smoke_marks --map=` on map04b/map04d);
-row 27 → 3 on M3 (the Kielholer's four lines baked); row 26 unchanged (the new bot tests are shared); row 28
-unchanged (T-163 reports step completions and act rounds, not Scrip). That would give **M2 77, M3 69, Act IV 61**,
-and the target becomes **≥ 77**.
+Before the merges (at db4c9ef6) the provisional totals were M2 76, M3 67 and Act IV 59; T-162 moved row 24 to 3 on
+those three columns and row 27 to 3 on Totenhafen, exactly as its branch paragraph said. Nothing else in T-162 or
+T-163 moves a cell: the hints, citations, transitions, the audio mix and the bot set-piece layer are shared systems
+(1.3); Pohl's own model (`ogpohl`) is noted in row 5; the Kaltenbrunn egg (0/5) and Q-19 (0/3) were already scored
+from `QA_REPORT_U10.md`.
 
 Reading it: the four new columns gained 16–22 points each and Totenhafen is now the third-best map on the seed
-rows (48 against the Inn's 44). But the bar moved: Kaltenbrunn's living world, PAUL and the audio beds lift Map 2 to
-76, so the target of §1.3 (the higher of the two re-scored totals) is 76 now and 77 after the merges, and **no new
+rows (48 against the Inn's 44). But the bar moved: Kaltenbrunn's living world, PAUL, the audio beds and the re-baked
+minimap lift Map 2 to 77, so the target of §1.3 (the higher of the two re-scored totals) is **77**, and **no new
 column reaches it**. What holds them down is the same list on every act: rows 16 and 28 (no soak reaches round 30
 or measures Scrip past act round 5: Q-19 is 0/3 on the final code, QA_REPORT_U10 §2), row 13 (four bosses that no
 run or capture has ever shown), row 21 (Jakub has lines but no scene of his own on three maps), row 27 (every line is
@@ -542,7 +545,7 @@ re-score's own headless run on the PC, 2026-11-02; `.smoke_logs/u10_*` = the lea
 | I | 3 | Jette joins; Wendel's family in the raid cellar, Brack the signalman with favours (`people_extra.json`, T-155) |
 | II | 2 | Jette carried; Ruhland and Riedl are body-less talk points with favours (`people_extra.json` `"body": false`) |
 | III | 3 | Dee's cage + her valve favour, Hale behind glass with reactions, Peg's choice (`people_extra.json` dee/hale, T-157) |
-| IV | 2 | Pohl in rack 2 bay 6, a Talk card and the tag favour (`people_extra.json` pohl, `tag_slot.gd`); kubiak stand-in body |
+| IV | 2 | Pohl in rack 2 bay 6, a Talk card and the tag favour (`people_extra.json` pohl, `tag_slot.gd`); `ogpohl` body (T-162) |
 
 **6. Room story**
 
@@ -760,17 +763,17 @@ re-score's own headless run on the PC, 2026-11-02; `.smoke_logs/u10_*` = the lea
 | III | 2 | 7 beds + its own base bed `ambient_map04c` (`audio.json music.ambient`), the jukebox (T-157) |
 | IV | 3 | 6 beds, the vacuum rule and the SFX low-pass in vacuum (`AudioDirector.set_vacuum_bed`, T-158) |
 
-**24. Minimap and pause map current** *(provisional until T-162 lands)*
+**24. Minimap and pause map current** *(finalised at 40cb5676: T-162 re-baked all seven through WSL + Xvfb)*
 
 | Map | Score | Evidence |
 |---|---|---|
-| M1 | 3 | `mapdata.json` baked 2026-10-25, 3 floors, 35 POIs; nothing moved since |
-| M2 | 2 | baked 2026-10-27, before T-161 replaced the surface mountains; 4 floors, 49 POIs; T-162 re-bakes |
-| M3 | 2 | baked 2026-11-01, before T-153's lever, bench, dump and searchlight nodes; 38 POIs; T-162 re-bakes |
-| I | 3 | re-baked 2026-11-02 under WSL after the raid and the lookout: 8 zones, 42 POIs (T-155) |
-| II | 3 | re-baked 2026-11-02: the footprint reaches the wingtip at x −130, 31 POIs (T-156) |
-| III | 3 | re-baked 2026-11-02 after the perch and the new levers: 36 POIs (T-157) |
-| IV | 1 | baked 2026-10-26: no pads, crater, vent or Pohl on it (`data/maps/map04d_mondlicht/mapdata.json`); T-162 re-bakes |
+| M1 | 3 | `map00_crossroads/mapdata.json` baked 2026-11-02 14:37, 3 floors, 35 POIs (T-162); `check_mapdata.sh` PASS |
+| M2 | 3 | `map01_kaltenbrunn/mapdata.json` baked 2026-11-02 14:40 after T-161's landscape, 4 floors, 49 POIs |
+| M3 | 3 | `map02_totenhafen/mapdata.json` baked 2026-11-02 14:59 after T-153/T-154's nodes, 4 floors, 38 POIs |
+| I | 3 | `map04a_thalbach/mapdata.json` baked 2026-11-02 15:01, 2 floors, 42 POIs (the lookout platform band) |
+| II | 3 | `map04b_kranich/mapdata.json` baked 2026-11-02 14:29, the wingtip footprint, 31 POIs; `smoke_marks --map=map04b` PASS |
+| III | 3 | `map04c_groomlake/mapdata.json` baked 2026-11-02 14:31 after the perch and levers, 2 floors, 36 POIs |
+| IV | 3 | `map04d_mondlicht/mapdata.json` baked 2026-11-02 14:34 with the pads, crater and vent, 27 POIs; `smoke_marks` map04d |
 
 **25. Crate / weapon-parcel drama**
 
@@ -784,7 +787,9 @@ re-score's own headless run on the PC, 2026-11-02; `.smoke_logs/u10_*` = the lea
 | III | 2 | 5 `Crate*` nodes; Dee's supply drop (T-157) |
 | IV | 2 | 3 `Crate*` nodes in `map04d.tscn` (was 2) |
 
-**26. Test coverage (launcher buttons, smokes, GUT files)** *(provisional until T-163 lands)*
+**26. Test coverage (launcher buttons, smokes, GUT files)** *(finalised at 40cb5676: T-162/T-163 added
+`smoke_bots_u10`, `smoke_transitions`, `test_bot_u10`, `test_bot_u10_eggs`, `test_first_hints`, `test_citations`,
+`test_npc_navmesh`, `test_transitions`, all shared across maps; no column moves)*
 
 | Map | Score | Evidence |
 |---|---|---|
@@ -796,19 +801,20 @@ re-score's own headless run on the PC, 2026-11-02; `.smoke_logs/u10_*` = the lea
 | III | 2 | 3 buttons (+dust storm), 11 smokes, 6 own GUT (test_groom_setpieces, …); `smoke_map04c_world` FAIL on master |
 | IV | 2 | 3 buttons (+terminator), 10 smokes, 9 own GUT (test_mondlicht_u10, test_endings, test_account_manager, …) |
 
-**27. Recorded voice on the map** *(provisional until T-162 lands)*
+**27. Recorded voice on the map** *(finalised at 40cb5676: T-162 baked the Kielholer's 4 KLH lines and the 18
+reserved Bolt/Sprocket/Vendelin lines; `missing` is 6 stage directions)*
 
 | Map | Score | Evidence |
 |---|---|---|
 | M1 | 3 | 108 M0 files, all baked (`vo/audio_manifest.json`) |
 | M2 | 3 | 67 M1 files + PAUL's 21 (OneCore placeholder, no real voice); all baked |
-| M3 | 2 | 50 M2 files incl. RADIO_UBOAT_01..06 in German and SLN 20; the Kielholer's 4 KLH lines in `missing` ("no voice profile") |
+| M3 | 3 | 50 M2 files incl. RADIO_UBOAT_01..06 in German, SLN 20 and KLH 4 (OneCore, as PAUL); all baked (T-162 item 8) |
 | I | 2 | 65 M4A files, all baked (T-166): 37 Kokoro, 28 OneCore placeholders (OPR 18, WIT 10) |
 | II | 2 | 96 M4B files, all baked: 51 Kokoro, 45 OneCore (OPR 21, PA 22, WIT 2) |
 | III | 2 | 88 M4C files, all baked: 37 Kokoro, 51 OneCore (DEE 18, HAL 10, OPR 19, FAS 4) |
-| IV | 2 | 98 M4D files, all baked: 42 Kokoro, 56 OneCore (OPR 40, WIV 13); 8 BLT/SPR/VEN lines reserved (not in Gravelight) |
+| IV | 2 | 106 M4D files, all baked: 42 Kokoro, the rest OneCore (OPR 40, WIV 13, the reserved BLT/SPR/VEN 8 since T-162) |
 
-**28. Pays well (Scrip per round)** *(provisional until T-163 lands)*
+**28. Pays well (Scrip per round)** *(finalised at 40cb5676: T-163 reports rounds and steps, no Scrip; unchanged)*
 
 | Map | Score | Evidence |
 |---|---|---|
@@ -950,19 +956,18 @@ PC"). If §1.3 is read with row 19 waived for Acts II and IV, their gaps are 31 
 ### 3.3 After the re-score (2026-11-02, db4c9ef6)
 
 **The target moved.** §1.3's target is the higher of the two re-scored reference totals: Map 1 stays at **71**, Map 2
-rises to **76** (77 once T-162's minimap re-bake lands), so the bar is **≥ 76 now, ≥ 77 after the pending merges**.
-Rows 24, 26, 27 and 28 are provisional (see 1.1b).
+rises to **77** (finalised at master 40cb5676 with T-162's minimap re-bake), so the bar is **≥ 77**.
 
-| Column | Total | Gap to 76 | Rows at 0 | Rows at 1 | §1.3: ≥ target | ≥ 3 "only here" actable | No seed row at 0 | Verdict |
+| Column | Total | Gap to 77 | Rows at 0 | Rows at 1 | §1.3: ≥ target | ≥ 3 "only here" actable | No seed row at 0 | Verdict |
 |---|---|---|---|---|---|---|---|---|
-| M3 Totenhafen | 67 (69 exp.) | **9** (8) | 20 extra people | 21 Jakub, 22 opening | no | yes (10) | yes | **FAIL** (total) |
-| Act I | 59 | **17** | — | 11 wonder weapon, 21 Jakub, 22 opening | no | yes (7) | yes | **FAIL** (total) |
-| Act II | 59 | **17** | — | 11 wonder, 16 loop, 22 opening, 25 crate, 28 pays | no | yes (10) | yes | **FAIL** (total) |
-| Act III | 60 | **16** | — | 16 loop, 28 pays | no | yes (10) | yes | **FAIL** (total) |
-| Act IV | 59 (61 exp.) | **17** (16) | — | 11 wonder, 16 loop, 19 squads, 24 minimap (p), 28 pays | no | yes (10) | yes | **FAIL** (total) |
+| M3 Totenhafen | 69 | **8** | 20 extra people | 21 Jakub, 22 opening | no | yes (10) | yes | **FAIL** (total) |
+| Act I | 59 | **18** | — | 11 wonder weapon, 21 Jakub, 22 opening | no | yes (7) | yes | **FAIL** (total) |
+| Act II | 59 | **18** | — | 11 wonder, 16 loop, 22 opening, 25 crate, 28 pays | no | yes (10) | yes | **FAIL** (total) |
+| Act III | 60 | **17** | — | 16 loop, 28 pays | no | yes (10) | yes | **FAIL** (total) |
+| Act IV | 61 | **16** | — | 11 wonder, 16 loop, 19 squads, 28 pays | no | yes (10) | yes | **FAIL** (total) |
 
-Against the **baseline target of 71** (the number the work order's sections were planned to): Totenhafen 67 misses by
-4 (2 after the merges); the acts miss by 11–12. Against the **seed rows alone** (the owner's 18): Totenhafen 48 beats
+Against the **baseline target of 71** (the number the work order's sections were planned to): Totenhafen 69 misses by
+2; the acts miss by 10–12. Against the **seed rows alone** (the owner's 18): Totenhafen 48 beats
 both references' baseline 44 and sits 3 under Kaltenbrunn's re-scored 51; the acts are at 40–41, where the
 baseline references stood at 44.
 
@@ -989,8 +994,10 @@ section. The three rows that move the most points for the least work are marked 
 | 27 voice (p) | M3 (2), Acts I–IV (2) | §6.8 / the owner | the Kielholer's 4 lines (T-162 bakes them); cast voices for the Operator, PA, WIT, DEE, HAL, WIV |
 | 28 pays (p) | Acts II, III, IV (1) | §7.4 | the same soak as row 16, with Scrip after act r8 recorded |
 
-Rows **1–3, 7–12, 14, 22, 23** have no column below both references (where Map 2 is itself at 1 or 2, a 2 is not
-"below both"). Row 11 (wonder weapon) is at 1 on Acts I, II and IV, the same as Map 1, and is not sent back; it is
+After the merges (40cb5676) two entries above no longer fall under both references and are kept only until the
+send-back pass closes: **row 24** (Act IV is 3) and **row 27 for Totenhafen** (3; the acts stay at 2 on their
+placeholder speakers). Rows **1–3, 7–12, 14, 22, 23** have no column below both references (where Map 2 is itself
+at 1 or 2, a 2 is not "below both"). Row 11 (wonder weapon) is at 1 on Acts I, II and IV, the same as Map 1, and is not sent back; it is
 the honest ceiling of 3.2: one wonder per campaign branch, the Undertow on Totenhafen and the Lodestone on Act III.
 
 ## 4. Scoring notes the build workers should know
