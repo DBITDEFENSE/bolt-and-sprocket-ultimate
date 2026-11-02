@@ -48,6 +48,7 @@ func _run() -> void:
 	await _storm()
 	await _wing_and_breach()
 	await _meteors()
+	await _searchlight()
 	_finish()
 
 
@@ -365,6 +366,54 @@ func _meteors() -> void:
 		if b4.setpieces.favours > 0:
 			by = String(b4.player.character_id)
 	_check(read and GameState.has_flag(&"pohl_tag_read") and by != "", "a bot read Pohl's tag into the record (%s)" % by)
+
+
+# ---------------------------------------------------------------- 4. Totenhafen: the searchlight by mark order
+
+## T-153's MAN_SEARCHLIGHT: a map mark (any kind but Defend) on the signal tower's light sends a bot up to man it
+## (BotMarkOrders.route -> "man"). Powered, every door open, no zombies: a bot is its operator within 150 s.
+func _searchlight() -> void:
+	if _map != null:
+		_map.queue_free()
+		await _frames(10)
+	Campaign.reset()
+	GLSettings.values["bot_ee_help"] = "off"
+	_map = (load("res://gravelight/maps/map02_totenhafen/map02.tscn") as PackedScene).instantiate() as Node3D
+	get_tree().root.add_child(_map)
+	get_tree().current_scene = _map
+	GameState.god_mode = true
+	await _frames(40)
+	_p = _map.get_node("Player1") as Player
+	RoundManager.stop()
+	for n: Node in get_tree().get_nodes_in_group(&"doors"):
+		var bd: BuyDoor = n as BuyDoor
+		if bd != null and not bd.is_open:
+			bd.open(0)
+	for n2: Node in _map.find_children("*", "", true, false):
+		if n2.has_method("run_sequence") and n2.get_script() != null and str((n2.get_script() as Script).resource_path).ends_with("power_switch.gd"):
+			n2.call("run_sequence", 1)
+	for z: Zombie in _dir().active_zombies():
+		z.kill_silently()
+	await _secs(2.0)
+	var sl: Searchlight = get_tree().get_first_node_in_group(&"searchlights") as Searchlight
+	_check(sl != null, "Totenhafen's tower searchlight")
+	if sl == null:
+		return
+	_check(GameState.power_on, "the power is on (the light needs it)")
+	var b0: BotBrain = _brains()[0] if not _brains().is_empty() else null
+	if b0 != null:
+		var near: Vector3 = b0.snap(sl.global_position + sl.global_basis * Vector3(0, 0, 6.0))
+		await _tp(near + Vector3(0, 0, 2))
+		await _bots_to(near)
+	var mm: MapMarks = MapMarks.current()
+	_check(mm != null, "the map marks")
+	if mm == null:
+		return
+	var r: Dictionary = mm.place({"kind": "go", "pos": sl.global_position, "node": sl, "target": "any"})
+	_check(bool(r.get("ok", false)), "the mark on the light became an order (%s)" % str(r.get("reason", "")))
+	var me: int = _p.player_id
+	var manned: bool = await _until(func() -> bool: return sl.operator_id != 0 and sl.operator_id != me, 150.0)
+	_check(manned, "a bot mans the searchlight on the mark order (operator %d)" % sl.operator_id)
 
 
 func _finish() -> void:
