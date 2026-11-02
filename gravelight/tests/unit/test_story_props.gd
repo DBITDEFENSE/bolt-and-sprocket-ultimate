@@ -6,7 +6,9 @@ extends GutTest
 ## INT_MARKE_POSTER (UPDATE 09 section 1, T-137): the recruiting poster on the taproom's notice wall.
 const FIXED_IDS: PackedStringArray = ["INT_M0_09", "INT_M0_10", "INT_M0_11", "INT_M0_12", "INT_M0_13", "INT_M0_14", "INT_MARKE_POSTER"]
 ## Map 2 (LORE.md section 13.2, T-036): the same rules, map "2". INT_MARKE_MEDIC (T-137): the surgeon's notes.
-const MAP2_IDS: PackedStringArray = ["INT_M2_01", "INT_M2_02", "INT_M2_03", "INT_M2_04", "INT_MARKE_MEDIC"]
+const MAP2_IDS: PackedStringArray = ["INT_M2_01", "INT_M2_02", "INT_M2_03", "INT_M2_04", "INT_MARKE_MEDIC",
+	# UPDATE 10 (T-154, LORE.md 13.6): Totenhafen's living-world props
+	"INT_M2_SAILOR_LETTER", "INT_M2_HALE_TELEGRAM", "INT_M2_PAYSLIP", "INT_M2_DRAWING", "INT_M2_RATION_BOOK"]
 ## Map 4 Act IV (LORE.md section 13, the Mondlicht list, UPDATE 07 T-113): the same rules, map "4d". INT_MARKE_TERMS (T-137).
 const MAP4D_IDS: PackedStringArray = ["INT_M4_RELAY", "INT_M4_CREWTAGS", "INT_M4_SMILE", "INT_M4_PILCH", "INT_MARKE_TERMS"]
 ## Map 4 Act III (UPDATE 07, docs/MAP4_FERNFLUG.md 13.1): the British crate's manifest and Hale's program log, in the hangar.
@@ -117,7 +119,7 @@ func test_spawn_all_places_the_map_0_items() -> void:
 	assert_eq(StoryProp.spawn_all(none, "3"), 0, "none on a map without fixed props")
 	var m2: Node3D = Node3D.new()
 	add_child_autofree(m2)
-	assert_eq(StoryProp.spawn_all(m2, "2"), 5, "five Map 2 items (four plus the T-137 surgeon's notes)")
+	assert_eq(StoryProp.spawn_all(m2, "2"), MAP2_IDS.size(), "the Map 2 items (four, the T-137 surgeon's notes, T-154's five)")
 	var m4d: Node3D = Node3D.new()
 	add_child_autofree(m4d)
 	assert_eq(StoryProp.spawn_all(m4d, "4d"), 5, "five Mondlicht items (four plus the T-137 Terms of the Mark)")
@@ -142,5 +144,17 @@ func test_spawn_all_places_the_map_0_items() -> void:
 		assert_almost_eq(rad_to_deg(p.rotation.y), float(e.get("yaw", 0.0)), 0.01, n + " yaw")
 		assert_true(p.is_in_group(&"story_props"), n + " in the story_props group")
 		assert_eq(p.title, str((_by_id()[str(e["id"])] as Dictionary)["title"]), n + " knows its title")
-		assert_true(p.get_prompt(null).contains(p.title), n + " prompt names the item")
+		if p.hidden_until_flag != &"":
+			# T-154: hidden until its flag (the sailor's letter under the cutter): no prompt, not readable, invisible
+			GameState.flags.erase(p.hidden_until_flag)
+			assert_false(p.revealed(), n + " hidden until " + String(p.hidden_until_flag))
+			assert_eq(p.get_prompt(null), "", n + " has no prompt while hidden")
+			GameState.set_flag(p.hidden_until_flag, true)
+			assert_true(p.visible and p.revealed(), n + " shows once " + String(p.hidden_until_flag) + " is set")
+			GameState.flags.erase(p.hidden_until_flag)
+		assert_true(p.hidden_until_flag != &"" or p.get_prompt(null).contains(p.title), n + " prompt names the item")
+		if p.hidden_until_flag != &"":
+			GameState.set_flag(p.hidden_until_flag, true)
+			assert_true(p.get_prompt(null).contains(p.title), n + " prompt names the item once revealed")
+			GameState.flags.erase(p.hidden_until_flag)
 		assert_true(p.net_local(), n + " reading is personal")
