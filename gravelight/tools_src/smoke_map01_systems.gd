@@ -80,7 +80,7 @@ func _run() -> void:
 		if n is PerkMachine:
 			perks += 1
 	var want_perks: int = 0   # one cabinet per perk plate in machine_lore.json (T-141 added Ledger Lager: 10)
-	for k: String in (GLData.table("machine_lore")["maps"]["map01_kaltenbrunn"]["entries"] as Dictionary).keys():
+	for k: String in (GLData.load_json("res://data/gravelight/machine_lore.json")["maps"]["map01_kaltenbrunn"]["entries"] as Dictionary).keys():   # not a GLData table
 		if k.begins_with("perk."):
 			want_perks += 1
 	_check(perks == want_perks, "%d perk machines placed (machine_lore says %d)" % [perks, want_perks])
