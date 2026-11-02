@@ -505,6 +505,6 @@ func mark_smile() -> void:
 	smile_seen = true
 	var ms: MapState = MapState.current()
 	if ms != null:
-		ms.add_marker({"pos": Vector3(0.0, 0.0, 104.0), "kind": "note", "label": "The smile (the rim, in the vacuum)",
+		ms.add_marker({"pos": Vector3(0.0, 0.0, 104.0), "kind": "note", "label": "The smile, the rim",
 			"color": Color(0.8, 0.55, 1.0), "owner": 0, "target": "me"})
 	print("[m4d] the smile is seen: a note on the minimap")
