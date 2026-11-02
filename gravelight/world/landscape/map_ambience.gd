@@ -2588,3 +2588,691 @@ func _ev_meteors() -> void:
 
 # ---- U10 Act III ----
 # Groom Lake's living world (UPDATE 10 section 3, DECISIONS T-157), from data/gravelight/map04c_ambience.json.
+#
+# Every block below returns at once when its key is not in the file (Map 0 and the other maps are unchanged).
+# Presentation only: nothing here touches gameplay (each peer runs its own; the beats key off the round and the
+# power, which every peer sees). Kinds: milky_way, heat_shimmer, wildlife (jackrabbits + coyotes), low_pass
+# (B-29s on approach), tumbleweeds, searchlight_towers, sand_roofs, quonset (huts ticking in the heat).
+
+var mw_now: float = -1.0                 # the Milky Way's strength now (the smoke)
+var shimmer_now: float = 0.0
+var rabbits: Array = []                  # {node, home, state, t}
+var coyotes: Array = []                  # {node, spot, state, t}
+var tumble: Array = []                   # {node, v, spin}
+var towers_lit: int = 0
+var _sky_sm: ShaderMaterial = null
+var _shim_cards: Array[MeshInstance3D] = []
+var _shim_mats: Array[ShaderMaterial] = []
+var _b29: Array = []                     # {node, from, to, t, dur}
+var _towers: Array = []                  # {pivot, beam, light, phase, speed}
+var _a3_gust_seen: bool = false
+var _sand_pool: Array[GPUParticles3D] = []
+
+
+# ================================================================== Act III pure rules (unit-tested)
+
+## The Milky Way's strength on beat round `r`: full until rounds[0], gone by rounds[1] (the dawn takes it).
+static func milky_way_at(r: int, sec: Dictionary) -> float:
+	var rr: Array = sec.get("rounds", [1, 6])
+	var st: Array = sec.get("strength", [1.0, 0.0])
+	var k: float = clampf(float(r - int(rr[0])) / maxf(1.0, float(int(rr[1]) - int(rr[0]))), 0.0, 1.0)
+	return lerpf(float(st[0]), float(st[1]), k)
+
+
+## The heat shimmer's strength on beat round `r`: none before from_round, full at full_round (the sun is up).
+static func shimmer_at(r: int, sec: Dictionary) -> float:
+	var a: int = int(sec.get("from_round", 6))
+	var b: int = int(sec.get("full_round", a + 2))
+	if r < a:
+		return 0.0
+	return clampf(float(r - a + 1) / maxf(1.0, float(b - a + 1)), 0.0, 1.0)
+
+
+## True when a critter at `at` should bolt: a player within `near_m` or a shot within `shot_m`.
+static func should_bolt(at: Vector3, players: Array, shot_at: Variant, near_m: float, shot_m: float) -> bool:
+	for p: Variant in players:
+		if Vector2((p as Vector3).x - at.x, (p as Vector3).z - at.z).length() <= near_m:
+			return true
+	return shot_at != null and Vector2((shot_at as Vector3).x - at.x, (shot_at as Vector3).z - at.z).length() <= shot_m
+
+
+## The flee direction: straight away from `from`, flat (a random heading when on top of it).
+static func flee_dir(at: Vector3, from: Vector3) -> Vector3:
+	var d: Vector3 = at - from
+	d.y = 0.0
+	return d.normalized() if d.length() > 0.05 else Vector3.RIGHT
+
+
+# ================================================================== setup
+
+func _kinds_setup_u10_act3() -> void:
+	if cfg.has("milky_way"):
+		_a3_milky_way_setup()
+	if cfg.has("heat_shimmer"):
+		_a3_shimmer_setup()
+	if cfg.has("wildlife"):
+		_ev_wildlife_setup()
+	if cfg.has("low_pass_b29"):
+		_round_fns.append(func(_b: int) -> void: _ev_low_pass_round(_a3_ar()))
+		debug_kinds["low_pass_b29"] = func() -> void: _ev_low_pass()
+		_ticks.append(_a3_tick_b29)
+	if cfg.has("tumbleweeds"):
+		_every("tumbleweeds", cfg["tumbleweeds"], _ev_tumbleweeds)
+		_ticks.append(_a3_tick_tumble)
+		debug_kinds["tumbleweeds"] = func() -> void: _ev_tumbleweeds()
+	if cfg.has("searchlight_towers"):
+		_a3_towers_setup()
+	if cfg.has("sand_roofs"):
+		_ticks.append(_a3_tick_sand)
+		debug_kinds["sand_roofs"] = func() -> void: _ev_sand_roofs()
+	if cfg.has("quonset"):
+		_a3_quonset_setup()
+
+
+# ================================================================== the Milky Way and the dawn's heat
+
+func _a3_milky_way_setup() -> void:
+	for n: Node in get_parent().find_children("*", "WorldEnvironment", true, false):
+		var env: Environment = (n as WorldEnvironment).environment
+		if env != null and env.sky != null and env.sky.sky_material is ShaderMaterial:
+			_sky_sm = env.sky.sky_material as ShaderMaterial
+	_round_fns.append(func(_b: int) -> void: _ev_milky_way(_a3_ar()))
+	_ev_milky_way(_a3_ar())
+	debug_kinds["milky_way"] = func() -> void: _ev_milky_way(1)
+
+
+func _ev_milky_way(r: int) -> void:
+	mw_now = milky_way_at(maxi(1, r), cfg.get("milky_way", {}))
+	if _sky_sm != null:
+		_sky_sm.set_shader_parameter("milky_way", mw_now)
+	_count("milky_way")
+
+
+func _a3_shimmer_setup() -> void:
+	var sec: Dictionary = cfg["heat_shimmer"]
+	var sh: Shader = load("res://gravelight/world/map04/shaders/heat_shimmer.gdshader") as Shader
+	for c: Variant in sec.get("cards", []):
+		var a: Array = c
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.name = "HeatShimmerCard"
+		var q: QuadMesh = QuadMesh.new()
+		q.size = Vector2(float(a[3]), float(a[4]))
+		mi.mesh = q
+		var sm: ShaderMaterial = ShaderMaterial.new()
+		sm.shader = sh
+		mi.material_override = sm
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		mi.position = Vector3(float(a[0]), float(a[1]), float(a[2]))
+		mi.rotation_degrees = Vector3(0, float(a[5]), 0)
+		mi.visible = false
+		add_child(mi)
+		_shim_cards.append(mi)
+		_shim_mats.append(sm)
+	_round_fns.append(func(_b: int) -> void: _ev_heat_shimmer(_a3_ar()))
+	debug_kinds["heat_shimmer"] = func() -> void: _ev_heat_shimmer(int(sec.get("full_round", 8)))
+
+
+func _ev_heat_shimmer(r: int) -> void:
+	shimmer_now = shimmer_at(r, cfg.get("heat_shimmer", {}))
+	for i: int in _shim_cards.size():
+		_shim_cards[i].visible = shimmer_now > 0.01
+		if sh_has_param(_shim_mats[i], "strength"):
+			_shim_mats[i].set_shader_parameter("strength", float((cfg.get("heat_shimmer", {}) as Dictionary).get("strength", 0.008)) * shimmer_now)
+	if shimmer_now > 0.0:
+		_count("heat_shimmer")
+
+
+static func sh_has_param(sm: ShaderMaterial, p: String) -> bool:
+	if sm == null or sm.shader == null:
+		return false
+	for u: Dictionary in sm.shader.get_shader_uniform_list():
+		if str(u.get("name", "")) == p:
+			return true
+	return false
+
+
+# ================================================================== wildlife: jackrabbits on the salt, coyotes on the berms
+
+func _critter_mat(c: Color) -> StandardMaterial3D:
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.albedo_color = c
+	m.roughness = 0.95
+	return m
+
+
+## A jackrabbit: a low body, a head, two tall ears (cheap boxes; ~0.5 m long).
+func _make_rabbit() -> Node3D:
+	var n: Node3D = Node3D.new()
+	n.name = "Jackrabbit"
+	var m: StandardMaterial3D = _critter_mat(Color(0.58, 0.5, 0.4))
+	for part: Array in [[Vector3(0.18, 0.2, 0.42), Vector3(0, 0.16, 0)], [Vector3(0.14, 0.14, 0.16), Vector3(0, 0.3, -0.22)],
+			[Vector3(0.03, 0.2, 0.05), Vector3(-0.04, 0.45, -0.22)], [Vector3(0.03, 0.2, 0.05), Vector3(0.04, 0.45, -0.22)],
+			[Vector3(0.06, 0.06, 0.06), Vector3(0, 0.2, 0.22)]]:
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		var bm: BoxMesh = BoxMesh.new()
+		bm.size = part[0]
+		mi.mesh = bm
+		mi.position = part[1]
+		mi.material_override = m if part[0] != Vector3(0.06, 0.06, 0.06) else _critter_mat(Color(0.92, 0.9, 0.86))
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		n.add_child(mi)
+	return n
+
+
+## A coyote: a lean body, legs, a head with a snout and ears, a low tail (~1.1 m).
+func _make_coyote() -> Node3D:
+	var n: Node3D = Node3D.new()
+	n.name = "Coyote"
+	var m: StandardMaterial3D = _critter_mat(Color(0.52, 0.44, 0.34))
+	for part: Array in [[Vector3(0.26, 0.28, 0.8), Vector3(0, 0.55, 0)], [Vector3(0.2, 0.22, 0.26), Vector3(0, 0.72, -0.48)],
+			[Vector3(0.1, 0.1, 0.18), Vector3(0, 0.66, -0.66)], [Vector3(0.05, 0.12, 0.04), Vector3(-0.06, 0.88, -0.44)],
+			[Vector3(0.05, 0.12, 0.04), Vector3(0.06, 0.88, -0.44)], [Vector3(0.1, 0.1, 0.42), Vector3(0, 0.5, 0.56)],
+			[Vector3(0.07, 0.42, 0.07), Vector3(-0.09, 0.21, -0.3)], [Vector3(0.07, 0.42, 0.07), Vector3(0.09, 0.21, -0.3)],
+			[Vector3(0.07, 0.42, 0.07), Vector3(-0.09, 0.21, 0.3)], [Vector3(0.07, 0.42, 0.07), Vector3(0.09, 0.21, 0.3)]]:
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		var bm: BoxMesh = BoxMesh.new()
+		bm.size = part[0]
+		mi.mesh = bm
+		mi.position = part[1]
+		mi.material_override = m
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		n.add_child(mi)
+	return n
+
+
+func _ev_wildlife_setup() -> void:
+	var w: Dictionary = cfg["wildlife"]
+	for i: int in int(w.get("rabbits", 4)):
+		var r: Node3D = _make_rabbit()
+		add_child(r)
+		var home: Vector3 = _a3_rand_in(w.get("area", [[-50, 0, 2], [50, 0, 56]]))
+		r.global_position = home
+		r.rotation.y = _rng.randf_range(0, TAU)
+		rabbits.append({"node": r, "home": home, "state": "idle", "t": _rng.randf_range(1.0, 4.0), "v": Vector3.ZERO})
+	var spots: Array = w.get("coyote_spots", [])
+	for i2: int in mini(int(w.get("coyotes", 2)), spots.size()):
+		var c: Node3D = _make_coyote()
+		add_child(c)
+		var sp: Vector3 = _a3_v3(spots[i2])
+		c.global_position = sp
+		c.rotation.y = _rng.randf_range(0, TAU)
+		coyotes.append({"node": c, "spot": sp, "state": "idle", "t": 0.0, "v": Vector3.ZERO})
+	_ticks.append(_ev_wildlife_tick)
+	_shot_fns.append(_ev_wildlife_shot)
+	if w.has("yip"):
+		_every("coyote_yip", w["yip"], _ev_coyote_yip)
+	debug_kinds["wildlife"] = func() -> void:
+		for r2: Dictionary in rabbits:
+			_bolt(r2, (r2["node"] as Node3D).global_position + Vector3(0, 0, 1), 9.0)
+		for c2: Dictionary in coyotes:
+			_bolt(c2, (c2["node"] as Node3D).global_position + Vector3(1, 0, 0), 8.0)
+
+
+func _a3_rand_in(box: Variant) -> Vector3:
+	var b: Array = box
+	var lo: Vector3 = _a3_v3(b[0])
+	var hi: Vector3 = _a3_v3(b[1])
+	return Vector3(_rng.randf_range(lo.x, hi.x), lo.y, _rng.randf_range(lo.z, hi.z))
+
+
+func _bolt(c: Dictionary, from: Vector3, speed: float) -> void:
+	if str(c["state"]) == "bolt":
+		return
+	var node: Node3D = c["node"]
+	c["state"] = "bolt"
+	c["t"] = 0.0
+	c["v"] = flee_dir(node.global_position, from) * speed
+	node.look_at(node.global_position - (c["v"] as Vector3), Vector3.UP)
+	var key: String = "rabbit_bolt" if node.name.begins_with("Jackrabbit") else "coyote_yip"
+	_a3_snd(key, node.global_position, -4.0)
+	_count("wildlife_bolt")
+
+
+func _ev_wildlife_shot(origin: Vector3) -> void:
+	var w: Dictionary = cfg.get("wildlife", {})
+	for c: Dictionary in rabbits + coyotes:
+		if should_bolt((c["node"] as Node3D).global_position, [], origin, 0.0, float(w.get("shot_bolt_m", 25.0))):
+			_bolt(c, origin, float(w.get("rabbit_mps", 9.0)) if (c["node"] as Node3D).name.begins_with("Jackrabbit") else float(w.get("coyote_mps", 8.0)))
+
+
+func _ev_wildlife_tick(delta: float) -> void:
+	var w: Dictionary = cfg.get("wildlife", {})
+	var near_m: float = float(w.get("bolt_m", 9.0))
+	var pp: Array = []
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		if n is Node3D:
+			pp.append((n as Node3D).global_position)
+	for c: Dictionary in rabbits + coyotes:
+		var node: Node3D = c["node"]
+		var rabbit: bool = node.name.begins_with("Jackrabbit")
+		c["t"] = float(c["t"]) + delta
+		match str(c["state"]):
+			"idle":
+				if should_bolt(node.global_position, pp, null, near_m * (1.0 if rabbit else 2.0), 0.0):
+					var from: Vector3 = node.global_position
+					var best: float = INF
+					for p: Variant in pp:
+						var d: float = (p as Vector3).distance_to(node.global_position)
+						if d < best:
+							best = d
+							from = p
+					_bolt(c, from, float(w.get("rabbit_mps", 9.0)) if rabbit else float(w.get("coyote_mps", 8.0)))
+				elif rabbit and float(c["t"]) > 3.0:
+					# a nibble, a hop to a new spot nearby
+					c["t"] = _rng.randf_range(-2.0, 0.0)
+					node.rotation.y = _rng.randf_range(0, TAU)
+			"bolt":
+				var v: Vector3 = c["v"]
+				node.global_position += v * delta
+				# the hop: a bounce in the stride (the rabbit's high, the coyote's a lope)
+				var hz2: float = 6.0 if rabbit else 3.2
+				node.global_position.y = (c["home"] as Vector3).y if c.has("home") else (c["spot"] as Vector3).y
+				node.global_position.y += absf(sin(float(c["t"]) * hz2 * PI)) * (0.35 if rabbit else 0.12)
+				if float(c["t"]) > float(w.get("bolt_s", 3.5)):
+					c["state"] = "gone"
+					c["t"] = 0.0
+					node.visible = false
+			"gone":
+				var rs: Array = w.get("respawn_s", [25.0, 45.0])
+				if float(c["t"]) > float(rs[0]):
+					c["state"] = "idle"
+					c["t"] = 0.0
+					node.visible = true
+					if rabbit:
+						c["home"] = _a3_rand_in(w.get("area", [[-50, 0, 2], [50, 0, 56]]))
+						node.global_position = c["home"]
+					else:
+						node.global_position = c["spot"]
+
+
+func _ev_coyote_yip() -> void:
+	for c: Dictionary in coyotes:
+		if str(c["state"]) == "idle" and _rng.randf() < 0.7:
+			far_sound("coyote_yip", (c["node"] as Node3D).global_position, -2.0)
+			_count("coyote_yip")
+			return
+	# none in view: a far one past the ridge
+	far_sound("coyote_yip", Vector3(_rng.randf_range(-300, 300), 0, 260), -8.0)
+	_count("coyote_yip")
+
+
+# ================================================================== B-29s on approach to a distant strip (low_pass_b29)
+
+## A B-29 at a glance: a long round fuselage, a glazed nose, the long wing, four nacelles, the tall fin; landing
+## lights burning in the wing roots (emissive, plus one light on the lead ship).
+func _make_b29(lead: bool) -> Node3D:
+	var n: Node3D = Node3D.new()
+	n.name = "Superfortress"
+	var skin: StandardMaterial3D = _critter_mat(Color(0.7, 0.72, 0.74))
+	skin.metallic = 0.6
+	skin.roughness = 0.4
+	var fus: MeshInstance3D = MeshInstance3D.new()
+	var cm: CylinderMesh = CylinderMesh.new()
+	cm.top_radius = 1.4
+	cm.bottom_radius = 1.4
+	cm.height = 30.0
+	cm.radial_segments = 10
+	fus.mesh = cm
+	fus.rotation_degrees = Vector3(90, 0, 0)
+	fus.material_override = skin
+	n.add_child(fus)
+	for part: Array in [[Vector3(43.0, 0.35, 4.6), Vector3(0, -0.2, -2.0)], [Vector3(0.4, 6.0, 4.5), Vector3(0, 3.0, 13.0)], [Vector3(14.0, 0.3, 3.0), Vector3(0, 0.5, 13.5)]]:
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		var bm: BoxMesh = BoxMesh.new()
+		bm.size = part[0]
+		mi.mesh = bm
+		mi.position = part[1]
+		mi.material_override = skin
+		n.add_child(mi)
+	for x: float in [-14.0, -7.0, 7.0, 14.0]:
+		var na: MeshInstance3D = MeshInstance3D.new()
+		var nc: CylinderMesh = CylinderMesh.new()
+		nc.top_radius = 0.7
+		nc.bottom_radius = 0.8
+		nc.height = 5.0
+		nc.radial_segments = 8
+		na.mesh = nc
+		na.rotation_degrees = Vector3(90, 0, 0)
+		na.position = Vector3(x, -0.5, -3.8)
+		na.material_override = skin
+		n.add_child(na)
+	var lamp: StandardMaterial3D = StandardMaterial3D.new()
+	lamp.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	lamp.albedo_color = Color(1.0, 0.95, 0.8)
+	lamp.emission_enabled = true
+	lamp.emission = Color(1.0, 0.92, 0.75)
+	lamp.emission_energy_multiplier = 8.0
+	for x2: float in [-4.0, 4.0]:
+		var l: MeshInstance3D = MeshInstance3D.new()
+		var sm2: SphereMesh = SphereMesh.new()
+		sm2.radius = 0.45
+		sm2.height = 0.9
+		l.mesh = sm2
+		l.position = Vector3(x2, -0.4, -4.4)
+		l.material_override = lamp
+		n.add_child(l)
+	if lead:
+		var ol: OmniLight3D = OmniLight3D.new()
+		ol.light_color = Color(1.0, 0.92, 0.75)
+		ol.light_energy = 3.0
+		ol.omni_range = 60.0
+		ol.shadow_enabled = false
+		ol.position = Vector3(0, -2.0, -6.0)
+		n.add_child(ol)
+	for c in n.get_children():
+		if c is GeometryInstance3D:
+			(c as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return n
+
+
+func _ev_low_pass_round(r: int) -> void:
+	var sec: Dictionary = cfg.get("low_pass_b29", {})
+	for x: Variant in sec.get("rounds", []):
+		if int(x) == r:   # json numbers are floats
+			_beat_after(float(sec.get("delay", 20.0)), _ev_low_pass)
+
+
+## A formation of `count` B-29s on a long descending approach across the sky to a strip beyond the ridge.
+func _ev_low_pass() -> void:
+	var sec: Dictionary = cfg.get("low_pass_b29", {})
+	var from: Vector3 = _a3_v3(sec.get("from", [-500, 140, 260]))
+	var to: Vector3 = _a3_v3(sec.get("to", [700, 40, -220]))
+	var offs: Array = sec.get("spacing", [[0, 0, 0], [-26, 4, -18], [-26, 4, 18], [-52, 8, 0]])
+	var dir: Vector3 = (to - from).normalized()
+	var basis: Basis = Basis.looking_at(dir, Vector3.UP)
+	for i: int in mini(int(sec.get("count", 4)), offs.size()):
+		var p: Node3D = _make_b29(i == 0)
+		add_child(p, true)
+		var o: Vector3 = basis * Vector3(float(offs[i][2]), float(offs[i][1]), -float(offs[i][0]))
+		p.global_position = from + o
+		p.global_basis = basis
+		_b29.append({"node": p, "from": from + o, "to": to + o, "t": 0.0, "dur": float(sec.get("seconds", 30.0))})
+	far_sound(str(sec.get("sound", "war_bomber_drone")), from.lerp(to, 0.5), 2.0)
+	_count("low_pass_b29")
+
+
+func _a3_tick_b29(delta: float) -> void:
+	for i: int in range(_b29.size() - 1, -1, -1):
+		var b: Dictionary = _b29[i]
+		var node: Node3D = b["node"]
+		b["t"] = float(b["t"]) + delta
+		var k: float = float(b["t"]) / float(b["dur"])
+		if k >= 1.0 or not is_instance_valid(node):
+			if is_instance_valid(node):
+				node.queue_free()
+			_b29.remove_at(i)
+			continue
+		node.global_position = (b["from"] as Vector3).lerp(b["to"], k)
+
+
+# ================================================================== tumbleweeds across the lake bed
+
+func _make_tumbleweed() -> Node3D:
+	var n: Node3D = Node3D.new()
+	n.name = "Tumbleweed"
+	var m: StandardMaterial3D = _critter_mat(Color(0.55, 0.45, 0.3))
+	for i: int in 5:
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		var tm: TorusMesh = TorusMesh.new()
+		tm.inner_radius = 0.34
+		tm.outer_radius = 0.4
+		tm.rings = 10
+		tm.ring_segments = 4
+		mi.mesh = tm
+		mi.rotation = Vector3(_rng.randf_range(0, TAU), _rng.randf_range(0, TAU), 0)
+		mi.material_override = m
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		n.add_child(mi)
+	return n
+
+
+func _ev_tumbleweeds() -> void:
+	var sec: Dictionary = cfg.get("tumbleweeds", {})
+	if tumble.size() >= int(sec.get("count", 3)):
+		return
+	var lz: Array = sec.get("lane_z", [4, 56])
+	var t: Node3D = _make_tumbleweed()
+	add_child(t)
+	t.global_position = Vector3(float(sec.get("from_x", -62.0)), 0.4, _rng.randf_range(float(lz[0]), float(lz[1])))
+	var sp: Array = sec.get("speed", [3.0, 6.0])
+	tumble.append({"node": t, "v": Vector3(_rng.randf_range(float(sp[0]), float(sp[1])), 0, _rng.randf_range(-0.6, 0.6)), "t": 0.0})
+	_count("tumbleweeds")
+
+
+func _a3_tick_tumble(delta: float) -> void:
+	var to_x: float = float((cfg.get("tumbleweeds", {}) as Dictionary).get("to_x", 62.0))
+	for i: int in range(tumble.size() - 1, -1, -1):
+		var tw: Dictionary = tumble[i]
+		var node: Node3D = tw["node"]
+		tw["t"] = float(tw["t"]) + delta
+		var v: Vector3 = tw["v"] as Vector3 * (0.7 + _wind * 0.6)
+		node.global_position += v * delta
+		node.global_position.y = 0.4 + absf(sin(float(tw["t"]) * 2.3)) * 0.5
+		node.rotate_z(-v.x * delta / 0.4)
+		if node.global_position.x > to_x:
+			node.queue_free()
+			tumble.remove_at(i)
+
+
+# ================================================================== the searchlight towers (dark until the power)
+
+func _a3_towers_setup() -> void:
+	var sec: Dictionary = cfg["searchlight_towers"]
+	var sh: Shader = load("res://gravelight/world/landscape/shaders/light_beam.gdshader") as Shader
+	var iron: StandardMaterial3D = _critter_mat(Color(0.25, 0.25, 0.26))
+	var h: float = float(sec.get("height", 12.0))
+	for tp: Variant in sec.get("towers", []):
+		var base: Vector3 = _a3_v3(tp)
+		var tower: Node3D = Node3D.new()
+		tower.name = "SearchlightTower"
+		add_child(tower)
+		tower.global_position = base
+		for lx: float in [-1.0, 1.0]:
+			for lz: float in [-1.0, 1.0]:
+				var leg: MeshInstance3D = MeshInstance3D.new()
+				var bm: BoxMesh = BoxMesh.new()
+				bm.size = Vector3(0.18, h, 0.18)
+				leg.mesh = bm
+				leg.position = Vector3(lx * 0.9, h * 0.5, lz * 0.9)
+				leg.rotation_degrees = Vector3(-lz * 2.5, 0, lx * 2.5)
+				leg.material_override = iron
+				tower.add_child(leg)
+		var deck: MeshInstance3D = MeshInstance3D.new()
+		var dm: BoxMesh = BoxMesh.new()
+		dm.size = Vector3(2.6, 0.15, 2.6)
+		deck.mesh = dm
+		deck.position = Vector3(0, h, 0)
+		deck.material_override = iron
+		tower.add_child(deck)
+		var pivot: Node3D = Node3D.new()
+		pivot.position = Vector3(0, h + 0.8, 0)
+		tower.add_child(pivot)
+		var head: MeshInstance3D = MeshInstance3D.new()
+		var hc: CylinderMesh = CylinderMesh.new()
+		hc.top_radius = 0.55
+		hc.bottom_radius = 0.6
+		hc.height = 0.8
+		head.mesh = hc
+		head.rotation_degrees = Vector3(90, 0, 0)
+		head.material_override = iron
+		pivot.add_child(head)
+		var beam: MeshInstance3D = MeshInstance3D.new()
+		var bc: CylinderMesh = CylinderMesh.new()
+		var ln: float = float(sec.get("beam_len", 70.0))
+		bc.top_radius = 0.5
+		bc.bottom_radius = 4.5
+		bc.height = ln
+		bc.cap_top = false
+		bc.cap_bottom = false
+		beam.mesh = bc
+		beam.rotation_degrees = Vector3(-90, 0, 0)
+		beam.position = Vector3(0, 0, -ln * 0.5)
+		var bmat: ShaderMaterial = ShaderMaterial.new()
+		bmat.shader = sh
+		beam.material_override = bmat
+		beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		beam.visible = false
+		pivot.add_child(beam)
+		var sl: SpotLight3D = SpotLight3D.new()
+		sl.light_color = Color(0.95, 0.95, 1.0)
+		sl.light_energy = 0.0
+		sl.spot_range = ln
+		sl.spot_angle = 4.0
+		sl.shadow_enabled = false
+		sl.set_meta("zone", "B_LAKEBED")
+		pivot.add_child(sl)
+		pivot.rotation_degrees = Vector3(-float(sec.get("tilt_deg", 14.0)), _rng.randf_range(0, 360), 0)
+		_towers.append({"pivot": pivot, "beam": beam, "light": sl, "phase": _rng.randf_range(0, TAU),
+			"speed": _rng.randf_range(float((sec.get("sweep", [25, 45]) as Array)[0]), float((sec.get("sweep", [25, 45]) as Array)[1])), "on": false})
+	_ticks.append(_a3_tick_towers)
+	_power_fns.append(_ev_searchlight_towers)
+	if not bool(sec.get("on_power", true)) or GameState.power_on:
+		_ev_searchlight_towers()
+	debug_kinds["searchlight_towers"] = func() -> void: _ev_searchlight_towers()
+
+
+## The power: the towers come up one by one (stagger_s apart), each with a clunk.
+func _ev_searchlight_towers() -> void:
+	var st: float = float((cfg.get("searchlight_towers", {}) as Dictionary).get("stagger_s", 0.8))
+	for i: int in _towers.size():
+		var tw: Dictionary = _towers[i]
+		if bool(tw["on"]):
+			continue
+		_beat_after(st * float(i + 1), func() -> void:
+			tw["on"] = true
+			(tw["beam"] as MeshInstance3D).visible = true
+			(tw["light"] as SpotLight3D).light_energy = 6.0
+			towers_lit += 1
+			_a3_snd("power_on", (tw["pivot"] as Node3D).global_position, -10.0)
+			_count("searchlight_tower"))
+
+
+func _a3_tick_towers(delta: float) -> void:
+	for tw: Dictionary in _towers:
+		if not bool(tw["on"]):
+			continue
+		var pv: Node3D = tw["pivot"]
+		pv.rotation_degrees.y += float(tw["speed"]) * delta * (0.6 + 0.4 * sin(_t * 0.2 + float(tw["phase"])))
+
+
+# ================================================================== sand blowing off the roofs on a gust
+
+func _make_sand() -> GPUParticles3D:
+	var p: GPUParticles3D = GPUParticles3D.new()
+	p.name = "RoofSand"
+	p.amount = 40
+	p.lifetime = 2.4
+	p.one_shot = true
+	p.explosiveness = 0.3
+	var pm: ParticleProcessMaterial = ParticleProcessMaterial.new()
+	pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	pm.emission_box_extents = Vector3(0.3, 0.1, 6.0)
+	pm.direction = Vector3(1, -0.3, 0.2)
+	pm.spread = 25.0
+	pm.initial_velocity_min = 2.0
+	pm.initial_velocity_max = 5.0
+	pm.gravity = Vector3(1.5, -1.2, 0)
+	pm.scale_min = 1.0
+	pm.scale_max = 3.0
+	p.process_material = pm
+	var q: QuadMesh = QuadMesh.new()
+	q.size = Vector2(0.35, 0.35)
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	m.albedo_color = Color(0.82, 0.72, 0.56, 0.35)
+	q.material = m
+	p.draw_pass_1 = q
+	p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return p
+
+
+func _a3_tick_sand(_delta: float) -> void:
+	var gusting: bool = _gust > 0.85
+	if gusting and not _a3_gust_seen:
+		_ev_sand_roofs()
+	_a3_gust_seen = gusting
+
+
+func _ev_sand_roofs() -> void:
+	for pt: Variant in (cfg.get("sand_roofs", {}) as Dictionary).get("points", []):
+		if _rng.randf() < 0.75:
+			_a3_burst(_sand_pool, _make_sand, _a3_v3(pt), 6)
+	_count("sand_roofs")
+
+
+# ================================================================== Quonset huts ticking in the heat
+
+func _a3_quonset_setup() -> void:
+	var sec: Dictionary = cfg["quonset"]
+	var iron: StandardMaterial3D = _critter_mat(Color(0.48, 0.47, 0.44))
+	iron.metallic = 0.5
+	iron.roughness = 0.55
+	for hp: Variant in sec.get("huts", []):
+		var a: Array = hp
+		var hut: MeshInstance3D = MeshInstance3D.new()
+		hut.name = "Quonset"
+		var cm: CylinderMesh = CylinderMesh.new()
+		cm.top_radius = float(a[3]) if a.size() > 3 else 3.2
+		cm.bottom_radius = cm.top_radius
+		cm.height = float(a[4]) if a.size() > 4 else 12.0
+		cm.radial_segments = 14
+		hut.mesh = cm
+		hut.material_override = iron
+		add_child(hut, true)
+		hut.global_position = Vector3(float(a[0]), float(a[1]), float(a[2]))
+		hut.rotation_degrees = Vector3(90, float(a[5]) if a.size() > 5 else 0.0, 0)
+	_every("quonset", sec, _ev_quonset)
+	debug_kinds["quonset"] = func() -> void: _ev_quonset()
+
+
+func _ev_quonset() -> void:
+	var sec: Dictionary = cfg.get("quonset", {})
+	var huts: Array = sec.get("huts", [])
+	if huts.is_empty():
+		return
+	# they tick more once the sun is on them
+	var hot: bool = _a3_ar() >= int(sec.get("heat_round", 4))
+	if not hot and _rng.randf() < 0.5:
+		return
+	var a: Array = huts[_rng.randi() % huts.size()]
+	_a3_snd(str(sec.get("sound", "quonset_tick")), Vector3(float(a[0]), 1.5, float(a[2])), 0.0 if hot else -6.0)
+	_count("quonset")
+
+
+# ================================================================== Act III helpers (own names: the Totenhafen block has its own)
+
+func _a3_snd(key: String, at: Vector3, db: float = 0.0) -> void:
+	if key != "" and AudioDirector.has_sound(key):
+		AudioDirector.play_3d(key, at, db)
+
+
+static func _a3_v3(v: Variant, fallback: Vector3 = Vector3.ZERO) -> Vector3:
+	var a: Array = v if v is Array else []
+	return Vector3(float(a[0]), float(a[1]), float(a[2])) if a.size() >= 3 else fallback
+
+
+## A one-shot particle burst from a small pool (`make` builds one).
+func _a3_burst(pool: Array[GPUParticles3D], make: Callable, at: Vector3, size: int = 4) -> void:
+	var p: GPUParticles3D = null
+	for q: GPUParticles3D in pool:
+		if not q.emitting:
+			p = q
+			break
+	if p == null:
+		if pool.size() < size:
+			p = make.call() as GPUParticles3D
+			add_child(p)
+			pool.append(p)
+		else:
+			p = pool[_rng.randi() % pool.size()]
+	p.global_position = at
+	p.restart()
+
+
+## The act round on an act map (RoundManager's own count, robust on a campaign arrival), else the beat round.
+func _a3_ar() -> int:
+	if RoundManager.has_act():
+		return maxi(1, RoundManager.act_round())
+	return maxi(1, beat_round())

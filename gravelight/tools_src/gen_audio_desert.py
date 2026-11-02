@@ -23,6 +23,7 @@ import numpy as np                           # noqa: E402
 A.ONLY = [a for a in _argv[0].split(",") if a] if _argv else []
 N, tax, white, pink, brown = A.N, A.tax, A.white, A.pink, A.brown
 lp, hp, bp, reson, nrm, sat = A.lp, A.hp, A.bp, A.reson, A.nrm, A.sat
+sine, saw, square = A.sine, A.saw, A.square
 smooth_rand, reverb, emit, loopify = A.smooth_rand, A.reverb, A.emit, A.loopify
 SR = A.SR
 
@@ -195,9 +196,195 @@ def gen_oneshots():
              bus="Ambience", volume_db=-5.0, pitch=[0.9, 1.1], max_voices=1)
 
 
+
+
+# ================================================================== UPDATE 10 §3 Act III (DECISIONS T-157)
+# The act's own base bed (audio.json music.ambient map04c_groomlake: it used to fall back to the Inn's wind), the
+# radar's sweep and motor, the jukebox's tune (our own composition: a 30 s period-swing pastiche, no real song),
+# the wildlife, the Quonset huts ticking in the heat, the fuel dump's whump, the hangar door's drop, the perks'
+# wake sting. All synthesized here; License: Owned.
+
+def _tone_env(n, a, d):
+    t = tax(n)
+    return np.minimum(1.0, t / max(a, 1e-4)) * np.exp(-t / max(d, 1e-4))
+
+
+def jukebox_tune(r):
+    """30 s loop: a walking bass, a muted-trumpet-ish lead, brushed snare and off-beat piano comps in Bb, 128 bpm,
+    16 bars, then the speaker (a band-limited cabinet) and a 78's faint crackle. An original melody."""
+    bpm = 128.0
+    beat = 60.0 / bpm
+    bars = 16
+    loop = bars * 4 * beat                     # 30.0 s
+    total = loop + 1.0
+    n = N(total)
+    out = np.zeros(n)
+    # the changes: I - vi - ii - V in Bb, twice per 8 bars, the bridge to IV
+    prog = ["Bb2", "G2", "C3", "F2", "Bb2", "G2", "C3", "F2", "Eb2", "E2", "Bb2", "G2", "C3", "F2", "Bb2", "F2"]
+    quality = [[0, 4, 7, 9], [0, 3, 7, 10], [0, 3, 7, 10], [0, 4, 7, 10]] * 4
+    walk = [0, 4, 7, 9]
+    for b in range(bars):
+        root = A.hz(prog[b])
+        for k in range(4):
+            t0 = (b * 4 + k) * beat
+            f = root * 2 ** (walk[k] / 12.0)
+            m = N(beat * 0.95)
+            x = lp(saw(np.full(m, f)), 600, 2) * _tone_env(m, 0.005, 0.35)
+            A.place(out, x * 0.55, t0)
+        # the piano comps on 2 and 4: a short chord
+        for k in (1, 3):
+            t0 = (b * 4 + k) * beat + 0.01
+            m = N(0.28)
+            ch = np.zeros(m)
+            for iv in quality[b % len(quality)]:
+                ch += sine(np.full(m, root * 4 * 2 ** (iv / 12.0))) + 0.4 * sine(np.full(m, root * 8 * 2 ** (iv / 12.0)))
+            A.place(out, ch * _tone_env(m, 0.004, 0.12) * 0.12, t0)
+        # the brushes: a swish on every beat, a tap on 2 and 4
+        for k in range(4):
+            t0 = (b * 4 + k) * beat
+            m = N(beat * 0.6)
+            sw = bp(white(r, beat * 0.6), 2500, 9000, 2) * _tone_env(m, 0.03, 0.12) * (0.18 if k % 2 == 0 else 0.3)
+            A.place(out, sw, t0)
+    # the lead: a swung tune over the changes (eighths long-short), muted (a square through a low-pass, a wah breath)
+    tune = ["F4", "G4", "Bb4", "D5", "C5", "Bb4", "G4", "-", "A4", "C5", "Eb5", "D5", "C5", "A4", "F4", "-",
+            "Bb4", "D5", "F5", "D5", "Eb5", "C5", "A4", "-", "G4", "Bb4", "D5", "C5", "Bb4", "-", "-", "-"]
+    i = 0
+    for b in range(bars):
+        for k in range(4):
+            note = tune[i % len(tune)]
+            i += 1
+            if note == "-":
+                continue
+            t0 = (b * 4 + k) * beat + (0.0 if k % 2 == 0 else beat * 0.08)
+            dur = beat * (0.9 if k % 2 == 0 else 0.6)
+            m = N(dur)
+            f = A.hz(note)
+            vib = f * (1.0 + 0.006 * np.sin(2 * np.pi * 5.2 * tax(m)))
+            tone = lp(square(vib), 1400 + 800 * (b % 4 == 3), 2) * _tone_env(m, 0.02, dur * 0.8)
+            A.place(out, tone * 0.22, t0)
+    # the speaker cabinet, a little room, the 78's crackle
+    out = bp(out, 180, 4200, 2)
+    crk = A.crackle(r, total, 9.0, 1.0, 1500, 6000) * 0.05 + lp(pink(r, total), 900, 2) * 0.01
+    x = A.to_stereo(nrm(out) * 0.9 + crk)
+    x = reverb(x, r, decay=0.8, wet=0.15, damp=4000)
+    return loopify(x, 1.0)
+
+
+def gen_u10():
+    total = LOOP + XF
+    # the act's base bed: open desert wind, a far diesel the generator sheds, the range's tin ticking far off
+    r = A.rng_for("m4c_base")
+    x = desert_wind(r, total, 1.0, 0.3)
+    x = x + 0.12 * A.to_stereo(lp(diesel(r, total, 720.0), 400, 2))
+    for k in range(5):
+        tick = hp(white(r, 0.05), 3000, 2) * np.exp(-tax(N(0.05)) / 0.006) * 0.15
+        A.place(x, A.to_stereo(tick), r.uniform(1.0, total - 2.0))
+    emit("ambient_map04c", "sfx/ambience/map04c_base", loopify(x, XF), -4.0, loop=True, **BED)
+    # the radar's sweep: a phosphor ping with a ringing tail and a soft swish
+    for i in A.variants(2):
+        r = A.rng_for(f"m4c_sweep{i}")
+        sec = 1.8
+        m = N(sec)
+        t = tax(m)
+        f = 1150.0 + 60.0 * i
+        ping = np.sin(2 * np.pi * f * t) * np.exp(-t / 0.35) + 0.4 * np.sin(2 * np.pi * f * 2.01 * t) * np.exp(-t / 0.18)
+        swish = A.sweep_noise(r, sec, 800, 3500, 1, 4, curve=900) * np.exp(-t / 0.6) * 0.3
+        x = reverb(A.to_stereo(nrm(ping) + swish), r, 1.2, 0.3)
+        emit("radar_sweep", f"sfx/world/m4c_radar_sweep_{i:02d}", x, -6.0, bus="SFX", volume_db=-4.0, pitch=[0.98, 1.02], max_voices=2)
+    # the radar's motor spinning up
+    r = A.rng_for("m4c_radar_motor")
+    sec = 2.5
+    m = N(sec)
+    t = tax(m)
+    fr = 30.0 + 90.0 * np.clip(t / 2.0, 0, 1)
+    x = (saw(fr) * 0.4 + sine(fr * 2) * 0.3) * np.minimum(1.0, t / 0.3) * np.exp(-np.maximum(t - 2.0, 0) / 0.3)
+    x = lp(x, 900, 2) + 0.1 * bp(white(r, sec), 2000, 6000, 2)
+    emit("radar_motor", "sfx/world/m4c_radar_motor", reverb(A.to_stereo(nrm(x)), r, 1.0, 0.2), -6.0, bus="SFX", volume_db=-4.0, max_voices=1)
+    # the jukebox's tune (Music bus: the music slider turns it down too)
+    r = A.rng_for("m4c_jukebox")
+    emit("jukebox_loop", "music/m4c_jukebox_loop", jukebox_tune(r), -3.0, loop=True, bus="Music", volume_db=-6.0, pitch=[1.0, 1.0], max_voices=1)
+    # coyotes: a run of yips sliding up and a short howl
+    for i in A.variants(3):
+        r = A.rng_for(f"m4c_coyote{i}")
+        sec = 2.2
+        x = np.zeros(N(sec))
+        tcur = 0.05
+        for k in range(int(r.integers(3, 6))):
+            d = r.uniform(0.09, 0.16)
+            m = N(d)
+            tt = tax(m)
+            f = r.uniform(650, 900) * (1.0 + 0.6 * tt / d)
+            y = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.sin(np.pi * tt / d) ** 2
+            A.place(x, y * r.uniform(0.6, 1.0), tcur)
+            tcur += d + r.uniform(0.04, 0.12)
+        m = N(0.8)
+        tt = tax(m)
+        f = 700 + 300 * np.sin(np.pi * tt / 0.8)
+        howl = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.sin(np.pi * tt / 0.8) * 0.7
+        A.place(x, howl, min(tcur, sec - 0.85))
+        x = reverb(A.to_stereo(nrm(x)), r, 2.2, 0.45, damp=3000, predelay=0.05)
+        emit("coyote_yip", f"sfx/ambience/m4c_coyote_{i:02d}", x, -8.0, bus="Ambience", volume_db=-6.0, pitch=[0.92, 1.08], max_voices=2)
+    # a jackrabbit bolting: a scrabble of feet on the crust
+    for i in A.variants(2):
+        r = A.rng_for(f"m4c_rabbit{i}")
+        sec = 0.7
+        x = np.zeros(N(sec))
+        for k in range(8):
+            hit = bp(white(r, 0.03), 900, 5000, 2) * np.exp(-tax(N(0.03)) / 0.008)
+            A.place(x, hit * r.uniform(0.4, 1.0), 0.03 + 0.07 * k + r.uniform(0, 0.02))
+        emit("rabbit_bolt", f"sfx/ambience/m4c_rabbit_{i:02d}", A.to_stereo(nrm(x)), -10.0, bus="Ambience", volume_db=-8.0, pitch=[0.9, 1.1], max_voices=2)
+    # the Quonset huts ticking as the corrugated iron heats
+    for i in A.variants(3):
+        r = A.rng_for(f"m4c_quonset{i}")
+        sec = 1.6
+        x = np.zeros(N(sec))
+        for k in range(int(r.integers(2, 5))):
+            m = N(0.4)
+            tt = tax(m)
+            f = r.uniform(700, 1500)
+            ping = (np.sin(2 * np.pi * f * tt) + 0.5 * np.sin(2 * np.pi * f * 2.7 * tt)) * np.exp(-tt / 0.07)
+            ping += bp(white(r, 0.4), 1500, 7000, 2) * np.exp(-tt / 0.01)
+            A.place(x, ping * r.uniform(0.4, 1.0), r.uniform(0.0, sec - 0.45))
+        emit("quonset_tick", f"sfx/ambience/m4c_quonset_{i:02d}", reverb(A.to_stereo(nrm(x)), r, 0.9, 0.25), -8.0, bus="Ambience", volume_db=-6.0, pitch=[0.9, 1.1], max_voices=2)
+    # the fuel dump catching: a deep whump, then the roar taking hold
+    r = A.rng_for("m4c_whump")
+    sec = 3.0
+    m = N(sec)
+    t = tax(m)
+    thump = lp(brown(r, sec), 140, 2) * np.exp(-t / 0.35) * 2.0 + np.sin(2 * np.pi * (48 - 12 * t) * t) * np.exp(-t / 0.5)
+    roar = fire_roar(r, sec)[:, 0] * np.clip((t - 0.2) / 1.2, 0, 1)
+    x = reverb(A.to_stereo(nrm(thump) + 0.6 * nrm(roar)), r, 1.6, 0.3)
+    emit("fuel_whump", "sfx/world/m4c_fuel_whump", x, -2.0, bus="SFX", volume_db=0.0, max_voices=1)
+    # the hangar's sliding door dropping: the rollers screaming, then the slam
+    r = A.rng_for("m4c_door_drop")
+    sec = 2.4
+    m = N(sec)
+    t = tax(m)
+    scream = sum(np.sin(2 * np.pi * f * t * (1 - 0.15 * t)) for f in (620.0, 930.0, 1410.0)) * np.clip(1.0 - t / 1.1, 0, 1) * 0.15
+    rumble = lp(brown(r, sec), 300, 2) * np.clip(1.0 - t / 1.1, 0, 1)
+    slam = np.zeros(m)
+    k0 = N(1.1)
+    sl = (lp(white(r, 1.3), 900, 2) + sum(np.sin(2 * np.pi * f * tax(N(1.3))) for f in (85.0, 170.0, 233.0)) * 0.6) * np.exp(-tax(N(1.3)) / 0.25)
+    slam[k0:k0 + len(sl)] += sl[: m - k0]
+    x = reverb(A.to_stereo(nrm(scream + 0.6 * nrm(rumble) + 1.4 * slam)), r, 1.8, 0.35)
+    emit("door_drop", "sfx/world/m4c_door_drop", x, -2.0, bus="SFX", volume_db=0.0, max_voices=1)
+    # the perks waking with the power: a short rising electric chord
+    r = A.rng_for("m4c_perk_wake")
+    sec = 1.2
+    m = N(sec)
+    t = tax(m)
+    x = np.zeros(m)
+    for k, f in enumerate((A.hz("Bb3"), A.hz("D4"), A.hz("F4"), A.hz("Bb4"))):
+        on = np.clip((t - 0.06 * k) / 0.02, 0, 1)
+        x += np.sin(2 * np.pi * f * (1.0 + 0.02 * np.minimum(t, 0.3)) * t) * on * np.exp(-np.maximum(t - 0.06 * k, 0) / 0.5)
+    x = x + 0.2 * bp(white(r, sec), 3000, 8000, 2) * np.exp(-t / 0.05)
+    emit("perk_wake_sting", "sfx/world/m4c_perk_wake", reverb(A.to_stereo(nrm(x)), r, 1.0, 0.25), -6.0, bus="SFX", volume_db=-4.0, max_voices=3)
+
+
 def main():
     gen_beds()
     gen_oneshots()
+    gen_u10()
     A.write_manifest()
     total = sum(d for _, d in A.STATS)
     print(f"gen_audio_desert: wrote {len(A.STATS)} files ({total:.1f} s of audio), {len(A.KEYS)} keys merged into data/gravelight/audio.json")

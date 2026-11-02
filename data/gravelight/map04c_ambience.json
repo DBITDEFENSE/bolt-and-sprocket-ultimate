@@ -1,0 +1,76 @@
+{
+  "_doc": "Groom Lake's living world (UPDATE 10 §3 Act III, contract C1, DECISIONS T-157): MapRoot attaches a MapAmbience with this file (needs_landscape false: the act has no Landscape). Presentation only. Kinds (the 'U10 Act III' block of gravelight/world/landscape/map_ambience.gd): gusts (the shared Map 0 gust: the wind, the sand off the roofs), milky_way (the desert sky's band: strength[0] up to rounds[0], strength[1] from rounds[1], the dawn taking it), heat_shimmer (refraction cards over the salt from from_round, full at full_round: the sun is up), wildlife (jackrabbits on the salt and coyotes on the berms that bolt from a player within bolt_m / a shot within shot_bolt_m, a yip now and then), low_pass_b29 (four B-29s with landing lights on a long approach to a strip beyond the ridge, on the beat rounds 2 and 7 = match 22 / 27 in a campaign, delay s into the round), tumbleweeds (rolling west to east across the salt with the wind), searchlight_towers (four towers outside the berms, dark until the power, then up one by one stagger_s apart, sweeping), sand_roofs (sand blowing off the hangar's and the sheds' roof edges on a gust), quonset (two Quonset huts past the west berm, ticking in the heat, more from heat_round). Rounds are beat rounds (rounds on this map: the act round in a campaign).",
+  "needs_landscape": false,
+  "gusts": {
+    "first_after": [15, 30],
+    "interval": [25, 55],
+    "seconds": [3.0, 6.0],
+    "sound": "amb_wind_gust",
+    "snow_push": 0.0
+  },
+  "milky_way": {
+    "rounds": [1, 6],
+    "strength": [1.0, 0.0]
+  },
+  "heat_shimmer": {
+    "from_round": 6,
+    "full_round": 8,
+    "strength": 0.008,
+    "cards": [
+      [0.0, 0.9, 57.5, 110.0, 1.8, 180.0],
+      [-57.5, 0.9, 28.0, 56.0, 1.8, 90.0],
+      [57.5, 0.9, 28.0, 56.0, 1.8, -90.0]
+    ]
+  },
+  "wildlife": {
+    "rabbits": 4,
+    "coyotes": 3,
+    "area": [[-52.0, 0.0, 4.0], [52.0, 0.0, 55.0]],
+    "coyote_spots": [[-60.0, 2.0, 36.0], [60.0, 2.0, 20.0], [-28.0, 2.0, 60.0], [30.0, 2.0, -4.0]],
+    "bolt_m": 9.0,
+    "shot_bolt_m": 25.0,
+    "rabbit_mps": 9.0,
+    "coyote_mps": 7.0,
+    "bolt_s": 3.5,
+    "respawn_s": [25.0, 45.0],
+    "yip": {"first_after": [20, 40], "interval": [45, 90]}
+  },
+  "low_pass_b29": {
+    "rounds": [2, 7],
+    "delay": 20.0,
+    "count": 4,
+    "seconds": 42.0,
+    "from": [-900.0, 170.0, 520.0],
+    "to": [900.0, 55.0, -420.0],
+    "spacing": [[0, 0, 0], [-34, 5, -24], [-34, 5, 24], [-68, 10, 0]],
+    "sound": "war_bomber_drone"
+  },
+  "tumbleweeds": {
+    "count": 3,
+    "first_after": [8, 20],
+    "interval": [16, 36],
+    "lane_z": [4.0, 56.0],
+    "from_x": -58.0,
+    "to_x": 58.0,
+    "speed": [3.0, 6.0]
+  },
+  "searchlight_towers": {
+    "towers": [[-66.0, 0.0, -12.0], [66.0, 0.0, -12.0], [-76.0, 0.0, 56.0], [76.0, 0.0, 56.0]],
+    "height": 12.0,
+    "beam_len": 70.0,
+    "tilt_deg": 14.0,
+    "sweep": [22.0, 40.0],
+    "on_power": true,
+    "stagger_s": 0.8
+  },
+  "sand_roofs": {
+    "points": [[20.0, 9.3, 70.0], [20.0, 9.3, 88.0], [70.0, 9.3, 70.0], [70.0, 9.3, 88.0], [45.0, 9.6, 60.0], [-70.0, 3.6, 74.0], [-20.0, 3.6, 74.0]]
+  },
+  "quonset": {
+    "huts": [[-88.0, 0.0, 18.0, 3.4, 13.0, 0.0], [-88.0, 0.0, 38.0, 3.4, 13.0, 0.0]],
+    "first_after": [8, 18],
+    "interval": [9, 22],
+    "heat_round": 4,
+    "sound": "quonset_tick"
+  }
+}

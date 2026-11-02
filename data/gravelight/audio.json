@@ -103,7 +103,8 @@
       "default": "ambient_map00",
       "map02_totenhafen": "ambient_map02_storm",
       "map04d_mondlicht": "ambient_map04d_concourse",
-      "map04b_kranich": "ambient_map04b"
+      "map04b_kranich": "ambient_map04b",
+      "map04c_groomlake": "ambient_map04c"
     },
     "ambient_db": [
       -6.0,
@@ -4545,6 +4546,118 @@
       ],
       "max_voices": 1,
       "bus": "Master"
+    },
+    "ambient_map04c": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map04c_base.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "radar_sweep": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4c_radar_sweep_01.wav",
+        "res://gravelight/audio/sfx/world/m4c_radar_sweep_02.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -4.0,
+      "pitch": [
+        0.98,
+        1.02
+      ],
+      "max_voices": 2
+    },
+    "radar_motor": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4c_radar_motor.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -4.0,
+      "max_voices": 1
+    },
+    "jukebox_loop": {
+      "files": [
+        "res://gravelight/audio/music/m4c_jukebox_loop.wav"
+      ],
+      "bus": "Music",
+      "volume_db": -6.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "coyote_yip": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/m4c_coyote_01.wav",
+        "res://gravelight/audio/sfx/ambience/m4c_coyote_02.wav",
+        "res://gravelight/audio/sfx/ambience/m4c_coyote_03.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": -6.0,
+      "pitch": [
+        0.92,
+        1.08
+      ],
+      "max_voices": 2
+    },
+    "rabbit_bolt": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/m4c_rabbit_01.wav",
+        "res://gravelight/audio/sfx/ambience/m4c_rabbit_02.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": -8.0,
+      "pitch": [
+        0.9,
+        1.1
+      ],
+      "max_voices": 2
+    },
+    "quonset_tick": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/m4c_quonset_01.wav",
+        "res://gravelight/audio/sfx/ambience/m4c_quonset_02.wav",
+        "res://gravelight/audio/sfx/ambience/m4c_quonset_03.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": -6.0,
+      "pitch": [
+        0.9,
+        1.1
+      ],
+      "max_voices": 2
+    },
+    "fuel_whump": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4c_fuel_whump.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": 0.0,
+      "max_voices": 1
+    },
+    "door_drop": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4c_door_drop.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": 0.0,
+      "max_voices": 1
+    },
+    "perk_wake_sting": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4c_perk_wake.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -4.0,
+      "max_voices": 3
     }
   }
 }

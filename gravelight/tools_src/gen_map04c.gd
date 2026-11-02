@@ -33,7 +33,7 @@ func setup_tables() -> void:
 	map_id = "map04c_groomlake"
 	display_name = "Fernflug — Act III: Groom Lake"
 	start_zone = "A_WRECK"
-	intro_text = "GROOM LAKE, NEVADA\nan Army Air Forces test range, 05:50"
+	intro_text = "GROOM LAKE, NEVADA\nan Army Air Forces test range, 05:50\none day the maps will call it Area 51"
 	json_table = "map04c"
 	zone_bits = {"A_WRECK": 1, "B_LAKEBED": 2, "C_HANGAR": 3, "D_MOTORPOOL": 4, "E_RADAR": 5, "F_LAB": 6, "G_SILO": 7}
 	adj = {"A_WRECK": ["B_LAKEBED"], "B_LAKEBED": ["A_WRECK", "C_HANGAR", "D_MOTORPOOL"],
@@ -1059,6 +1059,8 @@ func build_gameplay_extra() -> void:
 	box(gameplay, "BulkheadPlate", Vector3(8.8, 0, -4.0 - T * 0.5), Vector3(11.2, 2.4, -4.0 + T * 0.5), "steel")
 	# U10 §3: the radar's controller at the dish (turns it, pings the minimap when powered)
 	_node("res://gravelight/world/map04/radar_dish.gd", "RadarController", {}, Vector3(45, 19.6, 120))
+	# U10 §3: the jukebox in the hangar's break corner (by the bench), plays our own tune once the power is on
+	_node("res://gravelight/world/map04/jukebox.gd", "Jukebox", {}, Vector3(20.55, 0, 76.0), -90.0)
 	# the Jumpjockeys' launch points: the tower step's corners and the gantry post's foot
 	for lp: Array in [["Launch_Tower_1", Vector3(42.5, 1.0, 117.5)], ["Launch_Tower_2", Vector3(47.5, 1.0, 117.5)], ["Launch_Tower_3", Vector3(47.5, 1.0, 122.5)],
 			["Launch_Gantry", Vector3(ROCKET_X + 5.5, LAB_Y, ROCKET_Z + 1.5)]]:

@@ -19,6 +19,10 @@ uniform float star_density = 0.0045;
 uniform float star_gain = 1.6;
 uniform float cirrus = 0.55;
 uniform float exposure = 1.0;
+// U10 §3 (T-157): the Milky Way, a dusty band of light across the sky along the great circle normal to mw_pole,
+// strongest before the dawn takes it (MapAmbience's milky_way kind fades it with the act rounds; 0 = none)
+uniform float milky_way = 0.0;
+uniform vec3 mw_pole = vec3(0.35, 0.45, -0.82);
 
 float hash3(vec3 p) { return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
 float hash2(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -82,6 +86,21 @@ void sky() {
 		float s = stars(d);
 		float fade = smoothstep(0.06, 0.45, up) * (1.0 - clamp(g * 1.6, 0.0, 1.0));
 		col += vec3(0.85, 0.9, 1.0) * s * fade * star_gain;
+	}
+	// the Milky Way: a soft band with dark dust lanes down its middle and a denser field of faint stars in it
+	if (!AT_CUBEMAP_PASS && milky_way > 0.001 && up > 0.03) {
+		float lat = dot(d, normalize(mw_pole));
+		float bandw = exp(-lat * lat * 38.0);
+		vec2 bp = vec2(atan(d.z, d.x) * 3.0, lat * 18.0);
+		float dust = smoothstep(0.35, 0.75, fbm(bp * 1.7 + vec2(1.3, 0.0)));
+		float lane = 1.0 - 0.75 * exp(-lat * lat * 900.0) * smoothstep(0.3, 0.7, fbm(bp * 3.1));
+		float glowmw = bandw * (0.45 + 0.55 * fbm(bp * 0.9)) * lane * (1.0 - 0.5 * dust);
+		float fade = smoothstep(0.04, 0.3, up) * (1.0 - clamp(g * 2.0, 0.0, 1.0));
+		col += vec3(0.62, 0.66, 0.82) * glowmw * 0.22 * milky_way * fade;
+		vec3 g2 = d * 520.0;
+		float h2 = hash3(floor(g2));
+		float fs = step(1.0 - 0.02 * bandw, h2) * smoothstep(0.45, 0.0, length(fract(g2) - 0.5));
+		col += vec3(0.9, 0.92, 1.0) * fs * 0.7 * milky_way * fade;
 	}
 	// below the horizon: the dark land (the ridges cover most of it)
 	if (h < 0.0) {

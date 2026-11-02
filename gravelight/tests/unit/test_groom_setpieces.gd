@@ -147,3 +147,30 @@ func test_map_state_radar_ping_window() -> void:
 	assert_true(ms.radar_active(), "still on at 9.5 s")
 	ms._process(0.6)
 	assert_false(ms.radar_active(), "off after 10 s")
+
+
+# ---------------------------------------------------------------- the living world (map04c_ambience.json)
+
+func test_act3_ambience_file() -> void:
+	var c: Dictionary = GLData.load_json("res://data/gravelight/map04c_ambience.json")
+	assert_false(bool(c.get("needs_landscape", true)), "the act has no Landscape")
+	for k: String in ["milky_way", "heat_shimmer", "wildlife", "low_pass_b29", "tumbleweeds", "searchlight_towers", "sand_roofs", "quonset"]:
+		assert_true(c.has(k), k)
+	assert_false(c.has("low_pass"), "the B-29s are their own key: the Totenhafen low_pass kind never runs here")
+
+
+func test_milky_way_and_shimmer_with_the_dawn() -> void:
+	var c: Dictionary = GLData.load_json("res://data/gravelight/map04c_ambience.json")
+	assert_eq(MapAmbience.milky_way_at(1, c["milky_way"]), 1.0)
+	assert_almost_eq(MapAmbience.milky_way_at(6, c["milky_way"]), 0.0, 0.001)
+	assert_true(MapAmbience.milky_way_at(3, c["milky_way"]) < 1.0)
+	assert_eq(MapAmbience.shimmer_at(5, c["heat_shimmer"]), 0.0, "no shimmer before the sun is up")
+	assert_true(MapAmbience.shimmer_at(6, c["heat_shimmer"]) > 0.0)
+	assert_eq(MapAmbience.shimmer_at(9, c["heat_shimmer"]), 1.0)
+
+
+func test_wildlife_bolts() -> void:
+	assert_true(MapAmbience.should_bolt(Vector3.ZERO, [Vector3(5, 0, 0)], null, 9.0, 25.0), "a player 5 m off")
+	assert_false(MapAmbience.should_bolt(Vector3.ZERO, [Vector3(15, 0, 0)], null, 9.0, 25.0), "15 m off: it keeps nibbling")
+	assert_true(MapAmbience.should_bolt(Vector3.ZERO, [], Vector3(20, 0, 0), 9.0, 25.0), "a shot 20 m off")
+	assert_eq(MapAmbience.flee_dir(Vector3(1, 0, 0), Vector3.ZERO), Vector3.RIGHT, "straight away")
