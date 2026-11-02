@@ -433,7 +433,7 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 			w["pickup"] = _first(t.get("then_pickup", {}), null)
 			var crate: MysteryCrate = _current_crate()
 			w["crate"] = crate
-			w["can_trigger"] = crate != null and Economy.get_scrip(player.player_id) >= CrateManager.cost()
+			w["can_trigger"] = crate != null and (Economy.get_scrip(player.player_id) >= CrateManager.cost() or _my_roll(crate))
 			w["mode"] = hub.mode() if hub_ok else ""   # U10 (T-163): Full Partner may do the task's full_partner stages
 		"hold_zone":
 			var running: bool = not QuestManager.holdout_state(qid, sid).is_empty()
@@ -1183,9 +1183,21 @@ func _has_upgraded() -> bool:
 func _current_crate() -> MysteryCrate:
 	for s: Node in brain.get_tree().get_nodes_in_group(&"crate_spots"):
 		var c: MysteryCrate = s as MysteryCrate
-		if c != null and c.spot_index == CrateManager.location_index and c.phase == MysteryCrate.Phase.CLOSED:
+		if c != null and c.spot_index == CrateManager.location_index and (c.phase == MysteryCrate.Phase.CLOSED or _my_roll(c)):
 			return c
 	return null
+
+
+## U10 (T-163): this bot's own roll is still going (cycling, offered): the plan stays on the crate, so the errand
+## sees it through (the plan used to flip to "wait" the moment the lid opened, dropping the errand mid-roll, and the
+## stale errand then reported the next attempt done without a pull: s7's pulls came at half the rate).
+func _my_roll(c: MysteryCrate) -> bool:
+	if int(c.get("_owner_player")) != player.player_id:
+		return false
+	if c.phase == MysteryCrate.Phase.CYCLING:
+		return true
+	# offered: only while our errand is still deciding (once it took or left the gun, the offer runs out on its own)
+	return c.phase == MysteryCrate.Phase.OFFERED and not _errand.is_empty() and _errand.get("node") == c
 
 
 # ---------------------------------------------------------------- the voice
