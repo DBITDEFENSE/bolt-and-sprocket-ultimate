@@ -21,11 +21,17 @@ func _init() -> void:
 	DirAccess.make_dir_recursive_absolute(SFX_DIR)
 	DirAccess.make_dir_recursive_absolute(MUS_DIR)
 	var t0: int = Time.get_ticks_msec()
+	if OS.get_cmdline_user_args().has("--only=menu"):   # T-144: just the main menu's three sounds
+		_gen_menu()
+		print("gen_sfx: wrote %d files in %.1f s" % [_count, float(Time.get_ticks_msec() - t0) / 1000.0])
+		quit()
+		return
 	_gen_weapons()
 	_gen_feedback()
 	_gen_barricades()
 	_gen_zombies()
 	_gen_music()
+	_gen_menu()   # last: it draws from the shared rng, so the sounds before it stay what they were
 	print("gen_sfx: wrote %d files in %.1f s" % [_count, float(Time.get_ticks_msec() - t0) / 1000.0])
 	quit()
 
@@ -573,6 +579,33 @@ func _gen_barricades() -> void:
 	for k: int in 4:
 		bs = mix(bs, click(rng.randf_range(1200.0, 2400.0), 0.005), 0.03 + 0.025 * k, 0.25)
 	save(reverb(drive(bs, 2.0), 0.25, 1.1, 0.5), SFX_DIR + "board_slam.wav")
+
+
+# ─────────────────────────────────────────────────────────────── the main menu (T-144)
+
+const MENU_DIR: String = "res://gravelight/audio/sfx/ui/"
+
+
+func _gen_menu() -> void:
+	# Typewriter tick (hover / focus): a short type-bar strike, a key thock under it, a faint carriage ring.
+	var tk: PackedFloat32Array = buf(0.12)
+	tk = mix(tk, click(3200.0, 0.0025, 0.01), 0.0, 0.8)
+	tk = mix(tk, thump(0.06, 900.0, 520.0, 0.004, 0.012), 0.002, 0.45)
+	tk = mix(tk, env_ad(sine(0.1, 2350.0), 0.0005, 0.02), 0.0, 0.05)
+	save(reverb(tk, 0.08, 0.4, 0.2), MENU_DIR + "tick_01.wav")
+	# Rubber stamp (press): a padded thud on a wooden desk, the paper's slap and a little rattle of the stamp.
+	var st: PackedFloat32Array = thump(0.35, 180.0, 85.0, 0.012, 0.05)
+	st = mix(st, env_ad(svf(noise(0.2), 1800.0, 0.6, 1), 0.0008, 0.018), 0.0, 0.7)
+	st = mix(st, env_ad(svf(noise(0.25), 420.0, 0.9, 0), 0.001, 0.05), 0.0, 0.6)
+	st = mix(st, click(1700.0, 0.004), 0.05, 0.18)
+	save(reverb(drive(st, 1.6), 0.18, 0.7, 0.35), MENU_DIR + "stamp_01.wav")
+	# Paper whoosh (screen change): a band-passed noise swell sliding up, like a sheet pulled across the desk.
+	var wh_sec: float = 0.42
+	var sweep: Callable = func(t: float) -> float: return 700.0 + 2600.0 * clampf(t / wh_sec, 0.0, 1.0)
+	var wh: PackedFloat32Array = svf(noise(wh_sec), sweep, 0.7, 1)
+	var wh_env: Callable = func(t: float) -> float: return hump(t, wh_sec, 0.16, 0.22)
+	wh = env_fn(wh, wh_env)
+	save(reverb(scale(wh, 0.8), 0.12, 0.6, 0.3), MENU_DIR + "whoosh_01.wav")
 
 
 # ─────────────────────────────────────────────────────────────── zombies

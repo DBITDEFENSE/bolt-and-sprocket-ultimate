@@ -1,0 +1,68 @@
+{
+  "_doc": "Loading-screen and pause tips (UPDATE 09 section 7, DECISIONS T-144). `tips`: one shown per loading screen (LoadingScreen.pick_tip), each a single plain sentence or two, no brand names, under 140 characters. `lore_lines`: per map id, one line shown under the map's name while it loads (LoadingScreen.lore_line); in-world voice, the date where the story needs it. test_tips checks the counts, lengths and that every playable map has lines.",
+  "tips": [
+    "Rebuilt boards pay Scrip. The early rounds are for building, not for heroics.",
+    "Sprint, then crouch to slide. Jump out of a slide to keep the speed.",
+    "Hold USE at a wall gun you already own to buy its ammunition.",
+    "The Crucible forges a gun three times: V, VV and VVV. Each forge costs more.",
+    "A violet glint on a hand or above a brow is the Marke. Hit it: it pays extra and drops them faster.",
+    "Headshots pay more Scrip than body kills. The Marke on the forehead counts as the head.",
+    "Perk slots are capped at six (four under Classic Rules). Pick the ones that fit the map.",
+    "A downed friend can crawl and shoot for forty-five seconds. Hold USE on them to bring them back.",
+    "Doors cost Scrip but open new ground, new walls of guns and new ways to run.",
+    "The bank keeps Scrip between matches. Its interest is small and honest, which is rare.",
+    "A kill now and then drops dog tags. Walk near them and they drift to you: free Scrip.",
+    "Grenades cook while you hold the button. Peg's trait shows the fuse on the HUD.",
+    "Every board you rebuild in a round pays, up to a cap. Stand back from the window while you do it.",
+    "The power switch opens the perk cabinets. Find it before round five if you can.",
+    "Bots buy their own guns and open doors with their own Scrip. Mark a task and they will see to it.",
+    "Pings on the pause map tell your squad where to go. Bots follow them too.",
+    "Ammo boxes refill the gun in your hands and your grenades, for a price. Every map has them.",
+    "A crate costs a fair price and gives an unfair gun, sometimes. Sometimes not.",
+    "Finish a round without taking a hit and the round pay comes with a bonus.",
+    "A crawler is still a zombie. Count it before you start the next round.",
+    "Double Scrip doubles every kill, every board and every Marke bonus while it lasts.",
+    "Relief squads fight beside you for a while. If one falls, the Marke gets him back up.",
+    "Wren earns ten Scrip more for every headshot kill. Aim for the hat.",
+    "Deacon repairs, builds and resets traps faster. Give him the boards.",
+    "Dutch hits harder with the knife. When the ammo runs out, he does not.",
+    "Classic Rules turns off traits and the Marke bonus for a straight fight.",
+    "The intel you find is kept in the Archive between matches. Read it: it is all true.",
+    "Challenges rotate. Finish one in a match and its reward is yours for good.",
+    "On a new map, walk it once before the round starts: windows, doors, the way out.",
+    "The account is never closed by them. You close it."
+  ],
+  "lore_lines": {
+    "map00_crossroads": [
+      "Gasthaus Zum Kreuzweg, 23 December 1944. The plane is down, the road is closed, and the dead are walking up from the south.",
+      "Frau Pohl's coffee is still warm on the table. Nobody has paid for it.",
+      "There is a man locked in the coal cage, and he is the only one here who has never been marked."
+    ],
+    "map01_kaltenbrunn": [
+      "Kaltenbrunn, late December 1944. The salt mine kept the Ledger. The Ledger kept everyone.",
+      "Eleven went down the Maintenance Stairs. One came out.",
+      "The chapel is carved from salt. The prayers in it were not answered by anyone you would want."
+    ],
+    "map02_totenhafen": [
+      "Totenhafen, January 1945. The pens flood every third round, and the cargo is still aboard U-1047.",
+      "Lead coffins for a Swiss consignee. Nobody ships lead that carefully unless something inside must stay down.",
+      "The tide comes in. The tide goes out. The dead do not care either way."
+    ],
+    "map04a_thalbach": [
+      "Werk Thalbach, May 1945. The war is ending everywhere except here.",
+      "The night shift never clocked out. The clock is still running against them."
+    ],
+    "map04b_kranich": [
+      "Der Kranich, over the Atlantic, May 1945. Nobody aboard is a passenger.",
+      "The autopilot knows the way. The question is whose way."
+    ],
+    "map04c_groomlake": [
+      "Groom Lake, May 1945. A dry lake, a rocket, and a contract nobody read to the end.",
+      "The desert is quiet. The relay above it is not."
+    ],
+    "map04d_mondlicht": [
+      "The Moon, May 1945. Regional Retention Relay RR-7: the carrier that keeps the marked dead walking.",
+      "Every Marke on Earth answers to this place. Cut the line, and they all lie down."
+    ]
+  }
+}

@@ -223,6 +223,7 @@ func _graphics() -> void:
 		if i < order.size():
 			GLSettings.set_preset(order[i])
 			rebuild())))
+	content.add_child(MenuKit.para(detected_line(), 16, MenuKit.VIOLET.lightened(0.25)))
 	content.add_child(MenuKit.para("Low and Medium render below full resolution and upscale it; High is full quality; Ultra adds 4x MSAA with TAA, 8K shadows, the best AO, fog and level of detail (a fast GPU: RTX 3080 and up).", 16, MenuKit.DIM))
 	_choice("Anti-aliasing", "gfx_aa", GLSettings.AA_MODES, ["Off", "FXAA (cheap, soft)", "SMAA (sharp)", "MSAA 2x", "MSAA 4x", "MSAA 8x", "TAA (smoothest, softer in motion)", "MSAA 4x + TAA (best)"])
 	content.add_child(MenuKit.row("Render scale", MenuKit.slider(50, 100, 5, float(g.call("gfx", "gfx_scale")) * 100.0, func(v: float) -> void:
@@ -247,6 +248,19 @@ func _graphics() -> void:
 	content.add_child(MenuKit.row("Frame cap", MenuKit.options(PackedStringArray(["Off", "60", "120", "144", "165", "240", "360"]), ccur,
 		func(i: int) -> void: Settings.set_value("maxFps", caps[i]))))
 	content.add_child(MenuKit.para("With V-Sync on the game runs at your screen's refresh rate. V-Sync off with a frame cap at your refresh rate gives the least input lag.", 16, MenuKit.DIM))
+
+
+## T-144: what the first-launch auto-detect picked for this machine (GLSettings.auto_detect_preset, contract C4),
+## or the renderer and adapter when that is not in this build.
+static func detected_line() -> String:
+	var gs: Node = (Engine.get_main_loop() as SceneTree).root.get_node_or_null("GLSettings")
+	var adapter: String = RenderingServer.get_video_adapter_name()
+	var renderer: String = RenderingServer.get_current_rendering_method()   # what is running (a --rendering-driver flag can differ from the project)
+	if gs != null and gs.has_method("auto_detect_preset"):
+		var pick: String = str(gs.call("auto_detect_preset"))
+		return "Auto-detect suggests %s for this machine (%s, %s)." % [pick.capitalize(), adapter if adapter != "" else "unknown GPU", renderer]
+	return "Detected: %s on the %s renderer%s." % [adapter if adapter != "" else "an unknown GPU", renderer,
+		" (browser: the web profile applies)" if OS.has_feature("web") else ""]
 
 
 func _gfx_values() -> Dictionary:

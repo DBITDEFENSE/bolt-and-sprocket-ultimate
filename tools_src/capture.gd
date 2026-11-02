@@ -111,6 +111,9 @@ func _cam_set() -> void:
 	if set_d.is_empty():
 		push_error("[capture] no camera set '%s' in %s" % [_set_name, CAMS_JSON])
 		return
+	if str(set_d.get("mode", "")) == "maps":
+		await _cam_set_maps(set_d)
+		return
 	GameState.character_id = &"dutch"
 	GameState.bot_count = int(set_d.get("bots", 3))
 	GameState.bot_ai_mode = "off"
@@ -223,6 +226,79 @@ func _cam_set() -> void:
 			if map.squad != null:
 				map.squad.process_mode = Node.PROCESS_MODE_INHERIT
 			await _secs(0.5)
+
+
+## T-144 (the u09_menu_previews set, "mode": "maps"): one establishing frame per map, each cam naming its own
+## `map`. No bots, no round, the HUD hidden, a free Camera3D (fov `fov`, default 64) either at `pos` (the eye, not the
+## feet) with `yaw` / `pitch`, or behind the map's first player spawn (`spawn`: true; `back` metres behind it, `up`
+## above the eye, `pitch`). Saved as <name>.png (the map id), so tools/menu_previews.py can copy them as they are.
+func _cam_set_maps(set_d: Dictionary) -> void:
+	GameState.character_id = &"dutch"
+	GameState.bot_count = 0
+	GameState.bot_ai_mode = "off"
+	var cams: Array = set_d.get("cams", [])
+	for i: int in cams.size():
+		var cam: Dictionary = cams[i]
+		var cname: String = str(cam.get("name", "cam%02d" % i))
+		if not _only.is_empty() and not _only.has(cname):
+			continue
+		if not ResourceLoader.exists(str(cam.get("map", ""))):
+			print("[capture] missing map for %s" % cname)
+			continue
+		Campaign.reset()
+		var map: MapRoot = _load(str(cam["map"])) as MapRoot
+		GameState.god_mode = true
+		await _secs(float(set_d.get("settle_s", 6.0)))
+		RoundManager.stop()
+		if map.director != null:
+			map.director.kill_all(true)
+		for cl: Node in get_tree().root.find_children("*", "CanvasLayer", true, false):   # the HUD, subtitles, toasts
+			if not (cl.get_script() != null and str((cl.get_script() as Script).resource_path).ends_with("postfx.gd")):
+				(cl as CanvasLayer).visible = false
+		var c3: Camera3D = Camera3D.new()
+		c3.name = "PreviewCamera"
+		c3.fov = float(cam.get("fov", 64.0))
+		c3.far = 1500.0
+		map.add_child(c3)
+		var eye: Vector3
+		var yaw: float = deg_to_rad(float(cam.get("yaw", 0.0)))
+		var pitch: float = deg_to_rad(float(cam.get("pitch", -6.0)))
+		if bool(cam.get("player", false)) and map.player != null and map.player.camera != null:
+			# the map's own start view: the player's camera as the map placed it, pulled back and up a little
+			var pc: Transform3D = map.player.camera.global_transform
+			var fwd2: Vector3 = -pc.basis.z
+			fwd2.y = 0.0
+			fwd2 = fwd2.normalized() if fwd2.length() > 0.01 else Vector3.FORWARD
+			yaw = atan2(-fwd2.x, -fwd2.z) + deg_to_rad(float(cam.get("turn", 0.0)))
+			fwd2 = Vector3(-sin(yaw), 0.0, -cos(yaw))
+			eye = pc.origin - fwd2 * float(cam.get("back", 1.5)) + Vector3.UP * float(cam.get("up", 0.5))
+		elif bool(cam.get("spawn", false)):
+			var mk: Node3D = null
+			for n: Node in map.find_children("PlayerSpawn*", "", true, false):
+				if n is Node3D:
+					mk = n as Node3D
+					break
+			if mk == null and map.player != null:
+				mk = map.player
+			var base: Vector3 = mk.global_position if mk != null else Vector3.ZERO
+			var fwd: Vector3 = -mk.global_basis.z if mk != null else Vector3.FORWARD
+			fwd.y = 0.0
+			fwd = fwd.normalized() if fwd.length() > 0.01 else Vector3.FORWARD
+			yaw = atan2(-fwd.x, -fwd.z) + deg_to_rad(float(cam.get("turn", 0.0)))
+			fwd = Vector3(-sin(yaw), 0.0, -cos(yaw))
+			eye = base - fwd * float(cam.get("back", 3.0)) + Vector3.UP * (1.6 + float(cam.get("up", 1.0)))
+		else:
+			eye = _v3(cam.get("pos", [0, 1.6, 0]))
+		c3.global_position = eye
+		c3.rotation = Vector3(pitch, yaw, 0.0)
+		c3.current = true
+		if map.player != null:
+			map.player.visible = false
+		await _secs(float(cam.get("settle_s", 2.0)))
+		await _shot(cname)
+		_scene.queue_free()
+		_scene = null
+		await _secs(1.5)
 
 
 ## A camera's `do` list (T-094, the u05_objects set): world states to show before the shot, in order. "power"

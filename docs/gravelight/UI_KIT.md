@@ -94,3 +94,22 @@ pause roots and no stray `SystemFont` is built in `gravelight/ui` or `ui/map`.
 - Full-screen menu pages and the pause page keep their panel in a centred 16:9 frame (`MenuKit.keep_centred`,
   `MenuKit.frame_inset`); the main menu's column sits inside the same frame.
 - Shots: `shots_hud.tscn -- --size=3440x1440 --aspect=fill|keep` (2560x720 is a 32:9 window that fits any monitor).
+
+## The main menu (UPDATE 09 section 7, T-144)
+- The scene behind every menu page is `MenuScene` (`gravelight/ui/menu_scene.gd`; `MenuBackdrop` is a thin wrapper):
+  the Crossroads Inn at night cut from Map 0 by `tools_src/gen_menu_scene.gd` into `gravelight/ui/menu_inn.tscn`
+  (re-run it after `gen_map00.gd`), our zombies at a fence, the squad by a fire barrel, Map 0's MapAmbience on menu
+  timings. Budgets: <= 1200 draw calls, <= 4 shadowed lights (web / Compatibility: half the zombies, 1 shadowed
+  light, depth fog). `MenuScene.census()` gives the numbers.
+- Layout (1920 x 1080, scaled by `canvas_items` down to a 1280 x 720 browser window): the wordmark 140 px top left
+  with TERMS & CONDITIONS under it in the type face (letter-spaced, `MenuKit.spaced(font, px)`), a column of
+  `MenuKit.menu_link(text, cb, 40)` buttons behind `MenuKit.rule(h)` (the thin violet rule). A link's hover and focus
+  are one state: the label slides 12 px right, a violet glow comes up, `ui_tick` plays; a press plays `ui_stamp`.
+  Programmatic focus stays silent through `MenuKit.quiet()`.
+- Transitions: `MenuKit.transition_in(control)` / `transition_out(control, done)`: 0.25 s cross-fade with a 20 px
+  slide (the control must not sit in a container); every `MenuScreen` uses them and darkens the scene behind it.
+  Column changes play `ui_whoosh`. The three sounds come from `gen_sfx.gd -- --only=menu`.
+- Map cards: `MapCards.map_card(map_id, cb)` (16:9 preview from `gravelight/ui/map_previews/`, the kicker, the
+  name, the date line, BEST and the egg status). Loading: `LoadingScreen.go(tree, scene)` (preview art, a lore line
+  and a tip from `data/gravelight/tips.json`).
+- Shots: `gravelight/tools_src/shots_menus.tscn` through `tools/wsl_godot.sh` only (contract C8).

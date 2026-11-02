@@ -775,6 +775,20 @@
         {"name": "ref_barracks", "pos": [-14.0, 0.0, 39.0], "yaw": -90.0, "pitch": -0.2, "note": "Kaltenbrunn barracks along the bunk rows", "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn"},
         {"name": "ref_chapel", "pos": [12.0, -12.0, 63.0], "yaw": 180.0, "pitch": 11.3, "note": "Kaltenbrunn salt chapel toward the altar", "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn"}
       ]
+    },
+    "u09_menu_previews": {
+      "_doc": "T-144: the map select's and the loading screens' 16:9 previews, one establishing frame per map and act (capture.gd mode 'maps': each cam loads its own map; no bots, no HUD, a free camera at the eye `pos`, or the map's own start view with `player`: its player camera pulled back and up). Rendered through WSL (tools/wsl_godot.sh ... capture.tscn -- --set=u09_menu_previews), copied to gravelight/ui/map_previews/<name>.png at 960x540 by tools/menu_previews.py.",
+      "mode": "maps",
+      "settle_s": 7.0,
+      "cams": [
+        {"name": "map00_crossroads", "map": "res://gravelight/maps/map00_crossroads/map00.tscn", "pos": [-17.0, 1.7, -10.5], "yaw": -122.6, "pitch": 4.0, "fov": 62.0, "note": "the inn from the west road at night, as the main menu sees it"},
+        {"name": "map01_kaltenbrunn", "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", "player": true, "back": 1.5, "up": 0.5, "pitch": -4.0},
+        {"name": "map02_totenhafen", "map": "res://gravelight/maps/map02_totenhafen/map02.tscn", "player": true, "back": 1.5, "up": 0.5, "pitch": -4.0},
+        {"name": "map04a_thalbach", "map": "res://gravelight/maps/map04_fernflug/map04a.tscn", "pos": [20.0, 3.0, 2.0], "yaw": 180.0, "pitch": 0.0, "note": "the Siedlung street north toward the station and the works (the act frame: +Z north)"},
+        {"name": "map04b_kranich", "map": "res://gravelight/maps/map04_fernflug/map04b.tscn", "pos": [0.0, 2.2, 3.0], "yaw": 180.0, "pitch": -4.0, "note": "the bomb bay forward along the racks toward the centre body (+Z is the nose)"},
+        {"name": "map04c_groomlake", "map": "res://gravelight/maps/map04_fernflug/map04c.tscn", "pos": [0.0, 3.0, -32.0], "yaw": 180.0, "pitch": -2.0, "note": "across the salt north to the buildings (+Z north)"},
+        {"name": "map04d_mondlicht", "map": "res://gravelight/maps/map04_fernflug/map04d.tscn", "pos": [0.0, 2.4, 3.0], "yaw": 180.0, "pitch": 8.0, "note": "north over the yard, the Earth up in the sky (+Z north)"}
+      ]
     }
   }
 }

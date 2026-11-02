@@ -149,7 +149,27 @@ func note_ending(ending_id: String) -> void:
 	if not seen.has(ending_id):
 		seen.append(ending_id)
 	profile["endings_seen"] = seen
+	if ending_id == "kuendigung":
+		profile["fernflug_beaten"] = true   # T-144: the main menu's MONDLICHT hook (contract C7)
 	save_profile()
+
+
+## T-144 (contract C7): Fernflug beaten = the plan cancelled on the Moon (the "kuendigung" ending), recorded as the
+## profile flag `fernflug_beaten` (older profiles: read from endings_seen).
+func fernflug_beaten() -> bool:
+	return bool(profile.get("fernflug_beaten", false)) or endings_seen().has("kuendigung")
+
+
+## T-144: whether the easter egg `quest_id` was ever completed on this profile (every egg is recorded in "eggs_done";
+## the progression.json main eggs also in "egg_rewards"; Fernflug's egg is its kuendigung ending).
+func egg_done(quest_id: String) -> bool:
+	if quest_id == "":
+		return false
+	if bool((profile.get("eggs_done", {}) as Dictionary).get(quest_id, false)):
+		return true
+	if bool((profile.get("egg_rewards", {}) as Dictionary).get(quest_id, false)):
+		return true
+	return quest_id == "map04_kuendigung" and fernflug_beaten()
 
 
 func endings_seen() -> Array:
@@ -671,6 +691,11 @@ func _on_perk_bought(player: int, _perk: StringName) -> void:
 
 
 func _on_quest_completed(quest_id: StringName) -> void:
+	if not profile.has("eggs_done") or not (profile["eggs_done"] is Dictionary):   # T-144: every egg, for the map cards
+		profile["eggs_done"] = {}
+	if not bool((profile["eggs_done"] as Dictionary).get(String(quest_id), false)):
+		profile["eggs_done"][String(quest_id)] = true
+		save_profile()
 	var eggs: Dictionary = _prog.get("main_eggs", {})
 	if not eggs.has(String(quest_id)):
 		return

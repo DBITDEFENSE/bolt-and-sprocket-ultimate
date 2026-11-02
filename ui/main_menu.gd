@@ -43,6 +43,7 @@ func _ready() -> void:
 	doors = hub.get("doors", [])
 	_open = Unlocks.resolve(Data.table("unlocks"), SaveProfile.doc.get("unlocks", []))
 	_build()
+	MenuScene.preload_set()   # T-144: the CLAUDE ZOMBIES menu's 3D set loads in the background while the hub is up
 	_select(_first_open())
 	_buttons[_sel].grab_focus.call_deferred()
 

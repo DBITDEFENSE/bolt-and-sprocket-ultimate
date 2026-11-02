@@ -107,6 +107,7 @@ func _ready() -> void:
 	var head: HBoxContainer = HBoxContainer.new()
 	head.add_theme_constant_override("separation", 14)
 	box.add_child(head)
+	head.add_child(MenuKit.wordmark(46.0))   # T-144: the menus' masthead
 	head.add_child(MenuKit.label("PAUSED", 38, MenuKit.PAPER, true))
 	var tabs: HBoxContainer = HBoxContainer.new()
 	tabs.add_theme_constant_override("separation", 6)
@@ -114,6 +115,7 @@ func _ready() -> void:
 	head.add_child(tabs)
 	for i: int in TABS.size():
 		var tb: Button = MenuKit.button(TABS[i], set_tab.bind(i), 20)
+		tb.add_theme_font_override("font", MenuKit.spaced(MenuKit.type_font(), 3))
 		tb.alignment = HORIZONTAL_ALIGNMENT_CENTER
 		tb.custom_minimum_size = Vector2(132, 42)
 		tb.toggle_mode = true
@@ -127,7 +129,10 @@ func _ready() -> void:
 	resume.custom_minimum_size = Vector2(130, 42)
 	head.add_child(resume)
 	_buttons.append(resume)
-	box.add_child(MenuKit.label("Q / E or LB / RB switch tabs   ·   %s resumes" % GLSettings.binding_label(&"pause", false), 13, MenuKit.DIM))
+	var hr: ColorRect = MenuKit.rule(2.0)   # T-144: the violet rule under the header
+	hr.custom_minimum_size = Vector2(0, 2)
+	box.add_child(hr)
+	box.add_child(MenuKit.label("Q / E or LB / RB switch tabs   ·   %s resumes" % GLSettings.binding_label(&"pause", false), 16, MenuKit.DIM))
 	# the pages
 	var body: Control = Control.new()
 	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -153,9 +158,9 @@ func _ready() -> void:
 	_build_settings_page(_pages[TAB_SETTINGS])
 	_build_quit_page(_pages[TAB_QUIT])
 	# foot
-	_tip = MenuKit.para("", 15, MenuKit.DIM)
+	_tip = MenuKit.para("", 17, MenuKit.DIM.lightened(0.1))
 	box.add_child(_tip)
-	box.add_child(MenuKit.para(_controls_line(), 13, MenuKit.DIM))
+	box.add_child(MenuKit.para(_controls_line(), 16, MenuKit.DIM))
 	set_tab(TAB_MAP)
 
 
@@ -701,6 +706,12 @@ func _add_button(parent: Control, text: String, cb: Callable) -> Button:
 	return b
 
 
+## T-144: a field note from data/gravelight/tips.json (the loading screens' tips), the built-in list as a fallback.
+static func _pick_tip() -> String:
+	var t: String = LoadingScreen.pick_tip()
+	return "FIELD NOTE  ·  " + (t if t != "" else TIPS[randi() % TIPS.size()])
+
+
 func _controls_line() -> String:
 	var parts: PackedStringArray = []
 	for pair: Array in [["sprint", "Sprint"], ["crouch", "Crouch / slide"], ["interact", "Use / buy"], ["melee", "Knife"], ["lethal", "Grenade"], ["swap_weapon", "Swap"]]:
@@ -721,7 +732,7 @@ func _refresh_card() -> void:
 		_sens.set_value_no_signal(GLSettings.get_f("sensitivity"))
 	if _fov != null:
 		_fov.set_value_no_signal(GLSettings.get_f("fov"))
-	_tip.text = TIPS[randi() % TIPS.size()]
+	_tip.text = _pick_tip()
 
 
 func _elapsed() -> String:
@@ -842,4 +853,4 @@ func _process(delta: float) -> void:
 	_tip_t += delta
 	if _tip_t > 9.0:
 		_tip_t = 0.0
-		_tip.text = TIPS[randi() % TIPS.size()]
+		_tip.text = _pick_tip()

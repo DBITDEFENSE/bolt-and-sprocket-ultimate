@@ -21,6 +21,9 @@ var power_on: bool = false
 var open_zones: Dictionary = {}    # zone_id -> true
 var flags: Dictionary = {}         # e.g. {&"crate_has_moved": true}
 var stats: Dictionary = {}
+## T-144: the game-over ledger's rows, per player id: kills, headshots, marke_kills, scrip, downs, revives.
+var player_stats: Dictionary = {}
+const PLAYER_STAT_KEYS: Array[StringName] = [&"kills", &"headshots", &"marke_kills", &"scrip", &"downs", &"revives"]
 var god_mode: bool = false
 var input_blocked: bool = false   # dev console / text entry open
 var _start_msec: int = 0
@@ -46,6 +49,7 @@ func _ready() -> void:
 	GLBus.door_opened.connect(_on_door_opened)
 	GLBus.player_downed.connect(_on_player_downed)
 	GLBus.board_repaired.connect(_on_board_repaired)
+	GLBus.player_revived.connect(_on_player_revived)
 
 
 func reset_match(new_map_id: StringName, display_name: String, start_zone: StringName) -> void:
@@ -62,6 +66,7 @@ func reset_match(new_map_id: StringName, display_name: String, start_zone: Strin
 	retained = false
 	stats = {&"kills": 0, &"headshots": 0, &"melee_kills": 0, &"scrip_earned": 0, &"doors": 0,
 		&"downs": 0, &"boards": 0, &"round": 0, &"marke_kills": 0}
+	player_stats = {}
 	_start_msec = Time.get_ticks_msec()
 
 
@@ -212,10 +217,24 @@ func _bump(key: StringName, amount: int = 1) -> void:
 		stats[key] = int(stats.get(key, 0)) + amount
 
 
+## T-144: one player's ledger line.
+func _pbump(pid: int, key: StringName, amount: int = 1) -> void:
+	if phase != Phase.PLAYING or pid <= 0:
+		return
+	if not player_stats.has(pid):
+		var row: Dictionary = {}
+		for k: StringName in PLAYER_STAT_KEYS:
+			row[k] = 0
+		player_stats[pid] = row
+	(player_stats[pid] as Dictionary)[key] = int((player_stats[pid] as Dictionary).get(key, 0)) + amount
+
+
 func _on_enemy_killed(_enemy_id: StringName, limb: StringName, weapon_id: StringName, _by: int) -> void:
 	_bump(&"kills")
+	_pbump(_by, &"kills")
 	if limb == &"head":
 		_bump(&"headshots")
+		_pbump(_by, &"headshots")
 	if weapon_id == &"trench_knife" or weapon_id == &"etool":
 		_bump(&"melee_kills")
 
@@ -223,11 +242,13 @@ func _on_enemy_killed(_enemy_id: StringName, limb: StringName, weapon_id: String
 ## T-137: kills from a hit on the Marke (every mode; the bonus is the zombie's business and skips Classic Rules).
 func _on_marke_kill(_by_player: int, _enemy_id: StringName) -> void:
 	_bump(&"marke_kills")
+	_pbump(_by_player, &"marke_kills")
 
 
 func _on_scrip_changed(_player: int, _total: int, delta: int) -> void:
 	if delta > 0 and not Economy.moving:   # (a bank withdrawal is no earning, T-136)
 		_bump(&"scrip_earned", delta)
+		_pbump(_player, &"scrip", delta)
 
 
 func _on_door_opened(_door: StringName, _player: int) -> void:
@@ -236,6 +257,11 @@ func _on_door_opened(_door: StringName, _player: int) -> void:
 
 func _on_player_downed(_player: int) -> void:
 	_bump(&"downs")
+	_pbump(_player, &"downs")
+
+
+func _on_player_revived(_player: int, by_player: int) -> void:
+	_pbump(by_player, &"revives")
 
 
 func _on_board_repaired(_window: StringName, _player: int) -> void:
