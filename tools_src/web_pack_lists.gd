@@ -32,11 +32,30 @@ const SKIP_DIRS: PackedStringArray = ["res://.godot", "res://tools_src", "res://
 ## 3D menu (UPDATE 09 section 7) builds its squad and zombies from them.
 const GAME_DIRS: PackedStringArray = ["res://gravelight/audio/vo", "res://assets/third_party/polyhaven",
 	"res://assets/third_party/ambientcg", "res://assets/third_party/sketchfab", "res://assets/third_party/opengameart",
-	"res://assets/ours/wonder", "res://assets/ours/world", "res://assets/ours/arms"]
+	"res://assets/ours/wonder", "res://assets/ours/world", "res://assets/ours/arms",
+	"res://assets/ours/characters/people", "res://assets/ours/characters/human_base"]
+## T-150: the people GLBs the menu needs (the squad by the barrel); every other person and the living human_base
+## bodies are match-only. zombie_base stays in the main pack (the menu's zombies and the Marke armband).
+const MENU_PEOPLE: PackedStringArray = ["dutch", "wren", "deacon", "peg"]
+## T-150 audio: the files of sounds that no menu screen plays go to the pack of the map that plays them (a bed or
+## one-shot named only by that map's data/gravelight/ambience/<map>.json or the music.ambient entry), else the game packs.
+const AUDIO_DIRS: PackedStringArray = ["res://gravelight/audio/sfx", "res://gravelight/audio/music", "res://gravelight/audio/jingles"]
+const AUDIO_BANK: String = "res://data/gravelight/audio.json"
+const AUDIO_SFX_FALLBACK: PackedStringArray = ["res://gravelight/audio/sfx/final/", "res://gravelight/audio/sfx/placeholder/", "res://gravelight/audio/music/final/", "res://gravelight/audio/music/placeholder/"]
+## Scripts whose string literals name the sounds the menu path may play, and the data it reads.
+const MENU_SCRIPT_DIRS: PackedStringArray = ["res://ui", "res://gravelight/ui"]
+const MENU_SOUND_DATA: PackedStringArray = ["res://data/gravelight/map00_ambience.json"]
+const MENU_SOUND_KEYS: PackedStringArray = ["music_menu", "ui_click", "ui_tick", "ui_back"]
+## The fallback bed (AudioDirector.start_ambient) doesn't count as match-wide use of a map's bed.
+const FALLBACK_KEYS: PackedStringArray = ["ambient_wind"]
 ## What the start-up and the menus load as scene dependencies: never deferred (plus every autoload's preloads).
 const STARTUP_SCENES: PackedStringArray = ["res://ui/main_menu.tscn", "res://gravelight/ui/main_menu.tscn",
 	"res://gravelight/ui/menu_inn.tscn", "res://gravelight/ui/menu_scene.tscn"]
-const GAME_CHUNK_BYTES: int = 110 * 1048576
+## Chunks are sized by an estimate of the exported pack: textures shrink (VRAM compression, the 1024 px cap), audio and
+## models do not. Each exported game pack must stay <= 70 MB (static hosts); T-150 calibrated this on the real build.
+const GAME_CHUNK_BYTES: int = 60 * 1048576
+const TEX_EXT: PackedStringArray = ["png", "jpg", "jpeg", "webp", "exr", "hdr", "tga", "bmp"]
+const TEX_FACTOR: float = 0.56
 const TEXT_EXT: PackedStringArray = ["gd", "json", "cfg", "tres", "tscn", "gdshader", "gdshaderinc"]
 const NEVER_PACK_EXT: PackedStringArray = ["gd", "json", "cfg"]
 
@@ -136,6 +155,18 @@ func _initialize() -> void:
 	var startup: Dictionary = {}
 	for f: String in _closure(startup_roots):
 		startup[f] = true
+	# 3b. (T-150) audio: menu sounds stay; map-only sounds go to that map's pack; the rest is match-only (game packs)
+	var menu_audio: Dictionary = {}
+	var audio_pack: Dictionary = {}   # file -> pack name for a map-only sound
+	_audio_stage(all, in_map_pack, menu_audio, audio_pack)
+	for f: String in audio_pack:
+		var ap: String = str(audio_pack[f])
+		if not packs.has(ap):
+			packs[ap] = []
+			bytes[ap] = 0
+		(packs[ap] as Array).append(f)
+		bytes[ap] = int(bytes[ap]) + _size(f)
+		in_map_pack[f] = true
 	var game: Array = []
 	var game_bytes: int = 0
 	var kept_startup: int = 0
@@ -147,13 +178,20 @@ func _initialize() -> void:
 			if f.begins_with(gd + "/"):
 				under = true
 				break
+		for ad: String in AUDIO_DIRS:
+			if f.begins_with(ad + "/"):
+				under = true
+				break
 		if not under:
+			continue
+		if menu_audio.has(f) or _is_menu_person(f):
+			kept_startup += 1
 			continue
 		if startup.has(f):
 			kept_startup += 1
 			continue
 		game.append(f)
-		game_bytes += _size(f)
+		game_bytes += _est(f)
 	# split into chunks of at most GAME_CHUNK_BYTES of source (static hosts cap single files near 100 MB; the cap on
 	# textures makes an exported chunk about 0.6x its source), in path order so folders stay together
 	var game_packs: Array = []
@@ -162,7 +200,7 @@ func _initialize() -> void:
 		var cur: Array = []
 		var cur_b: int = 0
 		for f: String in game:
-			var b: int = _size(f)
+			var b: int = _est(f)
 			if not cur.is_empty() and cur_b + b > GAME_CHUNK_BYTES:
 				var nm: String = "game%d" % (game_packs.size() + 1)
 				packs[nm] = cur
@@ -264,3 +302,150 @@ func _size(f: String) -> int:
 	var n: int = fa.get_length()
 	fa.close()
 	return n
+
+
+## Estimated exported bytes of a source file (textures shrink, the rest doesn't).
+func _est(f: String) -> int:
+	var n: int = _size(f)
+	return int(n * TEX_FACTOR) if TEX_EXT.has(f.get_extension().to_lower()) else n
+
+
+func _is_menu_person(f: String) -> bool:
+	if not f.begins_with("res://assets/ours/characters/people/"):
+		return false
+	for id: String in MENU_PEOPLE:
+		if f.begins_with("res://assets/ours/characters/people/char_person_%s." % id):
+			return true
+	return false
+
+
+## Sorts every file under AUDIO_DIRS: menu_audio = needed by the menu path (stays in the main pack); audio_pack = used by
+## one map only (or by Fernflug acts only: the shared "map04" pack) -> its pack; the rest is left for the game packs.
+func _audio_stage(all: PackedStringArray, in_map_pack: Dictionary, menu_audio: Dictionary, audio_pack: Dictionary) -> void:
+	var bank: Dictionary = {}
+	var fa: FileAccess = FileAccess.open(AUDIO_BANK, FileAccess.READ)
+	if fa == null:
+		return
+	var parsed: Variant = JSON.parse_string(fa.get_as_text())
+	fa.close()
+	if not (parsed is Dictionary):
+		return
+	bank = parsed
+	# key -> files (bank "files", then the legacy dir lookup AudioDirector._streams does)
+	var key_files: Dictionary = {}
+	for sec: String in ["sounds", "music", "events", "perk_hum"]:
+		var d: Variant = bank.get(sec, {})
+		if not (d is Dictionary):
+			continue
+		for k: String in (d as Dictionary):
+			var e: Variant = (d as Dictionary)[k]
+			var list: Array = []
+			if e is Dictionary:
+				for ff: Variant in (e as Dictionary).get("files", []):
+					list.append(str(ff))
+			key_files[k] = list
+	var all_set: Dictionary = {}
+	for f: String in all:
+		all_set[f] = true
+	for k: String in key_files:
+		for dir: String in AUDIO_SFX_FALLBACK:
+			var cands: Array = [dir + k + ".wav"]
+			for i: int in range(1, 6):
+				cands.append(dir + k + "_%d.wav" % i)
+			for c: Variant in cands:
+				if all_set.has(str(c)) and not (key_files[k] as Array).has(str(c)):
+					(key_files[k] as Array).append(str(c))
+	# menu keys: literals in the menu scripts + the menu's data + the fixed list
+	var menu_keys: Dictionary = {}
+	for k: String in MENU_SOUND_KEYS:
+		menu_keys[k] = true
+	var re: RegEx = RegEx.new()
+	re.compile("\"([A-Za-z0-9_]+)\"")
+	var menu_text: PackedStringArray = []
+	for f: String in all:
+		var fext: String = f.get_extension()
+		if fext == "gd" or fext == "tscn":
+			for md: String in MENU_SCRIPT_DIRS:
+				if f.begins_with(md + "/"):
+					menu_text.append(FileAccess.get_file_as_string(f))
+	for p: String in MENU_SOUND_DATA:
+		menu_text.append(FileAccess.get_file_as_string(p))
+	for m: RegExMatch in re.search_all("\n".join(menu_text)):
+		var lit: String = m.get_string(1)
+		if key_files.has(lit):
+			menu_keys[lit] = true
+	for k: String in menu_keys:
+		for ff: Variant in key_files.get(k, []):
+			menu_audio[str(ff)] = true
+	# which map packs play each key: the per-map ambience tables and the music.ambient entries
+	var key_maps: Dictionary = {}   # key -> {pack: true}
+	var dir2: DirAccess = DirAccess.open("res://data/gravelight/ambience")
+	if dir2 != null:
+		for jf: String in dir2.get_files():
+			if jf.get_extension() != "json":
+				continue
+			var pk: String = jf.get_basename()   # map00, map04a ...
+			var txt: String = FileAccess.get_file_as_string("res://data/gravelight/ambience/" + jf)
+			for m: RegExMatch in re.search_all(txt):
+				var lit2: String = m.get_string(1)
+				if key_files.has(lit2):
+					if not key_maps.has(lit2):
+						key_maps[lit2] = {}
+					(key_maps[lit2] as Dictionary)[pk] = true
+	var music_cfg: Variant = bank.get("music", {})
+	if music_cfg is Dictionary:
+		var amb: Variant = (music_cfg as Dictionary).get("ambient", {})
+		if amb is Dictionary:
+			for mid: String in (amb as Dictionary):
+				var key3: String = str((amb as Dictionary)[mid])
+				if mid == "default" or not key_files.has(key3):
+					continue
+				var pk3: String = mid.get_slice("_", 0)
+				if not key_maps.has(key3):
+					key_maps[key3] = {}
+				(key_maps[key3] as Dictionary)[pk3] = true
+	# every other literal use of a key in a script / scene (outside the tools and tests) makes it match-wide
+	var code_text: PackedStringArray = []
+	for f: String in all:
+		var ext: String = f.get_extension()
+		if (ext == "gd" or ext == "tscn") and not f.begins_with("res://gravelight/maps/"):
+			code_text.append(FileAccess.get_file_as_string(f))
+	var code_keys: Dictionary = {}
+	for m: RegExMatch in re.search_all("\n".join(code_text)):
+		var lit3: String = m.get_string(1)
+		if key_files.has(lit3) and not FALLBACK_KEYS.has(lit3):
+			code_keys[lit3] = true
+	# file -> packs
+	var file_maps: Dictionary = {}
+	var file_wide: Dictionary = {}
+	for k: String in key_files:
+		for ff2: Variant in key_files[k]:
+			var fs: String = str(ff2)
+			if not FALLBACK_KEYS.has(k) and (code_keys.has(k) or not key_maps.has(k)):
+				file_wide[fs] = true
+			for pk4: String in (key_maps.get(k, {}) as Dictionary):
+				if not file_maps.has(fs):
+					file_maps[fs] = {}
+				(file_maps[fs] as Dictionary)[pk4] = true
+	for f: String in all:
+		var in_audio: bool = false
+		for ad: String in AUDIO_DIRS:
+			if f.begins_with(ad + "/"):
+				in_audio = true
+		if not in_audio or menu_audio.has(f) or in_map_pack.has(f) or NEVER_PACK_EXT.has(f.get_extension()):
+			continue
+		if file_wide.has(f) or not file_maps.has(f):
+			continue
+		var who: Array = (file_maps[f] as Dictionary).keys()
+		if who.size() == 1:
+			audio_pack[f] = str(who[0])
+		else:
+			var grp: String = ""
+			for w: Variant in who:
+				var g: String = str(SHARED_GROUP.get(str(w), ""))
+				if g == "" or (grp != "" and g != grp):
+					grp = ""
+					break
+				grp = g
+			if grp != "":
+				audio_pack[f] = grp

@@ -140,20 +140,20 @@ any static host, and works inside other pages. The price is that audio and loadi
 so a heavy moment can stutter a little more than on the desktop. The threaded template would need those headers
 on every file; we measured no reason to switch yet.
 
-**How big it is (the real numbers of the 2026-11-01 build, `tools/build_web.sh`).**
+**How big it is (the real numbers of the 2026-11-01 build after the map rebuilds and the new menu, `tools/build_web.sh`; T-150).**
 
 | What | Size | Over the wire (gzip/brotli) |
 |---|---|---|
 | Engine (`cz-<hash>.wasm` + js) | 37.7 MB | ~10 MB |
-| Main pack (menus, scripts, data, characters, sounds, music) | 90.9 MB | ~78 MB |
-| **To reach the menu** | **129.0 MB** | **~88 MB** |
-| Game packs `game1..game4` (voices, the material and prop libraries, guns, wonder weapons, world objects, arms) | 236.3 MB | |
-| Map packs: Crossroads 22.2, Kaltenbrunn 5.5, Totenhafen 4.1, Fernflug shared 2.7 + acts 0.3-0.5 each | 36.1 MB | |
-| **Before the first match** (menu + game packs + the map) | **368-387 MB** | |
+| Main pack (menus, scripts, data, the inn set's textures, the zombie bodies and the squad's four people, the menu's sounds and music) | 97.8 MB | ~85 MB |
+| **To reach the menu** | **135.8 MB** | **~95 MB** |
+| Game packs `game1..game6` (people and living bodies, voices, the material and prop libraries, guns, wonder weapons, world objects, arms, the match sounds and music), each 25-64 MB | 276.2 MB | |
+| Map packs (each map's own scene, textures and beds): Crossroads 14.4, Kaltenbrunn 7.7, Totenhafen 28.9, Thalbach 22.0, Kranich 9.6, Groom Lake 14.4, Mondlicht 22.4 | 119.4 MB | |
+| **Before the first match** (menu + all game packs + the map) | **420-441 MB** | |
 
 How it loads: the page downloads the engine and the main pack (the loading bar), then shows the menu. While you
-are in the menu the four game packs download in the background. When you pick a map, its pack downloads (a few
-MB, Crossroads 22 MB) and the match starts; if the game packs are not finished yet, a progress bar shows what is
+are in the menu the six game packs download in the background. When you pick a map, its pack downloads (8-29 MB,
+Crossroads 14 MB) and the match starts; if the game packs are not finished yet, a progress bar shows what is
 left. Everything is cached by the browser after the first visit (the file names carry a hash, so a new version is
 always fetched fresh and an old one never sticks).
 

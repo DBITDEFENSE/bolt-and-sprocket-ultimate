@@ -37,7 +37,29 @@ Settings > Video can change it at any time; nothing is picked again once a prese
    Compatibility renderer (what the browser runs), any other preset on Forward+ through lavapipe Vulkan. Draw calls,
    objects, triangles, lights and shadow casters are real; the FPS is not (software rendering).
 4. **The web build's size:** `tools/build_web.sh` prints the table; `python -I tools/pck_sizes.py <pck>` lists a
-   pack by folder.
+   pack by folder. The split rules are in `tools_src/web_pack_lists.gd` (T-139, T-150).
+
+### The web build's sizes (T-150, after the section 5 map rebuilds and the new main menu)
+
+Target: under 150 MB to reach the menu; every pack at most 70 MB (static hosts cap single files near 100 MB).
+
+| Piece | MB |
+|---|---|
+| Engine (wasm + js) | 37.7 |
+| Main pack | 97.8 |
+| html / js / icons | 0.3 |
+| **To reach the menu** | **135.8** |
+| game1 / game2 / game3 / game4 / game5 / game6 | 48.0 / 45.7 / 63.8 / 37.3 / 24.9 / 56.5 |
+| map00 / map01 / map02 | 14.4 / 7.7 / 28.9 |
+| map04a / map04b / map04c / map04d | 22.0 / 9.6 / 14.4 / 22.4 |
+| **First match** on map00 / 01 / 02 / 04a / 04b / 04c / 04d | 426 / 420 / 441 / 434 / 422 / 426 / 434 |
+
+What the menu keeps (main pack 97.8): the inn set `menu_inn.tscn` and its 63 Poly Haven / ambientCG textures (44 MB: the
+set's own materials, the biggest block and the one that cannot leave), the six zombie bodies and the Marke armband,
+the squad's four people (Dutch, Wren, Deacon, Peg), the menu music, the UI sounds and the sounds the menu plays
+(`music_menu`, the Map 0 war ambience the menu patches, the radio and gramophone), the map previews, fonts, scripts and
+data. Everything else is deferred: the other 21 people and the six `human_base` bodies, all other music, stingers and
+sounds (game packs), and each map's own beds, ambience one-shots and textures (that map's pack).
 
 ## What the UPDATE 09 pass changed (T-139)
 
