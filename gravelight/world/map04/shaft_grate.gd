@@ -72,16 +72,19 @@ func _build() -> void:
 	rim.position = Vector3(0, 0.03, 0)
 	add_child(rim)
 	var slat_m: StandardMaterial3D = StandardMaterial3D.new()
-	slat_m.albedo_color = Color(0.3, 0.3, 0.34)
+	slat_m.albedo_color = Color(0.32, 0.32, 0.36)
+	slat_m.albedo_texture = _grille_texture()   # bars and gaps: the closed vent read as a smooth pale plate (T-158 captures)
+	slat_m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	slat_m.uv1_scale = Vector3(5.0, 5.0, 1.0)
 	slat_m.metallic = 0.6
-	slat_m.roughness = 0.45
+	slat_m.roughness = 0.6
 	var n: int = 8
 	for i: int in n:
 		var piv: Node3D = Node3D.new()
 		piv.rotation.y = TAU * float(i) / float(n)
 		add_child(piv)
 		var hinge: Node3D = Node3D.new()
-		hinge.position = Vector3(0, 0.04, radius - 0.05)
+		hinge.position = Vector3(0, 0.04 + 0.002 * float(i), radius - 0.05)   # staggered: overlapping blades never z-fight
 		piv.add_child(hinge)
 		var blade: MeshInstance3D = MeshInstance3D.new()
 		var bm: BoxMesh = BoxMesh.new()
@@ -104,9 +107,20 @@ func _build() -> void:
 	lb.font_size = 32
 	lb.pixel_size = 0.006
 	lb.modulate = Color(0.95, 0.75, 0.3, 0.85)
-	lb.rotation = Vector3(-PI * 0.5, PI, 0)
+	lb.rotation = Vector3(-PI * 0.5, 0.0, 0.0)   # flat, read from the door side (+Z)
 	lb.position = Vector3(0, 0.05, radius + 0.45)
 	add_child(lb)
+
+
+## A grille: bright bars over near-black gaps (the shaft below), built once in code (Owned).
+static func _grille_texture() -> ImageTexture:
+	var img: Image = Image.create(16, 16, true, Image.FORMAT_RGB8)
+	for y: int in 16:
+		for x: int in 16:
+			var bar: bool = (x % 8) < 3
+			img.set_pixel(x, y, Color(0.75, 0.75, 0.8) if bar else Color(0.05, 0.05, 0.07))
+	img.generate_mipmaps()
+	return ImageTexture.create_from_image(img)
 
 
 func is_open() -> bool:

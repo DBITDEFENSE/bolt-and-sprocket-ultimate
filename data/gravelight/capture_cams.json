@@ -772,13 +772,13 @@
       "cams": [
         {"name": "T_line_yard", "pos": [0.0, 0.0, 62.0], "yaw": 180.0, "pitch": 4.0, "note": "the terminator part-way over the yard: the night's edge on the regolith", "do": ["call:Terminator:capture_dusk:4"], "settle_s": 4.0},
         {"name": "T_line_high", "pos": [6.0, 12.0, 58.0], "yaw": 170.0, "pitch": -24.0, "note": "the same line from over the south hull: the long shadow across the yard"},
-        {"name": "Heaters", "pos": [-3.0, 0.0, 54.0], "yaw": -20.0, "pitch": 2.0, "note": "the relay heaters' breaker by the yard airlock, thrown", "do": ["call:HeaterSwitch:throw_switch:5"]},
+        {"name": "Heaters", "pos": [-4.0, 0.0, 55.5], "yaw": 139.0, "pitch": -2.0, "note": "the relay heaters' breaker by the yard airlock, thrown", "do": ["call:HeaterSwitch:throw_switch:5"]},
         {"name": "Pad_plate", "pos": [-31.0, 0.0, 66.0], "yaw": 180.0, "pitch": -10.0, "note": "YardPad_S and the crater it throws you over"},
-        {"name": "Pad_glide", "pos": [-31.0, 4.6, 76.0], "yaw": 180.0, "pitch": -22.0, "note": "the glide's view from the arc's top: the bowl below, the landing beyond the north rim"},
+        {"name": "Pad_glide", "pos": [-31.0, 8.0, 72.0], "yaw": 180.0, "pitch": -32.0, "settle_s": 0.3, "note": "the glide's view from the arc's top: the bowl below, the landing beyond the north rim"},
         {"name": "Meteors", "pos": [0.0, 0.0, 63.0], "yaw": 180.0, "pitch": 3.0, "note": "the meteor shower: rings, streaks and fresh craters across the yard", "do": ["call:MeteorShower:_start:7"]},
         {"name": "Earth_violet", "pos": [0.0, 0.0, 92.0], "yaw": 176.5, "pitch": 40.0, "note": "the Earth with the violet spread at its cap", "do": ["call:EarthSky:capture_violet:2"]},
         {"name": "Earth_blue", "pos": [0.0, 0.0, 92.0], "yaw": 176.5, "pitch": 40.0, "note": "the Earth after CANCEL: the night side dark blue", "do": ["call:EarthSky:go_dark_blue:9"]},
-        {"name": "Field_units", "pos": [0.0, 0.0, 104.0], "yaw": 180.0, "pitch": 6.0, "note": "Darkmatter's field units walking the far rim with their lamps"},
+        {"name": "Field_units", "pos": [0.0, 0.0, 90.0], "yaw": 180.0, "pitch": 4.0, "note": "Darkmatter's field units walking the far rim with their lamps"},
         {"name": "Pohl", "pos": [30.4, 0.0, 36.6], "yaw": 180.0, "pitch": -2.0, "note": "Obergefreiter Pohl by his bay in rack 2"},
         {"name": "Vent", "pos": [28.0, 0.0, -17.2], "yaw": 0.0, "pitch": -24.0, "note": "the Account's vent open just inside the door", "do": ["call:ShaftGrate:capture_open:2"]},
         {"name": "T_night", "pos": [0.0, 0.0, 62.0], "yaw": 180.0, "pitch": 4.0, "note": "late in the act: the yard in night, lit by the Earth and the field units", "do": ["call:Terminator:capture_night:4"]}
