@@ -502,6 +502,9 @@ func _full_partner() -> void:
 		if b.ee != null and b.ee.active():
 			busy += 1
 			var ty: String = str(b.ee.task.get("type", ""))
+			if rally_now(b.ee.task["def"]):
+				cap = squad.brains.size()   # U10 (T-163): the Chapel bell is lit: everyone free joins the hold
+				continue
 			if ty != "collect" and not (ty == "carry" and (b.ee.task["def"] as Dictionary).has("pickups")):
 				taken["%s/%s" % [b.ee.task["qid"], b.ee.task["sid"]]] = true
 	if busy >= cap:
@@ -521,6 +524,34 @@ func _full_partner() -> void:
 			busy += 1
 			if str(best["as"]) == "escort" or (str((best["t"] as Dictionary).get("type", "")) != "collect" and not (best["t"] as Dictionary).has("pickups")):
 				taken["%s/%s" % [best["qid"], best["sid"]]] = true
+
+
+## U10 (T-163): a lit shoot_target with a then_hold (the Chapel bell: the Foreman comes 20 s later and must die in
+## the Chapel within the light) is a rally: every free bot joins the hold, not one.
+static func rally_now(t: Dictionary) -> bool:
+	return t.has("then_hold") and str(t.get("lit_flag", "")) != "" and GameState.has_flag(StringName(str(t["lit_flag"])))
+
+
+## U10 (T-163): the zone an armed kill condition wants `enemy_id` killed in ({} none): an active kill_condition
+## step with a zone and a world flag that is on now (the Requiem's s4: the Foreman, in F_CHAPEL, the bell lit).
+## Shot on its way in, it dies outside the zone and the step fails, so the bots hold fire until it is inside.
+var _kz_t: float = -INF
+var _kz: Dictionary = {}
+
+func kill_zone_for(enemy_id: StringName) -> StringName:
+	var now: float = squad.time()
+	if now - _kz_t >= 0.5:
+		_kz_t = now
+		_kz = {}
+		for qid: StringName in QuestManager.quest_ids():
+			for st: Variant in QuestManager.steps_of(qid):
+				var sd: Dictionary = st as Dictionary
+				if str(sd.get("type", "")) != "kill_condition" or not QuestManager.is_active(qid, StringName(str(sd["id"]))):
+					continue
+				var p: Dictionary = sd.get("params", {})
+				if p.has("zone") and p.has("world_flag") and GameState.has_flag(StringName(str(p["world_flag"]))):
+					_kz[StringName(str(p.get("enemy", "")))] = StringName(str(p["zone"]))
+	return _kz.get(enemy_id, &"")
 
 
 ## The best open step this brain can do now ({} none): {s, qid, sid, t, as}. Full Partner's pick, and the

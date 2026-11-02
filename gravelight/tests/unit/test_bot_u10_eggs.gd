@@ -157,6 +157,30 @@ func test_task_pause_pressure() -> void:
 			assert_gt(float(BotEECatalog.task_def(st as Dictionary).get("pause_pressure", 0.0)), 0.65, "s7 carries its own threshold")
 
 
+# ---------------------------------------------------------------- s4: the Chapel bell and the Foreman
+
+func test_hold_fire_until_the_foreman_is_in_the_chapel() -> void:
+	assert_true(BotAim.hold_fire_for_zone(&"E_LIFT", &"F_CHAPEL", 12.0), "on its way in: let it come")
+	assert_false(BotAim.hold_fire_for_zone(&"F_CHAPEL", &"F_CHAPEL", 12.0), "in the Chapel: fire")
+	assert_false(BotAim.hold_fire_for_zone(&"E_LIFT", &"F_CHAPEL", 2.0), "at arm's length: self-defence first")
+	assert_false(BotAim.hold_fire_for_zone(&"E_LIFT", &"", 12.0), "no kill condition armed: shoot as ever")
+
+
+func test_rally_on_the_lit_bell() -> void:
+	var q: Dictionary = GLData.load_json("res://data/gravelight/quests/map01_requiem.json")
+	var t: Dictionary = {}
+	for st: Variant in q["steps"]:
+		if str((st as Dictionary)["id"]) == "s4_key":
+			t = BotEECatalog.task_def(st as Dictionary)
+	var was: bool = GameState.has_flag(&"chapel_bell_lit")
+	GameState.set_flag(&"chapel_bell_lit", false)
+	assert_false(BotEEHub.rally_now(t), "unlit: one bot goes to light it")
+	GameState.set_flag(&"chapel_bell_lit", true)
+	assert_true(BotEEHub.rally_now(t), "lit: every free bot joins the Chapel hold")
+	GameState.set_flag(&"chapel_bell_lit", was)
+	assert_false(BotEEHub.rally_now({"type": "shoot_target", "target": {"group": "g"}}), "no then_hold: no rally")
+
+
 # ---------------------------------------------------------------- wonders from the bench
 
 func test_wonder_wanted() -> void:

@@ -180,6 +180,10 @@ func target_value(z: Zombie) -> float:
 	var per: BotPerception = brain.perception
 	var c: Dictionary = BotAIData.counter(z.enemy_id)
 	var th: float = float(per.threat.get(z.get_instance_id(), 0.0))
+	if brain.squad != null and brain.squad.ee != null and BotPerception.is_boss(z):
+		var kz: StringName = brain.squad.ee.kill_zone_for(z.enemy_id)
+		if kz != &"" and hold_fire_for_zone(ZoneVolume.zone_at(brain.get_tree(), z.global_position), kz, _flat(z.global_position, player.global_position)):
+			return 0.0   # U10 (T-163): not yet: it has to die in its zone (the Foreman in the lit Chapel)
 	var d: float = _flat(z.global_position, player.global_position)
 	var w: WeaponInstance = cur()
 	var max_r: float = max_range(w)
@@ -213,6 +217,12 @@ func target_value(z: Zombie) -> float:
 			if not near_anyone and BotConfig.in_fire_cone(h.head.global_position, -h.camera.global_basis.z, z.global_position, 22.0, 40.0):
 				return 0.0
 	return s
+
+
+## U10 (T-163) pure: hold fire on an enemy an armed kill condition wants killed in `want_zone` while it is
+## elsewhere, unless it is at arm's length (self-defence first).
+static func hold_fire_for_zone(at_zone: StringName, want_zone: StringName, dist_m: float, close_m: float = 3.0) -> bool:
+	return want_zone != &"" and at_zone != want_zone and dist_m > close_m
 
 
 func _holds_teammate(b: HomageBoss) -> bool:
