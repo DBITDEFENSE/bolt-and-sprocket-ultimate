@@ -1118,6 +1118,17 @@ onto the navmesh, stands 20 m from the start and has a path to it).
   between them, here the north catwalk under the tower floor), so a use point behind a closed door is INF and the
   executor asks `_try_door`; `BotEE._blocking_door` now paths over every navigation layer (a zone behind a closed door is
   not in the squad's mask, and on Totenhafen every zone has its own layer, so the masked path never reached it and no
-  door was ever found). The bot then buys the door with its own Scrip when it can afford it.
+  door was ever found). The bot then buys the door with its own Scrip when it can afford it: it stands at the last
+  open-zone point on the way when the door's own front lies in the closed zone (`BotBrain.door_approach`; door_signal's
+  ramp top is the tower's navmesh; a door counts as reached within 1.8 m), and `BotEE.door_reserve` keeps the door's
+  price out of its other purchases for 3 minutes.
+- **Ladders:** a zone's climb links (the zombies' ladders, `ClimbLink`) live on its climb layer (the zone's bit + 16),
+  which the director opens with the zone, so zombies are unchanged; the bots' mask (`BotSquad.nav_mask`) leaves the climb
+  layers out, because a bot can't climb (its route to the north catwalk ran up Ladder_CatwalkN and it stood at the foot).
+- **Shopping breaks** (`ee.json shop_break`): a bot on an egg task with 3000+ Scrip, not mid-hold, at a door or making
+  an input, pauses the task 20 s (at most every 90 s) so its own economy buys its kit; before, a Full Partner bot never
+  shopped while the egg ran and reached Totenhafen's round-10 holds with 7,000-11,000 Scrip and starting guns.
+- **One diesel hold at a time** (a gameplay rule: a second refuses to start while another runs): the bots started two
+  holds together, split up under doubled spawns and were all downed with the round held open.
 - **Ballast v2:** carriers are limited to melee and the pistol (`WeaponHolder.set_carry_limit`), bots included.
 - **Smoke:** `smoke_letzte_fahrt` (three bots on Full Partner, the human following; the forcing is in its header).
