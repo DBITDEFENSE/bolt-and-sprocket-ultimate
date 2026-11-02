@@ -31,7 +31,8 @@
       "smooth": 2,
       "requires_doors": [
         "door_mittelrumpf"
-      ]
+      ],
+      "home": 2
     },
     {
       "id": "map04b_blisters",
@@ -95,7 +96,8 @@
       ],
       "ring_width": 2.5,
       "smooth": 2,
-      "requires_doors": []
+      "requires_doors": [],
+      "home": 1
     }
   ]
 }

@@ -31,7 +31,8 @@
       "smooth": 2,
       "requires_doors": [
         "door_concourse"
-      ]
+      ],
+      "home": 1
     },
     {
       "id": "map04d_racks",
@@ -64,7 +65,8 @@
       "requires_doors": [
         "door_concourse",
         "door_fulfillment"
-      ]
+      ],
+      "home": 2
     },
     {
       "id": "map04d_nave",

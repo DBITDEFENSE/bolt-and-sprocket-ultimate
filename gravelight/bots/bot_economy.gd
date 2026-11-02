@@ -463,7 +463,10 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	# ---- doors
 	var dcfg: Dictionary = (cfg.get("shopping", {}) as Dictionary).get("doors", {})
 	var ordered_door: Node = brain.order_node() if order == &"open_door" else null
-	if bool(dcfg.get("enabled", true)) and squad.round_time() >= float(dcfg.get("round_delay_s", 20.0)) * (0.0 if ordered_door != null else 1.0) \
+	# (U10 T-163, Q-19: a self-led squad also buys in a break: the arrival grace of an act skip was spent idle and
+	# the first round's horde met it in the spawn bay; the delay exists to leave a human the first pick)
+	if bool(dcfg.get("enabled", true)) and (squad.round_time() >= float(dcfg.get("round_delay_s", 20.0)) * (0.0 if ordered_door != null else 1.0) \
+			or (self_led and brain.in_break())) \
 			and brain.doors_bought_round < int(dcfg.get("max_per_round_per_bot", 1)):
 		var human: Player = squad.human()
 		var route_doors: Dictionary = _route_doors() if self_led else {}
