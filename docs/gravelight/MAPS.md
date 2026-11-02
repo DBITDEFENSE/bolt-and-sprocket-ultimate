@@ -1402,6 +1402,31 @@ Cold sea night outside, warm practical pools inside, red in the boat; the power 
 | `INT_M2_03` | Loading manifest, nailed | D, the crane office wall |
 | `INT_M2_04` | Teletype strip, pinned | G, the teletype |
 
+## Map 2's living world (UPDATE 10 section 2, DECISIONS T-154)
+
+Data `data/gravelight/map02_ambience.json` (Map 0's MapAmbience schema; MapRoot attaches it), code the "U10 Totenhafen"
+block of `gravelight/world/landscape/map_ambience.gd`, pieces `_dress_u10_*` in `gen_map02.gd` + `DetailMap02`.
+Presentation only, each co-op peer runs its own; the one gameplay touch is the host's `cutter_slipped` flag.
+Rounds are *beat rounds*: the match round standalone, rounds on this map after a campaign arrival.
+
+| When | What |
+|---|---|
+| always | the sea's chop and swell (stronger with the tide), a burning freighter on the north horizon, a destroyer's searchlight sweeping the bay, its guns now and then, star shells over the water (from round 2), the dead U-boat half sunk off the breakwater, harbour cranes in silhouette, a storm bank with its own lightning, the cliff town's ruined façades with two fires, the church tower with its bell swinging in the wind, gulls on the parapet and the hut roof |
+| until round 10 | the lighthouse at the end of the breakwater: a beam every 9 s, the foghorn every few minutes |
+| round 6 | two RAF Mosquitoes low over the harbour, flak from the cliff |
+| round 10 | the lighthouse gutters and goes dark (and the foghorn stops) |
+| round 12 | the raid: sirens on the cliff, flak, seven bombs walking across the pens' roof: the hall shakes, dust bursts from the ceiling, pendants and chains swing, icicles fall, drips triple for a minute; the Operator complains (`OPR_RAID_M2_01`) |
+| round 15 | the cutter groans off its cradle, over the parapet and down into the surf with a splash; its cradle, torn-off wheelhouse and nets stay on the quay over its collider; the host sets `cutter_slipped` (the systems worker's `Surf_Cutter` spawn) and the sailor's letter appears where it lay |
+| `egg_lf_started` | the cliff bell tolls once |
+| power on | the pumps thunder (a shake near them), the docks' water drains 0.4 m (visual only, the tide's level is the TideController's), the pen lamps come on dock by dock from the pump room to the quay (per-light `sweep_delay`), the perks wake one by one with a sting of their jingles, the signal lamp starts to turn, U-1047's red battle lanterns give way to the white lamps, the cannery belt jolts and runs; then the existing burst and the Operator |
+| the tide | `GLBus.tide_stage` / `spring_tide` / `tide_flood_end` when the systems worker's controller emits them (else the water level is polled): the sea's and the docks' waves, the lightning's rate and strength, the spray over the parapet and the rain on the tower glass all rise with it |
+| reactive | gulls scatter at the first shot and come back after quiet; chains swing in gusts and after explosions; wet footprints behind everyone on the wet concrete; fish crates spill when the dead run through; the radios (hut, cannery office, workshop bench, the boat's control room, the signal rack) crackle German U-boat traffic, subtitled (`RADIO_UBOAT_01..06`, speaker `UBR`) |
+
+Story props (LORE.md §13.6): the sailor's letter (quay, after round 15), the Hale telegram (the teletype's table),
+the cannery pay slip (the office desk), the child's drawing (beside the shelter door), Hinnerk's ration book (the
+chart table). Sound: `gen_ambience_map02_u10.py` (the new one-shots), the beds 8 dB under a footstep
+(`amb_loudness.py map02`). Checks: `test_map02_ambience`, `smoke_map02_world`.
+
 ## Tools
 
 `smoke_map02.tscn` (headless: navmesh per zone, every door/zone reachable, spawns on the mesh, rounds 31–34 with 3 bots, the tide at 33, power, the Signal Tower door, perks, the Crucible, both traps), `perf_map02.tscn` (FPS per area with 24 zombies), `shots_map02.tscn` (every zone, power off and on). Unit test: `tests/unit/test_map02_data.gd` (door graph connected, prices, spawn/enemy ids, tide block).
