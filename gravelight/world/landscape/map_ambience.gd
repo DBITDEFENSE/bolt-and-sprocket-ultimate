@@ -4721,6 +4721,15 @@ func _ev_a1_kranich_glow() -> void:
 	mi.global_position = ThalbachRaid.v3(g.get("pos", [-20.0, 20.5, 185.0])) + Vector3.UP * len_ * 0.5
 	mi.set_instance_shader_parameter("beam_len", len_)
 	_a1_glow = mi
+	# the breath pools violet under the wing's trailing edge too (the plane's shape reads through the hangar's gap)
+	var pool: OmniLight3D = OmniLight3D.new()
+	pool.name = "KranichPool"
+	pool.light_color = Color(0.62, 0.32, 1.0)
+	pool.light_energy = float(g.get("pool_energy", 2.2))
+	pool.omni_range = float(g.get("pool_range", 26.0))
+	pool.shadow_enabled = false
+	add_child(pool)
+	pool.global_position = ThalbachRaid.v3(g.get("pool_pos", [-14.0, 5.0, 166.0]))
 	_a1_count("kranich_glow")
 
 

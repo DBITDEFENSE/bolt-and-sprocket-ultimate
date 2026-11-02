@@ -15,8 +15,8 @@
     845,
     1451
   ],
-  "baked_at": "2026-10-26T10:37:32",
-  "poi_signature": "3ff2bdeab4b347ec128f92fb54650b00",
+  "baked_at": "2026-11-02T11:22:29",
+  "poi_signature": "bcf553cecc5019de639eede46b8bed54",
   "floors": [
     {
       "id": "works",
@@ -359,7 +359,7 @@
       "id": "D_KIRCHPLATZ",
       "name": "Church Square",
       "y_min": -1.5,
-      "y_max": 7.0,
+      "y_max": 14.0,
       "polys": [
         [
           [
@@ -414,6 +414,24 @@
             40.05,
             95.3
           ]
+        ],
+        [
+          [
+            34.2,
+            72.0
+          ],
+          [
+            40.0,
+            72.0
+          ],
+          [
+            40.0,
+            87.0
+          ],
+          [
+            34.2,
+            87.0
+          ]
         ]
       ],
       "ys": [
@@ -428,6 +446,10 @@
         [
           -1.0,
           3.3
+        ],
+        [
+          6.5,
+          14.0
         ]
       ]
     },
@@ -925,6 +947,25 @@
       }
     },
     {
+      "id": "door:Gameplay/Breach_E_apron",
+      "type": "door",
+      "pos": [
+        -55.0,
+        0.0,
+        110.0
+      ],
+      "floor": 0,
+      "label": "Engine Test Stands",
+      "price": 1500,
+      "node_path": "Gameplay/Breach_E_apron",
+      "key": "Gameplay/Breach_E_apron",
+      "data": {
+        "door_id": "door_pruefstand",
+        "opens_zone": "G_PRUEFSTAND",
+        "requires_power": false
+      }
+    },
+    {
       "id": "door:Gameplay/Door_Bahnhof",
       "type": "door",
       "pos": [
@@ -1277,6 +1318,24 @@
       "data": {
         "trap_id": "jig_crane",
         "kind": "chandelier"
+      }
+    },
+    {
+      "id": "trap:Gameplay/Lever_RivetLine",
+      "type": "trap",
+      "pos": [
+        -47.75,
+        0.0,
+        72.0
+      ],
+      "floor": 0,
+      "label": "Trap",
+      "price": 1000,
+      "node_path": "Gameplay/Lever_RivetLine",
+      "key": "Gameplay/Lever_RivetLine",
+      "data": {
+        "trap_id": "rivet_line",
+        "kind": ""
       }
     },
     {

@@ -37,6 +37,7 @@ var _fan: Node3D
 var _fan_speed: float = 0.0     # rad/s now
 var _spin_burst: float = 0.0    # seconds left of a show spin (power on)
 var _hum: AudioStreamPlayer3D
+var _lamp: OmniLight3D           # the work lamp on the outlet screen (bright while the fan runs)
 
 
 static func inside(p: Vector3, a: Vector3, b: Vector3) -> bool:
@@ -128,8 +129,16 @@ func _build_screen() -> void:
 	for j: int in 7:
 		Props.obox(g, Vector3(0, h * float(j) / 6.0, 0), Vector3(0.06, 0.04, w), "steel")
 	Props.obox(g, Vector3(0, h + 0.1, 0), Vector3(0.3, 0.2, w + 0.4), "machine_grey")
+	_lamp = OmniLight3D.new()
+	_lamp.light_color = Color(0.8, 0.88, 1.0)
+	_lamp.light_energy = 0.0
+	_lamp.omni_range = 14.0
+	_lamp.shadow_enabled = false
+	_lamp.position = Vector3(-1.0, h + 0.4, 0)
+	g.add_child(_lamp)
 	for c: Node in g.find_children("*", "GeometryInstance3D", true, false):
 		(c as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	ThalbachLife.merge(g)
 
 
 func get_prompt(_player: Player) -> String:
@@ -213,6 +222,8 @@ func _process(delta: float) -> void:
 		_spin_burst -= delta
 		target = 5.0
 	_fan_speed = move_toward(_fan_speed, target, delta * (3.0 if target > _fan_speed else 1.2))
+	if _lamp != null:
+		_lamp.light_energy = 2.4 if running > 0.0 else (0.5 if GameState.power_on else 0.0)
 	if _fan != null and _fan_speed > 0.001:
 		_fan.rotate_object_local(Vector3.RIGHT, _fan_speed * delta)
 	if _hum != null and running <= 0.0 and _fan_speed < 0.5:

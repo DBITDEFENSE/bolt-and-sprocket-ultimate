@@ -26,6 +26,15 @@ static func jet(parent: Node3D) -> Node3D:
 		Props.obox(g, Vector3(-4.6, 0.1, side * 1.5), Vector3(1.4, 0.12, 2.6), "machine_grey", Vector3(0, side * -30.0, 0))
 	Props.obox(g, Vector3(-4.8, 1.2, 0), Vector3(1.8, 2.2, 0.14), "machine_grey", Vector3(0, 0, -35))
 	_no_shadow(g)
+	merge(g)
+	g.scale = Vector3.ONE * 1.5
+	var ex: OmniLight3D = OmniLight3D.new()
+	ex.light_color = Color(1.0, 0.55, 0.25)
+	ex.light_energy = 6.0
+	ex.omni_range = 22.0
+	ex.shadow_enabled = false
+	ex.position = Vector3(-3.0, -0.6, 0)
+	g.add_child(ex)
 	return g
 
 
@@ -57,6 +66,7 @@ static func train(parent: Node3D, cars: int) -> Node3D:
 		if i % 2 == 0:
 			Props.obox(g, Vector3(x0 + 4.5, 1.9, 0), Vector3(6.0, 1.0, 2.2), "tarp")
 	_no_shadow(g)
+	merge(g)
 	return g
 
 
@@ -76,6 +86,7 @@ static func rails(parent: Node3D, a: Vector3, b: Vector3) -> Node3D:
 		var p: Vector3 = a + d * (float(i) / float(maxi(1, n)))
 		Props.obox(g, p + Vector3(0, 0.04, 0), Vector3(0.24, 0.08, 2.4), "planks", Vector3(0, yaw, 0))
 	_no_shadow(g)
+	merge(g)
 	return g
 
 
@@ -206,7 +217,7 @@ static func _disc(img: Image, c: Vector2, r: float, ink: Color) -> void:
 
 
 ## A flapping poster: a subdivided quad whose free (bottom) edge ripples with `wind` (a shader uniform the block sets).
-static func poster(parent: Node3D, kind: String, pos: Vector3, yaw: float, size: Vector2 = Vector2(0.62, 0.88)) -> MeshInstance3D:
+static func poster(parent: Node3D, kind: String, pos: Vector3, yaw: float, size: Vector2 = Vector2(0.9, 1.28)) -> MeshInstance3D:
 	if _flap_shader == null:
 		_flap_shader = Shader.new()
 		_flap_shader.code = """shader_type spatial;
@@ -257,6 +268,7 @@ static func hanging_section(parent: Node3D, top: Vector3, drop: float) -> Node3D
 	for k: int in 6:
 		Props.obox(pivot, Vector3(-1.8 + float(k) * 0.72, -drop - 0.1, 0), Vector3(0.05, 0.22, 1.5), "machine_grey")
 	_no_shadow(pivot)
+	merge(pivot)
 	return pivot
 
 
@@ -298,6 +310,41 @@ static func _emissive(c: Color, e: float, billboard: bool = false) -> StandardMa
 		m.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
 		m.vertex_color_use_as_albedo = true
 	return m
+
+
+## Folds every primitive mesh under `group` into one mesh per material (the group's own frame; contract C4: a
+## heap of boxes is one draw call per material, not fifty). Only for pieces that never move apart.
+static func merge(group: Node3D) -> int:
+	var buckets: Dictionary = {}
+	var victims: Array[MeshInstance3D] = []
+	for n: Node in group.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		if not (mi.mesh is PrimitiveMesh) or mi.material_override == null:
+			continue
+		var xf: Transform3D = Transform3D.IDENTITY
+		var cur: Node = mi
+		while cur != null and cur != group:
+			if cur is Node3D:
+				xf = (cur as Node3D).transform * xf
+			cur = cur.get_parent()
+		var k: String = "%d|%d" % [mi.material_override.get_instance_id(), mi.cast_shadow]
+		if not buckets.has(k):
+			var st: SurfaceTool = SurfaceTool.new()
+			st.begin(Mesh.PRIMITIVE_TRIANGLES)
+			buckets[k] = {"st": st, "mat": mi.material_override, "shadow": mi.cast_shadow}
+		(buckets[k]["st"] as SurfaceTool).append_from(mi.mesh, 0, xf)
+		victims.append(mi)
+	for k2: String in buckets.keys():
+		var b: Dictionary = buckets[k2]
+		var out: MeshInstance3D = MeshInstance3D.new()
+		out.mesh = (b["st"] as SurfaceTool).commit()
+		out.material_override = b["mat"]
+		out.cast_shadow = b["shadow"]
+		group.add_child(out)
+	for mi2: MeshInstance3D in victims:
+		mi2.get_parent().remove_child(mi2)
+		mi2.free()
+	return victims.size()
 
 
 static func _no_shadow(n: Node) -> void:

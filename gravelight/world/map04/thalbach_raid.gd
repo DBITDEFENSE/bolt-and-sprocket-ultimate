@@ -598,6 +598,16 @@ func _breach_hole(br: Dictionary) -> Node3D:
 		Props.obox(g, Vector3(r.randf_range(-w * 0.7, w * 0.7), sz * 0.3, r.randf_range(-2.4, 2.4)), Vector3(sz * 1.4, sz * 0.6, sz),
 			"fl_brick", Vector3(r.randf_range(-20, 20), r.randf_range(0, 180), r.randf_range(-20, 20)))
 	Props.obox(g, Vector3(0.6, 2.6, 0.0), Vector3(w + 1.2, 0.3, 0.22), "rust", Vector3(0, 0, -9))
+	# the hall's wall lamp, torn loose and still burning on its cable, swinging in the hole
+	Props.cable(g, Vector3(-0.8, 2.5, 0.0), Vector3(-0.4, 1.7, 0.4), 0.05, 0.015, 3, "rubber")
+	Props.cyl(g, Vector3(-0.4, 1.6, 0.4), 0.16, 0.22, "enamel_green", Vector3(30, 0, 0))
+	var bl: OmniLight3D = OmniLight3D.new()
+	bl.light_color = Color(1.0, 0.78, 0.5)
+	bl.light_energy = 1.6
+	bl.omni_range = 10.0
+	bl.shadow_enabled = false
+	bl.position = Vector3(-0.4, 1.45, 0.5)
+	g.add_child(bl)
 	# soot round the hole on both faces
 	for fz: float in [-0.17, 0.17]:
 		for sx: float in [-1.0, 1.0]:
@@ -605,6 +615,7 @@ func _breach_hole(br: Dictionary) -> Node3D:
 		Props.obox(g, Vector3(0, 2.75, fz), Vector3(w + 1.8, 0.7, 0.01), "char")
 	for c: Node in g.find_children("*", "GeometryInstance3D", true, false):
 		(c as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	ThalbachLife.merge(g)
 	return g
 
 
@@ -654,6 +665,7 @@ func _build_rubble() -> void:
 			"glass", Vector3(r.randf_range(-50, 50), r.randf_range(0, 180), r.randf_range(-50, 50)))
 	for c: Node in heap.find_children("*", "GeometryInstance3D", true, false):
 		(c as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	ThalbachLife.merge(heap)
 	# the rest of the fallen bay: flat sheets, purlins and glass across the hall floor (no colliders, ankle high)
 	var box: Array = cfg.get("collapse_box", [])
 	if box.size() < 2:
@@ -675,6 +687,7 @@ func _build_rubble() -> void:
 		Props.strut(deb, a2, a2 + Vector3(r.randf_range(-5, 5), 0.0, r.randf_range(-1.5, 1.5)), 0.14, "steel")
 	for c2: Node in deb.find_children("*", "GeometryInstance3D", true, false):
 		(c2 as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	ThalbachLife.merge(deb)
 
 
 func _dust_cloud() -> void:

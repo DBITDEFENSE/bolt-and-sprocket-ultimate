@@ -9,7 +9,7 @@
     "searchlights": {"intensity": 0.14, "forest": [[-190.0, 28.0, 250.0], [230.0, 24.0, 110.0], [-230.0, 30.0, -40.0], [170.0, 26.0, -150.0]]},
     "train": {"round": 3, "every_rounds": 4, "delay": 15.0, "stop": [48.0, 0.0, 55.5], "from_x": 260.0, "seconds": 14.0, "brake_seconds": 4.0, "cars": 3,
       "whistle": "a1_train_whistle", "brakes": "a1_train_steam"},
-    "kranich_glow": {"pos": [-20.0, 20.5, 185.0], "length": 140.0, "intensity": 0.22, "top_radius": 14.0, "bottom_radius": 6.0},
+    "kranich_glow": {"pos": [-20.0, 20.5, 185.0], "length": 140.0, "intensity": 0.3, "top_radius": 14.0, "bottom_radius": 6.0, "pool_pos": [-14.0, 5.0, 166.0], "pool_energy": 2.2, "pool_range": 26.0},
     "rattle": {"points": [[34.0, 4.4, 56.0], [-40.0, 9.4, 72.0], [-20.0, 20.4, 165.0], [20.0, 6.3, 8.0], [-22.0, 6.4, 45.0]], "interval": [5.0, 12.0],
       "first_after": [8.0, 15.0], "min_wind": 0.35, "key": "a1_sheet_rattle"},
     "sway": {"amp_deg": 5.0, "points": [[-54.0, 8.7, 96.0, 3.0, 0.0], [-52.0, 8.7, 80.0, 3.0, 90.0], [-4.0, 8.7, 74.0, 2.8, 0.0]]},

@@ -65,6 +65,7 @@ func _build() -> void:
 	_leaf = pivot
 	for gi: Node in find_children("*", "GeometryInstance3D", true, false):
 		(gi as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	ThalbachLife.merge(pivot)
 
 
 func set_open(v: bool) -> void:

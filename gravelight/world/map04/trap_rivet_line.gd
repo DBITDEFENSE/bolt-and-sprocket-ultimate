@@ -98,6 +98,11 @@ func activate(by_player: int) -> bool:
 	return true
 
 
+## The capture tool's and the dev console's way in (no lever, no price): run it now.
+func show_run() -> void:
+	activate(0)
+
+
 func _physics_process(delta: float) -> void:
 	if not active:
 		if cooldown_left > 0.0:
@@ -216,6 +221,9 @@ func _build() -> void:
 		_hammers.append(ram)
 	for c: Node in find_children("*", "GeometryInstance3D", true, false):
 		(c as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	ThalbachLife.merge(rail)
+	for h: Node3D in _hammers:
+		ThalbachLife.merge(h)
 	# sparks at the hammers' feet
 	_sparks = GPUParticles3D.new()
 	_sparks.name = "Sparks"
