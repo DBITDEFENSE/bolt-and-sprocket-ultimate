@@ -1113,5 +1113,11 @@ onto the navmesh, stands 20 m from the start and has a path to it).
   up, takes the station and stays on it (no timeout) until the mark is removed, another order replaces it, the light goes
   to the boat or someone else has it; `_release` leaves the station. A bot operator sweeps `searchlight.bot_sweep_points`
   and swings to the densest group of zombies in range.
+- **Doors to a closed zone** (found by the final egg runs: three bots circled under the signal tower for 30 minutes):
+  `BotBrain.stand_point` no longer accepts a fallback point on the storey under the object (`_same_storey`: a floor slab
+  between them, here the north catwalk under the tower floor), so a use point behind a closed door is INF and the
+  executor asks `_try_door`; `BotEE._blocking_door` now paths over every navigation layer (a zone behind a closed door is
+  not in the squad's mask, and on Totenhafen every zone has its own layer, so the masked path never reached it and no
+  door was ever found). The bot then buys the door with its own Scrip when it can afford it.
 - **Ballast v2:** carriers are limited to melee and the pistol (`WeaponHolder.set_carry_limit`), bots included.
 - **Smoke:** `smoke_letzte_fahrt` (three bots on Full Partner, the human following; the forcing is in its header).
