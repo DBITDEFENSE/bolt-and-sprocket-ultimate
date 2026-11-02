@@ -546,7 +546,7 @@ static func skylights(parent: Node3D, x0: float, x1: float, z: float, roof_y: fl
 	var step: float = (x1 - x0) / float(n)
 	for k: int in n:
 		var cx: float = x0 + step * (k + 0.5)
-		Props.block(parent, Vector3(cx - step * 0.42, roof_y - 0.02, z - w * 0.5), Vector3(cx + step * 0.42, roof_y, z + w * 0.5), "lantern_glass", false)
+		Props.block(parent, Vector3(cx - step * 0.42, roof_y - 0.02, z - w * 0.5), Vector3(cx + step * 0.42, roof_y, z + w * 0.5), "window_dark", false)
 		Props.block(parent, Vector3(cx - step * 0.45, roof_y - 0.12, z - w * 0.5 - 0.06), Vector3(cx + step * 0.45, roof_y - 0.02, z - w * 0.5), "iron")
 		Props.block(parent, Vector3(cx - step * 0.45, roof_y - 0.12, z + w * 0.5), Vector3(cx + step * 0.45, roof_y - 0.02, z + w * 0.5 + 0.06), "iron")
 		Props.block(parent, Vector3(cx - 0.03, roof_y - 0.1, z - w * 0.5), Vector3(cx + 0.03, roof_y - 0.02, z + w * 0.5), "iron")

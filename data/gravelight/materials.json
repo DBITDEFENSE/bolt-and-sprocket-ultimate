@@ -756,6 +756,24 @@
       ],
       "grime": 0.25,
       "note": "Totenhafen: the cannery's zinc tables and brine tanks (T-145)"
+    },
+    "m2_interior": {
+      "set": "polyhaven/rusty-painted-metal",
+      "id": "rusty_painted_metal",
+      "tile_m": 1.6,
+      "tint": [
+        0.78,
+        0.84,
+        0.76
+      ],
+      "rough": [
+        0.4,
+        0.9
+      ],
+      "grime": 0.4,
+      "grime_height": 1.2,
+      "grime_floor_y": -2.0,
+      "note": "Totenhafen: U-1047's pressure hull from inside, grey-green paint with sweat and rust runs (T-145)"
     }
   },
   "generator": {
@@ -806,7 +824,9 @@
       "pier_concrete",
       "u_hull",
       "hull_red",
-      "zinc"
+      "zinc",
+      "m2_interior",
+      "u_interior"
     ],
     "keys": {
       "floorboards": "floorboards",
@@ -855,7 +875,9 @@
       "pier_concrete": "m2_pier",
       "u_hull": "m2_hull",
       "hull_red": "m2_hull_red",
-      "zinc": "m2_zinc"
+      "zinc": "m2_zinc",
+      "m2_interior": "m2_interior",
+      "u_interior": "m2_interior"
     }
   }
 }

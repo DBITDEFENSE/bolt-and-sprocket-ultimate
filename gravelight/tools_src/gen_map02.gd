@@ -626,7 +626,11 @@ func build_quay() -> void:
 	# the cliffs either side of the harbour and the breakwater
 	box(geo, "CliffW", Vector3(-110, -9, -60), Vector3(-30 - T, 46, 30), "cliff", false)
 	box(geo, "CliffE", Vector3(62 + T, -9, -60), Vector3(150, 46, 30), "cliff", false)
-	box(geo, "CliffBack", Vector3(-110, -9, 30), Vector3(150, 46, 33), "cliff", false)
+	# the headland behind the harbour, kept off the bunker's faces (it was coplanar with the 3 m face and MassAbove and
+	# z-fought them: the face read as the cliff's blue noise, U09 audit 4.1)
+	box(geo, "CliffBack", Vector3(-110, -9, 30), Vector3(-34.2, 46, 33), "cliff", false)
+	box(geo, "CliffBackE", Vector3(66.2, -9, 30), Vector3(150, 46, 33), "cliff", false)
+	box(geo, "CliffBackTop", Vector3(-34.2, 30.2, 30), Vector3(66.2, 46, 33), "cliff", false)
 	box(geo, "Breakwater", Vector3(-20, -3, -46), Vector3(90, 1.6, -42), "pier", false)
 
 
@@ -1403,7 +1407,7 @@ func _dress_light() -> void:
 func _dress_quay() -> void:
 	# wet patches, trodden snow, drifts in the corners
 	for r: Array in [[1.0, 9.5, 2.0, 9.0], [19.0, 31.5, 9.0, 29.0], [0.5, 9.5, 18.0, 29.5]]:
-		_noshadow(B(Vector3(float(r[0]), 0.0, float(r[2])), Vector3(float(r[1]), 0.012, float(r[3])), "snow_trodden", false))
+		_noshadow(B(Vector3(float(r[0]), 0.0, float(r[2])), Vector3(float(r[1]), 0.012, float(r[3])), "m2_floor_wet", false))   # T-145: wet patches (the trodden-snow set read as camouflage)
 	for d: Array in [[Vector3(1.2, 0, 28.5), Vector3(3.0, 0.5, 2.4)], [Vector3(30.5, 0, 28.6), Vector3(2.6, 0.5, 2.2)],
 			[Vector3(14, 0, 9.4), Vector3(8.0, 0.35, 1.0)], [Vector3(4.0, 0, 0.9), Vector3(5.0, 0.45, 1.4)]]:
 		Props.snow_drift(dress, d[0], d[1])
@@ -1423,7 +1427,7 @@ func _dress_quay() -> void:
 	# the harbourmaster's hut: window, lamp, sign, stove pipe, the desk and log inside, the Kar98k chalk wall
 	for wp: Array in [[Vector3(14, 0, 9.85), 180.0], [Vector3(14, 0, 17.15), 0.0]]:
 		var g: Node3D = Props.group(dress, "HutWindow", wp[0], float(wp[1]))
-		Props.block(g, Vector3(-0.6, 1.1, -0.02), Vector3(0.6, 2.0, 0.0), "lantern_glass")
+		Props.block(g, Vector3(-0.6, 1.1, -0.02), Vector3(0.6, 2.0, 0.0), "window_dark")   # T-145: no more glowing white slab
 		Props.block(g, Vector3(-0.66, 1.04, -0.06), Vector3(0.66, 1.1, 0.02), "beam")
 		Props.block(g, Vector3(-0.66, 2.0, -0.06), Vector3(0.66, 2.06, 0.02), "beam")
 		Props.block(g, Vector3(-0.03, 1.1, -0.04), Vector3(0.03, 2.0, 0.0), "beam")
@@ -1548,7 +1552,7 @@ func _dress_cannery() -> void:
 
 
 func _dress_workshop() -> void:
-	_noshadow(B(Vector3(32.15, 0.0, 0.15), Vector3(61.85, 0.012, 29.85), "concrete_floor", false))
+	_noshadow(B(Vector3(32.15, 0.0, 0.15), Vector3(61.85, 0.012, 29.85), "m2_floor", false))
 	# the gantry rail down the hall with its hoist, and the trusses
 	for tz: float in [5.0, 11.0, 17.0, 23.0]:
 		B(Vector3(32.2, 6.4, tz - 0.12), Vector3(61.8, 6.95, tz + 0.12), "beam")
