@@ -31,6 +31,21 @@ static var _pending_god: bool = false
 static var _pending_scrip: int = 0
 static var _pending_boss: String = ""
 static var _pending_squad: bool = false   # T-142: force a relief squad on the next round
+static var _pending_power: bool = false   # T-145: power on once the map is up
+
+## UPDATE 09 section 8 (T-145): the targets of the "Update 09 — online, web, rebuilt maps" buttons, as data so
+## smoke_launcher can check that every scene exists and every flag parses without opening a window.
+const MAIN_MENU_NEW: String = "res://gravelight/ui/main_menu.tscn"
+const MAP02: String = "res://gravelight/maps/map02_totenhafen/map02.tscn"
+const MOCK_PORT: int = 28500
+const WEB_PORT: int = 8060
+const WEB_URL: String = "http://127.0.0.1:8060/"
+## [label, act map id, start round] (the round numbers are the same as the "skip to Act" buttons above)
+const U09_ACTS: Array = [["Act I", "map04a_thalbach", 1], ["Act II", "map04b_kranich", 15],
+	["Act III", "map04c_groomlake", 21], ["Act IV", "map04d_mondlicht", 30]]
+## the user args of the two windows of "Host a test lobby (local)": [host, guest]
+const HOST_ARGS: Array = ["--mock-online-serve=28500", "--open=online", "--auto-host"]
+const GUEST_ARGS: Array = ["--mock-online=28500", "--open=online", "--auto-join"]
 
 var _round: SpinBox
 var _god: CheckBox
@@ -157,6 +172,8 @@ func _ready() -> void:
 		_start_gl(map0, 6), 22, "ui_confirm"))
 	col.add_child(_header("Update 09 — Ledger Lager and the bank on every map"))
 	col.add_child(MenuKit.button("Ledger Lager test (Map 0, 20,000 Scrip, power on, round 10)", func() -> void: _start_tool_scene("res://gravelight/tools_src/play_ledger.tscn"), 22, "ui_confirm"))
+	col.add_child(_header("Update 09 — online, the web build, the rebuilt maps"))
+	_add_u09_buttons(col, map0)
 	col.add_child(_header("Muster (your sidearm and Field Habits; saved per survivor, used by every match)"))
 	col.add_child(MenuKit.button("Muster — pick the sidearm and Field Habits for the survivor above", func() -> void: add_child(MenuMuster.new(CHARACTERS[_char.selected])), 22, "ui_confirm"))
 	col.add_child(_header("Bot mode (an AI plays your survivor; F6 or any input takes over)"))
@@ -174,6 +191,112 @@ func _ready() -> void:
 	_status = MenuKit.para("", 16, MenuKit.VIOLET)
 	col.add_child(_status)
 	first.grab_focus.call_deferred()
+
+
+## One hint label under each button, so the launcher says what a button does without opening it.
+func _hinted(col: Control, text: String, hint: String, action: Callable) -> Button:
+	var b: Button = MenuKit.button(text, action, 22, "ui_confirm")
+	b.tooltip_text = hint
+	col.add_child(b)
+	col.add_child(MenuKit.para(hint, 16, MenuKit.DIM))
+	return b
+
+
+## UPDATE 09 section 8 (T-145).
+func _add_u09_buttons(col: Control, _map0: String) -> void:
+	_hinted(col, "Online lobby", "The new main menu opened straight on Play > Online (Quick Match, Create, Browse, Join by code).", func() -> void:
+		MenuLobby.open_request = "online"
+		get_tree().change_scene_to_file(MAIN_MENU_NEW))
+	_hinted(col, "Host a test lobby (local)", "Two windows on this PC: one serves a local lobby relay and creates a lobby, the other opens Browse. No internet needed.",
+		func() -> void: _host_test_lobby())
+	_hinted(col, "Web build (serve locally)", "Builds build/web if it is missing (the first build takes minutes), serves it on %s and opens your browser there." % WEB_URL,
+		func() -> void: _serve_web())
+	_hinted(col, "Totenhafen — rebuilt", "Map 2 at round 5 with 3 bots, power on (the rebuilt harbour: walk the new routes).", func() -> void:
+		_pending_power = true
+		_start_gl(MAP02, 5, "", 3))
+	col.add_child(MenuKit.label("Fernflug — rebuilt (each act; bots, survivor and god mode from the fields above)", 20, MenuKit.PAPER, false))
+	var row: HBoxContainer = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	col.add_child(row)
+	for act: Array in U09_ACTS:
+		var aid: String = str(act[1])
+		var ar: int = int(act[2])
+		var ab: Button = MenuKit.button("%s (round %d)" % [str(act[0]), ar], func() -> void: _start_act(aid, ar), 22, "ui_confirm")
+		ab.tooltip_text = "Fernflug %s as rebuilt, in campaign mode with the act's arrival kit." % str(act[0])
+		ab.disabled = not Campaign.scene_exists(StringName(aid))
+		row.add_child(ab)
+	col.add_child(MenuKit.para("Each act opens in campaign mode with its arrival kit; Acts II to IV start with the launcher's Scrip for that round.", 16, MenuKit.DIM))
+	_hinted(col, "Main menu (new)", "The rebuilt CLAUDE ZOMBIES main menu (the 3D inn scene, Play / Muster / Archive / Extras).",
+		func() -> void: get_tree().change_scene_to_file(MAIN_MENU_NEW))
+
+
+## Two game windows over the local mock relay: the host serves the relay and creates a public lobby, the guest
+## (started 3 s later, once the relay listens) opens Browse. Both use the main menu with the --open=online /
+## --auto-host / --auto-join flags (MenuLobby), silent only if you mute them: these are real windows.
+func _host_test_lobby() -> void:
+	var host_pid: int = _spawn_main_menu(HOST_ARGS)
+	if host_pid <= 0:
+		_status.text = "Could not start the host window."
+		return
+	_status.text = "Host window started (pid %d, relay on port %d); the guest window opens in 3 s." % [host_pid, MOCK_PORT]
+	get_tree().create_timer(3.0).timeout.connect(func() -> void:
+		var gp: int = _spawn_main_menu(GUEST_ARGS)
+		_status.text = ("Host pid %d and guest pid %d are open: the guest is in Browse, join the lobby from there." % [host_pid, gp]) \
+			if gp > 0 else "Could not start the guest window.")
+
+
+func _spawn_main_menu(args: Array) -> int:
+	var argv: PackedStringArray = ["--path", ProjectSettings.globalize_path("res://"), MAIN_MENU_NEW, "--"]
+	for a: Variant in args:
+		argv.append(str(a))
+	return OS.create_process(OS.get_executable_path(), argv, false)
+
+
+## The shell command that builds (when build/web/index.html is missing) and serves the web build: for a console window.
+static func web_command(have_build: bool) -> String:
+	return ("" if have_build else "tools/build_web.sh && ") + "tools/serve_web.sh --port=%d" % WEB_PORT
+
+
+func _bash_path() -> String:
+	for p: String in ["C:/Program Files/Git/bin/bash.exe", "C:/Program Files/Git/usr/bin/bash.exe"]:
+		if FileAccess.file_exists(p):
+			return p
+	return "bash"
+
+
+## Builds if needed, serves build/web in a console window and opens the browser once the port answers (polled for
+## up to 30 minutes, since the first build takes minutes).
+func _serve_web() -> void:
+	var root: String = ProjectSettings.globalize_path("res://")
+	var have: bool = FileAccess.file_exists(root.path_join("build/web/index.html"))
+	var cmd: String = "cd \"%s\" && %s" % [root, web_command(have)]
+	var pid: int = OS.create_process(_bash_path(), ["-c", cmd], true)
+	if pid <= 0:
+		_status.text = "Could not start bash (Git Bash is needed): run tools/build_web.sh and tools/serve_web.sh by hand."
+		return
+	_status.text = ("Serving build/web on %s (console pid %d); the browser opens when it answers." % [WEB_URL, pid]) if have \
+		else "Building the web build (first time: minutes, see the console, pid %d); the browser opens at %s when it is served." % [pid, WEB_URL]
+	_open_when_up()
+
+
+func _open_when_up() -> void:
+	for i: int in 900:
+		await get_tree().create_timer(2.0).timeout
+		if not is_inside_tree():
+			return
+		var p: StreamPeerTCP = StreamPeerTCP.new()
+		if p.connect_to_host("127.0.0.1", WEB_PORT) == OK:
+			for k: int in 5:
+				await get_tree().create_timer(0.1).timeout
+				p.poll()
+				if p.get_status() != StreamPeerTCP.STATUS_CONNECTING:
+					break
+			var up: bool = p.get_status() == StreamPeerTCP.STATUS_CONNECTED
+			p.disconnect_from_host()
+			if up:
+				OS.shell_open(WEB_URL)
+				_status.text = "Opened %s in your browser." % WEB_URL
+				return
 
 
 func _header(text: String) -> Label:
@@ -307,6 +430,10 @@ static func _on_match_started(_map_id: StringName) -> void:
 			Economy.grant.call_deferred(pid, _pending_scrip)
 	_pending_round = 0
 	_pending_scrip = 0
+	if _pending_power:
+		_pending_power = false
+		GameState.set_deferred("power_on", true)
+		GLBus.power_activated.emit.call_deferred()
 	if _pending_squad:
 		_pending_squad = false
 		var t2: SceneTree = Engine.get_main_loop() as SceneTree
