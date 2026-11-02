@@ -323,6 +323,56 @@
         "talk": ["HAL_M4C_TALK_01", "HAL_M4C_TALK_02", "HAL_M4C_GLASS_03"],
         "react": ["HAL_M4C_RESIGN_01", "HAL_M4C_DELIVER_01", "HAL_M4C_CHOICE_02"]
       }
+    },
+    "siedlung_father": {
+      "name": "Erich Wendel, a fitter from Montage 1",
+      "title": "ERICH WENDEL",
+      "maps": ["map04a"],
+      "speaker": "WDL",
+      "display": "WENDEL",
+      "poi": "The family in the cellar",
+      "bio": "Forty-four, twelve years a fitter on the wing jigs in Montage 1, a Siedlung man (block 1, stair 3). When the coffins cracked he took his wife and their two girls down to the air-raid cellar and barred the side door. They are behind the blanket in the corner; he keeps them out of sight and asks for nothing but warmth.",
+      "bodies": [
+        {"person": "kubiak", "at": [3.6, 0.0, 6.4], "yaw": 90.0, "pose": "stand", "look": {"jacket": [0.18, 0.22, 0.34], "trousers": [0.17, 0.19, 0.28], "skin": [0.84, 0.69, 0.6], "head": [0.3, 0.24, 0.18], "headgear": "cap", "build": 1.0}}
+      ],
+      "favour": {"kind": "fetch", "item": "coal", "item_name": "sack of coal", "item_at": [31.0, 0.0, 41.5],
+        "ask": "The stove is dead and the little one is coughing. Coal spilled by the platform in the rail yard: one sack. Bring it and I lift the bar on the side door.",
+        "have": "You have a sack of coal. Give it to Wendel?",
+        "done": "Wendel lifts the bar: the cellar's side door to the courtyard stands open from now on.",
+        "reward": {"kind": "open_passage", "node": "CellarSideDoor", "flag": "a1_cellar_side_open"}},
+      "lines": {
+        "talk": ["WDL_PEOPLE_TALK_01", "WDL_PEOPLE_TALK_02"],
+        "ask": ["WDL_PEOPLE_ASK_01"],
+        "thanks": ["WDL_PEOPLE_THANKS_01"],
+        "door": ["WDL_PEOPLE_DOOR_01"],
+        "round": ["WDL_PEOPLE_ROUND_01", "WDL_PEOPLE_ROUND_02"],
+        "down": ["WDL_PEOPLE_DOWN_01"]
+      }
+    },
+    "railwayman": {
+      "name": "Otto Brack, the yard's signalman",
+      "title": "OTTO BRACK",
+      "maps": ["map04a"],
+      "speaker": "BRK",
+      "display": "BRACK",
+      "poi": "The signalman",
+      "bio": "Sixty-one, thirty-one years on the Werk's rail yard, the man who signalled the coffin train in from the coast. There is still one train on the line, an ammunition run nobody stopped, held outside the yard at danger. He would like to let one train in that does some good.",
+      "bodies": [
+        {"person": "rother", "at": [10.0, 0.0, 41.0], "yaw": 180.0, "pose": "stand", "look": {"jacket": [0.14, 0.15, 0.2], "trousers": [0.13, 0.13, 0.16], "skin": [0.82, 0.66, 0.58], "head": [0.6, 0.6, 0.6], "headgear": "cap", "build": 1.05}}
+      ],
+      "favour": {"kind": "fetch", "item": "signal", "item_name": "signal lever", "item_verb": "Pull", "item_at": [36.5, 0.0, 49.0],
+        "ask": "The signal is at danger. Pull the lever by the goods shed and the ammunition run comes in behind it. I see the crates get to you.",
+        "have": "You pulled the signal lever. Tell Brack?",
+        "done": "Brack nods: every train that comes in behind the goods shed now drops a crate in the yard (twice).",
+        "reward": {"kind": "train_drop", "powerup": "resupply", "at": [35.0, 0.0, 41.0], "drops": 2, "lifetime": 45.0}},
+      "lines": {
+        "talk": ["BRK_PEOPLE_TALK_01", "BRK_PEOPLE_TALK_02"],
+        "ask": ["BRK_PEOPLE_ASK_01"],
+        "thanks": ["BRK_PEOPLE_THANKS_01"],
+        "train": ["BRK_PEOPLE_TRAIN_01"],
+        "round": ["BRK_PEOPLE_ROUND_01", "BRK_PEOPLE_ROUND_02"],
+        "down": ["BRK_PEOPLE_DOWN_01"]
+      }
     }
   }
 }

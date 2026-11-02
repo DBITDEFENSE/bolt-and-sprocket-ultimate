@@ -68,5 +68,27 @@
     ],
     "vo": "PA_M4B_BAYDOORS_01"
   },
-  "deacon_cooldown_mult": 0.85
+  "deacon_cooldown_mult": 0.85,
+  "rivet_line": {
+    "_doc": "Werk Thalbach, Montage 1 (UPDATE 10 Act I, contract C6, T-155; gravelight/world/map04/trap_rivet_line.gd): the overhead rivet gantry runs the hall's south aisle end to end (pass_seconds a pass) for `duration` s after a warn_seconds klaxon; anything under the carriage (carriage_len along the rail x carriage_width across) is riveted.",
+    "cost": 1000,
+    "duration": 25.0,
+    "cooldown": 60.0,
+    "warn_seconds": 1.5,
+    "pass_seconds": 5.5,
+    "carriage_len": 3.0,
+    "carriage_width": 3.2,
+    "player_damage": 9999,
+    "zombie_damage": 999999
+  },
+  "wind_tunnel": {
+    "_doc": "Werk Thalbach's wind tunnel (UPDATE 10 Act I, contract C6, T-155; gravelight/world/map04/wind_tunnel.gd): a free lever (needs the power); the fan runs `duration` s, zombies in the test section are blown at zombie_push_mps into the outlet screen and shredded in its last screen_depth m, players drift at player_push_mps (never hurt), the plenum hatch to Montage 2 stands open while it runs.",
+    "cost": 0,
+    "duration": 20.0,
+    "cooldown": 30.0,
+    "zombie_push_mps": 6.0,
+    "player_push_mps": 3.0,
+    "screen_depth": 1.4,
+    "stagger_every": 4.0
+  }
 }

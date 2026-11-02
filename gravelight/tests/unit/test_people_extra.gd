@@ -4,7 +4,7 @@ extends GutTest
 ## exists with its audio, spots in the map's frame), the favour and timed-reward state machines, the trade rules.
 ## (That each spot sits on the navmesh is checked on the loaded maps: smoke_npc_walls and NpcWallProbe.)
 
-const KINDS: PackedStringArray = ["scrip_mark", "revive_point", "intel_ping", "cover", "unbolt_door", "supply_drop"]
+const KINDS: PackedStringArray = ["scrip_mark", "revive_point", "intel_ping", "cover", "unbolt_door", "supply_drop", "open_passage", "train_drop"]   # (+ T-157, T-155)
 
 
 func _people() -> Dictionary:
@@ -15,7 +15,7 @@ func test_the_table_counts() -> void:
 	assert_eq(ExtraPeople.ids_for_map("map01_kaltenbrunn", ExtraPeople.cfg()).size(), 3, "miners, a medic, a switchboard operator (the quartermaster is Ammer's trade card)")
 	assert_eq(ExtraPeople.ids_for_map("map00_crossroads", ExtraPeople.cfg()).size(), 3, "a deserter, a widow, a courier")
 	assert_eq(ExtraPeople.ids_for_map("map02_totenhafen", ExtraPeople.cfg()).size(), 0)
-	assert_eq(ExtraPeople.ids_for_map("map04a_thalbach", ExtraPeople.cfg()).size(), 0)
+	assert_eq(ExtraPeople.ids_for_map("map04a_thalbach", ExtraPeople.cfg()).size(), 2, "Erich Wendel and Otto Brack (T-155)")
 	assert_eq(ExtraPeople.ids_for_map("map04c_groomlake", ExtraPeople.cfg()).size(), 2, "Groom Lake: Dee in her cage, Hale in his office (U10 §3)")
 
 

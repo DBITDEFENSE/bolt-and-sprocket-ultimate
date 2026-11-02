@@ -13,6 +13,29 @@ const CATY: float = 12.0
 ## Where Skyhook Sekt goes in the wind tunnel (Phase 2 step 8; nothing is placed here yet): [pos, yaw].
 const SKYHOOK_SPOT: Array = [Vector3(1.0, 0.0, 104.0), -90.0]
 const CRANE_Y: float = 12.0
+## UPDATE 10 Act I (T-155): the air raid's breach in the Montage's north wall and the wind tunnel's plenum hatch.
+const BREACH_X: float = -55.0
+const BREACH_W: float = 3.0
+const HATCH_Z: float = 102.5
+const HATCH_W: float = 1.6
+const HATCH_H: float = 2.0
+## UPDATE 10 Act I (T-155): the air-watch post in the church square: one straight plank ramp along the square's east
+## wall (x RAMP_X0..39.85, z RAMP_Z0..RAMP_Z1, 0 -> 12 m at 36.9°, open underneath: W_D_E1's zombies walk out under it)
+## to a lookout platform at +12 (x PLAT_X0..39.85, z RAMP_Z1..PLAT_Z1). Stacked switchback flights could not be baked
+## (each zone box's top acts as a ceiling for Recast), so the ramp is one level and the square's 7 m box seam is
+## bridged by a link like the hangar's catwalk ramps. From the platform the Kranich is seen through the torn gap in the
+## hangar's south face (HANGAR_GAP: x, y ranges).
+const RAMP_X0: float = 37.0
+const RAMP_Z0: float = 66.0
+const RAMP_Z1: float = 82.0
+const PLAT_X0: float = 34.6
+const PLAT_Z1: float = 86.6
+const POST_TOP: float = 12.0
+const HANGAR_GAP: Array = [-11.0, -0.4, 5.6, 11.6]
+const CELLAR_SIDE_Z: float = 5.0
+## Every lit window's centre on its face, its outward normal and size (the living world draws the blackout blinds over
+## them one by one: map04a_ambience.json act1.windows_out). Filled by _facade, placed as "LitWindows" markers.
+var _lit_markers: Array = []
 
 
 func setup_tables() -> void:
@@ -53,6 +76,8 @@ func setup_tables() -> void:
 	]
 	for w: Array in windows:
 		zone_boxes.append(closet_box(str(w[1]), w[2], float(w[3])))
+	# UPDATE 10 (T-155): the watch post's ramp top and platform above the square's 7 m box (joined by a seam link)
+	zone_boxes.append(["D_KIRCHPLATZ", Vector3(PLAT_X0 - 0.4, 7.0, RAMP_Z0 + 6.0), Vector3(40.0, 14.0, PLAT_Z1 + 0.4)])
 	links = [
 		[Vector3(20, 0, 29.6), Vector3(20, 0, 30.4), "B_BAHNHOF"],
 		[Vector3(0.4, 0, 45), Vector3(-0.4, 0, 45), "C_KANTINE"],
@@ -65,6 +90,8 @@ func setup_tables() -> void:
 		# the catwalk ramps cross the floor box / catwalk box seam at y = 11.4
 		[Vector3(-68.2, 11.2, 170.6), Vector3(-68.2, 11.6, 171.4), "H_HALLE"],
 		[Vector3(28.2, 11.2, 170.6), Vector3(28.2, 11.6, 171.4), "H_HALLE"],
+		# UPDATE 10 (T-155): the watch post's ramp crosses the square's box / the post box seam (bridged 5 -> 7.5 m)
+		[Vector3((RAMP_X0 + 39.85) * 0.5, 5.0, RAMP_Z0 + 5.0 / 0.75), Vector3((RAMP_X0 + 39.85) * 0.5, 7.5, RAMP_Z0 + 7.5 / 0.75), "D_KIRCHPLATZ"],
 	]
 	buys = [
 		["kar98k", Vector3(12.17, 1.5, 6.0), -90.0], ["m1_carbine", Vector3(36.0, 1.5, 29.83), 0.0],
@@ -122,6 +149,10 @@ func setup_tables() -> void:
 			"radius": 3.0, "hang_height": 6.0, "style": &"skip", "chain_m": 2.2}, Vector3(20, 0, 45.5), 0.0, Vector3(39.6, 0, 47.0), 90.0, "coal_hopper"],
 		["res://gravelight/world/trap_chandelier.gd", "Trap_JigCrane", {"drop_points": PackedVector3Array([Vector3(-10, 0, 0), Vector3(0, 0, 0), Vector3(10, 0, 0)]),
 			"radius": 3.5, "hang_height": 7.5, "style": &"wing", "chain_m": 1.1}, Vector3(-26, 0, 84), 0.0, Vector3(-0.4, 0, 90.0), 90.0, "jig_crane"],
+		# UPDATE 10 (T-155): the rivet line runs Montage 1's south aisle (x -46.5..-1.5, z 62.4..65.6); the lever on the
+		# Kraftzentrale's east wall, beside its door
+		["res://gravelight/world/map04/trap_rivet_line.gd", "Trap_RivetLine", {"track_start": Vector3(-21.0, 0, 0), "track_end": Vector3(21.0, 0, 0)},
+			Vector3(-24.0, 0, 64.0), 0.0, Vector3(-47.75, 0, 72.0), -90.0, "rivet_line"],
 	]
 	mat_map = {
 		"wall": "brick", "concrete": "concrete", "ground": "concrete_floor", "cobble": "stone", "metal": "iron", "steel": "steel",
@@ -140,7 +171,7 @@ func setup_tables() -> void:
 	# hidden visuals (their colliders stay): the boxes the dressing redraws (the flat roofs under the sawtooth and
 	# hangar roofs, the solid rail boxes under the railings)
 	hide = ["NavBlock*", "Flatcar*", "Coffin*", "Table*", "Jig*", "Fan", "Crater", "Well", "Fountain", "Tower*", "GreatDoorsBlock",
-		"Impeller*", "Kranich*", "Rubble*", "MontageRoof", "HalleRoof", "Rail_*"]
+		"Impeller*", "Kranich*", "Rubble*", "MontageRoof", "HalleRoof", "Rail_*", "BreachPlug", "TunnelHatchPlug", "CellarSidePlug"]
 	sky_top = Color(0.006, 0.008, 0.02)
 	sky_horizon = Color(0.06, 0.05, 0.07)
 	ambient = Color(0.24, 0.26, 0.34)
@@ -158,6 +189,7 @@ func build_geometry() -> void:
 	_bahnhof()
 	_kantine()
 	_kirchplatz()
+	_watch_post()
 	_montage()
 	_windkanal()
 	_pruefstand()
@@ -171,7 +203,9 @@ func _siedlung() -> void:
 	wall_z("A_E", 40.0, 0, 30, 0, 6.0, [win(16, 0)], "wall")
 	wall_x("AB", 30.0, 0 - T * 0.5, 40 + T * 0.5, 0, 6.0, [door(20, 0)], "wall")
 	# the air-raid cellar: a bunker room in block 1's ground floor (the crate's start spot)
-	wall_z("CellarE", 12.0, 2, 10, 0, 3.0, [], "concrete")
+	wall_z("CellarE", 12.0, 2, 10, 0, 3.0, [gap(CELLAR_SIDE_Z, 0, 1.4, 2.1)], "concrete")
+	# UPDATE 10 (T-155): the cellar's side door into the courtyard (barred: a plug; Erich Wendel's favour opens it for good)
+	box(geo, "CellarSidePlug", Vector3(12.0 - T * 0.5, 0, CELLAR_SIDE_Z - 0.7), Vector3(12.0 + T * 0.5, 2.1, CELLAR_SIDE_Z + 0.7), "concrete")
 	wall_x("CellarN", 10.0, 2 - T * 0.5, 12 + T * 0.5, 0, 3.0, [door(7, 0, 1.8)], "concrete")
 	wall_z("CellarW", 2.0, 2, 10, 0, 3.0, [], "concrete")
 	wall_x("CellarS", 2.0, 2 - T * 0.5, 12 + T * 0.5, 0, 3.0, [], "concrete")
@@ -241,10 +275,36 @@ func _kirchplatz() -> void:
 			closet(w[2], float(w[3]))
 
 
+## UPDATE 10 (T-155): the Luftbeobachtung post: the plank ramp (its treads drawn in the dressing), stepped railing
+## colliders up its open west side, the platform with railings round its three open sides, posts under the platform.
+func _watch_post() -> void:
+	var rx1: float = 40.0 - T * 0.5
+	ramp_z("Ramp_Post", RAMP_X0, rx1, RAMP_Z0, RAMP_Z1, 0.0, POST_TOP)
+	box(geo, "PostPlatform", Vector3(PLAT_X0, POST_TOP - 0.2, RAMP_Z1), Vector3(rx1, POST_TOP, PLAT_Z1), "planks")
+	# the ramp's west railing: 1 m steps that follow the slope (a box per metre, 1.05 m over the tread)
+	var run: float = RAMP_Z1 - RAMP_Z0
+	var k: int = 0
+	var z: float = RAMP_Z0 + 2.0
+	while z < RAMP_Z1:
+		var y0: float = POST_TOP * (z - RAMP_Z0) / run
+		box(geo, "Rail_PostRamp%d" % k, Vector3(RAMP_X0 - 0.06, y0 - 0.4, z), Vector3(RAMP_X0 + 0.06, y0 + 1.05 + 0.75, minf(z + 1.0, RAMP_Z1)), "rail")
+		z += 1.0
+		k += 1
+	rail("Rail_PostPlatW", Vector3(PLAT_X0, POST_TOP, RAMP_Z1), Vector3(PLAT_X0, POST_TOP, PLAT_Z1))
+	rail("Rail_PostPlatN", Vector3(PLAT_X0, POST_TOP, PLAT_Z1), Vector3(rx1, POST_TOP, PLAT_Z1))
+	rail("Rail_PostPlatS", Vector3(PLAT_X0, POST_TOP, RAMP_Z1), Vector3(RAMP_X0, POST_TOP, RAMP_Z1))
+	for px: float in [PLAT_X0 + 0.2, RAMP_X0 + 0.2, rx1 - 0.25]:
+		box(geo, "NavBlock_PostLeg", Vector3(px - 0.15, 0, PLAT_Z1 - 0.35), Vector3(px + 0.15, POST_TOP - 0.2, PLAT_Z1 - 0.05), "beam")
+	box(geo, "NavBlock_PostLegS", Vector3(PLAT_X0 + 0.05, 0, RAMP_Z1 + 0.05), Vector3(PLAT_X0 + 0.35, POST_TOP - 0.2, RAMP_Z1 + 0.35), "beam")
+
+
 func _montage() -> void:
 	wall_x("E_S", 60.0, -60 - T * 0.5, -44 - T * 0.5, 0, 9.0, [], "wall")
 	wall_z("E_W", -60.0, 60, 110, 0, 9.0, [win(90, 0)], "wall")
-	wall_x("EG", 110.0, -60 - T * 0.5, 0 + T * 0.5, 0, 9.0, [win(-44, 0), door(-30, 0)], "wall")
+	wall_x("EG", 110.0, -60 - T * 0.5, 0 + T * 0.5, 0, 9.0, [win(-44, 0), door(-30, 0), door(BREACH_X, 0, BREACH_W)], "wall")
+	# UPDATE 10 (T-155): the air raid's Breach_E_apron. The gap is plugged (a world-layer collider, so the navmesh is baked
+	# shut through it; its visual is the raid node's brick patch) until the raid blows it open.
+	box(geo, "BreachPlug", Vector3(BREACH_X - BREACH_W * 0.5, 0, 110.0 - T * 0.5), Vector3(BREACH_X + BREACH_W * 0.5, DOOR_H, 110.0 + T * 0.5), "wall")
 	box(geo, "MontageRoof", Vector3(-60.3, 9.0, 59.7), Vector3(0.3, 9.3, 110.3), "roof", false)
 	# the two jigs with the half-built little wings, the gantry legs
 	box(geo, "Jig1", Vector3(-40, 0, 70), Vector3(-12, 2.5, 78), "steel")
@@ -266,7 +326,9 @@ func _montage() -> void:
 func _windkanal() -> void:
 	wall_z("F_E", 44.0, 100, 130, 0, 8.0, [win(108, 0)], "wall")
 	wall_x("F_N", 130.0, 0 - T * 0.5, 44 + T * 0.5, 0, 8.0, [win(22, 0)], "wall")
-	wall_z("FG", 0.0, 100, 130, 0, 8.0, [door(122, 0)], "wall")   # also the test stands' east wall (z 110..130)
+	wall_z("FG", 0.0, 100, 130, 0, 8.0, [door(122, 0), gap(HATCH_Z, 0, HATCH_W, HATCH_H)], "wall")   # also the test stands' east wall (z 110..130)
+	# UPDATE 10 (T-155): the wind tunnel's plenum hatch into Montage 2, plugged (the hatch opens it while the fan runs)
+	box(geo, "TunnelHatchPlug", Vector3(-T * 0.5, 0, HATCH_Z - HATCH_W * 0.5), Vector3(T * 0.5, HATCH_H, HATCH_Z + HATCH_W * 0.5), "wall")
 	box(geo, "WindkanalRoof", Vector3(-0.3, 8.0, 99.7), Vector3(44.3, 8.3, 130.3), "roof", false)
 	# the tunnel: a brick horn the length of the hall, open at both ends, the test section's glass wall
 	wall_z("TunnelS", 112.0, 6, 38, 0, 2.4, [], "wall")   # along x at z=112... built as x-walls below
@@ -400,6 +462,7 @@ func _facade(g: Node3D, out: Vector3, face: float, along: Array, sills: Array, w
 				o["curtain"] = curtain_keys[rng.randi() % curtain_keys.size()]
 				o["silhouette"] = rng.randf() < 0.6
 				lit.append(pos + Vector3(0, h * 0.5, 0) + out.normalized() * 0.6)
+				_lit_markers.append([pos + Vector3(0, h * 0.5, 0) + out.normalized() * 0.07, out.normalized(), w, h])
 			elif roll < 0.62:
 				o["curtain"] = curtain_keys[rng.randi() % curtain_keys.size()]
 				o["broken"] = 0.25 if rng.randf() < 0.3 else 0.0
@@ -493,12 +556,34 @@ func _dress_kranich() -> void:
 func _dress_halle() -> void:
 	var g: Node3D = Props.group(dress, "HalleDress", Vector3.ZERO)
 	# the south wall above the Prüfstand's 5 m wall: the hangar closes to its 20 m height (non-colliding; G is open air)
-	box(dress, "HalleSouthUpper", Vector3(-60.15, 5.0, 150.0 - T * 0.5), Vector3(0.15, 20.0, 150.0 + T * 0.5), "fl_concrete", false)
+	# UPDATE 10 (T-155): a bomb-torn gap in it (HANGAR_GAP), aimed at the church square's watch post: the Kranich is seen
+	# from the lookout. Ragged edges, hanging rebar, a torn net flap
+	var gx0: float = float(HANGAR_GAP[0])
+	var gx1: float = float(HANGAR_GAP[1])
+	var gy0: float = float(HANGAR_GAP[2])
+	var gy1: float = float(HANGAR_GAP[3])
+	box(dress, "HalleSouthUpper", Vector3(-60.15, 5.0, 150.0 - T * 0.5), Vector3(gx0, 20.0, 150.0 + T * 0.5), "fl_concrete", false)
+	box(dress, "HalleSouthUpperE", Vector3(gx1, 5.0, 150.0 - T * 0.5), Vector3(0.15, 20.0, 150.0 + T * 0.5), "fl_concrete", false)
+	box(dress, "HalleSouthUpperB", Vector3(gx0, 5.0, 150.0 - T * 0.5), Vector3(gx1, gy0, 150.0 + T * 0.5), "fl_concrete", false)
+	box(dress, "HalleSouthUpperT", Vector3(gx0, gy1, 150.0 - T * 0.5), Vector3(gx1, 20.0, 150.0 + T * 0.5), "fl_concrete", false)
+	var grng: RandomNumberGenerator = RandomNumberGenerator.new()
+	grng.seed = 1505
+	for k: int in 16:
+		var on_side: bool = k % 2 == 0
+		var ex: float = (gx0 if k % 4 == 0 else gx1) if on_side else grng.randf_range(gx0, gx1)
+		var ey: float = grng.randf_range(gy0, gy1) if on_side else (gy0 if k % 4 == 1 else gy1)
+		Props.obox(dress, Vector3(ex, ey, 150.0), Vector3(grng.randf_range(0.5, 1.3), grng.randf_range(0.4, 1.1), T + 0.06), "fl_concrete",
+			Vector3(0, 0, grng.randf_range(-30, 30)))
+	for k2: int in 7:
+		var rx: float = grng.randf_range(gx0 + 0.5, gx1 - 0.5)
+		Props.strut(dress, Vector3(rx, gy1, 150.0), Vector3(rx + grng.randf_range(-0.6, 0.6), gy1 - grng.randf_range(0.8, 2.2), 149.6 + grng.randf_range(0.0, 0.8)), 0.035, "rust")
 	# board-formed walls: lift lines every 1.2 m and pilasters every ~8 m on the inner faces (no tie holes on walls this big)
 	GenDetail.form_board(g, Vector3(-69.85, 0, 150.15), Vector3(-69.85, 20, 214.85), Vector3.RIGHT, 1.2, "fl_concrete", false)
 	GenDetail.form_board(g, Vector3(29.85, 0, 150.15), Vector3(29.85, 20, 214.85), Vector3.LEFT, 1.2, "fl_concrete", false)
 	GenDetail.form_board(g, Vector3(-69.85, 0, 214.85), Vector3(29.85, 20, 214.85), Vector3.FORWARD, 1.2, "fl_concrete", false)
-	GenDetail.form_board(g, Vector3(-69.85, 5, 150.15), Vector3(29.85, 20, 150.15), Vector3.BACK, 1.2, "fl_concrete", false)
+	GenDetail.form_board(g, Vector3(-69.85, 5, 150.15), Vector3(float(HANGAR_GAP[0]), 20, 150.15), Vector3.BACK, 1.2, "fl_concrete", false)
+	GenDetail.form_board(g, Vector3(float(HANGAR_GAP[1]), 5, 150.15), Vector3(29.85, 20, 150.15), Vector3.BACK, 1.2, "fl_concrete", false)
+	GenDetail.form_board(g, Vector3(float(HANGAR_GAP[0]), float(HANGAR_GAP[3]), 150.15), Vector3(float(HANGAR_GAP[1]), 20, 150.15), Vector3.BACK, 1.2, "fl_concrete", false)
 	for pz: float in [158.0, 166.0, 174.0, 182.0, 190.0, 198.0, 206.0]:
 		for side: Array in [[-69.85, 1.0], [29.85, -1.0]]:
 			var x: float = float(side[0])
@@ -620,7 +705,16 @@ func _dress_montage() -> void:
 	box(dress, "MontageCloseE", Vector3(-T * 0.5, 8.0, 100.0), Vector3(T * 0.5, 9.0, 110.15), "fl_brick", false)
 	# two sawtooth halls (north lights facing north), a valley girder between them, camouflage netting over both
 	GenDetail.sawtooth_roof(g, Vector3(-60.0, 9.0, 60.0), Vector3(0.0, 9.0, 85.0), 5, 2.4)
-	GenDetail.sawtooth_roof(g, Vector3(-60.0, 9.0, 85.0), Vector3(0.0, 9.0, 110.0), 5, 2.4)
+	# hall 2 in three parts (UPDATE 10, T-155): the middle bay (x -38..-22) is "Hall2Roof", kept out of the batches, the
+	# roof the air raid brings down (ThalbachRaid drops and hides it)
+	GenDetail.sawtooth_roof(g, Vector3(-60.0, 9.0, 85.0), Vector3(-38.0, 9.0, 110.0), 5, 2.4)
+	GenDetail.sawtooth_roof(g, Vector3(-22.0, 9.0, 85.0), Vector3(0.0, 9.0, 110.0), 5, 2.4)
+	var h2: Node3D = Props.group(dress, "Hall2Roof", Vector3.ZERO)
+	h2.set_meta("keep", true)
+	GenDetail.sawtooth_roof(h2, Vector3(-38.0, 9.0, 85.0), Vector3(-22.0, 9.0, 110.0), 5, 2.4)
+	for tz: float in [90.0, 100.0]:
+		GenDetail.i_beam(h2, Vector3(-38.0, 8.75, tz), Vector3(-22.0, 8.75, tz), 0.4, 0.2, "steel")
+	GenDetail.merge_children(h2)
 	GenDetail.i_beam(g, Vector3(-60.0, 8.6, 85.0), Vector3(0.0, 8.6, 85.0), 0.8, 0.35, "steel")
 	GenDetail.camo_net(dress, Vector3(-64.0, 0, 56.0), Vector3(4.0, 12.4, 114.0), 0.9, 8.0, 3.0, "nsew")
 	# brick piers on the walls under each valley, and tall steel-framed factory windows high on the west wall
@@ -903,6 +997,13 @@ func _dress_siedlung() -> void:
 		_balcony(g, b[0], b[1])
 	for c: Vector3 in lit:
 		lamp(c, WARM, 0.45, 5.0, 0.04, 0.2)
+	# UPDATE 10 (T-155): Erich Wendel's family behind a blanket hung across the cellar's south-west corner: a woman and
+	# two girls, silhouettes against the stove's glow only (civilians are never shown otherwise)
+	Props.cable(g, Vector3(2.2, 2.0, 4.6), Vector3(6.0, 2.0, 2.2), 0.08, 0.01, 2, "rubber")
+	Props.obox(g, Vector3(4.1, 1.15, 3.4), Vector3(4.6, 1.7, 0.03), "tarp", Vector3(0, -32.6, 0))
+	for sl: Array in [[Vector3(3.0, 0, 2.8), 1.62], [Vector3(3.8, 0, 2.6), 1.15], [Vector3(2.6, 0, 3.5), 0.95]]:
+		GenDetail.silhouette(g, sl[0], 57.4, float(sl[1]))
+	lamp(Vector3(3.0, 0.6, 2.7), FIRE, 0.5, 4.0, 0.15, 0.0)
 	# the west wing (A_W): a lower wash-house with a pent roof; the works wall (AB) with its gate and the notices
 	Props.block(g, Vector3(-0.15, 6.0, 0.0), Vector3(0.15, 6.3, 30.0), "concrete")
 	Props.obox(g, Vector3(-3.0, 7.1, 15.0), Vector3(6.6, 0.18, 30.6), "roof", Vector3(0, 0, -16))
@@ -1107,6 +1208,34 @@ func _dress_kirchplatz() -> void:
 		var rp2: Vector3 = Vector3(rng.randf_range(-7.6, 7.6), 0.0, rng.randf_range(-8.9, -7.15))
 		Props.obox(t, rp2 + Vector3(0, rng.randf_range(0.15, 0.5), 0), Vector3(rng.randf_range(0.4, 1.1), rng.randf_range(0.3, 0.6), rng.randf_range(0.3, 0.8)), "stone",
 			Vector3(rng.randf_range(-25, 25), rng.randf() * 180.0, rng.randf_range(-25, 25)))
+	# UPDATE 10 (T-155): the watch post's dressing: treads on the ramp, trestles under it, the railings, sandbags round
+	# the platform, its sign
+	var rrun: float = RAMP_Z1 - RAMP_Z0
+	var tz: float = RAMP_Z0 + 0.15
+	while tz < RAMP_Z1 - 0.1:
+		var ty: float = POST_TOP * (tz - RAMP_Z0) / rrun
+		NB(Vector3(RAMP_X0 + 0.05, ty + 0.01, tz - 0.05), Vector3(39.8, ty + 0.06, tz + 0.05), "beam", g)
+		tz += 0.4
+	for tr: int in 4:
+		var zt: float = RAMP_Z0 + 4.0 + float(tr) * 3.6
+		var yt: float = POST_TOP * (zt - RAMP_Z0) / rrun
+		Props.block(g, Vector3(RAMP_X0 + 0.05, 0, zt - 0.1), Vector3(RAMP_X0 + 0.25, yt - 0.15, zt + 0.1), "beam")
+		Props.strut(g, Vector3(RAMP_X0 + 0.15, 0.0, zt - 1.2), Vector3(RAMP_X0 + 0.15, yt - 0.3, zt), 0.08, "beam")
+	var rl0: Vector3 = Vector3(RAMP_X0, 1.05 + POST_TOP * 2.0 / rrun, RAMP_Z0 + 2.0)
+	var rl1: Vector3 = Vector3(RAMP_X0, POST_TOP + 1.05, RAMP_Z1)
+	Props.strut(g, rl0, rl1, 0.06, "beam")
+	Props.strut(g, rl0 - Vector3(0, 0.5, 0), rl1 - Vector3(0, 0.5, 0), 0.04, "beam")
+	for rp: int in 8:
+		var f: float = float(rp) / 7.0
+		var pz: float = lerpf(RAMP_Z0 + 2.0, RAMP_Z1, f)
+		var py: float = POST_TOP * (pz - RAMP_Z0) / rrun
+		Props.block(g, Vector3(RAMP_X0 - 0.05, py, pz - 0.05), Vector3(RAMP_X0 + 0.05, py + 1.1, pz + 0.05), "beam")
+	for rl: Array in [[Vector3(PLAT_X0, POST_TOP, RAMP_Z1), Vector3(PLAT_X0, POST_TOP, PLAT_Z1)], [Vector3(PLAT_X0, POST_TOP, PLAT_Z1), Vector3(39.8, POST_TOP, PLAT_Z1)],
+			[Vector3(PLAT_X0, POST_TOP, RAMP_Z1), Vector3(RAMP_X0, POST_TOP, RAMP_Z1)]]:
+		GenDetail.railing(g, rl[0], rl[1], 1.05, "beam", false)
+	for sb: int in 6:
+		Props.obox(g, Vector3(PLAT_X0 + 0.35, POST_TOP + 0.25, RAMP_Z1 + 0.6 + float(sb) * 0.7), Vector3(0.45, 0.3, 0.68), "tarp", Vector3(0, 0, 4))
+	GenDetail.enamel_sign(g, Vector3(RAMP_X0 - 0.08, 2.4, RAMP_Z0 + 3.0), -90.0, "LUFTBEOBACHTUNG", 1.3, 0.3, "enamel_white", Color(0.1, 0.1, 0.12))
 	# the well (Well collider 2.4 × 2.4 × 1.1): a round stone curb, a windlass roof on two posts, a bucket, the lantern
 	var w: Node3D = Props.group(g, "Well", Vector3(8.0, 0, 80.0))
 	Props.cyl(w, Vector3(0, 0.55, 0), 1.15, 1.1, "stone")
@@ -1183,7 +1312,8 @@ func _dress_windkanal() -> void:
 			var b1: float = PI * float(k2 + 1) / 9.0
 			Props.strut(g, Vector3(rib, 2.4 + sin(b0) * 2.22, 115.0 + cos(b0) * 3.37), Vector3(rib, 2.4 + sin(b1) * 2.22, 115.0 + cos(b1) * 3.37), 0.22, "fl_brick")
 	# the fan ring and the propeller (eight blades round a violet hub), the motor housing behind it
-	var fan: Node3D = Props.group(g, "FanRing", Vector3(1.8, 3.5, 115.0))
+	var fan: Node3D = Props.group(dress, "FanRing", Vector3(1.8, 3.5, 115.0))
+	fan.set_meta("keep", true)   # UPDATE 10 (T-155): the WindTunnel spins it
 	for k3: int in 24:
 		var a2: float = TAU * float(k3) / 24.0
 		var a3: float = TAU * float(k3 + 1) / 24.0
@@ -1347,6 +1477,7 @@ func _dress_works() -> void:
 	# the sky: searchlights sweeping a cloud deck, the dawn that never comes, the forest ridges round the valley
 	var sky: Node3D = Node3D.new()
 	sky.name = "ThalbachSky"
+	sky.add_to_group(&"thalbach_sky", true)
 	sky.set_script(load("res://gravelight/world/map04/thalbach_sky.gd"))
 	sky.set("bases", PackedVector3Array([Vector3(-66, 10, 64), Vector3(42, 10, 32), Vector3(36, 22, 212), Vector3(-74, 24, 150)]))
 	extra_root_nodes.append(sky)
@@ -1363,6 +1494,16 @@ func _dress_works() -> void:
 	label("WINDKANAL", Vector3(8, 5.0, 100.3), 0.0, 48)
 	label("PRÜFSTAND", Vector3(-30, 4.2, 110.3), 0.0, 48)
 	label("HALLE", Vector3(-30, 4.4, 150.3), 0.0, 48)
+	# UPDATE 10 (T-155): two flak towers on the skyline, the air raid's guns (map04a.json raid.flak_towers are their tops):
+	# board-formed concrete, four corner gun platforms, no markings
+	for ft: Vector3 in [Vector3(-118.0, 0.0, 30.0), Vector3(100.0, 0.0, 190.0)]:
+		Props.block(dress, ft + Vector3(-7.0, -0.5, -7.0), ft + Vector3(7.0, 32.0, 7.0), "fl_concrete")
+		Props.block(dress, ft + Vector3(-8.0, 32.0, -8.0), ft + Vector3(8.0, 33.2, 8.0), "fl_concrete")
+		for cx: float in [-6.0, 6.0]:
+			for cz: float in [-6.0, 6.0]:
+				Props.cyl(dress, ft + Vector3(cx, 34.0, cz), 2.0, 1.6, "fl_concrete")
+				Props.cyl(dress, ft + Vector3(cx, 35.2, cz), 0.5, 0.8, "machine_grey")
+				Props.cyl(dress, ft + Vector3(cx + 0.9, 36.0, cz), 0.12, 2.6, "steel", Vector3(0, 0, -55))
 	# the works' chimney behind the Kraftzentrale and a water tower beyond the Siedlung: skyline silhouettes
 	Props.cyl(dress, Vector3(-66.0, 14.0, 78.0), 1.4, 28.0, "fl_brick")
 	Props.cyl(dress, Vector3(-66.0, 28.2, 78.0), 1.6, 0.6, "concrete")
@@ -1552,6 +1693,64 @@ func build_lights() -> void:
 		moon.directional_shadow_max_distance = 60.0
 
 
+## UPDATE 10 Act I (T-155): the base bake, then what the air raid and the wind tunnel switch on at runtime (all
+## disabled in the scene): Nav_E_MONTAGE_raid (the Montage zone box baked again with the raid's rubble in it: the
+## route through Door_Pruefstand is gone), Link_Breach_E_apron (Montage 2 -> the test stands through the blown
+## wall; the test stands' layer) and Link_TunnelHatch (the Windkanal <-> Montage 2 through the plenum hatch; the
+## Windkanal's layer). The regions the base bake makes are untouched (same names, same polygons).
+func bake_regions() -> void:
+	super.bake_regions()
+	var nav: Node3D = map_root.get_node("Navigation") as Node3D
+	var raid: Dictionary = (JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/map04a.json")) as Dictionary).get("raid", {})
+	var rb: Array = raid.get("rubble_box", [])
+	if rb.size() >= 2:
+		var lo_r: Vector3 = Vector3(float(rb[0][0]), float(rb[0][1]), float(rb[0][2]))
+		var hi_r: Vector3 = Vector3(float(rb[1][0]), float(rb[1][1]), float(rb[1][2]))
+		# the heap as three stacked slabs: Recast treats one 2.2 m box as hollow (the gap under its top is taller than an
+		# agent, so the floor inside stays walkable); slabs under 1.75 m leave no gap anything fits in
+		var tmps: Array[Node3D] = []
+		var y0: float = lo_r.y
+		for y1: float in [lo_r.y + 0.8, lo_r.y + 1.6, hi_r.y]:
+			tmps.append(box(geo, "RaidRubbleBake", Vector3(lo_r.x, y0, lo_r.z), Vector3(hi_r.x, y1, hi_r.z), "concrete"))
+			y0 = y1
+		var src: NavigationMeshSourceGeometryData3D = NavigationMeshSourceGeometryData3D.new()
+		NavigationServer3D.parse_source_geometry_data(_navmesh(), src, geo)
+		# and as a carving obstruction (grown by the agent radius): the heap's footprint is cut out of the floor for sure
+		var g_r: float = 0.5
+		src.add_projected_obstruction(PackedVector3Array([Vector3(lo_r.x - g_r, lo_r.y, lo_r.z - g_r), Vector3(hi_r.x + g_r, lo_r.y, lo_r.z - g_r),
+			Vector3(hi_r.x + g_r, lo_r.y, hi_r.z + g_r), Vector3(lo_r.x - g_r, lo_r.y, hi_r.z + g_r)]), lo_r.y - 0.5, hi_r.y - lo_r.y + 1.0, true)
+		for zb: Array in zone_boxes:
+			if str(zb[0]) != "E_MONTAGE":
+				continue
+			var lo: Vector3 = zb[1]
+			var hi: Vector3 = zb[2]
+			var nm: NavigationMesh = _navmesh()
+			nm.filter_baking_aabb = AABB(lo, hi - lo)
+			NavigationServer3D.bake_from_source_geometry_data(nm, src)
+			var r: NavigationRegion3D = NavigationRegion3D.new()
+			r.name = "Nav_E_MONTAGE_raid"
+			r.navigation_mesh = nm
+			r.navigation_layers = 1 << (int(zone_bits["E_MONTAGE"]) - 1)
+			r.enabled = false
+			nav.add_child(r)
+			print("  E_MONTAGE after the raid: %d polys" % nm.get_polygon_count())
+			break
+		for tmp: Node3D in tmps:
+			geo.remove_child(tmp)
+			tmp.free()
+	for l: Array in [["Link_Breach_E_apron", Vector3(BREACH_X, 0, 109.25), Vector3(BREACH_X, 0, 110.75), "G_PRUEFSTAND"],
+			["Link_TunnelHatch", Vector3(-0.75, 0, HATCH_Z), Vector3(0.75, 0, HATCH_Z), "F_WINDKANAL"],
+			["Link_CellarSide", Vector3(11.2, 0, CELLAR_SIDE_Z), Vector3(12.8, 0, CELLAR_SIDE_Z), "A_SIEDLUNG"]]:
+		var link: NavigationLink3D = NavigationLink3D.new()
+		link.name = str(l[0])
+		link.start_position = l[1]
+		link.end_position = l[2]
+		link.bidirectional = true
+		link.navigation_layers = 1 << (int(zone_bits[l[3]]) - 1)
+		link.enabled = false
+		nav.add_child(link)
+
+
 func build_gameplay_extra() -> void:
 	# the act controller (the hangar unlock, the boss schedule) and the Fliegeralarm special round
 	_node("res://gravelight/maps/map04_fernflug/act_controller.gd", "ActController", {}, Vector3.ZERO)
@@ -1584,3 +1783,28 @@ func build_gameplay_extra() -> void:
 			"kind": "model", "note_text": str(m[2])}, m[3], 0.0)
 	_node("res://gravelight/world/quest_interact.gd", "JetteHatch", {"target": &"jette_hatch", "label_text": "WINDKANAL · BÜRO MAURER", "prompt_text": "put the models on Jette's desk",
 		"missing_text": "The hatch is shut: %s", "flag_labels": {}, "size": Vector3(1.0, 1.6, 1.0)}, Vector3(43.2, 0, 124.0), -90.0)
+	# ---- UPDATE 10 Act I (T-155): the lit windows (for the blackout), the air raid (act round 8), its breach door,
+	# the wind tunnel's plenum hatch
+	var lw: Node3D = Node3D.new()
+	lw.name = "LitWindows"
+	gameplay.add_child(lw)
+	var li: int = 0
+	for m: Array in _lit_markers:
+		var mk: Marker3D = Marker3D.new()
+		mk.name = "Lit%d" % li
+		mk.position = m[0]
+		mk.set_meta("out", m[1])
+		mk.set_meta("w", m[2])
+		mk.set_meta("h", m[3])
+		lw.add_child(mk)
+		li += 1
+	_node("res://gravelight/world/map04/thalbach_raid.gd", "AirRaid", {}, Vector3.ZERO)
+	_node("res://gravelight/world/map04/breach_door.gd", "Breach_E_apron", {"door_id": &"door_pruefstand", "opens_zone": &"G_PRUEFSTAND",
+		"link_group": &"pruefstand", "cost": 1500, "label": "Engine Test Stands", "size": Vector3(BREACH_W, DOOR_H, 0.25)}, Vector3(BREACH_X, 0, 110.0), 0.0)
+	_node("res://gravelight/world/map04/tunnel_hatch.gd", "TunnelHatch", {"width": HATCH_W, "height": HATCH_H}, Vector3(0.0, 0, HATCH_Z), 0.0)
+	_node("res://gravelight/world/map04/tunnel_hatch.gd", "CellarSideDoor", {"width": 1.4, "height": 2.1, "hinge": "side", "plate_text": "LUFTSCHUTZRAUM\nSEITENAUSGANG",
+		"flag_name": &"a1_cellar_side_open", "leaf_key": "planks", "plug_name": "CellarSidePlug", "link_path": NodePath("../../Navigation/Link_CellarSide")},
+		Vector3(12.0, 0, CELLAR_SIDE_Z), 0.0)
+	# Jette's logbook (the side egg): a minimap note the first time each glider model or her hatch is seen
+	_node("res://gravelight/world/map04/sight_note.gd", "SightNote_Jette", {"targets": [NodePath("../Glider1"), NodePath("../Glider2"), NodePath("../Glider3"),
+		NodePath("../JetteHatch")], "labels": PackedStringArray(["Jette's glider model", "Jette's glider model", "Jette's glider model", "Jette's desk hatch"])}, Vector3.ZERO)

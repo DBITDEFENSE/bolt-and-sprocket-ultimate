@@ -212,6 +212,57 @@ The ramp beacon lights; the vote; the cutscene (§11.1): the squad goes up the r
 
 ---
 
+### 3.10 UPDATE 10 additions (DECISIONS T-155; contract C6 ids `air_raid`, `rivet_line`, `wind_tunnel`)
+- **The air raid** (`ThalbachRaid`, node `Gameplay/AirRaid`, data `map04a.json "raid"`): act round 8, 10 s into it. Sirens
+  wind up on four poles, the two flak towers on the skyline (west and north-east, board-formed concrete, no markings)
+  fire for 40 s, the searchlights go frantic (`ThalbachSky.set_alarm`), and a stick of eight bombs walks across the
+  Siedlung, the rail yard and the church square, each lit 1.3 s ahead (30 damage within 3.2 m, zombies die), the last
+  three on Montage 2's roof. From 8 s the works' PA (the Operator) gives a **10 s warning**; 1.5 s before the fall a
+  shockwave throws every player out of the roof bay (x −38…−22, z 86…110; anyone who walks back in is moved out at the
+  fall: nobody is ever under it), zombies in it are crushed, and the bay `Hall2Roof` comes down.
+  - **The route swap (permanent, one event online):** `Door_E_south` (Montage 2 → the test stands through
+    Door_Pruefstand, −30, 110) is buried under the `RubbleBlock` (x −36…−24, z 104…109.8, 2.2 m); `Breach_E_apron` is
+    blown through the north wall at x −55 into the test stands' west aisle, the run-up to the hangar apron: a
+    Prüfstand door in the `pruefstand` link group (open if the stands are bought, else 1500 like the other two: the
+    raid never gives a zone away). Navigation: `Nav_E_MONTAGE_4` (the hall as built) leaves the map and
+    `Nav_E_MONTAGE_raid` (baked by the generator with the heap carved out) joins it; `Link_5_G_PRUEFSTAND` off,
+    `Link_Breach_E_apron` on. Regions are parked out of the tree, not just disabled (a disabled region still owns its
+    polygons for link attachment, which made the new Montage an island).
+  - **After:** six fires (the bay's two dead-end corners by the wall, the breach's flanks, two bomb holes in the town; none on a route) burn as damage zones whose heat falls
+    to nothing over three act rounds (10 dps to players, 80 to zombies at full heat), with smoke; the dust of the fall
+    hangs over the heap. A match that starts past act round 8 starts with the hall down.
+- **The rivet line** (`RivetLineTrap`, `traps.json rivet_line`): a 1000 lever on the Kraftzentrale's east wall (needs
+  the power) runs Montage 1's overhead rivet gantry along the hall's south aisle (x −46.5…−1.5, z 62.4…65.6) end to end
+  every 5.5 s for 25 s; four pneumatic hammers pound the floor under the carriage (3 × 3.2 m kill box, sparks, the
+  hammer loop); 60 s cooldown. It crosses the canteen door's threshold: the Montage's south choke.
+- **The wind tunnel** (`WindTunnel`, `traps.json wind_tunnel`): the free fan lever (needs the power) runs 20 s: zombies
+  in the test section are blown down it at 6 m/s (the wind parts round the model's sting) into the outlet screen at the
+  far end and shredded (the kill to whoever started it); players drift at a true 3 m/s and are never hurt (the toy);
+  the draft sucks the **plenum hatch** in the Windkanal/Montage 2 wall open (`TunnelHatch`, x 0, z 102.5,
+  `Link_TunnelHatch`): a shortcut F ↔ E for the run (84 m round becomes 5 m), only when both rooms are bought.
+- **The living world** (`data/gravelight/map04a_ambience.json`, the Act I block of `map_ambience.gd`): the blackout
+  (two lit windows a round get their blinds drawn from act round 2), the church bell on the wind, the test jet's low
+  pass north of the hangar at act round 4, four forest searchlights on the ridges, the ammunition train running in
+  behind the goods shed at act round 3 (and every 4th after) with sparks on the rails, the Kranich's violet breath
+  rising out of the hangar skylight (the landmark from spawn: the works wall hides everything under ~16° there), sheet
+  metal rattling, three wing sections swaying on the Montage's cranes, welding sparks at the jigs, six flapping posters
+  (the P·W·K bell and the works' crane in a cog, ART_FACTIONS §1 and §1b). Power on adds the PA crackling hall by hall,
+  the gantries' jolt and a sting per perk machine as its zone lights; the fan turns over once.
+- **Verticality:** the Luftbeobachtung post in the church square (x 34.4…37.2, z 74…80.8): four plank flights to a
+  lookout at +12 (its own navmesh box above 7 m, joined by a seam link on flight 3; zombies follow). From the lookout the
+  Kranich is seen through a bomb-torn gap in the hangar's upper south face (x −11…−0.4, y 5.6…11.6).
+- **People** (ExtraPeople, offline): Erich Wendel in the air-raid cellar (his wife and girls as silhouettes behind a
+  blanket; favour: a sack of coal from the rail yard; reward: the cellar's side door to the courtyard opens for good, a
+  loop through the cellar) and Otto Brack the signalman (favour: pull the signal lever by the goods shed; reward: the
+  next two trains each drop a Resupply in the yard).
+- **Room story:** four story props with Archive text (`INT_M4A_WORKSPASS`, `_RIVETLOG`, `_WINDOWLETTER`, `_LOADSHEET`).
+- **Jette's logbook** is findable: a minimap note the first time each glider model and her hatch are seen (`SightNote`).
+- **The training loop that survives late rounds** is the Prüfstand ring road (§3.5): wide, lit, the bunker as the
+  bail-out, and since the raid a second way out of it (the breach into Montage 2). Verified by the 10-minute fernflug
+  soak (stuck numbers in T-155).
+- **The boarding** preloads Act II while the exfil cutscene plays (master's `Campaign.preload_next`, T-157/T-158); the card
+  that follows shows the Act I -> II transition line (tips.json `transition_lines` "map04a>map04b").
+
 ## 4. ACT 2 — DER KRANICH, in flight (act rounds 15–20)
 
 ### 4.1 The place

@@ -596,6 +596,38 @@
       "map": "4b",
       "placement": "quest",
       "text": "A reel on the Bordfunk's tape deck, labelled in grease pencil with three names. Played back:\n\nRIEDL: \"Hier Kranich, Bordmechaniker Riedl. Testflug, zweite Nacht. Die Besatzung meldet... die Besatzung meldet nicht.\" (Kranich here, flight engineer Riedl. Test flight, second night. The crew reports... the crew does not report.)\nHAAS: \"Haas an Riedl. Da sind Leute im Werk, die wir nicht kennen. Sie zählen uns.\" (Haas to Riedl. There are people in the works we don't know. They are counting us.)\nPOHL: \"Pohl. Wenn jemand das hört: wir sind nicht verloren gegangen. Wir wurden abgeholt. Ende.\" (Pohl. If anyone hears this: we were not lost. We were collected. Out.)\n\nThe reel runs on for a minute after that: an engine, and a kettle coming to the boil."
+    },
+    {
+      "id": "INT_M4A_WORKSPASS",
+      "title": "Works Pass No. 0417",
+      "type": "DOC",
+      "map": "4a",
+      "placement": "fixed",
+      "text": "WERK THALBACH · WERKSAUSWEIS Nr. 0417<br>Brenner, Martha. Nieterin, Halle 1, Lehre 1. Siedlung Block 1, Stiege 3.<br>Photograph: torn out. The shift stamps run down the back in violet ink, two a day, March, April, the first days of May; the last one is smudged.<br><br>On the back, in pencil: <i>Erich, the girls are with me in the cellar. If the siren goes again do not come for us, go to the side door and bar it. We are warm enough. M.</i>"
+    },
+    {
+      "id": "INT_M4A_RIVETLOG",
+      "title": "The Rivet Line's Shift Log",
+      "type": "DOC",
+      "map": "4a",
+      "placement": "fixed",
+      "text": "NIETSTRASSE 1 · SCHICHTBUCH. Translated.<br><br>29.IV. Früh: 4,120 Niete. Holm 2 nachgezogen. Spät: 3,980. Luftalarm 21:40, Strecke stillgesetzt.<br>30.IV. Früh: 4,300. Spät: Lehre 1 ohne Besatzung, die Kolonne ist abgezogen (Transport). Strecke läuft mit Halle 2.<br>1.V. Früh: 2,210. Werkmeister W. sagt, die Lehren sind wichtiger als die Leute.<br>2.V. Kolonne fort. Niemand an der Strecke.<br>3.V. 02:10. Strecke läuft. Niemand hat sie eingeschaltet.<br>3.V. 02:40. Strecke läuft noch. Der Hebel steht auf AUS."
+    },
+    {
+      "id": "INT_M4A_WINDOWLETTER",
+      "title": "A Letter in a Window, Block 2",
+      "type": "DOC",
+      "map": "4a",
+      "placement": "fixed",
+      "text": "Folded small and pushed between the frame and the blackout board, the address side out so it could be read from the courtyard: <i>To whoever comes. Second floor left.</i><br><br>Inside: <i>We drew the blinds like they told us. Every night one more house goes dark and nobody comes out of it in the morning. The men from the yard walk the courtyard at night and do not answer when you call them by name. I have the window. I can see the hangar from here, the netting moves when there is no wind. Something under it hums. If you read this we have gone down to the cellar. Knock twice. Frieda K.</i>"
+    },
+    {
+      "id": "INT_M4A_LOADSHEET",
+      "title": "Load Sheet, Werknummer 1",
+      "type": "DOC",
+      "map": "4a",
+      "placement": "fixed",
+      "text": "BELADEPLAN · WERKNUMMER 1 (\"KRANICH\"). Carbon copy, stamped, unsigned.<br><br>Fuel: full, four tanks. Bomb bay: six racks, loaded per Anlage B (not attached). Impellers: four, run-in complete, \"do not shut down\".<br>Crew: <b>provided</b>.<br>Passengers: none.<br>Ballast: lead caskets ex Totenhafen, three, forward of the bay.<br>Destination: see flight plan (Wittkamp).<br><br>In the margin, in a different hand, small and furious: <i>Weight is wrong by 900 kg. Nobody has weighed the caskets. Nobody will fly this. — J.M.</i>"
     }
   ]
 }

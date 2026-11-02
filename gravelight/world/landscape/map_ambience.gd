@@ -4414,3 +4414,425 @@ func _ev_cables(c: Dictionary) -> void:
 			pivot.add_child(mi)
 		i += 1
 	counts["cables"] = i
+
+
+# ---- U10 Act I ------------------------------------------------------------------------------------------------------
+## Fernflug Act I, Werk Thalbach (UPDATE 10 §3, contract C1, DECISIONS T-155; data/gravelight/map04a_ambience.json,
+## every kind under its "act1" object so the shared top-level kinds of other blocks never run twice here). The
+## map has no Landscape: _setup() hands over to _kinds_setup_act1(), which builds what the file asks for and ticks it
+## from a child node (A1Ticker). Presentation only, per peer, seeded the same everywhere; the one gameplay hook is the
+## a1_train_arrived signal (the railwayman's favour drops its ammo crate on the host). Kinds (each off when absent):
+##   windows_out   the Siedlung's lit windows get their blackout blinds drawn, a few per act round from `from_round`
+##   bell          the church bell on the wind (a far toll every `interval` s)
+##   low_pass      a test jet's low pass over the runway north of the hangar at act round `round`
+##   searchlights  ThalbachSky.apply_cfg (the forest beams, intensity, sweep)
+##   train         a locomotive and flatcars run in on the siding behind the goods shed at act round `round`
+##                 (then every `every_rounds`): the whistle, steam, sparks on the rails as it brakes
+##   kranich_glow  the Kranich's intakes breathing violet up through the hangar's skylight (seen from spawn)
+##   rattle        sheet metal rattling on the roofs in the gusts
+##   sway          wing sections hanging from the hall cranes swaying with the wind
+##   weld          welding sparks and arc light at the jigs and in the hangar
+##   posters       fictional-emblem posters (P·W·K's Sunburst-and-Split-Bell, the works' crane in a cog) flapping
+##   power_on      the power-on spectacle's extras: the PA crackles hall by hall, the jig gantries jolt, every perk
+##                 machine wakes with a sting as its zone lights (the sweep, the fan and the burst are the
+##                 PowerSwitch's and the WindTunnel's own)
+signal a1_train_arrived(times: int)
+
+class A1Ticker extends Node:
+	var cb: Callable
+	func _process(d: float) -> void:
+		cb.call(d)
+
+var _a1_on: bool = false
+var _a1: Dictionary = {}                 # the "act1" object
+var _a1_rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var _a1_t: float = 0.0
+var _a1_wind: float = 0.3
+var _a1_timers: Dictionary = {}          # kind -> seconds to the next one
+var _a1_lit: Array = []                  # LitWindows markers still lit (shuffled once, seeded)
+var _a1_blinds: int = 0
+var _a1_last_round: int = -1
+var _a1_jet: Node3D
+var _a1_jet_done: bool = false
+var _a1_train: Node3D
+var _a1_train_runs: int = 0
+var _a1_hangs: Array = []                # {pivot, phase, amp, kick}
+var _a1_posters: Array[MeshInstance3D] = []
+var _a1_glow: MeshInstance3D
+var _a1_power_done: bool = false
+## Counters for the smoke (kind -> times).
+var a1_counts: Dictionary = {}
+
+
+func _kinds_setup_act1() -> void:
+	if _a1_on:
+		return
+	_a1 = cfg.get("act1", {})
+	if _a1.is_empty():
+		return
+	_a1_on = true
+	_a1_rng.seed = int(_a1.get("seed", 1945))
+	var tk: A1Ticker = A1Ticker.new()
+	tk.name = "A1Ticker"
+	tk.cb = _a1_tick
+	add_child(tk)
+	GLBus.round_started.connect(_a1_on_round)
+	GLBus.power_activated.connect(_ev_a1_power_on)
+	(func() -> void:
+		_ev_a1_searchlights()
+		_a1_build_lit()
+		_a1_build_hangs()
+		_ev_a1_posters()
+		_ev_a1_kranich_glow()
+		if GameState.power_on:
+			_a1_power_done = true).call_deferred()
+	for k: String in ["bell", "rattle", "weld"]:
+		var sec: Dictionary = _a1.get(k, {})
+		if not sec.is_empty():
+			var f: Array = sec.get("first_after", [8, 20])
+			_a1_timers[k] = _a1_rng.randf_range(float(f[0]), float(f[1]))
+
+
+func _a1_count(kind: String) -> void:
+	a1_counts[kind] = int(a1_counts.get(kind, 0)) + 1
+
+
+func _a1_act_round() -> int:
+	return RoundManager.act_round() if RoundManager.has_act() else maxi(1, RoundManager.current_round)
+
+
+func _a1_root() -> Node:
+	return get_parent()
+
+
+func _a1_tick(delta: float) -> void:
+	_a1_t += delta
+	if not _setup_done:   # the core never set up (no Landscape): the timed calls (_after) are ours to run
+		for i: int in range(_later.size() - 1, -1, -1):
+			var e: Array = _later[i]
+			e[0] = float(e[0]) - delta
+			if float(e[0]) <= 0.0:
+				_later.remove_at(i)
+				(e[1] as Callable).call()
+	# the wind: a slow wander with gusts (drives the posters, the rattles, the sways)
+	_a1_wind = clampf(0.35 + 0.25 * sin(_a1_t * 0.13) + 0.2 * sin(_a1_t * 0.41 + 1.7) + 0.15 * sin(_a1_t * 1.3), 0.05, 1.0)
+	for k: String in _a1_timers.keys():
+		_a1_timers[k] = float(_a1_timers[k]) - delta
+		if float(_a1_timers[k]) <= 0.0:
+			var iv: Array = (_a1.get(k, {}) as Dictionary).get("interval", [10, 20])
+			_a1_timers[k] = _a1_rng.randf_range(float(iv[0]), float(iv[1]))
+			match k:
+				"bell":
+					_ev_a1_bell()
+				"rattle":
+					_ev_a1_rattle()
+				"weld":
+					_ev_a1_weld()
+	for h: Dictionary in _a1_hangs:
+		var pv: Node3D = h["pivot"]
+		if not is_instance_valid(pv):
+			continue
+		h["kick"] = maxf(0.0, float(h["kick"]) - delta * 0.6)
+		var amp: float = float(h["amp"]) * (_a1_wind + float(h["kick"]) * 2.5)
+		pv.rotation.x = deg_to_rad(amp * sin(_a1_t * 0.9 + float(h["phase"])))
+		pv.rotation.z = deg_to_rad(amp * 0.4 * sin(_a1_t * 0.7 + float(h["phase"]) * 1.3))
+	for pm: MeshInstance3D in _a1_posters:
+		if is_instance_valid(pm):
+			(pm.material_override as ShaderMaterial).set_shader_parameter("wind", _a1_wind)
+	if _a1_glow != null and is_instance_valid(_a1_glow):
+		var m: ShaderMaterial = _a1_glow.material_override as ShaderMaterial
+		if m != null:
+			m.set_shader_parameter("intensity", float((_a1.get("kranich_glow", {}) as Dictionary).get("intensity", 0.22)) * (0.8 + 0.2 * sin(_a1_t * 0.8)))
+
+
+func _a1_on_round(_r: int, _special: bool) -> void:
+	var ar: int = _a1_act_round()
+	if ar == _a1_last_round:
+		return
+	_a1_last_round = ar
+	var wo: Dictionary = _a1.get("windows_out", {})
+	if not wo.is_empty() and ar >= int(wo.get("from_round", 2)):
+		for i: int in int(wo.get("per_round", 2)):
+			_after(_a1_rng.randf_range(4.0, float(wo.get("spread_s", 60.0))), _ev_a1_windows_out)
+	var lp: Dictionary = _a1.get("low_pass", {})
+	if not lp.is_empty() and not _a1_jet_done and ar == int(lp.get("round", 4)):
+		_a1_jet_done = true
+		_after(float(lp.get("delay", 20.0)), _ev_a1_low_pass)
+	var tr: Dictionary = _a1.get("train", {})
+	if not tr.is_empty():
+		var first: int = int(tr.get("round", 3))
+		var every: int = int(tr.get("every_rounds", 4))
+		if ar == first or (ar > first and every > 0 and (ar - first) % every == 0):
+			_after(float(tr.get("delay", 15.0)), _ev_a1_train)
+
+
+# ---- windows_out: the blackout
+
+func _a1_build_lit() -> void:
+	var holder: Node = _a1_root().get_node_or_null("Gameplay/LitWindows")
+	if holder == null:
+		return
+	for c: Node in holder.get_children():
+		if c is Node3D:
+			_a1_lit.append(c)
+	# the Siedlung's first (its windows face the spawn), then the rest; a seeded shuffle within each
+	var sied: Array = _a1_lit.filter(func(n: Node3D) -> bool: return n.global_position.z < 30.0 and n.global_position.x > -1.0)
+	var rest: Array = _a1_lit.filter(func(n: Node3D) -> bool: return not sied.has(n))
+	_a1_shuffle(sied)
+	_a1_shuffle(rest)
+	_a1_lit = sied + rest
+
+
+func _a1_shuffle(a: Array) -> void:
+	for i: int in range(a.size() - 1, 0, -1):
+		var j: int = _a1_rng.randi() % (i + 1)
+		var tmp: Variant = a[i]
+		a[i] = a[j]
+		a[j] = tmp
+
+
+## One lit window goes dark: its blackout blind is drawn and the room's spill lamp goes out.
+func _ev_a1_windows_out() -> void:
+	if _a1_lit.is_empty():
+		return
+	var m: Node3D = _a1_lit.pop_front()
+	if not is_instance_valid(m):
+		return
+	ThalbachLife.blind(self, m)
+	var spill: Vector3 = m.global_position + (m.get_meta("out", Vector3.BACK) as Vector3) * 0.53
+	for l: Node in _a1_root().find_children("*", "OmniLight3D", true, false):
+		var ol: OmniLight3D = l as OmniLight3D
+		if ol.global_position.distance_to(spill) < 0.6:
+			var tw: Tween = ol.create_tween()
+			tw.tween_property(ol, "light_energy", 0.0, 0.6)
+	_a1_blinds += 1
+	_a1_count("windows_out")
+
+
+# ---- bell, rattle, weld
+
+func _ev_a1_bell() -> void:
+	var b: Dictionary = _a1.get("bell", {})
+	var at: Vector3 = ThalbachRaid.v3(b.get("pos", [20.0, 16.0, 90.6]))
+	AudioDirector.play_3d(str(b.get("key", "amb_church_bell_far")), at, float(b.get("volume_db", -2.0)) + 6.0 * (_a1_wind - 0.5), 0.02)
+	_a1_count("bell")
+
+
+func _ev_a1_rattle() -> void:
+	var r: Dictionary = _a1.get("rattle", {})
+	var pts: Array = r.get("points", [])
+	if pts.is_empty() or _a1_wind < float(r.get("min_wind", 0.35)):
+		return
+	var at: Vector3 = ThalbachRaid.v3(pts[_a1_rng.randi() % pts.size()])
+	AudioDirector.play_3d(str(r.get("key", "a1_sheet_rattle")), at, -4.0 + 8.0 * _a1_wind, 0.1)
+	_a1_count("rattle")
+
+
+func _ev_a1_weld() -> void:
+	var w: Dictionary = _a1.get("weld", {})
+	var pts: Array = w.get("points", [])
+	if pts.is_empty():
+		return
+	var at: Vector3 = ThalbachRaid.v3(pts[_a1_rng.randi() % pts.size()])
+	var p: GPUParticles3D = ThalbachLife.sparks(self, at, 36, 75.0)
+	var l: OmniLight3D = OmniLight3D.new()
+	l.light_color = Color(0.75, 0.85, 1.0)
+	l.light_energy = 0.0
+	l.omni_range = 7.0
+	l.shadow_enabled = false
+	add_child(l)
+	l.global_position = at + Vector3.UP * 0.3
+	var tw: Tween = l.create_tween()
+	for i: int in 6:
+		tw.tween_property(l, "light_energy", _a1_rng.randf_range(1.5, 3.5), 0.05)
+		tw.tween_property(l, "light_energy", 0.3, 0.08)
+	tw.tween_property(l, "light_energy", 0.0, 0.2)
+	tw.tween_callback(l.queue_free)
+	get_tree().create_timer(1.5).timeout.connect(p.queue_free)
+	AudioDirector.play_3d(str(w.get("key", "amb_m2_weld")), at, -2.0, 0.1)
+	_a1_count("weld")
+
+
+# ---- sway: the hanging wing sections
+
+func _a1_build_hangs() -> void:
+	var sw: Dictionary = _a1.get("sway", {})
+	var i: int = 0
+	for row: Variant in sw.get("points", []):
+		var a: Array = row
+		var pv: Node3D = ThalbachLife.hanging_section(self, Vector3(float(a[0]), float(a[1]), float(a[2])), float(a[3]) if a.size() > 3 else 4.0)
+		pv.rotation.y = deg_to_rad(float(a[4]) if a.size() > 4 else 0.0)
+		_a1_hangs.append({"pivot": pv, "phase": float(i) * 1.9, "amp": float(sw.get("amp_deg", 5.0)), "kick": 0.0})
+		i += 1
+
+
+func _a1_kick_hangs(k: float) -> void:
+	for h: Dictionary in _a1_hangs:
+		h["kick"] = maxf(float(h["kick"]), k)
+
+
+# ---- posters, searchlights, the Kranich's glow
+
+func _ev_a1_posters() -> void:
+	for row: Variant in (_a1.get("posters", {}) as Dictionary).get("points", []):
+		var d: Dictionary = row
+		_a1_posters.append(ThalbachLife.poster(self, str(d.get("kind", "kranich")), ThalbachRaid.v3(d.get("pos", [0, 2, 0])), float(d.get("yaw", 0.0))))
+	if not _a1_posters.is_empty():
+		_a1_count("posters")
+
+
+func _ev_a1_searchlights() -> void:
+	var c: Dictionary = _a1.get("searchlights", {})
+	if c.is_empty():
+		return
+	for s: Node in get_tree().get_nodes_in_group(&"thalbach_sky"):
+		if s.has_method("apply_cfg"):
+			s.call("apply_cfg", c)
+			_a1_count("searchlights")
+
+
+func _ev_a1_kranich_glow() -> void:
+	var g: Dictionary = _a1.get("kranich_glow", {})
+	if g.is_empty() or not ResourceLoader.exists("res://gravelight/world/landscape/shaders/light_beam.gdshader"):
+		return
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.name = "KranichGlow"
+	var len_: float = float(g.get("length", 140.0))
+	var cm: CylinderMesh = CylinderMesh.new()
+	cm.top_radius = float(g.get("top_radius", 14.0))
+	cm.bottom_radius = float(g.get("bottom_radius", 6.0))
+	cm.height = len_
+	cm.radial_segments = 14
+	cm.rings = 1
+	cm.cap_top = false
+	cm.cap_bottom = false
+	mi.mesh = cm
+	var m: ShaderMaterial = ShaderMaterial.new()
+	m.shader = load("res://gravelight/world/landscape/shaders/light_beam.gdshader") as Shader
+	m.set_shader_parameter("color", Vector3(0.62, 0.3, 1.0))
+	m.set_shader_parameter("intensity", float(g.get("intensity", 0.22)))
+	m.set_shader_parameter("length_falloff", 1.6)
+	m.set_shader_parameter("edge_power", 2.2)
+	m.set_shader_parameter("near_fade", 4.0)
+	mi.material_override = m
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mi.extra_cull_margin = 40.0
+	add_child(mi)
+	mi.global_position = ThalbachRaid.v3(g.get("pos", [-20.0, 20.5, 185.0])) + Vector3.UP * len_ * 0.5
+	mi.set_instance_shader_parameter("beam_len", len_)
+	_a1_glow = mi
+	# the breath pools violet under the wing's trailing edge too (the plane's shape reads through the hangar's gap)
+	var pool: OmniLight3D = OmniLight3D.new()
+	pool.name = "KranichPool"
+	pool.light_color = Color(0.62, 0.32, 1.0)
+	pool.light_energy = float(g.get("pool_energy", 2.2))
+	pool.omni_range = float(g.get("pool_range", 26.0))
+	pool.shadow_enabled = false
+	add_child(pool)
+	pool.global_position = ThalbachRaid.v3(g.get("pool_pos", [-14.0, 5.0, 166.0]))
+	_a1_count("kranich_glow")
+
+
+# ---- low_pass: the test jet
+
+func _ev_a1_low_pass() -> void:
+	var lp: Dictionary = _a1.get("low_pass", {})
+	var a: Vector3 = ThalbachRaid.v3(lp.get("from", [-320.0, 46.0, 238.0]))
+	var b: Vector3 = ThalbachRaid.v3(lp.get("to", [320.0, 38.0, 238.0]))
+	var secs: float = float(lp.get("seconds", 5.4))
+	if _a1_jet != null and is_instance_valid(_a1_jet):
+		_a1_jet.queue_free()
+	_a1_jet = ThalbachLife.jet(self)
+	_a1_jet.global_position = a
+	_a1_jet.look_at(b, Vector3.UP)
+	_a1_jet.rotate_object_local(Vector3.UP, PI * 0.5)   # the model's nose is +X
+	var tw: Tween = _a1_jet.create_tween()
+	tw.tween_property(_a1_jet, "global_position", b, secs)
+	tw.parallel().tween_property(_a1_jet, "rotation:x", deg_to_rad(-18.0), secs).set_trans(Tween.TRANS_SINE)
+	tw.tween_callback(_a1_jet.queue_free)
+	# the roar peaks as it passes the works (the sound's peak sits 45 % into it)
+	var mid: Vector3 = (a + b) * 0.5
+	_after(maxf(0.0, secs * 0.5 - 8.0 * 0.45), func() -> void:
+		AudioDirector.play_3d(str(lp.get("key", "a1_jet_pass")), mid, 8.0, 0.0))
+	_after(secs * 0.5, func() -> void:
+		_shake(float(lp.get("shake", 0.25)))
+		_a1_kick_hangs(0.6))
+	_a1_count("low_pass")
+	print("[ambience] act1: the test jet's low pass")
+
+
+# ---- train: the arrival behind the goods shed
+
+func _ev_a1_train() -> void:
+	var tr: Dictionary = _a1.get("train", {})
+	var stop: Vector3 = ThalbachRaid.v3(tr.get("stop", [48.0, 0.0, 55.5]))
+	var start_x: float = float(tr.get("from_x", 260.0))
+	var secs: float = float(tr.get("seconds", 14.0))
+	if get_node_or_null("Siding") == null:
+		ThalbachLife.rails(self, Vector3(stop.x - 6.0, stop.y, stop.z), Vector3(start_x + 60.0, stop.y, stop.z))
+	if _a1_train != null and is_instance_valid(_a1_train):
+		_a1_train.queue_free()
+	_a1_train = ThalbachLife.train(self, int(tr.get("cars", 3)))
+	_a1_train.global_position = Vector3(start_x, stop.y, stop.z)
+	Props.smoke(_a1_train, Vector3(-4.0, 4.8, 0.0), 0.3, 2.2, 22)
+	AudioDirector.play_3d(str(tr.get("whistle", "a1_train_whistle")), Vector3(start_x * 0.5, 6.0, stop.z), 6.0, 0.0)
+	var tw: Tween = _a1_train.create_tween()
+	tw.tween_property(_a1_train, "global_position:x", stop.x, secs).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	# the brakes: sparks off the wheels for the last few seconds, then the steam let off
+	var brake: float = float(tr.get("brake_seconds", 4.0))
+	_after(maxf(0.0, secs - brake - 0.6), func() -> void:
+		AudioDirector.play_3d(str(tr.get("brakes", "a1_train_steam")), stop + Vector3(6.0, 1.0, 0), 4.0, 0.0))
+	for i: int in int(brake / 0.3):
+		_after(secs - brake + float(i) * 0.3, func() -> void:
+			if _a1_train != null and is_instance_valid(_a1_train):
+				for wx: float in [-3.6, 0.0, 9.0, 15.0]:
+					ThalbachLife.sparks(self, _a1_train.global_position + Vector3(wx, 0.15, 0.9), 10, 40.0)
+					ThalbachLife.sparks(self, _a1_train.global_position + Vector3(wx, 0.15, -0.9), 10, 40.0))
+	_after(secs, func() -> void:
+		_a1_train_runs += 1
+		_a1_count("train")
+		a1_train_arrived.emit(_a1_train_runs)
+		print("[ambience] act1: the train is in (%d)" % _a1_train_runs))
+
+
+# ---- power_on: the spectacle's extras
+
+func _ev_a1_power_on() -> void:
+	if _a1_power_done:
+		return
+	_a1_power_done = true
+	var po: Dictionary = _a1.get("power_on", {})
+	if po.is_empty():
+		return
+	_a1_count("power_on")
+	var pw: Dictionary = (GLData.load_json("res://data/gravelight/map04a.json") as Dictionary).get("power", {})
+	var start: float = float(pw.get("light_sweep_start", 2.0))
+	var gap: float = float(pw.get("light_zone_gap", 0.6))
+	var order: PackedStringArray = PackedStringArray()
+	for n: Node in get_tree().get_nodes_in_group(&"power_switch"):
+		if n.get("zone_order") != null:
+			order = n.get("zone_order")
+	# the PA horns crackle into life, the Montage first
+	var i: int = 0
+	for pv: Variant in po.get("pa_points", []):
+		var at: Vector3 = ThalbachRaid.v3(pv)
+		_after(start + float(i) * 0.4, func() -> void: AudioDirector.play_3d("a1_pa_crackle", at, 4.0, 0.0))
+		i += 1
+	# the jig gantries jolt: a clank, dust off the girders, the hanging sections kick
+	for gv: Variant in po.get("gantry_points", []):
+		var g: Vector3 = ThalbachRaid.v3(gv)
+		_after(start + 0.2, func() -> void:
+			AudioDirector.play_3d("board_slam", g, 2.0, 0.1)
+			Effects.dust_puff(g, "stone", 14))
+	_after(start + 0.2, func() -> void: _a1_kick_hangs(1.0))
+	# every perk machine wakes with a sting as its zone's lights come up
+	for n2: Node in _a1_root().find_children("Perk_*", "", true, false):
+		var p3: Node3D = n2 as Node3D
+		if p3 == null:
+			continue
+		var z: StringName = ZoneVolume.zone_at(get_tree(), p3.global_position)
+		var idx: int = order.find(String(z))
+		var at2: Vector3 = p3.global_position + Vector3.UP * 1.2
+		_after(start + float(maxi(0, idx)) * gap + 0.3, func() -> void:
+			AudioDirector.play_3d(str(po.get("perk_sting", "perk_tier4_sting")), at2, -2.0, 0.05))
+	print("[ambience] act1: the power-on spectacle")

@@ -21,8 +21,11 @@ func setup(b: BotBrain) -> void:
 
 
 func run(e: Dictionary, delta: float) -> String:
-	var node: Node3D = e.get("node") as Node3D
-	if node == null or not is_instance_valid(node):
+	var nv: Variant = e.get("node")
+	if not is_instance_valid(nv):   # (validity before the cast: a task's target can be freed under it)
+		return "done" if str(e.get("kind", "")) == "shoot_moving" else "failed"
+	var node: Node3D = nv as Node3D
+	if node == null:
 		return "done" if str(e.get("kind", "")) == "shoot_moving" else "failed"
 	if brain.squad.time() > float(e.get("until", INF)):
 		return "failed"
