@@ -31,6 +31,7 @@ var _taken: bool = false
 
 
 func _ready() -> void:
+	add_to_group(&"powerups")   # T-153: the Totenhafen tide floats drops off (TideController._drift_powerups)
 	var cfg: Dictionary = GLData.table("powerups")
 	_lifetime = float(cfg["lifetime_seconds"])
 	_blink_from = float(cfg["blink_from_seconds"])

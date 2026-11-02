@@ -644,3 +644,43 @@ The Hohe Wacht's night watchman, still on his rounds. He has a face, a greatcoat
   - Morgenrot: the Meiller Lanes' far end.
 - **ObservedFreeze** (Alix, the Slender's teleport) is a shared component, shared later with B&S's Galleria mannequins. **AnimJitter** steps animation at 12 fps for short bursts (the Hammer's hitch, the Reach's retract).
 - The campaign: on Map 0 with Homage Bosses On, the exfil beacon opens on round 11, after the Cousins (HOMAGE_BOSSES §4.2).
+
+## 8. Totenhafen: the drowned (Map 2, UPDATE 10 contract C2 "Kielholer" and C5; built, DECISIONS T-153)
+The Kielholer ("keel-haulers") are U-1047's ratings and the harbour's dead, who took the Marke the week the detachment was marked. They are sailors and are shown as sailors: the sailor's cut, waterlogged, weed on the shoulders. They are not gore props. They rise only while the docks are flooded and pull the living toward the water they came out of.
+
+### Data-ready summary (the drowned)
+| id | kind | kit | HP | the point |
+|---|---|---|---|---|
+| `kielholer` | tagged Gänger (`ganger_variant`) | `drowned` | ×1.2 | a grabber at the pier edges |
+| `kielholer_diver` | tagged Gänger | `drowned_diver` (brass helmet) | ×1.6 | a helmet that soaks until its glass breaks; the glow behind it ×2.0 |
+| `der_kielholer` | boss (`HomageBoss`) | `drowned_diver` + his own costume | 28,000 solo (×3.25 at 4P) | Kptlt. Arvid Lenz, the pen hall's boss (HOMAGE_BOSSES §4b) |
+
+### 8.1 Where they rise (`KielholerController`, `gravelight/world/map02/kielholer_controller.gd`)
+- Eight `Surface_<i>` spawn points on the pier edges (`map02.json "kielholer".surface_points`, zone D_PENHALL). They rise with the "water" emerge style (anim.json `emerge_by_spawn_prefix`), and are live only while the GameState flag `flooded` is on (Tide v2).
+- On the host, a Gänger that rises at a surface point is tagged a Kielholer. So is `surface_share` (35%) of the Pen Hall's other spawns while the docks are flooded, and `diver_share` (25%) of those are divers.
+- At most `max_active` (6) are up at once, or `max_active_spring` (10) on a spring tide.
+
+### 8.2 The grab
+- **Taking hold:** within `grab_range` (2 m) of a player, a Kielholer takes hold and pulls him toward the nearest water edge at `pull_mps` (1.2 m/s). The water edges are the pier and apron edges over the dock basins (`KielholerController.EDGES`).
+- **While held:** the player moves at ×0.25 (status `kielholer_grab`) and takes `hold_dps` 6, or `edge_dps` 16 within 1.6 m of the edge. A full 6 s hold at the edge is 96 damage: dangerous, never an instant kill. The railings keep everyone out of the water itself.
+- **Breaking free** (whichever comes first):
+  - the held player's melee;
+  - 60 damage to its `arm_grab` hitbox (the right forearm), from anyone;
+  - 150 damage from teammates (half weight off the arm, so bot fire at the body still frees him);
+  - `max_hold` (6 s).
+- **After a release:** that Kielholer won't re-grab the same player for 4 s, and a freed grabber staggers. The rules are HOMAGE_BOSSES §3.6's.
+
+### 8.3 The diver
+- The brass salvage helmet (gear `diver_helmet`) has a `helmet_glass` hitbox on its front port. The glass and the head take ×0.5 until 30% of the diver's max HP has gone into the helmet.
+- Then the glass breaks and a violet glow shows behind it. That glow is the Marke he wears (U09 C1), so his hand carries no mark. From then on, hits on the glass take ×2.0.
+
+### 8.4 Engineering notes
+- **The kits:** `drowned` and `drowned_diver` are anim.json kits drawn with the sailor geometry (`ZombieBody.KIT_ALIAS`), recoloured with `DROWNED_PALETTE` and a cold skin tone.
+- **Never rolled:** they are not in `ZombieBody.KITS` and never come from `variants_by_map`.
+- **Gear:** `diver_helmet` and `weed` are new gear pieces.
+- **Zombie hooks:**
+  - `Zombie.damaged(amount, limb, by_player, kind)` is a per-zombie hit signal.
+  - The meta `limb_mults` is a tagged kind's own limb table.
+- **Co-op:** the host tags, grabs and breaks free. A client sees the Gänger puppet in its rolled kit (the drowned look is host-side for now).
+- **Tests:** `gravelight/tests/unit/test_kielholer.gd`.
+- **Smoke:** `gravelight/tools_src/smoke_kielholer.tscn`.

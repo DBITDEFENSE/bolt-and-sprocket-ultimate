@@ -136,7 +136,43 @@ static func roll_random(spec: Dictionary, seed_value: int, quest_id: String) -> 
 					items[i] = items[j]
 					items[j] = tmp
 				out[str(key)] = items
+			"cipher":   # T-153 (Letzte Fahrt): three radios' 4-letter code groups and the order they are keyed
+				var c: Dictionary = roll_cipher(e, r)
+				out[str(key)] = c
+				out[str(key) + "_inputs"] = c["inputs"]
 	return out
+
+
+## A cipher roll (UPDATE 10 C3, T-153): {groups: {radio: "KXRT"}, order: [radio ids in keying order], inputs: [the
+## groups' first letters in that order], depth: "<n> FADEN", curtain: "<4 letters>"}. Letters skip I/O/Q (the
+## rotor wheels' stencils are easy to read), and the three first letters are distinct.
+static func roll_cipher(e: Dictionary, r: RandomNumberGenerator) -> Dictionary:
+	var alpha: String = str(e.get("alphabet", "ABCDEFGHJKLMNPRSTUVWXYZ"))
+	var radios: Array = (e.get("radios", []) as Array).duplicate()
+	var groups: Dictionary = {}
+	var used_first: Dictionary = {}
+	for rid: Variant in radios:
+		var g: String = ""
+		for i: int in int(e.get("length", 4)):
+			var ch: String = alpha[r.randi_range(0, alpha.length() - 1)]
+			while i == 0 and used_first.has(ch):
+				ch = alpha[r.randi_range(0, alpha.length() - 1)]
+			if i == 0:
+				used_first[ch] = true
+			g += ch
+		groups[str(rid)] = g
+	for i: int in range(radios.size() - 1, 0, -1):
+		var j: int = r.randi_range(0, i)
+		var tmp: Variant = radios[i]
+		radios[i] = radios[j]
+		radios[j] = tmp
+	var inputs: Array = []
+	for rid2: Variant in radios:
+		inputs.append(str(groups[str(rid2)])[0])
+	var curtain: String = ""
+	for i: int in 4:
+		curtain += alpha[r.randi_range(0, alpha.length() - 1)]
+	return {"groups": groups, "order": radios, "inputs": inputs, "depth": "%d FADEN" % r.randi_range(38, 64), "curtain": curtain}
 
 
 func random_value(qid: StringName, key: String) -> Variant:
@@ -877,6 +913,20 @@ func _do_action(qid: StringName, a: Dictionary, by: int) -> void:
 	if a.has("act_event"):   # UPDATE 07 (T-114): the egg fires an act's clock event early (the London window, the bomb run)
 		for ac: Node in get_tree().get_nodes_in_group(&"act_controllers"):
 			ac.call("fire_event", StringName(str(a["act_event"])))
+	if a.has("scrip_all"):   # T-153: the egg's Scrip to every player (Economy.grant: the earn multiplier applies)
+		for pid4: int in GameState.player_ids:
+			Economy.grant(pid4, int(a["scrip_all"]))
+	if a.has("tier_gift"):   # T-153: one held tonic per player goes up `n` tiers (the lowest-tier one; capped by the perk)
+		for pid5: int in GameState.player_ids:
+			var best: StringName = &""
+			var best_t: int = 99
+			for pk: Variant in PerkManager.owned(pid5):
+				var tt: int = PerkManager.tier_of(pid5, StringName(str(pk)))
+				if tt < best_t:
+					best_t = tt
+					best = StringName(str(pk))
+			if best != &"":
+				PerkManager.set_tier(pid5, best, best_t + int(a["tier_gift"]))
 	if a.has("perk_tier_grant"):   # UPDATE 07 (T-114): [perk, tier] free for the match: owners now, buyers when they drink
 		var pg: Array = a["perk_tier_grant"]
 		GameState.set_flag(StringName("perk_tier_free_" + str(pg[0])), int(pg[1]))

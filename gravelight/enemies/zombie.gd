@@ -21,6 +21,9 @@ extends CharacterBody3D
 
 enum State { INACTIVE, EMERGE, TO_WINDOW, WAIT_WINDOW, TEAR, CLIMB, CHASE, ATTACK, STAGGER, DEAD, KNOCKDOWN, GETUP, CLIMB_LINK, LIFTED }
 
+## A hit this zombie took (host / offline; after its multipliers; T-153: the Kielholer's grab and helmet listen).
+signal damaged(amount: float, limb: StringName, by_player: int, kind: StringName)
+
 const LAYER_WORLD: int = 1
 const LAYER_PLAYER: int = 1 << 1
 const LAYER_ZBODY: int = 1 << 2
@@ -1632,6 +1635,22 @@ func set_vulnerable(mult: float, seconds: float) -> void:
 	_vuln_until_ms = Time.get_ticks_msec() + int(seconds * 1000.0)
 
 
+## The Totenhafen searchlight's beam (C2, T-153): lit zombies are slowed by `slow` and take `mult` x damage while
+## the beam keeps refreshing them (the station calls this every tick with a short `seconds`); set_lit(false) ends it.
+func set_lit(on: bool, slow: float = 0.4, mult: float = 1.25, seconds: float = 0.5) -> void:
+	if on:
+		apply_frost(slow, seconds)
+		if vulnerability() <= mult:
+			set_vulnerable(mult, seconds)
+		set_meta(&"lit_until", Time.get_ticks_msec() + int(seconds * 1000.0))
+	elif has_meta(&"lit_until"):
+		remove_meta(&"lit_until")
+
+
+func is_lit() -> bool:
+	return has_meta(&"lit_until") and int(get_meta(&"lit_until")) > Time.get_ticks_msec()
+
+
 func vulnerability() -> float:
 	return _vuln_mult if _vuln_until_ms > Time.get_ticks_msec() else 1.0
 
@@ -1710,11 +1729,14 @@ func take_damage(amount: float, limb: StringName, weapon_id: StringName, by_play
 		amount *= float(_cfg["head_mult"])   # the Suited's visor (T-112)
 	if limb == &"head" and bool(_cfg.get("visor", false)) and kind != &"world" and kind != &"fire":
 		_crack_visor(by_player, weapon_id)
+	if has_meta(&"limb_mults"):
+		amount *= float((get_meta(&"limb_mults") as Dictionary).get(String(limb), 1.0))   # T-153: a tagged kind's own table (the diver's helmet)
 	amount *= vulnerability()
 	if GameState.has_flag(&"deaths_door") and kind != &"world":
 		amount = hp + 1.0
 	hp -= amount
 	GLBus.enemy_damaged.emit(enemy_id, limb, amount, by_player)
+	damaged.emit(amount, limb, by_player, kind)
 	if kind != &"fire" and kind != &"world":
 		_wound(limb, side)
 	if kind == &"bullet":

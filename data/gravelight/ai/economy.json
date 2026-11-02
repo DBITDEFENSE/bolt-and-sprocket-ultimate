@@ -79,7 +79,8 @@
     "lodestone": 6.5,
     "walther_p38": 0.5,
     "webley": 0.5,
-    "luger_p08": 0.5
+    "luger_p08": 0.5,
+    "undertow": 6.5
   },
   "upgraded_tier_bonus": 1.5,
   "reteach_tier_bonus": 0.6,

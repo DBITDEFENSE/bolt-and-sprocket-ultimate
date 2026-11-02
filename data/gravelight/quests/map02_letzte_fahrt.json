@@ -1,0 +1,91 @@
+{
+  "id": "map02_letzte_fahrt",
+  "display_name": "Letzte Fahrt (The Last Voyage)",
+  "map": "map02_totenhafen",
+  "version": 1,
+  "_doc": "Totenhafen's main egg (UPDATE 10 contract C3, docs/U10_TOTENHAFEN_DESIGN.md section 2, docs/gravelight/EASTER_EGGS.md section 10, DECISIONS T-153). The contract's step ids are all here (s0_power ... s10_ending); the sub-steps that feed them (s0a_load, s2a_radios, s5a/b/c) carry the contract's twists. World objects: gravelight/world/map02/letzte_fahrt_world.gd (radios, the cipher machine, the log pages, the diesel holds, the key slot, the curtain lever, the boat). Every step has a bot_task (the cipher has a solver with a think delay; the ending is the cutscene).",
+  "bot_knowledge": {
+    "cipher": {"label": "heard the three radios' code groups", "on_collect": {"tag": "lf_radio", "count": 3}}
+  },
+  "random": {
+    "cipher": {"type": "cipher", "radios": ["radio_cannery", "radio_workshop", "radio_uboat"], "length": 4},
+    "log_spots": {
+      "type": "pick_per_group",
+      "groups": {
+        "INT_M2_LOG_1": ["cabin_bunk", "cabin_locker"],
+        "INT_M2_LOG_2": ["radio_desk", "radio_shelf"],
+        "INT_M2_LOG_3": ["office_north_wall", "office_west_bench"],
+        "INT_M2_LOG_4": ["pump_locker", "pump_bench"]
+      }
+    },
+    "ut_parts": {
+      "type": "pick_per_group",
+      "groups": {
+        "undertow_pump": ["pens_pump1", "pens_desk"],
+        "undertow_head": ["tool_wall", "warhead_cage"],
+        "undertow_shard": ["sea_stairs"]
+      }
+    }
+  },
+  "steps": [
+    {"id": "s0a_load", "type": "flag", "params": {"flag": "ballast_loaded"}, "requires": [],
+     "bot_task": {"type": "carry", "pickups": {"group": "ballast_coffins"}, "deliver": {"group": "ballast_hooks"}, "what": "a coffin for the crane", "ping": "BALLAST"},
+     "debug_skip": "flag ballast_loaded"},
+    {"id": "s0_power", "type": "flag", "params": {"flag": "power_on"}, "requires": ["s0a_load"],
+     "bot_task": {"type": "interact_sequence", "target": {"group": "power_switch"}, "what": "the Pumpenschalter", "ping": "POWER"},
+     "on_complete": [{"flag": "egg_lf_started"}, {"vo": "OPR_LF_START_01", "delay": 9.0}, {"save_point": true}],
+     "debug_skip": "power_on"},
+    {"id": "s1_ballast", "type": "flag", "params": {"flag": "lf_ballast_done"}, "requires": ["s0_power"],
+     "bot_task": {"type": "carry", "pickups": {"group": "ballast_coffins"}, "deliver": {"group": "ballast_dumps"}, "what": "three coffins over the side", "ping": "BALLAST"},
+     "on_complete": [{"banner": "THREE OVERBOARD\nThe sea has them. The Operator does not."}, {"save_point": true}]},
+    {"id": "s2a_radios", "type": "collect", "params": {"tag": "lf_radio", "count": 3}, "requires": ["s0_power"],
+     "bot_task": {"type": "collect", "targets": {"group": "lf_radios"}, "id_prop": "radio_id", "what": "the three radios' code groups", "ping": "RADIO"}},
+    {"id": "s2_cipher", "type": "sequence", "params": {"target": "cipher", "inputs_from": "cipher_inputs"}, "requires": ["s2a_radios"],
+     "bot_task": {"type": "interact_sequence", "target": {"group": "cipher_machines"}, "input": {"method": "bot_set", "arg": "string"}, "needs": ["cipher"], "think_s": [20.0, 40.0], "what": "the rotor machine", "ping": "CIPHER"},
+     "reset": {"on": "wrong_input", "actions": [{"vo_category": ["OPR", "LF_CIPHER_WRONG"]}]},
+     "on_complete": [{"vo": "OPR_LF_CIPHER_01", "delay": 3.0}, {"save_point": true}]},
+    {"id": "s3_log", "type": "collect", "params": {"tag": "lf_log", "count": 4}, "requires": [],
+     "bot_task": {"type": "collect", "targets": {"group": "lf_log_pages"}, "id_prop": "page_id", "what": "the four pages of U-1047's log", "ping": "LOG"},
+     "on_complete": [{"vo": "DEA_LF_LOG_01", "delay": 2.0}, {"banner": "BRECHT'S START SEQUENCE\nAir. Fuel. Clutch. Both. Contact."}, {"save_point": true}]},
+    {"id": "s4_parts", "type": "build", "params": {"buildable": "undertow"}, "requires": [],
+     "bot_task": {"type": "carry", "pickups": {"group": "buildable_parts", "where": {"visible": true}}, "deliver": {"group": "workbenches"}, "what": "the Undertow's parts", "ping": "PART"},
+     "on_complete": [{"save_point": true}]},
+    {"id": "s5a_injector", "type": "flag", "params": {"flag": "inj_injector"}, "requires": ["s1_ballast", "s2_cipher", "s3_log"],
+     "bot_task": {"type": "hold_zone", "anchors": {"group": "diesel_inj_injector"}, "start": "interact", "radius": 3.5, "what": "the lathe, during a flood", "ping": "HOLD"}},
+    {"id": "s5b_battery", "type": "flag", "params": {"flag": "inj_battery"}, "requires": ["s1_ballast", "s2_cipher", "s3_log"],
+     "bot_task": {"type": "hold_zone", "anchors": {"group": "diesel_inj_battery"}, "start": "interact", "radius": 3.5, "what": "the battery cell, in the dark", "ping": "HOLD"}},
+    {"id": "s5c_sequence", "type": "flag", "params": {"flag": "inj_sequence"}, "requires": ["s1_ballast", "s2_cipher", "s3_log"],
+     "bot_task": {"type": "hold_zone", "anchors": {"group": "diesel_inj_sequence"}, "start": "interact", "radius": 3.5, "what": "the start panel, while they pull at the hull", "ping": "HOLD"}},
+    {"id": "s5_diesels", "type": "flag", "params": {"all": ["inj_injector", "inj_battery", "inj_sequence"]}, "requires": ["s5a_injector", "s5b_battery", "s5c_sequence"],
+     "bot_task": {"type": "hold_zone", "anchors": {"group": "diesel_inj_sequence"}, "start": "interact", "radius": 3.5, "what": "the diesels", "ping": "HOLD"},
+     "on_complete": [{"banner": "U-1047'S DIESELS ARE RUNNING"}, {"save_point": true}]},
+    {"id": "s6_boss", "type": "flag", "params": {"flag": "boat_key"}, "requires": ["s5_diesels", "s4_parts"],
+     "on_start": [{"summon_boss": ["der_kielholer", 13.2, 0.0, 70.0]}, {"banner": "SOMETHING IS COMING UP IN DOCK 2"}],
+     "bot_task": {"type": "carry", "pickups": {"group": "boat_keys"}, "deliver": {"group": "lf_key_slot"}, "what": "the drowned captain's key (they fight him as they fight anything; the key, when it drops or floats up, is the task)", "ping": "KEY"},
+     "on_complete": [{"banner": "THE IGNITION KEY\nU-1047 · Brecht"}, {"save_point": true}],
+     "debug_skip": "flag boat_key"},
+    {"id": "s7_key", "type": "interact", "params": {"target": "lf_key_slot", "requires_flags": ["boat_key", "lf_cipher_done"]}, "requires": ["s6_boss", "s2_cipher"],
+     "bot_task": {"type": "interact_sequence", "target": {"group": "lf_key_slot"}, "what": "the ignition in the tower", "ping": "KEY"},
+     "on_complete": [{"flag": "lf_key_turned"}, {"shake": 0.4}, {"vo": "OPR_LF_KEY_01", "delay": 2.0}, {"save_point": true}]},
+    {"id": "s8_curtain", "type": "interact", "params": {"target": "lf_curtain", "requires_flags": ["lf_key_turned"]}, "requires": ["s7_key"],
+     "bot_task": {"type": "interact_sequence", "target": {"group": "lf_curtain_lever"}, "what": "the curtain lever on pier 2", "ping": "CURTAIN"},
+     "on_complete": [{"flag": "curtain_open"}, {"vo": "OPR_LF_CURTAIN_01", "delay": 2.0}, {"save_point": true}]},
+    {"id": "s9_sail", "type": "flag", "params": {"flag": "lf_sailed"}, "requires": ["s8_curtain"],
+     "bot_task": {"type": "hold_zone", "anchors": {"group": "uboat_sail"}, "start": "interact", "final": true, "radius": 5.0, "what": "the deck, as she sails", "ping": "BOAT"}},
+    {"id": "s10_ending", "type": "cutscene", "params": {"runner": "res://gravelight/world/map02/letzte_fahrt_ending.gd", "seconds": 34.0, "dive_at": 20.0, "card_seconds": 6.0, "cutscene": "m2_letzte_fahrt_dive"}, "requires": ["s9_sail"],
+     "bot_task": {"player_only": "cutscene", "what": "the dive"}}
+  ],
+  "on_complete": [
+    {"scrip_all": 2500},
+    {"tier_gift": 1},
+    {"xp": 25000},
+    {"archive": "INT_M2_LOG_1"},
+    {"archive": "INT_M2_LOG_2"},
+    {"archive": "INT_M2_LOG_3"},
+    {"archive": "INT_M2_LOG_4"},
+    {"archive": "INT_M2_HALE_TELEGRAM"},
+    {"flag": "letzte_fahrt_complete"},
+    {"profile_list": ["calling_cards", "CARD_LETZTE_FAHRT"]},
+    {"profile_list": ["dossier_pages", "egg_map02"]}
+  ]
+}

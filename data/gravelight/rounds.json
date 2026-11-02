@@ -210,5 +210,12 @@
     ]
   },
   "retained_health_mult": 1.25,
-  "_doc_retained": "retained_health_mult: Map 4 Act IV's Retained state (the renewal ending, T-113): zombie health x this for the rest of the match."
+  "_doc_retained": "retained_health_mult: Map 4 Act IV's Retained state (the renewal ending, T-113): zombie health x this for the rest of the match.",
+  "map_overrides": {
+    "_doc": "UPDATE 10 (C2, T-153): per-map spawn pressure, keyed by the map id's first part. spawn_interval_mult scales RoundManager.current_interval, max_active_add raises max_active. Totenhafen paid the least Scrip per round (THE_BAR); the soak before/after is in DECISIONS T-153.",
+    "map02": {
+      "spawn_interval_mult": 0.75,
+      "max_active_add": 4
+    }
+  }
 }

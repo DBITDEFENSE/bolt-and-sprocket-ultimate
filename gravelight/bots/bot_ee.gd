@@ -232,8 +232,16 @@ func _pause_state() -> Dictionary:
 		var h: Player = brain.squad.human()
 		if a != Vector3.INF and h != null and is_instance_valid(h):
 			away = h.spectating or _flat(h.global_position, a) > float(_cfg().get("presence_m", 20.0)) * 1.5
+	var shop: bool = false
+	var sb: Dictionary = _cfg().get("shop_break", {})
+	if str(task.get("paused", "")) == "shopping":
+		shop = _now() - float(task.get("paused_t", _now())) < float(sb.get("seconds", 20.0))
+		if not shop:
+			_shop_next = _now() + float(sb.get("every_s", 90.0))
+	else:
+		shop = BotEECatalog.shop_break_due(Economy.get_scrip(player.player_id), str(_plan.get("do", "")), _now(), _shop_next, sb)
 	return {"type": str(task["type"]) if str(_plan.get("do", "")) != "hold" else "hold_zone", "pressure": brain.perception.pressure,
-		"teammate_down": down, "round_left": left, "player_away": away}
+		"teammate_down": down, "round_left": left, "player_away": away, "shop": shop}
 
 
 ## The action "ee_task" was picked: carry the plan out this frame.
@@ -299,7 +307,7 @@ func describe() -> Dictionary:
 		line += " (%d/%d)" % [(got as Array).size() if got is Array else 0, int(p.get("count", 1))]
 	var paused: String = str(task.get("paused", ""))
 	if paused != "":
-		line += " - paused: %s" % {"threat": "too hot", "teammate_down": "someone's down", "round_end": "finishing the round", "player_away": "waiting for you"}.get(paused, paused)
+		line += " - paused: %s" % {"threat": "too hot", "teammate_down": "someone's down", "round_end": "finishing the round", "player_away": "waiting for you", "shopping": "stocking up"}.get(paused, paused)
 	return {"quest_id": task["qid"], "step_id": task["sid"], "type": task["type"], "label": line, "state": "paused" if paused != "" else (d if d != "" else "running"),
 		"paused": paused, "source": task["source"], "ordered": task["ordered"], "pid": player.player_id}
 
@@ -315,11 +323,11 @@ func _refresh_plan() -> void:
 		if dn != null and is_instance_valid(dn) and not dn.is_open and float(_failed_nodes.get(dn.get_instance_id(), -INF)) <= _now():
 			return   # on the way to open a door: no second-guessing every think
 	var w: Dictionary = snapshot(task["qid"], task["sid"], task["def"], task.get("focus"), bool(task["ordered"]), str(task["type"]))
-	var was: String = "%s %s" % [str(_plan.get("do", "")), str((_plan.get("node") as Node).name) if _plan.get("node") is Node and is_instance_valid(_plan.get("node")) else ""]
+	var was: String = "%s %s" % [str(_plan.get("do", "")), str((_plan.get("node") as Node).name) if is_instance_valid(_plan.get("node")) and _plan.get("node") is Node else ""]
 	_plan = plan(str(task["type"]), task["def"], w)
 	var d: String = str(_plan.get("do", ""))
 	if OS.has_environment("EGG_DEBUG"):
-		var now_s: String = "%s %s" % [d, str((_plan.get("node") as Node).name) if _plan.get("node") is Node and is_instance_valid(_plan.get("node")) else ""]
+		var now_s: String = "%s %s" % [d, str((_plan.get("node") as Node).name) if is_instance_valid(_plan.get("node")) and _plan.get("node") is Node else ""]
 		if now_s != was:
 			var anchors: String = ""
 			for r: Variant in w.get("anchors", []):
@@ -353,6 +361,15 @@ func preview(qid: StringName, sid: StringName, t: Dictionary, ordered: bool, foc
 
 
 ## A world snapshot for the planners (the live game state, read once).
+## T-153: per quest step, when a thinking solver may make its first input (think_s in the bot_task).
+var _think_until: Dictionary = {}
+## T-153: the closed door last found between this bot and its egg target ({door, until}): BotEconomy holds its price
+## back from other purchases until it is open (a bot walked the long way round to door_signal, spent its Scrip on the
+## way during threat pauses, and could never buy it).
+var _door_want: Dictionary = {}
+## T-153: when the next shopping break may start (BotEECatalog.shop_break_due).
+var _shop_next: float = 0.0
+
 func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, ordered: bool, ty: String) -> Dictionary:
 	var now: float = _now()
 	var step: Dictionary = QuestManager.step_def(qid, sid)
@@ -387,6 +404,14 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 			w["ready"] = str(t.get("ready", "")) == "" or QuestManager.interact_ready(StringName(str(t["ready"])))
 			var nd: Interactable = w["node"] as Interactable
 			w["usable"] = nd != null and nd.can_interact(player)
+			if t.has("think_s"):   # T-153: a puzzle solver "thinks" a while before the first input (the cipher: 20-40 s)
+				var tk: String = "%s:%s" % [qid, sid]
+				var now_s: float = Time.get_ticks_msec() / 1000.0
+				if not _think_until.has(tk):
+					var ts: Variant = t["think_s"]
+					var secs: float = randf_range(float(ts[0]), float(ts[1])) if ts is Array else float(ts)
+					_think_until[tk] = now_s + secs
+				w["think_left"] = float(_think_until[tk]) - now_s
 		"shoot_target":
 			w["expected"] = QuestManager.sequence_inputs(qid, sid) if t.has("sequence") else []
 			w["progress"] = int(prog) if prog != null and not prog is Array else 0
@@ -428,9 +453,12 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 			w["has_item"] = item == "" or QuestManager.has_item(StringName(item))
 			w["pickup"] = _first(t.get("pickup", {}), null)
 			var prow: Array = []
+			w["carrying"] = false
 			if t.has("pickups") and hub_ok:
 				for pn: Node in hub.resolve(t["pickups"]):
 					var p3: Node3D = pn as Node3D
+					if p3 != null and "carrier" in p3 and int(p3.get("carrier")) == player.player_id:
+						w["carrying"] = true   # T-153: already holding one (a ballast coffin): deliver it
 					if p3 != null and _eligible(p3, t) and not hub.targeted_by_other(p3, brain):
 						prow.append({"node": p3, "d": _flat(p3.global_position, player.global_position)})
 			w["pickups"] = prow
@@ -538,6 +566,8 @@ static func plan_inputs(t: Dictionary, w: Dictionary) -> Dictionary:
 	var idx: int = int(w.get("progress", 0))
 	if expected.is_empty():
 		return {"do": "fail", "code": "info"}
+	if float(w.get("think_left", 0.0)) > 0.0 and idx == 0:
+		return {"do": "wait", "node": n}   # T-153: still working the puzzle out
 	if idx >= expected.size():
 		return {"do": "done"}
 	if BotEECatalog.commit_blocked(t, idx, expected.size()) and not bool(w.get("commit_ok", false)):
@@ -635,7 +665,7 @@ static func plan_hold(t: Dictionary, w: Dictionary) -> Dictionary:
 
 ## Carry: fetch (the item's pickup, or each part), then deliver once the target is ready for it.
 static func plan_carry(t: Dictionary, w: Dictionary) -> Dictionary:
-	if t.has("pickups"):
+	if t.has("pickups") and not bool(w.get("carrying", false)):
 		var best: Dictionary = {}
 		for r: Variant in w.get("pickups", []):
 			var row: Dictionary = r
@@ -693,7 +723,8 @@ static func plan_turn_key(_t: Dictionary, w: Dictionary) -> Dictionary:
 func _execute(delta: float) -> void:
 	_forced = {}
 	var d: String = str(_plan.get("do", ""))
-	var n: Node3D = _plan.get("node") as Node3D
+	var nv: Variant = _plan.get("node")
+	var n: Node3D = nv as Node3D if is_instance_valid(nv) else null   # T-153: the node can be freed under the plan (a picked-up key)
 	if _plan.has("node") and (n == null or not is_instance_valid(n)) and d != "escort" and d != "wait" and d != "hold":
 		_replan = true
 		_idle(delta)
@@ -879,7 +910,8 @@ func _do_shoot(n: Node3D, delta: float) -> void:
 
 
 func _do_hold(delta: float) -> void:
-	var n: Node3D = _plan.get("node") as Node3D
+	var nv: Variant = _plan.get("node")
+	var n: Node3D = nv as Node3D if is_instance_valid(nv) else null   # T-153: the node can be freed under the plan (a picked-up key)
 	var pos: Vector3 = _plan.get("pos", Vector3.INF)
 	var r: float = float(_plan.get("radius", 2.0))
 	if n != null and is_instance_valid(n):
@@ -960,6 +992,17 @@ func _try_door(goal: Vector3) -> bool:
 	return true
 
 
+## Scrip to keep for the door an egg task is waiting on (0 when none, it is open, or the want is stale).
+func door_reserve() -> int:
+	if _door_want.is_empty() or _now() > float(_door_want.get("until", 0.0)):
+		return 0
+	var d: BuyDoor = _door_want.get("door") as BuyDoor if is_instance_valid(_door_want.get("door")) else null
+	if d == null or d.is_open:
+		_door_want = {}
+		return 0
+	return Economy.price_for(player.player_id, d.cost)
+
+
 func _do_door(delta: float) -> void:
 	var d: BuyDoor = _plan.get("node") as BuyDoor
 	if d == null or d.is_open:
@@ -998,7 +1041,9 @@ func _blocking_door(goal: Vector3) -> BuyDoor:
 			break
 	if dest == Vector3.INF:
 		return null
-	var path: PackedVector3Array = NavigationServer3D.map_get_path(nav, player.global_position, dest, true, brain.squad.nav_mask())
+	# T-153: over every layer: a zone behind a closed door is not in the squad's mask, so a masked path never reaches it
+	# and the door in the way was never found (Totenhafen gives every zone its own layer)
+	var path: PackedVector3Array = NavigationServer3D.map_get_path(nav, player.global_position, dest, true, 0x7FFFFFFF)
 	if path.is_empty() or path[path.size() - 1].distance_to(dest) > 1.5:
 		return null
 	var best: BuyDoor = null
@@ -1010,6 +1055,8 @@ func _blocking_door(goal: Vector3) -> BuyDoor:
 		if dd < best_d:
 			best_d = dd
 			best = d
+	if best != null and best.can_interact(player):
+		_door_want = {"door": best, "until": _now() + 180.0}
 	if best == null or not best.can_interact(player) or Economy.get_scrip(player.player_id) < best.cost:
 		return null
 	if float(_failed_nodes.get(best.get_instance_id(), -INF)) > _now():

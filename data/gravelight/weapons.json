@@ -1446,6 +1446,87 @@
     ]
    },
    "flavor": "Everything that goes up."
+  },
+  "undertow": {
+   "feel": {
+    "hip": [
+     0.15,
+     -0.21,
+     -0.42
+    ],
+    "hip_rot": [
+     -4,
+     7,
+     3
+    ],
+    "reload_tilt": 0.35,
+    "cam_pitch": 3.2,
+    "cam_recover": 6.5,
+    "shake": 0.4,
+    "fov_punch": 2.5,
+    "vm_back": 0.07,
+    "vm_climb": 5.0,
+    "vm_spring": 9.0,
+    "eye_relief": 0.42,
+    "ads_zoom": 0.95
+   },
+   "name": "Undertow",
+   "class": "wonder",
+   "damage": 0,
+   "pellets": 1,
+   "rpm": 60,
+   "mode": "harpoon",
+   "mag": 1,
+   "reserve": 12,
+   "reload_partial": 2.1,
+   "reload_empty": 2.1,
+   "per_round_reload": false,
+   "ads_time": 0.32,
+   "sway": 0.22,
+   "penetration": 0,
+   "move_mult": 0.9,
+   "falloff_start": 999,
+   "falloff_end": 1000,
+   "falloff_min": 1.0,
+   "spread_hip": 0.0,
+   "spread_ads": 0.0,
+   "limb_mults": {},
+   "wall_price": 0,
+   "upgraded": "undertow_maelstrom",
+   "buildable": true,
+   "harpoon": {
+    "_doc": "UPDATE 10 (contract C4, docs/gravelight/WEAPONS.md section 11, DECISIONS T-153): THE UNDERTOW, a pressurised Nachtglas harpoon gun. Fire: the harpoon flies range m and skewers up to pierce zombies in a corridor_m line (skewer_health_mult x health(r) each); the chain reels them in over reel_s and they arrive stunned (stun_s) at arrive_m. Bosses (HomageBoss, Foreman, Screamer) take boss_damage and are never reeled. Into a flooded box (TideController.wet_box_index) the harpoon opens a whirlpool whirl_radius m for whirl_seconds: non-boss zombies in it are dragged under (a kill), bosses take whirl_dps. whirl_land (Maelstrom): the whirl also opens on dry ground (land_radius / land_seconds). chain: after the line, the harpoon jumps to the next target within chain_radius m, up to chain times. Reload: three pump strokes. cooldown: seconds between shots.",
+    "range": 25.0,
+    "pierce": 5,
+    "corridor_m": 0.9,
+    "skewer_health_mult": 0.6,
+    "boss_damage": 900.0,
+    "reel_s": 1.2,
+    "arrive_m": 2.0,
+    "stun_s": 2.0,
+    "whirl_radius": 4.0,
+    "whirl_seconds": 6.0,
+    "whirl_dps": 40.0,
+    "whirl_pull_mps": 3.5,
+    "whirl_drown_s": 0.6,
+    "whirl_land": false,
+    "land_radius": 3.0,
+    "land_seconds": 5.0,
+    "chain": 0,
+    "chain_radius": 6.0,
+    "cooldown": 0.35,
+    "fire_sound": "undertow_fire",
+    "reel_sound": "undertow_reel",
+    "pump_sound": "undertow_pump",
+    "whirl_sound": "undertow_whirl",
+    "splash_sound": "water_splash",
+    "color": [
+     0.55,
+     0.35,
+     0.95
+    ]
+   },
+   "flavor": "For what's down there."
   }
  },
  "tactical": {
@@ -2407,6 +2488,91 @@
    "properties": {
     "escape_velocity": true,
     "pull_well": true
+   }
+  },
+  "undertow_maelstrom": {
+   "feel": {
+    "hip": [
+     0.15,
+     -0.21,
+     -0.42
+    ],
+    "hip_rot": [
+     -4,
+     7,
+     3
+    ],
+    "reload_tilt": 0.35,
+    "cam_pitch": 3.2,
+    "cam_recover": 6.5,
+    "shake": 0.4,
+    "fov_punch": 2.5,
+    "vm_back": 0.07,
+    "vm_climb": 5.0,
+    "vm_spring": 9.0,
+    "eye_relief": 0.42,
+    "ads_zoom": 0.95
+   },
+   "name": "Undertow: Maelstrom",
+   "class": "wonder",
+   "damage": 0,
+   "pellets": 1,
+   "rpm": 60,
+   "mode": "harpoon",
+   "mag": 1,
+   "reserve": 18,
+   "reload_partial": 1.8,
+   "reload_empty": 1.8,
+   "per_round_reload": false,
+   "ads_time": 0.32,
+   "sway": 0.22,
+   "penetration": 0,
+   "move_mult": 0.9,
+   "falloff_start": 999,
+   "falloff_end": 1000,
+   "falloff_min": 1.0,
+   "spread_hip": 0.0,
+   "spread_ads": 0.0,
+   "limb_mults": {},
+   "wall_price": 0,
+   "buildable": true,
+   "harpoon": {
+    "_doc": "UPDATE 10 (contract C4, docs/gravelight/WEAPONS.md section 11, DECISIONS T-153): THE UNDERTOW, a pressurised Nachtglas harpoon gun. Fire: the harpoon flies range m and skewers up to pierce zombies in a corridor_m line (skewer_health_mult x health(r) each); the chain reels them in over reel_s and they arrive stunned (stun_s) at arrive_m. Bosses (HomageBoss, Foreman, Screamer) take boss_damage and are never reeled. Into a flooded box (TideController.wet_box_index) the harpoon opens a whirlpool whirl_radius m for whirl_seconds: non-boss zombies in it are dragged under (a kill), bosses take whirl_dps. whirl_land (Maelstrom): the whirl also opens on dry ground (land_radius / land_seconds). chain: after the line, the harpoon jumps to the next target within chain_radius m, up to chain times. Reload: three pump strokes. cooldown: seconds between shots.",
+    "range": 25.0,
+    "pierce": 5,
+    "corridor_m": 0.9,
+    "skewer_health_mult": 0.8,
+    "boss_damage": 1300.0,
+    "reel_s": 1.2,
+    "arrive_m": 2.0,
+    "stun_s": 2.0,
+    "whirl_radius": 4.0,
+    "whirl_seconds": 6.0,
+    "whirl_dps": 40.0,
+    "whirl_pull_mps": 3.5,
+    "whirl_drown_s": 0.6,
+    "whirl_land": true,
+    "land_radius": 3.0,
+    "land_seconds": 5.0,
+    "chain": 3,
+    "chain_radius": 6.0,
+    "cooldown": 0.35,
+    "fire_sound": "undertow_fire",
+    "reel_sound": "undertow_reel",
+    "pump_sound": "undertow_pump",
+    "whirl_sound": "undertow_whirl",
+    "splash_sound": "water_splash",
+    "color": [
+     0.7,
+     0.4,
+     1.0
+    ]
+   },
+   "flavor": "The sea comes to you.",
+   "base": "undertow",
+   "properties": {
+    "whirl_land": "the whirlpool opens on dry ground too (a violet vortex)",
+    "chain": "the harpoon chains to 3 more targets within 6 m"
    }
   }
  },

@@ -29,6 +29,8 @@ static func classify(n: Node) -> Dictionary:
 
 
 static func _one(n: Node) -> Dictionary:
+	if n is Searchlight:   # T-153: MAN_SEARCHLIGHT (a bot takes the tower light)
+		return {"kind": "activate", "sub": "searchlight", "label": "Searchlight", "price": 0}
 	if n is PerkMachine:
 		var pm: PerkMachine = n as PerkMachine
 		return {"kind": "buy", "sub": "perk", "label": PerkManager.display_name(pm.perk_id), "price": PerkManager.price(pm.perk_id), "id": String(pm.perk_id)}

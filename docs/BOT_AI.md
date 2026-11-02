@@ -1101,3 +1101,34 @@ decisions), `smoke_squads` (Map 0, a forced squad: navmesh spawn, shots, a death
 the round ending after the rise, a boss fight despawning a second squad, and the brains' milliseconds per frame with
 six soldiers, 24 zombies and three bots), `probe_squad_spawns` (`-- --map=mapXX [--regions]`: every edge spawn snaps
 onto the navmesh, stands 20 m from the start and has a path to it).
+
+## 13. Totenhafen (UPDATE 10 section 2, T-153)
+- **Letzte Fahrt:** every step has a `bot_task` (EASTER_EGGS §10). New in the executor: `think_s` on an
+  `interact_sequence` task (`[min, max]` seconds; the plan waits before the first input: the cipher's solver "works it
+  out" for 20–40 s), and the `carry` snapshot's `carrying` (a bot already holding a pickup, e.g. a ballast coffin, goes
+  to the delivery instead of looking for another pickup). The diesel holds and the sail are `hold_zone` tasks on anchors
+  (`HoldoutStation.is_holding()` / `UboatSail.is_holding()` count as charging; `start: interact` lets the bot start them).
+- **MAN_SEARCHLIGHT:** any mark (but Defend) on the tower searchlight routes to a new mark-order kind `man`
+  (`MarkTargets` classifies it `activate/searchlight`; `BotMarkOrders.route` → `man`; `BotMarkTask._man`): the bot walks
+  up, takes the station and stays on it (no timeout) until the mark is removed, another order replaces it, the light goes
+  to the boat or someone else has it; `_release` leaves the station. A bot operator sweeps `searchlight.bot_sweep_points`
+  and swings to the densest group of zombies in range.
+- **Doors to a closed zone** (found by the final egg runs: three bots circled under the signal tower for 30 minutes):
+  `BotBrain.stand_point` no longer accepts a fallback point on the storey under the object (`_same_storey`: a floor slab
+  between them, here the north catwalk under the tower floor), so a use point behind a closed door is INF and the
+  executor asks `_try_door`; `BotEE._blocking_door` now paths over every navigation layer (a zone behind a closed door is
+  not in the squad's mask, and on Totenhafen every zone has its own layer, so the masked path never reached it and no
+  door was ever found). The bot then buys the door with its own Scrip when it can afford it: it stands at the last
+  open-zone point on the way when the door's own front lies in the closed zone (`BotBrain.door_approach`; door_signal's
+  ramp top is the tower's navmesh; a door counts as reached within 1.8 m), and `BotEE.door_reserve` keeps the door's
+  price out of its other purchases for 3 minutes.
+- **Ladders:** a zone's climb links (the zombies' ladders, `ClimbLink`) live on its climb layer (the zone's bit + 16),
+  which the director opens with the zone, so zombies are unchanged; the bots' mask (`BotSquad.nav_mask`) leaves the climb
+  layers out, because a bot can't climb (its route to the north catwalk ran up Ladder_CatwalkN and it stood at the foot).
+- **Shopping breaks** (`ee.json shop_break`): a bot on an egg task with 3000+ Scrip, not mid-hold, at a door or making
+  an input, pauses the task 20 s (at most every 90 s) so its own economy buys its kit; before, a Full Partner bot never
+  shopped while the egg ran and reached Totenhafen's round-10 holds with 7,000-11,000 Scrip and starting guns.
+- **One diesel hold at a time** (a gameplay rule: a second refuses to start while another runs): the bots started two
+  holds together, split up under doubled spawns and were all downed with the round held open.
+- **Ballast v2:** carriers are limited to melee and the pistol (`WeaponHolder.set_carry_limit`), bots included.
+- **Smoke:** `smoke_letzte_fahrt` (three bots on Full Partner, the human following; the forcing is in its header).

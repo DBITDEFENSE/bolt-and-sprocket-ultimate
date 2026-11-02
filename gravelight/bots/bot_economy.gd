@@ -333,6 +333,8 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 		box_price, float(brain.personality_economy("save_bias", 1.0)))
 	if brain.is_player_bot and (not GameState.power_on or not AgentPlan.current_for(brain).is_empty()):
 		reserve = int((eco.get("reserve", {}) as Dictionary).get("min_scrip", 300))   # T-071: no perk to rebuy before the power (the gun comes first)
+	if brain.ee != null:
+		reserve += brain.ee.door_reserve()   # T-153: saving for the door an egg task is waiting on
 	# ---- an ammo box (or wall ammo) when the main gun runs low: ammo is never held back by the reserve
 	var box_c: Dictionary = _ammo_candidate(anc, rng, scrip)
 	if not box_c.is_empty():

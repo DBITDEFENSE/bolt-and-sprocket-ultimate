@@ -74,7 +74,12 @@ func _shop(e: Dictionary, node: Interactable, delta: float) -> String:
 	var kind: String = str(e["kind"])
 	var me: Vector3 = player.global_position
 	var front: Vector3 = BotBrain._door_side(node as BuyDoor, me) if node is BuyDoor else (e["stand"] as Vector3 if e.get("stand", Vector3.INF) != Vector3.INF else BotBrain._front_of(node))
-	if _flat(front, me) > 0.9 or absf(front.y - me.y) > 1.8:
+	if node is BuyDoor:
+		front = brain.door_approach(node as BuyDoor, front)   # T-153: a door whose front lies in the closed zone
+	# T-153: a door bought from its approach point (BotBrain.door_approach) stands on the open zones' edge, which the
+	# loco stops just short of: a door takes 1.8 m (its use box is wide), anything else 0.9 m
+	var arrive: float = 1.8 if node is BuyDoor else 0.9
+	if _flat(front, me) > arrive or absf(front.y - me.y) > 1.8:
 		e["hold"] = 0.0
 		walk_to(brain.snap(front), 0.8, e, delta)
 		return str(e.get("state", "running"))

@@ -32,6 +32,11 @@ func build_greybox() -> void:
 		func(r: Node3D) -> void: InteractableArt.part_bell(r),
 		func(r: Node3D) -> void: InteractableArt.part_frame(r),
 		func(r: Node3D) -> void: InteractableArt.part_crank(r)]
+	if buildable_id == &"undertow":
+		builders = [
+			func(r: Node3D) -> void: InteractableArt.part_ut_pump(r),
+			func(r: Node3D) -> void: InteractableArt.part_ut_head(r),
+			func(r: Node3D) -> void: InteractableArt.part_ut_shard(r)]
 	if buildable_id == &"lodestone":
 		builders = [
 			func(r: Node3D) -> void: InteractableArt.part_coil(r),
@@ -45,7 +50,9 @@ func build_greybox() -> void:
 	_bell_vis = Node3D.new()
 	_bell_vis.position = Vector3(0, BENCH_TOP, 0.3)
 	add_child(_bell_vis)
-	if buildable_id == &"lodestone":
+	if buildable_id == &"undertow":
+		InteractableArt.place(_bell_vis, "undertow_built", func(r: Node3D) -> void: InteractableArt.undertow(r))
+	elif buildable_id == &"lodestone":
 		InteractableArt.place(_bell_vis, "lodestone_built", func(r: Node3D) -> void: InteractableArt.lodestone(r))
 	else:
 		InteractableArt.place(_bell_vis, "totenglocke_built", func(r: Node3D) -> void: InteractableArt.totenglocke(r))

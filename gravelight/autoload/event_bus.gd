@@ -96,6 +96,28 @@ signal intel_found(intel_id: StringName)
 ## `seconds`, the minimap draws a sweep (RadarDish emits it on every peer).
 signal radar_ping(seconds: float)
 
+# Totenhafen (UPDATE 10 contract C2, T-153): the systems side emits, the living world (map_ambience) and the bots listen.
+## The tide's stage changed: &"low", &"half", &"high" or &"spring" (TideController.storm_for(stage) has the storm values).
+signal tide_stage(stage: StringName)
+## The first flood box went wet / the last one went dry (GameState flag `flooded` follows).
+signal tide_flood_begin()
+signal tide_flood_end()
+## A spring tide starts this round (every 9th round).
+signal spring_tide(round_number: int)
+## A sparking cable in the flood discharged at `position` (presentation: a flash and a crackle).
+signal tide_cable_spark(cable_id: StringName, position: Vector3)
+## Ballast v2: a coffin went to the crane (`loaded`) or overboard at the sea stairs (`dumped`); totals so far.
+signal ballast_loaded(total: int, by_player: int)
+signal ballast_dumped(total: int, by_player: int)
+## The Searchlight's beam is on (aimed by a player, a bot or the finale's auto-track) / off.
+signal searchlight_state(on: bool, operator_id: int)
+## The Crane Drop hit the east apron at `position`.
+signal crane_drop(position: Vector3)
+## Letzte Fahrt's boat: the sail started / its progress 0..1 (host-owned, replicated) / she dived.
+signal sail_started()
+signal sail_progress(t: float)
+signal sail_dived()
+
 # VO / presentation
 signal vo_line_started(line_id: StringName, speaker: StringName, text: String, duration: float)
 

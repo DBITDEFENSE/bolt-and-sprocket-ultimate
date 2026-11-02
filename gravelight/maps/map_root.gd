@@ -112,6 +112,7 @@ func _ready() -> void:
 	MapCompanion.attach(self)   # T-135: one more companion per map (after the flags: Jette follows you between acts)
 	ReliefSquad.attach(self)   # T-142: relief squads from the map edge (host / offline; clients get puppets)
 	ExtraPeople.attach(self)   # T-143: the extra people (miners, a medic, a switchboard operator, a deserter, a widow, a courier)
+	Totenhafen.attach(self)   # T-153: Totenhafen's UPDATE 10 systems (tide v2, ballast v2, the drowned, the searchlight, Letzte Fahrt)
 	for q: String in quest_files:
 		QuestManager.load_quest(q)
 	Campaign.restore_quests(self)   # UPDATE 07 (T-114): the egg's progress from the act before
@@ -295,7 +296,7 @@ func _spawn_intel() -> void:
 	for row: Dictionary in GLData.load_json("res://data/gravelight/intel.json").get("intel", []):
 		var m: String = str(row.get("map", ""))
 		var id: String = str(row["id"])
-		if str(row.get("placement", "")) in ["fixed", "companion", "quest"]:   # companion: filed by Jakub (his letter); quest: filed by a quest step (T-156); never spawned
+		if str(row.get("placement", "")) in ["fixed", "companion", "quest"]:   # companion: filed by Jakub (his letter); quest: filed by a quest step (T-156) or an egg (T-153); never spawned
 			continue
 		if (m == map_key or m == "all") and not ProfileSave.has_intel(id):
 			if id == "INT_GEN_02" and ProfileSave.dossier_level(&"peg") < 5:

@@ -75,5 +75,7 @@
     }
   },
   "returned_kill": 100,
-  "_returned_kill_doc": "UPDATE 07 (T-105): Scrip for a zombie flung off a drop or into vacuum by the Lodestone (Zombie.external_push's kill plane)."
+  "_returned_kill_doc": "UPDATE 07 (T-105): Scrip for a zombie flung off a drop or into vacuum by the Lodestone (Zombie.external_push's kill plane).",
+  "ballast_load_bonus": 500,
+  "_ballast_load_bonus_doc": "UPDATE 10 (T-153): Scrip to the carrier for each coffin loaded on Totenhafen's crane (Ballast v2; the Operator is pleased)."
 }

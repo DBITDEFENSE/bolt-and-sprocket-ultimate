@@ -635,3 +635,60 @@ office; the logbook reads itself, Skyhook Sekt tier II is free for the match, th
 personal minimap note ("Jette's glider model", "Jette's desk hatch") on each model and on the hatch the first time it
 is in view (within 16 m, inside the view cone, nothing solid between). Its squad lines are recorded on master
 (`DUT/PEG/DEA/WRN_M4A_GLIDER_01` on each model, `_M4A_JETTE_01` at the end): `smoke_map04a_world` checks all eight files.
+
+## 10. MAP 2 MAIN EGG — "LETZTE FAHRT" (The Last Voyage; UPDATE 10, contract C3, DECISIONS T-153)
+
+Design: `docs/U10_TOTENHAFEN_DESIGN.md` §2 (binding). Data: `data/gravelight/quests/map02_letzte_fahrt.json`. World objects:
+`gravelight/world/map02/letzte_fahrt_world.gd` (attached by `Totenhafen`, placed from `map02.json "letzte_fahrt"`).
+The story: Kptlt. Lenz refused to sail U-1047 with fourteen lead coffins as ballast; Basel ("HALE L PER HELVETIA
+AUTOMATEN AG") ordered him out; his ratings were marked; he scuttled the diesels and went down to the pump deck (he is
+DER KIELHOLER). Brecht wrote the start sequence "for whoever is not them". The squad follows it and sinks the cargo.
+
+```
+s0a_load (a coffin on the crane: flag ballast_loaded)
+ └ s0_power (the Pumpenschalter: flag power_on; sets egg_lf_started: the cliff bell tolls)
+    ├ s1_ballast   flag lf_ballast_done (3 dumped at the sea stairs + 1 loaded; TotenhafenBallast)
+    ├ s2a_radios   collect lf_radio x3 (LfRadio: cannery office, workshop bench, U-1047 radio room)
+    │  └ s2_cipher sequence "cipher" (CipherMachine in the signal tower; inputs_from cipher_inputs)
+    └ (s3_log      collect lf_log x4, no prerequisite: LfPage, two seeded spots each)
+      (s4_parts    build undertow, no prerequisite: the pump, the head, the shard after the 3rd dump)
+ s5a_injector / s5b_battery / s5c_sequence   flags inj_* (DieselHoldout; any order after s1, s2, s3; one at a time: a second
+                                             refuses to start while another runs; the engine room x1.5 spawns, no ring spawns)
+ └ s5_diesels   flag {all: inj_injector, inj_battery, inj_sequence}
+    └ s6_boss   (needs s4_parts too) on_start summons der_kielholer at dock 2; flag boat_key (his drop, or the
+       │         failsafe's floating key)
+       └ s7_key   interact lf_key_slot (needs boat_key + lf_cipher_done): flag lf_key_turned
+          └ s8_curtain  interact lf_curtain: flag curtain_open (the dock floods to spring height)
+             └ s9_sail   flag lf_sailed (UboatSail: 150 s on deck, host-owned sail_t)
+                └ s10_ending  cutscene (letzte_fahrt_ending.gd: the dive, the Hale telegram card)
+```
+
+**Seeded (`random`):** `cipher` (a new QuestManager type, `roll_cipher`: three 4-letter groups over A–Z without I/O/Q, three
+distinct first letters, a keying order; it also writes `cipher_inputs`, the first letters in order, the `sequence`
+step's inputs; plus the depth mark and the curtain code the teletype prints), `log_spots` (one of two spots per page),
+`ut_parts` (the Undertow's pump and head spots; the shard has one spot, the sea stairs).
+
+**How a player solves the cipher:** each radio says "FUNKSPRUCH n VON 3 · GRUPPE K X R T"; set wheel 1 to message 1's first
+letter, wheel 2 to message 2's, wheel 3 to message 3's; pull the lever. Wrong: FEHLER, the wheels go back to A, the
+Operator sneers (`OPR_LF_CIPHER_WRONG_*`); try again at once.
+
+**The twists:** the lathe runs only while the pump room is flooded (`needs_flood`); lifting the battery cell puts the
+lower pens' lights out (flag `lights_out`) for its 30 s; the start sequence is 45 s with the hull lurching and boarders
+at the hatch, the calls AIR · FUEL · CLUTCH · BOTH · CONTACT on screen. A holdout left empty for 20 s fails and can be
+started again from the next round. The boss: 420 s failsafe (he dives, the key floats up at the dock edge). The sail: a
+wipe ends the match (it is the finale).
+
+**Rewards (`on_complete`):** 2500 Scrip per player (`scrip_all`, a new action), one held tonic +1 tier per player
+(`tier_gift`, new), 25000 XP, the Archive entries `INT_M2_LOG_1..4` and `INT_M2_HALE_TELEGRAM`, flag
+`letzte_fahrt_complete`, the calling card `CARD_LETZTE_FAHRT`, dossier page `egg_map02`.
+
+**Bots (§9 schema):** every step has a `bot_task`: `carry` for the coffins (s0a to the hook, s1 to the dump; a bot already
+carrying goes straight to the delivery), `interact_sequence` for the switch, the key slot and the curtain lever and the
+cipher (input method `bot_set`, `needs: ["cipher"]` learned from the three radios, `think_s: [20, 40]`: the solver waits
+before its first input), `collect` for the radios and the pages (no `find`: the squad knows where the sets crackle and Brecht's page spots; bots
+do not search, and Full Partner stalled on not_found with it), `carry` for the Undertow's parts, `hold_zone` with
+anchors for the three diesel holds and the sail (anchors in groups `diesel_<id>` and `uboat_sail`, `start: interact`),
+and for s6 a `carry` of the key (group `boat_keys`) to the key slot: the bots fight the captain as they fight anything,
+and the key, when he drops it or it floats up after the failsafe, is the task (an escort ended with the fight and left
+the key lying). Player-only: only the cutscene (`s10_ending`). Smoke: `smoke_letzte_fahrt` (Full Partner, one
+run per process, the forcing is listed in its header).

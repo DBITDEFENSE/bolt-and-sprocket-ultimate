@@ -36,6 +36,8 @@ const RELOAD_CUES: Dictionary = {
 	"crank": [[0.12, "totenglocke_crank"], [0.38, "scrip_tick"], [0.58, "scrip_tick"], [0.8, "ashlight_charge"], [0.9, "perk_overclock_arc"]],
 	# T-105: the Lodestone's yoke down, a quarter turn of the lens in its cradle, the yoke up
 	"lodestone": [[0.2, "scrip_tick"], [0.5, "lodestone_turn"], [0.82, "lodestone_lift"]],
+	# T-153: the Undertow's three pump strokes
+	"undertow": [[0.14, "undertow_pump"], [0.44, "undertow_pump"], [0.74, "undertow_pump"]],
 }
 const FIRE_BUFFER: float = 0.12    # seconds a too-early semi-auto click is remembered
 const SWAP_TIME: float = 0.42      # raise time after a weapon swap (firing is blocked meanwhile)
@@ -82,7 +84,12 @@ var _ground_t: float = 0.0
 var _fired_this_frame: bool = false
 var _bell: Totenglocke = null      # Totenglocke wind-and-toll logic (gravelight/weapons/totenglocke.gd), made on first use
 var _lode: Lodestone = null        # the Lodestone's lift / slam / fling (gravelight/weapons/lodestone.gd, T-105), made on first use
+var _harpoon: Undertow = null      # the Undertow's harpoon, reel and whirl (gravelight/weapons/undertow.gd, T-153), made on first use
 var _bell_crank: Node3D = null
+## T-153 (Totenhafen Ballast v2): carrying a coffin limits the hands to melee and the pistol slot.
+var carry_limited: bool = false
+## T-153 (the Searchlight): a manned station holsters everything (no fire, no melee, no swap; the gun hidden).
+var holstered: bool = false
 var _fire_keys: Dictionary = {}    # base weapon id -> fire sound key (cached: "fire_<id>" or the class key)
 var _fire_buffer: float = 0.0      # a semi-auto click that arrived slightly early fires as soon as it can
 var _look_in: Vector2 = Vector2.ZERO
@@ -190,6 +197,35 @@ func max_slots() -> int:
 
 
 ## Drops weapons beyond the slot limit (e.g. Packmule Porter lost on down).
+## Ballast v2 (C2): limit to melee + the pistol slot while on (switches to a pistol when one is held).
+func set_carry_limit(on: bool) -> void:
+	carry_limited = on
+	if on:
+		var pi: int = pistol_slot()
+		if pi >= 0 and pi != current_index:
+			_select(pi)
+
+
+## The first slot holding a pistol-class weapon, -1 = none.
+func pistol_slot() -> int:
+	for i: int in slots.size():
+		if slots[i] != null and carry_allows(slots[i]):
+			return i
+	return -1
+
+
+## Pure (tested): may a carrier fire this weapon? Only the pistol class.
+static func carry_allows(w: WeaponInstance) -> bool:
+	return w != null and w.weapon_class() == &"pistol"
+
+
+## The Searchlight station: holster (hide the gun, block fire / melee / swap) or draw again.
+func set_holstered(on: bool) -> void:
+	holstered = on
+	ads_t = 0.0
+	visible = not on
+
+
 func enforce_slot_limit() -> void:
 	while slots.size() > max_slots():
 		slots.pop_back()
@@ -661,19 +697,23 @@ func tick(delta: float, intent: Dictionary) -> void:
 		_sprint_out_t = _sprint_out_total     # held full while sprinting; runs down from the moment the sprint ends
 	else:
 		_sprint_out_t = maxf(0.0, _sprint_out_t - delta)
-	var fire_block: bool = bool(intent.get("fire_block", false))
+	var fire_block: bool = bool(intent.get("fire_block", false)) or holstered or (carry_limited and not carry_allows(w))
 	# ADS
 	var want_ads: bool = bool(intent.get("ads", false)) and not sprinting and _melee_t <= 0.0 and not bool(intent.get("mantle", false))
 	var ads_time: float = 0.25 if w == null else maxf(0.05, w.f("ads_time", 0.25) * float(PerkManager.stat(player.player_id, "ads_time_mult", 1.0)))
 	ads_t = move_toward(ads_t, 1.0 if want_ads else 0.0, delta / ads_time)
 	# Swap
-	if bool(intent.get("swap", false)) and slots.size() > 1 and _melee_t <= 0.0:
-		_select((current_index + 1) % slots.size())
+	if bool(intent.get("swap", false)) and slots.size() > 1 and _melee_t <= 0.0 and not holstered:
+		var nxt: int = (current_index + 1) % slots.size()
+		if carry_limited:
+			nxt = pistol_slot()
+		if nxt >= 0 and nxt != current_index:
+			_select(nxt)
 	var slot_req: int = int(intent.get("slot", -1))
-	if slot_req >= 0 and slot_req < slots.size() and slot_req != current_index:
+	if slot_req >= 0 and slot_req < slots.size() and slot_req != current_index and not holstered and (not carry_limited or carry_allows(slots[slot_req])):
 		_select(slot_req)
 	# Melee
-	_tick_melee(delta, bool(intent.get("melee", false)))
+	_tick_melee(delta, bool(intent.get("melee", false)) and not holstered)
 	# Grenades / tactical
 	_tick_grenade(delta, bool(intent.get("lethal_held", false)))
 	if bool(intent.get("tactical", false)):
@@ -703,6 +743,8 @@ func tick(delta: float, intent: Dictionary) -> void:
 		_tick_bell(w, delta, can_shoot and bool(intent.get("fire_held", false)), bool(intent.get("fire_pressed", false)))
 	elif w != null and w.data.has("gravity"):
 		_tick_gravity(w, delta, can_shoot and bool(intent.get("fire_held", false)), can_shoot and bool(intent.get("fire_pressed", false)))
+	elif w != null and w.data.has("harpoon"):
+		harpoon_logic().tick(w, delta, can_shoot and bool(intent.get("fire_held", false)), can_shoot and bool(intent.get("fire_pressed", false)))
 	elif can_shoot and _burst_left > 0 and _burst_cd <= 0.0 and w.mag > 0:
 		_burst_left -= 1
 		_burst_cd = 60.0 / 900.0
@@ -1228,6 +1270,13 @@ func bell_logic() -> Totenglocke:
 ## The Lodestone (T-105): tap = lift, tap again = slam, alt = fling.
 func _tick_gravity(w: WeaponInstance, delta: float, held: bool, pressed: bool) -> void:
 	gravity_logic().tick(w, delta, held, pressed)
+
+
+## The Undertow's logic for this holder (T-153).
+func harpoon_logic() -> Undertow:
+	if _harpoon == null:
+		_harpoon = Undertow.new(self)
+	return _harpoon
 
 
 func gravity_logic() -> Lodestone:
@@ -2171,6 +2220,8 @@ func _animate(delta: float, sprinting: bool) -> void:
 		_bell.pose_parts(_bell_crank, _model)   # wind-up crank spin, the bell's ring-out vibration
 	if _lode != null and w != null and w.data.has("gravity"):
 		_lode.pose_parts(_model)   # T-105: the lens spins, the cradle opens on a lift, the coil glows on the charge
+	if w != null and w.data.has("harpoon"):
+		harpoon_logic().pose_parts(_model, w)   # T-153: the gauge needle, the loaded harpoon, the pump handle
 	if _model != null and _model.has_meta("wonder"):
 		WonderLook.tick(self, _model, delta)   # T-090: the wonder weapons' fluid, gauges, hammer, arcs (driven by this state)
 	var lh_override: Variant = null      # support-hand target in gun space, if a reload moves it
@@ -2789,6 +2840,8 @@ func _animate_reload(p: float) -> Variant:
 			return WonderLook.reload_crank(self, p, lh_home)   # T-090: the Sankt-Elmsfeuer's magneto crank
 		"lodestone":
 			return gravity_logic().reload_hand(p, _model, lh_home)   # T-105: the lens's quarter turn in the cradle
+		"undertow":
+			return harpoon_logic().reload_hand(p, _model, lh_home)   # T-153: three strokes of the diver's pump
 	return null
 
 

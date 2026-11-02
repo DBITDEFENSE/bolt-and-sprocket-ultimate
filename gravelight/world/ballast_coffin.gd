@@ -4,6 +4,9 @@ extends Interactable
 ## the crane hook (BallastHook). Carrying is slow (the enemies.json `carry_status`, refreshed every tick) and the
 ## coffin rides in the carrier's arms; it goes back to its pallet if the carrier goes down. Tuning in
 ## data/gravelight/map02.json "ballast". Co-op: the host decides, every peer mirrors the lift / return.
+## Ballast v2 (UPDATE 10 C2, T-153): the carrier's hands are limited to melee and the pistol slot
+## (WeaponHolder.set_carry_limit); a coffin goes to the crane (BallastHook) or overboard (BallastDump), and a gone
+## coffin comes back on a free pallet (respawn_at, driven by TotenhafenBallast).
 
 @export var coffin_id: StringName = &"coffin"
 @export var unit: String = "BLST-01"
@@ -11,6 +14,8 @@ extends Interactable
 
 var carrier: int = 0           # player id carrying it, 0 = on its pallet
 var delivered: bool = false
+## A delivered / dumped coffin is gone until respawn_at puts it back on a pallet.
+var gone_at_ms: int = 0
 var _art: Node3D
 var _carried: Node3D
 
@@ -65,6 +70,8 @@ func lift(pid: int) -> void:
 	_art.visible = false
 	area.collision_layer = 0
 	var p: Player = _player(pid)
+	if p != null and p.weapons != null:
+		p.weapons.set_carry_limit(true)
 	if p != null:
 		_carried = Node3D.new()
 		_carried.name = "CarriedCoffin"
@@ -80,6 +87,9 @@ func lift(pid: int) -> void:
 
 ## Back onto the pallet (the carrier went down, or the crane refused it).
 func drop() -> void:
+	var was: Player = _player(carrier) if carrier != 0 else null
+	if was != null and was.weapons != null:
+		was.weapons.set_carry_limit(false)
 	carrier = 0
 	if _carried != null and is_instance_valid(_carried):
 		_carried.queue_free()
@@ -94,6 +104,23 @@ func deliver() -> void:
 	delivered = true
 	drop()
 	area.collision_layer = 0
+	gone_at_ms = Time.get_ticks_msec()
+
+
+## Back on a pallet at `pos` with a new stencil (every peer; the host decides where).
+func respawn_at(pos: Vector3, new_unit: String) -> void:
+	delivered = false
+	carrier = 0
+	global_position = pos
+	if new_unit != "" and new_unit != unit:
+		unit = new_unit
+		if _art != null:
+			for c: Node in _art.get_children():
+				c.queue_free()
+			Props.coffin(_art, Vector3.ZERO, 0.0, unit)
+	if _art != null:
+		_art.visible = true
+	area.collision_layer = LAYER_INTERACTABLE
 
 
 func _process(delta: float) -> void:

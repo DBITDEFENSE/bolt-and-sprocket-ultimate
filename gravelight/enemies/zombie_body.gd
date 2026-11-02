@@ -102,6 +102,16 @@ const KIT_CLOTH: Dictionary = {
 	"dockworker": [Color(0.3, 0.28, 0.24), Color(0.22, 0.2, 0.18)],
 	"bellringer": [Color(0.22, 0.19, 0.16), Color(0.17, 0.15, 0.13)],
 	"nurse": [Color(0.37, 0.41, 0.52), Color(0.15, 0.17, 0.28)],
+	"drowned": [Color(0.11, 0.15, 0.15), Color(0.13, 0.15, 0.14)],
+	"drowned_diver": [Color(0.27, 0.25, 0.2), Color(0.2, 0.19, 0.16)],
+}
+## T-153 (Totenhafen): kits drawn with another kit's geometry (no GLB Kit_ object of their own). The drowned are
+## U-1047's ratings and the harbour's divers: the sailor's cut, waterlogged (DROWNED_PALETTE recolours the part keys).
+## Not in KITS: they are tagged onto Gangers by KielholerController, never rolled from variants_by_map.
+const KIT_ALIAS: Dictionary = {"drowned": "sailor", "drowned_diver": "sailor"}
+const DROWNED_PALETTE: Dictionary = {
+	"navy": Color(0.1, 0.14, 0.14), "cloth": Color(0.11, 0.15, 0.15), "cloth2": Color(0.13, 0.15, 0.14),
+	"white": Color(0.42, 0.45, 0.4), "hat": Color(0.1, 0.13, 0.13), "leather": Color(0.12, 0.1, 0.08),
 }
 
 static var _mats: Dictionary = {}
@@ -1036,10 +1046,15 @@ static func build_skinned(kit: String, build: String = "medium", female: bool = 
 		return _meshes[key]
 	var mesh: ArrayMesh
 	var base: Dictionary = {} if legacy_bodies else base_parts(build, female)
+	var geo: String = str(KIT_ALIAS.get(kit, kit))
 	if base.has("Body"):
-		mesh = _merge_glb(base, kit, female)
+		if geo != kit:
+			# T-153: an alias kit (the drowned) wears its base kit's clothes in its own palette and skin tone
+			mesh = _merge_glb(base, geo, female, false, _look(kit, "skin")[0], DROWNED_PALETTE)
+		else:
+			mesh = _merge_glb(base, kit, female)
 	else:
-		mesh = _skin_parts(body_parts(kit, build, female), kit)
+		mesh = _skin_parts(body_parts(geo, build, female), kit)
 	_meshes[key] = mesh
 	return mesh
 
@@ -1230,6 +1245,22 @@ static func gear_mesh(piece: String, female: bool = false) -> Array:
 		"oilskin":
 			bone = "Spine"
 			parts = [_cyl(0.19, 0.3, 0.7, Vector3(0, -0.3, 0.01), "oilskin", Vector3.ZERO, Vector3(1.05, 1, 0.85), 11, false)]
+		"diver_helmet":
+			# T-153: the Kielholer diver's brass salvage helmet: the bowl, the corselet on the shoulders, the front port
+			# (its glass is the helmet_glass hitbox) and two side ports. Local -Z is the face.
+			parts = [_sph(0.205, Vector3(0, 0.12, 0.0), "brass", Vector3(1.0, 1.05, 1.0), false, 14),
+				_cyl(0.25, 0.27, 0.07, Vector3(0, -0.07, 0.0), "brass", Vector3.ZERO, Vector3(1.0, 1.0, 0.9), 14, true),
+				_cyl(0.085, 0.085, 0.04, Vector3(0, 0.12, -0.2), "brass", Vector3(PI * 0.5, 0, 0), Vector3.ONE, 12),
+				_cyl(0.07, 0.07, 0.012, Vector3(0, 0.12, -0.222), "lens", Vector3(PI * 0.5, 0, 0), Vector3.ONE, 12),
+				_cyl(0.05, 0.05, 0.03, Vector3(-0.19, 0.13, -0.05), "brass", Vector3(0, 0, PI * 0.5), Vector3.ONE, 10),
+				_cyl(0.05, 0.05, 0.03, Vector3(0.19, 0.13, -0.05), "brass", Vector3(0, 0, PI * 0.5), Vector3.ONE, 10),
+				_box(Vector3(0.05, 0.05, 0.06), Vector3(0, 0.28, 0.06), "metal")]
+		"weed":
+			# T-153: kelp hanging off a drowned man's shoulders (dark green strips)
+			bone = "Chest"
+			parts = [_box(Vector3(0.03, 0.32, 0.01), Vector3(-0.14, 0.12, -0.12), "glove", Vector3(0.15, 0, 0.2)),
+				_box(Vector3(0.025, 0.26, 0.01), Vector3(0.12, 0.15, -0.125), "glove", Vector3(0.1, 0, -0.25)),
+				_box(Vector3(0.03, 0.36, 0.01), Vector3(0.06, 0.1, 0.13), "glove", Vector3(-0.1, 0, 0.1))]
 	var m: ArrayMesh = build_mesh("_", parts)
 	if piece == "armband" and ResourceLoader.exists(EMBLEM_TEX):
 		var q: QuadMesh = QuadMesh.new()

@@ -3,6 +3,9 @@ extends Interactable
 ## Map 2 "Ballast": the loading crane's hook over the loading square. A player carrying a BallastCoffin hooks it
 ## here; once `needed` coffins (map02.json "ballast") hang from the crane the flag `flag` is set and the
 ## Pumpenschalter will take the throw (PowerSwitch.requires_flag). The hooked coffins hang in the slings.
+## Ballast v2 (UPDATE 10 C2, T-153): the hook keeps taking coffins; `flag` holds the count (the power wants >= 1),
+## each load pays the carrier economy.json ballast_load_bonus, the Operator is pleased and the squad comments
+## (TotenhafenBallast listens to GLBus.ballast_loaded).
 
 @export var config_table: String = "map02"
 @export var flag: StringName = &"ballast_loaded"
@@ -52,15 +55,13 @@ func _carried_by(pid: int) -> BallastCoffin:
 
 
 func get_prompt(player: Player) -> String:
-	if count >= needed():
-		return ""
 	if _carried_by(player.player_id) == null:
-		return "The crane wants ballast (%d of %d)" % [count, needed()]
-	return "Hold [%s] to hook the coffin (%d of %d)" % [prompt_key(&"interact"), count, needed()]
+		return "The crane wants ballast (%d of %d)" % [count, needed()] if count < needed() else ""
+	return "Hold [%s] to hook the coffin for the crane (loaded: %d)" % [prompt_key(&"interact"), count]
 
 
 func can_interact(player: Player) -> bool:
-	return count < needed() and _carried_by(player.player_id) != null
+	return _carried_by(player.player_id) != null
 
 
 func hold_time(_player: Player) -> float:
@@ -76,6 +77,11 @@ func interact(player: Player) -> void:
 	hooked(count + 1)
 	Net.mirror(self, &"hooked", [count])
 	GLBus.item_picked_up.emit(c.coffin_id, player.player_id)
+	if Net.is_authority():
+		var bonus: int = int(GLData.table("economy").get("ballast_load_bonus", 500))
+		if bonus > 0:
+			Economy.grant(player.player_id, bonus)
+		GLBus.ballast_loaded.emit(count, player.player_id)
 
 
 ## The crane has `n` coffins; every peer runs this (the host decides).
@@ -84,6 +90,7 @@ func hooked(n: int) -> void:
 	if _slung != null:
 		_slung.visible = count > 0
 	AudioDirector.play_3d("lift_winch", global_position + Vector3.UP * 2.0, -4.0, 0.0)
-	if count >= needed() and Net.is_authority() and not GameState.has_flag(flag):
-		GameState.set_flag(flag, true)
+	if Net.is_authority():
+		GameState.set_flag(flag, count)
+	if count >= needed() and count == needed() and Net.is_authority():
 		GLVO.play_category(&"OPR", "BALLAST_HOOKED")

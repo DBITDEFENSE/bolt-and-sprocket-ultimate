@@ -27,6 +27,11 @@ signal died_boss(boss: HomageBoss)
 
 enum B { ARRIVE, MOVE, TELEGRAPH, ACTIVE, RECOVER, STAGGER, SPECIAL, RETREAT, GONE }
 
+## Weak-point limbs outside the weapon table: every damage kind (melee, explosive, wonder) takes the boss's
+## multiplier on them, not only bullets (the Reach's wrist / palm; T-153: DER KIELHOLER's helmet glass, its glow
+## and the back of the suit).
+const WEAK_POINT_LIMBS: Array[StringName] = [&"wrist", &"palm", &"helmet_glass", &"helmet_glow", &"back"]
+
 static var _mat_cache: Dictionary = {}
 
 var boss_key: String = ""          # "hammer" / "reach" / "alix" (a key of ecfg.bosses)
@@ -530,7 +535,7 @@ static func boss_damage(amount: float, limb: StringName, kind: StringName, boss_
 	var a: float = amount
 	if kind == &"bullet":
 		a = a / maxf(0.01, weapon_limb_mult(limb)) * boss_limb_mult
-	elif limb == &"wrist" or limb == &"palm":
+	elif limb in WEAK_POINT_LIMBS:
 		a *= boss_limb_mult
 	a *= state_mult
 	if deaths_door and kind != &"world":

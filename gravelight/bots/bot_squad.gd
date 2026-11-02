@@ -450,8 +450,10 @@ func director() -> ZombieDirector:
 	return map.director
 
 
+## The open zones' walkable layers. T-153: without the climb layers (ClimbLink): a bot can't climb a ladder, so its
+## paths take the stairs.
 func nav_mask() -> int:
-	return map.director.nav_mask if map.director != null else 0x7FFFFFFF
+	return (map.director.nav_mask if map.director != null else 0x7FFFFFFF) & ClimbLink.WALK_MASK
 
 
 func human() -> Player:

@@ -115,6 +115,9 @@ static func pick_tier(weights: Dictionary, roll: float, sprint_streak: int, max_
 	return StringName(str(pool.keys().back()))
 
 
+var _extra_next: Dictionary = {}   # T-153: enemy_id -> count for the next round (extra_spawn)
+
+
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_PAUSABLE
 	rng.randomize()
@@ -122,6 +125,7 @@ func _ready() -> void:
 
 
 func start_game(player_count: int) -> void:
+	_extra_next = {}
 	_cfg = GLData.table("rounds")
 	_holds.clear()
 	var sr: Dictionary = _cfg["special_round"]
@@ -209,6 +213,10 @@ func advance_round() -> void:
 	state = State.ROUND
 	GameState.stats[&"round"] = current_round
 	GLBus.round_started.emit(current_round, is_special_round)
+	if not _extra_next.is_empty():
+		var batch: Dictionary = _extra_next
+		_extra_next = {}
+		get_tree().create_timer(6.0).timeout.connect(_send_extra.bind(batch))
 
 
 ## True on the round the Foreman is scheduled for (the director consumes it).
@@ -235,11 +243,38 @@ func current_health() -> int:
 
 
 func current_interval() -> float:
-	return spawn_interval(current_round, _cfg)
+	return spawn_interval(current_round, _cfg) * float(map_override(GameState.map_id, _cfg).get("spawn_interval_mult", 1.0))
+
+
+## T-153 (UPDATE 10 C2): a map's spawn-pressure override from rounds.json "map_overrides" (keyed by the map id's
+## first part, "map02"): spawn_interval_mult scales the spawn interval, max_active_add raises the cap. {} = none.
+static func map_override(map_id: StringName, cfg: Dictionary) -> Dictionary:
+	var key: String = String(map_id).get_slice("_", 0)
+	return (cfg.get("map_overrides", {}) as Dictionary).get(key, {})
+
+
+## T-153 (C2): one-off extra spawns for the next round (the Ballast dump's +1 Glasshide): queued now, sent by the
+## director a few seconds into the next round (authority).
+func extra_spawn(enemy_id: StringName, count: int = 1) -> void:
+	_extra_next[enemy_id] = int(_extra_next.get(enemy_id, 0)) + count
+
+
+func pending_extra(enemy_id: StringName) -> int:
+	return int(_extra_next.get(enemy_id, 0))
+
+
+func _send_extra(batch: Dictionary) -> void:
+	if not Net.is_authority() or state != State.ROUND:
+		return
+	var dir: ZombieDirector = get_tree().get_first_node_in_group(&"director") as ZombieDirector
+	if dir == null:
+		return
+	for k: Variant in batch.keys():
+		dir.spawn_special(StringName(str(k)), int(batch[k]), [])
 
 
 func max_active() -> int:
-	return int(_cfg.get("max_active", 24))
+	return int(_cfg.get("max_active", 24)) + int(map_override(GameState.map_id, _cfg).get("max_active_add", 0))
 
 
 func can_spawn() -> bool:

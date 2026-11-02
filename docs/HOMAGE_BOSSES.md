@@ -440,6 +440,99 @@ Clearing the round (all three dead) grants:
 
 ---
 
+## 4b. DER KIELHOLER (map02), build note (UPDATE 10 §2, contract C5, DECISIONS T-153)
+Not a homage boss (no likeness). He is a story boss on the HB1 framework. The Cousins stay HB1. The design is binding in `docs/U10_TOTENHAFEN_DESIGN.md` §4. The enemy-side rules are in ENEMIES.md §8.
+
+**Who:** Kapitänleutnant Arvid Lenz of U-1047.
+- He refused to sail with the coffins, wrecked the battery cells himself and went down to the pump deck in the harbour's salvage diving dress. The Marke under his helmet glass kept him there.
+- His last impulse is *keep her in the pen*.
+- He is never a joke and never a monster for its own sake. He kneels at the end and lets the squad go ("Dann fahrt. Fahrt sie raus.").
+
+**Data:** `data/gravelight/bosses/map02.json`, loaded as `GLData.table("bosses/map02")`.
+- The top level is shaped like `bosses/map04.json`: `hp_player_step` 0.75, `horde_fraction` 0.5, `failsafe_seconds` 420, `round` 20, `campaign_round` 40, `bots_alone`, `status.grab`.
+- His block is `bosses.der_kielholer`. The Slender joins the file under `bosses.the_slender` (T-160).
+
+**HP:** 28,000 solo, scaled by §3.1 (×1.75 / 2.50 / 3.25), ×0.5 while the squad is bots alone.
+- 28,000 sits between the Kranführer (24,000) and PAUL (30,000).
+- He spends about a fifth of the fight under water, so his effective time to kill matches an always-up 30,000 boss.
+
+**Code:** `gravelight/enemies/homage/kielholer.gd` (`Kielholer extends HomageBoss`).
+- Its pure rules are static and unit-tested: `submerge_due`, `pick_dock`, `tide_mult`, `helmet_breaks`, `failsafe_due`, `sweep_hits`, `boss_hp`.
+- He is summoned by `ZombieDirector.summon_boss(&"der_kielholer", at)`, which allows one at a time.
+- `KielholerController` (`gravelight/world/map02/kielholer_controller.gd`) does two jobs:
+  - summons him standalone on the round, with Homage Bosses On, unless the egg already brought him;
+  - runs the bots-alone loop for whichever Kielholer is up.
+- The egg's s6 summons him at dock 2 through the quest action `summon_boss`. **That summon ignores the Homage Bosses setting**, so the egg can't softlock.
+
+**The fight:**
+- **Arena:** the whole Pen Hall.
+- **Arrival:** he surfaces at a dock (`letzte_fahrt.boss_docks`, dock 2 first) and walks the piers and the aprons.
+- **Submerging:** each time another quarter of his HP is gone (75 / 50 / 25%), he sinks.
+  - He takes no damage under water.
+  - After 6–10 s a violet ripple telegraphs, for 1.6 s, where he comes up: another dock, never the one he left.
+  - At high and spring tide he is ×1.3 faster and surfaces at the dock nearest his target.
+- **The chain sweep:** a 1.2 s overhead wind-up, then a 9 m line. It hits for 45, pulls the hit players 4 m toward him and knocks them down for 1.2 s.
+- **The charge:**
+  - The helmet lamp turns to the target and flares (1.0 s telegraph).
+  - Then he goes 9 m/s along the line for up to 14 m: 70 damage and a 7 m/s knock.
+- **The grab:** at a dock edge. He drags at 1.8 m/s toward the water, for 12 dps, or 28 at the edge. It breaks on any of:
+  - 4 melee presses;
+  - 300 team damage;
+  - 400 damage on the weak points;
+  - 5 s.
+- **The swipe:** 55, up close.
+
+**Weak points:**
+- The helmet glass (`helmet_glass`, a hitbox on the front port): ×1.0 until 15% of his max HP is gone. Then it breaks with a roar, and the violet glow behind it (the Marke he wears) takes ×2.0. The glow replaces the usual Marke ×1.5 because it sits inside the helmet.
+- The back of the suit where the chain rubs (`back`): ×1.3.
+- Head ×0.8 (the brass), arms ×0.6, legs ×0.5.
+- `HomageBoss.WEAK_POINT_LIMBS` makes melee, explosive and wonder hits on these limbs take the boss multiplier too, not only bullets.
+
+**Fail-safe:** 420 s after he first surfaces, he dives for good.
+- The ignition key floats up at the nearest dock edge (`BoatKey`, floating).
+- The flag `kielholer_dived` is set.
+
+**Death:** he kneels and is still (no ragdoll), and the lamp goes out.
+- **Scrip:** 1,500 per player.
+- **Drops:** a Resupply.
+- **Flag:** `kielholer_down`.
+- **Archive:** `INT_HB_KIELHOLER`, through `intel_found`.
+- **The key:** the ignition key drops at the body.
+
+**The key:** `gravelight/world/map02/boat_key.gd` (group `boat_keys`).
+- A brass key on a cork float with a paper tag, "U-1047 · Brecht".
+- **How it is taken:** by hold-to-interact, or automatically when any living player walks within 1.6 m. Bots never aim at interactables, so this lets them finish the egg alone.
+- **What taking it does:** sets the flag `boat_key` (the quest's s6 `flag` step), emits `GLBus.item_picked_up(&"boat_key")` and gives `QuestManager.give_item`.
+- **Co-op:** the host decides and mirrors the pickup.
+
+**The look:**
+- The `drowned_diver` body (the sailor geometry in the drowned palette), ×1.12 tall.
+- Costume pieces: the brass helmet with a lit port and side ports, the corselet, rubber gloves, lead-soled boots, and an anchor chain from the left shoulder across the chest with a stock hanging behind.
+- A helmet SpotLight (the charge telegraph) and a glow at the port.
+
+**Title card and bar:** "DER KIELHOLER" over "Kapitänleutnant Arvid Lenz, U-1047", dated "JANUAR 1945 · TOTENHAFEN", through `BossHud`.
+
+**VO** (the text is in lines.json; placeholder TTS):
+- **Lenz** (German, subtitled with the English in brackets; positional through `GLVO.play`):
+  - `KLH_STAYS_01` on spawn;
+  - `KLH_CARGO_01` and `KLH_BRECHT_01` around his dives;
+  - `KLH_DEATH_01` on death.
+- **The Operator:** `OPR_BOSS_KIELHOLER_SPAWN_01` and `_DEATH_01`.
+- **The squad:** `DUT/PEG/DEA/WRN_BOSS_KIELHOLER_01` (spawn) and `_02` (death). The first member present speaks.
+
+**Sounds:** `kielholer_surface`, `kielholer_roar`, `chain_sweep`, `hull_groan`, `water_splash` and `glass_break`.
+
+**Tests:**
+- `gravelight/tests/unit/test_kielholer.gd`: 12 tests.
+- `gravelight/tools_src/smoke_kielholer.tscn` covers: flood, tagging, the grab and its break, the diver's helmet, the summon, the title card and bar, a dive and resurfacing at another dock, the kill and the key, and the fail-safe with its floating key and auto-collect.
+
+**Not built:**
+- **Animation:** no bespoke clips; he uses the shared MZ clips (swipes, grab, kneel death).
+- **Co-op:** a client sees the generic boss puppet, without his costume or the title card (as HB1's notes).
+- **Bots:** they don't prefer his weak points.
+
+---
+
 ## 5. HB2 — Map 1 "Kaltenbrunn", round 15: PAUL
 
 ### 5.1 Who he was (canon; LORE §15.2)

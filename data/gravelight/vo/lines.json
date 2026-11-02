@@ -12626,5 +12626,300 @@
     "speaker": "WRN",
     "category": "M4A_RAID",
     "text": "Old door's buried. New hole, west side. Move."
+  },
+  "OPR_TIDE_SPRING_01": {
+    "speaker": "OPR",
+    "category": "TIDE_SPRING",
+    "text": "Spring tide! The harbour authority regrets the inconvenience. The harbour authority is {me}. Keep to the piers."
+  },
+  "OPR_TIDE_SPRING_02": {
+    "speaker": "OPR",
+    "category": "TIDE_SPRING",
+    "text": "The moon has filed a complaint, and the aprons are going under. Stand on something {tall}."
+  },
+  "OPR_TIDE_SPRING_WARN_01": {
+    "speaker": "OPR",
+    "category": "TIDE_SPRING_WARN",
+    "text": "Shipping forecast, special bulletin. Spring tide {next round}. Sea state: very hungry."
+  },
+  "OPR_PUMP_CRANK_START_01": {
+    "speaker": "OPR",
+    "category": "PUMP_CRANK_START",
+    "text": "Manual pumping. How quaint. Thirty seconds of honest {labour}, then."
+  },
+  "OPR_PUMP_CRANK_DONE_01": {
+    "speaker": "OPR",
+    "category": "PUMP_CRANK_DONE",
+    "text": "The pumps are pulling. The sea will be back. It is {very} punctual."
+  },
+  "OPR_BALLAST_LOAD_01": {
+    "speaker": "OPR",
+    "category": "BALLAST_LOAD",
+    "text": "Ballast received. The schedule {thanks} you."
+  },
+  "OPR_BALLAST_LOAD_02": {
+    "speaker": "OPR",
+    "category": "BALLAST_LOAD",
+    "text": "Another unit on the hook. Five hundred Scrip. You see? {Cooperation} pays."
+  },
+  "OPR_BALLAST_DUMP_01": {
+    "speaker": "OPR",
+    "category": "BALLAST_DUMP",
+    "text": "That was {inventory}."
+  },
+  "OPR_BALLAST_DUMP_02": {
+    "speaker": "OPR",
+    "category": "BALLAST_DUMP",
+    "text": "Overboard. I'll note it in your file. In {red}."
+  },
+  "DUT_BALLAST_LOAD_01": {
+    "speaker": "DUT",
+    "category": "BALLAST_LOAD",
+    "text": "That's a man in there. Was."
+  },
+  "PEG_BALLAST_LOAD_01": {
+    "speaker": "PEG",
+    "category": "BALLAST_LOAD",
+    "text": "Crane's got it. Don't ask me to feel good about it."
+  },
+  "DEA_BALLAST_LOAD_01": {
+    "speaker": "DEA",
+    "category": "BALLAST_LOAD",
+    "text": "Lord, keep him. Wherever they're taking him."
+  },
+  "WRN_BALLAST_LOAD_01": {
+    "speaker": "WRN",
+    "category": "BALLAST_LOAD",
+    "text": "..."
+  },
+  "DUT_BALLAST_DUMP_01": {
+    "speaker": "DUT",
+    "category": "BALLAST_DUMP",
+    "text": "Down you go, friend. Better the sea than them."
+  },
+  "PEG_BALLAST_DUMP_01": {
+    "speaker": "PEG",
+    "category": "BALLAST_DUMP",
+    "text": "Gone. Good."
+  },
+  "DEA_BALLAST_DUMP_01": {
+    "speaker": "DEA",
+    "category": "BALLAST_DUMP",
+    "text": "Lord, forgive me, that's the only burial they get."
+  },
+  "WRN_BALLAST_DUMP_01": {
+    "speaker": "WRN",
+    "category": "BALLAST_DUMP",
+    "text": "Rest easy. Nobody's selling you now."
+  },
+  "PEG_BALLAST_DUMP_THIRD_01": {
+    "speaker": "PEG",
+    "category": "BALLAST_DUMP_THIRD",
+    "text": "That's three. That's enough to make it a choice."
+  },
+  "DUT_WONDER_UNDERTOW_01": {
+    "speaker": "DUT",
+    "category": "WONDER_UNDERTOW",
+    "text": "A fishing pole. For what's down there."
+  },
+  "PEG_WONDER_UNDERTOW_01": {
+    "speaker": "PEG",
+    "category": "WONDER_UNDERTOW",
+    "text": "Pressure's good. Don't point the sharp end at me."
+  },
+  "DEA_WONDER_UNDERTOW_01": {
+    "speaker": "DEA",
+    "category": "WONDER_UNDERTOW",
+    "text": "Lord, it's humming. They all hum."
+  },
+  "WRN_WONDER_UNDERTOW_01": {
+    "speaker": "WRN",
+    "category": "WONDER_UNDERTOW",
+    "text": "Line and hook. I was taught the same with a rifle."
+  },
+  "OPR_SEARCHLIGHT_ON_01": {
+    "speaker": "OPR",
+    "category": "SEARCHLIGHT_ON",
+    "text": "The tower light is manned. Do try not to blind the {customers}."
+  },
+  "OPR_CRANE_DROP_01": {
+    "speaker": "OPR",
+    "category": "CRANE_DROP",
+    "text": "Freight delivered. Express. Mind your {heads}."
+  },
+  "KLH_STAYS_01": {
+    "speaker": "KLH",
+    "category": "STAYS",
+    "text": "Sie bleibt hier. (She stays here.)"
+  },
+  "KLH_CARGO_01": {
+    "speaker": "KLH",
+    "category": "CARGO",
+    "text": "Die Fracht bleibt hier. (The cargo stays here.)"
+  },
+  "KLH_BRECHT_01": {
+    "speaker": "KLH",
+    "category": "BRECHT",
+    "text": "Brecht… du hast es aufgeschrieben. (Brecht… you wrote it down.)"
+  },
+  "KLH_DEATH_01": {
+    "speaker": "KLH",
+    "category": "DEATH",
+    "text": "Dann fahrt. Fahrt sie raus. (Then sail. Take her out.)"
+  },
+  "OPR_BOSS_KIELHOLER_SPAWN_01": {
+    "speaker": "OPR",
+    "category": "BOSS_KIELHOLER_SPAWN",
+    "text": "A retained captain is surfacing in the pen hall. Kapitänleutnant Lenz. He has {opinions} about the cargo. Please don't share them."
+  },
+  "OPR_BOSS_KIELHOLER_DEATH_01": {
+    "speaker": "OPR",
+    "category": "BOSS_KIELHOLER_DEATH",
+    "text": "Captain Lenz has resigned his command. Collect the key, please. The boat is company property. So is the {cargo}."
+  },
+  "OPR_KIELHOLER_GRAB_01": {
+    "speaker": "OPR",
+    "category": "KIELHOLER_GRAB",
+    "text": "The harbour is reclaiming personnel at the pier edges. Personnel are {advised} to resist."
+  },
+  "DUT_BOSS_KIELHOLER_01": {
+    "speaker": "DUT",
+    "category": "BOSS_KIELHOLER",
+    "text": "That's her captain. Went down with her and he's still standing watch."
+  },
+  "DUT_BOSS_KIELHOLER_02": {
+    "speaker": "DUT",
+    "category": "BOSS_KIELHOLER",
+    "text": "Rest easy, skipper. We'll take her from here."
+  },
+  "PEG_BOSS_KIELHOLER_01": {
+    "speaker": "PEG",
+    "category": "BOSS_KIELHOLER",
+    "text": "Diving dress, captain's cuffs. That's Lenz. The man who wouldn't sail."
+  },
+  "PEG_BOSS_KIELHOLER_02": {
+    "speaker": "PEG",
+    "category": "BOSS_KIELHOLER",
+    "text": "He said take her out. All right, Kapitän. We will."
+  },
+  "DEA_BOSS_KIELHOLER_01": {
+    "speaker": "DEA",
+    "category": "BOSS_KIELHOLER",
+    "text": "Lord, he's still guarding that boat. Let's give the man his rest."
+  },
+  "DEA_BOSS_KIELHOLER_02": {
+    "speaker": "DEA",
+    "category": "BOSS_KIELHOLER",
+    "text": "Go on home, Captain. Your watch is over."
+  },
+  "WRN_BOSS_KIELHOLER_01": {
+    "speaker": "WRN",
+    "category": "BOSS_KIELHOLER",
+    "text": "Behind the helmet glass. Same violet. Break the glass, aim for the light."
+  },
+  "WRN_BOSS_KIELHOLER_02": {
+    "speaker": "WRN",
+    "category": "BOSS_KIELHOLER",
+    "text": "He let go at the end. Didn't fight it."
+  },
+  "RAD_M2_CODE_01": {
+    "speaker": "RAD",
+    "category": "M2_CODE",
+    "text": "[radio, German] Hafen, Hafen. Spruch eins von drei. Gruppe folgt. Ende. (Harbour, harbour. Message one of three. Group follows. Out.)"
+  },
+  "RAD_M2_CODE_02": {
+    "speaker": "RAD",
+    "category": "M2_CODE",
+    "text": "[radio, German] Hafen, Hafen. Spruch zwei von drei. Gruppe folgt. Ende. (Harbour, harbour. Message two of three. Group follows. Out.)"
+  },
+  "RAD_M2_CODE_03": {
+    "speaker": "RAD",
+    "category": "M2_CODE",
+    "text": "[radio, German] Hafen, Hafen. Spruch drei von drei. Gruppe folgt. Ende. (Harbour, harbour. Message three of three. Group follows. Out.)"
+  },
+  "OPR_LF_START_01": {
+    "speaker": "OPR",
+    "category": "LF_START",
+    "text": "The pumps are running and someone has been reading the boat's paperwork. That boat is {scheduled}. I'd prefer you didn't."
+  },
+  "OPR_LF_CIPHER_01": {
+    "speaker": "OPR",
+    "category": "LF_CIPHER",
+    "text": "The teletype is talking to strangers again. Please disregard anything it prints. Especially the {depth}."
+  },
+  "OPR_LF_CIPHER_WRONG_01": {
+    "speaker": "OPR",
+    "category": "LF_CIPHER_WRONG",
+    "text": "Wrong setting. The machine is {embarrassed} for you."
+  },
+  "OPR_LF_CIPHER_WRONG_02": {
+    "speaker": "OPR",
+    "category": "LF_CIPHER_WRONG",
+    "text": "No. Try listening to the radios. They repeat themselves. {Everything} here does."
+  },
+  "OPR_LF_DIESEL_START_01": {
+    "speaker": "OPR",
+    "category": "LF_DIESEL_START",
+    "text": "Unauthorised maintenance on a scheduled vessel. I'm writing this {down}."
+  },
+  "OPR_LF_DIESEL_START_02": {
+    "speaker": "OPR",
+    "category": "LF_DIESEL_START",
+    "text": "That is company machinery. You are not on the {maintenance} roster."
+  },
+  "DEA_LF_DIESELS_01": {
+    "speaker": "DEA",
+    "category": "LF_DIESELS",
+    "text": "There she is. Listen to that. Somebody built that to be quiet. Now she's loud."
+  },
+  "DEA_LF_LOG_01": {
+    "speaker": "DEA",
+    "category": "LF_LOG",
+    "text": "Somebody built that boat to be quiet. I'd like to hear it loud, once. Brecht wrote down how."
+  },
+  "OPR_LF_KEY_01": {
+    "speaker": "OPR",
+    "category": "LF_KEY",
+    "text": "That key was assigned to a captain. The captain has been {reassigned}. I'll allow it. Once."
+  },
+  "OPR_LF_CURTAIN_01": {
+    "speaker": "OPR",
+    "category": "LF_CURTAIN",
+    "text": "The curtain is open and the weather is coming in. That boat goes where the {schedule} says. Doesn't it?"
+  },
+  "OPR_LF_SAIL_01": {
+    "speaker": "OPR",
+    "category": "LF_SAIL",
+    "text": "She's moving. Excellent. Do keep to the {charted} route. The one I charted."
+  },
+  "PET_LF_HELM_01": {
+    "speaker": "PET",
+    "category": "LF_HELM",
+    "text": "I said I'd never take a boat out of here at night. I lied to the wrong people."
+  },
+  "PET_LF_TRAPPED_01": {
+    "speaker": "PET",
+    "category": "LF_TRAPPED",
+    "text": "Up here! The stair's the only dry thing left. Give me something that shoots and I'll hold the tower."
+  },
+  "DEA_LF_CUT_01": {
+    "speaker": "DEA",
+    "category": "LF_CUT",
+    "text": "That's enough. I heard it."
+  },
+  "DUT_LF_CUT_01": {
+    "speaker": "DUT",
+    "category": "LF_CUT",
+    "text": "Everybody below. Hatches shut. Let's give them the deep water."
+  },
+  "OPR_LF_CUT_01": {
+    "speaker": "OPR",
+    "category": "LF_CUT",
+    "text": "Cargo... {lost}."
+  },
+  "PEG_LF_TELEGRAM_01": {
+    "speaker": "PEG",
+    "category": "LF_TELEGRAM",
+    "text": "Basel. Hale. On the next tide. My orders said retrieve the tokens. I'm keeping this instead."
   }
 }

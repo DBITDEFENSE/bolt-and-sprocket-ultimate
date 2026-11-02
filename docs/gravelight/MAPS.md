@@ -1437,6 +1437,35 @@ the cannery pay slip (the office desk), the child's drawing (beside the shelter 
 chart table). Sound: `gen_ambience_map02_u10.py` (the new one-shots), the beds 8 dB under a footstep
 (`amb_loudness.py map02`). Checks: `test_map02_ambience`, `smoke_map02_world`.
 
+## Map 2 systems (UPDATE 10 section 2, contracts C2–C5, DECISIONS T-153)
+All attached at runtime by `Totenhafen` (`gravelight/world/map02/totenhafen.gd`, from MapRoot), placed from
+`data/gravelight/map02.json`; `map02.tscn` is still the generator's (only its `quest_files` line changed).
+- **Tide v2** (`tide_controller.gd`, `"tide"`): stages low / half (-3.3, the round before a high one) / high (-2.2, every
+  3rd round) / spring (-1.0, every 9th: 9, 18, 27 …). A spring tide also raises sheets over the north apron and the east
+  apron's basin edge (+0.35): the piers stand as islands. Floods hold 150 s (spring 200 s) then fall. While wet: wading,
+  the zombie slow, the GameState flag `flooded`, drops drift off (lost at the dock edge), four cables spark (power on:
+  stun wading zombies, 12 dps to wading players). GLBus `tide_stage`, `tide_flood_begin/end`, `spring_tide`,
+  `tide_cable_spark`; `TideController.storm_for(stage)` for the living world.
+- **The pump crank** (`PumpCrank`, the head of the pump stair): during a flood with power, a 30 s holdout under ×2 spawns
+  takes 40 s off the flood (once per flood).
+- **Ballast v2**: carrying = melee + pistol; the crane hook (`ballast_loaded`, +500 Scrip, the Operator pleased) or the
+  sea stairs (`BallastDump`, `ballast_dumped`, the Operator snippy, +1 Glasshide next round); coffins come back on a free
+  pallet after 20 s; the third dump leaves the Undertow's shard on the stairs.
+- **The searchlight** (signal tower, after power): manned (held at the stand, weapons holstered, aim = your view) or a
+  bot via the MAN_SEARCHLIGHT mark; the beam slows ×0.6 and marks +25% damage; it tracks the boat in the finale.
+- **The Crane Drop** (lever in the crane office, 1000): the crane drops a pallet on the east apron (6 × 4 m kill box,
+  60 s cooldown, debris 20 s).
+- **The drowned** (`kielholer_controller.gd`): `Surface_*` points on the pier edges, live while flooded; Kielholer grab and
+  pull toward the water (break: melee, 60 to `arm_grab`, teammates); the diver's `helmet_glass` breaks to a ×2 glow.
+- **THE UNDERTOW** (WEAPONS.md §11): parts in the lower pens, the workshop and (after the third dump) the sea stairs;
+  the bench in the crane office.
+- **DER KIELHOLER** (HOMAGE_BOSSES §4b): round 20 standalone (40 campaign) or Letzte Fahrt's s6.
+- **Letzte Fahrt** (EASTER_EGGS §10): the radios, the cipher machine, the log pages, the diesel holds, the key, the curtain,
+  the sail (UboatSail: a relative-motion finale; the hall's view cells are hidden behind a lightning flash, the boat's
+  colliders never move), the dive cutscene. Hinnerk waits on the tower stair and takes the wheel in the finale.
+- **Economy**: `rounds.json map_overrides.map02` (spawn interval ×0.75, max active +4) and two quay spawns
+  (`Ground_A_QUAY_2/3`, at runtime).
+
 ## Tools
 
 `smoke_map02.tscn` (headless: navmesh per zone, every door/zone reachable, spawns on the mesh, rounds 31–34 with 3 bots, the tide at 33, power, the Signal Tower door, perks, the Crucible, both traps), `perf_map02.tscn` (FPS per area with 24 zombies), `shots_map02.tscn` (every zone, power off and on). Unit test: `tests/unit/test_map02_data.gd` (door graph connected, prices, spawn/enemy ids, tide block).

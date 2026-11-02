@@ -90,6 +90,8 @@ static func best_bot(cands: Array, price: int, tune: Dictionary, allow_companion
 static func route(kind: String, c: Dictionary) -> String:
 	var ck: String = str(c.get("kind", "go"))
 	var sub: String = str(c.get("sub", ""))
+	if sub == "searchlight" and kind != "defend":
+		return "man"   # T-153: MAN_SEARCHLIGHT: any mark but Defend on the tower light mans it
 	match kind:
 		"buy":
 			if ck == "buy":
@@ -319,6 +321,10 @@ func place_order(spec: Dictionary, mark_id: int) -> Dictionary:
 			o["kind"] = "buy"
 			o["sub"] = "power"
 			o["label"] = "the power"
+		"man":
+			o["kind"] = "man"
+			o["sub"] = "searchlight"
+			o["label"] = "the searchlight"
 		_:
 			o["kind"] = how
 			o["label"] = where if where != "" else MapMarks.kind_name(how)

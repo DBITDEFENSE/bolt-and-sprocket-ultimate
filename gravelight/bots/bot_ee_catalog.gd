@@ -234,7 +234,19 @@ static func pause_reason(s: Dictionary, c: Dictionary) -> String:
 	var left: int = int(s.get("round_left", -1))
 	if left > 0 and left <= int(pc.get("round_end_left", 2)) and not (pc.get("no_threat_pause_types", []) as Array).has(ty):
 		return "round_end"
+	if bool(s.get("shop", false)):
+		return "shopping"   # T-153: ee.json shop_break: a rich bot steps off the egg to buy its kit
 	return ""
+
+
+## T-153 (ee.json shop_break): may a bot on an egg task take a shopping break now? It has `scrip` or more, its plan is
+## not a hold, a door, an input or a hand-off (never mid-job), and its last break ended `every_s` ago. A Full Partner
+## bot otherwise never stopped working the egg to shop: on Totenhafen the squad reached the round-10 diesel holds
+## with 7,000-11,000 Scrip unspent and starting guns, and was wiped.
+static func shop_break_due(scrip: int, plan_do: String, now: float, next_ok: float, sb: Dictionary) -> bool:
+	if sb.is_empty() or now < next_ok or scrip < int(sb.get("scrip", 3000)):
+		return false
+	return not ["hold", "door", "input", "handoff", "turn"].has(plan_do)
 
 
 ## The voice category for a refusal / can't code (VO_SCRIPT section 18).

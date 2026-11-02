@@ -90,5 +90,13 @@
     "player_push_mps": 3.0,
     "screen_depth": 1.4,
     "stagger_every": 4.0
+  },
+  "crane_drop": {
+    "_doc": "UPDATE 10 (T-153): Totenhafen's Crane Drop (gravelight/world/trap_crane.gd; placement and the box in map02.json crane_drop).",
+    "cost": 1000,
+    "duration": 3.0,
+    "cooldown": 60.0,
+    "player_damage": 9999,
+    "zombie_damage": 999999
   }
 }

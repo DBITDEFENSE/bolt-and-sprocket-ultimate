@@ -2685,7 +2685,7 @@ func build_gameplay() -> void:
 	map_root.set("display_name", "Totenhafen")
 	map_root.set("start_zone", &"A_QUAY")
 	map_root.set("intro_text", "TOTENHAFEN U-BUNKER\nBaltic coast, January 1945")
-	map_root.set("quest_files", PackedStringArray([]))
+	map_root.set("quest_files", PackedStringArray(["res://data/gravelight/quests/map02_letzte_fahrt.json"]))   # UPDATE 10 (T-153): Letzte Fahrt
 	var bits: Dictionary = {}
 	for k: String in ZONE_BITS.keys():
 		bits[StringName(k)] = ZONE_BITS[k]

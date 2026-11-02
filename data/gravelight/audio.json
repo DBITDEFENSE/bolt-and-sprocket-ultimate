@@ -4978,6 +4978,201 @@
       "max_voices": 1,
       "bus": "SFX",
       "attenuation": "loud"
+    },
+    "boat_horn": {
+      "files": [
+        "res://gravelight/audio/sfx/world/boat_horn_01.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -1.0,
+      "max_voices": 1,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "attenuation": "loud"
+    },
+    "chain_sweep": {
+      "files": [
+        "res://gravelight/audio/sfx/zombies/chain_sweep_01.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -1.0,
+      "max_voices": 2,
+      "pitch": [
+        0.95,
+        1.05
+      ],
+      "attenuation": "loud"
+    },
+    "cipher_wheel": {
+      "files": [
+        "res://gravelight/audio/sfx/world/cipher_wheel_01.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -6.0,
+      "max_voices": 3,
+      "pitch": [
+        0.94,
+        1.06
+      ],
+      "attenuation": "quiet"
+    },
+    "crane_crash": {
+      "files": [
+        "res://gravelight/audio/sfx/world/crane_crash_01.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": 0.0,
+      "max_voices": 1,
+      "pitch": [
+        0.96,
+        1.04
+      ],
+      "attenuation": "loud"
+    },
+    "diesel_start": {
+      "files": [
+        "res://gravelight/audio/sfx/world/diesel_start_01.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -1.0,
+      "max_voices": 1,
+      "pitch": [
+        0.98,
+        1.02
+      ],
+      "attenuation": "loud"
+    },
+    "hull_groan": {
+      "files": [
+        "res://gravelight/audio/sfx/world/hull_groan_01.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -2.0,
+      "max_voices": 1,
+      "pitch": [
+        0.92,
+        1.05
+      ],
+      "attenuation": "loud"
+    },
+    "kielholer_roar": {
+      "files": [
+        "res://gravelight/audio/sfx/zombies/kielholer_roar_01.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": 0.0,
+      "max_voices": 2,
+      "pitch": [
+        0.95,
+        1.05
+      ],
+      "attenuation": "loud"
+    },
+    "kielholer_surface": {
+      "files": [
+        "res://gravelight/audio/sfx/zombies/kielholer_surface_01.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -2.0,
+      "max_voices": 3,
+      "pitch": [
+        0.9,
+        1.1
+      ],
+      "attenuation": "world"
+    },
+    "searchlight_on": {
+      "files": [
+        "res://gravelight/audio/sfx/world/searchlight_on_01.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -3.0,
+      "max_voices": 1,
+      "pitch": [
+        0.98,
+        1.02
+      ],
+      "attenuation": "world"
+    },
+    "teletype_print": {
+      "files": [
+        "res://gravelight/audio/sfx/world/teletype_print_01.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -4.0,
+      "max_voices": 1,
+      "pitch": [
+        0.98,
+        1.02
+      ],
+      "attenuation": "world"
+    },
+    "undertow_fire": {
+      "files": [
+        "res://gravelight/audio/sfx/weapons/undertow_fire_01.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -1.0,
+      "max_voices": 2,
+      "pitch": [
+        0.96,
+        1.04
+      ],
+      "attenuation": "loud"
+    },
+    "undertow_pump": {
+      "files": [
+        "res://gravelight/audio/sfx/weapons/undertow_pump_01.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -5.0,
+      "max_voices": 2,
+      "pitch": [
+        0.95,
+        1.05
+      ],
+      "attenuation": "quiet"
+    },
+    "undertow_reel": {
+      "files": [
+        "res://gravelight/audio/sfx/weapons/undertow_reel_01.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -4.0,
+      "max_voices": 2,
+      "pitch": [
+        0.97,
+        1.03
+      ],
+      "attenuation": "world"
+    },
+    "undertow_whirl": {
+      "files": [
+        "res://gravelight/audio/sfx/weapons/undertow_whirl_01.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -2.0,
+      "max_voices": 2,
+      "pitch": [
+        0.95,
+        1.05
+      ],
+      "attenuation": "loud"
+    },
+    "water_splash": {
+      "files": [
+        "res://gravelight/audio/sfx/world/water_splash_01.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -3.0,
+      "max_voices": 4,
+      "pitch": [
+        0.9,
+        1.1
+      ],
+      "attenuation": "world"
     }
   }
 }

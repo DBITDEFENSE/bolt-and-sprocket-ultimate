@@ -1207,6 +1207,51 @@ func _reachable(p: Vector3) -> bool:
 	return not path.is_empty() and path[path.size() - 1].distance_to(dest) < 1.5
 
 
+## T-153: where to stand to buy `door` when its front (`front`) is not reachable on the open zones' navmesh: on
+## Totenhafen the top of the signal tower's ramp, outside door_signal, is the tower zone's own navmesh, so with the
+## tower shut no path reached the door and a bot circled under it. Walks the all-layer path back from the front and
+## returns the last point the open zones reach (within 7 m of the door); `front` itself when it is reachable or no
+## such point exists. Cached per door for a few seconds.
+func door_approach(door: BuyDoor, front: Vector3) -> Vector3:
+	var sf: Vector3 = snap(front)
+	if _reachable(sf):
+		return front
+	var key: int = door.get_instance_id() + 7
+	var c: Variant = _stand_cache.get(key)
+	if c is Array and squad.time() - float((c as Array)[0]) < 4.0:
+		return (c as Array)[1]
+	var out: Vector3 = front
+	var path: PackedVector3Array = NavigationServer3D.map_get_path(player.get_world_3d().navigation_map, player.global_position, sf, true, 0x7FFFFFFF)
+	var i: int = path.size() - 1
+	while i > 0:
+		var a: Vector3 = path[i]
+		var b: Vector3 = path[i - 1]
+		var steps: int = maxi(1, int(a.distance_to(b) / 0.75))
+		var found: bool = false
+		for k: int in range(0, steps + 1):
+			var p: Vector3 = a.lerp(b, float(k) / float(steps))
+			if p.distance_to(door.global_position) > 7.0:
+				break
+			if _reachable(p):
+				out = p
+				found = true
+				break
+		if found or a.distance_to(door.global_position) > 7.0:
+			break
+		i -= 1
+	_stand_cache[key] = [squad.time(), out]
+	return out
+
+
+## T-153: a stand point found below the object (the dy fallbacks) must not be on the storey underneath it: a floor
+## slab between them (Totenhafen's signal tower stands over the north catwalk) means the object can't be used from
+## there, so the closed door to its own floor is what is in the way.
+func _same_storey(s: Vector3, base: Vector3) -> bool:
+	if base.y - s.y < 1.0:
+		return true
+	return los_point(Vector3(s.x, base.y + 0.3, s.z), s + Vector3.UP * 0.5)
+
+
 func reachable(p: Vector3) -> bool:
 	return _reachable(p)
 
@@ -1257,7 +1302,7 @@ func stand_point(node: Node3D) -> Vector3:
 	for cand: Vector3 in cands:
 		for dy: float in [0.0, -1.5, -3.0]:
 			var s: Vector3 = snap(cand + Vector3(0.0, dy, 0.0))
-			if _flat(s, base) < 1.8 and base.y - s.y < 3.2 and s.y - base.y < 1.2 and _reachable(s):
+			if _flat(s, base) < 1.8 and base.y - s.y < 3.2 and s.y - base.y < 1.2 and _same_storey(s, base) and _reachable(s):
 				out = s
 				break
 		if out != Vector3.INF:

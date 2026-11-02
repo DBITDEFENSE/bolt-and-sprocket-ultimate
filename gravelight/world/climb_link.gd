@@ -7,6 +7,17 @@ extends RefCounted
 ## navigation layer is the zone's bit (MapRoot.nav_zone_bits) so closed zones keep their ladders closed.
 
 const META: StringName = &"climb"
+## T-153: a zone's ladders live on its climb layer (the zone's bit + CLIMB_OFFSET), not on its walk layer: the
+## ZombieDirector opens both together (zombies are unchanged), and the bots' mask (WALK_MASK) leaves the climb layers
+## out, because a bot cannot climb: on Totenhafen its route to the north catwalk ran up Ladder_CatwalkN and it stood
+## at the foot of the ladder for good instead of taking a stair.
+const CLIMB_OFFSET: int = 16
+const WALK_MASK: int = 0xFFFF
+
+
+## The climb layer bit (a mask value) for a zone's 1-based layer bit.
+static func climb_bit(zone_bit: int) -> int:
+	return 1 << (zone_bit - 1 + CLIMB_OFFSET)
 
 
 static func json_path_for(map_id: StringName) -> String:
@@ -39,7 +50,7 @@ static func spawn_all(root: Node3D, map_id: StringName, zone_bits: Dictionary) -
 		link.travel_cost = float(row.get("travel_cost", 1.0))
 		var zone: String = str(row.get("zone", ""))
 		if zone != "" and zone_bits.has(zone):
-			link.navigation_layers = 1 << (int(zone_bits[zone]) - 1)
+			link.navigation_layers = climb_bit(int(zone_bits[zone]))
 		else:
 			link.navigation_layers = 1
 		link.set_meta(META, true)

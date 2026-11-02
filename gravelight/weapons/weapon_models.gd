@@ -157,7 +157,7 @@ static func merge_static(n: Node3D) -> void:
 static func known_ids() -> PackedStringArray:
 	return PackedStringArray(["m1911", "walther_p38", "luger_p08", "webley", "kar98k", "m1_garand", "gewehr43", "m1_carbine", "mp40", "thompson", "stg44",
 		"trench_gun", "bar", "ppsh41", "mg42", "m1919", "sawed_off", "type100", "ptrs41", "springfield", "panzerschreck",
-		"flamethrower", "ashlight", "totenglocke", "elmsfeuer", "lodestone", "gramophone", "trench_knife", "etool", "frag"])
+		"flamethrower", "ashlight", "totenglocke", "elmsfeuer", "lodestone", "undertow", "gramophone", "trench_knife", "etool", "frag"])
 
 
 # ================================================================== materials
@@ -1773,6 +1773,51 @@ func _w_lodestone() -> void:
 	front_bead(Vector3(0, 0.05, -0.44), 0.004, "brass")                                                         # FrontSight (0, 0.0528, -0.44)
 	lhand(Vector3(0, -0.042, -0.2), "y", 0.017)
 	meta("lodestone", 0.56)
+
+
+## THE UNDERTOW (UPDATE 10, T-153; WEAPONS.md section 11): a harbour diver's pump turned harpoon gun. A brass
+## pressure cylinder on a wooden shoulder stock, a rubber hose down to the pump handle under the barrel (the reload's
+## three strokes slide it), a pressure gauge on the cylinder's flank whose needle shivers with the hum, a short steel
+## barrel and a Nachtglas-tipped harpoon on a violet-black chain at the muzzle (shown while loaded). Maelstrom adds
+## violet glow bands round the cylinder.
+func _w_undertow() -> void:
+	box(Vector3(0.036, 0.05, 0.26), Vector3(0, -0.035, 0.17), "wood", Vector3(-6.0, 0, 0))                     # the shoulder stock
+	box(Vector3(0.04, 0.07, 0.016), Vector3(0, -0.05, 0.305), "rubber")                                          # the butt pad
+	tube(0.045, 0.045, 0.36, Vector3(0, 0.0, -0.17), "brass", "z")                                                # the pressure cylinder
+	for zc: float in [0.006, -0.346]:
+		ring(0.04, 0.05, Vector3(0, 0.0, zc), "bronze", "z")                                                      # its end bands
+	for zr: float in [-0.08, -0.17, -0.26]:
+		ring(0.0455, 0.049, Vector3(0, 0.0, zr), "park", "z")                                                    # the rivet hoops
+	tube(0.018, 0.022, 0.24, Vector3(0, -0.004, -0.47), "steel", "z")                                            # the barrel
+	ring(0.018, 0.026, Vector3(0, -0.004, -0.585), "brass", "z")                                                 # the muzzle collar
+	var harpoon: Node3D = group("Harpoon", Vector3(0, -0.004, -0.6))                                             # the loaded harpoon
+	tube(0.006, 0.006, 0.22, Vector3(0, 0, 0.06), "steel", "z", harpoon)
+	tube(0.0, 0.017, 0.07, Vector3(0, 0, -0.08), "nachtglas", "z", harpoon)
+	for bs: float in [-1.0, 1.0]:
+		box(Vector3(0.004, 0.026, 0.03), Vector3(bs * 0.012, 0, -0.05), "nachtglas", Vector3(0, bs * 25.0, 0), harpoon)
+	var chain: Node3D = group("Chain", Vector3(0, -0.035, -0.52))                                                # the chain, coiled under the barrel
+	for i: int in 6:
+		ring(0.006, 0.009, Vector3(0, -0.012 * sin(i * 0.9), 0.03 * i), "black", "x" if i % 2 == 0 else "y", chain)
+	var pump: Node3D = group("Pump", Vector3(0, -0.06, -0.42))                                                  # the pump handle (slides on the reload)
+	box(Vector3(0.034, 0.036, 0.11), Vector3.ZERO, "wood", Vector3.ZERO, pump)
+	tube(0.006, 0.006, 0.14, Vector3(0, 0.022, 0.07), "steel", "z", pump)
+	tube(0.009, 0.009, 0.2, Vector3(0.0, -0.05, -0.26), "rubber", "z")                                           # the hose to the cylinder
+	var gauge: Node3D = group("Gauge", Vector3(0.05, 0.012, -0.12))                                              # the pressure gauge
+	tube(0.024, 0.024, 0.012, Vector3.ZERO, "brass", "x", gauge)
+	tube(0.02, 0.02, 0.004, Vector3(0.007, 0, 0), "glass", "x", gauge)
+	var needle: Node3D = group("Needle", Vector3(0.009, 0, 0), gauge)
+	box(Vector3(0.002, 0.017, 0.002), Vector3(0, 0.008, 0), "black", Vector3.ZERO, needle)
+	var glow: Node3D = group("Glow", Vector3(0, 0, -0.17))                                                       # Maelstrom's violet bands
+	for zg: float in [-0.12, 0.0, 0.12]:
+		ring(0.046, 0.051, Vector3(0, 0, zg), "nachtglas", "z", glow)
+	glow.visible = upgraded
+	grip(0.04, -0.045, 0.1, "wood", 16.0, 0.042, 0.034)
+	marker("Muzzle", Vector3(0, -0.004, -0.62))
+	rear_notch(-0.03, 0.045, 0.02, "brass", 0.03, 0.008)                                                         # SightPoint (0, 0.0638, -0.034)
+	box(Vector3(0.006, 0.043, 0.008), Vector3(0, 0.0395, -0.565), "brass")                                       # the bead's post on the barrel
+	front_bead(Vector3(0, 0.061, -0.565), 0.004, "brass")                                                        # FrontSight (0, 0.0638, -0.565)
+	lhand(Vector3(0, -0.06, -0.42), "z", 0.02)
+	meta("undertow", 0.66)
 
 
 ## Sankt-Elmsfeuer: a ship's arc projector rebuilt as a carbine. A copper induction coil in a glass sleeve over
