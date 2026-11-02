@@ -232,8 +232,16 @@ func _pause_state() -> Dictionary:
 		var h: Player = brain.squad.human()
 		if a != Vector3.INF and h != null and is_instance_valid(h):
 			away = h.spectating or _flat(h.global_position, a) > float(_cfg().get("presence_m", 20.0)) * 1.5
+	var shop: bool = false
+	var sb: Dictionary = _cfg().get("shop_break", {})
+	if str(task.get("paused", "")) == "shopping":
+		shop = _now() - float(task.get("paused_t", _now())) < float(sb.get("seconds", 20.0))
+		if not shop:
+			_shop_next = _now() + float(sb.get("every_s", 90.0))
+	else:
+		shop = BotEECatalog.shop_break_due(Economy.get_scrip(player.player_id), str(_plan.get("do", "")), _now(), _shop_next, sb)
 	return {"type": str(task["type"]) if str(_plan.get("do", "")) != "hold" else "hold_zone", "pressure": brain.perception.pressure,
-		"teammate_down": down, "round_left": left, "player_away": away}
+		"teammate_down": down, "round_left": left, "player_away": away, "shop": shop}
 
 
 ## The action "ee_task" was picked: carry the plan out this frame.
@@ -299,7 +307,7 @@ func describe() -> Dictionary:
 		line += " (%d/%d)" % [(got as Array).size() if got is Array else 0, int(p.get("count", 1))]
 	var paused: String = str(task.get("paused", ""))
 	if paused != "":
-		line += " - paused: %s" % {"threat": "too hot", "teammate_down": "someone's down", "round_end": "finishing the round", "player_away": "waiting for you"}.get(paused, paused)
+		line += " - paused: %s" % {"threat": "too hot", "teammate_down": "someone's down", "round_end": "finishing the round", "player_away": "waiting for you", "shopping": "stocking up"}.get(paused, paused)
 	return {"quest_id": task["qid"], "step_id": task["sid"], "type": task["type"], "label": line, "state": "paused" if paused != "" else (d if d != "" else "running"),
 		"paused": paused, "source": task["source"], "ordered": task["ordered"], "pid": player.player_id}
 
@@ -359,6 +367,8 @@ var _think_until: Dictionary = {}
 ## back from other purchases until it is open (a bot walked the long way round to door_signal, spent its Scrip on the
 ## way during threat pauses, and could never buy it).
 var _door_want: Dictionary = {}
+## T-153: when the next shopping break may start (BotEECatalog.shop_break_due).
+var _shop_next: float = 0.0
 
 func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, ordered: bool, ty: String) -> Dictionary:
 	var now: float = _now()

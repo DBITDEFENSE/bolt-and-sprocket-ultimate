@@ -13,6 +13,8 @@
   "_presence_m": "A final step in Full Partner mode needs the player within this many metres of its spot (and they must not wander off past 1.5x while the bot works).",
   "open_blocking_doors": {"ask": true, "full": true},
   "_open_blocking_doors": "A closed door between the bot and its egg target: it opens it with its own Scrip (affordable only), per mode.",
+  "shop_break": {"scrip": 3000, "seconds": 20.0, "every_s": 90.0},
+  "_shop_break": "T-153: a bot on an egg task with `scrip` or more (and not in a hold, at a door or making an input) pauses the task for `seconds` so its own economy can buy guns, perks and the Crucible, at most once every `every_s`. Without it a Full Partner bot never shopped while the egg ran (Totenhafen's squad reached the round-10 diesel holds with 7,000-11,000 Scrip unspent and was wiped).",
   "pause": {
     "pressure": 0.65,
     "resume_pressure": 0.45,
