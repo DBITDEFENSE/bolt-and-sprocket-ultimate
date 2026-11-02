@@ -59,6 +59,7 @@ func _mask(zones: String) -> int:
 	var m: int = 0
 	for z: String in zones.split(","):
 		m |= 1 << (int(BITS[z]) - 1)
+		m |= ClimbLink.climb_bit(int(BITS[z]))   # T-153: the zone's ladders (as the director's zombie mask)
 	return m
 
 
