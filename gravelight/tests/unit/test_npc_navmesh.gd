@@ -10,12 +10,18 @@ const MAPS: PackedStringArray = ["map00", "map01", "map02", "map04a", "map04b", 
 var _char: StringName
 var _bots: int
 var _mode: String
+var _characters: Variant
+var _pids: Array[int]
+var _bot_ids: Array[int]
 
 
 func before_all() -> void:
 	_char = GameState.character_id   # (the probe picks Peg and 3 bots: put them back so later tests see what they expect)
 	_bots = GameState.bot_count
 	_mode = GameState.bot_ai_mode
+	_characters = GameState.characters.duplicate()
+	_pids = GameState.player_ids.duplicate()
+	_bot_ids = GameState.bot_ids.duplicate()
 	ProfileSave.path = "user://_test_profile_npcnav_%d.json" % OS.get_process_id()
 	ProfileSave.profile = ProfileSave.new_profile()
 	GLSettings.values["homage_bosses"] = false
@@ -25,6 +31,9 @@ func after_all() -> void:
 	GameState.character_id = _char
 	GameState.bot_count = _bots
 	GameState.bot_ai_mode = _mode
+	GameState.characters = _characters
+	GameState.player_ids = _pids
+	GameState.bot_ids = _bot_ids
 	Campaign.reset()
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(ProfileSave.path))
 

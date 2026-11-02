@@ -182,5 +182,7 @@ kept alive, 3 bots + Jakub + the companion) on map00 and map01. The machine was 
   frames, the added per-frame work only): **0.44 us before, 1.05 us after, +0.6 us per zombie per rendered frame** (+0.02
   ms a frame for 32); the `--probe` columns above agree: the difference is under the 15% noise. On the web preset it
   stays on (it is cheaper than one skipped zombie animation frame).
-- Draw calls: neither change adds a draw call or a node (the census in the section above stands: map00 5,804 / map01
-  1,448 on `web`).
+- Draw calls: neither change adds a draw call or a node. `tools/wsl_perf.sh map01_kaltenbrunn,map00_crossroads web` on this
+  branch (all passes counted, Compatibility renderer): **map01 1,567 draw calls, 400k primitives; map00 6,002 draw calls,
+  1,868k primitives** (T-139's 1,448 / 5,804: the difference is master's new content from other sections, not these
+  changes); both stay over the C4 browser budget as before.
