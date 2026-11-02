@@ -221,14 +221,14 @@ The ramp beacon lights; the vote; the cutscene (§11.1): the squad goes up the r
   shockwave throws every player out of the roof bay (x −38…−22, z 86…110; anyone who walks back in is moved out at the
   fall: nobody is ever under it), zombies in it are crushed, and the bay `Hall2Roof` comes down.
   - **The route swap (permanent, one event online):** `Door_E_south` (Montage 2 → the test stands through
-    Door_Pruefstand, −30, 110) is buried under the `RubbleBlock` (x −36…−24, z 103.6…109.8, 2.2 m); `Breach_E_apron` is
+    Door_Pruefstand, −30, 110) is buried under the `RubbleBlock` (x −36…−24, z 104…109.8, 2.2 m); `Breach_E_apron` is
     blown through the north wall at x −55 into the test stands' west aisle, the run-up to the hangar apron: a
     Prüfstand door in the `pruefstand` link group (open if the stands are bought, else 1500 like the other two: the
     raid never gives a zone away). Navigation: `Nav_E_MONTAGE_4` (the hall as built) leaves the map and
     `Nav_E_MONTAGE_raid` (baked by the generator with the heap carved out) joins it; `Link_5_G_PRUEFSTAND` off,
     `Link_Breach_E_apron` on. Regions are parked out of the tree, not just disabled (a disabled region still owns its
     polygons for link attachment, which made the new Montage an island).
-  - **After:** six fires (the bay, the breach's flanks, two bomb holes in the town) burn as damage zones whose heat falls
+  - **After:** six fires (the bay's two dead-end corners by the wall, the breach's flanks, two bomb holes in the town; none on a route) burn as damage zones whose heat falls
     to nothing over three act rounds (10 dps to players, 80 to zombies at full heat), with smoke; the dust of the fall
     hangs over the heap. A match that starts past act round 8 starts with the hall down.
 - **The rivet line** (`RivetLineTrap`, `traps.json rivet_line`): a 1000 lever on the Kraftzentrale's east wall (needs
