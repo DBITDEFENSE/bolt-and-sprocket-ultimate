@@ -1196,3 +1196,52 @@ the trainer's phase.
 **Tests.** `test_bot_u10_eggs.gd` (the hunt and its give-up, the errand window, buy-first, the main-egg score order,
 stage_allowed and the Requiem's full_partner data, the task pause threshold, hold-fire and the rally, wonder_wanted,
 the Kielholer counter, break_free, the soak switch).
+
+## 13. UPDATE 10: Fernflug set-pieces (T-163, contract C7)
+
+**BotSetPieces** (`gravelight/bots/bot_setpieces.gd`, data `data/gravelight/ai/setpieces.json`, per-map positions in
+`routes_<map>.json` "setpieces"): one per bot, ticked on the brain's think. It either changes how the other layers
+behave (no sprint, hold fire, a tighter formation, danger zones on the blackboard) or takes the body for a move of its
+own: the brain's action `setpiece`, picked over the utility scores. Urgent moves (a rail in a breach's pull, the meteor
+shelter, the perch once climbed) keep the body against anything but a revive. The others (the wing walk, the vent
+lever, a jump pad, the walk to the perch, Pohl's favour) give it back while a zombie is within `moves.yield_m` (6 m)
+and resume after. The Act II classes are read by group and duck typing.
+
+| Act | Set-piece | What the bots do |
+|---|---|---|
+| II | decompression (`decompressions`, `rail_grips`) | Within radius + 4 m of a warning or pulling breach: to that breach's nearest rail, `RailGrip.hold(player, true)` until the event is over, then let go. The hole is a danger zone while it pulls. |
+| II | tilt (`flight_controller`, `tilt_sliders`) | No sprint while a tilt is warned or running. A sliding casing's lane is a danger zone. |
+| II | wing walk (`wing_walks`, `wing_hatches`, `clip_points`, `wing_chests`) | A `risky` optional task: self-led, Full Partner or ordered. Only in a quiet spell (a break, or nothing known within 18 m), one bot (blackboard claim `wing_walk`), hp at least 70 %, never in a warned tilt or the storm. Climb out, clip in at the nearest tether post before walking (bots are never unclipped), open the wingtip locker, take the discount token (and its wonder part when the slot is filled), climb back in. With no human in the match, only in a break with at least 25 s left. |
+| II | aux bus, bay doors | The aux bus is a `PowerSwitch`, so the economy's power plan throws it (in the arrival break). The bay doors are a `TrapLever` trap with `danger_contains`: the brain keeps out of it, and with no human in the match it may pull it. |
+| III | dust storm (`GroomController.dust_active()`) | No sprint. The formation at ×0.6. No shot at a stalker (`Zombie.hunt_by_sound`) farther than 7 m, unless it is within 4 m, a teammate is down or the bot is under half health. A shot makes every stalker within 18 m hear it. |
+| III | wreck collapse | A warned section's box (`wreck_collapse.sections[].box`) is a danger disc until it falls. The burning hull (`spread_points()`) is a fire disc for good. |
+| III | radar perch (`tower_ladders`, `routes_map04c.json setpieces.perch`) | A high-ground shooter (Wren) climbs the TowerLadder when the squad is within 30 m of the tower and nothing is within 8 m. She fights from the 16 m deck and climbs down when two zombies reach it, she is under 60 % health, a teammate is down, the storm comes or the round ends. 30 s cooldown. |
+| III | jukebox, Dee, Hale | Never errands: none of them is in a group a bot shops or works from (asserted). |
+| IV | terminator (`terminator`) | A self-led squad's home loop on the day side beats one on the night side (night zones spawn ×1.5). The visor is a player thing: bots have no glare. |
+| IV | jump pads (`jump_pads`) | Route links: on a trip of 18 m or more (follow, regroup, buy, resupply, power-up, order), a pad within 12 m whose landing saves 8 m of path is walked onto. JumpPad launches bots like players. |
+| IV | meteor shower (`meteor_shower`) | From the warning (`MeteorShower.warning`, new) to the end: out of the yard box to the nearest `meteor_shelter` point, under the concourse roof. Each strike is already a blackboard danger (T-158). |
+| IV | shaft grate (`shaft_grate_lever`, `shaft_grate`) | Pulled from within 14 m when four or more known zombies are on the grate and the bot keeps 1500 Scrip after the price. The open grate is a danger zone. |
+| IV | Pohl's favour (`tag_slot`) | An optional task: self-led, Full Partner or ordered, in a quiet spell. Accept it at Pohl (a "deliver" favour: the tag comes at once), then read the tag in at the Account's slot once that is reachable. Never after CANCEL. |
+
+**Q-19 (bots alone through Act II).**
+- Baseline: wiped in act round 1 every time (0/3, 0.9 to 1.6 min).
+  - No act had a `home` loop, so the squad stood in the spawn bay.
+  - The 14 s arrival grace went by with 24k Scrip unspent each.
+- Tuned:
+  - **Homes:** a `home` loop on every act.
+  - **Doors:** a self-led squad buys doors in a break.
+  - **Far errands:** a far errand in a break has to fit in what is left of it (`self_led_trip_mps` / `_margin_s`).
+  - **Retreat:** retreat spots need floor beyond them (`escape_probe_m`, `dead_end_cost`), so a bot no longer backs into the hull.
+  - **Stand fast:** in the Kranich the squad stands together and shoots every round (`setpieces.json stand_fast.maps`, the special round's rule).
+  - **Traps:** with no human in the match, the bots may pull a trap.
+  - **Boss counters:** for the Bordwart (aim the chest, keep 5.5 m from the vent and the cable) and the other three act bosses.
+  - **Galley loop:** the galley home loop now runs clear of the port window.
+
+The runs are in the report of T-163.
+
+**Tests.** `test_bot_u10` (pure rules, data, the new points on the navmesh, the Act II hooks); `smoke_bots_u10`:
+- Act III storm: no sprint, keeping close, a far stalker let be, a near one shot, a warned collapse as danger.
+- Act II: the wing walk with its clip and token, a decompression rail.
+- Act IV: the meteor shelter, Pohl's tag read in by a bot.
+
+The soak trace shows the move (`| setpiece wing_walk:chest`), and each bot's report line gets a `setpieces ...` counters line.
