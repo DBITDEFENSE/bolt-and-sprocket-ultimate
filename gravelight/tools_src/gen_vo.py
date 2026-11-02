@@ -106,6 +106,14 @@ PROFILES: dict[str, dict] = {
     "HAL":      dict(voice="David", rate="-2%",  pitch="-6%",  size=0.97, chain="pa",        gain_db=0.0),
     "BWT":      dict(voice="Mark",  rate="+4%",  pitch="-2%",  size=0.99, chain="pa",        gain_db=0.0),
     "RRK":      dict(voice="Mark",  rate="+2%",  pitch="-3%",  size=0.98, chain="radio",     gain_db=0.0),
+    # UPDATE 10 s6 (placeholder, T-162): the Bolt & Sprocket cameos in Map 4 (Bolt, Sprocket, Vendelin; M4C/M4D and the
+    # TERMS_READ lines) had no profile, so 18 lines stayed silent. OneCore placeholders on the radio chain until cast.
+    "BLT":      dict(voice="Mark",  rate="+6%",  pitch="+10%", size=0.92, chain="radio",     gain_db=0.0),
+    "SPR":      dict(voice="Zira",  rate="+2%",  pitch="+12%", size=0.95, chain="radio",     gain_db=0.0),
+    "VEN":      dict(voice="David", rate="-6%",  pitch="-2%",  size=1.0,  chain="radio",     gain_db=0.0),
+    # UPDATE 10 s6 (placeholder, T-162): the Kielholer (T-153) had no profile, so their 4 lines stayed silent: a drowned
+    # sailor, slow and low, on the radio chain (water and distance) until the owner casts him.
+    "KLH":      dict(voice="Mark",  rate="-14%", pitch="-16%", size=0.93, chain="radio",     gain_db=0.0),
     # PAUL (HB2, T-159): placeholder TTS, no real voice imitated. A big American private, loud and rough: David, low
     # and chesty (the larger "size"), Dutch's gravel chain; his PA roar (category PA) goes through the PA chain.
     "PAU":      dict(voice="David", rate="-2%",  pitch="-20%", size=0.86, chain="dutch",     gain_db=1.0),
@@ -965,6 +973,13 @@ def main() -> int:
                             if os.path.exists(fpath):
                                 os.remove(fpath)
                 files.pop(fid)
+
+    # T-162: a line that was missing once and has been baked since is not missing any more (the old list is carried over,
+    # and nothing used to take a baked line off it: audio_manifest.json said 341 missing when 23 were)
+    for fid in list(missing):
+        cur0 = files.get(fid)
+        if cur0 is not None and os.path.exists(os.path.join(ROOT, str(cur0.get("path", ""))[len("res://"):].replace("/", os.sep))):
+            missing.pop(fid)
 
     todo = []
     kept_human = 0

@@ -151,3 +151,38 @@ tick, as their animation already does), staggering the brains' heavy planning ac
 - Shadowed lights: 2 per zone instead of 4 in the browser (the profile's MAX_SHADOWED_PER_ZONE), or zombies not
   casting into omni shadows there.
 - Totenhafen: the five 60 m sea spotlights could share one shadowed light.
+
+## UPDATE 10 section 6 (T-162): the frame cost of smooth motion and the detailed people, zombies above 60 Hz
+
+Measured headless on the min-spec profile (`--preset=low` and `--preset=web`, `perf_marks --probe`, round 15, 24 zombies
+kept alive, 3 bots + Jakub + the companion) on map00 and map01. The machine was shared with 30+ other Godot processes
+(other workers), so single runs swing by 15%; the proportions are what counts.
+
+| Per frame / tick (ms) | map00 low | map00 web | map01 low | map01 web |
+|---|---|---|---|---|
+| Zombies `_process` (32 nodes), smoothing off | 0.945 | 1.016 | 1.009 | 0.999 |
+| Zombies `_process`, smoothing on (`--ab=zsmooth`) | 1.014 | 0.929 | 1.046 | 0.871 |
+| Zombies `_physics_process` (32 nodes) | 3.31 | 3.35 | 3.08 | 3.03 |
+| People posing (`patron_body.gd`) | 0.58 (13) | 0.61 (13) | 0.29 (6) | 0.29 (6) |
+| Faces (`face_driver.gd`) | 0.14 (18) | 0.15 (18) | 0.11 (10) | 0.12 (16) |
+| Players, all six incl. their weapon holders (`player.gd`) | 0.008 + 0.41 | 0.009 + 0.41 | 0.007 + 0.39 | 0.006 + 0.36 |
+
+- **The T-133 smooth motion** (the local player's camera and viewmodel in `_process`) is 0.01 ms a frame of script; the
+  bots' and Jakub's weapon holders are inside `player.gd`'s 0.4 ms for six players, i.e. about 0.07 ms a player: there is
+  nothing left to win by skipping the invisible viewmodels, so it was not touched (it would risk the reload cues).
+- **The T-134 people**: the posing already runs at the zombies' animation LOD (T-139: every frame within 15 m, every 2nd
+  to 35 m, every 4th beyond). The faces now use the same LOD (`PatronBody.lod_div`, `FaceDriver._process` steps with the
+  time it skipped, so the blink and lip flap stay in time). In the perf scene most faces are inside 15 m, so the
+  measured change is inside the noise (0.14 -> 0.14 ms); it pays when the camera is far from the crowd.
+- **Zombies above 60 Hz** (`Zombie.smooth_motion`, GLSettings `zombie_smooth`, default on, Settings > Video > "Smooth
+  zombies"; never on headless): the Pivot (the visible rig) is offset each rendered frame to the position interpolated
+  between the tick's start and end, within the full-rate animation distance; collision, hitboxes and every gameplay timer
+  stay on the 60 Hz tick (the visual leads the body by under 7 cm at a sprinter's speed). Global physics interpolation
+  stays off (many nodes are moved in `_process`). **Cost per zombie**: `tools_src/bench_zombie_smooth.tscn` (32 zombies, 3000
+  frames, the added per-frame work only): **0.44 us before, 1.05 us after, +0.6 us per zombie per rendered frame** (+0.02
+  ms a frame for 32); the `--probe` columns above agree: the difference is under the 15% noise. On the web preset it
+  stays on (it is cheaper than one skipped zombie animation frame).
+- Draw calls: neither change adds a draw call or a node. `tools/wsl_perf.sh map01_kaltenbrunn,map00_crossroads web` on this
+  branch (all passes counted, Compatibility renderer): **map01 1,567 draw calls, 400k primitives; map00 6,002 draw calls,
+  1,868k primitives** (T-139's 1,448 / 5,804: the difference is master's new content from other sections, not these
+  changes); both stay over the C4 browser budget as before.

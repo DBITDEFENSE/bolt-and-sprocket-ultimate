@@ -29,6 +29,7 @@ func _ready() -> void:
 	for row: Dictionary in MachineLore.archive_rows():   # maker's plates, the Crucibles, the chalk (T-075)
 		_intel[str(row["id"])] = row
 	_add_homage_rows()
+	_add_hint_rows()
 	load_profile()
 	GLBus.match_started.connect(_on_match_started)
 	GLBus.game_over.connect(_on_game_over)
@@ -462,6 +463,17 @@ func _add_homage_rows() -> void:
 					continue
 				_intel[str(id)] = {"id": str(id), "title": str(a.get("title", id)), "type": str(a.get("type", "DOC")),
 					"map": str(a.get("map", "")), "text": HomageEncounter.fill_tokens(str(a.get("text", "")))}
+
+
+## T-162: the Archive card each first-time hint files when it is shown (data/gravelight/hints.json "card"): the tide table,
+## the ballast order, the wing-walk rule card, the terminator log, the visor notice and the rest.
+func _add_hint_rows() -> void:
+	var hints: Dictionary = GLData.load_json("res://data/gravelight/hints.json").get("hints", {})
+	for k: String in hints:
+		var c: Variant = (hints[k] as Dictionary).get("card", null)
+		if c is Dictionary:
+			var id: String = "ARC_HINT_" + k.to_upper()
+			_intel[id] = {"id": id, "title": str(c.get("title", id)), "type": str(c.get("type", "CARD")), "map": str(c.get("map", "")), "text": str(c.get("text", ""))}
 
 
 func intel_rows() -> Array:

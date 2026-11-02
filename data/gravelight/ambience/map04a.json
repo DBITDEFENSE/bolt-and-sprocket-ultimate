@@ -2,25 +2,25 @@
   "_doc": "Fernflug Act I, Werk Thalbach: one bed per zone and its one-shots (UPDATE 09 §5, docs/MAPS_3_4_REBUILD.md §5.2, DECISIONS T-146). Read by ZoneAmbience (the Totenhafen worker's gravelight/world/zone_ambience.gd): when the listener's ZoneVolume changes, the zone's bed crossfades in over crossfade_s. Beds are synthesized loops (gravelight/tools_src/gen_audio_map04a.py, Owned); one-shots reuse existing keys. db = gain in dB; every_s = [min, max] seconds between one-shots.",
   "crossfade_s": 1.5,
   "zones": {
-    "A_SIEDLUNG": {"bed": "ambient_map04a_siedlung", "db": -8.0, "oneshots": [
+    "A_SIEDLUNG": {"bed": "ambient_map04a_siedlung", "db": -26.1, "oneshots": [
       {"key": "amb_crow_caw", "every_s": [14, 34], "db": -12},
       {"key": "amb_shutter_bang", "every_s": [22, 50], "db": -14}]},
-    "B_BAHNHOF": {"bed": "ambient_map04a_bahnhof", "db": -8.0, "oneshots": [
+    "B_BAHNHOF": {"bed": "ambient_map04a_bahnhof", "db": -26.1, "oneshots": [
       {"key": "amb_sign_creak", "every_s": [16, 40], "db": -14},
       {"key": "amb_crow_caw", "every_s": [25, 60], "db": -14}]},
-    "C_KANTINE": {"bed": "ambient_map04a_kantine", "db": -9.0, "oneshots": [
+    "C_KANTINE": {"bed": "ambient_map04a_kantine", "db": -27.1, "oneshots": [
       {"key": "radio_tune", "every_s": [30, 70], "db": -16}]},
-    "D_KIRCHPLATZ": {"bed": "ambient_map04a_church", "db": -8.0, "oneshots": [
+    "D_KIRCHPLATZ": {"bed": "ambient_map04a_church", "db": -26.1, "oneshots": [
       {"key": "amb_church_bell_far", "every_s": [60, 140], "db": -18},
       {"key": "amb_crow_flap", "every_s": [18, 45], "db": -12}]},
-    "E_MONTAGE": {"bed": "ambient_map04a_montage", "db": -8.0, "oneshots": [
+    "E_MONTAGE": {"bed": "ambient_map04a_montage", "db": -26.1, "oneshots": [
       {"key": "cellar_drip", "every_s": [6, 16], "db": -10},
       {"key": "amb_shutter_bang", "every_s": [30, 70], "db": -16}]},
-    "F_WINDKANAL": {"bed": "ambient_map04a_tunnel", "db": -7.0, "oneshots": [
+    "F_WINDKANAL": {"bed": "ambient_map04a_tunnel", "db": -25.1, "oneshots": [
       {"key": "cellar_drip", "every_s": [10, 24], "db": -14}]},
-    "G_PRUEFSTAND": {"bed": "ambient_map04a_pits", "db": -8.0, "oneshots": [
+    "G_PRUEFSTAND": {"bed": "ambient_map04a_pits", "db": -26.1, "oneshots": [
       {"key": "amb_wind_gust", "every_s": [20, 45], "db": -12}]},
-    "H_HALLE": {"bed": "ambient_map04a_hangar", "db": -7.0, "oneshots": [
+    "H_HALLE": {"bed": "ambient_map04a_hangar", "db": -25.1, "oneshots": [
       {"key": "cellar_drip", "every_s": [8, 20], "db": -12},
       {"key": "amb_wind_gust", "every_s": [25, 60], "db": -16}]}
   }

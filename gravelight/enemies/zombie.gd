@@ -256,6 +256,7 @@ func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 		_spawn_as_crawler()
 	_pivot.rotation = Vector3.ZERO
 	_pivot.position = Vector3.ZERO
+	_smooth_off = Vector3.ZERO
 	velocity = Vector3.ZERO
 	window = spawn.window()
 	global_position = spawn.global_position
@@ -461,6 +462,8 @@ func _enter(s: State) -> void:
 # ---------------------------------------------------------------- frame update
 
 func _physics_process(delta: float) -> void:
+	if smooth_motion:
+		_tick_prev = global_position   # T-162: where this tick started (the render-rate smoothing below lerps from it)
 	if puppet:
 		_puppet_tick(delta)
 		return
@@ -531,6 +534,31 @@ func _physics_process(delta: float) -> void:
 	_update_senses(delta)
 
 
+## UPDATE 10 s6 item 1 (T-162): zombies above 60 Hz. The body moves in the physics tick (60 Hz); with `smooth_motion`
+## (GLSettings zombie_smooth, default on, never headless) the visual (the Pivot) is offset each rendered frame so the
+## mesh shows the position interpolated between the tick's start and its end (Engine.get_physics_interpolation_fraction),
+## like the local player's head (T-133). Only within the full-rate animation distance (beyond it a 60 Hz step is not
+## visible); a jump over 2 m is a teleport and snaps; collision, hitboxes and every gameplay timer stay on the tick
+## (the visual leads the body by at most one tick of travel, under 7 cm at a sprinter's speed).
+static var smooth_motion: bool = false
+var _tick_prev: Vector3 = Vector3.INF
+var _smooth_off: Vector3 = Vector3.ZERO
+
+
+func _smooth_visual(near: bool) -> void:
+	if _pivot == null:
+		return
+	var off: Vector3 = Vector3.ZERO
+	if near and smooth_motion and _tick_prev.is_finite():
+		var d: Vector3 = global_position - _tick_prev
+		var l2: float = d.length_squared()
+		if l2 > 0.000001 and l2 < 4.0:
+			off = global_basis.inverse() * (-d * (1.0 - Engine.get_physics_interpolation_fraction()))
+	if off != _smooth_off:
+		_pivot.position += off - _smooth_off   # (a delta: states that move the Pivot themselves keep their own offset)
+		_smooth_off = off
+
+
 func _process(delta: float) -> void:
 	# Animation LOD: full rate within lod.full_m, half to lod.half_m, quarter beyond (anim.json).
 	if state == State.INACTIVE:
@@ -541,6 +569,8 @@ func _process(delta: float) -> void:
 	var div: int = 1
 	var half_m: float = float(lod["half_m"]) * anim_lod_scale
 	var full_m: float = float(lod["full_m"]) * anim_lod_scale
+	if smooth_motion or _smooth_off != Vector3.ZERO:
+		_smooth_visual(d2 <= full_m * full_m)
 	if d2 > half_m * half_m:
 		div = 4
 	elif d2 > full_m * full_m:
@@ -3291,6 +3321,7 @@ func _puppet_show(pos: Vector3, yaw: float) -> void:
 	_marke_layers(true)
 	_pivot.rotation = Vector3.ZERO
 	_pivot.position = Vector3.ZERO
+	_smooth_off = Vector3.ZERO
 	velocity = Vector3.ZERO
 	global_position = pos
 	rotation.y = yaw

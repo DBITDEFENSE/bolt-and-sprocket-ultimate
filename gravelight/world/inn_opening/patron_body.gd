@@ -335,14 +335,20 @@ static var _lod: Dictionary = {}
 
 
 func _pose_div() -> int:
-	var cam: Camera3D = get_viewport().get_camera_3d() if is_inside_tree() else null
+	return lod_div(self)
+
+
+## The update divisor for anything drawn at `n`: 1 within the zombies' full_m of the camera, 2 to half_m, 4 beyond (anim.json
+## lod, scaled in the browser). PatronBody's posing and (T-162) FaceDriver's blend shapes use it.
+static func lod_div(n: Node3D) -> int:
+	var cam: Camera3D = n.get_viewport().get_camera_3d() if n != null and n.is_inside_tree() else null
 	if cam == null:
 		return 1
 	if _lod.is_empty():
-		_lod = (GLData.table("anim").get("lod", {}) as Dictionary) if has_node(^"/root/GLData") else {}
+		_lod = (GLData.table("anim").get("lod", {}) as Dictionary) if n.has_node(^"/root/GLData") else {}
 		if _lod.is_empty():
 			_lod = {"full_m": 15.0, "half_m": 35.0}
-	var d2: float = cam.global_position.distance_squared_to(global_position)
+	var d2: float = cam.global_position.distance_squared_to(n.global_position)
 	var half_m: float = float(_lod["half_m"]) * Zombie.anim_lod_scale
 	var full_m: float = float(_lod["full_m"]) * Zombie.anim_lod_scale
 	if d2 > half_m * half_m:

@@ -3,7 +3,7 @@
   "zones": {
     "A_BOMBENSCHACHT": {
       "bed": "ambient_map04b_bay",
-      "db": -9.0,
+      "db": -27.1,
       "oneshots": [
         {"key": "kranich_creak", "every_s": [7, 18], "db": -8},
         {"key": "kranich_rattle", "every_s": [10, 24], "db": -12},
@@ -12,7 +12,7 @@
     },
     "B_MITTELRUMPF": {
       "bed": "ambient_map04b_body",
-      "db": -10.0,
+      "db": -28.1,
       "oneshots": [
         {"key": "kranich_bordfunk", "every_s": [12, 30], "db": -8},
         {"key": "kranich_creak", "every_s": [10, 24], "db": -11}
@@ -20,7 +20,7 @@
     },
     "C_FLUEGEL_L": {
       "bed": "ambient_map04b_wing",
-      "db": -7.0,
+      "db": -25.1,
       "oneshots": [
         {"key": "kranich_rattle", "every_s": [5, 14], "db": -8},
         {"key": "kranich_creak", "every_s": [8, 20], "db": -8}
@@ -28,7 +28,7 @@
     },
     "C_FLUEGEL_R": {
       "bed": "ambient_map04b_wing",
-      "db": -7.0,
+      "db": -25.1,
       "oneshots": [
         {"key": "kranich_rattle", "every_s": [5, 14], "db": -8},
         {"key": "kranich_creak", "every_s": [8, 20], "db": -8}
@@ -36,7 +36,7 @@
     },
     "D_TRIEBWERK": {
       "bed": "ambient_map04b_engine",
-      "db": -6.0,
+      "db": -24.1,
       "oneshots": [
         {"key": "kranich_creak", "every_s": [9, 22], "db": -9},
         {"key": "kranich_rattle", "every_s": [12, 28], "db": -12}
@@ -44,7 +44,7 @@
     },
     "E_KANZEL": {
       "bed": "ambient_map04b_blister",
-      "db": -7.0,
+      "db": -25.1,
       "oneshots": [
         {"key": "kranich_wind_gust", "every_s": [8, 20], "db": -7},
         {"key": "kranich_flak", "every_s": [20, 45], "db": -14},
@@ -53,7 +53,7 @@
     },
     "F_COCKPIT": {
       "bed": "ambient_map04b_cockpit",
-      "db": -9.0,
+      "db": -27.1,
       "oneshots": [
         {"key": "kranich_bordfunk", "every_s": [15, 35], "db": -10},
         {"key": "kranich_creak", "every_s": [14, 30], "db": -12}

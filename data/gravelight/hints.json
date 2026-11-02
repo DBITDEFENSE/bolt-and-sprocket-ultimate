@@ -1,0 +1,130 @@
+{
+  "_doc": "First-time hints (UPDATE 10 s6 item 7, DECISIONS T-162; gravelight/world/first_hints.gd). Each hint shows once per profile (ProfileSave.profile.hints_seen[key]) as the HUD's banner, the first time its situation is met. `map`: the map id prefix it belongs to. `when`: how the watcher notices the situation (polled twice a second): {kind: prop, group, prop} the first node of the group has a truthy `prop` (a number must exceed `min`, default 0); {kind: near, group, m} the local player is within m metres of a node of the group; {kind: exists, group, after_s} a node of the group exists and the match is after_s seconds old (the watcher's clock); {kind: special_round} a special round starts on the map (the dust storm, the air raid, the solar flare). Nodes that do not exist (the searchlight until the Totenhafen systems land) simply never fire. `hold`: seconds on screen. Plain sentences, no brand names. `card`: the Archive card filed when the hint is first shown (id ARC_HINT_<KEY>; ProfileSave._add_hint_rows).",
+  "hints": {
+    "tide": {
+      "map": "map02",
+      "hold": 6.0,
+      "text": "THE TIDE. When the water rises, the low ground is lost. Hold the piers and the high stairs until it falls.",
+      "when": {
+        "kind": "prop",
+        "group": "tide",
+        "prop": "flooded"
+      },
+      "card": {
+        "title": "Tide Table, Totenhafen Pens",
+        "type": "CARD",
+        "map": "2",
+        "text": "Posted inside the sea door of the pen hall, in the harbour master's hand: LOW at the turn of the round, HIGH on the flood rounds, a SPRING tide every ninth. Quay edges and dock aprons go under; the piers stay dry. Stay off the low ground while the water is up. Whatever the pumps can reach, the pumps will pump. Signed, the Harbour Office."
+      }
+    },
+    "ballast": {
+      "map": "map02",
+      "hold": 6.0,
+      "text": "BALLAST. Lift a sealed coffin and carry it to the crane hook or the sea stairs. It is heavy: you keep only your knife and your pistol while you carry.",
+      "when": {
+        "kind": "near",
+        "group": "ballast_coffins",
+        "m": 3.5
+      },
+      "card": {
+        "title": "Ballast Order No. 7",
+        "type": "CARD",
+        "map": "2",
+        "text": "Lead-sealed Nachtglas coffins are to be carried to the crane hook or tipped down the sea stairs. Two hands are required, so no firearm: knife and pistol only while carrying. A coffin dropped goes back to its pallet. A coffin delivered is Scrip. Do not open the seals. Signed, the Ballast Office."
+      }
+    },
+    "searchlight": {
+      "map": "map02",
+      "hold": 6.0,
+      "text": "THE SEARCHLIGHT. Man the lamp in the signal tower: what it lights moves slowly and takes more damage. You cannot shoot while you work it.",
+      "when": {
+        "kind": "near",
+        "group": "searchlights",
+        "m": 4.0
+      },
+      "card": {
+        "title": "Searchlight Watch Card",
+        "type": "CARD",
+        "map": "2",
+        "text": "The lamp in the signal tower slows what it lights and shows it to every gun. Man it from the chair; you cannot fire while you work it. Relieve the watch every round. Needs power. Signed, the Signals Section."
+      }
+    },
+    "wing_walk": {
+      "map": "map04b",
+      "hold": 6.5,
+      "text": "THE WING WALK. Clip your line to a rail point before the next tilt. Unclipped, the wind throws you off the wing.",
+      "when": {
+        "kind": "prop",
+        "group": "wing_walks",
+        "prop": "is_open"
+      },
+      "card": {
+        "title": "Wing Walk Rule Card",
+        "type": "CARD",
+        "map": "4",
+        "text": "Clip your line to a rail point before the tilt. A tilt throws everyone unclipped off the wing: you get up, but you lose the time. Bordschuetzen climb over the edge. The perk-tier token is in the chest at the wing tip. Signed, the Flight Engineer."
+      }
+    },
+    "dust_storm": {
+      "map": "map04c",
+      "hold": 6.5,
+      "text": "DUST STORM. You see only a few metres. Keep your back to a wall and listen: they come out of the white.",
+      "when": {
+        "kind": "special_round"
+      },
+      "card": {
+        "title": "Groom Lake Station Log, Dust",
+        "type": "CARD",
+        "map": "4",
+        "text": "When the dust comes down the lake bed you will see five metres, no more. Stay with a wall at your back; they come out of the white. The storm passes in one round. Signed, the Duty Sergeant."
+      }
+    },
+    "raid": {
+      "map": "map04a",
+      "hold": 6.5,
+      "text": "AIR RAID. Searchlight circles mark where the bombs fall. Leave the circle; the burnt crews come down on its edge.",
+      "when": {
+        "kind": "special_round"
+      },
+      "card": {
+        "title": "Fliegeralarm Bulletin",
+        "type": "CARD",
+        "map": "4",
+        "text": "Night raid on the works. Searchlights mark the impact circle; the bomb lands after the telegraph. Leave the circle. The burnt aircrew who come down on its edge are the same men as before. Signed, the Works Commandant."
+      }
+    },
+    "terminator": {
+      "map": "map04d",
+      "hold": 7.0,
+      "text": "THE TERMINATOR. The line between day and night crawls across the yard. The night side is colder and darker, and more of them rise there.",
+      "when": {
+        "kind": "exists",
+        "group": "terminator",
+        "after_s": 25.0
+      },
+      "card": {
+        "title": "Terminator Log, Mondlicht Relay",
+        "type": "CARD",
+        "map": "4",
+        "text": "The line between lunar day and night crosses the yard over the whole shift. On the night side the suit heaters strain, the domes are dimmer and more of them rise. Plan the shift by the line. Signed, the Relay Engineer."
+      }
+    },
+    "visor": {
+      "map": "map04d",
+      "hold": 6.5,
+      "text": "THE VISOR. The day side blinds you. Press the VISOR key to lower the sun visor; the night side reads darker through it.",
+      "when": {
+        "kind": "prop",
+        "group": "moon_suit_hud",
+        "prop": "glare",
+        "min": 0.15
+      },
+      "card": {
+        "title": "Sun Visor Notice",
+        "type": "CARD",
+        "map": "4",
+        "text": "The day side of the open yard blinds an unshielded eye. Lower the visor (the VISOR key) and the glare is gone; the night side reads darker through it. Raise it before you go into the domes. Signed, Suit Stores."
+      }
+    }
+  }
+}

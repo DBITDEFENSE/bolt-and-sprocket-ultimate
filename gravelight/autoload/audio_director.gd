@@ -418,7 +418,9 @@ func _range_db(field: String, fallback: Array, t: float) -> float:
 func _ambient_db() -> float:
 	if _vacuum:
 		return SILENT_DB
-	return _range_db("ambient_db", [-6.0, -2.0], intensity)
+	# T-162: music.ambient_trim_db {map id: dB} keeps each map-wide bed >= 8 dB under a footstep (tools_src/amb_loudness.py --apply)
+	var trims: Dictionary = _music_cfg().get("ambient_trim_db", {})
+	return _range_db("ambient_db", [-6.0, -2.0], intensity) + float(trims.get(str(_map_id), 0.0))
 
 
 func _score_db() -> float:

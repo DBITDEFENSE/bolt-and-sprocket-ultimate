@@ -59,6 +59,7 @@ var values: Dictionary = {
 	"colorblind": "off",
 	"film_grain": true,
 	"graphics_preset": "high",
+	"zombie_smooth": true,         # T-162: the zombies' meshes interpolated between physics ticks (above 60 Hz), within the full-rate animation distance
 	"smooth_motion": true,         # T-133: camera + viewmodel at the render rate, the eye interpolated (high-refresh screens)
 	"brightness": 1.0,             # T-133: scales each map's own adjustment brightness (0.7..1.4)
 	"gfx_sharpness": 0.4,          # T-133: the FSR sharpening (0 = sharpest, 2 = softest)
@@ -542,6 +543,7 @@ func apply_visuals() -> void:
 		var pl: Player = pn as Player
 		if pl != null and pl.is_local and pl.camera != null and pl.camera.current:
 			pl.set_smooth_view(bool(values.get("smooth_motion", true)) and DisplayServer.get_name() != "headless")
+	Zombie.smooth_motion = bool(values.get("zombie_smooth", true)) and DisplayServer.get_name() != "headless"
 	if active:
 		apply_aspect()
 
