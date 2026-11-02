@@ -490,6 +490,11 @@ func _tick_fire(delta: float) -> void:
 			pl.take_hit(float(fc.get("dps", 10.0)) * delta, self)
 
 
+## True while the DUST STORM special round runs (DustStormFx follows it, T-148).
+func dust_active() -> bool:
+	return _dust_on
+
+
 func fire_point() -> Vector3:
 	var pts: Array = (cfg.get("fire", {}) as Dictionary).get("points", [])
 	if pts.is_empty():
