@@ -122,8 +122,10 @@ func _physics_process(delta: float) -> void:
 		if p == null or not p.is_alive() or _cool.has(p.player_id):
 			continue
 		var d: Vector3 = p.global_position - global_position
-		if Vector2(d.x, d.z).length() > radius or absf(d.y) > 0.7 or not p.is_on_floor():
+		if Vector2(d.x, d.z).length() > radius or absf(d.y) > 0.7:
 			continue
+		if (p.is_local or p.is_bot) and not p.is_on_floor():
+			continue   # a remote player's puppet never reports the floor on the host: the height check stands in
 		launch(p)
 
 

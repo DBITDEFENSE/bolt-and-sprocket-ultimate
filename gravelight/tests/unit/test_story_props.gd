@@ -8,7 +8,7 @@ const FIXED_IDS: PackedStringArray = ["INT_M0_09", "INT_M0_10", "INT_M0_11", "IN
 ## Map 2 (LORE.md section 13.2, T-036): the same rules, map "2". INT_MARKE_MEDIC (T-137): the surgeon's notes.
 const MAP2_IDS: PackedStringArray = ["INT_M2_01", "INT_M2_02", "INT_M2_03", "INT_M2_04", "INT_MARKE_MEDIC"]
 ## Map 4 Act IV (LORE.md section 13, the Mondlicht list, UPDATE 07 T-113): the same rules, map "4d". INT_MARKE_TERMS (T-137).
-const MAP4D_IDS: PackedStringArray = ["INT_M4_RELAY", "INT_M4_CREWTAGS", "INT_M4_SMILE", "INT_M4_PILCH", "INT_MARKE_TERMS"]
+const MAP4D_IDS: PackedStringArray = ["INT_M4_RELAY", "INT_M4_CREWTAGS", "INT_M4_SMILE", "INT_M4_PILCH", "INT_MARKE_TERMS", "INT_M4D_DELIVERY_LOG", "INT_M4D_HAAS_TAG", "INT_M4D_RELAY_CARD", "INT_M4D_FLIGHT_CARD"]
 ## Map 4 Act III (UPDATE 07, docs/MAP4_FERNFLUG.md 13.1): the British crate's manifest and Hale's program log, in the hangar.
 const MAP4C_IDS: PackedStringArray = ["INT_M4_MANIFEST", "INT_M4_PROGRAM"]
 ## Map 1 (LORE.md section 13.5, T-137): Jakub's refusal on the Maintenance Stairs' second landing.
@@ -120,7 +120,7 @@ func test_spawn_all_places_the_map_0_items() -> void:
 	assert_eq(StoryProp.spawn_all(m2, "2"), 5, "five Map 2 items (four plus the T-137 surgeon's notes)")
 	var m4d: Node3D = Node3D.new()
 	add_child_autofree(m4d)
-	assert_eq(StoryProp.spawn_all(m4d, "4d"), 5, "five Mondlicht items (four plus the T-137 Terms of the Mark)")
+	assert_eq(StoryProp.spawn_all(m4d, "4d"), 9, "nine Mondlicht items (four, the T-137 Terms of the Mark, the four U10 props of T-158)")
 	var m4c: Node3D = Node3D.new()
 	add_child_autofree(m4c)
 	assert_eq(StoryProp.spawn_all(m4c, "4c"), 2, "two Groom Lake items (the manifest, the program log)")
