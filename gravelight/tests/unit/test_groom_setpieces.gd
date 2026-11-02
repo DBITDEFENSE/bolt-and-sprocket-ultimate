@@ -174,3 +174,35 @@ func test_wildlife_bolts() -> void:
 	assert_false(MapAmbience.should_bolt(Vector3.ZERO, [Vector3(15, 0, 0)], null, 9.0, 25.0), "15 m off: it keeps nibbling")
 	assert_true(MapAmbience.should_bolt(Vector3.ZERO, [], Vector3(20, 0, 0), 9.0, 25.0), "a shot 20 m off")
 	assert_eq(MapAmbience.flee_dir(Vector3(1, 0, 0), Vector3.ZERO), Vector3.RIGHT, "straight away")
+
+
+# ---------------------------------------------------------------- the traps, the people, the perch
+
+func test_act3_traps_config() -> void:
+	var fd: Dictionary = TrapLever.cfg_for("fuel_dump")
+	assert_eq(float(fd["duration"]), 20.0, "a 20 s fire wall")
+	assert_eq(int(fd["cost"]), 1000)
+	var dd: Dictionary = TrapLever.cfg_for("door_drop")
+	assert_eq(float(dd["cooldown"]), 60.0, "the door drop's 60 s")
+	assert_eq(str(TrapLever.STENCIL.get(&"fuel_dump", "")), "FUEL DUMP")
+	assert_eq(str(TrapLever.STENCIL.get(&"door_drop", "")), "HANGAR DOOR")
+
+
+func test_dee_and_hale() -> void:
+	var dee: Dictionary = ExtraPeople.people()["dee"]
+	assert_eq(str(dee["favour"]["reward"]["kind"]), "supply_drop", "Dee calls in a supply drop")
+	assert_eq(str(dee["favour"]["item"]), "radio_valve")
+	var hale: Dictionary = ExtraPeople.people()["hale"]
+	assert_false(hale.has("favour"), "Hale: a Talk card only")
+	var flags: Array = (hale["reactions"] as Array).map(func(r: Dictionary) -> String: return str(r["flag"]))
+	assert_eq(flags, ["peg_resigned", "peg_delivered"], "he reacts to Peg's choice either way")
+	var spots: Array[Vector3] = ExtraPeople.spots_for("map04c_groomlake")
+	assert_true(spots.has(Vector3(61.2, 0.0, 94.0)) and spots.has(Vector3(37.4, 0.0, 94.0)), "their talk spots are the checked spots")
+	assert_false(spots.has(Vector3(64.2, 0.0, 95.6)), "Dee's body in the cage never walks: not a checked spot")
+
+
+func test_perch_climb_link() -> void:
+	var cl: Array = GLData.load_json("res://data/gravelight/map04c.json")["climb_links"]
+	assert_eq(cl.size(), 1)
+	assert_eq(str(cl[0]["zone"]), "E_RADAR")
+	assert_eq(float(cl[0]["to"][1]), 16.0, "up to the 16 m deck")

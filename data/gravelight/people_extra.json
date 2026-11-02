@@ -206,6 +206,62 @@
         "round": ["OGP_PEOPLE_ROUND_01"],
         "down": ["OGP_PEOPLE_DOWN_01"]
       }
+    },
+    "dee": {
+      "_doc": "UPDATE 10 §3 Act III (T-157): Sgt. Dee Marchetti in her supply cage (the body behind the counter is fixed; she is talked to at the counter, talk_at). Her favour: the valve for her field radio from the motor pool; she calls in one supply drop at the hangar.",
+      "name": "Sgt. Dee Marchetti, supply",
+      "title": "SGT. DEE MARCHETTI",
+      "maps": ["map04c"],
+      "speaker": "DEE",
+      "display": "DEE",
+      "poi": "Supply cage (Dee)",
+      "bio": "The range's supply sergeant, 31, from Paterson, New Jersey. She locked herself in the hangar's supply cage the night the lab went quiet and has run the range from behind the wire since: the radio, the side door, the generator's fuel. She keeps a ledger of everything and lets nothing go to waste.",
+      "talk_at": [61.2, 0.0, 94.0],
+      "bodies": [
+        {"person": "jette", "at": [64.2, 0.0, 95.6], "yaw": 90.0, "pose": "stand", "fixed": true,
+          "look": {"jacket": [0.36, 0.36, 0.24], "trousers": [0.3, 0.3, 0.22], "skin": [0.82, 0.66, 0.55], "head": [0.2, 0.14, 0.1], "headgear": "none", "build": 0.95}}
+      ],
+      "favour": {
+        "kind": "fetch",
+        "item": "radio_valve",
+        "item_name": "radio valve",
+        "item_at": [-37.0, 0.0, 75.0],
+        "ask": "My field radio's dead without its valve. There's a spare in the motor pool, in the parts box behind the second truck. Bring it here and I'll get you something.",
+        "have": "You have the valve. Hand it through the wire?",
+        "done": "Dee calls in a supply drop: one crate at the hangar. She only gets the one.",
+        "reward": {"kind": "supply_drop", "at": [45.0, 0.0, 66.0], "powerup": "resupply", "mark_label": "Dee's supply drop", "line_delay_s": 4.0}
+      },
+      "lines": {
+        "talk": ["DEE_M4C_RADIO_02", "DEE_M4C_RADIO_05"],
+        "ask": ["DEE_M4C_FAVOUR_ASK_01"],
+        "thanks": ["DEE_M4C_FAVOUR_THANKS_01"],
+        "serve": ["DEE_M4C_DROP_01"],
+        "round": ["DEE_M4C_LAST_01"]
+      }
+    },
+    "hale": {
+      "_doc": "UPDATE 10 §3 Act III (T-157): Mr. Hale in his glass office: a Talk card only (no favour), cold; he reacts to Peg's choice (peg_resigned / peg_delivered). Talked to at the office's east face (talk_at); his body behind the glass is fixed.",
+      "name": "Mr. Hale, the program",
+      "title": "MR. HALE",
+      "maps": ["map04c"],
+      "speaker": "HAL",
+      "display": "HALE",
+      "poi": "Hale's office",
+      "bio": "A civilian with a Washington pass and no department anyone can name, 50s, grey suit, the only clean collar on the range. He signs for everything himself. He had a man waiting at the siding in Thalbach for the British crate and he has a man waiting for you.",
+      "talk_at": [37.4, 0.0, 94.0],
+      "said": "Hale does not offer you a chair. He has nothing for you, and he tells you so very politely.",
+      "bodies": [
+        {"person": "selwyn", "at": [33.6, 0.0, 96.0], "yaw": -90.0, "pose": "stand", "fixed": true,
+          "look": {"jacket": [0.34, 0.35, 0.37], "trousers": [0.3, 0.31, 0.33], "skin": [0.86, 0.72, 0.62], "head": [0.55, 0.52, 0.48], "headgear": "none", "build": 1.0}}
+      ],
+      "reactions": [
+        {"flag": "peg_resigned", "said": "Peg kept the engine. Hale writes something down and does not look up. 'Considerable strain, Lieutenant. It's in the file.'", "line": "HAL_M4C_RESIGN_01"},
+        {"flag": "peg_delivered", "said": "Peg gave him the engine. Hale is almost warm about it, which is worse. 'Your country is in your debt.'", "line": "HAL_M4C_DELIVER_01"}
+      ],
+      "lines": {
+        "talk": ["HAL_M4C_TALK_01", "HAL_M4C_TALK_02", "HAL_M4C_GLASS_03"],
+        "react": ["HAL_M4C_RESIGN_01", "HAL_M4C_DELIVER_01", "HAL_M4C_CHOICE_02"]
+      }
     }
   }
 }

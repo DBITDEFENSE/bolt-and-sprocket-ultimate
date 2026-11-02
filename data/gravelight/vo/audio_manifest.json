@@ -31774,6 +31774,66 @@
       "delivery": "calm",
       "lufs": -17.58,
       "phonemes": "ˌɪts spɾˈɛdɪŋ ˈɔvə di ˈɜːt. ˈɛvəɾi ɾˈWnd, ɐ lˈɪtᵊl mˈɔː."
+    },
+    "DEE_M4C_DROP_01": {
+      "line": "DEE_M4C_DROP_01",
+      "speaker": "DEE",
+      "hash": "66c857d7c54150eb",
+      "path": "res://gravelight/audio/vo/dee/DEE_M4C_DROP_01.ogg",
+      "format": "ogg",
+      "duration": 4.536,
+      "voice": "Zira",
+      "engine": "onecore",
+      "source": "tts",
+      "chain": "radio"
+    },
+    "DEE_M4C_FAVOUR_THANKS_01": {
+      "line": "DEE_M4C_FAVOUR_THANKS_01",
+      "speaker": "DEE",
+      "hash": "5cdd4c3623205404",
+      "path": "res://gravelight/audio/vo/dee/DEE_M4C_FAVOUR_THANKS_01.ogg",
+      "format": "ogg",
+      "duration": 10.025,
+      "voice": "Zira",
+      "engine": "onecore",
+      "source": "tts",
+      "chain": "radio"
+    },
+    "HAL_M4C_TALK_02": {
+      "line": "HAL_M4C_TALK_02",
+      "speaker": "HAL",
+      "hash": "a248f44acb849037",
+      "path": "res://gravelight/audio/vo/hal/HAL_M4C_TALK_02.ogg",
+      "format": "ogg",
+      "duration": 7.11,
+      "voice": "David",
+      "engine": "onecore",
+      "source": "tts",
+      "chain": "pa"
+    },
+    "HAL_M4C_TALK_01": {
+      "line": "HAL_M4C_TALK_01",
+      "speaker": "HAL",
+      "hash": "cff6f766317b8ac7",
+      "path": "res://gravelight/audio/vo/hal/HAL_M4C_TALK_01.ogg",
+      "format": "ogg",
+      "duration": 9.738,
+      "voice": "David",
+      "engine": "onecore",
+      "source": "tts",
+      "chain": "pa"
+    },
+    "DEE_M4C_FAVOUR_ASK_01": {
+      "line": "DEE_M4C_FAVOUR_ASK_01",
+      "speaker": "DEE",
+      "hash": "b5a2d2b684b86240",
+      "path": "res://gravelight/audio/vo/dee/DEE_M4C_FAVOUR_ASK_01.ogg",
+      "format": "ogg",
+      "duration": 10.211,
+      "voice": "Zira",
+      "engine": "onecore",
+      "source": "tts",
+      "chain": "radio"
     }
   },
   "missing": {

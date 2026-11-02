@@ -4,7 +4,7 @@ extends GutTest
 ## exists with its audio, spots in the map's frame), the favour and timed-reward state machines, the trade rules.
 ## (That each spot sits on the navmesh is checked on the loaded maps: smoke_npc_walls and NpcWallProbe.)
 
-const KINDS: PackedStringArray = ["scrip_mark", "revive_point", "intel_ping", "cover", "unbolt_door"]
+const KINDS: PackedStringArray = ["scrip_mark", "revive_point", "intel_ping", "cover", "unbolt_door", "supply_drop"]
 
 
 func _people() -> Dictionary:
@@ -16,10 +16,14 @@ func test_the_table_counts() -> void:
 	assert_eq(ExtraPeople.ids_for_map("map00_crossroads", ExtraPeople.cfg()).size(), 3, "a deserter, a widow, a courier")
 	assert_eq(ExtraPeople.ids_for_map("map02_totenhafen", ExtraPeople.cfg()).size(), 0)
 	assert_eq(ExtraPeople.ids_for_map("map04a_thalbach", ExtraPeople.cfg()).size(), 0)
+	assert_eq(ExtraPeople.ids_for_map("map04c_groomlake", ExtraPeople.cfg()).size(), 2, "Groom Lake: Dee in her cage, Hale in his office (U10 §3)")
 
 
 func test_kits_voices_and_names() -> void:
 	var cast: Dictionary = (GLData.load_json("res://data/gravelight/vo/voice_cast.json") as Dictionary).get("cast", {})
+	# the story speakers (Dee, Hale...) are voiced by gen_vo.py's OneCore placeholder profiles until they are cast
+	for spk: Variant in (GLData.load_json("res://data/gravelight/vo/rules.json") as Dictionary).get("story_speakers", []):
+		cast[str(spk)] = true
 	var kits: Dictionary = (GLData.load_json("res://data/gravelight/art/people.json") as Dictionary).get("people", {})
 	for pid: Variant in _people().keys():
 		var e: Dictionary = _people()[pid]
@@ -71,6 +75,12 @@ func test_favours_and_rewards_are_well_formed() -> void:
 		if e.has("trade"):
 			assert_eq(str((e["trade"] as Dictionary).get("kind", "")), "crate_tip")
 			assert_gt(int(e["trade"].get("cost", 0)), 0)
+			continue
+		if not e.has("favour"):
+			# a Talk card only (Hale, U10 §3): something to say, and reactions with their flags
+			assert_ne(str(e.get("said", "")), "", "%s: a talk-only card says something" % pid)
+			for r: Variant in e.get("reactions", []):
+				assert_ne(str((r as Dictionary).get("flag", "")), "", "%s: a reaction's flag" % pid)
 			continue
 		var f: Dictionary = e.get("favour", {})
 		assert_true(["fetch", "gun", "deliver"].has(str(f.get("kind", ""))), "%s: a favour kind" % pid)

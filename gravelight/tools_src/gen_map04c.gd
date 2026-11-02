@@ -53,7 +53,7 @@ func setup_tables() -> void:
 		["C_HANGAR", Vector3(20, -1, 60), Vector3(70, 12, 100)],
 		["D_MOTORPOOL", Vector3(-70, -1, 60), Vector3(-20, 6, 100)],
 		["D_MOTORPOOL", Vector3(-20, -1, 86), Vector3(20, 6, 100)],        # the service lane to the hangar's side door
-		["E_RADAR", Vector3(20, -1, 100), Vector3(70, 8, 140)],
+		["E_RADAR", Vector3(20, -1, 100), Vector3(70, 18, 140)],             # up to the tower's perch deck (U10 §3)
 		["F_LAB", Vector3(-70, LAB_Y - 1, 100), Vector3(-20, 6, 150)],       # the hall, the rooms and the hatch ramp
 		["F_LAB", Vector3(-20, LAB_Y - 1, 134), Vector3(20, 2, 140)],        # the cable trench from the radar tower
 		["G_SILO", Vector3(-70, LAB_Y - 1, 150), Vector3(-20, 40, 196)],
@@ -130,7 +130,10 @@ func setup_tables() -> void:
 	armorers_bench = []
 	burst_points = [Vector3(-45, 0, 80), Vector3(0, 0, 30), Vector3(45, 0, 80)]
 	traps = [
-		["res://gravelight/world/trap_live_wire.gd", "Trap_FuelDump", {"size": Vector3(8.0, 2.4, 1.2)}, Vector3(-27.0, 0, 90.0), 0.0, Vector3(-36.0, 0, 97.0), 180.0, "fuel_dump"],
+		# U10 §3 (T-157): the fuel dump lights a 20 s wall of fire with a whump and a smoke column (was a live wire)
+		["res://gravelight/world/map04/trap_fuel_dump.gd", "Trap_FuelDump", {"size": Vector3(8.0, 2.4, 1.6)}, Vector3(-27.0, 0, 90.0), 0.0, Vector3(-36.0, 0, 97.0), 180.0, "fuel_dump"],
+		# U10 §3: the hangar's sliding door drops on the south doorway (a crush trap, 60 s), its lever inside by the door
+		["res://gravelight/world/map04/trap_door_drop.gd", "Trap_HangarDoor", {"size": Vector3(3.2, 2.4, 2.0), "hang_y": 2.6}, Vector3(45.0, 0, 60.35), 0.0, Vector3(49.4, 0, 60.45), 0.0, "door_drop"],
 	]
 	mat_map = {
 		"wall": "planks", "concrete": "concrete", "ground": "concrete", "metal": "iron", "steel": "steel", "rust": "rust",
@@ -258,6 +261,14 @@ func _radar() -> void:
 	box(geo, "Tower_Base", Vector3(42, 0, 117), Vector3(48, 1.0, 123), "metal")             # a step (the launch points stand on it)
 	box(geo, "Tower_Mast", Vector3(44, 1.0, 119), Vector3(46, 18.0, 121), "metal")
 	box(geo, "Shack", Vector3(58, 0, 128), Vector3(66, 3.0, 136), "planks")                 # the shack (the radio on its south face)
+	# U10 §3 (T-157): the sniper perch: a grated deck round the mast at 16 m with railings (a gap over the ladder);
+	# players climb by the TowerLadder, zombies by the climb link (map04c.json climb_links TowerPerch)
+	box(geo, "Perch_Deck", Vector3(42.0, 15.9, 117.0), Vector3(48.0, 16.0, 123.0), "deck")
+	box(geo, "Perch_RailN", Vector3(42.0, 16.0, 122.92), Vector3(48.0, 17.1, 123.0), "rail")
+	box(geo, "Perch_RailE", Vector3(47.92, 16.0, 117.0), Vector3(48.0, 17.1, 123.0), "rail")
+	box(geo, "Perch_RailW", Vector3(42.0, 16.0, 117.0), Vector3(42.08, 17.1, 123.0), "rail")
+	box(geo, "Perch_RailSW", Vector3(42.0, 16.0, 117.0), Vector3(44.4, 17.1, 117.08), "rail")
+	box(geo, "Perch_RailSE", Vector3(45.6, 16.0, 117.0), Vector3(48.0, 17.1, 117.08), "rail")
 	for w: Array in windows:
 		if str(w[1]) == "E_RADAR":
 			closet(w[2], float(w[3]))
@@ -797,13 +808,14 @@ func _dress_radar() -> void:
 	B(Vector3(44.1, 1.0, 119.1), Vector3(45.9, 16.0, 120.9), "steel")
 	for y: float in [3.0, 6.0, 9.0, 12.0, 15.0]:
 		B(Vector3(44.05, y - 0.06, 119.05), Vector3(45.95, y + 0.06, 120.95), "black_paint")
-	CYL(Vector3(45, 17.3, 120), 0.45, 2.6, "iron")
+	# the riser through the perch deck to the dish's yoke (the dish sits high enough to turn over heads on the deck)
+	CYL(Vector3(45, 18.6, 120), 0.45, 5.2, "iron")
 	# the dish turns once the power is on (U10 §3, T-157: RadarDish rotates this group; kept out of the bake)
-	var dish: Node3D = D.dish(dress, Vector3(45, 19.6, 120), 4.0, 2.6, Vector3(0.8, 0.45, -0.4))
+	var dish: Node3D = D.dish(dress, Vector3(45, 22.0, 120), 4.0, 2.6, Vector3(0.8, 0.45, -0.4))
 	dish.name = "RadarDish"
 	dish.set_meta("keep", true)
-	CYL(Vector3(46.2, 21.0, 121.2), 0.05, 10.0, "iron")
-	_noshadow(Props.ball(dress, Vector3(46.2, 26.1, 121.2), Vector3(0.28, 0.32, 0.28), "lamp_red_lit"))
+	CYL(Vector3(46.2, 23.0, 121.2), 0.05, 10.0, "iron")
+	_noshadow(Props.ball(dress, Vector3(46.2, 28.1, 121.2), Vector3(0.28, 0.32, 0.28), "lamp_red_lit"))
 	Props.cable(dress, Vector3(45, 16, 120), Vector3(62, 3.0, 132), 1.5, 0.03, 10, "rubber")
 	# the shack (Shack collider 58..66 × 128..136): plank walls, the gable roof, the door, a lit window, the aerial
 	B(Vector3(58, 0, 128), Vector3(66, 3.0, 136), "planks")
@@ -831,7 +843,7 @@ func _dress_radar() -> void:
 	for b: Array in [[Vector3(20, 0, 140), Vector3(70, 0, 140), Vector3(0, 0, 1)], [Vector3(70, 0, 100), Vector3(70, 0, 140), Vector3(1, 0, 0)]]:
 		_berm(b[0], b[1], b[2], 2.0, true)
 	# the warning light on the dish mast (red, blinking, no shadow), the shack lamp (the key), the work flood
-	lamp(Vector3(46.2, 25.6, 121.2), RED, 2.0, 22.0, 0.6, 0.5, false, 2.2)
+	lamp(Vector3(46.2, 27.6, 121.2), RED, 2.0, 22.0, 0.6, 0.5, false, 2.2)
 	lamp(Vector3(61.0, 2.2, 127.3), INCAND, 1.0, 6.0, 0.05, 0.3, true)    # the key: the shack door lamp (shadowed, short)
 	D.floodlight(dress, Vector3(45.0, 6.2, 117.4), 180.0, 30.0)
 
@@ -1058,7 +1070,10 @@ func build_gameplay_extra() -> void:
 	# U10 §3 (T-157): the bulkhead plate the second wreck collapse tears out (fills the AB wall's x 10 opening)
 	box(gameplay, "BulkheadPlate", Vector3(8.8, 0, -4.0 - T * 0.5), Vector3(11.2, 2.4, -4.0 + T * 0.5), "steel")
 	# U10 §3: the radar's controller at the dish (turns it, pings the minimap when powered)
-	_node("res://gravelight/world/map04/radar_dish.gd", "RadarController", {}, Vector3(45, 19.6, 120))
+	_node("res://gravelight/world/map04/radar_dish.gd", "RadarController", {}, Vector3(45, 22.0, 120))
+	# U10 §3: the radar tower's ladder, foot and top (the sniper perch on the 16 m deck)
+	_node("res://gravelight/world/map04/tower_ladder.gd", "TowerLadder_Foot", {"down": false, "to_pos": Vector3(45.0, 16.05, 118.1)}, Vector3(45.0, 1.0, 116.7), 180.0)
+	_node("res://gravelight/world/map04/tower_ladder.gd", "TowerLadder_Top", {"down": true, "to_pos": Vector3(45.0, 0.05, 116.2)}, Vector3(45.0, 16.0, 117.6), 180.0)
 	# U10 §3: the jukebox in the hangar's break corner (by the bench), plays our own tune once the power is on
 	_node("res://gravelight/world/map04/jukebox.gd", "Jukebox", {}, Vector3(20.55, 0, 76.0), -90.0)
 	# the Jumpjockeys' launch points: the tower step's corners and the gantry post's foot

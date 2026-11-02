@@ -188,6 +188,8 @@ func _on_match_started(_map: StringName) -> void:
 		director.special_handler = self
 	SoundHunter.configure((cfg.get("dust_storm", {}) as Dictionary).get("hear", {}))
 	_schedule_storm.call_deferred()
+	if cfg.has("arrival"):
+		get_tree().create_timer(0.25).timeout.connect(_arrival_quiet)
 	for sp: Node in get_tree().get_nodes_in_group(&"zombie_spawns"):
 		if sp.name.begins_with("Catwalk_B_LAKEBED"):
 			_burrow_home[sp] = (sp as Node3D).global_position
@@ -324,6 +326,7 @@ func _process(delta: float) -> void:
 	if cfg.is_empty() or GameState.phase != GameState.Phase.PLAYING:
 		return
 	_prune()
+	_tick_cage_note(delta)
 	if not Net.is_authority():
 		return
 	_tick_burrows(delta)
@@ -926,6 +929,7 @@ func _on_intel_found(intel_id: StringName) -> void:
 func _on_power() -> void:
 	if cfg.is_empty():
 		return
+	_perks_wake()
 	_vo("DEE_M4C_POWER_01")
 	_squad(&"deacon", "DEA_M4C_POWER_01")
 	_vo("OPR_M4C_POWER_01")
@@ -1327,3 +1331,88 @@ func spread_points() -> Array[Vector3]:
 		var a: Array = hull[i]
 		out.append(Vector3(float(a[0]), float(a[1]), float(a[2])))
 	return out
+
+
+# ---------------------------------------------------------------- U10 §3: Dee's cage side egg, findable
+
+var cage_noted: bool = false
+var _cage_t: float = 0.0
+
+
+## The first time this peer's player sees Dee's cage (in the hangar, within cage_note.radius_m), the yard rule goes
+## on the minimap as a note and the HUD says what she wants (the egg's three things; the cage lines play on each).
+func _tick_cage_note(delta: float) -> void:
+	if cage_noted:
+		return
+	_cage_t -= delta
+	if _cage_t > 0.0:
+		return
+	_cage_t = 0.5
+	var cn: Dictionary = cfg.get("cage_note", {})
+	if cn.is_empty():
+		return
+	var at: Array = cn.get("at", [66.0, 0.0, 96.0])
+	var cage: Vector3 = Vector3(float(at[0]), float(at[1]), float(at[2]))
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		var p: Player = n as Player
+		if p == null or not bool(p.get("is_local")) or bool(p.get("is_bot")) or not p.is_alive():
+			continue
+		if p.global_position.distance_to(cage) > float(cn.get("radius_m", 14.0)):
+			continue
+		if ZoneVolume.zone_at(get_tree(), p.global_position) != &"C_HANGAR":
+			continue
+		cage_noted = true
+		var ms: MapState = MapState.current()
+		if ms != null:
+			ms.add_marker({"pos": cage, "kind": "note", "label": str(cn.get("label", "Dee's yard rule")), "color": Color(0.85, 0.72, 0.38), "owner": 0, "target": "me"})
+		_banner(str(cn.get("banner", "")), 4.0)
+		return
+
+
+# ---------------------------------------------------------------- U10 §3: the arrival on the salt, the perks waking
+
+var arrival_quiet: bool = false      # the smoke
+var perks_woken: int = 0
+
+
+## The arrival beat (row 22): the card is the map's intro banner (GROOM LAKE, NEVADA / ... / the future Area 51);
+## before the first round's spawns there is at least `quiet_s` of nothing but the wind and the wreck's fire (a gust,
+## the fire's roar close by); the squad's first lines (OPR_M4C_ARRIVE_*, <SPK>_M4C_ARRIVE_01) run over it.
+func _arrival_quiet() -> void:
+	var ac: Dictionary = cfg.get("arrival", {})
+	if not Net.is_authority() or RoundManager.state != RoundManager.State.BREAK:
+		return
+	if RoundManager.current_round + 1 != RoundManager.act_start:
+		return
+	RoundManager.break_left = maxf(RoundManager.break_left, float(ac.get("quiet_s", 12.0)))
+	arrival_quiet = true
+	var gust: String = str(ac.get("gust", "amb_wind_gust"))
+	if AudioDirector.has_sound(gust):
+		AudioDirector.play_2d(gust, -6.0)
+	var f: Array = ac.get("fire_at", [-17.6, 1.0, -22.0])
+	var fire: String = str(ac.get("fire", "fire_crackle"))
+	if AudioDirector.has_sound(fire):
+		AudioDirector.play_3d(fire, Vector3(float(f[0]), float(f[1]), float(f[2])), 2.0)
+
+
+## The power-on (row 9): the perks wake one after another nearest the generator first, each with a sting.
+func _perks_wake() -> void:
+	var gen: Vector3 = Vector3(-64.0, 0, 99.3)
+	var sw: Node3D = get_parent().get_node_or_null("Generator") as Node3D
+	if sw != null:
+		gen = sw.global_position
+	var machines: Array = []
+	for n: Node in get_parent().get_children():
+		if n is PerkMachine:
+			machines.append(n)
+	machines.sort_custom(func(a: Node3D, b: Node3D) -> bool: return a.global_position.distance_to(gen) < b.global_position.distance_to(gen))
+	var gap: float = float((cfg.get("power_wake", {}) as Dictionary).get("gap_s", 0.35))
+	var start: float = float((cfg.get("power_wake", {}) as Dictionary).get("start_s", 1.8))
+	for i: int in machines.size():
+		var m: Node3D = machines[i]
+		get_tree().create_timer(start + gap * float(i)).timeout.connect(func() -> void:
+			if is_instance_valid(m):
+				perks_woken += 1
+				if AudioDirector.has_sound("perk_wake_sting"):
+					AudioDirector.play_3d("perk_wake_sting", m.global_position + Vector3.UP * 1.5, 0.0)
+				Effects.shatter(m.global_position + Vector3.UP * 1.8, Color(1.0, 0.8, 0.45), 8, 2.0))
