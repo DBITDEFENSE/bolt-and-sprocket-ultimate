@@ -364,6 +364,8 @@ func training() -> bool:
 
 
 func phase_name() -> String:
+	if hunting:
+		return "hunt%s" % ("!" if _hunt_hp_t > _f("hunt_stall_s", 4.0) else "")
 	return PHASE_NAMES[phase]
 
 

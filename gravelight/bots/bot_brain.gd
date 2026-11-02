@@ -1324,7 +1324,7 @@ func invalidate_stand_cache() -> void:
 
 
 ## A reachable navmesh spot that sees `target` (a bell overhead), nearest rings first; INF when none within 12 m.
-func vantage_for(target_p: Vector3) -> Vector3:
+func vantage_for(target_p: Vector3, avoid: Array = []) -> Vector3:
 	var eye_h: float = float(BotAIData.combat("perception").get("eye_height", 1.55))
 	for r: float in [2.5, 4.5, 7.0, 10.0, 12.0]:
 		for k: int in 12:
@@ -1333,6 +1333,12 @@ func vantage_for(target_p: Vector3) -> Vector3:
 				var want: Vector3 = target_p + Vector3(cos(a) * r, dy, sin(a) * r)
 				var s: Vector3 = snap(want)
 				if s.distance_to(want) > 1.6 or s.y > target_p.y:
+					continue
+				var near_bad: bool = false
+				for av: Variant in avoid:
+					if (av as Vector3).distance_to(s) < 2.0:
+						near_bad = true   # U10 (T-163): a spot whose shots never reached it (another angle)
+				if near_bad:
 					continue
 				if not los_point(s + Vector3.UP * eye_h, target_p):
 					continue

@@ -33,6 +33,9 @@
   "hold_fight_m": 2.2,
   "_hold_fight_m": "Holding a zone: a zombie closer than this and the bot fights it the normal way (backs off, knifes) for that moment.",
   "errand_timeout_s": 45.0,
+  "shots_per_vantage": 8,
+  "vantages_max": 3,
+  "_shots_per_vantage": "U10 (T-163): a shoot_target bot fires at most shots_per_vantage rounds from one spot without the target answering (a bell rings, the Chapel bell lights), then tries another angle (BotBrain.vantage_for avoid list); after vantages_max spots it gives the step up (missed). Counted per target.",
   "wait_timeout_s": 150.0,
   "jakub": {
     "types": ["collect", "hold_zone", "carry", "escort"],

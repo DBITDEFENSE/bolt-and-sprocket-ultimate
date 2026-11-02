@@ -889,12 +889,13 @@ func _do_shoot(n: Node3D, delta: float) -> void:
 	if bool(_plan.get("need_upgraded", false)):
 		_forced = {"upgraded": true}
 	var id: int = n.get_instance_id()
+	var bad: Dictionary = task.get("vbad", {})   # U10 (T-163): per target, the vantages whose shots never connected
 	if not _vantage.has(id):
-		_vantage[id] = brain.vantage_for(n.global_position)
+		_vantage[id] = brain.vantage_for(n.global_position, bad.get(id, []))
 	var vp: Vector3 = _vantage[id]
 	if vp == Vector3.INF:
 		if not _try_door(n.global_position):
-			_finish(false, "unreachable")
+			_finish(false, "unreachable" if not bad.has(id) else "missed")
 		return
 	if not _walk(vp, 0.8, delta):
 		return
@@ -903,12 +904,23 @@ func _do_shoot(n: Node3D, delta: float) -> void:
 		return
 	_shoot_target = n
 	_shoot_frame = Engine.get_physics_frames()
-	var before: int = int(task.get("shots", 0))
+	# shots counted per target (a sequence's next bell starts at 0: the U08 count ran over all four bells) and per
+	# vantage: shots_per_vantage without the target answering -> another angle (a bell inside the specimen tank
+	# was in sight from a spot whose every round hit the tank's frame)
+	var sk: String = "shots_%d" % id
 	if brain.aim.shoot_at(n.global_position, 1.0):
-		task["shots"] = before + 1
+		task[sk] = int(task.get(sk, 0)) + 1
 		brain.aim.fire_cd = maxf(brain.aim.fire_cd, 0.6)
 		_replan = true
-		if int(task["shots"]) > 24:
+		var per_v: int = int(_cfg().get("shots_per_vantage", 8))
+		if int(task[sk]) % per_v == 0:
+			var lst: Array = bad.get(id, [])
+			lst.append(vp)
+			bad[id] = lst
+			task["vbad"] = bad
+			_vantage.erase(id)
+			_log("no hit on %s from %s: another angle" % [n.name, str(vp.snapped(Vector3.ONE * 0.1))])
+		if int(task[sk]) >= per_v * int(_cfg().get("vantages_max", 3)):
 			_finish(false, "missed")
 
 
