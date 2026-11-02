@@ -118,15 +118,12 @@ is match round 15.
 Routes, plans and tasks per set-piece: `docs/BOT_AI.md` section 15 (Fernflug: Acts II-IV) and section 14 (Kaltenbrunn,
 Totenhafen's boss and wonder).
 
-- **Totenhafen.** The Totenhafen systems (T-153, branch u10-2-totenhafen-systems) were not on master when this
-  closed.
-  - That branch already gives every LETZTE FAHRT step a bot_task: the coffins as carries, the cipher solver with its
-    think_s delay, the three diesel holds, the sail as a hold on `uboat_sail`.
-  - It also has the MAN_SEARCHLIGHT mark order and the reach fixes to the signal tower.
-  - Here: the Kielholer's counter (`der_kielholer`) and the grab break-free (`BotAim.break_free`), and the Undertow
-    as a wonder taken from the bench (its tier 6.5 comes with that branch's economy.json).
-  - Not done: verifying each LETZTE FAHRT task in a soak, and the searchlight-order case in smoke_bots_u10. Both
-    wait for T-153's merge.
+- **Totenhafen.** The Totenhafen systems (T-153) are on master, and this branch is rebased onto them.
+  - T-153 gives every LETZTE FAHRT step a bot_task, with the cipher solver's think_s delay and the shop break.
+  - It also has the MAN_SEARCHLIGHT mark order.
+  - Here: the Kielholer's counter (`der_kielholer`), the grab break-free (`BotAim.break_free`), the Undertow taken
+    from the bench, and the searchlight-order case in smoke_bots_u10.
+  - One smoke_letzte_fahrt run is in T-163's hand-back (its steps-done count).
 
 ## 4. Tests and smokes
 
