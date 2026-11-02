@@ -872,3 +872,48 @@ func build_gameplay() -> void:
 		m.position = bp
 		m.add_to_group(&"power_burst_points", true)
 		gameplay.add_child(m)
+
+
+# ================================================================== UPDATE 09 additions (T-146; additive only)
+# Nothing above calls these: an act generator opts in (gen_map04a overrides build_lights() to call
+# tag_light_zones after the base). Acts II-IV regenerate unchanged unless they call them too.
+
+## The zone whose box holds `p` (generous in height: a lamp under a roof or a flood on a wall top still counts),
+## else the zone whose box is nearest in plan. "" only when the act has no zone boxes.
+func zone_at(p: Vector3) -> String:
+	var best: String = ""
+	var best_d: float = INF
+	for zb: Array in zone_boxes:
+		var lo: Vector3 = zb[1]
+		var hi: Vector3 = zb[2]
+		var inside_xz: bool = p.x >= lo.x and p.x <= hi.x and p.z >= lo.z and p.z <= hi.z
+		if inside_xz and p.y >= lo.y - 2.0 and p.y <= hi.y + 12.0:
+			return str(zb[0])
+		var q: Vector3 = Vector3(clampf(p.x, lo.x, hi.x), clampf(p.y, lo.y, hi.y), clampf(p.z, lo.z, hi.z))
+		var d: float = Vector2(p.x - q.x, p.z - q.z).length() + absf(p.y - q.y) * 0.1
+		if d < best_d:
+			best_d = d
+			best = str(zb[0])
+	return best
+
+
+## Gives every Light3D under the map root (except directional lights) a `zone` meta from its position when it has
+## none, then holds the shadow budget (contract C4: at most `cap` shadow-casting lights per zone; the first ones
+## built keep theirs). Returns {zone: shadowed count} after the cap.
+func tag_light_zones(cap: int = 6) -> Dictionary:
+	var counts: Dictionary = {}
+	for n: Node in map_root.find_children("*", "Light3D", true, false):
+		if n is DirectionalLight3D:
+			continue
+		var l: Light3D = n as Light3D
+		if not l.has_meta("zone"):
+			l.set_meta("zone", StringName(zone_at(_xform_to_root(l).origin)))
+		if not l.shadow_enabled:
+			continue
+		var z: String = str(l.get_meta("zone"))
+		if int(counts.get(z, 0)) >= cap:
+			l.shadow_enabled = false
+			push_warning("gen_map04: %s loses its shadow (zone %s is at its %d shadowed lights)" % [l.name, z, cap])
+			continue
+		counts[z] = int(counts.get(z, 0)) + 1
+	return counts

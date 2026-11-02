@@ -477,19 +477,25 @@ static func trim(parent: Node3D, a: Vector3, b: Vector3, out: Vector3, h: float 
 ##   frame (Mats key, "beam"), sill_key ("stucco_trim"), mullions [cols, rows] ([2, 3]), glass ("window_dark"),
 ##   broken (0..1: share of panes punched out, the rest dirty glass), curtain ("" or a cloth key), lit (Color or
 ##   null: a warm glow card behind the glass), silhouette (bool: a dark figure on the glow, behind the curtain gap),
-##   shutters (bool), snow (bool: a cap on the sill), frost (bool), seed (int), depth (reveal depth, 0.12).
+##   shutters (bool), snow (bool: a cap on the sill), frost (bool), seed (int), depth (reveal depth, 0.12),
+##   blind (bool: a window painted onto a SOLID wall: the whole window stands proud of the face so the wall never
+##   covers its reveal), open (bool: a real opening (a barricade window): frame and sill only, no glass, back or curtain).
 ## Returns its group.
 static func window(parent: Node3D, pos: Vector3, yaw: float, w: float, h: float, opts: Dictionary = {}) -> Node3D:
-	var g: Node3D = _group(parent, "Window", Transform3D(Basis(Vector3.UP, deg_to_rad(yaw)), pos))
+	var bw: Basis = Basis(Vector3.UP, deg_to_rad(yaw))
+	var depth: float = float(opts.get("depth", 0.12))
+	var blind: bool = bool(opts.get("blind", false))
+	var is_open: bool = bool(opts.get("open", false))
+	var g: Node3D = _group(parent, "Window", Transform3D(bw, pos + (bw * Vector3(0, 0, -(depth + 0.09)) if blind else Vector3.ZERO)))
 	var fk: String = str(opts.get("frame", "beam"))
 	var mull: Array = opts.get("mullions", [2, 3])
-	var depth: float = float(opts.get("depth", 0.12))
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = int(opts.get("seed", int(absf(pos.x * 31.0 + pos.z * 17.0 + pos.y * 7.0))))
 	var hw: float = w * 0.5
 	# the reveal: the pane sits `depth` into the wall; a dark back so a solid wall reads as a window
-	var lit: Variant = opts.get("lit", null)
-	_ns(Props.block(g, Vector3(-hw, 0, depth + 0.02), Vector3(hw, h, depth + 0.04), "window_dark"))
+	var lit: Variant = null if is_open else opts.get("lit", null)
+	if not is_open:
+		_ns(Props.block(g, Vector3(-hw, 0, depth + 0.02), Vector3(hw, h, depth + 0.04), "window_dark"))
 	if lit is Color:
 		var glow: StandardMaterial3D = _glow_mat(lit as Color)
 		var gm: MeshInstance3D = Props.block(g, Vector3(-hw + 0.04, 0.04, depth + 0.012), Vector3(hw - 0.04, h - 0.04, depth + 0.018), "window_dark")
@@ -502,8 +508,8 @@ static func window(parent: Node3D, pos: Vector3, yaw: float, w: float, h: float,
 	Props.block(g, Vector3(-hw - fw, -0.02, -0.04), Vector3(-hw, h + fw, depth), fk)
 	Props.block(g, Vector3(hw, -0.02, -0.04), Vector3(hw + fw, h + fw, depth), fk)
 	Props.block(g, Vector3(-hw - fw, h, -0.05), Vector3(hw + fw, h + fw + 0.04, depth), fk)
-	var cols: int = maxi(1, int(mull[0]))
-	var rows: int = maxi(1, int(mull[1]))
+	var cols: int = 1 if is_open else maxi(1, int(mull[0]))
+	var rows: int = 1 if is_open else maxi(1, int(mull[1]))
 	for c: int in range(1, cols):
 		var x: float = -hw + w * float(c) / float(cols)
 		_ns(Props.block(g, Vector3(x - 0.025, 0, depth - 0.03), Vector3(x + 0.025, h, depth), fk))
@@ -513,7 +519,7 @@ static func window(parent: Node3D, pos: Vector3, yaw: float, w: float, h: float,
 	# panes: dirty glass, some punched out (the dark back shows), some cracked (cut-out shard glass)
 	var broken: float = float(opts.get("broken", 0.0))
 	var gk: String = str(opts.get("glass", "glass"))
-	for c2: int in cols:
+	for c2: int in (0 if is_open else cols):
 		for r2: int in rows:
 			var px0: float = -hw + w * float(c2) / float(cols)
 			var py0: float = h * float(r2) / float(rows)
@@ -533,7 +539,7 @@ static func window(parent: Node3D, pos: Vector3, yaw: float, w: float, h: float,
 		_ns(Props.block(g, Vector3(-hw - 0.08, 0.0, -0.13), Vector3(hw + 0.08, 0.05, -0.01), "snow"))
 	if bool(opts.get("frost", false)):
 		instance(g, "frost_pane", _quad(), card_mat("frost"), Transform3D(Basis(Vector3.UP, PI).scaled_local(Vector3(w * 0.9, h * 0.6, 1.0)), Vector3(0, h * 0.3, depth - 0.025)))
-	var ck: String = str(opts.get("curtain", ""))
+	var ck: String = "" if is_open else str(opts.get("curtain", ""))
 	if ck != "":
 		var gap: float = rng.randf_range(0.15, 0.45) * w
 		for s: float in [-1.0, 1.0]:
@@ -582,18 +588,25 @@ static func silhouette(parent: Node3D, pos: Vector3, yaw: float, h: float = 1.7,
 ## A door in a wall: frame (jambs, lintel, a step), a leaf (planks or steel) closed or swung open by `open_deg`
 ## about its left hinge, hinges and a handle. `pos` = the bottom centre of the opening on the wall's outer face,
 ## local -Z out. opts: frame ("beam"), leaf ("planks"), open_deg (0), depth (0.15), step (bool), sign (text, ""),
-## steel (bool: riveted steel leaf with a kick plate). Returns its group.
+## steel (bool: riveted steel leaf with a kick plate), blind (bool: a door painted onto a SOLID wall, the whole piece
+## stands proud of the face), leaf "" (frame only: round a gameplay door, which draws its own leaf). Returns its group.
 static func door(parent: Node3D, pos: Vector3, yaw: float, w: float, h: float, opts: Dictionary = {}) -> Node3D:
-	var g: Node3D = _group(parent, "DoorD", Transform3D(Basis(Vector3.UP, deg_to_rad(yaw)), pos))
+	var bd: Basis = Basis(Vector3.UP, deg_to_rad(yaw))
+	var depth: float = float(opts.get("depth", 0.15))
+	var g: Node3D = _group(parent, "DoorD", Transform3D(bd, pos + (bd * Vector3(0, 0, -(depth + 0.03)) if bool(opts.get("blind", false)) else Vector3.ZERO)))
 	var fk: String = str(opts.get("frame", "beam"))
 	var lk: String = str(opts.get("leaf", "planks"))
-	var depth: float = float(opts.get("depth", 0.15))
 	var hw: float = w * 0.5
 	Props.block(g, Vector3(-hw - 0.12, 0, -0.05), Vector3(-hw, h + 0.12, depth), fk)
 	Props.block(g, Vector3(hw, 0, -0.05), Vector3(hw + 0.12, h + 0.12, depth), fk)
 	Props.block(g, Vector3(-hw - 0.16, h, -0.07), Vector3(hw + 0.16, h + 0.2, depth), fk)
 	if bool(opts.get("step", true)):
 		_ns(Props.block(g, Vector3(-hw - 0.15, -0.02, -0.4), Vector3(hw + 0.15, 0.04, 0.0), "concrete"))
+	var sign0: String = str(opts.get("sign", ""))
+	if lk == "":
+		if sign0 != "":
+			enamel_sign(g, Vector3(0, h + 0.45, -0.06), 0.0, sign0, minf(w * 1.2, 1.6), 0.3)
+		return g
 	var hinge: Node3D = Props.group(g, "Leaf", Vector3(-hw + 0.02, 0, depth * 0.5), -float(opts.get("open_deg", 0.0)))
 	var steel: bool = bool(opts.get("steel", false))
 	Props.block(hinge, Vector3(0, 0.01, -0.025), Vector3(w - 0.04, h - 0.02, 0.025), lk)
@@ -953,7 +966,7 @@ static func wing_surface(x: float, z: float, p: Dictionary) -> Vector2:
 	var xc: float = (le - z) / maxf(0.01, le - te)
 	var f: float = 10.0 * (0.2969 * sqrt(xc) - 0.126 * xc - 0.3516 * xc * xc + 0.2843 * xc * xc * xc - 0.1036 * xc * xc * xc * xc)
 	var t: float = lerpf(float(p.get("t_root", 7.0)), float(p.get("t_tip", 3.6)), ax / half_span)
-	var tip_round: float = sqrt(maxf(0.0, 1.0 - pow(ax / half_span, 10.0)))
+	var tip_round: float = sqrt(maxf(0.0, 1.0 - pow(ax / half_span, float(p.get("tip_pow", 10.0)))))
 	var wing: float = maxf(0.0, f * t * tip_round)
 	var bz: Vector2 = p.get("body_z", Vector2(-20.5, 21.0))
 	var bh: float = float(p.get("body_h", 3.3))
@@ -1068,22 +1081,24 @@ static func rib_mesh(t_c: float = 0.12) -> ArrayMesh:
 
 ## A half-built wing in a jig: ribs every `rib_step` m across `span` (instanced), front and rear spars, and skin
 ## panels over the first `skin` share of the span (from the root, -X end). The wing's leading edge runs along local
-## +X at z 0 (chord toward -Z), root chord `root` tapering to `tip`. Returns its group.
+## +X at z 0 (chord toward -Z), root chord `root` tapering to `tip`; `mirror` puts the root at +X (the other half of a
+## flying wing). Returns its group.
 static func wing_skeleton(parent: Node3D, pos: Vector3, yaw: float, span: float, root: float, tip: float, skin: float = 0.35,
-		rib_step: float = 1.2, key: String = "machine_grey", skin_key: String = "chrome_worn", sweep: float = 0.25) -> Node3D:
+		rib_step: float = 1.2, key: String = "machine_grey", skin_key: String = "chrome_worn", sweep: float = 0.25, mirror: bool = false) -> Node3D:
 	var g: Node3D = Props.group(parent, "WingSkeleton", pos, yaw)
+	var m: float = -1.0 if mirror else 1.0
 	var n: int = maxi(2, int(span / rib_step))
 	var mesh: ArrayMesh = rib_mesh(0.13)
 	for i: int in n + 1:
 		var u: float = float(i) / float(n)
-		var x: float = -span * 0.5 + span * u
+		var x: float = (-span * 0.5 + span * u) * m
 		var c: float = lerpf(root, tip, u)
 		var zle: float = -u * span * sweep
 		instance(g, "rib_" + key, mesh, Mats.get_mat(key), Transform3D(Basis.IDENTITY.scaled(Vector3(0.025, c, c)), Vector3(x, 0, zle)), true)
 	# spars at 25% and 65% chord (straight lines root to tip)
 	for f: float in [0.25, 0.65]:
-		var a: Vector3 = Vector3(-span * 0.5, 0, -root * f)
-		var b: Vector3 = Vector3(span * 0.5, 0, -span * sweep - tip * f)
+		var a: Vector3 = Vector3(-span * 0.5 * m, 0, -root * f)
+		var b: Vector3 = Vector3(span * 0.5 * m, 0, -span * sweep - tip * f)
 		i_beam(g, a, b, lerpf(root, tip, 0.5) * 0.11, 0.12, key, Vector3.UP, true)
 	# the skinned part: upper skin panels as thin boxes following the chord's top line
 	var ns: int = maxi(1, int(n * skin))
@@ -1091,14 +1106,58 @@ static func wing_skeleton(parent: Node3D, pos: Vector3, yaw: float, span: float,
 		var u0: float = float(i2) / float(n)
 		var u1: float = float(i2 + 1) / float(n)
 		var c0: float = lerpf(root, tip, (u0 + u1) * 0.5)
-		var x0: float = -span * 0.5 + span * u0
-		var x1: float = -span * 0.5 + span * u1
+		var x0: float = (-span * 0.5 + span * u0) * m
+		var x1: float = (-span * 0.5 + span * u1) * m
 		var zm: float = -(u0 + u1) * 0.5 * span * sweep
 		var th: float = c0 * 0.13 * 0.5
-		Props.obox(g, Vector3((x0 + x1) * 0.5, th * 0.92, zm - c0 * 0.3), Vector3(x1 - x0 + 0.02, 0.012, c0 * 0.5), skin_key, Vector3(-4, 0, 0))
-		Props.obox(g, Vector3((x0 + x1) * 0.5, th * 0.62, zm - c0 * 0.72), Vector3(x1 - x0 + 0.02, 0.012, c0 * 0.36), skin_key, Vector3(8, 0, 0))
-		Props.obox(g, Vector3((x0 + x1) * 0.5, -th * 0.8, zm - c0 * 0.45), Vector3(x1 - x0 + 0.02, 0.012, c0 * 0.8), skin_key)
+		Props.obox(g, Vector3((x0 + x1) * 0.5, th * 0.92, zm - c0 * 0.3), Vector3(absf(x1 - x0) + 0.02, 0.012, c0 * 0.5), skin_key, Vector3(-4, 0, 0))
+		Props.obox(g, Vector3((x0 + x1) * 0.5, th * 0.62, zm - c0 * 0.72), Vector3(absf(x1 - x0) + 0.02, 0.012, c0 * 0.36), skin_key, Vector3(8, 0, 0))
+		Props.obox(g, Vector3((x0 + x1) * 0.5, -th * 0.8, zm - c0 * 0.45), Vector3(absf(x1 - x0) + 0.02, 0.012, c0 * 0.8), skin_key)
 	return g
+
+
+## Folds every primitive-mesh MeshInstance3D under `group` into one ArrayMesh child per material and shadow mode,
+## in the group's own frame (for a kept group the static batching skips: the Kranich, the crane bridge, the hangar
+## doors, so an fx can still move it as one piece). UVs are dropped like the batching does (the materials are
+## world-triplanar). Returns how many meshes it folded.
+static func merge_children(group: Node3D) -> int:
+	var buckets: Dictionary = {}
+	var victims: Array[MeshInstance3D] = []
+	for n: Node in group.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		if not (mi.mesh is PrimitiveMesh) or mi.material_override == null:
+			continue
+		var xf: Transform3D = Transform3D.IDENTITY
+		var cur: Node = mi
+		while cur != null and cur != group:
+			if cur is Node3D:
+				xf = (cur as Node3D).transform * xf
+			cur = cur.get_parent()
+		var k: String = "%d|%d" % [mi.material_override.get_instance_id(), mi.cast_shadow]
+		if not buckets.has(k):
+			var st: SurfaceTool = SurfaceTool.new()
+			st.begin(Mesh.PRIMITIVE_TRIANGLES)
+			buckets[k] = {"st": st, "mat": mi.material_override, "shadow": mi.cast_shadow}
+		(buckets[k]["st"] as SurfaceTool).append_from(mi.mesh, 0, xf)
+		victims.append(mi)
+	var i: int = 0
+	for k2: String in buckets.keys():
+		var b: Dictionary = buckets[k2]
+		var arrays: Array = (b["st"] as SurfaceTool).commit_to_arrays()
+		arrays[Mesh.ARRAY_TEX_UV] = null
+		var m: ArrayMesh = ArrayMesh.new()
+		m.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+		var out: MeshInstance3D = MeshInstance3D.new()
+		out.name = "Merged_%d" % i
+		out.mesh = m
+		out.material_override = b["mat"]
+		out.cast_shadow = b["shadow"]
+		group.add_child(out)
+		i += 1
+	for mi2: MeshInstance3D in victims:
+		mi2.get_parent().remove_child(mi2)
+		mi2.free()
+	return victims.size()
 
 
 ## Drops the caches (tests).
