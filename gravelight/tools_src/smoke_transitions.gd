@@ -30,8 +30,9 @@ func _ready() -> void:
 		elif a.begins_with("--max-gap="):
 			max_gap_ms = float(a.substr(10))
 	var tree: SceneTree = get_tree()
-	if get_parent() != tree.root:
-		get_parent().remove_child.call_deferred(self)
+	# (the smoke scene is the current scene, which a scene change frees: step out of that role, stay under the root)
+	if tree.current_scene == self:
+		tree.root.remove_child.call_deferred(self)
 		tree.root.add_child.call_deferred(self)
 	_run.call_deferred()
 

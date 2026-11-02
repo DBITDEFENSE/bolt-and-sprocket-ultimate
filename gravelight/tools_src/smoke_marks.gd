@@ -15,6 +15,8 @@ extends Node
 ##      door -> "Open this door for 1,500?"; a right-click removes a mark
 ##   godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/smoke_marks.tscn
 ##   (--clip: a chase camera on the working bot, for the clip of a bot buying a marked perk)
+##   --map=map04b (T-162, UPDATE 10 s6 item 4): the same squad phases on any act's map (7 Danger / Regroup / Defend and 8
+##   revive-and-resume; the inn's perk, wall-gun, door and pause-map phases need Map 0's props and are skipped there).
 ## Prints "[marks] ..." lines and RESULT PASS/FAIL (exit code 0/1).
 
 const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
@@ -25,6 +27,7 @@ var _fails: PackedStringArray = []
 var _lines: PackedStringArray = []
 var _clip: bool = false
 var _only: String = ""
+var _map_name: String = "map00"
 var _cam: Camera3D = null
 var _focus_pid: int = -1
 var _done: bool = false
@@ -38,6 +41,8 @@ func _ready() -> void:
 			_clip = true
 		elif a.begins_with("--only="):
 			_only = a.substr(7)
+		elif a.begins_with("--map="):
+			_map_name = a.substr(6)
 	AudioServer.set_bus_mute(AudioServer.get_bus_index("Master"), true)
 	ProfileSave.path = "user://_qa_marks_profile.json"
 	ProfileSave.profile = ProfileSave.new_profile()
@@ -49,7 +54,8 @@ func _ready() -> void:
 	GameState.bot_count = 3
 	GameState.bot_ai_mode = "off"
 	GameState.god_mode = true
-	_map = (load(MAP) as PackedScene).instantiate() as MapRoot
+	var scene_path: String = MAP if _map_name == "map00" else NpcWallProbe.scene_for(_map_name)
+	_map = (load(scene_path) as PackedScene).instantiate() as MapRoot
 	get_tree().root.add_child.call_deferred(_map)
 	get_tree().set_deferred("current_scene", _map)
 	GLBus.vo_line_started.connect(func(id: StringName, _spk: StringName, text: String, _d: float) -> void:
@@ -139,6 +145,8 @@ func _brain(pid: int) -> BotBrain:
 
 func _phase(name: String) -> bool:
 	print("[marks] ---- %s (t=%.0f)" % [name, _t])
+	if _map_name != "map00" and not (name.begins_with("7") or name.begins_with("8")):
+		return false   # (the other phases use the inn's own machines, guns, doors and pause map)
 	return _only == "" or name.begins_with(_only)
 
 
@@ -155,8 +163,9 @@ func _run() -> void:
 	var human: Player = _map.player
 	_check(mm.has_bots() and mm.bots().size() == 3, "MapMarks sees the 3 bots (%d)" % mm.bots().size())
 	# the cellar open, the power on (the perks live down there)
-	(_node("Gameplay/Door_Cellar") as BuyDoor).open(1)
-	(_node("Gameplay/Door_Stable") as BuyDoor).open(1)
+	if _map_name == "map00":
+		(_node("Gameplay/Door_Cellar") as BuyDoor).open(1)
+		(_node("Gameplay/Door_Stable") as BuyDoor).open(1)
 	GameState.power_on = true
 	GLBus.power_activated.emit()
 	RoundManager.break_left = 3.0
