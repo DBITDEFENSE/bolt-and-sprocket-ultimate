@@ -128,7 +128,25 @@ static func egg_may_work_now(brain: BotBrain) -> bool:
 	var egg: Dictionary = egg_block(TrainingRoute.map_key_of(String(brain.squad.map.map_id)))
 	if egg.is_empty() or egg_full(egg, state_with_eggs(brain)):
 		return true
-	return RoundManager.state != RoundManager.State.ROUND
+	return RoundManager.state != RoundManager.State.ROUND or brain.in_break()
+
+
+## U10 (T-163): an errand worth the errand window (BotTrainer.errand_window): the plan's current step affordable
+## (the power: not on yet), or an open egg step for the agent.
+static func errand_pending(brain: BotBrain) -> bool:
+	if brain == null or brain.squad == null or brain.squad.map == null:
+		return false
+	var step: Dictionary = current_for(brain)
+	if not step.is_empty():
+		if step.has("power"):
+			if not GameState.power_on:
+				return true
+		else:
+			var keep: int = int((BotAIData.table("economy").get("reserve", {}) as Dictionary).get("min_scrip", 300))
+			var pr: int = price_of(step, brain)
+			if pr >= 0 and Economy.get_scrip(brain.player.player_id) >= pr + keep:
+				return true
+	return egg_pending(brain)
 
 
 ## U10 (T-163) pure: does the plan's purchase come before the egg in this break? A perk, gun or door step the agent
@@ -151,7 +169,7 @@ static func buy_first(brain: BotBrain) -> bool:
 		return false
 	var keep: int = int((BotAIData.table("economy").get("reserve", {}) as Dictionary).get("min_scrip", 300))
 	return buy_first_rule(step, price_of(step, brain), Economy.get_scrip(brain.player.player_id), keep,
-		float(brain.scores.get("buy", 0.0)), RoundManager.state == RoundManager.State.ROUND)
+		float(brain.scores.get("buy", 0.0)), RoundManager.state == RoundManager.State.ROUND and not brain.in_break())
 
 
 ## Pure: the value of starting egg work now (0 = not now): in a quiet moment (a break, the crawler break) or
@@ -209,8 +227,8 @@ static func tick_egg(brain: BotBrain) -> void:
 		return   # U10 (T-163): the plan's purchase takes this break
 	if not quiet and brain.trainer != null and brain.trainer.owns_round():
 		return   # the trainer owns this round: egg work in the break (or the crawler break)
-	if not egg_full(egg, st) and RoundManager.state == RoundManager.State.ROUND:
-		return   # before Ironhide: the round breaks only
+	if not egg_full(egg, st) and RoundManager.state == RoundManager.State.ROUND and not quiet:
+		return   # before Ironhide: the round breaks only (and the errand window, U10)
 	if OS.has_environment("EGG_DEBUG"):
 		print("[egg debug] t=%.0f r%d trying a pick (quiet %s, pressure %.2f)" % [now, RoundManager.current_round, str(quiet), brain.perception.pressure])
 	var pick: Dictionary = brain.squad.ee.pick_for(brain, {}, true)

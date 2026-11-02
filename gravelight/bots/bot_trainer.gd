@@ -234,11 +234,50 @@ static func dead_reckon(last_pos: Vector3, me: Vector3, speed: float, age_s: flo
 
 # ================================================================== the utility input
 
+## U10 (T-163) pure: the errand window. With bot teammates standing, a round down to its last errand_left zombies
+## (nothing left to spawn, none within errand_clear_m) is the agent's break for an errand that a 10-15 s break can't
+## hold (the Lab door 83 m from its loop, the Crucible in the Core): it leaves the stragglers to the squad's hunt
+## (T-058) the way a co-op player leaves the last two to a teammate and goes shopping. Solo is the crawler break's.
+static func errand_window_rule(in_round: bool, to_spawn: int, special: bool, alive: int, nearest_d: float, mates: int, pending: bool, cfg: Dictionary) -> bool:
+	if not bool(cfg.get("errand_window", true)) or not in_round or to_spawn > 0 or special or not pending:
+		return false
+	if mates < 1 or alive < 1 or alive > int(cfg.get("errand_left", 2)):
+		return false
+	return nearest_d >= float(cfg.get("errand_clear_m", 8.0))
+
+
+var _ew_t: float = -INF
+var _ew_v: bool = false
+
+## The errand window now (cached for 0.5 s: the pending check asks the plan and the egg hub).
+func errand_window() -> bool:
+	if brain == null or brain.squad == null:
+		return false
+	var now: float = brain.squad.time()
+	if now - _ew_t < 0.5:
+		return _ew_v
+	_ew_t = now
+	var dirn: ZombieDirector = brain.squad.director()
+	var alive: int = dirn.active_zombies().size() if dirn != null else 0
+	var mates: int = 0
+	for b: BotBrain in brain.squad.brains:
+		if b != brain and b.player != null and is_instance_valid(b.player) and not b.player.downed and not b.player.spectating and not b.player.is_companion:
+			mates += 1
+	var in_round: bool = RoundManager.state == RoundManager.State.ROUND
+	var pending: bool = false
+	if in_round and RoundManager.to_spawn <= 0 and alive >= 1 and alive <= int(_f("errand_left", 2.0)) and mates >= 1:
+		pending = AgentPlan.errand_pending(brain)
+	_ew_v = errand_window_rule(in_round, RoundManager.to_spawn, RoundManager.is_special_round, alive, brain.perception.nearest_d, mates, pending, c)
+	return _ew_v
+
+
 ## lead_train's input: 0 when it can't train (no gun, no round, no loop, a special round on "fight"), 1 with
 ## zombies about, calm_value when nothing is near (the shopping and repairs may win then).
 func value() -> float:
 	if not brain.armed() or RoundManager.state != RoundManager.State.ROUND:
 		return 0.0
+	if errand_window():
+		return 0.0   # U10 (T-163): the last ones are the squad's; the agent has an errand
 	if brain.crawler != null and brain.crawler.holding():
 		return 0.0   # pass 3: the crawler break (errands, not a train)
 	var now: float = brain.squad.time()

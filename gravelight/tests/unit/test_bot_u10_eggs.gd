@@ -66,6 +66,19 @@ func test_hunt_can_be_switched_off() -> void:
 	assert_eq(int(BotTrainer.hunt_pick([{"d": 20.0, "crawler": true}], 0, false, 99.0, 0.1, off)["idx"]), -1)
 
 
+# ---------------------------------------------------------------- the errand window
+
+func test_errand_window_rule() -> void:
+	assert_true(BotTrainer.errand_window_rule(true, 0, false, 2, 20.0, 3, true, tcfg), "two left far off, teammates up, an errand: go")
+	assert_false(BotTrainer.errand_window_rule(true, 4, false, 2, 20.0, 3, true, tcfg), "still spawning")
+	assert_false(BotTrainer.errand_window_rule(true, 0, false, 3, 20.0, 3, true, tcfg), "three left: the train still has a job")
+	assert_false(BotTrainer.errand_window_rule(true, 0, false, 2, 4.0, 3, true, tcfg), "one in reach: fight first")
+	assert_false(BotTrainer.errand_window_rule(true, 0, false, 2, 20.0, 0, true, tcfg), "solo: the crawler break's job")
+	assert_false(BotTrainer.errand_window_rule(true, 0, false, 2, 20.0, 3, false, tcfg), "nothing to do: keep the round")
+	assert_false(BotTrainer.errand_window_rule(true, 0, true, 1, 20.0, 3, true, tcfg), "a special round: never")
+	assert_false(BotTrainer.errand_window_rule(false, 0, false, 1, 20.0, 3, true, tcfg), "a real break is a break already")
+
+
 # ---------------------------------------------------------------- the agent's plan before the egg in a break
 
 func test_buy_first_rule() -> void:

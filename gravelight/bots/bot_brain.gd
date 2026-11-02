@@ -623,6 +623,8 @@ func armed() -> bool:
 func in_break() -> bool:
 	if crawler != null and crawler.holding():
 		return true   # T-071 pass 3: the round's last zombie crawling behind: errands as in a break
+	if is_player_bot and trainer != null and trainer.errand_window():
+		return true   # U10 (T-163): the last ones left to the squad's hunt: the agent's errand as in a break
 	return RoundManager.state != RoundManager.State.ROUND or (RoundManager.to_spawn <= 0 and perception.known.is_empty() and squad.director() != null and squad.director().active_zombies().is_empty())
 
 
@@ -1093,6 +1095,8 @@ func crucible_for_me(range_m: float, anchor: Vector3) -> Crucible:
 		var cr: Crucible = cn as Crucible
 		if cr == null or not cr.is_powered() or cr.phase != Crucible.Phase.IDLE or _flat(cr.global_position, anchor) > range_m:
 			continue
+		if QuestManager.interact_ready(&"crucible_shard") or QuestManager.interact_ready(&"crucible_heartstorm"):
+			continue   # U10 (T-163): a forging gun hides the Requiem's shard slot / Heartstorm start (the agent's "couldn't use")
 		if not squad.can_claim(cr, player.player_id) or not _reachable(_front_of(cr)):
 			continue
 		return cr
