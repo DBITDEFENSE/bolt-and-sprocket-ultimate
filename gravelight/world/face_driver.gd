@@ -119,7 +119,19 @@ static func syllables(text: String) -> int:
 func _process(delta: float) -> void:
 	if _idx.is_empty() or mesh == null or not mesh.is_visible_in_tree():
 		return
-	step(delta)
+	# T-162 (UPDATE 10 s6 item 1): the zombies' animation LOD for the face too: every frame within full_m of the camera,
+	# every 2nd to half_m, every 4th beyond, stepping with the time it skipped (the blink and the lip flap stay in time).
+	_lod_acc += delta
+	_lod_skip += 1
+	if _lod_skip % PatronBody.lod_div(mesh) != 0:
+		return
+	var dt: float = _lod_acc
+	_lod_acc = 0.0
+	step(dt)
+
+
+var _lod_acc: float = 0.0
+var _lod_skip: int = 0
 
 
 ## One frame of the face (public so tools and tests can drive it without the tree's clock).

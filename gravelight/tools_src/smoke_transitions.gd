@@ -5,8 +5,9 @@ extends Node
 ##   card_ms  = from the scene change to the loading card being the current scene (what the player sees first),
 ##   total_ms = from the scene change to the new map's first frame (its player in the tree),
 ##   gap_ms   = the longest single frame in between (a frozen card; the hitch where the loaded scene is built).
-## FAILS if a hop shows no card, the card takes over 500 ms, or any frame in the transition is over 2000 ms. The
-## timings are real time of a headless run (no rendering, the machine may be loaded). The smoke node lives under the
+## FAILS if a hop shows no card, the card takes over 500 ms, or any frame in the transition is over 2000 ms x the
+## machine's load factor (a fixed 2M-step GDScript loop at start: `calib` over its 100 ms reference on an idle desktop,
+## at least 1; printed; --no-calib turns it off). The timings are real time of a headless run (no rendering). The smoke node lives under the
 ## root so the scene swaps do not free it. One RESULT line plus the timing table.
 ## Usage: godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/smoke_transitions.tscn
 ## [-- --only=map04c --max-gap=2000]
@@ -16,6 +17,8 @@ const CARD_MAX_MS: float = 500.0
 
 var only: String = ""
 var max_gap_ms: float = 2000.0
+var calib: bool = true
+var load_factor: float = 1.0
 var rows: Array[String] = []
 var fails: int = 0
 var _last_ms: int = 0
@@ -29,6 +32,8 @@ func _ready() -> void:
 			only = a.substr(7)
 		elif a.begins_with("--max-gap="):
 			max_gap_ms = float(a.substr(10))
+		elif a == "--no-calib":
+			calib = false
 	var tree: SceneTree = get_tree()
 	# (the smoke scene is the current scene, which a scene change frees: step out of that role, stay under the root)
 	if tree.current_scene == self:
@@ -56,6 +61,13 @@ func _map() -> MapRoot:
 
 func _run() -> void:
 	await get_tree().create_timer(0.5).timeout
+	if calib:
+		var c0: int = Time.get_ticks_usec()
+		var acc: float = 0.0
+		for i: int in 2000000:
+			acc += float(i) * 0.5
+		load_factor = clampf(float(Time.get_ticks_usec() - c0) / 1000.0 / 100.0, 1.0, 8.0)
+		print("[transitions] machine load factor %.1f (a fixed loop; the frame limit is %.0f ms x this)" % [load_factor, max_gap_ms])
 	ProfileSave.path = "user://_qa_transitions_profile.json"
 	ProfileSave.profile = ProfileSave.new_profile()
 	GLSettings.path = "user://_qa_transitions_settings.cfg"
@@ -105,7 +117,7 @@ func _run() -> void:
 		for i: int in 5:
 			await tree.process_frame
 		_watching = false
-		var ok: bool = card_ms >= 0.0 and card_ms <= CARD_MAX_MS and total_ms >= 0.0 and _gap <= max_gap_ms
+		var ok: bool = card_ms >= 0.0 and card_ms <= CARD_MAX_MS * load_factor and total_ms >= 0.0 and _gap <= max_gap_ms * load_factor
 		if not ok:
 			fails += 1
 		hops += 1
@@ -114,6 +126,6 @@ func _run() -> void:
 	for r: String in rows:
 		print("[transitions] %s" % r)
 	var pass_all: bool = fails == 0 and hops > 0
-	print("[transitions] RESULT: %s (%d hops, %d failed; card <= %.0f ms, no frame over %.0f ms)" % ["PASS" if pass_all else "FAIL", hops, fails, CARD_MAX_MS, max_gap_ms])
+	print("[transitions] RESULT: %s (%d hops, %d failed; card <= %.0f ms, no frame over %.0f ms; load factor %.1f)" % ["PASS" if pass_all else "FAIL", hops, fails, CARD_MAX_MS * load_factor, max_gap_ms * load_factor, load_factor])
 	Campaign.reset()
 	tree.quit(0 if pass_all else 1)
