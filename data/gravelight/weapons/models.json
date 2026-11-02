@@ -988,6 +988,14 @@
    },
    "notes": "A lead-glass lens (Sphere, spins; the Nachtglas seed inside) in a three-ring brass gyro cradle (Cradle, opens on a lift) on a brass yoke with a stencilled yard tag, the relay coil on a ceramic former behind the head (Coil, glows on the fling charge), wooden rear and front grips; Corona = Escape Velocity's violet ring of light round the lens (Crucible only).",
    "script": "tools_src/blender/wonder/lodestone.py"
+  },
+  "undertow": {
+   "source": null,
+   "asset": null,
+   "glb": null,
+   "parts": {},
+   "alt": [],
+   "notes": "procedural (WeaponModels._w_undertow, UPDATE 10 T-153): a brass pressure cylinder on a shoulder stock, a pump handle under the barrel, a gauge, a Nachtglas harpoon on a dark chain; no CC0 harpoon gun fitted, a Blender model is optional later"
   }
  },
  "greybox": [

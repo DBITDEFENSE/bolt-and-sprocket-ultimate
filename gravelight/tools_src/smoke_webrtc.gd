@@ -19,6 +19,10 @@ extends Node
 ## opens on the client, and the host's bot goes out on the deck: its CLIPPED state arrives on the client).
 
 const MAP_ID: String = "map00_crossroads"
+## UPDATE 10 (C8, T-153): --map=map02 plays Totenhafen; --through=flood,sail runs those host-owned events after the
+## two rounds (a spring flood: the client's tide must reach spring height; the boat's cast-off: the client must see
+## sail_t running from the host's mirror).
+const MAP_IDS: Dictionary = {"map00": "map00_crossroads", "map01": "map01_kaltenbrunn", "map02": "map02_totenhafen", "map04b": "map04b_kranich"}
 const HOST_TIMEOUT: float = 330.0
 const CLIENT_TIMEOUT: float = 310.0
 const RESULT_FILE: String = "user://_qa_webrtc_client_result.json"
@@ -50,6 +54,9 @@ var _bank_scrip0: int = 0
 var _map_id: String = MAP_ID      # --map= (UPDATE 10 C8)
 var _through: PackedStringArray = []   # --through=a,b
 var _act2_sent: bool = false
+var _flood_ok: bool = false       # T-153: map02 flood,sail
+var _sail_ok: bool = false
+var _scen_started: bool = false
 
 
 func _ready() -> void:
@@ -68,7 +75,7 @@ func _ready() -> void:
 		elif a.begins_with("--code="):
 			_code = a.get_slice("=", 1)
 		elif a.begins_with("--map="):
-			_map_id = {"map04b": "map04b_kranich"}.get(a.get_slice("=", 1), a.get_slice("=", 1))
+			_map_id = str(MAP_IDS.get(a.get_slice("=", 1), a.get_slice("=", 1)))
 		elif a.begins_with("--through="):
 			_through = a.get_slice("=", 1).split(",", false)
 	ProfileSave.path = "user://_qa_webrtc_%s.json" % _role
@@ -188,12 +195,39 @@ func _host_tick(delta: float) -> void:
 				z.take_damage(99999.0, &"head", &"m1911", 1, &"bullet")
 			if RoundManager.current_round >= 3:
 				_log("round %d reached (2 rounds played)" % RoundManager.current_round)
-				_p2_pos = (map.players[2] as Player).global_position
-				_qa_send("drop", {})
-				_goto("wait_drop")
+				if not _through.is_empty():
+					_goto("scenario")
+				else:
+					_p2_pos = (map.players[2] as Player).global_position
+					_qa_send("drop", {})
+					_goto("wait_drop")
 			elif _step_t > 120.0:
 				_fail("2 rounds never passed (round %d)" % RoundManager.current_round)
 				_goto("leave")
+		"scenario":
+			for z2: Zombie in map.director.active_zombies():
+				z2.take_damage(99999.0, &"head", &"m1911", 1, &"bullet")
+			if not _scen_started:
+				_scen_started = true
+				if _through.has("flood"):
+					var tide: TideController = get_tree().get_first_node_in_group(&"tide") as TideController
+					if tide == null:
+						_fail("--through=flood: no tide on this map")
+					else:
+						tide.force_stage(&"spring", 120.0)
+						_log("host: spring flood forced")
+				if _through.has("sail"):
+					GameState.set_flag(&"curtain_open", true)
+					var sail: Node = get_tree().get_first_node_in_group(&"uboat_sail")
+					if sail == null:
+						_fail("--through=sail: no boat on this map")
+					else:
+						sail.call("cast_off")
+						_log("host: cast off")
+			if _step_t > 35.0:
+				_p2_pos = (map.players[2] as Player).global_position
+				_qa_send("drop", {})
+				_goto("wait_drop")
 		"wait_drop":
 			if _drop_seen:
 				var p2: Player = map.players.get(2) as Player
@@ -383,6 +417,16 @@ func _client_tick(delta: float) -> void:
 			elif _bank_t > 0.0 and not _bank_ok and BankAccount.balance() >= 100 and Economy.get_scrip(2) <= _bank_scrip0 - 100:
 				_bank_ok = true
 				_notes.append("bank deposit round-trip %.2f s (balance %d)" % [_step_t - _bank_t, BankAccount.balance()])
+			if _through.has("flood") and not _flood_ok:
+				var ct: TideController = get_tree().get_first_node_in_group(&"tide") as TideController
+				if ct != null and ct.stage == &"spring" and ct.level > -1.3:
+					_flood_ok = true
+					_notes.append("the host's spring flood reached the client (level %.2f)" % ct.level)
+			if _through.has("sail") and not _sail_ok:
+				var cs: UboatSail = get_tree().get_first_node_in_group(&"uboat_sail") as UboatSail
+				if cs != null and cs.state == UboatSail.State.SAILING and cs.sail_t > 0.04:
+					_sail_ok = true
+					_notes.append("the boat sails on the client from the host's sail_t (%.2f)" % cs.sail_t)
 			if _step_t > 200.0:
 				_fail("the host never asked us to drop")
 				_client_finish()
@@ -434,6 +478,10 @@ func _client_finish() -> void:
 		_notes.append("bot puppet moved %.1f m, gun %s" % [_bot_moved, _bot_gun])
 	if not _jakub_ok and _map_id == MAP_ID:   # (Jakub is Map 0's)
 		_fails.append("never saw Jakub as a host-fed puppet")
+	if _through.has("flood") and not _flood_ok:
+		_fails.append("the spring flood never reached the client")
+	if _through.has("sail") and not _sail_ok:
+		_fails.append("the boat never sailed on the client")
 	if not _bank_ok:
 		_fails.append("the client's bank deposit never round-tripped (balance %d)" % BankAccount.balance())
 	var res: Dictionary = {"pass": _fails.is_empty(), "fails": Array(_fails), "notes": Array(_notes)}
