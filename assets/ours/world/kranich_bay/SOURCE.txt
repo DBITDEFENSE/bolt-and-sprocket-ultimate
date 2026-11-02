@@ -6,4 +6,4 @@ Credit line: none required (original work)
 Format: GLB, metres, +Y up, in Map 4 Act II's frame (placed at the origin); material slots kskin / kframe / kgrate / kglass / kdark mapped by gravelight/world/map04/kranich_shell.gd
 Downloaded: generated 2026-11-01 by Claude (T-147, UPDATE 09 section 5.3)
 Files used: model.glb
-Notes: frames, riveted skin, stringers, the ramp and hatch bulkheads, the bay doors with a breach, catwalk grating (15106 triangles)
+Notes: frames, riveted skin, stringers, the ramp and hatch bulkheads, the bay doors with a breach, catwalk grating (15198 triangles)

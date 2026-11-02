@@ -331,7 +331,7 @@
       "legs": [
         {"act_round": 1, "below": "sea", "clouds": 1.0, "lights": "none", "note": "the North Sea, 03:40"},
         {"act_round": 2, "below": "coast_in", "coast_s": 160.0, "coast_span": 900.0, "clouds": 0.8, "lights": "blackout", "note": "the English coast comes up"},
-        {"act_round": 3, "below": "land", "lights": "london", "clouds": 0.45, "ground_y": -41.0, "cloud_y": [-14.0, -22.0, -30.0], "speed_k": 0.3, "note": "London (the window)"},
+        {"act_round": 3, "below": "land", "lights": "london", "clouds": 0.3, "ground_y": -41.0, "cloud_y": [-12.0, -60.0, -90.0], "speed_k": 0.3, "note": "London (the window)"},
         {"act_round": 4, "below": "coast_out", "coast_s": 160.0, "coast_span": 900.0, "clouds": 0.9, "lights": "blackout", "note": "out over the Atlantic"},
         {"act_round": 5, "below": "coast_in", "coast_s": 200.0, "coast_span": 900.0, "clouds": 0.6, "lights": "towns", "note": "the American coast (the bomb run)"},
         {"act_round": 6, "below": "land", "clouds": 0.7, "lights": "none", "note": "west, into the dark"}

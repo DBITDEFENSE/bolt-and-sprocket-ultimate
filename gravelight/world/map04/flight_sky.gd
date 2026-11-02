@@ -708,6 +708,21 @@ func burst(p: Vector3, far: bool = false) -> void:
 	AudioDirector.play_3d(key, p, -6.0 if not far else -14.0, 0.15)
 
 
+## Dev / capture hook (the u09_map04b set's E_window camera: "call:FlightSky:preview_london"): jumps the outside to
+## the London leg and starts the window through the FlightController's own entry point, as act round 3 would.
+func preview_london() -> void:
+	for i: int in legs.size():
+		if str((legs[i] as Dictionary).get("lights", "")) == "london":
+			_set_leg(i)
+			_ground_y = _ground_y_target
+			break
+	if _fc == null:
+		_fc = get_tree().get_first_node_in_group(&"flight_controller")
+	if _fc != null:
+		_fc.call("start_london")
+	_scan_t = 0.0
+
+
 func _go_desert() -> void:
 	desert = true
 	_ground_y_target = float(cfg.get("desert_y", -186.5))

@@ -452,9 +452,18 @@ static func engine_room(g: Variant) -> void:
 	# beyond it, outside the shell: the impeller chamber and the core, turning, violet
 	var chamber: Node3D = Props.group(g.dress, "ImpellerChamber", Vector3(-82.5, 2.0, 38.0))
 	chamber.set_meta("keep", true)
-	cy(chamber, Vector3.ZERO, 3.4, 9.0, "lead", Vector3(90, 0, 0))
+	# a housing open toward the window (a closed drum would hide the core: its near face is all you would see)
+	blk(chamber, Vector3(-3.6, -2.8, -4.6), Vector3(-3.3, 3.6, 4.6), "lead")
+	blk(chamber, Vector3(-3.6, -2.8, -4.6), Vector3(4.0, -2.5, 4.6), "lead")
+	blk(chamber, Vector3(-3.6, 3.3, -4.6), Vector3(4.0, 3.6, 4.6), "lead")
+	for ze: float in [-4.6, 4.3]:
+		blk(chamber, Vector3(-3.6, -2.8, ze), Vector3(4.0, 3.6, ze + 0.3), "lead")
 	for zr: float in [-3.5, -1.2, 1.2, 3.5]:
-		cy(chamber, Vector3(0, 0, zr), 3.3, 0.18, "iron", Vector3(90, 0, 0))
+		blk(chamber, Vector3(-3.3, -2.5, zr - 0.09), Vector3(-3.15, 3.3, zr + 0.09), "iron")
+		blk(chamber, Vector3(-3.3, 3.15, zr - 0.09), Vector3(4.0, 3.3, zr + 0.09), "iron")
+	# the bearing housings the core turns in
+	cy(chamber, Vector3(0.5, 0.0, -4.0), 1.1, 0.8, "iron", Vector3(90, 0, 0))
+	cy(chamber, Vector3(0.5, 0.0, 4.0), 1.1, 0.8, "iron", Vector3(90, 0, 0))
 	merge_local(chamber)
 	var core: Node3D = mover(g, "ImpellerCore", Vector3(-82.0, 2.0, 38.0), &"flight_spin", {"spin_rps": 0.55, "spin_axis": Vector3(0, 0, 1)})
 	cy(core, Vector3.ZERO, 0.7, 7.0, "nachtglas_crystal", Vector3(90, 0, 0))
@@ -561,6 +570,8 @@ static func kanzel(g: Variant) -> void:
 	placard(g, Vector3(74.0, 3.2, 24.2), 180.0, "HECKKANZEL", 26)
 	# caged lamps (power), the reds
 	caged_lamp(g, Vector3(65.0, CEIL_ROOM, 32.0), 1.0, "E_KANZEL", Color(1.0, 0.82, 0.6), 1.1, 12.0)
+	caged_lamp(g, Vector3(59.0, CEIL_ROOM - 0.3, 27.0), 1.2, "E_KANZEL", Color(1.0, 0.82, 0.6), 0.9, 9.0)
+	caged_lamp(g, Vector3(71.0, CEIL_ROOM - 0.3, 27.0), 1.2, "E_KANZEL", Color(1.0, 0.82, 0.6), 0.9, 9.0)
 	caged_lamp(g, Vector3(65.0, CEIL_ROOM, 50.0), 1.0, "E_KANZEL", Color(1.0, 0.82, 0.6), 1.1, 12.0)
 	wall_lamp(g, Vector3(77.83, 2.8, 40.0), 90.0, "", Game_RED(), 0.8, 8.0, "lamp_red_lit")
 	# ammunition boxes and belts in the cavities, a parachute bin
@@ -636,6 +647,8 @@ static func cockpit(g: Variant) -> void:
 	# the key: the strap's violet (casts), the instrument glow, a lamp from the arch
 	g.lamp(Vector3(0, 1.4, 65.2), Color(0.62, 0.28, 1.0), 0.8, 6.0, 0.08, 0.4, true)
 	caged_lamp(g, Vector3(0, CEIL_COCKPIT, 60.25), 1.1, "F_COCKPIT", Color(1.0, 0.82, 0.6), 1.0, 12.0)
+	caged_lamp(g, Vector3(-11.0, CEIL_COCKPIT - 0.6, 63.25), 1.0, "F_COCKPIT", Color(1.0, 0.82, 0.6), 1.0, 12.0)
+	caged_lamp(g, Vector3(11.0, CEIL_COCKPIT - 0.6, 63.25), 1.0, "F_COCKPIT", Color(1.0, 0.82, 0.6), 1.0, 12.0)
 	# the flight engineer's panel on the port bulkhead (in the flat range by the door: flush) and charts
 	for i: int in 6:
 		Props.gauge(g.dress, Vector3(-21.8, 1.4 + 0.3 * float(i % 2), 59.3 + 0.4 * float(i)), -90.0, 0.08)

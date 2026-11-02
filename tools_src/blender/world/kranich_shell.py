@@ -297,6 +297,19 @@ class Section:
         self._skin(skin)
         self._frames(frames)
         self._stringers(frames)
+        self._cavity_floor(frames)
+
+    def _cavity_floor(self, mb):
+        """The strip of deck between the room face and the skin in the deep ranges (else the night shows under it)."""
+        for s in (-1, 1):
+            bounds = self._bounds(s)
+            for i in range(len(bounds) - 1):
+                a_lo, a_hi = bounds[i], bounds[i + 1]
+                if self.mode(s, (a_lo + a_hi) * 0.5) != "deep":
+                    continue
+                f, sk = self.face(s), self.skin_l(s)
+                pts = [self.P(a_lo, f, 0.0), self.P(a_hi, f, 0.0), self.P(a_hi, sk, 0.0), self.P(a_lo, sk, 0.0)]
+                mb.poly(pts, [boxuv(p, (0, 1, 0)) for p in pts], "kdark", V3(0, 1, 0))
 
     # ---------------------------------------------------------------- skin
     def _bounds(self, s):

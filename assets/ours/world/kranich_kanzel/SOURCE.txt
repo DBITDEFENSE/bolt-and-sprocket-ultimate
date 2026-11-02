@@ -6,4 +6,4 @@ Credit line: none required (original work)
 Format: GLB, metres, +Y up, in Map 4 Act II's frame (placed at the origin); material slots kskin / kframe / kgrate / kglass / kdark mapped by gravelight/world/map04/kranich_shell.gd
 Downloaded: generated 2026-11-01 by Claude (T-147, UPDATE 09 section 5.3)
 Files used: model.glb
-Notes: frames, riveted skin, four perspex blisters with their rings and frames, the walkway's arch and hatch, grating (38428 triangles)
+Notes: frames, riveted skin, four perspex blisters with their rings and frames, the walkway's arch and hatch, grating (38586 triangles)

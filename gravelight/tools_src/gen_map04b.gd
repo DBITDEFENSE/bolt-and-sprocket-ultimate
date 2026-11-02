@@ -271,7 +271,7 @@ func build_dressing() -> void:
 	sky.name = "FlightSky"
 	extra_root_nodes.append(sky)
 	Detail.dress_all(self)
-	power("F_COCKPIT", Vector3(0, 1.4, 72.7), 10.0, 0.9, Color(0.5, 0.9, 0.6))   # the instrument glow
+	power("F_COCKPIT", Vector3(0, 1.4, 72.7), 12.0, 1.3, Color(0.5, 0.9, 0.6))   # the instrument glow
 	fog("CoreHeat", Vector3(-70, 2.0, 40), Vector3(16, 4.0, 30), 0.05, Color(0.5, 0.35, 0.7), Color(0.08, 0.02, 0.12))
 	# the wing diorama for the crash: a flat wing, kept so the fx can slide it (FlightSky hides it until the crash)
 	var wd: Node3D = Props.group(dress, "WingDiorama", Vector3(0, DIO_Y + 14.0, -130))
