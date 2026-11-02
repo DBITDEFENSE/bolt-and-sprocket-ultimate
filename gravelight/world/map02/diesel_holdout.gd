@@ -28,6 +28,7 @@ static func setup_from(d: DieselHoldout, id: StringName, c: Dictionary) -> Diese
 	d.zone_id = StringName(str(c.get("zone", "D_PENHALL")))
 	d.seconds = float(c.get("seconds", 30.0))
 	d.spawn_mult = float(c.get("spawn_mult", 2.0))
+	d.temp_spawns = int(c.get("temp_spawns", 2))   # T-153: the engine room takes none (ring points fell in the hull walls and the basin)
 	d.radius = float(c.get("radius_m", 3.5))
 	var pts: PackedVector3Array = PackedVector3Array()
 	for a: Variant in c.get("spawns", []):

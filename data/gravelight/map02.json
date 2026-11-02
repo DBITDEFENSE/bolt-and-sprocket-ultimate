@@ -826,7 +826,10 @@
           "CLUTCH.",
           "BOTH.",
           "CONTACT."
-        ]
+        ],
+        "spawn_mult": 1.5,
+        "temp_spawns": 0,
+        "_tuning": "T-153: the engine room is a 5 m wide hull: x1.5 spawns and no ring spawns (boarders come up the gangway and from aft, the hull_pull bursts); with the default x2 and two ring points the bots alone were wiped there in four of six runs."
       }
     },
     "key_slot": [
