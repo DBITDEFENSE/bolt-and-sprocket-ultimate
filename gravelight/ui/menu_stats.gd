@@ -46,6 +46,11 @@ func build() -> void:
 	var fav: String = ProfileSave.favorite_weapon()
 	g.add_child(MenuKit.label("Favorite weapon", 20))
 	g.add_child(MenuKit.label(_weapon_name(fav) if fav != "" else "-", 20, MenuKit.GOLD))
+	# T-162: the citations (achievements): earned in gold, the rest dim with their task
+	var cits: Array = Citations.rows()
+	content.add_child(MenuKit.label("Citations  %d / %d" % [Citations.count_earned(), cits.size()], 26, MenuKit.VIOLET, true))
+	for c: Dictionary in cits:
+		content.add_child(MenuKit.label("%s  -  %s" % [c["name"], c["desc"]], 18, MenuKit.GOLD if bool(c["earned"]) else MenuKit.DIM))
 	content.add_child(MenuKit.label("Weapon mastery", 26, MenuKit.VIOLET, true))
 	content.add_child(MenuKit.para("Camos: Olive Drab 100 · Winter 250 · Bronze 500 · Silver 1000 · Gold 2000 kills. Gold on every weapon unlocks Nachtglas for all.", 17, MenuKit.DIM))
 	var mg: GridContainer = GridContainer.new()

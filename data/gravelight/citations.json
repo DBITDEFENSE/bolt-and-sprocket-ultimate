@@ -1,0 +1,139 @@
+{
+  "_doc": "Citations (UPDATE 10 s6 item 9, DECISIONS T-162; gravelight/world/citations.gd): the achievements. Earned once per profile (ProfileSave.profile.citations[id] = true), shown as a HUD toast (GLBus.bonus_awarded kind `citation`) and listed on the Service Record. `event`: wing_walk (FirstHints watcher: the local player clipped or on the wing), spring_tide (GLBus.spring_tide, when the signal exists, then the round ends), orbit (MoonLowG.orbit_count >= target), special_survived (a special round ends on `map`), boss_killed (`enemy` id, GLBus.enemy_killed), quest (`quest` id, GLBus.quest_completed). `guard_data`: a res:// file that must exist for the citation to be listed or earned (Totenhafen's egg until it lands); `guard_signal`: a GLBus signal that must exist. Every quest in data/gravelight/quests has a citation (test_citations).",
+  "citations": [
+    {
+      "id": "wing_walk",
+      "name": "Took the Wing Walk",
+      "desc": "Step out onto the Kranich's wing in flight.",
+      "map": "map04b_kranich",
+      "event": "wing_walk"
+    },
+    {
+      "id": "spring_tide",
+      "name": "Survived a Spring Tide",
+      "desc": "Live through a spring tide at Totenhafen.",
+      "map": "map02_totenhafen",
+      "event": "spring_tide",
+      "guard_signal": "spring_tide"
+    },
+    {
+      "id": "sent_to_orbit",
+      "name": "Sent to Orbit",
+      "desc": "Throw 5 of them off the Moon with the Lodestone.",
+      "map": "map04d_mondlicht",
+      "event": "orbit",
+      "target": 5
+    },
+    {
+      "id": "dust_walker",
+      "name": "Dust Walker",
+      "desc": "Live through the dust storm at Groom Lake.",
+      "map": "map04c_groomlake",
+      "event": "special_survived"
+    },
+    {
+      "id": "raid_survivor",
+      "name": "Raid Survivor",
+      "desc": "Live through the air raid at Werk Thalbach.",
+      "map": "map04a_thalbach",
+      "event": "special_survived"
+    },
+    {
+      "id": "beat_paul",
+      "name": "Beat PAUL",
+      "desc": "Put PAUL down at Kaltenbrunn.",
+      "map": "map01_kaltenbrunn",
+      "event": "boss_killed",
+      "enemy": "paul"
+    },
+    {
+      "id": "beat_hafenwaechter",
+      "name": "Beat the Hafenwaechter",
+      "desc": "Put the Hafenwaechter, the pens' night watchman, down at Totenhafen.",
+      "map": "map02_totenhafen",
+      "event": "boss_killed",
+      "enemy": "the_slender"
+    },
+    {
+      "id": "egg_map00_radio",
+      "name": "Glasmacher Calling",
+      "desc": "Complete the easter egg.",
+      "map": "map00_crossroads",
+      "event": "quest",
+      "quest": "map00_radio"
+    },
+    {
+      "id": "egg_map01_requiem",
+      "name": "Requiem for Kaltenbrunn",
+      "desc": "Complete the easter egg.",
+      "map": "map01_kaltenbrunn",
+      "event": "quest",
+      "quest": "map01_requiem"
+    },
+    {
+      "id": "egg_map01_song",
+      "name": "Lanterns Down Below",
+      "desc": "Complete the easter egg.",
+      "map": "map01_kaltenbrunn",
+      "event": "quest",
+      "quest": "map01_song"
+    },
+    {
+      "id": "egg_map01_wren_tag",
+      "name": "KB-4471",
+      "desc": "Complete the easter egg.",
+      "map": "map01_kaltenbrunn",
+      "event": "quest",
+      "quest": "map01_wren_tag"
+    },
+    {
+      "id": "egg_map04_kuendigung",
+      "name": "Kündigung",
+      "desc": "Complete the easter egg.",
+      "map": "map04a_thalbach",
+      "event": "quest",
+      "quest": "map04_kuendigung"
+    },
+    {
+      "id": "egg_map04a_jette",
+      "name": "Jette's Logbook",
+      "desc": "Complete the easter egg.",
+      "map": "map04a_thalbach",
+      "event": "quest",
+      "quest": "map04a_jette"
+    },
+    {
+      "id": "egg_map04b_crew_tags",
+      "name": "The Crew's Tags",
+      "desc": "Complete the easter egg.",
+      "map": "map04b_kranich",
+      "event": "quest",
+      "quest": "map04b_crew_tags"
+    },
+    {
+      "id": "egg_map04c_cage",
+      "name": "The Yard Rule",
+      "desc": "Complete the easter egg.",
+      "map": "map04c_groomlake",
+      "event": "quest",
+      "quest": "map04c_cage"
+    },
+    {
+      "id": "egg_map04d_smile",
+      "name": "The Smile",
+      "desc": "Complete the easter egg.",
+      "map": "map04d_mondlicht",
+      "event": "quest",
+      "quest": "map04d_smile"
+    },
+    {
+      "id": "egg_map02_letzte_fahrt",
+      "name": "Letzte Fahrt",
+      "desc": "Sail the U-1047 out of the pen at Totenhafen.",
+      "map": "map02_totenhafen",
+      "event": "quest",
+      "quest": "map02_letzte_fahrt",
+      "guard_data": "res://data/gravelight/quests/map02_letzte_fahrt.json"
+    }
+  ]
+}

@@ -526,7 +526,11 @@ func _begin_match(scene: String, seed_value: int, campaign: bool = false) -> voi
 		return
 	get_tree().paused = false
 	match_started.emit(scene, seed_value)
-	get_tree().change_scene_to_file(scene)
+	# UPDATE 10 s6 (T-162): the loading card for online matches and travel too (the map's art, a tip, the transition's lore line)
+	# instead of a bare scene change; LoadingScreen reuses the exfil cutscene's preload (Campaign.preload_next) when there is one
+	var from_id: String = str(Campaign.carry.get("from", "")) if campaign else ""
+	var to_id: String = str(Campaign.carry.get("to", "")) if campaign else ""
+	LoadingScreen.go(get_tree(), scene, to_id, LoadingScreen.transition_line(from_id, to_id))
 
 
 func _to_lobby() -> void:
