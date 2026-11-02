@@ -378,6 +378,8 @@ func run(delta: float) -> void:
 		return
 	if _finish_crawler(delta):
 		return
+	if _hunt_stragglers(delta, me):
+		return
 	var cut: bool = ahead != null and is_instance_valid(ahead) and ahead_d < _f("cut_m", 6.0)
 	if not _shop.is_empty():
 		if cut or (head != null and head_d < gap + 0.5):
@@ -580,6 +582,89 @@ func _finish_crawler(delta: float) -> bool:
 			stats["crawler_knifes"] = int(stats.get("crawler_knifes", 0)) + 1
 	if not brain.aim.update(delta, true):
 		brain.loco.look_at_dir(hp - player.global_position)
+	return true
+
+
+## U10 (T-163): the round-end hunt. The round has nothing left to spawn, only a few zombies are up, and none has come
+## within hunt_quiet_m for hunt_after_s: they aren't following (crawlers left far behind on the loop, one stuck at a
+## window or on another floor). A player stops circling and goes to finish them; so does the agent: the navmesh way
+## to the nearest one (its real position: a player hears the last ones' groans, as the squad's T-058 hunt), shooting
+## what it sees, knifing a crawler. Seen in the U08 god-mode soaks: the agent kited two crawlers for 30+ minutes
+## (backing round the loop, facing a train it could not see) and the round never ended. True while it hunts.
+var _quiet_t: float = 0.0
+var hunting: bool = false
+
+## Pure: which straggler to hunt. `rows` = [{"d": m (flat, +30 on another floor), "crawler": bool}] for the round's
+## active, targetable zombies; `quiet_s` = how long none on its feet has been within hunt_quiet_m. Returns {"idx":
+## the row to hunt (-1 none), "quiet": the new quiet_s}. Never while the round still spawns, in a special round or
+## with more than hunt_max_left up; a crawler at once (it never comes), a walker after hunt_after_s of quiet.
+static func hunt_pick(rows: Array, to_spawn: int, special: bool, quiet_s: float, delta: float, cfg: Dictionary) -> Dictionary:
+	if to_spawn > 0 or special or rows.is_empty() or rows.size() > int(cfg.get("hunt_max_left", 3)) or not bool(cfg.get("hunt_enabled", true)):
+		return {"idx": -1, "quiet": 0.0}
+	var best: int = -1
+	for i: int in rows.size():
+		var r: Dictionary = rows[i]
+		if float(r["d"]) < float(cfg.get("hunt_quiet_m", 8.0)) and not bool(r.get("crawler", false)):
+			return {"idx": -1, "quiet": 0.0}   # something on its feet is right here: the train / the fight handles it
+		if best < 0 or float(r["d"]) < float((rows[best] as Dictionary)["d"]):
+			best = i
+	var q: float = quiet_s + delta
+	if not bool((rows[best] as Dictionary).get("crawler", false)) and q < float(cfg.get("hunt_after_s", 5.0)):
+		return {"idx": -1, "quiet": q}
+	return {"idx": best, "quiet": q}
+
+
+func _hunt_stragglers(delta: float, me: Vector3) -> bool:
+	if hunting:
+		brain.aim.focus_target = null
+	hunting = false
+	var dirn: ZombieDirector = brain.squad.director() if brain.squad != null else null
+	if dirn == null:
+		return false
+	var rows: Array = []
+	var zs: Array[Zombie] = []
+	if RoundManager.to_spawn <= 0:
+		for zv: Variant in dirn.active_zombies():
+			var z: Zombie = zv as Zombie
+			if not BotPerception.targetable(z):
+				continue
+			if brain.crawler != null and brain.crawler.target == z and brain.crawler.holding():
+				_quiet_t = 0.0
+				return false   # the crawler break's own zombie: kept on purpose
+			zs.append(z)
+			rows.append({"d": _flat(z.global_position, me) + (30.0 if absf(z.global_position.y - me.y) > 2.5 else 0.0),
+				"crawler": z.is_crawler and not BotPerception.is_boss(z)})
+	var hp: Dictionary = hunt_pick(rows, RoundManager.to_spawn, RoundManager.is_special_round, _quiet_t, delta, c)
+	_quiet_t = float(hp["quiet"])
+	var bi: int = int(hp["idx"])
+	if bi < 0:
+		return false
+	var best: Zombie = zs[bi]
+	var best_d: float = float((rows[bi] as Dictionary)["d"])
+	hunting = true
+	stats["hunt_s"] = float(stats.get("hunt_s", 0.0)) + delta
+	var zp: Vector3 = best.global_position
+	var reach: float = float(BotAIData.combat("melee").get("range_m", 1.7))
+	if bool((rows[bi] as Dictionary)["crawler"]):
+		if best_d > reach - 0.2:
+			brain.loco.move_to(zp, 0.6, reach - 0.4)
+		else:
+			brain.loco.stop()
+			if brain.aim.melee_cd <= 0.0:
+				brain.aim.melee(best)
+				stats["crawler_knifes"] = int(stats.get("crawler_knifes", 0)) + 1
+		if not brain.aim.update(delta, true):
+			brain.loco.look_at_dir(zp - me)
+		return true
+	# a walker that won't come: close in to a shooting distance with the line of sight, then shoot it
+	var seen: bool = brain.perception.is_visible(best)
+	if not seen or best_d > _f("hunt_shoot_m", 12.0):
+		brain.loco.move_to(zp, 0.7, 3.0)
+	else:
+		brain.loco.stop()
+		brain.aim.focus_target = best
+	if not brain.aim.update(delta, true):
+		brain.loco.look_at_dir(zp - me)
 	return true
 
 

@@ -659,6 +659,12 @@
   "trainer": {
     "_doc": "BotTrainer: training the horde round a TrainingRoute (routes_<map>.json). The train: zombies following within follow_m behind on the loop (or within close_m anywhere). Gaps (flat metres to the train's head, the nearest follower): gap = its reach (ai_counters reach_m, 1.5 by default) + gap_margin_m + head speed x gap_per_speed_s (a runner gets more room); the agent runs (faces the way) when the head is inside gap, sprints inside gap - sprint_inside_m, turns to fire once it is beyond gap + turn_extra_m with the next ahead_need_m of the loop clear, and holds still to let a far train bunch up beyond hold_extra_m. A turn lasts at most face_max_s, then a glance forward of run_min_s (it can't see ahead while it looks back: no wallhacks). A zombie on the loop ahead within cut_m is a cutter: shot when the train is at least cut_kill_gap_m behind, passed on the ring's far side when there is room (pass_min_ring_m), else the loop is reversed when the other way is clear for reverse_clear_m. Unseen zombies' remembered positions are advanced toward the agent at their speed for up to dead_reckon_s (the train follows; a person knows that).",
     "think_hz": 10.0,
+    "hunt_enabled": true,
+    "hunt_max_left": 3,
+    "hunt_quiet_m": 8.0,
+    "hunt_after_s": 5.0,
+    "hunt_shoot_m": 12.0,
+    "_hunt_doc": "U10 (T-163) the round-end hunt (BotTrainer.hunt_pick): nothing left to spawn, at most hunt_max_left zombies up and none on its feet within hunt_quiet_m for hunt_after_s (a crawler at once): the agent leaves the loop for the nearest one (navmesh), knifes a crawler, shoots a walker from hunt_shoot_m with the line of sight. The U08 god-mode soaks had it circling the loop for 30+ minutes round crawlers left behind and a Foreman stuck in CHASE.",
     "follow_m": 13.0,
     "close_m": 3.5,
     "lateral_slack_m": 2.5,
