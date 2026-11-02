@@ -272,6 +272,15 @@ func build_dressing() -> void:
 	extra_root_nodes.append(sky)
 	Detail.dress_all(self)
 	power("F_COCKPIT", Vector3(0, 1.4, 72.7), 12.0, 1.3, Color(0.5, 0.9, 0.6))   # the instrument glow
+	# the wall guns' labels sit a centimetre behind the wall face (the hidden flat walls used to cover them): a painted
+	# backing plate just behind each one keeps them covered, as before (the buys table is untouched)
+	for b: Array in buys:
+		var away: Vector3 = Basis(Vector3.UP, deg_to_rad(float(b[2]))) * Vector3(0, 0, -1)
+		var c: Vector3 = (b[1] as Vector3) + away * 0.026
+		var half: Vector3 = Vector3(0.002, 0.65, 0.85) if absf(away.x) > 0.5 else Vector3(0.85, 0.65, 0.002)
+		var bp: MeshInstance3D = Props.block(dress, c - half, c + half, "steel")
+		if bp != null:
+			bp.material_override = KranichShell.frame_material()
 	fog("CoreHeat", Vector3(-70, 2.0, 40), Vector3(16, 4.0, 30), 0.05, Color(0.5, 0.35, 0.7), Color(0.08, 0.02, 0.12))
 	# the wing diorama for the crash: a flat wing, kept so the fx can slide it (FlightSky hides it until the crash)
 	var wd: Node3D = Props.group(dress, "WingDiorama", Vector3(0, DIO_Y + 14.0, -130))
