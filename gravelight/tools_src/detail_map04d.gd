@@ -231,7 +231,7 @@ static func shadow_diet(root: Node3D, ceil_of: Callable) -> int:
 		var sz: Vector3 = (xf.basis.get_scale() * mi.mesh.get_aabb().size).abs()
 		var top: float = xf.origin.y + sz.y * 0.5
 		var c: float = float(ceil_of.call(xf.origin))
-		if maxf(sz.x, maxf(sz.y, sz.z)) < 0.8 or minf(sz.x, minf(sz.y, sz.z)) < 0.05 or (c > 0.0 and xf.origin.y > c - 1.2 and top > c - 1.5):
+		if maxf(sz.x, maxf(sz.y, sz.z)) < 1.2 or minf(sz.x, minf(sz.y, sz.z)) < 0.05 or (c > 0.0 and xf.origin.y > c - 1.2 and top > c - 1.5):
 			mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			k += 1
 	return k

@@ -1156,9 +1156,16 @@ func _dress_account() -> void:
 ## covered to the chest, the tag on the rim; the violet threads the relay draws from his hand.
 func _first_retained() -> void:
 	var g: Node3D = Props.group(dress, "Pilch", Vector3(28, 0, -39.75))
-	D.blk(g, Vector3(-1.5, 0.0, -1.25), Vector3(1.5, 0.42, 1.25), "dm_graphite")
+	# the vitrine's walls (hollow: he lies inside, under the glass), its floor
+	D.blk(g, Vector3(-1.5, 0.0, -1.25), Vector3(1.5, 0.42, -1.13), "dm_graphite")
+	D.blk(g, Vector3(-1.5, 0.0, 1.13), Vector3(1.5, 0.42, 1.25), "dm_graphite")
+	D.blk(g, Vector3(-1.5, 0.0, -1.13), Vector3(-1.38, 0.42, 1.13), "dm_graphite")
+	D.blk(g, Vector3(1.38, 0.0, -1.13), Vector3(1.5, 0.42, 1.13), "dm_graphite")
+	D.blk(g, Vector3(-1.38, 0.0, -1.13), Vector3(1.38, 0.06, 1.13), "dm_graphite")
 	D.blk(g, Vector3(-1.38, 0.06, -1.13), Vector3(1.38, 0.09, 1.13), "dm_violet_deep")
-	D.blk(g, Vector3(-1.52, 0.42, -1.27), Vector3(1.52, 0.47, 1.27), "dm_chrome")
+	for r: Array in [[Vector3(-1.52, 0.42, -1.27), Vector3(1.52, 0.47, -1.13)], [Vector3(-1.52, 0.42, 1.13), Vector3(1.52, 0.47, 1.27)],
+			[Vector3(-1.52, 0.42, -1.13), Vector3(-1.38, 0.47, 1.13)], [Vector3(1.38, 0.42, -1.13), Vector3(1.52, 0.47, 1.13)]]:
+		D.blk(g, r[0], r[1], "dm_chrome")   # the rim: a frame, not a lid
 	D.blk(g, Vector3(-1.4, 0.46, -1.15), Vector3(1.4, 0.5, 0.25), "dm_frosted")
 	D.blk(g, Vector3(-1.4, 0.46, 0.25), Vector3(1.4, 0.5, 1.15), "dm_glass")
 	D.blk(g, Vector3(-1.42, 0.47, 0.22), Vector3(1.42, 0.5, 0.28), "dm_chrome")
@@ -1189,7 +1196,7 @@ func _first_retained() -> void:
 	D.blk(thumb, Vector3(-0.012, -0.012, 0.0), Vector3(0.012, 0.012, 0.055), "skin_pale")
 	for i: int in 5:
 		var a: float = -0.9 + 0.45 * float(i)
-		D.strut(g, Vector3(0.42, 0.3, 0.62), Vector3(0.42 + cos(a) * 0.9, 0.42, 0.62 + sin(a) * 0.5), 0.012, "dm_glow_violet")
+		D.strut(g, Vector3(0.42, 0.3, 0.62), Vector3(0.42 + cos(a) * 0.9, 0.4, 0.62 + sin(a) * 0.5), 0.006, "dm_glow_violet_soft")
 	# the tag on the rim, engraved
 	D.blk(g, Vector3(-0.55, 0.47, -1.27), Vector3(0.55, 0.5, -1.2), "dm_chrome")
 	D.text(g, "PILCH, J.  ·  KB  ·  11.XI.38", Vector3(0, 0.485, -1.275), 180.0, 18, Color(0.15, 0.12, 0.2, 1.0), 0.0, 0.0028)
