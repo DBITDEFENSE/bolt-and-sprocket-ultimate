@@ -764,6 +764,26 @@
         {"name": "F_retained", "pos": [28.6, 0.0, -37.4], "yaw": 0.0, "pitch": -42.0, "note": "F The Account: the first retained under the glass, looking down through the clear pane at his hand (T-149)"}
       ]
     },
+    "u10_map04d": {
+      "_doc": "UPDATE 10 §3 Act IV (T-158): the set-pieces in frame. Each `do` calls the set-piece's own capture entry point (capture.gd `call:<node>:<method>:<wait s>`).",
+      "map": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {"name": "T_line_yard", "pos": [0.0, 0.0, 62.0], "yaw": 180.0, "pitch": 4.0, "note": "the terminator part-way over the yard: the night's edge on the regolith", "do": ["call:Terminator:capture_dusk:4"], "settle_s": 4.0},
+        {"name": "T_line_high", "pos": [6.0, 12.0, 58.0], "yaw": 170.0, "pitch": -24.0, "note": "the same line from over the south hull: the long shadow across the yard"},
+        {"name": "Heaters", "pos": [-4.0, 0.0, 55.5], "yaw": 139.0, "pitch": -2.0, "note": "the relay heaters' breaker by the yard airlock, thrown", "do": ["call:HeaterSwitch:throw_switch:5"]},
+        {"name": "Pad_plate", "pos": [-31.0, 0.0, 66.0], "yaw": 180.0, "pitch": -10.0, "note": "YardPad_S and the crater it throws you over", "do": ["call:ZombieDirector:kill_all:0.3"]},
+        {"name": "Pad_glide", "pos": [-31.0, 8.0, 72.0], "yaw": 180.0, "pitch": -32.0, "settle_s": 0.3, "note": "the glide's view from the arc's top: the bowl below, the landing beyond the north rim", "do": ["call:ZombieDirector:kill_all:0.3"]},
+        {"name": "Meteors", "pos": [0.0, 0.0, 63.0], "yaw": 180.0, "pitch": 3.0, "note": "the meteor shower: rings, streaks and fresh craters across the yard", "do": ["call:ZombieDirector:kill_all:0.3", "call:MeteorShower:_start:7"]},
+        {"name": "Earth_violet", "pos": [0.0, 0.0, 92.0], "yaw": 176.5, "pitch": 40.0, "note": "the Earth with the violet spread at its cap", "do": ["call:ZombieDirector:kill_all:0.3", "call:EarthSky:capture_violet:2"]},
+        {"name": "Earth_blue", "pos": [0.0, 0.0, 92.0], "yaw": 176.5, "pitch": 40.0, "note": "the Earth after CANCEL: the night side dark blue", "do": ["call:ZombieDirector:kill_all:0.3", "call:EarthSky:go_dark_blue:9"]},
+        {"name": "Field_units", "pos": [0.0, 0.0, 90.0], "yaw": 180.0, "pitch": 4.0, "note": "Darkmatter's field units walking the far rim with their lamps", "do": ["call:ZombieDirector:kill_all:0.3"]},
+        {"name": "Pohl", "pos": [30.4, 0.0, 36.6], "yaw": 180.0, "pitch": -2.0, "note": "Obergefreiter Pohl by his bay in rack 2", "do": ["call:ZombieDirector:kill_all:0.3"]},
+        {"name": "Vent", "pos": [28.0, 0.0, -17.2], "yaw": 0.0, "pitch": -24.0, "note": "the Account's vent open just inside the door", "do": ["call:ZombieDirector:kill_all:0.3", "call:ShaftGrate:capture_open:2"]},
+        {"name": "T_night", "pos": [0.0, 0.0, 62.0], "yaw": 180.0, "pitch": 4.0, "note": "late in the act: the yard in night, lit by the Earth and the field units", "do": ["call:ZombieDirector:kill_all:0.3", "call:Terminator:capture_night:4"]}
+      ]
+    },
     "u09_ref": {
       "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
       "bots": 0,

@@ -73,7 +73,7 @@ func test_favours_and_rewards_are_well_formed() -> void:
 			assert_gt(int(e["trade"].get("cost", 0)), 0)
 			continue
 		var f: Dictionary = e.get("favour", {})
-		assert_true(["fetch", "gun"].has(str(f.get("kind", ""))), "%s: a favour kind" % pid)
+		assert_true(["fetch", "gun", "deliver"].has(str(f.get("kind", ""))), "%s: a favour kind" % pid)
 		assert_ne(str(f.get("ask", "")), "", "%s: an ask" % pid)
 		assert_true(KINDS.has(str((f.get("reward", {}) as Dictionary).get("kind", ""))), "%s: a reward kind" % pid)
 		if f["kind"] == "fetch":

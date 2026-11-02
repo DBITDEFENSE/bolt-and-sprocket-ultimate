@@ -202,7 +202,7 @@ func test_lore_for_every_placed_thing() -> void:
 	for e: Dictionary in GLData.load_json("res://data/gravelight/story_props.json").get("props", []):
 		if str(e.get("map", "")) == "4d":
 			props.append(str(e["id"]))
-	assert_eq(props.size(), 5, "the four documents and the Terms of the Mark (T-137) are hand-placed")
+	assert_eq(props.size(), 9, "the four documents, the Terms of the Mark (T-137) and the four U10 props (T-158) are hand-placed")
 
 
 func test_objectives_bake_and_menu_know_the_act() -> void:

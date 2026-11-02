@@ -5,7 +5,8 @@ extends Node3D
 ## where the table puts them (PatronBody bodies: a modelled person from people.json, no collider), shows a Talk card
 ## (PersonCard), may ask one favour and reacts to round starts, downs, the dead close by and, for some, to Jakub
 ## or the Operator's slips. Favours: fetch (an item lies somewhere on the map once you accepted: Interactable
-## FavourItem; bring it back), gun (hand over the gun in your hands). Rewards (reward.kind): scrip_mark, revive_point,
+## FavourItem; bring it back), gun (hand over the gun in your hands), deliver (T-158: accepting hands you the thing;
+## carry it to where it belongs, a TagSlot, which ends the favour). Rewards (reward.kind): scrip_mark, revive_point,
 ## intel_ping, cover, unbolt_door; the courier sells a tip (trade.kind crate_tip). Offline only.
 
 enum Favour { NONE, ASKED, HAVE, DONE }
@@ -128,7 +129,8 @@ func on_talk(p: Player) -> void:
 				card.said = str(fav.get("ask", ""))
 			Favour.HAVE:
 				card.said = str(fav.get("have", ""))
-				opts.append({"action": &"interact", "label": "GIVE THE %s" % str(fav.get("item_name", "item")).to_upper(), "call": give_item, "enabled": true})
+				if fav.get("kind", "") != "deliver":   # T-158: a delivered favour ends where it is taken (TagSlot), not here
+					opts.append({"action": &"interact", "label": "GIVE THE %s" % str(fav.get("item_name", "item")).to_upper(), "call": give_item, "enabled": true})
 			Favour.DONE:
 				card.said = str(fav.get("done", ""))
 	card.options = opts
@@ -143,6 +145,10 @@ func accept_favour(_p: Player = null) -> void:
 	favour = ExtraPeople.favour_next(favour, "accept") as Favour
 	_event("asked")
 	say("ask")
+	if str((cfg.get("favour", {}) as Dictionary).get("kind", "")) == "deliver":
+		# T-158 (Pohl): you leave with the thing at once; the favour ends where it is delivered (a TagSlot calls give_item)
+		item_taken(_p)
+		return
 	if item == null:
 		item = FavourItem.new()
 		item.name = "Item_" + id

@@ -524,6 +524,38 @@
       "map": "2",
       "text": "A civilian ration book on the signal room's chart table, the cover soft with salt, most of its coupons torn out. Name: Petersen, Hinnerk. Occupation: harbour pilot. The back pages are full of pencil. Translated.\n\nBread: 3 coupons left. Fat: none. Tobacco: traded for paraffin.\n(Pencil, inside the back cover:) HW 06.12 / 18.40. Springs on the 20th. Do not take her out on the springs.\n14 lead boxes went down to the apron on the ore train. The Kapitänleutnant asked me how deep it is past the breakwater. I told him the truth. He wrote it down.\nThe lighthouse keeper has not answered the lamp since Tuesday.\nIf anybody reads this, I am up the tower. The stairs flood. Bring a gun.",
       "placement": "fixed"
+    },
+    {
+      "id": "INT_M4D_DELIVERY_LOG",
+      "title": "Field units 3 and 4: the delivery log, RR-7",
+      "type": "DOC",
+      "map": "4d",
+      "text": "DELIVERY LOG · FIELD UNITS 3 & 4 · RR-7 \"MONDLICHT\"\n\n1938-11. Relay hull, sections A to F. Signed for: unit 3.\n1939-02. Forge unit 001 (uncrated, not lit). Signed for: unit 4.\n1939-04. Racks, three. Hangers, twenty-seven. Signed for: unit 3.\n1939-06. Retention columns I-III. Sign, NOBODY CANCELS, letters 13. Signed for: unit 4.\n1939-08. Executive unit (remote attendance). Signed for: nobody. Signed for itself.\n1945-05. Inventory, Kranich, three (RIEDL, HAAS, POHL). Racked, bay 4-6. Signed for: unit 3.\n\nThe last column, every entry: DELIVERED BEFORE YOU ASKED.\nUnits 3 and 4 still walk the rim. They do not come in. Their lamps are on a timer.",
+      "placement": "fixed"
+    },
+    {
+      "id": "INT_M4D_HAAS_TAG",
+      "title": "A tag on a hanger: rack 2, bay 5",
+      "type": "DOC",
+      "map": "4d",
+      "text": "HAAS, K.\nBORDSCHUETZE\nPROVIDED 2.V.45\nRR-7 · RACK 2 · BAY 5\n\nOn the back, scratched with a fingernail through the stencil, in a hand that kept slipping: K. HAAS. LANDSBERG. MUTTER: ELSE. NOT INVENTORY.",
+      "placement": "fixed"
+    },
+    {
+      "id": "INT_M4D_RELAY_CARD",
+      "title": "The relay's maintenance card, feed 2",
+      "type": "DOC",
+      "map": "4d",
+      "text": "RR-7 · FEED 2 · MAINTENANCE CARD\n\nHEATERS: economy mode. The relay will run its suits' heaters from the mast when a customer requests comfort (breaker, concourse north). Comfort is billed.\nYARD: the plates launch authorised personnel only. All personnel are authorised.\nDEBRIS: the crater floor receives scheduled maintenance from above. Shelter is provided in the modules. The yard is not a module.\nVENT 1 (the Account): opens to the shaft. Returned items are not refunded.\nTERMINATOR: the relay's night lasts fourteen of the Earth's days. Plan accordingly. We have.",
+      "placement": "fixed"
+    },
+    {
+      "id": "INT_M4D_FLIGHT_CARD",
+      "title": "The LANTERN's flight card",
+      "type": "DOC",
+      "map": "4d",
+      "text": "LANTERN · CAPSULE 2 · FLIGHT CARD (kept by the hatch, pencil, Rourke's hand crossed out and the rest in another)\n\nT+0 burn. T+9 min, the coast. T+3 days 2 h, the far side's shadow; the relay's pad lights came on before we asked.\nCREW: Rourke (pilot; the line crossed through). PAYLOAD: \"personnel, four, plus one\" — the plus one is not written by me.\nRETURN: no return leg is printed on this card. There is a box for it. Somebody has drawn a small smile in the box.",
+      "placement": "fixed"
     }
   ]
 }

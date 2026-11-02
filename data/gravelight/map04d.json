@@ -130,7 +130,7 @@
   "roster_doc": "jumpjockey and backorder are Act III's types (the Groom Lake build defines them in enemies.json; this act lists them by id: enemies.json `maps` admits them here, max_active 4 / 3). suited and shield_cell are this act's.",
   "glasshide_from_act_round": 99,
   "spawn_table": {
-    "_doc": "windows = the domes' service hatches (closets outside the hull); ground = emerge points (the regolith, the conveyor, the nave's floor); catwalk = the yard's two leap points (Catwalk_C_YARD_n) for the Jumpjockeys. The Account has no spawns: the horde comes through its one door and the Manager brings the crew through the pad.",
+    "_doc": "windows = the domes' service hatches (closets outside the hull); ground = emerge points (the regolith, the conveyor, the nave's floor); catwalk = the leap points (Catwalk_C_YARD_n, and the hall's Catwalk_E_HALL_n since UPDATE 10 / T-158): the Moon's leapers (MoonLowG) rise there and come down at you from above. The Account has no spawns: the horde comes through its one door and the Manager brings the crew through the pad.",
     "A_RECEPTION": {
       "windows": 2,
       "ground": 1
@@ -150,7 +150,8 @@
     },
     "E_HALL": {
       "windows": 2,
-      "ground": 2
+      "ground": 2,
+      "catwalk": 2
     },
     "F_CORE": {
       "windows": 0,
@@ -175,7 +176,36 @@
     "spread_per_round": 0.04,
     "spread_cap": 0.6,
     "spread_points": 40,
-    "fade_seconds": 60.0
+    "fade_seconds": 60.0,
+    "_doc_reverse": "UPDATE 10 §3 (T-158): the Earthrise beats. The violet spread grows with the act's rounds and REVERSES as the Kuendigung's cancel steps complete: each completed step of reverse_steps (in reverse_quest) takes 1/n of the spread away (EarthSky.reversed_spread); all of them (s18_cancel is CANCEL) turn the night side dark_blue. vo_dim: by the number of steps done, the Operator and Wren notice (two lines each); vo_spread: by act round, a line as the violet grows.",
+    "reverse_quest": "map04_kuendigung",
+    "reverse_steps": [
+      "s15_columns",
+      "s16_account",
+      "s17_manager",
+      "s18_cancel"
+    ],
+    "vo_dim": {
+      "1": [
+        "OPR_M4D_EARTH_DIM_01",
+        "WRN_M4D_EARTH_DIM_01"
+      ],
+      "2": [
+        "WRN_M4D_EARTH_DIM_02"
+      ],
+      "3": [
+        "OPR_M4D_EARTH_DIM_02"
+      ]
+    },
+    "vo_spread": {
+      "6": "JAK_M4D_EARTH_01",
+      "9": "WRN_M4D_EARTH_SPREAD_01"
+    },
+    "dark_blue": [
+      0.04,
+      0.08,
+      0.3
+    ]
   },
   "solar_flare": {
     "_doc": "The special round: the air posts fail, the Earth flickers, the Suited come over the rim every interval_seconds in waves of per_wave while the queue lasts; the yard shut: Gängers through the fallback points of the open domes. The last wave's point takes the Resupply.",
@@ -345,5 +375,278 @@
       "seconds": 40.0,
       "profile_id": "renewed"
     }
+  },
+  "terminator": {
+    "_doc": "UPDATE 10 §3 (T-158, contract C6 `terminator`): the day/night line. A vertical plane with its flat normal toward the Sun stands at center + h*s; s runs from from_s (all day) at act round 1 to to_s (all night) at the act's last round, gliding glide_seconds after each round start (host-owned, mirrored). The Sun's azimuth turns sun_azimuth_deg over the act and its elevation sinks from sun_elev_from to sun_elev_to; a shadow-only wall (wall_height x wall_length) on the line casts the night. Night side: in vacuum the suit heater strains (cold_air_drain s of air per s, x heater_cold_mult once the heaters run), the domes' lights drop to zone_dim, the zone's spawns get shadow_spawn_mult (+1 pressure). Day side of the yard: glare unless the visor is down (glare_from_dot: how far toward the Sun you must face; glare_max). economy_dim: the domes' lights before the heaters. zone_centres: where each zone counts as crossed. vo_cross: the Operator, once per zone crossed (in turn). vo_glare: once, on the first glare.",
+    "center": [
+      8.0,
+      0.0,
+      33.0
+    ],
+    "from_s": -80.0,
+    "to_s": 66.0,
+    "glide_seconds": 20.0,
+    "sun_azimuth_deg": 24.0,
+    "sun_elev_from": 15.6,
+    "sun_elev_to": 6.0,
+    "wall_height": 60.0,
+    "wall_length": 420.0,
+    "cold_air_drain": 0.6,
+    "heater_cold_mult": 0.4,
+    "zone_dim": 0.55,
+    "shadow_spawn_mult": 1.5,
+    "glare_from_dot": 0.35,
+    "glare_max": 0.82,
+    "economy_dim": 0.6,
+    "zone_centres": {
+      "A_RECEPTION": [
+        0,
+        0,
+        12
+      ],
+      "B_CONCOURSE": [
+        0,
+        0,
+        42
+      ],
+      "C_YARD": [
+        0,
+        0,
+        85
+      ],
+      "D_FULFILLMENT": [
+        28,
+        0,
+        42
+      ],
+      "E_HALL": [
+        28,
+        0,
+        4
+      ],
+      "F_CORE": [
+        28,
+        0,
+        -30
+      ]
+    },
+    "vo_cross": [
+      "OPR_M4D_TERM_01",
+      "OPR_M4D_TERM_02",
+      "OPR_M4D_TERM_03",
+      "OPR_M4D_TERM_04",
+      "OPR_M4D_TERM_05",
+      "OPR_M4D_TERM_06"
+    ],
+    "vo_glare": "OPR_M4D_GLARE_01"
+  },
+  "heaters": {
+    "_doc": "UPDATE 10 §3 (T-158, the Bar's row 9): the relay heaters' breaker (HeaterSwitch) on the concourse's north wall by the yard airlock: a free hold; the domes' lights come up in dome_order every dome_gap s, the mast surges, the airlocks cycle, the perks wake, burst Gangers at burst_points after burst_after s, the Operator (vo). Sets flag heaters_on.",
+    "at": [
+      -7.5,
+      0.0,
+      59.55
+    ],
+    "yaw": 0.0,
+    "hold_seconds": 1.5,
+    "dome_order": [
+      "A_RECEPTION",
+      "B_CONCOURSE",
+      "D_FULFILLMENT",
+      "E_HALL",
+      "F_CORE"
+    ],
+    "dome_gap": 0.8,
+    "burst_after": 3.5,
+    "burst": 4,
+    "burst_points": [
+      [
+        0,
+        0,
+        40
+      ],
+      [
+        0,
+        0,
+        12
+      ],
+      [
+        28,
+        0,
+        40
+      ],
+      [
+        28,
+        0,
+        4
+      ]
+    ],
+    "vo": "OPR_M4D_HEATERS_01"
+  },
+  "low_g": {
+    "_doc": "UPDATE 10 §3 (T-158, contract C6 `low_g`): JumpPad plates (pads: name, at, to = the landing spot, flight_s = the arc's time in the air under the act's gravity, zone); the yard's crater (crater: centre, rim radius, rim height, the gaps' bearings in degrees and width) is crossed by pad YardPad_S -> its north rim and back by YardPad_N; the leapers: Gangers that rise at a Catwalk_* point leap at a chasing target leap_min_m..leap_max_m away in a high slow arc (air_seconds under the zombies' Moon gravity, cooldown); shot in the air they fall and die; a landing staggers players within land_radius. The fling into space: a Lodestone fling in a vacuum zone whose speed (m/s) is at least fling_speed sends the zombie up and out (a kill credited to the flinger plus orbit_scrip, a fading scream, a streak): the HUD counts SENT TO ORBIT.",
+    "pads": [
+      {
+        "name": "YardPad_S",
+        "at": [
+          -31.0,
+          0.0,
+          70.0
+        ],
+        "to": [
+          -31.0,
+          0.0,
+          89.0
+        ],
+        "flight_s": 3.0,
+        "zone": "C_YARD"
+      },
+      {
+        "name": "YardPad_N",
+        "at": [
+          -27.0,
+          0.0,
+          89.5
+        ],
+        "to": [
+          -33.0,
+          0.0,
+          67.5
+        ],
+        "flight_s": 3.0,
+        "zone": "C_YARD"
+      },
+      {
+        "name": "YardPad_Airlock",
+        "at": [
+          5.5,
+          0.0,
+          64.5
+        ],
+        "to": [
+          24.0,
+          0.0,
+          97.5
+        ],
+        "flight_s": 3.0,
+        "zone": "C_YARD"
+      },
+      {
+        "name": "HallPad_S",
+        "at": [
+          23.0,
+          0.0,
+          -12.5
+        ],
+        "to": [
+          23.0,
+          0.0,
+          19.5
+        ],
+        "flight_s": 2.4,
+        "zone": "E_HALL"
+      },
+      {
+        "name": "HallPad_N",
+        "at": [
+          33.0,
+          0.0,
+          19.5
+        ],
+        "to": [
+          33.0,
+          0.0,
+          -12.0
+        ],
+        "flight_s": 2.4,
+        "zone": "E_HALL"
+      }
+    ],
+    "crater": {
+      "center": [
+        -31.0,
+        0.0,
+        79.0
+      ],
+      "radius": 5.5,
+      "rim_h": 2.4,
+      "gaps_deg": [
+        90.0
+      ],
+      "gap_width_deg": 50.0,
+      "segments": 12
+    },
+    "hall_catwalks": [
+      [
+        14.5,
+        0.0,
+        21.5
+      ],
+      [
+        41.5,
+        0.0,
+        21.5
+      ]
+    ],
+    "leap_min_m": 6.0,
+    "leap_max_m": 24.0,
+    "air_seconds": 2.4,
+    "cooldown": 7.0,
+    "launch_near_m": 5.0,
+    "land_radius": 2.2,
+    "fling_speed": 15.0,
+    "orbit_scrip": 120,
+    "vo_pad": "OPR_M4D_PAD_01",
+    "vo_orbit": "OPR_M4D_ORBIT_01",
+    "vo_orbit_more": [
+      "OPR_M4D_ORBIT_02",
+      "OPR_M4D_ORBIT_03"
+    ]
+  },
+  "meteor_shower": {
+    "_doc": "UPDATE 10 §3 (T-158, contract C6 `meteor_shower`; the Bar's row 14 with the shaft grate): a round event on match rounds first_round, first_round + every, ... (never on a special round). The relay warns warn_seconds ahead (klaxon, the Operator's 'scheduled maintenance', a banner), then for seconds the yard (yard_box [x0, z0, x1, z1]) takes impacts_per_s small impacts: each a falling streak (fall_s) and a strike radius_m wide (zombies die, players take player_damage at the centre, falling off to the edge), a crater mark that fades after mark_seconds, dust. Every aim_every-th impact lands within aim_m of a player standing in the yard, telegraphed by a ring tele_s ahead. Shelter in the modules: nothing lands under a roof. Host-owned: the host picks every point and mirrors it.",
+    "first_round": 33,
+    "every": 6,
+    "warn_seconds": 10.0,
+    "seconds": 40.0,
+    "impacts_per_s": 1.4,
+    "yard_box": [
+      -39.0,
+      61.0,
+      39.0,
+      109.0
+    ],
+    "radius_m": 2.6,
+    "player_damage": 90.0,
+    "aim_every": 3,
+    "aim_m": 5.0,
+    "tele_s": 1.2,
+    "fall_s": 0.9,
+    "mark_seconds": 30.0,
+    "banner": "SCHEDULED MAINTENANCE",
+    "vo_warn": "OPR_M4D_METEOR_WARN_01",
+    "vo_start": "OPR_M4D_METEOR_01",
+    "vo_end": "OPR_M4D_METEOR_END_01"
+  },
+  "shaft_grate": {
+    "_doc": "UPDATE 10 §3 (T-158, the Bar's row 14): the Account's floor vent over the dish's vacuum shaft, just inside the Account's one door (where the horde comes in). A lever (cost, like the other traps) opens the grate for open_seconds: zombies on it (radius_m) are drawn down the shaft (a kill with a long fall and the vent's roar), and a zombie the Lodestone flings onto the open grate drops too; players on it are thrown clear (push_mps) and take player_damage. cooldown s.",
+    "grate": [
+      28.0,
+      0.0,
+      -21.0
+    ],
+    "radius_m": 2.4,
+    "lever": [
+      15.05,
+      0.0,
+      -20.0
+    ],
+    "lever_yaw": -90.0,
+    "cost": 1000,
+    "open_seconds": 8.0,
+    "cooldown": 60.0,
+    "player_damage": 25.0,
+    "push_mps": 7.0,
+    "vo": "OPR_M4D_SHAFT_01"
   }
 }

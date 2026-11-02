@@ -2519,3 +2519,68 @@ func _uboat_white() -> void:
 		var tw: Tween = l.create_tween()
 		tw.tween_method(func(e: float) -> void: _set_light_e(l, e), e0, e0 * to, 1.6)
 	_count("uboat_white")
+
+
+# ---- U10 Act IV ----
+# Mondlicht (data/gravelight/map04d_ambience.json, contract C1, DECISIONS T-158): the Act IV kinds dust_settle,
+# crater_shadows, relay_mast, vacuum_muffle, earth_violet, field_units and meteors are handed to one MondlichtLiving
+# node (gravelight/world/map04/mondlicht_living.gd). `_kinds_setup_u10_act4` makes it once, only when the file lists
+# one of them (Map 0's file lists none: unchanged); the MondlichtController calls it, and a `_kinds_setup_*`
+# dispatcher would too (it is guarded). `_ev_<kind>` fires one beat of a kind now (the console and the smokes).
+# Every node lookup is guarded; the Moon has no Landscape.
+
+const U10_ACT4_KINDS: PackedStringArray = ["dust_settle", "crater_shadows", "relay_mast", "vacuum_muffle", "earth_violet", "field_units", "meteors"]
+
+var u10_act4: MondlichtLiving = null
+
+
+func _kinds_setup_u10_act4() -> void:
+	if u10_act4 != null or cfg.is_empty() or not is_inside_tree():
+		return
+	var c: Dictionary = {}
+	for k: String in U10_ACT4_KINDS:
+		if cfg.has(k):
+			c[k] = cfg[k]
+	if c.is_empty():
+		return
+	u10_act4 = MondlichtLiving.new()
+	add_child(u10_act4)
+	u10_act4.setup(c)
+
+
+func _ev_dust_settle() -> void:
+	if u10_act4 != null:
+		u10_act4.puff(Vector3(0.0, 0.0, 80.0))
+
+
+func _ev_crater_shadows() -> void:
+	var t: Node = get_tree().get_first_node_in_group(&"terminator") if is_inside_tree() else null
+	if t != null and t.has_method("debug_progress"):
+		t.call("debug_progress", minf(1.0, float(t.call("progress")) + 0.1))
+
+
+func _ev_relay_mast() -> void:
+	if not is_inside_tree():
+		return
+	for m: Node in get_tree().get_nodes_in_group(&"relay_mast"):
+		m.call("surge")
+
+
+func _ev_vacuum_muffle() -> void:
+	AudioDirector.call("_set_vacuum_muffle", not bool(AudioDirector.get("muffled")))
+
+
+func _ev_earth_violet() -> void:
+	var sky: Node = get_tree().get_first_node_in_group(&"earth_sky") if is_inside_tree() else null
+	if sky != null and sky.has_method("flicker"):
+		sky.call("flicker", 1.5)
+
+
+func _ev_field_units() -> void:
+	if u10_act4 != null:
+		u10_act4.call("_place_units", 30.0)
+
+
+func _ev_meteors() -> void:
+	if u10_act4 != null:
+		u10_act4.far_meteor()

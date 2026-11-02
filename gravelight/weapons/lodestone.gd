@@ -198,6 +198,14 @@ static func resolve_fling(ctx: Node3D, origin: Vector3, fwd: Vector3, w: WeaponI
 		z.external_push(vel, secs, pid, w.id, dmg)
 		flung.append(z)
 	out["flung"] = flung.size()
+	# UPDATE 10 §3 Act IV (T-158): on the Moon a fast enough fling in the open vacuum sends the body to orbit (MoonLowG)
+	var lowg: Node = ctx.get_tree().get_first_node_in_group(&"moon_lowg")
+	if lowg != null:
+		var orbited: int = 0
+		for fz: Zombie in flung:
+			if bool(lowg.call("on_flung", fz, vel, pid, w.id)):
+				orbited += 1
+		out["orbited"] = orbited
 	# Escape Velocity: a flung body that passes another knocks it along too (fling_chain hops, weaker each time)
 	var chain: int = int(g.get("fling_chain", 0))
 	if chain > 0 and not flung.is_empty():

@@ -16,6 +16,7 @@ const ACTION_NAMES: Dictionary = {
 	"minimap_zoom": "Minimap zoom",
 	"ping": "Ping / mark (double-tap: danger)",
 	"bot_mode": "Bot mode (an AI plays you)",
+	"visor": "Suit visor (the Moon)",
 }
 
 var _tab: int = 0

@@ -1,0 +1,40 @@
+{
+  "_doc": "Mondlicht's living world (UPDATE 10 §3 Act IV, contract C1, DECISIONS T-158): read by MapAmbience (MapRoot attaches it because this file exists); its `# ---- U10 Act IV ----` block hands these sections to a MondlichtLiving node (gravelight/world/map04/mondlicht_living.gd). Presentation only. needs_landscape false: the Moon has no Landscape and none of Map 0's kinds (bombers, artillery, crows...) are listed, so none run. dust_settle: a slow puff where a shot hits the regolith or the rim in the open (max_per_s, a pool of emitters, lifetime s, gravity m/s² for the puff, max_y: only hits this low; range_m of the ray). crater_shadows: the Sun swings with the terminator (Terminator), so the long shadows move; earthshine_gain lifts the yard's earthshine fill as the night grows. relay_mast: the mast beacon's pulse period (the dish's red warning lamp blinks in time). vacuum_muffle: AudioDirector's suit muffle on the SFX bus while in a vacuum zone (cutoff_hz, db). earth_violet: the Earth's violet points breathe (breath 0..1). field_units: Darkmatter's field units (constructs, never people) walking just beyond the north rim along path (feet at 2.4 m: the 3 m rim hides the legs, the bodies and lamps show over it) at speed m/s, spacing_m apart, lamps on (the Bar's row 19 on the Moon). meteors: distant silent streaks every interval s.",
+  "needs_landscape": false,
+  "dust_settle": {
+    "max_per_s": 6.0,
+    "pool": 10,
+    "amount": 14,
+    "lifetime": 6.0,
+    "speed_min": 0.4,
+    "speed_max": 1.4,
+    "gravity": 0.35,
+    "max_y": 3.5,
+    "range_m": 70.0
+  },
+  "crater_shadows": {
+    "earthshine_gain": 1.4
+  },
+  "relay_mast": {
+    "period": 3.2
+  },
+  "vacuum_muffle": {
+    "cutoff_hz": 420.0,
+    "db": -12.0
+  },
+  "earth_violet": {
+    "breath": 0.18
+  },
+  "field_units": {
+    "count": 3,
+    "speed": 1.1,
+    "spacing_m": 9.0,
+    "lamp_energy": 3.0,
+    "lamp_color": [1.0, 0.82, 0.55],
+    "path": [[-36.0, 2.4, 116.0], [-10.0, 2.4, 117.0], [14.0, 2.4, 116.0], [36.0, 2.4, 117.5]]
+  },
+  "meteors": {
+    "first_after": [15, 40],
+    "interval": [20, 60]
+  }
+}

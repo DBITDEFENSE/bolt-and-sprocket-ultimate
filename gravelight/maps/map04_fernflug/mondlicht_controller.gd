@@ -69,6 +69,7 @@ func _on_match_started(_map: StringName) -> void:
 	cfg = _load_cfg()
 	act = cfg.get("act", {})
 	(func() -> void: _arrival()).call_deferred()
+	_u10_systems()   # UPDATE 10 §3 (T-158): the terminator, the suit overlay, low gravity, the meteor shower
 
 
 func _arrival() -> void:
@@ -348,3 +349,162 @@ func start_renewal() -> void:
 	ending.set("cfg", (cfg.get("endings", {}) as Dictionary).get("renewal", {}))
 	get_tree().current_scene.add_child(ending)
 	print("[m4d] AUTO-RENEWAL: the plan renewed")
+
+
+# ---- U10 Act IV (T-158) ----
+# The set-pieces of UPDATE 10 §3 (contract C6): the terminator (Terminator), the suit overlay (MoonSuitHud, local),
+# low gravity done right (MoonLowG: the pads' first line, the leapers, the orbit count) and the meteor-shower round
+# (MeteorShower). Each is created here when the scene does not carry it (older scenes, the smokes), so the act runs
+# them whether or not map04d.tscn was regenerated. Console verbs: `terminator <0..1>|status`, `heaters`,
+# `meteors now|status`, `orbit status`.
+
+var _glare_said: bool = false
+
+
+func _u10_systems() -> void:
+	var map: Node = get_parent() if get_parent() != null else get_tree().current_scene
+	if map == null:
+		return
+	if get_tree().get_first_node_in_group(&"terminator") == null and cfg.has("terminator"):
+		var t: Terminator = Terminator.new()
+		map.add_child(t)
+	var tn: Terminator = get_tree().get_first_node_in_group(&"terminator") as Terminator
+	if tn != null and tn.cfg.is_empty():
+		var sd: Array = (cfg.get("earth", {}) as Dictionary).get("sun_dir", [0.88, 0.26, -0.31])
+		tn.setup(cfg.get("terminator", {}), Vector3(float(sd[0]), float(sd[1]), float(sd[2])))
+		if Net.is_authority():
+			tn.call("_set_round_target", RoundManager.current_round, true)
+	var amb: Node = get_tree().get_first_node_in_group(&"map_ambience")
+	if amb != null and amb.has_method("_kinds_setup_u10_act4"):
+		amb.call_deferred("_kinds_setup_u10_act4")   # the living world (map04d_ambience.json); guarded against a second call
+	if get_tree().get_first_node_in_group(&"moon_suit_hud") == null:
+		map.add_child(MoonSuitHud.new())
+	if get_tree().get_first_node_in_group(&"moon_lowg") == null and cfg.has("low_g"):
+		var lg: Node = load("res://gravelight/world/map04/moon_lowg.gd").new()
+		map.add_child(lg)
+	if get_tree().get_first_node_in_group(&"meteor_shower") == null and cfg.has("meteor_shower"):
+		var ms: Node = load("res://gravelight/world/map04/meteor_shower.gd").new()
+		map.add_child(ms)
+	GLBus.round_started.connect(_u10_round)
+	var tick: Timer = Timer.new()
+	tick.name = "U10Tick"
+	tick.wait_time = 0.5
+	tick.autostart = true
+	tick.timeout.connect(_u10_tick)
+	add_child(tick)
+	var con: Node = get_node_or_null("/root/GLConsole")
+	if con != null and con.has_method("register"):
+		con.call("register", "terminator", _cmd_terminator, "terminator <0..1>|status: put Mondlicht's day/night line at act progress t (T-158)")
+		con.call("register", "heaters", _cmd_heaters, "heaters: throw the relay heaters (Mondlicht's power-on, T-158)")
+
+
+## The first time a player is blinded in the open yard: the Operator on the visor (once).
+func glare_hint() -> void:
+	if _glare_said or not Net.is_authority():
+		return
+	_glare_said = true
+	var id: String = str((cfg.get("terminator", {}) as Dictionary).get("vo_glare", ""))
+	if id != "":
+		GLVO.play(StringName(id))
+
+
+func _cmd_terminator(a: PackedStringArray) -> String:
+	var t: Terminator = get_tree().get_first_node_in_group(&"terminator") as Terminator
+	if t == null:
+		return "no terminator on this map"
+	if a.size() > 0 and a[0].is_valid_float():
+		t.debug_progress(float(a[0]))
+	return "terminator s %.1f (target %.1f), progress %.2f, night zones %s, heaters %s" % [t.s, t.target_s, t.progress(), str(t.night_zones), str(t.heaters_on)]
+
+
+func _cmd_heaters(_a: PackedStringArray) -> String:
+	var hs: HeaterSwitch = get_tree().get_first_node_in_group(&"heater_switch") as HeaterSwitch
+	if hs == null:
+		GameState.set_flag(&"heaters_on")
+		return "no switch on this map: the flag is set"
+	hs.throw_switch()
+	return "the heaters run"
+
+
+var _u10_said: Dictionary = {}       # line id -> true (once per match)
+var smile_seen: bool = false
+
+
+func _say_once(id: String) -> void:
+	if id == "" or _u10_said.has(id):
+		return
+	_u10_said[id] = true
+	GLVO.play(StringName(id))
+
+
+func _jakub_here() -> bool:
+	return get_tree().get_first_node_in_group(&"jakub") != null
+
+
+## EarthSky: `done` of `total` cancel steps reversed the violet; the Operator and Wren notice (earth.vo_dim).
+func earth_dimmed(done: int, _total: int) -> void:
+	if not Net.is_authority():
+		return
+	var lines: Array = ((cfg.get("earth", {}) as Dictionary).get("vo_dim", {}) as Dictionary).get(str(done), [])
+	var i: int = 0
+	for id: Variant in lines:
+		var lid: String = str(id)
+		get_tree().create_timer(3.0 + 5.0 * float(i)).timeout.connect(func() -> void: _say_once(lid))
+		i += 1
+
+
+func _u10_round(r: int, _special: bool) -> void:
+	if not Net.is_authority():
+		return
+	var ar: int = RoundManager.act_round(r) if RoundManager.has_act() else r
+	var sp: Dictionary = (cfg.get("earth", {}) as Dictionary).get("vo_spread", {})
+	if sp.has(str(ar)):
+		var id: String = str(sp[str(ar)])
+		if not id.begins_with("JAK_") or _jakub_here():
+			get_tree().create_timer(12.0).timeout.connect(func() -> void: _say_once(id))
+
+
+## Twice a second: Jakub at the console and at Pilch's glass (when he is with the squad), the smile's first sight;
+## and the living world once MapRoot has attached its MapAmbience (it comes after match_started).
+func _u10_tick() -> void:
+	if get_tree().get_first_node_in_group(&"mondlicht_living") == null:
+		var amb: Node = get_tree().get_first_node_in_group(&"map_ambience")
+		if amb != null and amb.has_method("_kinds_setup_u10_act4"):
+			amb.call("_kinds_setup_u10_act4")
+	if Net.is_authority() and _jakub_here() and GameState.is_zone_open(&"F_CORE"):
+		for n: Node in get_tree().get_nodes_in_group(&"players"):
+			var p: Player = n as Player
+			if p == null or p.is_bot or not p.is_alive():
+				continue
+			if p.global_position.distance_to(Vector3(28, 0, -30)) < 3.5:
+				_say_once("JAK_M4D_CONSOLE_01")
+			if p.global_position.distance_to(Vector3(26.4, 0, -39.8)) < 3.0:
+				_say_once("JAK_M4D_PILCH_01")
+	_check_smile_sight()
+
+
+## The smile side egg, findable: the first time the local player in the yard looks up at the grin on the far wall,
+## the minimap gets a note at the rim's marker (where the egg's interact is).
+func _check_smile_sight() -> void:
+	if smile_seen:
+		return
+	var map: Node = get_tree().current_scene
+	var lp: Player = map.get("player") as Player if map != null else null
+	var cam: Camera3D = get_viewport().get_camera_3d()
+	if lp == null or cam == null or not ZoneVolume.vacuum_at(get_tree(), lp.global_position):
+		return
+	var to_smile: Vector3 = (Vector3(0.0, 30.0, 214.0) - cam.global_position).normalized()
+	if (-cam.global_transform.basis.z).dot(to_smile) < 0.9:
+		return
+	mark_smile()
+
+
+func mark_smile() -> void:
+	if smile_seen:
+		return
+	smile_seen = true
+	var ms: MapState = MapState.current()
+	if ms != null:
+		ms.add_marker({"pos": Vector3(0.0, 0.0, 104.0), "kind": "note", "label": "The smile, the rim",
+			"color": Color(0.8, 0.55, 1.0), "owner": 0, "target": "me"})
+	print("[m4d] the smile is seen: a note on the minimap")

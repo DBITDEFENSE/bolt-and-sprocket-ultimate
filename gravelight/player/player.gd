@@ -1569,6 +1569,21 @@ func external_push(v: Vector3, seconds: float, kind: StringName = &"push") -> vo
 	_push_t = maxf(0.05, seconds)
 
 
+## A launch plate's throw (UPDATE 10 §3 Act IV, JumpPad, T-158): the arc's take-off velocity; the horizontal part is
+## held for the flight (the lunge path, so air control neither adds to it nor bleeds it), gravity does the rest.
+## Bots take the take-off velocity only (their adapter steers in the air).
+func pad_launch(v: Vector3, seconds: float) -> void:
+	if downed or spectating:
+		return
+	velocity = v
+	_air_cap = Vector2(v.x, v.z).length()
+	if not is_bot:
+		_lunge_t = maxf(0.05, seconds - 0.05)
+		_lunge_vel = Vector3(v.x, 0.0, v.z)
+	if sliding:
+		_end_slide(false)
+
+
 ## The current push (zero when none), for the bots' movement adapter.
 func push_velocity() -> Vector3:
 	return _push_v if _push_t > 0.0 else Vector3.ZERO

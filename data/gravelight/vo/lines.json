@@ -12161,5 +12161,150 @@
     "speaker": "OPR",
     "category": "RAID_M2",
     "text": "[the tannoy rattles with every hit, the bulbs swinging] Oh, now really. Bombers? Tonight? This was not on the {schedule}. Somebody up there has not read the timetable, and I shall be writing to their superiors."
+  },
+  "OPR_M4D_TERM_01": {
+    "speaker": "OPR",
+    "category": "M4D_TERM",
+    "text": "The terminator is now passing over you. Please remain where you are. Darkness is included in your {plan}."
+  },
+  "OPR_M4D_TERM_02": {
+    "speaker": "OPR",
+    "category": "M4D_TERM",
+    "text": "Another part of the relay has entered its evening. Your suit heater will do its best. That is all we {promise}."
+  },
+  "OPR_M4D_TERM_03": {
+    "speaker": "OPR",
+    "category": "M4D_TERM",
+    "text": "We are experiencing scheduled darkness. Valued customers may notice a slight {chill}."
+  },
+  "OPR_M4D_TERM_04": {
+    "speaker": "OPR",
+    "category": "M4D_TERM",
+    "text": "The day is ending in this sector. It will end in every sector. We planned it that {way}."
+  },
+  "OPR_M4D_TERM_05": {
+    "speaker": "OPR",
+    "category": "M4D_TERM",
+    "text": "Cold is a temporary condition. Retention is {permanent}."
+  },
+  "OPR_M4D_TERM_06": {
+    "speaker": "OPR",
+    "category": "M4D_TERM",
+    "text": "The whole relay is in shadow now. It's quieter like this. Don't you {think}?"
+  },
+  "OPR_M4D_GLARE_01": {
+    "speaker": "OPR",
+    "category": "M4D_GLARE",
+    "text": "The Sun is unfiltered out here. Your visor is provided free of charge. Please lower {it}."
+  },
+  "OPR_M4D_HEATERS_01": {
+    "speaker": "OPR",
+    "category": "M4D_HEATERS",
+    "text": "Heaters engaged. Thank you for upgrading your comfort. The difference will appear on your {statement}."
+  },
+  "OPR_M4D_PAD_01": {
+    "speaker": "OPR",
+    "category": "M4D_PAD",
+    "text": "Launch plates are for authorised personnel. You are now authorised. Please enjoy the {view}."
+  },
+  "OPR_M4D_ORBIT_01": {
+    "speaker": "OPR",
+    "category": "M4D_ORBIT",
+    "text": "That customer has been relocated. Off-site. Permanently. We will update the {records}."
+  },
+  "OPR_M4D_ORBIT_02": {
+    "speaker": "OPR",
+    "category": "M4D_ORBIT",
+    "text": "Another one leaving us. We never lose a customer. We only... {misplace} them."
+  },
+  "OPR_M4D_ORBIT_03": {
+    "speaker": "OPR",
+    "category": "M4D_ORBIT",
+    "text": "Please stop throwing our inventory into {space}."
+  },
+  "OPR_M4D_METEOR_WARN_01": {
+    "speaker": "OPR",
+    "category": "M4D_METEOR",
+    "text": "Attention. Scheduled maintenance will begin in the yard in ten seconds. Please shelter in a module. Maintenance is not {optional}."
+  },
+  "OPR_M4D_METEOR_01": {
+    "speaker": "OPR",
+    "category": "M4D_METEOR",
+    "text": "Maintenance is in progress. Debris is part of the {service}."
+  },
+  "OPR_M4D_METEOR_END_01": {
+    "speaker": "OPR",
+    "category": "M4D_METEOR",
+    "text": "Maintenance is complete. The yard is safe again. {Statistically}."
+  },
+  "OPR_M4D_SHAFT_01": {
+    "speaker": "OPR",
+    "category": "M4D_SHAFT",
+    "text": "The vent is open. Anything standing on it will be returned to {sender}."
+  },
+  "OPR_M4D_EARTH_DIM_01": {
+    "speaker": "OPR",
+    "category": "M4D_EARTH",
+    "text": "The signal is weaker over the Atlantic. That is a... temporary {fault}."
+  },
+  "OPR_M4D_EARTH_DIM_02": {
+    "speaker": "OPR",
+    "category": "M4D_EARTH",
+    "text": "Stop. Stop that. You are cancelling. Nobody... nobody {cancels}."
+  },
+  "WRN_M4D_EARTH_DIM_01": {
+    "speaker": "WRN",
+    "category": "M4D_EARTH",
+    "text": "Look at the Earth. The violet. It's pulling back."
+  },
+  "WRN_M4D_EARTH_DIM_02": {
+    "speaker": "WRN",
+    "category": "M4D_EARTH",
+    "text": "London is dark again. Good. Dark is good."
+  },
+  "WRN_M4D_EARTH_SPREAD_01": {
+    "speaker": "WRN",
+    "category": "M4D_EARTH",
+    "text": "It's spreading over the Earth. Every round, a little more."
+  },
+  "JAK_M4D_CONSOLE_01": {
+    "speaker": "JAK",
+    "category": "M4D_CONSOLE",
+    "text": "Read them all out. Every name. In the mine we said the names at the end of every shift. Nobody gets left down here."
+  },
+  "OGP_PEOPLE_TALK_01": {
+    "speaker": "OGP",
+    "category": "PEOPLE_TALK",
+    "text": "Pohl. Obergefreiter Pohl, wireless operator, the Kranich. They hung me up with the others, and I... didn't go to sleep."
+  },
+  "OGP_PEOPLE_TALK_02": {
+    "speaker": "OGP",
+    "category": "PEOPLE_TALK",
+    "text": "Riedl and Haas are in the next bays. Don't try to wake them. I tried. I don't think they can be woken."
+  },
+  "OGP_PEOPLE_TALK_03": {
+    "speaker": "OGP",
+    "category": "PEOPLE_TALK",
+    "text": "I kept the set warm the whole way up. Nobody answered. Only the voice, and it only ever said thank you."
+  },
+  "OGP_PEOPLE_ASK_01": {
+    "speaker": "OGP",
+    "category": "PEOPLE_ASK",
+    "text": "My tag is on the hanger. Will you take it to their console and read it in? Out loud. So it says Pohl. Not bay six."
+  },
+  "OGP_PEOPLE_THANKS_01": {
+    "speaker": "OGP",
+    "category": "PEOPLE_THANKS",
+    "text": "Pohl. That's right. That's my name. ...Thank you."
+  },
+  "OGP_PEOPLE_ROUND_01": {
+    "speaker": "OGP",
+    "category": "PEOPLE_ROUND",
+    "text": "They're coming down the aisles again. I'll keep still. Mind the racks."
+  },
+  "OGP_PEOPLE_DOWN_01": {
+    "speaker": "OGP",
+    "category": "PEOPLE_DOWN",
+    "text": "Get up. Please get up. They'll put you on a hanger."
   }
 }

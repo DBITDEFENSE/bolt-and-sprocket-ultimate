@@ -80,10 +80,69 @@ func _ready() -> void:
 	if map_id == "":
 		map_id = demo_map
 	tip = pick_tip()
-	lore = lore_line(map_id)
+	lore = lore_line(lore_key if lore_key != "" else map_id)
 	_build()
-	if scene_path != "":
+	if curtain_s > 0.0:
+		_curtain_run()
+	elif scene_path != "":
 		_begin.call_deferred()
+
+
+# ---- UPDATE 10 (T-158): transitions as events ----
+# preload_scene: an exfil cutscene starts the next act loading on a thread while it plays (ExfilPoint), so the card
+# that follows only waits for what is left; `_begin` reuses that request instead of asking again.
+# curtain: the same card dropped over a scene as a curtain (the endings: the act's art, its name, a lore line keyed
+# `lore_key`, `status` in place of the bar) for `curtain_s` seconds, then it lifts and frees itself.
+
+static var preloaded: String = ""
+
+var lore_key: String = ""
+var curtain_s: float = 0.0
+var curtain_status: String = ""
+
+
+## Starts loading `path` on a thread now (an exfil cutscene's start). Safe to call twice.
+static func preload_scene(path: String) -> bool:
+	if path == "" or preloaded == path or not ResourceLoader.exists(path):
+		return preloaded == path
+	if ResourceLoader.load_threaded_request(path, "PackedScene", true) != OK:
+		return false
+	preloaded = path
+	return true
+
+
+## Drops the card for `id` over `parent` as a curtain (CanvasLayer `layer`) for `seconds`, lore from `lore_key`.
+static func curtain(parent: Node, id: String, lore_key_: String, seconds: float, status: String = "", layer: int = 40) -> CanvasLayer:
+	var cl: CanvasLayer = CanvasLayer.new()
+	cl.layer = layer
+	cl.name = "Curtain"
+	parent.add_child(cl)
+	var ls: LoadingScreen = (load(SCENE) as PackedScene).instantiate() as LoadingScreen
+	ls.map_id = id
+	ls.lore_key = lore_key_
+	ls.curtain_s = maxf(0.2, seconds)
+	ls.curtain_status = status
+	cl.add_child(ls)
+	return cl
+
+
+func _curtain_run() -> void:
+	_done = true
+	if _status != null:
+		_status.text = curtain_status
+	if _bar != null:
+		_bar.visible = false
+	modulate.a = 0.0
+	var tw: Tween = create_tween()
+	tw.tween_property(self, "modulate:a", 1.0, minf(0.8, curtain_s * 0.25))
+	tw.tween_interval(curtain_s)
+	tw.tween_property(self, "modulate:a", 0.0, 1.2)
+	tw.tween_callback(func() -> void:
+		var p: Node = get_parent()
+		if p is CanvasLayer:
+			p.queue_free()
+		else:
+			queue_free())
 
 
 func _fit() -> void:
@@ -184,6 +243,11 @@ func _begin() -> void:
 			get_tree().change_scene_to_file("res://gravelight/ui/main_menu.tscn")
 		return
 	if not is_inside_tree():
+		return
+	if preloaded == scene_path:   # T-158: the exfil cutscene already started this load
+		preloaded = ""
+		_status.text = "LOADING"
+		_requested = true
 		return
 	var err: int = ResourceLoader.load_threaded_request(scene_path, "PackedScene", true)
 	if err != OK:
