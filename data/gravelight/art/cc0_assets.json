@@ -623,6 +623,74 @@
       "res": "1k",
       "tex_px": 512,
       "note": "Totenhafen: gas bottles at the welding bench (T-145)"
+    },
+    {
+      "source": "polyhaven",
+      "id": "factory_brick",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "fl_brick",
+      "note": "U09 Act I (T-146): Werk Thalbach's works brick (halls, horn, Kraftzentrale)",
+      "tile_m": 1.5
+    },
+    {
+      "source": "polyhaven",
+      "id": "dirt_aerial_02",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "fl_yard",
+      "note": "U09 Act I (T-146): the Siedlung courtyard and the yards",
+      "tile_m": 20.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "plank_flooring_02",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "fl_planks",
+      "note": "U09 Act I (T-146): the canteen floor and stage",
+      "tile_m": 1.98
+    },
+    {
+      "source": "polyhaven",
+      "id": "peeling_painted_wall",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "fl_plaster",
+      "note": "U09 Act I (T-146): the housing blocks' and parish house's rendered facades",
+      "tile_m": 1.8
+    },
+    {
+      "source": "polyhaven",
+      "id": "old_gas_mask",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "U09 Act I (T-146): the air-raid cellar's sandbags"
+    },
+    {
+      "source": "polyhaven",
+      "id": "hanging_industrial_lamp",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "U09 Act I (T-146): the works' hanging lamps (visible fixtures)"
+    },
+    {
+      "source": "polyhaven",
+      "id": "industrial_wall_lamp",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "U09 Act I (T-146): wall lamps on the halls and the platform"
     }
   ]
 }

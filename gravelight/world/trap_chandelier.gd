@@ -8,6 +8,12 @@ const KEY: String = "chandelier"
 @export var drop_points: PackedVector3Array = PackedVector3Array([Vector3(0, 0, -6), Vector3.ZERO, Vector3(0, 0, 6)])
 @export var radius: float = 4.0
 @export var hang_height: float = 9.0
+## Art only (UPDATE 09, T-146): "crystal" the salt-crystal chandeliers (Map 1); "skip" a coal skip on two chains
+## (Fernflug Act I's Coal Hopper); "wing" a riveted wing section on a sling (Act I's Jig Crane). The drop, the
+## radius, the timing and the kill are the same for every style.
+@export var style: StringName = &"crystal"
+## Art only: how far the skip's / the wing section's chain runs up to its crane (the crystal style keeps its 6 m).
+@export var chain_m: float = 6.0
 
 var used_this_round: bool = false
 var _falling: bool = false
@@ -27,14 +33,79 @@ func _ready() -> void:
 		var ch: Node3D = Node3D.new()
 		add_child(ch)
 		ch.position = p + Vector3.UP * hang_height
-		Props.crystal_chandelier(ch, 6.0)   # salt-crystal art (world/props.gd); the chain runs up 6 m
-		var glow: OmniLight3D = OmniLight3D.new()
-		glow.light_color = Color(0.9, 0.85, 1.0)
-		glow.omni_range = 6.0
-		glow.light_energy = 0.6
-		ch.add_child(glow)
+		match style:
+			&"skip":
+				_skip_art(ch, chain_m)
+				_fold(ch)
+			&"wing":
+				_wing_art(ch, chain_m)
+				_fold(ch)
+			_:
+				Props.crystal_chandelier(ch, 6.0)   # salt-crystal art (world/props.gd); the chain runs up 6 m
+				var glow: OmniLight3D = OmniLight3D.new()
+				glow.light_color = Color(0.9, 0.85, 1.0)
+				glow.omni_range = 6.0
+				glow.light_energy = 0.6
+				ch.add_child(glow)
 		_chandeliers.append(ch)
 	GLBus.round_ended.connect(func(_r: int) -> void: reset())
+
+
+## Folds the primitive meshes under `n` into one mesh per material (a skip or a wing section is one or two draw
+## calls instead of a dozen). The materials are world-triplanar, so dropping UVs costs nothing.
+static func _fold(n: Node3D) -> void:
+	var buckets: Dictionary = {}
+	for c: Node in n.get_children():
+		var mi: MeshInstance3D = c as MeshInstance3D
+		if mi == null or not (mi.mesh is PrimitiveMesh) or mi.material_override == null:
+			continue
+		var k: int = mi.material_override.get_instance_id()
+		if not buckets.has(k):
+			var st: SurfaceTool = SurfaceTool.new()
+			st.begin(Mesh.PRIMITIVE_TRIANGLES)
+			buckets[k] = [st, mi.material_override]
+		(buckets[k][0] as SurfaceTool).append_from(mi.mesh, 0, mi.transform)
+		n.remove_child(mi)
+		mi.queue_free()
+	for k2: int in buckets.keys():
+		var arrays: Array = (buckets[k2][0] as SurfaceTool).commit_to_arrays()
+		arrays[Mesh.ARRAY_TEX_UV] = null
+		var m: ArrayMesh = ArrayMesh.new()
+		m.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+		var out: MeshInstance3D = MeshInstance3D.new()
+		out.mesh = m
+		out.material_override = buckets[k2][1]
+		n.add_child(out)
+
+
+## A riveted coal skip (1.6 × 1.1 × 0.9) heaped with coal, hung from its bail on two chains that run up `chain` m.
+static func _skip_art(parent: Node3D, chain: float) -> void:
+	Props.block(parent, Vector3(-0.8, 0.0, -0.55), Vector3(0.8, 0.85, 0.55), "rust")
+	Props.block(parent, Vector3(-0.84, 0.75, -0.59), Vector3(0.84, 0.9, 0.59), "iron")
+	for sx: float in [-0.5, 0.0, 0.5]:
+		Props.block(parent, Vector3(sx - 0.03, 0.05, -0.57), Vector3(sx + 0.03, 0.85, 0.57), "iron")
+	Props.ball(parent, Vector3(0, 0.9, 0), Vector3(1.4, 0.45, 0.95), "coal")
+	for sx2: float in [-0.82, 0.82]:
+		Props.block(parent, Vector3(sx2 - 0.03, 0.5, -0.05), Vector3(sx2 + 0.03, 1.6, 0.05), "iron")
+		Props.cable(parent, Vector3(sx2, 1.6, 0), Vector3(sx2 * 0.2, chain, 0), 0.0, 0.025, 4, "iron")
+	Props.block(parent, Vector3(-0.85, 1.55, -0.05), Vector3(0.85, 1.65, 0.05), "iron")
+
+
+## A section of wing (a 5 m panel of ribs under a half skin) on a four-leg sling that runs up `chain` m.
+static func _wing_art(parent: Node3D, chain: float) -> void:
+	Props.block(parent, Vector3(-2.5, 0.0, -0.9), Vector3(2.5, 0.06, 0.9), "chrome_worn")
+	Props.block(parent, Vector3(-2.5, 0.42, -0.6), Vector3(2.5, 0.46, 0.7), "chrome_worn")
+	for i: int in 6:
+		var x: float = -2.4 + float(i) * 0.96
+		Props.block(parent, Vector3(x - 0.02, 0.0, -0.85), Vector3(x + 0.02, 0.44, 0.85), "machine_grey")
+	for f: float in [-0.45, 0.35]:
+		Props.block(parent, Vector3(-2.5, 0.05, f - 0.05), Vector3(2.5, 0.42, f + 0.05), "machine_grey")
+	var apex: float = clampf(chain * 0.6, 0.7, 2.2)
+	for c: Vector3 in [Vector3(-2.2, 0.46, -0.6), Vector3(2.2, 0.46, -0.6), Vector3(-2.2, 0.46, 0.6), Vector3(2.2, 0.46, 0.6)]:
+		Props.strut(parent, c, Vector3(0, apex, 0), 0.03, "iron", true)
+	if chain > apex + 0.05:
+		Props.strut(parent, Vector3(0, apex, 0), Vector3(0, chain, 0), 0.05, "iron", true)
+	Props.ball(parent, Vector3(0, apex + 0.05, 0), Vector3(0.22, 0.3, 0.12), "crane_yellow")
 
 
 func trap_name() -> String:

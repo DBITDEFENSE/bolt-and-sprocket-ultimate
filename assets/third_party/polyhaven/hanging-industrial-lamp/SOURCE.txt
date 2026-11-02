@@ -1,0 +1,10 @@
+Title: Hanging Industrial Lamp
+Authors: Kuutti Siitonen
+Source: https://polyhaven.com/a/hanging_industrial_lamp
+File: https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_industrial_lamp/hanging_industrial_lamp_emissive_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_industrial_lamp/hanging_industrial_lamp_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_industrial_lamp/hanging_industrial_lamp_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_industrial_lamp/hanging_industrial_lamp_arm_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_industrial_lamp/hanging_industrial_lamp_glass_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/hanging_industrial_lamp/hanging_industrial_lamp.bin
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Hanging Industrial Lamp" by Kuutti Siitonen (Poly Haven), CC0. Modified: glTF packed to GLB, textures converted to PNG and resized, mesh decimated in Blender (tools/decimate_props.py).
+Format: GLB (metres, +Y up) with external PNG textures at <= 512 px
+Poly Haven id: hanging_industrial_lamp
+Downloaded: 2026-11-01 by Claude Code (U09 Act I builder, T-146) (tools/fetch_cc0_materials.py)
+Files used: model.glb, textures/hanging_industrial_lamp_emissive.png, textures/hanging_industrial_lamp_nor_gl.png, textures/hanging_industrial_lamp_diff.png, textures/hanging_industrial_lamp_arm.png, textures/hanging_industrial_lamp_glass_nor_gl.png

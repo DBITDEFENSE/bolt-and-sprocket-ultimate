@@ -774,6 +774,144 @@
       "grime_height": 1.2,
       "grime_floor_y": -2.0,
       "note": "Totenhafen: U-1047's pressure hull from inside, grey-green paint with sweat and rust runs (T-145)"
+    },
+    "fl_brick": {
+      "set": "polyhaven/factory-brick",
+      "id": "factory_brick",
+      "tile_m": 1.5,
+      "tint": [
+        0.86,
+        0.74,
+        0.66
+      ],
+      "rough": [
+        0.7,
+        1.0
+      ],
+      "grime": 0.45,
+      "grime_height": 1.4,
+      "frost": 0.12,
+      "frost_up": 0.6,
+      "note": "U09 Act I, Werk Thalbach (T-146): the works' brick: halls, the tunnel horn, the Kraftzentrale, the canteen"
+    },
+    "fl_corrugated": {
+      "set": "polyhaven/corrugated-iron",
+      "id": "corrugated_iron",
+      "tile_m": 1.12,
+      "tint": [
+        0.8,
+        0.77,
+        0.72
+      ],
+      "rough": [
+        0.35,
+        0.9
+      ],
+      "grime": 0.4,
+      "note": "U09 Act I, Werk Thalbach (T-146): corrugated iron: the sawtooth roofs, the goods shed, sheds and lean-tos"
+    },
+    "fl_concrete": {
+      "set": "polyhaven/concrete-wall-004",
+      "id": "concrete_wall_004",
+      "tile_m": 2.0,
+      "tint": [
+        0.84,
+        0.84,
+        0.82
+      ],
+      "rough": [
+        0.75,
+        1.0
+      ],
+      "grime": 0.5,
+      "grime_height": 1.2,
+      "note": "U09 Act I, Werk Thalbach (T-146): board-formed concrete: the test stands, the bunker, the hangar walls, the blast wall"
+    },
+    "fl_floor": {
+      "set": "polyhaven/concrete-floor-worn-001",
+      "id": "concrete_floor_worn_001",
+      "tile_m": 3.0,
+      "tint": [
+        0.8,
+        0.8,
+        0.78
+      ],
+      "rough": [
+        0.55,
+        1.0
+      ],
+      "grime": 0.3,
+      "wetness": 0.1,
+      "note": "U09 Act I, Werk Thalbach (T-146): the works' worn concrete floors and aprons"
+    },
+    "fl_grate": {
+      "set": "polyhaven/metal-grate-rusty",
+      "id": "metal_grate_rusty",
+      "tile_m": 0.5,
+      "tint": [
+        0.85,
+        0.8,
+        0.75
+      ],
+      "rough": [
+        0.4,
+        0.9
+      ],
+      "grime": 0.2,
+      "note": "U09 Act I, Werk Thalbach (T-146): catwalk grating and the ramp"
+    },
+    "fl_yard": {
+      "set": "polyhaven/dirt-aerial-02",
+      "id": "dirt_aerial_02",
+      "tile_m": 9.0,
+      "tint": [
+        0.78,
+        0.76,
+        0.74
+      ],
+      "rough": [
+        0.8,
+        1.0
+      ],
+      "grime": 0.2,
+      "frost": 0.25,
+      "frost_up": 0.7,
+      "note": "U09 Act I, Werk Thalbach (T-146): the Siedlung courtyard, the rail yard, the church square's beaten earth"
+    },
+    "fl_planks": {
+      "set": "polyhaven/plank-flooring-02",
+      "id": "plank_flooring_02",
+      "tile_m": 1.98,
+      "tint": [
+        0.72,
+        0.66,
+        0.58
+      ],
+      "rough": [
+        0.5,
+        0.95
+      ],
+      "grime": 0.4,
+      "note": "U09 Act I, Werk Thalbach (T-146): the canteen floor and stage"
+    },
+    "fl_plaster": {
+      "set": "polyhaven/peeling-painted-wall",
+      "id": "peeling_painted_wall",
+      "tile_m": 1.8,
+      "tint": [
+        0.82,
+        0.8,
+        0.74
+      ],
+      "rough": [
+        0.8,
+        1.0
+      ],
+      "grime": 0.55,
+      "grime_height": 1.6,
+      "frost": 0.1,
+      "frost_up": 0.6,
+      "note": "U09 Act I, Werk Thalbach (T-146): the housing blocks' and the parish house's rendered facades"
     }
   },
   "generator": {
@@ -826,7 +964,15 @@
       "hull_red",
       "zinc",
       "m2_interior",
-      "u_interior"
+      "u_interior",
+      "fl_brick",
+      "fl_corrugated",
+      "fl_concrete",
+      "fl_floor",
+      "fl_grate",
+      "fl_yard",
+      "fl_planks",
+      "fl_plaster"
     ],
     "keys": {
       "floorboards": "floorboards",
@@ -877,7 +1023,15 @@
       "hull_red": "m2_hull_red",
       "zinc": "m2_zinc",
       "m2_interior": "m2_interior",
-      "u_interior": "m2_interior"
+      "u_interior": "m2_interior",
+      "fl_brick": "fl_brick",
+      "fl_corrugated": "fl_corrugated",
+      "fl_concrete": "fl_concrete",
+      "fl_floor": "fl_floor",
+      "fl_grate": "fl_grate",
+      "fl_yard": "fl_yard",
+      "fl_planks": "fl_planks",
+      "fl_plaster": "fl_plaster"
     }
   }
 }
