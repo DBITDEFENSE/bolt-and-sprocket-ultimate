@@ -24,7 +24,7 @@
     "BNT",
     "TAG"
   ],
-  "speaker_default_priority": {
+  "speaker_default_priority": {"UBR": 1, 
     "OPR": 2,
     "FAS": 4,
     "REI": 4,

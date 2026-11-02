@@ -12120,5 +12120,46 @@
     "category": "SLENDER_DEAD",
     "text": "He wrote everything down. Every hour. ...I understand him.",
     "condition": "his death"
+  },
+  "RADIO_UBOAT_01": {
+    "speaker": "UBR",
+    "category": "RADIO_UBOAT",
+    "text": "[radio] To all boats. Harbour Commander Totenhafen. The harbour is closed. I say again: the harbour is closed.",
+    "speech": "An alle Boote. Hier Hafenkommandant Totenhafen. Der Hafen ist gesperrt. Ich wiederhole: Der Hafen ist gesperrt."
+  },
+  "RADIO_UBOAT_02": {
+    "speaker": "UBR",
+    "category": "RADIO_UBOAT",
+    "text": "[radio] U-1047, report your position. U-1047, come in, please.",
+    "speech": "U tausendsiebenundvierzig, melden Sie Ihre Position. U tausendsiebenundvierzig, bitte kommen."
+  },
+  "RADIO_UBOAT_03": {
+    "speaker": "UBR",
+    "category": "RADIO_UBOAT",
+    "text": "[radio] Convoy in grid square A-N four-zero-one-seven. Destroyer in sight. We are diving. Out.",
+    "speech": "Geleitzug im Quadrat Anton Nordpol vierzig siebzehn. Zerstörer in Sicht. Wir tauchen. Ende."
+  },
+  "RADIO_UBOAT_04": {
+    "speaker": "UBR",
+    "category": "RADIO_UBOAT",
+    "text": "[radio] Relayed from Basel, for U-1047: the cargo sails on the next tide. No queries.",
+    "speech": "Weitergeleitet aus Basel, an U tausendsiebenundvierzig: Die Ladung läuft mit der nächsten Tide aus. Keine Rückfragen."
+  },
+  "RADIO_UBOAT_05": {
+    "speaker": "UBR",
+    "category": "RADIO_UBOAT",
+    "text": "[radio] This is U-1047, the chief engineer. The captain has gone down to the pump deck. He is not coming back up.",
+    "speech": "Hier U tausendsiebenundvierzig, der leitende Ingenieur. Der Kommandant ist zum Pumpendeck hinunter. Er kommt nicht wieder herauf."
+  },
+  "RADIO_UBOAT_06": {
+    "speaker": "UBR",
+    "category": "RADIO_UBOAT",
+    "text": "[radio] Weather for Totenhafen: wind north-west, force nine. Sea state seven. Spring tide in the night. Out.",
+    "speech": "Wetter für Totenhafen: Wind Nordwest, Stärke neun. Seegang sieben. Springflut in der Nacht. Ende."
+  },
+  "OPR_RAID_M2_01": {
+    "speaker": "OPR",
+    "category": "RAID_M2",
+    "text": "[the tannoy rattles with every hit, the bulbs swinging] Oh, now really. Bombers? Tonight? This was not on the {schedule}. Somebody up there has not read the timetable, and I shall be writing to their superiors."
   }
 }
