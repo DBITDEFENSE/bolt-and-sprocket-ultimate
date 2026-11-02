@@ -277,8 +277,8 @@ func forced_slot() -> int:
 		var w: WeaponInstance = player.weapons.slots[i]
 		if not ws.is_empty() and (ws.has(String(w.id)) or ws.has(String(w.base_id()))):
 			return i
-		if bool(_forced.get("upgraded", false)) and w.upgraded:
-			return i
+		if bool(_forced.get("upgraded", false)) and w.upgraded and w.weapon_class() != &"wonder":
+			return i   # U10 (T-163): a gun's round; a taught wonder (the Totenglocke's toll) never rang the Chapel bell
 	return -1
 
 
@@ -1175,7 +1175,7 @@ func _human_near(p: Vector3, r: float) -> bool:
 
 func _has_upgraded() -> bool:
 	for w: WeaponInstance in player.weapons.slots:
-		if w.upgraded:
+		if w.upgraded and w.weapon_class() != &"wonder":
 			return true
 	return false
 

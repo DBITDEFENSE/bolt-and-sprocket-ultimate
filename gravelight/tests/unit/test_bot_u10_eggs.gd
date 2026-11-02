@@ -189,6 +189,15 @@ func test_rally_on_the_lit_bell() -> void:
 	assert_false(BotEEHub.rally_now({"type": "shoot_target", "target": {"group": "g"}}), "no then_hold: no rally")
 
 
+func test_a_gun_is_taught_before_a_wonder() -> void:
+	var eco: Dictionary = GLData.load_json("res://data/gravelight/ai/economy.json")
+	var bell: WeaponInstance = WeaponInstance.create(&"totenglocke")
+	var mp40: WeaponInstance = WeaponInstance.create(&"mp40")
+	assert_eq(BotBrain.best_to_teach([bell, mp40], 0, eco), 1, "no gun taught yet: the MP40 first (the Chapel bell needs a Crucible gun)")
+	var taught: WeaponInstance = WeaponInstance.create(&"mp40_up")
+	assert_eq(BotBrain.best_to_teach([bell, taught], 1, eco), 0, "a gun taught already: the wonder may learn now")
+
+
 # ---------------------------------------------------------------- wonders from the bench
 
 func test_wonder_wanted() -> void:

@@ -1142,14 +1142,21 @@ func _upgradeable_slot() -> int:
 ## Pure (T-121): the slot the Crucible should teach next: its best gun by economy tier (a taught gun counts its
 ## teachings, so a Thompson taught once is fed again before a fresh MP40), pistols last, the gun in hand on a tie.
 ## -1 when nothing carried can learn more.
+## U10 (T-163): a gun before a wonder: while no regular gun in the slots is taught yet, a wonder (the Totenglocke)
+## waits (-20): its toll never rings a quest bell, so a squad that taught only wonders could never light the
+## Requiem's Chapel bell (s4 needs a Crucible gun).
 static func best_to_teach(slots: Array, current: int, eco: Dictionary) -> int:
 	var best: int = -1
 	var best_s: float = -INF
+	var gun_taught: bool = false
+	for w0: Variant in slots:
+		if (w0 as WeaponInstance).upgraded and (w0 as WeaponInstance).weapon_class() != &"wonder":
+			gun_taught = true
 	for i: int in slots.size():
 		var w: WeaponInstance = slots[i]
 		if Crucible.action_for(w) != &"upgrade":
 			continue
-		var s: float = BotEconomy.tier_of(String(w.base_id()), w.upgraded, eco, w.tier) - (10.0 if w.weapon_class() == &"pistol" else 0.0) 			+ (0.01 if i == current else 0.0)
+		var s: float = BotEconomy.tier_of(String(w.base_id()), w.upgraded, eco, w.tier) - (10.0 if w.weapon_class() == &"pistol" else 0.0) 			+ (0.01 if i == current else 0.0) - (20.0 if w.weapon_class() == &"wonder" and not gun_taught else 0.0)
 		if s > best_s:
 			best_s = s
 			best = i
