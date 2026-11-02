@@ -78,6 +78,9 @@ func _ready() -> void:
 	add_child(guard)
 	get_tree().create_timer(0.35).timeout.connect(guard.queue_free)
 	var reopen: bool = Net.reopen_lobby   # T-138: back from an online match (host left / dropped): the lobby says why
+	if MenuLobby.consume_open_request():   # T-145: the dev launcher's "Online lobby" (--open=online): Play > Online at once
+		show_column("play", false)
+		reopen = true
 	if (Net.is_online() or reopen) and _screen == null:
 		open_screen.call_deferred(MenuLobby)
 

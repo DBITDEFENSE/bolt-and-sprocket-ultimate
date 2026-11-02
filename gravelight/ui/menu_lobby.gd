@@ -14,6 +14,13 @@ extends MenuScreen
 ##   lan       direct IP host / join (ENet), then the same room
 ## Controller-navigable like every MenuKit page.
 
+## UPDATE 09 section 8 (T-145), dev launcher only. `--open=online` (or `open_request = "online"`, set in-process)
+## makes the main menu open this screen at once; `--auto-host` creates a public lobby as soon as the screen is up and
+## `--auto-join` goes to Browse. Each fires once per process, and only when the flag is given: normal play, the smokes
+## and the tests never pass them.
+static var open_request: String = ""
+static var _auto_done: bool = false
+
 var _page: String = "home"
 var _status: String = ""
 var _code_field: LineEdit
@@ -24,6 +31,28 @@ var _create_public: bool = true
 var _create_slots: int = 4
 var _create_bots: bool = true
 var _dirty: bool = false
+
+
+## "online" when the lobby should open at once: the in-process request or `--open=online` in `args`.
+static func open_mode(args: Array = []) -> String:
+	if open_request != "":
+		return open_request
+	return "online" if args.has("--open=online") else ""
+
+
+static func consume_open_request() -> bool:
+	var m: String = open_mode(Array(OS.get_cmdline_user_args()) + Array(OS.get_cmdline_args()))
+	open_request = ""
+	return m == "online"
+
+
+## "host", "join" or "" from the launch flags (`--auto-host` / `--auto-join`).
+static func auto_mode(args: Array) -> String:
+	if args.has("--auto-host"):
+		return "host"
+	if args.has("--auto-join"):
+		return "join"
+	return ""
 
 
 func _init() -> void:
@@ -40,6 +69,20 @@ func _ready() -> void:
 	super._ready()
 	for pair: Array in _links():
 		(pair[0] as Signal).connect(pair[1] as Callable)
+	if not _auto_done:
+		var auto: String = auto_mode(Array(OS.get_cmdline_user_args()) + Array(OS.get_cmdline_args()))
+		if auto != "":
+			_auto_done = true
+			_run_auto.call_deferred(auto)
+
+
+func _run_auto(auto: String) -> void:
+	if not Lobbies.has_display_name():
+		Lobbies.set_display_name("Host test" if auto == "host" else "Guest test")
+	if auto == "host":
+		_create()
+	else:
+		_go("browse")
 
 
 func _links() -> Array:

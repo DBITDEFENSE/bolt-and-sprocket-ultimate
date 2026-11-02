@@ -2,6 +2,10 @@ extends Node
 ## Headless smoke test for the dev launcher's Map 4 buttons (UPDATE 07, T-116; PLAY.bat → ui/dev_launcher.tscn):
 ##   1. the launcher builds; the four Map 4 buttons exist ("full run", "skip to Act II / III / IV"), none disabled,
 ##      none marked "(not built yet)"
+##   1b. UPDATE 09 section 8 (T-145): the Update 09 buttons exist (Online lobby, Host a test lobby (local), Web build
+##       (serve locally), Totenhafen - rebuilt, Fernflug rebuilt Act I-IV, Main menu (new)), and each target resolves
+##       without opening a window: scenes exist, the launch flags parse (--open=online, --auto-host / --auto-join,
+##       --mock-online[-serve]=port), the web command is built, the Fernflug acts are built
 ##   2. "skip to Act II" (DevLauncher._start_act): Campaign.begin_at with the arrival kit; der Kranich loads in
 ##      campaign mode, round 15 next ("ACT II · 1"), the kit's guns, perks, grenades and the launcher's Scrip on
 ##      the human, the bots the launcher chose, the cradle beacon dormant and due at round 20
@@ -10,6 +14,10 @@ extends Node
 const TIMEOUT: float = 120.0
 const WANT: Array = ["Map 4 — Fernflug (full run: Act I from round 1)", "Map 4 — skip to Act II: der Kranich (round 15)",
 	"Map 4 — skip to Act III: Groom Lake (round 21)", "Map 4 — skip to Act IV: Mondlicht (round 30)"]
+
+const WANT_U09: Array = ["Online lobby", "Host a test lobby (local)", "Web build (serve locally)", "Totenhafen — rebuilt",
+	"Act I (round 1)", "Act II (round 15)", "Act III (round 21)", "Act IV (round 30)", "Main menu (new)",
+	"Relief squad test (Map 0, round 6, a squad forced on the next round)", "Ledger Lager test (Map 0, 20,000 Scrip, power on, round 10)"]
 
 var _fails: PackedStringArray = []
 var _t: float = 0.0
@@ -70,6 +78,10 @@ func _run() -> void:
 		if str(t).begins_with("Map 4") and str(t).contains("not built"):
 			unbuilt.append(str(t))
 	_check(unbuilt.is_empty(), "no Map 4 button says '(not built yet)' (%s)" % ", ".join(unbuilt))
+	for w3: String in WANT_U09:
+		var b3: Button = buttons.get(w3) as Button
+		_check(b3 != null and not b3.disabled, "Update 09 button exists and is enabled: %s" % w3)
+	_check_u09_targets()
 	var bots_chosen: int = (launcher.get("_bots") as OptionButton).selected
 	launcher.call("_start_act", "map04b_kranich", 15)   # the "skip to Act II" button's call
 	var loaded: bool = await _until(func() -> bool:
@@ -97,6 +109,30 @@ func _run() -> void:
 	_check(x != null and x.state == ExfilPoint.State.DORMANT and x.next_round() == 20, "the autopilot cradle is dormant, due at round 20")
 	_check(GameState.god_mode == false, "god mode follows the launcher's box (off)")
 	_finish()
+
+
+## The Update 09 buttons' targets, resolved without launching anything.
+func _check_u09_targets() -> void:
+	for scene: String in [DevLauncher.MAIN_MENU_NEW, DevLauncher.MAP02, "res://ui/dev_launcher.tscn"]:
+		_check(ResourceLoader.exists(scene), "scene exists: " + scene)
+	for act: Array in DevLauncher.U09_ACTS:
+		var sc: String = Campaign.scene_for(StringName(str(act[1])))
+		_check(ResourceLoader.exists(sc) and Campaign.scene_exists(StringName(str(act[1]))), "Fernflug %s scene resolves: %s" % [str(act[0]), sc])
+	# the flags of the two test-lobby windows parse the way the game reads them
+	for set: Array in [DevLauncher.HOST_ARGS, DevLauncher.GUEST_ARGS]:
+		for a: Variant in set:
+			_check(str(a).begins_with("--"), "flag shaped like a flag: " + str(a))
+		_check(MenuLobby.open_mode(set) == "online", "%s opens the online lobby" % str(set))
+	_check(MenuLobby.auto_mode(DevLauncher.HOST_ARGS) == "host" and MenuLobby.auto_mode(DevLauncher.GUEST_ARGS) == "join", "--auto-host / --auto-join parse")
+	_check(MenuLobby.auto_mode([]) == "" and MenuLobby.open_mode([]) == "", "no flags: nothing opens or auto-runs (normal play and smokes unaffected)")
+	var serve: String = str(DevLauncher.HOST_ARGS[0])
+	var join: String = str(DevLauncher.GUEST_ARGS[0])
+	_check(serve.begins_with("--mock-online-serve=") and join.begins_with("--mock-online=") and int(serve.get_slice("=", 1)) == DevLauncher.MOCK_PORT \
+		and int(join.get_slice("=", 1)) == DevLauncher.MOCK_PORT and DevLauncher.MOCK_PORT > 1024, "the relay flags carry the same port (%d)" % DevLauncher.MOCK_PORT)
+	_check(DevLauncher.web_command(true) == "tools/serve_web.sh --port=%d" % DevLauncher.WEB_PORT, "web command with a build: serve only")
+	_check(DevLauncher.web_command(false).begins_with("tools/build_web.sh && tools/serve_web.sh"), "web command without a build: build, then serve")
+	_check(FileAccess.file_exists(ProjectSettings.globalize_path("res://tools/build_web.sh")) and FileAccess.file_exists(ProjectSettings.globalize_path("res://tools/serve_web.sh")), "tools/build_web.sh and tools/serve_web.sh exist")
+	_check(DevLauncher.WEB_URL == "http://127.0.0.1:%d/" % DevLauncher.WEB_PORT, "the web URL matches the port")
 
 
 func _finish() -> void:
