@@ -705,7 +705,9 @@ static func enamel_sign(parent: Node3D, pos: Vector3, yaw: float, text: String, 
 	for sx: float in [-1.0, 1.0]:
 		for sy: float in [-1.0, 1.0]:
 			_ns(Props.cyl(g, Vector3(sx * (w * 0.5 - 0.03), sy * (h * 0.5 - 0.03), -0.018), 0.008, 0.006, "iron", Vector3(90, 0, 0)))
-	var l: Label3D = Props.stencil(g, Vector3(0, 0, -0.017), 0.0, text, 48, text_color, minf(0.004, h * 0.55 / 48.0))
+	# fit the text to the plate: its height and (at ~0.62 em a glyph) its width
+	var px: float = minf(0.004, minf(h * 0.55 / 48.0, (w - 0.08) / maxf(1.0, float(text.length()) * 48.0 * 0.62)))
+	var l: Label3D = Props.stencil(g, Vector3(0, 0, -0.017), 0.0, text, 48, text_color, px)
 	l.double_sided = false
 	return g
 

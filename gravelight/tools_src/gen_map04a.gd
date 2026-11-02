@@ -348,6 +348,7 @@ const KRANICH_AT: Vector3 = Vector3(-20, 0, 185)
 const KRANICH_WING: Dictionary = {"span": 86.0, "le_root": 26.0, "le_sweep": 0.22, "te_sweep": 0.12, "t_root": 7.0, "t_tip": 4.2,
 	"tip_pow": 20.0, "base": 0.2, "body_half": 10.5, "body_h": 3.3, "body_z": Vector2(-20.5, 21.0), "notch_half": 5.0, "notch_te": -20.0}
 const KRANICH_ENGINES: Array = [-30.0, -18.0, 18.0, 30.0]
+const KRANICH_PAINT: String = "olive_steel"
 const WARM: Color = Color(1.0, 0.72, 0.42)
 ## Whether the per-zone key spots cast shadows (measured against contract C4; see T-146).
 const KEY_SHADOW: bool = false
@@ -442,9 +443,9 @@ func _dress_kranich() -> void:
 	var shell: MeshInstance3D = MeshInstance3D.new()
 	shell.name = "Shell"
 	shell.mesh = GenDetail.flying_wing_mesh(KRANICH_WING, 48, 28)
-	shell.material_override = Mats.get_mat("grey_paint")
+	shell.material_override = Mats.get_mat(KRANICH_PAINT)
 	kr.add_child(shell)
-	Props.ball(kr, Vector3(0, 2.9, 1.0), Vector3(15.5, 5.6, 34), "grey_paint")          # the crown over the centre body
+	Props.ball(kr, Vector3(0, 2.9, 1.0), Vector3(15.5, 5.6, 34), KRANICH_PAINT)          # the crown over the centre body
 	Props.ball(kr, Vector3(0, 5.25, 11.5), Vector3(3.8, 1.9, 6.5), "glass")              # the cockpit canopy
 	for cz: float in [9.6, 11.5, 13.4]:
 		Props.obox(kr, Vector3(0, 5.6, cz), Vector3(3.5, 0.07, 0.07), "black_paint")
@@ -452,12 +453,12 @@ func _dress_kranich() -> void:
 	for ix: float in KRANICH_ENGINES:
 		var le: float = float(KRANICH_WING["le_root"]) - absf(ix) * float(KRANICH_WING["le_sweep"])
 		var te: float = -float(KRANICH_WING["le_root"]) + absf(ix) * float(KRANICH_WING["te_sweep"])
-		Props.ball(kr, Vector3(ix, 4.0, 0), Vector3(6.8, 3.8, 14), "grey_paint")       # the engine bay bulge
-		Props.obox(kr, Vector3(ix, 1.3, (le - 2.0 + 7.0) * 0.5), Vector3(2.4, 1.6, le - 2.0 - 7.0), "grey_paint")   # the intake duct fairing
+		Props.ball(kr, Vector3(ix, 4.0, 0), Vector3(6.8, 3.8, 14), KRANICH_PAINT)       # the engine bay bulge
+		Props.obox(kr, Vector3(ix, 1.3, (le - 2.0 + 7.0) * 0.5), Vector3(2.4, 1.6, le - 2.0 - 7.0), KRANICH_PAINT)   # the intake duct fairing
 		Props.cyl(kr, Vector3(ix, 1.35, le - 1.55), 1.15, 0.5, "black_paint", Vector3(90, 0, 0))    # the intake lip
 		Props.cyl(kr, Vector3(ix, 1.35, le - 1.75), 0.95, 0.2, "nachtglas", Vector3(90, 0, 0))     # the impeller glow inside
-		Props.cyl(kr, Vector3(ix, 1.1, te + 0.9), 0.85, 2.0, "char", Vector3(90, 0, 0))            # the exhaust
-		Props.cyl(kr, Vector3(ix, 1.1, te - 0.05), 0.6, 0.1, "black_paint", Vector3(90, 0, 0))
+		Props.cyl(kr, Vector3(ix, 0.8, te + 3.4), 0.55, 3.0, "char", Vector3(90, 0, 0))            # the exhaust, buried in the trailing edge
+		Props.cyl(kr, Vector3(ix, 0.8, te + 1.88), 0.42, 0.06, "black_paint", Vector3(90, 0, 0))
 	# the bomb bay's mouth over the ramp (the ramp plank is its own kept group, below)
 	Props.block(kr, Vector3(-3.9, 0.3, -20.12), Vector3(3.9, 3.15, -19.98), "black_paint")
 	for bx: float in [-4.0, 4.0]:
@@ -572,7 +573,7 @@ func _dress_halle() -> void:
 		for bxx: float in [2.5, 7.5, 12.5, 17.5]:
 			Props.block(gd, Vector3(sx * bxx - 0.12, 0.2, -0.3), Vector3(sx * bxx + 0.12, 15.8, -0.2), "iron")
 		Props.block(gd, Vector3(sx * 0.2, 7.0, -0.22), Vector3(sx * 19.8, 8.4, -0.19), "window_dark")
-		Props.stencil(gd, Vector3(sx * 10.0, 11.2, -0.33), 180.0, "HALLE 3" if sx < 0.0 else "TOR GESCHLOSSEN HALTEN", 200 if sx < 0.0 else 90, Color(0.85, 0.82, 0.7, 0.7))
+		Props.stencil(gd, Vector3(sx * 10.0, 11.2, -0.33), 0.0, "HALLE 3" if sx < 0.0 else "TOR GESCHLOSSEN HALTEN", 200 if sx < 0.0 else 90, Color(0.85, 0.82, 0.7, 0.7))
 	GenDetail.merge_children(gd)
 	GenDetail.i_beam(g, Vector3(-41.0, 16.6, 214.45), Vector3(1.0, 16.6, 214.45), 0.9, 0.4, "steel")
 	# the crane bridge at rest over the ramp (a kept group): the travelling crane with the Kranführer's cab at its east end
@@ -797,7 +798,7 @@ func _dress_bahnhof() -> void:
 	NB(Vector3(29.6, 3.6, 51.6), Vector3(37.6, 3.72, 51.75), "iron", g)
 	Props.block(g, Vector3(27.72, 0.05, 57.1), Vector3(27.78, 2.6, 59.4), "wood_red")   # the side door, slid open along the wall
 	NB(Vector3(27.68, 2.65, 54.6), Vector3(27.78, 2.75, 59.6), "iron", g)
-	Props.stencil(g, Vector3(34.0, 3.85, 51.62), 180.0, "GÜTERSCHUPPEN", 110, Color(0.9, 0.86, 0.76, 0.8))
+	Props.stencil(g, Vector3(34.0, 3.85, 51.62), 0.0, "GÜTERSCHUPPEN", 110, Color(0.9, 0.86, 0.76, 0.8))
 	# the station clock on a bracket off the shed wall, over the platform's east end
 	var ck: Node3D = Props.group(g, "StationClock", Vector3(35.0, 3.1, 51.6))
 	Props.strut(ck, Vector3(0, 0, 0), Vector3(0, 0, -0.9), 0.06, "iron")
@@ -816,7 +817,7 @@ func _dress_bahnhof() -> void:
 	GenDetail.enamel_sign(g, Vector3(6.17, 2.75, 55.6), -90.0, "THALBACH WERKBAHNHOF", 1.6, 0.3, "enamel_white", Color(0.06, 0.08, 0.16))
 	GenDetail.poster(g, Vector3(6.17, 1.55, 57.3), -90.0, "ÜBERSTELLUNG 2. MAI", "Arbeitskommando Thalbach:\nAbmarsch 4 Uhr, Richtung Westen.\nListe beim Fahrdienstleiter.", 0.42, 0.56)
 	GenDetail.poster(g, Vector3(1.0, 1.6, 57.84), 0.0, "FRACHTBRIEF", "Absender: Totenhafen\nInhalt: Werkstoff, 14 Behälter\nNicht öffnen.", 0.36, 0.48)
-	GenDetail.lamp_fixture(g, Vector3(1.4, 1.25, 56.9), "wall", 180.0, 0.0, "enamel_green")
+	GenDetail.lamp_fixture(g, Vector3(1.4, 1.25, 57.84), "wall", 0.0, 0.0, "enamel_green")
 	# Jette's desk (HutDesk): ledgers and a telephone
 	Props.block(g, Vector3(0.6, 0.8, 55.7), Vector3(1.2, 0.86, 56.3), "leather")
 	Props.block(g, Vector3(1.5, 0.8, 56.6), Vector3(1.9, 0.9, 56.9), "bakelite")
@@ -841,7 +842,7 @@ func _dress_bahnhof() -> void:
 	GenDetail.puddle(g, Vector3(31.0, 0.006, 42.0), 2.0, 1.1, 30.0)
 	for i2: int in 7:
 		Props.ball(g, Vector3(17.0 + float(i2) * 1.3, 0.02, 45.0 + sin(float(i2)) * 0.5), Vector3(0.7, 0.08, 0.5), "coal")
-	GenDetail.chalk_mark(g, Vector3(16.05, 1.0, 48.0), 0.0, "jakub", 0.26)
+	GenDetail.chalk_mark(g, Vector3(14.6, 0.95, 47.95), 0.0, "jakub", 0.26)
 	Props.stencil(g, Vector3(20.0, 3.3, 59.82), 0.0, "KIRCHPLATZ  →", 70)
 
 
@@ -906,15 +907,15 @@ func _dress_siedlung() -> void:
 	Props.block(g, Vector3(-0.15, 6.0, 0.0), Vector3(0.15, 6.3, 30.0), "concrete")
 	Props.obox(g, Vector3(-3.0, 7.1, 15.0), Vector3(6.6, 0.18, 30.6), "roof", Vector3(0, 0, -16))
 	_facade(g, Vector3.RIGHT, 0.15, [5.0, 10.0, 22.0, 26.5], [3.6], 1.0, 1.1, 105, 0.0)
-	GenDetail.enamel_sign(g, Vector3(0.17, 2.7, 9.0), 90.0, "WASCHKÜCHE", 1.0, 0.24)
+	GenDetail.enamel_sign(g, Vector3(0.17, 2.7, 9.0), -90.0, "WASCHKÜCHE", 1.0, 0.24)
 	for c2: Array in [[Vector3(-0.1, 6.0, 30.0 - 0.25), Vector3(40.1, 6.3, 30.0 + 0.25)]]:
 		Props.block(g, c2[0], c2[1], "concrete")
 	for px: float in [2.0, 6.0, 10.0, 14.0, 26.0, 30.0, 34.0, 38.0]:
 		Props.block(g, Vector3(px - 0.25, 0, 29.8), Vector3(px + 0.25, 6.3, 29.85 - 0.0 + 0.01), "fl_brick")
 	_frame_gameplay_doors(g, ["B_BAHNHOF"], "concrete")
-	GenDetail.poster(g, Vector3(15.2, 1.7, 29.83), 180.0, "VOLKSSTURM", "Appell aller Männer von 16 bis 60 Jahren.\nSonntag, 6 Uhr, Werkhof Thalbach.\nMitzubringen: Decke, Essgeschirr, Spaten.", 0.5, 0.72)
-	GenDetail.poster(g, Vector3(16.0, 2.55, 29.83), 180.0, "VERDUNKELN!", "ab 20 Uhr", 0.36, 0.3, "paper", Color(0.6, 0.1, 0.06), -3.0)
-	GenDetail.poster(g, Vector3(24.6, 1.6, 29.83), 180.0, "LOHNAUSZAHLUNG", "Freitag, 14 Uhr\nLohnkasse am Werkbahnhof", 0.36, 0.46, "paper", Color(0.1, 0.1, 0.12), 2.0)
+	GenDetail.poster(g, Vector3(15.2, 1.7, 29.83), 0.0, "VOLKSSTURM", "Appell aller Männer von 16 bis 60 Jahren.\nSonntag, 6 Uhr, Werkhof Thalbach.\nMitzubringen: Decke, Essgeschirr, Spaten.", 0.5, 0.72)
+	GenDetail.poster(g, Vector3(16.0, 2.55, 29.83), 0.0, "VERDUNKELN!", "ab 20 Uhr", 0.36, 0.3, "paper", Color(0.6, 0.1, 0.06), -3.0)
+	GenDetail.poster(g, Vector3(24.6, 1.6, 29.83), 0.0, "LOHNAUSZAHLUNG", "Freitag, 14 Uhr\nLohnkasse am Werkbahnhof", 0.36, 0.46, "paper", Color(0.1, 0.1, 0.12), 2.0)
 	# the air-raid cellar (Cellar* walls): sandbags along its north face and on its roof, the LSR arrows, a gas mask
 	Props.sandbags(g, Vector3(2.3, 0, 10.32), Vector3(5.8, 0, 10.32), 3)
 	Props.sandbags(g, Vector3(8.2, 0, 10.32), Vector3(11.7, 0, 10.32), 3)
@@ -922,7 +923,7 @@ func _dress_siedlung() -> void:
 		Props.sandbags(g, e[0], e[1], 2)
 	GenDetail.door(g, Vector3(7.0, 0, 10.15), 180.0, 1.8, DOOR_H, {"leaf": "", "frame": "concrete", "step": false})
 	GenDetail.enamel_sign(g, Vector3(7.0, 2.75, 10.2), 180.0, "LUFTSCHUTZRAUM  ·  40 PERSONEN", 1.6, 0.26, "enamel_white", Color(0.1, 0.1, 0.1))
-	for lsr: Array in [[Vector3(0.17, 1.9, 6.0), 90.0], [Vector3(20.0, 1.9, 0.17), 180.0], [Vector3(12.17, 1.9, 6.0), 90.0]]:
+	for lsr: Array in [[Vector3(0.17, 1.9, 6.0), -90.0], [Vector3(20.0, 1.9, 0.17), 180.0], [Vector3(12.17, 1.9, 6.0), -90.0]]:
 		Props.stencil(g, lsr[0], float(lsr[1]), "LSR  ←", 90, Color(0.92, 0.92, 0.88, 0.85))
 	_lib(g, "stove_barrel", Vector3(2.65, 0, 9.35), 30.0)
 	Props.cyl(g, Vector3(2.65, 2.0, 9.35), 0.07, 2.2, "iron")
@@ -930,7 +931,7 @@ func _dress_siedlung() -> void:
 	_lib(g, "gas_mask_hanging", Vector3(11.8, 1.9, 4.6), -90.0)
 	Props.shelves(g, Vector3(2.3, 0, 5.5), -90.0, 2.4, 1.8, 0.3, 3, 31)
 	Props.lantern(g, Vector3(7.0, 2.2, 6.0), 3.0)
-	GenDetail.poster(g, Vector3(2.17, 1.7, 3.2), 90.0, "VERHALTEN IM LUFTSCHUTZRAUM", "Ruhe bewahren.\nLicht löschen.\nDen Anweisungen des Luftschutzwarts folgen.", 0.42, 0.6)
+	GenDetail.poster(g, Vector3(2.17, 1.7, 3.2), -90.0, "VERHALTEN IM LUFTSCHUTZRAUM", "Ruhe bewahren.\nLicht löschen.\nDen Anweisungen des Luftschutzwarts folgen.", 0.42, 0.6)
 	# the crater (Crater collider 22..28 × 20..26, 0.6 m): a rim of earth and paving, scorched bowl
 	GenDetail.crater(g, Vector3(25.0, 0, 23.0), 2.25, 41, "dirt", "stone")
 	# the washing lines between the posts (NavBlock_Post), stiff sheets
@@ -945,7 +946,7 @@ func _dress_siedlung() -> void:
 	Props.strut(pump, Vector3(0, 1.25, 0), Vector3(0, 1.45, -0.55), 0.05, "loco_black")
 	Props.strut(pump, Vector3(0, 0.9, 0), Vector3(0, 0.75, -0.3), 0.06, "loco_black", true)
 	Props.block(pump, Vector3(-0.3, 0, -0.55), Vector3(0.3, 0.12, -0.15), "stone")
-	GenDetail.lamp_fixture(g, Vector3(8.6, 3.0, 29.83), "wall", 180.0, 0.0, "black_paint", "lantern_glass")
+	GenDetail.lamp_fixture(g, Vector3(8.6, 3.0, 29.83), "wall", 0.0, 0.0, "black_paint", "lantern_glass")
 	# the child's chalk game on the courtyard, a chalk stick figure on the block's base
 	GenDetail.chalk_mark(g, Vector3(32.5, 0.012, 16.0), 90.0, "hopscotch", 0.55, true)
 	GenDetail.card(g, "chalk", Vector3(30.4, 0.014, 16.0), Vector3.UP, Vector2(4.6, 1.6))
@@ -1014,8 +1015,8 @@ func _dress_kantine() -> void:
 	# the serving hatch (NavBlock_Hatch shelf in the west window): a counter, a roller shutter half up, a menu board
 	Props.block(g, Vector3(-43.75, 0.88, 46.3), Vector3(-42.5, 0.92, 49.7), "zinc")
 	Props.block(g, Vector3(-43.7, 2.25, 46.9), Vector3(-43.55, 2.6, 49.1), "iron")
-	GenDetail.enamel_sign(g, Vector3(-43.82, 2.95, 48.0), 90.0, "ESSENSAUSGABE", 1.4, 0.26)
-	GenDetail.poster(g, Vector3(-43.82, 1.7, 45.2), 90.0, "SPEISEPLAN", "Montag: Steckrübeneintopf\nDienstag: Steckrübeneintopf\nMittwoch: Graupen", 0.42, 0.58, "board_wood", Color(0.92, 0.92, 0.9))
+	GenDetail.enamel_sign(g, Vector3(-43.82, 2.95, 48.0), -90.0, "ESSENSAUSGABE", 1.4, 0.26)
+	GenDetail.poster(g, Vector3(-43.82, 1.7, 45.2), -90.0, "SPEISEPLAN", "Montag: Steckrübeneintopf\nDienstag: Steckrübeneintopf\nMittwoch: Graupen", 0.42, 0.58, "board_wood", Color(0.92, 0.92, 0.9))
 	# the stage (NavBlock_Stage 10 × 6 × 0.25): boards, a proscenium, curtains, the radio set, the concert banner, the PA
 	Props.block(g, Vector3(-43.85, 0.2, 54.0), Vector3(-34.0, 0.26, 59.85), "fl_planks")
 	NB(Vector3(-34.06, 0.0, 54.0), Vector3(-34.0, 0.25, 59.85), "beam", g)
@@ -1038,7 +1039,7 @@ func _dress_kantine() -> void:
 	Props.cyl(pa, Vector3(0, 0, -0.38), 0.12, 0.16, "black_paint", Vector3(90, 0, 0))
 	Props.cable(g, Vector3(-33.6, 4.3, 59.7), Vector3(-33.6, 5.6, 59.7), 0.0, 0.015, 2, "rubber")
 	# enamel signs, a coat rack of works coats by the Bahnhof door, a clock
-	GenDetail.enamel_sign(g, Vector3(-0.17, 2.6, 49.0), -90.0, "GESCHIRR ZURÜCKBRINGEN", 1.5, 0.26, "enamel_white", Color(0.08, 0.12, 0.2))
+	GenDetail.enamel_sign(g, Vector3(-0.17, 2.6, 49.0), 90.0, "GESCHIRR ZURÜCKBRINGEN", 1.5, 0.26, "enamel_white", Color(0.08, 0.12, 0.2))
 	GenDetail.enamel_sign(g, Vector3(-22.0, 3.0, 59.83), 0.0, "HÄNDE WASCHEN", 1.1, 0.26, "enamel_white", Color(0.08, 0.12, 0.2))
 	GenDetail.enamel_sign(g, Vector3(-22.0, 3.0, 30.17), 180.0, "KANTINE  ·  WERK THALBACH", 2.0, 0.3, "enamel_white", Color(0.08, 0.12, 0.2))
 	Props.block(g, Vector3(-0.3, 1.65, 50.6), Vector3(-0.17, 1.75, 53.4), "beam")
@@ -1047,7 +1048,7 @@ func _dress_kantine() -> void:
 		if hz < 53.0:
 			PropsStory.coat_drape(g, Vector3(-0.28, 1.68, hz), -90.0, "cloth_navy" if hz < 51.6 else "feldgrau")
 	Props.cyl(g, Vector3(-22.0, 4.0, 59.82), 0.3, 0.05, "enamel_white", Vector3(90, 0, 0))
-	GenDetail.chalk_mark(g, Vector3(-43.83, 0.7, 41.0), 90.0, "tally", 0.3)
+	GenDetail.chalk_mark(g, Vector3(-43.83, 0.7, 41.0), -90.0, "tally", 0.3)
 
 
 # ------------------------------------------------------------------ D: Kirchplatz
@@ -1213,7 +1214,7 @@ func _dress_windkanal() -> void:
 	for gz: float in [112.2, 117.8]:
 		for gx: float in [28.0, 34.0]:
 			Props.gauge(g, Vector3(gx, 1.6, gz + (0.18 if gz < 115.0 else -0.18)), 180.0 if gz < 115.0 else 0.0, 0.12)
-	Props.stencil(g, Vector3(32.0, 2.0, 111.82), 180.0, "MESSSTRECKE", 90, Color(0.9, 0.88, 0.8, 0.8))
+	Props.stencil(g, Vector3(32.0, 2.0, 111.82), 0.0, "MESSSTRECKE", 90, Color(0.9, 0.88, 0.8, 0.8))
 	# Jette's glass office over the north side of the test section (hung from the roof trusses, a ladder up the east
 	# wall): a steel deck at 2.7 m, glazing with mullions, a desk with its lamp, Wittkamp's silhouette at the glass
 	var ox0: float = 30.0
@@ -1235,17 +1236,17 @@ func _dress_windkanal() -> void:
 	Props.block(g, Vector3(34.0, 2.75, 121.4), Vector3(36.4, 3.5, 122.6), "furniture")
 	GenDetail.lamp_fixture(g, Vector3(35.6, 3.55, 122.3), "hanging", 0.0, 3.9, "enamel_green")
 	GenDetail.silhouette(g, Vector3(33.2, 2.75, 118.5), 0.0, 1.78)
-	GenDetail.enamel_sign(g, Vector3(37.0, 3.1, 118.3), 180.0, "BÜRO MAURER  ·  ZUTRITT NUR MIT ERLAUBNIS", 2.6, 0.24)
+	GenDetail.enamel_sign(g, Vector3(37.0, 3.1, 118.3), 0.0, "BÜRO MAURER  ·  ZUTRITT NUR MIT ERLAUBNIS", 2.6, 0.24)
 	Props.ladder(g, Vector3(43.7, 0, 125.4), -90.0, 2.75)
 	# the hatch under the office on the east wall (the JetteHatch interactable stands in front of it)
 	GenDetail.door(g, Vector3(43.85, 0.0, 124.0), 90.0, 0.9, 1.4, {"blind": true, "steel": true, "leaf": "machine_grey", "step": false, "frame": "steel"})
 	# signs, pipes, the control desk by the fan control
 	GenDetail.enamel_sign(g, Vector3(8.0, 3.0, 100.17), 180.0, "WINDKANAL  ·  ANLAGE 2", 1.8, 0.3)
-	GenDetail.enamel_sign(g, Vector3(5.5, 2.8, 111.82), 180.0, "VORSICHT  ·  LUFTSTROM", 1.4, 0.28, "enamel_white", Color(0.5, 0.06, 0.04))
+	GenDetail.enamel_sign(g, Vector3(5.5, 2.8, 111.82), 0.0, "VORSICHT  ·  LUFTSTROM", 1.4, 0.28, "enamel_white", Color(0.5, 0.06, 0.04))
 	GenDetail.pipe_run(g, PackedVector3Array([Vector3(1.0, 5.4, 113.2), Vector3(1.0, 5.4, 101.0), Vector3(43.5, 5.4, 101.0)]), 0.12, "machine_green", 3.0, 1)
 	GenDetail.cable_tray(g, Vector3(5.0, 4.6, 129.7), Vector3(43.6, 4.6, 129.7), 0.3, "iron", 3)
 	GenDetail.poster(g, Vector3(10.0, 1.7, 129.83), 0.0, "FLUGPLAN", "Kurs 285, Höhe 9000.\nWegpunkt 7: ?\nNicht kopieren.", 0.42, 0.56)
-	GenDetail.chalk_mark(g, Vector3(6.2, 1.1, 111.85), 180.0, "jakub", 0.26)
+	GenDetail.chalk_mark(g, Vector3(6.2, 1.1, 111.85), 0.0, "jakub", 0.26)
 
 
 # ------------------------------------------------------------------ G: Prüfstand
@@ -1300,14 +1301,14 @@ func _dress_pruefstand() -> void:
 				var a: float = TAU * float(k) / 6.0
 				Props.obox(g, c2 + Vector3(-0.62, 1.9 + sin(a) * 0.55, cos(a) * 0.55), Vector3(0.04, 0.9, 0.22), "chrome_worn", Vector3(rad_to_deg(-a), 0, 20))
 			GenDetail.card(g, "frost", c2 + Vector3(0, 0.02, 0), Vector3.UP, Vector2(5.0, 5.0))
-		Props.stencil(g, Vector3(px + 4.0, 0.6, 123.97), 180.0, "STAND %d" % (i2 + 1), 110, Color(0.9, 0.88, 0.8, 0.8))
+		Props.stencil(g, Vector3(px + 4.0, 0.6, 123.97), 0.0, "STAND %d" % (i2 + 1), 110, Color(0.9, 0.88, 0.8, 0.8))
 		px += 12.0
 	# the blast wall (NavBlock_BlastWall 52 × 0.6 × 3 m): form boards, a coping, warning stencils, the floods on it
 	GenDetail.form_board(g, Vector3(-56.0, 0, 133.98), Vector3(-4.0, 3.0, 133.98), Vector3.FORWARD, 0.3, "fl_concrete", false)
 	GenDetail.form_board(g, Vector3(-56.0, 0, 134.62), Vector3(-4.0, 3.0, 134.62), Vector3.BACK, 0.3, "fl_concrete", false)
 	Props.block(g, Vector3(-56.1, 3.0, 133.9), Vector3(-3.9, 3.15, 134.7), "concrete")
 	for sx: float in [-48.0, -30.0, -12.0]:
-		Props.stencil(g, Vector3(sx, 1.8, 133.96), 180.0, "ACHTUNG  ·  PRÜFLAUF", 120, Color(0.85, 0.15, 0.08, 0.85))
+		Props.stencil(g, Vector3(sx, 1.8, 133.96), 0.0, "ACHTUNG  ·  PRÜFLAUF", 120, Color(0.85, 0.15, 0.08, 0.85))
 	for fl: float in [-42.0, -30.0, -18.0]:
 		var fb: Node3D = Props.group(g, "Flood", Vector3(fl, 3.15, 134.3))
 		Props.block(fb, Vector3(-0.08, 0, -0.08), Vector3(0.08, 1.4, 0.08), "iron")
@@ -1331,7 +1332,7 @@ func _dress_pruefstand() -> void:
 	Props.block(g, Vector3(-58.2, 0.78, 146.6), Vector3(-57.0, 0.82, 147.4), "felt_green")
 	GenDetail.poster(g, Vector3(-59.83, 1.7, 148.6), -90.0, "BESATZUNG", "Prüfstand 4: Besatzung gestellt.\nKeine Namen eintragen.", 0.4, 0.5)
 	GenDetail.poster(g, Vector3(-48.4, 1.6, 138.17), 180.0, "PRÜFLAUF NUR MIT FREIGABE", "", 0.5, 0.3, "paper", Color(0.6, 0.08, 0.05))
-	GenDetail.chalk_mark(g, Vector3(-4.6, 1.0, 133.97), 180.0, "jakub", 0.28)
+	GenDetail.chalk_mark(g, Vector3(-4.6, 1.0, 133.97), 0.0, "jakub", 0.28)
 	# the hangar's 20 m wall rises behind the 5 m wall here; its foot gets a drift of grit and two drums
 	for dx: float in [-58.9, -58.1]:
 		Props.oil_drum(g, Vector3(dx, 0, 111.0), "rust")
@@ -1397,6 +1398,7 @@ func _lights() -> void:
 	lamp(Vector3(3.2, 3.5, 115.0), VIOLET, 0.9, 8.0, 0.06, 0.6)              # the fan hub's Nachtglas glow
 	lamp(Vector3(40.0, 8.7, 33.0), RED, 0.5, 4.0, 0.0, 0.2)                  # the signal lamp
 	lamp(Vector3(35.6, 3.4, 122.3), INCAND, 0.7, 6.0, 0.05, 0.3)             # Jette's desk lamp
+	lamp(Vector3(-20.0, 2.2, 164.2), SODIUM, 1.0, 8.0, 0.05, 0.5)            # the Kranich's bay light over the ramp
 	for sk: float in [-30.0, 5.0]:
 		shaft("SkylightShaft", Vector3(sk, 21.5, 185.0), Vector3(sk + 3.0, 0.0, 186.0), MOONLIGHT, 3.0, 26.0, 18.0, 2.0, false)
 	# power lights: each at a fixture's bulb (the fixture is drawn here), shadowless
@@ -1408,8 +1410,8 @@ func _lights() -> void:
 		["C_KANTINE", "hanging", Vector3(-31.0, 4.6, 48.0), 0.0, INCAND, 11.0, 1.1], ["C_KANTINE", "hanging", Vector3(-17.0, 4.6, 48.0), 0.0, INCAND, 11.0, 1.1],
 		["D_KIRCHPLATZ", "wall", Vector3(36.5, 2.65, 87.75), 0.0, INCAND, 12.0, 1.0], ["D_KIRCHPLATZ", "wall", Vector3(0.16, 5.0, 74.0), -90.0, SODIUM, 18.0, 1.0],
 		["D_KIRCHPLATZ", "wall", Vector3(39.84, 4.2, 66.0), 90.0, SODIUM, 16.0, 0.9],
-		["E_MONTAGE", "hanging", Vector3(-33.0, 6.6, 74.0), 0.0, MERCURY, 14.0, 1.2], ["E_MONTAGE", "hanging", Vector3(-19.0, 6.6, 74.0), 0.0, MERCURY, 14.0, 1.2],
-		["E_MONTAGE", "hanging", Vector3(-33.0, 6.6, 98.0), 0.0, MERCURY, 14.0, 1.2], ["E_MONTAGE", "hanging", Vector3(-19.0, 6.6, 98.0), 0.0, MERCURY, 14.0, 1.2],
+		["E_MONTAGE", "hanging", Vector3(-33.0, 6.6, 74.0), 0.0, MERCURY, 18.0, 1.7], ["E_MONTAGE", "hanging", Vector3(-19.0, 6.6, 74.0), 0.0, MERCURY, 18.0, 1.7],
+		["E_MONTAGE", "hanging", Vector3(-33.0, 6.6, 98.0), 0.0, MERCURY, 18.0, 1.7], ["E_MONTAGE", "hanging", Vector3(-19.0, 6.6, 98.0), 0.0, MERCURY, 18.0, 1.7],
 		["E_MONTAGE", "hanging", Vector3(-54.0, 3.4, 67.0), 0.0, INCAND, 9.0, 1.0],
 		["F_WINDKANAL", "hanging", Vector3(14.0, 6.0, 106.0), 0.0, MERCURY, 14.0, 1.1], ["F_WINDKANAL", "hanging", Vector3(14.0, 6.0, 124.0), 0.0, MERCURY, 14.0, 1.1],
 		["F_WINDKANAL", "hanging", Vector3(38.0, 4.9, 121.0), 0.0, INCAND, 8.0, 0.9],
