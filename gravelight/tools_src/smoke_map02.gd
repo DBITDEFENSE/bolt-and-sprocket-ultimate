@@ -146,8 +146,8 @@ func _run() -> void:
 	var bad: int = 0
 	for n: Node in get_tree().get_nodes_in_group(&"zombie_spawns"):
 		var sp: ZombieSpawn = n as ZombieSpawn
-		var zc: Dictionary = counts.get(String(sp.zone_id), {"windows": 0, "ground": 0, "catwalk": 0})
-		var kind: String = "windows" if sp.kind == &"window" else ("catwalk" if sp.name.begins_with("Catwalk") else "ground")
+		var zc: Dictionary = counts.get(String(sp.zone_id), {"windows": 0, "ground": 0, "catwalk": 0, "surface": 0})
+		var kind: String = "windows" if sp.kind == &"window" else ("catwalk" if sp.name.begins_with("Catwalk") else ("surface" if sp.name.begins_with("Surface") else "ground"))
 		zc[kind] = int(zc[kind]) + 1
 		counts[String(sp.zone_id)] = zc
 		if sp.kind == &"window":
@@ -163,7 +163,7 @@ func _run() -> void:
 		var want: Dictionary = cfg["spawn_table"][zone]
 		var have: Dictionary = counts.get(zone, {})
 		var ok: bool = int(have.get("windows", 0)) == int(want.get("windows", 0)) and int(have.get("ground", 0)) == int(want.get("ground", 0)) \
-			and int(have.get("catwalk", 0)) == int(want.get("catwalk", 0))
+			and int(have.get("catwalk", 0)) == int(want.get("catwalk", 0)) and int(have.get("surface", 0)) == int(want.get("surface", 0))
 		_check(ok, "%s spawn counts match map02.json (%s)" % [zone, str(have)])
 
 	# --- 3. systems

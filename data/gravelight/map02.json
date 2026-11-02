@@ -324,7 +324,7 @@
     "screamer"
   ],
   "spawn_table": {
-    "_doc": "Which spawn points exist per zone (the generator places them; the smoke test counts them). windows = barricades, ground = emerge points live from round 1, catwalk = emerge points live only at high tide. UPDATE 10 (T-153): A_QUAY gains Ground_A_QUAY_2/3 at runtime (TotenhafenWorld, the economy pass); the Kielholer Surface_* points (D_PENHALL pier edges) are live only while flooded and are not counted here.",
+    "_doc": "Which spawn points exist per zone (the generator places them; the smoke test counts them). windows = barricades, ground = emerge points live from round 1, catwalk = emerge points live only at high tide. UPDATE 10 (T-153): A_QUAY gains Ground_A_QUAY_2/3 at runtime (TotenhafenWorld, the economy pass); the Kielholer Surface_* points (D_PENHALL pier and apron edges, kielholer.surface_points) are live only while flooded and are counted as surface.",
     "A_QUAY": {
       "windows": 4,
       "ground": 4
@@ -340,7 +340,8 @@
     "D_PENHALL": {
       "windows": 3,
       "ground": 1,
-      "catwalk": 3
+      "catwalk": 3,
+      "surface": 8
     },
     "E_UBOAT": {
       "windows": 0,
@@ -617,9 +618,9 @@
         44.0
       ],
       [
-        13.0,
+        12.5,
         0.0,
-        39.0
+        37.2
       ]
     ],
     "surface_share": 0.35,

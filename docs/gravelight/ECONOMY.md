@@ -183,3 +183,18 @@ A third run gave Peg (the agent's survivor) the tonic from round 1 (`--give=ledg
 Scrip earned per survivor over rounds 3-14 was 38,660 against 36,820 on master's economy (+5.0%, the +20% on one
 survivor of four, inside the run-to-run noise). Logs: `.smoke_logs/u09/soak/{A,B,C}.log` (A: master's economy, Ledger
 Lager out of every bot plan and bonus roll; B: the branch as shipped; C: Peg holds it).
+
+## 9. Totenhafen's spawn pressure and the Ballast bonus (UPDATE 10 section 2, T-153)
+- `rounds.json "map_overrides"` keyed by the map id's first part (`RoundManager.map_override`): `map02` runs the spawn
+  interval ×0.75 and the active cap +4. Two more quay spawn points (`Ground_A_QUAY_2/3`) are placed at runtime.
+- `economy.json "ballast_load_bonus"`: 500 Scrip to the carrier for each coffin loaded on the crane (Ballast v2).
+- **Soak** (`ai_soak --scenario=totenhafen --runs=1 --max-minutes=10`, P1's Scrip by round end):
+
+| | by round 8 | per round | 10-min total |
+|---|---|---|---|
+| Totenhafen before | 10,385 | ~1,300 | 11,455 |
+| Totenhafen after | 9,605 | ~1,200 | 10,355 |
+| Kaltenbrunn (same settings) | 7,010 by round 7 | ~1,000 | 7,670 |
+
+  The interval and cap change pace, not the zombies per round, and one run per side is noisy; in this soak Totenhafen
+  already pays above Kaltenbrunn per round, so no zombie-count multiplier was added (T-153).
