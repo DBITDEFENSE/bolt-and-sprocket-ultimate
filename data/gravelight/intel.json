@@ -668,6 +668,38 @@
       "map": "2",
       "placement": "quest",
       "text": "Kapitänleutnant Arvid Lenz, commanding U-1047. Harbour salvage record, pen hall, night of 20 January 1945: one diving dress (brass helmet, weighted boots) signed out from the salvage locker by the commander himself, \"for the pump deck\". Not returned.\n\nHis engineer, Obermaschinist Brecht, had opened one of the fourteen lead coffins loaded as ballast. Lenz read what Brecht wrote about it, locked the coffins in the warhead cage and refused to sail. When Basel ordered him out on the next tide, he went below with a lamp and wrecked the battery cells himself, so that nobody could take her out with that cargo.\n\nThe mark the detachment was given that week sat under his helmet glass. It kept him on the pump deck. Since that night his last order kept him at the dock edges: she stays here.\n\nWhen the squad brought her diesels back to life he let them go. His last words were an order too: take her out."
+    },
+    {
+      "id": "INT_M4C_RANGELOG",
+      "title": "Motor Pool Shift Sheet, Groom Lake",
+      "type": "DOC",
+      "map": "4c",
+      "placement": "fixed",
+      "text": "A grease-thumbed shift sheet in a clip on the second truck's door. MOTOR POOL, RANGE DETACHMENT. Mechanic on duty: T/5 Oakes.\n\n4 May. Both trucks serviced. Generator shed: diesel topped, pull-cord frayed, ordered new. Sgt. Marchetti wants the fuel dump moved back from the lane. Told her it takes a crane we do not have.\n\n6 May. Lab wants the generator run all night. Did not say why. The pilot's crew came through at 0300 and did not stop at the gate.\n\n7 May. Nobody relieved me. The horn on truck two sounds by itself. The radio in the shack is counting. Going to the cage. The keys are in the shed, under the log. If you are reading this, run the generator, do not run the trucks: the tyres are gone and so, I think, is the road."
+    },
+    {
+      "id": "INT_M4C_FUELCARD",
+      "title": "Fuelling Card, LANTERN Vehicle No. 1",
+      "type": "DOC",
+      "map": "4c",
+      "placement": "fixed",
+      "text": "A pressboard card wired to the gantry post, columns ruled by hand, half the boxes stamped. PROPELLANT LOADING RECORD, TEST VEHICLE LANTERN 1. Authority: Mr. L. Hale.\n\nOxidiser: loaded 0410, 6 May. Fuel: loaded 0455. Pressurant: loaded 0520. Igniter: installed, key withheld (Hale). Payload bay: 4 seats, provisioned, the fifth item sealed in lead.\n\nCrew weight allowed: 4 persons. Pencilled under it: 5 persons, if the fifth sits on the floor and does not weigh what a man weighs.\n\nLast line, a different pen, pressed hard: STAND DOWN. The core is not in the vehicle. Do not light it without the core. The pit has the core. Do not go to the pit."
+    },
+    {
+      "id": "INT_M4C_SPECIMENTAG",
+      "title": "Specimen Room 1, Admission Tag",
+      "type": "DOC",
+      "map": "4c",
+      "placement": "fixed",
+      "text": "A manila tag on a string, hung on the wall beside the glass front of the first specimen room. Typed, then amended by hand until the hand gave up.\n\nSPECIMEN ROOM 1. Admitted 6 May, 2140. Subject: range personnel, 3 (three), from the excavation crew. Condition on admission: breathing. Exposure: the Nevada stone, viewing port, 40 min.\n\n2300: subjects quiet. Suits and hoods issued (glass, the filtered kind) for the staff's protection.\n\n0115: subjects standing. Not breathing. Hoods still on them. Do not open the front.\n\n0130: Hale says they are a program result and are to be kept. Marchetti says they are Pete, Dale and Ray and are to be buried. Hale has the key to the office. Marchetti has the rifle. I am writing this from the hall and I am going to the hangar."
+    },
+    {
+      "id": "INT_M4C_WATCHLOG",
+      "title": "Radar Watch Log, the Shack",
+      "type": "DOC",
+      "map": "4c",
+      "placement": "fixed",
+      "text": "The radar watch's log, clipped to the shack wall by the window, the pages curled by the heat. SET: search set, tower mast. WATCH: Pvt. Lindqvist.\n\n5 May, 2200. Set serviceable. Sweep clean to 40 miles. Two returns at 0220, bearing north, slow: Hale's trucks from the railhead.\n\n6 May, 2350. One return, east, fast and high, no flight plan. Lost it over the lake. Not ours. Not anybody's that I know of.\n\n7 May, 0300. The set is pinging on its own. Nothing on the scope and the scope is lit. Every sweep the lake bed shows marks, like men standing on the salt, and then they are nearer. Powered it down. It is still turning.\n\n0340. I can see them from the deck. I am going up to the deck. The ladder is the only thing they have not climbed. Yet."
     }
   ]
 }

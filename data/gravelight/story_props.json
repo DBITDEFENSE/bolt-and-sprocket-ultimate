@@ -457,6 +457,54 @@
       ],
       "yaw": 180,
       "where": "The Great Hangar, clipped to the tool cage by the south-west corner"
+    },
+    {
+      "id": "INT_M4C_RANGELOG",
+      "map": "4c",
+      "style": "docket",
+      "position": [
+        -40.0,
+        1.45,
+        68.0
+      ],
+      "yaw": 90,
+      "where": "Motor pool, the second truck's west door (the x -40 face), the mechanic's shift sheet in its clip"
+    },
+    {
+      "id": "INT_M4C_FUELCARD",
+      "map": "4c",
+      "style": "docket",
+      "position": [
+        -29.0,
+        -4.5,
+        176.0
+      ],
+      "yaw": 90,
+      "where": "Test silo, wired to the gantry post's west face (x -29), by the lift cage at the rocket's foot"
+    },
+    {
+      "id": "INT_M4C_SPECIMENTAG",
+      "map": "4c",
+      "style": "docket",
+      "position": [
+        -62.0,
+        -4.5,
+        123.85
+      ],
+      "yaw": 0,
+      "where": "Laboratory, specimen room 1's north dividing wall (z 124, its south face), beside the glass front"
+    },
+    {
+      "id": "INT_M4C_WATCHLOG",
+      "map": "4c",
+      "style": "docket",
+      "position": [
+        65.2,
+        1.5,
+        128.0
+      ],
+      "yaw": 0,
+      "where": "Radar tower, the shack's south wall right of the lit window, beside the radio"
     }
   ]
 }
