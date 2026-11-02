@@ -1340,11 +1340,19 @@ func vantage_for(target_p: Vector3, avoid: Array = []) -> Vector3:
 						near_bad = true   # U10 (T-163): a spot whose shots never reached it (another angle)
 				if near_bad:
 					continue
-				if not los_point(s + Vector3.UP * eye_h, target_p):
+				if not shot_clear(s + Vector3.UP * eye_h, target_p):
 					continue
 				if _reachable(s):
 					return s
 	return Vector3.INF
+
+
+## U10 (T-163): would a bullet from `from` reach `to`? The guns' own blockers (WeaponHolder.MASK_SHOT less the
+## zombie hitboxes: world, doors and the decor layer), not the sight mask: the Four Bells' specimen-tank bell sits
+## between copper pipes on the decor layer, in sight from spots whose every round hit the pipes.
+func shot_clear(from: Vector3, to: Vector3) -> bool:
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to, 1 | (1 << 8) | DecorHit.LAYER, [player.get_rid()])
+	return player.get_world_3d().direct_space_state.intersect_ray(q).is_empty()
 
 
 ## One line for the squad report / the debug overlay.
