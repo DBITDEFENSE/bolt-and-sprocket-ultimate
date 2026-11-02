@@ -27,6 +27,8 @@ signal holdout_failed(holdout_id: StringName)
 @export var hud_title: String = "HOLD"
 ## Can it run more than once (the crank: once per flood)?
 @export var repeatable: bool = false
+## Explicit temp spawn points (world); empty = a ring round the station.
+@export var spawn_points: PackedVector3Array = PackedVector3Array()
 
 var state: State = State.IDLE
 var progress: float = 0.0
@@ -116,8 +118,8 @@ func start(by_player: int = 0) -> void:
 	var dir: ZombieDirector = _director()
 	if dir != null:
 		dir.set_spawn_boost(zone_id, spawn_mult)
-		var pts: Array = []
-		for i: int in temp_spawns:
+		var pts: Array = Array(spawn_points)
+		for i: int in (temp_spawns if spawn_points.is_empty() else 0):
 			var a: float = TAU * float(i) / float(maxi(1, temp_spawns)) + randf() * 0.6
 			pts.append(global_position + Vector3(cos(a), 0, sin(a)) * (radius + 2.0))
 		if not pts.is_empty():
@@ -216,6 +218,11 @@ func _other_holdout_running() -> bool:
 		if n != self and (n as HoldoutStation).state == State.RUNNING:
 			return true
 	return false
+
+
+## BotEE's hold_zone anchors read this (charging = hold the ring).
+func is_holding() -> bool:
+	return state == State.RUNNING
 
 
 ## Abandon it now (a tool, a wipe).

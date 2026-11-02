@@ -196,6 +196,24 @@ func on_round(round_number: int) -> void:
 		GLBus.spring_tide.emit(round_number)
 
 
+## Letzte Fahrt (s8, the curtain): the water goes to `stage_name` now and holds `hold_s` (0 = until the next round
+## re-plans). Every peer runs it (the host mirrors).
+func force_stage(stage_name: StringName, hold_s: float = 0.0) -> void:
+	var y: float = stage_y(stage_name, _cfg)
+	var rise: float = maxf(1.0, float(_cfg.get("rise_seconds", 24.0)))
+	target = y
+	_rate = absf(y - level) / rise
+	if stage_name == STAGE_SPRING:
+		sheet_target = float(_cfg.get("spring_sheet_y", 0.35))
+		_sheet_rate = absf(sheet_target - sheet_level) / rise
+	hold_left = rise + hold_s if hold_s > 0.0 else -1.0
+	if stage != stage_name:
+		stage = stage_name
+		GLBus.tide_stage.emit(stage)
+	if Net.is_authority():
+		Net.mirror(self, &"force_stage", [stage_name, hold_s])
+
+
 ## The host's call: the water goes out now (the hold ran out or the crank finished it). Every peer runs it.
 func fall_now() -> void:
 	hold_left = -1.0

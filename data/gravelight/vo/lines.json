@@ -12821,5 +12821,105 @@
     "speaker": "WRN",
     "category": "BOSS_KIELHOLER",
     "text": "He let go at the end. Didn't fight it."
+  },
+  "RAD_M2_CODE_01": {
+    "speaker": "RAD",
+    "category": "M2_CODE",
+    "text": "[radio, German] Hafen, Hafen. Spruch eins von drei. Gruppe folgt. Ende. (Harbour, harbour. Message one of three. Group follows. Out.)"
+  },
+  "RAD_M2_CODE_02": {
+    "speaker": "RAD",
+    "category": "M2_CODE",
+    "text": "[radio, German] Hafen, Hafen. Spruch zwei von drei. Gruppe folgt. Ende. (Harbour, harbour. Message two of three. Group follows. Out.)"
+  },
+  "RAD_M2_CODE_03": {
+    "speaker": "RAD",
+    "category": "M2_CODE",
+    "text": "[radio, German] Hafen, Hafen. Spruch drei von drei. Gruppe folgt. Ende. (Harbour, harbour. Message three of three. Group follows. Out.)"
+  },
+  "OPR_LF_START_01": {
+    "speaker": "OPR",
+    "category": "LF_START",
+    "text": "The pumps are running and someone has been reading the boat's paperwork. That boat is {scheduled}. I'd prefer you didn't."
+  },
+  "OPR_LF_CIPHER_01": {
+    "speaker": "OPR",
+    "category": "LF_CIPHER",
+    "text": "The teletype is talking to strangers again. Please disregard anything it prints. Especially the {depth}."
+  },
+  "OPR_LF_CIPHER_WRONG_01": {
+    "speaker": "OPR",
+    "category": "LF_CIPHER_WRONG",
+    "text": "Wrong setting. The machine is {embarrassed} for you."
+  },
+  "OPR_LF_CIPHER_WRONG_02": {
+    "speaker": "OPR",
+    "category": "LF_CIPHER_WRONG",
+    "text": "No. Try listening to the radios. They repeat themselves. {Everything} here does."
+  },
+  "OPR_LF_DIESEL_START_01": {
+    "speaker": "OPR",
+    "category": "LF_DIESEL_START",
+    "text": "Unauthorised maintenance on a scheduled vessel. I'm writing this {down}."
+  },
+  "OPR_LF_DIESEL_START_02": {
+    "speaker": "OPR",
+    "category": "LF_DIESEL_START",
+    "text": "That is company machinery. You are not on the {maintenance} roster."
+  },
+  "DEA_LF_DIESELS_01": {
+    "speaker": "DEA",
+    "category": "LF_DIESELS",
+    "text": "There she is. Listen to that. Somebody built that to be quiet. Now she's loud."
+  },
+  "DEA_LF_LOG_01": {
+    "speaker": "DEA",
+    "category": "LF_LOG",
+    "text": "Somebody built that boat to be quiet. I'd like to hear it loud, once. Brecht wrote down how."
+  },
+  "OPR_LF_KEY_01": {
+    "speaker": "OPR",
+    "category": "LF_KEY",
+    "text": "That key was assigned to a captain. The captain has been {reassigned}. I'll allow it. Once."
+  },
+  "OPR_LF_CURTAIN_01": {
+    "speaker": "OPR",
+    "category": "LF_CURTAIN",
+    "text": "The curtain is open and the weather is coming in. That boat goes where the {schedule} says. Doesn't it?"
+  },
+  "OPR_LF_SAIL_01": {
+    "speaker": "OPR",
+    "category": "LF_SAIL",
+    "text": "She's moving. Excellent. Do keep to the {charted} route. The one I charted."
+  },
+  "PET_LF_HELM_01": {
+    "speaker": "PET",
+    "category": "LF_HELM",
+    "text": "I said I'd never take a boat out of here at night. I lied to the wrong people."
+  },
+  "PET_LF_TRAPPED_01": {
+    "speaker": "PET",
+    "category": "LF_TRAPPED",
+    "text": "Up here! The stair's the only dry thing left. Give me something that shoots and I'll hold the tower."
+  },
+  "DEA_LF_CUT_01": {
+    "speaker": "DEA",
+    "category": "LF_CUT",
+    "text": "That's enough. I heard it."
+  },
+  "DUT_LF_CUT_01": {
+    "speaker": "DUT",
+    "category": "LF_CUT",
+    "text": "Everybody below. Hatches shut. Let's give them the deep water."
+  },
+  "OPR_LF_CUT_01": {
+    "speaker": "OPR",
+    "category": "LF_CUT",
+    "text": "Cargo... {lost}."
+  },
+  "PEG_LF_TELEGRAM_01": {
+    "speaker": "PEG",
+    "category": "LF_TELEGRAM",
+    "text": "Basel. Hale. On the next tide. My orders said retrieve the tokens. I'm keeping this instead."
   }
 }

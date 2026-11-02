@@ -756,7 +756,20 @@
         "yaw": 0.0,
         "zone": "C_WORKSHOP",
         "seconds": 30.0,
-        "needs_flood": true
+        "needs_flood": true,
+        "spawns": [
+          [
+            50.0,
+            0.0,
+            10.0
+          ],
+          [
+            52.0,
+            0.0,
+            24.0
+          ]
+        ],
+        "step": "s5a_injector"
       },
       "inj_battery": {
         "position": [
@@ -767,7 +780,20 @@
         "yaw": 0.0,
         "zone": "F_LOWERPENS",
         "seconds": 30.0,
-        "lights_out": true
+        "lights_out": true,
+        "spawns": [
+          [
+            36.0,
+            -3.0,
+            56.0
+          ],
+          [
+            42.0,
+            -3.0,
+            62.0
+          ]
+        ],
+        "step": "s5b_battery"
       },
       "inj_sequence": {
         "position": [
@@ -779,7 +805,27 @@
         "zone": "E_UBOAT",
         "seconds": 45.0,
         "hull_pull": true,
-        "shake_every_s": 6.0
+        "shake_every_s": 6.0,
+        "spawns": [
+          [
+            6.0,
+            -2.0,
+            64.5
+          ],
+          [
+            7.0,
+            -2.0,
+            84.5
+          ]
+        ],
+        "step": "s5c_sequence",
+        "calls": [
+          "AIR.",
+          "FUEL.",
+          "CLUTCH.",
+          "BOTH.",
+          "CONTACT."
+        ]
       }
     },
     "key_slot": [
@@ -809,9 +855,9 @@
         ]
       ],
       "helm": [
-        6.0,
-        3.6,
-        55.0
+        8.6,
+        1.0,
+        59.6
       ],
       "board_points": [
         [
@@ -844,7 +890,44 @@
       "board_per_wave": 2,
       "shake_every_s": 9.0,
       "scroll_m": 220.0,
-      "dive_cutscene": "m2_letzte_fahrt_dive"
+      "dive_cutscene": "m2_letzte_fahrt_dive",
+      "helm_yaw": -90.0,
+      "aboard_box": [
+        [
+          3.8,
+          -2.6,
+          37.4
+        ],
+        [
+          10.2,
+          6.0,
+          86.8
+        ]
+      ],
+      "cards": {
+        "pen_mouth": {
+          "x": 0.0,
+          "z": 100.0,
+          "parallax": 1.0
+        },
+        "breakwater": {
+          "x": 26.0,
+          "z": 170.0,
+          "parallax": 1.0
+        },
+        "dead_uboat": {
+          "x": -22.0,
+          "z": 210.0,
+          "parallax": 1.0
+        },
+        "town": {
+          "x": -140.0,
+          "z": 120.0,
+          "parallax": 0.35
+        }
+      },
+      "hall_hide_at": 0.22,
+      "overboard_damage": 20.0
     },
     "boss_docks": {
       "dock1": [
@@ -876,6 +959,7 @@
     "rewards": {
       "scrip_per_player": 2500,
       "tier_gift": 1
-    }
+    },
+    "curtain_flood_hold_s": 600.0
   }
 }

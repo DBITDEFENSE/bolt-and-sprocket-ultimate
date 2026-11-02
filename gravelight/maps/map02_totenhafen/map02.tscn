@@ -17857,7 +17857,7 @@ display_name = "Totenhafen"
 start_zone = &"A_QUAY"
 intro_text = "TOTENHAFEN U-BUNKER
 Baltic coast, January 1945"
-quest_files = PackedStringArray()
+quest_files = PackedStringArray("res://data/gravelight/quests/map02_letzte_fahrt.json")
 nav_zone_bits = {
 &"A_QUAY": 1,
 &"B_CANNERY": 2,

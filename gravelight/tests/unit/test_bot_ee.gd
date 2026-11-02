@@ -4,9 +4,9 @@ extends GutTest
 ## fake nodes), and the never-sequence-break rule (the planners against the real QuestManager: a bot never makes a
 ## wrong input, never the player's commit, never a risky trigger unless ordered).
 
-const QUESTS: PackedStringArray = ["map00_radio", "map01_requiem", "map01_song", "map01_wren_tag", "map04_kuendigung",
+const QUESTS: PackedStringArray = ["map00_radio", "map01_requiem", "map01_song", "map01_wren_tag", "map02_letzte_fahrt", "map04_kuendigung",
 	"map04a_jette", "map04c_cage", "map04d_smile"]
-const PLAYER_ONLY: PackedStringArray = ["map01_requiem/s10_ending", "map01_song/s2_phonograph", "map01_wren_tag/s1_tag",
+const PLAYER_ONLY: PackedStringArray = ["map01_requiem/s10_ending", "map02_letzte_fahrt/s10_ending", "map01_song/s2_phonograph", "map01_wren_tag/s1_tag",
 	"map04_kuendigung/s6_board", "map04_kuendigung/s8_london", "map04_kuendigung/s10_autopilot", "map04_kuendigung/s11b_choice",
 	"map04_kuendigung/s14_rocket", "map04_kuendigung/s18_cancel", "map04d_smile/s1_rim"]
 

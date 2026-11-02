@@ -435,7 +435,9 @@
           "text": "Survive."
         }
       ],
-      "easter_egg": [],
+      "easter_egg": [
+        "map02_letzte_fahrt"
+      ],
       "side": []
     },
     "map04b_kranich": {
@@ -1190,6 +1192,149 @@
           "nodes": [
             "BordfunkReel"
           ]
+        }
+      }
+    },
+    "map02_letzte_fahrt": {
+      "title": "Letzte Fahrt",
+      "steps": {
+        "s0a_load": {
+          "done": "Hooked a coffin on the loading crane.",
+          "hint": "The pumps won't run while the crane's sling hangs empty.",
+          "guide": "Lift a lead coffin off a pallet (the north apron or the crane bay) and hook it on the crane in the crane bay.",
+          "where": "Crane bay, east apron",
+          "nodes": [
+            "BallastHook"
+          ]
+        },
+        "s0_power": {
+          "done": "Threw the Pumpenschalter: the harbour has power.",
+          "hint": "Down in the lower pens, a switch is waiting for the crane to be fed.",
+          "guide": "Open the Pump Room door from the Pen Hall and throw the Pumpenschalter on the east wall of the lower pens.",
+          "where": "Lower pens, east wall",
+          "nodes": [
+            "Pumpenschalter"
+          ]
+        },
+        "s1_ballast": {
+          "done": "Three coffins went over the side at the sea stairs.",
+          "hint": "The coffins don't have to go where the schedule says.",
+          "guide": "Carry three coffins to the sea stairs on the quay's north parapet and put them over the side (they come back on their pallets).",
+          "where": "The quay, the sea stairs",
+          "nodes": [
+            "BallastDump"
+          ]
+        },
+        "s2a_radios": {
+          "done": "Heard all three code groups.",
+          "hint": "Three sets in this harbour are keying the same traffic.",
+          "guide": "Listen to the radios in the cannery office, on the workshop bench and in U-1047's radio room. Each gives a four-letter group and its place in the order.",
+          "where": "Cannery, workshop, U-1047",
+          "nodes": [
+            "Radio_radio_cannery",
+            "Radio_radio_workshop",
+            "Radio_radio_uboat"
+          ]
+        },
+        "s2_cipher": {
+          "done": "The rotor machine answered: the depth mark and the curtain code.",
+          "hint": "The signal tower has a machine with three wheels.",
+          "guide": "In the signal tower set the three wheels to the first letters of the radio groups, in the order the radios said (message one, two, three), then pull the lever.",
+          "where": "Signal tower",
+          "nodes": [
+            "CipherMachine"
+          ]
+        },
+        "s3_log": {
+          "done": "Read all four pages of U-1047's log.",
+          "hint": "The captain's log came apart. Somebody hid the pages.",
+          "guide": "Find the four log pages: the captain's cabin, the radio room, the crane office and the pump-deck locker (each has two possible spots).",
+          "where": "U-1047, crane office, lower pens",
+          "nodes": []
+        },
+        "s4_parts": {
+          "done": "Built the Undertow.",
+          "hint": "A diver's pump, a harpoon head and a shard of something that went into the sea.",
+          "guide": "Find the diver's pump in the lower pens, the harpoon head in the workshop, and the coffin shard on the sea stairs after the third coffin goes over; build it at the crane office bench.",
+          "where": "Lower pens, workshop, sea stairs, crane office",
+          "nodes": [
+            "Workbench"
+          ]
+        },
+        "s5a_injector": {
+          "done": "Turned a new injector on the lathe.",
+          "hint": "Brecht: the lathe's belt only grips wet.",
+          "guide": "During a flood (high or spring tide), start the lathe in the workshop and hold it for 30 seconds.",
+          "where": "Workshop lathe",
+          "nodes": [
+            "Diesel_inj_injector"
+          ]
+        },
+        "s5b_battery": {
+          "done": "Lifted a battery cell out of the lower pens.",
+          "hint": "Brecht: when you lift the cell, the lights go. Bring your own.",
+          "guide": "Start the battery cell by pump 1 in the lower pens and hold for 30 seconds in the dark (the searchlight helps).",
+          "where": "Lower pens, pump 1",
+          "nodes": [
+            "Diesel_inj_battery"
+          ]
+        },
+        "s5c_sequence": {
+          "done": "Ran Brecht's start sequence.",
+          "hint": "Air. Fuel. Clutch. Both. Contact.",
+          "guide": "In U-1047's engine room, start the panel and hold for 45 seconds while the drowned pull at the hull.",
+          "where": "U-1047, engine room",
+          "nodes": [
+            "Diesel_inj_sequence"
+          ]
+        },
+        "s5_diesels": {
+          "done": "U-1047's diesels are running.",
+          "hint": "Three repairs, any order.",
+          "guide": "Finish the injector, the battery cell and the start sequence.",
+          "where": "U-1047",
+          "nodes": []
+        },
+        "s6_boss": {
+          "done": "The captain gave up the ignition key.",
+          "hint": "Something is coming up in dock 2.",
+          "guide": "Defeat DER KIELHOLER (the helmet glass, then the glow) and take the ignition key he drops. If he dives for good, the key floats up at the dock edge.",
+          "where": "The pen hall docks",
+          "nodes": []
+        },
+        "s7_key": {
+          "done": "Turned the ignition key in the tower.",
+          "hint": "A key needs its lock, and the curtain needs its code.",
+          "guide": "In the signal tower, turn the ignition key at the chart table (the teletype's code must be printed).",
+          "where": "Signal tower, chart table",
+          "nodes": [
+            "KeySlot"
+          ]
+        },
+        "s8_curtain": {
+          "done": "The pen curtain is open.",
+          "hint": "The way out of the pen is shut.",
+          "guide": "Pull the curtain lever at the end of pier 2. The storm and the spring tide come in.",
+          "where": "End of pier 2",
+          "nodes": [
+            "CurtainLever"
+          ]
+        },
+        "s9_sail": {
+          "done": "She sailed.",
+          "hint": "Get aboard. Everyone.",
+          "guide": "Board U-1047 and cast off at the helm by the tower (or she casts off when everyone is aboard). Hold the deck for 150 seconds.",
+          "where": "U-1047's deck",
+          "nodes": [
+            "UboatSail"
+          ]
+        },
+        "s10_ending": {
+          "done": "She went down where the chart says it is deepest.",
+          "hint": "The depth mark.",
+          "guide": "Watch.",
+          "where": "U-1047",
+          "nodes": []
         }
       }
     }

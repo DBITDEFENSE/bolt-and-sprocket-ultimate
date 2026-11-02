@@ -353,6 +353,9 @@ func preview(qid: StringName, sid: StringName, t: Dictionary, ordered: bool, foc
 
 
 ## A world snapshot for the planners (the live game state, read once).
+## T-153: per quest step, when a thinking solver may make its first input (think_s in the bot_task).
+var _think_until: Dictionary = {}
+
 func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, ordered: bool, ty: String) -> Dictionary:
 	var now: float = _now()
 	var step: Dictionary = QuestManager.step_def(qid, sid)
@@ -387,6 +390,14 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 			w["ready"] = str(t.get("ready", "")) == "" or QuestManager.interact_ready(StringName(str(t["ready"])))
 			var nd: Interactable = w["node"] as Interactable
 			w["usable"] = nd != null and nd.can_interact(player)
+			if t.has("think_s"):   # T-153: a puzzle solver "thinks" a while before the first input (the cipher: 20-40 s)
+				var tk: String = "%s:%s" % [qid, sid]
+				var now_s: float = Time.get_ticks_msec() / 1000.0
+				if not _think_until.has(tk):
+					var ts: Variant = t["think_s"]
+					var secs: float = randf_range(float(ts[0]), float(ts[1])) if ts is Array else float(ts)
+					_think_until[tk] = now_s + secs
+				w["think_left"] = float(_think_until[tk]) - now_s
 		"shoot_target":
 			w["expected"] = QuestManager.sequence_inputs(qid, sid) if t.has("sequence") else []
 			w["progress"] = int(prog) if prog != null and not prog is Array else 0
@@ -541,6 +552,8 @@ static func plan_inputs(t: Dictionary, w: Dictionary) -> Dictionary:
 	var idx: int = int(w.get("progress", 0))
 	if expected.is_empty():
 		return {"do": "fail", "code": "info"}
+	if float(w.get("think_left", 0.0)) > 0.0 and idx == 0:
+		return {"do": "wait", "node": n}   # T-153: still working the puzzle out
 	if idx >= expected.size():
 		return {"do": "done"}
 	if BotEECatalog.commit_blocked(t, idx, expected.size()) and not bool(w.get("commit_ok", false)):
