@@ -754,6 +754,8 @@ func preview_london() -> void:
 	if _fc != null:
 		_fc.call("start_london")
 	_scan_t = 0.0
+	print("[sky] preview_london: leg %d ground y %.1f plate %s clouds %s" % [leg_index, _ground_y,
+		str(_plate.visible) if _plate != null else "none", str(_clouds.map(func(c: MeshInstance3D) -> float: return c.position.y))])
 
 
 func _go_desert() -> void:

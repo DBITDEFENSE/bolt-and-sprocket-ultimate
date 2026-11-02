@@ -543,25 +543,29 @@ static func _heat(g: Variant, at: Vector3) -> void:
 static func kanzel(g: Variant) -> void:
 	var pm: Material = primer()
 	for bx: float in [56.0, 62.0, 68.0, 74.0]:
-		# the mount on its collider (x bx±0.4, z 24.3..25.6, y 0..1.2): a pedestal, a ring, twin guns through the blister
-		cy(g.dress, Vector3(bx, 0.55, 25.0), 0.3, 1.1, pm)
-		cy(g.dress, Vector3(bx, 1.12, 24.95), 0.38, 0.08, "iron")
-		blk(g.dress, Vector3(bx - 0.25, 1.15, 24.6), Vector3(bx + 0.25, 1.4, 25.4), "machine_grey")
 		if bx > 73.0:
-			# the aft blister is the London window (LondonCam at x 74, y 1.5, z 25.4): its guns are stowed, swung up and
-			# to starboard, out of the camera's view
-			for gx2: float in [0.42, 0.6]:
-				cy(g.dress, Vector3(bx + gx2, 1.9, 24.75), 0.035, 1.5, "black_paint", Vector3(-20, 0, 0))
-			blk(g.dress, Vector3(bx + 0.3, 1.15, 24.9), Vector3(bx + 0.72, 1.45, 25.5), "black_paint")
+			# the aft blister is the London window: LondonCam stands inside this mount's footprint (x 74, y 1.5, z 25.4,
+			# looking back and down), so the mount is a low stub and its stowed guns, receiver and ammunition stand to
+			# starboard of it, outside the camera's view
+			cy(g.dress, Vector3(bx, 0.3, 24.75), 0.26, 0.6, pm)
+			cy(g.dress, Vector3(bx, 0.62, 24.75), 0.32, 0.05, "iron")
+			for gx2: float in [0.78, 0.92]:
+				cy(g.dress, Vector3(bx + gx2, 1.3, 25.35), 0.035, 1.5, "black_paint", Vector3(-15, 0, 0))
+			blk(g.dress, Vector3(bx + 0.62, 0.0, 25.15), Vector3(bx + 1.05, 0.55, 25.6), "black_paint")
+			blk(g.dress, Vector3(bx + 0.62, 0.55, 25.2), Vector3(bx + 0.9, 0.85, 25.55), "olive_drab")
 		else:
+			# the mount on its collider (x bx±0.4, z 24.3..25.6, y 0..1.2): a pedestal, a ring, twin guns through the blister
+			cy(g.dress, Vector3(bx, 0.55, 25.0), 0.3, 1.1, pm)
+			cy(g.dress, Vector3(bx, 1.12, 24.95), 0.38, 0.08, "iron")
+			blk(g.dress, Vector3(bx - 0.25, 1.15, 24.6), Vector3(bx + 0.25, 1.4, 25.4), "machine_grey")
 			for gx: float in [-0.1, 0.1]:
 				cy(g.dress, Vector3(bx + gx, 1.45, 24.2), 0.035, 1.6, "black_paint", Vector3(90, 0, 0))
 				ns(cy(g.dress, Vector3(bx + gx, 1.45, 23.35), 0.05, 0.12, "black_paint", Vector3(90, 0, 0)))
 			blk(g.dress, Vector3(bx - 0.18, 1.3, 25.1), Vector3(bx + 0.18, 1.6, 25.55), "black_paint")   # the receiver
-		blk(g.dress, Vector3(bx + 0.25, 0.6, 24.5), Vector3(bx + 0.4, 0.9, 25.0), "olive_drab")    # the ammo can
-		for j: int in 6:
-			ns(Props.obox(g.dress, Vector3(bx + 0.3, 0.95 + 0.06 * float(j), 24.85 - 0.04 * float(j)), Vector3(0.12, 0.02, 0.05), "brass", Vector3(30, 0, 0)))
-		blk(g.dress, Vector3(bx - 0.22, 0.9, 25.25), Vector3(bx + 0.22, 0.98, 25.6), "leather")     # the gunner's saddle
+			blk(g.dress, Vector3(bx + 0.25, 0.6, 24.5), Vector3(bx + 0.4, 0.9, 25.0), "olive_drab")    # the ammo can
+			for j: int in 6:
+				ns(Props.obox(g.dress, Vector3(bx + 0.3, 0.95 + 0.06 * float(j), 24.85 - 0.04 * float(j)), Vector3(0.12, 0.02, 0.05), "brass", Vector3(30, 0, 0)))
+			blk(g.dress, Vector3(bx - 0.22, 0.9, 25.25), Vector3(bx + 0.22, 0.98, 25.6), "leather")     # the gunner's saddle
 		# spent casings on the grating round the mount
 		for c: int in 5:
 			ns(cy(g.dress, Vector3(bx - 0.5 + 0.23 * float(c), 0.02, 25.9 + 0.11 * float(c % 2)), 0.008, 0.06, "brass", Vector3(0, 0, 90)))

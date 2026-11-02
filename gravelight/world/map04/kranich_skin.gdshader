@@ -1,12 +1,13 @@
 shader_type spatial;
-render_mode cull_back, depth_draw_opaque, diffuse_burley, specular_schlick_ggx;
+render_mode cull_disabled, depth_draw_opaque, diffuse_burley, specular_schlick_ggx;
 // Der Kranich's riveted skin (UPDATE 09 section 5.3, DECISIONS T-147). The base is a CC0 painted steel sheet
 // (Poly Haven "Blue Metal Plate", data/gravelight/materials.json "kranich_skin"), desaturated and tinted to the
 // grey-green interior primer; on top this shader draws what the brief asks of the skin, procedurally (our own work):
 // the rivet rows on the frame lines (a double row), the rivet rows on the stringer lines, the sheet seams every
 // other frame bay and every third stringer, a little oil and wear. The shell's UVs are metres along (the frame axis,
 // the profile's arc) (tools_src/blender/world/kranich_shell.py), so frame_offset / frame_pitch put the rows exactly on
-// the frames of each room. Compatibility-safe (no derivatives beyond fwidth, no screen textures).
+// the frames of each room. Compatibility-safe (no derivatives beyond fwidth, no screen textures). Both faces draw
+// (cull_disabled, the normal flipped on the back face): the shell's frame webs are single plates.
 
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D normal_tex : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
@@ -49,6 +50,10 @@ vec2 rivet(float d_line, float s, float spacing) {
 }
 
 void fragment() {
+	if (!FRONT_FACING) {
+		NORMAL = -NORMAL;
+		TANGENT = -TANGENT;
+	}
 	vec2 uv = UV;
 	vec2 tuv = uv / tile_m;
 	vec3 base = texture(albedo_tex, tuv).rgb;

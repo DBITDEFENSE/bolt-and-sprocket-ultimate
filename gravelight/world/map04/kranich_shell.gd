@@ -43,12 +43,12 @@ func build() -> void:
 		for mi: MeshInstance3D in WorldArt.meshes(inst):
 			_remap(mi, skin)
 			mi.set_meta("zone", StringName(str(r[1])))
-			if mi.name.contains("Glass"):
-				mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-			elif mi.name.begins_with("Skin"):
+			# only the skin casts (double-sided: it is the envelope the moon must not cross); the frames and floors sit
+			# inside it and would only multiply the shadow passes (contract C4's triangle budget)
+			if mi.name.begins_with("Skin") and not mi.name.contains("Glass"):
 				mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_DOUBLE_SIDED
 			else:
-				mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+				mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			if vis > 0.0:
 				mi.visibility_range_end = vis
 				mi.visibility_range_end_margin = 6.0

@@ -40,7 +40,8 @@ DEEP = 0.6          # skin behind the wall's room face where the outside is free
 ARC_DEPTH = 0.32    # frame depth along the arch
 FLANGE = 0.09       # inner flange width (along the frame axis)
 WEB = 0.008         # web half thickness
-HOLE_SEGS = 8
+HOLE_SEGS = 6
+WEB_BOTH = False    # frame webs are single-sided: kranich_skin.gdshader draws both faces (cull_disabled, normal flipped)
 
 
 def V3(x, y, z):
@@ -439,14 +440,14 @@ class Section:
             corners = [self.P(a, f, y), self.P(a, sk, y), self.P(a, sk, y1), self.P(a, f, y1)]
             if k % 2 == 1 and y > 0.2:
                 ctr = self.P(a, (f + sk) * 0.5, (y + y1) * 0.5)
-                mb.plate_hole(corners, ctr, cell * 0.3, "kframe", A, uvf)
+                mb.plate_hole(corners, ctr, cell * 0.3, "kframe", A, uvf, both=WEB_BOTH)
             else:
-                mb.quad2(corners, [uvf(p) for p in corners], "kframe", A, True, WEB * 2)
+                mb.quad2(corners, [uvf(p) for p in corners], "kframe", A, WEB_BOTH, WEB * 2)
             y = y1
             k += 1
         if y < self.wall_top - 1e-4:
             corners = [self.P(a, f, y), self.P(a, sk, y), self.P(a, sk, self.wall_top), self.P(a, f, self.wall_top)]
-            mb.quad2(corners, [uvf(p) for p in corners], "kframe", A, True, WEB * 2)
+            mb.quad2(corners, [uvf(p) for p in corners], "kframe", A, WEB_BOTH, WEB * 2)
         # the inner flange on the room face
         lo = self.P(a - FLANGE * 0.5, f, 0.0)
         hi = self.P(a + FLANGE * 0.5, f + s * 0.012, self.wall_top)
@@ -465,9 +466,9 @@ class Section:
             if k % 2 == 1:
                 ctr = (corners[0] + corners[1] + corners[2] + corners[3]) * 0.25
                 r = min((corners[1] - corners[0]).length, (corners[3] - corners[0]).length) * 0.3
-                mb.plate_hole(corners, ctr, r, "kframe", A, uvf)
+                mb.plate_hole(corners, ctr, r, "kframe", A, uvf, both=WEB_BOTH)
             else:
-                mb.quad2(corners, [uvf(p) for p in corners], "kframe", A, True, WEB * 2)
+                mb.quad2(corners, [uvf(p) for p in corners], "kframe", A, WEB_BOTH, WEB * 2)
             # inner flange strip (facing the room)
             q0 = self.P(a - FLANGE * 0.5, i0[0], i0[1])
             q1 = self.P(a + FLANGE * 0.5, i0[0], i0[1])
