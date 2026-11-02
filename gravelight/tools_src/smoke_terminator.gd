@@ -79,7 +79,11 @@ func _body() -> void:
 	var mast: RelayMast = _first(&"relay_mast") as RelayMast
 	_check(mast != null and mast.heated, "the relay mast pulses violet (heated)")
 	_check(_dir.active_zombies().size() >= zs0 + 2, "a burst of the dead (%d -> %d)" % [zs0, _dir.active_zombies().size()])
-	_check(_said("OPR_M4D_HEATERS_01"), "the Operator on the heaters")
+	var vo_wait: float = 0.0
+	while not _said("OPR_M4D_HEATERS_01") and vo_wait < 12.0:   # it may queue behind a crossing line
+		await _secs(0.5)
+		vo_wait += 0.5
+	_check(_said("OPR_M4D_HEATERS_01"), "the Operator on the heaters (%.1f s after the checks)" % vo_wait)
 	_p.air = _p.air_max
 	a0 = _p.air
 	await _secs(2.0)
