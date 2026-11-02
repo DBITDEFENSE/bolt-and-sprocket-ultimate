@@ -273,9 +273,12 @@ func _on_boss_died() -> void:
 		hud.strike(boss_id, true)
 	GameState.set_flag(StringName(str((cfg.get("rewards", {}) as Dictionary).get("flag", "paul_down"))), true)
 	# safety: the rewards come after the fall; if the body never gets there (freed), grant them anyway
-	get_tree().create_timer(14.0).timeout.connect(func() -> void:
-		if not _rewarded:
-			_grant(boss.global_position if boss != null and is_instance_valid(boss) else Vector3.ZERO, false))
+	get_tree().create_timer(14.0).timeout.connect(_grant_fallback)
+
+
+func _grant_fallback() -> void:
+	if not _rewarded:
+		_grant(boss.global_position if boss != null and is_instance_valid(boss) else Vector3.ZERO, false)
 
 
 ## He pressed the crushed tin cup into this player's hand.

@@ -333,9 +333,7 @@ func _round_over() -> void:
 	if hud != null and is_instance_valid(hud):
 		var h: BossHud = hud
 		hud = null
-		get_tree().create_timer(4.0).timeout.connect(func() -> void:
-			if is_instance_valid(h):
-				h.queue_free())
+		get_tree().create_timer(4.0).timeout.connect(h.queue_free)
 	if was == Phase.CLEARED:
 		event_round = -1
 		phase = Phase.CLEARED
@@ -426,7 +424,7 @@ func squad_line(suffix: String) -> void:
 
 
 func later(seconds: float, line: String) -> void:
-	get_tree().create_timer(seconds).timeout.connect(func() -> void: say(line))
+	get_tree().create_timer(seconds).timeout.connect(say.bind(line, null))
 
 
 ## Grants Scrip, records unlocks (calling card, Archive card), files the intel documents.

@@ -877,6 +877,13 @@ func _smash_doors() -> void:
 			print("[paul] charged door %s open" % d.door_id)
 
 
+## Dev / smoke: start a move now against the nearest player (its cooldown is ignored).
+func debug_move(id: String) -> void:
+	target = _nearest_player()
+	_cds.erase(id)
+	_start(id)
+
+
 ## Dev / smoke: run the Charge straight at `at` (doors on the line open).
 func debug_charge_at(at: Vector3) -> void:
 	_face(at)
@@ -1010,9 +1017,7 @@ func _proj_impact(arc: bool) -> void:
 	_proj = null
 	_proj_kind = ""
 	_proj_dur = 0.0
-	get_tree().create_timer(1.5).timeout.connect(func() -> void:
-		if is_instance_valid(gone):
-			gone.queue_free())
+	get_tree().create_timer(1.5).timeout.connect(gone.queue_free)
 
 
 ## The Ground Pound's ring shockwave: expands to 8 m at 10 m/s; a player on the ground when it passes is hit
@@ -1129,9 +1134,12 @@ func _steam_burst() -> void:
 		_steam.restart()
 		_steam.emitting = true
 		if stage() != PaulRage.BERSERK:
-			get_tree().create_timer(1.0).timeout.connect(func() -> void:
-				if is_instance_valid(_steam) and stage() != PaulRage.BERSERK:
-					_steam.emitting = false)
+			get_tree().create_timer(1.0).timeout.connect(_steam_off)
+
+
+func _steam_off() -> void:
+	if _steam != null and stage() != PaulRage.BERSERK and state != State.DEAD:
+		_steam.emitting = false
 
 
 # ================================================================== geometry helpers
@@ -1308,7 +1316,7 @@ func _start_authored_death() -> void:
 	if _proj != null and is_instance_valid(_proj):
 		_proj.queue_free()
 		_proj = null
-	pose_anim()
+	_tree_play("Spawn", "idle", 1.0)   # (not pose_anim: that would put the state back to ATTACK)
 	_pose.clear()
 	_pose.set_bone("LeftUpperLeg", Vector3(-1.4, 0, 0))
 	_pose.set_bone("RightUpperLeg", Vector3(-1.4, 0, 0))

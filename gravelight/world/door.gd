@@ -25,6 +25,11 @@ const LAYER_DOOR: int = 1 << 8
 @export var art_style: StringName = &""
 
 var is_open: bool = false
+## HB3 (T-160): THE SLENDER locks this door as he walks past. A locked open door swings shut and blocks again;
+## nobody can buy or pass a locked door. boss_unlock() re-opens it for free (it was bought) when he leaves the zone or
+## dies; a door that was never bought just becomes buyable again.
+var boss_locked: bool = false
+var _was_open_before_lock: bool = false
 var _body: StaticBody3D
 var _visual: Node3D
 var _lock_lamp: MeshInstance3D   # powered doors: red until the power is on, then green
@@ -107,6 +112,8 @@ func _refresh_lock_lamp() -> void:
 
 
 func get_prompt(player: Player) -> String:
+	if boss_locked:
+		return "Locked. Keys jingle somewhere beyond it."
 	if is_open:
 		return ""
 	if requires_power and not GameState.power_on:
@@ -117,11 +124,11 @@ func get_prompt(player: Player) -> String:
 
 
 func can_interact(_player: Player) -> bool:
-	return not is_open and (GameState.power_on or not requires_power) and (requires_flag == &"" or GameState.has_flag(requires_flag))
+	return not boss_locked and not is_open and (GameState.power_on or not requires_power) and (requires_flag == &"" or GameState.has_flag(requires_flag))
 
 
 func interact(player: Player) -> void:
-	if is_open:
+	if is_open or boss_locked:
 		return
 	if try_purchase(player, door_id, cost):
 		open(player.player_id)
@@ -166,3 +173,55 @@ func _open_visual() -> void:
 		var tw: Tween = create_tween()
 		tw.tween_property(target, "position:y", size.y + 0.5, float(GLData.table("world")["door"]["open_seconds"])).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 		tw.tween_callback(target.hide)
+
+
+## HB3 (T-160): locked by the watchman. An open door shuts (its blocker back on, the leaf back down).
+func boss_lock() -> void:
+	if boss_locked:
+		return
+	boss_locked = true
+	_was_open_before_lock = is_open
+	_set_locked_visual(true)
+	Net.mirror(self, &"_net_boss_lock", [true])
+
+
+## Unlocked: a door that was open before re-opens for free (no purchase, no zone change: it was bought).
+func boss_unlock() -> void:
+	if not boss_locked:
+		return
+	boss_locked = false
+	_set_locked_visual(false)
+	Net.mirror(self, &"_net_boss_lock", [false])
+
+
+func _net_boss_lock(on: bool) -> void:
+	if on == boss_locked:
+		return
+	if on:
+		_was_open_before_lock = is_open
+	boss_locked = on
+	_set_locked_visual(on)
+
+
+func _set_locked_visual(on: bool) -> void:
+	var target: Node3D = get_node_or_null("Visual") as Node3D
+	if target == null:
+		target = _visual
+	if on:
+		_body.collision_layer = LAYER_DOOR
+		area.collision_layer = Interactable.LAYER_INTERACTABLE
+		if target != null:
+			target.show()
+			target.position.y = 0.0
+		AudioDirector.play_3d("door_creak" if AudioDirector.has_sound("door_creak") else "door_open", global_position + Vector3(0, 1.4, 0), 2.0)
+	else:
+		if _was_open_before_lock:
+			_open_visual()
+		else:
+			_body.collision_layer = LAYER_DOOR
+			area.collision_layer = Interactable.LAYER_INTERACTABLE
+
+
+## True when the door blocks passage right now (shut or locked).
+func blocks() -> bool:
+	return boss_locked or not is_open
