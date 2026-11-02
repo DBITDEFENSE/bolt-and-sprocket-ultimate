@@ -171,7 +171,8 @@ func _on_round_started(r: int, special: bool) -> void:
 		RoundManager.unreserve_round(event_round)   # switched off mid-match: the round plays as a normal round
 		return
 	# a Foreman or a special round still sitting on it (a late reservation): the boss moves +1
-	var foreman_now: int = r if RoundManager.boss_due() else -1
+	# (the director hears round_started first: a Foreman it already scheduled this round shows as _boss_pending)
+	var foreman_now: int = r if RoundManager.boss_due() or (director != null and director._boss_pending >= 0.0) else -1
 	var special_now: int = r if special else -1
 	var want: int = pick_round(r, foreman_now, special_now)
 	if want != r or not can_start(r):
