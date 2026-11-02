@@ -905,6 +905,12 @@ def main() -> int:
             if spk in neural_speakers or ck in neural_speakers:
                 parts, cues = speech_parts(raw_text)
                 say = plain_text(parts)
+                if rec.get("speech") and not multi:
+                    # T-154: "speech" is what is said when it differs from the subtitle (Totenhafen's U-boat radio
+                    # traffic is spoken in German, subtitled in English); the subtitle's [cues] still apply
+                    sp_parts, sp_cues = speech_parts(str(rec["speech"]))
+                    say = plain_text(sp_parts)
+                    cues = cues | sp_cues
                 if not re.search(r"[A-Za-z0-9]", say):
                     missing[file_id] = "no speech: stage direction only (%s)" % raw_text[:40]
                     continue
@@ -919,6 +925,7 @@ def main() -> int:
                                              "accent": str(c.get("accent", "")),
                                              "native_polish": bool(c.get("native_polish", False)),
                                              "native_german": bool(c.get("native_german", False)),
+                                             "german_all": bool(c.get("german_all", False)),
                                              "exclaim": bool(emo.get("exclaim", False))})
                 missing.pop(file_id, None)
                 continue

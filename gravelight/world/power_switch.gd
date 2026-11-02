@@ -163,13 +163,25 @@ func _light_zone(zone: StringName) -> void:
 		if l == null or StringName(str(l.get_meta("zone", ""))) != zone:
 			continue
 		var target: float = float(l.get_meta("energy", 1.0))
-		l.visible = true
-		var tw: Tween = l.create_tween()
-		tw.tween_property(l, "light_energy", target, 0.08)
-		tw.tween_property(l, "light_energy", 0.0, 0.08)
-		tw.tween_property(l, "light_energy", target, 0.08)
-		tw.tween_property(l, "light_energy", 0.0, 0.1)
-		tw.tween_property(l, "light_energy", target, 0.15)
+		# UPDATE 10 (T-154): a light may carry meta "sweep_delay" (seconds after its zone's turn), so a zone's lamps
+		# come on in a run (Totenhafen's pen hall, dock by dock from the pump room to the quay). Absent: at once.
+		var wait: float = float(l.get_meta("sweep_delay", 0.0))
+		if wait > 0.0:
+			get_tree().create_timer(wait).timeout.connect(_light_one.bind(l, target))
+			continue
+		_light_one(l, target)
+
+
+func _light_one(l: Light3D, target: float) -> void:
+	if not is_instance_valid(l):
+		return
+	l.visible = true
+	var tw: Tween = l.create_tween()
+	tw.tween_property(l, "light_energy", target, 0.08)
+	tw.tween_property(l, "light_energy", 0.0, 0.08)
+	tw.tween_property(l, "light_energy", target, 0.08)
+	tw.tween_property(l, "light_energy", 0.0, 0.1)
+	tw.tween_property(l, "light_energy", target, 0.15)
 
 
 func _burst(count: int) -> void:

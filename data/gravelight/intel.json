@@ -484,6 +484,46 @@
       "map": "1",
       "text": "A timber prop's worth of chalk, copied in pencil onto a sheet and pinned to the wall of the Maintenance Stairs' second landing, where the men who planned the climb could read it. The marks are the labourers' prop alphabet; the transcription is in Polish and German under each line. Translated.\n\nThree strokes and a hook, twice: weak, ours, don't trust it. Then, in the long form the timbermen used for a message meant for someone who was not there yet:\n\nThey came down to Nine with the box and the needle and asked the gang leaders first. They said: a mark in the hand, and you are known by name, and your pay is against it and your bread is against it. They said: the mark that keeps you.\nI said: I have a name. It is enough to carry. I said: you held our pay in March of forty-one and our ration cards against our wives, and now you offer me a thing to hold them against. No.\nThey wrote something by my number and went up. Nobody in Nine took it. Nobody in Nine was asked twice.\nTo whoever reads this after me: whatever they keep with that mark, they keep. Do not let them keep you.\nJ.O., May 1943.\n\nBeneath, in a second chalk, a hook drawn backwards.",
       "placement": "fixed"
+    },
+    {
+      "id": "INT_M2_SAILOR_LETTER",
+      "title": "A Rating's Letter, Never Sent",
+      "type": "DOC",
+      "map": "2",
+      "text": "A letter folded small and pushed into a tobacco tin, found on the quay where the cutter lay before it slipped into the sea. The envelope is addressed to Glückstadt and was never stamped. Translated.\n\nTotenhafen, 18 January 1945.\nDear Mother,\nWe are still in the pen. They do not tell us when we sail and the Old Man does not tell them either, which you would like, he is from the coast like us. The cargo is aboard and nobody sleeps forward. Brecht says it is only lead. Brecht does not sleep forward either.\nYesterday they lined up the whole detachment on the apron and a doctor from the Abteilung went down the line with a little gun, like the one the vet uses on the cattle, and put a grain into the back of each man's right hand, between the thumb and the finger. \"Die Marke, die dich hält,\" he said every time. It stings, and then it is cold, and then it is nothing. Heinz says it is for the pay and the rations. I do not think it is for the pay.\nGive Lotte my love and tell her I kept the drawing she sent. Tell her the sun in it is the only sun we have seen this month.\nYour son, Jens.",
+      "placement": "fixed"
+    },
+    {
+      "id": "INT_M2_HALE_TELEGRAM",
+      "title": "Telegram from Basel",
+      "type": "DOC",
+      "map": "2",
+      "text": "A telegram form torn off the signal room's teletype and left in its tray, the strip pasted down in two lines the way the post office does it. Translated from the German routing; the message came through in English.\n\nBASEL 19 1 45 0310 FOR KPTLT LENZ U 1047 TOTENHAFEN = SAIL ON THE NEXT TIDE OR THE DETACHMENT IS RETAINED =\n= HALE L PER HELVETIA AUTOMATEN AG STOP NO REPLY REQUIRED =",
+      "placement": "fixed"
+    },
+    {
+      "id": "INT_M2_PAYSLIP",
+      "title": "Cannery Pay Slip",
+      "type": "DOC",
+      "map": "2",
+      "text": "A pay slip from the cannery office's desk, printed on cheap grey card, the figures filled in by a clerk with a blunt pencil. Translated.\n\nFISCHKONSERVENFABRIK TOTENHAFEN. Wage account, week 2/1945.\nWorker: no. 0417, line II (gutting). Hours: 71.\nWage: 71 h at the Ledger rate . . . 42 Scrip.\nLess: canteen 11 Scrip. Less: lodging 9 Scrip. Less: contribution to the Ledger 14 Scrip. Less: breakages (one knife) 3 Scrip.\nTo pay: 5 Scrip. Redeemable at the works canteen only.\n(Stamped:) PAID IN FULL. THANK YOU FOR YOUR CONTINUED ENGAGEMENT.\n(Pencilled underneath, in another hand:) and they wonder why we stopped singing on the line",
+      "placement": "fixed"
+    },
+    {
+      "id": "INT_M2_DRAWING",
+      "title": "A Child's Drawing",
+      "type": "PHOTO",
+      "map": "2",
+      "text": "A child's crayon drawing of a grey boat on blue water under a large yellow sun with a smiling face, pinned beside the shelter door at child height; on the back, in careful letters, \"Papas Boot\".",
+      "placement": "fixed"
+    },
+    {
+      "id": "INT_M2_RATION_BOOK",
+      "title": "Hinnerk Petersen's Ration Book",
+      "type": "DOC",
+      "map": "2",
+      "text": "A civilian ration book on the signal room's chart table, the cover soft with salt, most of its coupons torn out. Name: Petersen, Hinnerk. Occupation: harbour pilot. The back pages are full of pencil. Translated.\n\nBread: 3 coupons left. Fat: none. Tobacco: traded for paraffin.\n(Pencil, inside the back cover:) HW 06.12 / 18.40. Springs on the 20th. Do not take her out on the springs.\n14 lead boxes went down to the apron on the ore train. The Kapitänleutnant asked me how deep it is past the breakwater. I told him the truth. He wrote it down.\nThe lighthouse keeper has not answered the lamp since Tuesday.\nIf anybody reads this, I am up the tower. The stairs flood. Bring a gun.",
+      "placement": "fixed"
     }
   ]
 }

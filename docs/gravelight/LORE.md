@@ -737,6 +737,28 @@ One fixed prop at Kaltenbrunn, same rules as §13.1 (`extract_intel.py` marks it
 |---|---|---|
 | `INT_MARKE_JAKUB` | A pinned sheet of pencil chalk-marks | M_STAIRS, the second landing's north wall (y −8), at eye height, facing the flight |
 
+### 13.6 Map 2 fixed story items, the living world (hand-placed; UPDATE 10 §2, T-154)
+
+Five more at Totenhafen, same rules as §13.1 (`extract_intel.py` marks them `"placement": "fixed"`; placements in `data/gravelight/story_props.json`, map `"2"`). The boat's log pages (`INT_M2_LOG_1..4`) are the Letzte Fahrt quest's (T-153). The sailor's letter lies where the cutter lay and only shows once the cutter has slipped into the sea (round 15; `hidden_until_flag` `cutter_slipped`). The drawing is shown with care: a curator's description, nothing more.
+
+| ID | Title | Type | Map | Text |
+|---|---|---|---|---|
+| `INT_M2_SAILOR_LETTER` | A Rating's Letter, Never Sent | DOC | 2 | A letter folded small and pushed into a tobacco tin, found on the quay where the cutter lay before it slipped into the sea. The envelope is addressed to Glückstadt and was never stamped. Translated.<br><br>Totenhafen, 18 January 1945.<br>Dear Mother,<br>We are still in the pen. They do not tell us when we sail and the Old Man does not tell them either, which you would like, he is from the coast like us. The cargo is aboard and nobody sleeps forward. Brecht says it is only lead. Brecht does not sleep forward either.<br>Yesterday they lined up the whole detachment on the apron and a doctor from the Abteilung went down the line with a little gun, like the one the vet uses on the cattle, and put a grain into the back of each man's right hand, between the thumb and the finger. "Die Marke, die dich hält," he said every time. It stings, and then it is cold, and then it is nothing. Heinz says it is for the pay and the rations. I do not think it is for the pay.<br>Give Lotte my love and tell her I kept the drawing she sent. Tell her the sun in it is the only sun we have seen this month.<br>Your son, Jens. |
+| `INT_M2_HALE_TELEGRAM` | Telegram from Basel | DOC | 2 | A telegram form torn off the signal room's teletype and left in its tray, the strip pasted down in two lines the way the post office does it. Translated from the German routing; the message came through in English.<br><br>BASEL 19 1 45 0310 FOR KPTLT LENZ U 1047 TOTENHAFEN = SAIL ON THE NEXT TIDE OR THE DETACHMENT IS RETAINED =<br>= HALE L PER HELVETIA AUTOMATEN AG STOP NO REPLY REQUIRED = |
+| `INT_M2_PAYSLIP` | Cannery Pay Slip | DOC | 2 | A pay slip from the cannery office's desk, printed on cheap grey card, the figures filled in by a clerk with a blunt pencil. Translated.<br><br>FISCHKONSERVENFABRIK TOTENHAFEN. Wage account, week 2/1945.<br>Worker: no. 0417, line II (gutting). Hours: 71.<br>Wage: 71 h at the Ledger rate . . . 42 Scrip.<br>Less: canteen 11 Scrip. Less: lodging 9 Scrip. Less: contribution to the Ledger 14 Scrip. Less: breakages (one knife) 3 Scrip.<br>To pay: 5 Scrip. Redeemable at the works canteen only.<br>(Stamped:) PAID IN FULL. THANK YOU FOR YOUR CONTINUED ENGAGEMENT.<br>(Pencilled underneath, in another hand:) and they wonder why we stopped singing on the line |
+| `INT_M2_DRAWING` | A Child's Drawing | PHOTO | 2 | A child's crayon drawing of a grey boat on blue water under a large yellow sun with a smiling face, pinned beside the shelter door at child height; on the back, in careful letters, "Papas Boot". |
+| `INT_M2_RATION_BOOK` | Hinnerk Petersen's Ration Book | DOC | 2 | A civilian ration book on the signal room's chart table, the cover soft with salt, most of its coupons torn out. Name: Petersen, Hinnerk. Occupation: harbour pilot. The back pages are full of pencil. Translated.<br><br>Bread: 3 coupons left. Fat: none. Tobacco: traded for paraffin.<br>(Pencil, inside the back cover:) HW 06.12 / 18.40. Springs on the 20th. Do not take her out on the springs.<br>14 lead boxes went down to the apron on the ore train. The Kapitänleutnant asked me how deep it is past the breakwater. I told him the truth. He wrote it down.<br>The lighthouse keeper has not answered the lamp since Tuesday.<br>If anybody reads this, I am up the tower. The stairs flood. Bring a gun. |
+
+**Where they are** (Map 2 generator frame: +X east, +Z south, y up):
+
+| ID | Prop | Room, surface |
+|---|---|---|
+| `INT_M2_SAILOR_LETTER` | A folded letter in a tobacco tin | A_QUAY, the quay floor between the parapet and the cutter's cradle; shown once the cutter slips (round 15) |
+| `INT_M2_HALE_TELEGRAM` | A telegram form | G_SIGNAL, the teletype's table, beside the machine |
+| `INT_M2_PAYSLIP` | A grey pay slip | B_CANNERY, the office desk by the delivery book |
+| `INT_M2_DRAWING` | A child's drawing, pinned | A_QUAY, the bunker face beside the air-raid shelter door (LUFTSCHUTZ · TÜR 3), at child height |
+| `INT_M2_RATION_BOOK` | A ration book | G_SIGNAL, the chart table, on the chart |
+
 ## 14. Glossary
 | Term | Meaning |
 |---|---|

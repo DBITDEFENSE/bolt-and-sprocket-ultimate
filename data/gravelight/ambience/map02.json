@@ -1,32 +1,37 @@
 {
-	"_doc": "Totenhafen's per-zone ambience (UPDATE 09 section 5, DECISIONS T-145; ZoneAmbience, gravelight/world/zone_ambience.gd). A bed per zone crossfades over crossfade_s when the local player's zone changes; one-shots fire at a random interval in every_s while the zone is current (spatial: placed 5-14 m round the listener). Beds and one-shots are AudioDirector keys in audio.json (built by gravelight/tools_src/gen_ambience_map02.py from CC0 surf / river recordings + synthesis); audio.json music.ambient map02_totenhafen = ambient_map02_storm plays under all of them.",
+	"_doc": "Totenhafen's per-zone ambience (UPDATE 09 section 5, DECISIONS T-145; ZoneAmbience, gravelight/world/zone_ambience.gd). A bed per zone crossfades over crossfade_s when the local player's zone changes; one-shots fire at a random interval in every_s while the zone is current (spatial: placed 5-14 m round the listener). Beds and one-shots are AudioDirector keys in audio.json (built by gravelight/tools_src/gen_ambience_map02.py from CC0 surf / river recordings + synthesis); audio.json music.ambient map02_totenhafen = ambient_map02_storm plays under all of them. UPDATE 10 (T-154) adds the living world's far-off one-shots that need no round: the ships' guns at sea, chains clanking in the hall, radio static in the boat and the signal room; the beds sit 8 dB under a footstep (gravelight/tools_src/amb_loudness.py map02: each bed and each bed with the storm under it, BS.1770 loudness, against the footsteps' loudest 400 ms); the round-bound ones (the lighthouse's foghorn until it goes dark at round 10, the cliff bell, the raid's siren and bombs, the gulls scattering) are MapAmbience events (data/gravelight/map02_ambience.json).",
 	"crossfade_s": 1.5,
 	"zones": {
-		"A_QUAY": {"bed": "ambient_map02_quay", "db": -6.0, "oneshots": [
+		"A_QUAY": {"bed": "ambient_map02_quay", "db": -20.0, "oneshots": [
 			{"key": "amb_m2_gull", "every_s": [7, 18], "db": -10.0, "spatial": true},
 			{"key": "amb_shutter_bang", "every_s": [14, 32], "db": -12.0, "spatial": true},
 			{"key": "amb_m2_wave", "every_s": [5, 11], "db": -8.0, "spatial": true},
-			{"key": "amb_wind_gust", "every_s": [12, 26], "db": -9.0}]},
-		"B_CANNERY": {"bed": "ambient_map02_cannery", "db": -8.0, "oneshots": [
+			{"key": "amb_wind_gust", "every_s": [12, 26], "db": -9.0},
+			{"key": "amb_m2_ship_guns", "every_s": [50, 110], "db": -14.0}]},
+		"B_CANNERY": {"bed": "ambient_map02_cannery", "db": -24.0, "oneshots": [
 			{"key": "amb_m2_hull_creak", "every_s": [20, 40], "db": -18.0, "spatial": true},
 			{"key": "amb_wind_gust", "every_s": [16, 34], "db": -16.0}]},
-		"C_WORKSHOP": {"bed": "ambient_map02_workshop", "db": -8.0, "oneshots": [
+		"C_WORKSHOP": {"bed": "ambient_map02_workshop", "db": -23.0, "oneshots": [
 			{"key": "amb_m2_weld", "every_s": [10, 22], "db": -12.0, "spatial": true},
 			{"key": "cellar_drip", "every_s": [6, 14], "db": -10.0, "spatial": true}]},
-		"D_PENHALL": {"bed": "ambient_map02_penhall", "db": -6.0, "oneshots": [
+		"D_PENHALL": {"bed": "ambient_map02_penhall", "db": -21.0, "oneshots": [
 			{"key": "amb_m2_groan", "every_s": [18, 40], "db": -10.0, "spatial": true},
 			{"key": "cellar_drip", "every_s": [2, 6], "db": -6.0, "spatial": true},
-			{"key": "amb_m2_thunder", "every_s": [25, 55], "db": -12.0}]},
-		"E_UBOAT": {"bed": "ambient_map02_uboat", "db": -7.0, "oneshots": [
+			{"key": "amb_m2_thunder", "every_s": [25, 55], "db": -12.0},
+			{"key": "amb_m2_chain", "every_s": [20, 45], "db": -14.0, "spatial": true}]},
+		"E_UBOAT": {"bed": "ambient_map02_uboat", "db": -25.0, "oneshots": [
 			{"key": "amb_m2_hull_creak", "every_s": [6, 14], "db": -8.0, "spatial": true},
-			{"key": "cellar_drip", "every_s": [8, 18], "db": -12.0, "spatial": true}]},
-		"F_LOWERPENS": {"bed": "ambient_map02_pens", "db": -6.0, "oneshots": [
+			{"key": "cellar_drip", "every_s": [8, 18], "db": -12.0, "spatial": true},
+			{"key": "amb_m2_radio", "every_s": [40, 80], "db": -18.0, "spatial": true}]},
+		"F_LOWERPENS": {"bed": "ambient_map02_pens", "db": -21.0, "oneshots": [
 			{"key": "cellar_drip", "every_s": [2, 5], "db": -6.0, "spatial": true},
 			{"key": "amb_m2_groan", "every_s": [30, 60], "db": -16.0}]},
-		"G_SIGNAL": {"bed": "ambient_map02_tower", "db": -7.0, "oneshots": [
+		"G_SIGNAL": {"bed": "ambient_map02_tower", "db": -20.0, "oneshots": [
 			{"key": "amb_m2_teletype", "every_s": [12, 26], "db": -8.0, "spatial": true},
 			{"key": "amb_m2_paper", "every_s": [9, 20], "db": -12.0, "spatial": true},
 			{"key": "amb_m2_thunder", "every_s": [20, 45], "db": -10.0},
-			{"key": "amb_wind_gust", "every_s": [8, 18], "db": -8.0}]}
+			{"key": "amb_wind_gust", "every_s": [8, 18], "db": -8.0},
+			{"key": "amb_m2_radio", "every_s": [25, 50], "db": -16.0, "spatial": true},
+			{"key": "amb_m2_ship_guns", "every_s": [60, 120], "db": -16.0}]}
 	}
 }

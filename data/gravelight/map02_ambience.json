@@ -1,0 +1,79 @@
+{
+ "_doc": "Totenhafen's living world (UPDATE 10 section 2.2, docs/U10_TOTENHAFEN_DESIGN.md section 7, DECISIONS T-154), read by gravelight/world/landscape/map_ambience.gd on Map 0's schema (MapRoot attaches it). Presentation only, local to each co-op peer; the one gameplay touch is cutter_slip.flag, set by the host. needs_landscape false: no Landscape (the Map 0 sky sections are absent here, so they stay off). Rounds are beat rounds: on a campaign arrival they count rounds on this map, standalone they are the match round. Ranges are [min, max] seconds; *_late is the range at full intensity (with 'by': 'storm', at full storm). Positions are the map frame (+X east, +Z south, y up; the sea is north of the quay, the pen mouth south of the hall). Sound keys are audio.json keys (the amb_m2_* one-shots from gravelight/tools_src/gen_ambience_map02_u10.py).",
+ "needs_landscape": false,
+ "intensity": {"start_round": 1, "full_round": 15},
+ "gusts": {"first_after": [12, 25], "interval": [18, 40], "seconds": [3.0, 6.0], "sound": "amb_wind_gust"},
+ "lamp_sway": {"impulse": 0.3, "damping": 0.5, "stiffness": 4.5},
+ "gulls": {
+  "perches": [[5.2, 1.19, 0.05], [7.4, 1.19, 0.0], [11.6, 1.19, 0.05], [15.1, 1.19, -0.02], [19.3, 1.19, 0.05], [22.4, 1.19, 0.0],
+   [27.0, 1.19, 0.05], [12.6, 3.45, 13.0], [16.2, 3.45, 15.2], [4.5, 0.86, 1.0]],
+  "color": "#dcdcd4", "scale": 1.15, "wheel": [16.0, 16.0, -12.0], "wheel_radius": 15.0, "away": [40.0, 24.0, -150.0],
+  "scatter_radius": 70.0, "return_after_quiet": 35.0, "sound": "amb_m2_gull", "flap_sound": "amb_crow_flap"
+ },
+ "lighthouse": {
+  "node": "Lighthouse", "lamp_height": 17.3, "period_s": 9.0, "off_round": 10, "beam_length": 220.0, "beam_width": 6.0,
+  "beam_intensity": 0.1, "light_energy": 4.0, "light_range": 26.0, "glow_size": 6.0, "color": "#fff1cf",
+  "foghorn": {"first_after": [60, 120], "interval": [150, 240], "sound": "amb_m2_foghorn", "db": -4.0}
+ },
+ "bell_tower": {"pivot": "CliffBellPivot", "flag": "egg_lf_started", "sound": "amb_church_bell_far", "db": 2.0, "wind_swing": 0.5, "toll_swing": 1.6},
+ "ships": {
+  "freighter": {"node": "BurningFreighter"},
+  "destroyer": {"node": "DestroyerLight", "yaw": 160.0, "sweep_deg": 55.0, "sweep_speed": 0.05, "length": 240.0, "width": 7.0, "intensity": 0.22},
+  "guns": {"first_after": [40, 80], "interval": [45, 100], "interval_late": [25, 60], "km": [4.0, 7.0], "sound": "war_artillery_boom", "db": -6.0},
+  "star_shells": {"first_after": [50, 90], "interval": [70, 130], "interval_late": [35, 70], "min_round": 2,
+   "points": [[-40, 0, -100], [20, 0, -110], [80, 0, -95]], "height": [55, 80], "burn_seconds": 30.0, "light_energy": 2.6, "light_range": 120.0, "sound": "war_flare_pop"}
+ },
+ "low_pass": {
+  "round": 6, "delay": [8, 14], "model": "mosquito", "count": 2, "wingspan": 16.0, "speed": 70.0, "chase_lag": 0.5, "bursts": [0, 0],
+  "from": [-170, 70, -70], "mid": [16, 30, -16], "to": [200, 85, 10], "sound": "war_fighter_pass", "volume_db": 4.0, "unit_size": 60.0, "max_distance": 700.0,
+  "flak": {"sites": [[-36, 47, -14], [-34, 47, 8], [68, 47, -12], [70, 47, 14]], "bursts": 10, "sound": "war_mg_distant"}
+ },
+ "raid": {
+  "round": 12, "delay": 14.0,
+  "siren": {"points": [[-36, 52, -20], [70, 52, 0], [16, 20, -30]], "sound": "amb_m2_siren", "db": 0.0},
+  "flak": {"sites": [[-36, 47, -14], [-34, 47, 8], [68, 47, -12], [70, 47, 14]], "seconds": 22.0},
+  "bombs": {"count": 7, "first_after": 9.0, "gap": [1.1, 1.8], "line": [[-14, 12.5, 40], [46, 12.5, 80]], "sound": "war_artillery_near", "db": 3.0,
+   "shake": 0.35, "shake_outside": 0.12, "sway": 0.35, "dust_radius": 14.0, "icicle_radius": 18.0},
+  "hall_box": [[-20, -6, 33], [52, 13, 84]],
+  "dust_group": "m2_dust_points", "icicle_group": "m2_icicles", "icicle_sound": "amb_m2_icicle",
+  "collapse": {"show": [], "hide": []},
+  "vo_line": "OPR_RAID_M2_01", "vo_after": 4.0
+ },
+ "chains": {"group": "swing_chains", "stiffness": 3.2, "damping": 0.35, "wind_push": 0.04, "impulse": 0.45, "explosion_radius": 16.0, "sound": "amb_m2_chain"},
+ "drips": {
+  "first_after": [3, 6], "interval": [1.5, 4.0],
+  "points": [[-10, 0, 62], [26, 0, 66], [-17, 0, 70], [-3, 0, 64], [40, -3, 62], [45, -3, 77], [7, -2, 50], [7, -2, 70]],
+  "radius": 16.0, "sound": "cellar_drip", "db": -9.0, "after_raid_mult": 3, "boost_seconds": 60.0
+ },
+ "conveyor_jolt": {"node": "ConveyorCans", "sound": "amb_m2_conveyor", "db": 0.0, "jolt_m": 0.06, "run_speed": 0.35, "spacing": 0.3},
+ "radio_chatter": {
+  "first_after": [25, 45], "interval": [35, 70],
+  "radios": [[10.85, 1.0, 16.35], [-3.2, 1.0, 9.0], [61.0, 1.0, 7.6], [5.1, -1.0, 58.5], [51.25, 8.2, 37.0]],
+  "radius": 8.0, "static_sound": "amb_m2_radio", "static_db": -8.0,
+  "lines": ["RADIO_UBOAT_01", "RADIO_UBOAT_02", "RADIO_UBOAT_03", "RADIO_UBOAT_04", "RADIO_UBOAT_05", "RADIO_UBOAT_06"]
+ },
+ "cutter_slip": {
+  "round": 15, "delay": 18.0, "hull": "CutterHull", "remnant": "CutterRemnantPieces", "seconds": 7.0,
+  "via": [0.0, 0.9, -3.5], "slide": [0.0, -1.6, -20.0], "tilt": [-14.0, 0.0, 9.0],
+  "groan_sound": "amb_m2_cutter_groan", "groan_db": 2.0, "splash_sound": "amb_m2_wave", "splash_at": [26.0, -1.5, -14.0],
+  "flag": "cutter_slipped", "spawn": "Surf_Cutter"
+ },
+ "footprints": {"wet_boxes": [[[0, -0.5, 0], [32, 1.0, 30]], [[-20, -0.5, 33], [52, 1.0, 84]], [[32, -3.5, 50], [52, -2.0, 84]]],
+  "step_m": 0.75, "life_s": 18.0, "max": 64, "size": [0.13, 0.3], "color": "#0a0c0d", "alpha": 0.5},
+ "frozen_spray": {"by": "storm", "first_after": [8, 16], "interval": [12, 24], "interval_late": [3, 7],
+  "points": [[4, 0.9, -0.6], [9, 0.9, -0.6], [14, 0.9, -0.6], [19, 0.9, -0.6], [24, 0.9, -0.6], [28, 0.9, -0.6]], "sound": "amb_m2_wave", "db": -4.0},
+ "fish_crates": {"group": "m2_fish_crates", "radius": 1.1, "check_s": 0.25, "sound": "amb_m2_crate_spill"},
+ "storm": {
+  "stages": {"low": 0.0, "half": 0.35, "high": 0.65, "spring": 1.0}, "calm_y": -4.0, "spring_y": -1.0, "tide_node": "Tide",
+  "ease_per_s": 0.08, "after_flood": 0.4,
+  "sea_node": "SeaWater", "dock_node": "TideWater", "sea_amp": [0.45, 0.95], "dock_amp": [0.18, 0.42],
+  "lightning_every": [[12, 28], [4, 10]], "lightning_peak": [1.0, 1.6], "rain_group": "m2_rain_glass", "rain": [0.35, 1.0]
+ },
+ "power_spectacle": {
+  "pumps": [[37, -3, 78], [47, -3, 78]], "pump_sound": "amb_m2_pump_start", "pump_db": 3.0, "shake": 0.25, "shake_radius": 30.0,
+  "drain_node": "TideWater", "drain_m": 0.4, "drain_s": 10.0,
+  "sweep": {"zone": "D_PENHALL", "from": [48, 0, 70], "speed_mps": 14.0, "max_s": 4.5},
+  "perk_stings": {"start_s": 3.0, "gap_s": 0.6, "seconds": 2.6, "db": -4.0},
+  "uboat_box": [[4, -2.6, 38], [10, 1.5, 86]], "uboat_red_to": 0.15, "uboat_delay": 3.2
+ }
+}

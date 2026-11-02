@@ -7,6 +7,7 @@ extends RefCounted
 
 static var _bomber: ArrayMesh
 static var _fighter: ArrayMesh
+static var _mosquito: ArrayMesh
 static var _tracer_mat: StandardMaterial3D
 
 
@@ -83,6 +84,27 @@ static func fighter() -> ArrayMesh:
 		_box(g, Vector3(s * 0.065, 0.0, -0.28), Vector3(0.01, 0.01, 0.05))
 	_fighter = _finish(a, g)
 	return _fighter
+
+
+## A twin-engined fast bomber, the RAF's Mosquito (UPDATE 10, T-154: Totenhafen's round-6 low pass): a slim
+## fuselage with the cockpit well forward, two engines close in on a wide wing, a single fin (span 1 along X).
+static func mosquito() -> ArrayMesh:
+	if _mosquito != null:
+		return _mosquito
+	var a: SurfaceTool = SurfaceTool.new()
+	a.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var g: SurfaceTool = SurfaceTool.new()
+	g.begin(Mesh.PRIMITIVE_TRIANGLES)
+	_cyl(a, Vector3(0, 0, 0.04), 0.04, 0.78, Vector3(90, 0, 0))                     # fuselage
+	_box(a, Vector3(0, -0.005, -0.06), Vector3(1.0, 0.014, 0.16))                    # wing
+	for x: float in [-0.17, 0.17]:
+		_cyl(a, Vector3(x, -0.012, -0.12), 0.034, 0.26, Vector3(90, 0, 0))          # nacelles
+		_box(g, Vector3(x + 0.03, 0.0, -0.02), Vector3(0.012, 0.01, 0.05))          # exhaust stubs
+	_box(a, Vector3(0, 0.004, 0.36), Vector3(0.36, 0.01, 0.08))                      # tailplane
+	_box(a, Vector3(0, 0.05, 0.38), Vector3(0.012, 0.1, 0.08))                       # fin
+	_box(a, Vector3(0, 0.04, -0.22), Vector3(0.06, 0.035, 0.08))                     # canopy, well forward
+	_mosquito = _finish(a, g)
+	return _mosquito
 
 
 ## The glowing streak of a tracer round (unit length along -Z; flights scale it).

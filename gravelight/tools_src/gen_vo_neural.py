@@ -126,12 +126,12 @@ class Phonemizer:
                         return True
         return False
 
-    def segments(self, text: str, native_german: bool = False) -> list[tuple[str, str]]:
+    def segments(self, text: str, native_german: bool = False, german_all: bool = False) -> list[tuple[str, str]]:
         """[(lang, text)] runs: consecutive Polish words (with their punctuation) become one "pl" run, a native German
-        speaker's German words one "de" run."""
+        speaker's German words one "de" run. german_all (T-154: a line spoken entirely in German): every word "de"."""
         toks = [m for m in re.finditer(r"\S+", text)]
         words = [re.sub(r"[^\wÀ-žĄ-ż']", "", m.group(0)) for m in toks]
-        langs = ["de" if native_german and words[i].lower() in self.de_words
+        langs = ["de" if german_all or (native_german and words[i].lower() in self.de_words)
                  else "pl" if words[i] and self._is_polish(words, i) else "en" for i in range(len(toks))]
         runs: list[tuple[str, str]] = []
         for m, lang in zip(toks, langs):
@@ -164,11 +164,12 @@ class Phonemizer:
             out.append(w)
         return "".join(out)
 
-    def __call__(self, text: str, lexicon: str, accent: str, native_polish: bool, native_german: bool = False) -> str:
+    def __call__(self, text: str, lexicon: str, accent: str, native_polish: bool, native_german: bool = False,
+                 german_all: bool = False) -> str:
         text = re.sub(r"(?<=\w)-(?=\w)", " ", text)            # "jen-koo-yeh", "bolt-action": no dash pauses
         text = re.sub(r"\.\s*(\.\.\.|…)", "...", text)         # "Góra. ...I know": one ellipsis
         parts = []
-        for lang, run in self.segments(text, native_german):
+        for lang, run in self.segments(text, native_german, german_all):
             if lang == "de":
                 if self.de is None:
                     self.de = mes.EspeakG2P("de")
@@ -227,7 +228,7 @@ def main() -> int:
     for n, job in enumerate(spec["jobs"]):
         try:
             ps = ph(job["text"], job.get("lexicon", "us"), job.get("accent", ""), bool(job.get("native_polish")),
-                    bool(job.get("native_german")))
+                    bool(job.get("native_german")), bool(job.get("german_all")))
             if job.get("exclaim"):
                 # A shouted line: its last full stop becomes "!", which gives Kokoro's rising, forceful read.
                 ps = re.sub(r"\.$", "!", ps)

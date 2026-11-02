@@ -489,7 +489,7 @@ static func coffin_stack(parent: Node3D, pos: Vector3, yaw: float, units: Array)
 # ================================================================== cannery, infirmary
 
 ## A belt conveyor with cans riding it: frame, rollers under a rubber belt, a can every 0.3 m, legs.
-static func conveyor(parent: Node3D, a: Vector3, b: Vector3, w: float = 1.4, h: float = 1.0) -> void:
+static func conveyor(parent: Node3D, a: Vector3, b: Vector3, w: float = 1.4, h: float = 1.0, cans: bool = true) -> void:
 	var len_: float = a.distance_to(b)
 	var dir: Vector3 = (b - a).normalized()
 	var yaw: float = rad_to_deg(atan2(dir.x, dir.z))
@@ -497,7 +497,7 @@ static func conveyor(parent: Node3D, a: Vector3, b: Vector3, w: float = 1.4, h: 
 	for sx: float in [-w * 0.5, w * 0.5]:
 		Props.block(g, Vector3(sx - 0.04, h - 0.18, -len_ * 0.5), Vector3(sx + 0.04, h, len_ * 0.5), "machine_green")
 	Props.block(g, Vector3(-w * 0.48, h - 0.04, -len_ * 0.5), Vector3(w * 0.48, h, len_ * 0.5), "rubber")
-	for k: int in int(len_ / 0.3):
+	for k: int in (int(len_ / 0.3) if cans else 0):   # T-154: the living world's ConveyorCans ride the belt instead
 		var z: float = -len_ * 0.5 + 0.15 + k * 0.3
 		Props.cyl(g, Vector3(0, h + 0.06, z), 0.05, 0.11, "can_tin")
 	for k2: int in int(len_ / 2.0) + 1:
@@ -598,7 +598,18 @@ static func pump(parent: Node3D, pos: Vector3, yaw: float) -> Node3D:
 	Props.cyl(g, Vector3(0, 1.0, 1.2), 0.8, 2.6, "machine_grey", Vector3(90, 0, 0))
 	for k2: int in 9:
 		Props.cyl(g, Vector3(0, 1.0, 0.1 + k2 * 0.27), 0.84, 0.05, "iron", Vector3(90, 0, 0))
-	Props.block(g, Vector3(-0.5, 0.3, 2.5), Vector3(0.5, 1.6, 3.5), "machine_grey")
+	# T-154: the motor's end, not a box (U09 captures: "the pump casing reads as a box"): the end bell, the fan
+	# cowl with its grille and a domed cap, a small terminal box on top, the feet on the bedplate
+	Props.cyl(g, Vector3(0, 1.0, 2.62), 0.84, 0.24, "machine_grey", Vector3(90, 0, 0))
+	Props.cyl(g, Vector3(0, 1.0, 2.98), 0.78, 0.5, "machine_grey", Vector3(90, 0, 0))
+	for k3: int in 7:
+		Props.block(g, Vector3(-0.66 + k3 * 0.22, 0.42, 3.235), Vector3(-0.62 + k3 * 0.22, 1.58, 3.255), "iron")
+	Props.ball(g, Vector3(0, 1.0, 3.28), Vector3(1.2, 1.2, 0.36), "machine_grey")
+	Props.cyl(g, Vector3(0, 1.0, 3.47), 0.12, 0.05, "iron", Vector3(90, 0, 0))
+	Props.block(g, Vector3(-0.24, 1.78, 0.7), Vector3(0.24, 2.12, 1.3), "machine_grey")
+	Props.pipe(g, Vector3(0.0, 2.12, 1.0), Vector3(0.0, 2.6, 1.0), 0.03)
+	for fx: float in [-0.62, 0.42]:
+		Props.block(g, Vector3(fx, 0.3, 0.2), Vector3(fx + 0.2, 0.5, 2.6), "machine_grey")
 	Props.block(g, Vector3(-0.35, 0.55, -1.75), Vector3(0.35, 1.45, -0.35), "yellow_paint")
 	# flanged pipes: suction down through the deck, delivery up and along the wall
 	Props.pipe(g, Vector3(0, 1.2, -3.2), Vector3(0, -0.6, -3.2), 0.24, "rust")
@@ -607,8 +618,8 @@ static func pump(parent: Node3D, pos: Vector3, yaw: float) -> Node3D:
 	Props.pipe(g, Vector3(0.95, 2.4, -2.2), Vector3(0.95, 3.0, -2.2), 0.2, "rust")
 	Props.cyl(g, Vector3(0.95, 2.7, -2.2), 0.28, 0.06, "iron")
 	Props.valve_wheel(g, Vector3(1.24, 2.8, -2.2), -90.0, 0.25, "red_paint")
-	Props.gauge(g, Vector3(-0.6, 1.6, 2.49), 180.0, 0.14)
-	Props.gauge(g, Vector3(0.6, 1.6, 2.49), 180.0, 0.14)
+	Props.gauge(g, Vector3(-0.3, 2.0, 1.31), 180.0, 0.1)
+	Props.gauge(g, Vector3(0.6, 2.4, -2.2), 180.0, 0.14)
 	return g
 
 
@@ -766,3 +777,310 @@ static func storm_card(parent: Node3D, pos: Vector3, size: Vector2, yaw: float =
 	mi.set_meta("keep", true)
 	parent.add_child(mi)
 	return mi
+
+
+# ================================================================== UPDATE 10 (T-154): the living world's pieces
+
+const RAIN_SHADER: String = """
+shader_type spatial;
+render_mode unshaded, blend_add, cull_disabled, depth_draw_never, fog_disabled;
+uniform float intensity = 0.4;
+float h11(float x) { return fract(sin(x * 91.7) * 43758.5453); }
+void fragment() {
+	float col = floor(UV.x * 90.0);
+	float speed = 1.6 + h11(col) * 1.4;
+	float y = fract(UV.y * 3.0 + TIME * speed + h11(col + 7.0));
+	float streak = smoothstep(0.0, 0.08, y) * (1.0 - smoothstep(0.08, 0.35, y));
+	float lane = 1.0 - smoothstep(0.0, 0.35, abs(fract(UV.x * 90.0) - 0.5));
+	float a = streak * lane * step(0.55, h11(col + 3.1)) * intensity;
+	ALBEDO = vec3(0.55, 0.62, 0.72) * a;
+	ALPHA = a;
+}
+"""
+
+static var _rain_mat: ShaderMaterial = null
+
+
+## Rain streaking down a pane (the signal tower's embrasures): a card whose shader's `intensity` the living world
+## raises with the storm (group m2_rain_glass).
+static func rain_card(parent: Node3D, pos: Vector3, size: Vector2, yaw: float) -> MeshInstance3D:
+	if _rain_mat == null:
+		var sh: Shader = Shader.new()
+		sh.code = RAIN_SHADER
+		_rain_mat = ShaderMaterial.new()
+		_rain_mat.shader = sh
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.name = "RainGlass"
+	var q: QuadMesh = QuadMesh.new()
+	q.size = size
+	mi.mesh = q
+	mi.material_override = _rain_mat
+	mi.position = pos
+	mi.rotation.y = deg_to_rad(yaw)
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mi.set_meta("keep", true)
+	mi.add_to_group(&"m2_rain_glass", true)
+	parent.add_child(mi)
+	return mi
+
+
+## One mesh from a list of [mesh, transform] parts with one material (icicle clusters, the conveyor's cans).
+static func merged(parts: Array, key: String) -> ArrayMesh:
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for pr: Array in parts:
+		st.append_from(pr[0] as Mesh, 0, pr[1] as Transform3D)
+	var m: ArrayMesh = st.commit()
+	m.surface_set_material(0, Mats.get_mat(key))
+	return m
+
+
+## A cluster of 2-4 icicles hanging from `pos` (tips down), one mesh, kept so it can fall in the raid. Meta
+## floor_y = where it lands.
+static func icicle_cluster(parent: Node3D, pos: Vector3, floor_y: float, seed_v: int) -> MeshInstance3D:
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = seed_v
+	var parts: Array = []
+	for k: int in rng.randi_range(2, 4):
+		var h: float = rng.randf_range(0.25, 0.85)
+		var r: float = rng.randf_range(0.025, 0.06)
+		var xf: Transform3D = Transform3D(Basis(Vector3.RIGHT, PI).scaled(Vector3(r * 2.0, h, r * 2.0)), Vector3(rng.randf_range(-0.25, 0.25), -h * 0.5, rng.randf_range(-0.06, 0.06)))
+		parts.append([Props.unit_cone(), xf])
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.name = "Icicles"
+	mi.mesh = merged(parts, "frosted")
+	mi.position = pos
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mi.set_meta("floor_y", floor_y)
+	parent.add_child(mi)
+	return mi
+
+
+## The cliff church: a nave and a square tower with an open belfry; the bell hangs from a kept pivot named
+## `pivot_name` (the living world swings it in the wind and tolls it once). Facing local -Z.
+static func cliff_church(parent: Node3D, pos: Vector3, yaw: float, pivot_name: String) -> Node3D:
+	var g: Node3D = Props.group(parent, "CliffChurch", pos, yaw)
+	Props.block(g, Vector3(-4.0, 0, 0), Vector3(4.0, 7.0, 16.0), "stucco")
+	Props.prism(g, Vector3(0, 9.0, 8.0), Vector3(8.6, 4.0, 16.4), "roof")
+	# the roof half gone at the east end: rafters against the sky
+	for k: int in 5:
+		Props.obox(g, Vector3(0, 8.4, 10.5 + k * 1.2), Vector3(8.4, 0.18, 0.18), "beam", Vector3(0, 0, 32.0 if k % 2 == 0 else -32.0))
+	Props.block(g, Vector3(-2.6, 0, -5.2), Vector3(2.6, 14.0, 0.0), "stucco")
+	for sx: float in [-2.6, 2.2]:   # the belfry's four corner piers and the open arches between them
+		for sz: float in [-5.2, -0.4]:
+			Props.block(g, Vector3(sx, 14.0, sz), Vector3(sx + 0.4, 17.4, sz + 0.4), "stucco")
+	Props.block(g, Vector3(-2.7, 17.4, -5.3), Vector3(2.7, 17.9, 0.1), "stucco_trim")
+	Props.cone(g, Vector3(0, 21.0, -2.6), 2.4, 6.2, "roof")
+	Props.block(g, Vector3(-0.05, 24.1, -2.65), Vector3(0.05, 25.2, -2.55), "iron")
+	for wy: float in [3.5, 9.0]:
+		Props.block(g, Vector3(-0.5, wy, -5.22), Vector3(0.5, wy + 1.8, -5.2), "window_dark")
+	var pv: Node3D = Node3D.new()
+	pv.name = pivot_name
+	pv.position = Vector3(0, 16.9, -2.6)
+	pv.set_meta("keep", true)
+	g.add_child(pv)
+	Props.block(pv, Vector3(-0.05, -0.5, -0.05), Vector3(0.05, 0.0, 0.05), "iron")
+	Props.bell(pv, Vector3(0, -1.75, 0), 1.3, "brass")
+	Props.block(g, Vector3(-2.2, 16.85, -2.7), Vector3(2.2, 17.0, -2.5), "beam")
+	return g
+
+
+## A burnt-out house front on the cliff edge: a gable wall with empty windows, a broken top, charred beams.
+static func ruined_facade(parent: Node3D, pos: Vector3, yaw: float, w: float, h: float, seed_v: int) -> void:
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = seed_v
+	var g: Node3D = Props.group(parent, "RuinedFacade", pos, yaw)
+	Props.block(g, Vector3(-w * 0.5, 0, -0.3), Vector3(w * 0.5, h, 0.3), "stucco" if rng.randf() < 0.6 else "brick")
+	# the gable, broken: a stepped ragged top
+	var steps: int = 4
+	for k: int in steps:
+		var x0: float = -w * 0.5 + k * w / steps
+		Props.block(g, Vector3(x0, h, -0.3), Vector3(x0 + w / steps, h + rng.randf_range(0.0, w * 0.35), 0.3), "stucco")
+	for row: int in int(h / 3.2):
+		for col: int in maxi(1, int(w / 2.6)):
+			var x: float = -w * 0.5 + 1.0 + col * 2.6
+			if x + 0.9 > w * 0.5:
+				continue
+			Props.block(g, Vector3(x, 1.2 + row * 3.2, -0.32), Vector3(x + 0.9, 2.6 + row * 3.2, -0.3), "window_dark")
+	for k2: int in 2:
+		Props.obox(g, Vector3(rng.randf_range(-w * 0.3, w * 0.3), h * 0.6, 1.2), Vector3(0.2, 0.2, rng.randf_range(2.0, 4.0)), "char", Vector3(rng.randf_range(-30, 30), 0, rng.randf_range(-40, 40)))
+
+
+## The lighthouse at the end of the breakwater: a tapering white tower with red bands, the gallery, the lantern
+## room. Returns the kept marker at the lamp's base the living world turns its beam on.
+static func lighthouse(parent: Node3D, base: Vector3, height: float) -> Node3D:
+	var g: Node3D = Props.group(parent, "LighthouseTower", base, 0.0)
+	var segs: int = 6
+	for k: int in segs:
+		var y0: float = height * float(k) / segs
+		var r0: float = lerpf(2.3, 1.5, float(k) / segs)
+		var r1: float = lerpf(2.3, 1.5, float(k + 1) / segs)
+		Props.cyl(g, Vector3(0, y0 + height / segs * 0.5, 0), (r0 + r1) * 0.5, height / segs, "red_paint" if k % 2 == 1 else "enamel_white")
+	Props.cyl(g, Vector3(0, height + 0.1, 0), 2.1, 0.2, "iron")
+	Props.railing(g, Vector3(-1.9, height + 0.2, -1.9), Vector3(1.9, height + 0.2, -1.9), 0.9, "iron", 0.6)
+	Props.railing(g, Vector3(-1.9, height + 0.2, 1.9), Vector3(1.9, height + 0.2, 1.9), 0.9, "iron", 0.6)
+	Props.cyl(g, Vector3(0, height + 1.3, 0), 1.15, 2.2, "glass")
+	for k2: int in 6:
+		var a: float = TAU * float(k2) / 6.0
+		Props.block(g, Vector3(cos(a) * 1.15 - 0.04, height + 0.2, sin(a) * 1.15 - 0.04), Vector3(cos(a) * 1.15 + 0.04, height + 2.4, sin(a) * 1.15 + 0.04), "iron")
+	Props.cone(g, Vector3(0, height + 2.9, 0), 1.35, 1.0, "red_paint")
+	Props.block(g, Vector3(-0.5, 0.0, -2.35), Vector3(0.5, 2.1, -2.2), "planks")
+	var mk: Node3D = Node3D.new()
+	mk.name = "Lighthouse"
+	mk.position = base
+	mk.set_meta("keep", true)
+	parent.add_child(mk)
+	return mk
+
+
+## A dockyard gantry crane in silhouette on the breakwater (black: the lightning backlights it).
+static func gantry_crane(parent: Node3D, pos: Vector3, yaw: float, h: float, boom: float) -> void:
+	var g: Node3D = Props.group(parent, "HarbourCrane", pos, yaw)
+	for sx: float in [-2.5, 2.5]:
+		for sz: float in [-2.0, 2.0]:
+			Props.strut(g, Vector3(sx, 0, sz), Vector3(sx * 0.4, h, sz * 0.4), 0.35, "black_paint")
+	for k: int in 4:
+		var y: float = h * (0.2 + 0.2 * k)
+		var s: float = lerpf(1.0, 0.4, y / h)
+		Props.block(g, Vector3(-2.5 * s, y, -2.0 * s), Vector3(2.5 * s, y + 0.25, -2.0 * s + 0.25), "black_paint")
+		Props.block(g, Vector3(-2.5 * s, y, 2.0 * s - 0.25), Vector3(2.5 * s, y + 0.25, 2.0 * s), "black_paint")
+	Props.block(g, Vector3(-1.6, h, -1.4), Vector3(1.6, h + 2.4, 1.4), "black_paint")
+	Props.strut(g, Vector3(0, h + 1.4, -1.0), Vector3(0, h + boom * 0.35, -boom), 0.5, "black_paint")
+	Props.strut(g, Vector3(0, h + 2.4, 0.0), Vector3(0, h + 6.0, 1.6), 0.3, "black_paint")
+	Props.cable(g, Vector3(0, h + 6.0, 1.6), Vector3(0, h + boom * 0.35, -boom), 0.0, 0.05, 2, "black_paint")
+	Props.cable(g, Vector3(0, h + boom * 0.35, -boom), Vector3(0, h * 0.35, -boom), 0.0, 0.05, 2, "black_paint")
+
+
+## A freighter burning on the horizon: a dark hull, the bridge and funnel, masts; the fire and its light are kept
+## children of the returned marker (the living world flickers them).
+static func burning_freighter(parent: Node3D, pos: Vector3, yaw: float, length: float) -> Node3D:
+	var g: Node3D = Props.group(parent, "Freighter", pos, yaw)
+	g.rotation.z = deg_to_rad(-6.0)
+	Props.block(g, Vector3(-length * 0.5, -1.5, -4.0), Vector3(length * 0.5, 4.0, 4.0), "black_paint")
+	Props.prism(g, Vector3(length * 0.5 + 3.0, 1.2, 0), Vector3(8.0, 5.6, 6.0), "black_paint", Vector3(0, 0, -90))
+	Props.block(g, Vector3(length * 0.1, 4.0, -3.2), Vector3(length * 0.28, 9.5, 3.2), "loco_black")
+	Props.cyl(g, Vector3(-length * 0.05, 9.0, 0), 1.4, 6.0, "loco_black")
+	for mx: float in [length * 0.38, -length * 0.3]:
+		Props.cyl(g, Vector3(mx, 10.0, 0), 0.25, 12.0, "loco_black")
+	var mk: Node3D = Node3D.new()
+	mk.name = "BurningFreighter"
+	mk.position = pos
+	mk.set_meta("keep", true)
+	parent.add_child(mk)
+	for fp: Vector3 in [Vector3(-length * 0.2, 4.5, 0), Vector3(length * 0.2, 9.0, 0)]:
+		Props.flames(mk, fp.rotated(Vector3.UP, deg_to_rad(yaw)), 5.0, 6.0, 40)
+		var l: OmniLight3D = OmniLight3D.new()
+		l.name = "FireLight"
+		l.position = fp.rotated(Vector3.UP, deg_to_rad(yaw)) + Vector3(0, 3, 0)
+		l.light_color = Color(1.0, 0.5, 0.2)
+		l.light_energy = 3.5
+		l.omni_range = 45.0
+		l.shadow_enabled = false
+		l.light_volumetric_fog_energy = 2.0
+		mk.add_child(l)
+	Props.smoke(mk, Vector3(0, 14.0, 0), 6.0, 18.0, 30)
+	return mk
+
+
+## A destroyer's low silhouette with its searchlight marker on the bridge (the living world sweeps a beam).
+static func destroyer(parent: Node3D, pos: Vector3, yaw: float) -> Node3D:
+	var g: Node3D = Props.group(parent, "Destroyer", pos, yaw)
+	Props.block(g, Vector3(-3.0, -1.0, -45.0), Vector3(3.0, 3.0, 45.0), "black_paint")
+	Props.prism(g, Vector3(0, 1.5, -48.0), Vector3(6.0, 4.0, 7.0), "black_paint", Vector3(-90, 0, 0))
+	Props.block(g, Vector3(-2.2, 3.0, -22.0), Vector3(2.2, 9.0, -12.0), "loco_black")
+	for fz: float in [-4.0, 8.0]:
+		Props.cyl(g, Vector3(0, 6.0, fz), 1.1, 6.0, "loco_black")
+	Props.cyl(g, Vector3(0, 13.0, -16.0), 0.25, 10.0, "loco_black")
+	var mk: Node3D = Node3D.new()
+	mk.name = "DestroyerLight"
+	mk.position = pos + Vector3(0, 10.0, -17.0).rotated(Vector3.UP, deg_to_rad(yaw))
+	mk.set_meta("keep", true)
+	parent.add_child(mk)
+	return mk
+
+
+## A caged pendant lamp on a long flex from the roof that swings (LampSway, group swing_lamps): the pivot at the
+## roof, the shade and bulb as "LanternBody" (the light is paired by distance, so it swings with it).
+static func swing_pendant(parent: Node3D, pos: Vector3, ceiling_y: float) -> Node3D:
+	var drop: float = ceiling_y - pos.y
+	var pivot: Node3D = Node3D.new()
+	pivot.name = "PendantSwing"
+	pivot.position = Vector3(pos.x, ceiling_y, pos.z)
+	pivot.set_meta("keep", true)
+	pivot.add_to_group(&"swing_lamps", true)
+	parent.add_child(pivot)
+	Props.block(pivot, Vector3(-0.012, -drop, -0.012), Vector3(0.012, 0.0, 0.012), "iron", false)
+	var body: Node3D = Node3D.new()
+	body.name = "LanternBody"
+	body.position = Vector3(0, -drop, 0)
+	pivot.add_child(body)
+	Props.cone(body, Vector3(0, 0.12, 0), 0.36, 0.24, "enamel_green")
+	Props.ball(body, Vector3(0, 0.0, 0), Vector3(0.14, 0.17, 0.14), "bulb_warm")
+	return pivot
+
+
+## A hanging chain from the roof with a pulley block and a hook at its foot (LampSway, group swing_chains).
+static func hanging_chain(parent: Node3D, pos: Vector3, ceiling_y: float, seed_v: int) -> Node3D:
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = seed_v
+	var drop: float = ceiling_y - pos.y
+	var pivot: Node3D = Node3D.new()
+	pivot.name = "ChainSwing"
+	pivot.position = Vector3(pos.x, ceiling_y, pos.z)
+	pivot.set_meta("keep", true)
+	pivot.add_to_group(&"swing_chains", true)
+	parent.add_child(pivot)
+	var parts: Array = []
+	var links: int = int(drop / 0.12)
+	for k: int in links:
+		var y: float = -0.06 - k * 0.12
+		var b: Basis = Basis(Vector3.UP, PI * 0.5 * (k % 2)) * Basis.from_scale(Vector3(0.05, 0.1, 0.015))
+		parts.append([Props.unit_box(), Transform3D(b, Vector3(0, y, 0))])
+	var chain: MeshInstance3D = MeshInstance3D.new()
+	chain.name = "Chain"
+	chain.mesh = merged(parts, "iron")
+	chain.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	pivot.add_child(chain)
+	var blk: Node3D = Node3D.new()
+	blk.name = "Block"
+	blk.position = Vector3(0, -drop, 0)
+	pivot.add_child(blk)
+	Props.block(blk, Vector3(-0.14, -0.1, -0.07), Vector3(0.14, 0.32, 0.07), "rust")
+	Props.cyl(blk, Vector3(0, 0.14, 0), 0.12, 0.16, "iron", Vector3(90, 0, 0))
+	if rng.randf() < 0.7:
+		Props.strut(blk, Vector3(0, -0.1, 0), Vector3(0, -0.32, 0), 0.04, "iron", true)
+		Props.strut(blk, Vector3(0, -0.32, 0), Vector3(0.12, -0.45, 0), 0.035, "iron", true)
+		Props.strut(blk, Vector3(0.12, -0.45, 0), Vector3(0.14, -0.33, 0), 0.03, "iron", true)
+	return pivot
+
+
+## A fish crate that spills (the living world tips "Box" and slides the "Fish*" children out): the crate on a
+## kept group in group m2_fish_crates, full of herring and ice.
+static func fish_crate(parent: Node3D, pos: Vector3, yaw: float, seed_v: int) -> Node3D:
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = seed_v
+	var g: Node3D = Node3D.new()
+	g.name = "FishCrate"
+	g.position = pos
+	g.rotation.y = deg_to_rad(yaw)
+	g.set_meta("keep", true)
+	g.add_to_group(&"m2_fish_crates", true)
+	parent.add_child(g)
+	var box: Node3D = Node3D.new()
+	box.name = "Box"
+	box.position = Vector3(0, 0, 0.3)   # its pivot on the bottom edge it tips over
+	g.add_child(box)
+	Props.block(box, Vector3(-0.4, 0, -0.6), Vector3(0.4, 0.05, 0.0), "planks")
+	for sx: float in [-0.4, 0.36]:
+		Props.block(box, Vector3(sx, 0.05, -0.6), Vector3(sx + 0.04, 0.32, 0.0), "planks")
+	for sz: float in [-0.6, -0.04]:
+		Props.block(box, Vector3(-0.4, 0.05, sz), Vector3(0.4, 0.32, sz + 0.04), "planks")
+	Props.stencil(box, Vector3(0, 0.2, 0.01), 0.0, "FISCH", 16, Color(0.15, 0.12, 0.1, 0.8))
+	for k: int in 6:
+		var f: Node3D = Node3D.new()
+		f.name = "Fish%d" % k
+		f.position = Vector3(rng.randf_range(-0.28, 0.28), 0.28, rng.randf_range(-0.25, 0.25))
+		f.rotation.y = rng.randf_range(0, TAU)
+		g.add_child(f)
+		Props.ball(f, Vector3.ZERO, Vector3(0.07, 0.05, 0.26), "chrome_worn" if k % 3 != 2 else "frosted")
+	return g
