@@ -56,7 +56,165 @@
     "banner_warn": "SHIPPING FORECAST: high water next round",
     "banner_rising": "THE TIDE IS COMING IN",
     "banner_falling": "THE TIDE IS GOING OUT",
-    "vo_delay": 2.5
+    "vo_delay": 2.5,
+    "_doc_v2": "Tide v2 (UPDATE 10 section 2, contract C2, DECISIONS T-153). stage_for_round: spring on every spring_every_rounds-th round (from min_round), high on every every_rounds-th, half on the round before a high one, else low. The water rises to the stage's y over rise_seconds, holds hold_seconds[stage] (the Pumpenschalter crank takes shortens_by_s off what is left), then falls; a new round re-plans. A spring tide also raises the sheets over spring_flood_boxes (the north apron and the east apron's basin edge; the piers stay dry islands) to spring_sheet_y. wade_min_y: below it nobody wades (the half tide only fills the basins). float_drift: one drift direction per flood box (flood_boxes then spring_flood_boxes): a dropped power-up in a wet box drifts at drift_mps and is lost when it leaves the box. cables: live while their spot is wet and the power is on: zombies in radius_m are stunned stun_s, players take player_dps. storm: per-stage values the living world reads (TideController.storm_for). GLBus: tide_stage, tide_flood_begin, tide_flood_end, spring_tide; GameState flag flooded while any box is wet.",
+    "stages": [
+      {
+        "y": -3.3,
+        "name": "half"
+      },
+      {
+        "y": -2.2,
+        "name": "high"
+      },
+      {
+        "y": -1.0,
+        "name": "spring"
+      }
+    ],
+    "spring_every_rounds": 9,
+    "hold_seconds": {
+      "half": 120.0,
+      "high": 150.0,
+      "spring": 200.0
+    },
+    "wade_min_y": -3.05,
+    "spring_flood_boxes": [
+      [
+        [
+          -20.0,
+          -0.6,
+          33.0
+        ],
+        [
+          52.0,
+          0.9,
+          38.0
+        ]
+      ],
+      [
+        [
+          32.0,
+          -0.6,
+          38.0
+        ],
+        [
+          46.0,
+          0.9,
+          50.0
+        ]
+      ]
+    ],
+    "spring_sheet_low_y": -0.6,
+    "spring_sheet_y": 0.35,
+    "pump_crank": {
+      "seconds": 30.0,
+      "spawn_mult": 2.0,
+      "shortens_by_s": 40.0,
+      "radius_m": 3.5,
+      "position": [
+        51.4,
+        0.0,
+        43.2
+      ],
+      "yaw": -90.0,
+      "vo_start": "OPR_PUMP_CRANK_START_01",
+      "vo_done": "OPR_PUMP_CRANK_DONE_01",
+      "banner": "THE PUMPS ARE PULLING THE WATER DOWN"
+    },
+    "float_powerups": true,
+    "drift_mps": 0.55,
+    "float_drift": [
+      [
+        0.0,
+        0.0,
+        1.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ],
+      [
+        -1.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "cables": [
+      {
+        "id": "cable_pens_w",
+        "pos": [
+          36.0,
+          -3.0,
+          63.0
+        ],
+        "radius_m": 2.6,
+        "stun_s": 2.5
+      },
+      {
+        "id": "cable_pens_e",
+        "pos": [
+          44.5,
+          -3.0,
+          71.0
+        ],
+        "radius_m": 2.6,
+        "stun_s": 2.5
+      },
+      {
+        "id": "cable_apron_n",
+        "pos": [
+          24.0,
+          0.0,
+          36.0
+        ],
+        "radius_m": 2.4,
+        "stun_s": 2.0
+      },
+      {
+        "id": "cable_apron_e",
+        "pos": [
+          38.0,
+          0.0,
+          45.0
+        ],
+        "radius_m": 2.4,
+        "stun_s": 2.0
+      }
+    ],
+    "cables_need_power": true,
+    "cable_tick_seconds": 0.5,
+    "player_dps": 12.0,
+    "storm": {
+      "spray_intensity_by_stage": {
+        "low": 0.2,
+        "half": 0.35,
+        "high": 0.65,
+        "spring": 1.0
+      },
+      "lightning_interval_by_stage": {
+        "low": 0.0,
+        "half": 45.0,
+        "high": 24.0,
+        "spring": 11.0
+      },
+      "wave_height_by_stage": {
+        "low": 0.3,
+        "half": 0.5,
+        "high": 0.9,
+        "spring": 1.5
+      }
+    },
+    "banner_spring_warn": "SHIPPING FORECAST: SPRING TIDE next round",
+    "banner_spring": "SPRING TIDE: THE APRONS ARE GOING UNDER",
+    "vo_spring": [
+      "OPR_TIDE_SPRING_01",
+      "OPR_TIDE_SPRING_02"
+    ],
+    "vo_spring_warn": [
+      "OPR_TIDE_SPRING_WARN_01"
+    ]
   },
   "zones": {
     "A_QUAY": {
@@ -280,8 +438,50 @@
         0.0,
         22.5,
         "BLST-07"
+      ],
+      [
+        38.6,
+        0.0,
+        40.0,
+        "BLST-11"
+      ],
+      [
+        36.5,
+        0.0,
+        42.4,
+        "BLST-12"
       ]
-    ]
+    ],
+    "_doc_v2": "Ballast v2 (C2, T-153): a carrier's WeaponHolder is limited to melee and the pistol slot (set_carry_limit). Two destinations: the crane hook (ballast_loaded counter, Operator OPR_BALLAST_LOAD_*, +economy.json ballast_load_bonus Scrip to the carrier) and the sea-stairs dump (BallastDump at dump; ballast_dumped counter, Operator OPR_BALLAST_DUMP_*, the next round +1 glasshide via RoundManager.extra_spawn). A delivered coffin respawns on a free pallet from coffin_spots after respawn_seconds, so both choices stay open. shard_after_dumps: the Undertow's shard appears on the sea stairs after that many dumps.",
+    "dump": [
+      10.0,
+      0.0,
+      -1.4
+    ],
+    "dump_yaw": 180.0,
+    "dump_seconds": 1.5,
+    "respawn_seconds": 20.0,
+    "max_coffins": 3,
+    "shard_after_dumps": 3,
+    "shard_spot": [
+      10.9,
+      0.0,
+      -2.7
+    ],
+    "squad_load": [
+      "DUT_BALLAST_LOAD_01",
+      "PEG_BALLAST_LOAD_01",
+      "DEA_BALLAST_LOAD_01",
+      "WRN_BALLAST_LOAD_01"
+    ],
+    "squad_dump": [
+      "DUT_BALLAST_DUMP_01",
+      "PEG_BALLAST_DUMP_01",
+      "DEA_BALLAST_DUMP_01",
+      "WRN_BALLAST_DUMP_01"
+    ],
+    "squad_dump_third": "PEG_BALLAST_DUMP_THIRD_01",
+    "glasshide_per_dump": 1
   },
   "exfil": {
     "round": 40,
@@ -301,5 +501,379 @@
     "vo_open": "OPR_EXFIL_OPEN_M2_01",
     "vo_wait": "OPR_EXFIL_WAIT_01",
     "vo_missed": "OPR_EXFIL_MISSED_M2_01"
+  },
+  "searchlight": {
+    "_doc": "The signal-tower searchlight (C2, T-153; gravelight/world/map02/searchlight.gd): a manned station that needs power. The operator is locked in (weapons holstered, Leave = interact again or jump); the beam (a SpotLight3D + a cone) slows zombies by slow (frost) and marks them +lit_damage_mult damage taken while they stand in it; bots man it via the MAN_SEARCHLIGHT mark order. During the sail it tracks the boat by itself.",
+    "position": [
+      47.2,
+      7.0,
+      37.3
+    ],
+    "yaw": 180.0,
+    "pivot_height": 1.6,
+    "range_m": 48.0,
+    "cone_deg": 9.0,
+    "slow": 0.4,
+    "lit_damage_mult": 1.25,
+    "tick_seconds": 0.2,
+    "turn_deg_per_s": 70.0,
+    "pitch_min_deg": -55.0,
+    "pitch_max_deg": 5.0,
+    "yaw_limit_deg": 80.0,
+    "bot_sweep_points": [
+      [
+        17.0,
+        0.0,
+        60.0
+      ],
+      [
+        40.0,
+        0.0,
+        66.0
+      ],
+      [
+        -3.0,
+        0.0,
+        60.0
+      ],
+      [
+        24.0,
+        0.0,
+        36.0
+      ],
+      [
+        40.0,
+        -3.0,
+        70.0
+      ]
+    ],
+    "bot_sweep_seconds": 4.0,
+    "sail_track_point": [
+      7.0,
+      1.0,
+      62.0
+    ]
+  },
+  "crane_drop": {
+    "_doc": "The Crane Drop trap (C2, T-153; traps.json crane_drop; gravelight/world/trap_crane.gd): a lever in the crane office swings the loading crane over the east apron and drops a pallet of crates: the kill box is box_size centred at drop (6 x 4 m), dust and a crash; the debris lies debris_seconds. cooldown from traps.json.",
+    "lever": [
+      44.6,
+      0.0,
+      53.4
+    ],
+    "lever_yaw": 90.0,
+    "drop": [
+      40.0,
+      0.0,
+      70.0
+    ],
+    "box_size": [
+      6.0,
+      4.0
+    ],
+    "hang_height": 9.0,
+    "debris_seconds": 20.0,
+    "swing_seconds": 2.2,
+    "fall_seconds": 0.7
+  },
+  "kielholer": {
+    "_doc": "The Kielholer (the drowned; C2, T-153): while the GameState flag flooded is on, the surface points (pier edges, named Surface_*, emerge style water) are live and a share of the spawns are tagged kielholer / kielholer_diver (enemies.json). They grab a player within grab_range and pull toward the nearest water edge; break free by melee, 60 damage to arm_grab, or teammates.",
+    "surface_points": [
+      [
+        -14.6,
+        0.0,
+        50.0
+      ],
+      [
+        -5.4,
+        0.0,
+        66.0
+      ],
+      [
+        -0.6,
+        0.0,
+        76.0
+      ],
+      [
+        14.6,
+        0.0,
+        46.0
+      ],
+      [
+        19.4,
+        0.0,
+        72.0
+      ],
+      [
+        32.6,
+        0.0,
+        62.0
+      ],
+      [
+        32.6,
+        0.0,
+        44.0
+      ],
+      [
+        13.0,
+        0.0,
+        39.0
+      ]
+    ],
+    "surface_share": 0.35,
+    "diver_share": 0.25,
+    "max_active": 6,
+    "max_active_spring": 10,
+    "zone": "D_PENHALL"
+  },
+  "undertow": {
+    "_doc": "THE UNDERTOW's parts and bench (C4, T-153): two spots each for undertow_pump (lower pens) and undertow_head (the workshop tool wall / the warhead cage), seeded by the quest's ut_parts; undertow_shard only from the dump (ballast.shard_spot after ballast.shard_after_dumps dumps). The bench is in the crane office.",
+    "spots": {
+      "undertow_pump": {
+        "pens_pump1": [
+          37.0,
+          -3.0,
+          72.6
+        ],
+        "pens_desk": [
+          50.6,
+          -3.0,
+          61.2
+        ]
+      },
+      "undertow_head": {
+        "tool_wall": [
+          61.2,
+          0.0,
+          12.0
+        ],
+        "warhead_cage": [
+          57.0,
+          0.0,
+          18.6
+        ]
+      }
+    },
+    "bench": [
+      47.6,
+      0.0,
+      53.0
+    ],
+    "bench_yaw": 0.0
+  },
+  "letzte_fahrt": {
+    "_doc": "Letzte Fahrt's world objects (C3, design section 2, T-153). radios: the three code-group radios (cannery office, workshop bench, U-1047's radio room). cipher: the SCHLUESSELGERAET HAFEN rotor machine in the signal tower. log_spots: two seeded spots per page. diesels: the three holdouts. key_slot: the ignition in the tower's chart room. curtain_lever: on pier 2's end. boat: the sail (sail_seconds; board_points; the deck box the holdout counts as on board). boss_docks: where DER KIELHOLER surfaces.",
+    "radios": {
+      "radio_cannery": [
+        -3.0,
+        0.0,
+        9.0,
+        90.0
+      ],
+      "radio_workshop": [
+        56.0,
+        0.0,
+        26.6,
+        180.0
+      ],
+      "radio_uboat": [
+        8.9,
+        -2.0,
+        54.5,
+        -90.0
+      ]
+    },
+    "cipher": [
+      45.0,
+      7.0,
+      33.7,
+      180.0
+    ],
+    "teletype_tray": [
+      50.2,
+      7.0,
+      35.8
+    ],
+    "log_spots": {
+      "INT_M2_LOG_1": {
+        "cabin_bunk": [
+          5.0,
+          -2.0,
+          55.2
+        ],
+        "cabin_locker": [
+          8.8,
+          -2.0,
+          51.0
+        ]
+      },
+      "INT_M2_LOG_2": {
+        "radio_desk": [
+          8.7,
+          -2.0,
+          53.6
+        ],
+        "radio_shelf": [
+          4.8,
+          -2.0,
+          50.6
+        ]
+      },
+      "INT_M2_LOG_3": {
+        "office_desk": [
+          46.2,
+          0.0,
+          56.2
+        ],
+        "office_shelf": [
+          49.4,
+          0.0,
+          52.6
+        ]
+      },
+      "INT_M2_LOG_4": {
+        "pump_locker": [
+          51.0,
+          -3.0,
+          63.0
+        ],
+        "pump_bench": [
+          33.0,
+          -3.0,
+          52.0
+        ]
+      }
+    },
+    "diesels": {
+      "inj_injector": {
+        "position": [
+          58.0,
+          0.0,
+          8.4
+        ],
+        "yaw": 0.0,
+        "zone": "C_WORKSHOP",
+        "seconds": 30.0,
+        "needs_flood": true
+      },
+      "inj_battery": {
+        "position": [
+          41.0,
+          -3.0,
+          76.0
+        ],
+        "yaw": 0.0,
+        "zone": "F_LOWERPENS",
+        "seconds": 30.0,
+        "lights_out": true
+      },
+      "inj_sequence": {
+        "position": [
+          7.0,
+          -2.0,
+          76.0
+        ],
+        "yaw": 180.0,
+        "zone": "E_UBOAT",
+        "seconds": 45.0,
+        "hull_pull": true,
+        "shake_every_s": 6.0
+      }
+    },
+    "key_slot": [
+      46.9,
+      7.0,
+      33.7,
+      180.0
+    ],
+    "curtain_lever": [
+      17.0,
+      0.0,
+      82.6,
+      180.0
+    ],
+    "boat": {
+      "sail_seconds": 150.0,
+      "deck_box": [
+        [
+          4.0,
+          0.5,
+          38.0
+        ],
+        [
+          10.0,
+          6.0,
+          86.0
+        ]
+      ],
+      "helm": [
+        6.0,
+        3.6,
+        55.0
+      ],
+      "board_points": [
+        [
+          3.6,
+          1.0,
+          46.0
+        ],
+        [
+          10.4,
+          1.0,
+          50.0
+        ],
+        [
+          3.6,
+          1.0,
+          70.0
+        ],
+        [
+          10.4,
+          1.0,
+          78.0
+        ],
+        [
+          7.0,
+          1.0,
+          85.5
+        ]
+      ],
+      "board_every_s": 5.0,
+      "board_per_wave": 2,
+      "shake_every_s": 9.0,
+      "scroll_m": 220.0,
+      "dive_cutscene": "m2_letzte_fahrt_dive"
+    },
+    "boss_docks": {
+      "dock1": [
+        -7.0,
+        0.0,
+        60.0
+      ],
+      "dock2": [
+        13.2,
+        0.0,
+        70.0
+      ],
+      "dock3": [
+        20.8,
+        0.0,
+        58.0
+      ],
+      "dock4": [
+        32.8,
+        0.0,
+        72.0
+      ]
+    },
+    "hinnerk_stair": [
+      36.0,
+      5.4,
+      34.0
+    ],
+    "rewards": {
+      "scrip_per_player": 2500,
+      "tier_gift": 1
+    }
   }
 }

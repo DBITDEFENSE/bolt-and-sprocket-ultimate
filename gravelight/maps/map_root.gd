@@ -112,6 +112,7 @@ func _ready() -> void:
 	MapCompanion.attach(self)   # T-135: one more companion per map (after the flags: Jette follows you between acts)
 	ReliefSquad.attach(self)   # T-142: relief squads from the map edge (host / offline; clients get puppets)
 	ExtraPeople.attach(self)   # T-143: the extra people (miners, a medic, a switchboard operator, a deserter, a widow, a courier)
+	Totenhafen.attach(self)   # T-153: Totenhafen's UPDATE 10 systems (tide v2, ballast v2, the drowned, the searchlight, Letzte Fahrt)
 	for q: String in quest_files:
 		QuestManager.load_quest(q)
 	Campaign.restore_quests(self)   # UPDATE 07 (T-114): the egg's progress from the act before

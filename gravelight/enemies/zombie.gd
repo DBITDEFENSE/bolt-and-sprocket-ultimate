@@ -1632,6 +1632,22 @@ func set_vulnerable(mult: float, seconds: float) -> void:
 	_vuln_until_ms = Time.get_ticks_msec() + int(seconds * 1000.0)
 
 
+## The Totenhafen searchlight's beam (C2, T-153): lit zombies are slowed by `slow` and take `mult` x damage while
+## the beam keeps refreshing them (the station calls this every tick with a short `seconds`); set_lit(false) ends it.
+func set_lit(on: bool, slow: float = 0.4, mult: float = 1.25, seconds: float = 0.5) -> void:
+	if on:
+		apply_frost(slow, seconds)
+		if vulnerability() <= mult:
+			set_vulnerable(mult, seconds)
+		set_meta(&"lit_until", Time.get_ticks_msec() + int(seconds * 1000.0))
+	elif has_meta(&"lit_until"):
+		remove_meta(&"lit_until")
+
+
+func is_lit() -> bool:
+	return has_meta(&"lit_until") and int(get_meta(&"lit_until")) > Time.get_ticks_msec()
+
+
 func vulnerability() -> float:
 	return _vuln_mult if _vuln_until_ms > Time.get_ticks_msec() else 1.0
 
