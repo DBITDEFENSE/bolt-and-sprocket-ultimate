@@ -1,0 +1,9 @@
+﻿line_id,character,text,recorded
+PRU_BANK_BROKE_01,PRU,Nothing in your account. I checked the ledger twice. It's a very clean ledger.,
+PRU_BANK_CLOSED_01,PRU,Window's closed. Regulations. I know what it sounds like.,
+PRU_BANK_DEPOSIT_01,PRU,"Credited. One percent a round, per the Finance Department. I'm, I'm not sure the Finance Department is still there.",
+PRU_BANK_GREET_M4C_01,PRU,"Range Finance Office, Private Pruitt. Hey, you're alive. Hold on, let me find the form. Everybody's accounts survived. The rest of the base, not so much.",
+PRU_BANK_GREET_M4C_02,PRU,"I stayed at the desk. Sergeant Marchetti said somebody had to keep the books, and then she locked the cage. We're neighbors. She says she's fine.",
+PRU_BANK_WITHDRAW_01,PRU,"Cash on the barrelhead. Count it, please. My hands won't hold still.",
+PRU_BANK_SCARED_01,PRU,"They're on the salt! They're on the salt, they're on the salt!",
+PRU_BANK_SCARED_02,PRU,I'm just a finance clerk! I just fill out the forms!,

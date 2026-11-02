@@ -1,0 +1,11 @@
+﻿line_id,character,text,recorded
+RUH_BANK_BROKE_01,RUH,"Your book is empty. I am sorry. I would put something in it myself, if I had anything left.",
+RUH_BANK_CLOSED_01,RUH,The cash window is closed. Works regulation. Even now.,
+RUH_BANK_DEPOSIT_01,RUH,Entered in your book. One per cent a round. I have always liked a book that balances.,
+RUH_BANK_GREET_M4A_01,RUH,"Lohnkasse, Werk Thalbach. Ilse Ruhland. The shift is gone and the pay is late, and I am still here. Please come to the window.",
+RUH_BANK_GREET_M4A_02,RUH,Good morning. I think it is morning. The savings book is open. Nobody has asked in three days.,
+RUH_BANK_GREET_M4B_01,RUH,"It is me again! I put the cash box in the equipment locker when the siren went, and then the siren was the engines, and now I am very far up. Your book came with me.",
+RUH_BANK_GREET_M4B_02,RUH,"Bordkasse, the quartermaster's locker. I know. I do not know what I am doing on an aeroplane either. Please do not open the hatches.",
+RUH_BANK_WITHDRAW_01,RUH,Here is your money. It is only paper. Everything here is only paper now.,
+RUH_BANK_SCARED_01,RUH,"They are coming through the yard! Oh no, oh no, please!",
+RUH_BANK_SCARED_02,RUH,I only do the wages! I only do the wages!,

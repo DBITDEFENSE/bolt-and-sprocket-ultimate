@@ -1,11 +1,11 @@
-Line counts per actor (voice_scripts/ (script version cf325dd8); 2925 spoken lines in all)
+Line counts per actor (voice_scripts/ (script version 376715f3); 3029 spoken lines in all)
 
 cousin_1                  12   The Cousins (together) 4, The Hammer (Mara) 8
 cousin_2                  10   The Cousins (together) 4, The Reach (Jo) 6
 cousin_3                  12   The Cousins (together) 4, The Third Hand (Alix) 8
 devin                      0   no lines yet
 paul                       0   no lines yet
-slot_amm                  10   AMM 10
+slot_amm                  15   AMM 15
 slot_blt                   4   BLT 4
 slot_bra                   9   Fraeulein Hedwig Brandt 9
 slot_bs_bathrobe           8   Confused Customer 8
@@ -32,24 +32,32 @@ slot_bs_squat             23   The Squatter 23
 slot_bs_statue             1   Statue 1
 slot_bs_tourist            6   Tourist 6
 slot_bwt                   7   BWT 7
-slot_dea                 312   Cpl. Elijah "Deacon" Brooks 312
+slot_cou                   8   COU 8
+slot_dea                 315   Cpl. Elijah "Deacon" Brooks 315
 slot_dee                  18   DEE 18
-slot_dut                 318   Sgt. Walter "Dutch" Kowalczyk 318
+slot_des                   8   DES 8
+slot_dut                 321   Sgt. Walter "Dutch" Kowalczyk 321
 slot_fas                  56   Dr. Emil Fasbender 56
 slot_hal                   8   HAL 8
-slot_jak                 187   Jakub Ostrowski 187
+slot_jak                 190   Jakub Ostrowski 190
+slot_jes                   8   JES 8
 slot_jet                  12   JET 12
 slot_kro                   9   Ida Kroll 9
 slot_kub                   3   Franz Kubiak 3
 slot_lsl                  10   Liesl 10
-slot_opr                 319   The Operator 319
+slot_med                   8   MED 8
+slot_min                   8   MIN 8
+slot_opr                 328   The Operator 328
 slot_pa                   15   PA 15
-slot_peg                 306   Lt. Margaret "Peg" Ashworth 306
+slot_peg                 309   Lt. Margaret "Peg" Ashworth 309
 slot_pet                  10   PET 10
 slot_poh                   2   Frau Agnes Pohl 2
+slot_pru                   8   PRU 8
+slot_rad                   9   RAD 9
 slot_rei                  23   Dr. Augusta Reinholt 23
 slot_rot                   3   Ewald Rother 3
 slot_rrk                   7   RRK 7
+slot_ruh                  10   RUH 10
 slot_sel                  15   SEL 15
 slot_sob                   5   Gefreiter Willi Sobotta 5
 slot_spr                   5   SPR 5
@@ -57,7 +65,8 @@ slot_sqd                  98   Relief squad soldiers (T-142) 98
 slot_tel                  19   TEL 19
 slot_tru                  12   Trudi Hanke 12
 slot_ven                   9   VEN 9
+slot_wid                   8   WID 8
 slot_wie                   9   Konrad Wiesner 9
 slot_wit                  12   WIT 12
 slot_wiv                  13   WIV 13
-slot_wrn                 326   Zofia "Wren" Nowak 326
+slot_wrn                 329   Zofia "Wren" Nowak 329
