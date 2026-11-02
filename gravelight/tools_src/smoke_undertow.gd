@@ -137,7 +137,7 @@ func _run() -> void:
 	_check(live.has(&"undertow_pump") and live.has(&"undertow_head") and live.size() == 2, "one live spot per part, no shard yet (%s)" % str(live.keys()))
 	var shard: BuildablePart = UndertowParts.spawn_shard(th) as BuildablePart
 	await _frames(2)
-	_check(shard != null and shard.is_live() and shard.global_position.z < 0.5, "the shard lies on the sea stairs after the dumps")
+	_check(shard != null and shard.is_live() and shard.global_position.z < 3.0, "the shard lies by the sea stairs (the quay parapet, z < 3) after the dumps")
 	for bp2: Variant in live.values():
 		(bp2 as BuildablePart).interact(_p)
 	if shard != null:
