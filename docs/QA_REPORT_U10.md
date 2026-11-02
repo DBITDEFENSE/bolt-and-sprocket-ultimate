@@ -130,10 +130,10 @@ Totenhafen's boss and wonder).
 
 ## 4. Tests and smokes
 
-- Unit tests: `test_bot_u10_eggs.gd` (this half) and `test_bot_u10.gd` (Fernflug); the final counts are in T-163's
-  report.
-- Smoke `smoke_bots_u10`: the storm, the wing walk with its clip and token, the breach rail, the meteor shelter,
-  Pohl's tag.
-- The existing bot smokes were re-run after the final rebase.
-- `smoke_bot_loco` fails only its CPU-time budget (about 550 us per bot against < 250) while ~40 other headless runs
-  load the machine. Its 42 behaviour checks pass. Re-run it on a quiet machine.
+- After the final rebase (master aa1807c5), the full unit suite passes 1738/1738 and check_scripts checks 696 scripts
+  with 0 failures.
+- New unit tests: `test_bot_u10_eggs.gd` (25 tests) and `test_bot_u10.gd` (21 tests).
+- Smoke RESULT lines, all PASS: bot_ai, bot_loco, botmode, bots, bots_u10 (new: the storm, the wing walk with its
+  clip and token, the breach rail, the meteor shelter, Pohl's tag), ee_bots, late_kit, requiem, squads.
+- `smoke_bot_loco` failed its CPU-time budget twice while ~40 other headless runs loaded the machine; it passed on
+  the final run.
