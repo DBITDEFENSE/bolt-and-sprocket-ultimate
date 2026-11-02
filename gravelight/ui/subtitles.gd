@@ -6,6 +6,7 @@ extends CanvasLayer
 const NAMES: Dictionary = {
 	&"OPR": "THE OPERATOR", &"FAS": "FASBENDER (RADIO)", &"REI": "REINHOLT", &"LSL": "LIESL",
 	&"DUT": "DUTCH", &"PEG": "PEG", &"DEA": "DEACON", &"WRN": "WREN", &"JAK": "JAKUB",
+	&"UBR": "U-BOAT RADIO",   # T-154: Totenhafen's radios, German traffic subtitled
 }
 const COLORS: Dictionary = {
 	&"OPR": Color(1.0, 0.78, 0.35), &"FAS": Color(0.62, 0.9, 0.62), &"REI": Color(0.72, 0.5, 1.0),

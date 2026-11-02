@@ -1085,6 +1085,7 @@ uniform float amp = 0.18;
 uniform float chop = 0.9;
 uniform float speed = 1.0;
 uniform float alpha = 0.9;
+uniform float level_offset = 0.0;   // T-154: a visual-only shift of the surface (the pumps draining the docks)
 varying float crest;
 
 float wave(vec2 p, vec2 dir, float k, float w, float t) {
@@ -1097,7 +1098,7 @@ void vertex() {
 	float h = wave(wp.xz, vec2(0.80, 0.60), 0.55, 1.7, t) * 0.5
 		+ wave(wp.xz, vec2(-0.35, 0.94), 1.10, 2.6, t) * 0.3
 		+ wave(wp.xz, vec2(0.98, -0.20), 2.30, 3.9, t) * 0.2;
-	VERTEX.y += h * amp;
+	VERTEX.y += h * amp + level_offset;
 	crest = clamp(h * 0.5 + 0.5, 0.0, 1.0);
 	float dx = cos(wp.x * 0.55 + t * 1.7) * 0.55 * amp;
 	float dz = cos(wp.z * 1.10 + t * 2.6) * 1.10 * amp * chop;

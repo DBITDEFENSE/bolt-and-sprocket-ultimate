@@ -5,6 +5,8 @@ extends Node
 ## API for other systems: LampSway.find(tree).impulse(direction, strength) for every lamp, or
 ## impulse_at(position, radius, direction, strength) for the ones near a point (e.g. a lamp that gets shot).
 ## Damped pendulums; asleep (no work) while everything hangs still.
+## UPDATE 10 (T-154): cfg "group" swings another group's pivots (Totenhafen's chains and pulley blocks,
+## "swing_chains"); only the default "swing_lamps" set registers as the map's LampSway.
 
 var cfg: Dictionary = {}
 var lamps: Array = []     # each: [pivot Node3D, light Light3D or null, light offset in pivot space, angle Vector2, velocity Vector2]
@@ -17,11 +19,13 @@ static func find(tree: SceneTree) -> LampSway:
 
 func setup(c: Dictionary, map_root: Node) -> void:
 	cfg = c
-	add_to_group(&"lamp_sway")
+	var grp: StringName = StringName(str(c.get("group", "swing_lamps")))
+	if grp == &"swing_lamps":
+		add_to_group(&"lamp_sway")
 	var lights: Array[OmniLight3D] = []
 	for n: Node in map_root.find_children("*", "OmniLight3D", true, false):
 		lights.append(n as OmniLight3D)
-	for n2: Node in get_tree().get_nodes_in_group(&"swing_lamps"):
+	for n2: Node in get_tree().get_nodes_in_group(grp):
 		var pivot: Node3D = n2 as Node3D
 		if pivot == null or not map_root.is_ancestor_of(pivot):
 			continue

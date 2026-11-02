@@ -11,6 +11,10 @@ var crows: Array = []        # each: {node, wing_l, wing_r, state, perch, pos, v
 var quiet: float = 999.0
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _caw_cd: float = 0.0
+var _own_mat: StandardMaterial3D = null
+var _wheel: Vector3 = Vector3(10, 26, -30)
+var _wheel_r: float = 22.0
+var _away: Vector3 = Vector3(-90, 30, -150)
 static var _body_mesh: ArrayMesh
 static var _mat: StandardMaterial3D
 
@@ -31,16 +35,41 @@ static func wire_perches(count: int, seed_v: int) -> Array[Vector3]:
 	return out
 
 
+## The perches from cfg "perches" when given (Totenhafen's gulls), else the inn's wires.
+static func perches_of(c: Dictionary, seed_v: int) -> Array[Vector3]:
+	var out: Array[Vector3] = []
+	for v: Variant in c.get("perches", []):
+		var a: Array = v
+		if a.size() >= 3:
+			out.append(Vector3(float(a[0]), float(a[1]), float(a[2])))
+	if out.is_empty():
+		return wire_perches(int(c.get("count", 11)), seed_v)
+	return out
+
+
+static func _vec(v: Variant, fallback: Vector3) -> Vector3:
+	var a: Array = v if v is Array else []
+	return Vector3(float(a[0]), float(a[1]), float(a[2])) if a.size() >= 3 else fallback
+
+
 func setup(c: Dictionary, seed_v: int) -> void:
 	cfg = c
 	_rng.seed = seed_v
-	for p: Vector3 in wire_perches(int(c.get("count", 11)), seed_v):
+	_wheel = _vec(c.get("wheel"), _wheel)
+	_wheel_r = float(c.get("wheel_radius", _wheel_r))
+	_away = _vec(c.get("away"), _away)
+	if c.has("color"):
+		_own_mat = _material().duplicate() as StandardMaterial3D
+		_own_mat.albedo_color = Color(str(c["color"]))
+	var sc: float = float(c.get("scale", 1.0))
+	for p: Vector3 in perches_of(c, seed_v):
 		var n: Node3D = Node3D.new()
 		n.name = "Crow"
 		add_child(n)
+		n.scale = Vector3.ONE * sc
 		var body: MeshInstance3D = MeshInstance3D.new()
 		body.mesh = _body()
-		body.material_override = _material()
+		body.material_override = _own_mat if _own_mat != null else _material()
 		body.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		n.add_child(body)
 		var wings: Array[Node3D] = []
@@ -50,7 +79,7 @@ func setup(c: Dictionary, seed_v: int) -> void:
 			n.add_child(w)
 			var wm: MeshInstance3D = MeshInstance3D.new()
 			wm.mesh = Props.unit_box()
-			wm.material_override = _material()
+			wm.material_override = _own_mat if _own_mat != null else _material()
 			wm.scale = Vector3(0.34, 0.012, 0.16)
 			wm.position = Vector3(side * 0.17, 0, 0.02)
 			wm.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -125,7 +154,7 @@ func perched_count() -> int:
 func _process(delta: float) -> void:
 	quiet += delta
 	_caw_cd -= delta
-	var woods: Vector3 = Vector3(-90, 30, -150)
+	var woods: Vector3 = _away
 	for c: Dictionary in crows:
 		var n: Node3D = c["node"]
 		c["t"] = float(c["t"]) + delta
@@ -139,7 +168,7 @@ func _process(delta: float) -> void:
 					continue
 				# climb, wheel once over the field, then head for the woods
 				var tt: float = float(c["t"]) - float(c["wait"])
-				var target: Vector3 = Vector3(10, 26, -30) + Vector3(cos(tt * 0.7 + float(c["phase"])), 0.2 * sin(tt), sin(tt * 0.7 + float(c["phase"]))) * 22.0
+				var target: Vector3 = _wheel + Vector3(cos(tt * 0.7 + float(c["phase"])), 0.2 * sin(tt), sin(tt * 0.7 + float(c["phase"]))) * _wheel_r
 				if tt > 7.0:
 					target = woods
 				var v: Vector3 = c["vel"]

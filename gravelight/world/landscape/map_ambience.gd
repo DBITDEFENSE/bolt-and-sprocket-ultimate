@@ -17,10 +17,21 @@ extends Node3D
 ##            breath fog in the cold, frost creeping over the windows, the farmhouse light going out at round 8,
 ##            the wreck's ammunition cooking off, and Dutch's line about the empty pilot's seat.
 ## The pure rules (intensity, delays, thresholds) are static so the unit tests can check them.
+##
+## UPDATE 10 (contract C1, DECISIONS T-154): every map may have its own living world. MapRoot._attach_map_ambience
+## adds this node with data/gravelight/<map prefix>_ambience.json when the scene has no MapAmbience of its own; Map 0
+## keeps its scene node and file, unchanged. A file with
+## "needs_landscape": false runs without the Landscape (the Map 0 sky pieces then stay off). Every Map 0 section
+## only runs when its key is in the file. New event kinds are data blocks that default to off: a block is a
+## _kinds_setup_<name>() method (found and run in name order at setup) that reads its key and registers what it
+## needs (_ticks, _round_fns, _power_fns, _shot_fns, _boom_fns, _flag_fns, _every timers, debug_kinds). Totenhafen's
+## kinds are in the "U10 Totenhafen" block at the end; each Fernflug act appends its own block after it.
 
 const FLASH_SLOTS: int = 8
 
 @export var config_path: String = "res://data/gravelight/map00_ambience.json"
+## Timed beats' delays are multiplied by this (smokes run them fast). Never changes what happens, only when.
+@export var delay_scale: float = 1.0
 
 var cfg: Dictionary = {}
 var land: Landscape
@@ -71,13 +82,37 @@ var _sparks: GPUParticles3D
 var _pilot_check: float = 0.0
 var _setup_done: bool = false
 var _sky_dirty: bool = true
+# UPDATE 10 kinds registry (see the header)
+var _ticks: Array[Callable] = []
+var _round_fns: Array[Callable] = []
+var _power_fns: Array[Callable] = []
+var _shot_fns: Array[Callable] = []
+var _boom_fns: Array[Callable] = []
+var _flag_fns: Array[Callable] = []
+var _kind_timers: Array = []            # {key, section, fn, left}
+## kind -> Callable for debug_trigger (the dev console, clips, smokes).
+var debug_kinds: Dictionary = {}
+## Campaign arrival: the timed beats count rounds on this map (beat_round); -1 until known.
+var round_base: int = -1
+var _campaign: bool = false
 
 
 func _ready() -> void:
 	add_to_group(&"map_ambience")
 	cfg = GLData.load_json(config_path)
 	_rng.randomize()
+	var mid: Variant = get_parent().get("map_id") if get_parent() != null else null
+	_campaign = mid != null and Campaign.arriving(StringName(str(mid)))
 	_setup.call_deferred()
+
+
+## The round as the timed beats count it: rounds since this map began on a campaign arrival, else the round.
+static func beat_round_of(r: int, base: int) -> int:
+	return r - maxi(0, base)
+
+
+func beat_round(r: int = -1) -> int:
+	return beat_round_of(round_now if r < 0 else r, round_base)
 
 
 ## The wind right now, ~0.15 (lull) .. ~1.1 (a full gust): the reactive dressing (curtains, wind at the broken
@@ -137,12 +172,14 @@ static func hearth_out(energy: float, base: float, c: Dictionary) -> bool:
 
 func _setup() -> void:
 	land = Landscape.find(get_tree())
-	if land == null or cfg.is_empty():
+	if cfg.is_empty() or (land == null and bool(cfg.get("needs_landscape", true))):
 		return
 	_setup_done = true
 	GLBus.round_started.connect(_on_round_started)
 	GLBus.weapon_fired.connect(_on_weapon_fired)
 	GLBus.explosion.connect(_on_explosion)
+	GLBus.power_activated.connect(_on_power_activated)
+	GLBus.flag_changed.connect(_on_flag_changed)
 	_flash_light = DirectionalLight3D.new()
 	_flash_light.name = "WarFlash"
 	_flash_light.shadow_enabled = false
@@ -151,35 +188,91 @@ func _setup() -> void:
 	_flash_light.visible = false
 	add_child(_flash_light)
 	_build_searchlights()
-	_build_aa()
+	if cfg.has("tracers"):
+		_build_aa()
 	_build_glow_pool()
-	crows = CrowFlock.new()
-	crows.name = "Crows"
-	add_child(crows)
-	crows.setup(cfg.get("crows", {}), _rng.randi())
-	breath = BreathFog.new()
-	breath.name = "BreathFog"
-	breath.cfg = cfg.get("breath", {})
-	add_child(breath)
-	frost = FrostCreep.new()
-	frost.name = "Frost"
-	add_child(frost)
-	frost.setup(cfg.get("frost", {}))
+	if cfg.has("crows"):
+		crows = CrowFlock.new()
+		crows.name = "Crows"
+		add_child(crows)
+		crows.setup(cfg.get("crows", {}), _rng.randi())
+	if cfg.has("breath"):
+		breath = BreathFog.new()
+		breath.name = "BreathFog"
+		breath.cfg = cfg.get("breath", {})
+		add_child(breath)
+	if cfg.has("frost"):
+		frost = FrostCreep.new()
+		frost.name = "Frost"
+		add_child(frost)
+		frost.setup(cfg.get("frost", {}))
 	sway = LampSway.new()
 	sway.name = "LampSway"
 	add_child(sway)
 	sway.setup(cfg.get("lamp_sway", {}), get_parent())
-	_find_fire_and_chimney()
+	if cfg.has("chimney"):
+		_find_fire_and_chimney()
 	_find_snow()
-	_build_spindrift()
+	if land != null:
+		_build_spindrift()
 	_build_cookoff()
 	for key: String in ["bombers", "fighters", "artillery", "tracers", "flares", "machine_guns", "gusts", "dog", "cookoff"]:
+		if not cfg.has(key):
+			continue
 		var sec: Dictionary = cfg.get(key, {})
 		var f: Array = sec.get("first_after", [20, 40])
 		_timers[key] = _rng.randf_range(float(f[0]), float(f[1]))
 	round_now = maxi(1, RoundManager.current_round)
 	intensity = intensity_for(round_now, cfg)
-	frost.apply(FrostCreep.frost_at(round_now, cfg.get("frost", {}), false))
+	if frost != null:
+		frost.apply(FrostCreep.frost_at(round_now, cfg.get("frost", {}), false))
+	if not _campaign:
+		round_base = 0
+	elif RoundManager.current_round > 0:
+		round_base = RoundManager.current_round - 1
+	_setup_kinds()
+
+
+## Runs every _kinds_setup_* block in name order (each returns at once when its key is not in the file).
+func _setup_kinds() -> void:
+	var names: Array[String] = []
+	for m: Dictionary in get_method_list():
+		var n: String = str(m["name"])
+		if n.begins_with("_kinds_setup_") and not names.has(n):
+			names.append(n)
+	names.sort()
+	for n2: String in names:
+		call(n2)
+
+
+## A kind's random timer: `fn` fires after section.first_after, then every section.interval (interval_late at full
+## intensity; with "by": "storm" the storm's strength stands in for the war's intensity).
+func _every(key: String, section: Dictionary, fn: Callable) -> void:
+	var f: Array = section.get("first_after", [20, 40])
+	_kind_timers.append({"key": key, "section": section, "fn": fn, "left": _rng.randf_range(float(f[0]), float(f[1]))})
+
+
+func _update_kind_timers(delta: float) -> void:
+	for t: Dictionary in _kind_timers:
+		t["left"] = float(t["left"]) - delta
+		if float(t["left"]) <= 0.0:
+			var sec: Dictionary = t["section"]
+			var k: float = storm_k if str(sec.get("by", "")) == "storm" else intensity
+			var iv: Vector2 = interval_range(sec, k)
+			t["left"] = _rng.randf_range(iv.x, iv.y)
+			(t["fn"] as Callable).call()
+
+
+## A node of the map by name ("" or missing: null).
+func _named(n: String) -> Node3D:
+	if n == "" or get_parent() == null:
+		return null
+	return get_parent().find_child(n, true, false) as Node3D
+
+
+## _after for a timed beat: the delay scales with delay_scale.
+func _beat_after(secs: float, fn: Callable) -> void:
+	_after(secs * delay_scale, fn)
 
 
 func _find_fire_and_chimney() -> void:
@@ -242,6 +335,10 @@ func _process(delta: float) -> void:
 		_write_sky()
 	if not flights.is_empty():
 		_prune_flights()
+	for fn: Callable in _ticks:
+		fn.call(delta)
+	if not _kind_timers.is_empty():
+		_update_kind_timers(delta)
 
 
 ## Drops flights that have flown off (freed), without touching the freed objects' types.
@@ -265,26 +362,44 @@ func _count(kind: String) -> void:
 func _set_round(r: int) -> void:
 	round_now = r
 	intensity = intensity_for(r, cfg)
-	if farm_lit and not farm_lit_at(r, cfg):
+	if farm_lit and cfg.has("farm_light") and not farm_lit_at(r, cfg):
 		_farm_light_out()
 
 
 func _on_round_started(r: int, _special: bool) -> void:
 	_set_round(maxi(1, r))
 	var b: Dictionary = cfg.get("bell", {})
-	if not bell_rung and r == int(b.get("round", 9)):
+	if cfg.has("bell") and not bell_rung and r == int(b.get("round", 9)):
 		bell_rung = true
 		_after(float(b.get("delay", 22.0)), _ring_midnight)
+	if round_base < 0:
+		round_base = maxi(0, r - 1)
+	for fn: Callable in _round_fns:
+		fn.call(beat_round(r))
 
 
-func _on_explosion(at: Vector3, _radius: float) -> void:
+func _on_explosion(at: Vector3, radius: float) -> void:
 	if crows != null:
 		crows.gunfire(at)
+	for fn: Callable in _boom_fns:
+		fn.call(at, radius)
 
 
 func _on_weapon_fired(_pid: int, _w: StringName, _u: bool, origin: Vector3, _d: Vector3) -> void:
 	if crows != null:
 		crows.gunfire(origin)
+	for fn: Callable in _shot_fns:
+		fn.call(origin)
+
+
+func _on_power_activated() -> void:
+	for fn: Callable in _power_fns:
+		fn.call()
+
+
+func _on_flag_changed(flag: StringName, value: Variant) -> void:
+	for fn: Callable in _flag_fns:
+		fn.call(flag, value)
 
 
 func _fire_event(key: String) -> void:
@@ -1171,3 +1286,1227 @@ func debug_trigger(kind: String, bearing: float = 90.0) -> void:
 			_ring_midnight()
 		"dog":
 			_dog()
+		_:
+			if debug_kinds.has(kind):
+				(debug_kinds[kind] as Callable).call()
+
+
+# ---- U10 Totenhafen ----
+# Totenhafen's living world (UPDATE 10 section 2.2, docs/U10_TOTENHAFEN_DESIGN.md section 7, DECISIONS T-154), from
+# data/gravelight/map02_ambience.json. Every block returns at once when its key is not in the file. Presentation
+# only: the one gameplay touch is the cutter's flag (set by the host) that the systems worker's sea-stair spawn
+# reads. Shared helpers first, then one block per kind: gulls, lighthouse, bell_tower, ships, low_pass, raid,
+# chains, drips, conveyor_jolt, radio_chatter, cutter_slip, footprints, frozen_spray, fish_crates, storm,
+# power_spectacle.
+
+var storm_k: float = 0.0                 # 0 calm .. 1 spring-tide storm (the tide drives it)
+var tide_stage_name: StringName = &""
+var gulls: CrowFlock
+var lighthouse_lit: bool = true
+var bell_tolled: bool = false
+var low_pass_done: bool = false
+var raid_done: bool = false
+var raid_bombs: int = 0
+var cutter_slipped: bool = false
+var conveyor_running: bool = false
+var drain_now: float = 0.0
+var chain_sway: LampSway
+var _storm_target: float = 0.0
+var _mist_pool: Array[GPUParticles3D] = []
+var _dust_pool: Array[GPUParticles3D] = []
+var _dust_points: Array[Vector3] = []
+var _icicles: Array[Node3D] = []
+var _drip_boost_left: float = 0.0
+var _lh: Node3D
+var _lh_pivot: Node3D
+var _lh_light: OmniLight3D
+var _lh_glow: MeshInstance3D
+var _bell: Node3D
+var _bell_a: float = 0.0
+var _bell_v: float = 0.0
+var _fire_lights: Array[Light3D] = []
+var _dbeam: MeshInstance3D
+var _destroyer: Node3D
+var _flak_sites: Array[GPUParticles3D] = []
+var _flak_off: Array[float] = []
+var _cans: Node3D
+var _radio_bag: Array = []
+var _fp_mm: MultiMeshInstance3D
+var _fp_life: PackedFloat32Array = PackedFloat32Array()
+var _fp_next: int = 0
+var _fp_last: Dictionary = {}           # player instance id -> [last step position, side]
+var _crates: Array = []                 # {node, spilled}
+var _crate_tick: float = 0.0
+var _chain_tick: float = 0.0
+var _lightnings: Array = []             # [LightningFlash, base every_s, base peak]
+var _rain_mats: Array[ShaderMaterial] = []
+var _sea_mat: ShaderMaterial
+var _dock_mat: ShaderMaterial
+var _tide_node: Node
+var _tide_poll: float = 0.0
+
+
+# ================================================================== U10 pure rules (unit-tested)
+
+static func lighthouse_lit_at(r: int, c: Dictionary) -> bool:
+	return r < int((c.get("lighthouse", {}) as Dictionary).get("off_round", 10))
+
+
+## True on the round a one-shot beat fires (the low pass, the raid, the cutter): exactly that beat round.
+static func beat_fires(beat_r: int, section: Dictionary, done: bool) -> bool:
+	return not done and section.has("round") and beat_r == int(section["round"])
+
+
+## The storm's strength for a tide stage name (storm.stages), 0 when unknown.
+static func storm_level_for(stage: StringName, c: Dictionary) -> float:
+	return clampf(float(((c.get("storm", {}) as Dictionary).get("stages", {}) as Dictionary).get(String(stage), 0.0)), 0.0, 1.0)
+
+
+## A tide level (the TideController's water y) as a storm strength, for when the tide signals aren't there: from
+## the low water (0) to the spring height (1).
+static func storm_level_for_y(y: float, c: Dictionary) -> float:
+	var s: Dictionary = c.get("storm", {})
+	var lo: float = float(s.get("calm_y", -4.0))
+	var hi: float = float(s.get("spring_y", -1.0))
+	return clampf((y - lo) / maxf(0.01, hi - lo), 0.0, 1.0)
+
+
+## Seconds after its zone's turn that a power light at `p` comes on in the sweep from `from` (sweep.speed_mps,
+## capped at sweep.max_s).
+static func sweep_delay_for(p: Vector3, sweep: Dictionary) -> float:
+	var f: Array = sweep.get("from", [0, 0, 0])
+	var d: float = Vector2(p.x - float(f[0]), p.z - float(f[2])).length()
+	return clampf(d / maxf(0.1, float(sweep.get("speed_mps", 14.0))), 0.0, float(sweep.get("max_s", 4.0)))
+
+
+static func _v3(v: Variant, fallback: Vector3 = Vector3.ZERO) -> Vector3:
+	var a: Array = v if v is Array else []
+	return Vector3(float(a[0]), float(a[1]), float(a[2])) if a.size() >= 3 else fallback
+
+
+static func _inside(p: Vector3, box: Variant) -> bool:
+	var b: Array = box if box is Array else []
+	if b.size() < 2:
+		return false
+	var lo: Vector3 = _v3(b[0])
+	var hi: Vector3 = _v3(b[1])
+	return p.x >= lo.x and p.x <= hi.x and p.y >= lo.y and p.y <= hi.y and p.z >= lo.z and p.z <= hi.z
+
+
+# ================================================================== U10 helpers
+
+func _snd3(key: String, at: Vector3, db: float = 0.0) -> AudioStreamPlayer3D:
+	if key == "" or not AudioDirector.has_sound(key):
+		return null
+	return AudioDirector.play_3d(key, at, db)
+
+
+## The local player's eye (the listener), or null.
+func _listener_pos() -> Variant:
+	var cam: Camera3D = _listener()
+	return cam.global_position if cam != null else null
+
+
+## A shake for the local player, `inside` when they stand in `box`, else `outside`.
+func _shake_in(box: Variant, inside: float, outside: float) -> void:
+	var lp: Variant = _listener_pos()
+	var amount: float = outside
+	if lp != null and _inside(lp as Vector3, box):
+		amount = inside
+	if amount > 0.0:
+		_shake(amount)
+
+
+## A light's energy, through FlickerLight's base_energy when it has one (its flicker rewrites light_energy).
+static func _light_e(l: Light3D) -> float:
+	return float(l.get("base_energy")) if l.get("base_energy") != null else l.light_energy
+
+
+static func _set_light_e(l: Light3D, e: float) -> void:
+	if l.get("base_energy") != null:
+		l.set("base_energy", e)
+	else:
+		l.light_energy = e
+
+
+## A one-shot particle burst from a small pool (mist over the parapet, dust from the hall's ceiling).
+func _burst_pool(pool: Array[GPUParticles3D], make: Callable, at: Vector3, size: int = 4) -> void:
+	var p: GPUParticles3D = null
+	for q: GPUParticles3D in pool:
+		if not q.emitting:
+			p = q
+			break
+	if p == null:
+		if pool.size() < size:
+			p = make.call() as GPUParticles3D
+			add_child(p)
+			pool.append(p)
+		else:
+			p = pool[_rng.randi() % pool.size()]
+	p.global_position = at
+	p.restart()
+
+
+func _make_mist() -> GPUParticles3D:
+	var p: GPUParticles3D = GPUParticles3D.new()
+	p.name = "SprayMist"
+	p.amount = 48
+	p.lifetime = 2.2
+	p.one_shot = true
+	p.explosiveness = 0.8
+	p.emitting = false
+	p.local_coords = false
+	p.visibility_aabb = AABB(Vector3(-8, -2, -8), Vector3(16, 10, 16))
+	var pm: ParticleProcessMaterial = ParticleProcessMaterial.new()
+	pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	pm.emission_box_extents = Vector3(2.0, 0.2, 0.3)
+	pm.direction = Vector3(0, 1, 0.6)
+	pm.spread = 30.0
+	pm.initial_velocity_min = 3.0
+	pm.initial_velocity_max = 7.0
+	pm.gravity = Vector3(0, -4.0, 1.2)
+	pm.scale_min = 0.6
+	pm.scale_max = 1.8
+	pm.color_ramp = Props._ramp_tex([[0.0, Color(0.85, 0.9, 0.95, 0.0)], [0.12, Color(0.85, 0.9, 0.95, 0.5)], [1.0, Color(0.8, 0.85, 0.9, 0.0)]])
+	p.process_material = pm
+	var q: QuadMesh = QuadMesh.new()
+	q.size = Vector2(0.9, 0.9)
+	q.material = Props._particle_mat(Color(1, 1, 1), Color(1, 1, 1), 0.0, false)
+	p.draw_pass_1 = q
+	p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return p
+
+
+func _make_dust() -> GPUParticles3D:
+	var p: GPUParticles3D = GPUParticles3D.new()
+	p.name = "CeilingDust"
+	p.amount = 60
+	p.lifetime = 3.4
+	p.one_shot = true
+	p.explosiveness = 0.7
+	p.emitting = false
+	p.local_coords = false
+	p.visibility_aabb = AABB(Vector3(-8, -14, -8), Vector3(16, 16, 16))
+	var pm: ParticleProcessMaterial = ParticleProcessMaterial.new()
+	pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	pm.emission_box_extents = Vector3(1.6, 0.1, 1.6)
+	pm.direction = Vector3(0, -1, 0)
+	pm.spread = 25.0
+	pm.initial_velocity_min = 0.5
+	pm.initial_velocity_max = 2.0
+	pm.gravity = Vector3(0, -3.0, 0)
+	pm.scale_min = 0.5
+	pm.scale_max = 2.2
+	pm.color_ramp = Props._ramp_tex([[0.0, Color(0.55, 0.53, 0.5, 0.0)], [0.1, Color(0.55, 0.53, 0.5, 0.55)], [1.0, Color(0.5, 0.48, 0.45, 0.0)]])
+	p.process_material = pm
+	var q: QuadMesh = QuadMesh.new()
+	q.size = Vector2(1.0, 1.0)
+	q.material = Props._particle_mat(Color(0, 0, 0), Color(0, 0, 0), 0.0, false)
+	p.draw_pass_1 = q
+	p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return p
+
+
+## A light-beam shaft (the searchlights' shader) from `parent`'s origin along its local `axis`.
+func _beam(parent: Node3D, axis: Vector3, length: float, width: float, intensity_v: float, col: Color) -> MeshInstance3D:
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.name = "Beam"
+	var cm: CylinderMesh = CylinderMesh.new()
+	cm.top_radius = width
+	cm.bottom_radius = 0.5
+	cm.height = length
+	cm.radial_segments = 14
+	cm.rings = 1
+	cm.cap_top = false
+	cm.cap_bottom = false
+	mi.mesh = cm
+	var m: ShaderMaterial = ShaderMaterial.new()
+	m.shader = load("res://gravelight/world/landscape/shaders/light_beam.gdshader") as Shader
+	m.set_shader_parameter("color", Vector3(col.r, col.g, col.b))
+	m.set_shader_parameter("intensity", intensity_v)
+	m.set_shader_parameter("length_falloff", 1.4)
+	m.set_shader_parameter("edge_power", 2.6)
+	m.set_shader_parameter("near_fade", 12.0)
+	mi.material_override = m
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mi.extra_cull_margin = 40.0
+	parent.add_child(mi)
+	mi.set_instance_shader_parameter("beam_len", length)
+	var y: Vector3 = axis.normalized()
+	var x: Vector3 = y.cross(Vector3.UP if absf(y.y) < 0.9 else Vector3.FORWARD).normalized()
+	mi.transform = Transform3D(Basis(x, y, x.cross(y)), y * length * 0.5)
+	return mi
+
+
+# ================================================================== gulls: scatter at the first shot
+
+func _kinds_setup_gulls() -> void:
+	if not cfg.has("gulls"):
+		return
+	gulls = CrowFlock.new()
+	gulls.name = "Gulls"
+	add_child(gulls)
+	gulls.setup(cfg["gulls"], _rng.randi())
+	_shot_fns.append(func(at: Vector3) -> void: _gulls_scare(at))
+	_boom_fns.append(func(at: Vector3, _r: float) -> void: _gulls_scare(at))
+	debug_kinds["gulls"] = func() -> void: _gulls_scare(gulls.crows[0]["node"].global_position if not gulls.crows.is_empty() else Vector3.ZERO)
+
+
+func _gulls_scare(at: Vector3) -> void:
+	var before: int = gulls.perched_count()
+	gulls.gunfire(at)
+	if gulls.perched_count() < before:
+		_count("gulls_scatter")
+
+
+# ================================================================== the lighthouse: a beam every 9 s, dark from round 10
+
+func _kinds_setup_lighthouse() -> void:
+	if not cfg.has("lighthouse"):
+		return
+	var c: Dictionary = cfg["lighthouse"]
+	_lh = _named(str(c.get("node", "Lighthouse")))
+	if _lh == null:
+		return
+	_lh_pivot = Node3D.new()
+	_lh_pivot.name = "LampTurn"
+	_lh_pivot.position = Vector3(0, float(c.get("lamp_height", 17.0)), 0)
+	_lh.add_child(_lh_pivot)
+	var col: Color = Color(str(c.get("color", "#fff1cf")))
+	for s: float in [1.0, -1.0]:
+		_beam(_lh_pivot, Vector3(0, -0.035, s), float(c.get("beam_length", 220.0)), float(c.get("beam_width", 9.0)), float(c.get("beam_intensity", 0.3)), col)
+	_lh_light = OmniLight3D.new()
+	_lh_light.light_color = col
+	_lh_light.omni_range = float(c.get("light_range", 26.0))
+	_lh_light.light_energy = 0.0
+	_lh_light.shadow_enabled = false
+	_lh_light.light_volumetric_fog_energy = 1.2
+	_lh_pivot.add_child(_lh_light)
+	_lh_glow = LandscapeProps.glow_sprite(Vector3.ZERO, float(c.get("glow_size", 6.0)), col, 2.0)
+	_lh_pivot.add_child(_lh_glow)
+	_ticks.append(_tick_lighthouse)
+	_round_fns.append(func(br: int) -> void:
+		if lighthouse_lit and not lighthouse_lit_at(br, cfg):
+			_lighthouse_out(false))
+	if round_base >= 0 and not lighthouse_lit_at(beat_round(round_now), cfg):
+		_lighthouse_out(true)
+	if c.has("foghorn"):
+		_every("foghorn", c["foghorn"], func() -> void:
+			if lighthouse_lit:
+				far_sound(str((c["foghorn"] as Dictionary).get("sound", "")), _lh.global_position, float((c["foghorn"] as Dictionary).get("db", -6.0)))
+				_count("foghorn"))
+	debug_kinds["lighthouse_dark"] = func() -> void: _lighthouse_out(false)
+
+
+func _tick_lighthouse(_delta: float) -> void:
+	if not lighthouse_lit or _lh_pivot == null:
+		return
+	var period: float = maxf(1.0, float((cfg["lighthouse"] as Dictionary).get("period_s", 9.0)))
+	_lh_pivot.rotation.y = TAU * fmod(_t, period) / period
+	# the flash when the beam sweeps past the viewer (a two-ended beam: twice a turn would be every 4.5 s, so the
+	# far end is dimmer and only the near one flashes full)
+	var k: float = 0.0
+	var lp: Variant = _listener_pos()
+	if lp != null:
+		var to: Vector3 = (lp as Vector3) - _lh_pivot.global_position
+		to.y = 0.0
+		var fwd: Vector3 = _lh_pivot.global_transform.basis.z
+		fwd.y = 0.0
+		if to.length() > 0.1 and fwd.length() > 0.1:
+			k = pow(maxf(0.0, fwd.normalized().dot(to.normalized())), 60.0)
+	_lh_light.light_energy = float((cfg["lighthouse"] as Dictionary).get("light_energy", 4.0)) * (0.25 + 0.75 * k)
+	(_lh_glow.material_override as StandardMaterial3D).albedo_color = Color(1.0, 0.94, 0.8) * (1.2 + 5.0 * k)
+
+
+func _lighthouse_out(instant: bool) -> void:
+	if not lighthouse_lit:
+		return
+	lighthouse_lit = false
+	_count("lighthouse_dark")
+	if _lh_pivot == null:
+		return
+	if instant:
+		_lh_pivot.visible = false
+		return
+	var piv: Node3D = _lh_pivot
+	var tw: Tween = piv.create_tween()
+	for k: int in 3:   # it gutters, then it's gone
+		tw.tween_callback(func() -> void: piv.visible = false)
+		tw.tween_interval(0.15 + 0.12 * k)
+		tw.tween_callback(func() -> void: piv.visible = true)
+		tw.tween_interval(0.3)
+	tw.tween_callback(func() -> void: piv.visible = false)
+
+
+# ================================================================== the cliff church's bell: swings in the wind, tolls once
+
+func _kinds_setup_bell_tower() -> void:
+	if not cfg.has("bell_tower"):
+		return
+	var c: Dictionary = cfg["bell_tower"]
+	_bell = _named(str(c.get("pivot", "CliffBellPivot")))
+	if GameState.has_flag(StringName(str(c.get("flag", "egg_lf_started")))):
+		bell_tolled = true   # the egg was started before this peer joined: no toll now
+	_ticks.append(_tick_bell)
+	_flag_fns.append(func(f: StringName, v: Variant) -> void:
+		if String(f) == str(c.get("flag", "egg_lf_started")) and bool(v) and not bell_tolled:
+			_bell_toll())
+	debug_kinds["bell_toll"] = func() -> void:
+		bell_tolled = false
+		_bell_toll()
+
+
+func _tick_bell(delta: float) -> void:
+	if _bell == null:
+		return
+	var c: Dictionary = cfg["bell_tower"]
+	var torque: float = _wind * float(c.get("wind_swing", 0.5)) * (0.6 + 0.4 * sin(_t * 1.3)) - 4.0 * _bell_a - 0.35 * _bell_v
+	_bell_v += torque * delta
+	_bell_a = clampf(_bell_a + _bell_v * delta, -0.9, 0.9)
+	_bell.rotation.x = _bell_a
+
+
+func _bell_toll() -> void:
+	var c: Dictionary = cfg["bell_tower"]
+	bell_tolled = true
+	_bell_v += float(c.get("toll_swing", 1.6))
+	var where: Vector3 = _bell.global_position if _bell != null else _v3(c.get("position"), Vector3(-40, 50, 0))
+	_beat_after(0.35, func() -> void: far_sound(str(c.get("sound", "")), where, float(c.get("db", 0.0))))
+	if str(c.get("vo_category", "")) != "":
+		_beat_after(float(c.get("vo_after", 4.0)), func() -> void: _squad_line(str(c["vo_category"])))
+	_count("bell_toll")
+
+
+# ================================================================== ships: a burning freighter, a destroyer's searchlight, star shells
+
+func _kinds_setup_ships() -> void:
+	if not cfg.has("ships"):
+		return
+	var c: Dictionary = cfg["ships"]
+	var fr: Node3D = _named(str((c.get("freighter", {}) as Dictionary).get("node", "BurningFreighter")))
+	if fr != null:
+		for n: Node in fr.find_children("*", "Light3D", true, false):
+			_fire_lights.append(n as Light3D)
+			n.set_meta("base_e", (n as Light3D).light_energy)
+	var ds: Dictionary = c.get("destroyer", {})
+	_destroyer = _named(str(ds.get("node", "DestroyerLight")))
+	if _destroyer != null:
+		_dbeam = _beam(_destroyer, Vector3(0, 0.04, -1), float(ds.get("length", 240.0)), float(ds.get("width", 7.0)), float(ds.get("intensity", 0.22)), Color(0.82, 0.88, 1.0))
+	_ticks.append(_tick_ships)
+	if c.has("guns"):
+		_every("ship_guns", c["guns"], _ship_guns)
+	if c.has("star_shells"):
+		_every("star_shells", c["star_shells"], _star_shell)
+	debug_kinds["ship_guns"] = _ship_guns
+	debug_kinds["star_shell"] = _star_shell
+
+
+func _tick_ships(_delta: float) -> void:
+	for i: int in _fire_lights.size():
+		var l: Light3D = _fire_lights[i]
+		l.light_energy = float(l.get_meta("base_e", 2.0)) * (0.7 + 0.3 * sin(_t * (2.1 + i * 0.7) + i) * sin(_t * 5.3 + i * 1.9))
+	if _destroyer != null and _dbeam != null:
+		var ds: Dictionary = (cfg["ships"] as Dictionary).get("destroyer", {})
+		var sw: float = deg_to_rad(float(ds.get("sweep_deg", 60.0)))
+		_destroyer.rotation.y = deg_to_rad(float(ds.get("yaw", 180.0))) + sw * sin(_t * float(ds.get("sweep_speed", 0.07)) * TAU)
+
+
+func _ship_guns() -> void:
+	var g: Dictionary = (cfg["ships"] as Dictionary).get("guns", {})
+	var at: Vector3 = _destroyer.global_position if _destroyer != null else _v3(g.get("position"), Vector3(80, 2, -120))
+	var kr: Array = g.get("km", [4.0, 7.0])
+	var km: float = _rng.randf_range(float(kr[0]), float(kr[1]))
+	var shots: int = _rng.randi_range(1, 3)
+	for k: int in shots:
+		_after(k * _rng.randf_range(0.6, 1.4), func() -> void:
+			_glow(at + Vector3(_rng.randf_range(-6, 6), 3.0, 0), 22.0, Color(1.0, 0.72, 0.42), 2.2, 0.35)
+			_after(boom_delay(km, cfg), func() -> void: far_sound(str(g.get("sound", "war_artillery_boom")), at, float(g.get("db", -6.0)))))
+	_count("ship_guns")
+
+
+## A star shell over the water: a parachute flare lighting the bay white, drifting down.
+func _star_shell() -> void:
+	var c: Dictionary = (cfg["ships"] as Dictionary).get("star_shells", {})
+	if round_now < int(c.get("min_round", 1)) or _flares.size() >= 2:
+		return
+	var pts: Array = c.get("points", [[16, 0, -90]])
+	var base: Vector3 = _v3(pts[_rng.randi() % pts.size()])
+	var hr: Array = c.get("height", [60, 85])
+	var pos: Vector3 = base + Vector3(_rng.randf_range(-25, 25), _rng.randf_range(float(hr[0]), float(hr[1])), _rng.randf_range(-15, 15))
+	var col: Color = Color(1.0, 0.95, 0.85)
+	var n: Node3D = Node3D.new()
+	n.name = "StarShell"
+	add_child(n)
+	n.global_position = pos
+	var glow: MeshInstance3D = LandscapeProps.glow_sprite(Vector3.ZERO, 7.0, col, 3.0)
+	n.add_child(glow)
+	n.add_child(LandscapeProps.glow_sprite(Vector3.ZERO, 1.6, Color(1, 1, 1), 6.0))
+	var l: OmniLight3D = OmniLight3D.new()
+	l.light_color = col
+	l.omni_range = float(c.get("light_range", 120.0))
+	l.omni_attenuation = 1.2
+	l.light_energy = 0.0
+	l.shadow_enabled = false
+	l.light_volumetric_fog_energy = 0.4
+	n.add_child(l)
+	n.add_child(_flare_smoke())
+	_flares.append({"node": n, "light": l, "glow": glow, "t": 0.0, "burn": float(c.get("burn_seconds", 30.0)), "energy": float(c.get("light_energy", 2.6)),
+		"drift": Vector3(_rng.randf_range(-0.6, 0.6), 0, _rng.randf_range(-0.4, 0.4)), "col": col})
+	far_sound(str(c.get("sound", "war_flare_pop")), pos, -6.0)
+	_count("star_shell")
+
+
+# ================================================================== the low pass: Mosquitoes over the harbour, flak from the cliff
+
+func _kinds_setup_low_pass() -> void:
+	if not cfg.has("low_pass"):
+		return
+	var c: Dictionary = cfg["low_pass"]
+	if round_base >= 0 and beat_round(round_now) > int(c.get("round", 6)):
+		low_pass_done = true
+	_round_fns.append(func(br: int) -> void:
+		if beat_fires(br, c, low_pass_done):
+			low_pass_done = true
+			var d: Array = c.get("delay", [8, 14])
+			_beat_after(_rng.randf_range(float(d[0]), float(d[1])), _low_pass))
+	debug_kinds["low_pass"] = _low_pass
+	_ticks.append(_tick_flak)
+
+
+func _low_pass() -> void:
+	var c: Dictionary = cfg["low_pass"]
+	var a: Vector3 = _v3(c.get("from"), Vector3(-160, 70, -60))
+	var m: Vector3 = _v3(c.get("mid"), Vector3(16, 34, -18))
+	var b: Vector3 = _v3(c.get("to"), Vector3(190, 80, 10))
+	var ctrl: Array[Vector3] = [a, a.lerp(m, 0.7), m.lerp(b, 0.3), b]
+	var secs: float = (a.distance_to(m) + m.distance_to(b)) / maxf(1.0, float(c.get("speed", 70.0)))
+	var f: SkyFlight = SkyFlight.new()
+	f.name = "LowPass"
+	f.sound = far_sound
+	add_child(f)
+	f.setup_fighters(c, ctrl, secs, _rng.randi())
+	flights.append(f)
+	_count("low_pass")
+	var fk: Dictionary = c.get("flak", {})
+	for v: Variant in fk.get("sites", []):
+		var site: GPUParticles3D = _flak_site(_v3(v))
+		var aim: Vector3 = (m - site.global_position).normalized()
+		(site.process_material as ParticleProcessMaterial).direction = aim
+		site.emitting = true
+		_flak_off[_flak_sites.find(site)] = secs * 0.8
+	var bursts: int = int(fk.get("bursts", 8))
+	for k: int in bursts:
+		var u: float = _rng.randf_range(0.2, 0.85)
+		var p: Vector3 = SkyFlight.bezier(ctrl, u) + Vector3(_rng.randf_range(-14, 14), _rng.randf_range(-6, 12), _rng.randf_range(-14, 14))
+		_after(u * secs, func() -> void:
+			_glow(p, 7.0, Color(1.0, 0.65, 0.3), 2.0, 0.35)
+			far_sound(str(fk.get("sound", "war_mg_distant")), p, -8.0)
+			_count("flak"))
+	if str(c.get("vo_category", "")) != "":
+		_after(secs * 0.5, func() -> void: _squad_line(str(c["vo_category"])))
+
+
+## A flak position's tracer emitter on the cliff (built once per site, reused by the low pass and the raid).
+func _flak_site(at: Vector3) -> GPUParticles3D:
+	for s: GPUParticles3D in _flak_sites:
+		if s.global_position.distance_to(at) < 1.0:
+			return s
+	var p: GPUParticles3D = GPUParticles3D.new()
+	p.name = "CliffFlak"
+	p.amount = 50
+	p.lifetime = 3.0
+	p.emitting = false
+	p.local_coords = false
+	p.visibility_aabb = AABB(Vector3(-200, -20, -200), Vector3(400, 260, 400))
+	var pm: ParticleProcessMaterial = ParticleProcessMaterial.new()
+	pm.direction = Vector3(0, 1, 0)
+	pm.spread = 9.0
+	pm.initial_velocity_min = 55.0
+	pm.initial_velocity_max = 70.0
+	pm.gravity = Vector3(0, -9.8, 0)
+	pm.color_ramp = Props._ramp_tex([[0.0, Color(1.0, 0.75, 0.4, 1.0)], [0.6, Color(1.0, 0.4, 0.15, 1.0)], [1.0, Color(0.8, 0.2, 0.1, 0.0)]])
+	p.process_material = pm
+	var q: QuadMesh = QuadMesh.new()
+	q.size = Vector2(0.9, 0.9)
+	var mat: StandardMaterial3D = Props._particle_mat(Color(1, 0.6, 0.3), Color(1, 0.4, 0.2), 4.0, true)
+	mat.disable_fog = true
+	q.material = mat
+	p.draw_pass_1 = q
+	p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(p)
+	p.global_position = at
+	_flak_sites.append(p)
+	_flak_off.append(0.0)
+	return p
+
+
+func _tick_flak(delta: float) -> void:
+	for i: int in _flak_sites.size():
+		if _flak_off[i] > 0.0:
+			_flak_off[i] -= delta
+			if _flak_off[i] <= 0.0:
+				_flak_sites[i].emitting = false
+
+
+# ================================================================== the raid: round 12, a bomb walk across the pens
+
+func _kinds_setup_raid() -> void:
+	if not cfg.has("raid"):
+		return
+	var c: Dictionary = cfg["raid"]
+	for n: Node in get_tree().get_nodes_in_group(StringName(str(c.get("dust_group", "m2_dust_points")))):
+		_dust_points.append((n as Node3D).global_position)
+	for n2: Node in get_tree().get_nodes_in_group(StringName(str(c.get("icicle_group", "m2_icicles")))):
+		_icicles.append(n2 as Node3D)
+	if round_base >= 0 and beat_round(round_now) > int(c.get("round", 12)):
+		raid_done = true
+	_round_fns.append(func(br: int) -> void:
+		if beat_fires(br, c, raid_done):
+			raid_done = true
+			_beat_after(float(c.get("delay", 14.0)), _raid))
+	debug_kinds["raid"] = _raid
+
+
+func _raid() -> void:
+	var c: Dictionary = cfg["raid"]
+	_count("raid")
+	var sr: Dictionary = c.get("siren", {})
+	for v: Variant in sr.get("points", []):
+		far_sound(str(sr.get("sound", "")), _v3(v), float(sr.get("db", -2.0)))
+	var fk: Dictionary = c.get("flak", {})
+	for v2: Variant in fk.get("sites", []):
+		var site: GPUParticles3D = _flak_site(_v3(v2))
+		(site.process_material as ParticleProcessMaterial).direction = Vector3(_rng.randf_range(-0.3, 0.3), 1.0, _rng.randf_range(0.1, 0.5)).normalized()
+		site.emitting = true
+		_flak_off[_flak_sites.find(site)] = float(fk.get("seconds", 20.0)) * maxf(0.2, delay_scale)
+	var bm: Dictionary = c.get("bombs", {})
+	var line: Array = bm.get("line", [[-14, 12, 40], [46, 12, 80]])
+	var a: Vector3 = _v3(line[0])
+	var b: Vector3 = _v3(line[1])
+	var count: int = int(bm.get("count", 7))
+	var at: float = float(bm.get("first_after", 8.0))
+	var gap: Array = bm.get("gap", [1.1, 1.8])
+	for i: int in count:
+		var p: Vector3 = a.lerp(b, float(i) / maxf(1.0, float(count - 1))) + Vector3(_rng.randf_range(-3, 3), 0, _rng.randf_range(-3, 3))
+		_beat_after(at, func() -> void: _bomb(p))
+		at += _rng.randf_range(float(gap[0]), float(gap[1]))
+	if str(c.get("vo_line", "")) != "":
+		_beat_after(at + float(c.get("vo_after", 5.0)), func() -> void:
+			if GLVO.play_local(StringName(str(c["vo_line"]))):
+				_count("raid_vo"))
+	for nm: Variant in (c.get("collapse", {}) as Dictionary).get("show", []):
+		var sn: Node3D = _named(str(nm))
+		if sn != null:
+			_beat_after(at, func() -> void: sn.visible = true)
+	for nm2: Variant in (c.get("collapse", {}) as Dictionary).get("hide", []):
+		var hn: Node3D = _named(str(nm2))
+		if hn != null:
+			_beat_after(at, func() -> void: hn.visible = false)
+
+
+## One bomb on the pens' roof at `p`: the whistle and the hit, the hall shakes, dust from the ceiling points near it,
+## the lamps and chains swing, icicles near it fall.
+func _bomb(p: Vector3) -> void:
+	var c: Dictionary = cfg["raid"]
+	var bm: Dictionary = c.get("bombs", {})
+	raid_bombs += 1
+	_count("raid_bomb")
+	_snd3(str(bm.get("sound", "war_artillery_near")), p, float(bm.get("db", 2.0)))
+	_glow(p + Vector3(0, 2.0, 0), 34.0, Color(1.0, 0.62, 0.3), 2.6, 0.45)
+	_shake_in(c.get("hall_box", []), float(bm.get("shake", 0.35)), float(bm.get("shake_outside", 0.12)))
+	_count("hall_shake")
+	var dir: Vector3 = Vector3(_rng.randf_range(-1, 1), 0, _rng.randf_range(-1, 1))
+	if sway != null:
+		sway.impulse(dir, float(bm.get("sway", 0.35)))
+		if not sway.lamps.is_empty():
+			_count("lamp_sway")
+	if chain_sway != null:
+		chain_sway.impulse(dir, float(bm.get("sway", 0.35)) * 1.5)
+		if not chain_sway.lamps.is_empty():
+			_count("chain_swing")
+	var r: float = float(bm.get("dust_radius", 14.0))
+	var n: int = 0
+	for dp: Vector3 in _dust_points:
+		if Vector2(dp.x - p.x, dp.z - p.z).length() < r and n < 3:
+			_burst_pool(_dust_pool, _make_dust, dp, 6)
+			_count("dust_burst")
+			n += 1
+	var ir: float = float(bm.get("icicle_radius", 18.0))
+	for ic: Node3D in _icicles:
+		if is_instance_valid(ic) and ic.visible and not ic.has_meta("fallen") and Vector2(ic.global_position.x - p.x, ic.global_position.z - p.z).length() < ir:
+			_icicle_fall(ic)
+	_drip_boost_left = float((cfg.get("drips", {}) as Dictionary).get("boost_seconds", 60.0))
+
+
+func _icicle_fall(ic: Node3D) -> void:
+	ic.set_meta("fallen", true)
+	_count("icicle_fall")
+	var floor_y: float = float(ic.get_meta("floor_y", ic.global_position.y - 4.0))
+	var drop: float = ic.global_position.y - floor_y
+	var t: float = sqrt(2.0 * maxf(0.1, drop) / 9.8)
+	var tw: Tween = ic.create_tween()
+	tw.tween_interval(_rng.randf_range(0.0, 0.5))
+	tw.tween_property(ic, "global_position:y", floor_y, t).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tw.tween_callback(func() -> void:
+		ic.visible = false
+		_snd3(str((cfg["raid"] as Dictionary).get("icicle_sound", "")), ic.global_position, -4.0)
+		_burst_pool(_mist_pool, _make_mist, ic.global_position, 4))
+
+
+# ================================================================== chains and pulley blocks swing (wind, impacts)
+
+func _kinds_setup_chains() -> void:
+	if not cfg.has("chains"):
+		return
+	var c: Dictionary = cfg["chains"]
+	chain_sway = LampSway.new()
+	chain_sway.name = "ChainSway"
+	add_child(chain_sway)
+	chain_sway.setup(c, get_parent())
+	_ticks.append(func(delta: float) -> void:
+		_chain_tick -= delta
+		if _chain_tick <= 0.0:
+			_chain_tick = 0.5
+			chain_sway.impulse(Vector3(0.4, 0, 1.0), float(c.get("wind_push", 0.04)) * _wind))
+	_boom_fns.append(func(at: Vector3, radius: float) -> void:
+		chain_sway.impulse_at(at, maxf(radius * 3.0, float(c.get("explosion_radius", 16.0))), Vector3(_rng.randf_range(-1, 1), 0, _rng.randf_range(-1, 1)), float(c.get("impulse", 0.4)))
+		var lp: Variant = _listener_pos()
+		if lp != null and (lp as Vector3).distance_to(at) < 20.0:
+			_snd3(str(c.get("sound", "")), at + Vector3(0, 3, 0), -8.0))
+
+
+# ================================================================== drips (louder and more after the raid)
+
+func _kinds_setup_drips() -> void:
+	if not cfg.has("drips"):
+		return
+	_every("drips", cfg["drips"], _drip)
+
+
+func _drip() -> void:
+	var c: Dictionary = cfg["drips"]
+	var lp: Variant = _listener_pos()
+	if lp == null:
+		return
+	var reps: int = 1
+	if _drip_boost_left > 0.0:
+		reps = int(c.get("after_raid_mult", 3.0))
+	for k: int in reps:
+		var near: Array[Vector3] = []
+		for v: Variant in c.get("points", []):
+			var p: Vector3 = _v3(v)
+			if p.distance_to(lp as Vector3) < float(c.get("radius", 16.0)):
+				near.append(p)
+		if near.is_empty():
+			return
+		var at: Vector3 = near[_rng.randi() % near.size()] + Vector3(_rng.randf_range(-2, 2), 0, _rng.randf_range(-2, 2))
+		_after(k * _rng.randf_range(0.2, 0.7), func() -> void: _snd3(str(c.get("sound", "cellar_drip")), at, float(c.get("db", -10.0))))
+	_count("drip")
+
+
+# ================================================================== the conveyor jolts when the power comes on
+
+func _kinds_setup_conveyor_jolt() -> void:
+	if not cfg.has("conveyor_jolt"):
+		return
+	var c: Dictionary = cfg["conveyor_jolt"]
+	_cans = _named(str(c.get("node", "ConveyorCans")))
+	if GameState.power_on:
+		conveyor_running = true
+	_power_fns.append(_conveyor_jolt)
+	_ticks.append(_tick_conveyor)
+	debug_kinds["conveyor_jolt"] = _conveyor_jolt
+
+
+func _conveyor_jolt() -> void:
+	var c: Dictionary = cfg["conveyor_jolt"]
+	_count("conveyor_jolt")
+	if _cans == null:
+		conveyor_running = true
+		return
+	_snd3(str(c.get("sound", "")), _cans.global_position, float(c.get("db", 0.0)))
+	var home: Vector3 = _cans.position
+	var j: float = float(c.get("jolt_m", 0.06))
+	var tw: Tween = _cans.create_tween()
+	tw.tween_property(_cans, "position", home + _cans.transform.basis.z * j + Vector3(0, j * 0.6, 0), 0.07)
+	tw.tween_property(_cans, "position", home - _cans.transform.basis.z * j * 0.5, 0.1)
+	tw.tween_property(_cans, "position", home, 0.18)
+	tw.tween_callback(func() -> void: conveyor_running = true)
+
+
+func _tick_conveyor(delta: float) -> void:
+	if not conveyor_running or _cans == null:
+		return
+	var c: Dictionary = cfg["conveyor_jolt"]
+	var half: float = float(c.get("length", 16.0)) * 0.5
+	var v: float = float(c.get("run_speed", 0.35))
+	for n: Node in _cans.get_children():
+		var nd: Node3D = n as Node3D
+		if nd != null:
+			nd.position.z = wrapf(nd.position.z + v * delta, -half, half)
+
+
+# ================================================================== the radios: U-boat traffic in German, subtitled
+
+func _kinds_setup_radio_chatter() -> void:
+	if not cfg.has("radio_chatter"):
+		return
+	_every("radio", cfg["radio_chatter"], func() -> void: _radio_line(false))
+	debug_kinds["radio"] = func() -> void: _radio_line(true)
+
+
+func _radio_line(force: bool) -> void:
+	var c: Dictionary = cfg["radio_chatter"]
+	var lp: Variant = _listener_pos()
+	var best: Variant = null
+	var bd: float = float(c.get("radius", 9.0))
+	for v: Variant in c.get("radios", []):
+		var p: Vector3 = _v3(v)
+		var d: float = p.distance_to(lp as Vector3) if lp != null else INF
+		if d < bd:
+			bd = d
+			best = p
+	if best == null:
+		if not force or (c.get("radios", []) as Array).is_empty():
+			return
+		best = _v3((c["radios"] as Array)[0])
+	if _radio_bag.is_empty():
+		_radio_bag = (c.get("lines", []) as Array).duplicate()
+		_radio_bag.shuffle()
+	if _radio_bag.is_empty():
+		return
+	var line: String = str(_radio_bag.pop_back())
+	_snd3(str(c.get("static_sound", "")), best as Vector3, float(c.get("static_db", -10.0)))
+	_after(0.5, func() -> void: GLVO.play_local(StringName(line)))
+	_count("radio_line")
+
+
+# ================================================================== the cutter slips into the sea (round 15)
+
+func _kinds_setup_cutter_slip() -> void:
+	if not cfg.has("cutter_slip"):
+		return
+	var c: Dictionary = cfg["cutter_slip"]
+	var rem: Node3D = _named(str(c.get("remnant", "CutterRemnant")))
+	if rem != null:
+		rem.visible = false
+	var late: bool = round_base >= 0 and beat_round(round_now) > int(c.get("round", 15))
+	if late or GameState.has_flag(StringName(str(c.get("flag", "cutter_slipped")))):
+		_cutter_slip(true)
+	_round_fns.append(func(br: int) -> void:
+		if beat_fires(br, c, cutter_slipped):
+			cutter_slipped = true
+			_beat_after(float(c.get("delay", 18.0)), func() -> void:
+				cutter_slipped = false
+				_cutter_slip(false)))
+	debug_kinds["cutter_slip"] = func() -> void: _cutter_slip(false)
+
+
+## The wreck slides off its cradle over the parapet into the sea with a groan and a wave; the cradle, the torn-off
+## wheelhouse and the nets stay on the quay where it lay (over its collider). The host sets the flag the systems
+## worker's sea-stair spawn (`Surf_Cutter`) and the hidden letter read.
+func _cutter_slip(instant: bool) -> void:
+	if cutter_slipped and not instant:
+		return
+	cutter_slipped = true
+	var c: Dictionary = cfg["cutter_slip"]
+	var hull: Node3D = _named(str(c.get("hull", "CutterHull")))
+	var rem: Node3D = _named(str(c.get("remnant", "CutterRemnant")))
+	if rem != null:
+		rem.visible = true
+	var flag: StringName = StringName(str(c.get("flag", "cutter_slipped")))
+	if Net.is_authority() and not GameState.has_flag(flag):
+		GameState.set_flag(flag, true)
+	var sp: Node = _named(str(c.get("spawn", "Surf_Cutter")))
+	if sp != null and sp.get("enabled") != null:
+		sp.set("enabled", true)
+	_count("cutter_slip")
+	if hull == null:
+		return
+	var to_pos: Vector3 = hull.position + _v3(c.get("slide"), Vector3(0, -3.0, -9.0))
+	var tilt: Vector3 = _v3(c.get("tilt"), Vector3(-15, 0, 8))
+	var to_rot: Vector3 = hull.rotation + Vector3(deg_to_rad(tilt.x), deg_to_rad(tilt.y), deg_to_rad(tilt.z))
+	if instant:
+		hull.position = to_pos
+		hull.rotation = to_rot
+		return
+	var secs: float = float(c.get("seconds", 7.0))
+	_snd3(str(c.get("groan_sound", "")), hull.global_position, float(c.get("groan_db", 0.0)))
+	var tw: Tween = hull.create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(hull, "position", to_pos, secs).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	tw.tween_property(hull, "rotation", to_rot, secs).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	var splash: Vector3 = _v3(c.get("splash_at"), Vector3(25, -1.5, -5))
+	_after(secs * 0.72, func() -> void:
+		_snd3(str(c.get("splash_sound", "amb_m2_wave")), splash, 4.0)
+		for k: int in 3:
+			_burst_pool(_mist_pool, _make_mist, splash + Vector3(_rng.randf_range(-3, 3), 0, _rng.randf_range(-1, 1)), 4)
+		_shake_in([[0, -1, -2], [32, 6, 30]], 0.12, 0.0))
+
+
+# ================================================================== wet footprints behind everyone on the wet concrete
+
+func _kinds_setup_footprints() -> void:
+	if not cfg.has("footprints"):
+		return
+	var c: Dictionary = cfg["footprints"]
+	var mx: int = int(c.get("max", 64))
+	var mm: MultiMesh = MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.use_colors = true
+	var pm: PlaneMesh = PlaneMesh.new()
+	var sz: Array = c.get("size", [0.13, 0.3])
+	pm.size = Vector2(float(sz[0]), float(sz[1]))
+	var mat: StandardMaterial3D = StandardMaterial3D.new()
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.vertex_color_use_as_albedo = true
+	mat.roughness = 0.08
+	mat.metallic_specular = 0.7
+	mat.albedo_color = Color(1, 1, 1)
+	pm.material = mat
+	mm.mesh = pm
+	mm.instance_count = mx
+	for i: int in mx:
+		mm.set_instance_transform(i, Transform3D(Basis(), Vector3(0, -100, 0)))
+		mm.set_instance_color(i, Color(0, 0, 0, 0))
+	_fp_mm = MultiMeshInstance3D.new()
+	_fp_mm.name = "Footprints"
+	_fp_mm.multimesh = mm
+	_fp_mm.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(_fp_mm)
+	_fp_mm.global_transform = Transform3D.IDENTITY
+	_fp_life.resize(mx)
+	_fp_life.fill(-1.0)
+	_ticks.append(_tick_footprints)
+
+
+func _tick_footprints(delta: float) -> void:
+	var c: Dictionary = cfg["footprints"]
+	var mm: MultiMesh = _fp_mm.multimesh
+	var life: float = float(c.get("life_s", 18.0))
+	var col: Color = Color(str(c.get("color", "#0b0d0e")))
+	var alpha: float = float(c.get("alpha", 0.5))
+	for i: int in _fp_life.size():
+		if _fp_life[i] < 0.0:
+			continue
+		_fp_life[i] += delta
+		var k: float = 1.0 - _fp_life[i] / life
+		if k <= 0.0:
+			_fp_life[i] = -1.0
+			mm.set_instance_color(i, Color(0, 0, 0, 0))
+		else:
+			mm.set_instance_color(i, Color(col.r, col.g, col.b, alpha * minf(1.0, k * 2.0)))
+	var step: float = float(c.get("step_m", 0.75))
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		var body: CharacterBody3D = n as CharacterBody3D
+		if body == null or not body.is_on_floor():
+			continue
+		var p: Vector3 = body.global_position
+		var wet: bool = false
+		for box: Variant in c.get("wet_boxes", []):
+			if _inside(p, box):
+				wet = true
+				break
+		if not wet:
+			continue
+		var id: int = body.get_instance_id()
+		var last: Array = _fp_last.get(id, [p, 1.0])
+		var lp: Vector3 = last[0]
+		var moved: Vector3 = Vector3(p.x - lp.x, 0, p.z - lp.z)
+		if moved.length() < step:
+			continue
+		var side: float = -float(last[1])
+		_fp_last[id] = [p, side]
+		var fwd: Vector3 = moved.normalized()
+		var right: Vector3 = fwd.cross(Vector3.UP)
+		var at: Vector3 = p + right * side * 0.12 + Vector3(0, 0.012, 0)
+		var basis: Basis = Basis.looking_at(fwd, Vector3.UP)
+		mm.set_instance_transform(_fp_next, Transform3D(basis, at))
+		mm.set_instance_color(_fp_next, Color(col.r, col.g, col.b, alpha))
+		_fp_life[_fp_next] = 0.0
+		_fp_next = (_fp_next + 1) % _fp_life.size()
+		_count("footprint")
+
+
+## How many footprints are showing (the smoke checks the trail).
+func footprints_showing() -> int:
+	var n: int = 0
+	for v: float in _fp_life:
+		if v >= 0.0:
+			n += 1
+	return n
+
+
+# ================================================================== frozen spray: big waves burst over the parapet
+
+func _kinds_setup_frozen_spray() -> void:
+	if not cfg.has("frozen_spray"):
+		return
+	_every("big_wave", cfg["frozen_spray"], _big_wave)
+	debug_kinds["big_wave"] = _big_wave
+
+
+func _big_wave() -> void:
+	var c: Dictionary = cfg["frozen_spray"]
+	var pts: Array = c.get("points", [])
+	if pts.is_empty():
+		return
+	var p: Vector3 = _v3(pts[_rng.randi() % pts.size()]) + Vector3(_rng.randf_range(-1.5, 1.5), 0, 0)
+	_burst_pool(_mist_pool, _make_mist, p, 4)
+	_snd3(str(c.get("sound", "amb_m2_wave")), p, float(c.get("db", -4.0)) + 4.0 * storm_k)
+	_count("big_wave")
+
+
+# ================================================================== fish crates spill when the dead run through
+
+func _kinds_setup_fish_crates() -> void:
+	if not cfg.has("fish_crates"):
+		return
+	for n: Node in get_tree().get_nodes_in_group(StringName(str((cfg["fish_crates"] as Dictionary).get("group", "m2_fish_crates")))):
+		_crates.append({"node": n, "spilled": false})
+	_ticks.append(_tick_crates)
+	debug_kinds["spill"] = func() -> void:
+		for cr: Dictionary in _crates:
+			if not bool(cr["spilled"]):
+				_spill(cr)
+				return
+
+
+func _tick_crates(delta: float) -> void:
+	_crate_tick -= delta
+	if _crate_tick > 0.0 or _crates.is_empty():
+		return
+	var c: Dictionary = cfg["fish_crates"]
+	_crate_tick = float(c.get("check_s", 0.25))
+	var dir: Node = get_tree().get_first_node_in_group(&"director")
+	if dir == null or not dir.has_method("active_zombies"):
+		return
+	var zs: Array = dir.call("active_zombies")
+	if zs.is_empty():
+		return
+	var r: float = float(c.get("radius", 1.1))
+	for cr: Dictionary in _crates:
+		if bool(cr["spilled"]):
+			continue
+		var cp: Vector3 = (cr["node"] as Node3D).global_position
+		for z: Variant in zs:
+			var zp: Vector3 = (z as Node3D).global_position
+			if absf(zp.y - cp.y) < 1.5 and Vector2(zp.x - cp.x, zp.z - cp.z).length() < r:
+				_spill(cr)
+				break
+
+
+## The crate tips over on its edge and the fish and ice slide out across the concrete (tweens, no physics).
+func _spill(cr: Dictionary) -> void:
+	cr["spilled"] = true
+	var g: Node3D = cr["node"]
+	_count("crate_spill")
+	_snd3(str((cfg["fish_crates"] as Dictionary).get("sound", "")), g.global_position, -2.0)
+	var box: Node3D = g.get_node_or_null("Box") as Node3D
+	var away: float = _rng.randf_range(-PI, PI)
+	if box != null:
+		var tw: Tween = box.create_tween()
+		tw.tween_property(box, "rotation", Vector3(deg_to_rad(_rng.randf_range(60, 80)), 0, 0), 0.35).set_trans(Tween.TRANS_BACK)
+	for n: Node in g.get_children():
+		var f: Node3D = n as Node3D
+		if f == null or not String(f.name).begins_with("Fish"):
+			continue
+		var start: Vector3 = f.position
+		var a: float = away + _rng.randf_range(-0.9, 0.9)
+		var end: Vector3 = Vector3(cos(a), 0, sin(a)) * _rng.randf_range(0.5, 1.6)
+		end.y = 0.02
+		var spin: float = _rng.randf_range(-3.0, 3.0)
+		var h: float = _rng.randf_range(0.2, 0.45)
+		var tw2: Tween = f.create_tween()
+		tw2.tween_interval(_rng.randf_range(0.05, 0.25))
+		tw2.tween_method(func(u: float) -> void:
+			f.position = start.lerp(end, u) + Vector3(0, h * 4.0 * u * (1.0 - u), 0)
+			f.rotation.y = spin * u, 0.0, 1.0, _rng.randf_range(0.35, 0.6))
+
+
+# ================================================================== the storm scales with the tide
+
+func _kinds_setup_storm() -> void:
+	if not cfg.has("storm"):
+		return
+	var c: Dictionary = cfg["storm"]
+	var sea: MeshInstance3D = _named(str(c.get("sea_node", "SeaWater"))) as MeshInstance3D
+	if sea != null and sea.material_override is ShaderMaterial:
+		_sea_mat = sea.material_override as ShaderMaterial
+	_dock_mat = _dock_material(str(c.get("dock_node", "TideWater")))
+	for n: Node in get_parent().find_children("*", "OmniLight3D", true, false):
+		if n is LightningFlash:
+			var lf: LightningFlash = n as LightningFlash
+			_lightnings.append([lf, lf.every_s, lf.peak_energy])
+	for n2: Node in get_tree().get_nodes_in_group(StringName(str(c.get("rain_group", "m2_rain_glass")))):
+		var mi: GeometryInstance3D = n2 as GeometryInstance3D
+		if mi != null and mi.material_override is ShaderMaterial:
+			_rain_mats.append(mi.material_override as ShaderMaterial)
+	# the tide's signals (contract C2) when the systems worker's TideController emits them; else poll its level
+	if GLBus.has_signal(&"tide_stage"):
+		GLBus.connect(&"tide_stage", func(stage: StringName) -> void: _on_tide_stage(stage))
+	if GLBus.has_signal(&"spring_tide"):
+		GLBus.connect(&"spring_tide", func(_r: int) -> void: _on_tide_stage(&"spring"))
+	if GLBus.has_signal(&"tide_flood_end"):
+		GLBus.connect(&"tide_flood_end", func() -> void: _storm_target = minf(_storm_target, float(c.get("after_flood", 0.4))))
+	_tide_node = get_parent().find_child(str(c.get("tide_node", "Tide")), true, false)
+	_ticks.append(_tick_storm)
+	_apply_storm()
+	debug_kinds["storm_spring"] = func() -> void: _on_tide_stage(&"spring")
+	debug_kinds["storm_calm"] = func() -> void: _on_tide_stage(&"low")
+
+
+func _on_tide_stage(stage: StringName) -> void:
+	tide_stage_name = stage
+	_storm_target = storm_level_for(stage, cfg)
+	_count("tide_stage")
+
+
+## The pens' water material, made unique to this map the first time (the storm and the pumps' drain set it).
+func _dock_material(node_name: String) -> ShaderMaterial:
+	if _dock_mat != null:
+		return _dock_mat
+	var w: MeshInstance3D = _named(node_name) as MeshInstance3D
+	if w == null or not (w.material_override is ShaderMaterial):
+		return null
+	w.material_override = (w.material_override as ShaderMaterial).duplicate()
+	_dock_mat = w.material_override as ShaderMaterial
+	return _dock_mat
+
+
+func _tick_storm(delta: float) -> void:
+	if tide_stage_name == &"" and _tide_node != null:
+		_tide_poll -= delta
+		if _tide_poll <= 0.0:
+			_tide_poll = 1.0
+			var lv: Variant = _tide_node.get("level")
+			if lv != null:
+				_storm_target = storm_level_for_y(float(lv), cfg)
+	var before: float = storm_k
+	storm_k = move_toward(storm_k, _storm_target, delta * float((cfg["storm"] as Dictionary).get("ease_per_s", 0.08)))
+	if storm_k != before:
+		_apply_storm()
+
+
+func _apply_storm() -> void:
+	var c: Dictionary = cfg["storm"]
+	var k: float = storm_k
+	if _sea_mat != null:
+		var sa: Array = c.get("sea_amp", [0.45, 0.95])
+		_sea_mat.set_shader_parameter("amp", lerpf(float(sa[0]), float(sa[1]), k))
+	if _dock_mat != null:
+		var da: Array = c.get("dock_amp", [0.18, 0.42])
+		_dock_mat.set_shader_parameter("amp", lerpf(float(da[0]), float(da[1]), k))
+	var le: Array = c.get("lightning_every", [[12, 28], [4, 10]])
+	var lpk: Array = c.get("lightning_peak", [1.0, 1.6])
+	for e: Array in _lightnings:
+		var lf: LightningFlash = e[0]
+		if not is_instance_valid(lf):
+			continue
+		var a: Array = le[0]
+		var b: Array = le[1]
+		lf.every_s = Vector2(lerpf(float(a[0]), float(b[0]), k), lerpf(float(a[1]), float(b[1]), k))
+		lf.peak_energy = float(e[2]) * lerpf(float(lpk[0]), float(lpk[1]), k)
+	var rn: Array = c.get("rain", [0.35, 1.0])
+	for m: ShaderMaterial in _rain_mats:
+		m.set_shader_parameter("intensity", lerpf(float(rn[0]), float(rn[1]), k))
+
+
+# ================================================================== the power-on spectacle
+
+func _kinds_setup_power_spectacle() -> void:
+	if not cfg.has("power_spectacle"):
+		return
+	var c: Dictionary = cfg["power_spectacle"]
+	var sweep: Dictionary = c.get("sweep", {})
+	if not sweep.is_empty():
+		for n: Node in get_tree().get_nodes_in_group(&"power_lights"):
+			var l: Light3D = n as Light3D
+			if l != null and str(l.get_meta("zone", "")) == str(sweep.get("zone", "D_PENHALL")):
+				l.set_meta("sweep_delay", sweep_delay_for(l.global_position, sweep))
+	_dock_material(str(c.get("drain_node", "TideWater")))
+	if GameState.power_on:
+		drain_now = float(c.get("drain_m", 0.4))
+		_apply_drain()
+	_power_fns.append(_power_spectacle)
+	_ticks.append(_tick_drain)
+	debug_kinds["power"] = _power_spectacle
+
+
+func _power_spectacle() -> void:
+	var c: Dictionary = cfg["power_spectacle"]
+	_count("power_spectacle")
+	# the pumps thunder
+	for v: Variant in c.get("pumps", []):
+		_snd3(str(c.get("pump_sound", "")), _v3(v) + Vector3(0, 1.2, 0), float(c.get("pump_db", 2.0)))
+	var lp: Variant = _listener_pos()
+	if lp != null:
+		for v2: Variant in c.get("pumps", []):
+			if (lp as Vector3).distance_to(_v3(v2)) < float(c.get("shake_radius", 30.0)):
+				_shake(float(c.get("shake", 0.25)))
+				break
+	_count("pumps_thunder")
+	_count("docks_drain")
+	# the perks wake one after another with a sting of their jingle, in the sweep's order
+	var from: Vector3 = _v3((c.get("sweep", {}) as Dictionary).get("from"), Vector3(48, 0, 70))
+	var ps: Dictionary = c.get("perk_stings", {})
+	var ms: Array = get_tree().get_nodes_in_group(&"perk_machines")
+	ms.sort_custom(func(a: Node, b: Node) -> bool: return (a as Node3D).global_position.distance_to(from) < (b as Node3D).global_position.distance_to(from))
+	var t: float = float(ps.get("start_s", 3.0))
+	for m: Node in ms:
+		var mm: Node3D = m as Node3D
+		_after(t, func() -> void: _perk_sting(mm))
+		t += float(ps.get("gap_s", 0.6))
+	# U-1047's interior: the red battle lanterns give way to the white lamps
+	_after(float(c.get("uboat_delay", 3.2)), _uboat_white)
+
+
+func _tick_drain(delta: float) -> void:
+	var c: Dictionary = cfg["power_spectacle"]
+	var target: float = float(c.get("drain_m", 0.4)) if GameState.power_on else 0.0
+	if is_equal_approx(drain_now, target):
+		return
+	drain_now = move_toward(drain_now, target, delta * float(c.get("drain_m", 0.4)) / maxf(0.5, float(c.get("drain_s", 10.0))))
+	_apply_drain()
+
+
+func _apply_drain() -> void:
+	if _dock_mat != null:
+		_dock_mat.set_shader_parameter("level_offset", -drain_now)
+
+
+func _perk_sting(m: Node3D) -> void:
+	if not is_instance_valid(m):
+		return
+	var ps: Dictionary = (cfg["power_spectacle"] as Dictionary).get("perk_stings", {})
+	var key: String = "jingle_" + str(m.get("perk_id"))
+	_count("perk_sting")
+	if not AudioDirector.has_sound(key):
+		return
+	var p: AudioStreamPlayer3D = AudioDirector.play_3d(key, m.global_position + Vector3.UP * 1.6, float(ps.get("db", -4.0)), 0.0)
+	if p == null:
+		return
+	var stream: AudioStream = p.stream
+	var secs: float = float(ps.get("seconds", 2.6))
+	var tw: Tween = create_tween()
+	tw.tween_interval(secs)
+	tw.tween_method(func(db: float) -> void:
+		if is_instance_valid(p) and p.stream == stream:
+			p.volume_db = db, p.volume_db, -50.0, 0.6)
+	tw.tween_callback(func() -> void:
+		if is_instance_valid(p) and p.stream == stream:
+			p.stop())
+
+
+func _uboat_white() -> void:
+	var c: Dictionary = cfg["power_spectacle"]
+	var box: Variant = c.get("uboat_box", [])
+	var to: float = float(c.get("uboat_red_to", 0.15))
+	for n: Node in get_parent().find_children("*", "OmniLight3D", true, false):
+		var l: OmniLight3D = n as OmniLight3D
+		if l.light_color.r < 0.8 or l.light_color.g > 0.4 or not _inside(l.global_position, box):
+			continue
+		var e0: float = _light_e(l)
+		var tw: Tween = l.create_tween()
+		tw.tween_method(func(e: float) -> void: _set_light_e(l, e), e0, e0 * to, 1.6)
+	_count("uboat_white")

@@ -73,13 +73,17 @@ func setup_fighters(c: Dictionary, ctrl: Array[Vector3], secs: float, seed_v: in
 	var span: float = float(c.get("wingspan", 1.9))
 	for i: int in 2:
 		var p: MeshInstance3D = MeshInstance3D.new()
-		p.mesh = PlaneModels.fighter()
+		p.mesh = PlaneModels.mosquito() if str(c.get("model", "")) == "mosquito" else PlaneModels.fighter()   # T-154
 		p.scale = Vector3.ONE * span
 		p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		p.set_meta("lag", float(i))
 		add_child(p)
 		planes.append(p)
 	var b: Array = c.get("bursts", [2, 5])
+	if planes.size() > int(c.get("count", 2)):   # T-154: the json may ask for one plane
+		for k: int in range(planes.size() - 1, int(c.get("count", 2)) - 1, -1):
+			planes[k].queue_free()
+			planes.remove_at(k)
 	_bursts_left = _rng.randi_range(int(b[0]), int(b[1]))
 	_burst_t = _rng.randf_range(1.0, 3.0)
 	_engine(str(c.get("sound", "")), float(c.get("volume_db", 0.0)), float(c.get("unit_size", 45.0)), float(c.get("max_distance", 700.0)), planes[0])

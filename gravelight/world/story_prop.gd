@@ -21,6 +21,9 @@ const LEATHER: String = "paint:#3a2416"
 
 @export var intel_id: StringName = &""
 @export var style: String = "letter"
+## UPDATE 10 (T-154): story_props.json "hidden_until_flag": the item is invisible and can't be read until that
+## GameState flag is set (Totenhafen's sailor's letter, under the cutter until it slips into the sea at round 15).
+@export var hidden_until_flag: StringName = &""
 
 var title: String = "Story item"
 var row: Dictionary = {}
@@ -35,6 +38,7 @@ static func spawn_all(map: Node3D, map_key: String) -> int:
 		var p: StoryProp = StoryProp.new()
 		p.intel_id = StringName(str(e.get("id", "")))
 		p.style = str(e.get("style", "letter"))
+		p.hidden_until_flag = StringName(str(e.get("hidden_until_flag", "")))
 		p.name = "Story_" + String(p.intel_id)
 		var pos: Array = e.get("position", [0.0, 0.0, 0.0])
 		if pos.size() >= 3:
@@ -68,6 +72,20 @@ func _ready() -> void:
 		interact_size = Vector3(0.7, 0.35, 0.6)
 		interact_offset = Vector3(0, 0.1, 0)
 	super._ready()
+	if hidden_until_flag != &"":
+		visible = GameState.has_flag(hidden_until_flag)
+		GLBus.flag_changed.connect(func(f: StringName, v: Variant) -> void:
+			if f == hidden_until_flag:
+				visible = bool(v))
+
+
+## Shown and readable (a hidden_until_flag item only once its flag is set).
+func revealed() -> bool:
+	return hidden_until_flag == &"" or GameState.has_flag(hidden_until_flag)
+
+
+func can_interact(player: Player) -> bool:
+	return revealed() and super.can_interact(player)
 
 
 func build_greybox() -> void:
@@ -85,6 +103,8 @@ func build_greybox() -> void:
 
 
 func get_prompt(_player: Player) -> String:
+	if not revealed():
+		return ""
 	return "Hold [%s] to read: %s" % [prompt_key(&"interact"), title]
 
 
