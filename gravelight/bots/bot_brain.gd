@@ -1207,6 +1207,15 @@ func _reachable(p: Vector3) -> bool:
 	return not path.is_empty() and path[path.size() - 1].distance_to(dest) < 1.5
 
 
+## T-153: a stand point found below the object (the dy fallbacks) must not be on the storey underneath it: a floor
+## slab between them (Totenhafen's signal tower stands over the north catwalk) means the object can't be used from
+## there, so the closed door to its own floor is what is in the way.
+func _same_storey(s: Vector3, base: Vector3) -> bool:
+	if base.y - s.y < 1.0:
+		return true
+	return los_point(Vector3(s.x, base.y + 0.3, s.z), s + Vector3.UP * 0.5)
+
+
 func reachable(p: Vector3) -> bool:
 	return _reachable(p)
 
@@ -1257,7 +1266,7 @@ func stand_point(node: Node3D) -> Vector3:
 	for cand: Vector3 in cands:
 		for dy: float in [0.0, -1.5, -3.0]:
 			var s: Vector3 = snap(cand + Vector3(0.0, dy, 0.0))
-			if _flat(s, base) < 1.8 and base.y - s.y < 3.2 and s.y - base.y < 1.2 and _reachable(s):
+			if _flat(s, base) < 1.8 and base.y - s.y < 3.2 and s.y - base.y < 1.2 and _same_storey(s, base) and _reachable(s):
 				out = s
 				break
 		if out != Vector3.INF:

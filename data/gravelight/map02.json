@@ -665,7 +665,7 @@
     "bench_yaw": 0.0
   },
   "letzte_fahrt": {
-    "_doc": "Letzte Fahrt's world objects (C3, design section 2, T-153). radios: the three code-group radios (cannery office, workshop bench, U-1047's radio room). cipher: the SCHLUESSELGERAET HAFEN rotor machine in the signal tower. log_spots: two seeded spots per page. diesels: the three holdouts. key_slot: the ignition in the tower's chart room. curtain_lever: on pier 2's end. boat: the sail (sail_seconds; board_points; the deck box the holdout counts as on board). boss_docks: where DER KIELHOLER surfaces.",
+    "_doc": "Letzte Fahrt's world objects (C3, design section 2, T-153). radios: the three code-group radios (cannery office, workshop bench, U-1047's radio room). cipher: the SCHLUESSELGERAET HAFEN rotor machine in the signal tower. log_spots: two seeded spots per page. diesels: the three holdouts. key_slot: the ignition in the tower's chart room. curtain_lever: on pier 2's end. boat: the sail (sail_seconds; board_points; the deck box the holdout counts as on board). boss_docks: where DER KIELHOLER surfaces. T-153 fix: the cipher machine stands mid-room facing the north windows (it stood across window W_G_N1).",
     "radios": {
       "radio_cannery": [
         -3.0,
@@ -687,10 +687,10 @@
       ]
     },
     "cipher": [
-      45.0,
+      45.6,
       7.0,
-      33.7,
-      180.0
+      35.6,
+      0.0
     ],
     "teletype_tray": [
       50.2,

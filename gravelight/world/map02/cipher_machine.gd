@@ -22,8 +22,9 @@ var _paper: Label3D
 
 
 func _ready() -> void:
-	interact_size = Vector3(0.4, 0.6, 0.4)
-	interact_offset = Vector3(0.55, 1.1, 0)
+	# the lever's use box is the front panel under the wheels (its offset points the bots' stand point to the front)
+	interact_size = Vector3(0.9, 0.25, 0.2)
+	interact_offset = Vector3(0, 0.85, -0.42)
 	super._ready()
 	add_to_group(&"cipher_machines")
 	for i: int in 3:
@@ -60,7 +61,7 @@ func build_greybox() -> void:
 		add_child(disc)
 	_lever = Node3D.new()
 	_lever.name = "Lever"
-	_lever.position = Vector3(0.55, 1.05, 0)
+	_lever.position = Vector3(0.45, 0.8, -0.4)
 	add_child(_lever)
 	add_box(_lever, Vector3(0.04, 0.32, 0.04), Vector3(0, 0.16, 0), brass)
 	add_box(_lever, Vector3(0.08, 0.08, 0.08), Vector3(0, 0.34, 0), greybox_mat(Color(0.5, 0.1, 0.08)))

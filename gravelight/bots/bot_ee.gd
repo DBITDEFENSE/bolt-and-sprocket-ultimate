@@ -1014,7 +1014,9 @@ func _blocking_door(goal: Vector3) -> BuyDoor:
 			break
 	if dest == Vector3.INF:
 		return null
-	var path: PackedVector3Array = NavigationServer3D.map_get_path(nav, player.global_position, dest, true, brain.squad.nav_mask())
+	# T-153: over every layer: a zone behind a closed door is not in the squad's mask, so a masked path never reaches it
+	# and the door in the way was never found (Totenhafen gives every zone its own layer)
+	var path: PackedVector3Array = NavigationServer3D.map_get_path(nav, player.global_position, dest, true, 0x7FFFFFFF)
 	if path.is_empty() or path[path.size() - 1].distance_to(dest) > 1.5:
 		return null
 	var best: BuyDoor = null

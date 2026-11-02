@@ -81,7 +81,12 @@ func _diag() -> void:
 	var busy: PackedStringArray = []
 	for b2: BotBrain in _map.squad.brains:
 		if b2.ee != null and b2.ee.active():
-			busy.append("p%d=%s/%s" % [b2.player.player_id, b2.ee.task.get("sid", ""), b2.ee.task.get("type", "")])
+			var pl: Dictionary = b2.ee.get("_plan") as Dictionary
+			var pn: Node3D = pl.get("node") as Node3D if pl.get("node") is Node3D and is_instance_valid(pl.get("node")) else null
+			busy.append("p%d=%s/%s do=%s at %s%s prog=%s" % [b2.player.player_id, b2.ee.task.get("sid", ""), b2.ee.task.get("type", ""),
+				str(pl.get("do", "")), str(b2.player.global_position.snapped(Vector3.ONE * 0.1)),
+				(" -> %s %.1f m" % [pn.name, pn.global_position.distance_to(b2.player.global_position)]) if pn != null else "",
+				str(QuestManager.progress(QUEST, StringName(str(b2.ee.task.get("sid", "")))))])
 	print("[%s]   %.1f min r%d power=%s loaded=%s dumped=%s | %s | busy %s" % [tag, _game_t / 60.0, RoundManager.current_round,
 		GameState.power_on, GameState.flags.get(&"ballast_loaded", 0), GameState.flags.get(&"ballast_dumped", 0), ", ".join(parts), ", ".join(busy)])
 
