@@ -89,6 +89,9 @@ func setup_tables() -> void:
 	]
 	# the yard's two leap points (the Jumpjockeys' landings; Catwalk_C_YARD_n)
 	catwalks = [["C_YARD", Vector3(-30, 0, 100), true], ["C_YARD", Vector3(30, 0, 100), true]]
+	# UPDATE 10 §3 (T-158): the hall's two leap points (the Moon's leapers come down from above: MoonLowG)
+	for hc: Array in (_u10_table().get("low_g", {}) as Dictionary).get("hall_catwalks", []):
+		catwalks.append(["E_HALL", Vector3(float(hc[0]), float(hc[1]), float(hc[2])), true])
 	perks = [
 		["second_wind", Vector3(8.0, 0, 22.6), 180.0],
 		["skyhook_sekt", Vector3(-11.3, 0, 30.0), 90.0], ["magpie_mead", Vector3(11.3, 0, 30.0), -90.0],
@@ -172,6 +175,7 @@ func _yard() -> void:
 	for b: Array in BOULDERS:
 		box(geo, "Rim_Boulder", b[0], b[1], "rim")
 	box(geo, "Rim_DishBase", Vector3(32, 0, 98), Vector3(38, 2.2, 104), "rim")
+	_crater_ring()   # UPDATE 10 §3 (T-158): the yard's crater, crossed by a jump pad
 	# the edge: a tall invisible wall over the rim keeps the slow jumps inside the yard
 	for e: Array in [[Vector3(-42.5, RIM_H, 60), Vector3(-42, 40, 112)], [Vector3(42, RIM_H, 60), Vector3(42.5, 40, 112)], [Vector3(-42.5, RIM_H, 112), Vector3(42.5, 40, 112.5)],
 			[Vector3(-42.5, CEIL_B, 59.5), Vector3(-12, 40, 60)], [Vector3(12, CEIL_D, 59.5), Vector3(42.5, 40, 60)], [Vector3(-12.3, CEIL_B + 0.3, 59.5), Vector3(12.3, 40, 60)]]:
@@ -627,6 +631,7 @@ func _dress_yard() -> void:
 	_smile()
 	_air_post_dressing(Vector3(-24, 0, 84))
 	_air_post_dressing(Vector3(24, 0, 84))
+	_dress_crater(rng)   # UPDATE 10 §3 (T-158)
 	_dome_caps()
 	_shadow_shells()
 	# the yard's light: the Sun (the scene's Moon node, set in gameplay_extra), earthshine, the smile's glow
@@ -1285,6 +1290,7 @@ func build_gameplay_extra() -> void:
 		var dn: Node = gameplay.get_node_or_null(str(dd[0]))
 		if dn != null:
 			dn.set("art_style", &"steel")
+	_u10_act4(table)   # UPDATE 10 §3 (T-158): the heaters, the mast, the pads, the hall's leap points, the shaft grate, the tag slot
 	_presentation()
 
 
@@ -1344,3 +1350,94 @@ func _presentation() -> void:
 		cells.append({"name": str(cdef[0]), "aabb": AABB(lo, hi - lo), "show": PackedStringArray(cdef[3]), "moon": true})
 	vc.set("cells", cells)
 	map_root.add_child(vc)
+
+
+# ================================================================== UPDATE 10 §3 Act IV (T-158)
+
+func _u10_table() -> Dictionary:
+	var t: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/map04d.json"))
+	return t if t is Dictionary else {}
+
+
+## The crater's rim points (bearing from +Z toward +X), minus the gaps.
+func _crater_points() -> Array:
+	var c: Dictionary = (_u10_table().get("low_g", {}) as Dictionary).get("crater", {})
+	var out: Array = []
+	if c.is_empty():
+		return out
+	var ca: Array = c.get("center", [-31.0, 0.0, 79.0])
+	var ctr: Vector3 = Vector3(float(ca[0]), 0.0, float(ca[2]))
+	var r: float = float(c.get("radius", 5.5))
+	var n: int = int(c.get("segments", 12)) * 2
+	var gw: float = float(c.get("gap_width_deg", 50.0)) * 0.5
+	for i: int in n:
+		var b: float = 360.0 * float(i) / float(n)
+		var in_gap: bool = false
+		for g: Variant in c.get("gaps_deg", []):
+			var d: float = absf(fposmod(b - float(g) + 180.0, 360.0) - 180.0)
+			if d < gw:
+				in_gap = true
+		if not in_gap:
+			out.append([ctr + Vector3(sin(deg_to_rad(b)), 0.0, cos(deg_to_rad(b))) * r, b])
+	return out
+
+
+## The crater's rim: overlapping blocks round the bowl (the collider and the navmesh's cut), a gap toward the yard.
+func _crater_ring() -> void:
+	var c: Dictionary = (_u10_table().get("low_g", {}) as Dictionary).get("crater", {})
+	var h: float = float(c.get("rim_h", 2.4))
+	for e: Array in _crater_points():
+		var p: Vector3 = e[0]
+		box(geo, "Rim_Crater", p - Vector3(1.0, 0.0, 1.0), p + Vector3(1.0, h, 1.0), "rim")
+
+
+## The crater's dressing: a dark bowl, slumped rim slabs over the blocks, ejecta on the regolith round it.
+func _dress_crater(rng: RandomNumberGenerator) -> void:
+	var c: Dictionary = (_u10_table().get("low_g", {}) as Dictionary).get("crater", {})
+	if c.is_empty():
+		return
+	var ca: Array = c.get("center", [-31.0, 0.0, 79.0])
+	var ctr: Vector3 = Vector3(float(ca[0]), 0.0, float(ca[2]))
+	var r: float = float(c.get("radius", 5.5))
+	var h: float = float(c.get("rim_h", 2.4))
+	var g: Node3D = Props.group(dress, "Crater", ctr)
+	D.cyl(g, Vector3(0, 0.012, 0), r - 0.9, 0.02, "rim_rock")
+	D.cyl(g, Vector3(0, 0.03, 0), r * 0.45, 0.02, "dm_steel_dark")
+	for e: Array in _crater_points():
+		var p: Vector3 = (e[0] as Vector3) - ctr
+		var b: float = float(e[1])
+		var sz: Vector3 = Vector3(2.3, h * rng.randf_range(0.85, 1.1), 1.6)
+		var rk: MeshInstance3D = D.ball(g, p + Vector3(0, h * 0.42, 0), sz, "rim_rock")
+		rk.rotation = Vector3(deg_to_rad(rng.randf_range(-10, 10)), deg_to_rad(b), deg_to_rad(rng.randf_range(-8, 8)))
+		var out: Vector3 = p.normalized() * (r + 1.6 + rng.randf_range(0.0, 2.0))
+		var ej: MeshInstance3D = D.ball(g, out + Vector3(0, 0.12, 0), Vector3(0.9, 0.35, 0.7) * rng.randf_range(0.6, 1.3), "rim_rock")
+		ej.rotation.y = rng.randf_range(0, TAU)
+	D.text(g, "CRATER 7  ·  KEEP TO THE MARKED PADS", Vector3(r + 0.9, 1.6, 0), -90.0, 22, Color(0.85, 0.82, 0.9, 0.85), 0.6)
+
+
+func _u10_act4(table: Dictionary) -> void:
+	# the relay heaters' breaker (the act's power-on) on the concourse's north wall by the yard airlock
+	var hc: Dictionary = table.get("heaters", {})
+	var ha: Array = hc.get("at", [-7.5, 0.0, 59.55])
+	_node("res://gravelight/world/map04/heater_switch.gd", "HeaterSwitch", {}, Vector3(float(ha[0]), float(ha[1]), float(ha[2])), float(hc.get("yaw", 0.0)))
+	# the relay mast's beacon over the dish foundation (the strut tops at 6.5 m over the 2.2 m base)
+	_node("res://gravelight/world/map04/relay_mast.gd", "RelayMast", {}, Vector3(35.0, 9.4, 101.0))
+	# the terminator (its wall and the Sun's swing; configured by the controller from map04d.json)
+	_node("res://gravelight/world/map04/terminator.gd", "Terminator", {}, Vector3.ZERO)
+	# the jump pads
+	var lg: Dictionary = table.get("low_g", {})
+	for pd: Dictionary in lg.get("pads", []):
+		var at: Array = pd.get("at", [0, 0, 0])
+		var to: Array = pd.get("to", [0, 0, 0])
+		_node("res://gravelight/world/map04/jump_pad.gd", str(pd.get("name", "JumpPad")), {"target": Vector3(float(to[0]), float(to[1]), float(to[2])),
+			"flight_s": float(pd.get("flight_s", 3.0)), "zone_id": StringName(str(pd.get("zone", "")))}, Vector3(float(at[0]), float(at[1]), float(at[2])))
+	# the Account's floor vent over the vacuum shaft and its lever
+	var sg: Dictionary = table.get("shaft_grate", {})
+	if not sg.is_empty():
+		var gp: Array = sg.get("grate", [28.0, 0.0, -21.0])
+		var lp: Array = sg.get("lever", [15.05, 0.0, -24.0])
+		var grate: Node3D = _node("res://gravelight/world/map04/shaft_grate.gd", "ShaftGrate", {"radius": float(sg.get("radius_m", 2.4))}, Vector3(float(gp[0]), float(gp[1]), float(gp[2])))
+		var lev: Node3D = _node("res://gravelight/world/map04/shaft_grate_lever.gd", "ShaftGrateLever", {}, Vector3(float(lp[0]), float(lp[1]), float(lp[2])), float(sg.get("lever_yaw", -90.0)))
+		lev.set("grate_path", lev.get_path_to(grate))
+	# Pohl's tag slot on the console's dais (the favour's end: ExtraPerson "pohl")
+	_node("res://gravelight/world/map04/tag_slot.gd", "TagSlot", {"person_id": "pohl"}, Vector3(26.2, 0.0, -29.2), 90.0)

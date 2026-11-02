@@ -151,6 +151,8 @@ func leap(z: Zombie, to: Vector3) -> void:
 	z.external_push(v, air + 0.2)
 	if not z.is_pushed():
 		return
+	z.velocity.y = v.y   # Zombie._update_push only takes a push's vertical on a state's first frame: the take-off here
+
 	var d: Dictionary = leapers.get(z, {"cd": 0.0, "airborne": false, "hp0": z.hp, "air_t": 0.0})
 	d["airborne"] = true
 	d["hp0"] = z.hp

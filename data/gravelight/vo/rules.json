@@ -783,7 +783,8 @@
     "M0_EGG_DONE": 2,
     "M0_EGG_TONICS": 2,
     "MARKE_FIRST": 2,
-    "SQD_RISE": 2
+    "SQD_RISE": 2,
+    "M4D_EARTH": 2
   },
   "squad_second_channel": [
     "TEAM_DOWN",

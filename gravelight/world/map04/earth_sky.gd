@@ -290,3 +290,8 @@ func go_dark_blue() -> void:
 	var tw: Tween = create_tween()
 	tw.tween_property(mat, "albedo_color", Color(float(a[0]), float(a[1]), float(a[2]), 0.55), 8.0 / maxf(0.01, Campaign.cutscene_speed))
 	print("[m4d] the Earth goes dark blue")
+
+
+## Captures (capture.gd `call:EarthSky:capture_violet`): the spread at its cap before any cancel step.
+func capture_violet() -> void:
+	set_spread(float(cfg.get("spread_cap", 0.6)))

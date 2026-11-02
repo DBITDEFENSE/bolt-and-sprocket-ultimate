@@ -184,3 +184,8 @@ func drop(z: Zombie) -> void:
 func _fall_fx(at: Vector3) -> void:
 	Effects.shatter(at + Vector3.UP * 0.6, Color(0.72, 0.45, 1.0), 16, 4.0)
 	AudioDirector.play_3d("m4d_vent_fall", at + Vector3.UP, 2.0)
+
+
+## Captures (capture.gd `call:ShaftGrate:capture_open`): the vent held open for the shot.
+func capture_open() -> void:
+	open_for(30.0)

@@ -263,14 +263,23 @@ func _update_zones() -> void:
 			dir.call("set_spawn_boost", StringName(z), float(cfg.get("shadow_spawn_mult", 1.5)) if night else 1.0)
 		if night and not crossed.has(z):
 			crossed.append(z)
-			_cross_line(z)
+			_cross_line(z, spoke_this_tick)
+			spoke_this_tick = true
+	spoke_this_tick = false
 
 
-func _cross_line(z: String) -> void:
+var spoke_this_tick: bool = false
+var crossings_spoken: int = 0
+
+
+## A zone falls into night: its flag; the Operator's line, one per crossing (zones crossed in the same moment, as
+## after a skip, share one line so they don't flood the story channel).
+func _cross_line(z: String, quiet: bool = false) -> void:
 	var ids: Array = cfg.get("vo_cross", [])
-	if not ids.is_empty():
+	if not ids.is_empty() and not quiet:
 		GLVO.play(StringName(str(ids[_vo_i % ids.size()])))
 		_vo_i += 1
+		crossings_spoken += 1
 	print("[m4d] the terminator crosses %s (s %.1f)" % [z, s])
 	GameState.set_flag(StringName("night_%s" % z.to_lower()))
 
@@ -328,3 +337,12 @@ func debug_progress(t: float) -> void:
 	var to: float = lerpf(float(cfg.get("from_s", -80.0)), float(cfg.get("to_s", 66.0)), clampf(t, 0.0, 1.0))
 	set_target(to, true)
 	_update_zones()
+
+
+## Captures (capture.gd `call:Terminator:capture_dusk`): the line part-way over the yard / most of the relay dark.
+func capture_dusk() -> void:
+	debug_progress(0.4)
+
+
+func capture_night() -> void:
+	debug_progress(0.75)
