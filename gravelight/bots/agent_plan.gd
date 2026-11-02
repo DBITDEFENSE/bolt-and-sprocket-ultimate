@@ -444,7 +444,31 @@ static func errand_for(step: Dictionary, brain: BotBrain) -> Dictionary:
 
 
 ## The trainer's bonus for a loop: plan_bonus for the plan's first open choice, less for the later ones.
+## U10 (T-163) pure: the plan's loop order now. `train_at_after` rows ({"step": egg step id, "order": [...]}) take
+## over once their step is done (`done`: step id -> true): Kaltenbrunn's egg moves underground from the Core Vault on
+## (the Chapel, the Lab, the Core), and the agent kept training on the Headframe 90 m above it, the squad strung out
+## between the floors.
+static func train_order(plan: Dictionary, done: Dictionary) -> Array:
+	var order: Array = plan.get("train_at", [])
+	for row: Variant in (plan.get("egg", {}) as Dictionary).get("train_at_after", []):
+		if bool(done.get(str((row as Dictionary).get("step", "")), false)):
+			order = (row as Dictionary).get("order", order)
+	return order
+
+
+static func _done_steps_of(plan: Dictionary) -> Dictionary:
+	var out: Dictionary = {}
+	var q: StringName = StringName(str((plan.get("egg", {}) as Dictionary).get("quest", "")))
+	if q == &"" or not QuestManager.quest_ids().has(q):
+		return out
+	for st: Variant in QuestManager.steps_of(q):
+		var sid: StringName = StringName(str((st as Dictionary)["id"]))
+		if QuestManager.is_step_done(q, sid):
+			out[String(sid)] = true
+	return out
+
+
 static func loop_bonus(map_key: String, route_id: String, bonus: float) -> float:
-	var order: Array = plan_for(map_key).get("train_at", [])
+	var order: Array = train_order(plan_for(map_key), _done_steps_of(plan_for(map_key)))
 	var i: int = order.find(route_id)
 	return 0.0 if i < 0 else bonus / float(i + 1)

@@ -87,6 +87,14 @@ func test_errand_window_rule() -> void:
 	assert_false(BotTrainer.errand_window_rule(false, 0, false, 1, 20.0, 3, true, tcfg), "a real break is a break already")
 
 
+func test_train_order_follows_the_egg_underground() -> void:
+	var plan: Dictionary = AgentPlan.plan_for("map01")
+	assert_eq(str(AgentPlan.train_order(plan, {})[0]), "map01_headframe", "early: the Headframe")
+	var later: Array = AgentPlan.train_order(plan, {"s0_power": true, "s1_vault": true})
+	assert_eq(str(later[0]), "map01_turbines", "the vault open: underground, by the Chapel, the Lab and the Core")
+	assert_true(later.has("map01_headframe"), "the Headframe stays a fallback")
+
+
 # ---------------------------------------------------------------- the agent's plan before the egg in a break
 
 func test_buy_first_rule() -> void:

@@ -212,6 +212,8 @@
       "egg": {
         "_doc": "U08 (T-131): the agent works the Requiem (BotEEHub.pick_for as the player): from round 2 once the Rail Yard is open, in the breaks; after Ironhide also mid-round when nothing is near. The Chapel bell (s4) needs a Crucible-taught gun, so the plan gets one after the StG-44.",
         "quest": "map01_requiem",
+        "train_at_after": [{"step": "s1_vault", "order": ["map01_turbines", "map01_pews", "map01_headframe"]}],
+        "_train_at_after_doc": "U10 (T-163): from the Core Vault on, the egg is underground (the Chapel, the Lab, the Core): train there (AgentPlan.train_order).",
         "after": [
           {
             "door": "door_a_b"

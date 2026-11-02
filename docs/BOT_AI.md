@@ -1132,3 +1132,67 @@ onto the navmesh, stands 20 m from the start and has a path to it).
   holds together, split up under doubled spawns and were all downed with the round held open.
 - **Ballast v2:** carriers are limited to melee and the pistol (`WeaponHolder.set_carry_limit`), bots included.
 - **Smoke:** `smoke_letzte_fahrt` (three bots on Full Partner, the human following; the forcing is in its header).
+
+## 14. UPDATE 10 section 7 (T-163): the Kaltenbrunn egg, the round's end, Totenhafen
+
+What stopped the bots on "Requiem for Kaltenbrunn" after U08 (T-131), found with `--egg-from` soaks (below), and
+what changed. All of it is bot behaviour: no round, health, spawn count or human price moved.
+
+**Rounds that never ended.** Three causes, three rules:
+- *Crawlers left behind.* The agent FACEs a train it can no longer see (dead-reckoned crawlers far back on the loop)
+  while backing round the loop, never fires, and the crawlers never catch up. **The round-end hunt**
+  (`BotTrainer.hunt_pick`, player_bot.json `trainer.hunt_*`): nothing left to spawn, at most 3 up, nothing on its
+  feet within 8 m for 5 s (a crawler at once) -> the agent walks to the nearest one, knifes a crawler, shoots a
+  walker from 12 m, and from 3.5 m once its health hasn't dropped for 4 s (a Foreman wedged in a fence corner took
+  every round on the rail).
+- *A straggler nobody can reach.* A Foreman stuck on Kaltenbrunn's rail-yard fence line (x 41) has a navmesh path to
+  us and we to it, and neither gets closer. The game recycles such a zombie after 40 s of no progress
+  (enemies.json `no_progress_respawn_seconds`), but a hunter walking up and down the fence kept resetting that timer
+  (round 12 open for 30 game minutes). Now a straggler the hunter gets no nearer to and no shot reaches for 8 s is
+  left alone for 60 s (`BotSquad.mark_unreachable`; the agent's hunt and the squad's T-058 hunt both skip it), and
+  the game takes it.
+- *The agent's errands.* With bot teammates there is no crawler break, and a 10-15 s break never covered an 83 m
+  walk (the Lab door, Pylon H behind it): the agent sat on 12,000-22,000 Scrip with an MP40 at round 12. **The errand
+  window** (`BotTrainer.errand_window_rule`): bot teammates standing, nothing left to spawn, at most 2 zombies up,
+  none within 8 m, and an affordable plan step or an open egg step -> `BotBrain.in_break()` is true for the agent
+  and `lead_train` steps back; the stragglers are the squad's hunt. A purchase errand's timeout also counts the walk
+  (3.5 m/s past 20 m), and in a break the plan's affordable perk / gun / door goes before egg work
+  (`AgentPlan.buy_first`: the U08 agent spent every break on the pylons and drank Ironhide at round 13).
+
+**The egg steps.**
+- s1 pylons, s2a radios, s3 parts: worked already; Full Partner now always takes an open main-egg step before a
+  side quest (ee.json `scores.main_quest` 100: the Song's cylinders used to draw a bot off).
+- s4 the Chapel bell + the Foreman: `full_partner: ["shoot"]` in the bot_task lets a Full Partner bot with a
+  Crucible gun light the bell unasked (BotEECatalog.stage_allowed). While it is lit, every free bot joins the Chapel
+  hold (`BotEEHub.rally_now`), and nobody shoots the Foreman until it is inside F_CHAPEL (`BotEEHub.kill_zone_for`
+  reads any armed zone + world-flag kill condition; `BotAim.hold_fire_for_zone`, self-defence inside 3 m): it was
+  shot on its way in and the step failed.
+- s6 the Four Bells: shots are counted per bell and per vantage; 8 unanswered rounds -> another angle (3 at most).
+  `vantage_for` now tests the line with the guns' own blockers (world, doors, decor), not the sight mask: the
+  specimen-tank bell sits between copper pipes on the decor layer and was "in sight" from spots whose every round
+  hit them.
+- s7 Herr Tamtam: `full_partner: ["trigger"]` (a missed chase only resets the step) and `pause_pressure: 0.85` let a
+  Full Partner bot keep pulling the crate (the drummer comes after 4-12 pulls at one spot); Full Partner's "nothing
+  to do" cancel now needs 150 s of continuous waiting, not one wait moment in a task older than that (it cancelled
+  the pull series between two offers).
+- s8b: a Full Partner bot takes the Totenglocke and farms the charge (worked once the rounds ended). Every player
+  may also take a built wonder from its bench now (`BotEconomy.wonder_wanted`: tier over the worst gun held + 0.5,
+  or a free slot; the agent's plan never holds it back): four Totenglocken from s3 on.
+- s9 the Heartstorm: the agent starts it (T-131); no bot feeds the Crucible while the shard slot or the Heartstorm
+  start is ready there (a forging gun hides them).
+
+**PAUL (T-159) and other bosses.** The `paul` counter is live: from rage 34 the bots break the nearest IV bottle
+they can see (-20 rage each; `BotAim.paul_aim_node`), the neck from behind (x2), wide spacing against the Charge and
+the Leap Slam, break_grab. A bot held by any boss grab knifes the grabber (`BotAim.break_free`: the held player's own
+"mash"); teammates shoot it off (break_grab). `der_kielholer` (Totenhafen) has its counter (the helmet glass, spread
+against the 9 m chain sweep, out of the 2.2 m dock-edge grab).
+
+**Soaking one step.** `tools/ai_soak.sh ... --egg-from=<step>` completes the main egg up to that step with the world
+effects of the skipped ones (a flag step's flag, the power, the Core Vault, the bench build, the music box's melody);
+pair it with `--open-doors=all --give=stg44_up,ironhide_stout --start-round=12`. EGG_DEBUG prints every plan change,
+each crate pull (with the location's use count) and "no hit ... another angle"; the trace shows `hunt` / `hunt!` as
+the trainer's phase.
+
+**Tests.** `test_bot_u10_eggs.gd` (the hunt and its give-up, the errand window, buy-first, the main-egg score order,
+stage_allowed and the Requiem's full_partner data, the task pause threshold, hold-fire and the rally, wonder_wanted,
+the Kielholer counter, break_free, the soak switch).
