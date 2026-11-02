@@ -3099,9 +3099,11 @@ func _a3_towers_setup() -> void:
 		var beam: MeshInstance3D = MeshInstance3D.new()
 		var bc: CylinderMesh = CylinderMesh.new()
 		var ln: float = float(sec.get("beam_len", 70.0))
-		bc.top_radius = 0.5
-		bc.bottom_radius = 4.5
+		bc.top_radius = 4.5      # light_beam: the source at -Y (the lamp), the wide end at +Y
+		bc.bottom_radius = 0.5
 		bc.height = ln
+		bc.radial_segments = 16
+		bc.rings = 1
 		bc.cap_top = false
 		bc.cap_bottom = false
 		beam.mesh = bc
@@ -3109,10 +3111,17 @@ func _a3_towers_setup() -> void:
 		beam.position = Vector3(0, 0, -ln * 0.5)
 		var bmat: ShaderMaterial = ShaderMaterial.new()
 		bmat.shader = sh
+		bmat.set_shader_parameter("color", Vector3(0.78, 0.8, 0.88))
+		bmat.set_shader_parameter("intensity", float(sec.get("intensity", 0.22)))
+		bmat.set_shader_parameter("length_falloff", 1.3)
+		bmat.set_shader_parameter("edge_power", 3.0)
+		bmat.set_shader_parameter("near_fade", 6.0)
 		beam.material_override = bmat
 		beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		beam.extra_cull_margin = 20.0
 		beam.visible = false
 		pivot.add_child(beam)
+		beam.set_instance_shader_parameter("beam_len", ln)   # without it the shaft collapses to a ring mid-beam
 		var sl: SpotLight3D = SpotLight3D.new()
 		sl.light_color = Color(0.95, 0.95, 1.0)
 		sl.light_energy = 0.0
