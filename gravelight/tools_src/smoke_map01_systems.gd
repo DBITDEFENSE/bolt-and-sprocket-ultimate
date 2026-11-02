@@ -79,7 +79,11 @@ func _run() -> void:
 	for n: Node in _g("").get_children():
 		if n is PerkMachine:
 			perks += 1
-	_check(perks == 9, "9 perk machines placed")
+	var want_perks: int = 0   # one cabinet per perk plate in machine_lore.json (T-141 added Ledger Lager: 10)
+	for k: String in (GLData.table("machine_lore")["maps"]["map01_kaltenbrunn"]["entries"] as Dictionary).keys():
+		if k.begins_with("perk."):
+			want_perks += 1
+	_check(perks == want_perks, "%d perk machines placed (machine_lore says %d)" % [perks, want_perks])
 
 	# --- Lab door needs power
 	var lab: BuyDoor = _g("Door_Lab") as BuyDoor
