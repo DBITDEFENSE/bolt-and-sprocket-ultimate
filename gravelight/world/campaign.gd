@@ -329,7 +329,29 @@ static func travel(payload: Dictionary, tree: SceneTree) -> void:
 		Net.travel(scene, payload)
 		return
 	tree.paused = false
-	LoadingScreen.go(tree, scene, String(target))   # T-144: the next map's art, a tip, a lore line; it awaits MapPacks.ensure (T-139)
+	# T-144: the next map's art, a tip, a lore line (U10 §3, T-157: the transition's own line when it has one, e.g. the
+	# Kranich's crash II -> III and the rocket III -> IV); it awaits MapPacks.ensure (T-139)
+	LoadingScreen.go(tree, scene, String(target), LoadingScreen.transition_line(str(payload.get("from", "")), String(target)))
+
+
+## U10 §3 (T-157, polish item 6): the next act's scene starts loading on a thread while the exfil cutscene plays, so
+## the loading card only has to wait for what is left (the LoadingScreen and a co-op change_scene pick it up). Not on
+## the web build while its packs are still being fetched (MapPacks.ensure runs first there).
+static var preloading: String = ""
+
+
+static func preload_next(target: StringName) -> bool:
+	var scene: String = scene_for(target)
+	if scene == "" or not scene_exists(target) or MapPacks.pending():
+		return false
+	if preloading == scene:
+		return true
+	# master's T-158 mechanism holds the request (LoadingScreen.preloaded): one threaded load, never two
+	if not LoadingScreen.preload_scene(scene):
+		return false
+	preloading = scene
+	print("[campaign] preloading %s during the cutscene" % scene)
+	return true
 
 
 ## Before the new map's MapRoot runs: the squad composition it will rebuild (bots, skill, survivors).
