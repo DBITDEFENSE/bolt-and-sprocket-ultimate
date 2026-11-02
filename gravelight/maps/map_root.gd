@@ -123,8 +123,14 @@ func _ready() -> void:
 		GameState.power_on = true
 		GLBus.power_activated.emit.call_deferred()
 	AudioDirector.start_ambient()
+	ZoneAmbience.attach(self)   # T-145: per-zone beds + one-shots when data/gravelight/ambience/<map>.json exists
 	(func() -> void: LampGlow.attach(self)).call_deferred()   # lamp glass dims with its light (T-057)
 	ShadowProxies.build(self)   # the static batches' shadows drawn from a few merged depth meshes (T-070)
+	var sb: Node = get_node_or_null("StaticBatches")
+	if sb != null:   # T-145: batches split into ViewCells visibility groups get proxies per group (hidden with it)
+		for vg: Node in sb.get_children():
+			if vg.has_meta("vis_group"):
+				ShadowProxies.build(self, "StaticBatches/" + String(vg.name))
 	if GLSettings.is_compat():   # T-139: the browser / Compatibility profile (no SDFGI / SSIL / SSR / volumetrics, capped shadows)
 		print("[WebProfile] %s: %s" % [map_id, str(WebProfile.apply(self))])
 		(func() -> void: WebProfile.apply(self)).call_deferred()   # again for what spawns deferred (intel, lamp glow)

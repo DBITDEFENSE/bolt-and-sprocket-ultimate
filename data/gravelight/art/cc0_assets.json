@@ -487,6 +487,142 @@
       "key": "snow",
       "note": "clean wind-packed snow: the Grounds, the near terrain (replaces snow_02, whose twig marks read as cracks, T-093)",
       "tile_m": 2.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "concrete_wall_004",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "m2_bunker",
+      "note": "Totenhafen: the bunker walls, the 3 m face, the pens (U09 s5, T-145)",
+      "tile_m": 2.5
+    },
+    {
+      "source": "polyhaven",
+      "id": "concrete_floor_worn_001",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "m2_floor",
+      "note": "Totenhafen: worn concrete floors: the quay, the aprons, the workshop (T-145)",
+      "tile_m": 3.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "dirty_concrete",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "m2_pier",
+      "note": "Totenhafen: pier sides and kerbs, stained by the tide (T-145)",
+      "tile_m": 2.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "metal_grate_rusty",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "m2_grate",
+      "note": "Totenhafen: catwalk grating, treads (T-145)",
+      "tile_m": 1.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "metal_plate",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "m2_zinc",
+      "note": "Totenhafen: zinc gutting tables, brine tanks (T-145)",
+      "tile_m": 1.5
+    },
+    {
+      "source": "polyhaven",
+      "id": "rusty_painted_metal",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "m2_hull",
+      "note": "Totenhafen: U-1047 and the cutter hull plating, the curtain (T-145)",
+      "tile_m": 2.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "corrugated_iron",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "m2_corrugated",
+      "note": "Totenhafen: tin roofs and sheds (T-145)",
+      "tile_m": 1.5
+    },
+    {
+      "source": "ambientcg",
+      "id": "DiamondPlate008A",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "m2_diamond",
+      "note": "Totenhafen: deck plates, the dais, the boat interior floor (T-145)",
+      "tile_m": 1.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "barrel_stove",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "Totenhafen: the infirmary stove (T-145)"
+    },
+    {
+      "source": "polyhaven",
+      "id": "lifebuoy",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "Totenhafen: life rings on the quay and the piers (T-145)"
+    },
+    {
+      "source": "polyhaven",
+      "id": "metal_toolbox",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "Totenhafen: the workshop tool wall and bench (T-145)"
+    },
+    {
+      "source": "polyhaven",
+      "id": "portable_welding_cart",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "Totenhafen: the welding bench (T-145)"
+    },
+    {
+      "source": "polyhaven",
+      "id": "metal_jerrycan",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "Totenhafen: fuel cans on the quay and the apron (T-145)"
+    },
+    {
+      "source": "polyhaven",
+      "id": "propane_tank",
+      "kind": "model",
+      "res": "1k",
+      "tex_px": 512,
+      "note": "Totenhafen: gas bottles at the welding bench (T-145)"
     }
   ]
 }

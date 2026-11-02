@@ -319,6 +319,91 @@
       ],
       "tris": 88,
       "place": "the woodshed's logs (low-poly filler)"
+    },
+    "stove_barrel": {
+      "path": "res://assets/third_party/polyhaven/barrel-stove/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.593,
+        0.856,
+        0.593
+      ],
+      "tris": 2500,
+      "target_tris": 2500,
+      "place": "Totenhafen: the infirmary stove (T-145)",
+      "decimated": "Blender collapse to 2500 (tools/decimate_props.py)"
+    },
+    "life_ring": {
+      "path": "res://assets/third_party/polyhaven/lifebuoy/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.783,
+        0.841,
+        0.155
+      ],
+      "tris": 1498,
+      "target_tris": 1500,
+      "place": "Totenhafen: life rings on the quay, the piers and the cutter (T-145)",
+      "decimated": "Blender collapse to 1500 (tools/decimate_props.py)"
+    },
+    "toolbox_metal": {
+      "path": "res://assets/third_party/polyhaven/metal-toolbox/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.4,
+        0.347,
+        0.292
+      ],
+      "tris": 1498,
+      "target_tris": 1500,
+      "place": "Totenhafen: the workshop bench and tool wall (T-145)",
+      "decimated": "Blender collapse to 1500 (tools/decimate_props.py)"
+    },
+    "welding_cart": {
+      "path": "res://assets/third_party/polyhaven/portable-welding-cart/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.838,
+        1.563,
+        0.655
+      ],
+      "tris": 4000,
+      "over_budget": true,
+      "target_tris": 4000,
+      "place": "Totenhafen: the welding bench (T-145)",
+      "decimated": "Blender collapse to 4000 (tools/decimate_props.py)"
+    },
+    "jerrycan": {
+      "path": "res://assets/third_party/polyhaven/metal-jerrycan/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.35,
+        0.455,
+        0.172
+      ],
+      "tris": 1200,
+      "target_tris": 1200,
+      "place": "Totenhafen: fuel cans on the quay and the apron (T-145)",
+      "decimated": "Blender collapse to 1200 (tools/decimate_props.py)"
+    },
+    "propane_tank": {
+      "path": "res://assets/third_party/polyhaven/propane-tank/model.glb",
+      "scale": 1.0,
+      "pivot": "base",
+      "size_m": [
+        0.337,
+        0.554,
+        0.337
+      ],
+      "tris": 1500,
+      "target_tris": 1500,
+      "place": "Totenhafen: gas bottles at the welding bench (T-145)",
+      "decimated": "Blender collapse to 1500 (tools/decimate_props.py)"
     }
   }
 }

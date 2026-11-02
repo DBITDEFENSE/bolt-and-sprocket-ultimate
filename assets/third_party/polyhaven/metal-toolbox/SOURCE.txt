@@ -1,0 +1,10 @@
+Title: Metal Toolbox
+Authors: Mateusz Sadek
+Source: https://polyhaven.com/a/metal_toolbox
+File: https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/metal_toolbox/metal_toolbox_1k.gltf; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/metal_toolbox/metal_toolbox_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/metal_toolbox/metal_toolbox_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/metal_toolbox/metal_toolbox_arm_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/metal_toolbox/metal_toolbox.bin
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Metal Toolbox" by Mateusz Sadek (Poly Haven), CC0. Modified: glTF packed to GLB, textures converted to PNG and resized.
+Format: GLB (metres, +Y up) with external PNG textures at <= 512 px
+Poly Haven id: metal_toolbox
+Downloaded: 2026-11-01 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: model.glb, textures/metal_toolbox_nor_gl.png, textures/metal_toolbox_diff.png, textures/metal_toolbox_arm.png

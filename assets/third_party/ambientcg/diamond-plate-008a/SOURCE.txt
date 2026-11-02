@@ -1,0 +1,12 @@
+Title: Diamond Plate 008 A
+Authors: ambientCG.com (Lennart Demes)
+Source: https://ambientcg.com/a/DiamondPlate008A
+File: https://ambientcg.com/get?file=DiamondPlate008A_1K-JPG.zip
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Diamond Plate 008 A" from ambientCG.com, CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 1k (albedo, normal OpenGL +Y, ORM at 1k)
+Tile size: see the asset page
+ambientCG id: DiamondPlate008A
+Library key: m2_diamond
+Downloaded: 2026-11-01 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: textures/DiamondPlate008A_albedo.png, textures/DiamondPlate008A_normal.png, textures/DiamondPlate008A_orm.png

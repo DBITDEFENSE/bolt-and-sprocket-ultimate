@@ -159,6 +159,10 @@ func _make_looping(s: AudioStream) -> void:
 			w.loop_mode = AudioStreamWAV.LOOP_FORWARD
 			w.loop_begin = 0
 			w.loop_end = int(w.get_length() * float(w.mix_rate))
+	elif s is AudioStreamOggVorbis:   # T-145: Totenhafen's zone beds are OGG
+		(s as AudioStreamOggVorbis).loop = true
+	elif s is AudioStreamMP3:
+		(s as AudioStreamMP3).loop = true
 
 
 func _pick(sound_name: String) -> AudioStream:

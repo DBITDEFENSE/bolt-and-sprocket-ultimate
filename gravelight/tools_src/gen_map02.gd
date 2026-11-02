@@ -131,16 +131,20 @@ const AMMO_BOXES: Array = [
 ]
 
 ## Greybox colour keys -> material library keys.
+## U09 s5 (T-145): the CC0 library sets (materials.json m2_*: form-board concrete, worn and wet floors, tide-stained
+## pier sides, grating, tread plate, painted hull plating, corrugated and tarred roofs) instead of the one noise.
 const MAT_MAP: Dictionary = {
-	"wall": "bunker_concrete", "concrete": "bunker_concrete", "ground": "wet_concrete", "pier": "pier_concrete",
-	"metal": "iron", "steel": "steel", "rust": "rust", "furniture": "furniture", "rock": "bunker_concrete",
-	"hull": "u_hull", "hull_in": "u_interior", "lead": "lead", "rail": "iron", "deck": "steel_grate", "stairs": "bunker_concrete",
-	"roof": "bunker_concrete", "planks": "planks", "zinc": "zinc", "cliff": "cliff", "shingle": "shingle", "grey": "grey_paint",
+	"wall": "m2_bunker", "concrete": "m2_bunker", "ground": "m2_floor", "pier": "m2_pier",
+	"metal": "iron", "steel": "steel", "rust": "rust", "furniture": "furniture", "rock": "m2_bunker",
+	"hull": "m2_hull", "hull_in": "u_interior", "lead": "lead", "rail": "iron", "deck": "m2_grate", "stairs": "m2_bunker",
+	"roof": "m2_corrugated", "planks": "planks", "zinc": "m2_zinc", "cliff": "cliff", "shingle": "shingle", "grey": "grey_paint",
 }
 const MAT_RULES: Array = [
-	["CanneryRoof", "roof"], ["WorkshopRoof", "roof"], ["HutRoof", "concrete"], ["Pier*", "pier_concrete"], ["Apron*", "wet_concrete"],
-	["Basin*", "pier_concrete"], ["Catwalk*", "steel_grate"], ["TowerFloor", "bunker_concrete"], ["Pens*", "wet_concrete"],
-	["Gangway", "steel_grate"], ["HullDeck*", "steel_grate"], ["Hatch*", "steel_grate"],
+	["CanneryRoof", "m2_corrugated"], ["WorkshopRoof", "m2_corrugated"], ["HutRoof", "m2_tarred"], ["Pier*", "m2_pier"],
+	["Apron*", "m2_floor_wet"], ["Basin*", "m2_pier"], ["Catwalk*", "m2_grate"], ["TowerFloor", "m2_floor"], ["PensFloor", "m2_floor_wet"],
+	["Pens*", "m2_bunker_wet"], ["StairW", "m2_bunker_wet"], ["Gangway", "m2_grate"], ["HullDeck*", "m2_tread"], ["Hatch*", "m2_grate"],
+	["HallRoof", "m2_bunker_wet"], ["HallW*", "m2_bunker_wet"], ["HallE*", "m2_bunker_wet"], ["Passage*", "m2_floor_wet"],
+	["SwitchDais", "m2_tread"],
 ]
 ## Greybox visuals replaced by dressing (colliders stay).
 const HIDE: Array = [
@@ -164,6 +168,37 @@ const STOVES: Array = [["Workshop", Vector3(61.0, 0, 27.8), 90.0], ["WorkshopNW"
 ## other maps): [floor position against the wall, yaw so local -Z faces the quay]. On the harbourmaster's hut's
 ## south face, east of its window and sign, facing the spawn.
 const ARMORERS_BENCH: Array = [Vector3(16.3, 0, 17.0 + T * 0.5 + 0.01), 180.0]
+## Visibility groups (U09 s5, T-145; ViewCells): a static mesh, light, label or decal belongs to the first box that
+## holds its centre (dressing built by a zone's _dress_* function carries that zone's group as meta "vis" and skips
+## the boxes); anything in no box is "ALL" and always drawn. "DH" is the hall round U-1047's hatch and tower: the
+## part of the hall the boat's interior sees up through the open hatch.
+const VIS_BOXES: Array = [
+	["E", Vector3(4.0, -6.0, 37.3), Vector3(10.0, 0.62, 86.7)],
+	["G", Vector3(41.0, 6.5, 32.9), Vector3(52.4, 11.7, 38.4)],
+	["F", Vector3(31.9, -6.5, 42.0), Vector3(52.1, -0.35, 84.7)],
+	["DH", Vector3(-4.0, 0.62, 50.0), Vector3(18.0, 13.5, 76.0)],
+	["D", Vector3(-23.5, -9.0, 33.0), Vector3(55.5, 13.5, 100.0)],
+	["B", Vector3(-34.0, -1.0, -0.4), Vector3(0.16, 9.0, 30.0)],
+	["C", Vector3(31.84, -1.0, -0.4), Vector3(66.0, 9.0, 30.0)],
+	["A", Vector3(0.16, -1.0, -14.0), Vector3(31.84, 14.0, 30.0)],
+]
+const VIS_ZONE: Dictionary = {"A": "A_QUAY", "B": "B_CANNERY", "C": "C_WORKSHOP", "D": "D_PENHALL", "DH": "D_PENHALL",
+	"E": "E_UBOAT", "F": "F_LOWERPENS", "G": "G_SIGNAL"}
+## Where the camera stands -> what it can see (tested in order; outside every cell everything is drawn). The quay
+## sees the cannery and the workshop through their doors and windows but not the hall (the 3 m bunker face has
+## only window closets there); the cannery and the workshop see the hall through their pen passages; the boat's
+## interior sees nothing outside but the hatch's column of the hall; the lower pens and the tower see the hall.
+const VIEW_CELLS: Array = [
+	["E_interior", Vector3(4.3, -2.7, 38.2), Vector3(9.7, 0.6, 85.9), ["E", "DH"], false],
+	["E_hatch", Vector3(0.0, 0.6, 50.0), Vector3(14.0, 9.0, 74.0), ["A", "B", "C", "D", "DH", "E", "F", "G"], false],
+	["F", Vector3(31.9, -6.5, 42.0), Vector3(52.1, -0.4, 84.7), ["F", "D", "DH"], false],
+	["G", Vector3(42.1, 6.6, 33.1), Vector3(51.9, 11.0, 37.9), ["G", "D", "DH"], false],
+	["passages", Vector3(-11.2, -0.5, 29.8), Vector3(45.2, 4.0, 33.2), ["A", "B", "C", "D", "DH", "F", "G"], false],
+	["D", Vector3(-20.2, -6.5, 33.0), Vector3(52.2, 13.0, 100.0), ["D", "DH", "A", "B", "C", "F", "G"], false],
+	["B", Vector3(-30.2, -1.0, -0.2), Vector3(0.0, 8.0, 29.85), ["B", "A", "C", "D", "DH"], true],
+	["C", Vector3(32.0, -1.0, -0.2), Vector3(62.2, 8.0, 29.85), ["C", "A", "B", "D", "DH"], true],
+	["A", Vector3(0.0, -1.0, -16.0), Vector3(32.0, 16.0, 29.85), ["A", "B", "C"], true],
+]
 const POWER_GAIN: float = 2.2
 const LAMP_GAIN: float = 1.7
 
@@ -226,6 +261,8 @@ func _process(_delta: float) -> bool:
 	build_gameplay()
 	_prune(dress)
 	_prune(geo)
+	_tag_visibility(map_root)
+	_add_view_cells()
 	_own(map_root)
 	var packed: PackedScene = PackedScene.new()
 	var err: int = packed.pack(map_root)
@@ -589,7 +626,11 @@ func build_quay() -> void:
 	# the cliffs either side of the harbour and the breakwater
 	box(geo, "CliffW", Vector3(-110, -9, -60), Vector3(-30 - T, 46, 30), "cliff", false)
 	box(geo, "CliffE", Vector3(62 + T, -9, -60), Vector3(150, 46, 30), "cliff", false)
-	box(geo, "CliffBack", Vector3(-110, -9, 30), Vector3(150, 46, 33), "cliff", false)
+	# the headland behind the harbour, kept off the bunker's faces (it was coplanar with the 3 m face and MassAbove and
+	# z-fought them: the face read as the cliff's blue noise, U09 audit 4.1)
+	box(geo, "CliffBack", Vector3(-110, -9, 30), Vector3(-34.2, 46, 33), "cliff", false)
+	box(geo, "CliffBackE", Vector3(66.2, -9, 30), Vector3(150, 46, 33), "cliff", false)
+	box(geo, "CliffBackTop", Vector3(-34.2, 30.2, 30), Vector3(66.2, 46, 33), "cliff", false)
 	box(geo, "Breakwater", Vector3(-20, -3, -46), Vector3(90, 1.6, -42), "pier", false)
 
 
@@ -954,7 +995,7 @@ func emergency(p: Vector3, yaw: float, energy: float = 0.9, range_: float = 9.0,
 
 ## Floodlight on a bracket aimed at `aim`; lens glow and a cold spot come on with the zone's power.
 func flood(zone: String, p: Vector3, aim: Vector3, spot_range: float = 30.0, spot_energy: float = 5.0, angle: float = 38.0,
-		color: Color = MERCURY) -> void:
+		color: Color = MERCURY, key_shadow: bool = false) -> void:
 	var dir: Vector3 = (aim - p).normalized()
 	var up: Vector3 = Vector3.UP if absf(dir.y) < 0.95 else Vector3.FORWARD
 	var basis: Basis = Basis.looking_at(dir, up)
@@ -969,7 +1010,7 @@ func flood(zone: String, p: Vector3, aim: Vector3, spot_range: float = 30.0, spo
 	gg.transform = g.transform
 	G(zone).add_child(gg)
 	_noshadow(Props.block(gg, Vector3(-0.29, -0.22, -0.085), Vector3(0.29, 0.22, -0.06), "flood_glass"))
-	power(zone, p + dir * 0.9, 4.0, 0.15, color, false, {"dir": dir, "range": spot_range, "energy": spot_energy, "angle": angle, "color": color})
+	power(zone, p + dir * 0.9, 4.0, 0.15, color, false, {"dir": dir, "range": spot_range, "energy": spot_energy, "angle": angle, "color": color, "shadow": key_shadow})
 
 
 ## Flat radial stain projected downward.
@@ -1020,6 +1061,11 @@ func _pole_lamp(zone: String, p: Vector3) -> void:
 	B(p + Vector3(-0.2, 0, -0.2), p + Vector3(0.2, 0.12, 0.2), "iron")
 	Props.strut(dress, p + Vector3(0, 4.1, 0), p + Vector3(0.9, 4.4, 0), 0.07, "iron", true)
 	Props.cone(dress, p + Vector3(0.9, 4.28, 0), 0.36, 0.26, "enamel_green")
+	CYL(p + Vector3(0.9, 4.44, 0), 0.06, 0.08, "iron")   # T-145: the fixture's cap, a wire cage round the bulb
+	for a: float in [0.0, 90.0, 180.0, 270.0]:
+		var o: Vector3 = Vector3(cos(deg_to_rad(a)), 0, sin(deg_to_rad(a))) * 0.13
+		Props.strut(dress, p + Vector3(0.9, 4.18, 0) + o, p + Vector3(0.9, 3.98, 0) + o * 0.4, 0.012, "iron", true)
+	CYL(p + Vector3(0.9, 4.18, 0), 0.14, 0.02, "iron")
 	_noshadow(Props.ball(dress, p + Vector3(0.9, 4.12, 0), Vector3(0.14, 0.16, 0.14), "bulb_off"))
 	_noshadow(Props.ball(G(zone), p + Vector3(0.9, 4.12, 0), Vector3(0.16, 0.18, 0.16), "bulb_warm"))
 	power(zone, p + Vector3(0.9, 3.9, 0), 13.0, 1.1, SODIUM)
@@ -1241,7 +1287,12 @@ func _dress_water() -> void:
 	pm2.subdivide_width = 60
 	pm2.subdivide_depth = 30
 	sea.mesh = pm2
-	sea.material_override = Mats.get_mat("sea_water")
+	var rough: ShaderMaterial = (Mats.get_mat("sea_water") as ShaderMaterial).duplicate() as ShaderMaterial
+	rough.set_shader_parameter("amp", 0.55)   # T-145: the Baltic in a storm off the quay, whitecaps on the swell
+	rough.set_shader_parameter("chop", 1.6)
+	rough.set_shader_parameter("speed", 1.4)
+	rough.set_shader_parameter("foam", Color(0.72, 0.78, 0.8))
+	sea.material_override = rough
 	sea.position = Vector3(16, -2.0, -75)
 	sea.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	sea.set_meta("keep", true)
@@ -1263,13 +1314,21 @@ func _dress_water() -> void:
 
 func build_dressing() -> void:
 	_dress_water()
-	_dress_quay()
-	_dress_cannery()
-	_dress_workshop()
-	_dress_penhall()
-	_dress_uboat()
-	_dress_lowerpens()
-	_dress_tower()
+	_tagged(_dress_quay, "A")
+	_tagged(_dress_cannery, "B")
+	_tagged(_dress_workshop, "C")
+	_tagged(_dress_penhall, "")   # the hall's pieces span D and DH: they take their group from where they stand
+	_tagged(_dress_uboat_hull, "DH")
+	_tagged(_dress_uboat, "E")
+	_tagged(_dress_lowerpens, "F")
+	_tagged(_dress_tower, "G")
+	_tagged(_dress_u09_quay, "A")
+	_tagged(_dress_u09_cannery, "B")
+	_tagged(_dress_u09_workshop, "C")
+	_tagged(_dress_u09_penhall, "")
+	_tagged(_dress_u09_uboat, "E")
+	_tagged(_dress_u09_lowerpens, "F")
+	_tagged(_dress_u09_tower, "G")
 	_dress_windows()
 	_dress_doors()
 	_dress_treads()
@@ -1277,6 +1336,46 @@ func build_dressing() -> void:
 	_dress_readability()
 	_dress_weather()
 	_dress_light()
+
+
+## Runs a dressing function and marks every top-level node it added under Dressing with meta "vis" = `g` (the
+## visibility group its pieces belong to, whatever box their centre falls in). `g` "" leaves them to the boxes.
+func _tagged(fn: Callable, g: String) -> void:
+	var before: int = dress.get_child_count()
+	var lights_before: int = _static_lights.size()
+	var power_before: int = _power.size()
+	var spots_before: int = _spots.size()
+	fn.call()
+	if g == "":
+		return
+	for i: int in range(before, dress.get_child_count()):
+		dress.get_child(i).set_meta("vis", g)
+	for i2: int in range(lights_before, _static_lights.size()):
+		_static_lights[i2]["vis"] = g
+	for i3: int in range(power_before, _power.size()):
+		_power[i3]["vis"] = g
+	for i4: int in range(spots_before, _spots.size()):
+		_spots[i4]["vis"] = g
+
+
+## The visibility group of a point (the first VIS_BOXES box holding it; "ALL" when none).
+func _vis_box(p: Vector3) -> String:
+	for vb: Array in VIS_BOXES:
+		var lo: Vector3 = vb[1]
+		var hi: Vector3 = vb[2]
+		if p.x >= lo.x and p.x <= hi.x and p.y >= lo.y and p.y <= hi.y and p.z >= lo.z and p.z <= hi.z:
+			return str(vb[0])
+	return "ALL"
+
+
+## A node's group: the nearest "vis" meta up its parents, else the box of `p` (its world centre).
+func _vis_of(n: Node, p: Vector3) -> String:
+	var q: Node = n
+	while q != null and q != map_root:
+		if q.has_meta("vis"):
+			return str(q.get_meta("vis"))
+		q = q.get_parent()
+	return _vis_box(p)
 
 
 ## Lighting pass (T-063): the light that is there before the pumps run, each from a source you can see. Moonlight
@@ -1293,8 +1392,9 @@ func _dress_light() -> void:
 		moon_window(id2, 0.6)
 	for id3: String in ["W_D_N1", "W_D_N2", "W_D_N3"]:
 		moon_window(id3, 0.8)
-	for mx: float in [-10.0, 7.0, 26.0, 42.0]:
-		shaft("SeaLight_Mouth", Vector3(mx, 1.9, 97.0), Vector3(mx, -0.8, 52.0), SEALIGHT, 10.0, 60.0, 38.0, 1.0)
+	# T-145: two wider sea shafts instead of four 60 m ones (C4: <= 6 shadowed lights in D)
+	for mx: float in [0.0, 33.0]:
+		shaft("SeaLight_Mouth", Vector3(mx, 1.9, 97.0), Vector3(mx, -0.8, 54.0), SEALIGHT, 13.0, 48.0, 46.0, 1.0)
 	# lanterns the dockers left burning: warm pools between the dark stretches (on tables, crates, the floor)
 	for hp: Vector3 in [Vector3(-7.0, 0.95, 19.0), Vector3(-4.0, 1.0, 4.8), Vector3(-12.5, 1.2, 26.0), Vector3(-26.5, 0, 16.5),
 			Vector3(40.5, 1.3, 14.5), Vector3(58.5, 1.3, 6.0), Vector3(55.0, 0, 29.6), Vector3(50.0, 1.3, 8.5),
@@ -1307,7 +1407,7 @@ func _dress_light() -> void:
 func _dress_quay() -> void:
 	# wet patches, trodden snow, drifts in the corners
 	for r: Array in [[1.0, 9.5, 2.0, 9.0], [19.0, 31.5, 9.0, 29.0], [0.5, 9.5, 18.0, 29.5]]:
-		_noshadow(B(Vector3(float(r[0]), 0.0, float(r[2])), Vector3(float(r[1]), 0.012, float(r[3])), "snow_trodden", false))
+		_noshadow(B(Vector3(float(r[0]), 0.0, float(r[2])), Vector3(float(r[1]), 0.012, float(r[3])), "m2_floor_wet", false))   # T-145: wet patches (the trodden-snow set read as camouflage)
 	for d: Array in [[Vector3(1.2, 0, 28.5), Vector3(3.0, 0.5, 2.4)], [Vector3(30.5, 0, 28.6), Vector3(2.6, 0.5, 2.2)],
 			[Vector3(14, 0, 9.4), Vector3(8.0, 0.35, 1.0)], [Vector3(4.0, 0, 0.9), Vector3(5.0, 0.45, 1.4)]]:
 		Props.snow_drift(dress, d[0], d[1])
@@ -1327,7 +1427,7 @@ func _dress_quay() -> void:
 	# the harbourmaster's hut: window, lamp, sign, stove pipe, the desk and log inside, the Kar98k chalk wall
 	for wp: Array in [[Vector3(14, 0, 9.85), 180.0], [Vector3(14, 0, 17.15), 0.0]]:
 		var g: Node3D = Props.group(dress, "HutWindow", wp[0], float(wp[1]))
-		Props.block(g, Vector3(-0.6, 1.1, -0.02), Vector3(0.6, 2.0, 0.0), "lantern_glass")
+		Props.block(g, Vector3(-0.6, 1.1, -0.02), Vector3(0.6, 2.0, 0.0), "window_dark")   # T-145: no more glowing white slab
 		Props.block(g, Vector3(-0.66, 1.04, -0.06), Vector3(0.66, 1.1, 0.02), "beam")
 		Props.block(g, Vector3(-0.66, 2.0, -0.06), Vector3(0.66, 2.06, 0.02), "beam")
 		Props.block(g, Vector3(-0.03, 1.1, -0.04), Vector3(0.03, 2.0, 0.0), "beam")
@@ -1355,21 +1455,9 @@ func _dress_quay() -> void:
 	Props.oil_drum(dress, Vector3(29.6, 0, 26.0), "rust", true)
 	Props.cart(dress, Vector3(23.5, 0, 24.5), 20.0)
 	Props.sandbags(dress, Vector3(19.5, 0, 29.2), Vector3(24.5, 0, 29.2), 2)
-	# the beached cutter: a listing hull, wheelhouse, mast with a lashed boom, the M1 Carbine chalk on its plate
-	var hull: Node3D = Props.group(dress, "Cutter", Vector3(25.5, 0, 5.0), 0.0)
-	hull.rotation.z = deg_to_rad(8.0)
-	Props.obox(hull, Vector3(0, 1.2, 0), Vector3(9.0, 2.2, 5.6), "u_hull")
-	Props.obox(hull, Vector3(0, 0.5, 0), Vector3(9.2, 1.0, 5.8), "hull_red")
-	Props.prism(hull, Vector3(-5.1, 1.3, 0), Vector3(2.2, 2.2, 5.0), "u_hull", Vector3(0, 0, -90))
-	Props.obox(hull, Vector3(0, 2.4, 0), Vector3(8.8, 0.2, 5.4), "planks")
-	Props.obox(hull, Vector3(2.0, 3.3, 0.4), Vector3(2.6, 1.8, 2.4), "planks")
-	Props.obox(hull, Vector3(2.0, 3.9, 0.4), Vector3(2.0, 0.6, 1.8), "window_dark")
-	Props.cyl(hull, Vector3(-1.5, 6.0, 0), 0.12, 7.4, "pine")
-	Props.obox(hull, Vector3(0.5, 3.3, -0.5), Vector3(5.5, 0.1, 0.1), "pine", Vector3(0, 8, 4))
-	Props.life_ring(hull, Vector3(-2.5, 2.1, -2.81), 0.0)
-	Props.stencil(hull, Vector3(2.2, 1.6, -2.82), 0.0, "TOT·HAF·7", 28, Color(0.85, 0.82, 0.7, 0.7))
+	# the beached cutter is DetailMap02.cutter (_dress_u09_quay); the snow along it and the M1 Carbine's chalk board
 	_noshadow(B(Vector3(20.6, 0, 1.9), Vector3(21.2, 0.12, 8.2), "snow", false))
-	B(Vector3(20.8, 0.0, 3.8), Vector3(20.84, 2.2, 6.2), "black_paint")
+	B(Vector3(20.8, 0.0, 3.8), Vector3(20.86, 2.2, 6.2), "black_paint")
 	# the bunker face from the quay: the name, pen-passage lamps, a flood over each passage, pilasters
 	B(Vector3(-5.0, 6.6, 29.6), Vector3(5.0, 7.5, 29.98), "concrete")
 	_label("KRIEGSMARINE · U-BUNKER TOTENHAFEN", Vector3(0, 7.05, 29.59), 180.0, 44, Color(0.9, 0.86, 0.74, 0.9))
@@ -1381,14 +1469,12 @@ func _dress_quay() -> void:
 	for wl: Vector3 in [Vector3(6, 3.5, 29.9), Vector3(26, 3.5, 29.9)]:   # over the vent windows (T-063): the power shows them
 		bulkhead("A_QUAY", wl, 180.0)
 		power("A_QUAY", wl + Vector3(0, -0.2, -0.7), 9.0, 0.9, SODIUM)
-	flood("A_QUAY", Vector3(8.0, 9.5, 29.6), Vector3(12.0, 0.0, 10.0), 38.0, 9.0, 46.0, SODIUM)
+	flood("A_QUAY", Vector3(8.0, 9.5, 29.6), Vector3(12.0, 0.0, 10.0), 38.0, 9.0, 46.0, SODIUM, true)   # A's key light (T-145)
 	flood("A_QUAY", Vector3(24.0, 9.5, 29.6), Vector3(22.0, 0.0, 6.0), 38.0, 9.0, 46.0, SODIUM)
 	lamp(Vector3(16.0, 6.0, 15.0), Color(0.5, 0.6, 0.78), 0.6, 30.0, 0.0, 0.1)
 	flood("A_QUAY", Vector3(-20.0, 9.5, 29.6), Vector3(-14.0, 0.0, 4.0), 30.0, 4.0, 42.0)
 	flood("A_QUAY", Vector3(50.0, 9.5, 29.6), Vector3(46.0, 0.0, 4.0), 30.0, 4.0, 42.0)
 	# the harbour beyond: the breakwater's beacon, the cannery's and workshop's roofs, chimneys and gables
-	_noshadow(Props.ball(dress, Vector3(72, 2.6, -44), Vector3(0.6, 0.6, 0.6), "emergency_red"))
-	lamp(Vector3(72, 2.6, -43), RED, 0.5, 14.0, 0.2, 0.0, false, 0.8)
 	Props.gable_roof(dress, Vector3(-30.3, 6.3, -0.3), Vector3(0.3, 6.3, 30.3), 2.4, true)
 	Props.gable_roof(dress, Vector3(31.7, 7.3, -0.3), Vector3(62.3, 7.3, 30.3), 2.6, true)
 	CYL(Vector3(-27.0, 8.6, 20.0), 0.45, 5.0, "brick")
@@ -1414,7 +1500,7 @@ func _dress_cannery() -> void:
 	for px: float in [-20.0, -14.0, -8.0]:
 		for pz: float in [14.0, 19.0]:
 			pendant("B_CANNERY", Vector3(px, 3.0, pz), 5.95, "enamel_white", 1.1, "bulb_cold")
-			power("B_CANNERY", Vector3(px, 2.8, pz), 8.0, 0.7, MERCURY)
+			power("B_CANNERY", Vector3(px, 2.8, pz), 8.0, 0.7, MERCURY, px == -14.0 and pz == 14.0)   # B's key light (T-145)
 	pendant("B_CANNERY", Vector3(-10, 3.0, 5.0), 5.95, "enamel_white", 1.0, "bulb_cold")
 	power("B_CANNERY", Vector3(-10, 2.8, 5.0), 8.0, 0.6, MERCURY)
 	pendant("B_CANNERY", Vector3(-22, 3.0, 25.0), 5.95, "enamel_white", 1.0, "bulb_cold")
@@ -1430,17 +1516,10 @@ func _dress_cannery() -> void:
 			var bx: float = -20.5 + k * 3.2
 			Props.obox(dress, Vector3(bx, 0.97, lz + 0.3), Vector3(0.25, 0.015, 0.04), "steel", Vector3(0, 20.0 + k * 11, 0))
 			_noshadow(Props.ball(dress, Vector3(bx + 1.2, 0.2, lz + 1.9), Vector3(0.6, 0.4, 0.6), "net"))
-	B(Vector3(-18, 0.9, 4.0), Vector3(-2, 1.0, 5.6), "rubber")
-	for rx: float in [-17.5, -14.0, -10.5, -7.0, -3.5]:
-		CYL(Vector3(rx, 0.95, 4.0), 0.1, 1.7, "iron", Vector3(90, 0, 0))
-	for sx: float in [-17.0, -9.0, -3.0]:
-		B(Vector3(sx - 0.05, 0, 4.2), Vector3(sx + 0.05, 0.9, 4.4), "iron")
-		B(Vector3(sx - 0.05, 0, 5.2), Vector3(sx + 0.05, 0.9, 5.4), "iron")
+	DetailMap02.conveyor(dress, Vector3(-18.0, 0, 4.8), Vector3(-2.0, 0, 4.8), 1.5, 1.0)
 	# brine tanks (riveted), cans on pallets and in a crate
 	for tc: Vector3 in [Vector3(-27.0, 0, 24.0), Vector3(-23.0, 0, 24.0)]:
-		CYL(tc + Vector3(0, 0.75, 0), 1.5, 1.5, "zinc")
-		CYL(tc + Vector3(0, 1.5, 0), 1.55, 0.06, "iron")
-		CYL(tc + Vector3(0, 0.05, 0), 1.55, 0.06, "iron")
+		DetailMap02.brine_tank(dress, tc, 1.45, 1.5)
 	Props.can_stack(dress, Vector3(-12.5, 0, 26.25), 8, 6, 5)
 	Props.can_stack(dress, Vector3(-7.5, 0, 26.25), 8, 6, 4)
 	Props.crate(dress, Vector3(-2.5, 0, 27.5), 1.1, 6.0, "KONSERVEN")
@@ -1451,8 +1530,7 @@ func _dress_cannery() -> void:
 	for cz: float in [1.2, 4.0, 6.8]:
 		Props.bed(dress, Vector3(-29.6, 0, cz), Vector3(-27.6, 0.55, cz + 2.0), "linen" if cz < 2.0 else "cloth_green")
 	Props.curtain(dress, Vector3(-24.0, 0, 3.0), 90.0, 2.0, "linen")
-	B(Vector3(-22.6, 0, 8.4), Vector3(-21.6, 1.2, 9.4), "iron")
-	CYL(Vector3(-22.1, 2.2, 8.9), 0.08, 2.0, "iron")
+	CYL(Vector3(-22.1, 2.05, 8.9), 0.08, 2.3, "iron")
 	lamp(Vector3(-22.1, 0.9, 8.0), Color(1.0, 0.45, 0.15), 1.1, 6.0, 0.3, 0.3)
 	Props.cabinet(dress, Vector3(-20.5, 0, 1.0), -90.0, 1.2, 1.8, 0.4, true)
 	Props.washstand(dress, Vector3(-26.0, 0, 9.2), 180.0)
@@ -1474,21 +1552,18 @@ func _dress_cannery() -> void:
 
 
 func _dress_workshop() -> void:
-	_noshadow(B(Vector3(32.15, 0.0, 0.15), Vector3(61.85, 0.012, 29.85), "concrete_floor", false))
+	_noshadow(B(Vector3(32.15, 0.0, 0.15), Vector3(61.85, 0.012, 29.85), "m2_floor", false))
 	# the gantry rail down the hall with its hoist, and the trusses
 	for tz: float in [5.0, 11.0, 17.0, 23.0]:
 		B(Vector3(32.2, 6.4, tz - 0.12), Vector3(61.8, 6.95, tz + 0.12), "beam")
 	B(Vector3(46.8, 6.0, 0.5), Vector3(47.2, 6.4, 29.5), "iron")
-	B(Vector3(46.4, 5.7, 10.5), Vector3(47.6, 6.0, 11.5), "machine_grey")
-	Props.cable(dress, Vector3(47.0, 5.7, 11.0), Vector3(47.0, 2.4, 11.0), 0.0, 0.025, 2, "iron")
-	Props.strut(dress, Vector3(46.7, 2.4, 11.0), Vector3(47.3, 2.1, 11.0), 0.08, "iron", true)
+	DetailMap02.chain_hoist(dress, Vector3(47.0, 5.95, 11.0), 2.2)
 	# torpedoes on cradles, one slung from the hoist, shells and drums; the lathe; the tool wall
-	Props.torpedo(dress, Vector3(39.5, 0, 8.5), 90.0, 7.0, true)
-	Props.torpedo(dress, Vector3(49.5, 0, 8.5), 90.0, 7.0, true)
-	Props.torpedo(dress, Vector3(39.5, 0, 14.5), 90.0, 7.0, true)
-	Props.torpedo(dress, Vector3(49.5, 0.2, 14.5), 90.0, 6.4, true)
-	Props.workbench(dress, Vector3(58.0, 0, 6.0), 0.0, 4.0, 2.0)
-	Props.cyl(dress, Vector3(58.0, 1.0, 6.0), 0.35, 1.6, "machine_grey", Vector3(0, 0, 90))
+	DetailMap02.torpedo_cradle(dress, Vector3(39.5, 0, 8.5), 90.0, 7.0, true, true)
+	DetailMap02.torpedo_cradle(dress, Vector3(49.5, 0, 8.5), 90.0, 7.0)
+	DetailMap02.torpedo_cradle(dress, Vector3(39.5, 0, 14.5), 90.0, 7.0)
+	DetailMap02.torpedo_cradle(dress, Vector3(49.5, 0, 14.5), 90.0, 6.6, true, true)
+	DetailMap02.lathe(dress, Vector3(58.0, 0, 6.0), 0.0)
 	Props.shelves(dress, Vector3(61.83, 0, 4.0), 90.0, 3.0, 2.4, 0.35, 4, 5)
 	Props.fuse_box(dress, Vector3(61.83, 2.0, 1.2), 90.0)
 	Props.pipe(dress, Vector3(61.83, 2.35, 1.2), Vector3(61.83, 6.9, 1.2), 0.03)
@@ -1559,7 +1634,7 @@ func _dress_penhall() -> void:
 	# the pen mouth: the steel curtain (ribbed, half down), its tracks and counterweights, the sea beyond
 	for k2: int in 36:
 		var cx: float = -20.0 + k2 * 2.0
-		B(Vector3(cx, 2.2, 84.0), Vector3(cx + 1.9, ROOF, 84.6), "machine_grey")
+		B(Vector3(cx, 2.2, 84.0), Vector3(cx + 1.9, ROOF, 84.6), "m2_curtain")
 		B(Vector3(cx + 1.9, 2.2, 84.05), Vector3(cx + 2.0, ROOF, 84.55), "black_paint")
 	for sx: float in [-19.6, 51.6]:
 		B(Vector3(sx - 0.4, 0, 83.6), Vector3(sx + 0.4, ROOF, 84.9), "iron")
@@ -1587,9 +1662,6 @@ func _dress_penhall() -> void:
 		Props.strut(dress, Vector3(20.5 + k3 * 2.0, 9.5, 64.1), Vector3(22.5 + k3 * 2.0, 10.6, 64.1), 0.1, "crane_yellow")
 	B(Vector3(38.5, 10.6, 55.4), Vector3(41.5, 11.4, 64.6), "machine_grey")
 	B(Vector3(38.8, 8.9, 58.6), Vector3(41.2, 9.5, 61.4), "machine_grey")
-	Props.cable(dress, Vector3(40.0, 8.9, 60.0), Vector3(40.0, 3.4, 60.0), 0.0, 0.03, 2, "iron")
-	CYL(Vector3(40.0, 3.2, 60.0), 0.18, 0.4, "iron")
-	Props.strut(dress, Vector3(40.0, 3.0, 60.0), Vector3(40.0, 2.5, 60.3), 0.12, "iron", true)
 	# the crane office: a timber cabin on the apron, lit window, the manifest's board on its west wall
 	var co: Node3D = Props.group(dress, "CraneOffice", Vector3(47, 0, 54.5), 0.0)
 	Props.block(co, Vector3(-3.0, 0, -2.5), Vector3(3.0, 3.0, 2.5), "planks")
@@ -1627,7 +1699,7 @@ func _dress_penhall() -> void:
 	for fz: float in [44.0, 62.0, 80.0]:
 		flood("D_PENHALL", Vector3(-19.6, 9.0, fz), Vector3(-10.0, 0.0, fz + 4.0), 34.0, 8.0, 50.0, SODIUM)
 		flood("D_PENHALL", Vector3(51.6, 9.0, fz), Vector3(40.0, 0.0, fz - 4.0), 34.0, 8.0, 50.0)
-	flood("D_PENHALL", Vector3(16.0, 11.0, 34.0), Vector3(16.0, 0.0, 60.0), 44.0, 9.0, 44.0)
+	flood("D_PENHALL", Vector3(16.0, 11.0, 34.0), Vector3(16.0, 0.0, 60.0), 44.0, 9.0, 44.0, MERCURY, true)   # D's key light (T-145)
 	for bz4: float in [40.0, 52.0, 64.0, 76.0]:
 		bulkhead("D_PENHALL", Vector3(-19.83, CATY + 1.8, bz4), -90.0, "bulb_cold")
 		power("D_PENHALL", Vector3(-19.2, CATY + 1.8, bz4), 7.0, 0.4, MERCURY)
@@ -1650,9 +1722,8 @@ func _dress_penhall() -> void:
 	lamp(Vector3(16.0, 6.0, 60.0), Color(0.5, 0.62, 0.8), 0.75, 26.0, 0.0, 0.5)
 	# the signal lamp on the tower's roof: a turning spot (battery, always on)
 	var sl: Node3D = spinner(dress, "SignalLamp", Vector3(47.0, TY + 4.65, 35.5), Vector3.UP, 0.7, false)
-	Props.cyl(sl, Vector3(0, -0.35, 0), 0.3, 0.3, "iron")
-	Props.block(sl, Vector3(-0.3, -0.2, -0.3), Vector3(0.3, 0.4, 0.3), "machine_grey")
-	var lens: MeshInstance3D = Props.cyl(sl, Vector3(0, 0.1, -0.33), 0.2, 0.08, "signal_glass", Vector3(90, 0, 0))
+	DetailMap02.signal_lamp_body(sl)
+	var lens: MeshInstance3D = Props.cyl(sl, Vector3(0, 0.1, -0.33), 0.26, 0.05, "signal_glass", Vector3(90, 0, 0))
 	lens.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var beam: SpotLight3D = SpotLight3D.new()
 	beam.name = "Beam"
@@ -1669,53 +1740,46 @@ func _dress_penhall() -> void:
 	_bake_local(sl, false)
 
 
-func _dress_uboat() -> void:
-	var zc: float = 62.0
-	# the hull: a long cylinder with the red-lead bottom, bow and stern cones, the casing and its slots, the tower
-	var hull: Node3D = Props.group(dress, "U1047", Vector3(7.0, SY - 0.3, zc), 0.0)
-	Props.cyl(hull, Vector3(0, 0, 0), 3.15, 46.0, "u_hull", Vector3(90, 0, 0))
-	Props.cyl(hull, Vector3(0, -1.2, 0), 2.6, 46.2, "hull_red", Vector3(90, 0, 0))
-	Props.cone(hull, Vector3(0, 0, -23.0 - 2.5), 3.1, 5.0, "u_hull", Vector3(-90, 0, 0))
-	Props.cone(hull, Vector3(0, 0, 23.0 + 2.0), 3.1, 4.0, "u_hull", Vector3(90, 0, 0))
-	Props.block(hull, Vector3(-2.9, 2.9, -24.0), Vector3(2.9, 3.3, 24.0), "u_hull")
-	for k: int in 40:
-		var sz: float = -23.5 + k * 1.2
-		_noshadow(Props.block(hull, Vector3(-2.7, 3.305, sz), Vector3(-0.5, 3.31, sz + 0.5), "black_paint", false))
-		_noshadow(Props.block(hull, Vector3(0.5, 3.305, sz), Vector3(2.7, 3.31, sz + 0.5), "black_paint", false))
-	Props.cyl(hull, Vector3(0, 2.2, -14.0), 0.5, 1.4, "grey_paint")
-	Props.cyl(hull, Vector3(0, 3.6, -14.0), 0.12, 3.4, "grey_paint", Vector3(0, 0, 90))
-	# the conning tower: plated, the wintergarten rail aft, periscopes, the direction-finder loop
-	Props.block(hull, Vector3(-2.6, 3.3, -10.0), Vector3(0.4, 5.9, -4.0), "u_hull")
-	Props.block(hull, Vector3(-2.7, 5.9, -10.1), Vector3(0.5, 6.05, -3.9), "iron")
-	Props.block(hull, Vector3(-2.65, 3.3, -4.0), Vector3(0.45, 3.6, -1.5), "u_hull")
-	Props.railing(hull, Vector3(-2.6, 3.6, -4.0), Vector3(-2.6, 3.6, -1.5), 0.9, "iron", 0.8)
-	Props.railing(hull, Vector3(0.4, 3.6, -4.0), Vector3(0.4, 3.6, -1.5), 0.9, "iron", 0.8)
-	Props.railing(hull, Vector3(-2.6, 3.6, -1.5), Vector3(0.4, 3.6, -1.5), 0.9, "iron", 0.8)
-	Props.railing(hull, Vector3(-2.6, 6.05, -10.0), Vector3(0.4, 6.05, -10.0), 0.9, "iron", 0.8)
-	Props.cyl(hull, Vector3(-1.6, 7.6, -7.5), 0.1, 3.2, "grey_paint")
-	Props.cyl(hull, Vector3(-0.6, 8.3, -6.5), 0.1, 4.6, "grey_paint")
-	Props.cyl(hull, Vector3(-0.6, 10.6, -6.5), 0.5, 0.06, "iron", Vector3(0, 0, 90))
-	Props.block(hull, Vector3(0.4, 4.4, -8.5), Vector3(0.42, 5.4, -6.5), "iron")
-	Props.stencil(hull, Vector3(0.42, 4.9, -7.5), -90.0, "U 1047", 36, Color(0.85, 0.82, 0.7, 0.8))
-	Props.stencil(hull, Vector3(-2.62, 4.9, -7.5), 90.0, "U 1047", 36, Color(0.85, 0.82, 0.7, 0.8))
-	Props.ladder(hull, Vector3(0.43, 3.3, -5.0), -90.0, 2.6, "iron")
-	# jumping wire bow to tower to stern, weed at the waterline, rust runs
-	Props.cable(hull, Vector3(-1.1, 3.3, -25.0), Vector3(-1.1, 6.05, -10.0), 0.3, 0.02, 6, "iron")
-	Props.cable(hull, Vector3(-1.1, 6.05, -4.0), Vector3(-1.1, 3.3, 24.5), 0.3, 0.02, 6, "iron")
-	for wz: float in [-18.0, -8.0, 4.0, 14.0]:
-		_noshadow(Props.ball(hull, Vector3(-3.0, HIGH_TIDE - (SY - 0.3) - 0.2, wz), Vector3(0.5, 0.3, 1.6), "weed"))
-		_noshadow(Props.ball(hull, Vector3(3.0, HIGH_TIDE - (SY - 0.3) - 0.2, wz), Vector3(0.5, 0.3, 1.6), "weed"))
+## U-1047 from outside (U09 s5, T-145; visibility group DH: the hall and the hatch see it): a Type VII lofted to
+## real section lines over the gameplay deck (DetailMap02.type_vii: saddle tanks, the casing's slots, the red lead
+## below the boot-top, bow planes, twin screws and the rudder out under the curtain), the conning tower over its
+## collider (DetailMap02.vii_tower: fairing, bridge, wintergarten with the flak, periscope standards, the DF loop),
+## the 8.8 cm gun, the jumping wires, the spray bulwark over the deck-edge colliders, the gangway's boards.
+func _dress_uboat_hull() -> void:
+	var g: Node3D = Props.group(dress, "U1047", Vector3(7.0, DECK, 38.0), 0.0)
+	DetailMap02.type_vii(g, 58.6, -2.6)
+	DetailMap02.vii_tower(g, Vector3(-1.1, 0.0, 17.0), 1.5, 3.0, 3.4, "U 1047")
+	# the jumping wire bow to the periscope standards to the stern, weed at the high-water line
+	Props.cable(g, Vector3(0, 0.0, 0.4), Vector3(-1.3, 5.8, 15.0), 0.4, 0.02, 6, "iron")
+	Props.cable(g, Vector3(-1.0, 5.6, 19.0), Vector3(0, 0.6, 57.0), 0.6, 0.02, 8, "iron")
+	for wz: float in [4.0, 14.0, 24.0, 34.0, 44.0]:
+		for sx: float in [-3.3, 3.3]:
+			_noshadow(Props.ball(g, Vector3(sx, HIGH_TIDE - DECK - 0.15, wz), Vector3(0.35, 0.25, 1.8), "weed"))
+	# the spray bulwark over the deck-edge colliders (HullSide*, BowCap, SternCap: 1.2 m above the deck), capped
+	for bw: Array in [[Vector3(4.0, 0.6, 37.4), Vector3(4.4, DECK + 1.2, 86.6)], [Vector3(9.6, 0.6, 37.4), Vector3(10.0, DECK + 1.2, 57.0)],
+			[Vector3(9.6, 0.6, 59.0), Vector3(10.0, DECK + 1.2, 86.6)], [Vector3(4.0, 0.6, 37.4), Vector3(10.0, DECK + 1.2, 38.0)],
+			[Vector3(4.0, 0.6, 86.0), Vector3(10.0, DECK + 1.2, 86.6)]]:
+		B(bw[0], bw[1], "m2_hull")
+		var top: Vector3 = Vector3((bw[0] as Vector3).x, DECK + 1.2, (bw[0] as Vector3).z)
+		B(top + Vector3(-0.04, 0, -0.04), Vector3((bw[1] as Vector3).x + 0.04, DECK + 1.28, (bw[1] as Vector3).z + 0.04), "iron")
+	B(Vector3(9.6, 0.6, 57.0), Vector3(10.0, DECK, 59.0), "m2_hull")
 	# the gangway: plank treads and a sign; the deck's hatch coaming
 	B(Vector3(10.0, DECK + 0.0, 57.0), Vector3(10.4, DECK + 0.1, 59.0), "iron")
 	_label("ZUTRITT NUR MIT AUSWEIS", Vector3(14.17, 1.9, 58.0), 90.0, 20, Color(0.85, 0.3, 0.2, 0.9))
 	B(Vector3(4.9, DECK, 60.9), Vector3(7.1, DECK + 0.25, 61.0), "iron")
 	B(Vector3(4.9, DECK, 60.9), Vector3(5.0, DECK + 0.25, 66.1), "iron")
 	B(Vector3(7.0, DECK, 60.9), Vector3(7.1, DECK + 0.25, 66.1), "iron")
+	B(Vector3(4.9, DECK, 66.0), Vector3(7.1, DECK + 0.25, 66.1), "iron")
+	for k: int in 10:
+		B(Vector3(10.4 + k * 0.36, DECK - 0.25 * k / 10.0 * 4.0 + 0.02, 57.05), Vector3(10.6 + k * 0.36, DECK - 0.25 * k / 10.0 * 4.0 + 0.06, 58.95), "planks")
+
+
+func _dress_uboat() -> void:
 	# the pressure hull from inside: plating on both sides, the bow and stern bulkheads, the deckhead
-	B(Vector3(4.0, SY - 0.5, 37.9), Vector3(4.4, DECK + 1.2, 86.1), "u_interior")
-	B(Vector3(9.6, SY - 0.5, 37.9), Vector3(10.0, DECK + 1.2, 86.1), "u_interior")
-	B(Vector3(4.0, SY - 0.5, 37.9), Vector3(10.0, DECK + 1.2, 38.4), "u_interior")
-	B(Vector3(4.0, SY - 0.5, 85.6), Vector3(10.0, DECK + 1.2, 86.1), "u_interior")
+	B(Vector3(4.0, SY - 0.5, 37.9), Vector3(4.4, 0.6, 86.1), "u_interior")
+	B(Vector3(9.6, SY - 0.5, 37.9), Vector3(10.0, 0.6, 86.1), "u_interior")
+	B(Vector3(4.0, SY - 0.5, 37.9), Vector3(10.0, 0.6, 38.4), "u_interior")
+	B(Vector3(4.0, SY - 0.5, 85.6), Vector3(10.0, 0.6, 86.1), "u_interior")
 	B(Vector3(4.0, 0.6, 38.4), Vector3(10.0, 0.62, 85.6), "u_interior")
 	for s3: float in [4.4, 9.6]:
 		for cz: float in [50.0, 56.0, 68.0]:
@@ -1790,17 +1854,8 @@ func _dress_lowerpens() -> void:
 	Props.puddle(dress, Vector3(47, y + 0.004, 54), 2.2, 1.6, -40.0)
 	# the pumps: horizontal cylinders on bedplates, a flywheel each (spin up with the power), valves, the mains
 	for px: float in [37.0, 47.0]:
-		var pg: Node3D = Props.group(dress, "Pump", Vector3(px, y, 78.0), 0.0)
-		Props.block(pg, Vector3(-2.0, 0, -4.0), Vector3(2.0, 0.3, 4.0), "iron")
-		Props.cyl(pg, Vector3(0, 1.1, -1.0), 0.9, 5.0, "machine_green", Vector3(90, 0, 0))
-		Props.cyl(pg, Vector3(0, 1.1, 1.6), 1.0, 0.3, "machine_green", Vector3(90, 0, 0))
-		Props.block(pg, Vector3(-1.6, 0.3, 2.0), Vector3(1.6, 1.8, 3.6), "machine_grey")
-		Props.gauge(pg, Vector3(-0.6, 1.5, 1.99), 180.0, 0.14)
-		Props.gauge(pg, Vector3(0.6, 1.5, 1.99), 180.0, 0.14)
-		Props.valve_wheel(pg, Vector3(1.61, 1.0, 2.8), -90.0, 0.2)
-		Props.pipe(pg, Vector3(0, 1.1, -3.5), Vector3(0, -0.5, -3.5), 0.22, "rust")
-		Props.pipe(pg, Vector3(0, 1.8, 2.8), Vector3(0, 2.6, 2.8), 0.18, "rust")
-		Props.pipe(pg, Vector3(0, 2.6, 2.8), Vector3(0, 2.6, 5.9), 0.18, "rust")
+		var pg: Node3D = DetailMap02.pump(dress, Vector3(px, y, 78.0), 0.0)
+		Props.cyl(pg, Vector3(-1.4, 1.1, 1.6), 0.09, 1.9, "steel", Vector3(0, 0, 90))   # the lay shaft out to the flywheel
 		var fw: Node3D = spinner(pg, "Flywheel", Vector3(-2.3, 1.1, 1.6), Vector3(1, 0, 0), 6.0, true)
 		Props.cyl(fw, Vector3.ZERO, 1.05, 0.12, "iron", Vector3(0, 0, 90))
 		for k: int in 6:
@@ -1851,11 +1906,7 @@ func _dress_tower() -> void:
 			Props.block(rk, Vector3(-0.5, 0.3 + k * 0.65, -0.42), Vector3(0.5, 0.8 + k * 0.65, -0.4), "black_paint")
 			_noshadow(Props.cyl(rk, Vector3(0.3, 0.55 + k * 0.65, -0.43), 0.05, 0.02, "gauge_lit", Vector3(90, 0, 0)))
 	Props.gauge(rk, Vector3(0.0, 1.95, -0.41), 0.0, 0.14)
-	var tt: Node3D = Props.group(dress, "Teletype", Vector3(51.2, y, 34.75), 0.0)
-	Props.block(tt, Vector3(-0.6, 0, -0.75), Vector3(0.6, 0.78, 0.75), "furniture")
-	Props.block(tt, Vector3(-0.45, 0.78, -0.5), Vector3(0.45, 1.1, 0.5), "black_paint")
-	Props.block(tt, Vector3(-0.4, 1.1, -0.1), Vector3(0.4, 1.12, 0.45), "paper")
-	Props.cyl(tt, Vector3(0, 1.25, 0.3), 0.08, 0.5, "paper", Vector3(0, 0, 90))
+	DetailMap02.teletype(dress, Vector3(51.2, y, 34.75), 90.0)
 	Props.table_visual(dress, Vector3(46.0, y, 34.2), 2.2, 1.2, 0.85)
 	Props.chair(dress, Vector3(46.5, y, 35.3), 0.0)
 	Props.shelves(dress, Vector3(48.5, y, 37.75), 180.0, 1.6, 1.4, 0.3, 2, 9)
@@ -1872,6 +1923,319 @@ func _dress_tower() -> void:
 	lamp(Vector3(46.0, y + 1.2, 34.2), INCAND, 0.7, 5.0, 0.08)
 	lamp(Vector3(51.0, y + 1.3, 36.6), Color(0.4, 0.9, 0.5), 0.35, 4.0, 0.2, 0.0, false, 4.0)
 	emergency(Vector3(42.17, y + 3.0, 36.5), -90.0, 0.7, 7.0)
+
+
+# ================================================================== U09 s5 dressing (T-145): pieces per zone
+
+## A CC0 library prop (PropLibrary: collision-free, pivot on the floor) under Dressing.
+func _prop(key: String, pos: Vector3, yaw: float = 0.0, s: float = 1.0) -> Node3D:
+	var p: Node3D = PropLibrary.instance(key)
+	if p == null:
+		push_warning("gen_map02: prop %s missing" % key)
+		return null
+	p.position = pos
+	p.rotation.y = deg_to_rad(yaw)
+	p.scale = Vector3(s, s, s)
+	dress.add_child(p)
+	return p
+
+
+## Water and rust streaks down a wall face: thin dark strips from `top` down a random length, every ~`step` m
+## along the face from a to b (a, b on the face; `out` = the face's outward normal, the strips stand 1 cm proud).
+func _streaks(a: Vector3, b: Vector3, out: Vector3, top: float, step: float, seed_v: int, key: String = "tide_mark") -> void:
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = seed_v
+	var n: int = int(a.distance_to(b) / step)
+	for k: int in n:
+		var p: Vector3 = a.lerp(b, (float(k) + rng.randf_range(0.1, 0.9)) / float(maxi(1, n)))
+		var w: float = rng.randf_range(0.04, 0.22)
+		var len_: float = rng.randf_range(0.8, maxf(1.0, top - a.y - 0.2))
+		var y0: float = top - rng.randf_range(0.0, 0.6)
+		var side: Vector3 = Vector3(out.z, 0, -out.x).abs()
+		var lo: Vector3 = p - side * w * 0.5 + out * 0.005
+		var hi: Vector3 = p + side * w * 0.5 + out * 0.015
+		_noshadow(B(Vector3(minf(lo.x, hi.x), maxf(a.y, y0 - len_), minf(lo.z, hi.z)), Vector3(maxf(lo.x, hi.x), y0, maxf(lo.z, hi.z)), key, false))
+
+
+## Chalk on a floor: a flat label (the dockers' tally).
+func _chalk_floor(text: String, pos: Vector3, yaw: float, size: int = 48) -> void:
+	var l: Label3D = Label3D.new()
+	l.text = text
+	l.font_size = size
+	l.pixel_size = 0.004
+	l.modulate = Color(0.88, 0.88, 0.84, 0.75)
+	l.outline_size = 0
+	l.position = pos
+	l.rotation = Vector3(deg_to_rad(-90), deg_to_rad(yaw), 0)
+	l.shaded = true
+	dress.add_child(l)
+
+
+func _dress_u09_quay() -> void:
+	# the cutter: a clinker hull listing on the quay over its collider (Cutter, x 21..30, z 2..8), stern west with a
+	# flat transom carrying the M1 Carbine's board
+	var cg: Node3D = Props.group(dress, "CutterHull", Vector3(31.0, 0.05, 5.0), 180.0)
+	cg.rotation.x = deg_to_rad(5.0)
+	DetailMap02.cutter(cg, 10.0, 5.8, 2.4)
+	Props.block(cg, Vector3(9.88, 1.0, -2.2), Vector3(10.04, 2.58, 2.2), "planks")
+	Props.block(cg, Vector3(9.88, 0.3, -1.25), Vector3(10.04, 1.0, 1.25), "planks")
+	Props.stencil(cg, Vector3(1.6, 1.9, -2.72), 180.0, "TOT·HAF·7", 30, Color(0.85, 0.82, 0.7, 0.75))
+	Props.stencil(cg, Vector3(1.6, 1.9, 2.72), 0.0, "TOT·HAF·7", 30, Color(0.85, 0.82, 0.7, 0.75))
+	_prop("life_ring", Vector3(24.3, 2.65, 3.92), 0.0)
+	# the harbourmaster's hut: the door hung open, shutters hooked back, a tide table, a hurricane lamp on its hook,
+	# the stove pipe's rain cap, a gutter, the halyard pole on the roof's corner
+	DetailMap02.hung_door(dress, Vector3(18.0, 0, 13.5), 90.0, 1.8, DOOR_H, 100.0, T * 0.5 + 0.03, "planks")
+	for wp: Array in [[Vector3(14, 0, 9.85), 180.0], [Vector3(14, 0, 17.15), 0.0]]:
+		var g: Node3D = Props.group(dress, "HutShutters", wp[0], float(wp[1]))
+		for s: float in [-1.0, 1.0]:
+			Props.block(g, Vector3(minf(s * 0.7, s * 1.32), 1.06, 0.01), Vector3(maxf(s * 0.7, s * 1.32), 2.04, 0.05), "planks")
+			Props.block(g, Vector3(minf(s * 0.74, s * 1.28), 1.5, 0.05), Vector3(maxf(s * 0.74, s * 1.28), 1.6, 0.07), "beam")
+	var tt: Node3D = Props.group(dress, "TideTable", Vector3(11.4, 0, 17.16), 180.0)
+	Props.block(tt, Vector3(-0.55, 1.15, -0.03), Vector3(0.55, 2.05, 0.0), "beam")
+	Props.block(tt, Vector3(-0.48, 1.2, -0.04), Vector3(0.48, 1.98, -0.03), "paper")
+	for r: int in 6:
+		Props.block(tt, Vector3(-0.44, 1.3 + r * 0.1, -0.045), Vector3(0.44, 1.305 + r * 0.1, -0.04), "black_paint", false)
+	_label("GEZEITEN  JANUAR 1945", Vector3(11.4, 1.92, 17.21), 0.0, 14, Color(0.15, 0.13, 0.1, 0.95))
+	_label("HW 06.12  NW 12.31  HW 18.40", Vector3(11.4, 1.62, 17.21), 0.0, 11, Color(0.15, 0.13, 0.1, 0.9))
+	Props.strut(dress, Vector3(18.16, 2.3, 16.4), Vector3(18.6, 2.3, 16.4), 0.03, "iron")
+	_hurricane(Vector3(18.6, 1.78, 16.4))
+	CYL(Vector3(11.0, 4.65, 11.0), 0.2, 0.05, "iron")
+	Props.cone(dress, Vector3(11.0, 4.78, 11.0), 0.24, 0.16, "iron")
+	B(Vector3(9.6, 3.2, 9.62), Vector3(18.4, 3.32, 9.72), "iron")
+	CYL(Vector3(17.75, 3.45 + 2.6, 10.25), 0.06, 5.2, "pine")
+	B(Vector3(17.15, 7.7, 10.2), Vector3(18.35, 7.76, 10.3), "pine")
+	Props.cable(dress, Vector3(17.8, 8.6, 10.25), Vector3(17.85, 3.6, 10.4), 0.05, 0.008, 4, "rope")
+	Props.cable(dress, Vector3(17.7, 8.6, 10.25), Vector3(17.95, 3.6, 10.1), 0.25, 0.008, 6, "rope")
+	# fish crates against the cannery wall, drums and jerrycans by the bunker face, a life ring on the parapet
+	for k: int in 6:
+		_prop("crate_wood_a", Vector3(0.75, 0.36 * (k / 2), 3.2 + (k % 2) * 0.86), 90.0 + (k % 3) * 4.0)
+	_prop("barrel_steel", Vector3(25.6, 0, 28.4), 30.0)
+	for jp: Vector3 in [Vector3(24.6, 0, 28.9), Vector3(24.2, 0, 28.7), Vector3(23.9, 0, 29.1)]:
+		_prop("jerrycan", jp, jp.x * 37.0)
+	_prop("life_ring", Vector3(17.0, 0.12, 0.24), 0.0)
+	# cleats on the parapet, gulls on its coping and a bollard
+	for cx: float in [8.0, 12.0, 18.0, 22.0]:
+		B(Vector3(cx - 0.18, 1.17, 0.12), Vector3(cx + 0.18, 1.22, 0.2), "iron")
+		B(Vector3(cx - 0.05, 1.1, 0.12), Vector3(cx + 0.05, 1.18, 0.2), "iron")
+	DetailMap02.gull(dress, Vector3(7.4, 1.17, 0.0), 170.0)
+	DetailMap02.gull(dress, Vector3(19.3, 1.17, 0.05), 200.0)
+	DetailMap02.gull(dress, Vector3(4.5, 0.86, 1.0), 120.0)
+	# the bunker face: a sealed blast door with its counterweight in a track, water and rust streaks from the top
+	var bd: Node3D = Props.group(dress, "BlastDoor", Vector3(16.0, 0, 29.98), 180.0)
+	Props.block(bd, Vector3(-2.0, 0.0, -0.22), Vector3(2.0, 4.2, 0.0), "m2_curtain")
+	for k2: int in 6:
+		Props.block(bd, Vector3(-2.0, 0.4 + k2 * 0.65, -0.26), Vector3(2.0, 0.5 + k2 * 0.65, -0.22), "iron")
+	for sx: float in [-2.12, 2.0]:
+		Props.block(bd, Vector3(sx, 0.0, -0.3), Vector3(sx + 0.12, 4.6, 0.0), "iron")
+	Props.block(bd, Vector3(-2.12, 4.5, -0.3), Vector3(2.12, 4.62, 0.0), "iron")
+	Props.cyl(bd, Vector3(2.75, 5.6, -0.25), 0.32, 0.12, "iron", Vector3(90, 0, 0))
+	Props.block(bd, Vector3(2.45, 2.4, -0.38), Vector3(3.05, 3.5, -0.1), "m2_curtain")
+	for sx2: float in [2.38, 3.05]:
+		Props.block(bd, Vector3(sx2, 0.2, -0.16), Vector3(sx2 + 0.06, 5.4, -0.04), "iron")
+	Props.cable(bd, Vector3(2.75, 5.92, -0.25), Vector3(2.75, 3.5, -0.25), 0.0, 0.02, 2, "iron")
+	Props.cable(bd, Vector3(2.45, 5.6, -0.25), Vector3(1.6, 4.62, -0.25), 0.0, 0.02, 2, "iron")
+	Props.stencil(bd, Vector3(0, 3.6, -0.27), 180.0, "LUFTSCHUTZ · TÜR 3", 22, Color(0.85, 0.82, 0.7, 0.6))
+	_streaks(Vector3(-29.0, 0.0, 29.99), Vector3(61.0, 0.0, 29.99), Vector3(0, 0, -1), ROOF - 0.3, 1.9, 4501)
+	_streaks(Vector3(4.0, 0.0, 29.985), Vector3(28.0, 0.0, 29.985), Vector3(0, 0, -1), 9.2, 3.5, 4502, "rust")
+	# the breakwater's two lights blinking (red to port, green to starboard), each on a small iron tower
+	for bl: Array in [[Vector3(72.0, 1.6, -44.0), RED, 0.0], [Vector3(-14.0, 1.6, -44.0), Color(0.3, 1.0, 0.45), 2.0]]:
+		var bp: Vector3 = bl[0]
+		var red: bool = bl[1] == RED
+		CYL(bp + Vector3(0, 1.0, 0), 0.3, 2.0, "red_paint" if red else "grey_paint")
+		CYL(bp + Vector3(0, 2.05, 0), 0.42, 0.1, "iron")
+		var blink: OmniLight3D = OmniLight3D.new()
+		blink.set_script(load("res://gravelight/world/blink_light.gd"))
+		blink.name = "BreakwaterLight"
+		blink.position = bp + Vector3(0, 2.45, 0)
+		blink.light_color = bl[1]
+		blink.omni_range = 16.0
+		blink.light_volumetric_fog_energy = 2.0
+		blink.set("energy_on", 3.0)
+		blink.set("phase", float(bl[2]))
+		blink.set_meta("keep", true)
+		dress.add_child(blink)
+		var glass: MeshInstance3D = Props.ball(blink, Vector3.ZERO, Vector3(0.45, 0.6, 0.45), "emergency_red" if red else "gauge_lit")
+		glass.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
+func _dress_u09_cannery() -> void:
+	# the line's hook rail, scale glints on the zinc, the infirmary's screen and barrel stove, a skylight row with
+	# snow on the glass, steam off the stove, the cannery's delivery book on a desk
+	DetailMap02.hook_rail(dress, Vector3(-21.0, 3.1, 16.5), Vector3(-7.0, 3.1, 16.5), 5.95)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 5101
+	for lz: float in [13.3, 18.3]:
+		for k: int in 26:
+			var x: float = rng.randf_range(-21.6, -6.4)
+			var z: float = lz + rng.randf_range(0.1, 1.3)
+			_noshadow(Props.obox(dress, Vector3(x, 0.952, z), Vector3(0.03, 0.003, 0.02), "can_tin", Vector3(0, rng.randf() * 180.0, 0)))
+	DetailMap02.screen(dress, Vector3(-28.5, 0, 6.5), 0.0)
+	_prop("stove_barrel", Vector3(-22.1, 0, 8.9), 30.0)
+	Props.smoke(dress, Vector3(-22.1, 3.25, 8.9), 0.1, 0.6, 8)
+	DetailMap02.skylights(dress, -27.0, -3.0, 16.5, 5.99, 1.6, 6)
+	Props.table_visual(dress, Vector3(-3.2, 0, 9.0), 1.2, 0.7, 0.85)
+	B(Vector3(-3.5, 0.85, 8.8), Vector3(-3.0, 0.9, 9.15), "leather")
+	B(Vector3(-3.48, 0.9, 8.82), Vector3(-3.02, 0.905, 9.13), "paper")
+	_label("LIEFERBUCH 1944/45", Vector3(-3.25, 0.91, 8.98), 0.0, 10, Color(0.15, 0.12, 0.1, 0.9))
+	Props.stool(dress, Vector3(-3.2, 0, 9.8))
+	_streaks(Vector3(-29.84, 0.0, 0.5), Vector3(-29.84, 0.0, 29.5), Vector3(1, 0, 0), 5.8, 2.2, 5102)
+	_streaks(Vector3(-29.5, 0.0, 0.16), Vector3(-0.5, 0.0, 0.16), Vector3(0, 0, 1), 5.8, 2.4, 5103)
+
+
+func _dress_u09_workshop() -> void:
+	DetailMap02.tool_wall(dress, Vector3(52.5, 0, 0.16), 180.0, 4.6)
+	_prop("toolbox_metal", Vector3(51.4, 0.95, 0.36), 8.0)
+	_prop("toolbox_metal", Vector3(53.7, 0.95, 0.33), -12.0)
+	# the welding bench against the east wall: a bench, the welding cart, gas bottles, the arc's flicker and sparks
+	Props.workbench(dress, Vector3(61.25, 0, 7.6), 90.0, 2.0, 0.8)
+	_prop("welding_cart", Vector3(60.0, 0, 8.6), -100.0)
+	_prop("propane_tank", Vector3(60.25, 0, 6.15), 0.0)
+	_prop("propane_tank", Vector3(59.85, 0, 6.3), 40.0)
+	lamp(Vector3(60.8, 1.15, 7.6), Color(0.62, 0.78, 1.0), 1.1, 6.0, 0.95, 0.3, false, 24.0)
+	Props.embers(dress, Vector3(61.0, 0.95, 7.6), 0.08, 10)
+	# caged bulkhead lamps round the walls; the key light is the one inside the warhead cage (shadowed)
+	for bl: Array in [[Vector3(32.17, 3.2, 26.0), -90.0], [Vector3(61.83, 3.2, 12.5), 90.0], [Vector3(40.0, 3.2, 0.17), 0.0]]:
+		bulkhead("C_WORKSHOP", bl[0], float(bl[1]))
+		var out: Vector3 = Basis(Vector3.UP, deg_to_rad(float(bl[1]))) * Vector3(0, 0, -0.6)
+		power("C_WORKSHOP", (bl[0] as Vector3) + out, 8.0, 0.55, SODIUM)
+	bulkhead("C_WORKSHOP", Vector3(57.0, 2.35, 16.06), 180.0)
+	power("C_WORKSHOP", Vector3(57.0, 2.1, 16.9), 9.0, 0.9, SODIUM, true)
+	# two more lead coffins in the cage (on BLST-11's neighbour's footprint), the warhead manifest on the mesh
+	Props.coffin(dress, Vector3(56.0, 0, 22.5), 0.0, "BLST-12")
+	Props.coffin(dress, Vector3(56.0, 0.76, 22.5), 0.0, "BLST-13", false)
+	var mf: Node3D = Props.group(dress, "Manifest", Vector3(54.0, 0, 16.0), 0.0)
+	Props.block(mf, Vector3(-0.3, 1.3, 0.04), Vector3(0.3, 1.75, 0.05), "paper")
+	_label("SPRENGKÖPFE: 0\nBALLAST: 14", Vector3(54.0, 1.55, 16.06), 180.0, 12, Color(0.15, 0.12, 0.1, 0.95))
+	_streaks(Vector3(32.16, 0.0, 0.5), Vector3(32.16, 0.0, 29.5), Vector3(1, 0, 0), 6.8, 2.6, 5201, "rust")
+	_streaks(Vector3(32.5, 0.0, 29.84), Vector3(61.5, 0.0, 29.84), Vector3(0, 0, -1), 6.8, 2.2, 5202)
+
+
+func _dress_u09_penhall() -> void:
+	# kerbs on every dock edge (under the railings: dressing, the agents keep 0.5 m off the rails anyway)
+	for k: Array in [[-14.22, -14.0, 38.2, 83.8], [-6.0, -5.78, 38.2, 83.8], [-0.22, 0.0, 38.2, 83.8], [14.0, 14.22, 38.2, 56.8],
+			[14.0, 14.22, 59.2, 83.8], [19.78, 20.0, 38.2, 83.8], [32.0, 32.22, 38.2, 83.8]]:
+		B(Vector3(float(k[0]), 0.0, float(k[2])), Vector3(float(k[1]), 0.1, float(k[3])), "m2_pier")
+	for k2: Array in [[-14.0, -6.0], [0.0, 14.0], [20.0, 32.0]]:
+		B(Vector3(float(k2[0]), 0.0, 37.78), Vector3(float(k2[1]), 0.1, 38.0), "m2_pier")
+	for pr: Array in [[-20.0, -14.0], [-6.0, 0.0], [14.0, 20.0]]:
+		for cz: float in [48.0, 60.0, 72.0]:
+			for ex: float in [float(pr[0]) + 0.45, float(pr[1]) - 0.45]:
+				B(Vector3(ex - 0.06, 0.0, cz - 0.3), Vector3(ex + 0.06, 0.12, cz + 0.3), "iron")
+				B(Vector3(ex - 0.04, 0.12, cz - 0.38), Vector3(ex + 0.04, 0.17, cz + 0.38), "iron")
+	# the crane's cab under the east end of the girders, its ladder down the leg, the operator's sign
+	var cab: Node3D = Props.group(dress, "CraneCab", Vector3(47.5, 7.4, 60.0), 0.0)
+	Props.block(cab, Vector3(-1.5, 0, -2.6), Vector3(1.5, 2.1, 2.6), "crane_yellow")
+	Props.block(cab, Vector3(-1.52, 0.9, -2.4), Vector3(-1.5, 1.8, 2.4), "window_dark")
+	Props.block(cab, Vector3(-1.4, 0.9, -2.62), Vector3(1.4, 1.8, -2.6), "window_dark")
+	Props.block(cab, Vector3(-1.6, 2.1, -2.7), Vector3(1.6, 2.2, 2.7), "iron")
+	for sz: float in [-2.0, 2.0]:
+		Props.block(cab, Vector3(-0.1, 2.2, sz - 0.1), Vector3(0.1, 2.6, sz + 0.1), "iron")
+	Props.stencil(cab, Vector3(0, 1.95, -2.63), 0.0, "KRAN 2 · 8 t", 26, Color(0.1, 0.08, 0.05, 0.9))
+	Props.ladder(dress, Vector3(50.25, 0.0, 56.7), -90.0, 9.4, "iron")
+	DetailMap02.hook(dress, Vector3(40.0, 3.45, 60.0), 1.4)
+	for sx: float in [-0.12, 0.12]:
+		Props.cable(dress, Vector3(40.0 + sx, 8.9, 60.0), Vector3(40.0 + sx, 3.6, 60.0), 0.0, 0.02, 2, "iron")
+	# the storm beyond the pen mouth (a cloud card the lightning brightens), drips from the roof into the docks,
+	# the dockers' chalk tally of the ballast on pier 1, puddles on the aprons, streaks down the walls
+	DetailMap02.storm_card(map_root, Vector3(16.0, 12.0, 150.0), Vector2(260.0, 70.0), 180.0).name = "StormCard_Mouth"
+	DetailMap02.drips(dress, Vector3(-10.0, 11.6, 62.0), Vector3(3.0, 0.1, 14.0), 15.0, 10)
+	DetailMap02.drips(dress, Vector3(26.0, 11.6, 66.0), Vector3(4.0, 0.1, 14.0), 15.0, 10)
+	DetailMap02.drips(dress, Vector3(-17.0, 11.6, 70.0), Vector3(2.0, 0.1, 8.0), 11.5, 8)
+	_chalk_floor("BALLAST  IIII IIII IIII", Vector3(-3.0, 0.016, 47.0), 90.0)
+	for pz: Array in [[Vector3(-12.0, 0.004, 35.6), 3.0, 1.2], [Vector3(24.0, 0.004, 36.2), 4.0, 1.4], [Vector3(40.0, 0.004, 70.0), 3.2, 1.8], [Vector3(-3.0, 0.004, 64.0), 2.0, 1.0]]:
+		Props.puddle(dress, pz[0], float(pz[1]), float(pz[2]), 15.0)
+	_streaks(Vector3(-19.84, 0.0, 33.5), Vector3(-19.84, 0.0, 83.5), Vector3(1, 0, 0), ROOF - 0.5, 2.0, 5401)
+	_streaks(Vector3(51.84, 0.0, 33.5), Vector3(51.84, 0.0, 83.5), Vector3(-1, 0, 0), ROOF - 0.5, 2.0, 5402)
+	_streaks(Vector3(-19.5, 0.0, 33.16), Vector3(51.5, 0.0, 33.16), Vector3(0, 0, 1), ROOF - 0.5, 2.4, 5403)
+	var lf: OmniLight3D = OmniLight3D.new()
+	lf.set_script(load("res://gravelight/world/lightning_flash.gd"))
+	lf.name = "Lightning"
+	lf.position = Vector3(16.0, 0.8, 92.0)
+	lf.omni_range = 30.0
+	lf.light_color = Color(0.75, 0.82, 1.0)
+	lf.light_volumetric_fog_energy = 1.5
+	lf.set("peak_energy", 4.0)
+	lf.set("cards", [NodePath("../StormCard_Mouth"), NodePath("../StormCard_TowerW"), NodePath("../StormCard_TowerE")] as Array[NodePath])
+	lf.set_meta("keep", true)
+	map_root.add_child(lf)
+
+
+func _dress_u09_uboat() -> void:
+	for bz: float in [50.0, 56.0, 68.0]:
+		DetailMap02.round_hatch(dress, Vector3(7.0, SY, bz), 0.0, 1.8, DOOR_H, 1.0 if bz != 56.0 else -1.0)
+	# overhead pipe runs under the deckhead with flanges and valves; gauges on the bulkheads
+	for px: float in [5.3, 8.7]:
+		Props.pipe(dress, Vector3(px, 0.42, 38.6), Vector3(px, 0.42, 85.4), 0.05, "grey_paint")
+		for fz: int in range(40, 86, 4):
+			CYL(Vector3(px, 0.42, float(fz)), 0.08, 0.05, "iron", Vector3(90, 0, 0))
+		for vz: float in [46.0, 62.0, 78.0]:
+			Props.valve_wheel(dress, Vector3(px, 0.3, vz), 0.0, 0.12, "red_paint")
+	for gz: float in [49.8, 55.8, 67.8]:
+		Props.gauge(dress, Vector3(5.3, -0.7, gz), 180.0, 0.1)
+		Props.gauge(dress, Vector3(8.7, -0.7, gz + 0.36), 0.0, 0.1)
+	# the Crucible strapped in at the forward bulkhead (webbing from its shoulders to the ribs), its violet key light
+	for st: Array in [[Vector3(6.1, SY + 2.2, 40.0), Vector3(4.5, SY + 0.4, 41.2)], [Vector3(7.9, SY + 2.2, 40.0), Vector3(9.5, SY + 0.4, 41.2)],
+			[Vector3(6.1, SY + 1.2, 39.0), Vector3(4.5, SY + 1.9, 39.2)], [Vector3(7.9, SY + 1.2, 39.0), Vector3(9.5, SY + 1.9, 39.2)]]:
+		Props.strut(dress, st[0], st[1], 0.05, "canvas")
+		B((st[1] as Vector3) - Vector3(0.06, 0.06, 0.06), (st[1] as Vector3) + Vector3(0.06, 0.06, 0.06), "iron")
+	lamp(Vector3(7.0, SY + 2.3, 41.8), VIOLET, 0.9, 6.0, 0.05, 0.4, true, 2.0)
+	# Deacon's map and the boat's log on the control room table
+	B(Vector3(4.65, SY + 0.9, 57.9), Vector3(5.55, SY + 0.905, 59.1), "paper")
+	for k: int in 5:
+		B(Vector3(4.7, SY + 0.906, 58.0 + k * 0.22), Vector3(5.5, SY + 0.909, 58.01 + k * 0.22), "black_paint", false)
+	B(Vector3(4.9, SY + 0.905, 59.2), Vector3(5.3, SY + 0.95, 59.5), "leather")
+	_label("KTB U 1047", Vector3(5.1, SY + 0.955, 59.35), 0.0, 9, Color(0.85, 0.82, 0.7, 0.9))
+
+
+func _dress_u09_lowerpens() -> void:
+	var y: float = LY
+	# the mains along the east wall: flanged pipe, a valve, brackets
+	for pr: Array in [[y + 2.4, 0.16], [y + 1.9, 0.09]]:
+		Props.pipe(dress, Vector3(51.75, float(pr[0]), 51.0), Vector3(51.75, float(pr[0]), 83.0), float(pr[1]), "rust")
+		for fz: int in range(52, 83, 3):
+			CYL(Vector3(51.75, float(pr[0]), float(fz)), float(pr[1]) + 0.05, 0.05, "iron", Vector3(90, 0, 0))
+	for bz: int in range(52, 83, 6):
+		B(Vector3(51.6, y + 2.2, float(bz) - 0.04), Vector3(51.98, y + 2.26, float(bz) + 0.04), "iron")
+	# the Pumpenschalter's backplate, conduit and signs; its lamp is the zone's key light (shadowed)
+	B(Vector3(51.86, y + 0.3, 68.8), Vector3(51.98, y + 2.4, 71.2), "machine_grey")
+	_label("PUMPENSCHALTER", Vector3(51.84, y + 2.6, 70.0), -90.0, 22, Color(0.85, 0.82, 0.7, 0.85))
+	_label("VORSICHT · HOCHSPANNUNG", Vector3(51.84, y + 0.55, 70.0), -90.0, 14, Color(0.9, 0.75, 0.1, 0.9))
+	Props.pipe(dress, Vector3(51.9, y + 2.4, 70.0), Vector3(51.9, -0.4, 70.0), 0.04)
+	lamp(Vector3(50.6, y + 2.5, 70.0), INCAND, 1.0, 7.0, 0.06, 0.3, true, 6.0)
+	# the drowned sailors' effects by the columns, left as they were found: a sea chest, a cap, boots, a kit bag, a photograph
+	Props.trunk(dress, Vector3(48.6, y, 57.6), Vector3(49.6, y + 0.5, 58.2))
+	CYL(Vector3(48.9, y + 0.53, 57.9), 0.13, 0.05, "black_paint")
+	CYL(Vector3(48.9, y + 0.56, 57.9), 0.15, 0.015, "black_paint")
+	for bx: float in [47.7, 47.95]:
+		B(Vector3(bx, y, 58.4), Vector3(bx + 0.14, y + 0.32, 58.7), "leather")
+	Props.sack(dress, Vector3(47.2, y, 57.2), 40.0, 0.9)
+	Props.picture(dress, Vector3(49.1, y + 0.505, 57.8), 0.0, 0.12, 0.16)
+	DetailMap02.drips(dress, Vector3(40.0, -0.45, 62.0), Vector3(5.0, 0.05, 7.0), 2.5, 8)
+	DetailMap02.drips(dress, Vector3(45.0, -0.45, 77.0), Vector3(4.0, 0.05, 4.0), 2.5, 6)
+	_streaks(Vector3(51.84, y, 50.5), Vector3(51.84, y, 83.5), Vector3(-1, 0, 0), -0.4, 1.6, 5601)
+
+
+func _dress_u09_tower() -> void:
+	var y: float = TY
+	# the chart on the chart table, dividers; snow blown into the two cliff embrasures and the storm beyond them
+	# (cloud cards on the closets' back walls: the embrasures open onto the cliff), the sway in the gusts
+	B(Vector3(45.05, y + 0.851, 33.75), Vector3(46.95, y + 0.854, 34.65), "paper")
+	for k: int in 6:
+		B(Vector3(45.1, y + 0.855, 33.8 + k * 0.15), Vector3(46.9, y + 0.857, 33.805 + k * 0.15), "steel", false)
+	Props.strut(dress, Vector3(45.6, y + 0.86, 34.1), Vector3(45.9, y + 0.86, 34.35), 0.01, "brass", true)
+	Props.strut(dress, Vector3(45.6, y + 0.86, 34.1), Vector3(45.95, y + 0.86, 34.0), 0.01, "brass", true)
+	for wx: float in [45.0, 49.0]:
+		Props.snow_drift(dress, Vector3(wx, y, 31.2), Vector3(2.2, 0.22, 1.4))
+		var nm: String = "StormCard_TowerW" if wx < 47.0 else "StormCard_TowerE"
+		DetailMap02.storm_card(map_root, Vector3(wx, y + 1.5, 30.27), Vector2(2.6, 2.9), 0.0).name = nm
+	var sw: Node3D = Node3D.new()
+	sw.set_script(load("res://gravelight/world/tower_sway.gd"))
+	sw.name = "TowerSway"
+	sw.position = Vector3(47.0, y, 35.5)
+	sw.set("size", Vector3(10.0, 4.0, 5.0))
+	sw.set_meta("keep", true)
+	map_root.add_child(sw)
+	_streaks(Vector3(42.4, y, 33.16), Vector3(51.6, y, 33.16), Vector3(0, 0, 1), y + 3.8, 1.4, 5701)
 
 
 func _dress_readability() -> void:
@@ -1898,6 +2262,51 @@ func _dress_readability() -> void:
 				_noshadow(Props.block(g, Vector3(x - 0.025, 0.15, f * face), Vector3(x + 0.025, DOOR_H - 0.1, f * (face + 0.015)), "lumi_paint", false))
 
 
+# ================================================================== visibility (T-145)
+
+## Tags every loose visual outside the batches (lights, labels, decals, particles, kept meshes and spinners) with
+## its visibility group: meta "vis_group" + the persistent node group "view_cell_member" ViewCells collects. The
+## top-most node of a subtree that sits in one group is tagged (its children follow it); colliders, navigation and
+## gameplay nodes are never touched. Every light also gets meta "zone" (its zone id, for the census and WebProfile).
+func _tag_visibility(n: Node) -> void:
+	for c: Node in n.get_children():
+		if c == gameplay or c == geo or c.name == "StaticBatches" or c.name == "Navigation" or c is WorldEnvironment 				or c is DirectionalLight3D or c is FogVolume or not (c is Node3D) or c.name == "Snowfall" or c.name == "DustMotes":
+			continue
+		var visual: bool = c is VisualInstance3D or c.has_meta("keep") or c.get_script() != null
+		if not visual:
+			_tag_visibility(c)
+			continue
+		var p: Vector3 = _xform_to_root(c as Node3D).origin
+		if c is Light3D and not c.has_meta("vis"):
+			var par: Node = c.get_parent()
+			if par != null and par.has_meta("vis"):
+				c.set_meta("vis", par.get_meta("vis"))
+		var g: String = _vis_of(c, p)
+		if c is Light3D and not c.has_meta("zone"):
+			c.set_meta("zone", StringName(VIS_ZONE.get(g, "GLOBAL")))
+		for l: Node in c.find_children("*", "Light3D", true, false):
+			if not l.has_meta("zone"):
+				l.set_meta("zone", c.get_meta("zone", StringName(VIS_ZONE.get(g, "GLOBAL"))))
+		if g == "ALL":
+			_tag_visibility(c)
+			continue
+		c.set_meta("vis_group", g)
+		c.add_to_group(&"view_cell_member", true)
+
+
+func _add_view_cells() -> void:
+	var vc: Node = Node.new()
+	vc.set_script(load("res://gravelight/world/view_cells.gd"))
+	vc.name = "ViewCells"
+	var cells: Array = []
+	for c: Array in VIEW_CELLS:
+		var lo: Vector3 = c[1]
+		var hi: Vector3 = c[2]
+		cells.append({"name": str(c[0]), "aabb": AABB(lo, hi - lo), "show": PackedStringArray(c[3]), "moon": bool(c[4])})
+	vc.set("cells", cells)
+	map_root.add_child(vc)
+
+
 # ================================================================== batching
 
 ## Merges every static primitive mesh (collision visuals + dressing) into one ArrayMesh per
@@ -1915,25 +2324,34 @@ func merge_static_meshes() -> int:
 			var cell: Vector3i = Vector3i(floori(c.x / 22.0), floori((c.y + 7.0) / 9.0), floori(c.z / 22.0))
 			if absf(c.x - 16.0) > 90.0 or absf(c.z - 40.0) > 90.0:
 				cell = Vector3i(9999, 0, 0)   # the cliffs, the town, the sea bed: one batch per material
-			var key: String = "%d|%d|%s" % [mi.material_override.get_instance_id(), mi.cast_shadow, cell]
+			var vg: String = _vis_of(mi, xf * mi.mesh.get_aabb().get_center())   # T-145: batches never mix visibility groups
+			var key: String = "%d|%d|%s|%s" % [mi.material_override.get_instance_id(), mi.cast_shadow, cell, vg]
 			if not groups.has(key):
 				var st: SurfaceTool = SurfaceTool.new()
 				st.begin(Mesh.PRIMITIVE_TRIANGLES)
-				groups[key] = {"mat": mi.material_override, "shadow": mi.cast_shadow, "st": st}
+				groups[key] = {"mat": mi.material_override, "shadow": mi.cast_shadow, "st": st, "vis": vg}
 			(groups[key]["st"] as SurfaceTool).append_from(mi.mesh, 0, xf)
 			victims.append(mi)
 	var batch_root: Node3D = Node3D.new()
 	batch_root.name = "StaticBatches"
 	map_root.add_child(batch_root)
+	var holders: Dictionary = {}
 	var i: int = 0
 	for key: String in groups.keys():
 		var g: Dictionary = groups[key]
+		var vg2: String = str(g["vis"])
+		if not holders.has(vg2):
+			var h: Node3D = Node3D.new()
+			h.name = "VisGroup_" + vg2
+			h.set_meta("vis_group", vg2)
+			batch_root.add_child(h)
+			holders[vg2] = h
 		var out: MeshInstance3D = MeshInstance3D.new()
 		out.name = "Batch_%d" % i
 		out.mesh = _commit(g["st"])
 		out.material_override = g["mat"]
 		out.cast_shadow = g["shadow"]
-		batch_root.add_child(out)
+		(holders[vg2] as Node3D).add_child(out)
 		i += 1
 	for mi: MeshInstance3D in victims:
 		mi.get_parent().remove_child(mi)
@@ -2109,6 +2527,7 @@ func build_lights() -> void:
 		l.light_volumetric_fog_energy = 0.0
 		l.shadow_enabled = bool(e["shadow"])
 		l.set_meta("zone", StringName(zone))
+		l.set_meta("vis", str(e.get("vis", _vis_box(e["pos"]))))
 		l.set_meta("energy", float(e["energy"]) * POWER_GAIN)
 		l.add_to_group(&"power_lights", true)
 		map_root.add_child(l)
@@ -2125,7 +2544,8 @@ func build_lights() -> void:
 			s.spot_angle = float(sp["angle"])
 			s.spot_attenuation = 0.6
 			s.light_volumetric_fog_energy = 0.35
-			s.shadow_enabled = zone == "D_PENHALL" and i % 3 == 0
+			s.shadow_enabled = bool(sp.get("shadow", false))   # T-145: one key flood per zone casts (was every third hall flood)
+			s.set_meta("zone", StringName(zone))
 			l.add_child(s)
 		if not first.has(zone):
 			first[zone] = l
@@ -2176,6 +2596,9 @@ func build_lights() -> void:
 		l2.omni_attenuation = 1.1
 		l2.light_volumetric_fog_energy = float(e2["fog"])
 		l2.shadow_enabled = bool(e2["shadow"])
+		var vg2: String = str(e2.get("vis", _vis_box(e2["pos"])))
+		l2.set_meta("vis", vg2)
+		l2.set_meta("zone", StringName(VIS_ZONE.get(vg2, "GLOBAL")))
 		map_root.add_child(l2)
 		si += 1
 	var names: Dictionary = {}
@@ -2195,6 +2618,9 @@ func build_lights() -> void:
 		s3.light_volumetric_fog_energy = float(e3["fog"])
 		s3.shadow_enabled = bool(e3["shadow"])
 		s3.shadow_blur = 1.5
+		var vg3: String = str(e3.get("vis", _vis_box(e3["aim"])))   # a shaft lights the room it aims into
+		s3.set_meta("vis", vg3)
+		s3.set_meta("zone", StringName(VIS_ZONE.get(vg3, "GLOBAL")))
 		map_root.add_child(s3)
 	# local fog: sea mist at the pen mouth, a cold haze over the docks, drips in the pump deck, the boat's air
 	_fog("MouthMist", Vector3(16, 4, 86), Vector3(74, 10, 10), 0.05, Color(0.7, 0.78, 0.85), Color(0, 0, 0))
