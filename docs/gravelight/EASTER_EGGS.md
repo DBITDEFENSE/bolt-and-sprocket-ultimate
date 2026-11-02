@@ -652,7 +652,8 @@ s0a_load (a coffin on the crane: flag ballast_loaded)
     │  └ s2_cipher sequence "cipher" (CipherMachine in the signal tower; inputs_from cipher_inputs)
     └ (s3_log      collect lf_log x4, no prerequisite: LfPage, two seeded spots each)
       (s4_parts    build undertow, no prerequisite: the pump, the head, the shard after the 3rd dump)
- s5a_injector / s5b_battery / s5c_sequence   flags inj_* (DieselHoldout; any order after s1, s2, s3)
+ s5a_injector / s5b_battery / s5c_sequence   flags inj_* (DieselHoldout; any order after s1, s2, s3; one at a time: a second
+                                             refuses to start while another runs; the engine room x1.5 spawns, no ring spawns)
  └ s5_diesels   flag {all: inj_injector, inj_battery, inj_sequence}
     └ s6_boss   (needs s4_parts too) on_start summons der_kielholer at dock 2; flag boat_key (his drop, or the
        │         failsafe's floating key)
