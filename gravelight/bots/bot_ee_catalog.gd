@@ -323,6 +323,8 @@ static func verb(t: Dictionary, stage: String = "") -> String:
 			return "Covering you at %s" % what
 		"turn_key":
 			return "Standing at %s" % what
+		"scout":
+			return "Looking for %s" % what
 	return "On %s" % what
 
 

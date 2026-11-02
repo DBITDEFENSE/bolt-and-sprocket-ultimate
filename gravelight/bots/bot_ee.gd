@@ -435,6 +435,20 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 			w["crate"] = crate
 			w["can_trigger"] = crate != null and (Economy.get_scrip(player.player_id) >= CrateManager.cost() or _my_roll(crate))
 			w["mode"] = hub.mode() if hub_ok else ""   # U10 (T-163): Full Partner may do the task's full_partner stages
+		"scout":
+			w["known"] = hub_ok and hub.knowledge.knows(str(t.get("need", "")))
+			var visited: Dictionary = task.get("visited", {}) if active() else {}
+			var pts: Array = []
+			for zn: Node in brain.get_tree().get_nodes_in_group(&"zone_volumes"):
+				var zv: ZoneVolume = zn as ZoneVolume
+				if zv == null or not GameState.is_zone_open(zv.zone_id):
+					continue
+				var zp: Vector3 = brain.snap(zv.global_position)
+				if zp == Vector3.INF or not brain.reachable(zp):
+					continue
+				var zk: String = "%s@%d,%d" % [zv.zone_id, int(zp.x), int(zp.z)]
+				pts.append({"pos": zp, "key": zk, "d": _flat(zp, player.global_position) + absf(zp.y - player.global_position.y) * 3.0, "visited": visited.has(zk)})
+			w["points"] = pts
 		"hold_zone":
 			var running: bool = not QuestManager.holdout_state(qid, sid).is_empty()
 			w["holdout_running"] = running
@@ -526,7 +540,27 @@ static func plan(ty: String, t: Dictionary, w: Dictionary) -> Dictionary:
 			return plan_escort(t, w)
 		"turn_key":
 			return plan_turn_key(t, w)
+		"scout":
+			return plan_scout(t, w)
 	return {"do": "fail", "code": "no_task"}
+
+
+## U10 (T-163): scout for a "seen" need (the Four Bells' four spots): done once the squad knows it; else the nearest
+## open zone this bot hasn't walked through yet (a player looking round the map), and "not_found" once it has seen
+## them all. No knowledge of where the things are: only the map's open zones.
+static func plan_scout(_t: Dictionary, w: Dictionary) -> Dictionary:
+	if bool(w.get("known", false)):
+		return {"do": "done"}
+	var best: Dictionary = {}
+	for r: Variant in w.get("points", []):
+		var row: Dictionary = r
+		if bool(row.get("visited", false)):
+			continue
+		if best.is_empty() or float(row["d"]) < float(best["d"]):
+			best = row
+	if best.is_empty():
+		return {"do": "fail", "code": "not_found"}
+	return {"do": "scout_go", "pos": best["pos"], "key": str(best["key"])}
 
 
 ## Collect: the focus (a marked note) if it still counts, else the nearest eligible target not counted yet.
@@ -778,6 +812,16 @@ func _execute(delta: float) -> void:
 			_replan = true
 		"door":
 			_do_door(delta)
+		"scout_go":
+			var sp: Vector3 = _plan.get("pos", player.global_position)
+			var vk: String = str(_plan.get("key", ""))
+			var vis: Dictionary = task.get("visited", {})
+			if _walk(sp, 3.0, delta) or (brain.loco.is_stuck() and _now() - float(task.get("scout_t", _now())) > 25.0):
+				vis[vk] = true   # walked through (or this one won't be reached: the next)
+				task["visited"] = vis
+				task["scout_t"] = _now()
+				task["prog_t"] = _now()
+				_replan = true
 		_:
 			_idle(delta)
 

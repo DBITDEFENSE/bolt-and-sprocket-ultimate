@@ -520,6 +520,8 @@ func _full_partner() -> void:
 		if b2.mark != null and b2.mark.active():
 			continue   # on the player's map-mark order (T-069)
 		var best: Dictionary = pick_for(b2, taken, false)
+		if best.is_empty():
+			best = scout_job()   # U10 (T-163): nothing to do but a "seen" need: go and look
 		if not best.is_empty():
 			start_on(b2, best["qid"], best["sid"], best["t"], false, "full", null, best["as"])
 			busy += 1
@@ -543,6 +545,38 @@ func _main_first(taken: Dictionary) -> void:
 		start_on(b, best["qid"], best["sid"], best["t"], false, "full", null, best["as"])
 		if str(best["as"]) == "escort" or (str((best["t"] as Dictionary).get("type", "")) != "collect" and not (best["t"] as Dictionary).has("pickups")):
 			taken["%s/%s" % [best["qid"], best["sid"]]] = true
+
+
+## U10 (T-163): the main egg's open step blocked only by a "seen" need nobody has found (the Four Bells: "found
+## where the four little bells hang", learned by seeing them): one free Full Partner bot scouts the open zones.
+## {} when there is none, or someone already scouts.
+func scout_job() -> Dictionary:
+	for b: BotBrain in squad.brains:
+		if b.ee != null and b.ee.active() and str(b.ee.task.get("type", "")) == "scout":
+			return {}
+	var qids: Array[StringName] = QuestManager.quest_ids()
+	if qids.is_empty() or QuestManager.is_complete(qids[0]):
+		return {}
+	var qid: StringName = qids[0]
+	for st: Variant in QuestManager.steps_of(qid):
+		var sd: Dictionary = st as Dictionary
+		var sid: StringName = StringName(str(sd["id"]))
+		if not QuestManager.is_active(qid, sid):
+			continue
+		var t: Dictionary = BotEECatalog.task_def(sd)
+		for need: Variant in BotEECatalog.missing_info(t, knowledge.known):
+			if _seen_need(str(need)):
+				return {"qid": qid, "sid": sid, "t": {"type": "scout", "need": str(need), "what": str(knowledge.labels.get(str(need), "what we haven't found"))}, "as": "task"}
+	return {}
+
+
+## Is a bot_knowledge key one learned by seeing things (on_seen)?
+func _seen_need(key: String) -> bool:
+	for q: StringName in QuestManager.quest_ids():
+		var bk: Dictionary = QuestManager.definition(q).get("bot_knowledge", {})
+		if bk.has(key) and (bk[key] as Dictionary).get("on_seen") is Dictionary:
+			return true
+	return false
 
 
 ## U10 (T-163): a lit shoot_target with a then_hold (the Chapel bell: the Foreman comes 20 s later and must die in

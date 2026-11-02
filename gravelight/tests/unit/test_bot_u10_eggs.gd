@@ -198,6 +198,20 @@ func test_a_gun_is_taught_before_a_wonder() -> void:
 	assert_eq(BotBrain.best_to_teach([bell, taught], 1, eco), 0, "a gun taught already: the wonder may learn now")
 
 
+func test_plan_scout() -> void:
+	var t: Dictionary = {"type": "scout", "need": "bells"}
+	assert_eq(str(BotEE.plan_scout(t, {"known": true})["do"]), "done", "the squad has seen the bells: done")
+	var pts: Array = [{"pos": Vector3(30, 0, 0), "key": "A", "d": 30.0, "visited": false},
+		{"pos": Vector3(10, 0, 0), "key": "B", "d": 10.0, "visited": true},
+		{"pos": Vector3(20, 0, 0), "key": "C", "d": 20.0, "visited": false}]
+	var p: Dictionary = BotEE.plan_scout(t, {"known": false, "points": pts})
+	assert_eq(str(p["do"]), "scout_go")
+	assert_eq(str(p["key"]), "C", "the nearest open zone not walked through yet")
+	for r: Variant in pts:
+		(r as Dictionary)["visited"] = true
+	assert_eq(str(BotEE.plan_scout(t, {"known": false, "points": pts}).get("code", "")), "not_found", "every zone walked: give up")
+
+
 # ---------------------------------------------------------------- wonders from the bench
 
 func test_wonder_wanted() -> void:
