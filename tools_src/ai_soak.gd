@@ -380,7 +380,8 @@ func _physics_process(delta: float) -> void:
 		if _trace_t <= 0.0:
 			_trace_t = trace_s
 			for b: BotBrain in _map.squad.brains:
-				print("[trace] t=%.0f r%d %s | task %s" % [_game_t, RoundManager.current_round, b.status_line(), str(b.task.get("label", "-"))])
+				print("[trace] t=%.0f r%d %s | task %s%s" % [_game_t, RoundManager.current_round, b.status_line(), str(b.task.get("label", "-")),
+					(" | setpiece " + b.setpieces.describe()) if b.setpieces != null and b.setpieces.describe() != "" else ""])
 			if _pb != null and is_instance_valid(_pb) and _pb.brain != null:
 				var tb: BotTrainer = _pb.trainer
 				var pp: Vector3 = _map.player.global_position

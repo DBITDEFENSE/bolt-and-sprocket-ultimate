@@ -198,7 +198,11 @@ func think(now: float) -> void:
 
 
 func wants_control() -> bool:
-	return not move.is_empty()
+	if move.is_empty():
+		return false
+	# a non-urgent move (the wing walk, the vent lever, a pad, the climb to the perch) yields to a fight at arm's
+	# length and comes back after it (Q-19: a bot walking off on its errand went down with zombies at 3 m)
+	return urgent() or brain.perception.nearest_d >= float(c("moves", "yield_m", 6.0))
 
 
 ## The brain's override: a grip or a shelter outranks everything but a revive that is already on; the wing walk and
@@ -210,6 +214,15 @@ func urgent() -> bool:
 	return k == "grip" or k == "shelter"
 
 
+## Q-19: maps too tight to run from sprinters (the Kranich's hull): the squad stands together and shoots every round
+## (BotBrain.stand_fast, the special round's rule). setpieces.json stand_fast.maps.
+func stand_fast() -> bool:
+	if RoundManager.state != RoundManager.State.ROUND or brain.squad == null or brain.squad.map == null:
+		return false
+	var key: String = TrainingRoute.map_key_of(String(brain.squad.map.map_id))
+	return (c("stand_fast", "maps", []) as Array).has(key)
+
+
 func no_sprint() -> bool:
 	return storm or tilt_warned or str(move.get("kind", "")) == "grip"
 
@@ -218,7 +231,7 @@ func no_sprint() -> bool:
 func may_fire_at(z: Zombie, d: float) -> bool:
 	if not storm or z == null:
 		return true
-	var on_us: bool = d <= float(c("storm", "on_us_m", 4.0)) or (z.get("target") == player)
+	var on_us: bool = d <= float(c("storm", "on_us_m", 4.0))   # (a stalker keeps a target it no longer hears: distance only)
 	var urgent_: bool = brain.player.hp < brain.player.max_hp * 0.5 or _any_down()
 	var ok: bool = storm_may_fire(d, bool(z.get("hunt_by_sound")), on_us, urgent_, float(c("storm", "quiet_fire_m", 7.0)))
 	if not ok:
@@ -768,6 +781,16 @@ func _nearest(g: StringName) -> Node3D:
 			best_d = d
 			best = n as Node3D
 	return best
+
+
+## The counters for the soak's report ("" when nothing happened).
+func counts_line() -> String:
+	var parts: PackedStringArray = []
+	for k: String in ["grips", "shelters", "held_fire", "levers", "wing_walks", "wing_clips", "wing_tokens", "pads_taken", "perches"]:
+		var v: int = int(get(k))
+		if v > 0:
+			parts.append("%s %d" % [k, v])
+	return ", ".join(parts)
 
 
 func describe() -> String:

@@ -640,6 +640,8 @@ func in_break() -> bool:
 ## holds, no training, no running off alone; the squad stands together and shoots (combat.json / ai_counters
 ## hold_ground).
 func stand_fast() -> bool:
+	if setpieces != null and setpieces.stand_fast():
+		return true   # U10 (T-163, Q-19): the Kranich's hull, every round (setpieces.json stand_fast)
 	return RoundManager.is_special_round and RoundManager.state == RoundManager.State.ROUND
 
 
@@ -940,7 +942,7 @@ func _trap_value() -> float:
 		var trap: Node = lever.call("trap") if lever.has_method("trap") else null
 		var tid: StringName = StringName(str(trap.get("trap_id"))) if trap != null and trap.get("trap_id") != null else &""
 		var ordered: bool = order_node() == lever
-		if not BotEconomy.may_touch("trap", ordered, planner != null, _human_used_traps.has(tid)):
+		if not BotEconomy.may_touch("trap", ordered, planner != null, _human_used_traps.has(tid), squad.bots_alone()):
 			continue
 		var at: Vector3 = (trap as Node3D).global_position if trap is Node3D else lever.global_position
 		if perception.count_near(at, 6.0) < 5 and not ordered:

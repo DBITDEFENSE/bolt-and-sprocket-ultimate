@@ -191,8 +191,8 @@ static func door_allowed(e: Dictionary, ordered: bool, bot_led: bool, human_open
 ## parts ("part") only when ordered onto that object, or (traps) when the human already used that one, or for the
 ## local-AI planner bot (the user-sanctioned exception) when its setting is on. `self_led` (T-058): no human is in
 ## the match (BotSquad.bots_alone()), so the squad is its own leader and throws the power itself (the rule
-## protects a human's choices; with no human there is nobody to take the step from). Easter eggs, parts and
-## traps stay off limits even then. Everything else is fine.
+## protects a human's choices; with no human there is nobody to take the step from). Traps too, when the caller
+## passes bots_alone (U10 T-163: the Kranich's bay doors). Easter eggs and parts stay off limits even then.
 static func may_touch(kind: String, ordered: bool, planner: bool, human_did: bool, self_led: bool = false) -> bool:
 	match kind:
 		"quest", "part":
@@ -200,7 +200,8 @@ static func may_touch(kind: String, ordered: bool, planner: bool, human_did: boo
 		"power":
 			return ordered or planner or self_led
 		"trap":
-			return ordered or planner or human_did
+			# U10 (T-163, Q-19): with nobody human in the match (bots_alone) a trap is nobody's choice to protect
+			return ordered or planner or human_did or self_led
 	return true
 
 

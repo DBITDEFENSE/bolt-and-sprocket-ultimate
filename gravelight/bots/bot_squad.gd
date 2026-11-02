@@ -1277,6 +1277,8 @@ func report() -> PackedStringArray:
 			out.append("  " + b.planner.status_line())
 		if b.bonus_perk != &"":
 			out.append("  bonus perk %s (announced %s)" % [b.bonus_perk, str(b.bonus_said)])
+		if b.setpieces != null and b.setpieces.counts_line() != "":
+			out.append("  setpieces " + b.setpieces.counts_line())   # U10 (T-163)
 	var ts: Dictionary = think_stats()
 	out.append("squad: order %s, revives by bots %d, choke reports %d, brain %.3f ms/bot/frame (think %.3f ms)" % [command, revives_total(), choke_events.size(),
 		float(ts["ms_per_bot_frame"]), float(ts["ms_per_think"])])

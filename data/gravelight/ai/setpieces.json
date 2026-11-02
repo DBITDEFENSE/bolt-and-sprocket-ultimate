@@ -1,5 +1,13 @@
 {
   "_doc": "UPDATE 10 §7 (contract C7, DECISIONS T-163): the bots' rules for Fernflug's set-pieces (gravelight/bots/bot_setpieces.gd, BotSetPieces). Per-map positions live in routes_<map>.json 'setpieces' (the meteor shelters, the radar perch). Bot tuning only: nothing here changes a set-piece for a human.",
+  "stand_fast": {
+    "_doc": "Q-19 (T-163): acts too tight to run from sprinters: the squad stands together and shoots every round there (BotBrain.stand_fast, the special round's rule: no sprint-away retreat, no solo training, no window holds). In the Kranich the bots died backing into the hull walls.",
+    "maps": ["map04b"]
+  },
+  "moves": {
+    "_doc": "A non-urgent move (wing walk, lever, pad, the walk to the perch) gives the body back to the fight while a zombie is within yield_m; a rail in a breach's pull, the meteor shelter and the perch once climbed keep it.",
+    "yield_m": 6.0
+  },
   "storm": {
     "_doc": "Act III's dust storm (GroomController.dust_active): no sprinting, the formation at spacing_mult, and no shot at a stalker (Zombie.hunt_by_sound) farther than quiet_fire_m unless it is within on_us_m or chasing this bot, a teammate is down or the bot is under half health. A shot makes every stalker within 18 m hear it (SoundHunter: 6 m x3).",
     "quiet_fire_m": 7.0,
