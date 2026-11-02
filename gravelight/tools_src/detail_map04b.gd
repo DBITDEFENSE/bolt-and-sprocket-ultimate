@@ -538,10 +538,17 @@ static func kanzel(g: Variant) -> void:
 		cy(g.dress, Vector3(bx, 0.55, 25.0), 0.3, 1.1, pm)
 		cy(g.dress, Vector3(bx, 1.12, 24.95), 0.38, 0.08, "iron")
 		blk(g.dress, Vector3(bx - 0.25, 1.15, 24.6), Vector3(bx + 0.25, 1.4, 25.4), "machine_grey")
-		for gx: float in [-0.1, 0.1]:
-			cy(g.dress, Vector3(bx + gx, 1.45, 24.2), 0.035, 1.6, "black_paint", Vector3(90, 0, 0))
-			ns(cy(g.dress, Vector3(bx + gx, 1.45, 23.35), 0.05, 0.12, "black_paint", Vector3(90, 0, 0)))
-		blk(g.dress, Vector3(bx - 0.18, 1.3, 25.1), Vector3(bx + 0.18, 1.6, 25.55), "black_paint")   # the receiver
+		if bx > 73.0:
+			# the aft blister is the London window (LondonCam at x 74, y 1.5, z 25.4): its guns are stowed, swung up and
+			# to starboard, out of the camera's view
+			for gx2: float in [0.42, 0.6]:
+				cy(g.dress, Vector3(bx + gx2, 1.9, 24.75), 0.035, 1.5, "black_paint", Vector3(-20, 0, 0))
+			blk(g.dress, Vector3(bx + 0.3, 1.15, 24.9), Vector3(bx + 0.72, 1.45, 25.5), "black_paint")
+		else:
+			for gx: float in [-0.1, 0.1]:
+				cy(g.dress, Vector3(bx + gx, 1.45, 24.2), 0.035, 1.6, "black_paint", Vector3(90, 0, 0))
+				ns(cy(g.dress, Vector3(bx + gx, 1.45, 23.35), 0.05, 0.12, "black_paint", Vector3(90, 0, 0)))
+			blk(g.dress, Vector3(bx - 0.18, 1.3, 25.1), Vector3(bx + 0.18, 1.6, 25.55), "black_paint")   # the receiver
 		blk(g.dress, Vector3(bx + 0.25, 0.6, 24.5), Vector3(bx + 0.4, 0.9, 25.0), "olive_drab")    # the ammo can
 		for j: int in 6:
 			ns(Props.obox(g.dress, Vector3(bx + 0.3, 0.95 + 0.06 * float(j), 24.85 - 0.04 * float(j)), Vector3(0.12, 0.02, 0.05), "brass", Vector3(30, 0, 0)))

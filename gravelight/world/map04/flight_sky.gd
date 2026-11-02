@@ -164,11 +164,16 @@ func _ready() -> void:
 	_rescan()
 
 
+## A node of the act by name: under FlightSky's own map root first (the capture tool and the tests host the map
+## under another scene, which may carry its own WorldEnvironment), then the current scene.
 func _scene_find(n: String) -> Node:
-	var root: Node = get_tree().current_scene if get_tree().current_scene != null else get_parent()
-	if root == null:
-		return null
-	return root.find_child(n, true, false)
+	for root: Node in [get_parent(), get_tree().current_scene]:
+		if root == null:
+			continue
+		var found: Node = root.find_child(n, true, false)
+		if found != null:
+			return found
+	return null
 
 
 func _act_round() -> int:

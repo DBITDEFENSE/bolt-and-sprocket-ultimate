@@ -333,6 +333,13 @@ func _cam_do(map: Node, ops: Array) -> void:
 				if map.find_child("ExfilPoint", true, false) == null and map is MapRoot:
 					ExfilPoint.spawn(map as MapRoot)
 					await _secs(0.5)
+			"call":
+				# "call:<node>:<method>[:<wait s>]" (T-147): a set-piece by its own entry point, e.g. the Kranich's
+				# London window (FlightController.start_london), shot `wait` seconds in
+				var cn: Node = map.find_child(op[1], true, false) if op.size() > 2 else null
+				if cn != null and cn.has_method(op[2]):
+					cn.call(op[2])
+					await _secs(float(op[3]) if op.size() > 3 else 1.0)
 
 
 static func load_cams() -> Dictionary:
