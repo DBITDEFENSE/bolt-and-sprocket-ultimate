@@ -584,6 +584,21 @@
    ]
   },
   {
+   "folder": "assets/third_party/polyhaven/dirt-aerial-02",
+   "source": "polyhaven",
+   "id": "dirt-aerial-02",
+   "title": "Dirt Aerial 02",
+   "author": "Rob Tuytel",
+   "url": "https://polyhaven.com/a/dirt_aerial_02",
+   "license": "CC0",
+   "credit": "\"Dirt Aerial 02\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/dirt_aerial_02_albedo.png",
+    "textures/dirt_aerial_02_normal.png",
+    "textures/dirt_aerial_02_orm.png"
+   ]
+  },
+  {
    "folder": "assets/third_party/polyhaven/dirty-concrete",
    "source": "polyhaven",
    "id": "dirty-concrete",
@@ -596,6 +611,21 @@
     "textures/dirty_concrete_albedo.png",
     "textures/dirty_concrete_normal.png",
     "textures/dirty_concrete_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/factory-brick",
+   "source": "polyhaven",
+   "id": "factory-brick",
+   "title": "Factory Brick",
+   "author": "Rob Tuytel",
+   "url": "https://polyhaven.com/a/factory_brick",
+   "license": "CC0",
+   "credit": "\"Factory Brick\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/factory_brick_albedo.png",
+    "textures/factory_brick_normal.png",
+    "textures/factory_brick_orm.png"
    ]
   },
   {
@@ -1827,6 +1857,17 @@
    ]
   },
   {
+   "credit": "\"Dirt Aerial 02\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Dirt Aerial 02"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/dirt-aerial-02"
+   ]
+  },
+  {
    "credit": "\"Dirty Concrete\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
    "license": "CC0",
    "source": "polyhaven",
@@ -1835,6 +1876,17 @@
    ],
    "folders": [
     "assets/third_party/polyhaven/dirty-concrete"
+   ]
+  },
+  {
+   "credit": "\"Factory Brick\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Factory Brick"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/factory-brick"
    ]
   },
   {

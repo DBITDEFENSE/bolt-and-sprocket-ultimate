@@ -99,6 +99,7 @@
     "ambient": {
       "map00_crossroads": "ambient_map00",
       "map01_kaltenbrunn": "ambient_map01",
+      "map04a_thalbach": "wind_howl",
       "default": "ambient_map00",
       "map02_totenhafen": "ambient_map02_storm"
     },
@@ -3852,6 +3853,110 @@
         1.0
       ],
       "max_voices": 2,
+      "loop": true
+    },
+    "ambient_map04a_siedlung": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map04a_siedlung_bed.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04a_bahnhof": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map04a_bahnhof_bed.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04a_kantine": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map04a_kantine_bed.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04a_church": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map04a_church_bed.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04a_montage": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map04a_montage_bed.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04a_tunnel": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map04a_tunnel_bed.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04a_pits": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map04a_pits_bed.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04a_hangar": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map04a_hangar_bed.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
       "loop": true
     }
   }
