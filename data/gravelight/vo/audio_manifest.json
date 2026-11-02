@@ -32166,6 +32166,90 @@
       "delivery": "calm",
       "lufs": -17.56,
       "phonemes": "ˌI ɐm nˌɒt ɾˈItɪŋ dat wˈan dˌWn."
+    },
+    "PA_M4B_BAYDOORS_01": {
+      "line": "PA_M4B_BAYDOORS_01",
+      "speaker": "PA",
+      "hash": "e39dce1097db8cbd",
+      "path": "res://gravelight/audio/vo/pa/PA_M4B_BAYDOORS_01.ogg",
+      "format": "ogg",
+      "duration": 4.614,
+      "voice": "David",
+      "engine": "onecore",
+      "source": "tts",
+      "chain": "pa"
+    },
+    "PA_M4B_DECOMP_01": {
+      "line": "PA_M4B_DECOMP_01",
+      "speaker": "PA",
+      "hash": "b9dc664861fd8380",
+      "path": "res://gravelight/audio/vo/pa/PA_M4B_DECOMP_01.ogg",
+      "format": "ogg",
+      "duration": 6.022,
+      "voice": "David",
+      "engine": "onecore",
+      "source": "tts",
+      "chain": "pa"
+    },
+    "PA_M4B_LASTCALL_01": {
+      "line": "PA_M4B_LASTCALL_01",
+      "speaker": "PA",
+      "hash": "47a83156bec147a3",
+      "path": "res://gravelight/audio/vo/pa/PA_M4B_LASTCALL_01.ogg",
+      "format": "ogg",
+      "duration": 10.849,
+      "voice": "David",
+      "engine": "onecore",
+      "source": "tts",
+      "chain": "pa"
+    },
+    "PA_M4B_LASTCALL_02": {
+      "line": "PA_M4B_LASTCALL_02",
+      "speaker": "PA",
+      "hash": "b5f7e0baccefd3b6",
+      "path": "res://gravelight/audio/vo/pa/PA_M4B_LASTCALL_02.ogg",
+      "format": "ogg",
+      "duration": 8.298,
+      "voice": "David",
+      "engine": "onecore",
+      "source": "tts",
+      "chain": "pa"
+    },
+    "PA_M4B_LASTCALL_03": {
+      "line": "PA_M4B_LASTCALL_03",
+      "speaker": "PA",
+      "hash": "e13381ce99422408",
+      "path": "res://gravelight/audio/vo/pa/PA_M4B_LASTCALL_03.ogg",
+      "format": "ogg",
+      "duration": 9.782,
+      "voice": "David",
+      "engine": "onecore",
+      "source": "tts",
+      "chain": "pa"
+    },
+    "PA_M4B_POWER_01": {
+      "line": "PA_M4B_POWER_01",
+      "speaker": "PA",
+      "hash": "d6fc30a8067b1a72",
+      "path": "res://gravelight/audio/vo/pa/PA_M4B_POWER_01.ogg",
+      "format": "ogg",
+      "duration": 6.11,
+      "voice": "David",
+      "engine": "onecore",
+      "source": "tts",
+      "chain": "pa"
+    },
+    "PA_M4B_WING_01": {
+      "line": "PA_M4B_WING_01",
+      "speaker": "PA",
+      "hash": "8b6203fd87d60d5d",
+      "path": "res://gravelight/audio/vo/pa/PA_M4B_WING_01.ogg",
+      "format": "ogg",
+      "duration": 6.692,
+      "voice": "David",
+      "engine": "onecore",
+      "source": "tts",
+      "chain": "pa"
     }
   },
   "missing": {
