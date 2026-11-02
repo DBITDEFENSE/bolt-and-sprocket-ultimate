@@ -607,6 +607,7 @@ func _dress_yard() -> void:
 	_air_post_dressing(Vector3(-24, 0, 84))
 	_air_post_dressing(Vector3(24, 0, 84))
 	_dome_caps()
+	_shadow_shells()
 	# the yard's light: the Sun (the scene's Moon node, set in gameplay_extra), earthshine, the smile's glow
 	fog("YardDust", Vector3(0, 0.5, 85), Vector3(80, 1.2, 50), 0.008, Color(0.6, 0.6, 0.65))
 	D.omni(map_root, "Lamp_C_Earthshine", Vector3(0, 14.0, 88.0), Color(0.5, 0.62, 0.95), 0.32, 75.0, "C_YARD")
@@ -632,6 +633,10 @@ func _boulder_chunks(lo: Vector3, hi: Vector3, rng: RandomNumberGenerator) -> vo
 		var s: Vector3 = Vector3(sz.x * rng.randf_range(0.45, 0.7), sz.y * rng.randf_range(0.5, 0.75), sz.z * rng.randf_range(0.45, 0.7))
 		var rk: MeshInstance3D = D.ball(dress, Vector3(c.x + off.x, hi.y - s.y * 0.25, c.z + off.z), s, "rim_rock")
 		rk.rotation = Vector3(deg_to_rad(rng.randf_range(-14, 14)), rng.randf_range(0, TAU), deg_to_rad(rng.randf_range(-14, 14)))
+	for side: float in [-1.0, 1.0]:
+		var bz: float = c.z + side * sz.z * 0.5
+		var bulge: MeshInstance3D = D.ball(dress, Vector3(c.x + rng.randf_range(-0.6, 0.6), sz.y * 0.45, bz), Vector3(sz.x * 0.8, sz.y * 0.95, 0.5), "rim_rock")
+		bulge.rotation.y = rng.randf_range(-0.25, 0.25)
 	for k2: int in 3:
 		var p: Vector3 = Vector3(rng.randf_range(lo.x - 0.3, hi.x + 0.3), 0.0, rng.randf_range(lo.z - 0.3, hi.z + 0.3))
 		var pb: MeshInstance3D = D.ball(dress, p + Vector3(0, 0.12, 0), Vector3(0.7, 0.4, 0.55) * rng.randf_range(0.6, 1.2), "rim_rock")
@@ -647,8 +652,11 @@ func _rim(rng: RandomNumberGenerator) -> void:
 		var b: Vector3 = r[1]
 		var n: int = int((b - a).length() / 3.2)
 		for i: int in n:
-			var p: Vector3 = a.lerp(b, (float(i) + 0.5) / float(n))
-			var h: float = rng.randf_range(0.6, 1.9)
+			var p: Vector3 = a.lerp(b, clampf((float(i) + 0.5 + rng.randf_range(-0.4, 0.4)) / float(n), 0.0, 1.0))
+			var h: float = rng.randf_range(0.4, 2.4)
+			if rng.randf() < 0.3:
+				var st: MeshInstance3D = D.ball(dress, p + Vector3(rng.randf_range(-1.0, 1.0), RIM_H + h * 0.9, 0), Vector3(1.6, 1.0, 1.4) * rng.randf_range(0.7, 1.3), "rim_rock")
+				st.rotation = Vector3(deg_to_rad(rng.randf_range(-20, 20)), rng.randf_range(0, TAU), 0)
 			var top: MeshInstance3D = D.ball(dress, p + Vector3(0, RIM_H + h * 0.15, 0), Vector3(rng.randf_range(2.8, 4.2), h * 1.4, rng.randf_range(2.0, 2.8)), "rim_rock")
 			top.rotation = Vector3(deg_to_rad(rng.randf_range(-10, 10)), rng.randf_range(0, PI), deg_to_rad(rng.randf_range(-12, 12)))
 			var out: Vector3 = Vector3(signf(p.x) if absf(p.x) > 40.5 else 0.0, 0.0, 1.0 if p.z > 110.5 else 0.0)
@@ -766,7 +774,7 @@ func _dish_foundation() -> void:
 func _smile() -> void:
 	var g: Node3D = Props.group(dress, "Smile", Vector3(0, 30.0, 214.0))
 	# the group lies on the crater wall's slope (local Y up the slope, local Z out toward the yard)
-	g.basis = Basis(Vector3(-1, 0, 0), Vector3(0, 0.53, 0.85), Vector3(0, 0.85, -0.53))
+	g.basis = Basis(Vector3(-1, 0, 0), Vector3(0, 0.906, 0.423), Vector3(0, 0.423, -0.906))
 	D.blk(g, Vector3(-40, -16, -2.6), Vector3(40, 14, -0.4), "rim_rock")
 	var n: int = 16
 	for i: int in n:
@@ -798,6 +806,27 @@ func _air_post_dressing(p: Vector3) -> void:
 	D.cyl(g, py + Vector3(0, 3.1, 0), 0.12, 0.2, "dm_glow_white")
 	D.cyl(g, py + Vector3(-side * 0.25, 1.1, 0), 0.32, 0.18, "dm_steel_dark", Vector3(0, 0, 90))
 	Props.cable(g, py + Vector3(-side * 0.3, 1.0, 0), Vector3(side * 0.3, 0.9, 0), 0.35, 0.03, 8, "rubber")
+
+
+## Shadow-only shells (never drawn): a 2 m slab over each lid and 1 m slabs outside the east and south hulls. The
+## lids are 0.3 m; with the Sun this low the shadow map lost them and light leaked down the hall's west wall in teeth.
+func _shadow_shells() -> void:
+	for d: Array in [[Vector3(-12.3, CEIL_A, -0.3), Vector3(12.3, CEIL_A, 24.3)], [Vector3(-12.3, CEIL_B, 23.7), Vector3(12.3, CEIL_B, 60.3)],
+			[Vector3(11.7, CEIL_D, 23.7), Vector3(44.3, CEIL_D, 60.3)], [Vector3(11.7, CEIL_E, -16.3), Vector3(44.3, CEIL_E, 24.3)],
+			[Vector3(13.7, CEIL_F, -44.3), Vector3(25.5, CEIL_F, -15.7)], [Vector3(30.5, CEIL_F, -44.3), Vector3(42.3, CEIL_F, -15.7)],
+			[Vector3(25.5, CEIL_F, -44.3), Vector3(30.5, CEIL_F, -32.5)], [Vector3(25.5, CEIL_F, -27.5), Vector3(30.5, CEIL_F, -15.7)]]:
+		var lo: Vector3 = d[0]
+		var hi: Vector3 = d[1]
+		_shadow_only(Vector3(lo.x, lo.y + 0.3, lo.z), Vector3(hi.x, hi.y + 2.3, hi.z))
+	for e: Array in [[Vector3(12.3, 0, -0.3), Vector3(13.3, CEIL_A + 2.3, 24.3)], [Vector3(44.3, 0, 23.7), Vector3(45.3, CEIL_D + 2.3, 60.3)],
+			[Vector3(44.3, 0, -16.3), Vector3(45.3, CEIL_E + 2.3, 24.3)], [Vector3(42.3, 0, -44.3), Vector3(43.3, CEIL_F + 2.3, -15.7)],
+			[Vector3(-12.3, 0, -1.3), Vector3(12.3, CEIL_A + 2.3, -0.3)], [Vector3(13.7, 0, -45.3), Vector3(42.3, CEIL_F + 2.3, -44.3)]]:
+		_shadow_only(e[0], e[1])
+
+
+func _shadow_only(a: Vector3, b: Vector3) -> void:
+	var mi: MeshInstance3D = D.blk(dress, a, b, "dm_graphite")
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
 
 
 ## The domes seen from the yard: a shallow cap over each lid (above the ceiling, so nothing shows inside).
@@ -1117,7 +1146,7 @@ func _dress_account() -> void:
 func _first_retained() -> void:
 	var g: Node3D = Props.group(dress, "Pilch", Vector3(28, 0, -39.75))
 	D.blk(g, Vector3(-1.5, 0.0, -1.25), Vector3(1.5, 0.42, 1.25), "dm_graphite")
-	D.blk(g, Vector3(-1.38, 0.08, -1.13), Vector3(1.38, 0.43, 1.13), "dm_violet_deep")
+	D.blk(g, Vector3(-1.38, 0.06, -1.13), Vector3(1.38, 0.09, 1.13), "dm_violet_deep")
 	D.blk(g, Vector3(-1.52, 0.42, -1.27), Vector3(1.52, 0.47, 1.27), "dm_chrome")
 	D.blk(g, Vector3(-1.4, 0.46, -1.15), Vector3(1.4, 0.5, 0.25), "dm_frosted")
 	D.blk(g, Vector3(-1.4, 0.46, 0.25), Vector3(1.4, 0.5, 1.15), "dm_glass")

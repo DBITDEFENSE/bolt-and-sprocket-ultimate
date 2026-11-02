@@ -28,9 +28,9 @@ const PBR: Dictionary = {
 	"floor_d": ["concrete-floor-painted", "concrete_floor_painted", 2.6, [0.9, 0.97, 1.12], [0.3, 0.85], 0.0, 0.25, 1.0, ""],
 	"floor_e": ["granite-tile", "granite_tile", 2.3, [0.78, 0.7, 0.98], [0.06, 0.4], 0.0, 0.05, 0.8, ""],
 	"floor_f": ["marble-tiles", "marble_tiles", 1.2, [0.34, 0.27, 0.46], [0.05, 0.3], 0.0, 0.05, 0.7, ""],
-	"regolith": ["moon-dusted-01", "moon_dusted_01", 2.4, [0.6, 0.6, 0.62], [0.82, 1.0], 0.0, 0.0, 1.2, ""],
-	"regolith_far": ["moon-dusted-01", "moon_dusted_01", 7.0, [0.42, 0.42, 0.45], [0.85, 1.0], 0.0, 0.0, 1.0, ""],
-	"rim_rock": ["moon-dusted-01", "moon_dusted_01", 3.2, [0.34, 0.34, 0.36], [0.85, 1.0], 0.0, 0.0, 1.6, ""],
+	"regolith": ["moon-dusted-01", "moon_dusted_01", 2.4, [0.46, 0.46, 0.48], [0.82, 1.0], 0.0, 0.0, 1.2, ""],
+	"regolith_far": ["moon-dusted-01", "moon_dusted_01", 7.0, [0.32, 0.32, 0.34], [0.85, 1.0], 0.0, 0.0, 1.0, ""],
+	"rim_rock": ["moon-dusted-01", "moon_dusted_01", 3.2, [0.3, 0.3, 0.32], [0.85, 1.0], 0.0, 0.0, 1.6, ""],
 	"wall_d": ["box-profile-metal-sheet", "box_profile_metal_sheet", 2.0, [0.66, 0.68, 0.72], [0.3, 0.7], 0.6, 0.1, 1.0, "white"],
 	"hull": ["box-profile-metal-sheet", "box_profile_metal_sheet", 3.0, [0.74, 0.74, 0.76], [0.4, 0.8], 0.3, 0.3, 0.6, "white"],
 }
