@@ -31,8 +31,9 @@ extends RefCounted
 ##                  to the nearest shelter point (routes_map04d.json "setpieces.meteor_shelter"), until it is over
 ##   shaft grate    `shaft_grate_lever`: pulled when enough of the dead stand on the grate (`shaft_grate`) and the
 ##                  bot can spare the price; the open grate is a danger zone
-##   Pohl's favour  an optional task the bots leave to the player (his tag is a story item; tag_slot is
-##                  player-facing): not taken by bots (documented choice, T-163)
+##   Pohl's favour  an optional task (self-led, Full Partner or ordered; a quiet spell): accept it at Pohl
+##                  (ExtraPerson "pohl": a "deliver" favour, the tag comes at once), carry the tag to the Account
+##                  console's `tag_slot` once the Account is reachable, never after CANCEL
 
 const CFG_PATH: String = "res://data/gravelight/ai/setpieces.json"
 
@@ -64,6 +65,8 @@ var _perch_t: float = 0.0
 var _perch_stage: String = ""
 var _perch_climb_t: float = 0.0
 var perches: int = 0
+var favours: int = 0
+var _favour_t: float = 0.0
 var pads_taken: int = 0
 var _scan_t: float = 0.0
 var _nodes: Dictionary = {}   # group -> Array[Node] (refreshed every 3 s)
@@ -176,7 +179,7 @@ func think(now: float) -> void:
 		return
 	if str(move.get("kind", "")) == "shelter":
 		_end_move()
-	if str(move.get("kind", "")) == "wing_walk" or str(move.get("kind", "")) == "perch":
+	if ["wing_walk", "perch", "favour"].has(str(move.get("kind", ""))):
 		return   # the walk / the perch runs to its end (run() finishes or ends it)
 	var lv: Dictionary = _lever_plan(now)
 	if not lv.is_empty():
@@ -195,6 +198,10 @@ func think(now: float) -> void:
 	var pr: Dictionary = _perch_plan(now)
 	if not pr.is_empty():
 		_set_move(pr)
+		return
+	var fv: Dictionary = _favour_plan(now)
+	if not fv.is_empty():
+		_set_move(fv)
 
 
 func wants_control() -> bool:
@@ -475,6 +482,8 @@ func _wing_plan(now: float) -> Dictionary:
 	}
 	if not wing_walk_ok(w):
 		return {}
+	if brain.squad.bots_alone() and brain.order_id() != &"wing_walk" and not (RoundManager.state == RoundManager.State.BREAK 			and RoundManager.break_left >= float(c("wing_walk", "alone_break_s", 25.0))):
+		return {}   # Q-19: three bots alone don't split up for it mid-round (no human covers the rest)
 	if not brain.squad.blackboard.claim("wing_walk", player.player_id, "wing_walk", now, now + float(c("wing_walk", "max_s", 120.0))):
 		return {}
 	return {"kind": "wing_walk", "walk": ww, "chest": chest, "t0": now}
@@ -620,6 +629,58 @@ func _run_perch(delta: float) -> void:
 					_perch_climb_t = float(tl.get("climb_s")) + 1.0
 
 
+## Pohl's favour (Act IV): the person node and his slot, when the favour is still to do and the slot can be reached.
+func _favour_plan(now: float) -> Dictionary:
+	if now < _favour_t:
+		return {}
+	_favour_t = now + 3.0
+	var slot: Node3D = _first(&"tag_slot") as Node3D
+	if slot == null or bool(slot.get("done")) or GameState.has_flag(&"cancelled"):
+		return {}
+	var person: Node3D = slot.call("person") as Node3D if slot.has_method("person") else null
+	if person == null or int(person.get("favour")) == 3:
+		return {}
+	var allowed: bool = brain.squad.bot_led() or brain.order_id() == &"favour"
+	if not allowed and brain.ee != null and brain.ee.hub != null:
+		allowed = brain.ee.hub.mode() == "full"
+	if not allowed or storm or not (brain.in_break() or brain.perception.nearest_d >= float(c("favour", "quiet_m", 18.0))):
+		return {}
+	var st: Vector3 = brain.stand_point(slot)
+	if st == Vector3.INF:
+		return {}   # the Account is still shut
+	if not brain.squad.blackboard.claim("pohl_favour", player.player_id, "favour", now, now + float(c("favour", "max_s", 90.0))):
+		return {}
+	return {"kind": "favour", "person": person, "slot": slot, "t0": now}
+
+
+func _run_favour(delta: float) -> void:
+	var person: Node3D = move.get("person") as Node3D
+	var slot: Node3D = move.get("slot") as Node3D
+	var now: float = brain.squad.time()
+	if person == null or slot == null or not is_instance_valid(person) or not is_instance_valid(slot) or bool(slot.get("done")) 			or GameState.has_flag(&"cancelled") or now - float(move.get("t0", now)) > float(c("favour", "max_s", 90.0)):
+		brain.squad.blackboard.release("pohl_favour", player.player_id)
+		_end_move()
+		return
+	if int(person.get("favour")) == 0:
+		var spot: Vector3 = person.call("spot") if person.has_method("spot") else person.global_position
+		if _run_walk(brain.snap(spot), delta, true) or _flat(spot, player.global_position) < 2.0:
+			_hold_t += delta
+			brain.loco.look_at_dir(person.global_position - player.global_position)
+			if _hold_t >= 1.0:
+				person.call("accept_favour", player)
+				_hold_t = 0.0
+		return
+	var st: Vector3 = brain.stand_point(slot)
+	if _run_walk(st if st != Vector3.INF else brain.snap(slot.global_position), delta, true) or _flat(slot.global_position, player.global_position) < 1.8:
+		_hold_t += delta
+		brain.loco.look_at_dir(slot.global_position - player.global_position)
+		if _hold_t >= float(slot.call("hold_time", player)) and bool(slot.call("can_interact", player)):
+			slot.call("interact", player)
+			favours += 1
+			brain.squad.blackboard.release("pohl_favour", player.player_id)
+			_end_move()
+
+
 func _hatch(direction: String) -> Node:
 	for h: Node in _group(&"wing_hatches"):
 		if str(h.get("direction")) == direction:
@@ -654,6 +715,8 @@ func run(delta: float) -> void:
 			_run_pad(delta)
 		"perch":
 			_run_perch(delta)
+		"favour":
+			_run_favour(delta)
 		_:
 			brain.loco.stop()
 
@@ -786,7 +849,7 @@ func _nearest(g: StringName) -> Node3D:
 ## The counters for the soak's report ("" when nothing happened).
 func counts_line() -> String:
 	var parts: PackedStringArray = []
-	for k: String in ["grips", "shelters", "held_fire", "levers", "wing_walks", "wing_clips", "wing_tokens", "pads_taken", "perches"]:
+	for k: String in ["grips", "shelters", "held_fire", "levers", "wing_walks", "wing_clips", "wing_tokens", "pads_taken", "perches", "favours"]:
 		var v: int = int(get(k))
 		if v > 0:
 			parts.append("%s %d" % [k, v])

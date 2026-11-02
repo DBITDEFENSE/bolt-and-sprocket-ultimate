@@ -29,7 +29,9 @@
     "_doc": "Act II's wing walk as a risky optional task: one bot, self-led squads / Full Partner / ordered, only in a break or with nothing known within quiet_m, hp at least hp_min, never in a warned tilt; clip in at the first tether post, the wingtip locker's token (and part), back in. Given up after max_s.",
     "quiet_m": 18.0,
     "hp_min": 0.7,
-    "max_s": 120.0
+    "max_s": 120.0,
+    "_doc_alone": "With no human in the match (bots_alone) only in a break with at least alone_break_s left (Q-19: the walk split a three-bot squad in its hardest act).",
+    "alone_break_s": 25.0
   },
   "meteor": {
     "_doc": "Act IV's meteor shower: from the warning to the end, out of the yard box (grown by box_margin_m) to the nearest shelter point.",
@@ -47,6 +49,11 @@
     "min_trip_m": 18.0,
     "max_detour_m": 12.0,
     "gain_m": 8.0
+  },
+  "favour": {
+    "_doc": "Act IV's Pohl: his favour as an optional task (self-led, Full Partner or ordered): in a break or with nothing known within quiet_m, accept it at Pohl and read his tag in at the Account's slot once that is reachable; never after CANCEL; given up after max_s.",
+    "quiet_m": 18.0,
+    "max_s": 90.0
   },
   "perch": {
     "_doc": "Act III's radar tower perch: the high-ground shooter goes up with nothing within quiet_m, comes down when crowd zombies are within 4 m of the deck, below hp_min, a teammate down, the storm or the break; cooldown_s before the next climb.",

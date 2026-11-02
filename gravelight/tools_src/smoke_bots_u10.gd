@@ -6,7 +6,8 @@ extends Node
 ##   2. Act II, the wing walk (a risky optional task, Full Partner): a bot climbs out, clips in before walking the
 ##      catwalk, takes the wingtip locker's discount token and climbs back in; a decompression's warning sends a bot
 ##      near the breach to a rail (RailGrip holders) and it lets go when the event is over.
-##   3. Act IV, the meteor shower: from the warning on, the bots in the yard go under the concourse roof.
+##   3. Act IV, the meteor shower: from the warning on, the bots in the yard go under the concourse roof; Pohl's
+##      favour (Full Partner, the Account open): a bot takes his tag and reads it in at the console's slot.
 ## The bots worker's searchlight-order case (Totenhafen) is added by the lead's half of T-163.
 ## Each phase loads its act the launcher's way (Campaign.begin_at with the arrival kit), god mode, rounds stopped.
 ## Usage: godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/smoke_bots_u10.tscn
@@ -345,6 +346,25 @@ func _meteors() -> void:
 	for b3: BotBrain in _brains():
 		sheltered += b3.setpieces.shelters
 	_check(sheltered >= 3, "each took the shelter move (%d)" % sheltered)
+	await _until(func() -> bool: return not bool(ms.get("active")) and not bool(ms.get("warning")), 60.0)
+	# Pohl's favour: Full Partner, the Account open (the columns' flag), nothing about
+	GLSettings.values["bot_ee_help"] = "full"
+	GameState.set_flag(&"account_open")
+	GameState.open_zone(&"F_CORE")
+	for z: Zombie in _dir().active_zombies():
+		z.kill_silently()
+	await _tp(Vector3(28, 0, 36))
+	await _bots_to(Vector3(26, 0, 38))
+	var slot: Node = get_tree().get_first_node_in_group(&"tag_slot")
+	_check(slot != null, "the Account console's tag slot")
+	if slot == null:
+		return
+	var read: bool = await _until(func() -> bool: return bool(slot.get("done")), 120.0)
+	var by: String = ""
+	for b4: BotBrain in _brains():
+		if b4.setpieces.favours > 0:
+			by = String(b4.player.character_id)
+	_check(read and GameState.has_flag(&"pohl_tag_read") and by != "", "a bot read Pohl's tag into the record (%s)" % by)
 
 
 func _finish() -> void:

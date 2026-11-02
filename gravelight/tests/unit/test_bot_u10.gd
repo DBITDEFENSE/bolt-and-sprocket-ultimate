@@ -163,6 +163,15 @@ func test_meteor_shower_says_when_it_warns() -> void:
 	ms.free()
 
 
+func test_pohl_slot_takes_a_bot() -> void:
+	var src: String = FileAccess.get_file_as_string("res://gravelight/world/map04/tag_slot.gd")
+	var ci: String = src.get_slice("func can_interact", 1).get_slice("func hold_time", 0)
+	assert_false(ci.contains("is_bot"), "the slot's can_interact lets a bot read the tag in (only its prompt is the player's)")
+	var pe: Dictionary = (GLData.load_json("res://data/gravelight/people_extra.json").get("people", {}) as Dictionary).get("pohl", {})
+	assert_eq(str((pe.get("favour", {}) as Dictionary).get("kind", "")), "deliver", "Pohl's favour hands the tag over at once")
+	assert_true(BotSetPieces.cfg().has("favour"))
+
+
 func test_lever_rule() -> void:
 	assert_true(BotSetPieces.lever_worth(5, 4000, 1000, false, 4, 1500))
 	assert_false(BotSetPieces.lever_worth(3, 4000, 1000, false, 4, 1500), "too few on the grate")
