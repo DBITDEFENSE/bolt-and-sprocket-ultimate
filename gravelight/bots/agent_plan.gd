@@ -131,6 +131,29 @@ static func egg_may_work_now(brain: BotBrain) -> bool:
 	return RoundManager.state != RoundManager.State.ROUND
 
 
+## U10 (T-163) pure: does the plan's purchase come before the egg in this break? A perk, gun or door step the agent
+## can pay for (price + the reserve) while the brain has a buy to make (its buy score over buy_first_score): the
+## 10-15 s breaks went to egg work (ee_task 0.85 beat buy 0.78) and the U10 god-mode soak's agent held 21,000 Scrip
+## at round 12 without Ironhide (its plan's step since round 8). Never mid-round (the trainer owns the round).
+static func buy_first_rule(step: Dictionary, price: int, scrip: int, keep: int, buy_score: float, in_round: bool, min_score: float = 0.3) -> bool:
+	if in_round or step.is_empty() or price < 0:
+		return false
+	if not (step.has("perk") or step.has("gun") or step.has("door")):
+		return false
+	return scrip >= price + keep and buy_score > min_score
+
+
+static func buy_first(brain: BotBrain) -> bool:
+	if brain == null or not brain.is_player_bot or brain.squad == null or brain.squad.map == null:
+		return false
+	var step: Dictionary = current_for(brain)
+	if step.is_empty():
+		return false
+	var keep: int = int((BotAIData.table("economy").get("reserve", {}) as Dictionary).get("min_scrip", 300))
+	return buy_first_rule(step, price_of(step, brain), Economy.get_scrip(brain.player.player_id), keep,
+		float(brain.scores.get("buy", 0.0)), RoundManager.state == RoundManager.State.ROUND)
+
+
 ## Pure: the value of starting egg work now (0 = not now): in a quiet moment (a break, the crawler break) or
 ## with nothing within quiet_m, and the threat pressure under max_pressure.
 static func egg_value(egg: Dictionary, quiet: bool, pressure: float, nearest_d: float) -> float:
@@ -182,6 +205,8 @@ static func tick_egg(brain: BotBrain) -> void:
 	var quiet: bool = brain.in_break()
 	if egg_value(egg, quiet, brain.perception.pressure, brain.perception.nearest_d) <= 0.0:
 		return
+	if buy_first(brain):
+		return   # U10 (T-163): the plan's purchase takes this break
 	if not quiet and brain.trainer != null and brain.trainer.owns_round():
 		return   # the trainer owns this round: egg work in the break (or the crawler break)
 	if not egg_full(egg, st) and RoundManager.state == RoundManager.State.ROUND:

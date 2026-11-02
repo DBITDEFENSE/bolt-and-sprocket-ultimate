@@ -66,6 +66,20 @@ func test_hunt_can_be_switched_off() -> void:
 	assert_eq(int(BotTrainer.hunt_pick([{"d": 20.0, "crawler": true}], 0, false, 99.0, 0.1, off)["idx"]), -1)
 
 
+# ---------------------------------------------------------------- the agent's plan before the egg in a break
+
+func test_buy_first_rule() -> void:
+	var ih: Dictionary = {"perk": "ironhide_stout"}
+	assert_true(AgentPlan.buy_first_rule(ih, 2500, 21000, 300, 0.78, false), "Ironhide affordable in a break: buy it before the next egg errand")
+	assert_false(AgentPlan.buy_first_rule(ih, 2500, 21000, 300, 0.78, true), "mid-round: the trainer owns it, no errand either way")
+	assert_false(AgentPlan.buy_first_rule(ih, 2500, 2600, 300, 0.78, false), "can't keep the reserve: the egg may have the break")
+	assert_false(AgentPlan.buy_first_rule(ih, 2500, 21000, 300, 0.0, false), "no buy to make (unreachable now): the egg goes on")
+	assert_false(AgentPlan.buy_first_rule({"power": true}, 0, 21000, 300, 0.9, false), "the power is the egg's own s0 step")
+	assert_false(AgentPlan.buy_first_rule({"crucible": "*"}, 5000, 21000, 300, 0.9, false), "a Crucible teaching waits for the egg")
+	assert_true(AgentPlan.buy_first_rule({"door": "door_lab"}, 1500, 2000, 300, 0.6, false), "a plan door (the Lab, Pylon H behind it)")
+	assert_false(AgentPlan.buy_first_rule({}, 0, 99999, 300, 1.0, false), "the plan is through")
+
+
 # ---------------------------------------------------------------- Full Partner: the main egg first
 
 func test_main_egg_beats_every_side_quest() -> void:

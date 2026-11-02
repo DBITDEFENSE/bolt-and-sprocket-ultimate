@@ -152,6 +152,8 @@ func _log(s: String) -> void:
 func value() -> float:
 	if brain != null and brain.is_player_bot and active() and not AgentPlan.egg_may_work_now(brain):
 		return 0.0   # T-086: the agent's egg work keeps to the breaks until its plan says it can afford a round
+	if brain != null and brain.is_player_bot and active() and not holding_now() and AgentPlan.buy_first(brain):
+		return 0.0   # U10 (T-163): the plan's purchase takes this break (Ironhide before the next pylon)
 	if not active() or str(task.get("paused", "")) != "":
 		return 0.0
 	var d: String = str(_plan.get("do", ""))
