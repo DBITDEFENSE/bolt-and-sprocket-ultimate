@@ -139,7 +139,7 @@ func setup_tables() -> void:
 		"caliche": "stone", "sand": "dirt", "stairs": "concrete",
 	}
 	mat_rules = [["Salt*", "concrete"], ["Tower_Base*", "concrete"], ["Hull*", "steel"], ["Wing*", "steel"], ["Caliche*", "stone"], ["Berm*", "dirt"], ["Tower*", "iron"], ["Truck*", "feldgrau"], ["Rocket*", "steel"]]
-	hide = ["NavBlock*", "Truck*", "Bomber*", "Cage*", "Office*", "Bench*", "Pit*", "Tank*", "Console*", "Rocket*", "Dish*", "Shack*", "Gantry*", "Wing*", "Tower_Mast*"]
+	hide = ["NavBlock*", "Truck*", "Bomber*", "Cage*", "Office*", "Bench*", "Pit*", "Tank*", "Console*", "Rocket*", "Dish*", "Shack*", "Gantry*", "Wing*", "Tower_Mast*", "G_E*", "G_N*", "G_S_E*"]
 	sky_top = Color(0.32, 0.46, 0.74)
 	sky_horizon = Color(0.96, 0.74, 0.5)
 	ambient = Color(0.62, 0.6, 0.64)
@@ -310,7 +310,7 @@ func _silo() -> void:
 	wall_x("G_S_E", 150.0, -34 - T * 0.5, -20 + T * 0.5, LAB_Y, 30.0, [], "concrete")
 	wall_z("Ctrl_E", -46.0, 156, 196, LAB_Y, LAB_Y + CEIL_CTRL, [door(166, LAB_Y, 2.4), door(186, LAB_Y, 2.4)], "concrete")   # control room | shaft
 	box(geo, "CtrlRoof", Vector3(-70.3, LAB_Y + CEIL_CTRL, 149.7), Vector3(-45.7, LAB_Y + CEIL_CTRL + 0.4, 196.3), "concrete", false)
-	box(geo, "ShaftWallW_Hi", Vector3(-46.3, LAB_Y + CEIL_CTRL, 150), Vector3(-45.7, 30.0, 196), "concrete", false)
+	box(geo, "ShaftWallW_Hi", Vector3(-46.3, LAB_Y + CEIL_CTRL, 150), Vector3(-45.7, 1.0, 196), "concrete", false)
 	box(geo, "Console_Burn", Vector3(-60, LAB_Y, 178), Vector3(-56, LAB_Y + 1.1, 179.5), "machine")   # the silo console
 	box(geo, "Rocket_Base", Vector3(ROCKET_X - 3.2, LAB_Y, ROCKET_Z - 3.2), Vector3(ROCKET_X + 3.2, LAB_Y + 1.0, ROCKET_Z + 3.2), "steel")
 	box(geo, "Gantry_Post", Vector3(ROCKET_X + 4.0, LAB_Y, ROCKET_Z - 0.5), Vector3(ROCKET_X + 5.0, LAB_Y + 28.0, ROCKET_Z + 0.5), "metal")
@@ -337,6 +337,7 @@ func build_dressing() -> void:
 	label("LANTERN", Vector3(-40, LAB_Y + 3.4, 149.7), 180.0, 40)
 	_power_lights()
 	_shadow_budget()
+	_bake_dressing()
 
 
 ## C4: small dressing casts no shadow (the lib batches per material, shadow flag and cell, and every caster batch is
@@ -356,6 +357,54 @@ func _shadow_budget() -> void:
 			mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			off += 1
 	print("shadow budget: %d small dressing meshes cast no shadow" % off)
+
+
+## C4: the lib batches per 22 m x 9 m cell, which split this act's ~45 dressing materials into ~600 batches (every one
+## a draw call from the salt, where the whole range is in view). The dressing is baked here first, coarser: one
+## ArrayMesh per material, shadow flag and 60 m cell (surface / underground), so the lib's pass only batches the
+## geometry boxes. Kept groups (the rocket, the power glows) and particles stay as they are.
+const BAKE_CELL: float = 60.0
+
+
+func _bake_dressing() -> void:
+	var groups: Dictionary = {}
+	var victims: Array[MeshInstance3D] = []
+	for n: Node in dress.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		if mi.mesh == null or mi.material_override == null or _kept(mi) or mi.mesh.get_surface_count() != 1:
+			continue
+		if not (mi.mesh is PrimitiveMesh or mi.mesh is ArrayMesh):
+			continue
+		var xf: Transform3D = _xform_to_root(mi)
+		var c: Vector3 = xf.origin
+		var cell: Vector3i = Vector3i(floori(c.x / BAKE_CELL), 0 if c.y > -1.5 else -1, floori(c.z / BAKE_CELL))
+		if absf(c.x) > 100.0 or c.z < -60.0 or c.z > 220.0:
+			cell = Vector3i(999, 0, 0)
+		var key: String = "%d|%d|%s" % [mi.material_override.get_instance_id(), mi.cast_shadow, cell]
+		if not groups.has(key):
+			var st: SurfaceTool = SurfaceTool.new()
+			st.begin(Mesh.PRIMITIVE_TRIANGLES)
+			groups[key] = {"mat": mi.material_override, "shadow": mi.cast_shadow, "st": st}
+		(groups[key]["st"] as SurfaceTool).append_from(mi.mesh, 0, xf)
+		victims.append(mi)
+	var holder: Node3D = Node3D.new()
+	holder.name = "DressingBaked"
+	holder.set_meta("keep", true)
+	dress.add_child(holder)
+	var i: int = 0
+	for key2: String in groups.keys():
+		var g: Dictionary = groups[key2]
+		var out: MeshInstance3D = MeshInstance3D.new()
+		out.name = "Baked_%d" % i
+		out.mesh = _commit(g["st"])
+		out.material_override = g["mat"]
+		out.cast_shadow = g["shadow"]
+		holder.add_child(out)
+		i += 1
+	for mi2: MeshInstance3D in victims:
+		mi2.get_parent().remove_child(mi2)
+		mi2.free()
+	print("dressing baked: %d meshes into %d batches" % [victims.size(), i])
 
 
 ## The salt slabs get the playa material (world-space polygons); the closets behind the hangar's and the motor
@@ -388,8 +437,7 @@ func _dress_wreck() -> void:
 	D.torn_ribs(dress, -17.2, D.wing_le(-17.2) - 0.4, D.wing_te(-17.2) + 0.6, -1.0, func(x: float, z: float) -> float: return D.shell_top(x, z), 31)
 	D.torn_ribs(dress, -18.0, -13.8, -30.8, 1.0, func(_x: float, z: float) -> float: return 2.5 * D.naca((-13.6 - z) / 17.4), 37)
 	# the black salt: 50 m of burn round the hull, laid north by the wind
-	D.ground_card(dress, "Scorch", Vector2(-62, -80), Vector2(62, 30), 0.02,
-		D.shader_mat("scorch.gdshader", {"centre": Vector3(0, 0, -20), "radius": 50.0}), 10)
+	# (the black salt itself is drawn by the salt material: salt_flat.gdshader's scorch slots, T-148)
 	D.debris_field(dress, Vector3(0, 0, -24), 58.0, 34.0, 80, 4401,
 		[Rect2(Vector2(-14.6, -36.6), Vector2(29.2, 33.0)), Rect2(Vector2(-61, -4.3), Vector2(122, 70))])
 	# inside: frames and stringers on the hull walls, ribs over the roof, the bay's ribs across the hole
@@ -486,16 +534,14 @@ func _dress_lakebed() -> void:
 	for i: int in 5:
 		D.range_marker(dress, Vector3(-40.0 + 20.0 * float(i), 0, 30.0), nums[i])
 	for j: int in 6:
-		D.range_marker(dress, Vector3(-75.0 - 28.0 * float(j), 0, 30.0 + 6.0 * float(j)), str(6 + j))
-		D.range_marker(dress, Vector3(75.0 + 28.0 * float(j), 0, 18.0 - 4.0 * float(j)), str(12 + j))
+		D.range_marker(dress, Vector3(-75.0 - 28.0 * float(j), 0, 30.0 + 6.0 * float(j)), "")
+		D.range_marker(dress, Vector3(75.0 + 28.0 * float(j), 0, 18.0 - 4.0 * float(j)), "")
 	# the impeller core's crater: a rim of thrown salt and a gouge back to where it hit
 	for k: int in 10:
 		var a: float = TAU * float(k) / 10.0
 		var p: Vector3 = Vector3(20, 0, 20) + Vector3(cos(a), 0, sin(a)) * 3.4
 		Props.ball(dress, p, Vector3(2.2, 0.7, 1.4), "concrete_floor").rotation.y = -a
 	B(Vector3(17.0, 0.0, 17.0), Vector3(23.0, 0.4, 23.0), "dirt")
-	D.ground_card(dress, "CoreScorch", Vector2(10, 6), Vector2(30, 30), 0.016,
-		D.shader_mat("scorch.gdshader", {"centre": Vector3(20, 0, 19), "radius": 8.0}), 4)
 	var gouge: Material = _track_mat(Color(0.42, 0.36, 0.3, 0.75))
 	D.tyre_tracks(dress, [Vector3(6, 0, -2.0), Vector3(12, 0, 7), Vector3(18, 0, 15.5)], 0.9, gouge)
 	lamp(Vector3(20, 1.2, 17), VIOLET, 1.4, 8.0, 0.15, 0.6)
@@ -598,19 +644,19 @@ func _berm(a: Vector3, b: Vector3, out: Vector3, h: float, slope: bool = true) -
 		Props.prism(dress, c, Vector3(4.8, h + 0.1, length + 4.0), "dirt", Vector3(0, 0.0 if along_z else 90.0, 0))
 
 
+## Tyre tracks and the core's gouge: an opaque strip a shade darker than the crust (alpha cards are unreliable in
+## the Compatibility renderer); the colour's alpha only darkens it.
 func _track_mat(c: Color) -> StandardMaterial3D:
 	var m: StandardMaterial3D = StandardMaterial3D.new()
-	m.albedo_color = c
-	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.albedo_color = Color(0.86, 0.84, 0.8).lerp(Color(c.r, c.g, c.b), c.a)
 	m.roughness = 1.0
-	m.disable_receive_shadows = false
 	return m
 
 
 # ------------------------------------------------------------------ C: the hangar
 
 func _dress_hangar() -> void:
-	B(Vector3(20.15, 0, 60.15), Vector3(69.85, 0.015, 99.85), "concrete_floor")
+	B(Vector3(20.15, 0, 60.15), Vector3(69.85, 0.015, 99.85), "floorboards")
 	# the wooden hangar: posts round the walls, king-post trusses every 5 m, the pitched shingle roof, the gables
 	for z: float in [62.5, 67.5, 72.5, 77.5, 82.5, 87.5, 92.5, 97.5]:
 		D.truss(dress, 20.0, 70.0, z, CEIL_HANGAR, 4.0)
@@ -779,8 +825,9 @@ func _dress_radar() -> void:
 			D.scrub(dress, p2, rng.randf_range(0.5, 1.0), 1200 + s)
 	for b: Array in [[Vector3(20, 0, 140), Vector3(70, 0, 140), Vector3(0, 0, 1)], [Vector3(70, 0, 100), Vector3(70, 0, 140), Vector3(1, 0, 0)]]:
 		_berm(b[0], b[1], b[2], 2.0, true)
-	# the warning light on the dish mast (the key: red, shadowed), the work flood on the lattice
-	lamp(Vector3(46.2, 25.6, 121.2), RED, 2.0, 22.0, 0.6, 0.5, true, 2.2)
+	# the warning light on the dish mast (red, blinking, no shadow), the shack lamp (the key), the work flood
+	lamp(Vector3(46.2, 25.6, 121.2), RED, 2.0, 22.0, 0.6, 0.5, false, 2.2)
+	lamp(Vector3(61.0, 2.2, 127.3), INCAND, 1.0, 6.0, 0.05, 0.3, true)    # the key: the shack door lamp (shadowed, short)
 	D.floodlight(dress, Vector3(45.0, 6.2, 117.4), 180.0, 30.0)
 
 
@@ -848,18 +895,35 @@ func _dress_silo() -> void:
 	B(Vector3(ROCKET_X - 1.4, LAB_Y + 0.97, ROCKET_Z - 1.4), Vector3(ROCKET_X + 1.4, LAB_Y + 1.01, ROCKET_Z + 1.4), "steel_grate")
 	# the service gantry (over the Gantry_Post collider), its lift cage and swing arms
 	D.gantry(dress, Vector3(ROCKET_X + 4.5, LAB_Y, ROCKET_Z), 28.0, Vector3(ROCKET_X, LAB_Y, ROCKET_Z))
-	# the shaft: form-board seams up the walls, the open silo doors at the rim, floodlights on the walls
-	for yi: int in range(-3, 30, 3):
+	# the shaft's walls as seen (T-148): the G_E / G_N / G_S_E colliders run up to y 30 for the act's kill volume, but
+	# their meshes are hidden and the concrete is drawn only to a 1 m parapet at the shaft's mouth, so from the
+	# salt the rocket and the gantry rise out of the ground instead of a 30 m slab
+	var sc: String = "bunker_concrete"
+	B(Vector3(-20.15, LAB_Y, 150.0), Vector3(-19.85, 1.0, 196.0), sc)
+	B(Vector3(-70.15, LAB_Y, 195.85), Vector3(-30.8, 1.0, 196.15), sc)
+	B(Vector3(-29.2, LAB_Y, 195.85), Vector3(-19.85, 1.0, 196.15), sc)
+	B(Vector3(-30.8, LAB_Y, 195.85), Vector3(-29.2, LAB_Y + SILL, 196.15), sc)
+	B(Vector3(-30.8, LAB_Y + WTOP, 195.85), Vector3(-29.2, 1.0, 196.15), sc)
+	B(Vector3(-34.15, LAB_Y, 149.85), Vector3(-19.85, 1.0, 150.15), sc)
+	B(Vector3(-46.3, LAB_Y + CEIL_CTRL, 149.85), Vector3(-34.15, 1.0, 150.15), sc)
+	for rl: Array in [[Vector3(-46.0, 1.0, 150.0), Vector3(-20.0, 1.0, 150.0)], [Vector3(-20.0, 1.0, 150.0), Vector3(-20.0, 1.0, 196.0)],
+			[Vector3(-20.0, 1.0, 196.0), Vector3(-46.0, 1.0, 196.0)], [Vector3(-46.0, 1.0, 196.0), Vector3(-46.0, 1.0, 150.0)]]:
+		Props.railing(dress, rl[0], rl[1], 1.0, "yellow_paint", 2.0)
+	# the shaft: form-board seams up the walls, the silo doors lying open on the salt, floodlights on the rim
+	for yi: int in range(-3, 0, 3):
 		var y: float = float(yi)
 		B(Vector3(-45.7, y, 150.2), Vector3(-45.64, y + 0.08, 195.8), "grime")
 		B(Vector3(-20.2, y, 150.2), Vector3(-20.15, y + 0.08, 195.8), "grime")
 		B(Vector3(-45.8, y, 195.8), Vector3(-20.2, y + 0.08, 195.85), "grime")
-	OB(Vector3(-48.5, 38.0, 173.0), Vector3(0.8, 16.0, 45.0), "concrete", Vector3(0, 0, 18))
-	OB(Vector3(-17.5, 38.0, 173.0), Vector3(0.8, 16.0, 45.0), "concrete", Vector3(0, 0, -18))
-	for fpos: Array in [[Vector3(-21.0, LAB_Y + 9.0, 160.0), 120.0], [Vector3(-21.0, LAB_Y + 9.0, 192.0), 60.0], [Vector3(-44.8, LAB_Y + 14.0, 192.0), -60.0]]:
-		D.floodlight(dress, fpos[0], float(fpos[1]), -25.0)
-	shaft("GantryFlood", Vector3(-21.5, LAB_Y + 9.2, 160.5), Vector3(ROCKET_X, LAB_Y + 10.0, ROCKET_Z), SODIUM, 6.0, 40.0, 30.0, 1.2, true)
+	OB(Vector3(-53.0, 0.9, 173.0), Vector3(12.6, 0.5, 45.0), "olive_steel", Vector3(0, 0, 8))
+	OB(Vector3(-13.0, 0.9, 173.0), Vector3(12.6, 0.5, 45.0), "olive_steel", Vector3(0, 0, -8))
+	for fpos: Array in [[Vector3(-20.6, 1.6, 160.0), 110.0], [Vector3(-20.6, 1.6, 192.0), 70.0], [Vector3(-45.4, 1.6, 192.0), -70.0]]:
+		D.floodlight(dress, fpos[0], float(fpos[1]), 35.0)
+	shaft("GantryFlood", Vector3(-21.2, 1.4, 160.5), Vector3(ROCKET_X, LAB_Y + 8.0, ROCKET_Z), SODIUM, 7.0, 45.0, 32.0, 1.2, true)
 	# the control room: relay racks on the west wall, the desk with the teletype, the clock, the burn board
+	B(Vector3(-69.85, LAB_Y, 150.15), Vector3(-46.15, LAB_Y + 0.015, 195.85), "tile_floor")
+	B(Vector3(-69.85, LAB_Y + CEIL_CTRL - 0.03, 150.15), Vector3(-46.15, LAB_Y + CEIL_CTRL, 195.85), "plaster_upper")
+	B(Vector3(-45.85, LAB_Y, 150.15), Vector3(-20.15, LAB_Y + 0.015, 195.85), "bunker_concrete")
 	for rz: float in [174.0, 176.0, 178.0, 190.0, 192.0]:
 		B(Vector3(-69.85, LAB_Y, rz - 0.9), Vector3(-69.2, LAB_Y + 2.2, rz + 0.9), "machine_grey")
 		for ly: float in [0.6, 1.2, 1.8]:
@@ -886,9 +950,9 @@ func _dress_far() -> void:
 	# two ridge rings round the lake (inside the 400 m camera far plane from every zone)
 	var centre: Vector3 = Vector3(0, 0, 80)
 	D.ridge_ring(dress, "RidgeNear", centre, 205.0, 30.0, 6.0, 26.0, 4451,
-		D.shader_mat("desert_ridge.gdshader", {"rock": Color(0.36, 0.29, 0.28), "foot": Color(0.22, 0.2, 0.22), "haze": Color(0.52, 0.56, 0.7), "haze_k": 0.005, "top_y": 26.0}))
+		D.shader_mat("desert_ridge.gdshader", {"rock": Color(0.36, 0.29, 0.28), "foot": Color(0.22, 0.2, 0.22), "haze": Color(0.36, 0.38, 0.5), "haze_k": 0.005, "top_y": 26.0}))
 	D.ridge_ring(dress, "RidgeFar", centre, 262.0, 50.0, 18.0, 52.0, 4457,
-		D.shader_mat("desert_ridge.gdshader", {"rock": Color(0.3, 0.27, 0.32), "foot": Color(0.24, 0.23, 0.3), "haze": Color(0.58, 0.62, 0.76), "haze_k": 0.008, "top_y": 52.0}))
+		D.shader_mat("desert_ridge.gdshader", {"rock": Color(0.26, 0.23, 0.29), "foot": Color(0.2, 0.19, 0.26), "haze": Color(0.42, 0.44, 0.58), "haze_k": 0.006, "haze_max": 0.6, "top_y": 52.0}))
 
 
 # ------------------------------------------------------------------ the power lights (the generator's sweep)
@@ -910,8 +974,8 @@ func _power_lights() -> void:
 		power("F_LAB", lp, 12.0, 0.8, Color(0.75, 0.95, 0.85))
 	pendant("G_SILO", Vector3(-58, LAB_Y + CEIL_CTRL - 0.6, 160), LAB_Y + CEIL_CTRL, "enamel_green", 1.1)
 	pendant("G_SILO", Vector3(-58, LAB_Y + CEIL_CTRL - 0.6, 184), LAB_Y + CEIL_CTRL, "enamel_green", 1.1)
-	power("G_SILO", Vector3(-21.2, LAB_Y + 8.6, 160.0), 18.0, 1.0, SODIUM)
-	power("G_SILO", Vector3(-21.2, LAB_Y + 8.6, 192.0), 18.0, 1.0, SODIUM)
+	power("G_SILO", Vector3(-21.4, 1.2, 160.0), 22.0, 1.0, SODIUM)
+	power("G_SILO", Vector3(-21.4, 1.2, 192.0), 22.0, 1.0, SODIUM)
 
 
 ## The blue hour: the desert sky shader replaces the lib's procedural sky, the sun sits just over the eastern
@@ -926,7 +990,7 @@ func build_lights() -> void:
 	if sun != null:
 		sun.light_color = Color(1.0, 0.76, 0.6)
 		sun.light_energy = 1.25
-		sun.directional_shadow_max_distance = 100.0
+		sun.directional_shadow_max_distance = 80.0
 		sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
 		sun.transform = Transform3D(Basis.looking_at(-sun_dir, Vector3.UP), Vector3(0, 50, 0))
 		sun.set_meta("zone", &"B_LAKEBED")

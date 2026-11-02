@@ -170,7 +170,7 @@ static func _cap(st: SurfaceTool, sec: Array, out: Vector3) -> void:
 ## The Kranich on its belly: the centre body over the spawn room (the bay torn open over its forward end), the
 ## starboard wing still on, sweeping east and bent up at the tip, the port wing's torn stub. Skin in `skin`,
 ## the torn edges and the bay's liner in `torn`. Returns the shell's node.
-static func kranich_shell(parent: Node3D, skin: String = "wreck", torn: String = "char") -> Node3D:
+static func kranich_shell(parent: Node3D, skin: String = "olive_steel", torn: String = "char") -> Node3D:
 	var g: Node3D = Node3D.new()
 	g.name = "KranichShell"
 	parent.add_child(g)
@@ -233,7 +233,7 @@ static func kranich_shell(parent: Node3D, skin: String = "wreck", torn: String =
 
 
 ## The port wing, torn off and lying on the salt west of the hull (over the WingTorn / WingTornTip colliders).
-static func torn_wing(parent: Node3D, skin: String = "wreck", torn: String = "char") -> void:
+static func torn_wing(parent: Node3D, skin: String = "olive_steel", torn: String = "char") -> void:
 	var st: SurfaceTool = st_new(true)
 	var tst: SurfaceTool = st_new(false)
 	var secs: Array = []
@@ -845,8 +845,8 @@ static func range_marker(parent: Node3D, p: Vector3, number: String) -> void:
 	for k: int in 4:
 		Props.block(parent, p + Vector3(-0.3, 0.4 * k, -0.3), p + Vector3(0.3, 0.4 * (k + 1), 0.3), "red_paint" if k % 2 == 1 else "enamel_white")
 	Props.block(parent, p + Vector3(-0.55, 1.6, -0.06), p + Vector3(0.55, 2.3, 0.06), "enamel_white")
-	Props.stencil(parent, p + Vector3(0, 1.95, -0.07), 0.0, number, 60, Color(0.08, 0.08, 0.08, 0.95))
-	Props.stencil(parent, p + Vector3(0, 1.95, 0.07), 180.0, number, 60, Color(0.08, 0.08, 0.08, 0.95))
+	if number != "":   # the far markers carry no board text (C4: every Label3D is a draw call)
+		Props.stencil(parent, p + Vector3(0, 1.95, -0.07), 0.0, number, 60, Color(0.08, 0.08, 0.08, 0.95))
 
 
 ## A desert scrub bush (creosote / sagebrush): a few crossing twig boxes and leaf balls, low.

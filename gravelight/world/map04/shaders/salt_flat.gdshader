@@ -1,7 +1,8 @@
 // Groom Lake's dry lake bed (UPDATE 09 §5.4, T-148): white salt crust broken into polygons by raised ridges (the
 // playa's shrinkage cracks), a beige undertone in the troughs, faint grit, a glint in the crust. World-space
 // (the generator's batches carry no UVs), so it tiles seamlessly over every salt slab. `wear` darkens the crust
-// where trucks and boots have crossed (tracks are separate strips with tyre_tracks.gdshader).
+// The black salt (T-148): two scorch slots (xz centre, radius, z squash) burn the crust soot-black round the wreck
+// and the impeller core's crater, ragged-edged, with the crack ridges still showing through the soot.
 shader_type spatial;
 render_mode diffuse_burley, specular_schlick_ggx;
 
@@ -12,6 +13,10 @@ uniform float cell = 2.2;          // polygon size, metres
 uniform float ridge_w = 0.09;
 uniform float grit = 0.14;
 uniform float tint_var = 0.08;
+uniform vec4 scorch_a = vec4(0.0, -22.0, 44.0, 0.75);   // the wreck: x, z, radius, z scale (north edge pulled in)
+uniform vec4 scorch_b = vec4(20.0, 19.0, 7.0, 1.0);     // the impeller core's crater
+uniform vec3 soot : source_color = vec3(0.035, 0.032, 0.03);
+uniform vec3 burnt : source_color = vec3(0.19, 0.15, 0.12);
 
 varying vec3 wpos;
 
@@ -57,6 +62,21 @@ float edge(vec2 p) {
 	return md;
 }
 
+float fbm3(vec2 p) {
+	return vnoise(p) * 0.5 + vnoise(p * 2.03 + 7.1) * 0.3 + vnoise(p * 4.1 + 3.3) * 0.2;
+}
+
+// 1 = burnt black, 0 = clean crust
+float scorch(vec4 sc, vec2 xz) {
+	if (sc.z <= 0.0) {
+		return 0.0;
+	}
+	vec2 rel = vec2(xz.x - sc.x, (xz.y - sc.y) / sc.w);
+	float d = length(rel) / sc.z;
+	float k = d + (fbm3(xz * 0.07) - 0.5) * 0.5;
+	return 1.0 - smoothstep(0.5, 1.0, k);
+}
+
 void vertex() {
 	wpos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
@@ -76,6 +96,10 @@ void fragment() {
 	float fd = smoothstep(45.0, 170.0, length(VERTEX));
 	c = mix(c, mix(trough, crust, 0.82) * (1.0 - tint_var + tint_var * 2.0 * big), fd);
 	r *= 1.0 - fd;
+	float burn = max(scorch(scorch_a, wpos.xz), scorch(scorch_b, wpos.xz));
+	float streak = fbm3(vec2(wpos.x * 0.3, wpos.z * 0.05));
+	vec3 bc = mix(soot, burnt, smoothstep(0.35, 0.95, (1.0 - burn) + (streak - 0.5) * 0.4));
+	c = mix(c, bc * (0.85 + 0.3 * r), burn);
 	ALBEDO = c;
 	ROUGHNESS = mix(0.95, 0.75, r);
 	SPECULAR = 0.35;
