@@ -1161,12 +1161,15 @@ what changed. All of it is bot behaviour: no round, health, spawn count or human
 
 **The egg steps.**
 - s1 pylons, s2a radios, s3 parts: worked already; Full Partner now always takes an open main-egg step before a
-  side quest (ee.json `scores.main_quest` 100: the Song's cylinders used to draw a bot off).
+  side quest (ee.json `scores.main_quest` 100) and drops a side quest when a main step opens (`BotEEHub._main_first`:
+  two bots held the Song's unreachable cylinders from round 1 to 8 while the power stayed off).
 - s4 the Chapel bell + the Foreman: `full_partner: ["shoot"]` in the bot_task lets a Full Partner bot with a
   Crucible gun light the bell unasked (BotEECatalog.stage_allowed). While it is lit, every free bot joins the Chapel
   hold (`BotEEHub.rally_now`), and nobody shoots the Foreman until it is inside F_CHAPEL (`BotEEHub.kill_zone_for`
   reads any armed zone + world-flag kill condition; `BotAim.hold_fire_for_zone`, self-defence inside 3 m): it was
-  shot on its way in and the step failed.
+  shot on its way in and the step failed. The bell needs a Crucible *gun*: a taught wonder's toll never rings it, so
+  `forced_slot` / `_has_upgraded` skip wonders and a bot's first teaching is a gun, the wonder after
+  (`BotBrain.best_to_teach`: the honest soaks' bots taught their Totenglocken and shot the bell from every angle).
 - s6 the Four Bells: shots are counted per bell and per vantage; 8 unanswered rounds -> another angle (3 at most).
   `vantage_for` now tests the line with the guns' own blockers (world, doors, decor), not the sight mask: the
   specimen-tank bell sits between copper pipes on the decor layer and was "in sight" from spots whose every round
@@ -1174,7 +1177,9 @@ what changed. All of it is bot behaviour: no round, health, spawn count or human
 - s7 Herr Tamtam: `full_partner: ["trigger"]` (a missed chase only resets the step) and `pause_pressure: 0.85` let a
   Full Partner bot keep pulling the crate (the drummer comes after 4-12 pulls at one spot); Full Partner's "nothing
   to do" cancel now needs 150 s of continuous waiting, not one wait moment in a task older than that (it cancelled
-  the pull series between two offers).
+  the pull series between two offers; it now counts from the last finished errand), and the plan stays on the crate
+  through the bot's own roll (it flipped to "wait" when the lid opened). Measured: the drummer after 6 pulls, shot,
+  s7 done in 5 game minutes.
 - s8b: a Full Partner bot takes the Totenglocke and farms the charge (worked once the rounds ended). Every player
   may also take a built wonder from its bench now (`BotEconomy.wonder_wanted`: tier over the worst gun held + 0.5,
   or a free slot; the agent's plan never holds it back): four Totenglocken from s3 on.
