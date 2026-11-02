@@ -617,7 +617,7 @@ func _update_hunt(now: float) -> void:
 	var best: Zombie = null
 	for z: Variant in act:
 		var zz: Zombie = z as Zombie
-		if zz != null and is_instance_valid(zz) and BotPerception.targetable(zz) and (best == null or BotPerception.is_boss(zz)):
+		if zz != null and is_instance_valid(zz) and BotPerception.targetable(zz) and not is_unreachable(zz) and (best == null or BotPerception.is_boss(zz)):
 			best = zz
 	if best == null:
 		return
@@ -628,6 +628,22 @@ func _update_hunt(now: float) -> void:
 ## Where the squad hunts the round's last zombie (Vector3.INF: no hunt).
 func hunt_point() -> Vector3:
 	return hunt_at
+
+
+## U10 (T-163): stragglers nobody can get to (instance id -> squad time until which they are left alone). A zombie
+## wedged behind a collider the navmesh doesn't know (Kaltenbrunn's rail-yard fence line at x 41) has a path to us
+## and we to it, and neither gets closer; a hunter walking up and down that fence kept resetting its no-progress
+## timer (enemies.json no_progress_respawn_seconds: recycled after 40 s with nobody getting nearer), so the round
+## never ended. Left alone, the game recycles it through a window.
+var _unreachable: Dictionary = {}
+
+func mark_unreachable(z: Zombie, seconds: float) -> void:
+	if z != null and is_instance_valid(z):
+		_unreachable[z.get_instance_id()] = time() + seconds
+
+
+func is_unreachable(z: Zombie) -> bool:
+	return z != null and is_instance_valid(z) and float(_unreachable.get(z.get_instance_id(), -INF)) > time()
 
 
 ## The training route (U03 section 3, TrainingRoute.for_map: the map's authored loops whose doors and zones are

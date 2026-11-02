@@ -60,6 +60,14 @@ func test_hunt_another_floor_counts_far() -> void:
 	assert_eq(int(BotTrainer.hunt_pick(rows, 0, false, 0.0, 0.1, tcfg)["idx"]), 1)
 
 
+func test_hunt_gives_up_an_unreachable_straggler() -> void:
+	var s: float = float(tcfg.get("hunt_unreach_s", 8.0))
+	assert_false(BotTrainer.hunt_unreachable(s - 1.0, 99.0, tcfg), "still getting closer: keep at it")
+	assert_false(BotTrainer.hunt_unreachable(99.0, s - 1.0, tcfg), "no closer but the shots land: keep shooting")
+	assert_true(BotTrainer.hunt_unreachable(s + 0.5, s + 0.5, tcfg), "no closer and no hits: leave it to the game's no-progress recycle")
+	assert_lt(float(tcfg.get("hunt_unreach_s", 8.0)) + 1.0, 40.0, "gives up well inside enemies.json no_progress_respawn_seconds")
+
+
 func test_hunt_can_be_switched_off() -> void:
 	var off: Dictionary = tcfg.duplicate()
 	off["hunt_enabled"] = false

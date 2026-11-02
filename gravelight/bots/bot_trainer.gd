@@ -637,6 +637,15 @@ var hunting: bool = false
 var _hunt_id: int = 0
 var _hunt_hp: float = 0.0
 var _hunt_hp_t: float = 0.0
+var _hunt_best_d: float = INF
+var _hunt_d_t: float = 0.0
+
+
+## Pure: give a straggler up? The hunter hasn't got 1 m closer for hunt_unreach_s and its health hasn't dropped for
+## as long (no shot reaches it either).
+static func hunt_unreachable(no_closer_s: float, no_damage_s: float, cfg: Dictionary) -> bool:
+	var s: float = float(cfg.get("hunt_unreach_s", 8.0))
+	return no_closer_s > s and no_damage_s > s
 
 ## Pure: which straggler to hunt. `rows` = [{"d": m (flat, +30 on another floor), "crawler": bool}] for the round's
 ## active, targetable zombies; `quiet_s` = how long none on its feet has been within hunt_quiet_m. Returns {"idx":
@@ -675,6 +684,8 @@ func _hunt_stragglers(delta: float, me: Vector3) -> bool:
 			if brain.crawler != null and brain.crawler.target == z and brain.crawler.holding():
 				_quiet_t = 0.0
 				return false   # the crawler break's own zombie: kept on purpose
+			if brain.squad.is_unreachable(z):
+				continue   # nobody can get to it: left for the game's no-progress recycle
 			zs.append(z)
 			rows.append({"d": _flat(z.global_position, me) + (30.0 if absf(z.global_position.y - me.y) > 2.5 else 0.0),
 				"crawler": z.is_crawler and not BotPerception.is_boss(z)})
@@ -707,11 +718,25 @@ func _hunt_stragglers(delta: float, me: Vector3) -> bool:
 		_hunt_id = best.get_instance_id()
 		_hunt_hp = best.hp
 		_hunt_hp_t = 0.0
+		_hunt_best_d = best_d
+		_hunt_d_t = 0.0
 	if best.hp < _hunt_hp - 0.5:
 		_hunt_hp = best.hp
 		_hunt_hp_t = 0.0
 	else:
 		_hunt_hp_t += delta
+	if best_d < _hunt_best_d - 1.0:
+		_hunt_best_d = best_d
+		_hunt_d_t = 0.0
+	else:
+		_hunt_d_t += delta
+	if hunt_unreachable(_hunt_d_t, _hunt_hp_t, c):
+		brain.squad.mark_unreachable(best, _f("hunt_giveup_s", 60.0))
+		stats["hunt_giveups"] = int(stats.get("hunt_giveups", 0)) + 1
+		_hunt_id = 0
+		hunting = false
+		brain.aim.focus_target = null
+		return false
 	var seen: bool = brain.perception.is_visible(best)
 	var shoot_m: float = _f("hunt_close_m", 3.5) if _hunt_hp_t > _f("hunt_stall_s", 4.0) else _f("hunt_shoot_m", 12.0)
 	if not seen or best_d > shoot_m:
