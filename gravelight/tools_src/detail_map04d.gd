@@ -287,7 +287,9 @@ static func merge_by_group(dress: Node3D, map_root: Node3D, group_of: Callable) 
 		var g: String = _vis_override(mi, dress)
 		if g == "":
 			g = str(group_of.call(xf * mi.mesh.get_aabb().get_center()))
-		var key: String = "%s|%d|%d" % [g, mi.material_override.get_instance_id(), mi.cast_shadow]
+		var cc: Vector3 = xf * mi.mesh.get_aabb().get_center()
+		var cell: Vector3i = Vector3i(floori(cc.x / 22.0), floori((cc.y + 7.0) / 9.0), floori(cc.z / 22.0))   # 22 m cells, as the lib: fine frustum culling
+		var key: String = "%s|%d|%d|%s" % [g, mi.material_override.get_instance_id(), mi.cast_shadow, cell]
 		if not groups.has(key):
 			var st: SurfaceTool = SurfaceTool.new()
 			st.begin(Mesh.PRIMITIVE_TRIANGLES)
