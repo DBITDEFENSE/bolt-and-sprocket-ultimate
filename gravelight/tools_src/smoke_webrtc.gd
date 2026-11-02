@@ -13,6 +13,10 @@ extends Node
 ## The host prints one RESULT line (PASS only when both sides passed); the client writes its result to a file the
 ## host reads (the network is gone by then). Silent: headless, dummy audio, loopback only.
 ## Usage: godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/smoke_webrtc.tscn
+## Scenarios (UPDATE 10 contract C8): `-- --map=<id> --through=<a,b>` plays the same flow on another map and drives its
+## host-owned events through the session; the client checks it saw each one mirrored. map04b (T-156):
+## --through=turbulence (a tilt: the client's FlightController banks and its camera rolls), wingwalk (the wing walk
+## opens on the client, and the host's bot goes out on the deck: its CLIPPED state arrives on the client).
 
 const MAP_ID: String = "map00_crossroads"
 const HOST_TIMEOUT: float = 330.0
@@ -43,6 +47,9 @@ var _jakub_ok: bool = false
 var _bank_t: float = -1.0
 var _bank_ok: bool = false
 var _bank_scrip0: int = 0
+var _map_id: String = MAP_ID      # --map= (UPDATE 10 C8)
+var _through: PackedStringArray = []   # --through=a,b
+var _act2_sent: bool = false
 
 
 func _ready() -> void:
@@ -60,6 +67,10 @@ func _ready() -> void:
 			_port = int(a.get_slice("=", 1))
 		elif a.begins_with("--code="):
 			_code = a.get_slice("=", 1)
+		elif a.begins_with("--map="):
+			_map_id = {"map04b": "map04b_kranich"}.get(a.get_slice("=", 1), a.get_slice("=", 1))
+		elif a.begins_with("--through="):
+			_through = a.get_slice("=", 1).split(",", false)
 	ProfileSave.path = "user://_qa_webrtc_%s.json" % _role
 	ProfileSave.profile = ProfileSave.new_profile()
 	_log_path = "user://_qa_webrtc_%s.log" % _role
@@ -123,13 +134,14 @@ func _start_host() -> void:
 	Net.player_rejoined.connect(func(pid: int) -> void:
 		_log("player %d rejoined" % pid)
 		_rejoin_seen = pid == 2)
-	Lobbies.create(MAP_ID, true, "Hosty", 3, true)
+	Lobbies.create(_map_id, true, "Hosty", 3, true)
 	_goto("lobby")
 
 
 func _spawn_client() -> void:
 	var args: PackedStringArray = ["--headless", "--audio-driver", "Dummy", "--path", ProjectSettings.globalize_path("res://"),
-		"res://gravelight/tools_src/smoke_webrtc.tscn", "--", "--role=client", "--port=%d" % _port, "--code=%s" % _code.to_lower()]
+		"res://gravelight/tools_src/smoke_webrtc.tscn", "--", "--role=client", "--port=%d" % _port, "--code=%s" % _code.to_lower(),
+		"--map=%s" % _map_id, "--through=%s" % ",".join(_through)]
 	_child_pid = OS.create_process(OS.get_executable_path(), args)
 	if _child_pid <= 0:
 		_fail("couldn't start the client process")
@@ -169,6 +181,9 @@ func _host_tick(delta: float) -> void:
 				_fail("the match never began on the host")
 				_finish()
 		"rounds":
+			if not _act2_sent and _map_id == "map04b_kranich" and _step_t > 3.0:
+				_act2_sent = true
+				_host_act2(map)
 			for z: Zombie in map.director.active_zombies():
 				z.take_damage(99999.0, &"head", &"m1911", 1, &"bullet")
 			if RoundManager.current_round >= 3:
@@ -217,6 +232,50 @@ func _host_tick(delta: float) -> void:
 			elif _step_t > 40.0 or (_child_pid > 0 and not OS.is_process_running(_child_pid) and _step_t > 3.0):
 				_fail("no result from the client")
 				_finish()
+
+
+## T-156: Act II's host-owned events, each one trigger the session mirrors (the client checks what it saw).
+func _host_act2(map: MapRoot) -> void:
+	var fc: FlightController = get_tree().get_first_node_in_group(&"flight_controller") as FlightController
+	var ww: WingWalk = get_tree().get_first_node_in_group(&"wing_walks") as WingWalk
+	if _through.has("wingwalk"):
+		if ww == null:
+			_fail("no WingWalk on the host")
+		else:
+			ww.open_now()
+			# the host's bot goes out on the deck: bots clip in at once (host state), the client must see it
+			var bot: Player = map.players.get(3) as Player
+			if bot != null:
+				bot.global_position = WingWalk.v3(ww.cfg.get("landing", [-40, 3.45, 44.2]))
+				bot.velocity = Vector3.ZERO
+			_log("wing walk opened, the bot (pid 3) out on the deck")
+	if _through.has("turbulence"):
+		if fc == null:
+			_fail("no FlightController on the host")
+		else:
+			fc.bank_now()
+			_log("tilt %d fired" % fc.tilts_done)
+	_qa_send("act2", {"through": Array(_through)})
+
+
+## T-156 (client): after the host's events, did they arrive?
+func _client_act2(through: Array) -> void:
+	var fc: FlightController = get_tree().get_first_node_in_group(&"flight_controller") as FlightController
+	var ww: WingWalk = get_tree().get_first_node_in_group(&"wing_walks") as WingWalk
+	var map: MapRoot = get_tree().current_scene as MapRoot
+	if through.has("turbulence"):
+		var rolled: bool = map != null and map.player != null and absf(map.player.ext_roll_deg) > 0.5
+		if fc == null or fc.banks_done < 1 or not (fc.banking or rolled):
+			_fail("the host's tilt never reached the client (banks %d)" % (fc.banks_done if fc != null else -1))
+		else:
+			_notes.append("the tilt arrived: banking, the camera rolled %.1f deg" % (map.player.ext_roll_deg if map != null and map.player != null else 0.0))
+	if through.has("wingwalk"):
+		if ww == null or not ww.is_open:
+			_fail("the wing walk never opened on the client")
+		elif ww.state_of(3) != WingWalk.ClipState.CLIPPED:
+			_fail("the host's clip state for the bot (pid 3) never arrived (%d)" % ww.state_of(3))
+		else:
+			_notes.append("the wing walk opened and the bot's clip state (CLIPPED) arrived")
 
 
 func _host_report() -> void:
@@ -373,7 +432,7 @@ func _client_finish() -> void:
 		_fails.append("the bot puppet never got its gun")
 	else:
 		_notes.append("bot puppet moved %.1f m, gun %s" % [_bot_moved, _bot_gun])
-	if not _jakub_ok:
+	if not _jakub_ok and _map_id == MAP_ID:   # (Jakub is Map 0's)
 		_fails.append("never saw Jakub as a host-fed puppet")
 	if not _bank_ok:
 		_fails.append("the client's bank deposit never round-tripped (balance %d)" % BankAccount.balance())
@@ -407,6 +466,9 @@ func _qa(what: String, _data: Dictionary) -> void:
 				_goto("dropped")
 			"host_leaving":
 				pass
+			"act2":
+				var th: Array = _data.get("through", [])
+				get_tree().create_timer(1.5).timeout.connect(func() -> void: _client_act2(th))
 
 
 func _physics_process(delta: float) -> void:

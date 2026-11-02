@@ -57,6 +57,17 @@ var _hud: CanvasLayer = null
 var _hud_labels: Array = []
 # the London window
 var london_started: bool = false
+# UPDATE 10 §3 (T-156): the tilt (turbulence_tilt), decompression and the flight clock that times them
+var tilt_t: float = 0.0
+var tilts_done: int = 0
+var tilt_impacts: int = 0
+var tilt_bomb_kills: int = 0
+var tilt_times: Array[float] = []   # this round's tilt starts (seconds on the round clock), host
+var round_clock: float = 0.0
+var _zslide: Dictionary = {}        # zombie instance id -> {x, mps, hit}
+var _push_t: float = 0.0
+var decomp_queue: Array = []        # [{t, node}] this round's decompressions, host
+var decomps_done: int = 0
 
 
 # ---------------------------------------------------------------- pure rules
@@ -182,6 +193,7 @@ func _on_round_started(_r: int, special: bool) -> void:
 			_strafe_at = _rng.randf_range(10.0, 40.0)
 	if special and director != null and director.special_handler == self:
 		_druck_start()
+	_schedule_flight_clock(ar)
 
 
 func _on_round_ended(_r: int) -> void:
@@ -191,9 +203,13 @@ func _on_round_ended(_r: int) -> void:
 # ---------------------------------------------------------------- tick
 
 func _process(delta: float) -> void:
-	if not Net.is_authority() or cfg.is_empty() or GameState.phase != GameState.Phase.PLAYING:
+	if cfg.is_empty() or GameState.phase != GameState.Phase.PLAYING:
+		return
+	if not Net.is_authority():
+		_tick_tilt_presentation(delta)
 		return
 	_tick_turbulence(delta)
+	_tick_decompression(delta)
 	_tick_strafe(delta)
 	_tick_breaches(delta)
 	_tick_climbers(delta)
@@ -202,20 +218,33 @@ func _process(delta: float) -> void:
 
 func _tick_turbulence(delta: float) -> void:
 	var tc: Dictionary = cfg.get("turbulence", {})
+	var tilt: Dictionary = cfg.get("turbulence_tilt", {})
+	round_clock += delta
 	if banking:
 		bank_left -= delta
+		tilt_t += delta
 		_zombie_push_t -= delta
-		if _zombie_push_t <= 0.0 and director != null:
+		if not tilt.is_empty():
+			_tick_tilt(delta, tilt)
+		elif _zombie_push_t <= 0.0 and director != null:
 			_zombie_push_t = 0.25
 			for z: Zombie in director.active_zombies():
 				if z.is_active() and not (z is HomageBoss) and not z.is_pushed():
 					z.external_push(Vector3(bank_side * float(tc.get("push_mps", 2.2)), 0, 0), 0.3)
 		if bank_left <= 0.0:
-			banking = false
-			for p: Player in _players():
-				p.ext_roll_deg = 0.0
-			turb_t = _rng.randf_range(float(tc.get("interval_min", 45.0)), float(tc.get("interval_max", 90.0)))
-			turb_warned = false
+			_end_bank()
+		return
+	if not tilt.is_empty():
+		# UPDATE 10 (T-156): the flight clock: 2-3 tilts a round at seeded times, each warned warn_seconds ahead
+		if tilt_times.is_empty():
+			return
+		var warn: float = float(tilt.get("warn_seconds", tc.get("warn_seconds", 3.0)))
+		if not turb_warned and round_clock >= tilt_times[0] - warn:
+			turb_warned = true
+			_warn_tilt()
+		if round_clock >= tilt_times[0]:
+			tilt_times.remove_at(0)
+			bank_now()
 		return
 	turb_t -= delta
 	if not turb_warned and turb_t <= float(tc.get("warn_seconds", 3.0)):
@@ -226,28 +255,208 @@ func _tick_turbulence(delta: float) -> void:
 		bank_now()
 
 
-## The deck banks: everyone is pushed sideways for `seconds`; zombies stumble at the onset.
+## The Bordfunk's chime and the warning 3 s ahead of a tilt (every peer hears the chime; the VO replicates itself).
+func _warn_tilt() -> void:
+	_vo("PA_M4B_TURB_01")
+	_warn_sound()
+	Net.mirror(self, &"_warn_sound")
+	for ww: Node in get_tree().get_nodes_in_group(&"wing_walks"):
+		ww.call("on_turbulence_warning")
+
+
+func _warn_sound() -> void:
+	AudioDirector.play_2d("kranich_bordfunk" if AudioDirector.has_sound("kranich_bordfunk") else "round_start", -8.0, 0.0)
+
+
+func _end_bank() -> void:
+	var tc: Dictionary = cfg.get("turbulence", {})
+	banking = false
+	tilt_t = 0.0
+	_zslide.clear()
+	for p: Player in _players():
+		p.ext_roll_deg = 0.0
+	turb_t = _rng.randf_range(float(tc.get("interval_min", 45.0)), float(tc.get("interval_max", 90.0)))
+	turb_warned = false
+
+
+## The deck banks: everyone is pushed sideways for `seconds`; zombies stumble at the onset. With the act's
+## `turbulence_tilt` block (UPDATE 10, T-156) the bank is a tilt: the floor rolls tilt_deg, loose cargo and the dead
+## slide downhill (KranichTilt), the dead take impact damage at the wall, players are pushed less; the wing walk's
+## unclipped are thrown off. Host-owned; `_bank_mirror` runs the presentation on every client.
 func bank_now() -> void:
 	var tc: Dictionary = cfg.get("turbulence", {})
+	var tilt: Dictionary = cfg.get("turbulence_tilt", {})
 	banking = true
-	bank_left = float(tc.get("seconds", 6.0))
+	bank_left = float(tilt.get("seconds", tc.get("seconds", 6.0)))
 	bank_side = -bank_side
 	banks_done += 1
+	tilt_t = 0.0
 	_zombie_push_t = 0.0
-	var v: Vector3 = Vector3(bank_side * float(tc.get("push_mps", 2.2)), 0, 0)
-	for p: Player in _players():
-		p.external_push(v, bank_left, &"push")
-		p.ext_roll_deg = -bank_side * float(tc.get("roll_deg", 4.0))
-		p.set("_shake", 0.2)
+	_push_t = 0.0
+	_zslide.clear()
+	if tilt.is_empty():
+		var v: Vector3 = Vector3(bank_side * float(tc.get("push_mps", 2.2)), 0, 0)
+		for p: Player in _players():
+			p.external_push(v, bank_left, &"push")
+			p.ext_roll_deg = -bank_side * float(tc.get("roll_deg", 4.0))
+			p.set("_shake", 0.2)
+	else:
+		tilts_done += 1
+		for p2: Player in _players():
+			p2.set("_shake", 0.25)
 	if director != null:
 		for z: Zombie in director.active_zombies():
 			if z.is_active() and not (z is HomageBoss):
 				z.force_stagger()
+	for ww: Node in get_tree().get_nodes_in_group(&"wing_walks"):
+		ww.call("on_turbulence", bank_left)
+	Net.mirror(self, &"_bank_mirror", [bank_side, bank_left])
 	if _first_turb:
 		_first_turb = false
 		_vo("OPR_M4B_TURB_01")
 		GLVO.play_category(&"DUT", "M4B_TURB", 0.6)
-	print("[flight] bank %d (side %+.0f)" % [banks_done, bank_side])
+	print("[flight] bank %d (side %+.0f)%s" % [banks_done, bank_side, " tilt" if not tilt.is_empty() else ""])
+
+
+## A client's copy of the bank/tilt: the deck rolls under the local player and the loose cargo slides (the host
+## pushes the zombies, decides the impacts and the knock-offs).
+func _bank_mirror(side: float, seconds: float) -> void:
+	if Net.is_authority():
+		return
+	banking = true
+	bank_side = side
+	bank_left = seconds
+	tilt_t = 0.0
+	banks_done += 1
+
+
+## The tilt angle right now (degrees, 0 when level): TiltSlider and the camera read it.
+func tilt_angle_now() -> float:
+	if not banking:
+		return 0.0
+	var tilt: Dictionary = cfg.get("turbulence_tilt", {})
+	if tilt.is_empty():
+		return 0.0
+	return KranichTilt.angle_at(tilt_t, float(tilt.get("seconds", 6.0)), float(tilt.get("tilt_deg", 8.0)),
+		float(tilt.get("ease_in", 0.8)), float(tilt.get("ease_out", 1.0)))
+
+
+## One host frame of a tilt: the roll on every player, the downhill push on players (reduced; the wing walk's own
+## wind and knock-offs are WingWalk's) and on the dead, with the wall impact.
+func _tick_tilt(delta: float, tilt: Dictionary) -> void:
+	var deg: float = float(tilt.get("tilt_deg", 8.0))
+	var angle: float = tilt_angle_now()
+	var down: Vector3 = KranichTilt.downhill(bank_side)
+	for p: Player in _players():
+		p.ext_roll_deg = KranichTilt.roll_for(bank_side, angle)
+	_push_t -= delta
+	if _push_t <= 0.0:
+		_push_t = 0.25
+		var pm: float = float(tilt.get("player_push_mps", 1.6)) * clampf(angle / maxf(0.1, deg), 0.0, 1.0)
+		if pm > 0.05:
+			for p2: Player in _players():
+				if not WingWalk.on_wing_any(get_tree(), p2):
+					p2.external_push(down * pm, 0.3, &"push")
+	if director == null or _zombie_push_t > 0.0:
+		return
+	_zombie_push_t = 0.25
+	var zm: float = KranichTilt.zombie_slide_mps(angle, deg, float(tilt.get("zombie_slide_mps", 5.0)))
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	for z: Zombie in director.active_zombies():
+		if not z.is_active() or z is HomageBoss or z.puppet:
+			continue
+		var id: int = z.get_instance_id()
+		var e: Dictionary = _zslide.get(id, {})
+		if not e.is_empty() and not bool(e.get("hit", false)):
+			var moved: float = absf(z.global_position.x - float(e["x"]))
+			var expected: float = float(e["mps"]) * 0.25
+			var wall: float = _wall_ahead(space, z.global_position, down, 1.2)
+			if KranichTilt.is_wall_impact(float(e["mps"]), moved, expected, wall, float(tilt.get("impact_min_mps", 2.5)), float(tilt.get("impact_reach_m", 0.9))):
+				e["hit"] = true
+				tilt_impacts += 1
+				z.take_damage(KranichTilt.impact_damage(z.max_hp, float(tilt.get("impact_damage_frac", 0.6))), &"torso", &"tilt_wall", 0, &"world")
+				AudioDirector.play_3d("impact_flesh", z.global_position + Vector3.UP, 0.0, 0.15)
+		var pushed: bool = false
+		if zm > 0.3 and not bool(e.get("hit", false)):
+			z.external_push(down * zm, 0.3)
+			pushed = z.is_pushed()
+		e["x"] = z.global_position.x
+		e["mps"] = zm if pushed else 0.0
+		_zslide[id] = e
+
+
+## Distance to the first world collider `reach` m ahead of `p` along `dir`, at chest and at knee height (a rack
+## base or a bunk stops a sliding body as hard as a wall); -1 when clear.
+func _wall_ahead(space: PhysicsDirectSpaceState3D, p: Vector3, dir: Vector3, reach: float) -> float:
+	if space == null:
+		return -1.0
+	var best: float = -1.0
+	for h: float in [0.9, 0.35]:
+		var from: Vector3 = p + Vector3(0, h, 0)
+		var hit: Dictionary = space.intersect_ray(PhysicsRayQueryParameters3D.create(from, from + dir * reach, 1))
+		if not hit.is_empty():
+			var d: float = from.distance_to(hit["position"] as Vector3)
+			best = d if best < 0.0 else minf(best, d)
+	return best
+
+
+## A client: the mirrored tilt rolls the local camera until it ends (the host ends its own bank).
+func _tick_tilt_presentation(delta: float) -> void:
+	if not banking:
+		return
+	bank_left -= delta
+	tilt_t += delta
+	var lp: Player = null
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		if (n as Player) != null and (n as Player).is_local:
+			lp = n as Player
+	var tilt: Dictionary = cfg.get("turbulence_tilt", {})
+	if lp != null:
+		lp.ext_roll_deg = KranichTilt.roll_for(bank_side, tilt_angle_now()) if not tilt.is_empty() else -bank_side * float((cfg.get("turbulence", {}) as Dictionary).get("roll_deg", 4.0))
+	if bank_left <= 0.0:
+		banking = false
+		tilt_t = 0.0
+		if lp != null:
+			lp.ext_roll_deg = 0.0
+
+
+## The flight clock for this act round (host): the round's 2-3 tilts and the decompressions due in it.
+func _schedule_flight_clock(ar: int) -> void:
+	round_clock = 0.0
+	var tilt: Dictionary = cfg.get("turbulence_tilt", {})
+	if not tilt.is_empty() and ar >= int(tilt.get("from_act_round", 1)):
+		var pr: Array = tilt.get("per_round", [2, 3])
+		var n: int = _rng.randi_range(int(pr[0]), int(pr[1]))
+		tilt_times = KranichTilt.schedule(n, tilt.get("first_s", [20, 35]), tilt.get("gap_s", [35, 60]), _rng)
+		turb_warned = false
+	decomp_queue.clear()
+	var dc: Dictionary = cfg.get("decompression", {})
+	for ev: Dictionary in dc.get("events", []):
+		if int(ev.get("act_round", -1)) != ar:
+			continue
+		var node: Node = _find_decompression(str(ev.get("breach", "")))
+		if node == null:
+			continue
+		var at: Array = ev.get("at_s", [30, 45])
+		decomp_queue.append({"t": _rng.randf_range(float(at[0]), float(at[1])), "node": node})
+
+
+func _find_decompression(n: String) -> Node:
+	for d: Node in get_tree().get_nodes_in_group(&"decompressions"):
+		if String(d.name) == n:
+			return d
+	return null
+
+
+## The decompressions due on the round clock (DecompressionBreach warns 3 s ahead, then pulls for 4 s).
+func _tick_decompression(_delta: float) -> void:
+	for e: Dictionary in decomp_queue.duplicate():
+		if round_clock >= float(e["t"]):
+			decomp_queue.erase(e)
+			var n: Node = e["node"]
+			if is_instance_valid(n):
+				n.call("start")
+				decomps_done += 1
 
 
 func _tick_strafe(delta: float) -> void:

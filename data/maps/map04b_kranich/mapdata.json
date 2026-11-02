@@ -5,18 +5,18 @@
   "style": "ink",
   "display_name": "Fernflug — Act II: der Kranich",
   "world_rect": [
-    -92.817,
+    -130.0,
     -12.0,
-    182.833,
+    220.0,
     98.0
   ],
   "px_per_m": 6.0,
   "image_size": [
-    1097,
+    1320,
     588
   ],
-  "baked_at": "2026-10-26T13:27:04",
-  "poi_signature": "6ead4469bf20bea523e9f9713361d862",
+  "baked_at": "2026-11-02T11:01:49",
+  "poi_signature": "9f3906802675c60fa8078ed30da3a36b",
   "floors": [
     {
       "id": "deck",
@@ -187,7 +187,7 @@
       "id": "C_FLUEGEL_L",
       "name": "Port Wing",
       "y_min": -1.5,
-      "y_max": 4.0,
+      "y_max": 5.0,
       "polys": [
         [
           [
@@ -224,16 +224,38 @@
             -31.3,
             27.95
           ]
+        ],
+        [
+          [
+            -118.0,
+            16.5
+          ],
+          [
+            -38.0,
+            16.5
+          ],
+          [
+            -38.0,
+            46.0
+          ],
+          [
+            -118.0,
+            46.0
+          ]
         ]
       ],
       "ys": [
         [
           -1.5,
-          4.0
+          3.0
         ],
         [
           -1.0,
           3.3
+        ],
+        [
+          2.5,
+          5.0
         ]
       ]
     },
@@ -541,6 +563,24 @@
       "data": {
         "spot_index": 0,
         "can_start": true
+      }
+    },
+    {
+      "id": "crate_spot:Gameplay/Crate_Kanzel",
+      "type": "crate_spot",
+      "pos": [
+        76.9,
+        0.0,
+        33.0
+      ],
+      "floor": 0,
+      "label": "Requisition Crate (Kanzel)",
+      "price": 950,
+      "node_path": "Gameplay/Crate_Kanzel",
+      "key": "Gameplay/Crate_Kanzel",
+      "data": {
+        "spot_index": 1,
+        "can_start": false
       }
     },
     {
@@ -859,6 +899,24 @@
       "price": 0,
       "node_path": "Gameplay/AuxBus",
       "key": "Gameplay/AuxBus"
+    },
+    {
+      "id": "trap:Gameplay/Lever_BayDoors",
+      "type": "trap",
+      "pos": [
+        5.0,
+        0.0,
+        23.75
+      ],
+      "floor": 0,
+      "label": "Trap",
+      "price": 1000,
+      "node_path": "Gameplay/Lever_BayDoors",
+      "key": "Gameplay/Lever_BayDoors",
+      "data": {
+        "trap_id": "bay_doors",
+        "kind": ""
+      }
     },
     {
       "id": "wall_buy:Gameplay/WallBuy_bar",

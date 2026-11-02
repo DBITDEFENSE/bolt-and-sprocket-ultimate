@@ -193,7 +193,7 @@ func test_scene_matches_the_table() -> void:
 	assert_eq(str((doors["door_cockpit"] as Dictionary).get("requires_flag", "")), "autopilot_key", "the cockpit door waits for the engineer's key")
 	assert_true(_nodes.has("Door_CockpitL") and _nodes.has("Door_CockpitR"), "two cockpit doors (port walkway, starboard walkway)")
 	assert_eq(perks, (cfg["perks"] as Array).size(), "perk machines placed")
-	assert_eq(crates, 1, "one crate spot (the galley)")
+	assert_eq(crates, 2, "two crate spots (the galley; the gun blisters, T-156)")
 	for zone: String in (cfg["spawn_table"] as Dictionary).keys():
 		if zone.begins_with("_"):
 			continue

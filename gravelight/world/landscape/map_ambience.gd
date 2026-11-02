@@ -3965,3 +3965,452 @@ func _a3_ar() -> int:
 	if RoundManager.has_act():
 		return maxi(1, RoundManager.act_round())
 	return maxi(1, beat_round())
+# ---- U10 Act II ----
+# UPDATE 10 §3 (contract C1, DECISIONS T-156): der Kranich's living world, data/gravelight/map04b_ambience.json. Each
+# kind is its own block keyed by name and off when the key is absent (Map 0 and the other maps never see them); none
+# needs a Landscape. Presentation only, every peer runs its own (the FlightController's tilt is mirrored, so the
+# rivets pop on every peer). The file says "needs_landscape": false; `_kinds_setup_u10_act2` (the registry) starts
+# the kinds present and puts `_act2_tick` on _ticks.
+#   flight_sun     the night turning to dawn across the act: FlightSky.set_sunrise + the Moon light's colour/energy/angle
+#   formation      other bombers holding station round the Kranich, bobbing; once per act one is hit by flak and goes
+#                  down trailing fire (a squad line, M4B_FORMATION_DOWN)
+#   flak_field     flak bursting far out round the formation (FlightSky.burst), from an act round
+#   st_elmo        St Elmo's fire: violet-blue glows crawling on the wingtips and the flight-deck frame, brighter in a tilt
+#   kranich_frost  condensation and frost on the inner skin (the skin shader's `frost`), rising with the altitude
+#   rivets         loose rivets popping (a spark and a ping near the listener) in every tilt
+#   engine_pitch   the engine bed's pitch sags and wobbles when the Triebwerk takes damage (blasts in the engine
+#                  room, the Bordwart's health)
+#   london_hush    the cabin goes quiet for the London window (the Ambience bus ducks while LondonWindow runs)
+#   cables         extra cable bundles hung in the group FlightSky swings ("flight_swing") on a tilt
+
+const ACT2_KINDS: PackedStringArray = ["flight_sun", "formation", "flak_field", "st_elmo", "kranich_frost", "rivets",
+	"engine_pitch", "london_hush", "cables"]
+
+var _a2_ready: bool = false
+var _a2_ticks: Array[Callable] = []
+var _a2_t: float = 0.0
+var _a2_sky: Node = null
+var _a2_fc: Node = null
+var _a2_bombers: Array[Dictionary] = []
+var _a2_down_round: int = -1
+var _a2_down_at: float = -1.0
+var _a2_round_t: float = 0.0
+var _a2_flak_t: float = 0.0
+var _a2_elmo: Array[Dictionary] = []
+var _a2_frost: float = 0.0
+var _a2_banking: bool = false
+var _a2_strain: float = 0.0
+var _a2_hush_on: bool = false
+var _a2_hush_db: float = 0.0
+var _a2_moon: DirectionalLight3D = null
+var _a2_moon_base: Dictionary = {}
+
+
+func _kinds_setup_u10_act2() -> void:
+	if _a2_ready or cfg.is_empty():
+		return
+	_a2_ready = true
+	for k: String in ACT2_KINDS:
+		if cfg.has(k) and has_method("_ev_" + k):
+			call("_ev_" + k, cfg[k] as Dictionary)
+	if not _a2_ticks.is_empty():
+		GLBus.round_started.connect(func(_r: int, _s: bool) -> void: _a2_round_t = 0.0)
+		_ticks.append(_act2_tick)
+
+
+func _act2_tick(delta: float) -> void:
+	if _a2_ticks.is_empty():
+		return
+	_a2_t += delta
+	_a2_round_t += delta
+	if _a2_sky == null or not is_instance_valid(_a2_sky):
+		_a2_sky = get_tree().get_first_node_in_group(&"flight_sky")
+	if _a2_fc == null or not is_instance_valid(_a2_fc):
+		_a2_fc = get_tree().get_first_node_in_group(&"flight_controller")
+	for f: Callable in _a2_ticks:
+		f.call(delta)
+
+
+func _a2_act_round() -> int:
+	return maxi(1, int(RoundManager.act_round())) if RoundManager.has_method("act_round") else maxi(1, RoundManager.current_round)
+
+
+## The act's progress 0..1 between two act rounds (the round clock's fraction of `round_s` in between).
+static func a2_progress(act_round: int, round_t: float, from_round: int, to_round: int, round_s: float = 150.0) -> float:
+	var span: float = maxf(1.0, float(to_round - from_round))
+	var x: float = float(act_round - from_round) + clampf(round_t / maxf(1.0, round_s), 0.0, 0.99)
+	return clampf(x / span, 0.0, 1.0)
+
+
+func _a2_cam() -> Vector3:
+	var cam: Camera3D = get_viewport().get_camera_3d()
+	return cam.global_position if cam != null else Vector3(0, 1.6, 37)
+
+
+# ---------------------------------------------------------------- flight_sun
+
+func _ev_flight_sun(c: Dictionary) -> void:
+	var root: Node = get_parent() if get_parent() != null else get_tree().current_scene
+	var lights: Array[Node] = root.find_children("*", "DirectionalLight3D", true, false) if root != null else ([] as Array[Node])
+	for n: Node in lights:
+		if n.name != "WarFlash":
+			_a2_moon = n as DirectionalLight3D
+			_a2_moon_base = {"energy": _a2_moon.light_energy, "color": _a2_moon.light_color, "rot": _a2_moon.rotation_degrees}
+			break
+	_a2_ticks.append(func(_d: float) -> void:
+		var k: float = a2_progress(_a2_act_round(), _a2_round_t, int(c.get("from_act_round", 1)), int(c.get("to_act_round", 6)), float(c.get("round_s", 150.0)))
+		var dawn: float = clampf(k, 0.0, 1.0) * float(c.get("dawn_max", 0.85))
+		if _a2_sky != null and _a2_sky.has_method("set_sunrise"):
+			_a2_sky.call("set_sunrise", dawn)
+		if _a2_moon != null and not _a2_moon_base.is_empty():
+			_a2_moon.light_color = (_a2_moon_base["color"] as Color).lerp(Color(str(c.get("dawn_color", "#ffb27a"))), dawn * 0.7)
+			_a2_moon.light_energy = float(_a2_moon_base["energy"]) * lerpf(1.0, float(c.get("dawn_energy_mult", 1.6)), dawn)
+		if int(counts.get("sunrise_pct", -1)) != int(dawn * 100.0) / 10 * 10:
+			counts["sunrise_pct"] = int(dawn * 100.0) / 10 * 10)
+
+
+# ---------------------------------------------------------------- formation
+
+func _ev_formation(c: Dictionary) -> void:
+	var mat: StandardMaterial3D = StandardMaterial3D.new()
+	mat.albedo_color = Color(str(c.get("color", "#1a1d24")))
+	mat.roughness = 0.9
+	var glow: StandardMaterial3D = StandardMaterial3D.new()
+	glow.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	glow.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	glow.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	glow.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	glow.albedo_color = Color(0.7, 0.45, 1.0, 0.9)
+	var i: int = 0
+	for o: Variant in c.get("offsets", []):
+		var off: Array = o
+		var node: Node3D = Node3D.new()
+		node.name = "Formation%d" % i
+		add_child(node)
+		var base: Vector3 = Vector3(float(off[0]), float(off[1]), float(off[2]))
+		node.global_position = base
+		var s: float = float(c.get("scale", 1.0))
+		var wing: MeshInstance3D = MeshInstance3D.new()
+		var bm: BoxMesh = BoxMesh.new()
+		bm.size = Vector3(150.0, 3.0, 26.0) * s
+		wing.mesh = bm
+		wing.material_override = mat
+		wing.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		node.add_child(wing)
+		var body: MeshInstance3D = MeshInstance3D.new()
+		var bm2: BoxMesh = BoxMesh.new()
+		bm2.size = Vector3(18.0, 5.0, 48.0) * s
+		body.mesh = bm2
+		body.material_override = mat
+		body.position = Vector3(0, 1.0, 10.0) * s
+		body.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		node.add_child(body)
+		for ex: float in [-45.0, -15.0, 15.0, 45.0]:
+			var q: MeshInstance3D = MeshInstance3D.new()
+			var qm: QuadMesh = QuadMesh.new()
+			qm.size = Vector2(9.0, 9.0) * s
+			q.mesh = qm
+			q.material_override = glow
+			q.position = Vector3(ex, 0.5, -14.0) * s
+			node.add_child(q)
+		_a2_bombers.append({"node": node, "base": base, "phase": float(i) * 1.7, "down": false, "t": 0.0, "trail": null})
+		i += 1
+	counts["formation"] = _a2_bombers.size()
+	var dn: Dictionary = c.get("down", {})
+	_a2_ticks.append(func(delta: float) -> void:
+		for b: Dictionary in _a2_bombers:
+			if not is_instance_valid(b["node"]):
+				continue
+			var n: Node3D = b["node"] as Node3D
+			if bool(b["down"]):
+				_a2_fall(b, delta, dn)
+				continue
+			var ph: float = float(b["phase"])
+			n.global_position = (b["base"] as Vector3) + Vector3(sin(_a2_t * 0.13 + ph) * 4.0, sin(_a2_t * 0.31 + ph) * float(c.get("bob_m", 5.0)), 0.0)
+			n.rotation = Vector3(sin(_a2_t * 0.23 + ph) * 0.02, 0.0, sin(_a2_t * 0.27 + ph) * 0.05)
+		# once per act: one is hit by flak and goes down trailing fire
+		if dn.is_empty() or counts.has("formation_down") or _a2_act_round() < int(dn.get("from_act_round", 2)):
+			return
+		if _a2_down_at < 0.0:
+			var at: Array = dn.get("at_s", [60, 140])
+			_a2_down_at = _rng.randf_range(float(at[0]), float(at[1]))
+		if _a2_round_t >= _a2_down_at:
+			formation_hit(int(dn.get("victim", 0))))
+
+
+## One of the formation is hit (presentation; also the dev console / smoke's hook).
+func formation_hit(index: int) -> void:
+	if index < 0 or index >= _a2_bombers.size() or bool(_a2_bombers[index]["down"]):
+		return
+	var b: Dictionary = _a2_bombers[index]
+	var n: Node3D = b["node"] as Node3D
+	b["down"] = true
+	b["t"] = 0.0
+	counts["formation_down"] = int(counts.get("formation_down", 0)) + 1
+	if _a2_sky != null and _a2_sky.has_method("burst"):
+		for k: int in 3:
+			_after(0.3 * k, func() -> void:
+				if is_instance_valid(n):
+					_a2_sky.call("burst", n.global_position + Vector3(_rng.randf_range(-20, 20), _rng.randf_range(-6, 10), _rng.randf_range(-12, 12)), false))
+	var trail: CPUParticles3D = CPUParticles3D.new()
+	trail.amount = 160
+	trail.lifetime = 3.5
+	trail.local_coords = false
+	trail.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	trail.emission_box_extents = Vector3(30, 1, 4)
+	trail.direction = Vector3(0, 0.3, -1)
+	trail.spread = 25.0
+	trail.gravity = Vector3(0, 2.0, 0)
+	trail.initial_velocity_min = 4.0
+	trail.initial_velocity_max = 9.0
+	trail.scale_amount_min = 3.0
+	trail.scale_amount_max = 7.0
+	var qm: QuadMesh = QuadMesh.new()
+	qm.size = Vector2(1, 1)
+	trail.mesh = qm
+	var fm: StandardMaterial3D = StandardMaterial3D.new()
+	fm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	fm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	fm.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	fm.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	fm.vertex_color_use_as_albedo = true
+	trail.material_override = fm
+	var grad: Gradient = Gradient.new()
+	grad.set_color(0, Color(1.0, 0.65, 0.2, 0.9))
+	grad.set_color(1, Color(0.15, 0.1, 0.1, 0.0))
+	trail.color_ramp = grad
+	n.add_child(trail)
+	trail.emitting = true
+	b["trail"] = trail
+	var fl: OmniLight3D = OmniLight3D.new()
+	fl.light_color = Color(1.0, 0.55, 0.2)
+	fl.light_energy = 6.0
+	fl.omni_range = 60.0
+	fl.shadow_enabled = false
+	n.add_child(fl)
+	_after(2.5, func() -> void: _squad_line("M4B_FORMATION_DOWN"))
+	print("[ambience] formation bomber %d hit" % index)
+
+
+func _a2_fall(b: Dictionary, delta: float, dn: Dictionary) -> void:
+	var n: Node3D = b["node"] as Node3D
+	b["t"] = float(b["t"]) + delta
+	var t: float = float(b["t"])
+	var fall_s: float = float(dn.get("fall_s", 26.0))
+	n.global_position += Vector3(0.0, -lerpf(2.0, 22.0, clampf(t / fall_s, 0, 1)), -6.0) * delta
+	n.rotation.x = lerpf(n.rotation.x, -0.5, delta * 0.15)
+	n.rotation.z += delta * 0.08
+	if t >= fall_s:
+		if _a2_sky != null and _a2_sky.has_method("burst"):
+			_a2_sky.call("burst", n.global_position, true)
+		far_sound("war_crash_boom", n.global_position, -4.0)
+		counts["formation_crash"] = 1
+		n.queue_free()
+
+
+# ---------------------------------------------------------------- flak_field
+
+func _ev_flak_field(c: Dictionary) -> void:
+	_a2_flak_t = 5.0
+	_a2_ticks.append(func(delta: float) -> void:
+		if _a2_act_round() < int(c.get("from_act_round", 2)) or _a2_sky == null or not _a2_sky.has_method("burst"):
+			return
+		_a2_flak_t -= delta
+		if _a2_flak_t > 0.0:
+			return
+		var iv: Array = c.get("interval", [6, 14])
+		_a2_flak_t = _rng.randf_range(float(iv[0]), float(iv[1]))
+		var r: Array = c.get("radius", [140, 320])
+		var dir: Vector3 = Vector3(_rng.randf_range(-1, 1), _rng.randf_range(-0.25, 0.45), _rng.randf_range(-1, 1)).normalized()
+		_a2_sky.call("burst", Vector3(0, 0, 37) + dir * _rng.randf_range(float(r[0]), float(r[1])), true)
+		counts["flak"] = int(counts.get("flak", 0)) + 1)
+
+
+# ---------------------------------------------------------------- st_elmo
+
+func _ev_st_elmo(c: Dictionary) -> void:
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	m.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	m.albedo_color = Color(str(c.get("color", "#8a8cff")))
+	for p: Variant in c.get("points", []):
+		var a: Array = p
+		var q: MeshInstance3D = MeshInstance3D.new()
+		var qm: QuadMesh = QuadMesh.new()
+		qm.size = Vector2(1.4, 1.4)
+		q.mesh = qm
+		q.material_override = m
+		q.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(q)
+		q.global_position = Vector3(float(a[0]), float(a[1]), float(a[2]))
+		q.visible = false
+		var l: OmniLight3D = OmniLight3D.new()
+		l.light_color = m.albedo_color
+		l.light_energy = 0.0
+		l.omni_range = 5.0
+		l.shadow_enabled = false
+		q.add_child(l)
+		_a2_elmo.append({"q": q, "l": l, "ph": _rng.randf() * TAU})
+	_a2_ticks.append(func(_d: float) -> void:
+		var on: bool = _a2_act_round() >= int(c.get("from_act_round", 2))
+		var tilt: bool = _a2_fc != null and bool(_a2_fc.get("banking"))
+		for e: Dictionary in _a2_elmo:
+			var q2: MeshInstance3D = e["q"] as MeshInstance3D
+			q2.visible = on
+			if not on:
+				continue
+			var fl: float = 0.55 + 0.45 * sin(_a2_t * 23.0 + float(e["ph"])) * sin(_a2_t * 7.3 + float(e["ph"]) * 2.0)
+			var k: float = fl * (1.8 if tilt else 1.0)
+			q2.scale = Vector3.ONE * (0.6 + 0.6 * k)
+			(e["l"] as OmniLight3D).light_energy = 0.8 * k
+		if on and not counts.has("st_elmo"):
+			counts["st_elmo"] = _a2_elmo.size())
+
+
+# ---------------------------------------------------------------- kranich_frost
+
+## The frost for an act round (pure): the table's value (rounds past its end keep the last).
+static func a2_frost_for(act_round: int, table: Array) -> float:
+	if table.is_empty():
+		return 0.0
+	return clampf(float(table[clampi(act_round - 1, 0, table.size() - 1)]), 0.0, 1.0)
+
+
+func _ev_kranich_frost(c: Dictionary) -> void:
+	_a2_ticks.append(func(delta: float) -> void:
+		var target: float = a2_frost_for(_a2_act_round(), c.get("by_act_round", []))
+		var nf: float = move_toward(_a2_frost, target, delta * float(c.get("rate_per_s", 0.01)))
+		if absf(nf - _a2_frost) < 0.0005 and counts.has("frost"):
+			return
+		_a2_frost = nf
+		for k: Variant in KranichShell._mats.keys():
+			var sm: ShaderMaterial = KranichShell._mats[k] as ShaderMaterial
+			if sm != null:
+				sm.set_shader_parameter("frost", _a2_frost)
+		counts["frost"] = int(_a2_frost * 100.0))
+
+
+# ---------------------------------------------------------------- rivets
+
+func _ev_rivets(c: Dictionary) -> void:
+	_a2_ticks.append(func(_d: float) -> void:
+		var b: bool = _a2_fc != null and bool(_a2_fc.get("banking"))
+		if b and not _a2_banking:
+			var pb: Array = c.get("per_bank", [3, 6])
+			var n: int = _rng.randi_range(int(pb[0]), int(pb[1]))
+			for i: int in n:
+				_after(_rng.randf_range(0.2, float(c.get("spread_s", 4.5))), _a2_pop_rivet.bind(float(c.get("radius", 5.0))))
+		_a2_banking = b)
+
+
+func _a2_pop_rivet(radius: float) -> void:
+	var cam: Vector3 = _a2_cam()
+	var ang: float = _rng.randf() * TAU
+	var p: Vector3 = Vector3(cam.x + cos(ang) * _rng.randf_range(1.5, radius), _rng.randf_range(1.9, 3.2), cam.z + sin(ang) * _rng.randf_range(1.5, radius))
+	var sp: CPUParticles3D = CPUParticles3D.new()
+	sp.one_shot = true
+	sp.amount = 10
+	sp.lifetime = 0.35
+	sp.explosiveness = 1.0
+	sp.direction = Vector3(0, -1, 0)
+	sp.spread = 70.0
+	sp.initial_velocity_min = 2.0
+	sp.initial_velocity_max = 5.0
+	var bm: BoxMesh = BoxMesh.new()
+	bm.size = Vector3(0.015, 0.015, 0.06)
+	sp.mesh = bm
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.albedo_color = Color(1.0, 0.8, 0.45)
+	sp.material_override = m
+	add_child(sp)
+	sp.global_position = p
+	sp.emitting = true
+	sp.finished.connect(sp.queue_free)
+	AudioDirector.play_3d("kranich_rattle", p, -8.0, 0.25)
+	counts["rivet"] = int(counts.get("rivet", 0)) + 1
+
+
+# ---------------------------------------------------------------- engine_pitch
+
+## The engine bed's pitch at a strain (pure): it sags and wobbles as the Triebwerk is hurt.
+static func a2_engine_pitch(strain: float, t: float, sag: float = 0.18, wobble: float = 0.04) -> float:
+	var s: float = clampf(strain, 0.0, 1.0)
+	return 1.0 - sag * s + wobble * s * sin(t * 7.0)
+
+
+func _ev_engine_pitch(c: Dictionary) -> void:
+	var zone: StringName = StringName(str(c.get("zone", "D_TRIEBWERK")))
+	GLBus.explosion.connect(func(at: Vector3, _r: float) -> void:
+		if ZoneVolume.zone_at(get_tree(), at) == zone:
+			_a2_strain = minf(1.0, _a2_strain + float(c.get("per_blast", 0.3))))
+	_a2_ticks.append(func(delta: float) -> void:
+		var boss: float = 0.0
+		var dir: ZombieDirector = get_tree().get_first_node_in_group(&"director") as ZombieDirector
+		if dir != null:
+			for z: Zombie in dir.active_zombies():
+				if z is HomageBoss and z.is_active() and z.max_hp > 0.0 and ZoneVolume.zone_at(get_tree(), z.global_position) == zone:
+					boss = maxf(boss, 1.0 - z.hp / z.max_hp)
+		_a2_strain = maxf(boss, _a2_strain - delta * float(c.get("decay_per_s", 0.05)))
+		var amb: Variant = AudioDirector.get("_ambient")
+		if amb is AudioStreamPlayer:
+			(amb as AudioStreamPlayer).pitch_scale = a2_engine_pitch(_a2_strain, _a2_t, float(c.get("sag", 0.18)), float(c.get("wobble", 0.04)))
+		if _a2_strain > 0.3:
+			counts["engine_strain"] = int(_a2_strain * 100.0))
+
+
+# ---------------------------------------------------------------- london_hush
+
+func _ev_london_hush(c: Dictionary) -> void:
+	var bus: int = AudioServer.get_bus_index(str(c.get("bus", "Ambience")))
+	if bus < 0:
+		return
+	_a2_ticks.append(func(_d: float) -> void:
+		var running: bool = false
+		var root: Node = get_tree().current_scene
+		if root != null:
+			for ch: Node in root.get_children():
+				if ch is LondonWindow:
+					running = true
+					break
+		if running and not _a2_hush_on:
+			_a2_hush_on = true
+			_a2_hush_db = AudioServer.get_bus_volume_db(bus)
+			var tw: Tween = create_tween()
+			tw.tween_method(func(v: float) -> void: AudioServer.set_bus_volume_db(bus, v), _a2_hush_db, _a2_hush_db - float(c.get("duck_db", 16.0)), float(c.get("fade_s", 2.5)))
+			counts["london_hush"] = int(counts.get("london_hush", 0)) + 1
+		elif not running and _a2_hush_on:
+			_a2_hush_on = false
+			var tw2: Tween = create_tween()
+			tw2.tween_method(func(v: float) -> void: AudioServer.set_bus_volume_db(bus, v), AudioServer.get_bus_volume_db(bus), _a2_hush_db, float(c.get("fade_s", 2.5))))
+
+
+# ---------------------------------------------------------------- cables
+
+func _ev_cables(c: Dictionary) -> void:
+	var m: Material = Mats.get_mat("black_paint")
+	var i: int = 0
+	for p: Variant in c.get("points", []):
+		var a: Array = p
+		var pivot: Node3D = Node3D.new()
+		pivot.name = "Cable%d" % i
+		add_child(pivot)
+		pivot.global_position = Vector3(float(a[0]), float(a[1]), float(a[2]))
+		var length: float = float(a[3]) if a.size() > 3 else 1.2
+		pivot.set_meta("swing_len", length)
+		pivot.add_to_group(&"flight_swing")
+		for k: int in 3:
+			var mi: MeshInstance3D = MeshInstance3D.new()
+			var cm: CylinderMesh = CylinderMesh.new()
+			cm.top_radius = 0.012
+			cm.bottom_radius = 0.012
+			cm.height = length - 0.1 * float(k)
+			mi.mesh = cm
+			mi.material_override = m
+			mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			mi.position = Vector3(0.025 * float(k - 1), -cm.height * 0.5, 0.0)
+			pivot.add_child(mi)
+		i += 1
+	counts["cables"] = i

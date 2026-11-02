@@ -75,6 +75,7 @@ var _rods: Array = []             # [node, base_pos]
 var _scan_t: float = 0.0
 var _shake_t: float = 0.0
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var sunrise: float = 0.0          # UPDATE 10 (T-156): night -> dawn across the act (set_sunrise)
 
 
 # ---------------------------------------------------------------- pure rules
@@ -497,6 +498,7 @@ func _process(delta: float) -> void:
 		_sky_mat.set_shader_parameter("east_glow", _east)
 		_sky_mat.set_shader_parameter("dawn", _dawn)
 		_sky_mat.set_shader_parameter("flash", _flash)
+		_sky_mat.set_shader_parameter("sunrise", sunrise)
 
 
 func _tick_layers(delta: float, cp: Vector3) -> void:
@@ -604,7 +606,6 @@ func _tick_fighters(delta: float) -> void:
 func spawn_pass(with_strafe: bool) -> void:
 	if _fighter_mesh == null:
 		return
-	var fcfg: Dictionary = cfg.get("fighters", {})
 	var kind: int = _rng.randi_range(0, 2)
 	var side: float = -1.0 if _rng.randf() < 0.5 else 1.0
 	var a: Vector3
@@ -624,6 +625,21 @@ func spawn_pass(with_strafe: bool) -> void:
 			var x3: float = _rng.randf_range(40.0, 110.0) * (1.0 if _rng.randf() < 0.7 else -1.0)
 			a = Vector3(x3, 180.0, WING_Z - 90.0)
 			b = Vector3(x3 + side * 30.0, -200.0, WING_Z - 160.0)
+	_spawn_pass_ab(a, b, with_strafe, kind)
+
+
+## UPDATE 10 (T-156): a fighter strafing close over the wing walk: low past `near` from aft to fore, guns firing.
+func spawn_pass_near(near: Vector3) -> void:
+	if _fighter_mesh == null or desert:
+		return
+	var off: float = _rng.randf_range(-18.0, 18.0)
+	var a: Vector3 = near + Vector3(off - 40.0, _rng.randf_range(8.0, 16.0), -260.0)
+	var b: Vector3 = near + Vector3(off + 40.0, _rng.randf_range(4.0, 12.0), 260.0)
+	_spawn_pass_ab(a, b, true, 0)
+
+
+func _spawn_pass_ab(a: Vector3, b: Vector3, with_strafe: bool, kind: int) -> void:
+	var fcfg: Dictionary = cfg.get("fighters", {})
 	var node: Node3D = Node3D.new()
 	node.name = "Fighter%d" % passes_done
 	add_child(node)
@@ -737,6 +753,8 @@ func calm() -> void:
 	_fc.set("banking", false)
 	_fc.set("turb_t", 1.0e9)
 	_fc.set("turb_warned", true)
+	_fc.set("tilt_times", [] as Array[float])   # T-156: the flight clock's tilts and breaches too
+	_fc.set("decomp_queue", [])
 	for n: Node in get_tree().get_nodes_in_group(&"players"):
 		n.set("ext_roll_deg", 0.0)
 
@@ -756,6 +774,11 @@ func preview_london() -> void:
 	_scan_t = 0.0
 	print("[sky] preview_london: leg %d ground y %.1f plate %s clouds %s" % [leg_index, _ground_y,
 		str(_plate.visible) if _plate != null else "none", str(_clouds.map(func(c: MeshInstance3D) -> float: return c.position.y))])
+
+
+## UPDATE 10 (T-156): the living world's sun (MapAmbience kind flight_sun): 0 night .. 1 first light behind the wing.
+func set_sunrise(k: float) -> void:
+	sunrise = clampf(k, 0.0, 1.0)
 
 
 func _go_desert() -> void:

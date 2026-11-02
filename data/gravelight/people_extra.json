@@ -6,6 +6,67 @@
   "line_gap_s": 6.0,
   "card_close_s": 25.0,
   "people": {
+    "ruhland": {
+      "name": "Ilse Ruhland",
+      "title": "ILSE RUHLAND",
+      "maps": ["map04b"],
+      "speaker": "RUH",
+      "display": "RUHLAND",
+      "poi": "Ruhland (the Bordkasse)",
+      "bio": "The wages clerk of Werk Thalbach, mid-twenties, practical and frightened and very polite. When the Kranich was loaded she climbed aboard after the cash box because nobody else would sign for it. She keeps the Bordkasse open behind its counter at the forward bulkhead and keeps the sums, because the sums are the one thing aboard that still make sense. They have run a fifth over from the day the works' till was fitted; she has started to suspect it was never her arithmetic.",
+      "bodies": [
+        {"person": "teller_ruhland", "at": [2.6, 0.0, 52.3], "yaw": 180.0, "pose": "stand", "body": false}
+      ],
+      "favour": {
+        "kind": "fetch",
+        "item": "bordkasse_ledger",
+        "item_name": "Bordkasse's ledger",
+        "item_at": [6.5, 0.0, 66.5],
+        "ask": "The Bordkasse's ledger went forward with the paymaster's satchel, to the flight deck. Bring it to me and I can make the sums come out honest.",
+        "have": "You have the ledger. Give it to Ruhland?",
+        "done": "Ruhland ran her finger down the columns: a fifth over on every page. She paid out what the ledger owed.",
+        "reward": {"kind": "scrip_mark", "scrip": 1500}
+      },
+      "lines": {
+        "talk": ["RUH_PEOPLE_TALK_01", "RUH_PEOPLE_TALK_02"],
+        "ask": ["RUH_PEOPLE_ASK_01"],
+        "thanks": ["RUH_PEOPLE_THANKS_01"],
+        "round": ["RUH_PEOPLE_ROUND_01"],
+        "down": ["RUH_PEOPLE_DOWN_01"]
+      }
+    },
+    "riedl": {
+      "name": "Anselm Riedl, on the engine-room intercom",
+      "title": "BORDMECHANIKER A. RIEDL",
+      "maps": ["map04b"],
+      "speaker": "RDL",
+      "display": "RIEDL",
+      "poi": "The engine-room intercom",
+      "until_act_round": 4,
+      "said": "Hier Maschine. Wer ist dort? (Engine room here. Who is that?) The voice is tired and polite and very sure this is a test flight.",
+      "bio": "Bordmechaniker Anselm Riedl, the only crewman who was aboard when the impellers were fitted, answers the intercom from the port engine room. His tag hangs on a buckled harness in the bunks. He thinks this is a test flight. He keeps asking the crew to report. Nobody has told him there is no crew, and by the fourth round of the act he will not be able to hear it.",
+      "bodies": [
+        {"person": "wiesner", "at": [8.2, 0.0, 39.2], "yaw": 90.0, "pose": "stand", "body": false}
+      ],
+      "favour": {
+        "kind": "fetch",
+        "item": "riedl_log",
+        "item_name": "engine log",
+        "item_at": [-7.0, 0.0, 47.0],
+        "ask": "My engine log. I left it in the galley with my coffee. Read me the last entry, would you? I cannot leave the engine.",
+        "have": "You have Riedl's engine log. Read him the last entry?",
+        "done": "You read him the last entry: start 02:10, crew PROVIDED. He was quiet a long time. Then he started calling out what he could hear in the wing.",
+        "reward": {"kind": "intel_ping", "radius_m": 60.0, "seconds": 10.0}
+      },
+      "lines": {
+        "talk": ["RDL_PEOPLE_TALK_01", "RDL_PEOPLE_TALK_02", "RDL_PEOPLE_TALK_03"],
+        "ask": ["RDL_PEOPLE_ASK_01"],
+        "thanks": ["RDL_PEOPLE_THANKS_01"],
+        "ping": ["RDL_PEOPLE_PING_01"],
+        "round": ["RDL_PEOPLE_ROUND_01"],
+        "down": ["RDL_PEOPLE_DOWN_01"]
+      }
+    },
     "miners": {
       "name": "Alois Brzezina and two miners",
       "title": "ALOIS BRZEZINA",

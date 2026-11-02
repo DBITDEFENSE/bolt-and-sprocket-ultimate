@@ -102,7 +102,7 @@ func _upgrade_prompt(player: Player) -> String:
 	var nm: String = PerkManager.tier_name(perk_id, next)
 	match PerkManager.can_upgrade(pid, perk_id):
 		&"ok":
-			return "Hold [%s] to brew %s [%s]\n%s" % [prompt_key(&"interact"), nm, price_str(player, PerkManager.tier_price(perk_id, next)),
+			return "Hold [%s] to brew %s [%s]\n%s" % [prompt_key(&"interact"), nm, price_str(player, PerkManager.tier_price_for(pid, perk_id, next)) + (" · discount token" if PerkManager.has_discount_token(pid) else ""),
 				PerkManager.tier_data(perk_id, next).get("desc", "")]
 		&"no_power":
 			return "%s: power must be activated" % nm
@@ -174,9 +174,10 @@ func sell_to_companion(companion: Player, payer_pid: int) -> StringName:
 func _brew_tier(player: Player) -> void:
 	var pid: int = player.player_id
 	var next: int = PerkManager.tier_of(pid, perk_id) + 1
-	if not try_purchase(player, StringName("%s_t%d" % [perk_id, next]), PerkManager.tier_price(perk_id, next)):
+	if not try_purchase(player, StringName("%s_t%d" % [perk_id, next]), PerkManager.tier_price_for(pid, perk_id, next)):
 		GLBus.perk_denied.emit(pid, perk_id, &"no_scrip")
 		return
+	PerkManager.use_discount_token(pid)   # UPDATE 10 (T-156): the wing walk's token, spent with the tier
 	_drinking = true
 	_play_jingle()
 	_cab_dispense()

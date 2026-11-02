@@ -13,6 +13,7 @@ const MAP2_IDS: PackedStringArray = ["INT_M2_01", "INT_M2_02", "INT_M2_03", "INT
 const MAP4D_IDS: PackedStringArray = ["INT_M4_RELAY", "INT_M4_CREWTAGS", "INT_M4_SMILE", "INT_M4_PILCH", "INT_MARKE_TERMS", "INT_M4D_DELIVERY_LOG", "INT_M4D_HAAS_TAG", "INT_M4D_RELAY_CARD", "INT_M4D_FLIGHT_CARD"]
 ## Map 4 Act III (UPDATE 07, docs/MAP4_FERNFLUG.md 13.1): the British crate's manifest and Hale's program log, in the hangar.
 const MAP4C_IDS: PackedStringArray = ["INT_M4_MANIFEST", "INT_M4_PROGRAM"]
+const MAP4B_IDS: PackedStringArray = ["INT_M4B_BORDBUCH", "INT_M4B_CREWPHOTO", "INT_M4B_AIMERCARD", "INT_M4B_AUTOPILOT"]   # T-156
 ## Map 1 (LORE.md section 13.5, T-137): Jakub's refusal on the Maintenance Stairs' second landing.
 const MAP1_IDS: PackedStringArray = ["INT_MARKE_JAKUB", "INT_M1_FENSKE_LEDGER"]   # (T-141: Fenske's second ledger)
 
@@ -67,6 +68,7 @@ func test_only_these_rows_are_fixed() -> void:
 	want.append_array(MAP2_IDS)
 	want.append_array(MAP4D_IDS)
 	want.append_array(MAP4C_IDS)
+	want.append_array(MAP4B_IDS)
 	want.append_array(MAP1_IDS)
 	want.sort()
 	assert_eq(fixed, want, "exactly the section 13.1, 13.2, 13.5 and Mondlicht rows are fixed")
@@ -126,12 +128,15 @@ func test_spawn_all_places_the_map_0_items() -> void:
 	var m4c: Node3D = Node3D.new()
 	add_child_autofree(m4c)
 	assert_eq(StoryProp.spawn_all(m4c, "4c"), 2, "two Groom Lake items (the manifest, the program log)")
+	var m4b: Node3D = Node3D.new()
+	add_child_autofree(m4b)
+	assert_eq(StoryProp.spawn_all(m4b, "4b"), 4, "four Kranich items (T-156: the Bordbuch, the crew photo, the aimer's card, the autopilot page)")
 	var by_name: Dictionary = {}
 	for c: Node in root.get_children() + other.get_children():
 		by_name[c.name] = c
 	for c2: Node in m2.get_children():
 		by_name[c2.name] = c2
-	for c3: Node in m4d.get_children() + m4c.get_children():
+	for c3: Node in m4d.get_children() + m4c.get_children() + m4b.get_children():
 		by_name[c3.name] = c3
 	for e: Dictionary in _props():
 		var n: String = "Story_" + str(e["id"])

@@ -29,6 +29,9 @@ uniform float rivet_radius = 0.007;
 uniform float row_gap = 0.032;       // the double row either side of a frame line
 uniform float seam_darken : hint_range(0.0, 1.0) = 0.55;
 uniform float grime : hint_range(0.0, 1.0) = 0.3;
+// UPDATE 10 (T-156): condensation and frost on the skin, raised with the altitude by the act's living world
+// (MapAmbience kind kranich_frost); 0 = none, the look of T-147
+uniform float frost : hint_range(0.0, 1.0) = 0.0;
 
 float hash12(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -109,6 +112,13 @@ void fragment() {
 	float low = 1.0 - smoothstep(0.0, 1.1, uv.y);
 	col = mix(col, col * vec3(0.55, 0.5, 0.42), clamp(g * grime + low * grime * 0.6, 0.0, 0.8));
 
+	if (frost > 0.0) {
+		// rime in ragged patches, heavier high on the arc; a wet sheen (condensation) under it
+		float fn = vnoise(uv * 3.1) * 0.6 + vnoise(uv * 11.0) * 0.4 + uv.y * 0.12;
+		float fr = frost * smoothstep(0.55 - frost * 0.3, 0.85, fn);
+		col = mix(col, vec3(0.74, 0.8, 0.86), fr * 0.7);
+		rough = mix(rough, 0.18, frost * 0.45 * (1.0 - fr));
+	}
 	ALBEDO = col;
 	ROUGHNESS = rough;
 	METALLIC = metal * orm.b + metal * 0.3;

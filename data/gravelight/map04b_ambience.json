@@ -1,0 +1,17 @@
+{
+  "_doc": "Der Kranich's living world (UPDATE 10 §3, contract C1, DECISIONS T-156): the kinds in the `# ---- U10 Act II ----` block at the end of gravelight/world/landscape/map_ambience.gd; MapRoot attaches the MapAmbience because this file exists; needs_landscape false: no Landscape in flight. Presentation only, every peer its own. The outside itself (the legs below: the coast, then the ocean, then America; the clouds; the fighter passes; London's flak and searchlights) is FlightSky's (map04b.json flight.sky) and stays there; the London window keeps its own timing (london_window.gd). flight_sun: night to dawn from from_act_round to to_act_round (round_s per round for the in-between), the sky's aft glow (FlightSky.set_sunrise, up to dawn_max) and the Moon light warming to dawn_color at dawn_energy_mult. formation: bombers holding station at `offsets` (map frame, m) bobbing bob_m; `down`: once per act from from_act_round, at_s into the round, the bomber `victim` is hit by flak and falls fall_s trailing fire (squad line M4B_FORMATION_DOWN). flak_field: far flak every interval s, radius m out, from from_act_round. st_elmo: violet-blue glows at `points` (the wingtips, the flight deck's frame) from from_act_round, brighter in a tilt. kranich_frost: the skin shader's frost per act round (by_act_round, the climb to altitude and down again over America), eased at rate_per_s. rivets: per_bank [min, max] rivets pop within radius m of the listener over spread_s of each tilt. engine_pitch: the engine bed sags `sag` and wobbles `wobble` with the Triebwerk's strain (per_blast for an explosion in `zone`, the Bordwart's lost health while he stands there; decays decay_per_s). london_hush: the `bus` ducks duck_db over fade_s while the London window runs. cables: cable bundles [x, y, z, length] hung in the group FlightSky swings.",
+  "needs_landscape": false,
+  "flight_sun": {"from_act_round": 1, "to_act_round": 6, "round_s": 150.0, "dawn_max": 0.85, "dawn_color": "#ffb27a", "dawn_energy_mult": 1.6},
+  "formation": {
+    "offsets": [[-235.0, 22.0, 30.0], [240.0, 12.0, -30.0], [70.0, 55.0, 330.0], [-90.0, -28.0, -260.0]],
+    "scale": 0.9, "bob_m": 5.0, "color": "#2a303c",
+    "down": {"from_act_round": 2, "at_s": [60.0, 140.0], "victim": 0, "fall_s": 26.0}
+  },
+  "flak_field": {"from_act_round": 2, "interval": [7.0, 15.0], "radius": [150.0, 340.0]},
+  "st_elmo": {"from_act_round": 2, "color": "#8a8cff", "points": [[-129.5, 3.4, 25.0], [129.5, 3.4, 25.0], [-12.0, 4.9, 73.6], [12.0, 4.9, 73.6]]},
+  "kranich_frost": {"by_act_round": [0.05, 0.25, 0.45, 0.6, 0.5, 0.25], "rate_per_s": 0.01},
+  "rivets": {"per_bank": [3, 6], "radius": 5.0, "spread_s": 4.5},
+  "engine_pitch": {"zone": "D_TRIEBWERK", "per_blast": 0.3, "decay_per_s": 0.05, "sag": 0.18, "wobble": 0.04},
+  "london_hush": {"bus": "Ambience", "duck_db": 16.0, "fade_s": 2.5},
+  "cables": {"points": [[-20.0, 2.15, 33.0, 1.1], [-34.0, 2.15, 41.0, 0.9], [20.0, 2.15, 33.0, 1.1], [36.0, 2.15, 41.0, 0.9], [-64.0, 4.6, 30.0, 1.6], [-70.0, 4.6, 50.0, 1.4], [64.0, 4.6, 44.0, 1.5], [0.0, 3.5, 30.0, 1.0]]}
+}

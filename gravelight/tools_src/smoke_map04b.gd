@@ -38,6 +38,7 @@ func _ready() -> void:
 	ProfileSave.profile = ProfileSave.new_profile()
 	GLSettings.path = "user://_qa_m4b_settings.cfg"
 	GLSettings.values["homage_bosses"] = false
+	GLSettings.values["bot_ee_help"] = "off"   # T-156: the crew tags are reachable now, so Full Partner bots would run the egg (London, the autopilot) ahead of the round clock this smoke checks
 	GameState.character_id = &"dutch"
 	GameState.bot_count = 3
 	Campaign.begin_at(&"map04b_kranich", 15, Campaign.arrival_kit(&"map04b_kranich"))
@@ -234,7 +235,7 @@ func _run() -> void:
 		if n2 is PerkMachine:
 			perks += 1
 	_check(perks == 9, "9 perk machines placed (Ledger Lager T-141)")
-	_check(get_tree().get_nodes_in_group(&"crate_spots").size() == 1, "the galley crate spot")
+	_check(get_tree().get_nodes_in_group(&"crate_spots").size() == 2, "the galley and the gun blisters crate spots (T-156)")
 	_check(RoundManager.has_act() and RoundManager.act_index() == 2, "the act block is loaded (index 2)")
 	var cl: BuyDoor = _g("Door_CockpitL") as BuyDoor
 	var cr: BuyDoor = _g("Door_CockpitR") as BuyDoor
@@ -300,9 +301,9 @@ func _run() -> void:
 	await _tp(Vector3(0.0, 0.2, 12.0), 0.0)
 	# a bank
 	fc.bank_now()
-	await _frames(2)
+	await _secs(1.2)   # T-156: the bank is a tilt now, eased in over 0.8 s
 	_check(fc.banking and absf(_p.ext_roll_deg) > 1.0, "a bank: the camera rolls (%.1f°) and the deck pushes" % _p.ext_roll_deg)
-	await _secs(7.0)
+	await _secs(6.0)
 	_check(not fc.banking and _p.ext_roll_deg == 0.0, "the bank ended and the camera levelled")
 	# a strafe over the bay
 	var hb: int = _hits

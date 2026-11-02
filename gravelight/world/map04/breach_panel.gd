@@ -15,6 +15,9 @@ extends Interactable
 @export var see_through: bool = false
 
 var is_open: bool = false
+## UPDATE 10 (T-156): torn off for good (the wing walk's way out): after its suction the hole stays open, never seals,
+## takes no seal prompt and is left out of the FlightController's random breaches.
+var torn: bool = false
 var open_t: float = 0.0
 var cfg: Dictionary = {}
 var times_blown: int = 0
@@ -99,8 +102,18 @@ func blow(flight_cfg: Dictionary) -> void:
 	print("[breach] %s blown (%d)" % [panel_id, times_blown])
 
 
+## UPDATE 10 (T-156): blows the panel (its normal suction) and tears it off for good (WingWalk.open_now).
+func tear(flight_cfg: Dictionary) -> void:
+	torn = true
+	if not is_open:
+		blow(flight_cfg)
+
+
 func seal(by_player: int = 0) -> void:
 	if not is_open:
+		return
+	if torn:
+		_settle_torn()
 		return
 	is_open = false
 	open_t = 0.0
@@ -112,8 +125,15 @@ func seal(by_player: int = 0) -> void:
 	print("[breach] %s sealed by %d" % [panel_id, by_player])
 
 
+## A torn panel after its suction: the hole stays (the night through the shell), the wind and the light die down.
+func _settle_torn() -> void:
+	open_t = 0.0
+	_light.light_energy = 0.6
+	_wind.emitting = false
+
+
 func _process(delta: float) -> void:
-	if not is_open:
+	if not is_open or (torn and open_t <= 0.0):
 		return
 	open_t -= delta
 	if open_t <= 0.0:
@@ -126,8 +146,8 @@ func _process(delta: float) -> void:
 	var mps: float = float(cfg.get("suction_mps", 4.0))
 	for n: Node in get_tree().get_nodes_in_group(&"players"):
 		var p: Player = n as Player
-		if p == null or not p.is_alive():
-			continue
+		if p == null or not p.is_alive() or absf(p.global_position.y - hole.y) > 2.0:
+			continue   # (T-156: not the wing walk's deck above the hole)
 		var v: Vector3 = suction_for(hole, p.global_position, radius, mps)
 		if v != Vector3.ZERO:
 			p.external_push(v, 0.15, &"pull")
@@ -146,13 +166,13 @@ func _process(delta: float) -> void:
 
 
 func get_prompt(_player: Player) -> String:
-	if not is_open:
+	if not is_open or torn:
 		return ""
 	return "Hold [%s] to seal the breach" % prompt_key(&"interact")
 
 
 func can_interact(player: Player) -> bool:
-	return is_open and not player.downed
+	return is_open and not torn and not player.downed
 
 
 func hold_time(player: Player) -> float:

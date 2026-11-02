@@ -12331,5 +12331,180 @@
     "speaker": "OGP",
     "category": "PEOPLE_DOWN",
     "text": "Get up. Please get up. They'll put you on a hanger."
+  },
+  "PA_M4B_WING_01": {
+    "speaker": "PA",
+    "category": "M4B_WING",
+    "text": "Achtung. Backbordfläche beschädigt. Sicherungsleine benutzen. (Attention. Port wing damaged. Use the safety line.)"
+  },
+  "PA_M4B_DECOMP_01": {
+    "speaker": "PA",
+    "category": "M4B_DECOMP",
+    "text": "Achtung! Druckabfall im Rumpf. Festhalten! (Attention! Pressure drop in the hull. Hold on!)"
+  },
+  "PA_M4B_POWER_01": {
+    "speaker": "PA",
+    "category": "M4B_POWER",
+    "text": "Hilfssammelschiene: ein. Alle Stationen, melden. (Auxiliary bus: on. All stations, report.)"
+  },
+  "PA_M4B_BAYDOORS_01": {
+    "speaker": "PA",
+    "category": "M4B_BAYDOORS",
+    "text": "Bombenklappen öffnen. Abstand halten. (Bay doors opening. Stand clear.)"
+  },
+  "PA_M4B_LASTCALL_01": {
+    "speaker": "PA",
+    "category": "M4B_LASTCALL",
+    "text": "Hier Kranich, Bordmechaniker Riedl. Testflug, zweite Nacht. Die Besatzung meldet... die Besatzung meldet nicht. (Kranich here, flight engineer Riedl. Test flight, second night. The crew reports... the crew does not report.)"
+  },
+  "PA_M4B_LASTCALL_02": {
+    "speaker": "PA",
+    "category": "M4B_LASTCALL",
+    "text": "Haas an Riedl. Da sind Leute im Werk, die wir nicht kennen. Sie zählen uns. (Haas to Riedl. There are people in the works we don't know. They are counting us.)"
+  },
+  "PA_M4B_LASTCALL_03": {
+    "speaker": "PA",
+    "category": "M4B_LASTCALL",
+    "text": "Pohl. Wenn jemand das hört: wir sind nicht verloren gegangen. Wir wurden abgeholt. Ende. (Pohl. If anyone hears this: we were not lost. We were collected. Out.)"
+  },
+  "DEA_M4B_WING_01": {
+    "speaker": "DEA",
+    "category": "M4B_WING",
+    "text": "The panel's gone. That's a way out onto the wing. In flight. Clip in or don't {go}."
+  },
+  "DUT_M4B_WING_FALL_01": {
+    "speaker": "DUT",
+    "category": "M4B_WING_FALL",
+    "text": "The rope held. My stomach {didn't}."
+  },
+  "PEG_M4B_WING_FALL_01": {
+    "speaker": "PEG",
+    "category": "M4B_WING_FALL",
+    "text": "Note to self: clip in. Underline {clip}."
+  },
+  "DEA_M4B_WING_FALL_01": {
+    "speaker": "DEA",
+    "category": "M4B_WING_FALL",
+    "text": "Lord, I saw the sea. Haul me in, I'm {done}."
+  },
+  "WRN_M4B_WING_FALL_01": {
+    "speaker": "WRN",
+    "category": "M4B_WING_FALL",
+    "text": "I am not writing that one {down}."
+  },
+  "DUT_M4B_ROSTER_01": {
+    "speaker": "DUT",
+    "category": "M4B_ROSTER",
+    "text": "Three names on the roster, rubbed out. Write 'em back in, {somebody}."
+  },
+  "PEG_M4B_ROSTER_01": {
+    "speaker": "PEG",
+    "category": "M4B_ROSTER",
+    "text": "Riedl, Haas, Pohl. The roster had them in pencil. Someone took an eraser to three {men}."
+  },
+  "DEA_M4B_ROSTER_01": {
+    "speaker": "DEA",
+    "category": "M4B_ROSTER",
+    "text": "There. Their names are back where they belong. The tape deck's got a reel with the same three {names}."
+  },
+  "WRN_M4B_ROSTER_01": {
+    "speaker": "WRN",
+    "category": "M4B_ROSTER",
+    "text": "Riedl. Haas. Pohl. I'm writing them back in. In ink this {time}."
+  },
+  "WRN_M4B_LASTCALL_REPLY_01": {
+    "speaker": "WRN",
+    "category": "M4B_LASTCALL_REPLY",
+    "text": "Collected. Like my brother. They knew, at the end. They {knew}."
+  },
+  "RUH_PEOPLE_TALK_01": {
+    "speaker": "RUH",
+    "category": "PEOPLE_TALK",
+    "text": "I was not supposed to be on this aeroplane. I was supposed to be counting the wages. I am still counting the {wages}."
+  },
+  "RUH_PEOPLE_TALK_02": {
+    "speaker": "RUH",
+    "category": "PEOPLE_TALK",
+    "text": "The cash box is the Werk's. The ledger is the Werk's. I am, apparently, also the {Werk's}."
+  },
+  "RUH_PEOPLE_ASK_01": {
+    "speaker": "RUH",
+    "category": "PEOPLE_ASK",
+    "text": "The Bordkasse's ledger went forward with the paymaster's satchel. The flight deck. Bring it to me and I can make the sums come out {honest}."
+  },
+  "RUH_PEOPLE_THANKS_01": {
+    "speaker": "RUH",
+    "category": "PEOPLE_THANKS",
+    "text": "Thank you. There: a fifth over, on every page. It was never my arithmetic. Take this, it was owed to {somebody}."
+  },
+  "RUH_PEOPLE_ROUND_01": {
+    "speaker": "RUH",
+    "category": "PEOPLE_ROUND",
+    "text": "They are coming up from the bay again. I will stay behind the {counter}."
+  },
+  "RUH_PEOPLE_DOWN_01": {
+    "speaker": "RUH",
+    "category": "PEOPLE_DOWN",
+    "text": "Someone is down! Get them up, get them {up}!"
+  },
+  "DUT_M4B_FORMATION_DOWN_01": {
+    "speaker": "DUT",
+    "category": "M4B_FORMATION_DOWN",
+    "text": "One of the formation's going down. Burning all the way. Nobody's getting out of {that}."
+  },
+  "PEG_M4B_FORMATION_DOWN_01": {
+    "speaker": "PEG",
+    "category": "M4B_FORMATION_DOWN",
+    "text": "Flak got the one on our wing. That could have been {us}."
+  },
+  "DEA_M4B_FORMATION_DOWN_01": {
+    "speaker": "DEA",
+    "category": "M4B_FORMATION_DOWN",
+    "text": "Lord keep them. Whoever's in it. If anybody {is}."
+  },
+  "WRN_M4B_FORMATION_DOWN_01": {
+    "speaker": "WRN",
+    "category": "M4B_FORMATION_DOWN",
+    "text": "Empty, I bet. Like this one. Flying for {nobody}."
+  },
+  "RDL_PEOPLE_TALK_01": {
+    "speaker": "RDL",
+    "category": "PEOPLE_TALK",
+    "text": "Engine room here. Riedl. Who is that on the line? Report, please."
+  },
+  "RDL_PEOPLE_TALK_02": {
+    "speaker": "RDL",
+    "category": "PEOPLE_TALK",
+    "text": "This is a test flight. Only a test flight. The crew is to report to their stations."
+  },
+  "RDL_PEOPLE_TALK_03": {
+    "speaker": "RDL",
+    "category": "PEOPLE_TALK",
+    "text": "Haas? Pohl? The kettle is still warm. Where have you gone?"
+  },
+  "RDL_PEOPLE_ROUND_01": {
+    "speaker": "RDL",
+    "category": "PEOPLE_ROUND",
+    "text": "The engine is singing again. I cannot shut it off. I have tried."
+  },
+  "RDL_PEOPLE_DOWN_01": {
+    "speaker": "RDL",
+    "category": "PEOPLE_DOWN",
+    "text": "Is someone hurt back there? Report!"
+  },
+  "RDL_PEOPLE_ASK_01": {
+    "speaker": "RDL",
+    "category": "PEOPLE_ASK",
+    "text": "My engine log. I left it in the galley with my coffee. Read me the last entry, would you? I cannot leave the engine."
+  },
+  "RDL_PEOPLE_THANKS_01": {
+    "speaker": "RDL",
+    "category": "PEOPLE_THANKS",
+    "text": "Crew: provided. Provided by whom. Thank you. I will listen to the wing for you."
+  },
+  "RDL_PEOPLE_PING_01": {
+    "speaker": "RDL",
+    "category": "PEOPLE_PING",
+    "text": "Something in the port wing. Several. Moving forward. I can hear them on the spar."
   }
 }
