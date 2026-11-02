@@ -47,7 +47,7 @@ func collect() -> void:
 			_add(str(n.get_meta("vis_group")), n as Node3D)
 	for g: String in _members.keys():
 		_shown[g] = true
-	_moon = root.get_node_or_null(moon_path) as DirectionalLight3D
+	_moon = get_node_or_null(moon_path) as DirectionalLight3D
 	if _moon != null:
 		_moon_energy = _moon.light_energy
 		_moon_shadow = _moon.shadow_enabled
