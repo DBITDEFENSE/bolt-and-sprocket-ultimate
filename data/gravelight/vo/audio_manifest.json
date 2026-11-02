@@ -12835,6 +12835,54 @@
       "lufs": -17.5,
       "phonemes": "dˌA wˈɒntɪd mˌiː tə flˈI dɛː ɡlˈIdə ˈoːvə də lˈIn. ˌI wˈʊdᵊnt. sˌoː dA lˈɒkt mˌiː ɪn wɪd də tˈImtˌAbᵊls."
     },
+    "KLH_BRECHT_01": {
+      "line": "KLH_BRECHT_01",
+      "speaker": "KLH",
+      "hash": "2bfeab05a1c11428",
+      "path": "res://gravelight/audio/vo/klh/KLH_BRECHT_01.ogg",
+      "format": "ogg",
+      "duration": 2.661,
+      "voice": "Mark",
+      "engine": "onecore",
+      "source": "tts",
+      "chain": "radio"
+    },
+    "KLH_CARGO_01": {
+      "line": "KLH_CARGO_01",
+      "speaker": "KLH",
+      "hash": "5a685d6ba042abd7",
+      "path": "res://gravelight/audio/vo/klh/KLH_CARGO_01.ogg",
+      "format": "ogg",
+      "duration": 1.503,
+      "voice": "Mark",
+      "engine": "onecore",
+      "source": "tts",
+      "chain": "radio"
+    },
+    "KLH_DEATH_01": {
+      "line": "KLH_DEATH_01",
+      "speaker": "KLH",
+      "hash": "58848396bada128a",
+      "path": "res://gravelight/audio/vo/klh/KLH_DEATH_01.ogg",
+      "format": "ogg",
+      "duration": 3.062,
+      "voice": "Mark",
+      "engine": "onecore",
+      "source": "tts",
+      "chain": "radio"
+    },
+    "KLH_STAYS_01": {
+      "line": "KLH_STAYS_01",
+      "speaker": "KLH",
+      "hash": "aac78214cdc05687",
+      "path": "res://gravelight/audio/vo/klh/KLH_STAYS_01.ogg",
+      "format": "ogg",
+      "duration": 1.353,
+      "voice": "Mark",
+      "engine": "onecore",
+      "source": "tts",
+      "chain": "radio"
+    },
     "KRO_SURV_ARMED_01": {
       "line": "KRO_SURV_ARMED_01",
       "speaker": "KRO",
@@ -33565,16 +33613,12 @@
     }
   },
   "missing": {
-    "KLH_BRECHT_01": "no voice profile for speaker KLH",
-    "KLH_CARGO_01": "no voice profile for speaker KLH",
-    "KLH_DEATH_01": "no voice profile for speaker KLH",
-    "KLH_STAYS_01": "no voice profile for speaker KLH",
     "LSL_REC_DRUMMER_01": "no speech: stage direction only ([faint giggle under the drum])",
+    "PAU_LAND_01": "no speech: stage direction only ([a roar with a man's voice inside it])",
     "REI_HEART_END": "no speech: stage direction only ([scream that becomes the bell toll; PA d)",
     "WRN_BALLAST_LOAD_01": "no speech: stage direction only (...)",
     "WRN_M4B_LONDON_01": "no speech: stage direction only (—)",
-    "WRN_M4C_RESIGN_01": "no speech: stage direction only (—)",
-    "PAU_LAND_01": "no speech: stage direction only ([a roar with a man's voice inside it])"
+    "WRN_M4C_RESIGN_01": "no speech: stage direction only (—)"
   },
   "neural_tool_version": "1"
 }

@@ -111,6 +111,9 @@ PROFILES: dict[str, dict] = {
     "BLT":      dict(voice="Mark",  rate="+6%",  pitch="+10%", size=0.92, chain="radio",     gain_db=0.0),
     "SPR":      dict(voice="Zira",  rate="+2%",  pitch="+12%", size=0.95, chain="radio",     gain_db=0.0),
     "VEN":      dict(voice="David", rate="-6%",  pitch="-2%",  size=1.0,  chain="radio",     gain_db=0.0),
+    # UPDATE 10 s6 (placeholder, T-162): the Kielholer (T-153) had no profile, so their 4 lines stayed silent: a drowned
+    # sailor, slow and low, on the radio chain (water and distance) until the owner casts him.
+    "KLH":      dict(voice="Mark",  rate="-14%", pitch="-16%", size=0.93, chain="radio",     gain_db=0.0),
     # PAUL (HB2, T-159): placeholder TTS, no real voice imitated. A big American private, loud and rough: David, low
     # and chesty (the larger "size"), Dutch's gravel chain; his PA roar (category PA) goes through the PA chain.
     "PAU":      dict(voice="David", rate="-2%",  pitch="-20%", size=0.86, chain="dutch",     gain_db=1.0),

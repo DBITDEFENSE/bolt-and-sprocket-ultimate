@@ -103,7 +103,7 @@ func test_the_searchlight_hint_waits_for_its_node() -> void:
 	# guarded by the node's existence: with no searchlight in the tree nothing is found, so the condition is false
 	var row: Dictionary = FirstHints.table()["searchlight"]
 	assert_false(FirstHints.met(row["when"], null, INF, 99.0, false), "no searchlight node, no hint")
-	assert_eq(str((row["when"] as Dictionary)["group"]), "searchlight")
+	assert_eq(str((row["when"] as Dictionary)["group"]), "searchlights")
 
 
 func test_each_hint_files_an_archive_card() -> void:

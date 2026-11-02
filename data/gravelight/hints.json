@@ -39,7 +39,7 @@
       "text": "THE SEARCHLIGHT. Man the lamp in the signal tower: what it lights moves slowly and takes more damage. You cannot shoot while you work it.",
       "when": {
         "kind": "near",
-        "group": "searchlight",
+        "group": "searchlights",
         "m": 4.0
       },
       "card": {
