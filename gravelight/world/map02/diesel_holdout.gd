@@ -76,11 +76,23 @@ func start_block(player: Player) -> String:
 		return base
 	if step_id == &"" or not QuestManager.is_active(QUEST, step_id):
 		return "" if QuestManager.is_step_done(QUEST, step_id) else "Not yet. (Brecht's log says what this is for.)"
+	if other_diesel_running(self, get_tree()):
+		# T-153: one engine job at a time (the bots started two holds at once, split up under x2 spawns each and
+		# were all downed; two holds also double the round's pressure for players)
+		return "One engine job at a time: finish the other first."
 	if bool(cfg.get("needs_flood", false)):
 		var t: TideController = _tide()
 		if t == null or not t.flooded:
 			return "The lathe's belt slips dry. It only grips when the pump room floods."
 	return ""
+
+
+## Is another of the three diesel holds running?
+static func other_diesel_running(me: Node, tree: SceneTree) -> bool:
+	for n: Node in tree.get_nodes_in_group(&"holdout_stations"):
+		if n != me and n is DieselHoldout and (n as DieselHoldout).state == HoldoutStation.State.RUNNING:
+			return true
+	return false
 
 
 func get_prompt(player: Player) -> String:
