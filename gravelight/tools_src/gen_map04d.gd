@@ -253,6 +253,17 @@ func build_dressing() -> void:
 	_dress_store()
 	_dress_hall()
 	_dress_account()
+	print("  shadow diet: %d small/flat/ceiling pieces stop casting" % D.shadow_diet(dress, _ceil_at))
+	print("  dressing triangles: %s" % D.tally(dress))
+
+
+## The ceiling over a point (0 in the yard and outside): the shadow diet's "near the ceiling" rule.
+func _ceil_at(p: Vector3) -> float:
+	for z: Array in [[-12.0, 12.0, 0.0, 24.0, CEIL_A], [-12.0, 12.0, 24.0, 60.0, CEIL_B], [12.0, 44.0, 24.0, 60.0, CEIL_D],
+			[12.0, 44.0, -16.0, 24.0, CEIL_E], [14.0, 42.0, -44.0, -16.0, CEIL_F]]:
+		if p.x >= float(z[0]) and p.x <= float(z[1]) and p.z >= float(z[2]) and p.z <= float(z[3]):
+			return float(z[4])
+	return 0.0
 
 
 ## Floors per dome (the shared Floor_Domes collider is hidden; an apron of regolith under the service hatches),
@@ -495,7 +506,7 @@ func _dress_concourse() -> void:
 	for wx: float in [-8.5, 8.5]:
 		D.omni(map_root, "Lamp_B_Wash_%d" % int(wx), Vector3(wx, 3.4, 44.0), Color(0.78, 0.7, 1.0), 1.3, 11.0, "B_CONCOURSE")
 	D.spot(map_root, "KeySpot_B_Model", Vector3(0, CEIL_B - 0.25, 35.5), Vector3(0, 1.2, 39.0), D.COLD, 5.0, 9.0, 34.0, "B_CONCOURSE", true)
-	D.spot(map_root, "KeySpot_B_Crucible", Vector3(-6.5, CEIL_B - 0.25, 46.0), Vector3(-8.0, 0.8, 46.0), D.VIOLET, 4.0, 8.0, 32.0, "B_CONCOURSE", true)
+	D.spot(map_root, "KeySpot_B_Crucible", Vector3(-6.5, CEIL_B - 0.25, 46.0), Vector3(-8.0, 0.8, 46.0), D.VIOLET, 4.0, 8.0, 32.0, "B_CONCOURSE", false)
 	D.omni(map_root, "Lamp_B_Airlock", Vector3(0, 3.0, 57.2), D.COLD, 0.8, 7.0, "B_CONCOURSE")
 
 
@@ -780,9 +791,9 @@ func _smile() -> void:
 	for i: int in n:
 		var u: float = -1.0 + 2.0 * float(i) / float(n - 1)
 		var x: float = u * 26.0
-		var y: float = -(1.0 - u * u) * 7.0
+		var y: float = 9.0 - (1.0 - u * u) * 7.0
 		var u2: float = -1.0 + 2.0 * float(i + 1) / float(n - 1)
-		var dy: float = (-(1.0 - u2 * u2) * 7.0) - y
+		var dy: float = (9.0 - (1.0 - u2 * u2) * 7.0) - y
 		var ang: float = rad_to_deg(atan2(dy, 52.0 / float(n - 1)))
 		D.obx(g, Vector3(x, y, -0.3), Vector3(3.9, 2.0 + 1.3 * (1.0 - absf(u)), 1.2), "dm_glow_violet", Vector3(0, 0, ang))
 		if i % 2 == 0:
@@ -875,7 +886,7 @@ func _dress_store() -> void:
 	D.omni(map_root, "Lamp_D_Cold_2", Vector3(28, CEIL_D - 1.2, 46.0), D.COLD, 2.0, 15.0, "D_FULFILLMENT")
 	D.omni(map_root, "Lamp_D_Cold_3", Vector3(28, CEIL_D - 1.2, 56.0), D.COLD, 1.4, 12.0, "D_FULFILLMENT")
 	D.spot(map_root, "KeySpot_D_Pad", Vector3(36.5, CEIL_D - 0.3, 28.8), Vector3(36.5, 0.0, 28.8), D.VIOLET, 6.0, 7.0, 38.0, "D_FULFILLMENT", true)
-	D.spot(map_root, "KeySpot_D_Aisle", Vector3(15.5, CEIL_D - 0.3, 38.0), Vector3(36.0, 0.5, 38.0), D.COLD, 4.0, 26.0, 26.0, "D_FULFILLMENT", true)
+	D.spot(map_root, "KeySpot_D_Aisle", Vector3(15.5, CEIL_D - 0.3, 38.0), Vector3(36.0, 0.5, 38.0), D.COLD, 4.0, 26.0, 26.0, "D_FULFILLMENT", false)
 
 
 ## One rack of suited inventory: steel uprights, a top rail with hangers, a suit in each bay facing south, a tag
@@ -1263,6 +1274,10 @@ func _presentation() -> void:
 	# the Sun: the scene's "Moon" light, low over the east rim, hard and white (long shadows across the yard)
 	var sun: DirectionalLight3D = map_root.get_node_or_null("Moon") as DirectionalLight3D
 	if sun != null:
+		# the Sun gate (moon_switch's idea): off inside the shelled domes away from the yard airlocks
+		sun.set_script(load("res://gravelight/world/map04/sun_gate.gd"))
+		sun.set("indoor_rects", [[-12.0, 12.0, 0.0, 60.0], [12.0, 44.0, -16.0, 60.0], [14.0, 42.0, -44.0, -16.0]])
+		sun.set("door_points", PackedVector3Array([Vector3(0, 0, 60), Vector3(28, 0, 60)]))
 		sun.transform = Transform3D(Basis.looking_at(-_sun_dir, Vector3.UP), Vector3.ZERO)
 		sun.light_color = Color(1.0, 0.97, 0.92)
 		sun.light_energy = 1.45

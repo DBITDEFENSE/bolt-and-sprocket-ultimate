@@ -77,6 +77,8 @@ const FLAT: Dictionary = {
 static var _cache: Dictionary = {}
 static var _font: FontVariation = null
 static var _plane: PlaneMesh = null
+static var _sph_lo: SphereMesh = null
+static var _rock: SphereMesh = null
 
 
 ## The act's material for `key` (cached per run so the batches merge). Unknown keys fall back to Mats.
@@ -141,7 +143,7 @@ static func _flat(e: Array) -> Material:
 		var c: Color = e[0]
 		c.a = float(e[5])
 		m.albedo_color = c
-		m.metallic_specular = 0.9
+		m.metallic_specular = 0.35
 	return m
 
 
@@ -171,6 +173,7 @@ static func cyl(parent: Node3D, c: Vector3, r: float, h: float, key: String, rot
 static func ball(parent: Node3D, c: Vector3, size: Vector3, key: String) -> MeshInstance3D:
 	var mi: MeshInstance3D = Props.ball(parent, c, size, "enamel_white")
 	mi.material_override = mat(key)
+	mi.mesh = rock_mesh() if key == "rim_rock" or key == "regolith_far" else lo_sphere()
 	_glow_noshadow(mi, key)
 	return mi
 
@@ -192,6 +195,80 @@ static func _glow_noshadow(mi: MeshInstance3D, key: String) -> void:
 	var e: Array = FLAT.get(key, [])
 	if not e.is_empty() and (e[3] != null or float(e[5]) < 1.0):
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
+## A lighter unit sphere than Props' (10 x 5: 80 triangles, not 144) for the many small balls.
+static func lo_sphere() -> SphereMesh:
+	if _sph_lo == null:
+		_sph_lo = SphereMesh.new()
+		_sph_lo.radius = 0.5
+		_sph_lo.height = 1.0
+		_sph_lo.radial_segments = 10
+		_sph_lo.rings = 5
+	return _sph_lo
+
+
+## A faceted unit sphere for rocks (7 x 4: 48 triangles); the facets read as broken lunar stone.
+static func rock_mesh() -> SphereMesh:
+	if _rock == null:
+		_rock = SphereMesh.new()
+		_rock.radius = 0.5
+		_rock.height = 1.0
+		_rock.radial_segments = 7
+		_rock.rings = 4
+	return _rock
+
+
+## The budget pass (C4): small, flat or ceiling-high dressing stops casting shadows (the Sun's cascades and the key
+## spots drew every bolt, tag and inlay again per pass). Returns how many were switched off.
+static func shadow_diet(root: Node3D, ceil_of: Callable) -> int:
+	var k: int = 0
+	for n: Node in root.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		if mi.cast_shadow != GeometryInstance3D.SHADOW_CASTING_SETTING_ON or mi.mesh == null:
+			continue
+		var xf: Transform3D = _xf_in(mi, root)
+		var sz: Vector3 = (xf.basis.get_scale() * mi.mesh.get_aabb().size).abs()
+		var top: float = xf.origin.y + sz.y * 0.5
+		var c: float = float(ceil_of.call(xf.origin))
+		if maxf(sz.x, maxf(sz.y, sz.z)) < 0.8 or minf(sz.x, minf(sz.y, sz.z)) < 0.05 or (c > 0.0 and xf.origin.y > c - 1.2 and top > c - 1.5):
+			mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			k += 1
+	return k
+
+
+static func _xf_in(n: Node3D, root: Node) -> Transform3D:
+	var xf: Transform3D = n.transform
+	var p: Node = n.get_parent()
+	while p != null and p != root:
+		if p is Node3D:
+			xf = (p as Node3D).transform * xf
+		p = p.get_parent()
+	return xf
+
+
+## Triangles per top-level dressing group (Props.group names; loose pieces under "(loose)"), largest first: the
+## generator prints it so the C4 budget has a place to start.
+static func tally(root: Node3D, top: int = 12) -> String:
+	var tris: Dictionary = {}
+	var faces: Dictionary = {}
+	for n: Node in root.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		if mi.mesh == null:
+			continue
+		if not faces.has(mi.mesh):
+			faces[mi.mesh] = mi.mesh.get_faces().size() / 3
+		var g: Node = mi
+		while g.get_parent() != root and g.get_parent() != null:
+			g = g.get_parent()
+		var key: String = "(loose)" if g == mi else String(g.name).rstrip("0123456789")
+		tris[key] = int(tris.get(key, 0)) + int(faces[mi.mesh])
+	var keys: Array = tris.keys()
+	keys.sort_custom(func(x: Variant, y: Variant) -> bool: return int(tris[x]) > int(tris[y]))
+	var out: PackedStringArray = PackedStringArray()
+	for k: Variant in keys.slice(0, top):
+		out.append("%s %d" % [k, tris[k]])
+	return ", ".join(out)
 
 
 ## A mesh instance kept out of the static batches (meta keep: its UVs or its own mesh must survive).

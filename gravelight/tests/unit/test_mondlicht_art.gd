@@ -50,6 +50,14 @@ func test_the_hand_moves_and_rests() -> void:
 	assert_almost_eq(RetainedHand.curl_at(5.5 * 0.9, 5.5, 24.0), 0.0, 0.001, "still for a beat")
 
 
+func test_the_sun_gate() -> void:
+	var rects: Array = [[-12.0, 12.0, 0.0, 60.0]]
+	var doors: PackedVector3Array = PackedVector3Array([Vector3(0, 0, 60)])
+	assert_true(SunGate.lit_at(Vector3(0, 1.6, 80), rects, doors, 9.0), "the yard is sunlit")
+	assert_true(SunGate.lit_at(Vector3(1, 1.6, 55), rects, doors, 9.0), "at the airlock the yard through the door keeps its Sun")
+	assert_false(SunGate.lit_at(Vector3(0, 1.6, 20), rects, doors, 9.0), "deep in a dome: off (the shells block it anyway)")
+
+
 func test_zone_at() -> void:
 	var boxes: Array = [["A", Vector3(-1, 0, -1), Vector3(1, 3, 1)], ["B", Vector3(5, 0, 5), Vector3(7, 3, 7)]]
 	assert_eq(DETAIL.zone_at(Vector3(0, 9, 0), boxes), "A", "inside a box at any height")
