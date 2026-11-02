@@ -2,11 +2,14 @@
 
 Short, phone-readable. Nothing here blocks the build.
 
-## UPDATE 09 online play (T-138, docs/ONLINE.md)
-- Nothing required: the Supabase project exists and the lobby tables are live (checked 2026-11-01).
-- Optional, for friends on strict networks (company / school / mobile): make a TURN account (e.g. Metered.ca "Open Relay" free tier or Cloudflare Calls TURN) and put its urls / username / credential in `data/gravelight/online.json` "turn" (docs/ONLINE.md "TURN").
-- Optional: Supabase dashboard > Database > Extensions > enable `pg_cron`, then re-run `supabase/migrations/0001_lobbies.sql` in the SQL editor (sweeps dead lobbies every minute; the game sweeps on its own too).
-- Optional: check Supabase > Realtime > Settings keeps "Allow public access" on (the lobby signaling uses public broadcast channels).
+## UPDATE 09 (2026-11-01): the account steps left for you, one line each
+1. **Vercel (publish the browser build):** `npx vercel login` then `sh tools/deploy_web.sh` (the session could not create the Vercel project itself: the permission guard blocks connecting the private repo to an outside service).
+2. **The site password:** `cd build/web && npx vercel env add CZ_PASSWORD production` (type the password you will text your friend), then `sh tools/deploy_web.sh` again.
+3. **Supabase:** nothing required; the project `claude-zombies` exists and the lobby tables are live (checked twice on 2026-11-01). Optional: enable `pg_cron` (Database > Extensions) so dead lobbies are swept every minute; the game sweeps on its own too.
+4. **TURN (optional, for friends on strict networks):** make a free TURN account (Metered.ca Open Relay or Cloudflare TURN) and paste its urls / username / credential into `data/gravelight/online.json` "turn".
+5. **Real FPS:** play each map once with `--frame-log` (Play.bat forwards it) and leave `logs/frame_log_*.csv`; and if you have a laptop with Iris Xe / Radeon 680M, open the browser build on it (`sh tools/serve_web.sh`, http://127.0.0.1:8060/) and note the FPS on Map 0.
+6. **Look at it in Forward+:** the main menu, Totenhafen's pen hall, Fernflug Act II and the Moon yard were only ever seen through a software renderer here.
+
 
 ## 0. Start a cloud session (UPDATE 06 Part A is done)
 The repo is on GitHub, **private**: https://github.com/DBITDEFENSE/bolt-and-sprocket-ultimate
@@ -113,7 +116,3 @@ egg completes with bots, and Kaltenbrunn's now gets as far as the power, the par
 isn't done yet: `docs/QA_REPORT_U08.md` (After) lists every blocker found and the ones still open. The work carries
 on from the PROGRESS.md resume line. Nothing for you to do; try the new launcher buttons if you like.
 
-## UPDATE 09 §2c/2d (T-139): the browser and Windows builds, one line each
-- Frame cost on your RTX: play a match on each map with `--frame-log` (the launcher forwards it) and leave logs/frame_log_*.csv for the next session (T-133/T-134 and the U09 changes were only measured headless and in software GL).
-- Vercel, once: `npx vercel login`, then `sh tools/deploy_web.sh` (builds build/web and deploys it); the password: `npx vercel env add CZ_PASSWORD production` in build/web, then deploy again.
-- Try the browser build on a laptop with Intel Iris Xe or Radeon 680M if you have one: `sh tools/serve_web.sh`, open http://127.0.0.1:8060/ in Chrome, and note the FPS on Map 0 (target 30+).
