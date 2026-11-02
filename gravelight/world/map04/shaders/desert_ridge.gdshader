@@ -10,6 +10,9 @@ uniform vec3 haze : source_color = vec3(0.5, 0.56, 0.7);
 uniform float haze_max = 0.7;
 uniform float haze_k = 0.006;
 uniform float top_y = 40.0;
+// the dust storm (U10, T-157): GroomController blends the ridges into the haboob's colour (they are fog_disabled)
+uniform float storm_k = 0.0;
+uniform vec3 storm_col : source_color = vec3(0.74, 0.65, 0.5);
 
 varying vec3 wpos;
 
@@ -29,7 +32,7 @@ void fragment() {
 	float n = vnoise(wpos.xz * 0.05 + wpos.y * 0.08) * 0.6 + vnoise(wpos.xz * 0.21) * 0.4;
 	vec3 c = mix(foot, rock, smoothstep(0.0, top_y, wpos.y)) * (0.8 + 0.4 * n);
 	float f = clamp(haze_max * (1.0 - exp(-haze_k * length(VERTEX))), 0.0, 0.95);
-	ALBEDO = c * (1.0 - f);
-	EMISSION = haze * f;
+	ALBEDO = c * (1.0 - f) * (1.0 - storm_k);
+	EMISSION = mix(haze * f, storm_col, storm_k);
 	ROUGHNESS = 1.0;
 }

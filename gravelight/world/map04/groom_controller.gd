@@ -793,6 +793,10 @@ func _storm_fx(on: bool) -> void:
 		if _sun != null:
 			_sun_base = _sun.light_energy
 			create_tween().tween_property(_sun, "light_energy", _sun_base * float(dc.get("sun_dim", 0.3)), 4.0)
+		var sc: Array = dc.get("fog_color", [0.78, 0.68, 0.5])
+		for m: ShaderMaterial in _ridge_mats():
+			m.set_shader_parameter("storm_col", Color(float(sc[0]), float(sc[1]), float(sc[2])) * 0.95)
+		create_tween().tween_method(_set_ridge_storm, 0.0, 1.0, 4.0)
 	else:
 		if _env != null and not _env_base.is_empty():
 			var tw2: Tween = create_tween()
@@ -803,6 +807,38 @@ func _storm_fx(on: bool) -> void:
 			tw2.parallel().tween_property(_env, "ambient_light_energy", float(_env_base["amb"]), 3.0)
 		if _sun != null and _sun_base >= 0.0:
 			create_tween().tween_property(_sun, "light_energy", _sun_base, 3.0)
+		create_tween().tween_method(_set_ridge_storm, 1.0, 0.0, 3.0)
+
+
+## The ridge rings are fog_disabled (their own haze, T-148), so the storm's fog would leave them standing crisp
+## through a 15 m haboob: their material blends to the storm's colour with the fog (desert_ridge storm_k).
+var _ridge_cache: Array[ShaderMaterial] = []
+var _ridge_scanned: bool = false
+
+func _ridge_mats() -> Array[ShaderMaterial]:
+	if _ridge_scanned:
+		return _ridge_cache
+	_ridge_scanned = true
+	var root: Node = _map()
+	if root == null:
+		return _ridge_cache
+	for n: Node in root.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		var mats: Array = [mi.material_override]
+		if mi.mesh != null:
+			for i: int in mi.mesh.get_surface_count():
+				mats.append(mi.get_surface_override_material(i))
+				mats.append(mi.mesh.surface_get_material(i))
+		for m: Variant in mats:
+			var sm: ShaderMaterial = m as ShaderMaterial
+			if sm != null and sm.shader != null and sm.shader.resource_path.ends_with("desert_ridge.gdshader") and not _ridge_cache.has(sm):
+				_ridge_cache.append(sm)
+	return _ridge_cache
+
+
+func _set_ridge_storm(k: float) -> void:
+	for m: ShaderMaterial in _ridge_mats():
+		m.set_shader_parameter("storm_k", k)
 
 
 ## A storm stalker: the Burrowers and the plain Gängers on the surface hunt by sound while the storm runs.
