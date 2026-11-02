@@ -745,7 +745,7 @@
       "cams": [
         {"name": "A_wide", "pos": [0.0, 0.0, 23.0], "yaw": 0.0, "pitch": 1.0, "note": "A Reception: from the concourse door across the landing dome", "do": ["power"], "settle_s": 4.0},
         {"name": "A_capsule", "pos": [0.0, 0.0, 10.0], "yaw": 49.1, "pitch": 1.0, "note": "A Reception: the capsule in its cradle"},
-        {"name": "A_desk", "pos": [3.0, 0.0, 19.0], "yaw": -51.3, "pitch": -5.0, "note": "A Reception: the desk with the bell"},
+        {"name": "A_desk", "pos": [3.5, 0.0, 10.0], "yaw": -132.0, "pitch": -6.0, "note": "A Reception: the desk with the bell, from the customers' side (T-149)"},
         {"name": "B_wide", "pos": [0.0, 0.0, 25.0], "yaw": 180.0, "pitch": 0.7, "note": "B Concourse: the long hall to the yard airlock"},
         {"name": "B_model", "pos": [0.0, 0.0, 30.0], "yaw": 180.0, "pitch": -3.9, "note": "B Concourse: the relay model under glass"},
         {"name": "B_airlock", "pos": [0.0, 0.0, 50.0], "yaw": 162.7, "pitch": -0.7, "note": "B Concourse: the airlock frames"},
@@ -760,7 +760,7 @@
         {"name": "E_plinth", "pos": [24.0, 0.0, 8.0], "yaw": 54.0, "pitch": -10.2, "note": "E Retention Hall: a column plinth on the floor"},
         {"name": "F_wide", "pos": [28.0, 0.0, -17.0], "yaw": 0.0, "pitch": -0.3, "note": "F The Account: from the door across the round room"},
         {"name": "F_console", "pos": [28.0, 0.0, -22.0], "yaw": 0.0, "pitch": -4.4, "note": "F The Account: the console"},
-        {"name": "F_retained", "pos": [28.0, 0.0, -35.0], "yaw": 0.0, "pitch": -14.6, "note": "F The Account: the first retained under the glass"}
+        {"name": "F_retained", "pos": [28.6, 0.0, -37.4], "yaw": 0.0, "pitch": -42.0, "note": "F The Account: the first retained under the glass, looking down through the clear pane at his hand (T-149)"}
       ]
     },
     "u09_ref": {

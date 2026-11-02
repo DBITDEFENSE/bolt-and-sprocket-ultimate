@@ -494,6 +494,21 @@
    ]
   },
   {
+   "folder": "assets/third_party/polyhaven/box-profile-metal-sheet",
+   "source": "polyhaven",
+   "id": "box-profile-metal-sheet",
+   "title": "Box Profile Metal Sheet",
+   "author": "Amal Kumar",
+   "url": "https://polyhaven.com/a/box_profile_metal_sheet",
+   "license": "CC0",
+   "credit": "\"Box Profile Metal Sheet\" by Amal Kumar (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/box_profile_metal_sheet_albedo.png",
+    "textures/box_profile_metal_sheet_normal.png",
+    "textures/box_profile_metal_sheet_orm.png"
+   ]
+  },
+  {
    "folder": "assets/third_party/polyhaven/brown-mud-03",
    "source": "polyhaven",
    "id": "brown-mud-03",
@@ -506,6 +521,21 @@
     "textures/brown_mud_03_albedo.png",
     "textures/brown_mud_03_normal.png",
     "textures/brown_mud_03_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/concrete-floor-painted",
+   "source": "polyhaven",
+   "id": "concrete-floor-painted",
+   "title": "Concrete Floor Painted",
+   "author": "Rob Tuytel",
+   "url": "https://polyhaven.com/a/concrete_floor_painted",
+   "license": "CC0",
+   "credit": "\"Concrete Floor Painted\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/concrete_floor_painted_albedo.png",
+    "textures/concrete_floor_painted_normal.png",
+    "textures/concrete_floor_painted_orm.png"
    ]
   },
   {
@@ -626,6 +656,21 @@
     "textures/factory_brick_albedo.png",
     "textures/factory_brick_normal.png",
     "textures/factory_brick_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/granite-tile",
+   "source": "polyhaven",
+   "id": "granite-tile",
+   "title": "Granite Tile",
+   "author": "Charlotte Baglioni",
+   "url": "https://polyhaven.com/a/granite_tile",
+   "license": "CC0",
+   "credit": "\"Granite Tile\" by Charlotte Baglioni (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/granite_tile_albedo.png",
+    "textures/granite_tile_normal.png",
+    "textures/granite_tile_orm.png"
    ]
   },
   {
@@ -773,6 +818,21 @@
    ]
   },
   {
+   "folder": "assets/third_party/polyhaven/marble-tiles",
+   "source": "polyhaven",
+   "id": "marble-tiles",
+   "title": "Marble Tiles",
+   "author": "Charlotte Baglioni",
+   "url": "https://polyhaven.com/a/marble_tiles",
+   "license": "CC0",
+   "credit": "\"Marble Tiles\" by Charlotte Baglioni (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/marble_tiles_albedo.png",
+    "textures/marble_tiles_normal.png",
+    "textures/marble_tiles_orm.png"
+   ]
+  },
+  {
    "folder": "assets/third_party/polyhaven/metal-grate-rusty",
    "source": "polyhaven",
    "id": "metal-grate-rusty",
@@ -832,6 +892,51 @@
     "textures/metal_toolbox_arm.png",
     "textures/metal_toolbox_diff.png",
     "textures/metal_toolbox_nor_gl.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/moon-dusted-01",
+   "source": "polyhaven",
+   "id": "moon-dusted-01",
+   "title": "Moon Dusted 01",
+   "author": "Greg Zaal (Photography), Rico Cilliers (Photography), Jenelle van Heerden (Photography), Dario Barresi (Processing)",
+   "url": "https://polyhaven.com/a/moon_dusted_01",
+   "license": "CC0",
+   "credit": "\"Moon Dusted 01\" by Greg Zaal (Photography), Rico Cilliers (Photography), Jenelle van Heerden (Photography), Dario Barresi (Processing) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/moon_dusted_01_albedo.png",
+    "textures/moon_dusted_01_normal.png",
+    "textures/moon_dusted_01_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/moon-footprints-01",
+   "source": "polyhaven",
+   "id": "moon-footprints-01",
+   "title": "Moon Footprints 01",
+   "author": "Greg Zaal (Photography), Rico Cilliers (Photography), Jenelle van Heerden (Photography), Dario Barresi (Processing)",
+   "url": "https://polyhaven.com/a/moon_footprints_01",
+   "license": "CC0",
+   "credit": "\"Moon Footprints 01\" by Greg Zaal (Photography), Rico Cilliers (Photography), Jenelle van Heerden (Photography), Dario Barresi (Processing) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/moon_footprints_01_albedo.png",
+    "textures/moon_footprints_01_normal.png",
+    "textures/moon_footprints_01_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/moon-track-01",
+   "source": "polyhaven",
+   "id": "moon-track-01",
+   "title": "Moon Track 01",
+   "author": "Greg Zaal (Photography), Jenelle van Heerden (Processing), Rico Cilliers (Photography)",
+   "url": "https://polyhaven.com/a/moon_track_01",
+   "license": "CC0",
+   "credit": "\"Moon Track 01\" by Greg Zaal (Photography), Jenelle van Heerden (Processing), Rico Cilliers (Photography) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/moon_track_01_albedo.png",
+    "textures/moon_track_01_normal.png",
+    "textures/moon_track_01_orm.png"
    ]
   },
   {
@@ -1186,6 +1291,21 @@
     "textures/stone_wall_height.png",
     "textures/stone_wall_normal.png",
     "textures/stone_wall_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/terrazzo-tiles",
+   "source": "polyhaven",
+   "id": "terrazzo-tiles",
+   "title": "Terrazzo Tiles",
+   "author": "Amal Kumar",
+   "url": "https://polyhaven.com/a/terrazzo_tiles",
+   "license": "CC0",
+   "credit": "\"Terrazzo Tiles\" by Amal Kumar (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/terrazzo_tiles_albedo.png",
+    "textures/terrazzo_tiles_normal.png",
+    "textures/terrazzo_tiles_orm.png"
    ]
   },
   {
@@ -1791,6 +1911,17 @@
    ]
   },
   {
+   "credit": "\"Box Profile Metal Sheet\" by Amal Kumar (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Box Profile Metal Sheet"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/box-profile-metal-sheet"
+   ]
+  },
+  {
    "credit": "\"Brown Mud 03\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
    "license": "CC0",
    "source": "polyhaven",
@@ -1799,6 +1930,17 @@
    ],
    "folders": [
     "assets/third_party/polyhaven/brown-mud-03"
+   ]
+  },
+  {
+   "credit": "\"Concrete Floor Painted\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Concrete Floor Painted"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/concrete-floor-painted"
    ]
   },
   {
@@ -1887,6 +2029,17 @@
    ],
    "folders": [
     "assets/third_party/polyhaven/factory-brick"
+   ]
+  },
+  {
+   "credit": "\"Granite Tile\" by Charlotte Baglioni (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Granite Tile"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/granite-tile"
    ]
   },
   {
@@ -1989,6 +2142,17 @@
    ]
   },
   {
+   "credit": "\"Marble Tiles\" by Charlotte Baglioni (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Marble Tiles"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/marble-tiles"
+   ]
+  },
+  {
    "credit": "\"Metal Grate Rusty\" by Rob Tuytel (Processing), Dimitrios Savva (Photography) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
    "license": "CC0",
    "source": "polyhaven",
@@ -2030,6 +2194,39 @@
    ],
    "folders": [
     "assets/third_party/polyhaven/metal-toolbox"
+   ]
+  },
+  {
+   "credit": "\"Moon Dusted 01\" by Greg Zaal (Photography), Rico Cilliers (Photography), Jenelle van Heerden (Photography), Dario Barresi (Processing) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Moon Dusted 01"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/moon-dusted-01"
+   ]
+  },
+  {
+   "credit": "\"Moon Footprints 01\" by Greg Zaal (Photography), Rico Cilliers (Photography), Jenelle van Heerden (Photography), Dario Barresi (Processing) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Moon Footprints 01"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/moon-footprints-01"
+   ]
+  },
+  {
+   "credit": "\"Moon Track 01\" by Greg Zaal (Photography), Jenelle van Heerden (Processing), Rico Cilliers (Photography) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Moon Track 01"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/moon-track-01"
    ]
   },
   {
@@ -2283,6 +2480,17 @@
    ],
    "folders": [
     "assets/third_party/polyhaven/stone-wall"
+   ]
+  },
+  {
+   "credit": "\"Terrazzo Tiles\" by Amal Kumar (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Terrazzo Tiles"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/terrazzo-tiles"
    ]
   },
   {

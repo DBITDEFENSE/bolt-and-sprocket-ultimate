@@ -691,6 +691,94 @@
       "res": "1k",
       "tex_px": 512,
       "note": "U09 Act I (T-146): wall lamps on the halls and the platform"
+    },
+    {
+      "source": "polyhaven",
+      "id": "moon_dusted_01",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "moon_dusted",
+      "note": "Mondlicht: the yard's regolith (Act IV C, U09 s5 T-149)",
+      "tile_m": 0.37
+    },
+    {
+      "source": "polyhaven",
+      "id": "moon_footprints_01",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "moon_footprints",
+      "note": "Mondlicht: boot prints worn into the regolith on the yard's loop (T-149)",
+      "tile_m": 1.55
+    },
+    {
+      "source": "polyhaven",
+      "id": "moon_track_01",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "moon_track",
+      "note": "Mondlicht: the field units' tracks to the rim (T-149)",
+      "tile_m": 0.2
+    },
+    {
+      "source": "polyhaven",
+      "id": "terrazzo_tiles",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "dm_terrazzo",
+      "note": "Mondlicht: the reception dome's lobby floor (T-149)",
+      "tile_m": 2.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "marble_tiles",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "dm_marble",
+      "note": "Mondlicht: the concourse's and the Account's polished floor, tinted (T-149)",
+      "tile_m": 2.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "granite_tile",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "dm_granite",
+      "note": "Mondlicht: the retention hall's nave floor (T-149)",
+      "tile_m": 2.3
+    },
+    {
+      "source": "polyhaven",
+      "id": "concrete_floor_painted",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "dm_store_floor",
+      "note": "Mondlicht: the fulfillment store's floor (T-149)",
+      "tile_m": 2.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "box_profile_metal_sheet",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "dm_profile",
+      "note": "Mondlicht: the fulfillment store's walls (T-149)",
+      "tile_m": 2.0
     }
   ]
 }

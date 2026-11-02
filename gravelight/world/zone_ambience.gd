@@ -76,6 +76,15 @@ static func validate(cfg: Dictionary) -> PackedStringArray:
 	return errs
 
 
+## A zone marked `vacuum: true` (Mondlicht's yard, T-149): its bed is the suit and the map's bed goes silent.
+static func is_vacuum(cfg: Dictionary, zone: StringName) -> bool:
+	return bool(((cfg.get("zones", {}) as Dictionary).get(String(zone), {}) as Dictionary).get("vacuum", false))
+
+
+func _exit_tree() -> void:
+	AudioDirector.set_vacuum_bed(false)
+
+
 ## Whether a bed / one-shot key plays: a res:// stream that exists, or an AudioDirector key with files.
 static func resolvable(key: String) -> bool:
 	if key.begins_with("res://"):
@@ -149,6 +158,8 @@ func set_zone(z: StringName) -> void:
 			_fade(b, SILENT_DB, true)
 	_timers.clear()
 	var zc: Dictionary = zones().get(String(z), {})
+	if is_inside_tree():
+		AudioDirector.set_vacuum_bed(is_vacuum(config, z))   # T-149: a vacuum zone hears only the suit
 	var key: String = str(zc.get("bed", ""))
 	if key != "":
 		var b2: Dictionary = {"key": key, "zone": z, "player": _make_player(key), "db": SILENT_DB, "out": false}

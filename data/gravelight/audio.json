@@ -101,7 +101,8 @@
       "map01_kaltenbrunn": "ambient_map01",
       "map04a_thalbach": "wind_howl",
       "default": "ambient_map00",
-      "map02_totenhafen": "ambient_map02_storm"
+      "map02_totenhafen": "ambient_map02_storm",
+      "map04d_mondlicht": "ambient_map04d_concourse"
     },
     "ambient_db": [
       -6.0,
@@ -3956,6 +3957,150 @@
         1.0,
         1.0
       ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "amb_m4d_airlock": {
+      "files": [
+        "res://gravelight/audio/sfx/world/m4d_airlock_01.wav",
+        "res://gravelight/audio/sfx/world/m4d_airlock_02.wav"
+      ],
+      "volume_db": -3.0,
+      "pitch": [
+        0.97,
+        1.03
+      ],
+      "max_voices": 2,
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "amb_m4d_chime": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/m4d_chime.wav"
+      ],
+      "volume_db": -8.0,
+      "pitch": [
+        0.99,
+        1.01
+      ],
+      "max_voices": 1,
+      "bus": "Ambience",
+      "attenuation": "quiet"
+    },
+    "amb_m4d_parcel": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/m4d_parcel_01.wav",
+        "res://gravelight/audio/sfx/ambience/m4d_parcel_02.wav",
+        "res://gravelight/audio/sfx/ambience/m4d_parcel_03.wav"
+      ],
+      "volume_db": -9.0,
+      "pitch": [
+        0.92,
+        1.08
+      ],
+      "max_voices": 2,
+      "bus": "Ambience",
+      "attenuation": "quiet"
+    },
+    "amb_m4d_swell": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/m4d_swell.wav"
+      ],
+      "volume_db": -8.0,
+      "pitch": [
+        0.98,
+        1.02
+      ],
+      "max_voices": 1,
+      "bus": "Ambience",
+      "attenuation": "quiet"
+    },
+    "amb_m4d_valve": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/m4d_valve_01.wav",
+        "res://gravelight/audio/sfx/ambience/m4d_valve_02.wav"
+      ],
+      "volume_db": -12.0,
+      "pitch": [
+        0.95,
+        1.05
+      ],
+      "max_voices": 1,
+      "bus": "Ambience",
+      "attenuation": "quiet"
+    },
+    "amb_m4d_vent": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/m4d_vent_01.wav",
+        "res://gravelight/audio/sfx/ambience/m4d_vent_02.wav",
+        "res://gravelight/audio/sfx/ambience/m4d_vent_03.wav"
+      ],
+      "volume_db": -10.0,
+      "pitch": [
+        0.94,
+        1.06
+      ],
+      "max_voices": 2,
+      "bus": "Ambience",
+      "attenuation": "quiet"
+    },
+    "ambient_map04d_account": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map04d_account_note.wav"
+      ],
+      "volume_db": -4.0,
+      "bus": "Ambience",
+      "attenuation": "quiet",
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04d_concourse": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map04d_concourse_bed.wav"
+      ],
+      "volume_db": -3.0,
+      "bus": "Ambience",
+      "attenuation": "quiet",
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04d_hall": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map04d_hall_bed.wav"
+      ],
+      "volume_db": -2.0,
+      "bus": "Ambience",
+      "attenuation": "quiet",
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04d_reception": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map04d_reception_bed.wav"
+      ],
+      "volume_db": -2.0,
+      "bus": "Ambience",
+      "attenuation": "quiet",
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04d_store": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map04d_store_bed.wav"
+      ],
+      "volume_db": -3.0,
+      "bus": "Ambience",
+      "attenuation": "quiet",
+      "max_voices": 1,
+      "loop": true
+    },
+    "ambient_map04d_yard": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map04d_yard_suit.wav"
+      ],
+      "volume_db": -4.0,
+      "bus": "Ambience",
+      "attenuation": "quiet",
       "max_voices": 1,
       "loop": true
     }

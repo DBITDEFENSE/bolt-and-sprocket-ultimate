@@ -20,6 +20,9 @@ const LAYER_DOOR: int = 1 << 8
 ## `requires_text` is the prompt until then.
 @export var requires_flag: StringName = &""
 @export var requires_text: String = "Not yet"
+## Presentation only: "steel" dresses an unpowered door as the steel bulkhead (no lock lamp; prices and logic unchanged).
+## Mondlicht sets it (U09 s5, T-149): Darkmatter's airlocks are not planks.
+@export var art_style: StringName = &""
 
 var is_open: bool = false
 var _body: StaticBody3D
@@ -51,7 +54,8 @@ func build_greybox() -> void:
 	add_child(_visual)
 	# a boarded, chained doorway; a steel bulkhead with a lock lamp if it needs the power (cached per size)
 	var sz: Vector3 = size
-	if not requires_power:
+	var steel: bool = requires_power or art_style == &"steel"
+	if not steel:
 		# a real plank door for the opening, with its hinges, planks, chain and brass price plaques (T-094)
 		var planes: Array = DoorArt.buy_door(_visual, sz)
 		if not planes.is_empty():
@@ -62,7 +66,7 @@ func build_greybox() -> void:
 				pl.rotation.y = 0.0 if side > 0 else PI
 				_cost_labels.append(pl)
 			return
-	var key: String = "%s_%d_%d_%d" % ["door_steel" if requires_power else "door_wood", int(sz.x * 100.0), int(sz.y * 100.0), int(sz.z * 100.0)]
+	var key: String = "%s_%d_%d_%d" % ["door_steel" if steel else "door_wood", int(sz.x * 100.0), int(sz.y * 100.0), int(sz.z * 100.0)]
 	if requires_power:
 		InteractableArt.place(_visual, key, func(r: Node3D) -> void: InteractableArt.door_steel(r, sz))
 		_lock_lamp = MeshInstance3D.new()
@@ -77,9 +81,11 @@ func build_greybox() -> void:
 		_visual.add_child(_lock_lamp)
 		GLBus.power_activated.connect(_refresh_lock_lamp)
 		_refresh_lock_lamp()
+	elif steel:
+		InteractableArt.place(_visual, key, func(r: Node3D) -> void: InteractableArt.door_steel(r, sz))
 	else:
 		InteractableArt.place(_visual, key, func(r: Node3D) -> void: InteractableArt.door_wood(r, sz))
-	var lz: Array = InteractableArt.door_label_z(size, requires_power)
+	var lz: Array = InteractableArt.door_label_z(size, steel)
 	for side: float in [-1.0, 1.0]:
 		var z: float = float(lz[0]) - 0.005 if side < 0.0 else float(lz[1]) + 0.005
 		var l: Label3D = add_label(_visual, "%s\n%d" % [label, cost], Vector3(0, size.y * 0.6, z), 28, Color(1.0, 0.92, 0.75, 0.95))

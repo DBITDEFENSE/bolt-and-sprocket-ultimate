@@ -56,8 +56,14 @@ func build_greybox() -> void:
 	_cap.name = "Cap"
 	_cap.position = Vector3(0, h, 0)
 	add_child(_cap)
-	Props.block(_cap, Vector3(-0.55, 0.0, -0.55), Vector3(0.55, 0.5, 0.55), "steel")
-	Props.block(_cap, Vector3(-0.2, 0.5, -0.2), Vector3(0.2, 0.9, 0.2), "nachtglas")
+	# the cap (U09 s5, T-149): a chrome capital in steps, the violet glass drum with an amber crack, the finial
+	Props.block(_cap, Vector3(-0.62, 0.0, -0.62), Vector3(0.62, 0.12, 0.62), "chrome")
+	Props.block(_cap, Vector3(-0.5, 0.12, -0.5), Vector3(0.5, 0.42, 0.5), "nachtglas_dim")
+	Props.block(_cap, Vector3(-0.56, 0.42, -0.56), Vector3(0.56, 0.52, 0.56), "chrome")
+	for s: float in [-1.0, 1.0]:
+		Props.obox(_cap, Vector3(s * 0.12, 0.27, 0.505), Vector3(0.03, 0.26, 0.01), "nachtglas_vein", Vector3(0, 0, s * 22.0))
+	Props.block(_cap, Vector3(-0.2, 0.52, -0.2), Vector3(0.2, 0.62, 0.2), "steel")
+	Props.obox(_cap, Vector3(0, 0.84, 0), Vector3(0.3, 0.3, 0.3), "nachtglas", Vector3(45, 0, 45))
 	_glow = OmniLight3D.new()
 	_glow.position = Vector3(0, 3.0, 0)
 	_glow.light_color = Color(0.62, 0.3, 1.0)
@@ -66,19 +72,27 @@ func build_greybox() -> void:
 	_glow.light_volumetric_fog_energy = 1.0
 	_glow.shadow_enabled = false
 	add_child(_glow)
-	# the terms plate: a brass plate on the base, facing +Z (the nave's way in)
+	# the terms plate: a brass plate on a chrome lectern at the plinth's front, facing +Z (the nave's way in),
+	# tilted to the reader, the text large enough to read from the hold distance (U09 s5, T-149)
+	var stand: MeshInstance3D = add_box(self, Vector3(0.08, 0.95, 0.08), Vector3(0, 0.475, 0.84), Mats.get_mat("chrome"))
+	stand.name = "PlateStand"
 	var plate: Node3D = Node3D.new()
 	plate.name = "Plate"
-	plate.position = Vector3(0, 1.3, 0.95)
+	plate.position = Vector3(0, 1.05, 0.9)
+	plate.rotation_degrees.x = -35.0
 	add_child(plate)
 	var pm: StandardMaterial3D = StandardMaterial3D.new()
 	pm.albedo_color = Color(0.66, 0.53, 0.28)
 	pm.metallic = 0.7
 	pm.roughness = 0.4
-	add_box(plate, Vector3(0.7, 0.42, 0.02), Vector3.ZERO, pm)
-	var l: Label3D = add_label(plate, "TERMS · %d of 3\n%s" % [index, _panel_title()], Vector3(0, 0, 0.012), 14, Color(0.15, 0.1, 0.05, 1.0))
-	l.pixel_size = 0.0024
+	add_box(plate, Vector3(0.86, 0.5, 0.025), Vector3.ZERO, pm)
+	add_box(plate, Vector3(0.9, 0.035, 0.035), Vector3(0, 0.265, 0.0), Mats.get_mat("chrome"))
+	add_box(plate, Vector3(0.9, 0.035, 0.035), Vector3(0, -0.265, 0.0), Mats.get_mat("chrome"))
+	var l: Label3D = add_label(plate, "TERMS · %s of III\n%s" % [["I", "II", "III"][clampi(index - 1, 0, 2)], _panel_title()], Vector3(0, 0.02, 0.0135), 24, Color(0.12, 0.08, 0.04, 1.0))
+	l.pixel_size = 0.0021
 	l.outline_size = 0
+	l.width = 380.0
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	var num: Label3D = add_label(self, ["I", "II", "III"][clampi(index - 1, 0, 2)], Vector3(0, 4.2, 1.0), 64, Color(0.75, 0.55, 1.0, 0.9))
 	num.pixel_size = 0.008
 

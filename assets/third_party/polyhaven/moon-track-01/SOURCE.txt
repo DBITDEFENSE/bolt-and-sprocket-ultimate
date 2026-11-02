@@ -1,0 +1,12 @@
+Title: Moon Track 01
+Authors: Greg Zaal (Photography), Jenelle van Heerden (Processing), Rico Cilliers (Photography)
+Source: https://polyhaven.com/a/moon_track_01
+File: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/moon_track_01/moon_track_01_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/moon_track_01/moon_track_01_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/moon_track_01/moon_track_01_arm_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Moon Track 01" by Greg Zaal (Photography), Jenelle van Heerden (Processing), Rico Cilliers (Photography) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 1k (albedo, normal OpenGL +Y, ORM at 1k)
+Tile size: 0.20 x 0.40 m
+Poly Haven id: moon_track_01
+Library key: moon_track
+Downloaded: 2026-11-01 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: textures/moon_track_01_albedo.png, textures/moon_track_01_normal.png, textures/moon_track_01_orm.png
