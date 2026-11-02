@@ -2772,6 +2772,48 @@ he runs out; THANKS_AMMO when passed ammo; KILL now and then. Cooldowns in data/
 | `SEL_KILL_02` | SEL | "That one's down." |
 | `SEL_KILL_03` | SEL | "Another one for the logbook." |
 
+### 14.16 Act II — UPDATE 10 §3 (T-156): the wing walk, decompression, the aux bus, the bay doors, the crew's tags side quest, Ruhland and Riedl, the formation
+
+Tier 2 unless the speaker's channel says otherwise (`PA` the Bordfunk, German with a gloss; `RDL` Riedl on the intercom before he is the Bordwart, a Kokoro voice through a speaking tube).
+
+| ID | Line | When |
+|---|---|---|
+| PA_M4B_WING_01 | Achtung. Backbordfläche beschädigt. Sicherungsleine benutzen. (Attention. Port wing damaged. Use the safety line.) | the wing walk opens (act round 2) |
+| PA_M4B_DECOMP_01 | Achtung! Druckabfall im Rumpf. Festhalten! (Attention! Pressure drop in the hull. Hold on!) | 3 s before a decompression |
+| PA_M4B_POWER_01 | Hilfssammelschiene: ein. Alle Stationen, melden. (Auxiliary bus: on. All stations, report.) | the aux bus sweep |
+| PA_M4B_BAYDOORS_01 | Bombenklappen öffnen. Abstand halten. (Bay doors opening. Stand clear.) | the bay-doors trap |
+| PA_M4B_LASTCALL_01 | Hier Kranich, Bordmechaniker Riedl. Testflug, zweite Nacht. Die Besatzung meldet... die Besatzung meldet nicht. (Kranich here, flight engineer Riedl. Test flight, second night. The crew reports... the crew does not report.) | the crew's tags, step 3 |
+| PA_M4B_LASTCALL_02 | Haas an Riedl. Da sind Leute im Werk, die wir nicht kennen. Sie zählen uns. (Haas to Riedl. There are people in the works we don't know. They are counting us.) | the crew's tags, step 3 |
+| PA_M4B_LASTCALL_03 | Pohl. Wenn jemand das hört: wir sind nicht verloren gegangen. Wir wurden abgeholt. Ende. (Pohl. If anyone hears this: we were not lost. We were collected. Out.) | the crew's tags, step 3 |
+| DEA_M4B_WING_01 | The panel's gone. That's a way out onto the wing. In flight. Clip in or don't {go}. | the panel tears |
+| DUT_M4B_WING_FALL_01 | The rope held. My stomach {didn't}. | thrown off the wing |
+| PEG_M4B_WING_FALL_01 | Note to self: clip in. Underline {clip}. | thrown off the wing |
+| DEA_M4B_WING_FALL_01 | Lord, I saw the sea. Haul me in, I'm {done}. | thrown off the wing |
+| WRN_M4B_WING_FALL_01 | I am not writing that one {down}. | thrown off the wing |
+| DUT_M4B_ROSTER_01 | Three names on the roster, rubbed out. Write 'em back in, {somebody}. | the crew's tags, step 2 |
+| PEG_M4B_ROSTER_01 | Riedl, Haas, Pohl. The roster had them in pencil. Someone took an eraser to three {men}. | the crew's tags, step 2 |
+| DEA_M4B_ROSTER_01 | There. Their names are back where they belong. The tape deck's got a reel with the same three {names}. | the crew's tags, step 2 |
+| WRN_M4B_ROSTER_01 | Riedl. Haas. Pohl. I'm writing them back in. In ink this {time}. | the crew's tags, step 2 |
+| WRN_M4B_LASTCALL_REPLY_01 | Collected. Like my brother. They knew, at the end. They {knew}. | after the reel |
+| RUH_PEOPLE_TALK_01 | I was not supposed to be on this aeroplane. I was supposed to be counting the wages. I am still counting the {wages}. | ExtraPeople (Ruhland at the Bordkasse; Riedl on the intercom until act round 4) |
+| RUH_PEOPLE_TALK_02 | The cash box is the Werk's. The ledger is the Werk's. I am, apparently, also the {Werk's}. | ExtraPeople (Ruhland at the Bordkasse; Riedl on the intercom until act round 4) |
+| RUH_PEOPLE_ASK_01 | The Bordkasse's ledger went forward with the paymaster's satchel. The flight deck. Bring it to me and I can make the sums come out {honest}. | ExtraPeople (Ruhland at the Bordkasse; Riedl on the intercom until act round 4) |
+| RUH_PEOPLE_THANKS_01 | Thank you. There: a fifth over, on every page. It was never my arithmetic. Take this, it was owed to {somebody}. | ExtraPeople (Ruhland at the Bordkasse; Riedl on the intercom until act round 4) |
+| RUH_PEOPLE_ROUND_01 | They are coming up from the bay again. I will stay behind the {counter}. | ExtraPeople (Ruhland at the Bordkasse; Riedl on the intercom until act round 4) |
+| RUH_PEOPLE_DOWN_01 | Someone is down! Get them up, get them {up}! | ExtraPeople (Ruhland at the Bordkasse; Riedl on the intercom until act round 4) |
+| RDL_PEOPLE_TALK_01 | Engine room here. Riedl. Who is that on the line? Report, please. | ExtraPeople: Riedl on the engine-room intercom until act round 4 |
+| RDL_PEOPLE_TALK_02 | This is a test flight. Only a test flight. The crew is to report to their stations. | ExtraPeople: Riedl on the engine-room intercom until act round 4 |
+| RDL_PEOPLE_TALK_03 | Haas? Pohl? The kettle is still warm. Where have you gone? | ExtraPeople: Riedl on the engine-room intercom until act round 4 |
+| RDL_PEOPLE_ROUND_01 | The engine is singing again. I cannot shut it off. I have tried. | ExtraPeople: Riedl on the engine-room intercom until act round 4 |
+| RDL_PEOPLE_DOWN_01 | Is someone hurt back there? Report! | ExtraPeople: Riedl on the engine-room intercom until act round 4 |
+| RDL_PEOPLE_ASK_01 | My engine log. I left it in the galley with my coffee. Read me the last entry, would you? I cannot leave the engine. | ExtraPeople: Riedl's favour (his engine log from the galley; he listens to the wing) |
+| RDL_PEOPLE_THANKS_01 | Crew: provided. Provided by whom. Thank you. I will listen to the wing for you. | ExtraPeople: Riedl's favour (his engine log from the galley; he listens to the wing) |
+| RDL_PEOPLE_PING_01 | Something in the port wing. Several. Moving forward. I can hear them on the spar. | ExtraPeople: Riedl's favour (his engine log from the galley; he listens to the wing) |
+| DUT_M4B_FORMATION_DOWN_01 | One of the formation's going down. Burning all the way. Nobody's getting out of {that}. | a formation bomber goes down |
+| PEG_M4B_FORMATION_DOWN_01 | Flak got the one on our wing. That could have been {us}. | a formation bomber goes down |
+| DEA_M4B_FORMATION_DOWN_01 | Lord keep them. Whoever's in it. If anybody {is}. | a formation bomber goes down |
+| WRN_M4B_FORMATION_DOWN_01 | Empty, I bet. Like this one. Flying for {nobody}. | a formation bomber goes down |
+
 ## 25. THE MARK (UPDATE 09 §1, DECISIONS T-137; canon CANON §2.2, LORE §2.5)
 
 The dead come from a chip, the Marke, under the skin of the right hand or the forehead (contract C1). The squad never

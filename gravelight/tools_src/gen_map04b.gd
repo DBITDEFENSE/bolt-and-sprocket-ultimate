@@ -116,7 +116,9 @@ func setup_tables() -> void:
 		# Ledger Lager (T-141): on the forward bulkhead of the centre body, 5 m port of the Bordkasse (bank.json)
 		["ledger_lager", Vector3(-5.0, 0, 53.45), 0.0],
 	]
-	crates = [["Galley", Vector3(-6.0, 0, 50.0), 90.0, true, [Vector3(-6, 0, 47), Vector3(-6, 0, 44), Vector3(0, 0, 44)]]]
+	crates = [["Galley", Vector3(-6.0, 0, 50.0), 90.0, true, [Vector3(-6, 0, 47), Vector3(-6, 0, 44), Vector3(0, 0, 44)]],
+		# T-156 (THE_BAR row 25): a second spot, the gun blisters' east wall: the drummer walks the crate across the wing
+		["Kanzel", Vector3(76.9, 0, 33.0), -90.0, false, [Vector3(74, 0, 33), Vector3(70, 0, 33), Vector3(66, 0, 36)]]]
 	player_spawns = [[Vector3(-2, 0, 8), 0.0], [Vector3(2, 0, 8), 0.0], [Vector3(-2, 0, 11), 0.0], [Vector3(2, 0, 11), 0.0]]
 	power_switch = {"name": "AuxBus", "label": "the auxiliary bus", "pos": Vector3(8.7, 0, 42.0), "yaw": -90.0,
 		"zone_order": ["B_MITTELRUMPF", "A_BOMBENSCHACHT", "C_FLUEGEL_L", "C_FLUEGEL_R", "D_TRIEBWERK", "E_KANZEL", "F_COCKPIT"]}
@@ -439,8 +441,9 @@ func build_gameplay_extra() -> void:
 	_node("res://gravelight/maps/map04_fernflug/act_controller.gd", "ActController", {}, Vector3.ZERO)
 	_node("res://gravelight/world/map04/flight_controller.gd", "FlightController", {}, Vector3.ZERO)
 	# the main egg continues aboard (UPDATE 07, T-114): the three crew tags (s7a) at the bunks, the radio room, a blister
-	map_root.set("quest_files", PackedStringArray(["res://data/gravelight/quests/map04_kuendigung.json"]))
-	for t: Array in [["Tag1", "I", "Riedl, A.", Vector3(7.0, 0.72, 27.0)], ["Tag2", "II", "Haas, W.", Vector3(7.0, 1.12, 48.0)], ["Tag3", "III", "Pohl, K.", Vector3(62.0, 0.1, 25.6)]]:
+	map_root.set("quest_files", PackedStringArray(["res://data/gravelight/quests/map04_kuendigung.json",
+		"res://data/gravelight/quests/map04b_crew_tags.json"]))   # T-156: the side quest anyone can do
+	for t: Array in [["Tag1", "I", "Riedl, A.", Vector3(7.0, 0.72, 27.0)], ["Tag2", "II", "Haas, W.", Vector3(7.0, 0.72, 31.2)], ["Tag3", "III", "Pohl, K.", Vector3(62.0, 0.1, 25.6)]]:
 		_node("res://gravelight/world/quest_note.gd", str(t[0]), {"tag": &"crew_tag", "item_id": StringName("tag_%s" % str(t[1]).to_lower()), "numeral": str(t[1]),
 			"kind": "tag", "note_text": str(t[2])}, t[3], 0.0)
 	# the breach panels in the wings' leading-edge walls (two a side)
@@ -492,6 +495,7 @@ func _set_pieces_u10() -> void:
 		ab.set("zone_order", zo)
 		ab.set("label", lbl)
 		ab.set("config_table", tbl)
+		(ab as Node3D).rotation.y = deg_to_rad(90.0)   # its face toward the cabin (the old yaw turned it to the wall)
 	# the wing walk: its region gets a name the WingWalk finds, the hatches, the tether posts, the wingtip locker
 	var nav: Node = map_root.get_node_or_null("Navigation")
 	if nav != null and wing_box_index >= 0:
@@ -508,16 +512,42 @@ func _set_pieces_u10() -> void:
 			_node(W + "clip_point.gd", "ClipPoint%d" % ci, {"clip_hold": float(ww.get("clip_hold", 1.0))}, _v(cp), 0.0)
 			ci += 1
 		_node(W + "wing_chest.gd", "WingChest", {"wonder_slot": str(ww.get("wonder_slot", "undertow_class"))}, _v(ww["chest"]), float(ww.get("chest_yaw", 0.0)))
+	# the crew's tags side quest (map04b_crew_tags.json): the radio room's roster board and the Bordfunk's tape deck
+	_node("res://gravelight/world/quest_interact.gd", "CrewRoster", {"target": &"crew_roster", "label_text": "BESATZUNGSLISTE",
+		"prompt_text": "read the crew's tags against the roster", "missing_text": "The roster: three names rubbed out", "size": Vector3(1.0, 1.6, 0.5)},
+		Vector3(8.7, 0, 44.6), 90.0)
+	_node("res://gravelight/world/quest_interact.gd", "BordfunkReel", {"target": &"bordfunk_reel", "label_text": "BORDFUNK · BAND",
+		"prompt_text": "play the last reel on the Bordfunk", "missing_text": "The tape deck: a reel marked with three names", "size": Vector3(1.0, 1.4, 0.6)},
+		Vector3(5.3, 0, 48.0), -90.0)
+	# the bay doors as a lever trap (traps.json bay_doors): the lever on the bay's forward bulkhead, starboard
+	var bd: Node3D = _node(W + "bay_doors_trap.gd", "Trap_BayDoors", {}, Vector3(0, 0, 12.0), 0.0)
+	_node("res://gravelight/world/trap_lever.gd", "Lever_BayDoors", {"trap_path": NodePath("../" + bd.name), "trap_id": &"bay_doors"}, Vector3(5.0, 0, 23.75), 0.0)
+	# T-156: Riedl's intercom (ExtraPeople "riedl" talks here until act round 4) and Ruhland's Talk point at the Bordkasse
+	var ic: Node3D = Node3D.new()
+	ic.name = "RiedlIntercom"
+	ic.position = Vector3(8.82, 0, 39.2)
+	gameplay.add_child(ic)
+	Props.block(ic, Vector3(-0.06, 1.25, -0.16), Vector3(0.0, 1.6, 0.16), "machine_grey")
+	Props.cyl(ic, Vector3(-0.09, 1.42, 0.0), 0.035, 0.22, "black_paint", Vector3(90, 0, 0))
+	var icl: Label3D = Label3D.new()
+	icl.text = "SPRECHANLAGE\nMASCHINE"
+	icl.font_size = 12
+	icl.pixel_size = 0.004
+	icl.position = Vector3(-0.07, 1.72, 0)
+	icl.rotation.y = -PI * 0.5
+	icl.modulate = Color(0.9, 0.85, 0.65)
+	ic.add_child(icl)
 	# the tilt's loose cargo
 	var si: int = 1
 	for sl: Dictionary in (flight_cfg.get("turbulence_tilt", {}) as Dictionary).get("sliders", []):
 		_node(W + "tilt_slider.gd", "Slider%d_%s" % [si, str(sl.get("kind", "crate"))], {"kind": str(sl.get("kind", "crate"))}, _v(sl["at"]), 0.0)
 		si += 1
 	# the decompression breaches (the bay's aft ramp seam, the starboard crawlway's leading edge) and their rails
-	var bay: Node3D = _node(W + "decompression.gd", "DecompBay", {}, Vector3(0, 0, 0.3), 0.0)
-	var stb: Node3D = _node(W + "decompression.gd", "DecompStarboard", {}, Vector3(30, 0, 45.75), 180.0)
-	for g: Array in [["GripBay1", Vector3(-8.6, 0, 3.0), 90.0, bay], ["GripBay2", Vector3(8.6, 0, 3.0), -90.0, bay],
-			["GripBay3", Vector3(-8.6, 0, 8.5), 90.0, bay], ["GripBay4", Vector3(8.6, 0, 8.5), -90.0, bay],
-			["GripStb1", Vector3(26.0, 0, 45.7), 180.0, stb], ["GripStb2", Vector3(34.0, 0, 45.7), 180.0, stb],
-			["GripStb3", Vector3(24.0, 0, 28.3), 0.0, stb], ["GripStb4", Vector3(36.0, 0, 28.3), 0.0, stb]]:
+	# (an Interactable's front is its local -Z: yaw 0 faces -Z, 90 faces -X, -90 faces +X, 180 faces +Z)
+	var bay: Node3D = _node(W + "decompression.gd", "DecompBay", {}, Vector3(0, 0, 0.3), 180.0)
+	var stb: Node3D = _node(W + "decompression.gd", "DecompStarboard", {}, Vector3(30, 0, 45.75), 0.0)
+	for g: Array in [["GripBay1", Vector3(-8.6, 0, 3.0), -90.0, bay], ["GripBay2", Vector3(8.6, 0, 3.0), 90.0, bay],
+			["GripBay3", Vector3(-8.6, 0, 8.5), -90.0, bay], ["GripBay4", Vector3(8.6, 0, 8.5), 90.0, bay],
+			["GripStb1", Vector3(26.0, 0, 45.7), 0.0, stb], ["GripStb2", Vector3(34.0, 0, 45.7), 0.0, stb],
+			["GripStb3", Vector3(24.0, 0, 28.3), 180.0, stb], ["GripStb4", Vector3(36.0, 0, 28.3), 180.0, stb]]:
 		_node(W + "rail_grip.gd", str(g[0]), {"breach_path": NodePath("../" + (g[3] as Node).name)}, g[1], float(g[2]))

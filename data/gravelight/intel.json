@@ -556,6 +556,46 @@
       "map": "4d",
       "text": "LANTERN · CAPSULE 2 · FLIGHT CARD (kept by the hatch, pencil, Rourke's hand crossed out and the rest in another)\n\nT+0 burn. T+9 min, the coast. T+3 days 2 h, the far side's shadow; the relay's pad lights came on before we asked.\nCREW: Rourke (pilot; the line crossed through). PAYLOAD: \"personnel, four, plus one\" — the plus one is not written by me.\nRETURN: no return leg is printed on this card. There is a box for it. Somebody has drawn a small smile in the box.",
       "placement": "fixed"
+    },
+    {
+      "id": "INT_M4B_BORDBUCH",
+      "title": "The Kranich's Bordbuch, one page (the flight log)",
+      "type": "DOC",
+      "map": "4b",
+      "placement": "fixed",
+      "text": "A loose page from the flight log, clipped to the first officer's seat. Typed headings, pencil entries.\n\nFLUG 1 · Werk Thalbach — Erprobung. Start 02:10. Besatzung: PROVIDED. Kurs 300, Steigflug. Bordnetz: Batterie.\n02:44 · Autopilot eingekuppelt (the Werk's crane-in-a-cog on the cradle's lid). Ruder frei. Keine Eingaben mehr erforderlich.\n03:05 · Bordmechaniker meldet: Triebwerk Backbord läuft rund. Er fragt, wer den Kurs vorgibt.\n03:12 · keine Antwort.\n\nUnder the last line, in another hand, smaller: \"The crew sheet says PROVIDED. Provided by whom. Riedl.\""
+    },
+    {
+      "id": "INT_M4B_CREWPHOTO",
+      "title": "A crew photograph, pinned over the galley",
+      "type": "PHOTO",
+      "map": "4b",
+      "placement": "fixed",
+      "text": "A small print, 6 by 9, pinned to the galley's frame with a drawing pin. Three men in flight overalls in front of the hangar at Werk Thalbach, squinting into the sun; behind them the Kranich's wing, so big it leaves the picture on both sides.\n\nOn the back, in pencil: \"Riedl, Haas, Pohl. 30.IV.45. The day before the medical. Haas says the doctor counted our teeth. Pohl says it is for the altitude. — A.R.\"\n\nSomeone has drawn a small kettle in the corner of the print, steaming. The galley's kettle is still warm."
+    },
+    {
+      "id": "INT_M4B_AIMERCARD",
+      "title": "The bomb-aimer's card (racks 1 to 6)",
+      "type": "DOC",
+      "map": "4b",
+      "placement": "fixed",
+      "text": "A stiff card in a celluloid sleeve, tacked to the bay's forward bulkhead where the aimer would stand.\n\nABWURFFOLGE · RELEASE ORDER\n1 · BOSTON\n2 · PROVIDENCE\n3 · NEW HAVEN\n4 · NEW YORK\n5 · PHILADELPHIA\n6 · WASHINGTON\n\nInterval: by the autopilot. Bomb-aimer: NOT REQUIRED.\n\nThe word \"NOT\" has been underlined twice in pencil, and beside two of the numbers, faint, the chalk mark from the casings: three strokes and a hook."
+    },
+    {
+      "id": "INT_M4B_AUTOPILOT",
+      "title": "A page from the autopilot's manual",
+      "type": "DOC",
+      "map": "4b",
+      "placement": "fixed",
+      "text": "A page torn from a service manual, folded into the engineer's station. Helvetia-style diagrams, a German text, an English gloss pencilled between the lines.\n\n\"KURSGEBER K-7 (course-giver). Once engaged, the unit does not accept inputs from the flight deck. It receives its heading from the PROVIDER by the strap (violet). It is not to be disengaged in flight. It cannot be disengaged in flight. Removal: by the key, in two stages, on the ground.\"\n\nIn the margin, Riedl's hand: \"On the ground. Then we will be on the ground.\""
+    },
+    {
+      "id": "INT_M4B_LASTCALL",
+      "title": "The Kranich's last transmission (the Bordfunk's reel)",
+      "type": "AUDIO",
+      "map": "4b",
+      "placement": "quest",
+      "text": "A reel on the Bordfunk's tape deck, labelled in grease pencil with three names. Played back:\n\nRIEDL: \"Hier Kranich, Bordmechaniker Riedl. Testflug, zweite Nacht. Die Besatzung meldet... die Besatzung meldet nicht.\" (Kranich here, flight engineer Riedl. Test flight, second night. The crew reports... the crew does not report.)\nHAAS: \"Haas an Riedl. Da sind Leute im Werk, die wir nicht kennen. Sie zählen uns.\" (Haas to Riedl. There are people in the works we don't know. They are counting us.)\nPOHL: \"Pohl. Wenn jemand das hört: wir sind nicht verloren gegangen. Wir wurden abgeholt. Ende.\" (Pohl. If anyone hears this: we were not lost. We were collected. Out.)\n\nThe reel runs on for a minute after that: an engine, and a kettle coming to the boil."
     }
   ]
 }

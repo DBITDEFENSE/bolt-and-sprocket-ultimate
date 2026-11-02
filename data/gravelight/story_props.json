@@ -361,6 +361,54 @@
       ],
       "yaw": -90,
       "where": "Reception, on the floor by the LANTERN's open hatch steps"
+    },
+    {
+      "id": "INT_M4B_BORDBUCH",
+      "map": "4b",
+      "style": "logbook",
+      "position": [
+        -1.8,
+        1.12,
+        70.1
+      ],
+      "yaw": 0,
+      "where": "Flight deck, the first officer's (port) seat, a page clipped to it"
+    },
+    {
+      "id": "INT_M4B_CREWPHOTO",
+      "map": "4b",
+      "style": "clipping",
+      "position": [
+        -8.84,
+        1.75,
+        43.0
+      ],
+      "yaw": -90,
+      "where": "Centre body, the galley's frame over the counter (west wall face), by the kettle"
+    },
+    {
+      "id": "INT_M4B_AIMERCARD",
+      "map": "4b",
+      "style": "docket",
+      "position": [
+        -3.5,
+        1.5,
+        23.84
+      ],
+      "yaw": 0,
+      "where": "Aft bomb bay, the forward bulkhead (z 23.85 face), port of the hatch, where the aimer would stand"
+    },
+    {
+      "id": "INT_M4B_AUTOPILOT",
+      "map": "4b",
+      "style": "docket",
+      "position": [
+        -77.84,
+        1.6,
+        48.5
+      ],
+      "yaw": -90,
+      "where": "Port engine room, the outboard wall (x -77.85 face) north of the ammo box, by the engineer's station"
     }
   ]
 }

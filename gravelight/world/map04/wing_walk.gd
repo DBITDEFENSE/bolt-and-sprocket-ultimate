@@ -410,6 +410,8 @@ func _land_and_down(p: Player) -> void:
 		var hud: Node = get_tree().get_first_node_in_group(&"hud")
 		if hud != null:
 			hud.call("show_banner", str(cfg.get("thrown_banner", "THROWN OFF THE WING\nthe safety line hauled you in")), 3.0)
+	if GameState.god_mode and not p.is_bot:
+		return   # god mode (the dev launcher, smokes): hauled in, not downed
 	if GameState.is_solo() and not p.is_bot:
 		solo_down(p)
 	else:

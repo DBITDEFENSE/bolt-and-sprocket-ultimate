@@ -1,0 +1,46 @@
+{
+  "id": "map04b_crew_tags",
+  "display_name": "The Crew's Tags",
+  "map": "map04b_kranich",
+  "version": 1,
+  "_doc": "Act II side quest anyone can do (UPDATE 10 §3, THE_BAR row 7, DECISIONS T-156; docs/gravelight/EASTER_EGGS.md, Fernflug side eggs): the three crew tags (QuestNote tag crew_tag: Riedl's on the first harness bunk, Haas's on the second, Pohl's under the aft blister's gun seat; the same tags the main egg's s7a counts, so finding them serves both) are read against the radio room's roster board (CrewRoster, target crew_roster), then the Bordfunk's tape deck plays the crew's last transmission (BordfunkReel, target bordfunk_reel): three lines on the PA channel, Wren's answer, and the Archive entry INT_M4B_LASTCALL. No fail, no power needed, open from the first act round.",
+  "steps": [
+    {
+      "id": "s1_tags",
+      "type": "collect",
+      "bot_task": {"type": "collect", "targets": {"class": "QuestNote", "where": {"tag": "crew_tag", "visible": true}}, "id_prop": "item_id", "what": "the crew's tags", "ping": "INTEL"},
+      "params": {"tag": "crew_tag", "count": 3},
+      "requires": [],
+      "on_complete": [{"banner": "Three crew tags. The radio room has a roster board."}]
+    },
+    {
+      "id": "s2_roster",
+      "type": "interact",
+      "bot_task": {"type": "interact_sequence", "target": {"class": "QuestInteract", "where": {"target": "crew_roster"}}, "what": "the crew roster", "ping": "INTEL"},
+      "params": {"target": "crew_roster"},
+      "requires": ["s1_tags"],
+      "on_complete": [
+        {"banner": "BESATZUNGSLISTE\nRiedl · Haas · Pohl, written back in.\nThe tape deck holds a reel with the same three names."},
+        {"vo_actor": "M4B_ROSTER", "patience": 45.0}
+      ]
+    },
+    {
+      "id": "s3_transmission",
+      "type": "interact",
+      "bot_task": {"type": "interact_sequence", "target": {"class": "QuestInteract", "where": {"target": "bordfunk_reel"}}, "what": "the Bordfunk's last reel", "ping": "INTEL", "player_only": "final"},
+      "params": {"target": "bordfunk_reel"},
+      "requires": ["s2_roster"],
+      "on_complete": [
+        {"flag": "kranich_lastcall_heard"},
+        {"vo": "PA_M4B_LASTCALL_01"},
+        {"vo": "PA_M4B_LASTCALL_02", "after": 9.0},
+        {"vo": "PA_M4B_LASTCALL_03", "after": 16.0},
+        {"vo_squad": "M4B_LASTCALL_REPLY", "after": 24.0, "patience": 30.0},
+        {"archive": "INT_M4B_LASTCALL"},
+        {"xp": 1500},
+        {"banner": "THE LAST TRANSMISSION\n\"Wir wurden abgeholt.\" (We were collected.)"}
+      ]
+    }
+  ],
+  "rewards": {"match": [], "profile": ["archive:INT_M4B_LASTCALL", "xp:1500"]}
+}

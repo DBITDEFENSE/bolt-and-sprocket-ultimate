@@ -604,6 +604,7 @@
    "3": "III",
    "4": "IV"
   },
-  "permanent_tier": 4
+  "permanent_tier": 4,
+  "discount_token_mult": 0.5
  }
 }

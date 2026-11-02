@@ -295,7 +295,7 @@ func _spawn_intel() -> void:
 	for row: Dictionary in GLData.load_json("res://data/gravelight/intel.json").get("intel", []):
 		var m: String = str(row.get("map", ""))
 		var id: String = str(row["id"])
-		if str(row.get("placement", "")) in ["fixed", "companion"]:   # companion: filed by Jakub (his letter), never spawned
+		if str(row.get("placement", "")) in ["fixed", "companion", "quest"]:   # companion: filed by Jakub (his letter); quest: filed by a quest step (T-156); never spawned
 			continue
 		if (m == map_key or m == "all") and not ProfileSave.has_intel(id):
 			if id == "INT_GEN_02" and ProfileSave.dossier_level(&"peg") < 5:

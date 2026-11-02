@@ -46,6 +46,8 @@ func setup(map_root: MapRoot, pid: String) -> void:
 	var bodies_cfg: Array = cfg.get("bodies", [])
 	for i: int in bodies_cfg.size():
 		var b: Dictionary = bodies_cfg[i]
+		if not bool(b.get("body", true)):
+			continue   # T-156: a talk point with no body of its own (Ruhland at the Bordkasse, whose teller is BankBranch's; Riedl on the intercom)
 		var pb: PatronBody = PatronBody.new()
 		pb.name = "Body%d" % i
 		add_child(pb)
@@ -91,7 +93,16 @@ func spot() -> Vector3:
 # ================================================================== talking
 
 func can_talk(p: Player) -> bool:
+	if not present():
+		return false
 	return p != null and not p.is_bot and not p.downed and not p.spectating and _card == null
+
+
+## T-156: a person who is only there until an act round (Riedl answers the intercom until he is the Bordwart).
+func present() -> bool:
+	if cfg.has("until_act_round") and RoundManager.act_round() >= int(cfg["until_act_round"]):
+		return false
+	return true
 
 
 func talk_prompt(_p: Player) -> String:
@@ -114,6 +125,8 @@ func on_talk(p: Player) -> void:
 		var open: bool = ExtraPeople.trade_open(_trade_round, RoundManager.current_round, bool(tr.get("once_per_round", true)))
 		card.said = "A tip about the Crate costs %d Scrip, once a round." % int(tr.get("cost", 200)) if open else "She has given you this round's tip."
 		opts.append({"action": &"interact", "label": "BUY THE TIP  (ǂ %d)" % int(tr.get("cost", 200)), "call": buy_tip, "enabled": open})
+	elif fav.is_empty():
+		card.said = str(cfg.get("said", ""))   # T-156: a voice with no favour to ask (Riedl on the intercom)
 	elif fav.get("kind", "") == "gun":
 		var offer: Dictionary = gun_offer(p)
 		card.said = str(fav.get("done" if favour == Favour.DONE else "ask", ""))
@@ -453,6 +466,8 @@ func _cover(delta: float) -> void:
 # ================================================================== voice
 
 func say(kind: String, force: bool = false) -> void:
+	if not present():
+		return
 	var ids: Array = (cfg.get("lines", {}) as Dictionary).get(kind, [])
 	if ids.is_empty():
 		return

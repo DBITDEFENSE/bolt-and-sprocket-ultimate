@@ -18,7 +18,7 @@ enum Phase { IDLE, WARN, PULL, DONE }
 
 const DATA: String = "res://data/gravelight/map04b.json"
 
-## The hole's centre, local to this node (the node sits on the floor at the wall; +Z is into the room).
+## The hole's centre, local to this node (the node sits on the floor at the wall; its front, local -Z, faces into the room).
 @export var hole_local: Vector3 = Vector3(0, 1.0, 0)
 
 var cfg: Dictionary = {}
@@ -69,18 +69,18 @@ func _ready() -> void:
 	cfg = (GLData.load_json(DATA).get("flight", {}) as Dictionary).get("decompression", {})
 	_plate = Props.block(self, Vector3(-1.2, 0.1, -0.12), Vector3(1.2, 2.0, 0.08), "lead")
 	_lamp = OmniLight3D.new()
-	_lamp.position = Vector3(0, 2.3, 0.5)
+	_lamp.position = Vector3(0, 2.3, -0.5)
 	_lamp.light_color = Color(1.0, 0.18, 0.1)
 	_lamp.light_energy = 0.0
 	_lamp.omni_range = 6.0
 	_lamp.shadow_enabled = false
 	add_child(_lamp)
 	_wind = CPUParticles3D.new()
-	_wind.position = Vector3(0, 1.0, 2.5)
+	_wind.position = Vector3(0, 1.0, -2.5)
 	_wind.amount = 80
 	_wind.lifetime = 0.6
 	_wind.emitting = false
-	_wind.direction = Vector3(0, 0, -1)
+	_wind.direction = Vector3(0, 0, 1)
 	_wind.spread = 30.0
 	_wind.gravity = Vector3.ZERO
 	_wind.initial_velocity_min = 8.0
@@ -91,7 +91,7 @@ func _ready() -> void:
 	_wind.mesh.set("size", Vector3(0.04, 0.04, 0.4))
 	_wind.material_override = Mats.get_mat("lead")
 	add_child(_wind)
-	var l: Label3D = Interactable.add_label(self, "DRUCKSPANT · NICHT ANLEHNEN", Vector3(0, 2.15, 0.1), 14, Color(0.95, 0.4, 0.3))
+	var l: Label3D = Interactable.add_label(self, "DRUCKSPANT · NICHT ANLEHNEN", Vector3(0, 2.15, -0.14), 14, Color(0.95, 0.4, 0.3))
 	l.outline_size = 3
 
 
@@ -190,6 +190,8 @@ func down_at_edge(p: Player) -> void:
 		var hud: Node = get_tree().get_first_node_in_group(&"hud")
 		if hud != null:
 			hud.call("show_banner", "PULLED TO THE BREACH\nhold a rail next time", 2.5)
+	if GameState.god_mode and not p.is_bot:
+		return   # god mode (the dev launcher, smokes): held at the edge, not downed
 	if GameState.is_solo() and not p.is_bot:
 		var ww: WingWalk = get_tree().get_first_node_in_group(&"wing_walks") as WingWalk
 		if ww != null:

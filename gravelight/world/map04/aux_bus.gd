@@ -79,6 +79,8 @@ func _find_dials() -> void:
 		return
 	for n: Node in root.find_children("*", "MeshInstance3D", true, false):
 		var mi: MeshInstance3D = n as MeshInstance3D
+		if mi.material_override is StandardMaterial3D and mi.material_override.resource_name == "dial_lit" and not _dials.has(mi.material_override):
+			_dials.append(mi.material_override as StandardMaterial3D)
 		if mi.mesh == null:
 			continue
 		for s: int in mi.mesh.get_surface_count():
