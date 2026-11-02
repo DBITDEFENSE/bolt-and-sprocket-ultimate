@@ -1,5 +1,5 @@
 {
-  "_doc": "Fixed, hand-placed story items (docs/gravelight/LORE.md section 13.1). StoryProp.spawn_all(map, map_key) spawns every entry whose map matches, at position (map frame: +X east, +Z south, y up) with yaw in degrees (0 = the front faces -Z; 90 faces -X; -90 faces +X; 180 faces +Z). Flat styles (guest_book, logbook, letter) sit on the surface at position.y; wall styles (drawing, docket, clipping) hang with their back on the wall face at position. id must be an intel.json row with placement fixed. 'where' is a note for people.",
+  "_doc": "Fixed, hand-placed story items (docs/gravelight/LORE.md section 13.1). StoryProp.spawn_all(map, map_key) spawns every entry whose map matches, at position (map frame: +X east, +Z south, y up) with yaw in degrees (0 = the front faces -Z; 90 faces -X; -90 faces +X; 180 faces +Z). Flat styles (guest_book, logbook, letter) sit on the surface at position.y; wall styles (drawing, docket, clipping) hang with their back on the wall face at position. id must be an intel.json row with placement fixed. 'where' is a note for people. hidden_until_flag (optional, T-154): the item is invisible and can't be read until that GameState flag is set.",
   "props": [
     {
       "id": "INT_M0_09",
@@ -252,6 +252,67 @@
       ],
       "yaw": -90,
       "where": "Kaltenbrunn pay office (C_ADMIN), on the floor beside its lifted board, between Ledger Lager and Second Wind on the west wall"
+    },
+    {
+      "id": "INT_M2_SAILOR_LETTER",
+      "map": "2",
+      "style": "letter",
+      "position": [
+        25.5,
+        0.01,
+        1.2
+      ],
+      "yaw": 90,
+      "hidden_until_flag": "cutter_slipped",
+      "where": "Quay floor between the parapet and the cutter's cradle; shown once the cutter slips into the sea at round 15 (T-154)"
+    },
+    {
+      "id": "INT_M2_HALE_TELEGRAM",
+      "map": "2",
+      "style": "letter",
+      "position": [
+        50.65,
+        7.785,
+        34.25
+      ],
+      "yaw": 90,
+      "where": "Signal Tower, the teletype's table (top 7.78) beside the machine, facing west (T-154)"
+    },
+    {
+      "id": "INT_M2_PAYSLIP",
+      "map": "2",
+      "style": "letter",
+      "position": [
+        -2.8,
+        0.855,
+        9.05
+      ],
+      "yaw": 180,
+      "where": "Cannery office desk (top 0.85) by the delivery book, facing the stool (T-154)"
+    },
+    {
+      "id": "INT_M2_DRAWING",
+      "map": "2",
+      "style": "drawing",
+      "position": [
+        18.8,
+        1.2,
+        29.97
+      ],
+      "yaw": 0,
+      "where": "Quay, the bunker face beside the shelter door (LUFTSCHUTZ TUER 3), at child height, facing the quay (T-154)"
+    },
+    {
+      "id": "INT_M2_RATION_BOOK",
+      "map": "2",
+      "style": "logbook",
+      "position": [
+        46.6,
+        7.856,
+        34.4
+      ],
+      "yaw": 180,
+      "where": "Signal Tower, the chart table, on the chart (top 7.854), facing the chair (T-154)"
     }
   ]
 }
