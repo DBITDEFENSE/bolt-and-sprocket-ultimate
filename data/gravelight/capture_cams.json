@@ -644,7 +644,7 @@
         {"name": "C_detail", "pos": [47.0, 0.0, 11.0], "yaw": -135.0, "pitch": -4.8, "note": "C Workshop: the warhead-store cage corner and the lead coffins"},
         {"name": "D_wide", "pos": [-10.0, 0.0, 35.0], "yaw": -147.8, "pitch": 0.7, "note": "D Pen Hall: from the west pen passage across the apron to U-1047"},
         {"name": "D_hero", "pos": [17.0, 0.0, 55.0], "yaw": 90.0, "pitch": 7.5, "note": "D Pen Hall: U-1047's conning tower from pier 2"},
-        {"name": "D_detail", "pos": [-15.0, 0.0, 36.5], "yaw": 55.5, "pitch": -12.8, "note": "D Pen Hall: the NW apron corner, wall, floor and catwalk stair foot"},
+        {"name": "D_detail", "pos": [-15.6, 0.0, 45.0], "yaw": 170.0, "pitch": -8.0, "note": "D Pen Hall: pier 0 looking south, the dock edge kerb, bollards and cleats, a pole lamp, the docks water (re-aimed T-145: the NW corner was black)"},
         {"name": "E_wide", "pos": [7.0, -2.0, 66.0], "yaw": 0.0, "pitch": -0.5, "note": "E U-boat: from the hatch ramp's foot forward through the bulkhead doors"},
         {"name": "E_hero", "pos": [7.0, -2.0, 46.0], "yaw": 0.0, "pitch": -2.9, "note": "E U-boat: the Crucible between the torpedo tubes"},
         {"name": "E_detail", "pos": [7.5, -2.0, 53.0], "yaw": 90.0, "pitch": -9.8, "note": "E U-boat: the bunks on the port wall"},

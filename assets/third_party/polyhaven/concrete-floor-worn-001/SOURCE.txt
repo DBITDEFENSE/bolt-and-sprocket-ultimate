@@ -1,0 +1,12 @@
+Title: Concrete Floor Worn 001
+Authors: Dimitrios Savva (Photography), Rico Cilliers (Processing)
+Source: https://polyhaven.com/a/concrete_floor_worn_001
+File: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_floor_worn_001/concrete_floor_worn_001_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_floor_worn_001/concrete_floor_worn_001_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_floor_worn_001/concrete_floor_worn_001_arm_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Concrete Floor Worn 001" by Dimitrios Savva (Photography), Rico Cilliers (Processing) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 1k (albedo, normal OpenGL +Y, ORM at 1k)
+Tile size: 3.00 x 3.00 m
+Poly Haven id: concrete_floor_worn_001
+Library key: m2_floor
+Downloaded: 2026-11-01 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: textures/concrete_floor_worn_001_albedo.png, textures/concrete_floor_worn_001_normal.png, textures/concrete_floor_worn_001_orm.png

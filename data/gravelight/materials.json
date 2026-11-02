@@ -534,6 +534,228 @@
       "grime": 0.15,
       "note": "trodden snow over frozen dirt: the tracks round the ring, the yard paths, the well steps (T-093; snow_05's tyre tread read as a modern tractor)",
       "normal_strength": 0.6
+    },
+    "m2_bunker": {
+      "set": "polyhaven/concrete-wall-004",
+      "id": "concrete_wall_004",
+      "tile_m": 2.4,
+      "tint": [
+        0.6,
+        0.63,
+        0.66
+      ],
+      "rough": [
+        0.7,
+        1.0
+      ],
+      "grime": 0.6,
+      "wetness": 0.15,
+      "grime_height": 1.6,
+      "note": "Totenhafen: the bunker's cast concrete; the panel joints read as form-board lines; damp at the foot (U09 s5, T-145)"
+    },
+    "m2_bunker_wet": {
+      "set": "polyhaven/concrete-wall-004",
+      "id": "concrete_wall_004",
+      "tile_m": 2.4,
+      "tint": [
+        0.46,
+        0.5,
+        0.52
+      ],
+      "rough": [
+        0.35,
+        0.9
+      ],
+      "grime": 0.7,
+      "wetness": 0.55,
+      "grime_height": 2.5,
+      "grime_floor_y": -3.0,
+      "note": "Totenhafen: the pens' walls and the lower pens, streaming wet (T-145)"
+    },
+    "m2_floor": {
+      "set": "polyhaven/concrete-floor-worn-001",
+      "id": "concrete_floor_worn_001",
+      "tile_m": 3.0,
+      "tint": [
+        0.72,
+        0.73,
+        0.74
+      ],
+      "rough": [
+        0.4,
+        0.95
+      ],
+      "grime": 0.45,
+      "wetness": 0.3,
+      "grime_height": 0.3,
+      "note": "Totenhafen: worn concrete floors: the workshop, the tower, the quay (T-145)"
+    },
+    "m2_floor_wet": {
+      "set": "polyhaven/dirty-concrete",
+      "id": "dirty_concrete",
+      "tile_m": 2.6,
+      "tint": [
+        0.52,
+        0.55,
+        0.56
+      ],
+      "rough": [
+        0.2,
+        0.85
+      ],
+      "grime": 0.5,
+      "wetness": 0.6,
+      "grime_height": 0.2,
+      "note": "Totenhafen: the wet aprons and pier decks (T-145)"
+    },
+    "m2_pier": {
+      "set": "polyhaven/dirty-concrete",
+      "id": "dirty_concrete",
+      "tile_m": 2.0,
+      "tint": [
+        0.5,
+        0.56,
+        0.52
+      ],
+      "rough": [
+        0.4,
+        0.95
+      ],
+      "grime": 0.75,
+      "wetness": 0.45,
+      "grime_floor_y": -6.0,
+      "grime_height": 4.0,
+      "note": "Totenhafen: pier and dock sides, tide-stained (T-145)"
+    },
+    "m2_grate": {
+      "set": "polyhaven/metal-grate-rusty",
+      "id": "metal_grate_rusty",
+      "tile_m": 1.0,
+      "tint": [
+        0.75,
+        0.72,
+        0.7
+      ],
+      "rough": [
+        0.35,
+        0.9
+      ],
+      "grime": 0.3,
+      "note": "Totenhafen: catwalk grating, stair treads (T-145)"
+    },
+    "m2_tread": {
+      "set": "polyhaven/metal-plate",
+      "id": "metal_plate",
+      "tile_m": 1.2,
+      "tint": [
+        0.7,
+        0.72,
+        0.72
+      ],
+      "rough": [
+        0.3,
+        0.85
+      ],
+      "grime": 0.35,
+      "note": "Totenhafen: tread plate: the boat's decks, the switch dais, the crane bay (T-145)"
+    },
+    "m2_hull": {
+      "set": "polyhaven/rusty-painted-metal",
+      "id": "rusty_painted_metal",
+      "tile_m": 2.2,
+      "tint": [
+        0.2,
+        0.21,
+        0.23
+      ],
+      "rough": [
+        0.35,
+        0.85
+      ],
+      "grime": 0.35,
+      "wetness": 0.2,
+      "note": "Totenhafen: U-1047's grey-black plating with rust weeping down it, the cutter's topsides (T-145)"
+    },
+    "m2_hull_red": {
+      "set": "polyhaven/rusty-painted-metal",
+      "id": "rusty_painted_metal",
+      "tile_m": 2.2,
+      "tint": [
+        0.62,
+        0.36,
+        0.3
+      ],
+      "rough": [
+        0.4,
+        0.9
+      ],
+      "grime": 0.4,
+      "wetness": 0.3,
+      "note": "Totenhafen: the red-lead antifouling below the boot-top (T-145)"
+    },
+    "m2_curtain": {
+      "set": "polyhaven/rusty-painted-metal",
+      "id": "rusty_painted_metal",
+      "tile_m": 2.5,
+      "tint": [
+        0.34,
+        0.35,
+        0.36
+      ],
+      "rough": [
+        0.35,
+        0.9
+      ],
+      "grime": 0.4,
+      "note": "Totenhafen: the pen mouth's steel curtain, the blast doors (T-145)"
+    },
+    "m2_corrugated": {
+      "set": "polyhaven/corrugated-iron",
+      "id": "corrugated_iron",
+      "tile_m": 1.5,
+      "tint": [
+        0.5,
+        0.52,
+        0.54
+      ],
+      "rough": [
+        0.35,
+        0.85
+      ],
+      "grime": 0.5,
+      "note": "Totenhafen: corrugated sheds and roofs (T-145)"
+    },
+    "m2_tarred": {
+      "set": "polyhaven/corrugated-iron",
+      "id": "corrugated_iron",
+      "tile_m": 1.5,
+      "tint": [
+        0.14,
+        0.14,
+        0.15
+      ],
+      "rough": [
+        0.5,
+        0.9
+      ],
+      "grime": 0.3,
+      "note": "Totenhafen: the harbourmaster's tarred roof (T-145)"
+    },
+    "m2_zinc": {
+      "set": "ambientcg/diamond-plate-008a",
+      "id": "DiamondPlate008A",
+      "tile_m": 0.9,
+      "tint": [
+        0.82,
+        0.84,
+        0.86
+      ],
+      "rough": [
+        0.2,
+        0.6
+      ],
+      "grime": 0.25,
+      "note": "Totenhafen: the cannery's zinc tables and brine tanks (T-145)"
     }
   },
   "generator": {
@@ -565,7 +787,26 @@
       "leather",
       "canvas",
       "ice",
-      "mud"
+      "mud",
+      "m2_bunker",
+      "m2_bunker_wet",
+      "m2_floor",
+      "m2_floor_wet",
+      "m2_pier",
+      "m2_grate",
+      "m2_tread",
+      "m2_hull",
+      "m2_hull_red",
+      "m2_curtain",
+      "m2_corrugated",
+      "m2_tarred",
+      "m2_zinc",
+      "bunker_concrete",
+      "wet_concrete",
+      "pier_concrete",
+      "u_hull",
+      "hull_red",
+      "zinc"
     ],
     "keys": {
       "floorboards": "floorboards",
@@ -595,7 +836,26 @@
       "rock": "rock",
       "straw_floor": "straw_floor",
       "wreck": "wreck",
-      "snow_trodden": "snow_trodden"
+      "snow_trodden": "snow_trodden",
+      "m2_bunker": "m2_bunker",
+      "m2_bunker_wet": "m2_bunker_wet",
+      "m2_floor": "m2_floor",
+      "m2_floor_wet": "m2_floor_wet",
+      "m2_pier": "m2_pier",
+      "m2_grate": "m2_grate",
+      "m2_tread": "m2_tread",
+      "m2_hull": "m2_hull",
+      "m2_hull_red": "m2_hull_red",
+      "m2_curtain": "m2_curtain",
+      "m2_corrugated": "m2_corrugated",
+      "m2_tarred": "m2_tarred",
+      "m2_zinc": "m2_zinc",
+      "bunker_concrete": "m2_bunker",
+      "wet_concrete": "m2_floor_wet",
+      "pier_concrete": "m2_pier",
+      "u_hull": "m2_hull",
+      "hull_red": "m2_hull_red",
+      "zinc": "m2_zinc"
     }
   }
 }

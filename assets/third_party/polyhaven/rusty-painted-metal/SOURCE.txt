@@ -1,0 +1,12 @@
+Title: Rusty Painted Metal
+Authors: Amal Kumar
+Source: https://polyhaven.com/a/rusty_painted_metal
+File: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rusty_painted_metal/rusty_painted_metal_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rusty_painted_metal/rusty_painted_metal_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rusty_painted_metal/rusty_painted_metal_arm_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Rusty Painted Metal" by Amal Kumar (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 1k (albedo, normal OpenGL +Y, ORM at 1k)
+Tile size: 2.20 x 2.20 m
+Poly Haven id: rusty_painted_metal
+Library key: m2_hull
+Downloaded: 2026-11-01 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: textures/rusty_painted_metal_albedo.png, textures/rusty_painted_metal_normal.png, textures/rusty_painted_metal_orm.png
