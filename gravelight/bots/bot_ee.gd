@@ -439,16 +439,22 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 			w["known"] = hub_ok and hub.knowledge.knows(str(t.get("need", "")))
 			var visited: Dictionary = task.get("visited", {}) if active() else {}
 			var pts: Array = []
+			var n_all: int = 0
+			var n_open: int = 0
 			for zn: Node in brain.get_tree().get_nodes_in_group(&"zone_volumes"):
 				var zv: ZoneVolume = zn as ZoneVolume
+				n_all += 1
 				if zv == null or not GameState.is_zone_open(zv.zone_id):
 					continue
+				n_open += 1
 				var zp: Vector3 = brain.snap(zv.global_position)
 				if zp == Vector3.INF or not brain.reachable(zp):
 					continue
 				var zk: String = "%s@%d,%d" % [zv.zone_id, int(zp.x), int(zp.z)]
 				pts.append({"pos": zp, "key": zk, "d": _flat(zp, player.global_position) + absf(zp.y - player.global_position.y) * 3.0, "visited": visited.has(zk)})
 			w["points"] = pts
+			if OS.has_environment("EGG_DEBUG") and pts.is_empty():
+				_log("scout: no zone to walk (%d zones, %d open, none reachable)" % [n_all, n_open])
 		"hold_zone":
 			var running: bool = not QuestManager.holdout_state(qid, sid).is_empty()
 			w["holdout_running"] = running
@@ -819,6 +825,8 @@ func _execute(delta: float) -> void:
 			if _walk(sp, 3.0, delta) or (brain.loco.is_stuck() and _now() - float(task.get("scout_t", _now())) > 25.0):
 				vis[vk] = true   # walked through (or this one won't be reached: the next)
 				task["visited"] = vis
+				if OS.has_environment("EGG_DEBUG"):
+					_log("scout: walked %s (%d so far)" % [vk, vis.size()])
 				task["scout_t"] = _now()
 				task["prog_t"] = _now()
 				_replan = true
