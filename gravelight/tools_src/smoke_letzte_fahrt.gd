@@ -14,6 +14,7 @@ const MAX_GAME_MIN: float = 55.0   # overridable: --lf-minutes=N
 var _events: PackedStringArray = []
 var _game_t: float = 0.0
 var _max_min: float = MAX_GAME_MIN
+var _skip_to: StringName = &""
 
 
 func _init() -> void:
@@ -23,11 +24,16 @@ func _init() -> void:
 	for a: String in OS.get_cmdline_user_args():
 		if a.begins_with("--lf-minutes="):
 			_max_min = float(a.get_slice("=", 1))
+		elif a.begins_with("--lf-skip-to="):
+			_skip_to = StringName(a.get_slice("=", 1))   # diagnostics only (a run that skips never counts)
 	_timeout_s = _max_min * 60.0 + 240.0   # game seconds (the timer is scaled too)
 
 
 func _body() -> void:
 	Engine.time_scale = TIME_SCALE
+	GLBus.purchase_denied.connect(func(pid: int, item: StringName, why: StringName) -> void:
+		if String(item).begins_with("door"):
+			print("[%s]   purchase denied: p%d %s (%s, has %d)" % [tag, pid, item, why, Economy.get_scrip(pid)]))
 	GLBus.quest_step_completed.connect(func(q: StringName, s: StringName) -> void:
 		if q == QUEST:
 			_events.append("%.1f min %s" % [_game_t / 60.0, s])
@@ -38,6 +44,21 @@ func _body() -> void:
 	if _map.squad != null and _map.squad.ee != null:
 		_map.squad.ee.set_mode("full")
 	_check(_map.squad != null and _map.squad.ee != null, "the squad's egg helper is on Full Partner")
+	if _skip_to != &"":
+		# diagnostics: the power thrown and the step's prerequisites done, so the bots start on the later steps
+		GameState.set_flag(&"ballast_loaded", 1)
+		var sw: PowerSwitch = _g("Pumpenschalter") as PowerSwitch
+		if sw != null:
+			sw.run_sequence(0)
+		await _frames(10)
+		QuestManager.debug_skipto(QUEST, _skip_to)
+		var tb: Node = get_tree().get_first_node_in_group(&"totenhafen_ballast")
+		if tb != null and QuestManager.is_step_done(QUEST, &"s1_ballast"):
+			tb.call(&"spawn_shard")   # the skipped dumps would have left the shard
+		for fl: Array in [[&"s2_cipher", &"lf_cipher_done"], [&"s6_boss", &"boat_key"], [&"s1_ballast", &"lf_ballast_done"]]:
+			if QuestManager.is_step_done(QUEST, fl[0]):
+				GameState.set_flag(fl[1], true)   # what the skipped steps would have set in the world
+		print("[%s] SKIPPED to %s (a diagnostic run: it does not count)" % [tag, _skip_to])
 	var last_step_t: float = 0.0
 	var steps_done: int = 0
 	while _game_t < _max_min * 60.0 and not QuestManager.is_complete(QUEST):
@@ -86,7 +107,7 @@ func _diag() -> void:
 			busy.append("p%d=%s/%s do=%s at %s%s prog=%s" % [b2.player.player_id, b2.ee.task.get("sid", ""), b2.ee.task.get("type", ""),
 				str(pl.get("do", "")), str(b2.player.global_position.snapped(Vector3.ONE * 0.1)),
 				(" -> %s %.1f m" % [pn.name, pn.global_position.distance_to(b2.player.global_position)]) if pn != null else "",
-				str(QuestManager.progress(QUEST, StringName(str(b2.ee.task.get("sid", "")))))])
+				str(QuestManager.progress(QUEST, StringName(str(b2.ee.task.get("sid", ""))))) + " scrip=%d" % Economy.get_scrip(b2.player.player_id)])
 	print("[%s]   %.1f min r%d power=%s loaded=%s dumped=%s | %s | busy %s" % [tag, _game_t / 60.0, RoundManager.current_round,
 		GameState.power_on, GameState.flags.get(&"ballast_loaded", 0), GameState.flags.get(&"ballast_dumped", 0), ", ".join(parts), ", ".join(busy)])
 
