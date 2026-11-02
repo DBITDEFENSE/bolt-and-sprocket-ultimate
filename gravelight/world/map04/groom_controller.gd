@@ -37,6 +37,11 @@ var _env: Environment = null
 var _env_base: Dictionary = {}
 var _kill_plane_before: float = -15.0
 var parts_seeded: Dictionary = {}    # part id -> spot id (when the controller seeded them)
+# U10 §3 (T-157): the storm is the round (every `every_act_rounds`), the stalkers hunt by sound
+var hunters: Dictionary = {}         # Zombie -> true while it hunts by sound (the storm's stalkers)
+var storms: int = 0                  # storms this match (the smoke, the HUD line once)
+var _sun: DirectionalLight3D = null
+var _sun_base: float = -1.0
 
 
 # ---------------------------------------------------------------- pure rules
@@ -81,6 +86,32 @@ static func backorder_allowed(kind_cfg: Dictionary, ar: int, flags: Dictionary, 
 	return flags.has(StringName(str(kind_cfg.get("requires_flag", "part_ls_part_coil")))) or flags.has(&"relay_coil_taken")
 
 
+## U10 §3: the storm comes every `every` act rounds (5, 10, 15...): true on those act rounds.
+static func storm_round_due(ar: int, every: int) -> bool:
+	return every > 0 and ar > 0 and ar % every == 0
+
+
+## The match round of the next storm after match round `now` (act-relative schedule from `act_start`).
+static func next_storm_round(now: int, act_start: int, every: int) -> int:
+	var ar: int = maxi(0, now - act_start + 1)
+	@warning_ignore("integer_division")
+	var next_ar: int = (ar / every + 1) * every
+	return act_start + next_ar - 1
+
+
+## Exponential fog density that leaves ~5 % of the light through at `vis_m` (3 / vis): 15 m -> 0.2.
+static func fog_for_visibility(vis_m: float) -> float:
+	return 3.0 / maxf(1.0, vis_m)
+
+
+## Whether a zombie in `zone` of kind `kind` is one of the storm's stalkers (hear.kinds; "" = an untagged Gänger;
+## only on the surface zones in hear.zones).
+static func is_stalker(kind: String, zone: String, hear_cfg: Dictionary) -> bool:
+	var kinds: Array = hear_cfg.get("kinds", ["burrower", ""])
+	var zones: Array = hear_cfg.get("zones", [])
+	return kinds.has(kind) and (zones.is_empty() or zones.has(zone))
+
+
 ## The round-clock fallback: the rocket is given on `fallback_round` (act-relative) when it isn't ready.
 static func rocket_fallback_due(ar: int, fallback_round: int, flags: Dictionary) -> bool:
 	return ar >= fallback_round and not flags.has(&"rocket_ready")
@@ -105,7 +136,9 @@ func _ready() -> void:
 	GLBus.buildable_completed.connect(_on_built)
 	GLBus.weapon_acquired.connect(_on_weapon)
 	GLBus.boss_spawned.connect(_on_boss)
+	GLBus.weapon_fired.connect(_on_weapon_fired)
 	_kill_plane_before = Zombie.kill_plane_y
+	SoundHunter.reset()
 
 
 func _exit_tree() -> void:
@@ -120,6 +153,8 @@ func _on_match_started(_map: StringName) -> void:
 		director = n as ZombieDirector
 	if director != null and str(RoundManager.act_block_of(GameState.map_id).get("special_kind", "")) == "dust_storm":
 		director.special_handler = self
+	SoundHunter.configure((cfg.get("dust_storm", {}) as Dictionary).get("hear", {}))
+	_schedule_storm.call_deferred()
 	for sp: Node in get_tree().get_nodes_in_group(&"zombie_spawns"):
 		if sp.name.begins_with("Catwalk_B_LAKEBED"):
 			_burrow_home[sp] = (sp as Node3D).global_position
@@ -219,6 +254,23 @@ func _on_round_started(_r: int, special: bool) -> void:
 
 func _on_round_ended(_r: int) -> void:
 	_dust_end()
+	_schedule_storm()
+
+
+## The storm's rhythm (U10 §3): the director's special round is pinned to every `every_act_rounds` act round
+## (5, 10, ...; RoundManager skips a reserved round such as a boss's by one). Host only; act maps only.
+func _schedule_storm() -> void:
+	var every: int = int((cfg.get("dust_storm", {}) as Dictionary).get("every_act_rounds", 0))
+	if every <= 0 or not Net.is_authority() or director == null or director.special_handler != self:
+		return
+	var nxt: int = next_storm_round(RoundManager.current_round, RoundManager.act_start, every)
+	if RoundManager.next_special != nxt:
+		RoundManager.next_special = nxt
+		RoundManager._skip_reserved()
+
+
+func _on_weapon_fired(pid: int, _w: StringName, _u: bool, _o: Vector3, _d: Vector3) -> void:
+	SoundHunter.note_fire(pid)
 
 
 func _process(delta: float) -> void:
@@ -262,6 +314,10 @@ func _untag(z: Zombie) -> void:
 	tagged.erase(z)
 	jj.erase(z)
 	bo.erase(z)
+	if hunters.has(z):
+		hunters.erase(z)
+		if z != null and is_instance_valid(z):
+			z.hunt_by_sound = false
 
 
 func _active_of(kind: String) -> int:
@@ -295,6 +351,8 @@ func _on_enemy_spawned(enemy_id: StringName, node_id: int) -> void:
 	var oc: Dictionary = cfg.get("backorder", {})
 	if backorder_allowed(oc, ar, GameState.flags, _active_of("backorder")) and _rng.randf() < float(oc.get("chance", 0.2)):
 		make("backorder", z)
+	if _dust_on:
+		_maybe_hunt(z)
 
 
 ## Turns a live Gänger into one of the act's kinds (the spawn hook, the console and the smoke).
@@ -632,21 +690,98 @@ func _tick_backorders(delta: float) -> void:
 # ---------------------------------------------------------------- DUST STORM (the special round)
 
 func _dust_start() -> void:
+	if _dust_on:
+		return
 	var dc: Dictionary = cfg.get("dust_storm", {})
 	_dust_on = true
 	_dust_t = 1.0
-	_banner(str(dc.get("banner", "DUST STORM")), 4.0)
+	storms += 1
+	# the HUD names the rule once per match ("DUST STORM: they hunt by sound"), the short banner after that
+	if storms == 1:
+		_banner(str(dc.get("hud_line", "DUST STORM: they hunt by sound")), 5.0)
+	else:
+		_banner(str(dc.get("banner", "DUST STORM")), 3.0)
 	_vo(str(dc.get("vo_start", "")))
-	var root: Node = _map()
-	for n: Node in root.find_children("*", "WorldEnvironment", true, false):
-		_env = (n as WorldEnvironment).environment
-	if _env != null:
-		_env_base = {"fog": _env.fog_density, "color": _env.fog_light_color, "vol": _env.volumetric_fog_density}
-		var c: Array = dc.get("fog_color", [0.78, 0.68, 0.5])
-		var tw: Tween = create_tween()
-		tw.tween_property(_env, "fog_density", float(dc.get("fog_density", 0.06)), 4.0)
-		tw.parallel().tween_property(_env, "fog_light_color", Color(float(c[0]), float(c[1]), float(c[2])), 4.0)
-		tw.parallel().tween_property(_env, "volumetric_fog_density", 0.05, 4.0)
+	_storm_fx(true)
+	for z: Variant in tagged.keys():
+		_maybe_hunt(z as Zombie)
+	if director != null:
+		for z2: Variant in director.active_zombies():
+			_maybe_hunt(z2 as Zombie)
+	if Net.is_authority():
+		_net_world("storm", true)
+
+
+## The storm's look on this peer: the fog closes to `visibility_m`, the sky and the sun go dim (the grit and the
+## sweep cards are DustStormFx's, which follows dust_active()).
+func _storm_fx(on: bool) -> void:
+	var dc: Dictionary = cfg.get("dust_storm", {})
+	if on:
+		var root: Node = _map()
+		for n: Node in root.find_children("*", "WorldEnvironment", true, false):
+			_env = (n as WorldEnvironment).environment
+		for n2: Node in root.find_children("*", "DirectionalLight3D", true, false):
+			var dl: DirectionalLight3D = n2 as DirectionalLight3D
+			if dl.shadow_enabled and dl.visible:
+				_sun = dl
+				break
+		if _env != null:
+			_env_base = {"fog": _env.fog_density, "color": _env.fog_light_color, "vol": _env.volumetric_fog_density,
+				"bg": _env.background_energy_multiplier, "amb": _env.ambient_light_energy}
+			var c: Array = dc.get("fog_color", [0.78, 0.68, 0.5])
+			var dens: float = fog_for_visibility(float(dc.get("visibility_m", 15.0))) if dc.has("visibility_m") else float(dc.get("fog_density", 0.06))
+			var tw: Tween = create_tween()
+			tw.tween_property(_env, "fog_density", dens, 4.0)
+			tw.parallel().tween_property(_env, "fog_light_color", Color(float(c[0]), float(c[1]), float(c[2])), 4.0)
+			tw.parallel().tween_property(_env, "volumetric_fog_density", 0.05, 4.0)
+			tw.parallel().tween_property(_env, "background_energy_multiplier", _env.background_energy_multiplier * float(dc.get("sky_dim", 0.45)), 4.0)
+			tw.parallel().tween_property(_env, "ambient_light_energy", _env.ambient_light_energy * float(dc.get("ambient_dim", 0.7)), 4.0)
+		if _sun != null:
+			_sun_base = _sun.light_energy
+			create_tween().tween_property(_sun, "light_energy", _sun_base * float(dc.get("sun_dim", 0.3)), 4.0)
+	else:
+		if _env != null and not _env_base.is_empty():
+			var tw2: Tween = create_tween()
+			tw2.tween_property(_env, "fog_density", float(_env_base["fog"]), 3.0)
+			tw2.parallel().tween_property(_env, "fog_light_color", _env_base["color"], 3.0)
+			tw2.parallel().tween_property(_env, "volumetric_fog_density", float(_env_base["vol"]), 3.0)
+			tw2.parallel().tween_property(_env, "background_energy_multiplier", float(_env_base["bg"]), 3.0)
+			tw2.parallel().tween_property(_env, "ambient_light_energy", float(_env_base["amb"]), 3.0)
+		if _sun != null and _sun_base >= 0.0:
+			create_tween().tween_property(_sun, "light_energy", _sun_base, 3.0)
+
+
+## A storm stalker: the Burrowers and the plain Gängers on the surface hunt by sound while the storm runs.
+func _maybe_hunt(z: Zombie) -> void:
+	if z == null or not is_instance_valid(z) or not z.is_active() or z is HomageBoss or z.state == Zombie.State.DEAD:
+		return
+	var hc: Dictionary = (cfg.get("dust_storm", {}) as Dictionary).get("hear", {})
+	if hc.is_empty():
+		return
+	var zone: String = String(ZoneVolume.zone_at(get_tree(), z.global_position))
+	if not is_stalker(str(tagged.get(z, "")), zone, hc):
+		return
+	z.hunt_by_sound = true
+	z.hear_radius_m = float(hc.get("radius_m", 6.0))
+	z.heard_at = Vector3.INF
+	hunters[z] = true
+
+
+func _release_hunters() -> void:
+	for z: Variant in hunters.keys():
+		var zz: Zombie = z as Zombie
+		if zz != null and is_instance_valid(zz):
+			zz.hunt_by_sound = false
+			zz.heard_at = Vector3.INF
+	hunters.clear()
+
+
+## The dev console and smoke_dust_storm: the storm now (without the special round's spawns), or off.
+func debug_storm(on: bool) -> void:
+	if on:
+		_dust_start()
+	else:
+		_dust_end()
 
 
 func _dust_end() -> void:
@@ -655,11 +790,10 @@ func _dust_end() -> void:
 	_dust_on = false
 	var dc: Dictionary = cfg.get("dust_storm", {})
 	_vo(str(dc.get("vo_end", "")))
-	if _env != null and not _env_base.is_empty():
-		var tw: Tween = create_tween()
-		tw.tween_property(_env, "fog_density", float(_env_base["fog"]), 3.0)
-		tw.parallel().tween_property(_env, "fog_light_color", _env_base["color"], 3.0)
-		tw.parallel().tween_property(_env, "volumetric_fog_density", float(_env_base["vol"]), 3.0)
+	_storm_fx(false)
+	_release_hunters()
+	if Net.is_authority():
+		_net_world("storm", false)
 
 
 ## The director's special-round hook: Burrowers rise in packs at the burrow points nearest a player, twice as
@@ -694,6 +828,7 @@ func tick_special(delta: float) -> void:
 		if not tagged.has(z):
 			_tag(z, "burrower")
 			Effects.dirt_burst(at, "earth", 1.2, Vector3.UP, 20)
+		_maybe_hunt(z)
 
 
 # ---------------------------------------------------------------- story
@@ -765,3 +900,34 @@ func _on_boss(enemy_id: StringName) -> void:
 		_squad(&"dutch", "DUT_M4C_PILOT_01")
 		_squad(&"peg", "PEG_M4C_PILOT_01")
 		_squad(&"wren", "WRN_M4C_PILOT_01")
+
+
+# ---------------------------------------------------------------- U10 §3 online (contract C8)
+
+## Host: one world event for every peer (the storm on/off, a wreck section's collapse, a radar ping). The host owns
+## the decision; a peer only replays the presentation (`_mirror_world`).
+func _net_world(ev: String, value: Variant) -> void:
+	Net.mirror(self, &"_mirror_world", [ev, value])
+
+
+func _mirror_world(ev: String, value: Variant) -> void:
+	if Net.is_authority():
+		return
+	match ev:
+		"storm":
+			if bool(value) and not _dust_on:
+				_dust_on = true
+				storms += 1
+				var dc: Dictionary = cfg.get("dust_storm", {})
+				_banner(str(dc.get("hud_line", "DUST STORM: they hunt by sound")) if storms == 1 else str(dc.get("banner", "DUST STORM")), 4.0)
+				_storm_fx(true)
+			elif not bool(value) and _dust_on:
+				_dust_on = false
+				_storm_fx(false)
+		_:
+			_mirror_world_more(ev, value)
+
+
+## The later set-pieces' peer side (the wreck, the radar): see their sections below.
+func _mirror_world_more(_ev: String, _value: Variant) -> void:
+	pass

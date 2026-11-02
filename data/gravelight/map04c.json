@@ -240,7 +240,21 @@
       "fog_density": 0.06,
       "fog_color": [0.78, 0.68, 0.5],
       "spawn_gap": 2.0,
-      "burrow_pack": 2
+      "burrow_pack": 2,
+      "_doc_u10": "UPDATE 10 §3 (T-157): the storm is the round every every_act_rounds act rounds (5, 10...); visibility_m sets the fog (density 3/vis); sky_dim / ambient_dim / sun_dim darken it; hud_line shows once per match. hear: the stalkers (kinds: the Burrowers and the plain Gängers \"\" in the surface zones) hunt by sound: radius_m, x loud_mult while a player sprints or fired in the last fire_window_s.",
+      "every_act_rounds": 5,
+      "visibility_m": 15.0,
+      "sky_dim": 0.45,
+      "ambient_dim": 0.7,
+      "sun_dim": 0.3,
+      "hud_line": "DUST STORM: they hunt by sound",
+      "hear": {
+        "radius_m": 6.0,
+        "loud_mult": 3.0,
+        "fire_window_s": 1.5,
+        "kinds": ["burrower", ""],
+        "zones": ["A_WRECK", "B_LAKEBED", "C_HANGAR", "D_MOTORPOOL", "E_RADAR"]
+      }
     },
     "events": {
       "rocket_fallback_round": 9

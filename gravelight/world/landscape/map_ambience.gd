@@ -2584,3 +2584,7 @@ func _ev_field_units() -> void:
 func _ev_meteors() -> void:
 	if u10_act4 != null:
 		u10_act4.far_meteor()
+
+
+# ---- U10 Act III ----
+# Groom Lake's living world (UPDATE 10 section 3, DECISIONS T-157), from data/gravelight/map04c_ambience.json.
