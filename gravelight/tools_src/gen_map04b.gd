@@ -18,6 +18,19 @@ const CEIL_BODY: float = 3.6
 const CEIL_WING: float = 2.2
 const CEIL_ROOM: float = 4.8
 const DIO_Y: float = -186.0   # the lake-bed diorama's ground
+const Detail = preload("res://gravelight/tools_src/detail_map04b.gd")
+## T-147: geometry whose mesh the shell replaces (colliders kept): every wall, the lids, the deck, the old rib posts,
+## the flight-deck glass box, the spars (dressing only)
+const SHELL_HIDDEN: Array = ["A_S*", "A_W*", "A_E*", "AB_*", "B_W*", "B_E*", "CL_*", "CR_*", "D_S*", "D_W*", "D_E*", "D_N*", "DW_S*",
+	"E_S*", "E_E*", "E_W*", "E_N*", "EW_S*", "F_W*", "F_E*", "F_S*", "BayRoof", "BodyRoof", "WingRoof*", "TriebwerkRoof", "WalkwayRoof*",
+	"KanzelRoof", "CockpitRoof", "Deck", "CockpitGlass", "Spar*", "Rib*"]
+## The shell's rooms: [GLB folder, zone, frame offset, frame pitch, visibility range m] (KranichShell; the offsets put the
+## skin shader's rivet rows on each room's frames, tools_src/blender/world/kranich_shell.py)
+const SHELL_ROOMS: Array = [
+	["kranich_bay", "A_BOMBENSCHACHT", 0.75, 1.5, 95.0], ["kranich_body", "B_MITTELRUMPF", 0.75, 1.5, 95.0],
+	["kranich_wing_l", "C_FLUEGEL_L", -9.0, 4.0 / 3.0, 95.0], ["kranich_wing_r", "C_FLUEGEL_R", 9.0, 4.0 / 3.0, 95.0],
+	["kranich_nacelle", "D_TRIEBWERK", 0.5, 1.5, 95.0], ["kranich_kanzel", "E_KANZEL", 0.5, 1.5, 95.0],
+	["kranich_cockpit", "F_COCKPIT", 0.25, 1.5, 95.0]]
 
 
 func setup_tables() -> void:
@@ -109,13 +122,17 @@ func setup_tables() -> void:
 		"furniture": "furniture", "deck": "steel_grate", "grey": "grey_paint", "lead": "lead", "glass": "glass", "beam": "beam",
 		"machine": "machine_grey", "olive": "feldgrau", "rail": "iron", "roof": "steel", "planks": "planks", "dirt": "dirt", "salt": "concrete",
 	}
-	mat_rules = [["Deck*", "steel_grate"], ["Rib*", "iron"], ["Spar*", "iron"], ["Rack*", "iron"], ["Hull*", "steel"], ["Salt*", "concrete"]]
+	mat_rules = [["Deck*", "steel_grate"], ["Rib*", "iron"], ["Spar*", "iron"], ["Rack*", "iron"], ["Hull*", "steel"], ["Salt*", "concrete"],
+		["Closet*", "grey_paint"]]
 	hide = ["NavBlock*", "Rack*", "Seat*", "Bunk*", "Station*", "Core*", "Kettle*", "Dio*", "Salt*", "Hangar*", "Flag*"]
+	# T-147: the shell (KranichShell, the Blender-built frames and skin) is what you see; the flat walls, lids, the deck,
+	# the old rib posts and the glass box keep their colliders (the navmesh is baked from them) and lose their meshes
+	hide.append_array(SHELL_HIDDEN)
 	sky_top = Color(0.004, 0.005, 0.012)
 	sky_horizon = Color(0.03, 0.035, 0.06)
 	ambient = Color(0.3, 0.2, 0.2)
 	fog_color = Color(0.06, 0.05, 0.06)
-	moon_rot = Vector3(-30, -160, 0)
+	moon_rot = Vector3(-27, -27, 0)   # the moon high ahead to port: in the flight deck's glass and its brow (T-147)
 
 
 # ================================================================== geometry
@@ -241,68 +258,89 @@ func _diorama() -> void:
 # ================================================================== dressing + lights
 
 func build_dressing() -> void:
-	# the hull's inner skin: red emergency lamps that never go out, the galley's warmth, the core's violet,
-	# the blisters' perspex domes, the cockpit glass's night, the racks' casings with their chalk
-	for p: Vector3 in [Vector3(0, CEIL_BAY - 0.3, 4), Vector3(0, CEIL_BAY - 0.3, 20), Vector3(-30, CEIL_WING - 0.2, 37), Vector3(30, CEIL_WING - 0.2, 37),
-			Vector3(-46, CEIL_WING - 0.2, 37), Vector3(46, CEIL_WING - 0.2, 37), Vector3(-37, CEIL_WING - 0.2, 54), Vector3(37, CEIL_WING - 0.2, 54)]:
-		lamp(p, RED, 0.9, 9.0, 0.12, 0.6)
-	lamp(Vector3(-7, 2.2, 43), INCAND, 1.1, 7.0, 0.05, 0.3)   # the galley kettle's lamp
-	_noshadow(B(Vector3(-77.4, 1.0, 34.5), Vector3(-76.8, 3.0, 41.5), "nachtglas"))   # the core behind its lead glass
-	lamp(Vector3(-74, 2.4, 38), VIOLET, 2.0, 14.0, 0.15, 1.2)
+	# T-147 (UPDATE 09 s5.3): the shell (frames, riveted skin, stringers, bulkheads, floors) is KranichShell's GLBs,
+	# the outside is FlightSky; the zones' pieces, fixtures and lights are detail_map04b.gd
+	# (loaded, not referenced by class: FlightSky uses autoloads, which a --script run cannot compile against)
+	var shell: Node3D = Node3D.new()
+	shell.set_script(load("res://gravelight/world/map04/kranich_shell.gd"))
+	shell.name = "Shell"
+	shell.set("rooms", SHELL_ROOMS)
+	extra_root_nodes.append(shell)
+	var sky: Node3D = Node3D.new()
+	sky.set_script(load("res://gravelight/world/map04/flight_sky.gd"))
+	sky.name = "FlightSky"
+	extra_root_nodes.append(sky)
+	Detail.dress_all(self)
+	power("F_COCKPIT", Vector3(0, 1.4, 72.7), 10.0, 0.9, Color(0.5, 0.9, 0.6))   # the instrument glow
 	fog("CoreHeat", Vector3(-70, 2.0, 40), Vector3(16, 4.0, 30), 0.05, Color(0.5, 0.35, 0.7), Color(0.08, 0.02, 0.12))
-	var k: Node3D = Props.group(dress, "Blisters", Vector3(0, 0, 0))
-	k.set_meta("keep", true)
-	for bx: float in [56.0, 62.0, 68.0, 74.0]:
-		var dome: MeshInstance3D = MeshInstance3D.new()
-		var sm: SphereMesh = SphereMesh.new()
-		sm.radius = 1.6
-		sm.height = 3.2
-		dome.mesh = sm
-		dome.position = Vector3(bx, 1.2, 24.0)
-		dome.material_override = Mats.get_mat("glass")
-		dome.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		k.add_child(dome)
-	# the London window: the aft dome's sky plate (a dark plane far below and behind, toggled violet by the beat)
-	var ld: Node3D = Props.group(dress, "LondonPlate", Vector3(74, -40, -120))
-	ld.set_meta("keep", true)
-	Props.block(ld, Vector3(-60, -0.5, -60), Vector3(60, 0, 60), "concrete")
-	for i: int in 24:
-		var hx: float = -50.0 + 4.3 * float(i)
-		Props.block(ld, Vector3(hx, 0, -6 + float(i % 5) * 2.0), Vector3(hx + 2.2, 1.5 + float((i * 7) % 5) * 0.9, -4 + float(i % 5) * 2.0), "grey_paint")
-	# the casings with the chalk marks (the BombRack nodes own the gameplay; the mesh is dressing)
-	for i: int in 3:
-		var z: float = 6.0 + 6.0 * float(i)
-		for sx: float in [-5.6, 5.6]:
-			Props.cyl(dress, Vector3(sx, 1.1, z), 0.45, 2.2, "steel", Vector3(90, 0, 0))
-	# the wing diorama for the crash: a flat wing, kept so the fx can slide it
+	# the wing diorama for the crash: a flat wing, kept so the fx can slide it (FlightSky hides it until the crash)
 	var wd: Node3D = Props.group(dress, "WingDiorama", Vector3(0, DIO_Y + 14.0, -130))
 	wd.set_meta("keep", true)
 	Props.block(wd, Vector3(-30, 0, -8), Vector3(30, 2.0, 8), "steel")
 	Props.block(wd, Vector3(-8, 0, -14), Vector3(8, 4.0, 14), "steel")
 	for ix: float in [-22.0, -12.0, 12.0, 22.0]:
 		Props.cyl(wd, Vector3(ix, 2.6, 0), 1.6, 3.5, "steel")
-	# power lights (the aux bus): pendants in the body and the bay, the wing's work lights, the room's floods
-	for zp: Array in [
-			["A_BOMBENSCHACHT", Vector3(0, CEIL_BAY - 0.6, 8)], ["A_BOMBENSCHACHT", Vector3(0, CEIL_BAY - 0.6, 18)],
-			["B_MITTELRUMPF", Vector3(0, CEIL_BODY - 0.6, 30)], ["B_MITTELRUMPF", Vector3(0, CEIL_BODY - 0.6, 42)], ["B_MITTELRUMPF", Vector3(0, CEIL_BODY - 0.6, 51)],
-			["C_FLUEGEL_L", Vector3(-20, CEIL_WING - 0.3, 37)], ["C_FLUEGEL_L", Vector3(-40, CEIL_WING - 0.3, 37)],
-			["C_FLUEGEL_R", Vector3(20, CEIL_WING - 0.3, 37)], ["C_FLUEGEL_R", Vector3(40, CEIL_WING - 0.3, 37)],
-			["D_TRIEBWERK", Vector3(-65, CEIL_ROOM - 0.8, 32)], ["D_TRIEBWERK", Vector3(-65, CEIL_ROOM - 0.8, 50)], ["D_TRIEBWERK", Vector3(-37, CEIL_WING - 0.3, 54)],
-			["E_KANZEL", Vector3(65, CEIL_ROOM - 0.8, 32)], ["E_KANZEL", Vector3(65, CEIL_ROOM - 0.8, 50)], ["E_KANZEL", Vector3(37, CEIL_WING - 0.3, 54)],
-			["F_COCKPIT", Vector3(0, CEIL_ROOM - 0.8, 60)], ["F_COCKPIT", Vector3(0, 1.4, 71)]]:
-		var zone: String = str(zp[0])
-		var pos: Vector3 = zp[1]
-		if zone == "F_COCKPIT" and pos.y < 2.0:
-			power(zone, pos, 10.0, 0.9, Color(0.5, 0.9, 0.6))   # the instrument glow
-		elif zone.begins_with("C_") or pos.y < CEIL_WING:
-			power(zone, pos, 12.0, 0.9, INCAND)
-		else:
-			pendant(zone, pos, pos.y + 0.6, "enamel_green", 1.1)
-	label("BOMBENSCHACHT", Vector3(0, CEIL_BAY - 0.5, 23.7), 180.0, 40)
-	label("MITTELRUMPF", Vector3(0, CEIL_BODY - 0.4, 24.3), 0.0, 40)
-	label("TRIEBWERK · BACKBORD", Vector3(-52.3, 2.6, 36), 90.0, 36)
-	label("KANZEL", Vector3(52.3, 2.6, 36), -90.0, 36)
-	label("FLUGDECK", Vector3(0, CEIL_ROOM - 0.5, 54.3), 0.0, 40)
+
+
+## T-147: every light carries a `zone` meta (contract C4: <= 6 shadowed per zone); the swinging bulbs go under their
+## power light (dark until the aux bus is thrown); the batches get a visibility range (the far rooms are not drawn).
+func _finish_lights() -> void:
+	var lights: Array[Node] = map_root.find_children("*", "Light3D", true, false)
+	var shadowed: Dictionary = {}
+	for n: Node in lights:
+		var l: Light3D = n as Light3D
+		if not l.has_meta("zone"):
+			l.set_meta("zone", StringName(_zone_of(l.global_position if l.is_inside_tree() else _pos_in_root(l))) if not (l is DirectionalLight3D) else &"SKY")
+		if l is OmniLight3D:
+			(l as OmniLight3D).omni_shadow_mode = OmniLight3D.SHADOW_CUBE   # Compatibility has no dual paraboloid
+		if l.shadow_enabled and not (l is DirectionalLight3D):
+			var zk: String = str(l.get_meta("zone"))
+			shadowed[zk] = int(shadowed.get(zk, 0)) + 1
+	print("  shadowed lights per zone: %s" % str(shadowed))
+	for n2: Node in dress.find_children("SwingBulb*", "Node3D", true, false):
+		var zone: String = str(n2.get_meta("power_zone", ""))
+		if zone == "":
+			continue
+		var best: Node3D = null
+		var bd: float = 1e9
+		var at: Vector3 = (n2 as Node3D).position
+		for n3: Node in lights:
+			if n3.is_in_group(&"power_lights") and str(n3.get_meta("zone", "")) == zone:
+				var d: float = (n3 as Node3D).position.distance_to(at)
+				if d < bd:
+					bd = d
+					best = n3 as Node3D
+		if best != null and bd < 2.5:
+			var xf: Transform3D = (n2 as Node3D).transform
+			n2.get_parent().remove_child(n2)
+			best.add_child(n2)
+			(n2 as Node3D).transform = best.transform.affine_inverse() * xf
+	var batches: Node = map_root.get_node_or_null("StaticBatches")
+	if batches != null:
+		for c: Node in batches.get_children():
+			var mi: MeshInstance3D = c as MeshInstance3D
+			if mi != null and mi.mesh != null and mi.mesh.get_aabb().size.length() < 60.0:
+				mi.visibility_range_end = 80.0
+				mi.visibility_range_end_margin = 6.0
+
+
+func _pos_in_root(n: Node3D) -> Vector3:
+	return _xform_to_root(n).origin
+
+
+## The zone a point lies in (the zone boxes), else the nearest box's zone.
+func _zone_of(p: Vector3) -> String:
+	var best: String = start_zone
+	var bd: float = 1e9
+	for zb: Array in zone_boxes:
+		var lo: Vector3 = zb[1]
+		var hi: Vector3 = zb[2]
+		var q: Vector3 = Vector3(clampf(p.x, lo.x, hi.x), clampf(p.y, lo.y, hi.y), clampf(p.z, lo.z, hi.z))
+		var d: float = q.distance_to(p)
+		if d < bd:
+			bd = d
+			best = str(zb[0])
+	return best
 
 
 func build_gameplay_extra() -> void:
@@ -335,3 +373,8 @@ func build_gameplay_extra() -> void:
 	cam.name = "LondonCam"
 	cam.position = Vector3(74, 1.5, 25.4)
 	gameplay.add_child(cam)
+	# T-147: the breach panels show the night through the shell's holes when they blow
+	for bp2: Node in gameplay.get_children():
+		if bp2.name.begins_with("Breach"):
+			bp2.set("see_through", true)
+	_finish_lights()

@@ -691,6 +691,17 @@
       "res": "1k",
       "tex_px": 512,
       "note": "U09 Act I (T-146): wall lamps on the halls and the platform"
+    },
+    {
+      "source": "polyhaven",
+      "id": "blue_metal_plate",
+      "kind": "texture",
+      "res": "1k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "kranich_skin",
+      "note": "painted, scuffed steel sheet: the Kranich's inner skin and frames (T-147; the rivet rows and panel seams are drawn on top by kranich_skin.gdshader)",
+      "tile_m": 2.5
     }
   ]
 }

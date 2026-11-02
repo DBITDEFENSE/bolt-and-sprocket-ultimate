@@ -912,6 +912,38 @@
       "frost": 0.1,
       "frost_up": 0.6,
       "note": "U09 Act I, Werk Thalbach (T-146): the housing blocks' and the parish house's rendered facades"
+    },
+    "kranich_skin": {
+      "set": "polyhaven/blue-metal-plate",
+      "id": "blue_metal_plate",
+      "tile_m": 2.5,
+      "tint": [
+        0.62,
+        0.66,
+        0.6
+      ],
+      "rough": [
+        0.35,
+        0.8
+      ],
+      "grime": 0.3,
+      "note": "the Kranich's painted steel (T-147): the base the skin shader (gravelight/world/map04/kranich_skin.gdshader) desaturates to the RLM grey-green primer and draws the rivet rows on; this plain entry serves the GLB slot lib_kranich_skin"
+    },
+    "deck_plate": {
+      "set": "polyhaven/metal-plate",
+      "id": "metal_plate",
+      "tile_m": 1.0,
+      "tint": [
+        0.62,
+        0.62,
+        0.6
+      ],
+      "rough": [
+        0.4,
+        0.9
+      ],
+      "grime": 0.35,
+      "note": "worn diamond plate: the Kranich's floor plates in the engine room, the cockpit and the walkways (T-147)"
     }
   },
   "generator": {

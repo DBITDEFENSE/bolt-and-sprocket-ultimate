@@ -703,10 +703,10 @@
         {"name": "D_core", "pos": [-65.0, 0.0, 38.0], "yaw": 90.0, "pitch": 1.8, "note": "D Triebwerk: the impeller core behind the glass"},
         {"name": "D_corner", "pos": [-70.0, 0.0, 30.0], "yaw": 53.5, "pitch": -7.8, "note": "D Triebwerk: the SW corner"},
         {"name": "E_wide", "pos": [53.0, 0.0, 36.0], "yaw": -57.1, "pitch": 1.1, "note": "E Kanzel: from the door toward the blisters"},
-        {"name": "E_london", "pos": [70.0, 0.0, 34.0], "yaw": -22.8, "pitch": -1.2, "note": "E Kanzel: the aft blister, the London window"},
+        {"name": "E_london", "pos": [74.0, 0.0, 26.3], "yaw": 0.0, "pitch": -24.0, "note": "E Kanzel: through the aft blister, back and down (the London window; re-aimed T-147)"},
         {"name": "E_corner", "pos": [70.0, 0.0, 50.0], "yaw": -135.0, "pitch": -6.9, "note": "E Kanzel: the NE corner"},
         {"name": "F_wide", "pos": [-21.0, 0.0, 56.0], "yaw": -123.7, "pitch": 0.9, "note": "F Cockpit: from the port door across the flight deck"},
-        {"name": "F_glass", "pos": [0.0, 0.0, 60.0], "yaw": 180.0, "pitch": 0.8, "note": "F Cockpit: the seats and the glass"},
+        {"name": "F_glass", "pos": [0.0, 0.0, 63.4], "yaw": 180.0, "pitch": 7.0, "note": "F Cockpit: the cradle, the seats, the glass and its brow with the night outside (re-aimed T-147)"},
         {"name": "F_cradle", "pos": [3.0, 0.0, 62.0], "yaw": 143.1, "pitch": -9.3, "note": "F Cockpit: the autopilot's cradle"}
       ]
     },

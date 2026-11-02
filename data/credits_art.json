@@ -494,6 +494,21 @@
    ]
   },
   {
+   "folder": "assets/third_party/polyhaven/blue-metal-plate",
+   "source": "polyhaven",
+   "id": "blue-metal-plate",
+   "title": "Blue Metal Plate",
+   "author": "Rob Tuytel",
+   "url": "https://polyhaven.com/a/blue_metal_plate",
+   "license": "CC0",
+   "credit": "\"Blue Metal Plate\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/blue_metal_plate_albedo.png",
+    "textures/blue_metal_plate_normal.png",
+    "textures/blue_metal_plate_orm.png"
+   ]
+  },
+  {
    "folder": "assets/third_party/polyhaven/brown-mud-03",
    "source": "polyhaven",
    "id": "brown-mud-03",
@@ -1788,6 +1803,17 @@
    ],
    "folders": [
     "assets/third_party/polyhaven/beige-wall-001"
+   ]
+  },
+  {
+   "credit": "\"Blue Metal Plate\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Blue Metal Plate"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/blue-metal-plate"
    ]
   },
   {
