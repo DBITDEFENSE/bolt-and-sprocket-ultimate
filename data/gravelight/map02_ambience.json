@@ -11,8 +11,8 @@
   "scatter_radius": 70.0, "return_after_quiet": 35.0, "sound": "amb_m2_gull", "flap_sound": "amb_crow_flap"
  },
  "lighthouse": {
-  "node": "Lighthouse", "lamp_height": 17.3, "period_s": 9.0, "off_round": 10, "beam_length": 220.0, "beam_width": 9.0,
-  "beam_intensity": 0.3, "light_energy": 4.0, "light_range": 26.0, "glow_size": 6.0, "color": "#fff1cf",
+  "node": "Lighthouse", "lamp_height": 17.3, "period_s": 9.0, "off_round": 10, "beam_length": 220.0, "beam_width": 6.0,
+  "beam_intensity": 0.1, "light_energy": 4.0, "light_range": 26.0, "glow_size": 6.0, "color": "#fff1cf",
   "foghorn": {"first_after": [60, 120], "interval": [150, 240], "sound": "amb_m2_foghorn", "db": -4.0}
  },
  "bell_tower": {"pivot": "CliffBellPivot", "flag": "egg_lf_started", "sound": "amb_church_bell_far", "db": 2.0, "wind_swing": 0.5, "toll_swing": 1.6},

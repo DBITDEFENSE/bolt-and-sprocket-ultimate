@@ -1334,6 +1334,7 @@ func build_dressing() -> void:
 	_tagged(_dress_u10_cannery, "B")
 	_tagged(_dress_u10_penhall, "")
 	_tagged(_dress_u10_tower, "G")
+	_tagged(_dress_u10_lowerpens, "F")
 	_dress_windows()
 	_dress_doors()
 	_dress_treads()
@@ -2818,9 +2819,14 @@ func _dress_u10_quay() -> void:
 		B(Vector3(bx, 0, 15.6), Vector3(bx + 0.14, 0.34, 15.9), "leather")
 	var ch: Node3D = Props.group(dress, "SeaChart", Vector3(14.2, 0, 10.16), 180.0)
 	Props.block(ch, Vector3(-0.8, 1.25, -0.02), Vector3(0.8, 2.3, 0.0), "paper_old")
-	for k: int in 7:
-		Props.block(ch, Vector3(-0.75 + k * 0.25, 1.3, -0.025), Vector3(-0.745 + k * 0.25, 2.25, -0.02), "black_paint", false)
-	Props.block(ch, Vector3(-0.3, 1.55, -0.026), Vector3(0.1, 1.95, -0.024), "red_paint", false)
+	# the coast down the left, soundings in rows, the breakwater, a pencilled course and the pen marked
+	Props.block(ch, Vector3(-0.78, 1.27, -0.022), Vector3(-0.42, 2.28, -0.021), "stucco", false)
+	for k: int in 5:
+		for j: int in 6:
+			Props.block(ch, Vector3(-0.3 + j * 0.17, 1.4 + k * 0.17, -0.023), Vector3(-0.27 + j * 0.17, 1.41 + k * 0.17, -0.022), "black_paint", false)
+	Props.obox(ch, Vector3(-0.15, 1.95, -0.023), Vector3(0.5, 0.012, 0.002), "black_paint", Vector3(0, 0, 8))
+	Props.obox(ch, Vector3(0.2, 1.62, -0.023), Vector3(0.9, 0.006, 0.002), "red_paint", Vector3(0, 0, -24))
+	Props.block(ch, Vector3(-0.47, 1.83, -0.024), Vector3(-0.4, 1.9, -0.023), "red_paint", false)
 	B(Vector3(17.3, 0.9, 16.5), Vector3(17.7, 1.75, 16.68), "yellow_paint")
 	var rs: Node3D = Props.group(dress, "Wireless", Vector3(10.85, 0.8, 16.35), 90.0)
 	Props.block(rs, Vector3(-0.22, 0, -0.13), Vector3(0.22, 0.28, 0.13), "bakelite")
@@ -2985,3 +2991,23 @@ func _dress_u10_tower() -> void:
 func _fish_crate(pos: Vector3, yaw: float, seed_v: int) -> void:
 	var g: Node3D = DetailMap02.fish_crate(dress, pos, yaw, seed_v)
 	_bake_local(g.get_node("Box") as Node3D, false)
+
+
+## The lower pens' columns (T-154): from the pump deck they stood in front of the pumps as plain grey boxes (the U09
+## captures' "pump reads as a box"): a plinth, chamfered arrises, a painted band with the column's number, a cable
+## conduit up the back. Dressing round the unchanged colliders.
+func _dress_u10_lowerpens() -> void:
+	var n: int = 1
+	for cx: float in [38.0, 46.0]:
+		for cz: float in [58.0, 66.0, 74.0]:
+			var c: Vector3 = Vector3(cx, LY, cz)
+			B(c + Vector3(-0.48, 0, -0.48), c + Vector3(0.48, 0.22, 0.48), "bunker_concrete")
+			for sx: float in [-1.0, 1.0]:
+				for sz: float in [-1.0, 1.0]:
+					Props.obox(dress, c + Vector3(sx * 0.4, 1.35, sz * 0.4), Vector3(0.09, 2.3, 0.09), "concrete", Vector3(0, 45, 0))
+			_noshadow(B(c + Vector3(-0.41, 1.0, -0.41), c + Vector3(0.41, 1.35, 0.41), "enamel_white", false))
+			_noshadow(B(c + Vector3(-0.415, 1.08, -0.415), c + Vector3(0.415, 1.12, 0.415), "black_paint", false))
+			for face: Array in [[Vector3(0, 1.55, -0.42), 0.0], [Vector3(0, 1.55, 0.42), 180.0]]:
+				_label("S %d" % n, c + (face[0] as Vector3), float(face[1]), 30, Color(0.95, 0.93, 0.85, 0.9))
+			Props.pipe(dress, c + Vector3(0.3, 0.22, 0.43), c + Vector3(0.3, 2.65, 0.43), 0.035, "grey_paint")
+			n += 1

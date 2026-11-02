@@ -1467,10 +1467,11 @@ func _make_mist() -> GPUParticles3D:
 	pm.gravity = Vector3(0, -4.0, 1.2)
 	pm.scale_min = 0.6
 	pm.scale_max = 1.8
-	pm.color_ramp = Props._ramp_tex([[0.0, Color(0.85, 0.9, 0.95, 0.0)], [0.12, Color(0.85, 0.9, 0.95, 0.5)], [1.0, Color(0.8, 0.85, 0.9, 0.0)]])
+	pm.color_ramp = Props._ramp_tex([[0.0, Color(0.85, 0.9, 0.95, 0.0)], [0.15, Color(0.85, 0.9, 0.95, 0.22)], [1.0, Color(0.8, 0.85, 0.9, 0.0)]])
+	pm.scale_curve = Props._curve_tex([[0.0, 0.4], [1.0, 1.0]])
 	p.process_material = pm
 	var q: QuadMesh = QuadMesh.new()
-	q.size = Vector2(0.9, 0.9)
+	q.size = Vector2(2.2, 2.2)
 	q.material = Props._particle_mat(Color(1, 1, 1), Color(1, 1, 1), 0.0, false)
 	p.draw_pass_1 = q
 	p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -1526,7 +1527,7 @@ func _beam(parent: Node3D, axis: Vector3, length: float, width: float, intensity
 	m.set_shader_parameter("intensity", intensity_v)
 	m.set_shader_parameter("length_falloff", 1.4)
 	m.set_shader_parameter("edge_power", 2.6)
-	m.set_shader_parameter("near_fade", 12.0)
+	m.set_shader_parameter("near_fade", 30.0)
 	mi.material_override = m
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mi.extra_cull_margin = 40.0
