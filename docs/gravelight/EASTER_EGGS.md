@@ -684,7 +684,10 @@ wipe ends the match (it is the finale).
 **Bots (§9 schema):** every step has a `bot_task`: `carry` for the coffins (s0a to the hook, s1 to the dump; a bot already
 carrying goes straight to the delivery), `interact_sequence` for the switch, the key slot and the curtain lever and the
 cipher (input method `bot_set`, `needs: ["cipher"]` learned from the three radios, `think_s: [20, 40]`: the solver waits
-before its first input), `collect` for the radios and the pages, `carry` for the Undertow's parts, `hold_zone` with
+before its first input), `collect` for the radios and the pages (no `find`: the squad knows where the sets crackle and Brecht's page spots; bots
+do not search, and Full Partner stalled on not_found with it), `carry` for the Undertow's parts, `hold_zone` with
 anchors for the three diesel holds and the sail (anchors in groups `diesel_<id>` and `uboat_sail`, `start: interact`),
-`escort` for the boss. Player-only: only the cutscene (`s10_ending`). Smoke: `smoke_letzte_fahrt` (Full Partner, one
+and for s6 a `carry` of the key (group `boat_keys`) to the key slot: the bots fight the captain as they fight anything,
+and the key, when he drops it or it floats up after the failsafe, is the task (an escort ended with the fight and left
+the key lying). Player-only: only the cutscene (`s10_ending`). Smoke: `smoke_letzte_fahrt` (Full Partner, one
 run per process, the forcing is listed in its header).

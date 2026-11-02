@@ -1,7 +1,7 @@
 class_name BallastDump
 extends Interactable
-## Ballast v2's second destination (UPDATE 10 contract C2, design section 3, DECISIONS T-153): the sea stairs on the
-## quay's north parapet. A player carrying a BallastCoffin holds [interact] to put it over the side: the coffin is
+## Ballast v2's second destination (UPDATE 10 contract C2, design section 3, DECISIONS T-153): the quay's north
+## parapet by the sea stairs (the landing stages are outside the barricade windows, so the coffins go over the parapet). A player carrying a BallastCoffin holds [interact] to put it over the side: the coffin is
 ## gone (it respawns on a pallet later), `ballast_dumped` counts up (a GameState flag holding the count), the
 ## Operator is snippy and the next round brings one more Glasshide (TotenhafenBallast listens to
 ## GLBus.ballast_dumped). Letzte Fahrt needs three dumped; the third leaves the Undertow's shard on the stairs.
@@ -68,7 +68,7 @@ func interact(player: Player) -> void:
 ## `n` coffins have gone over (every peer runs it; the host sets the flag).
 func dumped(n: int) -> void:
 	count = n
-	AudioDirector.play_3d("water_splash", global_position + Vector3(0, -1.0, -1.5), 2.0, 0.05)
+	AudioDirector.play_3d("water_splash", global_position + Vector3(0, -2.0, -2.5), 2.0, 0.05)
 	AudioDirector.play_3d("board_slam", global_position, -4.0, 0.1)
 	if Net.is_authority():
 		GameState.set_flag(flag, count)

@@ -54,7 +54,7 @@ func test_lines_exist() -> void:
 
 func test_dump_and_respawn_data() -> void:
 	assert_eq((b["dump"] as Array).size(), 3, "the dump has a position")
-	assert_lt(float((b["dump"] as Array)[2]), 0.0, "the dump is on the sea stairs (north of the parapet, z < 0)")
+	assert_lt(float((b["dump"] as Array)[2]), 3.0, "the dump is at the quay parapet by the sea stairs (z < 3)")
 	assert_gt(float(b["respawn_seconds"]), 0.0, "gone coffins come back")
 	assert_gte((b["coffin_spots"] as Array).size() + (b["pallet_spots"] as Array).size(), int(b["max_coffins"]) + 1, "more pallets than coffins (a free one to respawn on)")
 	assert_gt(int(GLData.table("economy").get("ballast_load_bonus", 0)), 0, "a load pays Scrip")

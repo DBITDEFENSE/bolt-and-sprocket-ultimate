@@ -4,7 +4,7 @@ extends RefCounted
 ## Searchlight, the Crane Drop and its lever in the crane office, and the economy pass's two new quay spawn points
 ## (C2 "two new quay spawn points"; named Ground_A_QUAY_* so they rise out of the water like the first two).
 
-const QUAY_SPAWNS: Array = [Vector3(17.0, 0.0, 1.5), Vector3(6.5, 0.0, 1.5)]
+const QUAY_SPAWNS: Array = [Vector3(20.5, 0.0, 1.5), Vector3(6.5, 0.0, 1.5)]
 
 
 static func attach(t: Totenhafen) -> void:

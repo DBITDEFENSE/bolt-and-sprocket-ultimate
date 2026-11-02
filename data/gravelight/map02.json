@@ -440,21 +440,21 @@
         "BLST-07"
       ]
     ],
-    "_doc_v2": "Ballast v2 (C2, T-153): a carrier's WeaponHolder is limited to melee and the pistol slot (set_carry_limit). Two destinations: the crane hook (ballast_loaded counter, Operator OPR_BALLAST_LOAD_*, +economy.json ballast_load_bonus Scrip to the carrier) and the sea-stairs dump (BallastDump at dump; ballast_dumped counter, Operator OPR_BALLAST_DUMP_*, the next round +1 glasshide via RoundManager.extra_spawn). A delivered coffin respawns on a free pallet from coffin_spots + pallet_spots (the extra pallets beside the crane: no baked coffin stands on them) after respawn_seconds, so both choices stay open. shard_after_dumps: the Undertow's shard appears on the sea stairs after that many dumps.",
+    "_doc_v2": "Ballast v2 (C2, T-153): a carrier's WeaponHolder is limited to melee and the pistol slot (set_carry_limit). Two destinations: the crane hook (ballast_loaded counter, Operator OPR_BALLAST_LOAD_*, +economy.json ballast_load_bonus Scrip to the carrier) and the dump at the quay parapet by the sea stairs (BallastDump at dump; the landing stages themselves are outside the barricade windows, so the dump is on the quay side; ballast_dumped counter, Operator OPR_BALLAST_DUMP_*, the next round +1 glasshide via RoundManager.extra_spawn). A delivered coffin respawns on a free pallet from coffin_spots + pallet_spots (the extra pallets beside the crane: no baked coffin stands on them) after respawn_seconds, so both choices stay open. shard_after_dumps: the Undertow's shard appears on the sea stairs after that many dumps.",
     "dump": [
-      10.0,
+      14.5,
       0.0,
-      -1.4
+      1.2
     ],
-    "dump_yaw": 180.0,
+    "dump_yaw": 0.0,
     "dump_seconds": 1.5,
     "respawn_seconds": 20.0,
     "max_coffins": 3,
     "shard_after_dumps": 3,
     "shard_spot": [
-      10.9,
+      12.9,
       0.0,
-      -2.7
+      1.3
     ],
     "squad_load": [
       "DUT_BALLAST_LOAD_01",
