@@ -69,6 +69,12 @@
   "sea_node": "SeaWater", "dock_node": "TideWater", "sea_amp": [0.45, 0.95], "dock_amp": [0.18, 0.42],
   "lightning_every": [[12, 28], [4, 10]], "lightning_peak": [1.0, 1.6], "rain_group": "m2_rain_glass", "rain": [0.35, 1.0]
  },
+ "arrival": {
+  "_doc": "UPDATE 10 section 9 (T-170, THE_BAR row 22): the opening you remember. The first step onto the quay (the local survivor moves first_move_m from where they stood) sets off the harbour siren from the cliff posts and, flash_after seconds later, the storm's lightning over the pen mouth; once a match, up to max_round beat rounds (a campaign arrival gets it too). No new systems: far_sound and the storm kind's LightningFlash nodes.",
+  "first_move_m": 2.0, "max_round": 3,
+  "siren": {"points": [[-36, 52, -20], [70, 52, 0]], "sound": "amb_m2_siren", "db": -3.0},
+  "flash_after": 1.4
+ },
  "power_spectacle": {
   "pumps": [[37, -3, 78], [47, -3, 78]], "pump_sound": "amb_m2_pump_start", "pump_db": 3.0, "shake": 0.25, "shake_radius": 30.0,
   "drain_node": "TideWater", "drain_m": 0.4, "drain_s": 10.0,

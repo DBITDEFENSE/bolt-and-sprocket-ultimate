@@ -2526,6 +2526,70 @@ func _uboat_white() -> void:
 	_count("uboat_white")
 
 
+# ================================================================== arrival: the opening you remember (T-170, THE_BAR row 22)
+
+## UPDATE 10 section 9 (T-170): the first step onto the quay. Once a match, when the local survivor has moved
+## `first_move_m` from where they stood at setup (a campaign squad arriving at any round gets it too, up to
+## `max_round` beat rounds), the harbour siren sounds from the cliff posts and the storm's lightning strikes over the
+## pen mouth `flash_after` seconds later; an optional `vo_line` (none written yet) would follow. Presentation only.
+var arrival_done: bool = false
+var _arrival_from: Vector3 = Vector3.INF
+
+
+func _kinds_setup_arrival() -> void:
+	if not cfg.has("arrival"):
+		return
+	var c: Dictionary = cfg["arrival"]
+	if round_base >= 0 and beat_round(round_now) > int(c.get("max_round", 3)):
+		arrival_done = true
+	_ticks.append(_tick_arrival)
+	debug_kinds["arrival"] = func() -> void:
+		arrival_done = false
+		_arrival()
+
+
+func _tick_arrival(_delta: float) -> void:
+	if arrival_done:
+		return
+	var p: Player = null
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		if n is Player and bool(n.get("is_local")) and not bool(n.get("is_bot")):
+			p = n as Player
+			break
+	if p == null:
+		return
+	if _arrival_from == Vector3.INF:
+		_arrival_from = p.global_position
+		return
+	var d: Vector3 = p.global_position - _arrival_from
+	d.y = 0.0
+	if d.length() >= float(cfg["arrival"].get("first_move_m", 2.0)):
+		_arrival()
+
+
+func _arrival() -> void:
+	if arrival_done:
+		return
+	arrival_done = true
+	var c: Dictionary = cfg["arrival"]
+	var sr: Dictionary = c.get("siren", {})
+	for v: Variant in sr.get("points", []):
+		far_sound(str(sr.get("sound", "")), _v3(v), float(sr.get("db", -3.0)))
+	_beat_after(float(c.get("flash_after", 1.2)), _arrival_flash)
+	if str(c.get("vo_line", "")) != "":
+		_beat_after(float(c.get("vo_after", 5.0)), func() -> void: GLVO.play_local(StringName(str(c["vo_line"]))))
+	_count("arrival")
+
+
+## The storm's lightning strikes now: every LightningFlash the storm kind found fires at its next frame.
+func _arrival_flash() -> void:
+	for e: Array in _lightnings:
+		var lf: LightningFlash = e[0] as LightningFlash
+		if is_instance_valid(lf):
+			lf._next = 0.0
+	_count("arrival_flash")
+
+
 # ---- U10 Kaltenbrunn ----------------------------------------------------------------------------------------------
 # UPDATE 10 section 5 (DECISIONS T-161): the kinds Kaltenbrunn's file (data/gravelight/map01_ambience.json) adds on top
 # of Map 0's schema. Each is a data block that defaults to off when its key is absent, so Map 0 is unchanged:

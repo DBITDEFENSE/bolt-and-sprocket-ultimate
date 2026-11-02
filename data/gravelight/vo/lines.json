@@ -12921,5 +12921,90 @@
     "speaker": "PEG",
     "category": "LF_TELEGRAM",
     "text": "Basel. Hale. On the next tide. My orders said retrieve the tokens. I'm keeping this instead."
+  },
+  "JES_PEOPLE_TALK_01": {
+    "speaker": "JES",
+    "category": "PEOPLE_TALK",
+    "text": "Zahlmeistersmaat Jessen. The window is open, the books are kept. I was told to keep the pay window until relieved, and I keep what I am told."
+  },
+  "JES_PEOPLE_TALK_02": {
+    "speaker": "JES",
+    "category": "PEOPLE_TALK",
+    "text": "The harbour master drew the last pay before he went down to the pens. He took the ledger page with him, and I cannot close the week without it."
+  },
+  "JES_PEOPLE_ASK_01": {
+    "speaker": "JES",
+    "category": "PEOPLE_ASK",
+    "text": "The harbour master's ledger page. He left it in his hut on the quay, by the chart. Bring it to me and I can close the week, and pay out what is owed."
+  },
+  "JES_PEOPLE_THANKS_01": {
+    "speaker": "JES",
+    "category": "PEOPLE_THANKS",
+    "text": "The page. Thank you. ...There. The week is closed, the sums agree. What the harbour owes you, I can pay. Count it, please."
+  },
+  "JES_PEOPLE_ROUND_01": {
+    "speaker": "JES",
+    "category": "PEOPLE_ROUND",
+    "text": "They are on the apron again. I shall stay at the window. The window is my post."
+  },
+  "JES_PEOPLE_DOWN_01": {
+    "speaker": "JES",
+    "category": "PEOPLE_DOWN",
+    "text": "Somebody is down out there! Get them up, I cannot leave the strongbox!"
+  },
+  "JES_PEOPLE_REACT_BALLAST_01": {
+    "speaker": "JES",
+    "category": "PEOPLE_REACT",
+    "text": "You put the Navy's cargo over the side. Three units. I have entered it as lost at sea. ...I did not enter who lost it."
+  },
+  "JES_PEOPLE_REACT_KEY_01": {
+    "speaker": "JES",
+    "category": "PEOPLE_REACT",
+    "text": "That is the Kapitaenleutnant's key. He signed for her in this book. If she sails, I shall sign her out. It is the last thing in this port that can still be done properly."
+  },
+  "HRM_PEOPLE_TALK_01": {
+    "speaker": "HRM",
+    "category": "PEOPLE_TALK",
+    "text": "Night shift, line two. When the doors were chained we were still on the line. I got under the clerk's desk. The others ran for the pens. ...Don't go down to the pens."
+  },
+  "HRM_PEOPLE_TALK_02": {
+    "speaker": "HRM",
+    "category": "PEOPLE_TALK",
+    "text": "Seventy-one hours and five Scrip to show for it. My boy is up in the town with my mother. If the bell rings up there, they are alive. Listen for it."
+  },
+  "HRM_PEOPLE_ASK_01": {
+    "speaker": "HRM",
+    "category": "PEOPLE_ASK",
+    "text": "The lamp from the infirmary. The nurse kept a storm lantern by the end cot. With a light I can see the hall, and I know every sound in it. Bring it and I will tell you where they are."
+  },
+  "HRM_PEOPLE_THANKS_01": {
+    "speaker": "HRM",
+    "category": "PEOPLE_THANKS",
+    "text": "Thank you. Keep your head down a moment. ...Hear that? The belt rattles when they cross it. There. And there."
+  },
+  "HRM_PEOPLE_PING_01": {
+    "speaker": "HRM",
+    "category": "PEOPLE_PING",
+    "text": "Quiet now. Listen. The line is talking. They are coming along the belt, and from the brine tanks."
+  },
+  "HRM_PEOPLE_ROUND_01": {
+    "speaker": "HRM",
+    "category": "PEOPLE_ROUND",
+    "text": "They are coming through the hall again. I will keep still. I am very good at keeping still."
+  },
+  "HRM_PEOPLE_DOWN_01": {
+    "speaker": "HRM",
+    "category": "PEOPLE_DOWN",
+    "text": "Someone is down on the floor! Get them up, please, get them up!"
+  },
+  "JAK_M2_FLOOD_01": {
+    "speaker": "JAK",
+    "category": "M2_FLOOD",
+    "text": "The water is coming in. In the mine we ran from water too. ...Only there was never anywhere to run to. Here there are stairs. Use them."
+  },
+  "JAK_M2_SAIL_01": {
+    "speaker": "JAK",
+    "category": "M2_SAIL",
+    "text": "A boat. I am on a boat. ...Marta would not believe it. Hania would. Hold on to something, the sea is not a coal wagon."
   }
 }

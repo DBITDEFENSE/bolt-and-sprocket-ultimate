@@ -157,6 +157,10 @@ func on_talk(p: Player) -> void:
 					opts.append({"action": &"interact", "label": "GIVE THE %s" % str(fav.get("item_name", "item")).to_upper(), "call": give_item, "enabled": true})
 			Favour.DONE:
 				card.said = str(fav.get("done", ""))
+		# T-170 (UPDATE 10 section 9): a person with a favour reacts to the world too (Jessen at the bank): once the
+		# ask has been seen, the newest reaction's text leads the card
+		if favour != Favour.NONE and str(react.get("said", "")) != "":
+			card.said = "%s\n\n%s" % [str(react["said"]), card.said]
 	card.options = opts
 	_card = card
 	map.add_child(card)
@@ -681,6 +685,9 @@ class FavourItem extends Interactable:
 				_box(Vector3(0.3, 0.5, 0.2), Vector3(0, 0.25, 0), Color(0.22, 0.2, 0.18))
 				_box(Vector3(0.05, 0.9, 0.05), Vector3(0, 0.9, 0), Color(0.55, 0.12, 0.08))
 				_box(Vector3(0.14, 0.06, 0.06), Vector3(0, 1.36, 0), Color(0.75, 0.72, 0.65))
+			"ledger":   # UPDATE 10 s9 (T-170): the harbour master's ledger page on its board, salt-stiff, in the hut
+				_box(Vector3(0.34, 0.03, 0.26), Vector3(0, 0.015, 0), Color(0.3, 0.22, 0.14))
+				_box(Vector3(0.28, 0.012, 0.21), Vector3(0.01, 0.036, 0.005), Color(0.86, 0.82, 0.7))
 			_:
 				_box(Vector3(0.16, 0.04, 0.16), Vector3(0, 0.02, 0), Color(0.18, 0.18, 0.18))
 				_box(Vector3(0.1, 0.2, 0.1), Vector3(0, 0.14, 0), Color(0.9, 0.72, 0.36, 0.7))

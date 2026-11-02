@@ -79,6 +79,7 @@ var _wren_done: bool = false
 var _choice: JakubChoice = null
 var _discounted: Dictionary = {}  # BuyDoor -> its own cost
 var _perk_cd: float = 0.0
+var _flood_said: bool = false      # T-170: his Totenhafen flood line, once
 var _perk_near_done: bool = false
 var _tonic_pending: StringName = &""   # T-127: the tonic he was sent for (&"" none)
 var _cousins_said: bool = false
@@ -255,6 +256,8 @@ func setup(map_root: MapRoot, mode: String, carried: Dictionary, cage_node: Hold
 		GLBus.boss_spawned.connect(_on_boss_spawned)
 		GLBus.power_activated.connect(_on_power)
 		GLBus.player_revived.connect(_on_revived)
+		GLBus.tide_flood_begin.connect(_on_flood)   # T-170: his Totenhafen beats (the first flood, the sail)
+		GLBus.sail_started.connect(_on_sail)
 	var con: Node = get_node_or_null("/root/GLConsole")
 	if con != null and con.has_method("register"):
 		con.call("register", "jakub", _cmd, "jakub status|breakout|join|arm <weapon>|down: Jakub, the prisoner companion (U02 section 6.2)")
@@ -974,6 +977,19 @@ func _on_boss_spawned(enemy_id: StringName) -> void:
 func _on_power() -> void:
 	if state == State.JOINED and _map_key() == "1":
 		_later_say(6.0, "M1_POWER")
+
+
+## T-170 (UPDATE 10 section 9): Totenhafen's beats. The arrival already plays M2_ARRIVE (_join); the first flood he
+## sees plays M2_FLOOD once, the sail (UboatSail.cast_off) M2_SAIL.
+func _on_flood() -> void:
+	if state == State.JOINED and _map_key() == "2" and not _flood_said:
+		_flood_said = true
+		_later_say(3.0, "M2_FLOOD")
+
+
+func _on_sail() -> void:
+	if state == State.JOINED and _map_key() == "2":
+		_later_say(6.0, "M2_SAIL")
 
 
 func _on_revived(who: int, _by: int) -> void:

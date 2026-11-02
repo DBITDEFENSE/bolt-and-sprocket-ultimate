@@ -19,6 +19,7 @@ var _vo: Array[StringName] = []
 func _ready() -> void:
 	ProfileSave.path = "user://_qa_profile_m2world.json"
 	ProfileSave.profile = ProfileSave.new_profile()
+	ProfileSave.profile[JakubCompanion.PROFILE_KEY] = "joined"   # T-170: the profile's Jakub arrives with you (his M2 beats)
 	_map = (load(MAP) as PackedScene).instantiate() as Node3D
 	get_tree().root.add_child.call_deferred(_map)
 	get_tree().set_deferred("current_scene", _map)
@@ -74,6 +75,18 @@ func _run() -> void:
 	_check(letter != null and not letter.visible, "the sailor's letter hidden under the cutter")
 	for id: String in ["INT_M2_HALE_TELEGRAM", "INT_M2_PAYSLIP", "INT_M2_DRAWING", "INT_M2_RATION_BOOK"]:
 		_check(_map.find_child("Story_" + id, true, false) != null, "story prop %s spawned" % id)
+
+	# T-170 (THE_BAR row 22): the first step onto the quay: the harbour siren, then the storm's lightning
+	_check(_n("arrival") == 0, "no arrival beat before anyone moves")
+	if _p != null:
+		await _frames(3)
+		_p.global_position += Vector3(0, 0, 3.0)
+		var lf: LightningFlash = (_amb._lightnings[0][0] as LightningFlash) if _amb._lightnings.size() > 0 else null
+		_check(await _until(func() -> bool: return _n("arrival") == 1, 2.0), "the first step: the harbour siren sounds (arrival %d)" % _n("arrival"))
+		_check(await _until(func() -> bool: return _n("arrival_flash") == 1 and lf != null and (not lf._seq.is_empty() or lf.light_energy > 0.0), 3.0), "and the storm's lightning strikes over the mouth")
+		_p.global_position += Vector3(0, 0, 3.0)
+		await _secs(0.5)
+		_check(_n("arrival") == 1, "once a match")
 
 	# gulls scatter at the first shot
 	var shot_at: Vector3 = (_amb.gulls.crows[0]["node"] as Node3D).global_position + Vector3(4, 0, 6)
@@ -192,7 +205,99 @@ func _run() -> void:
 		await _frames(3)
 		print("[m2world] walked %s -> %s, on floor %s, in players %s" % [p0, _p.global_position, _p.is_on_floor(), _p.is_in_group(&"players")])
 		_check(_amb.footprints_showing() >= 2, "wet footprints behind the player (%d)" % _amb.footprints_showing())
+	await _sendbacks()
 	_finish()
+
+
+func _until(pred: Callable, s: float) -> bool:
+	var t: float = 0.0
+	while t < s:
+		if pred.call():
+			return true
+		await get_tree().physics_frame
+		t += get_physics_process_delta_time()
+	return pred.call()
+
+
+func _said(id: StringName) -> bool:
+	return _vo.has(id)
+
+
+## UPDATE 10 section 9 send-backs (T-170), shown in a run: THE_BAR row 20 / 15 (Jessen at the Marinekasse's window with
+## his favour and his reactions at the bank, Harms of the night shift with hers), row 5 (Hinnerk's stair scene on the
+## first flood) and row 21 (Jakub's Totenhafen beats: the arrival, the first flood, the sail).
+func _sendbacks() -> void:
+	var people: Dictionary = {}
+	for n: Node in get_tree().get_nodes_in_group(&"extra_people"):
+		people[str(n.get("id"))] = n
+	_check(people.has("jessen") and people.has("harms"), "two extra people on Totenhafen (%s)" % ", ".join(people.keys()))
+	var j: ExtraPerson = people.get("jessen") as ExtraPerson
+	var h: ExtraPerson = people.get("harms") as ExtraPerson
+	if j != null and _p != null:
+		_check(j.bodies.is_empty() and get_tree().get_first_node_in_group(&"bank_branch") != null, "Jessen is the Marinekasse's teller (BankBranch's body, no second one)")
+		_p.global_position = j.spot() + Vector3(0, 0.1, 0.8)
+		await _frames(3)
+		j.on_talk(_p)
+		await _frames(3)
+		_check(j._card != null, "Jessen's Talk card opens at the pay window")
+		_check(await _until(func() -> bool: return _said(&"JES_PEOPLE_TALK_01") or _said(&"JES_PEOPLE_TALK_02"), 4.0), "and he speaks")
+		j.accept_favour(_p)
+		_check(j.item != null and j.item.visible, "the ledger page appears in the Hafenmeister's hut (%s)" % (str(j.item.global_position) if j.item != null else "-"))
+		if j._card != null:
+			j._card.queue_free()
+		await _frames(3)
+		var scrip0: int = Economy.get_scrip(_p.player_id)
+		j.item_taken(_p)
+		j.give_item(_p)
+		await _frames(3)
+		_check(j.favour == ExtraPerson.Favour.DONE and Economy.get_scrip(_p.player_id) == scrip0 + 1000, "the page handed through the grille: the week closed, 1000 Scrip paid out")
+		# row 15: a reaction at the bank: the ballast dump, then the boat's key
+		GameState.set_flag(&"lf_ballast_done", true)
+		await _frames(2)
+		j.on_talk(_p)
+		await _frames(3)
+		_check(j._card != null and j._card.said.begins_with("Jessen has entered the three coffins"), "the dump is on his card")
+		_check(await _until(func() -> bool: return _said(&"JES_PEOPLE_REACT_BALLAST_01"), 4.0), "and he enters it as lost at sea")
+		if j._card != null:
+			j._card.queue_free()
+		await _frames(3)
+		GameState.set_flag(&"boat_key", true)
+		await _frames(2)
+		j.on_talk(_p)
+		await _frames(3)
+		_check(await _until(func() -> bool: return _said(&"JES_PEOPLE_REACT_KEY_01"), 4.0), "the boat's key: he signs her out")
+		if j._card != null:
+			j._card.queue_free()
+		await _frames(3)
+	if h != null and _p != null:
+		_check(h.bodies.size() == 1 and h.bodies[0].global_position.distance_to(Vector3(-3.2, 0, 9.0)) < 2.5, "Harms hides by the cannery office's desk")
+		_p.global_position = h.spot() + Vector3(-1.0, 0.1, 0.0)
+		await _frames(3)
+		h.on_talk(_p)
+		await _frames(3)
+		_check(h._card != null, "Harms' Talk card opens")
+		h.accept_favour(_p)
+		_check(h.item != null and h.item.global_position.x < -20.0, "the storm lantern lies in the infirmary")
+		if h._card != null:
+			h._card.queue_free()
+		await _frames(3)
+		h.item_taken(_p)
+		h.give_item(_p)
+		_check(h.favour == ExtraPerson.Favour.DONE, "the lantern given: she listens to the hall (intel ping)")
+		_check(await _until(func() -> bool: return _said(&"HRM_PEOPLE_PING_01") or _said(&"HRM_PEOPLE_THANKS_01"), 6.0), "and says where they are")
+	# row 5: Hinnerk on the tower stair; the first flood plays his scene
+	var hp: MapCompanion = _map.get_node_or_null("Companion_petersen") as MapCompanion
+	_check(hp != null and hp.state == MapCompanion.State.WAITING and hp.player != null, "Hinnerk waits on the signal tower stair")
+	var jk: JakubCompanion = _map.get_node_or_null("JakubCompanion") as JakubCompanion
+	_check(jk != null and jk.state == JakubCompanion.State.JOINED, "the profile's Jakub arrived with the squad")
+	_check(await _until(func() -> bool: return _said(&"JAK_M2_ARRIVE_01") or _said(&"JAK_M2_ARRIVE_02"), 12.0), "Jakub: the sea (JAK_M2_ARRIVE)")
+	GLBus.tide_flood_begin.emit()
+	# (the radio's German traffic may still hold the voice channel: a refused scene retries every 2 s)
+	_check(await _until(func() -> bool: return _said(&"PET_LF_TRAPPED_01"), 16.0), "the first flood: Hinnerk's stair scene (PET_LF_TRAPPED_01)")
+	_check(hp != null and hp.events.has("scene") and not hp.play_scene(), "played once")
+	_check(await _until(func() -> bool: return _said(&"JAK_M2_FLOOD_01"), 12.0), "Jakub: the water is coming in (JAK_M2_FLOOD_01)")
+	GLBus.sail_started.emit()
+	_check(await _until(func() -> bool: return _said(&"JAK_M2_SAIL_01"), 14.0), "Jakub: the sail (JAK_M2_SAIL_01)")
 
 
 ## The red battle lanterns' summed energy inside U-1047.
