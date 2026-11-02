@@ -647,8 +647,8 @@ static func cockpit(g: Variant) -> void:
 	# the key: the strap's violet (casts), the instrument glow, a lamp from the arch
 	g.lamp(Vector3(0, 1.4, 65.2), Color(0.62, 0.28, 1.0), 0.8, 6.0, 0.08, 0.4, true)
 	caged_lamp(g, Vector3(0, CEIL_COCKPIT, 60.25), 1.1, "F_COCKPIT", Color(1.0, 0.82, 0.6), 1.0, 12.0)
-	caged_lamp(g, Vector3(-11.0, CEIL_COCKPIT - 0.6, 63.25), 1.0, "F_COCKPIT", Color(1.0, 0.82, 0.6), 1.0, 12.0)
-	caged_lamp(g, Vector3(11.0, CEIL_COCKPIT - 0.6, 63.25), 1.0, "F_COCKPIT", Color(1.0, 0.82, 0.6), 1.0, 12.0)
+	caged_lamp(g, Vector3(-11.0, CEIL_COCKPIT - 0.6, 63.25), 1.0, "F_COCKPIT", Color(1.0, 0.82, 0.6), 1.4, 14.0)
+	caged_lamp(g, Vector3(11.0, CEIL_COCKPIT - 0.6, 63.25), 1.0, "F_COCKPIT", Color(1.0, 0.82, 0.6), 1.4, 14.0)
 	# the flight engineer's panel on the port bulkhead (in the flat range by the door: flush) and charts
 	for i: int in 6:
 		Props.gauge(g.dress, Vector3(-21.8, 1.4 + 0.3 * float(i % 2), 59.3 + 0.4 * float(i)), -90.0, 0.08)
@@ -676,7 +676,19 @@ static func _cog(g: Variant, c: Vector3) -> void:
 static func london_plate(g: Variant) -> void:
 	var ld: Node3D = Props.group(g.dress, "LondonPlate", Vector3(74, -40, -120))
 	ld.set_meta("keep", true)
-	Props.block(ld, Vector3(-60, -0.5, -60), Vector3(60, 0, 60), "black_paint")
+	# the city from altitude: the ground shader FlightSky uses for the London leg, in city mode (streets, lights,
+	# the river, the fires once the window's bursts land), so the plate and the ground round it are one city
+	var city: ShaderMaterial = ShaderMaterial.new()
+	city.shader = load("res://gravelight/world/map04/ground_below.gdshader")
+	city.set_shader_parameter("city", 1.0)
+	city.set_shader_parameter("city_pos", Vector3(74, -40, -120))
+	city.set_shader_parameter("coast_z", -100000.0)
+	city.set_shader_parameter("land_ahead", 1.0)
+	city.set_shader_parameter("lights", 0.2)
+	city.set_shader_parameter("radius", 900.0)
+	city.set_shader_parameter("haze_color", Color("#121828"))
+	city.resource_name = "london_city"
+	blk(ld, Vector3(-60, -0.5, -60), Vector3(60, 0, 60), city, false)
 	var lit: StandardMaterial3D = StandardMaterial3D.new()
 	lit.albedo_color = Color(0.2, 0.15, 0.1)
 	lit.emission_enabled = true

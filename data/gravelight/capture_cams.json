@@ -690,7 +690,7 @@
       "bots": 0,
       "settle_s": 6.0,
       "cams": [
-        {"name": "A_wide", "pos": [0.0, 0.0, 23.0], "yaw": 0.0, "pitch": 1.0, "note": "A Bombenschacht: from the forward door aft down the bay", "do": ["power"], "settle_s": 4.0},
+        {"name": "A_wide", "pos": [0.0, 0.0, 23.0], "yaw": 0.0, "pitch": 1.0, "note": "A Bombenschacht: from the forward door aft down the bay", "do": ["power", "call:FlightSky:calm:0.1"], "settle_s": 4.0},
         {"name": "A_racks", "pos": [0.0, 0.0, 16.0], "yaw": -43.0, "pitch": -0.1, "note": "A Bombenschacht: the starboard bomb racks"},
         {"name": "A_corner", "pos": [0.0, 0.0, 5.0], "yaw": -62.4, "pitch": -7.6, "note": "A Bombenschacht: the aft starboard corner and ramp seam"},
         {"name": "B_wide", "pos": [0.0, 0.0, 25.0], "yaw": 180.0, "pitch": -0.3, "note": "B Mittelrumpf: from the bay door forward"},

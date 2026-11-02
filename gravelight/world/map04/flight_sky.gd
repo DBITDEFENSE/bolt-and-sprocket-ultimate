@@ -66,6 +66,8 @@ var _flak_mat: StandardMaterial3D = null
 var _smoke_mat: StandardMaterial3D = null
 var _flak_t: float = 0.0
 var _london: Node = null
+var _plate: Node3D = null
+var _plate_mat: ShaderMaterial = null
 var _desert_set: Node3D = null
 var _swing: Dictionary = {}       # instance id -> {node, base, angle, vel, omega}
 var _spin: Array[Node3D] = []
@@ -153,6 +155,12 @@ func _ready() -> void:
 	var wd: Node3D = _scene_find("WingDiorama") as Node3D
 	if wd != null:
 		wd.visible = false
+	_plate = _scene_find("LondonPlate") as Node3D
+	if _plate != null:
+		for c: Node in _plate.get_children():
+			if c is MeshInstance3D and (c as MeshInstance3D).material_override is ShaderMaterial:
+				_plate_mat = (c as MeshInstance3D).material_override as ShaderMaterial
+				break
 	if not GLBus.round_started.is_connected(_on_round_started):
 		GLBus.round_started.connect(_on_round_started)
 	if not GLBus.match_started.is_connected(_on_match_started):
@@ -225,7 +233,14 @@ func _set_leg(i: int) -> void:
 		if plate != null:
 			_ground_mat.set_shader_parameter("city_pos", plate.global_position)
 	_set_beams(str(leg.get("lights", "")) == "london")
+	_show_plate()
 	print("[sky] leg %d: %s" % [leg_index, str(leg.get("below", "sea"))])
+
+
+## London (the window's plate) is only down there on the London leg or while the window runs.
+func _show_plate() -> void:
+	if _plate != null:
+		_plate.visible = not desert and (str(leg.get("lights", "")) == "london" or (_london != null and is_instance_valid(_london)))
 
 
 func _build_sky() -> void:
@@ -445,11 +460,13 @@ func _rescan() -> void:
 				_rods.append([n4, (n4 as Node3D).position])
 	if _london == null or not is_instance_valid(_london):
 		_london = null
-		var root: Node = get_tree().current_scene
-		if root != null:
+		for root: Node in [get_parent(), get_tree().current_scene]:
+			if root == null or _london != null:
+				continue
 			for c: Node in root.get_children():
 				if c is LondonWindow:
 					_london = c
+		_show_plate()
 	if not desert:
 		var root2: Node = get_tree().current_scene
 		if root2 != null:
@@ -507,6 +524,8 @@ func _tick_layers(delta: float, cp: Vector3) -> void:
 		_ground_mat.set_shader_parameter("center", cp)
 		_ground_mat.set_shader_parameter("desert", _dawn)
 		_ground_mat.set_shader_parameter("fires", _east)
+	if _plate_mat != null:
+		_plate_mat.set_shader_parameter("fires", _east)
 	if not desert and GameState.has_flag(&"london_seen") and _london == null and _east < 1.0:
 		_east = minf(1.0, _east + delta / 8.0)
 
@@ -706,6 +725,20 @@ func burst(p: Vector3, far: bool = false) -> void:
 	if not AudioDirector.has_sound(key):
 		key = "grenade_explode"
 	AudioDirector.play_3d(key, p, -6.0 if not far else -14.0, 0.15)
+
+
+## Dev / capture hook ("call:FlightSky:calm", the u09_map04b set's first camera): no bank for the rest of the run, so
+## a capture's camera is not shoved across the deck between its shots (the turbulence itself is untouched in play).
+func calm() -> void:
+	if _fc == null:
+		_fc = get_tree().get_first_node_in_group(&"flight_controller")
+	if _fc == null:
+		return
+	_fc.set("banking", false)
+	_fc.set("turb_t", 1.0e9)
+	_fc.set("turb_warned", true)
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		n.set("ext_roll_deg", 0.0)
 
 
 ## Dev / capture hook (the u09_map04b set's E_window camera: "call:FlightSky:preview_london"): jumps the outside to
