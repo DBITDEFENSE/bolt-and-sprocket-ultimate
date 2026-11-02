@@ -124,6 +124,7 @@ func _ready() -> void:
 		GLBus.power_activated.emit.call_deferred()
 	AudioDirector.start_ambient()
 	ZoneAmbience.attach(self)   # T-145: per-zone beds + one-shots when data/gravelight/ambience/<map>.json exists
+	_attach_map_ambience()   # UPDATE 10 (contract C1): the living world from data/gravelight/<map>_ambience.json
 	(func() -> void: LampGlow.attach(self)).call_deferred()   # lamp glass dims with its light (T-057)
 	ShadowProxies.build(self)   # the static batches' shadows drawn from a few merged depth meshes (T-070)
 	var sb: Node = get_node_or_null("StaticBatches")
@@ -416,3 +417,21 @@ func _to_menu() -> void:
 			return
 		Net.leave("")
 	get_tree().change_scene_to_file("res://gravelight/ui/main_menu.tscn")
+
+
+## UPDATE 10 contract C1: every map may have a living-world file next to Map 0's (`<prefix>_ambience.json`, where the
+## prefix is the map id up to its first underscore: map01, map02, map04a...). Map 0's scene already carries its own
+## MapAmbience node from gen_map00 (config_path map00_ambience.json), so this only adds one when the scene has none and
+## the file exists. Presentation only: MapAmbience never touches gameplay.
+func _attach_map_ambience() -> void:
+	if get_node_or_null(^"MapAmbience") != null:
+		return
+	var prefix: String = str(map_id).get_slice("_", 0)
+	var path: String = "res://data/gravelight/%s_ambience.json" % prefix
+	if not ResourceLoader.exists(path) and not FileAccess.file_exists(path):
+		return
+	var amb: MapAmbience = MapAmbience.new()
+	amb.name = "MapAmbience"
+	amb.config_path = path
+	add_child(amb)
+
