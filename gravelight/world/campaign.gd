@@ -334,41 +334,24 @@ static func travel(payload: Dictionary, tree: SceneTree) -> void:
 	LoadingScreen.go(tree, scene, String(target), LoadingScreen.transition_line(str(payload.get("from", "")), String(target)))
 
 
-## U10 §3 (T-157, polish item 6): the next act's scene starts loading on a thread while the exfil cutscene plays, so
-## the loading card only has to wait for what is left (the LoadingScreen and a co-op change_scene pick it up). Not on
-## the web build while its packs are still being fetched (MapPacks.ensure runs first there).
+## UPDATE 10 §3 (T-156 + T-157, polish item 6): the transitions as events. While the exfil cutscene plays (the
+## boarding, the crash, the rocket) the next act's packs are fetched (MapPacks.ensure: the web build), then the scene
+## goes to T-158's LoadingScreen.preload_scene (one threaded request, `LoadingScreen.preloaded`), which the
+## LoadingScreen that Campaign.travel opens reuses instead of asking again. The call is idempotent: asking twice is
+## fine, nothing loads twice. `preloading` = the scene path being prepared. Returns false only when the target has no
+## scene.
 static var preloading: String = ""
 
 
 static func preload_next(target: StringName) -> bool:
 	var scene: String = scene_for(target)
-	if scene == "" or not scene_exists(target) or MapPacks.pending():
+	if scene == "":
 		return false
 	if preloading == scene:
 		return true
-	# master's T-158 mechanism holds the request (LoadingScreen.preloaded): one threaded load, never two
-	if not LoadingScreen.preload_scene(scene):
-		return false
-	preloading = scene
-	print("[campaign] preloading %s during the cutscene" % scene)
-	return true
-
-
-## UPDATE 10 §3 (T-156): the transitions as events. While the exfil cutscene plays (the boarding, the crash, ...) the
-## next act's packs are fetched (MapPacks.ensure: the web build), then the scene goes to T-158's
-## LoadingScreen.preload_scene (one threaded request, `LoadingScreen.preloaded`), which the LoadingScreen that
-## Campaign.travel opens (the act's card, a lore line, a tip) reuses instead of asking again. ExfilPoint also calls
-## preload_scene directly at the cutscene's start (T-158); the call is idempotent, so nothing loads twice, and on the
-## web this path is the one that works (the scene only exists once its packs are in). `preloading` = the scene path.
-static var preloading: String = ""
-
-
-static func preload_next(map_id: StringName) -> void:
-	var scene: String = scene_for(map_id)
-	if scene == "" or preloading == scene:
-		return
 	preloading = scene
 	_preload_async(scene)
+	return true
 
 
 static func _preload_async(scene: String) -> void:
