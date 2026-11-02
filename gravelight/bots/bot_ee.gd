@@ -200,7 +200,9 @@ func tick_think(now: float) -> void:
 	if why != "" and str(task.get("source", "")) == "full" and now - float(task.get("paused_t", now)) > float((_cfg().get("pause", {}) as Dictionary).get("full_drop_after_s", 60.0)):
 		cancel("paused too long")
 		return
-	if now - float(task.get("t0", now)) > float(_cfg().get("wait_timeout_s", 150.0)) and str(_plan.get("do", "")) == "wait" and str(task.get("source", "")) == "full":
+	# U10 (T-163): waiting the whole of wait_timeout_s, not a wait moment in a task older than that (the drummer's
+	# crate pulls wait out each offered gun between pulls: the task was cancelled mid-series after 150 s)
+	if now - float(task.get("wait_t0", now)) > float(_cfg().get("wait_timeout_s", 150.0)) and str(_plan.get("do", "")) == "wait" and str(task.get("source", "")) == "full":
 		cancel("nothing to do")
 		return
 	if str(task["type"]) == "escort" and str(task.get("source", "")) == "full" and hub != null:
@@ -243,7 +245,7 @@ func _pause_state() -> Dictionary:
 	else:
 		shop = BotEECatalog.shop_break_due(Economy.get_scrip(player.player_id), str(_plan.get("do", "")), _now(), _shop_next, sb)
 	return {"type": str(task["type"]) if str(_plan.get("do", "")) != "hold" else "hold_zone", "pressure": brain.perception.pressure,
-		"teammate_down": down, "round_left": left, "player_away": away, "shop": shop}
+		"teammate_down": down, "round_left": left, "player_away": away, "shop": shop, "pause_pressure": float(t.get("pause_pressure", -1.0))}
 
 
 ## The action "ee_task" was picked: carry the plan out this frame.
@@ -328,6 +330,11 @@ func _refresh_plan() -> void:
 	var was: String = "%s %s" % [str(_plan.get("do", "")), str((_plan.get("node") as Node).name) if is_instance_valid(_plan.get("node")) and _plan.get("node") is Node else ""]
 	_plan = plan(str(task["type"]), task["def"], w)
 	var d: String = str(_plan.get("do", ""))
+	if d == "wait":
+		if not task.has("wait_t0"):
+			task["wait_t0"] = _now()
+	else:
+		task.erase("wait_t0")
 	if OS.has_environment("EGG_DEBUG"):
 		var now_s: String = "%s %s" % [d, str((_plan.get("node") as Node).name) if is_instance_valid(_plan.get("node")) and _plan.get("node") is Node else ""]
 		if now_s != was:
@@ -747,6 +754,8 @@ func _execute(delta: float) -> void:
 			var r: String = _run_errand({"kind": "crate", "id": "ee", "node": n, "stand": brain.stand_point(n)}, delta)
 			if r != "running":
 				_replan = true
+				if OS.has_environment("EGG_DEBUG"):
+					_log("crate %s (uses here %d of %d)" % [r, CrateManager.uses_at_location, CrateManager.uses_until_move])
 		"hold":
 			_do_hold(delta)
 		"escort", "handoff", "wait":

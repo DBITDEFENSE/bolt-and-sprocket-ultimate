@@ -329,6 +329,20 @@ static func price_of(step: Dictionary, brain: BotBrain) -> int:
 ## can't spend (the pass-2 traces: 1,500-3,000 Scrip in hand while the yard door it needed was filtered out behind
 ## a Second Wind rebuy in the cellar).
 static func filter(cands: Array[Dictionary], brain: BotBrain) -> Array[Dictionary]:
+	# U10 (T-163): a free wonder from a bench (the Totenglocke, the Undertow) is never held back by the plan
+	var wonders: Array[Dictionary] = []
+	var rest: Array[Dictionary] = []
+	for cd: Dictionary in cands:
+		if bool(cd.get("wonder", false)):
+			wonders.append(cd)
+		else:
+			rest.append(cd)
+	var out: Array[Dictionary] = _filter(rest, brain)
+	out.append_array(wonders)
+	return out
+
+
+static func _filter(cands: Array[Dictionary], brain: BotBrain) -> Array[Dictionary]:
 	var step: Dictionary = current_for(brain)
 	last_raw = PackedStringArray(cands.map(func(x: Dictionary) -> String: return str(x.get("label", ""))))
 	if step.is_empty():

@@ -319,7 +319,7 @@
     {
       "id": "s7_drummer",
       "type": "chase",
-      "bot_task": {"type": "shoot_target", "target": {"group": "quest_drummers"}, "moving": true, "trigger": "crate", "risky": "trigger", "full_partner": ["trigger"], "then_pickup": {"class": "QuestPickup", "where": {"item_id": "nachtglas_shard", "visible": true}}, "what": "Herr Tamtam", "ping": "DRUMMER"},
+      "bot_task": {"type": "shoot_target", "target": {"group": "quest_drummers"}, "moving": true, "trigger": "crate", "risky": "trigger", "full_partner": ["trigger"], "pause_pressure": 0.85, "then_pickup": {"class": "QuestPickup", "where": {"item_id": "nachtglas_shard", "visible": true}}, "what": "Herr Tamtam", "ping": "DRUMMER"},
       "params": {
         "actor": "drummer",
         "item": "nachtglas_shard",

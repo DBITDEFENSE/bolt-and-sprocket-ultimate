@@ -265,6 +265,38 @@ func _update_weak_point() -> void:
 				if d < best_d and _los(eye(), arm.hitbox.global_position, target):
 					best_d = d
 					aim_node = arm.hitbox
+	elif target is Paul:
+		aim_node = paul_aim_node(target as Paul)
+
+
+## U10 (T-163): PAUL (T-159) is survived more than killed (75,000 HP; he retreats after 6 minutes): a bottle on his
+## rack takes 20 rage off him, so from rage bottles_from_rage on (Angry: Charge, Leap Slam) the bots break the
+## nearest bottle they can see; behind him (more than 120 deg off his facing) the neck takes x2; else the chest.
+func paul_aim_node(pl: Paul) -> Node3D:
+	var pc: Dictionary = BotAIData.counter(&"paul")
+	var me: Vector3 = eye()
+	if pl.rage != null and pl.rage.value >= float(pc.get("bottles_from_rage", 34.0)):
+		var best: Node3D = null
+		var best_d: float = INF
+		for i: int in pl.bottle_boxes.size():
+			var hb: Hitbox = pl.bottle_boxes[i]
+			if hb == null or not is_instance_valid(hb) or i >= pl.bottles_hp.size() or pl.bottles_hp[i] <= 0.0:
+				continue
+			var d: float = hb.global_position.distance_to(me)
+			if d < best_d and _los(me, hb.global_position, pl):
+				best_d = d
+				best = hb
+		if best != null:
+			return best
+	var to_me: Vector3 = me - pl.global_position
+	to_me.y = 0.0
+	if to_me.length() > 0.1 and pl.basis_fwd().angle_to(to_me.normalized()) > deg_to_rad(float(pc.get("neck_from_deg", 125.0))):
+		var hbs: Variant = pl.get("_hitboxes")
+		if hbs is Array:
+			for hb2: Variant in hbs:
+				if hb2 is Hitbox and (hb2 as Hitbox).limb == &"neck" and _los(me, (hb2 as Hitbox).global_position, pl):
+					return hb2 as Hitbox
+	return null
 
 
 ## Head when going for it (and the head hitbox is there), a weak point when set, else the chest.

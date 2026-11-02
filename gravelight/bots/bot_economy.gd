@@ -223,6 +223,14 @@ func _pv(kind: String, dist: float) -> float:
 	return clampf(value_of(eco, kind, dist) * float(m.get(kind, 1.0)), 0.0, 1.0)
 
 
+## U10 (T-163) pure: take a free wonder from a bench? Its tier must beat the worst gun held by wonder_margin (or a
+## slot is free).
+static func wonder_wanted(wonder_tier: float, worst_held: float, free_slot: bool, e: Dictionary) -> bool:
+	if free_slot:
+		return true
+	return wonder_tier > worst_held + float(e.get("wonder_margin", 0.5))
+
+
 ## The value (0..1) of a shopping candidate: its priority, a little less the farther it is.
 static func value_of(e: Dictionary, kind: String, dist: float) -> float:
 	var p: float = float((e.get("priorities", {}) as Dictionary).get(kind, 0.5))
@@ -433,6 +441,25 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 		var wb2: WallBuy = nodes[String(gun)]
 		out.append({"node": wb2, "kind": "gun", "value": _pv("gun", _flat(wb2.global_position, me)), "cost": wb2.price(),
 			"label": "buy the %s wall gun (%d Scrip)" % [BotBrain.weapon_name(gun), wb2.price()]})
+	# ---- U10 (T-163): a built wonder on a bench (Kaltenbrunn's Totenglocke, Totenhafen's Undertow) is free for each
+	# player: taken when its tier beats the worst gun held (or a slot is free). Bots only ever took one for an egg
+	# step (s8b's kill_with_weapon); a squad with four bells from round 8 lives longer.
+	var worst_tier: float = INF
+	for h2: Variant in held:
+		worst_tier = minf(worst_tier, float((h2 as Dictionary)["tier"]))
+	for wbn: Node in brain.get_tree().get_nodes_in_group(&"workbenches"):
+		var bench: Workbench = wbn as Workbench
+		if bench == null or not is_instance_valid(bench) or not bench.built or not bench.is_visible_in_tree() or not bench.can_interact(player):
+			continue
+		if not wonder_wanted(tier_of(String(bench.buildable_id), false, eco), worst_tier, free_slot, eco):
+			continue
+		if _flat(bench.global_position, anc) > rng * 1.5 or not squad.can_claim(bench, pid):
+			continue
+		var bst: Vector3 = brain.stand_point(bench)
+		if bst == Vector3.INF:
+			continue
+		out.append({"node": bench, "kind": "gun", "wonder": true, "value": _pv("gun", _flat(bench.global_position, me)), "cost": 0, "stand": bst,
+			"label": "take the %s from the workbench" % BotBrain.weapon_name(bench.buildable_id)})
 	# ---- doors
 	var dcfg: Dictionary = (cfg.get("shopping", {}) as Dictionary).get("doors", {})
 	var ordered_door: Node = brain.order_node() if order == &"open_door" else null

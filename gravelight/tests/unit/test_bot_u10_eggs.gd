@@ -137,6 +137,37 @@ func test_requiem_full_partner_stages() -> void:
 		"full_partner must name the task's own risky stage")
 
 
+func test_task_pause_pressure() -> void:
+	var c: Dictionary = GLData.load_json("res://data/gravelight/ai/ee.json")
+	var base: Dictionary = {"type": "shoot_target", "pressure": 0.7, "teammate_down": false, "round_left": -1, "player_away": false, "was": ""}
+	assert_eq(BotEECatalog.pause_reason(base, c), "threat", "the default threshold (0.65) pauses at 0.7")
+	var own: Dictionary = base.duplicate()
+	own["pause_pressure"] = 0.85
+	assert_eq(BotEECatalog.pause_reason(own, c), "", "the drummer's pulls go on at 0.7")
+	own["pressure"] = 0.9
+	assert_eq(BotEECatalog.pause_reason(own, c), "threat", "and stop at 0.9")
+	own["was"] = "threat"
+	own["pressure"] = 0.7
+	assert_eq(BotEECatalog.pause_reason(own, c), "threat", "resuming waits for the same margin below its own threshold")
+	own["pressure"] = 0.6
+	assert_eq(BotEECatalog.pause_reason(own, c), "", "back to it")
+	var q: Dictionary = GLData.load_json("res://data/gravelight/quests/map01_requiem.json")
+	for st: Variant in q["steps"]:
+		if str((st as Dictionary)["id"]) == "s7_drummer":
+			assert_gt(float(BotEECatalog.task_def(st as Dictionary).get("pause_pressure", 0.0)), 0.65, "s7 carries its own threshold")
+
+
+# ---------------------------------------------------------------- wonders from the bench
+
+func test_wonder_wanted() -> void:
+	var eco: Dictionary = GLData.load_json("res://data/gravelight/ai/economy.json")
+	var bell: float = BotEconomy.tier_of("totenglocke", false, eco)
+	assert_gt(bell, 5.0, "the Totenglocke is a wonder tier")
+	assert_true(BotEconomy.wonder_wanted(bell, 3.2, false, eco), "over an MP40: take it")
+	assert_false(BotEconomy.wonder_wanted(bell, bell + 1.0, false, eco), "every gun held is better: leave it")
+	assert_true(BotEconomy.wonder_wanted(0.0, 9.0, true, eco), "a free slot: always")
+
+
 # ---------------------------------------------------------------- boss grabs
 
 func test_kielholer_counter() -> void:

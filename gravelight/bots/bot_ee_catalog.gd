@@ -244,6 +244,11 @@ static func pause_reason(s: Dictionary, c: Dictionary) -> String:
 		return "player_away"
 	# hysteresis: once paused for threat it waits for the pressure to drop to resume_pressure
 	var limit: float = float(pc.get("resume_pressure", 0.45)) if str(s.get("was", "")) == "threat" else float(pc.get("pressure", 0.65))
+	if float(s.get("pause_pressure", -1.0)) > 0.0:
+		# U10 (T-163): a task's own threshold (the drummer's crate pulls go on under more pressure); resume the same
+		# margin below it
+		var own: float = float(s["pause_pressure"])
+		limit = own - (float(pc.get("pressure", 0.65)) - float(pc.get("resume_pressure", 0.45))) if str(s.get("was", "")) == "threat" else own
 	if not (pc.get("no_threat_pause_types", []) as Array).has(ty) and float(s.get("pressure", 0.0)) >= limit:
 		return "threat"
 	if bool(s.get("teammate_down", false)) and not (pc.get("no_down_pause_types", []) as Array).has(ty):
