@@ -94,6 +94,18 @@ PROFILES: dict[str, dict] = {
     # Jakub Ostrowski (U02 section 6.2): a Polish miner in his forties. Mark, slower and lower than Deacon, a slightly
     # larger "size" (older, chestier), dry and close with a little grit: calm, wry, unhurried.
     "JAK":      dict(voice="Mark",  rate="-13%", pitch="-11%", size=0.95, chain="jakub",     gain_db=0.0),
+    # UPDATE 10 (placeholder, T-150): the Map 4 speakers had no profile, so their lines stayed silent. OneCore
+    # placeholders until the owner casts them. Wittkamp (the works' PA, a man) and the Bordfunk (a recorded
+    # German PA voice) on the PA chain; Dee on a faded radio; Hale (a man) on the PA; the Woman in Violet's
+    # executive machine (velvet, "we") on the corporate chain; Rourke (the test pilot, a man) on the radio; the
+    # Bordwart (crew over the intercom, German) on the PA.
+    "WIT":      dict(voice="David", rate="+2%",  pitch="-3%",  size=0.98, chain="pa",        gain_db=0.0),
+    "PA":       dict(voice="David", rate="+0%",  pitch="-4%",  size=0.97, chain="pa",        gain_db=0.0),
+    "WIV":      dict(voice="Zira",  rate="-6%",  pitch="-2%",  size=1.02, chain="corporate", gain_db=0.0),
+    "DEE":      dict(voice="Zira",  rate="-4%",  pitch="-2%",  size=1.03, chain="radio",     gain_db=0.0),
+    "HAL":      dict(voice="David", rate="-2%",  pitch="-6%",  size=0.97, chain="pa",        gain_db=0.0),
+    "BWT":      dict(voice="Mark",  rate="+4%",  pitch="-2%",  size=0.99, chain="pa",        gain_db=0.0),
+    "RRK":      dict(voice="Mark",  rate="+2%",  pitch="-3%",  size=0.98, chain="radio",     gain_db=0.0),
 }
 # Reinholt's cylinders and diary samples are phonograph recordings; everything else of hers is the PA.
 REI_PHONO_CATEGORIES = ("CYL", "SAMPLE", "HEART_END", "END")

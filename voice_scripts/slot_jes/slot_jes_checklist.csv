@@ -1,0 +1,9 @@
+﻿line_id,character,text,recorded
+JES_BANK_BROKE_01,JES,There is nothing entered under your name. I looked twice. A paymaster's mate does not look a third time.,
+JES_BANK_CLOSED_01,JES,I may not open the strongbox just now. Orders. The Navy has regulations for the end of the world.,
+JES_BANK_DEPOSIT_01,JES,"Entered. One per cent a round, the Navy's own rate. It is the only thing on this base that still pays on time.",
+JES_BANK_GREET_M2_01,JES,"Zahlstelle, Marinekasse Totenhafen. Thank God, a living face. Please speak quietly. The water carries.",
+JES_BANK_GREET_M2_02,JES,"Deposits, withdrawals, nothing else. The Commandant ordered the pay window kept open until relieved. Nobody has relieved me.",
+JES_BANK_WITHDRAW_01,JES,"Your money, in full. Count it, please. I am not able to count just now.",
+JES_BANK_SCARED_01,JES,"They are on the quay! On the quay! Shoot them, please, shoot them!",
+JES_BANK_SCARED_02,JES,Gott im Himmel. I am only the paymaster's mate!,

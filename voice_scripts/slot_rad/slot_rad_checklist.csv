@@ -1,0 +1,10 @@
+﻿line_id,character,text,recorded
+RAD_PEOPLE_ASK_01,RAD,"My set lost its valve. There is a spare in the radio room upstairs, on the desk. Bring it down, and I will listen for you.",
+RAD_PEOPLE_DOWN_01,RAD,Somebody is down. I heard it on the floor.,
+RAD_PEOPLE_PING_01,RAD,"Sweep done. They are there, there, and there. Keep your eyes up.",
+RAD_PEOPLE_RELAY_01,RAD,It is speaking again. Someone is counting on this line.,
+RAD_PEOPLE_RELAY_02,RAD,"Same voice, same smile. Someone is counting on this line, and I do not like who.",
+RAD_PEOPLE_ROUND_01,RAD,New traffic on the board. Here we go.,
+RAD_PEOPLE_TALK_01,RAD,"Amt switchboard, nobody answering. I keep the plugs warm anyway. Habit.",
+RAD_PEOPLE_TALK_02,RAD,There is a voice on the line that is not ours. It counts. It says it is counting on us.,
+RAD_PEOPLE_THANKS_01,RAD,"There. Hear that hum? One sweep, and I will tell you where they gather.",
