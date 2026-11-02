@@ -753,6 +753,8 @@ func calm() -> void:
 	_fc.set("banking", false)
 	_fc.set("turb_t", 1.0e9)
 	_fc.set("turb_warned", true)
+	_fc.set("tilt_times", [] as Array[float])   # T-156: the flight clock's tilts and breaches too
+	_fc.set("decomp_queue", [])
 	for n: Node in get_tree().get_nodes_in_group(&"players"):
 		n.set("ext_roll_deg", 0.0)
 

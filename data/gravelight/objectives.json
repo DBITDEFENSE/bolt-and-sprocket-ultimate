@@ -492,7 +492,11 @@
       "easter_egg": [
         "map04_kuendigung"
       ],
-      "side": []
+      "side": [
+        {
+          "quest": "map04b_crew_tags"
+        }
+      ]
     },
     "map04d_mondlicht": {
       "current": [
@@ -1151,6 +1155,40 @@
             "CageItem_casing",
             "CageItem_bomber_coil",
             "CageItem_honey"
+          ]
+        }
+      }
+    },
+    "map04b_crew_tags": {
+      "title": "The Crew's Tags",
+      "steps": {
+        "s1_tags": {
+          "done": "Three crew tags found: Riedl, Haas, Pohl.",
+          "hint": "Every harness aboard is buckled over nobody. Somebody left their names behind. ({n}/3)",
+          "guide": "Find the three crew tags: on the first and second harness bunks in the centre body, and under the aft blister's gun seat in the gun blisters. ({n}/3)",
+          "where": "Mittelrumpf bunks · Kanzel, the aft blister",
+          "nodes": [
+            "Tag1",
+            "Tag2",
+            "Tag3"
+          ]
+        },
+        "s2_roster": {
+          "done": "The three names are back on the roster.",
+          "hint": "The radio room keeps a crew list. Three names on it have been rubbed out.",
+          "guide": "Read the tags against the BESATZUNGSLISTE board in the radio room (the centre body's starboard wall, by the aux bus).",
+          "where": "Mittelrumpf, the radio room",
+          "nodes": [
+            "CrewRoster"
+          ]
+        },
+        "s3_transmission": {
+          "done": "The Bordfunk played the crew's last transmission.",
+          "hint": "The tape deck has a reel with the same three names on it.",
+          "guide": "Hold USE on the Bordfunk's tape deck in the radio room to play the last reel.",
+          "where": "Mittelrumpf, the Bordfunk's tape deck",
+          "nodes": [
+            "BordfunkReel"
           ]
         }
       }

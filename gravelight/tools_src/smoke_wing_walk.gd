@@ -87,7 +87,7 @@ func _body() -> void:
 
 	# a fall off the deck counts as a throw
 	var before: int = ww.knocked
-	await _tp(Vector3(-90, 3.6, 27.0), 0.0)
+	await _tp(Vector3(-90, 3.6, 24.0), 0.0)   # just past the trailing-edge rail (S4 ends at z 22.2)
 	await _until(func() -> bool: return ww.knocked > before, 4.0)
 	_check(ww.knocked == before + 1 and _p.downed, "walking off the deck is a fall: downed at the hatch (knocked %d)" % ww.knocked)
 	await _until(func() -> bool: return not _p.downed, 6.0)

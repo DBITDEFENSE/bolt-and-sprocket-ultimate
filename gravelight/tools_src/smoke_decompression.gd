@@ -44,9 +44,9 @@ func _body() -> void:
 		if z != null:
 			print("[decomp]   ganger %s hp %.0f state %d pushed %s active %s" % [str(z.global_position.snapped(Vector3.ONE * 0.1)), z.hp, z.state, str(z.is_pushed()), str(z.is_active())])
 	_check(_p.global_position.distance_to(pos0) < 0.4 and not _p.downed, "holding the rail, the player is not moved")
-	_check(bay.sucked_out >= 1 and z != null and not z.is_active(), "the ganger is pulled out into the night (%d)" % bay.sucked_out)
 	_check(get_tree().get_nodes_in_group(&"ammo_drops").size() == 2, "the stowage net drops two ammo tins in the bay")
 	await _until(func() -> bool: return bay.phase == DecompressionBreach.Phase.DONE, 5.0)
+	_check(bay.sucked_out >= 1 and z != null and not z.is_active(), "the ganger is pulled out into the night (%d)" % bay.sucked_out)
 	grip.hold(_p, false)
 	# walk over a tin: the gun is refilled
 	var tins: Array = get_tree().get_nodes_in_group(&"ammo_drops")

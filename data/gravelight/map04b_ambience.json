@@ -4,7 +4,7 @@
   "flight_sun": {"from_act_round": 1, "to_act_round": 6, "round_s": 150.0, "dawn_max": 0.85, "dawn_color": "#ffb27a", "dawn_energy_mult": 1.6},
   "formation": {
     "offsets": [[-235.0, 22.0, 30.0], [240.0, 12.0, -30.0], [70.0, 55.0, 330.0], [-90.0, -28.0, -260.0]],
-    "scale": 0.9, "bob_m": 5.0, "color": "#1b1e26",
+    "scale": 0.9, "bob_m": 5.0, "color": "#2a303c",
     "down": {"from_act_round": 2, "at_s": [60.0, 140.0], "victim": 0, "fall_s": 26.0}
   },
   "flak_field": {"from_act_round": 2, "interval": [7.0, 15.0], "radius": [150.0, 340.0]},

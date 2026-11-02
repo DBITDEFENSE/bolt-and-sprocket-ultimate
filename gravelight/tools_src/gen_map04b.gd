@@ -137,6 +137,7 @@ func setup_tables() -> void:
 	# T-147: the shell (KranichShell, the Blender-built frames and skin) is what you see; the flat walls, lids, the deck,
 	# the old rib posts and the glass box keep their colliders (the navmesh is baked from them) and lose their meshes
 	hide.append_array(SHELL_HIDDEN)
+	hide.append("WingRail*")   # T-156: the catwalk's rails are colliders; the dressing draws the stanchions and the tether tube
 	sky_top = Color(0.004, 0.005, 0.012)
 	sky_horizon = Color(0.03, 0.035, 0.06)
 	ambient = Color(0.3, 0.2, 0.2)
@@ -346,6 +347,16 @@ func _wing_walk_dressing() -> void:
 		var mi: MeshInstance3D = Props.block(dress, lo, hi, "steel", false)
 		if mi != null and skin != null:
 			mi.material_override = skin
+	# fairings over the window closets whose roofs (3.3 m) stand above the wing skin (2.85 m) next to the walk
+	for w: Array in windows:
+		if not ["W_CL_S", "W_CR_S", "W_D_W"].has(str(w[0])):
+			continue
+		var cb: Array = closet_box(str(w[1]), w[2], float(w[3]))
+		var lo3: Vector3 = cb[1]
+		var hi3: Vector3 = cb[2]
+		var fm: MeshInstance3D = Props.block(dress, Vector3(lo3.x - 0.25, 2.7, lo3.z - 0.25), Vector3(hi3.x + 0.25, 3.36, hi3.z + 0.25), "steel", false)
+		if fm != null and skin != null:
+			fm.material_override = skin
 	# stanchions every ~3 m under the rails, the tether rail itself is the rail's top bar (a brass-yellow tube)
 	for rl: Array in ww.get("rails", []):
 		var a: Vector3 = Vector3(float(rl[0]), dy, float(rl[1]))

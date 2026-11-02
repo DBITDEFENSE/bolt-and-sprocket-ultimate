@@ -265,9 +265,12 @@ func _physics_process(delta: float) -> void:
 			if not p.is_alive() or _near_hatch_foot(p.global_position):
 				_set_state(pid, ClipState.OFF_WING)
 				_off_t.erase(pid)
-			elif p.global_position.y < deck_y - 1.2:
+			elif p.global_position.y < deck_y - 1.2 and _near_deck(segs, p.global_position):
 				_off_t.erase(pid)
 				throw_off(p, "fell")
+			elif p.global_position.y < deck_y - 1.2:
+				_set_state(pid, ClipState.OFF_WING)   # left the wing some other way (a respawn, a dev teleport): no fall
+				_off_t.erase(pid)
 			elif off > 3.0:
 				_set_state(pid, ClipState.OFF_WING)
 				_off_t.erase(pid)
@@ -275,6 +278,14 @@ func _physics_process(delta: float) -> void:
 		_wind(delta)
 		_tick_climbers(delta)
 		_tick_passes(delta)
+
+
+## Within 3 m (flat) of the catwalk: where a body that went over the side is.
+static func _near_deck(segments: Array, p: Vector3) -> bool:
+	for r: Array in segments:
+		if in_rect(r, p.x, p.z, 3.0):
+			return true
+	return false
 
 
 func _near_hatch_foot(p: Vector3) -> bool:

@@ -186,12 +186,12 @@ func _pull_players() -> void:
 ## A player at the breach's edge goes down there, never out (solo: the scripted down; the match goes on).
 func down_at_edge(p: Player) -> void:
 	p.velocity = Vector3.ZERO
+	if GameState.god_mode and not p.is_bot:
+		return   # god mode (the dev launcher, smokes, captures): held at the edge, not downed
 	if p.is_local:
 		var hud: Node = get_tree().get_first_node_in_group(&"hud")
 		if hud != null:
 			hud.call("show_banner", "PULLED TO THE BREACH\nhold a rail next time", 2.5)
-	if GameState.god_mode and not p.is_bot:
-		return   # god mode (the dev launcher, smokes): held at the edge, not downed
 	if GameState.is_solo() and not p.is_bot:
 		var ww: WingWalk = get_tree().get_first_node_in_group(&"wing_walks") as WingWalk
 		if ww != null:

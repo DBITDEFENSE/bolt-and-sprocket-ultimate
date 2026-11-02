@@ -2701,7 +2701,7 @@ func _ev_formation(c: Dictionary) -> void:
 	glow.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	glow.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
 	glow.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
-	glow.albedo_color = Color(0.6, 0.35, 1.0, 0.8)
+	glow.albedo_color = Color(0.7, 0.45, 1.0, 0.9)
 	var i: int = 0
 	for o: Variant in c.get("offsets", []):
 		var off: Array = o
@@ -2729,7 +2729,7 @@ func _ev_formation(c: Dictionary) -> void:
 		for ex: float in [-45.0, -15.0, 15.0, 45.0]:
 			var q: MeshInstance3D = MeshInstance3D.new()
 			var qm: QuadMesh = QuadMesh.new()
-			qm.size = Vector2(5.0, 5.0) * s
+			qm.size = Vector2(9.0, 9.0) * s
 			q.mesh = qm
 			q.material_override = glow
 			q.position = Vector3(ex, 0.5, -14.0) * s

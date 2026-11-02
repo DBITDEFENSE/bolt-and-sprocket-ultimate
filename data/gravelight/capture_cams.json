@@ -692,15 +692,15 @@
       "settle_s": 6.0,
       "cams": [
         {"name": "AuxBus_dark", "pos": [6.4, 0.0, 42.0], "yaw": -90.0, "pitch": -4.0, "note": "B: the aux bus board in the dark cabin, its red beacon (T-156)", "do": ["call:FlightSky:calm:0.1"], "settle_s": 3.0},
-        {"name": "WW_landing", "pos": [-40.0, 3.4, 43.0], "yaw": 0.0, "pitch": -8.0, "note": "the wing walk: the landing over the torn panel, the tether rail aft", "do": ["power", "call:WingWalk:open_now:1.5"]},
+        {"name": "Tilt_bay", "pos": [0.0, 0.0, 20.0], "yaw": 0.0, "pitch": -6.0, "note": "turbulence_tilt: the bay rolled 8 degrees, the casings rolling", "do": ["power", "call:FlightController:bank_now:2.5"]},
+        {"name": "Breach_bay", "pos": [0.0, 0.0, 12.6], "yaw": 0.0, "pitch": -4.0, "note": "decompression: the ramp seam pulling", "do": ["call:DecompBay:start:5.0"]},
+        {"name": "BayDoors", "pos": [0.0, 0.0, 23.0], "yaw": 0.0, "pitch": -28.0, "note": "the bay doors trap open", "do": ["call:Trap_BayDoors:capture_open:3.0"]},
+        {"name": "Galley_photo", "pos": [-4.6, 0.0, 43.0], "yaw": 90.0, "pitch": 8.0, "do": ["call:FlightSky:calm:0.1"], "note": "B: the crew photograph over the galley counter (a story prop)"},
+        {"name": "Ruhland", "pos": [0.9, 0.0, 49.2], "yaw": 180.0, "pitch": 2.0, "note": "B: Ruhland at the Bordkasse (her Talk card)"},
+        {"name": "WW_landing", "pos": [-40.0, 3.4, 43.0], "yaw": 0.0, "pitch": -8.0, "note": "the wing walk: the landing over the torn panel, the tether rail aft", "do": ["call:WingWalk:open_now:1.5"]},
         {"name": "WW_out", "pos": [-60.0, 3.4, 21.0], "yaw": 90.0, "pitch": -4.0, "note": "the wing walk: aft of the nacelle, out along the trailing edge to the wingtip"},
         {"name": "WW_back", "pos": [-112.0, 3.4, 24.0], "yaw": -105.0, "pitch": -2.0, "note": "the wing walk: from the wingtip locker back to the Kranich"},
-        {"name": "WW_formation", "pos": [-100.0, 3.4, 21.0], "yaw": 94.0, "pitch": 8.0, "note": "the wing walk: the bomber holding station off the port wing"},
-        {"name": "Tilt_bay", "pos": [0.0, 0.0, 20.0], "yaw": 0.0, "pitch": -6.0, "note": "turbulence_tilt: the bay rolled 8 degrees, the casings rolling", "do": ["call:FlightController:bank_now:2.5"]},
-        {"name": "Breach_bay", "pos": [0.0, 0.0, 9.0], "yaw": 0.0, "pitch": -4.0, "note": "decompression: the ramp seam pulling", "do": ["call:DecompBay:start:5.0"]},
-        {"name": "BayDoors", "pos": [0.0, 0.0, 23.0], "yaw": 0.0, "pitch": -28.0, "note": "the bay doors trap open", "do": ["call:Trap_BayDoors:capture_open:3.0"]},
-        {"name": "Galley_photo", "pos": [-4.8, 0.0, 43.0], "yaw": 90.0, "pitch": 6.0, "note": "B: the crew photograph over the galley counter (a story prop)"},
-        {"name": "Ruhland", "pos": [2.6, 0.0, 49.5], "yaw": 180.0, "pitch": 2.0, "note": "B: Ruhland at the Bordkasse (her Talk card)"}
+        {"name": "WW_formation", "pos": [-100.0, 3.4, 21.0], "yaw": 94.0, "pitch": 8.0, "note": "the wing walk: the bomber holding station off the port wing"}
       ]
     },
     "u09_map04b": {
