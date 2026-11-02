@@ -1,0 +1,6 @@
+{
+ "_doc": "Totenhafen (map02) bosses (UPDATE 10 C5): one entry under \"bosses\" keyed by id. the_slender: HB3 THE SLENDER, the Hafenwaechter (T-160). der_kielholer: the Totenhafen systems worker's (T-153).",
+ "version": 1,
+ "bosses": {
+ }
+}

@@ -121,6 +121,37 @@ func add_bar(key: String, boss: Node, big: String, small: String) -> void:
 	_rows[key] = {"bar": bar, "label": label, "strike": strike, "boss": boss, "box": box}
 
 
+## HB2 / HB3 (T-159, T-160): a gauge on a boss's bar. "bottle": PAUL's rage meter drawn as a stout bottle filling,
+## its three tiers marked on the glass (reads boss.gauge_value(), 0..1). "lantern": THE SLENDER's lantern pip, lit
+## amber while he can be damaged and grey while he can't (reads boss.gauge_value() > 0.5).
+func add_gauge(key: String, kind: String) -> void:
+	if not _rows.has(key):
+		return
+	var r: Dictionary = _rows[key]
+	if r.has("gauge"):
+		return
+	var g: Gauge = Gauge.new()
+	g.kind = kind
+	g.custom_minimum_size = Vector2(26, 34)
+	g.size = Vector2(26, 34)
+	g.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var box: Control = r["box"]
+	box.add_child(g)
+	g.anchor_left = 1.0
+	g.anchor_right = 1.0
+	g.offset_left = -4.0
+	g.offset_right = 22.0
+	g.offset_top = 2.0
+	g.offset_bottom = 36.0
+	r["gauge"] = g
+
+
+func gauge_value(key: String) -> float:
+	if not _rows.has(key) or not (_rows[key] as Dictionary).has("gauge"):
+		return -1.0
+	return ((_rows[key] as Dictionary)["gauge"] as Gauge).value
+
+
 func has_bar(key: String) -> bool:
 	return _rows.has(key)
 
@@ -149,6 +180,12 @@ func _process(_delta: float) -> void:
 			continue
 		if (b as Object).has_method("hp_fraction"):
 			(r["bar"] as ProgressBar).value = float((b as Object).call("hp_fraction"))
+		if r.has("gauge") and (b as Object).has_method("gauge_value"):
+			var gv: float = float((b as Object).call("gauge_value"))
+			var g: Gauge = r["gauge"]
+			if not is_equal_approx(g.value, gv):
+				g.value = gv
+				g.queue_redraw()
 
 
 ## The red ledger stamp on its ledger page. date_line: the Ledger's typewriter line under it.
@@ -309,3 +346,34 @@ class LedgerPage extends PanelContainer:
 		# a grimy top edge and a fold
 		draw_rect(Rect2(0, 0, sz.x, 3), Color(0.5, 0.42, 0.3, 0.35))
 		draw_line(Vector2(sz.x * 0.5, 0), Vector2(sz.x * 0.5, sz.y - 8), Color(0.4, 0.33, 0.22, 0.12), 2.0)
+
+
+## The gauge beside a boss bar (HB2's stout bottle, HB3's lantern pip).
+class Gauge extends Control:
+	var kind: String = "bottle"
+	var value: float = 0.0
+
+	func _draw() -> void:
+		if kind == "lantern":
+			var c: Vector2 = size * 0.5
+			var lit: bool = value > 0.5
+			draw_rect(Rect2(c.x - 5, c.y - 11, 10, 3), BRASS)   # the lantern's cap
+			draw_circle(c, 8.0, Color(1.0, 0.72, 0.3) if lit else Color(0.45, 0.45, 0.47))
+			draw_circle(c, 4.0, Color(0.75, 0.45, 1.0) if lit else Color(0.3, 0.3, 0.32))   # the violet flame / cold wick
+			draw_arc(c, 8.0, 0.0, TAU, 20, BRASS_DARK, 1.5)
+			return
+		# a stout bottle: neck, shoulders, body; filled from the bottom; tier marks at 34 and 67
+		var w: float = size.x
+		var h: float = size.y
+		var body: Rect2 = Rect2(w * 0.18, h * 0.32, w * 0.64, h * 0.64)
+		var neck: Rect2 = Rect2(w * 0.38, h * 0.04, w * 0.24, h * 0.3)
+		draw_rect(neck, Color(0.12, 0.08, 0.05, 0.85))
+		draw_rect(body, Color(0.12, 0.08, 0.05, 0.85))
+		var fill_h: float = body.size.y * clampf(value, 0.0, 1.0)
+		var stout: Color = Color(0.55, 0.12, 0.06).lerp(Color(1.0, 0.35, 0.15), clampf((value - 0.67) * 3.0, 0.0, 1.0))
+		draw_rect(Rect2(body.position.x, body.end.y - fill_h, body.size.x, fill_h), stout)
+		for f: float in [0.34, 0.67]:
+			var y: float = body.end.y - body.size.y * f
+			draw_line(Vector2(body.position.x - 2, y), Vector2(body.end.x + 2, y), PAPER, 1.0)
+		draw_rect(body, BRASS_DARK, false, 1.0)
+		draw_rect(neck, BRASS_DARK, false, 1.0)

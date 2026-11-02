@@ -8,6 +8,7 @@ const TABLES: PackedStringArray = [
 	"economy", "rounds", "player", "perks", "powerups", "crate", "traps",
 	"weapons", "enemies", "input_defaults", "world", "map01", "net", "bots", "campaign", "anim",
 	"bosses/cousins", "bosses/likeness",   # the homage bosses (HB1): table("bosses/cousins") reads data/gravelight/bosses/cousins.json
+	"bosses/map01", "bosses/map02", "bosses/map03",   # UPDATE 10 C5: PAUL (map01), THE SLENDER + der Kielholer (map02), the Morgenrot hook (map03)
 	"bosses/map04",   # Map 4 "Fernflug" bosses (UPDATE 07): the Kranführer, the Bordwart, the Test Pilot, the Account Manager
 	"bank",   # T-136: the savings bank (BankAccount)
 	"online",   # T-138: online lobbies (LobbyService), WebRTC ICE servers, rejoin grace, timeouts

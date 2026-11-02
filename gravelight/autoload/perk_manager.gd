@@ -51,6 +51,8 @@ const OVERCLOCK_BOSSES: PackedStringArray = ["foreman", "underwriter"]
 var _owned: Dictionary = {}        # player -> Array[StringName]
 var _bonus_slots: Dictionary = {}  # player -> int (Map 1 egg reward)
 var _bonus_perk: Dictionary = {}   # player -> StringName: a bot's bonus perk (outside the cap, kept on a down)
+var _slotless: Dictionary = {}     # player -> StringName: PAUL'S LAST ROUND's free Ironhide (outside the cap, lost on a down; T-159)
+var _overshield: Dictionary = {}   # player -> float: PAUL'S LAST ROUND's one-time overshield (absorbs hits first; T-159)
 ## The match's base cap (T-081), read from the data + Classic Rules on first use after reset_match (-1 = not yet);
 ## a co-op client takes the host's from the state snapshot ("cb").
 var _base_cap: int = -1
@@ -97,6 +99,8 @@ func reset_match() -> void:
 	_bonus_slots.clear()   # the Map 1 egg slot is re-applied on match_started
 	_base_cap = -1         # Classic Rules is read again for the new match
 	_bonus_perk.clear()
+	_slotless.clear()
+	_overshield.clear()
 	_overclock_ready_at.clear()
 	_tiers.clear()
 	_kept_tiers.clear()
@@ -340,16 +344,52 @@ func is_bonus(player: int, perk_id: StringName) -> bool:
 	return perk_id != &"" and bonus_perk(player) == perk_id
 
 
-## Owned perks that count toward the cap (the bonus perk doesn't).
+## Owned perks that count toward the cap (the bonus perk doesn't, nor PAUL'S LAST ROUND's free tonic).
 func capped_count(player: int) -> int:
 	var n: int = owned(player).size()
 	if is_bonus(player, bonus_perk(player)) and has_perk(player, bonus_perk(player)):
 		n -= 1
+	if _slotless.has(player) and has_perk(player, StringName(_slotless[player])) and not is_bonus(player, StringName(_slotless[player])):
+		n -= 1
 	return n
+
+
+## PAUL'S LAST ROUND (T-159): a tonic free and outside the cap, until the player goes down.
+func grant_slotless(player: int, perk_id: StringName) -> void:
+	if not Net.is_authority() or perk_data(perk_id).is_empty() or has_perk(player, perk_id):
+		return
+	_slotless[player] = perk_id
+	if not _owned.has(player):
+		_owned[player] = []
+	(_owned[player] as Array).append(perk_id)
+	GLBus.perks_changed.emit(player)
+
+
+func slotless_perk(player: int) -> StringName:
+	return StringName(_slotless.get(player, &""))
+
+
+## PAUL'S LAST ROUND (T-159): a one-time overshield that takes hits before health.
+func add_overshield(player: int, amount: float) -> void:
+	_overshield[player] = float(_overshield.get(player, 0.0)) + maxf(0.0, amount)
+
+
+func overshield(player: int) -> float:
+	return float(_overshield.get(player, 0.0))
+
+
+## Pure: what is left of a hit after an overshield, and the shield left: [hit, shield].
+static func absorb(amount: float, shield: float) -> Array:
+	var used: float = minf(maxf(0.0, shield), amount)
+	return [amount - used, shield - used]
 
 
 ## Co-op rule (and solo without Second Wind): every perk is lost on going down, except a bot's bonus perk.
 func on_player_downed(player: int) -> void:
+	if Net.is_authority() and _slotless.has(player):
+		(_owned.get(player, []) as Array).erase(StringName(_slotless[player]))
+		_slotless.erase(player)
+		GLBus.perks_changed.emit(player)
 	if not Net.is_authority() or owned(player).is_empty():
 		return
 	if GameState.retained:
@@ -893,6 +933,12 @@ func filter_hit(p: Player, amount: float) -> float:
 	var pid: int = p.player_id
 	if _active(pid, "invuln") or _active(pid, "iron_skin"):
 		return 0.0
+	if float(_overshield.get(pid, 0.0)) > 0.0:
+		var ab: Array = absorb(amount, float(_overshield[pid]))
+		_overshield[pid] = float(ab[1])
+		amount = float(ab[0])
+		if amount <= 0.0:
+			return 0.0
 	var dodge_cd: float = float(stat(pid, "sprint_dodge_cooldown", 0.0))
 	if dodge_cd > 0.0 and p.sprinting and not _active(pid, "dodge_cd"):
 		_open_window(pid, "dodge_cd", dodge_cd)

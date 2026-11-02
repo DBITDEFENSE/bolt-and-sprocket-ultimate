@@ -1,0 +1,2 @@
+class_name SlenderEncounter
+extends HomageEncounter
