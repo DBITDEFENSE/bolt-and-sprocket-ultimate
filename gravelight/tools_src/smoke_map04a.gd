@@ -227,7 +227,7 @@ func _run() -> void:
 	await _tp(Vector3(20.0, 0.2, 15.0), 0.0)
 	RoundManager.debug_set_round(1)
 	var t: float = 0.0
-	while t < 300.0 and not _rounds_seen.has(4):
+	while t < 420.0 and not _rounds_seen.has(4):   # U09: the dressed Werk takes the bots ~280 s to round 3; 300 s was on the edge
 		await _secs(1.0)
 		t += 1.0
 		for z2: Zombie in _dir.active_zombies():
