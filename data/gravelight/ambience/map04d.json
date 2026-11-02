@@ -1,0 +1,18 @@
+{
+  "_doc": "Mondlicht's zone ambience (UPDATE 09 s5.5, T-149) for ZoneAmbience: one bed per zone (an audio.json key from gravelight/tools_src/gen_audio_moon.py, synthesized, Owned), crossfaded on zone change, and the zone's one-shots at random intervals. `vacuum: true` marks a zone with no air: the bed is the suit only (breath, fan, regulator) and nothing outside is heard (the T-112 suit low-pass stays on the SFX and Ambience buses); its one-shots are suit sounds only.",
+  "crossfade_s": 1.5,
+  "zones": {
+    "A_RECEPTION": {"bed": "ambient_map04d_reception", "db": -8.0,
+      "oneshots": [{"key": "amb_m4d_chime", "every_s": [30, 60], "db": -10}, {"key": "amb_m4d_vent", "every_s": [9, 20], "db": -12}]},
+    "B_CONCOURSE": {"bed": "ambient_map04d_concourse", "db": -8.0,
+      "oneshots": [{"key": "amb_m4d_chime", "every_s": [40, 80], "db": -12}, {"key": "amb_m4d_vent", "every_s": [12, 26], "db": -13}]},
+    "C_YARD": {"bed": "ambient_map04d_yard", "db": -6.0, "vacuum": true,
+      "oneshots": [{"key": "amb_m4d_valve", "every_s": [14, 30], "db": -10}]},
+    "D_FULFILLMENT": {"bed": "ambient_map04d_store", "db": -8.0,
+      "oneshots": [{"key": "amb_m4d_parcel", "every_s": [4, 9], "db": -10}, {"key": "amb_m4d_vent", "every_s": [14, 30], "db": -14}]},
+    "E_HALL": {"bed": "ambient_map04d_hall", "db": -7.0,
+      "oneshots": [{"key": "amb_m4d_swell", "every_s": [18, 36], "db": -10}]},
+    "F_CORE": {"bed": "ambient_map04d_account", "db": -9.0,
+      "oneshots": []}
+  }
+}

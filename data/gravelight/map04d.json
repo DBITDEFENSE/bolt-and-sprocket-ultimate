@@ -159,12 +159,18 @@
   },
   "climb_links": [],
   "earth": {
+    "_doc_look": "U09 s5 (T-149): the Earth hangs high over the north rim, not straight up, so it is in the yard's eye line; sun_dir points toward the Sun (the scene's Moon light is the Sun: low over the east rim, long shadows) and lights the Earth's day side.",
     "position": [
-      0.0,
-      230.0,
-      95.0
+      -10.0,
+      150.0,
+      255.0
     ],
-    "radius": 48.0,
+    "radius": 56.0,
+    "sun_dir": [
+      0.88,
+      0.26,
+      -0.31
+    ],
     "spread_from_round": 3,
     "spread_per_round": 0.04,
     "spread_cap": 0.6,

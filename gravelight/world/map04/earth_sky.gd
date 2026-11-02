@@ -25,6 +25,7 @@ var _day: MeshInstance3D
 var _light: DirectionalLight3D
 var _flicker_t: float = 0.0
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var _point_mat: StandardMaterial3D = null
 
 
 ## The cities lit violet by the flags: London once the window has played, every bombed city (bomb_<city>_hit).
@@ -64,16 +65,32 @@ func _build() -> void:
 	sm.radial_segments = 48
 	sm.rings = 24
 	_day.mesh = sm
-	var dm: StandardMaterial3D = StandardMaterial3D.new()
-	dm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	dm.albedo_color = Color(0.32, 0.5, 0.92)
-	dm.emission_enabled = true
-	dm.emission = Color(0.2, 0.34, 0.7)
-	dm.emission_energy_multiplier = 1.4
+	# U09 s5 (T-149): oceans, continents, ice, clouds and a soft terminator from earth.gdshader, lit from the
+	# act's sun_dir (map04d.json earth), and a thin additive halo of atmosphere at the limb
+	var sun: Array = cfg.get("sun_dir", [0.88, 0.26, -0.31])
+	var sun_dir: Vector3 = Vector3(float(sun[0]), float(sun[1]), float(sun[2])).normalized()
+	var dm: ShaderMaterial = ShaderMaterial.new()
+	dm.shader = load("res://gravelight/world/map04/earth.gdshader") as Shader
+	dm.set_shader_parameter("sun_dir", sun_dir)
 	_day.material_override = dm
 	_day.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(_day)
-	# the night side: a hemisphere a hair outside the globe, dark, turned toward the yard
+	var halo: MeshInstance3D = MeshInstance3D.new()
+	halo.name = "Halo"
+	var hm: SphereMesh = SphereMesh.new()
+	hm.radius = radius * 1.045
+	hm.height = radius * 2.09
+	hm.radial_segments = 48
+	hm.rings = 24
+	halo.mesh = hm
+	var hmat: ShaderMaterial = ShaderMaterial.new()
+	hmat.shader = load("res://gravelight/world/map04/earth_halo.gdshader") as Shader
+	hmat.set_shader_parameter("sun_dir", sun_dir)
+	halo.material_override = hmat
+	halo.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(halo)
+	# the night side: a hemisphere a hair outside the globe turned toward the yard; transparent while the shader
+	# draws the night (T-149), it is what renew() floods violet
 	_night = MeshInstance3D.new()
 	var nm: SphereMesh = SphereMesh.new()
 	nm.radius = radius * 1.01
@@ -84,7 +101,9 @@ func _build() -> void:
 	_night.mesh = nm
 	var nmat: StandardMaterial3D = StandardMaterial3D.new()
 	nmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	nmat.albedo_color = Color(0.02, 0.025, 0.05)
+	nmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	nmat.disable_fog = true
+	nmat.albedo_color = Color(0.02, 0.025, 0.05, 0.0)
 	_night.material_override = nmat
 	_night.rotation_degrees = Vector3(-90, 0, 0)   # the hemisphere's dome faces -Z (toward the base, "down" the sky)
 	_night.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -111,7 +130,12 @@ func _point(pos: Vector3, size: float) -> MeshInstance3D:
 	pm.radial_segments = 8
 	pm.rings = 4
 	m.mesh = pm
-	m.material_override = Mats.get_mat("nachtglas")
+	if _point_mat == null:   # T-149: a fog-free violet glow, so the pinpricks read across the black
+		_point_mat = StandardMaterial3D.new()
+		_point_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		_point_mat.albedo_color = Color(0.85, 0.55, 1.0)
+		_point_mat.disable_fog = true
+	m.material_override = _point_mat
 	m.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	m.position = pos
 	add_child(m)

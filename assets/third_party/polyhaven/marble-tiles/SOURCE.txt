@@ -1,0 +1,12 @@
+Title: Marble Tiles
+Authors: Charlotte Baglioni
+Source: https://polyhaven.com/a/marble_tiles
+File: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/marble_tiles/marble_tiles_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/marble_tiles/marble_tiles_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/marble_tiles/marble_tiles_arm_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Marble Tiles" by Charlotte Baglioni (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 1k (albedo, normal OpenGL +Y, ORM at 1k)
+Tile size: 2.00 x 2.00 m
+Poly Haven id: marble_tiles
+Library key: dm_marble
+Downloaded: 2026-11-01 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: textures/marble_tiles_albedo.png, textures/marble_tiles_normal.png, textures/marble_tiles_orm.png

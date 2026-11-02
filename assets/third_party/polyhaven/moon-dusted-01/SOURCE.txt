@@ -1,0 +1,12 @@
+Title: Moon Dusted 01
+Authors: Greg Zaal (Photography), Rico Cilliers (Photography), Jenelle van Heerden (Photography), Dario Barresi (Processing)
+Source: https://polyhaven.com/a/moon_dusted_01
+File: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/moon_dusted_01/moon_dusted_01_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/moon_dusted_01/moon_dusted_01_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/moon_dusted_01/moon_dusted_01_arm_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Moon Dusted 01" by Greg Zaal (Photography), Rico Cilliers (Photography), Jenelle van Heerden (Photography), Dario Barresi (Processing) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 1k (albedo, normal OpenGL +Y, ORM at 1k)
+Tile size: 0.37 x 0.37 m
+Poly Haven id: moon_dusted_01
+Library key: moon_dusted
+Downloaded: 2026-11-01 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: textures/moon_dusted_01_albedo.png, textures/moon_dusted_01_normal.png, textures/moon_dusted_01_orm.png
