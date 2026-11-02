@@ -63,10 +63,10 @@ func interact(player: Player) -> void:
 		Net.mirror(self, &"_show", [0, ""])
 		return
 	var m: Array = message_for(radio_id, roll)
+	var first: bool = not heard   # read before _show, which marks the set heard on every peer
 	_show(int(m[0]), str(m[1]))
 	Net.mirror(self, &"_show", [int(m[0]), str(m[1])])
-	if not heard:
-		heard = true
+	if first:
 		QuestManager.collect(&"lf_radio", radio_id, player.player_id)
 
 

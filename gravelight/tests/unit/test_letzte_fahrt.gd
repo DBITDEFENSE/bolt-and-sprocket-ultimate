@@ -166,3 +166,31 @@ func test_holdout_step() -> void:
 	assert_false(bool(r[2]), "5 s empty is not abandoned")
 	r = HoldoutStation.step(0.5, 21.0, false, 0.0, 30.0, 20.0)
 	assert_true(bool(r[2]), "20 s empty fails it (retry next round)")
+
+
+## Regression (T-153): a radio counts for s2a_radios the first time it is heard, once (the message used to mark the
+## set heard before the count was taken, so no radio ever counted and the bots stalled on s2a for the whole run).
+func test_a_radio_counts_once_when_first_heard() -> void:
+	QuestManager.clear()
+	GameState.flags.clear()
+	var qid: StringName = QuestManager.load_quest(PATH)
+	assert_eq(qid, &"map02_letzte_fahrt", "the quest loads")
+	QuestManager.debug_skipto(qid, &"s2a_radios")
+	assert_true(QuestManager.is_active(qid, &"s2a_radios"), "s2a_radios is active")
+	var radio: LfRadio = LfRadio.new()
+	radio.radio_id = &"radio_cannery"
+	add_child_autofree(radio)
+	var p: Player = Player.new()
+	p.player_id = 1
+	radio.interact(p)
+	var got: Variant = QuestManager.progress(qid, &"s2a_radios")
+	var n: int = (got as Array).size() if got is Array else (int(got) if got != null else 0)
+	assert_eq(n, 1, "the first listen counts")
+	radio.interact(p)
+	got = QuestManager.progress(qid, &"s2a_radios")
+	n = (got as Array).size() if got is Array else (int(got) if got != null else 0)
+	assert_eq(n, 1, "listening again does not count twice")
+	assert_true(radio.heard, "the set is marked heard")
+	p.free()
+	QuestManager.clear()
+	GameState.flags.clear()
