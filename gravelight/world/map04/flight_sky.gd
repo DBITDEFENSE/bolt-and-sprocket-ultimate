@@ -75,6 +75,7 @@ var _rods: Array = []             # [node, base_pos]
 var _scan_t: float = 0.0
 var _shake_t: float = 0.0
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var sunrise: float = 0.0          # UPDATE 10 (T-156): night -> dawn across the act (set_sunrise)
 
 
 # ---------------------------------------------------------------- pure rules
@@ -497,6 +498,7 @@ func _process(delta: float) -> void:
 		_sky_mat.set_shader_parameter("east_glow", _east)
 		_sky_mat.set_shader_parameter("dawn", _dawn)
 		_sky_mat.set_shader_parameter("flash", _flash)
+		_sky_mat.set_shader_parameter("sunrise", sunrise)
 
 
 func _tick_layers(delta: float, cp: Vector3) -> void:
@@ -770,6 +772,11 @@ func preview_london() -> void:
 	_scan_t = 0.0
 	print("[sky] preview_london: leg %d ground y %.1f plate %s clouds %s" % [leg_index, _ground_y,
 		str(_plate.visible) if _plate != null else "none", str(_clouds.map(func(c: MeshInstance3D) -> float: return c.position.y))])
+
+
+## UPDATE 10 (T-156): the living world's sun (MapAmbience kind flight_sun): 0 night .. 1 first light behind the wing.
+func set_sunrise(k: float) -> void:
+	sunrise = clampf(k, 0.0, 1.0)
 
 
 func _go_desert() -> void:

@@ -210,8 +210,8 @@ func is_clipped(pid: int) -> bool:
 
 ## A ClipPoint's hold finished (host).
 func clip(p: Player) -> void:
-	if p == null:
-		return
+	if p == null or not on_deck(cfg.get("segments", []), float(cfg.get("deck_y", 3.4)), p.global_position):
+		return   # only on the deck (a tether post stands on it)
 	var r: Array = next_state(state_of(p.player_id), "deck" if state_of(p.player_id) == ClipState.OFF_WING else "clip", p.is_bot)
 	if int(r[0]) == ClipState.UNCLIPPED:
 		r = next_state(int(r[0]), "clip", p.is_bot)

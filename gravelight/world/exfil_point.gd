@@ -422,6 +422,7 @@ func _begin_cutscene(payload: Dictionary) -> void:
 	cutscene.cutscene_id = str(cfg.get("cutscene", ""))
 	cutscene.exfil = self
 	map.add_child(cutscene)
+	Campaign.preload_next(target_id())   # T-156: the next act loads behind the cutscene
 	print("[campaign] departing %s for %s (%s)" % [map.map_id, target_id(), cutscene.cutscene_id])
 
 

@@ -332,6 +332,32 @@ static func travel(payload: Dictionary, tree: SceneTree) -> void:
 	LoadingScreen.go(tree, scene, String(target))   # T-144: the next map's art, a tip, a lore line; it awaits MapPacks.ensure (T-139)
 
 
+## UPDATE 10 §3 (T-156): the transitions as events. While the exfil cutscene plays (the boarding, the crash, ...) the
+## next act's packs are fetched (MapPacks.ensure: the web build), then the scene goes to T-158's
+## LoadingScreen.preload_scene (one threaded request, `LoadingScreen.preloaded`), which the LoadingScreen that
+## Campaign.travel opens (the act's card, a lore line, a tip) reuses instead of asking again. ExfilPoint also calls
+## preload_scene directly at the cutscene's start (T-158); the call is idempotent, so nothing loads twice, and on the
+## web this path is the one that works (the scene only exists once its packs are in). `preloading` = the scene path.
+static var preloading: String = ""
+
+
+static func preload_next(map_id: StringName) -> void:
+	var scene: String = scene_for(map_id)
+	if scene == "" or preloading == scene:
+		return
+	preloading = scene
+	_preload_async(scene)
+
+
+static func _preload_async(scene: String) -> void:
+	var ok: bool = await MapPacks.ensure(scene)
+	if not ok or not ResourceLoader.exists(scene):
+		preloading = ""
+		return
+	var ok2: bool = LoadingScreen.preload_scene(scene)
+	print("[campaign] preloading %s behind the cutscene (%s)" % [scene, "ok" if ok2 else "refused"])
+
+
 ## Before the new map's MapRoot runs: the squad composition it will rebuild (bots, skill, survivors).
 static func prepare_state(payload: Dictionary) -> void:
 	active = true

@@ -17,6 +17,10 @@ uniform vec4 east_color : source_color = vec4(0.32, 0.1, 0.45, 1.0);
 uniform float dawn : hint_range(0.0, 1.0) = 0.0;
 uniform vec4 dawn_color : source_color = vec4(0.95, 0.55, 0.3, 1.0);
 uniform float flash : hint_range(0.0, 4.0) = 0.0;   // flak / searchlight wash over the lower sky
+// UPDATE 10 (T-156): the night turning to dawn across the act (FlightSky.set_sunrise from the living world): the
+// glow comes up behind the wing (aft, -Z: the Kranich flies west, away from the sun), the stars fade, the top lifts
+uniform float sunrise : hint_range(0.0, 1.0) = 0.0;
+uniform vec4 sunrise_color : source_color = vec4(0.95, 0.5, 0.28, 1.0);
 
 float hash13(vec3 p3) {
 	p3 = fract(p3 * 0.1031);
@@ -38,6 +42,9 @@ void sky() {
 	col += east_color.rgb * east_glow * pow(east, 3.0) * exp(-abs(h) * 5.0);
 	col = mix(col, mix(col, dawn_color.rgb * 0.6, exp(-abs(h) * 4.0)), dawn);
 	col += vec3(0.25, 0.22, 0.3) * flash * exp(-max(-h, 0.0) * 3.0) * 0.08;
+	float aft = clamp(-d.z * 0.5 + 0.5, 0.0, 1.0);
+	col += sunrise_color.rgb * sunrise * pow(aft, 2.5) * exp(-abs(h) * 3.5) * 0.9;
+	col = mix(col, col + vec3(0.06, 0.08, 0.14), sunrise * smoothstep(-0.05, 0.6, h));
 	if (!AT_CUBEMAP_PASS) {
 		// stars: one candidate per cell of a cube-ish grid on the sphere, twinkling
 		if (h > -0.05) {
@@ -49,7 +56,7 @@ void sky() {
 				float dist = length(g - c);
 				float tw = 0.75 + 0.25 * sin(TIME * (1.5 + rnd * 4.0) + rnd * 40.0);
 				float s = smoothstep(0.42, 0.0, dist) * tw * (0.3 + 0.7 * fract(rnd * 17.0));
-				col += vec3(0.85, 0.9, 1.0) * s * star_gain * smoothstep(-0.05, 0.12, h) * (1.0 - dawn);
+				col += vec3(0.85, 0.9, 1.0) * s * star_gain * smoothstep(-0.05, 0.12, h) * (1.0 - dawn) * (1.0 - sunrise * 0.85);
 			}
 		}
 		if (LIGHT0_ENABLED) {

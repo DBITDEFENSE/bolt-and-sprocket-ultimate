@@ -607,3 +607,19 @@ completes "Can't do that yet: we haven't ...".
 | map01_song s1_cylinders | collect | |
 | map01_song s2_phonograph | player_only: final | |
 | map01_wren_tag s1_tag | player_only: final | |
+
+---
+
+## FERNFLUG ACT II SIDE QUEST: "THE CREW'S TAGS" (UPDATE 10 §3, DECISIONS T-156; `data/gravelight/quests/map04b_crew_tags.json`)
+
+Der Kranich's side quest anyone can do (THE_BAR row 7): no power, no Bolt and no egg needed; it is open from the first act round.
+
+1. **Find the three crew tags** (`s1_tags`, collect `crew_tag` ×3). Stamped tin with the works' crane-in-a-cog: RIEDL, A. on the first harness bunk, HAAS, W. on the second, POHL, K. under the aft blister's gun seat. These are the same tags the main egg's s7a counts, so finding them serves both.
+2. **Read them at the roster** (`s2_roster`, interact `crew_roster`): the BESATZUNGSLISTE board in the radio room (the centre body's starboard wall, by the aux bus). The three names were rubbed out in pencil; you write them back in. Whoever reads them says a line (`M4B_ROSTER`: Dutch, Peg, Deacon or Wren).
+3. **Play the last reel** (`s3_transmission`, interact `bordfunk_reel`): the Bordfunk's tape deck. Three lines on the PA channel play (Riedl, then Haas, then Pohl: "we were not lost. We were collected."), then Wren answers if she is in the squad (`WRN_M4B_LASTCALL_REPLY_01`).
+
+**Rewards:** the Archive entry `INT_M4B_LASTCALL` ("The Kranich's last transmission"), 1500 XP, the flag `kranich_lastcall_heard`. No fail state.
+
+**Bots:** s1 is a `collect` task; s2 is an `interact_sequence` on the roster; s3 is `player_only: final` (the reel is the player's).
+
+**Checklist:** `smoke_map04b_world` runs the three steps end to end and checks the Archive entry.
