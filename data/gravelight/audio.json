@@ -3753,6 +3753,105 @@
       "max_voices": 1,
       "attenuation": "quiet"
     },
+    "amb_m2_chain": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map02/chain_clank_01.ogg",
+        "res://gravelight/audio/sfx/ambience/map02/chain_clank_02.ogg",
+        "res://gravelight/audio/sfx/ambience/map02/chain_clank_03.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "max_voices": 2,
+      "attenuation": "quiet"
+    },
+    "amb_m2_conveyor": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map02/conveyor_jolt_01.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "max_voices": 1,
+      "attenuation": "quiet"
+    },
+    "amb_m2_crate_spill": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map02/crate_spill_01.ogg",
+        "res://gravelight/audio/sfx/ambience/map02/crate_spill_02.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "max_voices": 2,
+      "attenuation": "quiet"
+    },
+    "amb_m2_cutter_groan": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map02/cutter_groan_01.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "max_voices": 1,
+      "attenuation": "world"
+    },
+    "amb_m2_foghorn": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map02/foghorn_01.ogg",
+        "res://gravelight/audio/sfx/ambience/map02/foghorn_02.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "max_voices": 1,
+      "attenuation": "world"
+    },
+    "amb_m2_icicle": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map02/icicle_01.ogg",
+        "res://gravelight/audio/sfx/ambience/map02/icicle_02.ogg",
+        "res://gravelight/audio/sfx/ambience/map02/icicle_03.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "max_voices": 3,
+      "attenuation": "quiet"
+    },
+    "amb_m2_pump_start": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map02/pump_start_01.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "max_voices": 2,
+      "attenuation": "world"
+    },
+    "amb_m2_radio": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map02/radio_static_01.ogg",
+        "res://gravelight/audio/sfx/ambience/map02/radio_static_02.ogg",
+        "res://gravelight/audio/sfx/ambience/map02/radio_static_03.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "max_voices": 1,
+      "attenuation": "quiet"
+    },
+    "amb_m2_ship_guns": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map02/ship_guns_01.ogg",
+        "res://gravelight/audio/sfx/ambience/map02/ship_guns_02.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "max_voices": 1,
+      "attenuation": "quiet"
+    },
+    "amb_m2_siren": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/map02/siren_01.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "max_voices": 3,
+      "attenuation": "world"
+    },
     "ambient_map02_cannery": {
       "files": [
         "res://gravelight/audio/sfx/ambience/map02/cannery_bed.ogg"
@@ -3810,7 +3909,7 @@
         "res://gravelight/audio/sfx/ambience/map02/storm_bed.ogg"
       ],
       "bus": "Ambience",
-      "volume_db": 0.0,
+      "volume_db": -17.0,
       "pitch": [
         1.0,
         1.0

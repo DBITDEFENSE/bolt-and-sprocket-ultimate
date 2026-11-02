@@ -1329,6 +1329,11 @@ func build_dressing() -> void:
 	_tagged(_dress_u09_uboat, "E")
 	_tagged(_dress_u09_lowerpens, "F")
 	_tagged(_dress_u09_tower, "G")
+	_tagged(_dress_u10_quay, "A")      # UPDATE 10 s2 (T-154): the living world's pieces
+	_tagged(_dress_u10_horizon, "")
+	_tagged(_dress_u10_cannery, "B")
+	_tagged(_dress_u10_penhall, "")
+	_tagged(_dress_u10_tower, "G")
 	_dress_windows()
 	_dress_doors()
 	_dress_treads()
@@ -1516,7 +1521,7 @@ func _dress_cannery() -> void:
 			var bx: float = -20.5 + k * 3.2
 			Props.obox(dress, Vector3(bx, 0.97, lz + 0.3), Vector3(0.25, 0.015, 0.04), "steel", Vector3(0, 20.0 + k * 11, 0))
 			_noshadow(Props.ball(dress, Vector3(bx + 1.2, 0.2, lz + 1.9), Vector3(0.6, 0.4, 0.6), "net"))
-	DetailMap02.conveyor(dress, Vector3(-18.0, 0, 4.8), Vector3(-2.0, 0, 4.8), 1.5, 1.0)
+	DetailMap02.conveyor(dress, Vector3(-18.0, 0, 4.8), Vector3(-2.0, 0, 4.8), 1.5, 1.0, false)
 	# brine tanks (riveted), cans on pallets and in a crate
 	for tc: Vector3 in [Vector3(-27.0, 0, 24.0), Vector3(-23.0, 0, 24.0)]:
 		DetailMap02.brine_tank(dress, tc, 1.45, 1.5)
@@ -1720,8 +1725,8 @@ func _dress_penhall() -> void:
 	for hp: Vector3 in [Vector3(-16.6, 0, 60.0), Vector3(-2.6, 0, 56.0), Vector3(16.4, 0, 70.0), Vector3(34.4, 0, 58.0), Vector3(44.0, 0, 46.0)]:
 		_hurricane(hp)
 	lamp(Vector3(16.0, 6.0, 60.0), Color(0.5, 0.62, 0.8), 0.75, 26.0, 0.0, 0.5)
-	# the signal lamp on the tower's roof: a turning spot (battery, always on)
-	var sl: Node3D = spinner(dress, "SignalLamp", Vector3(47.0, TY + 4.65, 35.5), Vector3.UP, 0.7, false)
+	# the signal lamp on the tower's roof: a spot on the battery, turning once the pumps run (T-154's power-on beat)
+	var sl: Node3D = spinner(dress, "SignalLamp", Vector3(47.0, TY + 4.65, 35.5), Vector3.UP, 0.7, true)   # T-154: it turns with the power
 	DetailMap02.signal_lamp_body(sl)
 	var lens: MeshInstance3D = Props.cyl(sl, Vector3(0, 0.1, -0.33), 0.26, 0.05, "signal_glass", Vector3(90, 0, 0))
 	lens.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -1976,12 +1981,18 @@ func _dress_u09_quay() -> void:
 	# flat transom carrying the M1 Carbine's board
 	var cg: Node3D = Props.group(dress, "CutterHull", Vector3(31.0, 0.05, 5.0), 180.0)
 	cg.rotation.x = deg_to_rad(5.0)
+	cg.set_meta("keep", true)   # T-154: one piece, so it can slip into the sea at round 15
 	DetailMap02.cutter(cg, 10.0, 5.8, 2.4)
 	Props.block(cg, Vector3(9.88, 1.0, -2.2), Vector3(10.04, 2.58, 2.2), "planks")
 	Props.block(cg, Vector3(9.88, 0.3, -1.25), Vector3(10.04, 1.0, 1.25), "planks")
 	Props.stencil(cg, Vector3(1.6, 1.9, -2.72), 180.0, "TOT·HAF·7", 30, Color(0.85, 0.82, 0.7, 0.75))
 	Props.stencil(cg, Vector3(1.6, 1.9, 2.72), 0.0, "TOT·HAF·7", 30, Color(0.85, 0.82, 0.7, 0.75))
-	_prop("life_ring", Vector3(24.3, 2.65, 3.92), 0.0)
+	var lr: Node3D = _prop("life_ring", Vector3(24.3, 2.65, 3.92), 0.0)
+	if lr != null:   # it goes with the hull
+		dress.remove_child(lr)
+		lr.transform = cg.transform.affine_inverse() * lr.transform
+		cg.add_child(lr)
+	_bake_local(cg, false)
 	# the harbourmaster's hut: the door hung open, shutters hooked back, a tide table, a hurricane lamp on its hook,
 	# the stove pipe's rain cap, a gutter, the halyard pole on the roof's corner
 	DetailMap02.hung_door(dress, Vector3(18.0, 0, 13.5), 90.0, 1.8, DOOR_H, 100.0, T * 0.5 + 0.03, "planks")
@@ -2017,9 +2028,7 @@ func _dress_u09_quay() -> void:
 	for cx: float in [8.0, 12.0, 18.0, 22.0]:
 		B(Vector3(cx - 0.18, 1.17, 0.12), Vector3(cx + 0.18, 1.22, 0.2), "iron")
 		B(Vector3(cx - 0.05, 1.1, 0.12), Vector3(cx + 0.05, 1.18, 0.2), "iron")
-	DetailMap02.gull(dress, Vector3(7.4, 1.17, 0.0), 170.0)
-	DetailMap02.gull(dress, Vector3(19.3, 1.17, 0.05), 200.0)
-	DetailMap02.gull(dress, Vector3(4.5, 0.86, 1.0), 120.0)
+	# (the gulls are the living world's flock now, map02_ambience.json "gulls": they scatter at the first shot)
 	# the bunker face: a sealed blast door with its counterweight in a track, water and rust streaks from the top
 	var bd: Node3D = Props.group(dress, "BlastDoor", Vector3(16.0, 0, 29.98), 180.0)
 	Props.block(bd, Vector3(-2.0, 0.0, -0.22), Vector3(2.0, 4.2, 0.0), "m2_curtain")
@@ -2790,3 +2799,189 @@ func build_gameplay() -> void:
 		m.position = bp
 		m.add_to_group(&"power_burst_points", true)
 		gameplay.add_child(m)
+
+
+# ================================================================== UPDATE 10 s2 dressing (T-154): the living world's pieces
+
+## The quay: the hut's interior, frozen spray on the parapet, the cutter's remnant (shown when it slips), the quay's
+## icicles under the bunker's eaves, fish crates, the hut's wireless.
+func _dress_u10_quay() -> void:
+	# the hut inside: a pot-bellied stove under the pipe, a cot, the sea chart, oilskins, the wireless on the desk
+	CYL(Vector3(11.0, 0.42, 11.0), 0.32, 0.84, "loco_black")
+	CYL(Vector3(11.0, 0.87, 11.0), 0.36, 0.06, "iron")
+	Props.pipe(dress, Vector3(11.0, 0.9, 11.0), Vector3(11.0, 3.2, 11.0), 0.07, "loco_black")
+	_noshadow(B(Vector3(10.85, 0.18, 10.66), Vector3(11.15, 0.36, 10.68), "ember", false))
+	lamp(Vector3(11.0, 0.4, 10.55), FIRE, 0.45, 3.5, 0.25, 0.0, false, 6.0)
+	CYL(Vector3(11.15, 0.98, 11.05), 0.09, 0.16, "copper")
+	Props.bed(dress, Vector3(13.0, 0, 16.0), Vector3(15.1, 0.45, 16.85), "cloth_green")
+	for bx: float in [15.3, 15.48]:
+		B(Vector3(bx, 0, 15.6), Vector3(bx + 0.14, 0.34, 15.9), "leather")
+	var ch: Node3D = Props.group(dress, "SeaChart", Vector3(14.2, 0, 10.16), 180.0)
+	Props.block(ch, Vector3(-0.8, 1.25, -0.02), Vector3(0.8, 2.3, 0.0), "paper_old")
+	for k: int in 7:
+		Props.block(ch, Vector3(-0.75 + k * 0.25, 1.3, -0.025), Vector3(-0.745 + k * 0.25, 2.25, -0.02), "black_paint", false)
+	Props.block(ch, Vector3(-0.3, 1.55, -0.026), Vector3(0.1, 1.95, -0.024), "red_paint", false)
+	B(Vector3(17.3, 0.9, 16.5), Vector3(17.7, 1.75, 16.68), "yellow_paint")
+	var rs: Node3D = Props.group(dress, "Wireless", Vector3(10.85, 0.8, 16.35), 90.0)
+	Props.block(rs, Vector3(-0.22, 0, -0.13), Vector3(0.22, 0.28, 0.13), "bakelite")
+	Props.cyl(rs, Vector3(-0.08, 0.15, -0.135), 0.06, 0.01, "gauge_lit", Vector3(90, 0, 0))
+	for kx: float in [0.06, 0.14]:
+		Props.cyl(rs, Vector3(kx, 0.1, -0.14), 0.025, 0.02, "black_paint", Vector3(90, 0, 0))
+	# frozen spray: ice over the parapet's coping and its landward face where the waves came over
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 15401
+	var x: float = 2.6
+	while x < 29.4:
+		var w: float = rng.randf_range(0.8, 2.4)
+		_noshadow(B(Vector3(x, 1.17, -0.17), Vector3(minf(29.5, x + w), 1.19, 0.17), "frosted", false))
+		_noshadow(B(Vector3(x + 0.2, rng.randf_range(0.55, 0.85), 0.15), Vector3(minf(29.5, x + w * 0.8), 1.17, 0.17), "frosted", false))
+		x += w + rng.randf_range(0.3, 1.6)
+	# the cutter's remnant (hidden until the cutter slips at round 15; the living world shows CutterRemnantPieces):
+	# the cradle's cribs and shores, the frame behind the M1 Carbine's board, the torn-off wheelhouse, the nets
+	var rem: Node3D = Node3D.new()
+	rem.name = "CutterRemnant"
+	rem.position = Vector3(25.5, 0, 5.0)
+	rem.set_meta("keep", true)
+	dress.add_child(rem)
+	var pc: Node3D = Props.group(rem, "CutterRemnantPieces", Vector3.ZERO, 0.0)
+	for cx: float in [-3.0, -0.5, 2.0, 4.0]:
+		Props.block(pc, Vector3(cx - 0.35, 0, -0.5), Vector3(cx + 0.35, 0.55, 0.5), "beam")
+		Props.strut(pc, Vector3(cx, 0, -2.7), Vector3(cx, 1.5, -1.4), 0.14, "beam")
+		Props.strut(pc, Vector3(cx, 0, 2.7), Vector3(cx, 1.4, 1.5), 0.14, "beam")
+	for fz: float in [-1.4, 1.4]:
+		Props.block(pc, Vector3(-4.62, 0, fz - 0.1), Vector3(-4.42, 2.45, fz + 0.1), "beam")
+	Props.block(pc, Vector3(-4.62, 0.4, -1.35), Vector3(-4.46, 2.35, 1.35), "planks")
+	var wh: Node3D = Props.group(pc, "TornWheelhouse", Vector3(-1.6, 0.0, 0.3), 20.0)
+	wh.rotation.z = deg_to_rad(12.0)
+	Props.block(wh, Vector3(-1.3, 0, -1.1), Vector3(1.3, 1.9, 1.1), "planks")
+	Props.block(wh, Vector3(-1.42, 1.9, -1.22), Vector3(1.42, 2.02, 1.22), "m2_tarred")
+	Props.block(wh, Vector3(-1.31, 0.9, -0.5), Vector3(-1.3, 1.5, 0.5), "window_dark")
+	Props.net_pile(pc, Vector3(2.4, 0, 0.6), Vector3(2.8, 1.1, 2.6), 31)
+	Props.cyl(pc, Vector3(0.6, 0.72, -1.2), 0.11, 7.0, "pine", Vector3(0, 0, 90))
+	for k2: int in 6:
+		Props.obox(pc, Vector3(rng.randf_range(-4.0, 4.0), 0.03, rng.randf_range(-2.6, 2.6)), Vector3(0.22, 0.05, rng.randf_range(1.2, 2.6)), "planks",
+			Vector3(0, rng.randf_range(0, 180), rng.randf_range(-6, 6)))
+	_bake_local(pc, false)
+	# icicles under the bunker's eaves over the quay (they fall in the raid)
+	var iq: Node3D = Node3D.new()
+	iq.name = "IciclesQuay"
+	iq.position = Vector3(16.0, 11.85, 29.72)
+	iq.set_meta("keep", true)
+	dress.add_child(iq)
+	var ix: float = -26.0
+	var si: int = 0
+	while ix < 59.0:
+		var ic: MeshInstance3D = DetailMap02.icicle_cluster(iq, Vector3(ix - 16.0, 0, 0), 0.0, 15410 + si)
+		ic.add_to_group(&"m2_icicles", true)
+		ix += rng.randf_range(5.0, 8.0)
+		si += 1
+	_fish_crate(Vector3(3.0, 0, 18.6), 20.0, 15420)
+	_fish_crate(Vector3(8.6, 0, 25.4), -35.0, 15421)
+
+
+## Beyond the walls: the cliff town (ruined façades and the church with its bell), the lighthouse at the end of the
+## breakwater, the harbour cranes, the burning freighter and the destroyer out at sea, the dead U-boat half sunk off
+## the breakwater, a storm bank on the north horizon with its own lightning (the cranes stand black against it).
+func _dress_u10_horizon() -> void:
+	DetailMap02.cliff_church(dress, Vector3(-40.0, 46.0, -30.0), -90.0, "CliffBellPivot")
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 15430
+	var k: int = 0
+	for fz: float in [-50.0, -38.0, -18.0, -6.0, 6.0, 18.0]:
+		DetailMap02.ruined_facade(dress, Vector3(-33.2, 46.0, fz), -90.0, rng.randf_range(6.5, 10.0), rng.randf_range(6.5, 10.0), 15431 + k)
+		k += 1
+	for fz2: float in [-48.0, -34.0, -20.0, -5.0, 10.0, 22.0]:
+		DetailMap02.ruined_facade(dress, Vector3(65.4, 46.0, fz2), 90.0, rng.randf_range(6.5, 10.0), rng.randf_range(6.5, 10.0), 15440 + k)
+		k += 1
+	for fp: Vector3 in [Vector3(-33.6, 48.5, -18.0), Vector3(65.8, 49.0, 10.0)]:
+		Props.flames(dress, fp, 2.4, 3.4, 26)
+		Props.smoke(dress, fp + Vector3(0, 4, 0), 2.0, 9.0, 16)
+	DetailMap02.lighthouse(dress, Vector3(88.0, 1.6, -44.0), 16.0)
+	DetailMap02.gantry_crane(dress, Vector3(10.0, 1.6, -44.0), 0.0, 20.0, 14.0)
+	DetailMap02.gantry_crane(dress, Vector3(52.0, 1.6, -44.0), 180.0, 22.0, 16.0)
+	DetailMap02.burning_freighter(dress, Vector3(-80.0, -2.0, -138.0), 15.0, 70.0)
+	DetailMap02.destroyer(dress, Vector3(122.0, -2.0, -126.0), 200.0)
+	var ub: Node3D = Props.group(dress, "DeadUBoat", Vector3(34.0, -3.4, -57.0), 75.0)
+	ub.rotation = Vector3(deg_to_rad(-9.0), deg_to_rad(75.0), deg_to_rad(21.0))
+	DetailMap02.type_vii(ub, 46.0, -2.6, "rust", "m2_hull_red")
+	DetailMap02.vii_tower(ub, Vector3(-1.0, 0.0, 13.0), 1.4, 2.6, 3.0, "")
+	DetailMap02.storm_card(map_root, Vector3(16.0, 22.0, -152.0), Vector2(380.0, 74.0), 0.0).name = "StormCard_North"
+	var lf: OmniLight3D = OmniLight3D.new()
+	lf.set_script(load("res://gravelight/world/lightning_flash.gd"))
+	lf.name = "Lightning_North"
+	lf.position = Vector3(16.0, 40.0, -110.0)
+	lf.omni_range = 170.0
+	lf.omni_attenuation = 0.6
+	lf.light_color = Color(0.75, 0.82, 1.0)
+	lf.light_volumetric_fog_energy = 0.6
+	lf.set("peak_energy", 2.2)
+	lf.set("cards", [NodePath("../StormCard_North")] as Array[NodePath])
+	lf.set_meta("keep", true)
+	map_root.add_child(lf)
+
+
+## The cannery: cans that ride the belt once the power jolts the conveyor (one mesh, scrolled by its spacing), a
+## fish crate by the line.
+func _dress_u10_cannery() -> void:
+	var cg: Node3D = Node3D.new()
+	cg.name = "ConveyorCans"
+	cg.position = Vector3(-10.0, 0, 4.8)
+	cg.rotation.y = deg_to_rad(90.0)
+	cg.set_meta("keep", true)
+	dress.add_child(cg)
+	var parts: Array = []
+	for k: int in int(16.0 / 0.3) - 1:
+		parts.append([Props.unit_cyl(), Transform3D(Basis.from_scale(Vector3(0.1, 0.11, 0.1)), Vector3(0, 1.06, -8.0 + 0.15 + k * 0.3))])
+	var cans: MeshInstance3D = MeshInstance3D.new()
+	cans.name = "Cans"
+	cans.mesh = DetailMap02.merged(parts, "can_tin")
+	cg.add_child(cans)
+	_fish_crate(Vector3(-24.0, 0, 25.6), 10.0, 15450)
+
+
+## The pen hall: caged pendants on long flexes that swing in the raid, chains and pulley blocks from the roof that
+## swing in the wind and after impacts, the dust points under the roof, icicles under the west catwalk, a fish
+## crate on the bow apron.
+func _dress_u10_penhall() -> void:
+	for pp: Vector3 in [Vector3(-12.0, 7.6, 36.5), Vector3(2.0, 7.6, 36.5), Vector3(18.0, 7.6, 38.0), Vector3(30.0, 7.4, 40.5),
+			Vector3(-17.0, 7.6, 56.0), Vector3(17.0, 7.6, 54.0), Vector3(-3.0, 7.6, 64.0), Vector3(24.0, 7.6, 76.0)]:
+		DetailMap02.swing_pendant(dress, pp, ROOF)
+		power("D_PENHALL", pp + Vector3(0, -0.2, 0), 10.0, 0.55, SODIUM)
+	var s: int = 0
+	for cp: Vector3 in [Vector3(-10.0, 6.4, 46.0), Vector3(-10.0, 5.6, 74.0), Vector3(7.0, 7.0, 35.6), Vector3(26.0, 6.0, 46.0),
+			Vector3(26.0, 5.2, 70.0), Vector3(-17.0, 6.2, 41.0), Vector3(36.0, 6.6, 44.0)]:
+		_bake_local(DetailMap02.hanging_chain(dress, cp, ROOF, 15460 + s), false)
+		s += 1
+	var dp: Node3D = Node3D.new()
+	dp.name = "DustPoints"
+	map_root.add_child(dp)
+	for dx: float in [-16.0, -8.0, 0.0, 8.0, 16.0, 24.0, 32.0, 40.0, 48.0]:
+		for dz: float in [40.0, 50.0, 60.0, 70.0, 80.0]:
+			var m: Marker3D = Marker3D.new()
+			m.name = "Dust"
+			m.position = Vector3(dx, ROOF - 0.4, dz)
+			m.add_to_group(&"m2_dust_points", true)
+			dp.add_child(m)
+	var ih: Node3D = Node3D.new()
+	ih.name = "IciclesHall"
+	ih.position = Vector3(-18.6, CATY - 0.08, 60.0)
+	ih.set_meta("keep", true)
+	dress.add_child(ih)
+	var i: int = 0
+	for iz: float in [41.0, 47.5, 53.0, 59.0, 66.5, 72.0, 79.0]:
+		var ic: MeshInstance3D = DetailMap02.icicle_cluster(ih, Vector3(0, 0, iz - 60.0), 0.0, 15470 + i)
+		ic.add_to_group(&"m2_icicles", true)
+		i += 1
+	_fish_crate(Vector3(7.6, 0, 35.2), 60.0, 15480)
+
+
+## The signal tower: rain streaking down the two embrasures' glass in front of the storm cards.
+func _dress_u10_tower() -> void:
+	for wx: float in [45.0, 49.0]:
+		DetailMap02.rain_card(map_root, Vector3(wx, TY + 1.5, 30.45), Vector2(2.6, 2.9), 0.0)
+
+
+## A spilling fish crate with its box baked to one mesh (the fish stay separate: they slide out).
+func _fish_crate(pos: Vector3, yaw: float, seed_v: int) -> void:
+	var g: Node3D = DetailMap02.fish_crate(dress, pos, yaw, seed_v)
+	_bake_local(g.get_node("Box") as Node3D, false)

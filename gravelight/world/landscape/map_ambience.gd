@@ -2038,12 +2038,13 @@ func _tick_conveyor(delta: float) -> void:
 	if not conveyor_running or _cans == null:
 		return
 	var c: Dictionary = cfg["conveyor_jolt"]
-	var half: float = float(c.get("length", 16.0)) * 0.5
+	# the cans are evenly spaced on one mesh: scrolling it by up to one spacing reads as the belt running
+	var sp: float = float(c.get("spacing", 0.3))
 	var v: float = float(c.get("run_speed", 0.35))
 	for n: Node in _cans.get_children():
 		var nd: Node3D = n as Node3D
 		if nd != null:
-			nd.position.z = wrapf(nd.position.z + v * delta, -half, half)
+			nd.position.z = wrapf(nd.position.z + v * delta, 0.0, sp)
 
 
 # ================================================================== the radios: U-boat traffic in German, subtitled
@@ -2087,7 +2088,7 @@ func _kinds_setup_cutter_slip() -> void:
 	if not cfg.has("cutter_slip"):
 		return
 	var c: Dictionary = cfg["cutter_slip"]
-	var rem: Node3D = _named(str(c.get("remnant", "CutterRemnant")))
+	var rem: Node3D = _named(str(c.get("remnant", "CutterRemnantPieces")))
 	if rem != null:
 		rem.visible = false
 	var late: bool = round_base >= 0 and beat_round(round_now) > int(c.get("round", 15))
@@ -2111,7 +2112,7 @@ func _cutter_slip(instant: bool) -> void:
 	cutter_slipped = true
 	var c: Dictionary = cfg["cutter_slip"]
 	var hull: Node3D = _named(str(c.get("hull", "CutterHull")))
-	var rem: Node3D = _named(str(c.get("remnant", "CutterRemnant")))
+	var rem: Node3D = _named(str(c.get("remnant", "CutterRemnantPieces")))
 	if rem != null:
 		rem.visible = true
 	var flag: StringName = StringName(str(c.get("flag", "cutter_slipped")))
@@ -2123,9 +2124,12 @@ func _cutter_slip(instant: bool) -> void:
 	_count("cutter_slip")
 	if hull == null:
 		return
-	var to_pos: Vector3 = hull.position + _v3(c.get("slide"), Vector3(0, -3.0, -9.0))
+	var p0: Vector3 = hull.position
+	var via: Vector3 = p0 + _v3(c.get("via"), Vector3(0, 0.9, -3.5))   # up over the parapet, then down the shingle
+	var to_pos: Vector3 = p0 + _v3(c.get("slide"), Vector3(0, -1.5, -21.0))
 	var tilt: Vector3 = _v3(c.get("tilt"), Vector3(-15, 0, 8))
-	var to_rot: Vector3 = hull.rotation + Vector3(deg_to_rad(tilt.x), deg_to_rad(tilt.y), deg_to_rad(tilt.z))
+	var r0: Vector3 = hull.rotation
+	var to_rot: Vector3 = r0 + Vector3(deg_to_rad(tilt.x), deg_to_rad(tilt.y), deg_to_rad(tilt.z))
 	if instant:
 		hull.position = to_pos
 		hull.rotation = to_rot
@@ -2133,9 +2137,10 @@ func _cutter_slip(instant: bool) -> void:
 	var secs: float = float(c.get("seconds", 7.0))
 	_snd3(str(c.get("groan_sound", "")), hull.global_position, float(c.get("groan_db", 0.0)))
 	var tw: Tween = hull.create_tween()
-	tw.set_parallel(true)
-	tw.tween_property(hull, "position", to_pos, secs).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-	tw.tween_property(hull, "rotation", to_rot, secs).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_method(func(u: float) -> void:
+		var e: float = u * u * (3.0 - 2.0 * u) * 0.4 + u * u * u * 0.6   # creeps, then goes
+		hull.position = p0.lerp(via, e).lerp(via.lerp(to_pos, e), e)
+		hull.rotation = r0.lerp(to_rot, e), 0.0, 1.0, secs)
 	var splash: Vector3 = _v3(c.get("splash_at"), Vector3(25, -1.5, -5))
 	_after(secs * 0.72, func() -> void:
 		_snd3(str(c.get("splash_sound", "amb_m2_wave")), splash, 4.0)
