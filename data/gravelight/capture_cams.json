@@ -725,16 +725,16 @@
         {"name": "raid_aftermath", "pos": [-8.0, 0.0, 100.0], "yaw": 103.0, "pitch": 6.0, "note": "UPDATE 10 (T-155): Montage 2 after the air raid: the fallen roof bay, the heap over Door_E_south, fires, the breach beyond", "do": ["power", "call:AirRaid:start_raid:22"], "settle_s": 3.0},
         {"name": "raid_breach", "pos": [-48.0, 0.0, 118.0], "yaw": 41.0, "pitch": 4.0, "note": "the test stands' west aisle: Breach_E_apron blown through the Montage wall, its fires", "do": ["power", "call:AirRaid:start_raid:22"], "settle_s": 3.0},
         {"name": "raid_town", "pos": [24.0, 0.0, 31.0], "yaw": 138.6, "pitch": 2.0, "note": "the rail yard after the bomb walk: a bomb fire by the platform, the dust", "do": ["call:AirRaid:start_raid:22"], "settle_s": 3.0},
-        {"name": "rivet_line", "pos": [-4.0, 0.0, 67.6], "yaw": 90.0, "pitch": 9.0, "note": "Montage 1: the rivet line's carriage running the south aisle, hammers down, sparks", "do": ["power", "call:Trap_RivetLine:show_run:4"], "settle_s": 1.0},
+        {"name": "rivet_line", "pos": [-6.0, 0.0, 68.6], "yaw": 72.0, "pitch": 16.0, "note": "Montage 1: the rivet line's carriage running the south aisle, hammers down, sparks", "do": ["power", "call:Trap_RivetLine:show_run:4"], "settle_s": 1.0},
         {"name": "wind_tunnel", "pos": [41.0, 0.0, 115.0], "yaw": 90.0, "pitch": 4.0, "note": "the wind tunnel from past the outlet screen, the fan running at the far end", "do": ["power", "open:Door_Montage", "open:Door_Windkanal", "call:WindTunnel:start_run:3"], "settle_s": 1.0},
         {"name": "tunnel_hatch", "pos": [4.5, 0.0, 102.5], "yaw": 90.0, "pitch": 2.0, "note": "the Windkanal side of the plenum hatch, sucked open while the fan runs (the shortcut to Montage 2)", "do": ["power", "open:Door_Montage", "open:Door_Windkanal", "call:WindTunnel:start_run:2"], "settle_s": 1.0},
-        {"name": "train", "pos": [37.5, 12.0, 84.0], "yaw": -31.5, "pitch": -22.0, "note": "from the watch post: the ammunition train in behind the goods shed, steam", "do": ["call:MapAmbience:_ev_a1_train:15"], "settle_s": 1.0},
+        {"name": "train", "pos": [37.5, 12.0, 84.0], "yaw": -40.0, "pitch": -15.0, "note": "from the watch post: the ammunition train in behind the goods shed, steam", "do": ["call:MapAmbience:_ev_a1_train:15"], "settle_s": 1.0},
         {"name": "lookout_kranich", "pos": [38.6, 12.0, 86.0], "yaw": 145.0, "pitch": -3.0, "note": "the hero view: from the watch post's platform through the torn gap in the hangar's south face to the Kranich", "do": ["power"], "settle_s": 4.0},
         {"name": "spawn_glow", "pos": [20.0, 0.0, 15.0], "yaw": 180.0, "pitch": 18.0, "note": "from spawn: the Kranich's violet breath rising over the works wall, the searchlights", "settle_s": 4.0},
         {"name": "watch_post", "pos": [24.0, 0.0, 70.0], "yaw": -113.2, "pitch": 15.0, "note": "the church square's Luftbeobachtung post: the ramp up the east wall to the platform", "settle_s": 3.0},
         {"name": "low_pass", "pos": [37.5, 12.0, 85.0], "yaw": 180.0, "pitch": 12.0, "note": "the test jet's low pass north of the hangar", "do": ["call:MapAmbience:_ev_a1_low_pass:2.7"], "settle_s": 0.2},
         {"name": "cellar_family", "pos": [9.0, 0.0, 8.0], "yaw": 47.8, "pitch": -5.0, "note": "the air-raid cellar: Erich Wendel, the blanket, his family as silhouettes", "settle_s": 3.0},
-        {"name": "posters", "pos": [21.0, 0.0, 24.0], "yaw": 180.0, "pitch": 3.0, "note": "the works wall from the courtyard: the two fictional-emblem posters flapping", "settle_s": 3.0}
+        {"name": "posters", "pos": [14.0, 0.0, 25.5], "yaw": 180.0, "pitch": 4.0, "note": "the works wall from the courtyard: the two fictional-emblem posters flapping", "settle_s": 3.0}
       ]
     },
     "u09_map04b": {

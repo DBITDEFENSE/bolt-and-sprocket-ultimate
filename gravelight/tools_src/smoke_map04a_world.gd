@@ -82,6 +82,10 @@ func _run() -> void:
 	while int(amb.a1_counts.get("train", 0)) < 1 and Time.get_ticks_msec() - t0 < 40000:
 		await _frames(5)
 	_check(int(amb.a1_counts.get("train", 0)) >= 1, "act round 3: the train came in behind the goods shed")
+	var tr: Node3D = amb._a1_train
+	var tr_at: Vector3 = tr.global_position if tr != null and is_instance_valid(tr) else Vector3.INF
+	var tr_meshes: int = tr.find_children("*", "MeshInstance3D", true, false).size() if tr != null and is_instance_valid(tr) else 0
+	_check(tr_at.distance_to(Vector3(48.0, 0.0, 55.5)) < 0.5 and tr_meshes > 0 and tr.is_visible_in_tree(), "it stands behind the shed (%s, %d meshes)" % [str(tr_at), tr_meshes])
 	await _to_round(4)
 	t0 = Time.get_ticks_msec()
 	while int(amb.a1_counts.get("low_pass", 0)) < 1 and Time.get_ticks_msec() - t0 < 40000:

@@ -132,9 +132,9 @@ func _build_screen() -> void:
 	_lamp = OmniLight3D.new()
 	_lamp.light_color = Color(0.8, 0.88, 1.0)
 	_lamp.light_energy = 0.0
-	_lamp.omni_range = 14.0
+	_lamp.omni_range = 18.0
 	_lamp.shadow_enabled = false
-	_lamp.position = Vector3(-1.0, h + 0.4, 0)
+	_lamp.position = Vector3(0.8, h + 0.3, 0)   # in front of the grille: it lights the screen and the lane
 	g.add_child(_lamp)
 	for c: Node in g.find_children("*", "GeometryInstance3D", true, false):
 		(c as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -223,7 +223,7 @@ func _process(delta: float) -> void:
 		target = 5.0
 	_fan_speed = move_toward(_fan_speed, target, delta * (3.0 if target > _fan_speed else 1.2))
 	if _lamp != null:
-		_lamp.light_energy = 2.4 if running > 0.0 else (0.5 if GameState.power_on else 0.0)
+		_lamp.light_energy = 3.5 if running > 0.0 else (0.6 if GameState.power_on else 0.0)
 	if _fan != null and _fan_speed > 0.001:
 		_fan.rotate_object_local(Vector3.RIGHT, _fan_speed * delta)
 	if _hum != null and running <= 0.0 and _fan_speed < 0.5:
