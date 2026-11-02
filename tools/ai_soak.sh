@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 # The AI soak test (Update 03 sections 0 and 9): headless, silent, as fast as the CPU allows. Writes a CSV per
 # run, a summary CSV per scenario and a markdown table per batch to logs/ai_runs/ (git-ignored).
-bots3|bots3|cousins|kaltenbrunn|totenhafen|ee_full|botmode|fernflug [--runs=3] [--seed=1]
+# Usage: tools/ai_soak.sh --scenario=bots3|cousins|kaltenbrunn|totenhafen|ee_full|botmode|fernflug [--runs=3] [--seed=1]
 #                        [--max-round=N] [--speed=1] [--skill=recruit|veteran|elite] [--max-minutes=150] [--loco=v1|v2]
 #                        [--trace=N (a status line per bot every N s)] [--orders=N (a wheel order every N s)]
 #                        [--ee=off|ask|full (Bot Easter-Egg Help; ee_full: the bots on Map 0's radio egg, T-067)]
