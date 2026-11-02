@@ -1696,9 +1696,9 @@ func _kinds_setup_ships() -> void:
 	if c.has("guns"):
 		_every("ship_guns", c["guns"], _ship_guns)
 	if c.has("star_shells"):
-		_every("star_shells", c["star_shells"], _star_shell)
+		_every("star_shells", c["star_shells"], func() -> void: _star_shell(false))
 	debug_kinds["ship_guns"] = _ship_guns
-	debug_kinds["star_shell"] = _star_shell
+	debug_kinds["star_shell"] = func() -> void: _star_shell(true)
 
 
 func _tick_ships(_delta: float) -> void:
@@ -1725,9 +1725,9 @@ func _ship_guns() -> void:
 
 
 ## A star shell over the water: a parachute flare lighting the bay white, drifting down.
-func _star_shell() -> void:
+func _star_shell(force: bool = false) -> void:
 	var c: Dictionary = (cfg["ships"] as Dictionary).get("star_shells", {})
-	if round_now < int(c.get("min_round", 1)) or _flares.size() >= 2:
+	if (not force and round_now < int(c.get("min_round", 1))) or _flares.size() >= 2:
 		return
 	var pts: Array = c.get("points", [[16, 0, -90]])
 	var base: Vector3 = _v3(pts[_rng.randi() % pts.size()])
@@ -2215,7 +2215,10 @@ func _tick_footprints(delta: float) -> void:
 		if not wet:
 			continue
 		var id: int = body.get_instance_id()
-		var last: Array = _fp_last.get(id, [p, 1.0])
+		if not _fp_last.has(id):
+			_fp_last[id] = [p, 1.0]
+			continue
+		var last: Array = _fp_last[id]
 		var lp: Vector3 = last[0]
 		var moved: Vector3 = Vector3(p.x - lp.x, 0, p.z - lp.z)
 		if moved.length() < step:
