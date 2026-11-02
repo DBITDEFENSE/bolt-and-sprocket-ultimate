@@ -206,3 +206,56 @@ func test_perch_climb_link() -> void:
 	assert_eq(cl.size(), 1)
 	assert_eq(str(cl[0]["zone"]), "E_RADAR")
 	assert_eq(float(cl[0]["to"][1]), 16.0, "up to the 16 m deck")
+
+
+# ---------------------------------------------------------------- the transitions (II -> III the crash, III -> IV the rocket)
+
+func test_transition_lore_lines() -> void:
+	var crash: String = LoadingScreen.transition_line("map04b_kranich", "map04c_groomlake")
+	assert_true(crash.contains("Nevada") or crash.contains("salt"), "the crash's line (%s)" % crash)
+	var rocket: String = LoadingScreen.transition_line("map04c_groomlake", "map04d_mondlicht")
+	assert_true(rocket.contains("LANTERN") or rocket.contains("Groom Lake"), "the rocket's line (%s)" % rocket)
+	assert_eq(LoadingScreen.transition_line("map00_crossroads", "map01_kaltenbrunn"), "", "no transition line: the map's own lore")
+	assert_eq(LoadingScreen.transition_line("", "map04c_groomlake"), "")
+
+
+func test_preload_next_act() -> void:
+	Campaign.preloading = ""
+	if not Campaign.scene_exists(&"map04d_mondlicht"):
+		pending("no Act IV scene in this build")
+		return
+	assert_true(Campaign.preload_next(&"map04d_mondlicht"), "the rocket's cutscene starts loading Act IV")
+	assert_eq(Campaign.preloading, Campaign.scene_for(&"map04d_mondlicht"))
+	assert_true(Campaign.preload_next(&"map04d_mondlicht"), "asking twice is fine")
+	var st: int = ResourceLoader.load_threaded_get_status(Campaign.preloading)
+	assert_ne(st, ResourceLoader.THREAD_LOAD_INVALID_RESOURCE, "a threaded load is under way")
+	while ResourceLoader.load_threaded_get_status(Campaign.preloading) == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
+		await get_tree().process_frame
+	ResourceLoader.load_threaded_get(Campaign.preloading)
+	Campaign.preloading = ""
+
+
+# ---------------------------------------------------------------- online (C8): the host decides, a peer replays
+
+func test_peer_replays_the_hosts_world_events() -> void:
+	var host: Node3D = Node3D.new()
+	add_child_autofree(host)
+	var gc: GroomController = GroomController.new()
+	host.add_child(gc)
+	gc.cfg = GLData.load_json("res://data/gravelight/map04c.json")["groom"]
+	var was: int = Net.mode
+	var start0: int = RoundManager.act_start
+	Net.mode = Net.Mode.CLIENT
+	gc._mirror_world("storm", true)
+	assert_true(gc.dust_active(), "the host's storm on a peer")
+	gc._mirror_world("spread", 2)
+	assert_eq(gc.spread_n, 2, "the fire's spread")
+	gc._mirror_world("act_start", 21)
+	assert_eq(RoundManager.act_start, 21, "the act's numbering (not in the round snapshot)")
+	gc._mirror_world("storm", false)
+	assert_false(gc.dust_active(), "the clear")
+	Net.mode = was
+	RoundManager.act_start = start0
+	# on the host the mirror is a no-op (it already ran the event)
+	gc._mirror_world("spread", 4)
+	assert_eq(gc.spread_n, 2)

@@ -296,6 +296,9 @@ func _collapse_round(ar: int) -> void:
 		_set_spread(sn)
 	if not Net.is_authority():
 		return
+	# peers: the act's numbering (RoundManager.act_start is not in the round snapshot) and the spread
+	_net_world("act_start", RoundManager.act_start)
+	_net_world("spread", sn)
 	var wc: Dictionary = cfg.get("wreck_collapse", {})
 	for sec: Variant in collapse_due(ar, wc, collapsed):
 		_warn_collapse(sec as Dictionary)
@@ -985,6 +988,11 @@ func _mirror_world_more(ev: String, value: Variant) -> void:
 	match ev:
 		"collapse_warn":
 			_collapse_warn_fx(str(value))
+		"act_start":
+			RoundManager.act_start = int(value)
+		"spread":
+			if int(value) != spread_n:
+				_set_spread(int(value))
 		"collapse":
 			_collapse_apply(str(value))
 			get_tree().create_timer(0.8).timeout.connect(_rebake_wreck_nav)
