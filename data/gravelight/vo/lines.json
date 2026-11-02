@@ -11592,5 +11592,533 @@
     "speaker": "WRN",
     "category": "BONUS_LEDGER",
     "text": "It's counting for me. Fine. I count too."
+  },
+  "OPR_BOSS_PAUL_01": {
+    "speaker": "OPR",
+    "category": "BOSS_PAUL",
+    "text": "Oh my! A {gentleman} from overseas has broken into the {studio}! Do give him a warm welcome!",
+    "condition": "Map 1, after the PA roar (spawn)"
+  },
+  "OPR_BOSS_PAUL_02": {
+    "speaker": "OPR",
+    "category": "BOSS_PAUL",
+    "text": "Ladies and gentlemen, our {strongest} account! Tremendous {tolerance}. Simply tremendous!",
+    "condition": "spawn (variant)"
+  },
+  "OPR_BOSS_PAUL_03": {
+    "speaker": "OPR",
+    "category": "BOSS_PAUL",
+    "text": "Back by popular {demand}! And bigger than {ever}!",
+    "condition": "a return visit"
+  },
+  "OPR_BOSS_PAUL_RAGE_01": {
+    "speaker": "OPR",
+    "category": "BOSS_PAUL_RAGE",
+    "text": "Oh dear. He's gone right {off} the chart. We'll need a bigger {chart}!",
+    "condition": "his first BERSERK"
+  },
+  "OPR_BOSS_PAUL_LEFT_01": {
+    "speaker": "OPR",
+    "category": "BOSS_PAUL_LEFT",
+    "text": "And he's off to find his {friends}! Aren't we {all}.",
+    "condition": "the 6:00 retreat"
+  },
+  "OPR_BOSS_PAUL_DEAD_01": {
+    "speaker": "OPR",
+    "category": "BOSS_PAUL_DEAD",
+    "text": "[three seconds of dead air] ...Maximum dose... {recorded}. [and, very quietly, a splice from some other broadcast] {Well done.}",
+    "condition": "his death (after the fall)"
+  },
+  "OPR_BOSS_SLENDER_01": {
+    "speaker": "OPR",
+    "category": "BOSS_SLENDER",
+    "text": "Attention, valued customers: the night {shift} is now on duty. Please have your {papers} ready.",
+    "condition": "Morgenrot, round 20 (spawn)"
+  },
+  "OPR_BOSS_SLENDER_02": {
+    "speaker": "OPR",
+    "category": "BOSS_SLENDER",
+    "text": "Our {watchman} has never missed a night. Not {one}. Do try not to be {noticed}!",
+    "condition": "spawn (variant)"
+  },
+  "OPR_BOSS_SLENDER_03": {
+    "speaker": "OPR",
+    "category": "BOSS_SLENDER",
+    "text": "Shift {change}! Three for the price of {one}!",
+    "condition": "Shift Change"
+  },
+  "OPR_BOSS_SLENDER_04": {
+    "speaker": "OPR",
+    "category": "BOSS_SLENDER",
+    "text": "We are experiencing a brief {outage}. Please remain where you can be {seen}.",
+    "condition": "End of Shift"
+  },
+  "OPR_BOSS_SLENDER_QUAR_01": {
+    "speaker": "OPR",
+    "category": "BOSS_SLENDER_QUAR",
+    "text": "A {customer} has been taken in for {review}.",
+    "condition": "a player quarantined"
+  },
+  "OPR_BOSS_SLENDER_LEFT_01": {
+    "speaker": "OPR",
+    "category": "BOSS_SLENDER_LEFT",
+    "text": "The watch is... {rescheduled}. He'll be by again. He's always {by}.",
+    "condition": "the 8:00 retreat"
+  },
+  "OPR_BOSS_SLENDER_DEAD_01": {
+    "speaker": "OPR",
+    "category": "BOSS_SLENDER_DEAD",
+    "text": "The night watch has clocked {out}! And dawn is... {closer} than you think.",
+    "condition": "his death"
+  },
+  "PAU_PA_01": {
+    "speaker": "PAU",
+    "category": "PA",
+    "text": "WHERE'S MY SQUAD?!",
+    "condition": "arrival, over the PA (channel PA)"
+  },
+  "PAU_LAND_01": {
+    "speaker": "PAU",
+    "category": "LAND",
+    "text": "[a roar with a man's voice inside it]",
+    "condition": "the crater landing"
+  },
+  "PAU_CALM_01": {
+    "speaker": "PAU",
+    "category": "CALM",
+    "text": "Count off! ...COUNT OFF!",
+    "condition": "Calm, bark"
+  },
+  "PAU_CALM_02": {
+    "speaker": "PAU",
+    "category": "CALM",
+    "text": "Gimme your pack. I got it. I GOT it.",
+    "condition": "Calm, bark"
+  },
+  "PAU_CALM_03": {
+    "speaker": "PAU",
+    "category": "CALM",
+    "text": "Nobody gets left. Nobody.",
+    "condition": "Calm, bark"
+  },
+  "PAU_FLEE_01": {
+    "speaker": "PAU",
+    "category": "FLEE",
+    "text": "DON'T YOU RUN! Nobody runs out on the squad!",
+    "condition": "players fleeing (rage up)"
+  },
+  "PAU_DOWN_01": {
+    "speaker": "PAU",
+    "category": "DOWN",
+    "text": "MAN DOWN! ...MAN DOWN! ...medic...",
+    "condition": "sees a player go down"
+  },
+  "PAU_ANGRY_01": {
+    "speaker": "PAU",
+    "category": "ANGRY",
+    "text": "You're not my guys. YOU'RE NOT MY GUYS!",
+    "condition": "becomes Angry"
+  },
+  "PAU_BERSERK_01": {
+    "speaker": "PAU",
+    "category": "BERSERK",
+    "text": "[a roar, and inside it] WHERE ARE THEY?!",
+    "condition": "becomes BERSERK"
+  },
+  "PAU_GRAB_01": {
+    "speaker": "PAU",
+    "category": "GRAB",
+    "text": "GOT you. Who sent you? WHERE ARE THEY?",
+    "condition": "Grab & Squeeze"
+  },
+  "PAU_THROW_01": {
+    "speaker": "PAU",
+    "category": "THROW",
+    "text": "Heads UP!",
+    "condition": "Zombie Throw / Rip & Throw"
+  },
+  "PAU_BOTTLE_01": {
+    "speaker": "PAU",
+    "category": "BOTTLE",
+    "text": "[a gasp] ...cold. That's cold.",
+    "condition": "a bottle breaks"
+  },
+  "PAU_BOTTLE_02": {
+    "speaker": "PAU",
+    "category": "BOTTLE",
+    "text": "...that's enough, doc. That's enough.",
+    "condition": "a bottle breaks (variant)"
+  },
+  "PAU_CUP_01": {
+    "speaker": "PAU",
+    "category": "CUP",
+    "text": "[quietly, to the cup] ...coffee's on me, fellas. Whole pot. ...Fellas?",
+    "condition": "the tin-cup idle"
+  },
+  "PAU_KNEE_01": {
+    "speaker": "PAU",
+    "category": "KNEE",
+    "text": "Not yet. Not YET.",
+    "condition": "knee-down stagger"
+  },
+  "PAU_LEAVE_01": {
+    "speaker": "PAU",
+    "category": "LEAVE",
+    "text": "I'm coming, fellas! HOLD ON!",
+    "condition": "the 6:00 retreat"
+  },
+  "PAU_LAST_DUT_01": {
+    "speaker": "PAU",
+    "category": "LAST_DUT",
+    "text": "...Hey. Sarge. You found me. Tell the guys I carried my share.",
+    "condition": "death, nearest player Dutch"
+  },
+  "PAU_LAST_PEG_01": {
+    "speaker": "PAU",
+    "category": "LAST_PEG",
+    "text": "...Hey. Ma'am. You're English? Huh. You found me. Tell the guys I carried my share.",
+    "condition": "death, Peg"
+  },
+  "PAU_LAST_DEA_01": {
+    "speaker": "PAU",
+    "category": "LAST_DEA",
+    "text": "...Hey. Grease on your hands. Good man. You found me. Tell the guys I carried my share.",
+    "condition": "death, Deacon"
+  },
+  "PAU_LAST_WRN_01": {
+    "speaker": "PAU",
+    "category": "LAST_WRN",
+    "text": "...Hey. You're not one of them. You found me. Tell the guys I carried my share.",
+    "condition": "death, Wren"
+  },
+  "PAU_LAST_BLT_01": {
+    "speaker": "PAU",
+    "category": "LAST_BLT",
+    "text": "...Hey. Kid. Nice hammer. You found me. Tell the guys I carried my share.",
+    "condition": "death, Bolt"
+  },
+  "PAU_LAST_VEN_01": {
+    "speaker": "PAU",
+    "category": "LAST_VEN",
+    "text": "...Hey. Mister. You look like a man who keeps his word. You found me. Tell the guys I carried my share.",
+    "condition": "death, Vendelin"
+  },
+  "SLN_ARRIVE_01": {
+    "speaker": "SLN",
+    "category": "ARRIVE",
+    "text": "[keys, then a calm voice] Evening. Don't mind me. I'm only on my rounds.",
+    "condition": "arrival, from the trees"
+  },
+  "SLN_TIER_LOW_01": {
+    "speaker": "SLN",
+    "category": "TIER_LOW",
+    "text": "[whisper] Noted.",
+    "condition": "a player reaches LOW"
+  },
+  "SLN_TIER_MED_01": {
+    "speaker": "SLN",
+    "category": "TIER_MED",
+    "text": "[whisper] Observed.",
+    "condition": "MEDIUM"
+  },
+  "SLN_TIER_HIGH_01": {
+    "speaker": "SLN",
+    "category": "TIER_HIGH",
+    "text": "[whisper] Logged.",
+    "condition": "HIGH"
+  },
+  "SLN_TIER_CRIT_01": {
+    "speaker": "SLN",
+    "category": "TIER_CRIT",
+    "text": "[right behind you, kindly] Quarantined.",
+    "condition": "CRITICAL (he's behind you)"
+  },
+  "SLN_WRITE_01": {
+    "speaker": "SLN",
+    "category": "WRITE",
+    "text": "[writing] ...three-twelve. Subject out after curfew. Noted.",
+    "condition": "writing at HIGH (pen scratch)"
+  },
+  "SLN_WRITE_02": {
+    "speaker": "SLN",
+    "category": "WRITE",
+    "text": "[writing] ...stood very still. Thought I wouldn't see.",
+    "condition": "writing (variant)"
+  },
+  "SLN_MIRROR_01": {
+    "speaker": "SLN",
+    "category": "MIRROR",
+    "text": "You stop, I stop. That's only manners.",
+    "condition": "the first mirror stop"
+  },
+  "SLN_SWEEP_01": {
+    "speaker": "SLN",
+    "category": "SWEEP",
+    "text": "Let's have a look at you.",
+    "condition": "Lantern Sweep"
+  },
+  "SLN_ROOM_01": {
+    "speaker": "SLN",
+    "category": "ROOM",
+    "text": "Everyone has a page. Find yours.",
+    "condition": "Watch Room entry"
+  },
+  "SLN_ROOM_02": {
+    "speaker": "SLN",
+    "category": "ROOM",
+    "text": "It's three o'clock. It's always three o'clock in here.",
+    "condition": "Watch Room, 12 s in"
+  },
+  "SLN_ROOM_ESCAPE_01": {
+    "speaker": "SLN",
+    "category": "ROOM_ESCAPE",
+    "text": "...Fair enough. You're excused.",
+    "condition": "page torn out"
+  },
+  "SLN_ROOM_FAIL_01": {
+    "speaker": "SLN",
+    "category": "ROOM_FAIL",
+    "text": "Noted.",
+    "condition": "the timer runs out"
+  },
+  "SLN_DECOY_01": {
+    "speaker": "SLN",
+    "category": "DECOY",
+    "text": "Change of shift.",
+    "condition": "Shift Change"
+  },
+  "SLN_DECOY_SHOT_01": {
+    "speaker": "SLN",
+    "category": "DECOY_SHOT",
+    "text": "Wrong lantern. Noted.",
+    "condition": "a decoy is shot"
+  },
+  "SLN_DARK_01": {
+    "speaker": "SLN",
+    "category": "DARK",
+    "text": "Lights out. Last round of the night.",
+    "condition": "End of Shift"
+  },
+  "SLN_BOOK_01": {
+    "speaker": "SLN",
+    "category": "BOOK",
+    "text": "[pages scattering] ...Ah. My book. One moment.",
+    "condition": "the book shot from his hands"
+  },
+  "SLN_LANTERN_01": {
+    "speaker": "SLN",
+    "category": "LANTERN",
+    "text": "...Can't see. Can't see a thing.",
+    "condition": "the lantern broken (stun)"
+  },
+  "SLN_LEAVE_01": {
+    "speaker": "SLN",
+    "category": "LEAVE",
+    "text": "Rounds aren't finished. I'll be back this way.",
+    "condition": "the 8:00 retreat"
+  },
+  "SLN_DEATH_01": {
+    "speaker": "SLN",
+    "category": "DEATH",
+    "text": "...Shift's over. Someone else has the watch now.",
+    "condition": "death"
+  },
+  "DUT_PAUL_01": {
+    "speaker": "DUT",
+    "category": "PAUL",
+    "text": "That's an American voice on the PA. ...That's an American VOICE.",
+    "condition": "the PA roar"
+  },
+  "DUT_PAUL_02": {
+    "speaker": "DUT",
+    "category": "PAUL",
+    "text": "Big fella's wearing dog tags. Ours. Aw, hell.",
+    "condition": "first sight"
+  },
+  "DUT_PAUL_RAGE_01": {
+    "speaker": "DUT",
+    "category": "PAUL_RAGE",
+    "text": "The bottles on his back! Shoot the bottles, calm him down!",
+    "condition": "his first Angry"
+  },
+  "DUT_PAUL_DEAD_01": {
+    "speaker": "DUT",
+    "category": "PAUL_DEAD",
+    "text": "Every unit's got one. The big one. The one who carries you.",
+    "condition": "after the fall (tier 2)"
+  },
+  "DUT_PAUL_CUP_01": {
+    "speaker": "DUT",
+    "category": "PAUL_CUP",
+    "text": "[turning it over] ...I'll buy the round, Paul. I'll buy every round.",
+    "condition": "Dutch receives the cup"
+  },
+  "PEG_PAUL_01": {
+    "speaker": "PEG",
+    "category": "PAUL",
+    "text": "American. A private, engineers, what's left of the sleeve says so. They did this to one of ours.",
+    "condition": "first sight"
+  },
+  "PEG_PAUL_02": {
+    "speaker": "PEG",
+    "category": "PAUL",
+    "text": "The bottles on his back are feeding him. Break them and he cools.",
+    "condition": "his first Angry"
+  },
+  "PEG_PAUL_DEAD_01": {
+    "speaker": "PEG",
+    "category": "PAUL_DEAD",
+    "text": "Note it. Private Paul. Carried his share. ...Somebody in London ought to read that.",
+    "condition": "after the fall (tier 2)"
+  },
+  "PEG_PAUL_CUP_01": {
+    "speaker": "PEG",
+    "category": "PAUL_CUP",
+    "text": "[quietly] I'll see it gets home, Private. You have my word.",
+    "condition": "Peg receives the cup"
+  },
+  "DEA_PAUL_01": {
+    "speaker": "DEA",
+    "category": "PAUL",
+    "text": "That's a soldier. That's a GI. Lord have mercy, what'd they pump into him?",
+    "condition": "first sight"
+  },
+  "DEA_PAUL_02": {
+    "speaker": "DEA",
+    "category": "PAUL",
+    "text": "Easy, big man. Easy. Nobody's leaving you.",
+    "condition": "Calm, after a bottle breaks"
+  },
+  "DEA_PAUL_PRAYER_01": {
+    "speaker": "DEA",
+    "category": "PAUL_PRAYER",
+    "text": "Lord, this man carried his brothers when they couldn't carry themselves. Carry him now. He's done his share. Amen.",
+    "condition": "after the fall: the unique kneel (tier 2)"
+  },
+  "DEA_PAUL_CUP_01": {
+    "speaker": "DEA",
+    "category": "PAUL_CUP",
+    "text": "[softly] I'll keep it shined for you.",
+    "condition": "Deacon receives the cup"
+  },
+  "WRN_PAUL_01": {
+    "speaker": "WRN",
+    "category": "PAUL",
+    "text": "They dosed him to see when he would die. He would not die. ...I know this file. I know this kind of file.",
+    "condition": "first sight"
+  },
+  "WRN_PAUL_02": {
+    "speaker": "WRN",
+    "category": "PAUL",
+    "text": "The back of his neck, when he turns. The line goes in there.",
+    "condition": "his first turn away"
+  },
+  "WRN_PAUL_NAME_01": {
+    "speaker": "WRN",
+    "category": "PAUL_NAME",
+    "text": "[writing] Paul. ...Not a mark. A name.",
+    "condition": "after the fall: writes in her notebook (tier 2)"
+  },
+  "WRN_PAUL_CUP_01": {
+    "speaker": "WRN",
+    "category": "PAUL_CUP",
+    "text": "[quiet] I will carry it. He carried enough.",
+    "condition": "Wren receives the cup"
+  },
+  "DUT_SLENDER_01": {
+    "speaker": "DUT",
+    "category": "SLENDER",
+    "text": "Tall fella with a lantern. Just watching. I hate the ones that just watch.",
+    "condition": "first sight"
+  },
+  "DUT_SLENDER_02": {
+    "speaker": "DUT",
+    "category": "SLENDER",
+    "text": "He's writing. He's writing about ME.",
+    "condition": "Dutch at HIGH"
+  },
+  "DUT_QUARANTINE_01": {
+    "speaker": "DUT",
+    "category": "QUARANTINE",
+    "text": "Room full of books and a clock that don't move. I'm never goin' in a library again.",
+    "condition": "returned from the Watch Room"
+  },
+  "DUT_SLENDER_DEAD_01": {
+    "speaker": "DUT",
+    "category": "SLENDER_DEAD",
+    "text": "...Shift's over, pal. Get some sleep.",
+    "condition": "his death"
+  },
+  "PEG_SLENDER_01": {
+    "speaker": "PEG",
+    "category": "SLENDER",
+    "text": "He only bleeds in the light. Bring him to the floodlights. Politely.",
+    "condition": "his first smoke-hit in darkness"
+  },
+  "PEG_SLENDER_02": {
+    "speaker": "PEG",
+    "category": "SLENDER",
+    "text": "Three of him. Watch the lanterns. The steady one's real.",
+    "condition": "Shift Change"
+  },
+  "PEG_QUARANTINE_01": {
+    "speaker": "PEG",
+    "category": "QUARANTINE",
+    "text": "A clerk's office with no clerk. I've been interrogated in worse.",
+    "condition": "returned"
+  },
+  "PEG_SLENDER_DEAD_01": {
+    "speaker": "PEG",
+    "category": "SLENDER_DEAD",
+    "text": "A man who kept his post when everyone else ran. I've known worse men in better uniforms.",
+    "condition": "his death"
+  },
+  "DEA_SLENDER_01": {
+    "speaker": "DEA",
+    "category": "SLENDER",
+    "text": "He's just doing his rounds. Lord, he's been doing his rounds this whole time.",
+    "condition": "first sight"
+  },
+  "DEA_SLENDER_02": {
+    "speaker": "DEA",
+    "category": "SLENDER",
+    "text": "Keys went quiet— MOVE!",
+    "condition": "his keys fall silent near Deacon"
+  },
+  "DEA_QUARANTINE_01": {
+    "speaker": "DEA",
+    "category": "QUARANTINE",
+    "text": "Clock stopped at three. Mama always said nothing good happens after three.",
+    "condition": "returned"
+  },
+  "DEA_SLENDER_DEAD_01": {
+    "speaker": "DEA",
+    "category": "SLENDER_DEAD",
+    "text": "Rest easy, watchman. We'll keep the lights on.",
+    "condition": "his death"
+  },
+  "WRN_SLENDER_01": {
+    "speaker": "WRN",
+    "category": "SLENDER",
+    "text": "He stops when I stop. He turns when I turn. ...Good. I can count on him.",
+    "condition": "the first mirror stop"
+  },
+  "WRN_SLENDER_02": {
+    "speaker": "WRN",
+    "category": "SLENDER",
+    "text": "The book! Shoot the book out of his hands!",
+    "condition": "his book appears"
+  },
+  "WRN_QUARANTINE_01": {
+    "speaker": "WRN",
+    "category": "QUARANTINE",
+    "text": "My page was neat. He has better handwriting than me.",
+    "condition": "returned"
+  },
+  "WRN_SLENDER_DEAD_01": {
+    "speaker": "WRN",
+    "category": "SLENDER_DEAD",
+    "text": "He wrote everything down. Every hour. ...I understand him.",
+    "condition": "his death"
   }
 }

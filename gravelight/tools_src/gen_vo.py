@@ -106,6 +106,12 @@ PROFILES: dict[str, dict] = {
     "HAL":      dict(voice="David", rate="-2%",  pitch="-6%",  size=0.97, chain="pa",        gain_db=0.0),
     "BWT":      dict(voice="Mark",  rate="+4%",  pitch="-2%",  size=0.99, chain="pa",        gain_db=0.0),
     "RRK":      dict(voice="Mark",  rate="+2%",  pitch="-3%",  size=0.98, chain="radio",     gain_db=0.0),
+    # PAUL (HB2, T-159): placeholder TTS, no real voice imitated. A big American private, loud and rough: David, low
+    # and chesty (the larger "size"), Dutch's gravel chain; his PA roar (category PA) goes through the PA chain.
+    "PAU":      dict(voice="David", rate="-2%",  pitch="-20%", size=0.86, chain="dutch",     gain_db=1.0),
+    # THE SLENDER (HB3, T-160): placeholder TTS, no real voice imitated. A calm, tired, courteous night watchman:
+    # Mark, slow and a little low, dry and close (Jakub's chain).
+    "SLN":      dict(voice="Mark",  rate="-16%", pitch="-8%",  size=0.95, chain="jakub",     gain_db=-1.0),
 }
 # Reinholt's cylinders and diary samples are phonograph recordings; everything else of hers is the PA.
 REI_PHONO_CATEGORIES = ("CYL", "SAMPLE", "HEART_END", "END")
@@ -778,6 +784,8 @@ def profile_for(speaker: str, line_id: str, category: str) -> dict | None:
         return None
     if speaker == "REI" and any(category.startswith(c) for c in REI_PHONO_CATEGORIES):
         prof = dict(prof, chain="phono")
+    if speaker == "PAU" and category == "PA":
+        prof = dict(prof, chain="pa")   # "WHERE'S MY SQUAD?!" over the admin block's PA
     return prof
 
 

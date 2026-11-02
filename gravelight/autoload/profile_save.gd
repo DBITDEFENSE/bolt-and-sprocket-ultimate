@@ -28,6 +28,7 @@ func _ready() -> void:
 	_add_cabinet_rows()
 	for row: Dictionary in MachineLore.archive_rows():   # maker's plates, the Crucibles, the chalk (T-075)
 		_intel[str(row["id"])] = row
+	_add_homage_rows()
 	load_profile()
 	GLBus.match_started.connect(_on_match_started)
 	GLBus.game_over.connect(_on_game_over)
@@ -447,7 +448,31 @@ func _add_cabinet_rows() -> void:
 				lo.get("plan_id", ""), lo.get("plan_name", ""), lo.get("name", pid)]}
 
 
+## UPDATE 10 (T-159, T-160): the homage bosses' Archive cards and documents (bosses/map01.json and map02.json
+## "archive": PAUL's card, his POW card and his letter; THE SLENDER's card and the Watch-Book). Likeness tokens are
+## resolved with the sheet's defaults, so no placeholder ever shows.
+func _add_homage_rows() -> void:
+	for file: String in ["bosses/map01", "bosses/map02"]:
+		for b: Variant in (GLData.table(file).get("bosses", {}) as Dictionary).values():
+			if not (b is Dictionary):
+				continue
+			for id: Variant in ((b as Dictionary).get("archive", {}) as Dictionary).keys():
+				var a: Variant = (b as Dictionary)["archive"][id]
+				if not (a is Dictionary):
+					continue
+				_intel[str(id)] = {"id": str(id), "title": str(a.get("title", id)), "type": str(a.get("type", "DOC")),
+					"map": str(a.get("map", "")), "text": HomageEncounter.fill_tokens(str(a.get("text", "")))}
+
+
 func intel_rows() -> Array:
+	# the Watch-Book's pages are this profile's own: the last match he logged (SlenderEncounter writes them)
+	if _intel.has("INT_HB_04") and (profile.get("watch_book", []) as Array).size() > 0:
+		var row: Dictionary = (_intel["INT_HB_04"] as Dictionary).duplicate()
+		row["text"] = str(row["text"]) + "\n\n" + "\n".join(PackedStringArray((profile["watch_book"] as Array).map(func(x: Variant) -> String: return str(x))))
+		var out: Array = []
+		for r: Variant in _intel.values():
+			out.append(row if (r as Dictionary).get("id", "") == "INT_HB_04" else r)
+		return out
 	return _intel.values()
 
 

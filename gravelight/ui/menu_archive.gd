@@ -2,7 +2,7 @@ class_name MenuArchive
 extends MenuScreen
 ## Intel Archive: every document, photo, cylinder and tape found across matches.
 
-const TYPE_NAMES: Dictionary = {"DOC": "Document", "PHOTO": "Photograph", "CYL": "Cylinder", "RADIO": "Radio", "TAPE": "Ledger tape", "PANEL": "Fine-print panel", "STENCIL": "Stencil", "PLAQUE": "Maker's plate", "FORGE": "Brass plate", "CHALK": "Chalk"}
+const TYPE_NAMES: Dictionary = {"DOC": "Document", "PHOTO": "Photograph", "CYL": "Cylinder", "RADIO": "Radio", "TAPE": "Ledger tape", "PANEL": "Fine-print panel", "STENCIL": "Stencil", "PLAQUE": "Maker's plate", "FORGE": "Brass plate", "CHALK": "Chalk", "CARD": "Boss card"}
 const MAP_NAMES: Dictionary = {"0": "Crossroads Inn", "1": "Kaltenbrunn", "2": "Totenhafen", "all": "Operation Gravelight", "cabinets": "Helvetia Automaten AG"}
 
 var _reader: Label

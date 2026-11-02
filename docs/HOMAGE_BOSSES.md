@@ -1,6 +1,6 @@
 # HOMAGE BOSSES — The Cousins · PAUL · The Slender (GRAVELIGHT; ULTIMATE PROMPT v3; milestones HB1–HB3)
 
-**Status: design only, paused for review (DECISIONS T-042).** Nothing here is built. Source: `C:\Users\Devin\PROJECTS\bolt-and-sprocket\ULTIMATE_PROMPT_V3_BOSSES.md` (v3), on top of v1 and v2. Where v3 conflicts with v1/v2 on these three bosses, v3 wins.
+**Status: HB1, HB2 and HB3 are built (T-045, T-159, T-160; see section 0 and the build notes at the end).** The original header said: design only, paused for review (DECISIONS T-042). Source: `C:\Users\Devin\PROJECTS\bolt-and-sprocket\ULTIMATE_PROMPT_V3_BOSSES.md` (v3), on top of v1 and v2. Where v3 conflicts with v1/v2 on these three bosses, v3 wins.
 
 These three bosses are homages to real people in Devin's life: his cousins, his friend Paul, and Devin himself. They are love letters. In the game they are terrifying; out of it they are flattering: powerful, memorable, never mocking.
 
@@ -9,6 +9,8 @@ These three bosses are homages to real people in Devin's life: his cousins, his 
 ---
 
 ## 0. Where the build stands, and where HB1–HB3 slot in
+
+**Build status (UPDATE 10, 2026-11-02):** HB1 The Cousins **built** (2026-10-22, T-045). **HB2 PAUL built** on Kaltenbrunn round 15 (T-159). **HB3 THE SLENDER built at Totenhafen**, not Morgenrot: he moved there as the Hafenwächter, the pens' night watchman, round 25 standalone / 45 in the campaign (T-160, `docs/U10_TOTENHAFEN_DESIGN.md` §9); `bosses/map03.json` keeps a Morgenrot placeholder pointing at the same script. The build notes for HB2 / HB3 are at the end of this doc. The text below this paragraph is the original design and still says "Morgenrot, round 20" for the Slender; at Totenhafen the Kessel floodlights are the powered lamp pools, the forest is the pen hall's catwalks, the pump stair and the quay, and the truck / Leuchtpistole / Launch Clock have no counterpart.
 
 - **Built and playable:** Map 0 Crossroads Inn (with the Helvetia cellar, the Carters' Yard, the Crucible), Map 1 Kaltenbrunn, Map 2 Totenhafen (first playable), joined by the campaign chain (exfil at rounds 10 and 30, kit carried, T-033). Nine perks, three wonder weapons, the Crucible's three tiers (T-037), AI bot teammates (T-031), voiced placeholder VO (T-035), the slide and the in-match settings page (T-040).
 - **MZ (v2 §7), the zombie animation upgrade, is built in the working tree but not yet committed** (T-041: the 19-bone `SkeletonProfileHumanoid` rig, the AnimationTree, ragdoll, dismemberment with the Gore setting, every map retrofitted). v3 rule 5 needs MZ first, so it is satisfied as soon as T-041 lands.
@@ -1259,3 +1261,34 @@ Optional, any time: a different look or default for any row of the sheet, the co
 - **Late arrivals:** a cousin who arrives after a death comes in with the current enrage steps. Alix gets Double Lash only from a grief window.
 - **The bodies:** they stay until 12 s after the round ends, so the deaths play out and Alix can reach a fallen cousin, then they go.
 - **smoke_campaign:** it runs with Homage Bosses Off (in memory, on a QA settings path) so it keeps testing the plain round-10 beacon. The shift to round 11 is unit-tested.
+
+---
+
+## HB2 build notes (PAUL, built 2026-11-02, UPDATE 10 section 4; DECISIONS T-159)
+
+**What's in (playable, tested):**
+- **Data:** `data/gravelight/bosses/map01.json` (`paul`: HP, return scaling, the rage table, the stages, every move's telegraph / damage / cooldown / counter, hit rules, the arena points, the arrival beat, rewards, the Archive texts, every line's subtitle). Loaded as `GLData.table("bosses/map01")`.
+- **Framework added:** `homage_encounter.gd` (`HomageEncounter`): the one-boss round director PAUL and THE SLENDER share: the reserved round and the +1 rule against the Foreman and special rounds, the horde fraction, bots alone, the fail-safe clock, lines (baked VO or a silent subtitle), `title_of` / `fill_tokens` (no placeholder token ever on screen), rewards. `BossHud.add_gauge` draws PAUL's rage bottle (tiers marked) and THE SLENDER's lantern pip.
+- **The rage system:** `paul_rage.gd` (`PaulRage`, pure): every source and drain of section 5.3, the three stages with the 5-point hysteresis; the growth (x1.00 / x1.15 / x1.30 over 1.2 s, plates pushing out, steam and the glow at BERSERK) and the shrink back.
+- **PAUL:** `paul.gd` on the MZ body ("soldier", heavy, iron-red), with the plates, the six-bottle rack (each bottle a hitbox, 400 HP scaled, -20 rage, frees a held player), IV lines, beard, cap, dog tags, the tin cup. All nine moves: Haymaker, Zombie Throw (a body proxy bowled along the ground, shards at the end), Grab & Squeeze (lifted to his fist, 25/s, 8 presses solo / 6% team damage / a bottle), Ground Pound (the ring; jump it), Rip & Throw (an ore cart or rail section in an arc with its landing shadow), Leap Slam, Thunderclap (the cone strips every board), Charge (unbought doors open free; a wall stuns him 2 s, x1.5), Headframe Climb & Dive (the shadow follows 0.6 s then locks). The neck x2 from behind, no small flinches, the blast knee-down x1.5. The idle taunt (the chest beat, the tin cup, -5).
+- **The arena:** follows anywhere; the lift shaft between the yard and F's lift mouth; never into the Core Vault (he waits in G, roaring).
+- **The round:** `paul_encounter.gd`: the headframe shake, the PA roar, the leap, the crater decal and the 10 m knockdown, the title card; the 6:00 retreat up the headframe and away north, back 8-10 rounds later +35% with six bottles; the death and the twist, never undone; PAUL'S LAST ROUND per player (`world/pauls_last_round.gd`: free Ironhide outside the cap until downed, or +100 overshield), 2000 Scrip, Double Scrip, the card, ARC_HB_PAUL, INT_HB_02 / INT_HB_03 (now listed in the Archive).
+- **VO:** the PAU lines, the Operator's PAUL lines and the squad's PAUL lines baked as placeholder TTS (OneCore PAU / OPR, Kokoro squad); `PEG_PAUL_DEAD_NAMED_01` stays reserved until the surname is supplied.
+- **Dev:** `boss spawn paul`, `spawn_boss paul`, `boss rage N` / `set_rage N`, `boss leave|kill|status`.
+- **Tests:** `test_paul.gd` (17), `smoke_paul.tscn` (ON with the arrival, the stages, the grab and a bottle, a charged door, the fail-safe, the return and the kill with the twist and the rewards; BOTS; OFF).
+
+**Cut or stubbed (HB2):** no baked boss clips (the shapes are the shared clips plus the pose layer); the bowled zombie and the ripped cart are proxies; the first-person lift keeps the player's own camera (no face close-up); no torn radio-room door exists to tear (a door prop lies on the floor); no bugle / trumpet sting (hooked as `bugle_phrase`); Deacon's kneel and Wren's notebook are their lines only; the tin cup is a profile unlock (`trinket_tin_cup`) and a player meta, not yet a viewmodel trinket; the lift shaft is 12 m in the geometry; co-op clients see the generic puppet (as HB1).
+
+## HB3 build notes (THE SLENDER at Totenhafen, built 2026-11-02, UPDATE 10 section 4; DECISIONS T-160)
+
+**What's in (playable, tested):**
+- **Data:** `data/gravelight/bosses/map02.json` (`the_slender`: the Watch rates, the room, the moves, the weak points, the lamp pools and fuse boxes, the doors he locks with their zone boxes, his rounds on the catwalks / pump stair / quay, the arrival, the walk-off, rewards, Archive, lines). `bosses/map03.json`: the Morgenrot placeholder.
+- **The Watch system:** `watch_meter.gd` (`WatchMeter`, pure) per player; the tier words and the violet `logged` screen effect from MEDIUM; CRITICAL puts him behind you; 100 takes you to the Watch Room (`world/watch_room.gd`): three books, your page in one, 25 s / 35 s solo, teammates' lantern hits release you, a fail returns you downed.
+- **THE SLENDER:** `slender.gd`: 2.6 m, the greatcoat, cap and scarf, a real pale face with violet eyes, the lantern on a pole, the keys (they jingle; silence is the Lash's telegraph), the book. The lit rule (powered lamp pools, the signal tower's searchlight, a `searchlights` hook for the C2 Searchlight, a `flares` hook, 5 m muzzle flash, frost); smoke puffs in the dark. The Walk, Teleport (unobserved only), Mirroring, the Lantern Sweep, the Key Ring Lash, Shift Change (decoys), End of Shift (lights out 30 s, three fuse boxes); the lantern stun and the book window.
+- **Doors:** `BuyDoor.boss_lock()` / `boss_unlock()`: he locks the Pen Hall doors and the pump stair door as he passes; each re-opens free when he leaves its zone, dies or walks off.
+- **The round:** `slender_encounter.gd`: round 25 standalone / 45 campaign, the power on, never while sailing or over another boss; the keys from everywhere, "Evening.", the lantern on the west catwalk, the title card; the 8:00 walk-off into the storm (doors open, meters clear, back 5 rounds later); the death (he sits and stays); OVERWATCH, 2500 Scrip, the Night Shift card, the Violet Lantern charm (record only), ARC_HB_SLENDER, the Watch-Book INT_HB_04 with this match's pages.
+- **VO:** the SLN lines, the Operator's and the squad's Slender / quarantine lines baked as placeholder TTS.
+- **Dev:** `boss spawn slender`, `spawn_boss slender`, `boss leave|kill|status`.
+- **Tests:** `test_slender.gd` (16), `smoke_slender.tscn` (ON: the walk, two doors locked, the beam logging, the lit rule, two break-frees, decoys, the walk-off re-opening the doors, the return and the kill with the rewards; BOTS; OFF).
+
+**Cut or stubbed (HB3):** the coat's bone-chain cloth; the HIGH tier's audio dropouts, echo footsteps and HUD flicker (the status FX and the pen-scratch line stand in); the Watch Room's live window onto the map (the room is lit, the window is not rendered); the Leuchtpistole and Die Lange Nacht are Morgenrot's (the hooks exist); the SkyClock nudge and the cable-car ending egg (Morgenrot only); the decoys are simple silhouettes; co-op clients see the generic puppet.

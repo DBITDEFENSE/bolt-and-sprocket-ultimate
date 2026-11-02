@@ -43,6 +43,9 @@ var _lights: Array = []            # [OmniLight3D, base energy, uses_base_energy
 var _flicker_t: float = 0.0
 ## The homage-boss encounter on its map (HB1: the Cousins Round on Map 0); null elsewhere and on co-op clients.
 var cousins: CousinsRound = null
+## UPDATE 10 C5 (T-159, T-160): the single homage boss on this map (PAUL on map01, THE SLENDER on map02); null
+## elsewhere and on co-op clients.
+var homage: HomageEncounter = null
 ## T-142: relief-squad soldiers alive right now (ReliefSquad keeps it): each holds one actor slot.
 var soldiers_alive: int = 0
 
@@ -70,6 +73,11 @@ func _ready() -> void:
 		cousins = CousinsRound.new()
 		cousins.director = self
 		add_child(cousins)
+	if not puppet_mode:
+		homage = HomageEncounter.make_for(GameState.map_id)
+		if homage != null:
+			homage.director = self
+			add_child(homage)
 
 
 ## Called by the map: zone -> nav layer bit, always-on bits, and the adjacency graph.
@@ -692,6 +700,10 @@ func summon_boss(enemy_id: StringName, at: Vector3) -> Node3D:
 			hb.spawn_homage(_snap(at), CousinsRound.boss_hp(key, RoundManager.players, HomageBoss.cfg()))
 			GLBus.enemy_spawned.emit(hb.enemy_id, hb.get_instance_id())
 			return hb
+		&"paul", &"slender", &"the_slender":
+			if homage != null and homage.boss_id == ("paul" if enemy_id == &"paul" else "the_slender"):
+				homage.start_now()
+			return homage
 		&"kranfuehrer":
 			var kf: Kranfuehrer = Kranfuehrer.new()
 			kf.director = self

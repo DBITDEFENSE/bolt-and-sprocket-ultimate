@@ -2,6 +2,9 @@
 
 Short, phone-readable. Nothing here blocks the build.
 
+## UPDATE 10 s4 (2026-11-02): PAUL and THE SLENDER
+- **Likeness (optional):** send Paul's details (a catchphrase, team, item or tattoo; his surname and unit, see HOMAGE_BOSSES D4 for the unit/date clash; what his letter should talk about) and your own (hair, height, glasses, beard, style; your surname for the watch-book) so `data/gravelight/bosses/likeness.json` can be filled; until then both use the defaults and no placeholder ever shows.
+
 ## UPDATE 09 (2026-11-01): the account steps left for you, one line each
 1. **Vercel (publish the browser build):** `npx vercel login` then `sh tools/deploy_web.sh` (the session could not create the Vercel project itself: the permission guard blocks connecting the private repo to an outside service).
 2. **The site password:** `cd build/web && npx vercel env add CZ_PASSWORD production` (type the password you will text your friend), then `sh tools/deploy_web.sh` again.
